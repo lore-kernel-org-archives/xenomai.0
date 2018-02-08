@@ -1,14 +1,15 @@
+From: "Sudler, Simon" <simon.sudler@siemens.com>
+Date: Thu, 8 Feb 2018 09:46:27 +0000
+Message-ID: <EB4794275C0C904BBABD6840AB8DC22D05986505@DENBGAT9EL2MSX.ww902.siemens.net>
+References: <EB4794275C0C904BBABD6840AB8DC22D0598637E@DENBGAT9EL2MSX.ww902.siemens.net>
+ <01691a1a-f661-4c0b-890f-d83038b25344@siemens.com>
+In-Reply-To: <01691a1a-f661-4c0b-890f-d83038b25344@siemens.com>
+Content-Language: de-DE
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"; format="flowed"
-Content-Transfer-Encoding: 8bit
-Date: Thu, 08 Feb 2018 10:39:44 +0100
-From: Pierre FICHEUX <pierre.ficheux@smile.fr>
-In-Reply-To: <afe62c97-fdef-d9fa-84d4-4aa1e81e6b11@xenomai.org>
-References: <c9443b76-da71-9885-82a4-9e524b460998@xenomai.org>
- <11bce118-b19b-fc07-8a2d-03f4d618d5d4@siemens.com>
- <afe62c97-fdef-d9fa-84d4-4aa1e81e6b11@xenomai.org>
-Message-ID: <6123f8244fd696d31c08146caf1c6fac@smile.fr>
-Subject: Re: [Xenomai] [RFC] FOSDEM meeting agenda
+Subject: Re: [Xenomai] Merging v4.4.108 into I-Pipe,
+	issue with switch_mm on x86
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,51 +18,42 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Philippe Gerum <rpm@xenomai.org>
-Cc: Jan Kiszka <jan.kiszka@siemens.com>, Steven Seeger <steven.seeger@nasa.gov>, Xenomai@xenomai.org
+To: "xenomai@xenomai.org" <xenomai@xenomai.org>, "Kiszka, Jan" <jan.kiszka@siemens.com>
 
-Hi all,
-
-Is there anywhere  a kind of report for the last Xenomai meeting?
-
--- 
-Pierre FICHEUX -/- CTO Smile ECS, France -\- pierre.ficheux@smile.fr
-                              http://www.smile.fr
-                              https://smile.eu/fr/offres/embarque-iot
-I would love to change the world, but they won't give me the source 
-code
-
-Le 2018-01-27 12:31, Philippe Gerum a écrit :
-> On 01/26/2018 07:49 PM, Jan Kiszka wrote:
->> 
->> Then testing. I would also not go into too much details, but it would 
->> be
->> good to understand what exist(ed) and what could be done easily to
->> improve it.
-> 
-> That I can answer quickly: over the years, we went from manual testing 
-> I
-> was carrying out over a couple of boards for each of the supported
-> architectures, to a home-made CI system Gilles had developed, which 
-> was
-> hosted on his server.
-> 
-> That system did automated nightly build tests for every architectures,
-> and latency measurements under stress periodically, for a few ARM SoCs
-> of the common ARM architectures back then (armv4, armv5, then later
-> armv7), generating latency reports. x86(32/64) testing was shared
-> between Gilles (early atom-based board) and I (i5 and atom). Other CPU
-> architectures were on my plate (e.g. ppc(32|64), blackfin - ia64, 
-> nios2
-> and sh4 when Xenomai was still supporting them).
-> 
-> Since we lost Gilles, no CI system has been available. We once had 
-> plans
-> to rehost our CI from the home-made infrastructure to a publicly
-> available automation server, but could not pursue mainly due to a lack
-> of time for putting the pieces together.
-> 
-> Today, I'm generally able to do proper testing on ARM* SoCs (armv7,
-> armv8 exclusively though) and x86, because this matches the target
-> architectures of some of my contract work.
+PiBKYW4gS2lzemthIHdyb3RlOg0KPiANCj4gT24gMjAxOC0wMi0wOCAwOToxMiwgU3VkbGVyLCBT
+aW1vbiAoUEQgUEEgQ0kgUiZEIDMpIHdyb3RlOg0KPiA+IEhpIEd1eXMsDQo+ID4NCj4gPiBJIHdh
+cyBqdXN0IGFib3V0IHRvIG1lcmdpbmcgdGhlIHY0LjQuMTA4IHRhZyBpbnRvIHRoZSBJLVBpcGUg
+YnJhbmNoIHdoZW4gSSBmYWxsIG92ZXIgdGhlc2UgNA0KPiA+IGNvbW1pdHMgZnJvbSBBbmR5IEx1
+dG9taXJza2k6DQo+ID4NCj4gPiBnaXQgbG9nIC0tb25lbGluZSBkZmU1MTNhNGU4ZGRkZTc1ZmZj
+NmFiZDNmMTM5YzVkNjViZjkyNWQ3Li40ZWFkNDRmZDI1MjVlZDk3ZTUzNjJhODA2ZDMxMmEwZTNi
+MGVhNDQ1DQo+ID4gNGVhZDQ0ZmQyNTI1IHg4Ni9tbSwgc2NoZWQvY29yZTogVHVybiBvZmYgSVJR
+cyBpbiBzd2l0Y2hfbW0oKQ0KPiA+IDcwYTM5YzdmZDE2NyB4ODYvbW0sIHNjaGVkL2NvcmU6IFVu
+aW5saW5lIHN3aXRjaF9tbSgpDQo+ID4gODNjYzRiNTBlM2E5IHg4Ni9tbTogQnVpbGQgYXJjaC94
+ODYvbW0vdGxiLmMgZXZlbiBvbiAhU01QDQo+ID4gNDI1ZjEzYTM2NjUyIHNjaGVkL2NvcmU6IEFk
+ZCBzd2l0Y2hfbW1faXJxc19vZmYoKSBhbmQgdXNlIGl0IGluIHRoZSBzY2hlZHVsZXINCj4gPg0K
+PiA+IEhlIGludHJvZHVjZXMgYSBzd2l0Y2hfbW1faXJxc19vZmYgZnVuY3Rpb24gYW5kIHR1cm5z
+IElSUXMgb2YgaW5zaWRlIHRoZSBzd2l0Y2hfbW0gZnVuY3Rpb24uIEluDQo+ID4gdGhlIHN3aXRj
+aF9tbSBjYXNlIGxvY2FsX2lycV9zYXZlL3Jlc3RvcmUgaXMgdG8gaGFuZGxlIHRoZSBpbnRlcnJ1
+cHQgZmxhZ3MuDQo+ID4NCj4gPiBJbiB0aGUgSS1QaXBlIGNhc2UsIHRoZSBzd2l0Y2hfbW0gZnVu
+Y3Rpb25zIHdhcyByZW5hbWVkIHRvIF9fc3dpdGNoX21tIHdoaWNoIHRoZW4gaGFuZGVscyB0aGUN
+Cj4gPiBpcnEgZmxhZ3Mgd2l0aCBoYXJkX2NvbmRfbG9jYWxfaXJxX3NhdmUvcmVzdG9yZS4NCj4g
+Pg0KPiA+IFNvIG15IHF1ZXN0aW9uIGlzOiBJcyB0aGlzIGRvdWJsZSBzYXZpbmcgYW5kIHJlc3Rv
+cmluZyBvZiB0aGUgZmxhZ3MgdXNlZnVsIGluIHRoZSBJLVBpcGUgY2FzZT8gTWF5YmUNCj4gPiB0
+aGUgdGhlIGhhcmRfY29uZF9sb2NhbF9pcnFfc2F2ZS9yZXN0b3JlIGNhbiBiZSBtb3ZlZCB0byB0
+aGUgbG9jYWxfaXJxX3NhdmUvcmVzdG9yZSB0byBoYXZlIHRoZQ0KPiA+IGlycSBmbGFnIGhhbmRs
+aW5nIGF0IG9uZSBwbGFjZS4NCj4gDQo+IE9vcHMsIHdoZW4gY2hhdHRpbmcgd2l0aCB5b3UsIEkg
+dG90YWxseSBmb3Jnb3QgdGhhdCBJIGFscmVhZHkgZGlkIGEgMTA5DQo+IG1lcmdlIGxhc3QgbW9u
+dGgsIGp1c3QgZGlkbid0IGZpbmQgZW5vdWdoIHRpbWUgdG8gdGVzdC4gTm93IHRoYXQgeW91IGFy
+ZQ0KPiBtZW50aW9uaW5nIHRoaXMgY29uY3JldGUgY29uZmxpY3QsIEkgc3RhcnRlZCB0byByZW1l
+bWJlci4gUGxlYXNlIGhhdmUgYQ0KPiBsb29rIGF0DQo+IGh0dHA6Ly9naXQueGVub21haS5vcmcv
+aXBpcGUtamtpLmdpdC9sb2cvP2g9Zm9yLXVwc3RyZWFtLzQuNC11cGRhdGUuDQo+IFRoYXQgdmVy
+c2lvbiAvc2VlbXMvIHRvIHdvcmsuDQoNCk9rYXksIHlvdSBhZGRlZCB0aGUgIl9fIiB0byB0aGUg
+c3dpdGNoX21tX2lycXNfb2ZmLiBXb3VsZG4ndCBpdCBiZSBlYXNpZXIgdG8ganVzdCBhZGQNCg0K
+dm9pZCBzd2l0Y2hfbW1faXJxc19vZmYoc3RydWN0IG1tX3N0cnVjdCAqcHJldiwgc3RydWN0IG1t
+X3N0cnVjdCAqbmV4dCwNCgkJCSAgc3RydWN0IHRhc2tfc3RydWN0ICp0c2spDQp7DQojaWZkZWYg
+Q09ORklHX0lQSVBFDQoJdW5zaWduZWQgbG9uZyBmbGFncyA9IGhhcmRfY29uZF9sb2NhbF9pcnFf
+c2F2ZSgpOw0KI2VuZGlmIC8qIENPTkZJR19JUElQRSAqLw0KDQoJdW5zaWduZWQgY3B1ID0gc21w
+X3Byb2Nlc3Nvcl9pZCgpOw0KDQoNCnRvIHRoZSBtbS90bGIuYyBhbmQgcmVzdG9yZSB0aGVtIGF0
+IHRoZSBlbmQgb2YgdGhlIGZ1bmN0aW9uPyBUaGVuIHdlIGNvdWxkIGxlYWYgdGhlDQptbWNfY29u
+dGV4dC5oIHVudG91Y2hlZC4NCg0KU2ltb24NCg==
 
