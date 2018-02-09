@@ -1,12 +1,14 @@
-From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <b709f916-7c1e-8adb-bae7-60ce388fc8fc@siemens.com>
-Date: Fri, 9 Feb 2018 17:54:08 +0100
+Date: Fri, 9 Feb 2018 18:23:47 +0100
+From: Henning Schild <henning.schild@siemens.com>
+Message-ID: <20180209182347.7bb4a455@mmd1pvb1c.ad001.siemens.net>
+In-Reply-To: <8eaf133f-a235-b0c3-0260-c527800d715a@siemens.com>
+References: <20180209161313.32524-1-henning.schild@siemens.com>
+ <8eaf133f-a235-b0c3-0260-c527800d715a@siemens.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
-Subject: [Xenomai] [PATCH] lib/boilerplate: Prevent migration to secondary
- mode for __printout
+Subject: Re: [Xenomai] [PATCH] boilerplate: introduce big lock to serialze
+ dso init calls
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,54 +17,66 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Xenomai <xenomai@xenomai.org>
-Cc: "Hartmann, Wolfgang" <wolfgang.hartmann@siemens.com>
+To: Jan Kiszka <jan.kiszka@siemens.com>
+Cc: xenomai@xenomai.org
 
-From: Wolfgang Hartmann <wolfgang.hartmann@siemens.com>
+Am Fri, 9 Feb 2018 17:48:22 +0100
+schrieb Jan Kiszka <jan.kiszka@siemens.com>:
 
-Use the __RT versions of the stdio function calls to avoid migration to
-secondary mode. In case of ___panic, flush the printer before exiting to
-avoid losing messages.
+> On 2018-02-09 17:13, Henning Schild wrote:
+> > When using dlopen() to include xenomai libraries into an
+> > application, __xenomai_init could be running in multiple threads at
+> > a time. That happens if the application dlopens multiple libs in
+> > multiple threads.  
+> 
+> So, dlopen itself is thread-safe, but it does not guarantee atomicity
+> for the init functions it executes? Or would we run xenomai_init_dso
+> manually in that case?
 
-Signed-off-by: Wolfgang Hartmann <wolfgang.hartmann@siemens.com>
-Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
----
- lib/boilerplate/ancillaries.c | 12 ++++++------
- 1 file changed, 6 insertions(+), 6 deletions(-)
+According to its man-page dlopen is MT-Safe, but i do not think that
+necessarily means it will serialize the init functions for us. I think
+i will have to read the code to answer this one.
 
-diff --git a/lib/boilerplate/ancillaries.c b/lib/boilerplate/ancillaries.c
-index 13d7fafa4..225e44995 100644
---- a/lib/boilerplate/ancillaries.c
-+++ b/lib/boilerplate/ancillaries.c
-@@ -52,15 +52,14 @@ static void __do_printout(const char *name, const char *header,
- {
- 	FILE *fp = stderr;
- 
--	fprintf(fp, "%4u\"%.3u.%.3u| ", ms / 1000, ms % 1000, us);
-+	__RT(fprintf(fp, "%4u\"%.3u.%.3u| ", ms / 1000, ms % 1000, us));
- 
- 	if (header)
--		fputs(header, fp);
-+		__RT(fputs(header, fp));
- 
--	fprintf(fp, "[%s] ", name ?: "main");
--	vfprintf(fp, fmt, ap);
--	fputc('\n', fp);
--	fflush(fp);
-+	__RT(fprintf(fp, "[%s] ", name ?: "main"));
-+	__RT(vfprintf(fp, fmt, ap));
-+	__RT(fputc('\n', fp));
- }
- 
- void __printout(const char *name, const char *header,
-@@ -110,6 +109,7 @@ void ___panic(const char *fn, const char *name,
- 	if (asprintf(&p, "BUG in %s(): ", fn) < 0)
- 		p = "BUG: ";
- 	__printout(name, p, fmt, ap);
-+	rt_print_flush_buffers();
- 	exit(1);
- }
- 
--- 
-2.13.6
+Henning
+
+> > 
+> > Introduce a big lock to serialize all calls to __xenomai_init.
+> > 
+> > Signed-off-by: Henning Schild <henning.schild@siemens.com>
+> > ---
+> >  lib/boilerplate/setup.c | 5 +++++
+> >  1 file changed, 5 insertions(+)
+> > 
+> > diff --git a/lib/boilerplate/setup.c b/lib/boilerplate/setup.c
+> > index f749828b91..653bbae104 100644
+> > --- a/lib/boilerplate/setup.c
+> > +++ b/lib/boilerplate/setup.c
+> > @@ -55,6 +55,9 @@ static int main_init_done;
+> >  
+> >  static DEFINE_PRIVATE_LIST(setup_list);
+> >  
+> > +// serialize dlopen() init calls, which come potentially
+> > multi-threaded  
+> 
+> Style: we use /* */ comments.
+> 
+> > +static pthread_mutex_t dso_init_lock = PTHREAD_MUTEX_INITIALIZER;
+> > +
+> >  static const struct option base_options[] = {
+> >  	{
+> >  #define help_opt	0
+> > @@ -657,7 +660,9 @@ void xenomai_init(int *argcp, char *const
+> > **argvp) 
+> >  void xenomai_init_dso(int *argcp, char *const **argvp)
+> >  {
+> > +	write_lock_nocancel(&dso_init_lock);
+> >  	__xenomai_init(argcp, argvp, "DSO");
+> > +	write_unlock(&dso_init_lock);
+> >  	trace_me("DSO bootstrap done");
+> >  }
+> >  
+> >   
+> 
+> Jan
+
 
