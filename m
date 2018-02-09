@@ -1,15 +1,8 @@
-From: Lowell Gilbert <kludge@be-well.ilk.org>
-References: <44eflvcaft.fsf@lowell-desk.lan>
- <31210f5e-1137-54e8-9e22-7562de250614@xenomai.org>
- <115c0698-ad5f-2dae-4ed4-1e027839eae1@xenomai.org>
- <44d11e1akp.fsf@be-well.ilk.org>
-Date: Fri, 09 Feb 2018 10:00:26 -0500
-In-Reply-To: <44d11e1akp.fsf@be-well.ilk.org> (Lowell Gilbert's message of
- "Fri, 09 Feb 2018 09:50:30 -0500")
-Message-ID: <448tc21a45.fsf@be-well.ilk.org>
-MIME-Version: 1.0
-Content-Type: text/plain
-Subject: Re: [Xenomai] rtdm_timer_start latency?
+From: Henning Schild <henning.schild@siemens.com>
+Date: Fri,  9 Feb 2018 17:13:13 +0100
+Message-Id: <20180209161313.32524-1-henning.schild@siemens.com>
+Subject: [Xenomai] [PATCH] boilerplate: introduce big lock to serialze dso
+	init calls
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -18,17 +11,44 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Lowell Gilbert <kludge@be-well.ilk.org>
-Cc: xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-Lowell Gilbert <kludge@be-well.ilk.org> writes:
+When using dlopen() to include xenomai libraries into an application,
+__xenomai_init could be running in multiple threads at a time. That
+happens if the application dlopens multiple libs in multiple threads.
 
-> To put it another way, I'm trying to figure out what am I doing wrong in:
-> 		ret = rtdm_timer_start(&pstate.collect.timer, rtdm_clock_read() + 1,
-> 				       pstate.collect.period,
-> 				       RTDM_TIMERMODE_RELATIVE);
+Introduce a big lock to serialize all calls to __xenomai_init.
 
-On second thought, and application of more coffee, that's clearly
-wrong. My putting a zero in for the second parameter (as I did
-originally) seems like what I would expect to work.
+Signed-off-by: Henning Schild <henning.schild@siemens.com>
+---
+ lib/boilerplate/setup.c | 5 +++++
+ 1 file changed, 5 insertions(+)
+
+diff --git a/lib/boilerplate/setup.c b/lib/boilerplate/setup.c
+index f749828b91..653bbae104 100644
+--- a/lib/boilerplate/setup.c
++++ b/lib/boilerplate/setup.c
+@@ -55,6 +55,9 @@ static int main_init_done;
+ 
+ static DEFINE_PRIVATE_LIST(setup_list);
+ 
++// serialize dlopen() init calls, which come potentially multi-threaded
++static pthread_mutex_t dso_init_lock = PTHREAD_MUTEX_INITIALIZER;
++
+ static const struct option base_options[] = {
+ 	{
+ #define help_opt	0
+@@ -657,7 +660,9 @@ void xenomai_init(int *argcp, char *const **argvp)
+ 
+ void xenomai_init_dso(int *argcp, char *const **argvp)
+ {
++	write_lock_nocancel(&dso_init_lock);
+ 	__xenomai_init(argcp, argvp, "DSO");
++	write_unlock(&dso_init_lock);
+ 	trace_me("DSO bootstrap done");
+ }
+ 
+-- 
+2.13.6
+
 
