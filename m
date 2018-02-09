@@ -1,15 +1,12 @@
-References: <0e3bd82f06324467932a33ca3ffe4085@ocnapvsw3301.ocr.priv>
- <16361_1515687408_5A578DF0_16361_2622_1_ffea3d58-bdb2-cc1b-d3d5-35e8a614477c@utpvision.it>
- <0728c0c5a202411db337cb9d6f866a22@ocnapvsw3301.ocr.priv>
 From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <f44ed317-e90e-472c-8527-4654404781f1@siemens.com>
-Date: Fri, 12 Jan 2018 14:36:35 +0100
+Message-ID: <b709f916-7c1e-8adb-bae7-60ce388fc8fc@siemens.com>
+Date: Fri, 9 Feb 2018 17:54:08 +0100
 MIME-Version: 1.0
-In-Reply-To: <0728c0c5a202411db337cb9d6f866a22@ocnapvsw3301.ocr.priv>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] R: Xenomai 3.0.6 high latency
+Subject: [Xenomai] [PATCH] lib/boilerplate: Prevent migration to secondary
+ mode for __printout
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -18,40 +15,54 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Fazio Maurizio <maurizio.fazio@leonardocompany.com>, "Simone M. Zucchi" <simone.zucchi@utpvision.it>, "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Xenomai <xenomai@xenomai.org>
+Cc: "Hartmann, Wolfgang" <wolfgang.hartmann@siemens.com>
 
-On 2018-01-12 10:51, Fazio Maurizio wrote:
-> Hello,
-> I applied your solution. I launched again the latency test but again worst case was 164us...
-> I monitored the test for a while and I noticed these behaviors:
-> - When I launched the console application the worst latency grew over 100 us...
-> - After a while the monitor has gone to black screen and then I moved the mouse... even in this case  the worst latency grew over 100us
-> 
-> Have you any idea?
-> 
+From: Wolfgang Hartmann <wolfgang.hartmann@siemens.com>
 
-You didn't specify enough details of your hardware platform and
-configuration yet. Maybe the latencies are related to hw effects, thus
-not much that software can contribute to.
+Use the __RT versions of the stdio function calls to avoid migration to
+secondary mode. In case of ___panic, flush the printer before exiting to
+avoid losing messages.
 
-Typical sources:
- - system management mode (BIOS)
-    -> disable SMI, if possible, via the related Xenomai logic
- - contentions on graphic operations, specifically with built-in GPUs
-    -> head-less operation, possibly also a different graphic mode
-       (framebuffer instead of DRM)
- - aggressive power management
-    -> disable in the kernel, watch out for suspicious BIOS settings
+Signed-off-by: Wolfgang Hartmann <wolfgang.hartmann@siemens.com>
+Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
+---
+ lib/boilerplate/ancillaries.c | 12 ++++++------
+ 1 file changed, 6 insertions(+), 6 deletions(-)
 
-Software-related latencies can be identified by using tracing, ftrace
-with event tracing (trace-cmd, kernelshark) or the ipipe function
-tracer. Specifically, use the latency benchmark to stop the latter when
-a new maximum arrives. If you share the trace, the community may help
-with analyzing.
-
-Jan
-
+diff --git a/lib/boilerplate/ancillaries.c b/lib/boilerplate/ancillaries.c
+index 13d7fafa4..225e44995 100644
+--- a/lib/boilerplate/ancillaries.c
++++ b/lib/boilerplate/ancillaries.c
+@@ -52,15 +52,14 @@ static void __do_printout(const char *name, const char *header,
+ {
+ 	FILE *fp = stderr;
+ 
+-	fprintf(fp, "%4u\"%.3u.%.3u| ", ms / 1000, ms % 1000, us);
++	__RT(fprintf(fp, "%4u\"%.3u.%.3u| ", ms / 1000, ms % 1000, us));
+ 
+ 	if (header)
+-		fputs(header, fp);
++		__RT(fputs(header, fp));
+ 
+-	fprintf(fp, "[%s] ", name ?: "main");
+-	vfprintf(fp, fmt, ap);
+-	fputc('\n', fp);
+-	fflush(fp);
++	__RT(fprintf(fp, "[%s] ", name ?: "main"));
++	__RT(vfprintf(fp, fmt, ap));
++	__RT(fputc('\n', fp));
+ }
+ 
+ void __printout(const char *name, const char *header,
+@@ -110,6 +109,7 @@ void ___panic(const char *fn, const char *name,
+ 	if (asprintf(&p, "BUG in %s(): ", fn) < 0)
+ 		p = "BUG: ";
+ 	__printout(name, p, fmt, ap);
++	rt_print_flush_buffers();
+ 	exit(1);
+ }
+ 
 -- 
-Siemens AG, Corporate Technology, CT RDA IOT SES-DE
-Corporate Competence Center Embedded Linux
+2.13.6
 
