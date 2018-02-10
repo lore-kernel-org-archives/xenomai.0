@@ -1,16 +1,17 @@
-From: Fazio Maurizio <maurizio.fazio@leonardocompany.com>
-Date: Fri, 12 Jan 2018 13:58:02 +0000
-Message-ID: <ba9c8a11a5c84e8a883096a5859f4ce0@ocnapvsw3301.ocr.priv>
-References: <0e3bd82f06324467932a33ca3ffe4085@ocnapvsw3301.ocr.priv>
- <16361_1515687408_5A578DF0_16361_2622_1_ffea3d58-bdb2-cc1b-d3d5-35e8a614477c@utpvision.it>
- <0728c0c5a202411db337cb9d6f866a22@ocnapvsw3301.ocr.priv>
- <13737_1515764197_5A58B9E5_13737_14946_1_f44ed317-e90e-472c-8527-4654404781f1@siemens.com>
-In-Reply-To: <13737_1515764197_5A58B9E5_13737_14946_1_f44ed317-e90e-472c-8527-4654404781f1@siemens.com>
-Content-Language: it-IT
+References: <20180209161313.32524-1-henning.schild@siemens.com>
+ <8eaf133f-a235-b0c3-0260-c527800d715a@siemens.com>
+ <20180209182347.7bb4a455@mmd1pvb1c.ad001.siemens.net>
+ <20180209185839.6f537a43@mmd1pvb1c.ad001.siemens.net>
+From: Philippe Gerum <rpm@xenomai.org>
+Message-ID: <5c68e748-f8e3-fcb2-e3f8-1b586b87a757@xenomai.org>
+Date: Sat, 10 Feb 2018 11:33:00 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Subject: [Xenomai] R: R: Xenomai 3.0.6 high latency
+In-Reply-To: <20180209185839.6f537a43@mmd1pvb1c.ad001.siemens.net>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai] [PATCH] boilerplate: introduce big lock to serialze
+ dso init calls
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -19,98 +20,54 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jan Kiszka <jan.kiszka@siemens.com>, "Simone M. Zucchi" <simone.zucchi@utpvision.it>, "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Henning Schild <henning.schild@siemens.com>, Jan Kiszka <jan.kiszka@siemens.com>
+Cc: xenomai@xenomai.org
 
-SGVsbG8sDQpGb2xsb3dpbmcgYXJlIHRoZSBzeXN0ZW0gaW5mb3JtYXRpb25zOg0KLSBPUzogQ2Vu
-dG9zIDcgNjQgYml0IHdpdGggR25vbWUgMy4xNC4yIFZlcnNpb24NCi0gUHJvY2Vzc29yOiAgIElu
-dGVswq4gWGVvbihSKSBDUFUgRTUtMjYzMCB2MyBAIDIuNDBHSHogw5cgMzINCi0gR3JhcGhpY3M6
-IEdhbGxpdW0gMC40IG9uIGxsdm1waXBlIChMTFZNIDMuOCwgMjU2IGJpdHMpIEkgcGF0Y2hlZCAz
-LjE4LjIwIGtlcm5lbCB3aXRoIFhlbm9tYWkgMy4wLjYuLi4NCkZvciBtb3JlIGRldGFpbHMgSSBh
-dHRhY2ggdGhlIGtlcm5lbCBjb25maWd1cmF0aW9uIGZpbGUuLi4NCg0KSSBidWlsdCBYZW5vbWFp
-IHdpdGggdGhlIGZvbGxvd2luZyBjb25maWd1cmUgb3B0aW9uOg0KY29uZmlndXJlIC0tZW5hYmxl
-LXNtcCAtLWVuYWJsZS1kbG9wZW4tbGlicyAtLWVuYWJsZS1wc2hhcmVkDQoNCkkgZGlzYWJsZWQg
-dGhlIGZvbGxvd2luZyBzeXN0ZW0gc2VydmljZXM6DQp1cG93ZXIuc2VydmljZSAtIERhZW1vbiBm
-b3IgcG93ZXIgbWFuYWdlbWVudCB0dW5lZC5zZXJ2aWNlIC0gRHluYW1pYyBTeXN0ZW0gVHVuaW5n
-IERhZW1vbiBzbWFydGQuc2VydmljZSAtIFNlbGYgTW9uaXRvcmluZyBhbmQgUmVwb3J0aW5nIFRl
-Y2hub2xvZ3kgKFNNQVJUKSBEYWVtb24gZmlyZXdhbGxkLnNlcnZpY2UgLSBmaXJld2FsbGQgLSBk
-eW5hbWljIGZpcmV3YWxsIGRhZW1vbg0KDQpBcyBTaW1vbmUgWnVjY2hpIHdyb3RlIGJlZm9yZS4u
-LiBJIGRpc2FibGVkIHRoZSBnbm9tZSBwb3dlciBtYW5hZ2VtZW50IGRjb25mLWVkaXRvciA9PiBn
-bm9tZS5zZXR0aW5ncy1kYWVtb24ucGx1Z2lucy5wb3dlciA9PiBhY3RpdmUgZmFsc2UNCg0KaW4g
-Z3J1YjIgSSBjb25maWd1cmVkIHRoZSBmb2xsb3dpbmcga2VybmVsIHBhcmFtZXRlcnM6DQphcG09
-b2ZmIHhlbm9tYWkubXNpPWRpc2FibGVkIHhlbm9tYWkuc3lzaGVhcF9zaXplPTIwNDgNCg0KTGF0
-ZW5jeSBncm93cyB3aGVuIEkgbGF1bmNoIGFwcGxpY2F0aW9ucyBsaWtlIGtkZXZlbG9wIG9yIHNp
-bWlsYXIsIG9yIHdoZW4gdGhlIEkgcmV0dXJuIGZyb20gdGhlIGxvY2sgc2NyZWVuLi4uDQpJIHNp
-bXBseSBsYXVuY2ggdGhlIFtYRU5PTUFJIEZPTERFUl0vYmluL2xhdGVuY3kgYXBwbGljYXRpb24u
-Li4gY2FuIEkgdHJhY2UgdGhpcyBidWlsdCBpbiBhcHBsaWNhdGlvbj8NCg0KVGhhbmtzIGluIGFk
-dmFuY2UNCk1hdXJpemlvIEZhemlvDQoNCkNoaWVmIFRlY2huaWNhbCBPZmZpY2UgLyBBaXJjcmFm
-dCBTeXN0ZW1zIFNvZnR3YXJlIEVuZ2luZWVyDQoNCg0KDQpMZW9uYXJkbyBTLnAuQS4NCkMuc28g
-RnJhbmNpYSwgNDI2IC0gVG9yaW5vIC0gMTAxNDYgLSBJdGFseSBUZWwuICszOSAwMTEgNzU2IDMz
-MDggLyAzNzYxDQoNCm1hdXJpemlvLmZhemlvQGxlb25hcmRvY29tcGFueS5jb20NCnd3dy5sZW9u
-YXJkb2NvbXBhbnkuY29tDQoNCuKAlOKAlOKAlOKAlOKAlOKAlOKAlOKAlOKAlOKAlOKAlOKAlOKA
-lOKAlOKAlOKAlOKAlOKAlOKAlOKAlOKAlOKAlOKAlOKAlOKAlOKAlOKAlOKAlOKAlOKAlOKAlOKA
-lOKAk+KAlOKAlOKAlOKAlOKAlOKAlA0KSEVMSUNPUFRFUlMvQUVST05BVVRJQ1MvRUxFQ1RST05J
-Q1MsIERFRkVOQ0UgJiBTRUNVUklUWSBTWVNURU1TL1NQQUNFIOKAlOKAlOKAlOKAlOKAlOKAlOKA
-lOKAlOKAlOKAlOKAlOKAlOKAlOKAlOKAlOKAlOKAlOKAlOKAlOKAlOKAlOKAlOKAlOKAlOKAlOKA
-lOKAlOKAlOKAlOKAlOKAlOKAlOKAk+KAlOKAlOKAlOKAlOKAlOKAlA0KDQoNCg0KQ29tcGFueSBH
-ZW5lcmFsIFVzZQ0KDQoNCklsIHByZXNlbnRlIG1lc3NhZ2dpbyBlLW1haWwgZSBvZ25pIHN1byBh
-bGxlZ2F0byBkZXZvbm8gaW50ZW5kZXJzaSBpbmRpcml6emF0aSBlc2NsdXNpdmFtZW50ZSBhbCBk
-ZXN0aW5hdGFyaW8gaW5kaWNhdG8gZSBjb25zaWRlcmFyc2kgZGFsIGNvbnRlbnV0byBzdHJldHRh
-bWVudGUgcmlzZXJ2YXRvIGUgY29uZmlkZW56aWFsZS4gU2Ugbm9uIHNpZXRlIGwnZWZmZXR0aXZv
-IGRlc3RpbmF0YXJpbyBvIGF2ZXRlIHJpY2V2dXRvIGlsIG1lc3NhZ2dpbyBlLW1haWwgcGVyIGVy
-cm9yZSwgc2lldGUgcHJlZ2F0aSBkaSBhdnZlcnRpcmUgaW1tZWRpYXRhbWVudGUgaWwgbWl0dGVu
-dGUgZSBkaSBjYW5jZWxsYXJlIGlsIHN1ZGRldHRvIG1lc3NhZ2dpbyBlIG9nbmkgc3VvIGFsbGVn
-YXRvIGRhbCB2b3N0cm8gc2lzdGVtYSBpbmZvcm1hdGljby4gUXVhbHNpYXNpIHV0aWxpenpvLCBk
-aWZmdXNpb25lLCBjb3BpYSBvIGFyY2hpdmlhemlvbmUgZGVsIHByZXNlbnRlIG1lc3NhZ2dpbyBk
-YSBwYXJ0ZSBkaSBjaGkgbm9uIG5lIMOoIGlsIGRlc3RpbmF0YXJpbyDDqCBzdHJldHRhbWVudGUg
-cHJvaWJpdG8gZSBwdcOyIGRhciBsdW9nbyBhIHJlc3BvbnNhYmlsaXTDoCBkaSBjYXJhdHRlcmUg
-Y2l2aWxlIGUgcGVuYWxlIHB1bmliaWxpIGFpIHNlbnNpIGRpIGxlZ2dlLg0KUXVlc3RhIGUtbWFp
-bCBoYSB2YWxvcmUgbGVnYWxlIHNvbG8gc2UgZmlybWF0YSBkaWdpdGFsbWVudGUgYWkgc2Vuc2kg
-ZGVsbGEgbm9ybWF0aXZhIHZpZ2VudGUuDQoNClRoZSBjb250ZW50cyBvZiB0aGlzIGVtYWlsIG1l
-c3NhZ2UgYW5kIGFueSBhdHRhY2htZW50cyBhcmUgaW50ZW5kZWQgc29sZWx5IGZvciB0aGUgYWRk
-cmVzc2VlKHMpIGFuZCBjb250YWluIGNvbmZpZGVudGlhbCBhbmQvb3IgcHJpdmlsZWdlZCBpbmZv
-cm1hdGlvbi4NCklmIHlvdSBhcmUgbm90IHRoZSBpbnRlbmRlZCByZWNpcGllbnQgb2YgdGhpcyBt
-ZXNzYWdlLCBvciBpZiB0aGlzIG1lc3NhZ2UgaGFzIGJlZW4gYWRkcmVzc2VkIHRvIHlvdSBpbiBl
-cnJvciwgcGxlYXNlIGltbWVkaWF0ZWx5IG5vdGlmeSB0aGUgc2VuZGVyIGFuZCB0aGVuIGRlbGV0
-ZSB0aGlzIG1lc3NhZ2UgYW5kIGFueSBhdHRhY2htZW50cyBmcm9tIHlvdXIgc3lzdGVtLiBJZiB5
-b3UgYXJlIG5vdCB0aGUgaW50ZW5kZWQgcmVjaXBpZW50LCB5b3UgYXJlIGhlcmVieSBub3RpZmll
-ZCB0aGF0IGFueSB1c2UsIGRpc3NlbWluYXRpb24sIGNvcHlpbmcsIG9yIHN0b3JhZ2Ugb2YgdGhp
-cyBtZXNzYWdlIG9yIGl0cyBhdHRhY2htZW50cyBpcyBzdHJpY3RseSBwcm9oaWJpdGVkLiBVbmF1
-dGhvcml6ZWQgZGlzY2xvc3VyZSBhbmQvb3IgdXNlIG9mIGluZm9ybWF0aW9uIGNvbnRhaW5lZCBp
-biB0aGlzIGVtYWlsIG1lc3NhZ2UgbWF5IHJlc3VsdCBpbiBjaXZpbCBhbmQgY3JpbWluYWwgbGlh
-YmlsaXR5LiDigJwNClRoaXMgZS1tYWlsIGhhcyBsZWdhbCB2YWx1ZSBhY2NvcmRpbmcgdG8gdGhl
-IGFwcGxpY2FibGUgbGF3cyBvbmx5IGlmIGl0IGlzIGRpZ2l0YWxseSBzaWduZWQgYnkgdGhlIHNl
-bmRlcg0KLS0tLS1NZXNzYWdnaW8gb3JpZ2luYWxlLS0tLS0NCkRhOiBKYW4gS2lzemthIFttYWls
-dG86amFuLmtpc3prYUBzaWVtZW5zLmNvbV0NCkludmlhdG86IHZlbmVyZMOsIDEyIGdlbm5haW8g
-MjAxOCAxNDozNw0KQTogRmF6aW8gTWF1cml6aW87IFNpbW9uZSBNLiBadWNjaGk7IHhlbm9tYWlA
-eGVub21haS5vcmcNCk9nZ2V0dG86IFJlOiBSOiBYZW5vbWFpIDMuMC42IGhpZ2ggbGF0ZW5jeQ0K
-DQpPbiAyMDE4LTAxLTEyIDEwOjUxLCBGYXppbyBNYXVyaXppbyB3cm90ZToNCj4gSGVsbG8sDQo+
-IEkgYXBwbGllZCB5b3VyIHNvbHV0aW9uLiBJIGxhdW5jaGVkIGFnYWluIHRoZSBsYXRlbmN5IHRl
-c3QgYnV0IGFnYWluIHdvcnN0IGNhc2Ugd2FzIDE2NHVzLi4uDQo+IEkgbW9uaXRvcmVkIHRoZSB0
-ZXN0IGZvciBhIHdoaWxlIGFuZCBJIG5vdGljZWQgdGhlc2UgYmVoYXZpb3JzOg0KPiAtIFdoZW4g
-SSBsYXVuY2hlZCB0aGUgY29uc29sZSBhcHBsaWNhdGlvbiB0aGUgd29yc3QgbGF0ZW5jeSBncmV3
-IG92ZXIgMTAwIHVzLi4uDQo+IC0gQWZ0ZXIgYSB3aGlsZSB0aGUgbW9uaXRvciBoYXMgZ29uZSB0
-byBibGFjayBzY3JlZW4gYW5kIHRoZW4gSSBtb3ZlZA0KPiB0aGUgbW91c2UuLi4gZXZlbiBpbiB0
-aGlzIGNhc2UgIHRoZSB3b3JzdCBsYXRlbmN5IGdyZXcgb3ZlciAxMDB1cw0KPg0KPiBIYXZlIHlv
-dSBhbnkgaWRlYT8NCj4NCg0KWW91IGRpZG4ndCBzcGVjaWZ5IGVub3VnaCBkZXRhaWxzIG9mIHlv
-dXIgaGFyZHdhcmUgcGxhdGZvcm0gYW5kIGNvbmZpZ3VyYXRpb24geWV0LiBNYXliZSB0aGUgbGF0
-ZW5jaWVzIGFyZSByZWxhdGVkIHRvIGh3IGVmZmVjdHMsIHRodXMgbm90IG11Y2ggdGhhdCBzb2Z0
-d2FyZSBjYW4gY29udHJpYnV0ZSB0by4NCg0KVHlwaWNhbCBzb3VyY2VzOg0KIC0gc3lzdGVtIG1h
-bmFnZW1lbnQgbW9kZSAoQklPUykNCiAgICAtPiBkaXNhYmxlIFNNSSwgaWYgcG9zc2libGUsIHZp
-YSB0aGUgcmVsYXRlZCBYZW5vbWFpIGxvZ2ljDQogLSBjb250ZW50aW9ucyBvbiBncmFwaGljIG9w
-ZXJhdGlvbnMsIHNwZWNpZmljYWxseSB3aXRoIGJ1aWx0LWluIEdQVXMNCiAgICAtPiBoZWFkLWxl
-c3Mgb3BlcmF0aW9uLCBwb3NzaWJseSBhbHNvIGEgZGlmZmVyZW50IGdyYXBoaWMgbW9kZQ0KICAg
-ICAgIChmcmFtZWJ1ZmZlciBpbnN0ZWFkIG9mIERSTSkNCiAtIGFnZ3Jlc3NpdmUgcG93ZXIgbWFu
-YWdlbWVudA0KICAgIC0+IGRpc2FibGUgaW4gdGhlIGtlcm5lbCwgd2F0Y2ggb3V0IGZvciBzdXNw
-aWNpb3VzIEJJT1Mgc2V0dGluZ3MNCg0KU29mdHdhcmUtcmVsYXRlZCBsYXRlbmNpZXMgY2FuIGJl
-IGlkZW50aWZpZWQgYnkgdXNpbmcgdHJhY2luZywgZnRyYWNlIHdpdGggZXZlbnQgdHJhY2luZyAo
-dHJhY2UtY21kLCBrZXJuZWxzaGFyaykgb3IgdGhlIGlwaXBlIGZ1bmN0aW9uIHRyYWNlci4gU3Bl
-Y2lmaWNhbGx5LCB1c2UgdGhlIGxhdGVuY3kgYmVuY2htYXJrIHRvIHN0b3AgdGhlIGxhdHRlciB3
-aGVuIGEgbmV3IG1heGltdW0gYXJyaXZlcy4gSWYgeW91IHNoYXJlIHRoZSB0cmFjZSwgdGhlIGNv
-bW11bml0eSBtYXkgaGVscCB3aXRoIGFuYWx5emluZy4NCg0KSmFuDQoNCi0tDQpTaWVtZW5zIEFH
-LCBDb3Jwb3JhdGUgVGVjaG5vbG9neSwgQ1QgUkRBIElPVCBTRVMtREUgQ29ycG9yYXRlIENvbXBl
-dGVuY2UgQ2VudGVyIEVtYmVkZGVkIExpbnV4DQoNCi0tLS0tLS0tLS0tLS0tIG5leHQgcGFydCAt
-LS0tLS0tLS0tLS0tLQpBIG5vbi10ZXh0IGF0dGFjaG1lbnQgd2FzIHNjcnViYmVkLi4uCk5hbWU6
-IGNvbmZpZy0zLjE4LjIwClR5cGU6IGFwcGxpY2F0aW9uL29jdGV0LXN0cmVhbQpTaXplOiAxMzg5
-NDggYnl0ZXMKRGVzYzogY29uZmlnLTMuMTguMjAKVVJMOiA8aHR0cDovL3hlbm9tYWkub3JnL3Bp
-cGVybWFpbC94ZW5vbWFpL2F0dGFjaG1lbnRzLzIwMTgwMTEyLzc3NzNlZmY3L2F0dGFjaG1lbnQu
-b2JqPgo=
+On 02/09/2018 06:58 PM, Henning Schild wrote:
+> Am Fri, 9 Feb 2018 18:23:47 +0100
+> schrieb "[ext] Henning Schild" <henning.schild@siemens.com>:
+> 
+>> Am Fri, 9 Feb 2018 17:48:22 +0100
+>> schrieb Jan Kiszka <jan.kiszka@siemens.com>:
+>>
+>>> On 2018-02-09 17:13, Henning Schild wrote:  
+>>>> When using dlopen() to include xenomai libraries into an
+>>>> application, __xenomai_init could be running in multiple threads
+>>>> at a time. That happens if the application dlopens multiple libs
+>>>> in multiple threads.    
+>>>
+>>> So, dlopen itself is thread-safe, but it does not guarantee
+>>> atomicity for the init functions it executes? Or would we run
+>>> xenomai_init_dso manually in that case?  
+>>
+>> According to its man-page dlopen is MT-Safe, but i do not think that
+>> necessarily means it will serialize the init functions for us. I think
+>> i will have to read the code to answer this one.
+> 
+> I just had a look at glibc, and it looks like dlopen contains a big
+> dlopen-lock as well.
+> 
+> https://sourceware.org/git/?p=glibc.git;a=blob;f=elf/dl-open.c;h=0e37dd74b603ba07f677f2b4cf21661de5379529;hb=23158b08a0908f381459f273a984c6fd328363cb#l541
+> 
+> dl_open_worker will be called only under that lock and that is where
+> a function named _dl_init gets called. uclibc also uses a big lock
+> around all dlopen activity.
+> 
+> It all looks like my patch is not required.
+>
+
+The MT-safety issue may be with the setup calls, which run on behalf of
+library constructors. Multiple threads calling __register_setup_call()
+concurrently may be a problem, which may happen when multiple DSOs are
+loaded concurrently (assuming their is nothing serializing the dl work).
+
+#define core_setup_call(__name)		__setup_call(__name, 0)
+#define boilerplate_setup_call(__name)	__setup_call(__name, 1)
+#define copperplate_setup_call(__name)	__setup_call(__name, 2)
+#define interface_setup_call(__name)	__setup_call(__name, 3)
+#define post_setup_call(__name)		__setup_call(__name, 4)
+#define user_setup_call(__name)		__setup_call(__name, 5)
+
+-- 
+Philippe.
+
