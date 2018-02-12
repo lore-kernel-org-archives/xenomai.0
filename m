@@ -1,16 +1,17 @@
-From: Lange Norbert <norbert.lange@andritz.com>
-Date: Mon, 12 Feb 2018 14:25:45 +0000
-Message-ID: <99BAB48E90E86D42AD41F0BCE3225AEB019FBEC572@GRZSMS582.andritz.com>
-References: <44eflvcaft.fsf@lowell-desk.lan>
- <31210f5e-1137-54e8-9e22-7562de250614@xenomai.org>
- <115c0698-ad5f-2dae-4ed4-1e027839eae1@xenomai.org>
- <44d11e1akp.fsf@be-well.ilk.org> <44o9kumikv.fsf@lowell-desk.lan>
-In-Reply-To: <44o9kumikv.fsf@lowell-desk.lan>
-Content-Language: en-US
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: quoted-printable
+Date: Mon, 12 Feb 2018 16:57:34 +0100
+From: Henning Schild <henning.schild@siemens.com>
+Message-ID: <20180212165734.0eb98638@mmd1pvb1c.ad001.siemens.net>
+In-Reply-To: <5c68e748-f8e3-fcb2-e3f8-1b586b87a757@xenomai.org>
+References: <20180209161313.32524-1-henning.schild@siemens.com>
+ <8eaf133f-a235-b0c3-0260-c527800d715a@siemens.com>
+ <20180209182347.7bb4a455@mmd1pvb1c.ad001.siemens.net>
+ <20180209185839.6f537a43@mmd1pvb1c.ad001.siemens.net>
+ <5c68e748-f8e3-fcb2-e3f8-1b586b87a757@xenomai.org>
 MIME-Version: 1.0
-Subject: Re: [Xenomai] rtdm_timer_start latency?
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai] [PATCH] boilerplate: introduce big lock to serialze
+ dso init calls
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -19,185 +20,65 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Lowell Gilbert <kludge@be-well.ilk.org>, "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Philippe Gerum <rpm@xenomai.org>
+Cc: Jan Kiszka <jan.kiszka@siemens.com>, xenomai@xenomai.org
 
-Hello,
+Am Sat, 10 Feb 2018 11:33:00 +0100
+schrieb Philippe Gerum <rpm@xenomai.org>:
 
-this seems identical to an issue I have. I wanted to start a millisecond ti=
-ck, aligned to seconds, but used the POSIX timerfd_settime.
-Under Linux this works as intendent, under cobalt it doesn't.
+> On 02/09/2018 06:58 PM, Henning Schild wrote:
+> > Am Fri, 9 Feb 2018 18:23:47 +0100
+> > schrieb "[ext] Henning Schild" <henning.schild@siemens.com>:
+> >   
+> >> Am Fri, 9 Feb 2018 17:48:22 +0100
+> >> schrieb Jan Kiszka <jan.kiszka@siemens.com>:
+> >>  
+> >>> On 2018-02-09 17:13, Henning Schild wrote:    
+> >>>> When using dlopen() to include xenomai libraries into an
+> >>>> application, __xenomai_init could be running in multiple threads
+> >>>> at a time. That happens if the application dlopens multiple libs
+> >>>> in multiple threads.      
+> >>>
+> >>> So, dlopen itself is thread-safe, but it does not guarantee
+> >>> atomicity for the init functions it executes? Or would we run
+> >>> xenomai_init_dso manually in that case?    
+> >>
+> >> According to its man-page dlopen is MT-Safe, but i do not think
+> >> that necessarily means it will serialize the init functions for
+> >> us. I think i will have to read the code to answer this one.  
+> > 
+> > I just had a look at glibc, and it looks like dlopen contains a big
+> > dlopen-lock as well.
+> > 
+> > https://sourceware.org/git/?p=glibc.git;a=blob;f=elf/dl-open.c;h=0e37dd74b603ba07f677f2b4cf21661de5379529;hb=23158b08a0908f381459f273a984c6fd328363cb#l541
+> > 
+> > dl_open_worker will be called only under that lock and that is where
+> > a function named _dl_init gets called. uclibc also uses a big lock
+> > around all dlopen activity.
+> > 
+> > It all looks like my patch is not required.
+> >  
+> 
+> The MT-safety issue may be with the setup calls, which run on behalf
+> of library constructors. Multiple threads calling
+> __register_setup_call() concurrently may be a problem, which may
+> happen when multiple DSOs are loaded concurrently (assuming their is
+> nothing serializing the dl work).
+> 
+> #define core_setup_call(__name)		__setup_call(__name, 0)
+> #define boilerplate_setup_call(__name)	__setup_call(__name, 1)
+> #define copperplate_setup_call(__name)	__setup_call(__name, 2)
+> #define interface_setup_call(__name)	__setup_call(__name, 3)
+> #define post_setup_call(__name)		__setup_call(__name, 4)
+> #define user_setup_call(__name)		__setup_call(__name, 5)
 
-I  expect that the first timeout would be somewhat close to the call, on a =
-"whole" millisecond.
+Found the problem, the setup_list was inconsistent because the
+application did a dlclose() on one of the xenomai-libs. And there are
+no destructors and no unregister_setup_call ...
 
-What happens is that the timer-function convert the (Nano-)seconds to the i=
-nternal resolution. This has a small error, which normally won't matter for=
- short timespans.
-The problem here is, that the absolute time will get converted with a big (=
-absolute) error - growing bigger the longer your system is up.
+Now i am wondering whether the setup_call list would be the only thing
+to consider when adding dtors. Or whether we could just have a dtor
+that returns -EBUSY to prevent dlclose().
 
-What you could do, is reading the current time and fixing it up to a whole =
-tick close to it, name this prev_secondtime, then use this as initial value=
-.
-Now the driver will have to fixup nothing or only a small amount, keeping t=
-he error low.
-
-You can also try fixing this at driver level, but I haven't dissected this =
-carefully yet.
-Basically the driver should calculate in the "source time" for as long as p=
-ossible and only use the converted internal value for close events to keep =
-conversion errors bounded.
-
-Norbert
-
-Highly experimental patch for ./kernel/cobalt/timer.c
-
---- timer.c.org 2017-12-18 10:09:37.283116000 +0100
-+++ timer.c     2017-12-18 10:39:36.085302719 +0100
-@@ -116,7 +116,7 @@
- {
-        struct xnclock *clock =3D xntimer_clock(timer);
-        xntimerq_t *q =3D xntimer_percpu_queue(timer);
--       xnticks_t date, now, delay, period;
-+       xnticks_t date, now, delay, period, expired =3D 0;
-        unsigned long gravity;
-        int ret =3D 0;
-
-@@ -141,6 +141,7 @@
-        default: /* XN_ABSOLUTE || XN_REALTIME */
-                date =3D xnclock_ns_to_ticks(clock, value);
-                if ((xnsticks_t)(date - now) <=3D 0) {
-+                       _ xnticks t nextvalue;
-                        if (interval =3D=3D XN_INFINITE)
-                                return -ETIMEDOUT;
-                        /*
-@@ -148,9 +149,17 @@
-                         * delivery, wait for the next shot on the
-                         * periodic time line.
-                         */
--                       delay =3D now - date;
-+                       expired =3D xnarch_div64(xnclock_ticks_to_ns(now - =
-date), interval);
-+                       nextvalue =3D value + interval * (expired + 1);
-+
-+                       /*
-+                        * Note: need to think about errors for big offsets=
-,
-+                        * iteration of the correction is likely necessary,
-+                        * until the value is within the boundaries [now, n=
-ow + period)
-+                        */
-+                       date =3D xnclock_ns_to_ticks(clock, nextvalue);
-+
-                        period =3D xnclock_ns_to_ticks(clock, interval);
--                       date +=3D period * (xnarch_div64(delay, period) + 1=
-);
-                }
-                break;
-        }
-
- >-----Original Message-----
- >From: Xenomai [mailto:xenomai-bounces@xenomai.org] On Behalf Of Lowell
- >Gilbert
- >Sent: Montag, 12. Februar 2018 14:41
- >To: xenomai@xenomai.org
- >Subject: Re: [Xenomai] rtdm_timer_start latency?
- >
- >E-MAIL FROM A NON-ANDRITZ SOURCE: AS A SECURITY MEASURE, PLEASE
- >EXERCISE CAUTION WITH E-MAIL CONTENT AND ANY LINKS OR
- >ATTACHMENTS.
- >
- >
- >Lowell Gilbert <kludge@be-well.ilk.org> writes:
- >
- >> Philippe Gerum <rpm@xenomai.org> writes:
- >>
- >>> On 02/09/2018 11:02 AM, Philippe Gerum wrote:
- >>>> On 02/09/2018 12:45 AM, Lowell Gilbert wrote:
- >>>>> Am I correct in assuming that when calling rtdm_timer_start(), I sho=
-uld
- >>>>> not be getting multi-second latencies before the first call to the t=
-imer
- >>>>> routine? Just checking before I dig in too far.
- >>>>>
- >>>>
- >>>> Of course not. I suspect an absolute expiry time is given with a
- >>>> relative mode spec.
- >>>>
- >>>
- >>> More generally, an absolute expiry time which is not based on the righ=
-t
- >>> clock specified by the mode argument.
- >>>
- >>> i.e.
- >>>
- >>> expiry =3D rtdm_clock_monotonic(), mode =3D RTDM_TIMERMODE_REALTIME
- >=3D> BAD
- >>> expiry =3D rtdm_clock_realtime(), mode =3D RTDM_TIMERMODE_ABSOLUTE =3D=
->
- >BAD
- >>> expiry =3D rtdm_clock_realtime() or _monotonic(), mode =3D
- >>> RTDM_TIMERMODE_RELATIVE =3D> BAD
- >>
- >> Okay, that makes sense.
- >>
- >> I was using 0 for expiry, because I really just wanted the periodic
- >> wakeup. I don't remember why I didn't create a periodic task instead of
- >> using a timer.
- >>
- >> What clock do I want to use to get the timer started? Once it starts, i=
-t
- >> runs fine; but it often takes two or three seconds before the first cal=
-l
- >> into the handler.
- >>
- >> To put it another way, I'm trying to figure out what am I doing wrong i=
-n:
- >>               ret =3D rtdm_timer_start(&pstate.collect.timer, 1,
- >>                                      pstate.collect.period,
- >>                                      RTDM_TIMERMODE_RELATIVE);
- >
- >I could just rewrite the code to use a periodic task, but I'd prefer to
- >understand what is actually wrong with my current code first, to be sure
- >that refactoring will really solve my problem.
- >
- >Or I could have the timer run constantly, but that is just hacking
- >around the problem, not really solving it.
- >
- >Thanks for all help, past and future.
- >
- >_______________________________________________
- >Xenomai mailing list
- >Xenomai@xenomai.org
- >https://xenomai.org/mailman/listinfo/xenomai
-________________________________
-
-This message and any attachments are solely for the use of the intended rec=
-ipients. They may contain privileged and/or confidential information or oth=
-er information protected from disclosure. If you are not an intended recipi=
-ent, you are hereby notified that you received this email in error and that=
- any review, dissemination, distribution or copying of this email and any a=
-ttachment is strictly prohibited. If you have received this email in error,=
- please contact the sender and delete the message and any attachment from y=
-our system.
-
-ANDRITZ HYDRO GmbH
-
-
-Rechtsform/ Legal form: Gesellschaft mit beschr=C3=A4nkter Haftung / Corpor=
-ation
-
-Firmensitz/ Registered seat: Wien
-
-Firmenbuchgericht/ Court of registry: Handelsgericht Wien
-
-Firmenbuchnummer/ Company registration: FN 61833 g
-
-DVR: 0605077
-
-UID-Nr.: ATU14756806
-
-
-Thank You
-________________________________
+Henning
 
