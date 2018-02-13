@@ -1,17 +1,13 @@
-References: <e21aeb44-3c45-2233-1da4-fac858e79736@tuebingen.mpg.de>
- <CALLqZ8SfJO1YQk5L2MKR=A2uWwFhqE-pnGGmUhfPtbASpbpYPA@mail.gmail.com>
- <48bf5946-4617-aca5-bb4f-a12ce622f098@tuebingen.mpg.de>
- <CALLqZ8RXP5x_6yyhcGZxXD1g0hNRpEu6v1k4U2pJk0zRevXFBA@mail.gmail.com>
-From: Vincent Berenz <vberenz@tuebingen.mpg.de>
-Message-ID: <5c370309-bd7c-c789-49e1-8f296697cd0c@tuebingen.mpg.de>
-Date: Fri, 12 Jan 2018 18:21:07 +0100
 MIME-Version: 1.0
-In-Reply-To: <CALLqZ8RXP5x_6yyhcGZxXD1g0hNRpEu6v1k4U2pJk0zRevXFBA@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 7bit
-Content-Language: en-US
-Subject: Re: [Xenomai] heap allocation working for some memory sizes but not
- others
+In-Reply-To: <CAOuPNLi8m_xtxG0cMWJXZHK0Y533fKKmOd1gbA9t-b7CHm3rUQ@mail.gmail.com>
+References: <CAOuPNLjAKofnxqE3F-CAKzPrkNak=-ZQP35L-ZE2aTvYz5ORGw@mail.gmail.com>
+ <CALLqZ8R8W7XuOprQ6cxjXU2GWy8+1iw6FV-CfhLr5U1rhkmHig@mail.gmail.com>
+ <CAOuPNLi8m_xtxG0cMWJXZHK0Y533fKKmOd1gbA9t-b7CHm3rUQ@mail.gmail.com>
+From: Greg Gallagher <greg@embeddedgreg.com>
+Date: Tue, 13 Feb 2018 11:59:18 -0500
+Message-ID: <CALLqZ8SQp0b6rXxecDaJRqmsCcegUyjzsWjiX28COUrwHY0f1g@mail.gmail.com>
+Content-Type: text/plain; charset="UTF-8"
+Subject: Re: [Xenomai] [rtnet] - help required with rtnet interface bring up
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -20,206 +16,227 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Greg Gallagher <greg@embeddedgreg.com>
-Cc: "Xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Pintu Kumar <pintu.ping@gmail.com>
+Cc: Jan Kiszka <jan.kiszka@siemens.com>, jan.kiszka@web.de, "Xenomai@xenomai.org" <xenomai@xenomai.org>
 
-Hi,
+I'll defer to someone with more experience with RTNet, but I'd confirm
+that you have the correct drivers loaded, and that you don't see any
+errors in the kernel log.  Are the non-realtime drivers loaded?
 
-You are right, I did put too much trust on our legacy code.
-After increasing the heap once more in the kernel configuration and 
-creating heap of size higher than the allocated heap, the problem seems 
-to be solved.
-How much more memory should be created compared to the allocated size 
-remains very unclear (at least to me). Adding a few bytes of memory did 
-not do the trick. I ended up adding double, which is likely overkill.
+-Greg
 
-Thanks again for your help
-
-Vincent
-
-
-On 11.01.2018 17:13, Greg Gallagher wrote:
-> Hi,
->     So there could be a couple things going on.  First, I'm not sure
-> why from 2.6.4 to 3.0.x you are seeing the behavior change, but
-> Xenomai 3 is fairly different from 2.6.x.  It could be Xenomai 3 is
-> more strict when it comes to heap allocation or the heap code is
-> different in Xenomai 3. You are getting EWOULDBLOCK returned from the
-> rt_heap_alloc which means that there isn't a block available of
-> suitable size.  Instead of allocating the entire heap size try smaller
-> sizes in the rt_heap_alloc function and see if you get the same
-> result.  The test code uses a 16k heap with 8k allocations. I've only
-> briefly looked at the heap code (digging in more now) so I'm not sure
-> if it's valid to allocate the entire heap.  Try changing your test to
-> allocate less the the actual heap size and see if there is a change.
+On Tue, Feb 13, 2018 at 11:25 AM, Pintu Kumar <pintu.ping@gmail.com> wrote:
+> On Tue, Feb 13, 2018 at 8:09 PM, Greg Gallagher <greg@embeddedgreg.com> wrote:
+>> Have you confirmed that the rtnet drivers for your system are loaded?
+>> Are they built into the kernel or built as modules?
+>>
 >
-> Thanks
+> Yes, I have enabled RTDM and RTNET in kernel confirm as loadable
+> module (M), and rent drivers are loaded successfully.
+> As I said before, all the rtnet modules are visible from lsmod.
 >
-> Greg
+> Also, as I said rtnet loopback (rtlo) is working fine.
+> But rteth0 does not come up using rent script.
+>
+> I even tried forcefully reserving the interface name to (eth0, eth1)
+> by passing kernel command line argument.
+> Now the interface name is shown as : eth0, eth1 (instead of enp0*)
+>
+> But still I am not able to get rteth0, rteth1 interface.
+>
+> Is there any thing I am missing?
+>
+> Thanks,
+> Pintu
 >
 >
-> On Thu, Jan 11, 2018 at 9:13 AM, Vincent Berenz
-> <vberenz@tuebingen.mpg.de> wrote:
->> Hi Greg,
+>> -Greg
 >>
->> Thanks a lot for your help.
->>
->> Indeed, reading the doc it makes sense to call rt_heap_bind after
->> rt_heap_create. I updated my test code, but our legacy code have been
->> working fine the other way around, though.
->> I also changed the error management to consider 0 as success.
->> But the problem remains, with the output remaining the same.
->>
->> Some more info:
->>
->> - I ran the same code on ubuntu 14.04  / xenomai 2.6.4 and all was fine
->> (prints "OK" for any memory size passed as argument)
->> - indeed when using TM_INFINITE the program hang
->> - code 11 indeed corresponds to EWOULDBLOCK / EAGAIN
->> - if I replace H_SHARE with H_FIFO and H_PRIO, output remains the same
->> - if I replace H_SHARE with H_SINGLE, error code becomes 12 (cannot allocate
->> memory) (but also program still produces "OK" for some memory size, same
->> values as when using H_SHARE)
->> - I compiled the tests, and heap-1 / heap-2 run ok
->>
->> Best
->>
->> Vincent
->>
->>
->>
->> On 10.01.2018 23:38, Greg Gallagher wrote:
+>> On Tue, Feb 13, 2018 at 8:26 AM, Pintu Kumar <pintu.ping@gmail.com> wrote:
 >>> Hi,
 >>>
->>> You may want to look at this test for help:
+>>> I am expecting some reply again with rtnet setup on ubuntu (virtual
+>>> box) using version: 4.9.62-pintu-xeno-3.0.6+
+>>> Note: I am using virtual box for experimental purpose before moving it
+>>> to the actual hardware
 >>>
->>> https://git.xenomai.org/xenomai-3.git/tree/lib/alchemy/testsuite/heap-1.c
+>>> I haven't got any reply with my previous query so I am top posting again.
 >>>
->>> I think you should have rt_heap_bind after your call to
->>> rt_heap_create, if you switch the timeout flag in rt_heap_bind to
->>> TM_INFINITE I think you should see your program hang.  From the docs
+>>> I am trying to verify UDP client/server socket communication using
+>>> rtnet interface.
+>>> Using loopback (rtlo with local address 127.0.0.1) it is working fine.
 >>>
->>> (https://xenomai.org/documentation/xenomai-3/html/xeno3prm/group__alchemy__heap.html#gae17a8784a83d2eec94089a86a831a833)
->>>    on rt_heap_bind it returns 0 on success, and your program treats 0 as
->>> an error.   Print the value of rc after rt_heap_bind returns, it will
->>> probable be -EWOULDBLOCK .
+>>> But, I have no success using the rteth0/1 (actual ip address) interface.
 >>>
->>> Thanks
+>>> In my machine the network interface names are shown like below:
+>>> 1) enp0s3
+>>>                  inet addr:10.0.2.15
+>>> 2) enp0s8
+>>>                  inet addr:192.168.56.101
 >>>
->>> Greg
+>>> When I try to start rtnet, I get these errors:
 >>>
->>> On Wed, Jan 10, 2018 at 4:31 AM, Vincent Berenz
->>> <vberenz@tuebingen.mpg.de> wrote:
->>>> Hi,
+>>> $ sudo /usr/xenomai/sbin/rtnet start
+>>> rteth0: ERROR while getting interface flags: No such device
+>>> rteth0-mac: ERROR while getting interface flags: No such device
+>>> ioctl: No such device
+>>> ioctl: No such device
+>>> ioctl: No such device
+>>> ioctl: No such device
+>>> ioctl (add): No such device
+>>> ioctl (add): No such device
+>>> ioctl (add): No such device
+>>> vnic0: ERROR while getting interface flags: No such device
+>>> SIOCSIFADDR: No such device
+>>> vnic0: ERROR while getting interface flags: No such device
+>>> Waiting for all slaves...ioctl: No such device
+>>> ioctl: No such device
+>>>
+>>> After this I see only rtlo is up, and I could not find rteth* device.
+>>>
+>>> 3) rtlo
+>>>
+>>> 4) $ sudo /usr/xenomai/sbin/rtifconfig
+>>>           rtlo      Medium: Local Loopback
+>>>                      IP address: 127.0.0.1
+>>>                      UP LOOPBACK RUNNING  MTU: 1500
+>>>
+>>>
+>>> 5) In the rtnet script I tried replacing the eth0 interface with my
+>>> system interface name, but that also did not help.
+>>>
+>>> So, please let me know how to bring up rteth0 interface on my system ?
+>>>
+>>>
+>>> Hope I will get some help this time to proceed.
+>>> Please help!
+>>>
+>>>
+>>> Thanks,
+>>> Pintu
+>>>
+>>>
+>>> On Tue, Jan 16, 2018 at 7:06 PM, Pintu Kumar <pintu.ping@gmail.com> wrote:
+>>>> Ok, I think I found the problem.
 >>>>
->>>> We are currently moving from xenomai 2 to xenomai 3. I installed xenomai
->>>> 3.0.5, and all seems to be working, with low latency.
->>>> I am now trying to get our legacy code to work on xenomai 3 using the
->>>> transition kit.
+>>>>> modprobe: FATAL: Module rttcp not found in directory
 >>>>
->>>> Our program crashes on heap allocation (rt_heap_alloc function) with
->>>> error
->>>> code -11 (resource temporarily unavailable).
+>>>> 1)
+>>>> I think the rttcp module is disabled in the kernel.
 >>>>
->>>> The rt_heap_alloc function was called successfully a few times before the
->>>> crash, so I first assumed not enough heap was reserved, so I recompiled
->>>> the
->>>> kernel with more and more heap:
+>>>> drivers/xenomai/net/stack/ipv4/Kconfig:
+>>>> # source "drivers/xenomai/net/stack/ipv4/tcp/Kconfig"
 >>>>
->>>> CONFIG_XENO_OPT_SYS_HEAPSZ=524288
->>>>
->>>> This does not solve the issue. We also tried tooling with the
->>>> '--mem-pool-size' argument, with no success.
->>>>
->>>> To check things I created a toy executable which just allocate memory:
->>>>
->>>> --
->>>>
->>>>       void alloc (char *name, int elemSize) {
->>>>
->>>>         rt_printf("allocating for %d | ",elemSize);
->>>>
->>>>         int      rc;
->>>>         RT_HEAP  heap;
->>>>         void    *ptr;
->>>>
->>>>         rc = rt_heap_bind(&heap,name,TM_NONBLOCK);
->>>>         if(!rc) return;
->>>>
->>>>         rc = rt_heap_create(&heap,name,(size_t)(elemSize),H_SHARED);
->>>>         if(rc) return;
->>>>
->>>>         rc = rt_heap_alloc(&heap,(size_t)(elemSize),TM_NONBLOCK,&ptr);
->>>>         if (rc) {
->>>>           printf("%d %s\n",rc,strerror(-rc));
->>>>           return;
->>>>         }
->>>>
->>>>         printf("OK\n");
->>>>         return;
->>>>       }
->>>>
->>>>       int main(int, char** argv){
->>>>
->>>>         int nb_ints = atoi(argv[1]);
->>>>         char *name = "test";
->>>>         alloc(name,nb_ints*sizeof(int));
->>>>
->>>>       }
->>>>
->>>> --
+>>>> But I wonder, why the rttcp is commented out in the kernel source.
+>>>> Is there any problem using tcp on xenomai ?
 >>>>
 >>>>
->>>> The output surprised me: allocation works for some values but not for
->>>> others.
+>>>> 2)  If I remove "tcp" from rtnet.conf and also make RTCAP as "no", I
+>>>> am able to run the rtnet script.
+>>>> But, I still get the following errors:
 >>>>
->>>>       for((nb_ints=2000;nb_ints<=132000;nb_ints+=2000)); do
->>>> xenomai_heap_test
->>>> $nb_ints; done
+>>>> # sudo /usr/xenomai/sbin/rtnet start
+>>>> ioctl: No such device
+>>>> ioctl: No such device
+>>>> ioctl: No such device
+>>>> ioctl: No such device
+>>>> ioctl (add): No such device
+>>>> ioctl (add): No such device
+>>>> ioctl (add): No such device
+>>>> vnic0: ERROR while getting interface flags: No such device
+>>>> SIOCSIFADDR: No such device
+>>>> vnic0: ERROR while getting interface flags: No such device
+>>>> SIOCSIFNETMASK: No such device
+>>>> Waiting for all slaves...ioctl: No such device
+>>>> ioctl: No such device
 >>>>
->>>> results in:
 >>>>
->>>>       allocating for 8000 | OK
->>>>       allocating for 16000 | OK
->>>>       [...]
->>>>       allocating for 64000 | OK
->>>>       allocating for 72000 | -11 Resource temporarily unavailable
->>>>       allocating for 80000 | -11 Resource temporarily unavailable
->>>>       allocating for 88000 | OK
->>>>       allocating for 96000 | OK
->>>>       [...]
->>>>       allocating for 128000 | OK
->>>>       allocating for 136000 | -11 Resource temporarily unavailable
->>>>       allocating for 144000 | -11 Resource temporarily unavailable
->>>>       [...]
->>>>       allocating for 168000 | -11 Resource temporarily unavailable
->>>>       allocating for 176000 | OK
->>>>       allocating for 184000 | OK
->>>>       allocating for 192000 | OK
->>>>       allocating for 200000 | OK
->>>>       allocating for 208000 | OK
->>>>       allocating for 216000 | -11 Resource temporarily unavailable
->>>>       allocating for 224000 | -11 Resource temporarily unavailable
->>>>       [...]
->>>>       allocating for 328000 | -11 Resource temporarily unavailable
->>>>       allocating for 336000 | -11 Resource temporarily unavailable
->>>>       allocating for 344000 | OK
->>>>       allocating for 352000 | OK
->>>>       [...]
->>>>       allocating for 384000 | OK
->>>>       allocating for 392000 | -11 Resource temporarily unavailable
->>>>       [...]
->>>>       allocating for 520000 | -11 Resource temporarily unavailable
->>>>       allocating for 528000 | -11 Resource temporarily unavailable
+>>>> However, the rt_ modules are getting installed.
 >>>>
->>>> Anything we are doing very wrong ?
+>>>> # lsmod | grep rt
+>>>> rtmac                   7879  1 tdma
+>>>> rtcfg                  32455  0
+>>>> rt_loopback             1143  1
+>>>> rtpacket                5768  0
+>>>> rtudp                   9262  0
+>>>> rt_eepro100            14398  0
+>>>> rtipv4                 21568  2 rtudp,rtcfg
+>>>> rtnet                  46929  8
+>>>> rtipv4,rt_loopback,rtmac,rt_eepro100,rtpacket,rtudp,rtcfg,tdma
 >>>>
->>>> Vincent
 >>>>
->>>> _______________________________________________
->>>> Xenomai mailing list
->>>> Xenomai@xenomai.org
->>>> https://xenomai.org/mailman/listinfo/xenomai
->>
-
+>>>> 3) Another problem is, if I do : ifconfig, I could not find any rtnet0 node.
+>>>>     Also, if I run: "/usr/xenomai/sbin/rtping 10.0.2.15", I get this:
+>>>> # sudo /usr/xenomai/sbin/rtping 10.0.2.15
+>>>> Real-time PING 10.0.2.15 56(84) bytes of data.
+>>>> ioctl: No route to host
+>>>>
+>>>>     So, how can I make sure that rtnet is working ?
+>>>>
+>>>>
+>>>> Thanks,
+>>>> Pintu
+>>>>
+>>>>
+>>>> On Tue, Jan 16, 2018 at 5:42 PM, Pintu Kumar <pintu.ping@gmail.com> wrote:
+>>>>> Hi,
+>>>>>
+>>>>> I have brought up Xenomai 3.0.6 (dual kernel, cobalt) on a
+>>>>> Ubuntu-32-bit machine with Linux Kernel version 4.9.62.
+>>>>> # cat /proc/xenomai/version
+>>>>> 3.0.6
+>>>>>
+>>>>> # uname -a
+>>>>> Linux osboxes 4.9.62-pintu-xeno-3.0.6+ #4 SMP Wed Jan 3 18:54:46 IST
+>>>>> 2018 i686 i686 i686 GNU/Linux
+>>>>>
+>>>>> My Xenomai libraries are installed under:
+>>>>> # ls /usr/xenomai/
+>>>>> bin/     demo/    etc/     include/ lib/     sbin/
+>>>>>
+>>>>>
+>>>>> I have verified with sample posix and native application and the
+>>>>> xenomai is working fine.
+>>>>>
+>>>>> -------------------------
+>>>>> Next, I wanted to check rtdm driver such as RTnet.
+>>>>> So, I noticed that RTNET module needs to be enabled in my patched kernel 4.9.62.
+>>>>> So, I enabled it and installed the modules successfully.
+>>>>>
+>>>>> I also see that the modules are installed under:
+>>>>> # ls /lib/modules/4.9.62-pintu-xeno-3.0.6+/kernel/drivers/xenomai/net/drivers/
+>>>>> e1000/          rt_8139too.ko   rt_eepro100.ko  rt_loopback.ko
+>>>>>
+>>>>> # ls /lib/modules/4.9.62-pintu-xeno-3.0.6+/kernel/drivers/xenomai/net/stack/
+>>>>> ipv4/     packet/   rtcfg/    rtmac/    rtnet.ko
+>>>>>
+>>>>>
+>>>>> So, after that, when I try to install the rtnet driver, I get the
+>>>>> following error:
+>>>>> # sudo /usr/xenomai/sbin/rtnet -v start
+>>>>> Turning on verbose mode
+>>>>> modprobe: FATAL: Module rttcp not found in directory
+>>>>> /lib/modules/4.9.62-pintu-xeno-3.0.6+
+>>>>>
+>>>>>
+>>>>> When, I check the config file, the RTNET module path is listed as:
+>>>>> RTNET_MOD="/lib/modules/`uname -r`/kernel/drivers/xenomai/net"
+>>>>>
+>>>>>
+>>>>> I tried changing it to the correct path by adding xenomai/net/drivers
+>>>>> or xenomai/net/stack, but still I get the same error.
+>>>>>
+>>>>>
+>>>>> Please let me know how to correctly install the RTNET driver using the
+>>>>> /usr/xenomai/sbin/rtnet scripts.
+>>>>>
+>>>>>
+>>>>>
+>>>>> Thanks,
+>>>>> Pintu
+>>>
+>>> _______________________________________________
+>>> Xenomai mailing list
+>>> Xenomai@xenomai.org
+>>> https://xenomai.org/mailman/listinfo/xenomai
 
