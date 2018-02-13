@@ -1,15 +1,15 @@
-From: Lowell Gilbert <kludge@be-well.ilk.org>
-References: <44eflvcaft.fsf@lowell-desk.lan>
- <31210f5e-1137-54e8-9e22-7562de250614@xenomai.org>
- <115c0698-ad5f-2dae-4ed4-1e027839eae1@xenomai.org>
- <44d11e1akp.fsf@be-well.ilk.org> <44o9kumikv.fsf@lowell-desk.lan>
-Date: Tue, 13 Feb 2018 12:04:22 -0500
-In-Reply-To: <44o9kumikv.fsf@lowell-desk.lan> (Lowell Gilbert's message of
- "Mon, 12 Feb 2018 08:41:04 -0500")
-Message-ID: <44sha4lt2h.fsf@lowell-desk.lan>
+References: <CAOuPNLjAKofnxqE3F-CAKzPrkNak=-ZQP35L-ZE2aTvYz5ORGw@mail.gmail.com>
+ <CALLqZ8R8W7XuOprQ6cxjXU2GWy8+1iw6FV-CfhLr5U1rhkmHig@mail.gmail.com>
+ <CAOuPNLi8m_xtxG0cMWJXZHK0Y533fKKmOd1gbA9t-b7CHm3rUQ@mail.gmail.com>
+From: Jan Kiszka <jan.kiszka@siemens.com>
+Message-ID: <0f568dbf-4ced-6e6a-9851-d8d66a5f764a@siemens.com>
+Date: Tue, 13 Feb 2018 18:14:36 +0100
 MIME-Version: 1.0
-Content-Type: text/plain
-Subject: Re: [Xenomai] rtdm_timer_start latency?
+In-Reply-To: <CAOuPNLi8m_xtxG0cMWJXZHK0Y533fKKmOd1gbA9t-b7CHm3rUQ@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai] [rtnet] - help required with rtnet interface bring up
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -18,66 +18,45 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
+To: Pintu Kumar <pintu.ping@gmail.com>, Greg Gallagher <greg@embeddedgreg.com>
+Cc: jan.kiszka@web.de, "Xenomai@xenomai.org" <xenomai@xenomai.org>
 
-Lowell Gilbert <kludge@be-well.ilk.org> writes:
+On 2018-02-13 17:25, Pintu Kumar wrote:
+> On Tue, Feb 13, 2018 at 8:09 PM, Greg Gallagher <greg@embeddedgreg.com> wrote:
+>> Have you confirmed that the rtnet drivers for your system are loaded?
+>> Are they built into the kernel or built as modules?
+>>
+> 
+> Yes, I have enabled RTDM and RTNET in kernel confirm as loadable
+> module (M), and rent drivers are loaded successfully.
+> As I said before, all the rtnet modules are visible from lsmod.
+> 
+> Also, as I said rtnet loopback (rtlo) is working fine.
+> But rteth0 does not come up using rent script.
+> 
+> I even tried forcefully reserving the interface name to (eth0, eth1)
+> by passing kernel command line argument.
+> Now the interface name is shown as : eth0, eth1 (instead of enp0*)
+> 
+> But still I am not able to get rteth0, rteth1 interface.
+> 
+> Is there any thing I am missing?
 
-> Lowell Gilbert <kludge@be-well.ilk.org> writes:
->
->> Philippe Gerum <rpm@xenomai.org> writes:
->>
->>> On 02/09/2018 11:02 AM, Philippe Gerum wrote:
->>>> On 02/09/2018 12:45 AM, Lowell Gilbert wrote:
->>>>> Am I correct in assuming that when calling rtdm_timer_start(), I should
->>>>> not be getting multi-second latencies before the first call to the timer
->>>>> routine? Just checking before I dig in too far.
->>>>>
->>>> 
->>>> Of course not. I suspect an absolute expiry time is given with a
->>>> relative mode spec.
->>>> 
->>>
->>> More generally, an absolute expiry time which is not based on the right
->>> clock specified by the mode argument.
->>>
->>> i.e.
->>>
->>> expiry = rtdm_clock_monotonic(), mode = RTDM_TIMERMODE_REALTIME => BAD
->>> expiry = rtdm_clock_realtime(), mode = RTDM_TIMERMODE_ABSOLUTE => BAD
->>> expiry = rtdm_clock_realtime() or _monotonic(), mode =
->>> RTDM_TIMERMODE_RELATIVE => BAD
->>
->> Okay, that makes sense.
->>
->> I was using 0 for expiry, because I really just wanted the periodic
->> wakeup. I don't remember why I didn't create a periodic task instead of
->> using a timer.
->>
->> What clock do I want to use to get the timer started? Once it starts, it
->> runs fine; but it often takes two or three seconds before the first call
->> into the handler.
->>
->> To put it another way, I'm trying to figure out what am I doing wrong in:
->> 		ret = rtdm_timer_start(&pstate.collect.timer, 1,
->> 				       pstate.collect.period,
->> 				       RTDM_TIMERMODE_RELATIVE);
->
-> I could just rewrite the code to use a periodic task, but I'd prefer to
-> understand what is actually wrong with my current code first, to be sure
-> that refactoring will really solve my problem.
->
-> Or I could have the timer run constantly, but that is just hacking
-> around the problem, not really solving it.
+I do not know the details of virtualbox and which kind of ethernet
+hardware it exposes to the guest. You can check with "lspci -knn" which
+kernel driver is registered for which PCI device, of which one will be
+your (virtual) NIC. If the network controller is (likely) still owned by
+a linux driver, check if there is a corresponding rtnet driver and
+specify that in /etc/rtnet.conf, along with the device that shall be
+rebound.
 
-I have a feature request that would require me to run the data collection
-constantly (or at least whenever there's a consumer ready to receive it),
-so that will ameliorate the problems for me. However, I'd prefer to
-understand what's happening, because as far as I understand at the moment,
-what I am doing *should* work.
+When using a more powerful virtualization solution like QEMU/KVM, you
+will get e1000/e1000e compatible models. Those at least used to work
+fine with RTnet.
 
-Also, as a matter of design, is there any reason to prefer a periodic task
-over a timer or vice versa? It can potentially cycle at fairly high rates
-(a period as low as 10 microseconds), although expected use cases will not.
+Jan
 
-Be well.
+-- 
+Siemens AG, Corporate Technology, CT RDA IOT SES-DE
+Corporate Competence Center Embedded Linux
 
