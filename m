@@ -6,8 +6,8 @@ References: <CAOuPNLjAKofnxqE3F-CAKzPrkNak=-ZQP35L-ZE2aTvYz5ORGw@mail.gmail.com>
  <CALLqZ8SQp0b6rXxecDaJRqmsCcegUyjzsWjiX28COUrwHY0f1g@mail.gmail.com>
  <CAOuPNLha-XLmhdnp3vcUktrgXOmehMOZNxF72scaiv37xV7-5g@mail.gmail.com>
 From: Greg Gallagher <greg@embeddedgreg.com>
-Date: Tue, 13 Feb 2018 13:26:11 -0500
-Message-ID: <CALLqZ8Tvs8k_356Vcy=FCFBjzu6u3_FfbGEtf_thPKeh_qVMGQ@mail.gmail.com>
+Date: Tue, 13 Feb 2018 13:51:57 -0500
+Message-ID: <CALLqZ8Qvah3EfROqLL5-VcOaGWNdpnHA+xz+JoLgxOudtRueVA@mail.gmail.com>
 Content-Type: text/plain; charset="UTF-8"
 Subject: Re: [Xenomai] [rtnet] - help required with rtnet interface bring up
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
@@ -21,9 +21,11 @@ List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
 To: Pintu Kumar <pintu.ping@gmail.com>
 Cc: Jan Kiszka <jan.kiszka@siemens.com>, jan.kiszka@web.de, "Xenomai@xenomai.org" <xenomai@xenomai.org>
 
-Did you get the output of lspci -knn as Jan suggested?
-
--Greg
+What I'm getting at is if the native Linux driver is loaded and bound
+to the ethernet interface, then the Xenomai driver won't be able to
+load.  You'll need to check what driver current is loaded and bound to
+the pci interface for you network card. The native driver needs to be
+unbound then the Xenomai driver can load and bind properly.
 
 On Tue, Feb 13, 2018 at 1:10 PM, Pintu Kumar <pintu.ping@gmail.com> wrote:
 > On Tue, Feb 13, 2018 at 10:29 PM, Greg Gallagher <greg@embeddedgreg.com> wrote:
