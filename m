@@ -1,18 +1,11 @@
-References: <CAOuPNLjAKofnxqE3F-CAKzPrkNak=-ZQP35L-ZE2aTvYz5ORGw@mail.gmail.com>
- <CALLqZ8R8W7XuOprQ6cxjXU2GWy8+1iw6FV-CfhLr5U1rhkmHig@mail.gmail.com>
- <CAOuPNLi8m_xtxG0cMWJXZHK0Y533fKKmOd1gbA9t-b7CHm3rUQ@mail.gmail.com>
- <CALLqZ8SQp0b6rXxecDaJRqmsCcegUyjzsWjiX28COUrwHY0f1g@mail.gmail.com>
- <CAOuPNLha-XLmhdnp3vcUktrgXOmehMOZNxF72scaiv37xV7-5g@mail.gmail.com>
- <CALLqZ8Tvs8k_356Vcy=FCFBjzu6u3_FfbGEtf_thPKeh_qVMGQ@mail.gmail.com>
- <CAOuPNLhR_na2Kk2U=poywxjAZegR2ahjjQL5HnujEqdq3Z1=kA@mail.gmail.com>
-From: Jan Kiszka <jan.kiszka@web.de>
-Message-ID: <486ddc38-4890-0515-0f17-de8d31bbe9fa@web.de>
-Date: Wed, 14 Feb 2018 07:45:31 +0100
+From: =?UTF-8?Q?St=c3=a9phane_Ancelot?= <sancelot@numalliance.com>
+Message-ID: <ecce0e19-a652-0945-19e3-3bbce634a374@numalliance.com>
+Date: Wed, 14 Feb 2018 10:14:45 +0100
 MIME-Version: 1.0
-In-Reply-To: <CAOuPNLhR_na2Kk2U=poywxjAZegR2ahjjQL5HnujEqdq3Z1=kA@mail.gmail.com>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Subject: Re: [Xenomai] [rtnet] - help required with rtnet interface bring up
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: fr
+Content-Transfer-Encoding: quoted-printable
+Subject: [Xenomai] rt_pipe_create
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -21,50 +14,26 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Pintu Kumar <pintu.ping@gmail.com>
-Cc: "Xenomai@xenomai.org" <xenomai@xenomai.org>
+To: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-T24gMjAxOC0wMi0xNCAwNzo0MiwgUGludHUgS3VtYXIgd3JvdGU6Cj4gT24gVHVlLCBGZWIgMTMs
-IDIwMTggYXQgMTE6NTYgUE0sIEdyZWcgR2FsbGFnaGVyIDxncmVnQGVtYmVkZGVkZ3JlZy5jb20+
-IHdyb3RlOgo+PiBEaWQgeW91IGdldCB0aGUgb3V0cHV0IG9mIGxzcGNpIC1rbm4gYXMgSmFuIHN1
-Z2dlc3RlZD8KPj4KPiAKPiBIZXJlLCBpcyB0aGUgb3V0cHV0IG9mIGxzcGNpOgo+IAo+ICQgbHNw
-Y2kgLWtubgo+IDAwOjAwLjAgSG9zdCBicmlkZ2UgWzA2MDBdOiBJbnRlbCBDb3Jwb3JhdGlvbiA0
-NDBGWCAtIDgyNDQxRlggUE1DCj4gW05hdG9tYV0gWzgwODY6MTIzN10gKHJldiAwMikKPiAwMDow
-MS4wIElTQSBicmlkZ2UgWzA2MDFdOiBJbnRlbCBDb3Jwb3JhdGlvbiA4MjM3MVNCIFBJSVgzIElT
-QQo+IFtOYXRvbWEvVHJpdG9uIElJXSBbODA4Njo3MDAwXQo+IDAwOjAxLjEgSURFIGludGVyZmFj
-ZSBbMDEwMV06IEludGVsIENvcnBvcmF0aW9uIDgyMzcxQUIvRUIvTUIgUElJWDQKPiBJREUgWzgw
-ODY6NzExMV0gKHJldiAwMSkKPiAgICAgICAgIEtlcm5lbCBkcml2ZXIgaW4gdXNlOiBhdGFfcGlp
-eAo+ICAgICAgICAgS2VybmVsIG1vZHVsZXM6IHBhdGFfYWNwaQo+IDAwOjAyLjAgVkdBIGNvbXBh
-dGlibGUgY29udHJvbGxlciBbMDMwMF06IElubm9UZWsgU3lzdGVtYmVyYXR1bmcgR21iSAo+IFZp
-cnR1YWxCb3ggR3JhcGhpY3MgQWRhcHRlciBbODBlZTpiZWVmXQo+ICAgICAgICAgS2VybmVsIGRy
-aXZlciBpbiB1c2U6IHZib3h2aWRlbwo+ICAgICAgICAgS2VybmVsIG1vZHVsZXM6IHZib3h2aWRl
-bwo+IDAwOjAzLjAgRXRoZXJuZXQgY29udHJvbGxlciBbMDIwMF06IEludGVsIENvcnBvcmF0aW9u
-IDgyNTQwRU0gR2lnYWJpdAo+IEV0aGVybmV0IENvbnRyb2xsZXIgWzgwODY6MTAwZV0gKHJldiAw
-MikKPiAgICAgICAgIFN1YnN5c3RlbTogSW50ZWwgQ29ycG9yYXRpb24gUFJPLzEwMDAgTVQgRGVz
-a3RvcCBBZGFwdGVyIFs4MDg2OjAwMWVdCj4gICAgICAgICBLZXJuZWwgZHJpdmVyIGluIHVzZTog
-ZTEwMDAKPiAgICAgICAgIEtlcm5lbCBtb2R1bGVzOiBlMTAwMCwgcnRfZTEwMDAKPiAwMDowNC4w
-IFN5c3RlbSBwZXJpcGhlcmFsIFswODgwXTogSW5ub1RlayBTeXN0ZW1iZXJhdHVuZyBHbWJICj4g
-VmlydHVhbEJveCBHdWVzdCBTZXJ2aWNlIFs4MGVlOmNhZmVdCj4gICAgICAgICBLZXJuZWwgZHJp
-dmVyIGluIHVzZTogdmJveGd1ZXN0Cj4gICAgICAgICBLZXJuZWwgbW9kdWxlczogdmJveGd1ZXN0
-Cj4gMDA6MDUuMCBNdWx0aW1lZGlhIGF1ZGlvIGNvbnRyb2xsZXIgWzA0MDFdOiBJbnRlbCBDb3Jw
-b3JhdGlvbiA4MjgwMUFBCj4gQUMnOTcgQXVkaW8gQ29udHJvbGxlciBbODA4NjoyNDE1XSAocmV2
-IDAxKQo+ICAgICAgICAgU3Vic3lzdGVtOiBEZWxsIDgyODAxQUEgQUMnOTcgQXVkaW8gQ29udHJv
-bGxlciBbMTAyODowMTc3XQo+ICAgICAgICAgS2VybmVsIGRyaXZlciBpbiB1c2U6IHNuZF9pbnRl
-bDh4MAo+ICAgICAgICAgS2VybmVsIG1vZHVsZXM6IHNuZF9pbnRlbDh4MAo+IDAwOjA2LjAgVVNC
-IGNvbnRyb2xsZXIgWzBjMDNdOiBBcHBsZSBJbmMuIEtleUxhcmdvL0ludHJlcGlkIFVTQiBbMTA2
-YjowMDNmXQo+ICAgICAgICAgS2VybmVsIGRyaXZlciBpbiB1c2U6IG9oY2ktcGNpCj4gMDA6MDcu
-MCBCcmlkZ2UgWzA2ODBdOiBJbnRlbCBDb3Jwb3JhdGlvbiA4MjM3MUFCL0VCL01CIFBJSVg0IEFD
-UEkKPiBbODA4Njo3MTEzXSAocmV2IDA4KQo+ICAgICAgICAgS2VybmVsIGRyaXZlciBpbiB1c2U6
-IHBpaXg0X3NtYnVzCj4gICAgICAgICBLZXJuZWwgbW9kdWxlczogaTJjX3BpaXg0Cj4gMDA6MDgu
-MCBFdGhlcm5ldCBjb250cm9sbGVyIFswMjAwXTogSW50ZWwgQ29ycG9yYXRpb24gODI1NDBFTSBH
-aWdhYml0Cj4gRXRoZXJuZXQgQ29udHJvbGxlciBbODA4NjoxMDBlXSAocmV2IDAyKQo+ICAgICAg
-ICAgU3Vic3lzdGVtOiBJbnRlbCBDb3Jwb3JhdGlvbiBQUk8vMTAwMCBNVCBEZXNrdG9wIEFkYXB0
-ZXIgWzgwODY6MDAxZV0KPiAgICAgICAgIEtlcm5lbCBkcml2ZXIgaW4gdXNlOiBlMTAwMAo+ICAg
-ICAgICAgS2VybmVsIG1vZHVsZXM6IGUxMDAwLCBydF9lMTAwMAoKUGVyZmVjdC4gU28sIHJ0X2Ux
-MDAwIGlzIHlvdXIgZHJpdmVyLiBOb3cgb3BlbiAvZXRjL3J0bmV0LmNvbmYsIHJlYWQgdGhlCmNv
-bW1lbnRzIGluIHRoZXJlLCBhbmQgYWRqdXN0IGl0IHRvIHlvdXIgc3lzdGVtLgoKSmFuCgotLS0t
-LS0tLS0tLS0tLSBuZXh0IHBhcnQgLS0tLS0tLS0tLS0tLS0KQSBub24tdGV4dCBhdHRhY2htZW50
-IHdhcyBzY3J1YmJlZC4uLgpOYW1lOiBzaWduYXR1cmUuYXNjClR5cGU6IGFwcGxpY2F0aW9uL3Bn
-cC1zaWduYXR1cmUKU2l6ZTogMTgxIGJ5dGVzCkRlc2M6IE9wZW5QR1AgZGlnaXRhbCBzaWduYXR1
-cmUKVVJMOiA8aHR0cDovL3hlbm9tYWkub3JnL3BpcGVybWFpbC94ZW5vbWFpL2F0dGFjaG1lbnRz
-LzIwMTgwMjE0LzAzMTM3NDc3L2F0dGFjaG1lbnQuc2lnPgo=
+Hi,
+
+we discovered abnormal behaviour with rt pipes.
+
+it is sometimes impossible to write to the pipe, it returns with ENOMEM.
+
+This mistake is dependant on the pipe poolsize allocated and the number=20
+of byte size written.
+
+Is there a minimum size to create a pipe? -- It seems that you have=20
+creation problems (rt_pipe_create) when you ask for a creation with a=20
+small poolsize.
+
+
+Best regards,
+
+St=C3=A9phane Ancelot
+
+
+
+
