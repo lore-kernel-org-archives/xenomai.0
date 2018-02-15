@@ -1,3 +1,5 @@
+MIME-Version: 1.0
+In-Reply-To: <198d3b6e-f486-51c1-ef0d-c82461e24a4f@web.de>
 References: <CAOuPNLjAKofnxqE3F-CAKzPrkNak=-ZQP35L-ZE2aTvYz5ORGw@mail.gmail.com>
  <CALLqZ8R8W7XuOprQ6cxjXU2GWy8+1iw6FV-CfhLr5U1rhkmHig@mail.gmail.com>
  <CAOuPNLi8m_xtxG0cMWJXZHK0Y533fKKmOd1gbA9t-b7CHm3rUQ@mail.gmail.com>
@@ -7,13 +9,11 @@ References: <CAOuPNLjAKofnxqE3F-CAKzPrkNak=-ZQP35L-ZE2aTvYz5ORGw@mail.gmail.com>
  <CAOuPNLhR_na2Kk2U=poywxjAZegR2ahjjQL5HnujEqdq3Z1=kA@mail.gmail.com>
  <486ddc38-4890-0515-0f17-de8d31bbe9fa@web.de>
  <CAOuPNLhqbD=8agrNMPDWFaXKm2RniD_G6FLyNUtC4K9mhPhHRA@mail.gmail.com>
-From: Jan Kiszka <jan.kiszka@web.de>
-Message-ID: <198d3b6e-f486-51c1-ef0d-c82461e24a4f@web.de>
-Date: Thu, 15 Feb 2018 08:06:20 +0100
-MIME-Version: 1.0
-In-Reply-To: <CAOuPNLhqbD=8agrNMPDWFaXKm2RniD_G6FLyNUtC4K9mhPhHRA@mail.gmail.com>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+ <198d3b6e-f486-51c1-ef0d-c82461e24a4f@web.de>
+From: Pintu Kumar <pintu.ping@gmail.com>
+Date: Thu, 15 Feb 2018 19:28:27 +0530
+Message-ID: <CAOuPNLhvY_-_ZDxBXJ2GBdiEB1FtKm6i1jDRK4hhsAEx5kLLLA@mail.gmail.com>
+Content-Type: text/plain; charset="UTF-8"
 Subject: Re: [Xenomai] [rtnet] - help required with rtnet interface bring up
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
@@ -23,164 +23,279 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Pintu Kumar <pintu.ping@gmail.com>, Philippe Gerum <rpm@xenomai.org>
+To: Jan Kiszka <jan.kiszka@web.de>
 Cc: "Xenomai@xenomai.org" <xenomai@xenomai.org>
 
-T24gMjAxOC0wMi0xNCAxNDo1MiwgUGludHUgS3VtYXIgd3JvdGU6Cj4gT24gV2VkLCBGZWIgMTQs
-IDIwMTggYXQgMTI6MTUgUE0sIEphbiBLaXN6a2EgPGphbi5raXN6a2FAd2ViLmRlPiB3cm90ZToK
-Pj4gT24gMjAxOC0wMi0xNCAwNzo0MiwgUGludHUgS3VtYXIgd3JvdGU6Cj4+PiBPbiBUdWUsIEZl
-YiAxMywgMjAxOCBhdCAxMTo1NiBQTSwgR3JlZyBHYWxsYWdoZXIgPGdyZWdAZW1iZWRkZWRncmVn
-LmNvbT4gd3JvdGU6Cj4+Pj4gRGlkIHlvdSBnZXQgdGhlIG91dHB1dCBvZiBsc3BjaSAta25uIGFz
-IEphbiBzdWdnZXN0ZWQ/Cj4+Pj4KPj4+Cj4+PiBIZXJlLCBpcyB0aGUgb3V0cHV0IG9mIGxzcGNp
-Ogo+Pj4KPj4+ICQgbHNwY2kgLWtubgo+Pj4gMDA6MDAuMCBIb3N0IGJyaWRnZSBbMDYwMF06IElu
-dGVsIENvcnBvcmF0aW9uIDQ0MEZYIC0gODI0NDFGWCBQTUMKPj4+IFtOYXRvbWFdIFs4MDg2OjEy
-MzddIChyZXYgMDIpCj4+PiAwMDowMS4wIElTQSBicmlkZ2UgWzA2MDFdOiBJbnRlbCBDb3Jwb3Jh
-dGlvbiA4MjM3MVNCIFBJSVgzIElTQQo+Pj4gW05hdG9tYS9Ucml0b24gSUldIFs4MDg2OjcwMDBd
-Cj4+PiAwMDowMS4xIElERSBpbnRlcmZhY2UgWzAxMDFdOiBJbnRlbCBDb3Jwb3JhdGlvbiA4MjM3
-MUFCL0VCL01CIFBJSVg0Cj4+PiBJREUgWzgwODY6NzExMV0gKHJldiAwMSkKPj4+ICAgICAgICAg
-S2VybmVsIGRyaXZlciBpbiB1c2U6IGF0YV9waWl4Cj4+PiAgICAgICAgIEtlcm5lbCBtb2R1bGVz
-OiBwYXRhX2FjcGkKPj4+IDAwOjAyLjAgVkdBIGNvbXBhdGlibGUgY29udHJvbGxlciBbMDMwMF06
-IElubm9UZWsgU3lzdGVtYmVyYXR1bmcgR21iSAo+Pj4gVmlydHVhbEJveCBHcmFwaGljcyBBZGFw
-dGVyIFs4MGVlOmJlZWZdCj4+PiAgICAgICAgIEtlcm5lbCBkcml2ZXIgaW4gdXNlOiB2Ym94dmlk
-ZW8KPj4+ICAgICAgICAgS2VybmVsIG1vZHVsZXM6IHZib3h2aWRlbwo+Pj4gMDA6MDMuMCBFdGhl
-cm5ldCBjb250cm9sbGVyIFswMjAwXTogSW50ZWwgQ29ycG9yYXRpb24gODI1NDBFTSBHaWdhYml0
-Cj4+PiBFdGhlcm5ldCBDb250cm9sbGVyIFs4MDg2OjEwMGVdIChyZXYgMDIpCj4+PiAgICAgICAg
-IFN1YnN5c3RlbTogSW50ZWwgQ29ycG9yYXRpb24gUFJPLzEwMDAgTVQgRGVza3RvcCBBZGFwdGVy
-IFs4MDg2OjAwMWVdCj4+PiAgICAgICAgIEtlcm5lbCBkcml2ZXIgaW4gdXNlOiBlMTAwMAo+Pj4g
-ICAgICAgICBLZXJuZWwgbW9kdWxlczogZTEwMDAsIHJ0X2UxMDAwCj4+PiAwMDowNC4wIFN5c3Rl
-bSBwZXJpcGhlcmFsIFswODgwXTogSW5ub1RlayBTeXN0ZW1iZXJhdHVuZyBHbWJICj4+PiBWaXJ0
-dWFsQm94IEd1ZXN0IFNlcnZpY2UgWzgwZWU6Y2FmZV0KPj4+ICAgICAgICAgS2VybmVsIGRyaXZl
-ciBpbiB1c2U6IHZib3hndWVzdAo+Pj4gICAgICAgICBLZXJuZWwgbW9kdWxlczogdmJveGd1ZXN0
-Cj4+PiAwMDowNS4wIE11bHRpbWVkaWEgYXVkaW8gY29udHJvbGxlciBbMDQwMV06IEludGVsIENv
-cnBvcmF0aW9uIDgyODAxQUEKPj4+IEFDJzk3IEF1ZGlvIENvbnRyb2xsZXIgWzgwODY6MjQxNV0g
-KHJldiAwMSkKPj4+ICAgICAgICAgU3Vic3lzdGVtOiBEZWxsIDgyODAxQUEgQUMnOTcgQXVkaW8g
-Q29udHJvbGxlciBbMTAyODowMTc3XQo+Pj4gICAgICAgICBLZXJuZWwgZHJpdmVyIGluIHVzZTog
-c25kX2ludGVsOHgwCj4+PiAgICAgICAgIEtlcm5lbCBtb2R1bGVzOiBzbmRfaW50ZWw4eDAKPj4+
-IDAwOjA2LjAgVVNCIGNvbnRyb2xsZXIgWzBjMDNdOiBBcHBsZSBJbmMuIEtleUxhcmdvL0ludHJl
-cGlkIFVTQiBbMTA2YjowMDNmXQo+Pj4gICAgICAgICBLZXJuZWwgZHJpdmVyIGluIHVzZTogb2hj
-aS1wY2kKPj4+IDAwOjA3LjAgQnJpZGdlIFswNjgwXTogSW50ZWwgQ29ycG9yYXRpb24gODIzNzFB
-Qi9FQi9NQiBQSUlYNCBBQ1BJCj4+PiBbODA4Njo3MTEzXSAocmV2IDA4KQo+Pj4gICAgICAgICBL
-ZXJuZWwgZHJpdmVyIGluIHVzZTogcGlpeDRfc21idXMKPj4+ICAgICAgICAgS2VybmVsIG1vZHVs
-ZXM6IGkyY19waWl4NAo+Pj4gMDA6MDguMCBFdGhlcm5ldCBjb250cm9sbGVyIFswMjAwXTogSW50
-ZWwgQ29ycG9yYXRpb24gODI1NDBFTSBHaWdhYml0Cj4+PiBFdGhlcm5ldCBDb250cm9sbGVyIFs4
-MDg2OjEwMGVdIChyZXYgMDIpCj4+PiAgICAgICAgIFN1YnN5c3RlbTogSW50ZWwgQ29ycG9yYXRp
-b24gUFJPLzEwMDAgTVQgRGVza3RvcCBBZGFwdGVyIFs4MDg2OjAwMWVdCj4+PiAgICAgICAgIEtl
-cm5lbCBkcml2ZXIgaW4gdXNlOiBlMTAwMAo+Pj4gICAgICAgICBLZXJuZWwgbW9kdWxlczogZTEw
-MDAsIHJ0X2UxMDAwCj4+Cj4+IFBlcmZlY3QuIFNvLCBydF9lMTAwMCBpcyB5b3VyIGRyaXZlci4g
-Tm93IG9wZW4gL2V0Yy9ydG5ldC5jb25mLCByZWFkIHRoZQo+PiBjb21tZW50cyBpbiB0aGVyZSwg
-YW5kIGFkanVzdCBpdCB0byB5b3VyIHN5c3RlbS4KPj4KPiAKPiBPayB0aGFuayB5b3Ugc28gbXVj
-aC4gSSBnb3QgYSBjbHVlIGFuZCBzb21ldGhpbmcgaXMgd29ya2luZyBub3cuIEJ1dAo+IHN0aWxs
-IG5vdCBwZXJmZWN0Lgo+IAo+IEkgZm9sbG93ZWQgdGhlIGZvbGxvd2luZyBzdGVwczoKPiAxKSBz
-dWRvIGlmY29uZmlnIFtldGgwL2V0aDFdIGRvd24KPiAyKSBSZW1vdmUgdGhlIGV4aXN0aW5nIGV0
-aGVybmV0IGRyaXZlciAoZTEwMDApID0+IG1vZHByb2JlIC1yIGUxMDAwCj4gMykgQ2hhbmdlZCB0
-aGUgcnRuZXQuY29uZjoKPiAgICAgUlRfRFJJVkVSPSJydF9lMTAwMCIKPiA0KSBCbGFuayBpcCBh
-ZGRyZXNzIGFzIHBlciBjb21tZW50cyB0aGVyZSA9PiBJUEFERFI9IiIKPiA1KSBzdWRvIC91c3Iv
-eGVub21haS9zYmluL3J0bmV0IHN0YXJ0Cj4gNikgR290IHRoaXM6Cj4gICAgIFdhaXRpbmcgZm9y
-IGFsbCBzbGF2ZXMuLi4KPiA3KSBQcmVzc2VkIF5DIHRvIHN0b3AKPiAKPiA4KSBOb3cgd2hlbiBJ
-IGNoZWNrIDogaWZjb25maWcsIEkgZ290IHRoaXM6Cj4gCj4gJCBpZmNvbmZpZwo+IAo+IHJ0ZXRo
-MCAgICBMaW5rIGVuY2FwOkV0aGVybmV0ICBIV2FkZHIgMDg6MDA6Mjc6NTI6YmE6ZjEKPiAgICAg
-ICAgICAgaW5ldDYgYWRkcjogZmU4MDo6YTAwOjI3ZmY6ZmU1MjpiYWYxLzY0IFNjb3BlOkxpbmsK
-PiAgICAgICAgICAgVVAgQlJPQURDQVNUIFJVTk5JTkcgIE1UVToxNTAwICBNZXRyaWM6MQo+ICAg
-ICAgICAgICBSWCBwYWNrZXRzOjE0NjUgZXJyb3JzOjAgZHJvcHBlZDoxNDY1IG92ZXJydW5zOjAg
-ZnJhbWU6MAo+ICAgICAgICAgICBUWCBwYWNrZXRzOjAgZXJyb3JzOjAgZHJvcHBlZDowIG92ZXJy
-dW5zOjAgY2FycmllcjowCj4gICAgICAgICAgIGNvbGxpc2lvbnM6MCB0eHF1ZXVlbGVuOjEwMDAK
-PiAgICAgICAgICAgUlggYnl0ZXM6NDEzMzIgKDQxLjMgS0IpICBUWCBieXRlczowICgwLjAgQikK
-PiAKPiBydGV0aDAtbWFjIExpbmsgZW5jYXA6RXRoZXJuZXQgIEhXYWRkciAwODowMDoyNzo1Mjpi
-YTpmMQo+ICAgICAgICAgICBpbmV0NiBhZGRyOiBmZTgwOjphMDA6MjdmZjpmZTUyOmJhZjEvNjQg
-U2NvcGU6TGluawo+ICAgICAgICAgICBVUCBCUk9BRENBU1QgUlVOTklORyAgTVRVOjE1MDAgIE1l
-dHJpYzoxCj4gICAgICAgICAgIFJYIHBhY2tldHM6MTQ2NSBlcnJvcnM6MCBkcm9wcGVkOjcgb3Zl
-cnJ1bnM6MCBmcmFtZTowCj4gICAgICAgICAgIFRYIHBhY2tldHM6MCBlcnJvcnM6MCBkcm9wcGVk
-OjAgb3ZlcnJ1bnM6MCBjYXJyaWVyOjAKPiAgICAgICAgICAgY29sbGlzaW9uczowIHR4cXVldWVs
-ZW46MTAwMAo+ICAgICAgICAgICBSWCBieXRlczo0MTMzMiAoNDEuMyBLQikgIFRYIGJ5dGVzOjAg
-KDAuMCBCKQo+IAo+IHJ0bG8gICAgICBMaW5rIGVuY2FwOkV0aGVybmV0ICBIV2FkZHIgMDA6MDA6
-MDA6MDA6MDA6MDAKPiAgICAgICAgICAgaW5ldDYgYWRkcjogZmU4MDo6MjAwOmZmOmZlMDA6MC82
-NCBTY29wZTpMaW5rCj4gICAgICAgICAgIFVQIEJST0FEQ0FTVCBSVU5OSU5HICBNVFU6MTUwMCAg
-TWV0cmljOjEKPiAgICAgICAgICAgUlggcGFja2V0czowIGVycm9yczowIGRyb3BwZWQ6MCBvdmVy
-cnVuczowIGZyYW1lOjAKPiAgICAgICAgICAgVFggcGFja2V0czowIGVycm9yczowIGRyb3BwZWQ6
-MCBvdmVycnVuczowIGNhcnJpZXI6MAo+ICAgICAgICAgICBjb2xsaXNpb25zOjAgdHhxdWV1ZWxl
-bjoxMDAwCj4gICAgICAgICAgIFJYIGJ5dGVzOjAgKDAuMCBCKSAgVFggYnl0ZXM6MCAoMC4wIEIp
-Cj4gCj4gdm5pYzAgICAgIExpbmsgZW5jYXA6RXRoZXJuZXQgIEhXYWRkciAwODowMDoyNzo1Mjpi
-YTpmMQo+ICAgICAgICAgICBpbmV0NiBhZGRyOiBmZTgwOjphMDA6MjdmZjpmZTUyOmJhZjEvNjQg
-U2NvcGU6TGluawo+ICAgICAgICAgICBVUCBCUk9BRENBU1QgUlVOTklORyAgTVRVOjE0OTYgIE1l
-dHJpYzoxCj4gICAgICAgICAgIFJYIHBhY2tldHM6MCBlcnJvcnM6MCBkcm9wcGVkOjAgb3ZlcnJ1
-bnM6MCBmcmFtZTowCj4gICAgICAgICAgIFRYIHBhY2tldHM6NyBlcnJvcnM6MCBkcm9wcGVkOjAg
-b3ZlcnJ1bnM6MCBjYXJyaWVyOjAKPiAgICAgICAgICAgY29sbGlzaW9uczowIHR4cXVldWVsZW46
-MTAwMAo+ICAgICAgICAgICBSWCBieXRlczowICgwLjAgQikgIFRYIGJ5dGVzOjU3OCAoNTc4LjAg
-QikKPiAKPiAKPiAkIHN1ZG8gL3Vzci94ZW5vbWFpL3NiaW4vcnRpZmNvbmZpZwo+IHJ0ZXRoMCAg
-ICBNZWRpdW06IEV0aGVybmV0ICBIYXJkd2FyZSBhZGRyZXNzOiAwODowMDoyNzo1MjpCQTpGMQo+
-ICAgICAgICAgICBVUCBCUk9BRENBU1QgUlVOTklORyAgTVRVOiAxNTAwCj4gCj4gcnRsbyAgICAg
-IE1lZGl1bTogTG9jYWwgTG9vcGJhY2sKPiAgICAgICAgICAgSVAgYWRkcmVzczogMTI3LjAuMC4x
-Cj4gICAgICAgICAgIFVQIExPT1BCQUNLIFJVTk5JTkcgIE1UVTogMTUwMAo+IAo+IAo+IC0tLS0t
-LS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0t
-LS0tLS0tLS0tLS0tLS0KPiBTbywgSSBzdGlsbCBoYXZlIHRoZSBmb2xsb3dpbmcgcXVlcmllczoK
-PiAxKSBXaHkgb25seSBydGV0aDAgaXMgdXAsIGFuZCBub3QgZXRoMSAoZWFybGllciBJIGhhdmUg
-Ym90aCBldGgwIGFuZCBldGgxKSA/Cj4gCgpUaGUgc3RhcnR1cCBzY3JpcHQgb25seSBzdXBwb3J0
-cyBvbmUgaW50ZXJmYWNlLiBUaGluayBvZiBpdCBhcyBhCnRlbXBsYXRlIGZvciBtb3JlIGNvbXBs
-ZXggY3VzdG9tIHNldHVwcy4gVGhlIHF1ZXN0aW9uIHlvdSBuZWVkIHRvIGFuc3dlcgpmb3IgeW91
-cnNlbGYgaXMgdGhlbiBhbHNvIHdoaWNoIG9mIHRoZSBSVG5ldCBmZWF0dXJlcyAoUlRjZmcsIFJU
-bWFjLApURE1BLC4uLikgeW91IHdhbnQgYW5kIGhvdyB5b3UnZCBsaWtlIHRvIHNldCB1cCB0aGUg
-b3ZlcmFsbCBuZXR3b3JrLgoKPiAyKSBXaHkgSVAgYWRkcmVzcyBpcyBub3Qgc2hvd24gdW5kZXIg
-cnRldGgwID8KPiAgICAgIEVhcmxpZXIsIHRoZSBuZXR3b3JrIHdhcyBhc3NvY2lhdGVkIHdpdGgg
-Ogo+ICAgICAgICAgICAgZXRoMCA9PiBpbmV0IGFkZHI6MTAuMC4yLjE1Cj4gICAgICAgICAgICBl
-dGgxID0+IGluZXQgYWRkcjoxOTIuMTY4LjU2LjEwMQoKQmVjYXVzZSB5b3UgZGlkbid0IHNldCBv
-bmUsIGFzIHlvdSBzdGF0ZWQgYWJvdmUsIGFuZCB5b3UgZGlkbid0IHNldCB1cCBhClJUY2ZnIG1h
-c3RlciB0aGF0IGNvdWxkIGhhbmQgb25lIG91dC4KCj4gCj4gLS0tLS0tLS0tLS0tLS0tLS0tLS0t
-LS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tCj4g
-Cj4gVGhlc2UgYXJlIHRoZSBrZXJuZWwgbG9ncyBkdXJpbmcgcnRuZXQgaW5zdGFsbGF0aW9uOgo+
-IAo+ICAgICAgICAgICAgICAgICoqKiBSVG5ldCBmb3IgWGVub21haSB2My4wLjYgKioqCj4gCj4g
-Wzg0MjIxLjE1MDI5NV0gUlRuZXQ6IGluaXRpYWxpc2luZyByZWFsLXRpbWUgbmV0d29ya2luZwo+
-IFs4NDIyMS4yMDI1MjBdIEludGVsKFIpIFBSTy8xMDAwIE5ldHdvcmsgRHJpdmVyIC0gdmVyc2lv
-biA3LjEuOQo+IFs4NDIyMS4yMDI1MjNdIENvcHlyaWdodCAoYykgMTk5OS0yMDA2IEludGVsIENv
-cnBvcmF0aW9uLgo+IFs4NDIyMS41MjY1MjJdIGUxMDAwOiAwMDAwOjAwOjAzLjA6IGUxMDAwX3By
-b2JlOiAoUENJOjMzTUh6OjMyLWJpdCkKPiBbODQyMjEuNTI2NTI1XSAwODoKPiBbODQyMjEuNTI2
-NTI2XSAwMDoKPiBbODQyMjEuNTI2NTI4XSAyNzoKPiBbODQyMjEuNTI2NTI5XSA1MjoKPiBbODQy
-MjEuNTI2NTMxXSBiYToKPiBbODQyMjEuNTI2NTMzXSBmMQo+IFs4NDIyMS41NzUyMzRdIFJUbmV0
-OiByZWdpc3RlcmVkIHJ0ZXRoMAo+IFs4NDIyMS41NzUyMzddIGUxMDAwOiBydGV0aDA6IGUxMDAw
-X3Byb2JlOiBJbnRlbChSKSBQUk8vMTAwMCBOZXR3b3JrIENvbm5lY3Rpb24KPiBbODQyMjEuOTAw
-ODA2XSBlMTAwMDogMDAwMDowMDowOC4wOiBlMTAwMF9wcm9iZTogKFBDSTozM01IejozMi1iaXQp
-Cj4gWzg0MjIxLjkwMDgxMF0gMDg6Cj4gWzg0MjIxLjkwMDgxMl0gMDA6Cj4gWzg0MjIxLjkwMDgx
-NF0gMjc6Cj4gWzg0MjIxLjkwMDgxNl0gMTk6Cj4gWzg0MjIxLjkwMDgxOF0gNWI6Cj4gWzg0MjIx
-LjkwMDgxOV0gZGMKPiBbODQyMjEuOTQ2NDc5XSBSVG5ldDogcmVnaXN0ZXJlZCBydGV0aDEKPiBb
-ODQyMjEuOTQ2NDgyXSBlMTAwMDogcnRldGgxOiBlMTAwMF9wcm9iZTogSW50ZWwoUikgUFJPLzEw
-MDAgTmV0d29yayBDb25uZWN0aW9uCj4gWzg0MjIxLjk3NjQ0OF0gaW5pdGlhbGl6aW5nIGxvb3Bi
-YWNrLi4uCj4gWzg0MjIxLjk3NjQ1OF0gUlRuZXQ6IHJlZ2lzdGVyZWQgcnRsbwo+IFs4NDIyMS45
-ODI1MTNdIFJUY2FwOiByZWFsLXRpbWUgY2FwdHVyaW5nIGludGVyZmFjZQo+IFs4NDIyMi4wMzk4
-OTJdIE1vZGVtTWFuYWdlclsxMDA1OV06IHNlZ2ZhdWx0IGF0IDAgaXAgMDgwNmY5NjQgc3AKPiBi
-ZmI3YmQ4MCBlcnJvciA0IGluIE1vZGVtTWFuYWdlcls4MDQ4MDAwKzEyMTAwMF0KPiBbODQyMjIu
-MDg5Njc4XSBSVGNmZzogaW5pdCByZWFsLXRpbWUgY29uZmlndXJhdGlvbiBkaXN0cmlidXRpb24g
-cHJvdG9jb2wKPiBbODQyMjIuMTQ5Nzc1XSBSVG1hYzogaW5pdCByZWFsdGltZSBtZWRpYSBhY2Nl
-c3MgY29udHJvbAo+IFs4NDIyMi4xNzc3MDRdIFJUbWFjL1RETUE6IGluaXQgdGltZSBkaXZpc2lv
-biBtdWx0aXBsZSBhY2Nlc3MgY29udHJvbCBtZWNoYW5pc20KPiBbODQyMjIuMTc5ODIxXSBSVGNm
-ZzogcnRjZmdfZG9fbWFpbl9ldmVudCgpIHJ0ZGV2PTEsCj4gZXZlbnQ9UlRDRkdfQ01EX1NFUlZF
-Uiwgc3RhdGU9UlRDRkdfTUFJTl9PRkYKPiBbODQyMjIuMTc5ODI0XSBSVGNmZzogbmV4dCBtYWlu
-IHN0YXRlPVJUQ0ZHX01BSU5fU0VSVkVSX1JVTk5JTkcKPiBbODQyMjQuMTk0MDU4XSBlMTAwMDog
-cnRldGgwOiBlMTAwMF93YXRjaGRvZzogTklDIExpbmsgaXMgVXAgMTAwMCBNYnBzCj4gRnVsbCBE
-dXBsZXgKPiBbODQyMjUuNDIyODI1XSBNb2RlbU1hbmFnZXJbMTA0MzVdOiBzZWdmYXVsdCBhdCAw
-IGlwIDA4MDZmOTY0IHNwCj4gYmZiODVmNDAgZXJyb3IgNCBpbiBNb2RlbU1hbmFnZXJbODA0ODAw
-MCsxMjEwMDBdCj4gWzg0MjI1LjQzNDc4OF0gUlRjZmc6IHJ0Y2ZnX2RvX21haW5fZXZlbnQoKSBy
-dGRldj0xLAo+IGV2ZW50PVJUQ0ZHX0NNRF9BREQsIHN0YXRlPVJUQ0ZHX01BSU5fU0VSVkVSX1JV
-Tk5JTkcKPiBbODQyMjUuNDM1Mzc2XSBSVGNmZzogcnRjZmdfZG9fbWFpbl9ldmVudCgpIHJ0ZGV2
-PTEsCj4gZXZlbnQ9UlRDRkdfQ01EX0FERCwgc3RhdGU9UlRDRkdfTUFJTl9TRVJWRVJfUlVOTklO
-Rwo+IFs4NDIyNS40MzU5MzldIFJUY2ZnOiBydGNmZ19kb19tYWluX2V2ZW50KCkgcnRkZXY9MSwK
-PiBldmVudD1SVENGR19DTURfQURELCBzdGF0ZT1SVENGR19NQUlOX1NFUlZFUl9SVU5OSU5HCj4g
-Wzg0MjI1LjQzODAxOF0gUlRjZmc6IHJ0Y2ZnX2RvX21haW5fZXZlbnQoKSBydGRldj0xLAo+IGV2
-ZW50PVJUQ0ZHX0NNRF9XQUlULCBzdGF0ZT1SVENGR19NQUlOX1NFUlZFUl9SVU5OSU5HCj4gWzg0
-MjI2LjE3OTg1OF0gUlRjZmc6IGVycm9yIC0xMSB3aGlsZSBzZW5kaW5nIHN0YWdlIDEgZnJhbWUK
-PiBbODQyMjYuMTc5ODcwXSBSVGNmZzogZXJyb3IgLTExIHdoaWxlIHNlbmRpbmcgc3RhZ2UgMSBm
-cmFtZQo+IFs4NDIyNi4xNzk4NzJdIFJUY2ZnOiBlcnJvciAtMTEgd2hpbGUgc2VuZGluZyBzdGFn
-ZSAxIGZyYW1lCj4gWzg0MjI3LjE3OTg2MV0gUlRjZmc6IGVycm9yIC0xMSB3aGlsZSBzZW5kaW5n
-IHN0YWdlIDEgZnJhbWUKPiBbODQyMjcuMTc5ODc3XSBSVGNmZzogZXJyb3IgLTExIHdoaWxlIHNl
-bmRpbmcgc3RhZ2UgMSBmcmFtZQo+IFs4NDIyNy4xNzk4NzldIFJUY2ZnOiBlcnJvciAtMTEgd2hp
-bGUgc2VuZGluZyBzdGFnZSAxIGZyYW1lCj4gWzg0MjI4LjE4MDg4OV0gUlRjZmc6IGVycm9yIC0x
-MSB3aGlsZSBzZW5kaW5nIHN0YWdlIDEgZnJhbWUKPiAuLi4uLi4uCj4gLi4uLi4uLgo+IAo+IFRo
-ZXNlIGVycm9yIGlzIGZsb3dpbmcgY29udGludW91c2x5IGluIHRoZSBrZXJuZWwgbG9ncy4gV2hh
-dCBkb2VzIHRoaXMKPiBpbmRpY2F0ZXMgPwo+IAoKVGhlIGVycm9yIG1heSBpbmRpY2F0ZSB0aGF0
-IHBhY2tldCB0cmFuc21pc3Npb24gdmlhIHJ0ZXRoMCBpcyBub3QKd29ya2luZyBwcm9wZXJseS4g
-TWF5YmUgdGhlIHJ0bmV0IGRyaXZlciBpcyBub3QgZnVsbHkgc3VwcG9ydGluZyB0aGF0Ck5JQywg
-b3IgaW50ZXJydXB0cyBkbyBub3QgYXJyaXZlIGZvciB0aGUgTklDIChjaGVjayAvcHJvYy94ZW5v
-bWFpL2lycXMpLApvciB5b3Ugc2ltcGx5IGxhY2sgYSAodmlydHVhbCkgbGluayBvbiB0aGF0IGlu
-dGVyZmFjZS4KCkphbgoKLS0tLS0tLS0tLS0tLS0gbmV4dCBwYXJ0IC0tLS0tLS0tLS0tLS0tCkEg
-bm9uLXRleHQgYXR0YWNobWVudCB3YXMgc2NydWJiZWQuLi4KTmFtZTogc2lnbmF0dXJlLmFzYwpU
-eXBlOiBhcHBsaWNhdGlvbi9wZ3Atc2lnbmF0dXJlClNpemU6IDE4MSBieXRlcwpEZXNjOiBPcGVu
-UEdQIGRpZ2l0YWwgc2lnbmF0dXJlClVSTDogPGh0dHA6Ly94ZW5vbWFpLm9yZy9waXBlcm1haWwv
-eGVub21haS9hdHRhY2htZW50cy8yMDE4MDIxNS84YjMzNzU2Ny9hdHRhY2htZW50LnNpZz4K
+On Thu, Feb 15, 2018 at 12:36 PM, Jan Kiszka <jan.kiszka@web.de> wrote:
+> On 2018-02-14 14:52, Pintu Kumar wrote:
+>> On Wed, Feb 14, 2018 at 12:15 PM, Jan Kiszka <jan.kiszka@web.de> wrote:
+>>> On 2018-02-14 07:42, Pintu Kumar wrote:
+>>>> On Tue, Feb 13, 2018 at 11:56 PM, Greg Gallagher <greg@embeddedgreg.com> wrote:
+>>>>> Did you get the output of lspci -knn as Jan suggested?
+>>>>>
+>>>>
+>>>> Here, is the output of lspci:
+>>>>
+>>>> $ lspci -knn
+>>>> 00:00.0 Host bridge [0600]: Intel Corporation 440FX - 82441FX PMC
+>>>> [Natoma] [8086:1237] (rev 02)
+>>>> 00:01.0 ISA bridge [0601]: Intel Corporation 82371SB PIIX3 ISA
+>>>> [Natoma/Triton II] [8086:7000]
+>>>> 00:01.1 IDE interface [0101]: Intel Corporation 82371AB/EB/MB PIIX4
+>>>> IDE [8086:7111] (rev 01)
+>>>>         Kernel driver in use: ata_piix
+>>>>         Kernel modules: pata_acpi
+>>>> 00:02.0 VGA compatible controller [0300]: InnoTek Systemberatung GmbH
+>>>> VirtualBox Graphics Adapter [80ee:beef]
+>>>>         Kernel driver in use: vboxvideo
+>>>>         Kernel modules: vboxvideo
+>>>> 00:03.0 Ethernet controller [0200]: Intel Corporation 82540EM Gigabit
+>>>> Ethernet Controller [8086:100e] (rev 02)
+>>>>         Subsystem: Intel Corporation PRO/1000 MT Desktop Adapter [8086:001e]
+>>>>         Kernel driver in use: e1000
+>>>>         Kernel modules: e1000, rt_e1000
+>>>> 00:04.0 System peripheral [0880]: InnoTek Systemberatung GmbH
+>>>> VirtualBox Guest Service [80ee:cafe]
+>>>>         Kernel driver in use: vboxguest
+>>>>         Kernel modules: vboxguest
+>>>> 00:05.0 Multimedia audio controller [0401]: Intel Corporation 82801AA
+>>>> AC'97 Audio Controller [8086:2415] (rev 01)
+>>>>         Subsystem: Dell 82801AA AC'97 Audio Controller [1028:0177]
+>>>>         Kernel driver in use: snd_intel8x0
+>>>>         Kernel modules: snd_intel8x0
+>>>> 00:06.0 USB controller [0c03]: Apple Inc. KeyLargo/Intrepid USB [106b:003f]
+>>>>         Kernel driver in use: ohci-pci
+>>>> 00:07.0 Bridge [0680]: Intel Corporation 82371AB/EB/MB PIIX4 ACPI
+>>>> [8086:7113] (rev 08)
+>>>>         Kernel driver in use: piix4_smbus
+>>>>         Kernel modules: i2c_piix4
+>>>> 00:08.0 Ethernet controller [0200]: Intel Corporation 82540EM Gigabit
+>>>> Ethernet Controller [8086:100e] (rev 02)
+>>>>         Subsystem: Intel Corporation PRO/1000 MT Desktop Adapter [8086:001e]
+>>>>         Kernel driver in use: e1000
+>>>>         Kernel modules: e1000, rt_e1000
+>>>
+>>> Perfect. So, rt_e1000 is your driver. Now open /etc/rtnet.conf, read the
+>>> comments in there, and adjust it to your system.
+>>>
+>>
+>> Ok thank you so much. I got a clue and something is working now. But
+>> still not perfect.
+>>
+>> I followed the following steps:
+>> 1) sudo ifconfig [eth0/eth1] down
+>> 2) Remove the existing ethernet driver (e1000) => modprobe -r e1000
+>> 3) Changed the rtnet.conf:
+>>     RT_DRIVER="rt_e1000"
+>> 4) Blank ip address as per comments there => IPADDR=""
+>> 5) sudo /usr/xenomai/sbin/rtnet start
+>> 6) Got this:
+>>     Waiting for all slaves...
+>> 7) Pressed ^C to stop
+>>
+>> 8) Now when I check : ifconfig, I got this:
+>>
+>> $ ifconfig
+>>
+>> rteth0    Link encap:Ethernet  HWaddr 08:00:27:52:ba:f1
+>>           inet6 addr: fe80::a00:27ff:fe52:baf1/64 Scope:Link
+>>           UP BROADCAST RUNNING  MTU:1500  Metric:1
+>>           RX packets:1465 errors:0 dropped:1465 overruns:0 frame:0
+>>           TX packets:0 errors:0 dropped:0 overruns:0 carrier:0
+>>           collisions:0 txqueuelen:1000
+>>           RX bytes:41332 (41.3 KB)  TX bytes:0 (0.0 B)
+>>
+>> rteth0-mac Link encap:Ethernet  HWaddr 08:00:27:52:ba:f1
+>>           inet6 addr: fe80::a00:27ff:fe52:baf1/64 Scope:Link
+>>           UP BROADCAST RUNNING  MTU:1500  Metric:1
+>>           RX packets:1465 errors:0 dropped:7 overruns:0 frame:0
+>>           TX packets:0 errors:0 dropped:0 overruns:0 carrier:0
+>>           collisions:0 txqueuelen:1000
+>>           RX bytes:41332 (41.3 KB)  TX bytes:0 (0.0 B)
+>>
+>> rtlo      Link encap:Ethernet  HWaddr 00:00:00:00:00:00
+>>           inet6 addr: fe80::200:ff:fe00:0/64 Scope:Link
+>>           UP BROADCAST RUNNING  MTU:1500  Metric:1
+>>           RX packets:0 errors:0 dropped:0 overruns:0 frame:0
+>>           TX packets:0 errors:0 dropped:0 overruns:0 carrier:0
+>>           collisions:0 txqueuelen:1000
+>>           RX bytes:0 (0.0 B)  TX bytes:0 (0.0 B)
+>>
+>> vnic0     Link encap:Ethernet  HWaddr 08:00:27:52:ba:f1
+>>           inet6 addr: fe80::a00:27ff:fe52:baf1/64 Scope:Link
+>>           UP BROADCAST RUNNING  MTU:1496  Metric:1
+>>           RX packets:0 errors:0 dropped:0 overruns:0 frame:0
+>>           TX packets:7 errors:0 dropped:0 overruns:0 carrier:0
+>>           collisions:0 txqueuelen:1000
+>>           RX bytes:0 (0.0 B)  TX bytes:578 (578.0 B)
+>>
+>>
+>> $ sudo /usr/xenomai/sbin/rtifconfig
+>> rteth0    Medium: Ethernet  Hardware address: 08:00:27:52:BA:F1
+>>           UP BROADCAST RUNNING  MTU: 1500
+>>
+>> rtlo      Medium: Local Loopback
+>>           IP address: 127.0.0.1
+>>           UP LOOPBACK RUNNING  MTU: 1500
+>>
+>>
+>> ----------------------------------------------------------------------------
+>> So, I still have the following queries:
+>> 1) Why only rteth0 is up, and not eth1 (earlier I have both eth0 and eth1) ?
+>>
+>
+> The startup script only supports one interface. Think of it as a
+> template for more complex custom setups. The question you need to answer
+> for yourself is then also which of the RTnet features (RTcfg, RTmac,
+> TDMA,...) you want and how you'd like to set up the overall network.
+>
+
+Ok, I manually enabled rteth1 : # rtifconfig rteth1 up
+But still rteth1 is not up.
+
+But the kernel logs says, both eth0 and eth1 is up
+[ 2718.418361] e1000: 0000:00:03.0: e1000_probe: (PCI:33MHz:32-bit)
+[ 2718.462851] e1000: rteth0: e1000_probe: Intel(R) PRO/1000 Network Connection
+[ 2718.787156] e1000: 0000:00:08.0: e1000_probe: (PCI:33MHz:32-bit)
+[ 2718.834465] e1000: rteth1: e1000_probe: Intel(R) PRO/1000 Network Connection
+[ 2721.212519] e1000: rteth0: e1000_watchdog: NIC Link is Up 1000 Mbps
+Full Duplex
+
+>> 2) Why IP address is not shown under rteth0 ?
+>>      Earlier, the network was associated with :
+>>            eth0 => inet addr:10.0.2.15
+>>            eth1 => inet addr:192.168.56.101
+>
+> Because you didn't set one, as you stated above, and you didn't set up a
+> RTcfg master that could hand one out.
+>
+
+Ok, I set the ip address of eth0 (10.0.2.15) in the script, but still
+IP address is not visible.
+
+$ ifconfig
+
+rteth0    Link encap:Ethernet  HWaddr 08:00:27:52:ba:f1
+          inet6 addr: fe80::a00:27ff:fe52:baf1/64 Scope:Link
+          UP BROADCAST RUNNING  MTU:1500  Metric:1
+          RX packets:96526 errors:0 dropped:96526 overruns:0 frame:0
+          TX packets:0 errors:0 dropped:0 overruns:0 carrier:0
+          collisions:0 txqueuelen:1000
+          RX bytes:2707980 (2.7 MB)  TX bytes:0 (0.0 B)
+
+vnic0     Link encap:Ethernet  HWaddr 08:00:27:52:ba:f1
+          inet addr:10.0.2.15  Bcast:10.255.255.255  Mask:255.0.0.0
+          inet6 addr: fe80::a00:27ff:fe52:baf1/64 Scope:Link
+          UP BROADCAST RUNNING  MTU:1496  Metric:1
+          RX packets:0 errors:0 dropped:0 overruns:0 frame:0
+          TX packets:57 errors:0 dropped:0 overruns:0 carrier:0
+          collisions:0 txqueuelen:1000
+          RX bytes:0 (0.0 B)  TX bytes:7418 (7.4 KB)
+
+Instead, it showing under vnic0.
+But still I could ping: 10.0.2.15
+Is this correct behavior ?
+
+However, it is shown under: rtifconfig
+
+$ sudo /usr/xenomai/sbin/rtifconfig
+rteth0    Medium: Ethernet  Hardware address: 08:00:27:52:BA:F1
+          IP address: 10.0.2.15  Broadcast address: 10.255.255.255
+          UP BROADCAST RUNNING  MTU: 1500
+
+rtlo      Medium: Local Loopback
+          IP address: 127.0.0.1
+          UP LOOPBACK RUNNING  MTU: 1500
+
+
+>>
+>> ---------------------------------------------------------------------------
+>>
+>> These are the kernel logs during rtnet installation:
+>>
+>>                *** RTnet for Xenomai v3.0.6 ***
+>>
+>> [84221.150295] RTnet: initialising real-time networking
+>> [84221.202520] Intel(R) PRO/1000 Network Driver - version 7.1.9
+>> [84221.202523] Copyright (c) 1999-2006 Intel Corporation.
+>> [84221.526522] e1000: 0000:00:03.0: e1000_probe: (PCI:33MHz:32-bit)
+>> [84221.526525] 08:
+>> [84221.526526] 00:
+>> [84221.526528] 27:
+>> [84221.526529] 52:
+>> [84221.526531] ba:
+>> [84221.526533] f1
+>> [84221.575234] RTnet: registered rteth0
+>> [84221.575237] e1000: rteth0: e1000_probe: Intel(R) PRO/1000 Network Connection
+>> [84221.900806] e1000: 0000:00:08.0: e1000_probe: (PCI:33MHz:32-bit)
+>> [84221.900810] 08:
+>> [84221.900812] 00:
+>> [84221.900814] 27:
+>> [84221.900816] 19:
+>> [84221.900818] 5b:
+>> [84221.900819] dc
+>> [84221.946479] RTnet: registered rteth1
+>> [84221.946482] e1000: rteth1: e1000_probe: Intel(R) PRO/1000 Network Connection
+>> [84221.976448] initializing loopback...
+>> [84221.976458] RTnet: registered rtlo
+>> [84221.982513] RTcap: real-time capturing interface
+>> [84222.039892] ModemManager[10059]: segfault at 0 ip 0806f964 sp
+>> bfb7bd80 error 4 in ModemManager[8048000+121000]
+>> [84222.089678] RTcfg: init real-time configuration distribution protocol
+>> [84222.149775] RTmac: init realtime media access control
+>> [84222.177704] RTmac/TDMA: init time division multiple access control mechanism
+>> [84222.179821] RTcfg: rtcfg_do_main_event() rtdev=1,
+>> event=RTCFG_CMD_SERVER, state=RTCFG_MAIN_OFF
+>> [84222.179824] RTcfg: next main state=RTCFG_MAIN_SERVER_RUNNING
+>> [84224.194058] e1000: rteth0: e1000_watchdog: NIC Link is Up 1000 Mbps
+>> Full Duplex
+>> [84225.422825] ModemManager[10435]: segfault at 0 ip 0806f964 sp
+>> bfb85f40 error 4 in ModemManager[8048000+121000]
+>> [84225.434788] RTcfg: rtcfg_do_main_event() rtdev=1,
+>> event=RTCFG_CMD_ADD, state=RTCFG_MAIN_SERVER_RUNNING
+>> [84225.435376] RTcfg: rtcfg_do_main_event() rtdev=1,
+>> event=RTCFG_CMD_ADD, state=RTCFG_MAIN_SERVER_RUNNING
+>> [84225.435939] RTcfg: rtcfg_do_main_event() rtdev=1,
+>> event=RTCFG_CMD_ADD, state=RTCFG_MAIN_SERVER_RUNNING
+>> [84225.438018] RTcfg: rtcfg_do_main_event() rtdev=1,
+>> event=RTCFG_CMD_WAIT, state=RTCFG_MAIN_SERVER_RUNNING
+>> [84226.179858] RTcfg: error -11 while sending stage 1 frame
+>> [84226.179870] RTcfg: error -11 while sending stage 1 frame
+>> [84226.179872] RTcfg: error -11 while sending stage 1 frame
+>> [84227.179861] RTcfg: error -11 while sending stage 1 frame
+>> [84227.179877] RTcfg: error -11 while sending stage 1 frame
+>> [84227.179879] RTcfg: error -11 while sending stage 1 frame
+>> [84228.180889] RTcfg: error -11 while sending stage 1 frame
+>> .......
+>> .......
+>>
+>> These error is flowing continuously in the kernel logs. What does this
+>> indicates ?
+>>
+>
+> The error may indicate that packet transmission via rteth0 is not
+> working properly. Maybe the rtnet driver is not fully supporting that
+> NIC, or interrupts do not arrive for the NIC (check /proc/xenomai/irqs),
+> or you simply lack a (virtual) link on that interface.
+>
+
+Here is the output of /proc/xenomai/irq
+
+$ cat /proc/xenomai/irq
+  IRQ         CPU0        CPU1
+   19:           0       39710         rteth0
+ 2304:           0           0         [sync]
+ 2305:           3           5         [reschedule]
+ 2306:      207869      151958         [timer/0]
+ 2307:           2           0         [timer-ipi]
+ 2339:          12           8         [virtual]
+
+
+With this error, I cannot proceed further to measure latency over rtnet.
+How to resolve this error ?
+Is there any work around ?
+
+
+> Jan
+>
+
