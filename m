@@ -1,9 +1,12 @@
-MIME-Version: 1.0
-From: Pintu Kumar <pintu.ping@gmail.com>
-Date: Tue, 16 Jan 2018 17:42:16 +0530
-Message-ID: <CAOuPNLgu+U_TkT8XgCLF70JVQmrEqug380LqY3FX=yqPCC_X2w@mail.gmail.com>
-Content-Type: text/plain; charset="UTF-8"
-Subject: [Xenomai] [RTnet] - rtnet module installation issue using rtnet.conf
+From: Henning Schild <henning.schild@siemens.com>
+Date: Fri, 16 Feb 2018 14:13:35 +0100
+Message-Id: <b3c06e9a71d3732551e5518491fa73288f971d9c.1518786423.git.henning.schild@siemens.com>
+In-Reply-To: <cover.1518786423.git.henning.schild@siemens.com>
+References: <cover.1518786423.git.henning.schild@siemens.com>
+In-Reply-To: <cover.1518786423.git.henning.schild@siemens.com>
+References: <cover.1518786423.git.henning.schild@siemens.com>
+Subject: [Xenomai] [PATCH 5/5] boilerplate/setup: introduce destructors for
+	__setup_call
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -12,61 +15,69 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org, jan.kiszka@web.de, Pintu Kumar <pintu.ping@gmail.com>
+To: xenomai@xenomai.org
 
-Hi,
+Whit dlclose() we can actually invalidate the setup_list, it might end
+up containing pointers to memory that got unmapped with dlclose(). The
+next dlopen() will then cause a segfault.
+Add destructors to that such referrences are remove from the setup_list
+when calling dlclose().
+The previous commit added a testcase that fails because of that issue,
+with this commit the test runs fine.
 
-I have brought up Xenomai 3.0.6 (dual kernel, cobalt) on a
-Ubuntu-32-bit machine with Linux Kernel version 4.9.62.
-# cat /proc/xenomai/version
-3.0.6
+Signed-off-by: Henning Schild <henning.schild@siemens.com>
+---
+ include/boilerplate/setup.h | 7 +++++++
+ lib/boilerplate/setup.c     | 6 ++++++
+ 2 files changed, 13 insertions(+)
 
-# uname -a
-Linux osboxes 4.9.62-pintu-xeno-3.0.6+ #4 SMP Wed Jan 3 18:54:46 IST
-2018 i686 i686 i686 GNU/Linux
+diff --git a/include/boilerplate/setup.h b/include/boilerplate/setup.h
+index 7df3cfecc..83af91f38 100644
+--- a/include/boilerplate/setup.h
++++ b/include/boilerplate/setup.h
+@@ -78,10 +78,16 @@ struct setup_descriptor {
+ #define __early_ctor		__attribute__ ((constructor(210)))
+ #define __bootstrap_ctor	__attribute__ ((constructor(220)))
+ 
++#define __setup_dtor		__attribute__ ((destructor(200)))
++
+ #define __setup_call(__name, __id)			\
+ static __setup_ctor void __declare_ ## __name(void)	\
+ {							\
+ 	__register_setup_call(&(__name), __id);		\
++}							\
++static __setup_dtor void __undeclare_ ## __name(void)	\
++{							\
++	__unregister_setup_call(&(__name), __id);	\
+ }
+ 
+ #define core_setup_call(__name)		__setup_call(__name, 0)
+@@ -96,6 +102,7 @@ extern "C" {
+ #endif
+ 
+ void __register_setup_call(struct setup_descriptor *p, int id);
++void __unregister_setup_call(struct setup_descriptor *p, int id);
+ 
+ extern pid_t __node_id;
+ 
+diff --git a/lib/boilerplate/setup.c b/lib/boilerplate/setup.c
+index f749828b9..9e4ee3410 100644
+--- a/lib/boilerplate/setup.c
++++ b/lib/boilerplate/setup.c
+@@ -698,6 +698,12 @@ void __register_setup_call(struct setup_descriptor *p, int id)
+ 	pvlist_prepend(&p->__reserved.next, &setup_list);
+ }
+ 
++void __unregister_setup_call(struct setup_descriptor *p, int id)
++{
++	pvlist_remove(&p->__reserved.next);
++}
++
++
+ const char *get_program_name(void)
+ {
+ 	return basename(__base_setup_data.arg0 ?: "program");
+-- 
+2.16.1
 
-My Xenomai libraries are installed under:
-# ls /usr/xenomai/
-bin/     demo/    etc/     include/ lib/     sbin/
-
-
-I have verified with sample posix and native application and the
-xenomai is working fine.
-
--------------------------
-Next, I wanted to check rtdm driver such as RTnet.
-So, I noticed that RTNET module needs to be enabled in my patched kernel 4.9.62.
-So, I enabled it and installed the modules successfully.
-
-I also see that the modules are installed under:
-# ls /lib/modules/4.9.62-pintu-xeno-3.0.6+/kernel/drivers/xenomai/net/drivers/
-e1000/          rt_8139too.ko   rt_eepro100.ko  rt_loopback.ko
-
-# ls /lib/modules/4.9.62-pintu-xeno-3.0.6+/kernel/drivers/xenomai/net/stack/
-ipv4/     packet/   rtcfg/    rtmac/    rtnet.ko
-
-
-So, after that, when I try to install the rtnet driver, I get the
-following error:
-# sudo /usr/xenomai/sbin/rtnet -v start
-Turning on verbose mode
-modprobe: FATAL: Module rttcp not found in directory
-/lib/modules/4.9.62-pintu-xeno-3.0.6+
-
-
-When, I check the config file, the RTNET module path is listed as:
-RTNET_MOD="/lib/modules/`uname -r`/kernel/drivers/xenomai/net"
-
-
-I tried changing it to the correct path by adding xenomai/net/drivers
-or xenomai/net/stack, but still I get the same error.
-
-
-Please let me know how to correctly install the RTNET driver using the
-/usr/xenomai/sbin/rtnet scripts.
-
-
-
-Thanks,
-Pintu
 
