@@ -1,13 +1,11 @@
-References: <cover.1518786423.git.henning.schild@siemens.com>
-From: Philippe Gerum <rpm@xenomai.org>
-Message-ID: <6f431818-1eec-a3eb-5a95-44f7dc5f2d79@xenomai.org>
-Date: Tue, 20 Feb 2018 10:27:05 +0100
+Message-ID: <5a8c1128.0721240a.9bf50.bc31@mx.google.com>
+Date: Tue, 20 Feb 2018 07:14:29 -0500
+From: Greg Gallagher <greg@embeddedgreg.com>
+In-Reply-To: <36155513-4fc7-7e28-3908-ab4473e992e8@iit.it>
 MIME-Version: 1.0
-In-Reply-To: <cover.1518786423.git.henning.schild@siemens.com>
 Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] [PATCH 0/5] dlopen()/dlclose() bugfix with testcase
+Content-Transfer-Encoding: base64
+Subject: Re: [Xenomai] Nvidia TX1/TX2 Boards
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,49 +14,45 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Henning Schild <henning.schild@siemens.com>, xenomai@xenomai.org
+To: alessio margan <alessio.margan@iit.it>
+Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On 02/16/2018 02:13 PM, Henning Schild wrote:
-> In order to fix a segfault in a dlopen()/dlclose()/dlopen() sequence i
-> wrote a testcase to reproduce the issue. That testcase also covers a few
-> other dlopen-related things.
-> The testcase is intetgrated into smokey. Because a smokey-test is already
-> a xenomai-application the actual test-program gets launched from the
-> testcase. And that program is a non-xenomai application which gains
-> xenomai-functionality with dlopen().
-> The series also contains preparation and fixes along the way
-> (posix-fork).
-> 
-> Henning Schild (5):
->   smokey/posix-fork: fix binary path for configure --with-testdir
->   smokey/posix-fork: actually wait for the process to exit
->   smokey/posix-fork: move fork/exec functionality into libsmokey
->   smokey/dlopen: introduce a new testcase
->   boilerplate/setup: introduce destructors for __setup_call
-> 
->  configure.ac                              |  2 +
->  include/boilerplate/setup.h               |  7 +++
->  include/smokey/smokey.h                   |  8 +++
->  lib/boilerplate/setup.c                   |  6 +++
->  lib/smokey/helpers.c                      | 31 +++++++++++
->  testsuite/smokey/Makefile.am              |  4 ++
->  testsuite/smokey/dlopen/Makefile.am       | 63 ++++++++++++++++++++++
->  testsuite/smokey/dlopen/dlopen.c          | 44 ++++++++++++++++
->  testsuite/smokey/dlopen/dlopentest.c      | 88 +++++++++++++++++++++++++++++++
->  testsuite/smokey/dlopen/libalchemy-test.c | 65 +++++++++++++++++++++++
->  testsuite/smokey/dlopen/libposix-test.c   | 32 +++++++++++
->  testsuite/smokey/posix-fork/Makefile.am   |  5 +-
->  testsuite/smokey/posix-fork/posix-fork.c  | 33 ++----------
->  13 files changed, 358 insertions(+), 30 deletions(-)
->  create mode 100644 testsuite/smokey/dlopen/Makefile.am
->  create mode 100644 testsuite/smokey/dlopen/dlopen.c
->  create mode 100644 testsuite/smokey/dlopen/dlopentest.c
->  create mode 100644 testsuite/smokey/dlopen/libalchemy-test.c
->  create mode 100644 testsuite/smokey/dlopen/libposix-test.c
-> 
+SGksCiAgIFRoZSBSUEkgaW1hZ2VzIEkndmUgYmVlbiB3b3JraW5nIG9uIGFyZSBjbG9zZSB0byBi
+ZWluZyByZWFkeSB0byBzaGFyZS4gSSBoYXZlIGEgY291cGxlIGJjbTI4MzUgaXNzdWVzIEknbSB3
+b3JraW5nIHRocm91Z2guIEkgaGF2ZW4ndCBtYWRlIG15IHdheSB0byB0aGUgUlRORVQgZHJpdmVy
+cyB5ZXQuIEFyZSB5b3UgbG9va2luZyB0byBldmFsdWF0ZSBSVE5FVCBvbiBhbiBhcm0gYmFzZWQg
+Ym9hcmQ/CgpHcmVnCgrCoCBPcmlnaW5hbCBNZXNzYWdlIMKgCkZyb206IGFsZXNzaW8ubWFyZ2Fu
+QGlpdC5pdApTZW50OiBGZWJydWFyeSAxOSwgMjAxOCA3OjIwIEFNClRvOiBncmVnQGVtYmVkZGVk
+Z3JlZy5jb20KQ2M6IHhlbm9tYWlAeGVub21haS5vcmcKU3ViamVjdDogUmU6IFtYZW5vbWFpXSBO
+dmlkaWEgVFgxL1RYMiBCb2FyZHMKClRoYW5rcy4KCkknIHZlIHJlZCBhYm91dCBSUEkgYXMgcmVm
+ZXJlbmNlIGJvYXJkLCBkb2VzIHJ0bmV0IHdvcmtzIG9uIHRoZW0gPyB3aGljaCAKYm9hcmRzL21v
+ZGVsIHNob3VsZCBJIGdpdmUgYSB0cnkgPwoKQWxlc3NpbwoKCk9uIDE2LzAyLzIwMTggMTc6NDEs
+IEdyZWcgR2FsbGFnaGVyIHdyb3RlOgo+wqDCoMKgwqDCoCBBcyBmYXIgYXMgSSBrbm93IHRoZXJl
+IGlzIG5vIElwaXBlIHBhdGNoIGZvciBMNFQgc28geW91J2QgaGF2ZSB0bwo+IHVzZSBtYWlubGlu
+ZSBMaW51eCBpZiB5b3UnZCBsaWtlIHRvIHJ1biBYZW5vbWFpIG9uIHRoZSBUWDEgb3IgVFgyLgo+
+IEknbSBub3Qgc3VyZSB3aGF0IHRvb2xzIHRoaXMgd291bGQgbGVhdmUgeW91IHdpdGggZm9yIHRo
+ZSBHUFUgYnV0IEkKPiBkb24ndCB0aGluayBDdWRhIHdvcmtzIHdpdGggdGhlIG5vdXZlYXUgZHJp
+dmVycy4KPsKgwqDCoMKgwqAgVGhlIG90aGVyIGlzc3VlIHRoYXQgSSd2ZSBzZWVuIG9uIHg4NiBi
+b2FyZHMgd2l0aCBOdmlkaWEgZ3B1cyBpcwo+IGl0J3MgdW5rbm93biBob3cgbG9uZyB0aGUgTnZp
+ZGlhIGRyaXZlciB0dXJuIGludGVycnVwdHMgb2ZmIGZvciwgc28KPiBsYXRlbmN5IG1heSBiZSBh
+ZmZlY3RlZC7CoCBJIGRvbid0IHRoaW5rIHRoZXJlIGFyZSBwbGFucyB0byBwb3J0IHRoZQo+IGlw
+aXBlIHRvIEw0VCBidXQgaWYgeW91IHdvdWxkIGxpa2UgdG8gdHJ5IEknbSBzdXJlIHBlb3BsZSBo
+ZXJlIHdvdWxkCj4gYmUgd2lsbGluZyB0byBhbnN3ZXIgcXVlc3Rpb25zLgo+Cj4gLUdyZWcKPgo+
+IE9uIEZyaSwgRmViIDE2LCAyMDE4IGF0IDEwOjEwIEFNLCBhbGVzc2lvIG1hcmdhbiA8YWxlc3Np
+by5tYXJnYW5AaWl0Lml0PiB3cm90ZToKPj4gSGkgYWxsLAo+Pgo+PiBkb2VzIGFueWJvZHkgaGF2
+ZSBzdWNjZXNzZnVsbHkgcnVuIFhlbm9tYWktMytSVG5ldCBvbiBOVklESUEgSmV0c29uIFRYMS9U
+WDIKPj4gY29tcHV0ZSBtb2R1bGVzID8KPj4KPj4gdGhpcyBpcyBhIFRYMSBsc2NwdSBvdXRwdXQK
+Pj4KPj4gbnZpZGlhQHRlZ3JhLXVidW50dTp+JCBsc2NwdQo+Pgo+PiBBcmNoaXRlY3R1cmU6wqDC
+oMKgwqDCoMKgwqDCoMKgIGFhcmNoNjQKPj4gQnl0ZSBPcmRlcjrCoMKgwqDCoMKgwqDCoMKgwqDC
+oMKgIExpdHRsZSBFbmRpYW4KPj4gQ1BVKHMpOsKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDC
+oCA0Cj4+IE9uLWxpbmUgQ1BVKHMpIGxpc3Q6wqDCoCAwLTMKPj4gVGhyZWFkKHMpIHBlciBjb3Jl
+OsKgwqDCoCAxCj4+IENvcmUocykgcGVyIHNvY2tldDrCoMKgwqAgNAo+PiBTb2NrZXQocyk6wqDC
+oMKgwqDCoMKgwqDCoMKgwqDCoMKgIDEKPj4gTW9kZWwgbmFtZTrCoMKgwqDCoMKgwqDCoMKgwqDC
+oMKgIEFSTXY4IFByb2Nlc3NvciByZXYgMSAodjhsKQo+PiBDUFUgbWF4IE1IejrCoMKgwqDCoMKg
+wqDCoMKgwqDCoCAxNzM0LjAwMDAKPj4gQ1BVIG1pbiBNSHo6wqDCoMKgwqDCoMKgwqDCoMKgwqAg
+MTAyLjAwMDAKPj4gSHlwZXJ2aXNvciB2ZW5kb3I6wqDCoMKgwqAgKG51bGwpCj4+IFZpcnR1YWxp
+emF0aW9uIHR5cGU6wqDCoCBmdWxsCj4+IEwxZCBjYWNoZTrCoMKgwqDCoMKgwqDCoMKgwqDCoMKg
+wqAgMzJLCj4+IEwxaSBjYWNoZTrCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqAgNDhLCj4+IEwyIGNh
+Y2hlOsKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgIDIwNDhLCj4+Cg==
 
-Merged, thanks.
-
--- 
-Philippe.
 
