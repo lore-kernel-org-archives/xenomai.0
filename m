@@ -1,5 +1,5 @@
 MIME-Version: 1.0
-In-Reply-To: <CAOuPNLhvY_-_ZDxBXJ2GBdiEB1FtKm6i1jDRK4hhsAEx5kLLLA@mail.gmail.com>
+In-Reply-To: <CAOuPNLi_1NpGz_uNar2xTPTa-g3OC0cj_G4YUgJb6N5rsV4o_g@mail.gmail.com>
 References: <CAOuPNLjAKofnxqE3F-CAKzPrkNak=-ZQP35L-ZE2aTvYz5ORGw@mail.gmail.com>
  <CALLqZ8R8W7XuOprQ6cxjXU2GWy8+1iw6FV-CfhLr5U1rhkmHig@mail.gmail.com>
  <CAOuPNLi8m_xtxG0cMWJXZHK0Y533fKKmOd1gbA9t-b7CHm3rUQ@mail.gmail.com>
@@ -11,9 +11,10 @@ References: <CAOuPNLjAKofnxqE3F-CAKzPrkNak=-ZQP35L-ZE2aTvYz5ORGw@mail.gmail.com>
  <CAOuPNLhqbD=8agrNMPDWFaXKm2RniD_G6FLyNUtC4K9mhPhHRA@mail.gmail.com>
  <198d3b6e-f486-51c1-ef0d-c82461e24a4f@web.de>
  <CAOuPNLhvY_-_ZDxBXJ2GBdiEB1FtKm6i1jDRK4hhsAEx5kLLLA@mail.gmail.com>
+ <CAOuPNLi_1NpGz_uNar2xTPTa-g3OC0cj_G4YUgJb6N5rsV4o_g@mail.gmail.com>
 From: Pintu Kumar <pintu.ping@gmail.com>
-Date: Mon, 19 Feb 2018 19:49:56 +0530
-Message-ID: <CAOuPNLi_1NpGz_uNar2xTPTa-g3OC0cj_G4YUgJb6N5rsV4o_g@mail.gmail.com>
+Date: Tue, 20 Feb 2018 12:13:30 +0530
+Message-ID: <CAOuPNLiQCtfd_h3tQpKFyg2=z1zZgwJaQw=tf9TmXBEJ6V5VUQ@mail.gmail.com>
 Content-Type: text/plain; charset="UTF-8"
 Subject: Re: [Xenomai] [rtnet] - help required with rtnet interface bring up
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
@@ -24,379 +25,472 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jan Kiszka <jan.kiszka@web.de>
+To: Jan Kiszka <jan.kiszka@web.de>, Pintu Kumar <pintu.ping@gmail.com>
 Cc: "Xenomai@xenomai.org" <xenomai@xenomai.org>
 
 Dear Jan,
 
-Thank you so much for your help so far.
-Please give some more hints, and I will be able to test my UDP socket
-program over RTnet interface.
-I think I am very close to it.
+I had two network adapter setup in my virtual box:
+NAT0: NAT network
+NAT1: Host-only adapter
 
-With some manual steps, currently, the problem I am facing is rteth0
-is up (shown in ifconfig), but its not connecting to real network (I
-cannot ping from another PC).
+Now I removed NAT1, and changed NAT0 to Host only type
+So, now I just have only one ethernet interface (eth0).
 
-I have 2 interface shown (in non-real time mode) : eth0 & eth1
-I am actually interested in eth1 (192.168.56.101), because this is the
-one accessible to outside, and I use it to connect it to PUTTY (on
-windows).
+After this if I install RTnet, rteth0 is up, but still it does not
+connect to the host PC.
+(I cannot ping the IP address from host).
 
-So, I tried the following:
-1) First I replaced the eth0 to eth1 in rtnet script (all places).
+Note: The ip address is visible only in vnic0 and not in rteth0.
 
-2) Along with this I also changed few things in rtnet.conf as follows:
-    - RT_DRIVER_OPTIONS="cards=1,0"
-    - IPADDR="192.168.56.101"
-    - RTCAP="yes"
-    - Commented out: TDMA_SLAVES, TDMA_CYCLE, TDMA_OFFSET
+And I still get the kernel errors flooded:
+[58710.438552] RTcfg: error -11 while sending stage 1 frame
+[58710.438585] RTcfg: error -11 while sending stage 1 frame
+[58710.438602] RTcfg: error -11 while sending stage 1 frame
+.....
 
-3) Uninstalled the non-rt driver: e1000 , and start the rtnet
-    - sudo modprobe -r e1000
-    - sudo /usr/xenomai/sbin/rtnet start
-But still in the logs, it says:
-rteth1: ERROR while getting interface flags: No such device
-rteth1-mac: ERROR while getting interface flags: No such device
+Please let me know if I am missing something.
 
-Why rteth1 not working?
+Here is the output from ifconfig:
 
-4) Then I tried doing it manually:
-     - sudo /usr/xenomai/sbin/rtifconfig rteth0 up 192.168.56.101
-     - sudo ifconfig rteth0 up 192.168.56.101
+pintu@osboxes:~$ ifconfig
+lo        Link encap:Local Loopback
+          inet addr:127.0.0.1  Mask:255.0.0.0
+          inet6 addr: ::1/128 Scope:Host
+          UP LOOPBACK RUNNING  MTU:65536  Metric:1
+          RX packets:42 errors:0 dropped:0 overruns:0 frame:0
+          TX packets:42 errors:0 dropped:0 overruns:0 carrier:0
+          collisions:0 txqueuelen:1
+          RX bytes:4594 (4.5 KB)  TX bytes:4594 (4.5 KB)
 
-After this I get the IP Address in both ifconfig and rtifconfig.
-But still it does not connect to network.
-When I check properly I noticed that the HWaddr is not correctly
-assigned as before for the IP Address: 192.168.56.101
-Earlier (non-rt case);
-eth0 : inet addr: 10.0.2.15 ; HWaddr 08:00:27:52:ba:f1
-eth1 : inet addr: 192.168.56.101 ; HWaddr 08:00:27:19:5b:dc
+rteth0    Link encap:Ethernet  HWaddr 08:00:27:52:ba:f1
+          inet6 addr: fe80::a00:27ff:fe52:baf1/64 Scope:Link
+          UP BROADCAST RUNNING  MTU:1500  Metric:1
+          RX packets:92071 errors:0 dropped:92052 overruns:0 frame:0
+          TX packets:0 errors:0 dropped:0 overruns:0 carrier:0
+          collisions:0 txqueuelen:1000
+          RX bytes:2584501 (2.5 MB)  TX bytes:0 (0.0 B)
 
-But with rteth0, I am getting for eth0:
-rteth0: inet addr:192.168.56.101 ; HWaddr 08:00:27:52:ba:f1
+rteth0-mac Link encap:Ethernet  HWaddr 08:00:27:52:ba:f1
+          inet6 addr: fe80::a00:27ff:fe52:baf1/64 Scope:Link
+          UP BROADCAST RUNNING  MTU:1500  Metric:1
+          RX packets:92071 errors:0 dropped:57 overruns:0 frame:0
+          TX packets:0 errors:0 dropped:0 overruns:0 carrier:0
+          collisions:0 txqueuelen:1000
+          RX bytes:2584501 (2.5 MB)  TX bytes:0 (0.0 B)
 
-rtifconfig
+rtlo      Link encap:Ethernet  HWaddr 00:00:00:00:00:00
+          inet6 addr: fe80::200:ff:fe00:0/64 Scope:Link
+          UP BROADCAST RUNNING  MTU:1500  Metric:1
+          RX packets:6 errors:0 dropped:0 overruns:0 frame:0
+          TX packets:0 errors:0 dropped:0 overruns:0 carrier:0
+          collisions:0 txqueuelen:1000
+          RX bytes:504 (504.0 B)  TX bytes:0 (0.0 B)
+
+vnic0     Link encap:Ethernet  HWaddr 08:00:27:52:ba:f1
+          inet addr:192.168.56.102  Bcast:192.168.56.255  Mask:255.255.255.0
+          inet6 addr: fe80::a00:27ff:fe52:baf1/64 Scope:Link
+          UP BROADCAST RUNNING  MTU:1496  Metric:1
+          RX packets:0 errors:0 dropped:0 overruns:0 frame:0
+          TX packets:57 errors:0 dropped:0 overruns:0 carrier:0
+          collisions:0 txqueuelen:1000
+          RX bytes:0 (0.0 B)  TX bytes:7598 (7.5 KB)
+
+pintu@osboxes:~$ sudo /usr/xenomai/sbin/rtifconfig
+[sudo] password for pintu:
 rteth0    Medium: Ethernet  Hardware address: 08:00:27:52:BA:F1
-          IP address: 192.168.56.101  Broadcast address: 192.168.56.255
+          IP address: 192.168.56.102  Broadcast address: 192.168.56.255
           UP BROADCAST RUNNING  MTU: 1500
 
-5) When I ping it still gives loopback ip address:
-sudo /usr/xenomai/sbin/rtping 192.168.56.101
-Real-time PING 192.168.56.101 56(84) bytes of data.
-64 bytes from 127.0.0.1: icmp_seq=1 time=9.9 us
-64 bytes from 127.0.0.1: icmp_seq=2 time=10.2 us
+rtlo      Medium: Local Loopback
+          IP address: 127.0.0.1
+          UP LOOPBACK RUNNING  MTU: 1500
 
-Where as if I ping using "ping" command it gives correct ip address:
-ping 192.168.56.101
-PING 192.168.56.101 (192.168.56.101) 56(84) bytes of data.
-64 bytes from 192.168.56.101: icmp_seq=1 ttl=64 time=0.024 ms
-64 bytes from 192.168.56.101: icmp_seq=2 ttl=64 time=0.021 ms
-
-But, still I am not able to access the IP from outside. The network is
-not connected.
-
-6) When I see rtroute, it says:
-sudo /usr/xenomai/sbin/rtroute
+pintu@osboxes:~$ sudo /usr/xenomai/sbin/rtroute
 Host Routing Table
 Hash Destination HW Address Device
 00 0.0.0.0  00:00:00:00:00:00 rtlo
+01 192.168.56.1  0A:00:27:00:00:12 rteth0
 01 127.0.0.1  00:00:00:00:00:00 rtlo
-25 192.168.56.101 00:00:00:00:00:00 rtlo
+26 192.168.56.102 00:00:00:00:00:00 rtlo
 3F 192.168.56.255 FF:FF:FF:FF:FF:FF rteth0
-
-
-Just, route:
-$ route
-Kernel IP routing table
-Destination     Gateway         Genmask         Flags Metric Ref    Use Iface
-192.168.56.0    *               255.255.255.0   U     0      0        0 rteth0
-
-
-So, my question is, how to make rteth1 up, so that I can access the IP
-(192.168.56.101) from outside.
-
-If you have any suggestion, please help!
-
-Once again, thank you so much till now for all your help and support.
-It was really helpful to understand.
 
 
 Thanks,
 Pintu
 
 
-On Thu, Feb 15, 2018 at 7:28 PM, Pintu Kumar <pintu.ping@gmail.com> wrote:
-> On Thu, Feb 15, 2018 at 12:36 PM, Jan Kiszka <jan.kiszka@web.de> wrote:
->> On 2018-02-14 14:52, Pintu Kumar wrote:
->>> On Wed, Feb 14, 2018 at 12:15 PM, Jan Kiszka <jan.kiszka@web.de> wrote:
->>>> On 2018-02-14 07:42, Pintu Kumar wrote:
->>>>> On Tue, Feb 13, 2018 at 11:56 PM, Greg Gallagher <greg@embeddedgreg.com> wrote:
->>>>>> Did you get the output of lspci -knn as Jan suggested?
->>>>>>
->>>>>
->>>>> Here, is the output of lspci:
->>>>>
->>>>> $ lspci -knn
->>>>> 00:00.0 Host bridge [0600]: Intel Corporation 440FX - 82441FX PMC
->>>>> [Natoma] [8086:1237] (rev 02)
->>>>> 00:01.0 ISA bridge [0601]: Intel Corporation 82371SB PIIX3 ISA
->>>>> [Natoma/Triton II] [8086:7000]
->>>>> 00:01.1 IDE interface [0101]: Intel Corporation 82371AB/EB/MB PIIX4
->>>>> IDE [8086:7111] (rev 01)
->>>>>         Kernel driver in use: ata_piix
->>>>>         Kernel modules: pata_acpi
->>>>> 00:02.0 VGA compatible controller [0300]: InnoTek Systemberatung GmbH
->>>>> VirtualBox Graphics Adapter [80ee:beef]
->>>>>         Kernel driver in use: vboxvideo
->>>>>         Kernel modules: vboxvideo
->>>>> 00:03.0 Ethernet controller [0200]: Intel Corporation 82540EM Gigabit
->>>>> Ethernet Controller [8086:100e] (rev 02)
->>>>>         Subsystem: Intel Corporation PRO/1000 MT Desktop Adapter [8086:001e]
->>>>>         Kernel driver in use: e1000
->>>>>         Kernel modules: e1000, rt_e1000
->>>>> 00:04.0 System peripheral [0880]: InnoTek Systemberatung GmbH
->>>>> VirtualBox Guest Service [80ee:cafe]
->>>>>         Kernel driver in use: vboxguest
->>>>>         Kernel modules: vboxguest
->>>>> 00:05.0 Multimedia audio controller [0401]: Intel Corporation 82801AA
->>>>> AC'97 Audio Controller [8086:2415] (rev 01)
->>>>>         Subsystem: Dell 82801AA AC'97 Audio Controller [1028:0177]
->>>>>         Kernel driver in use: snd_intel8x0
->>>>>         Kernel modules: snd_intel8x0
->>>>> 00:06.0 USB controller [0c03]: Apple Inc. KeyLargo/Intrepid USB [106b:003f]
->>>>>         Kernel driver in use: ohci-pci
->>>>> 00:07.0 Bridge [0680]: Intel Corporation 82371AB/EB/MB PIIX4 ACPI
->>>>> [8086:7113] (rev 08)
->>>>>         Kernel driver in use: piix4_smbus
->>>>>         Kernel modules: i2c_piix4
->>>>> 00:08.0 Ethernet controller [0200]: Intel Corporation 82540EM Gigabit
->>>>> Ethernet Controller [8086:100e] (rev 02)
->>>>>         Subsystem: Intel Corporation PRO/1000 MT Desktop Adapter [8086:001e]
->>>>>         Kernel driver in use: e1000
->>>>>         Kernel modules: e1000, rt_e1000
->>>>
->>>> Perfect. So, rt_e1000 is your driver. Now open /etc/rtnet.conf, read the
->>>> comments in there, and adjust it to your system.
->>>>
->>>
->>> Ok thank you so much. I got a clue and something is working now. But
->>> still not perfect.
->>>
->>> I followed the following steps:
->>> 1) sudo ifconfig [eth0/eth1] down
->>> 2) Remove the existing ethernet driver (e1000) => modprobe -r e1000
->>> 3) Changed the rtnet.conf:
->>>     RT_DRIVER="rt_e1000"
->>> 4) Blank ip address as per comments there => IPADDR=""
->>> 5) sudo /usr/xenomai/sbin/rtnet start
->>> 6) Got this:
->>>     Waiting for all slaves...
->>> 7) Pressed ^C to stop
->>>
->>> 8) Now when I check : ifconfig, I got this:
->>>
->>> $ ifconfig
->>>
->>> rteth0    Link encap:Ethernet  HWaddr 08:00:27:52:ba:f1
->>>           inet6 addr: fe80::a00:27ff:fe52:baf1/64 Scope:Link
->>>           UP BROADCAST RUNNING  MTU:1500  Metric:1
->>>           RX packets:1465 errors:0 dropped:1465 overruns:0 frame:0
->>>           TX packets:0 errors:0 dropped:0 overruns:0 carrier:0
->>>           collisions:0 txqueuelen:1000
->>>           RX bytes:41332 (41.3 KB)  TX bytes:0 (0.0 B)
->>>
->>> rteth0-mac Link encap:Ethernet  HWaddr 08:00:27:52:ba:f1
->>>           inet6 addr: fe80::a00:27ff:fe52:baf1/64 Scope:Link
->>>           UP BROADCAST RUNNING  MTU:1500  Metric:1
->>>           RX packets:1465 errors:0 dropped:7 overruns:0 frame:0
->>>           TX packets:0 errors:0 dropped:0 overruns:0 carrier:0
->>>           collisions:0 txqueuelen:1000
->>>           RX bytes:41332 (41.3 KB)  TX bytes:0 (0.0 B)
->>>
->>> rtlo      Link encap:Ethernet  HWaddr 00:00:00:00:00:00
->>>           inet6 addr: fe80::200:ff:fe00:0/64 Scope:Link
->>>           UP BROADCAST RUNNING  MTU:1500  Metric:1
->>>           RX packets:0 errors:0 dropped:0 overruns:0 frame:0
->>>           TX packets:0 errors:0 dropped:0 overruns:0 carrier:0
->>>           collisions:0 txqueuelen:1000
->>>           RX bytes:0 (0.0 B)  TX bytes:0 (0.0 B)
->>>
->>> vnic0     Link encap:Ethernet  HWaddr 08:00:27:52:ba:f1
->>>           inet6 addr: fe80::a00:27ff:fe52:baf1/64 Scope:Link
->>>           UP BROADCAST RUNNING  MTU:1496  Metric:1
->>>           RX packets:0 errors:0 dropped:0 overruns:0 frame:0
->>>           TX packets:7 errors:0 dropped:0 overruns:0 carrier:0
->>>           collisions:0 txqueuelen:1000
->>>           RX bytes:0 (0.0 B)  TX bytes:578 (578.0 B)
->>>
->>>
->>> $ sudo /usr/xenomai/sbin/rtifconfig
->>> rteth0    Medium: Ethernet  Hardware address: 08:00:27:52:BA:F1
->>>           UP BROADCAST RUNNING  MTU: 1500
->>>
->>> rtlo      Medium: Local Loopback
->>>           IP address: 127.0.0.1
->>>           UP LOOPBACK RUNNING  MTU: 1500
->>>
->>>
->>> ----------------------------------------------------------------------------
->>> So, I still have the following queries:
->>> 1) Why only rteth0 is up, and not eth1 (earlier I have both eth0 and eth1) ?
->>>
->>
->> The startup script only supports one interface. Think of it as a
->> template for more complex custom setups. The question you need to answer
->> for yourself is then also which of the RTnet features (RTcfg, RTmac,
->> TDMA,...) you want and how you'd like to set up the overall network.
->>
+On Mon, Feb 19, 2018 at 7:49 PM, Pintu Kumar <pintu.ping@gmail.com> wrote:
+> Dear Jan,
 >
-> Ok, I manually enabled rteth1 : # rtifconfig rteth1 up
-> But still rteth1 is not up.
+> Thank you so much for your help so far.
+> Please give some more hints, and I will be able to test my UDP socket
+> program over RTnet interface.
+> I think I am very close to it.
 >
-> But the kernel logs says, both eth0 and eth1 is up
-> [ 2718.418361] e1000: 0000:00:03.0: e1000_probe: (PCI:33MHz:32-bit)
-> [ 2718.462851] e1000: rteth0: e1000_probe: Intel(R) PRO/1000 Network Connection
-> [ 2718.787156] e1000: 0000:00:08.0: e1000_probe: (PCI:33MHz:32-bit)
-> [ 2718.834465] e1000: rteth1: e1000_probe: Intel(R) PRO/1000 Network Connection
-> [ 2721.212519] e1000: rteth0: e1000_watchdog: NIC Link is Up 1000 Mbps
-> Full Duplex
+> With some manual steps, currently, the problem I am facing is rteth0
+> is up (shown in ifconfig), but its not connecting to real network (I
+> cannot ping from another PC).
 >
->>> 2) Why IP address is not shown under rteth0 ?
->>>      Earlier, the network was associated with :
->>>            eth0 => inet addr:10.0.2.15
->>>            eth1 => inet addr:192.168.56.101
->>
->> Because you didn't set one, as you stated above, and you didn't set up a
->> RTcfg master that could hand one out.
->>
+> I have 2 interface shown (in non-real time mode) : eth0 & eth1
+> I am actually interested in eth1 (192.168.56.101), because this is the
+> one accessible to outside, and I use it to connect it to PUTTY (on
+> windows).
 >
-> Ok, I set the ip address of eth0 (10.0.2.15) in the script, but still
-> IP address is not visible.
+> So, I tried the following:
+> 1) First I replaced the eth0 to eth1 in rtnet script (all places).
 >
-> $ ifconfig
+> 2) Along with this I also changed few things in rtnet.conf as follows:
+>     - RT_DRIVER_OPTIONS="cards=1,0"
+>     - IPADDR="192.168.56.101"
+>     - RTCAP="yes"
+>     - Commented out: TDMA_SLAVES, TDMA_CYCLE, TDMA_OFFSET
 >
-> rteth0    Link encap:Ethernet  HWaddr 08:00:27:52:ba:f1
->           inet6 addr: fe80::a00:27ff:fe52:baf1/64 Scope:Link
->           UP BROADCAST RUNNING  MTU:1500  Metric:1
->           RX packets:96526 errors:0 dropped:96526 overruns:0 frame:0
->           TX packets:0 errors:0 dropped:0 overruns:0 carrier:0
->           collisions:0 txqueuelen:1000
->           RX bytes:2707980 (2.7 MB)  TX bytes:0 (0.0 B)
+> 3) Uninstalled the non-rt driver: e1000 , and start the rtnet
+>     - sudo modprobe -r e1000
+>     - sudo /usr/xenomai/sbin/rtnet start
+> But still in the logs, it says:
+> rteth1: ERROR while getting interface flags: No such device
+> rteth1-mac: ERROR while getting interface flags: No such device
 >
-> vnic0     Link encap:Ethernet  HWaddr 08:00:27:52:ba:f1
->           inet addr:10.0.2.15  Bcast:10.255.255.255  Mask:255.0.0.0
->           inet6 addr: fe80::a00:27ff:fe52:baf1/64 Scope:Link
->           UP BROADCAST RUNNING  MTU:1496  Metric:1
->           RX packets:0 errors:0 dropped:0 overruns:0 frame:0
->           TX packets:57 errors:0 dropped:0 overruns:0 carrier:0
->           collisions:0 txqueuelen:1000
->           RX bytes:0 (0.0 B)  TX bytes:7418 (7.4 KB)
+> Why rteth1 not working?
 >
-> Instead, it showing under vnic0.
-> But still I could ping: 10.0.2.15
-> Is this correct behavior ?
+> 4) Then I tried doing it manually:
+>      - sudo /usr/xenomai/sbin/rtifconfig rteth0 up 192.168.56.101
+>      - sudo ifconfig rteth0 up 192.168.56.101
 >
-> However, it is shown under: rtifconfig
+> After this I get the IP Address in both ifconfig and rtifconfig.
+> But still it does not connect to network.
+> When I check properly I noticed that the HWaddr is not correctly
+> assigned as before for the IP Address: 192.168.56.101
+> Earlier (non-rt case);
+> eth0 : inet addr: 10.0.2.15 ; HWaddr 08:00:27:52:ba:f1
+> eth1 : inet addr: 192.168.56.101 ; HWaddr 08:00:27:19:5b:dc
 >
-> $ sudo /usr/xenomai/sbin/rtifconfig
+> But with rteth0, I am getting for eth0:
+> rteth0: inet addr:192.168.56.101 ; HWaddr 08:00:27:52:ba:f1
+>
+> rtifconfig
 > rteth0    Medium: Ethernet  Hardware address: 08:00:27:52:BA:F1
->           IP address: 10.0.2.15  Broadcast address: 10.255.255.255
+>           IP address: 192.168.56.101  Broadcast address: 192.168.56.255
 >           UP BROADCAST RUNNING  MTU: 1500
 >
-> rtlo      Medium: Local Loopback
->           IP address: 127.0.0.1
->           UP LOOPBACK RUNNING  MTU: 1500
+> 5) When I ping it still gives loopback ip address:
+> sudo /usr/xenomai/sbin/rtping 192.168.56.101
+> Real-time PING 192.168.56.101 56(84) bytes of data.
+> 64 bytes from 127.0.0.1: icmp_seq=1 time=9.9 us
+> 64 bytes from 127.0.0.1: icmp_seq=2 time=10.2 us
+>
+> Where as if I ping using "ping" command it gives correct ip address:
+> ping 192.168.56.101
+> PING 192.168.56.101 (192.168.56.101) 56(84) bytes of data.
+> 64 bytes from 192.168.56.101: icmp_seq=1 ttl=64 time=0.024 ms
+> 64 bytes from 192.168.56.101: icmp_seq=2 ttl=64 time=0.021 ms
+>
+> But, still I am not able to access the IP from outside. The network is
+> not connected.
+>
+> 6) When I see rtroute, it says:
+> sudo /usr/xenomai/sbin/rtroute
+> Host Routing Table
+> Hash Destination HW Address Device
+> 00 0.0.0.0  00:00:00:00:00:00 rtlo
+> 01 127.0.0.1  00:00:00:00:00:00 rtlo
+> 25 192.168.56.101 00:00:00:00:00:00 rtlo
+> 3F 192.168.56.255 FF:FF:FF:FF:FF:FF rteth0
 >
 >
+> Just, route:
+> $ route
+> Kernel IP routing table
+> Destination     Gateway         Genmask         Flags Metric Ref    Use Iface
+> 192.168.56.0    *               255.255.255.0   U     0      0        0 rteth0
+>
+>
+> So, my question is, how to make rteth1 up, so that I can access the IP
+> (192.168.56.101) from outside.
+>
+> If you have any suggestion, please help!
+>
+> Once again, thank you so much till now for all your help and support.
+> It was really helpful to understand.
+>
+>
+> Thanks,
+> Pintu
+>
+>
+> On Thu, Feb 15, 2018 at 7:28 PM, Pintu Kumar <pintu.ping@gmail.com> wrote:
+>> On Thu, Feb 15, 2018 at 12:36 PM, Jan Kiszka <jan.kiszka@web.de> wrote:
+>>> On 2018-02-14 14:52, Pintu Kumar wrote:
+>>>> On Wed, Feb 14, 2018 at 12:15 PM, Jan Kiszka <jan.kiszka@web.de> wrote:
+>>>>> On 2018-02-14 07:42, Pintu Kumar wrote:
+>>>>>> On Tue, Feb 13, 2018 at 11:56 PM, Greg Gallagher <greg@embeddedgreg.com> wrote:
+>>>>>>> Did you get the output of lspci -knn as Jan suggested?
+>>>>>>>
+>>>>>>
+>>>>>> Here, is the output of lspci:
+>>>>>>
+>>>>>> $ lspci -knn
+>>>>>> 00:00.0 Host bridge [0600]: Intel Corporation 440FX - 82441FX PMC
+>>>>>> [Natoma] [8086:1237] (rev 02)
+>>>>>> 00:01.0 ISA bridge [0601]: Intel Corporation 82371SB PIIX3 ISA
+>>>>>> [Natoma/Triton II] [8086:7000]
+>>>>>> 00:01.1 IDE interface [0101]: Intel Corporation 82371AB/EB/MB PIIX4
+>>>>>> IDE [8086:7111] (rev 01)
+>>>>>>         Kernel driver in use: ata_piix
+>>>>>>         Kernel modules: pata_acpi
+>>>>>> 00:02.0 VGA compatible controller [0300]: InnoTek Systemberatung GmbH
+>>>>>> VirtualBox Graphics Adapter [80ee:beef]
+>>>>>>         Kernel driver in use: vboxvideo
+>>>>>>         Kernel modules: vboxvideo
+>>>>>> 00:03.0 Ethernet controller [0200]: Intel Corporation 82540EM Gigabit
+>>>>>> Ethernet Controller [8086:100e] (rev 02)
+>>>>>>         Subsystem: Intel Corporation PRO/1000 MT Desktop Adapter [8086:001e]
+>>>>>>         Kernel driver in use: e1000
+>>>>>>         Kernel modules: e1000, rt_e1000
+>>>>>> 00:04.0 System peripheral [0880]: InnoTek Systemberatung GmbH
+>>>>>> VirtualBox Guest Service [80ee:cafe]
+>>>>>>         Kernel driver in use: vboxguest
+>>>>>>         Kernel modules: vboxguest
+>>>>>> 00:05.0 Multimedia audio controller [0401]: Intel Corporation 82801AA
+>>>>>> AC'97 Audio Controller [8086:2415] (rev 01)
+>>>>>>         Subsystem: Dell 82801AA AC'97 Audio Controller [1028:0177]
+>>>>>>         Kernel driver in use: snd_intel8x0
+>>>>>>         Kernel modules: snd_intel8x0
+>>>>>> 00:06.0 USB controller [0c03]: Apple Inc. KeyLargo/Intrepid USB [106b:003f]
+>>>>>>         Kernel driver in use: ohci-pci
+>>>>>> 00:07.0 Bridge [0680]: Intel Corporation 82371AB/EB/MB PIIX4 ACPI
+>>>>>> [8086:7113] (rev 08)
+>>>>>>         Kernel driver in use: piix4_smbus
+>>>>>>         Kernel modules: i2c_piix4
+>>>>>> 00:08.0 Ethernet controller [0200]: Intel Corporation 82540EM Gigabit
+>>>>>> Ethernet Controller [8086:100e] (rev 02)
+>>>>>>         Subsystem: Intel Corporation PRO/1000 MT Desktop Adapter [8086:001e]
+>>>>>>         Kernel driver in use: e1000
+>>>>>>         Kernel modules: e1000, rt_e1000
+>>>>>
+>>>>> Perfect. So, rt_e1000 is your driver. Now open /etc/rtnet.conf, read the
+>>>>> comments in there, and adjust it to your system.
+>>>>>
+>>>>
+>>>> Ok thank you so much. I got a clue and something is working now. But
+>>>> still not perfect.
+>>>>
+>>>> I followed the following steps:
+>>>> 1) sudo ifconfig [eth0/eth1] down
+>>>> 2) Remove the existing ethernet driver (e1000) => modprobe -r e1000
+>>>> 3) Changed the rtnet.conf:
+>>>>     RT_DRIVER="rt_e1000"
+>>>> 4) Blank ip address as per comments there => IPADDR=""
+>>>> 5) sudo /usr/xenomai/sbin/rtnet start
+>>>> 6) Got this:
+>>>>     Waiting for all slaves...
+>>>> 7) Pressed ^C to stop
+>>>>
+>>>> 8) Now when I check : ifconfig, I got this:
+>>>>
+>>>> $ ifconfig
+>>>>
+>>>> rteth0    Link encap:Ethernet  HWaddr 08:00:27:52:ba:f1
+>>>>           inet6 addr: fe80::a00:27ff:fe52:baf1/64 Scope:Link
+>>>>           UP BROADCAST RUNNING  MTU:1500  Metric:1
+>>>>           RX packets:1465 errors:0 dropped:1465 overruns:0 frame:0
+>>>>           TX packets:0 errors:0 dropped:0 overruns:0 carrier:0
+>>>>           collisions:0 txqueuelen:1000
+>>>>           RX bytes:41332 (41.3 KB)  TX bytes:0 (0.0 B)
+>>>>
+>>>> rteth0-mac Link encap:Ethernet  HWaddr 08:00:27:52:ba:f1
+>>>>           inet6 addr: fe80::a00:27ff:fe52:baf1/64 Scope:Link
+>>>>           UP BROADCAST RUNNING  MTU:1500  Metric:1
+>>>>           RX packets:1465 errors:0 dropped:7 overruns:0 frame:0
+>>>>           TX packets:0 errors:0 dropped:0 overruns:0 carrier:0
+>>>>           collisions:0 txqueuelen:1000
+>>>>           RX bytes:41332 (41.3 KB)  TX bytes:0 (0.0 B)
+>>>>
+>>>> rtlo      Link encap:Ethernet  HWaddr 00:00:00:00:00:00
+>>>>           inet6 addr: fe80::200:ff:fe00:0/64 Scope:Link
+>>>>           UP BROADCAST RUNNING  MTU:1500  Metric:1
+>>>>           RX packets:0 errors:0 dropped:0 overruns:0 frame:0
+>>>>           TX packets:0 errors:0 dropped:0 overruns:0 carrier:0
+>>>>           collisions:0 txqueuelen:1000
+>>>>           RX bytes:0 (0.0 B)  TX bytes:0 (0.0 B)
+>>>>
+>>>> vnic0     Link encap:Ethernet  HWaddr 08:00:27:52:ba:f1
+>>>>           inet6 addr: fe80::a00:27ff:fe52:baf1/64 Scope:Link
+>>>>           UP BROADCAST RUNNING  MTU:1496  Metric:1
+>>>>           RX packets:0 errors:0 dropped:0 overruns:0 frame:0
+>>>>           TX packets:7 errors:0 dropped:0 overruns:0 carrier:0
+>>>>           collisions:0 txqueuelen:1000
+>>>>           RX bytes:0 (0.0 B)  TX bytes:578 (578.0 B)
+>>>>
+>>>>
+>>>> $ sudo /usr/xenomai/sbin/rtifconfig
+>>>> rteth0    Medium: Ethernet  Hardware address: 08:00:27:52:BA:F1
+>>>>           UP BROADCAST RUNNING  MTU: 1500
+>>>>
+>>>> rtlo      Medium: Local Loopback
+>>>>           IP address: 127.0.0.1
+>>>>           UP LOOPBACK RUNNING  MTU: 1500
+>>>>
+>>>>
+>>>> ----------------------------------------------------------------------------
+>>>> So, I still have the following queries:
+>>>> 1) Why only rteth0 is up, and not eth1 (earlier I have both eth0 and eth1) ?
+>>>>
 >>>
->>> ---------------------------------------------------------------------------
->>>
->>> These are the kernel logs during rtnet installation:
->>>
->>>                *** RTnet for Xenomai v3.0.6 ***
->>>
->>> [84221.150295] RTnet: initialising real-time networking
->>> [84221.202520] Intel(R) PRO/1000 Network Driver - version 7.1.9
->>> [84221.202523] Copyright (c) 1999-2006 Intel Corporation.
->>> [84221.526522] e1000: 0000:00:03.0: e1000_probe: (PCI:33MHz:32-bit)
->>> [84221.526525] 08:
->>> [84221.526526] 00:
->>> [84221.526528] 27:
->>> [84221.526529] 52:
->>> [84221.526531] ba:
->>> [84221.526533] f1
->>> [84221.575234] RTnet: registered rteth0
->>> [84221.575237] e1000: rteth0: e1000_probe: Intel(R) PRO/1000 Network Connection
->>> [84221.900806] e1000: 0000:00:08.0: e1000_probe: (PCI:33MHz:32-bit)
->>> [84221.900810] 08:
->>> [84221.900812] 00:
->>> [84221.900814] 27:
->>> [84221.900816] 19:
->>> [84221.900818] 5b:
->>> [84221.900819] dc
->>> [84221.946479] RTnet: registered rteth1
->>> [84221.946482] e1000: rteth1: e1000_probe: Intel(R) PRO/1000 Network Connection
->>> [84221.976448] initializing loopback...
->>> [84221.976458] RTnet: registered rtlo
->>> [84221.982513] RTcap: real-time capturing interface
->>> [84222.039892] ModemManager[10059]: segfault at 0 ip 0806f964 sp
->>> bfb7bd80 error 4 in ModemManager[8048000+121000]
->>> [84222.089678] RTcfg: init real-time configuration distribution protocol
->>> [84222.149775] RTmac: init realtime media access control
->>> [84222.177704] RTmac/TDMA: init time division multiple access control mechanism
->>> [84222.179821] RTcfg: rtcfg_do_main_event() rtdev=1,
->>> event=RTCFG_CMD_SERVER, state=RTCFG_MAIN_OFF
->>> [84222.179824] RTcfg: next main state=RTCFG_MAIN_SERVER_RUNNING
->>> [84224.194058] e1000: rteth0: e1000_watchdog: NIC Link is Up 1000 Mbps
->>> Full Duplex
->>> [84225.422825] ModemManager[10435]: segfault at 0 ip 0806f964 sp
->>> bfb85f40 error 4 in ModemManager[8048000+121000]
->>> [84225.434788] RTcfg: rtcfg_do_main_event() rtdev=1,
->>> event=RTCFG_CMD_ADD, state=RTCFG_MAIN_SERVER_RUNNING
->>> [84225.435376] RTcfg: rtcfg_do_main_event() rtdev=1,
->>> event=RTCFG_CMD_ADD, state=RTCFG_MAIN_SERVER_RUNNING
->>> [84225.435939] RTcfg: rtcfg_do_main_event() rtdev=1,
->>> event=RTCFG_CMD_ADD, state=RTCFG_MAIN_SERVER_RUNNING
->>> [84225.438018] RTcfg: rtcfg_do_main_event() rtdev=1,
->>> event=RTCFG_CMD_WAIT, state=RTCFG_MAIN_SERVER_RUNNING
->>> [84226.179858] RTcfg: error -11 while sending stage 1 frame
->>> [84226.179870] RTcfg: error -11 while sending stage 1 frame
->>> [84226.179872] RTcfg: error -11 while sending stage 1 frame
->>> [84227.179861] RTcfg: error -11 while sending stage 1 frame
->>> [84227.179877] RTcfg: error -11 while sending stage 1 frame
->>> [84227.179879] RTcfg: error -11 while sending stage 1 frame
->>> [84228.180889] RTcfg: error -11 while sending stage 1 frame
->>> .......
->>> .......
->>>
->>> These error is flowing continuously in the kernel logs. What does this
->>> indicates ?
+>>> The startup script only supports one interface. Think of it as a
+>>> template for more complex custom setups. The question you need to answer
+>>> for yourself is then also which of the RTnet features (RTcfg, RTmac,
+>>> TDMA,...) you want and how you'd like to set up the overall network.
 >>>
 >>
->> The error may indicate that packet transmission via rteth0 is not
->> working properly. Maybe the rtnet driver is not fully supporting that
->> NIC, or interrupts do not arrive for the NIC (check /proc/xenomai/irqs),
->> or you simply lack a (virtual) link on that interface.
+>> Ok, I manually enabled rteth1 : # rtifconfig rteth1 up
+>> But still rteth1 is not up.
 >>
->
-> Here is the output of /proc/xenomai/irq
->
-> $ cat /proc/xenomai/irq
->   IRQ         CPU0        CPU1
->    19:           0       39710         rteth0
->  2304:           0           0         [sync]
->  2305:           3           5         [reschedule]
->  2306:      207869      151958         [timer/0]
->  2307:           2           0         [timer-ipi]
->  2339:          12           8         [virtual]
->
->
-> With this error, I cannot proceed further to measure latency over rtnet.
-> How to resolve this error ?
-> Is there any work around ?
->
->
->> Jan
+>> But the kernel logs says, both eth0 and eth1 is up
+>> [ 2718.418361] e1000: 0000:00:03.0: e1000_probe: (PCI:33MHz:32-bit)
+>> [ 2718.462851] e1000: rteth0: e1000_probe: Intel(R) PRO/1000 Network Connection
+>> [ 2718.787156] e1000: 0000:00:08.0: e1000_probe: (PCI:33MHz:32-bit)
+>> [ 2718.834465] e1000: rteth1: e1000_probe: Intel(R) PRO/1000 Network Connection
+>> [ 2721.212519] e1000: rteth0: e1000_watchdog: NIC Link is Up 1000 Mbps
+>> Full Duplex
 >>
+>>>> 2) Why IP address is not shown under rteth0 ?
+>>>>      Earlier, the network was associated with :
+>>>>            eth0 => inet addr:10.0.2.15
+>>>>            eth1 => inet addr:192.168.56.101
+>>>
+>>> Because you didn't set one, as you stated above, and you didn't set up a
+>>> RTcfg master that could hand one out.
+>>>
+>>
+>> Ok, I set the ip address of eth0 (10.0.2.15) in the script, but still
+>> IP address is not visible.
+>>
+>> $ ifconfig
+>>
+>> rteth0    Link encap:Ethernet  HWaddr 08:00:27:52:ba:f1
+>>           inet6 addr: fe80::a00:27ff:fe52:baf1/64 Scope:Link
+>>           UP BROADCAST RUNNING  MTU:1500  Metric:1
+>>           RX packets:96526 errors:0 dropped:96526 overruns:0 frame:0
+>>           TX packets:0 errors:0 dropped:0 overruns:0 carrier:0
+>>           collisions:0 txqueuelen:1000
+>>           RX bytes:2707980 (2.7 MB)  TX bytes:0 (0.0 B)
+>>
+>> vnic0     Link encap:Ethernet  HWaddr 08:00:27:52:ba:f1
+>>           inet addr:10.0.2.15  Bcast:10.255.255.255  Mask:255.0.0.0
+>>           inet6 addr: fe80::a00:27ff:fe52:baf1/64 Scope:Link
+>>           UP BROADCAST RUNNING  MTU:1496  Metric:1
+>>           RX packets:0 errors:0 dropped:0 overruns:0 frame:0
+>>           TX packets:57 errors:0 dropped:0 overruns:0 carrier:0
+>>           collisions:0 txqueuelen:1000
+>>           RX bytes:0 (0.0 B)  TX bytes:7418 (7.4 KB)
+>>
+>> Instead, it showing under vnic0.
+>> But still I could ping: 10.0.2.15
+>> Is this correct behavior ?
+>>
+>> However, it is shown under: rtifconfig
+>>
+>> $ sudo /usr/xenomai/sbin/rtifconfig
+>> rteth0    Medium: Ethernet  Hardware address: 08:00:27:52:BA:F1
+>>           IP address: 10.0.2.15  Broadcast address: 10.255.255.255
+>>           UP BROADCAST RUNNING  MTU: 1500
+>>
+>> rtlo      Medium: Local Loopback
+>>           IP address: 127.0.0.1
+>>           UP LOOPBACK RUNNING  MTU: 1500
+>>
+>>
+>>>>
+>>>> ---------------------------------------------------------------------------
+>>>>
+>>>> These are the kernel logs during rtnet installation:
+>>>>
+>>>>                *** RTnet for Xenomai v3.0.6 ***
+>>>>
+>>>> [84221.150295] RTnet: initialising real-time networking
+>>>> [84221.202520] Intel(R) PRO/1000 Network Driver - version 7.1.9
+>>>> [84221.202523] Copyright (c) 1999-2006 Intel Corporation.
+>>>> [84221.526522] e1000: 0000:00:03.0: e1000_probe: (PCI:33MHz:32-bit)
+>>>> [84221.526525] 08:
+>>>> [84221.526526] 00:
+>>>> [84221.526528] 27:
+>>>> [84221.526529] 52:
+>>>> [84221.526531] ba:
+>>>> [84221.526533] f1
+>>>> [84221.575234] RTnet: registered rteth0
+>>>> [84221.575237] e1000: rteth0: e1000_probe: Intel(R) PRO/1000 Network Connection
+>>>> [84221.900806] e1000: 0000:00:08.0: e1000_probe: (PCI:33MHz:32-bit)
+>>>> [84221.900810] 08:
+>>>> [84221.900812] 00:
+>>>> [84221.900814] 27:
+>>>> [84221.900816] 19:
+>>>> [84221.900818] 5b:
+>>>> [84221.900819] dc
+>>>> [84221.946479] RTnet: registered rteth1
+>>>> [84221.946482] e1000: rteth1: e1000_probe: Intel(R) PRO/1000 Network Connection
+>>>> [84221.976448] initializing loopback...
+>>>> [84221.976458] RTnet: registered rtlo
+>>>> [84221.982513] RTcap: real-time capturing interface
+>>>> [84222.039892] ModemManager[10059]: segfault at 0 ip 0806f964 sp
+>>>> bfb7bd80 error 4 in ModemManager[8048000+121000]
+>>>> [84222.089678] RTcfg: init real-time configuration distribution protocol
+>>>> [84222.149775] RTmac: init realtime media access control
+>>>> [84222.177704] RTmac/TDMA: init time division multiple access control mechanism
+>>>> [84222.179821] RTcfg: rtcfg_do_main_event() rtdev=1,
+>>>> event=RTCFG_CMD_SERVER, state=RTCFG_MAIN_OFF
+>>>> [84222.179824] RTcfg: next main state=RTCFG_MAIN_SERVER_RUNNING
+>>>> [84224.194058] e1000: rteth0: e1000_watchdog: NIC Link is Up 1000 Mbps
+>>>> Full Duplex
+>>>> [84225.422825] ModemManager[10435]: segfault at 0 ip 0806f964 sp
+>>>> bfb85f40 error 4 in ModemManager[8048000+121000]
+>>>> [84225.434788] RTcfg: rtcfg_do_main_event() rtdev=1,
+>>>> event=RTCFG_CMD_ADD, state=RTCFG_MAIN_SERVER_RUNNING
+>>>> [84225.435376] RTcfg: rtcfg_do_main_event() rtdev=1,
+>>>> event=RTCFG_CMD_ADD, state=RTCFG_MAIN_SERVER_RUNNING
+>>>> [84225.435939] RTcfg: rtcfg_do_main_event() rtdev=1,
+>>>> event=RTCFG_CMD_ADD, state=RTCFG_MAIN_SERVER_RUNNING
+>>>> [84225.438018] RTcfg: rtcfg_do_main_event() rtdev=1,
+>>>> event=RTCFG_CMD_WAIT, state=RTCFG_MAIN_SERVER_RUNNING
+>>>> [84226.179858] RTcfg: error -11 while sending stage 1 frame
+>>>> [84226.179870] RTcfg: error -11 while sending stage 1 frame
+>>>> [84226.179872] RTcfg: error -11 while sending stage 1 frame
+>>>> [84227.179861] RTcfg: error -11 while sending stage 1 frame
+>>>> [84227.179877] RTcfg: error -11 while sending stage 1 frame
+>>>> [84227.179879] RTcfg: error -11 while sending stage 1 frame
+>>>> [84228.180889] RTcfg: error -11 while sending stage 1 frame
+>>>> .......
+>>>> .......
+>>>>
+>>>> These error is flowing continuously in the kernel logs. What does this
+>>>> indicates ?
+>>>>
+>>>
+>>> The error may indicate that packet transmission via rteth0 is not
+>>> working properly. Maybe the rtnet driver is not fully supporting that
+>>> NIC, or interrupts do not arrive for the NIC (check /proc/xenomai/irqs),
+>>> or you simply lack a (virtual) link on that interface.
+>>>
+>>
+>> Here is the output of /proc/xenomai/irq
+>>
+>> $ cat /proc/xenomai/irq
+>>   IRQ         CPU0        CPU1
+>>    19:           0       39710         rteth0
+>>  2304:           0           0         [sync]
+>>  2305:           3           5         [reschedule]
+>>  2306:      207869      151958         [timer/0]
+>>  2307:           2           0         [timer-ipi]
+>>  2339:          12           8         [virtual]
+>>
+>>
+>> With this error, I cannot proceed further to measure latency over rtnet.
+>> How to resolve this error ?
+>> Is there any work around ?
+>>
+>>
+>>> Jan
+>>>
 
