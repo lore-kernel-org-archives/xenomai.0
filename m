@@ -1,11 +1,12 @@
-From: =?UTF-8?Q?St=c3=a9phane_Ancelot?= <sancelot@numalliance.com>
-Message-ID: <d4cab393-f878-55f5-a582-8c5f9c008056@numalliance.com>
-Date: Fri, 23 Feb 2018 10:47:52 +0100
+From: Wolfgang Denk <wd@denx.de>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: fr
-Content-Transfer-Encoding: quoted-printable
-Subject: [Xenomai] c++11 issue
+Content-type: text/plain; charset=UTF-8
+Content-transfer-encoding: 8bit
+In-reply-to: <9d0a8dc6-d16d-e3e2-8d20-400e5e2e4b4c@siemens.com>
+References: <9d0a8dc6-d16d-e3e2-8d20-400e5e2e4b4c@siemens.com>
+Date: Fri, 23 Feb 2018 18:12:38 +0100
+Message-Id: <20180223171238.A15B7240112@gemini.denx.de>
+Subject: Re: [Xenomai] Winter^W y2038 is coming
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -14,49 +15,34 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Jan Kiszka <jan.kiszka@siemens.com>
+Cc: Xenomai <xenomai@xenomai.org>
 
-hi,
+Dear Jan Kiszka,
 
+In message <9d0a8dc6-d16d-e3e2-8d20-400e5e2e4b4c@siemens.com> you wrote:
+> 
+> I'm now wondering if we should take measures that detect or even prevent
+> the setting of invalid dates in the presence of 32-bit ABIs. Or if we
+> should suggest/demand the setting of -D_TIME_BITS=64 already. The clock
+> is ticking... Thoughts?
 
-I have got problems using c++ 11 with tunables .compiling this snippet=20
-code with -std=3Dc++0x gcc option fails to next error messages:
+As you well know, there are quite a few projects with product life
+times of 20 years, so we really should start to raise awareness of
+the y2038 problem.  In a case like this I think the best way is to
+push forward for 64 bit time stamps.
 
-#include <xenomai/init.h>
-#include <xenomai/tunables.h>
+Thanks.
 
+Best regards,
 
+Wolfgang Denk
 
-/nfs/solaris/AFFAIRES_ECLIPSE/DEVELOPPEMENT/DEVELOPPEMENTS_RD/DEBIAN_64BI=
-TS/sancelot/KERNEL/TARGET/usr/xenomai-3.0-igb/include/boilerplate/tunable=
-s.h:40:43:=20
-error: variable or field '__assign_cpu_affinity_config' declared void
- =C2=A0 void __tunable_set_call(__name, __scope)(typeof(__type) __val)
- =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
-=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
-=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
-=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 ^
-/nfs/solaris/AFFAIRES_ECLIPSE/DEVELOPPEMENT/DEVELOPPEMENTS_RD/DEBIAN_64BI=
-TS/sancelot/KERNEL/TARGET/usr/xenomai-3.0-igb/include/boilerplate/tunable=
-s.h:46:2:=20
-note: in expansion of macro '__define_tunable'
- =C2=A0 __define_tunable(__name, __type, __val, config)
- =C2=A0 ^
-/nfs/solaris/AFFAIRES_ECLIPSE/DEVELOPPEMENT/DEVELOPPEMENTS_RD/DEBIAN_64BI=
-TS/sancelot/KERNEL/TARGET/usr/xenomai-3.0-igb/include/boilerplate/tunable=
-s.h:72:15:=20
-note: in expansion of macro 'define_config_tunable'
- =C2=A0static inline define_config_tunable(cpu_affinity, cpu_set_t, cpus)
- =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
-=C2=A0=C2=A0 ^
-/nfs/solaris/AFFAIRES_ECLIPSE/DEVELOPPEMENT/DEVELOPPEMENTS_RD/DEBIAN_64BI=
-TS/sancelot/KERNEL/TARGET/usr/xenomai-3.0-igb/include/boilerplate/tunable=
-s.h:40:56:=20
-error: expected primary-expression before ')' token
- =C2=A0 void __tunable_set_call(__name, __scope)(typeof(__type) __val)
-
-
-Regards,
-
-S.ancelot
+-- 
+DENX Software Engineering GmbH,      Managing Director: Wolfgang Denk
+HRB 165235 Munich, Office: Kirchenstr.5, D-82194 Groebenzell, Germany
+Phone: (+49)-8142-66989-10 Fax: (+49)-8142-66989-80 Email: wd@denx.de
+At the source of every error which is blamed on the computer you will
+find at least two human errors, including the error of blaming it  on
+the computer.
 
