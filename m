@@ -1,11 +1,11 @@
-From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <9d0a8dc6-d16d-e3e2-8d20-400e5e2e4b4c@siemens.com>
-Date: Wed, 21 Feb 2018 19:33:20 +0100
+From: =?UTF-8?Q?St=c3=a9phane_Ancelot?= <sancelot@numalliance.com>
+Message-ID: <d4cab393-f878-55f5-a582-8c5f9c008056@numalliance.com>
+Date: Fri, 23 Feb 2018 10:47:52 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-Subject: [Xenomai] Winter^W y2038 is coming
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: fr
+Content-Transfer-Encoding: quoted-printable
+Subject: [Xenomai] c++11 issue
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -14,32 +14,49 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Xenomai <xenomai@xenomai.org>
+To: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-Hi,
+hi,
 
-likely due to some platform oddities (still has to be analyzed in more
-details), we are running into the situation that xntimer_grab_hardware
-on a x86-64 host tunes nkclock.wallclock_offset to a value that is not
-compatible with the 32-bit time_t ABI of compat applications. If you do
-a pattern like
 
-    abs_timeout = clock_gettime(CLOCK_REALTIME) + rel_timeout
-    some_abs_wait(abs_timeout)
+I have got problems using c++ 11 with tunables .compiling this snippet=20
+code with -std=3Dc++0x gcc option fails to next error messages:
 
-that abs_wait will practically wait forever. The same bug can also be
-triggered by doing a
+#include <xenomai/init.h>
+#include <xenomai/tunables.h>
 
-    clock_settime(CLOCK_REALTIME, -negative_date)
 
-I'm now wondering if we should take measures that detect or even prevent
-the setting of invalid dates in the presence of 32-bit ABIs. Or if we
-should suggest/demand the setting of -D_TIME_BITS=64 already. The clock
-is ticking... Thoughts?
 
-Jan
+/nfs/solaris/AFFAIRES_ECLIPSE/DEVELOPPEMENT/DEVELOPPEMENTS_RD/DEBIAN_64BI=
+TS/sancelot/KERNEL/TARGET/usr/xenomai-3.0-igb/include/boilerplate/tunable=
+s.h:40:43:=20
+error: variable or field '__assign_cpu_affinity_config' declared void
+ =C2=A0 void __tunable_set_call(__name, __scope)(typeof(__type) __val)
+ =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
+=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
+=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
+=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 ^
+/nfs/solaris/AFFAIRES_ECLIPSE/DEVELOPPEMENT/DEVELOPPEMENTS_RD/DEBIAN_64BI=
+TS/sancelot/KERNEL/TARGET/usr/xenomai-3.0-igb/include/boilerplate/tunable=
+s.h:46:2:=20
+note: in expansion of macro '__define_tunable'
+ =C2=A0 __define_tunable(__name, __type, __val, config)
+ =C2=A0 ^
+/nfs/solaris/AFFAIRES_ECLIPSE/DEVELOPPEMENT/DEVELOPPEMENTS_RD/DEBIAN_64BI=
+TS/sancelot/KERNEL/TARGET/usr/xenomai-3.0-igb/include/boilerplate/tunable=
+s.h:72:15:=20
+note: in expansion of macro 'define_config_tunable'
+ =C2=A0static inline define_config_tunable(cpu_affinity, cpu_set_t, cpus)
+ =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
+=C2=A0=C2=A0 ^
+/nfs/solaris/AFFAIRES_ECLIPSE/DEVELOPPEMENT/DEVELOPPEMENTS_RD/DEBIAN_64BI=
+TS/sancelot/KERNEL/TARGET/usr/xenomai-3.0-igb/include/boilerplate/tunable=
+s.h:40:56:=20
+error: expected primary-expression before ')' token
+ =C2=A0 void __tunable_set_call(__name, __scope)(typeof(__type) __val)
 
--- 
-Siemens AG, Corporate Technology, CT RDA IOT SES-DE
-Corporate Competence Center Embedded Linux
+
+Regards,
+
+S.ancelot
 
