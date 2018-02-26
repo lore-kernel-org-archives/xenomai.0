@@ -1,12 +1,15 @@
-MIME-Version: 1.0
-In-Reply-To: <DB6PR0701MB24563AD93D8C2C0D5771A10AB5C10@DB6PR0701MB2456.eurprd07.prod.outlook.com>
+From: Giulio Moro <g.moro@qmul.ac.uk>
+Date: Mon, 26 Feb 2018 16:07:46 +0000
+Message-ID: <DB6PR0701MB2456F5B40E0CA3A792E3F5ABB5C10@DB6PR0701MB2456.eurprd07.prod.outlook.com>
 References: <36415.147.91.1.44.1519652762.squirrel@mail.imp.bg.ac.rs>
  <CALLqZ8RdzYhzCYFfvvnsD_M7HXo2T4q9-n_6tedpWzEFsEd+mg@mail.gmail.com>
- <DB6PR0701MB24563AD93D8C2C0D5771A10AB5C10@DB6PR0701MB2456.eurprd07.prod.outlook.com>
-From: Greg Gallagher <greg@embeddedgreg.com>
-Date: Mon, 26 Feb 2018 11:06:00 -0500
-Message-ID: <CALLqZ8QdQFu6qVf47VkS7bjgR2Q1+qJu0eqV4VtaN+cgu03qFw@mail.gmail.com>
-Content-Type: text/plain; charset="UTF-8"
+ <DB6PR0701MB24563AD93D8C2C0D5771A10AB5C10@DB6PR0701MB2456.eurprd07.prod.outlook.com>,
+ <CALLqZ8QdQFu6qVf47VkS7bjgR2Q1+qJu0eqV4VtaN+cgu03qFw@mail.gmail.com>
+In-Reply-To: <CALLqZ8QdQFu6qVf47VkS7bjgR2Q1+qJu0eqV4VtaN+cgu03qFw@mail.gmail.com>
+Content-Language: en-GB
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
+MIME-Version: 1.0
 Subject: Re: [Xenomai] interrupt on edge problem, unexpected IRQ trap
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
@@ -16,8 +19,20 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Giulio Moro <g.moro@qmul.ac.uk>
+To: Greg Gallagher <greg@embeddedgreg.com>
 Cc: "branislav.sasic@automatika.imp.bg.ac.rs" <branislav.sasic@automatika.imp.bg.ac.rs>, "Xenomai@xenomai.org" <xenomai@xenomai.org>
+
+Yes correct, we have Xenomai installed and tried to use a pin through the l=
+inux sysfs interface. Xenomai was not using that same pin (or any other GPI=
+O pins, for what matters).
+Thanks,
+Giulio
+________________________________________
+From: Greg Gallagher <greg@embeddedgreg.com>
+Sent: 26 February 2018 16:06
+To: Giulio Moro
+Cc: branislav.sasic@automatika.imp.bg.ac.rs; Xenomai@xenomai.org
+Subject: Re: [Xenomai] interrupt on edge problem, unexpected IRQ trap
 
  In this case you have Xenomai installed and are using the GPIO in a
 non rt situation?  On Zynq I can use both the RTDM gpios and the sysfs
@@ -28,13 +43,16 @@ patience is appreciated.
 -Greg
 
 On Mon, Feb 26, 2018 at 10:54 AM, Giulio Moro <g.moro@qmul.ac.uk> wrote:
-> We have a similar issue on Linux 4.4.87 and  4.4.113, with xenomai 3.0.5: https://github.com/RobertCNelson/ti-linux-kernel-dev/issues/16  (comes with code to reproduce issue).
+> We have a similar issue on Linux 4.4.87 and  4.4.113, with xenomai 3.0.5:=
+ https://github.com/RobertCNelson/ti-linux-kernel-dev/issues/16  (comes wit=
+h code to reproduce issue).
 >
 > Best,
 > Giulio
 >
 > ________________________________________
-> From: Xenomai <xenomai-bounces@xenomai.org> on behalf of Greg Gallagher <greg@embeddedgreg.com>
+> From: Xenomai <xenomai-bounces@xenomai.org> on behalf of Greg Gallagher <=
+greg@embeddedgreg.com>
 > Sent: 26 February 2018 15:37
 > To: branislav.sasic@automatika.imp.bg.ac.rs
 > Cc: Xenomai@xenomai.org
@@ -50,7 +68,8 @@ On Mon, Feb 26, 2018 at 10:54 AM, Giulio Moro <g.moro@qmul.ac.uk> wrote:
 > <branislav.sasic@automatika.imp.bg.ac.rs> wrote:
 >> Hello,
 >>
->> I have a problem with new I-pipe patch, which was not existing with legacy
+>> I have a problem with new I-pipe patch, which was not existing with lega=
+cy
 >> patch on 3.14 kernel, on BeagleBone platform.
 >>
 >> When GPIO pin is configured as input with edge interrupt enable, on IRQ
@@ -91,7 +110,8 @@ On Mon, Feb 26, 2018 at 10:54 AM, Giulio Moro <g.moro@qmul.ac.uk> wrote:
 >> (omap_gpio_irq_handler+0x15c/0x1d0)
 >> [  303.336066] [<c0790630>] (omap_gpio_irq_handler) from [<c01a3874>]
 >> (__handle_irq_event_percpu+0x68/0x2bc)
->> [  303.336081] [<c01a3874>] (__handle_irq_event_percpu) from [<c01a3af4>]
+>> [  303.336081] [<c01a3874>] (__handle_irq_event_percpu) from [<c01a3af4>=
+]
 >> (handle_irq_event_percpu+0x2c/0x68)
 >> [  303.336095] [<c01a3af4>] (handle_irq_event_percpu) from [<c01a3b78>]
 >> (handle_irq_event+0x48/0x6c)
