@@ -1,17 +1,15 @@
-References: <b18a880f-9765-86e1-5274-ba8bfb0cc832@xenomai.org>
- <aa1018f6-a352-5814-7bf4-0a309d84a88a@ma-info.de>
- <20180117112452.1bb130c9@laptop.fritz.box>
- <98376b05-0ed2-3171-7d9d-a77d42782d9f@xenomai.org>
- <20180117173800.4bca11b9@laptop.fritz.box>
-From: Philippe Gerum <rpm@xenomai.org>
-Message-ID: <ec3e2fe9-6a2a-e195-ca0c-cdf58acd7c99@xenomai.org>
-Date: Wed, 17 Jan 2018 18:30:06 +0100
+References: <b709f916-7c1e-8adb-bae7-60ce388fc8fc@siemens.com>
+ <5c284b6e-b5e4-0054-805e-af4f7c15ee04@xenomai.org>
+From: Jan Kiszka <jan.kiszka@siemens.com>
+Message-ID: <2723c58b-7375-ee8d-9b34-6643b6569bf1@siemens.com>
+Date: Mon, 26 Feb 2018 18:45:29 +0100
 MIME-Version: 1.0
-In-Reply-To: <20180117173800.4bca11b9@laptop.fritz.box>
+In-Reply-To: <5c284b6e-b5e4-0054-805e-af4f7c15ee04@xenomai.org>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] kernel panic xnclock
+Subject: [Xenomai] [PATCH v2] lib/boilerplate: Prevent migration to
+ secondary mode for __printout
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -20,27 +18,80 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: ruggero <rrossi@atb-biomag.de>
-Cc: "Gaus Bernhard, Dr. Mergenthaler GmbH & Co. KG" <bernhard.gaus@ma-info.de>, xenomai@xenomai.org
+To: Philippe Gerum <rpm@xenomai.org>, Xenomai <xenomai@xenomai.org>
+Cc: "Hartmann, Wolfgang" <wolfgang.hartmann@siemens.com>
 
-On 01/17/2018 05:38 PM, ruggero wrote:
-> Hi Pilippe,
-> a small addition: the driver compile when included directly in the
-> kernel. Normally we would like to have it as a module.
-> 
+From: Wolfgang Hartmann <wolfgang.hartmann@siemens.com>
 
-diff --git a/arch/arm/kernel/ipipe.c b/arch/arm/kernel/ipipe.c
-index 771bb5eff7fe..e0624d3f1ee2 100644
---- a/arch/arm/kernel/ipipe.c
-+++ b/arch/arm/kernel/ipipe.c
-@@ -557,4 +557,6 @@ EXPORT_SYMBOL_GPL(check_and_switch_context);
- EXPORT_SYMBOL_GPL(__cpu_logical_map);
- #endif /* CONFIG_IPIPE */
+Use the __RT versions of the stdio function calls to avoid migration to
+secondary mode. In case of ___panic, flush the printer before exiting to
+avoid losing messages.
+
+Signed-off-by: Wolfgang Hartmann <wolfgang.hartmann@siemens.com>
+Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
+---
+
+Changes in v2:
+ - handle early print via standard calls
+
+ lib/boilerplate/ancillaries.c | 29 +++++++++++++++++++++++------
+ 1 file changed, 23 insertions(+), 6 deletions(-)
+
+diff --git a/lib/boilerplate/ancillaries.c b/lib/boilerplate/ancillaries.c
+index 13d7fafa4..7e98141ce 100644
+--- a/lib/boilerplate/ancillaries.c
++++ b/lib/boilerplate/ancillaries.c
+@@ -52,14 +52,30 @@ static void __do_printout(const char *name, const char *header,
+ {
+ 	FILE *fp = stderr;
  
-+EXPORT_SYMBOL_GPL(__ipipe_smp_key);
+-	fprintf(fp, "%4u\"%.3u.%.3u| ", ms / 1000, ms % 1000, us);
++	__RT(fprintf(fp, "%4u\"%.3u.%.3u| ", ms / 1000, ms % 1000, us));
+ 
+ 	if (header)
+-		fputs(header, fp);
++		__RT(fputs(header, fp));
+ 
+-	fprintf(fp, "[%s] ", name ?: "main");
+-	vfprintf(fp, fmt, ap);
+-	fputc('\n', fp);
++	__RT(fprintf(fp, "[%s] ", name ?: "main"));
++	__RT(vfprintf(fp, fmt, ap));
++	__RT(fputc('\n', fp));
++}
 +
- EXPORT_SYMBOL_GPL(cpu_architecture);
-
--- 
-Philippe.
++static void __do_early_printout(const char *name, const char *header,
++			  unsigned int ms, unsigned int us,
++			  const char *fmt, va_list ap)
++{
++	FILE *fp = stderr;
++
++	__STD(fprintf(fp, "%4u\"%.3u.%.3u| ", ms / 1000, ms % 1000, us));
++
++	if (header)
++		__STD(fputs(header, fp));
++
++	__STD(fprintf(fp, "[%s] ", name ?: "main"));
++	__STD(vfprintf(fp, fmt, ap));
++	__STD(fputc('\n', fp));
+ 	fflush(fp);
+ }
+ 
+@@ -77,7 +93,7 @@ void __printout(const char *name, const char *header,
+ 	 * uncontended.
+ 	 */
+ 	if (!init_done) {
+-		__do_printout(name, header, 0, 0, fmt, ap);
++		__do_early_printout(name, header, 0, 0, fmt, ap);
+ 		return;
+ 	}
+ 	
+@@ -110,6 +126,7 @@ void ___panic(const char *fn, const char *name,
+ 	if (asprintf(&p, "BUG in %s(): ", fn) < 0)
+ 		p = "BUG: ";
+ 	__printout(name, p, fmt, ap);
++	rt_print_flush_buffers();
+ 	exit(1);
+ }
+ 
 
