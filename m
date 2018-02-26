@@ -1,10 +1,13 @@
+From: Giulio Moro <g.moro@qmul.ac.uk>
+Date: Mon, 26 Feb 2018 15:54:54 +0000
+Message-ID: <DB6PR0701MB24563AD93D8C2C0D5771A10AB5C10@DB6PR0701MB2456.eurprd07.prod.outlook.com>
+References: <36415.147.91.1.44.1519652762.squirrel@mail.imp.bg.ac.rs>,
+ <CALLqZ8RdzYhzCYFfvvnsD_M7HXo2T4q9-n_6tedpWzEFsEd+mg@mail.gmail.com>
+In-Reply-To: <CALLqZ8RdzYhzCYFfvvnsD_M7HXo2T4q9-n_6tedpWzEFsEd+mg@mail.gmail.com>
+Content-Language: en-GB
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-In-Reply-To: <36415.147.91.1.44.1519652762.squirrel@mail.imp.bg.ac.rs>
-References: <36415.147.91.1.44.1519652762.squirrel@mail.imp.bg.ac.rs>
-From: Greg Gallagher <greg@embeddedgreg.com>
-Date: Mon, 26 Feb 2018 10:37:41 -0500
-Message-ID: <CALLqZ8RdzYhzCYFfvvnsD_M7HXo2T4q9-n_6tedpWzEFsEd+mg@mail.gmail.com>
-Content-Type: text/plain; charset="UTF-8"
 Subject: Re: [Xenomai] interrupt on edge problem, unexpected IRQ trap
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
@@ -14,8 +17,23 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: branislav.sasic@automatika.imp.bg.ac.rs
+To: Greg Gallagher <greg@embeddedgreg.com>, "branislav.sasic@automatika.imp.bg.ac.rs" <branislav.sasic@automatika.imp.bg.ac.rs>
 Cc: "Xenomai@xenomai.org" <xenomai@xenomai.org>
+
+We have a similar issue on Linux 4.4.87 and  4.4.113, with xenomai 3.0.5: h=
+ttps://github.com/RobertCNelson/ti-linux-kernel-dev/issues/16  (comes with =
+code to reproduce issue).
+
+Best,
+Giulio
+
+________________________________________
+From: Xenomai <xenomai-bounces@xenomai.org> on behalf of Greg Gallagher <gr=
+eg@embeddedgreg.com>
+Sent: 26 February 2018 15:37
+To: branislav.sasic@automatika.imp.bg.ac.rs
+Cc: Xenomai@xenomai.org
+Subject: Re: [Xenomai] interrupt on edge problem, unexpected IRQ trap
 
 Can you provide what version of Xenomai you are using and what ipipe
 patch you are using?  It also may be helpful if you could provide some
@@ -27,7 +45,8 @@ On Mon, Feb 26, 2018 at 8:46 AM,
 <branislav.sasic@automatika.imp.bg.ac.rs> wrote:
 > Hello,
 >
-> I have a problem with new I-pipe patch, which was not existing with legacy
+> I have a problem with new I-pipe patch, which was not existing with legac=
+y
 > patch on 3.14 kernel, on BeagleBone platform.
 >
 > When GPIO pin is configured as input with edge interrupt enable, on IRQ
@@ -161,4 +180,9 @@ On Mon, Feb 26, 2018 at 8:46 AM,
 > Xenomai mailing list
 > Xenomai@xenomai.org
 > https://xenomai.org/mailman/listinfo/xenomai
+
+_______________________________________________
+Xenomai mailing list
+Xenomai@xenomai.org
+https://xenomai.org/mailman/listinfo/xenomai
 
