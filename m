@@ -1,15 +1,11 @@
+From: Julian Viereck <jviereck@tuebingen.mpg.de>
+Message-ID: <9dee4e70-9bce-2fac-2aba-f27e65a9c1ba@tuebingen.mpg.de>
+Date: Mon, 26 Feb 2018 16:34:04 -0500
 MIME-Version: 1.0
-In-Reply-To: <854aec2d-861e-f17e-e57c-d86e9f5e7a90@xenomai.org>
-References: <CAOuPNLiL2jQ3wcYsxMAO2kqOvCvyPVPnZNakiLX_nhQVtVJk7A@mail.gmail.com>
- <CALLqZ8R77Pv+TRCrXiGkfzrcOdMMY+WfWzpO-qVE6-oFAgpU0g@mail.gmail.com>
- <CAOuPNLhcNcOdveFRLJUvFTLDDfQY4YOYUPRjWiPjK1o0zdTjJg@mail.gmail.com>
- <CAOuPNLgJOsYcT51SHS56mG5KDsS9pOBYPdWY9aWDvv7rfvBTUg@mail.gmail.com>
- <854aec2d-861e-f17e-e57c-d86e9f5e7a90@xenomai.org>
-From: Pintu Kumar <pintu.ping@gmail.com>
-Date: Tue, 20 Mar 2018 17:01:30 +0530
-Message-ID: <CAOuPNLgMJ_cvEsXJd+oF+g0ftMudT4Ztkb_yy=AXBMRDWuGqBg@mail.gmail.com>
-Content-Type: text/plain; charset="UTF-8"
-Subject: Re: [Xenomai] Simple application for invoking rtdm driver
+Content-Language: en-US
+Content-Type: text/plain; charset="utf-8"; format="flowed"
+Content-Transfer-Encoding: 8bit
+Subject: [Xenomai] Low latency under stress, otherwise high latency
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -18,171 +14,81 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Philippe Gerum <rpm@xenomai.org>
-Cc: "Xenomai@xenomai.org" <xenomai@xenomai.org>
+To: xenomai@xenomai.org
 
-On Tue, Mar 20, 2018 at 3:02 PM, Philippe Gerum <rpm@xenomai.org> wrote:
-> On 03/20/2018 08:26 AM, Pintu Kumar wrote:
->> On Tue, Mar 20, 2018 at 10:57 AM, Pintu Kumar <pintu.ping@gmail.com> wrote:
->>> On Tue, Mar 20, 2018 at 9:03 AM, Greg Gallagher <greg@embeddedgreg.com> wrote:
->>>> If you want to use open, read, write you need to specify in the
->>>> makefile to use the posix skin.  You need something like these in your
->>>> Makefile:
->>>>
->>>> XENO_CONFIG := /usr/xenomai/bin/xeno-config
->>>> CFLAGS := $(shell $(XENO_CONFIG) --posix --cflags)
->>>> LDFLAGS := $(shell  $(XENO_CONFIG) --posix --ldflags)
->>>>
->>>
->>> Oh yes I forgot to mention with posix skin it is working.
->>>
->>> But I wanted to use native API only, so I removed posix skin from Makefile.
->>>
->>> For, native API, I am using: rt_dev_{open, read, write}. Is this the
->>> valid API for Xenomai 3.0 ?
->>> Or there is something else?
->>> Is there any reference ?
->>>
->>
->> Dear Greg,
->>
->> In my sample, I am just copying some string from user <--> kernel and
->> printing them.
->> For normal driver, I get read/write latency like this:
->> write latency: 2.247 us
->> read latency: 2.202 us
->>
->> For Xenomai 3.0 rtdm driver, using : rt_dev_{open, read, write}
->> I get the latency like this:
->> write latency: 7.668 us
->> read latency: 5.558 us
->>
->> My concern is, why the latency is higher in case of RTDM ?
->> This is on x86-64 machine.
->>
->
-> Did you stress your machine while your test was running? If not, you
-> were not measuring worst-case latency, you were measuring execution time
-> in this case, which is different. If you want to actually measure
-> latency for real-time usage, you need to run your tests under
-> significant stress load. Under such load, the RTDM version should
-> perform reliably below a reasonable latency limit, the "normal" version
-> will experience jittery above that limit.
->
-> A trivial stress load may be as simple as running a dd loop copying
-> 128Mb blocks from /dev/zero to /dev/null in the background, you may also
-> add a kernel compilation keeping all CPUs busy.
->
+Hi folks,
 
-OK, I tried both the option. But still normal driver latency is much lower.
-In fact, with kernel build in another terminal, rtdm latency shoots much higher.
-Normal Kernel
---------------------
-write latency: 3.084 us
-read latency: 3.186 us
+after installing Xenomai 3.0.5/kernel 4.9.38 following [1] on our Dell 
+Precision 5820 machine (Intel Xeon W-2145), there are high latencies 
+when the system is at rest. When starting a stress test via `stress -v 
+-c 8 -i 10 -d 8`, the latency goes down (see terminal output below).
 
-RTDM Kernel (native)
----------------------------------
-write latency: 12.676 us
-read latency: 9.858 us
+Usually I would assume the latency increases with higher load and not go 
+down. Does someone has an idea where to start in debugging / fixing the 
+high latencies? Note that the cores are in C0 state 100% of the time 
+(with and without the load on the machine).
 
-RTDM Kernel (posix)
----------------------------------
-write latency: 12.907 us
-read latency: 8.699 us
+Thanks,
+Julian
 
-During the beginning of kernel build I even observed, RTDM (native)
-goes as high as:
-write latency: 4061.266 us
-read latency: 3947.836 us
-
----------------------------------
-As a quick reference, this is the snippet for the rtdm write method.
-
---------------------------------
-static ssize_t rtdm_write(..)
-{
-        struct dummy_context *context;
-
-        context = rtdm_fd_to_private(fd);
-
-        memset(context->buffer, 0, 4096);
-        rtdm_safe_copy_from_user(fd, context->buffer, buff, len);
-        rtdm_printk("write done\n");
-
-        return len;
-}
-
-The normal driver write is also almost same.
-
-In the application side, I just invoke using:
-        t1 = rt_timer_read();
-        ret = rt_dev_write(fd, msg, len);
-        t2 = rt_timer_read();
-
-Is there any thing wrong on the rtdm side ?
---------------------------------
-
-> Besides, you need to make sure to disable I-pipe and Cobalt debug
-> options, particularly CONFIG_IPIPE_TRACE and
-> CONFIG_XENO_OPT_DEBUG_LOCKING when running the RTDM case.
->
-
-Yes this debug options are already disabled.
-
->>
->> Latency is little better, when using only posix skin:
->> write latency: 3.587 us
->> read latency: 3.392 us
->>
->
-> This does not make much sense, see the excerpt from
-> include/trank/rtdm/rtdm.h, which simply wraps the inline rt_dev_write()
-> call to Cobalt's POSIX call [__wrap_]write() from lib/cobalt/rtdm.c:
->
-
-OK sorry, there was a mistake in posix latency value.
-I forgot to switch to rtdm driver, instead of normal driver.
-With posix skin and using the exactly same as normal driver application.
-The latency figure was almost same as native skin.
-write latency: 7.044 us
-read latency: 6.786 us
+[1]: http://rtt-lwr.readthedocs.io/en/latest/rtpc/xenomai3.html
 
 
-> #define rt_dev_call(__call, __args...)  \
-> ({                                      \
->         int __ret;                      \
->         __ret = __RT(__call(__args));   \
->         __ret < 0 ? -errno : __ret;     \
-> })
->
-> static inline ssize_t rt_dev_write(int fd, const void *buf, size_t len)
-> {
->         return rt_dev_call(write, fd, buf, len);
-> }
->
-> The way you measure the elapsed time may affect the measurement:
-> libalchemy's rt_timer_read() is definitely slower than libcobalt's
-> clock_gettime().
-
-For normal kernel driver (and rtdm with posix skin) application, I am
-using clock_gettime().
-For Xenomai rtdm driver with native skin application, I am using rt_timer_read()
-
-
->
-> The POSIX skin is generally faster than the alchemy API, because it
-> implements wrappers to the corresponding Cobalt system calls (i.e.
-> libcobalt is Xenomai's libc equivalent). Alchemy has to traverse
-> libcopperplate before actual syscalls may be issued by libcobalt it is
-> depending on, because libalchemy needs the copperplate interface layer
-> for shielding itself from Cobalt/Mercury differences.
->
-
-Actually, as per the previous experience for simple thread
-application, rt_timer_read() with native
-skin gave better latency, when compared to using posix skin with clock API.
-
-> --
-> Philippe.
+```bash
+root@broadway:~# /usr/xenomai/bin/xeno latency
+== Sampling period: 100 us
+== Test mode: periodic user-mode task
+== All results in microseconds
+warming up...
+RTT|  00:00:01  (periodic user-mode task, 100 us period, priority 99)
+RTH|----lat min|----lat avg|----lat max|-overrun|---msw|---lat 
+best|--lat worst
+RTD|      0.415|      3.945|    133.817|       1|     0| 0.415|    133.817
+RTD|      1.049|      3.941|    147.671|       2|     0| 0.415|    147.671
+RTD|      0.145|      3.971|     63.298|       2|     0| 0.145|    147.671
+RTD|      0.226|      4.145|     81.019|       2|     0| 0.145|    147.671
+RTD|      0.431|      3.938|     96.371|       2|     0| 0.145|    147.671
+RTD|      0.646|      4.030|    112.014|       3|     0| 0.145|    147.671
+RTD|      0.203|      3.929|    126.839|       4|     0| 0.145|    147.671
+RTD|      0.471|      3.957|    146.049|       5|     0| 0.145|    147.671
+RTD|      0.285|      3.940|     58.224|       5|     0| 0.145|    147.671
+RTD|      0.466|      3.957|     72.123|       5|     0| 0.145|    147.671
+RTD|      0.039|      3.913|     90.435|       5|     0| 0.039|    147.671
+RTD|      0.246|      3.942|    107.835|       6|     0| 0.039|    147.671
+^NRTD|      0.518|      3.946|    123.637|       7|     0| 0.039|    
+147.671
+RTD|      1.161|      3.953|    137.671|       8|     0| 0.039|    147.671
+RTD|      0.407|      3.933|     53.388|       8|     0| 0.039|    147.671
+RTD|      0.461|      3.963|     67.896|       8|     0| 0.039|    147.671
+RTD|      0.237|      3.953|     85.147|       8|     0| 0.039|    147.671
+RTD|      0.162|      4.022|     26.846|       8|     0| 0.039|    147.671
+RTD|      0.054|      4.191|    100.386|       8|     0| 0.039|    147.671
+RTD|      0.130|      3.936|    114.158|       9|     0| 0.039|    147.671
+RTD|      0.587|      3.949|    133.358|      10|     0| 0.039|    147.671
+RTT|  00:00:22  (periodic user-mode task, 100 us period, priority 99)
+RTH|----lat min|----lat avg|----lat max|-overrun|---msw|---lat 
+best|--lat worst
+RTD|      0.285|      4.161|     49.695|      10|     0| 0.039|    147.671
+RTD|      0.119|      4.018|      9.336|      10|     0| 0.039|    
+147.671  <<<< Started command `stress -v -c 8 -i 10 -d 8`
+RTD|      0.159|      3.992|     12.851|      10|     0| 0.039|    147.671
+RTD|      0.130|      4.159|     12.748|      10|     0| 0.039|    147.671
+RTD|      0.159|      4.107|     12.417|      10|     0| 0.039|    147.671
+RTD|      0.024|      4.037|     12.519|      10|     0| 0.024|    147.671
+RTD|      0.195|      4.042|      7.506|      10|     0| 0.024|    147.671
+RTD|      0.157|      4.069|     11.314|      10|     0| 0.024|    147.671
+RTD|      0.205|      4.309|     10.719|      10|     0| 0.024|    147.671
+RTD|      0.259|      4.142|     13.414|      10|     0| 0.024|    147.671
+RTD|      0.306|      4.216|     10.378|      10|     0| 0.024|    147.671
+RTD|      0.143|      4.287|     13.803|      10|     0| 0.024|    147.671
+RTD|      0.241|      4.110|     11.305|      10|     0| 0.024|    147.671
+RTD|      0.219|      4.228|     12.024|      10|     0| 0.024|    
+147.671  <<<< termianted `stress` command
+RTD|      0.132|      4.013|     66.058|      10|     0| 0.024|    147.671
+RTD|      0.448|      3.965|     83.214|      10|     0| 0.024|    147.671
+RTD|      0.228|      3.933|     97.855|      10|     0| 0.024|    147.671
+RTD|      1.771|      3.946|    112.659|      11|     0| 0.024|    147.671
+RT671
+RTD|      0.759|      3.964|    123.672|      15|     0| 0.024|    147.671
+```
 
