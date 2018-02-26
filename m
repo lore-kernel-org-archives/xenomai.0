@@ -1,12 +1,9 @@
-From: Wolfgang Denk <wd@denx.de>
 MIME-Version: 1.0
-Content-type: text/plain; charset=UTF-8
-Content-transfer-encoding: 8bit
-In-reply-to: <9d0a8dc6-d16d-e3e2-8d20-400e5e2e4b4c@siemens.com>
-References: <9d0a8dc6-d16d-e3e2-8d20-400e5e2e4b4c@siemens.com>
-Date: Fri, 23 Feb 2018 18:12:38 +0100
-Message-Id: <20180223171238.A15B7240112@gemini.denx.de>
-Subject: Re: [Xenomai] Winter^W y2038 is coming
+From: Pintu Kumar <pintu.ping@gmail.com>
+Date: Mon, 26 Feb 2018 16:29:02 +0530
+Message-ID: <CAOuPNLjwrgQu2wEd+pcNrcka6J9PJZJceh6UvhaXZy_tZ=8C0g@mail.gmail.com>
+Content-Type: text/plain; charset="UTF-8"
+Subject: [Xenomai] [RTDM/rt-serial] How to verify 16550A on Ubuntu desktop
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,34 +12,28 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jan Kiszka <jan.kiszka@siemens.com>
-Cc: Xenomai <xenomai@xenomai.org>
+To: "Xenomai@xenomai.org" <xenomai@xenomai.org>, Jan Kiszka <jan.kiszka@web.de>, Philippe Gerum <rpm@xenomai.org>, Greg Gallagher <greg@embeddedgreg.com>
 
-Dear Jan Kiszka,
+Hi,
 
-In message <9d0a8dc6-d16d-e3e2-8d20-400e5e2e4b4c@siemens.com> you wrote:
-> 
-> I'm now wondering if we should take measures that detect or even prevent
-> the setting of invalid dates in the presence of 32-bit ABIs. Or if we
-> should suggest/demand the setting of -D_TIME_BITS=64 already. The clock
-> is ticking... Thoughts?
+I have enabled RTDM serial driver 16550A in kernel and I am using it
+with x86-64 Ubuntu 16.04 desktop.
+CONFIG_XENO_DRIVERS_16550A=y
+CONFIG_XENO_DRIVERS_16550A_PIO=y
 
-As you well know, there are quite a few projects with product life
-times of 20 years, so we really should start to raise awareness of
-the y2038 problem.  In a case like this I think the best way is to
-push forward for 64 bit time stamps.
+Now I wanted to verify this driver using a sample application such as
+: cross-link
+But, when I check, the driver is not available under: /dev/rtdm/
+(rtser0, rtser1)
 
-Thanks.
+Is it possible to use this RT serial driver on Ubuntu PC?
+Please let me know how to install this driver and verify it.
 
-Best regards,
+I wanted to modify some part in the driver and verify it.
 
-Wolfgang Denk
+Need your initial support please!
 
--- 
-DENX Software Engineering GmbH,      Managing Director: Wolfgang Denk
-HRB 165235 Munich, Office: Kirchenstr.5, D-82194 Groebenzell, Germany
-Phone: (+49)-8142-66989-10 Fax: (+49)-8142-66989-80 Email: wd@denx.de
-At the source of every error which is blamed on the computer you will
-find at least two human errors, including the error of blaming it  on
-the computer.
+
+Thanks,
+Pintu
 
