@@ -1,15 +1,14 @@
-Date: Wed, 17 Jan 2018 17:36:32 +0100
-From: ruggero <rrossi@atb-biomag.de>
-Message-ID: <20180117173632.38966ec3@laptop.fritz.box>
-In-Reply-To: <98376b05-0ed2-3171-7d9d-a77d42782d9f@xenomai.org>
-References: <b18a880f-9765-86e1-5274-ba8bfb0cc832@xenomai.org>
- <aa1018f6-a352-5814-7bf4-0a309d84a88a@ma-info.de>
- <20180117112452.1bb130c9@laptop.fritz.box>
- <98376b05-0ed2-3171-7d9d-a77d42782d9f@xenomai.org>
+From: Johann Obermayr <johann.obermayr@sigmatek.at>
+Date: Mon, 26 Feb 2018 13:24:44 +0000
+Message-ID: <AM4PR0801MB1587343E7952DF08F44F7781F5C10@AM4PR0801MB1587.eurprd08.prod.outlook.com>
+References: <CAOuPNLjwrgQu2wEd+pcNrcka6J9PJZJceh6UvhaXZy_tZ=8C0g@mail.gmail.com>
+In-Reply-To: <CAOuPNLjwrgQu2wEd+pcNrcka6J9PJZJceh6UvhaXZy_tZ=8C0g@mail.gmail.com>
+Content-Language: de-DE
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] kernel panic xnclock
+Subject: Re: [Xenomai] [RTDM/rt-serial] How to verify 16550A on Ubuntu
+	desktop
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -18,41 +17,46 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Philippe Gerum <rpm@xenomai.org>
-Cc: "Gaus Bernhard, Dr. Mergenthaler GmbH & Co. KG" <bernhard.gaus@ma-info.de>, xenomai@xenomai.org
+To: Pintu Kumar <pintu.ping@gmail.com>, "Xenomai@xenomai.org" <xenomai@xenomai.org>
 
-Hallo Philippe,
-
-> 
-> With those explanations, it looks clearer now. Please apply this
-> patch:
->   
-
-Sorry, but after applying the patch I get a kernel compilation error.
-The error is:
-ERROR: "__ipipe_smp_key" [drivers/mergenthaler/clc/clc-clock.ko]
-undefined! scripts/Makefile.modpost:90: recipe for target '__modpost'
-failed
-
-symbol __ipipe_smp_key is used in both the two routines 
-xnlock_get_irqsave(&nklock, s);
-and
-xnlock_put_irqrestore(&nklock, s);
-
-and it looks like it is defined in the kernel:
-grep -r ipipe_smp_key * | grep -v patch | grep -v \.o
-arch/arm/kernel/ipipe.c:
-struct static_key __ipipe_smp_key = STATIC_KEY_INIT_TRUE; 
-arch/arm/include/asm/ipipe.h:
-extern struct static_key __ipipe_smp_key; 
-arch/arm/include/asm/ipipe.h:
-#define ipipe_smp_p (static_key_true(&__ipipe_smp_key)) 
-System.map:806fad48 D __ipipe_smp_key 
-Binary file vmlinux matches
-
-any suggestion?
-
-Thanks in advance, 
-
-Ruggero
+SGksDQoNClRha2UgYSBsb29rIGludG8gdGhlIGZpbGUgL3Byb2MvdHR5L2RyaXZlci9zZXJpYWwN
+CkhlcmUgeW91IHNlZSBhbGwgZm91bmQgdWFydCBhbmQgdXNlZCBsaW51eCBkcml2ZXIgYW5kIHVh
+cnQgcGFyYW1ldGVyIChwb3J0LCBpcnEsLi4pDQoNCldpdGggZm9sbG93IGZ1bmN0aW9uIHlvdSBj
+YW4gdW5iaW5kIHRoZSBsaW51eCBkcml2ZXINCg0Kc3RhdGljIGludCB1YXJ0X3VuYmluZChpbnQg
+dHR5bnIpDQp7DQoJY2hhciBkZXZbNjRdOw0KCWludCBmZDsNCglzdHJ1Y3Qgc2VyaWFsX3N0cnVj
+dCBzZXJpbmZvOw0KDQoJLy8gZG8gdW5iaW5kDQoJc3ByaW50ZihkZXYsICIvZGV2L3R0eVMldSIs
+IHR0eW5yKTsNCglmZCA9IG9wZW4oZGV2LCBPX1JEV1IgfCBPX05PTkJMT0NLKTsNCglpZiAoZmQg
+Pj0gMCkgew0KDQoJCWludCByZXQgPSBpb2N0bChmZCwgVElPQ0dTRVJJQUwsICZzZXJpbmZvKTsN
+CgkJaWYgKHJldCA9PSAwKSB7DQoJCQlzZXJpbmZvLnR5cGUgPSBQT1JUX1VOS05PV047DQoJCQly
+ZXQgPSBpb2N0bChmZCwgVElPQ1NTRVJJQUwsICZzZXJpbmZvKTsNCgkJfSANCgkJY2xvc2UoZmQp
+Ow0KCQlyZXR1cm4gcmV0Ow0KCX0NCglyZXR1cm4gLUVGQVVMVDsNCn0NCg0KV2UgYXJlIHVzaW5n
+IHRoZSBtb2R1bGFyIHhlbm9fMTY1NTBBIGRyaXZlciANCg0KQW5kIHdlIGFyZSBsb2FkaW5nIHRo
+aXMgd2l0aA0KDQpzeXN0ZW0oIi9zYmluL21vZHByb2JlIHhlbm9fMTY1NTBBIGlvPTB4M0Y4IGly
+cT00Iik7DQoNCmJldHRlciBzb2x1dGlvbiBhcmUgd2VsY29tZSDwn5iJDQoNClJlZ2FyZHMNCiAg
+Sm9oYW5uDQoNCj4gLS0tLS1VcnNwcsO8bmdsaWNoZSBOYWNocmljaHQtLS0tLQ0KPiBWb246IFhl
+bm9tYWkgW21haWx0bzp4ZW5vbWFpLWJvdW5jZXNAeGVub21haS5vcmddIEltIEF1ZnRyYWcgdm9u
+IFBpbnR1DQo+IEt1bWFyDQo+IEdlc2VuZGV0OiBNb250YWcsIDI2LiBGZWJydWFyIDIwMTggMTE6
+NTkNCj4gQW46IFhlbm9tYWlAeGVub21haS5vcmc7IEphbiBLaXN6a2EgPGphbi5raXN6a2FAd2Vi
+LmRlPjsgUGhpbGlwcGUNCj4gR2VydW0gPHJwbUB4ZW5vbWFpLm9yZz47IEdyZWcgR2FsbGFnaGVy
+IDxncmVnQGVtYmVkZGVkZ3JlZy5jb20+DQo+IEJldHJlZmY6IFtYZW5vbWFpXSBbUlRETS9ydC1z
+ZXJpYWxdIEhvdyB0byB2ZXJpZnkgMTY1NTBBIG9uIFVidW50dQ0KPiBkZXNrdG9wDQo+IA0KPiBI
+aSwNCj4gDQo+IEkgaGF2ZSBlbmFibGVkIFJURE0gc2VyaWFsIGRyaXZlciAxNjU1MEEgaW4ga2Vy
+bmVsIGFuZCBJIGFtIHVzaW5nIGl0IHdpdGggeDg2LQ0KPiA2NCBVYnVudHUgMTYuMDQgZGVza3Rv
+cC4NCj4gQ09ORklHX1hFTk9fRFJJVkVSU18xNjU1MEE9eQ0KPiBDT05GSUdfWEVOT19EUklWRVJT
+XzE2NTUwQV9QSU89eQ0KPiANCj4gTm93IEkgd2FudGVkIHRvIHZlcmlmeSB0aGlzIGRyaXZlciB1
+c2luZyBhIHNhbXBsZSBhcHBsaWNhdGlvbiBzdWNoIGFzDQo+IDogY3Jvc3MtbGluaw0KPiBCdXQs
+IHdoZW4gSSBjaGVjaywgdGhlIGRyaXZlciBpcyBub3QgYXZhaWxhYmxlIHVuZGVyOiAvZGV2L3J0
+ZG0vIChydHNlcjAsDQo+IHJ0c2VyMSkNCj4gDQo+IElzIGl0IHBvc3NpYmxlIHRvIHVzZSB0aGlz
+IFJUIHNlcmlhbCBkcml2ZXIgb24gVWJ1bnR1IFBDPw0KPiBQbGVhc2UgbGV0IG1lIGtub3cgaG93
+IHRvIGluc3RhbGwgdGhpcyBkcml2ZXIgYW5kIHZlcmlmeSBpdC4NCj4gDQo+IEkgd2FudGVkIHRv
+IG1vZGlmeSBzb21lIHBhcnQgaW4gdGhlIGRyaXZlciBhbmQgdmVyaWZ5IGl0Lg0KPiANCj4gTmVl
+ZCB5b3VyIGluaXRpYWwgc3VwcG9ydCBwbGVhc2UhDQo+IA0KPiANCj4gVGhhbmtzLA0KPiBQaW50
+dQ0KPiANCj4gX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX18N
+Cj4gWGVub21haSBtYWlsaW5nIGxpc3QNCj4gWGVub21haUB4ZW5vbWFpLm9yZw0KPiBodHRwczov
+L2VtZWEwMS5zYWZlbGlua3MucHJvdGVjdGlvbi5vdXRsb29rLmNvbS8/dXJsPWh0dHBzJTNBJTJG
+JTJGeGUNCj4gbm9tYWkub3JnJTJGbWFpbG1hbiUyRmxpc3RpbmZvJTJGeGVub21haSZkYXRhPTAy
+JTdDMDElN0Nqb2hhbm4ubw0KPiBiZXJtYXlyJTQwc2lnbWF0ZWsuYXQlN0MyYTgzMWY1Mzc5OWQ0
+NGJjMGVjMDA4ZDU3ZDA3Zjk3ZiU3Q2JjYjFkOA0KPiA3YWQyYmM0ODZlYTYyYjlhYzljNzQ2YmMx
+YiU3QzAlN0MwJTdDNjM2NTUyMzk1NTY3MTE3MzQ2JnNkYXRhPVcNCj4gY3JTUkFMUndqTzU5MFpj
+a2tHT1FtNThNdlRHZCUyQlQlMkJ4clclMkJRVEZNdzRnJTNEJnJlc2VyDQo+IHZlZD0wDQo=
 
