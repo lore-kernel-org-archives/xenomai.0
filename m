@@ -1,15 +1,13 @@
-References: <b709f916-7c1e-8adb-bae7-60ce388fc8fc@siemens.com>
- <5c284b6e-b5e4-0054-805e-af4f7c15ee04@xenomai.org>
-From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <2723c58b-7375-ee8d-9b34-6643b6569bf1@siemens.com>
-Date: Mon, 26 Feb 2018 18:45:29 +0100
+References: <36415.147.91.1.44.1519652762.squirrel@mail.imp.bg.ac.rs>
+From: Philippe Gerum <rpm@xenomai.org>
+Message-ID: <7201e905-ba51-2781-e186-c1d1d11de916@xenomai.org>
+Date: Mon, 26 Feb 2018 19:02:28 +0100
 MIME-Version: 1.0
-In-Reply-To: <5c284b6e-b5e4-0054-805e-af4f7c15ee04@xenomai.org>
+In-Reply-To: <36415.147.91.1.44.1519652762.squirrel@mail.imp.bg.ac.rs>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
-Subject: [Xenomai] [PATCH v2] lib/boilerplate: Prevent migration to
- secondary mode for __printout
+Subject: Re: [Xenomai] interrupt on edge problem, unexpected IRQ trap
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -18,80 +16,41 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Philippe Gerum <rpm@xenomai.org>, Xenomai <xenomai@xenomai.org>
-Cc: "Hartmann, Wolfgang" <wolfgang.hartmann@siemens.com>
+To: branislav.sasic@automatika.imp.bg.ac.rs, xenomai@xenomai.org
 
-From: Wolfgang Hartmann <wolfgang.hartmann@siemens.com>
+On 02/26/2018 02:46 PM, branislav.sasic@automatika.imp.bg.ac.rs wrote:
+> Hello,
+> 
+> I have a problem with new I-pipe patch, which was not existing with legacy
+> patch on 3.14 kernel, on BeagleBone platform.
+> 
+> When GPIO pin is configured as input with edge interrupt enable, on IRQ
+> occurrence the following message appears:
+> 
+> 
+> [  303.331386] irq 88, desc: dc1be400, depth: 0, count: 0, unhandled: 0
+> [  303.331401] ->handle_irq():  c01a810c,
+> [  303.331435] handle_edge_irq+0x0/0x194
+> [  303.331442] ->irq_data.chip(): dc097b50,
+> [  303.331454] 0xdc097b50
+> [  303.331461] ->action(): da097380
+> [  303.331467] ->action->handler(): c078dce4,
+> [  303.331483] gpio_sysfs_irq+0x0/0x24
+> [  303.331493]    IRQ_NOPROBE set
+> [  303.331503] unexpected IRQ trap at vector 58
+> 
+> [  303.335814] ------------[ cut here ]------------
+> [  303.335832] WARNING: CPU: 0 PID: 0 at kernel/irq/chip.c:883
 
-Use the __RT versions of the stdio function calls to avoid migration to
-secondary mode. In case of ___panic, flush the printer before exiting to
-avoid losing messages.
+As Greg pointed out, there is no way we can figure out which kernel you
+are running, which is a key information for us to help you.
 
-Signed-off-by: Wolfgang Hartmann <wolfgang.hartmann@siemens.com>
-Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
----
+Anyway, looking at the backtrace, it looks like the interrupt is not
+properly pipelined. You need drivers/gpio/gpio-omap.c to be fixed up in
+your kernel the way this commit fixes up a mainline 4.14 kernel:
 
-Changes in v2:
- - handle early print via standard calls
+http://git.xenomai.org/ipipe-arm.git/commit/?id=63b8ee7f25b73547ac8eff7a6be5b587422015ca
 
- lib/boilerplate/ancillaries.c | 29 +++++++++++++++++++++++------
- 1 file changed, 23 insertions(+), 6 deletions(-)
-
-diff --git a/lib/boilerplate/ancillaries.c b/lib/boilerplate/ancillaries.c
-index 13d7fafa4..7e98141ce 100644
---- a/lib/boilerplate/ancillaries.c
-+++ b/lib/boilerplate/ancillaries.c
-@@ -52,14 +52,30 @@ static void __do_printout(const char *name, const char *header,
- {
- 	FILE *fp = stderr;
- 
--	fprintf(fp, "%4u\"%.3u.%.3u| ", ms / 1000, ms % 1000, us);
-+	__RT(fprintf(fp, "%4u\"%.3u.%.3u| ", ms / 1000, ms % 1000, us));
- 
- 	if (header)
--		fputs(header, fp);
-+		__RT(fputs(header, fp));
- 
--	fprintf(fp, "[%s] ", name ?: "main");
--	vfprintf(fp, fmt, ap);
--	fputc('\n', fp);
-+	__RT(fprintf(fp, "[%s] ", name ?: "main"));
-+	__RT(vfprintf(fp, fmt, ap));
-+	__RT(fputc('\n', fp));
-+}
-+
-+static void __do_early_printout(const char *name, const char *header,
-+			  unsigned int ms, unsigned int us,
-+			  const char *fmt, va_list ap)
-+{
-+	FILE *fp = stderr;
-+
-+	__STD(fprintf(fp, "%4u\"%.3u.%.3u| ", ms / 1000, ms % 1000, us));
-+
-+	if (header)
-+		__STD(fputs(header, fp));
-+
-+	__STD(fprintf(fp, "[%s] ", name ?: "main"));
-+	__STD(vfprintf(fp, fmt, ap));
-+	__STD(fputc('\n', fp));
- 	fflush(fp);
- }
- 
-@@ -77,7 +93,7 @@ void __printout(const char *name, const char *header,
- 	 * uncontended.
- 	 */
- 	if (!init_done) {
--		__do_printout(name, header, 0, 0, fmt, ap);
-+		__do_early_printout(name, header, 0, 0, fmt, ap);
- 		return;
- 	}
- 	
-@@ -110,6 +126,7 @@ void ___panic(const char *fn, const char *name,
- 	if (asprintf(&p, "BUG in %s(): ", fn) < 0)
- 		p = "BUG: ";
- 	__printout(name, p, fmt, ap);
-+	rt_print_flush_buffers();
- 	exit(1);
- }
- 
+-- 
+Philippe.
 
