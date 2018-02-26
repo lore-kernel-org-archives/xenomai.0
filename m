@@ -1,14 +1,14 @@
-From: Johann Obermayr <johann.obermayr@sigmatek.at>
-Date: Mon, 26 Feb 2018 13:24:44 +0000
-Message-ID: <AM4PR0801MB1587343E7952DF08F44F7781F5C10@AM4PR0801MB1587.eurprd08.prod.outlook.com>
-References: <CAOuPNLjwrgQu2wEd+pcNrcka6J9PJZJceh6UvhaXZy_tZ=8C0g@mail.gmail.com>
-In-Reply-To: <CAOuPNLjwrgQu2wEd+pcNrcka6J9PJZJceh6UvhaXZy_tZ=8C0g@mail.gmail.com>
-Content-Language: de-DE
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+References: <CAOuPNLjTo8E7z=11ip8Dtjvt2dm=PU-+9urgwn8qgYCEcyxmMQ@mail.gmail.com>
+From: Jan Kiszka <jan.kiszka@siemens.com>
+Message-ID: <75d25b2f-e82b-d7ab-da1f-48192862a5af@siemens.com>
+Date: Mon, 26 Feb 2018 15:24:48 +0100
 MIME-Version: 1.0
-Subject: Re: [Xenomai] [RTDM/rt-serial] How to verify 16550A on Ubuntu
-	desktop
+In-Reply-To: <CAOuPNLjTo8E7z=11ip8Dtjvt2dm=PU-+9urgwn8qgYCEcyxmMQ@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai] [RTDM] Converting existing Linux char driver to rtdm
+	driver
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -19,44 +19,33 @@ List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: Pintu Kumar <pintu.ping@gmail.com>, "Xenomai@xenomai.org" <xenomai@xenomai.org>
 
-SGksDQoNClRha2UgYSBsb29rIGludG8gdGhlIGZpbGUgL3Byb2MvdHR5L2RyaXZlci9zZXJpYWwN
-CkhlcmUgeW91IHNlZSBhbGwgZm91bmQgdWFydCBhbmQgdXNlZCBsaW51eCBkcml2ZXIgYW5kIHVh
-cnQgcGFyYW1ldGVyIChwb3J0LCBpcnEsLi4pDQoNCldpdGggZm9sbG93IGZ1bmN0aW9uIHlvdSBj
-YW4gdW5iaW5kIHRoZSBsaW51eCBkcml2ZXINCg0Kc3RhdGljIGludCB1YXJ0X3VuYmluZChpbnQg
-dHR5bnIpDQp7DQoJY2hhciBkZXZbNjRdOw0KCWludCBmZDsNCglzdHJ1Y3Qgc2VyaWFsX3N0cnVj
-dCBzZXJpbmZvOw0KDQoJLy8gZG8gdW5iaW5kDQoJc3ByaW50ZihkZXYsICIvZGV2L3R0eVMldSIs
-IHR0eW5yKTsNCglmZCA9IG9wZW4oZGV2LCBPX1JEV1IgfCBPX05PTkJMT0NLKTsNCglpZiAoZmQg
-Pj0gMCkgew0KDQoJCWludCByZXQgPSBpb2N0bChmZCwgVElPQ0dTRVJJQUwsICZzZXJpbmZvKTsN
-CgkJaWYgKHJldCA9PSAwKSB7DQoJCQlzZXJpbmZvLnR5cGUgPSBQT1JUX1VOS05PV047DQoJCQly
-ZXQgPSBpb2N0bChmZCwgVElPQ1NTRVJJQUwsICZzZXJpbmZvKTsNCgkJfSANCgkJY2xvc2UoZmQp
-Ow0KCQlyZXR1cm4gcmV0Ow0KCX0NCglyZXR1cm4gLUVGQVVMVDsNCn0NCg0KV2UgYXJlIHVzaW5n
-IHRoZSBtb2R1bGFyIHhlbm9fMTY1NTBBIGRyaXZlciANCg0KQW5kIHdlIGFyZSBsb2FkaW5nIHRo
-aXMgd2l0aA0KDQpzeXN0ZW0oIi9zYmluL21vZHByb2JlIHhlbm9fMTY1NTBBIGlvPTB4M0Y4IGly
-cT00Iik7DQoNCmJldHRlciBzb2x1dGlvbiBhcmUgd2VsY29tZSDwn5iJDQoNClJlZ2FyZHMNCiAg
-Sm9oYW5uDQoNCj4gLS0tLS1VcnNwcsO8bmdsaWNoZSBOYWNocmljaHQtLS0tLQ0KPiBWb246IFhl
-bm9tYWkgW21haWx0bzp4ZW5vbWFpLWJvdW5jZXNAeGVub21haS5vcmddIEltIEF1ZnRyYWcgdm9u
-IFBpbnR1DQo+IEt1bWFyDQo+IEdlc2VuZGV0OiBNb250YWcsIDI2LiBGZWJydWFyIDIwMTggMTE6
-NTkNCj4gQW46IFhlbm9tYWlAeGVub21haS5vcmc7IEphbiBLaXN6a2EgPGphbi5raXN6a2FAd2Vi
-LmRlPjsgUGhpbGlwcGUNCj4gR2VydW0gPHJwbUB4ZW5vbWFpLm9yZz47IEdyZWcgR2FsbGFnaGVy
-IDxncmVnQGVtYmVkZGVkZ3JlZy5jb20+DQo+IEJldHJlZmY6IFtYZW5vbWFpXSBbUlRETS9ydC1z
-ZXJpYWxdIEhvdyB0byB2ZXJpZnkgMTY1NTBBIG9uIFVidW50dQ0KPiBkZXNrdG9wDQo+IA0KPiBI
-aSwNCj4gDQo+IEkgaGF2ZSBlbmFibGVkIFJURE0gc2VyaWFsIGRyaXZlciAxNjU1MEEgaW4ga2Vy
-bmVsIGFuZCBJIGFtIHVzaW5nIGl0IHdpdGggeDg2LQ0KPiA2NCBVYnVudHUgMTYuMDQgZGVza3Rv
-cC4NCj4gQ09ORklHX1hFTk9fRFJJVkVSU18xNjU1MEE9eQ0KPiBDT05GSUdfWEVOT19EUklWRVJT
-XzE2NTUwQV9QSU89eQ0KPiANCj4gTm93IEkgd2FudGVkIHRvIHZlcmlmeSB0aGlzIGRyaXZlciB1
-c2luZyBhIHNhbXBsZSBhcHBsaWNhdGlvbiBzdWNoIGFzDQo+IDogY3Jvc3MtbGluaw0KPiBCdXQs
-IHdoZW4gSSBjaGVjaywgdGhlIGRyaXZlciBpcyBub3QgYXZhaWxhYmxlIHVuZGVyOiAvZGV2L3J0
-ZG0vIChydHNlcjAsDQo+IHJ0c2VyMSkNCj4gDQo+IElzIGl0IHBvc3NpYmxlIHRvIHVzZSB0aGlz
-IFJUIHNlcmlhbCBkcml2ZXIgb24gVWJ1bnR1IFBDPw0KPiBQbGVhc2UgbGV0IG1lIGtub3cgaG93
-IHRvIGluc3RhbGwgdGhpcyBkcml2ZXIgYW5kIHZlcmlmeSBpdC4NCj4gDQo+IEkgd2FudGVkIHRv
-IG1vZGlmeSBzb21lIHBhcnQgaW4gdGhlIGRyaXZlciBhbmQgdmVyaWZ5IGl0Lg0KPiANCj4gTmVl
-ZCB5b3VyIGluaXRpYWwgc3VwcG9ydCBwbGVhc2UhDQo+IA0KPiANCj4gVGhhbmtzLA0KPiBQaW50
-dQ0KPiANCj4gX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX18N
-Cj4gWGVub21haSBtYWlsaW5nIGxpc3QNCj4gWGVub21haUB4ZW5vbWFpLm9yZw0KPiBodHRwczov
-L2VtZWEwMS5zYWZlbGlua3MucHJvdGVjdGlvbi5vdXRsb29rLmNvbS8/dXJsPWh0dHBzJTNBJTJG
-JTJGeGUNCj4gbm9tYWkub3JnJTJGbWFpbG1hbiUyRmxpc3RpbmZvJTJGeGVub21haSZkYXRhPTAy
-JTdDMDElN0Nqb2hhbm4ubw0KPiBiZXJtYXlyJTQwc2lnbWF0ZWsuYXQlN0MyYTgzMWY1Mzc5OWQ0
-NGJjMGVjMDA4ZDU3ZDA3Zjk3ZiU3Q2JjYjFkOA0KPiA3YWQyYmM0ODZlYTYyYjlhYzljNzQ2YmMx
-YiU3QzAlN0MwJTdDNjM2NTUyMzk1NTY3MTE3MzQ2JnNkYXRhPVcNCj4gY3JTUkFMUndqTzU5MFpj
-a2tHT1FtNThNdlRHZCUyQlQlMkJ4clclMkJRVEZNdzRnJTNEJnJlc2VyDQo+IHZlZD0wDQo=
+On 2018-02-26 12:26, Pintu Kumar wrote:
+> Hi,
+> 
+> I have a sample linux char driver which I am registering using normal
+> misc_register/deregister function.
+> In this driver, I have used, open, read, write, ioctl, release system calls.
+> 
+> Now I wanted to convert this driver to RTDM interface and compare it.
+> Later I wanted to add some more use cases related to interrupt
+> processing by connecting some external peripheral.
+> 
+> Firstly, please guide me how to easily convert an existing linux char
+> driver to RTDM model.
+> 
+
+Conversion of existing Linux UART drivers to RTDM is not straightforward
+as the former relies on a larger hierarchy of Linux drivers, starting
+with the tty core over the serial core and possibly some chip
+abstractions (8250). RTDM, as you can see from the existing drivers in
+kernel/drivers/serial, is rather compact and does not come with that
+infrastructure, primarily as it has a confined use case. Best is to
+study those drivers, use one as template and replace the required
+hardware accesses.
+
+Jan
+
+-- 
+Siemens AG, Corporate Technology, CT RDA IOT SES-DE
+Corporate Competence Center Embedded Linux
 
