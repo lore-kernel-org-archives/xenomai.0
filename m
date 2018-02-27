@@ -1,13 +1,15 @@
-References: <9d0a8dc6-d16d-e3e2-8d20-400e5e2e4b4c@siemens.com>
-From: Philippe Gerum <rpm@xenomai.org>
-Message-ID: <f0fbe41c-cd42-0991-9f3f-dd1f8c214e69@xenomai.org>
-Date: Thu, 1 Mar 2018 18:51:15 +0100
 MIME-Version: 1.0
-In-Reply-To: <9d0a8dc6-d16d-e3e2-8d20-400e5e2e4b4c@siemens.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] Winter^W y2038 is coming
+In-Reply-To: <CALLqZ8QFmD_rHhbaAFymoCJAdhK1EdLWFK6xWdqW+T7EykuQ=A@mail.gmail.com>
+References: <CAOuPNLjTo8E7z=11ip8Dtjvt2dm=PU-+9urgwn8qgYCEcyxmMQ@mail.gmail.com>
+ <75d25b2f-e82b-d7ab-da1f-48192862a5af@siemens.com>
+ <CAOuPNLj+-UHQ__AxN_mBWk0NitRf0oLqUZOPOae4i_NSHPa5MA@mail.gmail.com>
+ <CALLqZ8QFmD_rHhbaAFymoCJAdhK1EdLWFK6xWdqW+T7EykuQ=A@mail.gmail.com>
+From: Pintu Kumar <pintu.ping@gmail.com>
+Date: Tue, 27 Feb 2018 19:09:53 +0530
+Message-ID: <CAOuPNLjdRNXax22b7Bw=EsGcAmjeivFMmond_xzYbcqUn9RGvg@mail.gmail.com>
+Content-Type: text/plain; charset="UTF-8"
+Subject: Re: [Xenomai] [RTDM] Converting existing Linux char driver to rtdm
+	driver
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,60 +18,114 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jan Kiszka <jan.kiszka@siemens.com>, Xenomai <xenomai@xenomai.org>
+To: Greg Gallagher <greg@embeddedgreg.com>
+Cc: Jan Kiszka <jan.kiszka@siemens.com>, "Xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On 02/21/2018 07:33 PM, Jan Kiszka wrote:
-> Hi,
-> 
-> likely due to some platform oddities (still has to be analyzed in more
-> details), we are running into the situation that xntimer_grab_hardware
-> on a x86-64 host tunes nkclock.wallclock_offset to a value that is not
-> compatible with the 32-bit time_t ABI of compat applications. If you do
-> a pattern like
-> 
->     abs_timeout = clock_gettime(CLOCK_REALTIME) + rel_timeout
->     some_abs_wait(abs_timeout)
-> 
-> that abs_wait will practically wait forever. The same bug can also be
-> triggered by doing a
-> 
->     clock_settime(CLOCK_REALTIME, -negative_date)
-> 
-> I'm now wondering if we should take measures that detect or even prevent
-> the setting of invalid dates in the presence of 32-bit ABIs. Or if we
-> should suggest/demand the setting of -D_TIME_BITS=64 already. The clock
-> is ticking... Thoughts?
-> 
+Dear Greg & Jan,
 
-AFAIU, y2038 will hit any configuration showing timespec32 in the table
-below:
+Thank you so much for your help. Yes I am looking into existing sample
+drivers to understand. I think I got some clue.
+Basically I am developing a dummy RTDM char driver for some
+experimentation and analysis purpose.
+As you said, since there is no proper documentation for developing a
+RTDM driver, I might be having some more silly queries (if I am
+stuck).
 
-CPU-bitness    	ABI		Timespec
+1)
+> What's confusing about the context?
+As I see, there is a context_size that we need to set in rtdm_driver structure.
+Is this really required to set ? Can I set it to 0 ?
+Anyways, I currently set like this (for time being):
+struct dummy_context {
+        unsigned char *buffer;
+        unsigned int len;
+};
+Hope this fine ?
 
-64		native		timespec64
-64		x32*		timespec64
-64		ia32*		timespec32
-32		native		timespec32
+2)
+> The other question is do you need at RTDM driver?
+Yes, I need to develop a RTDM driver because I need to compare it with
+normal kernel driver.
+Later I need to add some specific use case for some purpose.
 
-(*) x86 specific
+3) How do we allocate memory in RTDM driver ?
+    I see rtdm_malloc()/free() is used. Is this in kernel allocation
+like kmalloc/vmalloc ?
+    Or, I need to directly use kmalloc/vmalloc itself , considering
+similar scenario like normal kernel approach.
 
-To sum up, x86_64 applications using the ia32 ABI, and any application
-running on a 32bit CPU won't make it after that date, with the current code.
+4) ^^Most important^^: how to I compile a sample RTDM char driver?
+    Is it the same method like normal kernel Makefile and using the
+xeno_config in addition ?
+    Is there any RTDM Makefile reference available ?
 
-Ignoring the case of 32bit platforms for which there does not seem to be
-much of a hope in mainline anyway, I would favor option #2 for ia32
-apps, i.e. assume that the underlying *libc can be told to pass
-timespec64 arguments, and have the compat mode wrappers in Cobalt assume
-userland always gives timespec64.
 
-To make sure kernel & userland agree on the timespec bitness, we could
-add a dedicated information bit to cobalt_bindreq::feat_req.
+5) When I install the RTDM driver (using insmod or modprobe), will it
+create the /dev node automatically like "misc" ?
+    I am registering the driver using: RTDM_CLASS_MISC
 
-I believe that those updates should go to 3.1, since they induce ABI
-changes, and it seems reasonable to ask ia32 ABI users to upgrade the
-*libc (for getting the timespec64 switch) along with the real-time core
-and libraries.
 
--- 
-Philippe.
+Thanks,
+Pintu
+
+
+On Mon, Feb 26, 2018 at 10:58 PM, Greg Gallagher <greg@embeddedgreg.com> wrote:
+> You'd have to decide what functionality you want with respect to rt
+> and non rt for your driver.  What's confusing about the context?  The
+> gpio driver is pretty up to date, you can look at it for some
+> guidance.  Unfortunately there isn't a lot of documentation at the
+> moment, so your best bet is to look at some of the existing drivers.
+> It's easier to answer specific questions you may have about the RTDM
+> framework.  The other question is do you need at RTDM driver?  Could
+> you use the UDD framework instead?  With the UDD framework you just
+> need to support a small RTDM driver and the rest of the driver lives
+> in user space.
+>
+> -Greg
+>
+> On Mon, Feb 26, 2018 at 12:20 PM, Pintu Kumar <pintu.ping@gmail.com> wrote:
+>> Dear Jan,
+>>
+>> This thread is about porting a normal misc char driver to rtdm model.
+>>
+>> Anyways I got some clue by looking into rtdmtest driver.
+>> But what is confusing to me is the rtdm context_ part and the rt, nrt part.
+>> How can I map this eith my exusting driver?
+>> Can I leave the context part NULL and use only rt for all other calls.
+>>
+>> Thanks,
+>> Pintu
+>>
+>> On 26 Feb 2018 7:54 pm, "Jan Kiszka" <jan.kiszka@siemens.com> wrote:
+>>>
+>>> On 2018-02-26 12:26, Pintu Kumar wrote:
+>>> > Hi,
+>>> >
+>>> > I have a sample linux char driver which I am registering using normal
+>>> > misc_register/deregister function.
+>>> > In this driver, I have used, open, read, write, ioctl, release system
+>>> > calls.
+>>> >
+>>> > Now I wanted to convert this driver to RTDM interface and compare it.
+>>> > Later I wanted to add some more use cases related to interrupt
+>>> > processing by connecting some external peripheral.
+>>> >
+>>> > Firstly, please guide me how to easily convert an existing linux char
+>>> > driver to RTDM model.
+>>> >
+>>>
+>>> Conversion of existing Linux UART drivers to RTDM is not straightforward
+>>> as the former relies on a larger hierarchy of Linux drivers, starting
+>>> with the tty core over the serial core and possibly some chip
+>>> abstractions (8250). RTDM, as you can see from the existing drivers in
+>>> kernel/drivers/serial, is rather compact and does not come with that
+>>> infrastructure, primarily as it has a confined use case. Best is to
+>>> study those drivers, use one as template and replace the required
+>>> hardware accesses.
+>>>
+>>> Jan
+>>>
+>>> --
+>>> Siemens AG, Corporate Technology, CT RDA IOT SES-DE
+>>> Corporate Competence Center Embedded Linux
 
