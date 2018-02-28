@@ -1,14 +1,18 @@
-From: "Schrenkhammer, Martin" <MSchrenkhammer@data-modul.com>
-Date: Wed, 14 Mar 2018 15:23:11 +0000
-Message-ID: <0B8B4C90A6FEA34E9EA10570C016C358BB7C09E2@DEMUC-SMX001.data-modul.local>
-References: <0B8B4C90A6FEA34E9EA10570C016C358BB7C0839@DEMUC-SMX001.data-modul.local>
- <57765855-6a4c-4651-70c8-528cc33607dc@xenomai.org>
-In-Reply-To: <57765855-6a4c-4651-70c8-528cc33607dc@xenomai.org>
-Content-Language: de-DE
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-Subject: Re: [Xenomai] Latency Peaks with Skylake vs. Haswell
+In-Reply-To: <CAOuPNLhNkgL4iMzEvS_64yjsL3da6RseFzpZQxC3k-DyXGogLg@mail.gmail.com>
+References: <CAOuPNLjTo8E7z=11ip8Dtjvt2dm=PU-+9urgwn8qgYCEcyxmMQ@mail.gmail.com>
+ <75d25b2f-e82b-d7ab-da1f-48192862a5af@siemens.com>
+ <CAOuPNLj+-UHQ__AxN_mBWk0NitRf0oLqUZOPOae4i_NSHPa5MA@mail.gmail.com>
+ <CALLqZ8QFmD_rHhbaAFymoCJAdhK1EdLWFK6xWdqW+T7EykuQ=A@mail.gmail.com>
+ <CAOuPNLjdRNXax22b7Bw=EsGcAmjeivFMmond_xzYbcqUn9RGvg@mail.gmail.com>
+ <CAOuPNLhNkgL4iMzEvS_64yjsL3da6RseFzpZQxC3k-DyXGogLg@mail.gmail.com>
+From: Greg Gallagher <greg@embeddedgreg.com>
+Date: Wed, 28 Feb 2018 09:49:08 -0500
+Message-ID: <CALLqZ8RHfg8s_SDBEOnC3WTBOqaMJ-9+v3B6G0rRM96cSvpL0w@mail.gmail.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+Subject: Re: [Xenomai] [RTDM] Converting existing Linux char driver to rtdm
+	driver
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,58 +21,205 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Philippe Gerum <rpm@xenomai.org>, "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Pintu Kumar <pintu.ping@gmail.com>
+Cc: Jan Kiszka <jan.kiszka@siemens.com>, "Xenomai@xenomai.org" <xenomai@xenomai.org>
 
-VG8gYmUgaG9uZXN0LCBJIGRvbid0IGtub3cgaG93IGV4YWN0bHkgdHJhY2tpbmcgdGhpcy4NCg0K
-V2hhdCBJIGFtIGRvaW5nOg0KT3BlbiAxIHRlcm1pbmFsIHdpbmRvdyB3aGljaCBydW5zIGxhdGVu
-Y3kgdGVzdC4NCldpdGggc2Vjb25kIHRlcm1pbmFsIHdpbmRvdyBJIHdhdGNoIC1uMSBjYXQgL3By
-b2MvaW50ZXJydXB0cw0KDQpEdXJpbmcgaWRsZSAoYmVzaWRlIGxhdGVuY3kgdGVzdCBhbmQgd2F0
-Y2hpbmcgaW50ZXJydXB0cyksIHRoZXJlIGFyZSBhYm91dCAyMCBNU0kgLyBzZWMuDQpJZiBhbm90
-aGVyIHdpbmRvdyAoZS5nLiBGaWxlIE1hbmdlcikgaXMgbW92ZWQgYXJvdW5kIGZhc3QsIEkgc2Vl
-IGFib3V0IDUwMCBNU0kgLyBzZWMuDQoNCldpdGggSGFzd2VsbCwgdGhlcmUgYXJlIG5vIGk5MTUg
-TVNJDQoNClRoYW5rcyBmb3IgdGhlIGhpbnQgYWJvdXQgYXV0b3R1bmUuICBJIHdpbGwgY2hlY2sg
-d2l0aCBuZXh0IG1lYXN1cmVtZW50cy4NCg0KLS0NCk1hcnRpbi4NCg0KLS0tLS1VcnNwcsO8bmds
-aWNoZSBOYWNocmljaHQtLS0tLQ0KVm9uOiBQaGlsaXBwZSBHZXJ1bSBbbWFpbHRvOnJwbUB4ZW5v
-bWFpLm9yZ10NCkdlc2VuZGV0OiBNaXR0d29jaCwgMTQuIE3DpHJ6IDIwMTggMTU6MzENCkFuOiBT
-Y2hyZW5raGFtbWVyLCBNYXJ0aW47IHhlbm9tYWlAeGVub21haS5vcmcNCkJldHJlZmY6IFJlOiBb
-WGVub21haV0gTGF0ZW5jeSBQZWFrcyB3aXRoIFNreWxha2UgdnMuIEhhc3dlbGwNCg0KT24gMDMv
-MTMvMjAxOCAxMjozMyBQTSwgU2NocmVua2hhbW1lciwgTWFydGluIHdyb3RlOg0KPiBJIGFtIGN1
-cnJlbnRseSBwb3J0aW5nIGEgcHJvamVjdCBmcm9tIEhhc3dlbGwgdG8gU2t5bGFrZSAoaTUtNjQ0
-MEVRKS4gV2hlbiBpbiBkZXNrdG9wLCBJIG9ic2VydmUgbGF0ZW5jeSBwZWFrcyB3aGVuIHdpbmRv
-d3MgYXJlIG1vdmVkIGFyb3VuZCBvciB6b29tZWQuIFdpdGggSGFzd2VsbCBDUFVzLCB0aGVyZSBp
-cyBub3QgaW1wYWN0IG9mIGdyYXBoaWMgd29ya2xvYWQuIFVuZm9ydHVuYXRlbHkgZXZlcnl0aGlu
-ZyBhYm92ZSAxMHVzICBpcyBhbiBpc3N1ZSBpbiBvdXIgcmVhbCB0aW1lIHN5c3RlbSBhcHBsaWNh
-dGlvbi4NCj4gQ3VycmVudGx5IEkgYW0gdXNpbmcgWHVidW50dSAxNi4wNCArIEtlcm5lbCA0Ljku
-NTEgKyBYZW5vbWFpIDMuMC42IEkNCj4gYWxyZWFkeSBkaXNhYmxlZCBhbGwgcG93ZXItIGFuZCBw
-ZXJmb3JtYW5jZSBmZWF0dXJlcyBsaWtlDQo+IEh5cGVyLVRocmVhZGluZywgU3BlZWRTdGVwLCBU
-dXJibyBNb2RlLCBDLVN0YXRlcyBpbiBCSU9TIGFuZCBhbHNvIGJ5DQo+IGtlcm5lbCBwYXJhbWV0
-ZXJzLiBBbHNvIGRpc2FibGVkIGk5MTUgcG93ZXIgc2F2aW5ncyBsaWtlDQo+IGk5MTUuZW5hYmxl
-X2RjPTAsICBpOTE1LmVuYWJsZV9yYzY9MCwgaTkxNS5lbmFibGVfZXhlY2xpc3RzPTAuLi4gYW5k
-DQo+IGRpc2FibGVkIGdyYWZpayB0dXJibyBndF9tYXhfZnJlcV9taHogPSAzNTAgIGd0X2Jvb3N0
-X2ZyZXFfbWh6ID0gMzUwDQo+DQo+IE9uZSBkaWZmZXJlbmNlIHdlIHNlZSBiZXR3ZWVuIEhhc3dl
-bGwgYW5kIFNreWxha2U6IGk5MTUgcmFpc2VzIGEgbG90IG9mIE1TSSB3aGVuIG1vdmluZyB3aW5k
-b3dzIGFyb3VuZCB3aGVyZSB0aGVyZSBhcmUgYWxtb3N0IHplcm8gYXQgSGFzd2VsbC4NCj4NCj4g
-QW55IGlkZWFzIGZvciBicmluZ2luZyB0aGUgcGVha3MgZG93bj8NCg0KRGlkIHlvdSB0cmFjayB3
-aGljaCBzcGVjaWZpYyBldmVudCB0aGUgaTkxNSBkcml2ZXIgd2FzIGhhbmRsaW5nIHdpdGggdGhv
-c2UgTVNJcz8NCg0KPg0KPiA9PSBTYW1wbGluZyBwZXJpb2Q6IDEwMCB1cw0KPiA9PSBUZXN0IG1v
-ZGU6IHBlcmlvZGljIHVzZXItbW9kZSB0YXNrDQo+ID09IEFsbCByZXN1bHRzIGluIG1pY3Jvc2Vj
-b25kcw0KPiB3YXJtaW5nIHVwLi4uDQo+IFJUVHwgIDAwOjAwOjAxICAocGVyaW9kaWMgdXNlci1t
-b2RlIHRhc2ssIDEwMCB1cyBwZXJpb2QsIHByaW9yaXR5IDk5KQ0KPiBSVEh8LS0tLWxhdCBtaW58
-LS0tLWxhdCBhdmd8LS0tLWxhdCBtYXh8LW92ZXJydW58LS0tbXN3fC0tLWxhdA0KPiBSVEh8YmVz
-dHwtLWxhdCB3b3JzdA0KPiBSVER8ICAgICAtMC4zNjh8ICAgICAtMC4yMTB8ICAgICAgMC4yNTl8
-ICAgICAgIDB8ICAgICAwfCAgICAgLTAuMzY4fCAgICAgIDAuMjU5DQo+IFJURHwgICAgIC0wLjI1
-OXwgICAgIC0wLjE2MXwgICAgICAxLjYwMXwgICAgICAgMHwgICAgIDB8ICAgICAtMC4zNjh8ICAg
-ICAgMS42MDENCj4gUlREfCAgICAgLTAuMjkwfCAgICAgLTAuMTc0fCAgICAgIDEuMzY3fCAgICAg
-ICAwfCAgICAgMHwgICAgIC0wLjM2OHwgICAgICAxLjYwMQ0KDQpUaGlzIGlzIHVucmVsYXRlZCB0
-byB0aGUgaXNzdWUgYXQgc3Rha2UsIGJ1dCB0aGUgY29yZSB0aW1lciBsb29rcyBzbGlnaHRseSBl
-YXJseSAobmVnYXRpdmUgbWlucyksIHdoaWNoIG1lYW5zIHRoYXQgdGhlIGV4cGVjdGVkIGludHJp
-bnNpYyBsYXRlbmN5IHZhbHVlIGlzIHRvbyBwZXNzaW1pc3RpYy9oaWdoLiBSdW5uaW5nIGF1dG90
-dW5lIG1heSBoZWxwIGluIHBpY2tpbmcgYmV0dGVyIGdyYXZpdHkgdmFsdWVzIGZvciB0aGlzIHRp
-bWVyLg0KDQotLQ0KUGhpbGlwcGUuDQoNClZlcnRyYXVsaWNoZSBFLU1haWwgdm9uIC8gQ29uZmlk
-ZW50aWFsIGUtbWFpbCBmcm9tOiBEQVRBIE1PRFVMIEFHDQpWb3JzdGFuZCAvIENFTzogRHIuIEZs
-b3JpYW4gUGVzYWhsDQpWb3JzaXR6ZW5kZSBkZXMgQXVmc2ljaHRzcmF0ZXMgLyBDaGFpcndvbWFu
-IG9mIHRoZSBTdXBlcnZpc29yeSBCb2FyZDogS3Jpc3RpbiBELiBSdXNzZWxsDQpTaXR6IGRlciBH
-ZXNlbGxzY2hhZnQgLyBSZWdpc3RlcmVkIE9mZmljZTogTcO8bmNoZW4NClJlZ2lzdGVyZ2VyaWNo
-dCAvIFJlZ2lzdHJhdGlvbiBDb3VydDogTcO8bmNoZW4gSGFuZGVsc3JlZ2lzdGVyIEIgODUgNTkx
-DQoNCg0KDQo=
+What's your prototype for dummy_write?  Can you post the function
+definition.  It looks like there's a rt_write is expecting a different
+type.
+
+On Wed, Feb 28, 2018 at 7:16 AM, Pintu Kumar <pintu.ping@gmail.com> wrote:
+> Hi,
+>
+> I am getting some error while building a RTDM driver. Please check my
+> inline reply.
+>
+>
+> On Tue, Feb 27, 2018 at 7:09 PM, Pintu Kumar <pintu.ping@gmail.com> wrote=
+:
+>> Dear Greg & Jan,
+>>
+>> Thank you so much for your help. Yes I am looking into existing sample
+>> drivers to understand. I think I got some clue.
+>> Basically I am developing a dummy RTDM char driver for some
+>> experimentation and analysis purpose.
+>> As you said, since there is no proper documentation for developing a
+>> RTDM driver, I might be having some more silly queries (if I am
+>> stuck).
+>>
+>> 1)
+>>> What's confusing about the context?
+>> As I see, there is a context_size that we need to set in rtdm_driver str=
+ucture.
+>> Is this really required to set ? Can I set it to 0 ?
+>> Anyways, I currently set like this (for time being):
+>> struct dummy_context {
+>>         unsigned char *buffer;
+>>         unsigned int len;
+>> };
+>> Hope this fine ?
+>>
+>> 2)
+>>> The other question is do you need at RTDM driver?
+>> Yes, I need to develop a RTDM driver because I need to compare it with
+>> normal kernel driver.
+>> Later I need to add some specific use case for some purpose.
+>>
+>> 3) How do we allocate memory in RTDM driver ?
+>>     I see rtdm_malloc()/free() is used. Is this in kernel allocation
+>> like kmalloc/vmalloc ?
+>>     Or, I need to directly use kmalloc/vmalloc itself , considering
+>> similar scenario like normal kernel approach.
+>>
+>> 4) ^^Most important^^: how to I compile a sample RTDM char driver?
+>>     Is it the same method like normal kernel Makefile and using the
+>> xeno_config in addition ?
+>>     Is there any RTDM Makefile reference available ?
+>>
+>
+> Hi,
+>
+> I get this errors when compiling a sample RTDM driver.
+>
+> rtdummy.c:63:15: error: initialization from incompatible pointer type
+> [-Werror=3Dincompatible-pointer-types]
+>    .write_rt =3D dummy_write,
+>                ^
+> /home/pintu/rtdummy.c:63:15: note: (near initialization for
+> =E2=80=98dummy_driver.ops.write_rt=E2=80=99)
+> cc1: some warnings being treated as errors
+>
+>
+> However, if I comment the write_rt part, the module is build successfully=
+.
+> Why this error is coming only for write part, but not for read, open,
+> ioctl and others ?
+>
+> This is my Makefile (simple Makefile used for building linux kernel modul=
+e)
+> --------------------------------
+> EXTRA_CFLAGS    +=3D -I$(shell pwd)
+>
+> obj-m :=3D rtdummy.o
+>
+> KDIR :=3D /lib/modules/$(shell uname -r)/build
+> PWD :=3D $(shell pwd)
+>
+> default:
+>         $(MAKE) -C $(KDIR) M=3D$(PWD) modules
+>
+> clean:
+>         $(MAKE) -C $(KDIR) M=3D$(PWD) clean
+> --------------------------------
+>
+> This is the structure used:
+>
+> -------------------------------------------------------------
+> static struct rtdm_driver dummy_driver =3D {
+>         .profile_info           =3D       RTDM_PROFILE_INFO(dummy,
+>                                                           RTDM_CLASS_DUMM=
+Y,
+>                                                           RTDM_SUBCLASS_D=
+UMMY,
+>                                                           0),
+>         .device_flags           =3D       RTDM_NAMED_DEVICE|RTDM_EXCLUSIV=
+E,
+>         .device_count           =3D       1,
+>         .context_size           =3D       sizeof(struct dummy_context),
+>         .ops =3D {
+>                 .open           =3D       dummy_open,
+>                 .read_rt        =3D       dummy_read,
+>                 .write_rt       =3D       dummy_write,
+>                 .ioctl_rt       =3D       dummy_ioctl,
+>                 .ioctl_nrt      =3D       dummy_ioctl,
+>                 .close          =3D       dummy_close,
+>         },
+> };
+> -------------------------------------------------------------
+>
+> Please let me know how to fix this error ?
+>
+>
+> Thanks,
+> Pintu
+>
+>
+>>
+>> 5) When I install the RTDM driver (using insmod or modprobe), will it
+>> create the /dev node automatically like "misc" ?
+>>     I am registering the driver using: RTDM_CLASS_MISC
+>>
+>>
+>> Thanks,
+>> Pintu
+>>
+>>
+>> On Mon, Feb 26, 2018 at 10:58 PM, Greg Gallagher <greg@embeddedgreg.com>=
+ wrote:
+>>> You'd have to decide what functionality you want with respect to rt
+>>> and non rt for your driver.  What's confusing about the context?  The
+>>> gpio driver is pretty up to date, you can look at it for some
+>>> guidance.  Unfortunately there isn't a lot of documentation at the
+>>> moment, so your best bet is to look at some of the existing drivers.
+>>> It's easier to answer specific questions you may have about the RTDM
+>>> framework.  The other question is do you need at RTDM driver?  Could
+>>> you use the UDD framework instead?  With the UDD framework you just
+>>> need to support a small RTDM driver and the rest of the driver lives
+>>> in user space.
+>>>
+>>> -Greg
+>>>
+>>> On Mon, Feb 26, 2018 at 12:20 PM, Pintu Kumar <pintu.ping@gmail.com> wr=
+ote:
+>>>> Dear Jan,
+>>>>
+>>>> This thread is about porting a normal misc char driver to rtdm model.
+>>>>
+>>>> Anyways I got some clue by looking into rtdmtest driver.
+>>>> But what is confusing to me is the rtdm context_ part and the rt, nrt =
+part.
+>>>> How can I map this eith my exusting driver?
+>>>> Can I leave the context part NULL and use only rt for all other calls.
+>>>>
+>>>> Thanks,
+>>>> Pintu
+>>>>
+>>>> On 26 Feb 2018 7:54 pm, "Jan Kiszka" <jan.kiszka@siemens.com> wrote:
+>>>>>
+>>>>> On 2018-02-26 12:26, Pintu Kumar wrote:
+>>>>> > Hi,
+>>>>> >
+>>>>> > I have a sample linux char driver which I am registering using norm=
+al
+>>>>> > misc_register/deregister function.
+>>>>> > In this driver, I have used, open, read, write, ioctl, release syst=
+em
+>>>>> > calls.
+>>>>> >
+>>>>> > Now I wanted to convert this driver to RTDM interface and compare i=
+t.
+>>>>> > Later I wanted to add some more use cases related to interrupt
+>>>>> > processing by connecting some external peripheral.
+>>>>> >
+>>>>> > Firstly, please guide me how to easily convert an existing linux ch=
+ar
+>>>>> > driver to RTDM model.
+>>>>> >
+>>>>>
+>>>>> Conversion of existing Linux UART drivers to RTDM is not straightforw=
+ard
+>>>>> as the former relies on a larger hierarchy of Linux drivers, starting
+>>>>> with the tty core over the serial core and possibly some chip
+>>>>> abstractions (8250). RTDM, as you can see from the existing drivers i=
+n
+>>>>> kernel/drivers/serial, is rather compact and does not come with that
+>>>>> infrastructure, primarily as it has a confined use case. Best is to
+>>>>> study those drivers, use one as template and replace the required
+>>>>> hardware accesses.
+>>>>>
+>>>>> Jan
+>>>>>
+>>>>> --
+>>>>> Siemens AG, Corporate Technology, CT RDA IOT SES-DE
+>>>>> Corporate Competence Center Embedded Linux
 
