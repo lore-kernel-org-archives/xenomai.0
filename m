@@ -1,11 +1,18 @@
-Date: Fri, 23 Mar 2018 12:22:06 -0400
-Message-ID: <dc7t5a0blp8e8ds7timig1qq.1521822126574@embeddedgreg.com>
-From: Greg Gallagher <greg@embeddedgreg.com>
-In-Reply-To: <CAOuPNLiQnbih972q09Qn-4PJ1p_WdB8i=5_SG3TVnf7hdWsC2A@mail.gmail.com>
+Date: Wed, 28 Feb 2018 18:46:42 +0200 (EET)
+From: =?windows-1251?B?2OXi9+Xt6u4g0uDw4PEgw/Do4+7w/OXi6Pc=?=
+ <shevchenko.taras@triolcorp.com.ua>
+Message-ID: <1249760478.8926934.1519836402496.JavaMail.zimbra@triolcorp.com.ua>
+In-Reply-To: <CALLqZ8S6_-dWvze2+MsBxNBvhS3UCtERLZ=VwqmkN3C9Rw6s1A@mail.gmail.com>
+References: <500456767.8825156.1519827180703.JavaMail.zimbra@triolcorp.com.ua>
+ <CALLqZ8SHXBKVFyzgkpxS-ecpzPVtEDwGqbzdxXwnwUG+Fn0pRA@mail.gmail.com>
+ <429130936.8886425.1519831182179.JavaMail.zimbra@triolcorp.com.ua>
+ <CALLqZ8Qa8y1idWvPfA2PBuG_urrgjDuYYX8B7_65yyEQswUvdg@mail.gmail.com>
+ <1139048827.8910394.1519833759993.JavaMail.zimbra@triolcorp.com.ua>
+ <CALLqZ8S6_-dWvze2+MsBxNBvhS3UCtERLZ=VwqmkN3C9Rw6s1A@mail.gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: base64
-Subject: Re: [Xenomai] Upgrading xenomai-3 patches in existing xenomai kernel
+Content-Transfer-Encoding: quoted-printable
+Subject: Re: [Xenomai] RTnet
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -14,56 +21,194 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Pintu Kumar <pintu.ping@gmail.com>, Henning Schild <henning.schild@siemens.com>
-Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Greg Gallagher <greg@embeddedgreg.com>
+Cc: xenomai <xenomai@xenomai.org>
 
-CldoZW4geW91IHJ1biB0aGUgcHJlcGFyZV9rZXJuZWwgc2NyaXB0IGFkZCB0aGUgZmxhZyAtLXZl
-cmJvc2UuIElmIHlvdSBoYXZlIGlwaXBlIHBhdGNoZXMgYWxyZWFkeSBhcHBsaWVkIHRvIHlvdXIg
-a2VybmVsIHlvdSBzaG91bGQgc2VlIGEgbWVzc2FnZSBhYm91dCBpcGlwZSBwYXRjaGVzIGhhdmUg
-YWxyZWFkeSBiZWVuIGFwcGxpZWQuIEl0IHdpbGwganVzdCBhZGQgdGhlIG5ldyBYZW5vbWFpIGJp
-dHMuCgpHcmVnCgrCoCBPcmlnaW5hbCBNZXNzYWdlIMKgCkZyb206IHBpbnR1LnBpbmdAZ21haWwu
-Y29tClNlbnQ6IE1hcmNoIDIzLCAyMDE4IDExOjU4IEFNClRvOiBoZW5uaW5nLnNjaGlsZEBzaWVt
-ZW5zLmNvbQpDYzogeGVub21haUB4ZW5vbWFpLm9yZwpTdWJqZWN0OiBSZTogW1hlbm9tYWldIFVw
-Z3JhZGluZyB4ZW5vbWFpLTMgcGF0Y2hlcyBpbiBleGlzdGluZyB4ZW5vbWFpIGtlcm5lbAoKT24g
-RnJpLCBNYXIgMjMsIDIwMTggYXQgNzoxNCBQTSwgSGVubmluZyBTY2hpbGQKPGhlbm5pbmcuc2No
-aWxkQHNpZW1lbnMuY29tPiB3cm90ZToKPiBBbSBGcmksIDIzIE1hciAyMDE4IDE5OjA2OjMwICsw
-NTMwCj4gc2NocmllYiBQaW50dSBLdW1hciA8cGludHUucGluZ0BnbWFpbC5jb20+Ogo+Cj4+IEhp
-LAo+Pgo+PiBJIGp1c3QgY2FtZSBhY3Jvc3MgYSBzaXR1YXRpb24gYWJvdXQgWGVub21haSB1cGdy
-YWRlLCBhbmQgd2FudGVkIHRvCj4+IGtub3cgeW91ciBvcGluaW9uLgo+Pgo+PiBTb21lIDQgbW9u
-dGhzIGJhY2ssIEkgYXBwbGllZCBYZW5vbWFpLTMgKGFuZCBpcGlwZSkgcGF0Y2hlcyB0byBteSB4
-ODYKPj4ga2VybmVsIDQuOS41MSwgdXNpbmcgdGhlIHByZXBhcmVfa2VybmVsIHNjcmlwdCwgYW5k
-IEkgYW0gdXNpbmcgaXQKPj4gc2luY2UgdGhlbi4KPgo+IFlvdSB3aWxsIG5lZWQgYW4gaXBpcGUt
-ZW5hYmxlZCBrZXJuZWwgYW55d2F5cy4gUHJlcGFyZSBrZXJuZWwgd2lsbCBqdXN0Cj4gaW5zdGFs
-bCB0aGUgeGVub21haS1iaXRzLgo+IElmIHlvdSBkbyBub3Qgd2FudCB0byB1c2UgYW4gaXBpcGUt
-a2VybmVsIGZyb20gdXBzdHJlYW0geW91IGNhbgo+IHJlYmFzZS9tZXJnZSB0aGUgaXBpcGUgYnJh
-bmNoIChpbiB5b3VyIGNhc2UgNC45LnkpIG9udG8vaW50byB5b3VyCj4ga2VybmVsLiBBbGwgdGhh
-dCBzaG91bGQgYmUgdW5kZXIgdmVyc2lvbiBjb250cm9sLiBQcmVwYXJlLWtlcm5lbCBpcyBhCj4g
-YnVpbGQgc3RlcCBhbmQgc2hvdWxkIGJlIGRvbmUgb24gYSBjbGVhbiB3b3JraW5nIGNvcHkgd2hl
-biBidWlsZGluZy4KPgoKWWFoLCBJIGNhbiBhcHBseSBpcGlwZSBjaGFuZ2VzIHNlcGFyYXRlbHkg
-dXNpbmcgdGhlIGdpdCBjb21tYW5kLgpJIGd1ZXNzIHRoYXQgc2hvdWxkIHdvcmsgb24gdG9wIG9m
-IGV4aXN0aW5nIGlwaXBlIGNoYW5nZXMgYWxyZWFkeSBhcHBsaWVkLgoKQnV0IEkgZG9uJ3Qgd2Fu
-dCB0byB1cGdyYWRlIGlwaXBlIHBhdGNoZXMsIHNpbmNlIGl0IGlzIGFscmVhZHkgbGF0ZXN0LgpN
-eSBtYWluIGNvbmNlcm5zIGlzIGFib3V0IGFwcGx5aW5nL3VwZ3JhZGluZyB4ZW5vbWFpIGRyaXZl
-ci9jb2JhbHQgY2hhbmdlcy4KU2hvdWxkIEkgdXNlIHByZXBhcmVfa2VybmVsIGZvciB0aGF0ICh3
-aXRob3V0IGlwaXBlIG9wdGlvbikgPwpPUiwgc2hvdWxkIEkgZG93bmxvYWQgdGhlIGNvbW1pdHMg
-YW5kIGFwcGx5IGRpcmVjdGx5IHRvIHRoZSBrZXJuZWwgaW4Kbm9ybWFsIHdheT8KV2hhdCBpcyB0
-aGUgcmlnaHQgb3B0aW9uLCBzbyB0aGF0IGFsbCBmdXR1cmUgdXBncmFkZXMgY2FuIGJlIGRvbmUK
-ZWFzaWx5LCBqdXN0IGxpa2Ugbm9ybWFsIGtlcm5lbD8KSSB0aGluayB3ZSBzaG91bGQgdGhpbmsg
-YWJvdXQgaXQgYW5kIGZpbmQgc29tZSBiZXN0IHdheT8KTWF5IGJlIHNvbWV0aGluZyBsaWtlOiBz
-Y3JpcHRzL3VwZ3JhZGVfeGVub21haQoKCgoKPiBIZW5uaW5nCj4KPj4gQnV0LCBub3cgSSB3YW50
-ZWQgdG8gdXBncmFkZSB0byBsYXRlc3QgWGVub21haSBrZXJuZWwgcGF0Y2hlcyBmcm9tCj4+IFhl
-bm9tYWktMyBnaXQuCj4+IENhbiBJIHNpbXBseSBjaGVycnlwaWNrIHRoZSBwYXRjaGVzIGZyb20g
-WGVub21haSBhbmQgYXBwbHkgdG8gbXkKPj4gS2VybmVsID8gSSBndWVzcyB0aGUgZm9sZGVyIHN0
-cnVjdHVyZXMgYXJlIGRpZmZlcmVudCwgc28gSSBndWVzcyBpdAo+PiBtYXkgbm90IHdvcmsgY2xl
-YW5seS4KPj4KPj4gU28sIHdoYXQgaXMgdGhlIGJlc3Qgd2F5IHRvIGFwcGx5IHRoZSBsYXRlc3Qg
-WGVub21haSBLZXJuZWwgcGF0Y2hlcywKPj4gb24gdG8gZXhpc3RpbmcgWGVub21haSBjb252ZXJ0
-ZWQga2VybmVsIHJlcG8sIHdpdGhvdXQgZGlzdHVyYmluZyB0aGUKPj4gcHJldmlvdXNseSBhcHBs
-aWVkIHBhdGNoZXMgPwo+Pgo+PiBJZiB0aGVyZSBpcyBhbnkgc3RhbmRhcmQgcHJvY2VkdXJlIHlv
-dSBmb2xsb3csIHBsZWFzZSBsZXQgbWUga25vdy4KPj4KPj4KPj4gVGhhbmtzLAo+PiBQaW50dQo+
-Pgo+PiBfX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fXwo+PiBY
-ZW5vbWFpIG1haWxpbmcgbGlzdAo+PiBYZW5vbWFpQHhlbm9tYWkub3JnCj4+IGh0dHBzOi8veGVu
-b21haS5vcmcvbWFpbG1hbi9saXN0aW5mby94ZW5vbWFpCj4KCl9fX19fX19fX19fX19fX19fX19f
-X19fX19fX19fX19fX19fX19fX19fX19fX19fClhlbm9tYWkgbWFpbGluZyBsaXN0Clhlbm9tYWlA
-eGVub21haS5vcmcKaHR0cHM6Ly94ZW5vbWFpLm9yZy9tYWlsbWFuL2xpc3RpbmZvL3hlbm9tYWkK
 
+Yes, all from sources
+I Download it
+=20
+wget https://xenomai.org/downloads/xenomai/stable/xenomai-3.0.5.tar.bz2
+
+
+wget https://xenomai.org/downloads/ipipe/v4.x/x86/ipipe-core-4.9.38-x86-4.p=
+atch
+
+
+and apply
+../xenomai-3.0.5/scripts/prepare-kernel.sh --arch=3Dx86_64 --ipipe=3Dipipe-=
+core-4.9.38-x86-4.patch
+
+then   make menuconfig
+
+then install
+and so on.....
+
+=D0=A1 =D1=83=D0=B2=D0=B0=D0=B6=D0=B5=D0=BD=D0=B8=D0=B5=D0=BC =D0=B8 =D0=BD=
+=D0=B0=D0=B4=D0=B5=D0=B6=D0=B4=D0=BE=D0=B9 =D0=BD=D0=B0 =D1=81=D0=BE=D1=82=
+=D1=80=D1=83=D0=B4=D0=BD=D0=B8=D1=87=D0=B5=D1=81=D1=82=D0=B2=D0=BE,
+=D0=A8=D0=B5=D0=B2=D1=87=D0=B5=D0=BD=D0=BA=D0=BE =D0=A2.=D0=93.
+
+----- Original Message -----
+From: "Greg Gallagher" <greg@embeddedgreg.com>
+To: "=D0=A8=D0=B5=D0=B2=D1=87=D0=B5=D0=BD=D0=BA=D0=BE =D0=A2=D0=B0=D1=80=D0=
+=B0=D1=81 =D0=93=D1=80=D0=B8=D0=B3=D0=BE=D1=80=D1=8C=D0=B5=D0=B2=D0=B8=D1=
+=87" <shevchenko.taras@triolcorp.com.ua>, "xenomai" <xenomai@xenomai.org>
+Sent: Wednesday, February 28, 2018 6:37:49 PM
+Subject: Re: [Xenomai] RTnet
+
+Please use reply all when responding or the rest of the list won't get
+the benefit of the question or have the chance to help answer.
+
+Have you built Xenomai from source?  It looks like you are pointing to
+the modules only, I believe it needs the patched kernel source.
+
+-Greg
+
+On Wed, Feb 28, 2018 at 11:02 AM, =D0=A8=D0=B5=D0=B2=D1=87=D0=B5=D0=BD=D0=
+=BA=D0=BE =D0=A2=D0=B0=D1=80=D0=B0=D1=81 =D0=93=D1=80=D0=B8=D0=B3=D0=BE=D1=
+=80=D1=8C=D0=B5=D0=B2=D0=B8=D1=87
+<shevchenko.taras@triolcorp.com.ua> wrote:
+> Thank for your reply
+>
+> I try  follow instruction  https://xenomai.org//rtnet-installation/
+>
+>
+> after make menuconfig and set options
+>
+>     Variant=E2=86=92Xenomai 2.1
+>     Add-ons=E2=86=92Real-time Capturing Support=E2=86=92ON
+>     Examples=E2=86=92RTnet Application Examples=E2=86=92ON
+> I  get
+>
+> .....
+>
+> checking for RTnet Kconfig file... .rtnet_config (supplied)
+> checking for RT-extension... configure: error: *** RT-extended kernel not=
+ found in /lib/modules/4.9.38-xenomai-3.0.5/build
+> makefile:51: recipe for target 'config.status' failed
+> make: *** [config.status] Error 1
+>
+>
+> this folder and path exist
+>
+> [*] RTnet Application Examples       =E2=94=82 =E2=94=82
+>   =E2=94=82 =E2=94=82()    Real-time Extension Config-Tool Path (NEW)    =
+which path  should I write here ?
+>
+>
+>
+>
+>
+>
+>
+>
+>
+> =D0=A1 =D1=83=D0=B2=D0=B0=D0=B6=D0=B5=D0=BD=D0=B8=D0=B5=D0=BC =D0=B8 =D0=
+=BD=D0=B0=D0=B4=D0=B5=D0=B6=D0=B4=D0=BE=D0=B9 =D0=BD=D0=B0 =D1=81=D0=BE=D1=
+=82=D1=80=D1=83=D0=B4=D0=BD=D0=B8=D1=87=D0=B5=D1=81=D1=82=D0=B2=D0=BE,
+> =D0=A8=D0=B5=D0=B2=D1=87=D0=B5=D0=BD=D0=BA=D0=BE =D0=A2.=D0=93.
+>
+> ----- Original Message -----
+> From: "Greg Gallagher" <greg@embeddedgreg.com>
+> To: "=D0=A8=D0=B5=D0=B2=D1=87=D0=B5=D0=BD=D0=BA=D0=BE =D0=A2=D0=B0=D1=80=
+=D0=B0=D1=81 =D0=93=D1=80=D0=B8=D0=B3=D0=BE=D1=80=D1=8C=D0=B5=D0=B2=D0=B8=
+=D1=87" <shevchenko.taras@triolcorp.com.ua>, "xenomai" <xenomai@xenomai.org=
+>
+> Sent: Wednesday, February 28, 2018 5:33:25 PM
+> Subject: Re: [Xenomai] RTnet
+>
+> Posting back to the list.  RtNet can be used with Xenomai-3, there's
+> been some recent discussion on how to do this.  You should look back
+> through the archive and see if those messages help and then if they
+> don't post back with a specific question.
+>
+> On Wed, Feb 28, 2018 at 10:19 AM, =D0=A8=D0=B5=D0=B2=D1=87=D0=B5=D0=BD=D0=
+=BA=D0=BE =D0=A2=D0=B0=D1=80=D0=B0=D1=81 =D0=93=D1=80=D0=B8=D0=B3=D0=BE=D1=
+=80=D1=8C=D0=B5=D0=B2=D0=B8=D1=87
+> <shevchenko.taras@triolcorp.com.ua> wrote:
+>> But  is it possible to use  Xenomai 3  with RTnet ?
+>> Could you point me right way to do it ?
+>>
+>> =D0=A1 =D1=83=D0=B2=D0=B0=D0=B6=D0=B5=D0=BD=D0=B8=D0=B5=D0=BC =D0=B8 =D0=
+=BD=D0=B0=D0=B4=D0=B5=D0=B6=D0=B4=D0=BE=D0=B9 =D0=BD=D0=B0 =D1=81=D0=BE=D1=
+=82=D1=80=D1=83=D0=B4=D0=BD=D0=B8=D1=87=D0=B5=D1=81=D1=82=D0=B2=D0=BE,
+>> =D0=A8=D0=B5=D0=B2=D1=87=D0=B5=D0=BD=D0=BA=D0=BE =D0=A2.=D0=93.
+>>
+>> ----- Original Message -----
+>> From: "Greg Gallagher" <greg@embeddedgreg.com>
+>> To: "=D0=A8=D0=B5=D0=B2=D1=87=D0=B5=D0=BD=D0=BA=D0=BE =D0=A2=D0=B0=D1=80=
+=D0=B0=D1=81 =D0=93=D1=80=D0=B8=D0=B3=D0=BE=D1=80=D1=8C=D0=B5=D0=B2=D0=B8=
+=D1=87" <shevchenko.taras@triolcorp.com.ua>
+>> Cc: "xenomai" <xenomai@xenomai.org>
+>> Sent: Wednesday, February 28, 2018 5:01:23 PM
+>> Subject: Re: [Xenomai] RTnet
+>>
+>> It looks like Xenomai 3.05 is not supported with the instructions you
+>> are following.
+>>
+>> -Greg
+>>
+>> On Wed, Feb 28, 2018 at 9:13 AM, =D0=A8=D0=B5=D0=B2=D1=87=D0=B5=D0=BD=D0=
+=BA=D0=BE =D0=A2=D0=B0=D1=80=D0=B0=D1=81 =D0=93=D1=80=D0=B8=D0=B3=D0=BE=D1=
+=80=D1=8C=D0=B5=D0=B2=D0=B8=D1=87
+>> <shevchenko.taras@triolcorp.com.ua> wrote:
+>>>
+>>> Hi!
+>>>
+>>> I do it first time and followed http://rtt-lwr.readthedocs.io/en/latest=
+/rtpc/rtnet.html
+>>>
+>>> I tried to install rtnet and get some error
+>>> taras@prog-pc12:~/RTnet$ sudo make menuconfig
+>>> make[1]: Entering directory '/home/taras/RTnet/scripts/kconfig'
+>>> #
+>>> # using defaults found in ../../.rtnet_config
+>>> #
+>>>
+>>>
+>>> *** End of RTnet configuration.
+>>> *** Execute 'make' to build RTnet or try 'make help'.
+>>>
+>>> make[1]: Leaving directory '/home/taras/RTnet/scripts/kconfig'
+>>> /bin/sh: 3: /home/taras/RTnet/configure: not found
+>>> makefile:51: recipe for target 'config.status' failed
+>>> make: *** [config.status] Error 1
+>>>
+>>>
+>>>
+>>> or if i do  ./configure    a get
+>>> checking for main in -lncurses... yes
+>>> checking for RTnet Kconfig file... ./defconfig (default)
+>>>
+>>> checking for RT-extension... /usr/xenomai (Xenomai 2.0.x)
+>>> checking for Xenomai version... configure: error: *** Unsupported Xenom=
+ai version 3.0.5 in /usr/xenomai
+>>> taras@prog-pc12:~/RTnet$
+>>>
+>>> What s wrong ? Please help/
+>>>
+>>> some outputs
+>>>
+>>> taras@prog-pc12:/usr/xenomai/bin$ ./xeno-config --info|grep -i build
+>>> Build args: --with-pic --with-core=3Dcobalt --enable-smp --disable-tls =
+--enable-dlopen-libs --disable-clock-monotonic-raw
+>>>
+>>> taras@prog-pc12:/usr/xenomai/bin$ cd /usr/xenomai/sbin/
+>>> taras@prog-pc12:/usr/xenomai/sbin$ ./version
+>>> Xenomai/cobalt v3.0.5
+>>>
+>>> taras@prog-pc12:/usr/xenomai/sbin$ uname -r
+>>> 4.9.38-xenomai-3.0.5
+>>>
+>>>
+>>>
+>>> =D0=A1 =D1=83=D0=B2=D0=B0=D0=B6=D0=B5=D0=BD=D0=B8=D0=B5=D0=BC =D0=B8 =
+=D0=BD=D0=B0=D0=B4=D0=B5=D0=B6=D0=B4=D0=BE=D0=B9 =D0=BD=D0=B0 =D1=81=D0=BE=
+=D1=82=D1=80=D1=83=D0=B4=D0=BD=D0=B8=D1=87=D0=B5=D1=81=D1=82=D0=B2=D0=BE,
+>>> =D0=A8=D0=B5=D0=B2=D1=87=D0=B5=D0=BD=D0=BA=D0=BE =D0=A2.=D0=93.
+>>> _______________________________________________
+>>> Xenomai mailing list
+>>> Xenomai@xenomai.org
+>>> https://xenomai.org/mailman/listinfo/xenomai
 
