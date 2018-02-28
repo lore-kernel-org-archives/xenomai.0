@@ -1,13 +1,12 @@
-References: <6aedc4bc-74b5-4a9f-5c38-036a3d7850b9@siemens.com>
-From: Philippe Gerum <rpm@xenomai.org>
-Message-ID: <bae60b94-363c-f1ff-9cee-ea0aed5ff7c7@xenomai.org>
-Date: Mon, 19 Mar 2018 17:45:59 +0100
 MIME-Version: 1.0
-In-Reply-To: <6aedc4bc-74b5-4a9f-5c38-036a3d7850b9@siemens.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] [PULL] ipipe 4.4 updates
+In-Reply-To: <500456767.8825156.1519827180703.JavaMail.zimbra@triolcorp.com.ua>
+References: <500456767.8825156.1519827180703.JavaMail.zimbra@triolcorp.com.ua>
+From: Greg Gallagher <greg@embeddedgreg.com>
+Date: Wed, 28 Feb 2018 10:01:23 -0500
+Message-ID: <CALLqZ8SHXBKVFyzgkpxS-ecpzPVtEDwGqbzdxXwnwUG+Fn0pRA@mail.gmail.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+Subject: Re: [Xenomai] RTnet
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,41 +15,74 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jan Kiszka <jan.kiszka@siemens.com>
-Cc: Xenomai <xenomai@xenomai.org>
+To: =?UTF-8?B?0KjQtdCy0YfQtdC90LrQviDQotCw0YDQsNGBINCT0YDQuNCz0L7RgNGM0LXQstC40Yc=?= <shevchenko.taras@triolcorp.com.ua>
+Cc: "Xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On 03/09/2018 05:51 PM, Jan Kiszka wrote:
-> The following changes since commit 5618f90d33b17ab0ee9352705610a5e9f00f9964:
-> 
->   Revert "ipipe: printk: defer dev_printk() output to safe context" (2017-12-15 18:10:01 +0100)
-> 
-> are available in the git repository at:
-> 
->   git://git.xenomai.org/ipipe-jki for-upstream/4.4-update
-> 
-> for you to fetch changes up to c6de6878f74e4b079066eddc373f3e8c125fdaa7:
-> 
->   Merge tag 'v4.4.120' into for-upstream/4.4-update (2018-03-08 18:49:28 +0100)
-> 
-> 
-> I-pipe specific commits:
-> 
-> Jan Kiszka (5):
->       arm/ipipe: Avoid open-coded __ipipe_call_mayday
+It looks like Xenomai 3.05 is not supported with the instructions you
+are following.
 
-This one is useless, although it does not hurt. As a matter of fact,
-__ipipe_exit_irq is only called from contexts running with hard IRQs
-disabled, otherwise the pipeline core would be just fundamentally
-broken. Merged it anyway.
+-Greg
 
->       x86/ipipe: Deny JUMP_LABEL over I-pipe
->       Merge tag 'v4.4.109' into for-upstream/4.4-update
->       x86/ipipe: Disable access_ok context under I-pipe
->       Merge tag 'v4.4.120' into for-upstream/4.4-update
-> 
-
-Merged, thanks.
-
--- 
-Philippe.
+On Wed, Feb 28, 2018 at 9:13 AM, =D0=A8=D0=B5=D0=B2=D1=87=D0=B5=D0=BD=D0=BA=
+=D0=BE =D0=A2=D0=B0=D1=80=D0=B0=D1=81 =D0=93=D1=80=D0=B8=D0=B3=D0=BE=D1=80=
+=D1=8C=D0=B5=D0=B2=D0=B8=D1=87
+<shevchenko.taras@triolcorp.com.ua> wrote:
+>
+> Hi!
+>
+> I do it first time and followed http://rtt-lwr.readthedocs.io/en/latest/r=
+tpc/rtnet.html
+>
+> I tried to install rtnet and get some error
+> taras@prog-pc12:~/RTnet$ sudo make menuconfig
+> make[1]: Entering directory '/home/taras/RTnet/scripts/kconfig'
+> #
+> # using defaults found in ../../.rtnet_config
+> #
+>
+>
+> *** End of RTnet configuration.
+> *** Execute 'make' to build RTnet or try 'make help'.
+>
+> make[1]: Leaving directory '/home/taras/RTnet/scripts/kconfig'
+> /bin/sh: 3: /home/taras/RTnet/configure: not found
+> makefile:51: recipe for target 'config.status' failed
+> make: *** [config.status] Error 1
+>
+>
+>
+> or if i do  ./configure    a get
+> checking for main in -lncurses... yes
+> checking for RTnet Kconfig file... ./defconfig (default)
+>
+> checking for RT-extension... /usr/xenomai (Xenomai 2.0.x)
+> checking for Xenomai version... configure: error: *** Unsupported Xenomai=
+ version 3.0.5 in /usr/xenomai
+> taras@prog-pc12:~/RTnet$
+>
+> What s wrong ? Please help/
+>
+> some outputs
+>
+> taras@prog-pc12:/usr/xenomai/bin$ ./xeno-config --info|grep -i build
+> Build args: --with-pic --with-core=3Dcobalt --enable-smp --disable-tls --=
+enable-dlopen-libs --disable-clock-monotonic-raw
+>
+> taras@prog-pc12:/usr/xenomai/bin$ cd /usr/xenomai/sbin/
+> taras@prog-pc12:/usr/xenomai/sbin$ ./version
+> Xenomai/cobalt v3.0.5
+>
+> taras@prog-pc12:/usr/xenomai/sbin$ uname -r
+> 4.9.38-xenomai-3.0.5
+>
+>
+>
+> =D0=A1 =D1=83=D0=B2=D0=B0=D0=B6=D0=B5=D0=BD=D0=B8=D0=B5=D0=BC =D0=B8 =D0=
+=BD=D0=B0=D0=B4=D0=B5=D0=B6=D0=B4=D0=BE=D0=B9 =D0=BD=D0=B0 =D1=81=D0=BE=D1=
+=82=D1=80=D1=83=D0=B4=D0=BD=D0=B8=D1=87=D0=B5=D1=81=D1=82=D0=B2=D0=BE,
+> =D0=A8=D0=B5=D0=B2=D1=87=D0=B5=D0=BD=D0=BA=D0=BE =D0=A2.=D0=93.
+> _______________________________________________
+> Xenomai mailing list
+> Xenomai@xenomai.org
+> https://xenomai.org/mailman/listinfo/xenomai
 
