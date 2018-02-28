@@ -1,13 +1,13 @@
-References: <287223691.8750502.1522325504217.JavaMail.zimbra@triolcorp.com.ua>
+References: <9dee4e70-9bce-2fac-2aba-f27e65a9c1ba@tuebingen.mpg.de>
 From: Philippe Gerum <rpm@xenomai.org>
-Message-ID: <7eebd101-731a-c91b-6fe5-4c512a931b99@xenomai.org>
-Date: Fri, 30 Mar 2018 10:47:02 +0200
+Message-ID: <50805f15-f8c3-a47d-0b05-7b722d44a73e@xenomai.org>
+Date: Wed, 28 Feb 2018 19:06:39 +0100
 MIME-Version: 1.0
-In-Reply-To: <287223691.8750502.1522325504217.JavaMail.zimbra@triolcorp.com.ua>
-Content-Type: text/plain; charset="windows-1251"
+In-Reply-To: <9dee4e70-9bce-2fac-2aba-f27e65a9c1ba@tuebingen.mpg.de>
+Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
-Content-Transfer-Encoding: base64
-Subject: Re: [Xenomai] x86 unusual IRQ number on UDOO board
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai] Low latency under stress, otherwise high latency
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,28 +16,29 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: =?UTF-8?B?0KjQtdCy0YfQtdC90LrQviDQotCw0YDQsNGBINCT0YDQuNCz0L7RgNGM0LU=?= =?UTF-8?B?0LLQuNGH?= <shevchenko.taras@triolcorp.com.ua>, xenomai <xenomai@xenomai.org>
-Cc: Olej <o.tsiliuric@yandex.ru>
+To: Julian Viereck <jviereck@tuebingen.mpg.de>, xenomai@xenomai.org
 
-T24gMDMvMjkvMjAxOCAwMjoxMSBQTSwg2OXi9+Xt6u4g0uDw4PEgw/Do4+7w/OXi6Pcgd3JvdGU6
-Cj4gR29vZCBkYXkgCj4gCj4gQ1BVMCBDUFUxIENQVTIgQ1BVMyAKPiAwOiAxNSAxIDAgMCBJTy1B
-UElDIDItZWRnZSB0aW1lciAKPiA5OiAwIDAgMCAwIElPLUFQSUMgOS1mYXN0ZW9pIGFjcGksIElO
-VDAwMDIgCj4gMzI6IDAgMCAwIDAgSU8tQVBJQyAzMi1mYXN0ZW9pIDgwODYyMkMxOjAwIAo+IDM3
-OiAwIDAgMCAwIElPLUFQSUMgMzctZmFzdGVvaSA4MDg2MjJDMTowNSAKPiA0MjogMCAwIDAgMCBJ
-Ty1BUElDIDQyLWZhc3Rlb2kgZHc6ZG1hYy0xIAo+IDQzOiAwIDAgMCAwIElPLUFQSUMgNDMtZmFz
-dGVvaSBkdzpkbWFjLTEgCj4gNDU6IDM0NDYgMTM2MjQ5IDY5OTk2IDY5OTMwIElPLUFQSUMgNDUt
-ZmFzdGVvaSBtbWMwIAo+IDQ3OiAwIDAgMCAwIElPLUFQSUMgNDctZmFzdGVvaSBtbWMxIAo+IAo+
-IGl0IGlzIHNlZW1zIHZlcnkgdW51c3VhbCAKCk5vLCBpdCdzIG5vdC4KCj4gZG9lcyBYZW5vbWFp
-IHdvcmsgZ29vZCB3aXRoIHN1Y2ggSVJRIG51bWJlcnMgPyAKPgoKWGVub21haSB3b3JrcyB3aXRo
-IElSUSBudW1iZXIgTGludXggZGVmaW5lcy4KCj4gCj4gMzA0OiAxIDAgMCAwIGNodi1ncGlvIDUw
-IDgwODYwRjE0OjAxIGNkIAo+IDMwOTogMjYgMjQ5NDMgODczIDMwMiBQQ0ktTVNJIDMyNzY4MC1l
-ZGdlIHhoY2lfaGNkIAo+IDMxMDogMTUgMTE5MDQgMTQgMTQgUENJLU1TSSAxMDQ4NTc2LWVkZ2Ug
-ZW5wMnMwIAo+IDMxMTogMCAwIDAgMCBQQ0ktTVNJIDMxMTI5Ni1lZGdlIGFoY2lbMDAwMDowMDox
-My4wXSAKPiAzMTI6IDM5NSAzOTQgMjIwODgyIDQxNyBQQ0ktTVNJIDMyNzY4LWVkZ2UgaTkxNSAK
-PiAzMTM6IDAgMCAwIDAgSU5UMDAwMiBWaXJ0dWFsIEdQSU8gMiBBQ1BJOkV2ZW50IAo+IDMxNDog
-NyA2IDUgNSBQQ0ktTVNJIDQyNTk4NC1lZGdlIG1laV90eGUgCj4gMzE1OiAzMjkgMzkxIDM2NSAz
-NjEgUENJLU1TSSA0NDIzNjgtZWRnZSBzbmRfaGRhX2ludGVsOmNhcmQwIAo+IAo+INEg8+Lg5uXt
-6OXsIOgg7eDk5ebk7ukg7eAg8e7y8PPk7ej35fHy4u4sIAo+INjl4vfl7eruINIuwy4gCj4gX19f
-X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX18KPiBYZW5vbWFpIG1h
-aWxpbmcgbGlzdAo+IFhlbm9tYWlAeGVub21haS5vcmcKPiBodHRwczovL3hlbm9tYWkub3JnL21h
-aWxtYW4vbGlzdGluZm8veGVub21haQo+IAoKCi0tIApQaGlsaXBwZS4KCg==
+On 02/26/2018 10:34 PM, Julian Viereck wrote:
+> Hi folks,
+> 
+> after installing Xenomai 3.0.5/kernel 4.9.38 following [1] on our Dell
+> Precision 5820 machine (Intel Xeon W-2145), there are high latencies
+> when the system is at rest. When starting a stress test via `stress -v
+> -c 8 -i 10 -d 8`, the latency goes down (see terminal output below).
+> 
+> Usually I would assume the latency increases with higher load and not go
+> down. Does someone has an idea where to start in debugging / fixing the
+> high latencies? Note that the cores are in C0 state 100% of the time
+> (with and without the load on the machine).
+
+Maybe a SMI issue [1]. You may want to boot your hardware with a vanilla
+kernel (unpatched, no Xenomai), then run the hwlatdetect test from the
+rt testsuite [2]. If SMIs are detected, you may want to ask your BIOS
+vendor to fix their code (some do actually).
+
+[1] http://xenomai.org/2014/06/dealing-with-x86-smi-troubles/
+[2] git://git.kernel.org/pub/scm/linux/kernel/git/clrkwllms/rt-tests.git
+
+-- 
+Philippe.
+
