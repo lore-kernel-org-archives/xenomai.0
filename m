@@ -1,13 +1,14 @@
+References: <9dee4e70-9bce-2fac-2aba-f27e65a9c1ba@tuebingen.mpg.de>
+ <50805f15-f8c3-a47d-0b05-7b722d44a73e@xenomai.org>
+From: Julian Viereck <jviereck@tuebingen.mpg.de>
+Message-ID: <9607c407-8524-0006-910d-941a07d1f9d8@tuebingen.mpg.de>
+Date: Wed, 28 Feb 2018 16:40:22 -0500
 MIME-Version: 1.0
-In-Reply-To: <19775.147.91.1.44.1519668319.squirrel@mail.imp.bg.ac.rs>
-References: <36415.147.91.1.44.1519652762.squirrel@mail.imp.bg.ac.rs>
- <CALLqZ8RdzYhzCYFfvvnsD_M7HXo2T4q9-n_6tedpWzEFsEd+mg@mail.gmail.com>
- <19775.147.91.1.44.1519668319.squirrel@mail.imp.bg.ac.rs>
-From: Greg Gallagher <greg@embeddedgreg.com>
-Date: Mon, 26 Feb 2018 13:15:29 -0500
-Message-ID: <CALLqZ8S3Yqcfj0b7DRbhJgtjOtv_XYL4FQPdcP23MA01FX0r9w@mail.gmail.com>
-Content-Type: text/plain; charset="UTF-8"
-Subject: Re: [Xenomai] interrupt on edge problem, unexpected IRQ trap
+In-Reply-To: <50805f15-f8c3-a47d-0b05-7b722d44a73e@xenomai.org>
+Content-Type: text/plain; charset="utf-8"; format="flowed"
+Content-Transfer-Encoding: 8bit
+Content-Language: en-US
+Subject: Re: [Xenomai] Low latency under stress, otherwise high latency
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,192 +17,129 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: branislav.sasic@automatika.imp.bg.ac.rs
-Cc: "Xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Philippe Gerum <rpm@xenomai.org>, xenomai@xenomai.org
 
-As Philippe mentioned, they are some missing pieces that need to be
-added to the ipipe.  The link Philippe provided will give you guidance
-on how to make those changes to your custom kernel.  The other option
-is you could use the ipipe-arm tree and the mainline kernel.  Also,
-unrelated, the gpios that are exposed in sysfs are not RTDM gpios.
-There currently isn't a RTDM driver for beaglebone gpio, but one can
-be added very easily.
+Thanks for your pointer to hwlatdetect and possible SMI issues.
+
+It looks like the hwlatdetect script is not working with the latest 
+kernel anymore. However, it appears the hwlat is now part of the 
+kernel's ftrace [1]. Here is the kernel documentation about how to use 
+and understand the trace loge file [2].
+
+Using a trace window of 1sec, trace width of 0.5 sec and tracing_thresh 
+of 20 microseconds, there are no unexpected latencies detected by the 
+hwlat tool. Therefore, I doubt the issue is due to SMI interrupts.
+
+In the meantime, I've also tested:
+
+1) disable hyperthreading and running a single core
+2) run the xenomai latency test from the console before booting the x11 
+desktop (to rule out any graphics issues)
+
+In both cases, the high latencies under no-workload remains.
+
+Any other ideas what to look into / debug / run traces on?
+
+Best,
+Julian
 
 
--Greg
+PS: Here are more details on my analysis.
 
-On Mon, Feb 26, 2018 at 1:05 PM,
-<branislav.sasic@automatika.imp.bg.ac.rs> wrote:
-> Xenomai 3.0.6, and ipipe-core-4.9.51-arm-3, patched on sunxi 4.11.2 kernel
-> (with BeagleBone patches applied too). Same situation with this kernel ->
-> https://github.com/beagleboard/linux/tree/4.9-xenomai
->
->
-> Just as Giulio wrote, GPIO is configured with:
->
-> echo 60 > /sys/class/gpio/export
-> echo both > /sys/class/gpio/gpio60/edge
->
-> or in kernel module init routine with:
->
-> gpio_request(gpio, "test");
-> gpio_direction_input(gpio);
-> irq = gpio_to_irq(gpio);
-> irq_set_irq_type(irq, IRQF_TRIGGER_FALLING | IRQF_TRIGGER_RISING);
-> rtdm_irq_request(&irq_handle, irq, test_isr, RTDM_IRQTYPE_EDGE,
-> DRIVER_NAME, NULL);
-> rtdm_irq_enable(&irq_handle);
->
->
-> Both reproduce the problem. In the second case, when requested with
-> rtdm_irq_request, IRQ is visible both in /proc/interrupts, and in
-> /proc/xenomai/irq
->
->
-> Thanks!
->
->
-> Branislav
->
->
->> Can you provide what version of Xenomai you are using and what ipipe
-> patch you are using?  It also may be helpful if you could provide some
-> sort of sample code that reproduces the problem.
+
+Using only a single core without hyperthreading, the recorded trace 
+looks like in [3]. The recording was done using the default setting (1 
+sec window, 0.5 sec width, threshold 10 microseconds).
+
+While the recording shows events of exceeding the threshold (there are 
+entries in the file), note that the timing is equally spaced. Another 
+experiment showed that the spacing between recorded events is correlated 
+with the `hwlat_detector/window` option. Therefore, I hypothesize the 
+recorded events are artificual
+
+[1]: 
+https://github.com/torvalds/linux/blob/master/Documentation/trace/hwlat_detector.txt#L34
+[2]: 
+https://github.com/torvalds/linux/blob/master/Documentation/trace/ftrace.txt#L1914
+[3]:
+
+```
+  tracer: hwlat
+#
+# entries-in-buffer/entries-written: 33/33   #P:1
+#
+#                              _-----=> irqs-off
+#                             / _----=> need-resched
+#                            | / _---=> hardirq/softirq
+#                            || / _--=> preempt-depth
+#                            ||| /     delay
+#           TASK-PID   CPU#  ||||    TIMESTAMP  FUNCTION
+#              | |       |   ||||       |         |
+            <...>-2906  [000] d...   356.575455: #34 inner/outer(us):   
+15/14    ts:1519851039.304934827
+            <...>-2906  [000] d...   357.599441: #35 inner/outer(us):   
+13/15    ts:1519851040.328934857
+            <...>-2906  [000] d...   358.623458: #36 inner/outer(us):   
+13/15    ts:1519851041.352934886
+            <...>-2906  [000] d...   359.647456: #37 inner/outer(us):   
+14/15    ts:1519851042.376934915
+            <...>-2906  [000] d...   360.671457: #38 inner/outer(us):   
+13/15    ts:1519851043.400934944 nmi-total:10 nmi-count:1
+            <...>-2906  [000] d...   361.695449: #39 inner/outer(us):   
+15/16    ts:1519851044.424934974
+            <...>-2906  [000] d...   362.719456: #40 inner/outer(us):   
+15/15    ts:1519851045.448935003
+            <...>-2906  [000] d...   363.743464: #41 inner/outer(us):   
+15/15    ts:1519851046.472935032
+            <...>-2906  [000] d...   364.767453: #42 inner/outer(us):   
+13/15    ts:1519851047.496935061
+            <...>-2906  [000] d...   365.791453: #43 inner/outer(us):   
+15/14    ts:1519851048.520935090
+            <...>-2906  [000] d...   366.815470: #44 inner/outer(us):   
+14/17    ts:1519851049.544935120
+            <...>-2906  [000] d...   367.839453: #45 inner/outer(us):   
+14/15    ts:1519851050.568935149
+            <...>-2906  [000] d...   368.863102: #46 inner/outer(us):   
+15/15    ts:1519851051.592935178
+            <...>-2906  [000] d...   369.887465: #47 inner/outer(us):   
+15/16    ts:1519851052.616935207
+            <...>-2906  [000] d...   370.911458: #48 inner/outer(us):   
+14/15    ts:1519851053.640935237
+            <...>-2906  [000] d...   371.935486: #49 inner/outer(us):   
+15/15    ts:1519851054.664935266
+            <...>-2906  [000] d...   372.959466: #50 inner/outer(us):   
+15/16    ts:1519851055.688935295
+            <...>-2906  [000] d...   373.983465: #51 inner/outer(us):   
+16/15    ts:1519851056.712935324
+            <...>-2906  [000] d...   375.007104: #52 inner/outer(us):   
+13/13    ts:1519851057.736935353
+            <...>-2906  [000] d...   376.031460: #53 inner/outer(us):   
+14/14    ts:1519851058.760935383 nmi-total:8 nmi-count:1
+```
+
+
+
+
+On 02/28/2018 01:06 PM, Philippe Gerum wrote:
+> On 02/26/2018 10:34 PM, Julian Viereck wrote:
+>> Hi folks,
 >>
->> -Greg
+>> after installing Xenomai 3.0.5/kernel 4.9.38 following [1] on our Dell
+>> Precision 5820 machine (Intel Xeon W-2145), there are high latencies
+>> when the system is at rest. When starting a stress test via `stress -v
+>> -c 8 -i 10 -d 8`, the latency goes down (see terminal output below).
 >>
->> On Mon, Feb 26, 2018 at 8:46 AM,
->> <branislav.sasic@automatika.imp.bg.ac.rs> wrote:
->>> Hello,
->>> I have a problem with new I-pipe patch, which was not existing with legacy
->>> patch on 3.14 kernel, on BeagleBone platform.
->>> When GPIO pin is configured as input with edge interrupt enable, on IRQ
-> occurrence the following message appears:
->>> [  303.331386] irq 88, desc: dc1be400, depth: 0, count: 0, unhandled: 0
-> [  303.331401] ->handle_irq():  c01a810c,
->>> [  303.331435] handle_edge_irq+0x0/0x194
->>> [  303.331442] ->irq_data.chip(): dc097b50,
->>> [  303.331454] 0xdc097b50
->>> [  303.331461] ->action(): da097380
->>> [  303.331467] ->action->handler(): c078dce4,
->>> [  303.331483] gpio_sysfs_irq+0x0/0x24
->>> [  303.331493]    IRQ_NOPROBE set
->>> [  303.331503] unexpected IRQ trap at vector 58
->>> [  303.335814] ------------[ cut here ]------------
->>> [  303.335832] WARNING: CPU: 0 PID: 0 at kernel/irq/chip.c:883
->>> __ipipe_ack_bad_irq+0x3c/0x48
->>> [  303.335839] Modules linked in:
->>> [  303.335863] CPU: 0 PID: 0 Comm: swapper/0 Not tainted 4.9.82 #2 [
-> 303.335871] Hardware name: Generic AM33XX (Flattened Device Tree) [
-> 303.335878] I-pipe domain: Linux
->>> [  303.335918] [<c0113520>] (unwind_backtrace) from [<c010d320>]
-> (show_stack+0x20/0x24)
->>> [  303.335946] [<c010d320>] (show_stack) from [<c073c99c>]
->>> (dump_stack+0xbc/0xec)
->>> [  303.335968] [<c073c99c>] (dump_stack) from [<c013dddc>]
->>> (__warn+0xe4/0x110)
->>> [  303.335984] [<c013dddc>] (__warn) from [<c013de38>]
->>> (warn_slowpath_null+0x30/0x38)
->>> [  303.335998] [<c013de38>] (warn_slowpath_null) from [<c01a74a0>]
-> (__ipipe_ack_bad_irq+0x3c/0x48)
->>> [  303.336027] [<c01a74a0>] (__ipipe_ack_bad_irq) from [<c020ccdc>]
-> (__ipipe_dispatch_irq+0x80/0x1e4)
->>> [  303.336048] [<c020ccdc>] (__ipipe_dispatch_irq) from [<c0790630>]
-> (omap_gpio_irq_handler+0x15c/0x1d0)
->>> [  303.336066] [<c0790630>] (omap_gpio_irq_handler) from [<c01a3874>]
-> (__handle_irq_event_percpu+0x68/0x2bc)
->>> [  303.336081] [<c01a3874>] (__handle_irq_event_percpu) from
->>> [<c01a3af4>]
->>> (handle_irq_event_percpu+0x2c/0x68)
->>> [  303.336095] [<c01a3af4>] (handle_irq_event_percpu) from [<c01a3b78>]
-> (handle_irq_event+0x48/0x6c)
->>> [  303.336111] [<c01a3b78>] (handle_irq_event) from [<c01a8348>]
-> (handle_level_irq+0xa8/0xfc)
->>> [  303.336127] [<c01a8348>] (handle_level_irq) from [<c01a2ea0>]
-> (generic_handle_irq+0x28/0x38)
->>> [  303.336141] [<c01a2ea0>] (generic_handle_irq) from [<c01a3014>]
-> (__handle_domain_irq+0x8c/0x10c)
->>> [  303.336164] [<c01a3014>] (__handle_domain_irq) from [<c0109c28>]
-> (handle_IRQ+0x2c/0x30)
->>> [  303.336182] [<c0109c28>] (handle_IRQ) from [<c0117990>]
->>> (__ipipe_do_IRQ+0x38/0x40)
->>> [  303.336198] [<c0117990>] (__ipipe_do_IRQ) from [<c020c4b4>]
->>> (__ipipe_do_sync_stage+0x268/0x278)
->>> [  303.336214] [<c020c4b4>] (__ipipe_do_sync_stage) from [<c020c820>]
-> (ipipe_unstall_root+0x50/0x5c)
->>> [  303.336244] [<c020c820>] (ipipe_unstall_root) from [<c0cbb4c8>]
-> (default_idle_call+0x54/0x7c)
->>> [  303.336271] [<c0cbb4c8>] (default_idle_call) from [<c0187c4c>]
-> (cpu_startup_entry+0xd0/0x144)
->>> [  303.336289] [<c0187c4c>] (cpu_startup_entry) from [<c0cb5c80>]
-> (rest_init+0x80/0x98)
->>> [  303.336315] [<c0cb5c80>] (rest_init) from [<c1300d08>]
->>> (start_kernel+0x370/0x3d8)
->>> [  303.336327] ---[ end trace fd2436447809c122 ]---
->>> [  303.336343] irq 88, desc: dc1be400, depth: 0, count: 0, unhandled: 0
-> [  303.336349] ->handle_irq():  c01a810c,
->>> [  303.336361] handle_edge_irq+0x0/0x194
->>> [  303.336367] ->irq_data.chip(): dc097b50,
->>> [  303.336376] 0xdc097b50
->>> [  303.336382] ->action(): da097380
->>> [  303.336389] ->action->handler(): c078dce4,
->>> [  303.336399] gpio_sysfs_irq+0x0/0x24
->>> [  303.336406]    IRQ_NOPROBE set
->>> [  303.336413] unexpected IRQ trap at vector 58
->>> [  306.761879] irq 88, desc: dc1be400, depth: 0, count: 1, unhandled: 0
-> [  306.761893] ->handle_irq():  c01a810c,
->>> [  306.761928] handle_edge_irq+0x0/0x194
->>> [  306.761935] ->irq_data.chip(): dc097b50,
->>> [  306.761947] 0xdc097b50
->>> [  306.761954] ->action(): da097380
->>> [  306.761960] ->action->handler(): c078dce4,
->>> [  306.761976] gpio_sysfs_irq+0x0/0x24
->>> [  306.761985]    IRQ_NOPROBE set
->>> [  306.761995] unexpected IRQ trap at vector 58
->>> [  306.766311] irq 88, desc: dc1be400, depth: 0, count: 1, unhandled: 0
-> [  306.766318] ->handle_irq():  c01a810c,
->>> [  306.766330] handle_edge_irq+0x0/0x194
->>> [  306.766336] ->irq_data.chip(): dc097b50,
->>> [  306.766344] 0xdc097b50
->>> [  306.766351] ->action(): da097380
->>> [  306.766357] ->action->handler(): c078dce4,
->>> [  306.766366] gpio_sysfs_irq+0x0/0x24
->>> [  306.766373]    IRQ_NOPROBE set
->>> [  306.766380] unexpected IRQ trap at vector 58
->>> [  306.892617] irq 88, desc: dc1be400, depth: 0, count: 2, unhandled: 0
-> [  306.892634] ->handle_irq():  c01a810c,
->>> [  306.892666] handle_edge_irq+0x0/0x194
->>> [  306.892673] ->irq_data.chip(): dc097b50,
->>> [  306.892683] 0xdc097b50
->>> [  306.892690] ->action(): da097380
->>> [  306.892697] ->action->handler(): c078dce4,
->>> [  306.892712] gpio_sysfs_irq+0x0/0x24
->>> [  306.892723]    IRQ_NOPROBE set
->>> [  306.892732] unexpected IRQ trap at vector 58
->>> [  306.897047] irq 88, desc: dc1be400, depth: 0, count: 2, unhandled: 0
-> [  306.897054] ->handle_irq():  c01a810c,
->>> [  306.897065] handle_edge_irq+0x0/0x194
->>> [  306.897071] ->irq_data.chip(): dc097b50,
->>> [  306.897079] 0xdc097b50
->>> [  306.897086] ->action(): da097380
->>> [  306.897092] ->action->handler(): c078dce4,
->>> [  306.897101] gpio_sysfs_irq+0x0/0x24
->>> [  306.897108]    IRQ_NOPROBE set
->>> [  306.897115] unexpected IRQ trap at vector 58
->>> Best regards,
->>> Branislav
->>> _______________________________________________
->>> Xenomai mailing list
->>> Xenomai@xenomai.org
->>> https://xenomai.org/mailman/listinfo/xenomai
->>
->> _______________________________________________
->> Xenomai mailing list
->> Xenomai@xenomai.org
->> https://xenomai.org/mailman/listinfo/xenomai
->>
+>> Usually I would assume the latency increases with higher load and not go
+>> down. Does someone has an idea where to start in debugging / fixing the
+>> high latencies? Note that the cores are in C0 state 100% of the time
+>> (with and without the load on the machine).
+> Maybe a SMI issue [1]. You may want to boot your hardware with a vanilla
+> kernel (unpatched, no Xenomai), then run the hwlatdetect test from the
+> rt testsuite [2]. If SMIs are detected, you may want to ask your BIOS
+> vendor to fix their code (some do actually).
 >
+> [1] http://xenomai.org/2014/06/dealing-with-x86-smi-troubles/
+> [2] git://git.kernel.org/pub/scm/linux/kernel/git/clrkwllms/rt-tests.git
 >
->
->
+
 
