@@ -1,12 +1,11 @@
-From: Jan Kiszka <jan.kiszka@web.de>
-References: <6aedc4bc-74b5-4a9f-5c38-036a3d7850b9@siemens.com>
-Message-ID: <ee7647d4-0bfd-0933-2f10-e9fdc5da2880@web.de>
-Date: Sat, 10 Mar 2018 14:06:33 -0800
+Date: Wed, 28 Feb 2018 16:13:00 +0200 (EET)
+From: =?windows-1251?B?2OXi9+Xt6u4g0uDw4PEgw/Do4+7w/OXi6Pc=?=
+ <shevchenko.taras@triolcorp.com.ua>
+Message-ID: <500456767.8825156.1519827180703.JavaMail.zimbra@triolcorp.com.ua>
 MIME-Version: 1.0
-In-Reply-To: <6aedc4bc-74b5-4a9f-5c38-036a3d7850b9@siemens.com>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Subject: [Xenomai] 4.9 for x86 issue (was: [PULL] ipipe 4.4 updates)
+Content-Type: text/plain; charset=windows-1251
+Content-Transfer-Encoding: quoted-printable
+Subject: [Xenomai] RTnet
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,24 +14,58 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Philippe Gerum <rpm@xenomai.org>
-Cc: Xenomai <xenomai@xenomai.org>
+To: xenomai@xenomai.org
 
-T24gMjAxOC0wMy0wOSAwODo1MSwgSmFuIEtpc3prYSB3cm90ZToKPiA0LjkgcmVxdWlyZXMgbW9y
-ZSB3b3JrLCBJJ3ZlIHB1c2hlZCB0aGUgYmVnaW5uaW5nIHRvIHdpcC80LjkgaW4gdGhlIHNhbWUK
-PiByZXBvLgoKSSBzdGFydGVkIHRvIHBhdGNoIGZ1cnRoZXIgb24gdGhpcyBkdXJpbmcgbXkgZmxp
-Z2h0ICh3aXAvNC45IHVwZGF0ZWQpLApub3RpY2VkIHRoYXQgdGhlIDQuMTQtd2lwIHF1ZXVlIHdp
-bGwgbmVlZCBhIGxpdHRsZSBiaXQgc3lzZW50cnkgdHdlYWtpbmcKYXMgd2VsbCAobWlzc2luZyA2
-NC1iaXQgc3lzY2FsbCBkaXNwYXRjaGluZyksIGFuZCB0aGVuIGhhZCB0byBmaW5kIDQuOQppbiBh
-IHJhdGhlciB1bmZvcnR1bmF0ZSBzdGF0ZSAvd3J0IHg4Ni02NDogQ1BVcyBhcmUgbm8gbG9uZ2Vy
-IGlkbGluZwpwcm9wZXJseS4gSSB3ZW50IGJhY2sgdG8gaXBpcGUtY29yZS00LjkuMjQteDg2LTIs
-IHdpdGhvdXQgYSBkaWZmZXJlbmNlLgoKSWYgeW91IHNob3VsZCBsb29rIGludG8gNC45LXg4NiBh
-cyB5b3UgaW5kaWNhdGVkLCBwbGVhc2UgY2hlY2sgdGhpcy4KCkFub3RoZXIgY2F0Y2ggYWxvbmcg
-dGhhdCByb2FkOiBtYXhjcHVzPTEgd2l0aCA+MSBDUFVzIGF2YWlsYWJsZSB0cmlnZ2VycwphIE5V
-TEwgcG9pbnRlciB3aGVuIFhlbm9tYWkgZ2V0cyBhcm1lZC4gVGhhdCBpcyB0aGUgY2FzZSB3aXRo
-IDQuNCBhcyB3ZWxsLgoKSmFuCgoKLS0tLS0tLS0tLS0tLS0gbmV4dCBwYXJ0IC0tLS0tLS0tLS0t
-LS0tCkEgbm9uLXRleHQgYXR0YWNobWVudCB3YXMgc2NydWJiZWQuLi4KTmFtZTogc2lnbmF0dXJl
-LmFzYwpUeXBlOiBhcHBsaWNhdGlvbi9wZ3Atc2lnbmF0dXJlClNpemU6IDE4MSBieXRlcwpEZXNj
-OiBPcGVuUEdQIGRpZ2l0YWwgc2lnbmF0dXJlClVSTDogPGh0dHA6Ly94ZW5vbWFpLm9yZy9waXBl
-cm1haWwveGVub21haS9hdHRhY2htZW50cy8yMDE4MDMxMC8xZThkZmYyNC9hdHRhY2htZW50LnNp
-Zz4K
+
+Hi!=20
+
+I do it first time and followed http://rtt-lwr.readthedocs.io/en/latest/rtp=
+c/rtnet.html=20
+
+I tried to install rtnet and get some error=20
+taras@prog-pc12:~/RTnet$ sudo make menuconfig=20
+make[1]: Entering directory '/home/taras/RTnet/scripts/kconfig'=20
+#=20
+# using defaults found in ../../.rtnet_config=20
+#=20
+
+
+*** End of RTnet configuration.=20
+*** Execute 'make' to build RTnet or try 'make help'.=20
+
+make[1]: Leaving directory '/home/taras/RTnet/scripts/kconfig'=20
+/bin/sh: 3: /home/taras/RTnet/configure: not found=20
+makefile:51: recipe for target 'config.status' failed=20
+make: *** [config.status] Error 1=20
+
+
+
+or if i do  ./configure    a get=20
+checking for main in -lncurses... yes=20
+checking for RTnet Kconfig file... ./defconfig (default)=20
+
+checking for RT-extension... /usr/xenomai (Xenomai 2.0.x)=20
+checking for Xenomai version... configure: error: *** Unsupported Xenomai v=
+ersion 3.0.5 in /usr/xenomai=20
+taras@prog-pc12:~/RTnet$=20
+
+What s wrong ? Please help/=20
+
+some outputs=20
+
+taras@prog-pc12:/usr/xenomai/bin$ ./xeno-config --info|grep -i build=20
+Build args: --with-pic --with-core=3Dcobalt --enable-smp --disable-tls --en=
+able-dlopen-libs --disable-clock-monotonic-raw=20
+
+taras@prog-pc12:/usr/xenomai/bin$ cd /usr/xenomai/sbin/=20
+taras@prog-pc12:/usr/xenomai/sbin$ ./version=20
+Xenomai/cobalt v3.0.5=20
+
+taras@prog-pc12:/usr/xenomai/sbin$ uname -r=20
+4.9.38-xenomai-3.0.5=20
+
+
+
+=D1 =F3=E2=E0=E6=E5=ED=E8=E5=EC =E8 =ED=E0=E4=E5=E6=E4=EE=E9 =ED=E0 =F1=EE=
+=F2=F0=F3=E4=ED=E8=F7=E5=F1=F2=E2=EE,=20
+=D8=E5=E2=F7=E5=ED=EA=EE =D2.=C3.=20
