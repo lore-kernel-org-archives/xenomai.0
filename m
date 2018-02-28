@@ -1,16 +1,20 @@
-Date: Wed, 28 Mar 2018 17:40:28 +0300 (EEST)
-From: =?windows-1251?B?2OXi9+Xt6u4g0uDw4PEgw/Do4+7w/OXi6Pc=?=
- <shevchenko.taras@triolcorp.com.ua>
-Message-ID: <606498428.8491423.1522248028355.JavaMail.zimbra@triolcorp.com.ua>
-In-Reply-To: <1320247074.8207767.1522165874048.JavaMail.zimbra@triolcorp.com.ua>
-References: <q17d41v98jmvc5qofdfiipjs.1522164993072@embeddedgreg.com>
- <289250163.8206221.1522165279222.JavaMail.zimbra@triolcorp.com.ua>
- <1221098029.8207596.1522165832579.JavaMail.zimbra@triolcorp.com.ua>
- <1320247074.8207767.1522165874048.JavaMail.zimbra@triolcorp.com.ua>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=windows-1251
+In-Reply-To: <1419496590.8933148.1519838143520.JavaMail.zimbra@triolcorp.com.ua>
+References: <500456767.8825156.1519827180703.JavaMail.zimbra@triolcorp.com.ua>
+ <CALLqZ8SHXBKVFyzgkpxS-ecpzPVtEDwGqbzdxXwnwUG+Fn0pRA@mail.gmail.com>
+ <429130936.8886425.1519831182179.JavaMail.zimbra@triolcorp.com.ua>
+ <CALLqZ8Qa8y1idWvPfA2PBuG_urrgjDuYYX8B7_65yyEQswUvdg@mail.gmail.com>
+ <1139048827.8910394.1519833759993.JavaMail.zimbra@triolcorp.com.ua>
+ <CALLqZ8S6_-dWvze2+MsBxNBvhS3UCtERLZ=VwqmkN3C9Rw6s1A@mail.gmail.com>
+ <1249760478.8926934.1519836402496.JavaMail.zimbra@triolcorp.com.ua>
+ <CALLqZ8RPLOHOGApGwgC2s49RvD+BAcn1FDzstJhoRs+Rkee+8w@mail.gmail.com>
+ <1419496590.8933148.1519838143520.JavaMail.zimbra@triolcorp.com.ua>
+From: Greg Gallagher <greg@embeddedgreg.com>
+Date: Wed, 28 Feb 2018 12:16:04 -0500
+Message-ID: <CALLqZ8QCYq0iwuSBhSE7+ziaEvZoCYXcXeiCSkn_=SMNmUwkXg@mail.gmail.com>
+Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
-Subject: Re: [Xenomai] 4.9 for x86 issue
+Subject: Re: [Xenomai] RTnet
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -19,256 +23,239 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Greg Gallagher <greg@embeddedgreg.com>
+To: =?UTF-8?B?0KjQtdCy0YfQtdC90LrQviDQotCw0YDQsNGBINCT0YDQuNCz0L7RgNGM0LXQstC40Yc=?= <shevchenko.taras@triolcorp.com.ua>
 Cc: xenomai <xenomai@xenomai.org>
 
-Hi!
-I found in boot log=20
-failed to start lsb apparmor initialization
-could it be the problem ?
+On the TODO list :)
 
-=D1 =F3=E2=E0=E6=E5=ED=E8=E5=EC =E8 =ED=E0=E4=E5=E6=E4=EE=E9 =ED=E0 =F1=EE=
-=F2=F0=F3=E4=ED=E8=F7=E5=F1=F2=E2=EE,
-=D8=E5=E2=F7=E5=ED=EA=EE =D2.=C3.
-
------ Original Message -----
-From: "=D8=E5=E2=F7=E5=ED=EA=EE =D2=E0=F0=E0=F1 =C3=F0=E8=E3=EE=F0=FC=E5=E2=
-=E8=F7" <shevchenko.taras@triolcorp.com.ua>
-To: "Greg Gallagher" <greg@embeddedgreg.com>
-Sent: Tuesday, March 27, 2018 6:51:14 PM
-Subject: Re: [Xenomai] 4.9 for x86 issue
-
-Maybe you need some additional output ?
-
-=D1 =F3=E2=E0=E6=E5=ED=E8=E5=EC =E8 =ED=E0=E4=E5=E6=E4=EE=E9 =ED=E0 =F1=EE=
-=F2=F0=F3=E4=ED=E8=F7=E5=F1=F2=E2=EE,
-=D8=E5=E2=F7=E5=ED=EA=EE =D2.=C3.
-
------ Original Message -----
-From: "=D8=E5=E2=F7=E5=ED=EA=EE =D2=E0=F0=E0=F1 =C3=F0=E8=E3=EE=F0=FC=E5=E2=
-=E8=F7" <shevchenko.taras@triolcorp.com.ua>
-To: "Greg Gallagher" <greg@embeddedgreg.com>
-Sent: Tuesday, March 27, 2018 6:50:32 PM
-Subject: Re: [Xenomai] 4.9 for x86 issue
-
-yeti@yeti-UDOO-x86:~$ uname -a
-Linux yeti-UDOO-x86 4.9.90 #1 SMP Tue Mar 27 12:22:27 EEST 2018 x86_64 x86_=
-64 x86_64 GNU/Linux
-yeti@yeti-UDOO-x86:~$ lsb_release -a
-No LSB modules are available.
-Distributor ID:=09Ubuntu
-Description:=09Ubuntu 16.04.4 LTS
-Release:=0916.04
-Codename:=09xenial
-
-yeti@yeti-UDOO-x86:~$ lsmod |grep sd    - nothing
-yeti@yeti-UDOO-x86:~$=20
-
-
-
-I enable mmc debug option at kernel   - get many messages like below  dmesg=
- output
-ipipe patch apply, xenomai not installed , without sdcard inserted
-
-[sdhci_irq()]: *** mmc0 got interrupt: 0x00000001
-[   58.591263] sdhci [sdhci_irq()]: *** mmc0 got interrupt: 0x00000002
-[   58.591280] mmc0: req done <CMD23>: 0: 00000000 00000000 00000000 000000=
-00
-[   58.591284] mmc0: req done (CMD25): 0: 00000900 00000000 00000000 000000=
-00
-[   58.591287] mmc0:     4096 bytes transferred: 0
-[   58.591291] mmc0:     (CMD12): 0: 00000000 00000000 00000000 00000000
-[   58.591319] mmc0: starting CMD13 arg 00010000 flags 00000195
-[   58.591352] sdhci [sdhci_irq()]: *** mmc0 got interrupt: 0x00000001
-[   58.591367] mmc0: req done (CMD13): 0: 00000900 00000000 00000000 000000=
-00
-[   58.594591] <mmc0: starting CMD23 arg 00000008 flags 00000015>
-[   58.594597] mmc0: starting CMD18 arg 000bba38 flags 000000b5
-[   58.594601] mmc0:     blksz 512 blocks 8 flags 00000200 tsac 100 ms nsac=
- 0
-[   58.594604] mmc0:     CMD12 arg 00000000 flags 00000095
-[   58.594640] sdhci [sdhci_irq()]: *** mmc0 got interrupt: 0x00000001
-[   58.594882] sdhci [sdhci_irq()]: *** mmc0 got interrupt: 0x00000002
-[   58.594898] mmc0: req done <CMD23>: 0: 00000000 00000000 00000000 000000=
-00
-[   58.594902] mmc0: req done (CMD18): 0: 00000900 00000000 00000000 000000=
-00
-[   58.594905] mmc0:     4096 bytes transferred: 0
-[   58.594908] mmc0:     (CMD12): 0: 00000000 00000000 00000000 00000000
-[   58.624730] <mmc0: starting CMD23 arg 00000020 flags 00000015>
-[   58.624735] mmc0: starting CMD18 arg 018be070 flags 000000b5
-[   58.624740] mmc0:     blksz 512 blocks 32 flags 00000200 tsac 100 ms nsa=
-c 0
-[   58.624743] mmc0:     CMD12 arg 00000000 flags 00000095
-[   58.624777] sdhci [sdhci_irq()]: *** mmc0 got interrupt: 0x00000001
-[   58.625185] sdhci [sdhci_irq()]: *** mmc0 got interrupt: 0x00000002
-[   58.625211] mmc0: req done <CMD23>: 0: 00000000 00000000 00000000 000000=
-00
-[   58.625216] mmc0: req done (CMD18): 0: 00000900 00000000 00000000 000000=
-00
-[   58.625219] mmc0:     16384 bytes transferred: 0
-[   58.625222] mmc0:     (CMD12): 0: 00000000 00000000 00000000 00000000
-[   58.625749] <mmc0: starting CMD23 arg 00000058 flags 00000015>
-[   58.625753] mmc0: starting CMD18 arg 018be090 flags 000000b5
-[   58.625757] mmc0:     blksz 512 blocks 88 flags 00000200 tsac 100 ms nsa=
-c 0
-[   58.625760] mmc0:     CMD12 arg 00000000 flags 00000095
-
-
-
-=D1 =F3=E2=E0=E6=E5=ED=E8=E5=EC =E8 =ED=E0=E4=E5=E6=E4=EE=E9 =ED=E0 =F1=EE=
-=F2=F0=F3=E4=ED=E8=F7=E5=F1=F2=E2=EE,
-=D8=E5=E2=F7=E5=ED=EA=EE =D2.=C3.
-
------ Original Message -----
-From: "=D8=E5=E2=F7=E5=ED=EA=EE =D2=E0=F0=E0=F1 =C3=F0=E8=E3=EE=F0=FC=E5=E2=
-=E8=F7" <shevchenko.taras@triolcorp.com.ua>
-To: "Greg Gallagher" <greg@embeddedgreg.com>
-Sent: Tuesday, March 27, 2018 6:41:19 PM
-Subject: Re: [Xenomai] 4.9 for x86 issue
-
-ok
-
-yes, UDOO x86 ULTRA
-https://www.udoo.org/docs-x86/Introduction/Introduction.html
-gpio   https://github.com/torvalds/linux/blob/master/drivers/pinctrl/intel/=
-pinctrl-cherryview.c
-
-=D1 =F3=E2=E0=E6=E5=ED=E8=E5=EC =E8 =ED=E0=E4=E5=E6=E4=EE=E9 =ED=E0 =F1=EE=
-=F2=F0=F3=E4=ED=E8=F7=E5=F1=F2=E2=EE,
-=D8=E5=E2=F7=E5=ED=EA=EE =D2.=C3.
-
------ Original Message -----
-From: "Greg Gallagher" <greg@embeddedgreg.com>
-To: "=D8=E5=E2=F7=E5=ED=EA=EE =D2=E0=F0=E0=F1 =C3=F0=E8=E3=EE=F0=FC=E5=E2=
-=E8=F7" <shevchenko.taras@triolcorp.com.ua>
-Sent: Tuesday, March 27, 2018 6:36:33 PM
-Subject: Re: [Xenomai] 4.9 for x86 issue
-
-For now I'll just see what is the scope of the work. The gpio I'm pretty fa=
-miliar with, the sdcard shouldn't be too bad. I'm not familiar with RTNET t=
-hat much but I'll see what I can do.
-
-Sent via the BlackBerry Hub for Android
-
-=A0 Original Message =A0
-From: shevchenko.taras@triolcorp.com.ua
-Sent: March 27, 2018 11:34 AM
-To: greg@embeddedgreg.com
-Subject: Re: [Xenomai] 4.9 for x86 issue
-
-do you mean remote access ? teamwiever ?
-
-=D1 =F3=E2=E0=E6=E5=ED=E8=E5=EC =E8 =ED=E0=E4=E5=E6=E4=EE=E9 =ED=E0 =F1=EE=
-=F2=F0=F3=E4=ED=E8=F7=E5=F1=F2=E2=EE,
-=D8=E5=E2=F7=E5=ED=EA=EE =D2.=C3.
-
------ Original Message -----
-From: "Greg Gallagher" <greg@embeddedgreg.com>
-To: "=D8=E5=E2=F7=E5=ED=EA=EE =D2=E0=F0=E0=F1 =C3=F0=E8=E3=EE=F0=FC=E5=E2=
-=E8=F7" <shevchenko.taras@triolcorp.com.ua>
-Sent: Tuesday, March 27, 2018 6:31:04 PM
-Subject: Re: [Xenomai] 4.9 for x86 issue
-
-Probably be closer to the weekend since I work full time on non Xenomai thi=
-ngs lol okay let me look into this and see what is there and what's not.
-
-Sent via the BlackBerry Hub for Android
-
-=A0 Original Message =A0
-From: shevchenko.taras@triolcorp.com.ua
-Sent: March 27, 2018 11:27 AM
-To: greg@embeddedgreg.com
-Subject: Re: [Xenomai] 4.9 for x86 issue
-
-Perfect !!
-I need by priority=20
-1)- RtNet driver to use UDP
-2)- Handle gpio interrupt
-3)- working card-reader
-if you have time today, can we use skype or viber or telegramm to communica=
-te faster
-
-
-=D1 =F3=E2=E0=E6=E5=ED=E8=E5=EC =E8 =ED=E0=E4=E5=E6=E4=EE=E9 =ED=E0 =F1=EE=
-=F2=F0=F3=E4=ED=E8=F7=E5=F1=F2=E2=EE,
-=D8=E5=E2=F7=E5=ED=EA=EE =D2.=C3.
-
------ Original Message -----
-From: "Greg Gallagher" <greg@embeddedgreg.com>
-To: "=D8=E5=E2=F7=E5=ED=EA=EE =D2=E0=F0=E0=F1 =C3=F0=E8=E3=EE=F0=FC=E5=E2=
-=E8=F7" <shevchenko.taras@triolcorp.com.ua>
-Sent: Tuesday, March 27, 2018 6:21:28 PM
-Subject: Re: [Xenomai] 4.9 for x86 issue
-
-Do you have a list of things that you need working on the board? I may have=
- some time to help.
-
-Greg
-
-Sent via the BlackBerry Hub for Android
-
-=A0 Original Message =A0
-From: shevchenko.taras@triolcorp.com.ua
-Sent: March 27, 2018 9:30 AM
-To: rpm@xenomai.org
-Cc: xenomai@xenomai.org
-Subject: Re: [Xenomai] 4.9 for x86 issue
-
-Sorry, but no
-I install 4.9.90 and new patch
-Ive the same problems=A0=A0 - no responce with=A0 my LKM=A0 and SD card rea=
-der
-I can add logs
-
-with sd discover new details:
-=A0 if boot with sd-card inserted in reader=A0=A0 - sd-card can read , if I=
- remove card=A0 - get no responce=20
-
-difference with lsmod command output (when inserted card and not) is nls_is=
-o8859_1=A0=20
-this module is absent without sd-card
-
-I try boot without sd card and do modprobe nls_iso8859_1=A0 after insert sd=
-card=A0=A0 -=A0 get no responce=20
-
-
-
-
------ Original Message -----
-From: "Philippe Gerum" <rpm@xenomai.org>
-To: "Jan Kiszka" <jan.kiszka@web.de>
-Cc: "xenomai" <xenomai@xenomai.org>
-Sent: Tuesday, March 27, 2018 4:12:32 PM
-Subject: Re: [Xenomai] 4.9 for x86 issue
-
-On 03/10/2018 11:06 PM, Jan Kiszka wrote:
-> On 2018-03-09 08:51, Jan Kiszka wrote:
->> 4.9 requires more work, I've pushed the beginning to wip/4.9 in the same
->> repo.
->=20
-> I started to patch further on this during my flight (wip/4.9 updated),
-> noticed that the 4.14-wip queue will need a little bit sysentry tweaking
-> as well (missing 64-bit syscall dispatching), and then had to find 4.9
-> in a rather unfortunate state /wrt x86-64: CPUs are no longer idling
-> properly. I went back to ipipe-core-4.9.24-x86-2, without a difference.
->=20
-> If you should look into 4.9-x86 as you indicated, please check this.
-
-Both issues fixed in 4.9.90/x86 as pushed lately. The result has run
-overnight in 64bit mode, and for a couple of hours in ia32emu mode. So
-far so good.
-
---=20
-Philippe.
-
-_______________________________________________
-Xenomai mailing list
-Xenomai@xenomai.org
-https://xenomai.org/mailman/listinfo/xenomai
-
-_______________________________________________
-Xenomai mailing list
-Xenomai@xenomai.org
-https://xenomai.org/mailman/listinfo/xenomai
+On Wed, Feb 28, 2018 at 12:15 PM, =D0=A8=D0=B5=D0=B2=D1=87=D0=B5=D0=BD=D0=
+=BA=D0=BE =D0=A2=D0=B0=D1=80=D0=B0=D1=81 =D0=93=D1=80=D0=B8=D0=B3=D0=BE=D1=
+=80=D1=8C=D0=B5=D0=B2=D0=B8=D1=87
+<shevchenko.taras@triolcorp.com.ua> wrote:
+> Thanks a lot )))))
+>
+> may be should you remove this page https://xenomai.org//rtnet-installatio=
+n/  or add a note abaut xenomai version for such installation
+>
+> with best regards
+> Taras
+>
+>
+> =D0=A1 =D1=83=D0=B2=D0=B0=D0=B6=D0=B5=D0=BD=D0=B8=D0=B5=D0=BC =D0=B8 =D0=
+=BD=D0=B0=D0=B4=D0=B5=D0=B6=D0=B4=D0=BE=D0=B9 =D0=BD=D0=B0 =D1=81=D0=BE=D1=
+=82=D1=80=D1=83=D0=B4=D0=BD=D0=B8=D1=87=D0=B5=D1=81=D1=82=D0=B2=D0=BE,
+> =D0=A8=D0=B5=D0=B2=D1=87=D0=B5=D0=BD=D0=BA=D0=BE =D0=A2.=D0=93.
+>
+> ----- Original Message -----
+> From: "Greg Gallagher" <greg@embeddedgreg.com>
+> To: "=D0=A8=D0=B5=D0=B2=D1=87=D0=B5=D0=BD=D0=BA=D0=BE =D0=A2=D0=B0=D1=80=
+=D0=B0=D1=81 =D0=93=D1=80=D0=B8=D0=B3=D0=BE=D1=80=D1=8C=D0=B5=D0=B2=D0=B8=
+=D1=87" <shevchenko.taras@triolcorp.com.ua>
+> Cc: "xenomai" <xenomai@xenomai.org>
+> Sent: Wednesday, February 28, 2018 6:55:55 PM
+> Subject: Re: [Xenomai] RTnet
+>
+> https://xenomai.org/documentation/xenomai-3/html/MIGRATION/#_rtnet_change=
+s
+>
+> I believe RTNet is built into Xenomai 3, so you just have to enable to
+> it in your menuconfig stage.  You don't have to build it separately.
+> I don't work with RTNet that much so my bad on longer answer.  You
+> should be able to enable the rtnet drivers you need from menuconfig
+> and then insert the drivers using modprobe.  You will have to unbind
+> the non-rt Ethernet drivers.  There was a recent thread that went into
+> detail about how to do this, please look at that thread.
+>
+> On Wed, Feb 28, 2018 at 11:46 AM, =D0=A8=D0=B5=D0=B2=D1=87=D0=B5=D0=BD=D0=
+=BA=D0=BE =D0=A2=D0=B0=D1=80=D0=B0=D1=81 =D0=93=D1=80=D0=B8=D0=B3=D0=BE=D1=
+=80=D1=8C=D0=B5=D0=B2=D0=B8=D1=87
+> <shevchenko.taras@triolcorp.com.ua> wrote:
+>>
+>> Yes, all from sources
+>> I Download it
+>>
+>> wget https://xenomai.org/downloads/xenomai/stable/xenomai-3.0.5.tar.bz2
+>>
+>>
+>> wget https://xenomai.org/downloads/ipipe/v4.x/x86/ipipe-core-4.9.38-x86-=
+4.patch
+>>
+>>
+>> and apply
+>> ../xenomai-3.0.5/scripts/prepare-kernel.sh --arch=3Dx86_64 --ipipe=3Dipi=
+pe-core-4.9.38-x86-4.patch
+>>
+>> then   make menuconfig
+>>
+>> then install
+>> and so on.....
+>>
+>> =D0=A1 =D1=83=D0=B2=D0=B0=D0=B6=D0=B5=D0=BD=D0=B8=D0=B5=D0=BC =D0=B8 =D0=
+=BD=D0=B0=D0=B4=D0=B5=D0=B6=D0=B4=D0=BE=D0=B9 =D0=BD=D0=B0 =D1=81=D0=BE=D1=
+=82=D1=80=D1=83=D0=B4=D0=BD=D0=B8=D1=87=D0=B5=D1=81=D1=82=D0=B2=D0=BE,
+>> =D0=A8=D0=B5=D0=B2=D1=87=D0=B5=D0=BD=D0=BA=D0=BE =D0=A2.=D0=93.
+>>
+>> ----- Original Message -----
+>> From: "Greg Gallagher" <greg@embeddedgreg.com>
+>> To: "=D0=A8=D0=B5=D0=B2=D1=87=D0=B5=D0=BD=D0=BA=D0=BE =D0=A2=D0=B0=D1=80=
+=D0=B0=D1=81 =D0=93=D1=80=D0=B8=D0=B3=D0=BE=D1=80=D1=8C=D0=B5=D0=B2=D0=B8=
+=D1=87" <shevchenko.taras@triolcorp.com.ua>, "xenomai" <xenomai@xenomai.org=
+>
+>> Sent: Wednesday, February 28, 2018 6:37:49 PM
+>> Subject: Re: [Xenomai] RTnet
+>>
+>> Please use reply all when responding or the rest of the list won't get
+>> the benefit of the question or have the chance to help answer.
+>>
+>> Have you built Xenomai from source?  It looks like you are pointing to
+>> the modules only, I believe it needs the patched kernel source.
+>>
+>> -Greg
+>>
+>> On Wed, Feb 28, 2018 at 11:02 AM, =D0=A8=D0=B5=D0=B2=D1=87=D0=B5=D0=BD=
+=D0=BA=D0=BE =D0=A2=D0=B0=D1=80=D0=B0=D1=81 =D0=93=D1=80=D0=B8=D0=B3=D0=BE=
+=D1=80=D1=8C=D0=B5=D0=B2=D0=B8=D1=87
+>> <shevchenko.taras@triolcorp.com.ua> wrote:
+>>> Thank for your reply
+>>>
+>>> I try  follow instruction  https://xenomai.org//rtnet-installation/
+>>>
+>>>
+>>> after make menuconfig and set options
+>>>
+>>>     Variant=E2=86=92Xenomai 2.1
+>>>     Add-ons=E2=86=92Real-time Capturing Support=E2=86=92ON
+>>>     Examples=E2=86=92RTnet Application Examples=E2=86=92ON
+>>> I  get
+>>>
+>>> .....
+>>>
+>>> checking for RTnet Kconfig file... .rtnet_config (supplied)
+>>> checking for RT-extension... configure: error: *** RT-extended kernel n=
+ot found in /lib/modules/4.9.38-xenomai-3.0.5/build
+>>> makefile:51: recipe for target 'config.status' failed
+>>> make: *** [config.status] Error 1
+>>>
+>>>
+>>> this folder and path exist
+>>>
+>>> [*] RTnet Application Examples       =E2=94=82 =E2=94=82
+>>>   =E2=94=82 =E2=94=82()    Real-time Extension Config-Tool Path (NEW)  =
+  which path  should I write here ?
+>>>
+>>>
+>>>
+>>>
+>>>
+>>>
+>>>
+>>>
+>>>
+>>> =D0=A1 =D1=83=D0=B2=D0=B0=D0=B6=D0=B5=D0=BD=D0=B8=D0=B5=D0=BC =D0=B8 =
+=D0=BD=D0=B0=D0=B4=D0=B5=D0=B6=D0=B4=D0=BE=D0=B9 =D0=BD=D0=B0 =D1=81=D0=BE=
+=D1=82=D1=80=D1=83=D0=B4=D0=BD=D0=B8=D1=87=D0=B5=D1=81=D1=82=D0=B2=D0=BE,
+>>> =D0=A8=D0=B5=D0=B2=D1=87=D0=B5=D0=BD=D0=BA=D0=BE =D0=A2.=D0=93.
+>>>
+>>> ----- Original Message -----
+>>> From: "Greg Gallagher" <greg@embeddedgreg.com>
+>>> To: "=D0=A8=D0=B5=D0=B2=D1=87=D0=B5=D0=BD=D0=BA=D0=BE =D0=A2=D0=B0=D1=
+=80=D0=B0=D1=81 =D0=93=D1=80=D0=B8=D0=B3=D0=BE=D1=80=D1=8C=D0=B5=D0=B2=D0=
+=B8=D1=87" <shevchenko.taras@triolcorp.com.ua>, "xenomai" <xenomai@xenomai.=
+org>
+>>> Sent: Wednesday, February 28, 2018 5:33:25 PM
+>>> Subject: Re: [Xenomai] RTnet
+>>>
+>>> Posting back to the list.  RtNet can be used with Xenomai-3, there's
+>>> been some recent discussion on how to do this.  You should look back
+>>> through the archive and see if those messages help and then if they
+>>> don't post back with a specific question.
+>>>
+>>> On Wed, Feb 28, 2018 at 10:19 AM, =D0=A8=D0=B5=D0=B2=D1=87=D0=B5=D0=BD=
+=D0=BA=D0=BE =D0=A2=D0=B0=D1=80=D0=B0=D1=81 =D0=93=D1=80=D0=B8=D0=B3=D0=BE=
+=D1=80=D1=8C=D0=B5=D0=B2=D0=B8=D1=87
+>>> <shevchenko.taras@triolcorp.com.ua> wrote:
+>>>> But  is it possible to use  Xenomai 3  with RTnet ?
+>>>> Could you point me right way to do it ?
+>>>>
+>>>> =D0=A1 =D1=83=D0=B2=D0=B0=D0=B6=D0=B5=D0=BD=D0=B8=D0=B5=D0=BC =D0=B8 =
+=D0=BD=D0=B0=D0=B4=D0=B5=D0=B6=D0=B4=D0=BE=D0=B9 =D0=BD=D0=B0 =D1=81=D0=BE=
+=D1=82=D1=80=D1=83=D0=B4=D0=BD=D0=B8=D1=87=D0=B5=D1=81=D1=82=D0=B2=D0=BE,
+>>>> =D0=A8=D0=B5=D0=B2=D1=87=D0=B5=D0=BD=D0=BA=D0=BE =D0=A2.=D0=93.
+>>>>
+>>>> ----- Original Message -----
+>>>> From: "Greg Gallagher" <greg@embeddedgreg.com>
+>>>> To: "=D0=A8=D0=B5=D0=B2=D1=87=D0=B5=D0=BD=D0=BA=D0=BE =D0=A2=D0=B0=D1=
+=80=D0=B0=D1=81 =D0=93=D1=80=D0=B8=D0=B3=D0=BE=D1=80=D1=8C=D0=B5=D0=B2=D0=
+=B8=D1=87" <shevchenko.taras@triolcorp.com.ua>
+>>>> Cc: "xenomai" <xenomai@xenomai.org>
+>>>> Sent: Wednesday, February 28, 2018 5:01:23 PM
+>>>> Subject: Re: [Xenomai] RTnet
+>>>>
+>>>> It looks like Xenomai 3.05 is not supported with the instructions you
+>>>> are following.
+>>>>
+>>>> -Greg
+>>>>
+>>>> On Wed, Feb 28, 2018 at 9:13 AM, =D0=A8=D0=B5=D0=B2=D1=87=D0=B5=D0=BD=
+=D0=BA=D0=BE =D0=A2=D0=B0=D1=80=D0=B0=D1=81 =D0=93=D1=80=D0=B8=D0=B3=D0=BE=
+=D1=80=D1=8C=D0=B5=D0=B2=D0=B8=D1=87
+>>>> <shevchenko.taras@triolcorp.com.ua> wrote:
+>>>>>
+>>>>> Hi!
+>>>>>
+>>>>> I do it first time and followed http://rtt-lwr.readthedocs.io/en/late=
+st/rtpc/rtnet.html
+>>>>>
+>>>>> I tried to install rtnet and get some error
+>>>>> taras@prog-pc12:~/RTnet$ sudo make menuconfig
+>>>>> make[1]: Entering directory '/home/taras/RTnet/scripts/kconfig'
+>>>>> #
+>>>>> # using defaults found in ../../.rtnet_config
+>>>>> #
+>>>>>
+>>>>>
+>>>>> *** End of RTnet configuration.
+>>>>> *** Execute 'make' to build RTnet or try 'make help'.
+>>>>>
+>>>>> make[1]: Leaving directory '/home/taras/RTnet/scripts/kconfig'
+>>>>> /bin/sh: 3: /home/taras/RTnet/configure: not found
+>>>>> makefile:51: recipe for target 'config.status' failed
+>>>>> make: *** [config.status] Error 1
+>>>>>
+>>>>>
+>>>>>
+>>>>> or if i do  ./configure    a get
+>>>>> checking for main in -lncurses... yes
+>>>>> checking for RTnet Kconfig file... ./defconfig (default)
+>>>>>
+>>>>> checking for RT-extension... /usr/xenomai (Xenomai 2.0.x)
+>>>>> checking for Xenomai version... configure: error: *** Unsupported Xen=
+omai version 3.0.5 in /usr/xenomai
+>>>>> taras@prog-pc12:~/RTnet$
+>>>>>
+>>>>> What s wrong ? Please help/
+>>>>>
+>>>>> some outputs
+>>>>>
+>>>>> taras@prog-pc12:/usr/xenomai/bin$ ./xeno-config --info|grep -i build
+>>>>> Build args: --with-pic --with-core=3Dcobalt --enable-smp --disable-tl=
+s --enable-dlopen-libs --disable-clock-monotonic-raw
+>>>>>
+>>>>> taras@prog-pc12:/usr/xenomai/bin$ cd /usr/xenomai/sbin/
+>>>>> taras@prog-pc12:/usr/xenomai/sbin$ ./version
+>>>>> Xenomai/cobalt v3.0.5
+>>>>>
+>>>>> taras@prog-pc12:/usr/xenomai/sbin$ uname -r
+>>>>> 4.9.38-xenomai-3.0.5
+>>>>>
+>>>>>
+>>>>>
+>>>>> =D0=A1 =D1=83=D0=B2=D0=B0=D0=B6=D0=B5=D0=BD=D0=B8=D0=B5=D0=BC =D0=B8 =
+=D0=BD=D0=B0=D0=B4=D0=B5=D0=B6=D0=B4=D0=BE=D0=B9 =D0=BD=D0=B0 =D1=81=D0=BE=
+=D1=82=D1=80=D1=83=D0=B4=D0=BD=D0=B8=D1=87=D0=B5=D1=81=D1=82=D0=B2=D0=BE,
+>>>>> =D0=A8=D0=B5=D0=B2=D1=87=D0=B5=D0=BD=D0=BA=D0=BE =D0=A2.=D0=93.
+>>>>> _______________________________________________
+>>>>> Xenomai mailing list
+>>>>> Xenomai@xenomai.org
+>>>>> https://xenomai.org/mailman/listinfo/xenomai
 
