@@ -1,14 +1,10 @@
-References: <a8e9d962-5de6-6616-327e-d2d709348466@xenomai.org>
- <f6913f09-11c2-bf26-fb77-f39533786ba8@siemens.com>
-From: Philippe Gerum <rpm@xenomai.org>
-Message-ID: <894bce3f-996b-d83e-d46a-8a2ebba83515@xenomai.org>
-Date: Thu, 1 Mar 2018 12:50:49 +0100
 MIME-Version: 1.0
-In-Reply-To: <f6913f09-11c2-bf26-fb77-f39533786ba8@siemens.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] Please review wip/rtnet-fixes
+From: Pintu Kumar <pintu.ping@gmail.com>
+Date: Thu, 1 Mar 2018 18:07:34 +0530
+Message-ID: <CAOuPNLiNGpnvWcj_6xZV0FWZfqMgi3Xc61GaHfZP1N58TYFYcQ@mail.gmail.com>
+Content-Type: text/plain; charset="UTF-8"
+Subject: [Xenomai] [NATIVE API] Xenomai native API equivalent for
+	clock_gettime
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,81 +13,35 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jan Kiszka <jan.kiszka@siemens.com>, "Xenomai@xenomai.org" <Xenomai@xenomai.org>
+To: "Xenomai@xenomai.org" <xenomai@xenomai.org>, Greg Gallagher <greg@embeddedgreg.com>, Jan Kiszka <jan.kiszka@web.de>, Philippe Gerum <rpm@xenomai.org>, Jan Kiszka <jan.kiszka@siemens.com>
 
-On 02/28/2018 08:36 PM, Jan Kiszka wrote:
-> On 2018-02-28 19:24, Philippe Gerum wrote:
->>
->> Gentlemen, we have 30 patches waiting for review by RTnet gurus in
->> wip/rtnet-fixes. We already had some positive feedback about them fixing
->> the ugly SMAP-related issue, which we may want to merge to stable-3.0.x
->> asap, but there are a couple of unrelated changes to review as well, namely:
->>
->> 9a6bbc384 net/socket: forward private ioctl requests to NIC driver
-> 
-> Seems harmless, but do we have a user for that?
+Hi,
 
-Yes, a couple of them now. High-end NICs (e.g. IGB) tend to provide even
-more hw features these days, like GPIO pins, general purpose timers and
-watchdogs. Also, when IEEE-1588 hw is available, one could make good use
-of it for timestamping and clock correction without necessarily aiming
-at implementing a full PTP stack in rt mode. In many of those potential
-use cases, only the ioctl interface is at hand for controlling those
-extra features from userland.
+I have one question about Xenomai native API
 
-By having the stack relay the regular, well-defined private range of
-ioctl requests to the NIC driver, we could prevent conflicts with
-upstream changes, and a generic way for userland to talk to the NIC
-driver directly for dealing with the hw-specific bits in rt mode.
+1) What is the native API equivalent for clock_gettime() ?
 
- I'm also skeptical if
-> SIOCPROTOPRIVATE should actually target a device driver. Seems more like
-> it's used at higher levels.
+I have seen this Xenomai native API guide but I could not find it.
+https://xenomai.org/documentation/xenomai-2.6/pdf/native-api.pdf
 
-Definitely, should be SIOCDEVPRIVATE. Changed accordingly.
+I have a simple pthread based POSIX application which I converted to native API.
+But for calculating the latency difference I using this in both case:
+clock_gettime(CLOCK_MONOTONIC, &now);
 
-> 
->> b78817868 net/socket: align rtdev do_ioctl handler on the regular
->> ndo_do_ioctl
-> 
-> Mostly fine, except for some unrelated whitespace breakage in
-> kernel/drivers/net/stack/socket.c.
+But I observed that if I use only NATIVE skin, I could not see any
+latency difference.
+However, if I use POSIX skin I see the latency difference.
 
-Fixed.
+So, I want to replace clock_gettime() with native API to find the
+exact difference with native skin.
 
-> 
->> 40b9bdc44 net/socket: enforce secondary mode for SIOCETHTOOL
-> 
-> Looks good, just also indent the "break" of the SIOCETHTOOL block with tabs.
->
+Or, if there is any other better way to measurement latency difference
+between POSIX API and native API, please let me know.
 
-Fixed.
 
->>
->> I don't see anything controversial in those patches, but I'd rather ask
->> before merging.
->>
->> 3.0.7 is currently on hold until we have wip/rtnet-fixes merged in whole
->> or in part (at least the SMAP stuff), so we direly need to make some
->> progress here.
-> 
-> I didn't look into all details, rather relying on test results as well.
-> Some minor findings:
-> 
-> There is a ping-pong debug change in "net/tcp: recvmsg: remove direct
-> references to user memory" vs. "net/tcp: sendmsg: remove direct
-> references to user memory". Please remove.
-> 
-> "net/udp: ioctl: fix temp arg buffer type" should get folded into the
-> commit that caused the regression ("net/udp: ioctl: remove direct
-> references to user memory").
-> 
 
-Fixed. While at it, subsequent attempts to fix issues in the same logic
-have been folded into a single commit too.
+Thank You!
 
-Thanks,
-
--- 
-Philippe.
+Regards,
+Pintu
 
