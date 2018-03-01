@@ -1,16 +1,13 @@
-References: <9dee4e70-9bce-2fac-2aba-f27e65a9c1ba@tuebingen.mpg.de>
- <50805f15-f8c3-a47d-0b05-7b722d44a73e@xenomai.org>
- <9607c407-8524-0006-910d-941a07d1f9d8@tuebingen.mpg.de>
- <96be225a-62dd-0aca-91f5-d0efdd97307f@xenomai.org>
-From: Julian Viereck <jviereck@tuebingen.mpg.de>
-Message-ID: <31cb225a-dd40-fa3a-37e9-139691ea01f4@tuebingen.mpg.de>
-Date: Thu, 1 Mar 2018 12:46:52 -0500
+References: <9d0a8dc6-d16d-e3e2-8d20-400e5e2e4b4c@siemens.com>
+From: Philippe Gerum <rpm@xenomai.org>
+Message-ID: <f0fbe41c-cd42-0991-9f3f-dd1f8c214e69@xenomai.org>
+Date: Thu, 1 Mar 2018 18:51:15 +0100
 MIME-Version: 1.0
-In-Reply-To: <96be225a-62dd-0aca-91f5-d0efdd97307f@xenomai.org>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 7bit
+In-Reply-To: <9d0a8dc6-d16d-e3e2-8d20-400e5e2e4b4c@siemens.com>
+Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
-Subject: Re: [Xenomai] Low latency under stress, otherwise high latency
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai] Winter^W y2038 is coming
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -19,52 +16,60 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Philippe Gerum <rpm@xenomai.org>, xenomai@xenomai.org
+To: Jan Kiszka <jan.kiszka@siemens.com>, Xenomai <xenomai@xenomai.org>
 
-> 1) disable hyperthreading and running a single core
-Seems like the latency problem is due to enabled hyperthreading.
+On 02/21/2018 07:33 PM, Jan Kiszka wrote:
+> Hi,
+> 
+> likely due to some platform oddities (still has to be analyzed in more
+> details), we are running into the situation that xntimer_grab_hardware
+> on a x86-64 host tunes nkclock.wallclock_offset to a value that is not
+> compatible with the 32-bit time_t ABI of compat applications. If you do
+> a pattern like
+> 
+>     abs_timeout = clock_gettime(CLOCK_REALTIME) + rel_timeout
+>     some_abs_wait(abs_timeout)
+> 
+> that abs_wait will practically wait forever. The same bug can also be
+> triggered by doing a
+> 
+>     clock_settime(CLOCK_REALTIME, -negative_date)
+> 
+> I'm now wondering if we should take measures that detect or even prevent
+> the setting of invalid dates in the presence of 32-bit ABIs. Or if we
+> should suggest/demand the setting of -D_TIME_BITS=64 already. The clock
+> is ticking... Thoughts?
+> 
 
-I reran the latency tests with hyperthreading disabled and the latencies 
-stay below 20 microseconds now. This is with 1 and 8 cores. Sorry for 
-reporting something different yesterday.
+AFAIU, y2038 will hit any configuration showing timespec32 in the table
+below:
 
-Thanks a lot for your help,
-Julian
+CPU-bitness    	ABI		Timespec
 
+64		native		timespec64
+64		x32*		timespec64
+64		ia32*		timespec32
+32		native		timespec32
 
-On 03/01/2018 04:24 AM, Philippe Gerum wrote:
-> On 02/28/2018 10:40 PM, Julian Viereck wrote:
->> Thanks for your pointer to hwlatdetect and possible SMI issues.
->>
->> It looks like the hwlatdetect script is not working with the latest
->> kernel anymore. However, it appears the hwlat is now part of the
->> kernel's ftrace [1]. Here is the kernel documentation about how to use
->> and understand the trace loge file [2].
->>
->> Using a trace window of 1sec, trace width of 0.5 sec and tracing_thresh
->> of 20 microseconds, there are no unexpected latencies detected by the
->> hwlat tool. Therefore, I doubt the issue is due to SMI interrupts.
->>
->> In the meantime, I've also tested:
->>
->> 1) disable hyperthreading and running a single core
-> 147 us is clearly pathological Xenomai-wise. This can't be a SMT/SMP
-> overhead.
->
->> 2) run the xenomai latency test from the console before booting the x11
->> desktop (to rule out any graphics issues)
->>
->> In both cases, the high latencies under no-workload remains.
->>
-> What are the exact settings regarding the CPU_IDLE and CPU_FREQ
-> (governor) frameworks?
->
->> Any other ideas what to look into / debug / run traces on?
->>
-> At this point, we'd need a pipeline trace. Could you take a snapshot
-> with this tool [1] by running the latency test with the -f option?
->
-> [1] http://xenomai.org/2014/06/using-the-i-pipe-tracer/
->
+(*) x86 specific
 
+To sum up, x86_64 applications using the ia32 ABI, and any application
+running on a 32bit CPU won't make it after that date, with the current code.
+
+Ignoring the case of 32bit platforms for which there does not seem to be
+much of a hope in mainline anyway, I would favor option #2 for ia32
+apps, i.e. assume that the underlying *libc can be told to pass
+timespec64 arguments, and have the compat mode wrappers in Cobalt assume
+userland always gives timespec64.
+
+To make sure kernel & userland agree on the timespec bitness, we could
+add a dedicated information bit to cobalt_bindreq::feat_req.
+
+I believe that those updates should go to 3.1, since they induce ABI
+changes, and it seems reasonable to ask ia32 ABI users to upgrade the
+*libc (for getting the timespec64 switch) along with the real-time core
+and libraries.
+
+-- 
+Philippe.
 
