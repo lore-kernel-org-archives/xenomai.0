@@ -1,12 +1,15 @@
-From: Giulio Moro <g.moro@qmul.ac.uk>
-Date: Mon, 26 Feb 2018 21:41:35 +0000
-Message-ID: <DB6PR0701MB245683DC50B4B964F0D846AAB5C10@DB6PR0701MB2456.eurprd07.prod.outlook.com>
-Content-Language: en-GB
-Content-Type: text/plain; charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
+References: <9dee4e70-9bce-2fac-2aba-f27e65a9c1ba@tuebingen.mpg.de>
+ <50805f15-f8c3-a47d-0b05-7b722d44a73e@xenomai.org>
+ <9607c407-8524-0006-910d-941a07d1f9d8@tuebingen.mpg.de>
+From: Philippe Gerum <rpm@xenomai.org>
+Message-ID: <96be225a-62dd-0aca-91f5-d0efdd97307f@xenomai.org>
+Date: Thu, 1 Mar 2018 10:24:36 +0100
 MIME-Version: 1.0
-Subject: [Xenomai] testsuite/smokey/dlopen fails to build when building out
-	of tree
+In-Reply-To: <9607c407-8524-0006-910d-941a07d1f9d8@tuebingen.mpg.de>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai] Low latency under stress, otherwise high latency
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,35 +18,44 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Julian Viereck <jviereck@tuebingen.mpg.de>, xenomai@xenomai.org
 
-git checkout stable-3.0.x
-scripts/bootstrap
-mkdir -p ../xenomai-3-build && cd ../xenomai-3-build
-../xenomai-3/configure --with-core=3Dcobalt --enable-pshared --host=3Darm-l=
-inux-gnueabihf --build=3Darm CFLAGS=3D"-march=3Darmv7-a -mfpu=3Dvfp3" --ena=
-ble-dlopen-libs
-make  V=3D1
+On 02/28/2018 10:40 PM, Julian Viereck wrote:
+> Thanks for your pointer to hwlatdetect and possible SMI issues.
+> 
+> It looks like the hwlatdetect script is not working with the latest
+> kernel anymore. However, it appears the hwlat is now part of the
+> kernel's ftrace [1]. Here is the kernel documentation about how to use
+> and understand the trace loge file [2].
+> 
+> Using a trace window of 1sec, trace width of 0.5 sec and tracing_thresh
+> of 20 microseconds, there are no unexpected latencies detected by the
+> hwlat tool. Therefore, I doubt the issue is due to SMI interrupts.
+> 
+> In the meantime, I've also tested:
+> 
+> 1) disable hyperthreading and running a single core
 
-will eventually result in
-arm-linux-gnueabihf-gcc -DHAVE_CONFIG_H -I. -I../../../../xenomai-3/testsui=
-te/smokey/dlopen -I../../../include  -I/home/giulio/bela-image-builder/down=
-loads/xenomai-3/lib/cobalt/arch/arm/include -I/home/giulio/bela-image-build=
-er/downloads/xenomai-3/kernel/cobalt/arch/arm/include -DNDEBUG -O2 -D_GNU_S=
-OURCE -D_REENTRANT -fasynchronous-unwind-tables -pipe -fstrict-aliasing -Wa=
-ll -Wstrict-prototypes -Wmissing-prototypes -Wno-long-long -Wno-unused-para=
-meter -Werror -D__XENO__ -D__IN_XENO__ -I/home/giulio/bela-image-builder/do=
-wnloads/xenomai-3/include/cobalt -DXENO_TEST_DIR=3D'"/usr/xenomai/bin"' -I.=
-./../../../xenomai-3   -march=3Darmv7-a -mfpu=3Dvfp3 -MT libdlopen_a-dlopen=
-.o -MD -MP -MF .deps/libdlopen_a-dlopen.Tpo -c -o libdlopen_a-dlopen.o `tes=
-t -f 'dlopen.c' || echo '../../../../xenomai-3/testsuite/smokey/dlopen/'`dl=
-open.c
-In file included from ../../../../xenomai-3/testsuite/smokey/dlopen/dlopen.=
-c:24:0:
-/home/giulio/bela-image-builder/downloads/xenomai-3/include/cobalt/stdio.h:=
-28:29: fatal error: cobalt/wrappers.h: No such file or directory
+147 us is clearly pathological Xenomai-wise. This can't be a SMT/SMP
+overhead.
 
-so it is missing a -I../../../../xenomai-3/include
+> 2) run the xenomai latency test from the console before booting the x11
+> desktop (to rule out any graphics issues)
+> 
+> In both cases, the high latencies under no-workload remains.
+> 
 
+What are the exact settings regarding the CPU_IDLE and CPU_FREQ
+(governor) frameworks?
 
+> Any other ideas what to look into / debug / run traces on?
+> 
+
+At this point, we'd need a pipeline trace. Could you take a snapshot
+with this tool [1] by running the latency test with the -f option?
+
+[1] http://xenomai.org/2014/06/using-the-i-pipe-tracer/
+
+-- 
+Philippe.
 
