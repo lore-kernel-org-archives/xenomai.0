@@ -1,19 +1,14 @@
+References: <a8e9d962-5de6-6616-327e-d2d709348466@xenomai.org>
+ <f6913f09-11c2-bf26-fb77-f39533786ba8@siemens.com>
+From: Philippe Gerum <rpm@xenomai.org>
+Message-ID: <894bce3f-996b-d83e-d46a-8a2ebba83515@xenomai.org>
+Date: Thu, 1 Mar 2018 12:50:49 +0100
 MIME-Version: 1.0
-In-Reply-To: <CALLqZ8RHfg8s_SDBEOnC3WTBOqaMJ-9+v3B6G0rRM96cSvpL0w@mail.gmail.com>
-References: <CAOuPNLjTo8E7z=11ip8Dtjvt2dm=PU-+9urgwn8qgYCEcyxmMQ@mail.gmail.com>
- <75d25b2f-e82b-d7ab-da1f-48192862a5af@siemens.com>
- <CAOuPNLj+-UHQ__AxN_mBWk0NitRf0oLqUZOPOae4i_NSHPa5MA@mail.gmail.com>
- <CALLqZ8QFmD_rHhbaAFymoCJAdhK1EdLWFK6xWdqW+T7EykuQ=A@mail.gmail.com>
- <CAOuPNLjdRNXax22b7Bw=EsGcAmjeivFMmond_xzYbcqUn9RGvg@mail.gmail.com>
- <CAOuPNLhNkgL4iMzEvS_64yjsL3da6RseFzpZQxC3k-DyXGogLg@mail.gmail.com>
- <CALLqZ8RHfg8s_SDBEOnC3WTBOqaMJ-9+v3B6G0rRM96cSvpL0w@mail.gmail.com>
-From: Pintu Kumar <pintu.ping@gmail.com>
-Date: Thu, 1 Mar 2018 15:48:13 +0530
-Message-ID: <CAOuPNLhdF7Hun1Zv8R8HdhZdJ3F5BUb+TzAU=7azX_WQywws-Q@mail.gmail.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-Subject: Re: [Xenomai] [RTDM] Converting existing Linux char driver to rtdm
-	driver
+In-Reply-To: <f6913f09-11c2-bf26-fb77-f39533786ba8@siemens.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai] Please review wip/rtnet-fixes
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -22,218 +17,81 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Greg Gallagher <greg@embeddedgreg.com>
-Cc: Jan Kiszka <jan.kiszka@siemens.com>, "Xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Jan Kiszka <jan.kiszka@siemens.com>, "Xenomai@xenomai.org" <Xenomai@xenomai.org>
 
-On Wed, Feb 28, 2018 at 8:19 PM, Greg Gallagher <greg@embeddedgreg.com> wro=
-te:
-> What's your prototype for dummy_write?  Can you post the function
-> definition.  It looks like there's a rt_write is expecting a different
-> type.
+On 02/28/2018 08:36 PM, Jan Kiszka wrote:
+> On 2018-02-28 19:24, Philippe Gerum wrote:
+>>
+>> Gentlemen, we have 30 patches waiting for review by RTnet gurus in
+>> wip/rtnet-fixes. We already had some positive feedback about them fixing
+>> the ugly SMAP-related issue, which we may want to merge to stable-3.0.x
+>> asap, but there are a couple of unrelated changes to review as well, namely:
+>>
+>> 9a6bbc384 net/socket: forward private ioctl requests to NIC driver
+> 
+> Seems harmless, but do we have a user for that?
+
+Yes, a couple of them now. High-end NICs (e.g. IGB) tend to provide even
+more hw features these days, like GPIO pins, general purpose timers and
+watchdogs. Also, when IEEE-1588 hw is available, one could make good use
+of it for timestamping and clock correction without necessarily aiming
+at implementing a full PTP stack in rt mode. In many of those potential
+use cases, only the ioctl interface is at hand for controlling those
+extra features from userland.
+
+By having the stack relay the regular, well-defined private range of
+ioctl requests to the NIC driver, we could prevent conflicts with
+upstream changes, and a generic way for userland to talk to the NIC
+driver directly for dealing with the hw-specific bits in rt mode.
+
+ I'm also skeptical if
+> SIOCPROTOPRIVATE should actually target a device driver. Seems more like
+> it's used at higher levels.
+
+Definitely, should be SIOCDEVPRIVATE. Changed accordingly.
+
+> 
+>> b78817868 net/socket: align rtdev do_ioctl handler on the regular
+>> ndo_do_ioctl
+> 
+> Mostly fine, except for some unrelated whitespace breakage in
+> kernel/drivers/net/stack/socket.c.
+
+Fixed.
+
+> 
+>> 40b9bdc44 net/socket: enforce secondary mode for SIOCETHTOOL
+> 
+> Looks good, just also indent the "break" of the SIOCETHTOOL block with tabs.
 >
 
-OK it is working now after adding "const" to void *buf in write function.
-Thank you for the clue :)
+Fixed.
 
-Regards,
-Pintu
+>>
+>> I don't see anything controversial in those patches, but I'd rather ask
+>> before merging.
+>>
+>> 3.0.7 is currently on hold until we have wip/rtnet-fixes merged in whole
+>> or in part (at least the SMAP stuff), so we direly need to make some
+>> progress here.
+> 
+> I didn't look into all details, rather relying on test results as well.
+> Some minor findings:
+> 
+> There is a ping-pong debug change in "net/tcp: recvmsg: remove direct
+> references to user memory" vs. "net/tcp: sendmsg: remove direct
+> references to user memory". Please remove.
+> 
+> "net/udp: ioctl: fix temp arg buffer type" should get folded into the
+> commit that caused the regression ("net/udp: ioctl: remove direct
+> references to user memory").
+> 
 
+Fixed. While at it, subsequent attempts to fix issues in the same logic
+have been folded into a single commit too.
 
-> On Wed, Feb 28, 2018 at 7:16 AM, Pintu Kumar <pintu.ping@gmail.com> wrote=
-:
->> Hi,
->>
->> I am getting some error while building a RTDM driver. Please check my
->> inline reply.
->>
->>
->> On Tue, Feb 27, 2018 at 7:09 PM, Pintu Kumar <pintu.ping@gmail.com> wrot=
-e:
->>> Dear Greg & Jan,
->>>
->>> Thank you so much for your help. Yes I am looking into existing sample
->>> drivers to understand. I think I got some clue.
->>> Basically I am developing a dummy RTDM char driver for some
->>> experimentation and analysis purpose.
->>> As you said, since there is no proper documentation for developing a
->>> RTDM driver, I might be having some more silly queries (if I am
->>> stuck).
->>>
->>> 1)
->>>> What's confusing about the context?
->>> As I see, there is a context_size that we need to set in rtdm_driver st=
-ructure.
->>> Is this really required to set ? Can I set it to 0 ?
->>> Anyways, I currently set like this (for time being):
->>> struct dummy_context {
->>>         unsigned char *buffer;
->>>         unsigned int len;
->>> };
->>> Hope this fine ?
->>>
->>> 2)
->>>> The other question is do you need at RTDM driver?
->>> Yes, I need to develop a RTDM driver because I need to compare it with
->>> normal kernel driver.
->>> Later I need to add some specific use case for some purpose.
->>>
->>> 3) How do we allocate memory in RTDM driver ?
->>>     I see rtdm_malloc()/free() is used. Is this in kernel allocation
->>> like kmalloc/vmalloc ?
->>>     Or, I need to directly use kmalloc/vmalloc itself , considering
->>> similar scenario like normal kernel approach.
->>>
->>> 4) ^^Most important^^: how to I compile a sample RTDM char driver?
->>>     Is it the same method like normal kernel Makefile and using the
->>> xeno_config in addition ?
->>>     Is there any RTDM Makefile reference available ?
->>>
->>
->> Hi,
->>
->> I get this errors when compiling a sample RTDM driver.
->>
->> rtdummy.c:63:15: error: initialization from incompatible pointer type
->> [-Werror=3Dincompatible-pointer-types]
->>    .write_rt =3D dummy_write,
->>                ^
->> /home/pintu/rtdummy.c:63:15: note: (near initialization for
->> =E2=80=98dummy_driver.ops.write_rt=E2=80=99)
->> cc1: some warnings being treated as errors
->>
->>
->> However, if I comment the write_rt part, the module is build successfull=
-y.
->> Why this error is coming only for write part, but not for read, open,
->> ioctl and others ?
->>
->> This is my Makefile (simple Makefile used for building linux kernel modu=
-le)
->> --------------------------------
->> EXTRA_CFLAGS    +=3D -I$(shell pwd)
->>
->> obj-m :=3D rtdummy.o
->>
->> KDIR :=3D /lib/modules/$(shell uname -r)/build
->> PWD :=3D $(shell pwd)
->>
->> default:
->>         $(MAKE) -C $(KDIR) M=3D$(PWD) modules
->>
->> clean:
->>         $(MAKE) -C $(KDIR) M=3D$(PWD) clean
->> --------------------------------
->>
->> This is the structure used:
->>
->> -------------------------------------------------------------
->> static struct rtdm_driver dummy_driver =3D {
->>         .profile_info           =3D       RTDM_PROFILE_INFO(dummy,
->>                                                           RTDM_CLASS_DUM=
-MY,
->>                                                           RTDM_SUBCLASS_=
-DUMMY,
->>                                                           0),
->>         .device_flags           =3D       RTDM_NAMED_DEVICE|RTDM_EXCLUSI=
-VE,
->>         .device_count           =3D       1,
->>         .context_size           =3D       sizeof(struct dummy_context),
->>         .ops =3D {
->>                 .open           =3D       dummy_open,
->>                 .read_rt        =3D       dummy_read,
->>                 .write_rt       =3D       dummy_write,
->>                 .ioctl_rt       =3D       dummy_ioctl,
->>                 .ioctl_nrt      =3D       dummy_ioctl,
->>                 .close          =3D       dummy_close,
->>         },
->> };
->> -------------------------------------------------------------
->>
->> Please let me know how to fix this error ?
->>
->>
->> Thanks,
->> Pintu
->>
->>
->>>
->>> 5) When I install the RTDM driver (using insmod or modprobe), will it
->>> create the /dev node automatically like "misc" ?
->>>     I am registering the driver using: RTDM_CLASS_MISC
->>>
->>>
->>> Thanks,
->>> Pintu
->>>
->>>
->>> On Mon, Feb 26, 2018 at 10:58 PM, Greg Gallagher <greg@embeddedgreg.com=
-> wrote:
->>>> You'd have to decide what functionality you want with respect to rt
->>>> and non rt for your driver.  What's confusing about the context?  The
->>>> gpio driver is pretty up to date, you can look at it for some
->>>> guidance.  Unfortunately there isn't a lot of documentation at the
->>>> moment, so your best bet is to look at some of the existing drivers.
->>>> It's easier to answer specific questions you may have about the RTDM
->>>> framework.  The other question is do you need at RTDM driver?  Could
->>>> you use the UDD framework instead?  With the UDD framework you just
->>>> need to support a small RTDM driver and the rest of the driver lives
->>>> in user space.
->>>>
->>>> -Greg
->>>>
->>>> On Mon, Feb 26, 2018 at 12:20 PM, Pintu Kumar <pintu.ping@gmail.com> w=
-rote:
->>>>> Dear Jan,
->>>>>
->>>>> This thread is about porting a normal misc char driver to rtdm model.
->>>>>
->>>>> Anyways I got some clue by looking into rtdmtest driver.
->>>>> But what is confusing to me is the rtdm context_ part and the rt, nrt=
- part.
->>>>> How can I map this eith my exusting driver?
->>>>> Can I leave the context part NULL and use only rt for all other calls=
-.
->>>>>
->>>>> Thanks,
->>>>> Pintu
->>>>>
->>>>> On 26 Feb 2018 7:54 pm, "Jan Kiszka" <jan.kiszka@siemens.com> wrote:
->>>>>>
->>>>>> On 2018-02-26 12:26, Pintu Kumar wrote:
->>>>>> > Hi,
->>>>>> >
->>>>>> > I have a sample linux char driver which I am registering using nor=
-mal
->>>>>> > misc_register/deregister function.
->>>>>> > In this driver, I have used, open, read, write, ioctl, release sys=
-tem
->>>>>> > calls.
->>>>>> >
->>>>>> > Now I wanted to convert this driver to RTDM interface and compare =
-it.
->>>>>> > Later I wanted to add some more use cases related to interrupt
->>>>>> > processing by connecting some external peripheral.
->>>>>> >
->>>>>> > Firstly, please guide me how to easily convert an existing linux c=
-har
->>>>>> > driver to RTDM model.
->>>>>> >
->>>>>>
->>>>>> Conversion of existing Linux UART drivers to RTDM is not straightfor=
-ward
->>>>>> as the former relies on a larger hierarchy of Linux drivers, startin=
-g
->>>>>> with the tty core over the serial core and possibly some chip
->>>>>> abstractions (8250). RTDM, as you can see from the existing drivers =
-in
->>>>>> kernel/drivers/serial, is rather compact and does not come with that
->>>>>> infrastructure, primarily as it has a confined use case. Best is to
->>>>>> study those drivers, use one as template and replace the required
->>>>>> hardware accesses.
->>>>>>
->>>>>> Jan
->>>>>>
->>>>>> --
->>>>>> Siemens AG, Corporate Technology, CT RDA IOT SES-DE
->>>>>> Corporate Competence Center Embedded Linux
+Thanks,
+
+-- 
+Philippe.
 
