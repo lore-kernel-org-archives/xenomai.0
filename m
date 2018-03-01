@@ -1,12 +1,16 @@
+References: <9dee4e70-9bce-2fac-2aba-f27e65a9c1ba@tuebingen.mpg.de>
+ <50805f15-f8c3-a47d-0b05-7b722d44a73e@xenomai.org>
+ <9607c407-8524-0006-910d-941a07d1f9d8@tuebingen.mpg.de>
+ <96be225a-62dd-0aca-91f5-d0efdd97307f@xenomai.org>
+From: Julian Viereck <jviereck@tuebingen.mpg.de>
+Message-ID: <31cb225a-dd40-fa3a-37e9-139691ea01f4@tuebingen.mpg.de>
+Date: Thu, 1 Mar 2018 12:46:52 -0500
 MIME-Version: 1.0
-In-Reply-To: <CAOuPNLiNGpnvWcj_6xZV0FWZfqMgi3Xc61GaHfZP1N58TYFYcQ@mail.gmail.com>
-References: <CAOuPNLiNGpnvWcj_6xZV0FWZfqMgi3Xc61GaHfZP1N58TYFYcQ@mail.gmail.com>
-From: Greg Gallagher <greg@embeddedgreg.com>
-Date: Thu, 1 Mar 2018 12:02:15 -0500
-Message-ID: <CALLqZ8SGRfcu3J=-75LkGQJR89PxS4=7zLCiojjVBzX+p=iADw@mail.gmail.com>
-Content-Type: text/plain; charset="UTF-8"
-Subject: Re: [Xenomai] [NATIVE API] Xenomai native API equivalent for
-	clock_gettime
+In-Reply-To: <96be225a-62dd-0aca-91f5-d0efdd97307f@xenomai.org>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 7bit
+Content-Language: en-US
+Subject: Re: [Xenomai] Low latency under stress, otherwise high latency
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,47 +19,52 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Pintu Kumar <pintu.ping@gmail.com>
-Cc: Jan Kiszka <jan.kiszka@siemens.com>, Jan Kiszka <jan.kiszka@web.de>, "Xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Philippe Gerum <rpm@xenomai.org>, xenomai@xenomai.org
 
-Are you using Xenomai 2.6 or 3?  If you are using 3 use this guide instead:
+> 1) disable hyperthreading and running a single core
+Seems like the latency problem is due to enabled hyperthreading.
 
-https://xenomai.org/documentation/xenomai-3/html/xeno3prm/group__alchemy__timer.html
+I reran the latency tests with hyperthreading disabled and the latencies 
+stay below 20 microseconds now. This is with 1 and 8 cores. Sorry for 
+reporting something different yesterday.
 
-Post back if nothing there can help, but you may want to loot at the
-source for some of the utilities that calculate latency as a example
-to work from
+Thanks a lot for your help,
+Julian
 
--Greg
 
-On Thu, Mar 1, 2018 at 7:37 AM, Pintu Kumar <pintu.ping@gmail.com> wrote:
-> Hi,
+On 03/01/2018 04:24 AM, Philippe Gerum wrote:
+> On 02/28/2018 10:40 PM, Julian Viereck wrote:
+>> Thanks for your pointer to hwlatdetect and possible SMI issues.
+>>
+>> It looks like the hwlatdetect script is not working with the latest
+>> kernel anymore. However, it appears the hwlat is now part of the
+>> kernel's ftrace [1]. Here is the kernel documentation about how to use
+>> and understand the trace loge file [2].
+>>
+>> Using a trace window of 1sec, trace width of 0.5 sec and tracing_thresh
+>> of 20 microseconds, there are no unexpected latencies detected by the
+>> hwlat tool. Therefore, I doubt the issue is due to SMI interrupts.
+>>
+>> In the meantime, I've also tested:
+>>
+>> 1) disable hyperthreading and running a single core
+> 147 us is clearly pathological Xenomai-wise. This can't be a SMT/SMP
+> overhead.
 >
-> I have one question about Xenomai native API
+>> 2) run the xenomai latency test from the console before booting the x11
+>> desktop (to rule out any graphics issues)
+>>
+>> In both cases, the high latencies under no-workload remains.
+>>
+> What are the exact settings regarding the CPU_IDLE and CPU_FREQ
+> (governor) frameworks?
 >
-> 1) What is the native API equivalent for clock_gettime() ?
+>> Any other ideas what to look into / debug / run traces on?
+>>
+> At this point, we'd need a pipeline trace. Could you take a snapshot
+> with this tool [1] by running the latency test with the -f option?
 >
-> I have seen this Xenomai native API guide but I could not find it.
-> https://xenomai.org/documentation/xenomai-2.6/pdf/native-api.pdf
+> [1] http://xenomai.org/2014/06/using-the-i-pipe-tracer/
 >
-> I have a simple pthread based POSIX application which I converted to native API.
-> But for calculating the latency difference I using this in both case:
-> clock_gettime(CLOCK_MONOTONIC, &now);
->
-> But I observed that if I use only NATIVE skin, I could not see any
-> latency difference.
-> However, if I use POSIX skin I see the latency difference.
->
-> So, I want to replace clock_gettime() with native API to find the
-> exact difference with native skin.
->
-> Or, if there is any other better way to measurement latency difference
-> between POSIX API and native API, please let me know.
->
->
->
-> Thank You!
->
-> Regards,
-> Pintu
+
 
