@@ -1,10 +1,10 @@
-Date: Fri, 2 Mar 2018 11:03:23 +0800 (CST)
-From: eric <ericvic@163.com>
+From: Henning Schild <henning.schild@siemens.com>
+Date: Fri,  2 Mar 2018 14:22:05 +0100
+Message-Id: <20180302132205.28807-1-henning.schild@siemens.com>
 MIME-Version: 1.0
-Message-ID: <142db5a5.4147.161e4aa07af.Coremail.ericvic@163.com>
-Content-Type: text/plain; charset=GBK
-Content-Transfer-Encoding: base64
-Subject: [Xenomai] rcu_sched detected stalls on CPUs
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+Subject: [Xenomai] [PATCH] cobalt/kernel: fix clock_adjtime() compile error
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -13,49 +13,43 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai <xenomai@xenomai.org>
+To: "xenomai @ xenomai . org" <xenomai@xenomai.org>
 
-SGVsbG8gZXZlcnkgb25lOgogICAgICAgICAgICBJIGhhdmUgYSBwcm9ibGVtIG9uIHg4NiBzbXAg
-c3lzdGVtICAubXkgbGludXggaXMgMy4xMC4zMiBhbmQgNC4xLjE4IHdpdGggIHhlbm9tYWkgcGF0
-Y2ggeGVub21haS0yLjYuNCx4ZW5vbWFpLTIuNi41IC4Kd2hlbiBncnViIHNldCBtYXhjcHVzPTEg
-dGhlIHN5c3RlbSBydW4gZmluZS4gYnV0IHdoZW4gc2V0IG1heCBjcHVzPTIobXkgY3B1IGlzIGR1
-YWwtY29yZSApLHRoZSBlcnJvciBpcyBibG93IC4KTXkgc3lzdGVtIHJ1biByZWFsdGltZSB0YXNr
-IGFuZCAgbGFyZ2Ugbm9uLXJlYWwgdGltZSBkaXNrIHdyaXRpbmcgLgoKSU5GTzogcmN1X3NjaGVk
-IGRldGVjdGVkIHN0YWxscyBvbiBDUFVzL3Rhc2tzOiB7IDB9IChkZXRlY3RlZCBieSAxLCB0PTQz
-MjYxMjAyIGppZmZpZXMsIGc9MjIwMzQwNTIsIGM9MjIwMzQwNTEsIHE9MTUzKQoKc2VuZGluZyBO
-TUkgdG8gYWxsIENQVXM6Ck5NSSBiYWNrdHJhY2UgZm9yIGNwdSAxCkNQVTogMSBQSUQ6IDAgQ29t
-bTogc3dhcHBlci8xIFRhaW50ZWQ6IFAgICAgICAgICAgIE8gMy4xMC4zMi14ZW5vbWFpICM5Ckhh
-cmR3YXJlIG5hbWU6IFRvIGJlIGZpbGxlZCBieSBPLkUuTS4gVG8gYmUgZmlsbGVkIGJ5IE8uRS5N
-Li8nVEEzMicsIEJJT1MgVEEzMlIxMTYgMDMvMDIvMjAxNgp0YXNrOiBmNjA2ZTI1MCB0aTogZjYw
-OGEwMDAgdGFzay50aTogZjYwOGEwMDAKRUlQOiAwMDYwOls8YzEwM2VmODY+XSBFRkxBR1M6IDAw
-MjAwMjA2IENQVTogMQpFSVAgaXMgYXQgZGVmYXVsdF9zZW5kX0lQSV9tYXNrX2xvZ2ljYWwrMHg5
-NC8weDlhCkVBWDogMDAyMDAwNDYgRUJYOiAwMDAwMDAwMiBFQ1g6IGMxNTdmYTYwIEVEWDogZmZm
-ZmYwMDAKRVNJOiAwMzAwMDAwMCBFREk6IDAwMjAwMjA2IEVCUDogMDAwMDBjMDAgRVNQOiBmNjA4
-YmUwMAogRFM6IDAwN2IgRVM6IDAwN2IgRlM6IDAwZDggR1M6IDAwMDAgU1M6IDAwNjgKQ1IwOiA4
-MDA1MDAzYiBDUjI6IGE1ZDk3MDE0IENSMzogMzYzYzAwMDAgQ1I0OiAwMDEwMDc5MApEUjA6IDAw
-MDAwMDAwIERSMTogMDAwMDAwMDAgRFIyOiAwMDAwMDAwMCBEUjM6IDAwMDAwMDAwCkRSNjogZmZm
-ZjBmZjAgRFI3OiAwMDAwMDQwMApJLXBpcGUgZG9tYWluIExpbnV4ClN0YWNrOgogMDAwMDAwMDAg
-YzE1ODM3MDAgMDAwMDAwOTkgMDAwMDAwMDIgYzEwM2VhN2MgMDAwMDAwMDAgYzE1ODM3MDAgYzEw
-M2VmYzIKIGMxNGU0ZDUxIGY2NjM2YWQ4IGMxMDkzM2EzIDEyYWYzMGVkIDAwMDAwMDAwIDAwMDAw
-MDAxIGMxNTgzNzAwIGMxNWFhMGI4CiAwMDAwMDAwMSAwMDAwMDAwMCAwMDAxMWQ1ZiBmNjYzYmFl
-YyBmNjYzNmEwYyBjMTA1MzU4YSA4ZGNmOWE0NiBjMTA3NmE1YgpDYWxsIFRyYWNlOgogWzxjMTAz
-ZWE3Yz5dID8gZGVmYXVsdF9zZW5kX0lQSV9hbGwrMHgyMC8weDY2CiBbPGMxMDNlZmMyPl0gPyBh
-cmNoX3RyaWdnZXJfYWxsX2NwdV9iYWNrdHJhY2UrMHgzNi8weDYwCiBbPGMxMDkzM2EzPl0gPyBy
-Y3VfY2hlY2tfY2FsbGJhY2tzKzB4MzU4LzB4NDc4CiBbPGMxMDUzNThhPl0gPyB1cGRhdGVfcm9v
-dF9wcm9jZXNzX3RpbWVzKzB4MmYvMHgzYgogWzxjMTA3NmE1Yj5dID8gdGlja19zY2hlZF9oYW5k
-bGUrMHgyMC8weDJhCiBbPGMxMDc2YzNjPl0gPyB0aWNrX3NjaGVkX3RpbWVyKzB4NDgvMHg2Ygog
-WzxjMTA2MjI3OT5dID8gX19ydW5faHJ0aW1lcisweDU3LzB4YmEKIFs8YzEwNjI1YjY+XSA/IGhy
-dGltZXJfaW50ZXJydXB0KzB4MTJhLzB4MjM4CiBbPGMxMDNlOGEyPl0gPyBzbXBfYXBpY190aW1l
-cl9pbnRlcnJ1cHQrMHg1MS8weDYwCiBbPGMxMDNlODUxPl0gPyBzbXBfc3B1cmlvdXNfaW50ZXJy
-dXB0KzB4NGMvMHg0YwogWzxjMTAzZGM4Zj5dID8gX19pcGlwZV9kb19JUlErMHgzYS8weDQzCiBb
-PGMxMDNlODUxPl0gPyBzbXBfc3B1cmlvdXNfaW50ZXJydXB0KzB4NGMvMHg0YwogWzxjMTA5MDBk
-OD5dID8gaGFuZGxlX3BlcmNwdV9kZXZpZF9pcnErMHgyMi8weDUzCiBbPGMxMDNkYzk0Pl0gPyBf
-X2lwaXBlX2RvX0lSUSsweDNmLzB4NDMKIFs8YzEwOTU0ZjU+XSA/IF9faXBpcGVfZG9fc3luY19z
-dGFnZSsweDExZS8weDEzZAogWzxjMTAzZDZkMT5dID8gX19pcGlwZV9oYW5kbGVfaXJxKzB4OTMv
-MHhmMgogWzxjMTQxY2ViZD5dID8gYXBpY190aW1lcl9pbnRlcnJ1cHQrMHgyZC8weDNjCiBbPGMx
-MDNkODBkPl0gPyBfX2lwaXBlX2hhbHRfcm9vdCsweDIzLzB4MjQKIFs8YzEwMmUwZjY+XSA/IGRl
-ZmF1bHRfaWRsZSsweDUvMHg2CiBbPGMxMDJlMDgxPl0gPyBhcmNoX2NwdV9pZGxlKzB4Ni8weDcK
-IFs8YzEwNmVlZjQ+XSA/IGNwdV9zdGFydHVwX2VudHJ5KzB4YWIvMHgxMmIKQ29kZTogZTYgMTgg
-ODkgYjAgMTAgYzMgZmYgZmYgODkgZDggOGIgMTUgYzggZmQgNTcgYzEgMDkgZTggODEgY2QgMDAg
-MDQgMDAgMDAgODMgZmIgMDIgMGYgNDQgYzUgODkgODIgMDAgYzMgZmYgZmYgZmYgMzQgMjQgOWQg
-NTcgOWQgNTggPDViPiA1ZSA1ZiA1ZCBjMyA5MCA1MyBmMCAwZiBiYSAyNQoKIA==
+Moving the definition out of the ifdef solves the following error:
+
+include/xenomai/cobalt/kernel/clock.h:260:16: error:
+ ‘struct <anonymous>’ has no member named ‘adjust_time’
+include/xenomai/cobalt/kernel/clock.h:263:19: error:
+ ‘struct <anonymous>’ has no member named ‘adjust_time’
+
+Signed-off-by: Henning Schild <henning.schild@siemens.com>
+---
+ include/cobalt/kernel/clock.h | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/include/cobalt/kernel/clock.h b/include/cobalt/kernel/clock.h
+index bf03c5921..bbdec9357 100644
+--- a/include/cobalt/kernel/clock.h
++++ b/include/cobalt/kernel/clock.h
+@@ -53,8 +53,6 @@ struct xnclock {
+ 		xnticks_t (*read_monotonic)(struct xnclock *clock);
+ 		int (*set_time)(struct xnclock *clock,
+ 				const struct timespec *ts);
+-		int (*adjust_time)(struct xnclock *clock,
+-				   struct timex *tx);
+ 		xnsticks_t (*ns_to_ticks)(struct xnclock *clock,
+ 					  xnsticks_t ns);
+ 		xnsticks_t (*ticks_to_ns)(struct xnclock *clock,
+@@ -66,6 +64,8 @@ struct xnclock {
+ 		void (*program_remote_shot)(struct xnclock *clock,
+ 					    struct xnsched *sched);
+ #endif
++		int (*adjust_time)(struct xnclock *clock,
++				   struct timex *tx);
+ 		int (*set_gravity)(struct xnclock *clock,
+ 				   const struct xnclock_gravity *p);
+ 		void (*reset_gravity)(struct xnclock *clock);
+-- 
+2.16.1
+
+
