@@ -1,17 +1,10 @@
-References: <9dee4e70-9bce-2fac-2aba-f27e65a9c1ba@tuebingen.mpg.de>
- <50805f15-f8c3-a47d-0b05-7b722d44a73e@xenomai.org>
- <9607c407-8524-0006-910d-941a07d1f9d8@tuebingen.mpg.de>
- <96be225a-62dd-0aca-91f5-d0efdd97307f@xenomai.org>
- <31cb225a-dd40-fa3a-37e9-139691ea01f4@tuebingen.mpg.de>
- <3e59ddd3-74dd-a0b5-5197-d748137dc296@xenomai.org>
-From: Julian Viereck <jviereck@tuebingen.mpg.de>
-Message-ID: <4f89e09b-dd7c-835c-c955-5cd810bfff59@tuebingen.mpg.de>
-Date: Thu, 1 Mar 2018 13:40:50 -0500
+Date: Fri, 2 Mar 2018 11:03:23 +0800 (CST)
+From: eric <ericvic@163.com>
 MIME-Version: 1.0
-In-Reply-To: <3e59ddd3-74dd-a0b5-5197-d748137dc296@xenomai.org>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] Low latency under stress, otherwise high latency
+Message-ID: <142db5a5.4147.161e4aa07af.Coremail.ericvic@163.com>
+Content-Type: text/plain; charset=GBK
+Content-Transfer-Encoding: base64
+Subject: [Xenomai] rcu_sched detected stalls on CPUs
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -20,26 +13,49 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Philippe Gerum <rpm@xenomai.org>, xenomai@xenomai.org
+To: xenomai <xenomai@xenomai.org>
 
-> What was the worst-case latency with HT enabled?
-The largest value I've observed was 883 microseconds, which happend only 
-once.
-
-Typical values range around 120-150 microseconds. When running the 
-stress test it goes < 20 microsecond.
-
-
-Am 1.3.18 um 12:53 PM schrieb Philippe Gerum:
-> On 03/01/2018 06:46 PM, Julian Viereck wrote:
->>> 1) disable hyperthreading and running a single core
->> Seems like the latency problem is due to enabled hyperthreading.
->>
->> I reran the latency tests with hyperthreading disabled and the latencies
->> stay below 20 microseconds now. This is with 1 and 8 cores. Sorry for
->> reporting something different yesterday.
->>
-> What was the worst-case latency with HT enabled?
->
-
-
+SGVsbG8gZXZlcnkgb25lOgogICAgICAgICAgICBJIGhhdmUgYSBwcm9ibGVtIG9uIHg4NiBzbXAg
+c3lzdGVtICAubXkgbGludXggaXMgMy4xMC4zMiBhbmQgNC4xLjE4IHdpdGggIHhlbm9tYWkgcGF0
+Y2ggeGVub21haS0yLjYuNCx4ZW5vbWFpLTIuNi41IC4Kd2hlbiBncnViIHNldCBtYXhjcHVzPTEg
+dGhlIHN5c3RlbSBydW4gZmluZS4gYnV0IHdoZW4gc2V0IG1heCBjcHVzPTIobXkgY3B1IGlzIGR1
+YWwtY29yZSApLHRoZSBlcnJvciBpcyBibG93IC4KTXkgc3lzdGVtIHJ1biByZWFsdGltZSB0YXNr
+IGFuZCAgbGFyZ2Ugbm9uLXJlYWwgdGltZSBkaXNrIHdyaXRpbmcgLgoKSU5GTzogcmN1X3NjaGVk
+IGRldGVjdGVkIHN0YWxscyBvbiBDUFVzL3Rhc2tzOiB7IDB9IChkZXRlY3RlZCBieSAxLCB0PTQz
+MjYxMjAyIGppZmZpZXMsIGc9MjIwMzQwNTIsIGM9MjIwMzQwNTEsIHE9MTUzKQoKc2VuZGluZyBO
+TUkgdG8gYWxsIENQVXM6Ck5NSSBiYWNrdHJhY2UgZm9yIGNwdSAxCkNQVTogMSBQSUQ6IDAgQ29t
+bTogc3dhcHBlci8xIFRhaW50ZWQ6IFAgICAgICAgICAgIE8gMy4xMC4zMi14ZW5vbWFpICM5Ckhh
+cmR3YXJlIG5hbWU6IFRvIGJlIGZpbGxlZCBieSBPLkUuTS4gVG8gYmUgZmlsbGVkIGJ5IE8uRS5N
+Li8nVEEzMicsIEJJT1MgVEEzMlIxMTYgMDMvMDIvMjAxNgp0YXNrOiBmNjA2ZTI1MCB0aTogZjYw
+OGEwMDAgdGFzay50aTogZjYwOGEwMDAKRUlQOiAwMDYwOls8YzEwM2VmODY+XSBFRkxBR1M6IDAw
+MjAwMjA2IENQVTogMQpFSVAgaXMgYXQgZGVmYXVsdF9zZW5kX0lQSV9tYXNrX2xvZ2ljYWwrMHg5
+NC8weDlhCkVBWDogMDAyMDAwNDYgRUJYOiAwMDAwMDAwMiBFQ1g6IGMxNTdmYTYwIEVEWDogZmZm
+ZmYwMDAKRVNJOiAwMzAwMDAwMCBFREk6IDAwMjAwMjA2IEVCUDogMDAwMDBjMDAgRVNQOiBmNjA4
+YmUwMAogRFM6IDAwN2IgRVM6IDAwN2IgRlM6IDAwZDggR1M6IDAwMDAgU1M6IDAwNjgKQ1IwOiA4
+MDA1MDAzYiBDUjI6IGE1ZDk3MDE0IENSMzogMzYzYzAwMDAgQ1I0OiAwMDEwMDc5MApEUjA6IDAw
+MDAwMDAwIERSMTogMDAwMDAwMDAgRFIyOiAwMDAwMDAwMCBEUjM6IDAwMDAwMDAwCkRSNjogZmZm
+ZjBmZjAgRFI3OiAwMDAwMDQwMApJLXBpcGUgZG9tYWluIExpbnV4ClN0YWNrOgogMDAwMDAwMDAg
+YzE1ODM3MDAgMDAwMDAwOTkgMDAwMDAwMDIgYzEwM2VhN2MgMDAwMDAwMDAgYzE1ODM3MDAgYzEw
+M2VmYzIKIGMxNGU0ZDUxIGY2NjM2YWQ4IGMxMDkzM2EzIDEyYWYzMGVkIDAwMDAwMDAwIDAwMDAw
+MDAxIGMxNTgzNzAwIGMxNWFhMGI4CiAwMDAwMDAwMSAwMDAwMDAwMCAwMDAxMWQ1ZiBmNjYzYmFl
+YyBmNjYzNmEwYyBjMTA1MzU4YSA4ZGNmOWE0NiBjMTA3NmE1YgpDYWxsIFRyYWNlOgogWzxjMTAz
+ZWE3Yz5dID8gZGVmYXVsdF9zZW5kX0lQSV9hbGwrMHgyMC8weDY2CiBbPGMxMDNlZmMyPl0gPyBh
+cmNoX3RyaWdnZXJfYWxsX2NwdV9iYWNrdHJhY2UrMHgzNi8weDYwCiBbPGMxMDkzM2EzPl0gPyBy
+Y3VfY2hlY2tfY2FsbGJhY2tzKzB4MzU4LzB4NDc4CiBbPGMxMDUzNThhPl0gPyB1cGRhdGVfcm9v
+dF9wcm9jZXNzX3RpbWVzKzB4MmYvMHgzYgogWzxjMTA3NmE1Yj5dID8gdGlja19zY2hlZF9oYW5k
+bGUrMHgyMC8weDJhCiBbPGMxMDc2YzNjPl0gPyB0aWNrX3NjaGVkX3RpbWVyKzB4NDgvMHg2Ygog
+WzxjMTA2MjI3OT5dID8gX19ydW5faHJ0aW1lcisweDU3LzB4YmEKIFs8YzEwNjI1YjY+XSA/IGhy
+dGltZXJfaW50ZXJydXB0KzB4MTJhLzB4MjM4CiBbPGMxMDNlOGEyPl0gPyBzbXBfYXBpY190aW1l
+cl9pbnRlcnJ1cHQrMHg1MS8weDYwCiBbPGMxMDNlODUxPl0gPyBzbXBfc3B1cmlvdXNfaW50ZXJy
+dXB0KzB4NGMvMHg0YwogWzxjMTAzZGM4Zj5dID8gX19pcGlwZV9kb19JUlErMHgzYS8weDQzCiBb
+PGMxMDNlODUxPl0gPyBzbXBfc3B1cmlvdXNfaW50ZXJydXB0KzB4NGMvMHg0YwogWzxjMTA5MDBk
+OD5dID8gaGFuZGxlX3BlcmNwdV9kZXZpZF9pcnErMHgyMi8weDUzCiBbPGMxMDNkYzk0Pl0gPyBf
+X2lwaXBlX2RvX0lSUSsweDNmLzB4NDMKIFs8YzEwOTU0ZjU+XSA/IF9faXBpcGVfZG9fc3luY19z
+dGFnZSsweDExZS8weDEzZAogWzxjMTAzZDZkMT5dID8gX19pcGlwZV9oYW5kbGVfaXJxKzB4OTMv
+MHhmMgogWzxjMTQxY2ViZD5dID8gYXBpY190aW1lcl9pbnRlcnJ1cHQrMHgyZC8weDNjCiBbPGMx
+MDNkODBkPl0gPyBfX2lwaXBlX2hhbHRfcm9vdCsweDIzLzB4MjQKIFs8YzEwMmUwZjY+XSA/IGRl
+ZmF1bHRfaWRsZSsweDUvMHg2CiBbPGMxMDJlMDgxPl0gPyBhcmNoX2NwdV9pZGxlKzB4Ni8weDcK
+IFs8YzEwNmVlZjQ+XSA/IGNwdV9zdGFydHVwX2VudHJ5KzB4YWIvMHgxMmIKQ29kZTogZTYgMTgg
+ODkgYjAgMTAgYzMgZmYgZmYgODkgZDggOGIgMTUgYzggZmQgNTcgYzEgMDkgZTggODEgY2QgMDAg
+MDQgMDAgMDAgODMgZmIgMDIgMGYgNDQgYzUgODkgODIgMDAgYzMgZmYgZmYgZmYgMzQgMjQgOWQg
+NTcgOWQgNTggPDViPiA1ZSA1ZiA1ZCBjMyA5MCA1MyBmMCAwZiBiYSAyNQoKIA==
