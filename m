@@ -1,11 +1,12 @@
-Date: Fri, 2 Mar 2018 14:22:35 +0100
-From: Henning Schild <henning.schild@siemens.com>
-Message-ID: <20180302142235.15671ecc@mmd1pvb1c.ad001.siemens.net>
-In-Reply-To: <20180302132205.28807-1-henning.schild@siemens.com>
 References: <20180302132205.28807-1-henning.schild@siemens.com>
+From: Philippe Gerum <rpm@xenomai.org>
+Message-ID: <6c33bb05-1d1e-7b6d-b628-de56ef28b8a7@xenomai.org>
+Date: Sun, 4 Mar 2018 12:17:56 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+In-Reply-To: <20180302132205.28807-1-henning.schild@siemens.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 Subject: Re: [Xenomai] [PATCH] cobalt/kernel: fix clock_adjtime() compile
 	error
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
@@ -16,31 +17,23 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "xenomai @ xenomai . org" <xenomai@xenomai.org>
+To: Henning Schild <henning.schild@siemens.com>, "xenomai @ xenomai . org" <xenomai@xenomai.org>
 
-Applies on top of current "next".
-
-Henning
-
-Am Fri, 2 Mar 2018 14:22:05 +0100
-schrieb Henning Schild <henning.schild@siemens.com>:
-
+On 03/02/2018 02:22 PM, Henning Schild wrote:
 > Moving the definition out of the ifdef solves the following error:
->=20
+> 
 > include/xenomai/cobalt/kernel/clock.h:260:16: error:
->  =E2=80=98struct <anonymous>=E2=80=99 has no member named =E2=80=98adjust=
-_time=E2=80=99
+>  ‘struct <anonymous>’ has no member named ‘adjust_time’
 > include/xenomai/cobalt/kernel/clock.h:263:19: error:
->  =E2=80=98struct <anonymous>=E2=80=99 has no member named =E2=80=98adjust=
-_time=E2=80=99
->=20
+>  ‘struct <anonymous>’ has no member named ‘adjust_time’
+> 
 > Signed-off-by: Henning Schild <henning.schild@siemens.com>
 > ---
 >  include/cobalt/kernel/clock.h | 4 ++--
 >  1 file changed, 2 insertions(+), 2 deletions(-)
->=20
-> diff --git a/include/cobalt/kernel/clock.h
-> b/include/cobalt/kernel/clock.h index bf03c5921..bbdec9357 100644
+> 
+> diff --git a/include/cobalt/kernel/clock.h b/include/cobalt/kernel/clock.h
+> index bf03c5921..bbdec9357 100644
 > --- a/include/cobalt/kernel/clock.h
 > +++ b/include/cobalt/kernel/clock.h
 > @@ -53,8 +53,6 @@ struct xnclock {
@@ -61,5 +54,10 @@ _time=E2=80=99
 >  		int (*set_gravity)(struct xnclock *clock,
 >  				   const struct xnclock_gravity *p);
 >  		void (*reset_gravity)(struct xnclock *clock);
+> 
 
+Merged, thanks.
+
+-- 
+Philippe.
 
