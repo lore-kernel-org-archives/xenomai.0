@@ -1,15 +1,10 @@
-Message-ID: <10044.147.91.1.44.1520238251.squirrel@mail.imp.bg.ac.rs>
-In-Reply-To: <59273.147.91.1.44.1519739508.squirrel@mail.imp.bg.ac.rs>
-References: <36415.147.91.1.44.1519652762.squirrel@mail.imp.bg.ac.rs>
- <CALLqZ8RdzYhzCYFfvvnsD_M7HXo2T4q9-n_6tedpWzEFsEd+mg@mail.gmail.com>
- <19775.147.91.1.44.1519668319.squirrel@mail.imp.bg.ac.rs>
- <CALLqZ8S3Yqcfj0b7DRbhJgtjOtv_XYL4FQPdcP23MA01FX0r9w@mail.gmail.com>
- <59273.147.91.1.44.1519739508.squirrel@mail.imp.bg.ac.rs>
-Date: Mon, 5 Mar 2018 09:24:11 +0100 (CET)
-From: branislav.sasic@automatika.imp.bg.ac.rs
+Date: Mon, 05 Mar 2018 07:10:53 -0500
+Message-ID: <paidvn7iib5il2ch6f5si5v4.1520251853430@embeddedgreg.com>
+From: Greg Gallagher <greg@embeddedgreg.com>
+In-Reply-To: <10044.147.91.1.44.1520238251.squirrel@mail.imp.bg.ac.rs>
 MIME-Version: 1.0
-Content-Type: text/plain;charset=utf-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: base64
 Subject: Re: [Xenomai] interrupt on edge problem, unexpected IRQ trap
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
@@ -19,237 +14,176 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: branislav.sasic@automatika.imp.bg.ac.rs
-Cc: "Xenomai@xenomai.org" <xenomai@xenomai.org>
+To: "branislav.sasic@automatika.imp.bg.ac.rs" <branislav.sasic@automatika.imp.bg.ac.rs>
+Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-Nothing? :|
-
-
-> Thank you for your help Greg & Philippe!
->
-> I merged gpio-omap.c from 4.14 kernel to my 4.11 kernel, result is freezed
-> cpu after interrupt. Then, I compiled 4.14 latest ipipe-arm kernel from
-> git (nothing added, nothing removed), and similar thing happens. Only I
-> could see some time after, until complete freeze, are messages
->
-> [   62.463002] unexpected IRQ trap at vector 3f
-> [   63.643847] unexpected IRQ trap at vector 3f
-> [   63.648204] unexpected IRQ trap at vector 3f
-> [   65.605123] unexpected IRQ trap at vector 3f
-> [   66.418225] unexpected IRQ trap at vector 3f
->
-> Tested through sysfs gpio interface.
->
->
-> Branislav
->
->
->
->> As Philippe mentioned, they are some missing pieces that need to be
->> added to the ipipe.  The link Philippe provided will give you guidance
->> on how to make those changes to your custom kernel.  The other option
->> is you could use the ipipe-arm tree and the mainline kernel.  Also,
->> unrelated, the gpios that are exposed in sysfs are not RTDM gpios.
->> There currently isn't a RTDM driver for beaglebone gpio, but one can
->> be added very easily.
->>
->>
->> -Greg
->>
->> On Mon, Feb 26, 2018 at 1:05 PM,
->> <branislav.sasic@automatika.imp.bg.ac.rs> wrote:
->>> Xenomai 3.0.6, and ipipe-core-4.9.51-arm-3, patched on sunxi 4.11.2
->>> kernel
->>> (with BeagleBone patches applied too). Same situation with this kernel
->>> ->
->>> https://github.com/beagleboard/linux/tree/4.9-xenomai
->>>
->>>
->>> Just as Giulio wrote, GPIO is configured with:
->>>
->>> echo 60 > /sys/class/gpio/export
->>> echo both > /sys/class/gpio/gpio60/edge
->>>
->>> or in kernel module init routine with:
->>>
->>> gpio_request(gpio, "test");
->>> gpio_direction_input(gpio);
->>> irq = gpio_to_irq(gpio);
->>> irq_set_irq_type(irq, IRQF_TRIGGER_FALLING | IRQF_TRIGGER_RISING);
->>> rtdm_irq_request(&irq_handle, irq, test_isr, RTDM_IRQTYPE_EDGE,
->>> DRIVER_NAME, NULL);
->>> rtdm_irq_enable(&irq_handle);
->>>
->>>
->>> Both reproduce the problem. In the second case, when requested with
->>> rtdm_irq_request, IRQ is visible both in /proc/interrupts, and in
->>> /proc/xenomai/irq
->>>
->>>
->>> Thanks!
->>>
->>>
->>> Branislav
->>>
->>>
->>>> Can you provide what version of Xenomai you are using and what ipipe
->>> patch you are using?  It also may be helpful if you could provide some
->>> sort of sample code that reproduces the problem.
->>>>
->>>> -Greg
->>>>
->>>> On Mon, Feb 26, 2018 at 8:46 AM,
->>>> <branislav.sasic@automatika.imp.bg.ac.rs> wrote:
->>>>> Hello,
->>>>> I have a problem with new I-pipe patch, which was not existing with
->>>>> legacy
->>>>> patch on 3.14 kernel, on BeagleBone platform.
->>>>> When GPIO pin is configured as input with edge interrupt enable, on
->>>>> IRQ
->>> occurrence the following message appears:
->>>>> [  303.331386] irq 88, desc: dc1be400, depth: 0, count: 0, unhandled:
->>>>> 0
->>> [  303.331401] ->handle_irq():  c01a810c,
->>>>> [  303.331435] handle_edge_irq+0x0/0x194
->>>>> [  303.331442] ->irq_data.chip(): dc097b50,
->>>>> [  303.331454] 0xdc097b50
->>>>> [  303.331461] ->action(): da097380
->>>>> [  303.331467] ->action->handler(): c078dce4,
->>>>> [  303.331483] gpio_sysfs_irq+0x0/0x24
->>>>> [  303.331493]    IRQ_NOPROBE set
->>>>> [  303.331503] unexpected IRQ trap at vector 58
->>>>> [  303.335814] ------------[ cut here ]------------
->>>>> [  303.335832] WARNING: CPU: 0 PID: 0 at kernel/irq/chip.c:883
->>>>> __ipipe_ack_bad_irq+0x3c/0x48
->>>>> [  303.335839] Modules linked in:
->>>>> [  303.335863] CPU: 0 PID: 0 Comm: swapper/0 Not tainted 4.9.82 #2 [
->>> 303.335871] Hardware name: Generic AM33XX (Flattened Device Tree) [
->>> 303.335878] I-pipe domain: Linux
->>>>> [  303.335918] [<c0113520>] (unwind_backtrace) from [<c010d320>]
->>> (show_stack+0x20/0x24)
->>>>> [  303.335946] [<c010d320>] (show_stack) from [<c073c99c>]
->>>>> (dump_stack+0xbc/0xec)
->>>>> [  303.335968] [<c073c99c>] (dump_stack) from [<c013dddc>]
->>>>> (__warn+0xe4/0x110)
->>>>> [  303.335984] [<c013dddc>] (__warn) from [<c013de38>]
->>>>> (warn_slowpath_null+0x30/0x38)
->>>>> [  303.335998] [<c013de38>] (warn_slowpath_null) from [<c01a74a0>]
->>> (__ipipe_ack_bad_irq+0x3c/0x48)
->>>>> [  303.336027] [<c01a74a0>] (__ipipe_ack_bad_irq) from [<c020ccdc>]
->>> (__ipipe_dispatch_irq+0x80/0x1e4)
->>>>> [  303.336048] [<c020ccdc>] (__ipipe_dispatch_irq) from [<c0790630>]
->>> (omap_gpio_irq_handler+0x15c/0x1d0)
->>>>> [  303.336066] [<c0790630>] (omap_gpio_irq_handler) from [<c01a3874>]
->>> (__handle_irq_event_percpu+0x68/0x2bc)
->>>>> [  303.336081] [<c01a3874>] (__handle_irq_event_percpu) from
->>>>> [<c01a3af4>]
->>>>> (handle_irq_event_percpu+0x2c/0x68)
->>>>> [  303.336095] [<c01a3af4>] (handle_irq_event_percpu) from
->>>>> [<c01a3b78>]
->>> (handle_irq_event+0x48/0x6c)
->>>>> [  303.336111] [<c01a3b78>] (handle_irq_event) from [<c01a8348>]
->>> (handle_level_irq+0xa8/0xfc)
->>>>> [  303.336127] [<c01a8348>] (handle_level_irq) from [<c01a2ea0>]
->>> (generic_handle_irq+0x28/0x38)
->>>>> [  303.336141] [<c01a2ea0>] (generic_handle_irq) from [<c01a3014>]
->>> (__handle_domain_irq+0x8c/0x10c)
->>>>> [  303.336164] [<c01a3014>] (__handle_domain_irq) from [<c0109c28>]
->>> (handle_IRQ+0x2c/0x30)
->>>>> [  303.336182] [<c0109c28>] (handle_IRQ) from [<c0117990>]
->>>>> (__ipipe_do_IRQ+0x38/0x40)
->>>>> [  303.336198] [<c0117990>] (__ipipe_do_IRQ) from [<c020c4b4>]
->>>>> (__ipipe_do_sync_stage+0x268/0x278)
->>>>> [  303.336214] [<c020c4b4>] (__ipipe_do_sync_stage) from [<c020c820>]
->>> (ipipe_unstall_root+0x50/0x5c)
->>>>> [  303.336244] [<c020c820>] (ipipe_unstall_root) from [<c0cbb4c8>]
->>> (default_idle_call+0x54/0x7c)
->>>>> [  303.336271] [<c0cbb4c8>] (default_idle_call) from [<c0187c4c>]
->>> (cpu_startup_entry+0xd0/0x144)
->>>>> [  303.336289] [<c0187c4c>] (cpu_startup_entry) from [<c0cb5c80>]
->>> (rest_init+0x80/0x98)
->>>>> [  303.336315] [<c0cb5c80>] (rest_init) from [<c1300d08>]
->>>>> (start_kernel+0x370/0x3d8)
->>>>> [  303.336327] ---[ end trace fd2436447809c122 ]---
->>>>> [  303.336343] irq 88, desc: dc1be400, depth: 0, count: 0, unhandled:
->>>>> 0
->>> [  303.336349] ->handle_irq():  c01a810c,
->>>>> [  303.336361] handle_edge_irq+0x0/0x194
->>>>> [  303.336367] ->irq_data.chip(): dc097b50,
->>>>> [  303.336376] 0xdc097b50
->>>>> [  303.336382] ->action(): da097380
->>>>> [  303.336389] ->action->handler(): c078dce4,
->>>>> [  303.336399] gpio_sysfs_irq+0x0/0x24
->>>>> [  303.336406]    IRQ_NOPROBE set
->>>>> [  303.336413] unexpected IRQ trap at vector 58
->>>>> [  306.761879] irq 88, desc: dc1be400, depth: 0, count: 1, unhandled:
->>>>> 0
->>> [  306.761893] ->handle_irq():  c01a810c,
->>>>> [  306.761928] handle_edge_irq+0x0/0x194
->>>>> [  306.761935] ->irq_data.chip(): dc097b50,
->>>>> [  306.761947] 0xdc097b50
->>>>> [  306.761954] ->action(): da097380
->>>>> [  306.761960] ->action->handler(): c078dce4,
->>>>> [  306.761976] gpio_sysfs_irq+0x0/0x24
->>>>> [  306.761985]    IRQ_NOPROBE set
->>>>> [  306.761995] unexpected IRQ trap at vector 58
->>>>> [  306.766311] irq 88, desc: dc1be400, depth: 0, count: 1, unhandled:
->>>>> 0
->>> [  306.766318] ->handle_irq():  c01a810c,
->>>>> [  306.766330] handle_edge_irq+0x0/0x194
->>>>> [  306.766336] ->irq_data.chip(): dc097b50,
->>>>> [  306.766344] 0xdc097b50
->>>>> [  306.766351] ->action(): da097380
->>>>> [  306.766357] ->action->handler(): c078dce4,
->>>>> [  306.766366] gpio_sysfs_irq+0x0/0x24
->>>>> [  306.766373]    IRQ_NOPROBE set
->>>>> [  306.766380] unexpected IRQ trap at vector 58
->>>>> [  306.892617] irq 88, desc: dc1be400, depth: 0, count: 2, unhandled:
->>>>> 0
->>> [  306.892634] ->handle_irq():  c01a810c,
->>>>> [  306.892666] handle_edge_irq+0x0/0x194
->>>>> [  306.892673] ->irq_data.chip(): dc097b50,
->>>>> [  306.892683] 0xdc097b50
->>>>> [  306.892690] ->action(): da097380
->>>>> [  306.892697] ->action->handler(): c078dce4,
->>>>> [  306.892712] gpio_sysfs_irq+0x0/0x24
->>>>> [  306.892723]    IRQ_NOPROBE set
->>>>> [  306.892732] unexpected IRQ trap at vector 58
->>>>> [  306.897047] irq 88, desc: dc1be400, depth: 0, count: 2, unhandled:
->>>>> 0
->>> [  306.897054] ->handle_irq():  c01a810c,
->>>>> [  306.897065] handle_edge_irq+0x0/0x194
->>>>> [  306.897071] ->irq_data.chip(): dc097b50,
->>>>> [  306.897079] 0xdc097b50
->>>>> [  306.897086] ->action(): da097380
->>>>> [  306.897092] ->action->handler(): c078dce4,
->>>>> [  306.897101] gpio_sysfs_irq+0x0/0x24
->>>>> [  306.897108]    IRQ_NOPROBE set
->>>>> [  306.897115] unexpected IRQ trap at vector 58
->>>>> Best regards,
->>>>> Branislav
->>>>> _______________________________________________
->>>>> Xenomai mailing list
->>>>> Xenomai@xenomai.org
->>>>> https://xenomai.org/mailman/listinfo/xenomai
->>>>
->>>> _______________________________________________
->>>> Xenomai mailing list
->>>> Xenomai@xenomai.org
->>>> https://xenomai.org/mailman/listinfo/xenomai
->>>>
->>>
->>>
->>>
->>>
->>
->
->
->
-> _______________________________________________
-> Xenomai mailing list
-> Xenomai@xenomai.org
-> https://xenomai.org/mailman/listinfo/xenomai
->
-
+SSBzaG91bGQgaGF2ZSBhY2Nlc3MgdG8gYSBiZWFnbGVib25lIGdyZWVuIHRoaXMgd2Vlay4gSSB3
+YXNuJ3QgYWJsZSB0byByZXByb2R1Y2UgaXQgd2l0aCBhIHp5bnEgb3IgcmFzcGJlcnJ5IFBpIDIg
+Ym9hcmQuCgpHcmVnCgoKCsKgIE9yaWdpbmFsIE1lc3NhZ2UgwqAKRnJvbTogYnJhbmlzbGF2LnNh
+c2ljQGF1dG9tYXRpa2EuaW1wLmJnLmFjLnJzClNlbnQ6IE1hcmNoIDUsIDIwMTggMzoyNCBBTQpU
+bzogYnJhbmlzbGF2LnNhc2ljQGF1dG9tYXRpa2EuaW1wLmJnLmFjLnJzCkNjOiB4ZW5vbWFpQHhl
+bm9tYWkub3JnClN1YmplY3Q6IFJlOiBbWGVub21haV0gaW50ZXJydXB0IG9uIGVkZ2UgcHJvYmxl
+bSwgdW5leHBlY3RlZCBJUlEgdHJhcAoKTm90aGluZz8gOnwKCgo+IFRoYW5rIHlvdSBmb3IgeW91
+ciBoZWxwIEdyZWcgJiBQaGlsaXBwZSEKPgo+IEkgbWVyZ2VkIGdwaW8tb21hcC5jIGZyb20gNC4x
+NCBrZXJuZWwgdG8gbXkgNC4xMSBrZXJuZWwsIHJlc3VsdCBpcyBmcmVlemVkCj4gY3B1IGFmdGVy
+IGludGVycnVwdC4gVGhlbiwgSSBjb21waWxlZCA0LjE0IGxhdGVzdCBpcGlwZS1hcm0ga2VybmVs
+IGZyb20KPiBnaXQgKG5vdGhpbmcgYWRkZWQsIG5vdGhpbmcgcmVtb3ZlZCksIGFuZCBzaW1pbGFy
+IHRoaW5nIGhhcHBlbnMuIE9ubHkgSQo+IGNvdWxkIHNlZSBzb21lIHRpbWUgYWZ0ZXIsIHVudGls
+IGNvbXBsZXRlIGZyZWV6ZSwgYXJlIG1lc3NhZ2VzCj4KPiBbwqDCoCA2Mi40NjMwMDJdIHVuZXhw
+ZWN0ZWQgSVJRIHRyYXAgYXQgdmVjdG9yIDNmCj4gW8KgwqAgNjMuNjQzODQ3XSB1bmV4cGVjdGVk
+IElSUSB0cmFwIGF0IHZlY3RvciAzZgo+IFvCoMKgIDYzLjY0ODIwNF0gdW5leHBlY3RlZCBJUlEg
+dHJhcCBhdCB2ZWN0b3IgM2YKPiBbwqDCoCA2NS42MDUxMjNdIHVuZXhwZWN0ZWQgSVJRIHRyYXAg
+YXQgdmVjdG9yIDNmCj4gW8KgwqAgNjYuNDE4MjI1XSB1bmV4cGVjdGVkIElSUSB0cmFwIGF0IHZl
+Y3RvciAzZgo+Cj4gVGVzdGVkIHRocm91Z2ggc3lzZnMgZ3BpbyBpbnRlcmZhY2UuCj4KPgo+IEJy
+YW5pc2xhdgo+Cj4KPgo+PiBBcyBQaGlsaXBwZSBtZW50aW9uZWQsIHRoZXkgYXJlIHNvbWUgbWlz
+c2luZyBwaWVjZXMgdGhhdCBuZWVkIHRvIGJlCj4+IGFkZGVkIHRvIHRoZSBpcGlwZS7CoCBUaGUg
+bGluayBQaGlsaXBwZSBwcm92aWRlZCB3aWxsIGdpdmUgeW91IGd1aWRhbmNlCj4+IG9uIGhvdyB0
+byBtYWtlIHRob3NlIGNoYW5nZXMgdG8geW91ciBjdXN0b20ga2VybmVsLsKgIFRoZSBvdGhlciBv
+cHRpb24KPj4gaXMgeW91IGNvdWxkIHVzZSB0aGUgaXBpcGUtYXJtIHRyZWUgYW5kIHRoZSBtYWlu
+bGluZSBrZXJuZWwuwqAgQWxzbywKPj4gdW5yZWxhdGVkLCB0aGUgZ3Bpb3MgdGhhdCBhcmUgZXhw
+b3NlZCBpbiBzeXNmcyBhcmUgbm90IFJURE0gZ3Bpb3MuCj4+IFRoZXJlIGN1cnJlbnRseSBpc24n
+dCBhIFJURE0gZHJpdmVyIGZvciBiZWFnbGVib25lIGdwaW8sIGJ1dCBvbmUgY2FuCj4+IGJlIGFk
+ZGVkIHZlcnkgZWFzaWx5Lgo+Pgo+Pgo+PiAtR3JlZwo+Pgo+PiBPbiBNb24sIEZlYiAyNiwgMjAx
+OCBhdCAxOjA1IFBNLAo+PiA8YnJhbmlzbGF2LnNhc2ljQGF1dG9tYXRpa2EuaW1wLmJnLmFjLnJz
+PiB3cm90ZToKPj4+IFhlbm9tYWkgMy4wLjYsIGFuZCBpcGlwZS1jb3JlLTQuOS41MS1hcm0tMywg
+cGF0Y2hlZCBvbiBzdW54aSA0LjExLjIKPj4+IGtlcm5lbAo+Pj4gKHdpdGggQmVhZ2xlQm9uZSBw
+YXRjaGVzIGFwcGxpZWQgdG9vKS4gU2FtZSBzaXR1YXRpb24gd2l0aCB0aGlzIGtlcm5lbAo+Pj4g
+LT4KPj4+IGh0dHBzOi8vZ2l0aHViLmNvbS9iZWFnbGVib2FyZC9saW51eC90cmVlLzQuOS14ZW5v
+bWFpCj4+Pgo+Pj4KPj4+IEp1c3QgYXMgR2l1bGlvIHdyb3RlLCBHUElPIGlzIGNvbmZpZ3VyZWQg
+d2l0aDoKPj4+Cj4+PiBlY2hvIDYwID4gL3N5cy9jbGFzcy9ncGlvL2V4cG9ydAo+Pj4gZWNobyBi
+b3RoID4gL3N5cy9jbGFzcy9ncGlvL2dwaW82MC9lZGdlCj4+Pgo+Pj4gb3IgaW4ga2VybmVsIG1v
+ZHVsZSBpbml0IHJvdXRpbmUgd2l0aDoKPj4+Cj4+PiBncGlvX3JlcXVlc3QoZ3BpbywgInRlc3Qi
+KTsKPj4+IGdwaW9fZGlyZWN0aW9uX2lucHV0KGdwaW8pOwo+Pj4gaXJxID0gZ3Bpb190b19pcnEo
+Z3Bpbyk7Cj4+PiBpcnFfc2V0X2lycV90eXBlKGlycSwgSVJRRl9UUklHR0VSX0ZBTExJTkcgfCBJ
+UlFGX1RSSUdHRVJfUklTSU5HKTsKPj4+IHJ0ZG1faXJxX3JlcXVlc3QoJmlycV9oYW5kbGUsIGly
+cSwgdGVzdF9pc3IsIFJURE1fSVJRVFlQRV9FREdFLAo+Pj4gRFJJVkVSX05BTUUsIE5VTEwpOwo+
+Pj4gcnRkbV9pcnFfZW5hYmxlKCZpcnFfaGFuZGxlKTsKPj4+Cj4+Pgo+Pj4gQm90aCByZXByb2R1
+Y2UgdGhlIHByb2JsZW0uIEluIHRoZSBzZWNvbmQgY2FzZSwgd2hlbiByZXF1ZXN0ZWQgd2l0aAo+
+Pj4gcnRkbV9pcnFfcmVxdWVzdCwgSVJRIGlzIHZpc2libGUgYm90aCBpbiAvcHJvYy9pbnRlcnJ1
+cHRzLCBhbmQgaW4KPj4+IC9wcm9jL3hlbm9tYWkvaXJxCj4+Pgo+Pj4KPj4+IFRoYW5rcyEKPj4+
+Cj4+Pgo+Pj4gQnJhbmlzbGF2Cj4+Pgo+Pj4KPj4+PiBDYW4geW91IHByb3ZpZGUgd2hhdCB2ZXJz
+aW9uIG9mIFhlbm9tYWkgeW91IGFyZSB1c2luZyBhbmQgd2hhdCBpcGlwZQo+Pj4gcGF0Y2ggeW91
+IGFyZSB1c2luZz/CoCBJdCBhbHNvIG1heSBiZSBoZWxwZnVsIGlmIHlvdSBjb3VsZCBwcm92aWRl
+IHNvbWUKPj4+IHNvcnQgb2Ygc2FtcGxlIGNvZGUgdGhhdCByZXByb2R1Y2VzIHRoZSBwcm9ibGVt
+Lgo+Pj4+Cj4+Pj4gLUdyZWcKPj4+Pgo+Pj4+IE9uIE1vbiwgRmViIDI2LCAyMDE4IGF0IDg6NDYg
+QU0sCj4+Pj4gPGJyYW5pc2xhdi5zYXNpY0BhdXRvbWF0aWthLmltcC5iZy5hYy5ycz4gd3JvdGU6
+Cj4+Pj4+IEhlbGxvLAo+Pj4+PiBJIGhhdmUgYSBwcm9ibGVtIHdpdGggbmV3IEktcGlwZSBwYXRj
+aCwgd2hpY2ggd2FzIG5vdCBleGlzdGluZyB3aXRoCj4+Pj4+IGxlZ2FjeQo+Pj4+PiBwYXRjaCBv
+biAzLjE0IGtlcm5lbCwgb24gQmVhZ2xlQm9uZSBwbGF0Zm9ybS4KPj4+Pj4gV2hlbiBHUElPIHBp
+biBpcyBjb25maWd1cmVkIGFzIGlucHV0IHdpdGggZWRnZSBpbnRlcnJ1cHQgZW5hYmxlLCBvbgo+
+Pj4+PiBJUlEKPj4+IG9jY3VycmVuY2UgdGhlIGZvbGxvd2luZyBtZXNzYWdlIGFwcGVhcnM6Cj4+
+Pj4+IFvCoCAzMDMuMzMxMzg2XSBpcnEgODgsIGRlc2M6IGRjMWJlNDAwLCBkZXB0aDogMCwgY291
+bnQ6IDAsIHVuaGFuZGxlZDoKPj4+Pj4gMAo+Pj4gW8KgIDMwMy4zMzE0MDFdIC0+aGFuZGxlX2ly
+cSgpOsKgIGMwMWE4MTBjLAo+Pj4+PiBbwqAgMzAzLjMzMTQzNV0gaGFuZGxlX2VkZ2VfaXJxKzB4
+MC8weDE5NAo+Pj4+PiBbwqAgMzAzLjMzMTQ0Ml0gLT5pcnFfZGF0YS5jaGlwKCk6IGRjMDk3YjUw
+LAo+Pj4+PiBbwqAgMzAzLjMzMTQ1NF0gMHhkYzA5N2I1MAo+Pj4+PiBbwqAgMzAzLjMzMTQ2MV0g
+LT5hY3Rpb24oKTogZGEwOTczODAKPj4+Pj4gW8KgIDMwMy4zMzE0NjddIC0+YWN0aW9uLT5oYW5k
+bGVyKCk6IGMwNzhkY2U0LAo+Pj4+PiBbwqAgMzAzLjMzMTQ4M10gZ3Bpb19zeXNmc19pcnErMHgw
+LzB4MjQKPj4+Pj4gW8KgIDMwMy4zMzE0OTNdwqDCoMKgIElSUV9OT1BST0JFIHNldAo+Pj4+PiBb
+wqAgMzAzLjMzMTUwM10gdW5leHBlY3RlZCBJUlEgdHJhcCBhdCB2ZWN0b3IgNTgKPj4+Pj4gW8Kg
+IDMwMy4zMzU4MTRdIC0tLS0tLS0tLS0tLVsgY3V0IGhlcmUgXS0tLS0tLS0tLS0tLQo+Pj4+PiBb
+wqAgMzAzLjMzNTgzMl0gV0FSTklORzogQ1BVOiAwIFBJRDogMCBhdCBrZXJuZWwvaXJxL2NoaXAu
+Yzo4ODMKPj4+Pj4gX19pcGlwZV9hY2tfYmFkX2lycSsweDNjLzB4NDgKPj4+Pj4gW8KgIDMwMy4z
+MzU4MzldIE1vZHVsZXMgbGlua2VkIGluOgo+Pj4+PiBbwqAgMzAzLjMzNTg2M10gQ1BVOiAwIFBJ
+RDogMCBDb21tOiBzd2FwcGVyLzAgTm90IHRhaW50ZWQgNC45LjgyICMyIFsKPj4+IDMwMy4zMzU4
+NzFdIEhhcmR3YXJlIG5hbWU6IEdlbmVyaWMgQU0zM1hYIChGbGF0dGVuZWQgRGV2aWNlIFRyZWUp
+IFsKPj4+IDMwMy4zMzU4NzhdIEktcGlwZSBkb21haW46IExpbnV4Cj4+Pj4+IFvCoCAzMDMuMzM1
+OTE4XSBbPGMwMTEzNTIwPl0gKHVud2luZF9iYWNrdHJhY2UpIGZyb20gWzxjMDEwZDMyMD5dCj4+
+PiAoc2hvd19zdGFjaysweDIwLzB4MjQpCj4+Pj4+IFvCoCAzMDMuMzM1OTQ2XSBbPGMwMTBkMzIw
+Pl0gKHNob3dfc3RhY2spIGZyb20gWzxjMDczYzk5Yz5dCj4+Pj4+IChkdW1wX3N0YWNrKzB4YmMv
+MHhlYykKPj4+Pj4gW8KgIDMwMy4zMzU5NjhdIFs8YzA3M2M5OWM+XSAoZHVtcF9zdGFjaykgZnJv
+bSBbPGMwMTNkZGRjPl0KPj4+Pj4gKF9fd2FybisweGU0LzB4MTEwKQo+Pj4+PiBbwqAgMzAzLjMz
+NTk4NF0gWzxjMDEzZGRkYz5dIChfX3dhcm4pIGZyb20gWzxjMDEzZGUzOD5dCj4+Pj4+ICh3YXJu
+X3Nsb3dwYXRoX251bGwrMHgzMC8weDM4KQo+Pj4+PiBbwqAgMzAzLjMzNTk5OF0gWzxjMDEzZGUz
+OD5dICh3YXJuX3Nsb3dwYXRoX251bGwpIGZyb20gWzxjMDFhNzRhMD5dCj4+PiAoX19pcGlwZV9h
+Y2tfYmFkX2lycSsweDNjLzB4NDgpCj4+Pj4+IFvCoCAzMDMuMzM2MDI3XSBbPGMwMWE3NGEwPl0g
+KF9faXBpcGVfYWNrX2JhZF9pcnEpIGZyb20gWzxjMDIwY2NkYz5dCj4+PiAoX19pcGlwZV9kaXNw
+YXRjaF9pcnErMHg4MC8weDFlNCkKPj4+Pj4gW8KgIDMwMy4zMzYwNDhdIFs8YzAyMGNjZGM+XSAo
+X19pcGlwZV9kaXNwYXRjaF9pcnEpIGZyb20gWzxjMDc5MDYzMD5dCj4+PiAob21hcF9ncGlvX2ly
+cV9oYW5kbGVyKzB4MTVjLzB4MWQwKQo+Pj4+PiBbwqAgMzAzLjMzNjA2Nl0gWzxjMDc5MDYzMD5d
+IChvbWFwX2dwaW9faXJxX2hhbmRsZXIpIGZyb20gWzxjMDFhMzg3ND5dCj4+PiAoX19oYW5kbGVf
+aXJxX2V2ZW50X3BlcmNwdSsweDY4LzB4MmJjKQo+Pj4+PiBbwqAgMzAzLjMzNjA4MV0gWzxjMDFh
+Mzg3ND5dIChfX2hhbmRsZV9pcnFfZXZlbnRfcGVyY3B1KSBmcm9tCj4+Pj4+IFs8YzAxYTNhZjQ+
+XQo+Pj4+PiAoaGFuZGxlX2lycV9ldmVudF9wZXJjcHUrMHgyYy8weDY4KQo+Pj4+PiBbwqAgMzAz
+LjMzNjA5NV0gWzxjMDFhM2FmND5dIChoYW5kbGVfaXJxX2V2ZW50X3BlcmNwdSkgZnJvbQo+Pj4+
+PiBbPGMwMWEzYjc4Pl0KPj4+IChoYW5kbGVfaXJxX2V2ZW50KzB4NDgvMHg2YykKPj4+Pj4gW8Kg
+IDMwMy4zMzYxMTFdIFs8YzAxYTNiNzg+XSAoaGFuZGxlX2lycV9ldmVudCkgZnJvbSBbPGMwMWE4
+MzQ4Pl0KPj4+IChoYW5kbGVfbGV2ZWxfaXJxKzB4YTgvMHhmYykKPj4+Pj4gW8KgIDMwMy4zMzYx
+MjddIFs8YzAxYTgzNDg+XSAoaGFuZGxlX2xldmVsX2lycSkgZnJvbSBbPGMwMWEyZWEwPl0KPj4+
+IChnZW5lcmljX2hhbmRsZV9pcnErMHgyOC8weDM4KQo+Pj4+PiBbwqAgMzAzLjMzNjE0MV0gWzxj
+MDFhMmVhMD5dIChnZW5lcmljX2hhbmRsZV9pcnEpIGZyb20gWzxjMDFhMzAxND5dCj4+PiAoX19o
+YW5kbGVfZG9tYWluX2lycSsweDhjLzB4MTBjKQo+Pj4+PiBbwqAgMzAzLjMzNjE2NF0gWzxjMDFh
+MzAxND5dIChfX2hhbmRsZV9kb21haW5faXJxKSBmcm9tIFs8YzAxMDljMjg+XQo+Pj4gKGhhbmRs
+ZV9JUlErMHgyYy8weDMwKQo+Pj4+PiBbwqAgMzAzLjMzNjE4Ml0gWzxjMDEwOWMyOD5dIChoYW5k
+bGVfSVJRKSBmcm9tIFs8YzAxMTc5OTA+XQo+Pj4+PiAoX19pcGlwZV9kb19JUlErMHgzOC8weDQw
+KQo+Pj4+PiBbwqAgMzAzLjMzNjE5OF0gWzxjMDExNzk5MD5dIChfX2lwaXBlX2RvX0lSUSkgZnJv
+bSBbPGMwMjBjNGI0Pl0KPj4+Pj4gKF9faXBpcGVfZG9fc3luY19zdGFnZSsweDI2OC8weDI3OCkK
+Pj4+Pj4gW8KgIDMwMy4zMzYyMTRdIFs8YzAyMGM0YjQ+XSAoX19pcGlwZV9kb19zeW5jX3N0YWdl
+KSBmcm9tIFs8YzAyMGM4MjA+XQo+Pj4gKGlwaXBlX3Vuc3RhbGxfcm9vdCsweDUwLzB4NWMpCj4+
+Pj4+IFvCoCAzMDMuMzM2MjQ0XSBbPGMwMjBjODIwPl0gKGlwaXBlX3Vuc3RhbGxfcm9vdCkgZnJv
+bSBbPGMwY2JiNGM4Pl0KPj4+IChkZWZhdWx0X2lkbGVfY2FsbCsweDU0LzB4N2MpCj4+Pj4+IFvC
+oCAzMDMuMzM2MjcxXSBbPGMwY2JiNGM4Pl0gKGRlZmF1bHRfaWRsZV9jYWxsKSBmcm9tIFs8YzAx
+ODdjNGM+XQo+Pj4gKGNwdV9zdGFydHVwX2VudHJ5KzB4ZDAvMHgxNDQpCj4+Pj4+IFvCoCAzMDMu
+MzM2Mjg5XSBbPGMwMTg3YzRjPl0gKGNwdV9zdGFydHVwX2VudHJ5KSBmcm9tIFs8YzBjYjVjODA+
+XQo+Pj4gKHJlc3RfaW5pdCsweDgwLzB4OTgpCj4+Pj4+IFvCoCAzMDMuMzM2MzE1XSBbPGMwY2I1
+YzgwPl0gKHJlc3RfaW5pdCkgZnJvbSBbPGMxMzAwZDA4Pl0KPj4+Pj4gKHN0YXJ0X2tlcm5lbCsw
+eDM3MC8weDNkOCkKPj4+Pj4gW8KgIDMwMy4zMzYzMjddIC0tLVsgZW5kIHRyYWNlIGZkMjQzNjQ0
+NzgwOWMxMjIgXS0tLQo+Pj4+PiBbwqAgMzAzLjMzNjM0M10gaXJxIDg4LCBkZXNjOiBkYzFiZTQw
+MCwgZGVwdGg6IDAsIGNvdW50OiAwLCB1bmhhbmRsZWQ6Cj4+Pj4+IDAKPj4+IFvCoCAzMDMuMzM2
+MzQ5XSAtPmhhbmRsZV9pcnEoKTrCoCBjMDFhODEwYywKPj4+Pj4gW8KgIDMwMy4zMzYzNjFdIGhh
+bmRsZV9lZGdlX2lycSsweDAvMHgxOTQKPj4+Pj4gW8KgIDMwMy4zMzYzNjddIC0+aXJxX2RhdGEu
+Y2hpcCgpOiBkYzA5N2I1MCwKPj4+Pj4gW8KgIDMwMy4zMzYzNzZdIDB4ZGMwOTdiNTAKPj4+Pj4g
+W8KgIDMwMy4zMzYzODJdIC0+YWN0aW9uKCk6IGRhMDk3MzgwCj4+Pj4+IFvCoCAzMDMuMzM2Mzg5
+XSAtPmFjdGlvbi0+aGFuZGxlcigpOiBjMDc4ZGNlNCwKPj4+Pj4gW8KgIDMwMy4zMzYzOTldIGdw
+aW9fc3lzZnNfaXJxKzB4MC8weDI0Cj4+Pj4+IFvCoCAzMDMuMzM2NDA2XcKgwqDCoCBJUlFfTk9Q
+Uk9CRSBzZXQKPj4+Pj4gW8KgIDMwMy4zMzY0MTNdIHVuZXhwZWN0ZWQgSVJRIHRyYXAgYXQgdmVj
+dG9yIDU4Cj4+Pj4+IFvCoCAzMDYuNzYxODc5XSBpcnEgODgsIGRlc2M6IGRjMWJlNDAwLCBkZXB0
+aDogMCwgY291bnQ6IDEsIHVuaGFuZGxlZDoKPj4+Pj4gMAo+Pj4gW8KgIDMwNi43NjE4OTNdIC0+
+aGFuZGxlX2lycSgpOsKgIGMwMWE4MTBjLAo+Pj4+PiBbwqAgMzA2Ljc2MTkyOF0gaGFuZGxlX2Vk
+Z2VfaXJxKzB4MC8weDE5NAo+Pj4+PiBbwqAgMzA2Ljc2MTkzNV0gLT5pcnFfZGF0YS5jaGlwKCk6
+IGRjMDk3YjUwLAo+Pj4+PiBbwqAgMzA2Ljc2MTk0N10gMHhkYzA5N2I1MAo+Pj4+PiBbwqAgMzA2
+Ljc2MTk1NF0gLT5hY3Rpb24oKTogZGEwOTczODAKPj4+Pj4gW8KgIDMwNi43NjE5NjBdIC0+YWN0
+aW9uLT5oYW5kbGVyKCk6IGMwNzhkY2U0LAo+Pj4+PiBbwqAgMzA2Ljc2MTk3Nl0gZ3Bpb19zeXNm
+c19pcnErMHgwLzB4MjQKPj4+Pj4gW8KgIDMwNi43NjE5ODVdwqDCoMKgIElSUV9OT1BST0JFIHNl
+dAo+Pj4+PiBbwqAgMzA2Ljc2MTk5NV0gdW5leHBlY3RlZCBJUlEgdHJhcCBhdCB2ZWN0b3IgNTgK
+Pj4+Pj4gW8KgIDMwNi43NjYzMTFdIGlycSA4OCwgZGVzYzogZGMxYmU0MDAsIGRlcHRoOiAwLCBj
+b3VudDogMSwgdW5oYW5kbGVkOgo+Pj4+PiAwCj4+PiBbwqAgMzA2Ljc2NjMxOF0gLT5oYW5kbGVf
+aXJxKCk6wqAgYzAxYTgxMGMsCj4+Pj4+IFvCoCAzMDYuNzY2MzMwXSBoYW5kbGVfZWRnZV9pcnEr
+MHgwLzB4MTk0Cj4+Pj4+IFvCoCAzMDYuNzY2MzM2XSAtPmlycV9kYXRhLmNoaXAoKTogZGMwOTdi
+NTAsCj4+Pj4+IFvCoCAzMDYuNzY2MzQ0XSAweGRjMDk3YjUwCj4+Pj4+IFvCoCAzMDYuNzY2MzUx
+XSAtPmFjdGlvbigpOiBkYTA5NzM4MAo+Pj4+PiBbwqAgMzA2Ljc2NjM1N10gLT5hY3Rpb24tPmhh
+bmRsZXIoKTogYzA3OGRjZTQsCj4+Pj4+IFvCoCAzMDYuNzY2MzY2XSBncGlvX3N5c2ZzX2lycSsw
+eDAvMHgyNAo+Pj4+PiBbwqAgMzA2Ljc2NjM3M13CoMKgwqAgSVJRX05PUFJPQkUgc2V0Cj4+Pj4+
+IFvCoCAzMDYuNzY2MzgwXSB1bmV4cGVjdGVkIElSUSB0cmFwIGF0IHZlY3RvciA1OAo+Pj4+PiBb
+wqAgMzA2Ljg5MjYxN10gaXJxIDg4LCBkZXNjOiBkYzFiZTQwMCwgZGVwdGg6IDAsIGNvdW50OiAy
+LCB1bmhhbmRsZWQ6Cj4+Pj4+IDAKPj4+IFvCoCAzMDYuODkyNjM0XSAtPmhhbmRsZV9pcnEoKTrC
+oCBjMDFhODEwYywKPj4+Pj4gW8KgIDMwNi44OTI2NjZdIGhhbmRsZV9lZGdlX2lycSsweDAvMHgx
+OTQKPj4+Pj4gW8KgIDMwNi44OTI2NzNdIC0+aXJxX2RhdGEuY2hpcCgpOiBkYzA5N2I1MCwKPj4+
+Pj4gW8KgIDMwNi44OTI2ODNdIDB4ZGMwOTdiNTAKPj4+Pj4gW8KgIDMwNi44OTI2OTBdIC0+YWN0
+aW9uKCk6IGRhMDk3MzgwCj4+Pj4+IFvCoCAzMDYuODkyNjk3XSAtPmFjdGlvbi0+aGFuZGxlcigp
+OiBjMDc4ZGNlNCwKPj4+Pj4gW8KgIDMwNi44OTI3MTJdIGdwaW9fc3lzZnNfaXJxKzB4MC8weDI0
+Cj4+Pj4+IFvCoCAzMDYuODkyNzIzXcKgwqDCoCBJUlFfTk9QUk9CRSBzZXQKPj4+Pj4gW8KgIDMw
+Ni44OTI3MzJdIHVuZXhwZWN0ZWQgSVJRIHRyYXAgYXQgdmVjdG9yIDU4Cj4+Pj4+IFvCoCAzMDYu
+ODk3MDQ3XSBpcnEgODgsIGRlc2M6IGRjMWJlNDAwLCBkZXB0aDogMCwgY291bnQ6IDIsIHVuaGFu
+ZGxlZDoKPj4+Pj4gMAo+Pj4gW8KgIDMwNi44OTcwNTRdIC0+aGFuZGxlX2lycSgpOsKgIGMwMWE4
+MTBjLAo+Pj4+PiBbwqAgMzA2Ljg5NzA2NV0gaGFuZGxlX2VkZ2VfaXJxKzB4MC8weDE5NAo+Pj4+
+PiBbwqAgMzA2Ljg5NzA3MV0gLT5pcnFfZGF0YS5jaGlwKCk6IGRjMDk3YjUwLAo+Pj4+PiBbwqAg
+MzA2Ljg5NzA3OV0gMHhkYzA5N2I1MAo+Pj4+PiBbwqAgMzA2Ljg5NzA4Nl0gLT5hY3Rpb24oKTog
+ZGEwOTczODAKPj4+Pj4gW8KgIDMwNi44OTcwOTJdIC0+YWN0aW9uLT5oYW5kbGVyKCk6IGMwNzhk
+Y2U0LAo+Pj4+PiBbwqAgMzA2Ljg5NzEwMV0gZ3Bpb19zeXNmc19pcnErMHgwLzB4MjQKPj4+Pj4g
+W8KgIDMwNi44OTcxMDhdwqDCoMKgIElSUV9OT1BST0JFIHNldAo+Pj4+PiBbwqAgMzA2Ljg5NzEx
+NV0gdW5leHBlY3RlZCBJUlEgdHJhcCBhdCB2ZWN0b3IgNTgKPj4+Pj4gQmVzdCByZWdhcmRzLAo+
+Pj4+PiBCcmFuaXNsYXYKPj4+Pj4gX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
+X19fX19fX19fX18KPj4+Pj4gWGVub21haSBtYWlsaW5nIGxpc3QKPj4+Pj4gWGVub21haUB4ZW5v
+bWFpLm9yZwo+Pj4+PiBodHRwczovL3hlbm9tYWkub3JnL21haWxtYW4vbGlzdGluZm8veGVub21h
+aQo+Pj4+Cj4+Pj4gX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
+X18KPj4+PiBYZW5vbWFpIG1haWxpbmcgbGlzdAo+Pj4+IFhlbm9tYWlAeGVub21haS5vcmcKPj4+
+PiBodHRwczovL3hlbm9tYWkub3JnL21haWxtYW4vbGlzdGluZm8veGVub21haQo+Pj4+Cj4+Pgo+
+Pj4KPj4+Cj4+Pgo+Pgo+Cj4KPgo+IF9fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
+X19fX19fX19fX19fCj4gWGVub21haSBtYWlsaW5nIGxpc3QKPiBYZW5vbWFpQHhlbm9tYWkub3Jn
+Cj4gaHR0cHM6Ly94ZW5vbWFpLm9yZy9tYWlsbWFuL2xpc3RpbmZvL3hlbm9tYWkKPgoKCgpfX19f
+X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fXwpYZW5vbWFpIG1haWxp
+bmcgbGlzdApYZW5vbWFpQHhlbm9tYWkub3JnCmh0dHBzOi8veGVub21haS5vcmcvbWFpbG1hbi9s
+aXN0aW5mby94ZW5vbWFpCg==
 
 
