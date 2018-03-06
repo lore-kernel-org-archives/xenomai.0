@@ -1,11 +1,11 @@
-Date: Mon, 05 Mar 2018 07:10:53 -0500
-Message-ID: <paidvn7iib5il2ch6f5si5v4.1520251853430@embeddedgreg.com>
-From: Greg Gallagher <greg@embeddedgreg.com>
-In-Reply-To: <10044.147.91.1.44.1520238251.squirrel@mail.imp.bg.ac.rs>
+Date: Tue, 6 Mar 2018 15:22:57 +0200 (EET)
+From: =?windows-1251?B?2OXi9+Xt6u4g0uDw4PEgw/Do4+7w/OXi6Pc=?=
+ <shevchenko.taras@triolcorp.com.ua>
+Message-ID: <392996706.2572717.1520342577614.JavaMail.zimbra@triolcorp.com.ua>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: base64
-Subject: Re: [Xenomai] interrupt on edge problem, unexpected IRQ trap
+Content-Type: text/plain; charset=windows-1251
+Content-Transfer-Encoding: quoted-printable
+Subject: [Xenomai] rtnet no eth0
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -14,176 +14,85 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "branislav.sasic@automatika.imp.bg.ac.rs" <branislav.sasic@automatika.imp.bg.ac.rs>
-Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Jan Kiszka <jan.kiszka@siemens.com>
+Cc: xenomai <xenomai@xenomai.org>
 
-SSBzaG91bGQgaGF2ZSBhY2Nlc3MgdG8gYSBiZWFnbGVib25lIGdyZWVuIHRoaXMgd2Vlay4gSSB3
-YXNuJ3QgYWJsZSB0byByZXByb2R1Y2UgaXQgd2l0aCBhIHp5bnEgb3IgcmFzcGJlcnJ5IFBpIDIg
-Ym9hcmQuCgpHcmVnCgoKCsKgIE9yaWdpbmFsIE1lc3NhZ2UgwqAKRnJvbTogYnJhbmlzbGF2LnNh
-c2ljQGF1dG9tYXRpa2EuaW1wLmJnLmFjLnJzClNlbnQ6IE1hcmNoIDUsIDIwMTggMzoyNCBBTQpU
-bzogYnJhbmlzbGF2LnNhc2ljQGF1dG9tYXRpa2EuaW1wLmJnLmFjLnJzCkNjOiB4ZW5vbWFpQHhl
-bm9tYWkub3JnClN1YmplY3Q6IFJlOiBbWGVub21haV0gaW50ZXJydXB0IG9uIGVkZ2UgcHJvYmxl
-bSwgdW5leHBlY3RlZCBJUlEgdHJhcAoKTm90aGluZz8gOnwKCgo+IFRoYW5rIHlvdSBmb3IgeW91
-ciBoZWxwIEdyZWcgJiBQaGlsaXBwZSEKPgo+IEkgbWVyZ2VkIGdwaW8tb21hcC5jIGZyb20gNC4x
-NCBrZXJuZWwgdG8gbXkgNC4xMSBrZXJuZWwsIHJlc3VsdCBpcyBmcmVlemVkCj4gY3B1IGFmdGVy
-IGludGVycnVwdC4gVGhlbiwgSSBjb21waWxlZCA0LjE0IGxhdGVzdCBpcGlwZS1hcm0ga2VybmVs
-IGZyb20KPiBnaXQgKG5vdGhpbmcgYWRkZWQsIG5vdGhpbmcgcmVtb3ZlZCksIGFuZCBzaW1pbGFy
-IHRoaW5nIGhhcHBlbnMuIE9ubHkgSQo+IGNvdWxkIHNlZSBzb21lIHRpbWUgYWZ0ZXIsIHVudGls
-IGNvbXBsZXRlIGZyZWV6ZSwgYXJlIG1lc3NhZ2VzCj4KPiBbwqDCoCA2Mi40NjMwMDJdIHVuZXhw
-ZWN0ZWQgSVJRIHRyYXAgYXQgdmVjdG9yIDNmCj4gW8KgwqAgNjMuNjQzODQ3XSB1bmV4cGVjdGVk
-IElSUSB0cmFwIGF0IHZlY3RvciAzZgo+IFvCoMKgIDYzLjY0ODIwNF0gdW5leHBlY3RlZCBJUlEg
-dHJhcCBhdCB2ZWN0b3IgM2YKPiBbwqDCoCA2NS42MDUxMjNdIHVuZXhwZWN0ZWQgSVJRIHRyYXAg
-YXQgdmVjdG9yIDNmCj4gW8KgwqAgNjYuNDE4MjI1XSB1bmV4cGVjdGVkIElSUSB0cmFwIGF0IHZl
-Y3RvciAzZgo+Cj4gVGVzdGVkIHRocm91Z2ggc3lzZnMgZ3BpbyBpbnRlcmZhY2UuCj4KPgo+IEJy
-YW5pc2xhdgo+Cj4KPgo+PiBBcyBQaGlsaXBwZSBtZW50aW9uZWQsIHRoZXkgYXJlIHNvbWUgbWlz
-c2luZyBwaWVjZXMgdGhhdCBuZWVkIHRvIGJlCj4+IGFkZGVkIHRvIHRoZSBpcGlwZS7CoCBUaGUg
-bGluayBQaGlsaXBwZSBwcm92aWRlZCB3aWxsIGdpdmUgeW91IGd1aWRhbmNlCj4+IG9uIGhvdyB0
-byBtYWtlIHRob3NlIGNoYW5nZXMgdG8geW91ciBjdXN0b20ga2VybmVsLsKgIFRoZSBvdGhlciBv
-cHRpb24KPj4gaXMgeW91IGNvdWxkIHVzZSB0aGUgaXBpcGUtYXJtIHRyZWUgYW5kIHRoZSBtYWlu
-bGluZSBrZXJuZWwuwqAgQWxzbywKPj4gdW5yZWxhdGVkLCB0aGUgZ3Bpb3MgdGhhdCBhcmUgZXhw
-b3NlZCBpbiBzeXNmcyBhcmUgbm90IFJURE0gZ3Bpb3MuCj4+IFRoZXJlIGN1cnJlbnRseSBpc24n
-dCBhIFJURE0gZHJpdmVyIGZvciBiZWFnbGVib25lIGdwaW8sIGJ1dCBvbmUgY2FuCj4+IGJlIGFk
-ZGVkIHZlcnkgZWFzaWx5Lgo+Pgo+Pgo+PiAtR3JlZwo+Pgo+PiBPbiBNb24sIEZlYiAyNiwgMjAx
-OCBhdCAxOjA1IFBNLAo+PiA8YnJhbmlzbGF2LnNhc2ljQGF1dG9tYXRpa2EuaW1wLmJnLmFjLnJz
-PiB3cm90ZToKPj4+IFhlbm9tYWkgMy4wLjYsIGFuZCBpcGlwZS1jb3JlLTQuOS41MS1hcm0tMywg
-cGF0Y2hlZCBvbiBzdW54aSA0LjExLjIKPj4+IGtlcm5lbAo+Pj4gKHdpdGggQmVhZ2xlQm9uZSBw
-YXRjaGVzIGFwcGxpZWQgdG9vKS4gU2FtZSBzaXR1YXRpb24gd2l0aCB0aGlzIGtlcm5lbAo+Pj4g
-LT4KPj4+IGh0dHBzOi8vZ2l0aHViLmNvbS9iZWFnbGVib2FyZC9saW51eC90cmVlLzQuOS14ZW5v
-bWFpCj4+Pgo+Pj4KPj4+IEp1c3QgYXMgR2l1bGlvIHdyb3RlLCBHUElPIGlzIGNvbmZpZ3VyZWQg
-d2l0aDoKPj4+Cj4+PiBlY2hvIDYwID4gL3N5cy9jbGFzcy9ncGlvL2V4cG9ydAo+Pj4gZWNobyBi
-b3RoID4gL3N5cy9jbGFzcy9ncGlvL2dwaW82MC9lZGdlCj4+Pgo+Pj4gb3IgaW4ga2VybmVsIG1v
-ZHVsZSBpbml0IHJvdXRpbmUgd2l0aDoKPj4+Cj4+PiBncGlvX3JlcXVlc3QoZ3BpbywgInRlc3Qi
-KTsKPj4+IGdwaW9fZGlyZWN0aW9uX2lucHV0KGdwaW8pOwo+Pj4gaXJxID0gZ3Bpb190b19pcnEo
-Z3Bpbyk7Cj4+PiBpcnFfc2V0X2lycV90eXBlKGlycSwgSVJRRl9UUklHR0VSX0ZBTExJTkcgfCBJ
-UlFGX1RSSUdHRVJfUklTSU5HKTsKPj4+IHJ0ZG1faXJxX3JlcXVlc3QoJmlycV9oYW5kbGUsIGly
-cSwgdGVzdF9pc3IsIFJURE1fSVJRVFlQRV9FREdFLAo+Pj4gRFJJVkVSX05BTUUsIE5VTEwpOwo+
-Pj4gcnRkbV9pcnFfZW5hYmxlKCZpcnFfaGFuZGxlKTsKPj4+Cj4+Pgo+Pj4gQm90aCByZXByb2R1
-Y2UgdGhlIHByb2JsZW0uIEluIHRoZSBzZWNvbmQgY2FzZSwgd2hlbiByZXF1ZXN0ZWQgd2l0aAo+
-Pj4gcnRkbV9pcnFfcmVxdWVzdCwgSVJRIGlzIHZpc2libGUgYm90aCBpbiAvcHJvYy9pbnRlcnJ1
-cHRzLCBhbmQgaW4KPj4+IC9wcm9jL3hlbm9tYWkvaXJxCj4+Pgo+Pj4KPj4+IFRoYW5rcyEKPj4+
-Cj4+Pgo+Pj4gQnJhbmlzbGF2Cj4+Pgo+Pj4KPj4+PiBDYW4geW91IHByb3ZpZGUgd2hhdCB2ZXJz
-aW9uIG9mIFhlbm9tYWkgeW91IGFyZSB1c2luZyBhbmQgd2hhdCBpcGlwZQo+Pj4gcGF0Y2ggeW91
-IGFyZSB1c2luZz/CoCBJdCBhbHNvIG1heSBiZSBoZWxwZnVsIGlmIHlvdSBjb3VsZCBwcm92aWRl
-IHNvbWUKPj4+IHNvcnQgb2Ygc2FtcGxlIGNvZGUgdGhhdCByZXByb2R1Y2VzIHRoZSBwcm9ibGVt
-Lgo+Pj4+Cj4+Pj4gLUdyZWcKPj4+Pgo+Pj4+IE9uIE1vbiwgRmViIDI2LCAyMDE4IGF0IDg6NDYg
-QU0sCj4+Pj4gPGJyYW5pc2xhdi5zYXNpY0BhdXRvbWF0aWthLmltcC5iZy5hYy5ycz4gd3JvdGU6
-Cj4+Pj4+IEhlbGxvLAo+Pj4+PiBJIGhhdmUgYSBwcm9ibGVtIHdpdGggbmV3IEktcGlwZSBwYXRj
-aCwgd2hpY2ggd2FzIG5vdCBleGlzdGluZyB3aXRoCj4+Pj4+IGxlZ2FjeQo+Pj4+PiBwYXRjaCBv
-biAzLjE0IGtlcm5lbCwgb24gQmVhZ2xlQm9uZSBwbGF0Zm9ybS4KPj4+Pj4gV2hlbiBHUElPIHBp
-biBpcyBjb25maWd1cmVkIGFzIGlucHV0IHdpdGggZWRnZSBpbnRlcnJ1cHQgZW5hYmxlLCBvbgo+
-Pj4+PiBJUlEKPj4+IG9jY3VycmVuY2UgdGhlIGZvbGxvd2luZyBtZXNzYWdlIGFwcGVhcnM6Cj4+
-Pj4+IFvCoCAzMDMuMzMxMzg2XSBpcnEgODgsIGRlc2M6IGRjMWJlNDAwLCBkZXB0aDogMCwgY291
-bnQ6IDAsIHVuaGFuZGxlZDoKPj4+Pj4gMAo+Pj4gW8KgIDMwMy4zMzE0MDFdIC0+aGFuZGxlX2ly
-cSgpOsKgIGMwMWE4MTBjLAo+Pj4+PiBbwqAgMzAzLjMzMTQzNV0gaGFuZGxlX2VkZ2VfaXJxKzB4
-MC8weDE5NAo+Pj4+PiBbwqAgMzAzLjMzMTQ0Ml0gLT5pcnFfZGF0YS5jaGlwKCk6IGRjMDk3YjUw
-LAo+Pj4+PiBbwqAgMzAzLjMzMTQ1NF0gMHhkYzA5N2I1MAo+Pj4+PiBbwqAgMzAzLjMzMTQ2MV0g
-LT5hY3Rpb24oKTogZGEwOTczODAKPj4+Pj4gW8KgIDMwMy4zMzE0NjddIC0+YWN0aW9uLT5oYW5k
-bGVyKCk6IGMwNzhkY2U0LAo+Pj4+PiBbwqAgMzAzLjMzMTQ4M10gZ3Bpb19zeXNmc19pcnErMHgw
-LzB4MjQKPj4+Pj4gW8KgIDMwMy4zMzE0OTNdwqDCoMKgIElSUV9OT1BST0JFIHNldAo+Pj4+PiBb
-wqAgMzAzLjMzMTUwM10gdW5leHBlY3RlZCBJUlEgdHJhcCBhdCB2ZWN0b3IgNTgKPj4+Pj4gW8Kg
-IDMwMy4zMzU4MTRdIC0tLS0tLS0tLS0tLVsgY3V0IGhlcmUgXS0tLS0tLS0tLS0tLQo+Pj4+PiBb
-wqAgMzAzLjMzNTgzMl0gV0FSTklORzogQ1BVOiAwIFBJRDogMCBhdCBrZXJuZWwvaXJxL2NoaXAu
-Yzo4ODMKPj4+Pj4gX19pcGlwZV9hY2tfYmFkX2lycSsweDNjLzB4NDgKPj4+Pj4gW8KgIDMwMy4z
-MzU4MzldIE1vZHVsZXMgbGlua2VkIGluOgo+Pj4+PiBbwqAgMzAzLjMzNTg2M10gQ1BVOiAwIFBJ
-RDogMCBDb21tOiBzd2FwcGVyLzAgTm90IHRhaW50ZWQgNC45LjgyICMyIFsKPj4+IDMwMy4zMzU4
-NzFdIEhhcmR3YXJlIG5hbWU6IEdlbmVyaWMgQU0zM1hYIChGbGF0dGVuZWQgRGV2aWNlIFRyZWUp
-IFsKPj4+IDMwMy4zMzU4NzhdIEktcGlwZSBkb21haW46IExpbnV4Cj4+Pj4+IFvCoCAzMDMuMzM1
-OTE4XSBbPGMwMTEzNTIwPl0gKHVud2luZF9iYWNrdHJhY2UpIGZyb20gWzxjMDEwZDMyMD5dCj4+
-PiAoc2hvd19zdGFjaysweDIwLzB4MjQpCj4+Pj4+IFvCoCAzMDMuMzM1OTQ2XSBbPGMwMTBkMzIw
-Pl0gKHNob3dfc3RhY2spIGZyb20gWzxjMDczYzk5Yz5dCj4+Pj4+IChkdW1wX3N0YWNrKzB4YmMv
-MHhlYykKPj4+Pj4gW8KgIDMwMy4zMzU5NjhdIFs8YzA3M2M5OWM+XSAoZHVtcF9zdGFjaykgZnJv
-bSBbPGMwMTNkZGRjPl0KPj4+Pj4gKF9fd2FybisweGU0LzB4MTEwKQo+Pj4+PiBbwqAgMzAzLjMz
-NTk4NF0gWzxjMDEzZGRkYz5dIChfX3dhcm4pIGZyb20gWzxjMDEzZGUzOD5dCj4+Pj4+ICh3YXJu
-X3Nsb3dwYXRoX251bGwrMHgzMC8weDM4KQo+Pj4+PiBbwqAgMzAzLjMzNTk5OF0gWzxjMDEzZGUz
-OD5dICh3YXJuX3Nsb3dwYXRoX251bGwpIGZyb20gWzxjMDFhNzRhMD5dCj4+PiAoX19pcGlwZV9h
-Y2tfYmFkX2lycSsweDNjLzB4NDgpCj4+Pj4+IFvCoCAzMDMuMzM2MDI3XSBbPGMwMWE3NGEwPl0g
-KF9faXBpcGVfYWNrX2JhZF9pcnEpIGZyb20gWzxjMDIwY2NkYz5dCj4+PiAoX19pcGlwZV9kaXNw
-YXRjaF9pcnErMHg4MC8weDFlNCkKPj4+Pj4gW8KgIDMwMy4zMzYwNDhdIFs8YzAyMGNjZGM+XSAo
-X19pcGlwZV9kaXNwYXRjaF9pcnEpIGZyb20gWzxjMDc5MDYzMD5dCj4+PiAob21hcF9ncGlvX2ly
-cV9oYW5kbGVyKzB4MTVjLzB4MWQwKQo+Pj4+PiBbwqAgMzAzLjMzNjA2Nl0gWzxjMDc5MDYzMD5d
-IChvbWFwX2dwaW9faXJxX2hhbmRsZXIpIGZyb20gWzxjMDFhMzg3ND5dCj4+PiAoX19oYW5kbGVf
-aXJxX2V2ZW50X3BlcmNwdSsweDY4LzB4MmJjKQo+Pj4+PiBbwqAgMzAzLjMzNjA4MV0gWzxjMDFh
-Mzg3ND5dIChfX2hhbmRsZV9pcnFfZXZlbnRfcGVyY3B1KSBmcm9tCj4+Pj4+IFs8YzAxYTNhZjQ+
-XQo+Pj4+PiAoaGFuZGxlX2lycV9ldmVudF9wZXJjcHUrMHgyYy8weDY4KQo+Pj4+PiBbwqAgMzAz
-LjMzNjA5NV0gWzxjMDFhM2FmND5dIChoYW5kbGVfaXJxX2V2ZW50X3BlcmNwdSkgZnJvbQo+Pj4+
-PiBbPGMwMWEzYjc4Pl0KPj4+IChoYW5kbGVfaXJxX2V2ZW50KzB4NDgvMHg2YykKPj4+Pj4gW8Kg
-IDMwMy4zMzYxMTFdIFs8YzAxYTNiNzg+XSAoaGFuZGxlX2lycV9ldmVudCkgZnJvbSBbPGMwMWE4
-MzQ4Pl0KPj4+IChoYW5kbGVfbGV2ZWxfaXJxKzB4YTgvMHhmYykKPj4+Pj4gW8KgIDMwMy4zMzYx
-MjddIFs8YzAxYTgzNDg+XSAoaGFuZGxlX2xldmVsX2lycSkgZnJvbSBbPGMwMWEyZWEwPl0KPj4+
-IChnZW5lcmljX2hhbmRsZV9pcnErMHgyOC8weDM4KQo+Pj4+PiBbwqAgMzAzLjMzNjE0MV0gWzxj
-MDFhMmVhMD5dIChnZW5lcmljX2hhbmRsZV9pcnEpIGZyb20gWzxjMDFhMzAxND5dCj4+PiAoX19o
-YW5kbGVfZG9tYWluX2lycSsweDhjLzB4MTBjKQo+Pj4+PiBbwqAgMzAzLjMzNjE2NF0gWzxjMDFh
-MzAxND5dIChfX2hhbmRsZV9kb21haW5faXJxKSBmcm9tIFs8YzAxMDljMjg+XQo+Pj4gKGhhbmRs
-ZV9JUlErMHgyYy8weDMwKQo+Pj4+PiBbwqAgMzAzLjMzNjE4Ml0gWzxjMDEwOWMyOD5dIChoYW5k
-bGVfSVJRKSBmcm9tIFs8YzAxMTc5OTA+XQo+Pj4+PiAoX19pcGlwZV9kb19JUlErMHgzOC8weDQw
-KQo+Pj4+PiBbwqAgMzAzLjMzNjE5OF0gWzxjMDExNzk5MD5dIChfX2lwaXBlX2RvX0lSUSkgZnJv
-bSBbPGMwMjBjNGI0Pl0KPj4+Pj4gKF9faXBpcGVfZG9fc3luY19zdGFnZSsweDI2OC8weDI3OCkK
-Pj4+Pj4gW8KgIDMwMy4zMzYyMTRdIFs8YzAyMGM0YjQ+XSAoX19pcGlwZV9kb19zeW5jX3N0YWdl
-KSBmcm9tIFs8YzAyMGM4MjA+XQo+Pj4gKGlwaXBlX3Vuc3RhbGxfcm9vdCsweDUwLzB4NWMpCj4+
-Pj4+IFvCoCAzMDMuMzM2MjQ0XSBbPGMwMjBjODIwPl0gKGlwaXBlX3Vuc3RhbGxfcm9vdCkgZnJv
-bSBbPGMwY2JiNGM4Pl0KPj4+IChkZWZhdWx0X2lkbGVfY2FsbCsweDU0LzB4N2MpCj4+Pj4+IFvC
-oCAzMDMuMzM2MjcxXSBbPGMwY2JiNGM4Pl0gKGRlZmF1bHRfaWRsZV9jYWxsKSBmcm9tIFs8YzAx
-ODdjNGM+XQo+Pj4gKGNwdV9zdGFydHVwX2VudHJ5KzB4ZDAvMHgxNDQpCj4+Pj4+IFvCoCAzMDMu
-MzM2Mjg5XSBbPGMwMTg3YzRjPl0gKGNwdV9zdGFydHVwX2VudHJ5KSBmcm9tIFs8YzBjYjVjODA+
-XQo+Pj4gKHJlc3RfaW5pdCsweDgwLzB4OTgpCj4+Pj4+IFvCoCAzMDMuMzM2MzE1XSBbPGMwY2I1
-YzgwPl0gKHJlc3RfaW5pdCkgZnJvbSBbPGMxMzAwZDA4Pl0KPj4+Pj4gKHN0YXJ0X2tlcm5lbCsw
-eDM3MC8weDNkOCkKPj4+Pj4gW8KgIDMwMy4zMzYzMjddIC0tLVsgZW5kIHRyYWNlIGZkMjQzNjQ0
-NzgwOWMxMjIgXS0tLQo+Pj4+PiBbwqAgMzAzLjMzNjM0M10gaXJxIDg4LCBkZXNjOiBkYzFiZTQw
-MCwgZGVwdGg6IDAsIGNvdW50OiAwLCB1bmhhbmRsZWQ6Cj4+Pj4+IDAKPj4+IFvCoCAzMDMuMzM2
-MzQ5XSAtPmhhbmRsZV9pcnEoKTrCoCBjMDFhODEwYywKPj4+Pj4gW8KgIDMwMy4zMzYzNjFdIGhh
-bmRsZV9lZGdlX2lycSsweDAvMHgxOTQKPj4+Pj4gW8KgIDMwMy4zMzYzNjddIC0+aXJxX2RhdGEu
-Y2hpcCgpOiBkYzA5N2I1MCwKPj4+Pj4gW8KgIDMwMy4zMzYzNzZdIDB4ZGMwOTdiNTAKPj4+Pj4g
-W8KgIDMwMy4zMzYzODJdIC0+YWN0aW9uKCk6IGRhMDk3MzgwCj4+Pj4+IFvCoCAzMDMuMzM2Mzg5
-XSAtPmFjdGlvbi0+aGFuZGxlcigpOiBjMDc4ZGNlNCwKPj4+Pj4gW8KgIDMwMy4zMzYzOTldIGdw
-aW9fc3lzZnNfaXJxKzB4MC8weDI0Cj4+Pj4+IFvCoCAzMDMuMzM2NDA2XcKgwqDCoCBJUlFfTk9Q
-Uk9CRSBzZXQKPj4+Pj4gW8KgIDMwMy4zMzY0MTNdIHVuZXhwZWN0ZWQgSVJRIHRyYXAgYXQgdmVj
-dG9yIDU4Cj4+Pj4+IFvCoCAzMDYuNzYxODc5XSBpcnEgODgsIGRlc2M6IGRjMWJlNDAwLCBkZXB0
-aDogMCwgY291bnQ6IDEsIHVuaGFuZGxlZDoKPj4+Pj4gMAo+Pj4gW8KgIDMwNi43NjE4OTNdIC0+
-aGFuZGxlX2lycSgpOsKgIGMwMWE4MTBjLAo+Pj4+PiBbwqAgMzA2Ljc2MTkyOF0gaGFuZGxlX2Vk
-Z2VfaXJxKzB4MC8weDE5NAo+Pj4+PiBbwqAgMzA2Ljc2MTkzNV0gLT5pcnFfZGF0YS5jaGlwKCk6
-IGRjMDk3YjUwLAo+Pj4+PiBbwqAgMzA2Ljc2MTk0N10gMHhkYzA5N2I1MAo+Pj4+PiBbwqAgMzA2
-Ljc2MTk1NF0gLT5hY3Rpb24oKTogZGEwOTczODAKPj4+Pj4gW8KgIDMwNi43NjE5NjBdIC0+YWN0
-aW9uLT5oYW5kbGVyKCk6IGMwNzhkY2U0LAo+Pj4+PiBbwqAgMzA2Ljc2MTk3Nl0gZ3Bpb19zeXNm
-c19pcnErMHgwLzB4MjQKPj4+Pj4gW8KgIDMwNi43NjE5ODVdwqDCoMKgIElSUV9OT1BST0JFIHNl
-dAo+Pj4+PiBbwqAgMzA2Ljc2MTk5NV0gdW5leHBlY3RlZCBJUlEgdHJhcCBhdCB2ZWN0b3IgNTgK
-Pj4+Pj4gW8KgIDMwNi43NjYzMTFdIGlycSA4OCwgZGVzYzogZGMxYmU0MDAsIGRlcHRoOiAwLCBj
-b3VudDogMSwgdW5oYW5kbGVkOgo+Pj4+PiAwCj4+PiBbwqAgMzA2Ljc2NjMxOF0gLT5oYW5kbGVf
-aXJxKCk6wqAgYzAxYTgxMGMsCj4+Pj4+IFvCoCAzMDYuNzY2MzMwXSBoYW5kbGVfZWRnZV9pcnEr
-MHgwLzB4MTk0Cj4+Pj4+IFvCoCAzMDYuNzY2MzM2XSAtPmlycV9kYXRhLmNoaXAoKTogZGMwOTdi
-NTAsCj4+Pj4+IFvCoCAzMDYuNzY2MzQ0XSAweGRjMDk3YjUwCj4+Pj4+IFvCoCAzMDYuNzY2MzUx
-XSAtPmFjdGlvbigpOiBkYTA5NzM4MAo+Pj4+PiBbwqAgMzA2Ljc2NjM1N10gLT5hY3Rpb24tPmhh
-bmRsZXIoKTogYzA3OGRjZTQsCj4+Pj4+IFvCoCAzMDYuNzY2MzY2XSBncGlvX3N5c2ZzX2lycSsw
-eDAvMHgyNAo+Pj4+PiBbwqAgMzA2Ljc2NjM3M13CoMKgwqAgSVJRX05PUFJPQkUgc2V0Cj4+Pj4+
-IFvCoCAzMDYuNzY2MzgwXSB1bmV4cGVjdGVkIElSUSB0cmFwIGF0IHZlY3RvciA1OAo+Pj4+PiBb
-wqAgMzA2Ljg5MjYxN10gaXJxIDg4LCBkZXNjOiBkYzFiZTQwMCwgZGVwdGg6IDAsIGNvdW50OiAy
-LCB1bmhhbmRsZWQ6Cj4+Pj4+IDAKPj4+IFvCoCAzMDYuODkyNjM0XSAtPmhhbmRsZV9pcnEoKTrC
-oCBjMDFhODEwYywKPj4+Pj4gW8KgIDMwNi44OTI2NjZdIGhhbmRsZV9lZGdlX2lycSsweDAvMHgx
-OTQKPj4+Pj4gW8KgIDMwNi44OTI2NzNdIC0+aXJxX2RhdGEuY2hpcCgpOiBkYzA5N2I1MCwKPj4+
-Pj4gW8KgIDMwNi44OTI2ODNdIDB4ZGMwOTdiNTAKPj4+Pj4gW8KgIDMwNi44OTI2OTBdIC0+YWN0
-aW9uKCk6IGRhMDk3MzgwCj4+Pj4+IFvCoCAzMDYuODkyNjk3XSAtPmFjdGlvbi0+aGFuZGxlcigp
-OiBjMDc4ZGNlNCwKPj4+Pj4gW8KgIDMwNi44OTI3MTJdIGdwaW9fc3lzZnNfaXJxKzB4MC8weDI0
-Cj4+Pj4+IFvCoCAzMDYuODkyNzIzXcKgwqDCoCBJUlFfTk9QUk9CRSBzZXQKPj4+Pj4gW8KgIDMw
-Ni44OTI3MzJdIHVuZXhwZWN0ZWQgSVJRIHRyYXAgYXQgdmVjdG9yIDU4Cj4+Pj4+IFvCoCAzMDYu
-ODk3MDQ3XSBpcnEgODgsIGRlc2M6IGRjMWJlNDAwLCBkZXB0aDogMCwgY291bnQ6IDIsIHVuaGFu
-ZGxlZDoKPj4+Pj4gMAo+Pj4gW8KgIDMwNi44OTcwNTRdIC0+aGFuZGxlX2lycSgpOsKgIGMwMWE4
-MTBjLAo+Pj4+PiBbwqAgMzA2Ljg5NzA2NV0gaGFuZGxlX2VkZ2VfaXJxKzB4MC8weDE5NAo+Pj4+
-PiBbwqAgMzA2Ljg5NzA3MV0gLT5pcnFfZGF0YS5jaGlwKCk6IGRjMDk3YjUwLAo+Pj4+PiBbwqAg
-MzA2Ljg5NzA3OV0gMHhkYzA5N2I1MAo+Pj4+PiBbwqAgMzA2Ljg5NzA4Nl0gLT5hY3Rpb24oKTog
-ZGEwOTczODAKPj4+Pj4gW8KgIDMwNi44OTcwOTJdIC0+YWN0aW9uLT5oYW5kbGVyKCk6IGMwNzhk
-Y2U0LAo+Pj4+PiBbwqAgMzA2Ljg5NzEwMV0gZ3Bpb19zeXNmc19pcnErMHgwLzB4MjQKPj4+Pj4g
-W8KgIDMwNi44OTcxMDhdwqDCoMKgIElSUV9OT1BST0JFIHNldAo+Pj4+PiBbwqAgMzA2Ljg5NzEx
-NV0gdW5leHBlY3RlZCBJUlEgdHJhcCBhdCB2ZWN0b3IgNTgKPj4+Pj4gQmVzdCByZWdhcmRzLAo+
-Pj4+PiBCcmFuaXNsYXYKPj4+Pj4gX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
-X19fX19fX19fX18KPj4+Pj4gWGVub21haSBtYWlsaW5nIGxpc3QKPj4+Pj4gWGVub21haUB4ZW5v
-bWFpLm9yZwo+Pj4+PiBodHRwczovL3hlbm9tYWkub3JnL21haWxtYW4vbGlzdGluZm8veGVub21h
-aQo+Pj4+Cj4+Pj4gX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
-X18KPj4+PiBYZW5vbWFpIG1haWxpbmcgbGlzdAo+Pj4+IFhlbm9tYWlAeGVub21haS5vcmcKPj4+
-PiBodHRwczovL3hlbm9tYWkub3JnL21haWxtYW4vbGlzdGluZm8veGVub21haQo+Pj4+Cj4+Pgo+
-Pj4KPj4+Cj4+Pgo+Pgo+Cj4KPgo+IF9fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
-X19fX19fX19fX19fCj4gWGVub21haSBtYWlsaW5nIGxpc3QKPiBYZW5vbWFpQHhlbm9tYWkub3Jn
-Cj4gaHR0cHM6Ly94ZW5vbWFpLm9yZy9tYWlsbWFuL2xpc3RpbmZvL3hlbm9tYWkKPgoKCgpfX19f
-X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fXwpYZW5vbWFpIG1haWxp
-bmcgbGlzdApYZW5vbWFpQHhlbm9tYWkub3JnCmh0dHBzOi8veGVub21haS5vcmcvbWFpbG1hbi9s
-aXN0aW5mby94ZW5vbWFpCg==
+Good day!=20
+I need help to run rtnet on my nic=20
+
+i remove r8169 module and follow this https://xenomai.org/rtnet-installatio=
+n/=20
+
+looback test are working=20
+
+some outputs below (could it be a problem by default there is not eth0 inte=
+rface it s name enp2s0 ?)=20
+
+what should i do ?=20
+
+sudo ./rtnet -v start=20
+[sudo] password for yeti:=20
+Turning on verbose mode=20
+sh: echo: I/O error=20
+/usr/xenomai/sbin/rtifconfig rtlo up 127.0.0.1=20
+/usr/xenomai/sbin/rtcfg rteth0 server=20
+ioctl: No such device=20
+/usr/xenomai/sbin/rtifconfig rteth0 up 192.168.161.45 netmask 255.255.255.0=
+=20
+ioctl: No such device=20
+/usr/xenomai/sbin/tdmacfg rteth0 master 5000=20
+ioctl: No such device=20
+/usr/xenomai/sbin/tdmacfg rteth0 slot 0 0=20
+ioctl: No such device=20
+/usr/xenomai/sbin/rtcfg rteth0 add 192.168.161.22 -stage1 -=20
+ioctl (add): No such device=20
+vnic0: ERROR while getting interface flags: No such device=20
+SIOCSIFADDR: No such device=20
+vnic0: ERROR while getting interface flags: No such device=20
+SIOCSIFNETMASK: No such device=20
+Waiting for all slaves.../usr/xenomai/sbin/rtcfg rteth0 wait=20
+ioctl: No such device=20
+/usr/xenomai/sbin/rtcfg rteth0 ready=20
+ioctl: No such device=20
+
+//-------------------------------------------------=20
+@yeti-UDOO-x86:/usr/xenomai/sbin$ sudo ./rtifconfig=20
+rtlo Medium: Local Loopback=20
+IP address: 127.0.0.1=20
+UP LOOPBACK RUNNING MTU: 1500=20
+//-------------------------------------------------=20
+Some string from conf file=20
+
+RT_DRIVER=3D"rt_r8169"=20
+RT_DRIVER_OPTIONS=3D""=20
+REBIND_RT_NICS=3D"0000:02:00.0"=20
+IPADDR=3D"192.168.161.45"=20
+NETMASK=3D"255.255.255.0"=20
+TDMA_SLAVES=3D"192.168.161.22"=20
+//-------------------------------------------------=20
+yeti@yeti-UDOO-x86:~$ lspci=20
+.....=20
+02:00.0 Ethernet controller: Realtek Semiconductor Co., Ltd. RTL8111/8168/8=
+411 PCI Express Gigabit Ethernet Controller (rev 0c)=20
+
+//-------------------------------------------------=20
+
+yeti@yeti-UDOO-x86:~$ lsmod=20
+Module Size Used by=20
+tdma 28672 0=20
+rtmac 20480 1 tdma=20
+rtcfg 45056 0=20
+rt_loopback 16384 1=20
+rtpacket 16384 0=20
+rtudp 24576 0=20
+rt_r8169 24576 0=20
+rtipv4 32768 2 rtudp,rtcfg=20
+rtnet 57344 8 rtipv4,rt_loopback,rtmac,rt_r8169,rtpacket,rtudp,rtcfg,tdma=
+=20
+
+//-------------------------------------------------=20
 
 
+=D1 =F3=E2=E0=E6=E5=ED=E8=E5=EC =E8 =ED=E0=E4=E5=E6=E4=EE=E9 =ED=E0 =F1=EE=
+=F2=F0=F3=E4=ED=E8=F7=E5=F1=F2=E2=EE,=20
+=D8=E5=E2=F7=E5=ED=EA=EE =D2.=C3.=20
