@@ -1,14 +1,12 @@
 MIME-Version: 1.0
-In-Reply-To: <1365131872.3062771.1520443277957.JavaMail.zimbra@triolcorp.com.ua>
-References: <193431298.3050958.1520439447908.JavaMail.zimbra@triolcorp.com.ua>
- <CALLqZ8RWOEEcNXGT7k_ckrJT8Us417Snhh_6aUCbVrotR6objw@mail.gmail.com>
- <1365131872.3062771.1520443277957.JavaMail.zimbra@triolcorp.com.ua>
-From: Greg Gallagher <greg@embeddedgreg.com>
-Date: Thu, 8 Mar 2018 11:35:32 -0500
-Message-ID: <CALLqZ8R2xhO2d22C193=rYb6p=Av=J6q+K+CgjQU2beq9NxoNA@mail.gmail.com>
+In-Reply-To: <35bb959b-9fa6-e8c6-6ed4-d0f454a0d2ae@xenomai.org>
+References: <CAOuPNLgxO=tNBOAhJ_FO2Qo4chhi1BvCNSYqCL-TX0yA=9rqsw@mail.gmail.com>
+ <35bb959b-9fa6-e8c6-6ed4-d0f454a0d2ae@xenomai.org>
+From: Pintu Kumar <pintu.ping@gmail.com>
+Date: Thu, 8 Mar 2018 23:01:56 +0530
+Message-ID: <CAOuPNLjvXRXfPQmssNqiR3DQx_q_S+sgkWK70kioV0sTeOeqDQ@mail.gmail.com>
 Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-Subject: Re: [Xenomai] cant compile rtdm module
+Subject: Re: [Xenomai] [xenomai] inconsistency in latency behavior
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,123 +15,103 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: =?UTF-8?B?0KjQtdCy0YfQtdC90LrQviDQotCw0YDQsNGBINCT0YDQuNCz0L7RgNGM0LXQstC40Yc=?= <shevchenko.taras@triolcorp.com.ua>
-Cc: xenomai <xenomai@xenomai.org>
+To: Philippe Gerum <rpm@xenomai.org>
+Cc: Jan Kiszka <jan.kiszka@web.de>, "Xenomai@xenomai.org" <xenomai@xenomai.org>
 
-Here is a sample makefile for an out of kernel module that you can use
-to create a custom rtdm module.
-
----------------------------------------------------------------------------=
----------------------------------------------------------------------------=
----------------------------
-#this should be the path to your patched kernel source that has the
-ipipe patches and Xenomai links applied
-#if you are using the O option when building the kernel (build takes
-place out of tree) use that directory
-XENO_KDIR :=3D <path to patched kernel source>
-
-#This is only needed if you are cross compiling, if you are not cross
-compiling then leave these blank
-CROSS_COMPILE=3Darm-linux-gnueabihf-
-ARCH=3Darm
-
-PWD :=3D $(shell pwd)
-
-#name of your module that you are compiling
-obj-m+=3Drtdm_hello.o
-
-all:
-make ARCH=3D$(ARCH) CROSS_COMPILE=3D$(CROSS_COMPILE) M=3D$(PWD) -C
-$(XENO_BUILD) modules
-clean:
-make ARCH=3D$(ARCH) CROSS_COMPILE=3D$(CROSS_COMPILE) M=3D$(PWD) -C
-$(XENO_BUILD) modules
----------------------------------------------------------------------------=
----------------------------------------------------------------------------=
-----------------------------
-
-For your purposes you don't need the CROSS_COMPILE and ARCH options
-you can omit those so your make lines should look like this,
-     make M=3D$(PWD) -C $(XENO_BUILD) modules
-
-
-I'll be creating a simple sample driver, maybe similar to how it's
-done in LDD3 and post it.  This is all depending on when I get time to
-do so , no time line lol
-
--Greg
-
-On Wed, Mar 7, 2018 at 12:21 PM, =D0=A8=D0=B5=D0=B2=D1=87=D0=B5=D0=BD=D0=BA=
-=D0=BE =D0=A2=D0=B0=D1=80=D0=B0=D1=81 =D0=93=D1=80=D0=B8=D0=B3=D0=BE=D1=80=
-=D1=8C=D0=B5=D0=B2=D0=B8=D1=87
-<shevchenko.taras@triolcorp.com.ua> wrote:
-> Yes I use UDOO-x86 with pentium n3720
-> I try to build  custom.
-> And i try to build some from kernel  - just to be shure thats all correct=
-.(Maybe it s not right way) but I get the same errors
-> Unfortunately, there is not many examples for x86_64
->
-> ----- Original Message -----
-> From: "Greg Gallagher" <greg@embeddedgreg.com>
-> To: "=D0=A8=D0=B5=D0=B2=D1=87=D0=B5=D0=BD=D0=BA=D0=BE =D0=A2=D0=B0=D1=80=
-=D0=B0=D1=81 =D0=93=D1=80=D0=B8=D0=B3=D0=BE=D1=80=D1=8C=D0=B5=D0=B2=D0=B8=
-=D1=87" <shevchenko.taras@triolcorp.com.ua>
-> Cc: "xenomai" <xenomai@xenomai.org>
-> Sent: Wednesday, March 7, 2018 7:11:24 PM
-> Subject: Re: [Xenomai] cant compile rtdm module
->
-> Are you trying to build a custom RTDM module or a built in one?  The
-> built in ones can be enabled in the menuconfig stage of the kernel
-> build.  What board are you using? UDOO-x86?
->
-> -Greg
->
-> On Wed, Mar 7, 2018 at 11:17 AM, =D0=A8=D0=B5=D0=B2=D1=87=D0=B5=D0=BD=D0=
-=BA=D0=BE =D0=A2=D0=B0=D1=80=D0=B0=D1=81 =D0=93=D1=80=D0=B8=D0=B3=D0=BE=D1=
-=80=D1=8C=D0=B5=D0=B2=D0=B8=D1=87
-> <shevchenko.taras@triolcorp.com.ua> wrote:
->>
+On Thu, Mar 8, 2018 at 8:49 PM, Philippe Gerum <rpm@xenomai.org> wrote:
+> On 03/08/2018 03:16 PM, Pintu Kumar wrote:
 >> Hi,
->> I can successfully compile and run code with Xenomai api in user space
->> but if i try to compile rtdm code there is many error
->> I try to use own code and your example from /kernel/drivers/gpio - outpu=
-ts below
 >>
->> please guide me how to compile and run simple rtdm module
+>> On x86_64 machine (with xenomai 3.0) sometimes I observed a huge
+>> variance and inconsistency in latency data when measuring latency
+>> delay using clock_nanosleep.
+>> I observed this inconsistency in both normal kernel, as well as xenomai kernel.
+>> I observed the same, even when using the direct xenomai API such as:
+>> rt_time_read().
 >>
->> yeti@yeti-UDOO-x86:~/xenoInstall/xenomai-3.0.5/kernel/drivers/gpio$ make=
- V=3D1
->> make: *** No targets. Stop.
->> yeti@yeti-UDOO-x86:~/xenoInstall/xenomai-3.0.5/kernel/drivers/gpio$ make=
- V=3D1 -C /usr/src/linux-headers-4.9.38-xenomai-3.0.5 M=3D$PWD modules
->> make: Entering directory '/usr/src/linux-headers-4.9.38-xenomai-3.0.5'
->> test -e include/generated/autoconf.h -a -e include/config/auto.conf || (=
- \
->> echo >&2; \
->> echo >&2 " ERROR: Kernel configuration is invalid."; \
->> echo >&2 " include/generated/autoconf.h or include/config/auto.conf are =
-missing.";\
->> echo >&2 " Run 'make oldconfig && make prepare' on kernel src to fix it.=
-"; \
->> echo >&2 ; \
->> /bin/false)
->> mkdir -p /home/yeti/xenoInstall/xenomai-3.0.5/kernel/drivers/gpio/.tmp_v=
-ersions ; rm -f /home/yeti/xenoInstall/xenomai-3.0.5/kernel/drivers/gpio/.t=
-mp_versions/*
->> make -f ./scripts/Makefile.build obj=3D/home/yeti/xenoInstall/xenomai-3.=
-0.5/kernel/drivers/gpio
->> (cat /dev/null; ) > /home/yeti/xenoInstall/xenomai-3.0.5/kernel/drivers/=
-gpio/modules.order
->> make -f ./scripts/Makefile.modpost
->> find /home/yeti/xenoInstall/xenomai-3.0.5/kernel/drivers/gpio/.tmp_versi=
-ons -name '*.mod' | xargs -r grep -h '\.ko$' | sort -u | sed 's/\.ko$/.o/' =
-| scripts/mod/modpost -a -i ./Module.symvers -I /home/yeti/xenoInstall/xeno=
-mai-3.0.5/kernel/drivers/gpio/Module.symvers -o /home/yeti/xenoInstall/xeno=
-mai-3.0.5/kernel/drivers/gpio/Module.symvers -S -w -s -T -
->> make: Leaving directory '/usr/src/linux-headers-4.9.38-xenomai-3.0.5'
->> yeti@yeti-UDOO-x86:~/xenoInstall/xenomai-3.0.5/kernel/drivers/gpio$
->> _______________________________________________
->> Xenomai mailing list
->> Xenomai@xenomai.org
->> https://xenomai.org/mailman/listinfo/xenomai
+>> So, I wanted to know if anybody observed the similar behavior.
+>> Or I am not sure if I am doing some thing wrong in measurement itself.
+>>
+>> I will explain my scenario below.
+>> 1) I created a single thread using the pthread API.
+>> 2) Inside the thread function, I just print one message and sleep for
+>> 100 micro-seconds using the clock_nanosleep() API.
+>> 3) Then I calculate the time difference before and after sleep.
+>> 4) I repeat this for 10 times, and then calculate the average.
+>> 5) I build this application for normal kernel and for xenomai using posix skin.
+>> 6) Then I compare the latency between both.
+>>
+>> What I observed is as follows:
+>> 1) Even if I give sleep for 100 micro-seconds, the timing difference
+>> comes in: 150, 160, and even in 600, 1000. Thus the average difference
+>> shows very high.
+>>
+>> 2) Sometimes, the xenomai timing difference is much larger than normal kernel.
+>> LIKE: Normal kernel => Average time taken  = 232.288 us
+>>        Xenomai kernel => Average time taken  = 427.478 us
+>>
+>> 3) If I give sleep in less than 5 mirco-seconds, then xenomai shows
+>> better. But still the time taken is not accurate.
+>>     Normal kernel => Average time taken  = 42.989 us
+>>  Xenomai kernel => Average time taken  = 26.264 us
+>>
+>> 4) If I give sleep in 100 milli-seconds, then only the results are
+>> coming some what proper.
+>>     Normal kernel => Average time taken  = 100.465 us
+>>  Xenomai kernel => Average time taken  = 100.409 us
+>>
+>>
+>> What could be the cause of this inconsistency ?
+>> Did anybody observed the similar issue on some system?
+>
+> 1. Does the standard latency test from the Xenomai distribution perform
+> properly on your hw? If so, then the issue is most likely in your
+> application.
+>
+
+I have seen the latency test code and implemented almost in the similar way.
+When I ran these test it was almost difficult to understand the
+latency difference.
+So, thats the reason I planned to first develop a simpler version.
+Any specific latency test you want to point me, and how to check the difference?
+
+> 2. Did you read [1][2], are you aware of the existence of so-called
+> "mode switches", and how they can ruin the latency figures? If not,
+> please read that document.
+>
+
+Yes, I have already read the [2]. I will further check the [1] part.
+
+> 3. Did you read [3], particularly section #3, with the admonition
+> regarding the effect of "xeno-config --posix --ldflags"? Please do,
+> reviewing all your libc calls in this light, including printf().
+>
+No, I haven't read [3] yet. But I am using the mix of skin that is:
+--posix and --native (both).
+
+But my point is I am getting huge latency difference even with normal
+kernel (using just gcc, without using any xenomai flags).
+I am using virtual box, but this also earlier I was getting almost
+accurate latency with the same code, but not sure why the behaviour is
+changed now.
+
+Do, you found any flaw in my code snippet, that you want to point out to me ?
+Am I doing some thing wrong ?
+
+
+> [1] http://xenomai.org/2014/06/finding-spurious-relaxes/
+> [2]
+> http://xenomai.org/2014/08/porting-a-linux-application-to-xenomai-dual-kernel/
+> [3]
+> http://www.xenomai.org/documentation/xenomai-3/html/man1/xeno-config/index.html
+>
+
+Thanks for these links. I will read these in detail later.
+
+
+> PS: no need to Cc: contributors and maintainers along with posting to
+> xenomai@xenomai.org. We all read this list.
+>
+> --
+> Philippe.
 
