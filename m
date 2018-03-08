@@ -1,13 +1,14 @@
-References: <CAOuPNLgxO=tNBOAhJ_FO2Qo4chhi1BvCNSYqCL-TX0yA=9rqsw@mail.gmail.com>
-From: Philippe Gerum <rpm@xenomai.org>
-Message-ID: <35bb959b-9fa6-e8c6-6ed4-d0f454a0d2ae@xenomai.org>
-Date: Thu, 8 Mar 2018 16:19:45 +0100
 MIME-Version: 1.0
-In-Reply-To: <CAOuPNLgxO=tNBOAhJ_FO2Qo4chhi1BvCNSYqCL-TX0yA=9rqsw@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] [xenomai] inconsistency in latency behavior
+In-Reply-To: <41185.147.91.1.43.1520506417.squirrel@mail.imp.bg.ac.rs>
+References: <paidvn7iib5il2ch6f5si5v4.1520251853430@embeddedgreg.com>
+ <60614.147.91.1.42.1520428526.squirrel@mail.imp.bg.ac.rs>
+ <CALLqZ8QpjWWkj7Ra82CX3Bh52rQaUzsJvkf3b9hRoTKTuFBePA@mail.gmail.com>
+ <41185.147.91.1.43.1520506417.squirrel@mail.imp.bg.ac.rs>
+From: Greg Gallagher <greg@embeddedgreg.com>
+Date: Thu, 8 Mar 2018 10:39:04 -0500
+Message-ID: <CALLqZ8SPSBYFwk7NXxeumepsQkxJLVf=yMg9SGz5L9=VmcoNTQ@mail.gmail.com>
+Content-Type: text/plain; charset="UTF-8"
+Subject: Re: [Xenomai] interrupt on edge problem, unexpected IRQ trap
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,74 +17,337 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Pintu Kumar <pintu.ping@gmail.com>, "Xenomai@xenomai.org" <xenomai@xenomai.org>, Greg Gallagher <greg@embeddedgreg.com>, Jan Kiszka <jan.kiszka@web.de>
+To: branislav.sasic@automatika.imp.bg.ac.rs
+Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On 03/08/2018 03:16 PM, Pintu Kumar wrote:
-> Hi,
-> 
-> On x86_64 machine (with xenomai 3.0) sometimes I observed a huge
-> variance and inconsistency in latency data when measuring latency
-> delay using clock_nanosleep.
-> I observed this inconsistency in both normal kernel, as well as xenomai kernel.
-> I observed the same, even when using the direct xenomai API such as:
-> rt_time_read().
-> 
-> So, I wanted to know if anybody observed the similar behavior.
-> Or I am not sure if I am doing some thing wrong in measurement itself.
-> 
-> I will explain my scenario below.
-> 1) I created a single thread using the pthread API.
-> 2) Inside the thread function, I just print one message and sleep for
-> 100 micro-seconds using the clock_nanosleep() API.
-> 3) Then I calculate the time difference before and after sleep.
-> 4) I repeat this for 10 times, and then calculate the average.
-> 5) I build this application for normal kernel and for xenomai using posix skin.
-> 6) Then I compare the latency between both.
-> 
-> What I observed is as follows:
-> 1) Even if I give sleep for 100 micro-seconds, the timing difference
-> comes in: 150, 160, and even in 600, 1000. Thus the average difference
-> shows very high.
-> 
-> 2) Sometimes, the xenomai timing difference is much larger than normal kernel.
-> LIKE: Normal kernel => Average time taken  = 232.288 us
->        Xenomai kernel => Average time taken  = 427.478 us
-> 
-> 3) If I give sleep in less than 5 mirco-seconds, then xenomai shows
-> better. But still the time taken is not accurate.
->     Normal kernel => Average time taken  = 42.989 us
->  Xenomai kernel => Average time taken  = 26.264 us
-> 
-> 4) If I give sleep in 100 milli-seconds, then only the results are
-> coming some what proper.
->     Normal kernel => Average time taken  = 100.465 us
->  Xenomai kernel => Average time taken  = 100.409 us
-> 
-> 
-> What could be the cause of this inconsistency ?
-> Did anybody observed the similar issue on some system?
+I'll have to run this on my known working set up and see what I can
+find.  The only difference between gpio-core and your file is
+gpio-core uses the same label in the gpio_request and the
+rtdm_irq_request.  For fun you can try to pass "gpio203" to
+rtdm_irq_request. I'll have to take a deeper look at what's happening
+in cobalt.
 
-1. Does the standard latency test from the Xenomai distribution perform
-properly on your hw? If so, then the issue is most likely in your
-application.
+-Greg
 
-2. Did you read [1][2], are you aware of the existence of so-called
-"mode switches", and how they can ruin the latency figures? If not,
-please read that document.
-
-3. Did you read [3], particularly section #3, with the admonition
-regarding the effect of "xeno-config --posix --ldflags"? Please do,
-reviewing all your libc calls in this light, including printf().
-
-[1] http://xenomai.org/2014/06/finding-spurious-relaxes/
-[2]
-http://xenomai.org/2014/08/porting-a-linux-application-to-xenomai-dual-kernel/
-[3]
-http://www.xenomai.org/documentation/xenomai-3/html/man1/xeno-config/index.html
-
-PS: no need to Cc: contributors and maintainers along with posting to
-xenomai@xenomai.org. We all read this list.
-
--- 
-Philippe.
+On Thu, Mar 8, 2018 at 5:53 AM,
+<branislav.sasic@automatika.imp.bg.ac.rs> wrote:
+> In attachment is example kernel module code that work when used
+> request_irq but not with rtdm_irq_request.
+> I need to measure time intervals between signal edges and to do some
+> processing inside that module. This worked fine on 3.14 kernel on
+> BeagleBone with Xenomai 2.6.x. Now, on NanoPi NEO (4.14, xenomai 3.0.6) it
+> seams it doesn't work.
+>
+>
+> Branislav
+>
+>
+>> I'd have to see more of the code to understand how you are setting
+>> that up.  If you look at the rtdm gpio code that is in Xenomai
+>> (kernel/drivers/gpio/gpio-core.c) that would be a good example to work
+>> from.  Are you planning on using the gpio pins from user space or from
+>> another rtdm driver?  IF you want to use them via user space there are
+>> better and quicker approaches then creating a custom RTDM driver.
+>>
+>> -Greg
+>>
+>> On Wed, Mar 7, 2018 at 8:15 AM,
+>> <branislav.sasic@automatika.imp.bg.ac.rs> wrote:
+>>> Thank you.
+>>> Meanwhile, I tried ipipe-arm kernel with latest xenomai from git on
+>>> NanoPi-NEO. Interrupts configured from sysfs interface works, doesn't
+>>> display any message, but when requested with rtdm_irq_request
+>>>
+>>> //request_irq(irq, irig_r_isr_test, 0, DRIVER_NAME, NULL); //this works
+>>> rtdm_irq_request(&irq_handle, irq, irig_r_isr_test, RTDM_IRQTYPE_EDGE,
+>>> DRIVER_NAME, NULL); //this not
+>>> irq_set_irq_type(irq, IRQF_TRIGGER_FALLING | IRQF_TRIGGER_RISING);
+>>> rtdm_irq_enable(&irq_handle);
+>>>
+>>> sunxi_pinctrl_irq_handler(struct irq_desc *desc) routine never get
+>>> called.
+>>>
+>>>
+>>> Branislav
+>>>
+>>>
+>>>> I should have access to a beaglebone green this week. I wasn't able to
+>>>> reproduce it with a zynq or raspberry Pi 2 board.
+>>>>
+>>>> Greg
+>>>>
+>>>>
+>>>>
+>>>>   Original Message
+>>>> From: branislav.sasic@automatika.imp.bg.ac.rs
+>>>> Sent: March 5, 2018 3:24 AM
+>>>> To: branislav.sasic@automatika.imp.bg.ac.rs
+>>>> Cc: xenomai@xenomai.org
+>>>> Subject: Re: [Xenomai] interrupt on edge problem, unexpected IRQ trap
+>>>>
+>>>> Nothing? :|
+>>>>
+>>>>
+>>>>> Thank you for your help Greg & Philippe!
+>>>>>
+>>>>> I merged gpio-omap.c from 4.14 kernel to my 4.11 kernel, result is
+>>>>> freezed
+>>>>> cpu after interrupt. Then, I compiled 4.14 latest ipipe-arm kernel
+>>>>> from
+>>>>> git (nothing added, nothing removed), and similar thing happens. Only
+>>>>> I
+>>>>> could see some time after, until complete freeze, are messages
+>>>>>
+>>>>> [   62.463002] unexpected IRQ trap at vector 3f
+>>>>> [   63.643847] unexpected IRQ trap at vector 3f
+>>>>> [   63.648204] unexpected IRQ trap at vector 3f
+>>>>> [   65.605123] unexpected IRQ trap at vector 3f
+>>>>> [   66.418225] unexpected IRQ trap at vector 3f
+>>>>>
+>>>>> Tested through sysfs gpio interface.
+>>>>>
+>>>>>
+>>>>> Branislav
+>>>>>
+>>>>>
+>>>>>
+>>>>>> As Philippe mentioned, they are some missing pieces that need to be
+>>>>>> added to the ipipe.  The link Philippe provided will give you
+>>>>>> guidance
+>>>>>> on how to make those changes to your custom kernel.  The other option
+>>>>>> is you could use the ipipe-arm tree and the mainline kernel.  Also,
+>>>>>> unrelated, the gpios that are exposed in sysfs are not RTDM gpios.
+>>>>>> There currently isn't a RTDM driver for beaglebone gpio, but one can
+>>>>>> be added very easily.
+>>>>>>
+>>>>>>
+>>>>>> -Greg
+>>>>>>
+>>>>>> On Mon, Feb 26, 2018 at 1:05 PM,
+>>>>>> <branislav.sasic@automatika.imp.bg.ac.rs> wrote:
+>>>>>>> Xenomai 3.0.6, and ipipe-core-4.9.51-arm-3, patched on sunxi 4.11.2
+>>>>>>> kernel
+>>>>>>> (with BeagleBone patches applied too). Same situation with this
+>>>>>>> kernel
+>>>>>>> ->
+>>>>>>> https://github.com/beagleboard/linux/tree/4.9-xenomai
+>>>>>>>
+>>>>>>>
+>>>>>>> Just as Giulio wrote, GPIO is configured with:
+>>>>>>>
+>>>>>>> echo 60 > /sys/class/gpio/export
+>>>>>>> echo both > /sys/class/gpio/gpio60/edge
+>>>>>>>
+>>>>>>> or in kernel module init routine with:
+>>>>>>>
+>>>>>>> gpio_request(gpio, "test");
+>>>>>>> gpio_direction_input(gpio);
+>>>>>>> irq = gpio_to_irq(gpio);
+>>>>>>> irq_set_irq_type(irq, IRQF_TRIGGER_FALLING | IRQF_TRIGGER_RISING);
+>>>>>>> rtdm_irq_request(&irq_handle, irq, test_isr, RTDM_IRQTYPE_EDGE,
+>>>>>>> DRIVER_NAME, NULL);
+>>>>>>> rtdm_irq_enable(&irq_handle);
+>>>>>>>
+>>>>>>>
+>>>>>>> Both reproduce the problem. In the second case, when requested with
+>>>>>>> rtdm_irq_request, IRQ is visible both in /proc/interrupts, and in
+>>>>>>> /proc/xenomai/irq
+>>>>>>>
+>>>>>>>
+>>>>>>> Thanks!
+>>>>>>>
+>>>>>>>
+>>>>>>> Branislav
+>>>>>>>
+>>>>>>>
+>>>>>>>> Can you provide what version of Xenomai you are using and what
+>>>>>>>> ipipe
+>>>>>>> patch you are using?  It also may be helpful if you could provide
+>>>>>>> some
+>>>>>>> sort of sample code that reproduces the problem.
+>>>>>>>>
+>>>>>>>> -Greg
+>>>>>>>>
+>>>>>>>> On Mon, Feb 26, 2018 at 8:46 AM,
+>>>>>>>> <branislav.sasic@automatika.imp.bg.ac.rs> wrote:
+>>>>>>>>> Hello,
+>>>>>>>>> I have a problem with new I-pipe patch, which was not existing
+>>>>>>>>> with
+>>>>>>>>> legacy
+>>>>>>>>> patch on 3.14 kernel, on BeagleBone platform.
+>>>>>>>>> When GPIO pin is configured as input with edge interrupt enable,
+>>>>>>>>> on
+>>>>>>>>> IRQ
+>>>>>>> occurrence the following message appears:
+>>>>>>>>> [  303.331386] irq 88, desc: dc1be400, depth: 0, count: 0,
+>>>>>>>>> unhandled:
+>>>>>>>>> 0
+>>>>>>> [  303.331401] ->handle_irq():  c01a810c,
+>>>>>>>>> [  303.331435] handle_edge_irq+0x0/0x194
+>>>>>>>>> [  303.331442] ->irq_data.chip(): dc097b50,
+>>>>>>>>> [  303.331454] 0xdc097b50
+>>>>>>>>> [  303.331461] ->action(): da097380
+>>>>>>>>> [  303.331467] ->action->handler(): c078dce4,
+>>>>>>>>> [  303.331483] gpio_sysfs_irq+0x0/0x24
+>>>>>>>>> [  303.331493]    IRQ_NOPROBE set
+>>>>>>>>> [  303.331503] unexpected IRQ trap at vector 58
+>>>>>>>>> [  303.335814] ------------[ cut here ]------------
+>>>>>>>>> [  303.335832] WARNING: CPU: 0 PID: 0 at kernel/irq/chip.c:883
+>>>>>>>>> __ipipe_ack_bad_irq+0x3c/0x48
+>>>>>>>>> [  303.335839] Modules linked in:
+>>>>>>>>> [  303.335863] CPU: 0 PID: 0 Comm: swapper/0 Not tainted 4.9.82 #2
+>>>>>>>>> [
+>>>>>>> 303.335871] Hardware name: Generic AM33XX (Flattened Device Tree) [
+>>>>>>> 303.335878] I-pipe domain: Linux
+>>>>>>>>> [  303.335918] [<c0113520>] (unwind_backtrace) from [<c010d320>]
+>>>>>>> (show_stack+0x20/0x24)
+>>>>>>>>> [  303.335946] [<c010d320>] (show_stack) from [<c073c99c>]
+>>>>>>>>> (dump_stack+0xbc/0xec)
+>>>>>>>>> [  303.335968] [<c073c99c>] (dump_stack) from [<c013dddc>]
+>>>>>>>>> (__warn+0xe4/0x110)
+>>>>>>>>> [  303.335984] [<c013dddc>] (__warn) from [<c013de38>]
+>>>>>>>>> (warn_slowpath_null+0x30/0x38)
+>>>>>>>>> [  303.335998] [<c013de38>] (warn_slowpath_null) from [<c01a74a0>]
+>>>>>>> (__ipipe_ack_bad_irq+0x3c/0x48)
+>>>>>>>>> [  303.336027] [<c01a74a0>] (__ipipe_ack_bad_irq) from
+>>>>>>>>> [<c020ccdc>]
+>>>>>>> (__ipipe_dispatch_irq+0x80/0x1e4)
+>>>>>>>>> [  303.336048] [<c020ccdc>] (__ipipe_dispatch_irq) from
+>>>>>>>>> [<c0790630>]
+>>>>>>> (omap_gpio_irq_handler+0x15c/0x1d0)
+>>>>>>>>> [  303.336066] [<c0790630>] (omap_gpio_irq_handler) from
+>>>>>>>>> [<c01a3874>]
+>>>>>>> (__handle_irq_event_percpu+0x68/0x2bc)
+>>>>>>>>> [  303.336081] [<c01a3874>] (__handle_irq_event_percpu) from
+>>>>>>>>> [<c01a3af4>]
+>>>>>>>>> (handle_irq_event_percpu+0x2c/0x68)
+>>>>>>>>> [  303.336095] [<c01a3af4>] (handle_irq_event_percpu) from
+>>>>>>>>> [<c01a3b78>]
+>>>>>>> (handle_irq_event+0x48/0x6c)
+>>>>>>>>> [  303.336111] [<c01a3b78>] (handle_irq_event) from [<c01a8348>]
+>>>>>>> (handle_level_irq+0xa8/0xfc)
+>>>>>>>>> [  303.336127] [<c01a8348>] (handle_level_irq) from [<c01a2ea0>]
+>>>>>>> (generic_handle_irq+0x28/0x38)
+>>>>>>>>> [  303.336141] [<c01a2ea0>] (generic_handle_irq) from [<c01a3014>]
+>>>>>>> (__handle_domain_irq+0x8c/0x10c)
+>>>>>>>>> [  303.336164] [<c01a3014>] (__handle_domain_irq) from
+>>>>>>>>> [<c0109c28>]
+>>>>>>> (handle_IRQ+0x2c/0x30)
+>>>>>>>>> [  303.336182] [<c0109c28>] (handle_IRQ) from [<c0117990>]
+>>>>>>>>> (__ipipe_do_IRQ+0x38/0x40)
+>>>>>>>>> [  303.336198] [<c0117990>] (__ipipe_do_IRQ) from [<c020c4b4>]
+>>>>>>>>> (__ipipe_do_sync_stage+0x268/0x278)
+>>>>>>>>> [  303.336214] [<c020c4b4>] (__ipipe_do_sync_stage) from
+>>>>>>>>> [<c020c820>]
+>>>>>>> (ipipe_unstall_root+0x50/0x5c)
+>>>>>>>>> [  303.336244] [<c020c820>] (ipipe_unstall_root) from [<c0cbb4c8>]
+>>>>>>> (default_idle_call+0x54/0x7c)
+>>>>>>>>> [  303.336271] [<c0cbb4c8>] (default_idle_call) from [<c0187c4c>]
+>>>>>>> (cpu_startup_entry+0xd0/0x144)
+>>>>>>>>> [  303.336289] [<c0187c4c>] (cpu_startup_entry) from [<c0cb5c80>]
+>>>>>>> (rest_init+0x80/0x98)
+>>>>>>>>> [  303.336315] [<c0cb5c80>] (rest_init) from [<c1300d08>]
+>>>>>>>>> (start_kernel+0x370/0x3d8)
+>>>>>>>>> [  303.336327] ---[ end trace fd2436447809c122 ]---
+>>>>>>>>> [  303.336343] irq 88, desc: dc1be400, depth: 0, count: 0,
+>>>>>>>>> unhandled:
+>>>>>>>>> 0
+>>>>>>> [  303.336349] ->handle_irq():  c01a810c,
+>>>>>>>>> [  303.336361] handle_edge_irq+0x0/0x194
+>>>>>>>>> [  303.336367] ->irq_data.chip(): dc097b50,
+>>>>>>>>> [  303.336376] 0xdc097b50
+>>>>>>>>> [  303.336382] ->action(): da097380
+>>>>>>>>> [  303.336389] ->action->handler(): c078dce4,
+>>>>>>>>> [  303.336399] gpio_sysfs_irq+0x0/0x24
+>>>>>>>>> [  303.336406]    IRQ_NOPROBE set
+>>>>>>>>> [  303.336413] unexpected IRQ trap at vector 58
+>>>>>>>>> [  306.761879] irq 88, desc: dc1be400, depth: 0, count: 1,
+>>>>>>>>> unhandled:
+>>>>>>>>> 0
+>>>>>>> [  306.761893] ->handle_irq():  c01a810c,
+>>>>>>>>> [  306.761928] handle_edge_irq+0x0/0x194
+>>>>>>>>> [  306.761935] ->irq_data.chip(): dc097b50,
+>>>>>>>>> [  306.761947] 0xdc097b50
+>>>>>>>>> [  306.761954] ->action(): da097380
+>>>>>>>>> [  306.761960] ->action->handler(): c078dce4,
+>>>>>>>>> [  306.761976] gpio_sysfs_irq+0x0/0x24
+>>>>>>>>> [  306.761985]    IRQ_NOPROBE set
+>>>>>>>>> [  306.761995] unexpected IRQ trap at vector 58
+>>>>>>>>> [  306.766311] irq 88, desc: dc1be400, depth: 0, count: 1,
+>>>>>>>>> unhandled:
+>>>>>>>>> 0
+>>>>>>> [  306.766318] ->handle_irq():  c01a810c,
+>>>>>>>>> [  306.766330] handle_edge_irq+0x0/0x194
+>>>>>>>>> [  306.766336] ->irq_data.chip(): dc097b50,
+>>>>>>>>> [  306.766344] 0xdc097b50
+>>>>>>>>> [  306.766351] ->action(): da097380
+>>>>>>>>> [  306.766357] ->action->handler(): c078dce4,
+>>>>>>>>> [  306.766366] gpio_sysfs_irq+0x0/0x24
+>>>>>>>>> [  306.766373]    IRQ_NOPROBE set
+>>>>>>>>> [  306.766380] unexpected IRQ trap at vector 58
+>>>>>>>>> [  306.892617] irq 88, desc: dc1be400, depth: 0, count: 2,
+>>>>>>>>> unhandled:
+>>>>>>>>> 0
+>>>>>>> [  306.892634] ->handle_irq():  c01a810c,
+>>>>>>>>> [  306.892666] handle_edge_irq+0x0/0x194
+>>>>>>>>> [  306.892673] ->irq_data.chip(): dc097b50,
+>>>>>>>>> [  306.892683] 0xdc097b50
+>>>>>>>>> [  306.892690] ->action(): da097380
+>>>>>>>>> [  306.892697] ->action->handler(): c078dce4,
+>>>>>>>>> [  306.892712] gpio_sysfs_irq+0x0/0x24
+>>>>>>>>> [  306.892723]    IRQ_NOPROBE set
+>>>>>>>>> [  306.892732] unexpected IRQ trap at vector 58
+>>>>>>>>> [  306.897047] irq 88, desc: dc1be400, depth: 0, count: 2,
+>>>>>>>>> unhandled:
+>>>>>>>>> 0
+>>>>>>> [  306.897054] ->handle_irq():  c01a810c,
+>>>>>>>>> [  306.897065] handle_edge_irq+0x0/0x194
+>>>>>>>>> [  306.897071] ->irq_data.chip(): dc097b50,
+>>>>>>>>> [  306.897079] 0xdc097b50
+>>>>>>>>> [  306.897086] ->action(): da097380
+>>>>>>>>> [  306.897092] ->action->handler(): c078dce4,
+>>>>>>>>> [  306.897101] gpio_sysfs_irq+0x0/0x24
+>>>>>>>>> [  306.897108]    IRQ_NOPROBE set
+>>>>>>>>> [  306.897115] unexpected IRQ trap at vector 58
+>>>>>>>>> Best regards,
+>>>>>>>>> Branislav
+>>>>>>>>> _______________________________________________
+>>>>>>>>> Xenomai mailing list
+>>>>>>>>> Xenomai@xenomai.org
+>>>>>>>>> https://xenomai.org/mailman/listinfo/xenomai
+>>>>>>>>
+>>>>>>>> _______________________________________________
+>>>>>>>> Xenomai mailing list
+>>>>>>>> Xenomai@xenomai.org
+>>>>>>>> https://xenomai.org/mailman/listinfo/xenomai
+>>>>>>>>
+>>>>>>>
+>>>>>>>
+>>>>>>>
+>>>>>>>
+>>>>>>
+>>>>>
+>>>>>
+>>>>>
+>>>>> _______________________________________________
+>>>>> Xenomai mailing list
+>>>>> Xenomai@xenomai.org
+>>>>> https://xenomai.org/mailman/listinfo/xenomai
+>>>>>
+>>>>
+>>>>
+>>>>
+>>>> _______________________________________________
+>>>> Xenomai mailing list
+>>>> Xenomai@xenomai.org
+>>>> https://xenomai.org/mailman/listinfo/xenomai
+>>>>
+>>>
+>>>
+>>
+>> _______________________________________________
+>> Xenomai mailing list
+>> Xenomai@xenomai.org
+>> https://xenomai.org/mailman/listinfo/xenomai
+>>
 
