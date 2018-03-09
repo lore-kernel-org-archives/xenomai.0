@@ -1,9 +1,10 @@
-Date: Fri, 9 Mar 2018 14:40:24 +0200 (EET)
+Date: Fri, 9 Mar 2018 15:18:35 +0200 (EET)
 From: =?windows-1251?B?2OXi9+Xt6u4g0uDw4PEgw/Do4+7w/OXi6Pc=?=
  <shevchenko.taras@triolcorp.com.ua>
-Message-ID: <1150022191.3242478.1520599224202.JavaMail.zimbra@triolcorp.com.ua>
-In-Reply-To: <5mv4cvt97tp1qjmddllhjpp3.1520597294434@embeddedgreg.com>
+Message-ID: <2091412133.3257704.1520601515758.JavaMail.zimbra@triolcorp.com.ua>
+In-Reply-To: <1150022191.3242478.1520599224202.JavaMail.zimbra@triolcorp.com.ua>
 References: <5mv4cvt97tp1qjmddllhjpp3.1520597294434@embeddedgreg.com>
+ <1150022191.3242478.1520599224202.JavaMail.zimbra@triolcorp.com.ua>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=windows-1251
 Content-Transfer-Encoding: quoted-printable
@@ -18,6 +19,49 @@ List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: Greg Gallagher <greg@embeddedgreg.com>
 Cc: xenomai <xenomai@xenomai.org>
+
+
+
+Is there a list of files and folders  must I have ?
+or way to check installation ?
+like xeno -config  or something else
+yeti@yeti-UDOO-x86:/usr/xenomai/bin$ ./xeno-config=20
+xeno-config --verbose
+        --core=3Dcobalt
+        --version=3D"3.0.5"
+        --cc=3D"gcc"
+        --ccld=3D"/usr/xenomai/bin/wrap-link.sh gcc"
+        --arch=3D"x86"
+        --prefix=3D"/usr/xenomai"
+        --library-dir=3D"/usr/xenomai/lib"
+Usage xeno-config OPTIONS
+Options :
+        --help
+        --v,--verbose
+        --version
+        --cc
+        --ccld
+        --arch
+        --prefix
+        --[skin=3D]posix|vxworks|psos|alchemy|rtdm|smokey|cobalt
+        --auto-init|auto-init-solib|no-auto-init
+        --mode-check|no-mode-check
+        --cflags
+        --ldflags
+        --lib*-dir|libdir|user-libdir
+        --core
+        --info
+        --compat
+
+
+
+----- Original Message -----
+From: "=D8=E5=E2=F7=E5=ED=EA=EE =D2=E0=F0=E0=F1 =C3=F0=E8=E3=EE=F0=FC=E5=E2=
+=E8=F7" <shevchenko.taras@triolcorp.com.ua>
+To: "Greg Gallagher" <greg@embeddedgreg.com>
+Cc: "xenomai" <xenomai@xenomai.org>
+Sent: Friday, March 9, 2018 2:40:24 PM
+Subject: Re: [Xenomai] cant compile rtdm module
 
 Im confused
 I extract tar xf xenomai-3.0.5.tar.bz2  in my home folder  /home/henoInstal=
@@ -209,4 +253,9 @@ mai-3.0.5/kernel/drivers/gpio/Module.symvers -S -w -s -T -
 >> Xenomai mailing list
 >> Xenomai@xenomai.org
 >> https://xenomai.org/mailman/listinfo/xenomai
+
+_______________________________________________
+Xenomai mailing list
+Xenomai@xenomai.org
+https://xenomai.org/mailman/listinfo/xenomai
 
