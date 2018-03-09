@@ -1,15 +1,10 @@
-Date: Fri, 9 Mar 2018 13:28:34 +0200 (EET)
-From: =?windows-1251?B?2OXi9+Xt6u4g0uDw4PEgw/Do4+7w/OXi6Pc=?=
- <shevchenko.taras@triolcorp.com.ua>
-Message-ID: <1248058911.3220402.1520594914841.JavaMail.zimbra@triolcorp.com.ua>
-In-Reply-To: <CALLqZ8R2xhO2d22C193=rYb6p=Av=J6q+K+CgjQU2beq9NxoNA@mail.gmail.com>
-References: <193431298.3050958.1520439447908.JavaMail.zimbra@triolcorp.com.ua>
- <CALLqZ8RWOEEcNXGT7k_ckrJT8Us417Snhh_6aUCbVrotR6objw@mail.gmail.com>
- <1365131872.3062771.1520443277957.JavaMail.zimbra@triolcorp.com.ua>
- <CALLqZ8R2xhO2d22C193=rYb6p=Av=J6q+K+CgjQU2beq9NxoNA@mail.gmail.com>
+Date: Fri, 09 Mar 2018 07:08:14 -0500
+Message-ID: <5mv4cvt97tp1qjmddllhjpp3.1520597294434@embeddedgreg.com>
+From: Greg Gallagher <greg@embeddedgreg.com>
+In-Reply-To: <1248058911.3220402.1520594914841.JavaMail.zimbra@triolcorp.com.ua>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=windows-1251
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: base64
 Subject: Re: [Xenomai] cant compile rtdm module
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
@@ -19,157 +14,118 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Greg Gallagher <greg@embeddedgreg.com>
-Cc: xenomai <xenomai@xenomai.org>
+To: =?UTF-8?B?0KjQtdCy0YfQtdC90LrQviDQotCw0YA=?= =?UTF-8?B?0LDRgSDQk9GA0LjQs9C+0YDRjNC10LLQuNGH?= <shevchenko.taras@triolcorp.com.ua>
+Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-I create such makefile based on your letter
--------------------------------------------
-obj-m :=3D rtdm_hello.o
-all:
-=09make -C /usr/src/linux-headers-4.9.38-xenomai-3.0.5/ M=3D$(PWD) modules
-clean:
-=09$(RM) $(CLEANMOD) *.o *.ko *.mod.c Module*.symvers Module.markers module=
-s.order
-=09$(RM) -R .tmp*
-------------------------------------------
-now I can compile and run simple Linux kernel Module
-but if i add    #include <rtdm/rtdm.h>  to my *.c file
-its crashed  and looks like some path are missed
+QXJlIHRoZSBYZW5vbWFpIGhlYWRlcnMgbG9hY3RlZCBpbiB5b3VyIGtlcm5lbCBzb3VyY2U/ICBX
+aGVyZSBkaWQgeW91IGJ1aWxkIHRoZSBwYXRjaGVkIGtlcm5lbCBmcm9tPwoKCgrCoCBPcmlnaW5h
+bCBNZXNzYWdlIMKgCkZyb206IHNoZXZjaGVua28udGFyYXNAdHJpb2xjb3JwLmNvbS51YQpTZW50
+OiBNYXJjaCA5LCAyMDE4IDY6MjggQU0KVG86IGdyZWdAZW1iZWRkZWRncmVnLmNvbQpDYzogeGVu
+b21haUB4ZW5vbWFpLm9yZwpTdWJqZWN0OiBSZTogW1hlbm9tYWldIGNhbnQgY29tcGlsZSBydGRt
+IG1vZHVsZQoKSSBjcmVhdGUgc3VjaCBtYWtlZmlsZSBiYXNlZCBvbiB5b3VyIGxldHRlcgotLS0t
+LS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tCm9iai1tIDo9IHJ0ZG1faGVs
+bG8ubwphbGw6Cm1ha2UgLUMgL3Vzci9zcmMvbGludXgtaGVhZGVycy00LjkuMzgteGVub21haS0z
+LjAuNS8gTT0kKFBXRCkgbW9kdWxlcwpjbGVhbjoKJChSTSkgJChDTEVBTk1PRCkgKi5vICoua28g
+Ki5tb2QuYyBNb2R1bGUqLnN5bXZlcnMgTW9kdWxlLm1hcmtlcnMgbW9kdWxlcy5vcmRlcgokKFJN
+KSAtUiAudG1wKgotLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0Kbm93
+IEkgY2FuIGNvbXBpbGUgYW5kIHJ1biBzaW1wbGUgTGludXgga2VybmVsIE1vZHVsZQpidXQgaWYg
+aSBhZGTCoMKgwqAgI2luY2x1ZGUgPHJ0ZG0vcnRkbS5oPsKgIHRvIG15ICouYyBmaWxlCml0cyBj
+cmFzaGVkwqAgYW5kIGxvb2tzIGxpa2Ugc29tZSBwYXRoIGFyZSBtaXNzZWQKCnlldGlAeWV0aS1V
+RE9PLXg4Njp+L3hlbm9JbnN0YWxsL3J0ZG1faGVsbG8kIG1ha2UKbWFrZSAtQyAvdXNyL3NyYy9s
+aW51eC1oZWFkZXJzLTQuOS4zOC14ZW5vbWFpLTMuMC41LyBNPS9ob21lL3lldGkveGVub0luc3Rh
+bGwvcnRkbV9oZWxsbyBtb2R1bGVzCm1ha2VbMV06IEVudGVyaW5nIGRpcmVjdG9yeSAnL3Vzci9z
+cmMvbGludXgtaGVhZGVycy00LjkuMzgteGVub21haS0zLjAuNScKwqAgQ0MgW01dwqAgL2hvbWUv
+eWV0aS94ZW5vSW5zdGFsbC9ydGRtX2hlbGxvL3J0ZG1faGVsbG8ubwpJbiBmaWxlIGluY2x1ZGVk
+IGZyb20gaW5jbHVkZS94ZW5vbWFpL3J0ZG0vZmQuaDoyNzowLArCoMKgwqDCoMKgwqDCoMKgwqDC
+oMKgwqDCoMKgwqDCoCBmcm9tIGluY2x1ZGUveGVub21haS9ydGRtL3J0ZG0uaDoyOCwKwqDCoMKg
+wqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqAgZnJvbSAvaG9tZS95ZXRpL3hlbm9JbnN0YWxsL3J0
+ZG1faGVsbG8vcnRkbV9oZWxsby5jOjM6Ci4vaW5jbHVkZS9hc20tZ2VuZXJpYy94ZW5vbWFpL3N5
+c2NhbGwuaDoyNDozNDogZmF0YWwgZXJyb3I6IGFzbS94ZW5vbWFpL2ZlYXR1cmVzLmg6IE5vIHN1
+Y2ggZmlsZSBvciBkaXJlY3RvcnkKY29tcGlsYXRpb24gdGVybWluYXRlZC4KCnBsZWFzZSBoZWxw
+CgoKLS0tLS0gT3JpZ2luYWwgTWVzc2FnZSAtLS0tLQpGcm9tOiAiR3JlZyBHYWxsYWdoZXIiIDxn
+cmVnQGVtYmVkZGVkZ3JlZy5jb20+ClRvOiAi0KjQtdCy0YfQtdC90LrQviDQotCw0YDQsNGBINCT
+0YDQuNCz0L7RgNGM0LXQstC40YciIDxzaGV2Y2hlbmtvLnRhcmFzQHRyaW9sY29ycC5jb20udWE+
+CkNjOiAieGVub21haSIgPHhlbm9tYWlAeGVub21haS5vcmc+ClNlbnQ6IFRodXJzZGF5LCBNYXJj
+aCA4LCAyMDE4IDY6MzU6MzIgUE0KU3ViamVjdDogUmU6IFtYZW5vbWFpXSBjYW50IGNvbXBpbGUg
+cnRkbSBtb2R1bGUKCkhlcmUgaXMgYSBzYW1wbGUgbWFrZWZpbGUgZm9yIGFuIG91dCBvZiBrZXJu
+ZWwgbW9kdWxlIHRoYXQgeW91IGNhbiB1c2UKdG8gY3JlYXRlIGEgY3VzdG9tIHJ0ZG0gbW9kdWxl
+LgoKLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0t
+LS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0t
+LS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0t
+LS0tLS0tLS0tCiN0aGlzIHNob3VsZCBiZSB0aGUgcGF0aCB0byB5b3VyIHBhdGNoZWQga2VybmVs
+IHNvdXJjZSB0aGF0IGhhcyB0aGUKaXBpcGUgcGF0Y2hlcyBhbmQgWGVub21haSBsaW5rcyBhcHBs
+aWVkCiNpZiB5b3UgYXJlIHVzaW5nIHRoZSBPIG9wdGlvbiB3aGVuIGJ1aWxkaW5nIHRoZSBrZXJu
+ZWwgKGJ1aWxkIHRha2VzCnBsYWNlIG91dCBvZiB0cmVlKSB1c2UgdGhhdCBkaXJlY3RvcnkKWEVO
+T19LRElSIDo9IDxwYXRoIHRvIHBhdGNoZWQga2VybmVsIHNvdXJjZT4KCiNUaGlzIGlzIG9ubHkg
+bmVlZGVkIGlmIHlvdSBhcmUgY3Jvc3MgY29tcGlsaW5nLCBpZiB5b3UgYXJlIG5vdCBjcm9zcwpj
+b21waWxpbmcgdGhlbiBsZWF2ZSB0aGVzZSBibGFuawpDUk9TU19DT01QSUxFPWFybS1saW51eC1n
+bnVlYWJpaGYtCkFSQ0g9YXJtCgpQV0QgOj0gJChzaGVsbCBwd2QpCgojbmFtZSBvZiB5b3VyIG1v
+ZHVsZSB0aGF0IHlvdSBhcmUgY29tcGlsaW5nCm9iai1tKz1ydGRtX2hlbGxvLm8KCmFsbDoKbWFr
+ZSBBUkNIPSQoQVJDSCkgQ1JPU1NfQ09NUElMRT0kKENST1NTX0NPTVBJTEUpIE09JChQV0QpIC1D
+CiQoWEVOT19CVUlMRCkgbW9kdWxlcwpjbGVhbjoKbWFrZSBBUkNIPSQoQVJDSCkgQ1JPU1NfQ09N
+UElMRT0kKENST1NTX0NPTVBJTEUpIE09JChQV0QpIC1DCiQoWEVOT19CVUlMRCkgbW9kdWxlcwot
+LS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0t
+LS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0t
+LS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0t
+LS0tLS0tCgpGb3IgeW91ciBwdXJwb3NlcyB5b3UgZG9uJ3QgbmVlZCB0aGUgQ1JPU1NfQ09NUElM
+RSBhbmQgQVJDSCBvcHRpb25zCnlvdSBjYW4gb21pdCB0aG9zZSBzbyB5b3VyIG1ha2UgbGluZXMg
+c2hvdWxkIGxvb2sgbGlrZSB0aGlzLArCoMKgwqDCoCBtYWtlIE09JChQV0QpIC1DICQoWEVOT19C
+VUlMRCkgbW9kdWxlcwoKCkknbGwgYmUgY3JlYXRpbmcgYSBzaW1wbGUgc2FtcGxlIGRyaXZlciwg
+bWF5YmUgc2ltaWxhciB0byBob3cgaXQncwpkb25lIGluIExERDMgYW5kIHBvc3QgaXQuwqAgVGhp
+cyBpcyBhbGwgZGVwZW5kaW5nIG9uIHdoZW4gSSBnZXQgdGltZSB0bwpkbyBzbyAsIG5vIHRpbWUg
+bGluZSBsb2wKCi1HcmVnCgpPbiBXZWQsIE1hciA3LCAyMDE4IGF0IDEyOjIxIFBNLCDQqNC10LLR
+h9C10L3QutC+INCi0LDRgNCw0YEg0JPRgNC40LPQvtGA0YzQtdCy0LjRhwo8c2hldmNoZW5rby50
+YXJhc0B0cmlvbGNvcnAuY29tLnVhPiB3cm90ZToKPiBZZXMgSSB1c2UgVURPTy14ODYgd2l0aCBw
+ZW50aXVtIG4zNzIwCj4gSSB0cnkgdG8gYnVpbGTCoCBjdXN0b20uCj4gQW5kIGkgdHJ5IHRvIGJ1
+aWxkIHNvbWUgZnJvbSBrZXJuZWzCoCAtIGp1c3QgdG8gYmUgc2h1cmUgdGhhdHMgYWxsIGNvcnJl
+Y3QuKE1heWJlIGl0IHMgbm90IHJpZ2h0IHdheSkgYnV0IEkgZ2V0IHRoZSBzYW1lIGVycm9ycwo+
+IFVuZm9ydHVuYXRlbHksIHRoZXJlIGlzIG5vdCBtYW55IGV4YW1wbGVzIGZvciB4ODZfNjQKPgo+
+IC0tLS0tIE9yaWdpbmFsIE1lc3NhZ2UgLS0tLS0KPiBGcm9tOiAiR3JlZyBHYWxsYWdoZXIiIDxn
+cmVnQGVtYmVkZGVkZ3JlZy5jb20+Cj4gVG86ICLQqNC10LLRh9C10L3QutC+INCi0LDRgNCw0YEg
+0JPRgNC40LPQvtGA0YzQtdCy0LjRhyIgPHNoZXZjaGVua28udGFyYXNAdHJpb2xjb3JwLmNvbS51
+YT4KPiBDYzogInhlbm9tYWkiIDx4ZW5vbWFpQHhlbm9tYWkub3JnPgo+IFNlbnQ6IFdlZG5lc2Rh
+eSwgTWFyY2ggNywgMjAxOCA3OjExOjI0IFBNCj4gU3ViamVjdDogUmU6IFtYZW5vbWFpXSBjYW50
+IGNvbXBpbGUgcnRkbSBtb2R1bGUKPgo+IEFyZSB5b3UgdHJ5aW5nIHRvIGJ1aWxkIGEgY3VzdG9t
+IFJURE0gbW9kdWxlIG9yIGEgYnVpbHQgaW4gb25lP8KgIFRoZQo+IGJ1aWx0IGluIG9uZXMgY2Fu
+IGJlIGVuYWJsZWQgaW4gdGhlIG1lbnVjb25maWcgc3RhZ2Ugb2YgdGhlIGtlcm5lbAo+IGJ1aWxk
+LsKgIFdoYXQgYm9hcmQgYXJlIHlvdSB1c2luZz8gVURPTy14ODY/Cj4KPiAtR3JlZwo+Cj4gT24g
+V2VkLCBNYXIgNywgMjAxOCBhdCAxMToxNyBBTSwg0KjQtdCy0YfQtdC90LrQviDQotCw0YDQsNGB
+INCT0YDQuNCz0L7RgNGM0LXQstC40YcKPiA8c2hldmNoZW5rby50YXJhc0B0cmlvbGNvcnAuY29t
+LnVhPiB3cm90ZToKPj4KPj4gSGksCj4+IEkgY2FuIHN1Y2Nlc3NmdWxseSBjb21waWxlIGFuZCBy
+dW4gY29kZSB3aXRoIFhlbm9tYWkgYXBpIGluIHVzZXIgc3BhY2UKPj4gYnV0IGlmIGkgdHJ5IHRv
+IGNvbXBpbGUgcnRkbSBjb2RlIHRoZXJlIGlzIG1hbnkgZXJyb3IKPj4gSSB0cnkgdG8gdXNlIG93
+biBjb2RlIGFuZCB5b3VyIGV4YW1wbGUgZnJvbSAva2VybmVsL2RyaXZlcnMvZ3BpbyAtIG91dHB1
+dHMgYmVsb3cKPj4KPj4gcGxlYXNlIGd1aWRlIG1lIGhvdyB0byBjb21waWxlIGFuZCBydW4gc2lt
+cGxlIHJ0ZG0gbW9kdWxlCj4+Cj4+IHlldGlAeWV0aS1VRE9PLXg4Njp+L3hlbm9JbnN0YWxsL3hl
+bm9tYWktMy4wLjUva2VybmVsL2RyaXZlcnMvZ3BpbyQgbWFrZSBWPTEKPj4gbWFrZTogKioqIE5v
+IHRhcmdldHMuIFN0b3AuCj4+IHlldGlAeWV0aS1VRE9PLXg4Njp+L3hlbm9JbnN0YWxsL3hlbm9t
+YWktMy4wLjUva2VybmVsL2RyaXZlcnMvZ3BpbyQgbWFrZSBWPTEgLUMgL3Vzci9zcmMvbGludXgt
+aGVhZGVycy00LjkuMzgteGVub21haS0zLjAuNSBNPSRQV0QgbW9kdWxlcwo+PiBtYWtlOiBFbnRl
+cmluZyBkaXJlY3RvcnkgJy91c3Ivc3JjL2xpbnV4LWhlYWRlcnMtNC45LjM4LXhlbm9tYWktMy4w
+LjUnCj4+IHRlc3QgLWUgaW5jbHVkZS9nZW5lcmF0ZWQvYXV0b2NvbmYuaCAtYSAtZSBpbmNsdWRl
+L2NvbmZpZy9hdXRvLmNvbmYgfHwgKCBcCj4+IGVjaG8gPiYyOyBcCj4+IGVjaG8gPiYyICIgRVJS
+T1I6IEtlcm5lbCBjb25maWd1cmF0aW9uIGlzIGludmFsaWQuIjsgXAo+PiBlY2hvID4mMiAiIGlu
+Y2x1ZGUvZ2VuZXJhdGVkL2F1dG9jb25mLmggb3IgaW5jbHVkZS9jb25maWcvYXV0by5jb25mIGFy
+ZSBtaXNzaW5nLiI7XAo+PiBlY2hvID4mMiAiIFJ1biAnbWFrZSBvbGRjb25maWcgJiYgbWFrZSBw
+cmVwYXJlJyBvbiBrZXJuZWwgc3JjIHRvIGZpeCBpdC4iOyBcCj4+IGVjaG8gPiYyIDsgXAo+PiAv
+YmluL2ZhbHNlKQo+PiBta2RpciAtcCAvaG9tZS95ZXRpL3hlbm9JbnN0YWxsL3hlbm9tYWktMy4w
+LjUva2VybmVsL2RyaXZlcnMvZ3Bpby8udG1wX3ZlcnNpb25zIDsgcm0gLWYgL2hvbWUveWV0aS94
+ZW5vSW5zdGFsbC94ZW5vbWFpLTMuMC41L2tlcm5lbC9kcml2ZXJzL2dwaW8vLnRtcF92ZXJzaW9u
+cy8qCj4+IG1ha2UgLWYgLi9zY3JpcHRzL01ha2VmaWxlLmJ1aWxkIG9iaj0vaG9tZS95ZXRpL3hl
+bm9JbnN0YWxsL3hlbm9tYWktMy4wLjUva2VybmVsL2RyaXZlcnMvZ3Bpbwo+PiAoY2F0IC9kZXYv
+bnVsbDsgKSA+IC9ob21lL3lldGkveGVub0luc3RhbGwveGVub21haS0zLjAuNS9rZXJuZWwvZHJp
+dmVycy9ncGlvL21vZHVsZXMub3JkZXIKPj4gbWFrZSAtZiAuL3NjcmlwdHMvTWFrZWZpbGUubW9k
+cG9zdAo+PiBmaW5kIC9ob21lL3lldGkveGVub0luc3RhbGwveGVub21haS0zLjAuNS9rZXJuZWwv
+ZHJpdmVycy9ncGlvLy50bXBfdmVyc2lvbnMgLW5hbWUgJyoubW9kJyB8IHhhcmdzIC1yIGdyZXAg
+LWggJ1wua28kJyB8IHNvcnQgLXUgfCBzZWQgJ3MvXC5rbyQvLm8vJyB8IHNjcmlwdHMvbW9kL21v
+ZHBvc3QgLWEgLWkgLi9Nb2R1bGUuc3ltdmVycyAtSSAvaG9tZS95ZXRpL3hlbm9JbnN0YWxsL3hl
+bm9tYWktMy4wLjUva2VybmVsL2RyaXZlcnMvZ3Bpby9Nb2R1bGUuc3ltdmVycyAtbyAvaG9tZS95
+ZXRpL3hlbm9JbnN0YWxsL3hlbm9tYWktMy4wLjUva2VybmVsL2RyaXZlcnMvZ3Bpby9Nb2R1bGUu
+c3ltdmVycyAtUyAtdyAtcyAtVCAtCj4+IG1ha2U6IExlYXZpbmcgZGlyZWN0b3J5ICcvdXNyL3Ny
+Yy9saW51eC1oZWFkZXJzLTQuOS4zOC14ZW5vbWFpLTMuMC41Jwo+PiB5ZXRpQHlldGktVURPTy14
+ODY6fi94ZW5vSW5zdGFsbC94ZW5vbWFpLTMuMC41L2tlcm5lbC9kcml2ZXJzL2dwaW8kCj4+IF9f
+X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fCj4+IFhlbm9tYWkg
+bWFpbGluZyBsaXN0Cj4+IFhlbm9tYWlAeGVub21haS5vcmcKPj4gaHR0cHM6Ly94ZW5vbWFpLm9y
+Zy9tYWlsbWFuL2xpc3RpbmZvL3hlbm9tYWkK
 
-yeti@yeti-UDOO-x86:~/xenoInstall/rtdm_hello$ make
-make -C /usr/src/linux-headers-4.9.38-xenomai-3.0.5/ M=3D/home/yeti/xenoIns=
-tall/rtdm_hello modules
-make[1]: Entering directory '/usr/src/linux-headers-4.9.38-xenomai-3.0.5'
-  CC [M]  /home/yeti/xenoInstall/rtdm_hello/rtdm_hello.o
-In file included from include/xenomai/rtdm/fd.h:27:0,
-                 from include/xenomai/rtdm/rtdm.h:28,
-                 from /home/yeti/xenoInstall/rtdm_hello/rtdm_hello.c:3:
-./include/asm-generic/xenomai/syscall.h:24:34: fatal error: asm/xenomai/fea=
-tures.h: No such file or directory
-compilation terminated.
-
-please help
-
-
------ Original Message -----
-From: "Greg Gallagher" <greg@embeddedgreg.com>
-To: "=D8=E5=E2=F7=E5=ED=EA=EE =D2=E0=F0=E0=F1 =C3=F0=E8=E3=EE=F0=FC=E5=E2=
-=E8=F7" <shevchenko.taras@triolcorp.com.ua>
-Cc: "xenomai" <xenomai@xenomai.org>
-Sent: Thursday, March 8, 2018 6:35:32 PM
-Subject: Re: [Xenomai] cant compile rtdm module
-
-Here is a sample makefile for an out of kernel module that you can use
-to create a custom rtdm module.
-
----------------------------------------------------------------------------=
----------------------------------------------------------------------------=
----------------------------
-#this should be the path to your patched kernel source that has the
-ipipe patches and Xenomai links applied
-#if you are using the O option when building the kernel (build takes
-place out of tree) use that directory
-XENO_KDIR :=3D <path to patched kernel source>
-
-#This is only needed if you are cross compiling, if you are not cross
-compiling then leave these blank
-CROSS_COMPILE=3Darm-linux-gnueabihf-
-ARCH=3Darm
-
-PWD :=3D $(shell pwd)
-
-#name of your module that you are compiling
-obj-m+=3Drtdm_hello.o
-
-all:
-make ARCH=3D$(ARCH) CROSS_COMPILE=3D$(CROSS_COMPILE) M=3D$(PWD) -C
-$(XENO_BUILD) modules
-clean:
-make ARCH=3D$(ARCH) CROSS_COMPILE=3D$(CROSS_COMPILE) M=3D$(PWD) -C
-$(XENO_BUILD) modules
----------------------------------------------------------------------------=
----------------------------------------------------------------------------=
-----------------------------
-
-For your purposes you don't need the CROSS_COMPILE and ARCH options
-you can omit those so your make lines should look like this,
-     make M=3D$(PWD) -C $(XENO_BUILD) modules
-
-
-I'll be creating a simple sample driver, maybe similar to how it's
-done in LDD3 and post it.  This is all depending on when I get time to
-do so , no time line lol
-
--Greg
-
-On Wed, Mar 7, 2018 at 12:21 PM, =D8=E5=E2=F7=E5=ED=EA=EE =D2=E0=F0=E0=F1 =
-=C3=F0=E8=E3=EE=F0=FC=E5=E2=E8=F7
-<shevchenko.taras@triolcorp.com.ua> wrote:
-> Yes I use UDOO-x86 with pentium n3720
-> I try to build  custom.
-> And i try to build some from kernel  - just to be shure thats all correct=
-.(Maybe it s not right way) but I get the same errors
-> Unfortunately, there is not many examples for x86_64
->
-> ----- Original Message -----
-> From: "Greg Gallagher" <greg@embeddedgreg.com>
-> To: "=D8=E5=E2=F7=E5=ED=EA=EE =D2=E0=F0=E0=F1 =C3=F0=E8=E3=EE=F0=FC=E5=E2=
-=E8=F7" <shevchenko.taras@triolcorp.com.ua>
-> Cc: "xenomai" <xenomai@xenomai.org>
-> Sent: Wednesday, March 7, 2018 7:11:24 PM
-> Subject: Re: [Xenomai] cant compile rtdm module
->
-> Are you trying to build a custom RTDM module or a built in one?  The
-> built in ones can be enabled in the menuconfig stage of the kernel
-> build.  What board are you using? UDOO-x86?
->
-> -Greg
->
-> On Wed, Mar 7, 2018 at 11:17 AM, =D8=E5=E2=F7=E5=ED=EA=EE =D2=E0=F0=E0=F1=
- =C3=F0=E8=E3=EE=F0=FC=E5=E2=E8=F7
-> <shevchenko.taras@triolcorp.com.ua> wrote:
->>
->> Hi,
->> I can successfully compile and run code with Xenomai api in user space
->> but if i try to compile rtdm code there is many error
->> I try to use own code and your example from /kernel/drivers/gpio - outpu=
-ts below
->>
->> please guide me how to compile and run simple rtdm module
->>
->> yeti@yeti-UDOO-x86:~/xenoInstall/xenomai-3.0.5/kernel/drivers/gpio$ make=
- V=3D1
->> make: *** No targets. Stop.
->> yeti@yeti-UDOO-x86:~/xenoInstall/xenomai-3.0.5/kernel/drivers/gpio$ make=
- V=3D1 -C /usr/src/linux-headers-4.9.38-xenomai-3.0.5 M=3D$PWD modules
->> make: Entering directory '/usr/src/linux-headers-4.9.38-xenomai-3.0.5'
->> test -e include/generated/autoconf.h -a -e include/config/auto.conf || (=
- \
->> echo >&2; \
->> echo >&2 " ERROR: Kernel configuration is invalid."; \
->> echo >&2 " include/generated/autoconf.h or include/config/auto.conf are =
-missing.";\
->> echo >&2 " Run 'make oldconfig && make prepare' on kernel src to fix it.=
-"; \
->> echo >&2 ; \
->> /bin/false)
->> mkdir -p /home/yeti/xenoInstall/xenomai-3.0.5/kernel/drivers/gpio/.tmp_v=
-ersions ; rm -f /home/yeti/xenoInstall/xenomai-3.0.5/kernel/drivers/gpio/.t=
-mp_versions/*
->> make -f ./scripts/Makefile.build obj=3D/home/yeti/xenoInstall/xenomai-3.=
-0.5/kernel/drivers/gpio
->> (cat /dev/null; ) > /home/yeti/xenoInstall/xenomai-3.0.5/kernel/drivers/=
-gpio/modules.order
->> make -f ./scripts/Makefile.modpost
->> find /home/yeti/xenoInstall/xenomai-3.0.5/kernel/drivers/gpio/.tmp_versi=
-ons -name '*.mod' | xargs -r grep -h '\.ko$' | sort -u | sed 's/\.ko$/.o/' =
-| scripts/mod/modpost -a -i ./Module.symvers -I /home/yeti/xenoInstall/xeno=
-mai-3.0.5/kernel/drivers/gpio/Module.symvers -o /home/yeti/xenoInstall/xeno=
-mai-3.0.5/kernel/drivers/gpio/Module.symvers -S -w -s -T -
->> make: Leaving directory '/usr/src/linux-headers-4.9.38-xenomai-3.0.5'
->> yeti@yeti-UDOO-x86:~/xenoInstall/xenomai-3.0.5/kernel/drivers/gpio$
->> _______________________________________________
->> Xenomai mailing list
->> Xenomai@xenomai.org
->> https://xenomai.org/mailman/listinfo/xenomai
 
