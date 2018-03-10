@@ -1,11 +1,13 @@
-Date: Sat, 10 Mar 2018 11:16:42 +0200 (EET)
-From: =?windows-1251?B?2OXi9+Xt6u4g0uDw4PEgw/Do4+7w/OXi6Pc=?=
- <shevchenko.taras@triolcorp.com.ua>
-Message-ID: <2114790524.3335654.1520673402537.JavaMail.zimbra@triolcorp.com.ua>
+References: <2114790524.3335654.1520673402537.JavaMail.zimbra@triolcorp.com.ua>
+From: Philippe Gerum <rpm@xenomai.org>
+Message-ID: <0810a571-c3a3-5e17-7054-42ec68b9787a@xenomai.org>
+Date: Sat, 10 Mar 2018 11:08:11 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset=windows-1251
-Content-Transfer-Encoding: quoted-printable
-Subject: [Xenomai] -Werror=format-security
+In-Reply-To: <2114790524.3335654.1520673402537.JavaMail.zimbra@triolcorp.com.ua>
+Content-Type: text/plain; charset="windows-1251"
+Content-Language: en-US
+Content-Transfer-Encoding: base64
+Subject: Re: [Xenomai] -Werror=format-security
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -14,34 +16,34 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai <xenomai@xenomai.org>
+To: =?UTF-8?B?0KjQtdCy0YfQtdC90LrQviDQotCw0YDQsNGBINCT0YDQuNCz0L7RgNGM0LU=?= =?UTF-8?B?0LLQuNGH?= <shevchenko.taras@triolcorp.com.ua>, xenomai <xenomai@xenomai.org>
 
-Now my new attempt=20
-
-git clone [ https://git.xenomai.org/xenomai-3.git | https://git.xenomai.org=
-/xenomai-3.git ]=20
-git checkout stable-3.0.x=20
-cd xenomai-3=20
-./script/bootstrap=20
-./configure --with-pic --with-core=3Dcobalt --enable-smp --disable-tls --en=
-able-dlopen-libs=20
-make -j4=20
-
-
-and get error=20
-
-make[3]: Entering directory '/usr/src/xenomai-3/testsuite/smokey/dlopen'=20
-CC libdlopen_a-dlopen.o=20
-CC libalchemy_test_la-libalchemy-test.lo=20
-CC libposix_test_la-libposix-test.lo=20
-CC dlopentest-dlopentest.o=20
-dlopentest.c: In function =91my_dlopen=92:=20
-dlopentest.c:46:4: error: format not a string literal and no format argumen=
-ts [-Werror=3Dformat-security]=20
-error(1, errno, dlerror());=20
-^=20
-cc1: all warnings being treated as errors=20
-Makefile:671: recipe for target 'dlopentest-dlopentest.o' failed=20
-
-
-should I disable some options gcc or make changes in code ?=20
+T24gMDMvMTAvMjAxOCAxMDoxNiBBTSwg2OXi9+Xt6u4g0uDw4PEgw/Do4+7w/OXi6Pcgd3JvdGU6
+Cj4gTm93IG15IG5ldyBhdHRlbXB0IAo+IAo+IGdpdCBjbG9uZSBbIGh0dHBzOi8vZ2l0Lnhlbm9t
+YWkub3JnL3hlbm9tYWktMy5naXQgfCBodHRwczovL2dpdC54ZW5vbWFpLm9yZy94ZW5vbWFpLTMu
+Z2l0IF0gCj4gZ2l0IGNoZWNrb3V0IHN0YWJsZS0zLjAueCAKPiBjZCB4ZW5vbWFpLTMgCj4gLi9z
+Y3JpcHQvYm9vdHN0cmFwIAo+IC4vY29uZmlndXJlIC0td2l0aC1waWMgLS13aXRoLWNvcmU9Y29i
+YWx0IC0tZW5hYmxlLXNtcCAtLWRpc2FibGUtdGxzIC0tZW5hYmxlLWRsb3Blbi1saWJzIAo+IG1h
+a2UgLWo0IAo+IAo+IAo+IGFuZCBnZXQgZXJyb3IgCj4gCj4gbWFrZVszXTogRW50ZXJpbmcgZGly
+ZWN0b3J5ICcvdXNyL3NyYy94ZW5vbWFpLTMvdGVzdHN1aXRlL3Ntb2tleS9kbG9wZW4nIAo+IEND
+IGxpYmRsb3Blbl9hLWRsb3Blbi5vIAo+IENDIGxpYmFsY2hlbXlfdGVzdF9sYS1saWJhbGNoZW15
+LXRlc3QubG8gCj4gQ0MgbGlicG9zaXhfdGVzdF9sYS1saWJwb3NpeC10ZXN0LmxvIAo+IENDIGRs
+b3BlbnRlc3QtZGxvcGVudGVzdC5vIAo+IGRsb3BlbnRlc3QuYzogSW4gZnVuY3Rpb24gkW15X2Rs
+b3BlbpI6IAo+IGRsb3BlbnRlc3QuYzo0Njo0OiBlcnJvcjogZm9ybWF0IG5vdCBhIHN0cmluZyBs
+aXRlcmFsIGFuZCBubyBmb3JtYXQgYXJndW1lbnRzIFstV2Vycm9yPWZvcm1hdC1zZWN1cml0eV0g
+Cj4gZXJyb3IoMSwgZXJybm8sIGRsZXJyb3IoKSk7IAo+IF4gCj4gY2MxOiBhbGwgd2FybmluZ3Mg
+YmVpbmcgdHJlYXRlZCBhcyBlcnJvcnMgCj4gTWFrZWZpbGU6NjcxOiByZWNpcGUgZm9yIHRhcmdl
+dCAnZGxvcGVudGVzdC1kbG9wZW50ZXN0Lm8nIGZhaWxlZCAKPiAKPiAKPiBzaG91bGQgSSBkaXNh
+YmxlIHNvbWUgb3B0aW9ucyBnY2Mgb3IgbWFrZSBjaGFuZ2VzIGluIGNvZGUgPyAKCllvdXIgY29t
+cGlsZXIgc2VlbXMgdG8gaGF2ZSAtV2Zvcm1hdC1zZWN1cml0eSBlbmFibGVkIGJ5IGRlZmF1bHQu
+IEVpdGhlcgpkcm9wIC0tZW5hYmxlLWRsb3Blbi1saWJzIHVubGVzcyB5b3UgYWN0dWFsbHkgbmVl
+ZCB0aGlzLCBvciBwdWxsIHRoZQpsYXRlc3QgY2hhbmdlcyBmcm9tIHRoZSByZXBvc2l0b3J5IHdo
+ZXJlIHRoaXMgaXNzdWUgaXMgbm93IGZpeGVkLgoKV2hlbmV2ZXIgeW91IG1heSBoYXZlIGEgc29s
+dXRpb24gdG8gdGhlIGlzc3VlIGJlaW5nIHJlcG9ydGVkLCBkbyBub3QKaGVzaXRhdGUgdG8gc2Vu
+ZCBhIHBhdGNoIGZpeGluZyBpdCBhbG9uZyB3aXRoIHN1Y2ggcmVwb3J0LiBJZgptYWludGFpbmVy
+cyBkb24ndCBhZ3JlZSB3aXRoIHRoZSBjaGFuZ2UsIHdlbGwsIG5vIGJpZyBkZWFsLCB0aGV5IHdp
+bGwKc2ltcGx5IGVudGVyIGEgZGlzY3Vzc2lvbiwgZXhwbGFpbmluZyB0aGUgaXNzdWUgdGhleSBt
+aWdodCBoYXZlIHdpdGggdGhlCnN1Z2dlc3RlZCBmaXguIE9yIHRoZXkgc2hvdWxkIGp1c3QgbWVy
+Z2UgdGhlIGZpeCBpZiB0aGV5IGFyZSBmaW5lIHdpdGggaXQuCgpJbiBlaXRoZXIgY2FzZXMsIGJ1
+Z3MgYXJlIGJlaW5nIGZpeGVkLCBrbm93bGVkZ2UgaXMgYmVpbmcgc2hhcmVkLCB0aGlzCndpbGwg
+YWx3YXlzIGJlIGEgd2luLgoKLS0gClBoaWxpcHBlLgoK
