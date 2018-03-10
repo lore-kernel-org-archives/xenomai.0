@@ -1,11 +1,11 @@
-From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <6aedc4bc-74b5-4a9f-5c38-036a3d7850b9@siemens.com>
-Date: Fri, 9 Mar 2018 17:51:25 +0100
+Date: Sat, 10 Mar 2018 11:16:42 +0200 (EET)
+From: =?windows-1251?B?2OXi9+Xt6u4g0uDw4PEgw/Do4+7w/OXi6Pc=?=
+ <shevchenko.taras@triolcorp.com.ua>
+Message-ID: <2114790524.3335654.1520673402537.JavaMail.zimbra@triolcorp.com.ua>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-Subject: [Xenomai] [PULL] ipipe 4.4 updates
+Content-Type: text/plain; charset=windows-1251
+Content-Transfer-Encoding: quoted-printable
+Subject: [Xenomai] -Werror=format-security
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -14,41 +14,34 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Philippe Gerum <rpm@xenomai.org>
-Cc: Xenomai <xenomai@xenomai.org>
+To: xenomai <xenomai@xenomai.org>
 
-The following changes since commit 5618f90d33b17ab0ee9352705610a5e9f00f9964:
+Now my new attempt=20
 
-  Revert "ipipe: printk: defer dev_printk() output to safe context" (2017-12-15 18:10:01 +0100)
-
-are available in the git repository at:
-
-  git://git.xenomai.org/ipipe-jki for-upstream/4.4-update
-
-for you to fetch changes up to c6de6878f74e4b079066eddc373f3e8c125fdaa7:
-
-  Merge tag 'v4.4.120' into for-upstream/4.4-update (2018-03-08 18:49:28 +0100)
+git clone [ https://git.xenomai.org/xenomai-3.git | https://git.xenomai.org=
+/xenomai-3.git ]=20
+git checkout stable-3.0.x=20
+cd xenomai-3=20
+./script/bootstrap=20
+./configure --with-pic --with-core=3Dcobalt --enable-smp --disable-tls --en=
+able-dlopen-libs=20
+make -j4=20
 
 
-I-pipe specific commits:
+and get error=20
 
-Jan Kiszka (5):
-      arm/ipipe: Avoid open-coded __ipipe_call_mayday
-      x86/ipipe: Deny JUMP_LABEL over I-pipe
-      Merge tag 'v4.4.109' into for-upstream/4.4-update
-      x86/ipipe: Disable access_ok context under I-pipe
-      Merge tag 'v4.4.120' into for-upstream/4.4-update
+make[3]: Entering directory '/usr/src/xenomai-3/testsuite/smokey/dlopen'=20
+CC libdlopen_a-dlopen.o=20
+CC libalchemy_test_la-libalchemy-test.lo=20
+CC libposix_test_la-libposix-test.lo=20
+CC dlopentest-dlopentest.o=20
+dlopentest.c: In function =91my_dlopen=92:=20
+dlopentest.c:46:4: error: format not a string literal and no format argumen=
+ts [-Werror=3Dformat-security]=20
+error(1, errno, dlerror());=20
+^=20
+cc1: all warnings being treated as errors=20
+Makefile:671: recipe for target 'dlopentest-dlopentest.o' failed=20
 
-Philippe Gerum (1):
-      ipipe: printk: enable dev_printk() from the head stage
 
-
-4.9 requires more work, I've pushed the beginning to wip/4.9 in the same
-repo.
-
-Jan
-
--- 
-Siemens AG, Corporate Technology, CT RDA IOT SES-DE
-Corporate Competence Center Embedded Linux
-
+should I disable some options gcc or make changes in code ?=20
