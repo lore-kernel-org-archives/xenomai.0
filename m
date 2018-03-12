@@ -1,12 +1,14 @@
+References: <392996706.2572717.1520342577614.JavaMail.zimbra@triolcorp.com.ua>
+ <418219368.3538777.1520856779293.JavaMail.zimbra@triolcorp.com.ua>
+From: Jan Kiszka <jan.kiszka@siemens.com>
+Message-ID: <7d55cdd0-8406-9329-c785-d79f201a5f3f@siemens.com>
+Date: Mon, 12 Mar 2018 07:24:08 -0700
 MIME-Version: 1.0
-In-Reply-To: <466115005.3631078.1520863793122.JavaMail.zimbra@triolcorp.com.ua>
-References: <466115005.3631078.1520863793122.JavaMail.zimbra@triolcorp.com.ua>
-From: Greg Gallagher <greg@embeddedgreg.com>
-Date: Mon, 12 Mar 2018 10:16:03 -0400
-Message-ID: <CALLqZ8QkmhLRL+T=QmMDctCdrpQ+xw=7ntR0Pj5Pgt1nq4HNFQ@mail.gmail.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-Subject: Re: [Xenomai] simple rtdm driver x86
+In-Reply-To: <418219368.3538777.1520856779293.JavaMail.zimbra@triolcorp.com.ua>
+Content-Type: text/plain; charset="windows-1251"
+Content-Language: en-US
+Content-Transfer-Encoding: base64
+Subject: Re: [Xenomai] rtnet no eth 0
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,26 +17,38 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: =?UTF-8?B?0KjQtdCy0YfQtdC90LrQviDQotCw0YDQsNGBINCT0YDQuNCz0L7RgNGM0LXQstC40Yc=?= <shevchenko.taras@triolcorp.com.ua>
+To: =?UTF-8?B?0KjQtdCy0YfQtdC90LrQviDQotCw0YDQsNGBINCT0YDQuNCz0L7RgNGM0LU=?= =?UTF-8?B?0LLQuNGH?= <shevchenko.taras@triolcorp.com.ua>
 Cc: xenomai <xenomai@xenomai.org>
 
-Are you using Xenomai 3 or 2?  I believe from your previous posts you
-are using Xenomai 3, include rtdm/driver.h , not rtdm_driver.h.
-
--Greg
-
-On Mon, Mar 12, 2018 at 10:09 AM, =D0=A8=D0=B5=D0=B2=D1=87=D0=B5=D0=BD=D0=
-=BA=D0=BE =D0=A2=D0=B0=D1=80=D0=B0=D1=81 =D0=93=D1=80=D0=B8=D0=B3=D0=BE=D1=
-=80=D1=8C=D0=B5=D0=B2=D0=B8=D1=87
-<shevchenko.taras@triolcorp.com.ua> wrote:
-> Hi,
-> could somebody share simple rtdm driver for begginers
-> better fo x86
-> I try to find it but almost for arm
-> and i have no such rtdm_driver.h
-> give an advice please should I start from ?
-> _______________________________________________
-> Xenomai mailing list
-> Xenomai@xenomai.org
-> https://xenomai.org/mailman/listinfo/xenomai
-
+T24gMjAxOC0wMy0xMiAwNToxMiwg2OXi9+Xt6u4g0uDw4PEgw/Do4+7w/OXi6Pcgd3JvdGU6Cj4g
+aXMgdGhlcmUgYSB3YXkgdG8gZGVidWcgbXkgaW5zdGFsbGF0aW9uID8KPiAKPiBpIGRvCj4gMSlh
+ZGQgcnRuZXQgaW4gbWVudWNvbmZpZyAgYW5kIGFkZCBkcml2ZXIgIDgxNjkKPiAyKXJlbW92ZSBy
+ODE2OQo+IAo+IHlldGlAeWV0aS1VRE9PLXg4NjovdXNyL3hlbm9tYWkvc2JpbiQgc3VkbyAuL3J0
+bmV0ICBzdGFydAo+IHNoOiBlY2hvOiBJL08gZXJyb3IKPiBpb2N0bDogTm8gc3VjaCBkZXZpY2UK
+PiAuL3J0bmV0OiAxOTM6IC4vcnRuZXQ6IGNhbm5vdCBvcGVuIDogTm8gc3VjaCBmaWxlCj4gdm5p
+YzA6IEVSUk9SIHdoaWxlIGdldHRpbmcgaW50ZXJmYWNlIGZsYWdzOiBObyBzdWNoIGRldmljZQo+
+IFNJT0NTSUZBRERSOiBObyBzdWNoIGRldmljZQo+IHZuaWMwOiBFUlJPUiB3aGlsZSBnZXR0aW5n
+IGludGVyZmFjZSBmbGFnczogTm8gc3VjaCBkZXZpY2UKPiBTSU9DU0lGTkVUTUFTSzogTm8gc3Vj
+aCBkZXZpY2UKPiBXYWl0aW5nIGZvciBhbGwgc2xhdmVzLi4uaW9jdGw6IE5vIHN1Y2ggZGV2aWNl
+Cj4gaW9jdGw6IE5vIHN1Y2ggZGV2aWNlCj4gCj4geWV0aUB5ZXRpLVVET08teDg2Oi91c3IveGVu
+b21haS9zYmluJCBsc21vZHxncmVwIHJ0Cj4gcnRtYWMgICAgICAgICAgICAgICAgICAyMDQ4MCAg
+MSB0ZG1hCj4gcnRjZmcgICAgICAgICAgICAgICAgICA0NTA1NiAgMAo+IHJ0cGFja2V0ICAgICAg
+ICAgICAgICAgMjA0ODAgIDAKPiBydHVkcCAgICAgICAgICAgICAgICAgIDI0NTc2ICAwCj4gcnRf
+cjgxNjkgICAgICAgICAgICAgICAyNDU3NiAgMAo+IHJ0aXB2NCAgICAgICAgICAgICAgICAgMzI3
+NjggIDIgcnR1ZHAscnRjZmcKPiBydG5ldCAgICAgICAgICAgICAgICAgIDY1NTM2ICA3IHJ0aXB2
+NCxydG1hYyxydF9yODE2OSxydHBhY2tldCxydHVkcCxydGNmZyx0ZG1hCj4gCj4gCj4geWV0aUB5
+ZXRpLVVET08teDg2Oi91c3IveGVub21haS9zYmluJCBsc3BjaSAta25uIHxncmVwIEV0aGVybmV0
+Cj4gCj4gMDI6MDAuMCBFdGhlcm5ldCBjb250cm9sbGVyIFswMjAwXTogUmVhbHRlayBTZW1pY29u
+ZHVjdG9yIENvLiwgTHRkLiBSVEw4MTExLzgxNjgvODQxMSBQQ0kgRXhwcmVzcyBHaWdhYml0IEV0
+aGVybmV0IENvbnRyb2xsZXIgWzEwZWM6ODE2OF0gKHJldiAwYykKPiAJU3Vic3lzdGVtOiBSZWFs
+dGVrIFNlbWljb25kdWN0b3IgQ28uLCBMdGQuIFJUTDgxMTEvODE2OC84NDExIFBDSSBFeHByZXNz
+IEdpZ2FiaXQgRXRoZXJuZXQgQ29udHJvbGxlciBbMTBlYzowMTIzXQo+IAlLZXJuZWwgbW9kdWxl
+czogcjgxNjkKPiB5ZXRpQHlldGktVURPTy14ODY6L3Vzci94ZW5vbWFpL3NiaW4kIHN1ZG8gcm1t
+b2QgcjgxNjkKPiBybW1vZDogRVJST1I6IE1vZHVsZSByODE2OSBpcyBub3QgY3VycmVudGx5IGxv
+YWRlZAoKU3RpbGwsIHJ0X3I4MTY5IGRpZG4ndCBiaW5kLiBNYXliZSBvdXIgZHJpdmVyIGRvZXNu
+J3QgbGlzdCB0aGlzIGNhcmQgSUQKKGkuZS4gaXMgdG9vIG9sZCkuLi4gYW5kIHRoYXQgaXMgdGhl
+IGNhc2UgaGVyZSAobm8gODE2OCkuIFlvdSBjYW4gdHJ5CmludGVncmF0aW5nIHRoZSBzdGF0ZSBv
+ZiB0aGUgY3VycmVudCB1cHN0cmVhbSBkcml2ZXIgL3dydCB0byB0aGlzIG5ldwpkZXZpY2UgSUQg
+aW50byB0aGUgUlRuZXQgdmFyaWFudCwgYnV0IHRoYXQncyBub3QgYSBzaW1wbGUgdGFzawoKSmFu
+CgotLSAKU2llbWVucyBBRywgQ29ycG9yYXRlIFRlY2hub2xvZ3ksIENUIFJEQSBJT1QgU0VTLURF
+CkNvcnBvcmF0ZSBDb21wZXRlbmNlIENlbnRlciBFbWJlZGRlZCBMaW51eAoK
