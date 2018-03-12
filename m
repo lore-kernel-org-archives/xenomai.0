@@ -1,14 +1,15 @@
-Date: Mon, 12 Mar 2018 16:44:34 +0200 (EET)
-From: =?windows-1251?B?2OXi9+Xt6u4g0uDw4PEgw/Do4+7w/OXi6Pc=?=
- <shevchenko.taras@triolcorp.com.ua>
-Message-ID: <322085351.3653612.1520865874504.JavaMail.zimbra@triolcorp.com.ua>
-In-Reply-To: <7d55cdd0-8406-9329-c785-d79f201a5f3f@siemens.com>
 References: <392996706.2572717.1520342577614.JavaMail.zimbra@triolcorp.com.ua>
  <418219368.3538777.1520856779293.JavaMail.zimbra@triolcorp.com.ua>
  <7d55cdd0-8406-9329-c785-d79f201a5f3f@siemens.com>
+ <322085351.3653612.1520865874504.JavaMail.zimbra@triolcorp.com.ua>
+From: Jan Kiszka <jan.kiszka@siemens.com>
+Message-ID: <b3a5f9fe-6e47-8c49-6d51-78f6cac76e56@siemens.com>
+Date: Mon, 12 Mar 2018 07:49:29 -0700
 MIME-Version: 1.0
-Content-Type: text/plain; charset=windows-1251
-Content-Transfer-Encoding: quoted-printable
+In-Reply-To: <322085351.3653612.1520865874504.JavaMail.zimbra@triolcorp.com.ua>
+Content-Type: text/plain; charset="windows-1251"
+Content-Language: en-US
+Content-Transfer-Encoding: base64
 Subject: Re: [Xenomai] rtnet no eth 0
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
@@ -18,72 +19,51 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jan Kiszka <jan.kiszka@siemens.com>
+To: =?UTF-8?B?0KjQtdCy0YfQtdC90LrQviDQotCw0YDQsNGBINCT0YDQuNCz0L7RgNGM0LU=?= =?UTF-8?B?0LLQuNGH?= <shevchenko.taras@triolcorp.com.ua>
 Cc: xenomai <xenomai@xenomai.org>
 
-Ok,=20
-could you describe in few words  - how to do that ?
-
-=D1 =F3=E2=E0=E6=E5=ED=E8=E5=EC =E8 =ED=E0=E4=E5=E6=E4=EE=E9 =ED=E0 =F1=EE=
-=F2=F0=F3=E4=ED=E8=F7=E5=F1=F2=E2=EE,
-=D8=E5=E2=F7=E5=ED=EA=EE =D2.=C3.
-
------ Original Message -----
-From: "Jan Kiszka" <jan.kiszka@siemens.com>
-To: "=D8=E5=E2=F7=E5=ED=EA=EE =D2=E0=F0=E0=F1 =C3=F0=E8=E3=EE=F0=FC=E5=E2=
-=E8=F7" <shevchenko.taras@triolcorp.com.ua>
-Cc: "xenomai" <xenomai@xenomai.org>
-Sent: Monday, March 12, 2018 4:24:08 PM
-Subject: Re: [Xenomai] rtnet no eth 0
-
-On 2018-03-12 05:12, =D8=E5=E2=F7=E5=ED=EA=EE =D2=E0=F0=E0=F1 =C3=F0=E8=E3=
-=EE=F0=FC=E5=E2=E8=F7 wrote:
-> is there a way to debug my installation ?
->=20
-> i do
-> 1)add rtnet in menuconfig  and add driver  8169
-> 2)remove r8169
->=20
-> yeti@yeti-UDOO-x86:/usr/xenomai/sbin$ sudo ./rtnet  start
-> sh: echo: I/O error
-> ioctl: No such device
-> ./rtnet: 193: ./rtnet: cannot open : No such file
-> vnic0: ERROR while getting interface flags: No such device
-> SIOCSIFADDR: No such device
-> vnic0: ERROR while getting interface flags: No such device
-> SIOCSIFNETMASK: No such device
-> Waiting for all slaves...ioctl: No such device
-> ioctl: No such device
->=20
-> yeti@yeti-UDOO-x86:/usr/xenomai/sbin$ lsmod|grep rt
-> rtmac                  20480  1 tdma
-> rtcfg                  45056  0
-> rtpacket               20480  0
-> rtudp                  24576  0
-> rt_r8169               24576  0
-> rtipv4                 32768  2 rtudp,rtcfg
-> rtnet                  65536  7 rtipv4,rtmac,rt_r8169,rtpacket,rtudp,rtcf=
-g,tdma
->=20
->=20
-> yeti@yeti-UDOO-x86:/usr/xenomai/sbin$ lspci -knn |grep Ethernet
->=20
-> 02:00.0 Ethernet controller [0200]: Realtek Semiconductor Co., Ltd. RTL81=
-11/8168/8411 PCI Express Gigabit Ethernet Controller [10ec:8168] (rev 0c)
-> =09Subsystem: Realtek Semiconductor Co., Ltd. RTL8111/8168/8411 PCI Expre=
-ss Gigabit Ethernet Controller [10ec:0123]
-> =09Kernel modules: r8169
-> yeti@yeti-UDOO-x86:/usr/xenomai/sbin$ sudo rmmod r8169
-> rmmod: ERROR: Module r8169 is not currently loaded
-
-Still, rt_r8169 didn't bind. Maybe our driver doesn't list this card ID
-(i.e. is too old)... and that is the case here (no 8168). You can try
-integrating the state of the current upstream driver /wrt to this new
-device ID into the RTnet variant, but that's not a simple task
-
-Jan
-
---=20
-Siemens AG, Corporate Technology, CT RDA IOT SES-DE
-Corporate Competence Center Embedded Linux
-
+T24gMjAxOC0wMy0xMiAwNzo0NCwg2OXi9+Xt6u4g0uDw4PEgw/Do4+7w/OXi6Pcgd3JvdGU6Cj4g
+T2ssIAo+IGNvdWxkIHlvdSBkZXNjcmliZSBpbiBmZXcgd29yZHMgIC0gaG93IHRvIGRvIHRoYXQg
+PwoKRGlmZiB0aGUgUlRuZXQgZHJpdmVyIGFnYWluc3QgdGhlIGNvcnJlc3BvbmRpbmcgdXBzdHJl
+YW0gZHJpdmVyLCBsb29rCmZvciBkZXZpYXRpbmcgcGF0dGVybnMgdGhhdCBhcmUgbm90IFJUbmV0
+IHJlbGF0ZWQuCgpBbHNvLCBjaGVjayBpbiB0aGUgdXBzdHJlYW0gaGlzdG9yeSBob3cgc3VwcG9y
+dCBmb3IgdGhlIGRldmljZSB0eXBlIDgxNjgKY2FtZSBpbiwgdmlhIHdoaWNoIGNvbW1pdHMuIE1h
+eWJlIHBvcnRpbmcgdGhlbSBvdmVyIGlzIGVub3VnaCwgbWF5YmUKaXQncyBqdXN0IHRoZSBJRCB0
+aGF0IGlzIG1pc3NpbmcuCgpKYW4KCj4gCj4g0SDz4uDm5e3o5ewg6CDt4OTl5uTu6SDt4CDx7vLw
+8+Tt6Pfl8fLi7iwKPiDY5eL35e3q7iDSLsMuCj4gCj4gLS0tLS0gT3JpZ2luYWwgTWVzc2FnZSAt
+LS0tLQo+IEZyb206ICJKYW4gS2lzemthIiA8amFuLmtpc3prYUBzaWVtZW5zLmNvbT4KPiBUbzog
+Itjl4vfl7eruINLg8ODxIMPw6OPu8Pzl4uj3IiA8c2hldmNoZW5rby50YXJhc0B0cmlvbGNvcnAu
+Y29tLnVhPgo+IENjOiAieGVub21haSIgPHhlbm9tYWlAeGVub21haS5vcmc+Cj4gU2VudDogTW9u
+ZGF5LCBNYXJjaCAxMiwgMjAxOCA0OjI0OjA4IFBNCj4gU3ViamVjdDogUmU6IFtYZW5vbWFpXSBy
+dG5ldCBubyBldGggMAo+IAo+IE9uIDIwMTgtMDMtMTIgMDU6MTIsINjl4vfl7eruINLg8ODxIMPw
+6OPu8Pzl4uj3IHdyb3RlOgo+PiBpcyB0aGVyZSBhIHdheSB0byBkZWJ1ZyBteSBpbnN0YWxsYXRp
+b24gPwo+Pgo+PiBpIGRvCj4+IDEpYWRkIHJ0bmV0IGluIG1lbnVjb25maWcgIGFuZCBhZGQgZHJp
+dmVyICA4MTY5Cj4+IDIpcmVtb3ZlIHI4MTY5Cj4+Cj4+IHlldGlAeWV0aS1VRE9PLXg4NjovdXNy
+L3hlbm9tYWkvc2JpbiQgc3VkbyAuL3J0bmV0ICBzdGFydAo+PiBzaDogZWNobzogSS9PIGVycm9y
+Cj4+IGlvY3RsOiBObyBzdWNoIGRldmljZQo+PiAuL3J0bmV0OiAxOTM6IC4vcnRuZXQ6IGNhbm5v
+dCBvcGVuIDogTm8gc3VjaCBmaWxlCj4+IHZuaWMwOiBFUlJPUiB3aGlsZSBnZXR0aW5nIGludGVy
+ZmFjZSBmbGFnczogTm8gc3VjaCBkZXZpY2UKPj4gU0lPQ1NJRkFERFI6IE5vIHN1Y2ggZGV2aWNl
+Cj4+IHZuaWMwOiBFUlJPUiB3aGlsZSBnZXR0aW5nIGludGVyZmFjZSBmbGFnczogTm8gc3VjaCBk
+ZXZpY2UKPj4gU0lPQ1NJRk5FVE1BU0s6IE5vIHN1Y2ggZGV2aWNlCj4+IFdhaXRpbmcgZm9yIGFs
+bCBzbGF2ZXMuLi5pb2N0bDogTm8gc3VjaCBkZXZpY2UKPj4gaW9jdGw6IE5vIHN1Y2ggZGV2aWNl
+Cj4+Cj4+IHlldGlAeWV0aS1VRE9PLXg4NjovdXNyL3hlbm9tYWkvc2JpbiQgbHNtb2R8Z3JlcCBy
+dAo+PiBydG1hYyAgICAgICAgICAgICAgICAgIDIwNDgwICAxIHRkbWEKPj4gcnRjZmcgICAgICAg
+ICAgICAgICAgICA0NTA1NiAgMAo+PiBydHBhY2tldCAgICAgICAgICAgICAgIDIwNDgwICAwCj4+
+IHJ0dWRwICAgICAgICAgICAgICAgICAgMjQ1NzYgIDAKPj4gcnRfcjgxNjkgICAgICAgICAgICAg
+ICAyNDU3NiAgMAo+PiBydGlwdjQgICAgICAgICAgICAgICAgIDMyNzY4ICAyIHJ0dWRwLHJ0Y2Zn
+Cj4+IHJ0bmV0ICAgICAgICAgICAgICAgICAgNjU1MzYgIDcgcnRpcHY0LHJ0bWFjLHJ0X3I4MTY5
+LHJ0cGFja2V0LHJ0dWRwLHJ0Y2ZnLHRkbWEKPj4KPj4KPj4geWV0aUB5ZXRpLVVET08teDg2Oi91
+c3IveGVub21haS9zYmluJCBsc3BjaSAta25uIHxncmVwIEV0aGVybmV0Cj4+Cj4+IDAyOjAwLjAg
+RXRoZXJuZXQgY29udHJvbGxlciBbMDIwMF06IFJlYWx0ZWsgU2VtaWNvbmR1Y3RvciBDby4sIEx0
+ZC4gUlRMODExMS84MTY4Lzg0MTEgUENJIEV4cHJlc3MgR2lnYWJpdCBFdGhlcm5ldCBDb250cm9s
+bGVyIFsxMGVjOjgxNjhdIChyZXYgMGMpCj4+IAlTdWJzeXN0ZW06IFJlYWx0ZWsgU2VtaWNvbmR1
+Y3RvciBDby4sIEx0ZC4gUlRMODExMS84MTY4Lzg0MTEgUENJIEV4cHJlc3MgR2lnYWJpdCBFdGhl
+cm5ldCBDb250cm9sbGVyIFsxMGVjOjAxMjNdCj4+IAlLZXJuZWwgbW9kdWxlczogcjgxNjkKPj4g
+eWV0aUB5ZXRpLVVET08teDg2Oi91c3IveGVub21haS9zYmluJCBzdWRvIHJtbW9kIHI4MTY5Cj4+
+IHJtbW9kOiBFUlJPUjogTW9kdWxlIHI4MTY5IGlzIG5vdCBjdXJyZW50bHkgbG9hZGVkCj4gCj4g
+U3RpbGwsIHJ0X3I4MTY5IGRpZG4ndCBiaW5kLiBNYXliZSBvdXIgZHJpdmVyIGRvZXNuJ3QgbGlz
+dCB0aGlzIGNhcmQgSUQKPiAoaS5lLiBpcyB0b28gb2xkKS4uLiBhbmQgdGhhdCBpcyB0aGUgY2Fz
+ZSBoZXJlIChubyA4MTY4KS4gWW91IGNhbiB0cnkKPiBpbnRlZ3JhdGluZyB0aGUgc3RhdGUgb2Yg
+dGhlIGN1cnJlbnQgdXBzdHJlYW0gZHJpdmVyIC93cnQgdG8gdGhpcyBuZXcKPiBkZXZpY2UgSUQg
+aW50byB0aGUgUlRuZXQgdmFyaWFudCwgYnV0IHRoYXQncyBub3QgYSBzaW1wbGUgdGFzawo+IAo+
+IEphbgo+IAoKCg==
