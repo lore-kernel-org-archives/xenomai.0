@@ -1,18 +1,11 @@
-Date: Mon, 12 Mar 2018 18:56:58 +0200 (EET)
-From: =?windows-1251?B?2OXi9+Xt6u4g0uDw4PEgw/Do4+7w/OXi6Pc=?=
- <shevchenko.taras@triolcorp.com.ua>
-Message-ID: <711430923.3726721.1520873818863.JavaMail.zimbra@triolcorp.com.ua>
-In-Reply-To: <CALLqZ8RH5oguZ0eazPNDX_2XYM-mjpQCnPkhHOLSOTVQfHnerQ@mail.gmail.com>
-References: <466115005.3631078.1520863793122.JavaMail.zimbra@triolcorp.com.ua>
- <CALLqZ8QkmhLRL+T=QmMDctCdrpQ+xw=7ntR0Pj5Pgt1nq4HNFQ@mail.gmail.com>
- <724564032.3685392.1520869318586.JavaMail.zimbra@triolcorp.com.ua>
- <CALLqZ8RWkkFLbt6=bYvEPP_BKCKcAwS0rU_+JCYAAMhFhkyQYg@mail.gmail.com>
- <1182515752.3725277.1520873109725.JavaMail.zimbra@triolcorp.com.ua>
- <CALLqZ8RH5oguZ0eazPNDX_2XYM-mjpQCnPkhHOLSOTVQfHnerQ@mail.gmail.com>
+From: Nihar Unadkat <Nihar@deltatau.com>
+Date: Mon, 12 Mar 2018 19:03:27 +0000
+Message-ID: <BYAPR11MB28714348FF015A782E5E7064D1D30@BYAPR11MB2871.namprd11.prod.outlook.com>
+Content-Language: en-US
 MIME-Version: 1.0
-Content-Type: text/plain; charset=windows-1251
+Content-Type: text/plain; charset=WINDOWS-1252
 Content-Transfer-Encoding: quoted-printable
-Subject: Re: [Xenomai] simple rtdm driver x86
+Subject: [Xenomai] Kernel crash/hang upon power on
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -21,113 +14,104 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Greg Gallagher <greg@embeddedgreg.com>
-Cc: xenomai <xenomai@xenomai.org>
+To: "xenomai@xenomai.org" <xenomai@xenomai.org>
+Cc: Henry Bausley <hbausley@deltatau.com>
 
-sad, to hear it
-it is possible to remind you if I get fail with gpio?
+Hello support,
 
-Yes I able to build from repo , I wrote about , today earlier
+I am currently using Kernel version 4.1.18 that has been patched with xenom=
+ai-2.6.5.
+gcc version 4.9.3 and CPU: ARMv7 Processor
 
-I used some different way   - like in your instruction=20
+After every one time per one or two thousands reboot,  I get a kernel crash=
+/hang at the same position "Waiting for root device /dev/mmcblk0p2...".
 
-make bzImage modules
-make install
+Here is what I am getting
+
+[2018-03-11 07:36:40.811] Initializing XFRM netlink socket
+[2018-03-11 07:36:40.811] NET: Registered protocol family 17
+[2018-03-11 07:36:40.811] NET: Registered protocol family 15
+[2018-03-11 07:36:40.827] Key type dns_resolver registered
+[2018-03-11 07:36:40.827] Registering SWP/SWPB emulation handler
+[2018-03-11 07:36:40.827] hctosys: unable to open rtc device (rtc0)
+[2018-03-11 07:36:40.842] Waiting for root device /dev/mmcblk0p2...=20
+[2018-03-11 07:37:01.840] INFO: rcu_sched detected stalls on CPUs/tasks:
+[2018-03-11 07:37:01.840] =09(detected by 0, t=3D21002 jiffies, g=3D-267, c=
+=3D-268, q=3D11)
+[2018-03-11 07:37:01.840] All QSes seen, last rcu_sched kthread activity 21=
+002 (-277311--298313), jiffies_till_next_fqs=3D3, root ->qsmask 0x0
+[2018-03-11 07:37:01.856] swapper/0       R running      0     0      0 0x0=
+0000000
+[2018-03-11 07:37:01.856] [<80011dfd>] (unwind_backtrace) from [<8000f9bf>]=
+ (show_stack+0xb/0xc)
+[2018-03-11 07:37:01.871] [<8000f9bf>] (show_stack) from [<80047c0d>] (rcu_=
+check_callbacks+0x3bd/0x4dc)
+[2018-03-11 07:37:01.871] [<80047c0d>] (rcu_check_callbacks) from [<8004990=
+7>] (update_process_times+0x23/0x46)
+[2018-03-11 07:37:01.887] [<80049907>] (update_process_times) from [<800539=
+85>] (tick_sched_handle+0x25/0x2e)
+[2018-03-11 07:37:01.887] [<80053985>] (tick_sched_handle) from [<800539c7>=
+] (tick_sched_timer+0x39/0x6a)
+[2018-03-11 07:37:01.887] [<800539c7>] (tick_sched_timer) from [<80049f41>]=
+ (__run_hrtimer+0x3f/0x86)
+[2018-03-11 07:37:01.902] [<80049f41>] (__run_hrtimer) from [<8004a40b>] (h=
+rtimer_interrupt+0xbf/0x1e0)
+[2018-03-11 07:37:01.902] [<8004a40b>] (hrtimer_interrupt) from [<80312029>=
+] (arch_timer_handler_phys+0x41/0x54)
+[2018-03-11 07:37:01.918] [<80312029>] (arch_timer_handler_phys) from [<800=
+41bc7>] (handle_percpu_devid_irq+0x53/0xa8)
+[2018-03-11 07:37:01.918] [<80041bc7>] (handle_percpu_devid_irq) from [<800=
+3fd83>] (generic_handle_irq+0x13/0x1c)
+[2018-03-11 07:37:01.934] [<8003fd83>] (generic_handle_irq) from [<8003ff7b=
+>] (__handle_domain_irq+0x73/0xac)
+[2018-03-11 07:37:01.934] [<8003ff7b>] (__handle_domain_irq) from [<8005c31=
+9>] (__ipipe_do_sync_stage+0x195/0x1f0)
+[2018-03-11 07:37:01.949] [<8005c319>] (__ipipe_do_sync_stage) from [<80009=
+2c5>] (__ipipe_grab_irq+0x4d/0x64)
+[2018-03-11 07:37:01.949] [<800092c5>] (__ipipe_grab_irq) from [<80009493>]=
+ (gic_handle_irq+0x2b/0x40)
+[2018-03-11 07:37:01.965] Exception stack(0x805e5f50 to 0x805e5f98)
+[2018-03-11 07:37:01.965] 5f40:                                     8005c43=
+8 80000133 ffffffff 803b575b
+[2018-03-11 07:37:01.965] 5f60: bffcd7a8 00000000 3f9ef000 00000000 805e400=
+0 805e6508 805dd380 00000000
+[2018-03-11 07:37:01.980] 5f80: ffffffff 805e6440 805d0f90 00000000 805e618=
+0 805e5fa8
+[2018-03-11 07:37:01.980] [<80009493>] (gic_handle_irq) from [<803b575b>] (=
+__irq_svc+0x3b/0x42)
+[2018-03-11 07:37:01.996] Exception stack(0x805e5f60 to 0x805e5fa8)
+[2018-03-11 07:37:01.996] 5f60: bffcd7a8 00000000 3f9ef000 00000000 805e400=
+0 805e6508 805dd380 00000000
+[2018-03-11 07:37:01.996] 5f80: ffffffff 805e6440 805d0f90 00000000 805e618=
+0 805e5fa8 8003af1d 8005c438
+[2018-03-11 07:37:02.012] 5fa0: 80000133 ffffffff
+[2018-03-11 07:37:02.012] [<803b575b>] (__irq_svc) from [<8005c438>] (ipipe=
+_unstall_root+0x2c/0x3c)
+[2018-03-11 07:37:02.012] [<8005c438>] (ipipe_unstall_root) from [<8003af1d=
+>] (cpu_startup_entry+0xf1/0x128)
+[2018-03-11 07:37:02.027] [<8003af1d>] (cpu_startup_entry) from [<8058c91f>=
+] (start_kernel+0x27f/0x2e8)
+[2018-03-11 07:37:02.027] [<8058c91f>] (start_kernel) from [<8000808f>] (0x=
+8000808f)
+[2018-03-11 07:37:02.027] rcu_sched kthread starved for 21002 jiffies!
 
 
------ Original Message -----
-From: "Greg Gallagher" <greg@embeddedgreg.com>
-To: "=D8=E5=E2=F7=E5=ED=EA=EE =D2=E0=F0=E0=F1 =C3=F0=E8=E3=EE=F0=FC=E5=E2=
-=E8=F7" <shevchenko.taras@triolcorp.com.ua>
-Cc: "xenomai" <xenomai@xenomai.org>
-Sent: Monday, March 12, 2018 6:50:47 PM
-Subject: Re: [Xenomai] simple rtdm driver x86
+NOTE: The only way to bypass this issue are=20
+1) Pressing ENTER after the above message.
+2) complete power cycle.
 
-No that shouldn't have an impact on it.  I have a couple theories
-about what is happening but I don't have time to test them out at the
-moment.  Hopefully I'll have some time closer to the end of the week
-to look into it.  Where you able to build from the git repo?
+Please advise what I can do to solve this issue.
 
--Greg
+Thank you.
 
-On Mon, Mar 12, 2018 at 12:45 PM, =D8=E5=E2=F7=E5=ED=EA=EE =D2=E0=F0=E0=F1 =
-=C3=F0=E8=E3=EE=F0=FC=E5=E2=E8=F7
-<shevchenko.taras@triolcorp.com.ua> wrote:
->
-> could be the problem in loading out-of-tree module taints kernel.
->
-> yeti@yeti-UDOO-x86:~/develop/rtdm_hello$ dmesg|grep rtdm
-> [ 1536.073433] rtdm_hello: loading out-of-tree module taints kernel.
-> [ 1536.073532] rtdm_hello: module verification failed: signature and/or r=
-equired key missing - tainting kernel
-> yeti@yeti-UDOO-x86:~/develop/rtdm_hello$ dmesg|grep RTDM
-> [ 1536.075500] RTDM gpio init.
-> [ 1536.075617] RTDM numero 266:
->
->
->
-> ----- Original Message -----
-> From: "Greg Gallagher" <greg@embeddedgreg.com>
-> To: "=D8=E5=E2=F7=E5=ED=EA=EE =D2=E0=F0=E0=F1 =C3=F0=E8=E3=EE=F0=FC=E5=E2=
-=E8=F7" <shevchenko.taras@triolcorp.com.ua>
-> Cc: "xenomai" <xenomai@xenomai.org>
-> Sent: Monday, March 12, 2018 5:46:05 PM
-> Subject: Re: [Xenomai] simple rtdm driver x86
->
-> Use this https://xenomai.org/documentation/xenomai-3/html/xeno3prm/index.=
-html
-> for rtdm references going forward.  You are running Xenomai 3, but
-> using the docs for 2.6.
->
-> -Greg
->
-> On Mon, Mar 12, 2018 at 11:41 AM, =D8=E5=E2=F7=E5=ED=EA=EE =D2=E0=F0=E0=
-=F1 =C3=F0=E8=E3=EE=F0=FC=E5=E2=E8=F7
-> <shevchenko.taras@triolcorp.com.ua> wrote:
->> Xenomai 3
->> It is work! Perfect!
->> Now i have the same problem as below
->> http://xenomai.org/pipermail/xenomai/2017-May/037361.html by Nitin Kulka=
-rni    and x86
->>
->> interrupt registered cat /proc/xenomai/irq
->>
->>
->>   IRQ         CPU0        CPU1        CPU2        CPU3
->>   266:           0           0           0           0         rtdm_hell=
-o
->>
->> but the handler is not invoked when I trigger the gpio pin.
->> I found http://xenomai.org/documentation/xenomai-2.6/html/api/group__rtd=
-mirq.html#gaf4e76db13d7f7aac4be2cae59e0097bc
->> only RTDM_IRQTYPE_EDGE  option
->> is there another trigger or another way to do it ?
->>
->>
->> ----- Original Message -----
->> From: "Greg Gallagher" <greg@embeddedgreg.com>
->> To: "=D8=E5=E2=F7=E5=ED=EA=EE =D2=E0=F0=E0=F1 =C3=F0=E8=E3=EE=F0=FC=E5=
-=E2=E8=F7" <shevchenko.taras@triolcorp.com.ua>
->> Cc: "xenomai" <xenomai@xenomai.org>
->> Sent: Monday, March 12, 2018 4:16:03 PM
->> Subject: Re: [Xenomai] simple rtdm driver x86
->>
->> Are you using Xenomai 3 or 2?  I believe from your previous posts you
->> are using Xenomai 3, include rtdm/driver.h , not rtdm_driver.h.
->>
->> -Greg
->>
->> On Mon, Mar 12, 2018 at 10:09 AM, =D8=E5=E2=F7=E5=ED=EA=EE =D2=E0=F0=E0=
-=F1 =C3=F0=E8=E3=EE=F0=FC=E5=E2=E8=F7
->> <shevchenko.taras@triolcorp.com.ua> wrote:
->>> Hi,
->>> could somebody share simple rtdm driver for begginers
->>> better fo x86
->>> I try to find it but almost for arm
->>> and i have no such rtdm_driver.h
->>> give an advice please should I start from ?
->>> _______________________________________________
->>> Xenomai mailing list
->>> Xenomai@xenomai.org
->>> https://xenomai.org/mailman/listinfo/xenomai
+Nihar Unadkat =A0
+Senior Firmware Engineer
+Direct: 818-444-5206
+nihar@deltatau.com
+
+OMRON DELTA TAU=20
+21314 Lassen Street, Chatsworth, CA 91311
+deltatau.com=20
+youtube.com/DeltaTauDataSystems
+
 
