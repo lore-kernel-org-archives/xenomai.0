@@ -1,12 +1,14 @@
-MIME-Version: 1.0
-In-Reply-To: <724564032.3685392.1520869318586.JavaMail.zimbra@triolcorp.com.ua>
+Date: Mon, 12 Mar 2018 18:17:36 +0200 (EET)
+From: =?windows-1251?B?2OXi9+Xt6u4g0uDw4PEgw/Do4+7w/OXi6Pc=?=
+ <shevchenko.taras@triolcorp.com.ua>
+Message-ID: <77662817.3709562.1520871456051.JavaMail.zimbra@triolcorp.com.ua>
+In-Reply-To: <CALLqZ8RWkkFLbt6=bYvEPP_BKCKcAwS0rU_+JCYAAMhFhkyQYg@mail.gmail.com>
 References: <466115005.3631078.1520863793122.JavaMail.zimbra@triolcorp.com.ua>
  <CALLqZ8QkmhLRL+T=QmMDctCdrpQ+xw=7ntR0Pj5Pgt1nq4HNFQ@mail.gmail.com>
  <724564032.3685392.1520869318586.JavaMail.zimbra@triolcorp.com.ua>
-From: Greg Gallagher <greg@embeddedgreg.com>
-Date: Mon, 12 Mar 2018 11:46:05 -0400
-Message-ID: <CALLqZ8RWkkFLbt6=bYvEPP_BKCKcAwS0rU_+JCYAAMhFhkyQYg@mail.gmail.com>
-Content-Type: text/plain; charset="UTF-8"
+ <CALLqZ8RWkkFLbt6=bYvEPP_BKCKcAwS0rU_+JCYAAMhFhkyQYg@mail.gmail.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=windows-1251
 Content-Transfer-Encoding: quoted-printable
 Subject: Re: [Xenomai] simple rtdm driver x86
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
@@ -17,8 +19,19 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: =?UTF-8?B?0KjQtdCy0YfQtdC90LrQviDQotCw0YDQsNGBINCT0YDQuNCz0L7RgNGM0LXQstC40Yc=?= <shevchenko.taras@triolcorp.com.ua>
+To: Greg Gallagher <greg@embeddedgreg.com>
 Cc: xenomai <xenomai@xenomai.org>
+
+thank you
+but not really help
+
+----- Original Message -----
+From: "Greg Gallagher" <greg@embeddedgreg.com>
+To: "=D8=E5=E2=F7=E5=ED=EA=EE =D2=E0=F0=E0=F1 =C3=F0=E8=E3=EE=F0=FC=E5=E2=
+=E8=F7" <shevchenko.taras@triolcorp.com.ua>
+Cc: "xenomai" <xenomai@xenomai.org>
+Sent: Monday, March 12, 2018 5:46:05 PM
+Subject: Re: [Xenomai] simple rtdm driver x86
 
 Use this https://xenomai.org/documentation/xenomai-3/html/xeno3prm/index.ht=
 ml
@@ -27,9 +40,8 @@ using the docs for 2.6.
 
 -Greg
 
-On Mon, Mar 12, 2018 at 11:41 AM, =D0=A8=D0=B5=D0=B2=D1=87=D0=B5=D0=BD=D0=
-=BA=D0=BE =D0=A2=D0=B0=D1=80=D0=B0=D1=81 =D0=93=D1=80=D0=B8=D0=B3=D0=BE=D1=
-=80=D1=8C=D0=B5=D0=B2=D0=B8=D1=87
+On Mon, Mar 12, 2018 at 11:41 AM, =D8=E5=E2=F7=E5=ED=EA=EE =D2=E0=F0=E0=F1 =
+=C3=F0=E8=E3=EE=F0=FC=E5=E2=E8=F7
 <shevchenko.taras@triolcorp.com.ua> wrote:
 > Xenomai 3
 > It is work! Perfect!
@@ -52,9 +64,8 @@ irq.html#gaf4e76db13d7f7aac4be2cae59e0097bc
 >
 > ----- Original Message -----
 > From: "Greg Gallagher" <greg@embeddedgreg.com>
-> To: "=D0=A8=D0=B5=D0=B2=D1=87=D0=B5=D0=BD=D0=BA=D0=BE =D0=A2=D0=B0=D1=80=
-=D0=B0=D1=81 =D0=93=D1=80=D0=B8=D0=B3=D0=BE=D1=80=D1=8C=D0=B5=D0=B2=D0=B8=
-=D1=87" <shevchenko.taras@triolcorp.com.ua>
+> To: "=D8=E5=E2=F7=E5=ED=EA=EE =D2=E0=F0=E0=F1 =C3=F0=E8=E3=EE=F0=FC=E5=E2=
+=E8=F7" <shevchenko.taras@triolcorp.com.ua>
 > Cc: "xenomai" <xenomai@xenomai.org>
 > Sent: Monday, March 12, 2018 4:16:03 PM
 > Subject: Re: [Xenomai] simple rtdm driver x86
@@ -64,9 +75,8 @@ irq.html#gaf4e76db13d7f7aac4be2cae59e0097bc
 >
 > -Greg
 >
-> On Mon, Mar 12, 2018 at 10:09 AM, =D0=A8=D0=B5=D0=B2=D1=87=D0=B5=D0=BD=D0=
-=BA=D0=BE =D0=A2=D0=B0=D1=80=D0=B0=D1=81 =D0=93=D1=80=D0=B8=D0=B3=D0=BE=D1=
-=80=D1=8C=D0=B5=D0=B2=D0=B8=D1=87
+> On Mon, Mar 12, 2018 at 10:09 AM, =D8=E5=E2=F7=E5=ED=EA=EE =D2=E0=F0=E0=
+=F1 =C3=F0=E8=E3=EE=F0=FC=E5=E2=E8=F7
 > <shevchenko.taras@triolcorp.com.ua> wrote:
 >> Hi,
 >> could somebody share simple rtdm driver for begginers
