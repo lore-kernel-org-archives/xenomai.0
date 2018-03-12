@@ -1,7 +1,7 @@
-Date: Mon, 12 Mar 2018 18:17:36 +0200 (EET)
+Date: Mon, 12 Mar 2018 18:45:09 +0200 (EET)
 From: =?windows-1251?B?2OXi9+Xt6u4g0uDw4PEgw/Do4+7w/OXi6Pc=?=
  <shevchenko.taras@triolcorp.com.ua>
-Message-ID: <77662817.3709562.1520871456051.JavaMail.zimbra@triolcorp.com.ua>
+Message-ID: <1182515752.3725277.1520873109725.JavaMail.zimbra@triolcorp.com.ua>
 In-Reply-To: <CALLqZ8RWkkFLbt6=bYvEPP_BKCKcAwS0rU_+JCYAAMhFhkyQYg@mail.gmail.com>
 References: <466115005.3631078.1520863793122.JavaMail.zimbra@triolcorp.com.ua>
  <CALLqZ8QkmhLRL+T=QmMDctCdrpQ+xw=7ntR0Pj5Pgt1nq4HNFQ@mail.gmail.com>
@@ -22,8 +22,18 @@ List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
 To: Greg Gallagher <greg@embeddedgreg.com>
 Cc: xenomai <xenomai@xenomai.org>
 
-thank you
-but not really help
+
+could be the problem in loading out-of-tree module taints kernel.
+
+yeti@yeti-UDOO-x86:~/develop/rtdm_hello$ dmesg|grep rtdm
+[ 1536.073433] rtdm_hello: loading out-of-tree module taints kernel.
+[ 1536.073532] rtdm_hello: module verification failed: signature and/or req=
+uired key missing - tainting kernel
+yeti@yeti-UDOO-x86:~/develop/rtdm_hello$ dmesg|grep RTDM
+[ 1536.075500] RTDM gpio init.
+[ 1536.075617] RTDM numero 266:
+
+
 
 ----- Original Message -----
 From: "Greg Gallagher" <greg@embeddedgreg.com>
