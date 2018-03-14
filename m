@@ -1,14 +1,14 @@
-References: <5ec34b95-3d0a-c57c-fbbf-dd8ce11f31cd@siemens.com>
-From: Philippe Gerum <rpm@xenomai.org>
-Message-ID: <20ce9191-d492-ff00-7deb-ab598df4864e@xenomai.org>
-Date: Wed, 14 Mar 2018 15:34:08 +0100
+From: "Schrenkhammer, Martin" <MSchrenkhammer@data-modul.com>
+Date: Wed, 14 Mar 2018 15:23:11 +0000
+Message-ID: <0B8B4C90A6FEA34E9EA10570C016C358BB7C09E2@DEMUC-SMX001.data-modul.local>
+References: <0B8B4C90A6FEA34E9EA10570C016C358BB7C0839@DEMUC-SMX001.data-modul.local>
+ <57765855-6a4c-4651-70c8-528cc33607dc@xenomai.org>
+In-Reply-To: <57765855-6a4c-4651-70c8-528cc33607dc@xenomai.org>
+Content-Language: de-DE
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-In-Reply-To: <5ec34b95-3d0a-c57c-fbbf-dd8ce11f31cd@siemens.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] [PATCH] cobalt/thread: Move tcb clearing into
- __xnthread_init
+Subject: Re: [Xenomai] Latency Peaks with Skylake vs. Haswell
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,66 +17,58 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jan Kiszka <jan.kiszka@siemens.com>, Xenomai <xenomai@xenomai.org>
+To: Philippe Gerum <rpm@xenomai.org>, "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On 03/08/2018 04:55 PM, Jan Kiszka wrote:
-> From: Jan Kiszka <jan.kiszka@siemens.com>
-> 
-> This both de-duplicates the code and ensures that all fields are zeroed
-> prior to calling one of the actual tcb initialization functions.
-> Specifically if host_task is not properly cleaned, we may cause a bug
-> when using the field earlier, e.g.
-> 
-> general protection fault: 0000 [#1] PREEMPT SMP
-> [...]
-> RIP: 0010:[<ffffffff81185a3c>]  [<ffffffff81185a3c>] xnthread_host_pid+0x1c/0x30
-> [..]
-> Call Trace:
->  [<ffffffff8117c987>] trace_event_raw_event_cobalt_thread_set_current_prio+0x57/0xa0
->  [<ffffffff8117f33d>] xnsched_set_effective_priority+0x8d/0xc0
->  [<ffffffff8117a1e4>] xnsched_rt_setparam+0x14/0x30
->  [<ffffffff8117e700>] xnsched_set_policy+0xc0/0x170
->  [<ffffffff81185687>] __xnthread_init+0x317/0x3d0
->  [<ffffffff8114a3e8>] ? trace_buffer_unlock_commit+0x58/0x70
->  [<ffffffff811857bb>] xnthread_init+0x7b/0x110
-> 
-> Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
-> ---
->  kernel/cobalt/thread.c | 3 +--
->  1 file changed, 1 insertion(+), 2 deletions(-)
-> 
-> diff --git a/kernel/cobalt/thread.c b/kernel/cobalt/thread.c
-> index 3d84ddd7b..ebdecfa91 100644
-> --- a/kernel/cobalt/thread.c
-> +++ b/kernel/cobalt/thread.c
-> @@ -212,6 +212,7 @@ int __xnthread_init(struct xnthread *thread,
->  	thread->entry = NULL;
->  	thread->cookie = NULL;
->  	init_completion(&thread->exited);
-> +	memset(xnthread_archtcb(thread), 0, sizeof(struct xnarchtcb));
->  
->  	gravity = flags & XNUSER ? XNTIMER_UGRAVITY : XNTIMER_KGRAVITY;
->  	xntimer_init(&thread->rtimer, &nkclock, timeout_handler,
-> @@ -260,7 +261,6 @@ void xnthread_init_shadow_tcb(struct xnthread *thread)
->  	 */
->  	__ipipe_share_current(0);
->  
-> -	memset(tcb, 0, sizeof(*tcb));
->  	tcb->core.host_task = p;
->  	tcb->core.tsp = &p->thread;
->  	tcb->core.mm = p->mm;
-> @@ -279,7 +279,6 @@ void xnthread_init_root_tcb(struct xnthread *thread)
->  	struct xnarchtcb *tcb = xnthread_archtcb(thread);
->  	struct task_struct *p = current;
->  
-> -	memset(tcb, 0, sizeof(*tcb));
->  	tcb->core.host_task = p;
->  	tcb->core.tsp = &tcb->core.ts;
->  	tcb->core.mm = p->mm;
-> 
-
-Merged, thanks.
-
--- 
-Philippe.
+VG8gYmUgaG9uZXN0LCBJIGRvbid0IGtub3cgaG93IGV4YWN0bHkgdHJhY2tpbmcgdGhpcy4NCg0K
+V2hhdCBJIGFtIGRvaW5nOg0KT3BlbiAxIHRlcm1pbmFsIHdpbmRvdyB3aGljaCBydW5zIGxhdGVu
+Y3kgdGVzdC4NCldpdGggc2Vjb25kIHRlcm1pbmFsIHdpbmRvdyBJIHdhdGNoIC1uMSBjYXQgL3By
+b2MvaW50ZXJydXB0cw0KDQpEdXJpbmcgaWRsZSAoYmVzaWRlIGxhdGVuY3kgdGVzdCBhbmQgd2F0
+Y2hpbmcgaW50ZXJydXB0cyksIHRoZXJlIGFyZSBhYm91dCAyMCBNU0kgLyBzZWMuDQpJZiBhbm90
+aGVyIHdpbmRvdyAoZS5nLiBGaWxlIE1hbmdlcikgaXMgbW92ZWQgYXJvdW5kIGZhc3QsIEkgc2Vl
+IGFib3V0IDUwMCBNU0kgLyBzZWMuDQoNCldpdGggSGFzd2VsbCwgdGhlcmUgYXJlIG5vIGk5MTUg
+TVNJDQoNClRoYW5rcyBmb3IgdGhlIGhpbnQgYWJvdXQgYXV0b3R1bmUuICBJIHdpbGwgY2hlY2sg
+d2l0aCBuZXh0IG1lYXN1cmVtZW50cy4NCg0KLS0NCk1hcnRpbi4NCg0KLS0tLS1VcnNwcsO8bmds
+aWNoZSBOYWNocmljaHQtLS0tLQ0KVm9uOiBQaGlsaXBwZSBHZXJ1bSBbbWFpbHRvOnJwbUB4ZW5v
+bWFpLm9yZ10NCkdlc2VuZGV0OiBNaXR0d29jaCwgMTQuIE3DpHJ6IDIwMTggMTU6MzENCkFuOiBT
+Y2hyZW5raGFtbWVyLCBNYXJ0aW47IHhlbm9tYWlAeGVub21haS5vcmcNCkJldHJlZmY6IFJlOiBb
+WGVub21haV0gTGF0ZW5jeSBQZWFrcyB3aXRoIFNreWxha2UgdnMuIEhhc3dlbGwNCg0KT24gMDMv
+MTMvMjAxOCAxMjozMyBQTSwgU2NocmVua2hhbW1lciwgTWFydGluIHdyb3RlOg0KPiBJIGFtIGN1
+cnJlbnRseSBwb3J0aW5nIGEgcHJvamVjdCBmcm9tIEhhc3dlbGwgdG8gU2t5bGFrZSAoaTUtNjQ0
+MEVRKS4gV2hlbiBpbiBkZXNrdG9wLCBJIG9ic2VydmUgbGF0ZW5jeSBwZWFrcyB3aGVuIHdpbmRv
+d3MgYXJlIG1vdmVkIGFyb3VuZCBvciB6b29tZWQuIFdpdGggSGFzd2VsbCBDUFVzLCB0aGVyZSBp
+cyBub3QgaW1wYWN0IG9mIGdyYXBoaWMgd29ya2xvYWQuIFVuZm9ydHVuYXRlbHkgZXZlcnl0aGlu
+ZyBhYm92ZSAxMHVzICBpcyBhbiBpc3N1ZSBpbiBvdXIgcmVhbCB0aW1lIHN5c3RlbSBhcHBsaWNh
+dGlvbi4NCj4gQ3VycmVudGx5IEkgYW0gdXNpbmcgWHVidW50dSAxNi4wNCArIEtlcm5lbCA0Ljku
+NTEgKyBYZW5vbWFpIDMuMC42IEkNCj4gYWxyZWFkeSBkaXNhYmxlZCBhbGwgcG93ZXItIGFuZCBw
+ZXJmb3JtYW5jZSBmZWF0dXJlcyBsaWtlDQo+IEh5cGVyLVRocmVhZGluZywgU3BlZWRTdGVwLCBU
+dXJibyBNb2RlLCBDLVN0YXRlcyBpbiBCSU9TIGFuZCBhbHNvIGJ5DQo+IGtlcm5lbCBwYXJhbWV0
+ZXJzLiBBbHNvIGRpc2FibGVkIGk5MTUgcG93ZXIgc2F2aW5ncyBsaWtlDQo+IGk5MTUuZW5hYmxl
+X2RjPTAsICBpOTE1LmVuYWJsZV9yYzY9MCwgaTkxNS5lbmFibGVfZXhlY2xpc3RzPTAuLi4gYW5k
+DQo+IGRpc2FibGVkIGdyYWZpayB0dXJibyBndF9tYXhfZnJlcV9taHogPSAzNTAgIGd0X2Jvb3N0
+X2ZyZXFfbWh6ID0gMzUwDQo+DQo+IE9uZSBkaWZmZXJlbmNlIHdlIHNlZSBiZXR3ZWVuIEhhc3dl
+bGwgYW5kIFNreWxha2U6IGk5MTUgcmFpc2VzIGEgbG90IG9mIE1TSSB3aGVuIG1vdmluZyB3aW5k
+b3dzIGFyb3VuZCB3aGVyZSB0aGVyZSBhcmUgYWxtb3N0IHplcm8gYXQgSGFzd2VsbC4NCj4NCj4g
+QW55IGlkZWFzIGZvciBicmluZ2luZyB0aGUgcGVha3MgZG93bj8NCg0KRGlkIHlvdSB0cmFjayB3
+aGljaCBzcGVjaWZpYyBldmVudCB0aGUgaTkxNSBkcml2ZXIgd2FzIGhhbmRsaW5nIHdpdGggdGhv
+c2UgTVNJcz8NCg0KPg0KPiA9PSBTYW1wbGluZyBwZXJpb2Q6IDEwMCB1cw0KPiA9PSBUZXN0IG1v
+ZGU6IHBlcmlvZGljIHVzZXItbW9kZSB0YXNrDQo+ID09IEFsbCByZXN1bHRzIGluIG1pY3Jvc2Vj
+b25kcw0KPiB3YXJtaW5nIHVwLi4uDQo+IFJUVHwgIDAwOjAwOjAxICAocGVyaW9kaWMgdXNlci1t
+b2RlIHRhc2ssIDEwMCB1cyBwZXJpb2QsIHByaW9yaXR5IDk5KQ0KPiBSVEh8LS0tLWxhdCBtaW58
+LS0tLWxhdCBhdmd8LS0tLWxhdCBtYXh8LW92ZXJydW58LS0tbXN3fC0tLWxhdA0KPiBSVEh8YmVz
+dHwtLWxhdCB3b3JzdA0KPiBSVER8ICAgICAtMC4zNjh8ICAgICAtMC4yMTB8ICAgICAgMC4yNTl8
+ICAgICAgIDB8ICAgICAwfCAgICAgLTAuMzY4fCAgICAgIDAuMjU5DQo+IFJURHwgICAgIC0wLjI1
+OXwgICAgIC0wLjE2MXwgICAgICAxLjYwMXwgICAgICAgMHwgICAgIDB8ICAgICAtMC4zNjh8ICAg
+ICAgMS42MDENCj4gUlREfCAgICAgLTAuMjkwfCAgICAgLTAuMTc0fCAgICAgIDEuMzY3fCAgICAg
+ICAwfCAgICAgMHwgICAgIC0wLjM2OHwgICAgICAxLjYwMQ0KDQpUaGlzIGlzIHVucmVsYXRlZCB0
+byB0aGUgaXNzdWUgYXQgc3Rha2UsIGJ1dCB0aGUgY29yZSB0aW1lciBsb29rcyBzbGlnaHRseSBl
+YXJseSAobmVnYXRpdmUgbWlucyksIHdoaWNoIG1lYW5zIHRoYXQgdGhlIGV4cGVjdGVkIGludHJp
+bnNpYyBsYXRlbmN5IHZhbHVlIGlzIHRvbyBwZXNzaW1pc3RpYy9oaWdoLiBSdW5uaW5nIGF1dG90
+dW5lIG1heSBoZWxwIGluIHBpY2tpbmcgYmV0dGVyIGdyYXZpdHkgdmFsdWVzIGZvciB0aGlzIHRp
+bWVyLg0KDQotLQ0KUGhpbGlwcGUuDQoNClZlcnRyYXVsaWNoZSBFLU1haWwgdm9uIC8gQ29uZmlk
+ZW50aWFsIGUtbWFpbCBmcm9tOiBEQVRBIE1PRFVMIEFHDQpWb3JzdGFuZCAvIENFTzogRHIuIEZs
+b3JpYW4gUGVzYWhsDQpWb3JzaXR6ZW5kZSBkZXMgQXVmc2ljaHRzcmF0ZXMgLyBDaGFpcndvbWFu
+IG9mIHRoZSBTdXBlcnZpc29yeSBCb2FyZDogS3Jpc3RpbiBELiBSdXNzZWxsDQpTaXR6IGRlciBH
+ZXNlbGxzY2hhZnQgLyBSZWdpc3RlcmVkIE9mZmljZTogTcO8bmNoZW4NClJlZ2lzdGVyZ2VyaWNo
+dCAvIFJlZ2lzdHJhdGlvbiBDb3VydDogTcO8bmNoZW4gSGFuZGVsc3JlZ2lzdGVyIEIgODUgNTkx
+DQoNCg0KDQo=
 
