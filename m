@@ -1,13 +1,14 @@
-References: <0B8B4C90A6FEA34E9EA10570C016C358BB7C0839@DEMUC-SMX001.data-modul.local>
+References: <5ec34b95-3d0a-c57c-fbbf-dd8ce11f31cd@siemens.com>
 From: Philippe Gerum <rpm@xenomai.org>
-Message-ID: <57765855-6a4c-4651-70c8-528cc33607dc@xenomai.org>
-Date: Wed, 14 Mar 2018 15:30:36 +0100
+Message-ID: <20ce9191-d492-ff00-7deb-ab598df4864e@xenomai.org>
+Date: Wed, 14 Mar 2018 15:34:08 +0100
 MIME-Version: 1.0
-In-Reply-To: <0B8B4C90A6FEA34E9EA10570C016C358BB7C0839@DEMUC-SMX001.data-modul.local>
+In-Reply-To: <5ec34b95-3d0a-c57c-fbbf-dd8ce11f31cd@siemens.com>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] Latency Peaks with Skylake vs. Haswell
+Subject: Re: [Xenomai] [PATCH] cobalt/thread: Move tcb clearing into
+ __xnthread_init
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,35 +17,65 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "Schrenkhammer, Martin" <MSchrenkhammer@data-modul.com>, "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Jan Kiszka <jan.kiszka@siemens.com>, Xenomai <xenomai@xenomai.org>
 
-On 03/13/2018 12:33 PM, Schrenkhammer, Martin wrote:
-> I am currently porting a project from Haswell to Skylake (i5-6440EQ). When in desktop, I observe latency peaks when windows are moved around or zoomed. With Haswell CPUs, there is not impact of graphic workload. Unfortunately everything above 10us  is an issue in our real time system application.
-> Currently I am using Xubuntu 16.04 + Kernel 4.9.51 + Xenomai 3.0.6
-> I already disabled all power- and performance features like Hyper-Threading, SpeedStep, Turbo Mode, C-States in BIOS and also by kernel parameters. Also disabled i915 power savings like i915.enable_dc=0,  i915.enable_rc6=0, i915.enable_execlists=0... and disabled grafik turbo gt_max_freq_mhz = 350  gt_boost_freq_mhz = 350
+On 03/08/2018 04:55 PM, Jan Kiszka wrote:
+> From: Jan Kiszka <jan.kiszka@siemens.com>
 > 
-> One difference we see between Haswell and Skylake: i915 raises a lot of MSI when moving windows around where there are almost zero at Haswell.
+> This both de-duplicates the code and ensures that all fields are zeroed
+> prior to calling one of the actual tcb initialization functions.
+> Specifically if host_task is not properly cleaned, we may cause a bug
+> when using the field earlier, e.g.
 > 
-> Any ideas for bringing the peaks down?
-
-Did you track which specific event the i915 driver was handling with
-those MSIs?
-
+> general protection fault: 0000 [#1] PREEMPT SMP
+> [...]
+> RIP: 0010:[<ffffffff81185a3c>]  [<ffffffff81185a3c>] xnthread_host_pid+0x1c/0x30
+> [..]
+> Call Trace:
+>  [<ffffffff8117c987>] trace_event_raw_event_cobalt_thread_set_current_prio+0x57/0xa0
+>  [<ffffffff8117f33d>] xnsched_set_effective_priority+0x8d/0xc0
+>  [<ffffffff8117a1e4>] xnsched_rt_setparam+0x14/0x30
+>  [<ffffffff8117e700>] xnsched_set_policy+0xc0/0x170
+>  [<ffffffff81185687>] __xnthread_init+0x317/0x3d0
+>  [<ffffffff8114a3e8>] ? trace_buffer_unlock_commit+0x58/0x70
+>  [<ffffffff811857bb>] xnthread_init+0x7b/0x110
 > 
-> == Sampling period: 100 us
-> == Test mode: periodic user-mode task
-> == All results in microseconds
-> warming up...
-> RTT|  00:00:01  (periodic user-mode task, 100 us period, priority 99)
-> RTH|----lat min|----lat avg|----lat max|-overrun|---msw|---lat best|--lat worst
-> RTD|     -0.368|     -0.210|      0.259|       0|     0|     -0.368|      0.259
-> RTD|     -0.259|     -0.161|      1.601|       0|     0|     -0.368|      1.601
-> RTD|     -0.290|     -0.174|      1.367|       0|     0|     -0.368|      1.601
+> Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
+> ---
+>  kernel/cobalt/thread.c | 3 +--
+>  1 file changed, 1 insertion(+), 2 deletions(-)
+> 
+> diff --git a/kernel/cobalt/thread.c b/kernel/cobalt/thread.c
+> index 3d84ddd7b..ebdecfa91 100644
+> --- a/kernel/cobalt/thread.c
+> +++ b/kernel/cobalt/thread.c
+> @@ -212,6 +212,7 @@ int __xnthread_init(struct xnthread *thread,
+>  	thread->entry = NULL;
+>  	thread->cookie = NULL;
+>  	init_completion(&thread->exited);
+> +	memset(xnthread_archtcb(thread), 0, sizeof(struct xnarchtcb));
+>  
+>  	gravity = flags & XNUSER ? XNTIMER_UGRAVITY : XNTIMER_KGRAVITY;
+>  	xntimer_init(&thread->rtimer, &nkclock, timeout_handler,
+> @@ -260,7 +261,6 @@ void xnthread_init_shadow_tcb(struct xnthread *thread)
+>  	 */
+>  	__ipipe_share_current(0);
+>  
+> -	memset(tcb, 0, sizeof(*tcb));
+>  	tcb->core.host_task = p;
+>  	tcb->core.tsp = &p->thread;
+>  	tcb->core.mm = p->mm;
+> @@ -279,7 +279,6 @@ void xnthread_init_root_tcb(struct xnthread *thread)
+>  	struct xnarchtcb *tcb = xnthread_archtcb(thread);
+>  	struct task_struct *p = current;
+>  
+> -	memset(tcb, 0, sizeof(*tcb));
+>  	tcb->core.host_task = p;
+>  	tcb->core.tsp = &tcb->core.ts;
+>  	tcb->core.mm = p->mm;
+> 
 
-This is unrelated to the issue at stake, but the core timer looks
-slightly early (negative mins), which means that the expected intrinsic
-latency value is too pessimistic/high. Running autotune may help in
-picking better gravity values for this timer.
+Merged, thanks.
 
 -- 
 Philippe.
