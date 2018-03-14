@@ -1,13 +1,13 @@
-Message-ID: <1521026342.8992.21.camel@sprinte.eu>
-From: Julien Blanc <julien.blanc@sprinte.eu>
-Date: Wed, 14 Mar 2018 12:19:02 +0100
-In-Reply-To: <6cb98615-fa18-9c11-affd-5bcda302ed44@xenomai.org>
-References: <1521024178.8992.7.camel@sprinte.eu>
- <6cb98615-fa18-9c11-affd-5bcda302ed44@xenomai.org>
-Content-Type: text/plain; charset="utf-8"
-Mime-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [Xenomai] Strange behaviour after calling clock_settime
+References: <0B8B4C90A6FEA34E9EA10570C016C358BB7C0839@DEMUC-SMX001.data-modul.local>
+From: Philippe Gerum <rpm@xenomai.org>
+Message-ID: <57765855-6a4c-4651-70c8-528cc33607dc@xenomai.org>
+Date: Wed, 14 Mar 2018 15:30:36 +0100
+MIME-Version: 1.0
+In-Reply-To: <0B8B4C90A6FEA34E9EA10570C016C358BB7C0839@DEMUC-SMX001.data-modul.local>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai] Latency Peaks with Skylake vs. Haswell
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,84 +16,36 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Philippe Gerum <rpm@xenomai.org>, xenomai@xenomai.org
+To: "Schrenkhammer, Martin" <MSchrenkhammer@data-modul.com>, "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-Le mercredi 14 mars 2018 à 12:00 +0100, Philippe Gerum a écrit :
-> On 03/14/2018 11:42 AM, Julien Blanc wrote:
-> > 
-> > Hi,
-> > 
-> > The current xenomai documentation states that it is allowed to call
-> > clock_settime with CLOCK_REALTIME parameter to set the value of the
-> > xenomai realtime clock. On our board, the value at bootup is always
-> > 0
-> Assuming you run in dual kernel mode, i.e. using Cobalt?
-> Assuming you run Xenomai 3.whatever?
-
-Yes, dual kernel using cobalt / xenomai 3.0.5. Target architecture is
-armv5l.
-
-> > (so, epoch), despite the hardware clock being correctly set.
-> > 
-> > However, we experience bad behaviour when doing so. Notably,
-> > alchemy
-> > condition variables seems to no longer work.
-> This is vague. What does "no longer work" mean, specifically? Soft
-> hang,
-> kernel crash, does not unblock upon signal, timeout fails to trigger
-> or
-> call always fails on timeout?
-
-Specifically, signaling most of the time no longer works (ie, the
-thread is stucked in the rt_cond_wait_xx call, despite the
-rt_cond_signal call being done). By "most of the time", i mean that
-this usually do not work, but it happened to work sometimes when in a
-debugging session. I already checked that this is not a simple
-applicative race condition issue (ie, the signalling being done before
-the call to wait).
-
-> There are smoke tests in the standard installation for testing basic
-> POSIX mechanisms with Cobalt:
+On 03/13/2018 12:33 PM, Schrenkhammer, Martin wrote:
+> I am currently porting a project from Haswell to Skylake (i5-6440EQ). When in desktop, I observe latency peaks when windows are moved around or zoomed. With Haswell CPUs, there is not impact of graphic workload. Unfortunately everything above 10us  is an issue in our real time system application.
+> Currently I am using Xubuntu 16.04 + Kernel 4.9.51 + Xenomai 3.0.6
+> I already disabled all power- and performance features like Hyper-Threading, SpeedStep, Turbo Mode, C-States in BIOS and also by kernel parameters. Also disabled i915 power savings like i915.enable_dc=0,  i915.enable_rc6=0, i915.enable_execlists=0... and disabled grafik turbo gt_max_freq_mhz = 350  gt_boost_freq_mhz = 350
 > 
-> # smokey --run=posix*
+> One difference we see between Haswell and Skylake: i915 raises a lot of MSI when moving windows around where there are almost zero at Haswell.
 > 
-> Those tests may take up to ~25s or so to complete. Also, you will
-> need a
-> properly calibrated timer to pass some of them, esp. those testing
-> the
-> clocks. So you may want to run "autotune" to get the timer gravity
-> values right before running the smoke tests.
+> Any ideas for bringing the peaks down?
 
-Here are the results before touching the CLOCK_REALTIME :
+Did you track which specific event the i915 driver was handling with
+those MSIs?
 
-# autotune 
-== auto-tuning started, period=1000000 ns (may take a while)
-irq gravity... 999 ns
-kernel gravity... 8499 ns
-user gravity... 15499 ns
-== auto-tuning completed after 35s
+> 
+> == Sampling period: 100 us
+> == Test mode: periodic user-mode task
+> == All results in microseconds
+> warming up...
+> RTT|  00:00:01  (periodic user-mode task, 100 us period, priority 99)
+> RTH|----lat min|----lat avg|----lat max|-overrun|---msw|---lat best|--lat worst
+> RTD|     -0.368|     -0.210|      0.259|       0|     0|     -0.368|      0.259
+> RTD|     -0.259|     -0.161|      1.601|       0|     0|     -0.368|      1.601
+> RTD|     -0.290|     -0.174|      1.367|       0|     0|     -0.368|      1.601
 
-# smokey --run=posix*
-posix_clock OK
-posix_cond OK
-posix_fork OK
-mutex_trylock not supported
-posix_mutex OK
-posix_select OK
+This is unrelated to the issue at stake, but the core timer looks
+slightly early (negative mins), which means that the expected intrinsic
+latency value is too pessimistic/high. Running autotune may help in
+picking better gravity values for this timer.
 
-After setting CLOCK_REALTIME :
-
-# smokey --run=posix*
-posix_clock OK
-posix_cond OK
-posix_fork OK
-mutex_trylock not supported
-posix_mutex OK
-posix_select OK
-
-So, i'll try to do a simple test program that reproduce the issue we
-encounter. Thanks for your answer
-
-Julien
-
+-- 
+Philippe.
 
