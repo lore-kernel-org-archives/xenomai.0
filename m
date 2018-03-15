@@ -1,16 +1,18 @@
 MIME-Version: 1.0
-In-Reply-To: <b43d4638-51a6-e583-e138-c1c8317f669b@xenomai.org>
-References: <CAOuPNLjjqZgqzwRe5ACxdPiCUpedbEW4Xh3FU=gSZc9tMmdgjw@mail.gmail.com>
- <5f063f66-df76-f7d4-c01e-aa7baadf3420@xenomai.org>
- <CAOuPNLhDXu3+igc7dKCWUxp1uy=1KzCXorr1gWmtjY=3ZrL4ig@mail.gmail.com>
- <78df92df-7f8b-c439-ce1c-732068e91ff3@xenomai.org>
- <CAOuPNLitA++hLqwGqU6+SN3mhhAfgOzfpyEd0XR4CvU_ykT7fg@mail.gmail.com>
- <b43d4638-51a6-e583-e138-c1c8317f669b@xenomai.org>
-From: Pintu Kumar <pintu.ping@gmail.com>
-Date: Thu, 15 Mar 2018 22:17:15 +0530
-Message-ID: <CAOuPNLgVyd45-vG9CF7vYnCxQ4ksf-O52etQe1iHUhSjG-HuxA@mail.gmail.com>
+In-Reply-To: <711430923.3726721.1520873818863.JavaMail.zimbra@triolcorp.com.ua>
+References: <466115005.3631078.1520863793122.JavaMail.zimbra@triolcorp.com.ua>
+ <CALLqZ8QkmhLRL+T=QmMDctCdrpQ+xw=7ntR0Pj5Pgt1nq4HNFQ@mail.gmail.com>
+ <724564032.3685392.1520869318586.JavaMail.zimbra@triolcorp.com.ua>
+ <CALLqZ8RWkkFLbt6=bYvEPP_BKCKcAwS0rU_+JCYAAMhFhkyQYg@mail.gmail.com>
+ <1182515752.3725277.1520873109725.JavaMail.zimbra@triolcorp.com.ua>
+ <CALLqZ8RH5oguZ0eazPNDX_2XYM-mjpQCnPkhHOLSOTVQfHnerQ@mail.gmail.com>
+ <711430923.3726721.1520873818863.JavaMail.zimbra@triolcorp.com.ua>
+From: Greg Gallagher <greg@embeddedgreg.com>
+Date: Thu, 15 Mar 2018 15:53:14 -0400
+Message-ID: <CALLqZ8T9tUKHC5cDw0AfOO_u1z9_zpAmSPq=0G32ywTy39uc8A@mail.gmail.com>
 Content-Type: text/plain; charset="UTF-8"
-Subject: Re: [Xenomai] segmentation fault during rt_task_unblock
+Content-Transfer-Encoding: quoted-printable
+Subject: Re: [Xenomai] simple rtdm driver x86
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -19,256 +21,127 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Philippe Gerum <rpm@xenomai.org>
-Cc: "Xenomai@xenomai.org" <xenomai@xenomai.org>
+To: =?UTF-8?B?0KjQtdCy0YfQtdC90LrQviDQotCw0YDQsNGBINCT0YDQuNCz0L7RgNGM0LXQstC40Yc=?= <shevchenko.taras@triolcorp.com.ua>
+Cc: xenomai <xenomai@xenomai.org>
 
-Hi,
+I had time to test this on a Zynq microzed board using the new 4.14
+ipipe and it works without issue.  What branch are you using from the
+Xenomai repo?
 
-Please find the complete program below:
-
----------------------------------------------------------
-$ cat bind_test.c
-#include <sys/mman.h>
-#include <alchemy/task.h>
-#include <alchemy/cond.h>
-#include <trank/rtdk.h>
-
-
-#define ONE_SECOND      1000000000ULL
-#define COND_NAME       "MyTestCond"
-
-
-static void bind_task(void *none)
-{
-        int err;
-        RT_COND cond;
-
-        printf("PINTU: %s: Inside bind_server -1\n", __func__);
-        /* If I use this sleep it does not crash, but it says resource
-unavailable */
-        //rt_task_sleep(75*1000);
-
-        err = rt_cond_bind(&cond, COND_NAME, TM_INFINITE);
-        if (err == -EINTR) {
-                rt_printf("PINTU: %s: error: %s\n", __func__, strerror(errno));
-                return;
-        }
-        printf("PINTU: %s: Finished\n", __func__);
-}
-
-int main(int argc, char **argv)
-{
-        int err;
-        RT_TASK taskid;
-
-        mlockall(MCL_CURRENT | MCL_FUTURE);
-
-        err = rt_task_create(&taskid, NULL, 0, 99, T_JOINABLE);
-        if (err) {
-                printf("Error: rt_task_create failed, err = %d\n", err);
-                return -1;
-        }
-
-        err = rt_task_start(&taskid, &bind_task, NULL);
-        if (err) {
-                printf("Error: rt_task_start failed, err = %d\n", err);
-                goto failed;
-        }
-
-        printf("PINTU: Before rt_task_unblock\n");
-
-        err = rt_task_unblock(&taskid);
-        if (err) {
-                printf("Error: rt_task_unblock failed, err = %d
-[%s]\n", err, strerror(errno));
-                goto failed;
-        }
-        //rt_task_sleep(ONE_SECOND);
-        //rt_task_join(&taskid);
-        printf("PINTU: After rt_task_unblock\n");
-
-failed:
-        rt_task_delete(&taskid);
-
-        return err;
-}
-
----------------------------------------------------------
-
-$ sudo ./bind_test
-PINTU: bind_task: Inside bind_server -1
-PINTU: Before rt_task_unblock
-Segmentation fault (core dumped)
-
-
-
-On Thu, Mar 15, 2018 at 6:38 PM, Philippe Gerum <rpm@xenomai.org> wrote:
-> On 03/15/2018 12:07 PM, Pintu Kumar wrote:
->> On Thu, Mar 15, 2018 at 3:29 PM, Philippe Gerum <rpm@xenomai.org> wrote:
->>> On 03/15/2018 10:51 AM, Pintu Kumar wrote:
->>>> On Thu, Mar 15, 2018 at 2:08 PM, Philippe Gerum <rpm@xenomai.org> wrote:
->>>>> On 03/15/2018 09:24 AM, Pintu Kumar wrote:
->>>>>> Hi All,
->>>>>>
->>>>>> I am trying to test rt_cond_bind() and rt_task_unblock() API with a
->>>>>> simple thread program using the Xenomai native skin, and with xenomai
->>>>>> 3.0.6.
->>>>>>
->>>>>> But, during call to rt_task_unblock(&task1) from the main function, I
->>>>>> get the segmentation fault.
->>>>>>
->>>>>
->>>>> Use gdb to get more information about the crash.
->>>>>
->>>>
->>>> Here is the gdb output:
->>>>
->>>> Thread 1 "cond_bin_test" received signal SIGSEGV, Segmentation fault.
->>>> cobalt_monitor_exit (mon=0x3c) at internal.c:232
->>>> warning: Source file is more recent than executable.
->>>> 232             state = get_monitor_state(mon);
->>>> (gdb) backtrace
->>>> #0  cobalt_monitor_exit (mon=0x3c) at internal.c:232
->>>> #1  0x0000ffffb7f80058 in monitor_exit (sobj=<optimized out>) at syncobj.c:72
->>>> #2  syncobj_unlock (sobj=<optimized out>, syns=0xfffffffff960) at syncobj.c:279
->>>> #3  0x0000ffffb7f81be8 in threadobj_unblock (thobj=thobj@entry=0xffffb739df88)
->>>>     at threadobj.c:1570
->>>> #4  0x0000ffffb7fa13b0 in rt_task_unblock (task=<optimized out>) at task.c:1353
->>>> #5  0x00000000004011d8 in main (argc=1, argv=0x413710) at cond_bin_test:92
->>>> (gdb)
->>>>
->>>> Its crashing inside, rt_task_unblock().
->>>>
->>>> I also get these back trace on console:
->>>>
->>>> Kernel backtrace :
->>>>
->>>> root@:~/mine/xenomai-3/testsuite/cond# [ 7923.372700]
->>>> cond_bind_test[26257]: unhandled level 2 translation fault (11) at
->>>> 0x00000040, esr 0x92000006
->>>>
->>>> [ 7923.381677] mm_pgd = ffff800031fde000, hw_pgd = ffff800031fdc000
->>>>
->>>> [ 7923.387684] [00000040] *pgd=00000000340fe003,
->>>> *pud=00000000316b4003, *pmd=0000000000000000
->>>>
->>>> [ 7923.395962]
->>>> ....
->>>>
->>>> It looks like there is some clean up problem that needs to be handled.
->>>>
->>>>
->>>> I could not find any sample reference about how to use rt_cond_bind()
->>>> along with rt_task_unblock().
->>>> If you can share a sample logic, it would be great.
->>>>
->>>>
->>>>>> # ./cond_bin_test
->>>>>> PINTU: Inside bind_test task....
->>>>>> PINTU: Before rt_task_unblock
->>>>>> Segmentation fault (core dumped)
->>>>>>
->>>>>> This is the code snippet for the program:
->>>>>>
->>>>>> void bind_test(...)
->>>>>> {
->>>>>>         ....
->>>>>>         err = rt_cond_bind(&cond, "COND1", TM_INFINITE);
->>>>>>         if (err == -EINTR)
->>>>>>                printf("error....");
->>>>>> }
->>>>>>
->>>>>> int main(...)
->>>>>> {
->>>>>>          ....
->>>>>>          rt_task_create(&bind_test, .....);
->>>>>>          rt_task_start(&bind_test, .......);
->>>>>>
->>>>>>          err = rt_task_unblock(&bind_test);
->>>>>>
->>>>>>          rt_task_delete(&bind_test);
->>>>>>
->>>>>>
->>>>>>          return 0;
->>>>>> }
->>>>>>
->>>>>> What is wrong with the above sample ?
->>>>>> I suppose this code was working on Xenomai 2.6.x
->>>>>>
->>>>>> If there is any thing missing please let me know.
->>>>>
->>>>> Your full test code. Task descriptor definition and flags are missing.
->>>>>
->>>>
->>>> Makefile is like this:
->>>>
->>>> target = cond_bind_test
->>>> skin = alchemy
->>>> CC := $(shell $(INSTALL_PATH)/xeno-config --cc)
->>>> CFLAGS := $(shell $(INSTALL_PATH)/xeno-config --skin=$(skin) --cflags)
->>>> LDFLAGS := $(shell $(INSTALL_PATH)/xeno-config --skin=$(skin) --ldflags)
->>>> $(target): cond_bind_test
->>>>         $(CC) -o $@ $< $(CFLAGS) $(LDFLAGS)
->>>>
->>>> ------------
->>>> The majority of sample program as a given above. I just removed some
->>>> error condition checks and declarations.
->>>> Task details are as follows:
->>>>
->>>> err = rt_task_create(&task1, NULL, 0, 99, T_JOINABLE);
->>>> err = rt_task_start(&task1, &bind_test, NULL);
->>>> err = rt_task_unblock(&bind_test);
->>>>
->>>> Apart from these there is nothing more...
->>>>
->>>> If you need more information please let me know.
->>>>
->>>
->>> __Full test code__, no ellipsis, verbatim, please. Or a self-contained
->>> test case reproducing the issue if you can't easily extract the faulting
->>> code from the original app. Where you define the task descriptor, and
->>> the exact sequence of your code could be involved in the issue.
->>>
->>>> I think we can easily reproduce it on Xenomai 3.0.6 if we just call
->>>> these functions.
->>>
->>> Did you try running testsuite/alchemy/*? task-9 is testing
->>> rt_task_unblock().
->>>
->>
->> Yes, this work because here we are not using rt_cond_bind.
->> The issue is when we combine: rt_cond_bind, with rt_task_unblock
->> What we are trying to do here is:
->> In the RT task, we are calling rt_cond_bind, so the task will block
->> for the condition, and wait for the err == -EINTR
->> Then, in the main function we are calling : rt_task_block.
->> Thus rt_task_unblock should unblock the task from rt_cond_bind and set
->> the err as -EINTR.
->>
->> But instead of this, rt_task_unblock is crashing.
->> And the error reason is: error: Resource temporarily unavailable
->>
->> One observation:
->> If I use rt_task_sleep(ONE_SECOND) just before rt_cond_bind in task
->> function, then the test is working fine.
->> So, I assume, we need to wait for some time before calling
->> rt_cond_bind, for the resource to be created.
->> Please correct me if I am wrong.
->>
+On Mon, Mar 12, 2018 at 12:56 PM, =D0=A8=D0=B5=D0=B2=D1=87=D0=B5=D0=BD=D0=
+=BA=D0=BE =D0=A2=D0=B0=D1=80=D0=B0=D1=81 =D0=93=D1=80=D0=B8=D0=B3=D0=BE=D1=
+=80=D1=8C=D0=B5=D0=B2=D0=B8=D1=87
+<shevchenko.taras@triolcorp.com.ua> wrote:
+> sad, to hear it
+> it is possible to remind you if I get fail with gpio?
 >
-> Sprinkling the code with "magical" delays is a documented way of
-> papering over bugs which will most certainly bite at some point later
-> on, so I would clearly not do that, and go to the bottom of the issue
-> instead.
+> Yes I able to build from repo , I wrote about , today earlier
 >
-> Since you still did not provide me with any self-contained code
-> demonstrating the bug, in order to help me in checking the Xenomai code
-> for any issue, I guess there is no urgency on getting this problem
-> solved on your end. I'm queuing this report to my todo list. I may get
-> back to you when I have some cycles left for digging this deeper.
+> I used some different way   - like in your instruction
 >
-> Thanks,
+> make bzImage modules
+> make install
 >
-> --
-> Philippe.
+>
+> ----- Original Message -----
+> From: "Greg Gallagher" <greg@embeddedgreg.com>
+> To: "=D0=A8=D0=B5=D0=B2=D1=87=D0=B5=D0=BD=D0=BA=D0=BE =D0=A2=D0=B0=D1=80=
+=D0=B0=D1=81 =D0=93=D1=80=D0=B8=D0=B3=D0=BE=D1=80=D1=8C=D0=B5=D0=B2=D0=B8=
+=D1=87" <shevchenko.taras@triolcorp.com.ua>
+> Cc: "xenomai" <xenomai@xenomai.org>
+> Sent: Monday, March 12, 2018 6:50:47 PM
+> Subject: Re: [Xenomai] simple rtdm driver x86
+>
+> No that shouldn't have an impact on it.  I have a couple theories
+> about what is happening but I don't have time to test them out at the
+> moment.  Hopefully I'll have some time closer to the end of the week
+> to look into it.  Where you able to build from the git repo?
+>
+> -Greg
+>
+> On Mon, Mar 12, 2018 at 12:45 PM, =D0=A8=D0=B5=D0=B2=D1=87=D0=B5=D0=BD=D0=
+=BA=D0=BE =D0=A2=D0=B0=D1=80=D0=B0=D1=81 =D0=93=D1=80=D0=B8=D0=B3=D0=BE=D1=
+=80=D1=8C=D0=B5=D0=B2=D0=B8=D1=87
+> <shevchenko.taras@triolcorp.com.ua> wrote:
+>>
+>> could be the problem in loading out-of-tree module taints kernel.
+>>
+>> yeti@yeti-UDOO-x86:~/develop/rtdm_hello$ dmesg|grep rtdm
+>> [ 1536.073433] rtdm_hello: loading out-of-tree module taints kernel.
+>> [ 1536.073532] rtdm_hello: module verification failed: signature and/or =
+required key missing - tainting kernel
+>> yeti@yeti-UDOO-x86:~/develop/rtdm_hello$ dmesg|grep RTDM
+>> [ 1536.075500] RTDM gpio init.
+>> [ 1536.075617] RTDM numero 266:
+>>
+>>
+>>
+>> ----- Original Message -----
+>> From: "Greg Gallagher" <greg@embeddedgreg.com>
+>> To: "=D0=A8=D0=B5=D0=B2=D1=87=D0=B5=D0=BD=D0=BA=D0=BE =D0=A2=D0=B0=D1=80=
+=D0=B0=D1=81 =D0=93=D1=80=D0=B8=D0=B3=D0=BE=D1=80=D1=8C=D0=B5=D0=B2=D0=B8=
+=D1=87" <shevchenko.taras@triolcorp.com.ua>
+>> Cc: "xenomai" <xenomai@xenomai.org>
+>> Sent: Monday, March 12, 2018 5:46:05 PM
+>> Subject: Re: [Xenomai] simple rtdm driver x86
+>>
+>> Use this https://xenomai.org/documentation/xenomai-3/html/xeno3prm/index=
+.html
+>> for rtdm references going forward.  You are running Xenomai 3, but
+>> using the docs for 2.6.
+>>
+>> -Greg
+>>
+>> On Mon, Mar 12, 2018 at 11:41 AM, =D0=A8=D0=B5=D0=B2=D1=87=D0=B5=D0=BD=
+=D0=BA=D0=BE =D0=A2=D0=B0=D1=80=D0=B0=D1=81 =D0=93=D1=80=D0=B8=D0=B3=D0=BE=
+=D1=80=D1=8C=D0=B5=D0=B2=D0=B8=D1=87
+>> <shevchenko.taras@triolcorp.com.ua> wrote:
+>>> Xenomai 3
+>>> It is work! Perfect!
+>>> Now i have the same problem as below
+>>> http://xenomai.org/pipermail/xenomai/2017-May/037361.html by Nitin Kulk=
+arni    and x86
+>>>
+>>> interrupt registered cat /proc/xenomai/irq
+>>>
+>>>
+>>>   IRQ         CPU0        CPU1        CPU2        CPU3
+>>>   266:           0           0           0           0         rtdm_hel=
+lo
+>>>
+>>> but the handler is not invoked when I trigger the gpio pin.
+>>> I found http://xenomai.org/documentation/xenomai-2.6/html/api/group__rt=
+dmirq.html#gaf4e76db13d7f7aac4be2cae59e0097bc
+>>> only RTDM_IRQTYPE_EDGE  option
+>>> is there another trigger or another way to do it ?
+>>>
+>>>
+>>> ----- Original Message -----
+>>> From: "Greg Gallagher" <greg@embeddedgreg.com>
+>>> To: "=D0=A8=D0=B5=D0=B2=D1=87=D0=B5=D0=BD=D0=BA=D0=BE =D0=A2=D0=B0=D1=
+=80=D0=B0=D1=81 =D0=93=D1=80=D0=B8=D0=B3=D0=BE=D1=80=D1=8C=D0=B5=D0=B2=D0=
+=B8=D1=87" <shevchenko.taras@triolcorp.com.ua>
+>>> Cc: "xenomai" <xenomai@xenomai.org>
+>>> Sent: Monday, March 12, 2018 4:16:03 PM
+>>> Subject: Re: [Xenomai] simple rtdm driver x86
+>>>
+>>> Are you using Xenomai 3 or 2?  I believe from your previous posts you
+>>> are using Xenomai 3, include rtdm/driver.h , not rtdm_driver.h.
+>>>
+>>> -Greg
+>>>
+>>> On Mon, Mar 12, 2018 at 10:09 AM, =D0=A8=D0=B5=D0=B2=D1=87=D0=B5=D0=BD=
+=D0=BA=D0=BE =D0=A2=D0=B0=D1=80=D0=B0=D1=81 =D0=93=D1=80=D0=B8=D0=B3=D0=BE=
+=D1=80=D1=8C=D0=B5=D0=B2=D0=B8=D1=87
+>>> <shevchenko.taras@triolcorp.com.ua> wrote:
+>>>> Hi,
+>>>> could somebody share simple rtdm driver for begginers
+>>>> better fo x86
+>>>> I try to find it but almost for arm
+>>>> and i have no such rtdm_driver.h
+>>>> give an advice please should I start from ?
+>>>> _______________________________________________
+>>>> Xenomai mailing list
+>>>> Xenomai@xenomai.org
+>>>> https://xenomai.org/mailman/listinfo/xenomai
 
