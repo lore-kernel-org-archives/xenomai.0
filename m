@@ -1,11 +1,9 @@
-Date: Wed, 14 Mar 2018 18:27:27 +0100 (CET)
-From: Yann le Chevoir <yann.le-chevoir@etu.esisar.grenoble-inp.fr>
-Message-ID: <247635384.10422957.1521048447821.JavaMail.zimbra@etu.esisar.grenoble-inp.fr>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
-Subject: Re: [Xenomai] kernel does not boot when ipipe tracer is activated
-Reply-To: Yann le Chevoir <yann.le-chevoir@grenoble-inp.org>
+From: Pintu Kumar <pintu.ping@gmail.com>
+Date: Thu, 15 Mar 2018 13:54:42 +0530
+Message-ID: <CAOuPNLjjqZgqzwRe5ACxdPiCUpedbEW4Xh3FU=gSZc9tMmdgjw@mail.gmail.com>
+Content-Type: text/plain; charset="UTF-8"
+Subject: [Xenomai] segmentation fault during rt_task_unblock
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -14,49 +12,54 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org, cperles@sepro-group.com
+To: "Xenomai@xenomai.org" <xenomai@xenomai.org>
 
-Hi,
+Hi All,
 
-I have the same problem C=C3=A9dric had in November.
-@C=C3=A9dric, did you manage to activate ipipe-tracer on your iMX6?
+I am trying to test rt_cond_bind() and rt_task_unblock() API with a
+simple thread program using the Xenomai native skin, and with xenomai
+3.0.6.
 
-Even with earlyprintk (menuconfig and bootargs), the
-kernel hangs to "Starting kernel...".
+But, during call to rt_task_unblock(&task1) from the main function, I
+get the segmentation fault.
 
-I have an iMX6 too, my Kernel is 4.1.38.
-The I-pipe patch 4.1.18 did not exactly fit. I finished to patch manually.
+# ./cond_bin_test
+PINTU: Inside bind_test task....
+PINTU: Before rt_task_unblock
+Segmentation fault (core dumped)
 
-Given an example, I look at the 4.4.43 patch to edit ring_buffer.c and
-reactivate ftrace as there was an error at compilation time.
-Now, ftrace works.
+This is the code snippet for the program:
 
-Which files should I look closer to see if there is a bug in my patch?
-Which files are used by the I-pipe debugging kernel option?
+void bind_test(...)
+{
+        ....
+        err = rt_cond_bind(&cond, "COND1", TM_INFINITE);
+        if (err == -EINTR)
+               printf("error....");
+}
 
-Thanks,
+int main(...)
+{
+         ....
+         rt_task_create(&bind_test, .....);
+         rt_task_start(&bind_test, .......);
+
+         err = rt_task_unblock(&bind_test);
+
+         rt_task_delete(&bind_test);
+
+
+         return 0;
+}
+
+What is wrong with the above sample ?
+I suppose this code was working on Xenomai 2.6.x
+
+If there is any thing missing please let me know.
+
+
+Thank You!
 
 Regards,
-
-Yann
-
-
-
->Hi,
->
->I=E2=80=99m working on an iMX6 based board with NXP kernel 4.1.15.
->Using cyclictest and dohell, I benched latency on my Xenomai + Preempt-rt
->kernel. To understand the results, I wanted to activate ftrace and
->ipipe-tracer.
->
->While ftrace activation was not a big deal, when "I-pipe debugging" is
->activated into menuconfig my kernel does not boot anymore and hangs to
->"Starting kernel ..."
->
->Did someone faced the same issue ?
->Is there a way to investigate
->
->Regards,
->
->C=C3=A9dric.
+Pintu
 
