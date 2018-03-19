@@ -1,8 +1,8 @@
 References: <6aedc4bc-74b5-4a9f-5c38-036a3d7850b9@siemens.com>
  <ee7647d4-0bfd-0933-2f10-e9fdc5da2880@web.de>
 From: Philippe Gerum <rpm@xenomai.org>
-Message-ID: <e6331b58-4dec-171b-47eb-cd3e35a855a7@xenomai.org>
-Date: Mon, 19 Mar 2018 17:54:30 +0100
+Message-ID: <0c14cdc6-920c-ff9c-e566-cd106ebe6945@xenomai.org>
+Date: Mon, 19 Mar 2018 17:59:12 +0100
 MIME-Version: 1.0
 In-Reply-To: <ee7647d4-0bfd-0933-2f10-e9fdc5da2880@web.de>
 Content-Type: text/plain; charset=utf-8
@@ -29,14 +29,16 @@ On 03/10/2018 11:06 PM, Jan Kiszka wrote:
 > noticed that the 4.14-wip queue will need a little bit sysentry tweaking
 > as well (missing 64-bit syscall dispatching), and then had to find 4.9
 > in a rather unfortunate state /wrt x86-64: CPUs are no longer idling
-> properly.
+> properly. I went back to ipipe-core-4.9.24-x86-2, without a difference.
+> 
+> If you should look into 4.9-x86 as you indicated, please check this.
+> 
+> Another catch along that road: maxcpus=1 with >1 CPUs available triggers
+> a NULL pointer when Xenomai gets armed. That is the case with 4.4 as well.
+> 
 
-Meaning they do not enter any high CSTATE although they should with
-CPU_IDLE* properly set, or something breaks when doing so?
-
-Please share your CONFIG_CPU_IDLE* settings. I'll try to reproduce here.
-
-Thanks,
+In the same vein, CONFIG_MAXSMP w/ CONFIG_IPIPE breaks the kernel at
+boot on x86.
 
 -- 
 Philippe.
