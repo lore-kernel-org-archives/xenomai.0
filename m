@@ -1,20 +1,16 @@
-References: <CAOuPNLiL2jQ3wcYsxMAO2kqOvCvyPVPnZNakiLX_nhQVtVJk7A@mail.gmail.com>
- <CALLqZ8R77Pv+TRCrXiGkfzrcOdMMY+WfWzpO-qVE6-oFAgpU0g@mail.gmail.com>
- <CAOuPNLhcNcOdveFRLJUvFTLDDfQY4YOYUPRjWiPjK1o0zdTjJg@mail.gmail.com>
- <CAOuPNLgJOsYcT51SHS56mG5KDsS9pOBYPdWY9aWDvv7rfvBTUg@mail.gmail.com>
- <854aec2d-861e-f17e-e57c-d86e9f5e7a90@xenomai.org>
- <CAOuPNLgMJ_cvEsXJd+oF+g0ftMudT4Ztkb_yy=AXBMRDWuGqBg@mail.gmail.com>
- <14040d9b-3b4b-9677-05d0-24773e309310@xenomai.org>
- <CAOuPNLjP+6CPOf-4uYHZCLEfAzGjQOXy32r+5TBwMrVFFH9fOw@mail.gmail.com>
+References: <6aedc4bc-74b5-4a9f-5c38-036a3d7850b9@siemens.com>
+ <ee7647d4-0bfd-0933-2f10-e9fdc5da2880@web.de>
+ <e6331b58-4dec-171b-47eb-cd3e35a855a7@xenomai.org>
+ <1807cec4-b41e-925a-a654-95352d5d1a1f@siemens.com>
 From: Philippe Gerum <rpm@xenomai.org>
-Message-ID: <20bffd5c-9f11-3bb2-236a-11764a129059@xenomai.org>
-Date: Tue, 20 Mar 2018 14:09:54 +0100
+Message-ID: <f1635a7c-3fd2-ac53-c80a-c327cb59aee1@xenomai.org>
+Date: Tue, 20 Mar 2018 15:22:22 +0100
 MIME-Version: 1.0
-In-Reply-To: <CAOuPNLjP+6CPOf-4uYHZCLEfAzGjQOXy32r+5TBwMrVFFH9fOw@mail.gmail.com>
+In-Reply-To: <1807cec4-b41e-925a-a654-95352d5d1a1f@siemens.com>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] Simple application for invoking rtdm driver
+Subject: Re: [Xenomai] 4.9 for x86 issue
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -23,228 +19,44 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Pintu Kumar <pintu.ping@gmail.com>
-Cc: "Xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Jan Kiszka <jan.kiszka@siemens.com>
+Cc: Xenomai <xenomai@xenomai.org>
 
-On 03/20/2018 01:00 PM, Pintu Kumar wrote:
-> On Tue, Mar 20, 2018 at 5:15 PM, Philippe Gerum <rpm@xenomai.org> wrote:
->> On 03/20/2018 12:31 PM, Pintu Kumar wrote:
->>> On Tue, Mar 20, 2018 at 3:02 PM, Philippe Gerum <rpm@xenomai.org> wrote:
->>>> On 03/20/2018 08:26 AM, Pintu Kumar wrote:
->>>>> On Tue, Mar 20, 2018 at 10:57 AM, Pintu Kumar <pintu.ping@gmail.com> wrote:
->>>>>> On Tue, Mar 20, 2018 at 9:03 AM, Greg Gallagher <greg@embeddedgreg.com> wrote:
->>>>>>> If you want to use open, read, write you need to specify in the
->>>>>>> makefile to use the posix skin.  You need something like these in your
->>>>>>> Makefile:
->>>>>>>
->>>>>>> XENO_CONFIG := /usr/xenomai/bin/xeno-config
->>>>>>> CFLAGS := $(shell $(XENO_CONFIG) --posix --cflags)
->>>>>>> LDFLAGS := $(shell  $(XENO_CONFIG) --posix --ldflags)
->>>>>>>
->>>>>>
->>>>>> Oh yes I forgot to mention with posix skin it is working.
->>>>>>
->>>>>> But I wanted to use native API only, so I removed posix skin from Makefile.
->>>>>>
->>>>>> For, native API, I am using: rt_dev_{open, read, write}. Is this the
->>>>>> valid API for Xenomai 3.0 ?
->>>>>> Or there is something else?
->>>>>> Is there any reference ?
->>>>>>
->>>>>
->>>>> Dear Greg,
->>>>>
->>>>> In my sample, I am just copying some string from user <--> kernel and
->>>>> printing them.
->>>>> For normal driver, I get read/write latency like this:
->>>>> write latency: 2.247 us
->>>>> read latency: 2.202 us
->>>>>
->>>>> For Xenomai 3.0 rtdm driver, using : rt_dev_{open, read, write}
->>>>> I get the latency like this:
->>>>> write latency: 7.668 us
->>>>> read latency: 5.558 us
->>>>>
->>>>> My concern is, why the latency is higher in case of RTDM ?
->>>>> This is on x86-64 machine.
->>>>>
->>>>
->>>> Did you stress your machine while your test was running? If not, you
->>>> were not measuring worst-case latency, you were measuring execution time
->>>> in this case, which is different. If you want to actually measure
->>>> latency for real-time usage, you need to run your tests under
->>>> significant stress load. Under such load, the RTDM version should
->>>> perform reliably below a reasonable latency limit, the "normal" version
->>>> will experience jittery above that limit.
->>>>
->>>> A trivial stress load may be as simple as running a dd loop copying
->>>> 128Mb blocks from /dev/zero to /dev/null in the background, you may also
->>>> add a kernel compilation keeping all CPUs busy.
->>>>
+On 03/20/2018 04:42 AM, Jan Kiszka wrote:
+> On 2018-03-20 00:54, Philippe Gerum wrote:
+>> On 03/10/2018 11:06 PM, Jan Kiszka wrote:
+>>> On 2018-03-09 08:51, Jan Kiszka wrote:
+>>>> 4.9 requires more work, I've pushed the beginning to wip/4.9 in the same
+>>>> repo.
 >>>
->>> OK, I tried both the option. But still normal driver latency is much lower.
->>> In fact, with kernel build in another terminal, rtdm latency shoots much higher.
->>> Normal Kernel
->>> --------------------
->>> write latency: 3.084 us
->>> read latency: 3.186 us
->>>
->>> RTDM Kernel (native)
->>> ---------------------------------
->>> write latency: 12.676 us
->>> read latency: 9.858 us
->>>
->>> RTDM Kernel (posix)
->>> ---------------------------------
->>> write latency: 12.907 us
->>> read latency: 8.699 us
->>>
->>> During the beginning of kernel build I even observed, RTDM (native)
->>> goes as high as:
->>> write latency: 4061.266 us
->>> read latency: 3947.836 us
->>>
->>> ---------------------------------
->>> As a quick reference, this is the snippet for the rtdm write method.
->>>
->>> --------------------------------
->>> static ssize_t rtdm_write(..)
->>> {
->>>         struct dummy_context *context;
->>>
->>>         context = rtdm_fd_to_private(fd);
->>>
->>>         memset(context->buffer, 0, 4096);
->>>         rtdm_safe_copy_from_user(fd, context->buffer, buff, len);
->>>         rtdm_printk("write done\n");
->>>
->>>         return len;
->>> }
->>>
->>> The normal driver write is also almost same.
->>>
->>> In the application side, I just invoke using:
->>>         t1 = rt_timer_read();
->>>         ret = rt_dev_write(fd, msg, len);
->>>         t2 = rt_timer_read();
->>>
->>> Is there any thing wrong on the rtdm side ?
->>> --------------------------------
->>>
->>>> Besides, you need to make sure to disable I-pipe and Cobalt debug
->>>> options, particularly CONFIG_IPIPE_TRACE and
->>>> CONFIG_XENO_OPT_DEBUG_LOCKING when running the RTDM case.
->>>>
->>>
->>> Yes this debug options are already disabled.
->>>
->>>>>
->>>>> Latency is little better, when using only posix skin:
->>>>> write latency: 3.587 us
->>>>> read latency: 3.392 us
->>>>>
->>>>
->>>> This does not make much sense, see the excerpt from
->>>> include/trank/rtdm/rtdm.h, which simply wraps the inline rt_dev_write()
->>>> call to Cobalt's POSIX call [__wrap_]write() from lib/cobalt/rtdm.c:
->>>>
->>>
->>> OK sorry, there was a mistake in posix latency value.
->>> I forgot to switch to rtdm driver, instead of normal driver.
->>> With posix skin and using the exactly same as normal driver application.
->>> The latency figure was almost same as native skin.
->>> write latency: 7.044 us
->>> read latency: 6.786 us
->>>
->>>
->>>> #define rt_dev_call(__call, __args...)  \
->>>> ({                                      \
->>>>         int __ret;                      \
->>>>         __ret = __RT(__call(__args));   \
->>>>         __ret < 0 ? -errno : __ret;     \
->>>> })
->>>>
->>>> static inline ssize_t rt_dev_write(int fd, const void *buf, size_t len)
->>>> {
->>>>         return rt_dev_call(write, fd, buf, len);
->>>> }
->>>>
->>>> The way you measure the elapsed time may affect the measurement:
->>>> libalchemy's rt_timer_read() is definitely slower than libcobalt's
->>>> clock_gettime().
->>>
->>> For normal kernel driver (and rtdm with posix skin) application, I am
->>> using clock_gettime().
->>> For Xenomai rtdm driver with native skin application, I am using rt_timer_read()
->>>
->>>
->>>>
->>>> The POSIX skin is generally faster than the alchemy API, because it
->>>> implements wrappers to the corresponding Cobalt system calls (i.e.
->>>> libcobalt is Xenomai's libc equivalent). Alchemy has to traverse
->>>> libcopperplate before actual syscalls may be issued by libcobalt it is
->>>> depending on, because libalchemy needs the copperplate interface layer
->>>> for shielding itself from Cobalt/Mercury differences.
->>>>
->>>
->>> Actually, as per the previous experience for simple thread
->>> application, rt_timer_read() with native
->>> skin gave better latency, when compared to using posix skin with clock API.
->>>
+>>> I started to patch further on this during my flight (wip/4.9 updated),
+>>> noticed that the 4.14-wip queue will need a little bit sysentry tweaking
+>>> as well (missing 64-bit syscall dispatching), and then had to find 4.9
+>>> in a rather unfortunate state /wrt x86-64: CPUs are no longer idling
+>>> properly.
 >>
->> This behavior makes not much sense, simply looking at the library code:
->> rt_timer_read() may be considered as a superset of libcobalt's
->> clock_gettime.
+>> Meaning they do not enter any high CSTATE although they should with
+>> CPU_IDLE* properly set, or something breaks when doing so?
+> 
+> This was in KVM, no CSTATEs involved.
+> 
 >>
->> This could be a hint that you might not be testing with Cobalt's POSIX
->> API. You may want to check running "nm" on your executable, verifying
->> that __wrap_* calls are listed (e.g. __wrap_clock_gettime instead of
->> clock_gettime).
+>> Please share your CONFIG_CPU_IDLE* settings. I'll try to reproduce here.
 >>
 > 
-> Yes, wrap calls are listed in symbol table.
+> #
+> # CPU Idle
+> #
+> CONFIG_CPU_IDLE=y
+> CONFIG_CPU_IDLE_GOV_LADDER=y
+> CONFIG_CPU_IDLE_GOV_MENU=y
+> # CONFIG_ARCH_NEEDS_CPU_IDLE_COUPLED is not set
+> # CONFIG_INTEL_IDLE is not set
 > 
-> posix# nm -a my_app | grep clock
->                  U __wrap_clock_gettime
-> 
-> 
 
-Then you may suspect a SMI problem, less likely an hyperthreading issue
-given the magnitude of the latency figures. You may want to have a look
-at this thread [1].
-
-If this is a SMI issue, you should be able to see it on a regular kernel
-as well, provided the protocol for testing is right and actually
-exercises the same thing for an equivalent period of time on both ends
-(Xenomai / native).
-
-We generally don't know which configuration is under test on your end:
-which I-pipe patch you have been using, which kernel release, which
-Xenomai release (assuming you are not using the obsolete 3.0.0 original
-release). Actually, we don't know much about your hw either (the Intel
-micro-architecture is not defining when it comes to latency issues, the
-SoC may be, the BIOS usually is).
-
-AFAIU, the symptoms you are referring to are either SMI-related, or
-might be related to some GPU driver doing issuing costly instructions
-badly affecting the latency (e.g. wbinvd, although a 4 ms latency spike
-is completely insane and does not fit the typical footprint of those
-insns), or might denote a massive I-pipe/Xenomai bug.
-
-The latter is always possible, but not the most likely at the moment, as
-this kind of bug tends to be noticed by many people, and nobody did so
-far with the stable Xenomai release and an official I-pipe patch for
-x86, or any other architecture.
-
-First I would recommend reading [2], providing the missing information
-afterwards.
-
-Then, I would make 100% sure that your SoC is SMI-free, and HT is
-disabled in the BIOS, running a vanilla kernel: no I-pipe, no Xenomai,
-just plain regular kernel.
-
-[1] http://xenomai.org/pipermail/xenomai/2018-February/038393.html
-[2] http://xenomai.org/asking-for-help/
+Ok, #89146106e8 should restore the previous pipeline behavior from 4.4,
+#595606457f in -stable should enable an (hopefully) smarter handling
+with Xenomai having its say on whether the idle state should be entered.
 
 -- 
 Philippe.
