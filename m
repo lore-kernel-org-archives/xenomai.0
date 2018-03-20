@@ -1,9 +1,9 @@
 MIME-Version: 1.0
-From: Pintu Kumar <pintu.ping@gmail.com>
-Date: Tue, 20 Mar 2018 07:12:24 +0530
-Message-ID: <CAOuPNLiL2jQ3wcYsxMAO2kqOvCvyPVPnZNakiLX_nhQVtVJk7A@mail.gmail.com>
+From: Greg Gallagher <greg@embeddedgreg.com>
+Date: Mon, 19 Mar 2018 23:10:22 -0400
+Message-ID: <CALLqZ8T2pFw9D8-E00H5Rn2Y2kxWoo1cxCfMVwr=jFCYK_8D+g@mail.gmail.com>
 Content-Type: text/plain; charset="UTF-8"
-Subject: [Xenomai] Simple application for invoking rtdm driver
+Subject: [Xenomai] Armv7 testing update
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,27 +15,39 @@ List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
 To: "Xenomai@xenomai.org" <xenomai@xenomai.org>
 
 Hi,
+   I thought I would post a quick update to some armv7 testing I was
+doing while creating an image for the raspberry pi 2b board.  I've put
+together a list of boards that we currently support in Xenomai (by
+supported I mean we have drivers for the board) and if they boot with
+the new 4.14 ipipe.
 
-I have developed a simple rtdm driver using: open, read_rt, write_rt, close.
-Now I wanted to test it using a Xenomai native application, using native skin.
+ Boards That Where Tested:
+Zynq:
+    MicroZed, Zybo, Zedboard, Z706
+Raspberry PI:
+    Raspberry Pi 2b
+Beaglebone
+     Beaglebone Black, Beaglebone Green
 
-Here are my observation.
+Status:
+Zynq boards all boot and run the gpio driver for both the PS and PL
+without issue.  No other RTDM drivers are currently supported for
+Zynq.
 
-1) If I use normal open, read, write system call, then Xenomai reports
-that normal read/write method is used for rtdm.
-So, it does not work like that.
+Raspberry PI 2b boots, gpio driver, spi driver
 
-2) If I use, rt_dev_open, rt_dev_read, rt_dev_write, then it works fine.
-But latency is very high for write/read, compared to normal.
-Also, the migration document says these are legacy API and should be
-replaced with rtdm_open, etc. for Xenomai 3.0.
-However, if I use rtdm_open, rtdm_write, etc, it could not compile successfully.
-I have included rtdm/rtdm.h header file.
+Beaglebone has gpio issues in the 4.14 ipipe tree, looking into that
+this week.  RTDM gpio drivers are almost ready to submit. Hoping to
+get this done in the next few weeks.
 
-So, please guide me which are the right APIs to use to invoke the rtdm driver.
-I could to find the right example in test suite.
+I left out IMX which I should have time to test out this weekend.
+
+I'll be posting the rootfs hopefully by the weekend along with 4.14
+kernels for Zynq and Raspberry Pi 2B.  These pieces will end up
+becoming images for people that don't want to build Xenomai from
+scratch but want to developed applications.  They just need a little
+more testing at the moment before they are ready for alpha release.
 
 
-Thanks,
-Pintu
+-Greg
 
