@@ -1,14 +1,9 @@
-References: <6aedc4bc-74b5-4a9f-5c38-036a3d7850b9@siemens.com>
- <ee7647d4-0bfd-0933-2f10-e9fdc5da2880@web.de>
-From: Philippe Gerum <rpm@xenomai.org>
-Message-ID: <0c14cdc6-920c-ff9c-e566-cd106ebe6945@xenomai.org>
-Date: Mon, 19 Mar 2018 17:59:12 +0100
 MIME-Version: 1.0
-In-Reply-To: <ee7647d4-0bfd-0933-2f10-e9fdc5da2880@web.de>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] 4.9 for x86 issue
+From: Pintu Kumar <pintu.ping@gmail.com>
+Date: Tue, 20 Mar 2018 07:12:24 +0530
+Message-ID: <CAOuPNLiL2jQ3wcYsxMAO2kqOvCvyPVPnZNakiLX_nhQVtVJk7A@mail.gmail.com>
+Content-Type: text/plain; charset="UTF-8"
+Subject: [Xenomai] Simple application for invoking rtdm driver
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,29 +12,30 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jan Kiszka <jan.kiszka@web.de>
-Cc: Xenomai <xenomai@xenomai.org>
+To: "Xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On 03/10/2018 11:06 PM, Jan Kiszka wrote:
-> On 2018-03-09 08:51, Jan Kiszka wrote:
->> 4.9 requires more work, I've pushed the beginning to wip/4.9 in the same
->> repo.
-> 
-> I started to patch further on this during my flight (wip/4.9 updated),
-> noticed that the 4.14-wip queue will need a little bit sysentry tweaking
-> as well (missing 64-bit syscall dispatching), and then had to find 4.9
-> in a rather unfortunate state /wrt x86-64: CPUs are no longer idling
-> properly. I went back to ipipe-core-4.9.24-x86-2, without a difference.
-> 
-> If you should look into 4.9-x86 as you indicated, please check this.
-> 
-> Another catch along that road: maxcpus=1 with >1 CPUs available triggers
-> a NULL pointer when Xenomai gets armed. That is the case with 4.4 as well.
-> 
+Hi,
 
-In the same vein, CONFIG_MAXSMP w/ CONFIG_IPIPE breaks the kernel at
-boot on x86.
+I have developed a simple rtdm driver using: open, read_rt, write_rt, close.
+Now I wanted to test it using a Xenomai native application, using native skin.
 
--- 
-Philippe.
+Here are my observation.
+
+1) If I use normal open, read, write system call, then Xenomai reports
+that normal read/write method is used for rtdm.
+So, it does not work like that.
+
+2) If I use, rt_dev_open, rt_dev_read, rt_dev_write, then it works fine.
+But latency is very high for write/read, compared to normal.
+Also, the migration document says these are legacy API and should be
+replaced with rtdm_open, etc. for Xenomai 3.0.
+However, if I use rtdm_open, rtdm_write, etc, it could not compile successfully.
+I have included rtdm/rtdm.h header file.
+
+So, please guide me which are the right APIs to use to invoke the rtdm driver.
+I could to find the right example in test suite.
+
+
+Thanks,
+Pintu
 
