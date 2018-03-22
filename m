@@ -1,12 +1,13 @@
+From: "PRADHAN, MAKARAND" <makarand.pradhan@siemens.com>
+Date: Thu, 22 Mar 2018 18:42:51 +0000
+Message-ID: <B89CCBE86D4F62448EE4F6367C6D3C894359249D@USIRVA0EM24MSX.ww017.siemens.net>
 References: <B89CCBE86D4F62448EE4F6367C6D3C894359247F@USIRVA0EM24MSX.ww017.siemens.net>
-From: Philippe Gerum <rpm@xenomai.org>
-Message-ID: <8fc783f8-aab0-6108-62c6-411e8c8e1bbc@xenomai.org>
-Date: Thu, 22 Mar 2018 18:39:40 +0100
-MIME-Version: 1.0
-In-Reply-To: <B89CCBE86D4F62448EE4F6367C6D3C894359247F@USIRVA0EM24MSX.ww017.siemens.net>
-Content-Type: text/plain; charset=utf-8
+ <8fc783f8-aab0-6108-62c6-411e8c8e1bbc@xenomai.org>
+In-Reply-To: <8fc783f8-aab0-6108-62c6-411e8c8e1bbc@xenomai.org>
 Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+MIME-Version: 1.0
 Subject: Re: [Xenomai] Question about using UDD in Xenomai-3
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
@@ -16,42 +17,36 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "PRADHAN, MAKARAND" <makarand.pradhan@siemens.com>, "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Philippe Gerum <rpm@xenomai.org>, "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On 03/22/2018 06:09 PM, PRADHAN, MAKARAND wrote:
-> Hi All,
-> 
-> I am working on upgrading our device from Xenomai 2 to Xenomai 3. I have been consulting the Xenomai web page. Based on reading the online documentation, I have a fair understanding of the UDD, All the same, I would highly appreciate a second opinion.
-> 
-> We have a user space interrupt handler and the Xenomai 3 documentation suggests use of UDD. So, I have tried to list down the things I should do.
-> 
-> In kernel space:
-> Register with the udd using udd_register_device.
-> I think, the udd_register_device would create /dev/udd/device_name which can be opened for ioctl. Can someone confirm this?
-> 
-> In User space:
-> Open device /dev/udd/device_name
-
-/dev/rtdm/device_name for the main control device,
-/dev/rtdm/device_name,mapper<mem-region-number> for the MMIO mappers
-responding to mmap() requests.
-
-> ioctl to this device UDD_RTIOC_IRQSIG, providing the pid and the signal to be received by the User space process.
-
-Only if the signal interface is preferred to read()ing. If you don't
-enable event signaling, select() and/or read() remain usable to wait for
-events.
-
-> ioctl to this device UDD_RTIOC_IRQEN to enable the int.
-
-Correct.
-
-> Wait on the signal using sigwaitinfo or sigtimedwait.
-> 
-> Am I on the right path?
-
-Yes.
-
--- 
-Philippe.
+VGhhbmtzIFBoaWxpcHBlLg0KDQpBcHByZWNpYXRlIHlvdXIgcHJvbXB0IHJlcGx5Lg0KDQpNYWth
+cmFuZC4NCg0KLS0tLS1PcmlnaW5hbCBNZXNzYWdlLS0tLS0NCkZyb206IFBoaWxpcHBlIEdlcnVt
+IFttYWlsdG86cnBtQHhlbm9tYWkub3JnXSANClNlbnQ6IFRodXJzZGF5LCBNYXJjaCAyMiwgMjAx
+OCAxOjQwIFBNDQpUbzogUFJBREhBTiwgTUFLQVJBTkQgKFBEIFBBIENJIFJDIFImRCBTVzIpOyB4
+ZW5vbWFpQHhlbm9tYWkub3JnDQpTdWJqZWN0OiBSZTogW1hlbm9tYWldIFF1ZXN0aW9uIGFib3V0
+IHVzaW5nIFVERCBpbiBYZW5vbWFpLTMNCg0KT24gMDMvMjIvMjAxOCAwNjowOSBQTSwgUFJBREhB
+TiwgTUFLQVJBTkQgd3JvdGU6DQo+IEhpIEFsbCwNCj4gDQo+IEkgYW0gd29ya2luZyBvbiB1cGdy
+YWRpbmcgb3VyIGRldmljZSBmcm9tIFhlbm9tYWkgMiB0byBYZW5vbWFpIDMuIEkgaGF2ZSBiZWVu
+IGNvbnN1bHRpbmcgdGhlIFhlbm9tYWkgd2ViIHBhZ2UuIEJhc2VkIG9uIHJlYWRpbmcgdGhlIG9u
+bGluZSBkb2N1bWVudGF0aW9uLCBJIGhhdmUgYSBmYWlyIHVuZGVyc3RhbmRpbmcgb2YgdGhlIFVE
+RCwgQWxsIHRoZSBzYW1lLCBJIHdvdWxkIGhpZ2hseSBhcHByZWNpYXRlIGEgc2Vjb25kIG9waW5p
+b24uDQo+IA0KPiBXZSBoYXZlIGEgdXNlciBzcGFjZSBpbnRlcnJ1cHQgaGFuZGxlciBhbmQgdGhl
+IFhlbm9tYWkgMyBkb2N1bWVudGF0aW9uIHN1Z2dlc3RzIHVzZSBvZiBVREQuIFNvLCBJIGhhdmUg
+dHJpZWQgdG8gbGlzdCBkb3duIHRoZSB0aGluZ3MgSSBzaG91bGQgZG8uDQo+IA0KPiBJbiBrZXJu
+ZWwgc3BhY2U6DQo+IFJlZ2lzdGVyIHdpdGggdGhlIHVkZCB1c2luZyB1ZGRfcmVnaXN0ZXJfZGV2
+aWNlLg0KPiBJIHRoaW5rLCB0aGUgdWRkX3JlZ2lzdGVyX2RldmljZSB3b3VsZCBjcmVhdGUgL2Rl
+di91ZGQvZGV2aWNlX25hbWUgd2hpY2ggY2FuIGJlIG9wZW5lZCBmb3IgaW9jdGwuIENhbiBzb21l
+b25lIGNvbmZpcm0gdGhpcz8NCj4gDQo+IEluIFVzZXIgc3BhY2U6DQo+IE9wZW4gZGV2aWNlIC9k
+ZXYvdWRkL2RldmljZV9uYW1lDQoNCi9kZXYvcnRkbS9kZXZpY2VfbmFtZSBmb3IgdGhlIG1haW4g
+Y29udHJvbCBkZXZpY2UsIC9kZXYvcnRkbS9kZXZpY2VfbmFtZSxtYXBwZXI8bWVtLXJlZ2lvbi1u
+dW1iZXI+IGZvciB0aGUgTU1JTyBtYXBwZXJzIHJlc3BvbmRpbmcgdG8gbW1hcCgpIHJlcXVlc3Rz
+Lg0KDQo+IGlvY3RsIHRvIHRoaXMgZGV2aWNlIFVERF9SVElPQ19JUlFTSUcsIHByb3ZpZGluZyB0
+aGUgcGlkIGFuZCB0aGUgc2lnbmFsIHRvIGJlIHJlY2VpdmVkIGJ5IHRoZSBVc2VyIHNwYWNlIHBy
+b2Nlc3MuDQoNCk9ubHkgaWYgdGhlIHNpZ25hbCBpbnRlcmZhY2UgaXMgcHJlZmVycmVkIHRvIHJl
+YWQoKWluZy4gSWYgeW91IGRvbid0IGVuYWJsZSBldmVudCBzaWduYWxpbmcsIHNlbGVjdCgpIGFu
+ZC9vciByZWFkKCkgcmVtYWluIHVzYWJsZSB0byB3YWl0IGZvciBldmVudHMuDQoNCj4gaW9jdGwg
+dG8gdGhpcyBkZXZpY2UgVUREX1JUSU9DX0lSUUVOIHRvIGVuYWJsZSB0aGUgaW50Lg0KDQpDb3Jy
+ZWN0Lg0KDQo+IFdhaXQgb24gdGhlIHNpZ25hbCB1c2luZyBzaWd3YWl0aW5mbyBvciBzaWd0aW1l
+ZHdhaXQuDQo+IA0KPiBBbSBJIG9uIHRoZSByaWdodCBwYXRoPw0KDQpZZXMuDQoNCi0tDQpQaGls
+aXBwZS4NCg==
 
