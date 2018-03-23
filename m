@@ -1,14 +1,9 @@
-From: "PRADHAN, MAKARAND" <makarand.pradhan@siemens.com>
-Date: Thu, 22 Mar 2018 18:42:51 +0000
-Message-ID: <B89CCBE86D4F62448EE4F6367C6D3C894359249D@USIRVA0EM24MSX.ww017.siemens.net>
-References: <B89CCBE86D4F62448EE4F6367C6D3C894359247F@USIRVA0EM24MSX.ww017.siemens.net>
- <8fc783f8-aab0-6108-62c6-411e8c8e1bbc@xenomai.org>
-In-Reply-To: <8fc783f8-aab0-6108-62c6-411e8c8e1bbc@xenomai.org>
-Content-Language: en-US
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-Subject: Re: [Xenomai] Question about using UDD in Xenomai-3
+From: Pintu Kumar <pintu.ping@gmail.com>
+Date: Fri, 23 Mar 2018 11:36:48 +0530
+Message-ID: <CAOuPNLh0inmNY6Vi6CDDranrF3iRv8zKeokfppbZCnoAVz=ZBQ@mail.gmail.com>
+Content-Type: text/plain; charset="UTF-8"
+Subject: [Xenomai] FUSE package error while doing configure for xenomai-3
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,36 +12,29 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Philippe Gerum <rpm@xenomai.org>, "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: "Xenomai@xenomai.org" <xenomai@xenomai.org>
 
-VGhhbmtzIFBoaWxpcHBlLg0KDQpBcHByZWNpYXRlIHlvdXIgcHJvbXB0IHJlcGx5Lg0KDQpNYWth
-cmFuZC4NCg0KLS0tLS1PcmlnaW5hbCBNZXNzYWdlLS0tLS0NCkZyb206IFBoaWxpcHBlIEdlcnVt
-IFttYWlsdG86cnBtQHhlbm9tYWkub3JnXSANClNlbnQ6IFRodXJzZGF5LCBNYXJjaCAyMiwgMjAx
-OCAxOjQwIFBNDQpUbzogUFJBREhBTiwgTUFLQVJBTkQgKFBEIFBBIENJIFJDIFImRCBTVzIpOyB4
-ZW5vbWFpQHhlbm9tYWkub3JnDQpTdWJqZWN0OiBSZTogW1hlbm9tYWldIFF1ZXN0aW9uIGFib3V0
-IHVzaW5nIFVERCBpbiBYZW5vbWFpLTMNCg0KT24gMDMvMjIvMjAxOCAwNjowOSBQTSwgUFJBREhB
-TiwgTUFLQVJBTkQgd3JvdGU6DQo+IEhpIEFsbCwNCj4gDQo+IEkgYW0gd29ya2luZyBvbiB1cGdy
-YWRpbmcgb3VyIGRldmljZSBmcm9tIFhlbm9tYWkgMiB0byBYZW5vbWFpIDMuIEkgaGF2ZSBiZWVu
-IGNvbnN1bHRpbmcgdGhlIFhlbm9tYWkgd2ViIHBhZ2UuIEJhc2VkIG9uIHJlYWRpbmcgdGhlIG9u
-bGluZSBkb2N1bWVudGF0aW9uLCBJIGhhdmUgYSBmYWlyIHVuZGVyc3RhbmRpbmcgb2YgdGhlIFVE
-RCwgQWxsIHRoZSBzYW1lLCBJIHdvdWxkIGhpZ2hseSBhcHByZWNpYXRlIGEgc2Vjb25kIG9waW5p
-b24uDQo+IA0KPiBXZSBoYXZlIGEgdXNlciBzcGFjZSBpbnRlcnJ1cHQgaGFuZGxlciBhbmQgdGhl
-IFhlbm9tYWkgMyBkb2N1bWVudGF0aW9uIHN1Z2dlc3RzIHVzZSBvZiBVREQuIFNvLCBJIGhhdmUg
-dHJpZWQgdG8gbGlzdCBkb3duIHRoZSB0aGluZ3MgSSBzaG91bGQgZG8uDQo+IA0KPiBJbiBrZXJu
-ZWwgc3BhY2U6DQo+IFJlZ2lzdGVyIHdpdGggdGhlIHVkZCB1c2luZyB1ZGRfcmVnaXN0ZXJfZGV2
-aWNlLg0KPiBJIHRoaW5rLCB0aGUgdWRkX3JlZ2lzdGVyX2RldmljZSB3b3VsZCBjcmVhdGUgL2Rl
-di91ZGQvZGV2aWNlX25hbWUgd2hpY2ggY2FuIGJlIG9wZW5lZCBmb3IgaW9jdGwuIENhbiBzb21l
-b25lIGNvbmZpcm0gdGhpcz8NCj4gDQo+IEluIFVzZXIgc3BhY2U6DQo+IE9wZW4gZGV2aWNlIC9k
-ZXYvdWRkL2RldmljZV9uYW1lDQoNCi9kZXYvcnRkbS9kZXZpY2VfbmFtZSBmb3IgdGhlIG1haW4g
-Y29udHJvbCBkZXZpY2UsIC9kZXYvcnRkbS9kZXZpY2VfbmFtZSxtYXBwZXI8bWVtLXJlZ2lvbi1u
-dW1iZXI+IGZvciB0aGUgTU1JTyBtYXBwZXJzIHJlc3BvbmRpbmcgdG8gbW1hcCgpIHJlcXVlc3Rz
-Lg0KDQo+IGlvY3RsIHRvIHRoaXMgZGV2aWNlIFVERF9SVElPQ19JUlFTSUcsIHByb3ZpZGluZyB0
-aGUgcGlkIGFuZCB0aGUgc2lnbmFsIHRvIGJlIHJlY2VpdmVkIGJ5IHRoZSBVc2VyIHNwYWNlIHBy
-b2Nlc3MuDQoNCk9ubHkgaWYgdGhlIHNpZ25hbCBpbnRlcmZhY2UgaXMgcHJlZmVycmVkIHRvIHJl
-YWQoKWluZy4gSWYgeW91IGRvbid0IGVuYWJsZSBldmVudCBzaWduYWxpbmcsIHNlbGVjdCgpIGFu
-ZC9vciByZWFkKCkgcmVtYWluIHVzYWJsZSB0byB3YWl0IGZvciBldmVudHMuDQoNCj4gaW9jdGwg
-dG8gdGhpcyBkZXZpY2UgVUREX1JUSU9DX0lSUUVOIHRvIGVuYWJsZSB0aGUgaW50Lg0KDQpDb3Jy
-ZWN0Lg0KDQo+IFdhaXQgb24gdGhlIHNpZ25hbCB1c2luZyBzaWd3YWl0aW5mbyBvciBzaWd0aW1l
-ZHdhaXQuDQo+IA0KPiBBbSBJIG9uIHRoZSByaWdodCBwYXRoPw0KDQpZZXMuDQoNCi0tDQpQaGls
-aXBwZS4NCg==
+Hi,
+
+I am trying to install xenomai-3 again.
+# ./script/bootstrap
+
+After this, when I do configure, it is stopped at FUSE
+# ./configure
+....
+....
+checking whether the registry should be enabled... no
+./configure: line 13838: syntax error near unexpected token `FUSE,'
+./configure: line 13838: `      PKG_CHECK_MODULES(FUSE, fuse)'
+
+How to solve this problem ?
+If anybody have come across this problem?
+
+I tried installing : fuse, libfuse2, but it did not help.
+
+Please help!
+
+
+Thanks,
+Pintu
 
