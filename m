@@ -1,18 +1,13 @@
-Date: Wed, 28 Feb 2018 18:46:42 +0200 (EET)
-From: =?windows-1251?B?2OXi9+Xt6u4g0uDw4PEgw/Do4+7w/OXi6Pc=?=
- <shevchenko.taras@triolcorp.com.ua>
-Message-ID: <1249760478.8926934.1519836402496.JavaMail.zimbra@triolcorp.com.ua>
-In-Reply-To: <CALLqZ8S6_-dWvze2+MsBxNBvhS3UCtERLZ=VwqmkN3C9Rw6s1A@mail.gmail.com>
-References: <500456767.8825156.1519827180703.JavaMail.zimbra@triolcorp.com.ua>
- <CALLqZ8SHXBKVFyzgkpxS-ecpzPVtEDwGqbzdxXwnwUG+Fn0pRA@mail.gmail.com>
- <429130936.8886425.1519831182179.JavaMail.zimbra@triolcorp.com.ua>
- <CALLqZ8Qa8y1idWvPfA2PBuG_urrgjDuYYX8B7_65yyEQswUvdg@mail.gmail.com>
- <1139048827.8910394.1519833759993.JavaMail.zimbra@triolcorp.com.ua>
- <CALLqZ8S6_-dWvze2+MsBxNBvhS3UCtERLZ=VwqmkN3C9Rw6s1A@mail.gmail.com>
+Date: Fri, 23 Mar 2018 18:10:46 +0100
+From: Henning Schild <henning.schild@siemens.com>
+Message-ID: <20180323181046.39831f17@mmd1pvb1c.ad001.siemens.net>
+In-Reply-To: <dc7t5a0blp8e8ds7timig1qq.1521822126574@embeddedgreg.com>
+References: <CAOuPNLiQnbih972q09Qn-4PJ1p_WdB8i=5_SG3TVnf7hdWsC2A@mail.gmail.com>
+ <dc7t5a0blp8e8ds7timig1qq.1521822126574@embeddedgreg.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: quoted-printable
-Subject: Re: [Xenomai] RTnet
+Subject: Re: [Xenomai] Upgrading xenomai-3 patches in existing xenomai kernel
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -22,193 +17,108 @@ List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: Greg Gallagher <greg@embeddedgreg.com>
-Cc: xenomai <xenomai@xenomai.org>
+Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
+My conservative approach is to "git clean -dfx" the kernel tree every
+single time and "preapre-kernel" again, from the new xenomai repo.
 
-Yes, all from sources
-I Download it
-=20
-wget https://xenomai.org/downloads/xenomai/stable/xenomai-3.0.5.tar.bz2
+The rebuild will take time, you will have to back-up your config etc.
 
+If you want to safe build-time and still be conservative, i would
+"prepare-kernel.sh --outpatch=3D". That guy can be applied and reverted
+i.e. with git. So you can unpatch and repatch your kernel without
+loosing configs and build results.
 
-wget https://xenomai.org/downloads/ipipe/v4.x/x86/ipipe-core-4.9.38-x86-4.p=
-atch
+I do not know how smart prepare-kernel.sh is, but i can imagine it
+might eventually end up in a "merge" situation, where things could go
+wrong. So i prefer the tools i know to avoid surprises.
 
+Henning
 
-and apply
-../xenomai-3.0.5/scripts/prepare-kernel.sh --arch=3Dx86_64 --ipipe=3Dipipe-=
-core-4.9.38-x86-4.patch
+Am Fri, 23 Mar 2018 12:22:06 -0400
+schrieb Greg Gallagher <greg@embeddedgreg.com>:
 
-then   make menuconfig
+> When you run the prepare_kernel script add the flag --verbose. If you
+> have ipipe patches already applied to your kernel you should see a
+> message about ipipe patches have already been applied. It will just
+> add the new Xenomai bits.
+>=20
+> Greg
+>=20
+> =C2=A0 Original Message =C2=A0
+> From: pintu.ping@gmail.com
+> Sent: March 23, 2018 11:58 AM
+> To: henning.schild@siemens.com
+> Cc: xenomai@xenomai.org
+> Subject: Re: [Xenomai] Upgrading xenomai-3 patches in existing
+> xenomai kernel
+>=20
+> On Fri, Mar 23, 2018 at 7:14 PM, Henning Schild
+> <henning.schild@siemens.com> wrote:
+> > Am Fri, 23 Mar 2018 19:06:30 +0530
+> > schrieb Pintu Kumar <pintu.ping@gmail.com>:
+> > =20
+> >> Hi,
+> >>
+> >> I just came across a situation about Xenomai upgrade, and wanted to
+> >> know your opinion.
+> >>
+> >> Some 4 months back, I applied Xenomai-3 (and ipipe) patches to my
+> >> x86 kernel 4.9.51, using the prepare_kernel script, and I am using
+> >> it since then. =20
+> >
+> > You will need an ipipe-enabled kernel anyways. Prepare kernel will
+> > just install the xenomai-bits.
+> > If you do not want to use an ipipe-kernel from upstream you can
+> > rebase/merge the ipipe branch (in your case 4.9.y) onto/into your
+> > kernel. All that should be under version control. Prepare-kernel is
+> > a build step and should be done on a clean working copy when
+> > building.=20
+>=20
+> Yah, I can apply ipipe changes separately using the git command.
+> I guess that should work on top of existing ipipe changes already
+> applied.
+>=20
+> But I don't want to upgrade ipipe patches, since it is already latest.
+> My main concerns is about applying/upgrading xenomai driver/cobalt
+> changes. Should I use prepare_kernel for that (without ipipe option) ?
+> OR, should I download the commits and apply directly to the kernel in
+> normal way?
+> What is the right option, so that all future upgrades can be done
+> easily, just like normal kernel?
+> I think we should think about it and find some best way?
+> May be something like: scripts/upgrade_xenomai
+>=20
+>=20
+>=20
+>=20
+> > Henning
+> > =20
+> >> But, now I wanted to upgrade to latest Xenomai kernel patches from
+> >> Xenomai-3 git.
+> >> Can I simply cherrypick the patches from Xenomai and apply to my
+> >> Kernel ? I guess the folder structures are different, so I guess it
+> >> may not work cleanly.
+> >>
+> >> So, what is the best way to apply the latest Xenomai Kernel
+> >> patches, on to existing Xenomai converted kernel repo, without
+> >> disturbing the previously applied patches ?
+> >>
+> >> If there is any standard procedure you follow, please let me know.
+> >>
+> >>
+> >> Thanks,
+> >> Pintu
+> >>
+> >> _______________________________________________
+> >> Xenomai mailing list
+> >> Xenomai@xenomai.org
+> >> https://xenomai.org/mailman/listinfo/xenomai =20
+> > =20
+>=20
+> _______________________________________________
+> Xenomai mailing list
+> Xenomai@xenomai.org
+> https://xenomai.org/mailman/listinfo/xenomai
 
-then install
-and so on.....
-
-=D0=A1 =D1=83=D0=B2=D0=B0=D0=B6=D0=B5=D0=BD=D0=B8=D0=B5=D0=BC =D0=B8 =D0=BD=
-=D0=B0=D0=B4=D0=B5=D0=B6=D0=B4=D0=BE=D0=B9 =D0=BD=D0=B0 =D1=81=D0=BE=D1=82=
-=D1=80=D1=83=D0=B4=D0=BD=D0=B8=D1=87=D0=B5=D1=81=D1=82=D0=B2=D0=BE,
-=D0=A8=D0=B5=D0=B2=D1=87=D0=B5=D0=BD=D0=BA=D0=BE =D0=A2.=D0=93.
-
------ Original Message -----
-From: "Greg Gallagher" <greg@embeddedgreg.com>
-To: "=D0=A8=D0=B5=D0=B2=D1=87=D0=B5=D0=BD=D0=BA=D0=BE =D0=A2=D0=B0=D1=80=D0=
-=B0=D1=81 =D0=93=D1=80=D0=B8=D0=B3=D0=BE=D1=80=D1=8C=D0=B5=D0=B2=D0=B8=D1=
-=87" <shevchenko.taras@triolcorp.com.ua>, "xenomai" <xenomai@xenomai.org>
-Sent: Wednesday, February 28, 2018 6:37:49 PM
-Subject: Re: [Xenomai] RTnet
-
-Please use reply all when responding or the rest of the list won't get
-the benefit of the question or have the chance to help answer.
-
-Have you built Xenomai from source?  It looks like you are pointing to
-the modules only, I believe it needs the patched kernel source.
-
--Greg
-
-On Wed, Feb 28, 2018 at 11:02 AM, =D0=A8=D0=B5=D0=B2=D1=87=D0=B5=D0=BD=D0=
-=BA=D0=BE =D0=A2=D0=B0=D1=80=D0=B0=D1=81 =D0=93=D1=80=D0=B8=D0=B3=D0=BE=D1=
-=80=D1=8C=D0=B5=D0=B2=D0=B8=D1=87
-<shevchenko.taras@triolcorp.com.ua> wrote:
-> Thank for your reply
->
-> I try  follow instruction  https://xenomai.org//rtnet-installation/
->
->
-> after make menuconfig and set options
->
->     Variant=E2=86=92Xenomai 2.1
->     Add-ons=E2=86=92Real-time Capturing Support=E2=86=92ON
->     Examples=E2=86=92RTnet Application Examples=E2=86=92ON
-> I  get
->
-> .....
->
-> checking for RTnet Kconfig file... .rtnet_config (supplied)
-> checking for RT-extension... configure: error: *** RT-extended kernel not=
- found in /lib/modules/4.9.38-xenomai-3.0.5/build
-> makefile:51: recipe for target 'config.status' failed
-> make: *** [config.status] Error 1
->
->
-> this folder and path exist
->
-> [*] RTnet Application Examples       =E2=94=82 =E2=94=82
->   =E2=94=82 =E2=94=82()    Real-time Extension Config-Tool Path (NEW)    =
-which path  should I write here ?
->
->
->
->
->
->
->
->
->
-> =D0=A1 =D1=83=D0=B2=D0=B0=D0=B6=D0=B5=D0=BD=D0=B8=D0=B5=D0=BC =D0=B8 =D0=
-=BD=D0=B0=D0=B4=D0=B5=D0=B6=D0=B4=D0=BE=D0=B9 =D0=BD=D0=B0 =D1=81=D0=BE=D1=
-=82=D1=80=D1=83=D0=B4=D0=BD=D0=B8=D1=87=D0=B5=D1=81=D1=82=D0=B2=D0=BE,
-> =D0=A8=D0=B5=D0=B2=D1=87=D0=B5=D0=BD=D0=BA=D0=BE =D0=A2.=D0=93.
->
-> ----- Original Message -----
-> From: "Greg Gallagher" <greg@embeddedgreg.com>
-> To: "=D0=A8=D0=B5=D0=B2=D1=87=D0=B5=D0=BD=D0=BA=D0=BE =D0=A2=D0=B0=D1=80=
-=D0=B0=D1=81 =D0=93=D1=80=D0=B8=D0=B3=D0=BE=D1=80=D1=8C=D0=B5=D0=B2=D0=B8=
-=D1=87" <shevchenko.taras@triolcorp.com.ua>, "xenomai" <xenomai@xenomai.org=
->
-> Sent: Wednesday, February 28, 2018 5:33:25 PM
-> Subject: Re: [Xenomai] RTnet
->
-> Posting back to the list.  RtNet can be used with Xenomai-3, there's
-> been some recent discussion on how to do this.  You should look back
-> through the archive and see if those messages help and then if they
-> don't post back with a specific question.
->
-> On Wed, Feb 28, 2018 at 10:19 AM, =D0=A8=D0=B5=D0=B2=D1=87=D0=B5=D0=BD=D0=
-=BA=D0=BE =D0=A2=D0=B0=D1=80=D0=B0=D1=81 =D0=93=D1=80=D0=B8=D0=B3=D0=BE=D1=
-=80=D1=8C=D0=B5=D0=B2=D0=B8=D1=87
-> <shevchenko.taras@triolcorp.com.ua> wrote:
->> But  is it possible to use  Xenomai 3  with RTnet ?
->> Could you point me right way to do it ?
->>
->> =D0=A1 =D1=83=D0=B2=D0=B0=D0=B6=D0=B5=D0=BD=D0=B8=D0=B5=D0=BC =D0=B8 =D0=
-=BD=D0=B0=D0=B4=D0=B5=D0=B6=D0=B4=D0=BE=D0=B9 =D0=BD=D0=B0 =D1=81=D0=BE=D1=
-=82=D1=80=D1=83=D0=B4=D0=BD=D0=B8=D1=87=D0=B5=D1=81=D1=82=D0=B2=D0=BE,
->> =D0=A8=D0=B5=D0=B2=D1=87=D0=B5=D0=BD=D0=BA=D0=BE =D0=A2.=D0=93.
->>
->> ----- Original Message -----
->> From: "Greg Gallagher" <greg@embeddedgreg.com>
->> To: "=D0=A8=D0=B5=D0=B2=D1=87=D0=B5=D0=BD=D0=BA=D0=BE =D0=A2=D0=B0=D1=80=
-=D0=B0=D1=81 =D0=93=D1=80=D0=B8=D0=B3=D0=BE=D1=80=D1=8C=D0=B5=D0=B2=D0=B8=
-=D1=87" <shevchenko.taras@triolcorp.com.ua>
->> Cc: "xenomai" <xenomai@xenomai.org>
->> Sent: Wednesday, February 28, 2018 5:01:23 PM
->> Subject: Re: [Xenomai] RTnet
->>
->> It looks like Xenomai 3.05 is not supported with the instructions you
->> are following.
->>
->> -Greg
->>
->> On Wed, Feb 28, 2018 at 9:13 AM, =D0=A8=D0=B5=D0=B2=D1=87=D0=B5=D0=BD=D0=
-=BA=D0=BE =D0=A2=D0=B0=D1=80=D0=B0=D1=81 =D0=93=D1=80=D0=B8=D0=B3=D0=BE=D1=
-=80=D1=8C=D0=B5=D0=B2=D0=B8=D1=87
->> <shevchenko.taras@triolcorp.com.ua> wrote:
->>>
->>> Hi!
->>>
->>> I do it first time and followed http://rtt-lwr.readthedocs.io/en/latest=
-/rtpc/rtnet.html
->>>
->>> I tried to install rtnet and get some error
->>> taras@prog-pc12:~/RTnet$ sudo make menuconfig
->>> make[1]: Entering directory '/home/taras/RTnet/scripts/kconfig'
->>> #
->>> # using defaults found in ../../.rtnet_config
->>> #
->>>
->>>
->>> *** End of RTnet configuration.
->>> *** Execute 'make' to build RTnet or try 'make help'.
->>>
->>> make[1]: Leaving directory '/home/taras/RTnet/scripts/kconfig'
->>> /bin/sh: 3: /home/taras/RTnet/configure: not found
->>> makefile:51: recipe for target 'config.status' failed
->>> make: *** [config.status] Error 1
->>>
->>>
->>>
->>> or if i do  ./configure    a get
->>> checking for main in -lncurses... yes
->>> checking for RTnet Kconfig file... ./defconfig (default)
->>>
->>> checking for RT-extension... /usr/xenomai (Xenomai 2.0.x)
->>> checking for Xenomai version... configure: error: *** Unsupported Xenom=
-ai version 3.0.5 in /usr/xenomai
->>> taras@prog-pc12:~/RTnet$
->>>
->>> What s wrong ? Please help/
->>>
->>> some outputs
->>>
->>> taras@prog-pc12:/usr/xenomai/bin$ ./xeno-config --info|grep -i build
->>> Build args: --with-pic --with-core=3Dcobalt --enable-smp --disable-tls =
---enable-dlopen-libs --disable-clock-monotonic-raw
->>>
->>> taras@prog-pc12:/usr/xenomai/bin$ cd /usr/xenomai/sbin/
->>> taras@prog-pc12:/usr/xenomai/sbin$ ./version
->>> Xenomai/cobalt v3.0.5
->>>
->>> taras@prog-pc12:/usr/xenomai/sbin$ uname -r
->>> 4.9.38-xenomai-3.0.5
->>>
->>>
->>>
->>> =D0=A1 =D1=83=D0=B2=D0=B0=D0=B6=D0=B5=D0=BD=D0=B8=D0=B5=D0=BC =D0=B8 =
-=D0=BD=D0=B0=D0=B4=D0=B5=D0=B6=D0=B4=D0=BE=D0=B9 =D0=BD=D0=B0 =D1=81=D0=BE=
-=D1=82=D1=80=D1=83=D0=B4=D0=BD=D0=B8=D1=87=D0=B5=D1=81=D1=82=D0=B2=D0=BE,
->>> =D0=A8=D0=B5=D0=B2=D1=87=D0=B5=D0=BD=D0=BA=D0=BE =D0=A2.=D0=93.
->>> _______________________________________________
->>> Xenomai mailing list
->>> Xenomai@xenomai.org
->>> https://xenomai.org/mailman/listinfo/xenomai
 
