@@ -1,16 +1,12 @@
-Date: Fri, 23 Mar 2018 15:39:33 +0100
-From: Henning Schild <henning.schild@siemens.com>
-Message-ID: <20180323153933.2866a618@mmd1pvb1c.ad001.siemens.net>
-In-Reply-To: <CAOuPNLhn=TCvg9rvXHdS6232WEVARpE3YJN5He2sdjUx=jWc8A@mail.gmail.com>
-References: <CAOuPNLh0inmNY6Vi6CDDranrF3iRv8zKeokfppbZCnoAVz=ZBQ@mail.gmail.com>
- <20180323124215.53d92406@mmd1pvb1c.ad001.siemens.net>
- <CAOuPNLhr5GAznXwfSEke1Z8jAa0CCXgK2aCD1_N1HYo57mjMWw@mail.gmail.com>
- <20180323144007.03c11111@mmd1pvb1c.ad001.siemens.net>
- <CAOuPNLhn=TCvg9rvXHdS6232WEVARpE3YJN5He2sdjUx=jWc8A@mail.gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] FUSE package error while doing configure for xenomai-3
+In-Reply-To: <20180323144423.07559e5f@mmd1pvb1c.ad001.siemens.net>
+References: <CAOuPNLhfiTB7cXcs45yDMGceHzHc_Zvuv0Vx335Of9uPJb=W6g@mail.gmail.com>
+ <20180323144423.07559e5f@mmd1pvb1c.ad001.siemens.net>
+From: Pintu Kumar <pintu.ping@gmail.com>
+Date: Fri, 23 Mar 2018 21:28:21 +0530
+Message-ID: <CAOuPNLiQnbih972q09Qn-4PJ1p_WdB8i=5_SG3TVnf7hdWsC2A@mail.gmail.com>
+Content-Type: text/plain; charset="UTF-8"
+Subject: Re: [Xenomai] Upgrading xenomai-3 patches in existing xenomai kernel
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -19,108 +15,68 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Pintu Kumar <pintu.ping@gmail.com>
+To: Henning Schild <henning.schild@siemens.com>
 Cc: "Xenomai@xenomai.org" <xenomai@xenomai.org>
 
-Am Fri, 23 Mar 2018 19:12:42 +0530
-schrieb Pintu Kumar <pintu.ping@gmail.com>:
+On Fri, Mar 23, 2018 at 7:14 PM, Henning Schild
+<henning.schild@siemens.com> wrote:
+> Am Fri, 23 Mar 2018 19:06:30 +0530
+> schrieb Pintu Kumar <pintu.ping@gmail.com>:
+>
+>> Hi,
+>>
+>> I just came across a situation about Xenomai upgrade, and wanted to
+>> know your opinion.
+>>
+>> Some 4 months back, I applied Xenomai-3 (and ipipe) patches to my x86
+>> kernel 4.9.51, using the prepare_kernel script, and I am using it
+>> since then.
+>
+> You will need an ipipe-enabled kernel anyways. Prepare kernel will just
+> install the xenomai-bits.
+> If you do not want to use an ipipe-kernel from upstream you can
+> rebase/merge the ipipe branch (in your case 4.9.y) onto/into your
+> kernel. All that should be under version control. Prepare-kernel is a
+> build step and should be done on a clean working copy when building.
+>
 
-> On Fri, Mar 23, 2018 at 7:10 PM, Henning Schild
-> <henning.schild@siemens.com> wrote:
-> > Am Fri, 23 Mar 2018 18:55:27 +0530
-> > schrieb Pintu Kumar <pintu.ping@gmail.com>:
-> >  
-> >> On Fri, Mar 23, 2018 at 5:12 PM, Henning Schild
-> >> <henning.schild@siemens.com> wrote:  
-> >> > Am Fri, 23 Mar 2018 11:36:48 +0530
-> >> > schrieb Pintu Kumar <pintu.ping@gmail.com>:
-> >> >  
-> >> >> Hi,
-> >> >>
-> >> >> I am trying to install xenomai-3 again.
-> >> >> # ./script/bootstrap
-> >> >>
-> >> >> After this, when I do configure, it is stopped at FUSE
-> >> >> # ./configure
-> >> >> ....
-> >> >> ....
-> >> >> checking whether the registry should be enabled... no
-> >> >> ./configure: line 13838: syntax error near unexpected token
-> >> >> `FUSE,' ./configure: line 13838: `      PKG_CHECK_MODULES(FUSE,
-> >> >> fuse)'
-> >> >>
-> >> >> How to solve this problem ?
-> >> >> If anybody have come across this problem?  
-> >> >
-> >> > Yes, it is known. You will have to install "pkg-config", or the
-> >> > equivalent if you are not on Debian.
-> >> >  
-> >>
-> >> Yes, I already installed it.
-> >> pkg-config is already the newest version (0.29.1-u.4.0.0.2).
-> >> 0 upgraded, 0 newly installed, 0 to remove and 1 not upgraded.
-> >>
-> >> Looks like some problem with fuse.
-> >>
-> >> # apt-get install fuse
-> >> Reading package lists... Done
-> >> Building dependency tree
-> >> Reading state information... Done
-> >> Some packages could not be installed. This may mean that you have
-> >> requested an impossible situation or if you are using the unstable
-> >> distribution that some required packages have not yet been created
-> >> or been moved out of Incoming.
-> >> The following information may help to resolve the situation:
-> >>
-> >> The following packages have unmet dependencies:
-> >>  fuse : Depends: libfuse2 (= 2.9.3-u.4.0.0.1) but 2.9.7-u.4.0.0.2
-> >> is to be installed
-> >> E: Unable to correct problems, you have held broken packages.  
-> >
-> > You only need fuse when enabling the registry, which you probably do
-> > not want to do. The problem you run into is your autoconf not
-> > supporting PKG_CHECK_MODULES.
-> >
-> > grep PKG_CHECK_MODULE /usr/share/aclocal/*
-> > should return a line like the following
-> > ...
-> > /usr/share/aclocal/pkg.m4:AC_DEFUN([PKG_CHECK_MODULES_STATIC],
-> > ...  
-> 
-> OK. For me it return like this:
-> 
-> # grep PKG_CHECK_MODULE /usr/share/aclocal/*
-> /usr/share/aclocal/fontutil.m4: PKG_CHECK_MODULES(MAPS, [fontutil])
+Yah, I can apply ipipe changes separately using the git command.
+I guess that should work on top of existing ipipe changes already applied.
 
-If that is the only hit you seem to missing AC_DEFUN and pkg.m4. Find
-which package provides this file in your distro.
+But I don't want to upgrade ipipe patches, since it is already latest.
+My main concerns is about applying/upgrading xenomai driver/cobalt changes.
+Should I use prepare_kernel for that (without ipipe option) ?
+OR, should I download the commits and apply directly to the kernel in
+normal way?
+What is the right option, so that all future upgrades can be done
+easily, just like normal kernel?
+I think we should think about it and find some best way?
+May be something like: scripts/upgrade_xenomai
 
-Henning
 
-> 
-> 
-> >
-> > If not, you are missing some package.
-> >
-> > Henning
-> >  
-> >>
-> >>  
-> >> > Henning
-> >> >  
-> >> >> I tried installing : fuse, libfuse2, but it did not help.
-> >> >>
-> >> >> Please help!
-> >> >>
-> >> >>
-> >> >> Thanks,
-> >> >> Pintu
-> >> >>
-> >> >> _______________________________________________
-> >> >> Xenomai mailing list
-> >> >> Xenomai@xenomai.org
-> >> >> https://xenomai.org/mailman/listinfo/xenomai  
-> >> >  
-> >  
 
+
+> Henning
+>
+>> But, now I wanted to upgrade to latest Xenomai kernel patches from
+>> Xenomai-3 git.
+>> Can I simply cherrypick the patches from Xenomai and apply to my
+>> Kernel ? I guess the folder structures are different, so I guess it
+>> may not work cleanly.
+>>
+>> So, what is the best way to apply the latest Xenomai Kernel patches,
+>> on to existing Xenomai converted kernel repo, without disturbing the
+>> previously applied patches ?
+>>
+>> If there is any standard procedure you follow, please let me know.
+>>
+>>
+>> Thanks,
+>> Pintu
+>>
+>> _______________________________________________
+>> Xenomai mailing list
+>> Xenomai@xenomai.org
+>> https://xenomai.org/mailman/listinfo/xenomai
+>
 
