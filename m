@@ -1,12 +1,9 @@
 MIME-Version: 1.0
-In-Reply-To: <20180323144423.07559e5f@mmd1pvb1c.ad001.siemens.net>
-References: <CAOuPNLhfiTB7cXcs45yDMGceHzHc_Zvuv0Vx335Of9uPJb=W6g@mail.gmail.com>
- <20180323144423.07559e5f@mmd1pvb1c.ad001.siemens.net>
-From: Pintu Kumar <pintu.ping@gmail.com>
-Date: Fri, 23 Mar 2018 21:28:21 +0530
-Message-ID: <CAOuPNLiQnbih972q09Qn-4PJ1p_WdB8i=5_SG3TVnf7hdWsC2A@mail.gmail.com>
+From: Ivid Suvarna <ivid.suvarna@gmail.com>
+Date: Fri, 23 Mar 2018 21:38:32 +0530
+Message-ID: <CABXF_ADnHHUgBZ=RzCSzA-mJpShF=gwXyAarWXs4zLgRx1GC5g@mail.gmail.com>
 Content-Type: text/plain; charset="UTF-8"
-Subject: Re: [Xenomai] Upgrading xenomai-3 patches in existing xenomai kernel
+Subject: Re: [Xenomai] FUSE package error while doing configure for xenomai-3
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,68 +12,27 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Henning Schild <henning.schild@siemens.com>
-Cc: "Xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Pintu Kumar <pintu.ping@gmail.com>
+Cc: xenomai@xenomai.org
 
-On Fri, Mar 23, 2018 at 7:14 PM, Henning Schild
-<henning.schild@siemens.com> wrote:
-> Am Fri, 23 Mar 2018 19:06:30 +0530
-> schrieb Pintu Kumar <pintu.ping@gmail.com>:
+Hi Pintu-san,
+
+> I am trying to install xenomai-3 again.
+> # ./script/bootstrap
 >
->> Hi,
->>
->> I just came across a situation about Xenomai upgrade, and wanted to
->> know your opinion.
->>
->> Some 4 months back, I applied Xenomai-3 (and ipipe) patches to my x86
->> kernel 4.9.51, using the prepare_kernel script, and I am using it
->> since then.
+> After this, when I do configure, it is stopped at FUSE
+> # ./configure
+> ....
+> ....
+> checking whether the registry should be enabled... no
+> ./configure: line 13838: syntax error near unexpected token `FUSE,'
+> ./configure: line 13838: `      PKG_CHECK_MODULES(FUSE, fuse)'
 >
-> You will need an ipipe-enabled kernel anyways. Prepare kernel will just
-> install the xenomai-bits.
-> If you do not want to use an ipipe-kernel from upstream you can
-> rebase/merge the ipipe branch (in your case 4.9.y) onto/into your
-> kernel. All that should be under version control. Prepare-kernel is a
-> build step and should be done on a clean working copy when building.
->
+> How to solve this problem ?
+> If anybody have come across this problem?
 
-Yah, I can apply ipipe changes separately using the git command.
-I guess that should work on top of existing ipipe changes already applied.
+Try installing libfuse-dev after installing libfuse2
 
-But I don't want to upgrade ipipe patches, since it is already latest.
-My main concerns is about applying/upgrading xenomai driver/cobalt changes.
-Should I use prepare_kernel for that (without ipipe option) ?
-OR, should I download the commits and apply directly to the kernel in
-normal way?
-What is the right option, so that all future upgrades can be done
-easily, just like normal kernel?
-I think we should think about it and find some best way?
-May be something like: scripts/upgrade_xenomai
-
-
-
-
-> Henning
->
->> But, now I wanted to upgrade to latest Xenomai kernel patches from
->> Xenomai-3 git.
->> Can I simply cherrypick the patches from Xenomai and apply to my
->> Kernel ? I guess the folder structures are different, so I guess it
->> may not work cleanly.
->>
->> So, what is the best way to apply the latest Xenomai Kernel patches,
->> on to existing Xenomai converted kernel repo, without disturbing the
->> previously applied patches ?
->>
->> If there is any standard procedure you follow, please let me know.
->>
->>
->> Thanks,
->> Pintu
->>
->> _______________________________________________
->> Xenomai mailing list
->> Xenomai@xenomai.org
->> https://xenomai.org/mailman/listinfo/xenomai
->
+Regards,
+IVID
 
