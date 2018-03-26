@@ -1,11 +1,13 @@
-MIME-Version: 1.0
-In-Reply-To: <C2EC5BA46D13CD44B5915A8FEEB4C44E7B748FFC@DDCEXCH.ddc-ny.com>
+From: "Pham, Phong" <phamp@ddc-web.com>
+Date: Mon, 26 Mar 2018 22:14:57 +0000
+Message-ID: <C2EC5BA46D13CD44B5915A8FEEB4C44E7B749024@DDCEXCH.ddc-ny.com>
 References: <C2EC5BA46D13CD44B5915A8FEEB4C44E7B748FFC@DDCEXCH.ddc-ny.com>
-From: Greg Gallagher <greg@embeddedgreg.com>
-Date: Mon, 26 Mar 2018 15:11:19 -0400
-Message-ID: <CALLqZ8TiSWc5frjyc2J5zjvF-eo6sRnS3T_Stf_CP7n9+b5LHw@mail.gmail.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+ <CALLqZ8TiSWc5frjyc2J5zjvF-eo6sRnS3T_Stf_CP7n9+b5LHw@mail.gmail.com>
+In-Reply-To: <CALLqZ8TiSWc5frjyc2J5zjvF-eo6sRnS3T_Stf_CP7n9+b5LHw@mail.gmail.com>
+Content-Language: en-US
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+MIME-Version: 1.0
 Subject: Re: [Xenomai] git://git.xenomai.org/ipipe.git points to Linux 3.18
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
@@ -15,35 +17,56 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "Pham, Phong" <phamp@ddc-web.com>
+To: Greg Gallagher <greg@embeddedgreg.com>
 Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-What branch did you checkout?  Try git checkout ipipe-4.9.y or if you
-want 4.9.51 you can use the git tag  ipipe-core-4.9.51-x86-5.
-
-On Mon, Mar 26, 2018 at 3:05 PM, Pham, Phong <phamp@ddc-web.com> wrote:
->
-> Hi,
->
-> git clone git://git.xenomai.org/ipipe.git and I get Linux version 3.18 w/=
- the Xenomai patch included.  (In my .gitconfig, I remapped git:// to use h=
-ttps:// protocol to get around my company blocking git port.)
->
-> Should the Linux version be 4.9.51 (latest) instead of the older version?
->
-> Is the https protocol link points to Linux 3.10 but the git protocol link=
- actually points to 4.9.51?
-> Phong.
->
-> Notice: This e-mail and any files transmitted with it may contain Data De=
-vice Corporation's privileged and proprietary information. It is intended s=
-olely for the use of the individual or entity to whom it is addressed. If y=
-ou are not the named recipient of this transmission, any disclosure, copyin=
-g, distribution or reliance on the contents of this message is prohibited. =
-If you received this e-mail in error, please destroy it and any attached fi=
-les and notify me immediately.
-> _______________________________________________
-> Xenomai mailing list
-> Xenomai@xenomai.org
-> https://xenomai.org/mailman/listinfo/xenomai
+DQpIaSBHcmVnLA0KDQpJZiBJIGdpdCBjaGVja291dCB2NC45LjUxIGFuZCB0aGVuIGFwcGx5IGEg
+cGF0Y2gsIHNheSBpcGlwZS1jb3JlLTQuOS41MS1wb3dlcnBjLTMucGF0Y2gsIHRoZW4gaXQgc2Vl
+bXMgbGlrZSB0aGUgcGF0Y2ggY29tbWFuZCBpcyBmaW5lIHdpdGggaXQuICAoSSBkaWQgdGhlIC0t
+ZHJ5LXJ1biBhbmQgcGF0Y2ggZGlkbid0IGFzayBhbnkgcXVlc3Rpb24pDQoNCkhvd2V2ZXIsIGlm
+IEkgZ2l0IGNoZWNrb3V0IGlwaXBlLWNvcmUtNC45LjUxLXBvd2VycGMtMyBhbmQgdGhlbiBpc3N1
+ZSB0aGUgc2FtZSBwYXRjaCBjb21tYW5kDQoNCnBhdGNoIC1wMSAtLWRyeS1ydW4gPCAuLi9pcGlw
+ZS1jb3JlLTQuOS41MS1wb3dlcnBjLTMucGF0Y2gNCg0KSXQgYXNrcyBtZSAiUmV2ZXJzZWQgKG9y
+IHByZXZpb3VzbHkgYXBwbGllZCkgcGF0Y2ggZGV0ZWN0ZWQhICBBc3N1bWUgLVI/IFtuXQ0KDQpG
+b3IgYSBidW5jaCBvZiBmaWxlcy4gIElmIEkgYW5zd2VyIHkgdGhlbiB0aGVyZSBhcmUgc29tZSBm
+aWxlcyB0aGUgcGF0Y2ggdG9vbCBzYXkgIlRoZSBuZXh0IHBhdGNoIHdvdWxkIGNyZWF0ZSB0aGUg
+ZmlsZSA8ZmlsZW5hbWU+LCB3aGljaCBhbHJlYWR5IGV4aXN0cyEgIEFzc3VtZSAtUiBbbl0NCg0K
+U28gaXMgaXQgaWxsZWdhbCB0byBwZXJmb3JtIHRoZSBwYXRjaCBvbiB0aGUgc2FtZSB0YWcgbmFt
+ZSBsaWtlIGluIG15IGNhc2UgaXBpcGUtY29yZS00LjkuNTEtcG93ZXJwYy0zLnBhdGNoPw0KDQpQ
+aG9uZy4NCg0KLS0tLS1PcmlnaW5hbCBNZXNzYWdlLS0tLS0NCkZyb206IEdyZWcgR2FsbGFnaGVy
+IFttYWlsdG86Z3JlZ0BlbWJlZGRlZGdyZWcuY29tXQ0KU2VudDogTW9uZGF5LCBNYXJjaCAyNiwg
+MjAxOCAxMjoxMSBQTQ0KVG86IFBoYW0sIFBob25nDQpDYzogeGVub21haUB4ZW5vbWFpLm9yZw0K
+U3ViamVjdDogUmU6IFtYZW5vbWFpXSBnaXQ6Ly9naXQueGVub21haS5vcmcvaXBpcGUuZ2l0IHBv
+aW50cyB0byBMaW51eCAzLjE4DQoNCldoYXQgYnJhbmNoIGRpZCB5b3UgY2hlY2tvdXQ/ICBUcnkg
+Z2l0IGNoZWNrb3V0IGlwaXBlLTQuOS55IG9yIGlmIHlvdSB3YW50IDQuOS41MSB5b3UgY2FuIHVz
+ZSB0aGUgZ2l0IHRhZyAgaXBpcGUtY29yZS00LjkuNTEteDg2LTUuDQoNCk9uIE1vbiwgTWFyIDI2
+LCAyMDE4IGF0IDM6MDUgUE0sIFBoYW0sIFBob25nIDxwaGFtcEBkZGMtd2ViLmNvbT4gd3JvdGU6
+DQo+DQo+IEhpLA0KPg0KPiBnaXQgY2xvbmUgZ2l0Oi8vZ2l0Lnhlbm9tYWkub3JnL2lwaXBlLmdp
+dCBhbmQgSSBnZXQgTGludXggdmVyc2lvbiAzLjE4DQo+IHcvIHRoZSBYZW5vbWFpIHBhdGNoIGlu
+Y2x1ZGVkLiAgKEluIG15IC5naXRjb25maWcsIEkgcmVtYXBwZWQgZ2l0Oi8vDQo+IHRvIHVzZSBo
+dHRwczovLyBwcm90b2NvbCB0byBnZXQgYXJvdW5kIG15IGNvbXBhbnkgYmxvY2tpbmcgZ2l0IHBv
+cnQuKQ0KPg0KPiBTaG91bGQgdGhlIExpbnV4IHZlcnNpb24gYmUgNC45LjUxIChsYXRlc3QpIGlu
+c3RlYWQgb2YgdGhlIG9sZGVyIHZlcnNpb24/DQo+DQo+IElzIHRoZSBodHRwcyBwcm90b2NvbCBs
+aW5rIHBvaW50cyB0byBMaW51eCAzLjEwIGJ1dCB0aGUgZ2l0IHByb3RvY29sIGxpbmsgYWN0dWFs
+bHkgcG9pbnRzIHRvIDQuOS41MT8NCj4gUGhvbmcuDQo+DQo+IE5vdGljZTogVGhpcyBlLW1haWwg
+YW5kIGFueSBmaWxlcyB0cmFuc21pdHRlZCB3aXRoIGl0IG1heSBjb250YWluIERhdGEgRGV2aWNl
+IENvcnBvcmF0aW9uJ3MgcHJpdmlsZWdlZCBhbmQgcHJvcHJpZXRhcnkgaW5mb3JtYXRpb24uIEl0
+IGlzIGludGVuZGVkIHNvbGVseSBmb3IgdGhlIHVzZSBvZiB0aGUgaW5kaXZpZHVhbCBvciBlbnRp
+dHkgdG8gd2hvbSBpdCBpcyBhZGRyZXNzZWQuIElmIHlvdSBhcmUgbm90IHRoZSBuYW1lZCByZWNp
+cGllbnQgb2YgdGhpcyB0cmFuc21pc3Npb24sIGFueSBkaXNjbG9zdXJlLCBjb3B5aW5nLCBkaXN0
+cmlidXRpb24gb3IgcmVsaWFuY2Ugb24gdGhlIGNvbnRlbnRzIG9mIHRoaXMgbWVzc2FnZSBpcyBw
+cm9oaWJpdGVkLiBJZiB5b3UgcmVjZWl2ZWQgdGhpcyBlLW1haWwgaW4gZXJyb3IsIHBsZWFzZSBk
+ZXN0cm95IGl0IGFuZCBhbnkgYXR0YWNoZWQgZmlsZXMgYW5kIG5vdGlmeSBtZSBpbW1lZGlhdGVs
+eS4NCj4gX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX18NCj4g
+WGVub21haSBtYWlsaW5nIGxpc3QNCj4gWGVub21haUB4ZW5vbWFpLm9yZw0KPiBodHRwczovL3hl
+bm9tYWkub3JnL21haWxtYW4vbGlzdGluZm8veGVub21haQ0KTm90aWNlOiBUaGlzIGUtbWFpbCBh
+bmQgYW55IGZpbGVzIHRyYW5zbWl0dGVkIHdpdGggaXQgbWF5IGNvbnRhaW4gRGF0YSBEZXZpY2Ug
+Q29ycG9yYXRpb24ncyBwcml2aWxlZ2VkIGFuZCBwcm9wcmlldGFyeSBpbmZvcm1hdGlvbi4gSXQg
+aXMgaW50ZW5kZWQgc29sZWx5IGZvciB0aGUgdXNlIG9mIHRoZSBpbmRpdmlkdWFsIG9yIGVudGl0
+eSB0byB3aG9tIGl0IGlzIGFkZHJlc3NlZC4gSWYgeW91IGFyZSBub3QgdGhlIG5hbWVkIHJlY2lw
+aWVudCBvZiB0aGlzIHRyYW5zbWlzc2lvbiwgYW55IGRpc2Nsb3N1cmUsIGNvcHlpbmcsIGRpc3Ry
+aWJ1dGlvbiBvciByZWxpYW5jZSBvbiB0aGUgY29udGVudHMgb2YgdGhpcyBtZXNzYWdlIGlzIHBy
+b2hpYml0ZWQuIElmIHlvdSByZWNlaXZlZCB0aGlzIGUtbWFpbCBpbiBlcnJvciwgcGxlYXNlIGRl
+c3Ryb3kgaXQgYW5kIGFueSBhdHRhY2hlZCBmaWxlcyBhbmQgbm90aWZ5IG1lIGltbWVkaWF0ZWx5
+Lg0K
 
