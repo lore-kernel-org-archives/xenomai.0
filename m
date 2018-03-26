@@ -1,11 +1,11 @@
-Date: Mon, 26 Mar 2018 19:29:54 +0300 (EEST)
-From: =?windows-1251?B?2OXi9+Xt6u4g0uDw4PEgw/Do4+7w/OXi6Pc=?=
- <shevchenko.taras@triolcorp.com.ua>
-Message-ID: <1257363232.7918002.1522081794591.JavaMail.zimbra@triolcorp.com.ua>
+From: "Pham, Phong" <phamp@ddc-web.com>
+Date: Mon, 26 Mar 2018 19:05:09 +0000
+Message-ID: <C2EC5BA46D13CD44B5915A8FEEB4C44E7B748FFC@DDCEXCH.ddc-ny.com>
+Content-Language: en-US
 MIME-Version: 1.0
-Content-Type: text/plain; charset=windows-1251
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
-Subject: [Xenomai] errors in log when startup 4.9.51
+Subject: [Xenomai] git://git.xenomai.org/ipipe.git points to Linux 3.18
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -14,33 +14,25 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai <xenomai@xenomai.org>
-
-Hi=20
-I found errors in log when startup 4.9.51 with Xenomai could it be a proble=
-m with sd reader ?=20
+To: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
 
+Hi,
 
+git clone git://git.xenomai.org/ipipe.git and I get Linux version 3.18 w/ t=
+he Xenomai patch included.  (In my .gitconfig, I remapped git:// to use htt=
+ps:// protocol to get around my company blocking git port.)
 
-[ 0.366633] platform wdat_wdt: failed to claim resource 4=20
-[ 0.366647] ACPI: watchdog: Failed to create platform device=20
+Should the Linux version be 4.9.51 (latest) instead of the older version?
 
-[ 1.447252] i2c_designware 808622C1:00: failure requesting irq 32: -38=20
+Is the https protocol link points to Linux 3.10 but the git protocol link a=
+ctually points to 4.9.51?
+Phong.
 
-Xenomai registerd=20
-
-[ 12.960998] [Xenomai] scheduling class idle registered.=20
-[ 12.961001] [Xenomai] scheduling class rt registered.=20
-[ 12.961052] [Xenomai] SMI-enabled chipset found, but SMI workaround disabl=
-ed=20
-(see xenomai.smi parameter). You might encounter=20
-high latencies!=20
-[ 12.961171] I-pipe: head domain Xenomai registered.=20
-[ 12.962015] [Xenomai] Cobalt v3.0.5 (Sisyphus's Boulder)=20
-
-PS I saw patch today but have not try it yet=20
-
-=D1 =F3=E2=E0=E6=E5=ED=E8=E5=EC =E8 =ED=E0=E4=E5=E6=E4=EE=E9 =ED=E0 =F1=EE=
-=F2=F0=F3=E4=ED=E8=F7=E5=F1=F2=E2=EE,=20
-=D8=E5=E2=F7=E5=ED=EA=EE =D2.=C3.=20
+Notice: This e-mail and any files transmitted with it may contain Data Devi=
+ce Corporation's privileged and proprietary information. It is intended sol=
+ely for the use of the individual or entity to whom it is addressed. If you=
+ are not the named recipient of this transmission, any disclosure, copying,=
+ distribution or reliance on the contents of this message is prohibited. If=
+ you received this e-mail in error, please destroy it and any attached file=
+s and notify me immediately.
