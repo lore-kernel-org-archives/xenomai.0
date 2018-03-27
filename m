@@ -1,10 +1,12 @@
-Date: Tue, 27 Mar 2018 11:25:58 +0200
-From: Henning Schild <henning.schild@siemens.com>
-Message-ID: <20180327112558.3fc3e8eb@mmd1pvb1c.ad001.siemens.net>
-In-Reply-To: <52bd261d-07c2-80d1-77f4-fb501795dea7@frank-benkert.de>
 References: <52bd261d-07c2-80d1-77f4-fb501795dea7@frank-benkert.de>
+ <20180327112558.3fc3e8eb@mmd1pvb1c.ad001.siemens.net>
+From: Frank Benkert <xenomai@frank-benkert.de>
+Message-ID: <8e9cc022-3efa-d874-8939-3fb85529913e@frank-benkert.de>
+Date: Tue, 27 Mar 2018 11:57:30 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+In-Reply-To: <20180327112558.3fc3e8eb@mmd1pvb1c.ad001.siemens.net>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
 Content-Transfer-Encoding: 7bit
 Subject: Re: [Xenomai] Regression posix/mprotect failed on Xenomai 2.6.5 on
  powerpc
@@ -16,58 +18,71 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Frank Benkert <xenomai@frank-benkert.de>
-Cc: xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-Am Tue, 27 Mar 2018 09:59:37 +0200
-schrieb Frank Benkert <xenomai@frank-benkert.de>:
+Hi Hennig,
 
-> Hello,
+thanks for the quick answer.
+I was wrong about the kernel-preparation. I misread the git log of our 
+repository. The patch where someone added the prepare-kernel changes was 
+reverted and the script is executed on every new kernel build in fact.
+I think this is the way it should be.
+Just the ipipe patch (ipipe-core-v3.5.3.patch-v2) seems to be in effect 
+in our repo (according the git log).
+
+
+
+
+Am 27.03.2018 um 11:25 schrieb Henning Schild:
+> Am Tue, 27 Mar 2018 09:59:37 +0200
+> schrieb Frank Benkert <xenomai@frank-benkert.de>:
 > 
-> we have to maintain an old productive system.
-
-Good luck ;) The versions you are using are not maintained anymore.
-
-> It's based on a powerpc MPC5200.
-> After updating Xenomai from 2.6.1 to 2.6.5 the Xenomai regression
-> test suite failed on posix/mprotect:
+>> Hello,
+>>
+>> we have to maintain an old productive system.
 > 
-> + /usr/bin/regression/posix/mprotect
-> memory read
-> memory write after exec enable
-> memory write after write enable
-> memory read/write after access enable
-> FAILURE main:102: read zero returned 255 instead of 0
+> Good luck ;) The versions you are using are not maintained anymore.
 > 
-> Did someone else also discovered this problem or does a wrong 
-> configuration of our system triggers this?
+>> It's based on a powerpc MPC5200.
+>> After updating Xenomai from 2.6.1 to 2.6.5 the Xenomai regression
+>> test suite failed on posix/mprotect:
+>>
+>> + /usr/bin/regression/posix/mprotect
+>> memory read
+>> memory write after exec enable
+>> memory write after write enable
+>> memory read/write after access enable
+>> FAILURE main:102: read zero returned 255 instead of 0
+>>
+>> Did someone else also discovered this problem or does a wrong
+>> configuration of our system triggers this?
+>>
+>> The effective config.gz is attached.
+>>
+>> Our Kernel is 3.5.3 and was originally patched with
+>> scripts/prepare-kernel.sh from Xenomai v2.6.1
+>> could that be the problem? I thought this only patches ipipe into the
+>> kernel - regardless of the xenomai version.
 > 
-> The effective config.gz is attached.
+> Yes that is a problem. You will need to patch the kernel again. It
+> should already be ipipe-enabled and prepare-kernel adds the cokernel.
+> (part of xenomai)
 > 
-> Our Kernel is 3.5.3 and was originally patched with
-> scripts/prepare-kernel.sh from Xenomai v2.6.1
-> could that be the problem? I thought this only patches ipipe into the 
-> kernel - regardless of the xenomai version.
-
-Yes that is a problem. You will need to patch the kernel again. It
-should already be ipipe-enabled and prepare-kernel adds the cokernel.
-(part of xenomai)
-
-Henning
-
-> Am I wrong?
+> Henning
 > 
-> Thanks!
-> -------------- next part --------------
-> A non-text attachment was scrubbed...
-> Name: config.gz
-> Type: application/gzip
-> Size: 12427 bytes
-> Desc: not available
-> URL:
-> <http://xenomai.org/pipermail/xenomai/attachments/20180327/c70e78a7/attachment.bin>
-> _______________________________________________ Xenomai mailing list
-> Xenomai@xenomai.org
-> https://xenomai.org/mailman/listinfo/xenomai
-
+>> Am I wrong?
+>>
+>> Thanks!
+>> -------------- next part --------------
+>> A non-text attachment was scrubbed...
+>> Name: config.gz
+>> Type: application/gzip
+>> Size: 12427 bytes
+>> Desc: not available
+>> URL:
+>> <http://xenomai.org/pipermail/xenomai/attachments/20180327/c70e78a7/attachment.bin>
+>> _______________________________________________ Xenomai mailing list
+>> Xenomai@xenomai.org
+>> https://xenomai.org/mailman/listinfo/xenomai
+> 
 
