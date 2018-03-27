@@ -1,12 +1,13 @@
+Date: Tue, 27 Mar 2018 16:30:23 +0300 (EEST)
+From: =?windows-1251?B?2OXi9+Xt6u4g0uDw4PEgw/Do4+7w/OXi6Pc=?=
+ <shevchenko.taras@triolcorp.com.ua>
+Message-ID: <1522259079.8157400.1522157423318.JavaMail.zimbra@triolcorp.com.ua>
+In-Reply-To: <54cd6098-3828-b028-3328-daf91b46d9da@xenomai.org>
 References: <6aedc4bc-74b5-4a9f-5c38-036a3d7850b9@siemens.com>
  <ee7647d4-0bfd-0933-2f10-e9fdc5da2880@web.de>
-From: Philippe Gerum <rpm@xenomai.org>
-Message-ID: <54cd6098-3828-b028-3328-daf91b46d9da@xenomai.org>
-Date: Tue, 27 Mar 2018 15:12:32 +0200
+ <54cd6098-3828-b028-3328-daf91b46d9da@xenomai.org>
 MIME-Version: 1.0
-In-Reply-To: <ee7647d4-0bfd-0933-2f10-e9fdc5da2880@web.de>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
+Content-Type: text/plain; charset=windows-1251
 Content-Transfer-Encoding: 7bit
 Subject: Re: [Xenomai] 4.9 for x86 issue
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
@@ -17,8 +18,31 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jan Kiszka <jan.kiszka@web.de>
-Cc: Xenomai <xenomai@xenomai.org>
+To: Philippe Gerum <rpm@xenomai.org>
+Cc: xenomai <xenomai@xenomai.org>
+
+Sorry, but no
+I install 4.9.90 and new patch
+Ive the same problems   - no responce with  my LKM  and SD card reader
+I can add logs
+
+with sd discover new details:
+  if boot with sd-card inserted in reader   - sd-card can read , if I remove card  - get no responce 
+ 
+difference with lsmod command output (when inserted card and not) is nls_iso8859_1  
+ this module is absent without sd-card
+
+I try boot without sd card and do modprobe nls_iso8859_1  after insert sdcard   -  get no responce 
+
+
+
+
+----- Original Message -----
+From: "Philippe Gerum" <rpm@xenomai.org>
+To: "Jan Kiszka" <jan.kiszka@web.de>
+Cc: "xenomai" <xenomai@xenomai.org>
+Sent: Tuesday, March 27, 2018 4:12:32 PM
+Subject: Re: [Xenomai] 4.9 for x86 issue
 
 On 03/10/2018 11:06 PM, Jan Kiszka wrote:
 > On 2018-03-09 08:51, Jan Kiszka wrote:
@@ -39,4 +63,9 @@ far so good.
 
 -- 
 Philippe.
+
+_______________________________________________
+Xenomai mailing list
+Xenomai@xenomai.org
+https://xenomai.org/mailman/listinfo/xenomai
 
