@@ -1,18 +1,12 @@
 MIME-Version: 1.0
-In-Reply-To: <1249760478.8926934.1519836402496.JavaMail.zimbra@triolcorp.com.ua>
-References: <500456767.8825156.1519827180703.JavaMail.zimbra@triolcorp.com.ua>
- <CALLqZ8SHXBKVFyzgkpxS-ecpzPVtEDwGqbzdxXwnwUG+Fn0pRA@mail.gmail.com>
- <429130936.8886425.1519831182179.JavaMail.zimbra@triolcorp.com.ua>
- <CALLqZ8Qa8y1idWvPfA2PBuG_urrgjDuYYX8B7_65yyEQswUvdg@mail.gmail.com>
- <1139048827.8910394.1519833759993.JavaMail.zimbra@triolcorp.com.ua>
- <CALLqZ8S6_-dWvze2+MsBxNBvhS3UCtERLZ=VwqmkN3C9Rw6s1A@mail.gmail.com>
- <1249760478.8926934.1519836402496.JavaMail.zimbra@triolcorp.com.ua>
-From: Greg Gallagher <greg@embeddedgreg.com>
-Date: Wed, 28 Feb 2018 11:55:55 -0500
-Message-ID: <CALLqZ8RPLOHOGApGwgC2s49RvD+BAcn1FDzstJhoRs+Rkee+8w@mail.gmail.com>
+In-Reply-To: <CAA3JOdYcsqAU7z0nhd7WMCcH-3z-XiDP2RfS6RKK0hYi2Br59Q@mail.gmail.com>
+References: <CAA3JOdYcsqAU7z0nhd7WMCcH-3z-XiDP2RfS6RKK0hYi2Br59Q@mail.gmail.com>
+From: Virendra Kate <virendrakate@gmail.com>
+Date: Mon, 26 Mar 2018 17:58:02 -0700
+Message-ID: <CAA3JOdasXZGO9Dpyu3UU4rUgkjueP69hLBSi4R8hfn93xB1TTw@mail.gmail.com>
 Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-Subject: Re: [Xenomai] RTnet
+Subject: Re: [Xenomai] GDB freezes with breakpoints inside RT POSIX App
+	(ARM64)
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -21,209 +15,60 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: =?UTF-8?B?0KjQtdCy0YfQtdC90LrQviDQotCw0YDQsNGBINCT0YDQuNCz0L7RgNGM0LXQstC40Yc=?= <shevchenko.taras@triolcorp.com.ua>
-Cc: xenomai <xenomai@xenomai.org>
+To: xenomai@xenomai.org
 
-https://xenomai.org/documentation/xenomai-3/html/MIGRATION/#_rtnet_changes
+Hello,
 
-I believe RTNet is built into Xenomai 3, so you just have to enable to
-it in your menuconfig stage.  You don't have to build it separately.
-I don't work with RTNet that much so my bad on longer answer.  You
-should be able to enable the rtnet drivers you need from menuconfig
-and then insert the drivers using modprobe.  You will have to unbind
-the non-rt Ethernet drivers.  There was a recent thread that went into
-detail about how to do this, please look at that thread.
+Could someone please help me out with this issue? This is an important
+issue for us as it is hindering efficient debugging.
 
-On Wed, Feb 28, 2018 at 11:46 AM, =D0=A8=D0=B5=D0=B2=D1=87=D0=B5=D0=BD=D0=
-=BA=D0=BE =D0=A2=D0=B0=D1=80=D0=B0=D1=81 =D0=93=D1=80=D0=B8=D0=B3=D0=BE=D1=
-=80=D1=8C=D0=B5=D0=B2=D0=B8=D1=87
-<shevchenko.taras@triolcorp.com.ua> wrote:
->
-> Yes, all from sources
-> I Download it
->
-> wget https://xenomai.org/downloads/xenomai/stable/xenomai-3.0.5.tar.bz2
->
->
-> wget https://xenomai.org/downloads/ipipe/v4.x/x86/ipipe-core-4.9.38-x86-4=
-.patch
->
->
-> and apply
-> ../xenomai-3.0.5/scripts/prepare-kernel.sh --arch=3Dx86_64 --ipipe=3Dipip=
-e-core-4.9.38-x86-4.patch
->
-> then   make menuconfig
->
-> then install
-> and so on.....
->
-> =D0=A1 =D1=83=D0=B2=D0=B0=D0=B6=D0=B5=D0=BD=D0=B8=D0=B5=D0=BC =D0=B8 =D0=
-=BD=D0=B0=D0=B4=D0=B5=D0=B6=D0=B4=D0=BE=D0=B9 =D0=BD=D0=B0 =D1=81=D0=BE=D1=
-=82=D1=80=D1=83=D0=B4=D0=BD=D0=B8=D1=87=D0=B5=D1=81=D1=82=D0=B2=D0=BE,
-> =D0=A8=D0=B5=D0=B2=D1=87=D0=B5=D0=BD=D0=BA=D0=BE =D0=A2.=D0=93.
->
-> ----- Original Message -----
-> From: "Greg Gallagher" <greg@embeddedgreg.com>
-> To: "=D0=A8=D0=B5=D0=B2=D1=87=D0=B5=D0=BD=D0=BA=D0=BE =D0=A2=D0=B0=D1=80=
-=D0=B0=D1=81 =D0=93=D1=80=D0=B8=D0=B3=D0=BE=D1=80=D1=8C=D0=B5=D0=B2=D0=B8=
-=D1=87" <shevchenko.taras@triolcorp.com.ua>, "xenomai" <xenomai@xenomai.org=
->
-> Sent: Wednesday, February 28, 2018 6:37:49 PM
-> Subject: Re: [Xenomai] RTnet
->
-> Please use reply all when responding or the rest of the list won't get
-> the benefit of the question or have the chance to help answer.
->
-> Have you built Xenomai from source?  It looks like you are pointing to
-> the modules only, I believe it needs the patched kernel source.
->
-> -Greg
->
-> On Wed, Feb 28, 2018 at 11:02 AM, =D0=A8=D0=B5=D0=B2=D1=87=D0=B5=D0=BD=D0=
-=BA=D0=BE =D0=A2=D0=B0=D1=80=D0=B0=D1=81 =D0=93=D1=80=D0=B8=D0=B3=D0=BE=D1=
-=80=D1=8C=D0=B5=D0=B2=D0=B8=D1=87
-> <shevchenko.taras@triolcorp.com.ua> wrote:
->> Thank for your reply
->>
->> I try  follow instruction  https://xenomai.org//rtnet-installation/
->>
->>
->> after make menuconfig and set options
->>
->>     Variant=E2=86=92Xenomai 2.1
->>     Add-ons=E2=86=92Real-time Capturing Support=E2=86=92ON
->>     Examples=E2=86=92RTnet Application Examples=E2=86=92ON
->> I  get
->>
->> .....
->>
->> checking for RTnet Kconfig file... .rtnet_config (supplied)
->> checking for RT-extension... configure: error: *** RT-extended kernel no=
-t found in /lib/modules/4.9.38-xenomai-3.0.5/build
->> makefile:51: recipe for target 'config.status' failed
->> make: *** [config.status] Error 1
->>
->>
->> this folder and path exist
->>
->> [*] RTnet Application Examples       =E2=94=82 =E2=94=82
->>   =E2=94=82 =E2=94=82()    Real-time Extension Config-Tool Path (NEW)   =
- which path  should I write here ?
->>
->>
->>
->>
->>
->>
->>
->>
->>
->> =D0=A1 =D1=83=D0=B2=D0=B0=D0=B6=D0=B5=D0=BD=D0=B8=D0=B5=D0=BC =D0=B8 =D0=
-=BD=D0=B0=D0=B4=D0=B5=D0=B6=D0=B4=D0=BE=D0=B9 =D0=BD=D0=B0 =D1=81=D0=BE=D1=
-=82=D1=80=D1=83=D0=B4=D0=BD=D0=B8=D1=87=D0=B5=D1=81=D1=82=D0=B2=D0=BE,
->> =D0=A8=D0=B5=D0=B2=D1=87=D0=B5=D0=BD=D0=BA=D0=BE =D0=A2.=D0=93.
->>
->> ----- Original Message -----
->> From: "Greg Gallagher" <greg@embeddedgreg.com>
->> To: "=D0=A8=D0=B5=D0=B2=D1=87=D0=B5=D0=BD=D0=BA=D0=BE =D0=A2=D0=B0=D1=80=
-=D0=B0=D1=81 =D0=93=D1=80=D0=B8=D0=B3=D0=BE=D1=80=D1=8C=D0=B5=D0=B2=D0=B8=
-=D1=87" <shevchenko.taras@triolcorp.com.ua>, "xenomai" <xenomai@xenomai.org=
->
->> Sent: Wednesday, February 28, 2018 5:33:25 PM
->> Subject: Re: [Xenomai] RTnet
->>
->> Posting back to the list.  RtNet can be used with Xenomai-3, there's
->> been some recent discussion on how to do this.  You should look back
->> through the archive and see if those messages help and then if they
->> don't post back with a specific question.
->>
->> On Wed, Feb 28, 2018 at 10:19 AM, =D0=A8=D0=B5=D0=B2=D1=87=D0=B5=D0=BD=
-=D0=BA=D0=BE =D0=A2=D0=B0=D1=80=D0=B0=D1=81 =D0=93=D1=80=D0=B8=D0=B3=D0=BE=
-=D1=80=D1=8C=D0=B5=D0=B2=D0=B8=D1=87
->> <shevchenko.taras@triolcorp.com.ua> wrote:
->>> But  is it possible to use  Xenomai 3  with RTnet ?
->>> Could you point me right way to do it ?
->>>
->>> =D0=A1 =D1=83=D0=B2=D0=B0=D0=B6=D0=B5=D0=BD=D0=B8=D0=B5=D0=BC =D0=B8 =
-=D0=BD=D0=B0=D0=B4=D0=B5=D0=B6=D0=B4=D0=BE=D0=B9 =D0=BD=D0=B0 =D1=81=D0=BE=
-=D1=82=D1=80=D1=83=D0=B4=D0=BD=D0=B8=D1=87=D0=B5=D1=81=D1=82=D0=B2=D0=BE,
->>> =D0=A8=D0=B5=D0=B2=D1=87=D0=B5=D0=BD=D0=BA=D0=BE =D0=A2.=D0=93.
->>>
->>> ----- Original Message -----
->>> From: "Greg Gallagher" <greg@embeddedgreg.com>
->>> To: "=D0=A8=D0=B5=D0=B2=D1=87=D0=B5=D0=BD=D0=BA=D0=BE =D0=A2=D0=B0=D1=
-=80=D0=B0=D1=81 =D0=93=D1=80=D0=B8=D0=B3=D0=BE=D1=80=D1=8C=D0=B5=D0=B2=D0=
-=B8=D1=87" <shevchenko.taras@triolcorp.com.ua>
->>> Cc: "xenomai" <xenomai@xenomai.org>
->>> Sent: Wednesday, February 28, 2018 5:01:23 PM
->>> Subject: Re: [Xenomai] RTnet
->>>
->>> It looks like Xenomai 3.05 is not supported with the instructions you
->>> are following.
->>>
->>> -Greg
->>>
->>> On Wed, Feb 28, 2018 at 9:13 AM, =D0=A8=D0=B5=D0=B2=D1=87=D0=B5=D0=BD=
-=D0=BA=D0=BE =D0=A2=D0=B0=D1=80=D0=B0=D1=81 =D0=93=D1=80=D0=B8=D0=B3=D0=BE=
-=D1=80=D1=8C=D0=B5=D0=B2=D0=B8=D1=87
->>> <shevchenko.taras@triolcorp.com.ua> wrote:
->>>>
->>>> Hi!
->>>>
->>>> I do it first time and followed http://rtt-lwr.readthedocs.io/en/lates=
-t/rtpc/rtnet.html
->>>>
->>>> I tried to install rtnet and get some error
->>>> taras@prog-pc12:~/RTnet$ sudo make menuconfig
->>>> make[1]: Entering directory '/home/taras/RTnet/scripts/kconfig'
->>>> #
->>>> # using defaults found in ../../.rtnet_config
->>>> #
->>>>
->>>>
->>>> *** End of RTnet configuration.
->>>> *** Execute 'make' to build RTnet or try 'make help'.
->>>>
->>>> make[1]: Leaving directory '/home/taras/RTnet/scripts/kconfig'
->>>> /bin/sh: 3: /home/taras/RTnet/configure: not found
->>>> makefile:51: recipe for target 'config.status' failed
->>>> make: *** [config.status] Error 1
->>>>
->>>>
->>>>
->>>> or if i do  ./configure    a get
->>>> checking for main in -lncurses... yes
->>>> checking for RTnet Kconfig file... ./defconfig (default)
->>>>
->>>> checking for RT-extension... /usr/xenomai (Xenomai 2.0.x)
->>>> checking for Xenomai version... configure: error: *** Unsupported Xeno=
-mai version 3.0.5 in /usr/xenomai
->>>> taras@prog-pc12:~/RTnet$
->>>>
->>>> What s wrong ? Please help/
->>>>
->>>> some outputs
->>>>
->>>> taras@prog-pc12:/usr/xenomai/bin$ ./xeno-config --info|grep -i build
->>>> Build args: --with-pic --with-core=3Dcobalt --enable-smp --disable-tls=
- --enable-dlopen-libs --disable-clock-monotonic-raw
->>>>
->>>> taras@prog-pc12:/usr/xenomai/bin$ cd /usr/xenomai/sbin/
->>>> taras@prog-pc12:/usr/xenomai/sbin$ ./version
->>>> Xenomai/cobalt v3.0.5
->>>>
->>>> taras@prog-pc12:/usr/xenomai/sbin$ uname -r
->>>> 4.9.38-xenomai-3.0.5
->>>>
->>>>
->>>>
->>>> =D0=A1 =D1=83=D0=B2=D0=B0=D0=B6=D0=B5=D0=BD=D0=B8=D0=B5=D0=BC =D0=B8 =
-=D0=BD=D0=B0=D0=B4=D0=B5=D0=B6=D0=B4=D0=BE=D0=B9 =D0=BD=D0=B0 =D1=81=D0=BE=
-=D1=82=D1=80=D1=83=D0=B4=D0=BD=D0=B8=D1=87=D0=B5=D1=81=D1=82=D0=B2=D0=BE,
->>>> =D0=A8=D0=B5=D0=B2=D1=87=D0=B5=D0=BD=D0=BA=D0=BE =D0=A2.=D0=93.
->>>> _______________________________________________
->>>> Xenomai mailing list
->>>> Xenomai@xenomai.org
->>>> https://xenomai.org/mailman/listinfo/xenomai
+We thought of moving the application to the alchemy skin but given the fact
+that the posix skin is the fastest ( https://xenomai.org/
+pipermail/xenomai/2017-June/037400.html )  we would like to stick with
+posix.
 
+Thank you,
+Virendra
+
+On Mon, Mar 12, 2018 at 3:14 PM, Virendra Kate <virendrakate@gmail.com>
+wrote:
+
+> Hello,
+>
+> I have been trying to debug a xenomai-cobalt application which uses
+> the POSIX API.
+> Target environment:
+> hw = ARM64,
+> linux kernel = 4.12.14,
+> "cat /proc/xenomai/version" = 3.1-devel,
+> "cat /proc/ipipe/version" = 2.
+>
+> Debugger/compiler info:
+> gdb (on the target board): GNU gdb (Ubuntu 7.11.1-0ubuntu1~16.5) 7.11.1
+> gcc (on the target board):(Ubuntu/Linaro 5.4.0-6ubuntu1~16.04.9) 5.4.0
+> 20160609
+> Installed Xenomai 3 libraries from the latest xenomai-next package
+> with the target's default toolchain mentioned above using :
+> ./scripts/bootstrap
+> ./configure CFLAGS="-march=armv8-a" LDFLAGS="-march=armv8-a"
+> --with-core=cobalt --enable-smp --enable-pshared
+> make
+> sudo make install
+>
+> Compiled the Posix App on the target using the attached makefile. Then
+> ran the application - works perfectly fine. I can also see the RT
+> thread (with correct priority) in "cat /proc/xenomai/sched/threads".
+> Now I ran the application with gdb (no breakpoints) - works perfectly
+> fine. Next I ran the application with breakpoints inside "main" & the
+> RT task - only the "main" breakpoints were hit and gdb freezes without
+> hitting the RT bereakpoint. I also ran a simple "alchemy" based
+> application and the breakpoints in the RT task worked perfectly fine.
+>
+> At the moment the only workaround I use is to switch to the
+> SCHED_OTHER (non-RT) scheme & then the breakpoints work fine.
+> Did anyone face this issue? If yes how was this resolved with SCHED_FIFO
+> on?
+>
+> Thank you,
+> Virendra
+>
