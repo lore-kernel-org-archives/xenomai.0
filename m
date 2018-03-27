@@ -1,12 +1,12 @@
+From: Frank Benkert <xenomai@frank-benkert.de>
+Message-ID: <52bd261d-07c2-80d1-77f4-fb501795dea7@frank-benkert.de>
+Date: Tue, 27 Mar 2018 09:59:37 +0200
 MIME-Version: 1.0
-In-Reply-To: <CAA3JOdYcsqAU7z0nhd7WMCcH-3z-XiDP2RfS6RKK0hYi2Br59Q@mail.gmail.com>
-References: <CAA3JOdYcsqAU7z0nhd7WMCcH-3z-XiDP2RfS6RKK0hYi2Br59Q@mail.gmail.com>
-From: Virendra Kate <virendrakate@gmail.com>
-Date: Mon, 26 Mar 2018 17:58:02 -0700
-Message-ID: <CAA3JOdasXZGO9Dpyu3UU4rUgkjueP69hLBSi4R8hfn93xB1TTw@mail.gmail.com>
-Content-Type: text/plain; charset="UTF-8"
-Subject: Re: [Xenomai] GDB freezes with breakpoints inside RT POSIX App
-	(ARM64)
+Content-Language: en-US
+Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset="utf-8"; Format="flowed"
+Subject: [Xenomai] Regression posix/mprotect failed on Xenomai 2.6.5 on
+	powerpc
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,58 +17,21 @@ List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: xenomai@xenomai.org
 
-Hello,
-
-Could someone please help me out with this issue? This is an important
-issue for us as it is hindering efficient debugging.
-
-We thought of moving the application to the alchemy skin but given the fact
-that the posix skin is the fastest ( https://xenomai.org/
-pipermail/xenomai/2017-June/037400.html )  we would like to stick with
-posix.
-
-Thank you,
-Virendra
-
-On Mon, Mar 12, 2018 at 3:14 PM, Virendra Kate <virendrakate@gmail.com>
-wrote:
-
-> Hello,
->
-> I have been trying to debug a xenomai-cobalt application which uses
-> the POSIX API.
-> Target environment:
-> hw = ARM64,
-> linux kernel = 4.12.14,
-> "cat /proc/xenomai/version" = 3.1-devel,
-> "cat /proc/ipipe/version" = 2.
->
-> Debugger/compiler info:
-> gdb (on the target board): GNU gdb (Ubuntu 7.11.1-0ubuntu1~16.5) 7.11.1
-> gcc (on the target board):(Ubuntu/Linaro 5.4.0-6ubuntu1~16.04.9) 5.4.0
-> 20160609
-> Installed Xenomai 3 libraries from the latest xenomai-next package
-> with the target's default toolchain mentioned above using :
-> ./scripts/bootstrap
-> ./configure CFLAGS="-march=armv8-a" LDFLAGS="-march=armv8-a"
-> --with-core=cobalt --enable-smp --enable-pshared
-> make
-> sudo make install
->
-> Compiled the Posix App on the target using the attached makefile. Then
-> ran the application - works perfectly fine. I can also see the RT
-> thread (with correct priority) in "cat /proc/xenomai/sched/threads".
-> Now I ran the application with gdb (no breakpoints) - works perfectly
-> fine. Next I ran the application with breakpoints inside "main" & the
-> RT task - only the "main" breakpoints were hit and gdb freezes without
-> hitting the RT bereakpoint. I also ran a simple "alchemy" based
-> application and the breakpoints in the RT task worked perfectly fine.
->
-> At the moment the only workaround I use is to switch to the
-> SCHED_OTHER (non-RT) scheme & then the breakpoints work fine.
-> Did anyone face this issue? If yes how was this resolved with SCHED_FIFO
-> on?
->
-> Thank you,
-> Virendra
->
+SGVsbG8sCgp3ZSBoYXZlIHRvIG1haW50YWluIGFuIG9sZCBwcm9kdWN0aXZlIHN5c3RlbS4KSXQn
+cyBiYXNlZCBvbiBhIHBvd2VycGMgTVBDNTIwMC4KQWZ0ZXIgdXBkYXRpbmcgWGVub21haSBmcm9t
+IDIuNi4xIHRvIDIuNi41IHRoZSBYZW5vbWFpIHJlZ3Jlc3Npb24gdGVzdCAKc3VpdGUgZmFpbGVk
+IG9uIHBvc2l4L21wcm90ZWN0OgoKKyAvdXNyL2Jpbi9yZWdyZXNzaW9uL3Bvc2l4L21wcm90ZWN0
+Cm1lbW9yeSByZWFkCm1lbW9yeSB3cml0ZSBhZnRlciBleGVjIGVuYWJsZQptZW1vcnkgd3JpdGUg
+YWZ0ZXIgd3JpdGUgZW5hYmxlCm1lbW9yeSByZWFkL3dyaXRlIGFmdGVyIGFjY2VzcyBlbmFibGUK
+RkFJTFVSRSBtYWluOjEwMjogcmVhZCB6ZXJvIHJldHVybmVkIDI1NSBpbnN0ZWFkIG9mIDAKCkRp
+ZCBzb21lb25lIGVsc2UgYWxzbyBkaXNjb3ZlcmVkIHRoaXMgcHJvYmxlbSBvciBkb2VzIGEgd3Jv
+bmcgCmNvbmZpZ3VyYXRpb24gb2Ygb3VyIHN5c3RlbSB0cmlnZ2VycyB0aGlzPwoKVGhlIGVmZmVj
+dGl2ZSBjb25maWcuZ3ogaXMgYXR0YWNoZWQuCgpPdXIgS2VybmVsIGlzIDMuNS4zIGFuZCB3YXMg
+b3JpZ2luYWxseSBwYXRjaGVkIHdpdGgKc2NyaXB0cy9wcmVwYXJlLWtlcm5lbC5zaCBmcm9tIFhl
+bm9tYWkgdjIuNi4xCmNvdWxkIHRoYXQgYmUgdGhlIHByb2JsZW0/IEkgdGhvdWdodCB0aGlzIG9u
+bHkgcGF0Y2hlcyBpcGlwZSBpbnRvIHRoZSAKa2VybmVsIC0gcmVnYXJkbGVzcyBvZiB0aGUgeGVu
+b21haSB2ZXJzaW9uLgoKQW0gSSB3cm9uZz8KClRoYW5rcyEKLS0tLS0tLS0tLS0tLS0gbmV4dCBw
+YXJ0IC0tLS0tLS0tLS0tLS0tCkEgbm9uLXRleHQgYXR0YWNobWVudCB3YXMgc2NydWJiZWQuLi4K
+TmFtZTogY29uZmlnLmd6ClR5cGU6IGFwcGxpY2F0aW9uL2d6aXAKU2l6ZTogMTI0MjcgYnl0ZXMK
+RGVzYzogbm90IGF2YWlsYWJsZQpVUkw6IDxodHRwOi8veGVub21haS5vcmcvcGlwZXJtYWlsL3hl
+bm9tYWkvYXR0YWNobWVudHMvMjAxODAzMjcvYzcwZTc4YTcvYXR0YWNobWVudC5iaW4+Cg==
