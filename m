@@ -1,12 +1,13 @@
-From: Frank Benkert <xenomai@frank-benkert.de>
-Message-ID: <52bd261d-07c2-80d1-77f4-fb501795dea7@frank-benkert.de>
-Date: Tue, 27 Mar 2018 09:59:37 +0200
+Date: Tue, 27 Mar 2018 11:25:58 +0200
+From: Henning Schild <henning.schild@siemens.com>
+Message-ID: <20180327112558.3fc3e8eb@mmd1pvb1c.ad001.siemens.net>
+In-Reply-To: <52bd261d-07c2-80d1-77f4-fb501795dea7@frank-benkert.de>
+References: <52bd261d-07c2-80d1-77f4-fb501795dea7@frank-benkert.de>
 MIME-Version: 1.0
-Content-Language: en-US
-Content-Transfer-Encoding: base64
-Content-Type: text/plain; charset="utf-8"; Format="flowed"
-Subject: [Xenomai] Regression posix/mprotect failed on Xenomai 2.6.5 on
-	powerpc
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai] Regression posix/mprotect failed on Xenomai 2.6.5 on
+ powerpc
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,23 +16,58 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
+To: Frank Benkert <xenomai@frank-benkert.de>
+Cc: xenomai@xenomai.org
 
-SGVsbG8sCgp3ZSBoYXZlIHRvIG1haW50YWluIGFuIG9sZCBwcm9kdWN0aXZlIHN5c3RlbS4KSXQn
-cyBiYXNlZCBvbiBhIHBvd2VycGMgTVBDNTIwMC4KQWZ0ZXIgdXBkYXRpbmcgWGVub21haSBmcm9t
-IDIuNi4xIHRvIDIuNi41IHRoZSBYZW5vbWFpIHJlZ3Jlc3Npb24gdGVzdCAKc3VpdGUgZmFpbGVk
-IG9uIHBvc2l4L21wcm90ZWN0OgoKKyAvdXNyL2Jpbi9yZWdyZXNzaW9uL3Bvc2l4L21wcm90ZWN0
-Cm1lbW9yeSByZWFkCm1lbW9yeSB3cml0ZSBhZnRlciBleGVjIGVuYWJsZQptZW1vcnkgd3JpdGUg
-YWZ0ZXIgd3JpdGUgZW5hYmxlCm1lbW9yeSByZWFkL3dyaXRlIGFmdGVyIGFjY2VzcyBlbmFibGUK
-RkFJTFVSRSBtYWluOjEwMjogcmVhZCB6ZXJvIHJldHVybmVkIDI1NSBpbnN0ZWFkIG9mIDAKCkRp
-ZCBzb21lb25lIGVsc2UgYWxzbyBkaXNjb3ZlcmVkIHRoaXMgcHJvYmxlbSBvciBkb2VzIGEgd3Jv
-bmcgCmNvbmZpZ3VyYXRpb24gb2Ygb3VyIHN5c3RlbSB0cmlnZ2VycyB0aGlzPwoKVGhlIGVmZmVj
-dGl2ZSBjb25maWcuZ3ogaXMgYXR0YWNoZWQuCgpPdXIgS2VybmVsIGlzIDMuNS4zIGFuZCB3YXMg
-b3JpZ2luYWxseSBwYXRjaGVkIHdpdGgKc2NyaXB0cy9wcmVwYXJlLWtlcm5lbC5zaCBmcm9tIFhl
-bm9tYWkgdjIuNi4xCmNvdWxkIHRoYXQgYmUgdGhlIHByb2JsZW0/IEkgdGhvdWdodCB0aGlzIG9u
-bHkgcGF0Y2hlcyBpcGlwZSBpbnRvIHRoZSAKa2VybmVsIC0gcmVnYXJkbGVzcyBvZiB0aGUgeGVu
-b21haSB2ZXJzaW9uLgoKQW0gSSB3cm9uZz8KClRoYW5rcyEKLS0tLS0tLS0tLS0tLS0gbmV4dCBw
-YXJ0IC0tLS0tLS0tLS0tLS0tCkEgbm9uLXRleHQgYXR0YWNobWVudCB3YXMgc2NydWJiZWQuLi4K
-TmFtZTogY29uZmlnLmd6ClR5cGU6IGFwcGxpY2F0aW9uL2d6aXAKU2l6ZTogMTI0MjcgYnl0ZXMK
-RGVzYzogbm90IGF2YWlsYWJsZQpVUkw6IDxodHRwOi8veGVub21haS5vcmcvcGlwZXJtYWlsL3hl
-bm9tYWkvYXR0YWNobWVudHMvMjAxODAzMjcvYzcwZTc4YTcvYXR0YWNobWVudC5iaW4+Cg==
+Am Tue, 27 Mar 2018 09:59:37 +0200
+schrieb Frank Benkert <xenomai@frank-benkert.de>:
+
+> Hello,
+> 
+> we have to maintain an old productive system.
+
+Good luck ;) The versions you are using are not maintained anymore.
+
+> It's based on a powerpc MPC5200.
+> After updating Xenomai from 2.6.1 to 2.6.5 the Xenomai regression
+> test suite failed on posix/mprotect:
+> 
+> + /usr/bin/regression/posix/mprotect
+> memory read
+> memory write after exec enable
+> memory write after write enable
+> memory read/write after access enable
+> FAILURE main:102: read zero returned 255 instead of 0
+> 
+> Did someone else also discovered this problem or does a wrong 
+> configuration of our system triggers this?
+> 
+> The effective config.gz is attached.
+> 
+> Our Kernel is 3.5.3 and was originally patched with
+> scripts/prepare-kernel.sh from Xenomai v2.6.1
+> could that be the problem? I thought this only patches ipipe into the 
+> kernel - regardless of the xenomai version.
+
+Yes that is a problem. You will need to patch the kernel again. It
+should already be ipipe-enabled and prepare-kernel adds the cokernel.
+(part of xenomai)
+
+Henning
+
+> Am I wrong?
+> 
+> Thanks!
+> -------------- next part --------------
+> A non-text attachment was scrubbed...
+> Name: config.gz
+> Type: application/gzip
+> Size: 12427 bytes
+> Desc: not available
+> URL:
+> <http://xenomai.org/pipermail/xenomai/attachments/20180327/c70e78a7/attachment.bin>
+> _______________________________________________ Xenomai mailing list
+> Xenomai@xenomai.org
+> https://xenomai.org/mailman/listinfo/xenomai
+
+
