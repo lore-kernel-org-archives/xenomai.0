@@ -1,11 +1,10 @@
 References: <52bd261d-07c2-80d1-77f4-fb501795dea7@frank-benkert.de>
- <20180327112558.3fc3e8eb@mmd1pvb1c.ad001.siemens.net>
-From: Frank Benkert <xenomai@frank-benkert.de>
-Message-ID: <8e9cc022-3efa-d874-8939-3fb85529913e@frank-benkert.de>
-Date: Tue, 27 Mar 2018 11:57:30 +0200
+From: Philippe Gerum <rpm@xenomai.org>
+Message-ID: <cd4214b0-078b-f02b-66c1-f81c4b078ac4@xenomai.org>
+Date: Tue, 27 Mar 2018 13:01:43 +0200
 MIME-Version: 1.0
-In-Reply-To: <20180327112558.3fc3e8eb@mmd1pvb1c.ad001.siemens.net>
-Content-Type: text/plain; charset=utf-8; format=flowed
+In-Reply-To: <52bd261d-07c2-80d1-77f4-fb501795dea7@frank-benkert.de>
+Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
 Subject: Re: [Xenomai] Regression posix/mprotect failed on Xenomai 2.6.5 on
@@ -18,71 +17,37 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
+To: Frank Benkert <xenomai@frank-benkert.de>, xenomai@xenomai.org
 
-Hi Hennig,
+On 03/27/2018 09:59 AM, Frank Benkert wrote:
+> Hello,
+> 
+> we have to maintain an old productive system.
+> It's based on a powerpc MPC5200.
+> After updating Xenomai from 2.6.1 to 2.6.5 the Xenomai regression test
+> suite failed on posix/mprotect:
+> 
+> + /usr/bin/regression/posix/mprotect
+> memory read
+> memory write after exec enable
+> memory write after write enable
+> memory read/write after access enable
+> FAILURE main:102: read zero returned 255 instead of 0
+> 
+This does not look good given how trivial the failing test is. I can't
+tell for kernel 3.5.x, and I won't try it because this would require to
+downgrade to a legacy ppc toolchain for building such an old kernel,
+which would require more time than I can invest in this case.
 
-thanks for the quick answer.
-I was wrong about the kernel-preparation. I misread the git log of our 
-repository. The patch where someone added the prepare-kernel changes was 
-reverted and the script is executed on every new kernel build in fact.
-I think this is the way it should be.
-Just the ipipe patch (ipipe-core-v3.5.3.patch-v2) seems to be in effect 
-in our repo (according the git log).
+Luckily, I still have an ancient 3.10.32 kernel image in my tftpboot
+area for some ppc52xx (*), which I tried: it does not exhibit the issue
+with a stock Xenomai 2.6.5 release.
 
+(*) Hw is a venerable motorola Icecube, but I would assume that any 6xx
+core would do just as well:
 
+CPU:   MPC5200 v1.0, Core v1.1 at 396 MHz
 
-
-Am 27.03.2018 um 11:25 schrieb Henning Schild:
-> Am Tue, 27 Mar 2018 09:59:37 +0200
-> schrieb Frank Benkert <xenomai@frank-benkert.de>:
-> 
->> Hello,
->>
->> we have to maintain an old productive system.
-> 
-> Good luck ;) The versions you are using are not maintained anymore.
-> 
->> It's based on a powerpc MPC5200.
->> After updating Xenomai from 2.6.1 to 2.6.5 the Xenomai regression
->> test suite failed on posix/mprotect:
->>
->> + /usr/bin/regression/posix/mprotect
->> memory read
->> memory write after exec enable
->> memory write after write enable
->> memory read/write after access enable
->> FAILURE main:102: read zero returned 255 instead of 0
->>
->> Did someone else also discovered this problem or does a wrong
->> configuration of our system triggers this?
->>
->> The effective config.gz is attached.
->>
->> Our Kernel is 3.5.3 and was originally patched with
->> scripts/prepare-kernel.sh from Xenomai v2.6.1
->> could that be the problem? I thought this only patches ipipe into the
->> kernel - regardless of the xenomai version.
-> 
-> Yes that is a problem. You will need to patch the kernel again. It
-> should already be ipipe-enabled and prepare-kernel adds the cokernel.
-> (part of xenomai)
-> 
-> Henning
-> 
->> Am I wrong?
->>
->> Thanks!
->> -------------- next part --------------
->> A non-text attachment was scrubbed...
->> Name: config.gz
->> Type: application/gzip
->> Size: 12427 bytes
->> Desc: not available
->> URL:
->> <http://xenomai.org/pipermail/xenomai/attachments/20180327/c70e78a7/attachment.bin>
->> _______________________________________________ Xenomai mailing list
->> Xenomai@xenomai.org
->> https://xenomai.org/mailman/listinfo/xenomai
-> 
+-- 
+Philippe.
 
