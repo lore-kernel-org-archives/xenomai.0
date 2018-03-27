@@ -1,9 +1,14 @@
+References: <6aedc4bc-74b5-4a9f-5c38-036a3d7850b9@siemens.com>
+ <ee7647d4-0bfd-0933-2f10-e9fdc5da2880@web.de>
+ <54cd6098-3828-b028-3328-daf91b46d9da@xenomai.org>
+From: Jan Kiszka <jan.kiszka@web.de>
+Message-ID: <a0af397d-f4b5-f06b-1f55-191547512087@web.de>
+Date: Tue, 27 Mar 2018 18:42:16 +0200
 MIME-Version: 1.0
-From: Pintu Kumar <pintu.ping@gmail.com>
-Date: Tue, 27 Mar 2018 22:08:20 +0530
-Message-ID: <CAOuPNLhC=f01Fa-fZ9SFCsroBq14m9059PMFe9he9Jd_m3p=5g@mail.gmail.com>
-Content-Type: text/plain; charset="UTF-8"
-Subject: [Xenomai] Debug prints inside xenomai library code
+In-Reply-To: <54cd6098-3828-b028-3328-daf91b46d9da@xenomai.org>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+Subject: Re: [Xenomai] 4.9 for x86 issue
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -12,20 +17,26 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "Xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Philippe Gerum <rpm@xenomai.org>
+Cc: Xenomai <xenomai@xenomai.org>
 
-Hi,
-
-How to add our own debug printf statements inside xenomai library
-function, in order to debug something. ?
-When I add some printf/rt_printf/fprintf(stderr) statements, it never
-get printed on console.
-We even tried with --enable-debug=full flag but it did not help.
-
-It looks like standard input/output calls are disabled.
-If there is any option to enable it, please let me know.
-
-
-Thanks,
-Pintu
-
+T24gMjAxOC0wMy0yNyAxNToxMiwgUGhpbGlwcGUgR2VydW0gd3JvdGU6Cj4gT24gMDMvMTAvMjAx
+OCAxMTowNiBQTSwgSmFuIEtpc3prYSB3cm90ZToKPj4gT24gMjAxOC0wMy0wOSAwODo1MSwgSmFu
+IEtpc3prYSB3cm90ZToKPj4+IDQuOSByZXF1aXJlcyBtb3JlIHdvcmssIEkndmUgcHVzaGVkIHRo
+ZSBiZWdpbm5pbmcgdG8gd2lwLzQuOSBpbiB0aGUgc2FtZQo+Pj4gcmVwby4KPj4KPj4gSSBzdGFy
+dGVkIHRvIHBhdGNoIGZ1cnRoZXIgb24gdGhpcyBkdXJpbmcgbXkgZmxpZ2h0ICh3aXAvNC45IHVw
+ZGF0ZWQpLAo+PiBub3RpY2VkIHRoYXQgdGhlIDQuMTQtd2lwIHF1ZXVlIHdpbGwgbmVlZCBhIGxp
+dHRsZSBiaXQgc3lzZW50cnkgdHdlYWtpbmcKPj4gYXMgd2VsbCAobWlzc2luZyA2NC1iaXQgc3lz
+Y2FsbCBkaXNwYXRjaGluZyksIGFuZCB0aGVuIGhhZCB0byBmaW5kIDQuOQo+PiBpbiBhIHJhdGhl
+ciB1bmZvcnR1bmF0ZSBzdGF0ZSAvd3J0IHg4Ni02NDogQ1BVcyBhcmUgbm8gbG9uZ2VyIGlkbGlu
+Zwo+PiBwcm9wZXJseS4gSSB3ZW50IGJhY2sgdG8gaXBpcGUtY29yZS00LjkuMjQteDg2LTIsIHdp
+dGhvdXQgYSBkaWZmZXJlbmNlLgo+Pgo+PiBJZiB5b3Ugc2hvdWxkIGxvb2sgaW50byA0LjkteDg2
+IGFzIHlvdSBpbmRpY2F0ZWQsIHBsZWFzZSBjaGVjayB0aGlzLgo+IAo+IEJvdGggaXNzdWVzIGZp
+eGVkIGluIDQuOS45MC94ODYgYXMgcHVzaGVkIGxhdGVseS4gVGhlIHJlc3VsdCBoYXMgcnVuCj4g
+b3Zlcm5pZ2h0IGluIDY0Yml0IG1vZGUsIGFuZCBmb3IgYSBjb3VwbGUgb2YgaG91cnMgaW4gaWEz
+MmVtdSBtb2RlLiBTbwo+IGZhciBzbyBnb29kLgoKR3JlYXQsIHRoYW5rcyEKCkphbgoKLS0tLS0t
+LS0tLS0tLS0gbmV4dCBwYXJ0IC0tLS0tLS0tLS0tLS0tCkEgbm9uLXRleHQgYXR0YWNobWVudCB3
+YXMgc2NydWJiZWQuLi4KTmFtZTogc2lnbmF0dXJlLmFzYwpUeXBlOiBhcHBsaWNhdGlvbi9wZ3At
+c2lnbmF0dXJlClNpemU6IDE4MSBieXRlcwpEZXNjOiBPcGVuUEdQIGRpZ2l0YWwgc2lnbmF0dXJl
+ClVSTDogPGh0dHA6Ly94ZW5vbWFpLm9yZy9waXBlcm1haWwveGVub21haS9hdHRhY2htZW50cy8y
+MDE4MDMyNy9hZTVlZTk0My9hdHRhY2htZW50LnNpZz4K
