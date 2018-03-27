@@ -1,20 +1,11 @@
-Date: Wed, 28 Feb 2018 19:15:43 +0200 (EET)
-From: =?windows-1251?B?2OXi9+Xt6u4g0uDw4PEgw/Do4+7w/OXi6Pc=?=
- <shevchenko.taras@triolcorp.com.ua>
-Message-ID: <1419496590.8933148.1519838143520.JavaMail.zimbra@triolcorp.com.ua>
-In-Reply-To: <CALLqZ8RPLOHOGApGwgC2s49RvD+BAcn1FDzstJhoRs+Rkee+8w@mail.gmail.com>
-References: <500456767.8825156.1519827180703.JavaMail.zimbra@triolcorp.com.ua>
- <CALLqZ8SHXBKVFyzgkpxS-ecpzPVtEDwGqbzdxXwnwUG+Fn0pRA@mail.gmail.com>
- <429130936.8886425.1519831182179.JavaMail.zimbra@triolcorp.com.ua>
- <CALLqZ8Qa8y1idWvPfA2PBuG_urrgjDuYYX8B7_65yyEQswUvdg@mail.gmail.com>
- <1139048827.8910394.1519833759993.JavaMail.zimbra@triolcorp.com.ua>
- <CALLqZ8S6_-dWvze2+MsBxNBvhS3UCtERLZ=VwqmkN3C9Rw6s1A@mail.gmail.com>
- <1249760478.8926934.1519836402496.JavaMail.zimbra@triolcorp.com.ua>
- <CALLqZ8RPLOHOGApGwgC2s49RvD+BAcn1FDzstJhoRs+Rkee+8w@mail.gmail.com>
+From: Philippe Gerum <rpm@xenomai.org>
+Message-ID: <25945327-203a-5535-d68c-12b1a8143f7d@xenomai.org>
+Date: Tue, 27 Mar 2018 19:03:50 +0200
 MIME-Version: 1.0
 Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
-Subject: Re: [Xenomai] RTnet
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+Subject: [Xenomai] I-pipe documentation effort
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -23,232 +14,28 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Greg Gallagher <greg@embeddedgreg.com>
-Cc: xenomai <xenomai@xenomai.org>
-
-Thanks a lot )))))
-
-may be should you remove this page https://xenomai.org//rtnet-installation/=
-  or add a note abaut xenomai version for such installation
-
-with best regards
-Taras
+To: "Xenomai@xenomai.org" <Xenomai@xenomai.org>
 
 
-=D0=A1 =D1=83=D0=B2=D0=B0=D0=B6=D0=B5=D0=BD=D0=B8=D0=B5=D0=BC =D0=B8 =D0=BD=
-=D0=B0=D0=B4=D0=B5=D0=B6=D0=B4=D0=BE=D0=B9 =D0=BD=D0=B0 =D1=81=D0=BE=D1=82=
-=D1=80=D1=83=D0=B4=D0=BD=D0=B8=D1=87=D0=B5=D1=81=D1=82=D0=B2=D0=BE,
-=D0=A8=D0=B5=D0=B2=D1=87=D0=B5=D0=BD=D0=BA=D0=BE =D0=A2.=D0=93.
+[1] is the beginning of a (long overdue) documentation effort of the
+interrupt pipeline. The primary intent at this point is to help the
+I-pipe maintainers to find their way more easily in the maze.
 
------ Original Message -----
-From: "Greg Gallagher" <greg@embeddedgreg.com>
-To: "=D0=A8=D0=B5=D0=B2=D1=87=D0=B5=D0=BD=D0=BA=D0=BE =D0=A2=D0=B0=D1=80=D0=
-=B0=D1=81 =D0=93=D1=80=D0=B8=D0=B3=D0=BE=D1=80=D1=8C=D0=B5=D0=B2=D0=B8=D1=
-=87" <shevchenko.taras@triolcorp.com.ua>
-Cc: "xenomai" <xenomai@xenomai.org>
-Sent: Wednesday, February 28, 2018 6:55:55 PM
-Subject: Re: [Xenomai] RTnet
+This effort is not complete yet, there is more to come, including a
+documentation of the I-pipe API used by Xenomai. The document I'm
+pushing today does not cover everything I'd like to see there, but
+again, that's a start. If you would like some aspects to be (better)
+covered, please consider contributing to the discussion on this list, or
+submitting your piece for inclusion in that doc.
 
-https://xenomai.org/documentation/xenomai-3/html/MIGRATION/#_rtnet_changes
+Help from native English speakers for fixing misspellings and gibberish
+would be welcome too, just send me patches.
 
-I believe RTNet is built into Xenomai 3, so you just have to enable to
-it in your menuconfig stage.  You don't have to build it separately.
-I don't work with RTNet that much so my bad on longer answer.  You
-should be able to enable the rtnet drivers you need from menuconfig
-and then insert the drivers using modprobe.  You will have to unbind
-the non-rt Ethernet drivers.  There was a recent thread that went into
-detail about how to do this, please look at that thread.
+Thanks,
 
-On Wed, Feb 28, 2018 at 11:46 AM, =D0=A8=D0=B5=D0=B2=D1=87=D0=B5=D0=BD=D0=
-=BA=D0=BE =D0=A2=D0=B0=D1=80=D0=B0=D1=81 =D0=93=D1=80=D0=B8=D0=B3=D0=BE=D1=
-=80=D1=8C=D0=B5=D0=B2=D0=B8=D1=87
-<shevchenko.taras@triolcorp.com.ua> wrote:
->
-> Yes, all from sources
-> I Download it
->
-> wget https://xenomai.org/downloads/xenomai/stable/xenomai-3.0.5.tar.bz2
->
->
-> wget https://xenomai.org/downloads/ipipe/v4.x/x86/ipipe-core-4.9.38-x86-4=
-.patch
->
->
-> and apply
-> ../xenomai-3.0.5/scripts/prepare-kernel.sh --arch=3Dx86_64 --ipipe=3Dipip=
-e-core-4.9.38-x86-4.patch
->
-> then   make menuconfig
->
-> then install
-> and so on.....
->
-> =D0=A1 =D1=83=D0=B2=D0=B0=D0=B6=D0=B5=D0=BD=D0=B8=D0=B5=D0=BC =D0=B8 =D0=
-=BD=D0=B0=D0=B4=D0=B5=D0=B6=D0=B4=D0=BE=D0=B9 =D0=BD=D0=B0 =D1=81=D0=BE=D1=
-=82=D1=80=D1=83=D0=B4=D0=BD=D0=B8=D1=87=D0=B5=D1=81=D1=82=D0=B2=D0=BE,
-> =D0=A8=D0=B5=D0=B2=D1=87=D0=B5=D0=BD=D0=BA=D0=BE =D0=A2.=D0=93.
->
-> ----- Original Message -----
-> From: "Greg Gallagher" <greg@embeddedgreg.com>
-> To: "=D0=A8=D0=B5=D0=B2=D1=87=D0=B5=D0=BD=D0=BA=D0=BE =D0=A2=D0=B0=D1=80=
-=D0=B0=D1=81 =D0=93=D1=80=D0=B8=D0=B3=D0=BE=D1=80=D1=8C=D0=B5=D0=B2=D0=B8=
-=D1=87" <shevchenko.taras@triolcorp.com.ua>, "xenomai" <xenomai@xenomai.org=
->
-> Sent: Wednesday, February 28, 2018 6:37:49 PM
-> Subject: Re: [Xenomai] RTnet
->
-> Please use reply all when responding or the rest of the list won't get
-> the benefit of the question or have the chance to help answer.
->
-> Have you built Xenomai from source?  It looks like you are pointing to
-> the modules only, I believe it needs the patched kernel source.
->
-> -Greg
->
-> On Wed, Feb 28, 2018 at 11:02 AM, =D0=A8=D0=B5=D0=B2=D1=87=D0=B5=D0=BD=D0=
-=BA=D0=BE =D0=A2=D0=B0=D1=80=D0=B0=D1=81 =D0=93=D1=80=D0=B8=D0=B3=D0=BE=D1=
-=80=D1=8C=D0=B5=D0=B2=D0=B8=D1=87
-> <shevchenko.taras@triolcorp.com.ua> wrote:
->> Thank for your reply
->>
->> I try  follow instruction  https://xenomai.org//rtnet-installation/
->>
->>
->> after make menuconfig and set options
->>
->>     Variant=E2=86=92Xenomai 2.1
->>     Add-ons=E2=86=92Real-time Capturing Support=E2=86=92ON
->>     Examples=E2=86=92RTnet Application Examples=E2=86=92ON
->> I  get
->>
->> .....
->>
->> checking for RTnet Kconfig file... .rtnet_config (supplied)
->> checking for RT-extension... configure: error: *** RT-extended kernel no=
-t found in /lib/modules/4.9.38-xenomai-3.0.5/build
->> makefile:51: recipe for target 'config.status' failed
->> make: *** [config.status] Error 1
->>
->>
->> this folder and path exist
->>
->> [*] RTnet Application Examples       =E2=94=82 =E2=94=82
->>   =E2=94=82 =E2=94=82()    Real-time Extension Config-Tool Path (NEW)   =
- which path  should I write here ?
->>
->>
->>
->>
->>
->>
->>
->>
->>
->> =D0=A1 =D1=83=D0=B2=D0=B0=D0=B6=D0=B5=D0=BD=D0=B8=D0=B5=D0=BC =D0=B8 =D0=
-=BD=D0=B0=D0=B4=D0=B5=D0=B6=D0=B4=D0=BE=D0=B9 =D0=BD=D0=B0 =D1=81=D0=BE=D1=
-=82=D1=80=D1=83=D0=B4=D0=BD=D0=B8=D1=87=D0=B5=D1=81=D1=82=D0=B2=D0=BE,
->> =D0=A8=D0=B5=D0=B2=D1=87=D0=B5=D0=BD=D0=BA=D0=BE =D0=A2.=D0=93.
->>
->> ----- Original Message -----
->> From: "Greg Gallagher" <greg@embeddedgreg.com>
->> To: "=D0=A8=D0=B5=D0=B2=D1=87=D0=B5=D0=BD=D0=BA=D0=BE =D0=A2=D0=B0=D1=80=
-=D0=B0=D1=81 =D0=93=D1=80=D0=B8=D0=B3=D0=BE=D1=80=D1=8C=D0=B5=D0=B2=D0=B8=
-=D1=87" <shevchenko.taras@triolcorp.com.ua>, "xenomai" <xenomai@xenomai.org=
->
->> Sent: Wednesday, February 28, 2018 5:33:25 PM
->> Subject: Re: [Xenomai] RTnet
->>
->> Posting back to the list.  RtNet can be used with Xenomai-3, there's
->> been some recent discussion on how to do this.  You should look back
->> through the archive and see if those messages help and then if they
->> don't post back with a specific question.
->>
->> On Wed, Feb 28, 2018 at 10:19 AM, =D0=A8=D0=B5=D0=B2=D1=87=D0=B5=D0=BD=
-=D0=BA=D0=BE =D0=A2=D0=B0=D1=80=D0=B0=D1=81 =D0=93=D1=80=D0=B8=D0=B3=D0=BE=
-=D1=80=D1=8C=D0=B5=D0=B2=D0=B8=D1=87
->> <shevchenko.taras@triolcorp.com.ua> wrote:
->>> But  is it possible to use  Xenomai 3  with RTnet ?
->>> Could you point me right way to do it ?
->>>
->>> =D0=A1 =D1=83=D0=B2=D0=B0=D0=B6=D0=B5=D0=BD=D0=B8=D0=B5=D0=BC =D0=B8 =
-=D0=BD=D0=B0=D0=B4=D0=B5=D0=B6=D0=B4=D0=BE=D0=B9 =D0=BD=D0=B0 =D1=81=D0=BE=
-=D1=82=D1=80=D1=83=D0=B4=D0=BD=D0=B8=D1=87=D0=B5=D1=81=D1=82=D0=B2=D0=BE,
->>> =D0=A8=D0=B5=D0=B2=D1=87=D0=B5=D0=BD=D0=BA=D0=BE =D0=A2.=D0=93.
->>>
->>> ----- Original Message -----
->>> From: "Greg Gallagher" <greg@embeddedgreg.com>
->>> To: "=D0=A8=D0=B5=D0=B2=D1=87=D0=B5=D0=BD=D0=BA=D0=BE =D0=A2=D0=B0=D1=
-=80=D0=B0=D1=81 =D0=93=D1=80=D0=B8=D0=B3=D0=BE=D1=80=D1=8C=D0=B5=D0=B2=D0=
-=B8=D1=87" <shevchenko.taras@triolcorp.com.ua>
->>> Cc: "xenomai" <xenomai@xenomai.org>
->>> Sent: Wednesday, February 28, 2018 5:01:23 PM
->>> Subject: Re: [Xenomai] RTnet
->>>
->>> It looks like Xenomai 3.05 is not supported with the instructions you
->>> are following.
->>>
->>> -Greg
->>>
->>> On Wed, Feb 28, 2018 at 9:13 AM, =D0=A8=D0=B5=D0=B2=D1=87=D0=B5=D0=BD=
-=D0=BA=D0=BE =D0=A2=D0=B0=D1=80=D0=B0=D1=81 =D0=93=D1=80=D0=B8=D0=B3=D0=BE=
-=D1=80=D1=8C=D0=B5=D0=B2=D0=B8=D1=87
->>> <shevchenko.taras@triolcorp.com.ua> wrote:
->>>>
->>>> Hi!
->>>>
->>>> I do it first time and followed http://rtt-lwr.readthedocs.io/en/lates=
-t/rtpc/rtnet.html
->>>>
->>>> I tried to install rtnet and get some error
->>>> taras@prog-pc12:~/RTnet$ sudo make menuconfig
->>>> make[1]: Entering directory '/home/taras/RTnet/scripts/kconfig'
->>>> #
->>>> # using defaults found in ../../.rtnet_config
->>>> #
->>>>
->>>>
->>>> *** End of RTnet configuration.
->>>> *** Execute 'make' to build RTnet or try 'make help'.
->>>>
->>>> make[1]: Leaving directory '/home/taras/RTnet/scripts/kconfig'
->>>> /bin/sh: 3: /home/taras/RTnet/configure: not found
->>>> makefile:51: recipe for target 'config.status' failed
->>>> make: *** [config.status] Error 1
->>>>
->>>>
->>>>
->>>> or if i do  ./configure    a get
->>>> checking for main in -lncurses... yes
->>>> checking for RTnet Kconfig file... ./defconfig (default)
->>>>
->>>> checking for RT-extension... /usr/xenomai (Xenomai 2.0.x)
->>>> checking for Xenomai version... configure: error: *** Unsupported Xeno=
-mai version 3.0.5 in /usr/xenomai
->>>> taras@prog-pc12:~/RTnet$
->>>>
->>>> What s wrong ? Please help/
->>>>
->>>> some outputs
->>>>
->>>> taras@prog-pc12:/usr/xenomai/bin$ ./xeno-config --info|grep -i build
->>>> Build args: --with-pic --with-core=3Dcobalt --enable-smp --disable-tls=
- --enable-dlopen-libs --disable-clock-monotonic-raw
->>>>
->>>> taras@prog-pc12:/usr/xenomai/bin$ cd /usr/xenomai/sbin/
->>>> taras@prog-pc12:/usr/xenomai/sbin$ ./version
->>>> Xenomai/cobalt v3.0.5
->>>>
->>>> taras@prog-pc12:/usr/xenomai/sbin$ uname -r
->>>> 4.9.38-xenomai-3.0.5
->>>>
->>>>
->>>>
->>>> =D0=A1 =D1=83=D0=B2=D0=B0=D0=B6=D0=B5=D0=BD=D0=B8=D0=B5=D0=BC =D0=B8 =
-=D0=BD=D0=B0=D0=B4=D0=B5=D0=B6=D0=B4=D0=BE=D0=B9 =D0=BD=D0=B0 =D1=81=D0=BE=
-=D1=82=D1=80=D1=83=D0=B4=D0=BD=D0=B8=D1=87=D0=B5=D1=81=D1=82=D0=B2=D0=BE,
->>>> =D0=A8=D0=B5=D0=B2=D1=87=D0=B5=D0=BD=D0=BA=D0=BE =D0=A2.=D0=93.
->>>> _______________________________________________
->>>> Xenomai mailing list
->>>> Xenomai@xenomai.org
->>>> https://xenomai.org/mailman/listinfo/xenomai
+[1]
+http://git.xenomai.org/ipipe-noarch.git/commit/?id=c77d53324e7cb47295a3c11c1bf0919385ccc23b
+
+-- 
+Philippe.
 
