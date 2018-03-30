@@ -1,16 +1,19 @@
-MIME-Version: 1.0
-In-Reply-To: <CAOuPNLjsR2rELk49orfVWJ2TVg_-66crVoc67eRZG9KEeCEcVg@mail.gmail.com>
 References: <CAOuPNLjGFNwaCNa1zGQY4gZpLC7J=5M4EzGNS-YiK1UOx=+t0w@mail.gmail.com>
  <d8ad5e99-4097-4754-f443-de74f9653cb4@xenomai.org>
  <CAOuPNLgYEpHaoMMZ+Dx=WHqwMnRLwkx_hUZAj6Jtiqfq_1LTZw@mail.gmail.com>
  <5e40ba43-e8a0-1a2e-9020-d62788ad7c01@xenomai.org>
  <CAOuPNLjsR2rELk49orfVWJ2TVg_-66crVoc67eRZG9KEeCEcVg@mail.gmail.com>
-From: Pintu Kumar <pintu.ping@gmail.com>
-Date: Fri, 30 Mar 2018 12:23:22 +0530
-Message-ID: <CAOuPNLh_7X7jieLUN3vYRzKfvJMHO-60gC9mT_nS1O_K8m-iSA@mail.gmail.com>
-Content-Type: text/plain; charset="UTF-8"
+ <CAOuPNLh_7X7jieLUN3vYRzKfvJMHO-60gC9mT_nS1O_K8m-iSA@mail.gmail.com>
+From: Philippe Gerum <rpm@xenomai.org>
+Message-ID: <96202e8c-f3cc-5c97-09af-a4d6a9b7c0f1@xenomai.org>
+Date: Fri, 30 Mar 2018 10:04:18 +0200
+MIME-Version: 1.0
+In-Reply-To: <CAOuPNLh_7X7jieLUN3vYRzKfvJMHO-60gC9mT_nS1O_K8m-iSA@mail.gmail.com>
+Content-Language: en-US
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 Subject: Re: [Xenomai] Problem with rt_cond_wait and rt_cond_signal
-	combination
+ combination
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -19,124 +22,90 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Philippe Gerum <rpm@xenomai.org>
+To: Pintu Kumar <pintu.ping@gmail.com>
 Cc: "Xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On Fri, Mar 30, 2018 at 12:12 PM, Pintu Kumar <pintu.ping@gmail.com> wrote:
-> On Wed, Mar 28, 2018 at 11:02 PM, Philippe Gerum <rpm@xenomai.org> wrote:
->> On 03/28/2018 07:20 PM, Pintu Kumar wrote:
->>> On Wed, Mar 28, 2018 at 8:37 PM, Philippe Gerum <rpm@xenomai.org> wrote:
->>>> On 03/28/2018 09:54 AM, Pintu Kumar wrote:
->>>>> Hi,
->>>>>
->>>>> We are facing one issue on Xenomai-3 on x86_64 system.
->>>>> Kernel: 4.9.51
->>>>> ipipe version: 4
->>>>> # /usr/xenomai/sbin/version
->>>>> Xenomai/cobalt v3.0.6 -- #5956064 (2018-03-20 12:13:33 +0100)
->>>>>
->>>>> Its a very simple API level test.
->>>>> We create a condition variable and wait for the condition inside a task.
->>>>> Then, we immediately signal the condition from the main thread, and simply
->>>>> wait for the test to finish.
->>>>>
->>>>> But we observed that condition task is never getting released, and the
->>>>> program hangs.
->>>>>
->>>>> This is the output:
->>>>> --------------------------
->>>>> # ./condsignal
->>>>> cond_task --> started
->>>>> main --> cond signal success: 0
->>>>> Waiting for task to finish....
->>>>> ^C
->>>>>
->>>>>
->>>>> This is the code snippet that was used.
->>>>> -----------------------------------------------------
->>>>> # cat condsignal.c
->>>>>
->>>>> /*
->>>>>  * 1. Create an condition variable and wait inside a task.
->>>>>  * 2. Delete the condition variable from main task.
->>>>>  * 3. Observe that the condition wait is released and task ends normally.
->>>>>  * 4. Finally main task should exit normally.
->>>>>  *
->>>>>  * */
->>>>> #include <stdio.h>
->>>>> #include <stdlib.h>
->>>>> #include <sys/mman.h>
->>>>> #include <alchemy/task.h>
->>>>> #include <alchemy/mutex.h>
->>>>> #include <alchemy/cond.h>
->>>>> #include <alchemy/task.h>
->>>>>
->>>>> static RT_COND cond;
->>>>> static RT_MUTEX mutex;
->>>>>
->>>>> static void cond_task(void *cookie)
->>>>> {
->>>>>         int err;
->>>>>
->>>>>         printf("%s --> started \n", __func__);
->>>>>         rt_mutex_acquire(&mutex, TM_INFINITE);
->>>>>         err = rt_cond_wait(&cond, &mutex, TM_INFINITE);
->>>>>         rt_mutex_release(&mutex);
->>>>>         if (err) {
->>>>>                 printf("rt_cond_wait failed, err = %d", err);
->>>>>                 return;
->>>>>         }
->>>>>         printf("%s --> cond wait done\n", __func__);
->>>>> }
->>>>>
->>>>> int main(int argc, char **argv)
->>>>> {
->>>>>         int err;
->>>>>         RT_TASK task1;
->>>>>
->>>>>         mlockall(MCL_CURRENT | MCL_FUTURE);
->>>>
->>>>         The line above is redundant with libcobalt inits. But you need:
->>>>
->>>>           err = rt_task_shadow(NULL, "main", <prio>, 0);
->>>>           ...
->>>
->>> OK thank you so much for this. I will try it.
->>> And, yes I am debugging this issue.
->>> I found that rt_cond_wait_timed, did not return from here:
->>
->> Ok, thanks for looking at this. The issue is that the app is missing the
->> call to rt_task_shadow() in the main thread. So that thread receives
->> -EPERM from rt_mutex_acquire(), and the rest is a fallout of that
->> original error.
->>
->
-> Ok, we tried adding rt_task_shadow(NULL, "main", 99, 0), just before
-> rt_task_create(),
-> but it did not help.
-> Still the tasks hangs under rt_cond_wait().
-> So, we need to debug further.
->
-
-OK. Good news :)
-I changed as below and it worked.
-rt_task_shadow(NULL, "main", 98, 0)
-
-So, basically, I lowered the priority of main task and the cond_task
-exited normally this time.
-This indicates that cond_task should run first, then the main task.
-
-But, now the question is:
-when do we need rt_task_shadow() and why it is important only for this case?
-We havent added this in any of our previous tests.
-Is there any side effects of adding this in actual code ?
-
-
->
-> Thanks,
-> Pintu
->
->
->> --
->> Philippe.
-
+T24gMDMvMzAvMjAxOCAwODo1MyBBTSwgUGludHUgS3VtYXIgd3JvdGU6Cj4gT24gRnJpLCBNYXIg
+MzAsIDIwMTggYXQgMTI6MTIgUE0sIFBpbnR1IEt1bWFyIDxwaW50dS5waW5nQGdtYWlsLmNvbT4g
+d3JvdGU6Cj4+IE9uIFdlZCwgTWFyIDI4LCAyMDE4IGF0IDExOjAyIFBNLCBQaGlsaXBwZSBHZXJ1
+bSA8cnBtQHhlbm9tYWkub3JnPiB3cm90ZToKPj4+IE9uIDAzLzI4LzIwMTggMDc6MjAgUE0sIFBp
+bnR1IEt1bWFyIHdyb3RlOgo+Pj4+IE9uIFdlZCwgTWFyIDI4LCAyMDE4IGF0IDg6MzcgUE0sIFBo
+aWxpcHBlIEdlcnVtIDxycG1AeGVub21haS5vcmc+IHdyb3RlOgo+Pj4+PiBPbiAwMy8yOC8yMDE4
+IDA5OjU0IEFNLCBQaW50dSBLdW1hciB3cm90ZToKPj4+Pj4+IEhpLAo+Pj4+Pj4KPj4+Pj4+IFdl
+IGFyZSBmYWNpbmcgb25lIGlzc3VlIG9uIFhlbm9tYWktMyBvbiB4ODZfNjQgc3lzdGVtLgo+Pj4+
+Pj4gS2VybmVsOiA0LjkuNTEKPj4+Pj4+IGlwaXBlIHZlcnNpb246IDQKPj4+Pj4+ICMgL3Vzci94
+ZW5vbWFpL3NiaW4vdmVyc2lvbgo+Pj4+Pj4gWGVub21haS9jb2JhbHQgdjMuMC42IC0tICM1OTU2
+MDY0ICgyMDE4LTAzLTIwIDEyOjEzOjMzICswMTAwKQo+Pj4+Pj4KPj4+Pj4+IEl0cyBhIHZlcnkg
+c2ltcGxlIEFQSSBsZXZlbCB0ZXN0Lgo+Pj4+Pj4gV2UgY3JlYXRlIGEgY29uZGl0aW9uIHZhcmlh
+YmxlIGFuZCB3YWl0IGZvciB0aGUgY29uZGl0aW9uIGluc2lkZSBhIHRhc2suCj4+Pj4+PiBUaGVu
+LCB3ZSBpbW1lZGlhdGVseSBzaWduYWwgdGhlIGNvbmRpdGlvbiBmcm9tIHRoZSBtYWluIHRocmVh
+ZCwgYW5kIHNpbXBseQo+Pj4+Pj4gd2FpdCBmb3IgdGhlIHRlc3QgdG8gZmluaXNoLgo+Pj4+Pj4K
+Pj4+Pj4+IEJ1dCB3ZSBvYnNlcnZlZCB0aGF0IGNvbmRpdGlvbiB0YXNrIGlzIG5ldmVyIGdldHRp
+bmcgcmVsZWFzZWQsIGFuZCB0aGUKPj4+Pj4+IHByb2dyYW0gaGFuZ3MuCj4+Pj4+Pgo+Pj4+Pj4g
+VGhpcyBpcyB0aGUgb3V0cHV0Ogo+Pj4+Pj4gLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0KPj4+
+Pj4+ICMgLi9jb25kc2lnbmFsCj4+Pj4+PiBjb25kX3Rhc2sgLS0+IHN0YXJ0ZWQKPj4+Pj4+IG1h
+aW4gLS0+IGNvbmQgc2lnbmFsIHN1Y2Nlc3M6IDAKPj4+Pj4+IFdhaXRpbmcgZm9yIHRhc2sgdG8g
+ZmluaXNoLi4uLgo+Pj4+Pj4gXkMKPj4+Pj4+Cj4+Pj4+Pgo+Pj4+Pj4gVGhpcyBpcyB0aGUgY29k
+ZSBzbmlwcGV0IHRoYXQgd2FzIHVzZWQuCj4+Pj4+PiAtLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0t
+LS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLQo+Pj4+Pj4gIyBjYXQgY29uZHNpZ25hbC5jCj4+
+Pj4+Pgo+Pj4+Pj4gLyoKPj4+Pj4+ICAqIDEuIENyZWF0ZSBhbiBjb25kaXRpb24gdmFyaWFibGUg
+YW5kIHdhaXQgaW5zaWRlIGEgdGFzay4KPj4+Pj4+ICAqIDIuIERlbGV0ZSB0aGUgY29uZGl0aW9u
+IHZhcmlhYmxlIGZyb20gbWFpbiB0YXNrLgo+Pj4+Pj4gICogMy4gT2JzZXJ2ZSB0aGF0IHRoZSBj
+b25kaXRpb24gd2FpdCBpcyByZWxlYXNlZCBhbmQgdGFzayBlbmRzIG5vcm1hbGx5Lgo+Pj4+Pj4g
+ICogNC4gRmluYWxseSBtYWluIHRhc2sgc2hvdWxkIGV4aXQgbm9ybWFsbHkuCj4+Pj4+PiAgKgo+
+Pj4+Pj4gICogKi8KPj4+Pj4+ICNpbmNsdWRlIDxzdGRpby5oPgo+Pj4+Pj4gI2luY2x1ZGUgPHN0
+ZGxpYi5oPgo+Pj4+Pj4gI2luY2x1ZGUgPHN5cy9tbWFuLmg+Cj4+Pj4+PiAjaW5jbHVkZSA8YWxj
+aGVteS90YXNrLmg+Cj4+Pj4+PiAjaW5jbHVkZSA8YWxjaGVteS9tdXRleC5oPgo+Pj4+Pj4gI2lu
+Y2x1ZGUgPGFsY2hlbXkvY29uZC5oPgo+Pj4+Pj4gI2luY2x1ZGUgPGFsY2hlbXkvdGFzay5oPgo+
+Pj4+Pj4KPj4+Pj4+IHN0YXRpYyBSVF9DT05EIGNvbmQ7Cj4+Pj4+PiBzdGF0aWMgUlRfTVVURVgg
+bXV0ZXg7Cj4+Pj4+Pgo+Pj4+Pj4gc3RhdGljIHZvaWQgY29uZF90YXNrKHZvaWQgKmNvb2tpZSkK
+Pj4+Pj4+IHsKPj4+Pj4+ICAgICAgICAgaW50IGVycjsKPj4+Pj4+Cj4+Pj4+PiAgICAgICAgIHBy
+aW50ZigiJXMgLS0+IHN0YXJ0ZWQgXG4iLCBfX2Z1bmNfXyk7Cj4+Pj4+PiAgICAgICAgIHJ0X211
+dGV4X2FjcXVpcmUoJm11dGV4LCBUTV9JTkZJTklURSk7Cj4+Pj4+PiAgICAgICAgIGVyciA9IHJ0
+X2NvbmRfd2FpdCgmY29uZCwgJm11dGV4LCBUTV9JTkZJTklURSk7Cj4+Pj4+PiAgICAgICAgIHJ0
+X211dGV4X3JlbGVhc2UoJm11dGV4KTsKPj4+Pj4+ICAgICAgICAgaWYgKGVycikgewo+Pj4+Pj4g
+ICAgICAgICAgICAgICAgIHByaW50ZigicnRfY29uZF93YWl0IGZhaWxlZCwgZXJyID0gJWQiLCBl
+cnIpOwo+Pj4+Pj4gICAgICAgICAgICAgICAgIHJldHVybjsKPj4+Pj4+ICAgICAgICAgfQo+Pj4+
+Pj4gICAgICAgICBwcmludGYoIiVzIC0tPiBjb25kIHdhaXQgZG9uZVxuIiwgX19mdW5jX18pOwo+
+Pj4+Pj4gfQo+Pj4+Pj4KPj4+Pj4+IGludCBtYWluKGludCBhcmdjLCBjaGFyICoqYXJndikKPj4+
+Pj4+IHsKPj4+Pj4+ICAgICAgICAgaW50IGVycjsKPj4+Pj4+ICAgICAgICAgUlRfVEFTSyB0YXNr
+MTsKPj4+Pj4+Cj4+Pj4+PiAgICAgICAgIG1sb2NrYWxsKE1DTF9DVVJSRU5UIHwgTUNMX0ZVVFVS
+RSk7Cj4+Pj4+Cj4+Pj4+ICAgICAgICAgVGhlIGxpbmUgYWJvdmUgaXMgcmVkdW5kYW50IHdpdGgg
+bGliY29iYWx0IGluaXRzLiBCdXQgeW91IG5lZWQ6Cj4+Pj4+Cj4+Pj4+ICAgICAgICAgICBlcnIg
+PSBydF90YXNrX3NoYWRvdyhOVUxMLCAibWFpbiIsIDxwcmlvPiwgMCk7Cj4+Pj4+ICAgICAgICAg
+ICAuLi4KPj4+Pgo+Pj4+IE9LIHRoYW5rIHlvdSBzbyBtdWNoIGZvciB0aGlzLiBJIHdpbGwgdHJ5
+IGl0Lgo+Pj4+IEFuZCwgeWVzIEkgYW0gZGVidWdnaW5nIHRoaXMgaXNzdWUuCj4+Pj4gSSBmb3Vu
+ZCB0aGF0IHJ0X2NvbmRfd2FpdF90aW1lZCwgZGlkIG5vdCByZXR1cm4gZnJvbSBoZXJlOgo+Pj4K
+Pj4+IE9rLCB0aGFua3MgZm9yIGxvb2tpbmcgYXQgdGhpcy4gVGhlIGlzc3VlIGlzIHRoYXQgdGhl
+IGFwcCBpcyBtaXNzaW5nIHRoZQo+Pj4gY2FsbCB0byBydF90YXNrX3NoYWRvdygpIGluIHRoZSBt
+YWluIHRocmVhZC4gU28gdGhhdCB0aHJlYWQgcmVjZWl2ZXMKPj4+IC1FUEVSTSBmcm9tIHJ0X211
+dGV4X2FjcXVpcmUoKSwgYW5kIHRoZSByZXN0IGlzIGEgZmFsbG91dCBvZiB0aGF0Cj4+PiBvcmln
+aW5hbCBlcnJvci4KPj4+Cj4+Cj4+IE9rLCB3ZSB0cmllZCBhZGRpbmcgcnRfdGFza19zaGFkb3co
+TlVMTCwgIm1haW4iLCA5OSwgMCksIGp1c3QgYmVmb3JlCj4+IHJ0X3Rhc2tfY3JlYXRlKCksCj4+
+IGJ1dCBpdCBkaWQgbm90IGhlbHAuCj4+IFN0aWxsIHRoZSB0YXNrcyBoYW5ncyB1bmRlciBydF9j
+b25kX3dhaXQoKS4KPj4gU28sIHdlIG5lZWQgdG8gZGVidWcgZnVydGhlci4KPj4KPiAKPiBPSy4g
+R29vZCBuZXdzIDopCj4gSSBjaGFuZ2VkIGFzIGJlbG93IGFuZCBpdCB3b3JrZWQuCj4gcnRfdGFz
+a19zaGFkb3coTlVMTCwgIm1haW4iLCA5OCwgMCkKPiAKCj4gU28sIGJhc2ljYWxseSwgSSBsb3dl
+cmVkIHRoZSBwcmlvcml0eSBvZiBtYWluIHRhc2sgYW5kIHRoZSBjb25kX3Rhc2sKPiBleGl0ZWQg
+bm9ybWFsbHkgdGhpcyB0aW1lLgo+IFRoaXMgaW5kaWNhdGVzIHRoYXQgY29uZF90YXNrIHNob3Vs
+ZCBydW4gZmlyc3QsIHRoZW4gdGhlIG1haW4gdGFzay4KPgoKTm8sIHRoZSBwcmlvcml0eSBpcyBp
+cnJlbGV2YW50IHRvIHRoaXMgY2FzZS4gUGxlYXNlIGNoZWNrIHlvdXIgY29kZTogYQpjb25kaXRp
+b24gdmFyaWFibGUgaGFzIHRvIGJlIHBhaXJlZCB3aXRoIGEgY29uZGl0aW9uLCBvdGhlcndpc2Ug
+aXQgZG9lcwpub3QgbWFrZSBhbnkgc2Vuc2UuIEkgZG91YmxlLWNoZWNrZWQgaGVyZSBhbHJlYWR5
+LCBJJ20gY29uZmlkZW50IHRoZXJlCmlzIG5vIHN1Y2ggaXNzdWUgd2l0aCB0aGUgcnRfY29uZCog
+QVBJLiBUeXBpY2FsIGV4YW1wbGUgYXR0YWNoZWQuCgo+IEJ1dCwgbm93IHRoZSBxdWVzdGlvbiBp
+czoKPiB3aGVuIGRvIHdlIG5lZWQgcnRfdGFza19zaGFkb3coKSBhbmQgd2h5IGl0IGlzIGltcG9y
+dGFudCBvbmx5IGZvciB0aGlzIGNhc2U/Cj4gV2UgaGF2ZW50IGFkZGVkIHRoaXMgaW4gYW55IG9m
+IG91ciBwcmV2aW91cyB0ZXN0cy4KCllvdSBuZWVkIHRoYXQgdG8gY29udmVydCB0aGUgbWFpbigp
+IHRocmVhZCBpbnRvIGFuIEFsY2hlbXkgdGFzay4KRXhjZXJwdCBmcm9tIHRoZSBkb2N1bWVudGF0
+aW9uIG9mIHJ0X3Rhc2tfc2hhZG93OgogKiBTZXQgdGhlIGNhbGxpbmcgdGhyZWFkIHBlcnNvbmFs
+aXR5IHRvIHRoZSBBbGNoZW15IEFQSSwgZW5hYmxpbmcgdGhlCiAqIGZ1bGwgc2V0IG9mIEFsY2hl
+bXkgc2VydmljZXMuCgpydF9tdXRleCogYW5kIGZyaWVuZHMgYXJlIEFsY2hlbXkgc2VydmljZXMu
+Cgo+IElzIHRoZXJlIGFueSBzaWRlIGVmZmVjdHMgb2YgYWRkaW5nIHRoaXMgaW4gYWN0dWFsIGNv
+ZGUgPwo+IAoKWWVzLCBpdCBtYXkgaGVscCBpbiBmaXhpbmcgaXQuCgo+IAo+Pgo+PiBUaGFua3Ms
+Cj4+IFBpbnR1Cj4+Cj4+Cj4+PiAtLQo+Pj4gUGhpbGlwcGUuCj4gCgoKLS0gClBoaWxpcHBlLgot
+LS0tLS0tLS0tLS0tLSBuZXh0IHBhcnQgLS0tLS0tLS0tLS0tLS0KQSBub24tdGV4dCBhdHRhY2ht
+ZW50IHdhcyBzY3J1YmJlZC4uLgpOYW1lOiBjb25kc2lnLmMKVHlwZTogdGV4dC94LWNzcmMKU2l6
+ZTogMTE1NCBieXRlcwpEZXNjOiBub3QgYXZhaWxhYmxlClVSTDogPGh0dHA6Ly94ZW5vbWFpLm9y
+Zy9waXBlcm1haWwveGVub21haS9hdHRhY2htZW50cy8yMDE4MDMzMC8zZTQ0MzkyOS9hdHRhY2ht
+ZW50LmM+Cg==
