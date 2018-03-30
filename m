@@ -1,18 +1,11 @@
+From: Philippe Gerum <rpm@xenomai.org>
+Message-ID: <bb8f24a9-17fb-7230-1371-35085882cc6f@xenomai.org>
+Date: Fri, 30 Mar 2018 20:01:14 +0200
 MIME-Version: 1.0
-In-Reply-To: <96202e8c-f3cc-5c97-09af-a4d6a9b7c0f1@xenomai.org>
-References: <CAOuPNLjGFNwaCNa1zGQY4gZpLC7J=5M4EzGNS-YiK1UOx=+t0w@mail.gmail.com>
- <d8ad5e99-4097-4754-f443-de74f9653cb4@xenomai.org>
- <CAOuPNLgYEpHaoMMZ+Dx=WHqwMnRLwkx_hUZAj6Jtiqfq_1LTZw@mail.gmail.com>
- <5e40ba43-e8a0-1a2e-9020-d62788ad7c01@xenomai.org>
- <CAOuPNLjsR2rELk49orfVWJ2TVg_-66crVoc67eRZG9KEeCEcVg@mail.gmail.com>
- <CAOuPNLh_7X7jieLUN3vYRzKfvJMHO-60gC9mT_nS1O_K8m-iSA@mail.gmail.com>
- <96202e8c-f3cc-5c97-09af-a4d6a9b7c0f1@xenomai.org>
-From: Pintu Kumar <pintu.ping@gmail.com>
-Date: Fri, 30 Mar 2018 19:13:39 +0530
-Message-ID: <CAOuPNLiXpZGU-6=_z-O2KCofdNu2W9bj_dqSnRuppBOuy6MSUw@mail.gmail.com>
-Content-Type: text/plain; charset="UTF-8"
-Subject: Re: [Xenomai] Problem with rt_cond_wait and rt_cond_signal
-	combination
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+Subject: [Xenomai] Xenomai / UDOO x86
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -21,169 +14,65 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Philippe Gerum <rpm@xenomai.org>
-Cc: "Xenomai@xenomai.org" <xenomai@xenomai.org>
-
-On Fri, Mar 30, 2018 at 1:34 PM, Philippe Gerum <rpm@xenomai.org> wrote:
-> On 03/30/2018 08:53 AM, Pintu Kumar wrote:
->> On Fri, Mar 30, 2018 at 12:12 PM, Pintu Kumar <pintu.ping@gmail.com> wrote:
->>> On Wed, Mar 28, 2018 at 11:02 PM, Philippe Gerum <rpm@xenomai.org> wrote:
->>>> On 03/28/2018 07:20 PM, Pintu Kumar wrote:
->>>>> On Wed, Mar 28, 2018 at 8:37 PM, Philippe Gerum <rpm@xenomai.org> wrote:
->>>>>> On 03/28/2018 09:54 AM, Pintu Kumar wrote:
->>>>>>> Hi,
->>>>>>>
->>>>>>> We are facing one issue on Xenomai-3 on x86_64 system.
->>>>>>> Kernel: 4.9.51
->>>>>>> ipipe version: 4
->>>>>>> # /usr/xenomai/sbin/version
->>>>>>> Xenomai/cobalt v3.0.6 -- #5956064 (2018-03-20 12:13:33 +0100)
->>>>>>>
->>>>>>> Its a very simple API level test.
->>>>>>> We create a condition variable and wait for the condition inside a task.
->>>>>>> Then, we immediately signal the condition from the main thread, and simply
->>>>>>> wait for the test to finish.
->>>>>>>
->>>>>>> But we observed that condition task is never getting released, and the
->>>>>>> program hangs.
->>>>>>>
->>>>>>> This is the output:
->>>>>>> --------------------------
->>>>>>> # ./condsignal
->>>>>>> cond_task --> started
->>>>>>> main --> cond signal success: 0
->>>>>>> Waiting for task to finish....
->>>>>>> ^C
->>>>>>>
->>>>>>>
->>>>>>> This is the code snippet that was used.
->>>>>>> -----------------------------------------------------
->>>>>>> # cat condsignal.c
->>>>>>>
->>>>>>> /*
->>>>>>>  * 1. Create an condition variable and wait inside a task.
->>>>>>>  * 2. Delete the condition variable from main task.
->>>>>>>  * 3. Observe that the condition wait is released and task ends normally.
->>>>>>>  * 4. Finally main task should exit normally.
->>>>>>>  *
->>>>>>>  * */
->>>>>>> #include <stdio.h>
->>>>>>> #include <stdlib.h>
->>>>>>> #include <sys/mman.h>
->>>>>>> #include <alchemy/task.h>
->>>>>>> #include <alchemy/mutex.h>
->>>>>>> #include <alchemy/cond.h>
->>>>>>> #include <alchemy/task.h>
->>>>>>>
->>>>>>> static RT_COND cond;
->>>>>>> static RT_MUTEX mutex;
->>>>>>>
->>>>>>> static void cond_task(void *cookie)
->>>>>>> {
->>>>>>>         int err;
->>>>>>>
->>>>>>>         printf("%s --> started \n", __func__);
->>>>>>>         rt_mutex_acquire(&mutex, TM_INFINITE);
->>>>>>>         err = rt_cond_wait(&cond, &mutex, TM_INFINITE);
->>>>>>>         rt_mutex_release(&mutex);
->>>>>>>         if (err) {
->>>>>>>                 printf("rt_cond_wait failed, err = %d", err);
->>>>>>>                 return;
->>>>>>>         }
->>>>>>>         printf("%s --> cond wait done\n", __func__);
->>>>>>> }
->>>>>>>
->>>>>>> int main(int argc, char **argv)
->>>>>>> {
->>>>>>>         int err;
->>>>>>>         RT_TASK task1;
->>>>>>>
->>>>>>>         mlockall(MCL_CURRENT | MCL_FUTURE);
->>>>>>
->>>>>>         The line above is redundant with libcobalt inits. But you need:
->>>>>>
->>>>>>           err = rt_task_shadow(NULL, "main", <prio>, 0);
->>>>>>           ...
->>>>>
->>>>> OK thank you so much for this. I will try it.
->>>>> And, yes I am debugging this issue.
->>>>> I found that rt_cond_wait_timed, did not return from here:
->>>>
->>>> Ok, thanks for looking at this. The issue is that the app is missing the
->>>> call to rt_task_shadow() in the main thread. So that thread receives
->>>> -EPERM from rt_mutex_acquire(), and the rest is a fallout of that
->>>> original error.
->>>>
->>>
->>> Ok, we tried adding rt_task_shadow(NULL, "main", 99, 0), just before
->>> rt_task_create(),
->>> but it did not help.
->>> Still the tasks hangs under rt_cond_wait().
->>> So, we need to debug further.
->>>
->>
->> OK. Good news :)
->> I changed as below and it worked.
->> rt_task_shadow(NULL, "main", 98, 0)
->>
->
->> So, basically, I lowered the priority of main task and the cond_task
->> exited normally this time.
->> This indicates that cond_task should run first, then the main task.
->>
->
-> No, the priority is irrelevant to this case. Please check your code: a
-> condition variable has to be paired with a condition, otherwise it does
-> not make any sense. I double-checked here already, I'm confident there
-> is no such issue with the rt_cond* API. Typical example attached.
->
-
-OK. Thank you so much for your sample code.
-Now, my code is also working fine with any priority, and without
-infinite loop, and adding rt_task_join in the end.
-Now, I found the root cause.
-I found that the following while condition is important:
-{{{
-        while (count == oldcount)
-                err = rt_cond_wait(&cond, &mutex, TM_INFINITE);
-}}}
-Then, we make it true by incrementing the count before signal.
-If I remove the while, it did not work.
-So, the point is, we should wait for the condition to true, before
-executing the cond_wait itself.
-Please correct me if I am wrong.
-
-Thank You,
-Pintu
+To: =?UTF-8?B?0KjQtdCy0YfQtdC90LrQviDQotCw0YDQsNGBINCT0YDQuNCz0L7RgNGM0LU=?= =?UTF-8?B?0LLQuNGH?= <shevchenko.taras@triolcorp.com.ua>, Olej <o.tsiliuric@yandex.ru>
+Cc: "Xenomai@xenomai.org" <Xenomai@xenomai.org>
 
 
->> But, now the question is:
->> when do we need rt_task_shadow() and why it is important only for this case?
->> We havent added this in any of our previous tests.
->
-> You need that to convert the main() thread into an Alchemy task.
-> Excerpt from the documentation of rt_task_shadow:
->  * Set the calling thread personality to the Alchemy API, enabling the
->  * full set of Alchemy services.
->
-> rt_mutex* and friends are Alchemy services.
->
->> Is there any side effects of adding this in actual code ?
->>
->
-> Yes, it may help in fixing it.
->
->>
->>>
->>> Thanks,
->>> Pintu
->>>
->>>
->>>> --
->>>> Philippe.
->>
->
->
-> --
-> Philippe.
+> Hi all,
+> I finished some experiments to figure out what is going on
+> so  again
+> I have udoo board x86 ultra
+> 
+> 1) Use ubuntu with vanile kernel 4.10.0-28 or 4.13.0-37 or 4.9.51   no problem with sd card , all work perfectly
+> 2) Use 4.9.51 with ipipe patch   -pipe-core -4.9.51-x86-4.patch  guide to system no responce
+>  when i insert sd-card or insert own rtdm module for gpio test  and gpio interrupt occured
+> 3) I use xenomai from git branch  stable-3.0.y (download yesterday)
+> 4) there is options from menuconfig that I enable/disable
+
+Interrupt issues are most likely an I-pipe problem with your hardware.
+There are several interrupt controllers on the board, each controller
+driver has to be fixed up for supporting interrupt pipelining.
+
+On x86, this work has already been done for the common APIC and IO-APIC
+chips, I suspect that some GPIO pin controller driver has not been fixed
+up in your case.
+
+To find out which one, boot your vanilla kernel ensuring that all the
+drivers you need are loaded, then have a look at the label column of
+/proc/interrupts. The name of the controller is mentioned there:
+
+$ cat /proc/interrupts
+
+e.g.
+           CPU0       CPU1       CPU2       CPU3
+   0:         74          0          0          0   IO-APIC    2-edge
+                                                    ^^^^^^^
+timer
+ 122:          0          0          0          0   PCI-MSI 294912-edge
+
+                                                    ^^^^^^^
+ahci[0000:00:12.0]
+
+Find the corresponding driver in the kernel source, for anything which
+is different from IO-APIC, and PCI-*. You may exclude all IRQs with
+symbolic names from the list (e.g. LOC, SPU, PMI), only care for
+numbered IRQs.
+
+The string you should be looking for is defined in the .name field of
+the irqchip descriptor advertised by those drivers.
+
+static struct irq_chip ioapic_chip __read_mostly = {
+	.name			= "IO-APIC",
+
+defined in arch/x86/kernel/apic/io_apic.c
+
+This process of elimination should give you the name of an interrupt
+controller driver which has not been fixed up, i.e. not bearing any
+CONFIG_IPIPE changes. This one (or maybe several of them) may break the
+kernel when CONFIG_IPIPE is enabled for that very reason.
+
+PS: please no private mails, use the mailing list for technical matters.
+
+-- 
+Philippe.
 
