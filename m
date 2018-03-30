@@ -1,11 +1,15 @@
-Date: Thu, 29 Mar 2018 15:11:44 +0300 (EEST)
-From: =?windows-1251?B?2OXi9+Xt6u4g0uDw4PEgw/Do4+7w/OXi6Pc=?=
- <shevchenko.taras@triolcorp.com.ua>
-Message-ID: <287223691.8750502.1522325504217.JavaMail.zimbra@triolcorp.com.ua>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=windows-1251
-Content-Transfer-Encoding: quoted-printable
-Subject: [Xenomai] x86 unusual IRQ number on UDOO board
+In-Reply-To: <5e40ba43-e8a0-1a2e-9020-d62788ad7c01@xenomai.org>
+References: <CAOuPNLjGFNwaCNa1zGQY4gZpLC7J=5M4EzGNS-YiK1UOx=+t0w@mail.gmail.com>
+ <d8ad5e99-4097-4754-f443-de74f9653cb4@xenomai.org>
+ <CAOuPNLgYEpHaoMMZ+Dx=WHqwMnRLwkx_hUZAj6Jtiqfq_1LTZw@mail.gmail.com>
+ <5e40ba43-e8a0-1a2e-9020-d62788ad7c01@xenomai.org>
+From: Pintu Kumar <pintu.ping@gmail.com>
+Date: Fri, 30 Mar 2018 12:12:28 +0530
+Message-ID: <CAOuPNLjsR2rELk49orfVWJ2TVg_-66crVoc67eRZG9KEeCEcVg@mail.gmail.com>
+Content-Type: text/plain; charset="UTF-8"
+Subject: Re: [Xenomai] Problem with rt_cond_wait and rt_cond_signal
+	combination
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -14,34 +18,108 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai <xenomai@xenomai.org>
-Cc: Olej <o.tsiliuric@yandex.ru>
+To: Philippe Gerum <rpm@xenomai.org>
+Cc: "Xenomai@xenomai.org" <xenomai@xenomai.org>
 
-Good day=20
+On Wed, Mar 28, 2018 at 11:02 PM, Philippe Gerum <rpm@xenomai.org> wrote:
+> On 03/28/2018 07:20 PM, Pintu Kumar wrote:
+>> On Wed, Mar 28, 2018 at 8:37 PM, Philippe Gerum <rpm@xenomai.org> wrote:
+>>> On 03/28/2018 09:54 AM, Pintu Kumar wrote:
+>>>> Hi,
+>>>>
+>>>> We are facing one issue on Xenomai-3 on x86_64 system.
+>>>> Kernel: 4.9.51
+>>>> ipipe version: 4
+>>>> # /usr/xenomai/sbin/version
+>>>> Xenomai/cobalt v3.0.6 -- #5956064 (2018-03-20 12:13:33 +0100)
+>>>>
+>>>> Its a very simple API level test.
+>>>> We create a condition variable and wait for the condition inside a task.
+>>>> Then, we immediately signal the condition from the main thread, and simply
+>>>> wait for the test to finish.
+>>>>
+>>>> But we observed that condition task is never getting released, and the
+>>>> program hangs.
+>>>>
+>>>> This is the output:
+>>>> --------------------------
+>>>> # ./condsignal
+>>>> cond_task --> started
+>>>> main --> cond signal success: 0
+>>>> Waiting for task to finish....
+>>>> ^C
+>>>>
+>>>>
+>>>> This is the code snippet that was used.
+>>>> -----------------------------------------------------
+>>>> # cat condsignal.c
+>>>>
+>>>> /*
+>>>>  * 1. Create an condition variable and wait inside a task.
+>>>>  * 2. Delete the condition variable from main task.
+>>>>  * 3. Observe that the condition wait is released and task ends normally.
+>>>>  * 4. Finally main task should exit normally.
+>>>>  *
+>>>>  * */
+>>>> #include <stdio.h>
+>>>> #include <stdlib.h>
+>>>> #include <sys/mman.h>
+>>>> #include <alchemy/task.h>
+>>>> #include <alchemy/mutex.h>
+>>>> #include <alchemy/cond.h>
+>>>> #include <alchemy/task.h>
+>>>>
+>>>> static RT_COND cond;
+>>>> static RT_MUTEX mutex;
+>>>>
+>>>> static void cond_task(void *cookie)
+>>>> {
+>>>>         int err;
+>>>>
+>>>>         printf("%s --> started \n", __func__);
+>>>>         rt_mutex_acquire(&mutex, TM_INFINITE);
+>>>>         err = rt_cond_wait(&cond, &mutex, TM_INFINITE);
+>>>>         rt_mutex_release(&mutex);
+>>>>         if (err) {
+>>>>                 printf("rt_cond_wait failed, err = %d", err);
+>>>>                 return;
+>>>>         }
+>>>>         printf("%s --> cond wait done\n", __func__);
+>>>> }
+>>>>
+>>>> int main(int argc, char **argv)
+>>>> {
+>>>>         int err;
+>>>>         RT_TASK task1;
+>>>>
+>>>>         mlockall(MCL_CURRENT | MCL_FUTURE);
+>>>
+>>>         The line above is redundant with libcobalt inits. But you need:
+>>>
+>>>           err = rt_task_shadow(NULL, "main", <prio>, 0);
+>>>           ...
+>>
+>> OK thank you so much for this. I will try it.
+>> And, yes I am debugging this issue.
+>> I found that rt_cond_wait_timed, did not return from here:
+>
+> Ok, thanks for looking at this. The issue is that the app is missing the
+> call to rt_task_shadow() in the main thread. So that thread receives
+> -EPERM from rt_mutex_acquire(), and the rest is a fallout of that
+> original error.
+>
 
-CPU0 CPU1 CPU2 CPU3=20
-0: 15 1 0 0 IO-APIC 2-edge timer=20
-9: 0 0 0 0 IO-APIC 9-fasteoi acpi, INT0002=20
-32: 0 0 0 0 IO-APIC 32-fasteoi 808622C1:00=20
-37: 0 0 0 0 IO-APIC 37-fasteoi 808622C1:05=20
-42: 0 0 0 0 IO-APIC 42-fasteoi dw:dmac-1=20
-43: 0 0 0 0 IO-APIC 43-fasteoi dw:dmac-1=20
-45: 3446 136249 69996 69930 IO-APIC 45-fasteoi mmc0=20
-47: 0 0 0 0 IO-APIC 47-fasteoi mmc1=20
-
-it is seems very unusual=20
-does Xenomai work good with such IRQ numbers ?=20
+Ok, we tried adding rt_task_shadow(NULL, "main", 99, 0), just before
+rt_task_create(),
+but it did not help.
+Still the tasks hangs under rt_cond_wait().
+So, we need to debug further.
 
 
-304: 1 0 0 0 chv-gpio 50 80860F14:01 cd=20
-309: 26 24943 873 302 PCI-MSI 327680-edge xhci_hcd=20
-310: 15 11904 14 14 PCI-MSI 1048576-edge enp2s0=20
-311: 0 0 0 0 PCI-MSI 311296-edge ahci[0000:00:13.0]=20
-312: 395 394 220882 417 PCI-MSI 32768-edge i915=20
-313: 0 0 0 0 INT0002 Virtual GPIO 2 ACPI:Event=20
-314: 7 6 5 5 PCI-MSI 425984-edge mei_txe=20
-315: 329 391 365 361 PCI-MSI 442368-edge snd_hda_intel:card0=20
+Thanks,
+Pintu
 
-=D1 =F3=E2=E0=E6=E5=ED=E8=E5=EC =E8 =ED=E0=E4=E5=E6=E4=EE=E9 =ED=E0 =F1=EE=
-=F2=F0=F3=E4=ED=E8=F7=E5=F1=F2=E2=EE,=20
-=D8=E5=E2=F7=E5=ED=EA=EE =D2.=C3.=20
+
+> --
+> Philippe.
+
