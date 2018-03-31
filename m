@@ -1,11 +1,10 @@
-From: Philippe Gerum <rpm@xenomai.org>
-Message-ID: <bb8f24a9-17fb-7230-1371-35085882cc6f@xenomai.org>
-Date: Fri, 30 Mar 2018 20:01:14 +0200
+From: Steve Freyder <steve@freyder.net>
+Message-ID: <5ABFDCCE.8060007@freyder.net>
+Date: Sat, 31 Mar 2018 14:09:02 -0500
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
+Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Transfer-Encoding: 7bit
-Subject: [Xenomai] Xenomai / UDOO x86
+Subject: [Xenomai] Xenomai argv editing, and registry client socket issues
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -14,65 +13,196 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: =?UTF-8?B?0KjQtdCy0YfQtdC90LrQviDQotCw0YDQsNGBINCT0YDQuNCz0L7RgNGM0LU=?= =?UTF-8?B?0LLQuNGH?= <shevchenko.taras@triolcorp.com.ua>, Olej <o.tsiliuric@yandex.ru>
-Cc: "Xenomai@xenomai.org" <Xenomai@xenomai.org>
+To: "xenomai@xenomai.org" <xenomai@xenomai.org>
+
+============================================================================80|
+Hello Xenomai list.
+
+I have a couple of issues to report, I believe two minor patches may be in
+order.  I've searched the archives for a report on these, and couldn't find
+any, so I submit this for your consideration.
+
+Here's my test environment.
+
+This small C program I call "exectest" - basically it does an exec as
+directed by its command arguments:
+
+===============exectest.c
+#include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h>
+#include <errno.h>
+
+int main(
+     int     argc,
+     char    *argv[]
+){
+     if (getenv("argvterm") != NULL)  {
+         argv[argc] = NULL ;
+     }
+     return(execvp(argv[1],&argv[1])) ;
+}
+===============exectest.c end
+
+I compile this program using --skins=alchemy so it has the Xenomai
+auto-init code wrapping main(), the executable is "exectest".
+
+A few test scripts -- "dotest", "argv", and "reg" -- all of them
+chmod +x
+
+===============dotest
+#!/bin/sh
+
+function ext()  {
+     ./exectest --session=$SESSION --mem-pool-size=16M "$@"
+}
+
+set -x
+pkill sysregd     # start fresh
+SESSION=mysession
+sysregd --daemon --root /var/run/xenomai/$USER/$SESSION --linger
+ext ./argv foo bar
+argvterm=1 ext ./argv foo bar
+sleep 3  # wait for reg to clear out
+#
+find /run/xenomai
+ext ./reg
+===============dotest end
+
+===============argv
+ICB-G3L:/.g3l# cat argv
+#!/bin/sh
+
+echo pid $$ argv = "$@"
+===============argv end
+
+===============reg
+#!/bin/sh
+
+set -x
+ls -l /proc/$$/fd
+netstat -xenp | grep SEQPACKET
+find /run/xenomai
+===============reg end
+
+When I run ./dotest, here's the output (with <<<>>>'s interspersed
+for comments):
+
+# ./dotest
++ pkill sysregd
++ SESSION=mysession
++ sysregd --daemon --root /var/run/xenomai/root/mysession --linger
++ ext ./argv foo bar
++ ./exectest --session=mysession --mem-pool-size=16M ./argv foo bar
+pid 1757 argv = foo bar foo bar
++ argvterm=1
++ ext ./argv foo bar
++ ./exectest --session=mysession --mem-pool-size=16M ./argv foo bar
+pid 1764 argv = foo bar
+
+<<<<<<  >>>>>>>>
+
+Note the duplicate args on the first invocation "foo bar foo bar",
+but not on the second where "argvterm" is set to 1.
+
+This seems to indicate that something like:
+
+     argv[argc] = NULL
+
+should be added to the Xenomai command line parsing code that expunges
+the Xenomai-specific options from argv, after all of the work is done,
+to restore the expectations that execvp (and probably others) apparently
+have about a NULL-terminated argv array.
+
+Now the second issue:
+
+<<<<<<  >>>>>>>>
+
++ sleep 3
++ find /run/xenomai
+/run/xenomai
+/run/xenomai/root
+/run/xenomai/root/mysession
+/run/xenomai/root/mysession/system
+/run/xenomai/root/mysession/system/threads
+/run/xenomai/root/mysession/system/heaps
+/run/xenomai/root/mysession/system/version
++ ext ./reg
++ ./exectest --session=mysession --mem-pool-size=16M ./reg
++ ls -l /proc/1811/fd
+lrwx------    1 root     root            64 Mar 31 13:12 0 -> /dev/ttymxc1
+lrwx------    1 root     root            64 Mar 31 13:12 1 -> /dev/ttymxc1
+lrwx------    1 root     root            64 Mar 31 13:12 2 -> /dev/ttymxc1
+lr-x------    1 root     root            64 Mar 31 13:12 255 -> /.g3l/reg
+lrwx------    1 root     root            64 Mar 31 13:12 3 -> socket:[11759]
+lrwx------    1 root     root            64 Mar 31 13:12 4 -> /dev/fuse
++ grep SEQPACKET
++ netstat -xenp
+unix  3      [ ]   SEQPACKET  CONNECTED  11759 1811/sh
+unix  3      [ ]   SEQPACKET  CONNECTED  13704 1798/sysregd 
+@EC0B7696-xenomai
++ find /run/xenomai
+/run/xenomai
+/run/xenomai/root
+/run/xenomai/root/mysession
+
+<<<<<<  >>>>>>>>
+
+Here, we're running the same "exectest" program to exec a shell script, but
+this time it's to test the registry connect code, checking for inheritance
+of the socket file descriptor that the registry code will be using to 
+connect
+to sysregd via the @EC0B7696-xenomai Unix domain socket.
+
+We're listing our fd's from /proc/ourpid/fd, and we're seeing based on that
+plus the netstat output that fd 3 is the client-side of the sysregd Unix
+domain socket created by the Xenomai initialization code that "sh" has
+inherited from "exectest".
+
+This seems to suggest that FD_CLOEXEC should be set on the client-side 
+socket
+in the registry client code.
+
+Finally, this causes the "find /run/xenomai" command to hang (until 
+interrupted
+by Control-C or other) indefinitely.
+
+Here is the pertinent part of an strace of that "find /run/xenomai" command
+
+<<<<<<  >>>>>>>>
+
+lstat64("/run/xenomai", {st_mode=S_IFDIR|0755, st_size=60, ...}) = 0
+fstat64(1, {st_mode=S_IFCHR|0600, st_rdev=makedev(207, 17), ...}) = 0
+ioctl(1, TCGETS, {B115200 opost isig icanon echo ...}) = 0
+write(1, "/run/xenomai\n", 13/run/xenomai
+)          = 13
+open("/run/xenomai", 
+O_RDONLY|O_NONBLOCK|O_LARGEFILE|O_DIRECTORY|O_CLOEXEC) = 5
+fstat64(5, {st_mode=S_IFDIR|0755, st_size=60, ...}) = 0
+getdents64(5, /* 3 entries */, 32768)   = 72
+lstat64("/run/xenomai/root", {st_mode=S_IFDIR|0755, st_size=60, ...}) = 0
+write(1, "/run/xenomai/root\n", 18/run/xenomai/root
+)     = 18
+open("/run/xenomai/root", 
+O_RDONLY|O_NONBLOCK|O_LARGEFILE|O_DIRECTORY|O_CLOEXEC) = 6
+fstat64(6, {st_mode=S_IFDIR|0755, st_size=60, ...}) = 0
+getdents64(6, /* 3 entries */, 32768)   = 80
+lstat64("/run/xenomai/root/mysession", {st_mode=S_IFDIR|0755, 
+st_size=100, ...}) = 0
+write(1, "/run/xenomai/root/mysession\n", 28/run/xenomai/root/mysession
+) = 28
+open("/run/xenomai/root/mysession", 
+O_RDONLY|O_NONBLOCK|O_LARGEFILE|O_DIRECTORY|O_CLOEXEC) = 7
+fstat64(7, {st_mode=S_IFDIR|0755, st_size=100, ...}) = 0
+getdents64(7, /* 5 entries */, 32768)   = 128
+lstat64("/run/xenomai/root/mysession/1811",
+
+<<<<<<  >>>>>>>>
+
+That last lstat64() is what hangs indefinitely.
 
 
-> Hi all,
-> I finished some experiments to figure out what is going on
-> so  again
-> I have udoo board x86 ultra
-> 
-> 1) Use ubuntu with vanile kernel 4.10.0-28 or 4.13.0-37 or 4.9.51   no problem with sd card , all work perfectly
-> 2) Use 4.9.51 with ipipe patch   -pipe-core -4.9.51-x86-4.patch  guide to system no responce
->  when i insert sd-card or insert own rtdm module for gpio test  and gpio interrupt occured
-> 3) I use xenomai from git branch  stable-3.0.y (download yesterday)
-> 4) there is options from menuconfig that I enable/disable
+Thank you in advance.
+Steve
 
-Interrupt issues are most likely an I-pipe problem with your hardware.
-There are several interrupt controllers on the board, each controller
-driver has to be fixed up for supporting interrupt pipelining.
-
-On x86, this work has already been done for the common APIC and IO-APIC
-chips, I suspect that some GPIO pin controller driver has not been fixed
-up in your case.
-
-To find out which one, boot your vanilla kernel ensuring that all the
-drivers you need are loaded, then have a look at the label column of
-/proc/interrupts. The name of the controller is mentioned there:
-
-$ cat /proc/interrupts
-
-e.g.
-           CPU0       CPU1       CPU2       CPU3
-   0:         74          0          0          0   IO-APIC    2-edge
-                                                    ^^^^^^^
-timer
- 122:          0          0          0          0   PCI-MSI 294912-edge
-
-                                                    ^^^^^^^
-ahci[0000:00:12.0]
-
-Find the corresponding driver in the kernel source, for anything which
-is different from IO-APIC, and PCI-*. You may exclude all IRQs with
-symbolic names from the list (e.g. LOC, SPU, PMI), only care for
-numbered IRQs.
-
-The string you should be looking for is defined in the .name field of
-the irqchip descriptor advertised by those drivers.
-
-static struct irq_chip ioapic_chip __read_mostly = {
-	.name			= "IO-APIC",
-
-defined in arch/x86/kernel/apic/io_apic.c
-
-This process of elimination should give you the name of an interrupt
-controller driver which has not been fixed up, i.e. not bearing any
-CONFIG_IPIPE changes. This one (or maybe several of them) may break the
-kernel when CONFIG_IPIPE is enabled for that very reason.
-
-PS: please no private mails, use the mailing list for technical matters.
-
--- 
-Philippe.
 
