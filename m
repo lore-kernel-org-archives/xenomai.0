@@ -1,14 +1,16 @@
-References: <529dd829-ca80-10f7-36f5-c1dcba403360@siemens.com>
- <bfdeba2c-bcc9-c18e-c73d-e8d4effdb95e@xenomai.org>
-From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <76fa9788-761b-663b-0c90-724f73086919@siemens.com>
-Date: Thu, 5 Apr 2018 17:48:43 +0200
+References: <5AC116C9.6040809@freyder.net>
+ <15a83f1d-7785-11c9-5f64-c09cb035ff10@xenomai.org>
+ <5AC24433.30107@freyder.net>
+From: Philippe Gerum <rpm@xenomai.org>
+Message-ID: <6cacabd8-af4c-27e0-1b62-34ce73d7b933@xenomai.org>
+Date: Mon, 2 Apr 2018 17:20:51 +0200
 MIME-Version: 1.0
-In-Reply-To: <bfdeba2c-bcc9-c18e-c73d-e8d4effdb95e@xenomai.org>
-Content-Type: text/plain; charset=utf-8
+In-Reply-To: <5AC24433.30107@freyder.net>
+Content-Type: text/plain; charset="utf-8"
 Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] ipipe: fix preemption damage in hard_preempt_enable()
+Content-Transfer-Encoding: 8bit
+Subject: Re: [Xenomai] Possible Xenomai fuse filesystem/registry queue
+ status files issue?
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,34 +19,79 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Philippe Gerum <rpm@xenomai.org>, Xenomai <xenomai@xenomai.org>
+To: Steve Freyder <steve@freyder.net>, "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On 2018-04-05 17:08, Philippe Gerum wrote:
-> On 04/05/2018 04:49 PM, Jan Kiszka wrote:
->> Hi Philippe,
+On 04/02/2018 04:54 PM, Steve Freyder wrote:
+> On 4/2/2018 8:41 AM, Philippe Gerum wrote:
+>> On 04/01/2018 07:28 PM, Steve Freyder wrote:
+>>> Greetings again.
+>>>
+>>> As I understand it, for each rt_queue there's supposed to be a
+>>> "status file" located in the fuse filesystem underneath the
+>>> "/run/xenomai/user/session/pid/alchemy/queues" directory, with
+>>> the file name being the queue name.  This used to contain very
+>>> useful info about queue status, message counts, etc.  I don't know
+>>> when it broke or whether it's something I'm doing wrong but I'm
+>>> now getting a "memory exhausted" message on the console when I
+>>> attempt to do a "cat" on the status file.
+>>>
+>>> Here's a small C program that just creates a queue, and then does
+>>> a pause to hold the accessor count non-zero.
+>>>
+>> <snip>
 >>
->> to assess the impact of the bug that the mentioned commit fixes, can you
->> describe the code path that trigger it?
+>>> The resulting output (logged in via the system console):
+>>>
+>>> # sh qtest.sh
+>>> + sleep 1
+>>> + ./qc --mem-pool-size=64M --session=mysession foo
+>>> + find /run/xenomai
+>>> /run/xenomai
+>>> /run/xenomai/root
+>>> /run/xenomai/root/mysession
+>>> /run/xenomai/root/mysession/821
+>>> /run/xenomai/root/mysession/821/alchemy
+>>> /run/xenomai/root/mysession/821/alchemy/tasks
+>>> /run/xenomai/root/mysession/821/alchemy/tasks/task@1[821]
+>>> /run/xenomai/root/mysession/821/alchemy/queues
+>>> /run/xenomai/root/mysession/821/alchemy/queues/foo
+>>> /run/xenomai/root/mysession/system
+>>> /run/xenomai/root/mysession/system/threads
+>>> /run/xenomai/root/mysession/system/heaps
+>>> /run/xenomai/root/mysession/system/version
+>>> + qfile='/run/xenomai/*/*/*/alchemy/queues/foo'
+>>> + cat /run/xenomai/root/mysession/821/alchemy/queues/foo
+>>> memory exhausted
+>>>
+>>> At this point, it hangs, although SIGINT usually terminates it.
+>>>
+>>> I've seen some cases where SIGINT won't terminate it, and a reboot is
+>>> required to clean things up.  I see this message appears to be logged
+>>> in the obstack error handler.  I don't think I'm running out of memory,
+>>> which makes me think "heap corruption".  Not much of an analysis!  I did
+>>> try varying queue sizes and max message counts - no change.
+>>>
+>> I can't reproduce this. I would suspect a rampant memory corruption too,
+>> although running the test code over valgrind (mercury build) did not
+>> reveal any issue.
+>>
+>> - which Xenomai version are you using?
+>> - cobalt / mercury ?
+>> - do you enable the shared heap when configuring ? (--enable-pshared)
 >>
 > 
-> e.g. in the rtnet stack, calling rtdev_get_by_name() on a PREEMPT
-> kernel, and a regular rescheduling pending at the time of the call.
+> I'm using Cobalt.  uname -a reports:
 > 
-> rtdev_get_by_name()
->       -> rtdm_lock_irqsave(...)
->       -> rtdev_reference(...)
->             -> try_module_get()
->                   hard_preempt_disable(); /* hard IRQs were off */
->                   ...
->                   hard_preempt_enable();
->                      -> hard_local_irq_restore() /* still off */
->                      -> preempt_check_resched(); /* resched pending */
->                            <<schedule() with hard IRQs off>>
+> Linux sdftest 4.1.18_C01571-15S00-00.000.zimg+83fdace666 #2 SMP Fri Mar
+> 9 11:07:52 CST 2018 armv7l GNU/Linux
 > 
-> This went unnoticed until I got some changes in creating a resched
-> opportunity right on spot...
+> Here is the config dump:
+> 
+> CONFIG_XENO_PSHARED=1
 
-Hmm, ok. I suspect (/hope) that this case is a rather RTnet-specific case.
+Any chance you could have some leftover files in /dev/shm from aborted
+runs, which would steal RAM?
 
-Jan
+-- 
+Philippe.
 
