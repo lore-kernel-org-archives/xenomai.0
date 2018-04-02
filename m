@@ -1,16 +1,10 @@
-From: Jan Kiszka <jan.kiszka@siemens.com>
-References: <6aedc4bc-74b5-4a9f-5c38-036a3d7850b9@siemens.com>
- <ee7647d4-0bfd-0933-2f10-e9fdc5da2880@web.de>
- <54cd6098-3828-b028-3328-daf91b46d9da@xenomai.org>
- <1edf5dcb-bc63-2f53-f91b-f821b244563c@web.de>
-Message-ID: <1c2bccfb-8427-a366-34b4-7092e34ce0b3@siemens.com>
-Date: Fri, 6 Apr 2018 18:09:31 +0200
+Date: Mon, 02 Apr 2018 16:26:29 +0200
+Message-ID: <20180402162629.Horde.aGvVeyDe3lwwFExaCtLehqi@webmail.uam.es>
+From: rodrigo.amaducci@uam.es
+Content-Type: text/plain; charset=utf-8; format=flowed; DelSp=Yes
 MIME-Version: 1.0
-In-Reply-To: <1edf5dcb-bc63-2f53-f91b-f821b244563c@web.de>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] 4.9 for x86 issue
+Content-Disposition: inline
+Subject: [Xenomai]  Context switching with POSIX skin
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -19,66 +13,42 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Philippe Gerum <rpm@xenomai.org>
-Cc: Xenomai <xenomai@xenomai.org>
+To: xenomai@xenomai.org
 
-On 2018-04-05 22:13, Jan Kiszka wrote:
-> On 2018-03-27 15:12, Philippe Gerum wrote:
->> On 03/10/2018 11:06 PM, Jan Kiszka wrote:
->>> On 2018-03-09 08:51, Jan Kiszka wrote:
->>>> 4.9 requires more work, I've pushed the beginning to wip/4.9 in the same
->>>> repo.
->>>
->>> I started to patch further on this during my flight (wip/4.9 updated),
->>> noticed that the 4.14-wip queue will need a little bit sysentry tweaking
->>> as well (missing 64-bit syscall dispatching), and then had to find 4.9
->>> in a rather unfortunate state /wrt x86-64: CPUs are no longer idling
->>> properly. I went back to ipipe-core-4.9.24-x86-2, without a difference.
->>>
->>> If you should look into 4.9-x86 as you indicated, please check this.
->>
->> Both issues fixed in 4.9.90/x86 as pushed lately. The result has run
->> overnight in 64bit mode, and for a couple of hours in ia32emu mode. So
->> far so good.
-> 
-> Just trying 4.9.90-x86-6 in KVM, and I'm still finding 100% (virtual)
-> CPU load. I also triggered this with stable-3.0.x:
-> 
-> [  237.455846] WARNING: CPU: 0 PID: 1055 at ../kernel/xenomai/posix/timerfd.c:57 timerfd_read+0x2a6/0x350
-> [  237.460728] Modules linked in:
-> [  237.461490] CPU: 0 PID: 1055 Comm: sampling-1052 Not tainted 4.9.90+ #11
-> [  237.461490] Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS rel-1.11.1-0-g0551a4be2c-prebuilt.qemu-project.org 04/01/2014
-> [  237.461490] I-pipe domain: Xenomai
-> [  237.461490]  ffffc90001b7fdb0 ffffffff8145e395 0000000000000000 0000000000000000
-> [  237.461490]  ffffc90001b7fdf0 ffffffff810e7261 000000393d61d170 ffffc900003e6008
-> [  237.461490]  0000000000000003 0000000000000008 00007f513e8c2de8 0000000000026200
-> [  237.461490] Call Trace:
-> [  237.461490]  [<ffffffff8145e395>] dump_stack+0xb2/0xdd
-> [  237.461490]  [<ffffffff810e7261>] __warn+0xd1/0xf0
-> [  237.461490]  [<ffffffff810e734d>] warn_slowpath_null+0x1d/0x20
-> [  237.461490]  [<ffffffff812423b6>] timerfd_read+0x2a6/0x350
-> [  237.461490]  [<ffffffff812174ec>] rtdm_fd_read+0x13c/0x3b0
-> [  237.461490]  [<ffffffff81220260>] ? CoBaLt_ioctl+0x20/0x20
-> [  237.461490]  [<ffffffff8122026e>] CoBaLt_read+0xe/0x10
-> [  237.461490]  [<ffffffff81235894>] handle_head_syscall+0x184/0x4b0
-> [  237.461490]  [<ffffffff81236288>] ipipe_fastcall_hook+0x18/0x20
-> [  237.461490]  [<ffffffff811a9054>] ipipe_handle_syscall+0x64/0x110
-> [  237.461490]  [<ffffffff81002b33>] do_syscall_64+0x43/0x1c0
-> [  237.461490]  [<ffffffff81840b43>] entry_SYSCALL_64_after_swapgs+0x5d/0xdb
-> [  237.461490] ---[ end trace 9d2476a38b0c5379 ]---
-> 
+Hello,
 
-The WARN_ON is due to missing
-http://git.xenomai.org/ipipe-jki.git/commit/?h=for-upstream/4.4-update&id=d95805a2f3448cf65e85897cf43f260b9ff3f9d0
-in 4.9. I'm preparing a PR. I've also did a stable update for 4.9.
+I'm currently working on a program that, basically, reads some data from a
+DAQ device periodically, performs some calculations over it and writes the
+result back to the DAQ. All these operations are performed by a real-time
+thread (using POSIX skin), while a second non real-time thread stores some
+information in a file. Both threads communicate through a message queue
+and are created using POSIX-skin pthread_create.
 
-The idleness bug can be resolved by dropping ipipe_enter_idle_hook from
-Xenomai until we have a better logic at hand. If someone wants the
-current behavior, there is still idle=poll.
+In summary, the real-time thread uses the following functions:
+- POSIX-skin clock_nanosleep to make the thread periodic
+- Analogy a4l_sync_read and a4l_sync_write to interact with the DAQ device
+- POSIX-skin mq_timedsend to write in the message queue
 
-Jan
+And the writer non real-time thread uses:
+- POSIX-skin mq_receive to read from the message queue
 
--- 
-Siemens AG, Corporate Technology, CT RDA IOT SES-DE
-Corporate Competence Center Embedded Linux
+Problem is that both threads are constantly switching between primary and
+secondary contexts, as the value MSW at /proc/xenomai/sched/stat shows,
+so my questions are the following:
+
+- Does any of the functions used in the real-time thread perform a switch
+to secondary mode?
+
+- Since POSIX-skin mq_receive switches to primary context in the writer
+thread, can regular POSIX message queues be used in both threads without
+affecting real-time?
+
+- Is there any other possible source of context switching that I'm not
+considering (allocating memory in one thread that is freed in the other,
+maybe)?
+
+Thanks in advance,
+
+Rodrigo
+
 
