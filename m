@@ -1,20 +1,16 @@
-References: <6aedc4bc-74b5-4a9f-5c38-036a3d7850b9@siemens.com>
- <ee7647d4-0bfd-0933-2f10-e9fdc5da2880@web.de>
- <54cd6098-3828-b028-3328-daf91b46d9da@xenomai.org>
- <1edf5dcb-bc63-2f53-f91b-f821b244563c@web.de>
- <fd85297e-17eb-add4-619e-234f7602dc44@xenomai.org>
- <0fb957ac-ae49-2d57-9f83-8a61201b1fb1@siemens.com>
- <57044fd9-5e29-5d04-958d-e2195536298b@xenomai.org>
- <0356efbe-6dd5-ff57-219e-122e38b52662@siemens.com>
-From: Philippe Gerum <rpm@xenomai.org>
-Message-ID: <fefb6ea1-e962-8697-6b6d-902705611c7f@xenomai.org>
-Date: Sat, 7 Apr 2018 09:25:25 +0200
+References: <5AC116C9.6040809@freyder.net>
+ <15a83f1d-7785-11c9-5f64-c09cb035ff10@xenomai.org>
+ <5AC24433.30107@freyder.net>
+ <6cacabd8-af4c-27e0-1b62-34ce73d7b933@xenomai.org>
+From: Steve Freyder <steve@freyder.net>
+Message-ID: <5AC25632.90608@freyder.net>
+Date: Mon, 2 Apr 2018 11:11:30 -0500
 MIME-Version: 1.0
-In-Reply-To: <0356efbe-6dd5-ff57-219e-122e38b52662@siemens.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
+In-Reply-To: <6cacabd8-af4c-27e0-1b62-34ce73d7b933@xenomai.org>
+Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] 4.9 for x86 issue
+Subject: Re: [Xenomai] Possible Xenomai fuse filesystem/registry queue
+ status files issue?
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -23,122 +19,82 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jan Kiszka <jan.kiszka@siemens.com>
-Cc: Xenomai <xenomai@xenomai.org>
+To: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On 04/06/2018 05:11 PM, Jan Kiszka wrote:
-> On 2018-04-06 16:11, Philippe Gerum wrote:
->> On 04/06/2018 03:38 PM, Jan Kiszka wrote:
->>> On 2018-04-06 08:54, Philippe Gerum wrote:
->>>> On 04/05/2018 10:13 PM, Jan Kiszka wrote:
->>>>> On 2018-03-27 15:12, Philippe Gerum wrote:
->>>>>> On 03/10/2018 11:06 PM, Jan Kiszka wrote:
->>>>>>> On 2018-03-09 08:51, Jan Kiszka wrote:
->>>>>>>> 4.9 requires more work, I've pushed the beginning to wip/4.9 in the same
->>>>>>>> repo.
->>>>>>>
->>>>>>> I started to patch further on this during my flight (wip/4.9 updated),
->>>>>>> noticed that the 4.14-wip queue will need a little bit sysentry tweaking
->>>>>>> as well (missing 64-bit syscall dispatching), and then had to find 4.9
->>>>>>> in a rather unfortunate state /wrt x86-64: CPUs are no longer idling
->>>>>>> properly. I went back to ipipe-core-4.9.24-x86-2, without a difference.
->>>>>>>
->>>>>>> If you should look into 4.9-x86 as you indicated, please check this.
->>>>>>
->>>>>> Both issues fixed in 4.9.90/x86 as pushed lately. The result has run
->>>>>> overnight in 64bit mode, and for a couple of hours in ia32emu mode. So
->>>>>> far so good.
->>>>>
->>>>> Just trying 4.9.90-x86-6 in KVM, and I'm still finding 100% (virtual)
->>>>> CPU load. I also triggered this with stable-3.0.x:
->>>>>
->>>>> [  237.455846] WARNING: CPU: 0 PID: 1055 at ../kernel/xenomai/posix/timerfd.c:57 timerfd_read+0x2a6/0x350
->>>>> [  237.460728] Modules linked in:
->>>>> [  237.461490] CPU: 0 PID: 1055 Comm: sampling-1052 Not tainted 4.9.90+ #11
->>>>> [  237.461490] Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS rel-1.11.1-0-g0551a4be2c-prebuilt.qemu-project.org 04/01/2014
->>>>> [  237.461490] I-pipe domain: Xenomai
->>>>> [  237.461490]  ffffc90001b7fdb0 ffffffff8145e395 0000000000000000 0000000000000000
->>>>> [  237.461490]  ffffc90001b7fdf0 ffffffff810e7261 000000393d61d170 ffffc900003e6008
->>>>> [  237.461490]  0000000000000003 0000000000000008 00007f513e8c2de8 0000000000026200
->>>>> [  237.461490] Call Trace:
->>>>> [  237.461490]  [<ffffffff8145e395>] dump_stack+0xb2/0xdd
->>>>> [  237.461490]  [<ffffffff810e7261>] __warn+0xd1/0xf0
->>>>> [  237.461490]  [<ffffffff810e734d>] warn_slowpath_null+0x1d/0x20
->>>>> [  237.461490]  [<ffffffff812423b6>] timerfd_read+0x2a6/0x350
->>>>> [  237.461490]  [<ffffffff812174ec>] rtdm_fd_read+0x13c/0x3b0
->>>>> [  237.461490]  [<ffffffff81220260>] ? CoBaLt_ioctl+0x20/0x20
->>>>> [  237.461490]  [<ffffffff8122026e>] CoBaLt_read+0xe/0x10
->>>>> [  237.461490]  [<ffffffff81235894>] handle_head_syscall+0x184/0x4b0
->>>>> [  237.461490]  [<ffffffff81236288>] ipipe_fastcall_hook+0x18/0x20
->>>>> [  237.461490]  [<ffffffff811a9054>] ipipe_handle_syscall+0x64/0x110
->>>>> [  237.461490]  [<ffffffff81002b33>] do_syscall_64+0x43/0x1c0
->>>>> [  237.461490]  [<ffffffff81840b43>] entry_SYSCALL_64_after_swapgs+0x5d/0xdb
->>>>> [  237.461490] ---[ end trace 9d2476a38b0c5379 ]---
->>>>>
->>>>> I will debug this tomorrow.
->>>>>
+On 4/2/2018 10:20 AM, Philippe Gerum wrote:
+> On 04/02/2018 04:54 PM, Steve Freyder wrote:
+>> On 4/2/2018 8:41 AM, Philippe Gerum wrote:
+>>> On 04/01/2018 07:28 PM, Steve Freyder wrote:
+>>>> Greetings again.
 >>>>
->>>> I can't reproduce this, the loadavg on my qemu instance consistently
->>>> converges to 0.0x figures while running the latency test (10Khz or 1Khz,
->>>> same). I'm now running 4.9.92, but I don't think this should make any
->>>> difference, since I could trace the box entering the idle state on .90.
+>>>> As I understand it, for each rt_queue there's supposed to be a
+>>>> "status file" located in the fuse filesystem underneath the
+>>>> "/run/xenomai/user/session/pid/alchemy/queues" directory, with
+>>>> the file name being the queue name.  This used to contain very
+>>>> useful info about queue status, message counts, etc.  I don't know
+>>>> when it broke or whether it's something I'm doing wrong but I'm
+>>>> now getting a "memory exhausted" message on the console when I
+>>>> attempt to do a "cat" on the status file.
 >>>>
->>>> Are you running the ia32emu mode, or x86_64? Also, could you share your
->>>> .config for building the guest kernel?
+>>>> Here's a small C program that just creates a queue, and then does
+>>>> a pause to hold the accessor count non-zero.
+>>>>
+>>> <snip>
 >>>
->>> Config is the same I sent back then. Userland is 64-bit, compat support
->>> enabled.
->>
->> You only sent me the CONFIG_IDLE* settings I asked for. I'd need the
->> whole file now.
-> 
-> Sorry, though I did. Attached.
-> 
-
-Thanks,
-
->>
+>>>> The resulting output (logged in via the system console):
+>>>>
+>>>> # sh qtest.sh
+>>>> + sleep 1
+>>>> + ./qc --mem-pool-size=64M --session=mysession foo
+>>>> + find /run/xenomai
+>>>> /run/xenomai
+>>>> /run/xenomai/root
+>>>> /run/xenomai/root/mysession
+>>>> /run/xenomai/root/mysession/821
+>>>> /run/xenomai/root/mysession/821/alchemy
+>>>> /run/xenomai/root/mysession/821/alchemy/tasks
+>>>> /run/xenomai/root/mysession/821/alchemy/tasks/task@1[821]
+>>>> /run/xenomai/root/mysession/821/alchemy/queues
+>>>> /run/xenomai/root/mysession/821/alchemy/queues/foo
+>>>> /run/xenomai/root/mysession/system
+>>>> /run/xenomai/root/mysession/system/threads
+>>>> /run/xenomai/root/mysession/system/heaps
+>>>> /run/xenomai/root/mysession/system/version
+>>>> + qfile='/run/xenomai/*/*/*/alchemy/queues/foo'
+>>>> + cat /run/xenomai/root/mysession/821/alchemy/queues/foo
+>>>> memory exhausted
+>>>>
+>>>> At this point, it hangs, although SIGINT usually terminates it.
+>>>>
+>>>> I've seen some cases where SIGINT won't terminate it, and a reboot is
+>>>> required to clean things up.  I see this message appears to be logged
+>>>> in the obstack error handler.  I don't think I'm running out of memory,
+>>>> which makes me think "heap corruption".  Not much of an analysis!  I did
+>>>> try varying queue sizes and max message counts - no change.
+>>>>
+>>> I can't reproduce this. I would suspect a rampant memory corruption too,
+>>> although running the test code over valgrind (mercury build) did not
+>>> reveal any issue.
 >>>
->>> The reason I see so far: xnclock_core_local_shot never sets XNIDLE.
->>
->> It does here (I traced it). However this should depend on the NO_HZ
->> settings, mine are :
->>
->> CONFIG_TICK_ONESHOT=y
->> CONFIG_NO_HZ_COMMON=y
->> # CONFIG_HZ_PERIODIC is not set
->> CONFIG_NO_HZ_IDLE=y
->> CONFIG_NO_HZ=y
->>
-> 
-> Same here.
-> 
->>> I
->>> suspect we always have a timer registered, that for the host clock. So
->>
->> In that case, the timer is not idle Xenomai-wise.
->>
->>> we can't become idle this way. I'm not even sure that this test makes
->>> sense because a pending RT timer does not make a non-idle system.
+>>> - which Xenomai version are you using?
+>>> - cobalt / mercury ?
+>>> - do you enable the shared heap when configuring ? (--enable-pshared)
 >>>
+>> I'm using Cobalt.  uname -a reports:
 >>
->> This is not about testing for Cobalt idleness, but for its core timer
->> idleness, given that the core timer is shared between both kernels. We
->> want to know whether we may allow the regular kernel to shutdown the
->> clock event hardware for entering a sleep state. XNIDLE -> XNTIMERIDLE
->> if you will. I covered this stuff in Documentation/ipipe.rst lately.
+>> Linux sdftest 4.1.18_C01571-15S00-00.000.zimg+83fdace666 #2 SMP Fri Mar
+>> 9 11:07:52 CST 2018 armv7l GNU/Linux
 >>
-> 
-> I still don't see the problem. We own the timer, Linux does not program
-> it. And letting Linux call hlt does not disturb the timer programming,
-> in most cases at least (there might be some weird old broken hardware).
+>> Here is the config dump:
+>>
+>> CONFIG_XENO_PSHARED=1
+> Any chance you could have some leftover files in /dev/shm from aborted
+> runs, which would steal RAM?
+>
+I've been rebooting before each test run, but I'll keep that in mind for
+future testing.
 
+Sounds like I need to try rolling back to an older build, I have a 3.0.5
+and a 3.0.3 build handy.
 
-The problem is not with hlt, but with the tick device switch when c3stop
-is enabled on the device, and going idle means shutting it down before
-switching to a broadcast device. Very unfortunately, this is not even an
-x86-specific issue, this may also happen elsewhere, e.g. ARM's TWD.
-
--- 
-Philippe.
 
