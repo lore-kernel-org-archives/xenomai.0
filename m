@@ -1,11 +1,14 @@
-From: Sagi Maimon <SMaimon@advaoptical.com>
-Date: Mon, 2 Apr 2018 12:56:39 +0000
-Message-ID: <024cb4c6850d4e8fa626c8f43b66feb4@advaoptical.com>
-Content-Language: en-US
+References: <5AC116C9.6040809@freyder.net>
+From: Philippe Gerum <rpm@xenomai.org>
+Message-ID: <15a83f1d-7785-11c9-5f64-c09cb035ff10@xenomai.org>
+Date: Mon, 2 Apr 2018 15:41:58 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Subject: [Xenomai] Unrecoverable FP Unavailable Exception 801
+In-Reply-To: <5AC116C9.6040809@freyder.net>
+Content-Type: text/plain; charset="utf-8"
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
+Subject: Re: [Xenomai] Possible Xenomai fuse filesystem/registry queue
+ status files issue?
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -14,48 +17,66 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Steve Freyder <steve@freyder.net>, "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-Hi all,
-I am working with: Powerpc e300 SOC.
-I am using: xenomai-2.6.4 version
+On 04/01/2018 07:28 PM, Steve Freyder wrote:
+> Greetings again.
+> 
+> As I understand it, for each rt_queue there's supposed to be a
+> "status file" located in the fuse filesystem underneath the
+> "/run/xenomai/user/session/pid/alchemy/queues" directory, with
+> the file name being the queue name.  This used to contain very
+> useful info about queue status, message counts, etc.  I don't know
+> when it broke or whether it's something I'm doing wrong but I'm
+> now getting a "memory exhausted" message on the console when I
+> attempt to do a "cat" on the status file.
+> 
+> Here's a small C program that just creates a queue, and then does
+> a pause to hold the accessor count non-zero.
+> 
 
-I am experiencing this exception on my Linux :
-Unrecoverable FP Unavailable Exception 801 at c0003858
-Oops: Unrecoverable FP Unavailable Exception, sig: 6 [#1]
+<snip>
 
-This happens during "alignment exception" (600)
+> The resulting output (logged in via the system console):
+> 
+> # sh qtest.sh
+> + sleep 1
+> + ./qc --mem-pool-size=64M --session=mysession foo
+> + find /run/xenomai
+> /run/xenomai
+> /run/xenomai/root
+> /run/xenomai/root/mysession
+> /run/xenomai/root/mysession/821
+> /run/xenomai/root/mysession/821/alchemy
+> /run/xenomai/root/mysession/821/alchemy/tasks
+> /run/xenomai/root/mysession/821/alchemy/tasks/task@1[821]
+> /run/xenomai/root/mysession/821/alchemy/queues
+> /run/xenomai/root/mysession/821/alchemy/queues/foo
+> /run/xenomai/root/mysession/system
+> /run/xenomai/root/mysession/system/threads
+> /run/xenomai/root/mysession/system/heaps
+> /run/xenomai/root/mysession/system/version
+> + qfile='/run/xenomai/*/*/*/alchemy/queues/foo'
+> + cat /run/xenomai/root/mysession/821/alchemy/queues/foo
+> memory exhausted
+> 
+> At this point, it hangs, although SIGINT usually terminates it.
+> 
+> I've seen some cases where SIGINT won't terminate it, and a reboot is
+> required to clean things up.  I see this message appears to be logged
+> in the obstack error handler.  I don't think I'm running out of memory,
+> which makes me think "heap corruption".  Not much of an analysis!  I did
+> try varying queue sizes and max message counts - no change.
+> 
 
-I found this link:
-https://www.mail-archive.com/search?l=xenomai@xenomai.org&q=subject:%22Re%5C%3A+%5C%5BXenomai%5C%5D+FPU+problems+in+Xenomai+2.4.x%22&o=newest&f=1
+I can't reproduce this. I would suspect a rampant memory corruption too,
+although running the test code over valgrind (mercury build) did not
+reveal any issue.
 
-As I understand heavy use of FPU by Linux application with the xenomai can Couse this problem.
-I have built a Linux application that causes many "alignment exceptions", but I don't get any Unrecoverable FP Unavailable Exceptions.
+- which Xenomai version are you using?
+- cobalt / mercury ?
+- do you enable the shared heap when configuring ? (--enable-pshared)
 
-Does anyone familiar with this error?
-Have this problem fixed in recent xenomai/ipipe versions?
-Where can I find a list of fixes made in any xenomai/ipipe version?
+-- 
+Philippe.
 
-Thanks,
-
-
-Sagi Maimon
-Manager R&D Software Oscilloquartz SA.
-ADVA Optical Networking
-Phone: +972 9 775 0124
-Mobile: +972 54 5662632
-e-mail: SMaimon@advaoptical.com<mailto:SMaimon@advaoptical.com>
-[ADVA_OSA_Logo]
-www.oscilloquartz.com<http://www.oscilloquartz.com/>
-www.advaoptical.com<http://www.advaoptical.com/>
-
-
-
-
--------------- next part --------------
-A non-text attachment was scrubbed...
-Name: image001.jpg
-Type: image/jpeg
-Size: 4482 bytes
-Desc: image001.jpg
-URL: <http://xenomai.org/pipermail/xenomai/attachments/20180402/8864aee2/attachment.jpg>
