@@ -1,12 +1,14 @@
-From: "Pham, Phong" <phamp@ddc-web.com>
-Date: Tue, 10 Apr 2018 19:03:08 +0000
-Message-ID: <C2EC5BA46D13CD44B5915A8FEEB4C44E8488E31A@DDCEXCH.ddc-ny.com>
-Content-Language: en-US
+Date: Tue, 03 Apr 2018 12:21:23 +0200
+Message-ID: <20180403122123.Horde.D2Qo7ce4c1LHdQcBYRZNBmd@webmail.uam.es>
+From: rodrigo.amaducci@uam.es
+References: <20180402162629.Horde.aGvVeyDe3lwwFExaCtLehqi@webmail.uam.es>
+ <CALLqZ8TSMOAt0hVKf9UWBVwp4t2LWKkLYOjAWyhywLHAc5oFRg@mail.gmail.com>
+ <d5181033-d020-34bb-8b1b-8a261c885f75@xenomai.org>
+In-Reply-To: <d5181033-d020-34bb-8b1b-8a261c885f75@xenomai.org>
+Content-Type: text/plain; charset=utf-8; format=flowed; DelSp=Yes
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-Subject: [Xenomai] mmap when using in conjunction with mapper to retrieve
- memory mapped IO space
+Content-Disposition: inline
+Subject: Re: [Xenomai] Context switching with POSIX skin
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,81 +17,57 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "xenomai@xenomai.org" <xenomai@xenomai.org>
-Cc: "Hillman, Robert" <hillman@ddc-web.com>
+To: rpm@xenomai.org, greg@embeddedgreg.com
+Cc: xenomai@xenomai.org
+
+Thank you Greg and Philippe for the quick response.
+
+I wasn't aware of the existence of XDDP, and it is exactly what I  
+need. Problem is that when I run even the xddp-echo.c example from  
+http://xenomai.org/documentation/xenomai-3/html/xeno3prm/xddp-echo_8c-example.html I get this error "socket: Address family not supported by  
+protocol".
+
+ From what I can read in the documentation  
+(https://linux.die.net/man/2/socket) I guess it is related to the use  
+of the domain AF_RTIPC, but I don't really know what is going on.
+
+It compiles without errors or warnings using the following Makefile:
+
+target = xddp-echo
+skin = posix
+CC := $(shell /usr/xenomai/bin/xeno-config --cc)
+CFLAGS := $(shell /usr/xenomai/bin/xeno-config --skin=$(skin) --cflags)
+LDFLAGS := $(shell /usr/xenomai/bin/xeno-config --skin=$(skin) --ldflags)
+$(target): $(target).c
+	$(CC) -o $@ $< $(CFLAGS) $(LDFLAGS)
+clean:
+	@rm $(target)
+
+Best regards,
+
+Rodrigo
 
 
-Hi,
+Quoting Philippe Gerum <rpm@xenomai.org>:
 
-According to page 651
-https://xenomai.org/documentation/xenomai-3/pdf/xeno3prm.pdf
-
-
-This will make such region accessible via the mapper device using the follo=
-wing sequence of code, via
-the default ->mmap() handler from the UDD core:
-int fd, fdm;
-void *p;
-fd =3D open("/dev/foocard", O_RDWR);
-fdm =3D open("/dev/foocard,mapper@2", O_RDWR);
-p =3D mmap(NULL, 4096, PROT_READ|PROT_WRITE, 0, fdm, 0);
-
-
-I have several questions:
-
-1)      It looks like the 4th argument of mmap (the one to the left of "fdm=
-") needs to be either MAP_SHARED or MAP_PRIVATE
-
-2)      The "@" character right after "mapper" is not valid (ie. there shou=
-ld be no "@" character at all)
-
-3)      /dev/foocard should be /dev/rtdm/foocard
-
-here's my real question:
-
-Assuming all 3 of the above is valid from user space, and on the kernel spa=
-ce, I followed the ex. to create memory region, etc. such that I do see my =
-device
-
-# ls -l dev/rtdm
-crw-------    1 root     root      252,   0 Jan  1 00:00 autotune
-crw-------    1 root     root      247,   0 Jan  1 00:00 eeprom
-crw-------    1 root     root      246,   0 Jan  1 00:00 eeprom,mapper0
-crw-------    1 root     root      254,   0 Jan  1 00:00 memdev-private
-crw-------    1 root     root      254,   1 Jan  1 00:00 memdev-shared
-crw-------    1 root     root      253,   0 Jan  1 00:00 memdev-sys
-crw-------    1 root     root      249,   0 Jan  1 00:00 mmio
-crw-------    1 root     root      248,   0 Jan  1 00:00 mmio,mapper0
-crw-------    1 root     root      248,   1 Jan  1 00:00 mmio,mapper1
-crw-------    1 root     root      248,   2 Jan  1 00:00 mmio,mapper2
-crw-------    1 root     root      248,   3 Jan  1 00:00 mmio,mapper3
-crw-------    1 root     root      248,   4 Jan  1 00:00 mmio,mapper4
-crw-------    1 root     root      250,   0 Jan  1 00:00 switchtest
-crw-------    1 root     root      251,   0 Jan  1 00:00 timerbench
+> On 04/02/2018 04:54 PM, Greg Gallagher wrote:
+>> I believe you want to look at xddp for communication between RT and
+>> non RT threads:
+>>
+>> http://xenomai.org/documentation/xenomai-3/html/xeno3prm/xddp-echo_8c-example.html
+>>
+>> I don't have much experience with using message queues for RT to
+>> non-RT communications but I believe using a message queue with a RT
+>> and non-RT thread is expected to cause mode switches.
+>
+> Correct, the Cobalt-enabled nrt thread (i.E. prio=0) would have to
+> switch temporarily to primary mode for reading/writing, then back to
+> secondary upon return from syscall. This is expensive when done
+> frequently. XDDP is the right option for rt <-> nrt chat between threads.
+>
+> --
+> Philippe.
 
 
-like /dev/rtdm/eeprom and /dev/rtdm/eeprom,mapper0  etc. I don't see my ker=
-nel hook ever gets called
 
 
-static struct udd_device eeprom =3D {
-              .device_flags =3D RTDM_NAMED_DEVICE,
-              .device_name =3D "eeprom",
-              .ops =3D {
-                             .close =3D phong_scs750_close,
-                             .open =3D phong_scs750_open,
-                             .mmap =3D phong_scs750_mmap,
-              }
-
-By that, I mean phong_scs750_open, phong_scs750_mmap never gets invoked.  m=
-map() from user space returns -1 with errno value of 19 (ENODEV).  Any advi=
-se?
-
-Phong.
-Notice: This e-mail and any files transmitted with it may contain Data Devi=
-ce Corporation's privileged and proprietary information. It is intended sol=
-ely for the use of the individual or entity to whom it is addressed. If you=
- are not the named recipient of this transmission, any disclosure, copying,=
- distribution or reliance on the contents of this message is prohibited. If=
- you received this e-mail in error, please destroy it and any attached file=
-s and notify me immediately.
