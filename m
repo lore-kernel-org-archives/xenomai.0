@@ -1,11 +1,11 @@
 From: Giulio Moro <g.moro@qmul.ac.uk>
-Date: Wed, 4 Apr 2018 19:58:14 +0000
-Message-ID: <DB6PR0701MB2456EF1925C87F170E90540EB5A40@DB6PR0701MB2456.eurprd07.prod.outlook.com>
+Date: Wed, 4 Apr 2018 20:15:09 +0000
+Message-ID: <DB6PR0701MB2456FE5A9F080B3BE39375E0B5A40@DB6PR0701MB2456.eurprd07.prod.outlook.com>
 Content-Language: en-GB
 Content-Type: text/plain; charset="iso-8859-1"
 Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-Subject: [Xenomai] xeno-config --no-mode-check still has -lmodechk
+Subject: [Xenomai] doc for xeno-config skins
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,18 +16,33 @@ List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
- /usr/xenomai/bin/xeno-config --skin cobalt --ldflags --no-mode-check
+What is the difference between the Posix and Cobalt skin, as far as xeno-co=
+nfig is concerned??
 
-returns
--Wl,--no-as-needed   /usr/xenomai/lib/xenomai/bootstrap.o -Wl,--wrap=3Dmain=
- -Wl,--dynamic-list=3D/usr/xenomai/lib/dynlist.ld -L/usr/xenomai/lib -lcoba=
-lt -lmodechk -lpthread -lrt
+Difference between
+  xeno-config --skin posix --cflags
+  xeno-config --skin cobalt --cflags
+is that the former declares -D__COBALT_WRAP__ (which in turn adds fwd decla=
+rations for clock_nanosleep() and pthread_setname_np() in boilerplate/libc.=
+h).
 
-which removes the modechk wrappers, but leaves -lmodechk in. Is this expect=
-ed?
+difference between=20
+  xeno-config --skin posix --ldflags
+  xeno-config --skin cobalt --ldflags
+is that the former adds `-Wl,@/usr/xenomai/lib/cobalt.wrappers`
 
-As I understand it, libmodechk provides implementations for __wrap_malloc, =
-__wrap_free and __real_malloc, __real_free() are these needed even when the=
- wrappers are disabled, or should -lmodechk not be included?
+So it seems to me that `--skin posix` expects you to call, e.g.: pthread_cr=
+eate(), while `--skin cobalt` expects you to call, e.g.: __wrap_pthread_cre=
+ate()
 
+Is this correct?
+Is that it?
+What are the intended uses?
+I don't think this is documented anywhere? Where would be the best place to=
+ have this written down? Perhaps the --help of xeno-config? Also, while we =
+are at it, --skin alchemy vs --skin native and the effect of --compat could=
+ use some description.
+
+Best,
+Giulio
 
