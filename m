@@ -1,10 +1,12 @@
-From: Sagi Maimon <SMaimon@advaoptical.com>
-Date: Wed, 4 Apr 2018 10:17:54 +0000
-Message-ID: <e6b33545f46048ada70f0e10863bf3b4@advaoptical.com>
+From: "Seeger, Steven D. (GSFC-582.0)[Embedded Flight Systems, Inc]"
+ <steven.seeger@nasa.gov>
+Date: Wed, 4 Apr 2018 12:55:26 +0000
+Message-ID: <0A5CA087C7C2B54F937024C86CBC8AD515BA78D3@NDMSMBX402.ndc.nasa.gov>
 References: <mailman.27.1522680894.4366.xenomai@xenomai.org>
  <8214382.neGrAg1Q7R@wirbelwind>
- <20180403183138.muvg7ntdj2hhesd3@csclub.uwaterloo.ca>
-In-Reply-To: <20180403183138.muvg7ntdj2hhesd3@csclub.uwaterloo.ca>
+ <20180403183138.muvg7ntdj2hhesd3@csclub.uwaterloo.ca>,
+ <e6b33545f46048ada70f0e10863bf3b4@advaoptical.com>
+In-Reply-To: <e6b33545f46048ada70f0e10863bf3b4@advaoptical.com>
 Content-Language: en-US
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
@@ -18,8 +20,18 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Lennart Sorensen <lsorense@csclub.uwaterloo.ca>, Steven Seeger <steven.seeger@nasa.gov>
+To: Sagi Maimon <SMaimon@advaoptical.com>, Lennart Sorensen <lsorense@csclub.uwaterloo.ca>
 Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
+
+Can you trigger alignment exception both from a regular Linux user thread a=
+nd a xenomai user thread?=20
+________________________________________
+From: Sagi Maimon [SMaimon@advaoptical.com]
+Sent: Wednesday, April 04, 2018 6:17 AM
+To: Lennart Sorensen; Seeger, Steven D. (GSFC-582.0)[Embedded Flight System=
+s, Inc]
+Cc: xenomai@xenomai.org
+Subject: RE: [Xenomai] Unrecoverable FP Unavailable Exception 801
 
 As far as I know The system doesn't use kernel threads that use the FPU (bu=
 t it is a huge system, so I hard to be sure)
@@ -27,7 +39,7 @@ What I know for sure, is that some processes on user space use double varia=
 bles in user space.
 I have also wrote some user space application that triggers the "Alignment =
 Exception (600)", just for testing.
-=20
+
 
 -----Original Message-----
 From: Xenomai [mailto:xenomai-bounces@xenomai.org] On Behalf Of Lennart Sor=
@@ -38,9 +50,9 @@ Cc: xenomai@xenomai.org
 Subject: Re: [Xenomai] Unrecoverable FP Unavailable Exception 801
 
 On Tue, Apr 03, 2018 at 09:57:52AM -0400, Steven Seeger wrote:
-> I'm a little curious about the fact that the address this occurred at=20
-> is 0xc0003858, which suggests it's kernel code. As Philippe asked,=20
-> what version of the ipipe are you using? Also, what is your exact CPU?=20
+> I'm a little curious about the fact that the address this occurred at
+> is 0xc0003858, which suggests it's kernel code. As Philippe asked,
+> what version of the ipipe are you using? Also, what is your exact CPU?
 > The e300c2 does not have an FPU, so this would be quite a configuration p=
 roblem.
 
