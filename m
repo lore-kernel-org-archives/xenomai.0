@@ -1,13 +1,11 @@
-References: <024cb4c6850d4e8fa626c8f43b66feb4@advaoptical.com>
-From: Philippe Gerum <rpm@xenomai.org>
-Message-ID: <8f91fded-ea03-3cc0-b300-813332989405@xenomai.org>
-Date: Mon, 2 Apr 2018 16:19:06 +0200
 MIME-Version: 1.0
-In-Reply-To: <024cb4c6850d4e8fa626c8f43b66feb4@advaoptical.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] Unrecoverable FP Unavailable Exception 801
+In-Reply-To: <DB6PR0701MB2456B23A97C5A7498981FC29B5A40@DB6PR0701MB2456.eurprd07.prod.outlook.com>
+References: <DB6PR0701MB2456B23A97C5A7498981FC29B5A40@DB6PR0701MB2456.eurprd07.prod.outlook.com>
+From: Greg Gallagher <greg@embeddedgreg.com>
+Date: Wed, 4 Apr 2018 15:44:11 -0400
+Message-ID: <CALLqZ8Rv9PQLey6Z3eK5N7aJPBOv=ANym7uAkaeSwwRgmYCjLQ@mail.gmail.com>
+Content-Type: text/plain; charset="UTF-8"
+Subject: Re: [Xenomai] cobalt equivalent of rt_task_shadow()
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,47 +14,36 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
+To: Giulio Moro <g.moro@qmul.ac.uk>
+Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On 04/02/2018 02:56 PM, Sagi Maimon wrote:
-> Hi all,
-> I am working with: Powerpc e300 SOC.
-> I am using: xenomai-2.6.4 version
+Do you still want to use the alchemy API?  rt_task_shadow is still
+available in Xenomai 3
 
-The key information is: which I-pipe version.
+-Greg
 
-> 
-> I am experiencing this exception on my Linux :
-> Unrecoverable FP Unavailable Exception 801 at c0003858
-> Oops: Unrecoverable FP Unavailable Exception, sig: 6 [#1]
-> 
-> This happens during "alignment exception" (600)
-> 
-> I found this link:
-> https://www.mail-archive.com/search?l=xenomai@xenomai.org&q=subject:%22Re%5C%3A+%5C%5BXenomai%5C%5D+FPU+problems+in+Xenomai+2.4.x%22&o=newest&f=1
-> 
-> As I understand heavy use of FPU by Linux application with the xenomai can Couse this problem.
-
-Reading the discussion you mentioned, it says that the bug(s) mentioned
-have been fixed in 2.6.2.1, so this is unlikely to apply to 2.6.4.
-
-> I have built a Linux application that causes many "alignment exceptions", but I don't get any Unrecoverable FP Unavailable Exceptions.
-> 
-> Does anyone familiar with this error?
-
-The e300 core may also issue alignment exceptions for misaligned
-single/multiple integer stores, or dcbz insn to write-through or
-cache-inhibited memory.
-
-> Have this problem fixed in recent xenomai/ipipe versions?
-
-No fix related to this since ages.
-
-> Where can I find a list of fixes made in any xenomai/ipipe version?
-> 
-
-Only in the git commit logs for the related I-pipe and Xenomai source trees.
-
--- 
-Philippe.
+On Wed, Apr 4, 2018 at 3:37 PM, Giulio Moro <g.moro@qmul.ac.uk> wrote:
+> On Xenomai 2.6, native API, I used to run
+>
+>   rt_task_shadow(&thisTask, threadName, threadPriority, T_JOINABLE | T_FPU);
+>
+> Now I am using Cobalt on Xenomai 3 and I am looking for a drop-in replacement.
+>
+> Going through the source of alchemy.c, copperplate/internal.c and cobalt/thread.c, it seems that rt_task_shadow() now is implemented by calling
+>
+>   pthread_setschedparam_ex(pthread_self(), SCHED_FIFO, &param_ex)
+>
+> where sched_param_ex param_ex.sched_priorirty = threadPriority
+>
+> Is that all that is needed to turn the current thread into a Xenomai thread of priority threadPriority?
+> Perhaps followed by
+>   __wrap_pthread_setname_np(pthread_self(), taskName);
+> ?
+>
+> Thanks,
+> Giulio
+> _______________________________________________
+> Xenomai mailing list
+> Xenomai@xenomai.org
+> https://xenomai.org/mailman/listinfo/xenomai
 
