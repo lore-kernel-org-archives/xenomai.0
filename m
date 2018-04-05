@@ -1,16 +1,14 @@
-References: <5AC116C9.6040809@freyder.net>
- <15a83f1d-7785-11c9-5f64-c09cb035ff10@xenomai.org>
- <5AC24433.30107@freyder.net>
-From: Philippe Gerum <rpm@xenomai.org>
-Message-ID: <6cacabd8-af4c-27e0-1b62-34ce73d7b933@xenomai.org>
-Date: Mon, 2 Apr 2018 17:20:51 +0200
-MIME-Version: 1.0
-In-Reply-To: <5AC24433.30107@freyder.net>
-Content-Type: text/plain; charset="utf-8"
+From: Lange Norbert <norbert.lange@andritz.com>
+Date: Thu, 5 Apr 2018 15:54:34 +0000
+Message-ID: <99BAB48E90E86D42AD41F0BCE3225AEB019FC066DF@GRZSMS582.andritz.com>
+References: <99BAB48E90E86D42AD41F0BCE3225AEB019FC0631A@GRZSMS582.andritz.com>
+ <bbb33d4c-e8d0-b383-0424-d99592486988@siemens.com>
+In-Reply-To: <bbb33d4c-e8d0-b383-0424-d99592486988@siemens.com>
 Content-Language: en-US
-Content-Transfer-Encoding: 8bit
-Subject: Re: [Xenomai] Possible Xenomai fuse filesystem/registry queue
- status files issue?
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+MIME-Version: 1.0
+Subject: Re: [Xenomai] building Xenomai Apps with CMake (RFC)
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -19,79 +17,72 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Steve Freyder <steve@freyder.net>, "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Jan Kiszka <jan.kiszka@siemens.com>, "Xenomai (xenomai@xenomai.org)" <xenomai@xenomai.org>, Henning Schild <henning.schild@siemens.com>
 
-On 04/02/2018 04:54 PM, Steve Freyder wrote:
-> On 4/2/2018 8:41 AM, Philippe Gerum wrote:
->> On 04/01/2018 07:28 PM, Steve Freyder wrote:
->>> Greetings again.
->>>
->>> As I understand it, for each rt_queue there's supposed to be a
->>> "status file" located in the fuse filesystem underneath the
->>> "/run/xenomai/user/session/pid/alchemy/queues" directory, with
->>> the file name being the queue name.  This used to contain very
->>> useful info about queue status, message counts, etc.  I don't know
->>> when it broke or whether it's something I'm doing wrong but I'm
->>> now getting a "memory exhausted" message on the console when I
->>> attempt to do a "cat" on the status file.
->>>
->>> Here's a small C program that just creates a queue, and then does
->>> a pause to hold the accessor count non-zero.
->>>
->> <snip>
->>
->>> The resulting output (logged in via the system console):
->>>
->>> # sh qtest.sh
->>> + sleep 1
->>> + ./qc --mem-pool-size=64M --session=mysession foo
->>> + find /run/xenomai
->>> /run/xenomai
->>> /run/xenomai/root
->>> /run/xenomai/root/mysession
->>> /run/xenomai/root/mysession/821
->>> /run/xenomai/root/mysession/821/alchemy
->>> /run/xenomai/root/mysession/821/alchemy/tasks
->>> /run/xenomai/root/mysession/821/alchemy/tasks/task@1[821]
->>> /run/xenomai/root/mysession/821/alchemy/queues
->>> /run/xenomai/root/mysession/821/alchemy/queues/foo
->>> /run/xenomai/root/mysession/system
->>> /run/xenomai/root/mysession/system/threads
->>> /run/xenomai/root/mysession/system/heaps
->>> /run/xenomai/root/mysession/system/version
->>> + qfile='/run/xenomai/*/*/*/alchemy/queues/foo'
->>> + cat /run/xenomai/root/mysession/821/alchemy/queues/foo
->>> memory exhausted
->>>
->>> At this point, it hangs, although SIGINT usually terminates it.
->>>
->>> I've seen some cases where SIGINT won't terminate it, and a reboot is
->>> required to clean things up.  I see this message appears to be logged
->>> in the obstack error handler.  I don't think I'm running out of memory,
->>> which makes me think "heap corruption".  Not much of an analysis!  I did
->>> try varying queue sizes and max message counts - no change.
->>>
->> I can't reproduce this. I would suspect a rampant memory corruption too,
->> although running the test code over valgrind (mercury build) did not
->> reveal any issue.
->>
->> - which Xenomai version are you using?
->> - cobalt / mercury ?
->> - do you enable the shared heap when configuring ? (--enable-pshared)
->>
-> 
-> I'm using Cobalt.  uname -a reports:
-> 
-> Linux sdftest 4.1.18_C01571-15S00-00.000.zimg+83fdace666 #2 SMP Fri Mar
-> 9 11:07:52 CST 2018 armv7l GNU/Linux
-> 
-> Here is the config dump:
-> 
-> CONFIG_XENO_PSHARED=1
-
-Any chance you could have some leftover files in /dev/shm from aborted
-runs, which would steal RAM?
-
--- 
-Philippe.
+SGVsbG8sDQoNCiA+LS0tLS1PcmlnaW5hbCBNZXNzYWdlLS0tLS0NCiA+RnJvbTogSmFuIEtpc3pr
+YSBbbWFpbHRvOmphbi5raXN6a2FAc2llbWVucy5jb21dDQogPlNlbnQ6IERvbm5lcnN0YWcsIDA1
+LiBBcHJpbCAyMDE4IDE2OjU1DQogPlRvOiBMYW5nZSBOb3JiZXJ0OyBYZW5vbWFpICh4ZW5vbWFp
+QHhlbm9tYWkub3JnKTsgSGVubmluZyBTY2hpbGQNCiA+U3ViamVjdDogUmU6IGJ1aWxkaW5nIFhl
+bm9tYWkgQXBwcyB3aXRoIENNYWtlIChSRkMpDQogPg0KID5FLU1BSUwgRlJPTSBBIE5PTi1BTkRS
+SVRaIFNPVVJDRTogQVMgQSBTRUNVUklUWSBNRUFTVVJFLCBQTEVBU0UNCiA+RVhFUkNJU0UgQ0FV
+VElPTiBXSVRIIEUtTUFJTCBDT05URU5UIEFORCBBTlkgTElOS1MgT1INCiA+QVRUQUNITUVOVFMu
+DQogPg0KID4NCiA+T24gMjAxOC0wNC0wMyAxNjoxMCwgTGFuZ2UgTm9yYmVydCB3cm90ZToNCiA+
+PiBIZWxsbywNCiA+Pg0KID4+IEkgd2VudCBhaGVhZCBhbmQgY3JlYXRlZCBhIHNjcmlwdCB0byBh
+ZGQgc3VwcG9ydCBmb3IgWGVub21haSAoMyspIHRvIENNYWtlLg0KID5JdHMgY3VycmVudGx5IHN1
+ZmZpY2llbnQgZm9yIG1lLA0KID4+IGJ1dCBJIHdvdWxkIGxpa2UgdG8gZ2V0IHRoaXMgaW4gYSBz
+aGFwZSB0aGF0IGl0IGlzIHVzZWZ1bCBhbmQgcm9idXN0IGVub3VnaCBmb3INCiA+bW9zdCBwZW9w
+bGUuDQogPj4gVWx0aW1hdGVseSBpdCBzaG91bGQgZW5kIHVwIHVwIHN0cmVhbWVkIHRvIENNYWtl
+IChJIGhvcGUgdGhlIGJpbnV0aWxzLXNwZWNpZmljDQogPndyYXBwZXJzIGFyZW4ndCBhIGtub2Nr
+LW91dCBhZ2FpbnN0IGFkb3B0aW9uKS4NCiA+Pg0KID4+IE1vc3RseSB0aGlzIHNob3VsZCBpbnRl
+cmVzdCBwZW9wbGUgdGhhdCB3YW50IHRvIHVzZSBDTWFrZSwgYnV0IGEgZmV3IHRoaW5ncw0KID5t
+aWdodCBuZWVkIHN1cHBvcnQgZnJvbSB0aGUgWGVub21haSBkaXN0cmlidXRpb24uDQogPj4gVG8g
+YmUgbW9yZSBzcGVjaWZpYzogdXNpbmcgcHJlY29tcGlsZWQgb2JqZWN0LWZpbGVzIGxpa2UgdGhl
+IGJvb3N0cmFwIGNvZGUNCiA+YW5kIGl0cyBsaW5rZXIgd3JhcHMgYW5kIHJlZGlyZWN0aW9ucyBh
+cmUgc29tZXRoaW5nIEkgd291bGQNCiA+PiBsaWtlIHRvIGF2b2lkLCBvciBhdGxlYXN0IG9mZmVy
+IGFuIGFsdGVybmF0aXZlIHRoYXQgZG9lcyBub3QgbmVlZCB0aGF0IG11Y2gNCiA+d29yayBvdXRz
+aWRlIG9mIGEgInJlZ3VsYXIgYnVpbGQiLg0KID4+IEZvciB0aGF0LCBoYXZpbmcgdGhlIGJvb3Rz
+dHJhcCBjb2RlIChjb25maWd1cmFibGUgb3IgYSBmZXcgdmFyaWFudHMpIGluc3RhbGxlZA0KID5h
+cyBzb3VyY2Vjb2RlIHdvdWxkIGhlbHAuDQogPj4NCiA+PiBDb2RlIGlzIHVwbG9hZGVkIHRvIEdp
+dGh1YiA6IGh0dHBzOi8vZ2l0aHViLmNvbS9ub2xhbmdlL2NtYWtlX3hlbm9tYWkNCiA+DQogPlRo
+YW5rcyBmb3Igc2hhcmluZyB0aGlzLiBJSVJDLCB3ZSBoYXZlIHNvbWUgWGVvbW1haSB1c2VyIGlu
+LWhvdXNlIGFzDQogPndlbGwgd2hvIGxvb2tlZCBpbnRvIGNtYWtlLCBuZWVkIHRvIGNoZWNrIHRo
+ZSBzdGF0dXMgYW5kIHNjb3BlIGFnYWluDQogPihtYXliZSBIZW5uaW5nIGtub3dzIG1vcmUpLiBD
+b3VsZCBiZSBpbnRlcmVzdGluZywgaW5kZWVkLg0KDQpJZiBJIG1heSBhc2ssIGFyZSB5b3UgdXNp
+bmcgdGhlICJib29zdHJhcHMiIGZyb20gWGVub21haSBvciBzb21lIG93biBpbml0LWNvZGU/DQoo
+dGhhdOKAmXMgY3VycmVudGx5IHRoZSBiaWdnZXN0IGhlYWRhY2hlIHJlbWFpbmluZykNCg0KID4N
+CiA+Rm9yIG15IHVuZGVyc3RhbmRpbmc6IFlvdSBuZWVkIGNtYWtlIHVwc3RyZWFtIGNoYW5nZXMg
+dG8gbWFrZSB0aGluZ3MNCiA+d29yaz8gT3IgaXMgdGhpcyBwcm9qZWN0IHNvbWV0aGluZyB0aGF0
+IGNvdWxkIGV2ZW50dWFsbHkgYmUgY2FycmllZCBpbg0KID5YZW5vbWFpIHVwc3RyZWFtLCBqdXN0
+IHJlcXVpcmluZyBzb21lIGNtYWtlIHZlcnNpb24gPj0gWD8NCg0KTm8gc3RyaWN0IG5lZWQgdG8g
+dXBzdHJlYW0gdGhlIHNjcmlwdHMgaW4gZWl0aGVyIFhlbm9tYWkgb3IgQ01ha2UsIHRoZSBmaWxl
+cyBqdXN0IG5lZWQgdG8gYmUgaW4gdGhlIHNlYXJjaC1wYXRoIG9mIENNYWtlIHRvIGJlIHVzYWJs
+ZSAobGlrZWx5IGRvZXNudCBuZWVkIGFueXRoaW5nIG5ld2VyIHRoYW4gQ01ha2UgMy4wIGJ1dCB3
+b3VsZCBuZWVkIHRvIHRlc3QgdGhpcykuDQpJIHZhbHVlIHRoZSBmZWVkYmFjayBmcm9tIGJvdGgg
+Y29tbXVuaXRpZXMsIHBhcnRpY3VsYXJseSBiZWNhdXNlIEkgZG9u4oCZdCB1c2UgYW55dGhpbmcg
+YnV0IHRoZSBQb3NpeC9Db2JhbHQgU2tpbg0KYW5kIGdldHRpbmcgaXQgaW50byBDTWFrZSB3b3Vs
+ZCBiZSB0aGUgYmVzdCB0aGluZyBmb3IgbWFpbnRlbmFuY2UuDQoNCk5ldmVydGhlbGVzcyBpdCBj
+b3VsZCBiZSByZWFsbHkgaGVscGZ1bCB0byBhZGQgYSBoZWFkZXJmaWxlIGluIHRoZSBYZW5vbWFp
+IGRpc3RyaWJ1dGlvbiwgcmVwbGljYXRpbmcgdGhlIHN0ZXBzIHRoYXQgJ2JvaWxlcnBsYXRlL2lu
+aXQvYm9vdHN0cmFwLmMnIGRvZXMsDQphbmQgYWxsb3dpbmcgdG8gZGlzYWJsZSBwYXJ0cyBvZiB0
+aGUgZnVuY3Rpb25hbGl0eSBsaWtlIHRoZSBtYWluIHdyYXBwZXIuDQpUaGF0IGdsdWUgY29kZSB3
+b3VsZCBpZGVhbGx5IGJlIGJ1aWx0IHRvZ2V0aGVyIHdpdGggbGlicmFyaWVzL2V4ZWN1dGFibGVz
+IHVzaW5nIGl0IChpZGVudGljYWwgZmxhZ3MgYW5kIHN1Y2gpLg0KUmlnaHQgbm93IHRoZSBjb2Rl
+IGlzIG1vc3RseSBkdXBsaWNhdGVkIGFuZCBwbGFjZWQgd2l0aCB0aGUgQ01ha2UgU2NyaXB0cywg
+d2hpY2ggaXMgbm90IGlkZWFsLg0KDQpOb3JiZXJ0DQpfX19fX19fX19fX19fX19fX19fX19fX19f
+X19fX19fXw0KDQpUaGlzIG1lc3NhZ2UgYW5kIGFueSBhdHRhY2htZW50cyBhcmUgc29sZWx5IGZv
+ciB0aGUgdXNlIG9mIHRoZSBpbnRlbmRlZCByZWNpcGllbnRzLiBUaGV5IG1heSBjb250YWluIHBy
+aXZpbGVnZWQgYW5kL29yIGNvbmZpZGVudGlhbCBpbmZvcm1hdGlvbiBvciBvdGhlciBpbmZvcm1h
+dGlvbiBwcm90ZWN0ZWQgZnJvbSBkaXNjbG9zdXJlLiBJZiB5b3UgYXJlIG5vdCBhbiBpbnRlbmRl
+ZCByZWNpcGllbnQsIHlvdSBhcmUgaGVyZWJ5IG5vdGlmaWVkIHRoYXQgeW91IHJlY2VpdmVkIHRo
+aXMgZW1haWwgaW4gZXJyb3IgYW5kIHRoYXQgYW55IHJldmlldywgZGlzc2VtaW5hdGlvbiwgZGlz
+dHJpYnV0aW9uIG9yIGNvcHlpbmcgb2YgdGhpcyBlbWFpbCBhbmQgYW55IGF0dGFjaG1lbnQgaXMg
+c3RyaWN0bHkgcHJvaGliaXRlZC4gSWYgeW91IGhhdmUgcmVjZWl2ZWQgdGhpcyBlbWFpbCBpbiBl
+cnJvciwgcGxlYXNlIGNvbnRhY3QgdGhlIHNlbmRlciBhbmQgZGVsZXRlIHRoZSBtZXNzYWdlIGFu
+ZCBhbnkgYXR0YWNobWVudCBmcm9tIHlvdXIgc3lzdGVtLg0KDQpBTkRSSVRaIEhZRFJPIEdtYkgN
+Cg0KDQpSZWNodHNmb3JtLyBMZWdhbCBmb3JtOiBHZXNlbGxzY2hhZnQgbWl0IGJlc2NocsOkbmt0
+ZXIgSGFmdHVuZyAvIENvcnBvcmF0aW9uDQoNCkZpcm1lbnNpdHovIFJlZ2lzdGVyZWQgc2VhdDog
+V2llbg0KDQpGaXJtZW5idWNoZ2VyaWNodC8gQ291cnQgb2YgcmVnaXN0cnk6IEhhbmRlbHNnZXJp
+Y2h0IFdpZW4NCg0KRmlybWVuYnVjaG51bW1lci8gQ29tcGFueSByZWdpc3RyYXRpb246IEZOIDYx
+ODMzIGcNCg0KRFZSOiAwNjA1MDc3DQoNClVJRC1Oci46IEFUVTE0NzU2ODA2DQoNCg0KVGhhbmsg
+WW91DQpfX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fXw0K
 
