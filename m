@@ -1,15 +1,16 @@
-From: Philippe Gerum <rpm@xenomai.org>
-References: <DB6PR0701MB2456EF1925C87F170E90540EB5A40@DB6PR0701MB2456.eurprd07.prod.outlook.com>
- <7528e4df-ac06-8893-bf77-7cbf9e91eeef@xenomai.org>
- <DB6PR0701MB245618054AEE22508685BDE4B5BB0@DB6PR0701MB2456.eurprd07.prod.outlook.com>
-Message-ID: <baa70a7e-806e-197e-7ee5-0d3489c65ff9@xenomai.org>
-Date: Thu, 5 Apr 2018 15:09:58 +0200
+Date: Thu, 05 Apr 2018 15:25:18 +0200
+Message-ID: <20180405152518.Horde.-CDL8q6su7PhMYoQTU0iWhp@webmail.uam.es>
+From: rodrigo.amaducci@uam.es
+References: <20180402162629.Horde.aGvVeyDe3lwwFExaCtLehqi@webmail.uam.es>
+ <CALLqZ8TSMOAt0hVKf9UWBVwp4t2LWKkLYOjAWyhywLHAc5oFRg@mail.gmail.com>
+ <d5181033-d020-34bb-8b1b-8a261c885f75@xenomai.org>
+ <20180403122123.Horde.D2Qo7ce4c1LHdQcBYRZNBmd@webmail.uam.es>
+ <53039d03-c118-3c20-e7cd-eefc264919d7@xenomai.org>
+In-Reply-To: <53039d03-c118-3c20-e7cd-eefc264919d7@xenomai.org>
+Content-Type: text/plain; charset=utf-8; format=flowed; DelSp=Yes
 MIME-Version: 1.0
-In-Reply-To: <DB6PR0701MB245618054AEE22508685BDE4B5BB0@DB6PR0701MB2456.eurprd07.prod.outlook.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-Subject: [Xenomai]  xeno-config --no-mode-check still has -lmodechk
+Content-Disposition: inline
+Subject: Re: [Xenomai] Context switching with POSIX skin
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -18,28 +19,24 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Giulio Moro <g.moro@qmul.ac.uk>, "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Philippe Gerum <rpm@xenomai.org>, greg@embeddedgreg.com
+Cc: xenomai@xenomai.org
 
-On 04/05/2018 01:15 PM, Giulio Moro wrote:
-> so would it not be up to the external libs to specify in their docs that they should be linked with -lmodechk?
+Quoting Philippe Gerum <rpm@xenomai.org>:
+>
+> You need to enable the ipc/xddp driver (CONFIG_XENO_DRIVERS_RTIPC_XDDP)
+> in your kernel.
+>
+> --
+> Philippe.
 
-You likely mean mentioning such dependency in their LDFLAGS as DSOs when
-linked, which is right.
+I have recompiled my kernel a couple of times activating all the RTIPC  
+drivers but I'm still getting the same error when running xddp-echo.
 
-Over time, I received several reports from users of 3rd party libs which
-could not assume that unfortunately. So the question boils down to:
-should we break those builds to remove a generally useless dependency on
-libmodechk, or should we keep this dependency to please those users and
-maintain backward compat.
+Rodrigo
 
-Another question this raises is about calling __real_* symbols directly
-from the application code - which would be ok as a way to bypass the
-assertion checking in this case (likewise the other way around,
-referring to __wrap* calls). Not depending on libmodechk would
-invalidate such usage, ending up in undefined references.
 
-Open question AFAIC.
 
--- 
-Philippe.
+
+
 
