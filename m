@@ -1,9 +1,10 @@
 References: <529dd829-ca80-10f7-36f5-c1dcba403360@siemens.com>
-From: Philippe Gerum <rpm@xenomai.org>
-Message-ID: <bfdeba2c-bcc9-c18e-c73d-e8d4effdb95e@xenomai.org>
-Date: Thu, 5 Apr 2018 17:08:18 +0200
+ <bfdeba2c-bcc9-c18e-c73d-e8d4effdb95e@xenomai.org>
+From: Jan Kiszka <jan.kiszka@siemens.com>
+Message-ID: <76fa9788-761b-663b-0c90-724f73086919@siemens.com>
+Date: Thu, 5 Apr 2018 17:48:43 +0200
 MIME-Version: 1.0
-In-Reply-To: <529dd829-ca80-10f7-36f5-c1dcba403360@siemens.com>
+In-Reply-To: <bfdeba2c-bcc9-c18e-c73d-e8d4effdb95e@xenomai.org>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -16,32 +17,34 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jan Kiszka <jan.kiszka@siemens.com>, Xenomai <xenomai@xenomai.org>
+To: Philippe Gerum <rpm@xenomai.org>, Xenomai <xenomai@xenomai.org>
 
-On 04/05/2018 04:49 PM, Jan Kiszka wrote:
-> Hi Philippe,
+On 2018-04-05 17:08, Philippe Gerum wrote:
+> On 04/05/2018 04:49 PM, Jan Kiszka wrote:
+>> Hi Philippe,
+>>
+>> to assess the impact of the bug that the mentioned commit fixes, can you
+>> describe the code path that trigger it?
+>>
 > 
-> to assess the impact of the bug that the mentioned commit fixes, can you
-> describe the code path that trigger it?
+> e.g. in the rtnet stack, calling rtdev_get_by_name() on a PREEMPT
+> kernel, and a regular rescheduling pending at the time of the call.
 > 
+> rtdev_get_by_name()
+>       -> rtdm_lock_irqsave(...)
+>       -> rtdev_reference(...)
+>             -> try_module_get()
+>                   hard_preempt_disable(); /* hard IRQs were off */
+>                   ...
+>                   hard_preempt_enable();
+>                      -> hard_local_irq_restore() /* still off */
+>                      -> preempt_check_resched(); /* resched pending */
+>                            <<schedule() with hard IRQs off>>
+> 
+> This went unnoticed until I got some changes in creating a resched
+> opportunity right on spot...
 
-e.g. in the rtnet stack, calling rtdev_get_by_name() on a PREEMPT
-kernel, and a regular rescheduling pending at the time of the call.
+Hmm, ok. I suspect (/hope) that this case is a rather RTnet-specific case.
 
-rtdev_get_by_name()
-      -> rtdm_lock_irqsave(...)
-      -> rtdev_reference(...)
-            -> try_module_get()
-                  hard_preempt_disable(); /* hard IRQs were off */
-                  ...
-                  hard_preempt_enable();
-                     -> hard_local_irq_restore() /* still off */
-                     -> preempt_check_resched(); /* resched pending */
-                           <<schedule() with hard IRQs off>>
-
-This went unnoticed until I got some changes in creating a resched
-opportunity right on spot...
-
--- 
-Philippe.
+Jan
 
