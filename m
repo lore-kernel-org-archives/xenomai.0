@@ -1,13 +1,13 @@
-References: <DB6PR0701MB2456FE5A9F080B3BE39375E0B5A40@DB6PR0701MB2456.eurprd07.prod.outlook.com>
+References: <DB6PR0701MB2456EF1925C87F170E90540EB5A40@DB6PR0701MB2456.eurprd07.prod.outlook.com>
 From: Philippe Gerum <rpm@xenomai.org>
-Message-ID: <08c2ad36-f2c4-952f-5372-bd95146943cf@xenomai.org>
-Date: Thu, 5 Apr 2018 08:36:33 +0200
+Message-ID: <7528e4df-ac06-8893-bf77-7cbf9e91eeef@xenomai.org>
+Date: Thu, 5 Apr 2018 08:43:08 +0200
 MIME-Version: 1.0
-In-Reply-To: <DB6PR0701MB2456FE5A9F080B3BE39375E0B5A40@DB6PR0701MB2456.eurprd07.prod.outlook.com>
+In-Reply-To: <DB6PR0701MB2456EF1925C87F170E90540EB5A40@DB6PR0701MB2456.eurprd07.prod.outlook.com>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] doc for xeno-config skins
+Subject: Re: [Xenomai] xeno-config --no-mode-check still has -lmodechk
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -18,30 +18,20 @@ List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: Giulio Moro <g.moro@qmul.ac.uk>, "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On 04/04/2018 10:15 PM, Giulio Moro wrote:
-> What is the difference between the Posix and Cobalt skin, as far as xeno-config is concerned??
+On 04/04/2018 09:58 PM, Giulio Moro wrote:
+>  /usr/xenomai/bin/xeno-config --skin cobalt --ldflags --no-mode-check
 > 
-> Difference between
->   xeno-config --skin posix --cflags
->   xeno-config --skin cobalt --cflags
-> is that the former declares -D__COBALT_WRAP__ (which in turn adds fwd declarations for clock_nanosleep() and pthread_setname_np() in boilerplate/libc.h).
+> returns
+> -Wl,--no-as-needed   /usr/xenomai/lib/xenomai/bootstrap.o -Wl,--wrap=main -Wl,--dynamic-list=/usr/xenomai/lib/dynlist.ld -L/usr/xenomai/lib -lcobalt -lmodechk -lpthread -lrt
 > 
-> difference between 
->   xeno-config --skin posix --ldflags
->   xeno-config --skin cobalt --ldflags
-> is that the former adds `-Wl,@/usr/xenomai/lib/cobalt.wrappers`
+> which removes the modechk wrappers, but leaves -lmodechk in. Is this expected?
 > 
-> So it seems to me that `--skin posix` expects you to call, e.g.: pthread_create(), while `--skin cobalt` expects you to call, e.g.: __wrap_pthread_create()
+> As I understand it, libmodechk provides implementations for __wrap_malloc, __wrap_free and __real_malloc, __real_free() are these needed even when the wrappers are disabled, or should -lmodechk not be included?
 > 
-> Is this correct?
-> Is that it?
-> What are the intended uses?
-> I don't think this is documented anywhere? Where would be the best place to have this written down? Perhaps the --help of xeno-config? Also, while we are at it, --skin alchemy vs --skin native and the effect of --compat could use some description.
 > 
 
-http://www.xenomai.org/documentation/xenomai-3/html/man1/xeno-config/index.html
-
-
+The main exec may still depend on external libs built with mode checking
+wrappers.
 
 -- 
 Philippe.
