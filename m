@@ -1,18 +1,20 @@
-Date: Fri, 06 Apr 2018 17:47:42 +0200
-Message-ID: <20180406174742.Horde.mGK2rLoWTNZ7_UBk7_dT7_y@webmail.uam.es>
-From: rodrigo.amaducci@uam.es
-References: <20180402162629.Horde.aGvVeyDe3lwwFExaCtLehqi@webmail.uam.es>
- <CALLqZ8TSMOAt0hVKf9UWBVwp4t2LWKkLYOjAWyhywLHAc5oFRg@mail.gmail.com>
- <d5181033-d020-34bb-8b1b-8a261c885f75@xenomai.org>
- <20180403122123.Horde.D2Qo7ce4c1LHdQcBYRZNBmd@webmail.uam.es>
- <53039d03-c118-3c20-e7cd-eefc264919d7@xenomai.org>
- <20180405152518.Horde.-CDL8q6su7PhMYoQTU0iWhp@webmail.uam.es>
- <CALLqZ8RvHzjMnZWbLhRzc1nRFA2t9XJWf8OghfU7ivXYGeDUfg@mail.gmail.com>
-In-Reply-To: <CALLqZ8RvHzjMnZWbLhRzc1nRFA2t9XJWf8OghfU7ivXYGeDUfg@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8; format=flowed; DelSp=Yes
+From: Jan Kiszka <jan.kiszka@siemens.com>
+References: <6aedc4bc-74b5-4a9f-5c38-036a3d7850b9@siemens.com>
+ <ee7647d4-0bfd-0933-2f10-e9fdc5da2880@web.de>
+ <54cd6098-3828-b028-3328-daf91b46d9da@xenomai.org>
+ <1edf5dcb-bc63-2f53-f91b-f821b244563c@web.de>
+ <fd85297e-17eb-add4-619e-234f7602dc44@xenomai.org>
+ <0fb957ac-ae49-2d57-9f83-8a61201b1fb1@siemens.com>
+ <57044fd9-5e29-5d04-958d-e2195536298b@xenomai.org>
+ <0356efbe-6dd5-ff57-219e-122e38b52662@siemens.com>
+Message-ID: <74fad713-d94a-f0b2-8bb2-60e9b7bc5d7f@siemens.com>
+Date: Fri, 6 Apr 2018 17:52:37 +0200
 MIME-Version: 1.0
-Content-Disposition: inline
-Subject: Re: [Xenomai] Context switching with POSIX skin
+In-Reply-To: <0356efbe-6dd5-ff57-219e-122e38b52662@siemens.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai] 4.9 for x86 issue
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -21,37 +23,28 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Greg Gallagher <greg@embeddedgreg.com>, rpm@xenomai.org
-Cc: xenomai@xenomai.org
+To: Philippe Gerum <rpm@xenomai.org>
+Cc: Xenomai <xenomai@xenomai.org>
 
-Thank you very much Greg.
+On 2018-04-06 17:11, Jan Kiszka wrote:
+>> This is not about testing for Cobalt idleness, but for its core timer
+>> idleness, given that the core timer is shared between both kernels. We
+>> want to know whether we may allow the regular kernel to shutdown the
+>> clock event hardware for entering a sleep state. XNIDLE -> XNTIMERIDLE
+>> if you will. I covered this stuff in Documentation/ipipe.rst lately.
+>>
+> 
+> I still don't see the problem. We own the timer, Linux does not program
+> it. And letting Linux call hlt does not disturb the timer programming,
+> in most cases at least (there might be some weird old broken hardware).
 
-Quoting Greg Gallagher <greg@embeddedgreg.com>:
+Looking at ipipe_enter_idle_hook more closely: What might make sense as
+logic here is a test for a close-to-expire timer on the CPU. Then we
+would do polling until the expiry which may reduce wakeup latencies. But
+the question would be what the thresholds should be on the different
+targets.
 
-> I'll look into it this weekend and see if I can get the demo running
-> on Zynq or one of my boards.
->
-> On Thu, Apr 5, 2018 at 9:25 AM,  <rodrigo.amaducci@uam.es> wrote:
->> Quoting Philippe Gerum <rpm@xenomai.org>:
->>>
->>>
->>> You need to enable the ipc/xddp driver (CONFIG_XENO_DRIVERS_RTIPC_XDDP)
->>> in your kernel.
->>>
->>> --
->>> Philippe.
->>
->>
->> I have recompiled my kernel a couple of times activating all the RTIPC
->> drivers but I'm still getting the same error when running xddp-echo.
->>
->> Rodrigo
->>
->>
->>
->>
->>
+Did you see any concrete issues without that hook? On which architecture?
 
-
-
+Jan
 
