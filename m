@@ -1,13 +1,15 @@
 References: <6aedc4bc-74b5-4a9f-5c38-036a3d7850b9@siemens.com>
  <ee7647d4-0bfd-0933-2f10-e9fdc5da2880@web.de>
  <54cd6098-3828-b028-3328-daf91b46d9da@xenomai.org>
-From: Jan Kiszka <jan.kiszka@web.de>
-Message-ID: <1edf5dcb-bc63-2f53-f91b-f821b244563c@web.de>
-Date: Thu, 5 Apr 2018 22:13:35 +0200
+ <1edf5dcb-bc63-2f53-f91b-f821b244563c@web.de>
+From: Philippe Gerum <rpm@xenomai.org>
+Message-ID: <fd85297e-17eb-add4-619e-234f7602dc44@xenomai.org>
+Date: Fri, 6 Apr 2018 08:54:48 +0200
 MIME-Version: 1.0
-In-Reply-To: <54cd6098-3828-b028-3328-daf91b46d9da@xenomai.org>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+In-Reply-To: <1edf5dcb-bc63-2f53-f91b-f821b244563c@web.de>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Subject: Re: [Xenomai] 4.9 for x86 issue
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
@@ -17,55 +19,67 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Philippe Gerum <rpm@xenomai.org>
+To: Jan Kiszka <jan.kiszka@web.de>
 Cc: Xenomai <xenomai@xenomai.org>
 
-T24gMjAxOC0wMy0yNyAxNToxMiwgUGhpbGlwcGUgR2VydW0gd3JvdGU6Cj4gT24gMDMvMTAvMjAx
-OCAxMTowNiBQTSwgSmFuIEtpc3prYSB3cm90ZToKPj4gT24gMjAxOC0wMy0wOSAwODo1MSwgSmFu
-IEtpc3prYSB3cm90ZToKPj4+IDQuOSByZXF1aXJlcyBtb3JlIHdvcmssIEkndmUgcHVzaGVkIHRo
-ZSBiZWdpbm5pbmcgdG8gd2lwLzQuOSBpbiB0aGUgc2FtZQo+Pj4gcmVwby4KPj4KPj4gSSBzdGFy
-dGVkIHRvIHBhdGNoIGZ1cnRoZXIgb24gdGhpcyBkdXJpbmcgbXkgZmxpZ2h0ICh3aXAvNC45IHVw
-ZGF0ZWQpLAo+PiBub3RpY2VkIHRoYXQgdGhlIDQuMTQtd2lwIHF1ZXVlIHdpbGwgbmVlZCBhIGxp
-dHRsZSBiaXQgc3lzZW50cnkgdHdlYWtpbmcKPj4gYXMgd2VsbCAobWlzc2luZyA2NC1iaXQgc3lz
-Y2FsbCBkaXNwYXRjaGluZyksIGFuZCB0aGVuIGhhZCB0byBmaW5kIDQuOQo+PiBpbiBhIHJhdGhl
-ciB1bmZvcnR1bmF0ZSBzdGF0ZSAvd3J0IHg4Ni02NDogQ1BVcyBhcmUgbm8gbG9uZ2VyIGlkbGlu
-Zwo+PiBwcm9wZXJseS4gSSB3ZW50IGJhY2sgdG8gaXBpcGUtY29yZS00LjkuMjQteDg2LTIsIHdp
-dGhvdXQgYSBkaWZmZXJlbmNlLgo+Pgo+PiBJZiB5b3Ugc2hvdWxkIGxvb2sgaW50byA0LjkteDg2
-IGFzIHlvdSBpbmRpY2F0ZWQsIHBsZWFzZSBjaGVjayB0aGlzLgo+IAo+IEJvdGggaXNzdWVzIGZp
-eGVkIGluIDQuOS45MC94ODYgYXMgcHVzaGVkIGxhdGVseS4gVGhlIHJlc3VsdCBoYXMgcnVuCj4g
-b3Zlcm5pZ2h0IGluIDY0Yml0IG1vZGUsIGFuZCBmb3IgYSBjb3VwbGUgb2YgaG91cnMgaW4gaWEz
-MmVtdSBtb2RlLiBTbwo+IGZhciBzbyBnb29kLgoKSnVzdCB0cnlpbmcgNC45LjkwLXg4Ni02IGlu
-IEtWTSwgYW5kIEknbSBzdGlsbCBmaW5kaW5nIDEwMCUgKHZpcnR1YWwpCkNQVSBsb2FkLiBJIGFs
-c28gdHJpZ2dlcmVkIHRoaXMgd2l0aCBzdGFibGUtMy4wLng6CgpbICAyMzcuNDU1ODQ2XSBXQVJO
-SU5HOiBDUFU6IDAgUElEOiAxMDU1IGF0IC4uL2tlcm5lbC94ZW5vbWFpL3Bvc2l4L3RpbWVyZmQu
-Yzo1NyB0aW1lcmZkX3JlYWQrMHgyYTYvMHgzNTAKWyAgMjM3LjQ2MDcyOF0gTW9kdWxlcyBsaW5r
-ZWQgaW46ClsgIDIzNy40NjE0OTBdIENQVTogMCBQSUQ6IDEwNTUgQ29tbTogc2FtcGxpbmctMTA1
-MiBOb3QgdGFpbnRlZCA0LjkuOTArICMxMQpbICAyMzcuNDYxNDkwXSBIYXJkd2FyZSBuYW1lOiBR
-RU1VIFN0YW5kYXJkIFBDIChRMzUgKyBJQ0g5LCAyMDA5KSwgQklPUyByZWwtMS4xMS4xLTAtZzA1
-NTFhNGJlMmMtcHJlYnVpbHQucWVtdS1wcm9qZWN0Lm9yZyAwNC8wMS8yMDE0ClsgIDIzNy40NjE0
-OTBdIEktcGlwZSBkb21haW46IFhlbm9tYWkKWyAgMjM3LjQ2MTQ5MF0gIGZmZmZjOTAwMDFiN2Zk
-YjAgZmZmZmZmZmY4MTQ1ZTM5NSAwMDAwMDAwMDAwMDAwMDAwIDAwMDAwMDAwMDAwMDAwMDAKWyAg
-MjM3LjQ2MTQ5MF0gIGZmZmZjOTAwMDFiN2ZkZjAgZmZmZmZmZmY4MTBlNzI2MSAwMDAwMDAzOTNk
-NjFkMTcwIGZmZmZjOTAwMDAzZTYwMDgKWyAgMjM3LjQ2MTQ5MF0gIDAwMDAwMDAwMDAwMDAwMDMg
-MDAwMDAwMDAwMDAwMDAwOCAwMDAwN2Y1MTNlOGMyZGU4IDAwMDAwMDAwMDAwMjYyMDAKWyAgMjM3
-LjQ2MTQ5MF0gQ2FsbCBUcmFjZToKWyAgMjM3LjQ2MTQ5MF0gIFs8ZmZmZmZmZmY4MTQ1ZTM5NT5d
-IGR1bXBfc3RhY2srMHhiMi8weGRkClsgIDIzNy40NjE0OTBdICBbPGZmZmZmZmZmODEwZTcyNjE+
-XSBfX3dhcm4rMHhkMS8weGYwClsgIDIzNy40NjE0OTBdICBbPGZmZmZmZmZmODEwZTczNGQ+XSB3
-YXJuX3Nsb3dwYXRoX251bGwrMHgxZC8weDIwClsgIDIzNy40NjE0OTBdICBbPGZmZmZmZmZmODEy
-NDIzYjY+XSB0aW1lcmZkX3JlYWQrMHgyYTYvMHgzNTAKWyAgMjM3LjQ2MTQ5MF0gIFs8ZmZmZmZm
-ZmY4MTIxNzRlYz5dIHJ0ZG1fZmRfcmVhZCsweDEzYy8weDNiMApbICAyMzcuNDYxNDkwXSAgWzxm
-ZmZmZmZmZjgxMjIwMjYwPl0gPyBDb0JhTHRfaW9jdGwrMHgyMC8weDIwClsgIDIzNy40NjE0OTBd
-ICBbPGZmZmZmZmZmODEyMjAyNmU+XSBDb0JhTHRfcmVhZCsweGUvMHgxMApbICAyMzcuNDYxNDkw
-XSAgWzxmZmZmZmZmZjgxMjM1ODk0Pl0gaGFuZGxlX2hlYWRfc3lzY2FsbCsweDE4NC8weDRiMApb
-ICAyMzcuNDYxNDkwXSAgWzxmZmZmZmZmZjgxMjM2Mjg4Pl0gaXBpcGVfZmFzdGNhbGxfaG9vaysw
-eDE4LzB4MjAKWyAgMjM3LjQ2MTQ5MF0gIFs8ZmZmZmZmZmY4MTFhOTA1ND5dIGlwaXBlX2hhbmRs
-ZV9zeXNjYWxsKzB4NjQvMHgxMTAKWyAgMjM3LjQ2MTQ5MF0gIFs8ZmZmZmZmZmY4MTAwMmIzMz5d
-IGRvX3N5c2NhbGxfNjQrMHg0My8weDFjMApbICAyMzcuNDYxNDkwXSAgWzxmZmZmZmZmZjgxODQw
-YjQzPl0gZW50cnlfU1lTQ0FMTF82NF9hZnRlcl9zd2FwZ3MrMHg1ZC8weGRiClsgIDIzNy40NjE0
-OTBdIC0tLVsgZW5kIHRyYWNlIDlkMjQ3NmEzOGIwYzUzNzkgXS0tLQoKSSB3aWxsIGRlYnVnIHRo
-aXMgdG9tb3Jyb3cuCgpKYW4KCi0tLS0tLS0tLS0tLS0tIG5leHQgcGFydCAtLS0tLS0tLS0tLS0t
-LQpBIG5vbi10ZXh0IGF0dGFjaG1lbnQgd2FzIHNjcnViYmVkLi4uCk5hbWU6IHNpZ25hdHVyZS5h
-c2MKVHlwZTogYXBwbGljYXRpb24vcGdwLXNpZ25hdHVyZQpTaXplOiAxODEgYnl0ZXMKRGVzYzog
-T3BlblBHUCBkaWdpdGFsIHNpZ25hdHVyZQpVUkw6IDxodHRwOi8veGVub21haS5vcmcvcGlwZXJt
-YWlsL3hlbm9tYWkvYXR0YWNobWVudHMvMjAxODA0MDUvYTk5OGI0Y2UvYXR0YWNobWVudC5zaWc+
-Cg==
+On 04/05/2018 10:13 PM, Jan Kiszka wrote:
+> On 2018-03-27 15:12, Philippe Gerum wrote:
+>> On 03/10/2018 11:06 PM, Jan Kiszka wrote:
+>>> On 2018-03-09 08:51, Jan Kiszka wrote:
+>>>> 4.9 requires more work, I've pushed the beginning to wip/4.9 in the same
+>>>> repo.
+>>>
+>>> I started to patch further on this during my flight (wip/4.9 updated),
+>>> noticed that the 4.14-wip queue will need a little bit sysentry tweaking
+>>> as well (missing 64-bit syscall dispatching), and then had to find 4.9
+>>> in a rather unfortunate state /wrt x86-64: CPUs are no longer idling
+>>> properly. I went back to ipipe-core-4.9.24-x86-2, without a difference.
+>>>
+>>> If you should look into 4.9-x86 as you indicated, please check this.
+>>
+>> Both issues fixed in 4.9.90/x86 as pushed lately. The result has run
+>> overnight in 64bit mode, and for a couple of hours in ia32emu mode. So
+>> far so good.
+> 
+> Just trying 4.9.90-x86-6 in KVM, and I'm still finding 100% (virtual)
+> CPU load. I also triggered this with stable-3.0.x:
+> 
+> [  237.455846] WARNING: CPU: 0 PID: 1055 at ../kernel/xenomai/posix/timerfd.c:57 timerfd_read+0x2a6/0x350
+> [  237.460728] Modules linked in:
+> [  237.461490] CPU: 0 PID: 1055 Comm: sampling-1052 Not tainted 4.9.90+ #11
+> [  237.461490] Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS rel-1.11.1-0-g0551a4be2c-prebuilt.qemu-project.org 04/01/2014
+> [  237.461490] I-pipe domain: Xenomai
+> [  237.461490]  ffffc90001b7fdb0 ffffffff8145e395 0000000000000000 0000000000000000
+> [  237.461490]  ffffc90001b7fdf0 ffffffff810e7261 000000393d61d170 ffffc900003e6008
+> [  237.461490]  0000000000000003 0000000000000008 00007f513e8c2de8 0000000000026200
+> [  237.461490] Call Trace:
+> [  237.461490]  [<ffffffff8145e395>] dump_stack+0xb2/0xdd
+> [  237.461490]  [<ffffffff810e7261>] __warn+0xd1/0xf0
+> [  237.461490]  [<ffffffff810e734d>] warn_slowpath_null+0x1d/0x20
+> [  237.461490]  [<ffffffff812423b6>] timerfd_read+0x2a6/0x350
+> [  237.461490]  [<ffffffff812174ec>] rtdm_fd_read+0x13c/0x3b0
+> [  237.461490]  [<ffffffff81220260>] ? CoBaLt_ioctl+0x20/0x20
+> [  237.461490]  [<ffffffff8122026e>] CoBaLt_read+0xe/0x10
+> [  237.461490]  [<ffffffff81235894>] handle_head_syscall+0x184/0x4b0
+> [  237.461490]  [<ffffffff81236288>] ipipe_fastcall_hook+0x18/0x20
+> [  237.461490]  [<ffffffff811a9054>] ipipe_handle_syscall+0x64/0x110
+> [  237.461490]  [<ffffffff81002b33>] do_syscall_64+0x43/0x1c0
+> [  237.461490]  [<ffffffff81840b43>] entry_SYSCALL_64_after_swapgs+0x5d/0xdb
+> [  237.461490] ---[ end trace 9d2476a38b0c5379 ]---
+> 
+> I will debug this tomorrow.
+> 
+
+I can't reproduce this, the loadavg on my qemu instance consistently
+converges to 0.0x figures while running the latency test (10Khz or 1Khz,
+same). I'm now running 4.9.92, but I don't think this should make any
+difference, since I could trace the box entering the idle state on .90.
+
+Are you running the ia32emu mode, or x86_64? Also, could you share your
+.config for building the guest kernel?
+
+Thanks,
+
+-- 
+Philippe.
+
