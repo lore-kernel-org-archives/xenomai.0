@@ -1,16 +1,17 @@
-From: Lange Norbert <norbert.lange@andritz.com>
-Date: Fri, 6 Apr 2018 09:36:03 +0000
-Message-ID: <99BAB48E90E86D42AD41F0BCE3225AEB019FC06762@GRZSMS582.andritz.com>
-References: <99BAB48E90E86D42AD41F0BCE3225AEB019FC0631A@GRZSMS582.andritz.com>
- <bbb33d4c-e8d0-b383-0424-d99592486988@siemens.com>
- <99BAB48E90E86D42AD41F0BCE3225AEB019FC066DF@GRZSMS582.andritz.com>
- <20180406104729.0a46cb24@mmd1pvb1c.ad001.siemens.net>
-In-Reply-To: <20180406104729.0a46cb24@mmd1pvb1c.ad001.siemens.net>
-Content-Language: en-US
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+References: <6aedc4bc-74b5-4a9f-5c38-036a3d7850b9@siemens.com>
+ <ee7647d4-0bfd-0933-2f10-e9fdc5da2880@web.de>
+ <54cd6098-3828-b028-3328-daf91b46d9da@xenomai.org>
+ <1edf5dcb-bc63-2f53-f91b-f821b244563c@web.de>
+ <fd85297e-17eb-add4-619e-234f7602dc44@xenomai.org>
+From: Jan Kiszka <jan.kiszka@siemens.com>
+Message-ID: <0fb957ac-ae49-2d57-9f83-8a61201b1fb1@siemens.com>
+Date: Fri, 6 Apr 2018 15:38:55 +0200
 MIME-Version: 1.0
-Subject: Re: [Xenomai] building Xenomai Apps with CMake (RFC)
+In-Reply-To: <fd85297e-17eb-add4-619e-234f7602dc44@xenomai.org>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai] 4.9 for x86 issue
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -19,150 +20,77 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Henning Schild <henning.schild@siemens.com>
-Cc: Jan Kiszka <jan.kiszka@siemens.com>, "Xenomai (xenomai@xenomai.org)" <xenomai@xenomai.org>
+To: Philippe Gerum <rpm@xenomai.org>
+Cc: Xenomai <xenomai@xenomai.org>
 
-DQoNCiA+LS0tLS1PcmlnaW5hbCBNZXNzYWdlLS0tLS0NCiA+RnJvbTogSGVubmluZyBTY2hpbGQg
-W21haWx0bzpoZW5uaW5nLnNjaGlsZEBzaWVtZW5zLmNvbV0NCiA+U2VudDogRnJlaXRhZywgMDYu
-IEFwcmlsIDIwMTggMTA6NDcNCiA+VG86IExhbmdlIE5vcmJlcnQNCiA+Q2M6IEphbiBLaXN6a2E7
-IFhlbm9tYWkgKHhlbm9tYWlAeGVub21haS5vcmcpDQogPlN1YmplY3Q6IFJlOiBidWlsZGluZyBY
-ZW5vbWFpIEFwcHMgd2l0aCBDTWFrZSAoUkZDKQ0KID4NCiA+RS1NQUlMIEZST00gQSBOT04tQU5E
-UklUWiBTT1VSQ0U6IEFTIEEgU0VDVVJJVFkgTUVBU1VSRSwgUExFQVNFDQogPkVYRVJDSVNFIENB
-VVRJT04gV0lUSCBFLU1BSUwgQ09OVEVOVCBBTkQgQU5ZIExJTktTIE9SDQogPkFUVEFDSE1FTlRT
-Lg0KID4NCiA+DQogPkFtIFRodSwgNSBBcHIgMjAxOCAxNTo1NDozNCArMDAwMA0KID5zY2hyaWVi
-IExhbmdlIE5vcmJlcnQgPG5vcmJlcnQubGFuZ2VAYW5kcml0ei5jb20+Og0KID4NCiA+PiBIZWxs
-bywNCiA+Pg0KID4+ICA+LS0tLS1PcmlnaW5hbCBNZXNzYWdlLS0tLS0NCiA+PiAgPkZyb206IEph
-biBLaXN6a2EgW21haWx0bzpqYW4ua2lzemthQHNpZW1lbnMuY29tXQ0KID4+ICA+U2VudDogRG9u
-bmVyc3RhZywgMDUuIEFwcmlsIDIwMTggMTY6NTUNCiA+PiAgPlRvOiBMYW5nZSBOb3JiZXJ0OyBY
-ZW5vbWFpICh4ZW5vbWFpQHhlbm9tYWkub3JnKTsgSGVubmluZyBTY2hpbGQNCiA+PiAgPlN1Ympl
-Y3Q6IFJlOiBidWlsZGluZyBYZW5vbWFpIEFwcHMgd2l0aCBDTWFrZSAoUkZDKQ0KID4+ICA+DQog
-Pj4gID5FLU1BSUwgRlJPTSBBIE5PTi1BTkRSSVRaIFNPVVJDRTogQVMgQSBTRUNVUklUWSBNRUFT
-VVJFLCBQTEVBU0UNCiA+PiAgPkVYRVJDSVNFIENBVVRJT04gV0lUSCBFLU1BSUwgQ09OVEVOVCBB
-TkQgQU5ZIExJTktTIE9SDQogPj4gID5BVFRBQ0hNRU5UUy4NCiA+PiAgPg0KID4+ICA+DQogPj4g
-ID5PbiAyMDE4LTA0LTAzIDE2OjEwLCBMYW5nZSBOb3JiZXJ0IHdyb3RlOg0KID4+ICA+PiBIZWxs
-bywNCiA+PiAgPj4NCiA+PiAgPj4gSSB3ZW50IGFoZWFkIGFuZCBjcmVhdGVkIGEgc2NyaXB0IHRv
-IGFkZCBzdXBwb3J0IGZvciBYZW5vbWFpICgzKykNCiA+PiAgPj4gdG8gQ01ha2UuDQogPj4gID5J
-dHMgY3VycmVudGx5IHN1ZmZpY2llbnQgZm9yIG1lLA0KID4+ICA+PiBidXQgSSB3b3VsZCBsaWtl
-IHRvIGdldCB0aGlzIGluIGEgc2hhcGUgdGhhdCBpdCBpcyB1c2VmdWwgYW5kDQogPj4gID4+IHJv
-YnVzdCBlbm91Z2ggZm9yDQogPj4gID5tb3N0IHBlb3BsZS4NCiA+PiAgPj4gVWx0aW1hdGVseSBp
-dCBzaG91bGQgZW5kIHVwIHVwIHN0cmVhbWVkIHRvIENNYWtlIChJIGhvcGUgdGhlDQogPj4gID4+
-IGJpbnV0aWxzLXNwZWNpZmljDQogPj4gID53cmFwcGVycyBhcmVuJ3QgYSBrbm9jay1vdXQgYWdh
-aW5zdCBhZG9wdGlvbikuDQogPj4gID4+DQogPj4gID4+IE1vc3RseSB0aGlzIHNob3VsZCBpbnRl
-cmVzdCBwZW9wbGUgdGhhdCB3YW50IHRvIHVzZSBDTWFrZSwgYnV0IGENCiA+PiAgPj4gZmV3IHRo
-aW5ncw0KID4+ICA+bWlnaHQgbmVlZCBzdXBwb3J0IGZyb20gdGhlIFhlbm9tYWkgZGlzdHJpYnV0
-aW9uLg0KID4+ICA+PiBUbyBiZSBtb3JlIHNwZWNpZmljOiB1c2luZyBwcmVjb21waWxlZCBvYmpl
-Y3QtZmlsZXMgbGlrZSB0aGUNCiA+PiAgPj4gYm9vc3RyYXAgY29kZQ0KID4+ICA+YW5kIGl0cyBs
-aW5rZXIgd3JhcHMgYW5kIHJlZGlyZWN0aW9ucyBhcmUgc29tZXRoaW5nIEkgd291bGQNCiA+PiAg
-Pj4gbGlrZSB0byBhdm9pZCwgb3IgYXRsZWFzdCBvZmZlciBhbiBhbHRlcm5hdGl2ZSB0aGF0IGRv
-ZXMgbm90IG5lZWQNCiA+PiAgPj4gdGhhdCBtdWNoDQogPj4gID53b3JrIG91dHNpZGUgb2YgYSAi
-cmVndWxhciBidWlsZCIuDQogPj4gID4+IEZvciB0aGF0LCBoYXZpbmcgdGhlIGJvb3RzdHJhcCBj
-b2RlIChjb25maWd1cmFibGUgb3IgYSBmZXcNCiA+PiAgPj4gdmFyaWFudHMpIGluc3RhbGxlZA0K
-ID4+ICA+YXMgc291cmNlY29kZSB3b3VsZCBoZWxwLg0KID4+ICA+Pg0KID4+ICA+PiBDb2RlIGlz
-IHVwbG9hZGVkIHRvIEdpdGh1YiA6DQogPj4gID4+IGh0dHBzOi8vZ2l0aHViLmNvbS9ub2xhbmdl
-L2NtYWtlX3hlbm9tYWkNCiA+PiAgPg0KID4+ICA+VGhhbmtzIGZvciBzaGFyaW5nIHRoaXMuIElJ
-UkMsIHdlIGhhdmUgc29tZSBYZW9tbWFpIHVzZXIgaW4taG91c2UgYXMNCiA+PiAgPndlbGwgd2hv
-IGxvb2tlZCBpbnRvIGNtYWtlLCBuZWVkIHRvIGNoZWNrIHRoZSBzdGF0dXMgYW5kIHNjb3BlIGFn
-YWluDQogPj4gID4obWF5YmUgSGVubmluZyBrbm93cyBtb3JlKS4gQ291bGQgYmUgaW50ZXJlc3Rp
-bmcsIGluZGVlZC4NCiA+Pg0KID4+IElmIEkgbWF5IGFzaywgYXJlIHlvdSB1c2luZyB0aGUgImJv
-b3N0cmFwcyIgZnJvbSBYZW5vbWFpIG9yIHNvbWUgb3duDQogPj4gaW5pdC1jb2RlPyAodGhhdOKA
-mXMgY3VycmVudGx5IHRoZSBiaWdnZXN0IGhlYWRhY2hlIHJlbWFpbmluZykNCiA+DQogPk5vLCBp
-IGRvIG5vdCBrbm93IGFueW9uZSB1c2luZyBDTWFrZSB3aXRoIFhlbm9tYWksIHNvIGkgd291bGQg
-bm90IGtub3cNCiA+aG93IHRvIGRlYWwgd2l0aCBib290c3RyYXAgdGhlcmUuDQoNClRoaXMgcXVl
-c3Rpb24gd2FzIG5vdCBsaW1pdGVkIHRvIENNYWtlLCBidXQgSSBhbSBjdXJpb3VzIHdoZXRoZXIg
-dGhlIGJvb3RzdHJhcCBtYWdpYw0KZnJvbSB0aGUgdG9vbHMgc2hpcHBpbmcgd2l0aCBYZW5vbWFp
-IGlzIHBvcHVsYXIgb3V0c2lkZSBvZiBpdC4NCg0KID4NCiA+PiAgPg0KID4+ICA+Rm9yIG15IHVu
-ZGVyc3RhbmRpbmc6IFlvdSBuZWVkIGNtYWtlIHVwc3RyZWFtIGNoYW5nZXMgdG8gbWFrZSB0aGlu
-Z3MNCiA+PiAgPndvcms/IE9yIGlzIHRoaXMgcHJvamVjdCBzb21ldGhpbmcgdGhhdCBjb3VsZCBl
-dmVudHVhbGx5IGJlIGNhcnJpZWQNCiA+PiAgPmluIFhlbm9tYWkgdXBzdHJlYW0sIGp1c3QgcmVx
-dWlyaW5nIHNvbWUgY21ha2UgdmVyc2lvbiA+PSBYPw0KID4+DQogPj4gTm8gc3RyaWN0IG5lZWQg
-dG8gdXBzdHJlYW0gdGhlIHNjcmlwdHMgaW4gZWl0aGVyIFhlbm9tYWkgb3IgQ01ha2UsDQogPj4g
-dGhlIGZpbGVzIGp1c3QgbmVlZCB0byBiZSBpbiB0aGUgc2VhcmNoLXBhdGggb2YgQ01ha2UgdG8g
-YmUgdXNhYmxlDQogPj4gKGxpa2VseSBkb2VzbnQgbmVlZCBhbnl0aGluZyBuZXdlciB0aGFuIENN
-YWtlIDMuMCBidXQgd291bGQgbmVlZCB0bw0KID4+IHRlc3QgdGhpcykuIEkgdmFsdWUgdGhlIGZl
-ZWRiYWNrIGZyb20gYm90aCBjb21tdW5pdGllcywgcGFydGljdWxhcmx5DQogPj4gYmVjYXVzZSBJ
-IGRvbuKAmXQgdXNlIGFueXRoaW5nIGJ1dCB0aGUgUG9zaXgvQ29iYWx0IFNraW4gYW5kIGdldHRp
-bmcgaXQNCiA+PiBpbnRvIENNYWtlIHdvdWxkIGJlIHRoZSBiZXN0IHRoaW5nIGZvciBtYWludGVu
-YW5jZS4NCiA+DQogPkl0IHdvdWxkIHByb2JhYmx5IGJlIGEgZ29vZCBpZGVhIHRvIHRyeSBhbmQg
-bWFpbmxpbmUgaXQgaW4gb25lIG9mIHRoZQ0KID50d28gcHJvamVjdHMuIEFuZCBteSBndWVzcyBp
-cyB0aGF0IENNYWtlIHdvdWxkIG5vdCByZWFsbHkgZml0IGFuZCB0aGV5DQogPm1pZ2h0IG5vdCB3
-YW50IHN1Y2ggY29kZS4NCg0KV2VsbCwgdGhlcmUgYXJlIG11bHRpcGxlIExpbnV4LW9ubHkgbW9k
-dWxlcyBhbHJlYWR5IChGaW5kTFRUbmdVU1QsIEZpbmRYMTEpLA0KYXN3ZWxsIGFzICJub24tT1Mi
-IGNvbXBpbGVycyBsaWtlIElBUi4NCkkgZG91YnQgdGhleSB3b3VsZCBiZSBoYXBweSBpZiBJIGFk
-ZCBzb21lIGJvb3RzdHJhcCBjb2RlIGZvciBYZW5vbWFpIHRob3VnaC4NCg0KaHR0cHM6Ly9jbWFr
-ZS5vcmcvY21ha2UvaGVscC9sYXRlc3QvbWFudWFsL2NtYWtlLW1vZHVsZXMuNy5odG1sDQoNCiA+
-DQogPj4gTmV2ZXJ0aGVsZXNzIGl0IGNvdWxkIGJlIHJlYWxseSBoZWxwZnVsIHRvIGFkZCBhIGhl
-YWRlcmZpbGUgaW4gdGhlDQogPj4gWGVub21haSBkaXN0cmlidXRpb24sIHJlcGxpY2F0aW5nIHRo
-ZSBzdGVwcyB0aGF0DQogPj4gJ2JvaWxlcnBsYXRlL2luaXQvYm9vdHN0cmFwLmMnIGRvZXMsIGFu
-ZCBhbGxvd2luZyB0byBkaXNhYmxlIHBhcnRzIG9mDQogPj4gdGhlIGZ1bmN0aW9uYWxpdHkgbGlr
-ZSB0aGUgbWFpbiB3cmFwcGVyLiBUaGF0IGdsdWUgY29kZSB3b3VsZCBpZGVhbGx5DQogPj4gYmUg
-YnVpbHQgdG9nZXRoZXIgd2l0aCBsaWJyYXJpZXMvZXhlY3V0YWJsZXMgdXNpbmcgaXQgKGlkZW50
-aWNhbA0KID4+IGZsYWdzIGFuZCBzdWNoKS4gUmlnaHQgbm93IHRoZSBjb2RlIGlzIG1vc3RseSBk
-dXBsaWNhdGVkIGFuZCBwbGFjZWQNCiA+PiB3aXRoIHRoZSBDTWFrZSBTY3JpcHRzLCB3aGljaCBp
-cyBub3QgaWRlYWwuDQogPg0KID5JIGRpZCBub3QgZnVsbHkgdW5kZXJzdGFuZCB0aGUgYm9vdHN0
-cmFwIHdpdGggcmVnYXJkIHRvIGNtYWtlIHlldC4gQnV0DQogPnRoZSBtYWdpYyB3cmFwcGluZyBp
-cyBub3QgcHJldHR5LCBhbHNvIGluIG90aGVyIHJlZ2FyZHMuIFNvIHBhdGNoZXMNCiA+dGhhdCBp
-bXByb3ZlIHRoYXQsIHdoaWxlIGFjdHVhbGx5IHRhcmdldGluZyBzb21ldGhpbmcgbGlrZSBDTWFr
-ZSwgd291bGQNCiA+YmUgd2VsY29tZS4NCg0KVGhlcmUgaXMgbm8gYm9vdHN0cmFwIHdpdGggQ01h
-a2UgeWV0LCBhbmQgSSBhbSB1bnN1cmUgd2hldGhlciB0aGUgY3VycmVudA0KbWV0aG9kIHNob3Vs
-ZCBiZSBzdXBwb3J0ZWQgYXQgYWxsLg0KVGhlIGNvc3Qgb2YgYWRkaW5nIHRoZSBib290c3RyYXAg
-Y29kZSB0byBhICpuZXcqIHByb2plY3QgaXMgbG93LCBhbmQgZXZlbiBsb3dlcg0KSWYgdGhpcyB3
-b3VsZCBiZSBkaXN0cmlidXRlZCBhcyBoZWFkZXIgd2l0aCBYZW5vbWFpIChBZ2FpbiB0aGF0IHdv
-dWxkIG5vdCBiZSBsaW1pdGVkIHRvIENNYWtlKS4gWW91IG9mIGNvdXJzZQ0KbG9zZSB0aGUgYWJp
-bGl0eSB0byBjb21waWxlIHNvdXJjZXMgYXMtaXMgKHdoaWNoIEkgYmVsaWV2ZSB3YXMgdGhlIG1v
-dGl2YXRpb24pDQoNCk15IHBsYW4gd291bGQgYmUgdG8gYWxsb3cgYXBwbGljYXRpb25zL2xpYnJh
-cmllcyBhbiBlYXN5IHdheSBvZiBjcmVhdGluZyB0aGVpciBvd24gYm9vdHN0cmFwIGNvZGUuDQoy
-IHZhcmlhbnRzIG9mIHRoaXM6DQoNCmJvb3RzdHJhcC13cmFwLmM6DQojZGVmaW5lXyBYRU5PTUFJ
-X0JPT1RTVFJBUF9ERUZJTkVfTUFJTldSQVBQRVINCi8vIGRvIG1vcmUgdGhhbiBqdXN0IGZldGNo
-aW5nIHRoZSBYZW5vbWFpLXJlbGVhdGVkIGFyZ3VtZW50cw0KLy8gKGxpa2UgaGFuZGxpbmcgLS1o
-ZWxwKQ0KI2RlZmluZSBfWEVOT01BSV9CT09UU1RSQVBfUFJPQ0VTU19BUkdWDQojaW5jbHVkZSA8
-eGVub21haS9ib290c3RyYXAtdGVtcGxhdGUuaD4NCg0KDQpib290c3RyYXAtZHNvLmM6DQojZGVm
-aW5lIF9YRU5PTUFJX0JPT1RTVFJBUF9EU08NCiNpbmNsdWRlIDx4ZW5vbWFpL2Jvb3RzdHJhcC10
-ZW1wbGF0ZS5oPg0KDQooVGhhdCB3b3VsZCBvYnZpb3VzbHkgbmVlZCB0aGUgeGVub21haS9ib290
-c3RyYXAtdGVtcGxhdGUuaCBpbiBYZW5vbWFpKQ0KDQogPg0KID5Ob3cgcmVnYXJkaW5nIENNYWtl
-IGl0c2VsZi4gSXMgbm90IG9uZSBvZiBpdHMgbWFpbiBwdXJwb3NlcyB0byBiZQ0KID5wbGF0Zm9y
-bSBpbmRlcGVuZGFudCwgdGhhdCBkb2VzIG5vdCBzZWVtIHRvIGJlIHRvbyB1c2VmdWwgZm9yIFhl
-bm9tYWkuDQogPkFuZCB0aGVyZSBpcyBhIHpvbyBvZiBzdWNoIGJ1aWxkIHN5c3RlbXMgb3V0IHRo
-ZXJlLCB3aGF0IGFib3V0IGJhemVsLA0KID5zY29ucywgcmFrZSAuLi4gPyBTbyBpIGd1ZXNzIGkg
-YW0gYWdhaW5zdCBhZGRpbmcgc3VwcG9ydCBmb3IgYW55IHN1Y2gNCiA+dGhpbmcgdG8geGVub21h
-aSwgZXNwZWNpYWxseSBpZiBpdHMgT1MgYWJzdHJhY3Rpb25zIGRvIG5vdCBtYXRjaCAtLQ0KID5s
-aWtlIGl0IHNlZW1zIHRvIGJlIHRoZSBjYXNlIGZvciBDTWFrZS4NCg0KWW91IGxvb2sgYXQgaXQg
-ZnJvbSB0aGUgd3Jvbmcgc2lkZSwgeW91ciAoc3ViLSlwcm9qZWN0IGlzIHBsYXRmb3JtIGluZGVw
-ZW5kZW50LA0KWGVub21haSBpcyBqdXN0IG9uZSBwb3NzaWJsZSB0YXJnZXQuIFRoaXMgdHJhbnNp
-dGl2ZWx5IHdvcmtzIHRocm91Z2hvdXQgcG9zc2libHkNCmRlcGVuZGVuY2llcyAtIHRoZXkgd29u
-J3QgY2FyZSB3aGF0IHBsYXRmb3JtIHRoZXkgYXJlIGNvbXBpbGVkIGZvci4NCg0KV2l0aCBDTWFr
-ZSB5b3UgY2FuIGhhdmUgb25lIGFwcGxpY2F0aW9uIChvciBpdHMgKnBhcnRzKikgZGV2ZWxvcGVk
-IG9uL2ZvcjoNCi0gICBYZW5vbWFpIChQcm9kdWN0aW9uKQ0KLSAgIExpbnV4IChWZXJpZmljYXRp
-b24sIFVuaXR0ZXN0cykNCi0gICBXaW5kb3dzIChwbGVhc2UgZG9uJ3QgYXNrKQ0KDQpBbmQgbW9z
-dCBJREVzIHN1cHBvcnQgQ01ha2Ugbm93YWRheXMgKGRldGVjdGluZyBpbmNsdWRlIHBhdGhzICsg
-c2V0dGluZ3MsIGJ1aWxkLCBldGMpLg0KDQpUaGlzIHN0YXJ0ZWQgYXMgYSBuZWVkIHRvIHVzZSBh
-IGZsZXhpYmxlIGJ1aWxkLXN5c3RlbSwNCml0IGVuZGVkIHVwIGJlaW5nIENNYWtlLCBhbmQgaXQg
-YWxyZWFkeSBzdWZmaWNlcyBmb3Igb3VyIG5lZWRzLg0KQXMgYSBzaWRlbm90ZSwgaXQgc3RhcnRl
-ZCB3aXRoIGJ1aWxkaW5nIEFSTSBDb3J0ZXggRmlybXdhcmVzIG9uIGdjYyBhbmQgSUFSLA0KYW5k
-IHNvZnR3YXJlLW1vZHVsZXMgZnJvbSB0aG9zZSBwcm9qZWN0cyBjb3VsZCBub3cgYmUgdXNlZCBh
-cyB0aGV5IGFyZQ0Kd2l0aCBYZW5vbWFpIHByb2plY3RzLg0KDQpHb29nbGUgZm9yICJGaW5kWGVu
-b21haSIgdG8gc2VlIHRoYXQgSSBhbSBoYXJkeSB0aGUgb25seSBvbmUgd2l0aCB0aGF0IG5lZWQu
-DQpXaGF0IEkgd291bGQgbGlrZSBpcyB0byBoYXZlIGEgcHJvcGVyIHNvbHV0aW9uIGZvciBYZW5v
-bWFpLCBhbmQgbXkgd2F5IG9mIGRvaW5nIHRoYXQNCmlzIHRvIGdldCBjcml0aWNpemVkIGZyb20g
-cGVvcGxlLWluLXRoZS1rbm93Lg0KDQogPiAsIHdoYXQgYWJvdXQgYmF6ZWwsIHNjb25zLCByYWtl
-IC4uLiA/DQoNCkR1bm5vLCBub3QgbXkgaW50ZXJlc3QsIG5vdCBteSBpbnRlbnQgdG8gc29sdmUg
-ZXZlcnkgcHJvYmxlbSBpbiB0aGUgd29ybGQuDQpBZGRpbmcgcHJvcGVyIENNYWtlIHN1cHBvcnQg
-aW4gYSBwcm9wZXIgcGxhY2UgKGJlIGl0IFhlbm9tYWkgb3IgQ01ha2UpIGluc3RlYWQNCm9mIHVz
-aW5nIHRoZSB0d2VudGlldGggaG9tZS1jb29rZWQgc29sdXRpb24gaXMgd2hhdCBJIGFtIGludGVy
-ZXN0ZWQgaW4uDQoNCk5vcmJlcnQNCg0KX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX18N
-Cg0KVGhpcyBtZXNzYWdlIGFuZCBhbnkgYXR0YWNobWVudHMgYXJlIHNvbGVseSBmb3IgdGhlIHVz
-ZSBvZiB0aGUgaW50ZW5kZWQgcmVjaXBpZW50cy4gVGhleSBtYXkgY29udGFpbiBwcml2aWxlZ2Vk
-IGFuZC9vciBjb25maWRlbnRpYWwgaW5mb3JtYXRpb24gb3Igb3RoZXIgaW5mb3JtYXRpb24gcHJv
-dGVjdGVkIGZyb20gZGlzY2xvc3VyZS4gSWYgeW91IGFyZSBub3QgYW4gaW50ZW5kZWQgcmVjaXBp
-ZW50LCB5b3UgYXJlIGhlcmVieSBub3RpZmllZCB0aGF0IHlvdSByZWNlaXZlZCB0aGlzIGVtYWls
-IGluIGVycm9yIGFuZCB0aGF0IGFueSByZXZpZXcsIGRpc3NlbWluYXRpb24sIGRpc3RyaWJ1dGlv
-biBvciBjb3B5aW5nIG9mIHRoaXMgZW1haWwgYW5kIGFueSBhdHRhY2htZW50IGlzIHN0cmljdGx5
-IHByb2hpYml0ZWQuIElmIHlvdSBoYXZlIHJlY2VpdmVkIHRoaXMgZW1haWwgaW4gZXJyb3IsIHBs
-ZWFzZSBjb250YWN0IHRoZSBzZW5kZXIgYW5kIGRlbGV0ZSB0aGUgbWVzc2FnZSBhbmQgYW55IGF0
-dGFjaG1lbnQgZnJvbSB5b3VyIHN5c3RlbS4NCg0KQU5EUklUWiBIWURSTyBHbWJIDQoNCg0KUmVj
-aHRzZm9ybS8gTGVnYWwgZm9ybTogR2VzZWxsc2NoYWZ0IG1pdCBiZXNjaHLDpG5rdGVyIEhhZnR1
-bmcgLyBDb3Jwb3JhdGlvbg0KDQpGaXJtZW5zaXR6LyBSZWdpc3RlcmVkIHNlYXQ6IFdpZW4NCg0K
-RmlybWVuYnVjaGdlcmljaHQvIENvdXJ0IG9mIHJlZ2lzdHJ5OiBIYW5kZWxzZ2VyaWNodCBXaWVu
-DQoNCkZpcm1lbmJ1Y2hudW1tZXIvIENvbXBhbnkgcmVnaXN0cmF0aW9uOiBGTiA2MTgzMyBnDQoN
-CkRWUjogMDYwNTA3Nw0KDQpVSUQtTnIuOiBBVFUxNDc1NjgwNg0KDQoNClRoYW5rIFlvdQ0KX19f
-X19fX19fX19fX19fX19fX19fX19fX19fX19fX18NCg==
+On 2018-04-06 08:54, Philippe Gerum wrote:
+> On 04/05/2018 10:13 PM, Jan Kiszka wrote:
+>> On 2018-03-27 15:12, Philippe Gerum wrote:
+>>> On 03/10/2018 11:06 PM, Jan Kiszka wrote:
+>>>> On 2018-03-09 08:51, Jan Kiszka wrote:
+>>>>> 4.9 requires more work, I've pushed the beginning to wip/4.9 in the same
+>>>>> repo.
+>>>>
+>>>> I started to patch further on this during my flight (wip/4.9 updated),
+>>>> noticed that the 4.14-wip queue will need a little bit sysentry tweaking
+>>>> as well (missing 64-bit syscall dispatching), and then had to find 4.9
+>>>> in a rather unfortunate state /wrt x86-64: CPUs are no longer idling
+>>>> properly. I went back to ipipe-core-4.9.24-x86-2, without a difference.
+>>>>
+>>>> If you should look into 4.9-x86 as you indicated, please check this.
+>>>
+>>> Both issues fixed in 4.9.90/x86 as pushed lately. The result has run
+>>> overnight in 64bit mode, and for a couple of hours in ia32emu mode. So
+>>> far so good.
+>>
+>> Just trying 4.9.90-x86-6 in KVM, and I'm still finding 100% (virtual)
+>> CPU load. I also triggered this with stable-3.0.x:
+>>
+>> [  237.455846] WARNING: CPU: 0 PID: 1055 at ../kernel/xenomai/posix/timerfd.c:57 timerfd_read+0x2a6/0x350
+>> [  237.460728] Modules linked in:
+>> [  237.461490] CPU: 0 PID: 1055 Comm: sampling-1052 Not tainted 4.9.90+ #11
+>> [  237.461490] Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS rel-1.11.1-0-g0551a4be2c-prebuilt.qemu-project.org 04/01/2014
+>> [  237.461490] I-pipe domain: Xenomai
+>> [  237.461490]  ffffc90001b7fdb0 ffffffff8145e395 0000000000000000 0000000000000000
+>> [  237.461490]  ffffc90001b7fdf0 ffffffff810e7261 000000393d61d170 ffffc900003e6008
+>> [  237.461490]  0000000000000003 0000000000000008 00007f513e8c2de8 0000000000026200
+>> [  237.461490] Call Trace:
+>> [  237.461490]  [<ffffffff8145e395>] dump_stack+0xb2/0xdd
+>> [  237.461490]  [<ffffffff810e7261>] __warn+0xd1/0xf0
+>> [  237.461490]  [<ffffffff810e734d>] warn_slowpath_null+0x1d/0x20
+>> [  237.461490]  [<ffffffff812423b6>] timerfd_read+0x2a6/0x350
+>> [  237.461490]  [<ffffffff812174ec>] rtdm_fd_read+0x13c/0x3b0
+>> [  237.461490]  [<ffffffff81220260>] ? CoBaLt_ioctl+0x20/0x20
+>> [  237.461490]  [<ffffffff8122026e>] CoBaLt_read+0xe/0x10
+>> [  237.461490]  [<ffffffff81235894>] handle_head_syscall+0x184/0x4b0
+>> [  237.461490]  [<ffffffff81236288>] ipipe_fastcall_hook+0x18/0x20
+>> [  237.461490]  [<ffffffff811a9054>] ipipe_handle_syscall+0x64/0x110
+>> [  237.461490]  [<ffffffff81002b33>] do_syscall_64+0x43/0x1c0
+>> [  237.461490]  [<ffffffff81840b43>] entry_SYSCALL_64_after_swapgs+0x5d/0xdb
+>> [  237.461490] ---[ end trace 9d2476a38b0c5379 ]---
+>>
+>> I will debug this tomorrow.
+>>
+> 
+> I can't reproduce this, the loadavg on my qemu instance consistently
+> converges to 0.0x figures while running the latency test (10Khz or 1Khz,
+> same). I'm now running 4.9.92, but I don't think this should make any
+> difference, since I could trace the box entering the idle state on .90.
+> 
+> Are you running the ia32emu mode, or x86_64? Also, could you share your
+> .config for building the guest kernel?
+
+Config is the same I sent back then. Userland is 64-bit, compat support
+enabled.
+
+The reason I see so far: xnclock_core_local_shot never sets XNIDLE. I
+suspect we always have a timer registered, that for the host clock. So
+we can't become idle this way. I'm not even sure that this test makes
+sense because a pending RT timer does not make a non-idle system.
+
+Jan
+
+-- 
+Siemens AG, Corporate Technology, CT RDA IOT SES-DE
+Corporate Competence Center Embedded Linux
 
