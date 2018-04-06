@@ -1,14 +1,17 @@
-MIME-Version: 1.0
-In-Reply-To: <CA+K1mPHXcOwp2iBwEAKytK4yK5Oap58f3fnrn7zY5JCRgMEMNg@mail.gmail.com>
+From: Giulio Moro <g.moro@qmul.ac.uk>
+Date: Fri, 6 Apr 2018 17:43:14 +0000
+Message-ID: <DB6PR0701MB245629B3133923BDC6B4CE1DB5BA0@DB6PR0701MB2456.eurprd07.prod.outlook.com>
 References: <CA+K1mPGTJBd5OmUUhCcLVJMaHPhrwDgO34xtP6gG6qCvvw2BOw@mail.gmail.com>
  <CALLqZ8SoRLCMVuPM7Q_AoUSWUT=QxE1krXy_djUZhZDrPtTFEw@mail.gmail.com>
  <CA+K1mPHAhOt8mKMm_yDudnZxpT96N9g5+m5VCpZ09-wy2cV5VQ@mail.gmail.com>
  <CALLqZ8S95QCd99H92-S=xfM=Czke3AY728cgMenM8PnSeZ07Og@mail.gmail.com>
- <CA+K1mPHXcOwp2iBwEAKytK4yK5Oap58f3fnrn7zY5JCRgMEMNg@mail.gmail.com>
-From: Greg Gallagher <greg@embeddedgreg.com>
-Date: Fri, 6 Apr 2018 13:41:29 -0400
-Message-ID: <CALLqZ8RE5uR7cYQLie+zXW63_r9DFa=SJ+cAuyRzk9pXcU5bdw@mail.gmail.com>
-Content-Type: text/plain; charset="UTF-8"
+ <CA+K1mPHXcOwp2iBwEAKytK4yK5Oap58f3fnrn7zY5JCRgMEMNg@mail.gmail.com>,
+ <CALLqZ8RE5uR7cYQLie+zXW63_r9DFa=SJ+cAuyRzk9pXcU5bdw@mail.gmail.com>
+In-Reply-To: <CALLqZ8RE5uR7cYQLie+zXW63_r9DFa=SJ+cAuyRzk9pXcU5bdw@mail.gmail.com>
+Content-Language: en-GB
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
+MIME-Version: 1.0
 Subject: Re: [Xenomai] Context switch to secondary mode in xenomai tasks
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
@@ -18,15 +21,28 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: C Smith <csmithquestions@gmail.com>
+To: Greg Gallagher <greg@embeddedgreg.com>, C Smith <csmithquestions@gmail.com>
 Cc: "Xenomai@xenomai.org" <xenomai@xenomai.org>
 
+or
+   cat /proc/xenomai/stat
+and see if the count in the MSW column increases for that task
+________________________________________
+From: Xenomai <xenomai-bounces@xenomai.org> on behalf of Greg Gallagher <gr=
+eg@embeddedgreg.com>
+Sent: 06 April 2018 18:41
+To: C Smith
+Cc: Xenomai@xenomai.org
+Subject: Re: [Xenomai] Context switch to secondary mode in xenomai tasks
+
 Check here:
-https://xenomai.org/2014/08/porting-a-linux-application-to-xenomai-dual-kernel/#Chasing_the_unwanted_mode_switches
+https://xenomai.org/2014/08/porting-a-linux-application-to-xenomai-dual-ker=
+nel/#Chasing_the_unwanted_mode_switches
 
 
 On Fri, Apr 6, 2018 at 1:39 PM, C Smith <csmithquestions@gmail.com> wrote:
-> How can we verify which tasks are switching to secondary mode? We know the
+> How can we verify which tasks are switching to secondary mode? We know th=
+e
 > xml parser definitely is switching to secondary mode, setting T_WARNSW,
 > causing the application to send the SIGXCPU signal, but we don't know if
 > it's affecting the other tasks.
@@ -43,7 +59,8 @@ On Fri, Apr 6, 2018 at 1:39 PM, C Smith <csmithquestions@gmail.com> wrote:
 >>
 >> -Greg
 >>
->> On Fri, Apr 6, 2018 at 1:01 PM, C Smith <csmithquestions@gmail.com> wrote:
+>> On Fri, Apr 6, 2018 at 1:01 PM, C Smith <csmithquestions@gmail.com> wrot=
+e:
 >> > The tasks manipulate shared data however they do not communicate
 >> > directly.
 >> > The rt_task which parses the xml document and the main rt_task are
@@ -61,11 +78,13 @@ On Fri, Apr 6, 2018 at 1:39 PM, C Smith <csmithquestions@gmail.com> wrote:
 >> >> wrote:
 >> >> > Hi all--
 >> >> >
->> >> > Our real time application has a main rt_task which runs concurrently
+>> >> > Our real time application has a main rt_task which runs concurrentl=
+y
 >> >> > with
 >> >> > several other rt_tasks (spawned using rt_task_create) and we are
 >> >> > concerned
->> >> > about a context switch in one of the tasks. The problematic task uses
+>> >> > about a context switch in one of the tasks. The problematic task us=
+es
 >> >> > libxml2 to parse an xml document sent over ethernet which seems to
 >> >> > cause
 >> >> > a
@@ -82,4 +101,9 @@ On Fri, Apr 6, 2018 at 1:39 PM, C Smith <csmithquestions@gmail.com> wrote:
 >> >
 >
 >
+
+_______________________________________________
+Xenomai mailing list
+Xenomai@xenomai.org
+https://xenomai.org/mailman/listinfo/xenomai
 
