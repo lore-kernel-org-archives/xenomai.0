@@ -1,11 +1,13 @@
-From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <e0cc88bf-1fd8-1c01-513b-b7444b323da7@siemens.com>
-Date: Fri, 6 Apr 2018 19:07:47 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-Subject: [Xenomai] dlopen test in current stable fails
+In-Reply-To: <CA+K1mPHAhOt8mKMm_yDudnZxpT96N9g5+m5VCpZ09-wy2cV5VQ@mail.gmail.com>
+References: <CA+K1mPGTJBd5OmUUhCcLVJMaHPhrwDgO34xtP6gG6qCvvw2BOw@mail.gmail.com>
+ <CALLqZ8SoRLCMVuPM7Q_AoUSWUT=QxE1krXy_djUZhZDrPtTFEw@mail.gmail.com>
+ <CA+K1mPHAhOt8mKMm_yDudnZxpT96N9g5+m5VCpZ09-wy2cV5VQ@mail.gmail.com>
+From: Greg Gallagher <greg@embeddedgreg.com>
+Date: Fri, 6 Apr 2018 13:17:37 -0400
+Message-ID: <CALLqZ8S95QCd99H92-S=xfM=Czke3AY728cgMenM8PnSeZ07Og@mail.gmail.com>
+Content-Type: text/plain; charset="UTF-8"
+Subject: Re: [Xenomai] Context switch to secondary mode in xenomai tasks
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -14,22 +16,49 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Xenomai <xenomai@xenomai.org>, Henning Schild <henning.schild@siemens.com>
+To: C Smith <csmithquestions@gmail.com>
+Cc: "Xenomai@xenomai.org" <xenomai@xenomai.org>
 
-Henning,
+If a tasks switches to secondary mode it would act like a normal Linux
+thread. I haven't used Xenomai 2.6 in a while but if you are seeing
+both tasks drop to secondary mode you may want to list the resources
+that they are sharing and how you are sharing them and then we can see
+if something would cause mode switches. Are you seeing both threads
+drop to secondary mode?
 
-should dlopen work with stable-3.0.x? The test case is merged, but it
-fails for me.
+-Greg
 
-../../../lib/boilerplate/setup.c:686: __register_setup_call: Assertion
-`!main_init_done' failed.
-
-(at this chance I noticed that redirecting smokey outputs on the command
-line does not work as well - different story).
-
-Jan
-
--- 
-Siemens AG, Corporate Technology, CT RDA IOT SES-DE
-Corporate Competence Center Embedded Linux
+On Fri, Apr 6, 2018 at 1:01 PM, C Smith <csmithquestions@gmail.com> wrote:
+> The tasks manipulate shared data however they do not communicate directly.
+> The rt_task which parses the xml document and the main rt_task are running
+> periodically at different rates using rt_task_set_periodic.
+>
+> On Fri, Apr 6, 2018 at 9:54 AM, Greg Gallagher <greg@embeddedgreg.com>
+> wrote:
+>>
+>> Do the tasks communicate with each other?
+>>
+>> -Greg
+>>
+>> On Fri, Apr 6, 2018 at 12:51 PM, C Smith <csmithquestions@gmail.com>
+>> wrote:
+>> > Hi all--
+>> >
+>> > Our real time application has a main rt_task which runs concurrently
+>> > with
+>> > several other rt_tasks (spawned using rt_task_create) and we are
+>> > concerned
+>> > about a context switch in one of the tasks. The problematic task uses
+>> > libxml2 to parse an xml document sent over ethernet which seems to cause
+>> > a
+>> > switch to secondary mode. Would this also switch the other tasks we are
+>> > running to secondary mode, or is it isolated?
+>> >
+>> > We are running Xenomai 2.6.2 and Xenomai 2.6.5 in our application.
+>> > _______________________________________________
+>> > Xenomai mailing list
+>> > Xenomai@xenomai.org
+>> > https://xenomai.org/mailman/listinfo/xenomai
+>
+>
 
