@@ -1,12 +1,13 @@
 MIME-Version: 1.0
-In-Reply-To: <CALLqZ8S95QCd99H92-S=xfM=Czke3AY728cgMenM8PnSeZ07Og@mail.gmail.com>
+In-Reply-To: <CA+K1mPHXcOwp2iBwEAKytK4yK5Oap58f3fnrn7zY5JCRgMEMNg@mail.gmail.com>
 References: <CA+K1mPGTJBd5OmUUhCcLVJMaHPhrwDgO34xtP6gG6qCvvw2BOw@mail.gmail.com>
  <CALLqZ8SoRLCMVuPM7Q_AoUSWUT=QxE1krXy_djUZhZDrPtTFEw@mail.gmail.com>
  <CA+K1mPHAhOt8mKMm_yDudnZxpT96N9g5+m5VCpZ09-wy2cV5VQ@mail.gmail.com>
  <CALLqZ8S95QCd99H92-S=xfM=Czke3AY728cgMenM8PnSeZ07Og@mail.gmail.com>
-From: C Smith <csmithquestions@gmail.com>
-Date: Fri, 6 Apr 2018 10:39:41 -0700
-Message-ID: <CA+K1mPHXcOwp2iBwEAKytK4yK5Oap58f3fnrn7zY5JCRgMEMNg@mail.gmail.com>
+ <CA+K1mPHXcOwp2iBwEAKytK4yK5Oap58f3fnrn7zY5JCRgMEMNg@mail.gmail.com>
+From: Greg Gallagher <greg@embeddedgreg.com>
+Date: Fri, 6 Apr 2018 13:41:29 -0400
+Message-ID: <CALLqZ8RE5uR7cYQLie+zXW63_r9DFa=SJ+cAuyRzk9pXcU5bdw@mail.gmail.com>
 Content-Type: text/plain; charset="UTF-8"
 Subject: Re: [Xenomai] Context switch to secondary mode in xenomai tasks
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
@@ -17,60 +18,68 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Greg Gallagher <greg@embeddedgreg.com>, xenomai@xenomai.org
+To: C Smith <csmithquestions@gmail.com>
+Cc: "Xenomai@xenomai.org" <xenomai@xenomai.org>
 
-How can we verify which tasks are switching to secondary mode? We know the
-xml parser definitely is switching to secondary mode, setting T_WARNSW,
-causing the application to send the SIGXCPU signal, but we don't know if
-it's affecting the other tasks.
+Check here:
+https://xenomai.org/2014/08/porting-a-linux-application-to-xenomai-dual-kernel/#Chasing_the_unwanted_mode_switches
 
-On Fri, Apr 6, 2018 at 10:17 AM, Greg Gallagher <greg@embeddedgreg.com>
-wrote:
 
-> If a tasks switches to secondary mode it would act like a normal Linux
-> thread. I haven't used Xenomai 2.6 in a while but if you are seeing
-> both tasks drop to secondary mode you may want to list the resources
-> that they are sharing and how you are sharing them and then we can see
-> if something would cause mode switches. Are you seeing both threads
-> drop to secondary mode?
+On Fri, Apr 6, 2018 at 1:39 PM, C Smith <csmithquestions@gmail.com> wrote:
+> How can we verify which tasks are switching to secondary mode? We know the
+> xml parser definitely is switching to secondary mode, setting T_WARNSW,
+> causing the application to send the SIGXCPU signal, but we don't know if
+> it's affecting the other tasks.
 >
-> -Greg
+> On Fri, Apr 6, 2018 at 10:17 AM, Greg Gallagher <greg@embeddedgreg.com>
+> wrote:
+>>
+>> If a tasks switches to secondary mode it would act like a normal Linux
+>> thread. I haven't used Xenomai 2.6 in a while but if you are seeing
+>> both tasks drop to secondary mode you may want to list the resources
+>> that they are sharing and how you are sharing them and then we can see
+>> if something would cause mode switches. Are you seeing both threads
+>> drop to secondary mode?
+>>
+>> -Greg
+>>
+>> On Fri, Apr 6, 2018 at 1:01 PM, C Smith <csmithquestions@gmail.com> wrote:
+>> > The tasks manipulate shared data however they do not communicate
+>> > directly.
+>> > The rt_task which parses the xml document and the main rt_task are
+>> > running
+>> > periodically at different rates using rt_task_set_periodic.
+>> >
+>> > On Fri, Apr 6, 2018 at 9:54 AM, Greg Gallagher <greg@embeddedgreg.com>
+>> > wrote:
+>> >>
+>> >> Do the tasks communicate with each other?
+>> >>
+>> >> -Greg
+>> >>
+>> >> On Fri, Apr 6, 2018 at 12:51 PM, C Smith <csmithquestions@gmail.com>
+>> >> wrote:
+>> >> > Hi all--
+>> >> >
+>> >> > Our real time application has a main rt_task which runs concurrently
+>> >> > with
+>> >> > several other rt_tasks (spawned using rt_task_create) and we are
+>> >> > concerned
+>> >> > about a context switch in one of the tasks. The problematic task uses
+>> >> > libxml2 to parse an xml document sent over ethernet which seems to
+>> >> > cause
+>> >> > a
+>> >> > switch to secondary mode. Would this also switch the other tasks we
+>> >> > are
+>> >> > running to secondary mode, or is it isolated?
+>> >> >
+>> >> > We are running Xenomai 2.6.2 and Xenomai 2.6.5 in our application.
+>> >> > _______________________________________________
+>> >> > Xenomai mailing list
+>> >> > Xenomai@xenomai.org
+>> >> > https://xenomai.org/mailman/listinfo/xenomai
+>> >
+>> >
 >
-> On Fri, Apr 6, 2018 at 1:01 PM, C Smith <csmithquestions@gmail.com> wrote:
-> > The tasks manipulate shared data however they do not communicate
-> directly.
-> > The rt_task which parses the xml document and the main rt_task are
-> running
-> > periodically at different rates using rt_task_set_periodic.
-> >
-> > On Fri, Apr 6, 2018 at 9:54 AM, Greg Gallagher <greg@embeddedgreg.com>
-> > wrote:
-> >>
-> >> Do the tasks communicate with each other?
-> >>
-> >> -Greg
-> >>
-> >> On Fri, Apr 6, 2018 at 12:51 PM, C Smith <csmithquestions@gmail.com>
-> >> wrote:
-> >> > Hi all--
-> >> >
-> >> > Our real time application has a main rt_task which runs concurrently
-> >> > with
-> >> > several other rt_tasks (spawned using rt_task_create) and we are
-> >> > concerned
-> >> > about a context switch in one of the tasks. The problematic task uses
-> >> > libxml2 to parse an xml document sent over ethernet which seems to
-> cause
-> >> > a
-> >> > switch to secondary mode. Would this also switch the other tasks we
-> are
-> >> > running to secondary mode, or is it isolated?
-> >> >
-> >> > We are running Xenomai 2.6.2 and Xenomai 2.6.5 in our application.
-> >> > _______________________________________________
-> >> > Xenomai mailing list
-> >> > Xenomai@xenomai.org
-> >> > https://xenomai.org/mailman/listinfo/xenomai
-> >
-> >
 >
+
