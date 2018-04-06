@@ -1,16 +1,14 @@
-References: <6aedc4bc-74b5-4a9f-5c38-036a3d7850b9@siemens.com>
- <ee7647d4-0bfd-0933-2f10-e9fdc5da2880@web.de>
- <54cd6098-3828-b028-3328-daf91b46d9da@xenomai.org>
- <1edf5dcb-bc63-2f53-f91b-f821b244563c@web.de>
-From: Philippe Gerum <rpm@xenomai.org>
-Message-ID: <fd85297e-17eb-add4-619e-234f7602dc44@xenomai.org>
-Date: Fri, 6 Apr 2018 08:54:48 +0200
+Date: Fri, 6 Apr 2018 10:47:29 +0200
+From: Henning Schild <henning.schild@siemens.com>
+Message-ID: <20180406104729.0a46cb24@mmd1pvb1c.ad001.siemens.net>
+In-Reply-To: <99BAB48E90E86D42AD41F0BCE3225AEB019FC066DF@GRZSMS582.andritz.com>
+References: <99BAB48E90E86D42AD41F0BCE3225AEB019FC0631A@GRZSMS582.andritz.com>
+ <bbb33d4c-e8d0-b383-0424-d99592486988@siemens.com>
+ <99BAB48E90E86D42AD41F0BCE3225AEB019FC066DF@GRZSMS582.andritz.com>
 MIME-Version: 1.0
-In-Reply-To: <1edf5dcb-bc63-2f53-f91b-f821b244563c@web.de>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] 4.9 for x86 issue
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
+Subject: Re: [Xenomai] building Xenomai Apps with CMake (RFC)
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -19,67 +17,133 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jan Kiszka <jan.kiszka@web.de>
-Cc: Xenomai <xenomai@xenomai.org>
+To: Lange Norbert <norbert.lange@andritz.com>
+Cc: Jan Kiszka <jan.kiszka@siemens.com>, "Xenomai (xenomai@xenomai.org)" <xenomai@xenomai.org>
 
-On 04/05/2018 10:13 PM, Jan Kiszka wrote:
-> On 2018-03-27 15:12, Philippe Gerum wrote:
->> On 03/10/2018 11:06 PM, Jan Kiszka wrote:
->>> On 2018-03-09 08:51, Jan Kiszka wrote:
->>>> 4.9 requires more work, I've pushed the beginning to wip/4.9 in the same
->>>> repo.
->>>
->>> I started to patch further on this during my flight (wip/4.9 updated),
->>> noticed that the 4.14-wip queue will need a little bit sysentry tweaking
->>> as well (missing 64-bit syscall dispatching), and then had to find 4.9
->>> in a rather unfortunate state /wrt x86-64: CPUs are no longer idling
->>> properly. I went back to ipipe-core-4.9.24-x86-2, without a difference.
->>>
->>> If you should look into 4.9-x86 as you indicated, please check this.
->>
->> Both issues fixed in 4.9.90/x86 as pushed lately. The result has run
->> overnight in 64bit mode, and for a couple of hours in ia32emu mode. So
->> far so good.
-> 
-> Just trying 4.9.90-x86-6 in KVM, and I'm still finding 100% (virtual)
-> CPU load. I also triggered this with stable-3.0.x:
-> 
-> [  237.455846] WARNING: CPU: 0 PID: 1055 at ../kernel/xenomai/posix/timerfd.c:57 timerfd_read+0x2a6/0x350
-> [  237.460728] Modules linked in:
-> [  237.461490] CPU: 0 PID: 1055 Comm: sampling-1052 Not tainted 4.9.90+ #11
-> [  237.461490] Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS rel-1.11.1-0-g0551a4be2c-prebuilt.qemu-project.org 04/01/2014
-> [  237.461490] I-pipe domain: Xenomai
-> [  237.461490]  ffffc90001b7fdb0 ffffffff8145e395 0000000000000000 0000000000000000
-> [  237.461490]  ffffc90001b7fdf0 ffffffff810e7261 000000393d61d170 ffffc900003e6008
-> [  237.461490]  0000000000000003 0000000000000008 00007f513e8c2de8 0000000000026200
-> [  237.461490] Call Trace:
-> [  237.461490]  [<ffffffff8145e395>] dump_stack+0xb2/0xdd
-> [  237.461490]  [<ffffffff810e7261>] __warn+0xd1/0xf0
-> [  237.461490]  [<ffffffff810e734d>] warn_slowpath_null+0x1d/0x20
-> [  237.461490]  [<ffffffff812423b6>] timerfd_read+0x2a6/0x350
-> [  237.461490]  [<ffffffff812174ec>] rtdm_fd_read+0x13c/0x3b0
-> [  237.461490]  [<ffffffff81220260>] ? CoBaLt_ioctl+0x20/0x20
-> [  237.461490]  [<ffffffff8122026e>] CoBaLt_read+0xe/0x10
-> [  237.461490]  [<ffffffff81235894>] handle_head_syscall+0x184/0x4b0
-> [  237.461490]  [<ffffffff81236288>] ipipe_fastcall_hook+0x18/0x20
-> [  237.461490]  [<ffffffff811a9054>] ipipe_handle_syscall+0x64/0x110
-> [  237.461490]  [<ffffffff81002b33>] do_syscall_64+0x43/0x1c0
-> [  237.461490]  [<ffffffff81840b43>] entry_SYSCALL_64_after_swapgs+0x5d/0xdb
-> [  237.461490] ---[ end trace 9d2476a38b0c5379 ]---
-> 
-> I will debug this tomorrow.
-> 
+Am Thu, 5 Apr 2018 15:54:34 +0000
+schrieb Lange Norbert <norbert.lange@andritz.com>:
 
-I can't reproduce this, the loadavg on my qemu instance consistently
-converges to 0.0x figures while running the latency test (10Khz or 1Khz,
-same). I'm now running 4.9.92, but I don't think this should make any
-difference, since I could trace the box entering the idle state on .90.
+> Hello,
+>=20
+>  >-----Original Message-----
+>  >From: Jan Kiszka [mailto:jan.kiszka@siemens.com]
+>  >Sent: Donnerstag, 05. April 2018 16:55
+>  >To: Lange Norbert; Xenomai (xenomai@xenomai.org); Henning Schild
+>  >Subject: Re: building Xenomai Apps with CMake (RFC)
+>  >
+>  >E-MAIL FROM A NON-ANDRITZ SOURCE: AS A SECURITY MEASURE, PLEASE
+>  >EXERCISE CAUTION WITH E-MAIL CONTENT AND ANY LINKS OR
+>  >ATTACHMENTS.
+>  >
+>  >
+>  >On 2018-04-03 16:10, Lange Norbert wrote: =20
+>  >> Hello,
+>  >>
+>  >> I went ahead and created a script to add support for Xenomai (3+)
+>  >> to CMake. =20
+>  >Its currently sufficient for me, =20
+>  >> but I would like to get this in a shape that it is useful and
+>  >> robust enough for =20
+>  >most people. =20
+>  >> Ultimately it should end up up streamed to CMake (I hope the
+>  >> binutils-specific =20
+>  >wrappers aren't a knock-out against adoption). =20
+>  >>
+>  >> Mostly this should interest people that want to use CMake, but a
+>  >> few things =20
+>  >might need support from the Xenomai distribution. =20
+>  >> To be more specific: using precompiled object-files like the
+>  >> boostrap code =20
+>  >and its linker wraps and redirections are something I would =20
+>  >> like to avoid, or atleast offer an alternative that does not need
+>  >> that much =20
+>  >work outside of a "regular build". =20
+>  >> For that, having the bootstrap code (configurable or a few
+>  >> variants) installed =20
+>  >as sourcecode would help. =20
+>  >>
+>  >> Code is uploaded to Github :
+>  >> https://github.com/nolange/cmake_xenomai =20
+>  >
+>  >Thanks for sharing this. IIRC, we have some Xeommai user in-house as
+>  >well who looked into cmake, need to check the status and scope again
+>  >(maybe Henning knows more). Could be interesting, indeed. =20
+>=20
+> If I may ask, are you using the "boostraps" from Xenomai or some own
+> init-code? (that=E2=80=99s currently the biggest headache remaining)
 
-Are you running the ia32emu mode, or x86_64? Also, could you share your
-.config for building the guest kernel?
+No, i do not know anyone using CMake with Xenomai, so i would not know
+how to deal with bootstrap there.
 
-Thanks,
+>  >
+>  >For my understanding: You need cmake upstream changes to make things
+>  >work? Or is this project something that could eventually be carried
+>  >in Xenomai upstream, just requiring some cmake version >=3D X? =20
+>=20
+> No strict need to upstream the scripts in either Xenomai or CMake,
+> the files just need to be in the search-path of CMake to be usable
+> (likely doesnt need anything newer than CMake 3.0 but would need to
+> test this). I value the feedback from both communities, particularly
+> because I don=E2=80=99t use anything but the Posix/Cobalt Skin and gettin=
+g it
+> into CMake would be the best thing for maintenance.
 
--- 
-Philippe.
+It would probably be a good idea to try and mainline it in one of the
+two projects. And my guess is that CMake would not really fit and they
+might not want such code.
+
+> Nevertheless it could be really helpful to add a headerfile in the
+> Xenomai distribution, replicating the steps that
+> 'boilerplate/init/bootstrap.c' does, and allowing to disable parts of
+> the functionality like the main wrapper. That glue code would ideally
+> be built together with libraries/executables using it (identical
+> flags and such). Right now the code is mostly duplicated and placed
+> with the CMake Scripts, which is not ideal.
+
+I did not fully understand the bootstrap with regard to cmake yet. But
+the magic wrapping is not pretty, also in other regards. So patches
+that improve that, while actually targeting something like CMake, would
+be welcome.
+
+Now regarding CMake itself. Is not one of its main purposes to be
+platform independant, that does not seem to be too useful for Xenomai.
+And there is a zoo of such build systems out there, what about bazel,
+scons, rake ... ? So i guess i am against adding support for any such
+thing to xenomai, especially if its OS abstractions do not match --
+like it seems to be the case for CMake.
+
+Henning
+
+> Norbert
+> ________________________________
+>=20
+> This message and any attachments are solely for the use of the
+> intended recipients. They may contain privileged and/or confidential
+> information or other information protected from disclosure. If you
+> are not an intended recipient, you are hereby notified that you
+> received this email in error and that any review, dissemination,
+> distribution or copying of this email and any attachment is strictly
+> prohibited. If you have received this email in error, please contact
+> the sender and delete the message and any attachment from your system.
+>=20
+> ANDRITZ HYDRO GmbH
+>=20
+>=20
+> Rechtsform/ Legal form: Gesellschaft mit beschr=C3=A4nkter Haftung /
+> Corporation
+>=20
+> Firmensitz/ Registered seat: Wien
+>=20
+> Firmenbuchgericht/ Court of registry: Handelsgericht Wien
+>=20
+> Firmenbuchnummer/ Company registration: FN 61833 g
+>=20
+> DVR: 0605077
+>=20
+> UID-Nr.: ATU14756806
+>=20
+>=20
+> Thank You
+> ________________________________
+
 
