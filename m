@@ -1,22 +1,13 @@
-References: <6aedc4bc-74b5-4a9f-5c38-036a3d7850b9@siemens.com>
- <ee7647d4-0bfd-0933-2f10-e9fdc5da2880@web.de>
- <54cd6098-3828-b028-3328-daf91b46d9da@xenomai.org>
- <1edf5dcb-bc63-2f53-f91b-f821b244563c@web.de>
- <fd85297e-17eb-add4-619e-234f7602dc44@xenomai.org>
- <0fb957ac-ae49-2d57-9f83-8a61201b1fb1@siemens.com>
- <57044fd9-5e29-5d04-958d-e2195536298b@xenomai.org>
- <0356efbe-6dd5-ff57-219e-122e38b52662@siemens.com>
- <fefb6ea1-e962-8697-6b6d-902705611c7f@xenomai.org>
- <1a70c4b6-b7a5-d4fb-b1ca-f6fc03828e9d@siemens.com>
- <a4d4d122-b18b-6adb-0f71-409d72479380@xenomai.org>
-From: Jan Kiszka <jan.kiszka@web.de>
-Message-ID: <a7be31f8-18c3-1b97-6120-1e18776f9fed@web.de>
-Date: Sat, 7 Apr 2018 18:58:43 +0200
+References: <edde814a-56f9-1853-22fe-d3b28c1aadc6@siemens.com>
+From: Philippe Gerum <rpm@xenomai.org>
+Message-ID: <fb450297-ba2f-5e5e-4bfd-cc9090a2ba47@xenomai.org>
+Date: Sat, 7 Apr 2018 18:58:50 +0200
 MIME-Version: 1.0
-In-Reply-To: <a4d4d122-b18b-6adb-0f71-409d72479380@xenomai.org>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Subject: Re: [Xenomai] 4.9 for x86 issue
+In-Reply-To: <edde814a-56f9-1853-22fe-d3b28c1aadc6@siemens.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai] [PULL] ipipe 4.9 update
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -25,130 +16,54 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Philippe Gerum <rpm@xenomai.org>
+To: Jan Kiszka <jan.kiszka@siemens.com>
 Cc: Xenomai <xenomai@xenomai.org>
 
-T24gMjAxOC0wNC0wNyAxODo1NSwgUGhpbGlwcGUgR2VydW0gd3JvdGU6Cj4gT24gMDQvMDcvMjAx
-OCAxMTo0MiBBTSwgSmFuIEtpc3prYSB3cm90ZToKPj4gT24gMjAxOC0wNC0wNyAwOToyNSwgUGhp
-bGlwcGUgR2VydW0gd3JvdGU6Cj4+PiBPbiAwNC8wNi8yMDE4IDA1OjExIFBNLCBKYW4gS2lzemth
-IHdyb3RlOgo+Pj4+IE9uIDIwMTgtMDQtMDYgMTY6MTEsIFBoaWxpcHBlIEdlcnVtIHdyb3RlOgo+
-Pj4+PiBPbiAwNC8wNi8yMDE4IDAzOjM4IFBNLCBKYW4gS2lzemthIHdyb3RlOgo+Pj4+Pj4gT24g
-MjAxOC0wNC0wNiAwODo1NCwgUGhpbGlwcGUgR2VydW0gd3JvdGU6Cj4+Pj4+Pj4gT24gMDQvMDUv
-MjAxOCAxMDoxMyBQTSwgSmFuIEtpc3prYSB3cm90ZToKPj4+Pj4+Pj4gT24gMjAxOC0wMy0yNyAx
-NToxMiwgUGhpbGlwcGUgR2VydW0gd3JvdGU6Cj4+Pj4+Pj4+PiBPbiAwMy8xMC8yMDE4IDExOjA2
-IFBNLCBKYW4gS2lzemthIHdyb3RlOgo+Pj4+Pj4+Pj4+IE9uIDIwMTgtMDMtMDkgMDg6NTEsIEph
-biBLaXN6a2Egd3JvdGU6Cj4+Pj4+Pj4+Pj4+IDQuOSByZXF1aXJlcyBtb3JlIHdvcmssIEkndmUg
-cHVzaGVkIHRoZSBiZWdpbm5pbmcgdG8gd2lwLzQuOSBpbiB0aGUgc2FtZQo+Pj4+Pj4+Pj4+PiBy
-ZXBvLgo+Pj4+Pj4+Pj4+Cj4+Pj4+Pj4+Pj4gSSBzdGFydGVkIHRvIHBhdGNoIGZ1cnRoZXIgb24g
-dGhpcyBkdXJpbmcgbXkgZmxpZ2h0ICh3aXAvNC45IHVwZGF0ZWQpLAo+Pj4+Pj4+Pj4+IG5vdGlj
-ZWQgdGhhdCB0aGUgNC4xNC13aXAgcXVldWUgd2lsbCBuZWVkIGEgbGl0dGxlIGJpdCBzeXNlbnRy
-eSB0d2Vha2luZwo+Pj4+Pj4+Pj4+IGFzIHdlbGwgKG1pc3NpbmcgNjQtYml0IHN5c2NhbGwgZGlz
-cGF0Y2hpbmcpLCBhbmQgdGhlbiBoYWQgdG8gZmluZCA0LjkKPj4+Pj4+Pj4+PiBpbiBhIHJhdGhl
-ciB1bmZvcnR1bmF0ZSBzdGF0ZSAvd3J0IHg4Ni02NDogQ1BVcyBhcmUgbm8gbG9uZ2VyIGlkbGlu
-Zwo+Pj4+Pj4+Pj4+IHByb3Blcmx5LiBJIHdlbnQgYmFjayB0byBpcGlwZS1jb3JlLTQuOS4yNC14
-ODYtMiwgd2l0aG91dCBhIGRpZmZlcmVuY2UuCj4+Pj4+Pj4+Pj4KPj4+Pj4+Pj4+PiBJZiB5b3Ug
-c2hvdWxkIGxvb2sgaW50byA0LjkteDg2IGFzIHlvdSBpbmRpY2F0ZWQsIHBsZWFzZSBjaGVjayB0
-aGlzLgo+Pj4+Pj4+Pj4KPj4+Pj4+Pj4+IEJvdGggaXNzdWVzIGZpeGVkIGluIDQuOS45MC94ODYg
-YXMgcHVzaGVkIGxhdGVseS4gVGhlIHJlc3VsdCBoYXMgcnVuCj4+Pj4+Pj4+PiBvdmVybmlnaHQg
-aW4gNjRiaXQgbW9kZSwgYW5kIGZvciBhIGNvdXBsZSBvZiBob3VycyBpbiBpYTMyZW11IG1vZGUu
-IFNvCj4+Pj4+Pj4+PiBmYXIgc28gZ29vZC4KPj4+Pj4+Pj4KPj4+Pj4+Pj4gSnVzdCB0cnlpbmcg
-NC45LjkwLXg4Ni02IGluIEtWTSwgYW5kIEknbSBzdGlsbCBmaW5kaW5nIDEwMCUgKHZpcnR1YWwp
-Cj4+Pj4+Pj4+IENQVSBsb2FkLiBJIGFsc28gdHJpZ2dlcmVkIHRoaXMgd2l0aCBzdGFibGUtMy4w
-Lng6Cj4+Pj4+Pj4+Cj4+Pj4+Pj4+IFsgIDIzNy40NTU4NDZdIFdBUk5JTkc6IENQVTogMCBQSUQ6
-IDEwNTUgYXQgLi4va2VybmVsL3hlbm9tYWkvcG9zaXgvdGltZXJmZC5jOjU3IHRpbWVyZmRfcmVh
-ZCsweDJhNi8weDM1MAo+Pj4+Pj4+PiBbICAyMzcuNDYwNzI4XSBNb2R1bGVzIGxpbmtlZCBpbjoK
-Pj4+Pj4+Pj4gWyAgMjM3LjQ2MTQ5MF0gQ1BVOiAwIFBJRDogMTA1NSBDb21tOiBzYW1wbGluZy0x
-MDUyIE5vdCB0YWludGVkIDQuOS45MCsgIzExCj4+Pj4+Pj4+IFsgIDIzNy40NjE0OTBdIEhhcmR3
-YXJlIG5hbWU6IFFFTVUgU3RhbmRhcmQgUEMgKFEzNSArIElDSDksIDIwMDkpLCBCSU9TIHJlbC0x
-LjExLjEtMC1nMDU1MWE0YmUyYy1wcmVidWlsdC5xZW11LXByb2plY3Qub3JnIDA0LzAxLzIwMTQK
-Pj4+Pj4+Pj4gWyAgMjM3LjQ2MTQ5MF0gSS1waXBlIGRvbWFpbjogWGVub21haQo+Pj4+Pj4+PiBb
-ICAyMzcuNDYxNDkwXSAgZmZmZmM5MDAwMWI3ZmRiMCBmZmZmZmZmZjgxNDVlMzk1IDAwMDAwMDAw
-MDAwMDAwMDAgMDAwMDAwMDAwMDAwMDAwMAo+Pj4+Pj4+PiBbICAyMzcuNDYxNDkwXSAgZmZmZmM5
-MDAwMWI3ZmRmMCBmZmZmZmZmZjgxMGU3MjYxIDAwMDAwMDM5M2Q2MWQxNzAgZmZmZmM5MDAwMDNl
-NjAwOAo+Pj4+Pj4+PiBbICAyMzcuNDYxNDkwXSAgMDAwMDAwMDAwMDAwMDAwMyAwMDAwMDAwMDAw
-MDAwMDA4IDAwMDA3ZjUxM2U4YzJkZTggMDAwMDAwMDAwMDAyNjIwMAo+Pj4+Pj4+PiBbICAyMzcu
-NDYxNDkwXSBDYWxsIFRyYWNlOgo+Pj4+Pj4+PiBbICAyMzcuNDYxNDkwXSAgWzxmZmZmZmZmZjgx
-NDVlMzk1Pl0gZHVtcF9zdGFjaysweGIyLzB4ZGQKPj4+Pj4+Pj4gWyAgMjM3LjQ2MTQ5MF0gIFs8
-ZmZmZmZmZmY4MTBlNzI2MT5dIF9fd2FybisweGQxLzB4ZjAKPj4+Pj4+Pj4gWyAgMjM3LjQ2MTQ5
-MF0gIFs8ZmZmZmZmZmY4MTBlNzM0ZD5dIHdhcm5fc2xvd3BhdGhfbnVsbCsweDFkLzB4MjAKPj4+
-Pj4+Pj4gWyAgMjM3LjQ2MTQ5MF0gIFs8ZmZmZmZmZmY4MTI0MjNiNj5dIHRpbWVyZmRfcmVhZCsw
-eDJhNi8weDM1MAo+Pj4+Pj4+PiBbICAyMzcuNDYxNDkwXSAgWzxmZmZmZmZmZjgxMjE3NGVjPl0g
-cnRkbV9mZF9yZWFkKzB4MTNjLzB4M2IwCj4+Pj4+Pj4+IFsgIDIzNy40NjE0OTBdICBbPGZmZmZm
-ZmZmODEyMjAyNjA+XSA/IENvQmFMdF9pb2N0bCsweDIwLzB4MjAKPj4+Pj4+Pj4gWyAgMjM3LjQ2
-MTQ5MF0gIFs8ZmZmZmZmZmY4MTIyMDI2ZT5dIENvQmFMdF9yZWFkKzB4ZS8weDEwCj4+Pj4+Pj4+
-IFsgIDIzNy40NjE0OTBdICBbPGZmZmZmZmZmODEyMzU4OTQ+XSBoYW5kbGVfaGVhZF9zeXNjYWxs
-KzB4MTg0LzB4NGIwCj4+Pj4+Pj4+IFsgIDIzNy40NjE0OTBdICBbPGZmZmZmZmZmODEyMzYyODg+
-XSBpcGlwZV9mYXN0Y2FsbF9ob29rKzB4MTgvMHgyMAo+Pj4+Pj4+PiBbICAyMzcuNDYxNDkwXSAg
-WzxmZmZmZmZmZjgxMWE5MDU0Pl0gaXBpcGVfaGFuZGxlX3N5c2NhbGwrMHg2NC8weDExMAo+Pj4+
-Pj4+PiBbICAyMzcuNDYxNDkwXSAgWzxmZmZmZmZmZjgxMDAyYjMzPl0gZG9fc3lzY2FsbF82NCsw
-eDQzLzB4MWMwCj4+Pj4+Pj4+IFsgIDIzNy40NjE0OTBdICBbPGZmZmZmZmZmODE4NDBiNDM+XSBl
-bnRyeV9TWVNDQUxMXzY0X2FmdGVyX3N3YXBncysweDVkLzB4ZGIKPj4+Pj4+Pj4gWyAgMjM3LjQ2
-MTQ5MF0gLS0tWyBlbmQgdHJhY2UgOWQyNDc2YTM4YjBjNTM3OSBdLS0tCj4+Pj4+Pj4+Cj4+Pj4+
-Pj4+IEkgd2lsbCBkZWJ1ZyB0aGlzIHRvbW9ycm93Lgo+Pj4+Pj4+Pgo+Pj4+Pj4+Cj4+Pj4+Pj4g
-SSBjYW4ndCByZXByb2R1Y2UgdGhpcywgdGhlIGxvYWRhdmcgb24gbXkgcWVtdSBpbnN0YW5jZSBj
-b25zaXN0ZW50bHkKPj4+Pj4+PiBjb252ZXJnZXMgdG8gMC4weCBmaWd1cmVzIHdoaWxlIHJ1bm5p
-bmcgdGhlIGxhdGVuY3kgdGVzdCAoMTBLaHogb3IgMUtoeiwKPj4+Pj4+PiBzYW1lKS4gSSdtIG5v
-dyBydW5uaW5nIDQuOS45MiwgYnV0IEkgZG9uJ3QgdGhpbmsgdGhpcyBzaG91bGQgbWFrZSBhbnkK
-Pj4+Pj4+PiBkaWZmZXJlbmNlLCBzaW5jZSBJIGNvdWxkIHRyYWNlIHRoZSBib3ggZW50ZXJpbmcg
-dGhlIGlkbGUgc3RhdGUgb24gLjkwLgo+Pj4+Pj4+Cj4+Pj4+Pj4gQXJlIHlvdSBydW5uaW5nIHRo
-ZSBpYTMyZW11IG1vZGUsIG9yIHg4Nl82ND8gQWxzbywgY291bGQgeW91IHNoYXJlIHlvdXIKPj4+
-Pj4+PiAuY29uZmlnIGZvciBidWlsZGluZyB0aGUgZ3Vlc3Qga2VybmVsPwo+Pj4+Pj4KPj4+Pj4+
-IENvbmZpZyBpcyB0aGUgc2FtZSBJIHNlbnQgYmFjayB0aGVuLiBVc2VybGFuZCBpcyA2NC1iaXQs
-IGNvbXBhdCBzdXBwb3J0Cj4+Pj4+PiBlbmFibGVkLgo+Pj4+Pgo+Pj4+PiBZb3Ugb25seSBzZW50
-IG1lIHRoZSBDT05GSUdfSURMRSogc2V0dGluZ3MgSSBhc2tlZCBmb3IuIEknZCBuZWVkIHRoZQo+
-Pj4+PiB3aG9sZSBmaWxlIG5vdy4KPj4+Pgo+Pj4+IFNvcnJ5LCB0aG91Z2ggSSBkaWQuIEF0dGFj
-aGVkLgo+Pj4+Cj4+Pgo+Pj4gVGhhbmtzLAo+Pj4KPj4+Pj4KPj4+Pj4+Cj4+Pj4+PiBUaGUgcmVh
-c29uIEkgc2VlIHNvIGZhcjogeG5jbG9ja19jb3JlX2xvY2FsX3Nob3QgbmV2ZXIgc2V0cyBYTklE
-TEUuCj4+Pj4+Cj4+Pj4+IEl0IGRvZXMgaGVyZSAoSSB0cmFjZWQgaXQpLiBIb3dldmVyIHRoaXMg
-c2hvdWxkIGRlcGVuZCBvbiB0aGUgTk9fSFoKPj4+Pj4gc2V0dGluZ3MsIG1pbmUgYXJlIDoKPj4+
-Pj4KPj4+Pj4gQ09ORklHX1RJQ0tfT05FU0hPVD15Cj4+Pj4+IENPTkZJR19OT19IWl9DT01NT049
-eQo+Pj4+PiAjIENPTkZJR19IWl9QRVJJT0RJQyBpcyBub3Qgc2V0Cj4+Pj4+IENPTkZJR19OT19I
-Wl9JRExFPXkKPj4+Pj4gQ09ORklHX05PX0haPXkKPj4+Pj4KPj4+Pgo+Pj4+IFNhbWUgaGVyZS4K
-Pj4+Pgo+Pj4+Pj4gSQo+Pj4+Pj4gc3VzcGVjdCB3ZSBhbHdheXMgaGF2ZSBhIHRpbWVyIHJlZ2lz
-dGVyZWQsIHRoYXQgZm9yIHRoZSBob3N0IGNsb2NrLiBTbwo+Pj4+Pgo+Pj4+PiBJbiB0aGF0IGNh
-c2UsIHRoZSB0aW1lciBpcyBub3QgaWRsZSBYZW5vbWFpLXdpc2UuCj4+Pj4+Cj4+Pj4+PiB3ZSBj
-YW4ndCBiZWNvbWUgaWRsZSB0aGlzIHdheS4gSSdtIG5vdCBldmVuIHN1cmUgdGhhdCB0aGlzIHRl
-c3QgbWFrZXMKPj4+Pj4+IHNlbnNlIGJlY2F1c2UgYSBwZW5kaW5nIFJUIHRpbWVyIGRvZXMgbm90
-IG1ha2UgYSBub24taWRsZSBzeXN0ZW0uCj4+Pj4+Pgo+Pj4+Pgo+Pj4+PiBUaGlzIGlzIG5vdCBh
-Ym91dCB0ZXN0aW5nIGZvciBDb2JhbHQgaWRsZW5lc3MsIGJ1dCBmb3IgaXRzIGNvcmUgdGltZXIK
-Pj4+Pj4gaWRsZW5lc3MsIGdpdmVuIHRoYXQgdGhlIGNvcmUgdGltZXIgaXMgc2hhcmVkIGJldHdl
-ZW4gYm90aCBrZXJuZWxzLiBXZQo+Pj4+PiB3YW50IHRvIGtub3cgd2hldGhlciB3ZSBtYXkgYWxs
-b3cgdGhlIHJlZ3VsYXIga2VybmVsIHRvIHNodXRkb3duIHRoZQo+Pj4+PiBjbG9jayBldmVudCBo
-YXJkd2FyZSBmb3IgZW50ZXJpbmcgYSBzbGVlcCBzdGF0ZS4gWE5JRExFIC0+IFhOVElNRVJJRExF
-Cj4+Pj4+IGlmIHlvdSB3aWxsLiBJIGNvdmVyZWQgdGhpcyBzdHVmZiBpbiBEb2N1bWVudGF0aW9u
-L2lwaXBlLnJzdCBsYXRlbHkuCj4+Pj4+Cj4+Pj4KPj4+PiBJIHN0aWxsIGRvbid0IHNlZSB0aGUg
-cHJvYmxlbS4gV2Ugb3duIHRoZSB0aW1lciwgTGludXggZG9lcyBub3QgcHJvZ3JhbQo+Pj4+IGl0
-LiBBbmQgbGV0dGluZyBMaW51eCBjYWxsIGhsdCBkb2VzIG5vdCBkaXN0dXJiIHRoZSB0aW1lciBw
-cm9ncmFtbWluZywKPj4+PiBpbiBtb3N0IGNhc2VzIGF0IGxlYXN0ICh0aGVyZSBtaWdodCBiZSBz
-b21lIHdlaXJkIG9sZCBicm9rZW4gaGFyZHdhcmUpLgo+Pj4KPj4+Cj4+PiBUaGUgcHJvYmxlbSBp
-cyBub3Qgd2l0aCBobHQsIGJ1dCB3aXRoIHRoZSB0aWNrIGRldmljZSBzd2l0Y2ggd2hlbiBjM3N0
-b3AKPj4+IGlzIGVuYWJsZWQgb24gdGhlIGRldmljZSwgYW5kIGdvaW5nIGlkbGUgbWVhbnMgc2h1
-dHRpbmcgaXQgZG93biBiZWZvcmUKPj4+IHN3aXRjaGluZyB0byBhIGJyb2FkY2FzdCBkZXZpY2Uu
-IFZlcnkgdW5mb3J0dW5hdGVseSwgdGhpcyBpcyBub3QgZXZlbiBhbgo+Pj4geDg2LXNwZWNpZmlj
-IGlzc3VlLCB0aGlzIG1heSBhbHNvIGhhcHBlbiBlbHNld2hlcmUsIGUuZy4gQVJNJ3MgVFdELgo+
-Pj4KPj4KPj4gU28sIHdlIGFyZSB0YWxraW5nIGFib3V0IHN5c3RlbXMgd2hlcmUgQ0xPQ0tfRVZU
-X0ZFQVRfQzNTVE9QIGlzIHNldCBvbgo+PiB0aG9zZSBjbG9ja2V2ZW50IGRldmljZXMgdGhhdCB3
-ZSB0YWtlIG92ZXIgZm9yIFhlbm9tYWkgcHVycG9zZXMsIHJpZ2h0Pwo+PiBUaGF0IGV4Y2x1ZGVz
-IHRoZSB2YXN0IG1ham9yaXR5IG9mIHN5c3RlbXMgWGVub21haSBydW5zIG9uLiBJdAo+PiBzcGVj
-aWZpY2FsbHkgZXhjbHVkZXMgYW55IG1vZGVybiB4ODYgc3lzdGVtcyB3aGljaCBub3cgaGF2ZSBB
-UkFUCj4+IHN1cHBvcnQuIEZvciB0aGUgcmVtYWluaW5nIG9uZXMsIHdlIGFsd2F5cyByZWNvbW1l
-bmRlZCB0byBoYXZlCj4+IEFDUElfUFJPQ0VTU09SIGRpc2FibGVkLCB0aHVzIGhhdmUgbm8gbmVl
-ZCBmb3IgdGhpcyBuZXcgd29ya2Fyb3VuZCBlaXRoZXIuCj4+Cj4gCj4gVGhpcyBpcyBub3QgYSB3
-b3JrIGFyb3VuZC4gVGhlIGZhY3QgdGhhdCBsaW51eCBpcyBub3QgYXdhcmUgdGhhdCBhCj4gc2Vj
-b25kIGtlcm5lbCBtYXkgY29uc2lkZXIgdGhlIHRpbWVyIGFzIGJ1c3kgaXMgYSBnZW5lcmFsIGlz
-c3VlLCBhbmQKPiBhc2tpbmcgdGhhdCBzZWNvbmQga2VybmVsIHRvIGhhdmUgaXRzIHNheSBpcyBu
-b3QgYSB3b3JrIGFyb3VuZCwgYnV0IGEKPiByZXF1aXJlbWVudC4KPiAKPj4gUmVnYXJkaW5nIHRo
-ZSBtZW50aW9uZWQgQVJNIHN5c3RlbTogSXMgdGhlcmUgbm8gZXF1aXZhbGVudCB0bwo+PiAhQUNQ
-SV9QUk9DRVNTT1IsIGkuZS4gZGlzYWJsaW5nIGRlZXAgc2xlZXAgc3RhdGVzIHdpdGhvdXQgZGVu
-eWluZyB3ZmkKPj4gY29tcGxldGVseT8gV2UgZGVmaW5pdGVseSBuZWVkIGEgbXVjaCBtb3JlIHRh
-cmdldGVkIHNvbHV0aW9uIGhlcmUuIEFueQo+PiBzdWdnZXN0aW9ucz8KPj4KPiAKPiBZZXMsIHRy
-eSB0byBmaW5kIHdoYXQgZG9lcyBub3Qgd29yayBpbiB5b3VyIGNhc2UuIEknbGwgdHJ5IHRvIHJl
-cHJvZHVjZQo+IHRvbW9ycm93IHVzaW5nIHlvdXIgS2NvbmZpZy4KCkkgdGhpbmsgeW91IGFyZSBz
-dGlsbCBvbiB0aGUgd3JvbmcgdHJhY2sgaGVyZTogeDg2IGlzIG5vdCBhdCBhbGwKYWZmZWN0ZWQg
-YnkgdGhlIGlzc3VlIHlvdSBzZWUuIFBsZWFzZSBmb2N1cyBvbiB0aGUgQVJNIHN5c3RlbSB3aGVy
-ZSB5b3UKc2F3IHRoZSBpc3N1ZSBpbiB0aGUgZmlyc3QgcGxhY2UuCgpKYW4KCi0tLS0tLS0tLS0t
-LS0tIG5leHQgcGFydCAtLS0tLS0tLS0tLS0tLQpBIG5vbi10ZXh0IGF0dGFjaG1lbnQgd2FzIHNj
-cnViYmVkLi4uCk5hbWU6IHNpZ25hdHVyZS5hc2MKVHlwZTogYXBwbGljYXRpb24vcGdwLXNpZ25h
-dHVyZQpTaXplOiAxODEgYnl0ZXMKRGVzYzogT3BlblBHUCBkaWdpdGFsIHNpZ25hdHVyZQpVUkw6
-IDxodHRwOi8veGVub21haS5vcmcvcGlwZXJtYWlsL3hlbm9tYWkvYXR0YWNobWVudHMvMjAxODA0
-MDcvYjRkYWNhODAvYXR0YWNobWVudC5zaWc+Cg==
+On 04/06/2018 07:21 PM, Jan Kiszka wrote:
+> The following changes since commit 3d21f886ffae3ffdef54a19ec53393482626a84c:
+> 
+>   ipipe-core-4.9.90-x86-6 (2018-03-26 17:36:13 +0200)
+> 
+> are available in the git repository at:
+> 
+>   git://git.xenomai.org/ipipe-jki 
+> 
+> for you to fetch changes up to 3fac4646875dbbab6969cf080a02467b578c55be:
+> 
+>   Merge tag 'v4.9.92' into for-upstream/4.9 (2018-04-06 18:45:31 +0200)
+> 
+> ----------------------------------------------------------------
+> (excluding stable merge)
+> Jan Kiszka (4):
+>       arm/ipipe: Avoid open-coded __ipipe_call_mayday
+>       ipipe: Fix root domain guard in preempt_schedule_notrace
+>       x86/ipipe: Deny JUMP_LABEL over I-pipe
+>       x86/ipipe: Disable access_ok context under I-pipe
+> 
+>  arch/arm/kernel/ipipe.c        | 3 +--
+>  arch/x86/Kconfig               | 2 +-
+>  arch/x86/include/asm/uaccess.h | 2 +-
+>  kernel/sched/core.c            | 2 +-
+>  4 files changed, 4 insertions(+), 5 deletions(-)
+> 
+> diff --git a/arch/arm/kernel/ipipe.c b/arch/arm/kernel/ipipe.c
+> index b95c8128c5de..e7642bd28871 100644
+> --- a/arch/arm/kernel/ipipe.c
+> +++ b/arch/arm/kernel/ipipe.c
+> @@ -354,8 +354,7 @@ void __ipipe_exit_irq(struct pt_regs *regs)
+>  		 * so prefer test then maybe clear over
+>  		 * test_and_clear.
+>  		 */
+> -		ipipe_clear_thread_flag(TIP_MAYDAY);
+> -		__ipipe_notify_trap(IPIPE_TRAP_MAYDAY, regs);
+> +		__ipipe_call_mayday(regs);
+>  	}
+>  }
+
+Nack. If the purpose is to prevent open coding, then you should provide
+a light __ipipe_call_mayday() which does not fiddle with the IRQ state
+uselessly. __ipipe_irq_exit does run with hard IRQs off by design.
+
+-- 
+Philippe.
+
