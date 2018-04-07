@@ -1,18 +1,20 @@
-From: Giulio Moro <g.moro@qmul.ac.uk>
-Date: Fri, 6 Apr 2018 17:43:14 +0000
-Message-ID: <DB6PR0701MB245629B3133923BDC6B4CE1DB5BA0@DB6PR0701MB2456.eurprd07.prod.outlook.com>
-References: <CA+K1mPGTJBd5OmUUhCcLVJMaHPhrwDgO34xtP6gG6qCvvw2BOw@mail.gmail.com>
- <CALLqZ8SoRLCMVuPM7Q_AoUSWUT=QxE1krXy_djUZhZDrPtTFEw@mail.gmail.com>
- <CA+K1mPHAhOt8mKMm_yDudnZxpT96N9g5+m5VCpZ09-wy2cV5VQ@mail.gmail.com>
- <CALLqZ8S95QCd99H92-S=xfM=Czke3AY728cgMenM8PnSeZ07Og@mail.gmail.com>
- <CA+K1mPHXcOwp2iBwEAKytK4yK5Oap58f3fnrn7zY5JCRgMEMNg@mail.gmail.com>,
- <CALLqZ8RE5uR7cYQLie+zXW63_r9DFa=SJ+cAuyRzk9pXcU5bdw@mail.gmail.com>
-In-Reply-To: <CALLqZ8RE5uR7cYQLie+zXW63_r9DFa=SJ+cAuyRzk9pXcU5bdw@mail.gmail.com>
-Content-Language: en-GB
-Content-Type: text/plain; charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
+References: <6aedc4bc-74b5-4a9f-5c38-036a3d7850b9@siemens.com>
+ <ee7647d4-0bfd-0933-2f10-e9fdc5da2880@web.de>
+ <54cd6098-3828-b028-3328-daf91b46d9da@xenomai.org>
+ <1edf5dcb-bc63-2f53-f91b-f821b244563c@web.de>
+ <fd85297e-17eb-add4-619e-234f7602dc44@xenomai.org>
+ <0fb957ac-ae49-2d57-9f83-8a61201b1fb1@siemens.com>
+ <57044fd9-5e29-5d04-958d-e2195536298b@xenomai.org>
+ <0356efbe-6dd5-ff57-219e-122e38b52662@siemens.com>
+From: Philippe Gerum <rpm@xenomai.org>
+Message-ID: <fefb6ea1-e962-8697-6b6d-902705611c7f@xenomai.org>
+Date: Sat, 7 Apr 2018 09:25:25 +0200
 MIME-Version: 1.0
-Subject: Re: [Xenomai] Context switch to secondary mode in xenomai tasks
+In-Reply-To: <0356efbe-6dd5-ff57-219e-122e38b52662@siemens.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai] 4.9 for x86 issue
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -21,89 +23,122 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Greg Gallagher <greg@embeddedgreg.com>, C Smith <csmithquestions@gmail.com>
-Cc: "Xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Jan Kiszka <jan.kiszka@siemens.com>
+Cc: Xenomai <xenomai@xenomai.org>
 
-or
-   cat /proc/xenomai/stat
-and see if the count in the MSW column increases for that task
-________________________________________
-From: Xenomai <xenomai-bounces@xenomai.org> on behalf of Greg Gallagher <gr=
-eg@embeddedgreg.com>
-Sent: 06 April 2018 18:41
-To: C Smith
-Cc: Xenomai@xenomai.org
-Subject: Re: [Xenomai] Context switch to secondary mode in xenomai tasks
-
-Check here:
-https://xenomai.org/2014/08/porting-a-linux-application-to-xenomai-dual-ker=
-nel/#Chasing_the_unwanted_mode_switches
-
-
-On Fri, Apr 6, 2018 at 1:39 PM, C Smith <csmithquestions@gmail.com> wrote:
-> How can we verify which tasks are switching to secondary mode? We know th=
-e
-> xml parser definitely is switching to secondary mode, setting T_WARNSW,
-> causing the application to send the SIGXCPU signal, but we don't know if
-> it's affecting the other tasks.
->
-> On Fri, Apr 6, 2018 at 10:17 AM, Greg Gallagher <greg@embeddedgreg.com>
-> wrote:
+On 04/06/2018 05:11 PM, Jan Kiszka wrote:
+> On 2018-04-06 16:11, Philippe Gerum wrote:
+>> On 04/06/2018 03:38 PM, Jan Kiszka wrote:
+>>> On 2018-04-06 08:54, Philippe Gerum wrote:
+>>>> On 04/05/2018 10:13 PM, Jan Kiszka wrote:
+>>>>> On 2018-03-27 15:12, Philippe Gerum wrote:
+>>>>>> On 03/10/2018 11:06 PM, Jan Kiszka wrote:
+>>>>>>> On 2018-03-09 08:51, Jan Kiszka wrote:
+>>>>>>>> 4.9 requires more work, I've pushed the beginning to wip/4.9 in the same
+>>>>>>>> repo.
+>>>>>>>
+>>>>>>> I started to patch further on this during my flight (wip/4.9 updated),
+>>>>>>> noticed that the 4.14-wip queue will need a little bit sysentry tweaking
+>>>>>>> as well (missing 64-bit syscall dispatching), and then had to find 4.9
+>>>>>>> in a rather unfortunate state /wrt x86-64: CPUs are no longer idling
+>>>>>>> properly. I went back to ipipe-core-4.9.24-x86-2, without a difference.
+>>>>>>>
+>>>>>>> If you should look into 4.9-x86 as you indicated, please check this.
+>>>>>>
+>>>>>> Both issues fixed in 4.9.90/x86 as pushed lately. The result has run
+>>>>>> overnight in 64bit mode, and for a couple of hours in ia32emu mode. So
+>>>>>> far so good.
+>>>>>
+>>>>> Just trying 4.9.90-x86-6 in KVM, and I'm still finding 100% (virtual)
+>>>>> CPU load. I also triggered this with stable-3.0.x:
+>>>>>
+>>>>> [  237.455846] WARNING: CPU: 0 PID: 1055 at ../kernel/xenomai/posix/timerfd.c:57 timerfd_read+0x2a6/0x350
+>>>>> [  237.460728] Modules linked in:
+>>>>> [  237.461490] CPU: 0 PID: 1055 Comm: sampling-1052 Not tainted 4.9.90+ #11
+>>>>> [  237.461490] Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS rel-1.11.1-0-g0551a4be2c-prebuilt.qemu-project.org 04/01/2014
+>>>>> [  237.461490] I-pipe domain: Xenomai
+>>>>> [  237.461490]  ffffc90001b7fdb0 ffffffff8145e395 0000000000000000 0000000000000000
+>>>>> [  237.461490]  ffffc90001b7fdf0 ffffffff810e7261 000000393d61d170 ffffc900003e6008
+>>>>> [  237.461490]  0000000000000003 0000000000000008 00007f513e8c2de8 0000000000026200
+>>>>> [  237.461490] Call Trace:
+>>>>> [  237.461490]  [<ffffffff8145e395>] dump_stack+0xb2/0xdd
+>>>>> [  237.461490]  [<ffffffff810e7261>] __warn+0xd1/0xf0
+>>>>> [  237.461490]  [<ffffffff810e734d>] warn_slowpath_null+0x1d/0x20
+>>>>> [  237.461490]  [<ffffffff812423b6>] timerfd_read+0x2a6/0x350
+>>>>> [  237.461490]  [<ffffffff812174ec>] rtdm_fd_read+0x13c/0x3b0
+>>>>> [  237.461490]  [<ffffffff81220260>] ? CoBaLt_ioctl+0x20/0x20
+>>>>> [  237.461490]  [<ffffffff8122026e>] CoBaLt_read+0xe/0x10
+>>>>> [  237.461490]  [<ffffffff81235894>] handle_head_syscall+0x184/0x4b0
+>>>>> [  237.461490]  [<ffffffff81236288>] ipipe_fastcall_hook+0x18/0x20
+>>>>> [  237.461490]  [<ffffffff811a9054>] ipipe_handle_syscall+0x64/0x110
+>>>>> [  237.461490]  [<ffffffff81002b33>] do_syscall_64+0x43/0x1c0
+>>>>> [  237.461490]  [<ffffffff81840b43>] entry_SYSCALL_64_after_swapgs+0x5d/0xdb
+>>>>> [  237.461490] ---[ end trace 9d2476a38b0c5379 ]---
+>>>>>
+>>>>> I will debug this tomorrow.
+>>>>>
+>>>>
+>>>> I can't reproduce this, the loadavg on my qemu instance consistently
+>>>> converges to 0.0x figures while running the latency test (10Khz or 1Khz,
+>>>> same). I'm now running 4.9.92, but I don't think this should make any
+>>>> difference, since I could trace the box entering the idle state on .90.
+>>>>
+>>>> Are you running the ia32emu mode, or x86_64? Also, could you share your
+>>>> .config for building the guest kernel?
+>>>
+>>> Config is the same I sent back then. Userland is 64-bit, compat support
+>>> enabled.
 >>
->> If a tasks switches to secondary mode it would act like a normal Linux
->> thread. I haven't used Xenomai 2.6 in a while but if you are seeing
->> both tasks drop to secondary mode you may want to list the resources
->> that they are sharing and how you are sharing them and then we can see
->> if something would cause mode switches. Are you seeing both threads
->> drop to secondary mode?
->>
->> -Greg
->>
->> On Fri, Apr 6, 2018 at 1:01 PM, C Smith <csmithquestions@gmail.com> wrot=
-e:
->> > The tasks manipulate shared data however they do not communicate
->> > directly.
->> > The rt_task which parses the xml document and the main rt_task are
->> > running
->> > periodically at different rates using rt_task_set_periodic.
->> >
->> > On Fri, Apr 6, 2018 at 9:54 AM, Greg Gallagher <greg@embeddedgreg.com>
->> > wrote:
->> >>
->> >> Do the tasks communicate with each other?
->> >>
->> >> -Greg
->> >>
->> >> On Fri, Apr 6, 2018 at 12:51 PM, C Smith <csmithquestions@gmail.com>
->> >> wrote:
->> >> > Hi all--
->> >> >
->> >> > Our real time application has a main rt_task which runs concurrentl=
-y
->> >> > with
->> >> > several other rt_tasks (spawned using rt_task_create) and we are
->> >> > concerned
->> >> > about a context switch in one of the tasks. The problematic task us=
-es
->> >> > libxml2 to parse an xml document sent over ethernet which seems to
->> >> > cause
->> >> > a
->> >> > switch to secondary mode. Would this also switch the other tasks we
->> >> > are
->> >> > running to secondary mode, or is it isolated?
->> >> >
->> >> > We are running Xenomai 2.6.2 and Xenomai 2.6.5 in our application.
->> >> > _______________________________________________
->> >> > Xenomai mailing list
->> >> > Xenomai@xenomai.org
->> >> > https://xenomai.org/mailman/listinfo/xenomai
->> >
->> >
->
->
+>> You only sent me the CONFIG_IDLE* settings I asked for. I'd need the
+>> whole file now.
+> 
+> Sorry, though I did. Attached.
+> 
 
-_______________________________________________
-Xenomai mailing list
-Xenomai@xenomai.org
-https://xenomai.org/mailman/listinfo/xenomai
+Thanks,
+
+>>
+>>>
+>>> The reason I see so far: xnclock_core_local_shot never sets XNIDLE.
+>>
+>> It does here (I traced it). However this should depend on the NO_HZ
+>> settings, mine are :
+>>
+>> CONFIG_TICK_ONESHOT=y
+>> CONFIG_NO_HZ_COMMON=y
+>> # CONFIG_HZ_PERIODIC is not set
+>> CONFIG_NO_HZ_IDLE=y
+>> CONFIG_NO_HZ=y
+>>
+> 
+> Same here.
+> 
+>>> I
+>>> suspect we always have a timer registered, that for the host clock. So
+>>
+>> In that case, the timer is not idle Xenomai-wise.
+>>
+>>> we can't become idle this way. I'm not even sure that this test makes
+>>> sense because a pending RT timer does not make a non-idle system.
+>>>
+>>
+>> This is not about testing for Cobalt idleness, but for its core timer
+>> idleness, given that the core timer is shared between both kernels. We
+>> want to know whether we may allow the regular kernel to shutdown the
+>> clock event hardware for entering a sleep state. XNIDLE -> XNTIMERIDLE
+>> if you will. I covered this stuff in Documentation/ipipe.rst lately.
+>>
+> 
+> I still don't see the problem. We own the timer, Linux does not program
+> it. And letting Linux call hlt does not disturb the timer programming,
+> in most cases at least (there might be some weird old broken hardware).
+
+
+The problem is not with hlt, but with the tick device switch when c3stop
+is enabled on the device, and going idle means shutting it down before
+switching to a broadcast device. Very unfortunately, this is not even an
+x86-specific issue, this may also happen elsewhere, e.g. ARM's TWD.
+
+-- 
+Philippe.
 
