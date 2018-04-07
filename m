@@ -1,12 +1,12 @@
 References: <edde814a-56f9-1853-22fe-d3b28c1aadc6@siemens.com>
-From: Philippe Gerum <rpm@xenomai.org>
-Message-ID: <fb450297-ba2f-5e5e-4bfd-cc9090a2ba47@xenomai.org>
-Date: Sat, 7 Apr 2018 18:58:50 +0200
+ <fb450297-ba2f-5e5e-4bfd-cc9090a2ba47@xenomai.org>
+From: Jan Kiszka <jan.kiszka@web.de>
+Message-ID: <fa4f1378-b342-8fb1-3923-1a4c86041272@web.de>
+Date: Sat, 7 Apr 2018 19:04:19 +0200
 MIME-Version: 1.0
-In-Reply-To: <edde814a-56f9-1853-22fe-d3b28c1aadc6@siemens.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+In-Reply-To: <fb450297-ba2f-5e5e-4bfd-cc9090a2ba47@xenomai.org>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 Subject: Re: [Xenomai] [PULL] ipipe 4.9 update
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
@@ -16,54 +16,43 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jan Kiszka <jan.kiszka@siemens.com>
+To: Philippe Gerum <rpm@xenomai.org>
 Cc: Xenomai <xenomai@xenomai.org>
 
-On 04/06/2018 07:21 PM, Jan Kiszka wrote:
-> The following changes since commit 3d21f886ffae3ffdef54a19ec53393482626a84c:
-> 
->   ipipe-core-4.9.90-x86-6 (2018-03-26 17:36:13 +0200)
-> 
-> are available in the git repository at:
-> 
->   git://git.xenomai.org/ipipe-jki 
-> 
-> for you to fetch changes up to 3fac4646875dbbab6969cf080a02467b578c55be:
-> 
->   Merge tag 'v4.9.92' into for-upstream/4.9 (2018-04-06 18:45:31 +0200)
-> 
-> ----------------------------------------------------------------
-> (excluding stable merge)
-> Jan Kiszka (4):
->       arm/ipipe: Avoid open-coded __ipipe_call_mayday
->       ipipe: Fix root domain guard in preempt_schedule_notrace
->       x86/ipipe: Deny JUMP_LABEL over I-pipe
->       x86/ipipe: Disable access_ok context under I-pipe
-> 
->  arch/arm/kernel/ipipe.c        | 3 +--
->  arch/x86/Kconfig               | 2 +-
->  arch/x86/include/asm/uaccess.h | 2 +-
->  kernel/sched/core.c            | 2 +-
->  4 files changed, 4 insertions(+), 5 deletions(-)
-> 
-> diff --git a/arch/arm/kernel/ipipe.c b/arch/arm/kernel/ipipe.c
-> index b95c8128c5de..e7642bd28871 100644
-> --- a/arch/arm/kernel/ipipe.c
-> +++ b/arch/arm/kernel/ipipe.c
-> @@ -354,8 +354,7 @@ void __ipipe_exit_irq(struct pt_regs *regs)
->  		 * so prefer test then maybe clear over
->  		 * test_and_clear.
->  		 */
-> -		ipipe_clear_thread_flag(TIP_MAYDAY);
-> -		__ipipe_notify_trap(IPIPE_TRAP_MAYDAY, regs);
-> +		__ipipe_call_mayday(regs);
->  	}
->  }
-
-Nack. If the purpose is to prevent open coding, then you should provide
-a light __ipipe_call_mayday() which does not fiddle with the IRQ state
-uselessly. __ipipe_irq_exit does run with hard IRQs off by design.
-
--- 
-Philippe.
-
+T24gMjAxOC0wNC0wNyAxODo1OCwgUGhpbGlwcGUgR2VydW0gd3JvdGU6Cj4gT24gMDQvMDYvMjAx
+OCAwNzoyMSBQTSwgSmFuIEtpc3prYSB3cm90ZToKPj4gVGhlIGZvbGxvd2luZyBjaGFuZ2VzIHNp
+bmNlIGNvbW1pdCAzZDIxZjg4NmZmYWUzZmZkZWY1NGExOWVjNTMzOTM0ODI2MjZhODRjOgo+Pgo+
+PiAgIGlwaXBlLWNvcmUtNC45LjkwLXg4Ni02ICgyMDE4LTAzLTI2IDE3OjM2OjEzICswMjAwKQo+
+Pgo+PiBhcmUgYXZhaWxhYmxlIGluIHRoZSBnaXQgcmVwb3NpdG9yeSBhdDoKPj4KPj4gICBnaXQ6
+Ly9naXQueGVub21haS5vcmcvaXBpcGUtamtpIAo+Pgo+PiBmb3IgeW91IHRvIGZldGNoIGNoYW5n
+ZXMgdXAgdG8gM2ZhYzQ2NDY4NzVkYmJhYjY5NjljZjA4MGEwMjQ2N2I1NzhjNTViZToKPj4KPj4g
+ICBNZXJnZSB0YWcgJ3Y0LjkuOTInIGludG8gZm9yLXVwc3RyZWFtLzQuOSAoMjAxOC0wNC0wNiAx
+ODo0NTozMSArMDIwMCkKPj4KPj4gLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0t
+LS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLQo+PiAoZXhjbHVkaW5nIHN0YWJsZSBtZXJnZSkK
+Pj4gSmFuIEtpc3prYSAoNCk6Cj4+ICAgICAgIGFybS9pcGlwZTogQXZvaWQgb3Blbi1jb2RlZCBf
+X2lwaXBlX2NhbGxfbWF5ZGF5Cj4+ICAgICAgIGlwaXBlOiBGaXggcm9vdCBkb21haW4gZ3VhcmQg
+aW4gcHJlZW1wdF9zY2hlZHVsZV9ub3RyYWNlCj4+ICAgICAgIHg4Ni9pcGlwZTogRGVueSBKVU1Q
+X0xBQkVMIG92ZXIgSS1waXBlCj4+ICAgICAgIHg4Ni9pcGlwZTogRGlzYWJsZSBhY2Nlc3Nfb2sg
+Y29udGV4dCB1bmRlciBJLXBpcGUKPj4KPj4gIGFyY2gvYXJtL2tlcm5lbC9pcGlwZS5jICAgICAg
+ICB8IDMgKy0tCj4+ICBhcmNoL3g4Ni9LY29uZmlnICAgICAgICAgICAgICAgfCAyICstCj4+ICBh
+cmNoL3g4Ni9pbmNsdWRlL2FzbS91YWNjZXNzLmggfCAyICstCj4+ICBrZXJuZWwvc2NoZWQvY29y
+ZS5jICAgICAgICAgICAgfCAyICstCj4+ICA0IGZpbGVzIGNoYW5nZWQsIDQgaW5zZXJ0aW9ucygr
+KSwgNSBkZWxldGlvbnMoLSkKPj4KPj4gZGlmZiAtLWdpdCBhL2FyY2gvYXJtL2tlcm5lbC9pcGlw
+ZS5jIGIvYXJjaC9hcm0va2VybmVsL2lwaXBlLmMKPj4gaW5kZXggYjk1YzgxMjhjNWRlLi5lNzY0
+MmJkMjg4NzEgMTAwNjQ0Cj4+IC0tLSBhL2FyY2gvYXJtL2tlcm5lbC9pcGlwZS5jCj4+ICsrKyBi
+L2FyY2gvYXJtL2tlcm5lbC9pcGlwZS5jCj4+IEBAIC0zNTQsOCArMzU0LDcgQEAgdm9pZCBfX2lw
+aXBlX2V4aXRfaXJxKHN0cnVjdCBwdF9yZWdzICpyZWdzKQo+PiAgCQkgKiBzbyBwcmVmZXIgdGVz
+dCB0aGVuIG1heWJlIGNsZWFyIG92ZXIKPj4gIAkJICogdGVzdF9hbmRfY2xlYXIuCj4+ICAJCSAq
+Lwo+PiAtCQlpcGlwZV9jbGVhcl90aHJlYWRfZmxhZyhUSVBfTUFZREFZKTsKPj4gLQkJX19pcGlw
+ZV9ub3RpZnlfdHJhcChJUElQRV9UUkFQX01BWURBWSwgcmVncyk7Cj4+ICsJCV9faXBpcGVfY2Fs
+bF9tYXlkYXkocmVncyk7Cj4+ICAJfQo+PiAgfQo+IAo+IE5hY2suIElmIHRoZSBwdXJwb3NlIGlz
+IHRvIHByZXZlbnQgb3BlbiBjb2RpbmcsIHRoZW4geW91IHNob3VsZCBwcm92aWRlCj4gYSBsaWdo
+dCBfX2lwaXBlX2NhbGxfbWF5ZGF5KCkgd2hpY2ggZG9lcyBub3QgZmlkZGxlIHdpdGggdGhlIElS
+USBzdGF0ZQo+IHVzZWxlc3NseS4gX19pcGlwZV9pcnFfZXhpdCBkb2VzIHJ1biB3aXRoIGhhcmQg
+SVJRcyBvZmYgYnkgZGVzaWduLgoKWW91IGFscmVhZHkgbWVyZ2VkIHRoaXMgaW50byA0LjQuIFRo
+aXMgaXMganVzdCB0aGUgc2FtZSB0aGluZyB3aXRoIHRoZQpzYW1lIHJlYXNvbmluZy4KCkphbgoK
+LS0tLS0tLS0tLS0tLS0gbmV4dCBwYXJ0IC0tLS0tLS0tLS0tLS0tCkEgbm9uLXRleHQgYXR0YWNo
+bWVudCB3YXMgc2NydWJiZWQuLi4KTmFtZTogc2lnbmF0dXJlLmFzYwpUeXBlOiBhcHBsaWNhdGlv
+bi9wZ3Atc2lnbmF0dXJlClNpemU6IDE4MSBieXRlcwpEZXNjOiBPcGVuUEdQIGRpZ2l0YWwgc2ln
+bmF0dXJlClVSTDogPGh0dHA6Ly94ZW5vbWFpLm9yZy9waXBlcm1haWwveGVub21haS9hdHRhY2ht
+ZW50cy8yMDE4MDQwNy82Nzc4NGZiZS9hdHRhY2htZW50LnNpZz4K
