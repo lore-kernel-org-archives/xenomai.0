@@ -1,26 +1,12 @@
-References: <6aedc4bc-74b5-4a9f-5c38-036a3d7850b9@siemens.com>
- <ee7647d4-0bfd-0933-2f10-e9fdc5da2880@web.de>
- <54cd6098-3828-b028-3328-daf91b46d9da@xenomai.org>
- <1edf5dcb-bc63-2f53-f91b-f821b244563c@web.de>
- <fd85297e-17eb-add4-619e-234f7602dc44@xenomai.org>
- <0fb957ac-ae49-2d57-9f83-8a61201b1fb1@siemens.com>
- <57044fd9-5e29-5d04-958d-e2195536298b@xenomai.org>
- <0356efbe-6dd5-ff57-219e-122e38b52662@siemens.com>
- <fefb6ea1-e962-8697-6b6d-902705611c7f@xenomai.org>
- <1a70c4b6-b7a5-d4fb-b1ca-f6fc03828e9d@siemens.com>
- <a4d4d122-b18b-6adb-0f71-409d72479380@xenomai.org>
- <a7be31f8-18c3-1b97-6120-1e18776f9fed@web.de>
- <ebe2a8c6-cb7b-8e1f-57e7-35e316906257@xenomai.org>
- <3c64bbb8-3578-ac24-9c9f-6842be71f8b7@web.de>
- <083f82c5-bf4a-0a96-de00-2512ad26318a@xenomai.org>
-From: Jan Kiszka <jan.kiszka@web.de>
-Message-ID: <94850109-bb74-8946-8fa3-a151b8d2480c@web.de>
-Date: Sat, 7 Apr 2018 19:33:19 +0200
+From: "Jerry W. Rice" <jerrywrice@fabnexus.com>
+Date: Sat, 7 Apr 2018 12:22:00 -0700
+Message-ID: <000301d3cea5$b4e97200$1ebc5600$@fabnexus.com>
 MIME-Version: 1.0
-In-Reply-To: <083f82c5-bf4a-0a96-de00-2512ad26318a@xenomai.org>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Subject: Re: [Xenomai] 4.9 for x86 issue
+Content-Language: en-us
+Content-Type: text/plain;
+	charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai] xenomai.org code I-Pipe patch download page issue
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -29,38 +15,15 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Philippe Gerum <rpm@xenomai.org>
-Cc: Xenomai <xenomai@xenomai.org>
+To: xenomai@xenomai.org
 
-T24gMjAxOC0wNC0wNyAxOToyMCwgUGhpbGlwcGUgR2VydW0gd3JvdGU6Cj4gT2ssIHNvIGhlcmUg
-aXMgdGhlIHNpdHVhdGlvbiBhcyBvZiBub3c6IHlvdSBzYXkgdGhhdCB0aGlzIGFwcHJvYWNoIGlz
-Cj4gc3R1cGlkLCBJJ20gc2F5aW5nIHRoYXQgSSB0cmFjZWQgaXQgd29ya2luZyBvbiB4ODYgYW5k
-IEFSTS4gSSdtIGFsc28KPiBzYXlpbmcgdGhhdCB0aGUgZ2VuZXJhbCBpc3N1ZSBvZiBsaW51eCBk
-ZWZpbmluZyBhbG9uZSB3aGF0IHRoZSBpZGxlCj4gc3RhdGUgbWlnaHQgYmUgaGFzIHRvIGJlIGFk
-ZHJlc3NlZC4KPiAKPiBTbyBwbGVhc2UgcHJvdmlkZSBhbiBleHBsYW5hdGlvbiB0byB0aGUgYnVn
-IHlvdSBzZWUgb24geW91ciBlbmQsIEknbGwKPiB0cnkgdG8gZmlndXJlIG91dCB3aHkgSSBjYW4n
-dCBzZWUgdGhhdCBoZXJlLCBhbmQgbWFrZSBhbiBpbmZvcm1lZAo+IG9waW5pb24gYWJvdXQgd2hl
-dGhlciB0aGUgY3VycmVudCBhcHByb2FjaCBpcyB3cm9uZyBvciB0b28gbGltaXRlZCBpbgo+IGxv
-Z2ljLCB3aGljaCBpcyBkaWZmZXJlbnQuCj4gCj4gRHJvcHBpbmcgY29kZSBhcyBhIGtuZWUgamVy
-ayByZWFjdGlvbiBzaW1wbHkgYmVjYXVzZSBpdCBkb2VzIG5vdCB3b3JrCj4gZm9yIHlvdXIgY2Fz
-ZSBtYXkgbm90IGJlIHRoZSBiZXN0IG9wdGlvbi4KCkxvb2ssIHRoZXJlIGFyZSBhIGNvdXBsZSBv
-ZiB0aGluZ3MgZmlzaHkgd2l0aCB0aGlzIGFwcHJvYWNoOgotIHRoZXJlIGlzIG5vIGRvY3VtZW50
-YXRpb24gb2YgYSBwb3NpdGl2ZSBpbXBhY3Qgb24geDg2IChkaWQgeW91IG1lYXN1cmUKICBoaWdo
-IGxhdGVuY3kgd2l0aG91dCB0aGlzIGNoYW5nZT8gT24gd2hpY2ggaGFyZHdhcmU/IFdpdGggd2hp
-Y2gKICAuY29uZmlnKQotIHRoZXJlIGlzIG5vIHJlYXNvbmluZyB3aHkgd2Ugc3VkZGVubHkgbmVl
-ZCB0aGlzIHNpbmNlIDQuOSAob24geDg2KQotIGl0IGRvZXMgbm90IGFkZHJlc3MgdGhlIGlzc3Vl
-IChzb21lIHRpbWVyIHN0b3BwaW5nIGluIGRlZXAgc2xlZXAKICBzdGF0ZSkgYXQgaXRzIHJvb3Qg
-KExpbnV4IHRlbGxpbmcgaGFyZHdhcmUgdG8gZW50ZXIgdGhhdCAqc3BlY2lmaWMqCiAgc2xlZXAg
-c3RhdGUpCgpBZ2FpbiwgSSBjYW5ub3QgdGFsayBhYm91dCBBUk0gYXMgSSBkaWRuJ3QgbG9vayBv
-biB0aGF0IGVuZCB5ZXQsIGJ1dCBJCmNhbiB0ZWxsIHlvdSBmb3IgeDg2IHRoYXQgLSBpZiB0aGlz
-IGlzIHJlYWxseSBqdXN0IGFib3V0IEMzIHZzLiB0aGUgQVBJQwp0aW1lciAtIHlvdSBhcmUgaHVu
-dGluZyBhIGdob3N0LCBhIG5vbi1leGlzdGluZyBwcm9ibGVtLiBBdCB0aGUgc2FtZQp0aW1lLCB0
-aGUgYXBwcm9hY2ggY2F1c2VkIGEgcmVncmVzc2lvbiBvbiB4ODYgdGhhdCBvbmUgbWF5IG9ubHkg
-c2VlIHdpdGgKcHJvcGVyIGluc3RydW1lbnRhdGlvbiBpbiBwbGFjZSAobGlrZSBydW5uaW5nIGlu
-IGEgVk0gb3IgaGF2aW5nIGEgcG93ZXIKbWV0ZXIgYXR0YWNoZWQgdG8gdGhlIGhhcmR3YXJlKSBi
-ZWNhdXNlIGl0IGFsd2F5cyBwcmV2ZW50cyBpZGxlbmVzcyB0aGVyZS4KCkphbgoKLS0tLS0tLS0t
-LS0tLS0gbmV4dCBwYXJ0IC0tLS0tLS0tLS0tLS0tCkEgbm9uLXRleHQgYXR0YWNobWVudCB3YXMg
-c2NydWJiZWQuLi4KTmFtZTogc2lnbmF0dXJlLmFzYwpUeXBlOiBhcHBsaWNhdGlvbi9wZ3Atc2ln
-bmF0dXJlClNpemU6IDE4MSBieXRlcwpEZXNjOiBPcGVuUEdQIGRpZ2l0YWwgc2lnbmF0dXJlClVS
-TDogPGh0dHA6Ly94ZW5vbWFpLm9yZy9waXBlcm1haWwveGVub21haS9hdHRhY2htZW50cy8yMDE4
-MDQwNy9mM2RmNTdjNy9hdHRhY2htZW50LnNpZz4K
+On the Code I-Pipe patch down-load page for Arm-64, the more recent Arm-64
+patches are placed in the 'older' (lower page), and the older patches are
+shown on the outer (top) page. 
+
+ 
+
+(Thanks for the all the cool work!)
+
+ 
+
