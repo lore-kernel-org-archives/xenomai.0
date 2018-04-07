@@ -1,16 +1,13 @@
-References: <5AC116C9.6040809@freyder.net>
- <15a83f1d-7785-11c9-5f64-c09cb035ff10@xenomai.org>
- <5AC24433.30107@freyder.net>
- <6cacabd8-af4c-27e0-1b62-34ce73d7b933@xenomai.org>
-From: Steve Freyder <steve@freyder.net>
-Message-ID: <5AC25632.90608@freyder.net>
-Date: Mon, 2 Apr 2018 11:11:30 -0500
+References: <CA+K1mPGTJBd5OmUUhCcLVJMaHPhrwDgO34xtP6gG6qCvvw2BOw@mail.gmail.com>
+From: Philippe Gerum <rpm@xenomai.org>
+Message-ID: <77777f1c-8678-51e0-3a40-919305fd665b@xenomai.org>
+Date: Sat, 7 Apr 2018 09:57:06 +0200
 MIME-Version: 1.0
-In-Reply-To: <6cacabd8-af4c-27e0-1b62-34ce73d7b933@xenomai.org>
-Content-Type: text/plain; charset=utf-8; format=flowed
+In-Reply-To: <CA+K1mPGTJBd5OmUUhCcLVJMaHPhrwDgO34xtP6gG6qCvvw2BOw@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] Possible Xenomai fuse filesystem/registry queue
- status files issue?
+Subject: Re: [Xenomai] Context switch to secondary mode in xenomai tasks
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -19,82 +16,26 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: C Smith <csmithquestions@gmail.com>, xenomai@xenomai.org
 
-On 4/2/2018 10:20 AM, Philippe Gerum wrote:
-> On 04/02/2018 04:54 PM, Steve Freyder wrote:
->> On 4/2/2018 8:41 AM, Philippe Gerum wrote:
->>> On 04/01/2018 07:28 PM, Steve Freyder wrote:
->>>> Greetings again.
->>>>
->>>> As I understand it, for each rt_queue there's supposed to be a
->>>> "status file" located in the fuse filesystem underneath the
->>>> "/run/xenomai/user/session/pid/alchemy/queues" directory, with
->>>> the file name being the queue name.  This used to contain very
->>>> useful info about queue status, message counts, etc.  I don't know
->>>> when it broke or whether it's something I'm doing wrong but I'm
->>>> now getting a "memory exhausted" message on the console when I
->>>> attempt to do a "cat" on the status file.
->>>>
->>>> Here's a small C program that just creates a queue, and then does
->>>> a pause to hold the accessor count non-zero.
->>>>
->>> <snip>
->>>
->>>> The resulting output (logged in via the system console):
->>>>
->>>> # sh qtest.sh
->>>> + sleep 1
->>>> + ./qc --mem-pool-size=64M --session=mysession foo
->>>> + find /run/xenomai
->>>> /run/xenomai
->>>> /run/xenomai/root
->>>> /run/xenomai/root/mysession
->>>> /run/xenomai/root/mysession/821
->>>> /run/xenomai/root/mysession/821/alchemy
->>>> /run/xenomai/root/mysession/821/alchemy/tasks
->>>> /run/xenomai/root/mysession/821/alchemy/tasks/task@1[821]
->>>> /run/xenomai/root/mysession/821/alchemy/queues
->>>> /run/xenomai/root/mysession/821/alchemy/queues/foo
->>>> /run/xenomai/root/mysession/system
->>>> /run/xenomai/root/mysession/system/threads
->>>> /run/xenomai/root/mysession/system/heaps
->>>> /run/xenomai/root/mysession/system/version
->>>> + qfile='/run/xenomai/*/*/*/alchemy/queues/foo'
->>>> + cat /run/xenomai/root/mysession/821/alchemy/queues/foo
->>>> memory exhausted
->>>>
->>>> At this point, it hangs, although SIGINT usually terminates it.
->>>>
->>>> I've seen some cases where SIGINT won't terminate it, and a reboot is
->>>> required to clean things up.  I see this message appears to be logged
->>>> in the obstack error handler.  I don't think I'm running out of memory,
->>>> which makes me think "heap corruption".  Not much of an analysis!  I did
->>>> try varying queue sizes and max message counts - no change.
->>>>
->>> I can't reproduce this. I would suspect a rampant memory corruption too,
->>> although running the test code over valgrind (mercury build) did not
->>> reveal any issue.
->>>
->>> - which Xenomai version are you using?
->>> - cobalt / mercury ?
->>> - do you enable the shared heap when configuring ? (--enable-pshared)
->>>
->> I'm using Cobalt.  uname -a reports:
->>
->> Linux sdftest 4.1.18_C01571-15S00-00.000.zimg+83fdace666 #2 SMP Fri Mar
->> 9 11:07:52 CST 2018 armv7l GNU/Linux
->>
->> Here is the config dump:
->>
->> CONFIG_XENO_PSHARED=1
-> Any chance you could have some leftover files in /dev/shm from aborted
-> runs, which would steal RAM?
->
-I've been rebooting before each test run, but I'll keep that in mind for
-future testing.
+On 04/06/2018 06:51 PM, C Smith wrote:
+> Hi all--
+> 
+> Our real time application has a main rt_task which runs concurrently with
+> several other rt_tasks (spawned using rt_task_create) and we are concerned
+> about a context switch in one of the tasks. The problematic task uses
+> libxml2 to parse an xml document sent over ethernet which seems to cause a
+> switch to secondary mode. Would this also switch the other tasks we are
+> running to secondary mode, or is it isolated?
 
-Sounds like I need to try rolling back to an older build, I have a 3.0.5
-and a 3.0.3 build handy.
+This is isolated in the sense that only the xml parser task will switch
+to secondary mode.
 
+However, this may still cause a priority inversion for any rt thread
+which synchronizes with that switching thread, since the former may end
+up waiting for a wake up event coming from the latter, which might be
+delayed until it switches back to rt mode.
+
+-- 
+Philippe.
 
