@@ -1,18 +1,10 @@
-References: <20180402162629.Horde.aGvVeyDe3lwwFExaCtLehqi@webmail.uam.es>
- <CALLqZ8TSMOAt0hVKf9UWBVwp4t2LWKkLYOjAWyhywLHAc5oFRg@mail.gmail.com>
- <d5181033-d020-34bb-8b1b-8a261c885f75@xenomai.org>
- <20180403122123.Horde.D2Qo7ce4c1LHdQcBYRZNBmd@webmail.uam.es>
- <53039d03-c118-3c20-e7cd-eefc264919d7@xenomai.org>
- <20180405152518.Horde.-CDL8q6su7PhMYoQTU0iWhp@webmail.uam.es>
- <CALLqZ8RvHzjMnZWbLhRzc1nRFA2t9XJWf8OghfU7ivXYGeDUfg@mail.gmail.com>
-From: Philippe Gerum <rpm@xenomai.org>
-Message-ID: <1c628d16-62c7-bcb5-fe41-2cc9c0a5ebf6@xenomai.org>
-Date: Sun, 8 Apr 2018 18:18:48 +0200
+Date: Sun, 08 Apr 2018 12:57:06 -0400
+Message-ID: <6m2m4tbt7p9f2b8p30a2ptbt.1523206626964@embeddedgreg.com>
+From: Greg Gallagher <greg@embeddedgreg.com>
+In-Reply-To: <1c628d16-62c7-bcb5-fe41-2cc9c0a5ebf6@xenomai.org>
 MIME-Version: 1.0
-In-Reply-To: <CALLqZ8RvHzjMnZWbLhRzc1nRFA2t9XJWf8OghfU7ivXYGeDUfg@mail.gmail.com>
 Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: base64
 Subject: Re: [Xenomai] Context switching with POSIX skin
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
@@ -22,42 +14,32 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Greg Gallagher <greg@embeddedgreg.com>, rodrigo.amaducci@uam.es
-Cc: "Xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Philippe Gerum <rpm@xenomai.org>, "rodrigo.amaducci@uam.es" <rodrigo.amaducci@uam.es>
+Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On 04/06/2018 04:00 PM, Greg Gallagher wrote:
-> I'll look into it this weekend and see if I can get the demo running
-> on Zynq or one of my boards.
-> 
-> On Thu, Apr 5, 2018 at 9:25 AM,  <rodrigo.amaducci@uam.es> wrote:
->> Quoting Philippe Gerum <rpm@xenomai.org>:
->>>
->>>
->>> You need to enable the ipc/xddp driver (CONFIG_XENO_DRIVERS_RTIPC_XDDP)
->>> in your kernel.
->>>
->>> --
->>> Philippe.
->>
->>
->> I have recompiled my kernel a couple of times activating all the RTIPC
->> drivers but I'm still getting the same error when running xddp-echo.
->>
->> Rodrigo
->>
->>
->>
->>
->>
-> 
+VGVzdGVkIG9uIHp5bnEgenlibyBhbmQgbWljcm96ZWQsIHRoZSBkZW1vIHdvcmtzLiBJIGJ1aWx0
+IGl0IGZyb20gc3RhYmxlIHVzaW5nIHRoZSA0LjE0IGlwaXBlLWFybSByZXBvIGFuZCBtb2Rwcm9i
+ZWQgdGhlIG1vZHVsZSBhdCBib290LiBBcmUgeW91IHVzaW5nIGEgbW9kdWxlIG9yIGJ1aWxkaW5n
+IGl0IGludG8gdGhlIGtlcm5lbD8gCgotR3JlZwoKwqAgT3JpZ2luYWwgTWVzc2FnZSDCoApGcm9t
+OiBycG1AeGVub21haS5vcmcKU2VudDogQXByaWwgOCwgMjAxOCAxMjoxOCBQTQpUbzogZ3JlZ0Bl
+bWJlZGRlZGdyZWcuY29tOyByb2RyaWdvLmFtYWR1Y2NpQHVhbS5lcwpDYzogeGVub21haUB4ZW5v
+bWFpLm9yZwpTdWJqZWN0OiBSZTogW1hlbm9tYWldIENvbnRleHQgc3dpdGNoaW5nIHdpdGggUE9T
+SVggc2tpbgoKT24gMDQvMDYvMjAxOCAwNDowMCBQTSwgR3JlZyBHYWxsYWdoZXIgd3JvdGU6Cj4g
+SSdsbCBsb29rIGludG8gaXQgdGhpcyB3ZWVrZW5kIGFuZCBzZWUgaWYgSSBjYW4gZ2V0IHRoZSBk
+ZW1vIHJ1bm5pbmcKPiBvbiBaeW5xIG9yIG9uZSBvZiBteSBib2FyZHMuCj4gCj4gT24gVGh1LCBB
+cHIgNSwgMjAxOCBhdCA5OjI1IEFNLMKgIDxyb2RyaWdvLmFtYWR1Y2NpQHVhbS5lcz4gd3JvdGU6
+Cj4+IFF1b3RpbmcgUGhpbGlwcGUgR2VydW0gPHJwbUB4ZW5vbWFpLm9yZz46Cj4+Pgo+Pj4KPj4+
+IFlvdSBuZWVkIHRvIGVuYWJsZSB0aGUgaXBjL3hkZHAgZHJpdmVyIChDT05GSUdfWEVOT19EUklW
+RVJTX1JUSVBDX1hERFApCj4+PiBpbiB5b3VyIGtlcm5lbC4KPj4+Cj4+PiAtLQo+Pj4gUGhpbGlw
+cGUuCj4+Cj4+Cj4+IEkgaGF2ZSByZWNvbXBpbGVkIG15IGtlcm5lbCBhIGNvdXBsZSBvZiB0aW1l
+cyBhY3RpdmF0aW5nIGFsbCB0aGUgUlRJUEMKPj4gZHJpdmVycyBidXQgSSdtIHN0aWxsIGdldHRp
+bmcgdGhlIHNhbWUgZXJyb3Igd2hlbiBydW5uaW5nIHhkZHAtZWNoby4KPj4KPj4gUm9kcmlnbwo+
+Pgo+Pgo+Pgo+Pgo+Pgo+IAoKRldJVywgSSBjYW4gY29uZmlybSB0aGF0IGFsbCB0aGUgUlRJUEMg
+ZGVtb3MgZnJvbSB0aGUgc3RhYmxlLTMuMC54IGFuZAotbmV4dCBicmFuY2hlcyBkbyB3b3JrLCBw
+cm92aWRlZCB0aGUgZHJpdmVyIGlzIGVuYWJsZWQgaW4gdGhlIGtlcm5lbApjb25maWd1cmF0aW9u
+IC0gYW5kIG1vZHByb2JlZCBpZiBtb2R1bGFyIGJlZm9yZSB0aGUgdGVzdHMgYXJlIHN0YXJ0ZWQu
+CgpUZXN0ZWQgb24geDg2IGFuZCBzb21lIEFSTSBTb0MsIGJ1dCBzaW5jZSB0aGlzIGlzIHB1cmVs
+eSBnZW5lcmljIGNvZGUsCnRoZSBhcmNoaXRlY3R1cmUgaXMgdmVyeSB1bmxpa2VseSB0byBoYXZl
+IGFueSBpbXBhY3Qgb24gdGhpcyBpc3N1ZS4KCi0tIApQaGlsaXBwZS4K
 
-FWIW, I can confirm that all the RTIPC demos from the stable-3.0.x and
--next branches do work, provided the driver is enabled in the kernel
-configuration - and modprobed if modular before the tests are started.
-
-Tested on x86 and some ARM SoC, but since this is purely generic code,
-the architecture is very unlikely to have any impact on this issue.
-
--- 
-Philippe.
 
