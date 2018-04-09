@@ -1,17 +1,13 @@
-From: Lange Norbert <norbert.lange@andritz.com>
-Date: Mon, 9 Apr 2018 08:54:29 +0000
-Message-ID: <99BAB48E90E86D42AD41F0BCE3225AEB019FC068AB@GRZSMS582.andritz.com>
-References: <99BAB48E90E86D42AD41F0BCE3225AEB019FC0631A@GRZSMS582.andritz.com>
- <bbb33d4c-e8d0-b383-0424-d99592486988@siemens.com>
- <99BAB48E90E86D42AD41F0BCE3225AEB019FC066DF@GRZSMS582.andritz.com>
- <20180406104729.0a46cb24@mmd1pvb1c.ad001.siemens.net>
- <c4ba316c-946d-3247-e291-8fb5a9d1a83e@alaxarxa.net>
-In-Reply-To: <c4ba316c-946d-3247-e291-8fb5a9d1a83e@alaxarxa.net>
-Content-Language: en-US
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+Date: Mon, 09 Apr 2018 11:59:19 +0200
+Message-ID: <20180409115919.Horde.F6jK7go7kRv9owEvxxe7yxw@webmail.uam.es>
+From: rodrigo.amaducci@uam.es
+References: <1c628d16-62c7-bcb5-fe41-2cc9c0a5ebf6@xenomai.org>
+ <6m2m4tbt7p9f2b8p30a2ptbt.1523206626964@embeddedgreg.com>
+In-Reply-To: <6m2m4tbt7p9f2b8p30a2ptbt.1523206626964@embeddedgreg.com>
+Content-Type: text/plain; charset=utf-8; format=flowed; DelSp=Yes
 MIME-Version: 1.0
-Subject: Re: [Xenomai] building Xenomai Apps with CMake (RFC)
+Content-Disposition: inline
+Subject: Re: [Xenomai] Context switching with POSIX skin
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -20,80 +16,53 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Leopold Palomo-Avellaneda <leo@alaxarxa.net>, Henning Schild <henning.schild@siemens.com>
-Cc: Jan Kiszka <jan.kiszka@siemens.com>, "Xenomai (xenomai@xenomai.org)" <xenomai@xenomai.org>
+To: Greg Gallagher <greg@embeddedgreg.com>, rpm@xenomai.org
+Cc: xenomai@xenomai.org
 
-Pi0gbm9uZSAoLS1uby1hdXRvLWluaXQpDQogPi0gYm9vdHN0cmFwLXBpYy5vICgtLWF1dG8taW5p
-dC1zb2xpYikNCiA+LSBib290c3RyYXAubyAoLS1hdXRvLWluaXQgb3IgZGVmYXVsdCkNCiA+DQog
-PlRvIG1lIHRoZSBxdWVzdGlvbnMgdGhlbiBhcmU6DQogPi0gVGhlIGNvZGUgdGhlcmUgY291bGQg
-YmUgZW5jYXBzdWxhdGVkIGluIGEgaGVhZGVyPw0KSSBkb250IHNlZSBob3cgaXQgY291bGQgbm90
-LCBpdCBqdXN0IHVzZXMgcHVibGljIEFQSQ0KID4tIG9yIGNvdWxkIGJlIHB1dCBpbiBhIGxpYj8N
-CkFzIHN0YXRpYyBsaWI6IE5vdCBhIGdvb2QgaWRlYSwgYXMgeW91IHdvdWxkIHRoZW4gbmVlZCB0
-byBwdWxsIHRoZSBjb2RlIGluIChsZCBqdXN0IGxpbmtzIG9iamVjdHMgd2hpY2ggaGF2ZSByZWZl
-cmVuY2VkIHN5bWJvbHMpDQpBcyBkeW5hbWljIGxpYjogTm90IGVudGlyZWx5IHBvc3NpYmxlLCBh
-bmQgZXZlbiBsZXNzIGZsZXhpYmxlIHRoYW4gbm93LiBIb3dldmVyIGhlbHBlci1jb2RlIHNob3Vs
-ZCBiZSBwdXQgdGhlcmUgKHBhcnNpbmcgIi9wcm9jL3NlbGYvY21kbGluZSIpDQogPi0gb25seSBj
-b3VsZCBiZSBkb25lIGluIHRoaXMgd2F5Pw0KDQpJIGFjdHVhbGx5IGFkZGVkIHRoZSAicmVndWxh
-ciIgYm9vc3RzdHJhcCBsaW5raW5nIGluIHRoZSBvYmplY3QgZmlsZSwNCmh0dHBzOi8vZ2l0aHVi
-LmNvbS9ub2xhbmdlL2NtYWtlX3hlbm9tYWkvYmxvYi9tYXN0ZXIvZXhhbXBsZXMvcG9zaXgvY3lj
-bGljdGVzdC9DTWFrZUxpc3RzLnR4dA0KTm90ZSB0aGF0IHRoaXMgd2lsbCBhdXRvbWF0aWNhbGx5
-IGRlY2lkZSB3aGV0aGVyIHRvIHVzZSB0aGUgYm9vdHN0cmFwLm8gb3IgYm9vdHN0cmFwLXBpYy5v
-IHZhcmlhbnQuDQoNCkJ1dCBJIGRvbuKAmXQgbGlrZSBob3cgdGhpcyBpcyBkb25lLiBZb3UgY291
-bGQgdXNlIGFueSBraW5kIG9mIGRpZmZlcmVudCBjb21waWxlcmZsYWdzLA0KYW5kIHNlcGFyYXRp
-bmcgdGhlICJib290c3RyYXBwaW5nIiBpdHNlbGYgKGNvbmZpZ3VyaW5nIFhlbm9tYWkgKyBwcm9t
-b3RpbmcgdGhlIG1haW4gdGhyZWFkKQ0KZnJvbSB0aGUgIm90aGVyIiBzdHVmZiAoaGFuZGxpbmcg
-Ii0taGVscCIgYW5kIGFkZGluZyBhIG1haW4gbWV0aG9kKSB3b3VsZCBnaXZlIHlvdQ0KYSBsb3Qg
-ZmxleGliaWxpdHkuDQoNCj5SZWdhcmRpbmcgdG8gQ01ha2UsIEkgc29sdmVkIHRoaXMgcGFzc2lu
-ZyB0aGlzIGFyZ3VtZW50cyB0byBWQVJTIHRvIGNtYWtlLiBTbywNCiA+dGdlIEZpbmRYZW5vbWFp
-IHdhcyBhIHNpbXBsZSB3cmFwcGVyIHRvIHhlbm8tY29uZmlnIHRvIG9idGFpbiB0aGUgY29ycmVj
-dA0KID52YWx1ZXMNCiA+dG8gYnVpbGQgdGhlIHhlbm8gYXBwbGljYXRpb24uDQoNClRoZSBWQVJT
-IGFwcHJvYWNoIGlzIGZyYWdpbGUsIGFuZCB3b24ndCBwbGF5IG5pY2UgaWYgeW91IGhhdmUgYSBw
-cm9qZWN0DQp3aGVyZSB5b3UgYnVpbGQgbXVsdGlwbGUgYXBwcy9saWJyYXJpZXMgLSBzb21lIG5v
-dCB1c2luZyBYZW5vbWFpLg0KSnVzdCB0aGluayBvZiB1bml0LXRlc3RzIHRoYXQgcnVuIG9uIHBs
-YWluIExpbnV4Lg0KVGhlICJtb2Rlcm4iIENNYWtlIGFwcHJvYWNoIGlzIHRvIGV4cG9zZSB0YXJn
-ZXRzIHlvdSBjYW4gbGluayB0by4NCg0KID4NCiA+SWYgbXkgbWVtb3J5IGRvZXNuJ3QgZmFpbCBp
-dCB3YXMgc29tZXRoaW5nIHRoYXQgR2lsbGVzIHJlY29tbWVuZCBzb21lIHllYXJzDQogPmFnby4N
-CiA+VGhlIGJlc3Qgd2F5IHRvIGJ1aWxkIGEgeGVub21haSBhcHBsaWNhdGlvbiBpcyB0byB1c2Ug
-dGhlIHhlbm8tY29uZmlnIG91dHB1dCB0bw0KID5vYnRhaW4gdGhlIGNvcnJlY3QgdmFsdWVzLg0K
-DQpUaGUgYmVzdCB3YXkgaXN0IHRvICJjb25jZW50cmF0ZSIgdGhlIGtub3dsZWRnZSBpbiB0aGUg
-WGVub21haSBwcm9qZWN0LA0Kc28gWGVub21haS00IHdpbGwgKGhvcGVmdWxseSkganVzdCBidWls
-ZCB3aXRoIHlvdXIgcHJvamVjdC4NClRoaXMgZG9lcyBub3QgaGF2ZSB0byBiZSBpc29sYXRlZCB0
-byB4ZW5vLWNvbmZpZywgd2hpY2ggaGFzIHNvbWUgcHJvYmxlbXMNCklmIHlvdSBoYXZlIGEgcmVs
-b2NhdGFibGUgYnVpbGQgZW52aXJvbm1lbnQgKGFuZCBzaG91bGQgbm90IGNvbnRhaW4gYmFzZWxp
-bmUgYW5kIG9wdGltaXphdGlvbiAgZmxhZ3MgZnJvbSB0aGUgdG9vbGNoYWluKQ0KDQogPg0KID5T
-bywgbXkgcG9pbnQgb2YgdmlldyBpcyB0aGF0IHlvdSBkb24ndCBoYXZlIHRvIG1vZGlmeSBhbnl0
-aGluZyBmcm9tIFhlbm9tYWkgdG8NCiA+dXNlIGl0IHdpdGggQ01ha2UuIEFub3RoZXIgdGhpbmcg
-aXMgdGhlIGJvb3RzdHJhcCBzdHVmZiB0aGF0IG1heWJlIGl0J3MgYSBiaXQNCiA+dWdseS4NCg0K
-Tm8sIHlvdSBkb24ndCBoYXZlIHRvLCBidXQgc29tZSBjaGFuZ2VzIGNvdWxkIG1ha2UgaXQgbW9y
-ZSByb2J1c3QsDQpuYW1lbHkgcHV0dGluZyB0aGUgYm9vdHN0cmFwIGZ1bmN0aW9uYWxpdHkgaW4g
-YSBoZWFkZXINCmFuZCBoYXZpbmcgdGhlIGZsYWdzIGFjY2Vzc2libGUgd2l0aG91dCBuZWVkaW5n
-IHRvIGV4ZWN1dGUgYSB0b29sIChldmVuIGlmIGl04oCZcyBhIHNoZWxsLXNjcmlwdCkuDQoNCkkg
-YW0gc3RpbGwgdG9ybiBiZXR3ZWVuIHdoZXRoZXIgYSBGaW5kWGVub21haSB3b3VsZCBiZSBmaXR0
-aW5nIGJldHRlciBpbiBDTWFrZSBvciBYZW5vbWFpLg0KDQpJbiBDTWFrZSBpdCB3b3VsZCBiZSBl
-YXN5IHRvIHVzZSwgZXZlbiB3aXRoIGFscmVhZHkgcmVsZWFzZWQgWGVub21haSBWZXJzaW9ucywN
-CmFuZCBlYXN5IHRvIGp1c3QgYWRkIGludG8geW91ciBvd24gcHJvamVjdCBzbyB5b3UgZG9u4oCZ
-dCBuZWVkIGEgbm90LXlldC1yZWxlYXNlZCBDTWFrZS4NCkl0IG1pZ2h0IHRvdGFsbHkgYnJlYWsg
-ZG93biBpbiB0aGUgZnV0dXJlLCBzaG91bGQgWGVub21haSAoNCkgaGF2ZSBkcmFzdGljYWwgY2hh
-bmdlcy4NCg0KSW4gWGVub21haSwgaXQgd291bGQgYmUgZWFzaWVyIHRvIG1haW50YWluIGFuZCBn
-ZXR0aW5nIG91dCBpbmZvcm1hdGlvbiBsaWtlIHRoZSB2ZXJzaW9uDQpjb3VsZCBiZSBqdXN0IGly
-b25lZCBpbiB3aGVuIGluc3RhbGxpbmcuIEl0IHdvdWxkIG5lZWQgbW9yZSBjaGFuZ2VzIHRvIFhl
-bm9tYWkgaG93ZXZlciwNCmFuZCB0aGlzIGRvZXNu4oCZdCBoZWxwIGFueW9uZSB3aXRoIGFuIGFs
-cmVhZHkgcmVsZWFzZWQgdmVyc2lvbiwgc28geW91IHdpbGwgbmVlZCBhbiBhZGRpdGlvbmFsDQpN
-ZXRob2Qgb2Ygc3VwcG9ydGluZyB0aG9zZS4NCg0KTm9yYmVydA0KX19fX19fX19fX19fX19fX19f
-X19fX19fX19fX19fX18NCg0KVGhpcyBtZXNzYWdlIGFuZCBhbnkgYXR0YWNobWVudHMgYXJlIHNv
-bGVseSBmb3IgdGhlIHVzZSBvZiB0aGUgaW50ZW5kZWQgcmVjaXBpZW50cy4gVGhleSBtYXkgY29u
-dGFpbiBwcml2aWxlZ2VkIGFuZC9vciBjb25maWRlbnRpYWwgaW5mb3JtYXRpb24gb3Igb3RoZXIg
-aW5mb3JtYXRpb24gcHJvdGVjdGVkIGZyb20gZGlzY2xvc3VyZS4gSWYgeW91IGFyZSBub3QgYW4g
-aW50ZW5kZWQgcmVjaXBpZW50LCB5b3UgYXJlIGhlcmVieSBub3RpZmllZCB0aGF0IHlvdSByZWNl
-aXZlZCB0aGlzIGVtYWlsIGluIGVycm9yIGFuZCB0aGF0IGFueSByZXZpZXcsIGRpc3NlbWluYXRp
-b24sIGRpc3RyaWJ1dGlvbiBvciBjb3B5aW5nIG9mIHRoaXMgZW1haWwgYW5kIGFueSBhdHRhY2ht
-ZW50IGlzIHN0cmljdGx5IHByb2hpYml0ZWQuIElmIHlvdSBoYXZlIHJlY2VpdmVkIHRoaXMgZW1h
-aWwgaW4gZXJyb3IsIHBsZWFzZSBjb250YWN0IHRoZSBzZW5kZXIgYW5kIGRlbGV0ZSB0aGUgbWVz
-c2FnZSBhbmQgYW55IGF0dGFjaG1lbnQgZnJvbSB5b3VyIHN5c3RlbS4NCg0KQU5EUklUWiBIWURS
-TyBHbWJIDQoNCg0KUmVjaHRzZm9ybS8gTGVnYWwgZm9ybTogR2VzZWxsc2NoYWZ0IG1pdCBiZXNj
-aHLDpG5rdGVyIEhhZnR1bmcgLyBDb3Jwb3JhdGlvbg0KDQpGaXJtZW5zaXR6LyBSZWdpc3RlcmVk
-IHNlYXQ6IFdpZW4NCg0KRmlybWVuYnVjaGdlcmljaHQvIENvdXJ0IG9mIHJlZ2lzdHJ5OiBIYW5k
-ZWxzZ2VyaWNodCBXaWVuDQoNCkZpcm1lbmJ1Y2hudW1tZXIvIENvbXBhbnkgcmVnaXN0cmF0aW9u
-OiBGTiA2MTgzMyBnDQoNCkRWUjogMDYwNTA3Nw0KDQpVSUQtTnIuOiBBVFUxNDc1NjgwNg0KDQoN
-ClRoYW5rIFlvdQ0KX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX18NCg==
+Quoting Greg Gallagher <greg@embeddedgreg.com>:
+
+> Tested on zynq zybo and microzed, the demo works. I built it from  
+> stable using the 4.14 ipipe-arm repo and modprobed the module at  
+> boot. Are you using a module or building it into the kernel?
+>
+> -Greg
+
+I'm building it into the kernel. Since I'm new to all these I just took an
+already working Ubuntu 16.04 with Xenomai 3.0.5 and added to its .config file
+the RTIPC option with gconfig. The resulting .config has the following lines:
+
+#
+# Real-time IPC drivers
+#
+CONFIG_XENO_DRIVERS_RTIPC=m
+CONFIG_XENO_DRIVERS_RTIPC_XDDP=y
+CONFIG_XENO_DRIVERS_RTIPC_IDDP=y
+CONFIG_XENO_OPT_IDDP_NRPORT=32
+CONFIG_XENO_DRIVERS_RTIPC_BUFP=y
+CONFIG_XENO_OPT_BUFP_NRPORT=32
+
+After compiling the new kernel and installing it, if I do modprobe -n -v
+xeno_rtipc I get:
+
+insmod /lib/modules/4.9.90/kernel/drivers/xenomai/ipc/xeno_rtipc.ko
+
+So since it seems to be correctly installed I guess it may a problem with
+my Makefile, I'm using:
+
+target = xddp-echo
+skin = posix
+CC := $(shell /usr/xenomai/bin/xeno-config --cc)
+CFLAGS := $(shell /usr/xenomai/bin/xeno-config --skin=$(skin) --cflags)
+LDFLAGS := $(shell /usr/xenomai/bin/xeno-config --skin=$(skin) --ldflags)
+$(target): $(target).c
+	$(CC) -o $@ $< $(CFLAGS) $(LDFLAGS)
+clean:
+	@rm $(target)
+
+Am I missing something?
+
+- Rodrigo
+
+
+
 
