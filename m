@@ -1,13 +1,17 @@
-Date: Mon, 09 Apr 2018 11:59:19 +0200
-Message-ID: <20180409115919.Horde.F6jK7go7kRv9owEvxxe7yxw@webmail.uam.es>
-From: rodrigo.amaducci@uam.es
-References: <1c628d16-62c7-bcb5-fe41-2cc9c0a5ebf6@xenomai.org>
- <6m2m4tbt7p9f2b8p30a2ptbt.1523206626964@embeddedgreg.com>
-In-Reply-To: <6m2m4tbt7p9f2b8p30a2ptbt.1523206626964@embeddedgreg.com>
-Content-Type: text/plain; charset=utf-8; format=flowed; DelSp=Yes
+Date: Mon, 9 Apr 2018 18:12:26 +0200
+From: Henning Schild <henning.schild@siemens.com>
+Message-ID: <20180409181226.6eaa32e1@mmd1pvb1c.ad001.siemens.net>
+In-Reply-To: <78959cd0-b4fe-1692-ef6e-a4815073a185@alaxarxa.net>
+References: <99BAB48E90E86D42AD41F0BCE3225AEB019FC0631A@GRZSMS582.andritz.com>
+ <bbb33d4c-e8d0-b383-0424-d99592486988@siemens.com>
+ <99BAB48E90E86D42AD41F0BCE3225AEB019FC066DF@GRZSMS582.andritz.com>
+ <20180406104729.0a46cb24@mmd1pvb1c.ad001.siemens.net>
+ <99BAB48E90E86D42AD41F0BCE3225AEB019FC06762@GRZSMS582.andritz.com>
+ <78959cd0-b4fe-1692-ef6e-a4815073a185@alaxarxa.net>
 MIME-Version: 1.0
-Content-Disposition: inline
-Subject: Re: [Xenomai] Context switching with POSIX skin
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai] building Xenomai Apps with CMake (RFC)
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,53 +20,36 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Greg Gallagher <greg@embeddedgreg.com>, rpm@xenomai.org
-Cc: xenomai@xenomai.org
+To: Leopold Palomo-Avellaneda <leo@alaxarxa.net>
+Cc: "Xenomai (xenomai@xenomai.org)" <xenomai@xenomai.org>, Jan Kiszka <jan.kiszka@siemens.com>
 
-Quoting Greg Gallagher <greg@embeddedgreg.com>:
+Am Fri, 6 Apr 2018 17:37:06 +0200
+schrieb Leopold Palomo-Avellaneda <leo@alaxarxa.net>:
 
-> Tested on zynq zybo and microzed, the demo works. I built it from  
-> stable using the 4.14 ipipe-arm repo and modprobed the module at  
-> boot. Are you using a module or building it into the kernel?
->
-> -Greg
+> Hi
+> 
+> On 06/04/18 11:36, Lange Norbert wrote:
+> [...]
+> 
+> > 
+> > Google for "FindXenomai" to see that I am hardy the only one with
+> > that need. What I would like is to have a proper solution for
+> > Xenomai, and my way of doing that is to get criticized from
+> > people-in-the-know.  
+> 
+> I have done a "FindXenomai" and I have found several projects. I did
+> myself one, based in the ROS one, and the Orocos people has another
+> for instance.
+> 
+> You are not alone in the darkness ... ;-)
 
-I'm building it into the kernel. Since I'm new to all these I just took an
-already working Ubuntu 16.04 with Xenomai 3.0.5 and added to its .config file
-the RTIPC option with gconfig. The resulting .config has the following lines:
+Ok, then go ahead and share it, at least with Norbert.
 
-#
-# Real-time IPC drivers
-#
-CONFIG_XENO_DRIVERS_RTIPC=m
-CONFIG_XENO_DRIVERS_RTIPC_XDDP=y
-CONFIG_XENO_DRIVERS_RTIPC_IDDP=y
-CONFIG_XENO_OPT_IDDP_NRPORT=32
-CONFIG_XENO_DRIVERS_RTIPC_BUFP=y
-CONFIG_XENO_OPT_BUFP_NRPORT=32
+Henning
 
-After compiling the new kernel and installing it, if I do modprobe -n -v
-xeno_rtipc I get:
-
-insmod /lib/modules/4.9.90/kernel/drivers/xenomai/ipc/xeno_rtipc.ko
-
-So since it seems to be correctly installed I guess it may a problem with
-my Makefile, I'm using:
-
-target = xddp-echo
-skin = posix
-CC := $(shell /usr/xenomai/bin/xeno-config --cc)
-CFLAGS := $(shell /usr/xenomai/bin/xeno-config --skin=$(skin) --cflags)
-LDFLAGS := $(shell /usr/xenomai/bin/xeno-config --skin=$(skin) --ldflags)
-$(target): $(target).c
-	$(CC) -o $@ $< $(CFLAGS) $(LDFLAGS)
-clean:
-	@rm $(target)
-
-Am I missing something?
-
-- Rodrigo
-
-
+> 
+> Leopold
+> 
+> 
 
 
