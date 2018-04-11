@@ -1,9 +1,13 @@
+Date: Wed, 11 Apr 2018 09:45:04 -0400
+Message-ID: <20180411134504.c5pswbha72ywtc7l@csclub.uwaterloo.ca>
+References: <CAOuPNLhmVjMMm80Xmu9DKCAD7QqyRZ_qBbnmCi38nKX9defDVQ@mail.gmail.com>
+ <fg9ar1ooobcbsnuj1ib0ko69.1523444325709@embeddedgreg.com>
 MIME-Version: 1.0
-From: Saisravani Tummalapudi <tummalapudisaisravani@gmail.com>
-Date: Wed, 11 Apr 2018 13:11:25 +0000
-Message-ID: <CAHV4+d7NuFexQJvF+vdKv_29gk92QC5OSqLNOGGQ_kDwU1GVLA@mail.gmail.com>
-Content-Type: text/plain; charset="UTF-8"
-Subject: [Xenomai] configuring kernel patched with xenomai
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <fg9ar1ooobcbsnuj1ib0ko69.1523444325709@embeddedgreg.com>
+From: lsorense@csclub.uwaterloo.ca (Lennart Sorensen)
+Subject: Re: [Xenomai] How to use rtdm serial driver on beagle bone
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -12,9 +16,16 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
+To: Greg Gallagher <greg@embeddedgreg.com>
+Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-I have built 4.9.51 kernel in linux and patched with xenomai 3.0.5
-i am getting an error when configuring patched kernel
-ERROR:make: *** No rule to make target 'localmodconfig'. Stop.
-please help us to solve this issue.
+On Wed, Apr 11, 2018 at 06:58:45AM -0400, Greg Gallagher wrote:
+> What serial chip is on the beaglebone? If it's not supported then your best bet is to port the Linux driver to rtdm.
+
+I believe the normal driver is the 8250_omap.
+
+So it is 16550 style, but not 100% the same.
+
+-- 
+Len Sorensen
+
