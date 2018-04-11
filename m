@@ -1,13 +1,10 @@
-Date: Wed, 11 Apr 2018 09:45:04 -0400
-Message-ID: <20180411134504.c5pswbha72ywtc7l@csclub.uwaterloo.ca>
-References: <CAOuPNLhmVjMMm80Xmu9DKCAD7QqyRZ_qBbnmCi38nKX9defDVQ@mail.gmail.com>
- <fg9ar1ooobcbsnuj1ib0ko69.1523444325709@embeddedgreg.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <fg9ar1ooobcbsnuj1ib0ko69.1523444325709@embeddedgreg.com>
-From: lsorense@csclub.uwaterloo.ca (Lennart Sorensen)
-Subject: Re: [Xenomai] How to use rtdm serial driver on beagle bone
+Message-ID: <1523454871.2312.15.camel@smigroup.net>
+From: Mauro Salvini <mauro.salvini@smigroup.net>
+Date: Wed, 11 Apr 2018 15:54:31 +0200
+Mime-Version: 1.0
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+Subject: [Xenomai] rt_task_wait_period() does not return -EWOULDBLOCK
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,16 +13,23 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Greg Gallagher <greg@embeddedgreg.com>
-Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: xenomai <xenomai@xenomai.org>
 
-On Wed, Apr 11, 2018 at 06:58:45AM -0400, Greg Gallagher wrote:
-> What serial chip is on the beaglebone? If it's not supported then your best bet is to port the Linux driver to rtdm.
-
-I believe the normal driver is the 8250_omap.
-
-So it is 16550 style, but not 100% the same.
-
--- 
-Len Sorensen
-
+SGksCgpJJ20gZmFjaW5nIGFuIHVuZXhwZWN0ZWQgYmVoYXZpb3Igb2YgcnRfdGFza193YWl0X3Bl
+cmlvZCgpLgoKeGVub21haTogMy4wLjMKaXBpcGU6IDQuMS4xOC1hcm0tOSBvbiBrZXJuZWwgNC4x
+LjM2IGZyb20gTlhQCmFyY2g6IEFSTQpTT0M6IGlNWDZzeAoKUnVubmluZyBzaW1wbGUgYXR0YWNo
+ZWQgcHJvZ3JhbSAoY29tcGlsZWQgYW5kIGxpbmtlZCB1c2luZyAieGVuby1jb25maWcgCi0tYWxj
+aGVteSAtLWNmbGFncyIgYW5kICJ4ZW5vLWNvbmZpZyAtLWFsY2hlbXkgLS1sZGZsYWdzIiksCnJ0
+X3Rhc2tfd2FpdF9wZXJpb2QoKSBuZXZlciByZXR1cm5zIChpbnN0ZWFkIHJldHVybiAtRVdPVUxE
+QkxPQ0spIGlmCnJ0X3Rhc2tfc2V0X3BlcmlvZCgpIG5vdCBjYWxsZWQuCgpPdXRwdXQgd2l0aCBT
+RVRfUEVSSU9EIGRlZmluZWQ6Ck1haW4gMApXQUlUIFBFUklPRCBET05FIQpXQUlUIFBFUklPRCBE
+T05FIQpNYWluIDIKV0FJVCBQRVJJT0QgRE9ORSEKV0FJVCBQRVJJT0QgRE9ORSEKTWFpbiA0CldB
+SVQgUEVSSU9EIERPTkUhCldBSVQgUEVSSU9EIERPTkUhCk1haW4gNgouLi4KCk91dHB1dCB3aXRo
+IFNFVF9QRVJJT0Qgbm90IGRlZmluZWQ6Ck1haW4gMApNYWluIDAKTWFpbiAwCk1haW4gMApNYWlu
+IDAKLi4uCgpUZXN0ZWQgYWxzbyB3aXRoIHhlbm9tYWkgMy4wLjYgZnJvbSBnaXQgb24gbGF0ZXN0
+IGNvbW1pdCAob24gc2FtZSBpcGlwZQphbmQga2VybmVsKS4KCkFtIEkgd3Jvbmcgc29tZXdoZXJl
+PwoKVGhhbmsgeW91LCBiZXN0IHJlZ2FyZHMuCgpNYXVybwotLS0tLS0tLS0tLS0tLSBuZXh0IHBh
+cnQgLS0tLS0tLS0tLS0tLS0KQSBub24tdGV4dCBhdHRhY2htZW50IHdhcyBzY3J1YmJlZC4uLgpO
+YW1lOiB0ZXN0X3hlbm9fd2FpdHBlcmlvZC5jClR5cGU6IHRleHQveC1jc3JjClNpemU6IDY5MSBi
+eXRlcwpEZXNjOiBub3QgYXZhaWxhYmxlClVSTDogPGh0dHA6Ly94ZW5vbWFpLm9yZy9waXBlcm1h
+aWwveGVub21haS9hdHRhY2htZW50cy8yMDE4MDQxMS9iZjdiNmIxYy9hdHRhY2htZW50LmM+Cg==
