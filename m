@@ -1,11 +1,11 @@
-From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <0d01604d-2b7e-ea3f-e8bc-86a7f55e7d43@siemens.com>
-Date: Wed, 11 Apr 2018 13:11:01 +0200
+Date: Wed, 11 Apr 2018 07:12:36 -0400
+Message-ID: <clgfu772f8r3bc79k7u8th4g.1523445156964@embeddedgreg.com>
+From: Greg Gallagher <greg@embeddedgreg.com>
+In-Reply-To: <7a4b9236.60185.162b3c8628b.Coremail.yanghaha@whu.edu.cn>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-Subject: [Xenomai] Locking in lib/boilerplate/hash.c
+Content-Transfer-Encoding: base64
+Subject: Re: [Xenomai] Xenomai and I-pipe source code analysis
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -14,24 +14,36 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Philippe Gerum <rpm@xenomai.org>, Xenomai <xenomai@xenomai.org>
+To: =?UTF-8?B?5p2o5aOu?= <yanghaha@whu.edu.cn>, "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-Hi Philippe,
+UGhpbGlwcGUgaGFzIHN1Ym1pdHRlZCBzb21lIHZlcnkgZ29vZCBkb2N1bWVudGF0aW9uIGFib3V0
+IHRoZSBvdmVyYWxsIGRlc2lnbiBvZiB0aGUgaXBpcGUuIAoKaHR0cHM6Ly9naXQueGVub21haS5v
+cmcvaXBpcGUtbm9hcmNoLmdpdC9jb21taXQvP2lkPWM3N2Q1MzMyNGU3Y2I0NzI5NWEzYzExYzFi
+ZjA5MTkzODVjY2MyM2IKClRoYXQgZG9jdW1lbnQgc2hvdWxkIGhlbHAgd2l0aCBhbiBvdmVyYWxs
+IHVuZGVyc3RhbmRpbmcuIE5leHQgSSdkIHJlY2NvbWVuZGluZyBnb2luZyB0aHJvdWdoIHRoZSBo
+aXN0b3J5IG9mIHRoaXMgbGlzdCBhbmQgc2VlaW5nIHdoYXQgaW5mb3JtYXRpb24geW91IGNhbiBw
+dWxsIGZyb20gcHJldmlvdXMgdGhyZWFkcy4gSWYgeW91IGhhdmUgc3BlY2lmaWMgcXVlc3Rpb25z
+IHlvdSBjYW4gcG9zdCBoZXJlIGJ1dCBwbGVhc2UgdW5kZXJzdGFuZCBpdCBtYXkgdGFrZSBzb21l
+IHRpbWUgZm9yIGEgbWFpbnRhaW5lciB0byByZXNwb25kLiAKCkl0IHdvdWxkIGJlIGEgZ3JlYXQg
+aGVscCBpZiB5b3UgY291bGQgaGVscCBhZGQgdG8gdGhlIGlwaXBlIGRvY3VtZW50cyBvbmNlIHdl
+IGhhdmUgY29tcGxldGVkIHlvdXIgaW52ZXN0Z2F0aW9uLiBUaGlzIHdvdWxkIGhlbHAgb3RoZXJz
+IHdobyBhcmUgaW4geW91ciBzaXR1YXRpb24uCgpHcmVnCgrCoCBPcmlnaW5hbCBNZXNzYWdlIMKg
+CkZyb206IHlhbmdoYWhhQHdodS5lZHUuY24KU2VudDogQXByaWwgMTEsIDIwMTggNDoxOCBBTQpU
+bzogeGVub21haUB4ZW5vbWFpLm9yZwpTdWJqZWN0OiBbWGVub21haV0gWGVub21haSBhbmQgSS1w
+aXBlIHNvdXJjZSBjb2RlIGFuYWx5c2lzCgpJIGFtIHRyeWluZyB0byBtZWFzdXJlIHNvZnR3YXJl
+IGludGVncml0eSBpbiB0aGUgWGVub21haSBkdWFsLWNvcmUgc3lzdGVtIHRvIGVuc3VyZSBzb2Z0
+d2FyZSBzZWN1cml0eS4gClRoZXJlZm9yZSwgSSB3YW50IHRvIGhhdmUgYSBkZWVwIHVuZGVyc3Rh
+bmRpbmcgb2YgdGhlIFhlbm9tYWkgYW5kIEktcGlwZSBzb3VyY2UgY29kZSwgYW5kIHRoZW4gSSBj
+YW4gaW5zZXJ0IG15IGNvZGUgdG8gbWVhc3VyZSB0aGUgaW50ZWdyaXR5IG9mIHRoZSBzb2Z0d2Fy
+ZS4gCkhvd2V2ZXIsIEkgZm91bmQgdGhhdCB0aGUgZnVuY3Rpb25zIGluIHRoZSBJLXBpcGUgcGF0
+Y2ggZG8gbm90IGhhdmUgY29ycmVzcG9uZGluZyBjb21tZW50cy4gClRoaXMgbWFrZXMgaXQgZGlm
+ZmljdWx0IGZvciBtZSB0byB1bmRlcnN0YW5kIHRoZSBmdW5jdGlvbiBjYWxsIGZsb3csIGFuZCBJ
+IGNhbm5vdCB1bmRlcnN0YW5kIHRoZSBkZXRhaWxzIG9mIHRoZSBJLXBpcGUgdGFzayBzY2hlZHVs
+aW5nLiAKSSBoYXZlIHRyaWVkIHRvIHVzZSB0aGUgSS1waXBlIHRyYWNlciB0byBkZWJ1ZyB0aGUg
+a2VybmVsIHNvdXJjZSBidXQgaXQgd2FzIG5vdCBzdWNjZXNzZnVsLiAKU28gaG93IGRvIEkgc29s
+dmUgbXkgcHJvYmxlbSwgd2hhdCBnb29kIGFkdmljZSBkbyB5b3UgaGF2ZT8KVGhhbmtzIQpfX19f
+X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fXwpYZW5vbWFpIG1haWxp
+bmcgbGlzdApYZW5vbWFpQHhlbm9tYWkub3JnCmh0dHBzOi8veGVub21haS5vcmcvbWFpbG1hbi9s
+aXN0aW5mby94ZW5vbWFpCg==
 
-many users of the hash functions prefer (and actually have to) call
-those services under an external lock to close race windows, e.g.
-between lookup and entry usage. Still, those services come with their
-own, internal lock. That seems to protect only the hash list, thus
-leaves races on the entries open. I understand that some APIs (e.g.
-psos) cannot solve that easily, but I wonder if the other users should
-pay for the internal lock that is unneeded given an outer one.
-
-IOW: How about pulling the internal lock out to the user, removing it
-from hash.c?
-
-Jan
-
--- 
-Siemens AG, Corporate Technology, CT RDA IOT SES-DE
-Corporate Competence Center Embedded Linux
 
