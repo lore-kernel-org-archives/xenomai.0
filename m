@@ -1,13 +1,14 @@
-References: <7a4b9236.60185.162b3c8628b.Coremail.yanghaha@whu.edu.cn>
-From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <791b65c0-f67d-bc70-5a84-596d74de3b4d@siemens.com>
-Date: Wed, 11 Apr 2018 17:24:20 +0200
 MIME-Version: 1.0
-In-Reply-To: <7a4b9236.60185.162b3c8628b.Coremail.yanghaha@whu.edu.cn>
-Content-Type: text/plain; charset="utf-8"
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
-Subject: Re: [Xenomai] Xenomai and I-pipe source code analysis
+In-Reply-To: <CALLqZ8SApBe3Zfix9p6vfFH-S1_20j7d5_A9kve3iL3H+F2HYQ@mail.gmail.com>
+References: <CAOuPNLhmVjMMm80Xmu9DKCAD7QqyRZ_qBbnmCi38nKX9defDVQ@mail.gmail.com>
+ <fg9ar1ooobcbsnuj1ib0ko69.1523444325709@embeddedgreg.com>
+ <20180411134504.c5pswbha72ywtc7l@csclub.uwaterloo.ca>
+ <CALLqZ8SApBe3Zfix9p6vfFH-S1_20j7d5_A9kve3iL3H+F2HYQ@mail.gmail.com>
+From: Pintu Kumar <pintu.ping@gmail.com>
+Date: Thu, 12 Apr 2018 11:56:20 +0530
+Message-ID: <CAOuPNLhVJ2wFG_nZ4+c4BPpX+idyDd-fNVVb9s7izej-qajcbA@mail.gmail.com>
+Content-Type: text/plain; charset="UTF-8"
+Subject: Re: [Xenomai] How to use rtdm serial driver on beagle bone
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,22 +17,43 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: =?UTF-8?B?5p2o5aOu?= <yanghaha@whu.edu.cn>, xenomai@xenomai.org
+To: Greg Gallagher <greg@embeddedgreg.com>
+Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On 2018-04-11 10:17, 杨壮 wrote:
-> I am trying to measure software integrity in the Xenomai dual-core system to ensure software security. 
-> Therefore, I want to have a deep understanding of the Xenomai and I-pipe source code, and then I can insert my code to measure the integrity of the software. 
-> However, I found that the functions in the I-pipe patch do not have corresponding comments. 
-> This makes it difficult for me to understand the function call flow, and I cannot understand the details of the I-pipe task scheduling. 
-> I have tried to use the I-pipe tracer to debug the kernel source but it was not successful. 
-> So how do I solve my problem, what good advice do you have?
+Hi,
 
-I suspect your problem starts much earlier: Do you have dual-core
-hardware that is ensuring hardware safety? Before that, it's only an
-academic exercise to look at the software from a safety point of view.
+In BeagleBone there is no direct serial interface available.
+However, we use Serial over USB (ttyUSB0) to connect to minicom.
+In this case it is possible to use this interface over Xenomai and
+check latency improvement?
 
-Jan
--- 
-Siemens AG, Corporate Technology, CT RDA IOT SES-DE
-Corporate Competence Center Embedded Linux
+
+Thanks,
+Pintu
+
+
+
+On Wed, Apr 11, 2018 at 7:34 PM, Greg Gallagher <greg@embeddedgreg.com> wrote:
+> I think someone tried this with the uart on the PI, the basic steps
+> would be (IMHO)
+>      -unbind the current uart driver
+>      -insert the xeno_16550A driver
+>     -fix problems as they arise
+>
+> If you search the list you should see people who have tried this with
+> other platforms in the past.
+>
+> -Greg
+>
+> On Wed, Apr 11, 2018 at 9:45 AM, Lennart Sorensen
+> <lsorense@csclub.uwaterloo.ca> wrote:
+>> On Wed, Apr 11, 2018 at 06:58:45AM -0400, Greg Gallagher wrote:
+>>> What serial chip is on the beaglebone? If it's not supported then your best bet is to port the Linux driver to rtdm.
+>>
+>> I believe the normal driver is the 8250_omap.
+>>
+>> So it is 16550 style, but not 100% the same.
+>>
+>> --
+>> Len Sorensen
 
