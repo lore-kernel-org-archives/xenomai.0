@@ -1,14 +1,12 @@
+From: Jan Kiszka <jan.kiszka@siemens.com>
+Message-ID: <9311c789-ef1d-8a28-502f-eb83540a0f68@siemens.com>
+Date: Thu, 12 Apr 2018 10:28:55 +0200
 MIME-Version: 1.0
-In-Reply-To: <CALLqZ8SApBe3Zfix9p6vfFH-S1_20j7d5_A9kve3iL3H+F2HYQ@mail.gmail.com>
-References: <CAOuPNLhmVjMMm80Xmu9DKCAD7QqyRZ_qBbnmCi38nKX9defDVQ@mail.gmail.com>
- <fg9ar1ooobcbsnuj1ib0ko69.1523444325709@embeddedgreg.com>
- <20180411134504.c5pswbha72ywtc7l@csclub.uwaterloo.ca>
- <CALLqZ8SApBe3Zfix9p6vfFH-S1_20j7d5_A9kve3iL3H+F2HYQ@mail.gmail.com>
-From: Pintu Kumar <pintu.ping@gmail.com>
-Date: Thu, 12 Apr 2018 11:56:20 +0530
-Message-ID: <CAOuPNLhVJ2wFG_nZ4+c4BPpX+idyDd-fNVVb9s7izej-qajcbA@mail.gmail.com>
-Content-Type: text/plain; charset="UTF-8"
-Subject: Re: [Xenomai] How to use rtdm serial driver on beagle bone
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+Subject: [Xenomai] [PATCH] Revert "boilerplate/hash: drop preposterous PI
+	for locking"
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,43 +15,31 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Greg Gallagher <greg@embeddedgreg.com>
-Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Xenomai <xenomai@xenomai.org>
 
-Hi,
+This reverts commit 0f19393b3702705c8470147b6a3fd03a08b42642.
 
-In BeagleBone there is no direct serial interface available.
-However, we use Serial over USB (ttyUSB0) to connect to minicom.
-In this case it is possible to use this interface over Xenomai and
-check latency improvement?
+No reason was given back then, and we there is the risk that this code
+is used by prio-sensitive threads. Moreover, pvhash still used PI -
+unless it is mapped on plain hash in case of !CONFIG_XENO_PSHARED.
 
+Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
+---
+ lib/boilerplate/hash.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-Thanks,
-Pintu
-
-
-
-On Wed, Apr 11, 2018 at 7:34 PM, Greg Gallagher <greg@embeddedgreg.com> wrote:
-> I think someone tried this with the uart on the PI, the basic steps
-> would be (IMHO)
->      -unbind the current uart driver
->      -insert the xeno_16550A driver
->     -fix problems as they arise
->
-> If you search the list you should see people who have tried this with
-> other platforms in the past.
->
-> -Greg
->
-> On Wed, Apr 11, 2018 at 9:45 AM, Lennart Sorensen
-> <lsorense@csclub.uwaterloo.ca> wrote:
->> On Wed, Apr 11, 2018 at 06:58:45AM -0400, Greg Gallagher wrote:
->>> What serial chip is on the beaglebone? If it's not supported then your best bet is to port the Linux driver to rtdm.
->>
->> I believe the normal driver is the 8250_omap.
->>
->> So it is 16550 style, but not 100% the same.
->>
->> --
->> Len Sorensen
+diff --git a/lib/boilerplate/hash.c b/lib/boilerplate/hash.c
+index aa35fa475..17beb385c 100644
+--- a/lib/boilerplate/hash.c
++++ b/lib/boilerplate/hash.c
+@@ -101,6 +101,7 @@ void __hash_init(void *heap, struct hash_table *t)
+ 
+ 	pthread_mutexattr_init(&mattr);
+ 	pthread_mutexattr_settype(&mattr, mutex_type_attribute);
++	pthread_mutexattr_setprotocol(&mattr, PTHREAD_PRIO_INHERIT);
+ 	pthread_mutexattr_setpshared(&mattr, mutex_scope_attribute);
+ 	__RT(pthread_mutex_init(&t->lock, &mattr));
+ 	pthread_mutexattr_destroy(&mattr);
+-- 
+2.13.6
 
