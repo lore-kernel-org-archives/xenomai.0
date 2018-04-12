@@ -1,21 +1,11 @@
-From: Philippe Gerum <rpm@xenomai.org>
-References: <5AC116C9.6040809@freyder.net>
- <15a83f1d-7785-11c9-5f64-c09cb035ff10@xenomai.org>
- <5AC24433.30107@freyder.net>
- <6cacabd8-af4c-27e0-1b62-34ce73d7b933@xenomai.org>
- <5AC25632.90608@freyder.net>
- <7f51755d-8a54-c1a8-9ee4-a3014e03b3df@xenomai.org>
- <5ACA9F4C.8090902@freyder.net>
- <bdd2e389-bb90-1b16-9e18-6c23ec31218d@xenomai.org>
-Message-ID: <9638da9b-dcf7-8fac-8ef7-3b54d9f10316@xenomai.org>
-Date: Thu, 12 Apr 2018 12:23:46 +0200
+Date: Thu, 12 Apr 2018 07:18:41 -0400
+Message-ID: <lbdt7mkde3suahbb6gnqc3gu.1523531921044@embeddedgreg.com>
+From: Greg Gallagher <greg@embeddedgreg.com>
+In-Reply-To: <CAOuPNLhVJ2wFG_nZ4+c4BPpX+idyDd-fNVVb9s7izej-qajcbA@mail.gmail.com>
 MIME-Version: 1.0
-In-Reply-To: <bdd2e389-bb90-1b16-9e18-6c23ec31218d@xenomai.org>
-Content-Type: text/plain; charset="utf-8"
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
-Subject: Re: [Xenomai] Possible Xenomai fuse filesystem/registry queue
- status files issue?
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: base64
+Subject: Re: [Xenomai] How to use rtdm serial driver on beagle bone
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -24,161 +14,35 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Steve Freyder <steve@freyder.net>, "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Pintu Kumar <pintu.ping@gmail.com>
+Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On 04/12/2018 11:31 AM, Philippe Gerum wrote:
-> On 04/09/2018 01:01 AM, Steve Freyder wrote:
->> On 4/2/2018 11:51 AM, Philippe Gerum wrote:
->>> On 04/02/2018 06:11 PM, Steve Freyder wrote:
->>>> On 4/2/2018 10:20 AM, Philippe Gerum wrote:
->>>>> On 04/02/2018 04:54 PM, Steve Freyder wrote:
->>>>>> On 4/2/2018 8:41 AM, Philippe Gerum wrote:
->>>>>>> On 04/01/2018 07:28 PM, Steve Freyder wrote:
->>>>>>>> Greetings again.
->>>>>>>>
->>>>>>>> As I understand it, for each rt_queue there's supposed to be a
->>>>>>>> "status file" located in the fuse filesystem underneath the
->>>>>>>> "/run/xenomai/user/session/pid/alchemy/queues" directory, with
->>>>>>>> the file name being the queue name.  This used to contain very
->>>>>>>> useful info about queue status, message counts, etc.  I don't know
->>>>>>>> when it broke or whether it's something I'm doing wrong but I'm
->>>>>>>> now getting a "memory exhausted" message on the console when I
->>>>>>>> attempt to do a "cat" on the status file.
->>>>>>>>
->>>>>>>> Here's a small C program that just creates a queue, and then does
->>>>>>>> a pause to hold the accessor count non-zero.
->>>>>>>>
->>>>>>> <snip>
->>>>>>>
->>>>>>>> The resulting output (logged in via the system console):
->>>>>>>>
->>>>>>>> # sh qtest.sh
->>>>>>>> + sleep 1
->>>>>>>> + ./qc --mem-pool-size=64M --session=mysession foo
->>>>>>>> + find /run/xenomai
->>>>>>>> /run/xenomai
->>>>>>>> /run/xenomai/root
->>>>>>>> /run/xenomai/root/mysession
->>>>>>>> /run/xenomai/root/mysession/821
->>>>>>>> /run/xenomai/root/mysession/821/alchemy
->>>>>>>> /run/xenomai/root/mysession/821/alchemy/tasks
->>>>>>>> /run/xenomai/root/mysession/821/alchemy/tasks/task@1[821]
->>>>>>>> /run/xenomai/root/mysession/821/alchemy/queues
->>>>>>>> /run/xenomai/root/mysession/821/alchemy/queues/foo
->>>>>>>> /run/xenomai/root/mysession/system
->>>>>>>> /run/xenomai/root/mysession/system/threads
->>>>>>>> /run/xenomai/root/mysession/system/heaps
->>>>>>>> /run/xenomai/root/mysession/system/version
->>>>>>>> + qfile='/run/xenomai/*/*/*/alchemy/queues/foo'
->>>>>>>> + cat /run/xenomai/root/mysession/821/alchemy/queues/foo
->>>>>>>> memory exhausted
->>>>>>>>
->>>>>>>> At this point, it hangs, although SIGINT usually terminates it.
->>>>>>>>
->>>>>>>> I've seen some cases where SIGINT won't terminate it, and a
->>>>>>>> reboot is
->>>>>>>> required to clean things up.  I see this message appears to be
->>>>>>>> logged
->>>>>>>> in the obstack error handler.  I don't think I'm running out of
->>>>>>>> memory,
->>>>>>>> which makes me think "heap corruption".  Not much of an analysis!
->>>>>>>> I did
->>>>>>>> try varying queue sizes and max message counts - no change.
->>>>>>>>
->>>>>>> I can't reproduce this. I would suspect a rampant memory corruption
->>>>>>> too,
->>>>>>> although running the test code over valgrind (mercury build) did not
->>>>>>> reveal any issue.
->>>>>>>
->>>>>>> - which Xenomai version are you using?
->>>>>>> - cobalt / mercury ?
->>>>>>> - do you enable the shared heap when configuring ? (--enable-pshared)
->>>>>>>
->>>>>> I'm using Cobalt.  uname -a reports:
->>>>>>
->>>>>> Linux sdftest 4.1.18_C01571-15S00-00.000.zimg+83fdace666 #2 SMP Fri
->>>>>> Mar
->>>>>> 9 11:07:52 CST 2018 armv7l GNU/Linux
->>>>>>
->>>>>> Here is the config dump:
->>>>>>
->>>>>> CONFIG_XENO_PSHARED=1
->>>>> Any chance you could have some leftover files in /dev/shm from aborted
->>>>> runs, which would steal RAM?
->>>>>
->>>> I've been rebooting before each test run, but I'll keep that in mind for
->>>> future testing.
->>>>
->>>> Sounds like I need to try rolling back to an older build, I have a 3.0.5
->>>> and a 3.0.3 build handy.
->>> The standalone test should work with the shared heap disabled, could you
->>> check it against a build configure with --disable-pshared? Thanks,
->>>
->> Philippe,
->>
->> Sorry for the delay - our vendor had been doing all of our kernel and SDK
->> builds so I had to do a lot of learning to get this all going.
->>
->> With the --disable-pshared in effect:
->>
->> /.g3l # ./qc --dump-config | grep SHARED
->> based on Xenomai/cobalt v3.0.6 -- #6e34bb5 (2018-04-01 10:50:59 +0200)
->> CONFIG_XENO_PSHARED is OFF
->>
->> /.g3l # ./qc foo &
->> /.g3l # find /run/xenomai/
->> /run/xenomai/
->> /run/xenomai/root
->> /run/xenomai/root/opus
->> /run/xenomai/root/opus/3477
->> /run/xenomai/root/opus/3477/alchemy
->> /run/xenomai/root/opus/3477/alchemy/tasks
->> /run/xenomai/root/opus/3477/alchemy/tasks/qcreate3477
->> /run/xenomai/root/opus/3477/alchemy/queues
->> /run/xenomai/root/opus/3477/alchemy/queues/foo
->> /run/xenomai/root/opus/system
->> /run/xenomai/root/opus/system/threads
->> /run/xenomai/root/opus/system/heaps
->> /run/xenomai/root/opus/system/version
->> root@ICB-G3L:/.g3l # cat run/xenomai/root/opus/3477/alchemy/queues/foo
->> [TYPE]  [TOTALMEM]  [USEDMEM]  [QLIMIT]  [MCOUNT]
->>  FIFO        5344       3248        10         0
->>
->> Perfect!
->>
->> What's the next step?
->>
-> 
-> I can reproduce this issue. I'm on it.
-> 
+SSB0aG91Z2h0IHRoZSBoZWFkZXIgY29udGFpbmVkIG91dHB1dHMgZm9yIHRoZSBVQVJUPyAgVGhl
+IGRyaXZlciB3aWxsIGNvbnRyb2wgaW50ZXJmYWNlcyBmb3IgdGhlIHNlcmlhbCBjaGlwLCB0dHlV
+U0IwIHByb2JhYmx5IHdvbid0IGJlIGluY2x1ZGVkIGluIHRoYXQuIFdoYXQgdHlwZSBvZiBkZXZp
+Y2UgYXJlIHlvdSBzZW5kaW5nIGRhdGEgdG8gb3ZlciBzZXJpYWw/CgpHcmVnCgrCoCBPcmlnaW5h
+bCBNZXNzYWdlIMKgCkZyb206IHBpbnR1LnBpbmdAZ21haWwuY29tClNlbnQ6IEFwcmlsIDEyLCAy
+MDE4IDI6MjYgQU0KVG86IGdyZWdAZW1iZWRkZWRncmVnLmNvbQpDYzogbHNvcmVuc2VAY3NjbHVi
+LnV3YXRlcmxvby5jYTsgeGVub21haUB4ZW5vbWFpLm9yZwpTdWJqZWN0OiBSZTogW1hlbm9tYWld
+IEhvdyB0byB1c2UgcnRkbSBzZXJpYWwgZHJpdmVyIG9uIGJlYWdsZSBib25lCgpIaSwKCkluIEJl
+YWdsZUJvbmUgdGhlcmUgaXMgbm8gZGlyZWN0IHNlcmlhbCBpbnRlcmZhY2UgYXZhaWxhYmxlLgpI
+b3dldmVyLCB3ZSB1c2UgU2VyaWFsIG92ZXIgVVNCICh0dHlVU0IwKSB0byBjb25uZWN0IHRvIG1p
+bmljb20uCkluIHRoaXMgY2FzZSBpdCBpcyBwb3NzaWJsZSB0byB1c2UgdGhpcyBpbnRlcmZhY2Ug
+b3ZlciBYZW5vbWFpIGFuZApjaGVjayBsYXRlbmN5IGltcHJvdmVtZW50PwoKClRoYW5rcywKUGlu
+dHUKCgoKT24gV2VkLCBBcHIgMTEsIDIwMTggYXQgNzozNCBQTSwgR3JlZyBHYWxsYWdoZXIgPGdy
+ZWdAZW1iZWRkZWRncmVnLmNvbT4gd3JvdGU6Cj4gSSB0aGluayBzb21lb25lIHRyaWVkIHRoaXMg
+d2l0aCB0aGUgdWFydCBvbiB0aGUgUEksIHRoZSBiYXNpYyBzdGVwcwo+IHdvdWxkIGJlIChJTUhP
+KQo+wqDCoMKgwqDCoCAtdW5iaW5kIHRoZSBjdXJyZW50IHVhcnQgZHJpdmVyCj7CoMKgwqDCoMKg
+IC1pbnNlcnQgdGhlIHhlbm9fMTY1NTBBIGRyaXZlcgo+wqDCoMKgwqAgLWZpeCBwcm9ibGVtcyBh
+cyB0aGV5IGFyaXNlCj4KPiBJZiB5b3Ugc2VhcmNoIHRoZSBsaXN0IHlvdSBzaG91bGQgc2VlIHBl
+b3BsZSB3aG8gaGF2ZSB0cmllZCB0aGlzIHdpdGgKPiBvdGhlciBwbGF0Zm9ybXMgaW4gdGhlIHBh
+c3QuCj4KPiAtR3JlZwo+Cj4gT24gV2VkLCBBcHIgMTEsIDIwMTggYXQgOTo0NSBBTSwgTGVubmFy
+dCBTb3JlbnNlbgo+IDxsc29yZW5zZUBjc2NsdWIudXdhdGVybG9vLmNhPiB3cm90ZToKPj4gT24g
+V2VkLCBBcHIgMTEsIDIwMTggYXQgMDY6NTg6NDVBTSAtMDQwMCwgR3JlZyBHYWxsYWdoZXIgd3Jv
+dGU6Cj4+PiBXaGF0IHNlcmlhbCBjaGlwIGlzIG9uIHRoZSBiZWFnbGVib25lPyBJZiBpdCdzIG5v
+dCBzdXBwb3J0ZWQgdGhlbiB5b3VyIGJlc3QgYmV0IGlzIHRvIHBvcnQgdGhlIExpbnV4IGRyaXZl
+ciB0byBydGRtLgo+Pgo+PiBJIGJlbGlldmUgdGhlIG5vcm1hbCBkcml2ZXIgaXMgdGhlIDgyNTBf
+b21hcC4KPj4KPj4gU28gaXQgaXMgMTY1NTAgc3R5bGUsIGJ1dCBub3QgMTAwJSB0aGUgc2FtZS4K
+Pj4KPj4gLS0KPj4gTGVuIFNvcmVuc2VuCg==
 
-The patch below should solve the problem for the registry, however this
-may have uncovered a bug in the "tlsf" allocator (once again), which
-should not have failed allocating memory. Two separate issues then.
-
-diff --git a/include/copperplate/registry-obstack.h
-b/include/copperplate/registry-obstack.h
-index fe192faf7..48e453bc3 100644
---- a/include/copperplate/registry-obstack.h
-+++ b/include/copperplate/registry-obstack.h
-@@ -29,11 +29,12 @@ struct threadobj;
- struct syncobj;
-
- /*
-- * Assume we may want fast allocation of private memory from real-time
-- * mode when growing the obstack.
-+ * Obstacks are grown from handlers called by the fusefs server
-+ * thread, which has no real-time requirement: malloc/free is fine for
-+ * memory management.
-  */
--#define obstack_chunk_alloc	pvmalloc
--#define obstack_chunk_free	pvfree
-+#define obstack_chunk_alloc	malloc
-+#define obstack_chunk_free	free
-
- struct threadobj;
-
-
--- 
-Philippe.
 
