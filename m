@@ -1,10 +1,13 @@
-Date: Thu, 12 Apr 2018 07:18:41 -0400
-Message-ID: <lbdt7mkde3suahbb6gnqc3gu.1523531921044@embeddedgreg.com>
-From: Greg Gallagher <greg@embeddedgreg.com>
-In-Reply-To: <CAOuPNLhVJ2wFG_nZ4+c4BPpX+idyDd-fNVVb9s7izej-qajcbA@mail.gmail.com>
+From: Giulio Moro <g.moro@qmul.ac.uk>
+Date: Thu, 12 Apr 2018 11:29:37 +0000
+Message-ID: <DB6PR0701MB245607019F5DF13196B89A32B5BC0@DB6PR0701MB2456.eurprd07.prod.outlook.com>
+References: <CAOuPNLhVJ2wFG_nZ4+c4BPpX+idyDd-fNVVb9s7izej-qajcbA@mail.gmail.com>,
+ <lbdt7mkde3suahbb6gnqc3gu.1523531921044@embeddedgreg.com>
+In-Reply-To: <lbdt7mkde3suahbb6gnqc3gu.1523531921044@embeddedgreg.com>
+Content-Language: en-GB
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: base64
 Subject: Re: [Xenomai] How to use rtdm serial driver on beagle bone
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
@@ -14,35 +17,83 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Pintu Kumar <pintu.ping@gmail.com>
+To: Greg Gallagher <greg@embeddedgreg.com>, Pintu Kumar <pintu.ping@gmail.com>
 Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-SSB0aG91Z2h0IHRoZSBoZWFkZXIgY29udGFpbmVkIG91dHB1dHMgZm9yIHRoZSBVQVJUPyAgVGhl
-IGRyaXZlciB3aWxsIGNvbnRyb2wgaW50ZXJmYWNlcyBmb3IgdGhlIHNlcmlhbCBjaGlwLCB0dHlV
-U0IwIHByb2JhYmx5IHdvbid0IGJlIGluY2x1ZGVkIGluIHRoYXQuIFdoYXQgdHlwZSBvZiBkZXZp
-Y2UgYXJlIHlvdSBzZW5kaW5nIGRhdGEgdG8gb3ZlciBzZXJpYWw/CgpHcmVnCgrCoCBPcmlnaW5h
-bCBNZXNzYWdlIMKgCkZyb206IHBpbnR1LnBpbmdAZ21haWwuY29tClNlbnQ6IEFwcmlsIDEyLCAy
-MDE4IDI6MjYgQU0KVG86IGdyZWdAZW1iZWRkZWRncmVnLmNvbQpDYzogbHNvcmVuc2VAY3NjbHVi
-LnV3YXRlcmxvby5jYTsgeGVub21haUB4ZW5vbWFpLm9yZwpTdWJqZWN0OiBSZTogW1hlbm9tYWld
-IEhvdyB0byB1c2UgcnRkbSBzZXJpYWwgZHJpdmVyIG9uIGJlYWdsZSBib25lCgpIaSwKCkluIEJl
-YWdsZUJvbmUgdGhlcmUgaXMgbm8gZGlyZWN0IHNlcmlhbCBpbnRlcmZhY2UgYXZhaWxhYmxlLgpI
-b3dldmVyLCB3ZSB1c2UgU2VyaWFsIG92ZXIgVVNCICh0dHlVU0IwKSB0byBjb25uZWN0IHRvIG1p
-bmljb20uCkluIHRoaXMgY2FzZSBpdCBpcyBwb3NzaWJsZSB0byB1c2UgdGhpcyBpbnRlcmZhY2Ug
-b3ZlciBYZW5vbWFpIGFuZApjaGVjayBsYXRlbmN5IGltcHJvdmVtZW50PwoKClRoYW5rcywKUGlu
-dHUKCgoKT24gV2VkLCBBcHIgMTEsIDIwMTggYXQgNzozNCBQTSwgR3JlZyBHYWxsYWdoZXIgPGdy
-ZWdAZW1iZWRkZWRncmVnLmNvbT4gd3JvdGU6Cj4gSSB0aGluayBzb21lb25lIHRyaWVkIHRoaXMg
-d2l0aCB0aGUgdWFydCBvbiB0aGUgUEksIHRoZSBiYXNpYyBzdGVwcwo+IHdvdWxkIGJlIChJTUhP
-KQo+wqDCoMKgwqDCoCAtdW5iaW5kIHRoZSBjdXJyZW50IHVhcnQgZHJpdmVyCj7CoMKgwqDCoMKg
-IC1pbnNlcnQgdGhlIHhlbm9fMTY1NTBBIGRyaXZlcgo+wqDCoMKgwqAgLWZpeCBwcm9ibGVtcyBh
-cyB0aGV5IGFyaXNlCj4KPiBJZiB5b3Ugc2VhcmNoIHRoZSBsaXN0IHlvdSBzaG91bGQgc2VlIHBl
-b3BsZSB3aG8gaGF2ZSB0cmllZCB0aGlzIHdpdGgKPiBvdGhlciBwbGF0Zm9ybXMgaW4gdGhlIHBh
-c3QuCj4KPiAtR3JlZwo+Cj4gT24gV2VkLCBBcHIgMTEsIDIwMTggYXQgOTo0NSBBTSwgTGVubmFy
-dCBTb3JlbnNlbgo+IDxsc29yZW5zZUBjc2NsdWIudXdhdGVybG9vLmNhPiB3cm90ZToKPj4gT24g
-V2VkLCBBcHIgMTEsIDIwMTggYXQgMDY6NTg6NDVBTSAtMDQwMCwgR3JlZyBHYWxsYWdoZXIgd3Jv
-dGU6Cj4+PiBXaGF0IHNlcmlhbCBjaGlwIGlzIG9uIHRoZSBiZWFnbGVib25lPyBJZiBpdCdzIG5v
-dCBzdXBwb3J0ZWQgdGhlbiB5b3VyIGJlc3QgYmV0IGlzIHRvIHBvcnQgdGhlIExpbnV4IGRyaXZl
-ciB0byBydGRtLgo+Pgo+PiBJIGJlbGlldmUgdGhlIG5vcm1hbCBkcml2ZXIgaXMgdGhlIDgyNTBf
-b21hcC4KPj4KPj4gU28gaXQgaXMgMTY1NTAgc3R5bGUsIGJ1dCBub3QgMTAwJSB0aGUgc2FtZS4K
-Pj4KPj4gLS0KPj4gTGVuIFNvcmVuc2VuCg==
+Ports UART1, UART2, UART4, UART5 are available on the BeagleBone's P8 and P=
+9, and UART0 is on the debugging header. UART3 is also available, but only =
+the TX line I think.
+These can be accessed through the linux driver at `/dev/ttyS0`...`/dev/ttyS=
+5`
 
+Additionally, you have uart0 from the PRUSS.
+
+See https://raw.githubusercontent.com/derekmolloy/boneDeviceTree/master/doc=
+s/BeagleboneBlackP8HeaderTable.pdf and https://raw.githubusercontent.com/de=
+rekmolloy/boneDeviceTree/master/docs/BeagleboneBlackP9HeaderTable.pdf
+
+
+________________________________________
+From: Xenomai <xenomai-bounces@xenomai.org> on behalf of Greg Gallagher <gr=
+eg@embeddedgreg.com>
+Sent: 12 April 2018 12:18
+To: Pintu Kumar
+Cc: xenomai@xenomai.org
+Subject: Re: [Xenomai] How to use rtdm serial driver on beagle bone
+
+I thought the header contained outputs for the UART?  The driver will contr=
+ol interfaces for the serial chip, ttyUSB0 probably won't be included in th=
+at. What type of device are you sending data to over serial?
+
+Greg
+
+  Original Message
+From: pintu.ping@gmail.com
+Sent: April 12, 2018 2:26 AM
+To: greg@embeddedgreg.com
+Cc: lsorense@csclub.uwaterloo.ca; xenomai@xenomai.org
+Subject: Re: [Xenomai] How to use rtdm serial driver on beagle bone
+
+Hi,
+
+In BeagleBone there is no direct serial interface available.
+However, we use Serial over USB (ttyUSB0) to connect to minicom.
+In this case it is possible to use this interface over Xenomai and
+check latency improvement?
+
+
+Thanks,
+Pintu
+
+
+
+On Wed, Apr 11, 2018 at 7:34 PM, Greg Gallagher <greg@embeddedgreg.com> wro=
+te:
+> I think someone tried this with the uart on the PI, the basic steps
+> would be (IMHO)
+>=A0=A0=A0=A0=A0 -unbind the current uart driver
+>=A0=A0=A0=A0=A0 -insert the xeno_16550A driver
+>=A0=A0=A0=A0 -fix problems as they arise
+>
+> If you search the list you should see people who have tried this with
+> other platforms in the past.
+>
+> -Greg
+>
+> On Wed, Apr 11, 2018 at 9:45 AM, Lennart Sorensen
+> <lsorense@csclub.uwaterloo.ca> wrote:
+>> On Wed, Apr 11, 2018 at 06:58:45AM -0400, Greg Gallagher wrote:
+>>> What serial chip is on the beaglebone? If it's not supported then your =
+best bet is to port the Linux driver to rtdm.
+>>
+>> I believe the normal driver is the 8250_omap.
+>>
+>> So it is 16550 style, but not 100% the same.
+>>
+>> --
+>> Len Sorensen
+_______________________________________________
+Xenomai mailing list
+Xenomai@xenomai.org
+https://xenomai.org/mailman/listinfo/xenomai
 
