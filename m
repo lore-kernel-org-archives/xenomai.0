@@ -1,14 +1,12 @@
-References: <C2EC5BA46D13CD44B5915A8FEEB4C44E8488E31A@DDCEXCH.ddc-ny.com>
-From: Philippe Gerum <rpm@xenomai.org>
-Message-ID: <2fa46484-f8e1-ffbd-5e67-79d6345d08d2@xenomai.org>
-Date: Thu, 12 Apr 2018 10:58:20 +0200
+From: Jan Kiszka <jan.kiszka@siemens.com>
+Message-ID: <cc53e58a-c3ed-bd99-704b-70b0da168f98@siemens.com>
+Date: Thu, 12 Apr 2018 11:03:22 +0200
 MIME-Version: 1.0
-In-Reply-To: <C2EC5BA46D13CD44B5915A8FEEB4C44E8488E31A@DDCEXCH.ddc-ny.com>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] mmap when using in conjunction with mapper to
- retrieve memory mapped IO space
+Subject: [Xenomai] [PATCH] copperplate: Do not allow cancellation in
+ hash_enter/search_probe
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,79 +15,69 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "Pham, Phong" <phamp@ddc-web.com>, "xenomai@xenomai.org" <xenomai@xenomai.org>
-Cc: "Hillman, Robert" <hillman@ddc-web.com>
+To: Xenomai <xenomai@xenomai.org>
 
-On 04/10/2018 09:03 PM, Pham, Phong wrote:
-> 
-> Hi,
-> 
-> According to page 651
-> https://xenomai.org/documentation/xenomai-3/pdf/xeno3prm.pdf
-> 
-> 
-> This will make such region accessible via the mapper device using the following sequence of code, via
-> the default ->mmap() handler from the UDD core:
-> int fd, fdm;
-> void *p;
-> fd = open("/dev/foocard", O_RDWR);
-> fdm = open("/dev/foocard,mapper@2", O_RDWR);
-> p = mmap(NULL, 4096, PROT_READ|PROT_WRITE, 0, fdm, 0);
-> 
-> 
-> I have several questions:
-> 
-> 1)      It looks like the 4th argument of mmap (the one to the left of "fdm") needs to be either MAP_SHARED or MAP_PRIVATE
-> 
-> 2)      The "@" character right after "mapper" is not valid (ie. there should be no "@" character at all)
-> 
-> 3)      /dev/foocard should be /dev/rtdm/foocard
+It's not really safe to allow a potentially modifying operation to be
+canceled in the middle, just dropping the lock during rollback. Better
+defer cancellation until the lock is dropped.
 
+Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
+---
+ lib/boilerplate/hash.c | 10 ++++++----
+ 1 file changed, 6 insertions(+), 4 deletions(-)
 
-Fixed, thanks.
-
-https://xenomai.org/documentation/xenomai-3/html/xeno3prm/structudd__memregion.html#udd_memory_region
-
-> 
-> here's my real question:
-> 
-> Assuming all 3 of the above is valid from user space, and on the kernel space, I followed the ex. to create memory region, etc. such that I do see my device
-> 
-> # ls -l dev/rtdm
-> crw-------    1 root     root      252,   0 Jan  1 00:00 autotune
-> crw-------    1 root     root      247,   0 Jan  1 00:00 eeprom
-> crw-------    1 root     root      246,   0 Jan  1 00:00 eeprom,mapper0
-> crw-------    1 root     root      254,   0 Jan  1 00:00 memdev-private
-> crw-------    1 root     root      254,   1 Jan  1 00:00 memdev-shared
-> crw-------    1 root     root      253,   0 Jan  1 00:00 memdev-sys
-> crw-------    1 root     root      249,   0 Jan  1 00:00 mmio
-> crw-------    1 root     root      248,   0 Jan  1 00:00 mmio,mapper0
-> crw-------    1 root     root      248,   1 Jan  1 00:00 mmio,mapper1
-> crw-------    1 root     root      248,   2 Jan  1 00:00 mmio,mapper2
-> crw-------    1 root     root      248,   3 Jan  1 00:00 mmio,mapper3
-> crw-------    1 root     root      248,   4 Jan  1 00:00 mmio,mapper4
-> crw-------    1 root     root      250,   0 Jan  1 00:00 switchtest
-> crw-------    1 root     root      251,   0 Jan  1 00:00 timerbench
-> 
-> 
-> like /dev/rtdm/eeprom and /dev/rtdm/eeprom,mapper0  etc. I don't see my kernel hook ever gets called
-> 
-> 
-> static struct udd_device eeprom = {
->               .device_flags = RTDM_NAMED_DEVICE,
->               .device_name = "eeprom",
->               .ops = {
->                              .close = phong_scs750_close,
->                              .open = phong_scs750_open,
->                              .mmap = phong_scs750_mmap,
->               }
-> 
-> By that, I mean phong_scs750_open, phong_scs750_mmap never gets invoked.  mmap() from user space returns -1 with errno value of 19 (ENODEV).  Any advise?
-
-Your app may be missing symbol wrapping. Please check out this doc:
-
-https://xenomai.org/documentation/xenomai-3/html/xeno3prm/group__cobalt__api.html
-
+diff --git a/lib/boilerplate/hash.c b/lib/boilerplate/hash.c
+index 17beb385c..9ce1b7cb7 100644
+--- a/lib/boilerplate/hash.c
++++ b/lib/boilerplate/hash.c
+@@ -277,6 +277,7 @@ int __hash_enter_probe(struct hash_table *t,
+ {
+ 	struct hash_bucket *bucket;
+ 	struct hashobj *obj, *tmp;
++	struct service svc;
+ 	int ret;
+ 
+ 	holder_init(&newobj->link);
+@@ -285,7 +286,7 @@ int __hash_enter_probe(struct hash_table *t,
+ 		return ret;
+ 
+ 	bucket = do_hash(t, key, len);
+-	push_cleanup_lock(&t->lock);
++	CANCEL_DEFER(svc);
+ 	write_lock(&t->lock);
+ 
+ 	if (!list_empty(&bucket->obj_list)) {
+@@ -311,7 +312,7 @@ int __hash_enter_probe(struct hash_table *t,
+ 	list_append(&newobj->link, &bucket->obj_list);
+ out:
+ 	write_unlock(&t->lock);
+-	pop_cleanup_lock(&t->lock);
++	CANCEL_RESTORE(svc);
+ 
+ 	return ret;
+ }
+@@ -322,10 +323,11 @@ struct hashobj *hash_search_probe(struct hash_table *t,
+ {
+ 	struct hash_bucket *bucket;
+ 	struct hashobj *obj, *tmp;
++	struct service svc;
+ 
+ 	bucket = do_hash(t, key, len);
+ 
+-	push_cleanup_lock(&t->lock);
++	CANCEL_DEFER(svc);
+ 	write_lock(&t->lock);
+ 
+ 	if (!list_empty(&bucket->obj_list)) {
+@@ -345,7 +347,7 @@ struct hashobj *hash_search_probe(struct hash_table *t,
+ 	obj = NULL;
+ out:
+ 	write_unlock(&t->lock);
+-	pop_cleanup_lock(&t->lock);
++	CANCEL_RESTORE(svc);
+ 
+ 	return obj;
+ }
 -- 
-Philippe.
+2.13.6
 
