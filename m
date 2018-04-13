@@ -1,12 +1,11 @@
-From: "Pham, Phong" <phamp@ddc-web.com>
-Date: Wed, 2 May 2018 01:13:26 +0000
-Message-ID: <C2EC5BA46D13CD44B5915A8FEEB4C44E8A2D2291@DDCEXCH.ddc-ny.com>
-Content-Language: en-US
+From: Jan Kiszka <jan.kiszka@siemens.com>
+Message-ID: <5669484d-19e6-a2a3-b08b-9ac6a34cab1c@siemens.com>
+Date: Fri, 13 Apr 2018 19:49:19 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
 Content-Transfer-Encoding: 7bit
-Subject: [Xenomai] potentially missing timer rating check in
-	select_root_only_timer()
+Subject: [Xenomai] [PATCH] copperplate: Remove redundant cleanups
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,26 +14,32 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "xenomai@xenomai.org" <xenomai@xenomai.org>
-Cc: "Hillman, Robert" <hillman@ddc-web.com>
+To: Xenomai <xenomai@xenomai.org>
 
+We are running this section with cancellation deferred, so no
+termination possible, thus nothing to clean up.
 
-Hi,
+Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
+---
+ lib/copperplate/traceobj.c | 2 --
+ 1 file changed, 2 deletions(-)
 
-I am suspecting that in kernel/ipipe/timer.c:select_root_only_timer()
+diff --git a/lib/copperplate/traceobj.c b/lib/copperplate/traceobj.c
+index d10c47905..8a3f4f5e6 100644
+--- a/lib/copperplate/traceobj.c
++++ b/lib/copperplate/traceobj.c
+@@ -200,11 +200,9 @@ static void dump_marks_on_error(struct traceobj *trobj)
+ 
+ 	CANCEL_DEFER(svc);
+ 
+-	push_cleanup_lock(&trobj->lock);
+ 	read_lock(&trobj->lock);
+ 	dump_marks(trobj);
+ 	read_unlock(&trobj->lock);
+-	pop_cleanup_lock(&trobj->lock);
+ 
+ 	CANCEL_RESTORE(svc);
+ }
+-- 
+2.13.6
 
-When t->irq == per_cpu(ipipe_percpu.hrtimer_irq, icpu), a condition to test the timer rating against current timer rating before installing the timer is missing.  That is t->rating > percpu_timer->rating (combined with same irq #) before the condition becomes true.
-
-Here's screenshot:
-[cid:image001.png@01D3E177.63116AC0]
-
-Phong.
-
-Notice: This e-mail and any files transmitted with it may contain Data Device Corporation's privileged and proprietary information. It is intended solely for the use of the individual or entity to whom it is addressed. If you are not the named recipient of this transmission, any disclosure, copying, distribution or reliance on the contents of this message is prohibited. If you received this e-mail in error, please destroy it and any attached files and notify me immediately.
--------------- next part --------------
-A non-text attachment was scrubbed...
-Name: image001.png
-Type: image/png
-Size: 100938 bytes
-Desc: image001.png
-URL: <http://xenomai.org/pipermail/xenomai/attachments/20180502/fb07b0f2/attachment.png>
