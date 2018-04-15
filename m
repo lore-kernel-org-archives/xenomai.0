@@ -1,13 +1,10 @@
+Date: Sun, 15 Apr 2018 23:40:24 +0800 (GMT+08:00)
+From: kirayamato@zju.edu.cn
 MIME-Version: 1.0
-In-Reply-To: <30537bafa8504df7bb6403a2260f1e40@P10-EX01.3DSystems.Internal>
-References: <42c109690d5e4729812cc187a71dd5b0@P10-EX01.3DSystems.Internal>
- <CALLqZ8Sm+r2phnaqXxgL8SD-UKy+PzwZVAje3O=fA_=mi-y6QQ@mail.gmail.com>
- <30537bafa8504df7bb6403a2260f1e40@P10-EX01.3DSystems.Internal>
-From: Greg Gallagher <greg@embeddedgreg.com>
-Date: Wed, 16 May 2018 16:39:46 -0400
-Message-ID: <CALLqZ8SDnwYHhW4P8uk__Fi3ipOZDfW-jX0LqqMbjPQ21VMNTg@mail.gmail.com>
-Content-Type: text/plain; charset="UTF-8"
-Subject: Re: [Xenomai] Boot failed on arm64 - xenomai_init --> ipipe_send_ipi
+Message-ID: <35db7c75.cc71d.162c9f6e836.Coremail.kirayamato@zju.edu.cn>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: base64
+Subject: [Xenomai] undefined reference error when using xenomai-based library
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,102 +13,76 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "Auel, Kendall" <Kendall.Auel@3dsystems.com>
-Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: xenomai@xenomai.org
 
-I know Philippe put a change into the arm 32-bit ipipe for the new gic
-in the imx7d which was causing a lock up.  I'm not sure if this is a
-similar thing.
-
--Greg
-
-On Wed, May 16, 2018 at 4:00 PM, Auel, Kendall
-<Kendall.Auel@3dsystems.com> wrote:
-> Greg,
->
-> The kernel is 4.9.51, modified by NXP for the i.MX8, the Xenomai branch is "next", and the ipipe patch is ipipe-core-4.9.51-arm64-4.patch.
->
-> Also, I modified the defconfig to turn off CONFIG_CPU_FREQ and CONFIG_ACPI_PROCESSOR. I've also tried a version with PAGE_MIGRATION disabled and got the same result.
->
-> - Kendall
->
->>
->> HI,
->>   What ipipe and kernel version are you using and what Xenomai branch are
->> you using?
->>
->> -Greg
->>
->> On Wed, May 16, 2018 at 2:13 PM, Auel, Kendall
->> <Kendall.Auel@3dsystems.com> wrote:
->> > I'm trying to build a xenomai-enabled kernel for an arm64 (quad A53 cores).
->> Something is not configured correctly, but I haven't been able to get past a
->> stall during xenomai_init. Any ideas on what I'm doing wrong? Thanks.
->> >
->> > [    0.729547] kvm [1]: 8-bit VMID
->> > [    0.732121] kvm [1]: IDMAP page: 40c5e000
->> > [    0.736134] kvm [1]: HYP VA range: 800000000000:ffffffffffff
->> > [    0.742609] kvm [1]: Hyp mode initialized successfully
->> > [    0.747003] kvm [1]: GICv3: no GICV resource entry
->> > [    0.751740] kvm [1]: disabling GICv2 emulation
->> > [    0.756357] kvm [1]: GIC system register CPU interface enabled
->> > [    0.762428] kvm [1]: vgic interrupt IRQ1
->> > [    0.766021] kvm [1]: virtual timer IRQ4
->> > [    0.775341] audit: initializing netlink subsys (disabled)
->> > [    0.777914] audit: type=2000 audit(0.675:1): initialized
->> > [    0.783729] [Xenomai] scheduling class idle registered.
->> > [    0.788506] [Xenomai] scheduling class rt registered.
->> > [   21.795205] INFO: rcu_preempt detected stalls on CPUs/tasks:
->> > [   21.798018]  2-...: (0 ticks this GP) idle=4c9/140000000000000/0
->> softirq=129/129 fqs=2428
->> > [   21.806295]  (detected by 1, t=5255 jiffies, g=-252, c=-253, q=106)
->> > [   21.812575] Task dump for CPU 2:
->> > [   21.815801] swapper/0       R  running task        0     1      0 0x00000002
->> > [   21.822864] Call trace:
->> > [   21.825315] [<ffff0000080859f4>] __switch_to+0x8c/0xa0
->> > [   21.830456] [<ffff0000084384a8>] gic_raise_softirq+0x58/0x170
->> > [   21.836208] [<ffff00000808dd64>] ipipe_send_ipi+0x24/0x30
->> > [   21.841615] [<ffff000008154f60>] ipipe_critical_enter+0x108/0x1a8
->> > [   21.847719] [<ffff000008156d60>] ipipe_select_timers+0x2d8/0x320
->> > [   21.853736] [<ffff0000091a2440>] xenomai_init+0x158/0x4c4
->> > [   21.859141] [<ffff000008083308>] do_one_initcall+0x38/0x128
->> > [   21.864724] [<ffff000009190d00>] kernel_init_freeable+0x1ac/0x24c
->> > [   21.870828] [<ffff000008c57e40>] kernel_init+0x10/0x100
->> > [   21.876056] [<ffff000008082fe4>] ret_from_fork+0x14/0x30
->> >
->> > Thanks,
->> > Kendall Auel, Senior Embedded Software Engineer 3D Systems, 26600 SW
->> > Parkway Ave., Suite 300, Dock 61, Wilsonville OR 97070, USA
->> > Tel: +1 503 482 1970   Mobile: +1 503 939 6862
->> 3dsystems.com<http://3dsystems.com/>
->> >
->> > [3D-Systems-logo_primary_3-color_light-bkgrd_no-tm]
->> >
->> > This e-mail is intended for the exclusive use of the recipients named above
->> and may constitute privileged or confidential information or otherwise be
->> protected from disclosure. Dissemination, distribution, forwarding or copying
->> of this e-mail by anyone other than the intended recipients is prohibited. If
->> you have received this e-mail in error, please notify me immediately by reply
->> e-mail or telephone and completely delete or destroy any and all electronic
->> or other copies of the original message and any attachments to it. Thank you.
->> >
->> > -------------- next part -------------- A non-text attachment was
->> > scrubbed...
->> > Name: image001.png
->> > Type: image/png
->> > Size: 10651 bytes
->> > Desc: image001.png
->> > URL:
->> >
->> <http://xenomai.org/pipermail/xenomai/attachments/20180516/92c0d749/a
->> t
->> > tachment.png>
->> _______________________________________________
->> > Xenomai mailing list
->> > Xenomai@xenomai.org
->> > https://xenomai.org/mailman/listinfo/xenomai
-> _______________________________________________
-> Xenomai mailing list
-> Xenomai@xenomai.org
-> https://xenomai.org/mailman/listinfo/xenomai
-
+SGVsbG8sIGV2ZXJ5b25lCgpJIGFtIHVzaW5nIFhlbm9tYWkgMi42LjQgTmF0aXZlIHNraW4gdG8g
+YnVpbGQgYSBzdGF0aWMgbGlicmFyeSB3aXRoIGEga2VybmVsIDMuMTQuMTcKClRoZSBsaWJyYXJ5
+IHdhcyBidWlsdCBzdWNjZXNzZnVsbHkgdW5kZXIgZWNsaXBzZS4gSG93ZXZlciwgbGQgcmV0dXJu
+ZWQgZXJyb3JzIHdoZW4gSSB0ZXN0IHRoZSBsaWJyYXJ5IHdoaWNoIHNhaWQgYXMgZm9sbG93aW5n
+LCB3aGVyZSBteWxpYiBpcyB0aGUgbGlicmFyeSBidWlsdCBhbmQgVGVzdG15bGliIGlzIHRoZSB0
+ZXN0IHByb2plY3QuIEJvdGggb2YgbXlsaWIgYW5kIFRlc3RteWxpYiBhcmUgbGlua2VkIHdpdGgg
+bmF0aXZlIGFuZCB4ZW5vbWFpIGxpYiwgd2hpY2ggaXMgb2J2aW91cyBpbiB0aGUgZ2NjIG91dHB1
+dC4gSSBjYW4gbm90IHVuZGVyc3RhbmQgd2h5IHRoZXJlIGFyZSBzdGlsbCB1bmRlZmluZWQgcmVm
+ZXJlbmNlIHRvIFhlbm9tYWkgQVBJcyBlcnJvcnMuIENhbiBhbnlvbmUgaGVscCBtZSBmaXggaXQ/
+CgogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
+ICAgICAgICAgICAgICAgeW91cnM6IEtpcmEgWWFtYXRvCiAgICAgICAgICAgICAgICAgICAgICAg
+ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgMjAxOC0w
+NC0xNQoKKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioq
+KioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqCkJ1
+aWxkaW5nIHRhcmdldDogVGVzdG15bGliCiBJbnZva2luZzogR0NDIEMrKyBMaW5rZXIKIGcrKyAt
+TC91c3IveGVub21haS9saWIgLUwvcm9vdC93b3Jrc3BhY2UvVGVzdG15bGliL3NyYyAtWGxpbmtl
+ciAtcnBhdGggLVhsaW5rZXIgL3Vzci94ZW5vbWFpL2xpYiAtbyAiVGVzdG15bGliIiAgLi9zcmMv
+aW50ZXJmYWNlLm8gLi9zcmMvbWFpbi5vICAgLWxuYXRpdmUgLWx4ZW5vbWFpIC1scHRocmVhZCAt
+bHJ0IC1sbXlsaWIgLWxwY2FwIC1sbmV0IC1sbQogL3Jvb3Qvd29ya3NwYWNlL1Rlc3RteWxpYi9z
+cmMvbGlibXlsaWIuYShUaHJlYWQubynvvJppbiBmdW5jdGlvbuKAmFN3aXRjaE1vZCh2b2lkKini
+gJnvvJoKL3Jvb3Qvd29ya3NwYWNlL215bGliL0RlYnVnLy4uL3NyYy9UaHJlYWQuY3BwOjEwNu+8
+mnVuZGVmaW5lZCByZWZlcmVuY2UgdG8g4oCYcnRfdGFza19zZXRfcGVyaW9kaWPigJkKL3Jvb3Qv
+d29ya3NwYWNlL215bGliL0RlYnVnLy4uL3NyYy9UaHJlYWQuY3BwOjExNO+8mnVuZGVmaW5lZCBy
+ZWZlcmVuY2UgdG8g4oCYcnRfdGFza193YWl0X3BlcmlvZOKAmQovcm9vdC93b3Jrc3BhY2UvVGVz
+dG15bGliL3NyYy9saWJteWxpYi5hKFRocmVhZC5vKe+8mmluIGZ1bmN0aW9u4oCYQ3JlYXRlVGhy
+ZWFkcyh1bnNpZ25lZCBsb25nKiwgdW5zaWduZWQgbG9uZyosIHVuc2lnbmVkIGxvbmcqKeKAme+8
+mgovcm9vdC93b3Jrc3BhY2UvbXlsaWIvRGVidWcvLi4vc3JjL1RocmVhZC5jcHA6MTI477yadW5k
+ZWZpbmVkIHJlZmVyZW5jZSB0byDigJhydF90YXNrX2NyZWF0ZeKAmQovcm9vdC93b3Jrc3BhY2Uv
+bXlsaWIvRGVidWcvLi4vc3JjL1RocmVhZC5jcHA6MTI577yadW5kZWZpbmVkIHJlZmVyZW5jZSB0
+byDigJhydF90YXNrX3N0YXJ04oCZCi9yb290L3dvcmtzcGFjZS9teWxpYi9EZWJ1Zy8uLi9zcmMv
+VGhyZWFkLmNwcDoxMzDvvJp1bmRlZmluZWQgcmVmZXJlbmNlIHRvIOKAmHJ0X3Rhc2tfY3JlYXRl
+4oCZCi9yb290L3dvcmtzcGFjZS9teWxpYi9EZWJ1Zy8uLi9zcmMvVGhyZWFkLmNwcDoxMzHvvJp1
+bmRlZmluZWQgcmVmZXJlbmNlIHRvIOKAmHJ0X3Rhc2tfc3RhcnTigJkKL3Jvb3Qvd29ya3NwYWNl
+L215bGliL0RlYnVnLy4uL3NyYy9UaHJlYWQuY3BwOjEzM++8mnVuZGVmaW5lZCByZWZlcmVuY2Ug
+dG8g4oCYcnRfdGFza19jcmVhdGXigJkKL3Jvb3Qvd29ya3NwYWNlL215bGliL0RlYnVnLy4uL3Ny
+Yy9UaHJlYWQuY3BwOjEzNO+8mnVuZGVmaW5lZCByZWZlcmVuY2UgdG8g4oCYcnRfdGFza19zdGFy
+dOKAmQovcm9vdC93b3Jrc3BhY2UvVGVzdG15bGliL3NyYy9saWJteWxpYi5hKG15Y2xhc3Mubynv
+vJppbiBmdW5jdGlvbuKAmG15Y2xhc3M6OlJlc2V0KCnigJnvvJoKL3Jvb3Qvd29ya3NwYWNlL215
+bGliL0RlYnVnLy4uL3NyYy9teWNsYXNzLmNwcDo0MjbvvJp1bmRlZmluZWQgcmVmZXJlbmNlIHRv
+IOKAmHJ0X3RpbWVyX3JlYWTigJkKL3Jvb3Qvd29ya3NwYWNlL1Rlc3RteWxpYi9zcmMvbGlibXls
+aWIuYShteWNsYXNzLm8p77yaaW4gZnVuY3Rpb27igJhteWNsYXNzOjpTZW5kKCnigJnvvJoKL3Jv
+b3Qvd29ya3NwYWNlL215bGliL0RlYnVnLy4uL3NyYy9teWNsYXNzLmNwcDoxMTE477yadW5kZWZp
+bmVkIHJlZmVyZW5jZSB0byDigJhydF90YXNrX3NldF9wZXJpb2RpY+KAmQovcm9vdC93b3Jrc3Bh
+Y2UvbXlsaWIvRGVidWcvLi4vc3JjL215Y2xhc3MuY3BwOjExMjTvvJp1bmRlZmluZWQgcmVmZXJl
+bmNlIHRvIOKAmHJ0X3RpbWVyX3JlYWTigJkKL3Jvb3Qvd29ya3NwYWNlL215bGliL0RlYnVnLy4u
+L3NyYy9teWNsYXNzLmNwcDoxMTI377yadW5kZWZpbmVkIHJlZmVyZW5jZSB0byDigJhydF90YXNr
+X3dhaXRfcGVyaW9k4oCZCi9yb290L3dvcmtzcGFjZS9teWxpYi9EZWJ1Zy8uLi9zcmMvbXljbGFz
+cy5jcHA6MTE0Ne+8mnVuZGVmaW5lZCByZWZlcmVuY2UgdG8g4oCYcnRfdGltZXJfcmVhZOKAmQov
+cm9vdC93b3Jrc3BhY2UvbXlsaWIvRGVidWcvLi4vc3JjL215Y2xhc3MuY3BwOjE0MTfvvJp1bmRl
+ZmluZWQgcmVmZXJlbmNlIHRvIOKAmHJ0X3RpbWVyX3JlYWTigJkKL3Jvb3Qvd29ya3NwYWNlL215
+bGliL0RlYnVnLy4uL3NyYy9teWNsYXNzLmNwcDoxNDE577yadW5kZWZpbmVkIHJlZmVyZW5jZSB0
+byDigJhydF90aW1lcl9yZWFk4oCZCi9yb290L3dvcmtzcGFjZS9teWxpYi9EZWJ1Zy8uLi9zcmMv
+bXljbGFzcy5jcHA6MTQ1Nu+8mnVuZGVmaW5lZCByZWZlcmVuY2UgdG8g4oCYcnRfdGFza193YWl0
+X3BlcmlvZOKAmQovcm9vdC93b3Jrc3BhY2UvbXlsaWIvRGVidWcvLi4vc3JjL215Y2xhc3MuY3Bw
+OjE0NTnvvJp1bmRlZmluZWQgcmVmZXJlbmNlIHRvIOKAmHJ0X3Rhc2tfd2FpdF9wZXJpb2TigJkK
+L3Jvb3Qvd29ya3NwYWNlL1Rlc3RteWxpYi9zcmMvbGlibXlsaWIuYShteWNsYXNzLm8p77yaaW4g
+ZnVuY3Rpb27igJhteWNsYXNzOjpSZWN2KCnigJnvvJoKL3Jvb3Qvd29ya3NwYWNlL215bGliL0Rl
+YnVnLy4uL3NyYy9teWNsYXNzLmNwcDoxNTI477yadW5kZWZpbmVkIHJlZmVyZW5jZSB0byDigJhy
+dF90YXNrX3NldF9wZXJpb2RpY+KAmQovcm9vdC93b3Jrc3BhY2UvbXlsaWIvRGVidWcvLi4vc3Jj
+L215Y2xhc3MuY3BwOjE1MzXvvJp1bmRlZmluZWQgcmVmZXJlbmNlIHRvIOKAmHJ0X3RpbWVyX3Jl
+YWTigJkKL3Jvb3Qvd29ya3NwYWNlL215bGliL0RlYnVnLy4uL3NyYy9teWNsYXNzLmNwcDoxNTM3
+77yadW5kZWZpbmVkIHJlZmVyZW5jZSB0byDigJhydF90aW1lcl9yZWFk4oCZCi9yb290L3dvcmtz
+cGFjZS9teWxpYi9EZWJ1Zy8uLi9zcmMvbXljbGFzcy5jcHA6MTU2Mu+8mnVuZGVmaW5lZCByZWZl
+cmVuY2UgdG8g4oCYcnRfdGltZXJfcmVhZOKAmQovcm9vdC93b3Jrc3BhY2UvbXlsaWIvRGVidWcv
+Li4vc3JjL215Y2xhc3MuY3BwOjE2MzfvvJp1bmRlZmluZWQgcmVmZXJlbmNlIHRvIOKAmHJ0X3Rh
+c2tfd2FpdF9wZXJpb2TigJkKL3Jvb3Qvd29ya3NwYWNlL215bGliL0RlYnVnLy4uL3NyYy9teWNs
+YXNzLmNwcDoxNjQw77yadW5kZWZpbmVkIHJlZmVyZW5jZSB0byDigJhydF90YXNrX3dhaXRfcGVy
+aW9k4oCZCmNvbGxlY3QyOiBlcnJvcjogbGQgcmV0dXJuZWQgMSBleGl0IHN0YXR1cwogbWFrZTog
+KioqIFtUZXN0bXlsaWJdIGVycm9yIDEKCiAyMToyNjo0NSBCdWlsZCBGaW5pc2hlZCAodG9vayAx
+cy4zOTBtcykKKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioq
+KioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKio=
