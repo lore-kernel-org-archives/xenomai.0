@@ -1,11 +1,12 @@
 MIME-Version: 1.0
-In-Reply-To: <57898ff1-afda-849d-dbd6-be3a480d44a8@univ-grenoble-alpes.fr>
-References: <57898ff1-afda-849d-dbd6-be3a480d44a8@univ-grenoble-alpes.fr>
+In-Reply-To: <1374825470.13406245.1523973370099.JavaMail.zimbra@triolcorp.com.ua>
+References: <1374825470.13406245.1523973370099.JavaMail.zimbra@triolcorp.com.ua>
 From: Greg Gallagher <greg@embeddedgreg.com>
-Date: Tue, 17 Apr 2018 12:38:28 -0400
-Message-ID: <CALLqZ8QjpDNEyr0kkEaktkd87gJ6+gjZB3bQ5UaXE8Fh4++xXA@mail.gmail.com>
+Date: Tue, 17 Apr 2018 12:40:47 -0400
+Message-ID: <CALLqZ8Rs-3ux4rCxmXkRbRjQ_5c2MhkXFSLMCr3nfdkNYJKHpg@mail.gmail.com>
 Content-Type: text/plain; charset="UTF-8"
-Subject: Re: [Xenomai] Questions about IRQ
+Content-Transfer-Encoding: quoted-printable
+Subject: Re: [Xenomai] PCIe driver to communicate
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -14,59 +15,24 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jean-Marc Lenoir <jean-marc.lenoir@univ-grenoble-alpes.fr>
-Cc: "Xenomai@xenomai.org" <xenomai@xenomai.org>
+To: =?UTF-8?B?0KjQtdCy0YfQtdC90LrQviDQotCw0YDQsNGBINCT0YDQuNCz0L7RgNGM0LXQstC40Yc=?= <shevchenko.taras@triolcorp.com.ua>
+Cc: xenomai <xenomai@xenomai.org>
 
-    This API is the API for the cobalt kernel and used in kernel
-space.  These functions aren't available in user space.  Your user
-program is failing to build because the data structures exist in the
-kernel and not in user space.
-    You can create an RTDM driver to handle the IRQs from the PCI
-board and then a user space program to read data from the driver.
-Usually you can't have the Linux driver and the xenomai driver loaded
-at the same time, for drivers like RTnet, serial and SPI I have to
-unload the Linux driver or else the Xenomai probe function won't be
-called because the Linux driver has registered itself for the
-hardware.  I guess there could be exceptions to that rule.
-    If you want examples for RTDM drivers look in the drivers
-directory.  You can also look at using UDD driver to control the
-device from user space. When I get time I'll look through the code
-base and see if I can point you to some examples.  In the meantime the
-UDD source files contain some documentation about how the functions
-work if you want to get some more information.
+There no official documentation for doing this but if you google
+'Xenomai PCI driver', you should find some third party example on how
+to do this.
 
 -Greg
 
-On Tue, Apr 17, 2018 at 10:59 AM, Jean-Marc Lenoir
-<jean-marc.lenoir@univ-grenoble-alpes.fr> wrote:
-> Hello,
->
-> I would like to make a program which handle the interrupt requests of a PCI
-> board with Xenomai 3. I'm trying to use this Xenomai API:
-> https://xenomai.org/documentation/xenomai-3/html/xeno3prm/group__cobalt__core__irq.html
-> but there are some points that are not clear at all for me.
->
-> 1) There is already a Linux driver that handle the IRQ of this board and I
-> need to keep this driver running because I use it for the board
-> configuration. So, if both a Linux driver and a Xenomai program try to
-> handle the same IRQ, what happen? Does Xenomai always have the priority? Or
-> do I need to configure something to give the priority to Xenomai?
->
-> 2) This API works on kernel mode or user mode? (Actually, I'm not sure there
-> is a kernel mode, I'm a beginner with Xenomai.)
->
-> 3) When I'm trying to make a simple program with this API (in user mode), I
-> am unable to compile it: there is some missing definitions like the
-> structure xnintr. I think I need to change something when I build the
-> Xenomai libraries but I don't know what (the current libraries are compiled
-> with the options "./configure --with-core=cobalt --enable-smp
-> --enable-pshared"). Any idea?
->
-> 4) If someone know where I can find an example of program using this API, it
-> could help me a lot.
->
-> Thanks for your help,
-> Jean-Marc
+On Tue, Apr 17, 2018 at 9:56 AM, =D0=A8=D0=B5=D0=B2=D1=87=D0=B5=D0=BD=D0=BA=
+=D0=BE =D0=A2=D0=B0=D1=80=D0=B0=D1=81 =D0=93=D1=80=D0=B8=D0=B3=D0=BE=D1=80=
+=D1=8C=D0=B5=D0=B2=D0=B8=D1=87
+<shevchenko.taras@triolcorp.com.ua> wrote:
+> Hi!
+> I have to write PCIe driver to interchange with FPGA
+> Posiible someone do it before ? pls share with me or point me where to st=
+art ?
+> Thanks
 >
 >
 > _______________________________________________
