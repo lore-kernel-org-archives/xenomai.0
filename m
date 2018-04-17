@@ -1,11 +1,11 @@
-From: Fazio Maurizio <maurizio.fazio@leonardocompany.com>
-Date: Tue, 17 Apr 2018 15:27:08 +0000
-Message-ID: <8cb23a1388df4237bd2b132fe0addd83@ocnapvsw3301.ocr.priv>
-Content-Language: it-IT
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Subject: [Xenomai] kernel panic - xenomai3.0.6
+In-Reply-To: <57898ff1-afda-849d-dbd6-be3a480d44a8@univ-grenoble-alpes.fr>
+References: <57898ff1-afda-849d-dbd6-be3a480d44a8@univ-grenoble-alpes.fr>
+From: Greg Gallagher <greg@embeddedgreg.com>
+Date: Tue, 17 Apr 2018 12:38:28 -0400
+Message-ID: <CALLqZ8QjpDNEyr0kkEaktkd87gJ6+gjZB3bQ5UaXE8Fh4++xXA@mail.gmail.com>
+Content-Type: text/plain; charset="UTF-8"
+Subject: Re: [Xenomai] Questions about IRQ
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -14,56 +14,63 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Jean-Marc Lenoir <jean-marc.lenoir@univ-grenoble-alpes.fr>
+Cc: "Xenomai@xenomai.org" <xenomai@xenomai.org>
 
-R29vZCBtb3JuaW5nLA0KSeKAmXZlIGF0dGFjaGVkIGEga2VybmVsIHBhbmljIHByb2JsZW0gdGhh
-dCBvY2N1cnMgZHVyaW5nIHRoZSBleGVjdXRpb24gb2YgbXkgYXBwbGljYXRpb24uDQpIYXZlIHlv
-dSBzb21lIGlkZWFzPw0KDQpDcHU6ICBJbnRlbCBDb3JlIGk3DQpPUzogQ2VudG9zIDcgNjRiaXQg
-d2l0aCBrZXJuZWwgMy4xOC4yMCBhbmQgcGF0aCBYZW5vbWFpIDMuMC42DQoNClRoYW5rcyBpbiBh
-ZHZhbmNlDQoNCg0KDQpbY2lkOmltYWdlMDAyLmpwZ0AwMUQzRDY3MS40RDE5QzdBMF0NCg0KDQoN
-Cg0KDQpNYXVyaXppbyBGYXppbw0KDQpDaGllZiBUZWNobmljYWwgT2ZmaWNlIC8gQWlyY3JhZnQg
-U3lzdGVtcw0KU29mdHdhcmUgRW5naW5lZXINCg0KDQoNCkxlb25hcmRvIFMucC5BLg0KQy5zbyBG
-cmFuY2lhLCA0MjYgLSBUb3Jpbm8gLSAxMDE0NiAtIEl0YWx5DQpUZWwuICszOSAwMTEgNzU2IDMz
-MDggLyAzNzYxDQoNCm1hdXJpemlvLmZhemlvQGxlb25hcmRvY29tcGFueS5jb20NCnd3dy5sZW9u
-YXJkb2NvbXBhbnkuY29tDQoNCuKAlOKAlOKAlOKAlOKAlOKAlOKAlOKAlOKAlOKAlOKAlOKAlOKA
-lOKAlOKAlOKAlOKAlOKAlOKAlOKAlOKAlOKAlOKAlOKAlOKAlOKAlOKAlOKAlOKAlOKAlOKAlOKA
-lOKAk+KAlOKAlOKAlOKAlOKAlOKAlA0KSEVMSUNPUFRFUlMvQUVST05BVVRJQ1MvRUxFQ1RST05J
-Q1MsIERFRkVOQ0UgJiBTRUNVUklUWSBTWVNURU1TL1NQQUNFDQrigJTigJTigJTigJTigJTigJTi
-gJTigJTigJTigJTigJTigJTigJTigJTigJTigJTigJTigJTigJTigJTigJTigJTigJTigJTigJTi
-gJTigJTigJTigJTigJTigJTigJTigJPigJTigJTigJTigJTigJTigJQNCg0KDQoNCg0KSWwgcHJl
-c2VudGUgbWVzc2FnZ2lvIGUtbWFpbCBlIG9nbmkgc3VvIGFsbGVnYXRvIGRldm9ubyBpbnRlbmRl
-cnNpIGluZGlyaXp6YXRpIGVzY2x1c2l2YW1lbnRlIGFsIGRlc3RpbmF0YXJpbyBpbmRpY2F0byBl
-IGNvbnNpZGVyYXJzaSBkYWwgY29udGVudXRvIHN0cmV0dGFtZW50ZSByaXNlcnZhdG8gZSBjb25m
-aWRlbnppYWxlLiBTZSBub24gc2lldGUgbCdlZmZldHRpdm8gZGVzdGluYXRhcmlvIG8gYXZldGUg
-cmljZXZ1dG8gaWwgbWVzc2FnZ2lvIGUtbWFpbCBwZXIgZXJyb3JlLCBzaWV0ZSBwcmVnYXRpIGRp
-IGF2dmVydGlyZSBpbW1lZGlhdGFtZW50ZSBpbCBtaXR0ZW50ZSBlIGRpIGNhbmNlbGxhcmUgaWwg
-c3VkZGV0dG8gbWVzc2FnZ2lvIGUgb2duaSBzdW8gYWxsZWdhdG8gZGFsIHZvc3RybyBzaXN0ZW1h
-IGluZm9ybWF0aWNvLiBRdWFsc2lhc2kgdXRpbGl6em8sIGRpZmZ1c2lvbmUsIGNvcGlhIG8gYXJj
-aGl2aWF6aW9uZSBkZWwgcHJlc2VudGUgbWVzc2FnZ2lvIGRhIHBhcnRlIGRpIGNoaSBub24gbmUg
-w6ggaWwgZGVzdGluYXRhcmlvIMOoIHN0cmV0dGFtZW50ZSBwcm9pYml0byBlIHB1w7IgZGFyIGx1
-b2dvIGEgcmVzcG9uc2FiaWxpdMOgIGRpIGNhcmF0dGVyZSBjaXZpbGUgZSBwZW5hbGUgcHVuaWJp
-bGkgYWkgc2Vuc2kgZGkgbGVnZ2UuDQpRdWVzdGEgZS1tYWlsIGhhIHZhbG9yZSBsZWdhbGUgc29s
-byBzZSBmaXJtYXRhIGRpZ2l0YWxtZW50ZSBhaSBzZW5zaSBkZWxsYSBub3JtYXRpdmEgdmlnZW50
-ZS4NCl9fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fDQpUaGUgY29udGVudHMgb2YgdGhp
-cyBlbWFpbCBtZXNzYWdlIGFuZCBhbnkgYXR0YWNobWVudHMgYXJlIGludGVuZGVkIHNvbGVseSBm
-b3IgdGhlIGFkZHJlc3NlZShzKSBhbmQgY29udGFpbiBjb25maWRlbnRpYWwgYW5kL29yIHByaXZp
-bGVnZWQgaW5mb3JtYXRpb24uDQpJZiB5b3UgYXJlIG5vdCB0aGUgaW50ZW5kZWQgcmVjaXBpZW50
-IG9mIHRoaXMgbWVzc2FnZSwgb3IgaWYgdGhpcyBtZXNzYWdlIGhhcyBiZWVuIGFkZHJlc3NlZCB0
-byB5b3UgaW4gZXJyb3IsIHBsZWFzZSBpbW1lZGlhdGVseSBub3RpZnkgdGhlIHNlbmRlciBhbmQg
-dGhlbiBkZWxldGUgdGhpcyBtZXNzYWdlIGFuZCBhbnkgYXR0YWNobWVudHMgZnJvbSB5b3VyIHN5
-c3RlbS4gSWYgeW91IGFyZSBub3QgdGhlIGludGVuZGVkIHJlY2lwaWVudCwgeW91IGFyZSBoZXJl
-Ynkgbm90aWZpZWQgdGhhdCBhbnkgdXNlLCBkaXNzZW1pbmF0aW9uLCBjb3B5aW5nLCBvciBzdG9y
-YWdlIG9mIHRoaXMgbWVzc2FnZSBvciBpdHMgYXR0YWNobWVudHMgaXMgc3RyaWN0bHkgcHJvaGli
-aXRlZC4gVW5hdXRob3JpemVkIGRpc2Nsb3N1cmUgYW5kL29yIHVzZSBvZiBpbmZvcm1hdGlvbiBj
-b250YWluZWQgaW4gdGhpcyBlbWFpbCBtZXNzYWdlIG1heSByZXN1bHQgaW4gY2l2aWwgYW5kIGNy
-aW1pbmFsIGxpYWJpbGl0eS4g4oCcDQpUaGlzIGUtbWFpbCBoYXMgbGVnYWwgdmFsdWUgYWNjb3Jk
-aW5nIHRvIHRoZSBhcHBsaWNhYmxlIGxhd3Mgb25seSBpZiBpdCBpcyBkaWdpdGFsbHkgc2lnbmVk
-IGJ5IHRoZSBzZW5kZXINCi0tLS0tLS0tLS0tLS0tIG5leHQgcGFydCAtLS0tLS0tLS0tLS0tLQpB
-IG5vbi10ZXh0IGF0dGFjaG1lbnQgd2FzIHNjcnViYmVkLi4uCk5hbWU6IGltYWdlMDAyLmpwZwpU
-eXBlOiBpbWFnZS9qcGVnClNpemU6IDM0NDcgYnl0ZXMKRGVzYzogaW1hZ2UwMDIuanBnClVSTDog
-PGh0dHA6Ly94ZW5vbWFpLm9yZy9waXBlcm1haWwveGVub21haS9hdHRhY2htZW50cy8yMDE4MDQx
-Ny85ZGZjYzE4YS9hdHRhY2htZW50LmpwZz4KLS0tLS0tLS0tLS0tLS0gbmV4dCBwYXJ0IC0tLS0t
-LS0tLS0tLS0tCkEgbm9uLXRleHQgYXR0YWNobWVudCB3YXMgc2NydWJiZWQuLi4KTmFtZToga2Vy
-bmVsUGFuaWMuSlBHClR5cGU6IGltYWdlL2pwZWcKU2l6ZTogNjM1NDY1IGJ5dGVzCkRlc2M6IGtl
-cm5lbFBhbmljLkpQRwpVUkw6IDxodHRwOi8veGVub21haS5vcmcvcGlwZXJtYWlsL3hlbm9tYWkv
-YXR0YWNobWVudHMvMjAxODA0MTcvOWRmY2MxOGEvYXR0YWNobWVudC5qcGU+Cg==
+    This API is the API for the cobalt kernel and used in kernel
+space.  These functions aren't available in user space.  Your user
+program is failing to build because the data structures exist in the
+kernel and not in user space.
+    You can create an RTDM driver to handle the IRQs from the PCI
+board and then a user space program to read data from the driver.
+Usually you can't have the Linux driver and the xenomai driver loaded
+at the same time, for drivers like RTnet, serial and SPI I have to
+unload the Linux driver or else the Xenomai probe function won't be
+called because the Linux driver has registered itself for the
+hardware.  I guess there could be exceptions to that rule.
+    If you want examples for RTDM drivers look in the drivers
+directory.  You can also look at using UDD driver to control the
+device from user space. When I get time I'll look through the code
+base and see if I can point you to some examples.  In the meantime the
+UDD source files contain some documentation about how the functions
+work if you want to get some more information.
+
+-Greg
+
+On Tue, Apr 17, 2018 at 10:59 AM, Jean-Marc Lenoir
+<jean-marc.lenoir@univ-grenoble-alpes.fr> wrote:
+> Hello,
+>
+> I would like to make a program which handle the interrupt requests of a PCI
+> board with Xenomai 3. I'm trying to use this Xenomai API:
+> https://xenomai.org/documentation/xenomai-3/html/xeno3prm/group__cobalt__core__irq.html
+> but there are some points that are not clear at all for me.
+>
+> 1) There is already a Linux driver that handle the IRQ of this board and I
+> need to keep this driver running because I use it for the board
+> configuration. So, if both a Linux driver and a Xenomai program try to
+> handle the same IRQ, what happen? Does Xenomai always have the priority? Or
+> do I need to configure something to give the priority to Xenomai?
+>
+> 2) This API works on kernel mode or user mode? (Actually, I'm not sure there
+> is a kernel mode, I'm a beginner with Xenomai.)
+>
+> 3) When I'm trying to make a simple program with this API (in user mode), I
+> am unable to compile it: there is some missing definitions like the
+> structure xnintr. I think I need to change something when I build the
+> Xenomai libraries but I don't know what (the current libraries are compiled
+> with the options "./configure --with-core=cobalt --enable-smp
+> --enable-pshared"). Any idea?
+>
+> 4) If someone know where I can find an example of program using this API, it
+> could help me a lot.
+>
+> Thanks for your help,
+> Jean-Marc
+>
+>
+> _______________________________________________
+> Xenomai mailing list
+> Xenomai@xenomai.org
+> https://xenomai.org/mailman/listinfo/xenomai
+
