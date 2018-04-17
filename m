@@ -1,12 +1,12 @@
 MIME-Version: 1.0
-In-Reply-To: <1374825470.13406245.1523973370099.JavaMail.zimbra@triolcorp.com.ua>
-References: <1374825470.13406245.1523973370099.JavaMail.zimbra@triolcorp.com.ua>
+In-Reply-To: <8cb23a1388df4237bd2b132fe0addd83@ocnapvsw3301.ocr.priv>
+References: <8cb23a1388df4237bd2b132fe0addd83@ocnapvsw3301.ocr.priv>
 From: Greg Gallagher <greg@embeddedgreg.com>
-Date: Tue, 17 Apr 2018 12:40:47 -0400
-Message-ID: <CALLqZ8Rs-3ux4rCxmXkRbRjQ_5c2MhkXFSLMCr3nfdkNYJKHpg@mail.gmail.com>
+Date: Tue, 17 Apr 2018 12:41:27 -0400
+Message-ID: <CALLqZ8TxoKntzDObQYvBbonPG725B8GbQo-9ZeeFMTLrDkxoaA@mail.gmail.com>
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
-Subject: Re: [Xenomai] PCIe driver to communicate
+Subject: Re: [Xenomai] kernel panic - xenomai3.0.6
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,26 +15,100 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: =?UTF-8?B?0KjQtdCy0YfQtdC90LrQviDQotCw0YDQsNGBINCT0YDQuNCz0L7RgNGM0LXQstC40Yc=?= <shevchenko.taras@triolcorp.com.ua>
-Cc: xenomai <xenomai@xenomai.org>
+To: Fazio Maurizio <maurizio.fazio@leonardocompany.com>
+Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-There no official documentation for doing this but if you google
-'Xenomai PCI driver', you should find some third party example on how
-to do this.
+I don't see a log attached, my email may have filtered it?
 
--Greg
-
-On Tue, Apr 17, 2018 at 9:56 AM, =D0=A8=D0=B5=D0=B2=D1=87=D0=B5=D0=BD=D0=BA=
-=D0=BE =D0=A2=D0=B0=D1=80=D0=B0=D1=81 =D0=93=D1=80=D0=B8=D0=B3=D0=BE=D1=80=
-=D1=8C=D0=B5=D0=B2=D0=B8=D1=87
-<shevchenko.taras@triolcorp.com.ua> wrote:
-> Hi!
-> I have to write PCIe driver to interchange with FPGA
-> Posiible someone do it before ? pls share with me or point me where to st=
-art ?
-> Thanks
+On Tue, Apr 17, 2018 at 11:27 AM, Fazio Maurizio
+<maurizio.fazio@leonardocompany.com> wrote:
+> Good morning,
+> I=E2=80=99ve attached a kernel panic problem that occurs during the execu=
+tion of my application.
+> Have you some ideas?
+>
+> Cpu:  Intel Core i7
+> OS: Centos 7 64bit with kernel 3.18.20 and path Xenomai 3.0.6
+>
+> Thanks in advance
 >
 >
+>
+> [cid:image002.jpg@01D3D671.4D19C7A0]
+>
+>
+>
+>
+>
+> Maurizio Fazio
+>
+> Chief Technical Office / Aircraft Systems
+> Software Engineer
+>
+>
+>
+> Leonardo S.p.A.
+> C.so Francia, 426 - Torino - 10146 - Italy
+> Tel. +39 011 756 3308 / 3761
+>
+> maurizio.fazio@leonardocompany.com
+> www.leonardocompany.com
+>
+> =E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=
+=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=
+=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=
+=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=93=
+=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94
+> HELICOPTERS/AERONAUTICS/ELECTRONICS, DEFENCE & SECURITY SYSTEMS/SPACE
+> =E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=
+=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=
+=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=
+=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=93=
+=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94
+>
+>
+>
+>
+> Il presente messaggio e-mail e ogni suo allegato devono intendersi indiri=
+zzati esclusivamente al destinatario indicato e considerarsi dal contenuto =
+strettamente riservato e confidenziale. Se non siete l'effettivo destinatar=
+io o avete ricevuto il messaggio e-mail per errore, siete pregati di avvert=
+ire immediatamente il mittente e di cancellare il suddetto messaggio e ogni=
+ suo allegato dal vostro sistema informatico. Qualsiasi utilizzo, diffusion=
+e, copia o archiviazione del presente messaggio da parte di chi non ne =C3=
+=A8 il destinatario =C3=A8 strettamente proibito e pu=C3=B2 dar luogo a res=
+ponsabilit=C3=A0 di carattere civile e penale punibili ai sensi di legge.
+> Questa e-mail ha valore legale solo se firmata digitalmente ai sensi dell=
+a normativa vigente.
+> ________________________________
+> The contents of this email message and any attachments are intended solel=
+y for the addressee(s) and contain confidential and/or privileged informati=
+on.
+> If you are not the intended recipient of this message, or if this message=
+ has been addressed to you in error, please immediately notify the sender a=
+nd then delete this message and any attachments from your system. If you ar=
+e not the intended recipient, you are hereby notified that any use, dissemi=
+nation, copying, or storage of this message or its attachments is strictly =
+prohibited. Unauthorized disclosure and/or use of information contained in =
+this email message may result in civil and criminal liability. =E2=80=9C
+> This e-mail has legal value according to the applicable laws only if it i=
+s digitally signed by the sender
+> -------------- next part --------------
+> A non-text attachment was scrubbed...
+> Name: image002.jpg
+> Type: image/jpeg
+> Size: 3447 bytes
+> Desc: image002.jpg
+> URL: <http://xenomai.org/pipermail/xenomai/attachments/20180417/9dfcc18a/=
+attachment.jpg>
+> -------------- next part --------------
+> A non-text attachment was scrubbed...
+> Name: kernelPanic.JPG
+> Type: image/jpeg
+> Size: 635465 bytes
+> Desc: kernelPanic.JPG
+> URL: <http://xenomai.org/pipermail/xenomai/attachments/20180417/9dfcc18a/=
+attachment.jpe>
 > _______________________________________________
 > Xenomai mailing list
 > Xenomai@xenomai.org
