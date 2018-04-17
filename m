@@ -1,13 +1,11 @@
+From: Philippe Gerum <rpm@xenomai.org>
+Message-ID: <638350e7-cd56-9427-179a-a066d1e4ce75@xenomai.org>
+Date: Tue, 17 Apr 2018 19:31:45 +0200
 MIME-Version: 1.0
-In-Reply-To: <CALLqZ8TxoKntzDObQYvBbonPG725B8GbQo-9ZeeFMTLrDkxoaA@mail.gmail.com>
-References: <8cb23a1388df4237bd2b132fe0addd83@ocnapvsw3301.ocr.priv>
- <CALLqZ8TxoKntzDObQYvBbonPG725B8GbQo-9ZeeFMTLrDkxoaA@mail.gmail.com>
-From: Greg Gallagher <greg@embeddedgreg.com>
-Date: Tue, 17 Apr 2018 13:18:49 -0400
-Message-ID: <CALLqZ8TNa5Rb8_VyqJpccSvEoJY2zoybnK4uUtMfghmn6WvFLA@mail.gmail.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-Subject: Re: [Xenomai] kernel panic - xenomai3.0.6
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+Subject: [Xenomai] [RFC] Dropping pvalloc/pvfree/pvstrdup from libcopperplate
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,106 +14,88 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Fazio Maurizio <maurizio.fazio@leonardocompany.com>
-Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: "Xenomai@xenomai.org" <Xenomai@xenomai.org>
 
-NVM, found it
 
-On Tue, Apr 17, 2018 at 12:41 PM, Greg Gallagher <greg@embeddedgreg.com> wr=
-ote:
-> I don't see a log attached, my email may have filtered it?
->
-> On Tue, Apr 17, 2018 at 11:27 AM, Fazio Maurizio
-> <maurizio.fazio@leonardocompany.com> wrote:
->> Good morning,
->> I=E2=80=99ve attached a kernel panic problem that occurs during the exec=
-ution of my application.
->> Have you some ideas?
->>
->> Cpu:  Intel Core i7
->> OS: Centos 7 64bit with kernel 3.18.20 and path Xenomai 3.0.6
->>
->> Thanks in advance
->>
->>
->>
->> [cid:image002.jpg@01D3D671.4D19C7A0]
->>
->>
->>
->>
->>
->> Maurizio Fazio
->>
->> Chief Technical Office / Aircraft Systems
->> Software Engineer
->>
->>
->>
->> Leonardo S.p.A.
->> C.so Francia, 426 - Torino - 10146 - Italy
->> Tel. +39 011 756 3308 / 3761
->>
->> maurizio.fazio@leonardocompany.com
->> www.leonardocompany.com
->>
->> =E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=
-=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=
-=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=
-=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=93=
-=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94
->> HELICOPTERS/AERONAUTICS/ELECTRONICS, DEFENCE & SECURITY SYSTEMS/SPACE
->> =E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=
-=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=
-=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=
-=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=93=
-=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94
->>
->>
->>
->>
->> Il presente messaggio e-mail e ogni suo allegato devono intendersi indir=
-izzati esclusivamente al destinatario indicato e considerarsi dal contenuto=
- strettamente riservato e confidenziale. Se non siete l'effettivo destinata=
-rio o avete ricevuto il messaggio e-mail per errore, siete pregati di avver=
-tire immediatamente il mittente e di cancellare il suddetto messaggio e ogn=
-i suo allegato dal vostro sistema informatico. Qualsiasi utilizzo, diffusio=
-ne, copia o archiviazione del presente messaggio da parte di chi non ne =C3=
-=A8 il destinatario =C3=A8 strettamente proibito e pu=C3=B2 dar luogo a res=
-ponsabilit=C3=A0 di carattere civile e penale punibili ai sensi di legge.
->> Questa e-mail ha valore legale solo se firmata digitalmente ai sensi del=
-la normativa vigente.
->> ________________________________
->> The contents of this email message and any attachments are intended sole=
-ly for the addressee(s) and contain confidential and/or privileged informat=
-ion.
->> If you are not the intended recipient of this message, or if this messag=
-e has been addressed to you in error, please immediately notify the sender =
-and then delete this message and any attachments from your system. If you a=
-re not the intended recipient, you are hereby notified that any use, dissem=
-ination, copying, or storage of this message or its attachments is strictly=
- prohibited. Unauthorized disclosure and/or use of information contained in=
- this email message may result in civil and criminal liability. =E2=80=9C
->> This e-mail has legal value according to the applicable laws only if it =
-is digitally signed by the sender
->> -------------- next part --------------
->> A non-text attachment was scrubbed...
->> Name: image002.jpg
->> Type: image/jpeg
->> Size: 3447 bytes
->> Desc: image002.jpg
->> URL: <http://xenomai.org/pipermail/xenomai/attachments/20180417/9dfcc18a=
-/attachment.jpg>
->> -------------- next part --------------
->> A non-text attachment was scrubbed...
->> Name: kernelPanic.JPG
->> Type: image/jpeg
->> Size: 635465 bytes
->> Desc: kernelPanic.JPG
->> URL: <http://xenomai.org/pipermail/xenomai/attachments/20180417/9dfcc18a=
-/attachment.jpe>
->> _______________________________________________
->> Xenomai mailing list
->> Xenomai@xenomai.org
->> https://xenomai.org/mailman/listinfo/xenomai
+-- the context
+
+Non-POSIX APIs Xenomai 3 implements in user-space are all based on
+libcopperplate, a mediating layer which hides the real-time core from
+the real-time API implementation, so that the same API can run over
+Cobalt or native glibc services unmodified. libcopperplate also provides
+common building blocks for implementing real-time APIs.
+
+libcopperplate can be built with support for sharing the main (real-time
+capable) heap memory between multiple processes when --enable-pshared is
+given to the configure script.  Objects stored in this heap can be
+accessed by all processes sharing the same session label (see the
+--session command line argument for applications), and any process which
+belongs to that session can issue allocation requests to this shared
+heap transparently.
+
+The pvalloc(), pvfree() and pvstrdup() routines exposed by
+libcopperplate are wrappers to the internal (real-time capable)
+allocator delivering strictly private, process-local memory, by contrast
+to process-shared chunks returned by the main allocator.
+
+Managing shared blocks requires a bit more CPU cycles per allocation
+requests, since all references to the shared memory are in essence
+offset-based. So the idea was to optimize the allocation of memory
+chunks which are in essence process-private by using a dedicated
+allocator dealing with plain memory references. Should an awful lot of
+private memory be allocated by some processes in the session, this
+separation would keep the pressure off of the main shared heap too.
+
+In the Xenomai code base, xnmalloc() always refers to the main heap,
+which may be shared or not. If --enable-pshared was not given,
+xnmalloc() and pvmalloc() are strictly equivalent, pulling memory from
+the only allocator linked in, which delivers private memory.
+
+-- the issue
+
+When --disable-pshared is in effect (default), the --mem-pool-size
+argument sets the size of the main, process-local heap memory to which
+all of xnmalloc(), pvmalloc() and friends refer to. So far, so good.
+
+When --enable-pshared is in effect, the --mem-pool-size argument sets
+the size of the main, shared heap memory. However, we currently have no
+mean to define the size of the private heap memory in this case, and a
+tiny default value of 8k is built in. This led to ugly side-effects
+reported recently when using the fuse-based registry for applications,
+causing some confusion with OOM errors [1].
+
+To sum up, we need to make the size of the private heap configurable.
+Or, we may reconsider the usefulness of maintaining a separate private
+heap when --enable-pshared is set.
+
+-- the observation
+
+pvmalloc()/pvstrdup() are used only a very few times in the Xenomai
+libraries, and always for small bits. Those allocations are not supposed
+to happen in any time-critical phase of any application either. So the
+two conditions which led to adding the private memory allocator are not
+met by the current Xenomai code base, making that private allocation
+scheme useless in this context.
+
+-- the cure
+
+We have two options:
+
+- considering that pvmalloc() and friends are not part of the public
+interface and drop them bluntly, turning the few existing calls to the
+xnmalloc() interface, solving the heap size configuration problem in the
+same move.
+
+- keeping pvmalloc(), adding some option to set its size for fixing the
+original issue [1].
+
+If you do depend on pvmalloc() today, you may want to make the case for
+keeping it.
+
+Thanks,
+
+[1] http://xenomai.org/pipermail/xenomai/2018-April/038595.html
+
+-- 
+Philippe.
 
