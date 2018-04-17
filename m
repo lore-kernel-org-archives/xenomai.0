@@ -1,12 +1,15 @@
-Date: Mon, 28 May 2018 13:10:22 +0200 (CEST)
-From: Paal Tamas <paal_to@freemail.hu>
-In-Reply-To: <2325d3e2-26a7-f32a-5611-166eb22d5f03@web.de>
-Message-ID: <freemail.20180528131022.81320.1@fmxmldata03.freemail.hu>
+References: <7be9b9c7-7393-eca0-6a86-bcf3d0302271@siemens.com>
+ <667bd118-b8eb-4fbf-cb24-4f4f30114370@siemens.com>
+ <3c4fc185-19af-4285-07a2-148b2a039fec@xenomai.org>
+From: Jan Kiszka <jan.kiszka@siemens.com>
+Message-ID: <43104375-41a6-7327-b053-7074adc3115d@siemens.com>
+Date: Tue, 17 Apr 2018 09:30:25 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; CHARSET=UTF-8
-Content-Transfer-Encoding: QUOTED-PRINTABLE
-Subject: Re: [Xenomai] Posix named semaphore used by two separate
-	applications
+In-Reply-To: <3c4fc185-19af-4285-07a2-148b2a039fec@xenomai.org>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai] [PATCH] copperplate: Drop PI from registry locks
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,62 +18,85 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
+To: Philippe Gerum <rpm@xenomai.org>, Xenomai <xenomai@xenomai.org>
 
-=0A=0AJan Kiszka <jan.kiszka@web.de> =C3=ADrta:=0A>On 2018-05-25 11:18, Paa=
-l Tamas wrote:=0A>> =0A>> =0A>> Jan Kiszka <jan.kiszka@siemens.com> =C3=ADr=
-ta:=0A>>> On 2018-05-24 16:18, Jan Kiszka wrote:=0A>>>> Again, re-adding th=
-e list - please always use "reply to all".=0A>>>>=0A>>>> On 2018-05-24 13:5=
-6, Paal Tamas wrote:=0A>>>>>=0A>>>>>=0A>>>>> Jan Kiszka <jan.kiszka@siemens=
-.com> =C3=ADrta:=0A>>>>>> [re-adding the list]=0A>>>>>>=0A>>>>>> On 2018-05=
--24 13:35, Paal Tamas wrote:=0A>>>>>>>=0A>>>>>>>=0A>>>>>>> Jan Kiszka <jan.=
-kiszka@siemens.com> =C3=ADrta:=0A>>>>>>>> On 2018-05-24 10:50, Paal Tamas w=
-rote:=0A>>>>>>>>> I would like to use the same named semaphore in two separ=
-ate Xenomai binaries. I am using the Posix skin. It does not work as I am e=
-xpecting it. =0A>>>>>>>>> The first instance of my test application creates=
- a named semaphore. It goes to sleep after that. The second instance of the=
- same applications starts than. It realizes that the semaphore with the nam=
-e already exists, so it opens it. The sem_open() returns a valid (like) poi=
-nter. After that all semaphore functions in this second application return =
-EINVAL (22) (Invalid argument). Both the sem_wait() and the sem_close() fun=
-ction behave this way.=0A>>>>>>>>>=0A>>>>>>>>> The same procedure worked fi=
-ne in 2.6.2.1 (the previous version I used). I tried 3.0.5 and the latest g=
-it repository too. The same bad behavior there.=0A>>>>>>>>>=0A>>>>>>>>=0A>>=
->>>>>> Did you configure userspace with --enable-pshared?=0A>>>>>>>>=0A>>>>=
->>>=0A>>>>>>> Yes. I invoked the "configure" script this way:=0A>>>>>>>=0A>=
->>>>>> ./configure --with-core=3Dcobalt --enable-smp --enable-pshared=0A>>>=
->>>=0A>>>>>> OK.=0A>>>>>>=0A>>>>>>>=0A>>>>>>> This is my configuration:=0A>=
->>>>>>=0A>>>>>>> /xeno-config --info=0A>>>>>>> Xenomai version: Xenomai/cob=
-alt v3.0.6 -- #50ef005 (2018-05-13 16:21:13 +0200)=0A>>>>>>> Linux clickand=
-move-NUC 4.9.51xeno #1 SMP Wed May 23 05:14:47 PDT 2018 x86_64 x86_64 x86_6=
-4 GNU/Linux=0A>>>>>>> Kernel parameters: BOOT_IMAGE=3D/boot/vmlinuz-4.9.51x=
-eno root=3DUUID=3D7e90a17b-1ea0-4b84-849f-7d621fe6d580 ro quiet splash vt.h=
-andoff=3D7=0A>>>>>>> I-pipe release #5 detected=0A>>>>>>> Cobalt core 3.0.6=
- detected=0A>>>>>>> Compiler: gcc version 5.4.0 20160609 (Ubuntu 5.4.0-6ubu=
-ntu1~16.04.5)=0A>>>>>>> Build args: --with-core=3Dcobalt --enable-smp --ena=
-ble-pshared=0A>>>>>>>=0A>>>>>>> When I tried the git repository I cheated a=
- bit. I could not find the configure script (neither some others) and all t=
-he makefile.in files were missing, so I copied these files from the xenomai=
--3.0.6.tar.bz2. I've never tried the git  repositore before, always used th=
-e bz2 file(s). In case of the 3.0.5 version I used the bz2 file for the tes=
-ts.=0A>>>>>>=0A>>>>>> Just run scripts/bootstrap when using a git checkout.=
-=0A>>>>>=0A>>>>> Do I need any parameters to the scripts/bootstrap script i=
-n this case or I should simply run it?=0A>>>>>=0A>>>>>>=0A>>>>>> To ensure =
-that we are truly hunting a Xenomai issue: Does your testcase=0A>>>>>> work=
- with plain Linux?=0A>>>>>>=0A>>>>>=0A>>>>> Yes, it works fine under plain =
-Linux. Sorry that I forgot to mention this...=0A>>>>=0A>>>> Confirmed.=0A>>=
->>=0A>>>> In fact, your test also exposes some cleanup issue: When terminat=
-ing a=0A>>>> process, Xenomai does not remove the semaphore, and you need t=
-o reboot=0A>>>> to remove the object.=0A>>>=0A>>> Correction: This is not a=
- wrong behavior, Linux does the same. The test=0A>>> code just has no chanc=
-e to clean up a preexisting sem because of the=0A>>> other problem (EINVAL)=
-.=0A>>>=0A>>> Jan=0A>>>=0A>>>>=0A>>>> Will look into these problems.=0A>>>>=
-=0A>>>> Jan=0A>>>>=0A>>>=0A>> I saw that you created some patches on this i=
-ssue and modified the git repository. I cloned the latest one, rebuilt Xeno=
-mai and my test application but the original EINVAL, Invalid Argument error=
- in case of the second instance of the test application still exists. In ot=
-her words I do not see any change in the behavior.=0A>> Should I rebuild th=
-e Linux kernel too?=0A>=0A>Yes, the fix is targeting the kernel code.=0A>=
-=0A>Jan=0A>=0A=0AAfter rebuilding the kernel the problem is disappeared. No=
-w my test program works as expected.=0AThank you very much!=0A=0ATamas=0A
+On 2018-04-17 09:22, Philippe Gerum wrote:
+> On 04/13/2018 07:51 PM, Jan Kiszka wrote:
+>> None of the callers that run into the locks have RT requirements.
+>>
+>> Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
+>> ---
+>>
+>> As noted before, I think we should even be fine with STD locks, but that
+>> may require more changes.
+>>
+>>  lib/copperplate/registry.c | 2 --
+>>  1 file changed, 2 deletions(-)
+>>
+>> diff --git a/lib/copperplate/registry.c b/lib/copperplate/registry.c
+>> index daefa6c97..1bf0ebfea 100644
+>> --- a/lib/copperplate/registry.c
+>> +++ b/lib/copperplate/registry.c
+>> @@ -175,7 +175,6 @@ int registry_init_file(struct fsobj *fsobj,
+>>  
+>>  	pthread_mutexattr_init(&mattr);
+>>  	pthread_mutexattr_settype(&mattr, mutex_type_attribute);
+>> -	pthread_mutexattr_setprotocol(&mattr, PTHREAD_PRIO_INHERIT);
+>>  	pthread_mutexattr_setpshared(&mattr, PTHREAD_PROCESS_PRIVATE);
+>>  	ret = __bt(-__RT(pthread_mutex_init(&fsobj->lock, &mattr)));
+>>  	pthread_mutexattr_destroy(&mattr);
+>> @@ -758,7 +757,6 @@ int __registry_pkg_init(const char *arg0, char *mountpt, int flags)
+>>  
+>>  	pthread_mutexattr_init(&mattr);
+>>  	pthread_mutexattr_settype(&mattr, mutex_type_attribute);
+>> -	pthread_mutexattr_setprotocol(&mattr, PTHREAD_PRIO_INHERIT);
+>>  	pthread_mutexattr_setpshared(&mattr, PTHREAD_PROCESS_PRIVATE);
+>>  	ret = __bt(-__RT(pthread_mutex_init(&p->lock, &mattr)));
+>>  	pthread_mutexattr_destroy(&mattr);
+>>
+> 
+> This one raises an interesting issue: since commit #8e606e681,
+> registry_{add, destroy}_file() use plain malloc(), therefore are subject
+> to mode switches, dropping the real-time guarantee from object
+> creation/deletion routines such as rt_*_{create, delete}() calls from
+> the Alchemy API.
+> 
+> Previously to such change, some of these routines did not provide such
+> guarantee anyway, e.g. rt_task_create(), but others did like
+> rt_mutex_create(), rt_cond_create().
+> 
+> I'm now questioning those specific changes in registry_{add,
+> destroy}_file(), because they might break applications assuming that rt
+> mode is not lost when calling them, which is still true if the registry
+> is disabled, leading to a fairly confusing inconsistency.
+> 
+> Merging your patch would enforce this change in behavior even more,
+> carving in stone that all object creation and deletion routines which
+> interface with the registry won't be rt-capable anymore.
+
+Sure, we need to sort out the rt_*_create topic prior to being able to
+decide about this one.
+
+> 
+> Would that be generally acceptable?
+
+I would not expect a lot use cases to be affected by that. The bare
+minimum would be documenting this in the 2->3 migration guide.
+
+OTOH, given that this is the stable series, such a change (8e606e681)
+may better wait for 3.1.
+
+> 
+> PS: btw, the memory allocation mess is much worse than I suspected, and
+> it is globally bad: this is not only a matter of properly sizing the
+> private memory heap, but a general performance issues with all
+> allocators, on different aspects and usage patterns. I'll follow up on
+> this later this week with details.
+
+Is that related to 8e606e681 or does it predate it / is orthogonal to it?
+
+Jan
+-- 
+Siemens AG, Corporate Technology, CT RDA IOT SES-DE
+Corporate Competence Center Embedded Linux
 
