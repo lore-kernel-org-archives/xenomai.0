@@ -1,14 +1,15 @@
-From: Fazio Maurizio <maurizio.fazio@leonardocompany.com>
-Date: Wed, 18 Apr 2018 15:46:22 +0000
-Message-ID: <58a11549a6554c2580f9977b05ae8c13@ocnapvsw3301.ocr.priv>
 References: <8cb23a1388df4237bd2b132fe0addd83@ocnapvsw3301.ocr.priv>
  <988_1524033866_5AD6E94A_988_16165_1_c7507d3b-9477-e834-e0e4-f8f7dee397c1@siemens.com>
-In-Reply-To: <988_1524033866_5AD6E94A_988_16165_1_c7507d3b-9477-e834-e0e4-f8f7dee397c1@siemens.com>
-Content-Language: it-IT
+ <58a11549a6554c2580f9977b05ae8c13@ocnapvsw3301.ocr.priv>
+From: Jan Kiszka <jan.kiszka@siemens.com>
+Message-ID: <d6f7f5ce-acf9-a4c7-58d7-60980b51fcbc@siemens.com>
+Date: Wed, 18 Apr 2018 18:02:42 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Subject: [Xenomai] R: kernel panic - xenomai3.0.6
+In-Reply-To: <58a11549a6554c2580f9977b05ae8c13@ocnapvsw3301.ocr.priv>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai] R: kernel panic - xenomai3.0.6
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,101 +18,43 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jan Kiszka <jan.kiszka@siemens.com>, "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Fazio Maurizio <maurizio.fazio@leonardocompany.com>, "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-SGVsbG8gSmFuLA0KVGhhbmtzIGZvciB0aGUgcmVwbHkgYnV0IGF0IHRoZSBtb21lbnQgSSBjYW5u
-b3QgdXBncmFkZSB0aGUga2VybmVsIHZlcnNpb24gb2YgdGhlIHN5c3RlbSA6KA0KDQpJIGV4ZWN1
-dGVkIHRoZSBhcHBsaWNhdGlvbiB3aXRoIGtkdW1wIHNlcnZpY2UgZW5hYmxlZC4gSSBhdHRhY2hl
-ZCB0aGUgdm1jb3JlLWRtZXNnIGZpbGUuDQpDb21wYXJpbmcgdGhlIHZtY29yZS1kbWVzZyBjYWxs
-IHRyYWNlIGF0IHRoZSBlbmQgb2YgdGhlIGZpbGUgd2l0aCB0aGUgY2FsbCB0cmFjZSBJIHNlZSBv
-biB0aGUgc2NyZWVuLCB0aGVyZSBhcmUgb3RoZXIgbGluZXMgSSBkb24ndCBzZWUgaW50byB0aGUg
-ZmlsZS4NClRoZSBmb2xsb3dpbmcgaXMgdGhlIGNvbXBsZXRlIGNhbGwgdHJhY2UgOg0KWyAgMzY4
-LjUwMTIwOV0gS2VybmVsIHBhbmljIC0gbm90IHN5bmNpbmc6IFdhdGNoZG9nIGRldGVjdGVkIGhh
-cmQgTE9DS1VQIG9uIGNwdSAyDQpbICAzNjguNTAxMjY0XSBDUFU6IDIgUElEOiAxNDQ4NiBDb21t
-OiBFWEVfbWlsYnVzIFRhaW50ZWQ6IFAgICAgICAgICAgIE9FICAzLjE4LjIwLXhlbm9tYWkgIzEN
-ClsgIDM2OC41MDEzMTZdIEhhcmR3YXJlIG5hbWU6IENvbmN1cnJlbnQgVGVjaG5vbG9naWVzIFZN
-RSBTQkMvVlAgQjF4L21zZCwgQklPUyAzLjExLjAxIDA5LzE5LzIwMTYgWyAgMzY4LjUwMTM3MV0g
-IDAwMDAwMDAwMDAwMDAwMDAgMDAwMDAwMDBhYjYyNGI4NyBmZmZmODgwNDFmNzA1YzA4IGZmZmZm
-ZmZmODE1ZTg1NmYgWyAgMzY4LjUwMTQyNV0gIDAwMDAwMDAwMDAwMDAwMDAgZmZmZmZmZmY4MTdl
-MTJmOCBmZmZmODgwNDFmNzA1Yzg4IGZmZmZmZmZmODE1ZTI0ZmYgWyAgMzY4LjUwMTQ3OV0gIDAw
-MDAwMDAwMDAwMDAwMTAgZmZmZjg4MDQxZjcwNWM5OCBmZmZmODgwNDFmNzA1YzM4IDAwMDAwMDAw
-YWI2MjRiODcgWyAgMzY4LjUwMTUzMl0gQ2FsbCBUcmFjZToNClsgIDM2OC41MDE1NDldICA8Tk1J
-PiAgWzxmZmZmZmZmZjgxNWU4NTZmPl0gZHVtcF9zdGFjaysweDQ2LzB4NTggWyAgMzY4LjUwMTU5
-N10gIFs8ZmZmZmZmZmY4MTVlMjRmZj5dIHBhbmljKzB4ZGIvMHgyMGQgWyAgMzY4LjUwMTYzMV0g
-IFs8ZmZmZmZmZmY4MTEwYWNhMD5dID8gcmVzdGFydF93YXRjaGRvZ19ocnRpbWVyKzB4NTAvMHg1
-MA0KWyAgMzY4LjUwMTY3NV0gIFs8ZmZmZmZmZmY4MTEwYWQ1YT5dIHdhdGNoZG9nX292ZXJmbG93
-X2NhbGxiYWNrKzB4YmEvMHhjMA0KWyAgMzY4LjUwMTcxOF0gIFs8ZmZmZmZmZmY4MTEyMDM4ZD5d
-IF9fcGVyZl9ldmVudF9vdmVyZmxvdysweDlkLzB4MjUwIFsgIDM2OC41MDE3NTldICBbPGZmZmZm
-ZmZmODExMjBjYzQ+XSBwZXJmX2V2ZW50X292ZXJmbG93KzB4MTQvMHgyMCBbICAzNjguNTAxNzk4
-XSAgWzxmZmZmZmZmZjgxMDFmYzA5Pl0gaW50ZWxfcG11X2hhbmRsZV9pcnErMHgxZjkvMHg0MjAg
-WyAgMzY4LjUwMTg0MF0gIFs8ZmZmZmZmZmY4MTAxN2JhYj5dIHBlcmZfZXZlbnRfbm1pX2hhbmRs
-ZXIrMHgyYi8weDUwIFsgIDM2OC41MDE4ODFdICBbPGZmZmZmZmZmODEwMDZiOWI+XSBubWlfaGFu
-ZGxlKzB4N2IvMHhlMCBbICAzNjguNTAxOTE2XSAgWzxmZmZmZmZmZjgxMDA3MGM0Pl0gZGVmYXVs
-dF9kb19ubWkrMHg0NC8weDEzMCBbICAzNjguNTAxOTUzXSAgWzxmZmZmZmZmZjgxMDA3MjgwPl0g
-ZG9fbm1pKzB4ZDAvMHhmMCBbICAzNjguNTAxOTg2XSAgWzxmZmZmZmZmZjgxNWYxM2NhPl0gZW5k
-X3JlcGVhdF9ubWkrMHgxZS8weDJlID8ga3RpbWVfZ2V0ID8ga3RpbWVfZ2V0ID8ga3RpbWVfZ2V0
-DQo8PEVPRT4+ICAgdGlja19pcnFfZW50ZXINCmlycV9lbnRlcg0KX19pcGlwZV9kb19zeW5jX3N0
-YWdlDQpfX2lwaXBlX2RvX3N5bmNfcGlwZWxpbmUNCmRpc3BhdGNoX2lycV9oZWFkDQpfX2lwaXBl
-X2Rpc3BhdGNoX2lycQ0KX19pcGlwZV9oYW5kbGVfaXJxDQphcGljX3RpbWVyX2ludGVycnVwdA0K
-PyBfX2lwaXBlX2hhbHRfcm9vdA0KPyBtd2FpdF9pZGxlDQphcmNoX2NwdV9pZGxlDQpjcHVfc3Rh
-cnR1cF9lbnRyeQ0Kc3RhcnRfc2Vjb25kYXJ5DQoNCg0KVGhhbmtzIGluIGFkdmFuY2UNCg0KTWF1
-cml6aW8gRmF6aW8NCg0KQ2hpZWYgVGVjaG5pY2FsIE9mZmljZSAvIEFpcmNyYWZ0IFN5c3RlbXMg
-U29mdHdhcmUgRW5naW5lZXINCg0KDQoNCkxlb25hcmRvIFMucC5BLg0KQy5zbyBGcmFuY2lhLCA0
-MjYgLSBUb3Jpbm8gLSAxMDE0NiAtIEl0YWx5IFRlbC4gKzM5IDAxMSA3NTYgMzMwOCAvIDM3NjEN
-Cg0KbWF1cml6aW8uZmF6aW9AbGVvbmFyZG9jb21wYW55LmNvbQ0Kd3d3Lmxlb25hcmRvY29tcGFu
-eS5jb20NCg0K4oCU4oCU4oCU4oCU4oCU4oCU4oCU4oCU4oCU4oCU4oCU4oCU4oCU4oCU4oCU4oCU
-4oCU4oCU4oCU4oCU4oCU4oCU4oCU4oCU4oCU4oCU4oCU4oCU4oCU4oCU4oCU4oCU4oCT4oCU4oCU
-4oCU4oCU4oCU4oCUDQpIRUxJQ09QVEVSUy9BRVJPTkFVVElDUy9FTEVDVFJPTklDUywgREVGRU5D
-RSAmIFNFQ1VSSVRZIFNZU1RFTVMvU1BBQ0Ug4oCU4oCU4oCU4oCU4oCU4oCU4oCU4oCU4oCU4oCU
-4oCU4oCU4oCU4oCU4oCU4oCU4oCU4oCU4oCU4oCU4oCU4oCU4oCU4oCU4oCU4oCU4oCU4oCU4oCU
-4oCU4oCU4oCU4oCT4oCU4oCU4oCU4oCU4oCU4oCUDQoNCg0KDQpDb21wYW55IEdlbmVyYWwgVXNl
-DQoNCg0KSWwgcHJlc2VudGUgbWVzc2FnZ2lvIGUtbWFpbCBlIG9nbmkgc3VvIGFsbGVnYXRvIGRl
-dm9ubyBpbnRlbmRlcnNpIGluZGlyaXp6YXRpIGVzY2x1c2l2YW1lbnRlIGFsIGRlc3RpbmF0YXJp
-byBpbmRpY2F0byBlIGNvbnNpZGVyYXJzaSBkYWwgY29udGVudXRvIHN0cmV0dGFtZW50ZSByaXNl
-cnZhdG8gZSBjb25maWRlbnppYWxlLiBTZSBub24gc2lldGUgbCdlZmZldHRpdm8gZGVzdGluYXRh
-cmlvIG8gYXZldGUgcmljZXZ1dG8gaWwgbWVzc2FnZ2lvIGUtbWFpbCBwZXIgZXJyb3JlLCBzaWV0
-ZSBwcmVnYXRpIGRpIGF2dmVydGlyZSBpbW1lZGlhdGFtZW50ZSBpbCBtaXR0ZW50ZSBlIGRpIGNh
-bmNlbGxhcmUgaWwgc3VkZGV0dG8gbWVzc2FnZ2lvIGUgb2duaSBzdW8gYWxsZWdhdG8gZGFsIHZv
-c3RybyBzaXN0ZW1hIGluZm9ybWF0aWNvLiBRdWFsc2lhc2kgdXRpbGl6em8sIGRpZmZ1c2lvbmUs
-IGNvcGlhIG8gYXJjaGl2aWF6aW9uZSBkZWwgcHJlc2VudGUgbWVzc2FnZ2lvIGRhIHBhcnRlIGRp
-IGNoaSBub24gbmUgw6ggaWwgZGVzdGluYXRhcmlvIMOoIHN0cmV0dGFtZW50ZSBwcm9pYml0byBl
-IHB1w7IgZGFyIGx1b2dvIGEgcmVzcG9uc2FiaWxpdMOgIGRpIGNhcmF0dGVyZSBjaXZpbGUgZSBw
-ZW5hbGUgcHVuaWJpbGkgYWkgc2Vuc2kgZGkgbGVnZ2UuDQpRdWVzdGEgZS1tYWlsIGhhIHZhbG9y
-ZSBsZWdhbGUgc29sbyBzZSBmaXJtYXRhIGRpZ2l0YWxtZW50ZSBhaSBzZW5zaSBkZWxsYSBub3Jt
-YXRpdmEgdmlnZW50ZS4NCg0KVGhlIGNvbnRlbnRzIG9mIHRoaXMgZW1haWwgbWVzc2FnZSBhbmQg
-YW55IGF0dGFjaG1lbnRzIGFyZSBpbnRlbmRlZCBzb2xlbHkgZm9yIHRoZSBhZGRyZXNzZWUocykg
-YW5kIGNvbnRhaW4gY29uZmlkZW50aWFsIGFuZC9vciBwcml2aWxlZ2VkIGluZm9ybWF0aW9uLg0K
-SWYgeW91IGFyZSBub3QgdGhlIGludGVuZGVkIHJlY2lwaWVudCBvZiB0aGlzIG1lc3NhZ2UsIG9y
-IGlmIHRoaXMgbWVzc2FnZSBoYXMgYmVlbiBhZGRyZXNzZWQgdG8geW91IGluIGVycm9yLCBwbGVh
-c2UgaW1tZWRpYXRlbHkgbm90aWZ5IHRoZSBzZW5kZXIgYW5kIHRoZW4gZGVsZXRlIHRoaXMgbWVz
-c2FnZSBhbmQgYW55IGF0dGFjaG1lbnRzIGZyb20geW91ciBzeXN0ZW0uIElmIHlvdSBhcmUgbm90
-IHRoZSBpbnRlbmRlZCByZWNpcGllbnQsIHlvdSBhcmUgaGVyZWJ5IG5vdGlmaWVkIHRoYXQgYW55
-IHVzZSwgZGlzc2VtaW5hdGlvbiwgY29weWluZywgb3Igc3RvcmFnZSBvZiB0aGlzIG1lc3NhZ2Ug
-b3IgaXRzIGF0dGFjaG1lbnRzIGlzIHN0cmljdGx5IHByb2hpYml0ZWQuIFVuYXV0aG9yaXplZCBk
-aXNjbG9zdXJlIGFuZC9vciB1c2Ugb2YgaW5mb3JtYXRpb24gY29udGFpbmVkIGluIHRoaXMgZW1h
-aWwgbWVzc2FnZSBtYXkgcmVzdWx0IGluIGNpdmlsIGFuZCBjcmltaW5hbCBsaWFiaWxpdHkuIOKA
-nA0KVGhpcyBlLW1haWwgaGFzIGxlZ2FsIHZhbHVlIGFjY29yZGluZyB0byB0aGUgYXBwbGljYWJs
-ZSBsYXdzIG9ubHkgaWYgaXQgaXMgZGlnaXRhbGx5IHNpZ25lZCBieSB0aGUgc2VuZGVyDQotLS0t
-LU1lc3NhZ2dpbyBvcmlnaW5hbGUtLS0tLQ0KRGE6IEphbiBLaXN6a2EgW21haWx0bzpqYW4ua2lz
-emthQHNpZW1lbnMuY29tXQ0KSW52aWF0bzogbWVyY29sZWTDrCAxOCBhcHJpbGUgMjAxOCAwODo0
-NA0KQTogRmF6aW8gTWF1cml6aW87IHhlbm9tYWlAeGVub21haS5vcmcNCk9nZ2V0dG86IFJlOiBr
-ZXJuZWwgcGFuaWMgLSB4ZW5vbWFpMy4wLjYNCg0KT24gMjAxOC0wNC0xNyAxNzoyNywgRmF6aW8g
-TWF1cml6aW8gd3JvdGU6DQo+IEdvb2QgbW9ybmluZywNCj4gSeKAmXZlIGF0dGFjaGVkIGEga2Vy
-bmVsIHBhbmljIHByb2JsZW0gdGhhdCBvY2N1cnMgZHVyaW5nIHRoZSBleGVjdXRpb24gb2YgbXkg
-YXBwbGljYXRpb24uDQo+IEhhdmUgeW91IHNvbWUgaWRlYXM/DQo+DQo+IENwdTogIEludGVsIENv
-cmUgaTcNCj4gT1M6IENlbnRvcyA3IDY0Yml0IHdpdGgga2VybmVsIDMuMTguMjAgYW5kIHBhdGgg
-WGVub21haSAzLjAuNg0KDQpQbGVhc2UgdXNlIGEgc3VwcG9ydGVkIGtlcm5lbCB2ZXJzaW9uLiBU
-aGF0IGlzIGN1cnJlbnRseSA0LjkgWzFdIG9yDQo0LjQtYmFzZWQgWzJdLg0KDQpUaGVuIHBsZWFz
-ZSBjYXRjaCBzdWNoIGJ1Z3MgKGlmIHRoZXkgc3RpbGwgb2NjdXIpIGFzIHRleHQgbG9nLCB1c2lu
-ZyBhDQpVQVJUIGNvbnNvbGUgb3IgbmV0Y29uc29sZSB0byBleHRyYWN0IHRoZSBpbmZvcm1hdGlv
-biBmcm9tIHRoZSBtYWNoaW5lLg0KV2UgY2Fubm90IHNlZSBpbiB5b3VyIHBpY3R1cmUgaWYgdGhh
-dCB3YXMgdGhlIGZpcnN0IGlzc3VlIHRoZSBrZXJuZWwNCmZvdW5kIG9yIGp1c3QgYSBzdWJzZXF1
-ZW50IGZhdWx0Lg0KDQpKYW4NCg0KWzFdIGh0dHA6Ly9naXQueGVub21haS5vcmcvaXBpcGUuZ2l0
-L2xvZy8/aD1pcGlwZS00LjkueQ0KWzJdIGh0dHA6Ly9naXQueGVub21haS5vcmcvaXBpcGUtamtp
-LmdpdC9sb2cvP2g9Zm9yLXVwc3RyZWFtLzQuNC11cGRhdGUNCg0KLS0NClNpZW1lbnMgQUcsIENv
-cnBvcmF0ZSBUZWNobm9sb2d5LCBDVCBSREEgSU9UIFNFUy1ERQ0KQ29ycG9yYXRlIENvbXBldGVu
-Y2UgQ2VudGVyIEVtYmVkZGVkIExpbnV4DQotLS0tLS0tLS0tLS0tLSBuZXh0IHBhcnQgLS0tLS0t
-LS0tLS0tLS0KQW4gZW1iZWRkZWQgYW5kIGNoYXJzZXQtdW5zcGVjaWZpZWQgdGV4dCB3YXMgc2Ny
-dWJiZWQuLi4KTmFtZTogdm1jb3JlLWRtZXNnLnR4dApVUkw6IDxodHRwOi8veGVub21haS5vcmcv
-cGlwZXJtYWlsL3hlbm9tYWkvYXR0YWNobWVudHMvMjAxODA0MTgvMGRhY2Y0MjYvYXR0YWNobWVu
-dC50eHQ+Cg==
+On 2018-04-18 17:46, Fazio Maurizio wrote:
+> Hello Jan,
+> Thanks for the reply but at the moment I cannot upgrade the kernel version of the system :(
+> 
+> I executed the application with kdump service enabled. I attached the vmcore-dmesg file.
+> Comparing the vmcore-dmesg call trace at the end of the file with the call trace I see on the screen, there are other lines I don't see into the file.
+> The following is the complete call trace :
+> [  368.501209] Kernel panic - not syncing: Watchdog detected hard LOCKUP on cpu 2
+> [  368.501264] CPU: 2 PID: 14486 Comm: EXE_milbus Tainted: P           OE  3.18.20-xenomai #1
+> [  368.501316] Hardware name: Concurrent Technologies VME SBC/VP B1x/msd, BIOS 3.11.01 09/19/2016 [  368.501371]  0000000000000000 00000000ab624b87 ffff88041f705c08 ffffffff815e856f [  368.501425]  0000000000000000 ffffffff817e12f8 ffff88041f705c88 ffffffff815e24ff [  368.501479]  0000000000000010 ffff88041f705c98 ffff88041f705c38 00000000ab624b87 [  368.501532] Call Trace:
+> [  368.501549]  <NMI>  [<ffffffff815e856f>] dump_stack+0x46/0x58 [  368.501597]  [<ffffffff815e24ff>] panic+0xdb/0x20d [  368.501631]  [<ffffffff8110aca0>] ? restart_watchdog_hrtimer+0x50/0x50
+> [  368.501675]  [<ffffffff8110ad5a>] watchdog_overflow_callback+0xba/0xc0
+> [  368.501718]  [<ffffffff8112038d>] __perf_event_overflow+0x9d/0x250 [  368.501759]  [<ffffffff81120cc4>] perf_event_overflow+0x14/0x20 [  368.501798]  [<ffffffff8101fc09>] intel_pmu_handle_irq+0x1f9/0x420 [  368.501840]  [<ffffffff81017bab>] perf_event_nmi_handler+0x2b/0x50 [  368.501881]  [<ffffffff81006b9b>] nmi_handle+0x7b/0xe0 [  368.501916]  [<ffffffff810070c4>] default_do_nmi+0x44/0x130 [  368.501953]  [<ffffffff81007280>] do_nmi+0xd0/0xf0 [  368.501986]  [<ffffffff815f13ca>] end_repeat_nmi+0x1e/0x2e ? ktime_get ? ktime_get ? ktime_get
+> <<EOE>>   tick_irq_enter
+> irq_enter
+> __ipipe_do_sync_stage
+> __ipipe_do_sync_pipeline
+> dispatch_irq_head
+> __ipipe_dispatch_irq
+> __ipipe_handle_irq
+> apic_timer_interrupt
+> ? __ipipe_halt_root
+> ? mwait_idle
+> arch_cpu_idle
+> cpu_startup_entry
+> start_secondary
+> 
+
+OK, is the system actually locked up at that point - or is the Linux
+watchdog just upset that your real-time application is stealing too much
+time from Linux?
+
+Jan
+
+-- 
+Siemens AG, Corporate Technology, CT RDA IOT SES-DE
+Corporate Competence Center Embedded Linux
+
