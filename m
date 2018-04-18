@@ -1,14 +1,15 @@
+From: "Pham, Phong" <phamp@ddc-web.com>
+Date: Wed, 18 Apr 2018 23:02:04 +0000
+Message-ID: <C2EC5BA46D13CD44B5915A8FEEB4C44E8489E20B@DDCEXCH.ddc-ny.com>
 References: <C2EC5BA46D13CD44B5915A8FEEB4C44E8488E31A@DDCEXCH.ddc-ny.com>
  <2fa46484-f8e1-ffbd-5e67-79d6345d08d2@xenomai.org>
  <C2EC5BA46D13CD44B5915A8FEEB4C44E8489E1E1@DDCEXCH.ddc-ny.com>
-From: Philippe Gerum <rpm@xenomai.org>
-Message-ID: <b72099ab-d43f-ae57-7cea-fa801cd98d1c@xenomai.org>
-Date: Wed, 18 Apr 2018 21:58:03 +0200
-MIME-Version: 1.0
-In-Reply-To: <C2EC5BA46D13CD44B5915A8FEEB4C44E8489E1E1@DDCEXCH.ddc-ny.com>
-Content-Type: text/plain; charset=utf-8
+ <b72099ab-d43f-ae57-7cea-fa801cd98d1c@xenomai.org>
+In-Reply-To: <b72099ab-d43f-ae57-7cea-fa801cd98d1c@xenomai.org>
 Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+MIME-Version: 1.0
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 Subject: Re: [Xenomai] mmap when using in conjunction with mapper to
  retrieve memory mapped IO space
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
@@ -19,37 +20,53 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "Pham, Phong" <phamp@ddc-web.com>, "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Philippe Gerum <rpm@xenomai.org>, "xenomai@xenomai.org" <xenomai@xenomai.org>
 Cc: "Hillman, Robert" <hillman@ddc-web.com>
 
-On 04/18/2018 09:33 PM, Pham, Phong wrote:
-> 
-> Hi,
-> 
-> Instead of  symbol `mmap' out of range, I now have symbol `malloc' out of range.  I removed  all the -fPIC in my environment.  I have to recompile libc???  I never compiled libc and wants to avoid it.
-
-Of course not.
-
-> 
-> Any suggestion on
-> R_PPC_REL24 relocation at 0x0ffacd3c for symbol `mmap/malloc' out of range
-> 
-
-This is likely happening because the default auto-init glue module for a
-final executable is mentioned in the flags, you either want to pass
---auto-init-solib if you do need auto-init for bootstrapping a DSO, or
---no-auto-init if you don't care about auto-bootstrap, along with
---ldflags to xeno-config.
-
-http://www.xenomai.org/documentation/xenomai-3/html/man1/xeno-config/index.html
-
-> 
-> I suggest you add the missing --posix in the LDFLAGS as well.  After all, I copied my app from this very snippet and that's why I get the error.
-> 
-
-As mentioned in the doc you are referring to, this example is about
-building a trivial VxWorks app, not a POSIX one.
-
--- 
-Philippe.
-
+4oCcVGhpcyBpcyBsaWtlbHkgaGFwcGVuaW5nIGJlY2F1c2UgdGhlIGRlZmF1bHQgYXV0by1pbml0
+IGdsdWUgbW9kdWxlIGZvciBhIGZpbmFsIGV4ZWN1dGFibGUgaXMgbWVudGlvbmVkIGluIHRoZSBm
+bGFncywgeW91IGVpdGhlciB3YW50IHRvIHBhc3MgLS1hdXRvLWluaXQtc29saWIgaWYgeW91IGRv
+IG5lZWQgYXV0by1pbml0IGZvciBib290c3RyYXBwaW5nIGEgRFNPLCBvciAtLW5vLWF1dG8taW5p
+dCBpZiB5b3UgZG9uJ3QgY2FyZSBhYm91dCBhdXRvLWJvb3RzdHJhcCwgYWxvbmcgd2l0aCAtLWxk
+ZmxhZ3MgdG8geGVuby1jb25maWcuDQoNCg0KDQpodHRwOi8vd3d3Lnhlbm9tYWkub3JnL2RvY3Vt
+ZW50YXRpb24veGVub21haS0zL2h0bWwvbWFuMS94ZW5vLWNvbmZpZy9pbmRleC5odG1s4oCcDQoN
+Cg0KDQoNCg0KSSBzZWUuICBBZnRlciBhZGRpbmcgZWl0aGVyIC0tYXV0by1pbml0LXNvbGliIG9y
+IC0tbm8tYXV0by1pbml0IHdoZW4gY29tcGlsaW5nIGZvciBsaWJyYXJ5LCBhbG9uZyB3aXRoIGNv
+bXBpbGVyIG9wdGlvbiAtZlBJQywgbW1hcCgpIHN0aWxsIHJldHVybnMgLTE7IChXL291dCAtZlBJ
+QywgbXVubWFwKCkgY2Fubm90IGJlIHJlbG9jYXRlZCAoc2ltaWxhciB0eXBlcyBvZiBlcnJvciBs
+aWtlIGJlZm9yZSkuICBIb3dldmVyLCBlcnJubyBpcyAwLiAgSG93IGNvbWUgZXJybm8gcmV0dXJu
+cyDigJxubyBlcnJvcuKAnSB3aGVuIG1tYXAoKSByZXR1cm5zIGZhaWx1cmU/DQoNCg0KDQpQaG9u
+Zy4NCg0KDQoNCi0tLS0tT3JpZ2luYWwgTWVzc2FnZS0tLS0tDQpGcm9tOiBQaGlsaXBwZSBHZXJ1
+bSBbbWFpbHRvOnJwbUB4ZW5vbWFpLm9yZ10NClNlbnQ6IFdlZG5lc2RheSwgQXByaWwgMTgsIDIw
+MTggMTI6NTggUE0NClRvOiBQaGFtLCBQaG9uZzsgeGVub21haUB4ZW5vbWFpLm9yZw0KQ2M6IEhp
+bGxtYW4sIFJvYmVydA0KU3ViamVjdDogUmU6IFtYZW5vbWFpXSBtbWFwIHdoZW4gdXNpbmcgaW4g
+Y29uanVuY3Rpb24gd2l0aCBtYXBwZXIgdG8gcmV0cmlldmUgbWVtb3J5IG1hcHBlZCBJTyBzcGFj
+ZQ0KDQoNCg0KT24gMDQvMTgvMjAxOCAwOTozMyBQTSwgUGhhbSwgUGhvbmcgd3JvdGU6DQoNCj4N
+Cg0KPiBIaSwNCg0KPg0KDQo+IEluc3RlYWQgb2YgIHN5bWJvbCBgbW1hcCcgb3V0IG9mIHJhbmdl
+LCBJIG5vdyBoYXZlIHN5bWJvbCBgbWFsbG9jJyBvdXQgb2YgcmFuZ2UuICBJIHJlbW92ZWQgIGFs
+bCB0aGUgLWZQSUMgaW4gbXkgZW52aXJvbm1lbnQuICBJIGhhdmUgdG8gcmVjb21waWxlIGxpYmM/
+Pz8gIEkgbmV2ZXIgY29tcGlsZWQgbGliYyBhbmQgd2FudHMgdG8gYXZvaWQgaXQuDQoNCg0KDQpP
+ZiBjb3Vyc2Ugbm90Lg0KDQoNCg0KPg0KDQo+IEFueSBzdWdnZXN0aW9uIG9uDQoNCj4gUl9QUENf
+UkVMMjQgcmVsb2NhdGlvbiBhdCAweDBmZmFjZDNjIGZvciBzeW1ib2wgYG1tYXAvbWFsbG9jJyBv
+dXQgb2YNCg0KPiByYW5nZQ0KDQo+DQoNCg0KDQpUaGlzIGlzIGxpa2VseSBoYXBwZW5pbmcgYmVj
+YXVzZSB0aGUgZGVmYXVsdCBhdXRvLWluaXQgZ2x1ZSBtb2R1bGUgZm9yIGEgZmluYWwgZXhlY3V0
+YWJsZSBpcyBtZW50aW9uZWQgaW4gdGhlIGZsYWdzLCB5b3UgZWl0aGVyIHdhbnQgdG8gcGFzcyAt
+LWF1dG8taW5pdC1zb2xpYiBpZiB5b3UgZG8gbmVlZCBhdXRvLWluaXQgZm9yIGJvb3RzdHJhcHBp
+bmcgYSBEU08sIG9yIC0tbm8tYXV0by1pbml0IGlmIHlvdSBkb24ndCBjYXJlIGFib3V0IGF1dG8t
+Ym9vdHN0cmFwLCBhbG9uZyB3aXRoIC0tbGRmbGFncyB0byB4ZW5vLWNvbmZpZy4NCg0KDQoNCmh0
+dHA6Ly93d3cueGVub21haS5vcmcvZG9jdW1lbnRhdGlvbi94ZW5vbWFpLTMvaHRtbC9tYW4xL3hl
+bm8tY29uZmlnL2luZGV4Lmh0bWwNCg0KDQoNCj4NCg0KPiBJIHN1Z2dlc3QgeW91IGFkZCB0aGUg
+bWlzc2luZyAtLXBvc2l4IGluIHRoZSBMREZMQUdTIGFzIHdlbGwuICBBZnRlciBhbGwsIEkgY29w
+aWVkIG15IGFwcCBmcm9tIHRoaXMgdmVyeSBzbmlwcGV0IGFuZCB0aGF0J3Mgd2h5IEkgZ2V0IHRo
+ZSBlcnJvci4NCg0KPg0KDQoNCg0KQXMgbWVudGlvbmVkIGluIHRoZSBkb2MgeW91IGFyZSByZWZl
+cnJpbmcgdG8sIHRoaXMgZXhhbXBsZSBpcyBhYm91dCBidWlsZGluZyBhIHRyaXZpYWwgVnhXb3Jr
+cyBhcHAsIG5vdCBhIFBPU0lYIG9uZS4NCg0KDQoNCi0tDQoNClBoaWxpcHBlLg0KDQpOb3RpY2U6
+IFRoaXMgZS1tYWlsIGFuZCBhbnkgZmlsZXMgdHJhbnNtaXR0ZWQgd2l0aCBpdCBtYXkgY29udGFp
+biBEYXRhIERldmljZSBDb3Jwb3JhdGlvbidzIHByaXZpbGVnZWQgYW5kIHByb3ByaWV0YXJ5IGlu
+Zm9ybWF0aW9uLiBJdCBpcyBpbnRlbmRlZCBzb2xlbHkgZm9yIHRoZSB1c2Ugb2YgdGhlIGluZGl2
+aWR1YWwgb3IgZW50aXR5IHRvIHdob20gaXQgaXMgYWRkcmVzc2VkLiBJZiB5b3UgYXJlIG5vdCB0
+aGUgbmFtZWQgcmVjaXBpZW50IG9mIHRoaXMgdHJhbnNtaXNzaW9uLCBhbnkgZGlzY2xvc3VyZSwg
+Y29weWluZywgZGlzdHJpYnV0aW9uIG9yIHJlbGlhbmNlIG9uIHRoZSBjb250ZW50cyBvZiB0aGlz
+IG1lc3NhZ2UgaXMgcHJvaGliaXRlZC4gSWYgeW91IHJlY2VpdmVkIHRoaXMgZS1tYWlsIGluIGVy
+cm9yLCBwbGVhc2UgZGVzdHJveSBpdCBhbmQgYW55IGF0dGFjaGVkIGZpbGVzIGFuZCBub3RpZnkg
+bWUgaW1tZWRpYXRlbHkuDQo=
