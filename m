@@ -1,16 +1,14 @@
 MIME-Version: 1.0
-In-Reply-To: <CAOuPNLj9WoyAbv3d6jZjaFto9FT+_ZnvH6Skkopd26Z_4Bs9+w@mail.gmail.com>
-References: <1523454871.2312.15.camel@smigroup.net>
- <e0a935b3-8f75-484f-5324-9c5694476bfc@xenomai.org>
- <1523457598.2312.18.camel@smigroup.net>
- <627da48b-4a8d-e8e4-b521-a3fe99304cae@xenomai.org>
- <1524043270.2300.2.camel@smigroup.net>
- <CAOuPNLj9WoyAbv3d6jZjaFto9FT+_ZnvH6Skkopd26Z_4Bs9+w@mail.gmail.com>
+In-Reply-To: <4875254d-fa4b-9160-aecf-9f9dc624d708@univ-grenoble-alpes.fr>
+References: <57898ff1-afda-849d-dbd6-be3a480d44a8@univ-grenoble-alpes.fr>
+ <CALLqZ8QjpDNEyr0kkEaktkd87gJ6+gjZB3bQ5UaXE8Fh4++xXA@mail.gmail.com>
+ <4875254d-fa4b-9160-aecf-9f9dc624d708@univ-grenoble-alpes.fr>
 From: Greg Gallagher <greg@embeddedgreg.com>
-Date: Wed, 18 Apr 2018 09:45:13 -0400
-Message-ID: <CALLqZ8T+pFjMOt9Oqruy+NJuVxcV_6YgaXq_2_HqYUV2ew-VAg@mail.gmail.com>
+Date: Wed, 18 Apr 2018 09:48:07 -0400
+Message-ID: <CALLqZ8S5H0qe=p0p7MzYQaYQxurjK4j2neYjtkLGWvNcndNgSQ@mail.gmail.com>
 Content-Type: text/plain; charset="UTF-8"
-Subject: Re: [Xenomai] rt_task_wait_period() does not return -EWOULDBLOCK
+Content-Transfer-Encoding: quoted-printable
+Subject: Re: [Xenomai] Questions about IRQ
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -19,93 +17,100 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Pintu Kumar <pintu.ping@gmail.com>
-Cc: xenomai <xenomai@xenomai.org>
+To: Jean-Marc Lenoir <jean-marc.lenoir@univ-grenoble-alpes.fr>
+Cc: "Xenomai@xenomai.org" <xenomai@xenomai.org>
 
-What version was this working in?  I'm assuming you are working out of
-stable-3.0.x? If you reverted to an older git commit please post the
-commit.
+Take a look at this header file, it will eventually be documented properly.
+
+https://git.xenomai.org/xenomai-3.git/tree/include/cobalt/kernel/rtdm/udd.h=
+?id=3D33dd9ce1b5765e3f9da6de21ea647ea3cd454ba9
+
+I keep meaning to do an example, hopefully I'll make some time sooner
+than later.
 
 -Greg
 
-On Wed, Apr 18, 2018 at 9:17 AM, Pintu Kumar <pintu.ping@gmail.com> wrote:
-> Oh yes.
-> I was about to post the similar problem with rt_task_wait_period(NULL).
+On Wed, Apr 18, 2018 at 5:16 AM, Jean-Marc Lenoir
+<jean-marc.lenoir@univ-grenoble-alpes.fr> wrote:
+> Thanks for the explanations! It's clear for me now.
+> UDD seems to be exactly what I would like, so if you find some examples
+> please tell me.
 >
-> I did "git pull" for my xenomai-3 repo and installed the newer version.
-> After that weird things started happening to my previous test program
-> for latency measurement.
-> The latency value started giving all wrong results.
-> In my test programs I was using: rt_task_set_period(100 us) and
-> measuring latency with rt_task_wait_period(NULL).
-> But, now rt_task_wait_period() returns immediately.
->
-> Then, I reverted back the entire xenomai-3 to my older version.
-> And everything works fine for me.
->
-> So, it looks like there is some change happened in latest xenomai-3
-> repo, which disturbed the rt_task_wait_period API.
->
-> Please check, else all my previous efforts will go in vain.
+> Jean-Marc
 >
 >
-> Thanks,
-> Pintu
->
->
->
-> On Wed, Apr 18, 2018 at 2:51 PM, Mauro Salvini
-> <mauro.salvini@smigroup.net> wrote:
->> On Wed, 2018-04-11 at 16:42 +0200, Philippe Gerum wrote:
->>> On 04/11/2018 04:39 PM, Mauro Salvini wrote:
->>> > On Wed, 2018-04-11 at 16:20 +0200, Philippe Gerum wrote:
->>> > > On 04/11/2018 03:54 PM, Mauro Salvini wrote:
->>> > > > Hi,
->>> > > >
->>> > > > I'm facing an unexpected behavior of rt_task_wait_period().
->>> > > >
->>> > > >
->>> >
->>> > ...
->>> >
->>> > > Please try this and let me know if the situation gets any better:
->>> >
->>> > Yes, now it works as expected.
->>> >
->>> > Thank you Philippe.
->>> >
->>> > Best regards.
->>> >
->>> > Mauro
->>> >
->>> >
+> Le 17/04/2018 =C3=A0 18:38, Greg Gallagher a =C3=A9crit :
+>>
+>>      This API is the API for the cobalt kernel and used in kernel
+>> space.  These functions aren't available in user space.  Your user
+>> program is failing to build because the data structures exist in the
+>> kernel and not in user space.
+>>      You can create an RTDM driver to handle the IRQs from the PCI
+>> board and then a user space program to read data from the driver.
+>> Usually you can't have the Linux driver and the xenomai driver loaded
+>> at the same time, for drivers like RTnet, serial and SPI I have to
+>> unload the Linux driver or else the Xenomai probe function won't be
+>> called because the Linux driver has registered itself for the
+>> hardware.  I guess there could be exceptions to that rule.
+>>      If you want examples for RTDM drivers look in the drivers
+>> directory.  You can also look at using UDD driver to control the
+>> device from user space. When I get time I'll look through the code
+>> base and see if I can point you to some examples.  In the meantime the
+>> UDD source files contain some documentation about how the functions
+>> work if you want to get some more information.
+>>
+>> -Greg
+>>
+>> On Tue, Apr 17, 2018 at 10:59 AM, Jean-Marc Lenoir
+>> <jean-marc.lenoir@univ-grenoble-alpes.fr> wrote:
 >>>
->>> Ok, upstreamed. Thanks.
+>>> Hello,
 >>>
->>
->> Hi Philippe,
->>
->> I resume this thread because when I tried your patch I tried only the
->> case that didn't work, that is with SET_PERIOD undefined
->> (so rt_task_set_periodic() not called), and didn't re-test also the
->> code with rt_task_set_periodic() call. Sorry, my fault.
->>
->> With this patch applied, when I call rt_task_set_periodic() (SET_PERIOD
->> defined), rt_task_wait_period() returns -EWOULDBLOCK as if
->> rt_task_set_periodic() was never called.
->>
->> Thanks in advance, regards
->>
->> Mauro
->>
->>
->> _______________________________________________
->> Xenomai mailing list
->> Xenomai@xenomai.org
->> https://xenomai.org/mailman/listinfo/xenomai
+>>> I would like to make a program which handle the interrupt requests of a
+>>> PCI
+>>> board with Xenomai 3. I'm trying to use this Xenomai API:
+>>>
+>>> https://xenomai.org/documentation/xenomai-3/html/xeno3prm/group__cobalt=
+__core__irq.html
+>>> but there are some points that are not clear at all for me.
+>>>
+>>> 1) There is already a Linux driver that handle the IRQ of this board an=
+d
+>>> I
+>>> need to keep this driver running because I use it for the board
+>>> configuration. So, if both a Linux driver and a Xenomai program try to
+>>> handle the same IRQ, what happen? Does Xenomai always have the priority=
+?
+>>> Or
+>>> do I need to configure something to give the priority to Xenomai?
+>>>
+>>> 2) This API works on kernel mode or user mode? (Actually, I'm not sure
+>>> there
+>>> is a kernel mode, I'm a beginner with Xenomai.)
+>>>
+>>> 3) When I'm trying to make a simple program with this API (in user mode=
+),
+>>> I
+>>> am unable to compile it: there is some missing definitions like the
+>>> structure xnintr. I think I need to change something when I build the
+>>> Xenomai libraries but I don't know what (the current libraries are
+>>> compiled
+>>> with the options "./configure --with-core=3Dcobalt --enable-smp
+>>> --enable-pshared"). Any idea?
+>>>
+>>> 4) If someone know where I can find an example of program using this AP=
+I,
+>>> it
+>>> could help me a lot.
+>>>
+>>> Thanks for your help,
+>>> Jean-Marc
+>>>
+>>>
+>>> _______________________________________________
+>>> Xenomai mailing list
+>>> Xenomai@xenomai.org
+>>> https://xenomai.org/mailman/listinfo/xenomai
 >
-> _______________________________________________
-> Xenomai mailing list
-> Xenomai@xenomai.org
-> https://xenomai.org/mailman/listinfo/xenomai
+>
 
