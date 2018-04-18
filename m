@@ -1,5 +1,7 @@
-MIME-Version: 1.0
-In-Reply-To: <CALLqZ8T+pFjMOt9Oqruy+NJuVxcV_6YgaXq_2_HqYUV2ew-VAg@mail.gmail.com>
+Message-ID: <1524063580.2300.6.camel@smigroup.net>
+From: Mauro Salvini <mauro.salvini@smigroup.net>
+Date: Wed, 18 Apr 2018 16:59:40 +0200
+In-Reply-To: <CAOuPNLjvqxa+azvZhLzL4QEfs6J9ichrp2h--R5ffjimCffCEg@mail.gmail.com>
 References: <1523454871.2312.15.camel@smigroup.net>
  <e0a935b3-8f75-484f-5324-9c5694476bfc@xenomai.org>
  <1523457598.2312.18.camel@smigroup.net>
@@ -7,10 +9,10 @@ References: <1523454871.2312.15.camel@smigroup.net>
  <1524043270.2300.2.camel@smigroup.net>
  <CAOuPNLj9WoyAbv3d6jZjaFto9FT+_ZnvH6Skkopd26Z_4Bs9+w@mail.gmail.com>
  <CALLqZ8T+pFjMOt9Oqruy+NJuVxcV_6YgaXq_2_HqYUV2ew-VAg@mail.gmail.com>
-From: Pintu Kumar <pintu.ping@gmail.com>
-Date: Wed, 18 Apr 2018 20:01:16 +0530
-Message-ID: <CAOuPNLjvqxa+azvZhLzL4QEfs6J9ichrp2h--R5ffjimCffCEg@mail.gmail.com>
+ <CAOuPNLjvqxa+azvZhLzL4QEfs6J9ichrp2h--R5ffjimCffCEg@mail.gmail.com>
 Content-Type: text/plain; charset="UTF-8"
+Mime-Version: 1.0
+Content-Transfer-Encoding: quoted-printable
 Subject: Re: [Xenomai] rt_task_wait_period() does not return -EWOULDBLOCK
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
@@ -20,123 +22,65 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Greg Gallagher <greg@embeddedgreg.com>
+To: Pintu Kumar <pintu.ping@gmail.com>, Greg Gallagher <greg@embeddedgreg.com>
 Cc: xenomai <xenomai@xenomai.org>
 
-On Wed, Apr 18, 2018 at 7:15 PM, Greg Gallagher <greg@embeddedgreg.com> wrote:
-> What version was this working in?  I'm assuming you are working out of
-> stable-3.0.x? If you reverted to an older git commit please post the
-> commit.
->
+On Wed, 2018-04-18 at 20:01 +0530, Pintu Kumar wrote:
+> On Wed, Apr 18, 2018 at 7:15 PM, Greg Gallagher <greg@embeddedgreg.co
+> m> wrote:
+> > What version was this working in?=C2=A0=C2=A0I'm assuming you are wor=
+king out
+> > of
+> > stable-3.0.x? If you reverted to an older git commit please post
+> > the
+> > commit.
+> >=20
+>=20
+> Sorry, I don't remember the previous working versions.
+> My current xeno-config is:
+> # xeno-config --info
+> Xenomai version: Xenomai/cobalt v3.0.6 -- #5956064 (2018-03-20
+> 12:13:33 +0100)
+> Linux 4.9.51-x86-64-mine-xeno3-rtdm #1 SMP Mon Apr 9 21:35:39 JST
+> 2018
+> x86_64 x86_64 x86_64 GNU/Linux
+> Kernel parameters: initrd=3D0:\initrd.img-4.9.51-x86-64-mine-xeno3-rtdm
+> root=3D/dev/disk/by-partlabel/system ro ip=3Doff
+> I-pipe release #4 detected
+> Cobalt core 3.0.6 detected
+> Compiler: gcc version 5.4.0 xxx
+> Build args:
+>=20
+> With this it is working fine.
+>=20
+> However, when I remove everything (/usr/xenomai/) and re-install the
+> latest xenomai-3 (pulled today), it shows problem.
+> I did not revert any specific commit and tried.
+> May be I can check that later.
+> Note: as of now the problem is seen only when using
+> rt_task_wait_period(NULL).
+> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0When I use rt_tas=
+k_sleep() then it works fine.
 
-Sorry, I don't remember the previous working versions.
-My current xeno-config is:
-# xeno-config --info
-Xenomai version: Xenomai/cobalt v3.0.6 -- #5956064 (2018-03-20 12:13:33 +0100)
-Linux 4.9.51-x86-64-mine-xeno3-rtdm #1 SMP Mon Apr 9 21:35:39 JST 2018
-x86_64 x86_64 x86_64 GNU/Linux
-Kernel parameters: initrd=0:\initrd.img-4.9.51-x86-64-mine-xeno3-rtdm
-root=/dev/disk/by-partlabel/system ro ip=off
-I-pipe release #4 detected
-Cobalt core 3.0.6 detected
-Compiler: gcc version 5.4.0 xxx
-Build args:
+Hi Greg and Pintu,
 
-With this it is working fine.
+commit 73de42cc87f8831694f119359472283f8c7a21e6 on stable branch
+contains patch that Philippe sent to me some days ago.
+He upstreamed it because I told him that patch was working, but in fact
+as I said in previous mail patch actually corrects one bug
+(rt_task_wait_period() that not return -EWOULDBLOCK if
+rt_task_set_periodic() was never called) but exploits another
+(rt_task_wait_period() return -EWOULDBLOCK also when
+rt_task_set_periodic() was called).
 
-However, when I remove everything (/usr/xenomai/) and re-install the
-latest xenomai-3 (pulled today), it shows problem.
-I did not revert any specific commit and tried.
-May be I can check that later.
-Note: as of now the problem is seen only when using rt_task_wait_period(NULL).
-         When I use rt_task_sleep() then it works fine.
+It is my fault because when Philippe sent me the patch I tested only
+the previous non-working case and not the working, sorry for the mess.
 
+I'm trying to find where is the bug, but it's not simple because I
+don't know Xenomai internals.
 
-Thanks,
-Pintu
+Thanks, regards
 
+Mauro
 
-
-> -Greg
->
-> On Wed, Apr 18, 2018 at 9:17 AM, Pintu Kumar <pintu.ping@gmail.com> wrote:
->> Oh yes.
->> I was about to post the similar problem with rt_task_wait_period(NULL).
->>
->> I did "git pull" for my xenomai-3 repo and installed the newer version.
->> After that weird things started happening to my previous test program
->> for latency measurement.
->> The latency value started giving all wrong results.
->> In my test programs I was using: rt_task_set_period(100 us) and
->> measuring latency with rt_task_wait_period(NULL).
->> But, now rt_task_wait_period() returns immediately.
->>
->> Then, I reverted back the entire xenomai-3 to my older version.
->> And everything works fine for me.
->>
->> So, it looks like there is some change happened in latest xenomai-3
->> repo, which disturbed the rt_task_wait_period API.
->>
->> Please check, else all my previous efforts will go in vain.
->>
->>
->> Thanks,
->> Pintu
->>
->>
->>
->> On Wed, Apr 18, 2018 at 2:51 PM, Mauro Salvini
->> <mauro.salvini@smigroup.net> wrote:
->>> On Wed, 2018-04-11 at 16:42 +0200, Philippe Gerum wrote:
->>>> On 04/11/2018 04:39 PM, Mauro Salvini wrote:
->>>> > On Wed, 2018-04-11 at 16:20 +0200, Philippe Gerum wrote:
->>>> > > On 04/11/2018 03:54 PM, Mauro Salvini wrote:
->>>> > > > Hi,
->>>> > > >
->>>> > > > I'm facing an unexpected behavior of rt_task_wait_period().
->>>> > > >
->>>> > > >
->>>> >
->>>> > ...
->>>> >
->>>> > > Please try this and let me know if the situation gets any better:
->>>> >
->>>> > Yes, now it works as expected.
->>>> >
->>>> > Thank you Philippe.
->>>> >
->>>> > Best regards.
->>>> >
->>>> > Mauro
->>>> >
->>>> >
->>>>
->>>> Ok, upstreamed. Thanks.
->>>>
->>>
->>> Hi Philippe,
->>>
->>> I resume this thread because when I tried your patch I tried only the
->>> case that didn't work, that is with SET_PERIOD undefined
->>> (so rt_task_set_periodic() not called), and didn't re-test also the
->>> code with rt_task_set_periodic() call. Sorry, my fault.
->>>
->>> With this patch applied, when I call rt_task_set_periodic() (SET_PERIOD
->>> defined), rt_task_wait_period() returns -EWOULDBLOCK as if
->>> rt_task_set_periodic() was never called.
->>>
->>> Thanks in advance, regards
->>>
->>> Mauro
->>>
->>>
->>> _______________________________________________
->>> Xenomai mailing list
->>> Xenomai@xenomai.org
->>> https://xenomai.org/mailman/listinfo/xenomai
->>
->> _______________________________________________
->> Xenomai mailing list
->> Xenomai@xenomai.org
->> https://xenomai.org/mailman/listinfo/xenomai
 
