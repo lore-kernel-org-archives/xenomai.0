@@ -1,11 +1,15 @@
-From: Philippe Gerum <rpm@xenomai.org>
-Message-ID: <638350e7-cd56-9427-179a-a066d1e4ce75@xenomai.org>
-Date: Tue, 17 Apr 2018 19:31:45 +0200
-MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+From: "Pham, Phong" <phamp@ddc-web.com>
+Date: Wed, 18 Apr 2018 02:21:39 +0000
+Message-ID: <C2EC5BA46D13CD44B5915A8FEEB4C44E8489E108@DDCEXCH.ddc-ny.com>
+References: <C2EC5BA46D13CD44B5915A8FEEB4C44E8488E31A@DDCEXCH.ddc-ny.com>
+ <2fa46484-f8e1-ffbd-5e67-79d6345d08d2@xenomai.org>
+In-Reply-To: <2fa46484-f8e1-ffbd-5e67-79d6345d08d2@xenomai.org>
 Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-Subject: [Xenomai] [RFC] Dropping pvalloc/pvfree/pvstrdup from libcopperplate
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+MIME-Version: 1.0
+Subject: Re: [Xenomai] mmap when using in conjunction with mapper to
+ retrieve memory mapped IO space
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -14,88 +18,102 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "Xenomai@xenomai.org" <Xenomai@xenomai.org>
+To: Philippe Gerum <rpm@xenomai.org>, "xenomai@xenomai.org" <xenomai@xenomai.org>
+Cc: "Hillman, Robert" <hillman@ddc-web.com>
 
-
--- the context
-
-Non-POSIX APIs Xenomai 3 implements in user-space are all based on
-libcopperplate, a mediating layer which hides the real-time core from
-the real-time API implementation, so that the same API can run over
-Cobalt or native glibc services unmodified. libcopperplate also provides
-common building blocks for implementing real-time APIs.
-
-libcopperplate can be built with support for sharing the main (real-time
-capable) heap memory between multiple processes when --enable-pshared is
-given to the configure script.  Objects stored in this heap can be
-accessed by all processes sharing the same session label (see the
---session command line argument for applications), and any process which
-belongs to that session can issue allocation requests to this shared
-heap transparently.
-
-The pvalloc(), pvfree() and pvstrdup() routines exposed by
-libcopperplate are wrappers to the internal (real-time capable)
-allocator delivering strictly private, process-local memory, by contrast
-to process-shared chunks returned by the main allocator.
-
-Managing shared blocks requires a bit more CPU cycles per allocation
-requests, since all references to the shared memory are in essence
-offset-based. So the idea was to optimize the allocation of memory
-chunks which are in essence process-private by using a dedicated
-allocator dealing with plain memory references. Should an awful lot of
-private memory be allocated by some processes in the session, this
-separation would keep the pressure off of the main shared heap too.
-
-In the Xenomai code base, xnmalloc() always refers to the main heap,
-which may be shared or not. If --enable-pshared was not given,
-xnmalloc() and pvmalloc() are strictly equivalent, pulling memory from
-the only allocator linked in, which delivers private memory.
-
--- the issue
-
-When --disable-pshared is in effect (default), the --mem-pool-size
-argument sets the size of the main, process-local heap memory to which
-all of xnmalloc(), pvmalloc() and friends refer to. So far, so good.
-
-When --enable-pshared is in effect, the --mem-pool-size argument sets
-the size of the main, shared heap memory. However, we currently have no
-mean to define the size of the private heap memory in this case, and a
-tiny default value of 8k is built in. This led to ugly side-effects
-reported recently when using the fuse-based registry for applications,
-causing some confusion with OOM errors [1].
-
-To sum up, we need to make the size of the private heap configurable.
-Or, we may reconsider the usefulness of maintaining a separate private
-heap when --enable-pshared is set.
-
--- the observation
-
-pvmalloc()/pvstrdup() are used only a very few times in the Xenomai
-libraries, and always for small bits. Those allocations are not supposed
-to happen in any time-critical phase of any application either. So the
-two conditions which led to adding the private memory allocator are not
-met by the current Xenomai code base, making that private allocation
-scheme useless in this context.
-
--- the cure
-
-We have two options:
-
-- considering that pvmalloc() and friends are not part of the public
-interface and drop them bluntly, turning the few existing calls to the
-xnmalloc() interface, solving the heap size configuration problem in the
-same move.
-
-- keeping pvmalloc(), adding some option to set its size for fixing the
-original issue [1].
-
-If you do depend on pvmalloc() today, you may want to make the case for
-keeping it.
-
-Thanks,
-
-[1] http://xenomai.org/pipermail/xenomai/2018-April/038595.html
-
--- 
-Philippe.
+DQpIaSBQaGlsaXBwZSBhbmQgYWxsLA0KDQpSZWdhcmRpbmcgIllvdXIgYXBwIG1heSBiZSBtaXNz
+aW5nIHN5bWJvbCB3cmFwcGluZy4gUGxlYXNlIGNoZWNrIG91dCB0aGlzIGRvYzoNCg0KaHR0cHM6
+Ly94ZW5vbWFpLm9yZy9kb2N1bWVudGF0aW9uL3hlbm9tYWktMy9odG1sL3hlbm8zcHJtL2dyb3Vw
+X19jb2JhbHRfX2FwaS5odG1sIg0KDQpUaGFua3MgZm9yIHRoZSB0aXAuICBJbiB0aGUgTWFrZWZp
+bGUgZnJhZ21lbnQgZnJvbSB0aGlzIGxpbms6DQpodHRwczovL3hlbm9tYWkub3JnL2J1aWxkaW5n
+LWFwcGxpY2F0aW9ucy13aXRoLXhlbm9tYWktMy14Lw0KDQpJIHN1Z2dlc3QgeW91IGFkZCB0aGUg
+bWlzc2luZyAtLXBvc2l4IGluIHRoZSBMREZMQUdTIGFzIHdlbGwuICBBZnRlciBhbGwsIEkgY29w
+aWVkIG15IGFwcCBmcm9tIHRoaXMgdmVyeSBzbmlwcGV0IGFuZCB0aGF0J3Mgd2h5IEkgZ2V0IHRo
+ZSBlcnJvci4NCg0KT24gdGhlIHNhbWUgaWRlYSAodXNpbmcgTERGTEFHUyBmcm9tIHhlbm8tY29u
+ZmlnKSwgSSB3b3VsZCBsaWtlIHRvIGNyZWF0ZSBhIGR5bmFtaWNhbGx5IGxpbmtlZCBsaWJyYXJ5
+ICguc28pLiAgV2l0aG91dCB0aGUgTERGTEFHUyBmcm9tIHhlbm8tY29uZmlnLCBteSBsaWJyYXJ5
+IGxvYWRzIGZpbmUgKGJ1dCB3aWxsIGZhaWwgd2hlbiBtbWFwIGlzIGNhbGxlZCk7IHdpdGggdGhl
+IExERkxBR1MgdGhhdCBoYXMgLS1wb3NpeCwgSSBnZXQgdGhpcyBlcnJvciB3aGVuIGxvYWRpbmc6
+DQoNClJfUFBDX1JFTDI0IHJlbG9jYXRpb24gYXQgMHgwZmZhY2QzYyBmb3Igc3ltYm9sIGBtbWFw
+JyBvdXQgb2YgcmFuZ2UNCg0KRG9lcyB0aGlzIG1lYW4gSSBoYXZlIHRvIHJlY29tcGlsZSBhbGwg
+b2YgdGhlIFhlbm9tYWkgbGlicmFyeSB3aXRoIC1mUElDPyAgSSBkaWRuJ3Qgc2VlIGFueXRoaW5n
+IHJlZ2FyZGluZyB0aGF0IGNob2ljZSBkdXJpbmcgImNvbmZpZ3VyZSIgYnV0IHBlZWtpbmcgaW50
+byB0aGUgY29uZmlndXJlIHNjcmlwdCwgdGhlcmUgYXJlIGEgZmV3IC1mUElDIG9jY3VycmVuY2Vz
+LiAgQ3VycmVudGx5LCBJIGFtIHVzaW5nICJCdWlsZGluZyB0aGUgUFBDMzIgbGlicmFyaWVzIiBp
+bnN0cnVjdGlvbiBhbmQgYWxzbyBJIGRpZG4ndCBuZWVkIHRvIHBlcmZvcm0gLi9zY3JpcHQvYm9v
+dHN0cmFwIGIvYyBJIGFtIGJ1aWxkaW5nIGl0IGZyb20gdGhlIHJlbGVhc2UgdGFyYmFsbC4NCg0K
+JHhlbm9tYWlfcm9vdC9jb25maWd1cmUgLS1ob3N0PXBvd2VycGMtbGludXggLS13aXRoLWNvcmU9
+Y29iYWx0IC0tZW5hYmxlLWRlYnVnPXN5bWJvbHMNCg0KU3VnZ2VzdGlvbiBvbiB0aGUgZXJyb3Ig
+YWJvdmUgYW5kL29yIGNvbXBpbGluZyBYZW5vbWFpIGxpYnJhcnkgdy8gLWZQSUMgaXMgYXBwcmVj
+aWF0ZWQuDQoNCkp1c3QgZnlpIHcvIHJlZ2FyZCB0byB5b3VyIHVwZGF0ZWQgImNvbW1lbnQgZml4
+IiBvbiBob3cgdG8gbW1hcCgpLCBJIGRvbid0IGtub3cgaWYgeW91IG5lZWQgdG8gdXBkYXRlIHVk
+ZC5oIChyaWdodCBhYm92ZSBzdHJ1Y3QgdWRkX21lbXJlZ2lvbikgYXMgd2VsbC4gIGkuZS4gdGhl
+IHNhbWUgY29tbWVudCBleGlzdHMgdGhlcmUgYnV0IGRvbid0IGtub3cgaWYgdGhlIGNvbW1lbnQg
+dGhlcmUgaXMgcmV0cmlldmVkIGZyb20gdGhlIGxvY2F0aW9uIHdoZXJlIHlvdSBtYWRlIHRoZSAi
+Y29tbWVudCBmaXgiLg0KDQpQaG9uZy4NCg0KLS0tLS1PcmlnaW5hbCBNZXNzYWdlLS0tLS0NCkZy
+b206IFBoaWxpcHBlIEdlcnVtIFttYWlsdG86cnBtQHhlbm9tYWkub3JnXQ0KU2VudDogVGh1cnNk
+YXksIEFwcmlsIDEyLCAyMDE4IDE6NTggQU0NClRvOiBQaGFtLCBQaG9uZzsgeGVub21haUB4ZW5v
+bWFpLm9yZw0KQ2M6IEhpbGxtYW4sIFJvYmVydA0KU3ViamVjdDogUmU6IFtYZW5vbWFpXSBtbWFw
+IHdoZW4gdXNpbmcgaW4gY29uanVuY3Rpb24gd2l0aCBtYXBwZXIgdG8gcmV0cmlldmUgbWVtb3J5
+IG1hcHBlZCBJTyBzcGFjZQ0KDQpPbiAwNC8xMC8yMDE4IDA5OjAzIFBNLCBQaGFtLCBQaG9uZyB3
+cm90ZToNCj4NCj4gSGksDQo+DQo+IEFjY29yZGluZyB0byBwYWdlIDY1MQ0KPiBodHRwczovL3hl
+bm9tYWkub3JnL2RvY3VtZW50YXRpb24veGVub21haS0zL3BkZi94ZW5vM3BybS5wZGYNCj4NCj4N
+Cj4gVGhpcyB3aWxsIG1ha2Ugc3VjaCByZWdpb24gYWNjZXNzaWJsZSB2aWEgdGhlIG1hcHBlciBk
+ZXZpY2UgdXNpbmcgdGhlDQo+IGZvbGxvd2luZyBzZXF1ZW5jZSBvZiBjb2RlLCB2aWEgdGhlIGRl
+ZmF1bHQgLT5tbWFwKCkgaGFuZGxlciBmcm9tIHRoZSBVREQgY29yZToNCj4gaW50IGZkLCBmZG07
+DQo+IHZvaWQgKnA7DQo+IGZkID0gb3BlbigiL2Rldi9mb29jYXJkIiwgT19SRFdSKTsNCj4gZmRt
+ID0gb3BlbigiL2Rldi9mb29jYXJkLG1hcHBlckAyIiwgT19SRFdSKTsgcCA9IG1tYXAoTlVMTCwg
+NDA5NiwNCj4gUFJPVF9SRUFEfFBST1RfV1JJVEUsIDAsIGZkbSwgMCk7DQo+DQo+DQo+IEkgaGF2
+ZSBzZXZlcmFsIHF1ZXN0aW9uczoNCj4NCj4gMSkgICAgICBJdCBsb29rcyBsaWtlIHRoZSA0dGgg
+YXJndW1lbnQgb2YgbW1hcCAodGhlIG9uZSB0byB0aGUgbGVmdCBvZiAiZmRtIikgbmVlZHMgdG8g
+YmUgZWl0aGVyIE1BUF9TSEFSRUQgb3IgTUFQX1BSSVZBVEUNCj4NCj4gMikgICAgICBUaGUgIkAi
+IGNoYXJhY3RlciByaWdodCBhZnRlciAibWFwcGVyIiBpcyBub3QgdmFsaWQgKGllLiB0aGVyZSBz
+aG91bGQgYmUgbm8gIkAiIGNoYXJhY3RlciBhdCBhbGwpDQo+DQo+IDMpICAgICAgL2Rldi9mb29j
+YXJkIHNob3VsZCBiZSAvZGV2L3J0ZG0vZm9vY2FyZA0KDQoNCkZpeGVkLCB0aGFua3MuDQoNCmh0
+dHBzOi8veGVub21haS5vcmcvZG9jdW1lbnRhdGlvbi94ZW5vbWFpLTMvaHRtbC94ZW5vM3BybS9z
+dHJ1Y3R1ZGRfX21lbXJlZ2lvbi5odG1sI3VkZF9tZW1vcnlfcmVnaW9uDQoNCj4NCj4gaGVyZSdz
+IG15IHJlYWwgcXVlc3Rpb246DQo+DQo+IEFzc3VtaW5nIGFsbCAzIG9mIHRoZSBhYm92ZSBpcyB2
+YWxpZCBmcm9tIHVzZXIgc3BhY2UsIGFuZCBvbiB0aGUNCj4ga2VybmVsIHNwYWNlLCBJIGZvbGxv
+d2VkIHRoZSBleC4gdG8gY3JlYXRlIG1lbW9yeSByZWdpb24sIGV0Yy4gc3VjaA0KPiB0aGF0IEkg
+ZG8gc2VlIG15IGRldmljZQ0KPg0KPiAjIGxzIC1sIGRldi9ydGRtDQo+IGNydy0tLS0tLS0gICAg
+MSByb290ICAgICByb290ICAgICAgMjUyLCAgIDAgSmFuICAxIDAwOjAwIGF1dG90dW5lDQo+IGNy
+dy0tLS0tLS0gICAgMSByb290ICAgICByb290ICAgICAgMjQ3LCAgIDAgSmFuICAxIDAwOjAwIGVl
+cHJvbQ0KPiBjcnctLS0tLS0tICAgIDEgcm9vdCAgICAgcm9vdCAgICAgIDI0NiwgICAwIEphbiAg
+MSAwMDowMCBlZXByb20sbWFwcGVyMA0KPiBjcnctLS0tLS0tICAgIDEgcm9vdCAgICAgcm9vdCAg
+ICAgIDI1NCwgICAwIEphbiAgMSAwMDowMCBtZW1kZXYtcHJpdmF0ZQ0KPiBjcnctLS0tLS0tICAg
+IDEgcm9vdCAgICAgcm9vdCAgICAgIDI1NCwgICAxIEphbiAgMSAwMDowMCBtZW1kZXYtc2hhcmVk
+DQo+IGNydy0tLS0tLS0gICAgMSByb290ICAgICByb290ICAgICAgMjUzLCAgIDAgSmFuICAxIDAw
+OjAwIG1lbWRldi1zeXMNCj4gY3J3LS0tLS0tLSAgICAxIHJvb3QgICAgIHJvb3QgICAgICAyNDks
+ICAgMCBKYW4gIDEgMDA6MDAgbW1pbw0KPiBjcnctLS0tLS0tICAgIDEgcm9vdCAgICAgcm9vdCAg
+ICAgIDI0OCwgICAwIEphbiAgMSAwMDowMCBtbWlvLG1hcHBlcjANCj4gY3J3LS0tLS0tLSAgICAx
+IHJvb3QgICAgIHJvb3QgICAgICAyNDgsICAgMSBKYW4gIDEgMDA6MDAgbW1pbyxtYXBwZXIxDQo+
+IGNydy0tLS0tLS0gICAgMSByb290ICAgICByb290ICAgICAgMjQ4LCAgIDIgSmFuICAxIDAwOjAw
+IG1taW8sbWFwcGVyMg0KPiBjcnctLS0tLS0tICAgIDEgcm9vdCAgICAgcm9vdCAgICAgIDI0OCwg
+ICAzIEphbiAgMSAwMDowMCBtbWlvLG1hcHBlcjMNCj4gY3J3LS0tLS0tLSAgICAxIHJvb3QgICAg
+IHJvb3QgICAgICAyNDgsICAgNCBKYW4gIDEgMDA6MDAgbW1pbyxtYXBwZXI0DQo+IGNydy0tLS0t
+LS0gICAgMSByb290ICAgICByb290ICAgICAgMjUwLCAgIDAgSmFuICAxIDAwOjAwIHN3aXRjaHRl
+c3QNCj4gY3J3LS0tLS0tLSAgICAxIHJvb3QgICAgIHJvb3QgICAgICAyNTEsICAgMCBKYW4gIDEg
+MDA6MDAgdGltZXJiZW5jaA0KPg0KPg0KPiBsaWtlIC9kZXYvcnRkbS9lZXByb20gYW5kIC9kZXYv
+cnRkbS9lZXByb20sbWFwcGVyMCAgZXRjLiBJIGRvbid0IHNlZQ0KPiBteSBrZXJuZWwgaG9vayBl
+dmVyIGdldHMgY2FsbGVkDQo+DQo+DQo+IHN0YXRpYyBzdHJ1Y3QgdWRkX2RldmljZSBlZXByb20g
+PSB7DQo+ICAgICAgICAgICAgICAgLmRldmljZV9mbGFncyA9IFJURE1fTkFNRURfREVWSUNFLA0K
+PiAgICAgICAgICAgICAgIC5kZXZpY2VfbmFtZSA9ICJlZXByb20iLA0KPiAgICAgICAgICAgICAg
+IC5vcHMgPSB7DQo+ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgLmNsb3NlID0gcGhvbmdf
+c2NzNzUwX2Nsb3NlLA0KPiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIC5vcGVuID0gcGhv
+bmdfc2NzNzUwX29wZW4sDQo+ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgLm1tYXAgPSBw
+aG9uZ19zY3M3NTBfbW1hcCwNCj4gICAgICAgICAgICAgICB9DQo+DQo+IEJ5IHRoYXQsIEkgbWVh
+biBwaG9uZ19zY3M3NTBfb3BlbiwgcGhvbmdfc2NzNzUwX21tYXAgbmV2ZXIgZ2V0cyBpbnZva2Vk
+LiAgbW1hcCgpIGZyb20gdXNlciBzcGFjZSByZXR1cm5zIC0xIHdpdGggZXJybm8gdmFsdWUgb2Yg
+MTkgKEVOT0RFVikuICBBbnkgYWR2aXNlPw0KDQpZb3VyIGFwcCBtYXkgYmUgbWlzc2luZyBzeW1i
+b2wgd3JhcHBpbmcuIFBsZWFzZSBjaGVjayBvdXQgdGhpcyBkb2M6DQoNCmh0dHBzOi8veGVub21h
+aS5vcmcvZG9jdW1lbnRhdGlvbi94ZW5vbWFpLTMvaHRtbC94ZW5vM3BybS9ncm91cF9fY29iYWx0
+X19hcGkuaHRtbA0KDQoNCi0tDQpQaGlsaXBwZS4NCk5vdGljZTogVGhpcyBlLW1haWwgYW5kIGFu
+eSBmaWxlcyB0cmFuc21pdHRlZCB3aXRoIGl0IG1heSBjb250YWluIERhdGEgRGV2aWNlIENvcnBv
+cmF0aW9uJ3MgcHJpdmlsZWdlZCBhbmQgcHJvcHJpZXRhcnkgaW5mb3JtYXRpb24uIEl0IGlzIGlu
+dGVuZGVkIHNvbGVseSBmb3IgdGhlIHVzZSBvZiB0aGUgaW5kaXZpZHVhbCBvciBlbnRpdHkgdG8g
+d2hvbSBpdCBpcyBhZGRyZXNzZWQuIElmIHlvdSBhcmUgbm90IHRoZSBuYW1lZCByZWNpcGllbnQg
+b2YgdGhpcyB0cmFuc21pc3Npb24sIGFueSBkaXNjbG9zdXJlLCBjb3B5aW5nLCBkaXN0cmlidXRp
+b24gb3IgcmVsaWFuY2Ugb24gdGhlIGNvbnRlbnRzIG9mIHRoaXMgbWVzc2FnZSBpcyBwcm9oaWJp
+dGVkLiBJZiB5b3UgcmVjZWl2ZWQgdGhpcyBlLW1haWwgaW4gZXJyb3IsIHBsZWFzZSBkZXN0cm95
+IGl0IGFuZCBhbnkgYXR0YWNoZWQgZmlsZXMgYW5kIG5vdGlmeSBtZSBpbW1lZGlhdGVseS4NCg==
 
