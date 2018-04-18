@@ -1,12 +1,14 @@
 From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <ab079dfb-98cd-887b-6b54-33f0fa15f74b@siemens.com>
-Date: Wed, 18 Apr 2018 14:51:36 +0200
+References: <ab079dfb-98cd-887b-6b54-33f0fa15f74b@siemens.com>
+Message-ID: <7a7b6761-e304-d94f-a597-009829427f06@siemens.com>
+Date: Wed, 18 Apr 2018 14:51:56 +0200
 MIME-Version: 1.0
+In-Reply-To: <ab079dfb-98cd-887b-6b54-33f0fa15f74b@siemens.com>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
-Subject: [Xenomai] [PATCH 1/2] testsuite/smokey: Add handover test for
- prio-ceiling mutexes
+Subject: [Xenomai] [PATCH 2/2] cobalt/synch: Clear PP boost prior to handing
+ over the ownership
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,78 +19,42 @@ List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: Xenomai <xenomai@xenomai.org>
 
-This triggers a bug in the PP implementation.
+Otherwise we first add the synch object to the new owner's boost list
+before we remove it from the old one's, corrupting the list.
 
 Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
 ---
- testsuite/smokey/posix-mutex/posix-mutex.c | 47 ++++++++++++++++++++++++++++++
- 1 file changed, 47 insertions(+)
+ kernel/cobalt/synch.c | 10 +++++-----
+ 1 file changed, 5 insertions(+), 5 deletions(-)
 
-diff --git a/testsuite/smokey/posix-mutex/posix-mutex.c b/testsuite/smokey/posix-mutex/posix-mutex.c
-index 7b0ed10c7..182f8c0e5 100644
---- a/testsuite/smokey/posix-mutex/posix-mutex.c
-+++ b/testsuite/smokey/posix-mutex/posix-mutex.c
-@@ -904,6 +904,52 @@ static int protect_trylock(void)
- 	return 0;
- }
+diff --git a/kernel/cobalt/synch.c b/kernel/cobalt/synch.c
+index f1102a5df..8c217c247 100644
+--- a/kernel/cobalt/synch.c
++++ b/kernel/cobalt/synch.c
+@@ -942,6 +942,11 @@ bool xnsynch_release(struct xnsynch *synch, struct xnthread *curr)
+ 	 */
+ 	xnlock_get_irqsave(&nklock, s);
  
-+static int protect_handover(void)
-+{
-+	struct smokey_barrier barrier;
-+	struct locker_context args;
-+	pthread_mutex_t mutex;
-+	pthread_t tid;
-+	int ret;
++	if (synch->status & XNSYNCH_PP) {
++		clear_pp_boost(synch, curr);
++		need_resched = true;
++	}
 +
-+	ret = do_init_mutex_ceiling(&mutex, PTHREAD_MUTEX_NORMAL,
-+				    THREAD_PRIO_HIGH);
-+	if (ret)
-+		return ret;
-+
-+	if (!__T(ret, pthread_mutex_lock(&mutex)))
-+		return ret;
-+
-+	args.mutex = &mutex;
-+	smokey_barrier_init(&barrier);
-+	args.barrier = &barrier;
-+	args.lock_acquired = 0;
-+	ret = create_thread(&tid, SCHED_FIFO, THREAD_PRIO_LOW,
-+			    mutex_locker, &args);
-+	if (ret)
-+		return ret;
-+
-+	sleep_ms(1);	/* Wait for the locker to contend on the mutex. */
-+
-+	if (!__T(ret, pthread_mutex_unlock(&mutex)))
-+		return ret;
-+
-+	/* Make sure the locker thread released the lock again. */
-+	if (!__T(ret, smokey_barrier_wait(&barrier)))
-+		return ret;
-+
-+	if (!__T(ret, pthread_mutex_lock(&mutex)))
-+		return ret;
-+
-+	if (!__T(ret, pthread_mutex_unlock(&mutex)))
-+		return ret;
-+
-+	if (!__T(ret, pthread_mutex_destroy(&mutex)))
-+		return ret;
-+
-+	return 0;
-+}
-+
- /* Detect obviously wrong execution times. */
- static int check_time_limit(const struct timespec *start,
- 			    xnticks_t limit_ns)
-@@ -963,6 +1009,7 @@ static int run_posix_mutex(struct smokey_test *t, int argc, char *const argv[])
- 	do_test(protect_weak, MAX_100_MS);
- 	do_test(protect_dynamic, MAX_100_MS);
- 	do_test(protect_trylock, MAX_100_MS);
-+	do_test(protect_handover, MAX_100_MS);
+ 	h = atomic_cmpxchg(lockp, currh, XN_NO_HANDLE);
+ 	if ((h & ~XNSYNCH_FLCEIL) != currh)
+ 		/* FLCLAIM set, synch is contended. */
+@@ -949,11 +954,6 @@ bool xnsynch_release(struct xnsynch *synch, struct xnthread *curr)
+ 	else if (h != currh)	/* FLCEIL set, FLCLAIM clear. */
+ 		atomic_set(lockp, XN_NO_HANDLE);
  
- 	return 0;
- }
+-	if (synch->status & XNSYNCH_PP) {
+-		clear_pp_boost(synch, curr);
+-		need_resched = true;
+-	}
+-
+ 	xnlock_put_irqrestore(&nklock, s);
+ 
+ 	return need_resched;
 -- 
 2.13.6
 
