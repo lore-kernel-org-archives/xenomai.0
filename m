@@ -1,22 +1,14 @@
-References: <1523454871.2312.15.camel@smigroup.net>
- <e0a935b3-8f75-484f-5324-9c5694476bfc@xenomai.org>
- <1523457598.2312.18.camel@smigroup.net>
- <627da48b-4a8d-e8e4-b521-a3fe99304cae@xenomai.org>
- <1524043270.2300.2.camel@smigroup.net>
- <CAOuPNLj9WoyAbv3d6jZjaFto9FT+_ZnvH6Skkopd26Z_4Bs9+w@mail.gmail.com>
- <CALLqZ8T+pFjMOt9Oqruy+NJuVxcV_6YgaXq_2_HqYUV2ew-VAg@mail.gmail.com>
- <CAOuPNLjvqxa+azvZhLzL4QEfs6J9ichrp2h--R5ffjimCffCEg@mail.gmail.com>
- <1524063580.2300.6.camel@smigroup.net>
- <CALLqZ8Qwq3OVVH2YbryvJV8R=jsoyzDomB1iALsokHTtagNwKw@mail.gmail.com>
-From: Philippe Gerum <rpm@xenomai.org>
-Message-ID: <f643e687-5d78-3fca-fbb6-b23ddc97a121@xenomai.org>
-Date: Wed, 18 Apr 2018 20:33:24 +0200
-MIME-Version: 1.0
-In-Reply-To: <CALLqZ8Qwq3OVVH2YbryvJV8R=jsoyzDomB1iALsokHTtagNwKw@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8
+From: "Pham, Phong" <phamp@ddc-web.com>
+Date: Wed, 18 Apr 2018 19:33:06 +0000
+Message-ID: <C2EC5BA46D13CD44B5915A8FEEB4C44E8489E1E1@DDCEXCH.ddc-ny.com>
+References: <C2EC5BA46D13CD44B5915A8FEEB4C44E8488E31A@DDCEXCH.ddc-ny.com>
+ <2fa46484-f8e1-ffbd-5e67-79d6345d08d2@xenomai.org> 
 Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] rt_task_wait_period() does not return -EWOULDBLOCK
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+MIME-Version: 1.0
+Subject: Re: [Xenomai] mmap when using in conjunction with mapper to
+ retrieve memory mapped IO space
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -25,84 +17,115 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Greg Gallagher <greg@embeddedgreg.com>, Mauro Salvini <mauro.salvini@smigroup.net>
-Cc: xenomai <xenomai@xenomai.org>
+To: Philippe Gerum <rpm@xenomai.org>, "xenomai@xenomai.org" <xenomai@xenomai.org>
+Cc: "Hillman, Robert" <hillman@ddc-web.com>
 
-On 04/18/2018 05:09 PM, Greg Gallagher wrote:
-> No problem, I won't be able to look into it till the weekend so any
-> help debugging is appreciated :)
-
-Brown paper bag bug. The change was tested on Mercury only, where timer
-ids cannot be zero; zero is a perfectly valid timer id with Cobalt. Oh,
-well. I'll send a fix tested on both ends.
-
-> 
-> On Wed, Apr 18, 2018 at 10:59 AM, Mauro Salvini
-> <mauro.salvini@smigroup.net> wrote:
->> On Wed, 2018-04-18 at 20:01 +0530, Pintu Kumar wrote:
->>> On Wed, Apr 18, 2018 at 7:15 PM, Greg Gallagher <greg@embeddedgreg.co
->>> m> wrote:
->>>> What version was this working in?  I'm assuming you are working out
->>>> of
->>>> stable-3.0.x? If you reverted to an older git commit please post
->>>> the
->>>> commit.
->>>>
->>>
->>> Sorry, I don't remember the previous working versions.
->>> My current xeno-config is:
->>> # xeno-config --info
->>> Xenomai version: Xenomai/cobalt v3.0.6 -- #5956064 (2018-03-20
->>> 12:13:33 +0100)
->>> Linux 4.9.51-x86-64-mine-xeno3-rtdm #1 SMP Mon Apr 9 21:35:39 JST
->>> 2018
->>> x86_64 x86_64 x86_64 GNU/Linux
->>> Kernel parameters: initrd=0:\initrd.img-4.9.51-x86-64-mine-xeno3-rtdm
->>> root=/dev/disk/by-partlabel/system ro ip=off
->>> I-pipe release #4 detected
->>> Cobalt core 3.0.6 detected
->>> Compiler: gcc version 5.4.0 xxx
->>> Build args:
->>>
->>> With this it is working fine.
->>>
->>> However, when I remove everything (/usr/xenomai/) and re-install the
->>> latest xenomai-3 (pulled today), it shows problem.
->>> I did not revert any specific commit and tried.
->>> May be I can check that later.
->>> Note: as of now the problem is seen only when using
->>> rt_task_wait_period(NULL).
->>>          When I use rt_task_sleep() then it works fine.
->>
->> Hi Greg and Pintu,
->>
->> commit 73de42cc87f8831694f119359472283f8c7a21e6 on stable branch
->> contains patch that Philippe sent to me some days ago.
->> He upstreamed it because I told him that patch was working, but in fact
->> as I said in previous mail patch actually corrects one bug
->> (rt_task_wait_period() that not return -EWOULDBLOCK if
->> rt_task_set_periodic() was never called) but exploits another
->> (rt_task_wait_period() return -EWOULDBLOCK also when
->> rt_task_set_periodic() was called).
->>
->> It is my fault because when Philippe sent me the patch I tested only
->> the previous non-working case and not the working, sorry for the mess.
->>
->> I'm trying to find where is the bug, but it's not simple because I
->> don't know Xenomai internals.
->>
->> Thanks, regards
->>
->> Mauro
->>
-> 
-> _______________________________________________
-> Xenomai mailing list
-> Xenomai@xenomai.org
-> https://xenomai.org/mailman/listinfo/xenomai
-> 
-
-
--- 
-Philippe.
+DQpIaSwNCg0KSW5zdGVhZCBvZiAgc3ltYm9sIGBtbWFwJyBvdXQgb2YgcmFuZ2UsIEkgbm93IGhh
+dmUgc3ltYm9sIGBtYWxsb2MnIG91dCBvZiByYW5nZS4gIEkgcmVtb3ZlZCAgYWxsIHRoZSAtZlBJ
+QyBpbiBteSBlbnZpcm9ubWVudC4gIEkgaGF2ZSB0byByZWNvbXBpbGUgbGliYz8/PyAgSSBuZXZl
+ciBjb21waWxlZCBsaWJjIGFuZCB3YW50cyB0byBhdm9pZCBpdC4NCg0KQW55IHN1Z2dlc3Rpb24g
+b24NClJfUFBDX1JFTDI0IHJlbG9jYXRpb24gYXQgMHgwZmZhY2QzYyBmb3Igc3ltYm9sIGBtbWFw
+L21hbGxvYycgb3V0IG9mIHJhbmdlDQoNCmlzIGFwcHJlY2lhdGVkLg0KDQpUaGlzIGlzIGFmdGVy
+IEkgYWRkIExERkxBR1MgKGZyb20geGVuby1jb25maWcpIGR1cmluZyB0aGUgcHJvY2VzcyBvZiBj
+cmVhdGluZyBhIHNoYXJlZCBsaWJyYXJ5Lg0KDQpQaG9uZy4NCg0KLS0tLS1PcmlnaW5hbCBNZXNz
+YWdlLS0tLS0NCkZyb206IFBoYW0sIFBob25nDQpTZW50OiBUdWVzZGF5LCBBcHJpbCAxNywgMjAx
+OCA3OjIyIFBNDQpUbzogJ1BoaWxpcHBlIEdlcnVtJzsgeGVub21haUB4ZW5vbWFpLm9yZw0KQ2M6
+IEhpbGxtYW4sIFJvYmVydA0KU3ViamVjdDogUkU6IFtYZW5vbWFpXSBtbWFwIHdoZW4gdXNpbmcg
+aW4gY29uanVuY3Rpb24gd2l0aCBtYXBwZXIgdG8gcmV0cmlldmUgbWVtb3J5IG1hcHBlZCBJTyBz
+cGFjZQ0KDQoNCkhpIFBoaWxpcHBlIGFuZCBhbGwsDQoNClJlZ2FyZGluZyAiWW91ciBhcHAgbWF5
+IGJlIG1pc3Npbmcgc3ltYm9sIHdyYXBwaW5nLiBQbGVhc2UgY2hlY2sgb3V0IHRoaXMgZG9jOg0K
+DQpodHRwczovL3hlbm9tYWkub3JnL2RvY3VtZW50YXRpb24veGVub21haS0zL2h0bWwveGVubzNw
+cm0vZ3JvdXBfX2NvYmFsdF9fYXBpLmh0bWwiDQoNClRoYW5rcyBmb3IgdGhlIHRpcC4gIEluIHRo
+ZSBNYWtlZmlsZSBmcmFnbWVudCBmcm9tIHRoaXMgbGluazoNCmh0dHBzOi8veGVub21haS5vcmcv
+YnVpbGRpbmctYXBwbGljYXRpb25zLXdpdGgteGVub21haS0zLXgvDQoNCkkgc3VnZ2VzdCB5b3Ug
+YWRkIHRoZSBtaXNzaW5nIC0tcG9zaXggaW4gdGhlIExERkxBR1MgYXMgd2VsbC4gIEFmdGVyIGFs
+bCwgSSBjb3BpZWQgbXkgYXBwIGZyb20gdGhpcyB2ZXJ5IHNuaXBwZXQgYW5kIHRoYXQncyB3aHkg
+SSBnZXQgdGhlIGVycm9yLg0KDQpPbiB0aGUgc2FtZSBpZGVhICh1c2luZyBMREZMQUdTIGZyb20g
+eGVuby1jb25maWcpLCBJIHdvdWxkIGxpa2UgdG8gY3JlYXRlIGEgZHluYW1pY2FsbHkgbGlua2Vk
+IGxpYnJhcnkgKC5zbykuICBXaXRob3V0IHRoZSBMREZMQUdTIGZyb20geGVuby1jb25maWcsIG15
+IGxpYnJhcnkgbG9hZHMgZmluZSAoYnV0IHdpbGwgZmFpbCB3aGVuIG1tYXAgaXMgY2FsbGVkKTsg
+d2l0aCB0aGUgTERGTEFHUyB0aGF0IGhhcyAtLXBvc2l4LCBJIGdldCB0aGlzIGVycm9yIHdoZW4g
+bG9hZGluZzoNCg0KUl9QUENfUkVMMjQgcmVsb2NhdGlvbiBhdCAweDBmZmFjZDNjIGZvciBzeW1i
+b2wgYG1tYXAnIG91dCBvZiByYW5nZQ0KDQpEb2VzIHRoaXMgbWVhbiBJIGhhdmUgdG8gcmVjb21w
+aWxlIGFsbCBvZiB0aGUgWGVub21haSBsaWJyYXJ5IHdpdGggLWZQSUM/ICBJIGRpZG4ndCBzZWUg
+YW55dGhpbmcgcmVnYXJkaW5nIHRoYXQgY2hvaWNlIGR1cmluZyAiY29uZmlndXJlIiBidXQgcGVl
+a2luZyBpbnRvIHRoZSBjb25maWd1cmUgc2NyaXB0LCB0aGVyZSBhcmUgYSBmZXcgLWZQSUMgb2Nj
+dXJyZW5jZXMuICBDdXJyZW50bHksIEkgYW0gdXNpbmcgIkJ1aWxkaW5nIHRoZSBQUEMzMiBsaWJy
+YXJpZXMiIGluc3RydWN0aW9uIGFuZCBhbHNvIEkgZGlkbid0IG5lZWQgdG8gcGVyZm9ybSAuL3Nj
+cmlwdC9ib290c3RyYXAgYi9jIEkgYW0gYnVpbGRpbmcgaXQgZnJvbSB0aGUgcmVsZWFzZSB0YXJi
+YWxsLg0KDQokeGVub21haV9yb290L2NvbmZpZ3VyZSAtLWhvc3Q9cG93ZXJwYy1saW51eCAtLXdp
+dGgtY29yZT1jb2JhbHQgLS1lbmFibGUtZGVidWc9c3ltYm9scw0KDQpTdWdnZXN0aW9uIG9uIHRo
+ZSBlcnJvciBhYm92ZSBhbmQvb3IgY29tcGlsaW5nIFhlbm9tYWkgbGlicmFyeSB3LyAtZlBJQyBp
+cyBhcHByZWNpYXRlZC4NCg0KSnVzdCBmeWkgdy8gcmVnYXJkIHRvIHlvdXIgdXBkYXRlZCAiY29t
+bWVudCBmaXgiIG9uIGhvdyB0byBtbWFwKCksIEkgZG9uJ3Qga25vdyBpZiB5b3UgbmVlZCB0byB1
+cGRhdGUgdWRkLmggKHJpZ2h0IGFib3ZlIHN0cnVjdCB1ZGRfbWVtcmVnaW9uKSBhcyB3ZWxsLiAg
+aS5lLiB0aGUgc2FtZSBjb21tZW50IGV4aXN0cyB0aGVyZSBidXQgZG9uJ3Qga25vdyBpZiB0aGUg
+Y29tbWVudCB0aGVyZSBpcyByZXRyaWV2ZWQgZnJvbSB0aGUgbG9jYXRpb24gd2hlcmUgeW91IG1h
+ZGUgdGhlICJjb21tZW50IGZpeCIuDQoNClBob25nLg0KDQotLS0tLU9yaWdpbmFsIE1lc3NhZ2Ut
+LS0tLQ0KRnJvbTogUGhpbGlwcGUgR2VydW0gW21haWx0bzpycG1AeGVub21haS5vcmddDQpTZW50
+OiBUaHVyc2RheSwgQXByaWwgMTIsIDIwMTggMTo1OCBBTQ0KVG86IFBoYW0sIFBob25nOyB4ZW5v
+bWFpQHhlbm9tYWkub3JnDQpDYzogSGlsbG1hbiwgUm9iZXJ0DQpTdWJqZWN0OiBSZTogW1hlbm9t
+YWldIG1tYXAgd2hlbiB1c2luZyBpbiBjb25qdW5jdGlvbiB3aXRoIG1hcHBlciB0byByZXRyaWV2
+ZSBtZW1vcnkgbWFwcGVkIElPIHNwYWNlDQoNCk9uIDA0LzEwLzIwMTggMDk6MDMgUE0sIFBoYW0s
+IFBob25nIHdyb3RlOg0KPg0KPiBIaSwNCj4NCj4gQWNjb3JkaW5nIHRvIHBhZ2UgNjUxDQo+IGh0
+dHBzOi8veGVub21haS5vcmcvZG9jdW1lbnRhdGlvbi94ZW5vbWFpLTMvcGRmL3hlbm8zcHJtLnBk
+Zg0KPg0KPg0KPiBUaGlzIHdpbGwgbWFrZSBzdWNoIHJlZ2lvbiBhY2Nlc3NpYmxlIHZpYSB0aGUg
+bWFwcGVyIGRldmljZSB1c2luZyB0aGUNCj4gZm9sbG93aW5nIHNlcXVlbmNlIG9mIGNvZGUsIHZp
+YSB0aGUgZGVmYXVsdCAtPm1tYXAoKSBoYW5kbGVyIGZyb20gdGhlIFVERCBjb3JlOg0KPiBpbnQg
+ZmQsIGZkbTsNCj4gdm9pZCAqcDsNCj4gZmQgPSBvcGVuKCIvZGV2L2Zvb2NhcmQiLCBPX1JEV1Ip
+Ow0KPiBmZG0gPSBvcGVuKCIvZGV2L2Zvb2NhcmQsbWFwcGVyQDIiLCBPX1JEV1IpOyBwID0gbW1h
+cChOVUxMLCA0MDk2LA0KPiBQUk9UX1JFQUR8UFJPVF9XUklURSwgMCwgZmRtLCAwKTsNCj4NCj4N
+Cj4gSSBoYXZlIHNldmVyYWwgcXVlc3Rpb25zOg0KPg0KPiAxKSAgICAgIEl0IGxvb2tzIGxpa2Ug
+dGhlIDR0aCBhcmd1bWVudCBvZiBtbWFwICh0aGUgb25lIHRvIHRoZSBsZWZ0IG9mICJmZG0iKSBu
+ZWVkcyB0byBiZSBlaXRoZXIgTUFQX1NIQVJFRCBvciBNQVBfUFJJVkFURQ0KPg0KPiAyKSAgICAg
+IFRoZSAiQCIgY2hhcmFjdGVyIHJpZ2h0IGFmdGVyICJtYXBwZXIiIGlzIG5vdCB2YWxpZCAoaWUu
+IHRoZXJlIHNob3VsZCBiZSBubyAiQCIgY2hhcmFjdGVyIGF0IGFsbCkNCj4NCj4gMykgICAgICAv
+ZGV2L2Zvb2NhcmQgc2hvdWxkIGJlIC9kZXYvcnRkbS9mb29jYXJkDQoNCg0KRml4ZWQsIHRoYW5r
+cy4NCg0KaHR0cHM6Ly94ZW5vbWFpLm9yZy9kb2N1bWVudGF0aW9uL3hlbm9tYWktMy9odG1sL3hl
+bm8zcHJtL3N0cnVjdHVkZF9fbWVtcmVnaW9uLmh0bWwjdWRkX21lbW9yeV9yZWdpb24NCg0KPg0K
+PiBoZXJlJ3MgbXkgcmVhbCBxdWVzdGlvbjoNCj4NCj4gQXNzdW1pbmcgYWxsIDMgb2YgdGhlIGFi
+b3ZlIGlzIHZhbGlkIGZyb20gdXNlciBzcGFjZSwgYW5kIG9uIHRoZQ0KPiBrZXJuZWwgc3BhY2Us
+IEkgZm9sbG93ZWQgdGhlIGV4LiB0byBjcmVhdGUgbWVtb3J5IHJlZ2lvbiwgZXRjLiBzdWNoDQo+
+IHRoYXQgSSBkbyBzZWUgbXkgZGV2aWNlDQo+DQo+ICMgbHMgLWwgZGV2L3J0ZG0NCj4gY3J3LS0t
+LS0tLSAgICAxIHJvb3QgICAgIHJvb3QgICAgICAyNTIsICAgMCBKYW4gIDEgMDA6MDAgYXV0b3R1
+bmUNCj4gY3J3LS0tLS0tLSAgICAxIHJvb3QgICAgIHJvb3QgICAgICAyNDcsICAgMCBKYW4gIDEg
+MDA6MDAgZWVwcm9tDQo+IGNydy0tLS0tLS0gICAgMSByb290ICAgICByb290ICAgICAgMjQ2LCAg
+IDAgSmFuICAxIDAwOjAwIGVlcHJvbSxtYXBwZXIwDQo+IGNydy0tLS0tLS0gICAgMSByb290ICAg
+ICByb290ICAgICAgMjU0LCAgIDAgSmFuICAxIDAwOjAwIG1lbWRldi1wcml2YXRlDQo+IGNydy0t
+LS0tLS0gICAgMSByb290ICAgICByb290ICAgICAgMjU0LCAgIDEgSmFuICAxIDAwOjAwIG1lbWRl
+di1zaGFyZWQNCj4gY3J3LS0tLS0tLSAgICAxIHJvb3QgICAgIHJvb3QgICAgICAyNTMsICAgMCBK
+YW4gIDEgMDA6MDAgbWVtZGV2LXN5cw0KPiBjcnctLS0tLS0tICAgIDEgcm9vdCAgICAgcm9vdCAg
+ICAgIDI0OSwgICAwIEphbiAgMSAwMDowMCBtbWlvDQo+IGNydy0tLS0tLS0gICAgMSByb290ICAg
+ICByb290ICAgICAgMjQ4LCAgIDAgSmFuICAxIDAwOjAwIG1taW8sbWFwcGVyMA0KPiBjcnctLS0t
+LS0tICAgIDEgcm9vdCAgICAgcm9vdCAgICAgIDI0OCwgICAxIEphbiAgMSAwMDowMCBtbWlvLG1h
+cHBlcjENCj4gY3J3LS0tLS0tLSAgICAxIHJvb3QgICAgIHJvb3QgICAgICAyNDgsICAgMiBKYW4g
+IDEgMDA6MDAgbW1pbyxtYXBwZXIyDQo+IGNydy0tLS0tLS0gICAgMSByb290ICAgICByb290ICAg
+ICAgMjQ4LCAgIDMgSmFuICAxIDAwOjAwIG1taW8sbWFwcGVyMw0KPiBjcnctLS0tLS0tICAgIDEg
+cm9vdCAgICAgcm9vdCAgICAgIDI0OCwgICA0IEphbiAgMSAwMDowMCBtbWlvLG1hcHBlcjQNCj4g
+Y3J3LS0tLS0tLSAgICAxIHJvb3QgICAgIHJvb3QgICAgICAyNTAsICAgMCBKYW4gIDEgMDA6MDAg
+c3dpdGNodGVzdA0KPiBjcnctLS0tLS0tICAgIDEgcm9vdCAgICAgcm9vdCAgICAgIDI1MSwgICAw
+IEphbiAgMSAwMDowMCB0aW1lcmJlbmNoDQo+DQo+DQo+IGxpa2UgL2Rldi9ydGRtL2VlcHJvbSBh
+bmQgL2Rldi9ydGRtL2VlcHJvbSxtYXBwZXIwICBldGMuIEkgZG9uJ3Qgc2VlDQo+IG15IGtlcm5l
+bCBob29rIGV2ZXIgZ2V0cyBjYWxsZWQNCj4NCj4NCj4gc3RhdGljIHN0cnVjdCB1ZGRfZGV2aWNl
+IGVlcHJvbSA9IHsNCj4gICAgICAgICAgICAgICAuZGV2aWNlX2ZsYWdzID0gUlRETV9OQU1FRF9E
+RVZJQ0UsDQo+ICAgICAgICAgICAgICAgLmRldmljZV9uYW1lID0gImVlcHJvbSIsDQo+ICAgICAg
+ICAgICAgICAgLm9wcyA9IHsNCj4gICAgICAgICAgICAgICAgICAgICAgICAgICAgICAuY2xvc2Ug
+PSBwaG9uZ19zY3M3NTBfY2xvc2UsDQo+ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgLm9w
+ZW4gPSBwaG9uZ19zY3M3NTBfb3BlbiwNCj4gICAgICAgICAgICAgICAgICAgICAgICAgICAgICAu
+bW1hcCA9IHBob25nX3Njczc1MF9tbWFwLA0KPiAgICAgICAgICAgICAgIH0NCj4NCj4gQnkgdGhh
+dCwgSSBtZWFuIHBob25nX3Njczc1MF9vcGVuLCBwaG9uZ19zY3M3NTBfbW1hcCBuZXZlciBnZXRz
+IGludm9rZWQuICBtbWFwKCkgZnJvbSB1c2VyIHNwYWNlIHJldHVybnMgLTEgd2l0aCBlcnJubyB2
+YWx1ZSBvZiAxOSAoRU5PREVWKS4gIEFueSBhZHZpc2U/DQoNCllvdXIgYXBwIG1heSBiZSBtaXNz
+aW5nIHN5bWJvbCB3cmFwcGluZy4gUGxlYXNlIGNoZWNrIG91dCB0aGlzIGRvYzoNCg0KaHR0cHM6
+Ly94ZW5vbWFpLm9yZy9kb2N1bWVudGF0aW9uL3hlbm9tYWktMy9odG1sL3hlbm8zcHJtL2dyb3Vw
+X19jb2JhbHRfX2FwaS5odG1sDQoNCg0KLS0NClBoaWxpcHBlLg0KTm90aWNlOiBUaGlzIGUtbWFp
+bCBhbmQgYW55IGZpbGVzIHRyYW5zbWl0dGVkIHdpdGggaXQgbWF5IGNvbnRhaW4gRGF0YSBEZXZp
+Y2UgQ29ycG9yYXRpb24ncyBwcml2aWxlZ2VkIGFuZCBwcm9wcmlldGFyeSBpbmZvcm1hdGlvbi4g
+SXQgaXMgaW50ZW5kZWQgc29sZWx5IGZvciB0aGUgdXNlIG9mIHRoZSBpbmRpdmlkdWFsIG9yIGVu
+dGl0eSB0byB3aG9tIGl0IGlzIGFkZHJlc3NlZC4gSWYgeW91IGFyZSBub3QgdGhlIG5hbWVkIHJl
+Y2lwaWVudCBvZiB0aGlzIHRyYW5zbWlzc2lvbiwgYW55IGRpc2Nsb3N1cmUsIGNvcHlpbmcsIGRp
+c3RyaWJ1dGlvbiBvciByZWxpYW5jZSBvbiB0aGUgY29udGVudHMgb2YgdGhpcyBtZXNzYWdlIGlz
+IHByb2hpYml0ZWQuIElmIHlvdSByZWNlaXZlZCB0aGlzIGUtbWFpbCBpbiBlcnJvciwgcGxlYXNl
+IGRlc3Ryb3kgaXQgYW5kIGFueSBhdHRhY2hlZCBmaWxlcyBhbmQgbm90aWZ5IG1lIGltbWVkaWF0
+ZWx5Lg0K
 
