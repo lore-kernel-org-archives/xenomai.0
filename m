@@ -1,11 +1,11 @@
-From: Philippe Gerum <rpm@xenomai.org>
 References: <7be9b9c7-7393-eca0-6a86-bcf3d0302271@siemens.com>
  <667bd118-b8eb-4fbf-cb24-4f4f30114370@siemens.com>
  <3c4fc185-19af-4285-07a2-148b2a039fec@xenomai.org>
  <43104375-41a6-7327-b053-7074adc3115d@siemens.com>
  <f85588dd-aa36-0b2b-1346-3ace7ad32867@xenomai.org>
-Message-ID: <5ecd8b53-f1e8-6cea-a5aa-ed93f8b3b604@xenomai.org>
-Date: Thu, 19 Apr 2018 11:18:51 +0200
+From: Jan Kiszka <jan.kiszka@siemens.com>
+Message-ID: <0f1449dc-9485-2966-6254-bac6ee0752af@siemens.com>
+Date: Thu, 19 Apr 2018 11:24:52 +0200
 MIME-Version: 1.0
 In-Reply-To: <f85588dd-aa36-0b2b-1346-3ace7ad32867@xenomai.org>
 Content-Type: text/plain; charset=utf-8
@@ -20,9 +20,9 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jan Kiszka <jan.kiszka@siemens.com>, Xenomai <xenomai@xenomai.org>
+To: Philippe Gerum <rpm@xenomai.org>, Xenomai <xenomai@xenomai.org>
 
-On 04/19/2018 11:17 AM, Philippe Gerum wrote:
+On 2018-04-19 11:17, Philippe Gerum wrote:
 > On 04/17/2018 09:30 AM, Jan Kiszka wrote:
 >> On 2018-04-17 09:22, Philippe Gerum wrote:
 >>> On 04/13/2018 07:51 PM, Jan Kiszka wrote:
@@ -96,9 +96,8 @@ On 04/19/2018 11:17 AM, Philippe Gerum wrote:
 > actual implementation does not require this.
 > 
 
-In fact, pv* calls there should simply move to xn* counterparts, fixing
-the issue without any change in behavior.
+Over the time, we consistently moved more and more parts away from
+RT-capable object creation/destruction, though.
 
--- 
-Philippe.
+Jan
 
