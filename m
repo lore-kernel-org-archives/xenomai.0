@@ -1,21 +1,9 @@
-References: <5AC116C9.6040809@freyder.net>
- <15a83f1d-7785-11c9-5f64-c09cb035ff10@xenomai.org>
- <5AC24433.30107@freyder.net>
- <6cacabd8-af4c-27e0-1b62-34ce73d7b933@xenomai.org>
- <5AC25632.90608@freyder.net>
- <7f51755d-8a54-c1a8-9ee4-a3014e03b3df@xenomai.org>
- <5ACA9F4C.8090902@freyder.net>
- <bdd2e389-bb90-1b16-9e18-6c23ec31218d@xenomai.org>
- <9638da9b-dcf7-8fac-8ef7-3b54d9f10316@xenomai.org>
-From: Steve Freyder <steve@freyder.net>
-Message-ID: <5ACF7EE1.7020404@freyder.net>
-Date: Thu, 12 Apr 2018 10:44:33 -0500
 MIME-Version: 1.0
-In-Reply-To: <9638da9b-dcf7-8fac-8ef7-3b54d9f10316@xenomai.org>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] Possible Xenomai fuse filesystem/registry queue
- status files issue?
+From: Pintu Kumar <pintu.ping@gmail.com>
+Date: Tue, 24 Apr 2018 13:16:43 +0530
+Message-ID: <CAOuPNLgkw9N2ixwb86v_USHhbPwwGh8u6Dn-kCh1UMzpsbSZEA@mail.gmail.com>
+Content-Type: text/plain; charset="UTF-8"
+Subject: [Xenomai] large number of negative latency with simple task sleep
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -24,182 +12,56 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Philippe Gerum <rpm@xenomai.org>, "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: "Xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On 4/12/2018 5:23 AM, Philippe Gerum wrote:
-> On 04/12/2018 11:31 AM, Philippe Gerum wrote:
->> On 04/09/2018 01:01 AM, Steve Freyder wrote:
->>> On 4/2/2018 11:51 AM, Philippe Gerum wrote:
->>>> On 04/02/2018 06:11 PM, Steve Freyder wrote:
->>>>> On 4/2/2018 10:20 AM, Philippe Gerum wrote:
->>>>>> On 04/02/2018 04:54 PM, Steve Freyder wrote:
->>>>>>> On 4/2/2018 8:41 AM, Philippe Gerum wrote:
->>>>>>>> On 04/01/2018 07:28 PM, Steve Freyder wrote:
->>>>>>>>> Greetings again.
->>>>>>>>>
->>>>>>>>> As I understand it, for each rt_queue there's supposed to be a
->>>>>>>>> "status file" located in the fuse filesystem underneath the
->>>>>>>>> "/run/xenomai/user/session/pid/alchemy/queues" directory, with
->>>>>>>>> the file name being the queue name.  This used to contain very
->>>>>>>>> useful info about queue status, message counts, etc.  I don't know
->>>>>>>>> when it broke or whether it's something I'm doing wrong but I'm
->>>>>>>>> now getting a "memory exhausted" message on the console when I
->>>>>>>>> attempt to do a "cat" on the status file.
->>>>>>>>>
->>>>>>>>> Here's a small C program that just creates a queue, and then does
->>>>>>>>> a pause to hold the accessor count non-zero.
->>>>>>>>>
->>>>>>>> <snip>
->>>>>>>>
->>>>>>>>> The resulting output (logged in via the system console):
->>>>>>>>>
->>>>>>>>> # sh qtest.sh
->>>>>>>>> + sleep 1
->>>>>>>>> + ./qc --mem-pool-size=64M --session=mysession foo
->>>>>>>>> + find /run/xenomai
->>>>>>>>> /run/xenomai
->>>>>>>>> /run/xenomai/root
->>>>>>>>> /run/xenomai/root/mysession
->>>>>>>>> /run/xenomai/root/mysession/821
->>>>>>>>> /run/xenomai/root/mysession/821/alchemy
->>>>>>>>> /run/xenomai/root/mysession/821/alchemy/tasks
->>>>>>>>> /run/xenomai/root/mysession/821/alchemy/tasks/task@1[821]
->>>>>>>>> /run/xenomai/root/mysession/821/alchemy/queues
->>>>>>>>> /run/xenomai/root/mysession/821/alchemy/queues/foo
->>>>>>>>> /run/xenomai/root/mysession/system
->>>>>>>>> /run/xenomai/root/mysession/system/threads
->>>>>>>>> /run/xenomai/root/mysession/system/heaps
->>>>>>>>> /run/xenomai/root/mysession/system/version
->>>>>>>>> + qfile='/run/xenomai/*/*/*/alchemy/queues/foo'
->>>>>>>>> + cat /run/xenomai/root/mysession/821/alchemy/queues/foo
->>>>>>>>> memory exhausted
->>>>>>>>>
->>>>>>>>> At this point, it hangs, although SIGINT usually terminates it.
->>>>>>>>>
->>>>>>>>> I've seen some cases where SIGINT won't terminate it, and a
->>>>>>>>> reboot is
->>>>>>>>> required to clean things up.  I see this message appears to be
->>>>>>>>> logged
->>>>>>>>> in the obstack error handler.  I don't think I'm running out of
->>>>>>>>> memory,
->>>>>>>>> which makes me think "heap corruption".  Not much of an analysis!
->>>>>>>>> I did
->>>>>>>>> try varying queue sizes and max message counts - no change.
->>>>>>>>>
->>>>>>>> I can't reproduce this. I would suspect a rampant memory corruption
->>>>>>>> too,
->>>>>>>> although running the test code over valgrind (mercury build) did not
->>>>>>>> reveal any issue.
->>>>>>>>
->>>>>>>> - which Xenomai version are you using?
->>>>>>>> - cobalt / mercury ?
->>>>>>>> - do you enable the shared heap when configuring ? (--enable-pshared)
->>>>>>>>
->>>>>>> I'm using Cobalt.  uname -a reports:
->>>>>>>
->>>>>>> Linux sdftest 4.1.18_C01571-15S00-00.000.zimg+83fdace666 #2 SMP Fri
->>>>>>> Mar
->>>>>>> 9 11:07:52 CST 2018 armv7l GNU/Linux
->>>>>>>
->>>>>>> Here is the config dump:
->>>>>>>
->>>>>>> CONFIG_XENO_PSHARED=1
->>>>>> Any chance you could have some leftover files in /dev/shm from aborted
->>>>>> runs, which would steal RAM?
->>>>>>
->>>>> I've been rebooting before each test run, but I'll keep that in mind for
->>>>> future testing.
->>>>>
->>>>> Sounds like I need to try rolling back to an older build, I have a 3.0.5
->>>>> and a 3.0.3 build handy.
->>>> The standalone test should work with the shared heap disabled, could you
->>>> check it against a build configure with --disable-pshared? Thanks,
->>>>
->>> Philippe,
->>>
->>> Sorry for the delay - our vendor had been doing all of our kernel and SDK
->>> builds so I had to do a lot of learning to get this all going.
->>>
->>> With the --disable-pshared in effect:
->>>
->>> /.g3l # ./qc --dump-config | grep SHARED
->>> based on Xenomai/cobalt v3.0.6 -- #6e34bb5 (2018-04-01 10:50:59 +0200)
->>> CONFIG_XENO_PSHARED is OFF
->>>
->>> /.g3l # ./qc foo &
->>> /.g3l # find /run/xenomai/
->>> /run/xenomai/
->>> /run/xenomai/root
->>> /run/xenomai/root/opus
->>> /run/xenomai/root/opus/3477
->>> /run/xenomai/root/opus/3477/alchemy
->>> /run/xenomai/root/opus/3477/alchemy/tasks
->>> /run/xenomai/root/opus/3477/alchemy/tasks/qcreate3477
->>> /run/xenomai/root/opus/3477/alchemy/queues
->>> /run/xenomai/root/opus/3477/alchemy/queues/foo
->>> /run/xenomai/root/opus/system
->>> /run/xenomai/root/opus/system/threads
->>> /run/xenomai/root/opus/system/heaps
->>> /run/xenomai/root/opus/system/version
->>> root@ICB-G3L:/.g3l # cat run/xenomai/root/opus/3477/alchemy/queues/foo
->>> [TYPE]  [TOTALMEM]  [USEDMEM]  [QLIMIT]  [MCOUNT]
->>>   FIFO        5344       3248        10         0
->>>
->>> Perfect!
->>>
->>> What's the next step?
->>>
->> I can reproduce this issue. I'm on it.
->>
-> The patch below should solve the problem for the registry, however this
-> may have uncovered a bug in the "tlsf" allocator (once again), which
-> should not have failed allocating memory. Two separate issues then.
->
-> diff --git a/include/copperplate/registry-obstack.h
-> b/include/copperplate/registry-obstack.h
-> index fe192faf7..48e453bc3 100644
-> --- a/include/copperplate/registry-obstack.h
-> +++ b/include/copperplate/registry-obstack.h
-> @@ -29,11 +29,12 @@ struct threadobj;
->   struct syncobj;
->
->   /*
-> - * Assume we may want fast allocation of private memory from real-time
-> - * mode when growing the obstack.
-> + * Obstacks are grown from handlers called by the fusefs server
-> + * thread, which has no real-time requirement: malloc/free is fine for
-> + * memory management.
->    */
-> -#define obstack_chunk_alloc	pvmalloc
-> -#define obstack_chunk_free	pvfree
-> +#define obstack_chunk_alloc	malloc
-> +#define obstack_chunk_free	free
->
->   struct threadobj;
->
->
-Thanks Philippe,
+Hi,
 
-I shall add this to my build ASAP.  If I understand correctly, this is 
-switching
-the entire registry-obstack-related dynamic storage allocation mechanism 
-from the
-"pv" routines (TLSF allocator?) paradigm to the standard malloc/free 
-paradigm.
+I have one doubt with xenomai in general.
+I execute a task that does_nothing and simply sleeps for 100 us.
+For sleep I used: rt_task_wait_period, with a period of 100 us.
+I execute this nothing() function 10 times and measure latency
+difference across this, and then print the latency values using:
+printf / rt_printf.
 
-I ask because my next issue report was going to be about a SEGV that I have
-been seeing occasionally in registry_add_file() after having called 
-pvstrdup()
-and having gotten a NULL return back.  The caller there apparently does not
-expect a NULL return, so when you said "should not have failed 
-allocating memory"
-that brought my attention back to the SEGV issue.  This appears to be 
-related to
-what I will call "heavy registry activity" when I am initializing - creating
-lots of RT tasks, queues, mutexes, etc, causing hot activity in 
-registry_add_file
-I would expect.
+I get the following output on x86_64 machine (maxcpus: 8)
 
-I'm thinking creation of a "registry exerciser" program may be in order...
+main: creating task name: task0, priority: 99
+Task: 0, Iteration: 10, Sleep duration: 100 us
+1 89.633 -10.367
+2 89.542 -10.458
+3 93.613 -6.387
+4 94.539 -5.461
+5 94.767 -5.233
+6 93.893 -6.107
+7 94.880 -5.120
+8 94.775 -5.225
+9 94.063 -5.937
+10 94.982 -5.018
 
+Task[0] - Avg Latency: -6.531 us
+Task[0] - Max Latency: -5.018 us
+Task[0] - Min Latency: -10.458 us
+
+------------------
+Here if you see, none of the samples crosses the deadline of 100 us.
+But on the other hand most of the tasks completed too early.
+Thus most of the latency are returning negative.
+If I run this for large number of samples, I get too many negative values..
+Is this expected ?
+Anybody else observed the similar behavior?
+
+AFAIK, for real time timeliness is important, neither too early nor
+too late. It should be accurate always....
+
+Whether, it will be the same behavior on a typical RTOS system ?
+If somebody can project a real RTOS output in similar manner, it will
+be of great help...
+
+If there is anything which can effect this behavior in Xenomai, please
+let me know.
+Currently I am measuring accuracy, so it is important for me to know....
+
+
+Thanks,
+Pintu
 
