@@ -1,9 +1,11 @@
 MIME-Version: 1.0
+In-Reply-To: <CAOuPNLjfpsTq6UNxQbu2VOyt128ecX5jQJr8VrWuHWBH_x+tog@mail.gmail.com>
+References: <CAOuPNLjfpsTq6UNxQbu2VOyt128ecX5jQJr8VrWuHWBH_x+tog@mail.gmail.com>
 From: Pintu Kumar <pintu.ping@gmail.com>
-Date: Tue, 24 Apr 2018 13:16:43 +0530
-Message-ID: <CAOuPNLgkw9N2ixwb86v_USHhbPwwGh8u6Dn-kCh1UMzpsbSZEA@mail.gmail.com>
+Date: Tue, 24 Apr 2018 13:20:35 +0530
+Message-ID: <CAOuPNLgKtc-Vw2njNGsn2VTp-A8_mmqN-vk1F5-wVb=nTi8jnQ@mail.gmail.com>
 Content-Type: text/plain; charset="UTF-8"
-Subject: [Xenomai] large number of negative latency with simple task sleep
+Subject: Re: [Xenomai] overlapping and missing output with large data range
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -14,54 +16,68 @@ List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: "Xenomai@xenomai.org" <xenomai@xenomai.org>
 
-Hi,
+On Mon, Apr 23, 2018 at 3:20 PM, Pintu Kumar <pintu.ping@gmail.com> wrote:
+> Hi All,
+>
+> I am facing one problem with Xenomai when I try to output some 2-3
+> columns data on console, may be 1000 or 10000+ ranges.
+>
+> This is one sample output:
+> {{{
+> .....
+> .....
+> 1369 100.232 0.232
+> 1370 100.247 0.247
+> 1371 100.240 0.240
+> 1372 100.2181987 100.491 0.491
+> 1988 100.758 0.758
+> 1989 100.794 0.794
+> 1990 100.805 0.805
+> .....
+> .....
+> }}}
+>
+> Here I am trying to measure some latency with my test program.
+> Its a simple program where I create one thread, then sleep for 100us
+> and measure latency.
+> I do this for 1000 times, and print latency data for each round.
+> I am using normal printf/rt_printf for printing the data on console.
+> Finally I take all these data and plot a graphical view.
+>
+> In the above output, as you can see (in one big line):
+> The next iteration data is overlapped.
+> Also may rows are missing.
+> I guess the correct output may be:
+> 1372 100.218  ??.???
+> ......
+> 1987 100.491 0.491
+>
+> So, may data are missing.
+>
+> I need all the data to be appearing correctly, otherwise my graphical
+> plotting data goes wrong.
+>
+> Is there anything I am do about it?
+> Any ideas will be really appreciated....
+>
+> I already tried by storing the latency values in an array, and then
+> printing it at the end of the task.
+> But this also did not help much....
+>
 
-I have one doubt with xenomai in general.
-I execute a task that does_nothing and simply sleeps for 100 us.
-For sleep I used: rt_task_wait_period, with a period of 100 us.
-I execute this nothing() function 10 times and measure latency
-difference across this, and then print the latency values using:
-printf / rt_printf.
-
-I get the following output on x86_64 machine (maxcpus: 8)
-
-main: creating task name: task0, priority: 99
-Task: 0, Iteration: 10, Sleep duration: 100 us
-1 89.633 -10.367
-2 89.542 -10.458
-3 93.613 -6.387
-4 94.539 -5.461
-5 94.767 -5.233
-6 93.893 -6.107
-7 94.880 -5.120
-8 94.775 -5.225
-9 94.063 -5.937
-10 94.982 -5.018
-
-Task[0] - Avg Latency: -6.531 us
-Task[0] - Max Latency: -5.018 us
-Task[0] - Min Latency: -10.458 us
-
-------------------
-Here if you see, none of the samples crosses the deadline of 100 us.
-But on the other hand most of the tasks completed too early.
-Thus most of the latency are returning negative.
-If I run this for large number of samples, I get too many negative values..
-Is this expected ?
-Anybody else observed the similar behavior?
-
-AFAIK, for real time timeliness is important, neither too early nor
-too late. It should be accurate always....
-
-Whether, it will be the same behavior on a typical RTOS system ?
-If somebody can project a real RTOS output in similar manner, it will
-be of great help...
-
-If there is anything which can effect this behavior in Xenomai, please
-let me know.
-Currently I am measuring accuracy, so it is important for me to know....
+OK, I could resolve this issue.
+What I did is, I stored all latency difference in a global array.
+Then, instead of printing it inside the task, I am printing it at the
+end of main function itself.
+This way I could get all the latency output correctly.
+But, I have to maintain a large array output...
+If there is any better way please let me know...
 
 
-Thanks,
-Pintu
+Thanks
+
+
+>
+> Thanks,
+> Pintu
 
