@@ -1,10 +1,10 @@
 From: Lange Norbert <norbert.lange@andritz.com>
-Date: Wed, 25 Apr 2018 16:40:32 +0000
-Message-ID: <99BAB48E90E86D42AD41F0BCE3225AEB019FC12C42@GRZSMS582.andritz.com>
+Date: Wed, 25 Apr 2018 16:45:53 +0000
+Message-ID: <99BAB48E90E86D42AD41F0BCE3225AEB019FC12C57@GRZSMS582.andritz.com>
 Content-Language: en-US
-MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: quoted-printable
+MIME-Version: 1.0
 Subject: Re: [Xenomai] xeno-config --no-mode-check still has -lmodechk
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
@@ -17,20 +17,8 @@ List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
 To: "Xenomai (xenomai@xenomai.org)" <xenomai@xenomai.org>, "Philippe Gerum
  (rpm@xenomai.org)" <rpm@xenomai.org>
 
-Hello,
-
-Since I just ran into this=E2=80=A6.
-libcobalt seems to really need libmodechk to define __real_malloc and __rea=
-l_free.
-I believe this to be a bug?
-
-$ nm /home/lano/buildroot/host/x86_64-buildroot-linux-gnu/sysroot/usr/xenom=
-ai/lib/libcobalt.so | grep malloc
-00000000000199f0 T malloc_ex
-                 U malloc@@GLIBC_2.2.5
-000000000001aef0 T malloc_usable_size_ex
-                 U __real_malloc
-000000000001a430 T tlsf_malloc
+Ok, I believe that's my entirely the fault of my changes, ignore the previo=
+us mail
 
 Norbert
 ________________________________
@@ -63,3 +51,4 @@ UID-Nr.: ATU14756806
 
 Thank You
 ________________________________
+
