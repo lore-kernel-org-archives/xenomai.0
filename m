@@ -1,17 +1,11 @@
-From: Philippe Gerum <rpm@xenomai.org>
-References: <mailman.27.1522680894.4366.xenomai@xenomai.org>
- <1542961.KC98kqrEBl@wirbelwind>
- <cad2a4c9f8b749109afff86f3ef0f201@advaoptical.com>
- <80155073.HUEqfJo2pc@wirbelwind>
- <b2cbe5362c38461d9a2eb817b78fb633@EDB3.wapice.localdomain>
-Message-ID: <4715a857-f535-fe49-2506-5abbb16553ed@xenomai.org>
-Date: Wed, 25 Apr 2018 18:49:53 +0200
+Date: Wed, 25 Apr 2018 20:23:29 +0300 (EEST)
+From: =?windows-1251?B?2OXi9+Xt6u4g0uDw4PEgw/Do4+7w/OXi6Pc=?=
+ <shevchenko.taras@triolcorp.com.ua>
+Message-ID: <588276150.3283019.1524677009807.JavaMail.zimbra@triolcorp.com.ua>
 MIME-Version: 1.0
-In-Reply-To: <b2cbe5362c38461d9a2eb817b78fb633@EDB3.wapice.localdomain>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-Subject: [Xenomai]  Unrecoverable FP Unavailable Exception 801
+Content-Type: text/plain; charset="cp1251"
+Content-Transfer-Encoding: base64
+Subject: [Xenomai] rtnet 8168g 8168h  master -slave
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -20,73 +14,112 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jouko Haapaluoma <jouko.haapaluoma@wapice.com>, Sagi Maimon <SMaimon@advaoptical.com>, "xenomai@xenomai.org" <xenomai@xenomai.org>
-Cc: Adnan Ali <adnan.ali@wapice.com>, Sakari Junnila <sakari.junnila@wapice.com>, "Seeger,
- Steven D. (GSFC-444.0)[Embedded Flight Systems,
- Inc]" <steven.seeger@nasa.gov>
+To: xenomai <xenomai@xenomai.org>
+Cc: Jan Kiszka <jan.kiszka@siemens.com>
 
-On 04/25/2018 10:54 AM, Jouko Haapaluoma wrote:
-> On Mon, Apr 02, 2018 at 12:56:39PM +0000, Sagi Maimon wrote:
->> Hi all,
->> I am working with: Powerpc e300 SOC.
->> I am using: xenomai-2.6.4 version
->>
->> I am experiencing this exception on my Linux :
->> Unrecoverable FP Unavailable Exception 801 at c0003858
->> Oops: Unrecoverable FP Unavailable Exception, sig: 6 [#1]
->>
->> This happens during "alignment exception" (600)
-> 
-> Hello
-> 
-> We have also seen this issue recently with Xenomai 2.6.4 and i-pipe 3.1.10-powerpc-2.13-06.
-> 
-> We have been investigating this and Adnan found that the issue seems to be in arch/powerpc/kernel/process.c: enable_kernel_fp().
-> 
-> In this function the irqs are disabled and enabled by calling local_irq_save_hw_cond() and local_irq_restore_hw_cond(). In between the FP bit is enabled and written to MSR in giveup_fpu(). However, the local_irq_restore_hw_cond() restores the previous MSR which does not have the FP bit enabled and this leads to the exception 801.
-> 
-> We have briefly tested that the exception 801 does not occur with the following patch:
-> 
-> --- a/arch/powerpc/kernel/process.c	2018-04-24 15:54:10.164558970 +0300
-> +++ b/arch/powerpc/kernel/process_new.c	2018-04-24 15:53:30.635567659 +0300
-> @@ -114,6 +114,11 @@ void enable_kernel_fp(void)
->  #else
->  	giveup_fpu(last_task_used_math);
->  #endif /* CONFIG_SMP */
-> +	/*
-> +	 * giveup_fpu sets the FP bit in MSR, toggling it off would cause
-> +	 * unavailable FP kernel panic. So, keep it on if it was set.
-> +	 */
-> +	flags |= (mfmsr() & MSR_FP);
->  	local_irq_restore_hw_cond(flags);
->  }
->  EXPORT_SYMBOL(enable_kernel_fp);
-> 
-> It seems that the implementation is quite similar also in the current I-pipe branch ipipe-4.9.y (only the FP bit is set by msr_check_and_set() and not in giveup_fpu). Therefore the problem seems to exist also in the latest i-pipe.
-> 
-> Is our fix correct or have we missed something?
-> 
-
-The fix makes a lot of sense, thanks. This bug slipped under the radar
-for years likely because enabling the ppc fpu in kernel context mainly
-happens when fixing up alignment issues, which rt apps tend to avoid in
-the first place for performance reason by only using aligned memory
-accesses (synchronous exceptions are not that cheap latency-wise).
-
-Regarding the ipipe-4.9.y series, there are several other spots touching
-the msr in this file which may be affected the same way (vsx, altivec,
-spe, anything that involves calling msr_check_and_set/clear_msr() under
-hard masking basically).
-
-Adding a dedicated irq_restore helper which does not touch any other bit
-aside of MSR_EE would make sense there. The BOOK-E version of
-irq_save/restore specifically uses the wrtee* instructions not to touch
-those bits, so we may assume this would be semantically correct to do
-the same for BOOK3-S.
-
-PS: CCing Steven who took over the maintenance of the ppc pipeline from
-kernel 4.14 and on.
-
--- 
-Philippe.
-
+SGkhIApJIGNoYW5nZSBkcml2ZXIgYW5kIHRyeSB0byBtYWtlIG1hc3RlciAtIHNsYXZlIGNvbmZp
+Z3VyYXRpb24gCml0cyBjb25uZWN0ZWQgCkJlbG93IGxvZ3MgZnJvbSBzbGF2ZSAod2l0aCBpIHBp
+cGUgZGVidWcgdHVybnMgb24pIFRETUEgbWFzdGVyIHBhcmFtZXRycyBhcmUgY3ljbGUgNTAwIG9m
+ZnNldCA1MCAKUXVlc3Rpb24gaXMgSSBnZXQgcGluZyBtYXN0ZXIgLXNsYXZlIGFib3V0IDQwMCBt
+a3MgYnV0IHNvbWUgdGltZXMgODAwLTkwMCBpdCBpcyBub3QgY29udmVuaWVudCBmb3IgbWUgCkhv
+dyBJIGNhbiBjaGVjayBkcml2ZXIgaXMgcm9idXN0ID8gCgoqKiogUlRuZXQgZm9yIFhlbm9tYWkg
+djMuMC42ICoqKiAKClsgNzIwNC41NDM0OTddIFJUbmV0OiBpbml0aWFsaXNpbmcgcmVhbC10aW1l
+IG5ldHdvcmtpbmcgClsgNzIwNC41NzAxMTNdIGNhbGwgcnRsODE2OV9pbml0X29uZSAKWyA3MjA0
+LjU3MDExNV0gcnRfcjgxNjkgR2lnYWJpdCBFdGhlcm5ldCBkcml2ZXIgMi4zTEstTkFQSSBsb2Fk
+ZWQgClsgNzIwNC41NzAzNjFdIHJ0X3I4MTY5IDAwMDA6MDE6MDAuMDogY2FuJ3QgZGlzYWJsZSBB
+U1BNOyBPUyBkb2Vzbid0IGhhdmUgQVNQTSBjb250cm9sIApbIDcyMDQuNTcwNTExXSBjYWxsIHJ0
+bF9pbml0X2p1bWJvX29wcyBFRElUIApbIDcyMDQuNTcxMDY2XSBSVG5ldDogcmVnaXN0ZXJlZCBy
+dGV0aDAgClsgNzIwNC41NzEwNzVdIFJUTDgxNjhoLzgxMTFoIGF0IDB4ZmZmZmE0MjBjMDY4ZjAw
+MCwgMzA6OWM6MjM6MjA6NTA6MmIsIFhJRCAxNDEwMDg4MCBJUlEgMTYgClsgNzIwNC41NzEwNzdd
+IGp1bWJvIGZlYXR1cmVzIFtmcmFtZXM6IDkyMDAgYnl0ZXMsIHR4IGNoZWNrc3VtbWluZzoga29d
+IApbIDcyMDQuNTcxNzY4XSBjYWxsIHJ0bDgxNjlfcmVtb3ZlX29uZSAKWyA3MjA0LjU3MTc3N10g
+UlRuZXQ6IHVucmVnaXN0ZXJlZCBydGV0aDAgClsgNzIwNC41NzI4MjBdIGNhbGwgcnRsODE2OV9p
+bml0X29uZSAKWyA3MjA0LjU3MjgyM10gcnRfcjgxNjkgR2lnYWJpdCBFdGhlcm5ldCBkcml2ZXIg
+Mi4zTEstTkFQSSBsb2FkZWQgClsgNzIwNC41NzMwMDNdIHJ0X3I4MTY5IDAwMDA6MDE6MDAuMDog
+Y2FuJ3QgZGlzYWJsZSBBU1BNOyBPUyBkb2Vzbid0IGhhdmUgQVNQTSBjb250cm9sIApbIDcyMDQu
+NTczMTQyXSBjYWxsIHJ0bF9pbml0X2p1bWJvX29wcyBFRElUIApbIDcyMDQuNTczMjYyXSBSVG5l
+dDogcmVnaXN0ZXJlZCBydGV0aDAgClsgNzIwNC41NzMyNzBdIFJUTDgxNjhoLzgxMTFoIGF0IDB4
+ZmZmZmE0MjBjMDY5OTAwMCwgMzA6OWM6MjM6MjA6NTA6MmIsIFhJRCAxNDEwMDg4MCBJUlEgMTYg
+ClsgNzIwNC41NzMyNzFdIGp1bWJvIGZlYXR1cmVzIFtmcmFtZXM6IDkyMDAgYnl0ZXMsIHR4IGNo
+ZWNrc3VtbWluZzoga29dIApbIDcyMDQuNTkyNDMyXSBpbml0aWFsaXppbmcgbG9vcGJhY2suLi4g
+ClsgNzIwNC41OTI0NDNdIFJUbmV0OiByZWdpc3RlcmVkIHJ0bG8gClsgNzIwNC42MDg5NzZdIFJU
+Y2ZnOiBpbml0IHJlYWwtdGltZSBjb25maWd1cmF0aW9uIGRpc3RyaWJ1dGlvbiBwcm90b2NvbCAK
+WyA3MjA0LjYyMTU5Ml0gUlRtYWM6IGluaXQgcmVhbHRpbWUgbWVkaWEgYWNjZXNzIGNvbnRyb2wg
+ClsgNzIwNC42MzM5MjddIFJUbWFjL1RETUE6IGluaXQgdGltZSBkaXZpc2lvbiBtdWx0aXBsZSBh
+Y2Nlc3MgY29udHJvbCBtZWNoYW5pc20gClsgNzIwNC42NDQ0OTNdIGNhbGwgcnRsODE2OV9hbGxv
+Y19yeF9kYXRhIAouLi4gClsgNzIwNC42NDQ4NjBdIGNhbGwgcnRsODE2OV9hbGxvY19yeF9kYXRh
+IApbIDcyMDQuNjQ0ODYxXSBjYWxsIHJ0bF9sb29rdXBfZmlybXdhcmVfbmFtZSAKWyA3MjA0LjY0
+NDg4N10gY2FsbCBydGxfY2hlY2tfZmlybXdhcmUgClsgNzIwNC42NTgzOTVdIGNhbGwgcnRsODE2
+OV9zZXRfc3BlZWQgClsgNzIwNC42NTg4MzFdIGNhbGwgcnRsODE2OV9zZXRfZmVhdHVyZXMgClsg
+NzIwNC42NTg4NDldIGNhbGwgcnRsODE2OV9jaGFuZ2VfbXR1IApbIDcyMDQuNjU4OTgyXSBjYWxs
+IHJ0bF9od19zdGFydCAKWyA3MjA0LjY1ODk4NF0gY2FsbCBydGxfaHdfc3RhcnRfODE2OCAKWyA3
+MjA0LjY1OTEwNl0gY2FsbCBhZGQgcnRsX2h3X3N0YXJ0XzgxNjhoXzEgClsgNzIwNC42NzQ3MjJd
+IE1vZGVtTWFuYWdlclsyOTI5N106IHNlZ2ZhdWx0IGF0IDAgaXAgMDAwMDAwMDAwMDQzMWFiMyBz
+cCAwMDAwN2ZmZGJiMGYxOGUwIGVycm9yIDQgaW4gTW9kZW1NYW5hZ2VyWzQwMDAwMCsxMDMwMDBd
+IApbIDcyMDQuODQyNTM5XSBsaW5rIHJ0ZXRoIGRvd24gClsgNzIwNC44NDI1NDFdIC0tLS0tLS0t
+LS0tLVsgY3V0IGhlcmUgXS0tLS0tLS0tLS0tLSAKWyA3MjA0Ljg0MjU0OV0gV0FSTklORzogQ1BV
+OiAxIFBJRDogMzExMTcgYXQgLi9pbmNsdWRlL2xpbnV4L2lwaXBlLmg6MjMyIF9fcnRsODE2OV9j
+aGVja19saW5rX3N0YXR1cysweDJmMy8weDM0MCBbcnRfcjgxNjldIApbIDcyMDQuODQyNTUxXSBN
+b2R1bGVzIGxpbmtlZCBpbjogdGRtYSBydG1hYyBydGNmZyBydF9sb29wYmFjayBydHBhY2tldCBy
+dHVkcCBydF9yODE2OShPRSkgcnRpcHY0IHJ0bmV0IHVhcyB1c2Jfc3RvcmFnZSB4dF9DSEVDS1NV
+TSBpcHRhYmxlX21hbmdsZSBpcHRfTUFTUVVFUkFERSBuZl9uYXRfbWFzcXVlcmFkZV9pcHY0IGlw
+dGFibGVfbmF0IG5mX25hdF9pcHY0IG5mX25hdCBuZl9jb25udHJhY2tfaXB2NCBuZl9kZWZyYWdf
+aXB2NCB4dF9jb25udHJhY2sgbmZfY29ubnRyYWNrIGlwdF9SRUpFQ1QgbmZfcmVqZWN0X2lwdjQg
+eHRfdGNwdWRwIGJyaWRnZSBzdHAgbGxjIGVidGFibGVfZmlsdGVyIGVidGFibGVzIGlwNnRhYmxl
+X2ZpbHRlciBpcDZfdGFibGVzIGlwdGFibGVfZmlsdGVyIGlwX3RhYmxlcyB4X3RhYmxlcyBwY2lf
+c3R1YiB2Ym94cGNpKE9FKSB2Ym94bmV0YWRwKE9FKSB2Ym94bmV0Zmx0KE9FKSB2Ym94ZHJ2KE9F
+KSBkbV9jcnlwdCBzbmRfaGRhX2NvZGVjX2hkbWkgc25kX2hkYV9jb2RlY19yZWFsdGVrIHV2Y3Zp
+ZGVvIHNuZF9oZGFfY29kZWNfZ2VuZXJpYyBzbmRfaGRhX2ludGVsIHNuZF9oZGFfY29kZWMgaW50
+ZWxfcmFwbCB2aWRlb2J1ZjJfdm1hbGxvYyB2aWRlb2J1ZjJfbWVtb3BzIHg4Nl9wa2dfdGVtcF90
+aGVybWFsIHZpZGVvYnVmMl92NGwyIGludGVsX3Bvd2VyY2xhbXAgdmlkZW9idWYyX2NvcmUgc25k
+X3VzYl9hdWRpbyBjb3JldGVtcCB2aWRlb2RldiBzbmRfaGRhX2NvcmUga3ZtX2ludGVsIHNuZF91
+c2JtaWRpX2xpYiBzbmRfaHdkZXAga3ZtIHNuZF9wY20gc25kX3NlcV9taWRpIG1lZGlhIHNuZF9z
+ZXFfbWlkaV9ldmVudCAKWyA3MjA0Ljg0MjYzMl0gc25kX3Jhd21pZGkgc25kX3NlcSBqb3lkZXYg
+aW5wdXRfbGVkcyBzbmRfc2VxX2RldmljZSBzbmRfdGltZXIgc25kIG1laV9tZSBpcnFieXBhc3Mg
+c291bmRjb3JlIG1laSBzaHBjaHAgc2VyaW9fcmF3IGJpbmZtdF9taXNjIG1hY19oaWQgaWJfaXNl
+ciByZG1hX2NtIGl3X2NtIGliX2NtIGliX2NvcmUgY29uZmlnZnMgaXNjc2lfdGNwIGxpYmlzY3Np
+X3RjcCBsaWJpc2NzaSBzY3NpX3RyYW5zcG9ydF9pc2NzaSBwYXJwb3J0X3BjIHBwZGV2IGxwIHBh
+cnBvcnQgYXV0b2ZzNCBidHJmcyByYWlkMTAgcmFpZDQ1NiBhc3luY19yYWlkNl9yZWNvdiBhc3lu
+Y19tZW1jcHkgYXN5bmNfcHEgYXN5bmNfeG9yIGFzeW5jX3R4IHhvciByYWlkNl9wcSBsaWJjcmMz
+MmMgcmFpZDEgcmFpZDAgbXVsdGlwYXRoIGxpbmVhciBoaWRfZ2VuZXJpYyB1c2JoaWQgaGlkIGk5
+MTUgbXhtX3dtaSBjcmN0MTBkaWZfcGNsbXVsIGNyYzMyX3BjbG11bCBnaGFzaF9jbG11bG5pX2lu
+dGVsIGkyY19hbGdvX2JpdCBkcm1fa21zX2hlbHBlciBhZXNuaV9pbnRlbCBhZXNfeDg2XzY0IHN5
+c2NvcHlhcmVhIGxydyBzeXNmaWxscmVjdCBnbHVlX2hlbHBlciBzeXNpbWdibHQgYWJsa19oZWxw
+ZXIgZmJfc3lzX2ZvcHMgY3J5cHRkIGRybSBwc21vdXNlIG1paSBhaGNpIGxpYmFoY2kgdmlkZW8g
+d21pIGZqZXMgW2xhc3QgdW5sb2FkZWQ6IHI4MTY5XSAKWyA3MjA0Ljg0MjcyNl0gQ1BVOiAxIFBJ
+RDogMzExMTcgQ29tbTogcnRpZmNvbmZpZyBUYWludGVkOiBHIFcgT0UgNC45LjkwLXhlbm9tYWkt
+cGMgIzEgClsgNzIwNC44NDI3MjhdIEhhcmR3YXJlIG5hbWU6IE1TSSBNUy03OTk2L0gxMTBNIFBS
+Ty1WRCAoTVMtNzk5NiksIEJJT1MgMi5DMCAwNC8yMC8yMDE3IApbIDcyMDQuODQyNzI5XSBJLXBp
+cGUgZG9tYWluOiBMaW51eCAKWyA3MjA0Ljg0MjczMV0gZmZmZmE0MjBjMTUwM2MwOCBmZmZmZmZm
+Zjk4NDIwMjc2IDAwMDAwMDAwMDAwMDAwMDAgMDAwMDAwMDAwMDAwMDAwMCAKWyA3MjA0Ljg0Mjcz
+Nl0gZmZmZmE0MjBjMTUwM2M0OCBmZmZmZmZmZjk4MDc1MGZiIDAwMDAwMGU4MDAwMDAwMDEgMDAw
+MDAwMDAwMDA1NzBjOCAKWyA3MjA0Ljg0Mjc0MF0gMDAwMDAwMDAwMDA1NzAwMCBmZmZmOGZkOTY5
+MDY1MDAwIGZmZmY4ZmQ5NjkwNjUyMjAgZmZmZmE0MjBjMDY5OTAwMCAKWyA3MjA0Ljg0Mjc0Nl0g
+Q2FsbCBUcmFjZTogClsgNzIwNC44NDI3NzBdIFs8ZmZmZmZmZmY5ODQyMDI3Nj5dIGR1bXBfc3Rh
+Y2srMHhhOS8weGQzIApbIDcyMDQuODQyNzc5XSBbPGZmZmZmZmZmOTgwNzUwZmI+XSBfX3dhcm4r
+MHhjYi8weGYwIApbIDcyMDQuODQyNzgyXSBbPGZmZmZmZmZmOTgwNzUyMmQ+XSB3YXJuX3Nsb3dw
+YXRoX251bGwrMHgxZC8weDIwIApbIDcyMDQuODQyNzg2XSBbPGZmZmZmZmZmYzBhY2E5MTM+XSBf
+X3J0bDgxNjlfY2hlY2tfbGlua19zdGF0dXMrMHgyZjMvMHgzNDAgW3J0X3I4MTY5XSAKWyA3MjA0
+Ljg0Mjc4OV0gWzxmZmZmZmZmZmMwYWNjNGYwPl0gcnRsODE2OV9vcGVuKzB4NWMwLzB4YzgwIFty
+dF9yODE2OV0gClsgNzIwNC44NDI3OTZdIFs8ZmZmZmZmZmZjMDE4MDUxNz5dIHJ0ZGV2X29wZW4r
+MHgzNy8weDgwIFtydG5ldF0gClsgNzIwNC44NDI3OTldIFs8ZmZmZmZmZmY5ODg1OTE2Nz5dID8g
+bXV0ZXhfbG9ja19pbnRlcnJ1cHRpYmxlKzB4MTcvMHg1MCAKWyA3MjA0Ljg0MjgwM10gWzxmZmZm
+ZmZmZmMwMTgwYWNjPl0gcnRuZXRfY29yZV9pb2N0bCsweDFmYy8weDViMCBbcnRuZXRdIApbIDcy
+MDQuODQyODA2XSBbPGZmZmZmZmZmYzAxODA4Nzk+XSBydG5ldF9pb2N0bCsweDEwOS8weDE2MCBb
+cnRuZXRdIApbIDcyMDQuODQyODA5XSBbPGZmZmZmZmZmOTgyMzA4ODc+XSA/IGttZW1fY2FjaGVf
+YWxsb2MrMHhkNy8weDFiMCAKWyA3MjA0Ljg0MjgxMl0gWzxmZmZmZmZmZjk4MjViOWQ0Pl0gZG9f
+dmZzX2lvY3RsKzB4YTQvMHg1ZTAgClsgNzIwNC44NDI4MTVdIFs8ZmZmZmZmZmY5ODA1YjFlZT5d
+ID8gX19kb19wYWdlX2ZhdWx0KzB4MjhlLzB4NTEwIApbIDcyMDQuODQyODE3XSBbPGZmZmZmZmZm
+OTgyNTc1YTM+XSA/IHB1dG5hbWUrMHg1My8weDYwIApbIDcyMDQuODQyODIwXSBbPGZmZmZmZmZm
+OTgyNWJmODk+XSBTeVNfaW9jdGwrMHg3OS8weDkwIApbIDcyMDQuODQyODIyXSBbPGZmZmZmZmZm
+OTgwMDJjMmY+XSBkb19zeXNjYWxsXzY0KzB4OGYvMHgxMDAgClsgNzIwNC44NDI4MjVdIFs8ZmZm
+ZmZmZmY5ODg1YzQzZT5dIGVudHJ5X1NZU0NBTExfNjRfYWZ0ZXJfc3dhcGdzKzB4NTgvMHhjNiAK
+WyA3MjA0Ljg0MjgyN10gLS0tWyBlbmQgdHJhY2UgNzQ4MTM1MjhhYTA5ZDVlZCBdLS0tIApbIDcy
+MDcuODEyMTU2XSBsaW5rIHJ0ZXRoIHVwIApbIDcyMDkuNTUxMjcyXSBURE1BOiBjYWxpYnJhdGVk
+IG1hc3Rlci10by1zbGF2ZSBwYWNrZXQgZGVsYXk6IDI1IHVzIChtaW4vbWF4OiAyMi8yOCB1cykg
+CnJvb3RAcHJvZy1wYzEyOi9tZWRpYS90YXJhcy9CMDJFMUU4QUQ2RTEwQjlEL0xYL2RyaXZlciMg
+CgotLS0tLS0tLS0tLS0tLSBuZXh0IHBhcnQgLS0tLS0tLS0tLS0tLS0KQSBub24tdGV4dCBhdHRh
+Y2htZW50IHdhcyBzY3J1YmJlZC4uLgpOYW1lOiByODE2OS5jClR5cGU6IHRleHQveC1jKytzcmMK
+U2l6ZTogMjE0Mjg4IGJ5dGVzCkRlc2M6IG5vdCBhdmFpbGFibGUKVVJMOiA8aHR0cDovL3hlbm9t
+YWkub3JnL3BpcGVybWFpbC94ZW5vbWFpL2F0dGFjaG1lbnRzLzIwMTgwNDI1L2U1MDE0Njg2L2F0
+dGFjaG1lbnQuYz4K
