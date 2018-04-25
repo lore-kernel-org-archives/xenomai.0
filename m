@@ -1,11 +1,12 @@
-From: Jouko Haapaluoma <jouko.haapaluoma@wapice.com>
-Date: Wed, 25 Apr 2018 08:54:30 +0000
-Message-ID: <b2cbe5362c38461d9a2eb817b78fb633@EDB3.wapice.localdomain>
+From: Sagi Maimon <SMaimon@advaoptical.com>
+Date: Wed, 25 Apr 2018 10:03:49 +0000
+Message-ID: <f8dcb04851eb41f999146f02ae552dd3@advaoptical.com>
 References: <mailman.27.1522680894.4366.xenomai@xenomai.org>
  <1542961.KC98kqrEBl@wirbelwind>
  <cad2a4c9f8b749109afff86f3ef0f201@advaoptical.com>
  <80155073.HUEqfJo2pc@wirbelwind>
-In-Reply-To: <80155073.HUEqfJo2pc@wirbelwind>
+ <b2cbe5362c38461d9a2eb817b78fb633@EDB3.wapice.localdomain>
+In-Reply-To: <b2cbe5362c38461d9a2eb817b78fb633@EDB3.wapice.localdomain>
 Content-Language: en-US
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
@@ -19,8 +20,19 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Sagi Maimon <SMaimon@advaoptical.com>, "xenomai@xenomai.org" <xenomai@xenomai.org>, "Philippe Gerum <rpm@xenomai.org> (rpm@xenomai.org)" <rpm@xenomai.org>
+To: Jouko Haapaluoma <jouko.haapaluoma@wapice.com>, "xenomai@xenomai.org" <xenomai@xenomai.org>, "Philippe Gerum <rpm@xenomai.org> (rpm@xenomai.org)" <rpm@xenomai.org>
 Cc: Adnan Ali <adnan.ali@wapice.com>, Sakari Junnila <sakari.junnila@wapice.com>
+
+Thanks a lot Jouko, I will try your fix.
+
+-----Original Message-----
+From: Jouko Haapaluoma [mailto:jouko.haapaluoma@wapice.com]=20
+Sent: Wednesday, April 25, 2018 11:55
+To: Sagi Maimon <SMaimon@advaoptical.com>; xenomai@xenomai.org; Philippe Ge=
+rum <rpm@xenomai.org> (rpm@xenomai.org) <rpm@xenomai.org>
+Cc: Adnan Ali <adnan.ali@wapice.com>; Sakari Junnila <sakari.junnila@wapice=
+.com>
+Subject: RE: [Xenomai] Unrecoverable FP Unavailable Exception 801
 
 On Mon, Apr 02, 2018 at 12:56:39PM +0000, Sagi Maimon wrote:
 > Hi all,
@@ -52,8 +64,7 @@ wing patch:
 
 --- a/arch/powerpc/kernel/process.c	2018-04-24 15:54:10.164558970 +0300
 +++ b/arch/powerpc/kernel/process_new.c	2018-04-24 15:53:30.635567659 +0300
-@@ -114,6 +114,11 @@ void enable_kernel_fp(void)
- #else
+@@ -114,6 +114,11 @@ void enable_kernel_fp(void)  #else
  	giveup_fpu(last_task_used_math);
  #endif /* CONFIG_SMP */
 +	/*
