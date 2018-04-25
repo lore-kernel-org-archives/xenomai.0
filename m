@@ -1,10 +1,12 @@
-Date: Wed, 25 Apr 2018 06:34:17 -0400
-Message-ID: <lh74n2pg893hlqlq0lo8j8t0.1524652457846@embeddedgreg.com>
-From: Greg Gallagher <greg@embeddedgreg.com>
-In-Reply-To: <B4C4C988-263B-479A-92A8-71C47B8CA7A1@icloud.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: base64
+In-Reply-To: <lh74n2pg893hlqlq0lo8j8t0.1524652457846@embeddedgreg.com>
+References: <B4C4C988-263B-479A-92A8-71C47B8CA7A1@icloud.com>
+ <lh74n2pg893hlqlq0lo8j8t0.1524652457846@embeddedgreg.com>
+From: Pintu Kumar <pintu.ping@gmail.com>
+Date: Wed, 25 Apr 2018 16:25:55 +0530
+Message-ID: <CAOuPNLg8gDaw=g5r3MDka5BSC4a4bOyw6Zv+hg=MOYfN=bpoyA@mail.gmail.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Subject: Re: [Xenomai] question on installing xenomai 3 on raspberry pi 3
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
@@ -14,40 +16,85 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Yuan Dai <yuan.dai24@icloud.com>, "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Greg Gallagher <greg@embeddedgreg.com>
+Cc: Yuan Dai <yuan.dai24@icloud.com>, "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-ClVzdWFsbHkgb24gcGkgdGhlIGtlcm5lbCBpbWFnZSBpcyBjYWxsZWQga2VybmVsLmltZywga2Vy
-bmVsNy5pbWcgb3Iga2VybmVsOC5pbWcgdW5sZXNzIG90aGVyd2lzZSBzcGVjaWZpZWQgaW4geW91
-ciBjb25maWcudHh0IGZpbGUuIFlvdSBjYW4gZWl0aGVyIHJlbmFtZSB5b3VyIHppbWFnZSB0byBr
-ZXJuZWwuaW1nIChvciBzaW1pbGFyKSBvciBhZGQga2VybmVsPXpJbWFnZSBpbiB5b3VyIGNvbmZp
-Zy50eHQuCgpodHRwczovL3d3dy5yYXNwYmVycnlwaS5vcmcvZG9jdW1lbnRhdGlvbi9jb25maWd1
-cmF0aW9uL2NvbmZpZy10eHQvYm9vdC5tZAoKVGhpcyBtYXkgYWxzbyBiZSBkaWZmZXJlbnQgaW4g
-eW91IGFyZSB1c2luZyB1Ym9vdCB0byBsb2FkIHRoZSBrZXJuZWwuIEknbSBhc3N1bWluZyB5b3Ug
-YXJlIHVzaW5nIHRoZSByYXNwYmVycnkgUGkgYm9vdGxvYWRlciBvbmx5LgoKR3JlZwoKCsKgIE9y
-aWdpbmFsIE1lc3NhZ2UgwqAKRnJvbTogeXVhbi5kYWkyNEBpY2xvdWQuY29tClNlbnQ6IEFwcmls
-IDI1LCAyMDE4IDM6MTYgQU0KVG86IHhlbm9tYWlAeGVub21haS5vcmcKU3ViamVjdDogW1hlbm9t
-YWldIHF1ZXN0aW9uIG9uIGluc3RhbGxpbmcgeGVub21haSAzIG9uIHJhc3BiZXJyeSBwaSAzCgpI
-aQoKSSBhbSB0cnlpbmcgdG8gaW5zdGFsbCB4ZW5vbWFpIDMgb24gcmFzcGJlcnJ5IHBpIDNCIGFu
-ZCB3b3VsZCBsaWtlIHRvIGtub3cgd2hlcmUgZXhhY3RseSBzaG91bGQgSSBwdXQgdGhlIGNvbXBp
-bGVkIGtlcm5lbCBpbWFnZSBvbiB0aGUgU0QgY2FyZC4KCkkgaGF2ZSBkb3dubG9hZGVkIHhlbm9t
-YWkgdi4zLjAuMgpjb21waWxlZCB0aGUga2VybmVsIGJ5IAptYWtlIEFSQ0g9YXJtIENST1NTX0NP
-TVBJTEU9YXJtLWxpbnV4LWdudWVhYmloZi0gekltYWdlIG1vZHVsZXMgZHRicwpOb3cgSSBqdXN0
-IG5lZWQgdG8gY29weSB0aGUgekltYWdlIGFuZCB0aGUgZGV2aWNlIHRyZWUgdG8gdGhlIG1pY3Jv
-U0QgY2FyZC4KCkJ1dCB3aGV0aGVyIEkgY29waWVkIHRvIApzdWRvIGNwIGFyY2gvYXJtL2Jvb3Qv
-ekltYWdlIC9ib290LwpvciBJIHRyaWVkIHRvIGNvcHkgdG8gCnN1ZG8gY3AgYXJjaC9hcm0vYm9v
-dC96SW1hZ2UgL21lZGlhLyR7VVNFUn0vYm9vdApJIGNhbm5vdCBnZXQgYSBzdWNjZXNzZnVsIHJl
-Ym9vdCBmcm9tIHRoZSBuZXcgS2VybmVsIGltYWdlLgoKSSB3aWxsIGVpdGhlciBnZXQgYSBibGFj
-ayBzY3JlZW4gYWZ0ZXIgSSByZXN0YXJ0IHRoZSBjb21wdXRlciBvciBnZXQgYSB3YXJuaW5nIGFm
-dGVyIHNvbWV0aW1lIGZvciBhIG5vcm1hbCBib290LiAKVGhlIGVycm9yIGNvZGUgaXMgbGlrZSB0
-aGlzIAplbmQga2VybmVsIHBhbmljIDogYXR0ZW1wdGVkIHRvIGtpbGwgaW5pdCEgRXhpdGNvZGUg
-PTB4MDAwMDAwYuKAk25vdCBzeW5jaW5nwqDCoMKgCgpJIGJlbGlldmUgdGhpcyBpcyBub3QgYSB4
-ZW5vbWFpIHByb2JsZW0gYnV0IHJhdGhlciBhIGtlcm5lbCBjb21waWxpbmcgaXNzdWUgb3IgZXZl
-biBhIFNEIGlzc3VlLiBCdXQgSSBoYXZlIHRyaWVkIHNldmVyYWwgd2F5cyBieSBzZWFyY2hpbmcg
-b25saW5lIGFuZCBoYXZlIG5vdCBoYWQgYW55IGx1Y2sgeWV0LiBQbGVhc2UgbGV0IG1lIGtub3cg
-aWYgeW91IGhhdmUgYW55IHN1Z2dlc3Rpb25zIG9yIHdlYnBhZ2UgdGhhdCBJIGNhbiByZWZlciB0
-by4gVGhhbmsgeW91IHNvIG11Y2ggZm9yIHlvdXIgdGltZSEKCkJlc3QsCll1YW4KCl9fX19fX19f
-X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fClhlbm9tYWkgbWFpbGluZyBs
-aXN0Clhlbm9tYWlAeGVub21haS5vcmcKaHR0cHM6Ly94ZW5vbWFpLm9yZy9tYWlsbWFuL2xpc3Rp
-bmZvL3hlbm9tYWkK
+Hi,
 
+Sometime back I have given a presentation about "Tizen bring up on
+Raspberry Pi 2".
+https://elinux.org/images/7/78/Pkumar.pdf
+
+Here I have described about how to replace the kernel image on rpi2.
+Please refer to slide:22,23
+
+Hope this method should work even on rpi3 as well.
+
+
+Thanks,
+Pintu
+
+
+On Wed, Apr 25, 2018 at 4:04 PM, Greg Gallagher <greg@embeddedgreg.com> wro=
+te:
+>
+> Usually on pi the kernel image is called kernel.img, kernel7.img or kerne=
+l8.img unless otherwise specified in your config.txt file. You can either r=
+ename your zimage to kernel.img (or similar) or add kernel=3DzImage in your=
+ config.txt.
+>
+> https://www.raspberrypi.org/documentation/configuration/config-txt/boot.m=
+d
+>
+> This may also be different in you are using uboot to load the kernel. I'm=
+ assuming you are using the raspberry Pi bootloader only.
+>
+> Greg
+>
+>
+>   Original Message
+> From: yuan.dai24@icloud.com
+> Sent: April 25, 2018 3:16 AM
+> To: xenomai@xenomai.org
+> Subject: [Xenomai] question on installing xenomai 3 on raspberry pi 3
+>
+> Hi
+>
+> I am trying to install xenomai 3 on raspberry pi 3B and would like to kno=
+w where exactly should I put the compiled kernel image on the SD card.
+>
+> I have downloaded xenomai v.3.0.2
+> compiled the kernel by
+> make ARCH=3Darm CROSS_COMPILE=3Darm-linux-gnueabihf- zImage modules dtbs
+> Now I just need to copy the zImage and the device tree to the microSD car=
+d.
+>
+> But whether I copied to
+> sudo cp arch/arm/boot/zImage /boot/
+> or I tried to copy to
+> sudo cp arch/arm/boot/zImage /media/${USER}/boot
+> I cannot get a successful reboot from the new Kernel image.
+>
+> I will either get a black screen after I restart the computer or get a wa=
+rning after sometime for a normal boot.
+> The error code is like this
+> end kernel panic : attempted to kill init! Exitcode =3D0x000000b=E2=80=93=
+not syncing
+>
+> I believe this is not a xenomai problem but rather a kernel compiling iss=
+ue or even a SD issue. But I have tried several ways by searching online an=
+d have not had any luck yet. Please let me know if you have any suggestions=
+ or webpage that I can refer to. Thank you so much for your time!
+>
+> Best,
+> Yuan
+>
+> _______________________________________________
+> Xenomai mailing list
+> Xenomai@xenomai.org
+> https://xenomai.org/mailman/listinfo/xenomai
+> _______________________________________________
+> Xenomai mailing list
+> Xenomai@xenomai.org
+> https://xenomai.org/mailman/listinfo/xenomai
 
