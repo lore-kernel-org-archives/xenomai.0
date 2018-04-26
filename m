@@ -1,14 +1,12 @@
-From: Edouard Tisserant <edouard.tisserant@gmail.com>
-References: <ca00a2b2-b44d-a25a-cb53-852a0f8e2d32@gmail.com>
- <594f0ba9-8e01-d2d2-a58e-2abcb3b72289@gmail.com>
-Message-ID: <fb226301-fe52-c9c9-f5a0-3f760b8d5492@gmail.com>
-Date: Thu, 26 Apr 2018 11:24:19 +0200
+From: Philippe Gerum <rpm@xenomai.org>
+Message-ID: <ad4d0f53-1c4c-1c5d-44f0-38721eff2bc1@xenomai.org>
+Date: Thu, 26 Apr 2018 12:20:14 +0200
 MIME-Version: 1.0
-In-Reply-To: <594f0ba9-8e01-d2d2-a58e-2abcb3b72289@gmail.com>
 Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
 Content-Language: en-US
-Subject: Re: [Xenomai] Crash with longer dlopen/dlcose sequence
+Content-Transfer-Encoding: 7bit
+Subject: [Xenomai] [BUG] critical bug fixed in the shared heap memory
+	allocator
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,110 +15,14 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "Xenomai (xenomai@xenomai.org)" <xenomai@xenomai.org>
-
-One more question. Sorry for flooding the list.
-
-As a workaround to avoid leaking memory, I would like to try this :
-
-=C2=A0- xeno_stub.so : stub library, linked with bootstrap-pic.o
-=C2=A0- 1.so, 2.so, ... n.so : libraries calling alchemy/posix realtime
-resources, NOT linked with bootstrap-pic.o
-
-Process life-cycle would be :
-
-- process start
-
-dlopen(xeno_stub.so)
-
-dlopen(1.so)
-dlsym + call 1.so
-dlclose(1.so)
-=2E..
-dlopen(n.so)
-dlsym + call n.so
-dlclose(n.so)
-
-dlclose(xeno_stub.so)
-
-- process end
-
-Is that correct to assume that this way, pointers setup while calling
-xenomai_init() as a side effect of first dlopen() would stay valid while
-other non-bootstrap-pic libraries are loaded and unloaded ?
+To: "Xenomai@xenomai.org" <Xenomai@xenomai.org>
 
 
-On 26/04/2018 09:39, Edouard Tisserant wrote:
-> @Henning Schild :
->
-> I just see your message from Tuesday : '[PATCH 3/3] build: link dlopen
-> libs with "nodelete"'
->
-> Is "nodelete" the only way to make it stable ? Does it apply only to
-> Xenomai libs (i.e. alchemy, copperplalte) or should it also apply to
-> final shared object that uses Xenomai libs ?=C2=A0
->
-> Edouard
->
->
-> On 26/04/2018 09:02, Edouard Tisserant wrote:
->> Good Morning !
->>
->> I'm chasing the origins of a random segfault when porting Beremiz to
->> Xenomai 3.
->>
->> Beremiz PLC runtime loads PLC logic as a shared object. Loading is
->> performed as dlopen call from python interpreter. Each time PLC
->> programmer tries a new program, previous shared object is dlcosed and
->> the new program is dlopened.
->>
->> Of course, there is in depth checks to ensure that all
->> dlopen/dlclose/dlsym operations are done from main thread only, and it=
+If you rely on --enable-pshared, i.e. having a multi-process application
+sharing a central heap, you do want to pick this fix:
 
->> is ensured that all real time tasks and resources have been closed
->> before dlclose.
->>
->> Also, I did check that implicit call to xenomai_init_dso() really
->> happens, when linking shared object with bootstrap-pic.o . I also trie=
-d
->> explicit call to xenomai_init (once at first load or after every
->> dlopen), no change.
->>
->> I tried last commit about this topic : "boilerplate/setup: introduce
->> destructors for __setup_call"
->> (5511e76040444af875ae1bb099c13a25b16336fc). It didn't help,
->> unfortunately, but did remove Xenomai "Bad syscall" warning sometimes
->> after dlclose.
->>
->> Segfault never happen at first reload. i.e. dlopen/dlcose/dlopen never=
+http://git.xenomai.org/xenomai-3.git/commit/?id=984d13432547d9cb9283162e3efd6b2224acb2a9
 
->> fails. You have to at least extend the sequence to
->> dlopen/dlcose/dlopen/dlcose/dlopen to see the crash. In other words,
->> smokey/dlopen test doesn't try hard enough to catch the problem. I hav=
-e
->> to reload about 6 times to have a crash. Also, it seems that crash has=
-
->> higher probability to occur if no symbol was called from shared object=
-
->> in between dlopen and dlclose (dlsym was called).
->>
->> Enabling full Xenomai debug didn't display more details on the crash.
->> Post-mortem debug (gdb -c core) works, but gdb can't give me any
->> backtrace :
->>
->> (gdb) bt
->> #0=C2=A0 0x00007fb8 in ?? ()
->> #1=C2=A0 0xb520c098 in ?? ()
->>
->> Is there a way to have gdb telling a bit more about what happens in
->> boilerplate/copperplate ? How can I find where it crashes ?
->>
->> Cheers,
->>
->> Edouard
->>
->>
->
-
-
+-- 
+Philippe.
 
