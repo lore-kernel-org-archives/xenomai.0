@@ -1,25 +1,18 @@
-References: <5AC116C9.6040809@freyder.net>
- <15a83f1d-7785-11c9-5f64-c09cb035ff10@xenomai.org>
- <5AC24433.30107@freyder.net>
- <6cacabd8-af4c-27e0-1b62-34ce73d7b933@xenomai.org>
- <5AC25632.90608@freyder.net>
- <7f51755d-8a54-c1a8-9ee4-a3014e03b3df@xenomai.org>
- <5ACA9F4C.8090902@freyder.net>
- <bdd2e389-bb90-1b16-9e18-6c23ec31218d@xenomai.org>
- <9638da9b-dcf7-8fac-8ef7-3b54d9f10316@xenomai.org>
- <5ACF7EE1.7020404@freyder.net>
- <fb8259aa-d3b2-479e-b508-58202e5f75ee@xenomai.org>
- <5ACF9DCC.5020102@freyder.net>
-From: Philippe Gerum <rpm@xenomai.org>
-Message-ID: <b6e53d00-24f7-c1d7-333f-3f037360c41e@xenomai.org>
-Date: Fri, 13 Apr 2018 08:36:59 +0200
 MIME-Version: 1.0
-In-Reply-To: <5ACF9DCC.5020102@freyder.net>
-Content-Type: text/plain; charset="utf-8"
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
-Subject: Re: [Xenomai] Possible Xenomai fuse filesystem/registry queue
- status files issue?
+In-Reply-To: <CALLqZ8Q=1eoUqi38k8GjWgSpEs8LYOM9=Q8zaWfO3DyHwC9nrw@mail.gmail.com>
+References: <CAOkoxmtZkcrWjcfm3ySkOiucqfCoKT6tUv4JHfV3H3PNs6xk4A@mail.gmail.com>
+ <h8k8o2nn4gj7hrnjep8rlfqb.1524759069245@embeddedgreg.com>
+ <CAOkoxmt4-eEcWCc21_AM2CwatWP1kLY7vmRJrJsWf_ZRjMn1ew@mail.gmail.com>
+ <CALLqZ8TadWG+XetGJTFA93PxWBonhCrzstf_NHJfUhs2tZ5mMw@mail.gmail.com>
+ <CAOkoxms_Dt3-Le8OF9tuuGjWANBU3d5kzMj-uatfSLP3YsT9zg@mail.gmail.com>
+ <CALLqZ8Q=1eoUqi38k8GjWgSpEs8LYOM9=Q8zaWfO3DyHwC9nrw@mail.gmail.com>
+From: Salvatore Barone <salvator.barone@gmail.com>
+Date: Thu, 26 Apr 2018 18:54:09 +0200
+Message-ID: <CAOkoxmsYrbY_72-wBFNw5HFZ+p6q00BnRfuNcrhyPUwarTczVw@mail.gmail.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+Subject: Re: [Xenomai] Issue with Xenomai 3.0.6,
+ I-Pipe 4.9.51 and Linux 4.9.51 on Xilinx Zynq 7000 MPSOC
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -28,246 +21,490 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Steve Freyder <steve@freyder.net>, "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Greg Gallagher <greg@embeddedgreg.com>
+Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On 04/12/2018 07:56 PM, Steve Freyder wrote:
-> On 4/12/2018 11:05 AM, Philippe Gerum wrote:
->> On 04/12/2018 05:44 PM, Steve Freyder wrote:
->>> On 4/12/2018 5:23 AM, Philippe Gerum wrote:
->>>> On 04/12/2018 11:31 AM, Philippe Gerum wrote:
->>>>> On 04/09/2018 01:01 AM, Steve Freyder wrote:
->>>>>> On 4/2/2018 11:51 AM, Philippe Gerum wrote:
->>>>>>> On 04/02/2018 06:11 PM, Steve Freyder wrote:
->>>>>>>> On 4/2/2018 10:20 AM, Philippe Gerum wrote:
->>>>>>>>> On 04/02/2018 04:54 PM, Steve Freyder wrote:
->>>>>>>>>> On 4/2/2018 8:41 AM, Philippe Gerum wrote:
->>>>>>>>>>> On 04/01/2018 07:28 PM, Steve Freyder wrote:
->>>>>>>>>>>> Greetings again.
->>>>>>>>>>>>
->>>>>>>>>>>> As I understand it, for each rt_queue there's supposed to be a
->>>>>>>>>>>> "status file" located in the fuse filesystem underneath the
->>>>>>>>>>>> "/run/xenomai/user/session/pid/alchemy/queues" directory, with
->>>>>>>>>>>> the file name being the queue name.  This used to contain very
->>>>>>>>>>>> useful info about queue status, message counts, etc.  I don't
->>>>>>>>>>>> know
->>>>>>>>>>>> when it broke or whether it's something I'm doing wrong but I'm
->>>>>>>>>>>> now getting a "memory exhausted" message on the console when I
->>>>>>>>>>>> attempt to do a "cat" on the status file.
->>>>>>>>>>>>
->>>>>>>>>>>> Here's a small C program that just creates a queue, and then
->>>>>>>>>>>> does
->>>>>>>>>>>> a pause to hold the accessor count non-zero.
->>>>>>>>>>>>
->>>>>>>>>>> <snip>
->>>>>>>>>>>
->>>>>>>>>>>> The resulting output (logged in via the system console):
->>>>>>>>>>>>
->>>>>>>>>>>> # sh qtest.sh
->>>>>>>>>>>> + sleep 1
->>>>>>>>>>>> + ./qc --mem-pool-size=64M --session=mysession foo
->>>>>>>>>>>> + find /run/xenomai
->>>>>>>>>>>> /run/xenomai
->>>>>>>>>>>> /run/xenomai/root
->>>>>>>>>>>> /run/xenomai/root/mysession
->>>>>>>>>>>> /run/xenomai/root/mysession/821
->>>>>>>>>>>> /run/xenomai/root/mysession/821/alchemy
->>>>>>>>>>>> /run/xenomai/root/mysession/821/alchemy/tasks
->>>>>>>>>>>> /run/xenomai/root/mysession/821/alchemy/tasks/task@1[821]
->>>>>>>>>>>> /run/xenomai/root/mysession/821/alchemy/queues
->>>>>>>>>>>> /run/xenomai/root/mysession/821/alchemy/queues/foo
->>>>>>>>>>>> /run/xenomai/root/mysession/system
->>>>>>>>>>>> /run/xenomai/root/mysession/system/threads
->>>>>>>>>>>> /run/xenomai/root/mysession/system/heaps
->>>>>>>>>>>> /run/xenomai/root/mysession/system/version
->>>>>>>>>>>> + qfile='/run/xenomai/*/*/*/alchemy/queues/foo'
->>>>>>>>>>>> + cat /run/xenomai/root/mysession/821/alchemy/queues/foo
->>>>>>>>>>>> memory exhausted
->>>>>>>>>>>>
->>>>>>>>>>>> At this point, it hangs, although SIGINT usually terminates it.
->>>>>>>>>>>>
->>>>>>>>>>>> I've seen some cases where SIGINT won't terminate it, and a
->>>>>>>>>>>> reboot is
->>>>>>>>>>>> required to clean things up.  I see this message appears to be
->>>>>>>>>>>> logged
->>>>>>>>>>>> in the obstack error handler.  I don't think I'm running out of
->>>>>>>>>>>> memory,
->>>>>>>>>>>> which makes me think "heap corruption".  Not much of an
->>>>>>>>>>>> analysis!
->>>>>>>>>>>> I did
->>>>>>>>>>>> try varying queue sizes and max message counts - no change.
->>>>>>>>>>>>
->>>>>>>>>>> I can't reproduce this. I would suspect a rampant memory
->>>>>>>>>>> corruption
->>>>>>>>>>> too,
->>>>>>>>>>> although running the test code over valgrind (mercury build)
->>>>>>>>>>> did not
->>>>>>>>>>> reveal any issue.
->>>>>>>>>>>
->>>>>>>>>>> - which Xenomai version are you using?
->>>>>>>>>>> - cobalt / mercury ?
->>>>>>>>>>> - do you enable the shared heap when configuring ?
->>>>>>>>>>> (--enable-pshared)
->>>>>>>>>>>
->>>>>>>>>> I'm using Cobalt.  uname -a reports:
->>>>>>>>>>
->>>>>>>>>> Linux sdftest 4.1.18_C01571-15S00-00.000.zimg+83fdace666 #2
->>>>>>>>>> SMP Fri
->>>>>>>>>> Mar
->>>>>>>>>> 9 11:07:52 CST 2018 armv7l GNU/Linux
->>>>>>>>>>
->>>>>>>>>> Here is the config dump:
->>>>>>>>>>
->>>>>>>>>> CONFIG_XENO_PSHARED=1
->>>>>>>>> Any chance you could have some leftover files in /dev/shm from
->>>>>>>>> aborted
->>>>>>>>> runs, which would steal RAM?
->>>>>>>>>
->>>>>>>> I've been rebooting before each test run, but I'll keep that in
->>>>>>>> mind for
->>>>>>>> future testing.
->>>>>>>>
->>>>>>>> Sounds like I need to try rolling back to an older build, I have a
->>>>>>>> 3.0.5
->>>>>>>> and a 3.0.3 build handy.
->>>>>>> The standalone test should work with the shared heap disabled,
->>>>>>> could you
->>>>>>> check it against a build configure with --disable-pshared? Thanks,
->>>>>>>
->>>>>> Philippe,
->>>>>>
->>>>>> Sorry for the delay - our vendor had been doing all of our kernel
->>>>>> and SDK
->>>>>> builds so I had to do a lot of learning to get this all going.
->>>>>>
->>>>>> With the --disable-pshared in effect:
->>>>>>
->>>>>> /.g3l # ./qc --dump-config | grep SHARED
->>>>>> based on Xenomai/cobalt v3.0.6 -- #6e34bb5 (2018-04-01 10:50:59
->>>>>> +0200)
->>>>>> CONFIG_XENO_PSHARED is OFF
->>>>>>
->>>>>> /.g3l # ./qc foo &
->>>>>> /.g3l # find /run/xenomai/
->>>>>> /run/xenomai/
->>>>>> /run/xenomai/root
->>>>>> /run/xenomai/root/opus
->>>>>> /run/xenomai/root/opus/3477
->>>>>> /run/xenomai/root/opus/3477/alchemy
->>>>>> /run/xenomai/root/opus/3477/alchemy/tasks
->>>>>> /run/xenomai/root/opus/3477/alchemy/tasks/qcreate3477
->>>>>> /run/xenomai/root/opus/3477/alchemy/queues
->>>>>> /run/xenomai/root/opus/3477/alchemy/queues/foo
->>>>>> /run/xenomai/root/opus/system
->>>>>> /run/xenomai/root/opus/system/threads
->>>>>> /run/xenomai/root/opus/system/heaps
->>>>>> /run/xenomai/root/opus/system/version
->>>>>> root@ICB-G3L:/.g3l # cat
->>>>>> run/xenomai/root/opus/3477/alchemy/queues/foo
->>>>>> [TYPE]  [TOTALMEM]  [USEDMEM]  [QLIMIT]  [MCOUNT]
->>>>>>    FIFO        5344       3248        10         0
->>>>>>
->>>>>> Perfect!
->>>>>>
->>>>>> What's the next step?
->>>>>>
->>>>> I can reproduce this issue. I'm on it.
->>>>>
->>>> The patch below should solve the problem for the registry, however this
->>>> may have uncovered a bug in the "tlsf" allocator (once again), which
->>>> should not have failed allocating memory. Two separate issues then.
->>>>
->>>> diff --git a/include/copperplate/registry-obstack.h
->>>> b/include/copperplate/registry-obstack.h
->>>> index fe192faf7..48e453bc3 100644
->>>> --- a/include/copperplate/registry-obstack.h
->>>> +++ b/include/copperplate/registry-obstack.h
->>>> @@ -29,11 +29,12 @@ struct threadobj;
->>>>    struct syncobj;
->>>>
->>>>    /*
->>>> - * Assume we may want fast allocation of private memory from real-time
->>>> - * mode when growing the obstack.
->>>> + * Obstacks are grown from handlers called by the fusefs server
->>>> + * thread, which has no real-time requirement: malloc/free is fine for
->>>> + * memory management.
->>>>     */
->>>> -#define obstack_chunk_alloc    pvmalloc
->>>> -#define obstack_chunk_free    pvfree
->>>> +#define obstack_chunk_alloc    malloc
->>>> +#define obstack_chunk_free    free
->>>>
->>>>    struct threadobj;
->>>>
->>>>
->>> Thanks Philippe,
->>>
->>> I shall add this to my build ASAP.  If I understand correctly, this is
->>> switching
->>> the entire registry-obstack-related dynamic storage allocation mechanism
->>> from the
->>> "pv" routines (TLSF allocator?) paradigm to the standard malloc/free
->>> paradigm.
->> Yes, because the context that runs those calls is a non-rt one in
->> essence, i.e. the fuse filesystem server thread.
->>
->>> I ask because my next issue report was going to be about a SEGV that
->>> I have
->>> been seeing occasionally in registry_add_file() after having called
->>> pvstrdup()
->>> and having gotten a NULL return back.  The caller there apparently
->>> does not
->>> expect a NULL return, so when you said "should not have failed
->>> allocating memory"
->>> that brought my attention back to the SEGV issue.  This appears to be
->>> related to
->>> what I will call "heavy registry activity" when I am initializing -
->>> creating
->>> lots of RT tasks, queues, mutexes, etc, causing hot activity in
->>> registry_add_file
->>> I would expect.
->> Your assumption is spot on. There is a flaw in the way the private
->> memory allocator is sized in pshared mode (i.e. tlsf in that case). Only
->> 8k are reserved for the main private pool pvmalloc() refers to, that
->> size was picked in order to limit the amount of locked memory reserved
->> by an allocator which is usually under low pressure when pshared is
->> enabled. The consequence of random pvmalloc() calls implicitly pulling
->> memory from that heap was overlooked.
->>
->> Problem is that a high registry activity exactly defeats that
->> assumption, consuming much more memory as obstacks grow with printout
->> data.
->>
->> I've been converting pvmalloc() calls to plain malloc() when applicable
->> lately, but we may still need a way to let the user specify which amount
->> of private memory would be required for the remaining pvmalloc() calls.
->>
->>> I'm thinking creation of a "registry exerciser" program may be in
->>> order...
->>>
->>>
->> Yeah, possibly. The fuse-based registry was assumed to be straighforward
->> to implement in theory, but ended up with lots of brain damage corner
->> cases.
->>
-> That 8K allocation, is that on a "per-process" basis?  I had started
-> breaking my code into more processes because I had an inkling that
-> there was some kind of limit on how many registry entries a process
-> could have - maybe now I understand where that limit originates!
-> 
-> Do you think that an increase from 8 to 64K would be acceptable?  A
-> "temporary workaround" at best, but I'm pretty sure that would be
-> enough to get my code running in short order.
-> 
+Just before the last attempt! About two hours ago...
 
-As a work aroud, just raise MIN_TLSF_HEAPSZ to the value you see fit.
-There is no limitation on the number of registry entries whatsoever,
-only transient memory pressure on the private allocator with FUSE, when
-running pshared that could lead to OOM situations.
+2018-04-26 18:43 GMT+02:00 Greg Gallagher <greg@embeddedgreg.com>:
 
-The situation may get worse because TLSF is really bad at dealing with
-internal fragmentation. I'm working on a drop in replacement for the
--next branch for this reason.
+> git clone git://git.xenomai.org/xenomai-3.git
+> git checkout stable-3.0.x
+>
+> When was the last time you sync'd with the Linux stable tree?
+>
+> On Thu, Apr 26, 2018 at 12:39 PM, Salvatore Barone
+> <salvator.barone@gmail.com> wrote:
+> > Which repo sould I use?
+> >
+> >
+> > 2018-04-26 18:35 GMT+02:00 Greg Gallagher <greg@embeddedgreg.com>:
+> >>
+> >> My email cutoff the last part of your panic, I can see the full log no=
+w.
+> >> Try using the latest git repo, so checkout the stable-3.0.x branch for
+> >> Xenomai.  The only difference between my test setup is I'm using the
+> stable
+> >> branch.  I'll attempt to reproduce tonight if you still see the error.
+> >>
+> >> On Thu, Apr 26, 2018 at 12:29 PM, Salvatore Barone
+> >> <salvator.barone@gmail.com> wrote:
+> >>>
+> >>> No, I'm patching the 4.9.51 mainline Linux Kernel with the 4.9.51
+> I-Pipe
+> >>> patch. I'm using Xenomai 3.0.6 library and Linaro latest debian root
+> >>> filesystem (2017 something)
+> >>>
+> >>> 2018-04-26 18:11 GMT+02:00 Greg Gallagher <greg@embeddedgreg.com>:
+> >>>>
+> >>>>
+> >>>> Are you patching the Xilinx Linux kernel with the Xenomai patch? Hav=
+e
+> >>>> you tried mainline?
+> >>>>
+> >>>> Greg
+> >>>> From: salvator.barone@gmail.com
+> >>>> Sent: April 26, 2018 12:01 PM
+> >>>> To: greg@embeddedgreg.com
+> >>>> Cc: xenomai@xenomai.org
+> >>>> Subject: Re: [Xenomai] Issue with Xenomai 3.0.6, I-Pipe 4.9.51 and
+> Linux
+> >>>> 4.9.51 on Xilinx Zynq 7000 MPSOC
+> >>>>
+> >>>> Hi Greg! I've read all your blog post on this argument! With the
+> xilinz
+> >>>> linux kernel i have no problem!
+> >>>>
+> >>>> Saluti,
+> >>>> Salvatore Barone.
+> >>>>
+> >>>> Il Gio 26 Apr 2018, 16:25 Greg Gallagher <greg@embeddedgreg.com> ha
+> >>>> scritto:
+> >>>>>
+> >>>>> If you load a non Xenomai kernel do you see the panic?  I think
+> >>>>> there's an issue with your rootfs. I've tested zynq running on 4.14
+> >>>>> ipipe and 4.9 ipipe with Xenomai 3.0.x stable using both a ubuntu a=
+nd
+> >>>>> busybox file system with no issues.  I've tested on Zybo, Minized a=
+nd
+> >>>>> the Zc702 board.  If it's a rootfs problem and not Xenomai related =
+I
+> >>>>> can help you off list.  Try loading a non Xenomai kernel and see if
+> >>>>> the panic still exists.
+> >>>>>
+> >>>>>
+> >>>>> -Greg
+> >>>>>
+> >>>>> On Thu, Apr 26, 2018 at 10:10 AM, Salvatore Barone
+> >>>>> <salvator.barone@gmail.com> wrote:
+> >>>>> > Hi all,
+> >>>>> > I'm trying to run Xenomai 3 on a Xilinx Zynq 7000 MPSOC (on a
+> >>>>> > Digilent Zybo
+> >>>>> > development board). I've read a lot of tutorial and documentation
+> >>>>> > before
+> >>>>> > posting here.
+> >>>>> > I run into a "kernel panic" and I cannot solve it.
+> >>>>> > I know to be annoying, but just to be not prone to
+> misunderstanding,
+> >>>>> > I'm
+> >>>>> > going to report my personal walk-through below!
+> >>>>> >
+> >>>>> > In short: I've downloaded Linux stable sources from git, Xenomai =
+3
+> >>>>> > and
+> >>>>> > I-Pipe. I checkout the 4.9.51 branch, applied the I-Pipe patch as
+> >>>>> > follow
+> >>>>> > -----------------------------------------------
+> >>>>> > git clone git://
+> >>>>> > git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable.git
+> >>>>> > git clone git://git.xenomai.org/xenomai-3.git
+> >>>>> > wget -O $IPIPE
+> >>>>> >
+> >>>>> > https://xenomai.org/downloads/ipipe/v4.x/arm/ipipe-core-4.9.
+> 51-arm-4.patch
+> >>>>> > cd xenomai-3
+> >>>>> > ./scripts/prepare-kernel.sh
+> >>>>> > --linux=3Dlinux-stable --ipipe=3D../ipipe-core-4.9.51-arm-4.patch
+> >>>>> > --arch=3Darm
+> >>>>> > -----------------------------------------------
+> >>>>> > Then, I copied the "xilinx_zynq_defconfig" file, from Xilinx, int=
+o
+> >>>>> > the
+> >>>>> > arch/arm/configs directory, and then
+> >>>>> > -----------------------------------------------
+> >>>>> > export ARCH=3Darm
+> >>>>> > export CROSS_COMPILE=3Darm-linux-gnueabihf-
+> >>>>> > make xilinx_zynq_defconfig
+> >>>>> > make menuconfig
+> >>>>> > -----------------------------------------------
+> >>>>> > I've
+> >>>>> > 1) disabled frequency scaling
+> >>>>> > 2) disabled CMA
+> >>>>> > 3) disabled kernel hacks
+> >>>>> > and then
+> >>>>> > -----------------------------------------------
+> >>>>> > make
+> >>>>> > make UIMAGE_LOADADDR=3D0x8000 uImage modules
+> >>>>> > make modules_install INSTALL_MOD_PATH=3D$ZYNQ_MODULES
+> >>>>> > -----------------------------------------------
+> >>>>> > So, I compiled the Xenomai 3 library
+> >>>>> > -----------------------------------------------
+> >>>>> > cd xenomai3
+> >>>>> > git checkout tags/v3.0.6 -b xenomai_3.0.6
+> >>>>> > ./scripts/bootstrap
+> >>>>> > mkdir xeno3_build
+> >>>>> > cd xeno3_build
+> >>>>> > ../configure CFLAGS=3D"-march=3Darmv7-a -mfpu=3Dvfp3 -mfloat-abi=
+=3Dhard"
+> >>>>> > LDFLAGS=3D"-march=3Darmv7-a" --build=3Dx86_64-pc-linux-gnu
+> >>>>> > --host=3Darm-none-linux-gnueabi --with-core=3Dcobalt --enable-smp
+> >>>>> > --enable-tls
+> >>>>> > CC=3Darm-linux-gnueabihf-gcc LD=3Darm-linux-gnueabihf-ld
+> >>>>> > make DESTDIR=3D$XENO_ZYNQ_STAGE install
+> >>>>> > ---------------------------------------------
+> >>>>> >
+> >>>>> > All work as expected.
+> >>>>> > I used linaro latest root fs, adding the xenomai3 library and
+> kernel
+> >>>>> > modules, but, at the system boot, I run into "kernel panic".
+> >>>>> > Dump follows
+> >>>>> > ---------------------------------------------
+> >>>>> > [16:06:07:495] EXT4-fs (mmcblk0p2): recovery complete=E2=90=8D=E2=
+=90=8A
+> >>>>> > [16:06:07:495] EXT4-fs (mmcblk0p2): mounted filesystem with order=
+ed
+> >>>>> > data
+> >>>>> > mode. Opts: (null)=E2=90=8D=E2=90=8A
+> >>>>> > [16:06:07:495] VFS: Mounted root (ext4 filesystem) on device
+> 179:2.=E2=90=8D=E2=90=8A
+> >>>>> > [16:06:07:511] devtmpfs: mounted=E2=90=8D=E2=90=8A
+> >>>>> > [16:06:07:511] Freeing unused kernel memory: 1024K (c0900000 -
+> >>>>> > c0a00000)=E2=90=8D=E2=90=8A
+> >>>>> > [16:06:07:591] random: fast init done=E2=90=8D=E2=90=8A
+> >>>>> > [16:06:07:639] /sbin/init: /lib/arm-linux-gnueabihf/
+> libseccomp.so.2:
+> >>>>> > no
+> >>>>> > version information available (required by /sbin/init)=E2=90=8D=
+=E2=90=8A
+> >>>>> > [16:06:07:655] /sbin/init: /lib/arm-linux-gnueabihf/
+> libseccomp.so.2:
+> >>>>> > no
+> >>>>> > version information available (required by /sbin/init)=E2=90=8D=
+=E2=90=8A
+> >>>>> > [16:06:07:655] /sbin/init: /lib/arm-linux-gnueabihf/
+> libseccomp.so.2:
+> >>>>> > no
+> >>>>> > version information available (required by /sbin/init)=E2=90=8D=
+=E2=90=8A
+> >>>>> > [16:06:07:671] /sbin/init: /lib/arm-linux-gnueabihf/
+> libseccomp.so.2:
+> >>>>> > no
+> >>>>> > version information available (required by /sbin/init)=E2=90=8D=
+=E2=90=8A
+> >>>>> > [16:06:07:687] /sbin/init: /lib/arm-linux-gnueabihf/
+> libseccomp.so.2:
+> >>>>> > no
+> >>>>> > version information available (required by /sbin/init)=E2=90=8D=
+=E2=90=8A
+> >>>>> > [16:06:07:687] /sbin/init: /lib/arm-linux-gnueabihf/
+> libseccomp.so.2:
+> >>>>> > no
+> >>>>> > version information available (required by /sbin/init)=E2=90=8D=
+=E2=90=8A
+> >>>>> > [16:06:07:703] /sbin/init: /lib/arm-linux-gnueabihf/
+> libseccomp.so.2:
+> >>>>> > no
+> >>>>> > version information available (required by /sbin/init)=E2=90=8D=
+=E2=90=8A
+> >>>>> > [16:06:07:703] /sbin/init: /lib/arm-linux-gnueabihf/
+> libseccomp.so.2:
+> >>>>> > no
+> >>>>> > version information available (required by /sbin/init)=E2=90=8D=
+=E2=90=8A
+> >>>>> > [16:06:07:719] /sbin/init: /lib/arm-linux-gnueabihf/
+> libseccomp.so.2:
+> >>>>> > no
+> >>>>> > version information available (required by /sbin/init)=E2=90=8D=
+=E2=90=8A
+> >>>>> > [16:06:07:735] /sbin/init: /lib/arm-linux-gnueabihf/
+> libseccomp.so.2:
+> >>>>> > no
+> >>>>> > version information available (required by /sbin/init)=E2=90=8D=
+=E2=90=8A
+> >>>>> > [16:06:07:735] /sbin/init: /lib/arm-linux-gnueabihf/
+> libseccomp.so.2:
+> >>>>> > no
+> >>>>> > version information available (required by
+> >>>>> > /lib/arm-linux-gnueabihf/libselinux.so.1)=E2=90=8D=E2=90=8A
+> >>>>> > [16:06:07:751] /sbin/init: /lib/arm-linux-gnueabihf/
+> libseccomp.so.2:
+> >>>>> > no
+> >>>>> > version information available (required by
+> >>>>> > /lib/arm-linux-gnueabihf/libselinux.so.1)=E2=90=8D=E2=90=8A
+> >>>>> > [16:06:07:767] /sbin/init: /lib/arm-linux-gnueabihf/
+> libseccomp.so.2:
+> >>>>> > no
+> >>>>> > version information available (required by
+> >>>>> > /lib/arm-linux-gnueabihf/libselinux.so.1)=E2=90=8D=E2=90=8A
+> >>>>> > [16:06:07:783] /sbin/init: /lib/arm-linux-gnueabihf/
+> libseccomp.so.2:
+> >>>>> > no
+> >>>>> > version information available (required by
+> >>>>> > /lib/arm-linux-gnueabihf/libcap.so.2)=E2=90=8D=E2=90=8A
+> >>>>> > [16:06:07:783] /sbin/init: /lib/arm-linux-gnueabihf/
+> libseccomp.so.2:
+> >>>>> > no
+> >>>>> > version information available (required by
+> >>>>> > /lib/arm-linux-gnueabihf/libcap.so.2)=E2=90=8D=E2=90=8A
+> >>>>> > [16:06:07:799] /sbin/init: /lib/arm-linux-gnueabihf/
+> libseccomp.so.2:
+> >>>>> > no
+> >>>>> > version information available (required by
+> >>>>> > /lib/arm-linux-gnueabihf/libcap.so.2)=E2=90=8D=E2=90=8A
+> >>>>> > [16:06:07:815] /sbin/init: /lib/arm-linux-gnueabihf/
+> libseccomp.so.2:
+> >>>>> > no
+> >>>>> > version information available (required by
+> >>>>> > /lib/arm-linux-gnueabihf/librt.so.1)=E2=90=8D=E2=90=8A
+> >>>>> > [16:06:07:831] /sbin/init: /lib/arm-linux-gnueabihf/
+> libseccomp.so.2:
+> >>>>> > no
+> >>>>> > version information available (required by
+> >>>>> > /lib/arm-linux-gnueabihf/librt.so.1)=E2=90=8D=E2=90=8A
+> >>>>> > [16:06:07:831] /sbin/init: /lib/arm-linux-gnueabihf/
+> libseccomp.so.2:
+> >>>>> > no
+> >>>>> > version information available (required by
+> >>>>> > /lib/arm-linux-gnueabihf/libseccomp.so.2)=E2=90=8D=E2=90=8A
+> >>>>> > [16:06:07:847] /sbin/init: /lib/arm-linux-gnueabihf/
+> libseccomp.so.2:
+> >>>>> > no
+> >>>>> > version information available (required by
+> >>>>> > /lib/arm-linux-gnueabihf/libpam.so.0)=E2=90=8D=E2=90=8A
+> >>>>> > [16:06:07:863] /sbin/init: /lib/arm-linux-gnueabihf/
+> libseccomp.so.2:
+> >>>>> > no
+> >>>>> > version information available (required by
+> >>>>> > /lib/arm-linux-gnueabihf/libpam.so.0)=E2=90=8D=E2=90=8A
+> >>>>> > [16:06:07:879] /sbin/init: /lib/arm-linux-gnueabihf/
+> libseccomp.so.2:
+> >>>>> > no
+> >>>>> > version information available (required by
+> >>>>> > /lib/arm-linux-gnueabihf/libaudit.so.1)=E2=90=8D=E2=90=8A
+> >>>>> > [16:06:07:879] /sbin/init: /lib/arm-linux-gnueabihf/
+> libseccomp.so.2:
+> >>>>> > no
+> >>>>> > version information available (required by
+> >>>>> > /lib/arm-linux-gnueabihf/libaudit.so.1)=E2=90=8D=E2=90=8A
+> >>>>> > [16:06:07:895] /sbin/init: /lib/arm-linux-gnueabihf/
+> libseccomp.so.2:
+> >>>>> > no
+> >>>>> > version information available (required by
+> >>>>> > /lib/arm-linux-gnueabihf/libkmod.so.2)=E2=90=8D=E2=90=8A
+> >>>>> > [16:06:07:911] /sbin/init: /lib/arm-linux-gnueabihf/
+> libseccomp.so.2:
+> >>>>> > no
+> >>>>> > version information available (required by
+> >>>>> > /lib/arm-linux-gnueabihf/libkmod.so.2)=E2=90=8D=E2=90=8A
+> >>>>> > [16:06:07:927] /sbin/init: /lib/arm-linux-gnueabihf/
+> libseccomp.so.2:
+> >>>>> > no
+> >>>>> > version information available (required by
+> >>>>> > /lib/arm-linux-gnueabihf/libkmod.so.2)=E2=90=8D=E2=90=8A
+> >>>>> > [16:06:07:943] /sbin/init: /lib/arm-linux-gnueabihf/
+> libseccomp.so.2:
+> >>>>> > no
+> >>>>> > version information available (required by
+> >>>>> > /lib/arm-linux-gnueabihf/libapparmor.so.1)=E2=90=8D=E2=90=8A
+> >>>>> > [16:06:07:943] /sbin/init: /lib/arm-linux-gnueabihf/
+> libseccomp.so.2:
+> >>>>> > no
+> >>>>> > version information available (required by
+> >>>>> > /lib/arm-linux-gnueabihf/libapparmor.so.1)=E2=90=8D=E2=90=8A
+> >>>>> > [16:06:07:959] /sbin/init: /lib/arm-linux-gnueabihf/
+> libseccomp.so.2:
+> >>>>> > no
+> >>>>> > version information available (required by
+> >>>>> > /lib/arm-linux-gnueabihf/libapparmor.so.1)=E2=90=8D=E2=90=8A
+> >>>>> > [16:06:07:975] /sbin/init: /lib/arm-linux-gnueabihf/
+> libseccomp.so.2:
+> >>>>> > no
+> >>>>> > version information available (required by
+> >>>>> > /lib/arm-linux-gnueabihf/libapparmor.so.1)=E2=90=8D=E2=90=8A
+> >>>>> > [16:06:07:991] /sbin/init: /lib/arm-linux-gnueabihf/
+> libseccomp.so.2:
+> >>>>> > no
+> >>>>> > version information available (required by
+> >>>>> > /lib/arm-linux-gnueabihf/libmount.so.1)=E2=90=8D=E2=90=8A
+> >>>>> > [16:06:07:991] /sbin/init: /lib/arm-linux-gnueabihf/
+> libseccomp.so.2:
+> >>>>> > no
+> >>>>> > version information available (required by
+> >>>>> > /lib/arm-linux-gnueabihf/libmount.so.1)=E2=90=8D=E2=90=8A
+> >>>>> > [16:06:08:007] /sbin/init: /lib/arm-linux-gnueabihf/
+> libseccomp.so.2:
+> >>>>> > no
+> >>>>> > version information available (required by
+> >>>>> > /lib/arm-linux-gnueabihf/libmount.so.1)=E2=90=8D=E2=90=8A
+> >>>>> > [16:06:08:023] /sbin/init: /lib/arm-linux-gnueabihf/
+> libseccomp.so.2:
+> >>>>> > no
+> >>>>> > version information available (required by
+> >>>>> > /lib/arm-linux-gnueabihf/libmount.so.1)=E2=90=8D=E2=90=8A
+> >>>>> > [16:06:08:039] /sbin/init: /lib/arm-linux-gnueabihf/
+> libseccomp.so.2:
+> >>>>> > no
+> >>>>> > version information available (required by
+> >>>>> > /lib/arm-linux-gnueabihf/libmount.so.1)=E2=90=8D=E2=90=8A
+> >>>>> > [16:06:08:039] /sbin/init: /lib/arm-linux-gnueabihf/
+> libseccomp.so.2:
+> >>>>> > no
+> >>>>> > version information available (required by
+> >>>>> > /lib/arm-linux-gnueabihf/libmount.so.1)=E2=90=8D=E2=90=8A
+> >>>>> > [16:06:08:055] /sbin/init: /lib/arm-linux-gnueabihf/
+> libseccomp.so.2:
+> >>>>> > no
+> >>>>> > version information available (required by
+> >>>>> > /lib/arm-linux-gnueabihf/libmount.so.1)=E2=90=8D=E2=90=8A
+> >>>>> > [16:06:08:072] /sbin/init: /lib/arm-linux-gnueabihf/
+> libseccomp.so.2:
+> >>>>> > no
+> >>>>> > version information available (required by
+> >>>>> > /lib/arm-linux-gnueabihf/libgcc_s.so.1)=E2=90=8D=E2=90=8A
+> >>>>> > [16:06:08:087] /sbin/init: /lib/arm-linux-gnueabihf/
+> libseccomp.so.2:
+> >>>>> > no
+> >>>>> > version information available (required by
+> >>>>> > /lib/arm-linux-gnueabihf/libpthread.so.0)=E2=90=8D=E2=90=8A
+> >>>>> > [16:06:08:103] /sbin/init: /lib/arm-linux-gnueabihf/
+> libseccomp.so.2:
+> >>>>> > no
+> >>>>> > version information available (required by
+> >>>>> > /lib/arm-linux-gnueabihf/libpthread.so.0)=E2=90=8D=E2=90=8A
+> >>>>> > [16:06:08:103] /sbin/init: /lib/arm-linux-gnueabihf/
+> libseccomp.so.2:
+> >>>>> > no
+> >>>>> > version information available (required by
+> >>>>> > /lib/arm-linux-gnueabihf/libpcre.so.3)=E2=90=8D=E2=90=8A
+> >>>>> > [16:06:08:119] /sbin/init: /lib/arm-linux-gnueabihf/
+> libseccomp.so.2:
+> >>>>> > no
+> >>>>> > version information available (required by
+> >>>>> > /lib/arm-linux-gnueabihf/libdl.so.2)=E2=90=8D=E2=90=8A
+> >>>>> > [16:06:08:135] /sbin/init: /lib/arm-linux-gnueabihf/
+> libseccomp.so.2:
+> >>>>> > no
+> >>>>> > version information available (required by
+> >>>>> > /lib/arm-linux-gnueabihf/libdl.so.2)=E2=90=8D=E2=90=8A
+> >>>>> > [16:06:08:151] /sbin/init: /lib/arm-linux-gnueabihf/libgcc_s.so.1=
+:
+> >>>>> > version
+> >>>>> > `UUID_1.0' not found (required by
+> >>>>> > /lib/arm-linux-gnueabihf/libblkid.so.1)=E2=90=8D=E2=90=8A
+> >>>>> > [16:06:08:151] /sbin/init: /lib/arm-linux-gnueabihf/
+> libseccomp.so.2:
+> >>>>> > no
+> >>>>> > version information available (required by
+> >>>>> > /lib/arm-linux-gnueabihf/libblkid.so.1)=E2=90=8D=E2=90=8A
+> >>>>> > [16:06:08:167] /sbin/init: /lib/arm-linux-gnueabihf/
+> libseccomp.so.2:
+> >>>>> > no
+> >>>>> > version information available (required by
+> >>>>> > /lib/arm-linux-gnueabihf/libblkid.so.1)=E2=90=8D=E2=90=8A
+> >>>>> > [16:06:08:183] /sbin/init: /lib/arm-linux-gnueabihf/
+> libseccomp.so.2:
+> >>>>> > no
+> >>>>> > version information available (required by
+> >>>>> > /lib/arm-linux-gnueabihf/libblkid.so.1)=E2=90=8D=E2=90=8A
+> >>>>> > [16:06:08:199] /sbin/init: /lib/arm-linux-gnueabihf/
+> libseccomp.so.2:
+> >>>>> > no
+> >>>>> > version information available (required by
+> >>>>> > /lib/arm-linux-gnueabihf/libblkid.so.1)=E2=90=8D=E2=90=8A
+> >>>>> > [16:06:08:231] Kernel panic - not syncing: Attempted to kill init=
+!
+> >>>>> > exitcode=3D0x00000100=E2=90=8D=E2=90=8A
+> >>>>> > [16:06:08:231] =E2=90=8D=E2=90=8A
+> >>>>> > [16:06:08:231] CPU0: stopping=E2=90=8D=E2=90=8A
+> >>>>> > [16:06:08:231] CPU: 0 PID: 0 Comm: swapper/0 Not tainted
+> >>>>> > 4.9.24-xilinx-dirty #1=E2=90=8D=E2=90=8A
+> >>>>> > [16:06:08:231] Hardware name: Xilinx Zynq Platform=E2=90=8D=E2=90=
+=8A
+> >>>>> > [16:06:08:247] I-pipe domain: Linux=E2=90=8D=E2=90=8A
+> >>>>> > [16:06:08:247] Backtrace: =E2=90=8D=E2=90=8A
+> >>>>> > [16:06:08:247] [<c010b2c4>] (dump_backtrace) from [<c010b538>]
+> >>>>> > (show_stack+0x18/0x1c)=E2=90=8D=E2=90=8A
+> >>>>> > [16:06:08:247]  r6:00000080 r5:00000000 r4:c0a140b8=E2=90=8D=E2=
+=90=8A
+> >>>>> > [16:06:08:247] [<c010b520>] (show_stack) from [<c031e618>]
+> >>>>> > (dump_stack+0x90/0xb4)=E2=90=8D=E2=90=8A
+> >>>>> > [16:06:08:263] [<c031e588>] (dump_stack) from [<c010e238>]
+> >>>>> > (handle_IPI+0xe0/0x16c)=E2=90=8D=E2=90=8A
+> >>>>> > [16:06:08:263]  r7:00000004 r6:00000000 r5:c0a03608 r4:c094b51c=
+=E2=90=8D=E2=90=8A
+> >>>>> > [16:06:08:263] [<c010e158>] (handle_IPI) from [<c010e2f0>]
+> >>>>> > (__ipipe_do_IPI+0x2c/0x38)=E2=90=8D=E2=90=8A
+> >>>>> > [16:06:08:279]  r10:c0a40ac0 r9:dfbd080c r8:dfbd0810 r7:dfbd0818
+> >>>>> > r6:c0a50c00 r5:00000404=E2=90=8D=E2=90=8A
+> >>>>> > [16:06:08:279]  r4:c094ab4c=E2=90=8D=E2=90=8A
+> >>>>> > [16:06:08:279] [<c010e2c4>] (__ipipe_do_IPI) from [<c018bcf8>]
+> >>>>> > (__ipipe_do_sync_stage+0x224/0x268)=E2=90=8D=E2=90=8A
+> >>>>> > [16:06:08:295]  r5:c0a40b00 r4:00000404=E2=90=8D=E2=90=8A
+> >>>>> > [16:06:08:295] [<c018bad4>] (__ipipe_do_sync_stage) from
+> [<c018be40>]
+> >>>>> > (ipipe_unstall_root+0x40/0x50)=E2=90=8D=E2=90=8A
+> >>>>> > [16:06:08:295]  r10:00000000 r9:c094c5bc r8:00000001 r7:c0a0346c
+> >>>>> > r6:c0a00000 r5:c0a269cc=E2=90=8D=E2=90=8A
+> >>>>> > [16:06:08:311]  r4:c0948808=E2=90=8D=E2=90=8A
+> >>>>> > [16:06:08:311] [<c018be00>] (ipipe_unstall_root) from [<c0152464>=
+]
+> >>>>> > (cpu_startup_entry+0x144/0x1d4)=E2=90=8D=E2=90=8A
+> >>>>> > [16:06:08:311]  r4:dfbd45c0=E2=90=8D=E2=90=8A
+> >>>>> > [16:06:08:311] [<c0152320>] (cpu_startup_entry) from [<c064fec8>]
+> >>>>> > (rest_init+0x78/0x90)=E2=90=8D=E2=90=8A
+> >>>>> > [16:06:08:327]  r7:c0a03440=E2=90=8D=E2=90=8A
+> >>>>> > [16:06:08:327] [<c064fe50>] (rest_init) from [<c0900c74>]
+> >>>>> > (start_kernel+0x308/0x368)=E2=90=8D=E2=90=8A
+> >>>>> > [16:06:08:327]  r4:c0a30bcc=E2=90=8D=E2=90=8A
+> >>>>> > [16:06:08:327] [<c090096c>] (start_kernel) from [<0000807c>]
+> >>>>> > (0x807c)=E2=90=8D=E2=90=8A
+> >>>>> > [16:06:08:343] ---[ end Kernel panic - not syncing: Attempted to
+> kill
+> >>>>> > init!
+> >>>>> > exitcode=3D0x00000100=E2=90=8D=E2=90=8A
+> >>>>> > --------------------------------------------
+> >>>>> >
+> >>>>> > What sould I do to solve the issue?
+> >>>>> > Thanks in advance.
+> >>>>> >
+> >>>>> >
+> >>>>> >
+> >>>>> > --
+> >>>>> > Saluti,
+> >>>>> > Salvatore Barone
+> >>>>> > _______________________________________________
+> >>>>> > Xenomai mailing list
+> >>>>> > Xenomai@xenomai.org
+> >>>>> > https://xenomai.org/mailman/listinfo/xenomai
+> >>>
+> >>>
+> >>>
+> >>>
+> >>> --
+> >>> Saluti,
+> >>> Salvatore Barone
+> >>
+> >>
+> >
+> >
+> >
+> > --
+> > Saluti,
+> > Salvatore Barone
+>
 
--- 
-Philippe.
 
+
+--=20
+Saluti,
+Salvatore Barone
