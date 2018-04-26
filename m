@@ -1,15 +1,16 @@
-Date: Thu, 26 Apr 2018 20:28:32 +0300 (EEST)
-From: =?windows-1251?B?2OXi9+Xt6u4g0uDw4PEgw/Do4+7w/OXi6Pc=?=
- <shevchenko.taras@triolcorp.com.ua>
-Message-ID: <1484971780.3690382.1524763712454.JavaMail.zimbra@triolcorp.com.ua>
-In-Reply-To: <419566b6-ff24-3cc1-f17a-9e98322a3273@siemens.com>
 References: <588276150.3283019.1524677009807.JavaMail.zimbra@triolcorp.com.ua>
  <6b8f182d-b243-0d6b-8f2b-5531f3f99608@siemens.com>
  <2086272052.3682610.1524760457344.JavaMail.zimbra@triolcorp.com.ua>
  <419566b6-ff24-3cc1-f17a-9e98322a3273@siemens.com>
+ <1484971780.3690382.1524763712454.JavaMail.zimbra@triolcorp.com.ua>
+From: Jan Kiszka <jan.kiszka@siemens.com>
+Message-ID: <7ba0a615-bcdf-cc66-5a22-5ac538b22d67@siemens.com>
+Date: Thu, 26 Apr 2018 19:48:29 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=windows-1251
-Content-Transfer-Encoding: quoted-printable
+In-Reply-To: <1484971780.3690382.1524763712454.JavaMail.zimbra@triolcorp.com.ua>
+Content-Type: text/plain; charset="windows-1251"
+Content-Language: en-US
+Content-Transfer-Encoding: base64
 Subject: Re: [Xenomai] rtnet 8168g 8168h master -slave
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
@@ -19,187 +20,148 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jan Kiszka <jan.kiszka@siemens.com>
+To: =?UTF-8?B?0KjQtdCy0YfQtdC90LrQviDQotCw0YDQsNGBINCT0YDQuNCz0L7RgNGM0LU=?= =?UTF-8?B?0LLQuNGH?= <shevchenko.taras@triolcorp.com.ua>
 Cc: xenomai <xenomai@xenomai.org>
 
-No , I dont use
-
-tell, to disable TDMA  is it enought comment it in rtnet script
-#    modprobe rtmac >/dev/null
-#    modprobe tdma >/dev/null
-
-
-=D1 =F3=E2=E0=E6=E5=ED=E8=E5=EC =E8 =ED=E0=E4=E5=E6=E4=EE=E9 =ED=E0 =F1=EE=
-=F2=F0=F3=E4=ED=E8=F7=E5=F1=F2=E2=EE,
-=D8=E5=E2=F7=E5=ED=EA=EE =D2.=C3.
-
------ Original Message -----
-From: "Jan Kiszka" <jan.kiszka@siemens.com>
-To: "=D8=E5=E2=F7=E5=ED=EA=EE =D2=E0=F0=E0=F1 =C3=F0=E8=E3=EE=F0=FC=E5=E2=
-=E8=F7" <shevchenko.taras@triolcorp.com.ua>
-Cc: "xenomai" <xenomai@xenomai.org>, "Greg Gallagher" <greg@embeddedgreg.co=
-m>
-Sent: =D7=E5=F2=E2=E5=F0=E3, 26 =C0=EF=F0=E5=EB=FC 2018 =E3 20:24:25
-Subject: Re: rtnet 8168g 8168h master -slave
-
-On 2018-04-26 18:34, =D8=E5=E2=F7=E5=ED=EA=EE =D2=E0=F0=E0=F1 =C3=F0=E8=E3=
-=EE=F0=FC=E5=E2=E8=F7 wrote:
-> do you mean NAPI and polling mechanism ?
->=20
-
-They do not exist for RTnet drivers. If you still use them, change the
-driver. Look at the existing models, how the handle interrupts and TX
-requests.
-
-Jan
-
-> =D1 =F3=E2=E0=E6=E5=ED=E8=E5=EC =E8 =ED=E0=E4=E5=E6=E4=EE=E9 =ED=E0 =F1=
-=EE=F2=F0=F3=E4=ED=E8=F7=E5=F1=F2=E2=EE,
-> =D8=E5=E2=F7=E5=ED=EA=EE =D2.=C3.
->=20
-> ----- Original Message -----
-> From: "Jan Kiszka" <jan.kiszka@siemens.com>
-> To: "=D8=E5=E2=F7=E5=ED=EA=EE =D2=E0=F0=E0=F1 =C3=F0=E8=E3=EE=F0=FC=E5=E2=
-=E8=F7" <shevchenko.taras@triolcorp.com.ua>, "xenomai" <xenomai@xenomai.org=
->
-> Cc: "Greg Gallagher" <greg@embeddedgreg.com>
-> Sent: =D7=E5=F2=E2=E5=F0=E3, 26 =C0=EF=F0=E5=EB=FC 2018 =E3 19:26:45
-> Subject: Re: rtnet 8168g 8168h master -slave
->=20
-> On 2018-04-25 19:23, =D8=E5=E2=F7=E5=ED=EA=EE =D2=E0=F0=E0=F1 =C3=F0=E8=
-=E3=EE=F0=FC=E5=E2=E8=F7 wrote:
->> Hi!
->> I change driver=A0 and try to make=A0 master - slave configuration
->> its connected
->> Below logs from slave (with i pipe debug turns on) =A0=A0=A0 TDMA master
->> parametrs are cycle 500=A0 offset 50
->> Question is I get ping master -slave about 400 mks=A0 but some times
->> 800-900=A0 it is not convenient for me
->> How I can check driver is robust ?
->>
->> =A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0 *** RTnet for Xenomai v3.0.6 =
-***
->>
->> [ 7204.543497] RTnet: initialising real-time networking
->> [ 7204.570113] call rtl8169_init_one
->> [ 7204.570115] rt_r8169 Gigabit Ethernet driver 2.3LK-NAPI loaded
->> [ 7204.570361] rt_r8169 0000:01:00.0: can't disable ASPM; OS doesn't
->> have ASPM control
->> [ 7204.570511] call rtl_init_jumbo_ops EDIT
->> [ 7204.571066] RTnet: registered rteth0
->> [ 7204.571075] RTL8168h/8111h at 0xffffa420c068f000, 30:9c:23:20:50:2b,
->> XID 14100880 IRQ 16
->> [ 7204.571077] jumbo features [frames: 9200 bytes, tx checksumming: ko]
->> [ 7204.571768] call rtl8169_remove_one
->> [ 7204.571777] RTnet: unregistered rteth0
->> [ 7204.572820] call rtl8169_init_one
->> [ 7204.572823] rt_r8169 Gigabit Ethernet driver 2.3LK-NAPI loaded
->> [ 7204.573003] rt_r8169 0000:01:00.0: can't disable ASPM; OS doesn't
->> have ASPM control
->> [ 7204.573142] call rtl_init_jumbo_ops EDIT
->> [ 7204.573262] RTnet: registered rteth0
->> [ 7204.573270] RTL8168h/8111h at 0xffffa420c0699000, 30:9c:23:20:50:2b,
->> XID 14100880 IRQ 16
->> [ 7204.573271] jumbo features [frames: 9200 bytes, tx checksumming: ko]
->> [ 7204.592432] initializing loopback...
->> [ 7204.592443] RTnet: registered rtlo
->> [ 7204.608976] RTcfg: init real-time configuration distribution protocol
->> [ 7204.621592] RTmac: init realtime media access control
->> [ 7204.633927] RTmac/TDMA: init time division multiple access control
->> mechanism
->> [ 7204.644493] call rtl8169_alloc_rx_data
->> ...
->> [ 7204.644860] call rtl8169_alloc_rx_data
->> [ 7204.644861] call rtl_lookup_firmware_name
->> [ 7204.644887] call rtl_check_firmware
->> [ 7204.658395] call rtl8169_set_speed
->> [ 7204.658831] call rtl8169_set_features
->> [ 7204.658849] call rtl8169_change_mtu
->> [ 7204.658982] call rtl_hw_start
->> [ 7204.658984] call rtl_hw_start_8168
->> [ 7204.659106] call add rtl_hw_start_8168h_1
->> [ 7204.674722] ModemManager[29297]: segfault at 0 ip 0000000000431ab3 sp
->> 00007ffdbb0f18e0 error 4 in ModemManager[400000+103000]
->> [ 7204.842539] link rteth down
->> [ 7204.842541] ------------[ cut here ]------------
->> [ 7204.842549] WARNING: CPU: 1 PID: 31117 at ./include/linux/ipipe.h:232
->> __rtl8169_check_link_status+0x2f3/0x340 [rt_r8169]
->> [ 7204.842551] Modules linked in: tdma rtmac rtcfg rt_loopback rtpacket
->> rtudp rt_r8169(OE) rtipv4 rtnet uas usb_storage xt_CHECKSUM
->> iptable_mangle ipt_MASQUERADE nf_nat_masquerade_ipv4 iptable_nat
->> nf_nat_ipv4 nf_nat nf_conntrack_ipv4 nf_defrag_ipv4 xt_conntrack
->> nf_conntrack ipt_REJECT nf_reject_ipv4 xt_tcpudp bridge stp llc
->> ebtable_filter ebtables ip6table_filter ip6_tables iptable_filter
->> ip_tables x_tables pci_stub vboxpci(OE) vboxnetadp(OE) vboxnetflt(OE)
->> vboxdrv(OE) dm_crypt snd_hda_codec_hdmi snd_hda_codec_realtek uvcvideo
->> snd_hda_codec_generic snd_hda_intel snd_hda_codec intel_rapl
->> videobuf2_vmalloc videobuf2_memops x86_pkg_temp_thermal videobuf2_v4l2
->> intel_powerclamp videobuf2_core snd_usb_audio coretemp videodev
->> snd_hda_core kvm_intel snd_usbmidi_lib snd_hwdep kvm snd_pcm
->> snd_seq_midi media snd_seq_midi_event
->> [ 7204.842632]=A0 snd_rawmidi snd_seq joydev input_leds snd_seq_device
->> snd_timer snd mei_me irqbypass soundcore mei shpchp serio_raw
->> binfmt_misc mac_hid ib_iser rdma_cm iw_cm ib_cm ib_core configfs
->> iscsi_tcp libiscsi_tcp libiscsi scsi_transport_iscsi parport_pc ppdev lp
->> parport autofs4 btrfs raid10 raid456 async_raid6_recov async_memcpy
->> async_pq async_xor async_tx xor raid6_pq libcrc32c raid1 raid0 multipath
->> linear hid_generic usbhid hid i915 mxm_wmi crct10dif_pclmul crc32_pclmul
->> ghash_clmulni_intel i2c_algo_bit drm_kms_helper aesni_intel aes_x86_64
->> syscopyarea lrw sysfillrect glue_helper sysimgblt ablk_helper
->> fb_sys_fops cryptd drm psmouse mii ahci libahci video wmi fjes [last
->> unloaded: r8169]
->> [ 7204.842726] CPU: 1 PID: 31117 Comm: rtifconfig Tainted: G=A0=A0=A0=A0=
-=A0=A0=A0 W=A0
->> OE=A0=A0 4.9.90-xenomai-pc #1
->> [ 7204.842728] Hardware name: MSI MS-7996/H110M PRO-VD (MS-7996), BIOS
->> 2.C0 04/20/2017
->> [ 7204.842729] I-pipe domain: Linux
->> [ 7204.842731]=A0 ffffa420c1503c08 ffffffff98420276 0000000000000000
->> 0000000000000000
->> [ 7204.842736]=A0 ffffa420c1503c48 ffffffff980750fb 000000e800000001
->> 00000000000570c8
->> [ 7204.842740]=A0 0000000000057000 ffff8fd969065000 ffff8fd969065220
->> ffffa420c0699000
->> [ 7204.842746] Call Trace:
->> [ 7204.842770]=A0 [<ffffffff98420276>] dump_stack+0xa9/0xd3
->> [ 7204.842779]=A0 [<ffffffff980750fb>] __warn+0xcb/0xf0
->> [ 7204.842782]=A0 [<ffffffff9807522d>] warn_slowpath_null+0x1d/0x20
->> [ 7204.842786]=A0 [<ffffffffc0aca913>]
->> __rtl8169_check_link_status+0x2f3/0x340 [rt_r8169]
->> [ 7204.842789]=A0 [<ffffffffc0acc4f0>] rtl8169_open+0x5c0/0xc80 [rt_r816=
-9]
->> [ 7204.842796]=A0 [<ffffffffc0180517>] rtdev_open+0x37/0x80 [rtnet]
->> [ 7204.842799]=A0 [<ffffffff98859167>] ? mutex_lock_interruptible+0x17/0=
-x50
->> [ 7204.842803]=A0 [<ffffffffc0180acc>] rtnet_core_ioctl+0x1fc/0x5b0 [rtn=
-et]
->> [ 7204.842806]=A0 [<ffffffffc0180879>] rtnet_ioctl+0x109/0x160 [rtnet]
->> [ 7204.842809]=A0 [<ffffffff98230887>] ? kmem_cache_alloc+0xd7/0x1b0
->> [ 7204.842812]=A0 [<ffffffff9825b9d4>] do_vfs_ioctl+0xa4/0x5e0
->> [ 7204.842815]=A0 [<ffffffff9805b1ee>] ? __do_page_fault+0x28e/0x510
->> [ 7204.842817]=A0 [<ffffffff982575a3>] ? putname+0x53/0x60
->> [ 7204.842820]=A0 [<ffffffff9825bf89>] SyS_ioctl+0x79/0x90
->> [ 7204.842822]=A0 [<ffffffff98002c2f>] do_syscall_64+0x8f/0x100
->> [ 7204.842825]=A0 [<ffffffff9885c43e>] entry_SYSCALL_64_after_swapgs+0x5=
-8/0xc6
->> [ 7204.842827] ---[ end trace 74813528aa09d5ed ]---
->> [ 7207.812156] link rteth up
->> [ 7209.551272] TDMA: calibrated master-to-slave packet delay: 25 us
->> (min/max: 22/28 us)
->> root@prog-pc12:/media/taras/B02E1E8AD6E10B9D/LX/driver#
->>
->=20
-> Something is still broken in your driver port, leaving hard IRQs on in
-> the end. That is typically related to calling of illegal Linux services
-> from RT context (which is the IRQ or the xmit handler in this case).
->=20
-> Make sure you have all I-pipe and Xenomai debug features enabled. They
-> may provide an earlier clue of where things go wrong.
->=20
-> Jan
->=20
-
---=20
-Siemens AG, Corporate Technology, CT RDA IOT SES-DE
-Corporate Competence Center Embedded Linux
-
+T24gMjAxOC0wNC0yNiAxOToyOCwg2OXi9+Xt6u4g0uDw4PEgw/Do4+7w/OXi6Pcgd3JvdGU6Cj4g
+Tm8gLCBJIGRvbnQgdXNlCj4gCj4gdGVsbCwgdG8gZGlzYWJsZSBURE1BICBpcyBpdCBlbm91Z2h0
+IGNvbW1lbnQgaXQgaW4gcnRuZXQgc2NyaXB0Cj4gIyAgICBtb2Rwcm9iZSBydG1hYyA+L2Rldi9u
+dWxsCj4gIyAgICBtb2Rwcm9iZSB0ZG1hID4vZGV2L251bGwKPiAKCklmIHlvdSBkb24ndCB3YW50
+IHJ0bWFjIGFuZCBydGNmZywgZG9uJ3QgdXNlIHRoZSBzY3JpcHQuIEp1c3QgZG8gd2hhdAppbml0
+X3J0bmV0IGRvZXMKCi0gbG9hZCB0aGUgY29yZSBhbmQgZGVzaXJlZCBwcm90b2NvbHMKLSBsb2Fk
+IGFuZCBiaW5kIHRoZSBOSUMgZHJpdmVyCi0gcnRpZmNvbmZpZwoKSmFuCgo+IAo+INEg8+Lg5uXt
+6OXsIOgg7eDk5ebk7ukg7eAg8e7y8PPk7ej35fHy4u4sCj4g2OXi9+Xt6u4g0i7DLgo+IAo+IC0t
+LS0tIE9yaWdpbmFsIE1lc3NhZ2UgLS0tLS0KPiBGcm9tOiAiSmFuIEtpc3prYSIgPGphbi5raXN6
+a2FAc2llbWVucy5jb20+Cj4gVG86ICLY5eL35e3q7iDS4PDg8SDD8Ojj7vD85eLo9yIgPHNoZXZj
+aGVua28udGFyYXNAdHJpb2xjb3JwLmNvbS51YT4KPiBDYzogInhlbm9tYWkiIDx4ZW5vbWFpQHhl
+bm9tYWkub3JnPiwgIkdyZWcgR2FsbGFnaGVyIiA8Z3JlZ0BlbWJlZGRlZGdyZWcuY29tPgo+IFNl
+bnQ6INfl8uLl8OMsIDI2IMDv8OXr/CAyMDE4IOMgMjA6MjQ6MjUKPiBTdWJqZWN0OiBSZTogcnRu
+ZXQgODE2OGcgODE2OGggbWFzdGVyIC1zbGF2ZQo+IAo+IE9uIDIwMTgtMDQtMjYgMTg6MzQsINjl
+4vfl7eruINLg8ODxIMPw6OPu8Pzl4uj3IHdyb3RlOgo+PiBkbyB5b3UgbWVhbiBOQVBJIGFuZCBw
+b2xsaW5nIG1lY2hhbmlzbSA/Cj4+Cj4gCj4gVGhleSBkbyBub3QgZXhpc3QgZm9yIFJUbmV0IGRy
+aXZlcnMuIElmIHlvdSBzdGlsbCB1c2UgdGhlbSwgY2hhbmdlIHRoZQo+IGRyaXZlci4gTG9vayBh
+dCB0aGUgZXhpc3RpbmcgbW9kZWxzLCBob3cgdGhlIGhhbmRsZSBpbnRlcnJ1cHRzIGFuZCBUWAo+
+IHJlcXVlc3RzLgo+IAo+IEphbgo+IAo+PiDRIPPi4Obl7ejl7CDoIO3g5OXm5O7pIO3gIPHu8vDz
+5O3o9+Xx8uLuLAo+PiDY5eL35e3q7iDSLsMuCj4+Cj4+IC0tLS0tIE9yaWdpbmFsIE1lc3NhZ2Ug
+LS0tLS0KPj4gRnJvbTogIkphbiBLaXN6a2EiIDxqYW4ua2lzemthQHNpZW1lbnMuY29tPgo+PiBU
+bzogItjl4vfl7eruINLg8ODxIMPw6OPu8Pzl4uj3IiA8c2hldmNoZW5rby50YXJhc0B0cmlvbGNv
+cnAuY29tLnVhPiwgInhlbm9tYWkiIDx4ZW5vbWFpQHhlbm9tYWkub3JnPgo+PiBDYzogIkdyZWcg
+R2FsbGFnaGVyIiA8Z3JlZ0BlbWJlZGRlZGdyZWcuY29tPgo+PiBTZW50OiDX5fLi5fDjLCAyNiDA
+7/Dl6/wgMjAxOCDjIDE5OjI2OjQ1Cj4+IFN1YmplY3Q6IFJlOiBydG5ldCA4MTY4ZyA4MTY4aCBt
+YXN0ZXIgLXNsYXZlCj4+Cj4+IE9uIDIwMTgtMDQtMjUgMTk6MjMsINjl4vfl7eruINLg8ODxIMPw
+6OPu8Pzl4uj3IHdyb3RlOgo+Pj4gSGkhCj4+PiBJIGNoYW5nZSBkcml2ZXKgIGFuZCB0cnkgdG8g
+bWFrZaAgbWFzdGVyIC0gc2xhdmUgY29uZmlndXJhdGlvbgo+Pj4gaXRzIGNvbm5lY3RlZAo+Pj4g
+QmVsb3cgbG9ncyBmcm9tIHNsYXZlICh3aXRoIGkgcGlwZSBkZWJ1ZyB0dXJucyBvbikgoKCgIFRE
+TUEgbWFzdGVyCj4+PiBwYXJhbWV0cnMgYXJlIGN5Y2xlIDUwMKAgb2Zmc2V0IDUwCj4+PiBRdWVz
+dGlvbiBpcyBJIGdldCBwaW5nIG1hc3RlciAtc2xhdmUgYWJvdXQgNDAwIG1rc6AgYnV0IHNvbWUg
+dGltZXMKPj4+IDgwMC05MDCgIGl0IGlzIG5vdCBjb252ZW5pZW50IGZvciBtZQo+Pj4gSG93IEkg
+Y2FuIGNoZWNrIGRyaXZlciBpcyByb2J1c3QgPwo+Pj4KPj4+IKCgoKCgoKCgoKCgoKCgICoqKiBS
+VG5ldCBmb3IgWGVub21haSB2My4wLjYgKioqCj4+Pgo+Pj4gWyA3MjA0LjU0MzQ5N10gUlRuZXQ6
+IGluaXRpYWxpc2luZyByZWFsLXRpbWUgbmV0d29ya2luZwo+Pj4gWyA3MjA0LjU3MDExM10gY2Fs
+bCBydGw4MTY5X2luaXRfb25lCj4+PiBbIDcyMDQuNTcwMTE1XSBydF9yODE2OSBHaWdhYml0IEV0
+aGVybmV0IGRyaXZlciAyLjNMSy1OQVBJIGxvYWRlZAo+Pj4gWyA3MjA0LjU3MDM2MV0gcnRfcjgx
+NjkgMDAwMDowMTowMC4wOiBjYW4ndCBkaXNhYmxlIEFTUE07IE9TIGRvZXNuJ3QKPj4+IGhhdmUg
+QVNQTSBjb250cm9sCj4+PiBbIDcyMDQuNTcwNTExXSBjYWxsIHJ0bF9pbml0X2p1bWJvX29wcyBF
+RElUCj4+PiBbIDcyMDQuNTcxMDY2XSBSVG5ldDogcmVnaXN0ZXJlZCBydGV0aDAKPj4+IFsgNzIw
+NC41NzEwNzVdIFJUTDgxNjhoLzgxMTFoIGF0IDB4ZmZmZmE0MjBjMDY4ZjAwMCwgMzA6OWM6MjM6
+MjA6NTA6MmIsCj4+PiBYSUQgMTQxMDA4ODAgSVJRIDE2Cj4+PiBbIDcyMDQuNTcxMDc3XSBqdW1i
+byBmZWF0dXJlcyBbZnJhbWVzOiA5MjAwIGJ5dGVzLCB0eCBjaGVja3N1bW1pbmc6IGtvXQo+Pj4g
+WyA3MjA0LjU3MTc2OF0gY2FsbCBydGw4MTY5X3JlbW92ZV9vbmUKPj4+IFsgNzIwNC41NzE3Nzdd
+IFJUbmV0OiB1bnJlZ2lzdGVyZWQgcnRldGgwCj4+PiBbIDcyMDQuNTcyODIwXSBjYWxsIHJ0bDgx
+NjlfaW5pdF9vbmUKPj4+IFsgNzIwNC41NzI4MjNdIHJ0X3I4MTY5IEdpZ2FiaXQgRXRoZXJuZXQg
+ZHJpdmVyIDIuM0xLLU5BUEkgbG9hZGVkCj4+PiBbIDcyMDQuNTczMDAzXSBydF9yODE2OSAwMDAw
+OjAxOjAwLjA6IGNhbid0IGRpc2FibGUgQVNQTTsgT1MgZG9lc24ndAo+Pj4gaGF2ZSBBU1BNIGNv
+bnRyb2wKPj4+IFsgNzIwNC41NzMxNDJdIGNhbGwgcnRsX2luaXRfanVtYm9fb3BzIEVESVQKPj4+
+IFsgNzIwNC41NzMyNjJdIFJUbmV0OiByZWdpc3RlcmVkIHJ0ZXRoMAo+Pj4gWyA3MjA0LjU3MzI3
+MF0gUlRMODE2OGgvODExMWggYXQgMHhmZmZmYTQyMGMwNjk5MDAwLCAzMDo5YzoyMzoyMDo1MDoy
+YiwKPj4+IFhJRCAxNDEwMDg4MCBJUlEgMTYKPj4+IFsgNzIwNC41NzMyNzFdIGp1bWJvIGZlYXR1
+cmVzIFtmcmFtZXM6IDkyMDAgYnl0ZXMsIHR4IGNoZWNrc3VtbWluZzoga29dCj4+PiBbIDcyMDQu
+NTkyNDMyXSBpbml0aWFsaXppbmcgbG9vcGJhY2suLi4KPj4+IFsgNzIwNC41OTI0NDNdIFJUbmV0
+OiByZWdpc3RlcmVkIHJ0bG8KPj4+IFsgNzIwNC42MDg5NzZdIFJUY2ZnOiBpbml0IHJlYWwtdGlt
+ZSBjb25maWd1cmF0aW9uIGRpc3RyaWJ1dGlvbiBwcm90b2NvbAo+Pj4gWyA3MjA0LjYyMTU5Ml0g
+UlRtYWM6IGluaXQgcmVhbHRpbWUgbWVkaWEgYWNjZXNzIGNvbnRyb2wKPj4+IFsgNzIwNC42MzM5
+MjddIFJUbWFjL1RETUE6IGluaXQgdGltZSBkaXZpc2lvbiBtdWx0aXBsZSBhY2Nlc3MgY29udHJv
+bAo+Pj4gbWVjaGFuaXNtCj4+PiBbIDcyMDQuNjQ0NDkzXSBjYWxsIHJ0bDgxNjlfYWxsb2Nfcnhf
+ZGF0YQo+Pj4gLi4uCj4+PiBbIDcyMDQuNjQ0ODYwXSBjYWxsIHJ0bDgxNjlfYWxsb2NfcnhfZGF0
+YQo+Pj4gWyA3MjA0LjY0NDg2MV0gY2FsbCBydGxfbG9va3VwX2Zpcm13YXJlX25hbWUKPj4+IFsg
+NzIwNC42NDQ4ODddIGNhbGwgcnRsX2NoZWNrX2Zpcm13YXJlCj4+PiBbIDcyMDQuNjU4Mzk1XSBj
+YWxsIHJ0bDgxNjlfc2V0X3NwZWVkCj4+PiBbIDcyMDQuNjU4ODMxXSBjYWxsIHJ0bDgxNjlfc2V0
+X2ZlYXR1cmVzCj4+PiBbIDcyMDQuNjU4ODQ5XSBjYWxsIHJ0bDgxNjlfY2hhbmdlX210dQo+Pj4g
+WyA3MjA0LjY1ODk4Ml0gY2FsbCBydGxfaHdfc3RhcnQKPj4+IFsgNzIwNC42NTg5ODRdIGNhbGwg
+cnRsX2h3X3N0YXJ0XzgxNjgKPj4+IFsgNzIwNC42NTkxMDZdIGNhbGwgYWRkIHJ0bF9od19zdGFy
+dF84MTY4aF8xCj4+PiBbIDcyMDQuNjc0NzIyXSBNb2RlbU1hbmFnZXJbMjkyOTddOiBzZWdmYXVs
+dCBhdCAwIGlwIDAwMDAwMDAwMDA0MzFhYjMgc3AKPj4+IDAwMDA3ZmZkYmIwZjE4ZTAgZXJyb3Ig
+NCBpbiBNb2RlbU1hbmFnZXJbNDAwMDAwKzEwMzAwMF0KPj4+IFsgNzIwNC44NDI1MzldIGxpbmsg
+cnRldGggZG93bgo+Pj4gWyA3MjA0Ljg0MjU0MV0gLS0tLS0tLS0tLS0tWyBjdXQgaGVyZSBdLS0t
+LS0tLS0tLS0tCj4+PiBbIDcyMDQuODQyNTQ5XSBXQVJOSU5HOiBDUFU6IDEgUElEOiAzMTExNyBh
+dCAuL2luY2x1ZGUvbGludXgvaXBpcGUuaDoyMzIKPj4+IF9fcnRsODE2OV9jaGVja19saW5rX3N0
+YXR1cysweDJmMy8weDM0MCBbcnRfcjgxNjldCj4+PiBbIDcyMDQuODQyNTUxXSBNb2R1bGVzIGxp
+bmtlZCBpbjogdGRtYSBydG1hYyBydGNmZyBydF9sb29wYmFjayBydHBhY2tldAo+Pj4gcnR1ZHAg
+cnRfcjgxNjkoT0UpIHJ0aXB2NCBydG5ldCB1YXMgdXNiX3N0b3JhZ2UgeHRfQ0hFQ0tTVU0KPj4+
+IGlwdGFibGVfbWFuZ2xlIGlwdF9NQVNRVUVSQURFIG5mX25hdF9tYXNxdWVyYWRlX2lwdjQgaXB0
+YWJsZV9uYXQKPj4+IG5mX25hdF9pcHY0IG5mX25hdCBuZl9jb25udHJhY2tfaXB2NCBuZl9kZWZy
+YWdfaXB2NCB4dF9jb25udHJhY2sKPj4+IG5mX2Nvbm50cmFjayBpcHRfUkVKRUNUIG5mX3JlamVj
+dF9pcHY0IHh0X3RjcHVkcCBicmlkZ2Ugc3RwIGxsYwo+Pj4gZWJ0YWJsZV9maWx0ZXIgZWJ0YWJs
+ZXMgaXA2dGFibGVfZmlsdGVyIGlwNl90YWJsZXMgaXB0YWJsZV9maWx0ZXIKPj4+IGlwX3RhYmxl
+cyB4X3RhYmxlcyBwY2lfc3R1YiB2Ym94cGNpKE9FKSB2Ym94bmV0YWRwKE9FKSB2Ym94bmV0Zmx0
+KE9FKQo+Pj4gdmJveGRydihPRSkgZG1fY3J5cHQgc25kX2hkYV9jb2RlY19oZG1pIHNuZF9oZGFf
+Y29kZWNfcmVhbHRlayB1dmN2aWRlbwo+Pj4gc25kX2hkYV9jb2RlY19nZW5lcmljIHNuZF9oZGFf
+aW50ZWwgc25kX2hkYV9jb2RlYyBpbnRlbF9yYXBsCj4+PiB2aWRlb2J1ZjJfdm1hbGxvYyB2aWRl
+b2J1ZjJfbWVtb3BzIHg4Nl9wa2dfdGVtcF90aGVybWFsIHZpZGVvYnVmMl92NGwyCj4+PiBpbnRl
+bF9wb3dlcmNsYW1wIHZpZGVvYnVmMl9jb3JlIHNuZF91c2JfYXVkaW8gY29yZXRlbXAgdmlkZW9k
+ZXYKPj4+IHNuZF9oZGFfY29yZSBrdm1faW50ZWwgc25kX3VzYm1pZGlfbGliIHNuZF9od2RlcCBr
+dm0gc25kX3BjbQo+Pj4gc25kX3NlcV9taWRpIG1lZGlhIHNuZF9zZXFfbWlkaV9ldmVudAo+Pj4g
+WyA3MjA0Ljg0MjYzMl2gIHNuZF9yYXdtaWRpIHNuZF9zZXEgam95ZGV2IGlucHV0X2xlZHMgc25k
+X3NlcV9kZXZpY2UKPj4+IHNuZF90aW1lciBzbmQgbWVpX21lIGlycWJ5cGFzcyBzb3VuZGNvcmUg
+bWVpIHNocGNocCBzZXJpb19yYXcKPj4+IGJpbmZtdF9taXNjIG1hY19oaWQgaWJfaXNlciByZG1h
+X2NtIGl3X2NtIGliX2NtIGliX2NvcmUgY29uZmlnZnMKPj4+IGlzY3NpX3RjcCBsaWJpc2NzaV90
+Y3AgbGliaXNjc2kgc2NzaV90cmFuc3BvcnRfaXNjc2kgcGFycG9ydF9wYyBwcGRldiBscAo+Pj4g
+cGFycG9ydCBhdXRvZnM0IGJ0cmZzIHJhaWQxMCByYWlkNDU2IGFzeW5jX3JhaWQ2X3JlY292IGFz
+eW5jX21lbWNweQo+Pj4gYXN5bmNfcHEgYXN5bmNfeG9yIGFzeW5jX3R4IHhvciByYWlkNl9wcSBs
+aWJjcmMzMmMgcmFpZDEgcmFpZDAgbXVsdGlwYXRoCj4+PiBsaW5lYXIgaGlkX2dlbmVyaWMgdXNi
+aGlkIGhpZCBpOTE1IG14bV93bWkgY3JjdDEwZGlmX3BjbG11bCBjcmMzMl9wY2xtdWwKPj4+IGdo
+YXNoX2NsbXVsbmlfaW50ZWwgaTJjX2FsZ29fYml0IGRybV9rbXNfaGVscGVyIGFlc25pX2ludGVs
+IGFlc194ODZfNjQKPj4+IHN5c2NvcHlhcmVhIGxydyBzeXNmaWxscmVjdCBnbHVlX2hlbHBlciBz
+eXNpbWdibHQgYWJsa19oZWxwZXIKPj4+IGZiX3N5c19mb3BzIGNyeXB0ZCBkcm0gcHNtb3VzZSBt
+aWkgYWhjaSBsaWJhaGNpIHZpZGVvIHdtaSBmamVzIFtsYXN0Cj4+PiB1bmxvYWRlZDogcjgxNjld
+Cj4+PiBbIDcyMDQuODQyNzI2XSBDUFU6IDEgUElEOiAzMTExNyBDb21tOiBydGlmY29uZmlnIFRh
+aW50ZWQ6IEegoKCgoKCgIFegCj4+PiBPRaCgIDQuOS45MC14ZW5vbWFpLXBjICMxCj4+PiBbIDcy
+MDQuODQyNzI4XSBIYXJkd2FyZSBuYW1lOiBNU0kgTVMtNzk5Ni9IMTEwTSBQUk8tVkQgKE1TLTc5
+OTYpLCBCSU9TCj4+PiAyLkMwIDA0LzIwLzIwMTcKPj4+IFsgNzIwNC44NDI3MjldIEktcGlwZSBk
+b21haW46IExpbnV4Cj4+PiBbIDcyMDQuODQyNzMxXaAgZmZmZmE0MjBjMTUwM2MwOCBmZmZmZmZm
+Zjk4NDIwMjc2IDAwMDAwMDAwMDAwMDAwMDAKPj4+IDAwMDAwMDAwMDAwMDAwMDAKPj4+IFsgNzIw
+NC44NDI3MzZdoCBmZmZmYTQyMGMxNTAzYzQ4IGZmZmZmZmZmOTgwNzUwZmIgMDAwMDAwZTgwMDAw
+MDAwMQo+Pj4gMDAwMDAwMDAwMDA1NzBjOAo+Pj4gWyA3MjA0Ljg0Mjc0MF2gIDAwMDAwMDAwMDAw
+NTcwMDAgZmZmZjhmZDk2OTA2NTAwMCBmZmZmOGZkOTY5MDY1MjIwCj4+PiBmZmZmYTQyMGMwNjk5
+MDAwCj4+PiBbIDcyMDQuODQyNzQ2XSBDYWxsIFRyYWNlOgo+Pj4gWyA3MjA0Ljg0Mjc3MF2gIFs8
+ZmZmZmZmZmY5ODQyMDI3Nj5dIGR1bXBfc3RhY2srMHhhOS8weGQzCj4+PiBbIDcyMDQuODQyNzc5
+XaAgWzxmZmZmZmZmZjk4MDc1MGZiPl0gX193YXJuKzB4Y2IvMHhmMAo+Pj4gWyA3MjA0Ljg0Mjc4
+Ml2gIFs8ZmZmZmZmZmY5ODA3NTIyZD5dIHdhcm5fc2xvd3BhdGhfbnVsbCsweDFkLzB4MjAKPj4+
+IFsgNzIwNC44NDI3ODZdoCBbPGZmZmZmZmZmYzBhY2E5MTM+XQo+Pj4gX19ydGw4MTY5X2NoZWNr
+X2xpbmtfc3RhdHVzKzB4MmYzLzB4MzQwIFtydF9yODE2OV0KPj4+IFsgNzIwNC44NDI3ODldoCBb
+PGZmZmZmZmZmYzBhY2M0ZjA+XSBydGw4MTY5X29wZW4rMHg1YzAvMHhjODAgW3J0X3I4MTY5XQo+
+Pj4gWyA3MjA0Ljg0Mjc5Nl2gIFs8ZmZmZmZmZmZjMDE4MDUxNz5dIHJ0ZGV2X29wZW4rMHgzNy8w
+eDgwIFtydG5ldF0KPj4+IFsgNzIwNC44NDI3OTldoCBbPGZmZmZmZmZmOTg4NTkxNjc+XSA/IG11
+dGV4X2xvY2tfaW50ZXJydXB0aWJsZSsweDE3LzB4NTAKPj4+IFsgNzIwNC44NDI4MDNdoCBbPGZm
+ZmZmZmZmYzAxODBhY2M+XSBydG5ldF9jb3JlX2lvY3RsKzB4MWZjLzB4NWIwIFtydG5ldF0KPj4+
+IFsgNzIwNC44NDI4MDZdoCBbPGZmZmZmZmZmYzAxODA4Nzk+XSBydG5ldF9pb2N0bCsweDEwOS8w
+eDE2MCBbcnRuZXRdCj4+PiBbIDcyMDQuODQyODA5XaAgWzxmZmZmZmZmZjk4MjMwODg3Pl0gPyBr
+bWVtX2NhY2hlX2FsbG9jKzB4ZDcvMHgxYjAKPj4+IFsgNzIwNC44NDI4MTJdoCBbPGZmZmZmZmZm
+OTgyNWI5ZDQ+XSBkb192ZnNfaW9jdGwrMHhhNC8weDVlMAo+Pj4gWyA3MjA0Ljg0MjgxNV2gIFs8
+ZmZmZmZmZmY5ODA1YjFlZT5dID8gX19kb19wYWdlX2ZhdWx0KzB4MjhlLzB4NTEwCj4+PiBbIDcy
+MDQuODQyODE3XaAgWzxmZmZmZmZmZjk4MjU3NWEzPl0gPyBwdXRuYW1lKzB4NTMvMHg2MAo+Pj4g
+WyA3MjA0Ljg0MjgyMF2gIFs8ZmZmZmZmZmY5ODI1YmY4OT5dIFN5U19pb2N0bCsweDc5LzB4OTAK
+Pj4+IFsgNzIwNC44NDI4MjJdoCBbPGZmZmZmZmZmOTgwMDJjMmY+XSBkb19zeXNjYWxsXzY0KzB4
+OGYvMHgxMDAKPj4+IFsgNzIwNC44NDI4MjVdoCBbPGZmZmZmZmZmOTg4NWM0M2U+XSBlbnRyeV9T
+WVNDQUxMXzY0X2FmdGVyX3N3YXBncysweDU4LzB4YzYKPj4+IFsgNzIwNC44NDI4MjddIC0tLVsg
+ZW5kIHRyYWNlIDc0ODEzNTI4YWEwOWQ1ZWQgXS0tLQo+Pj4gWyA3MjA3LjgxMjE1Nl0gbGluayBy
+dGV0aCB1cAo+Pj4gWyA3MjA5LjU1MTI3Ml0gVERNQTogY2FsaWJyYXRlZCBtYXN0ZXItdG8tc2xh
+dmUgcGFja2V0IGRlbGF5OiAyNSB1cwo+Pj4gKG1pbi9tYXg6IDIyLzI4IHVzKQo+Pj4gcm9vdEBw
+cm9nLXBjMTI6L21lZGlhL3RhcmFzL0IwMkUxRThBRDZFMTBCOUQvTFgvZHJpdmVyIwo+Pj4KPj4K
+Pj4gU29tZXRoaW5nIGlzIHN0aWxsIGJyb2tlbiBpbiB5b3VyIGRyaXZlciBwb3J0LCBsZWF2aW5n
+IGhhcmQgSVJRcyBvbiBpbgo+PiB0aGUgZW5kLiBUaGF0IGlzIHR5cGljYWxseSByZWxhdGVkIHRv
+IGNhbGxpbmcgb2YgaWxsZWdhbCBMaW51eCBzZXJ2aWNlcwo+PiBmcm9tIFJUIGNvbnRleHQgKHdo
+aWNoIGlzIHRoZSBJUlEgb3IgdGhlIHhtaXQgaGFuZGxlciBpbiB0aGlzIGNhc2UpLgo+Pgo+PiBN
+YWtlIHN1cmUgeW91IGhhdmUgYWxsIEktcGlwZSBhbmQgWGVub21haSBkZWJ1ZyBmZWF0dXJlcyBl
+bmFibGVkLiBUaGV5Cj4+IG1heSBwcm92aWRlIGFuIGVhcmxpZXIgY2x1ZSBvZiB3aGVyZSB0aGlu
+Z3MgZ28gd3JvbmcuCj4+Cj4+IEphbgo+Pgo+IAoKCg==
