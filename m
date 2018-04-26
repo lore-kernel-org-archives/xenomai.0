@@ -1,15 +1,11 @@
-References: <ca00a2b2-b44d-a25a-cb53-852a0f8e2d32@gmail.com>
- <594f0ba9-8e01-d2d2-a58e-2abcb3b72289@gmail.com>
- <fb226301-fe52-c9c9-f5a0-3f760b8d5492@gmail.com>
-From: Philippe Gerum <rpm@xenomai.org>
-Message-ID: <74da7f07-6df9-5a5f-ff63-b414437749b2@xenomai.org>
-Date: Thu, 26 Apr 2018 17:30:02 +0200
+From: Fazio Maurizio <maurizio.fazio@leonardocompany.com>
+Date: Thu, 26 Apr 2018 15:52:21 +0000
+Message-ID: <dec8a697401d414a96c47076bdbad481@ocnapvsw3301.ocr.priv>
+Content-Language: it-IT
 MIME-Version: 1.0
-In-Reply-To: <fb226301-fe52-c9c9-f5a0-3f760b8d5492@gmail.com>
 Content-Type: text/plain; charset="utf-8"
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
-Subject: Re: [Xenomai] Crash with longer dlopen/dlcose sequence
+Content-Transfer-Encoding: base64
+Subject: [Xenomai] Xenomai 3.0.6 on kernel 4.4.71 freeze
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -18,50 +14,67 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Edouard Tisserant <edouard.tisserant@gmail.com>, "Xenomai (xenomai@xenomai.org)" <xenomai@xenomai.org>
+To: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On 04/26/2018 11:24 AM, Edouard Tisserant wrote:
-> One more question. Sorry for flooding the list.
-> 
-> As a workaround to avoid leaking memory, I would like to try this :
-> 
->  - xeno_stub.so : stub library, linked with bootstrap-pic.o
->  - 1.so, 2.so, ... n.so : libraries calling alchemy/posix realtime
-> resources, NOT linked with bootstrap-pic.o
-> 
-> Process life-cycle would be :
-> 
-> - process start
-> 
-> dlopen(xeno_stub.so)
-> 
-> dlopen(1.so)
-> dlsym + call 1.so
-> dlclose(1.so)
-> ...
-> dlopen(n.so)
-> dlsym + call n.so
-> dlclose(n.so)
-> 
-> dlclose(xeno_stub.so)
-> 
-> - process end
-> 
-> Is that correct to assume that this way, pointers setup while calling
-> xenomai_init() as a side effect of first dlopen() would stay valid while
-> other non-bootstrap-pic libraries are loaded and unloaded ?
-
-If by pointer setup, you mean all the init stuff run by the various
-Xenomai libraries when called on behalf of xenomai_init(), then yes. The
-bootstrap mechanism should be able to support the lifecycle described above.
-
-The init sequence is explained here:
-http://xenomai.org/2015/05/application-setup-and-init/#Initialization_sequence
-
-This document refers to the bootstrap module included in the main
-executable, but same logic would apply to DSOs which include
-bootstrap-pic such as xeno_stub.so.
-
--- 
-Philippe.
-
+SGVsbG8sDQpJIHRyaWVkIHRvIHVwZ3JhZGUgbXkgQ2VudG9zNyBtYWNoaW5lIHRvIGEgc3VwcG9y
+dGVkIGtlcm5lbCA0LjQuNzEuDQpJIGRvd25sb2FkZWQgdGhlIGxpbnV4LXN0YWJsZSBrZXJuZWwg
+NC40LjcxIGFuZCBJIHBhdGNoZWQgaXQgdXNpbmcgdGhlIGlwaXBlLWNvcmUtNC40LjcxLXg4Ni0x
+MC5wYXRjaCB3aXRoIG5vIGVycm9yczsgVGhlbiBJIGNvbXBpbGVkIHRoZSBrZXJuZWwgdXNpbmcg
+dGhlIGNvbmZpZ3VyYXRpb24gYXR0YWNoZWQgd2l0aCBubyBwcm9ibGVtcy4NCg0KV2hlbiBJIHN0
+YXJ0IHRoZSBzeXN0ZW0gY2hvb3NpbmcgdGhlIG5ldyBrZXJuZWwteGVub21haSBjb25maWd1cmF0
+aW9uLCBpdCBmcmVlemVzIGFmdGVyIGZldyBzZWNvbmQgZHVyaW5nIHRoZSBzeXN0ZW0gbG9hZGlu
+Zy4uLiByYXJlbHkgaXQgc3RhcnRzIHdpdGggbm8gcHJvYmxlbXMuIEkgYXR0YWNoZWQgdGhlIGxv
+Z3MgY2FwdHVyZWQgdXNpbmcgdGhlIHNlcmlhbCBwb3J0IHRoYXQgc2hvd3Mgd2hlbiBJdCBmcmVl
+emVzIGFuZCB3aGVuIGl0IHN0YXJ0cyAgLg0KDQpIb3BpbmcgaW4gc29tZSBoZWxwLA0KVGhhbmtz
+IGluIGFkdmFuY2UNCg0KTWF1cml6aW8gRmF6aW8NCg0KQ2hpZWYgVGVjaG5pY2FsIE9mZmljZSAv
+IEFpcmNyYWZ0IFN5c3RlbXMgU29mdHdhcmUgRW5naW5lZXINCg0KDQoNCkxlb25hcmRvIFMucC5B
+Lg0KQy5zbyBGcmFuY2lhLCA0MjYgLSBUb3Jpbm8gLSAxMDE0NiAtIEl0YWx5IFRlbC4gKzM5IDAx
+MSA3NTYgMzMwOCAvIDM3NjENCg0KbWF1cml6aW8uZmF6aW9AbGVvbmFyZG9jb21wYW55LmNvbQ0K
+d3d3Lmxlb25hcmRvY29tcGFueS5jb20NCg0K4oCU4oCU4oCU4oCU4oCU4oCU4oCU4oCU4oCU4oCU
+4oCU4oCU4oCU4oCU4oCU4oCU4oCU4oCU4oCU4oCU4oCU4oCU4oCU4oCU4oCU4oCU4oCU4oCU4oCU
+4oCU4oCU4oCU4oCT4oCU4oCU4oCU4oCU4oCU4oCUDQpIRUxJQ09QVEVSUy9BRVJPTkFVVElDUy9F
+TEVDVFJPTklDUywgREVGRU5DRSAmIFNFQ1VSSVRZIFNZU1RFTVMvU1BBQ0Ug4oCU4oCU4oCU4oCU
+4oCU4oCU4oCU4oCU4oCU4oCU4oCU4oCU4oCU4oCU4oCU4oCU4oCU4oCU4oCU4oCU4oCU4oCU4oCU
+4oCU4oCU4oCU4oCU4oCU4oCU4oCU4oCU4oCU4oCT4oCU4oCU4oCU4oCU4oCU4oCUDQoNCg0KDQoN
+CkNvbXBhbnkgR2VuZXJhbCBVc2UNCg0KSWwgcHJlc2VudGUgbWVzc2FnZ2lvIGUtbWFpbCBlIG9n
+bmkgc3VvIGFsbGVnYXRvIGRldm9ubyBpbnRlbmRlcnNpIGluZGlyaXp6YXRpIGVzY2x1c2l2YW1l
+bnRlIGFsIGRlc3RpbmF0YXJpbyBpbmRpY2F0byBlIGNvbnNpZGVyYXJzaSBkYWwgY29udGVudXRv
+IHN0cmV0dGFtZW50ZSByaXNlcnZhdG8gZSBjb25maWRlbnppYWxlLiBTZSBub24gc2lldGUgbCdl
+ZmZldHRpdm8gZGVzdGluYXRhcmlvIG8gYXZldGUgcmljZXZ1dG8gaWwgbWVzc2FnZ2lvIGUtbWFp
+bCBwZXIgZXJyb3JlLCBzaWV0ZSBwcmVnYXRpIGRpIGF2dmVydGlyZSBpbW1lZGlhdGFtZW50ZSBp
+bCBtaXR0ZW50ZSBlIGRpIGNhbmNlbGxhcmUgaWwgc3VkZGV0dG8gbWVzc2FnZ2lvIGUgb2duaSBz
+dW8gYWxsZWdhdG8gZGFsIHZvc3RybyBzaXN0ZW1hIGluZm9ybWF0aWNvLiBRdWFsc2lhc2kgdXRp
+bGl6em8sIGRpZmZ1c2lvbmUsIGNvcGlhIG8gYXJjaGl2aWF6aW9uZSBkZWwgcHJlc2VudGUgbWVz
+c2FnZ2lvIGRhIHBhcnRlIGRpIGNoaSBub24gbmUgw6ggaWwgZGVzdGluYXRhcmlvIMOoIHN0cmV0
+dGFtZW50ZSBwcm9pYml0byBlIHB1w7IgZGFyIGx1b2dvIGEgcmVzcG9uc2FiaWxpdMOgIGRpIGNh
+cmF0dGVyZSBjaXZpbGUgZSBwZW5hbGUgcHVuaWJpbGkgYWkgc2Vuc2kgZGkgbGVnZ2UuDQpRdWVz
+dGEgZS1tYWlsIGhhIHZhbG9yZSBsZWdhbGUgc29sbyBzZSBmaXJtYXRhIGRpZ2l0YWxtZW50ZSBh
+aSBzZW5zaSBkZWxsYSBub3JtYXRpdmEgdmlnZW50ZS4NCg0KVGhlIGNvbnRlbnRzIG9mIHRoaXMg
+ZW1haWwgbWVzc2FnZSBhbmQgYW55IGF0dGFjaG1lbnRzIGFyZSBpbnRlbmRlZCBzb2xlbHkgZm9y
+IHRoZSBhZGRyZXNzZWUocykgYW5kIGNvbnRhaW4gY29uZmlkZW50aWFsIGFuZC9vciBwcml2aWxl
+Z2VkIGluZm9ybWF0aW9uLg0KSWYgeW91IGFyZSBub3QgdGhlIGludGVuZGVkIHJlY2lwaWVudCBv
+ZiB0aGlzIG1lc3NhZ2UsIG9yIGlmIHRoaXMgbWVzc2FnZSBoYXMgYmVlbiBhZGRyZXNzZWQgdG8g
+eW91IGluIGVycm9yLCBwbGVhc2UgaW1tZWRpYXRlbHkgbm90aWZ5IHRoZSBzZW5kZXIgYW5kIHRo
+ZW4gZGVsZXRlIHRoaXMgbWVzc2FnZSBhbmQgYW55IGF0dGFjaG1lbnRzIGZyb20geW91ciBzeXN0
+ZW0uIElmIHlvdSBhcmUgbm90IHRoZSBpbnRlbmRlZCByZWNpcGllbnQsIHlvdSBhcmUgaGVyZWJ5
+IG5vdGlmaWVkIHRoYXQgYW55IHVzZSwgZGlzc2VtaW5hdGlvbiwgY29weWluZywgb3Igc3RvcmFn
+ZSBvZiB0aGlzIG1lc3NhZ2Ugb3IgaXRzIGF0dGFjaG1lbnRzIGlzIHN0cmljdGx5IHByb2hpYml0
+ZWQuIFVuYXV0aG9yaXplZCBkaXNjbG9zdXJlIGFuZC9vciB1c2Ugb2YgaW5mb3JtYXRpb24gY29u
+dGFpbmVkIGluIHRoaXMgZW1haWwgbWVzc2FnZSBtYXkgcmVzdWx0IGluIGNpdmlsIGFuZCBjcmlt
+aW5hbCBsaWFiaWxpdHkuIOKAnA0KVGhpcyBlLW1haWwgaGFzIGxlZ2FsIHZhbHVlIGFjY29yZGlu
+ZyB0byB0aGUgYXBwbGljYWJsZSBsYXdzIG9ubHkgaWYgaXQgaXMgZGlnaXRhbGx5IHNpZ25lZCBi
+eSB0aGUgc2VuZGVyDQotLS0tLS0tLS0tLS0tLSBuZXh0IHBhcnQgLS0tLS0tLS0tLS0tLS0KQSBu
+b24tdGV4dCBhdHRhY2htZW50IHdhcyBzY3J1YmJlZC4uLgpOYW1lOiBsaW51eDQuNC43MUZBSUwu
+bG9nClR5cGU6IGFwcGxpY2F0aW9uL29jdGV0LXN0cmVhbQpTaXplOiA0NzI5OCBieXRlcwpEZXNj
+OiBsaW51eDQuNC43MUZBSUwubG9nClVSTDogPGh0dHA6Ly94ZW5vbWFpLm9yZy9waXBlcm1haWwv
+eGVub21haS9hdHRhY2htZW50cy8yMDE4MDQyNi85NDY1OGYyNy9hdHRhY2htZW50Lm9iaj4KLS0t
+LS0tLS0tLS0tLS0gbmV4dCBwYXJ0IC0tLS0tLS0tLS0tLS0tCkEgbm9uLXRleHQgYXR0YWNobWVu
+dCB3YXMgc2NydWJiZWQuLi4KTmFtZTogbGludXg0LjQuNzFPSy5sb2cKVHlwZTogYXBwbGljYXRp
+b24vb2N0ZXQtc3RyZWFtClNpemU6IDE1MTMwNCBieXRlcwpEZXNjOiBsaW51eDQuNC43MU9LLmxv
+ZwpVUkw6IDxodHRwOi8veGVub21haS5vcmcvcGlwZXJtYWlsL3hlbm9tYWkvYXR0YWNobWVudHMv
+MjAxODA0MjYvOTQ2NThmMjcvYXR0YWNobWVudC0wMDAxLm9iaj4KLS0tLS0tLS0tLS0tLS0gbmV4
+dCBwYXJ0IC0tLS0tLS0tLS0tLS0tCkEgbm9uLXRleHQgYXR0YWNobWVudCB3YXMgc2NydWJiZWQu
+Li4KTmFtZTogY29uZmlnClR5cGU6IGFwcGxpY2F0aW9uL29jdGV0LXN0cmVhbQpTaXplOiAxNDkz
+ODEgYnl0ZXMKRGVzYzogY29uZmlnClVSTDogPGh0dHA6Ly94ZW5vbWFpLm9yZy9waXBlcm1haWwv
+eGVub21haS9hdHRhY2htZW50cy8yMDE4MDQyNi85NDY1OGYyNy9hdHRhY2htZW50LTAwMDIub2Jq
+Pgo=
