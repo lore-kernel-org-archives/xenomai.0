@@ -1,12 +1,13 @@
+Date: Thu, 26 Apr 2018 19:34:17 +0300 (EEST)
+From: =?windows-1251?B?2OXi9+Xt6u4g0uDw4PEgw/Do4+7w/OXi6Pc=?=
+ <shevchenko.taras@triolcorp.com.ua>
+Message-ID: <2086272052.3682610.1524760457344.JavaMail.zimbra@triolcorp.com.ua>
+In-Reply-To: <6b8f182d-b243-0d6b-8f2b-5531f3f99608@siemens.com>
 References: <588276150.3283019.1524677009807.JavaMail.zimbra@triolcorp.com.ua>
-From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <6b8f182d-b243-0d6b-8f2b-5531f3f99608@siemens.com>
-Date: Thu, 26 Apr 2018 18:26:45 +0200
+ <6b8f182d-b243-0d6b-8f2b-5531f3f99608@siemens.com>
 MIME-Version: 1.0
-In-Reply-To: <588276150.3283019.1524677009807.JavaMail.zimbra@triolcorp.com.ua>
-Content-Type: text/plain; charset="windows-1251"
-Content-Language: en-US
-Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset=windows-1251
+Content-Transfer-Encoding: quoted-printable
 Subject: Re: [Xenomai] rtnet 8168g 8168h master -slave
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
@@ -16,117 +17,153 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: =?UTF-8?B?0KjQtdCy0YfQtdC90LrQviDQotCw0YDQsNGBINCT0YDQuNCz0L7RgNGM0LU=?= =?UTF-8?B?0LLQuNGH?= <shevchenko.taras@triolcorp.com.ua>, xenomai <xenomai@xenomai.org>
+To: Jan Kiszka <jan.kiszka@siemens.com>
+Cc: xenomai <xenomai@xenomai.org>
 
-T24gMjAxOC0wNC0yNSAxOToyMywg2OXi9+Xt6u4g0uDw4PEgw/Do4+7w/OXi6Pcgd3JvdGU6Cj4g
-SGkhCj4gSSBjaGFuZ2UgZHJpdmVyoCBhbmQgdHJ5IHRvIG1ha2WgIG1hc3RlciAtIHNsYXZlIGNv
-bmZpZ3VyYXRpb24KPiBpdHMgY29ubmVjdGVkCj4gQmVsb3cgbG9ncyBmcm9tIHNsYXZlICh3aXRo
-IGkgcGlwZSBkZWJ1ZyB0dXJucyBvbikgoKCgIFRETUEgbWFzdGVyCj4gcGFyYW1ldHJzIGFyZSBj
-eWNsZSA1MDCgIG9mZnNldCA1MAo+IFF1ZXN0aW9uIGlzIEkgZ2V0IHBpbmcgbWFzdGVyIC1zbGF2
-ZSBhYm91dCA0MDAgbWtzoCBidXQgc29tZSB0aW1lcwo+IDgwMC05MDCgIGl0IGlzIG5vdCBjb252
-ZW5pZW50IGZvciBtZQo+IEhvdyBJIGNhbiBjaGVjayBkcml2ZXIgaXMgcm9idXN0ID8KPiAKPiCg
-oKCgoKCgoKCgoKCgoCAqKiogUlRuZXQgZm9yIFhlbm9tYWkgdjMuMC42ICoqKgo+IAo+IFsgNzIw
-NC41NDM0OTddIFJUbmV0OiBpbml0aWFsaXNpbmcgcmVhbC10aW1lIG5ldHdvcmtpbmcKPiBbIDcy
-MDQuNTcwMTEzXSBjYWxsIHJ0bDgxNjlfaW5pdF9vbmUKPiBbIDcyMDQuNTcwMTE1XSBydF9yODE2
-OSBHaWdhYml0IEV0aGVybmV0IGRyaXZlciAyLjNMSy1OQVBJIGxvYWRlZAo+IFsgNzIwNC41NzAz
-NjFdIHJ0X3I4MTY5IDAwMDA6MDE6MDAuMDogY2FuJ3QgZGlzYWJsZSBBU1BNOyBPUyBkb2Vzbid0
-Cj4gaGF2ZSBBU1BNIGNvbnRyb2wKPiBbIDcyMDQuNTcwNTExXSBjYWxsIHJ0bF9pbml0X2p1bWJv
-X29wcyBFRElUCj4gWyA3MjA0LjU3MTA2Nl0gUlRuZXQ6IHJlZ2lzdGVyZWQgcnRldGgwCj4gWyA3
-MjA0LjU3MTA3NV0gUlRMODE2OGgvODExMWggYXQgMHhmZmZmYTQyMGMwNjhmMDAwLCAzMDo5Yzoy
-MzoyMDo1MDoyYiwKPiBYSUQgMTQxMDA4ODAgSVJRIDE2Cj4gWyA3MjA0LjU3MTA3N10ganVtYm8g
-ZmVhdHVyZXMgW2ZyYW1lczogOTIwMCBieXRlcywgdHggY2hlY2tzdW1taW5nOiBrb10KPiBbIDcy
-MDQuNTcxNzY4XSBjYWxsIHJ0bDgxNjlfcmVtb3ZlX29uZQo+IFsgNzIwNC41NzE3NzddIFJUbmV0
-OiB1bnJlZ2lzdGVyZWQgcnRldGgwCj4gWyA3MjA0LjU3MjgyMF0gY2FsbCBydGw4MTY5X2luaXRf
-b25lCj4gWyA3MjA0LjU3MjgyM10gcnRfcjgxNjkgR2lnYWJpdCBFdGhlcm5ldCBkcml2ZXIgMi4z
-TEstTkFQSSBsb2FkZWQKPiBbIDcyMDQuNTczMDAzXSBydF9yODE2OSAwMDAwOjAxOjAwLjA6IGNh
-bid0IGRpc2FibGUgQVNQTTsgT1MgZG9lc24ndAo+IGhhdmUgQVNQTSBjb250cm9sCj4gWyA3MjA0
-LjU3MzE0Ml0gY2FsbCBydGxfaW5pdF9qdW1ib19vcHMgRURJVAo+IFsgNzIwNC41NzMyNjJdIFJU
-bmV0OiByZWdpc3RlcmVkIHJ0ZXRoMAo+IFsgNzIwNC41NzMyNzBdIFJUTDgxNjhoLzgxMTFoIGF0
-IDB4ZmZmZmE0MjBjMDY5OTAwMCwgMzA6OWM6MjM6MjA6NTA6MmIsCj4gWElEIDE0MTAwODgwIElS
-USAxNgo+IFsgNzIwNC41NzMyNzFdIGp1bWJvIGZlYXR1cmVzIFtmcmFtZXM6IDkyMDAgYnl0ZXMs
-IHR4IGNoZWNrc3VtbWluZzoga29dCj4gWyA3MjA0LjU5MjQzMl0gaW5pdGlhbGl6aW5nIGxvb3Bi
-YWNrLi4uCj4gWyA3MjA0LjU5MjQ0M10gUlRuZXQ6IHJlZ2lzdGVyZWQgcnRsbwo+IFsgNzIwNC42
-MDg5NzZdIFJUY2ZnOiBpbml0IHJlYWwtdGltZSBjb25maWd1cmF0aW9uIGRpc3RyaWJ1dGlvbiBw
-cm90b2NvbAo+IFsgNzIwNC42MjE1OTJdIFJUbWFjOiBpbml0IHJlYWx0aW1lIG1lZGlhIGFjY2Vz
-cyBjb250cm9sCj4gWyA3MjA0LjYzMzkyN10gUlRtYWMvVERNQTogaW5pdCB0aW1lIGRpdmlzaW9u
-IG11bHRpcGxlIGFjY2VzcyBjb250cm9sCj4gbWVjaGFuaXNtCj4gWyA3MjA0LjY0NDQ5M10gY2Fs
-bCBydGw4MTY5X2FsbG9jX3J4X2RhdGEKPiAuLi4KPiBbIDcyMDQuNjQ0ODYwXSBjYWxsIHJ0bDgx
-NjlfYWxsb2NfcnhfZGF0YQo+IFsgNzIwNC42NDQ4NjFdIGNhbGwgcnRsX2xvb2t1cF9maXJtd2Fy
-ZV9uYW1lCj4gWyA3MjA0LjY0NDg4N10gY2FsbCBydGxfY2hlY2tfZmlybXdhcmUKPiBbIDcyMDQu
-NjU4Mzk1XSBjYWxsIHJ0bDgxNjlfc2V0X3NwZWVkCj4gWyA3MjA0LjY1ODgzMV0gY2FsbCBydGw4
-MTY5X3NldF9mZWF0dXJlcwo+IFsgNzIwNC42NTg4NDldIGNhbGwgcnRsODE2OV9jaGFuZ2VfbXR1
-Cj4gWyA3MjA0LjY1ODk4Ml0gY2FsbCBydGxfaHdfc3RhcnQKPiBbIDcyMDQuNjU4OTg0XSBjYWxs
-IHJ0bF9od19zdGFydF84MTY4Cj4gWyA3MjA0LjY1OTEwNl0gY2FsbCBhZGQgcnRsX2h3X3N0YXJ0
-XzgxNjhoXzEKPiBbIDcyMDQuNjc0NzIyXSBNb2RlbU1hbmFnZXJbMjkyOTddOiBzZWdmYXVsdCBh
-dCAwIGlwIDAwMDAwMDAwMDA0MzFhYjMgc3AKPiAwMDAwN2ZmZGJiMGYxOGUwIGVycm9yIDQgaW4g
-TW9kZW1NYW5hZ2VyWzQwMDAwMCsxMDMwMDBdCj4gWyA3MjA0Ljg0MjUzOV0gbGluayBydGV0aCBk
-b3duCj4gWyA3MjA0Ljg0MjU0MV0gLS0tLS0tLS0tLS0tWyBjdXQgaGVyZSBdLS0tLS0tLS0tLS0t
-Cj4gWyA3MjA0Ljg0MjU0OV0gV0FSTklORzogQ1BVOiAxIFBJRDogMzExMTcgYXQgLi9pbmNsdWRl
-L2xpbnV4L2lwaXBlLmg6MjMyCj4gX19ydGw4MTY5X2NoZWNrX2xpbmtfc3RhdHVzKzB4MmYzLzB4
-MzQwIFtydF9yODE2OV0KPiBbIDcyMDQuODQyNTUxXSBNb2R1bGVzIGxpbmtlZCBpbjogdGRtYSBy
-dG1hYyBydGNmZyBydF9sb29wYmFjayBydHBhY2tldAo+IHJ0dWRwIHJ0X3I4MTY5KE9FKSBydGlw
-djQgcnRuZXQgdWFzIHVzYl9zdG9yYWdlIHh0X0NIRUNLU1VNCj4gaXB0YWJsZV9tYW5nbGUgaXB0
-X01BU1FVRVJBREUgbmZfbmF0X21hc3F1ZXJhZGVfaXB2NCBpcHRhYmxlX25hdAo+IG5mX25hdF9p
-cHY0IG5mX25hdCBuZl9jb25udHJhY2tfaXB2NCBuZl9kZWZyYWdfaXB2NCB4dF9jb25udHJhY2sK
-PiBuZl9jb25udHJhY2sgaXB0X1JFSkVDVCBuZl9yZWplY3RfaXB2NCB4dF90Y3B1ZHAgYnJpZGdl
-IHN0cCBsbGMKPiBlYnRhYmxlX2ZpbHRlciBlYnRhYmxlcyBpcDZ0YWJsZV9maWx0ZXIgaXA2X3Rh
-YmxlcyBpcHRhYmxlX2ZpbHRlcgo+IGlwX3RhYmxlcyB4X3RhYmxlcyBwY2lfc3R1YiB2Ym94cGNp
-KE9FKSB2Ym94bmV0YWRwKE9FKSB2Ym94bmV0Zmx0KE9FKQo+IHZib3hkcnYoT0UpIGRtX2NyeXB0
-IHNuZF9oZGFfY29kZWNfaGRtaSBzbmRfaGRhX2NvZGVjX3JlYWx0ZWsgdXZjdmlkZW8KPiBzbmRf
-aGRhX2NvZGVjX2dlbmVyaWMgc25kX2hkYV9pbnRlbCBzbmRfaGRhX2NvZGVjIGludGVsX3JhcGwK
-PiB2aWRlb2J1ZjJfdm1hbGxvYyB2aWRlb2J1ZjJfbWVtb3BzIHg4Nl9wa2dfdGVtcF90aGVybWFs
-IHZpZGVvYnVmMl92NGwyCj4gaW50ZWxfcG93ZXJjbGFtcCB2aWRlb2J1ZjJfY29yZSBzbmRfdXNi
-X2F1ZGlvIGNvcmV0ZW1wIHZpZGVvZGV2Cj4gc25kX2hkYV9jb3JlIGt2bV9pbnRlbCBzbmRfdXNi
-bWlkaV9saWIgc25kX2h3ZGVwIGt2bSBzbmRfcGNtCj4gc25kX3NlcV9taWRpIG1lZGlhIHNuZF9z
-ZXFfbWlkaV9ldmVudAo+IFsgNzIwNC44NDI2MzJdoCBzbmRfcmF3bWlkaSBzbmRfc2VxIGpveWRl
-diBpbnB1dF9sZWRzIHNuZF9zZXFfZGV2aWNlCj4gc25kX3RpbWVyIHNuZCBtZWlfbWUgaXJxYnlw
-YXNzIHNvdW5kY29yZSBtZWkgc2hwY2hwIHNlcmlvX3Jhdwo+IGJpbmZtdF9taXNjIG1hY19oaWQg
-aWJfaXNlciByZG1hX2NtIGl3X2NtIGliX2NtIGliX2NvcmUgY29uZmlnZnMKPiBpc2NzaV90Y3Ag
-bGliaXNjc2lfdGNwIGxpYmlzY3NpIHNjc2lfdHJhbnNwb3J0X2lzY3NpIHBhcnBvcnRfcGMgcHBk
-ZXYgbHAKPiBwYXJwb3J0IGF1dG9mczQgYnRyZnMgcmFpZDEwIHJhaWQ0NTYgYXN5bmNfcmFpZDZf
-cmVjb3YgYXN5bmNfbWVtY3B5Cj4gYXN5bmNfcHEgYXN5bmNfeG9yIGFzeW5jX3R4IHhvciByYWlk
-Nl9wcSBsaWJjcmMzMmMgcmFpZDEgcmFpZDAgbXVsdGlwYXRoCj4gbGluZWFyIGhpZF9nZW5lcmlj
-IHVzYmhpZCBoaWQgaTkxNSBteG1fd21pIGNyY3QxMGRpZl9wY2xtdWwgY3JjMzJfcGNsbXVsCj4g
-Z2hhc2hfY2xtdWxuaV9pbnRlbCBpMmNfYWxnb19iaXQgZHJtX2ttc19oZWxwZXIgYWVzbmlfaW50
-ZWwgYWVzX3g4Nl82NAo+IHN5c2NvcHlhcmVhIGxydyBzeXNmaWxscmVjdCBnbHVlX2hlbHBlciBz
-eXNpbWdibHQgYWJsa19oZWxwZXIKPiBmYl9zeXNfZm9wcyBjcnlwdGQgZHJtIHBzbW91c2UgbWlp
-IGFoY2kgbGliYWhjaSB2aWRlbyB3bWkgZmplcyBbbGFzdAo+IHVubG9hZGVkOiByODE2OV0KPiBb
-IDcyMDQuODQyNzI2XSBDUFU6IDEgUElEOiAzMTExNyBDb21tOiBydGlmY29uZmlnIFRhaW50ZWQ6
-IEegoKCgoKCgIFegCj4gT0WgoCA0LjkuOTAteGVub21haS1wYyAjMQo+IFsgNzIwNC44NDI3Mjhd
-IEhhcmR3YXJlIG5hbWU6IE1TSSBNUy03OTk2L0gxMTBNIFBSTy1WRCAoTVMtNzk5NiksIEJJT1MK
-PiAyLkMwIDA0LzIwLzIwMTcKPiBbIDcyMDQuODQyNzI5XSBJLXBpcGUgZG9tYWluOiBMaW51eAo+
-IFsgNzIwNC44NDI3MzFdoCBmZmZmYTQyMGMxNTAzYzA4IGZmZmZmZmZmOTg0MjAyNzYgMDAwMDAw
-MDAwMDAwMDAwMAo+IDAwMDAwMDAwMDAwMDAwMDAKPiBbIDcyMDQuODQyNzM2XaAgZmZmZmE0MjBj
-MTUwM2M0OCBmZmZmZmZmZjk4MDc1MGZiIDAwMDAwMGU4MDAwMDAwMDEKPiAwMDAwMDAwMDAwMDU3
-MGM4Cj4gWyA3MjA0Ljg0Mjc0MF2gIDAwMDAwMDAwMDAwNTcwMDAgZmZmZjhmZDk2OTA2NTAwMCBm
-ZmZmOGZkOTY5MDY1MjIwCj4gZmZmZmE0MjBjMDY5OTAwMAo+IFsgNzIwNC44NDI3NDZdIENhbGwg
-VHJhY2U6Cj4gWyA3MjA0Ljg0Mjc3MF2gIFs8ZmZmZmZmZmY5ODQyMDI3Nj5dIGR1bXBfc3RhY2sr
-MHhhOS8weGQzCj4gWyA3MjA0Ljg0Mjc3OV2gIFs8ZmZmZmZmZmY5ODA3NTBmYj5dIF9fd2Fybisw
-eGNiLzB4ZjAKPiBbIDcyMDQuODQyNzgyXaAgWzxmZmZmZmZmZjk4MDc1MjJkPl0gd2Fybl9zbG93
-cGF0aF9udWxsKzB4MWQvMHgyMAo+IFsgNzIwNC44NDI3ODZdoCBbPGZmZmZmZmZmYzBhY2E5MTM+
-XQo+IF9fcnRsODE2OV9jaGVja19saW5rX3N0YXR1cysweDJmMy8weDM0MCBbcnRfcjgxNjldCj4g
-WyA3MjA0Ljg0Mjc4OV2gIFs8ZmZmZmZmZmZjMGFjYzRmMD5dIHJ0bDgxNjlfb3BlbisweDVjMC8w
-eGM4MCBbcnRfcjgxNjldCj4gWyA3MjA0Ljg0Mjc5Nl2gIFs8ZmZmZmZmZmZjMDE4MDUxNz5dIHJ0
-ZGV2X29wZW4rMHgzNy8weDgwIFtydG5ldF0KPiBbIDcyMDQuODQyNzk5XaAgWzxmZmZmZmZmZjk4
-ODU5MTY3Pl0gPyBtdXRleF9sb2NrX2ludGVycnVwdGlibGUrMHgxNy8weDUwCj4gWyA3MjA0Ljg0
-MjgwM12gIFs8ZmZmZmZmZmZjMDE4MGFjYz5dIHJ0bmV0X2NvcmVfaW9jdGwrMHgxZmMvMHg1YjAg
-W3J0bmV0XQo+IFsgNzIwNC44NDI4MDZdoCBbPGZmZmZmZmZmYzAxODA4Nzk+XSBydG5ldF9pb2N0
-bCsweDEwOS8weDE2MCBbcnRuZXRdCj4gWyA3MjA0Ljg0MjgwOV2gIFs8ZmZmZmZmZmY5ODIzMDg4
-Nz5dID8ga21lbV9jYWNoZV9hbGxvYysweGQ3LzB4MWIwCj4gWyA3MjA0Ljg0MjgxMl2gIFs8ZmZm
-ZmZmZmY5ODI1YjlkND5dIGRvX3Zmc19pb2N0bCsweGE0LzB4NWUwCj4gWyA3MjA0Ljg0MjgxNV2g
-IFs8ZmZmZmZmZmY5ODA1YjFlZT5dID8gX19kb19wYWdlX2ZhdWx0KzB4MjhlLzB4NTEwCj4gWyA3
-MjA0Ljg0MjgxN12gIFs8ZmZmZmZmZmY5ODI1NzVhMz5dID8gcHV0bmFtZSsweDUzLzB4NjAKPiBb
-IDcyMDQuODQyODIwXaAgWzxmZmZmZmZmZjk4MjViZjg5Pl0gU3lTX2lvY3RsKzB4NzkvMHg5MAo+
-IFsgNzIwNC44NDI4MjJdoCBbPGZmZmZmZmZmOTgwMDJjMmY+XSBkb19zeXNjYWxsXzY0KzB4OGYv
-MHgxMDAKPiBbIDcyMDQuODQyODI1XaAgWzxmZmZmZmZmZjk4ODVjNDNlPl0gZW50cnlfU1lTQ0FM
-TF82NF9hZnRlcl9zd2FwZ3MrMHg1OC8weGM2Cj4gWyA3MjA0Ljg0MjgyN10gLS0tWyBlbmQgdHJh
-Y2UgNzQ4MTM1MjhhYTA5ZDVlZCBdLS0tCj4gWyA3MjA3LjgxMjE1Nl0gbGluayBydGV0aCB1cAo+
-IFsgNzIwOS41NTEyNzJdIFRETUE6IGNhbGlicmF0ZWQgbWFzdGVyLXRvLXNsYXZlIHBhY2tldCBk
-ZWxheTogMjUgdXMKPiAobWluL21heDogMjIvMjggdXMpCj4gcm9vdEBwcm9nLXBjMTI6L21lZGlh
-L3RhcmFzL0IwMkUxRThBRDZFMTBCOUQvTFgvZHJpdmVyIwo+IAoKU29tZXRoaW5nIGlzIHN0aWxs
-IGJyb2tlbiBpbiB5b3VyIGRyaXZlciBwb3J0LCBsZWF2aW5nIGhhcmQgSVJRcyBvbiBpbgp0aGUg
-ZW5kLiBUaGF0IGlzIHR5cGljYWxseSByZWxhdGVkIHRvIGNhbGxpbmcgb2YgaWxsZWdhbCBMaW51
-eCBzZXJ2aWNlcwpmcm9tIFJUIGNvbnRleHQgKHdoaWNoIGlzIHRoZSBJUlEgb3IgdGhlIHhtaXQg
-aGFuZGxlciBpbiB0aGlzIGNhc2UpLgoKTWFrZSBzdXJlIHlvdSBoYXZlIGFsbCBJLXBpcGUgYW5k
-IFhlbm9tYWkgZGVidWcgZmVhdHVyZXMgZW5hYmxlZC4gVGhleQptYXkgcHJvdmlkZSBhbiBlYXJs
-aWVyIGNsdWUgb2Ygd2hlcmUgdGhpbmdzIGdvIHdyb25nLgoKSmFuCgo=
+do you mean NAPI and polling mechanism ?
+
+=D1 =F3=E2=E0=E6=E5=ED=E8=E5=EC =E8 =ED=E0=E4=E5=E6=E4=EE=E9 =ED=E0 =F1=EE=
+=F2=F0=F3=E4=ED=E8=F7=E5=F1=F2=E2=EE,
+=D8=E5=E2=F7=E5=ED=EA=EE =D2.=C3.
+
+----- Original Message -----
+From: "Jan Kiszka" <jan.kiszka@siemens.com>
+To: "=D8=E5=E2=F7=E5=ED=EA=EE =D2=E0=F0=E0=F1 =C3=F0=E8=E3=EE=F0=FC=E5=E2=
+=E8=F7" <shevchenko.taras@triolcorp.com.ua>, "xenomai" <xenomai@xenomai.org=
+>
+Cc: "Greg Gallagher" <greg@embeddedgreg.com>
+Sent: =D7=E5=F2=E2=E5=F0=E3, 26 =C0=EF=F0=E5=EB=FC 2018 =E3 19:26:45
+Subject: Re: rtnet 8168g 8168h master -slave
+
+On 2018-04-25 19:23, =D8=E5=E2=F7=E5=ED=EA=EE =D2=E0=F0=E0=F1 =C3=F0=E8=E3=
+=EE=F0=FC=E5=E2=E8=F7 wrote:
+> Hi!
+> I change driver=A0 and try to make=A0 master - slave configuration
+> its connected
+> Below logs from slave (with i pipe debug turns on) =A0=A0=A0 TDMA master
+> parametrs are cycle 500=A0 offset 50
+> Question is I get ping master -slave about 400 mks=A0 but some times
+> 800-900=A0 it is not convenient for me
+> How I can check driver is robust ?
+>=20
+> =A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0 *** RTnet for Xenomai v3.0.6 *=
+**
+>=20
+> [ 7204.543497] RTnet: initialising real-time networking
+> [ 7204.570113] call rtl8169_init_one
+> [ 7204.570115] rt_r8169 Gigabit Ethernet driver 2.3LK-NAPI loaded
+> [ 7204.570361] rt_r8169 0000:01:00.0: can't disable ASPM; OS doesn't
+> have ASPM control
+> [ 7204.570511] call rtl_init_jumbo_ops EDIT
+> [ 7204.571066] RTnet: registered rteth0
+> [ 7204.571075] RTL8168h/8111h at 0xffffa420c068f000, 30:9c:23:20:50:2b,
+> XID 14100880 IRQ 16
+> [ 7204.571077] jumbo features [frames: 9200 bytes, tx checksumming: ko]
+> [ 7204.571768] call rtl8169_remove_one
+> [ 7204.571777] RTnet: unregistered rteth0
+> [ 7204.572820] call rtl8169_init_one
+> [ 7204.572823] rt_r8169 Gigabit Ethernet driver 2.3LK-NAPI loaded
+> [ 7204.573003] rt_r8169 0000:01:00.0: can't disable ASPM; OS doesn't
+> have ASPM control
+> [ 7204.573142] call rtl_init_jumbo_ops EDIT
+> [ 7204.573262] RTnet: registered rteth0
+> [ 7204.573270] RTL8168h/8111h at 0xffffa420c0699000, 30:9c:23:20:50:2b,
+> XID 14100880 IRQ 16
+> [ 7204.573271] jumbo features [frames: 9200 bytes, tx checksumming: ko]
+> [ 7204.592432] initializing loopback...
+> [ 7204.592443] RTnet: registered rtlo
+> [ 7204.608976] RTcfg: init real-time configuration distribution protocol
+> [ 7204.621592] RTmac: init realtime media access control
+> [ 7204.633927] RTmac/TDMA: init time division multiple access control
+> mechanism
+> [ 7204.644493] call rtl8169_alloc_rx_data
+> ...
+> [ 7204.644860] call rtl8169_alloc_rx_data
+> [ 7204.644861] call rtl_lookup_firmware_name
+> [ 7204.644887] call rtl_check_firmware
+> [ 7204.658395] call rtl8169_set_speed
+> [ 7204.658831] call rtl8169_set_features
+> [ 7204.658849] call rtl8169_change_mtu
+> [ 7204.658982] call rtl_hw_start
+> [ 7204.658984] call rtl_hw_start_8168
+> [ 7204.659106] call add rtl_hw_start_8168h_1
+> [ 7204.674722] ModemManager[29297]: segfault at 0 ip 0000000000431ab3 sp
+> 00007ffdbb0f18e0 error 4 in ModemManager[400000+103000]
+> [ 7204.842539] link rteth down
+> [ 7204.842541] ------------[ cut here ]------------
+> [ 7204.842549] WARNING: CPU: 1 PID: 31117 at ./include/linux/ipipe.h:232
+> __rtl8169_check_link_status+0x2f3/0x340 [rt_r8169]
+> [ 7204.842551] Modules linked in: tdma rtmac rtcfg rt_loopback rtpacket
+> rtudp rt_r8169(OE) rtipv4 rtnet uas usb_storage xt_CHECKSUM
+> iptable_mangle ipt_MASQUERADE nf_nat_masquerade_ipv4 iptable_nat
+> nf_nat_ipv4 nf_nat nf_conntrack_ipv4 nf_defrag_ipv4 xt_conntrack
+> nf_conntrack ipt_REJECT nf_reject_ipv4 xt_tcpudp bridge stp llc
+> ebtable_filter ebtables ip6table_filter ip6_tables iptable_filter
+> ip_tables x_tables pci_stub vboxpci(OE) vboxnetadp(OE) vboxnetflt(OE)
+> vboxdrv(OE) dm_crypt snd_hda_codec_hdmi snd_hda_codec_realtek uvcvideo
+> snd_hda_codec_generic snd_hda_intel snd_hda_codec intel_rapl
+> videobuf2_vmalloc videobuf2_memops x86_pkg_temp_thermal videobuf2_v4l2
+> intel_powerclamp videobuf2_core snd_usb_audio coretemp videodev
+> snd_hda_core kvm_intel snd_usbmidi_lib snd_hwdep kvm snd_pcm
+> snd_seq_midi media snd_seq_midi_event
+> [ 7204.842632]=A0 snd_rawmidi snd_seq joydev input_leds snd_seq_device
+> snd_timer snd mei_me irqbypass soundcore mei shpchp serio_raw
+> binfmt_misc mac_hid ib_iser rdma_cm iw_cm ib_cm ib_core configfs
+> iscsi_tcp libiscsi_tcp libiscsi scsi_transport_iscsi parport_pc ppdev lp
+> parport autofs4 btrfs raid10 raid456 async_raid6_recov async_memcpy
+> async_pq async_xor async_tx xor raid6_pq libcrc32c raid1 raid0 multipath
+> linear hid_generic usbhid hid i915 mxm_wmi crct10dif_pclmul crc32_pclmul
+> ghash_clmulni_intel i2c_algo_bit drm_kms_helper aesni_intel aes_x86_64
+> syscopyarea lrw sysfillrect glue_helper sysimgblt ablk_helper
+> fb_sys_fops cryptd drm psmouse mii ahci libahci video wmi fjes [last
+> unloaded: r8169]
+> [ 7204.842726] CPU: 1 PID: 31117 Comm: rtifconfig Tainted: G=A0=A0=A0=A0=
+=A0=A0=A0 W=A0
+> OE=A0=A0 4.9.90-xenomai-pc #1
+> [ 7204.842728] Hardware name: MSI MS-7996/H110M PRO-VD (MS-7996), BIOS
+> 2.C0 04/20/2017
+> [ 7204.842729] I-pipe domain: Linux
+> [ 7204.842731]=A0 ffffa420c1503c08 ffffffff98420276 0000000000000000
+> 0000000000000000
+> [ 7204.842736]=A0 ffffa420c1503c48 ffffffff980750fb 000000e800000001
+> 00000000000570c8
+> [ 7204.842740]=A0 0000000000057000 ffff8fd969065000 ffff8fd969065220
+> ffffa420c0699000
+> [ 7204.842746] Call Trace:
+> [ 7204.842770]=A0 [<ffffffff98420276>] dump_stack+0xa9/0xd3
+> [ 7204.842779]=A0 [<ffffffff980750fb>] __warn+0xcb/0xf0
+> [ 7204.842782]=A0 [<ffffffff9807522d>] warn_slowpath_null+0x1d/0x20
+> [ 7204.842786]=A0 [<ffffffffc0aca913>]
+> __rtl8169_check_link_status+0x2f3/0x340 [rt_r8169]
+> [ 7204.842789]=A0 [<ffffffffc0acc4f0>] rtl8169_open+0x5c0/0xc80 [rt_r8169=
+]
+> [ 7204.842796]=A0 [<ffffffffc0180517>] rtdev_open+0x37/0x80 [rtnet]
+> [ 7204.842799]=A0 [<ffffffff98859167>] ? mutex_lock_interruptible+0x17/0x=
+50
+> [ 7204.842803]=A0 [<ffffffffc0180acc>] rtnet_core_ioctl+0x1fc/0x5b0 [rtne=
+t]
+> [ 7204.842806]=A0 [<ffffffffc0180879>] rtnet_ioctl+0x109/0x160 [rtnet]
+> [ 7204.842809]=A0 [<ffffffff98230887>] ? kmem_cache_alloc+0xd7/0x1b0
+> [ 7204.842812]=A0 [<ffffffff9825b9d4>] do_vfs_ioctl+0xa4/0x5e0
+> [ 7204.842815]=A0 [<ffffffff9805b1ee>] ? __do_page_fault+0x28e/0x510
+> [ 7204.842817]=A0 [<ffffffff982575a3>] ? putname+0x53/0x60
+> [ 7204.842820]=A0 [<ffffffff9825bf89>] SyS_ioctl+0x79/0x90
+> [ 7204.842822]=A0 [<ffffffff98002c2f>] do_syscall_64+0x8f/0x100
+> [ 7204.842825]=A0 [<ffffffff9885c43e>] entry_SYSCALL_64_after_swapgs+0x58=
+/0xc6
+> [ 7204.842827] ---[ end trace 74813528aa09d5ed ]---
+> [ 7207.812156] link rteth up
+> [ 7209.551272] TDMA: calibrated master-to-slave packet delay: 25 us
+> (min/max: 22/28 us)
+> root@prog-pc12:/media/taras/B02E1E8AD6E10B9D/LX/driver#
+>=20
+
+Something is still broken in your driver port, leaving hard IRQs on in
+the end. That is typically related to calling of illegal Linux services
+from RT context (which is the IRQ or the xmit handler in this case).
+
+Make sure you have all I-pipe and Xenomai debug features enabled. They
+may provide an earlier clue of where things go wrong.
+
+Jan
+
