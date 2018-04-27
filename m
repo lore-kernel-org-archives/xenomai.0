@@ -1,24 +1,10 @@
-References: <CAOkoxmtZkcrWjcfm3ySkOiucqfCoKT6tUv4JHfV3H3PNs6xk4A@mail.gmail.com>
- <h8k8o2nn4gj7hrnjep8rlfqb.1524759069245@embeddedgreg.com>
- <CAOkoxmt4-eEcWCc21_AM2CwatWP1kLY7vmRJrJsWf_ZRjMn1ew@mail.gmail.com>
- <CALLqZ8TadWG+XetGJTFA93PxWBonhCrzstf_NHJfUhs2tZ5mMw@mail.gmail.com>
- <CAOkoxms_Dt3-Le8OF9tuuGjWANBU3d5kzMj-uatfSLP3YsT9zg@mail.gmail.com>
- <CALLqZ8Q=1eoUqi38k8GjWgSpEs8LYOM9=Q8zaWfO3DyHwC9nrw@mail.gmail.com>
- <CAOkoxmsYrbY_72-wBFNw5HFZ+p6q00BnRfuNcrhyPUwarTczVw@mail.gmail.com>
- <CALLqZ8SAqH5Gsc+edEhGFAz=x1qn-qVVF6u_86zyquJArRma+Q@mail.gmail.com>
- <CAOkoxmuTuVmtoKADwtm6ujXMz-ZdxaJnUntAFJFfRsAMrstFmg@mail.gmail.com>
- <CALLqZ8TvFOdwgVpKQn2Ni90BAMEtddEnZqJwEEmLSMyGu2BSYA@mail.gmail.com>
- <CAOkoxmuwS98pG5tYhXpEwh+U+oEKKePJip9fRn8=VftBxXWDsw@mail.gmail.com>
- <CALLqZ8Snr6ktnwrcvO1y-a75afRkDgHg2qgPwtkhby87UhNb5g@mail.gmail.com>
- <CAOkoxmvQWVLo4Hmy+nCLRB4FV68uu4FSrnfODJTOELPy=ocexQ@mail.gmail.com>
-From: Jeff Webb <jeff.webb@nta-inc.net>
-Message-ID: <37fdc1c7-ae40-8e39-5c86-5ef38f326627@nta-inc.net>
-Date: Fri, 27 Apr 2018 09:20:36 -0500
+Date: Fri, 27 Apr 2018 10:30:02 -0400
+Message-ID: <eonumkfibhh2lfchip34ab4e.1524839402683@embeddedgreg.com>
+From: Greg Gallagher <greg@embeddedgreg.com>
+In-Reply-To: <37fdc1c7-ae40-8e39-5c86-5ef38f326627@nta-inc.net>
 MIME-Version: 1.0
-In-Reply-To: <CAOkoxmvQWVLo4Hmy+nCLRB4FV68uu4FSrnfODJTOELPy=ocexQ@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: base64
 Subject: Re: [Xenomai] [SPAM] Re:  Issue with Xenomai 3.0.6,
  I-Pipe 4.9.51 and Linux 4.9.51 on Xilinx Zynq 7000 MPSOC
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
@@ -29,31 +15,37 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
+To: Jeff Webb <jeff.webb@nta-inc.net>, "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On 04/27/2018 02:55 AM, Salvatore Barone wrote:
-> It works! Thanks Greg!
-> If you're interested, I can post a script that do all the work!
-
-I, for one, would appreciate that.  I am sure there are others who would as=
- well.  I am about to dust off an old Zynq-based Xenomai-2.6 project, and a=
-ny hints as to the best set of kernel sources, i-pipe patches, config, and =
-process for an up-to-date build would be helpful.
-
-Many thanks,
-
--Jeff
-
-________________________________
-
-CONFIDENTIALITY NOTICE: The contents of this e-mail message may be privileg=
-ed, confidential, proprietary, Controlled Unclassified Information (CUI) or=
- otherwise protected against disclosure or dissemination. This e-mail messa=
-ge and any files transmitted with it are intended solely for the use of the=
- individual/individuals or entity/entities to whom they are addressed. If y=
-ou are not the intended recipient of this message, any dissemination, distr=
-ibution, printing or copying is strictly prohibited. If you have received t=
-his message in error, please e-mail or call the sender (jeff.webb@nta-inc.n=
-et, (256) 842-7041) and destroy all copies.
+SSdsbCB1cGRhdGUgbXkgaG93LXRvIHRoaXMgd2Vla2VuZCBhbmQgcG9zdCBteSBwcmVidWlsdCBp
+bWFnZXMuIEkganVzdCBuZWVkIHRvIG1ha2UgdGltZSB0byBsb29rIGludG8gdGhlIDQuOS41MSBs
+b2NrIHVwLiBJJ2xsIHBvc3QgaGVyZSB3aXRoIGxpbmtzIG9uY2UgdGhpbmdzIGFyZSByZWFkeS4K
+CgpHcmVnCgoKwqAgT3JpZ2luYWwgTWVzc2FnZSDCoApGcm9tOiBqZWZmLndlYmJAbnRhLWluYy5u
+ZXQKU2VudDogQXByaWwgMjcsIDIwMTggMTA6MjEgQU0KVG86IHhlbm9tYWlAeGVub21haS5vcmcK
+U3ViamVjdDogUmU6IFtYZW5vbWFpXSBbU1BBTV0gUmU6IElzc3VlIHdpdGggWGVub21haSAzLjAu
+NiwgSS1QaXBlIDQuOS41MSBhbmQgTGludXggNC45LjUxIG9uIFhpbGlueCBaeW5xIDcwMDAgTVBT
+T0MKCk9uIDA0LzI3LzIwMTggMDI6NTUgQU0sIFNhbHZhdG9yZSBCYXJvbmUgd3JvdGU6Cj4gSXQg
+d29ya3MhIFRoYW5rcyBHcmVnIQo+IElmIHlvdSdyZSBpbnRlcmVzdGVkLCBJIGNhbiBwb3N0IGEg
+c2NyaXB0IHRoYXQgZG8gYWxsIHRoZSB3b3JrIQoKSSwgZm9yIG9uZSwgd291bGQgYXBwcmVjaWF0
+ZSB0aGF0LsKgIEkgYW0gc3VyZSB0aGVyZSBhcmUgb3RoZXJzIHdobyB3b3VsZCBhcyB3ZWxsLsKg
+IEkgYW0gYWJvdXQgdG8gZHVzdCBvZmYgYW4gb2xkIFp5bnEtYmFzZWQgWGVub21haS0yLjYgcHJv
+amVjdCwgYW5kIGFueSBoaW50cyBhcyB0byB0aGUgYmVzdCBzZXQgb2Yga2VybmVsIHNvdXJjZXMs
+IGktcGlwZSBwYXRjaGVzLCBjb25maWcsIGFuZCBwcm9jZXNzIGZvciBhbiB1cC10by1kYXRlIGJ1
+aWxkIHdvdWxkIGJlIGhlbHBmdWwuCgpNYW55IHRoYW5rcywKCi1KZWZmCgpfX19fX19fX19fX19f
+X19fX19fX19fX19fX19fX19fXwoKQ09ORklERU5USUFMSVRZIE5PVElDRTogVGhlIGNvbnRlbnRz
+IG9mIHRoaXMgZS1tYWlsIG1lc3NhZ2UgbWF5IGJlIHByaXZpbGVnZWQsIGNvbmZpZGVudGlhbCwg
+cHJvcHJpZXRhcnksIENvbnRyb2xsZWQgVW5jbGFzc2lmaWVkIEluZm9ybWF0aW9uIChDVUkpIG9y
+IG90aGVyd2lzZSBwcm90ZWN0ZWQgYWdhaW5zdCBkaXNjbG9zdXJlIG9yIGRpc3NlbWluYXRpb24u
+IFRoaXMgZS1tYWlsIG1lc3NhZ2UgYW5kIGFueSBmaWxlcyB0cmFuc21pdHRlZCB3aXRoIGl0IGFy
+ZSBpbnRlbmRlZCBzb2xlbHkgZm9yIHRoZSB1c2Ugb2YgdGhlIGluZGl2aWR1YWwvaW5kaXZpZHVh
+bHMgb3IgZW50aXR5L2VudGl0aWVzIHRvIHdob20gdGhleSBhcmUgYWRkcmVzc2VkLiBJZiB5b3Ug
+YXJlIG5vdCB0aGUgaW50ZW5kZWQgcmVjaXBpZW50IG9mIHRoaXMgbWVzc2FnZSwgYW55IGRpc3Nl
+bWluYXRpb24sIGRpc3RyaWJ1dGlvbiwgcHJpbnRpbmcgb3IgY29weWluZyBpcyBzdHJpY3RseSBw
+cm9oaWJpdGVkLiBJZiB5b3UgaGF2ZSByZWNlaXZlZCB0aGlzIG1lc3NhZ2UgaW4gZXJyb3IsIHBs
+ZWFzZSBlLW1haWwgb3IgY2FsbCB0aGUgc2VuZGVyIChqZWZmLndlYmJAbnRhLWluYy5uZXQsICgy
+NTYpIDg0Mi03MDQxKSBhbmQgZGVzdHJveSBhbGwgY29waWVzLgoKCl9fX19fX19fX19fX19fX19f
+X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fClhlbm9tYWkgbWFpbGluZyBsaXN0Clhlbm9t
+YWlAeGVub21haS5vcmcKaHR0cHM6Ly94ZW5vbWFpLm9yZy9tYWlsbWFuL2xpc3RpbmZvL3hlbm9t
+YWkK
 
 
