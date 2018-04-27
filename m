@@ -1,11 +1,11 @@
-Date: Fri, 27 Apr 2018 19:36:29 +0300 (EEST)
-From: =?windows-1251?B?2OXi9+Xt6u4g0uDw4PEgw/Do4+7w/OXi6Pc=?=
- <shevchenko.taras@triolcorp.com.ua>
-Message-ID: <1849465986.4045811.1524846989897.JavaMail.zimbra@triolcorp.com.ua>
+From: Philippe Gerum <rpm@xenomai.org>
+Message-ID: <bd6a8257-9986-df8b-182d-b1b5d41e3a2a@xenomai.org>
+Date: Fri, 27 Apr 2018 20:23:49 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=windows-1251
-Content-Transfer-Encoding: quoted-printable
-Subject: [Xenomai] rtnet with virtual box
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+Subject: [Xenomai] Performance issue with memory allocators
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -14,19 +14,29 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai <xenomai@xenomai.org>
-Cc: Olej <o.tsiliuric@yandex.ru>
+To: "Xenomai@xenomai.org" <Xenomai@xenomai.org>
 
-Hi community!=20
-Please share information about=20
-does anybody run rtnet with virtual box?=20
-if you managed to do that please tell me=20
-- version of Virtual Box=20
-- network adapter type=20
-- rtnet driver name=20
 
-Thanks you=20
+After a comprehensive series of tests, it is now obvious that
+heapobj-pshared has gruesome performances when releasing bursts of
+small-sized objects. Allocation of large objects is not particularly
+efficient either, although not as bad. The Cobalt core allocator is
+affected by the same bug too.
 
-=D1 =F3=E2=E0=E6=E5=ED=E8=E5=EC =E8 =ED=E0=E4=E5=E6=E4=EE=E9 =ED=E0 =F1=EE=
-=F2=F0=F3=E4=ED=E8=F7=E5=F1=F2=E2=EE,=20
-=D8=E5=E2=F7=E5=ED=EA=EE =D2.=C3.=20
+Those new tests are available from the wip/heapmem branch, they are
+based on the smokey framework (e.g. smokey --run=memory_* --verbose=2).
+
+Work is ongoing into the wip/heapmem branch to fix the mess, first
+addressing the issue with the core (in-kernel) allocator,
+heapobj-pshared next. Please note that wip/heapmem is a development
+branch I'm working on for testing improvements - hopefully - to the
+memory allocators, which should not be used in production.
+
+I would strongly recommend that users running single-process
+applications - i.e. not needing the shared heap feature - make sure to
+turn off heapobj-pshared when configuring, by passing --disable-pshared
+to the configuration script (or leave the feature to the default off state).
+
+-- 
+Philippe.
+
