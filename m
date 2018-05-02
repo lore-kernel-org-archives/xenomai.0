@@ -1,19 +1,12 @@
 From: "Pham, Phong" <phamp@ddc-web.com>
-Date: Wed, 2 May 2018 00:32:48 +0000
-Message-ID: <C2EC5BA46D13CD44B5915A8FEEB4C44E8A2D2256@DDCEXCH.ddc-ny.com>
-References: <C2EC5BA46D13CD44B5915A8FEEB4C44E8488E31A@DDCEXCH.ddc-ny.com>
- <2fa46484-f8e1-ffbd-5e67-79d6345d08d2@xenomai.org>
- <C2EC5BA46D13CD44B5915A8FEEB4C44E8489E1E1@DDCEXCH.ddc-ny.com>
- <b72099ab-d43f-ae57-7cea-fa801cd98d1c@xenomai.org>
- <C2EC5BA46D13CD44B5915A8FEEB4C44E8489E20B@DDCEXCH.ddc-ny.com>
- <5d7e35c2-dde2-e44b-dc7e-d073570b6661@xenomai.org>
-In-Reply-To: <5d7e35c2-dde2-e44b-dc7e-d073570b6661@xenomai.org>
+Date: Wed, 2 May 2018 01:13:26 +0000
+Message-ID: <C2EC5BA46D13CD44B5915A8FEEB4C44E8A2D2291@DDCEXCH.ddc-ny.com>
 Content-Language: en-US
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-Subject: Re: [Xenomai] mmap when using in conjunction with mapper to
- retrieve memory mapped IO space
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Subject: [Xenomai] potentially missing timer rating check in
+	select_root_only_timer()
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -22,70 +15,26 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Philippe Gerum <rpm@xenomai.org>, "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: "xenomai@xenomai.org" <xenomai@xenomai.org>
 Cc: "Hillman, Robert" <hillman@ddc-web.com>
 
-DQpIaSBQaGlsaXBwZSwNCg0KQmVsb3cgYXJlIHRoZSBzbmlwcGV0cyBjb21waWxlZCB3aXRoIC1m
-UElDIGluIHRoZSBEU08uICBJZiBJIGRvbid0IGNvbXBpbGUgd2l0aCAtZlBJQywgSSBnZXQgdGhp
-cyBlcnJvcjoNCg0KIyBiaW4vdnhhcHANCmJpbi92eGFwcDogZXJyb3Igd2hpbGUgbG9hZGluZyBz
-aGFyZWQgbGlicmFyaWVzOiAvdXNyL3hlbm9tYWkvbGliL2xpYnNjczc1MC5zbzogUl9QUENfUkVM
-MjQgcmVsb2NhdGlvbiBhdCAweDBmZmFjZWM0IGZvciBzeW1ib2wgYG11bm1hcCcgb3V0IG9mIHJh
-bmdlDQoNCklmIEkgZG8gY29tcGlsZSB3aXRoIC1mUElDIGZvciBteSBEU08sIHRoaXMgaXMgdGhl
-IHNuaXBwZXQgb24gdGhlIGV4ZWN1dGFibGUgKGllLiBmcm9tIHlvdXIgZXhhbXBsZSwgdGhhdCB3
-b3VsZCBiZSAidnhhcHAiIGV4ZWN1dGFibGUuKQ0KDQouLi4NCi4uLg0KICAgICAgICBpbnQgZmRf
-ZWVwcm9tID0gb3BlbigiL2Rldi9ydGRtL2VlcHJvbSxtYXBwZXIwIiwgT19SRFdSKTsNCiAgICAg
-ICAgdWludDMyX3QgYmFzZUFkZHJfZWVwcm9tID0gKHZvbGF0aWxlIHVpbnQzMl90KW1tYXAoTlVM
-TCwgU0NTX0VFUFJPTV9QSFlTSUNBTF9TSVpFLCBQUk9UX1JFQUQgfCBQUk9UX1dSSVRFLCBNQVBf
-U0hBUkVELCBmZF9lZXByb20sIDApOw0KcHJpbnRmKCIlcygpOiAgYmFzZUFkZHJfZWVwcm9tID0g
-MHglMDh4XG4iLCBfX2Z1bmNfXywgYmFzZUFkZHJfZWVwcm9tKTsNCi4uLg0KLi4uDQoNCkJlbG93
-IGlzIHRoZSBzbmlwcGV0IGZyb20gbXkgRFNPOg0KDQouLi4NCi4uLg0KICAgIGludCBmZG0gPSBv
-cGVuKCIvZGV2L3J0ZG0vZWVwcm9tLG1hcHBlcjAiLCBPX1JEV1IpOw0KICAgIHVpbnQzMl90IGJh
-c2VBZGRyID0gLTI7DQoNCnByaW50ZigiJXMoKTogYmFzZUFkZHIgPSAweCUwOHgsIGVycm5vID0g
-JWRcbiIsIF9fZnVuY19fLCBiYXNlQWRkciwgZXJybm8pOw0KYmFzZUFkZHIgPSAodm9sYXRpbGUg
-dWludDMyX3QpbW1hcChOVUxMLCBTQ1NfRUVQUk9NX1BIWVNJQ0FMX1NJWkUsIFBST1RfUkVBRCB8
-IFBST1RfV1JJVEUsIE1BUF9TSEFSRUQsIGZkbSwgMCk7DQoNCmlmIChiYXNlQWRkciA9IC0xKQ0K
-ew0KcHJpbnRmKCIlcygpOiBiYXNlQWRkciA9IDB4JTA4eCwgZXJybm8gPSAlZFxuIiwgX19mdW5j
-X18sIGJhc2VBZGRyLCBlcnJubyk7DQp9DQouLi4uDQoNCkZvciBteSBEU08sIExERkxBR1MgOj0g
-JChzaGVsbCAkKFhFTk9fQ09ORklHKSAtLW5vLWF1dG8taW5pdCAtLXBvc2l4IC0tdnh3b3JrcyAt
-LWxkZmxhZ3MpIGlzIGluIHRoZSBtYWtlZmlsZS4gIEZvciBteSAidnhhcHAiLCBMREZMQUdTIDo9
-ICQoc2hlbGwgJChYRU5PX0NPTkZJRykgLS1wb3NpeCAtLXZ4d29ya3MgLS1sZGZsYWdzKQ0KDQpP
-dXRwdXQ6DQpzY3NFZXByb21UZXN0KCk6ICBiYXNlQWRkcl9lZXByb20gPSAweDM2NmVlMDAwDQpz
-eXNFZXByb21TZXQoKTogYmFzZUFkZHIgPSAweGZmZmZmZmZlLCBlcnJubyA9IDANCnN5c0VlcHJv
-bVNldCgpOiBiYXNlQWRkciA9IDB4ZmZmZmZmZmYsIGVycm5vID0gMA0KDQpzY3NFZXByb21UZXN0
-KCkgcmVzaWRlcyBpbiB0aGUgInZ4YXBwIiBleGVjdXRhYmxlIGFuZCBzeXNFZXByb21TZXQoKSBy
-ZXNpZGVzIGluIHRoZSBEU08uDQoNClBob25nLg0KDQotLS0tLU9yaWdpbmFsIE1lc3NhZ2UtLS0t
-LQ0KRnJvbTogUGhpbGlwcGUgR2VydW0gW21haWx0bzpycG1AeGVub21haS5vcmddDQpTZW50OiBU
-aHVyc2RheSwgQXByaWwgMTksIDIwMTggMTI6MjYgQU0NClRvOiBQaGFtLCBQaG9uZzsgeGVub21h
-aUB4ZW5vbWFpLm9yZw0KQ2M6IEhpbGxtYW4sIFJvYmVydA0KU3ViamVjdDogUmU6IFtYZW5vbWFp
-XSBtbWFwIHdoZW4gdXNpbmcgaW4gY29uanVuY3Rpb24gd2l0aCBtYXBwZXIgdG8gcmV0cmlldmUg
-bWVtb3J5IG1hcHBlZCBJTyBzcGFjZQ0KDQpPbiAwNC8xOS8yMDE4IDAxOjAyIEFNLCBQaGFtLCBQ
-aG9uZyB3cm90ZToNCj4g4oCcVGhpcyBpcyBsaWtlbHkgaGFwcGVuaW5nIGJlY2F1c2UgdGhlIGRl
-ZmF1bHQgYXV0by1pbml0IGdsdWUgbW9kdWxlIGZvcg0KPiBhIGZpbmFsIGV4ZWN1dGFibGUgaXMg
-bWVudGlvbmVkIGluIHRoZSBmbGFncywgeW91IGVpdGhlciB3YW50IHRvIHBhc3MNCj4gLS1hdXRv
-LWluaXQtc29saWIgaWYgeW91IGRvIG5lZWQgYXV0by1pbml0IGZvciBib290c3RyYXBwaW5nIGEg
-RFNPLCBvcg0KPiAtLW5vLWF1dG8taW5pdCBpZiB5b3UgZG9uJ3QgY2FyZSBhYm91dCBhdXRvLWJv
-b3RzdHJhcCwgYWxvbmcgd2l0aA0KPiAtLWxkZmxhZ3MgdG8geGVuby1jb25maWcuDQo+DQo+DQo+
-DQo+IGh0dHA6Ly93d3cueGVub21haS5vcmcvZG9jdW1lbnRhdGlvbi94ZW5vbWFpLTMvaHRtbC9t
-YW4xL3hlbm8tY29uZmlnL2luZGV4Lmh0bWzigJwNCj4NCj4NCj4NCj4NCj4NCj4gSSBzZWUuICBB
-ZnRlciBhZGRpbmcgZWl0aGVyIC0tYXV0by1pbml0LXNvbGliIG9yIC0tbm8tYXV0by1pbml0IHdo
-ZW4NCj4gY29tcGlsaW5nIGZvciBsaWJyYXJ5LCBhbG9uZyB3aXRoIGNvbXBpbGVyIG9wdGlvbiAt
-ZlBJQywgbW1hcCgpIHN0aWxsDQo+IHJldHVybnMgLTE7IChXL291dCAtZlBJQywgbXVubWFwKCkg
-Y2Fubm90IGJlIHJlbG9jYXRlZCAoc2ltaWxhciB0eXBlcyBvZg0KPiBlcnJvciBsaWtlIGJlZm9y
-ZSkuDQoNCnhlbm8tY29uZmlnIC0tbGRmbGFncyB3aWxsIHJldHVybiB0aGUgWGVub21haS1yZWxh
-dGVkIGZsYWdzIGZvciBsaW5raW5nLA0Kd2hpY2ggLWZQSUMgaXMgbm90LiBJZiB5b3UgcGxhbiBm
-b3IgYnVpbGRpbmcgYSBEU08sIHlvdSBuZWVkIHRvIGFwcGx5DQp0aGUgY29tbW9uIHJ1bGVzIHN0
-YXRlZCBpbiB0aGUgbGQgZG9jdW1lbnRhdGlvbiwgd2hpY2ggaW5jbHVkZQ0KbWVudGlvbmluZyAg
-LWZQSUMgLyAtZnBpYyBmb3Igc2hhcmVkIGxpYnMuIFRoaXMgaXMgbm90IGEgWGVub21haSBpc3N1
-ZS4NCg0KICBIb3dldmVyLCBlcnJubyBpcyAwLiAgSG93IGNvbWUgZXJybm8gcmV0dXJucyDigJxu
-bw0KPiBlcnJvcuKAnSB3aGVuIG1tYXAoKSByZXR1cm5zIGZhaWx1cmU/DQo+DQoNClBsZWFzZSBw
-b3N0IGEgdGVzdCBjb2RlIHNuaXBwZXQgaWxsdXN0cmF0aW5nIHRoZSBwcm9ibGVtLg0KDQotLQ0K
-UGhpbGlwcGUuDQpOb3RpY2U6IFRoaXMgZS1tYWlsIGFuZCBhbnkgZmlsZXMgdHJhbnNtaXR0ZWQg
-d2l0aCBpdCBtYXkgY29udGFpbiBEYXRhIERldmljZSBDb3Jwb3JhdGlvbidzIHByaXZpbGVnZWQg
-YW5kIHByb3ByaWV0YXJ5IGluZm9ybWF0aW9uLiBJdCBpcyBpbnRlbmRlZCBzb2xlbHkgZm9yIHRo
-ZSB1c2Ugb2YgdGhlIGluZGl2aWR1YWwgb3IgZW50aXR5IHRvIHdob20gaXQgaXMgYWRkcmVzc2Vk
-LiBJZiB5b3UgYXJlIG5vdCB0aGUgbmFtZWQgcmVjaXBpZW50IG9mIHRoaXMgdHJhbnNtaXNzaW9u
-LCBhbnkgZGlzY2xvc3VyZSwgY29weWluZywgZGlzdHJpYnV0aW9uIG9yIHJlbGlhbmNlIG9uIHRo
-ZSBjb250ZW50cyBvZiB0aGlzIG1lc3NhZ2UgaXMgcHJvaGliaXRlZC4gSWYgeW91IHJlY2VpdmVk
-IHRoaXMgZS1tYWlsIGluIGVycm9yLCBwbGVhc2UgZGVzdHJveSBpdCBhbmQgYW55IGF0dGFjaGVk
-IGZpbGVzIGFuZCBub3RpZnkgbWUgaW1tZWRpYXRlbHkuDQo=
 
+Hi,
+
+I am suspecting that in kernel/ipipe/timer.c:select_root_only_timer()
+
+When t->irq == per_cpu(ipipe_percpu.hrtimer_irq, icpu), a condition to test the timer rating against current timer rating before installing the timer is missing.  That is t->rating > percpu_timer->rating (combined with same irq #) before the condition becomes true.
+
+Here's screenshot:
+[cid:image001.png@01D3E177.63116AC0]
+
+Phong.
+
+Notice: This e-mail and any files transmitted with it may contain Data Device Corporation's privileged and proprietary information. It is intended solely for the use of the individual or entity to whom it is addressed. If you are not the named recipient of this transmission, any disclosure, copying, distribution or reliance on the contents of this message is prohibited. If you received this e-mail in error, please destroy it and any attached files and notify me immediately.
+-------------- next part --------------
+A non-text attachment was scrubbed...
+Name: image001.png
+Type: image/png
+Size: 100938 bytes
+Desc: image001.png
+URL: <http://xenomai.org/pipermail/xenomai/attachments/20180502/fb07b0f2/attachment.png>
