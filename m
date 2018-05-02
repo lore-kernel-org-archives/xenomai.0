@@ -1,15 +1,19 @@
-From: Steven Seeger <steven.seeger@nasa.gov>
-Date: Sun, 29 Apr 2018 23:21:00 -0400
-Message-ID: <2016084.lXyCYvDxLZ@wirbelwind>
-In-Reply-To: <4715a857-f535-fe49-2506-5abbb16553ed@xenomai.org>
-References: <mailman.27.1522680894.4366.xenomai@xenomai.org>
- <b2cbe5362c38461d9a2eb817b78fb633@EDB3.wapice.localdomain>
- <4715a857-f535-fe49-2506-5abbb16553ed@xenomai.org>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 7Bit
+From: "Pham, Phong" <phamp@ddc-web.com>
+Date: Wed, 2 May 2018 00:32:48 +0000
+Message-ID: <C2EC5BA46D13CD44B5915A8FEEB4C44E8A2D2256@DDCEXCH.ddc-ny.com>
+References: <C2EC5BA46D13CD44B5915A8FEEB4C44E8488E31A@DDCEXCH.ddc-ny.com>
+ <2fa46484-f8e1-ffbd-5e67-79d6345d08d2@xenomai.org>
+ <C2EC5BA46D13CD44B5915A8FEEB4C44E8489E1E1@DDCEXCH.ddc-ny.com>
+ <b72099ab-d43f-ae57-7cea-fa801cd98d1c@xenomai.org>
+ <C2EC5BA46D13CD44B5915A8FEEB4C44E8489E20B@DDCEXCH.ddc-ny.com>
+ <5d7e35c2-dde2-e44b-dc7e-d073570b6661@xenomai.org>
+In-Reply-To: <5d7e35c2-dde2-e44b-dc7e-d073570b6661@xenomai.org>
+Content-Language: en-US
 Content-Type: text/plain; charset="utf-8"
-Subject: Re: [Xenomai] Unrecoverable FP Unavailable Exception 801
-Reply-To: steven.seeger@nasa.gov
+Content-Transfer-Encoding: base64
+MIME-Version: 1.0
+Subject: Re: [Xenomai] mmap when using in conjunction with mapper to
+ retrieve memory mapped IO space
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -18,138 +22,70 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Philippe Gerum <rpm@xenomai.org>
-Cc: Adnan Ali <adnan.ali@wapice.com>, Sakari Junnila <sakari.junnila@wapice.com>, "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Philippe Gerum <rpm@xenomai.org>, "xenomai@xenomai.org" <xenomai@xenomai.org>
+Cc: "Hillman, Robert" <hillman@ddc-web.com>
 
-Hello all. I've created what Philippe thinks is a good patch for this issue as 
-well as looked at other cases of clobbered bits in the MSR as it relates to 
-vsx, spe, and altivec. I have checked in a patch on our interim 4.14 IPIPE 
-work which is not yet public. It looks trivial to backport this to 4.9. I am a 
-new maintainer even though I've been a thorn in Philippe's side for well over 
-a decade. Once he takes a minute from his busy life to grant me access to push 
-a change for 4.9 I will do so.
-
-In the meantime, for anyone who would like to see this issue patched on 4.9.51 
-against the latest ipipe-core-4.9.51-powerpc-3.patch this should work:
-
-diff --git a/arch/powerpc/kernel/process.c b/arch/powerpc/kernel/process.c
-index ed47cc3..866983a 100644
---- a/arch/powerpc/kernel/process.c
-+++ b/arch/powerpc/kernel/process.c
-@@ -172,6 +172,7 @@ void giveup_fpu(struct task_struct *tsk)
- 	msr_check_and_set(MSR_FP);
- 	__giveup_fpu(tsk);
- 	msr_check_and_clear(MSR_FP);
-+    flags &= MSR_FP;
- 	hard_cond_local_irq_restore(flags);
- }
- EXPORT_SYMBOL(giveup_fpu);
-@@ -204,6 +205,11 @@ void flush_fp_to_thread(struct task_struct *tsk)
- 			 */
- 			BUG_ON(tsk != current);
- 			giveup_fpu(tsk);
-+
-+			/* giveup_fpu clears the MSR_FP bit from MSR
-+			 * unconditionally
-+			 */
-+			flags &= ~MSR_FP;
- 		}
- 		hard_preempt_enable(flags);
- 	}
-@@ -219,6 +225,7 @@ void enable_kernel_fp(void)
- 	flags = hard_cond_local_irq_save();
- 
- 	cpumsr = msr_check_and_set(MSR_FP);
-+	flags |= MSR_FP; /* must exit this routine with MSR_FP bit set */
- 
- 	if (current->thread.regs && (current->thread.regs->msr & MSR_FP)) {
- 		check_if_tm_restore_required(current);
-@@ -285,6 +292,7 @@ void enable_kernel_altivec(void)
- 
- 	flags = hard_cond_local_irq_save();
- 	cpumsr = msr_check_and_set(MSR_VEC);
-+	flags |= MSR_VEC; /* must exit this routine with MSR_VEC set in MSR */
- 
- 	if (current->thread.regs && (current->thread.regs->msr & MSR_VEC)) {
- 		check_if_tm_restore_required(current);
-@@ -317,6 +325,10 @@ void flush_altivec_to_thread(struct task_struct *tsk)
- 		if (tsk->thread.regs->msr & MSR_VEC) {
- 			BUG_ON(tsk != current);
- 			giveup_altivec(tsk);
-+			/* giveup_altivec() clears MSR_VEC
-+			 * unconditionally from MSR
-+			 */
-+			flags &= ~MSR_VEC;
- 		}
- 		hard_preempt_enable(flags);
- 	}
-@@ -405,6 +417,10 @@ void flush_vsx_to_thread(struct task_struct *tsk)
- 		if (tsk->thread.regs->msr & (MSR_VSX|MSR_VEC|MSR_FP)) {
- 			BUG_ON(tsk != current);
- 			giveup_vsx(tsk);
-+			/* giveup_vsx() clears MSR_FP,VEC,VSX unconditionally
-+			 * so clear them in flags
-+			 */
-+			flags &= ~(MSR_FP|MSR_VEC|MSR_VSX);
- 		}
- 		hard_preempt_enable(flags);
- 	}
-@@ -436,6 +452,7 @@ void giveup_spe(struct task_struct *tsk)
- 	msr_check_and_set(MSR_SPE);
- 	__giveup_spe(tsk);
- 	msr_check_and_clear(MSR_SPE);
-+    flags &= MSR_SPE;
- 	hard_cond_local_irq_restore(flags);
- }
- EXPORT_SYMBOL(giveup_spe);
-@@ -448,7 +465,8 @@ void enable_kernel_spe(void)
- 
- 	flags = hard_cond_local_irq_save();
- 	msr_check_and_set(MSR_SPE);
--
-+	/* must exit this routine with MSR_SPE set in MSR */
-+	flags |= MSR_SPE;
- 	if (current->thread.regs && (current->thread.regs->msr & MSR_SPE)) {
- 		check_if_tm_restore_required(current);
- 		__giveup_spe(current);
-@@ -467,6 +485,10 @@ void flush_spe_to_thread(struct task_struct *tsk)
- 			BUG_ON(tsk != current);
- 			tsk->thread.spefscr = mfspr(SPRN_SPEFSCR);
- 			giveup_spe(tsk);
-+			/* giveup_spe clears MSR_SPE from MSR, so must clear
-+			 * it here to exit rouitine properly
-+			 */
-+			flags &= MSR_SPE;
- 		}
- 		hard_preempt_enable(flags);
- 	}
-@@ -531,6 +553,7 @@ void giveup_all(struct task_struct *tsk)
- #endif
- 
- 	msr_check_and_clear(msr_all_available);
-+    flags &= ~msr_all_available;
- 	hard_cond_local_irq_restore(flags);
- }
- EXPORT_SYMBOL(giveup_all);
-@@ -563,6 +586,7 @@ void restore_math(struct pt_regs *regs)
- 	}
- 
- 	msr_check_and_clear(msr_all_available);
-+    flags &= ~msr_all_available;
- 	hard_cond_local_irq_restore(flags);
- 
- 	regs->msr = msr;
-@@ -1225,6 +1249,8 @@ struct task_struct *__switch_to(struct task_struct 
-*prev,
- 
- 	/* Save FPU, Altivec, VSX and SPE state */
- 	giveup_all(prev);
-+    /* giveup_all clears msr_all_available bits unconditionally */
-+	flags &= ~msr_all_available;
- 
- 	__switch_to_tm(prev, new);
- 
-
-
-
+DQpIaSBQaGlsaXBwZSwNCg0KQmVsb3cgYXJlIHRoZSBzbmlwcGV0cyBjb21waWxlZCB3aXRoIC1m
+UElDIGluIHRoZSBEU08uICBJZiBJIGRvbid0IGNvbXBpbGUgd2l0aCAtZlBJQywgSSBnZXQgdGhp
+cyBlcnJvcjoNCg0KIyBiaW4vdnhhcHANCmJpbi92eGFwcDogZXJyb3Igd2hpbGUgbG9hZGluZyBz
+aGFyZWQgbGlicmFyaWVzOiAvdXNyL3hlbm9tYWkvbGliL2xpYnNjczc1MC5zbzogUl9QUENfUkVM
+MjQgcmVsb2NhdGlvbiBhdCAweDBmZmFjZWM0IGZvciBzeW1ib2wgYG11bm1hcCcgb3V0IG9mIHJh
+bmdlDQoNCklmIEkgZG8gY29tcGlsZSB3aXRoIC1mUElDIGZvciBteSBEU08sIHRoaXMgaXMgdGhl
+IHNuaXBwZXQgb24gdGhlIGV4ZWN1dGFibGUgKGllLiBmcm9tIHlvdXIgZXhhbXBsZSwgdGhhdCB3
+b3VsZCBiZSAidnhhcHAiIGV4ZWN1dGFibGUuKQ0KDQouLi4NCi4uLg0KICAgICAgICBpbnQgZmRf
+ZWVwcm9tID0gb3BlbigiL2Rldi9ydGRtL2VlcHJvbSxtYXBwZXIwIiwgT19SRFdSKTsNCiAgICAg
+ICAgdWludDMyX3QgYmFzZUFkZHJfZWVwcm9tID0gKHZvbGF0aWxlIHVpbnQzMl90KW1tYXAoTlVM
+TCwgU0NTX0VFUFJPTV9QSFlTSUNBTF9TSVpFLCBQUk9UX1JFQUQgfCBQUk9UX1dSSVRFLCBNQVBf
+U0hBUkVELCBmZF9lZXByb20sIDApOw0KcHJpbnRmKCIlcygpOiAgYmFzZUFkZHJfZWVwcm9tID0g
+MHglMDh4XG4iLCBfX2Z1bmNfXywgYmFzZUFkZHJfZWVwcm9tKTsNCi4uLg0KLi4uDQoNCkJlbG93
+IGlzIHRoZSBzbmlwcGV0IGZyb20gbXkgRFNPOg0KDQouLi4NCi4uLg0KICAgIGludCBmZG0gPSBv
+cGVuKCIvZGV2L3J0ZG0vZWVwcm9tLG1hcHBlcjAiLCBPX1JEV1IpOw0KICAgIHVpbnQzMl90IGJh
+c2VBZGRyID0gLTI7DQoNCnByaW50ZigiJXMoKTogYmFzZUFkZHIgPSAweCUwOHgsIGVycm5vID0g
+JWRcbiIsIF9fZnVuY19fLCBiYXNlQWRkciwgZXJybm8pOw0KYmFzZUFkZHIgPSAodm9sYXRpbGUg
+dWludDMyX3QpbW1hcChOVUxMLCBTQ1NfRUVQUk9NX1BIWVNJQ0FMX1NJWkUsIFBST1RfUkVBRCB8
+IFBST1RfV1JJVEUsIE1BUF9TSEFSRUQsIGZkbSwgMCk7DQoNCmlmIChiYXNlQWRkciA9IC0xKQ0K
+ew0KcHJpbnRmKCIlcygpOiBiYXNlQWRkciA9IDB4JTA4eCwgZXJybm8gPSAlZFxuIiwgX19mdW5j
+X18sIGJhc2VBZGRyLCBlcnJubyk7DQp9DQouLi4uDQoNCkZvciBteSBEU08sIExERkxBR1MgOj0g
+JChzaGVsbCAkKFhFTk9fQ09ORklHKSAtLW5vLWF1dG8taW5pdCAtLXBvc2l4IC0tdnh3b3JrcyAt
+LWxkZmxhZ3MpIGlzIGluIHRoZSBtYWtlZmlsZS4gIEZvciBteSAidnhhcHAiLCBMREZMQUdTIDo9
+ICQoc2hlbGwgJChYRU5PX0NPTkZJRykgLS1wb3NpeCAtLXZ4d29ya3MgLS1sZGZsYWdzKQ0KDQpP
+dXRwdXQ6DQpzY3NFZXByb21UZXN0KCk6ICBiYXNlQWRkcl9lZXByb20gPSAweDM2NmVlMDAwDQpz
+eXNFZXByb21TZXQoKTogYmFzZUFkZHIgPSAweGZmZmZmZmZlLCBlcnJubyA9IDANCnN5c0VlcHJv
+bVNldCgpOiBiYXNlQWRkciA9IDB4ZmZmZmZmZmYsIGVycm5vID0gMA0KDQpzY3NFZXByb21UZXN0
+KCkgcmVzaWRlcyBpbiB0aGUgInZ4YXBwIiBleGVjdXRhYmxlIGFuZCBzeXNFZXByb21TZXQoKSBy
+ZXNpZGVzIGluIHRoZSBEU08uDQoNClBob25nLg0KDQotLS0tLU9yaWdpbmFsIE1lc3NhZ2UtLS0t
+LQ0KRnJvbTogUGhpbGlwcGUgR2VydW0gW21haWx0bzpycG1AeGVub21haS5vcmddDQpTZW50OiBU
+aHVyc2RheSwgQXByaWwgMTksIDIwMTggMTI6MjYgQU0NClRvOiBQaGFtLCBQaG9uZzsgeGVub21h
+aUB4ZW5vbWFpLm9yZw0KQ2M6IEhpbGxtYW4sIFJvYmVydA0KU3ViamVjdDogUmU6IFtYZW5vbWFp
+XSBtbWFwIHdoZW4gdXNpbmcgaW4gY29uanVuY3Rpb24gd2l0aCBtYXBwZXIgdG8gcmV0cmlldmUg
+bWVtb3J5IG1hcHBlZCBJTyBzcGFjZQ0KDQpPbiAwNC8xOS8yMDE4IDAxOjAyIEFNLCBQaGFtLCBQ
+aG9uZyB3cm90ZToNCj4g4oCcVGhpcyBpcyBsaWtlbHkgaGFwcGVuaW5nIGJlY2F1c2UgdGhlIGRl
+ZmF1bHQgYXV0by1pbml0IGdsdWUgbW9kdWxlIGZvcg0KPiBhIGZpbmFsIGV4ZWN1dGFibGUgaXMg
+bWVudGlvbmVkIGluIHRoZSBmbGFncywgeW91IGVpdGhlciB3YW50IHRvIHBhc3MNCj4gLS1hdXRv
+LWluaXQtc29saWIgaWYgeW91IGRvIG5lZWQgYXV0by1pbml0IGZvciBib290c3RyYXBwaW5nIGEg
+RFNPLCBvcg0KPiAtLW5vLWF1dG8taW5pdCBpZiB5b3UgZG9uJ3QgY2FyZSBhYm91dCBhdXRvLWJv
+b3RzdHJhcCwgYWxvbmcgd2l0aA0KPiAtLWxkZmxhZ3MgdG8geGVuby1jb25maWcuDQo+DQo+DQo+
+DQo+IGh0dHA6Ly93d3cueGVub21haS5vcmcvZG9jdW1lbnRhdGlvbi94ZW5vbWFpLTMvaHRtbC9t
+YW4xL3hlbm8tY29uZmlnL2luZGV4Lmh0bWzigJwNCj4NCj4NCj4NCj4NCj4NCj4gSSBzZWUuICBB
+ZnRlciBhZGRpbmcgZWl0aGVyIC0tYXV0by1pbml0LXNvbGliIG9yIC0tbm8tYXV0by1pbml0IHdo
+ZW4NCj4gY29tcGlsaW5nIGZvciBsaWJyYXJ5LCBhbG9uZyB3aXRoIGNvbXBpbGVyIG9wdGlvbiAt
+ZlBJQywgbW1hcCgpIHN0aWxsDQo+IHJldHVybnMgLTE7IChXL291dCAtZlBJQywgbXVubWFwKCkg
+Y2Fubm90IGJlIHJlbG9jYXRlZCAoc2ltaWxhciB0eXBlcyBvZg0KPiBlcnJvciBsaWtlIGJlZm9y
+ZSkuDQoNCnhlbm8tY29uZmlnIC0tbGRmbGFncyB3aWxsIHJldHVybiB0aGUgWGVub21haS1yZWxh
+dGVkIGZsYWdzIGZvciBsaW5raW5nLA0Kd2hpY2ggLWZQSUMgaXMgbm90LiBJZiB5b3UgcGxhbiBm
+b3IgYnVpbGRpbmcgYSBEU08sIHlvdSBuZWVkIHRvIGFwcGx5DQp0aGUgY29tbW9uIHJ1bGVzIHN0
+YXRlZCBpbiB0aGUgbGQgZG9jdW1lbnRhdGlvbiwgd2hpY2ggaW5jbHVkZQ0KbWVudGlvbmluZyAg
+LWZQSUMgLyAtZnBpYyBmb3Igc2hhcmVkIGxpYnMuIFRoaXMgaXMgbm90IGEgWGVub21haSBpc3N1
+ZS4NCg0KICBIb3dldmVyLCBlcnJubyBpcyAwLiAgSG93IGNvbWUgZXJybm8gcmV0dXJucyDigJxu
+bw0KPiBlcnJvcuKAnSB3aGVuIG1tYXAoKSByZXR1cm5zIGZhaWx1cmU/DQo+DQoNClBsZWFzZSBw
+b3N0IGEgdGVzdCBjb2RlIHNuaXBwZXQgaWxsdXN0cmF0aW5nIHRoZSBwcm9ibGVtLg0KDQotLQ0K
+UGhpbGlwcGUuDQpOb3RpY2U6IFRoaXMgZS1tYWlsIGFuZCBhbnkgZmlsZXMgdHJhbnNtaXR0ZWQg
+d2l0aCBpdCBtYXkgY29udGFpbiBEYXRhIERldmljZSBDb3Jwb3JhdGlvbidzIHByaXZpbGVnZWQg
+YW5kIHByb3ByaWV0YXJ5IGluZm9ybWF0aW9uLiBJdCBpcyBpbnRlbmRlZCBzb2xlbHkgZm9yIHRo
+ZSB1c2Ugb2YgdGhlIGluZGl2aWR1YWwgb3IgZW50aXR5IHRvIHdob20gaXQgaXMgYWRkcmVzc2Vk
+LiBJZiB5b3UgYXJlIG5vdCB0aGUgbmFtZWQgcmVjaXBpZW50IG9mIHRoaXMgdHJhbnNtaXNzaW9u
+LCBhbnkgZGlzY2xvc3VyZSwgY29weWluZywgZGlzdHJpYnV0aW9uIG9yIHJlbGlhbmNlIG9uIHRo
+ZSBjb250ZW50cyBvZiB0aGlzIG1lc3NhZ2UgaXMgcHJvaGliaXRlZC4gSWYgeW91IHJlY2VpdmVk
+IHRoaXMgZS1tYWlsIGluIGVycm9yLCBwbGVhc2UgZGVzdHJveSBpdCBhbmQgYW55IGF0dGFjaGVk
+IGZpbGVzIGFuZCBub3RpZnkgbWUgaW1tZWRpYXRlbHkuDQo=
 
