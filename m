@@ -1,11 +1,14 @@
+References: <C2EC5BA46D13CD44B5915A8FEEB4C44E8A2D2291@DDCEXCH.ddc-ny.com>
 From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <5669484d-19e6-a2a3-b08b-9ac6a34cab1c@siemens.com>
-Date: Fri, 13 Apr 2018 19:49:19 +0200
+Message-ID: <70acf08c-e861-c18b-c0f8-b60cc7571084@siemens.com>
+Date: Wed, 2 May 2018 07:34:03 +0200
 MIME-Version: 1.0
+In-Reply-To: <C2EC5BA46D13CD44B5915A8FEEB4C44E8A2D2291@DDCEXCH.ddc-ny.com>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
-Subject: [Xenomai] [PATCH] copperplate: Remove redundant cleanups
+Subject: Re: [Xenomai] potentially missing timer rating check in
+ select_root_only_timer()
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -14,32 +17,27 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Xenomai <xenomai@xenomai.org>
+To: "Pham, Phong" <phamp@ddc-web.com>, "xenomai@xenomai.org" <xenomai@xenomai.org>
+Cc: "Hillman, Robert" <hillman@ddc-web.com>
 
-We are running this section with cancellation deferred, so no
-termination possible, thus nothing to clean up.
+Hi Phong,
 
-Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
----
- lib/copperplate/traceobj.c | 2 --
- 1 file changed, 2 deletions(-)
+On 2018-05-02 03:13, Pham, Phong wrote:
+> Hi,
+> 
+> I am suspecting that in kernel/ipipe/timer.c:select_root_only_timer()
+> 
+> When t->irq == per_cpu(ipipe_percpu.hrtimer_irq, icpu), a condition to test the timer rating against current timer rating before installing the timer is missing.  That is t->rating > percpu_timer->rating (combined with same irq #) before the condition becomes true.
 
-diff --git a/lib/copperplate/traceobj.c b/lib/copperplate/traceobj.c
-index d10c47905..8a3f4f5e6 100644
---- a/lib/copperplate/traceobj.c
-+++ b/lib/copperplate/traceobj.c
-@@ -200,11 +200,9 @@ static void dump_marks_on_error(struct traceobj *trobj)
- 
- 	CANCEL_DEFER(svc);
- 
--	push_cleanup_lock(&trobj->lock);
- 	read_lock(&trobj->lock);
- 	dump_marks(trobj);
- 	read_unlock(&trobj->lock);
--	pop_cleanup_lock(&trobj->lock);
- 
- 	CANCEL_RESTORE(svc);
- }
+Conceptually, I-pipe timers should have highest rating. Can you explain
+in more details why it should be there?
+
+Also note that your own code looks suspicious: percpu_timer is a per-cpu
+variable but is not accesses as such.
+
+Jan
+
 -- 
-2.13.6
+Siemens AG, Corporate Technology, CT RDA IOT SES-DE
+Corporate Competence Center Embedded Linux
 
