@@ -1,19 +1,11 @@
+From: Jan Kiszka <jan.kiszka@siemens.com>
+Message-ID: <ac9368a5-6f44-64ae-5999-0e60d2d9ffb8@siemens.com>
+Date: Wed, 2 May 2018 18:33:48 +0200
 MIME-Version: 1.0
-In-Reply-To: <1409831554.4445446.1525269395683.JavaMail.zimbra@triolcorp.com.ua>
-References: <o8krfbogm8lie1nfuolb6du4.1524796511535@embeddedgreg.com>
- <1430984661.4004024.1524839797276.JavaMail.zimbra@triolcorp.com.ua>
- <CALLqZ8RkP3D3z4eCfpevvAtujL5PfcLqK2NTfBakWaKprhTmoA@mail.gmail.com>
- <865117766.4054244.1524858734306.JavaMail.zimbra@triolcorp.com.ua>
- <CALLqZ8SkbLmcv4vLUV-gudwi5L_-GbnBAKXNMCYo0J-jsvdBoQ@mail.gmail.com>
- <1882680512.4260090.1525250520796.JavaMail.zimbra@triolcorp.com.ua>
- <CALLqZ8QQPNTKPv=MMLFXhrtxHEJrLdUvnkDXwMLeoheagwCOcQ@mail.gmail.com>
- <1409831554.4445446.1525269395683.JavaMail.zimbra@triolcorp.com.ua>
-From: Greg Gallagher <greg@embeddedgreg.com>
-Date: Wed, 2 May 2018 09:59:34 -0400
-Message-ID: <CALLqZ8QQq6kOmFS3QWgEQBf93CqY4Koa5D3GRO8fKPagFFdztg@mail.gmail.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-Subject: Re: [Xenomai] how to bring gpio to user space
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+Subject: [Xenomai] [PATCH 1/2] testsuite/smokey: Add cond + pp-mutex test
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -22,81 +14,233 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: =?UTF-8?B?0KjQtdCy0YfQtdC90LrQviDQotCw0YDQsNGBINCT0YDQuNCz0L7RgNGM0LXQstC40Yc=?= <shevchenko.taras@triolcorp.com.ua>
-Cc: Olej <o.tsiliuric@yandex.ru>, xenomai <xenomai@xenomai.org>
+To: Xenomai <xenomai@xenomai.org>
 
-No problem, I think the rest of the log was from the panic and may not
-be an issue after this fix.
+This stresses the case of fast-path mutex acquire plus pthread_cond_wait
+with that mutex, which currently triggers a bug in xnsynch_release.
 
-On Wed, May 2, 2018 at 9:56 AM, =D0=A8=D0=B5=D0=B2=D1=87=D0=B5=D0=BD=D0=BA=
-=D0=BE =D0=A2=D0=B0=D1=80=D0=B0=D1=81 =D0=93=D1=80=D0=B8=D0=B3=D0=BE=D1=80=
-=D1=8C=D0=B5=D0=B2=D0=B8=D1=87
-<shevchenko.taras@triolcorp.com.ua> wrote:
-> yes, sorry for this and thanks for help
->
-> =D0=A1 =D1=83=D0=B2=D0=B0=D0=B6=D0=B5=D0=BD=D0=B8=D0=B5=D0=BC =D0=B8 =D0=
-=BD=D0=B0=D0=B4=D0=B5=D0=B6=D0=B4=D0=BE=D0=B9 =D0=BD=D0=B0 =D1=81=D0=BE=D1=
-=82=D1=80=D1=83=D0=B4=D0=BD=D0=B8=D1=87=D0=B5=D1=81=D1=82=D0=B2=D0=BE,
-> =D0=A8=D0=B5=D0=B2=D1=87=D0=B5=D0=BD=D0=BA=D0=BE =D0=A2.=D0=93.
->
-> ----- =D0=98=D1=81=D1=85=D0=BE=D0=B4=D0=BD=D0=BE=D0=B5 =D1=81=D0=BE=D0=BE=
-=D0=B1=D1=89=D0=B5=D0=BD=D0=B8=D0=B5 -----
-> =D0=9E=D1=82: "Greg Gallagher" <greg@embeddedgreg.com>
-> =D0=9A=D0=BE=D0=BC=D1=83: "=D0=A8=D0=B5=D0=B2=D1=87=D0=B5=D0=BD=D0=BA=D0=
-=BE =D0=A2=D0=B0=D1=80=D0=B0=D1=81 =D0=93=D1=80=D0=B8=D0=B3=D0=BE=D1=80=D1=
-=8C=D0=B5=D0=B2=D0=B8=D1=87" <shevchenko.taras@triolcorp.com.ua>
-> =D0=9A=D0=BE=D0=BF=D0=B8=D1=8F: "xenomai" <xenomai@xenomai.org>, "Olej" <=
-o.tsiliuric@yandex.ru>
-> =D0=9E=D1=82=D0=BF=D1=80=D0=B0=D0=B2=D0=BB=D0=B5=D0=BD=D0=BD=D1=8B=D0=B5:=
- =D0=A1=D1=80=D0=B5=D0=B4=D0=B0, 2 =D0=9C=D0=B0=D0=B9 2018 =D0=B3 16:47:57
-> =D0=A2=D0=B5=D0=BC=D0=B0: Re: how to bring gpio to user space
->
-> It looks like you are calling rtdm_dev_register twice, so the second
-> one complains that it already exists.  Take out the second call and
-> see what happens.
->
->
-> // rtdm_sem_init(&sem, 0);    // init the global semaphore
->    rtdm_printk("gpio TRY register Driver \n");
->    err=3Drtdm_dev_register(&device);
-> if ((err=3Drtdm_dev_register(&device))!=3D0){
-> // gpio_free(GPIO_PIN);
-> rtdm_printk("err number =3D %d\n",err);
-> if(err =3D=3D -EINVAL)
->     rtdm_printk("err EINVAL =3D %d\n",err);
-> if(err =3D=3D -EEXIST)
->     rtdm_printk("err EEXIST =3D %d\n",err);
->      if(err =3D=3D -ENOMEM)
->     rtdm_printk("err ENOMEM =3D %d\n",err);
->      if(err =3D=3D -EAGAIN)
->     rtdm_printk("err EAGAIN =3D %d\n",err);
->      if(err =3D=3D -ENOSYS)
->     rtdm_printk("err ENOSYS =3D %d\n",err);
->      if(err =3D=3D -ENXIO)
->     rtdm_printk("err ENXIO =3D %d\n",err);
->
-> kfree(&device);
-> return err;
-> }
->
-> -Greg
->
-> On Wed, May 2, 2018 at 4:42 AM, =D0=A8=D0=B5=D0=B2=D1=87=D0=B5=D0=BD=D0=
-=BA=D0=BE =D0=A2=D0=B0=D1=80=D0=B0=D1=81 =D0=93=D1=80=D0=B8=D0=B3=D0=BE=D1=
-=80=D1=8C=D0=B5=D0=B2=D0=B8=D1=87
-> <shevchenko.taras@triolcorp.com.ua> wrote:
->> HI Community
->> I try to register simple rtdm gpio driver
->>
->> but get the error EEXIST  ? could you explain what is wrong or missing ?
->> and what daes it mean  "invalid opcode: 0000 [#1] SMP" ?
->>
->> [ 1415.642644] gpio Driver Init
->> [ 1415.642646] gpio TRY register Driver
->> [ 1415.642881] err number =3D -17
->> [ 1415.642885] err EEXIST =3D -17
->> [ 1415.642922] ------------[ cut here ]------------
->> [ 1415.643010] kernel BUG at mm/slub.c:3873!
->> [ 1415.643066] invalid opcode: 0000 [#1] SMP
->>
+Along this, drop the HAVE_PTHREAD_MUTEXATTR_SETPROTOCOL conditional -
+libboilerplate takes care of that.
+
+Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
+---
+ testsuite/smokey/posix-cond/posix-cond.c | 96 ++++++++++++++++++++++++--------
+ 1 file changed, 72 insertions(+), 24 deletions(-)
+
+diff --git a/testsuite/smokey/posix-cond/posix-cond.c b/testsuite/smokey/posix-cond/posix-cond.c
+index 6c9a458b9..153c64599 100644
+--- a/testsuite/smokey/posix-cond/posix-cond.c
++++ b/testsuite/smokey/posix-cond/posix-cond.c
+@@ -42,27 +42,21 @@ static inline unsigned long long timer_tsc2ns(unsigned long long tsc)
+ 	return clockobj_tsc_to_ns(tsc);
+ }
+ 
+-static int mutex_init(pthread_mutex_t *mutex, int type, int pi)
++static int mutex_init(pthread_mutex_t *mutex, int type, int proto)
+ {
+ 	pthread_mutexattr_t mattr;
+ 	int err;
+ 
+ 	pthread_mutexattr_init(&mattr);
+ 	pthread_mutexattr_settype(&mattr, type);
+-#ifdef HAVE_PTHREAD_MUTEXATTR_SETPROTOCOL
+-	if (pi != 0)
+-		pthread_mutexattr_setprotocol(&mattr, PTHREAD_PRIO_INHERIT);
+-
+-	err = pthread_mutex_init(mutex, &mattr);
+-#else
+-	if (pi != 0) {
+-		err = ENOSYS;
++	err = pthread_mutexattr_setprotocol(&mattr, proto);
++	if (err)
+ 		goto out;
+-	}
+-	err = pthread_mutex_init(mutex, &mattr);
++	if (proto == PTHREAD_PRIO_PROTECT)
++		pthread_mutexattr_setprioceiling(&mattr, 3);
+ 
++	err = pthread_mutex_init(mutex, &mattr);
+   out:
+-#endif
+ 	pthread_mutexattr_destroy(&mattr);
+ 
+ 	return -err;
+@@ -217,7 +211,8 @@ static void autoinit_simple_condwait(void)
+ 
+ 	smokey_trace("%s", __func__);
+ 
+-	check("mutex_init", mutex_init(&mutex, PTHREAD_MUTEX_DEFAULT, 0), 0);
++	check("mutex_init", mutex_init(&mutex, PTHREAD_MUTEX_DEFAULT,
++				       PTHREAD_PRIO_NONE), 0);
+ 	check("mutex_lock", mutex_lock(&mutex), 0);
+ 	check("thread_spawn",
+ 	      thread_spawn(&cond_signaler_tid, 2, cond_signaler, &cm), 0);
+@@ -246,7 +241,8 @@ static void simple_condwait(void)
+ 
+ 	smokey_trace("%s", __func__);
+ 
+-	check("mutex_init", mutex_init(&mutex, PTHREAD_MUTEX_DEFAULT, 0), 0);
++	check("mutex_init", mutex_init(&mutex, PTHREAD_MUTEX_DEFAULT,
++				       PTHREAD_PRIO_NONE), 0);
+ 	check("cond_init", cond_init(&cond, 0), 0);
+ 	check("mutex_lock", mutex_lock(&mutex), 0);
+ 	check("thread_spawn",
+@@ -271,7 +267,8 @@ static void relative_condwait(void)
+ 
+ 	smokey_trace("%s", __func__);
+ 
+-	check("mutex_init", mutex_init(&mutex, PTHREAD_MUTEX_DEFAULT, 0), 0);
++	check("mutex_init", mutex_init(&mutex, PTHREAD_MUTEX_DEFAULT,
++				       PTHREAD_PRIO_NONE), 0);
+ 	check("cond_init", cond_init(&cond, 0), 0);
+ 	check("mutex_lock", mutex_lock(&mutex), 0);
+ 
+@@ -294,7 +291,8 @@ static void autoinit_absolute_condwait(void)
+ 
+ 	smokey_trace("%s", __func__);
+ 
+-	check("mutex_init", mutex_init(&mutex, PTHREAD_MUTEX_DEFAULT, 0), 0);
++	check("mutex_init", mutex_init(&mutex, PTHREAD_MUTEX_DEFAULT,
++				       PTHREAD_PRIO_NONE), 0);
+ 	check("mutex_lock", mutex_lock(&mutex), 0);
+ 
+ 	start = timer_get_tsc();
+@@ -316,7 +314,8 @@ static void absolute_condwait(void)
+ 
+ 	smokey_trace("%s", __func__);
+ 
+-	check("mutex_init", mutex_init(&mutex, PTHREAD_MUTEX_DEFAULT, 0), 0);
++	check("mutex_init", mutex_init(&mutex, PTHREAD_MUTEX_DEFAULT,
++				       PTHREAD_PRIO_NONE), 0);
+ 	check("cond_init", cond_init(&cond, 1), 0);
+ 	check("mutex_lock", mutex_lock(&mutex), 0);
+ 
+@@ -373,7 +372,8 @@ static void sig_norestart_condwait(void)
+ 	smokey_trace("%s", __func__);
+ 
+ 	check_unix("sigaction", sigaction(SIGRTMIN, &sa, NULL), 0);
+-	check("mutex_init", mutex_init(&mutex, PTHREAD_MUTEX_DEFAULT, 0), 0);
++	check("mutex_init", mutex_init(&mutex, PTHREAD_MUTEX_DEFAULT,
++				       PTHREAD_PRIO_NONE), 0);
+ 	check("cond_init", cond_init(&cond, 0), 0);
+ 	check("mutex_lock", mutex_lock(&mutex), 0);
+ 	check("thread_spawn",
+@@ -411,7 +411,8 @@ static void sig_restart_condwait(void)
+ 	smokey_trace("%s", __func__);
+ 
+ 	check_unix("sigaction", sigaction(SIGRTMIN, &sa, NULL), 0);
+-	check("mutex_init", mutex_init(&mutex, PTHREAD_MUTEX_DEFAULT, 0), 0);
++	check("mutex_init", mutex_init(&mutex, PTHREAD_MUTEX_DEFAULT,
++				       PTHREAD_PRIO_NONE), 0);
+ 	check("cond_init", cond_init(&cond, 0), 0);
+ 	check("mutex_lock", mutex_lock(&mutex), 0);
+ 	check("thread_spawn",
+@@ -465,7 +466,8 @@ static void sig_norestart_condwait_mutex(void)
+ 	smokey_trace("%s", __func__);
+ 
+ 	check_unix("sigaction", sigaction(SIGRTMIN, &sa, NULL), 0);
+-	check("mutex_init", mutex_init(&mutex, PTHREAD_MUTEX_DEFAULT, 0), 0);
++	check("mutex_init", mutex_init(&mutex, PTHREAD_MUTEX_DEFAULT,
++				       PTHREAD_PRIO_NONE), 0);
+ 	check("cond_init", cond_init(&cond, 0), 0);
+ 	check("mutex_lock", mutex_lock(&mutex), 0);
+ 	check("thread_spawn",
+@@ -505,7 +507,8 @@ static void sig_restart_condwait_mutex(void)
+ 	smokey_trace("%s", __func__);
+ 
+ 	check_unix("sigaction", sigaction(SIGRTMIN, &sa, NULL), 0);
+-	check("mutex_init", mutex_init(&mutex, PTHREAD_MUTEX_DEFAULT, 0), 0);
++	check("mutex_init", mutex_init(&mutex, PTHREAD_MUTEX_DEFAULT,
++				       PTHREAD_PRIO_NONE), 0);
+ 	check("cond_init", cond_init(&cond, 0), 0);
+ 	check("mutex_lock", mutex_lock(&mutex), 0);
+ 	check("thread_spawn",
+@@ -561,7 +564,8 @@ static void sig_norestart_double(void)
+ 	smokey_trace("%s", __func__);
+ 
+ 	check_unix("sigaction", sigaction(SIGRTMIN, &sa, NULL), 0);
+-	check("mutex_init", mutex_init(&mutex, PTHREAD_MUTEX_DEFAULT, 0), 0);
++	check("mutex_init", mutex_init(&mutex, PTHREAD_MUTEX_DEFAULT,
++				       PTHREAD_PRIO_NONE), 0);
+ 	check("cond_init", cond_init(&cond, 0), 0);
+ 	check("mutex_lock", mutex_lock(&mutex), 0);
+ 	check("thread_spawn",
+@@ -601,7 +605,8 @@ static void sig_restart_double(void)
+ 	smokey_trace("%s", __func__);
+ 
+ 	check_unix("sigaction", sigaction(SIGRTMIN, &sa, NULL), 0);
+-	check("mutex_init", mutex_init(&mutex, PTHREAD_MUTEX_DEFAULT, 0), 0);
++	check("mutex_init", mutex_init(&mutex, PTHREAD_MUTEX_DEFAULT,
++				       PTHREAD_PRIO_NONE), 0);
+ 	check("cond_init", cond_init(&cond, 0), 0);
+ 	check("mutex_lock", mutex_lock(&mutex), 0);
+ 	check("thread_spawn",
+@@ -657,7 +662,8 @@ static void cond_destroy_whilewait(void)
+ 	smokey_trace("%s", __func__);
+ 
+ 	check_unix("sigaction", sigaction(SIGRTMIN, &sa, NULL), 0);
+-	check("mutex_init", mutex_init(&mutex, PTHREAD_MUTEX_DEFAULT, 0), 0);
++	check("mutex_init", mutex_init(&mutex, PTHREAD_MUTEX_DEFAULT,
++				       PTHREAD_PRIO_NONE), 0);
+ 	check("cond_init", cond_init(&cond, 0), 0);
+ 	check("mutex_lock", mutex_lock(&mutex), 0);
+ 	check("thread_spawn",
+@@ -676,6 +682,47 @@ static void cond_destroy_whilewait(void)
+ 	check("cond_destroy", cond_destroy(&cond), 0);
+ }
+ 
++static void *cond_delayed_signaler(void *cookie)
++{
++	struct cond_mutex *cm = cookie;
++
++	thread_msleep(10);
++
++	check("mutex_lock", mutex_lock(cm->mutex), 0);
++	check("cond_signal", cond_signal(cm->cond), 0);
++	check("mutex_unlock", mutex_unlock(cm->mutex), 0);
++
++	return NULL;
++}
++
++static void cond_ppmutex(void)
++{
++	pthread_cond_t cond = PTHREAD_COND_INITIALIZER;
++	pthread_mutex_t mutex;
++	struct cond_mutex cm = {
++		.mutex = &mutex,
++		.cond = &cond,
++	};
++	pthread_t cond_signaler_tid;
++
++	smokey_trace("%s", __func__);
++
++	check("mutex_init", mutex_init(&mutex, PTHREAD_MUTEX_DEFAULT,
++				       PTHREAD_PRIO_PROTECT), 0);
++	check("thread_spawn",
++	      thread_spawn(&cond_signaler_tid, 3, cond_delayed_signaler,
++			   &cm), 0);
++
++	thread_msleep(1);
++	check("mutex_lock", mutex_lock(&mutex), 0);
++
++	check("cond_wait", cond_wait(&cond, &mutex, 0), 0);
++	check("mutex_unlock", mutex_unlock(&mutex), 0);
++	check("thread_join", thread_join(cond_signaler_tid), 0);
++	check("mutex_destroy", mutex_destroy(&mutex), 0);
++	check("cond_destroy", cond_destroy(&cond), 0);
++}
++
+ int run_posix_cond(struct smokey_test *t, int argc, char *const argv[])
+ {
+ 	struct sched_param sparam;
+@@ -696,6 +743,7 @@ int run_posix_cond(struct smokey_test *t, int argc, char *const argv[])
+ 	sig_norestart_double();
+ 	sig_restart_double();
+ 	cond_destroy_whilewait();
++	cond_ppmutex();
+ 
+ 	return 0;
+ }
+-- 
+2.13.6
 
