@@ -1,15 +1,9 @@
-From: "Pham, Phong" <phamp@ddc-web.com>
-Date: Wed, 2 May 2018 17:43:13 +0000
-Message-ID: <C2EC5BA46D13CD44B5915A8FEEB4C44E8A2D2301@DDCEXCH.ddc-ny.com>
-References: <C2EC5BA46D13CD44B5915A8FEEB4C44E8A2D2291@DDCEXCH.ddc-ny.com>
- <70acf08c-e861-c18b-c0f8-b60cc7571084@siemens.com>
-In-Reply-To: <70acf08c-e861-c18b-c0f8-b60cc7571084@siemens.com>
-Content-Language: en-US
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-Subject: Re: [Xenomai] potentially missing timer rating check in
- select_root_only_timer()
+From: Virendra Kate <virendrakate@gmail.com>
+Date: Thu, 3 May 2018 10:49:33 -0700
+Message-ID: <CAA3JOdbY+p2yHyUEKmKDaug8hUj5izgxwfAYrf4BCgrx48-4Vw@mail.gmail.com>
+Content-Type: text/plain; charset="UTF-8"
+Subject: [Xenomai] Shared memory between RT and NRT tasks (Posix Skin)
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -18,58 +12,29 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jan Kiszka <jan.kiszka@siemens.com>, "xenomai@xenomai.org" <xenomai@xenomai.org>
-Cc: "Hillman, Robert" <hillman@ddc-web.com>
+To: xenomai@xenomai.org
 
-DQpIaSBKYW4sDQoNCkluIG15IHNjZW5hcmlvLCBpdCBpcyBhIHNpbmdsZSBDUFUgUG93ZXJwYyBz
-eXN0ZW0uICBXaGF0IEkgd2FzIGludGVuZGluZyB0byBkbyBpcyByZXBsYWNpbmcgdGhlIGRlY3Jl
-bWVudGVyIChQb3dlcnBjIHNwZWNpZmljIGNvdW50IGRvd24gdGltZXIpIGNsb2NrZXZlbnQgd2l0
-aCBteSB0aW1lciBjbG9ja2V2ZW50LiAgKE15IHRpbWVyIGlzIGxvY2F0ZWQgc29tZXdoZXJlIGVs
-c2Ugb24gdGhlIGNoaXAgYWNjZXNzaWJsZSB2aWEgbWVtb3J5IG1hcHBlZCBJTykuICAgQWNjb3Jk
-aW5nIHRvIExpbnV4LCB1c2VyIGNhbiBjaGFuZ2UgdGhlIHJhdGluZyBhbmQga2VybmVsIHdpbGwg
-c2VsZWN0IHRoZSBoaWdoZXN0IHJhdGluZyB0aW1lciBmb3IgeW91LiAgU28gSSBjaGFuZ2UgbXkg
-dGltZXIgcmF0aW5nIHRvIGJlIGhpZ2hlciB0aGFuIHRoZSBkZWNyZW1lbnRlci4gIEluIGlwaXBl
-X3NlbGVjdF90aW1lcnMoKSwgaXQgd2lsbCBwaWNrIHRoZSBmaXJzdCB0aW1lciBmb3VuZCBvbiB0
-aGUgdGltZXJzIGxpbmtlZCBsaXN0LiAgVGhhdCBsaW5rZWQgbGlzdCBvZiB0aW1lcnMgaXMgYWxz
-byBzb3J0ZWQgYnkgaGlnaGVzdCBwcmlvcml0eSBmaXJzdC4gIEhvd2V2ZXIsIHdoZW4gc2VsZWN0
-X3Jvb3Rfb25seV90aW1lcigpIGlzIGV4ZWN1dGVkLCB0aGUgY29kZSBnb2VzIHRocnUgdGhlIGVu
-dGlyZSBsaXN0IGFuZCBzZWxlY3QgdGhlIGxhc3Qgb25lLCB0aGUgb25lIHdpdGggdGhlIGxvd2Vz
-dCByYXRpbmcuDQoNClcvIHJlZ2FyZCB0byAicGVyY3B1X3RpbWVyLT5yYXRpbmciIGNvZGluZyBz
-dHlsZSwgeWVzLCB0aGlzIGNhbiBiZSBkb25lIGJldHRlciBidXQgc2luY2UgSSBhbSBvbiBzaW5n
-bGUgY3B1LCB3aGF0IEkgZGlkICJkb2VzIHRoZSBqb2IiLiAgSSByZWNhbGxlZCB0aGVyZSBhcmUg
-YSBidW5jaCBvZiBtYWNyb3MganVzdCB0byBjaGFuZ2UgYSB2YXJpYWJsZTsgdGhpcyBjYW4gY2Vy
-dGFpbmx5IGJlIGNoYW5nZWQuICBUaGUgZm9jdXMgaXMgbW9yZSBvbiBjaGVja2luZyB0aGUgcmF0
-aW5ncy4NCg0KSSBhbSBhbHNvIG5vdCBmYW1pbGlhciB3aXRoIHRoZSBjb2RlIGVub3VnaCBzbyBJ
-IG1heSBoYXZlIG1pc3VuZGVyc3RhbmRpbmdzIG9uIHRoZWlyIGludGVuZGVkIHVzYWdlLiAgTWF5
-YmUgeW91IGNvdWxkIGNsYXJpZnkgdGhlbSBmb3IgbWUuDQoNClRoYW5rcywNClBob25nLg0KDQpQ
-UzogRm9yIG91ciBuZWVkLCBJIGRlY2lkZWQgSSB3aWxsIG5vIGxvbmdlciBwdXN1ZSB0aGUgcGF0
-aCBvZiByZXBsYWNlIHRoZSBkZWNyZW1lbnRlciB3aXRoIGEgZGlmZmVyZW50IHRpbWVyLiAgQnV0
-IEkganVzdCB0aG91Z2h0IHRvIGJyaW5nIHVwIG15IG9ic2VydmF0aW9uIHdpdGggcmVnYXJkIHRv
-IHNlbGVjdGluZyB0aGUgaGlnaGVzdCB0aW1lciByYXRpbmcuDQoNCi0tLS0tT3JpZ2luYWwgTWVz
-c2FnZS0tLS0tDQpGcm9tOiBKYW4gS2lzemthIFttYWlsdG86amFuLmtpc3prYUBzaWVtZW5zLmNv
-bV0NClNlbnQ6IFR1ZXNkYXksIE1heSAwMSwgMjAxOCAxMDozNCBQTQ0KVG86IFBoYW0sIFBob25n
-OyB4ZW5vbWFpQHhlbm9tYWkub3JnDQpDYzogSGlsbG1hbiwgUm9iZXJ0DQpTdWJqZWN0OiBSZTog
-cG90ZW50aWFsbHkgbWlzc2luZyB0aW1lciByYXRpbmcgY2hlY2sgaW4gc2VsZWN0X3Jvb3Rfb25s
-eV90aW1lcigpDQoNCkhpIFBob25nLA0KDQpPbiAyMDE4LTA1LTAyIDAzOjEzLCBQaGFtLCBQaG9u
-ZyB3cm90ZToNCj4gSGksDQo+DQo+IEkgYW0gc3VzcGVjdGluZyB0aGF0IGluIGtlcm5lbC9pcGlw
-ZS90aW1lci5jOnNlbGVjdF9yb290X29ubHlfdGltZXIoKQ0KPg0KPiBXaGVuIHQtPmlycSA9PSBw
-ZXJfY3B1KGlwaXBlX3BlcmNwdS5ocnRpbWVyX2lycSwgaWNwdSksIGEgY29uZGl0aW9uIHRvIHRl
-c3QgdGhlIHRpbWVyIHJhdGluZyBhZ2FpbnN0IGN1cnJlbnQgdGltZXIgcmF0aW5nIGJlZm9yZSBp
-bnN0YWxsaW5nIHRoZSB0aW1lciBpcyBtaXNzaW5nLiAgVGhhdCBpcyB0LT5yYXRpbmcgPiBwZXJj
-cHVfdGltZXItPnJhdGluZyAoY29tYmluZWQgd2l0aCBzYW1lIGlycSAjKSBiZWZvcmUgdGhlIGNv
-bmRpdGlvbiBiZWNvbWVzIHRydWUuDQoNCkNvbmNlcHR1YWxseSwgSS1waXBlIHRpbWVycyBzaG91
-bGQgaGF2ZSBoaWdoZXN0IHJhdGluZy4gQ2FuIHlvdSBleHBsYWluDQppbiBtb3JlIGRldGFpbHMg
-d2h5IGl0IHNob3VsZCBiZSB0aGVyZT8NCg0KQWxzbyBub3RlIHRoYXQgeW91ciBvd24gY29kZSBs
-b29rcyBzdXNwaWNpb3VzOiBwZXJjcHVfdGltZXIgaXMgYSBwZXItY3B1DQp2YXJpYWJsZSBidXQg
-aXMgbm90IGFjY2Vzc2VzIGFzIHN1Y2guDQoNCkphbg0KDQotLQ0KU2llbWVucyBBRywgQ29ycG9y
-YXRlIFRlY2hub2xvZ3ksIENUIFJEQSBJT1QgU0VTLURFDQpDb3Jwb3JhdGUgQ29tcGV0ZW5jZSBD
-ZW50ZXIgRW1iZWRkZWQgTGludXgNCk5vdGljZTogVGhpcyBlLW1haWwgYW5kIGFueSBmaWxlcyB0
-cmFuc21pdHRlZCB3aXRoIGl0IG1heSBjb250YWluIERhdGEgRGV2aWNlIENvcnBvcmF0aW9uJ3Mg
-cHJpdmlsZWdlZCBhbmQgcHJvcHJpZXRhcnkgaW5mb3JtYXRpb24uIEl0IGlzIGludGVuZGVkIHNv
-bGVseSBmb3IgdGhlIHVzZSBvZiB0aGUgaW5kaXZpZHVhbCBvciBlbnRpdHkgdG8gd2hvbSBpdCBp
-cyBhZGRyZXNzZWQuIElmIHlvdSBhcmUgbm90IHRoZSBuYW1lZCByZWNpcGllbnQgb2YgdGhpcyB0
-cmFuc21pc3Npb24sIGFueSBkaXNjbG9zdXJlLCBjb3B5aW5nLCBkaXN0cmlidXRpb24gb3IgcmVs
-aWFuY2Ugb24gdGhlIGNvbnRlbnRzIG9mIHRoaXMgbWVzc2FnZSBpcyBwcm9oaWJpdGVkLiBJZiB5
-b3UgcmVjZWl2ZWQgdGhpcyBlLW1haWwgaW4gZXJyb3IsIHBsZWFzZSBkZXN0cm95IGl0IGFuZCBh
-bnkgYXR0YWNoZWQgZmlsZXMgYW5kIG5vdGlmeSBtZSBpbW1lZGlhdGVseS4NCg==
+Hello,
 
+I am trying to create a shared memory between a RT (Cobalt) and a NRT
+(Linux) task. I went through the " A Tour of the Native API " document
+which pointed me towards the alchemy (previously "native") API.
+
+Currently we are using the Posix skin as it has better performance. This
+link:
+http://www.xenomai.org/documentation/xenomai-2.4/html/api/group__posix__shm.html
+indicates
+that the typical posix share memory API was available for Xenoami Cobalt in
+version 2.4.
+
+Since the shared memory section is missing in the Xenomai 3 documentation
+and I couldn't find the --wrap shm_open() etc. flags in the
+"cobalt.wrappers" file I was wondering if this functionality is supported
+in Xenomai 3 Posix skin.
+
+At this point I am avoiding the use of message queues.
+
+Any help is appreciated.
+
+Thanks,
+Virendra Kate
