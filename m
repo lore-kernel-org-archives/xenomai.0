@@ -1,14 +1,16 @@
+References: <C2EC5BA46D13CD44B5915A8FEEB4C44E8A2D2291@DDCEXCH.ddc-ny.com>
+ <70acf08c-e861-c18b-c0f8-b60cc7571084@siemens.com>
+ <C2EC5BA46D13CD44B5915A8FEEB4C44E8A2D2301@DDCEXCH.ddc-ny.com>
+From: Jan Kiszka <jan.kiszka@siemens.com>
+Message-ID: <4446a085-14c2-886c-5e2a-eb61370d1d46@siemens.com>
+Date: Thu, 3 May 2018 23:31:44 +0200
 MIME-Version: 1.0
-References: <CAA3JOdbY+p2yHyUEKmKDaug8hUj5izgxwfAYrf4BCgrx48-4Vw@mail.gmail.com>
- <CALLqZ8Qg9L1ooa0GmN+NkJjKejy8KG5sScn1VVPj4vtOg+O42w@mail.gmail.com>
- <CAA3JOdYL4dSX6Beayo00JMzgWS7guNY032=P0=R3_40jE9iiYQ@mail.gmail.com>
- <CALLqZ8T9Ka1jtqZJG3dDX1-cx6TVeAA+n=7r_AKrugQSXdf-aw@mail.gmail.com>
-In-Reply-To: <CALLqZ8T9Ka1jtqZJG3dDX1-cx6TVeAA+n=7r_AKrugQSXdf-aw@mail.gmail.com>
-From: Virendra Kate <virendrakate@gmail.com>
-Date: Thu, 03 May 2018 18:59:27 +0000
-Message-ID: <CAA3JOdZ4V7DsFvsQw_Li7QrQszSPScorQEfqFjEC2C+_bnaxpQ@mail.gmail.com>
-Content-Type: text/plain; charset="UTF-8"
-Subject: Re: [Xenomai] Shared memory between RT and NRT tasks (Posix Skin)
+In-Reply-To: <C2EC5BA46D13CD44B5915A8FEEB4C44E8A2D2301@DDCEXCH.ddc-ny.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai] potentially missing timer rating check in
+ select_root_only_timer()
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,66 +19,38 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Greg Gallagher <greg@embeddedgreg.com>
-Cc: "Xenomai@xenomai.org" <xenomai@xenomai.org>
+To: "Pham, Phong" <phamp@ddc-web.com>, "xenomai@xenomai.org" <xenomai@xenomai.org>
+Cc: "Hillman, Robert" <hillman@ddc-web.com>
 
-Thanks Greg.
+On 2018-05-02 19:43, Pham, Phong wrote:
+> 
+> Hi Jan,
+> 
+> In my scenario, it is a single CPU Powerpc system.  What I was intending to do is replacing the decrementer (Powerpc specific count down timer) clockevent with my timer clockevent.  (My timer is located somewhere else on the chip accessible via memory mapped IO).   According to Linux, user can change the rating and kernel will select the highest rating timer for you.  So I change my timer rating to be higher than the decrementer.  In ipipe_select_timers(), it will pick the first timer found on the timers linked list.  That linked list of timers is also sorted by highest priority first.  However, when select_root_only_timer() is executed, the code goes thru the entire list and select the last one, the one with the lowest rating.
 
+OK, I'm starting to see the problem:
 
-On Thu, May 3, 2018 at 11:42 AM Greg Gallagher <greg@embeddedgreg.com>
-wrote:
+1. You have some CPUs that are not used by Xenomai (ipipe_select_timers,
+   "fixup" mask is non-empty)
 
-> I can continue to do some digging, but I've only really used xddp.
-> I'm sure someone on the list can help out.
->
-> On Thu, May 3, 2018 at 2:33 PM, Virendra Kate <virendrakate@gmail.com>
-> wrote:
-> > I am still looking into xddp but might not be the best solution for us.
-> >
-> > The shared memory is 16MB big.
-> >
-> > -Virendra
-> >
-> > On Thu, May 3, 2018 at 10:51 AM, Greg Gallagher <greg@embeddedgreg.com>
-> wrote:
-> >> Have you considered using xddp sockets instead?  How large is the
-> >> memory you are sharing?
-> >>
-> >> -Greg
-> >>
-> >> On Thu, May 3, 2018 at 1:49 PM, Virendra Kate <virendrakate@gmail.com>
-> wrote:
-> >>> Hello,
-> >>>
-> >>> I am trying to create a shared memory between a RT (Cobalt) and a NRT
-> >>> (Linux) task. I went through the " A Tour of the Native API " document
-> >>> which pointed me towards the alchemy (previously "native") API.
-> >>>
-> >>> Currently we are using the Posix skin as it has better performance.
-> This
-> >>> link:
-> >>>
-> http://www.xenomai.org/documentation/xenomai-2.4/html/api/group__posix__shm.html
-> >>> indicates
-> >>> that the typical posix share memory API was available for Xenoami
-> Cobalt in
-> >>> version 2.4.
-> >>>
-> >>> Since the shared memory section is missing in the Xenomai 3
-> documentation
-> >>> and I couldn't find the --wrap shm_open() etc. flags in the
-> >>> "cobalt.wrappers" file I was wondering if this functionality is
-> supported
-> >>> in Xenomai 3 Posix skin.
-> >>>
-> >>> At this point I am avoiding the use of message queues.
-> >>>
-> >>> Any help is appreciated.
-> >>>
-> >>> Thanks,
-> >>> Virendra Kate
-> >>> _______________________________________________
-> >>> Xenomai mailing list
-> >>> Xenomai@xenomai.org
-> >>> https://xenomai.org/mailman/listinfo/xenomai
->
+2. There are multiple ipipe-timers available, sorted according to their
+   rating in "timers" list (higher ratings first).
+
+3. select_root_only_timer is now called for each timer in the list, and
+   if the timer matches regarding the IRQ, it will be registered
+   (install_pcpu_timer).
+
+Due to this multi-registration (actually overwriting), you end up with
+the lowest rated timer installed.
+
+So the proper fix is to prevent further calls to select_root_only_timer
+after the first successful one. Would you write such a patch? Should be
+about making select_root_only_timer return some true/false, depending on
+whether it actually installed something.
+
+Jan
+
+-- 
+Siemens AG, Corporate Technology, CT RDA IOT SES-DE
+Corporate Competence Center Embedded Linux
+
