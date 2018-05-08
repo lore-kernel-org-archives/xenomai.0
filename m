@@ -1,11 +1,11 @@
-Date: Mon, 07 May 2018 06:49:29 -0400
-Message-ID: <tmt7vluf7ud6hv232ldfl2pt.1525690169235@embeddedgreg.com>
-From: Greg Gallagher <greg@embeddedgreg.com>
-In-Reply-To: <CAOuPNLhtyP8-qsZ6WhLEc5Em0UrdyQgb3xLAV9K7Cfv_-jO16A@mail.gmail.com>
+Date: Tue, 8 May 2018 13:03:58 +0300 (EEST)
+From: =?windows-1251?B?2OXi9+Xt6u4g0uDw4PEgw/Do4+7w/OXi6Pc=?=
+ <shevchenko.taras@triolcorp.com.ua>
+Message-ID: <1690521400.5815208.1525773838317.JavaMail.zimbra@triolcorp.com.ua>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: base64
-Subject: Re: [Xenomai] Xenomai porting for proprietary drivers
+Content-Type: text/plain; charset=windows-1251
+Content-Transfer-Encoding: quoted-printable
+Subject: [Xenomai] porting Linux POSIX app to Xenomai
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -14,20 +14,32 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Pintu Kumar <pintu.ping@gmail.com>, "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: xenomai <xenomai@xenomai.org>
+Cc: Olej <o.tsiliuric@yandex.ru>
 
-Ckl0J3MgcG9zc2libGUgdG8gcG9ydCBwcm9wcmlldGFyeSBkcml2ZXJzLCBidXQgdGhlIGxpY2Vu
-c2UgaXMgdGhlIHNhbWUgYXMgdGhlIExpbnV4IGtlcm5lbC4gV2hpY2ggbWVhbnMgeW91IG11c3Qg
-Y29tcGx5IHdpdGggdGhlIEdQTCBsaWNlbnNlLiAKCgpHcmVnCgrCoCBPcmlnaW5hbCBNZXNzYWdl
-IMKgCkZyb206IHBpbnR1LnBpbmdAZ21haWwuY29tClNlbnQ6IE1heSA3LCAyMDE4IDY6MTYgQU0K
-VG86IHhlbm9tYWlAeGVub21haS5vcmcKU3ViamVjdDogW1hlbm9tYWldIFhlbm9tYWkgcG9ydGlu
-ZyBmb3IgcHJvcHJpZXRhcnkgZHJpdmVycwoKSGksCgpJIGhlYXJkIHRoYXQgWGVub21haSBwb3J0
-aW5nIGlzIG5vdCBwb3NzaWJsZSBmb3IgYSBwcm9wcmlldGFyeQpkcml2ZXJzLiBUaGF0IG1lYW5z
-IHdlIGNhbm5vdCBjb252ZXJ0IG91ciBpbnRlcm5hbCBkcml2ZXJzIHRvIFhlbm9tYWkKUlRETSBp
-bnRlcmZhY2UuCklzIHRoaXMgdHJ1ZSA/CgpJZiB0aGlzIGlzIHRydWUsIGlzIGl0IG1lbnRpb25l
-ZCBzb21ld2hlcmUgPwpJcyBpdCBiZWNhdXNlIG9mIHNvbWUgbGljZW5zaW5nIGlzc3VlID8KCgpU
-aGFua3MsClBpbnR1CgpfX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
-X19fXwpYZW5vbWFpIG1haWxpbmcgbGlzdApYZW5vbWFpQHhlbm9tYWkub3JnCmh0dHBzOi8veGVu
-b21haS5vcmcvbWFpbG1hbi9saXN0aW5mby94ZW5vbWFpCg==
+Good day!=20
+I ve read https://xenomai.org//2014/08/porting-a-linux-application-to-xenom=
+ai-dual-kernel/=20
+but some details are still on=20
+Please tell me some nuances=20
+
+1) is it true the same POSIX-code will generate Xenomai rt-task with option=
+s below=20
+CFLAGS :=3D $(shell $(XENO_CONFIG) =97skin=3Dposix =97cflags)=20
+LDFLAGS :=3D $(shell $(XENO_CONFIG) =97skin=3Dposix =97ldflags)=20
+and default Linux -task without options ?=20
+
+2) Xenomai create wrappers (include/cobalt/wrappers.h) for some system call=
+ Linux/POSIX:=20
+Does it mean: all of this (man -s2) POSIX-functions safely use from real-ti=
+me points of view ?=20
+
+3) Xenomai task that not doing system call (calculation task , for example)=
+, not be interrupted by Linux ?=20
+
+4) No imlementing system call POSIX library functions (man s3 section strcp=
+y(), strcmp(), sprintf(), atoi(), sqrt(), sin() etc) can be safely use from=
+ real-time points of view ?=20
+
 
 
