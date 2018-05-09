@@ -1,13 +1,20 @@
-From: Giulio Moro <g.moro@qmul.ac.uk>
-Date: Tue, 8 May 2018 10:28:06 +0000
-Message-ID: <VI1PR0701MB21261A3412C5D4176A5834AEB59A0@VI1PR0701MB2126.eurprd07.prod.outlook.com>
-References: <1690521400.5815208.1525773838317.JavaMail.zimbra@triolcorp.com.ua>
-In-Reply-To: <1690521400.5815208.1525773838317.JavaMail.zimbra@triolcorp.com.ua>
-Content-Language: en-GB
-Content-Type: text/plain; charset="windows-1251"
-Content-Transfer-Encoding: quoted-printable
+References: <ca00a2b2-b44d-a25a-cb53-852a0f8e2d32@gmail.com>
+ <594f0ba9-8e01-d2d2-a58e-2abcb3b72289@gmail.com>
+ <fb226301-fe52-c9c9-f5a0-3f760b8d5492@gmail.com>
+ <74da7f07-6df9-5a5f-ff63-b414437749b2@xenomai.org>
+ <1dbe3f00-a866-248c-3799-a0d8efeee4e4@gmail.com>
+ <e937a73f-ef0f-5394-bdae-400fcfe30ddb@gmail.com>
+ <2e75fd33-8998-4cfb-6fa6-bef20f37f2dc@gmail.com>
+ <e398a8e0-65f2-cd46-b502-0e81f5e6fee6@xenomai.org>
+From: Edouard Tisserant <edouard.tisserant@gmail.com>
+Message-ID: <9c2a8966-09c2-cc32-9a7b-fe16339d9c80@gmail.com>
+Date: Wed, 9 May 2018 09:45:48 +0200
 MIME-Version: 1.0
-Subject: Re: [Xenomai] porting Linux POSIX app to Xenomai
+In-Reply-To: <e398a8e0-65f2-cd46-b502-0e81f5e6fee6@xenomai.org>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+Content-Language: en-US
+Subject: Re: [Xenomai] Crash with longer dlopen/dlcose sequence
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,71 +23,69 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: =?windows-1251?B?2OXi9+Xt6u4g0uDw4PEgw/Do4+7w/OXi6Pc=?= <shevchenko.taras@triolcorp.com.ua>, xenomai <xenomai@xenomai.org>
-Cc: Olej <o.tsiliuric@yandex.ru>
+To: Philippe Gerum <rpm@xenomai.org>, "Xenomai (xenomai@xenomai.org)" <xenomai@xenomai.org>
 
-> 1) is it true the same POSIX-code will generate Xenomai rt-task with opti=
-ons below
+I detected this in my dmesg :
 
-Yes. Make sure you set the scheduler policy to SCHED_FIFO (or SCHED_RR) (e.=
-g.: with pthread_attr_setschedpolicy())
+[Xenomai] bad syscall <0xf0002>
 
-> Does it mean: all of this (man -s2) POSIX-functions safely use from real-=
-time points of view ?
+The message isn't associated to any crash. It doesn't seem to break
+anything, but it doesn't smell good... does it ?
 
-Xenomai's libcobalt implements the POSIX functions documented here:
-http://www.xenomai.org/documentation/xenomai-3/html/xeno3prm/group__cobalt_=
-_api.html
-Check the documentation to see which can be safely used from a real-time co=
-ntext.
+It happens each time I dlopen a cobalt-wrapped shared object (also
+happens if just using alchemy, without any other special linker
+instuctions).
 
-> 3) Xenomai task that not doing system call (calculation task , for exampl=
-e), not be interrupted by Linux ?
+I was looking at kernel/cobalt/posix/syscall*,  but still I couldn't
+figure out what is emitting that wrong syscall when dlopening. In case
+it matters, OABI compatibility is not enabled in my build, and target is
+an imx28.
 
-Correct, as long as it stays in primary mode (i.e.: does not do system call=
-s to Linux), your task will run at a higher priority than Linux and therefo=
-re (assuming SCHED_FIFO), the scheduler will only interrupt it if there is =
-another (Xenomai!) thread at higher priority that is ready to run.
-
-> 4)  strcpy(), strcmp(), sprintf(), atoi(), sqrt(), sin() etc) can be safe=
-ly use from real-time points of view ?
-
-Yes, as long as a function does not require a system call to Linux, it is s=
-afe to use it in your real-time thread.
-
-________________________________________
-From: Xenomai <xenomai-bounces@xenomai.org> on behalf of =D8=E5=E2=F7=E5=ED=
-=EA=EE =D2=E0=F0=E0=F1 =C3=F0=E8=E3=EE=F0=FC=E5=E2=E8=F7 <shevchenko.taras@=
-triolcorp.com.ua>
-Sent: 08 May 2018 11:03
-To: xenomai
-Cc: Olej
-Subject: [Xenomai] porting Linux POSIX app to Xenomai
-
-Good day!
-I ve read https://xenomai.org//2014/08/porting-a-linux-application-to-xenom=
-ai-dual-kernel/
-but some details are still on
-Please tell me some nuances
-
-1) is it true the same POSIX-code will generate Xenomai rt-task with option=
-s below
-CFLAGS :=3D $(shell $(XENO_CONFIG) =97skin=3Dposix =97cflags)
-LDFLAGS :=3D $(shell $(XENO_CONFIG) =97skin=3Dposix =97ldflags)
-and default Linux -task without options ?
-
-
-3) Xenomai task that not doing system call (calculation task , for example)=
-, not be interrupted by Linux ?
-
-4) No imlementing system call POSIX library functions (man s3 section strcp=
-y(), strcmp(), sprintf(), atoi(), sqrt(), sin() etc) can be safely use from=
- real-time points of view ?
+I'm a bit lost. Where should I search ?
 
 
 
-_______________________________________________
-Xenomai mailing list
-Xenomai@xenomai.org
-https://xenomai.org/mailman/listinfo/xenomai
+
+On 27/04/2018 17:43, Philippe Gerum wrote:
+> On 04/27/2018 04:43 PM, Edouard Tisserant wrote:
+>>> Now let see if dlopen/dlclose some code using alchemy segfaults or not...
+>> Well, it didn't work as-is, but I finally got it working !
+>>
+>> If I was dlopening anything relying on copperplate after that python
+>> code, then it was making an assert :  __register_setup_call: Assertion
+>> `!main_init_done' failed.
+>>
+>> The reason is that all xenomai libraries we plan to use have to be
+>> loaded _before_ call to xenomai_init, so that their setup call is
+>> registered.
+>>
+>> Hereafter is updated (and simplified) python code :
+>>
+>> from ctypes import *
+>> for name in ["cobalt", "modechk", "copperplate", "alchemy"]:
+>>     globals()[name] = CDLL("lib"+name+".so", mode=RTLD_GLOBAL)
+>> cobalt.xenomai_init(pointer(c_int(0)),
+>> pointer((POINTER(c_char)*2)(create_string_buffer("python"), None)))
+>>
+>> Note : Order of dlopen matters. Argument passed to
+>> xenomai_init(&argc,&argv) are here only to prevent de-referencing NULL.
+>>
+>> After this being executed, you can load and unload many shared object
+>> that use alchemy and posix (they should not be linked to boostrap_pic.o)
+>>
+> Looks good. The key point is that xenomai_init() is the call from the
+> API which controls the whole Xenomai init process, after which Xenomai
+> libs are fully functional. This explains why any library which wants to
+> be part of that process needs its setup descriptor to be known and
+> registered prior to issuing this call.
+>
+> The bootstrap module is just a helper that calls xenomai_init()
+> automatically before the main() routine is entered (bootstrap.o) when
+> glued to a final executable, or right after a DSO is loaded
+> (bootstrap-pic.o) when glued to a shared library. If the application
+> wants a fine-grained control over the init sequence instead, it just
+> needs not to include the bootstrap module in the executable/DSO, calling
+> xenomai_init() manually when it sees fit.
+>
+
 
