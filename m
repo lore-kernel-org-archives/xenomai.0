@@ -1,23 +1,10 @@
-References: <ca00a2b2-b44d-a25a-cb53-852a0f8e2d32@gmail.com>
- <594f0ba9-8e01-d2d2-a58e-2abcb3b72289@gmail.com>
- <fb226301-fe52-c9c9-f5a0-3f760b8d5492@gmail.com>
- <74da7f07-6df9-5a5f-ff63-b414437749b2@xenomai.org>
- <1dbe3f00-a866-248c-3799-a0d8efeee4e4@gmail.com>
- <e937a73f-ef0f-5394-bdae-400fcfe30ddb@gmail.com>
- <2e75fd33-8998-4cfb-6fa6-bef20f37f2dc@gmail.com>
- <e398a8e0-65f2-cd46-b502-0e81f5e6fee6@xenomai.org>
- <9c2a8966-09c2-cc32-9a7b-fe16339d9c80@gmail.com>
- <bd252434-25b7-e0c1-5a55-7e9321c48d8f@gmail.com>
- <6430f861-a017-02e8-ba19-9a75aedc9475@gmail.com>
-From: Philippe Gerum <rpm@xenomai.org>
-Message-ID: <b6be86e9-bc5a-c213-d458-219d8c4ecc01@xenomai.org>
-Date: Sat, 12 May 2018 19:08:21 +0200
+From: Steve Freyder <steve@freyder.net>
+Message-ID: <5AF7623E.8020101@freyder.net>
+Date: Sat, 12 May 2018 16:53:02 -0500
 MIME-Version: 1.0
-In-Reply-To: <6430f861-a017-02e8-ba19-9a75aedc9475@gmail.com>
-Content-Type: text/plain; charset="utf-8"
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
-Subject: Re: [Xenomai] Crash with longer dlopen/dlcose sequence
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 7bit
+Subject: [Xenomai] RTDM serial illicit call from head domain 'Xenomai'
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -26,85 +13,126 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Edouard Tisserant <edouard.tisserant@gmail.com>, "Xenomai (xenomai@xenomai.org)" <xenomai@xenomai.org>
+To: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On 05/09/2018 12:27 PM, Edouard Tisserant wrote:
-> 
->>> [Xenomai] bad syscall <0xf0002>
->> #define __ARM_NR_BASE           (__NR_SYSCALL_BASE+0x0f0000)
->> #define __ARM_NR_cacheflush     (__ARM_NR_BASE+2)
-> 
-> This special syscall is issued by Glibc in _dl_reloacate_object (see
-> /elf/dl-reloc.c and /sysdeps/unix/sysv/linux/arm/dl-machine.h)
-> 
-> As a workaround, rebuilding everything with -fPIC avoids relocation, and
-> then bad syscall.
-> 
+Greetings again,
 
-Thanks for digging this out. Could you try this patch, keeping the relocation enabled in your build? TIA,
+Xenomai 3.0.6, armv7, imx6, imx_uart rtdm driver
 
-diff --git a/kernel/cobalt/arch/arm/include/asm/xenomai/syscall.h b/kernel/cobalt/arch/arm/include/asm/xenomai/syscall.h
-index 92afe8d9d..baa352181 100644
---- a/kernel/cobalt/arch/arm/include/asm/xenomai/syscall.h
-+++ b/kernel/cobalt/arch/arm/include/asm/xenomai/syscall.h
-@@ -33,6 +33,11 @@
- #define __ARM_NR_ipipe	(__NR_SYSCALL_BASE + XENO_ARM_SYSCALL)
- #endif
- 
-+/*
-+ * Cobalt syscall numbers can be fetched from ARM_ORIG_r0 with ARM_r7
-+ * containing the Xenomai syscall marker, Linux syscalls directly from
-+ * ARM_r7 (may require the OABI tweak).
-+ */
- #define __xn_reg_sys(__regs)	((__regs)->ARM_ORIG_r0)
- /* In OABI_COMPAT mode, handle both OABI and EABI userspace syscalls */
- #ifdef CONFIG_OABI_COMPAT
-@@ -46,11 +51,15 @@
- #define __xn_syscall(__regs)	(__xn_reg_sys(__regs) & ~__COBALT_SYSCALL_BIT)
- 
- /*
-- * Returns the syscall number depending on the handling core. Cobalt
-- * syscall numbers can be fetched from ARM_ORIG_r0 with ARM_r7
-- * containing the Xenomai syscall marker, Linux syscalls directly from
-- * ARM_r7 (may require the OABI tweak).
-+ * Root syscall number with predicate (valid only if
-+ * !__xn_syscall_p(__regs)).
-  */
-+#define __xn_rootcall_p(__regs, __code)					\
-+	({								\
-+		*(__code) = __xn_abi_decode(__regs);			\
-+		*(__code) < NR_syscalls || *(__code) >= __ARM_NR_BASE;	\
-+	})
-+	
- static inline long __xn_get_syscall_nr(struct pt_regs *regs)
- {
- 	return __xn_syscall_p(regs) ? __xn_reg_sys(regs) : __xn_abi_decode(regs);
-diff --git a/kernel/cobalt/posix/syscall.c b/kernel/cobalt/posix/syscall.c
-index 68700a336..058a8282b 100644
---- a/kernel/cobalt/posix/syscall.c
-+++ b/kernel/cobalt/posix/syscall.c
-@@ -666,10 +666,6 @@ ret_handled:
- 	return KEVENT_STOP;
- 
- linux_syscall:
--	code = __xn_get_syscall_nr(regs);
--	if (code >= NR_syscalls)
--		goto bad_syscall;
--
- 	if (xnsched_root_p())
- 		/*
- 		 * The call originates from the Linux domain, either
-@@ -679,6 +675,9 @@ linux_syscall:
- 		 */
- 		return KEVENT_PROPAGATE;
- 
-+	if (!__xn_rootcall_p(regs, &code))
-+		goto bad_syscall;
-+
- 	/*
- 	 * We know this is a Cobalt thread since it runs over the head
- 	 * domain, however the current syscall should be handled by
+I've seen many postings about this, and about symbol wrapping, etc, 
+etc.  I'm still
+not understanding something very basic here, I'm sure.
 
--- 
-Philippe.
+When I run a program built with --alchemy (no --posix) skin, and I 
+execute these lines
+of code (error checking is omitted here but being done in the real 
+program and not failing):
+
+#define SER_BAUD        9600            /**< Baud rate for SYNC interface */
+#define SYNC_DEVICE     "rtser0"        /**< serial device used for SYNC */
+
+static const struct rtser_config sync_config = {
+         .config_mask       = 0xFFFF,
+         .baud_rate         = SER_BAUD,
+         .parity            = RTSER_NO_PARITY,
+         .data_bits         = RTSER_8_BITS,
+         .stop_bits         = RTSER_1_STOPB,
+         .handshake         = RTSER_NO_HAND,
+         .fifo_depth        = RTSER_FIFO_DEPTH_1,
+         .rx_timeout        = RTSER_TIMEOUT_NONE,
+         .tx_timeout        = 1e9,
+         .event_timeout     = 1e9,
+         .timestamp_history = RTSER_DEF_TIMESTAMP_HISTORY,
+         .event_mask        = RTSER_EVENT_RXPEND,
+};
+
+fd = __RT(open)(SYNC_DEVICE,0) ;
+
+     err = __RT(ioctl)(fd, RTSER_RTIOC_SET_CONFIG, &sync_config);
+
+I get this traceback (once only per system boot):
+
+------------------------------------------------------------------------
+[  411.088376] I-pipe: Detected illicit call from head domain 'Xenomai'
+[  411.088376]         into a regular Linux service
+[  411.100666] CPU: 1 PID: 875 Comm: rtserE Not tainted 
+4.1.18_C01571-15S00-00.000.zimg+83fdace666 #1
+[  411.109644] Hardware name: Freescale i.MX6 Quad/DualLite (Device Tree)
+[  411.116189] Backtrace:
+[  411.118694] [<80014a64>] (dump_backtrace) from [<80014c9c>] 
+(show_stack+0x20/0x24)
+[  411.126280]  r7:00000000 r6:00000080 r5:00000000 r4:80b81c94
+[  411.132072] [<80014c7c>] (show_stack) from [<806b5f3c>] 
+(dump_stack+0xa0/0xc4)
+[  411.139326] [<806b5e9c>] (dump_stack) from [<800ab000>] 
+(ipipe_root_only+0x11c/0x188)
+[  411.147171]  r9:80c58300 r8:00000000 r7:80c45380 r6:80b34e6c 
+r5:600d0013 r4:809abba4
+[  411.155073] [<800aaee4>] (ipipe_root_only) from [<8001f5ac>] 
+(ipipe_test_and_stall_root+0x18/0xc0)
+[  411.164046]  r10:bc5c0024 r9:00000000 r8:40480201 r7:00000005 
+r6:00002580 r5:80bc154c
+[  411.172023]  r4:80ba5c9c r3:00000000
+[  411.175675] [<8001f594>] (ipipe_test_and_stall_root) from 
+[<806b8274>] (mutex_trylock+0x40/0x1ec)
+[  411.184561]  r7:00000005 r6:00002580 r5:80bc154c r4:80ba5c9c
+[  411.190358] [<806b8234>] (mutex_trylock) from [<80580d78>] 
+(clk_prepare_lock+0x1c/0xfc)
+[  411.198376]  r7:00000005 r6:00002580 r5:bece7e50 r4:bec36480
+[  411.204164] [<80580d5c>] (clk_prepare_lock) from [<80581e8c>] 
+(clk_core_get_rate+0x1c/0x70)
+[  411.212530]  r5:bece7e50 r4:bec36480
+[  411.216180] [<80581e70>] (clk_core_get_rate) from [<80581f04>] 
+(clk_get_rate+0x24/0x28)
+[  411.224198]  r5:bece7e50 r4:bc5c2000
+[  411.227863] [<80581ee0>] (clk_get_rate) from [<7f08d2c4>] 
+(rt_imx_uart_ioctl+0xa88/0xe5c [xeno_imx_uart])
+[  411.237464] [<7f08c83c>] (rt_imx_uart_ioctl [xeno_imx_uart]) from 
+[<8010779c>] (rtdm_fd_ioctl+0xc0/0x218)
+[  411.247048]  r10:00011638 r9:00000000 r8:40480201 r7:00000005 
+r6:bc5c0000 r5:600d0013
+[  411.255025]  r4:80c58300
+[  411.257609] [<801076e0>] (rtdm_fd_ioctl) from [<8010dc70>] 
+(CoBaLt_ioctl+0x18/0x1c)
+[  411.265280]  r3:00011638 r2:00011638 r1:40480201
+[  411.269989]  r10:bf648800 r9:c0943008 r8:8010dc58 r7:80b34e6c 
+r6:00000001 r5:00000052
+[  411.277964]  r4:bece7fb0
+[  411.280548] [<8010dc58>] (CoBaLt_ioctl) from [<8011efc4>] 
+(ipipe_syscall_hook+0x174/0x380)
+[  411.288839] [<8011ee50>] (ipipe_syscall_hook) from [<800ad6d8>] 
+(__ipipe_notify_syscall+0xa4/0x3e0)
+[  411.297899]  r10:bf648800 r9:80c45380 r8:80b34e6c r7:bf649800 
+r6:80c45380 r5:00000001
+[  411.305873]  r4:200d0013
+[  411.308464] [<800ad634>] (__ipipe_notify_syscall) from [<80010868>] 
+(pipeline_syscall+0x8/0x24)
+[  411.317177]  r10:00000002 r9:bece6000 r8:80010928 r7:000f0042 
+r6:00000005 r5:40480201
+[  411.325153]  r4:00011638
+------------------------------------------------------------------------
+
+If I do not execute the ioctl call, and I instead call:
+
+     err = __RT(write)(fd,"x",1) ;
+
+I do not get the traceback, and the write is successful.  This tells me 
+that ioctl() path
+has some kind of check in it that the write() path doesn't have.  Is the 
+detection of a
+cross-domain call something that an RTDM driver is doing or is this 
+something at a higher
+level making these checks?
+
+What's more, I've seen many comments that this is a problem scenario, 
+and that it will put
+the system into a "bad state".  But all of my testing says that this is 
+completely benign
+and everything is working as I expect it to.  It can't be both ways - 
+which way is it, and
+why?
+
+Thanks in advance,
+Steve
+
 
