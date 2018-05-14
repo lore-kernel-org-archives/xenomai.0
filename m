@@ -1,12 +1,12 @@
-Date: Sun, 15 Apr 2018 09:09:11 +0200 (CEST)
-From: g.strobbe@telenet.be
-Message-ID: <1618299311.310098094.1523776151729.JavaMail.zimbra@telenet.be>
-In-Reply-To: <CAHV4+d4OK6Rda8xd_HCVVW=u3-Xmv5Bjm-A7ZJg=wRFW-i=aGQ@mail.gmail.com>
-References: <CAHV4+d4OK6Rda8xd_HCVVW=u3-Xmv5Bjm-A7ZJg=wRFW-i=aGQ@mail.gmail.com>
+References: <eg64ced20shm6v12mr5lh120.1526233045295@embeddedgreg.com>
+ <cc5a42d0-62f1-66cd-bd63-43e3badeb3a9@xenomai.org>
+From: Steve Freyder <steve@freyder.net>
+Message-ID: <5AF90461.6040404@freyder.net>
+Date: Sun, 13 May 2018 22:37:05 -0500
+In-Reply-To: <cc5a42d0-62f1-66cd-bd63-43e3badeb3a9@xenomai.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] Configuring for x86-based dual kernels
+Content-Type: text/plain; charset="utf-8"
+Subject: Re: [Xenomai] RTDM serial illicit call from head domain 'Xenomai'
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,42 +15,21 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Saisravani Tummalapudi <tummalapudisaisravani@gmail.com>
-Cc: xenomai <xenomai@xenomai.org>
+To: Philippe Gerum <rpm@xenomai.org>, Greg Gallagher <greg@embeddedgreg.com>
+Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
+
+   Did a build with that fix, and then installed it and ran the same
+   test program - no more traceback - excellent!
+   Thanks!
+   Steve
+
+   On 5/13/2018 12:53 PM, Philippe Gerum wrote:
+
+On 05/13/2018 07:37 PM, Greg Gallagher wrote:
+
+I can take a look at it this week. I'd like to trace through some of the drivers
+ to get a better understanding of when or if they cause a domain switch.
 
 
------ On Apr 14, 2018, at 6:24 PM, Saisravani Tummalapudi tummalapudisaisravani@gmail.com wrote:
-
-Hello
-How to disable the options given in the below link provided.Please help us
-to solve this problem
-
-https://xenomai.org//2014/06/configuring-for-x86-based-dual-kernels/
-_______________________________________________
-Xenomai mailing list
-Xenomai@xenomai.org
-https://xenomai.org/mailman/listinfo/xenomai
-
-Hello,
-
-That is part of building the kernel.
-
-On https://xenomai.org/installing-xenomai-3-x/#Cobalt_kernel_parameters
-under "Building a Cobalt/x86 kernel (32/64bit)" for example
-after you type make menuconfig
-you get access to all those kernel parameters.
-
-If you like too see the bigger overview: 
-
-https://debian-handbook.info/browse/stable/sect.kernel-compilation.html
-under 8.10.3. Configuring the Kernel
-
-or
-
-https://kernelnewbies.org/FAQ/KernelCompilation
-
-Best regards,
-
-Gino
-
-
+I pushed a quick fix for the i.MX serial driver, but I believe that a
+general review of the oldish drivers we have there would be very useful.
