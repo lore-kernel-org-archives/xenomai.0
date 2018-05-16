@@ -1,13 +1,12 @@
-From: "Auel, Kendall" <Kendall.Auel@3DSystems.Com>
-Date: Wed, 16 May 2018 20:00:07 +0000
-Message-ID: <30537bafa8504df7bb6403a2260f1e40@P10-EX01.3DSystems.Internal>
+MIME-Version: 1.0
+In-Reply-To: <30537bafa8504df7bb6403a2260f1e40@P10-EX01.3DSystems.Internal>
 References: <42c109690d5e4729812cc187a71dd5b0@P10-EX01.3DSystems.Internal>
  <CALLqZ8Sm+r2phnaqXxgL8SD-UKy+PzwZVAje3O=fA_=mi-y6QQ@mail.gmail.com>
-In-Reply-To: <CALLqZ8Sm+r2phnaqXxgL8SD-UKy+PzwZVAje3O=fA_=mi-y6QQ@mail.gmail.com>
-Content-Language: en-US
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-MIME-Version: 1.0
+ <30537bafa8504df7bb6403a2260f1e40@P10-EX01.3DSystems.Internal>
+From: Greg Gallagher <greg@embeddedgreg.com>
+Date: Wed, 16 May 2018 16:39:46 -0400
+Message-ID: <CALLqZ8SDnwYHhW4P8uk__Fi3ipOZDfW-jX0LqqMbjPQ21VMNTg@mail.gmail.com>
+Content-Type: text/plain; charset="UTF-8"
 Subject: Re: [Xenomai] Boot failed on arm64 - xenomai_init --> ipipe_send_ipi
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
@@ -17,76 +16,102 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: "Auel, Kendall" <Kendall.Auel@3dsystems.com>
+Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-R3JlZywNCg0KVGhlIGtlcm5lbCBpcyA0LjkuNTEsIG1vZGlmaWVkIGJ5IE5YUCBmb3IgdGhlIGku
-TVg4LCB0aGUgWGVub21haSBicmFuY2ggaXMgIm5leHQiLCBhbmQgdGhlIGlwaXBlIHBhdGNoIGlz
-IGlwaXBlLWNvcmUtNC45LjUxLWFybTY0LTQucGF0Y2guDQoNCkFsc28sIEkgbW9kaWZpZWQgdGhl
-IGRlZmNvbmZpZyB0byB0dXJuIG9mZiBDT05GSUdfQ1BVX0ZSRVEgYW5kIENPTkZJR19BQ1BJX1BS
-T0NFU1NPUi4gSSd2ZSBhbHNvIHRyaWVkIGEgdmVyc2lvbiB3aXRoIFBBR0VfTUlHUkFUSU9OIGRp
-c2FibGVkIGFuZCBnb3QgdGhlIHNhbWUgcmVzdWx0Lg0KDQotIEtlbmRhbGwNCg0KPiANCj4gSEks
-DQo+ICAgV2hhdCBpcGlwZSBhbmQga2VybmVsIHZlcnNpb24gYXJlIHlvdSB1c2luZyBhbmQgd2hh
-dCBYZW5vbWFpIGJyYW5jaCBhcmUNCj4geW91IHVzaW5nPw0KPiANCj4gLUdyZWcNCj4gDQo+IE9u
-IFdlZCwgTWF5IDE2LCAyMDE4IGF0IDI6MTMgUE0sIEF1ZWwsIEtlbmRhbGwNCj4gPEtlbmRhbGwu
-QXVlbEAzZHN5c3RlbXMuY29tPiB3cm90ZToNCj4gPiBJJ20gdHJ5aW5nIHRvIGJ1aWxkIGEgeGVu
-b21haS1lbmFibGVkIGtlcm5lbCBmb3IgYW4gYXJtNjQgKHF1YWQgQTUzIGNvcmVzKS4NCj4gU29t
-ZXRoaW5nIGlzIG5vdCBjb25maWd1cmVkIGNvcnJlY3RseSwgYnV0IEkgaGF2ZW4ndCBiZWVuIGFi
-bGUgdG8gZ2V0IHBhc3QgYQ0KPiBzdGFsbCBkdXJpbmcgeGVub21haV9pbml0LiBBbnkgaWRlYXMg
-b24gd2hhdCBJJ20gZG9pbmcgd3Jvbmc/IFRoYW5rcy4NCj4gPg0KPiA+IFsgICAgMC43Mjk1NDdd
-IGt2bSBbMV06IDgtYml0IFZNSUQNCj4gPiBbICAgIDAuNzMyMTIxXSBrdm0gWzFdOiBJRE1BUCBw
-YWdlOiA0MGM1ZTAwMA0KPiA+IFsgICAgMC43MzYxMzRdIGt2bSBbMV06IEhZUCBWQSByYW5nZTog
-ODAwMDAwMDAwMDAwOmZmZmZmZmZmZmZmZg0KPiA+IFsgICAgMC43NDI2MDldIGt2bSBbMV06IEh5
-cCBtb2RlIGluaXRpYWxpemVkIHN1Y2Nlc3NmdWxseQ0KPiA+IFsgICAgMC43NDcwMDNdIGt2bSBb
-MV06IEdJQ3YzOiBubyBHSUNWIHJlc291cmNlIGVudHJ5DQo+ID4gWyAgICAwLjc1MTc0MF0ga3Zt
-IFsxXTogZGlzYWJsaW5nIEdJQ3YyIGVtdWxhdGlvbg0KPiA+IFsgICAgMC43NTYzNTddIGt2bSBb
-MV06IEdJQyBzeXN0ZW0gcmVnaXN0ZXIgQ1BVIGludGVyZmFjZSBlbmFibGVkDQo+ID4gWyAgICAw
-Ljc2MjQyOF0ga3ZtIFsxXTogdmdpYyBpbnRlcnJ1cHQgSVJRMQ0KPiA+IFsgICAgMC43NjYwMjFd
-IGt2bSBbMV06IHZpcnR1YWwgdGltZXIgSVJRNA0KPiA+IFsgICAgMC43NzUzNDFdIGF1ZGl0OiBp
-bml0aWFsaXppbmcgbmV0bGluayBzdWJzeXMgKGRpc2FibGVkKQ0KPiA+IFsgICAgMC43Nzc5MTRd
-IGF1ZGl0OiB0eXBlPTIwMDAgYXVkaXQoMC42NzU6MSk6IGluaXRpYWxpemVkDQo+ID4gWyAgICAw
-Ljc4MzcyOV0gW1hlbm9tYWldIHNjaGVkdWxpbmcgY2xhc3MgaWRsZSByZWdpc3RlcmVkLg0KPiA+
-IFsgICAgMC43ODg1MDZdIFtYZW5vbWFpXSBzY2hlZHVsaW5nIGNsYXNzIHJ0IHJlZ2lzdGVyZWQu
-DQo+ID4gWyAgIDIxLjc5NTIwNV0gSU5GTzogcmN1X3ByZWVtcHQgZGV0ZWN0ZWQgc3RhbGxzIG9u
-IENQVXMvdGFza3M6DQo+ID4gWyAgIDIxLjc5ODAxOF0gIDItLi4uOiAoMCB0aWNrcyB0aGlzIEdQ
-KSBpZGxlPTRjOS8xNDAwMDAwMDAwMDAwMDAvMA0KPiBzb2Z0aXJxPTEyOS8xMjkgZnFzPTI0MjgN
-Cj4gPiBbICAgMjEuODA2Mjk1XSAgKGRldGVjdGVkIGJ5IDEsIHQ9NTI1NSBqaWZmaWVzLCBnPS0y
-NTIsIGM9LTI1MywgcT0xMDYpDQo+ID4gWyAgIDIxLjgxMjU3NV0gVGFzayBkdW1wIGZvciBDUFUg
-MjoNCj4gPiBbICAgMjEuODE1ODAxXSBzd2FwcGVyLzAgICAgICAgUiAgcnVubmluZyB0YXNrICAg
-ICAgICAwICAgICAxICAgICAgMCAweDAwMDAwMDAyDQo+ID4gWyAgIDIxLjgyMjg2NF0gQ2FsbCB0
-cmFjZToNCj4gPiBbICAgMjEuODI1MzE1XSBbPGZmZmYwMDAwMDgwODU5ZjQ+XSBfX3N3aXRjaF90
-bysweDhjLzB4YTANCj4gPiBbICAgMjEuODMwNDU2XSBbPGZmZmYwMDAwMDg0Mzg0YTg+XSBnaWNf
-cmFpc2Vfc29mdGlycSsweDU4LzB4MTcwDQo+ID4gWyAgIDIxLjgzNjIwOF0gWzxmZmZmMDAwMDA4
-MDhkZDY0Pl0gaXBpcGVfc2VuZF9pcGkrMHgyNC8weDMwDQo+ID4gWyAgIDIxLjg0MTYxNV0gWzxm
-ZmZmMDAwMDA4MTU0ZjYwPl0gaXBpcGVfY3JpdGljYWxfZW50ZXIrMHgxMDgvMHgxYTgNCj4gPiBb
-ICAgMjEuODQ3NzE5XSBbPGZmZmYwMDAwMDgxNTZkNjA+XSBpcGlwZV9zZWxlY3RfdGltZXJzKzB4
-MmQ4LzB4MzIwDQo+ID4gWyAgIDIxLjg1MzczNl0gWzxmZmZmMDAwMDA5MWEyNDQwPl0geGVub21h
-aV9pbml0KzB4MTU4LzB4NGM0DQo+ID4gWyAgIDIxLjg1OTE0MV0gWzxmZmZmMDAwMDA4MDgzMzA4
-Pl0gZG9fb25lX2luaXRjYWxsKzB4MzgvMHgxMjgNCj4gPiBbICAgMjEuODY0NzI0XSBbPGZmZmYw
-MDAwMDkxOTBkMDA+XSBrZXJuZWxfaW5pdF9mcmVlYWJsZSsweDFhYy8weDI0Yw0KPiA+IFsgICAy
-MS44NzA4MjhdIFs8ZmZmZjAwMDAwOGM1N2U0MD5dIGtlcm5lbF9pbml0KzB4MTAvMHgxMDANCj4g
-PiBbICAgMjEuODc2MDU2XSBbPGZmZmYwMDAwMDgwODJmZTQ+XSByZXRfZnJvbV9mb3JrKzB4MTQv
-MHgzMA0KPiA+DQo+ID4gVGhhbmtzLA0KPiA+IEtlbmRhbGwgQXVlbCwgU2VuaW9yIEVtYmVkZGVk
-IFNvZnR3YXJlIEVuZ2luZWVyIDNEIFN5c3RlbXMsIDI2NjAwIFNXDQo+ID4gUGFya3dheSBBdmUu
-LCBTdWl0ZSAzMDAsIERvY2sgNjEsIFdpbHNvbnZpbGxlIE9SIDk3MDcwLCBVU0ENCj4gPiBUZWw6
-ICsxIDUwMyA0ODIgMTk3MCAgIE1vYmlsZTogKzEgNTAzIDkzOSA2ODYyDQo+IDNkc3lzdGVtcy5j
-b208aHR0cDovLzNkc3lzdGVtcy5jb20vPg0KPiA+DQo+ID4gWzNELVN5c3RlbXMtbG9nb19wcmlt
-YXJ5XzMtY29sb3JfbGlnaHQtYmtncmRfbm8tdG1dDQo+ID4NCj4gPiBUaGlzIGUtbWFpbCBpcyBp
-bnRlbmRlZCBmb3IgdGhlIGV4Y2x1c2l2ZSB1c2Ugb2YgdGhlIHJlY2lwaWVudHMgbmFtZWQgYWJv
-dmUNCj4gYW5kIG1heSBjb25zdGl0dXRlIHByaXZpbGVnZWQgb3IgY29uZmlkZW50aWFsIGluZm9y
-bWF0aW9uIG9yIG90aGVyd2lzZSBiZQ0KPiBwcm90ZWN0ZWQgZnJvbSBkaXNjbG9zdXJlLiBEaXNz
-ZW1pbmF0aW9uLCBkaXN0cmlidXRpb24sIGZvcndhcmRpbmcgb3IgY29weWluZw0KPiBvZiB0aGlz
-IGUtbWFpbCBieSBhbnlvbmUgb3RoZXIgdGhhbiB0aGUgaW50ZW5kZWQgcmVjaXBpZW50cyBpcyBw
-cm9oaWJpdGVkLiBJZg0KPiB5b3UgaGF2ZSByZWNlaXZlZCB0aGlzIGUtbWFpbCBpbiBlcnJvciwg
-cGxlYXNlIG5vdGlmeSBtZSBpbW1lZGlhdGVseSBieSByZXBseQ0KPiBlLW1haWwgb3IgdGVsZXBo
-b25lIGFuZCBjb21wbGV0ZWx5IGRlbGV0ZSBvciBkZXN0cm95IGFueSBhbmQgYWxsIGVsZWN0cm9u
-aWMNCj4gb3Igb3RoZXIgY29waWVzIG9mIHRoZSBvcmlnaW5hbCBtZXNzYWdlIGFuZCBhbnkgYXR0
-YWNobWVudHMgdG8gaXQuIFRoYW5rIHlvdS4NCj4gPg0KPiA+IC0tLS0tLS0tLS0tLS0tIG5leHQg
-cGFydCAtLS0tLS0tLS0tLS0tLSBBIG5vbi10ZXh0IGF0dGFjaG1lbnQgd2FzDQo+ID4gc2NydWJi
-ZWQuLi4NCj4gPiBOYW1lOiBpbWFnZTAwMS5wbmcNCj4gPiBUeXBlOiBpbWFnZS9wbmcNCj4gPiBT
-aXplOiAxMDY1MSBieXRlcw0KPiA+IERlc2M6IGltYWdlMDAxLnBuZw0KPiA+IFVSTDoNCj4gPg0K
-PiA8aHR0cDovL3hlbm9tYWkub3JnL3BpcGVybWFpbC94ZW5vbWFpL2F0dGFjaG1lbnRzLzIwMTgw
-NTE2LzkyYzBkNzQ5L2ENCj4gdA0KPiA+IHRhY2htZW50LnBuZz4NCj4gX19fX19fX19fX19fX19f
-X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX18NCj4gPiBYZW5vbWFpIG1haWxpbmcgbGlz
-dA0KPiA+IFhlbm9tYWlAeGVub21haS5vcmcNCj4gPiBodHRwczovL3hlbm9tYWkub3JnL21haWxt
-YW4vbGlzdGluZm8veGVub21haQ0K
+I know Philippe put a change into the arm 32-bit ipipe for the new gic
+in the imx7d which was causing a lock up.  I'm not sure if this is a
+similar thing.
+
+-Greg
+
+On Wed, May 16, 2018 at 4:00 PM, Auel, Kendall
+<Kendall.Auel@3dsystems.com> wrote:
+> Greg,
+>
+> The kernel is 4.9.51, modified by NXP for the i.MX8, the Xenomai branch is "next", and the ipipe patch is ipipe-core-4.9.51-arm64-4.patch.
+>
+> Also, I modified the defconfig to turn off CONFIG_CPU_FREQ and CONFIG_ACPI_PROCESSOR. I've also tried a version with PAGE_MIGRATION disabled and got the same result.
+>
+> - Kendall
+>
+>>
+>> HI,
+>>   What ipipe and kernel version are you using and what Xenomai branch are
+>> you using?
+>>
+>> -Greg
+>>
+>> On Wed, May 16, 2018 at 2:13 PM, Auel, Kendall
+>> <Kendall.Auel@3dsystems.com> wrote:
+>> > I'm trying to build a xenomai-enabled kernel for an arm64 (quad A53 cores).
+>> Something is not configured correctly, but I haven't been able to get past a
+>> stall during xenomai_init. Any ideas on what I'm doing wrong? Thanks.
+>> >
+>> > [    0.729547] kvm [1]: 8-bit VMID
+>> > [    0.732121] kvm [1]: IDMAP page: 40c5e000
+>> > [    0.736134] kvm [1]: HYP VA range: 800000000000:ffffffffffff
+>> > [    0.742609] kvm [1]: Hyp mode initialized successfully
+>> > [    0.747003] kvm [1]: GICv3: no GICV resource entry
+>> > [    0.751740] kvm [1]: disabling GICv2 emulation
+>> > [    0.756357] kvm [1]: GIC system register CPU interface enabled
+>> > [    0.762428] kvm [1]: vgic interrupt IRQ1
+>> > [    0.766021] kvm [1]: virtual timer IRQ4
+>> > [    0.775341] audit: initializing netlink subsys (disabled)
+>> > [    0.777914] audit: type=2000 audit(0.675:1): initialized
+>> > [    0.783729] [Xenomai] scheduling class idle registered.
+>> > [    0.788506] [Xenomai] scheduling class rt registered.
+>> > [   21.795205] INFO: rcu_preempt detected stalls on CPUs/tasks:
+>> > [   21.798018]  2-...: (0 ticks this GP) idle=4c9/140000000000000/0
+>> softirq=129/129 fqs=2428
+>> > [   21.806295]  (detected by 1, t=5255 jiffies, g=-252, c=-253, q=106)
+>> > [   21.812575] Task dump for CPU 2:
+>> > [   21.815801] swapper/0       R  running task        0     1      0 0x00000002
+>> > [   21.822864] Call trace:
+>> > [   21.825315] [<ffff0000080859f4>] __switch_to+0x8c/0xa0
+>> > [   21.830456] [<ffff0000084384a8>] gic_raise_softirq+0x58/0x170
+>> > [   21.836208] [<ffff00000808dd64>] ipipe_send_ipi+0x24/0x30
+>> > [   21.841615] [<ffff000008154f60>] ipipe_critical_enter+0x108/0x1a8
+>> > [   21.847719] [<ffff000008156d60>] ipipe_select_timers+0x2d8/0x320
+>> > [   21.853736] [<ffff0000091a2440>] xenomai_init+0x158/0x4c4
+>> > [   21.859141] [<ffff000008083308>] do_one_initcall+0x38/0x128
+>> > [   21.864724] [<ffff000009190d00>] kernel_init_freeable+0x1ac/0x24c
+>> > [   21.870828] [<ffff000008c57e40>] kernel_init+0x10/0x100
+>> > [   21.876056] [<ffff000008082fe4>] ret_from_fork+0x14/0x30
+>> >
+>> > Thanks,
+>> > Kendall Auel, Senior Embedded Software Engineer 3D Systems, 26600 SW
+>> > Parkway Ave., Suite 300, Dock 61, Wilsonville OR 97070, USA
+>> > Tel: +1 503 482 1970   Mobile: +1 503 939 6862
+>> 3dsystems.com<http://3dsystems.com/>
+>> >
+>> > [3D-Systems-logo_primary_3-color_light-bkgrd_no-tm]
+>> >
+>> > This e-mail is intended for the exclusive use of the recipients named above
+>> and may constitute privileged or confidential information or otherwise be
+>> protected from disclosure. Dissemination, distribution, forwarding or copying
+>> of this e-mail by anyone other than the intended recipients is prohibited. If
+>> you have received this e-mail in error, please notify me immediately by reply
+>> e-mail or telephone and completely delete or destroy any and all electronic
+>> or other copies of the original message and any attachments to it. Thank you.
+>> >
+>> > -------------- next part -------------- A non-text attachment was
+>> > scrubbed...
+>> > Name: image001.png
+>> > Type: image/png
+>> > Size: 10651 bytes
+>> > Desc: image001.png
+>> > URL:
+>> >
+>> <http://xenomai.org/pipermail/xenomai/attachments/20180516/92c0d749/a
+>> t
+>> > tachment.png>
+>> _______________________________________________
+>> > Xenomai mailing list
+>> > Xenomai@xenomai.org
+>> > https://xenomai.org/mailman/listinfo/xenomai
+> _______________________________________________
+> Xenomai mailing list
+> Xenomai@xenomai.org
+> https://xenomai.org/mailman/listinfo/xenomai
 
