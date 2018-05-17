@@ -1,10 +1,10 @@
-From: Libin Zhao <libin.zhao@envisioncn.com>
-Date: Thu, 17 May 2018 12:23:57 +0000
-Message-ID: <BJBPR01MB13202D191F08293D461E0B2E5910@BJBPR01MB132.CHNPR01.prod.partner.outlook.cn>
-Content-Language: zh-CN
+Date: Thu, 17 May 2018 09:18:55 -0400
+Message-ID: <rti950mkcs8t9lpmtir7lg71.1526563135028@embeddedgreg.com>
+From: Greg Gallagher <greg@embeddedgreg.com>
+In-Reply-To: <BJBPR01MB13202D191F08293D461E0B2E5910@BJBPR01MB132.CHNPR01.prod.partner.outlook.cn>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: base64
 Subject: Re: [Xenomai] Xddp and socket: Address family not supported by
  protocol
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
@@ -15,45 +15,47 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Libin Zhao <libin.zhao@envisioncn.com>, "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-Hi,
+CkRvIHlvdSBoYXZlIHRoZSBtb2R1bGUgbG9hZGVkIG9yIGVuYWJsZWQgaW4gdGhlIGtlcm5lbD8K
+CsKgIE9yaWdpbmFsIE1lc3NhZ2UgwqAKRnJvbTogbGliaW4uemhhb0BlbnZpc2lvbmNuLmNvbQpT
+ZW50OiBNYXkgMTcsIDIwMTggOToxMyBBTQpUbzogeGVub21haUB4ZW5vbWFpLm9yZwpTdWJqZWN0
+OiBSZTogW1hlbm9tYWldIFhkZHAgYW5kIHNvY2tldDogQWRkcmVzcyBmYW1pbHkgbm90IHN1cHBv
+cnRlZCBieSBwcm90b2NvbAoKSGksCgrCoMKgwqDCoMKgwqDCoMKgIE5vdyxJIGluc3RhbGwgWGVu
+b21haS0zLjMgSW4gVWJ1bnR1IDMuMTguMjAsCgrCoMKgwqDCoMKgwqDCoMKgIFRoZSBsYXRlbmN5
+IHRlc3QgYW5kIGN5Y2xpY3Rlc3QgcnVuIGdvb2QgaW4gbXkgZW52aXJvbm1lbnQgbGlrZSB0aGF0
+CltjaWQ6aW1hZ2UwMDEucG5nQDAxRDNFRTFDLkY5ODBEMDIwXQoKQW5kIGV4ZWN1dGUgdGhlIGNt
+ZCA6ZG1lc2cgfCBncmVwIC1JIHhlbm9tYWkscmVzdWx0IGxpa2UgYmVsb3c6CltjaWQ6aW1hZ2Uw
+MDIucG5nQDAxRDNFRTFDLkY5ODBEMDIwXQoKQnV0IHdoZW4gSSBydW4gdGhlIGRlbW8gdGVzdMKg
+IGlkZHAtbGFiZWwgLCB0aGUgcmVzdWx0IGlzIGVycm9yICx0aGUgZXJyb3IgbWVzc2FnZSBiZWxv
+dzoKc29ja2V0OiBBZGRyZXNzIGZhbWlseSBub3Qgc3VwcG9ydGVkIGJ5IHByb3RvY29sCgpTbyAs
+aG93IGNhbiBJIG1ha2UgaXQgcmlnaHQsIGNhbiB5b3UgaGVscCBtZSA/CgpUaGFua3MgdmVyeSBt
+dWNoIQoKCkJSCnRvbnkKCgoKCj8/Pyg/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/
+Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/
+Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/
+Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/LD8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/PwpUaGlzIGVtYWls
+IG1lc3NhZ2UgKGluY2x1ZGluZyBhbnkgYXR0YWNobWVudHMpIGlzIGNvbmZpZGVudGlhbCBhbmQg
+bWF5IGJlIGxlZ2FsbHkgcHJpdmlsZWdlZC4gSWYgeW91IGhhdmUgcmVjZWl2ZWQgaXQgYnkgbWlz
+dGFrZSwgcGxlYXNlIG5vdGlmeSB0aGUgc2VuZGVyIGJ5IHJldHVybiBlbWFpbCBhbmQgZGVsZXRl
+IHRoaXMgbWVzc2FnZSBmcm9tIHlvdXIgc3lzdGVtLiBBbnkgdW5hdXRob3JpemVkIHVzZSBvciBk
+aXNzZW1pbmF0aW9uIG9mIHRoaXMgbWVzc2FnZSBpbiB3aG9sZSBvciBpbiBwYXJ0IGlzIHN0cmlj
+dGx5IHByb2hpYml0ZWQuIEVudmlzaW9uIEVuZXJneSBMaW1pdGVkIGFuZCBhbGwgaXRzIHN1YnNp
+ZGlhcmllcyBzaGFsbCBub3QgYmUgbGlhYmxlIGZvciB0aGUgaW1wcm9wZXIgb3IgaW5jb21wbGV0
+ZSB0cmFuc21pc3Npb24gb2YgdGhlIGluZm9ybWF0aW9uIGNvbnRhaW5lZCBpbiB0aGlzIGVtYWls
+IG5vciBmb3IgYW55IGRlbGF5IGluIGl0cyByZWNlaXB0IG9yIGRhbWFnZSB0byB5b3VyIHN5c3Rl
+bS4gRW52aXNpb24gRW5lcmd5IExpbWl0ZWQgZG9lcyBub3QgZ3VhcmFudGVlIHRoZSBpbnRlZ3Jp
+dHkgb2YgdGhpcyBlbWFpbCBtZXNzYWdlLCBub3IgdGhhdCB0aGlzIGVtYWlsIG1lc3NhZ2UgaXMg
+ZnJlZSBvZiB2aXJ1c2VzLCBpbnRlcmNlcHRpb25zLCBvciBpbnRlcmZlcmVuY2UuCi0tLS0tLS0t
+LS0tLS0tIG5leHQgcGFydCAtLS0tLS0tLS0tLS0tLQpBIG5vbi10ZXh0IGF0dGFjaG1lbnQgd2Fz
+IHNjcnViYmVkLi4uCk5hbWU6IGltYWdlMDAxLnBuZwpUeXBlOiBpbWFnZS9wbmcKU2l6ZTogMTY3
+MjkgYnl0ZXMKRGVzYzogaW1hZ2UwMDEucG5nClVSTDogPGh0dHA6Ly94ZW5vbWFpLm9yZy9waXBl
+cm1haWwveGVub21haS9hdHRhY2htZW50cy8yMDE4MDUxNy9jMDg2ODI5ZC9hdHRhY2htZW50LnBu
+Zz4KLS0tLS0tLS0tLS0tLS0gbmV4dCBwYXJ0IC0tLS0tLS0tLS0tLS0tCkEgbm9uLXRleHQgYXR0
+YWNobWVudCB3YXMgc2NydWJiZWQuLi4KTmFtZTogaW1hZ2UwMDIucG5nClR5cGU6IGltYWdlL3Bu
+ZwpTaXplOiAxMjM2NSBieXRlcwpEZXNjOiBpbWFnZTAwMi5wbmcKVVJMOiA8aHR0cDovL3hlbm9t
+YWkub3JnL3BpcGVybWFpbC94ZW5vbWFpL2F0dGFjaG1lbnRzLzIwMTgwNTE3L2MwODY4MjlkL2F0
+dGFjaG1lbnQtMDAwMS5wbmc+Cl9fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
+X19fX19fX19fClhlbm9tYWkgbWFpbGluZyBsaXN0Clhlbm9tYWlAeGVub21haS5vcmcKaHR0cHM6
+Ly94ZW5vbWFpLm9yZy9tYWlsbWFuL2xpc3RpbmZvL3hlbm9tYWkK
 
-         Now,I install Xenomai-3.3 In Ubuntu 3.18.20,
 
-         The latency test and cyclictest run good in my environment like that
-[cid:image001.png@01D3EE1C.F980D020]
-
-And execute the cmd :dmesg | grep -I xenomai,result like below:
-[cid:image002.png@01D3EE1C.F980D020]
-
-But when I run the demo test  iddp-label , the result is error ,the error message below:
-socket: Address family not supported by protocol
-
-So ,how can I make it right, can you help me ?
-
-Thanks very much!
-
-
-BR
-tony
-
-
-
-
-???(????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????,?????????????????????
-This email message (including any attachments) is confidential and may be legally privileged. If you have received it by mistake, please notify the sender by return email and delete this message from your system. Any unauthorized use or dissemination of this message in whole or in part is strictly prohibited. Envision Energy Limited and all its subsidiaries shall not be liable for the improper or incomplete transmission of the information contained in this email nor for any delay in its receipt or damage to your system. Envision Energy Limited does not guarantee the integrity of this email message, nor that this email message is free of viruses, interceptions, or interference.
--------------- next part --------------
-A non-text attachment was scrubbed...
-Name: image001.png
-Type: image/png
-Size: 16729 bytes
-Desc: image001.png
-URL: <http://xenomai.org/pipermail/xenomai/attachments/20180517/c086829d/attachment.png>
--------------- next part --------------
-A non-text attachment was scrubbed...
-Name: image002.png
-Type: image/png
-Size: 12365 bytes
-Desc: image002.png
-URL: <http://xenomai.org/pipermail/xenomai/attachments/20180517/c086829d/attachment-0001.png>
