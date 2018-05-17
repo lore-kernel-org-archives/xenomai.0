@@ -1,12 +1,11 @@
-Message-Id: <1526523181.3850725.1374998144.0B5577D4@webmail.messagingengine.com>
-From: Dmitriy Cherkasov <dmitriy@oss-tech.org>
+From: Lucky Luo <LLuo@advaoptical.com>
+Date: Thu, 17 May 2018 04:26:45 +0000
+Message-ID: <27d5d83d2bbb48ed89dc0d3adecdca7d@advaoptical.com>
+Content-Language: en-US
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Content-Type: text/plain; charset="utf-8"
-Date: Wed, 16 May 2018 19:13:01 -0700
-References: <42c109690d5e4729812cc187a71dd5b0@P10-EX01.3DSystems.Internal>
-In-Reply-To: <42c109690d5e4729812cc187a71dd5b0@P10-EX01.3DSystems.Internal>
-Subject: Re: [Xenomai] Boot failed on arm64 - xenomai_init --> ipipe_send_ipi
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+Subject: [Xenomai] how can I support xenomai on ARM64 platform?
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,19 +14,16 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
+To: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On Wed, May 16, 2018, at 11:13 AM, Auel, Kendall wrote:
-> I'm trying to build a xenomai-enabled kernel for an arm64 (quad A53 
-> cores). Something is not configured correctly, but I haven't been able 
-> to get past a stall during xenomai_init. Any ideas on what I'm doing 
-> wrong? Thanks.
-> 
-> [    0.729547] kvm [1]: 8-bit VMID
-> [    0.732121] kvm [1]: IDMAP page: 40c5e000
-> [    0.736134] kvm [1]: HYP VA range: 800000000000:ffffffffffff
-> [    0.742609] kvm [1]: Hyp mode initialized successfully
+Dear xenomai team,
 
-I don't think this patch has ever been tested with KVM/HYP mode. I
-would try and see if it works in SVC mode on the same hardware.
+I am an user of xenomai which help me a lot in PTP application, we really a=
+ppreciate your contribution on xenomai.
+It seems that xenomai 3.0 cannot work on arm64 in Cobalt (dual kernel mode)=
+ currently, will xenomai 3.0 support arm64 in the future?
+If I can apply xenomai 3.0 to my card with CPU NXP LS1088A (arm64 CortexA53=
+) in mercury mode?
 
+Many Thanks
+Lucky
