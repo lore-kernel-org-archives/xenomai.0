@@ -1,12 +1,13 @@
-Date: Thu, 17 May 2018 09:18:55 -0400
-Message-ID: <rti950mkcs8t9lpmtir7lg71.1526563135028@embeddedgreg.com>
-From: Greg Gallagher <greg@embeddedgreg.com>
-In-Reply-To: <BJBPR01MB13202D191F08293D461E0B2E5910@BJBPR01MB132.CHNPR01.prod.partner.outlook.cn>
+Date: Thu, 17 May 2018 10:31:24 -0400
+Message-ID: <20180517143124.opi6fnv52ps5vojr@csclub.uwaterloo.ca>
+References: <42c109690d5e4729812cc187a71dd5b0@P10-EX01.3DSystems.Internal>
+ <1526523181.3850725.1374998144.0B5577D4@webmail.messagingengine.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: base64
-Subject: Re: [Xenomai] Xddp and socket: Address family not supported by
- protocol
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <1526523181.3850725.1374998144.0B5577D4@webmail.messagingengine.com>
+From: lsorense@csclub.uwaterloo.ca (Lennart Sorensen)
+Subject: Re: [Xenomai] Boot failed on arm64 - xenomai_init --> ipipe_send_ipi
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,47 +16,27 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Libin Zhao <libin.zhao@envisioncn.com>, "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Dmitriy Cherkasov <dmitriy@oss-tech.org>
+Cc: xenomai@xenomai.org
 
-CkRvIHlvdSBoYXZlIHRoZSBtb2R1bGUgbG9hZGVkIG9yIGVuYWJsZWQgaW4gdGhlIGtlcm5lbD8K
-CsKgIE9yaWdpbmFsIE1lc3NhZ2UgwqAKRnJvbTogbGliaW4uemhhb0BlbnZpc2lvbmNuLmNvbQpT
-ZW50OiBNYXkgMTcsIDIwMTggOToxMyBBTQpUbzogeGVub21haUB4ZW5vbWFpLm9yZwpTdWJqZWN0
-OiBSZTogW1hlbm9tYWldIFhkZHAgYW5kIHNvY2tldDogQWRkcmVzcyBmYW1pbHkgbm90IHN1cHBv
-cnRlZCBieSBwcm90b2NvbAoKSGksCgrCoMKgwqDCoMKgwqDCoMKgIE5vdyxJIGluc3RhbGwgWGVu
-b21haS0zLjMgSW4gVWJ1bnR1IDMuMTguMjAsCgrCoMKgwqDCoMKgwqDCoMKgIFRoZSBsYXRlbmN5
-IHRlc3QgYW5kIGN5Y2xpY3Rlc3QgcnVuIGdvb2QgaW4gbXkgZW52aXJvbm1lbnQgbGlrZSB0aGF0
-CltjaWQ6aW1hZ2UwMDEucG5nQDAxRDNFRTFDLkY5ODBEMDIwXQoKQW5kIGV4ZWN1dGUgdGhlIGNt
-ZCA6ZG1lc2cgfCBncmVwIC1JIHhlbm9tYWkscmVzdWx0IGxpa2UgYmVsb3c6CltjaWQ6aW1hZ2Uw
-MDIucG5nQDAxRDNFRTFDLkY5ODBEMDIwXQoKQnV0IHdoZW4gSSBydW4gdGhlIGRlbW8gdGVzdMKg
-IGlkZHAtbGFiZWwgLCB0aGUgcmVzdWx0IGlzIGVycm9yICx0aGUgZXJyb3IgbWVzc2FnZSBiZWxv
-dzoKc29ja2V0OiBBZGRyZXNzIGZhbWlseSBub3Qgc3VwcG9ydGVkIGJ5IHByb3RvY29sCgpTbyAs
-aG93IGNhbiBJIG1ha2UgaXQgcmlnaHQsIGNhbiB5b3UgaGVscCBtZSA/CgpUaGFua3MgdmVyeSBt
-dWNoIQoKCkJSCnRvbnkKCgoKCj8/Pyg/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/
-Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/
-Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/
-Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/LD8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/PwpUaGlzIGVtYWls
-IG1lc3NhZ2UgKGluY2x1ZGluZyBhbnkgYXR0YWNobWVudHMpIGlzIGNvbmZpZGVudGlhbCBhbmQg
-bWF5IGJlIGxlZ2FsbHkgcHJpdmlsZWdlZC4gSWYgeW91IGhhdmUgcmVjZWl2ZWQgaXQgYnkgbWlz
-dGFrZSwgcGxlYXNlIG5vdGlmeSB0aGUgc2VuZGVyIGJ5IHJldHVybiBlbWFpbCBhbmQgZGVsZXRl
-IHRoaXMgbWVzc2FnZSBmcm9tIHlvdXIgc3lzdGVtLiBBbnkgdW5hdXRob3JpemVkIHVzZSBvciBk
-aXNzZW1pbmF0aW9uIG9mIHRoaXMgbWVzc2FnZSBpbiB3aG9sZSBvciBpbiBwYXJ0IGlzIHN0cmlj
-dGx5IHByb2hpYml0ZWQuIEVudmlzaW9uIEVuZXJneSBMaW1pdGVkIGFuZCBhbGwgaXRzIHN1YnNp
-ZGlhcmllcyBzaGFsbCBub3QgYmUgbGlhYmxlIGZvciB0aGUgaW1wcm9wZXIgb3IgaW5jb21wbGV0
-ZSB0cmFuc21pc3Npb24gb2YgdGhlIGluZm9ybWF0aW9uIGNvbnRhaW5lZCBpbiB0aGlzIGVtYWls
-IG5vciBmb3IgYW55IGRlbGF5IGluIGl0cyByZWNlaXB0IG9yIGRhbWFnZSB0byB5b3VyIHN5c3Rl
-bS4gRW52aXNpb24gRW5lcmd5IExpbWl0ZWQgZG9lcyBub3QgZ3VhcmFudGVlIHRoZSBpbnRlZ3Jp
-dHkgb2YgdGhpcyBlbWFpbCBtZXNzYWdlLCBub3IgdGhhdCB0aGlzIGVtYWlsIG1lc3NhZ2UgaXMg
-ZnJlZSBvZiB2aXJ1c2VzLCBpbnRlcmNlcHRpb25zLCBvciBpbnRlcmZlcmVuY2UuCi0tLS0tLS0t
-LS0tLS0tIG5leHQgcGFydCAtLS0tLS0tLS0tLS0tLQpBIG5vbi10ZXh0IGF0dGFjaG1lbnQgd2Fz
-IHNjcnViYmVkLi4uCk5hbWU6IGltYWdlMDAxLnBuZwpUeXBlOiBpbWFnZS9wbmcKU2l6ZTogMTY3
-MjkgYnl0ZXMKRGVzYzogaW1hZ2UwMDEucG5nClVSTDogPGh0dHA6Ly94ZW5vbWFpLm9yZy9waXBl
-cm1haWwveGVub21haS9hdHRhY2htZW50cy8yMDE4MDUxNy9jMDg2ODI5ZC9hdHRhY2htZW50LnBu
-Zz4KLS0tLS0tLS0tLS0tLS0gbmV4dCBwYXJ0IC0tLS0tLS0tLS0tLS0tCkEgbm9uLXRleHQgYXR0
-YWNobWVudCB3YXMgc2NydWJiZWQuLi4KTmFtZTogaW1hZ2UwMDIucG5nClR5cGU6IGltYWdlL3Bu
-ZwpTaXplOiAxMjM2NSBieXRlcwpEZXNjOiBpbWFnZTAwMi5wbmcKVVJMOiA8aHR0cDovL3hlbm9t
-YWkub3JnL3BpcGVybWFpbC94ZW5vbWFpL2F0dGFjaG1lbnRzLzIwMTgwNTE3L2MwODY4MjlkL2F0
-dGFjaG1lbnQtMDAwMS5wbmc+Cl9fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
-X19fX19fX19fClhlbm9tYWkgbWFpbGluZyBsaXN0Clhlbm9tYWlAeGVub21haS5vcmcKaHR0cHM6
-Ly94ZW5vbWFpLm9yZy9tYWlsbWFuL2xpc3RpbmZvL3hlbm9tYWkK
+On Wed, May 16, 2018 at 07:13:01PM -0700, Dmitriy Cherkasov wrote:
+> On Wed, May 16, 2018, at 11:13 AM, Auel, Kendall wrote:
+> > I'm trying to build a xenomai-enabled kernel for an arm64 (quad A53 
+> > cores). Something is not configured correctly, but I haven't been able 
+> > to get past a stall during xenomai_init. Any ideas on what I'm doing 
+> > wrong? Thanks.
+> > 
+> > [    0.729547] kvm [1]: 8-bit VMID
+> > [    0.732121] kvm [1]: IDMAP page: 40c5e000
+> > [    0.736134] kvm [1]: HYP VA range: 800000000000:ffffffffffff
+> > [    0.742609] kvm [1]: Hyp mode initialized successfully
+> 
+> I don't think this patch has ever been tested with KVM/HYP mode. I
+> would try and see if it works in SVC mode on the same hardware.
 
+32 bit armhf does work with xenomai and HYP.  Never tried 64 bit arm
+though.
+
+-- 
+Len Sorensen
 
