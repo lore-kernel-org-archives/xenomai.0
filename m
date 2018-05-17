@@ -1,13 +1,12 @@
-References: <27d5d83d2bbb48ed89dc0d3adecdca7d@advaoptical.com>
-From: Jorge Ramirez <jro@xenomai.org>
-Message-ID: <1ad48f8c-30b6-6d34-96b4-63a2dc9d62ad@xenomai.org>
-Date: Thu, 17 May 2018 10:25:47 +0200
+From: Libin Zhao <libin.zhao@envisioncn.com>
+Date: Thu, 17 May 2018 12:23:57 +0000
+Message-ID: <BJBPR01MB13202D191F08293D461E0B2E5910@BJBPR01MB132.CHNPR01.prod.partner.outlook.cn>
+Content-Language: zh-CN
 MIME-Version: 1.0
-In-Reply-To: <27d5d83d2bbb48ed89dc0d3adecdca7d@advaoptical.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Content-Language: en-US
-Subject: Re: [Xenomai] how can I support xenomai on ARM64 platform?
+Subject: Re: [Xenomai] Xddp and socket: Address family not supported by
+ protocol
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,26 +15,45 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Lucky Luo <LLuo@advaoptical.com>, "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On 05/17/2018 06:26 AM, Lucky Luo wrote:
-> Dear xenomai team,
->
-> I am an user of xenomai which help me a lot in PTP application, we really appreciate your contribution on xenomai.
-> It seems that xenomai 3.0 cannot work on arm64 in Cobalt (dual kernel mode) currently, will xenomai 3.0 support arm64 in the future?
+Hi,
 
-that was contributed long ago....see this for instance (db410 is arm64)
-https://discuss.96boards.org/t/xenomai-installation-and-configuring-on-db410c-manual/2270
+         Now,I install Xenomai-3.3 In Ubuntu 3.18.20,
 
+         The latency test and cyclictest run good in my environment like that
+[cid:image001.png@01D3EE1C.F980D020]
 
-> If I can apply xenomai 3.0 to my card with CPU NXP LS1088A (arm64 CortexA53) in mercury mode?
->
-> Many Thanks
-> Lucky
-> _______________________________________________
-> Xenomai mailing list
-> Xenomai@xenomai.org
-> https://xenomai.org/mailman/listinfo/xenomai
->
+And execute the cmd :dmesg | grep -I xenomai,result like below:
+[cid:image002.png@01D3EE1C.F980D020]
+
+But when I run the demo test  iddp-label , the result is error ,the error message below:
+socket: Address family not supported by protocol
+
+So ,how can I make it right, can you help me ?
+
+Thanks very much!
 
 
+BR
+tony
+
+
+
+
+???(????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????,?????????????????????
+This email message (including any attachments) is confidential and may be legally privileged. If you have received it by mistake, please notify the sender by return email and delete this message from your system. Any unauthorized use or dissemination of this message in whole or in part is strictly prohibited. Envision Energy Limited and all its subsidiaries shall not be liable for the improper or incomplete transmission of the information contained in this email nor for any delay in its receipt or damage to your system. Envision Energy Limited does not guarantee the integrity of this email message, nor that this email message is free of viruses, interceptions, or interference.
+-------------- next part --------------
+A non-text attachment was scrubbed...
+Name: image001.png
+Type: image/png
+Size: 16729 bytes
+Desc: image001.png
+URL: <http://xenomai.org/pipermail/xenomai/attachments/20180517/c086829d/attachment.png>
+-------------- next part --------------
+A non-text attachment was scrubbed...
+Name: image002.png
+Type: image/png
+Size: 12365 bytes
+Desc: image002.png
+URL: <http://xenomai.org/pipermail/xenomai/attachments/20180517/c086829d/attachment-0001.png>
