@@ -1,13 +1,9 @@
-Date: Thu, 17 May 2018 10:31:24 -0400
-Message-ID: <20180517143124.opi6fnv52ps5vojr@csclub.uwaterloo.ca>
-References: <42c109690d5e4729812cc187a71dd5b0@P10-EX01.3DSystems.Internal>
- <1526523181.3850725.1374998144.0B5577D4@webmail.messagingengine.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <1526523181.3850725.1374998144.0B5577D4@webmail.messagingengine.com>
-From: lsorense@csclub.uwaterloo.ca (Lennart Sorensen)
-Subject: Re: [Xenomai] Boot failed on arm64 - xenomai_init --> ipipe_send_ipi
+From: Greg Gallagher <greg@embeddedgreg.com>
+Date: Thu, 17 May 2018 22:00:24 -0400
+Message-ID: <CALLqZ8Qt5w=_W0nU=vhMNtS-Tx-zwE9Nnp-COV9YOK3OX57jTQ@mail.gmail.com>
+Content-Type: text/plain; charset="UTF-8"
+Subject: [Xenomai] Reference Images Alpha Release
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,27 +12,25 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Dmitriy Cherkasov <dmitriy@oss-tech.org>
-Cc: xenomai@xenomai.org
+To: "Xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On Wed, May 16, 2018 at 07:13:01PM -0700, Dmitriy Cherkasov wrote:
-> On Wed, May 16, 2018, at 11:13 AM, Auel, Kendall wrote:
-> > I'm trying to build a xenomai-enabled kernel for an arm64 (quad A53 
-> > cores). Something is not configured correctly, but I haven't been able 
-> > to get past a stall during xenomai_init. Any ideas on what I'm doing 
-> > wrong? Thanks.
-> > 
-> > [    0.729547] kvm [1]: 8-bit VMID
-> > [    0.732121] kvm [1]: IDMAP page: 40c5e000
-> > [    0.736134] kvm [1]: HYP VA range: 800000000000:ffffffffffff
-> > [    0.742609] kvm [1]: Hyp mode initialized successfully
-> 
-> I don't think this patch has ever been tested with KVM/HYP mode. I
-> would try and see if it works in SVC mode on the same hardware.
+https://github.com/ggallagher31/xenomai-3-alpha-images/blob/master/README.md
 
-32 bit armhf does work with xenomai and HYP.  Never tried 64 bit arm
-though.
 
--- 
-Len Sorensen
+Here is the first attempt of Xenomai-3 reference images, this is based
+on 4.14 ipipe kernel and the rootfs is a Ubuntu based.  Xenomai was
+built off the stable-3.0.x branch.  The images are currently hosted on
+google drive which may change later but for now it should work.  Ping
+me if there are access problems.
+
+Currently only RPI2 is in included with a extremely simple RT app.
+Zynq boards and gpio examples will be posted this weekend (yay long
+weekend).
+
+Please send any feedback or suggestion of improvements directly to me
+greg@embeddedgreg.com
+
+Thanks
+
+Greg
 
