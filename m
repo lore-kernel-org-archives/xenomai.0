@@ -1,9 +1,25 @@
+References: <ca00a2b2-b44d-a25a-cb53-852a0f8e2d32@gmail.com>
+ <594f0ba9-8e01-d2d2-a58e-2abcb3b72289@gmail.com>
+ <fb226301-fe52-c9c9-f5a0-3f760b8d5492@gmail.com>
+ <74da7f07-6df9-5a5f-ff63-b414437749b2@xenomai.org>
+ <1dbe3f00-a866-248c-3799-a0d8efeee4e4@gmail.com>
+ <e937a73f-ef0f-5394-bdae-400fcfe30ddb@gmail.com>
+ <2e75fd33-8998-4cfb-6fa6-bef20f37f2dc@gmail.com>
+ <e398a8e0-65f2-cd46-b502-0e81f5e6fee6@xenomai.org>
+ <9c2a8966-09c2-cc32-9a7b-fe16339d9c80@gmail.com>
+ <bd252434-25b7-e0c1-5a55-7e9321c48d8f@gmail.com>
+ <6430f861-a017-02e8-ba19-9a75aedc9475@gmail.com>
+ <b6be86e9-bc5a-c213-d458-219d8c4ecc01@xenomai.org>
+ <1a298a3a-7961-8ea1-9f2f-00a1b68d9f25@gmail.com>
+From: Philippe Gerum <rpm@xenomai.org>
+Message-ID: <aae12ae8-154b-1c69-9908-820f8457ba28@xenomai.org>
+Date: Fri, 18 May 2018 09:08:07 +0200
 MIME-Version: 1.0
-From: sushma talasila <sushmatalasila7@gmail.com>
-Date: Mon, 16 Apr 2018 11:30:03 +0530
-Message-ID: <CAHN8J2-Z1n=kxbTL=fkoLnn50w4W-d2yy4aAjsbkF+DFZAD_bw@mail.gmail.com>
-Content-Type: text/plain; charset="UTF-8"
-Subject: [Xenomai] Configuring for x86-based dual kernels
+In-Reply-To: <1a298a3a-7961-8ea1-9f2f-00a1b68d9f25@gmail.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai] Crash with longer dlopen/dlcose sequence
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -12,12 +28,21 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
+To: Edouard Tisserant <edouard.tisserant@gmail.com>, "Xenomai (xenomai@xenomai.org)" <xenomai@xenomai.org>
 
-Hello,
-I have patched linux kernel with xenomai. I have a problem in configuring.
-I want to disable some options like CONFIG_APM, CONFIG_ACPI_PROCESSOR. how
-can i disable these options. I can't find these parameters after executing
-make menuconfig command.
-please help me to solve this problem.
-Thank you.
+On 05/16/2018 11:20 AM, Edouard Tisserant wrote:
+> 
+>>>>> [Xenomai] bad syscall <0xf0002>
+> 
+>> Thanks for digging this out. Could you try this patch, keeping the relocation enabled in your build? TIA,
+> 
+> Works for me : No more "bad syscall" complain even if linking with some
+> non -fPIC compiled objects.
+> 
+
+Thanks for following up on this. I merged the change into the -next
+branch for now.
+
+-- 
+Philippe.
+
