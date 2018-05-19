@@ -1,11 +1,9 @@
-From: "Singh, Raman" <rasingh@mitre.org>
-Date: Fri, 18 May 2018 16:24:47 +0000
-Message-ID: <CY4PR0901MB2211C40E748F61C0C92D976DA1900@CY4PR0901MB2211.namprd09.prod.outlook.com>
-Content-Language: en-US
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-Subject: [Xenomai] Xenomai 3 Multi-core Semaphore latency
+From: C Smith <csmithquestions@gmail.com>
+Date: Fri, 18 May 2018 22:30:28 -0700
+Message-ID: <CA+K1mPGOFaKzQO2nys2XcbZ7vLaDvfpivOzyMXDgK89Z59sLGA@mail.gmail.com>
+Content-Type: text/plain; charset="UTF-8"
+Subject: [Xenomai] Only 2 serial ports at a time with xeno_16550A driver
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -14,235 +12,89 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: xenomai@xenomai.org
 
-Environment: ARM Cortex-A53 quad-core processor (ARM 64-bit) on a
-Zynq Ultrascale+ ZCU102 dev board, Xenomai 3 next branch from May=20
-14, 2018 (SHA1: 410a4cc1109ba4e0d05b7ece7b4a5210287e1183 ),=20
-Cobalt configuration with POSIX skin, Linux Kernel version 4.9.24
+The xeno_16550A driver works on my system but I can't get it to use more
+than two ports at a time.
 
-I've been having issues with semaphore latency when threads access=20
-semaphores while executing on different cores. When both threads accessing=
-=20
-a semaphore execute on the same processor core, the latency between
-one thread posting a semaphore and another waking up after waiting on it=20
-is fairly small. However, as soon as one of the threads is moved to a=20
-different core, the latency between a semaphore post from one thread to a=20
-waiting thread waking up in response starts to become large enough to=20
-affect real time performance.  The latencies I've been seeing are on the or=
-der
-of 100's of milliseconds.
+'dmesg' after the kernel boots shows this:
+[    0.538264] 00:05: ttyS1 at I/O 0x2f8 (irq = 5, base_baud = 115200) is a
+16550A
+[    0.559280] 00:06: ttyS3 at I/O 0x2e8 (irq = 5, base_baud = 115200) is a
+16550A
+[    0.580306] 00:0a: ttyS0 at I/O 0x3f8 (irq = 4, base_baud = 115200) is a
+16550A
+[    0.601275] 0000:00:16.3: ttyS2 at I/O 0xf0a0 (irq = 19, base_baud =
+115200) is a 16550A
 
-The code below demonstrates the issue. It creates two threads. One thread
-calls sem_post() and sleeps for a millisecond for each iteration of a loop=
-=20
-for 1000 iterations. The other thread performs a blocking wait on the=20
-semaphore in a loop for the same amount of iterations. Both threads print=20
-out their operation (either sem_post() or sem_wait()) along with a=20
-timestamp and loop iteration count. The expectation is that the printouts=20
-that result should alternate between posts and waits and this is in fact=20
-what happens when both threads run on the same core. The timestamps show=20
-that the latency between a post and the second thread waking up is pretty=20
-low.
+If I load xeno_16550A in either of these two ways below my code can use
+both serial ports listed, so we know that all three ports work OK:
+[root@neon ~]# modprobe xeno_16550A io=0x3f8,0x02f8 irq=4,5
+[root@neon ~]# modprobe xeno_16550A io=0x3f8,0x02e8 irq=4,5
 
-When the threads are moved to separate cores, the pattern of the printouts
-changes. Instead of alternating posts followed by waits, there are
-multiple posts in a row followed by an equal number of waits in a row. The=
-=20
-timestamps show significant latency between the first call to sem_post()=20
-in a sequence and the corresponding first sem_wait() call that returns
-after blocking.
+But this always fails to allow 3 ports to work:
+modprobe xeno_16550A io=0x3f8,0x02f8,0x02e8  irq=4,5,5
+Only the first two ports can be initialized, the third gets a "device or
+resource busy", rt_dev_open() returns -16.
 
-I've also tried this test code using standard Linux primitives, and in=20
-both cases, the printouts come out the same with alternating posts and=20
-waits.  Additionally, this multi-core issue does not occur on an older ZC70=
-6=20
-platform with Xenomai 2.6.x.
+My code snippet is:
 
-With regard to the executable generated from the code below, with no=20
-arguments provided it will run with both threads on the same core. If
-any argument(s) are provided, it will run with the threads on separate
-cores.
+struct rtser_config serial_config = {
+        .config_mask       = 0xFFFF,
+        .baud_rate         = 115200,
+        .parity            = RTSER_NO_PARITY,
+        .data_bits         = RTSER_8_BITS,
+        .stop_bits         = RTSER_1_STOPB,
+        .handshake         = RTSER_NO_HAND,
+        .fifo_depth        = RTSER_DEF_FIFO_DEPTH, //RTSER_FIFO_DEPTH_8,
+    // I'd rather not initialize this, but compiler error if not
+    .reserved          = 0,
+        .rx_timeout        = 500000, /* 500 us */
+        .tx_timeout        = RTSER_DEF_TIMEOUT,
+        .event_timeout     = 5000000, /* 5 ms */
+        .timestamp_history = RTSER_RX_TIMESTAMP_HISTORY,
+        .event_mask        = RTSER_EVENT_RXPEND,
+};
 
-Any help with this issue would be appreciated.
+static int fd_tty[MAX_NUM_SERIAL_PORT];   /* file descriptors for serial
+ports */
 
-Thanks,=20
-Raman
-
-#include <cstdlib>
-#include <errno.h>
-#include <stdio.h>
-#include <pthread.h>
-#include <semaphore.h>
-#include <string.h>
-#include <time.h>
-#include <unistd.h>
-
-static sem_t semaphore;
-
-void* producer_thread(void* arg)
+/* a for() loop on port_num is here. ports are not initialized in order,
+BTW. */
+fd_tty[port_num] = rt_dev_open(tmpstr, O_RDWR | O_NONBLOCK);
+if (fd_tty[port_num] < 0)
 {
-    int count =3D 0;
-
-    struct timespec current_time;
-
-    while(count < 1000)
-    {
-        sem_post(&semaphore);
-        ++count;
-
-        if(clock_gettime(CLOCK_REALTIME, &current_time) =3D=3D -1)
-        {
-            printf("Failed to get current time.\n");
-            return 0;
-        }
-
-        printf("sem_post:%lld.%.9ld, count =3D %d\n",
-               static_cast<long long>(current_time.tv_sec), current_time.tv=
-_nsec, count);
-
-        usleep(1000);
-    }
-
-    return 0;
+   printf("Problem setting up serial port %d on %s, got: %d\n", port_num,
+tmpstr, fd_tty[port_num]);
+}
+else
+{
+   int ser_return;
+   ser_return = rt_dev_ioctl(fd_tty[port_num], RTSER_RTIOC_SET_CONFIG,
+&serial_config);
+   if (ser_return < 0)
+   {
+      printf("serial device %s initialization failed with: (%d)\n",tmpstr,
+ser_return);
+   }
+   else if (ser_return >= 0)
+   {
+      printf("successfully initialized serial device rtser%d
+(fd=%d)\n",port_num,fd_tty[port_num]);
+   }
 }
 
-void* consumer_thread(void* arg)
-{
-    int count =3D 0;
+This is the output as ports get initialized:
+successfully initialized serial device rtser1 (fd=12)
+successfully initialized serial device rtser0 (fd=13)
+Problem setting up serial port 2 on rtser2, got: -16
 
-    struct timespec current_time;
+I tried this with serial compiled into the kernel and I took the ports away
+from the kernel with 'setserial /dev/ttyS_ uart none', and also I tried
+with serial as kernel modules and I removed the modules - so there was no
+possibility of the kernel using the serial ports.
 
-    while(count < 1000)
-    {
-        sem_wait(&semaphore);
-        ++count;
+Is there somehow a limit of 2 ports compiled into the xeno_16550A driver ?
+Or is the driver having trouble with the shared interrupt 5?
 
-        if(clock_gettime(CLOCK_REALTIME, &current_time) =3D=3D -1)
-        {
-            printf("Failed to get current time.\n");
-            return 0;
-        }
-
-        printf("sem_wait:%lld.%.9ld, count =3D %d\n",
-               static_cast<long long>(current_time.tv_sec), current_time.tv=
-_nsec, count);
-
-    }
-
-    return 0;
-}
-
-int main(int argc, char *argv[])
-{
-    bool same_core =3D true;
-    if(argc > 1) same_core =3D false;
-
-    if(sem_init(&semaphore, 0, 0) =3D=3D -1)
-    {
-        printf("Failed to initialize semaphore. Error: %s\n.", strerror(err=
-no));
-        return -1;
-    }
-
-    int producer_affinity =3D 0;
-    int consumer_affinity =3D 0;
-    if(!same_core) consumer_affinity =3D 1;
-
-    int consumer_priority =3D 86;
-    int producer_priority =3D 99;
-
-    pthread_attr_t attr;
-
-    if(pthread_attr_init(&attr))
-    {
-        printf("Failed to initialize attributes.\n");
-        return -1;
-    }
-
-    if(pthread_attr_setinheritsched(&attr, PTHREAD_EXPLICIT_SCHED))
-    {
-        printf("Failed to disable scheduler inheritance.\n");
-        return -1;
-    }
-
-    if(pthread_attr_setschedpolicy(&attr, SCHED_FIFO))
-    {
-        printf("Failed to set scheduler to SCHED_FIFO.\n");
-        return -1;
-    }
-
-    sched_param param;
-    if(!pthread_attr_getschedparam(&attr, &param))
-    {
-        param.sched_priority =3D consumer_priority;
-
-        if(pthread_attr_setschedparam(&attr, &param))
-        {
-           printf("Unable to set thread priority.\n");
-           return -1;
-        }
-    }
-    else
-    {
-        printf("Unable to get params for setting priority.\n");
-        return -1;
-    }
-
-    cpu_set_t cpu_set;
-    CPU_ZERO(&cpu_set);
-    CPU_SET(consumer_affinity, &cpu_set);
-    if(pthread_attr_setaffinity_np(&attr, sizeof(cpu_set_t), &cpu_set))
-    {
-        printf("Unable to set CPU affinity.\n");
-        return -1;
-    }
-
-    pthread_t consumer;
-    if(pthread_create(&consumer, &attr, consumer_thread, NULL))
-    {
-        printf("Unable to create consumer thread.\n");
-        return -1;
-    }
-
-    if(!pthread_attr_getschedparam(&attr, &param))
-    {
-        param.sched_priority =3D producer_priority;
-
-        if(pthread_attr_setschedparam(&attr, &param))
-        {
-           printf("Unable to set thread priority.\n");
-           return -1;
-        }
-    }
-    else
-    {
-        printf("Unable to get params for setting priority.\n");
-        return -1;
-    }
-
-    CPU_ZERO(&cpu_set);
-    CPU_SET(producer_affinity, &cpu_set);
-    if(pthread_attr_setaffinity_np(&attr, sizeof(cpu_set_t), &cpu_set))
-    {
-        printf("Unable to set CPU affinity.\n");
-        return -1;
-    }
-
-    pthread_t producer;
-    if(pthread_create(&producer, &attr, producer_thread, NULL))
-    {
-        printf("Unable to create producer thread.\n");
-        return -1;
-    }
-
-    pthread_attr_destroy(&attr);
-
-    pthread_join(producer, NULL);
-    pthread_join(consumer, NULL);
-
-    sem_destroy(&semaphore);
-
-    return 0;
-}
-
+I am using Xenomai 2.6.5 on kernel 3.18.20
