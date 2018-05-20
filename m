@@ -1,9 +1,12 @@
+References: <CA+K1mPH6SPht4gtnO4iU9NT814H8GUKUi7OVerF=jcaL-imMJA@mail.gmail.com>
+From: Jan Kiszka <jan.kiszka@web.de>
+Message-ID: <5380a351-1aa5-b6c1-98b6-fb4211cf1154@web.de>
+Date: Sun, 20 May 2018 09:53:44 +0200
 MIME-Version: 1.0
-From: C Smith <csmithquestions@gmail.com>
-Date: Sun, 20 May 2018 00:43:05 -0700
-Message-ID: <CA+K1mPH6SPht4gtnO4iU9NT814H8GUKUi7OVerF=jcaL-imMJA@mail.gmail.com>
-Content-Type: text/plain; charset="UTF-8"
-Subject: [Xenomai] Only 2 serial ports at a time with xeno_16550A driver
+In-Reply-To: <CA+K1mPH6SPht4gtnO4iU9NT814H8GUKUi7OVerF=jcaL-imMJA@mail.gmail.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+Subject: Re: [Xenomai] Only 2 serial ports at a time with xeno_16550A driver
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -12,41 +15,37 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
+To: C Smith <csmithquestions@gmail.com>, xenomai@xenomai.org
 
-An update:
-In the modprobe, I tried putting first the two ports which share IRQ 5:
-modprobe xeno_16550A io=0x02f8,0x2e8,0x3f8 irq=5,5,4
-results:
-"successfully initialized serial device rtser1 (fd=12)
-Problem setting up serial port 0 on rtser0, got: -16
-successfully initialized serial device rtser2 (fd=13)"
-
-So rt_dev_open() returns -EBUSY on the first port which shared IRQ 5
-
-Then I tried initializing only the two ports which share IRQ 5:
-modprobe xeno_16550A io=0x02f8,0x2e8 irq=5,5
-results:
-"successfully initialized serial device rtser1 (fd=12)
-Problem setting up serial port 0 on rtser0, got: -16"
-
-So rt_dev_open() returns -EBUSY on the first port which shared IRQ 5
-
-I reversed the order of the two ports which share IRQ 5:
- modprobe xeno_16550A io=0x02e8,0x2f8 irq=5,5
-results:
-"successfully initialized serial device rtser1 (fd=12)
-Problem setting up serial port 0 on rtser0, got: -16"
-
-So again rt_dev_open() returns -EBUSY on the first port which shared IRQ 5,
-even though it is a different port address now.
-
-I recompiled the xeno_16550A driver with some printk()s in function
-rt_16550_init_io() of 16550A_io.h. That function has the potential to
-return -EBUSY if request_region() or mapped_io[] indicate failure, but
-nothing printed to dmesg when rt_dev_open() failed.
-
-How else can I analyze why rt_dev_open() thinks a port is unavailable?
-
-thanks,
--C Smith
+T24gMjAxOC0wNS0yMCAwOTo0MywgQyBTbWl0aCB3cm90ZToKPiBBbiB1cGRhdGU6Cj4gSW4gdGhl
+IG1vZHByb2JlLCBJIHRyaWVkIHB1dHRpbmcgZmlyc3QgdGhlIHR3byBwb3J0cyB3aGljaCBzaGFy
+ZSBJUlEgNToKPiBtb2Rwcm9iZSB4ZW5vXzE2NTUwQSBpbz0weDAyZjgsMHgyZTgsMHgzZjggaXJx
+PTUsNSw0Cj4gcmVzdWx0czoKPiAic3VjY2Vzc2Z1bGx5IGluaXRpYWxpemVkIHNlcmlhbCBkZXZp
+Y2UgcnRzZXIxIChmZD0xMikKPiBQcm9ibGVtIHNldHRpbmcgdXAgc2VyaWFsIHBvcnQgMCBvbiBy
+dHNlcjAsIGdvdDogLTE2Cj4gc3VjY2Vzc2Z1bGx5IGluaXRpYWxpemVkIHNlcmlhbCBkZXZpY2Ug
+cnRzZXIyIChmZD0xMykiCj4gCj4gU28gcnRfZGV2X29wZW4oKSByZXR1cm5zIC1FQlVTWSBvbiB0
+aGUgZmlyc3QgcG9ydCB3aGljaCBzaGFyZWQgSVJRIDUKPiAKPiBUaGVuIEkgdHJpZWQgaW5pdGlh
+bGl6aW5nIG9ubHkgdGhlIHR3byBwb3J0cyB3aGljaCBzaGFyZSBJUlEgNToKPiBtb2Rwcm9iZSB4
+ZW5vXzE2NTUwQSBpbz0weDAyZjgsMHgyZTggaXJxPTUsNQo+IHJlc3VsdHM6Cj4gInN1Y2Nlc3Nm
+dWxseSBpbml0aWFsaXplZCBzZXJpYWwgZGV2aWNlIHJ0c2VyMSAoZmQ9MTIpCj4gUHJvYmxlbSBz
+ZXR0aW5nIHVwIHNlcmlhbCBwb3J0IDAgb24gcnRzZXIwLCBnb3Q6IC0xNiIKPiAKPiBTbyBydF9k
+ZXZfb3BlbigpIHJldHVybnMgLUVCVVNZIG9uIHRoZSBmaXJzdCBwb3J0IHdoaWNoIHNoYXJlZCBJ
+UlEgNQo+IAo+IEkgcmV2ZXJzZWQgdGhlIG9yZGVyIG9mIHRoZSB0d28gcG9ydHMgd2hpY2ggc2hh
+cmUgSVJRIDU6Cj4gIG1vZHByb2JlIHhlbm9fMTY1NTBBIGlvPTB4MDJlOCwweDJmOCBpcnE9NSw1
+Cj4gcmVzdWx0czoKPiAic3VjY2Vzc2Z1bGx5IGluaXRpYWxpemVkIHNlcmlhbCBkZXZpY2UgcnRz
+ZXIxIChmZD0xMikKPiBQcm9ibGVtIHNldHRpbmcgdXAgc2VyaWFsIHBvcnQgMCBvbiBydHNlcjAs
+IGdvdDogLTE2Igo+IAo+IFNvIGFnYWluIHJ0X2Rldl9vcGVuKCkgcmV0dXJucyAtRUJVU1kgb24g
+dGhlIGZpcnN0IHBvcnQgd2hpY2ggc2hhcmVkIElSUSA1LAo+IGV2ZW4gdGhvdWdoIGl0IGlzIGEg
+ZGlmZmVyZW50IHBvcnQgYWRkcmVzcyBub3cuCj4gCj4gSSByZWNvbXBpbGVkIHRoZSB4ZW5vXzE2
+NTUwQSBkcml2ZXIgd2l0aCBzb21lIHByaW50aygpcyBpbiBmdW5jdGlvbgo+IHJ0XzE2NTUwX2lu
+aXRfaW8oKSBvZiAxNjU1MEFfaW8uaC4gVGhhdCBmdW5jdGlvbiBoYXMgdGhlIHBvdGVudGlhbCB0
+bwo+IHJldHVybiAtRUJVU1kgaWYgcmVxdWVzdF9yZWdpb24oKSBvciBtYXBwZWRfaW9bXSBpbmRp
+Y2F0ZSBmYWlsdXJlLCBidXQKPiBub3RoaW5nIHByaW50ZWQgdG8gZG1lc2cgd2hlbiBydF9kZXZf
+b3BlbigpIGZhaWxlZC4KPiAKPiBIb3cgZWxzZSBjYW4gSSBhbmFseXplIHdoeSBydF9kZXZfb3Bl
+bigpIHRoaW5rcyBhIHBvcnQgaXMgdW5hdmFpbGFibGU/Cj4gCgpEbyB5b3UgaGF2ZSBDT05GSUdf
+WEVOT19PUFRfU0hJUlEgZW5hYmxlZCBpbiB5b3VyIGtlcm5lbD8KCkphbgoKLS0tLS0tLS0tLS0t
+LS0gbmV4dCBwYXJ0IC0tLS0tLS0tLS0tLS0tCkEgbm9uLXRleHQgYXR0YWNobWVudCB3YXMgc2Ny
+dWJiZWQuLi4KTmFtZTogc2lnbmF0dXJlLmFzYwpUeXBlOiBhcHBsaWNhdGlvbi9wZ3Atc2lnbmF0
+dXJlClNpemU6IDE4MSBieXRlcwpEZXNjOiBPcGVuUEdQIGRpZ2l0YWwgc2lnbmF0dXJlClVSTDog
+PGh0dHA6Ly94ZW5vbWFpLm9yZy9waXBlcm1haWwveGVub21haS9hdHRhY2htZW50cy8yMDE4MDUy
+MC9lZTNjNzlhOS9hdHRhY2htZW50LnNpZz4K
