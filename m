@@ -1,13 +1,13 @@
-References: <CY4PR0901MB2211C40E748F61C0C92D976DA1900@CY4PR0901MB2211.namprd09.prod.outlook.com>
 From: Philippe Gerum <rpm@xenomai.org>
-Message-ID: <afc4023f-295b-0f0f-2c8a-e9f9496107f9@xenomai.org>
-Date: Sun, 20 May 2018 17:07:44 +0200
+References: <bd6a8257-9986-df8b-182d-b1b5d41e3a2a@xenomai.org>
+Message-ID: <41222b4c-b99c-2745-f1df-f00785c52104@xenomai.org>
+Date: Sun, 20 May 2018 20:15:34 +0200
 MIME-Version: 1.0
-In-Reply-To: <CY4PR0901MB2211C40E748F61C0C92D976DA1900@CY4PR0901MB2211.namprd09.prod.outlook.com>
+In-Reply-To: <bd6a8257-9986-df8b-182d-b1b5d41e3a2a@xenomai.org>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] Xenomai 3 Multi-core Semaphore latency
+Subject: Re: [Xenomai] Performance issue with memory allocators
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,43 +16,103 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "Singh, Raman" <rasingh@mitre.org>, "xenomai@xenomai.org" <xenomai@xenomai.org>, Dmitriy Cherkasov <dmitriy@oss-tech.org>
+To: "Xenomai@xenomai.org" <Xenomai@xenomai.org>
 
-On 05/18/2018 06:24 PM, Singh, Raman wrote:
-> Environment: ARM Cortex-A53 quad-core processor (ARM 64-bit) on a
-> Zynq Ultrascale+ ZCU102 dev board, Xenomai 3 next branch from May 
-> 14, 2018 (SHA1: 410a4cc1109ba4e0d05b7ece7b4a5210287e1183 ), 
-> Cobalt configuration with POSIX skin, Linux Kernel version 4.9.24
+On 04/27/2018 08:23 PM, Philippe Gerum wrote:
 > 
-> I've been having issues with semaphore latency when threads access 
-> semaphores while executing on different cores. When both threads accessing 
-> a semaphore execute on the same processor core, the latency between
-> one thread posting a semaphore and another waking up after waiting on it 
-> is fairly small. However, as soon as one of the threads is moved to a 
-> different core, the latency between a semaphore post from one thread to a 
-> waiting thread waking up in response starts to become large enough to 
-> affect real time performance.  The latencies I've been seeing are on the order
-> of 100's of milliseconds.
+> After a comprehensive series of tests, it is now obvious that
+> heapobj-pshared has gruesome performances when releasing bursts of
+> small-sized objects. Allocation of large objects is not particularly
+> efficient either, although not as bad. The Cobalt core allocator is
+> affected by the same bug too.
+> 
+> Those new tests are available from the wip/heapmem branch, they are
+> based on the smokey framework (e.g. smokey --run=memory_* --verbose=2).
+> 
+> Work is ongoing into the wip/heapmem branch to fix the mess, first
+> addressing the issue with the core (in-kernel) allocator,
+> heapobj-pshared next. Please note that wip/heapmem is a development
+> branch I'm working on for testing improvements - hopefully - to the
+> memory allocators, which should not be used in production.
+> 
+> I would strongly recommend that users running single-process
+> applications - i.e. not needing the shared heap feature - make sure to
+> turn off heapobj-pshared when configuring, by passing --disable-pshared
+> to the configuration script (or leave the feature to the default off state).
 > 
 
-Reproduced on hikey here: the rescheduling IPIs Xenomai is sending for
-waking up threads on remote CPUs don't flow to the other end properly
-(ipipe_send_ipi()), which explains the behavior you have been seeing.
+The situation is now fixed in the -next branch for the core (in kernel)
+heap manager. A set of smokey tests exercising and benchmarking all
+memory allocators has been merged too. They may run from seconds to
+several minutes depending on the processing horsepower available with
+the platform [1]. Reducing the number of allocation rounds for running a
+memory pattern check with random block sizes helps in limiting the test
+duration. e.g.
 
-@Dmitriy: this may be an issue with the range of SGIs available to the
-kernel when a secure firmware is enabled, which may be restricted to
-SGI[0-7].
+~ # smokey --run=memory_coreheap --verbose=2 random_alloc_rounds=16
+== memcheck started on coreheap at Thu Jan  1 01:21:50 1970
 
-For the rescheduling IPI on ARM64, the interrupt pipeline attempts to
-trigger SGI8 which may be reserved by the ATF in secure mode, therefore
-may never be received on the remote end.
+     seq_heap_size=2048k
+     random_alloc_rounds=16
+     pattern_heap_size=128k
+     pattern_check_rounds=128
 
-Fixing this will require some work in the interrupt pipeline, typically
-for multiplexing our IPIs on a single SGI below SGI8. As a matter of
-fact, the same issue exists on the ARM side, but since running a secure
-firmware there is uncommon for Xenomai users, this went unnoticed (at
-least not reported yet AFAIR). We need to sync up on this not to
-duplicate work.
+heapmem is a new user-space allocator which is currently used as a
+drop-in replacement for TLSF in this branch. This is mainly a workhorse
+code I used for refining the new allocation algorithm, which is now
+implemented by the Cobalt core for managing its memory heaps. It may or
+may not be kept, depending on a general consensus about the matter.
+Passing --with-localmem=tlsf when configuring reverts this setting,
+switching back to TLSF for managing process local memory.
+
+coreheap is the nickname of the in-kernel allocator (aka xnheap).
+CONFIG_XENO_DRIVERS_HEAPCHECK must be enabled in the Kconfig to run the
+corresponding smokey test.
+
+As the benchmark figures show when running 'memory_pshared', the shared
+memory allocator still needs to be fixed. This is next on my list.
+
+Whether those major fixes should be backported to the -stable branch at
+some point is an open question. The results obtained from the test and
+benchmarking suite mentioned earlier should help in deciding about this
+issue.
+
+[1] # smokey --list=memory*
+#6   memory_coreheap
+	Check for the Cobalt core allocator sanity.
+	seq_heap_size=<size[K|M|G]>	max. heap size for sequential alloc tests
+	pattern_heap_size=<size[K|M|G]>	max. heap size for pattern check test
+	random_alloc_rounds=<N>		# of rounds of random-size allocations
+	pattern_check_rounds=<N>	# of rounds of pattern check tests
+	max_results=<N>	# of result lines (worst-case first, -1=all)
+	Set --verbose=2 for detailed runtime statistics.
+
+#7   memory_heapmem
+	Check for the heapmem allocator sanity.
+	seq_heap_size=<size[K|M|G]>	max. heap size for sequential alloc tests
+	pattern_heap_size=<size[K|M|G]>	max. heap size for pattern check test
+	random_alloc_rounds=<N>		# of rounds of random-size allocations
+	pattern_check_rounds=<N>	# of rounds of pattern check tests
+	max_results=<N>	# of result lines (worst-case first, -1=all)
+	Set --verbose=2 for detailed runtime statistics.
+
+#8   memory_tlsf
+	Check for the TLSF allocator sanity.
+	seq_heap_size=<size[K|M|G]>	max. heap size for sequential alloc tests
+	pattern_heap_size=<size[K|M|G]>	max. heap size for pattern check test
+	random_alloc_rounds=<N>		# of rounds of random-size allocations
+	pattern_check_rounds=<N>	# of rounds of pattern check tests
+	max_results=<N>	# of result lines (worst-case first, -1=all)
+	Set --verbose=2 for detailed runtime statistics.
+
+#26  memory_pshared
+	Check for the pshared allocator sanity.
+	seq_heap_size=<size[K|M|G]>	max. heap size for sequential alloc tests
+	pattern_heap_size=<size[K|M|G]>	max. heap size for pattern check test
+	random_alloc_rounds=<N>		# of rounds of random-size allocations
+	pattern_check_rounds=<N>	# of rounds of pattern check tests
+	max_results=<N>	# of result lines (worst-case first, -1=all)
+	Set --verbose=2 for detailed runtime statistics.
 
 -- 
 Philippe.
