@@ -1,12 +1,13 @@
-References: <CA+K1mPH6SPht4gtnO4iU9NT814H8GUKUi7OVerF=jcaL-imMJA@mail.gmail.com>
-From: Jan Kiszka <jan.kiszka@web.de>
-Message-ID: <5380a351-1aa5-b6c1-98b6-fb4211cf1154@web.de>
-Date: Sun, 20 May 2018 09:53:44 +0200
+References: <CY4PR0901MB2211C40E748F61C0C92D976DA1900@CY4PR0901MB2211.namprd09.prod.outlook.com>
+From: Philippe Gerum <rpm@xenomai.org>
+Message-ID: <afc4023f-295b-0f0f-2c8a-e9f9496107f9@xenomai.org>
+Date: Sun, 20 May 2018 17:07:44 +0200
 MIME-Version: 1.0
-In-Reply-To: <CA+K1mPH6SPht4gtnO4iU9NT814H8GUKUi7OVerF=jcaL-imMJA@mail.gmail.com>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Subject: Re: [Xenomai] Only 2 serial ports at a time with xeno_16550A driver
+In-Reply-To: <CY4PR0901MB2211C40E748F61C0C92D976DA1900@CY4PR0901MB2211.namprd09.prod.outlook.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai] Xenomai 3 Multi-core Semaphore latency
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,37 +16,44 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: C Smith <csmithquestions@gmail.com>, xenomai@xenomai.org
+To: "Singh, Raman" <rasingh@mitre.org>, "xenomai@xenomai.org" <xenomai@xenomai.org>, Dmitriy Cherkasov <dmitriy@oss-tech.org>
 
-T24gMjAxOC0wNS0yMCAwOTo0MywgQyBTbWl0aCB3cm90ZToKPiBBbiB1cGRhdGU6Cj4gSW4gdGhl
-IG1vZHByb2JlLCBJIHRyaWVkIHB1dHRpbmcgZmlyc3QgdGhlIHR3byBwb3J0cyB3aGljaCBzaGFy
-ZSBJUlEgNToKPiBtb2Rwcm9iZSB4ZW5vXzE2NTUwQSBpbz0weDAyZjgsMHgyZTgsMHgzZjggaXJx
-PTUsNSw0Cj4gcmVzdWx0czoKPiAic3VjY2Vzc2Z1bGx5IGluaXRpYWxpemVkIHNlcmlhbCBkZXZp
-Y2UgcnRzZXIxIChmZD0xMikKPiBQcm9ibGVtIHNldHRpbmcgdXAgc2VyaWFsIHBvcnQgMCBvbiBy
-dHNlcjAsIGdvdDogLTE2Cj4gc3VjY2Vzc2Z1bGx5IGluaXRpYWxpemVkIHNlcmlhbCBkZXZpY2Ug
-cnRzZXIyIChmZD0xMykiCj4gCj4gU28gcnRfZGV2X29wZW4oKSByZXR1cm5zIC1FQlVTWSBvbiB0
-aGUgZmlyc3QgcG9ydCB3aGljaCBzaGFyZWQgSVJRIDUKPiAKPiBUaGVuIEkgdHJpZWQgaW5pdGlh
-bGl6aW5nIG9ubHkgdGhlIHR3byBwb3J0cyB3aGljaCBzaGFyZSBJUlEgNToKPiBtb2Rwcm9iZSB4
-ZW5vXzE2NTUwQSBpbz0weDAyZjgsMHgyZTggaXJxPTUsNQo+IHJlc3VsdHM6Cj4gInN1Y2Nlc3Nm
-dWxseSBpbml0aWFsaXplZCBzZXJpYWwgZGV2aWNlIHJ0c2VyMSAoZmQ9MTIpCj4gUHJvYmxlbSBz
-ZXR0aW5nIHVwIHNlcmlhbCBwb3J0IDAgb24gcnRzZXIwLCBnb3Q6IC0xNiIKPiAKPiBTbyBydF9k
-ZXZfb3BlbigpIHJldHVybnMgLUVCVVNZIG9uIHRoZSBmaXJzdCBwb3J0IHdoaWNoIHNoYXJlZCBJ
-UlEgNQo+IAo+IEkgcmV2ZXJzZWQgdGhlIG9yZGVyIG9mIHRoZSB0d28gcG9ydHMgd2hpY2ggc2hh
-cmUgSVJRIDU6Cj4gIG1vZHByb2JlIHhlbm9fMTY1NTBBIGlvPTB4MDJlOCwweDJmOCBpcnE9NSw1
-Cj4gcmVzdWx0czoKPiAic3VjY2Vzc2Z1bGx5IGluaXRpYWxpemVkIHNlcmlhbCBkZXZpY2UgcnRz
-ZXIxIChmZD0xMikKPiBQcm9ibGVtIHNldHRpbmcgdXAgc2VyaWFsIHBvcnQgMCBvbiBydHNlcjAs
-IGdvdDogLTE2Igo+IAo+IFNvIGFnYWluIHJ0X2Rldl9vcGVuKCkgcmV0dXJucyAtRUJVU1kgb24g
-dGhlIGZpcnN0IHBvcnQgd2hpY2ggc2hhcmVkIElSUSA1LAo+IGV2ZW4gdGhvdWdoIGl0IGlzIGEg
-ZGlmZmVyZW50IHBvcnQgYWRkcmVzcyBub3cuCj4gCj4gSSByZWNvbXBpbGVkIHRoZSB4ZW5vXzE2
-NTUwQSBkcml2ZXIgd2l0aCBzb21lIHByaW50aygpcyBpbiBmdW5jdGlvbgo+IHJ0XzE2NTUwX2lu
-aXRfaW8oKSBvZiAxNjU1MEFfaW8uaC4gVGhhdCBmdW5jdGlvbiBoYXMgdGhlIHBvdGVudGlhbCB0
-bwo+IHJldHVybiAtRUJVU1kgaWYgcmVxdWVzdF9yZWdpb24oKSBvciBtYXBwZWRfaW9bXSBpbmRp
-Y2F0ZSBmYWlsdXJlLCBidXQKPiBub3RoaW5nIHByaW50ZWQgdG8gZG1lc2cgd2hlbiBydF9kZXZf
-b3BlbigpIGZhaWxlZC4KPiAKPiBIb3cgZWxzZSBjYW4gSSBhbmFseXplIHdoeSBydF9kZXZfb3Bl
-bigpIHRoaW5rcyBhIHBvcnQgaXMgdW5hdmFpbGFibGU/Cj4gCgpEbyB5b3UgaGF2ZSBDT05GSUdf
-WEVOT19PUFRfU0hJUlEgZW5hYmxlZCBpbiB5b3VyIGtlcm5lbD8KCkphbgoKLS0tLS0tLS0tLS0t
-LS0gbmV4dCBwYXJ0IC0tLS0tLS0tLS0tLS0tCkEgbm9uLXRleHQgYXR0YWNobWVudCB3YXMgc2Ny
-dWJiZWQuLi4KTmFtZTogc2lnbmF0dXJlLmFzYwpUeXBlOiBhcHBsaWNhdGlvbi9wZ3Atc2lnbmF0
-dXJlClNpemU6IDE4MSBieXRlcwpEZXNjOiBPcGVuUEdQIGRpZ2l0YWwgc2lnbmF0dXJlClVSTDog
-PGh0dHA6Ly94ZW5vbWFpLm9yZy9waXBlcm1haWwveGVub21haS9hdHRhY2htZW50cy8yMDE4MDUy
-MC9lZTNjNzlhOS9hdHRhY2htZW50LnNpZz4K
+On 05/18/2018 06:24 PM, Singh, Raman wrote:
+> Environment: ARM Cortex-A53 quad-core processor (ARM 64-bit) on a
+> Zynq Ultrascale+ ZCU102 dev board, Xenomai 3 next branch from May 
+> 14, 2018 (SHA1: 410a4cc1109ba4e0d05b7ece7b4a5210287e1183 ), 
+> Cobalt configuration with POSIX skin, Linux Kernel version 4.9.24
+> 
+> I've been having issues with semaphore latency when threads access 
+> semaphores while executing on different cores. When both threads accessing 
+> a semaphore execute on the same processor core, the latency between
+> one thread posting a semaphore and another waking up after waiting on it 
+> is fairly small. However, as soon as one of the threads is moved to a 
+> different core, the latency between a semaphore post from one thread to a 
+> waiting thread waking up in response starts to become large enough to 
+> affect real time performance.  The latencies I've been seeing are on the order
+> of 100's of milliseconds.
+> 
+
+Reproduced on hikey here: the rescheduling IPIs Xenomai is sending for
+waking up threads on remote CPUs don't flow to the other end properly
+(ipipe_send_ipi()), which explains the behavior you have been seeing.
+
+@Dmitriy: this may be an issue with the range of SGIs available to the
+kernel when a secure firmware is enabled, which may be restricted to
+SGI[0-7].
+
+For the rescheduling IPI on ARM64, the interrupt pipeline attempts to
+trigger SGI8 which may be reserved by the ATF in secure mode, therefore
+may never be received on the remote end.
+
+Fixing this will require some work in the interrupt pipeline, typically
+for multiplexing our IPIs on a single SGI below SGI8. As a matter of
+fact, the same issue exists on the ARM side, but since running a secure
+firmware there is uncommon for Xenomai users, this went unnoticed (at
+least not reported yet AFAIR). We need to sync up on this not to
+duplicate work.
+
+-- 
+Philippe.
+
