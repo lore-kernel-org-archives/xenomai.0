@@ -1,13 +1,10 @@
-From: Philippe Gerum <rpm@xenomai.org>
-References: <25945327-203a-5535-d68c-12b1a8143f7d@xenomai.org>
-Message-ID: <bae68755-80ac-8108-cc93-bf476beeeb68@xenomai.org>
-Date: Mon, 21 May 2018 12:32:25 +0200
 MIME-Version: 1.0
-In-Reply-To: <25945327-203a-5535-d68c-12b1a8143f7d@xenomai.org>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] I-pipe documentation effort
+From: C Smith <csmithquestions@gmail.com>
+Date: Mon, 21 May 2018 11:07:16 -0700
+Message-ID: <CA+K1mPGFNBvfLbJ+s0Dubx8BMnk9Fpp2NAu568qa8fz7gGfU4Q@mail.gmail.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+Subject: [Xenomai] Only 2 serial ports at a time with xeno_16550A driver
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,32 +13,21 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "Xenomai@xenomai.org" <Xenomai@xenomai.org>
+To: xenomai@xenomai.org
 
-On 03/27/2018 07:03 PM, Philippe Gerum wrote:
-> 
-> [1] is the beginning of a (long overdue) documentation effort of the
-> interrupt pipeline. The primary intent at this point is to help the
-> I-pipe maintainers to find their way more easily in the maze.
-> 
-> This effort is not complete yet, there is more to come, including a
-> documentation of the I-pipe API used by Xenomai. The document I'm
-> pushing today does not cover everything I'd like to see there, but
-> again, that's a start. If you would like some aspects to be (better)
-> covered, please consider contributing to the discussion on this list, or
-> submitting your piece for inclusion in that doc.
-> 
-> Help from native English speakers for fixing misspellings and gibberish
-> would be welcome too, just send me patches.
-> 
-> Thanks,
-> 
-> [1]
-> http://git.xenomai.org/ipipe-noarch.git/commit/?id=c77d53324e7cb47295a3c11c1bf0919385ccc23b
-> 
-
-http://git.xenomai.org/ipipe-arm.git/commit/?id=0acb5dbc69d8a7d7a108857f2f89708b0208a704
-
--- 
-Philippe.
-
+QWggT0ssIEkgcmVjb21waWxlZCB0aGUga2VybmVsIHNvIHhlbm9tYWkgaGFzIHNoYXJlZCBpbnRl
+cnJ1cHRzIG5vdy4gSQp0aG91Z2h0IHRoYXQgZmxhZyB3YXMgZm9yIGxldmVsLXNlbnNpdGl2ZSBp
+bnRlcnJ1cHRzLiBUaGUgYXR0YWNoZWQgcGF0Y2gKbWF5IGNsYXJpZnkgdGhpcyBmb3IgcGVvcGxl
+IGluIHRoZSBmdXR1cmUuCgpCdXQgYWx0aG91Z2ggcnRfZGV2X29wZW4oKSBub3cgc3VjY2Vzc2Z1
+bGx5IHJldHVybnMgYSBmaWxlIGRlc2NyaXB0b3Igd2hlbgpvcGVuaW5nIHRoZSB0d28gc2VyaWFs
+IHBvcnRzICh3aGljaCBzaGFyZSBJUlEgNSksIG5laXRoZXIgb2YgdGhvc2Ugc2VyaWFsCnBvcnRz
+IGNhbiBjb21tdW5pY2F0ZS4KSSBnb3Qgb25seSBhIHNpbmdsZSBieXRlIGludG8gbXkgeGVub21h
+aSBhcHAgZnJvbSBvbmUgb2YgdGhvc2UgcG9ydHMuClRoaXMgc2VlbXMgbGlrZSB0aGUga2luZCBv
+ZiBiZWhhdmlvciBvbmUgd291bGQgZ2V0IGlmLCBpbiB0aGUgaGFuZGxlciwKdGhlcmUgaXMgbm8g
+cmUtZW5hYmxlIG9mIG9mIHRoZSBpbnRlcnJ1cHQgYXQgdGhlIGNvbnRyb2xsZXIgbGV2ZWwuIEl0
+IHNlZW1zCnRoZSBJUlEgaXMgZmlyaW5nIG9ubHkgb25jZS4KCnRoYW5rcywKLUMgU21pdGgKLS0t
+LS0tLS0tLS0tLS0gbmV4dCBwYXJ0IC0tLS0tLS0tLS0tLS0tCkEgbm9uLXRleHQgYXR0YWNobWVu
+dCB3YXMgc2NydWJiZWQuLi4KTmFtZTogeGVub19zaGlycS1oZWxwLnBhdGNoClR5cGU6IHRleHQv
+eC1wYXRjaApTaXplOiA2NTYgYnl0ZXMKRGVzYzogbm90IGF2YWlsYWJsZQpVUkw6IDxodHRwOi8v
+eGVub21haS5vcmcvcGlwZXJtYWlsL3hlbm9tYWkvYXR0YWNobWVudHMvMjAxODA1MjEvMDdjOGIy
+MTMvYXR0YWNobWVudC5iaW4+Cg==
