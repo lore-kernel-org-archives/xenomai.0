@@ -1,15 +1,15 @@
-References: <42c109690d5e4729812cc187a71dd5b0@P10-EX01.3DSystems.Internal>
- <1526523181.3850725.1374998144.0B5577D4@webmail.messagingengine.com>
- <ed5b3323-845b-51a6-8b25-afa3ccfd045a@siemens.com>
-From: Dmitriy Cherkasov <dmitriy@oss-tech.org>
-Message-ID: <dfef9c96-ecc6-3b16-3036-f89abd41c4be@oss-tech.org>
-Date: Mon, 21 May 2018 23:26:20 -0700
+References: <CY4PR0901MB2211C40E748F61C0C92D976DA1900@CY4PR0901MB2211.namprd09.prod.outlook.com>
+ <afc4023f-295b-0f0f-2c8a-e9f9496107f9@xenomai.org>
+ <21f3928b-46d5-3de2-b18c-cdcc58492344@oss-tech.org>
+From: Philippe Gerum <rpm@xenomai.org>
+Message-ID: <8e05c8dc-1cc9-1796-6153-1b3609701c8f@xenomai.org>
+Date: Tue, 22 May 2018 09:29:27 +0200
 MIME-Version: 1.0
-In-Reply-To: <ed5b3323-845b-51a6-8b25-afa3ccfd045a@siemens.com>
+In-Reply-To: <21f3928b-46d5-3de2-b18c-cdcc58492344@oss-tech.org>
 Content-Type: text/plain; charset=utf-8
-Content-Language: en-GB
+Content-Language: en-US
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] Boot failed on arm64 - xenomai_init --> ipipe_send_ipi
+Subject: Re: [Xenomai] Xenomai 3 Multi-core Semaphore latency
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -18,36 +18,67 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jan Kiszka <jan.kiszka@siemens.com>, xenomai@xenomai.org, "Auel, Kendall" <Kendall.Auel@3DSystems.Com>
+To: Dmitriy Cherkasov <dmitriy@oss-tech.org>, "Singh, Raman" <rasingh@mitre.org>, "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On 05/18/2018 12:00 AM, Jan Kiszka wrote:
-> On 2018-05-17 04:13, Dmitriy Cherkasov wrote:
->> On Wed, May 16, 2018, at 11:13 AM, Auel, Kendall wrote:
->>> I'm trying to build a xenomai-enabled kernel for an arm64 (quad A53 
->>> cores). Something is not configured correctly, but I haven't been able 
->>> to get past a stall during xenomai_init. Any ideas on what I'm doing 
->>> wrong? Thanks.
+On 05/22/2018 07:06 AM, Dmitriy Cherkasov wrote:
+> On 05/20/2018 08:07 AM, Philippe Gerum wrote:
+>> On 05/18/2018 06:24 PM, Singh, Raman wrote:
+>>> Environment: ARM Cortex-A53 quad-core processor (ARM 64-bit) on a
+>>> Zynq Ultrascale+ ZCU102 dev board, Xenomai 3 next branch from May 
+>>> 14, 2018 (SHA1: 410a4cc1109ba4e0d05b7ece7b4a5210287e1183 ), 
+>>> Cobalt configuration with POSIX skin, Linux Kernel version 4.9.24
 >>>
->>> [    0.729547] kvm [1]: 8-bit VMID
->>> [    0.732121] kvm [1]: IDMAP page: 40c5e000
->>> [    0.736134] kvm [1]: HYP VA range: 800000000000:ffffffffffff
->>> [    0.742609] kvm [1]: Hyp mode initialized successfully
+>>> I've been having issues with semaphore latency when threads access 
+>>> semaphores while executing on different cores. When both threads accessing 
+>>> a semaphore execute on the same processor core, the latency between
+>>> one thread posting a semaphore and another waking up after waiting on it 
+>>> is fairly small. However, as soon as one of the threads is moved to a 
+>>> different core, the latency between a semaphore post from one thread to a 
+>>> waiting thread waking up in response starts to become large enough to 
+>>> affect real time performance.  The latencies I've been seeing are on the order
+>>> of 100's of milliseconds.
+>>>
 >>
->> I don't think this patch has ever been tested with KVM/HYP mode. I
->> would try and see if it works in SVC mode on the same hardware.
+>> Reproduced on hikey here: the rescheduling IPIs Xenomai is sending for
+>> waking up threads on remote CPUs don't flow to the other end properly
+>> (ipipe_send_ipi()), which explains the behavior you have been seeing.
+>>
+>> @Dmitriy: this may be an issue with the range of SGIs available to the
+>> kernel when a secure firmware is enabled, which may be restricted to
+>> SGI[0-7].
+>>
+>> For the rescheduling IPI on ARM64, the interrupt pipeline attempts to
+>> trigger SGI8 which may be reserved by the ATF in secure mode, therefore
+>> may never be received on the remote end.
+>>
+>> Fixing this will require some work in the interrupt pipeline, typically
+>> for multiplexing our IPIs on a single SGI below SGI8. As a matter of
+>> fact, the same issue exists on the ARM side, but since running a secure
+>> firmware there is uncommon for Xenomai users, this went unnoticed (at
+>> least not reported yet AFAIR). We need to sync up on this not to
+>> duplicate work.
 >>
 > 
-> It's unlikely that the presence of KVM is causing issues: Linux just
-> installs the needed hypervisor stub in EL2 but will continue in EL1 from
-> then on. Only when actually spawning a VM, that code will come into play
-> again.
+> I see this on Hikey with the latest ipipe-arm64 tree as well. I can confirm the
+> reschedule IPI isn't being received although it is sent. Rearranging the IPIs
+> to move reschedule up a few spots resolves the issue, so I think this confirms
+> the root cause.
 > 
-> I'm rather concerned to see gic_raise_softirq causing a Linux context
-> switch. I suppose there is some Linux synchronization mechanism in play,
-> and the patch lacks related adaptions of that.
-> 
-> Jan
+> Philippe, are there architectures that already do this type of multiplexing, or
+> does this mechanism need to be designed from scratch?
 > 
 
-Good point. Kendall, did the patch apply cleanly?
+ppc implements a muxed IPI scheme for platforms with interrupt
+controllers not providing enough IPI channels (i.e. less than 4). This
+is done in the SMP support code, which enables the feature for all ICs
+that would require it (CONFIG_PPC_SMP_MUXED_IPI).
+
+We could use a similar approach, except that we may want to multiplex
+all of the regular kernel inter-processor messages (i.e.
+IPI_WAKEUP..IPI_CPU_BACKTRACE) on a single IPI vector, mapping I-pipe
+messages 1:1 onto the remaining IPI vectors for efficiency. That would
+leave us with 1 (mux) + 3 (HRTIMER, RESCHED and CRITICAL) SGIs used.
+
+-- 
+Philippe.
 
