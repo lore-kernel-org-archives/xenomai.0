@@ -1,10 +1,14 @@
-From: Steve Freyder <steve@freyder.net>
-Message-ID: <5AD4F8A8.70604@freyder.net>
-Date: Mon, 16 Apr 2018 14:25:28 -0500
+References: <CY4PR0901MB2211C40E748F61C0C92D976DA1900@CY4PR0901MB2211.namprd09.prod.outlook.com>
+ <afc4023f-295b-0f0f-2c8a-e9f9496107f9@xenomai.org>
+From: Dmitriy Cherkasov <dmitriy@oss-tech.org>
+Message-ID: <21f3928b-46d5-3de2-b18c-cdcc58492344@oss-tech.org>
+Date: Mon, 21 May 2018 22:06:24 -0700
 MIME-Version: 1.0
-Content-Transfer-Encoding: base64
-Content-Type: text/plain; charset="utf-8"; Format="flowed"
-Subject: [Xenomai] Queue status files/FUSE issue -- part two
+In-Reply-To: <afc4023f-295b-0f0f-2c8a-e9f9496107f9@xenomai.org>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-GB
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai] Xenomai 3 Multi-core Semaphore latency
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -13,87 +17,51 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Philippe Gerum <rpm@xenomai.org>, "Singh, Raman" <rasingh@mitre.org>, "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-R3JlZXRpbmdzIGFnYWluLAoKVGhlcmUgc2VlbXMgdG8gYmUgYW4gaXNzdWUgd2l0aCB0aGUgUlQg
-cXVldWUgc3RhdHVzIGZpbGUgZm9ybWF0dGluZyBhbmQgCnBlcmhhcHMKdGhlIHdheSBpbiB3aGlj
-aCB0aGUgW1dBSVRFUlNdIGxpc3QgaXMgbWFuYWdlZCwgYW5kL29yIG1heWJlIHRoZSB3YXkgdGhl
-IApvdXRwdXQKc3RyaW5nIHRlcm1pbmF0aW9uIGlzIGRvbmUuCgpJIGNhbid0IGJlIHN1cmUgYW5k
-IHRob3VnaHQgSSBzaG91bGQgc2ltcGx5IHN1Ym1pdCB0aGUgdGVzdCAKcHJvZ3JhbS9zY3JpcHRz
-IGFuZApkb2N1bWVudCB0aGUgcmVzdWx0cy4gIEkgYW0gYXR0YWNoaW5nIHRoZW0gYXMgYSBjb21w
-cmVzc2VkIHRhciBmaWxlLCBJIGhvcGUKdGhhdCBpcyBhY2NlcHRhYmxlIGZvcm0gZm9yIHRoZSBm
-b3J1bS4KCkkgbm90aWNlZCB0aGF0IHRoZSAzMjc2OCBsZW5ndGggaW4gdGhpcyBhcmVhIG9mIHRo
-ZSBjb2RlOgoKLi94ZW5vbWFpLTMvbGliL2NvcHBlcnBsYXRlL3JlZ2lzdHJ5LmMtMzE3LSAgICAg
-ICAgICAgICBjYXNlIE9fUkRXUjoKLi94ZW5vbWFpLTMvbGliL2NvcHBlcnBsYXRlL3JlZ2lzdHJ5
-LmMtMzE4LSBzYnVmLT5zdF9tb2RlIHw9IDA2NjY7Ci4veGVub21haS0zL2xpYi9jb3BwZXJwbGF0
-ZS9yZWdpc3RyeS5jLTMxOS0gYnJlYWs7Ci4veGVub21haS0zL2xpYi9jb3BwZXJwbGF0ZS9yZWdp
-c3RyeS5jLTMyMC0gICAgICAgICAgICAgfQouL3hlbm9tYWktMy9saWIvY29wcGVycGxhdGUvcmVn
-aXN0cnkuYy0zMjEtIHNidWYtPnN0X25saW5rID0gMTsKLi94ZW5vbWFpLTMvbGliL2NvcHBlcnBs
-YXRlL3JlZ2lzdHJ5LmM6MzIyOiBzYnVmLT5zdF9zaXplID0gMzI3Njg7IC8qIApYWFg6IHRoaXMg
-c2hvdWxkIGJlIGR5bmFtaWMuICovCi4veGVub21haS0zL2xpYi9jb3BwZXJwbGF0ZS9yZWdpc3Ry
-eS5jLTMyMy0gc2J1Zi0+c3RfYXRpbSA9IGZzb2JqLT5tdGltZTsKLi94ZW5vbWFpLTMvbGliL2Nv
-cHBlcnBsYXRlL3JlZ2lzdHJ5LmMtMzI0LSBzYnVmLT5zdF9jdGltID0gZnNvYmotPmN0aW1lOwou
-L3hlbm9tYWktMy9saWIvY29wcGVycGxhdGUvcmVnaXN0cnkuYy0zMjUtIHNidWYtPnN0X210aW0g
-PSBmc29iai0+bXRpbWU7Cgpzb21ldGltZXMgaXMgYWx0ZXJlZCwgYmVmb3JlIHRoZSBGVVNFIHJl
-YWQgcmVxdWVzdCBpcyBzYXRpc2ZpZWQsIGFuZApzb21ldGltZXMgbm90LiAgSSBkaWRuJ3QgdHJ5
-IHRvIHRyYWNlIGl0IHRvbyBmYXIuCgpUaGUgc2NyaXB0ICJxdGVzdC5zaCIgcnVucyBhIHByb2dy
-YW0gY2FsbGVkICJxeCIgKFF1ZXVlIGVYZXJjaXNlcikgdG8gCmNyZWF0ZSBhCnF1ZXVlLCBhbmQg
-cG9zdCBhIHJlYWQgb24gdGhlIHF1ZXVlLiAgVHdvIGNvcGllcyBhcmUgbGF1bmNoZWQgaW4gdGhl
-IApiYWNrZ3JvdW5kCnRoZW4gdGhlIGZpcnN0IGlzIGtpbGxlZC4gIFRoZSBxdWV1ZSBzdGF0dXMg
-ZmlsZSBpcyBkaXNwbGF5ZWQgaW4gdGhlIApwcm9jZXNzLgoKTm90ZSB3aGF0IGhhcHBlbnMgdG8g
-dGhlIHF1ZXVlIHN0YXR1cyBvdXRwdXQgYXMgeW91IHJ1biAic2ggcXRlc3Quc2giCnJlcGVhdGVk
-bHkuICBPbiBteSBzeXN0ZW0sIEkgc2VlIHNvbWV0aGluZyBsaWtlIHdoYXQgaXMgc2hvd24gYmVs
-b3cuCgpUaGUgaW5jbHVkZWQgImtpbGx0YXNrLnNoIiBjYW4gYmUgdXNlZCB0byBnZXQgcmlkIG9m
-IGFsbCBvZiB0aGUgCmxpbmdlcmluZyB0YXNrcwphZnRlciB0aGUgdGVzdGluZyBpcyBvdmVyLgoK
-SSB1c2UgYSBsaW5nZXJpbmcgc3lzcmVnZCBsYXVuY2hlZCBpbiBzci5zaCBiZWZvcmUgc3RhcnRp
-bmcKdGhlIHRlc3RpbmcsIGxvb2tzIGxpa2UgdGhpczoKCnN5c3JlZ2QgLS1kYWVtb24gLS1yb290
-IC92YXIvcnVuL3hlbm9tYWkvcm9vdC9zZXNzIC0tbGluZ2VyCgpUaGFua3MgaW4gYWR2YW5jZSwK
-U3RldmUKCgotLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0t
-LS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0KIyBzaCBxdGVzdC5zaAorIHQxPTE1MzQyCisgc2xlZXAg
-MQorIHF4IHEgZm9vIHIKMTUzNDI6cnRfcXVldWVfcmVhZCgmcSxidWYsNTEyLFRNX0lORklOSVRF
-KS4uLlt1bmZpbmlzaGVkXQorIHQyPTE1MzQ4Cisga2lsbCAxNTM0MgorIHF4IHEgZm9vIHIKKyBz
-bGVlcCAxCjE1MzQ4OnJ0X3F1ZXVlX3JlYWQoJnEsYnVmLDUxMixUTV9JTkZJTklURSkuLi5bdW5m
-aW5pc2hlZF0KcXRlc3Quc2g6IGxpbmUgMTA6IDE1MzQyIFRlcm1pbmF0ZWQgICAgICAgICAgICAg
-IHF4IHEgZm9vIHIKKyBxc3RhdCBmb28KY2F0IC9ydW4veGVub21haS9yb290L3Nlc3MvMTUzNDgv
-YWxjaGVteS9xdWV1ZXMvZm9vCi0tLS0tLS0tLS0tLS0tLS0tLS0KW1RZUEVdICBbVE9UQUxNRU1d
-ICBbVVNFRE1FTV0gIFtRTElNSVRdICBbTUNPVU5UXQogIEZJRk8gICAgICAgIDg3MDQgICAgICAg
-ICAgMCAgICAgICAgIDAgICAgICAgICAwCi0tCltXQUlURVJdCnRhc2tAMVsxNTM0OF0KCi0tLS0t
-LS0tLS0tLS0tLS0tLS0KIyBzaCBxdGVzdC5zaAorIHQxPTE1MzU5Cisgc2xlZXAgMQorIHF4IHEg
-Zm9vIHIKMTUzNTk6cnRfcXVldWVfcmVhZCgmcSxidWYsNTEyLFRNX0lORklOSVRFKS4uLlt1bmZp
-bmlzaGVkXQorIHQyPTE1MzY0Cisga2lsbCAxNTM1OQorIHNsZWVwIDEKKyBxeCBxIGZvbyByCjE1
-MzY0OnJ0X3F1ZXVlX3JlYWQoJnEsYnVmLDUxMixUTV9JTkZJTklURSkuLi5bdW5maW5pc2hlZF0K
-cXRlc3Quc2g6IGxpbmUgMTA6IDE1MzU5IFRlcm1pbmF0ZWQgICAgICAgICAgICAgIHF4IHEgZm9v
-IHIKKyBxc3RhdCBmb28KY2F0IC9ydW4veGVub21haS9yb290L3Nlc3MvMTUzNDgvYWxjaGVteS9x
-dWV1ZXMvZm9vCi0tLS0tLS0tLS0tLS0tLS0tLS0KW1RZUEVdICBbVE9UQUxNRU1dICBbVVNFRE1F
-TV0gIFtRTElNSVRdICBbTUNPVU5UXQogIEZJRk8gICAgICAgIDg3MDQgICAgICAgICAgMCAgICAg
-ICAgIDAgICAgICAgICAwCi0tCltXQUlURVJdCnRhc2tAMVsxNTM0OF0KdGFza0AxWzE1MzU5XQp0
-YXNrQDFbMTUzNjRdCiAgRklGTyAgICAgICAgODcwNCAgICAgICAgICAwICAgICAgICAgMCAgICAg
-ICAgIDAKLS0KW1ctLS0tLS0tLS0tLS0tLS0tLS0tCiMgc2ggcXRlc3Quc2gKKyB0MT0xNTM3Nwor
-IHNsZWVwIDEKKyBxeCBxIGZvbyByCjE1Mzc3OnJ0X3F1ZXVlX3JlYWQoJnEsYnVmLDUxMixUTV9J
-TkZJTklURSkuLi5bdW5maW5pc2hlZF0KKyB0Mj0xNTM4MgorIGtpbGwgMTUzNzcKKyBzbGVlcCAx
-CisgcXggcSBmb28gcgoxNTM4MjpydF9xdWV1ZV9yZWFkKCZxLGJ1Ziw1MTIsVE1fSU5GSU5JVEUp
-Li4uW3VuZmluaXNoZWRdCnF0ZXN0LnNoOiBsaW5lIDEwOiAxNTM3NyBUZXJtaW5hdGVkICAgICAg
-ICAgICAgICBxeCBxIGZvbyByCisgcXN0YXQgZm9vCmNhdCAvcnVuL3hlbm9tYWkvcm9vdC9zZXNz
-LzE1MzQ4L2FsY2hlbXkvcXVldWVzL2ZvbwotLS0tLS0tLS0tLS0tLS0tLS0tCltUWVBFXSAgW1RP
-VEFMTUVNXSAgW1VTRURNRU1dICBbUUxJTUlUXSAgW01DT1VOVF0KICBGSUZPICAgICAgICA4NzA0
-ICAgICAgICAgIDAgICAgICAgICAwICAgICAgICAgMAotLQpbV0FJVEVSXQp0YXNrQDFbMTUzNDhd
-CnRhc2tAMVsxNTM1OV0KdGFza0AxWzE1MzY0XQp0YXNrQDFbMTUzNzddCnRhc2tAMVsxNTM4Ml0K
-ICAgICAgICAgIDAgICAgICAgICAwCi0tCltXQUlURVJdCnRhc2tAMVsxNTM0OF0KdGFza0AxWzE1
-MzU5XQp0YXNrQDFbMTUzNjRdCiAgRklGTyAgICAgICAgODctLS0tLS0tLS0tLS0tLS0tLS0tCiMg
-c2ggcXRlc3Quc2gKKyB0MT0xNTM5MworIHNsZWVwIDEKKyBxeCBxIGZvbyByCjE1MzkzOnJ0X3F1
-ZXVlX3JlYWQoJnEsYnVmLDUxMixUTV9JTkZJTklURSkuLi5bdW5maW5pc2hlZF0KKyB0Mj0xNTM5
-OAorIGtpbGwgMTUzOTMKKyBzbGVlcCAxCisgcXggcSBmb28gcgoxNTM5ODpydF9xdWV1ZV9yZWFk
-KCZxLGJ1Ziw1MTIsVE1fSU5GSU5JVEUpLi4uW3VuZmluaXNoZWRdCnF0ZXN0LnNoOiBsaW5lIDEw
-OiAxNTM5MyBUZXJtaW5hdGVkICAgICAgICAgICAgICBxeCBxIGZvbyByCisgcXN0YXQgZm9vCmNh
-dCAvcnVuL3hlbm9tYWkvcm9vdC9zZXNzLzE1MzQ4L2FsY2hlbXkvcXVldWVzL2ZvbwotLS0tLS0t
-LS0tLS0tLS0tLS0tCltUWVBFXSAgW1RPVEFMTUVNXSAgW1VTRURNRU1dICBbUUxJTUlUXSAgW01D
-T1VOVF0KICBGSUZPICAgICAgICA4NzA0ICAgICAgICAgIDAgICAgICAgICAwICAgICAgICAgMAot
-LQpbV0FJVEVSXQp0YXNrQDFbMTUzNDhdCnRhc2tAMVsxNTM1OV0KdGFza0AxWzE1MzY0XQp0YXNr
-QDFbMTUzNzddCnRhc2tAMVsxNTM4Ml0KdGFza0AxWzE1MzkzXQp0YXNrQDFbMTUzOThdClRFUl0K
-dGFza0AxWzE1MzQ4XQp0YXNrQDFbMTUzNTldCnRhc2tAMVsxNTM2NF0KdGFza0AxWzE1Mzc3XQp0
-YXNrQDFbMTUzODJdCiAgICAgICAgICAwICAgICAgICAgMAotLQpbV0FJVEVSXQp0YXNrQDFbMTUz
-NDhdCnRhc2stLS0tLS0tLS0tLS0tLS0tLS0tCgotLS0tLS0tLS0tLS0tLSBuZXh0IHBhcnQgLS0t
-LS0tLS0tLS0tLS0KQSBub24tdGV4dCBhdHRhY2htZW50IHdhcyBzY3J1YmJlZC4uLgpOYW1lOiBx
-dWV1ZS1zdGF0dXMudGFyLmd6ClR5cGU6IGFwcGxpY2F0aW9uL3gtZ3ppcApTaXplOiA4NDI4MCBi
-eXRlcwpEZXNjOiBub3QgYXZhaWxhYmxlClVSTDogPGh0dHA6Ly94ZW5vbWFpLm9yZy9waXBlcm1h
-aWwveGVub21haS9hdHRhY2htZW50cy8yMDE4MDQxNi8yNmQ0ZjZkZi9hdHRhY2htZW50LmJpbj4K
+On 05/20/2018 08:07 AM, Philippe Gerum wrote:
+> On 05/18/2018 06:24 PM, Singh, Raman wrote:
+>> Environment: ARM Cortex-A53 quad-core processor (ARM 64-bit) on a
+>> Zynq Ultrascale+ ZCU102 dev board, Xenomai 3 next branch from May 
+>> 14, 2018 (SHA1: 410a4cc1109ba4e0d05b7ece7b4a5210287e1183 ), 
+>> Cobalt configuration with POSIX skin, Linux Kernel version 4.9.24
+>>
+>> I've been having issues with semaphore latency when threads access 
+>> semaphores while executing on different cores. When both threads accessing 
+>> a semaphore execute on the same processor core, the latency between
+>> one thread posting a semaphore and another waking up after waiting on it 
+>> is fairly small. However, as soon as one of the threads is moved to a 
+>> different core, the latency between a semaphore post from one thread to a 
+>> waiting thread waking up in response starts to become large enough to 
+>> affect real time performance.  The latencies I've been seeing are on the order
+>> of 100's of milliseconds.
+>>
+> 
+> Reproduced on hikey here: the rescheduling IPIs Xenomai is sending for
+> waking up threads on remote CPUs don't flow to the other end properly
+> (ipipe_send_ipi()), which explains the behavior you have been seeing.
+> 
+> @Dmitriy: this may be an issue with the range of SGIs available to the
+> kernel when a secure firmware is enabled, which may be restricted to
+> SGI[0-7].
+> 
+> For the rescheduling IPI on ARM64, the interrupt pipeline attempts to
+> trigger SGI8 which may be reserved by the ATF in secure mode, therefore
+> may never be received on the remote end.
+> 
+> Fixing this will require some work in the interrupt pipeline, typically
+> for multiplexing our IPIs on a single SGI below SGI8. As a matter of
+> fact, the same issue exists on the ARM side, but since running a secure
+> firmware there is uncommon for Xenomai users, this went unnoticed (at
+> least not reported yet AFAIR). We need to sync up on this not to
+> duplicate work.
+> 
+
+I see this on Hikey with the latest ipipe-arm64 tree as well. I can confirm the
+reschedule IPI isn't being received although it is sent. Rearranging the IPIs
+to move reschedule up a few spots resolves the issue, so I think this confirms
+the root cause.
+
+Philippe, are there architectures that already do this type of multiplexing, or
+does this mechanism need to be designed from scratch?
+
