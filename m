@@ -1,10 +1,12 @@
+References: <CA+K1mPH6SPht4gtnO4iU9NT814H8GUKUi7OVerF=jcaL-imMJA@mail.gmail.com>
+From: Jan Kiszka <jan.kiszka@siemens.com>
+Message-ID: <18370ab1-dd9e-f62a-524f-e64608f7fec1@siemens.com>
+Date: Wed, 23 May 2018 06:55:50 +0200
 MIME-Version: 1.0
-In-Reply-To: <CA+K1mPGwUjmabtZFz0Taeinj22ACT2WJ3=fZADugRZj5Ua-05A@mail.gmail.com>
-References: <CA+K1mPGwUjmabtZFz0Taeinj22ACT2WJ3=fZADugRZj5Ua-05A@mail.gmail.com>
-From: Greg Gallagher <greg@embeddedgreg.com>
-Date: Tue, 22 May 2018 14:38:47 -0400
-Message-ID: <CALLqZ8QULgKJPWUBjPnJAu3uuPSd3VJge9EJyQCh2sJzdM8Jtg@mail.gmail.com>
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <CA+K1mPH6SPht4gtnO4iU9NT814H8GUKUi7OVerF=jcaL-imMJA@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Subject: Re: [Xenomai] Only 2 serial ports at a time with xeno_16550A driver
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
@@ -14,38 +16,18 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: C Smith <csmithquestions@gmail.com>
-Cc: "Xenomai@xenomai.org" <xenomai@xenomai.org>
+To: C Smith <csmithquestions@gmail.com>, xenomai@xenomai.org
 
-This is highly likely, I'm not sure when this driver was last tested.
-Are you able to put a patch together?  Has anyone else sense similar
-behaviour?
+On 2018-05-20 09:43, C Smith wrote:
+> An update:
+> In the modprobe, I tried putting first the two ports which share IRQ 5:
+> modprobe xeno_16550A io=0x02f8,0x2e8,0x3f8 irq=5,5,4
 
--Greg
+BTW, the x86 platform UARTs use IRQ4 (port 1 and 3) and IRQ3 (port 2 and 4).
 
-On Tue, May 22, 2018 at 2:31 PM, C Smith <csmithquestions@gmail.com> wrote:
-> I think I may have found a bug in the rtl_16550A driver when using shared
-> interrupts. (I am on Xenomai 2.6.5. Kernel 3.18.20.)
->
-> I think the interrupt handler is not sending an EOI to the lower (ISA 8259)
-> interrupt controller, though it certainly is doing the right thing for
-> higher IRQs above 16.
->
-> I used a Moxa 4-port serial card in the PCI bus which has all 4 ports
-> sharing IRQ 17. The rtl_16550A driver can use all 4 ports OK.
->
-> But the rtl_16550A driver stalls after one interrupt when I use multiple
-> serial ports on my motherboard where all the serial ports share IRQ 5. This
-> is indicated by the fact that I can send one byte out the port, or I can
-> get a single byte into the port, before the port can no longer send or
-> receive anything further.
->
-> I diffed the Xenomai 3.0.5 source versus the 2.6.5 rtl_16550A.c source and
-> the code is very similar so the liability is in both branches I assume.
->
-> -C Smith
-> _______________________________________________
-> Xenomai mailing list
-> Xenomai@xenomai.org
-> https://xenomai.org/mailman/listinfo/xenomai
+Jan
+
+-- 
+Siemens AG, Corporate Technology, CT RDA IOT SES-DE
+Corporate Competence Center Embedded Linux
 
