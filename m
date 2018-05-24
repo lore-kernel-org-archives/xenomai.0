@@ -1,14 +1,14 @@
-References: <7be9b9c7-7393-eca0-6a86-bcf3d0302271@siemens.com>
- <667bd118-b8eb-4fbf-cb24-4f4f30114370@siemens.com>
-From: Philippe Gerum <rpm@xenomai.org>
-Message-ID: <3c4fc185-19af-4285-07a2-148b2a039fec@xenomai.org>
-Date: Tue, 17 Apr 2018 09:22:40 +0200
+References: <freemail.20180524135633.61226.1@fmxmldata03.freemail.hu>
+From: Jan Kiszka <jan.kiszka@siemens.com>
+Message-ID: <a4df1809-1bf2-5e56-7234-a6b47d9ad950@siemens.com>
+Date: Thu, 24 May 2018 16:18:01 +0200
 MIME-Version: 1.0
-In-Reply-To: <667bd118-b8eb-4fbf-cb24-4f4f30114370@siemens.com>
-Content-Type: text/plain; charset=utf-8
+In-Reply-To: <freemail.20180524135633.61226.1@fmxmldata03.freemail.hu>
+Content-Type: text/plain; charset="utf-8"
 Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] [PATCH] copperplate: Drop PI from registry locks
+Content-Transfer-Encoding: 8bit
+Subject: Re: [Xenomai] Posix named semaphore used by two separate
+	applications
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,69 +17,72 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jan Kiszka <jan.kiszka@siemens.com>, Xenomai <xenomai@xenomai.org>
+To: Paal Tamas <paal_to@freemail.hu>, Xenomai <xenomai@xenomai.org>
 
-On 04/13/2018 07:51 PM, Jan Kiszka wrote:
-> None of the callers that run into the locks have RT requirements.
+Again, re-adding the list - please always use "reply to all".
+
+On 2018-05-24 13:56, Paal Tamas wrote:
 > 
-> Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
-> ---
 > 
-> As noted before, I think we should even be fine with STD locks, but that
-> may require more changes.
+> Jan Kiszka <jan.kiszka@siemens.com> írta:
+>> [re-adding the list]
+>>
+>> On 2018-05-24 13:35, Paal Tamas wrote:
+>>>
+>>>
+>>> Jan Kiszka <jan.kiszka@siemens.com> írta:
+>>>> On 2018-05-24 10:50, Paal Tamas wrote:
+>>>>> I would like to use the same named semaphore in two separate Xenomai binaries. I am using the Posix skin. It does not work as I am expecting it. 
+>>>>> The first instance of my test application creates a named semaphore. It goes to sleep after that. The second instance of the same applications starts than. It realizes that the semaphore with the name already exists, so it opens it. The sem_open() returns a valid (like) pointer. After that all semaphore functions in this second application return EINVAL (22) (Invalid argument). Both the sem_wait() and the sem_close() function behave this way.
+>>>>>
+>>>>> The same procedure worked fine in 2.6.2.1 (the previous version I used). I tried 3.0.5 and the latest git repository too. The same bad behavior there.
+>>>>>
+>>>>
+>>>> Did you configure userspace with --enable-pshared?
+>>>>
+>>>
+>>> Yes. I invoked the "configure" script this way:
+>>>
+>>> ./configure --with-core=cobalt --enable-smp --enable-pshared
+>>
+>> OK.
+>>
+>>>
+>>> This is my configuration:
+>>>
+>>> /xeno-config --info
+>>> Xenomai version: Xenomai/cobalt v3.0.6 -- #50ef005 (2018-05-13 16:21:13 +0200)
+>>> Linux clickandmove-NUC 4.9.51xeno #1 SMP Wed May 23 05:14:47 PDT 2018 x86_64 x86_64 x86_64 GNU/Linux
+>>> Kernel parameters: BOOT_IMAGE=/boot/vmlinuz-4.9.51xeno root=UUID=7e90a17b-1ea0-4b84-849f-7d621fe6d580 ro quiet splash vt.handoff=7
+>>> I-pipe release #5 detected
+>>> Cobalt core 3.0.6 detected
+>>> Compiler: gcc version 5.4.0 20160609 (Ubuntu 5.4.0-6ubuntu1~16.04.5)
+>>> Build args: --with-core=cobalt --enable-smp --enable-pshared
+>>>
+>>> When I tried the git repository I cheated a bit. I could not find the configure script (neither some others) and all the makefile.in files were missing, so I copied these files from the xenomai-3.0.6.tar.bz2. I've never tried the git  repositore before, always used the bz2 file(s). In case of the 3.0.5 version I used the bz2 file for the tests.
+>>
+>> Just run scripts/bootstrap when using a git checkout.
 > 
->  lib/copperplate/registry.c | 2 --
->  1 file changed, 2 deletions(-)
+> Do I need any parameters to the scripts/bootstrap script in this case or I should simply run it?
 > 
-> diff --git a/lib/copperplate/registry.c b/lib/copperplate/registry.c
-> index daefa6c97..1bf0ebfea 100644
-> --- a/lib/copperplate/registry.c
-> +++ b/lib/copperplate/registry.c
-> @@ -175,7 +175,6 @@ int registry_init_file(struct fsobj *fsobj,
->  
->  	pthread_mutexattr_init(&mattr);
->  	pthread_mutexattr_settype(&mattr, mutex_type_attribute);
-> -	pthread_mutexattr_setprotocol(&mattr, PTHREAD_PRIO_INHERIT);
->  	pthread_mutexattr_setpshared(&mattr, PTHREAD_PROCESS_PRIVATE);
->  	ret = __bt(-__RT(pthread_mutex_init(&fsobj->lock, &mattr)));
->  	pthread_mutexattr_destroy(&mattr);
-> @@ -758,7 +757,6 @@ int __registry_pkg_init(const char *arg0, char *mountpt, int flags)
->  
->  	pthread_mutexattr_init(&mattr);
->  	pthread_mutexattr_settype(&mattr, mutex_type_attribute);
-> -	pthread_mutexattr_setprotocol(&mattr, PTHREAD_PRIO_INHERIT);
->  	pthread_mutexattr_setpshared(&mattr, PTHREAD_PROCESS_PRIVATE);
->  	ret = __bt(-__RT(pthread_mutex_init(&p->lock, &mattr)));
->  	pthread_mutexattr_destroy(&mattr);
+>>
+>> To ensure that we are truly hunting a Xenomai issue: Does your testcase
+>> work with plain Linux?
+>>
 > 
+> Yes, it works fine under plain Linux. Sorry that I forgot to mention this...
 
-This one raises an interesting issue: since commit #8e606e681,
-registry_{add, destroy}_file() use plain malloc(), therefore are subject
-to mode switches, dropping the real-time guarantee from object
-creation/deletion routines such as rt_*_{create, delete}() calls from
-the Alchemy API.
+Confirmed.
 
-Previously to such change, some of these routines did not provide such
-guarantee anyway, e.g. rt_task_create(), but others did like
-rt_mutex_create(), rt_cond_create().
+In fact, your test also exposes some cleanup issue: When terminating a
+process, Xenomai does not remove the semaphore, and you need to reboot
+to remove the object.
 
-I'm now questioning those specific changes in registry_{add,
-destroy}_file(), because they might break applications assuming that rt
-mode is not lost when calling them, which is still true if the registry
-is disabled, leading to a fairly confusing inconsistency.
+Will look into these problems.
 
-Merging your patch would enforce this change in behavior even more,
-carving in stone that all object creation and deletion routines which
-interface with the registry won't be rt-capable anymore.
-
-Would that be generally acceptable?
-
-PS: btw, the memory allocation mess is much worse than I suspected, and
-it is globally bad: this is not only a matter of properly sizing the
-private memory heap, but a general performance issues with all
-allocators, on different aspects and usage patterns. I'll follow up on
-this later this week with details.
+Jan
 
 -- 
-Philippe.
+Siemens AG, Corporate Technology, CT RDA IOT SES-DE
+Corporate Competence Center Embedded Linux
 
