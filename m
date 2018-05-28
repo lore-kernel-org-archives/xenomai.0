@@ -1,12 +1,10 @@
-References: <ed2939b9-1410-f562-fe2b-680d8ef1f616@siemens.com>
- <freemail.20180525111815.26788.1@fmxmldata05.freemail.hu>
-From: Jan Kiszka <jan.kiszka@web.de>
-Message-ID: <2325d3e2-26a7-f32a-5611-166eb22d5f03@web.de>
-Date: Sat, 26 May 2018 07:09:19 +0200
+Date: Mon, 28 May 2018 13:10:22 +0200 (CEST)
+From: Paal Tamas <paal_to@freemail.hu>
+In-Reply-To: <2325d3e2-26a7-f32a-5611-166eb22d5f03@web.de>
+Message-ID: <freemail.20180528131022.81320.1@fmxmldata03.freemail.hu>
 MIME-Version: 1.0
-In-Reply-To: <freemail.20180525111815.26788.1@fmxmldata05.freemail.hu>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+Content-Type: text/plain; CHARSET=UTF-8
+Content-Transfer-Encoding: QUOTED-PRINTABLE
 Subject: Re: [Xenomai] Posix named semaphore used by two separate
 	applications
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
@@ -17,76 +15,62 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Paal Tamas <paal_to@freemail.hu>, xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-T24gMjAxOC0wNS0yNSAxMToxOCwgUGFhbCBUYW1hcyB3cm90ZToKPiAKPiAKPiBKYW4gS2lzemth
-IDxqYW4ua2lzemthQHNpZW1lbnMuY29tPiDDrXJ0YToKPj4gT24gMjAxOC0wNS0yNCAxNjoxOCwg
-SmFuIEtpc3prYSB3cm90ZToKPj4+IEFnYWluLCByZS1hZGRpbmcgdGhlIGxpc3QgLSBwbGVhc2Ug
-YWx3YXlzIHVzZSAicmVwbHkgdG8gYWxsIi4KPj4+Cj4+PiBPbiAyMDE4LTA1LTI0IDEzOjU2LCBQ
-YWFsIFRhbWFzIHdyb3RlOgo+Pj4+Cj4+Pj4KPj4+PiBKYW4gS2lzemthIDxqYW4ua2lzemthQHNp
-ZW1lbnMuY29tPiDDrXJ0YToKPj4+Pj4gW3JlLWFkZGluZyB0aGUgbGlzdF0KPj4+Pj4KPj4+Pj4g
-T24gMjAxOC0wNS0yNCAxMzozNSwgUGFhbCBUYW1hcyB3cm90ZToKPj4+Pj4+Cj4+Pj4+Pgo+Pj4+
-Pj4gSmFuIEtpc3prYSA8amFuLmtpc3prYUBzaWVtZW5zLmNvbT4gw61ydGE6Cj4+Pj4+Pj4gT24g
-MjAxOC0wNS0yNCAxMDo1MCwgUGFhbCBUYW1hcyB3cm90ZToKPj4+Pj4+Pj4gSSB3b3VsZCBsaWtl
-IHRvIHVzZSB0aGUgc2FtZSBuYW1lZCBzZW1hcGhvcmUgaW4gdHdvIHNlcGFyYXRlIFhlbm9tYWkg
-YmluYXJpZXMuIEkgYW0gdXNpbmcgdGhlIFBvc2l4IHNraW4uIEl0IGRvZXMgbm90IHdvcmsgYXMg
-SSBhbSBleHBlY3RpbmcgaXQuIAo+Pj4+Pj4+PiBUaGUgZmlyc3QgaW5zdGFuY2Ugb2YgbXkgdGVz
-dCBhcHBsaWNhdGlvbiBjcmVhdGVzIGEgbmFtZWQgc2VtYXBob3JlLiBJdCBnb2VzIHRvIHNsZWVw
-IGFmdGVyIHRoYXQuIFRoZSBzZWNvbmQgaW5zdGFuY2Ugb2YgdGhlIHNhbWUgYXBwbGljYXRpb25z
-IHN0YXJ0cyB0aGFuLiBJdCByZWFsaXplcyB0aGF0IHRoZSBzZW1hcGhvcmUgd2l0aCB0aGUgbmFt
-ZSBhbHJlYWR5IGV4aXN0cywgc28gaXQgb3BlbnMgaXQuIFRoZSBzZW1fb3BlbigpIHJldHVybnMg
-YSB2YWxpZCAobGlrZSkgcG9pbnRlci4gQWZ0ZXIgdGhhdCBhbGwgc2VtYXBob3JlIGZ1bmN0aW9u
-cyBpbiB0aGlzIHNlY29uZCBhcHBsaWNhdGlvbiByZXR1cm4gRUlOVkFMICgyMikgKEludmFsaWQg
-YXJndW1lbnQpLiBCb3RoIHRoZSBzZW1fd2FpdCgpIGFuZCB0aGUgc2VtX2Nsb3NlKCkgZnVuY3Rp
-b24gYmVoYXZlIHRoaXMgd2F5Lgo+Pj4+Pj4+Pgo+Pj4+Pj4+PiBUaGUgc2FtZSBwcm9jZWR1cmUg
-d29ya2VkIGZpbmUgaW4gMi42LjIuMSAodGhlIHByZXZpb3VzIHZlcnNpb24gSSB1c2VkKS4gSSB0
-cmllZCAzLjAuNSBhbmQgdGhlIGxhdGVzdCBnaXQgcmVwb3NpdG9yeSB0b28uIFRoZSBzYW1lIGJh
-ZCBiZWhhdmlvciB0aGVyZS4KPj4+Pj4+Pj4KPj4+Pj4+Pgo+Pj4+Pj4+IERpZCB5b3UgY29uZmln
-dXJlIHVzZXJzcGFjZSB3aXRoIC0tZW5hYmxlLXBzaGFyZWQ/Cj4+Pj4+Pj4KPj4+Pj4+Cj4+Pj4+
-PiBZZXMuIEkgaW52b2tlZCB0aGUgImNvbmZpZ3VyZSIgc2NyaXB0IHRoaXMgd2F5Ogo+Pj4+Pj4K
-Pj4+Pj4+IC4vY29uZmlndXJlIC0td2l0aC1jb3JlPWNvYmFsdCAtLWVuYWJsZS1zbXAgLS1lbmFi
-bGUtcHNoYXJlZAo+Pj4+Pgo+Pj4+PiBPSy4KPj4+Pj4KPj4+Pj4+Cj4+Pj4+PiBUaGlzIGlzIG15
-IGNvbmZpZ3VyYXRpb246Cj4+Pj4+Pgo+Pj4+Pj4gL3hlbm8tY29uZmlnIC0taW5mbwo+Pj4+Pj4g
-WGVub21haSB2ZXJzaW9uOiBYZW5vbWFpL2NvYmFsdCB2My4wLjYgLS0gIzUwZWYwMDUgKDIwMTgt
-MDUtMTMgMTY6MjE6MTMgKzAyMDApCj4+Pj4+PiBMaW51eCBjbGlja2FuZG1vdmUtTlVDIDQuOS41
-MXhlbm8gIzEgU01QIFdlZCBNYXkgMjMgMDU6MTQ6NDcgUERUIDIwMTggeDg2XzY0IHg4Nl82NCB4
-ODZfNjQgR05VL0xpbnV4Cj4+Pj4+PiBLZXJuZWwgcGFyYW1ldGVyczogQk9PVF9JTUFHRT0vYm9v
-dC92bWxpbnV6LTQuOS41MXhlbm8gcm9vdD1VVUlEPTdlOTBhMTdiLTFlYTAtNGI4NC04NDlmLTdk
-NjIxZmU2ZDU4MCBybyBxdWlldCBzcGxhc2ggdnQuaGFuZG9mZj03Cj4+Pj4+PiBJLXBpcGUgcmVs
-ZWFzZSAjNSBkZXRlY3RlZAo+Pj4+Pj4gQ29iYWx0IGNvcmUgMy4wLjYgZGV0ZWN0ZWQKPj4+Pj4+
-IENvbXBpbGVyOiBnY2MgdmVyc2lvbiA1LjQuMCAyMDE2MDYwOSAoVWJ1bnR1IDUuNC4wLTZ1YnVu
-dHUxfjE2LjA0LjUpCj4+Pj4+PiBCdWlsZCBhcmdzOiAtLXdpdGgtY29yZT1jb2JhbHQgLS1lbmFi
-bGUtc21wIC0tZW5hYmxlLXBzaGFyZWQKPj4+Pj4+Cj4+Pj4+PiBXaGVuIEkgdHJpZWQgdGhlIGdp
-dCByZXBvc2l0b3J5IEkgY2hlYXRlZCBhIGJpdC4gSSBjb3VsZCBub3QgZmluZCB0aGUgY29uZmln
-dXJlIHNjcmlwdCAobmVpdGhlciBzb21lIG90aGVycykgYW5kIGFsbCB0aGUgbWFrZWZpbGUuaW4g
-ZmlsZXMgd2VyZSBtaXNzaW5nLCBzbyBJIGNvcGllZCB0aGVzZSBmaWxlcyBmcm9tIHRoZSB4ZW5v
-bWFpLTMuMC42LnRhci5iejIuIEkndmUgbmV2ZXIgdHJpZWQgdGhlIGdpdCAgcmVwb3NpdG9yZSBi
-ZWZvcmUsIGFsd2F5cyB1c2VkIHRoZSBiejIgZmlsZShzKS4gSW4gY2FzZSBvZiB0aGUgMy4wLjUg
-dmVyc2lvbiBJIHVzZWQgdGhlIGJ6MiBmaWxlIGZvciB0aGUgdGVzdHMuCj4+Pj4+Cj4+Pj4+IEp1
-c3QgcnVuIHNjcmlwdHMvYm9vdHN0cmFwIHdoZW4gdXNpbmcgYSBnaXQgY2hlY2tvdXQuCj4+Pj4K
-Pj4+PiBEbyBJIG5lZWQgYW55IHBhcmFtZXRlcnMgdG8gdGhlIHNjcmlwdHMvYm9vdHN0cmFwIHNj
-cmlwdCBpbiB0aGlzIGNhc2Ugb3IgSSBzaG91bGQgc2ltcGx5IHJ1biBpdD8KPj4+Pgo+Pj4+Pgo+
-Pj4+PiBUbyBlbnN1cmUgdGhhdCB3ZSBhcmUgdHJ1bHkgaHVudGluZyBhIFhlbm9tYWkgaXNzdWU6
-IERvZXMgeW91ciB0ZXN0Y2FzZQo+Pj4+PiB3b3JrIHdpdGggcGxhaW4gTGludXg/Cj4+Pj4+Cj4+
-Pj4KPj4+PiBZZXMsIGl0IHdvcmtzIGZpbmUgdW5kZXIgcGxhaW4gTGludXguIFNvcnJ5IHRoYXQg
-SSBmb3Jnb3QgdG8gbWVudGlvbiB0aGlzLi4uCj4+Pgo+Pj4gQ29uZmlybWVkLgo+Pj4KPj4+IElu
-IGZhY3QsIHlvdXIgdGVzdCBhbHNvIGV4cG9zZXMgc29tZSBjbGVhbnVwIGlzc3VlOiBXaGVuIHRl
-cm1pbmF0aW5nIGEKPj4+IHByb2Nlc3MsIFhlbm9tYWkgZG9lcyBub3QgcmVtb3ZlIHRoZSBzZW1h
-cGhvcmUsIGFuZCB5b3UgbmVlZCB0byByZWJvb3QKPj4+IHRvIHJlbW92ZSB0aGUgb2JqZWN0Lgo+
-Pgo+PiBDb3JyZWN0aW9uOiBUaGlzIGlzIG5vdCBhIHdyb25nIGJlaGF2aW9yLCBMaW51eCBkb2Vz
-IHRoZSBzYW1lLiBUaGUgdGVzdAo+PiBjb2RlIGp1c3QgaGFzIG5vIGNoYW5jZSB0byBjbGVhbiB1
-cCBhIHByZWV4aXN0aW5nIHNlbSBiZWNhdXNlIG9mIHRoZQo+PiBvdGhlciBwcm9ibGVtIChFSU5W
-QUwpLgo+Pgo+PiBKYW4KPj4KPj4+Cj4+PiBXaWxsIGxvb2sgaW50byB0aGVzZSBwcm9ibGVtcy4K
-Pj4+Cj4+PiBKYW4KPj4+Cj4+Cj4gSSBzYXcgdGhhdCB5b3UgY3JlYXRlZCBzb21lIHBhdGNoZXMg
-b24gdGhpcyBpc3N1ZSBhbmQgbW9kaWZpZWQgdGhlIGdpdCByZXBvc2l0b3J5LiBJIGNsb25lZCB0
-aGUgbGF0ZXN0IG9uZSwgcmVidWlsdCBYZW5vbWFpIGFuZCBteSB0ZXN0IGFwcGxpY2F0aW9uIGJ1
-dCB0aGUgb3JpZ2luYWwgRUlOVkFMLCBJbnZhbGlkIEFyZ3VtZW50IGVycm9yIGluIGNhc2Ugb2Yg
-dGhlIHNlY29uZCBpbnN0YW5jZSBvZiB0aGUgdGVzdCBhcHBsaWNhdGlvbiBzdGlsbCBleGlzdHMu
-IEluIG90aGVyIHdvcmRzIEkgZG8gbm90IHNlZSBhbnkgY2hhbmdlIGluIHRoZSBiZWhhdmlvci4K
-PiBTaG91bGQgSSByZWJ1aWxkIHRoZSBMaW51eCBrZXJuZWwgdG9vPwoKWWVzLCB0aGUgZml4IGlz
-IHRhcmdldGluZyB0aGUga2VybmVsIGNvZGUuCgpKYW4KCi0tLS0tLS0tLS0tLS0tIG5leHQgcGFy
-dCAtLS0tLS0tLS0tLS0tLQpBIG5vbi10ZXh0IGF0dGFjaG1lbnQgd2FzIHNjcnViYmVkLi4uCk5h
-bWU6IHNpZ25hdHVyZS5hc2MKVHlwZTogYXBwbGljYXRpb24vcGdwLXNpZ25hdHVyZQpTaXplOiAx
-ODEgYnl0ZXMKRGVzYzogT3BlblBHUCBkaWdpdGFsIHNpZ25hdHVyZQpVUkw6IDxodHRwOi8veGVu
-b21haS5vcmcvcGlwZXJtYWlsL3hlbm9tYWkvYXR0YWNobWVudHMvMjAxODA1MjYvNjRkODBjODkv
-YXR0YWNobWVudC5zaWc+Cg==
+=0A=0AJan Kiszka <jan.kiszka@web.de> =C3=ADrta:=0A>On 2018-05-25 11:18, Paa=
+l Tamas wrote:=0A>> =0A>> =0A>> Jan Kiszka <jan.kiszka@siemens.com> =C3=ADr=
+ta:=0A>>> On 2018-05-24 16:18, Jan Kiszka wrote:=0A>>>> Again, re-adding th=
+e list - please always use "reply to all".=0A>>>>=0A>>>> On 2018-05-24 13:5=
+6, Paal Tamas wrote:=0A>>>>>=0A>>>>>=0A>>>>> Jan Kiszka <jan.kiszka@siemens=
+.com> =C3=ADrta:=0A>>>>>> [re-adding the list]=0A>>>>>>=0A>>>>>> On 2018-05=
+-24 13:35, Paal Tamas wrote:=0A>>>>>>>=0A>>>>>>>=0A>>>>>>> Jan Kiszka <jan.=
+kiszka@siemens.com> =C3=ADrta:=0A>>>>>>>> On 2018-05-24 10:50, Paal Tamas w=
+rote:=0A>>>>>>>>> I would like to use the same named semaphore in two separ=
+ate Xenomai binaries. I am using the Posix skin. It does not work as I am e=
+xpecting it. =0A>>>>>>>>> The first instance of my test application creates=
+ a named semaphore. It goes to sleep after that. The second instance of the=
+ same applications starts than. It realizes that the semaphore with the nam=
+e already exists, so it opens it. The sem_open() returns a valid (like) poi=
+nter. After that all semaphore functions in this second application return =
+EINVAL (22) (Invalid argument). Both the sem_wait() and the sem_close() fun=
+ction behave this way.=0A>>>>>>>>>=0A>>>>>>>>> The same procedure worked fi=
+ne in 2.6.2.1 (the previous version I used). I tried 3.0.5 and the latest g=
+it repository too. The same bad behavior there.=0A>>>>>>>>>=0A>>>>>>>>=0A>>=
+>>>>>> Did you configure userspace with --enable-pshared?=0A>>>>>>>>=0A>>>>=
+>>>=0A>>>>>>> Yes. I invoked the "configure" script this way:=0A>>>>>>>=0A>=
+>>>>>> ./configure --with-core=3Dcobalt --enable-smp --enable-pshared=0A>>>=
+>>>=0A>>>>>> OK.=0A>>>>>>=0A>>>>>>>=0A>>>>>>> This is my configuration:=0A>=
+>>>>>>=0A>>>>>>> /xeno-config --info=0A>>>>>>> Xenomai version: Xenomai/cob=
+alt v3.0.6 -- #50ef005 (2018-05-13 16:21:13 +0200)=0A>>>>>>> Linux clickand=
+move-NUC 4.9.51xeno #1 SMP Wed May 23 05:14:47 PDT 2018 x86_64 x86_64 x86_6=
+4 GNU/Linux=0A>>>>>>> Kernel parameters: BOOT_IMAGE=3D/boot/vmlinuz-4.9.51x=
+eno root=3DUUID=3D7e90a17b-1ea0-4b84-849f-7d621fe6d580 ro quiet splash vt.h=
+andoff=3D7=0A>>>>>>> I-pipe release #5 detected=0A>>>>>>> Cobalt core 3.0.6=
+ detected=0A>>>>>>> Compiler: gcc version 5.4.0 20160609 (Ubuntu 5.4.0-6ubu=
+ntu1~16.04.5)=0A>>>>>>> Build args: --with-core=3Dcobalt --enable-smp --ena=
+ble-pshared=0A>>>>>>>=0A>>>>>>> When I tried the git repository I cheated a=
+ bit. I could not find the configure script (neither some others) and all t=
+he makefile.in files were missing, so I copied these files from the xenomai=
+-3.0.6.tar.bz2. I've never tried the git  repositore before, always used th=
+e bz2 file(s). In case of the 3.0.5 version I used the bz2 file for the tes=
+ts.=0A>>>>>>=0A>>>>>> Just run scripts/bootstrap when using a git checkout.=
+=0A>>>>>=0A>>>>> Do I need any parameters to the scripts/bootstrap script i=
+n this case or I should simply run it?=0A>>>>>=0A>>>>>>=0A>>>>>> To ensure =
+that we are truly hunting a Xenomai issue: Does your testcase=0A>>>>>> work=
+ with plain Linux?=0A>>>>>>=0A>>>>>=0A>>>>> Yes, it works fine under plain =
+Linux. Sorry that I forgot to mention this...=0A>>>>=0A>>>> Confirmed.=0A>>=
+>>=0A>>>> In fact, your test also exposes some cleanup issue: When terminat=
+ing a=0A>>>> process, Xenomai does not remove the semaphore, and you need t=
+o reboot=0A>>>> to remove the object.=0A>>>=0A>>> Correction: This is not a=
+ wrong behavior, Linux does the same. The test=0A>>> code just has no chanc=
+e to clean up a preexisting sem because of the=0A>>> other problem (EINVAL)=
+.=0A>>>=0A>>> Jan=0A>>>=0A>>>>=0A>>>> Will look into these problems.=0A>>>>=
+=0A>>>> Jan=0A>>>>=0A>>>=0A>> I saw that you created some patches on this i=
+ssue and modified the git repository. I cloned the latest one, rebuilt Xeno=
+mai and my test application but the original EINVAL, Invalid Argument error=
+ in case of the second instance of the test application still exists. In ot=
+her words I do not see any change in the behavior.=0A>> Should I rebuild th=
+e Linux kernel too?=0A>=0A>Yes, the fix is targeting the kernel code.=0A>=
+=0A>Jan=0A>=0A=0AAfter rebuilding the kernel the problem is disappeared. No=
+w my test program works as expected.=0AThank you very much!=0A=0ATamas=0A
+
