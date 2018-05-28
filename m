@@ -1,9 +1,11 @@
+From: Jan Kiszka <jan.kiszka@siemens.com>
+Message-ID: <9c717071-fc03-1ba8-f6ff-9d6f131bd52d@siemens.com>
+Date: Mon, 28 May 2018 20:51:35 +0200
 MIME-Version: 1.0
-From: C Smith <csmithquestions@gmail.com>
-Date: Mon, 28 May 2018 10:21:01 -0700
-Message-ID: <CA+K1mPHAYw41SVh9M1zUwcZUB5g8ygjSbM7Pn0J61gRMzTkKcA@mail.gmail.com>
-Content-Type: text/plain; charset="UTF-8"
-Subject: [Xenomai] Only 2 serial ports at a time with xeno_16550A driver
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+Subject: [Xenomai] syncobj_wait_grant vs. signals
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -12,19 +14,21 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
+To: Philippe Gerum <rpm@xenomai.org>
+Cc: Xenomai <xenomai@xenomai.org>
 
-Jan wrote:
->Platform UART IRQs are assumed to be edge-triggered (see irqtype
->variable) - maybe your special board is different in this regard as
->well. Try removing RTDM_IRQTYPE_EDGE.
+Hi Philippe,
 
-I couldn't find a kernel option called RTDM_IRQTYPE_EDGE, either with 'make
-menuconfig' or by grepping the Xenomai sources.
+struggling with an internal implementation on top of copperplate's
+syncobj_wait_grant, I was wondering if that function is supposed to
+return -EINTR on signal interruptions. It's mercury variant will not
+because it used pthread_cond_wait internally. The cobalt version does,
+and now I need to decide where to handle that best.
 
-So I assumed you meant do do this in include/rtdm_driver.h ?
-/* #define RTDM_IRQTYPE_EDGE        XN_ISR_EDGE */   // just a test
-#define RTDM_IRQTYPE_EDGE 0
+Thanks,
+Jan
 
-I  recompiled the xeno_16550A driver this way and it behaved no better. I
-still can't get an interrupt if two serial ports share an IRQ.
+-- 
+Siemens AG, Corporate Technology, CT RDA IOT SES-DE
+Corporate Competence Center Embedded Linux
+
