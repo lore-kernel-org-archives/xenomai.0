@@ -1,13 +1,13 @@
-References: <CA+K1mPHAYw41SVh9M1zUwcZUB5g8ygjSbM7Pn0J61gRMzTkKcA@mail.gmail.com>
-From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <ca10bce1-a06d-6c3d-41ad-af0c3012a999@siemens.com>
-Date: Tue, 29 May 2018 08:39:29 +0200
+References: <9c717071-fc03-1ba8-f6ff-9d6f131bd52d@siemens.com>
+From: Philippe Gerum <rpm@xenomai.org>
+Message-ID: <a57cb350-387e-fa0b-aad0-94f925a1f54a@xenomai.org>
+Date: Tue, 29 May 2018 09:31:27 +0200
 MIME-Version: 1.0
-In-Reply-To: <CA+K1mPHAYw41SVh9M1zUwcZUB5g8ygjSbM7Pn0J61gRMzTkKcA@mail.gmail.com>
+In-Reply-To: <9c717071-fc03-1ba8-f6ff-9d6f131bd52d@siemens.com>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] Only 2 serial ports at a time with xeno_16550A driver
+Subject: Re: [Xenomai] syncobj_wait_grant vs. signals
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,33 +16,27 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: C Smith <csmithquestions@gmail.com>, xenomai@xenomai.org
+To: Jan Kiszka <jan.kiszka@siemens.com>
+Cc: Xenomai <xenomai@xenomai.org>
 
-On 2018-05-28 19:21, C Smith wrote:
-> Jan wrote:
->> Platform UART IRQs are assumed to be edge-triggered (see irqtype
->> variable) - maybe your special board is different in this regard as
->> well. Try removing RTDM_IRQTYPE_EDGE.
+On 05/28/2018 08:51 PM, Jan Kiszka wrote:
+> Hi Philippe,
 > 
-> I couldn't find a kernel option called RTDM_IRQTYPE_EDGE, either with 'make
-> menuconfig' or by grepping the Xenomai sources.
-> 
-> So I assumed you meant do do this in include/rtdm_driver.h ?
-> /* #define RTDM_IRQTYPE_EDGE        XN_ISR_EDGE */   // just a test
-> #define RTDM_IRQTYPE_EDGE 0
-> 
-> I  recompiled the xeno_16550A driver this way and it behaved no better. I
-> still can't get an interrupt if two serial ports share an IRQ.
+> struggling with an internal implementation on top of copperplate's
+> syncobj_wait_grant, I was wondering if that function is supposed to
+> return -EINTR on signal interruptions. It's mercury variant will not
+> because it used pthread_cond_wait internally. The cobalt version does,
+> and now I need to decide where to handle that best.
 > 
 
-How does /proc/interrupts look like when you have Linux driving all UARTs?
+The only requirement is to have EINTR honored by wait_grant/wait_drain
+calls upon syncobj_flush().
 
-Jan
-
-PS: You mail program is constantly breaking the topic threading - or you
-are not replying to the previous answers but writing new emails.
+The reason the Cobalt side returns EINTR also on Linux signals is due to
+cobalt_monitor_wait() not implementing the prologue/epilogue functional
+split pthread_cond_wait() exhibits, which allows to filter out EINTR in
+order to match the POSIX spec.
 
 -- 
-Siemens AG, Corporate Technology, CT RDA IOT SES-DE
-Corporate Competence Center Embedded Linux
+Philippe.
 
