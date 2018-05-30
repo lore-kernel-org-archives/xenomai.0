@@ -1,16 +1,13 @@
-References: <7be9b9c7-7393-eca0-6a86-bcf3d0302271@siemens.com>
- <667bd118-b8eb-4fbf-cb24-4f4f30114370@siemens.com>
- <3c4fc185-19af-4285-07a2-148b2a039fec@xenomai.org>
- <43104375-41a6-7327-b053-7074adc3115d@siemens.com>
-From: Philippe Gerum <rpm@xenomai.org>
-Message-ID: <07b5921c-3038-3981-7b37-c762eccd1336@xenomai.org>
-Date: Tue, 17 Apr 2018 09:36:16 +0200
+References: <CALLqZ8Qt5w=_W0nU=vhMNtS-Tx-zwE9Nnp-COV9YOK3OX57jTQ@mail.gmail.com>
+From: Jan Kiszka <jan.kiszka@siemens.com>
+Message-ID: <ff1c8ec5-420c-29cc-7f6e-6067bdfd2a99@siemens.com>
+Date: Wed, 30 May 2018 16:03:44 +0200
 MIME-Version: 1.0
-In-Reply-To: <43104375-41a6-7327-b053-7074adc3115d@siemens.com>
+In-Reply-To: <CALLqZ8Qt5w=_W0nU=vhMNtS-Tx-zwE9Nnp-COV9YOK3OX57jTQ@mail.gmail.com>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] [PATCH] copperplate: Drop PI from registry locks
+Subject: Re: [Xenomai] Reference Images Alpha Release
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -19,89 +16,49 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jan Kiszka <jan.kiszka@siemens.com>, Xenomai <xenomai@xenomai.org>
+To: Greg Gallagher <greg@embeddedgreg.com>, "Xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On 04/17/2018 09:30 AM, Jan Kiszka wrote:
-> On 2018-04-17 09:22, Philippe Gerum wrote:
->> On 04/13/2018 07:51 PM, Jan Kiszka wrote:
->>> None of the callers that run into the locks have RT requirements.
->>>
->>> Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
->>> ---
->>>
->>> As noted before, I think we should even be fine with STD locks, but that
->>> may require more changes.
->>>
->>>  lib/copperplate/registry.c | 2 --
->>>  1 file changed, 2 deletions(-)
->>>
->>> diff --git a/lib/copperplate/registry.c b/lib/copperplate/registry.c
->>> index daefa6c97..1bf0ebfea 100644
->>> --- a/lib/copperplate/registry.c
->>> +++ b/lib/copperplate/registry.c
->>> @@ -175,7 +175,6 @@ int registry_init_file(struct fsobj *fsobj,
->>>  
->>>  	pthread_mutexattr_init(&mattr);
->>>  	pthread_mutexattr_settype(&mattr, mutex_type_attribute);
->>> -	pthread_mutexattr_setprotocol(&mattr, PTHREAD_PRIO_INHERIT);
->>>  	pthread_mutexattr_setpshared(&mattr, PTHREAD_PROCESS_PRIVATE);
->>>  	ret = __bt(-__RT(pthread_mutex_init(&fsobj->lock, &mattr)));
->>>  	pthread_mutexattr_destroy(&mattr);
->>> @@ -758,7 +757,6 @@ int __registry_pkg_init(const char *arg0, char *mountpt, int flags)
->>>  
->>>  	pthread_mutexattr_init(&mattr);
->>>  	pthread_mutexattr_settype(&mattr, mutex_type_attribute);
->>> -	pthread_mutexattr_setprotocol(&mattr, PTHREAD_PRIO_INHERIT);
->>>  	pthread_mutexattr_setpshared(&mattr, PTHREAD_PROCESS_PRIVATE);
->>>  	ret = __bt(-__RT(pthread_mutex_init(&p->lock, &mattr)));
->>>  	pthread_mutexattr_destroy(&mattr);
->>>
->>
->> This one raises an interesting issue: since commit #8e606e681,
->> registry_{add, destroy}_file() use plain malloc(), therefore are subject
->> to mode switches, dropping the real-time guarantee from object
->> creation/deletion routines such as rt_*_{create, delete}() calls from
->> the Alchemy API.
->>
->> Previously to such change, some of these routines did not provide such
->> guarantee anyway, e.g. rt_task_create(), but others did like
->> rt_mutex_create(), rt_cond_create().
->>
->> I'm now questioning those specific changes in registry_{add,
->> destroy}_file(), because they might break applications assuming that rt
->> mode is not lost when calling them, which is still true if the registry
->> is disabled, leading to a fairly confusing inconsistency.
->>
->> Merging your patch would enforce this change in behavior even more,
->> carving in stone that all object creation and deletion routines which
->> interface with the registry won't be rt-capable anymore.
+On 2018-05-18 04:00, Greg Gallagher wrote:
+> https://github.com/ggallagher31/xenomai-3-alpha-images/blob/master/README.md
 > 
-> Sure, we need to sort out the rt_*_create topic prior to being able to
-> decide about this one.
 > 
->>
->> Would that be generally acceptable?
+> Here is the first attempt of Xenomai-3 reference images, this is based
+> on 4.14 ipipe kernel and the rootfs is a Ubuntu based.  Xenomai was
+> built off the stable-3.0.x branch.  The images are currently hosted on
+> google drive which may change later but for now it should work.  Ping
+> me if there are access problems.
 > 
-> I would not expect a lot use cases to be affected by that. The bare
-> minimum would be documenting this in the 2->3 migration guide.
+> Currently only RPI2 is in included with a extremely simple RT app.
+> Zynq boards and gpio examples will be posted this weekend (yay long
+> weekend).
 > 
-> OTOH, given that this is the stable series, such a change (8e606e681)
-> may better wait for 3.1.
-> 
->>
->> PS: btw, the memory allocation mess is much worse than I suspected, and
->> it is globally bad: this is not only a matter of properly sizing the
->> private memory heap, but a general performance issues with all
->> allocators, on different aspects and usage patterns. I'll follow up on
->> this later this week with details.
-> 
-> Is that related to 8e606e681 or does it predate it / is orthogonal to it?
+> Please send any feedback or suggestion of improvements directly to me
+> greg@embeddedgreg.com
 > 
 
-Orthogonal, most allocators we use have serious performance flaws on
-release (core xnheap, pshared), the only one which does not has a bad
-fragmentation issue (tlsf).
+Thanks for taking actions here, Greg! I think this is a step in the
+right direction. I didn't have the time to try out the image yet, though.
+
+To my understanding, you are manually creating those images so far,
+right? Or did you also share somewhere some generation script or tool?
+
+I've started some similar effort for our Jailhouse hypervisor, but there
+with the idea to let the user build the images themselves:
+
+https://github.com/siemens/jailhouse-images
+
+This is currently limited to x86 and ARM64 (the latter is optional
+because the build is not yet optimized), and we do not have a real board
+in the portfolio yet, only QEMU / KVM. But that may change soon (I'm
+planning to look into enabling some OrangePi next - Raspis are way too
+broken for virtualization).
+
+Maybe such a generating approach could be valuable for us as well (once
+the remaining issues of that approach are solved). What do you think?
+
+Jan
 
 -- 
-Philippe.
+Siemens AG, Corporate Technology, CT RDA IOT SES-DE
+Corporate Competence Center Embedded Linux
 
