@@ -1,13 +1,11 @@
+From: Jan Kiszka <jan.kiszka@siemens.com>
+Message-ID: <799ac855-b6ed-f9b3-72b4-bcb614a75922@siemens.com>
+Date: Wed, 30 May 2018 12:19:56 +0200
 MIME-Version: 1.0
-In-Reply-To: <CALLqZ8Qv6KppR1vAhw4VhKGGDHiyBySE+Tq+U6+_64U7L9=Wjw@mail.gmail.com>
-References: <E179B671-6D57-4517-B751-91AE099B2DCF@korgrd.com>
- <CALLqZ8Qv6KppR1vAhw4VhKGGDHiyBySE+Tq+U6+_64U7L9=Wjw@mail.gmail.com>
-From: Pintu Kumar <pintu.ping@gmail.com>
-Date: Wed, 30 May 2018 09:24:44 +0530
-Message-ID: <CAOuPNLgSKf=vucNgqVWHndg6NoLBbCJE2u7mS3kZh1_qdGrEsg@mail.gmail.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-Subject: Re: [Xenomai] xenomai 3.0.6 on RPi3 overheating when idle
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+Subject: [Xenomai] Application startup deadlock over debug backtrace
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,165 +14,67 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Greg Gallagher <greg@embeddedgreg.com>
-Cc: Steve Pavao <stevep@korgrd.com>, "Xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Philippe Gerum <rpm@xenomai.org>, Xenomai <xenomai@xenomai.org>
 
-Hi,
+Hi Philippe,
 
-I have done Xenomai-3 bring up RPi3-ModelB-2015 with 32-bit Kernel and
-Raspbian, but without Yocto.
-I havent changed any kernel configuration and so far I havent seen any
-heating issue.
-But I have just finished the bring up and havent tested any functionality
-yet.
+I just managed to lock up my application using the next branch and, ok,
+a number of custom patches. However, the backtrace itself does not seem
+to point to those changes:
 
-May be you can compare the kernel configuration that comes with Yocto and
-Raspbian default.
-You can also check the "top" output and see for any CPU increase suspect.
-You can monitor dmesg logs and check for suspicious output.
+#0  0x00007f90232975fb in __lll_lock_wait_private () from /lib64/libc.so.6
+#1  0x00007f9023223bfa in _L_lock_10389 () from /lib64/libc.so.6
+#2  0x00007f9023221735 in malloc () from /lib64/libc.so.6
+#3  0x00007f90241d004a in local_strdup () from /lib64/ld-linux-x86-64.so.2
+#4  0x00007f90241d3343 in _dl_map_object () from /lib64/ld-linux-x86-64.so.2
+#5  0x00007f90241dd925 in dl_open_worker () from /lib64/ld-linux-x86-64.so.2
+#6  0x00007f90241d97e4 in _dl_catch_error () from /lib64/ld-linux-x86-64.so.2
+#7  0x00007f90241dd33b in _dl_open () from /lib64/ld-linux-x86-64.so.2
+#8  0x00007f90232c0432 in do_dlopen () from /lib64/libc.so.6
+#9  0x00007f90241d97e4 in _dl_catch_error () from /lib64/ld-linux-x86-64.so.2
+#10 0x00007f90232c04cf in dlerror_run () from /lib64/libc.so.6
+#11 0x00007f90232c0541 in __libc_dlopen_mode () from /lib64/libc.so.6
+#12 0x00007f9023297ea5 in init () from /lib64/libc.so.6
+#13 0x00007f9023762420 in pthread_once () from /lib64/libpthread.so.0
+#14 0x00007f9023297fbc in backtrace () from /lib64/libc.so.6
+#15 0x00007f9023b88d80 in cobalt_sigshadow_handler (sig=sig@entry=28, 
+    si=si@entry=0x7ffceea715b0, ctxt=ctxt@entry=0x7ffceea71480)
+    at ../../../lib/cobalt/sigshadow.c:55
+#16 0x00007f9023b88dca in sigshadow_handler (sig=28, si=0x7ffceea715b0, 
+    ctxt=0x7ffceea71480) at ../../../lib/cobalt/sigshadow.c:80
+#17 <signal handler called>
+#18 0x00007f902328718a in mmap64 () from /lib64/libc.so.6
+#19 0x00007f90232204dd in _int_malloc () from /lib64/libc.so.6
+#20 0x00007f9023221740 in malloc () from /lib64/libc.so.6
+#21 0x00007f9023972925 in __real_malloc (size=<optimized out>)
+    at ../../../lib/cobalt/malloc-nowrap.c:23
+#22 0x00007f9023da76cc in heapobj_pkg_init_private ()
+    at ../../../lib/copperplate/heapobj-heapmem.c:80
+#23 0x00007f9023da30c4 in copperplate_init ()
+    at ../../../lib/copperplate/init.c:199
+#24 0x00007f9023b8efc3 in __xenomai_init (argcp=argcp@entry=0x7ffceea71af4, 
+    argvp=argvp@entry=0x7ffceea71af8, me=me@entry=0x7f9023b9333d "program")
+    at ../../../lib/boilerplate/setup.c:605
+#25 0x00007f9023b8f5ca in xenomai_init (argcp=argcp@entry=0x7ffceea71af4, 
+    argvp=argvp@entry=0x7ffceea71af8) at ../../../lib/boilerplate/setup.c:660
+#26 0x0000000000400d32 in call_init (argvp=0x7ffceea71af8, 
+    argcp=0x7ffceea71af4) at ../../../../lib/boilerplate/init/bootstrap.c:105
+#27 xenomai_bootstrap () at ../../../../lib/boilerplate/init/bootstrap.c:169
+#28 0x000000000040106d in __libc_csu_init (argc=1, argv=0x7ffceea71c48, 
+    envp=0x7ffceea71c58) at elf-init.c:88
+#29 0x00007f90231c7a95 in __libc_start_main () from /lib64/libc.so.6
+#30 0x0000000000400d89 in _start () at ../sysdeps/x86_64/start.S:118
 
+Xenomai libs where configured with --enable-dlopen-libs, 
+--enable-lazy-setsched and --enable-debug, the kernel with
+CONFIG_XENO_OPT_DEBUG_TRACE_RELAX (which is what enables that
+sighshadow-based tracing, right?).
 
-Thanks,
-Pintu
+My feeling is that there is generic issue produced here.
 
-FYI:
-This is the latency test output is from Rpi3:
-pi@raspberrypi:~ $ sudo /usr/xenomai/bin/latency
-=3D=3D Sampling period: 1000 us
-=3D=3D Test mode: periodic user-mode task
-=3D=3D All results in microseconds
-warming up...
-RTT|  00:00:01  (periodic user-mode task, 1000 us period, priority 99)
-RTH|----lat min|----lat avg|----lat max|-overrun|---msw|---lat best|--lat
-worst
-RTD|      0.364|      1.164|      8.385|       0|     0|      0.364|
-8.385
-RTD|      0.780|      1.528|      7.707|       0|     0|      0.364|
-8.385
-RTD|      0.728|      1.541|      8.019|       0|     0|      0.364|
-8.385
-RTD|      0.779|      1.543|      9.060|       0|     0|      0.364|
-9.060
-RTD|      0.675|      1.495|      5.050|       0|     0|      0.364|
-9.060
-RTD|      0.726|      1.499|      9.685|       0|     0|      0.364|
-9.685
-RTD|      0.726|      1.503|      6.455|       0|     0|      0.364|
-9.685
-RTD|      0.361|      1.166|      8.851|       0|     0|      0.361|
-9.685
-RTD|      0.465|      1.486|     17.496|       0|     0|      0.361|
- 17.496
-RTD|      0.360|      1.128|      9.006|       0|     0|      0.360|
- 17.496
-RTD|      0.360|      1.101|      4.943|       0|     0|      0.360|
- 17.496
-RTD|      0.412|      1.148|     12.391|       0|     0|      0.360|
- 17.496
-RTD|      0.359|      1.177|     10.047|       0|     0|      0.359|
- 17.496
-RTD|      0.463|      1.436|      3.901|       0|     0|      0.359|
- 17.496
-RTD|      0.411|      1.137|      7.650|       0|     0|      0.359|
- 17.496
-RTD|      0.462|      1.145|      5.514|       0|     0|      0.359|
- 17.496
-RTD|      0.410|      1.141|      5.410|       0|     0|      0.359|
- 17.496
-RTD|      0.409|      1.188|      8.066|       0|     0|      0.359|
- 17.496
-RTD|      0.461|      1.449|      9.628|       0|     0|      0.359|
- 17.496
-RTD|      0.357|      1.075|      6.659|       0|     0|      0.357|
- 17.496
-RTD|      0.356|      1.109|      6.971|       0|     0|      0.356|
- 17.496
-RTT|  00:00:22  (periodic user-mode task, 1000 us period, priority 99)
-RTH|----lat min|----lat avg|----lat max|-overrun|---msw|---lat best|--lat
-worst
-RTD|      0.356|      1.107|      9.366|       0|     0|      0.356|
- 17.496
-RTD|      0.303|      1.116|      5.303|       0|     0|      0.303|
- 17.496
-RTD|      0.355|      1.410|      5.980|       0|     0|      0.303|
- 17.496
+Jan
 
+-- 
+Siemens AG, Corporate Technology, CT RDA IOT SES-DE
+Corporate Competence Center Embedded Linux
 
-
-
-
-On Wed, May 30, 2018 at 2:20 AM, Greg Gallagher <greg@embeddedgreg.com>
-wrote:
-
-> I haven't tested Xenomai on RPI3 in 32-bit mode, I think someone else
-> tried it a while ago with out using Yocto and may be able to share his
-> experiences (Gustav?).  I haven't seen this issue on Raspberry pi 2b.
-> You can take a look at the output of ps and see if anything is using a
-> lot of the CPU.  I'm finishing up some RPI0 and 1 work now but I'll
-> hopefully move on to look at the rpi3 in the next couple of weeks.
->
-> -Greg
->
-> On Tue, May 29, 2018 at 4:37 PM, Steve Pavao <stevep@korgrd.com> wrote:
-> > Hello,
-> >
-> > I=E2=80=99m having an overheating problem when running xenomai 3.0.6 on
-> Raspberry Pi 3 with the recipes and defconfig from
-> https://github.com/pficheux/meta-xenomai <https://github.com/pficheux/
-> meta-xenomai> , but I=E2=80=99m using the altered kernel setting CONFIG_H=
-Z=3D1000.
-> >
-> > Under this configuration, the RPi3 overheats when idle.  I=E2=80=99d li=
-ke to try
-> to understand why.  Is there perhaps a defconfig settting I need to adjus=
-t,
-> so that there will be not be so much heat-generating activity when the
-> system is idle?  I did not observe anything useful with ps.
-> >
-> > This is my first time successfully building and running xenomai on RPi3
-> 32-bit using yocto recipes and a defconfig.  I built in rocko branch.  I
-> notice there are many options in the defconfig which may affect operation=
-.
-> I do not 100% understand all these options, but I have started googling
-> them to see if I can solve this issue.
-> >
-> > I appreciate any ideas you may have.
-> >
-> > Steve Pavao
-> > Korg R&D
-> >
-> > some of dmesg:
-> >
-> > [    0.000000] Linux version 4.9.45-xeno (oe-user@oe-host) (gcc version
-> 7.3.0 (GCC) ) #2 SMP Tue May 29 19:19:23 UTC 2018
-> > [    0.000000] CPU: ARMv7 Processor [410fd034] revision 4 (ARMv7),
-> cr=3D10c5383d
-> >
-> > [    0.000000] arm_arch_timer: Architected cp15 timer(s) running at
-> 19.20MHz (phys).
-> > [    0.000000] I-pipe, 19.200 MHz clocksource, wrap in 960767920505705 =
-ms
-> > [    0.000000] clocksource: ipipe_tsc: mask: 0xffffffffffffffff
-> max_cycles: 0x46d987e47, max_idle_ns: 440795202767 ns
-> > [    0.000000] clocksource: arch_sys_counter: mask: 0xffffffffffffff
-> max_cycles: 0x46d987e47, max_idle_ns: 440795202767 ns
-> > [    0.000007] sched_clock: 56 bits at 19MHz, resolution 52ns, wraps
-> every 4398046511078ns
-> > [    0.000025] Switching to timer-based delay loop, resolution 52ns
-> > [    0.001464] Interrupt pipeline (release #2)
-> >
-> > [    0.164653] [Xenomai] scheduling class idle registered.
-> > [    0.164676] [Xenomai] scheduling class rt registered.
-> > [    0.164820] I-pipe: head domain Xenomai registered.
-> > [    0.166498] [Xenomai] Cobalt v3.0.6 (Stellar Parallax)
-> >
-> > _______________________________________________
-> > Xenomai mailing list
-> > Xenomai@xenomai.org
-> > https://xenomai.org/mailman/listinfo/xenomai
->
-> _______________________________________________
-> Xenomai mailing list
-> Xenomai@xenomai.org
-> https://xenomai.org/mailman/listinfo/xenomai
->
