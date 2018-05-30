@@ -1,14 +1,14 @@
+References: <799ac855-b6ed-f9b3-72b4-bcb614a75922@siemens.com>
+ <11524d56-14d2-23ae-f4b1-44baa2f52291@xenomai.org>
+From: Jan Kiszka <jan.kiszka@siemens.com>
+Message-ID: <f377ed53-a238-6396-491d-d5ad35312961@siemens.com>
+Date: Wed, 30 May 2018 19:12:50 +0200
 MIME-Version: 1.0
-In-Reply-To: <693dba0f-7963-251d-4fed-9dce2f1be05c@siemens.com>
-References: <CALLqZ8Qt5w=_W0nU=vhMNtS-Tx-zwE9Nnp-COV9YOK3OX57jTQ@mail.gmail.com>
- <ff1c8ec5-420c-29cc-7f6e-6067bdfd2a99@siemens.com>
- <CALLqZ8SuFNKfmXrNPHm1yVDPD8PRN4W2k5aCvU_EKGbyyQWZHA@mail.gmail.com>
- <693dba0f-7963-251d-4fed-9dce2f1be05c@siemens.com>
-From: Greg Gallagher <greg@embeddedgreg.com>
-Date: Wed, 30 May 2018 13:06:16 -0400
-Message-ID: <CALLqZ8TWDnR8or+znARodu8jPw5zcCd-MUcSUZoXm=g_NWLEiQ@mail.gmail.com>
-Content-Type: text/plain; charset="UTF-8"
-Subject: Re: [Xenomai] Reference Images Alpha Release
+In-Reply-To: <11524d56-14d2-23ae-f4b1-44baa2f52291@xenomai.org>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai] Application startup deadlock over debug backtrace
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,90 +17,74 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jan Kiszka <jan.kiszka@siemens.com>
-Cc: "Xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Philippe Gerum <rpm@xenomai.org>, Xenomai <xenomai@xenomai.org>
 
-Okay, I briefly looked at a couple Debian options that I can script
-the generation of the needed image.  I'll go down that path and see
-what how that goes. I'll hopefully post an update in the next week or
-so :)
-
--Greg
-
-On Wed, May 30, 2018 at 12:59 PM, Jan Kiszka <jan.kiszka@siemens.com> wrote:
-> On 2018-05-30 17:46, Greg Gallagher wrote:
->> I agree, after the first run of building the images myself I think
->> having the user generate the images would make more sense.  I'm
->> looking into doing that with an existing tool I think yocto may be a
->> good choice.  I've been generating some images with buildroot as well
->> which seems to be pretty straight forward to do and looks to only
->> require minimal changes.  The other long term goal for this would be
->> to make sure a certain set of boards are always sane and new users
->> just have to learn the new tools and not debug boot issues.  I'll
->> hopefully post an update to this soon, I just finished the work to
->> bring the bcm2835 to the 4.14 ipipe so it looks like we should be able
->> to try more raspberry pi builds.
->
-> Going with a complete our-of-source image is surely an option and has a
-> value (many users are still basing their development on such
-> approaches). The disadvantage is that customizations require the user to
-> rebuild everything. Generating a distro-based image (no, yocto is no
-> distro) is much faster in this regard, both for rebuilds as well as
-> extensions. That was my motivation to pick that Debian path for the
-> Jailhouse demo/reference images.
->
-> Jan
->
+On 2018-05-30 19:02, Philippe Gerum wrote:
+> On 05/30/2018 12:19 PM, Jan Kiszka wrote:
+>> Hi Philippe,
 >>
->> -Greg
+>> I just managed to lock up my application using the next branch and, ok,
+>> a number of custom patches. However, the backtrace itself does not seem
+>> to point to those changes:
 >>
->> On Wed, May 30, 2018 at 10:03 AM, Jan Kiszka <jan.kiszka@siemens.com> wrote:
->>> On 2018-05-18 04:00, Greg Gallagher wrote:
->>>> https://github.com/ggallagher31/xenomai-3-alpha-images/blob/master/README.md
->>>>
->>>>
->>>> Here is the first attempt of Xenomai-3 reference images, this is based
->>>> on 4.14 ipipe kernel and the rootfs is a Ubuntu based.  Xenomai was
->>>> built off the stable-3.0.x branch.  The images are currently hosted on
->>>> google drive which may change later but for now it should work.  Ping
->>>> me if there are access problems.
->>>>
->>>> Currently only RPI2 is in included with a extremely simple RT app.
->>>> Zynq boards and gpio examples will be posted this weekend (yay long
->>>> weekend).
->>>>
->>>> Please send any feedback or suggestion of improvements directly to me
->>>> greg@embeddedgreg.com
->>>>
->>>
->>> Thanks for taking actions here, Greg! I think this is a step in the
->>> right direction. I didn't have the time to try out the image yet, though.
->>>
->>> To my understanding, you are manually creating those images so far,
->>> right? Or did you also share somewhere some generation script or tool?
->>>
->>> I've started some similar effort for our Jailhouse hypervisor, but there
->>> with the idea to let the user build the images themselves:
->>>
->>> https://github.com/siemens/jailhouse-images
->>>
->>> This is currently limited to x86 and ARM64 (the latter is optional
->>> because the build is not yet optimized), and we do not have a real board
->>> in the portfolio yet, only QEMU / KVM. But that may change soon (I'm
->>> planning to look into enabling some OrangePi next - Raspis are way too
->>> broken for virtualization).
->>>
->>> Maybe such a generating approach could be valuable for us as well (once
->>> the remaining issues of that approach are solved). What do you think?
->>>
->>> Jan
->>>
->>> --
->>> Siemens AG, Corporate Technology, CT RDA IOT SES-DE
->>> Corporate Competence Center Embedded Linux
->
->
-> --
-> Siemens AG, Corporate Technology, CT RDA IOT SES-DE
-> Corporate Competence Center Embedded Linux
+>> #0  0x00007f90232975fb in __lll_lock_wait_private () from /lib64/libc.so.6
+>> #1  0x00007f9023223bfa in _L_lock_10389 () from /lib64/libc.so.6
+>> #2  0x00007f9023221735 in malloc () from /lib64/libc.so.6
+>> #3  0x00007f90241d004a in local_strdup () from /lib64/ld-linux-x86-64.so.2
+>> #4  0x00007f90241d3343 in _dl_map_object () from /lib64/ld-linux-x86-64.so.2
+>> #5  0x00007f90241dd925 in dl_open_worker () from /lib64/ld-linux-x86-64.so.2
+>> #6  0x00007f90241d97e4 in _dl_catch_error () from /lib64/ld-linux-x86-64.so.2
+>> #7  0x00007f90241dd33b in _dl_open () from /lib64/ld-linux-x86-64.so.2
+>> #8  0x00007f90232c0432 in do_dlopen () from /lib64/libc.so.6
+>> #9  0x00007f90241d97e4 in _dl_catch_error () from /lib64/ld-linux-x86-64.so.2
+>> #10 0x00007f90232c04cf in dlerror_run () from /lib64/libc.so.6
+>> #11 0x00007f90232c0541 in __libc_dlopen_mode () from /lib64/libc.so.6
+>> #12 0x00007f9023297ea5 in init () from /lib64/libc.so.6
+>> #13 0x00007f9023762420 in pthread_once () from /lib64/libpthread.so.0
+>> #14 0x00007f9023297fbc in backtrace () from /lib64/libc.so.6
+>> #15 0x00007f9023b88d80 in cobalt_sigshadow_handler (sig=sig@entry=28, 
+>>     si=si@entry=0x7ffceea715b0, ctxt=ctxt@entry=0x7ffceea71480)
+>>     at ../../../lib/cobalt/sigshadow.c:55
+>> #16 0x00007f9023b88dca in sigshadow_handler (sig=28, si=0x7ffceea715b0, 
+>>     ctxt=0x7ffceea71480) at ../../../lib/cobalt/sigshadow.c:80
+>> #17 <signal handler called>
+>> #18 0x00007f902328718a in mmap64 () from /lib64/libc.so.6
+>> #19 0x00007f90232204dd in _int_malloc () from /lib64/libc.so.6
+>> #20 0x00007f9023221740 in malloc () from /lib64/libc.so.6
+>> #21 0x00007f9023972925 in __real_malloc (size=<optimized out>)
+>>     at ../../../lib/cobalt/malloc-nowrap.c:23
+>> #22 0x00007f9023da76cc in heapobj_pkg_init_private ()
+>>     at ../../../lib/copperplate/heapobj-heapmem.c:80
+>> #23 0x00007f9023da30c4 in copperplate_init ()
+>>     at ../../../lib/copperplate/init.c:199
+>> #24 0x00007f9023b8efc3 in __xenomai_init (argcp=argcp@entry=0x7ffceea71af4, 
+>>     argvp=argvp@entry=0x7ffceea71af8, me=me@entry=0x7f9023b9333d "program")
+>>     at ../../../lib/boilerplate/setup.c:605
+>> #25 0x00007f9023b8f5ca in xenomai_init (argcp=argcp@entry=0x7ffceea71af4, 
+>>     argvp=argvp@entry=0x7ffceea71af8) at ../../../lib/boilerplate/setup.c:660
+>> #26 0x0000000000400d32 in call_init (argvp=0x7ffceea71af8, 
+>>     argcp=0x7ffceea71af4) at ../../../../lib/boilerplate/init/bootstrap.c:105
+>> #27 xenomai_bootstrap () at ../../../../lib/boilerplate/init/bootstrap.c:169
+>> #28 0x000000000040106d in __libc_csu_init (argc=1, argv=0x7ffceea71c48, 
+>>     envp=0x7ffceea71c58) at elf-init.c:88
+>> #29 0x00007f90231c7a95 in __libc_start_main () from /lib64/libc.so.6
+>> #30 0x0000000000400d89 in _start () at ../sysdeps/x86_64/start.S:118
+>>
+>> Xenomai libs where configured with --enable-dlopen-libs, 
+>> --enable-lazy-setsched and --enable-debug, the kernel with
+>> CONFIG_XENO_OPT_DEBUG_TRACE_RELAX (which is what enables that
+>> sighshadow-based tracing, right?).
+>>
+>> My feeling is that there is generic issue produced here.
+>>
+> 
+> It looks like backtrace() is dlopening libgcc_s.so at first call. Some
+> preload during the process startup may work around this issue.
+> cobalt_corectl() can be tell us dynamically whether
+> CONFIG_XENO_OPT_DEBUG_TRACE_RELAX is enabled in the kernel
+> (_CC_COBALT_DEBUG_TRACE_RELAX).
+
+Preloading - or dry-running that function early.
+
+Jan
 
