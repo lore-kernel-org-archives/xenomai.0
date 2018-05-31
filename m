@@ -1,13 +1,11 @@
-From: Abel Vesa <abel.vesa@nxp.com>
-Date: Thu, 31 May 2018 07:25:48 +0000
-Message-ID: <20180531072547.xss3iljr5uk4cxnw@fsr-ub1664-175>
-Content-Language: en-US
-Content-Type: text/plain; charset="utf-8"
-Content-ID: <BE5697AFD50BF44E85715CE363A767AD@eurprd04.prod.outlook.com>
-Content-Transfer-Encoding: base64
+From: jimmyo <jimmyo@gmx.at>
+Message-ID: <aa456ae4-96fc-0f6c-3d2a-bfb050bed4bc@gmx.at>
+Date: Thu, 31 May 2018 14:20:43 +0200
 MIME-Version: 1.0
-Subject: [Xenomai] Problem with ipipe locking PPIs and SGIs globally not per
- cpu
+Content-Type: text/plain; charset="utf-8"; format="flowed"
+Content-Transfer-Encoding: 8bit
+Content-Language: de-DE
+Subject: [Xenomai] ipipe 4.14 for ARM and X86
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,38 +14,15 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Xenomai <xenomai@xenomai.org>
 
-VGhlIHByb2JsZW0gaXMgdGhlIGZhY3QgdGhhdCB0aGUgYXJtIHR3ZCBpcnEgKGZvciBleGFtcGxl
-KSBpcyBtYXNrZWQgb24gdGhhdA0Kc3BlY2lmaWMgY29yZSBpbnNpZGUgZ2ljLCBidXQgdGhlIGlw
-aXBlIGlzIGxvY2tpbmcgaXQgZ2xvYmFsbHkuDQoNCkFjY29yZGluZyB0byBHSUMgYXJjaGl0ZWN0
-dXJlIHNwZWNpZmljYXRpb24NCg0KaHR0cHM6Ly93d3cuY2wuY2FtLmFjLnVrL3Jlc2VhcmNoL3Ny
-Zy9oYW4vQUNTLVAzNS96eW5xL2FybV9naWNfYXJjaGl0ZWN0dXJlX3NwZWNpZmljYXRpb24ucGRm
-DQoNClNlY3Rpb24gMi4yLjENCg0KICAgICAgICAuLi4NCiAgICAgICAgSW50ZXJydXB0IG51bWJl
-cnMgSUQwLUlEMzEgYXJlIHVzZWQgZm9yIGludGVycnVwdHMgdGhhdCBhcmUgcHJpdmF0ZSB0byBh
-IENQVSBpbnRlcmZhY2UuIFRoZXNlIGludGVycnVwdHMgYXJlDQogICAgICAgIGJhbmtlZCBpbiB0
-aGUgRGlzdHJpYnV0b3IuDQoNCiAgICAgICAgQSBiYW5rZWQgaW50ZXJydXB0IGlzIG9uZSB3aGVy
-ZSB0aGUgRGlzdHJpYnV0b3IgY2FuIGhhdmUgbXVsdGlwbGUgaW50ZXJydXB0cyB3aXRoIHRoZSBz
-YW1lIElELiBBIGJhbmtlZA0KICAgICAgICBpbnRlcnJ1cHQgaXMgaWRlbnRpZmllZCB1bmlxdWVs
-eSBieSBpdHMgSUQgbnVtYmVyIGFuZCBpdHMgYXNzb2NpYXRlZCBDUFUgaW50ZXJmYWNlIG51bWJl
-ci4gT2YgdGhlIGJhbmtlZA0KICAgICAgICBpbnRlcnJ1cHQgSURzOg0KICAgICAgICAgICAgICAg
-IOKAlCBJRDAtSUQxNSBhcmUgdXNlZCBmb3IgU0dJcw0KICAgICAgICAgICAgICAgIOKAlCBJRDE2
-LUlEMzEgYXJlIHVzZWQgZm9yIFBQSXMNCiAgICAgICAgICAgICAgICBJbiBhIG11bHRpcHJvY2Vz
-c29yIHN5c3RlbToNCiAgICAgICAgICAgICAgICDigJQgQSBQUEkgaXMgZm9yd2FyZGVkIHRvIGEg
-cGFydGljdWxhciBDUFUgaW50ZXJmYWNlLCBhbmQgaXMgcHJpdmF0ZSB0byB0aGF0IGludGVyZmFj
-ZS4gSW4gcHJpb3JpdGl6aW5nDQogICAgICAgICAgICAgICAgaW50ZXJydXB0cyBmb3IgYSBDUFUg
-aW50ZXJmYWNlIHRoZSBEaXN0cmlidXRvciBkb2VzIG5vdCBjb25zaWRlciBQUElzIHRoYXQgcmVs
-YXRlIHRvIG90aGVyIGludGVyZmFjZXMuDQogICAgICAgIC4uLg0KDQpJbiBvdXIgY2FzZSwgd2Un
-cmUgdGFsa2luZyBhYm91dCBJRDI5IChsaW51eCBtYXBwZWQgMTYpLiBJbiBrZXJuZWwvaXBpcGUv
-Y29yZS5jLA0KaW4gZnVuY3Rpb24gX19pcGlwZV9sb2NrX2lycSB0aGUgY29udHJvbCBiaXRzIHNo
-b3VsZCBlaXRoZXIgYmUgc2V0IHBlciBjcHUgYW5kDQpub3QgZ2xvYmFsbHkgaWYgdGhlIGh3aXJx
-IGlzIGxlc3MgdGhhbiAzMS4NCg0KQSBzdWdnZXN0aW9uIHdvdWxkIGJlIHRvIHVzZSB0aGUgTlJf
-Q1BVUyBiaXRzIGZyb20gaXBkLT5pcnFzW2lycV0uY29udHJvbCB0bw0KbWFyayB0aGUgbG9jayBv
-biBhIHBlciBjcHUgYmFzaXMgYW5kIHRoZW4gZGVwZW5kaW5nIG9uIHRoZSB0eXBlIG9mIHRoZSBp
-cnENCnNldCB0aGUgY29ycmVzcG9uZGluZyBiaXRzIGZvciBlYWNoIChvciBhbGwsIGluIGNhc2Ug
-U1BJcykgY3B1LiBBbmQgdGhlbiwgd2hlbg0KY2hlY2tpbmcgaWYgbG9ja2VkIChpbiBfX2lwaXBl
-X3NldF9pcnFfcGVuZGluZyBhbmQgX19pcGlwZV9kb19zeW5jX3N0YWdlKQ0KaW5jbHVkZSB0aGUg
-Y3B1IGluIHRoZSBjb25kaXRpb24uIFRoYXQgc2hvdWxkIGJlIGFsbC4NCg0KSSdsbCB0cnkgdG8g
-Y29tZSB1cCB3aXRoIGEgcGF0Y2ggbGF0ZXIuIEkganVzdCB3YW50ZWQgdG8gcG9pbnQgb3V0IHRo
-ZSBwcm9ibGVtDQpoZXJlLg0KDQpBYmVsDQotLSA=
+Hello,
+
+now we are testing ipipe 4.14 for both platforms.
+Everything seems to be ok.
+
+Is there a schedule/roadmap for a release?
+
+Thanks
+   Jimmy
 
