@@ -1,13 +1,15 @@
-From: Philippe Gerum <rpm@xenomai.org>
+From: Abel Vesa <abel.vesa@nxp.com>
+Date: Thu, 31 May 2018 13:13:29 +0000
+Message-ID: <20180531131328.blxaaytisovwxx5a@fsr-ub1664-175>
 References: <20180531072547.xss3iljr5uk4cxnw@fsr-ub1664-175>
  <f700d5b6-c780-f306-0453-f984aee4b937@xenomai.org>
-Message-ID: <d869577b-bb66-7cb7-5682-48d8c2acf85c@xenomai.org>
-Date: Thu, 31 May 2018 15:06:16 +0200
-MIME-Version: 1.0
-In-Reply-To: <f700d5b6-c780-f306-0453-f984aee4b937@xenomai.org>
-Content-Type: text/plain; charset="utf-8"
+ <d869577b-bb66-7cb7-5682-48d8c2acf85c@xenomai.org>
+In-Reply-To: <d869577b-bb66-7cb7-5682-48d8c2acf85c@xenomai.org>
 Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset="utf-8"
+Content-ID: <201AE32503455947896B80CB56468AE2@eurprd04.prod.outlook.com>
+Content-Transfer-Encoding: base64
+MIME-Version: 1.0
 Subject: Re: [Xenomai] Problem with ipipe locking PPIs and SGIs globally not
  per cpu
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
@@ -18,88 +20,84 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Abel Vesa <abel.vesa@nxp.com>, "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Philippe Gerum <rpm@xenomai.org>
+Cc: "A.s. Dong" <aisheng.dong@nxp.com>, Nitin Garg <nitin.garg@nxp.com>, Leonard Crestez <leonard.crestez@nxp.com>, "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On 05/31/2018 03:01 PM, Philippe Gerum wrote:
-> On 05/31/2018 09:25 AM, Abel Vesa wrote:
->> The problem is the fact that the arm twd irq (for example) is masked on that
->> specific core inside gic, but the ipipe is locking it globally.
->>
->> According to GIC architecture specification
->>
->> https://www.cl.cam.ac.uk/research/srg/han/ACS-P35/zynq/arm_gic_architecture_specification.pdf
->>
->> Section 2.2.1
->>
->>         ...
->>         Interrupt numbers ID0-ID31 are used for interrupts that are private to a CPU interface. These interrupts are
->>         banked in the Distributor.
->>
->>         A banked interrupt is one where the Distributor can have multiple interrupts with the same ID. A banked
->>         interrupt is identified uniquely by its ID number and its associated CPU interface number. Of the banked
->>         interrupt IDs:
->>                 — ID0-ID15 are used for SGIs
->>                 — ID16-ID31 are used for PPIs
->>                 In a multiprocessor system:
->>                 — A PPI is forwarded to a particular CPU interface, and is private to that interface. In prioritizing
->>                 interrupts for a CPU interface the Distributor does not consider PPIs that relate to other interfaces.
->>         ...
->>
->> In our case, we're talking about ID29 (linux mapped 16). In kernel/ipipe/core.c,
->> in function __ipipe_lock_irq the control bits should either be set per cpu and
->> not globally if the hwirq is less than 31.
->>
->> A suggestion would be to use the NR_CPUS bits from ipd->irqs[irq].control to
->> mark the lock on a per cpu basis and then depending on the type of the irq
->> set the corresponding bits for each (or all, in case SPIs) cpu.
-> 
-> Using the control bits would limit the number of supported CPUs to
-> __WORD_SIZE - 3, which would be too restrictive on high-end x86 or
-> armv8-based boards.
-> 
->  And then, when
->> checking if locked (in __ipipe_set_irq_pending and __ipipe_do_sync_stage)
->> include the cpu in the condition. That should be all.
->>
->> I'll try to come up with a patch later. I just wanted to point out the problem
->> here.
->>
-> 
-> Thanks for looking at this. Originally, this per-IRQ pipeline-specific
-> bit was aimed at addressing the following scenario:
-> 
->         local_irq_disable()
->         -> [IRQ receipt, logged for root stage]
-> 	   disable_irq(irq)
-> 	   ...
-> 	   local_irq_enable()
-> 	      -> [spurious IRQ replay upon log sync since IRQ
-> 	          is deemed disabled]
-> 
-> It turns out that this is definitely not the best way to address it. It
-> suffers multiple shortcomings, including SMP races and the requirement
-> to fix up each and every mask/unmask irqchip handlers being used. The
-> current approach even abuses the internal genirq interface, by handling
-> a corner case related to the (shutdown|disable)_irq ops from the
-> mask/unmask handlers.
-> 
-> There is an ongoing work to overhaul the integration of the interrupt
-> pipeline with the genirq core which addresses this issue, and several
-> others.
-> 
-> In the meantime, you could work around this issue by dropping the
-> __ipipe_lock/unlock dance entirely, addressing this case by clearing the
-> IRQ bit of the disabled/shutdown interrupt in each per-CPU log, from
-> within irq(_percpu)_disable, __irq_disable and irq_shutdown. That would
-> still not be perfect from a SMP synchronization point of view, but not
-> worse than the current __ipipe_lock/unlock_irq scheme regarding this,
-> and definitely better in all other aspects.
-> 
-
-If you go for that fix, please make sure to bypass the lazy disable mode
-for IRQs and actually mask the IC hardware upon __irq_disable, otherwise
-clearing the IRQ log for that IRQ would be pointless.
-
--- 
-Philippe.
+KyBBaXNoZW5nLCBOaXRpbiBhbmQgTGVvbmFyZA0KDQpPbiBUaHUsIE1heSAzMSwgMjAxOCBhdCAw
+MzowNjoxNlBNICswMjAwLCBQaGlsaXBwZSBHZXJ1bSB3cm90ZToNCj4gT24gMDUvMzEvMjAxOCAw
+MzowMSBQTSwgUGhpbGlwcGUgR2VydW0gd3JvdGU6DQo+ID4gT24gMDUvMzEvMjAxOCAwOToyNSBB
+TSwgQWJlbCBWZXNhIHdyb3RlOg0KPiA+PiBUaGUgcHJvYmxlbSBpcyB0aGUgZmFjdCB0aGF0IHRo
+ZSBhcm0gdHdkIGlycSAoZm9yIGV4YW1wbGUpIGlzIG1hc2tlZCBvbiB0aGF0DQo+ID4+IHNwZWNp
+ZmljIGNvcmUgaW5zaWRlIGdpYywgYnV0IHRoZSBpcGlwZSBpcyBsb2NraW5nIGl0IGdsb2JhbGx5
+Lg0KPiA+Pg0KPiA+PiBBY2NvcmRpbmcgdG8gR0lDIGFyY2hpdGVjdHVyZSBzcGVjaWZpY2F0aW9u
+DQo+ID4+DQo+ID4+IGh0dHBzOi8vZW1lYTAxLnNhZmVsaW5rcy5wcm90ZWN0aW9uLm91dGxvb2su
+Y29tLz91cmw9aHR0cHMlM0ElMkYlMkZ3d3cuY2wuY2FtLmFjLnVrJTJGcmVzZWFyY2glMkZzcmcl
+MkZoYW4lMkZBQ1MtUDM1JTJGenlucSUyRmFybV9naWNfYXJjaGl0ZWN0dXJlX3NwZWNpZmljYXRp
+b24ucGRmJmRhdGE9MDIlN0MwMSU3Q2FiZWwudmVzYSU0MG54cC5jb20lN0M2ODVhNGRlZjJjMzI0
+OGYxNjBjZTA4ZDVjNmY3NGM0OCU3QzY4NmVhMWQzYmMyYjRjNmZhOTJjZDk5YzVjMzAxNjM1JTdD
+MCU3QzElN0M2MzY2MzM2ODc4MTE3NzE2ODAmc2RhdGE9d2hxMU1JalZHWndoTXRZQk14UFhtakZF
+U2JtT0E4JTJCdERhTlJVSm02TGhNJTNEJnJlc2VydmVkPTANCj4gPj4NCj4gPj4gU2VjdGlvbiAy
+LjIuMQ0KPiA+Pg0KPiA+PiAgICAgICAgIC4uLg0KPiA+PiAgICAgICAgIEludGVycnVwdCBudW1i
+ZXJzIElEMC1JRDMxIGFyZSB1c2VkIGZvciBpbnRlcnJ1cHRzIHRoYXQgYXJlIHByaXZhdGUgdG8g
+YSBDUFUgaW50ZXJmYWNlLiBUaGVzZSBpbnRlcnJ1cHRzIGFyZQ0KPiA+PiAgICAgICAgIGJhbmtl
+ZCBpbiB0aGUgRGlzdHJpYnV0b3IuDQo+ID4+DQo+ID4+ICAgICAgICAgQSBiYW5rZWQgaW50ZXJy
+dXB0IGlzIG9uZSB3aGVyZSB0aGUgRGlzdHJpYnV0b3IgY2FuIGhhdmUgbXVsdGlwbGUgaW50ZXJy
+dXB0cyB3aXRoIHRoZSBzYW1lIElELiBBIGJhbmtlZA0KPiA+PiAgICAgICAgIGludGVycnVwdCBp
+cyBpZGVudGlmaWVkIHVuaXF1ZWx5IGJ5IGl0cyBJRCBudW1iZXIgYW5kIGl0cyBhc3NvY2lhdGVk
+IENQVSBpbnRlcmZhY2UgbnVtYmVyLiBPZiB0aGUgYmFua2VkDQo+ID4+ICAgICAgICAgaW50ZXJy
+dXB0IElEczoNCj4gPj4gICAgICAgICAgICAgICAgIOKAlCBJRDAtSUQxNSBhcmUgdXNlZCBmb3Ig
+U0dJcw0KPiA+PiAgICAgICAgICAgICAgICAg4oCUIElEMTYtSUQzMSBhcmUgdXNlZCBmb3IgUFBJ
+cw0KPiA+PiAgICAgICAgICAgICAgICAgSW4gYSBtdWx0aXByb2Nlc3NvciBzeXN0ZW06DQo+ID4+
+ICAgICAgICAgICAgICAgICDigJQgQSBQUEkgaXMgZm9yd2FyZGVkIHRvIGEgcGFydGljdWxhciBD
+UFUgaW50ZXJmYWNlLCBhbmQgaXMgcHJpdmF0ZSB0byB0aGF0IGludGVyZmFjZS4gSW4gcHJpb3Jp
+dGl6aW5nDQo+ID4+ICAgICAgICAgICAgICAgICBpbnRlcnJ1cHRzIGZvciBhIENQVSBpbnRlcmZh
+Y2UgdGhlIERpc3RyaWJ1dG9yIGRvZXMgbm90IGNvbnNpZGVyIFBQSXMgdGhhdCByZWxhdGUgdG8g
+b3RoZXIgaW50ZXJmYWNlcy4NCj4gPj4gICAgICAgICAuLi4NCj4gPj4NCj4gPj4gSW4gb3VyIGNh
+c2UsIHdlJ3JlIHRhbGtpbmcgYWJvdXQgSUQyOSAobGludXggbWFwcGVkIDE2KS4gSW4ga2VybmVs
+L2lwaXBlL2NvcmUuYywNCj4gPj4gaW4gZnVuY3Rpb24gX19pcGlwZV9sb2NrX2lycSB0aGUgY29u
+dHJvbCBiaXRzIHNob3VsZCBlaXRoZXIgYmUgc2V0IHBlciBjcHUgYW5kDQo+ID4+IG5vdCBnbG9i
+YWxseSBpZiB0aGUgaHdpcnEgaXMgbGVzcyB0aGFuIDMxLg0KPiA+Pg0KPiA+PiBBIHN1Z2dlc3Rp
+b24gd291bGQgYmUgdG8gdXNlIHRoZSBOUl9DUFVTIGJpdHMgZnJvbSBpcGQtPmlycXNbaXJxXS5j
+b250cm9sIHRvDQo+ID4+IG1hcmsgdGhlIGxvY2sgb24gYSBwZXIgY3B1IGJhc2lzIGFuZCB0aGVu
+IGRlcGVuZGluZyBvbiB0aGUgdHlwZSBvZiB0aGUgaXJxDQo+ID4+IHNldCB0aGUgY29ycmVzcG9u
+ZGluZyBiaXRzIGZvciBlYWNoIChvciBhbGwsIGluIGNhc2UgU1BJcykgY3B1Lg0KPiA+IA0KPiA+
+IFVzaW5nIHRoZSBjb250cm9sIGJpdHMgd291bGQgbGltaXQgdGhlIG51bWJlciBvZiBzdXBwb3J0
+ZWQgQ1BVcyB0bw0KPiA+IF9fV09SRF9TSVpFIC0gMywgd2hpY2ggd291bGQgYmUgdG9vIHJlc3Ry
+aWN0aXZlIG9uIGhpZ2gtZW5kIHg4NiBvcg0KPiA+IGFybXY4LWJhc2VkIGJvYXJkcy4NCj4gPiAN
+Cj4gPiAgQW5kIHRoZW4sIHdoZW4NCj4gPj4gY2hlY2tpbmcgaWYgbG9ja2VkIChpbiBfX2lwaXBl
+X3NldF9pcnFfcGVuZGluZyBhbmQgX19pcGlwZV9kb19zeW5jX3N0YWdlKQ0KPiA+PiBpbmNsdWRl
+IHRoZSBjcHUgaW4gdGhlIGNvbmRpdGlvbi4gVGhhdCBzaG91bGQgYmUgYWxsLg0KPiA+Pg0KPiA+
+PiBJJ2xsIHRyeSB0byBjb21lIHVwIHdpdGggYSBwYXRjaCBsYXRlci4gSSBqdXN0IHdhbnRlZCB0
+byBwb2ludCBvdXQgdGhlIHByb2JsZW0NCj4gPj4gaGVyZS4NCj4gPj4NCj4gPiANCj4gPiBUaGFu
+a3MgZm9yIGxvb2tpbmcgYXQgdGhpcy4gT3JpZ2luYWxseSwgdGhpcyBwZXItSVJRIHBpcGVsaW5l
+LXNwZWNpZmljDQo+ID4gYml0IHdhcyBhaW1lZCBhdCBhZGRyZXNzaW5nIHRoZSBmb2xsb3dpbmcg
+c2NlbmFyaW86DQo+ID4gDQo+ID4gICAgICAgICBsb2NhbF9pcnFfZGlzYWJsZSgpDQo+ID4gICAg
+ICAgICAtPiBbSVJRIHJlY2VpcHQsIGxvZ2dlZCBmb3Igcm9vdCBzdGFnZV0NCj4gPiAJICAgZGlz
+YWJsZV9pcnEoaXJxKQ0KPiA+IAkgICAuLi4NCj4gPiAJICAgbG9jYWxfaXJxX2VuYWJsZSgpDQo+
+ID4gCSAgICAgIC0+IFtzcHVyaW91cyBJUlEgcmVwbGF5IHVwb24gbG9nIHN5bmMgc2luY2UgSVJR
+DQo+ID4gCSAgICAgICAgICBpcyBkZWVtZWQgZGlzYWJsZWRdDQo+ID4gDQo+ID4gSXQgdHVybnMg
+b3V0IHRoYXQgdGhpcyBpcyBkZWZpbml0ZWx5IG5vdCB0aGUgYmVzdCB3YXkgdG8gYWRkcmVzcyBp
+dC4gSXQNCj4gPiBzdWZmZXJzIG11bHRpcGxlIHNob3J0Y29taW5ncywgaW5jbHVkaW5nIFNNUCBy
+YWNlcyBhbmQgdGhlIHJlcXVpcmVtZW50DQo+ID4gdG8gZml4IHVwIGVhY2ggYW5kIGV2ZXJ5IG1h
+c2svdW5tYXNrIGlycWNoaXAgaGFuZGxlcnMgYmVpbmcgdXNlZC4gVGhlDQo+ID4gY3VycmVudCBh
+cHByb2FjaCBldmVuIGFidXNlcyB0aGUgaW50ZXJuYWwgZ2VuaXJxIGludGVyZmFjZSwgYnkgaGFu
+ZGxpbmcNCj4gPiBhIGNvcm5lciBjYXNlIHJlbGF0ZWQgdG8gdGhlIChzaHV0ZG93bnxkaXNhYmxl
+KV9pcnEgb3BzIGZyb20gdGhlDQo+ID4gbWFzay91bm1hc2sgaGFuZGxlcnMuDQo+ID4gDQo+ID4g
+VGhlcmUgaXMgYW4gb25nb2luZyB3b3JrIHRvIG92ZXJoYXVsIHRoZSBpbnRlZ3JhdGlvbiBvZiB0
+aGUgaW50ZXJydXB0DQo+ID4gcGlwZWxpbmUgd2l0aCB0aGUgZ2VuaXJxIGNvcmUgd2hpY2ggYWRk
+cmVzc2VzIHRoaXMgaXNzdWUsIGFuZCBzZXZlcmFsDQo+ID4gb3RoZXJzLg0KPiA+IA0KPiA+IElu
+IHRoZSBtZWFudGltZSwgeW91IGNvdWxkIHdvcmsgYXJvdW5kIHRoaXMgaXNzdWUgYnkgZHJvcHBp
+bmcgdGhlDQo+ID4gX19pcGlwZV9sb2NrL3VubG9jayBkYW5jZSBlbnRpcmVseSwgYWRkcmVzc2lu
+ZyB0aGlzIGNhc2UgYnkgY2xlYXJpbmcgdGhlDQo+ID4gSVJRIGJpdCBvZiB0aGUgZGlzYWJsZWQv
+c2h1dGRvd24gaW50ZXJydXB0IGluIGVhY2ggcGVyLUNQVSBsb2csIGZyb20NCj4gPiB3aXRoaW4g
+aXJxKF9wZXJjcHUpX2Rpc2FibGUsIF9faXJxX2Rpc2FibGUgYW5kIGlycV9zaHV0ZG93bi4gVGhh
+dCB3b3VsZA0KPiA+IHN0aWxsIG5vdCBiZSBwZXJmZWN0IGZyb20gYSBTTVAgc3luY2hyb25pemF0
+aW9uIHBvaW50IG9mIHZpZXcsIGJ1dCBub3QNCj4gPiB3b3JzZSB0aGFuIHRoZSBjdXJyZW50IF9f
+aXBpcGVfbG9jay91bmxvY2tfaXJxIHNjaGVtZSByZWdhcmRpbmcgdGhpcywNCj4gPiBhbmQgZGVm
+aW5pdGVseSBiZXR0ZXIgaW4gYWxsIG90aGVyIGFzcGVjdHMuDQo+ID4gDQo+IA0KPiBJZiB5b3Ug
+Z28gZm9yIHRoYXQgZml4LCBwbGVhc2UgbWFrZSBzdXJlIHRvIGJ5cGFzcyB0aGUgbGF6eSBkaXNh
+YmxlIG1vZGUNCj4gZm9yIElSUXMgYW5kIGFjdHVhbGx5IG1hc2sgdGhlIElDIGhhcmR3YXJlIHVw
+b24gX19pcnFfZGlzYWJsZSwgb3RoZXJ3aXNlDQo+IGNsZWFyaW5nIHRoZSBJUlEgbG9nIGZvciB0
+aGF0IElSUSB3b3VsZCBiZSBwb2ludGxlc3MuDQo+IA0KPiAtLSANCj4gUGhpbGlwcGUuDQoNCi0t
+IA==
 
