@@ -1,11 +1,14 @@
-From: jimmyo <jimmyo@gmx.at>
-Message-ID: <aa456ae4-96fc-0f6c-3d2a-bfb050bed4bc@gmx.at>
-Date: Thu, 31 May 2018 14:20:43 +0200
+References: <20180531072547.xss3iljr5uk4cxnw@fsr-ub1664-175>
+From: Philippe Gerum <rpm@xenomai.org>
+Message-ID: <f700d5b6-c780-f306-0453-f984aee4b937@xenomai.org>
+Date: Thu, 31 May 2018 15:01:20 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"; format="flowed"
+In-Reply-To: <20180531072547.xss3iljr5uk4cxnw@fsr-ub1664-175>
+Content-Type: text/plain; charset="utf-8"
+Content-Language: en-US
 Content-Transfer-Encoding: 8bit
-Content-Language: de-DE
-Subject: [Xenomai] ipipe 4.14 for ARM and X86
+Subject: Re: [Xenomai] Problem with ipipe locking PPIs and SGIs globally not
+ per cpu
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -14,15 +17,82 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Xenomai <xenomai@xenomai.org>
+To: Abel Vesa <abel.vesa@nxp.com>, "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-Hello,
+On 05/31/2018 09:25 AM, Abel Vesa wrote:
+> The problem is the fact that the arm twd irq (for example) is masked on that
+> specific core inside gic, but the ipipe is locking it globally.
+> 
+> According to GIC architecture specification
+> 
+> https://www.cl.cam.ac.uk/research/srg/han/ACS-P35/zynq/arm_gic_architecture_specification.pdf
+> 
+> Section 2.2.1
+> 
+>         ...
+>         Interrupt numbers ID0-ID31 are used for interrupts that are private to a CPU interface. These interrupts are
+>         banked in the Distributor.
+> 
+>         A banked interrupt is one where the Distributor can have multiple interrupts with the same ID. A banked
+>         interrupt is identified uniquely by its ID number and its associated CPU interface number. Of the banked
+>         interrupt IDs:
+>                 — ID0-ID15 are used for SGIs
+>                 — ID16-ID31 are used for PPIs
+>                 In a multiprocessor system:
+>                 — A PPI is forwarded to a particular CPU interface, and is private to that interface. In prioritizing
+>                 interrupts for a CPU interface the Distributor does not consider PPIs that relate to other interfaces.
+>         ...
+> 
+> In our case, we're talking about ID29 (linux mapped 16). In kernel/ipipe/core.c,
+> in function __ipipe_lock_irq the control bits should either be set per cpu and
+> not globally if the hwirq is less than 31.
+> 
+> A suggestion would be to use the NR_CPUS bits from ipd->irqs[irq].control to
+> mark the lock on a per cpu basis and then depending on the type of the irq
+> set the corresponding bits for each (or all, in case SPIs) cpu.
 
-now we are testing ipipe 4.14 for both platforms.
-Everything seems to be ok.
+Using the control bits would limit the number of supported CPUs to
+__WORD_SIZE - 3, which would be too restrictive on high-end x86 or
+armv8-based boards.
 
-Is there a schedule/roadmap for a release?
+ And then, when
+> checking if locked (in __ipipe_set_irq_pending and __ipipe_do_sync_stage)
+> include the cpu in the condition. That should be all.
+> 
+> I'll try to come up with a patch later. I just wanted to point out the problem
+> here.
+> 
 
-Thanks
-   Jimmy
+Thanks for looking at this. Originally, this per-IRQ pipeline-specific
+bit was aimed at addressing the following scenario:
+
+        local_irq_disable()
+        -> [IRQ receipt, logged for root stage]
+	   disable_irq(irq)
+	   ...
+	   local_irq_enable()
+	      -> [spurious IRQ replay upon log sync since IRQ
+	          is deemed disabled]
+
+It turns out that this is definitely not the best way to address it. It
+suffers multiple shortcomings, including SMP races and the requirement
+to fix up each and every mask/unmask irqchip handlers being used. The
+current approach even abuses the internal genirq interface, by handling
+a corner case related to the (shutdown|disable)_irq ops from the
+mask/unmask handlers.
+
+There is an ongoing work to overhaul the integration of the interrupt
+pipeline with the genirq core which addresses this issue, and several
+others.
+
+In the meantime, you could work around this issue by dropping the
+__ipipe_lock/unlock dance entirely, addressing this case by clearing the
+IRQ bit of the disabled/shutdown interrupt in each per-CPU log, from
+within irq(_percpu)_disable, __irq_disable and irq_shutdown. That would
+still not be perfect from a SMP synchronization point of view, but not
+worse than the current __ipipe_lock/unlock_irq scheme regarding this,
+and definitely better in all other aspects.
+
+-- 
+Philippe.
 
