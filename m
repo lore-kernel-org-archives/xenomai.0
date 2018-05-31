@@ -1,13 +1,15 @@
-References: <CALLqZ8QZZovg3CvE+-tpJpyvzH4NHkVpA=Kh=EX=-ZLo_ivw7w@mail.gmail.com>
 From: Philippe Gerum <rpm@xenomai.org>
-Message-ID: <31d6c7d9-0f08-0201-105d-56d906467489@xenomai.org>
-Date: Tue, 17 Apr 2018 09:44:50 +0200
+References: <20180531072547.xss3iljr5uk4cxnw@fsr-ub1664-175>
+ <f700d5b6-c780-f306-0453-f984aee4b937@xenomai.org>
+Message-ID: <d869577b-bb66-7cb7-5682-48d8c2acf85c@xenomai.org>
+Date: Thu, 31 May 2018 15:06:16 +0200
 MIME-Version: 1.0
-In-Reply-To: <CALLqZ8QZZovg3CvE+-tpJpyvzH4NHkVpA=Kh=EX=-ZLo_ivw7w@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8
+In-Reply-To: <f700d5b6-c780-f306-0453-f984aee4b937@xenomai.org>
+Content-Type: text/plain; charset="utf-8"
 Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] Increase RTDM_MAX_MINOR
+Content-Transfer-Encoding: 8bit
+Subject: Re: [Xenomai] Problem with ipipe locking PPIs and SGIs globally not
+ per cpu
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,30 +18,87 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Greg Gallagher <greg@embeddedgreg.com>, "Xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Abel Vesa <abel.vesa@nxp.com>, "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On 04/14/2018 04:20 AM, Greg Gallagher wrote:
-> Currently in the rtdm gpio drivers if the pin numbers we are trying to
-> register in rtdm space are above 1024 we will fail to register the
-> pins and the driver fails to load.  This happens because we use
-> RTDM_MAX_MINOR to limit the number of devices that can be registered.
-> For the gpio case adding a pin with a high pin number doesn't mean
-> that we have that many devices registered.  For example on the
-> raspberry pi2 the gpio pins start at 1994, but only the gpio rtdm
-> driver is loaded and we don't have 1994 rtdm devices registered.
->   I've tested out increasing the RTDM_MAX_MAJOR to 4096, which works
-> but I'm not sure this is the best solution.  Another solution could be
-> to subtract RTDM_MAX_MAJOR from the pin number if it's above
-> RTDM_MAX_MAJOR but we would now have pin numbers different from that
-> of the Linux gpio subsystem.
->     Any thoughts on the best approach?
+On 05/31/2018 03:01 PM, Philippe Gerum wrote:
+> On 05/31/2018 09:25 AM, Abel Vesa wrote:
+>> The problem is the fact that the arm twd irq (for example) is masked on that
+>> specific core inside gic, but the ipipe is locking it globally.
+>>
+>> According to GIC architecture specification
+>>
+>> https://www.cl.cam.ac.uk/research/srg/han/ACS-P35/zynq/arm_gic_architecture_specification.pdf
+>>
+>> Section 2.2.1
+>>
+>>         ...
+>>         Interrupt numbers ID0-ID31 are used for interrupts that are private to a CPU interface. These interrupts are
+>>         banked in the Distributor.
+>>
+>>         A banked interrupt is one where the Distributor can have multiple interrupts with the same ID. A banked
+>>         interrupt is identified uniquely by its ID number and its associated CPU interface number. Of the banked
+>>         interrupt IDs:
+>>                 — ID0-ID15 are used for SGIs
+>>                 — ID16-ID31 are used for PPIs
+>>                 In a multiprocessor system:
+>>                 — A PPI is forwarded to a particular CPU interface, and is private to that interface. In prioritizing
+>>                 interrupts for a CPU interface the Distributor does not consider PPIs that relate to other interfaces.
+>>         ...
+>>
+>> In our case, we're talking about ID29 (linux mapped 16). In kernel/ipipe/core.c,
+>> in function __ipipe_lock_irq the control bits should either be set per cpu and
+>> not globally if the hwirq is less than 31.
+>>
+>> A suggestion would be to use the NR_CPUS bits from ipd->irqs[irq].control to
+>> mark the lock on a per cpu basis and then depending on the type of the irq
+>> set the corresponding bits for each (or all, in case SPIs) cpu.
+> 
+> Using the control bits would limit the number of supported CPUs to
+> __WORD_SIZE - 3, which would be too restrictive on high-end x86 or
+> armv8-based boards.
+> 
+>  And then, when
+>> checking if locked (in __ipipe_set_irq_pending and __ipipe_do_sync_stage)
+>> include the cpu in the condition. That should be all.
+>>
+>> I'll try to come up with a patch later. I just wanted to point out the problem
+>> here.
+>>
+> 
+> Thanks for looking at this. Originally, this per-IRQ pipeline-specific
+> bit was aimed at addressing the following scenario:
+> 
+>         local_irq_disable()
+>         -> [IRQ receipt, logged for root stage]
+> 	   disable_irq(irq)
+> 	   ...
+> 	   local_irq_enable()
+> 	      -> [spurious IRQ replay upon log sync since IRQ
+> 	          is deemed disabled]
+> 
+> It turns out that this is definitely not the best way to address it. It
+> suffers multiple shortcomings, including SMP races and the requirement
+> to fix up each and every mask/unmask irqchip handlers being used. The
+> current approach even abuses the internal genirq interface, by handling
+> a corner case related to the (shutdown|disable)_irq ops from the
+> mask/unmask handlers.
+> 
+> There is an ongoing work to overhaul the integration of the interrupt
+> pipeline with the genirq core which addresses this issue, and several
+> others.
+> 
+> In the meantime, you could work around this issue by dropping the
+> __ipipe_lock/unlock dance entirely, addressing this case by clearing the
+> IRQ bit of the disabled/shutdown interrupt in each per-CPU log, from
+> within irq(_percpu)_disable, __irq_disable and irq_shutdown. That would
+> still not be perfect from a SMP synchronization point of view, but not
+> worse than the current __ipipe_lock/unlock_irq scheme regarding this,
+> and definitely better in all other aspects.
 > 
 
-RTDM only allocates a namespace with alloc_chrdev_region() for covering
-0..RTDM_MAX_MINOR-1 entirely, plus one entry in its own bitmap per
-minor, so raising RTDM_MAX_MINOR should be fine, i.e. that would not
-lead to over consume memory uselessly. Other options look complicated
-and error-prone.
+If you go for that fix, please make sure to bypass the lazy disable mode
+for IRQs and actually mask the IC hardware upon __irq_disable, otherwise
+clearing the IRQ log for that IRQ would be pointless.
 
 -- 
 Philippe.
