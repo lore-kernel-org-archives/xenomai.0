@@ -1,15 +1,15 @@
-From: Steven Seeger <steven.seeger@nasa.gov>
-Date: Tue, 12 Jun 2018 09:40:22 -0400
-Message-ID: <3064634.cGzeNpOAbh@wirbelwind>
-In-Reply-To: <CAE+nJ0KaKUuQS9VXp5VvrJZstjYEt=SGvC=GsFBcZfUYhTQ1Yw@mail.gmail.com>
-References: <2C2C7702C02C48D7A264944F1391A7F1@itd206>
- <4509611.bxaP7qoUFh@wirbelwind>
- <CAE+nJ0KaKUuQS9VXp5VvrJZstjYEt=SGvC=GsFBcZfUYhTQ1Yw@mail.gmail.com>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 7Bit
-Content-Type: text/plain; charset="ISO-8859-1"
-Subject: Re: [Xenomai] Reg:Xenomaui support for Powerpc p1022
-Reply-To: steven.seeger@nasa.gov
+From: "robert.berger@gmane" <gmane@reliableembeddedsystems.com>
+Date: Fri, 1 Jun 2018 03:42:14 +0300
+Message-ID: <5382785f-5d8f-4969-bf52-31dd584dddbe@reliableembeddedsystems.com>
+References: <CALLqZ8Qt5w=_W0nU=vhMNtS-Tx-zwE9Nnp-COV9YOK3OX57jTQ@mail.gmail.com>
+ <ff1c8ec5-420c-29cc-7f6e-6067bdfd2a99@siemens.com>
+ <CALLqZ8SuFNKfmXrNPHm1yVDPD8PRN4W2k5aCvU_EKGbyyQWZHA@mail.gmail.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 7bit
+In-Reply-To: <CALLqZ8SuFNKfmXrNPHm1yVDPD8PRN4W2k5aCvU_EKGbyyQWZHA@mail.gmail.com>
+Content-Language: en-US
+Subject: Re: [Xenomai] Reference Images Alpha Release
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -18,19 +18,21 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Alexander Voytov <alexander.voytov@gmail.com>
-Cc: xenomai@xenomai.org
+To: xenomai@xenomai.org
+Cc: Jan Kiszka <jan.kiszka@siemens.com>
 
-On Tuesday, June 12, 2018 9:34:21 AM EDT Alexander Voytov wrote:
-> What about P2020 and xenomai? Did anyone ported xenomai on fsl p2020?
-> Alex
+Hi Greg,
 
-You're asking the wrong questions. p1020 and p2020 are e500 processors, and 
-the e500 family is supported in xenomai. I have an 8548 board (also e500) 
-which I use for testing. Just no SMP on that one.
+On 2018-05-30 18:46, Greg Gallagher wrote:
+> I agree, after the first run of building the images myself I think
+> having the user generate the images would make more sense.  I'm
+> looking into doing that with an existing tool I think yocto may be a
+> good choice.  
 
-Steven
+In case you need some help with Yocto images I might be able to help.
 
+Regards,
 
+Robert
 
 
