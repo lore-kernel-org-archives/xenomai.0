@@ -1,11 +1,11 @@
+From: Sagi Maimon <SMaimon@advaoptical.com>
+Date: Mon, 4 Jun 2018 08:24:30 +0000
+Message-ID: <81447d4fbbd44e3ca473502b0755813a@advaoptical.com>
+Content-Language: en-US
 MIME-Version: 1.0
-References: <b72f1080-adf6-6926-5757-b2c200714f41@xenomai.org>
-In-Reply-To: <b72f1080-adf6-6926-5757-b2c200714f41@xenomai.org>
-From: "karim.allah.ahmed@gmail.com" <karim.allah.ahmed@gmail.com>
-Date: Wed, 20 Jun 2018 18:09:43 +0200
-Message-ID: <CAOTdubt_GGDXGEWRb8LubOYUMFNRQxscx9dnxOvKiFs+jkuW5A@mail.gmail.com>
-Content-Type: text/plain; charset="UTF-8"
-Subject: Re: [Xenomai] [NOTICE] GIT migration completed
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+Subject: [Xenomai] xenomai scheduling
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -14,34 +14,36 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: rpm@xenomai.org
-Cc: Xenomai@xenomai.org
+To: "Xenomai@xenomai.org" <Xenomai@xenomai.org>
 
-Hello Philippe,
+Hi all,
+Going over the xenomai documentation and code there is something I can't qu=
+ite understand.
 
-Is there still a public 'dovetail' repo somewhere?
+As far as I understand :
+One of the xenomai/nucleus tasks is INIT task, this task triggers the Linux=
+ kernel scheduler when no other xenomai task needs the CPU time.
+In the RPI system when a xenomai task migrate to secondary domain (Linux), =
+the INIT task gets the migrating task priority.
+That way xenomai preserve the priority scheme consistent across both schedu=
+lers.
 
-Regards.
-On Sun, Jun 17, 2018 at 4:54 PM Philippe Gerum <rpm@xenomai.org> wrote:
->
->
-> Services are back to normal, with some changes as previously announced.
-> Please have a look at the web site [1] for details.
->
-> Thanks,
->
-> [1] https://xenomai.org
->
-> --
-> Philippe.
->
-> _______________________________________________
-> Xenomai mailing list
-> Xenomai@xenomai.org
-> https://xenomai.org/mailman/listinfo/xenomai
+But what about Linux timer interrupt?
+In case of Linux timer interrupt, ADOS/xenomai will pass interrupt to Linux=
+ handling which during scheduler_tick() will invoke the Linux scheduler.
+In this case a Linux process can get precedence over a xenomai task, how ca=
+n it be?
 
+I guess I am missing something, can someone explain?
 
+Thanks,
 
--- 
-Karim Allah Ahmed.
+Sagi Maimon
+Manager R&D Software Oscilloquartz SA.
+ADVA Optical Networking
+Phone: +972 9 775 0124
+Mobile: +972 54 5662632
+e-mail: SMaimon@advaoptical.com
+www.oscilloquartz.com
+www.advaoptical.com
 
