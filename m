@@ -1,29 +1,11 @@
-References: <CAOuPNLg60S+am654fq55vTMoFV1=PfMp3as5MZtt5BHUacFRBQ@mail.gmail.com>
- <2ee8fa04-7ad4-58d5-603b-1d41ad2533ec@siemens.com>
- <CAOuPNLiE-Fy3LJrozgsLE9ga0ibC+GOSHO6ciJppU_bnZtbx0g@mail.gmail.com>
- <73a5c9f6-5014-5113-1ddd-2fcf974273bb@siemens.com>
- <CAOuPNLjuB53ovnEBijNSqrgsKYcSGjLM-L=J4mfbRogwo_5kVA@mail.gmail.com>
- <CAOuPNLh2C8b1KC5D6+Lws_1UA0o0Sp_BaPb3mUTyebUPq_EduA@mail.gmail.com>
- <CAOuPNLiCfmUrDMWyX=N37hVJTBDEqwOtoOr1srf-55ks1qms+w@mail.gmail.com>
- <513744ad-f8fe-d54e-0618-fad492ed5bff@siemens.com>
- <5f46f00c-f09b-7439-93cf-4ff2a0343974@siemens.com>
- <6da8a3e2-7a76-afb2-c46c-7c173a8e444c@siemens.com>
- <CAOuPNLhYPGrP5s0y6e9HFUVrg2aDochOxF_fMkbjTmYnEvPOQQ@mail.gmail.com>
- <CAOuPNLjXN531P13WddSAQ-ZmnNOF_EQ4R+3eZ09VtG5zNvUH0g@mail.gmail.com>
- <aaa3a49e-ae7f-1696-199b-4ade86bd503f@siemens.com>
- <CAOuPNLi-p3A9LvkbpAVDapjN-dKgD8hJ3RJwJV+P=FvK2Pa7SA@mail.gmail.com>
- <8e8bd751-89b5-7006-a791-ae464838f5ed@siemens.com>
- <CAOuPNLh6ShYRG3E1Q+uad4phS3+QEtogzzu6RQpLz=N4qVQX1Q@mail.gmail.com>
-From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <b15f32c2-9bbc-c2f6-e65d-7331c0bc790a@siemens.com>
-Date: Wed, 27 Jun 2018 18:17:27 +0200
+From: Philippe Gerum <rpm@xenomai.org>
+Message-ID: <035ed079-cdbb-c39f-d3c6-2a0f46f59361@xenomai.org>
+Date: Tue, 5 Jun 2018 12:48:23 +0200
 MIME-Version: 1.0
-In-Reply-To: <CAOuPNLh6ShYRG3E1Q+uad4phS3+QEtogzzu6RQpLz=N4qVQX1Q@mail.gmail.com>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] Kernel oops during rtnet loopback usage on x86_64
-	(e1000e)
+Subject: [Xenomai] Introducing Dovetail
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -32,28 +14,65 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Pintu Kumar <pintu.ping@gmail.com>
-Cc: "Xenomai@xenomai.org" <xenomai@xenomai.org>
+To: "Xenomai@xenomai.org" <Xenomai@xenomai.org>
+Cc: "Kiszka, Jan" <jan.kiszka@siemens.com>, "Seeger,
+ Steven D. (GSFC-444.0)[Embedded Flight Systems,
+ Inc]" <steven.seeger@nasa.gov>
 
-On 2018-06-27 16:12, Pintu Kumar wrote:
->> With nosmap, that particular issue should no longer occur (at least as
->> long as we can ask the kernel for this relaxation), so I suspect the
->> other effect you see now is something else.
-> 
-> Just for the information, that issue occurred even on Beagle bone, and
-> there is no smap on arm.
-> However, it works on virtual box. how ?
 
-Does it work when you go back to Xenomai 3.0.6? Then it would be a
-regression of the copy-to/from-userspace improvements done after that
-release, you could start bisecting which commit introduced it.
+This is a heads-up about an ongoing work I hinted at last year [1]
+codenamed "Dovetail", which has just reached a significant milestone. In
+ short, an overhauled implementation of the interrupt pipeline is now
+capable of delivering short response times reliably on the ARM SoCs I'm
+working on (mainly i.MX(6q|7d) so far), running the recent 4.17 kernel
+release.
 
-But I'm not sure right now if there isn't something similar to smap
-(then just without a knob to turn it off) in the ARM architecture as well...
+This code can be found at [2]. Beware: this is work in progress, the
+code base is still in a state of flux, the API will not be carved in
+stone anytime soon. However, the main logic is in place and should not
+change significantly from now on. Obviously, the devil might still be in
+the detail though.
 
-Jan
+The rationale behind this effort is about securing the maintenance of
+this key component of Xenomai so that it could be maintained with common
+ kernel development knowledge, at a fraction of the engineering and
+maintenance cost native preemption requires. For several reasons, the
+I-pipe does not qualify.
+
+Maintaining the I-pipe proved to be difficult over the years as changes
+to the mainline kernel regularly caused non-trivial code conflicts,
+sometimes nasty regressions bit us downstream. Although the concept of
+interrupt pipelining proved to be correct in delivering short response
+time with reasonably limited changes to the original kernel, the way
+this mechanism is currently integrated into the mainline code shows its
+age. For those interested, the major issues affecting the current
+implementation are explained at [3].
+
+Back in 2002, I made the choice to add the interrupt pipeline mechanism
+sideways to the regular kernel logic for dealing with IRQs, as a way to
+limit the potentially nasty interactions between them, logically-wise
+and code-wise, including merge conflicts. This decision proved to be,
+well, completely wrong over time. I mean, really utterly wrong.
+
+For instance, the countless overhauls of the x86 *APIC support upstream
+made rebasing the I-pipe on the next kernel release a complete nightmare
+ for as many times. Likewise, maintaining our ARM port with Gilles amid
+the transition to the device tree model for this architecture, which
+regularly broke our changes to the irqchip and timer drivers, has
+certainly boosted our creativity with respect to curse words.
+
+Dovetail addresses the issue of maintainability, hopefully the right way
+this time. At the moment, my goal is to make an ARM-targeted version of
+Xenomai's Cobalt core use whichever interrupt pipeline flavor is
+available from the kernel, either the current I-pipe or the Dovetail
+interface. If all goes as planned, Xenomai ports based on Dovetail
+should be much easier to rebase on newer kernels, reducing the
+maintenance cost.
+
+[1] http://www.xenomai.org/pipermail/xenomai/2017-December/038163.html
+[2] git://steely.xenomai.org/linux-dovetail.git
+[3] https://xenomai.org/2018/06/introduction-to-dovetail/
 
 -- 
-Siemens AG, Corporate Technology, CT RDA IOT SES-DE
-Corporate Competence Center Embedded Linux
+Philippe.
 
