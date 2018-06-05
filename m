@@ -1,22 +1,13 @@
 MIME-Version: 1.0
-References: <CAOuPNLias38WgrA7SeQxC-Nh47q7kM8vRVR=ex_yFzQT1pnDZg@mail.gmail.com>
- <CAOuPNLgNoHKH5EA3aanAqSMXQn1Y25oM3rCWNN7-5DUJxc=sBQ@mail.gmail.com>
- <CALLqZ8TNfqRY0vqfCqExS+CxWGqTDe9Tm5-q3sMzbaY5Vi1nHQ@mail.gmail.com>
- <CAOuPNLjpiUzDTskhMHfRpqsoPU_1gd1n3PrXa=K0GGbsG+WoNA@mail.gmail.com>
- <CAOuPNLi0k3KmzKJjyE5vqQmW-92DoRXyB+pGMqqwSiwY7Tz8Sw@mail.gmail.com>
- <CAOuPNLhQ-f_wm9u8ikWf_yB43f6c+8f8bm8zo36vEE+43ZpKtQ@mail.gmail.com>
- <20180627143752.648bb696@md1pvb1c.ad001.siemens.net>
- <CAOuPNLjW5AY1yMYux4FQXzvzd6FpyTP8tZ4JEJq3DZa3C5kiuA@mail.gmail.com>
- <CAOuPNLgbE8iySGr12b8-eRdyr5iN3jhJ38iS9aZDprJUs+zRYw@mail.gmail.com>
- <CAOuPNLg9Tw_MK2UrazRc2Bwg0Jsi2PU=aL2tzSaDRiY6qUhFww@mail.gmail.com>
- <20180628173615.10a16310@md1pvb1c.ad001.siemens.net>
-In-Reply-To: <20180628173615.10a16310@md1pvb1c.ad001.siemens.net>
+In-Reply-To: <4e64e78c-0b25-c6e6-90cb-f48c7cdd5051@xenomai.org>
+References: <CAOuPNLiWw7R9j75OvFWq6RAcwgiaGaOt_4Ep0hXOz-ZOMkrrww@mail.gmail.com>
+ <4e64e78c-0b25-c6e6-90cb-f48c7cdd5051@xenomai.org>
 From: Pintu Kumar <pintu.ping@gmail.com>
-Date: Thu, 28 Jun 2018 22:05:48 +0530
-Message-ID: <CAOuPNLgBVJPHOyzOypiCG0VkAZMG+EjSe-cAjALKS=rXm8t27w@mail.gmail.com>
+Date: Tue, 5 Jun 2018 18:34:44 +0530
+Message-ID: <CAOuPNLgw8NurkqsMUK49NTKiLx1YqidQZ=i7vMMpF=Nxu1ZROg@mail.gmail.com>
 Content-Type: text/plain; charset="UTF-8"
-Subject: Re: [Xenomai] beaglebone: arm: xeno-test gives segmentation fault -
-	test dlopen failed
+Subject: Re: [Xenomai] Applying arch specific ipipe patches - commit by
+	commit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -25,233 +16,95 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Henning Schild <henning.schild@siemens.com>
+To: Philippe Gerum <rpm@xenomai.org>
 Cc: "Xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On Thu, Jun 28, 2018 at 9:06 PM Henning Schild
-<henning.schild@siemens.com> wrote:
+Dear Philippe,
+
+Thank you so much for your reply.
+Yes, I already cloned the common ipipe.git and looked into it.
+
+I tried to do the following:
+1) git clone https://git.xenomai.org/ipipe.git
+2) git checkout ipipe-4.9.y  => I think it points to 4.9.92
+    [But I need only 4.9.51]
+
+3) cd ipipe
+
+4) ./scripts/ipipe/genpatches.sh --split
+reference: v4.9.92, kernel version: 4.9.92
+fatal: ambiguous argument 'v4.9.92': unknown revision or path not in
+the working tree.
+Use '--' to separate paths from revisions, like this:
+'git <command> [<revision>...] -- [<file>...]'
+ipipe-core-4.9.92-noarch.patch
+rm: missing operand
+Try 'rm --help' for more information.
+
+
+I get the above error, when I run this script.
+I am not sure what does it indicates.
+I wanted all arch patches only for kernel 4.9.51
+How to use this script to generate that?
+
+If you have any suggestions please help!
+
+Thanks,
+Pintu
+
+
+On Tue, Jun 5, 2018 at 5:55 PM, Philippe Gerum <rpm@xenomai.org> wrote:
+> On 06/04/2018 12:24 PM, Pintu Kumar wrote:
+>> Dear Greg,
+>>
+>> I have one specific requirement regarding applying ipipe and xenomai
+>> patches to our kernel.
+>>
+>> I am using kernel version: 4.9.51> I have all arch (x86, arm, arm64) changes in single kernel itself.
+>>
+>> On this kernel I want to first apply "ipipe_4.9.51_x86" patches and
+>> then in the same kernel I want to apply "ipipe_4.9.51_arm" and
+>> "ipipe_4.9.51_arm64" patches.
+>>
+>> I cannot do it because it may create several conflicts. It can contain
+>> non-arch specific common changes that it will try to apply twice.
+>>
 >
-> Hi,
+> The tree at [1] precisely provides such integrated combo with all the
+> supported archs. All patches are extracted from it. Rebasing your code
+> on top of that tree would spare you those issues.
 >
-> could you please try v3.0.7 (733a32b71f77dfb3e7a64039d0692e6c9d5d1cfe)
-
-How to clone 3.0.7 as a git repo (not the tar)?
-
-> this is a tag not a branch. Or use branch "stable/v3.0.x".
-
-Ok, will try with stable on Beaglebone. But as I see stable also
-contains the same dlopen fixes.
-
-> The commit from "next" you mentioned does not exist anymore, one of the
-> pleasures of using git ... do not use "next" unless you really have to!
+>> So, if you have any suggestions about applying the patches commit by
+>> commit for each arch please let me know.
+>> Or, if we can modify the prepare_kernel script to handle this case,
+>> then that is also fine.
+>>
+>> Currently, my idea is:
+>> - First apply arch/x86 patches from ipipe-x86 kernel
+>> - Then apply arch/arm patches from ipipe-arm kernel
+>> - Then apply common patches between x86 and arm
+>> - Then apply x86 specific non-arch patches
+>> - Then apply arm specific non-arch patches
+>> - Then resolve some of the conflicts
+>>
+>> Do you think this process will work out easily?
+>> Can I use prepare_kernel for the same?
+>> If I have to apply commit by commit, how to decide which commit to start with?
+>>
+>> If you have any better method please let me know.
+>>
 >
-I guess, arm64 support is present only on "next" branch.
-Since we want to maintain single kernel for all (x86, arm, arm64) we
-choose next branch.
-And AFAIK, next branch should always contain all the patches from
-previous stable branch.
-
-> If you are not using dlopen just drop "--enable-dlopen-libs" from your
-> configure options.
+> Try this from the cloned top level directory of [1]:
 >
-Yes, I did not use this, but still I get dlopen error on ARM - beaglebone.
-I just used:
-# ./configure --enable-smp
-
-Also, on x86, it works if I just use:
-# ./configure
-
-But same dlopen error if I use:
-# ./configure --enable-dlopen-libs
-
-And, I wanted to know how to disable this config from xenomai-3 - configure.ac
-CONFIG_XENO_LIBS_DLOPEN
-
-> Henning
+> $ ./scripts/ipipe/genpatches.sh --split
 >
-> Am Wed, 27 Jun 2018 18:51:03 +0530
-> schrieb Pintu Kumar <pintu.ping@gmail.com>:
+> This is another way of getting the noarch and arch-specific bits of the
+> I-pipe separately. If the script aborts in error, just pick the script
+> from the latest I-pipe version in the series (e.g. 4.9.92 for the 4.9
+> series).
 >
-> > Hi,
-> >
-> > Sorry, but both the below patches are already applied to my
-> > xenomai-next repo: build: link dlopen libs with "nodelete"
-> > smokey/dlopen: fix testcase
-> >
-> > Still I am facing dlopen issue.
-> > Is there any other patches I am missing?
-> >
-> >
-> > Thanks,
-> > Pintu
-> >
-> > On Wed, Jun 27, 2018 at 6:47 PM Pintu Kumar <pintu.ping@gmail.com>
-> > wrote:
-> > >
-> > > Hi,
-> > >
-> > > One doubt, how do we clone 3.0.7 ?
-> > > Is it part of the following branches?
-> > >   remotes/origin/next
-> > >   remotes/origin/stable/v3.0.x
-> > >
-> > > I could not find any branch with the name 3.0.7.
-> > >
-> > > Is all 3 patches important, or only this is fine:
-> > > build: link dlopen libs with "nodelete"
-> > > smokey/dlopen: fix testcase
-> > >
-> > > Sorry, but can you list down all 3 commits.
-> > >
-> > >
-> > > Thanks,
-> > > Pintu
-> > >
-> > >
-> > >
-> > > Thanks,
-> > > Pintu
-> > > On Wed, Jun 27, 2018 at 6:30 PM Pintu Kumar <pintu.ping@gmail.com>
-> > > wrote:
-> > > >
-> > > > Dear Henning,
-> > > >
-> > > > Thanks so much for your reply.
-> > > > I am actually using xenomai-next branch.
-> > > > With last commit as:
-> > > > commit ffb68112e2342a62a1f70916a35a3d68e875b12c
-> > > > Author: Philippe Gerum <rpm@xenomai.org>
-> > > > Date:   Mon May 21 12:54:59 2018 +0200
-> > > >
-> > > >     scripts/prepare-kernel.sh: drop left overs from obsolete ports
-> > > >
-> > > > Anyways, I will check with your reference commits.
-> > > >
-> > > > Thanks,
-> > > > Pintu
-> > > > On Wed, Jun 27, 2018 at 6:07 PM Henning Schild
-> > > > <henning.schild@siemens.com> wrote:
-> > > > >
-> > > > > Hi Pintu,
-> > > > >
-> > > > > i guess you might be using v3.0.6. There are a couple of
-> > > > > commits on top of that
-> > > > > https://gitlab.denx.de/Xenomai/xenomai/commit/aa008686091484c88cbb809bc190133a98769a30
-> > > > > and 2 parents
-> > > > > All three are in v3.0.7, which hopefully solves your problem.
-> > > > >
-> > > > > regards,
-> > > > > Henning
-> > > > >
-> > > > > Am Wed, 27 Jun 2018 16:11:43 +0530
-> > > > > schrieb Pintu Kumar <pintu.ping@gmail.com>:
-> > > > >
-> > > > > > Dear Henning,
-> > > > > >
-> > > > > > I saw your commit regarding dlopen here:
-> > > > > > https://xenomai.org/pipermail/xenomai/2018-February/038351.html
-> > > > > >
-> > > > > > We are facing dlopen error with xeno-test on arm (beagle
-> > > > > > bone) and arm64 (hikey) boards.
-> > > > > > Segmentation fault
-> > > > > > /usr/xenomai/bin/smokey: test dlopen failed: Unknown error -1
-> > > > > >
-> > > > > > Do you have any clue regarding this issue.
-> > > > > > Earlier xeno-test worked for us, but after this commit
-> > > > > > xeno-test is failing.
-> > > > > >
-> > > > > > Currently we dont need dlopen test.
-> > > > > > So, please let us know how to disable dlopen test to pass the
-> > > > > > xeno-test report.
-> > > > > >
-> > > > > >
-> > > > > > Thanks,
-> > > > > > Pintu
-> > > > > >
-> > > > > >
-> > > > > >
-> > > > > > On Tue, Jun 26, 2018 at 11:07 PM Pintu Kumar
-> > > > > > <pintu.ping@gmail.com> wrote:
-> > > > > > >
-> > > > > > > One more thing,
-> > > > > > > On x86 xeno-test works fine even with dlopen.
-> > > > > > >
-> > > > > > > This problem is seen only of arm and arm64 boards.
-> > > > > > >
-> > > > > > > Thanks,
-> > > > > > > Pintu
-> > > > > > > On Tue, Jun 26, 2018 at 10:16 PM Pintu Kumar
-> > > > > > > <pintu.ping@gmail.com> wrote:
-> > > > > > > >
-> > > > > > > > Ok Greg thanks a lot.
-> > > > > > > >
-> > > > > > > > Yes, I can recompile it, but for now I want to get rid of
-> > > > > > > > this dlopen to pass rest of xeno-test.
-> > > > > > > > Please let me know how to disable it from configure.ac
-> > > > > > > >
-> > > > > > > > Thanks,
-> > > > > > > > Pintu
-> > > > > > > > On Tue, Jun 26, 2018 at 8:57 PM Greg Gallagher
-> > > > > > > > <greg@embeddedgreg.com> wrote:
-> > > > > > > > >
-> > > > > > > > > Hi,
-> > > > > > > > >   I'll take a look at this tonight.  I'll confirm if
-> > > > > > > > > this test is crashing on all platforms or just BB.  To
-> > > > > > > > > disable I believe you'll have to recompile the tests.
-> > > > > > > > >
-> > > > > > > > > -Greg
-> > > > > > > > >
-> > > > > > > > > On Tue, Jun 26, 2018 at 10:43 AM, Pintu Kumar
-> > > > > > > > > <pintu.ping@gmail.com> wrote:
-> > > > > > > > > > Dear Greg,
-> > > > > > > > > >
-> > > > > > > > > > Please let me know how to disable "dlopen" test in
-> > > > > > > > > > xenomai-next.
-> > > > > > > > > >
-> > > > > > > > > > I even tried, without dlopen parameter
-> > > > > > > > > > during ./configure but still I get the same issue.
-> > > > > > > > > > #  ./configure --enable-smp
-> > > > > > > > > >
-> > > > > > > > > > We did not face this issue earlier on xenomai-3
-> > > > > > > > > > stable branch. So, I am planning to disable it right
-> > > > > > > > > > now. Please help!
-> > > > > > > > > >
-> > > > > > > > > >
-> > > > > > > > > > Thanks,
-> > > > > > > > > > Pintu
-> > > > > > > > > >
-> > > > > > > > > > On Tue, Jun 26, 2018 at 12:52 PM Pintu Kumar
-> > > > > > > > > > <pintu.ping@gmail.com> wrote:
-> > > > > > > > > >>
-> > > > > > > > > >> Hi,
-> > > > > > > > > >> I am using Kernel 4.9.51 for beagle bone black with
-> > > > > > > > > >> xenomai patches from xenomai-next repo.
-> > > > > > > > > >>
-> > > > > > > > > >> I have installed xenomai-3-next using below:
-> > > > > > > > > >> # ./scripts/bootstrap
-> > > > > > > > > >> # ./configure --with-pic --with-core=cobalt
-> > > > > > > > > >> --enable-smp --disable-tls --enable-dlopen-libs
-> > > > > > > > > >> # make
-> > > > > > > > > >> # make install
-> > > > > > > > > >>
-> > > > > > > > > >> After that when I run xeno-test I get below error,
-> > > > > > > > > >> and the test stopped.
-> > > > > > > > > >>
-> > > > > > > > > >> # root@bdk:~# /usr/xenomai/bin/xeno-test
-> > > > > > > > > >> ....
-> > > > > > > > > >> ....
-> > > > > > > > > >> vdso_access OK
-> > > > > > > > > >> xddp skipped (no kernel support)
-> > > > > > > > > >> Segmentation fault
-> > > > > > > > > >> /usr/xenomai/bin/smokey: test dlopen failed: Unknown
-> > > > > > > > > >> error -1
-> > > > > > > > > >>
-> > > > > > > > > >> If you have any clue about this error, please let me
-> > > > > > > > > >> know.
-> > > > > > > > > >>
-> > > > > > > > > >>
-> > > > > > > > > >> Thanks,
-> > > > > > > > > >> Pintu
-> > > > >
+> [1] git://git.xenomai.org/ipipe.git
 >
+> --
+> Philippe.
 
