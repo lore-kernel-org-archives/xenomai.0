@@ -1,10 +1,13 @@
-Date: Thu, 28 Jun 2018 09:31:06 +0800 (CST)
-From: =?GBK?Q?10=C4=EA?= <v907240791@163.com>
+From: Philippe Gerum <rpm@xenomai.org>
+References: <CAOuPNLiWw7R9j75OvFWq6RAcwgiaGaOt_4Ep0hXOz-ZOMkrrww@mail.gmail.com>
+Message-ID: <4e64e78c-0b25-c6e6-90cb-f48c7cdd5051@xenomai.org>
+Date: Tue, 5 Jun 2018 14:25:02 +0200
 MIME-Version: 1.0
-Message-ID: <77f54229.2964.1644403f006.Coremail.v907240791@163.com>
-Content-Type: text/plain; charset=GBK
-Content-Transfer-Encoding: base64
-Subject: [Xenomai] Some Problem with build sam5d36 IMAGE
+In-Reply-To: <CAOuPNLiWw7R9j75OvFWq6RAcwgiaGaOt_4Ep0hXOz-ZOMkrrww@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+Subject: [Xenomai] Applying arch specific ipipe patches - commit by commit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -13,32 +16,59 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
+To: Pintu Kumar <pintu.ping@gmail.com>, "Xenomai@xenomai.org" <xenomai@xenomai.org>, Greg Gallagher <greg@embeddedgreg.com>
 
-Li9wcmVwYXJlLWtlcm5lbC5zaCAtLWFyY2g9YXJtIC0tYWRlb3M9L3Vzci9zcmMvbGludXgvaXBp
-cGUtY29yZS00LjE0LjM2LWFybS0xLnBhdGNoIC0tbGludXg9L3Vzci9zcmMvbGludXgvbGludXgt
-NC4xNC4zNgptYWtlIG1lbnVjb25maWcgICAgIC0tLS1hbmQgSSBsb2FkIGZpbGUgaW4gL3Vzci9z
-cmMvbGludXgvbGludXgtNC4xNC4zNi9hcmNoL2FybS9jb25maWdzL3NhbWE1X2RlZmNvbmZpZyAg
-IC0tYW5kIHNhdmUgaW4gL3Vzci9zcmMvbGludXgvbGludXgtNC4xNC4zNi8uY29uZmlnCgptYWtl
-IEFSQ0g9YXJtIENST1NTX0NPTVBJTEU9YXJtLW5vbmUtbGludXgtZ251ZWFiaS0gYnpJbWFnZSBt
-b2R1bGVzCgpUaGF0J3MgYWxsIEkgZG8sIHdoaWxlIGJ1aWxkaW5nLCBzb21lIGVycm9ycyBjb21p
-bmcgdGhhdCA6CgoKIEFTICAgICAgYXJjaC9hcm0veGVub21haS9zd2l0Y2gubwogIENDICAgICAg
-YXJjaC9hcm0veGVub21haS9zeXNjYWxsLm8KSW4gZmlsZSBpbmNsdWRlZCBmcm9tIGFyY2gvYXJt
-L3hlbm9tYWkvaW5jbHVkZS9hc20veGVub21haS9zeXNjYWxsLmg6Mjk6MCwKICAgICAgICAgICAg
-ICAgICBmcm9tIGFyY2gvYXJtL3hlbm9tYWkvc3lzY2FsbC5jOjIyOgouL2luY2x1ZGUvYXNtLWdl
-bmVyaWMveGVub21haS9zeXNjYWxsLmg6IEluIGZ1bmN0aW9uICdjb2JhbHRfY29weV9mcm9tX3Vz
-ZXInOgouL2luY2x1ZGUvYXNtLWdlbmVyaWMveGVub21haS9zeXNjYWxsLmg6NDk6MzogZXJyb3I6
-IGltcGxpY2l0IGRlY2xhcmF0aW9uIG9mIGZ1bmN0aW9uICdfX2NvcHlfZnJvbV91c2VyX2luYXRv
-bWljJyBbLVdlcnJvcj1pbXBsaWNpdC1mdW5jdGlvbi1kZWNsYXJhdGlvbl0KICAgX194bl9jb3B5
-X2Zyb21fdXNlcihkc3QsIHNyYywgc2l6ZSkpID8gLUVGQVVMVCA6IDA7CiAgIF4KLi9pbmNsdWRl
-L2FzbS1nZW5lcmljL3hlbm9tYWkvc3lzY2FsbC5oOiBJbiBmdW5jdGlvbiAnY29iYWx0X2NvcHlf
-dG9fdXNlcic6Ci4vaW5jbHVkZS9hc20tZ2VuZXJpYy94ZW5vbWFpL3N5c2NhbGwuaDo1NjozOiBl
-cnJvcjogaW1wbGljaXQgZGVjbGFyYXRpb24gb2YgZnVuY3Rpb24gJ19fY29weV90b191c2VyX2lu
-YXRvbWljJyBbLVdlcnJvcj1pbXBsaWNpdC1mdW5jdGlvbi1kZWNsYXJhdGlvbl0KICAgX194bl9j
-b3B5X3RvX3VzZXIoZHN0LCBzcmMsIHNpemUpKSA/IC1FRkFVTFQgOiAwOwogICBeCmNjMTogc29t
-ZSB3YXJuaW5ncyBiZWluZyB0cmVhdGVkIGFzIGVycm9ycwpzY3JpcHRzL01ha2VmaWxlLmJ1aWxk
-OjMyODogcmVjaXBlIGZvciB0YXJnZXQgJ2FyY2gvYXJtL3hlbm9tYWkvc3lzY2FsbC5vJyBmYWls
-ZWQKbWFrZVsxXTogKioqIFthcmNoL2FybS94ZW5vbWFpL3N5c2NhbGwub10gRXJyb3IgMQpNYWtl
-ZmlsZToxMDQwOiByZWNpcGUgZm9yIHRhcmdldCAnYXJjaC9hcm0veGVub21haScgZmFpbGVkCm1h
-a2U6ICoqKiBbYXJjaC9hcm0veGVub21haV0gRXJyb3IgMgoKCgoKQ2FuIGFueSBib2R5IGhlbHAg
-bWUgPwoKCgoKIA==
+On 06/04/2018 12:24 PM, Pintu Kumar wrote:
+> Dear Greg,
+> 
+> I have one specific requirement regarding applying ipipe and xenomai
+> patches to our kernel.
+> 
+> I am using kernel version: 4.9.51> I have all arch (x86, arm, arm64) changes in single kernel itself.
+> 
+> On this kernel I want to first apply "ipipe_4.9.51_x86" patches and
+> then in the same kernel I want to apply "ipipe_4.9.51_arm" and
+> "ipipe_4.9.51_arm64" patches.
+> 
+> I cannot do it because it may create several conflicts. It can contain
+> non-arch specific common changes that it will try to apply twice.
+> 
+
+The tree at [1] precisely provides such integrated combo with all the
+supported archs. All patches are extracted from it. Rebasing your code
+on top of that tree would spare you those issues.
+
+> So, if you have any suggestions about applying the patches commit by
+> commit for each arch please let me know.
+> Or, if we can modify the prepare_kernel script to handle this case,
+> then that is also fine.
+> 
+> Currently, my idea is:
+> - First apply arch/x86 patches from ipipe-x86 kernel
+> - Then apply arch/arm patches from ipipe-arm kernel
+> - Then apply common patches between x86 and arm
+> - Then apply x86 specific non-arch patches
+> - Then apply arm specific non-arch patches
+> - Then resolve some of the conflicts
+> 
+> Do you think this process will work out easily?
+> Can I use prepare_kernel for the same?
+> If I have to apply commit by commit, how to decide which commit to start with?
+> 
+> If you have any better method please let me know.
+> 
+
+Try this from the cloned top level directory of [1]:
+
+$ ./scripts/ipipe/genpatches.sh --split
+
+This is another way of getting the noarch and arch-specific bits of the
+I-pipe separately. If the script aborts in error, just pick the script
+from the latest I-pipe version in the series (e.g. 4.9.92 for the 4.9
+series).
+
+[1] git://git.xenomai.org/ipipe.git
+
+-- 
+Philippe.
+
