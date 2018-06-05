@@ -1,10 +1,13 @@
-Message-ID: <1530603625.4507.9.camel@sprinte.eu>
-From: Julien Blanc <julien.blanc@sprinte.eu>
-Date: Tue, 03 Jul 2018 09:40:25 +0200
-Content-Type: text/plain; charset="UTF-8"
-Mime-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Subject: [Xenomai] [rtcan] Access to tx / rx / err counters
+From: Steven Seeger <steven.seeger@nasa.gov>
+Date: Tue, 5 Jun 2018 09:33:21 -0400
+Message-ID: <8802987.z5JkY3iLTf@wirbelwind>
+In-Reply-To: <035ed079-cdbb-c39f-d3c6-2a0f46f59361@xenomai.org>
+References: <035ed079-cdbb-c39f-d3c6-2a0f46f59361@xenomai.org>
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7Bit
+Content-Type: text/plain; charset="utf-8"
+Subject: Re: [Xenomai] Introducing Dovetail
+Reply-To: steven.seeger@nasa.gov
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -13,27 +16,25 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "Xenomai@xenomai.org" <Xenomai@xenomai.org>
+To: Philippe Gerum <rpm@xenomai.org>
+Cc: "Kiszka, Jan" <jan.kiszka@siemens.com>, "Xenomai@xenomai.org" <Xenomai@xenomai.org>
 
-Hi,
+On Tuesday, June 5, 2018 6:48:23 AM EDT Philippe Gerum wrote:
+> This is a heads-up about an ongoing work I hinted at last year [1]
+> codenamed "Dovetail", which has just reached a significant milestone. In
+>  short, an overhauled implementation of the interrupt pipeline is now
+> capable of delivering short response times reliably on the ARM SoCs I'm
+> working on (mainly i.MX(6q|7d) so far), running the recent 4.17 kernel
+> release.
 
-/proc/rtcan/devices , as well as the respective
-/proc/rtcan/<device>/info both gives access to the TX-Counter, RX-
-Counter and Errors counter of the device.
+<snip>
 
-I'd like to access these counters from an application, but cannot find
-the appropriate ioctls to do this. Adding them is not an issue, but i
-would like to avoid duplicating any existing feature, or to read the
-/proc filesystem whose format is not really guaranted.
+Hi Philippe.
 
-Is there a way to access these counters ? And if not, what would be the
-ioctl to add ? For example :
+Looks like there is just one branch here. Assuming this is the future, is the 
+goal here to have a generic branch and arch-specific branches again?
 
-#define RTCAN_RTIOC_GET_RXCOUNTER _IOR(RTIOC_TYPE_CAN, 0xC, int)
-#define RTCAN_RTIOC_GET_TXCOUNTER _IOR(RTIOC_TYPE_CAN, 0xD, int)
-#define RTCAN_RTIOC_GET_ERRCOUNTER _IOR(RTIOC_TYPE_CAN, 0xE, int)
+Steven
 
-Regards,
 
-Julien
 
