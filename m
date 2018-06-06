@@ -1,15 +1,15 @@
-References: <6b3f6665-d424-9350-837f-cad1b3b54c7c@gmx.at>
- <d72ffe7c-500d-4fa2-8643-ac82fbe619f1@xenomai.org>
- <VI1PR0801MB18548FC46353D8A7836127A2F5400@VI1PR0801MB1854.eurprd08.prod.outlook.com>
-From: Philippe Gerum <rpm@xenomai.org>
-Message-ID: <d5b902a5-05b7-ae28-c2d5-e04c0e8b6f6c@xenomai.org>
-Date: Thu, 5 Jul 2018 16:14:17 +0200
 MIME-Version: 1.0
-In-Reply-To: <VI1PR0801MB18548FC46353D8A7836127A2F5400@VI1PR0801MB1854.eurprd08.prod.outlook.com>
-Content-Type: text/plain; charset="utf-8"
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
-Subject: Re: [Xenomai] context switch minimize
+In-Reply-To: <9df15323-f92d-a668-ba1a-5986170996ec@xenomai.org>
+References: <CAOuPNLiWw7R9j75OvFWq6RAcwgiaGaOt_4Ep0hXOz-ZOMkrrww@mail.gmail.com>
+ <4e64e78c-0b25-c6e6-90cb-f48c7cdd5051@xenomai.org>
+ <CAOuPNLgw8NurkqsMUK49NTKiLx1YqidQZ=i7vMMpF=Nxu1ZROg@mail.gmail.com>
+ <9df15323-f92d-a668-ba1a-5986170996ec@xenomai.org>
+From: Pintu Kumar <pintu.ping@gmail.com>
+Date: Wed, 6 Jun 2018 17:22:42 +0530
+Message-ID: <CAOuPNLidcKbBbguT6Ye8nCpMbdD9Q7qA5X=OS7Sbi=jJud-tHg@mail.gmail.com>
+Content-Type: text/plain; charset="UTF-8"
+Subject: Re: [Xenomai] Applying arch specific ipipe patches - commit by
+	commit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -18,60 +18,74 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Johann Obermayr <johann.obermayr@sigmatek.at>, "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Philippe Gerum <rpm@xenomai.org>
+Cc: "Xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On 07/05/2018 04:08 PM, Johann Obermayr wrote:
-> 
-> 
->> -----Ursprüngliche Nachricht-----
->> Von: Xenomai [mailto:xenomai-bounces@xenomai.org] Im Auftrag von
->> Philippe Gerum
->> Gesendet: Donnerstag, 5. Juli 2018 15:05
->> An: jimmyo <jimmyo@gmx.at>; xenomai@xenomai.org
->> Betreff: Re: [Xenomai] context switch minimize
+On Tue, Jun 5, 2018 at 6:47 PM, Philippe Gerum <rpm@xenomai.org> wrote:
+> On 06/05/2018 03:04 PM, Pintu Kumar wrote:
+>> Dear Philippe,
 >>
->> On 07/05/2018 11:37 AM, jimmyo wrote:
->>> Hello,
->>>
->>> we have a running system on mx6 with Kernel 3.10.x and Xenomai 2.6.4.
->>> i known, it's very old.
->>> now we have to make some optmization.
->>> In one xenomai task we need to check, if a TCP/UDP socket handle has
->>> data to receive.
->>> at this time we use select to detect if there are data available and
->>> with ioctl & FIONREAD we get count of data.
->>>
->>> Now we must search a way, to do this in the primary domain, without
->>> switching to secondary domain.
->>>
->>> Is there a way to solve it ?
->>>
->>> we have a exists rtdm interface to a own kernel module.
->>> And we use rt_dev_ioctl to communicate with this module.
->>>
+>> Thank you so much for your reply.
+>> Yes, I already cloned the common ipipe.git and looked into it.
 >>
->> A plain thread could select() these file descriptors in userland, posting a
->> Xenomai-managed semaphore which your rt thread would trywait() on.
+>> I tried to do the following:
+>> 1) git clone https://git.xenomai.org/ipipe.git
+>> 2) git checkout ipipe-4.9.y  => I think it points to 4.9.92
+>>     [But I need only 4.9.51]
 >>
->> - semaphores can be posted by any thread, including those unknown to
->> Xenomai
->> - sem_trywait() would poll for the event without switching mode.
+>> 3) cd ipipe
 >>
->> --
->> Philippe.
+>> 4) ./scripts/ipipe/genpatches.sh --split
+>> reference: v4.9.92, kernel version: 4.9.92
+>> fatal: ambiguous argument 'v4.9.92': unknown revision or path not in
+>> the working tree.
+>> Use '--' to separate paths from revisions, like this:
+>> 'git <command> [<revision>...] -- [<file>...]'
+>> ipipe-core-4.9.92-noarch.patch
+>> rm: missing operand
+>> Try 'rm --help' for more information.
 >>
->> _______________________________________________
->> Xenomai mailing list
->> Xenomai@xenomai.org
->> https://xenomai.org/mailman/listinfo/xenomai
-> 
-> Hello,
-> 
-> We also thought about our own thread but wanted to know if there is a better solution.
-> 
+>>
+>> I get the above error, when I run this script.
+>> I am not sure what does it indicates.
+>> I wanted all arch patches only for kernel 4.9.51
+>> How to use this script to generate that?
+>>
+>> If you have any suggestions please help!
+>>
+>
+> $ git fetch --tags
+> $ git checkout ipipe-core-4.9.51-x86-5
+> $ ./scripts/ipipe/genpatches.sh --split
+>
 
-None that would be as simple.
+Thank you for this trick :)
+I could able to download arch and non-arch specific patches and apply
+in the same kernel.
 
--- 
-Philippe.
+But, there is one problem.
+There are still some files changes that are common between arm and arm64.
+So, if I apply ipipe-arm patch first then try to apply ipipe-arm64
+patch, then I get this:
+
+checking file drivers/clocksource/arm_arch_timer.c
+Reversed (or previously applied) patch detected!  Assume -R? [n] n
+Apply anyway? [n] n
+
+Like this there were 5 Reverse patch detected.
+Currently I skipped it.
+
+This means these file changes were already applied and arm64 is trying
+to apply again.
+So, my point is, we can improve the genpatches.sh script logic to
+handle this case.
+This is my suggestion.
+
+
+Thanks,
+Pintu
+
+
+> --
+> Philippe.
 
