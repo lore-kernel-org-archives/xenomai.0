@@ -1,12 +1,13 @@
+From: "Yan, Hongliang" <archer.hl.yan@intel.com>
+Date: Fri, 8 Jun 2018 05:22:43 +0000
+Message-ID: <9DA3CFDAD528B6408A6F2150A12D33CA51A77EC6@SHSMSX103.ccr.corp.intel.com>
 References: <9DA3CFDAD528B6408A6F2150A12D33CA51A776E1@SHSMSX103.ccr.corp.intel.com>
-From: Philippe Gerum <rpm@xenomai.org>
-Message-ID: <b55360b0-3453-50be-b81e-e895ed01845c@xenomai.org>
-Date: Thu, 7 Jun 2018 19:09:48 +0200
-MIME-Version: 1.0
-In-Reply-To: <9DA3CFDAD528B6408A6F2150A12D33CA51A776E1@SHSMSX103.ccr.corp.intel.com>
-Content-Type: text/plain; charset=utf-8
+ <b55360b0-3453-50be-b81e-e895ed01845c@xenomai.org>
+In-Reply-To: <b55360b0-3453-50be-b81e-e895ed01845c@xenomai.org>
 Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+MIME-Version: 1.0
 Subject: Re: [Xenomai] INTR-REMAP issue while enabling GPIO interrupt as
  RTDM interrupt
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
@@ -17,232 +18,150 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "Yan, Hongliang" <archer.hl.yan@intel.com>, "Xenomai@xenomai.org" <Xenomai@xenomai.org>
+To: Philippe Gerum <rpm@xenomai.org>, "Xenomai@xenomai.org" <Xenomai@xenomai.org>
 
-On 06/07/2018 05:55 PM, Yan, Hongliang wrote:
-> Hi All,
->   I am trying to enable pinctrl-intel.c GPIO interrupt as RTDM interrupt. I use rtdm_irq_request to replace devm_request_irq in probe function.
->   code is as following:
-> =======================================================================
-> #if 1
->     if ((ret = rtdm_irq_request(&irq_rtdm,
->                     irq, handler_interruption,
->                     0,
->                     "test", NULL)) != 0) {
->         printk("rtdm request error\n");
-> }
-> 
-> #else
->     ret = devm_request_irq(pctrl->dev, irq, intel_gpio_irq, IRQF_SHARED,
->                    dev_name(pctrl->dev), pctrl);
->     if (ret) {
->         dev_err(pctrl->dev, "failed to request interrupt\n");
->         goto fail;
->     }
-> #endif
-
-That won't work, unless you fixed up that GPIO driver to cope with interrupt pipelining - which does not seem to be the case.
-
-If you plan to implement those changes, please keep in mind that you won't be able to share a common IRQ line between multiple GPIO controllers unlike pinctrl-intel would originally allow for non-rt usage. The current I-pipe patch implementation does not support this.
-
-The code below was an attempt to adapt the pinctrl-intel driver to IRQ pipelining, which broke in flight due to lack of time. It is very unlikely to work as is, not even to build properly, I have no clue whether there is a slightest chance this might work, but that's a starting point...to somewhere.
-
-commit ab4493579d95de58718a8ea81ae1fffc6f2ed0f7 (wip/intel-pinctrl)
-Author: Philippe Gerum <rpm@xenomai.org>
-Date:   Wed May 31 18:16:19 2017 +0200
-
-    drivers: inter-pinctrl: make I-pipe aware
-
-diff --git a/drivers/pinctrl/intel/pinctrl-intel.c b/drivers/pinctrl/intel/pinctrl-intel.c
-index 01443762e570..f8bf54b6d485 100644
---- a/drivers/pinctrl/intel/pinctrl-intel.c
-+++ b/drivers/pinctrl/intel/pinctrl-intel.c
-@@ -91,7 +91,11 @@ struct intel_pinctrl_context {
-  */
- struct intel_pinctrl {
- 	struct device *dev;
-+#ifdef CONFIG_IPIPE
-+	ipipe_spinlock_t lock;
-+#else
- 	raw_spinlock_t lock;
-+#endif
- 	struct pinctrl_desc pctldesc;
- 	struct pinctrl_dev *pctldev;
- 	struct gpio_chip chip;
-@@ -647,15 +651,13 @@ static const struct gpio_chip intel_gpio_chip = {
- 	.set = intel_gpio_set,
- };
- 
--static void intel_gpio_irq_ack(struct irq_data *d)
-+static void __intel_gpio_irq_ack(struct irq_data *d)
- {
- 	struct gpio_chip *gc = irq_data_get_irq_chip_data(d);
- 	struct intel_pinctrl *pctrl = gpiochip_get_data(gc);
- 	const struct intel_community *community;
- 	unsigned pin = irqd_to_hwirq(d);
- 
--	raw_spin_lock(&pctrl->lock);
--
- 	community = intel_get_community(pctrl, pin);
- 	if (community) {
- 		unsigned padno = pin_to_padno(community, pin);
-@@ -664,7 +666,14 @@ static void intel_gpio_irq_ack(struct irq_data *d)
- 
- 		writel(BIT(gpp_offset), community->regs + GPI_IS + gpp * 4);
- 	}
-+}
- 
-+static void intel_gpio_irq_ack(struct irq_data *d)
-+{
-+	struct intel_pinctrl *pctrl = gpiochip_get_data(gc);
-+
-+	raw_spin_lock(&pctrl->lock);
-+	__intel_gpio_irq_ack(d);
- 	raw_spin_unlock(&pctrl->lock);
- }
- 
-@@ -694,18 +703,17 @@ static void intel_gpio_irq_enable(struct irq_data *d)
- 		writel(value, community->regs + community->ie_offset + gpp * 4);
- 	}
- 
-+	ipipe_unlock_irq(d->irq);
-+	
- 	raw_spin_unlock_irqrestore(&pctrl->lock, flags);
- }
- 
--static void intel_gpio_irq_mask_unmask(struct irq_data *d, bool mask)
-+static void __intel_gpio_irq_mask_unmask(struct irq_data *d, bool mask)
- {
- 	struct gpio_chip *gc = irq_data_get_irq_chip_data(d);
- 	struct intel_pinctrl *pctrl = gpiochip_get_data(gc);
- 	const struct intel_community *community;
- 	unsigned pin = irqd_to_hwirq(d);
--	unsigned long flags;
--
--	raw_spin_lock_irqsave(&pctrl->lock, flags);
- 
- 	community = intel_get_community(pctrl, pin);
- 	if (community) {
-@@ -723,20 +731,55 @@ static void intel_gpio_irq_mask_unmask(struct irq_data *d, bool mask)
- 			value |= BIT(gpp_offset);
- 		writel(value, reg);
- 	}
--
--	raw_spin_unlock_irqrestore(&pctrl->lock, flags);
- }
- 
- static void intel_gpio_irq_mask(struct irq_data *d)
- {
--	intel_gpio_irq_mask_unmask(d, true);
-+	struct intel_pinctrl *pctrl = gpiochip_get_data(gc);
-+	unsigned long flags;
-+
-+	raw_spin_lock_irqsave(&pctrl->lock, flags);
-+	ipipe_lock_irq(d->irq);
-+	__intel_gpio_irq_mask_unmask(d, true);
-+	raw_spin_unlock_irqrestore(&pctrl->lock, flags);
- }
- 
- static void intel_gpio_irq_unmask(struct irq_data *d)
- {
--	intel_gpio_irq_mask_unmask(d, false);
-+	struct intel_pinctrl *pctrl = gpiochip_get_data(gc);
-+	unsigned long flags;
-+
-+	raw_spin_lock_irqsave(&pctrl->lock, flags);
-+	__intel_gpio_irq_mask_unmask(d, false);
-+	ipipe_unlock_irq(d->irq);
-+	raw_spin_unlock_irqrestore(&pctrl->lock, flags);
-+}
-+
-+#ifdef CONFIG_IPIPE
-+
-+static void intel_gpio_irq_hold(struct irq_data *d)
-+{
-+	struct intel_pinctrl *pctrl = gpiochip_get_data(gc);
-+	unsigned long flags;
-+
-+	raw_spin_lock_irqsave(&pctrl->lock, flags);
-+	__intel_gpio_irq_mask_unmask(d, true);
-+	__intel_gpio_irq_ack(d);
-+	raw_spin_unlock_irqrestore(&pctrl->lock, flags);
-+}
-+
-+static void intel_gpio_irq_release(struct irq_data *d)
-+{
-+	struct intel_pinctrl *pctrl = gpiochip_get_data(gc);
-+	unsigned long flags;
-+
-+	raw_spin_lock_irqsave(&pctrl->lock, flags);
-+	__intel_gpio_irq_mask_unmask(d, false);
-+	raw_spin_unlock_irqrestore(&pctrl->lock, flags);
- }
- 
-+#endif
-+
- static int intel_gpio_irq_type(struct irq_data *d, unsigned type)
- {
- 	struct gpio_chip *gc = irq_data_get_irq_chip_data(d);
-@@ -837,7 +880,7 @@ static irqreturn_t intel_gpio_community_irq_handler(struct intel_pinctrl *pctrl,
- 
- 			irq = irq_find_mapping(gc->irqdomain,
- 					       community->pin_base + padno);
--			generic_handle_irq(irq);
-+			ipipe_handle_demuxed_irq(irq);
- 
- 			ret |= IRQ_HANDLED;
- 		}
-@@ -862,6 +905,14 @@ static irqreturn_t intel_gpio_irq(int irq, void *data)
- 	return ret;
- }
- 
-+static void ipipe_irq_cascade(struct irq_desc *desc)
-+{
-+#ifdef CONFIG_IPIPE
-+	intel_gpio_irq(irq_desc_get_irq(desc),
-+		       irq_desc_get_handler_data(desc));
-+#endif
-+}
-+
- static struct irq_chip intel_gpio_irqchip = {
- 	.name = "intel-gpio",
- 	.irq_enable = intel_gpio_irq_enable,
-@@ -870,6 +921,10 @@ static struct irq_chip intel_gpio_irqchip = {
- 	.irq_unmask = intel_gpio_irq_unmask,
- 	.irq_set_type = intel_gpio_irq_type,
- 	.irq_set_wake = intel_gpio_irq_wake,
-+#ifdef CONFIG_IPIPE
-+	.irq_hold = intel_gpio_irq_hold,
-+	.irq_release = intel_gpio_irq_release,
-+#endif
- };
- 
- static int intel_gpio_probe(struct intel_pinctrl *pctrl, int irq)
-@@ -902,12 +957,17 @@ static int intel_gpio_probe(struct intel_pinctrl *pctrl, int irq)
- 	 * to the irq directly) because on some platforms several GPIO
- 	 * controllers share the same interrupt line.
- 	 */
--	ret = devm_request_irq(pctrl->dev, irq, intel_gpio_irq,
--			       IRQF_SHARED | IRQF_NO_THREAD,
--			       dev_name(pctrl->dev), pctrl);
--	if (ret) {
--		dev_err(pctrl->dev, "failed to request interrupt\n");
--		goto fail;
-+	if (IS_ENABLED(CONFIG_IPIPE))
-+		irq_set_chained_handler_and_data(irq,
-+					ipipe_irq_cascade, pctrl);
-+	else {
-+		ret = devm_request_irq(pctrl->dev, irq, intel_gpio_irq,
-+				       IRQF_SHARED | IRQF_NO_THREAD,
-+				       dev_name(pctrl->dev), pctrl);
-+		if (ret) {
-+			dev_err(pctrl->dev, "failed to request interrupt\n");
-+			goto fail;
-+		}
- 	}
- 
- 	ret = gpiochip_irqchip_add(&pctrl->chip, &intel_gpio_irqchip, 0,
-
--- 
-Philippe.
+SGkgUGhpbGlwcGUsDQogIE1heSBJIGFzayB3aHkgeW91IHVzZSBpcnFfc2V0X2NoYWluZWRfaGFu
+ZGxlcl9hbmRfZGF0YSBpbnN0ZWFkIG9mIHJ0ZG1faXJxX3JlcXVlc3Q/IEl0IHNlZW1zIGlycV9z
+ZXRfY2hhaW5lZF9oYW5kbGVyX2FuZF9kYXRhIHJlZ2lzdGVyIHRoZSBpcnEgYXMgaXBpcGVfcm9v
+dF9kb21haW4gd2hpbGUgcnRkbV9pcnFfcmVxdWVzdCByZWdpc3RlciB0aGUgaXJxIGFzIHhuc2No
+ZWRfcmVhbHRpbWVfZG9tYWluLiBDYW4gd2UgdXNlIHhuc2NoZWRfcmVhbHRpbWVfZG9tYWluIGZv
+ciB0aGlzIEdQSU8gaW50ZXJydXB0Pw0KDQpCZXN0IFJlZ2FyZHMsDQoNCkFyY2hlciBZYW4NCuS4
+pem4v+S6rg0KDQoNCi0tLS0tT3JpZ2luYWwgTWVzc2FnZS0tLS0tDQpGcm9tOiBQaGlsaXBwZSBH
+ZXJ1bSBbbWFpbHRvOnJwbUB4ZW5vbWFpLm9yZ10gDQpTZW50OiBGcmlkYXksIEp1bmUgOCwgMjAx
+OCAxOjEwIEFNDQpUbzogWWFuLCBIb25nbGlhbmcgPGFyY2hlci5obC55YW5AaW50ZWwuY29tPjsg
+WGVub21haUB4ZW5vbWFpLm9yZw0KU3ViamVjdDogUmU6IFtYZW5vbWFpXSBJTlRSLVJFTUFQIGlz
+c3VlIHdoaWxlIGVuYWJsaW5nIEdQSU8gaW50ZXJydXB0IGFzIFJURE0gaW50ZXJydXB0DQoNCk9u
+IDA2LzA3LzIwMTggMDU6NTUgUE0sIFlhbiwgSG9uZ2xpYW5nIHdyb3RlOg0KPiBIaSBBbGwsDQo+
+ICAgSSBhbSB0cnlpbmcgdG8gZW5hYmxlIHBpbmN0cmwtaW50ZWwuYyBHUElPIGludGVycnVwdCBh
+cyBSVERNIGludGVycnVwdC4gSSB1c2UgcnRkbV9pcnFfcmVxdWVzdCB0byByZXBsYWNlIGRldm1f
+cmVxdWVzdF9pcnEgaW4gcHJvYmUgZnVuY3Rpb24uDQo+ICAgY29kZSBpcyBhcyBmb2xsb3dpbmc6
+DQo+ID09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09
+PT09PT09PT09PT09PT09PT0NCj4gPQ0KPiAjaWYgMQ0KPiAgICAgaWYgKChyZXQgPSBydGRtX2ly
+cV9yZXF1ZXN0KCZpcnFfcnRkbSwNCj4gICAgICAgICAgICAgICAgICAgICBpcnEsIGhhbmRsZXJf
+aW50ZXJydXB0aW9uLA0KPiAgICAgICAgICAgICAgICAgICAgIDAsDQo+ICAgICAgICAgICAgICAg
+ICAgICAgInRlc3QiLCBOVUxMKSkgIT0gMCkgew0KPiAgICAgICAgIHByaW50aygicnRkbSByZXF1
+ZXN0IGVycm9yXG4iKTsgfQ0KPiANCj4gI2Vsc2UNCj4gICAgIHJldCA9IGRldm1fcmVxdWVzdF9p
+cnEocGN0cmwtPmRldiwgaXJxLCBpbnRlbF9ncGlvX2lycSwgSVJRRl9TSEFSRUQsDQo+ICAgICAg
+ICAgICAgICAgICAgICBkZXZfbmFtZShwY3RybC0+ZGV2KSwgcGN0cmwpOw0KPiAgICAgaWYgKHJl
+dCkgew0KPiAgICAgICAgIGRldl9lcnIocGN0cmwtPmRldiwgImZhaWxlZCB0byByZXF1ZXN0IGlu
+dGVycnVwdFxuIik7DQo+ICAgICAgICAgZ290byBmYWlsOw0KPiAgICAgfQ0KPiAjZW5kaWYNCg0K
+VGhhdCB3b24ndCB3b3JrLCB1bmxlc3MgeW91IGZpeGVkIHVwIHRoYXQgR1BJTyBkcml2ZXIgdG8g
+Y29wZSB3aXRoIGludGVycnVwdCBwaXBlbGluaW5nIC0gd2hpY2ggZG9lcyBub3Qgc2VlbSB0byBi
+ZSB0aGUgY2FzZS4NCg0KSWYgeW91IHBsYW4gdG8gaW1wbGVtZW50IHRob3NlIGNoYW5nZXMsIHBs
+ZWFzZSBrZWVwIGluIG1pbmQgdGhhdCB5b3Ugd29uJ3QgYmUgYWJsZSB0byBzaGFyZSBhIGNvbW1v
+biBJUlEgbGluZSBiZXR3ZWVuIG11bHRpcGxlIEdQSU8gY29udHJvbGxlcnMgdW5saWtlIHBpbmN0
+cmwtaW50ZWwgd291bGQgb3JpZ2luYWxseSBhbGxvdyBmb3Igbm9uLXJ0IHVzYWdlLiBUaGUgY3Vy
+cmVudCBJLXBpcGUgcGF0Y2ggaW1wbGVtZW50YXRpb24gZG9lcyBub3Qgc3VwcG9ydCB0aGlzLg0K
+DQpUaGUgY29kZSBiZWxvdyB3YXMgYW4gYXR0ZW1wdCB0byBhZGFwdCB0aGUgcGluY3RybC1pbnRl
+bCBkcml2ZXIgdG8gSVJRIHBpcGVsaW5pbmcsIHdoaWNoIGJyb2tlIGluIGZsaWdodCBkdWUgdG8g
+bGFjayBvZiB0aW1lLiBJdCBpcyB2ZXJ5IHVubGlrZWx5IHRvIHdvcmsgYXMgaXMsIG5vdCBldmVu
+IHRvIGJ1aWxkIHByb3Blcmx5LCBJIGhhdmUgbm8gY2x1ZSB3aGV0aGVyIHRoZXJlIGlzIGEgc2xp
+Z2h0ZXN0IGNoYW5jZSB0aGlzIG1pZ2h0IHdvcmssIGJ1dCB0aGF0J3MgYSBzdGFydGluZyBwb2lu
+dC4uLnRvIHNvbWV3aGVyZS4NCg0KY29tbWl0IGFiNDQ5MzU3OWQ5NWRlNTg3MThhOGVhODFhZTFm
+ZmZjNmYyZWQwZjcgKHdpcC9pbnRlbC1waW5jdHJsKQ0KQXV0aG9yOiBQaGlsaXBwZSBHZXJ1bSA8
+cnBtQHhlbm9tYWkub3JnPg0KRGF0ZTogICBXZWQgTWF5IDMxIDE4OjE2OjE5IDIwMTcgKzAyMDAN
+Cg0KICAgIGRyaXZlcnM6IGludGVyLXBpbmN0cmw6IG1ha2UgSS1waXBlIGF3YXJlDQoNCmRpZmYg
+LS1naXQgYS9kcml2ZXJzL3BpbmN0cmwvaW50ZWwvcGluY3RybC1pbnRlbC5jIGIvZHJpdmVycy9w
+aW5jdHJsL2ludGVsL3BpbmN0cmwtaW50ZWwuYw0KaW5kZXggMDE0NDM3NjJlNTcwLi5mOGJmNTRi
+NmQ0ODUgMTAwNjQ0DQotLS0gYS9kcml2ZXJzL3BpbmN0cmwvaW50ZWwvcGluY3RybC1pbnRlbC5j
+DQorKysgYi9kcml2ZXJzL3BpbmN0cmwvaW50ZWwvcGluY3RybC1pbnRlbC5jDQpAQCAtOTEsNyAr
+OTEsMTEgQEAgc3RydWN0IGludGVsX3BpbmN0cmxfY29udGV4dCB7DQogICovDQogc3RydWN0IGlu
+dGVsX3BpbmN0cmwgew0KIAlzdHJ1Y3QgZGV2aWNlICpkZXY7DQorI2lmZGVmIENPTkZJR19JUElQ
+RQ0KKwlpcGlwZV9zcGlubG9ja190IGxvY2s7DQorI2Vsc2UNCiAJcmF3X3NwaW5sb2NrX3QgbG9j
+azsNCisjZW5kaWYNCiAJc3RydWN0IHBpbmN0cmxfZGVzYyBwY3RsZGVzYzsNCiAJc3RydWN0IHBp
+bmN0cmxfZGV2ICpwY3RsZGV2Ow0KIAlzdHJ1Y3QgZ3Bpb19jaGlwIGNoaXA7DQpAQCAtNjQ3LDE1
+ICs2NTEsMTMgQEAgc3RhdGljIGNvbnN0IHN0cnVjdCBncGlvX2NoaXAgaW50ZWxfZ3Bpb19jaGlw
+ID0gew0KIAkuc2V0ID0gaW50ZWxfZ3Bpb19zZXQsDQogfTsNCiANCi1zdGF0aWMgdm9pZCBpbnRl
+bF9ncGlvX2lycV9hY2soc3RydWN0IGlycV9kYXRhICpkKQ0KK3N0YXRpYyB2b2lkIF9faW50ZWxf
+Z3Bpb19pcnFfYWNrKHN0cnVjdCBpcnFfZGF0YSAqZCkNCiB7DQogCXN0cnVjdCBncGlvX2NoaXAg
+KmdjID0gaXJxX2RhdGFfZ2V0X2lycV9jaGlwX2RhdGEoZCk7DQogCXN0cnVjdCBpbnRlbF9waW5j
+dHJsICpwY3RybCA9IGdwaW9jaGlwX2dldF9kYXRhKGdjKTsNCiAJY29uc3Qgc3RydWN0IGludGVs
+X2NvbW11bml0eSAqY29tbXVuaXR5Ow0KIAl1bnNpZ25lZCBwaW4gPSBpcnFkX3RvX2h3aXJxKGQp
+Ow0KIA0KLQlyYXdfc3Bpbl9sb2NrKCZwY3RybC0+bG9jayk7DQotDQogCWNvbW11bml0eSA9IGlu
+dGVsX2dldF9jb21tdW5pdHkocGN0cmwsIHBpbik7DQogCWlmIChjb21tdW5pdHkpIHsNCiAJCXVu
+c2lnbmVkIHBhZG5vID0gcGluX3RvX3BhZG5vKGNvbW11bml0eSwgcGluKTsgQEAgLTY2NCw3ICs2
+NjYsMTQgQEAgc3RhdGljIHZvaWQgaW50ZWxfZ3Bpb19pcnFfYWNrKHN0cnVjdCBpcnFfZGF0YSAq
+ZCkNCiANCiAJCXdyaXRlbChCSVQoZ3BwX29mZnNldCksIGNvbW11bml0eS0+cmVncyArIEdQSV9J
+UyArIGdwcCAqIDQpOw0KIAl9DQorfQ0KIA0KK3N0YXRpYyB2b2lkIGludGVsX2dwaW9faXJxX2Fj
+ayhzdHJ1Y3QgaXJxX2RhdGEgKmQpIHsNCisJc3RydWN0IGludGVsX3BpbmN0cmwgKnBjdHJsID0g
+Z3Bpb2NoaXBfZ2V0X2RhdGEoZ2MpOw0KKw0KKwlyYXdfc3Bpbl9sb2NrKCZwY3RybC0+bG9jayk7
+DQorCV9faW50ZWxfZ3Bpb19pcnFfYWNrKGQpOw0KIAlyYXdfc3Bpbl91bmxvY2soJnBjdHJsLT5s
+b2NrKTsNCiB9DQogDQpAQCAtNjk0LDE4ICs3MDMsMTcgQEAgc3RhdGljIHZvaWQgaW50ZWxfZ3Bp
+b19pcnFfZW5hYmxlKHN0cnVjdCBpcnFfZGF0YSAqZCkNCiAJCXdyaXRlbCh2YWx1ZSwgY29tbXVu
+aXR5LT5yZWdzICsgY29tbXVuaXR5LT5pZV9vZmZzZXQgKyBncHAgKiA0KTsNCiAJfQ0KIA0KKwlp
+cGlwZV91bmxvY2tfaXJxKGQtPmlycSk7DQorCQ0KIAlyYXdfc3Bpbl91bmxvY2tfaXJxcmVzdG9y
+ZSgmcGN0cmwtPmxvY2ssIGZsYWdzKTsgIH0NCiANCi1zdGF0aWMgdm9pZCBpbnRlbF9ncGlvX2ly
+cV9tYXNrX3VubWFzayhzdHJ1Y3QgaXJxX2RhdGEgKmQsIGJvb2wgbWFzaykNCitzdGF0aWMgdm9p
+ZCBfX2ludGVsX2dwaW9faXJxX21hc2tfdW5tYXNrKHN0cnVjdCBpcnFfZGF0YSAqZCwgYm9vbCBt
+YXNrKQ0KIHsNCiAJc3RydWN0IGdwaW9fY2hpcCAqZ2MgPSBpcnFfZGF0YV9nZXRfaXJxX2NoaXBf
+ZGF0YShkKTsNCiAJc3RydWN0IGludGVsX3BpbmN0cmwgKnBjdHJsID0gZ3Bpb2NoaXBfZ2V0X2Rh
+dGEoZ2MpOw0KIAljb25zdCBzdHJ1Y3QgaW50ZWxfY29tbXVuaXR5ICpjb21tdW5pdHk7DQogCXVu
+c2lnbmVkIHBpbiA9IGlycWRfdG9faHdpcnEoZCk7DQotCXVuc2lnbmVkIGxvbmcgZmxhZ3M7DQot
+DQotCXJhd19zcGluX2xvY2tfaXJxc2F2ZSgmcGN0cmwtPmxvY2ssIGZsYWdzKTsNCiANCiAJY29t
+bXVuaXR5ID0gaW50ZWxfZ2V0X2NvbW11bml0eShwY3RybCwgcGluKTsNCiAJaWYgKGNvbW11bml0
+eSkgew0KQEAgLTcyMywyMCArNzMxLDU1IEBAIHN0YXRpYyB2b2lkIGludGVsX2dwaW9faXJxX21h
+c2tfdW5tYXNrKHN0cnVjdCBpcnFfZGF0YSAqZCwgYm9vbCBtYXNrKQ0KIAkJCXZhbHVlIHw9IEJJ
+VChncHBfb2Zmc2V0KTsNCiAJCXdyaXRlbCh2YWx1ZSwgcmVnKTsNCiAJfQ0KLQ0KLQlyYXdfc3Bp
+bl91bmxvY2tfaXJxcmVzdG9yZSgmcGN0cmwtPmxvY2ssIGZsYWdzKTsNCiB9DQogDQogc3RhdGlj
+IHZvaWQgaW50ZWxfZ3Bpb19pcnFfbWFzayhzdHJ1Y3QgaXJxX2RhdGEgKmQpICB7DQotCWludGVs
+X2dwaW9faXJxX21hc2tfdW5tYXNrKGQsIHRydWUpOw0KKwlzdHJ1Y3QgaW50ZWxfcGluY3RybCAq
+cGN0cmwgPSBncGlvY2hpcF9nZXRfZGF0YShnYyk7DQorCXVuc2lnbmVkIGxvbmcgZmxhZ3M7DQor
+DQorCXJhd19zcGluX2xvY2tfaXJxc2F2ZSgmcGN0cmwtPmxvY2ssIGZsYWdzKTsNCisJaXBpcGVf
+bG9ja19pcnEoZC0+aXJxKTsNCisJX19pbnRlbF9ncGlvX2lycV9tYXNrX3VubWFzayhkLCB0cnVl
+KTsNCisJcmF3X3NwaW5fdW5sb2NrX2lycXJlc3RvcmUoJnBjdHJsLT5sb2NrLCBmbGFncyk7DQog
+fQ0KIA0KIHN0YXRpYyB2b2lkIGludGVsX2dwaW9faXJxX3VubWFzayhzdHJ1Y3QgaXJxX2RhdGEg
+KmQpICB7DQotCWludGVsX2dwaW9faXJxX21hc2tfdW5tYXNrKGQsIGZhbHNlKTsNCisJc3RydWN0
+IGludGVsX3BpbmN0cmwgKnBjdHJsID0gZ3Bpb2NoaXBfZ2V0X2RhdGEoZ2MpOw0KKwl1bnNpZ25l
+ZCBsb25nIGZsYWdzOw0KKw0KKwlyYXdfc3Bpbl9sb2NrX2lycXNhdmUoJnBjdHJsLT5sb2NrLCBm
+bGFncyk7DQorCV9faW50ZWxfZ3Bpb19pcnFfbWFza191bm1hc2soZCwgZmFsc2UpOw0KKwlpcGlw
+ZV91bmxvY2tfaXJxKGQtPmlycSk7DQorCXJhd19zcGluX3VubG9ja19pcnFyZXN0b3JlKCZwY3Ry
+bC0+bG9jaywgZmxhZ3MpOyB9DQorDQorI2lmZGVmIENPTkZJR19JUElQRQ0KKw0KK3N0YXRpYyB2
+b2lkIGludGVsX2dwaW9faXJxX2hvbGQoc3RydWN0IGlycV9kYXRhICpkKSB7DQorCXN0cnVjdCBp
+bnRlbF9waW5jdHJsICpwY3RybCA9IGdwaW9jaGlwX2dldF9kYXRhKGdjKTsNCisJdW5zaWduZWQg
+bG9uZyBmbGFnczsNCisNCisJcmF3X3NwaW5fbG9ja19pcnFzYXZlKCZwY3RybC0+bG9jaywgZmxh
+Z3MpOw0KKwlfX2ludGVsX2dwaW9faXJxX21hc2tfdW5tYXNrKGQsIHRydWUpOw0KKwlfX2ludGVs
+X2dwaW9faXJxX2FjayhkKTsNCisJcmF3X3NwaW5fdW5sb2NrX2lycXJlc3RvcmUoJnBjdHJsLT5s
+b2NrLCBmbGFncyk7IH0NCisNCitzdGF0aWMgdm9pZCBpbnRlbF9ncGlvX2lycV9yZWxlYXNlKHN0
+cnVjdCBpcnFfZGF0YSAqZCkgew0KKwlzdHJ1Y3QgaW50ZWxfcGluY3RybCAqcGN0cmwgPSBncGlv
+Y2hpcF9nZXRfZGF0YShnYyk7DQorCXVuc2lnbmVkIGxvbmcgZmxhZ3M7DQorDQorCXJhd19zcGlu
+X2xvY2tfaXJxc2F2ZSgmcGN0cmwtPmxvY2ssIGZsYWdzKTsNCisJX19pbnRlbF9ncGlvX2lycV9t
+YXNrX3VubWFzayhkLCBmYWxzZSk7DQorCXJhd19zcGluX3VubG9ja19pcnFyZXN0b3JlKCZwY3Ry
+bC0+bG9jaywgZmxhZ3MpOw0KIH0NCiANCisjZW5kaWYNCisNCiBzdGF0aWMgaW50IGludGVsX2dw
+aW9faXJxX3R5cGUoc3RydWN0IGlycV9kYXRhICpkLCB1bnNpZ25lZCB0eXBlKSAgew0KIAlzdHJ1
+Y3QgZ3Bpb19jaGlwICpnYyA9IGlycV9kYXRhX2dldF9pcnFfY2hpcF9kYXRhKGQpOyBAQCAtODM3
+LDcgKzg4MCw3IEBAIHN0YXRpYyBpcnFyZXR1cm5fdCBpbnRlbF9ncGlvX2NvbW11bml0eV9pcnFf
+aGFuZGxlcihzdHJ1Y3QgaW50ZWxfcGluY3RybCAqcGN0cmwsDQogDQogCQkJaXJxID0gaXJxX2Zp
+bmRfbWFwcGluZyhnYy0+aXJxZG9tYWluLA0KIAkJCQkJICAgICAgIGNvbW11bml0eS0+cGluX2Jh
+c2UgKyBwYWRubyk7DQotCQkJZ2VuZXJpY19oYW5kbGVfaXJxKGlycSk7DQorCQkJaXBpcGVfaGFu
+ZGxlX2RlbXV4ZWRfaXJxKGlycSk7DQogDQogCQkJcmV0IHw9IElSUV9IQU5ETEVEOw0KIAkJfQ0K
+QEAgLTg2Miw2ICs5MDUsMTQgQEAgc3RhdGljIGlycXJldHVybl90IGludGVsX2dwaW9faXJxKGlu
+dCBpcnEsIHZvaWQgKmRhdGEpDQogCXJldHVybiByZXQ7DQogfQ0KIA0KK3N0YXRpYyB2b2lkIGlw
+aXBlX2lycV9jYXNjYWRlKHN0cnVjdCBpcnFfZGVzYyAqZGVzYykgeyAjaWZkZWYgDQorQ09ORklH
+X0lQSVBFDQorCWludGVsX2dwaW9faXJxKGlycV9kZXNjX2dldF9pcnEoZGVzYyksDQorCQkgICAg
+ICAgaXJxX2Rlc2NfZ2V0X2hhbmRsZXJfZGF0YShkZXNjKSk7ICNlbmRpZiB9DQorDQogc3RhdGlj
+IHN0cnVjdCBpcnFfY2hpcCBpbnRlbF9ncGlvX2lycWNoaXAgPSB7DQogCS5uYW1lID0gImludGVs
+LWdwaW8iLA0KIAkuaXJxX2VuYWJsZSA9IGludGVsX2dwaW9faXJxX2VuYWJsZSwNCkBAIC04NzAs
+NiArOTIxLDEwIEBAIHN0YXRpYyBzdHJ1Y3QgaXJxX2NoaXAgaW50ZWxfZ3Bpb19pcnFjaGlwID0g
+ew0KIAkuaXJxX3VubWFzayA9IGludGVsX2dwaW9faXJxX3VubWFzaywNCiAJLmlycV9zZXRfdHlw
+ZSA9IGludGVsX2dwaW9faXJxX3R5cGUsDQogCS5pcnFfc2V0X3dha2UgPSBpbnRlbF9ncGlvX2ly
+cV93YWtlLA0KKyNpZmRlZiBDT05GSUdfSVBJUEUNCisJLmlycV9ob2xkID0gaW50ZWxfZ3Bpb19p
+cnFfaG9sZCwNCisJLmlycV9yZWxlYXNlID0gaW50ZWxfZ3Bpb19pcnFfcmVsZWFzZSwgI2VuZGlm
+DQogfTsNCiANCiBzdGF0aWMgaW50IGludGVsX2dwaW9fcHJvYmUoc3RydWN0IGludGVsX3BpbmN0
+cmwgKnBjdHJsLCBpbnQgaXJxKSBAQCAtOTAyLDEyICs5NTcsMTcgQEAgc3RhdGljIGludCBpbnRl
+bF9ncGlvX3Byb2JlKHN0cnVjdCBpbnRlbF9waW5jdHJsICpwY3RybCwgaW50IGlycSkNCiAJICog
+dG8gdGhlIGlycSBkaXJlY3RseSkgYmVjYXVzZSBvbiBzb21lIHBsYXRmb3JtcyBzZXZlcmFsIEdQ
+SU8NCiAJICogY29udHJvbGxlcnMgc2hhcmUgdGhlIHNhbWUgaW50ZXJydXB0IGxpbmUuDQogCSAq
+Lw0KLQlyZXQgPSBkZXZtX3JlcXVlc3RfaXJxKHBjdHJsLT5kZXYsIGlycSwgaW50ZWxfZ3Bpb19p
+cnEsDQotCQkJICAgICAgIElSUUZfU0hBUkVEIHwgSVJRRl9OT19USFJFQUQsDQotCQkJICAgICAg
+IGRldl9uYW1lKHBjdHJsLT5kZXYpLCBwY3RybCk7DQotCWlmIChyZXQpIHsNCi0JCWRldl9lcnIo
+cGN0cmwtPmRldiwgImZhaWxlZCB0byByZXF1ZXN0IGludGVycnVwdFxuIik7DQotCQlnb3RvIGZh
+aWw7DQorCWlmIChJU19FTkFCTEVEKENPTkZJR19JUElQRSkpDQorCQlpcnFfc2V0X2NoYWluZWRf
+aGFuZGxlcl9hbmRfZGF0YShpcnEsDQorCQkJCQlpcGlwZV9pcnFfY2FzY2FkZSwgcGN0cmwpOw0K
+KwllbHNlIHsNCisJCXJldCA9IGRldm1fcmVxdWVzdF9pcnEocGN0cmwtPmRldiwgaXJxLCBpbnRl
+bF9ncGlvX2lycSwNCisJCQkJICAgICAgIElSUUZfU0hBUkVEIHwgSVJRRl9OT19USFJFQUQsDQor
+CQkJCSAgICAgICBkZXZfbmFtZShwY3RybC0+ZGV2KSwgcGN0cmwpOw0KKwkJaWYgKHJldCkgew0K
+KwkJCWRldl9lcnIocGN0cmwtPmRldiwgImZhaWxlZCB0byByZXF1ZXN0IGludGVycnVwdFxuIik7
+DQorCQkJZ290byBmYWlsOw0KKwkJfQ0KIAl9DQogDQogCXJldCA9IGdwaW9jaGlwX2lycWNoaXBf
+YWRkKCZwY3RybC0+Y2hpcCwgJmludGVsX2dwaW9faXJxY2hpcCwgMCwNCg0KLS0NClBoaWxpcHBl
+Lg0K
 
