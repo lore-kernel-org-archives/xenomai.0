@@ -1,14 +1,15 @@
+From: Philippe Gerum <rpm@xenomai.org>
 References: <9DA3CFDAD528B6408A6F2150A12D33CA51A776E1@SHSMSX103.ccr.corp.intel.com>
  <b55360b0-3453-50be-b81e-e895ed01845c@xenomai.org>
  <9DA3CFDAD528B6408A6F2150A12D33CA51A77EC6@SHSMSX103.ccr.corp.intel.com>
-From: Philippe Gerum <rpm@xenomai.org>
-Message-ID: <e7ec797a-61b5-0033-cc00-cb6df3e39923@xenomai.org>
-Date: Fri, 8 Jun 2018 09:07:20 +0200
+ <e7ec797a-61b5-0033-cc00-cb6df3e39923@xenomai.org>
+Message-ID: <764a018e-5768-c093-7993-2ad290d58797@xenomai.org>
+Date: Fri, 8 Jun 2018 09:10:30 +0200
 MIME-Version: 1.0
-In-Reply-To: <9DA3CFDAD528B6408A6F2150A12D33CA51A77EC6@SHSMSX103.ccr.corp.intel.com>
-Content-Type: text/plain; charset="utf-8"
+In-Reply-To: <e7ec797a-61b5-0033-cc00-cb6df3e39923@xenomai.org>
+Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
 Subject: Re: [Xenomai] INTR-REMAP issue while enabling GPIO interrupt as
  RTDM interrupt
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
@@ -21,240 +22,19 @@ List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: "Yan, Hongliang" <archer.hl.yan@intel.com>, "Xenomai@xenomai.org" <Xenomai@xenomai.org>
 
-On 06/08/2018 07:22 AM, Yan, Hongliang wrote:
-> Hi Philippe,
->   May I ask why you use irq_set_chained_handler_and_data instead of rtdm_irq_request? It seems irq_set_chained_handler_and_data register the irq as ipipe_root_domain while rtdm_irq_request register the irq as xnsched_realtime_domain. Can we use xnsched_realtime_domain for this GPIO interrupt?
-
-That is the other way around. The rtdm* API is based on the modified
-genirq core from the Linux kernel. Modifying the pinctrl driver enables
-IRQ pipelining, which in turn allows rtdm* calls to interpose on the IRQ
-flow for handling events in rt mode.
-
+On 06/08/2018 09:07 AM, Philippe Gerum wrote:
+> On 06/08/2018 07:22 AM, Yan, Hongliang wrote:
+>> Hi Philippe,
+>>   May I ask why you use irq_set_chained_handler_and_data instead of rtdm_irq_request? It seems irq_set_chained_handler_and_data register the irq as ipipe_root_domain while rtdm_irq_request register the irq as xnsched_realtime_domain. Can we use xnsched_realtime_domain for this GPIO interrupt?
 > 
-> Best Regards,
-> 
-> Archer Yan
-> 严鸿亮
-> 
-> 
-> -----Original Message-----
-> From: Philippe Gerum [mailto:rpm@xenomai.org] 
-> Sent: Friday, June 8, 2018 1:10 AM
-> To: Yan, Hongliang <archer.hl.yan@intel.com>; Xenomai@xenomai.org
-> Subject: Re: [Xenomai] INTR-REMAP issue while enabling GPIO interrupt as RTDM interrupt
-> 
-> On 06/07/2018 05:55 PM, Yan, Hongliang wrote:
->> Hi All,
->>   I am trying to enable pinctrl-intel.c GPIO interrupt as RTDM interrupt. I use rtdm_irq_request to replace devm_request_irq in probe function.
->>   code is as following:
->> ======================================================================
->> =
->> #if 1
->>     if ((ret = rtdm_irq_request(&irq_rtdm,
->>                     irq, handler_interruption,
->>                     0,
->>                     "test", NULL)) != 0) {
->>         printk("rtdm request error\n"); }
->>
->> #else
->>     ret = devm_request_irq(pctrl->dev, irq, intel_gpio_irq, IRQF_SHARED,
->>                    dev_name(pctrl->dev), pctrl);
->>     if (ret) {
->>         dev_err(pctrl->dev, "failed to request interrupt\n");
->>         goto fail;
->>     }
->> #endif
-> 
-> That won't work, unless you fixed up that GPIO driver to cope with interrupt pipelining - which does not seem to be the case.
-> 
-> If you plan to implement those changes, please keep in mind that you won't be able to share a common IRQ line between multiple GPIO controllers unlike pinctrl-intel would originally allow for non-rt usage. The current I-pipe patch implementation does not support this.
-> 
-> The code below was an attempt to adapt the pinctrl-intel driver to IRQ pipelining, which broke in flight due to lack of time. It is very unlikely to work as is, not even to build properly, I have no clue whether there is a slightest chance this might work, but that's a starting point...to somewhere.
-> 
-> commit ab4493579d95de58718a8ea81ae1fffc6f2ed0f7 (wip/intel-pinctrl)
-> Author: Philippe Gerum <rpm@xenomai.org>
-> Date:   Wed May 31 18:16:19 2017 +0200
-> 
->     drivers: inter-pinctrl: make I-pipe aware
-> 
-> diff --git a/drivers/pinctrl/intel/pinctrl-intel.c b/drivers/pinctrl/intel/pinctrl-intel.c
-> index 01443762e570..f8bf54b6d485 100644
-> --- a/drivers/pinctrl/intel/pinctrl-intel.c
-> +++ b/drivers/pinctrl/intel/pinctrl-intel.c
-> @@ -91,7 +91,11 @@ struct intel_pinctrl_context {
->   */
->  struct intel_pinctrl {
->  	struct device *dev;
-> +#ifdef CONFIG_IPIPE
-> +	ipipe_spinlock_t lock;
-> +#else
->  	raw_spinlock_t lock;
-> +#endif
->  	struct pinctrl_desc pctldesc;
->  	struct pinctrl_dev *pctldev;
->  	struct gpio_chip chip;
-> @@ -647,15 +651,13 @@ static const struct gpio_chip intel_gpio_chip = {
->  	.set = intel_gpio_set,
->  };
->  
-> -static void intel_gpio_irq_ack(struct irq_data *d)
-> +static void __intel_gpio_irq_ack(struct irq_data *d)
->  {
->  	struct gpio_chip *gc = irq_data_get_irq_chip_data(d);
->  	struct intel_pinctrl *pctrl = gpiochip_get_data(gc);
->  	const struct intel_community *community;
->  	unsigned pin = irqd_to_hwirq(d);
->  
-> -	raw_spin_lock(&pctrl->lock);
-> -
->  	community = intel_get_community(pctrl, pin);
->  	if (community) {
->  		unsigned padno = pin_to_padno(community, pin); @@ -664,7 +666,14 @@ static void intel_gpio_irq_ack(struct irq_data *d)
->  
->  		writel(BIT(gpp_offset), community->regs + GPI_IS + gpp * 4);
->  	}
-> +}
->  
-> +static void intel_gpio_irq_ack(struct irq_data *d) {
-> +	struct intel_pinctrl *pctrl = gpiochip_get_data(gc);
-> +
-> +	raw_spin_lock(&pctrl->lock);
-> +	__intel_gpio_irq_ack(d);
->  	raw_spin_unlock(&pctrl->lock);
->  }
->  
-> @@ -694,18 +703,17 @@ static void intel_gpio_irq_enable(struct irq_data *d)
->  		writel(value, community->regs + community->ie_offset + gpp * 4);
->  	}
->  
-> +	ipipe_unlock_irq(d->irq);
-> +	
->  	raw_spin_unlock_irqrestore(&pctrl->lock, flags);  }
->  
-> -static void intel_gpio_irq_mask_unmask(struct irq_data *d, bool mask)
-> +static void __intel_gpio_irq_mask_unmask(struct irq_data *d, bool mask)
->  {
->  	struct gpio_chip *gc = irq_data_get_irq_chip_data(d);
->  	struct intel_pinctrl *pctrl = gpiochip_get_data(gc);
->  	const struct intel_community *community;
->  	unsigned pin = irqd_to_hwirq(d);
-> -	unsigned long flags;
-> -
-> -	raw_spin_lock_irqsave(&pctrl->lock, flags);
->  
->  	community = intel_get_community(pctrl, pin);
->  	if (community) {
-> @@ -723,20 +731,55 @@ static void intel_gpio_irq_mask_unmask(struct irq_data *d, bool mask)
->  			value |= BIT(gpp_offset);
->  		writel(value, reg);
->  	}
-> -
-> -	raw_spin_unlock_irqrestore(&pctrl->lock, flags);
->  }
->  
->  static void intel_gpio_irq_mask(struct irq_data *d)  {
-> -	intel_gpio_irq_mask_unmask(d, true);
-> +	struct intel_pinctrl *pctrl = gpiochip_get_data(gc);
-> +	unsigned long flags;
-> +
-> +	raw_spin_lock_irqsave(&pctrl->lock, flags);
-> +	ipipe_lock_irq(d->irq);
-> +	__intel_gpio_irq_mask_unmask(d, true);
-> +	raw_spin_unlock_irqrestore(&pctrl->lock, flags);
->  }
->  
->  static void intel_gpio_irq_unmask(struct irq_data *d)  {
-> -	intel_gpio_irq_mask_unmask(d, false);
-> +	struct intel_pinctrl *pctrl = gpiochip_get_data(gc);
-> +	unsigned long flags;
-> +
-> +	raw_spin_lock_irqsave(&pctrl->lock, flags);
-> +	__intel_gpio_irq_mask_unmask(d, false);
-> +	ipipe_unlock_irq(d->irq);
-> +	raw_spin_unlock_irqrestore(&pctrl->lock, flags); }
-> +
-> +#ifdef CONFIG_IPIPE
-> +
-> +static void intel_gpio_irq_hold(struct irq_data *d) {
-> +	struct intel_pinctrl *pctrl = gpiochip_get_data(gc);
-> +	unsigned long flags;
-> +
-> +	raw_spin_lock_irqsave(&pctrl->lock, flags);
-> +	__intel_gpio_irq_mask_unmask(d, true);
-> +	__intel_gpio_irq_ack(d);
-> +	raw_spin_unlock_irqrestore(&pctrl->lock, flags); }
-> +
-> +static void intel_gpio_irq_release(struct irq_data *d) {
-> +	struct intel_pinctrl *pctrl = gpiochip_get_data(gc);
-> +	unsigned long flags;
-> +
-> +	raw_spin_lock_irqsave(&pctrl->lock, flags);
-> +	__intel_gpio_irq_mask_unmask(d, false);
-> +	raw_spin_unlock_irqrestore(&pctrl->lock, flags);
->  }
->  
-> +#endif
-> +
->  static int intel_gpio_irq_type(struct irq_data *d, unsigned type)  {
->  	struct gpio_chip *gc = irq_data_get_irq_chip_data(d); @@ -837,7 +880,7 @@ static irqreturn_t intel_gpio_community_irq_handler(struct intel_pinctrl *pctrl,
->  
->  			irq = irq_find_mapping(gc->irqdomain,
->  					       community->pin_base + padno);
-> -			generic_handle_irq(irq);
-> +			ipipe_handle_demuxed_irq(irq);
->  
->  			ret |= IRQ_HANDLED;
->  		}
-> @@ -862,6 +905,14 @@ static irqreturn_t intel_gpio_irq(int irq, void *data)
->  	return ret;
->  }
->  
-> +static void ipipe_irq_cascade(struct irq_desc *desc) { #ifdef 
-> +CONFIG_IPIPE
-> +	intel_gpio_irq(irq_desc_get_irq(desc),
-> +		       irq_desc_get_handler_data(desc)); #endif }
-> +
->  static struct irq_chip intel_gpio_irqchip = {
->  	.name = "intel-gpio",
->  	.irq_enable = intel_gpio_irq_enable,
-> @@ -870,6 +921,10 @@ static struct irq_chip intel_gpio_irqchip = {
->  	.irq_unmask = intel_gpio_irq_unmask,
->  	.irq_set_type = intel_gpio_irq_type,
->  	.irq_set_wake = intel_gpio_irq_wake,
-> +#ifdef CONFIG_IPIPE
-> +	.irq_hold = intel_gpio_irq_hold,
-> +	.irq_release = intel_gpio_irq_release, #endif
->  };
->  
->  static int intel_gpio_probe(struct intel_pinctrl *pctrl, int irq) @@ -902,12 +957,17 @@ static int intel_gpio_probe(struct intel_pinctrl *pctrl, int irq)
->  	 * to the irq directly) because on some platforms several GPIO
->  	 * controllers share the same interrupt line.
->  	 */
-> -	ret = devm_request_irq(pctrl->dev, irq, intel_gpio_irq,
-> -			       IRQF_SHARED | IRQF_NO_THREAD,
-> -			       dev_name(pctrl->dev), pctrl);
-> -	if (ret) {
-> -		dev_err(pctrl->dev, "failed to request interrupt\n");
-> -		goto fail;
-> +	if (IS_ENABLED(CONFIG_IPIPE))
-> +		irq_set_chained_handler_and_data(irq,
-> +					ipipe_irq_cascade, pctrl);
-> +	else {
-> +		ret = devm_request_irq(pctrl->dev, irq, intel_gpio_irq,
-> +				       IRQF_SHARED | IRQF_NO_THREAD,
-> +				       dev_name(pctrl->dev), pctrl);
-> +		if (ret) {
-> +			dev_err(pctrl->dev, "failed to request interrupt\n");
-> +			goto fail;
-> +		}
->  	}
->  
->  	ret = gpiochip_irqchip_add(&pctrl->chip, &intel_gpio_irqchip, 0,
-> 
-> --
-> Philippe.
+> That is the other way around. The rtdm* API is based on the modified
+> genirq core from the Linux kernel. Modifying the pinctrl driver enables
+> IRQ pipelining, which in turn allows rtdm* calls to interpose on the IRQ
+> flow for handling events in rt mode.
 > 
 
+This may be worth a read:
+http://git.xenomai.org/ipipe-noarch.git/tree/Documentation/ipipe.rst
 
 -- 
 Philippe.
