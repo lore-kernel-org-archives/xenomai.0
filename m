@@ -1,17 +1,14 @@
 From: Philippe Gerum <rpm@xenomai.org>
-References: <9DA3CFDAD528B6408A6F2150A12D33CA51A776E1@SHSMSX103.ccr.corp.intel.com>
- <b55360b0-3453-50be-b81e-e895ed01845c@xenomai.org>
- <9DA3CFDAD528B6408A6F2150A12D33CA51A77EC6@SHSMSX103.ccr.corp.intel.com>
- <e7ec797a-61b5-0033-cc00-cb6df3e39923@xenomai.org>
-Message-ID: <764a018e-5768-c093-7993-2ad290d58797@xenomai.org>
-Date: Fri, 8 Jun 2018 09:10:30 +0200
+References: <bd6a8257-9986-df8b-182d-b1b5d41e3a2a@xenomai.org>
+ <41222b4c-b99c-2745-f1df-f00785c52104@xenomai.org>
+Message-ID: <d8f7d33e-a6fc-2911-56d8-f985981b1698@xenomai.org>
+Date: Fri, 8 Jun 2018 14:48:29 +0200
 MIME-Version: 1.0
-In-Reply-To: <e7ec797a-61b5-0033-cc00-cb6df3e39923@xenomai.org>
+In-Reply-To: <41222b4c-b99c-2745-f1df-f00785c52104@xenomai.org>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] INTR-REMAP issue while enabling GPIO interrupt as
- RTDM interrupt
+Subject: Re: [Xenomai] Performance issue with memory allocators
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -20,21 +17,35 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "Yan, Hongliang" <archer.hl.yan@intel.com>, "Xenomai@xenomai.org" <Xenomai@xenomai.org>
+To: "Xenomai@xenomai.org" <Xenomai@xenomai.org>
+Cc: "Kiszka, Jan" <jan.kiszka@siemens.com>
 
-On 06/08/2018 09:07 AM, Philippe Gerum wrote:
-> On 06/08/2018 07:22 AM, Yan, Hongliang wrote:
->> Hi Philippe,
->>   May I ask why you use irq_set_chained_handler_and_data instead of rtdm_irq_request? It seems irq_set_chained_handler_and_data register the irq as ipipe_root_domain while rtdm_irq_request register the irq as xnsched_realtime_domain. Can we use xnsched_realtime_domain for this GPIO interrupt?
-> 
-> That is the other way around. The rtdm* API is based on the modified
-> genirq core from the Linux kernel. Modifying the pinctrl driver enables
-> IRQ pipelining, which in turn allows rtdm* calls to interpose on the IRQ
-> flow for handling events in rt mode.
-> 
-
-This may be worth a read:
-http://git.xenomai.org/ipipe-noarch.git/tree/Documentation/ipipe.rst
+On 05/20/2018 08:15 PM, Philippe Gerum wrote:
+> On 04/27/2018 08:23 PM, Philippe Gerum wrote:
+>>
+>> After a comprehensive series of tests, it is now obvious that
+>> heapobj-pshared has gruesome performances when releasing bursts of
+>> small-sized objects. Allocation of large objects is not particularly
+>> efficient either, although not as bad. The Cobalt core allocator is
+>> affected by the same bug too.
+>>
+>> Those new tests are available from the wip/heapmem branch, they are
+>> based on the smokey framework (e.g. smokey --run=memory_* --verbose=2).
+>>
+>> Work is ongoing into the wip/heapmem branch to fix the mess, first
+>> addressing the issue with the core (in-kernel) allocator,
+>> heapobj-pshared next. Please note that wip/heapmem is a development
+>> branch I'm working on for testing improvements - hopefully - to the
+>> memory allocators, which should not be used in production.
+>>
+>> I would strongly recommend that users running single-process
+>> applications - i.e. not needing the shared heap feature - make sure to
+>> turn off heapobj-pshared when configuring, by passing --disable-pshared
+>> to the configuration script (or leave the feature to the default off state).
+>>
+> > As the benchmark figures show when running 'memory_pshared', the shared
+> memory allocator still needs to be fixed. This is next on my list.
+The pshared allocator is now fixed in the next branch.
 
 -- 
 Philippe.
