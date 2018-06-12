@@ -1,12 +1,15 @@
-MIME-Version: 1.0
-In-Reply-To: <4509611.bxaP7qoUFh@wirbelwind>
+From: Steven Seeger <steven.seeger@nasa.gov>
+Date: Tue, 12 Jun 2018 09:40:22 -0400
+Message-ID: <3064634.cGzeNpOAbh@wirbelwind>
+In-Reply-To: <CAE+nJ0KaKUuQS9VXp5VvrJZstjYEt=SGvC=GsFBcZfUYhTQ1Yw@mail.gmail.com>
 References: <2C2C7702C02C48D7A264944F1391A7F1@itd206>
  <4509611.bxaP7qoUFh@wirbelwind>
-From: Alexander Voytov <alexander.voytov@gmail.com>
-Date: Tue, 12 Jun 2018 06:34:21 -0700
-Message-ID: <CAE+nJ0KaKUuQS9VXp5VvrJZstjYEt=SGvC=GsFBcZfUYhTQ1Yw@mail.gmail.com>
-Content-Type: text/plain; charset="UTF-8"
+ <CAE+nJ0KaKUuQS9VXp5VvrJZstjYEt=SGvC=GsFBcZfUYhTQ1Yw@mail.gmail.com>
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7Bit
+Content-Type: text/plain; charset="ISO-8859-1"
 Subject: Re: [Xenomai] Reg:Xenomaui support for Powerpc p1022
+Reply-To: steven.seeger@nasa.gov
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,40 +18,19 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: steven.seeger@nasa.gov
+To: Alexander Voytov <alexander.voytov@gmail.com>
 Cc: xenomai@xenomai.org
 
-What about P2020 and xenomai? Did anyone ported xenomai on fsl p2020?
-Alex
+On Tuesday, June 12, 2018 9:34:21 AM EDT Alexander Voytov wrote:
+> What about P2020 and xenomai? Did anyone ported xenomai on fsl p2020?
+> Alex
 
-On Tue, Jun 12, 2018 at 5:58 AM, Steven Seeger <steven.seeger@nasa.gov>
-wrote:
+You're asking the wrong questions. p1020 and p2020 are e500 processors, and 
+the e500 family is supported in xenomai. I have an 8548 board (also e500) 
+which I use for testing. Just no SMP on that one.
 
-> On Monday, June 11, 2018 7:10:10 AM EDT Sureshvs wrote:
-> > Hi
-> >
-> >
-> > I am using freescale P1022 PowerPC based processor board.xenomai support
-> is
-> > available for p1022 ? In your website, suported architectures for
-> > powerpc1022 is not mentioned.
-> >
-> > Kindly share the details.
->
-> Hi Suresh. I'm currently the powerpc maintainer for xenomai. I will soon
-> have
-> my hands on a p1020 board and will be using it for (among other things)
-> some
-> xenomai testing. I will be able to help you at that point if you need it.
-> Please stay in touch with your experiences.
->
-> Steven
->
->
->
->
-> _______________________________________________
-> Xenomai mailing list
-> Xenomai@xenomai.org
-> https://xenomai.org/mailman/listinfo/xenomai
->
+Steven
+
+
+
+
