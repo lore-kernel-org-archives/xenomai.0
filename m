@@ -1,16 +1,11 @@
-References: <bd6a8257-9986-df8b-182d-b1b5d41e3a2a@xenomai.org>
- <41222b4c-b99c-2745-f1df-f00785c52104@xenomai.org>
- <d8f7d33e-a6fc-2911-56d8-f985981b1698@xenomai.org>
- <5B1EDD8E.2010707@freyder.net>
- <6d63abf1-0b15-5c55-5ab5-f0f424848dd3@xenomai.org>
-From: Steve Freyder <steve@freyder.net>
-Message-ID: <5B201BCD.1060600@freyder.net>
-Date: Tue, 12 Jun 2018 14:15:25 -0500
 MIME-Version: 1.0
-In-Reply-To: <6d63abf1-0b15-5c55-5ab5-f0f424848dd3@xenomai.org>
-Content-Type: text/plain; charset="windows-1252"; format="flowed"
+From: Ashok kumar <ashokkumar.bb@gmail.com>
+Date: Wed, 13 Jun 2018 10:36:26 +0530
+Message-ID: <CAFUnMknE0yE7tFKtKrG5x+x9UoA7yHQR-aEtSRMEo__nG=EtcQ@mail.gmail.com>
+Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
-Subject: Re: [Xenomai] Performance issue with memory allocators
+Subject: [Xenomai] how to install the following modules xeno_rtdm xeno_hal
+ xeno_nucleus to use RTnet
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -19,230 +14,60 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Philippe Gerum <rpm@xenomai.org>, "Xenomai@xenomai.org" <Xenomai@xenomai.org>
+To: xenomai@xenomai.org
+Cc: "J. Kiszka" <jan.kiszka@siemens.com>
 
-On 6/12/2018 1:39 AM, Philippe Gerum wrote:
-> On 06/11/2018 10:37 PM, Steve Freyder wrote:
->> On 6/8/2018 7:48 AM, Philippe Gerum wrote:
->>> On 05/20/2018 08:15 PM, Philippe Gerum wrote:
->>>> On 04/27/2018 08:23 PM, Philippe Gerum wrote:
->>>>> After a comprehensive series of tests, it is now obvious that
->>>>> heapobj-pshared has gruesome performances when releasing bursts of
->>>>> small-sized objects. Allocation of large objects is not particularly
->>>>> efficient either, although not as bad. The Cobalt core allocator is
->>>>> affected by the same bug too.
->>>>>
->>>>> Those new tests are available from the wip/heapmem branch, they are
->>>>> based on the smokey framework (e.g. smokey --run=3Dmemory_* --verbose=
-=3D2).
->>>>>
->>>>> Work is ongoing into the wip/heapmem branch to fix the mess, first
->>>>> addressing the issue with the core (in-kernel) allocator,
->>>>> heapobj-pshared next. Please note that wip/heapmem is a development
->>>>> branch I'm working on for testing improvements - hopefully - to the
->>>>> memory allocators, which should not be used in production.
->>>>>
->>>>> I would strongly recommend that users running single-process
->>>>> applications - i.e. not needing the shared heap feature - make sure to
->>>>> turn off heapobj-pshared when configuring, by passing --disable-pshar=
-ed
->>>>> to the configuration script (or leave the feature to the default off =
-state).
->>>>>
->>>>> As the benchmark figures show when running 'memory_pshared', the shar=
-ed
->>>> memory allocator still needs to be fixed. This is next on my list.
->>> The pshared allocator is now fixed in the next branch.
->>>
->> I tried to build with the -next branch, I'm not sure if I'm doing
->> something wrong, but I'm getting the errors below.  I thought perhaps
->> the "struct shared_heap" should have been "struct shared_heap_memory",
->> so I made that change, and that resulted in the second set of errors
->> shown below that, then I decided time to post to the group:
->>
->> Thanks,
->> Steve
->>
->> ------------------------------------------------------------------------
->>
->> make[3]: Entering directory
->> '/home/sdf/xenobuild/imx-xenomai/build/xenomai-3/lib/copperplate/regd'
->>    CC       regd.o
->>    CC       fs-common.o
->> In file included from
->> ../../../../../xenomai-3/include/cobalt/wrappers.h:21:0,
->>                   from
->> /home/sdf/xenobuild/imx-xenomai/xenomai-3/include/cobalt/time.h:26,
->>                   from
->> /opt/emac/5.1/sysroots/armv7a-neon-emac-linux-gnueabi/usr/include/sys/ty=
-pes.h:132,
->>                   from
->> ../../../../../xenomai-3/lib/copperplate/regd/fs-common.c:19:
->> ../../../../../xenomai-3/lib/copperplate/regd/fs-common.c: In function
->> =E2?~open_heaps=E2?T:
->> ../../../../../xenomai-3/lib/copperplate/regd/fs-common.c:247:10: error:
->> dereferencing pointer to incomplete type =E2?~struct shared_heap=E2?T
->>     heap =3D container_of(obj, struct shared_heap, memspec);
->>            ^
->> ../../../../../xenomai-3/lib/copperplate/regd/fs-common.c:247:10: error:
->> initialization from incompatible pointer type
->> [-Werror=3Dincompatible-pointer-types]
->>     heap =3D container_of(obj, struct shared_heap, memspec);
->>            ^
->> In file included from
->> /opt/emac/5.1/sysroots/armv7a-neon-emac-linux-gnueabi/usr/include/string=
-.h:32:0,
->>                   from
->> ../../../../../xenomai-3/include/copperplate/heapobj.h:24,
->>                   from
->> ../../../../../xenomai-3/lib/copperplate/regd/fs-common.c:27:
->> ../../../../../xenomai-3/lib/copperplate/regd/fs-common.c:247:35: error:
->> invalid use of undefined type =E2?~struct shared_heap=E2?T
->>     heap =3D container_of(obj, struct shared_heap, memspec);
->>                                     ^
->> ------------------------------------------------------------------------
->> This is with "struct shared_heap" changed to "struct shared_heap_memory":
->>
->> make[3]: Entering directory
->> '/home/sdf/xenobuild/imx-xenomai/build/xenomai-3/lib/copperplate/regd'
->>    CC       regd.o
->>    CC       fs-common.o
->> ../../../../../xenomai-3/lib/copperplate/regd/fs-common.c: In function
->> =E2open_heaps=E2:
->> ../../../../../xenomai-3/lib/copperplate/regd/fs-common.c:249:17: error:
->> =E2struct shared_heap_memory=E2 has no member named =E2ubytes=E2
->>     p->used =3D heap->ubytes;
->>                   ^
->> ../../../../../xenomai-3/lib/copperplate/regd/fs-common.c:250:18: error:
->> =E2struct shared_heap_memory=E2 has no member named =E2total=E2
->>     p->total =3D heap->total;
->>                    ^
->> Makefile:472: recipe for target 'fs-common.o' failed
->> make[3]: *** [fs-common.o] Error 1
->>
-> This may help:
->
-> diff --git a/lib/copperplate/regd/fs-common.c b/lib/copperplate/regd/fs-c=
-ommon.c
-> index ef2e6dae9..e0bdd3d04 100644
-> --- a/lib/copperplate/regd/fs-common.c
-> +++ b/lib/copperplate/regd/fs-common.c
-> @@ -211,8 +211,8 @@ int open_heaps(struct fsobj *fsobj, void *priv)
->   {
->   	struct sysgroup_memspec *obj, *tmp;
->   	struct heap_data *heap_data, *p;
-> +	struct shared_heap_memory *heap;
->   	struct fsobstack *o =3D priv;
-> -	struct shared_heap *heap;
->   	int ret, count, len =3D 0;
->  =20
->   	ret =3D heapobj_bind_session(__copperplate_setup_data.session_label);
-> @@ -244,10 +244,10 @@ int open_heaps(struct fsobj *fsobj, void *priv)
->   	for_each_sysgroup(obj, tmp, heap) {
->   		if (p - heap_data >=3D count)
->   			break;
-> -		heap =3D container_of(obj, struct shared_heap, memspec);
-> +		heap =3D container_of(obj, struct shared_heap_memory, memspec);
->   		namecpy(p->name, heap->name);
-> -		p->used =3D heap->ubytes;
-> -		p->total =3D heap->total;
-> +		p->used =3D heap->used_size;
-> +		p->total =3D heap->usable_size;
->   		p++;
->   	}
->
-Philippe,
+Hi,
 
-Thanks for that update, I see that it made it into the -next branch. =20
-The build went fine
-and I updated my SDK as well with the new heapobj headers, etc.  But now=20
-it appears as though
-g++ is unhappy with casting between void* and heapobj*, heap_memory*,=20
-etc that I'm guessing has
-to do with alchemy headers ref'ing the heap pointers using void *. I'm=20
-ignoring this for now, focusing on the apps which are in C, which is 95%=20
-of what I have, and will look at using
--fpermissive or #pragma's to fix the C++ issues later.
+I am using xenomai -2.6.2.1 and I have patched the xenomai -2.6.2.1
+with linux kernel 3.4.6
+and I installed using the following commands
 
-This is my first attempt with pshared since the new allocator went in. =20
-I've always launched
-sysregd during system startup, like this:
+sudo make-kpkg --bzimage --initrd --append-to-version=3D-xenomai-2.6.4
+-j8 kernel-image kernel-headers modules
+# Install kernel
+cd ..
+sudo dpkg -i linux-image-*.deb
+sudo dpkg -i linux-headers-*.deb
 
-sysregd --daemon --root /var/run/xenomai/root/opus --linger
+sudo ../xenomai-2.6.4/configure --enable-shared --enable-smp --enable-x86-s=
+ep
+sudo make -j8
+sudo make install
 
-Here's a traceback which happens with our rt_queue reader app, it only=20
-happens when the
-session already exists, not when it's the first process (except sysregd)=20
-in the session:
+cd /etc/ld.so.conf.d/
+sudo touch xenomai.conf
+sudo sh -c "echo '/usr/xenomai/lib' >> xenomai.conf"
+sudo ldconfig
 
-./mqueue-reader
-2165 Segmentation fault      (core dumped) ./mqueue-reader "$@"
+echo "export PATH=3D$PATH:/usr/xenomai/bin" >> ~/.bashrc
+# echo "export PATH=3D$PATH:/usr/xenomai/bin:/usr/xenomai/lib:/usr/xenomai/=
+include"
+>> ~/.bashrc
+sudo su
+echo "export PATH=3D$PATH:/usr/xenomai/bin" >> ~/.bashrc
+# echo "export PATH=3D$PATH:/usr/xenomai/bin:/usr/xenomai/lib:/usr/xenomai/=
+include"
+>> ~/.bashr
+************************************************* *************************=
+***
+after installing xenomai-2.6.4 with linux kernel 3.4.6
+I am not able to get the module in the xenomai directory, to use  RTnet
 
-gdb session with core file:
+=E2=80=8CI  required to load the modules  for RTnet operations
+sudo modprobe xeno_rtdm
+sudo modprobe xeno_hal
+sudo modprobe xeno_nucleus
 
-Core was generated by `./mqueue-readerE --mem-pool-size=3D32M --session=3Do=
-pus'.
-Program terminated with signal SIGSEGV, Segmentation fault.
-#0  0x76ee8704 in ?? ()
-[Current thread is 1 (LWP 2104)]
-(gdb) bt
-#0  0x76ee8704 in ?? ()
-#1  0x76fc38c0 in shavl_search_inner (delta=3D0x7ec7b9f0, n=3D0x7ec7ba04,=20
-avl=3D0x7445c8f4) at ../../../../xenomai-3/include/boilerplate/avl-inner.h:=
-285
-#2  shavl_search_nearest (dir=3D1, node=3D0x7ec7ba04, avl=3D0x7445c8f4) at =
+after executing this command I am using lsmod to view these modules
+,but the modules are not getting loaded.
 
-../../../../xenomai-3/include/boilerplate/avl-inner.h:393
-#3  shavl_search_ge (node=3D0x7ec7ba04, avl=3D0x7445c8f4) at=20
-../../../../xenomai-3/include/boilerplate/avl-inner.h:411
-#4  find_suitable_range (size=3D1536, ext=3D0x7445c8b8) at=20
-../../../../xenomai-3/lib/copperplate/heapobj-pshared.c:204
-#5  reserve_page_range (size=3D1536, ext=3D0x7445c8b8) at=20
-../../../../xenomai-3/lib/copperplate/heapobj-pshared.c:215
-#6  add_free_range (heap=3D0x2, heap@entry=3D0x7445c000, bsize=3D2127018500=
-,=20
-bsize@entry=3D1536, log2size=3D1950728192, log2size@entry=3D0)
-     at ../../../../xenomai-3/lib/copperplate/heapobj-pshared.c:422
-#7  0x76fc3b9c in sheapmem_alloc (heap=3D0x7445c000, size=3Dsize@entry=3D12=
-72)=20
-at ../../../../xenomai-3/lib/copperplate/heapobj-pshared.c:543
-#8  0x76fc49d0 in xnmalloc (size=3Dsize@entry=3D1272) at=20
-../../../../xenomai-3/lib/copperplate/heapobj-pshared.c:1177
-#9  0x76fc18d4 in __threadobj_alloc=20
-(tcb_struct_size=3Dtcb_struct_size@entry=3D248,=20
-wait_union_size=3Dwait_union_size@entry=3D1024,
-     thobj_offset=3Dthobj_offset@entry=3D0) at=20
-../../../../xenomai-3/lib/copperplate/threadobj.c:1118
-#10 0x76fc27a0 in main_overlay () at=20
-../../../../xenomai-3/lib/copperplate/threadobj.c:1787
-#11 threadobj_pkg_init (anon_session=3Danon_session@entry=3D0) at=20
-../../../../xenomai-3/lib/copperplate/threadobj.c:1818
-#12 0x76fbfa1c in copperplate_init () at=20
-../../../../xenomai-3/lib/copperplate/init.c:225
-#13 0x76f9e534 in __xenomai_init (argcp=3D0x7ec7bbfc,=20
-argcp@entry=3D0x7ec7bc44, argvp=3D0x103d428, argvp@entry=3D0x7ec7bc40,
-     me=3Dme@entry=3D0x76fa6460 "program") at=20
-../../../../xenomai-3/lib/boilerplate/setup.c:601
-#14 0x76f9ecf8 in xenomai_init (argcp=3D0x7ec7bc44,=20
-argcp@entry=3D0x7ec7bc3c, argvp=3Dargvp@entry=3D0x7ec7bc40)
-     at ../../../../xenomai-3/lib/boilerplate/setup.c:656
-#15 0x00010f0c in call_init (argvp=3D0x7ec7bc40, argcp=3D0x7ec7bc3c) at=20
-../../../../../xenomai-3/lib/boilerplate/init/bootstrap.c:105
-#16 xenomai_bootstrap () at=20
-../../../../../xenomai-3/lib/boilerplate/init/bootstrap.c:169
-#17 0x00011864 in __libc_csu_init (argc=3D3, argv=3D0x7ec7bdd4,=20
-envp=3D0x7ec7bde4) at /usr/src/debug/glibc/2.23-r0/git/csu/elf-init.c:88
-#18 0x41408088 in __libc_start_main () from /lib/libc.so.6
-#19 0x00010f68 in _start () at ../sysdeps/arm/start.S:124
-Backtrace stopped: previous frame identical to this frame (corrupt stack?)
+In /usr/xenomai I am not able to see the modules.
 
-The mqueue-reader app is larger than it should be so if this traceback=20
-isn't enough to lead
-you to a solution and you need some test code I will trim it down to=20
-something much smaller that
-still shows the issue and send that along.
+help me to get the following module xeno_rtdm, xeno_hal, xeno_nucleus
+install to use the rtnet
 
-Thanks in advance,
-Steve
 
+Thank you
+R. Ashokkumar
 
