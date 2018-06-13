@@ -1,12 +1,9 @@
-From: Philippe Gerum <rpm@xenomai.org>
-Message-ID: <29ddc3f2-146d-c8a2-87c4-4c01f03f9b91@xenomai.org>
-Date: Wed, 13 Jun 2018 15:43:08 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-Subject: [Xenomai] [NOTICE][RESEND] Upcoming migration of the GIT
-	repositories
+From: C Smith <csmithquestions@gmail.com>
+Date: Wed, 13 Jun 2018 10:25:00 -0700
+Message-ID: <CA+K1mPGChtz-6Hj3_VE_BTg9QL+4V7c-mRO8MjrM18OQ81BCfg@mail.gmail.com>
+Content-Type: text/plain; charset="UTF-8"
+Subject: [Xenomai] How to print to dmesg buffer from an RT task
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,21 +12,17 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "Xenomai@xenomai.org" <Xenomai@xenomai.org>
+To: xenomai@xenomai.org
 
+I'd like my Xenomai task to write to both stdout and also to the kernel's
+dmesg buffer.
+It is a periodic task started with rt_task_create().
+When I do rt_vfprintf(stdout, ...)
+it prints to stdout OK, but I also want to send the same string to the
+dmesg buffer, and
+I can't call printk() or rtdm_printk() because this task isn't a kernel
+module.
 
-As hinted in the minutes from the last Xenomai meeting in Brussels [1],
-the project will be gradually switching a large part of its server
-infrastructure over to Denx's gitlab server.
+(I'm using Xenomai 2.6.5 on x86.)
 
-The first step of this process will happen on June 16-17 2018. Please
-make sure to read the details of this migration in this document [2].
-
-Thanks,
-
-[1] http://xenomai.org/pipermail/xenomai/2018-February/038291.html
-[2] http://xenomai.org/migrating-the-infrastructure
-
--- 
-Philippe.
-
+Thanks
