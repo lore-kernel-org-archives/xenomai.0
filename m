@@ -1,13 +1,14 @@
+References: <C2EC5BA46D13CD44B5915A8FEEB4C44E9BFA1EED@DDCEXCH.ddc-ny.com>
+From: Philippe Gerum <rpm@xenomai.org>
+Message-ID: <d5eec08d-2820-7406-ba3d-42df26ebf3fe@xenomai.org>
+Date: Thu, 14 Jun 2018 08:10:17 +0200
 MIME-Version: 1.0
-Sender: kiwamu@gmail.com
-In-Reply-To: <99BAB48E90E86D42AD41F0BCE3225AEB019FC2A4FA@GRZSMS582.andritz.com>
-References: <CAEvX6dnegM8CXwc7zGCsvyWNMziEcjdjB0fJRH_NMdTO2vdWgA@mail.gmail.com>
- <99BAB48E90E86D42AD41F0BCE3225AEB019FC2A4FA@GRZSMS582.andritz.com>
-From: Kiwamu Okabe <kiwamu@debian.or.jp>
-Date: Thu, 14 Jun 2018 14:42:05 +0900
-Message-ID: <CAEvX6dkxs+pdZTJaeATtviKzV+LvQPY-d_wg2TfEjk=xXPCRfQ@mail.gmail.com>
-Content-Type: text/plain; charset="UTF-8"
-Subject: Re: [Xenomai] Why get low latency while running stress command?
+In-Reply-To: <C2EC5BA46D13CD44B5915A8FEEB4C44E9BFA1EED@DDCEXCH.ddc-ny.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai] thread executing udd_register_device() is not
+ rescheduled again
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,67 +17,54 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: "Pham, Phong" <phamp@ddc-web.com>, "xenomai@xenomai.org" <xenomai@xenomai.org>
+Cc: "Hillman, Robert" <hillman@ddc-web.com>
 
-Dear Lange,
+On 06/13/2018 10:26 PM, Pham, Phong wrote:
+> 
+> Hi,
+> 
+> I currently have a bunch of rtdm devices.  One of the devices, from userspace, I use ioctl() to get to kernel space.  When in kernel space, I create anther rtdm device (using udd_register_device() API).  The API returns success without any issue.  However, upon exiting the kernel space, in handle_root_syscall (), execute xnthread_relax(),xnthread_suspend(),
+> 
+>               /*
+>               * If the current thread is being relaxed, we must have been
+>               * called from xnthread_relax(), in which case we introduce an
+>               * opportunity for interrupt delivery right before switching
+>               * context, which shortens the uninterruptible code path.
+>               *
+>               * We have to shut irqs off before __xnsched_run() though: if
+>               * an interrupt could preempt us in ___xnsched_run() right
+>               * after the call to xnarch_escalate() but before we grab the
+>               * nklock, we would enter the critical section in
+>               * xnsched_run() while running in secondary mode, which would
+>               * defeat the purpose of xnarch_escalate().
+>               */
+>               if (likely(thread == sched->curr)) {
+>                              xnsched_set_resched(sched);
+>                              if (unlikely(mask & XNRELAX)) {
+>                                            xnlock_clear_irqon(&nklock);
+>                                            splmax();
+>                                            __xnsched_run(sched);
+>                                            return;
+>                              }
+>                              /*
+>                              * If the thread is runnning on another CPU,
+>                              * xnsched_run will trigger the IPI as required.
+>                              */
+>                              __xnsched_run(sched);
+>                              goto out;
+>               }
+> 
+> and the current thread never runs again (ie. never exits xnthread_suspend()).
+> 
+> I noticed that  udd_register_device() eventually uses device_create() Linux API to create the files.  If I do not call device_create() and execute everything else, then my current thread does not hang (ie. runs til completion).  Any insight into Xenomai implementation causes the Xenomai scheduler to behave this way when Linux device_create() API is invoked?
+> 
 
-On Wed, Jun 13, 2018 at 7:47 PM, Lange Norbert
-<norbert.lange@andritz.com> wrote:
-> I guess what happens is, that the CPU will be put to sleep and/or lower frequency and voltage between calls,
-> These transitions are rather slow and will then have to happen on wake-up
-> Disable any kind of powersaving features in Linux and possibly BIOS (C-States).
+You are basically looking at your thread running in secondary mode -
+therefore suspended Xenomai-wise - caused by the non-rt ioctl() call it
+just issued. It still runs, but under the control of the Linux
+scheduler. I'm unsure to understand which problem you would like to report.
 
-Thanks for your reply.
-
-After read following:
-
-* https://www.thomas-krenn.com/en/wiki/Processor_P-states_and_C-states
-* https://gist.github.com/wmealing/2dd2b543c4d3cff6cab7
-* https://wiki.archlinux.org/index.php/CPU_frequency_scaling#Scaling_governors
-* https://wiki.debian.org/HowTo/CpuFrequencyScaling
-
-I set up some parameters:
-
-```
-$ sudo vi /etc/default/grub
---snip--
-GRUB_CMDLINE_LINUX_DEFAULT="quiet processor.max_cstate=1
-intel_idle.max_cstate=0"
---snip--
-$ sudo update-grub
-$ sudo apt install cpufrequtils
-$ sudo vi /etc/default/cpufrequtils
-GOVERNOR="performance"
-$ sudo reboot
-```
-
-Then I have better latency:
-
-```
-$ sudo /usr/lib/xenomai/testsuite/latency
-== Sampling period: 100 us
-== Test mode: periodic user-mode task
-== All results in microseconds
-warming up...
-RTT|  00:00:01  (periodic user-mode task, 100 us period, priority 99)
-RTH|----lat min|----lat avg|----lat max|-overrun|---msw|---lat best|--lat worst
-RTD|      0.417|      2.658|      4.211|       0|     0|      0.417|      4.211
-RTD|      0.843|      2.718|      4.780|       0|     0|      0.417|      4.780
-RTD|      0.726|      2.689|      4.456|       0|     0|      0.417|      4.780
-RTD|      0.923|      2.731|      5.068|       0|     0|      0.417|      5.068
-RTD|      0.908|      2.676|      4.906|       0|     0|      0.417|      5.068
-RTD|      0.402|      2.686|      4.784|       0|     0|      0.402|      5.068
-RTD|      0.907|      2.617|      4.501|       0|     0|      0.402|      5.068
-RTD|      0.928|      2.615|      5.730|       0|     0|      0.402|      5.730
-RTD|      0.538|      2.630|      4.245|       0|     0|      0.402|      5.730
-RTD|      0.399|      2.638|      4.607|       0|     0|      0.399|      5.730
-RTD|      0.414|      2.613|      4.114|       0|     0|      0.399|      5.730
-RTD|      0.502|      2.620|      4.486|       0|     0|      0.399|      5.730
-RTD|      0.694|      2.625|      4.292|       0|     0|      0.399|      5.730
-RTD|      0.618|      2.641|      4.847|       0|     0|      0.399|      5.730
-```
-
-Thanks a lot!
 -- 
-Kiwamu Okabe at METASEPI DESIGN
+Philippe.
 
