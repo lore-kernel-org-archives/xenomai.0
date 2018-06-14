@@ -1,20 +1,16 @@
-References: <bd6a8257-9986-df8b-182d-b1b5d41e3a2a@xenomai.org>
- <41222b4c-b99c-2745-f1df-f00785c52104@xenomai.org>
- <d8f7d33e-a6fc-2911-56d8-f985981b1698@xenomai.org>
- <5B1EDD8E.2010707@freyder.net>
- <6d63abf1-0b15-5c55-5ab5-f0f424848dd3@xenomai.org>
- <5B201BCD.1060600@freyder.net>
- <f529188c-4a06-000c-985a-e46a30a919c1@xenomai.org>
- <5B21A065.3020707@freyder.net>
+References: <CY4PR0901MB2211C40E748F61C0C92D976DA1900@CY4PR0901MB2211.namprd09.prod.outlook.com>
+ <afc4023f-295b-0f0f-2c8a-e9f9496107f9@xenomai.org>
+ <21f3928b-46d5-3de2-b18c-cdcc58492344@oss-tech.org>
+ <alpine.DEB.2.20.1806121211290.22532@af78237-pc.mitre.org>
 From: Philippe Gerum <rpm@xenomai.org>
-Message-ID: <335b30c0-ceed-c9b2-841d-a0cad3a93f2d@xenomai.org>
-Date: Thu, 14 Jun 2018 15:10:34 +0200
+Message-ID: <6c6edae0-3b57-d5e3-beb2-2a1ffad1c5f2@xenomai.org>
+Date: Thu, 14 Jun 2018 15:46:33 +0200
 MIME-Version: 1.0
-In-Reply-To: <5B21A065.3020707@freyder.net>
-Content-Type: text/plain; charset="windows-1252"
+In-Reply-To: <alpine.DEB.2.20.1806121211290.22532@af78237-pc.mitre.org>
+Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
-Content-Transfer-Encoding: quoted-printable
-Subject: Re: [Xenomai] Performance issue with memory allocators
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai] Xenomai 3 Multi-core Semaphore latency
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -23,271 +19,332 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Steve Freyder <steve@freyder.net>, "Xenomai@xenomai.org" <Xenomai@xenomai.org>
+To: Jeff Melvile <jmelville@mitre.org>, Dmitriy Cherkasov <dmitriy@oss-tech.org>
+Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On 06/14/2018 12:53 AM, Steve Freyder wrote:
-> On 6/13/2018 2:06 AM, Philippe Gerum wrote:
->> On 06/12/2018 09:15 PM, Steve Freyder wrote:
->>> On 6/12/2018 1:39 AM, Philippe Gerum wrote:
->>>> On 06/11/2018 10:37 PM, Steve Freyder wrote:
->>>>> On 6/8/2018 7:48 AM, Philippe Gerum wrote:
->>>>>> On 05/20/2018 08:15 PM, Philippe Gerum wrote:
->>>>>>> On 04/27/2018 08:23 PM, Philippe Gerum wrote:
->>>>>>>> After a comprehensive series of tests, it is now obvious that
->>>>>>>> heapobj-pshared has gruesome performances when releasing bursts of
->>>>>>>> small-sized objects. Allocation of large objects is not
->>>>>>>> particularly
->>>>>>>> efficient either, although not as bad. The Cobalt core allocator is
->>>>>>>> affected by the same bug too.
->>>>>>>>
->>>>>>>> Those new tests are available from the wip/heapmem branch, they are
->>>>>>>> based on the smokey framework (e.g. smokey --run=3Dmemory_*
->>>>>>>> --verbose=3D2).
->>>>>>>>
->>>>>>>> Work is ongoing into the wip/heapmem branch to fix the mess, first
->>>>>>>> addressing the issue with the core (in-kernel) allocator,
->>>>>>>> heapobj-pshared next. Please note that wip/heapmem is a development
->>>>>>>> branch I'm working on for testing improvements - hopefully - to the
->>>>>>>> memory allocators, which should not be used in production.
->>>>>>>>
->>>>>>>> I would strongly recommend that users running single-process
->>>>>>>> applications - i.e. not needing the shared heap feature - make
->>>>>>>> sure to
->>>>>>>> turn off heapobj-pshared when configuring, by passing
->>>>>>>> --disable-pshared
->>>>>>>> to the configuration script (or leave the feature to the default
->>>>>>>> off state).
->>>>>>>>
->>>>>>>> As the benchmark figures show when running 'memory_pshared', the
->>>>>>>> shared
->>>>>>> memory allocator still needs to be fixed. This is next on my list.
->>>>>> The pshared allocator is now fixed in the next branch.
->>>>>>
->>>>> I tried to build with the -next branch, I'm not sure if I'm doing
->>>>> something wrong, but I'm getting the errors below.=A0 I thought perha=
-ps
->>>>> the "struct shared_heap" should have been "struct shared_heap_memory",
->>>>> so I made that change, and that resulted in the second set of errors
->>>>> shown below that, then I decided time to post to the group:
->>>>>
->>>>> Thanks,
->>>>> Steve
->>>>>
->>>>> ---------------------------------------------------------------------=
----
->>>>>
->>>>>
->>>>> make[3]: Entering directory
->>>>> '/home/sdf/xenobuild/imx-xenomai/build/xenomai-3/lib/copperplate/regd'
->>>>> =A0=A0=A0 CC=A0=A0=A0=A0=A0=A0 regd.o
->>>>> =A0=A0=A0 CC=A0=A0=A0=A0=A0=A0 fs-common.o
->>>>> In file included from
->>>>> ../../../../../xenomai-3/include/cobalt/wrappers.h:21:0,
->>>>> =A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0 from
->>>>> /home/sdf/xenobuild/imx-xenomai/xenomai-3/include/cobalt/time.h:26,
->>>>> =A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0 from
->>>>> /opt/emac/5.1/sysroots/armv7a-neon-emac-linux-gnueabi/usr/include/sys=
-/types.h:132,
->>>>>
->>>>>
->>>>> =A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0 from
->>>>> ../../../../../xenomai-3/lib/copperplate/regd/fs-common.c:19:
->>>>> ../../../../../xenomai-3/lib/copperplate/regd/fs-common.c: In function
->>>>> =E2?~open_heaps=E2?T:
->>>>> ../../../../../xenomai-3/lib/copperplate/regd/fs-common.c:247:10:
->>>>> error:
->>>>> dereferencing pointer to incomplete type =E2?~struct shared_heap=E2?T
->>>>> =A0=A0=A0=A0 heap =3D container_of(obj, struct shared_heap, memspec);
->>>>> =A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0 ^
->>>>> ../../../../../xenomai-3/lib/copperplate/regd/fs-common.c:247:10:
->>>>> error:
->>>>> initialization from incompatible pointer type
->>>>> [-Werror=3Dincompatible-pointer-types]
->>>>> =A0=A0=A0=A0 heap =3D container_of(obj, struct shared_heap, memspec);
->>>>> =A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0 ^
->>>>> In file included from
->>>>> /opt/emac/5.1/sysroots/armv7a-neon-emac-linux-gnueabi/usr/include/str=
-ing.h:32:0,
->>>>>
->>>>>
->>>>> =A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0 from
->>>>> ../../../../../xenomai-3/include/copperplate/heapobj.h:24,
->>>>> =A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0 from
->>>>> ../../../../../xenomai-3/lib/copperplate/regd/fs-common.c:27:
->>>>> ../../../../../xenomai-3/lib/copperplate/regd/fs-common.c:247:35:
->>>>> error:
->>>>> invalid use of undefined type =E2?~struct shared_heap=E2?T
->>>>> =A0=A0=A0=A0 heap =3D container_of(obj, struct shared_heap, memspec);
->>>>> =A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=
-=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0 ^
->>>>> ---------------------------------------------------------------------=
----
->>>>>
->>>>> This is with "struct shared_heap" changed to "struct
->>>>> shared_heap_memory":
->>>>>
->>>>> make[3]: Entering directory
->>>>> '/home/sdf/xenobuild/imx-xenomai/build/xenomai-3/lib/copperplate/regd'
->>>>> =A0=A0=A0 CC=A0=A0=A0=A0=A0=A0 regd.o
->>>>> =A0=A0=A0 CC=A0=A0=A0=A0=A0=A0 fs-common.o
->>>>> ../../../../../xenomai-3/lib/copperplate/regd/fs-common.c: In function
->>>>> =E2open_heaps=E2:
->>>>> ../../../../../xenomai-3/lib/copperplate/regd/fs-common.c:249:17:
->>>>> error:
->>>>> =E2struct shared_heap_memory=E2 has no member named =E2ubytes=E2
->>>>> =A0=A0=A0=A0 p->used =3D heap->ubytes;
->>>>> =A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0 ^
->>>>> ../../../../../xenomai-3/lib/copperplate/regd/fs-common.c:250:18:
->>>>> error:
->>>>> =E2struct shared_heap_memory=E2 has no member named =E2total=E2
->>>>> =A0=A0=A0=A0 p->total =3D heap->total;
->>>>> =A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0 ^
->>>>> Makefile:472: recipe for target 'fs-common.o' failed
->>>>> make[3]: *** [fs-common.o] Error 1
->>>>>
->>>> This may help:
+On 06/12/2018 06:18 PM, Jeff Melvile wrote:
+> Dmitriy (and Philippe),
+> 
+> Thanks for looking into this. I'm working with Raman.
+> 
+> On Tue, 22 May 2018, Dmitriy Cherkasov wrote:
+> 
+>> On 05/20/2018 08:07 AM, Philippe Gerum wrote:
+>>> On 05/18/2018 06:24 PM, Singh, Raman wrote:
+>>>> Environment: ARM Cortex-A53 quad-core processor (ARM 64-bit) on a
+>>>> Zynq Ultrascale+ ZCU102 dev board, Xenomai 3 next branch from May 
+>>>> 14, 2018 (SHA1: 410a4cc1109ba4e0d05b7ece7b4a5210287e1183 ), 
+>>>> Cobalt configuration with POSIX skin, Linux Kernel version 4.9.24
 >>>>
->>>> diff --git a/lib/copperplate/regd/fs-common.c
->>>> b/lib/copperplate/regd/fs-common.c
->>>> index ef2e6dae9..e0bdd3d04 100644
->>>> --- a/lib/copperplate/regd/fs-common.c
->>>> +++ b/lib/copperplate/regd/fs-common.c
->>>> @@ -211,8 +211,8 @@ int open_heaps(struct fsobj *fsobj, void *priv)
->>>> =A0=A0 {
->>>> =A0=A0=A0=A0=A0=A0 struct sysgroup_memspec *obj, *tmp;
->>>> =A0=A0=A0=A0=A0=A0 struct heap_data *heap_data, *p;
->>>> +=A0=A0=A0 struct shared_heap_memory *heap;
->>>> =A0=A0=A0=A0=A0=A0 struct fsobstack *o =3D priv;
->>>> -=A0=A0=A0 struct shared_heap *heap;
->>>> =A0=A0=A0=A0=A0=A0 int ret, count, len =3D 0;
->>>> =A0=A0=A0=A0=A0=A0=A0=A0 ret =3D
->>>> heapobj_bind_session(__copperplate_setup_data.session_label);
->>>> @@ -244,10 +244,10 @@ int open_heaps(struct fsobj *fsobj, void *priv)
->>>> =A0=A0=A0=A0=A0=A0 for_each_sysgroup(obj, tmp, heap) {
->>>> =A0=A0=A0=A0=A0=A0=A0=A0=A0=A0 if (p - heap_data >=3D count)
->>>> =A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0 break;
->>>> -=A0=A0=A0=A0=A0=A0=A0 heap =3D container_of(obj, struct shared_heap, =
-memspec);
->>>> +=A0=A0=A0=A0=A0=A0=A0 heap =3D container_of(obj, struct shared_heap_m=
-emory, memspec);
->>>> =A0=A0=A0=A0=A0=A0=A0=A0=A0=A0 namecpy(p->name, heap->name);
->>>> -=A0=A0=A0=A0=A0=A0=A0 p->used =3D heap->ubytes;
->>>> -=A0=A0=A0=A0=A0=A0=A0 p->total =3D heap->total;
->>>> +=A0=A0=A0=A0=A0=A0=A0 p->used =3D heap->used_size;
->>>> +=A0=A0=A0=A0=A0=A0=A0 p->total =3D heap->usable_size;
->>>> =A0=A0=A0=A0=A0=A0=A0=A0=A0=A0 p++;
->>>> =A0=A0=A0=A0=A0=A0 }
+>>>> I've been having issues with semaphore latency when threads access 
+>>>> semaphores while executing on different cores. When both threads accessing 
+>>>> a semaphore execute on the same processor core, the latency between
+>>>> one thread posting a semaphore and another waking up after waiting on it 
+>>>> is fairly small. However, as soon as one of the threads is moved to a 
+>>>> different core, the latency between a semaphore post from one thread to a 
+>>>> waiting thread waking up in response starts to become large enough to 
+>>>> affect real time performance.  The latencies I've been seeing are on the order
+>>>> of 100's of milliseconds.
 >>>>
->>> Philippe,
 >>>
->>> Thanks for that update, I see that it made it into the -next branch.
->>> The build went fine
->>> and I updated my SDK as well with the new heapobj headers, etc.=A0 But =
-now
->>> it appears as though
->>> g++ is unhappy with casting between void* and heapobj*, heap_memory*,
->>> etc that I'm guessing has
->>> to do with alchemy headers ref'ing the heap pointers using void *. I'm
->>> ignoring this for now, focusing on the apps which are in C, which is 95%
->>> of what I have, and will look at using
->>> -fpermissive or #pragma's to fix the C++ issues later.
+>>> Reproduced on hikey here: the rescheduling IPIs Xenomai is sending for
+>>> waking up threads on remote CPUs don't flow to the other end properly
+>>> (ipipe_send_ipi()), which explains the behavior you have been seeing.
 >>>
->> I fixed this in the repo, only tested with a trivial C++ app pulling in
->> the headers though. Please let me know if that works for you too.
+>>> @Dmitriy: this may be an issue with the range of SGIs available to the
+>>> kernel when a secure firmware is enabled, which may be restricted to
+>>> SGI[0-7].
+>>>
+>>> For the rescheduling IPI on ARM64, the interrupt pipeline attempts to
+>>> trigger SGI8 which may be reserved by the ATF in secure mode, therefore
+>>> may never be received on the remote end.
+>>>
+>>> Fixing this will require some work in the interrupt pipeline, typically
+>>> for multiplexing our IPIs on a single SGI below SGI8. As a matter of
+>>> fact, the same issue exists on the ARM side, but since running a secure
+>>> firmware there is uncommon for Xenomai users, this went unnoticed (at
+>>> least not reported yet AFAIR). We need to sync up on this not to
+>>> duplicate work.
+>>>
 >>
->>> This is my first attempt with pshared since the new allocator went in.
->>> I've always launched
->>> sysregd during system startup, like this:
->>>
->>> sysregd --daemon --root /var/run/xenomai/root/opus --linger
->>>
->>> Here's a traceback which happens with our rt_queue reader app, it only
->>> happens when the
->>> session already exists, not when it's the first process (except sysregd)
->>> in the session:
->>>
->>> ./mqueue-reader
->>> 2165 Segmentation fault=A0=A0=A0=A0=A0 (core dumped) ./mqueue-reader "$=
-@"
->>>
->>> gdb session with core file:
->>>
->>> Core was generated by `./mqueue-readerE --mem-pool-size=3D32M
->>> --session=3Dopus'.
->>> Program terminated with signal SIGSEGV, Segmentation fault.
->>> #0=A0 0x76ee8704 in ?? ()
->>> [Current thread is 1 (LWP 2104)]
->>> (gdb) bt
->>> #0=A0 0x76ee8704 in ?? ()
->>> #1=A0 0x76fc38c0 in shavl_search_inner (delta=3D0x7ec7b9f0, n=3D0x7ec7b=
-a04,
->>> avl=3D0x7445c8f4) at
->>> ../../../../xenomai-3/include/boilerplate/avl-inner.h:285
->>> #2=A0 shavl_search_nearest (dir=3D1, node=3D0x7ec7ba04, avl=3D0x7445c8f=
-4) at
->>> ../../../../xenomai-3/include/boilerplate/avl-inner.h:393
->>> #3=A0 shavl_search_ge (node=3D0x7ec7ba04, avl=3D0x7445c8f4) at
->>> ../../../../xenomai-3/include/boilerplate/avl-inner.h:411
->>> #4=A0 find_suitable_range (size=3D1536, ext=3D0x7445c8b8) at
->>> ../../../../xenomai-3/lib/copperplate/heapobj-pshared.c:204
->>> #5=A0 reserve_page_range (size=3D1536, ext=3D0x7445c8b8) at
->>> ../../../../xenomai-3/lib/copperplate/heapobj-pshared.c:215
->>> #6=A0 add_free_range (heap=3D0x2, heap@entry=3D0x7445c000, bsize=3D2127=
-018500,
->>> bsize@entry=3D1536, log2size=3D1950728192, log2size@entry=3D0)
->>> =A0=A0=A0=A0 at ../../../../xenomai-3/lib/copperplate/heapobj-pshared.c=
-:422
->>> #7=A0 0x76fc3b9c in sheapmem_alloc (heap=3D0x7445c000, size=3Dsize@entr=
-y=3D1272)
->>> at ../../../../xenomai-3/lib/copperplate/heapobj-pshared.c:543
->>>
->> Going from heap=3D0x7445c000 with size=3D1272 to heap=3D0x2 with
->> size=3D2127018500 looks weird, and won't work obviously. Any chance a
->> stack overflow would be at work here?
->>
->>> The mqueue-reader app is larger than it should be so if this traceback
->>> isn't enough to lead
->>> you to a solution and you need some test code I will trim it down to
->>> something much smaller that
->>> still shows the issue and send that along.
->>>
->> You may want to run the new stress test exercising all of the memory
->> allocators, specifically for the heapmem-pshared:
->>
->> $ smokey --run=3Dmemory_pshared --verbose=3D2
->>
->> If that one runs properly on your setup, I would suspect an issue local
->> to the app (e.g. such as a stack overflow).
->>
-> Philippe,
->=20
-> First, thanks for the update on the g++ header issue, my compiles are
-> all clean now.
->=20
-> I rebuilt my program with a 512K stack, same problem with the SEGV.
->=20
-> Tried something different, without running my application at all, I ran
-> this script:
->=20
-> ulimit -c unlimited
-> smokey --run=3Dmemory_pshared --verbose=3D2 --mem-pool-size=3D32M --sessi=
-on=3Dfoo
->=20
-> it ran fine, but if I ran it a second time, without waiting for the
-> first invocation to
-> finish, then I got the same SEGV that I previously was seeing with my
-> program and the
-> traceback looks the same.
->=20
-> It's as if there's an initialization issue when you're not the creator
-> of the
-> pshared heap.
->=20
->=20
+>> I see this on Hikey with the latest ipipe-arm64 tree as well. I can confirm the
+>> reschedule IPI isn't being received although it is sent. Rearranging the IPIs
+>> to move reschedule up a few spots resolves the issue, so I think this confirms
+>> the root cause.
+> 
+> Short term - what is the consequence of naively rearranging the IPIs? What 
+> else breaks? FWIW secure firmware is not in use. Is your test patch 
+> something we can apply to be able to test the multi-core aspects of our 
+> software?
+> 
+> Let me know if there is anything either of us can do to help. We have 
+> kernel development experience but admittedly not quite at this level.
+> 
 
-Yeah, this can't work just yet. Implementation blunder. I'll follow up
-on this.
+This issue may affect the ARM port in some cases as well, so I took a stab at it for ARM64 since the related code is very similar. Could you test that patch? TIA,
 
---=20
+commit 765aa7853642b46e1c13fd1f21dfcb9d049f5bfa (HEAD -> wip/arm64-ipi-4.9)
+Author: Philippe Gerum <rpm@xenomai.org>
+Date:   Wed Jun 13 19:16:27 2018 +0200
+
+    arm64/ipipe: multiplex IPIs
+    
+    SGI8-15 can be reserved for the exclusive use of the firmware. The
+    ARM64 kernel currently uses six of them (NR_IPI), and the pipeline
+    needs to define three more for conveying out-of-band events
+    (i.e. reschedule, hrtimer and critical IPIs). Therefore we have to
+    multiplex nine inter-processor events over eight SGIs (SGI0-7).
+    
+    This patch changes the IPI management in order to multiplex all
+    regular (in-band) IPIs over SGI0, reserving SGI1-3 for out-of-band
+    events.
+
+diff --git a/arch/arm64/include/asm/ipipe.h b/arch/arm64/include/asm/ipipe.h
+index b16f03b508d6..8e756be01906 100644
+--- a/arch/arm64/include/asm/ipipe.h
++++ b/arch/arm64/include/asm/ipipe.h
+@@ -32,6 +32,7 @@
+ #include <linux/jump_label.h>
+ #include <linux/ipipe_trace.h>
+ #include <linux/ipipe_debug.h>
++#include <asm/hardirq.h>
+ 
+ #define IPIPE_CORE_RELEASE	4
+ 
+@@ -165,7 +166,7 @@ static inline void ipipe_unmute_pic(void)
+ void __ipipe_early_core_setup(void);
+ void __ipipe_hook_critical_ipi(struct ipipe_domain *ipd);
+ void __ipipe_root_localtimer(unsigned int irq, void *cookie);
+-void __ipipe_grab_ipi(unsigned svc, struct pt_regs *regs);
++void __ipipe_grab_ipi(unsigned int sgi, struct pt_regs *regs);
+ void __ipipe_ipis_alloc(void);
+ void __ipipe_ipis_request(void);
+ 
+diff --git a/arch/arm64/include/asm/ipipe_base.h b/arch/arm64/include/asm/ipipe_base.h
+index 867474e1b075..4d8beb560a2f 100644
+--- a/arch/arm64/include/asm/ipipe_base.h
++++ b/arch/arm64/include/asm/ipipe_base.h
+@@ -31,13 +31,15 @@
+ 
+ #ifdef CONFIG_SMP
+ 
+-extern unsigned __ipipe_first_ipi;
+-
+-#define IPIPE_CRITICAL_IPI	__ipipe_first_ipi
+-#define IPIPE_HRTIMER_IPI	(IPIPE_CRITICAL_IPI + 1)
+-#define IPIPE_RESCHEDULE_IPI	(IPIPE_CRITICAL_IPI + 2)
+-
+-#define IPIPE_LAST_IPI		IPIPE_RESCHEDULE_IPI
++/*
++ * Out-of-band IPIs are directly mapped to SGI1-3, instead of
++ * multiplexed over SGI0 like regular in-band messages.
++ */
++#define IPIPE_IPI_BASE		IPIPE_VIRQ_BASE
++#define IPIPE_OOB_IPI_NR	3
++#define IPIPE_CRITICAL_IPI	(IPIPE_IPI_BASE + NR_IPI)
++#define IPIPE_HRTIMER_IPI	(IPIPE_IPI_BASE + NR_IPI + 1)
++#define IPIPE_RESCHEDULE_IPI	(IPIPE_IPI_BASE + NR_IPI + 2)
+ 
+ #ifdef CONFIG_IPIPE_LEGACY
+ #define hard_smp_processor_id()						\
+diff --git a/arch/arm64/kernel/ipipe.c b/arch/arm64/kernel/ipipe.c
+index ae1d0f542a3e..57f4e951648e 100644
+--- a/arch/arm64/kernel/ipipe.c
++++ b/arch/arm64/kernel/ipipe.c
+@@ -219,7 +219,6 @@ void __ipipe_enable_pipeline(void)
+ 				  irq,
+ 				  (ipipe_irq_handler_t)__ipipe_do_IRQ,
+ 				  NULL, NULL);
+-
+ #ifdef CONFIG_SMP
+ 	__ipipe_ipis_request();
+ #endif /* CONFIG_SMP */
+diff --git a/arch/arm64/kernel/smp.c b/arch/arm64/kernel/smp.c
+index dbb00c13eb6f..3fe20f7b7f36 100644
+--- a/arch/arm64/kernel/smp.c
++++ b/arch/arm64/kernel/smp.c
+@@ -75,23 +75,8 @@ enum ipi_msg_type {
+ 	IPI_TIMER,
+ 	IPI_IRQ_WORK,
+ 	IPI_WAKEUP,
+-#ifdef CONFIG_IPIPE
+-	IPI_IPIPE_FIRST,
+-#endif /* CONFIG_IPIPE */
+ };
+ 
+-#ifdef CONFIG_IPIPE
+-#define noipipe_irq_enter()			\
+-	do {					\
+-	} while(0)
+-#define noipipe_irq_exit()			\
+-	do {					\
+-	} while(0)
+-#else /* !CONFIG_IPIPE */
+-#define noipipe_irq_enter()	irq_enter()
+-#define noipipe_irq_exit()	irq_exit()
+-#endif /* !CONFIG_IPIPE */
+-
+ #ifdef CONFIG_ARM64_VHE
+ 
+ /* Whether the boot CPU is running in HYP mode or not*/
+@@ -766,12 +751,6 @@ static const char *ipi_types[NR_IPI] __tracepoint_string = {
+ 	S(IPI_WAKEUP, "CPU wake-up interrupts"),
+ };
+ 
+-static void smp_cross_call(const struct cpumask *target, unsigned int ipinr)
+-{
+-	trace_ipi_raise(target, ipi_types[ipinr]);
+-	__smp_cross_call(target, ipinr);
+-}
+-
+ void show_ipi_list(struct seq_file *p, int prec)
+ {
+ 	unsigned int cpu, i;
+@@ -798,60 +777,123 @@ u64 smp_irq_stat_cpu(unsigned int cpu)
+ }
+ 
+ #ifdef CONFIG_IPIPE
+-#define IPIPE_IPI_BASE	IPIPE_VIRQ_BASE
+ 
+-unsigned __ipipe_first_ipi;
+-EXPORT_SYMBOL_GPL(__ipipe_first_ipi);
++static DEFINE_PER_CPU(unsigned long, ipi_messages);
++
++#define noipipe_irq_enter()			\
++	do {					\
++	} while(0)
++#define noipipe_irq_exit()			\
++	do {					\
++	} while(0)
+ 
+-static void  __ipipe_do_IPI(unsigned virq, void *cookie)
++static void  __ipipe_do_IPI(unsigned int virq, void *cookie)
+ {
+-	enum ipi_msg_type msg = virq - IPIPE_IPI_BASE;
+-	handle_IPI(msg, raw_cpu_ptr(&ipipe_percpu.tick_regs));
++	unsigned int ipinr = virq - IPIPE_IPI_BASE;
++	
++	handle_IPI(ipinr, raw_cpu_ptr(&ipipe_percpu.tick_regs));
+ }
+ 
+ void __ipipe_ipis_alloc(void)
+ {
+-	unsigned int virq, ipi, last_ipi;
++	unsigned int virq, ipi;
++	static bool done;
+ 
+ 	/* May be called multiple times via init_stage() */
+-	if (__ipipe_first_ipi)
++	if (done)
+ 		return;
+ 
+-	last_ipi = NR_IPI + IPIPE_LAST_IPI;
+-	for (ipi = 0; ipi <= last_ipi; ipi++) {
++	/*
++	 * We have to get virtual IRQs in the range
++	 * [ IPIPE_IPI_BASE..IPIPE_IPI_BASE + NR_IPI + IPIPE_OOB_IPI_NR - 1 ],
++	 * otherwise something is wrong (likely someone would have
++	 * allocated virqs before we do, and this would break our
++	 * fixed numbering scheme for IPIs).
++	 */
++	for (ipi = 0; ipi < NR_IPI + IPIPE_OOB_IPI_NR; ipi++) {
+ 		virq = ipipe_alloc_virq();
+-		if (ipi == IPI_IPIPE_FIRST)
+-			__ipipe_first_ipi = virq;
++		WARN_ON_ONCE(virq != IPIPE_IPI_BASE + ipi);
+ 	}
++
++	done = true;
+ }
+ 
+ void __ipipe_ipis_request(void)
+ {
+-	unsigned virq;
++	unsigned int virq;
+ 
+-	for (virq = IPIPE_IPI_BASE; virq < __ipipe_first_ipi; virq++)
++	/*
++	 * Attach a handler to each VIRQ mapping an IPI which might be
++	 * posted by __ipipe_grab_ipi(). This handler will invoke
++	 * handle_IPI() from the root stage in turn, passing it the
++	 * corresponding IPI message number.
++	 */
++	for (virq = IPIPE_IPI_BASE;
++	     virq < IPIPE_IPI_BASE + NR_IPI + IPIPE_OOB_IPI_NR; virq++)
+ 		ipipe_request_irq(ipipe_root_domain,
+ 				  virq,
+ 				  (ipipe_irq_handler_t)__ipipe_do_IPI,
+ 				  NULL, NULL);
+ }
+-void ipipe_send_ipi(unsigned ipi, cpumask_t cpumask)
++
++static void smp_cross_call(const struct cpumask *target, unsigned int ipinr)
++{
++	unsigned int cpu, sgi;
++
++	if (ipinr < NR_IPI) {
++		/* regular in-band IPI (multiplexed over SGI0). */
++		trace_ipi_raise_rcuidle(target, ipi_types[ipinr]);
++		for_each_cpu(cpu, target)
++			set_bit(ipinr, &per_cpu(ipi_messages, cpu));
++		smp_mb();
++		sgi = 0;
++	} else	/* out-of-band IPI (SGI1-3). */
++		sgi = ipinr - NR_IPI + 1;
++		
++	__smp_cross_call(target, sgi);
++}
++
++void ipipe_send_ipi(unsigned int ipi, cpumask_t cpumask)
+ {
+-	enum ipi_msg_type msg = ipi - IPIPE_IPI_BASE;
+-	smp_cross_call(&cpumask, msg);
++	unsigned int ipinr = ipi - IPIPE_IPI_BASE;
++	smp_cross_call(&cpumask, ipinr);
+ }
+ EXPORT_SYMBOL_GPL(ipipe_send_ipi);
+ 
+  /* hw IRQs off */
+-asmlinkage void __exception __ipipe_grab_ipi(unsigned svc, struct pt_regs *regs)
++asmlinkage void __ipipe_grab_ipi(unsigned int sgi, struct pt_regs *regs)
+ {
+-	int virq = IPIPE_IPI_BASE + svc;
++	unsigned int ipinr, irq;
++	unsigned long *pmsg;
+ 
+-	__ipipe_dispatch_irq(virq, IPIPE_IRQF_NOACK);
++	if (sgi) {		/* SGI1-3, OOB messages. */
++		irq = sgi + NR_IPI - 1 + IPIPE_IPI_BASE;
++		__ipipe_dispatch_irq(irq, IPIPE_IRQF_NOACK);
++	} else {
++		/* In-band IPI (0..NR_IPI-1) multiplexed over SGI0. */
++		pmsg = raw_cpu_ptr(&ipi_messages);
++		while (*pmsg) {
++			ipinr = ffs(*pmsg) - 1;
++			clear_bit(ipinr, pmsg);
++			irq = IPIPE_IPI_BASE + ipinr;
++			__ipipe_dispatch_irq(irq, IPIPE_IRQF_NOACK);
++		}
++	}
+ 
+ 	__ipipe_exit_irq(regs);
+ }
+ 
++#else
++
++#define noipipe_irq_enter()	irq_enter()
++#define noipipe_irq_exit()	irq_exit()
++
++static void smp_cross_call(const struct cpumask *target, unsigned int ipinr)
++{
++	trace_ipi_raise(target, ipi_types[ipinr]);
++	__smp_cross_call(target, ipinr);
++}
++
+ #endif /* CONFIG_IPIPE */
+ 
+ void arch_send_call_function_ipi_mask(const struct cpumask *mask)
+
+-- 
 Philippe.
 
