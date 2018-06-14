@@ -1,21 +1,13 @@
-References: <bd6a8257-9986-df8b-182d-b1b5d41e3a2a@xenomai.org>
- <41222b4c-b99c-2745-f1df-f00785c52104@xenomai.org>
- <d8f7d33e-a6fc-2911-56d8-f985981b1698@xenomai.org>
- <5B1EDD8E.2010707@freyder.net>
- <6d63abf1-0b15-5c55-5ab5-f0f424848dd3@xenomai.org>
- <5B201BCD.1060600@freyder.net>
- <f529188c-4a06-000c-985a-e46a30a919c1@xenomai.org>
- <5B21A065.3020707@freyder.net>
- <335b30c0-ceed-c9b2-841d-a0cad3a93f2d@xenomai.org>
- <7a1a9208-b1c3-a3fd-a40a-bb42c89669e7@xenomai.org>
-From: Steve Freyder <steve@freyder.net>
-Message-ID: <5B229AAF.1040505@freyder.net>
-Date: Thu, 14 Jun 2018 11:41:19 -0500
+References: <5AD4F8A8.70604@freyder.net>
+From: Philippe Gerum <rpm@xenomai.org>
+Message-ID: <c89016d3-862d-1424-5bab-b7f658a425b5@xenomai.org>
+Date: Thu, 14 Jun 2018 18:45:56 +0200
 MIME-Version: 1.0
-In-Reply-To: <7a1a9208-b1c3-a3fd-a40a-bb42c89669e7@xenomai.org>
-Content-Type: text/plain; charset=windows-1252; format=flowed
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] Performance issue with memory allocators
+In-Reply-To: <5AD4F8A8.70604@freyder.net>
+Content-Type: text/plain; charset="utf-8"
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
+Subject: Re: [Xenomai] Queue status files/FUSE issue -- part two
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -24,110 +16,71 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Philippe Gerum <rpm@xenomai.org>, "Xenomai@xenomai.org" <Xenomai@xenomai.org>
+To: Steve Freyder <steve@freyder.net>, "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On 6/14/2018 10:21 AM, Philippe Gerum wrote:
-> On 06/14/2018 03:10 PM, Philippe Gerum wrote:
->> On 06/14/2018 12:53 AM, Steve Freyder wrote:
->>> I rebuilt my program with a 512K stack, same problem with the SEGV.
->>>
->>> Tried something different, without running my application at all, I ran
->>> this script:
->>>
->>> ulimit -c unlimited
->>> smokey --run=memory_pshared --verbose=2 --mem-pool-size=32M --session=foo
->>>
->>> it ran fine, but if I ran it a second time, without waiting for the
->>> first invocation to
->>> finish, then I got the same SEGV that I previously was seeing with my
->>> program and the
->>> traceback looks the same.
->>>
->>> It's as if there's an initialization issue when you're not the creator
->>> of the
->>> pshared heap.
->>>
->>>
->> Yeah, this can't work just yet. Implementation blunder. I'll follow up
->> on this.
->>
-> Could you check if the situation gets any better with this change in?
->
-> http://git.xenomai.org/xenomai-3.git/commit/?h=next&id=7e3d69ae6c9235289a8984b609ae2400ab950f17
->
-> Thanks,
->
-Philippe,
+On 04/16/2018 09:25 PM, Steve Freyder wrote:
+> Greetings again,
+> 
+> There seems to be an issue with the RT queue status file formatting and
+> perhaps
+> the way in which the [WAITERS] list is managed, and/or maybe the way the
+> output
+> string termination is done.
+> 
+> I can't be sure and thought I should simply submit the test
+> program/scripts and
+> document the results.  I am attaching them as a compressed tar file, I hope
+> that is acceptable form for the forum.
+> 
+> I noticed that the 32768 length in this area of the code:
+> 
+> ./xenomai-3/lib/copperplate/registry.c-317-             case O_RDWR:
+> ./xenomai-3/lib/copperplate/registry.c-318- sbuf->st_mode |= 0666;
+> ./xenomai-3/lib/copperplate/registry.c-319- break;
+> ./xenomai-3/lib/copperplate/registry.c-320-             }
+> ./xenomai-3/lib/copperplate/registry.c-321- sbuf->st_nlink = 1;
+> ./xenomai-3/lib/copperplate/registry.c:322: sbuf->st_size = 32768; /*
+> XXX: this should be dynamic. */
+> ./xenomai-3/lib/copperplate/registry.c-323- sbuf->st_atim = fsobj->mtime;
+> ./xenomai-3/lib/copperplate/registry.c-324- sbuf->st_ctim = fsobj->ctime;
+> ./xenomai-3/lib/copperplate/registry.c-325- sbuf->st_mtim = fsobj->mtime;
+> 
+> sometimes is altered, before the FUSE read request is satisfied, and
+> sometimes not.  I didn't try to trace it too far.
+> 
+> The script "qtest.sh" runs a program called "qx" (Queue eXerciser) to
+> create a
+> queue, and post a read on the queue.  Two copies are launched in the
+> background
+> then the first is killed.  The queue status file is displayed in the
+> process.
+> 
+> Note what happens to the queue status output as you run "sh qtest.sh"
+> repeatedly.  On my system, I see something like what is shown below.
+> 
+> The included "killtask.sh" can be used to get rid of all of the
+> lingering tasks
+> after the testing is over.
+> 
+> I use a lingering sysregd launched in sr.sh before starting
+> the testing, looks like this:
 
-This looks pretty similar.  At first I thought my patching didn't fly, 
-but I double-checked
-my work and although the size of the "smokey" binary didn't change, the 
-size of
-libcopperplate DID change so the patch is there.
+[snip]
 
-Core was generated by `smokey --run=memory_pshared --verbose=2 
---mem-pool-size=32M --session=foo'.
-Program terminated with signal SIGSEGV, Segmentation fault.
-#0  compare_range_by_size (r=0xfffcb000, l=0x741f38ec) at 
-../../../../xenomai-3/lib/copperplate/heapobj-pshared.c:638
-638     ../../../../xenomai-3/lib/copperplate/heapobj-pshared.c: No such 
-file or directory.
-[Current thread is 1 (LWP 800)]
-(gdb) bt
-#0  compare_range_by_size (r=0xfffcb000, l=0x741f38ec) at 
-../../../../xenomai-3/lib/copperplate/heapobj-pshared.c:638
-#1  search_range_by_size (avl=avl@entry=0x741f38ec, 
-node=node@entry=0x7eca29d4, pdelta=0x7eca29c0,
-     pdelta@entry=0x76f418fc <add_free_range+216>, dir=dir@entry=0) at 
-../../../../xenomai-3/lib/copperplate/heapobj-pshared.c:640
-#2  0x76f418fc in shavl_search_inner (ops=0x76f56630 <size_search_ops>, 
-delta=0x76f418fc <add_free_range+216>, n=0x7eca29d4,
-     avl=0x741f38ec) at 
-../../../../xenomai-3/include/boilerplate/avl-inner.h:285
-#3  shavl_search_nearest (ops=0x76f56630 <size_search_ops>, dir=1, 
-node=0x7eca29d4, avl=0x741f38ec)
-     at ../../../../xenomai-3/include/boilerplate/avl-inner.h:395
-#4  shavl_search_ge (ops=0x76f56630 <size_search_ops>, node=0x7eca29d4, 
-avl=0x741f38ec)
-     at ../../../../xenomai-3/include/boilerplate/avl-inner.h:415
-#5  find_suitable_range (size=1536, ext=0x741f38b8) at 
-../../../../xenomai-3/lib/copperplate/heapobj-pshared.c:207
-#6  reserve_page_range (size=1536, ext=0x741f38b8) at 
-../../../../xenomai-3/lib/copperplate/heapobj-pshared.c:219
-#7  add_free_range (heap=0x7eca29c0, heap@entry=0x741f3000, 
-bsize=1995793968, bsize@entry=1536, log2size=1948200960, log2size@entry=0)
-     at ../../../../xenomai-3/lib/copperplate/heapobj-pshared.c:432
-#8  0x76f41be4 in sheapmem_alloc (heap=0x741f3000, size=size@entry=1272) 
-at ../../../../xenomai-3/lib/copperplate/heapobj-pshared.c:553
-#9  0x76f42a44 in xnmalloc (size=size@entry=1272) at 
-../../../../xenomai-3/lib/copperplate/heapobj-pshared.c:1197
-#10 0x76f3f8f4 in __threadobj_alloc 
-(tcb_struct_size=tcb_struct_size@entry=248, 
-wait_union_size=wait_union_size@entry=1024,
-     thobj_offset=thobj_offset@entry=0) at 
-../../../../xenomai-3/lib/copperplate/threadobj.c:1118
-#11 0x76f407c0 in main_overlay () at 
-../../../../xenomai-3/lib/copperplate/threadobj.c:1787
-#12 threadobj_pkg_init (anon_session=anon_session@entry=0) at 
-../../../../xenomai-3/lib/copperplate/threadobj.c:1818
-#13 0x76f3da3c in copperplate_init () at 
-../../../../xenomai-3/lib/copperplate/init.c:225
-#14 0x76f1c5ac in __xenomai_init (argcp=0x7eca2bcc, 
-argcp@entry=0x7eca2c14, argvp=0x1a7430, argvp@entry=0x7eca2c10,
-     me=me@entry=0x76f244e0 "program") at 
-../../../../xenomai-3/lib/boilerplate/setup.c:601
-#15 0x76f1cd70 in xenomai_init (argcp=0x7eca2c14, 
-argcp@entry=0x7eca2c0c, argvp=argvp@entry=0x7eca2c10)
-     at ../../../../xenomai-3/lib/boilerplate/setup.c:656
-#16 0x000149f0 in call_init (argvp=0x7eca2c10, argcp=0x7eca2c0c) at 
-../../../../../xenomai-3/lib/boilerplate/init/bootstrap.c:105
-#17 xenomai_bootstrap () at 
-../../../../../xenomai-3/lib/boilerplate/init/bootstrap.c:169
-#18 0x0002a334 in __libc_csu_init (argc=5, argv=0x7eca2da4, 
-envp=0x7eca2dbc) at /usr/src/debug/glibc/2.23-r0/git/csu/elf-init.c:88
-#19 0x41408088 in __libc_start_main () from /lib/libc.so.6
-#20 0x00014c94 in _start () at ../sysdeps/arm/start.S:124
-Backtrace stopped: previous frame identical to this frame (corrupt stack?)
-(gdb)
+Assuming this has been observed with applications running in a common
+session, a process that dies unexpectedly in that session won't get its
+threads properly removed from a shared wait list (e.g. the queue's one),
+as the per-thread destructor won't have a chance to run.
 
+Therefore killing the first process may be the cause of the behavior you
+observed, because there is no general provision for being resilient to
+such an event in a shared session, where it is assumed that either every
+process which belongs to the session is present and functional, or the
+whole session is deemed broken anyway.
+
+Arguably, this may be an over-simplification, but that is the current
+basic assumption of the whole pshared support.
+
+-- 
+Philippe.
 
