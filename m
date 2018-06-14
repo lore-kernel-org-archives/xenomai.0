@@ -1,15 +1,14 @@
-From: "Pham, Phong" <phamp@ddc-web.com>
-Date: Thu, 14 Jun 2018 22:58:04 +0000
-Message-ID: <C2EC5BA46D13CD44B5915A8FEEB4C44E9BFA1F63@DDCEXCH.ddc-ny.com>
-References: <C2EC5BA46D13CD44B5915A8FEEB4C44E9BFA1EED@DDCEXCH.ddc-ny.com>
- <d5eec08d-2820-7406-ba3d-42df26ebf3fe@xenomai.org>
-In-Reply-To: <d5eec08d-2820-7406-ba3d-42df26ebf3fe@xenomai.org>
-Content-Language: en-US
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-Subject: Re: [Xenomai] thread executing udd_register_device() is not
- rescheduled again
+In-Reply-To: <CALLqZ8R_2t+JUGubiPWW1qmS1hysJm5fHdxGrqJ1=NfXmMpbJA@mail.gmail.com>
+References: <CA+K1mPGChtz-6Hj3_VE_BTg9QL+4V7c-mRO8MjrM18OQ81BCfg@mail.gmail.com>
+ <CALLqZ8SBvhD0nkxLM0O3WQryCNNnwN2BvYkCJnrkxxP1vxrUEQ@mail.gmail.com>
+ <CA+K1mPFmyt0-rBYPiZ4e9QCuBgXrdjD5Y2P2UcRWZFbeKmob8Q@mail.gmail.com>
+ <CALLqZ8R_2t+JUGubiPWW1qmS1hysJm5fHdxGrqJ1=NfXmMpbJA@mail.gmail.com>
+From: C Smith <csmithquestions@gmail.com>
+Date: Thu, 14 Jun 2018 16:49:23 -0700
+Message-ID: <CA+K1mPGS6UoPNKD3QMt4P8EKwN8DdaKG1hzGF6qB2A17xc=oMg@mail.gmail.com>
+Content-Type: text/plain; charset="UTF-8"
+Subject: Re: [Xenomai] How to print to dmesg buffer from an RT task
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -18,95 +17,56 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Philippe Gerum <rpm@xenomai.org>, "xenomai@xenomai.org" <xenomai@xenomai.org>
-Cc: "Hillman, Robert" <hillman@ddc-web.com>
+To: Greg Gallagher <greg@embeddedgreg.com>, xenomai@xenomai.org
 
-DQpIaSBQaGlsaXBwZSwNCg0KSSBkaWcgdXAgYSBsaXR0bGUgbW9yZTsgdGhlIExpbnV4ICJjdXJy
-ZW50IiB0aHJlYWQgY2FsbHMgZGV2aWNlX2NyZWF0ZSgpIExpbnV4IEFQSSBldmVudHVhbGx5IGxl
-YWQgdG8gZGV2dG1wZnNfY3JlYXRlX25vZGUoKTsgdXBvbiB3YWtlX3VwX3Byb2Nlc3Moa2RldnRt
-cGZzIHRocmVhZCksIGtkZXZ0bXBmcyBiZWNvbWVzIGF2YWlsYWJsZSAoZXhwZWN0ZWQpLiAgSG93
-ZXZlciwgYWZ0ZXIgd2FpdF9mb3JfY29tcGxldGlvbigpLCB0aGUgImN1cnJlbnQiIHJ1bm5pbmcg
-dGhyZWFkIGlzIG5vIGxvbmdlciAiY3VycmVudCIgYnV0IHJhdGhlciAiY3VycmVudCIgdGhyZWFk
-IGlzIG5vdyBzd2l0Y2hlZCB0byB0aGUgaW5pdGlhbCBwcm9jZXNzIEkgaW52b2tlZCB3aGljaCB3
-YXMgc2xlZXBpbmcgd2hlbiBkZXZpY2VfY3JlYXRlKCkgaXMgY2FsbGVkLiAgVGhlIG9uY2UgY3Vy
-cmVudCB0aHJlYWQgdGhhdCBleGVjdXRlIGRldmljZV9jcmVhdGUoKSBldmVudHVhbGx5IGNhbGxz
-IHhudGhyZWFkX3N1c3BlbmQoKSBhbmQgaGFuZy4gIFRoZSAiY3VycmVudCIgdGhyZWFkIG5vdyBk
-b2Vzbid0IGRvIGFueXRoaW5nIGVpdGhlci4NCg0KMSkgRG9lcyB0aGUgZGV0YWlsZWQgZGVzY3Jp
-cHRpb24gYWJvdmUgImZpdHMiIHdpdGggd2hhdCB5b3UgbWVudGlvbmVkICJzZWNvbmRhcnkgbW9k
-ZSI/DQoyKSBEb2VzIGl0IG1lYW4gdGhhdCB1ZGRfcmVnaXN0ZXJfZGV2aWNlKCkgdXNhZ2UgaXMg
-aW5hcHByb3ByaWF0ZSB3aGVuIGNhbGxpbmcgZnJvbSBhIHVzZXIgc3BhY2UgdmlhIGFuIGlvY3Rs
-IG9mIGFuIFJURE0gZGV2aWNlPw0KDQozKSBJIG5vdGljZWQgdGhlcmUgaXMgbnJ0IGNhbGxzIGlu
-IGtlcm5lbC94ZW5vbWFpL3Bvc2l4L21lbW9yeS5jLiAgV2lsbCB0aGlzIGJlIGEgZ29vZCBleGFt
-cGxlIG9mIGNhbGxpbmcgYW4gaW9jdGwgdGhhdCB3aWxsIGNyZWF0ZSBhIHJ0ZG0gZGV2aWNlIG1h
-cHBlcj8gIChJIGhhdmVuJ3QgcmVhZCB0aGUgY29kZSBpbiBkZXRhaWwgYW5kIGhvcGUgeW91IHdv
-dWxkIHByb3ZpZGUgYSBxdWljayB5ZXMvbm8gc3VnZ2VzdGlvbiBiZWZvcmUgSSBwcm9jZWVkIHRv
-IHNhdmUgdGltZS4pDQo0KSBJZiAoMykgaXMgbm90IGFuIGV4LiwgZG9lcyBpdCBtZWFuIEkgaGF2
-ZSB0byBjcmVhdGUgYSBMaW51eCBmaWxlIG1hcHBlciAoaW5zdGVhZCBvZiBydGRtIGZpbGUgbWFw
-cGVyKSB3aXRob3V0IFhlbm9tYWkgaW52b2x2ZW1lbnQsIChpZS4gZXF1aXZhbGVudCB0byB1ZGRf
-cmVnaXN0ZXJfZGV2aWNlKCkgZnVuY3Rpb25hbGl0eSBidXQgc3RyaWN0bHkgTGludXgpPw0KDQpQ
-aG9uZy4NCg0KLS0tLS1PcmlnaW5hbCBNZXNzYWdlLS0tLS0NCkZyb206IFBoaWxpcHBlIEdlcnVt
-IFttYWlsdG86cnBtQHhlbm9tYWkub3JnXQ0KU2VudDogV2VkbmVzZGF5LCBKdW5lIDEzLCAyMDE4
-IDExOjEwIFBNDQpUbzogUGhhbSwgUGhvbmc7IHhlbm9tYWlAeGVub21haS5vcmcNCkNjOiBIaWxs
-bWFuLCBSb2JlcnQNClN1YmplY3Q6IFJlOiBbWGVub21haV0gdGhyZWFkIGV4ZWN1dGluZyB1ZGRf
-cmVnaXN0ZXJfZGV2aWNlKCkgaXMgbm90IHJlc2NoZWR1bGVkIGFnYWluDQoNCk9uIDA2LzEzLzIw
-MTggMTA6MjYgUE0sIFBoYW0sIFBob25nIHdyb3RlOg0KPg0KPiBIaSwNCj4NCj4gSSBjdXJyZW50
-bHkgaGF2ZSBhIGJ1bmNoIG9mIHJ0ZG0gZGV2aWNlcy4gIE9uZSBvZiB0aGUgZGV2aWNlcywgZnJv
-bSB1c2Vyc3BhY2UsIEkgdXNlIGlvY3RsKCkgdG8gZ2V0IHRvIGtlcm5lbCBzcGFjZS4gIFdoZW4g
-aW4ga2VybmVsIHNwYWNlLCBJIGNyZWF0ZSBhbnRoZXIgcnRkbSBkZXZpY2UgKHVzaW5nIHVkZF9y
-ZWdpc3Rlcl9kZXZpY2UoKSBBUEkpLiAgVGhlIEFQSSByZXR1cm5zIHN1Y2Nlc3Mgd2l0aG91dCBh
-bnkgaXNzdWUuICBIb3dldmVyLCB1cG9uIGV4aXRpbmcgdGhlIGtlcm5lbCBzcGFjZSwgaW4gaGFu
-ZGxlX3Jvb3Rfc3lzY2FsbCAoKSwgZXhlY3V0ZSB4bnRocmVhZF9yZWxheCgpLHhudGhyZWFkX3N1
-c3BlbmQoKSwNCj4NCj4gICAgICAgICAgICAgICAvKg0KPiAgICAgICAgICAgICAgICogSWYgdGhl
-IGN1cnJlbnQgdGhyZWFkIGlzIGJlaW5nIHJlbGF4ZWQsIHdlIG11c3QgaGF2ZSBiZWVuDQo+ICAg
-ICAgICAgICAgICAgKiBjYWxsZWQgZnJvbSB4bnRocmVhZF9yZWxheCgpLCBpbiB3aGljaCBjYXNl
-IHdlIGludHJvZHVjZSBhbg0KPiAgICAgICAgICAgICAgICogb3Bwb3J0dW5pdHkgZm9yIGludGVy
-cnVwdCBkZWxpdmVyeSByaWdodCBiZWZvcmUgc3dpdGNoaW5nDQo+ICAgICAgICAgICAgICAgKiBj
-b250ZXh0LCB3aGljaCBzaG9ydGVucyB0aGUgdW5pbnRlcnJ1cHRpYmxlIGNvZGUgcGF0aC4NCj4g
-ICAgICAgICAgICAgICAqDQo+ICAgICAgICAgICAgICAgKiBXZSBoYXZlIHRvIHNodXQgaXJxcyBv
-ZmYgYmVmb3JlIF9feG5zY2hlZF9ydW4oKSB0aG91Z2g6IGlmDQo+ICAgICAgICAgICAgICAgKiBh
-biBpbnRlcnJ1cHQgY291bGQgcHJlZW1wdCB1cyBpbiBfX194bnNjaGVkX3J1bigpIHJpZ2h0DQo+
-ICAgICAgICAgICAgICAgKiBhZnRlciB0aGUgY2FsbCB0byB4bmFyY2hfZXNjYWxhdGUoKSBidXQg
-YmVmb3JlIHdlIGdyYWIgdGhlDQo+ICAgICAgICAgICAgICAgKiBua2xvY2ssIHdlIHdvdWxkIGVu
-dGVyIHRoZSBjcml0aWNhbCBzZWN0aW9uIGluDQo+ICAgICAgICAgICAgICAgKiB4bnNjaGVkX3J1
-bigpIHdoaWxlIHJ1bm5pbmcgaW4gc2Vjb25kYXJ5IG1vZGUsIHdoaWNoIHdvdWxkDQo+ICAgICAg
-ICAgICAgICAgKiBkZWZlYXQgdGhlIHB1cnBvc2Ugb2YgeG5hcmNoX2VzY2FsYXRlKCkuDQo+ICAg
-ICAgICAgICAgICAgKi8NCj4gICAgICAgICAgICAgICBpZiAobGlrZWx5KHRocmVhZCA9PSBzY2hl
-ZC0+Y3VycikpIHsNCj4gICAgICAgICAgICAgICAgICAgICAgICAgICAgICB4bnNjaGVkX3NldF9y
-ZXNjaGVkKHNjaGVkKTsNCj4gICAgICAgICAgICAgICAgICAgICAgICAgICAgICBpZiAodW5saWtl
-bHkobWFzayAmIFhOUkVMQVgpKSB7DQo+ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
-ICAgICAgICAgICB4bmxvY2tfY2xlYXJfaXJxb24oJm5rbG9jayk7DQo+ICAgICAgICAgICAgICAg
-ICAgICAgICAgICAgICAgICAgICAgICAgICAgICBzcGxtYXgoKTsNCj4gICAgICAgICAgICAgICAg
-ICAgICAgICAgICAgICAgICAgICAgICAgICAgIF9feG5zY2hlZF9ydW4oc2NoZWQpOw0KPiAgICAg
-ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgcmV0dXJuOw0KPiAgICAgICAg
-ICAgICAgICAgICAgICAgICAgICAgIH0NCj4gICAgICAgICAgICAgICAgICAgICAgICAgICAgICAv
-Kg0KPiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICogSWYgdGhlIHRocmVhZCBpcyBydW5u
-bmluZyBvbiBhbm90aGVyIENQVSwNCj4gICAgICAgICAgICAgICAgICAgICAgICAgICAgICAqIHhu
-c2NoZWRfcnVuIHdpbGwgdHJpZ2dlciB0aGUgSVBJIGFzIHJlcXVpcmVkLg0KPiAgICAgICAgICAg
-ICAgICAgICAgICAgICAgICAgICovDQo+ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgX194
-bnNjaGVkX3J1bihzY2hlZCk7DQo+ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgZ290byBv
-dXQ7DQo+ICAgICAgICAgICAgICAgfQ0KPg0KPiBhbmQgdGhlIGN1cnJlbnQgdGhyZWFkIG5ldmVy
-IHJ1bnMgYWdhaW4gKGllLiBuZXZlciBleGl0cyB4bnRocmVhZF9zdXNwZW5kKCkpLg0KPg0KPiBJ
-IG5vdGljZWQgdGhhdCAgdWRkX3JlZ2lzdGVyX2RldmljZSgpIGV2ZW50dWFsbHkgdXNlcyBkZXZp
-Y2VfY3JlYXRlKCkgTGludXggQVBJIHRvIGNyZWF0ZSB0aGUgZmlsZXMuICBJZiBJIGRvIG5vdCBj
-YWxsIGRldmljZV9jcmVhdGUoKSBhbmQgZXhlY3V0ZSBldmVyeXRoaW5nIGVsc2UsIHRoZW4gbXkg
-Y3VycmVudCB0aHJlYWQgZG9lcyBub3QgaGFuZyAoaWUuIHJ1bnMgdGlsIGNvbXBsZXRpb24pLiAg
-QW55IGluc2lnaHQgaW50byBYZW5vbWFpIGltcGxlbWVudGF0aW9uIGNhdXNlcyB0aGUgWGVub21h
-aSBzY2hlZHVsZXIgdG8gYmVoYXZlIHRoaXMgd2F5IHdoZW4gTGludXggZGV2aWNlX2NyZWF0ZSgp
-IEFQSSBpcyBpbnZva2VkPw0KPg0KDQpZb3UgYXJlIGJhc2ljYWxseSBsb29raW5nIGF0IHlvdXIg
-dGhyZWFkIHJ1bm5pbmcgaW4gc2Vjb25kYXJ5IG1vZGUgLQ0KdGhlcmVmb3JlIHN1c3BlbmRlZCBY
-ZW5vbWFpLXdpc2UgLSBjYXVzZWQgYnkgdGhlIG5vbi1ydCBpb2N0bCgpIGNhbGwgaXQNCmp1c3Qg
-aXNzdWVkLiBJdCBzdGlsbCBydW5zLCBidXQgdW5kZXIgdGhlIGNvbnRyb2wgb2YgdGhlIExpbnV4
-DQpzY2hlZHVsZXIuIEknbSB1bnN1cmUgdG8gdW5kZXJzdGFuZCB3aGljaCBwcm9ibGVtIHlvdSB3
-b3VsZCBsaWtlIHRvIHJlcG9ydC4NCg0KLS0NClBoaWxpcHBlLg0KTm90aWNlOiBUaGlzIGUtbWFp
-bCBhbmQgYW55IGZpbGVzIHRyYW5zbWl0dGVkIHdpdGggaXQgbWF5IGNvbnRhaW4gRGF0YSBEZXZp
-Y2UgQ29ycG9yYXRpb24ncyBhbmQgaXRzIHN1YnNpZGlhcmllcyBwcml2aWxlZ2VkIGFuZCBwcm9w
-cmlldGFyeSBpbmZvcm1hdGlvbi4gSXQgaXMgaW50ZW5kZWQgc29sZWx5IGZvciB0aGUgdXNlIG9m
-IHRoZSBpbmRpdmlkdWFsIG9yIGVudGl0eSB0byB3aG9tIGl0IGlzIGFkZHJlc3NlZC4gSWYgeW91
-IGFyZSBub3QgdGhlIG5hbWVkIHJlY2lwaWVudCBvZiB0aGlzIHRyYW5zbWlzc2lvbiwgYW55IGRp
-c2Nsb3N1cmUsIGNvcHlpbmcsIGRpc3RyaWJ1dGlvbiBvciByZWxpYW5jZSBvbiB0aGUgY29udGVu
-dHMgb2YgdGhpcyBtZXNzYWdlIGlzIHByb2hpYml0ZWQuIElmIHlvdSByZWNlaXZlZCB0aGlzIGUt
-bWFpbCBpbiBlcnJvciwgcGxlYXNlIGRlc3Ryb3kgaXQgYW5kIGFueSBhdHRhY2hlZCBmaWxlcyBh
-bmQgbm90aWZ5IG1lIGltbWVkaWF0ZWx5Lg0KDQpDbGljayBIZXJlPGh0dHA6Ly93d3cuZGRjLXdl
-Yi5jb20vUHJvZmlsZS9FbWFpbFByaXZhY3kuYXNweD4gdG8gdmlldyBvdXIgcHJpdmFjeSBzdGF0
-ZW1lbnQuDQo=
+XDDP sockets seemed like overkill, so to work around this: I'm creating a
+new message queue (RT_QUEUE) for the string transfer from the userspace RT
+process to a kernelspace module (which was already running anyway). The
+Xenomai API seems to say that use of this message queue will not cause my
+userspace RT app to switch to secondary mode. I'll let you know if it
+doesn't work.
 
+<Thanks to those who advised to do it this way.>
+
+-C Smith
+
+On Wed, Jun 13, 2018 at 12:00 PM, Greg Gallagher <greg@embeddedgreg.com>
+wrote:
+
+> If you are looking at creating your own RTDM driver you just need a
+> basic driver that has open, read, write, close.  There would be no IPC
+> needed.  If you'd rather send the logs to a non-RT thread and have
+> that open /dev/kmsg then you can use xddp to do the IPC calls
+>
+> On Wed, Jun 13, 2018 at 2:57 PM, C Smith <csmithquestions@gmail.com>
+> wrote:
+> >
+> >
+> > On Wed, Jun 13, 2018 at 10:35 AM, Greg Gallagher <greg@embeddedgreg.com>
+> > wrote:
+> >>
+> >> You can try to write to /dev/kmsg, but this is a Linux resource so it
+> >> will impact which domain your thread is running on.
+> >
+> >
+> > Yeah, I can't allow this task to switch to secondary mode, it is a
+> > time-critical RT task.
+> >
+> >> AFAIK user space
+> >> tasks shouldn't be logging to the kernel log for the most part.
+> >
+> > Well, in the past this same task used to run as a RT module in
+> kernelspace,
+> > so architecturally I still need that dmesg log,
+> > (log files on disk are vulnerable to media problems etc).
+> >
+> >> One
+> >> solution I've seen is to create a driver (in your case RTDM driver) to
+> >> take in log messages and log them to the kernel log.
+> >
+> > What IPC method can I use between my RT task and the RTDM logging driver
+> in
+> > order to avoid a switch to secondary mode?
+> > Must I use IDDP sockets ?
+>
+>
