@@ -1,15 +1,15 @@
-References: <5AD4F8A8.70604@freyder.net>
- <c89016d3-862d-1424-5bab-b7f658a425b5@xenomai.org>
- <5B22B1A2.9060300@freyder.net>
- <b5acbb7d-a9a0-8e42-af44-84ced51c8952@xenomai.org>
-From: Steve Freyder <steve@freyder.net>
-Message-ID: <5B22E383.5080909@freyder.net>
-Date: Thu, 14 Jun 2018 16:52:03 -0500
+From: "Pham, Phong" <phamp@ddc-web.com>
+Date: Thu, 14 Jun 2018 22:58:04 +0000
+Message-ID: <C2EC5BA46D13CD44B5915A8FEEB4C44E9BFA1F63@DDCEXCH.ddc-ny.com>
+References: <C2EC5BA46D13CD44B5915A8FEEB4C44E9BFA1EED@DDCEXCH.ddc-ny.com>
+ <d5eec08d-2820-7406-ba3d-42df26ebf3fe@xenomai.org>
+In-Reply-To: <d5eec08d-2820-7406-ba3d-42df26ebf3fe@xenomai.org>
+Content-Language: en-US
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-In-Reply-To: <b5acbb7d-a9a0-8e42-af44-84ced51c8952@xenomai.org>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] Queue status files/FUSE issue -- part two
+Subject: Re: [Xenomai] thread executing udd_register_device() is not
+ rescheduled again
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -19,149 +19,94 @@ List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: Philippe Gerum <rpm@xenomai.org>, "xenomai@xenomai.org" <xenomai@xenomai.org>
+Cc: "Hillman, Robert" <hillman@ddc-web.com>
 
-On 6/14/2018 2:05 PM, Philippe Gerum wrote:
-> On 06/14/2018 08:19 PM, Steve Freyder wrote:
->> On 6/14/2018 11:45 AM, Philippe Gerum wrote:
->>> On 04/16/2018 09:25 PM, Steve Freyder wrote:
->>>> Greetings again,
->>>>
->>>> There seems to be an issue with the RT queue status file formatting and
->>>> perhaps
->>>> the way in which the [WAITERS] list is managed, and/or maybe the way the
->>>> output
->>>> string termination is done.
->>>>
->>>> I can't be sure and thought I should simply submit the test
->>>> program/scripts and
->>>> document the results.  I am attaching them as a compressed tar file,
->>>> I hope
->>>> that is acceptable form for the forum.
->>>>
->>>> I noticed that the 32768 length in this area of the code:
->>>>
->>>> ./xenomai-3/lib/copperplate/registry.c-317-             case O_RDWR:
->>>> ./xenomai-3/lib/copperplate/registry.c-318- sbuf->st_mode |= 0666;
->>>> ./xenomai-3/lib/copperplate/registry.c-319- break;
->>>> ./xenomai-3/lib/copperplate/registry.c-320-             }
->>>> ./xenomai-3/lib/copperplate/registry.c-321- sbuf->st_nlink = 1;
->>>> ./xenomai-3/lib/copperplate/registry.c:322: sbuf->st_size = 32768; /*
->>>> XXX: this should be dynamic. */
->>>> ./xenomai-3/lib/copperplate/registry.c-323- sbuf->st_atim =
->>>> fsobj->mtime;
->>>> ./xenomai-3/lib/copperplate/registry.c-324- sbuf->st_ctim =
->>>> fsobj->ctime;
->>>> ./xenomai-3/lib/copperplate/registry.c-325- sbuf->st_mtim =
->>>> fsobj->mtime;
->>>>
->>>> sometimes is altered, before the FUSE read request is satisfied, and
->>>> sometimes not.  I didn't try to trace it too far.
->>>>
->>>> The script "qtest.sh" runs a program called "qx" (Queue eXerciser) to
->>>> create a
->>>> queue, and post a read on the queue.  Two copies are launched in the
->>>> background
->>>> then the first is killed.  The queue status file is displayed in the
->>>> process.
->>>>
->>>> Note what happens to the queue status output as you run "sh qtest.sh"
->>>> repeatedly.  On my system, I see something like what is shown below.
->>>>
->>>> The included "killtask.sh" can be used to get rid of all of the
->>>> lingering tasks
->>>> after the testing is over.
->>>>
->>>> I use a lingering sysregd launched in sr.sh before starting
->>>> the testing, looks like this:
->>> [snip]
->>>
->>> Assuming this has been observed with applications running in a common
->>> session, a process that dies unexpectedly in that session won't get its
->>> threads properly removed from a shared wait list (e.g. the queue's one),
->>> as the per-thread destructor won't have a chance to run.
->>>
->>> Therefore killing the first process may be the cause of the behavior you
->>> observed, because there is no general provision for being resilient to
->>> such an event in a shared session, where it is assumed that either every
->>> process which belongs to the session is present and functional, or the
->>> whole session is deemed broken anyway.
->>>
->>> Arguably, this may be an over-simplification, but that is the current
->>> basic assumption of the whole pshared support.
->>>
->> I'm very disapppointed to hear that, it's the first I've ever heard that
->> documented.
->>
->> The unfortunate problem with that is that it goes against the paradigms
->> that were present in the 2.6.x version of Xenomai, where resources owned
->> by threads inside a dying process were always cleaned up properly, or at
->> least that is what we always observed, and counted on.
-> This is because 2.6 implemented every skin in kernel space, which became
-> a maintenance nightmare over the years. Only POSIX services are
-> implemented as syscalls in 3.x, with all other skins built on top of
-> this one via libcopperplate.
->
->> It seems then that I have only two options, 1) abandon the use of pshared
->> and registry completely, or 2) create some kind of application layer
->> signal catcher that performs all of the thread cleanup.  #1 is potentially
->> alot of work, and #2 won't completely guarantee that the session can't be
->> compromised if something dies in a way the signal catcher can't clean up
->> after.  So I'm pretty much forced to go with #1.  I believe that means
->> that I have to change from using RT_QUEUE's for IPC to something like
->> IDDP sockets, or another facility that doesn't rely on pshared/registry
->> to make the required resources available cross-process.
->>
->> Can RT_TASK, RT_QUEUE, RT_MUTEX, RT_SEM, etc objects be shared
->> cross-process using shared memory where task A calls rt_queue_create()
->> targetting an RT_QUEUE object in shared memory and task B uses that
->> object to perform an rt_queue_write() operation to that same queue?
->> If that worked I wouldn't need pshared/registry to share the objects
->> and the pshared cleanup issue would disappear.
->>
-> No, there is much more than just sharing the queue descriptor.
->
->> If the answer to the above is "no", then there needs to be support for
->> the same kind of resource sharing that can be done using Unix Domain
->> Sockets on a standard Linux system that allows one process to send a
->> file descriptor that then becomes valid in the process receiving the
->> message.
->>
-> What would that solve in this specific case?
-Now that I realize that all of the Alchemy layer that is in libcopperplate
-is vulnerable to these cleanup issues, my idea of being able to share
-those resources across processes is no good.  Prior to that I thought
-that only the act of making them shareable via the registry would cause
-the vulnerability, hence the idea of inventing an alternate sharing
-mechanism not subject to the vulnerability would help.  Clearly not.
->
->> Of course this all assumes that the storage tracking for an RT_QUEUE's
->> heap is immune to corruption when a process with that RT_QUEUE open dies,
->> regardless of where/how it dies.
->>
->>
-> Tasks, queues, mutexes and sema4s have direct counterparts in the
-> POSIXish libcobalt API, although POSIX queues and alchemy queues have
-> more differences. They can all be shared over common shm.
->
-> IDDP would be another way to implement a 1:1 or N:1 messaging system
-> based on the RTIPC services. That would entail a user->kernel->user copy
-> of each message which is heavier than what 3.x achieves since the sender
-> and receiver share the buffer memory directly in the latter case, but
-> that would exactly match what you had with 2.6 and the kernel-based
-> services anyway.
->
-Yes, I realize now that step #1 when moving from 2.6 to 3.x should have
-been a conversion of all of our Alchemy (native) code to Posix.  The IDDP
-solution is attractive too, and I do use that now for some things. The
-added overhead for the user->kernel->user copy is acceptable for our
-applications.  I should be able to map all of my rt_queue_xxx calls to
-equivalent mq_xxx calls using with a thin layer of inline functions to
-normalize any minor semantic differences/error mapping issues.  The
-queue semantics that I rely upon are global "queue name" namespace,
-non-blocking open/create, non-blocking writes, and reads with timeout,
-all of which appear to be fine with the mq_xxx suite.  Pretty much the
-same with {rt_,posix_}{mutex,sem}_xxx, and I don't rely on those to have
-cross-process semantics.
-
-
+DQpIaSBQaGlsaXBwZSwNCg0KSSBkaWcgdXAgYSBsaXR0bGUgbW9yZTsgdGhlIExpbnV4ICJjdXJy
+ZW50IiB0aHJlYWQgY2FsbHMgZGV2aWNlX2NyZWF0ZSgpIExpbnV4IEFQSSBldmVudHVhbGx5IGxl
+YWQgdG8gZGV2dG1wZnNfY3JlYXRlX25vZGUoKTsgdXBvbiB3YWtlX3VwX3Byb2Nlc3Moa2RldnRt
+cGZzIHRocmVhZCksIGtkZXZ0bXBmcyBiZWNvbWVzIGF2YWlsYWJsZSAoZXhwZWN0ZWQpLiAgSG93
+ZXZlciwgYWZ0ZXIgd2FpdF9mb3JfY29tcGxldGlvbigpLCB0aGUgImN1cnJlbnQiIHJ1bm5pbmcg
+dGhyZWFkIGlzIG5vIGxvbmdlciAiY3VycmVudCIgYnV0IHJhdGhlciAiY3VycmVudCIgdGhyZWFk
+IGlzIG5vdyBzd2l0Y2hlZCB0byB0aGUgaW5pdGlhbCBwcm9jZXNzIEkgaW52b2tlZCB3aGljaCB3
+YXMgc2xlZXBpbmcgd2hlbiBkZXZpY2VfY3JlYXRlKCkgaXMgY2FsbGVkLiAgVGhlIG9uY2UgY3Vy
+cmVudCB0aHJlYWQgdGhhdCBleGVjdXRlIGRldmljZV9jcmVhdGUoKSBldmVudHVhbGx5IGNhbGxz
+IHhudGhyZWFkX3N1c3BlbmQoKSBhbmQgaGFuZy4gIFRoZSAiY3VycmVudCIgdGhyZWFkIG5vdyBk
+b2Vzbid0IGRvIGFueXRoaW5nIGVpdGhlci4NCg0KMSkgRG9lcyB0aGUgZGV0YWlsZWQgZGVzY3Jp
+cHRpb24gYWJvdmUgImZpdHMiIHdpdGggd2hhdCB5b3UgbWVudGlvbmVkICJzZWNvbmRhcnkgbW9k
+ZSI/DQoyKSBEb2VzIGl0IG1lYW4gdGhhdCB1ZGRfcmVnaXN0ZXJfZGV2aWNlKCkgdXNhZ2UgaXMg
+aW5hcHByb3ByaWF0ZSB3aGVuIGNhbGxpbmcgZnJvbSBhIHVzZXIgc3BhY2UgdmlhIGFuIGlvY3Rs
+IG9mIGFuIFJURE0gZGV2aWNlPw0KDQozKSBJIG5vdGljZWQgdGhlcmUgaXMgbnJ0IGNhbGxzIGlu
+IGtlcm5lbC94ZW5vbWFpL3Bvc2l4L21lbW9yeS5jLiAgV2lsbCB0aGlzIGJlIGEgZ29vZCBleGFt
+cGxlIG9mIGNhbGxpbmcgYW4gaW9jdGwgdGhhdCB3aWxsIGNyZWF0ZSBhIHJ0ZG0gZGV2aWNlIG1h
+cHBlcj8gIChJIGhhdmVuJ3QgcmVhZCB0aGUgY29kZSBpbiBkZXRhaWwgYW5kIGhvcGUgeW91IHdv
+dWxkIHByb3ZpZGUgYSBxdWljayB5ZXMvbm8gc3VnZ2VzdGlvbiBiZWZvcmUgSSBwcm9jZWVkIHRv
+IHNhdmUgdGltZS4pDQo0KSBJZiAoMykgaXMgbm90IGFuIGV4LiwgZG9lcyBpdCBtZWFuIEkgaGF2
+ZSB0byBjcmVhdGUgYSBMaW51eCBmaWxlIG1hcHBlciAoaW5zdGVhZCBvZiBydGRtIGZpbGUgbWFw
+cGVyKSB3aXRob3V0IFhlbm9tYWkgaW52b2x2ZW1lbnQsIChpZS4gZXF1aXZhbGVudCB0byB1ZGRf
+cmVnaXN0ZXJfZGV2aWNlKCkgZnVuY3Rpb25hbGl0eSBidXQgc3RyaWN0bHkgTGludXgpPw0KDQpQ
+aG9uZy4NCg0KLS0tLS1PcmlnaW5hbCBNZXNzYWdlLS0tLS0NCkZyb206IFBoaWxpcHBlIEdlcnVt
+IFttYWlsdG86cnBtQHhlbm9tYWkub3JnXQ0KU2VudDogV2VkbmVzZGF5LCBKdW5lIDEzLCAyMDE4
+IDExOjEwIFBNDQpUbzogUGhhbSwgUGhvbmc7IHhlbm9tYWlAeGVub21haS5vcmcNCkNjOiBIaWxs
+bWFuLCBSb2JlcnQNClN1YmplY3Q6IFJlOiBbWGVub21haV0gdGhyZWFkIGV4ZWN1dGluZyB1ZGRf
+cmVnaXN0ZXJfZGV2aWNlKCkgaXMgbm90IHJlc2NoZWR1bGVkIGFnYWluDQoNCk9uIDA2LzEzLzIw
+MTggMTA6MjYgUE0sIFBoYW0sIFBob25nIHdyb3RlOg0KPg0KPiBIaSwNCj4NCj4gSSBjdXJyZW50
+bHkgaGF2ZSBhIGJ1bmNoIG9mIHJ0ZG0gZGV2aWNlcy4gIE9uZSBvZiB0aGUgZGV2aWNlcywgZnJv
+bSB1c2Vyc3BhY2UsIEkgdXNlIGlvY3RsKCkgdG8gZ2V0IHRvIGtlcm5lbCBzcGFjZS4gIFdoZW4g
+aW4ga2VybmVsIHNwYWNlLCBJIGNyZWF0ZSBhbnRoZXIgcnRkbSBkZXZpY2UgKHVzaW5nIHVkZF9y
+ZWdpc3Rlcl9kZXZpY2UoKSBBUEkpLiAgVGhlIEFQSSByZXR1cm5zIHN1Y2Nlc3Mgd2l0aG91dCBh
+bnkgaXNzdWUuICBIb3dldmVyLCB1cG9uIGV4aXRpbmcgdGhlIGtlcm5lbCBzcGFjZSwgaW4gaGFu
+ZGxlX3Jvb3Rfc3lzY2FsbCAoKSwgZXhlY3V0ZSB4bnRocmVhZF9yZWxheCgpLHhudGhyZWFkX3N1
+c3BlbmQoKSwNCj4NCj4gICAgICAgICAgICAgICAvKg0KPiAgICAgICAgICAgICAgICogSWYgdGhl
+IGN1cnJlbnQgdGhyZWFkIGlzIGJlaW5nIHJlbGF4ZWQsIHdlIG11c3QgaGF2ZSBiZWVuDQo+ICAg
+ICAgICAgICAgICAgKiBjYWxsZWQgZnJvbSB4bnRocmVhZF9yZWxheCgpLCBpbiB3aGljaCBjYXNl
+IHdlIGludHJvZHVjZSBhbg0KPiAgICAgICAgICAgICAgICogb3Bwb3J0dW5pdHkgZm9yIGludGVy
+cnVwdCBkZWxpdmVyeSByaWdodCBiZWZvcmUgc3dpdGNoaW5nDQo+ICAgICAgICAgICAgICAgKiBj
+b250ZXh0LCB3aGljaCBzaG9ydGVucyB0aGUgdW5pbnRlcnJ1cHRpYmxlIGNvZGUgcGF0aC4NCj4g
+ICAgICAgICAgICAgICAqDQo+ICAgICAgICAgICAgICAgKiBXZSBoYXZlIHRvIHNodXQgaXJxcyBv
+ZmYgYmVmb3JlIF9feG5zY2hlZF9ydW4oKSB0aG91Z2g6IGlmDQo+ICAgICAgICAgICAgICAgKiBh
+biBpbnRlcnJ1cHQgY291bGQgcHJlZW1wdCB1cyBpbiBfX194bnNjaGVkX3J1bigpIHJpZ2h0DQo+
+ICAgICAgICAgICAgICAgKiBhZnRlciB0aGUgY2FsbCB0byB4bmFyY2hfZXNjYWxhdGUoKSBidXQg
+YmVmb3JlIHdlIGdyYWIgdGhlDQo+ICAgICAgICAgICAgICAgKiBua2xvY2ssIHdlIHdvdWxkIGVu
+dGVyIHRoZSBjcml0aWNhbCBzZWN0aW9uIGluDQo+ICAgICAgICAgICAgICAgKiB4bnNjaGVkX3J1
+bigpIHdoaWxlIHJ1bm5pbmcgaW4gc2Vjb25kYXJ5IG1vZGUsIHdoaWNoIHdvdWxkDQo+ICAgICAg
+ICAgICAgICAgKiBkZWZlYXQgdGhlIHB1cnBvc2Ugb2YgeG5hcmNoX2VzY2FsYXRlKCkuDQo+ICAg
+ICAgICAgICAgICAgKi8NCj4gICAgICAgICAgICAgICBpZiAobGlrZWx5KHRocmVhZCA9PSBzY2hl
+ZC0+Y3VycikpIHsNCj4gICAgICAgICAgICAgICAgICAgICAgICAgICAgICB4bnNjaGVkX3NldF9y
+ZXNjaGVkKHNjaGVkKTsNCj4gICAgICAgICAgICAgICAgICAgICAgICAgICAgICBpZiAodW5saWtl
+bHkobWFzayAmIFhOUkVMQVgpKSB7DQo+ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
+ICAgICAgICAgICB4bmxvY2tfY2xlYXJfaXJxb24oJm5rbG9jayk7DQo+ICAgICAgICAgICAgICAg
+ICAgICAgICAgICAgICAgICAgICAgICAgICAgICBzcGxtYXgoKTsNCj4gICAgICAgICAgICAgICAg
+ICAgICAgICAgICAgICAgICAgICAgICAgICAgIF9feG5zY2hlZF9ydW4oc2NoZWQpOw0KPiAgICAg
+ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgcmV0dXJuOw0KPiAgICAgICAg
+ICAgICAgICAgICAgICAgICAgICAgIH0NCj4gICAgICAgICAgICAgICAgICAgICAgICAgICAgICAv
+Kg0KPiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICogSWYgdGhlIHRocmVhZCBpcyBydW5u
+bmluZyBvbiBhbm90aGVyIENQVSwNCj4gICAgICAgICAgICAgICAgICAgICAgICAgICAgICAqIHhu
+c2NoZWRfcnVuIHdpbGwgdHJpZ2dlciB0aGUgSVBJIGFzIHJlcXVpcmVkLg0KPiAgICAgICAgICAg
+ICAgICAgICAgICAgICAgICAgICovDQo+ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgX194
+bnNjaGVkX3J1bihzY2hlZCk7DQo+ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgZ290byBv
+dXQ7DQo+ICAgICAgICAgICAgICAgfQ0KPg0KPiBhbmQgdGhlIGN1cnJlbnQgdGhyZWFkIG5ldmVy
+IHJ1bnMgYWdhaW4gKGllLiBuZXZlciBleGl0cyB4bnRocmVhZF9zdXNwZW5kKCkpLg0KPg0KPiBJ
+IG5vdGljZWQgdGhhdCAgdWRkX3JlZ2lzdGVyX2RldmljZSgpIGV2ZW50dWFsbHkgdXNlcyBkZXZp
+Y2VfY3JlYXRlKCkgTGludXggQVBJIHRvIGNyZWF0ZSB0aGUgZmlsZXMuICBJZiBJIGRvIG5vdCBj
+YWxsIGRldmljZV9jcmVhdGUoKSBhbmQgZXhlY3V0ZSBldmVyeXRoaW5nIGVsc2UsIHRoZW4gbXkg
+Y3VycmVudCB0aHJlYWQgZG9lcyBub3QgaGFuZyAoaWUuIHJ1bnMgdGlsIGNvbXBsZXRpb24pLiAg
+QW55IGluc2lnaHQgaW50byBYZW5vbWFpIGltcGxlbWVudGF0aW9uIGNhdXNlcyB0aGUgWGVub21h
+aSBzY2hlZHVsZXIgdG8gYmVoYXZlIHRoaXMgd2F5IHdoZW4gTGludXggZGV2aWNlX2NyZWF0ZSgp
+IEFQSSBpcyBpbnZva2VkPw0KPg0KDQpZb3UgYXJlIGJhc2ljYWxseSBsb29raW5nIGF0IHlvdXIg
+dGhyZWFkIHJ1bm5pbmcgaW4gc2Vjb25kYXJ5IG1vZGUgLQ0KdGhlcmVmb3JlIHN1c3BlbmRlZCBY
+ZW5vbWFpLXdpc2UgLSBjYXVzZWQgYnkgdGhlIG5vbi1ydCBpb2N0bCgpIGNhbGwgaXQNCmp1c3Qg
+aXNzdWVkLiBJdCBzdGlsbCBydW5zLCBidXQgdW5kZXIgdGhlIGNvbnRyb2wgb2YgdGhlIExpbnV4
+DQpzY2hlZHVsZXIuIEknbSB1bnN1cmUgdG8gdW5kZXJzdGFuZCB3aGljaCBwcm9ibGVtIHlvdSB3
+b3VsZCBsaWtlIHRvIHJlcG9ydC4NCg0KLS0NClBoaWxpcHBlLg0KTm90aWNlOiBUaGlzIGUtbWFp
+bCBhbmQgYW55IGZpbGVzIHRyYW5zbWl0dGVkIHdpdGggaXQgbWF5IGNvbnRhaW4gRGF0YSBEZXZp
+Y2UgQ29ycG9yYXRpb24ncyBhbmQgaXRzIHN1YnNpZGlhcmllcyBwcml2aWxlZ2VkIGFuZCBwcm9w
+cmlldGFyeSBpbmZvcm1hdGlvbi4gSXQgaXMgaW50ZW5kZWQgc29sZWx5IGZvciB0aGUgdXNlIG9m
+IHRoZSBpbmRpdmlkdWFsIG9yIGVudGl0eSB0byB3aG9tIGl0IGlzIGFkZHJlc3NlZC4gSWYgeW91
+IGFyZSBub3QgdGhlIG5hbWVkIHJlY2lwaWVudCBvZiB0aGlzIHRyYW5zbWlzc2lvbiwgYW55IGRp
+c2Nsb3N1cmUsIGNvcHlpbmcsIGRpc3RyaWJ1dGlvbiBvciByZWxpYW5jZSBvbiB0aGUgY29udGVu
+dHMgb2YgdGhpcyBtZXNzYWdlIGlzIHByb2hpYml0ZWQuIElmIHlvdSByZWNlaXZlZCB0aGlzIGUt
+bWFpbCBpbiBlcnJvciwgcGxlYXNlIGRlc3Ryb3kgaXQgYW5kIGFueSBhdHRhY2hlZCBmaWxlcyBh
+bmQgbm90aWZ5IG1lIGltbWVkaWF0ZWx5Lg0KDQpDbGljayBIZXJlPGh0dHA6Ly93d3cuZGRjLXdl
+Yi5jb20vUHJvZmlsZS9FbWFpbFByaXZhY3kuYXNweD4gdG8gdmlldyBvdXIgcHJpdmFjeSBzdGF0
+ZW1lbnQuDQo=
 
