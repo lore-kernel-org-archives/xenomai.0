@@ -1,14 +1,23 @@
+References: <bd6a8257-9986-df8b-182d-b1b5d41e3a2a@xenomai.org>
+ <41222b4c-b99c-2745-f1df-f00785c52104@xenomai.org>
+ <d8f7d33e-a6fc-2911-56d8-f985981b1698@xenomai.org>
+ <5B1EDD8E.2010707@freyder.net>
+ <6d63abf1-0b15-5c55-5ab5-f0f424848dd3@xenomai.org>
+ <5B201BCD.1060600@freyder.net>
+ <f529188c-4a06-000c-985a-e46a30a919c1@xenomai.org>
+ <5B21A065.3020707@freyder.net>
+ <335b30c0-ceed-c9b2-841d-a0cad3a93f2d@xenomai.org>
+ <7a1a9208-b1c3-a3fd-a40a-bb42c89669e7@xenomai.org>
+ <5B229AAF.1040505@freyder.net>
+ <f9318b36-50b4-aa44-0c8d-f0cf1e4e1e79@xenomai.org>
+From: Steve Freyder <steve@freyder.net>
+Message-ID: <5B23F5FA.9040607@freyder.net>
+Date: Fri, 15 Jun 2018 12:23:06 -0500
 MIME-Version: 1.0
-In-Reply-To: <CALLqZ8R_2t+JUGubiPWW1qmS1hysJm5fHdxGrqJ1=NfXmMpbJA@mail.gmail.com>
-References: <CA+K1mPGChtz-6Hj3_VE_BTg9QL+4V7c-mRO8MjrM18OQ81BCfg@mail.gmail.com>
- <CALLqZ8SBvhD0nkxLM0O3WQryCNNnwN2BvYkCJnrkxxP1vxrUEQ@mail.gmail.com>
- <CA+K1mPFmyt0-rBYPiZ4e9QCuBgXrdjD5Y2P2UcRWZFbeKmob8Q@mail.gmail.com>
- <CALLqZ8R_2t+JUGubiPWW1qmS1hysJm5fHdxGrqJ1=NfXmMpbJA@mail.gmail.com>
-From: C Smith <csmithquestions@gmail.com>
-Date: Thu, 14 Jun 2018 16:49:23 -0700
-Message-ID: <CA+K1mPGS6UoPNKD3QMt4P8EKwN8DdaKG1hzGF6qB2A17xc=oMg@mail.gmail.com>
-Content-Type: text/plain; charset="UTF-8"
-Subject: Re: [Xenomai] How to print to dmesg buffer from an RT task
+In-Reply-To: <f9318b36-50b4-aa44-0c8d-f0cf1e4e1e79@xenomai.org>
+Content-Type: text/plain; charset=windows-1252; format=flowed
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai] Performance issue with memory allocators
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,56 +26,43 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Greg Gallagher <greg@embeddedgreg.com>, xenomai@xenomai.org
+To: Philippe Gerum <rpm@xenomai.org>, "Xenomai@xenomai.org" <Xenomai@xenomai.org>
 
-XDDP sockets seemed like overkill, so to work around this: I'm creating a
-new message queue (RT_QUEUE) for the string transfer from the userspace RT
-process to a kernelspace module (which was already running anyway). The
-Xenomai API seems to say that use of this message queue will not cause my
-userspace RT app to switch to secondary mode. I'll let you know if it
-doesn't work.
-
-<Thanks to those who advised to do it this way.>
-
--C Smith
-
-On Wed, Jun 13, 2018 at 12:00 PM, Greg Gallagher <greg@embeddedgreg.com>
-wrote:
-
-> If you are looking at creating your own RTDM driver you just need a
-> basic driver that has open, read, write, close.  There would be no IPC
-> needed.  If you'd rather send the logs to a non-RT thread and have
-> that open /dev/kmsg then you can use xddp to do the IPC calls
+On 6/14/2018 11:52 AM, Philippe Gerum wrote:
+> On 06/14/2018 06:41 PM, Steve Freyder wrote:
+>> #2  0x76f418fc in shavl_search_inner (ops=0x76f56630 <size_search_ops>,
+>> delta=0x76f418fc <add_free_range+216>, n=0x7eca29d4,
+>>      avl=0x741f38ec) at
+>> ../../../../xenomai-3/include/boilerplate/avl-inner.h:285
+>> #3  shavl_search_nearest (ops=0x76f56630 <size_search_ops>, dir=1,
+>> node=0x7eca29d4, avl=0x741f38ec)
+>>      at ../../../../xenomai-3/include/boilerplate/avl-inner.h:395
+>> #4  shavl_search_ge (ops=0x76f56630 <size_search_ops>, node=0x7eca29d4,
+>> avl=0x741f38ec)
+> The search operations parameter is last in the original code, but first
+> in your backtrace. Does this mean that you had conflicts there and fixed
+> them up manually? Since this is a new code, I'm unsure why you had such
+> conflicts in the first place.
 >
-> On Wed, Jun 13, 2018 at 2:57 PM, C Smith <csmithquestions@gmail.com>
-> wrote:
-> >
-> >
-> > On Wed, Jun 13, 2018 at 10:35 AM, Greg Gallagher <greg@embeddedgreg.com>
-> > wrote:
-> >>
-> >> You can try to write to /dev/kmsg, but this is a Linux resource so it
-> >> will impact which domain your thread is running on.
-> >
-> >
-> > Yeah, I can't allow this task to switch to secondary mode, it is a
-> > time-critical RT task.
-> >
-> >> AFAIK user space
-> >> tasks shouldn't be logging to the kernel log for the most part.
-> >
-> > Well, in the past this same task used to run as a RT module in
-> kernelspace,
-> > so architecturally I still need that dmesg log,
-> > (log files on disk are vulnerable to media problems etc).
-> >
-> >> One
-> >> solution I've seen is to create a driver (in your case RTDM driver) to
-> >> take in log messages and log them to the kernel log.
-> >
-> > What IPC method can I use between my RT task and the RTDM logging driver
-> in
-> > order to avoid a switch to secondary mode?
-> > Must I use IDDP sockets ?
+> Could you check with a pristine -next tree so that we may compare our
+> results from the same code base?
 >
+> Thanks,
 >
+Philippe,
+
+I went back to do a full git clone, checkout, patch, rebuild, and I
+found that when I fetched the -next branch that the patch had been
+comitted already.  So I proceeded to skip to the build step, and then
+retest the simultaneous execution of two instances of the smokey
+memory_pshared test, but still got the same failure.
+
+Are you seeing the test failure with your build?
+
+I've never had any reason to doubt the validity of my SDK or build
+procedures, but if your build is passing the test, something must be
+wrong on my end.
+
+Steve
+
+
