@@ -1,10 +1,9 @@
 MIME-Version: 1.0
-From: Ashok kumar <ashokkumar.bb@gmail.com>
-Date: Mon, 18 Jun 2018 11:10:34 +0530
-Message-ID: <CAFUnMknnfLVajKcd1qL5LS9EKFpjb=jM1GbNbY5i00jh7ZqPyA@mail.gmail.com>
+From: Radu Rendec <radu.rendec@gmail.com>
+Date: Mon, 18 Jun 2018 08:52:50 -0400
+Message-ID: <CAD5jUk-DyMgNffkgzvvmbm3+LtceXBnRSoFL0=YwYw7_BCk6yA@mail.gmail.com>
 Content-Type: text/plain; charset="UTF-8"
-Subject: [Xenomai] xenomai modules - xeno_rtdm, xeno_hal,
-	xeno_nucleus. not getting installed
+Subject: [Xenomai] ipipe-4.4.y LTS
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,38 +14,16 @@ List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: xenomai@xenomai.org
 
-Hi,
+Hi all,
 
-I have patched xenomai -2.6.4 with linux 3.18.20 .
-and installed the patched kernel, and  compiled the xenomai library using below
-commands
+Are there any plans to maintain the ipipe-4.4.y branch and update it to
+later versions of kernel 4.4? It would be nice to have, since at this
+point kernel 4.4 has the longest projected EOL.
 
-cd /usr/src
-sudo mkdir build_xenomai-2.6.4
-cd build_xenomai-2.6.4
+Currently the latest thing that can be merged cleanly on top of
+ipipe-core-4.4.71-powerpc-8 is kernel 4.4.73, which is only 2 releases
+later than what's already in there.
 
-sudo ../xenomai-2.6.4/configure --enable-shared --enable-smp --enable-x86-sep
-sudo make -j8
-sudo make install
-
-in /usr/xenomai/ I am not able to get the modules directory and xenomai modules
-are not available ,xeno_rtdm,xeno_hal,xeno_nucleus.
-
-I used the below command to load the modules
-
-sudo modprobe xeno_rtdm,
-sudo modprobe xeno_hal
-sudo modprobe xeno_nucleus
-
-but the modules are not getting loaded.
-
-
-is there any modification should be done in the make file, or any
-other options should be enabled in the configure options
-
-kindly help me the get the xenomai modules available.
-
-
-Thank you
-R.Ashokkumar
+Thanks,
+Radu Rendec
 
