@@ -1,14 +1,14 @@
-References: <CAD5jUk-DyMgNffkgzvvmbm3+LtceXBnRSoFL0=YwYw7_BCk6yA@mail.gmail.com>
- <CALLqZ8REcWEpxdAg8V5DxAgOrrofpnb-moAHg46Epv5DvBY1+w@mail.gmail.com>
-From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <3286435f-71ae-874d-72a5-5a7cbef0d550@siemens.com>
-Date: Tue, 19 Jun 2018 09:09:38 +0200
 MIME-Version: 1.0
-In-Reply-To: <CALLqZ8REcWEpxdAg8V5DxAgOrrofpnb-moAHg46Epv5DvBY1+w@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] ipipe-4.4.y LTS
+In-Reply-To: <CALLqZ8QKJkfwwuT1MVLLzXMzUggQ+8KMcYUEusBJC+-QBpYKtQ@mail.gmail.com>
+References: <CAFUnMknnfLVajKcd1qL5LS9EKFpjb=jM1GbNbY5i00jh7ZqPyA@mail.gmail.com>
+ <CALLqZ8QKJkfwwuT1MVLLzXMzUggQ+8KMcYUEusBJC+-QBpYKtQ@mail.gmail.com>
+From: Ashok kumar <ashokkumar.bb@gmail.com>
+Date: Tue, 19 Jun 2018 15:14:42 +0530
+Message-ID: <CAFUnMkkc8oL92bUvdnP0K_5aoAfa1eDap2GAByU7D1og8kKvkA@mail.gmail.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+Subject: Re: [Xenomai] xenomai modules - xeno_rtdm, xeno_hal,
+ xeno_nucleus. not getting installed
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,46 +17,36 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Greg Gallagher <greg@embeddedgreg.com>, Radu Rendec <radu.rendec@gmail.com>
+To: Greg Gallagher <greg@embeddedgreg.com>
 Cc: "Xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On 2018-06-18 15:59, Greg Gallagher wrote:
-> Are there still plans to have a ipipe patch for the CIP kernel?  I
-> think this was brought up at the last meet up?  Maybe the bigger
-> question (which is a lot more work) is do we plan on maintaining ipipe
-> for 4.4, 4.9 and older?
-
-Yes, there are plans to go over 4.4-CIP. So far, I'm only maintaining
-based on 4.4-LTS, just tested on x86, pushed to
-https://lab.xenomai.org/ipipe-jki.git/log/?h=for-upstream/4.4-update.
-Would be happy to receive contributions in form of tests on other
-architectures!
-
-Jan
-
-> 
-> -Greg
-> 
-> On Mon, Jun 18, 2018 at 8:52 AM, Radu Rendec <radu.rendec@gmail.com> wrote:
->> Hi all,
->>
->> Are there any plans to maintain the ipipe-4.4.y branch and update it to
->> later versions of kernel 4.4? It would be nice to have, since at this
->> point kernel 4.4 has the longest projected EOL.
->>
->> Currently the latest thing that can be merged cleanly on top of
->> ipipe-core-4.4.71-powerpc-8 is kernel 4.4.73, which is only 2 releases
->> later than what's already in there.
->>
->> Thanks,
->> Radu Rendec
->>
->> _______________________________________________
->> Xenomai mailing list
->> Xenomai@xenomai.org
->> https://xenomai.org/mailman/listinfo/xenomai
-
--- 
-Siemens AG, Corporate Technology, CT RDA IOT SES-DE
-Corporate Competence Center Embedded Linux
-
+SGksCgpJIGhhdmUgdHVybmVkIG1vZHVsZXMgT04sIEkgaGF2ZSBhdHRhY2hlZCB0aGUgZW5hYmxl
+IG1vZHVsZXMgc2VjdGlvbgppbiB0aGUga2VybmVsIGNvbmZpZ3VyYXRpb24KCnRoYW5rIHlvdQpS
+LkFzaG9ra3VtYXIKCgoKT24gTW9uLCBKdW4gMTgsIDIwMTggYXQgNzozMCBQTSwgR3JlZyBHYWxs
+YWdoZXIgPGdyZWdAZW1iZWRkZWRncmVnLmNvbT4gd3JvdGU6Cj4gRGlkIHlvdSB0dXJuIHRoZW0g
+b24gaW4gbWVudWNvbmZpZyB3aGVuIHlvdSBidWlsdCB5b3VyIGtlcm5lbD8KPgo+IC1HcmVnCj4K
+PiBPbiBNb24sIEp1biAxOCwgMjAxOCBhdCAxOjQwIEFNLCBBc2hvayBrdW1hciA8YXNob2trdW1h
+ci5iYkBnbWFpbC5jb20+IHdyb3RlOgo+PiBIaSwKPj4KPj4gSSBoYXZlIHBhdGNoZWQgeGVub21h
+aSAtMi42LjQgd2l0aCBsaW51eCAzLjE4LjIwIC4KPj4gYW5kIGluc3RhbGxlZCB0aGUgcGF0Y2hl
+ZCBrZXJuZWwsIGFuZCAgY29tcGlsZWQgdGhlIHhlbm9tYWkgbGlicmFyeSB1c2luZyBiZWxvdwo+
+PiBjb21tYW5kcwo+Pgo+PiBjZCAvdXNyL3NyYwo+PiBzdWRvIG1rZGlyIGJ1aWxkX3hlbm9tYWkt
+Mi42LjQKPj4gY2QgYnVpbGRfeGVub21haS0yLjYuNAo+Pgo+PiBzdWRvIC4uL3hlbm9tYWktMi42
+LjQvY29uZmlndXJlIC0tZW5hYmxlLXNoYXJlZCAtLWVuYWJsZS1zbXAgLS1lbmFibGUteDg2LXNl
+cAo+PiBzdWRvIG1ha2UgLWo4Cj4+IHN1ZG8gbWFrZSBpbnN0YWxsCj4+Cj4+IGluIC91c3IveGVu
+b21haS8gSSBhbSBub3QgYWJsZSB0byBnZXQgdGhlIG1vZHVsZXMgZGlyZWN0b3J5IGFuZCB4ZW5v
+bWFpIG1vZHVsZXMKPj4gYXJlIG5vdCBhdmFpbGFibGUgLHhlbm9fcnRkbSx4ZW5vX2hhbCx4ZW5v
+X251Y2xldXMuCj4+Cj4+IEkgdXNlZCB0aGUgYmVsb3cgY29tbWFuZCB0byBsb2FkIHRoZSBtb2R1
+bGVzCj4+Cj4+IHN1ZG8gbW9kcHJvYmUgeGVub19ydGRtLAo+PiBzdWRvIG1vZHByb2JlIHhlbm9f
+aGFsCj4+IHN1ZG8gbW9kcHJvYmUgeGVub19udWNsZXVzCj4+Cj4+IGJ1dCB0aGUgbW9kdWxlcyBh
+cmUgbm90IGdldHRpbmcgbG9hZGVkLgo+Pgo+Pgo+PiBpcyB0aGVyZSBhbnkgbW9kaWZpY2F0aW9u
+IHNob3VsZCBiZSBkb25lIGluIHRoZSBtYWtlIGZpbGUsIG9yIGFueQo+PiBvdGhlciBvcHRpb25z
+IHNob3VsZCBiZSBlbmFibGVkIGluIHRoZSBjb25maWd1cmUgb3B0aW9ucwo+Pgo+PiBraW5kbHkg
+aGVscCBtZSB0aGUgZ2V0IHRoZSB4ZW5vbWFpIG1vZHVsZXMgYXZhaWxhYmxlLgo+Pgo+Pgo+PiBU
+aGFuayB5b3UKPj4gUi5Bc2hva2t1bWFyCj4+Cj4+IF9fX19fX19fX19fX19fX19fX19fX19fX19f
+X19fX19fX19fX19fX19fX19fX19fCj4+IFhlbm9tYWkgbWFpbGluZyBsaXN0Cj4+IFhlbm9tYWlA
+eGVub21haS5vcmcKPj4gaHR0cHM6Ly94ZW5vbWFpLm9yZy9tYWlsbWFuL2xpc3RpbmZvL3hlbm9t
+YWkKLS0tLS0tLS0tLS0tLS0gbmV4dCBwYXJ0IC0tLS0tLS0tLS0tLS0tCkEgbm9uLXRleHQgYXR0
+YWNobWVudCB3YXMgc2NydWJiZWQuLi4KTmFtZTogU2NyZWVuc2hvdCBmcm9tIDIwMTgtMDYtMTkg
+MTU6MTE6NDEucG5nClR5cGU6IGltYWdlL3BuZwpTaXplOiAyODY2MjYgYnl0ZXMKRGVzYzogbm90
+IGF2YWlsYWJsZQpVUkw6IDxodHRwOi8veGVub21haS5vcmcvcGlwZXJtYWlsL3hlbm9tYWkvYXR0
+YWNobWVudHMvMjAxODA2MTkvZDkxZjdkMjMvYXR0YWNobWVudC5wbmc+Cg==
