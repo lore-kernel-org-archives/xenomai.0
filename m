@@ -1,12 +1,14 @@
+From: "Pham, Phong" <phamp@ddc-web.com>
+Date: Tue, 19 Jun 2018 00:02:54 +0000
+Message-ID: <C2EC5BA46D13CD44B5915A8FEEB4C44E9BFA20EE@DDCEXCH.ddc-ny.com>
+References: <C2EC5BA46D13CD44B5915A8FEEB4C44E9BFA1EED@DDCEXCH.ddc-ny.com>
+ <d5eec08d-2820-7406-ba3d-42df26ebf3fe@xenomai.org> 
+Content-Language: en-US
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-In-Reply-To: <CAOuPNLi0WPEqk9HmjukdYPp_8S1VLUv5vO+R1fDrNUy1m6Bz9w@mail.gmail.com>
-References: <CAOuPNLjnhO+vFwdQkM513kZrcxTq95ivHFWVf+boGdke42R4hQ@mail.gmail.com>
- <CAOuPNLi0WPEqk9HmjukdYPp_8S1VLUv5vO+R1fDrNUy1m6Bz9w@mail.gmail.com>
-From: Greg Gallagher <greg@embeddedgreg.com>
-Date: Mon, 18 Jun 2018 11:00:15 -0400
-Message-ID: <CALLqZ8Qb_d0YQ0T7EJC2aQ_U=g3KfLjS9A9sk0KX=wV4PS8Sfg@mail.gmail.com>
-Content-Type: text/plain; charset="UTF-8"
-Subject: Re: [Xenomai] rpi3 - very high negative latency for simple xeno task
+Subject: Re: [Xenomai] thread executing udd_register_device() is not
+ rescheduled again
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,125 +17,113 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Pintu Kumar <pintu.ping@gmail.com>
-Cc: "Xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Philippe Gerum <rpm@xenomai.org>, "xenomai@xenomai.org" <xenomai@xenomai.org>
+Cc: "Hillman, Robert" <hillman@ddc-web.com>
 
-Hi Pintu,
-   I just started doing some work recently with the RPI3 to see how
-Xenomai performs, but I haven't made it too far at the moment.  How
-did you tune the system?
-
--Greg
-
-On Sun, Jun 17, 2018 at 10:07 AM, Pintu Kumar <pintu.ping@gmail.com> wrote:
-> Dear Greg,
->
-> Do you have any comment about this?
-> On Wed, Jun 6, 2018 at 11:11 AM Pintu Kumar <pintu.ping@gmail.com> wrote:
->>
->> Hi,
->>
->> I have a simple demo program, which just create one rt_task (using
->> native API) and inside the task, I just rt_printf "some logs" for 10
->> times, with 100us interval.
->>
->> Today I checked this program first time on Raspberry Pi 3, Model B.
->> Xenomai: 3.0.6
->> ARCH = arm32
->> Kernel: 4.9.80 for rpi3
->>
->> Here is the output:
->> -------------------------
->> native $ sudo ./simple_xeno_task 10
->> main: creating task name: task0, priority: 99
->> Task: 0, Iteration: 10, Sleep duration: 100 us
->>
->> Task[0] - Avg Latency: -9.630 us
->> Task[0] - Max Latency: 0.052 us
->> Task[0] - Min Latency: -67.448 us
->> 1 32.552 -67.448
->> 2 75.261 -24.739
->> 3 97.657 -2.343
->> 4 99.479 -0.521
->> 5 99.791 -0.209
->> 6 99.740 -0.260
->> 7 100.052 0.052
->> 8 99.635 -0.365
->> 9 99.740 -0.260
->> 10 99.792 -0.208
->> ALL FINISHED.......!!!
->> -------------------------------
->>
->> If you see, the first 2 iterations have very large negative values.
->> What could be the cause of this?
->> As per RTOS, I expect the output to be close to 100us always.
->>
->>
->> When I run the same program on x86_64 machine I get the below output:
->> --------------------------------
->> ./simple_xeno_task 10
->> main: creating task name: task0, priority: 99
->> Task: 0, Iteration: 10, Sleep duration: 100 us
->>
->> Task[0] - Avg Latency: -0.680 us
->> Task[0] - Max Latency: 0.043 us
->> Task[0] - Min Latency: -5.868 us
->> 1 94.132 -5.868
->> 2 99.127 -0.873
->> 3 99.955 -0.045
->> 4 100.043 0.043
->> 5 99.990 -0.010
->> 6 99.959 -0.041
->> 7 100.017 0.017
->> 8 99.977 -0.023
->> 9 99.965 -0.035
->> 10 100.039 0.039
->> ALL FINISHED.......!!!
->> --------------------------------
->>
->> So, I wonder what could be the cause of negative latency on Rpi3 with Xenomai.
->>
->>
->> This is the latency output on Rpi3:
->> ----------------------------------------------
->> sudo /usr/xenomai/bin/latency
->> == Sampling period: 1000 us
->> == Test mode: periodic user-mode task
->> == All results in microseconds
->> warming up...
->> RTT|  00:00:01  (periodic user-mode task, 1000 us period, priority 99)
->> RTH|----lat min|----lat avg|----lat max|-overrun|---msw|---lat best|--lat worst
->> RTD|      0.625|      1.374|      5.312|       0|     0|      0.625|      5.312
->> RTD|      0.624|      1.376|      5.468|       0|     0|      0.624|      5.468
->> RTD|      0.624|      1.373|      5.676|       0|     0|      0.624|      5.676
->> RTD|      0.623|      1.372|      9.426|       0|     0|      0.623|      9.426
->> RTD|      0.467|      1.355|      4.582|       0|     0|      0.467|      9.426
->> RTD|      0.623|      1.384|      9.113|       0|     0|      0.467|      9.426
->> RTD|      0.622|      1.379|      5.935|       0|     0|      0.467|      9.426
->> RTD|      0.622|      1.359|      4.581|       0|     0|      0.467|      9.426
->> RTD|      0.622|      1.372|      7.028|       0|     0|      0.467|      9.426
->> RTD|      0.621|      1.361|      6.038|       0|     0|      0.467|      9.426
->> RTD|      0.621|      1.360|      4.267|       0|     0|      0.467|      9.426
->> RTD|      0.673|      1.364|     10.256|       0|     0|      0.467|     10.256
->> RTD|      0.672|      1.363|      6.453|       0|     0|      0.467|     10.256
->> RTD|      0.620|      1.352|      4.161|       0|     0|      0.467|     10.256
->> RTD|      0.619|      1.373|      7.234|       0|     0|      0.467|     10.256
->> RTD|      0.619|      1.352|      6.140|       0|     0|      0.467|     10.256
->> RTD|      0.671|      1.352|      4.733|       0|     0|      0.467|     10.256
->> RTD|      0.566|      1.363|      5.514|       0|     0|      0.467|     10.256
->> RTD|      0.618|      1.368|      6.712|       0|     0|      0.467|     10.256
->> RTD|      0.618|      1.353|      4.420|       0|     0|      0.467|     10.256
->> RTD|      0.617|      1.368|      6.815|       0|     0|      0.467|     10.256
->> ^C---|-----------|-----------|-----------|--------|------|-------------------------
->>
->> ----------------------------------------------
->>
->>
->> Thanks,
->> Pintu
->
-> _______________________________________________
-> Xenomai mailing list
-> Xenomai@xenomai.org
-> https://xenomai.org/mailman/listinfo/xenomai
+DQpIaSBQaGlsaXBwZSBhbmQgYWxsLA0KDQpXaGlsZSBJIG1heSBoYXZlIHRvbyBtYW55IHF1ZXN0
+aW9ucyBmcm9tIG15IHByZXZpb3VzIGVtYWlsLCBJIHRoaW5rIHdoYXQgSSByZWFsbHkgbmVlZCBp
+cyBzb21lb25lIHRvIGNvbmZpcm0gbXkgcXVlc3Rpb24gIzIgd2hlcmUgY2FsbGluZyB1ZGRfcmVn
+aXN0ZXJfZGV2aWNlKCkgKGluIGtlcm5lbCBzcGFjZSBvZiBjb3Vyc2UpIGlzIGluYXBwcm9wcmlh
+dGUgaW4gWGVub21haSB3aGVuIGluaXRpYXRpbmcgdGhlIHByb2Nlc3MgaXMgZnJvbSBhIHVzZXIg
+c3BhY2UgdmlhIGFuIGlvY3RsIG9mIGFuIFJURE0gZGV2aWNlPw0KDQpTcGVjaWZpY2FsbHksDQoN
+ClVzZXIgc3BhY2U6DQppb2N0bChmZF9mcm9tX21tYXBfcnRkbV9kZXZpY2UsIERPX01ZX1dPUkss
+IE5VTEwpOw0KDQp3aGVyZSB0aGUgcnRkbV9kZXZpY2UgcHJvdmlkZXMgbXkgY3VzdG9tIGlvY3Rs
+IGltcGxlbWVudGF0aW9uLg0KDQpLZXJuZWwgc3BhY2U6DQpzdHJ1Y3QgdWRkX2RldmljZSBteV9u
+ZXdfZGV2aWNlOw0KcnRkbV9kZXZpY2VfaW90Y2woc3RydWN0IHJ0ZG1fZmQgKmZkLCB1bnNpZ25l
+ZCBpbnQgcmVxdWVzdCwgdm9pZCAqYXJnKQ0Kew0Kc3dpdGNoIChyZXF1ZXN0KQ0Kew0KICBjYXNl
+IERPX01ZX1dPUks6DQouLi4NCnVkZF9yZWdpc3Rlcl9kZXZpY2UoJm15X25ld19kZXZpY2UpOw0K
+Li4uDQogIGJyZWFrOw0KfQ0KDQppcyBpbGxlZ2FsIGluIFhlbm9tYWk/DQoNCkFueSB3YXkgb2Yg
+Z2V0dGluZyBhcm91bmQgdGhpcz8NClRoYW5rcywNClBob25nLg0KDQotLS0tLU9yaWdpbmFsIE1l
+c3NhZ2UtLS0tLQ0KRnJvbTogUGhhbSwgUGhvbmcNClNlbnQ6IFRodXJzZGF5LCBKdW5lIDE0LCAy
+MDE4IDM6NTggUE0NClRvOiAnUGhpbGlwcGUgR2VydW0nOyB4ZW5vbWFpQHhlbm9tYWkub3JnDQpD
+YzogSGlsbG1hbiwgUm9iZXJ0DQpTdWJqZWN0OiBSRTogW1hlbm9tYWldIHRocmVhZCBleGVjdXRp
+bmcgdWRkX3JlZ2lzdGVyX2RldmljZSgpIGlzIG5vdCByZXNjaGVkdWxlZCBhZ2Fpbg0KDQoNCg0K
+SGkgUGhpbGlwcGUsDQoNCkkgZGlnIHVwIGEgbGl0dGxlIG1vcmU7IHRoZSBMaW51eCAiY3VycmVu
+dCIgdGhyZWFkIGNhbGxzIGRldmljZV9jcmVhdGUoKSBMaW51eCBBUEkgZXZlbnR1YWxseSBsZWFk
+IHRvIGRldnRtcGZzX2NyZWF0ZV9ub2RlKCk7IHVwb24gd2FrZV91cF9wcm9jZXNzKGtkZXZ0bXBm
+cyB0aHJlYWQpLCBrZGV2dG1wZnMgYmVjb21lcyBhdmFpbGFibGUgKGV4cGVjdGVkKS4gIEhvd2V2
+ZXIsIGFmdGVyIHdhaXRfZm9yX2NvbXBsZXRpb24oKSwgdGhlICJjdXJyZW50IiBydW5uaW5nIHRo
+cmVhZCBpcyBubyBsb25nZXIgImN1cnJlbnQiIGJ1dCByYXRoZXIgImN1cnJlbnQiIHRocmVhZCBp
+cyBub3cgc3dpdGNoZWQgdG8gdGhlIGluaXRpYWwgcHJvY2VzcyBJIGludm9rZWQgd2hpY2ggd2Fz
+IHNsZWVwaW5nIHdoZW4gZGV2aWNlX2NyZWF0ZSgpIGlzIGNhbGxlZC4gIFRoZSBvbmNlIGN1cnJl
+bnQgdGhyZWFkIHRoYXQgZXhlY3V0ZSBkZXZpY2VfY3JlYXRlKCkgZXZlbnR1YWxseSBjYWxscyB4
+bnRocmVhZF9zdXNwZW5kKCkgYW5kIGhhbmcuICBUaGUgImN1cnJlbnQiIHRocmVhZCBub3cgZG9l
+c24ndCBkbyBhbnl0aGluZyBlaXRoZXIuDQoNCjEpIERvZXMgdGhlIGRldGFpbGVkIGRlc2NyaXB0
+aW9uIGFib3ZlICJmaXRzIiB3aXRoIHdoYXQgeW91IG1lbnRpb25lZCAic2Vjb25kYXJ5IG1vZGUi
+Pw0KMikgRG9lcyBpdCBtZWFuIHRoYXQgdWRkX3JlZ2lzdGVyX2RldmljZSgpIHVzYWdlIGlzIGlu
+YXBwcm9wcmlhdGUgd2hlbiBjYWxsaW5nIGZyb20gYSB1c2VyIHNwYWNlIHZpYSBhbiBpb2N0bCBv
+ZiBhbiBSVERNIGRldmljZT8NCg0KMykgSSBub3RpY2VkIHRoZXJlIGlzIG5ydCBjYWxscyBpbiBr
+ZXJuZWwveGVub21haS9wb3NpeC9tZW1vcnkuYy4gIFdpbGwgdGhpcyBiZSBhIGdvb2QgZXhhbXBs
+ZSBvZiBjYWxsaW5nIGFuIGlvY3RsIHRoYXQgd2lsbCBjcmVhdGUgYSBydGRtIGRldmljZSBtYXBw
+ZXI/ICAoSSBoYXZlbid0IHJlYWQgdGhlIGNvZGUgaW4gZGV0YWlsIGFuZCBob3BlIHlvdSB3b3Vs
+ZCBwcm92aWRlIGEgcXVpY2sgeWVzL25vIHN1Z2dlc3Rpb24gYmVmb3JlIEkgcHJvY2VlZCB0byBz
+YXZlIHRpbWUuKQ0KNCkgSWYgKDMpIGlzIG5vdCBhbiBleC4sIGRvZXMgaXQgbWVhbiBJIGhhdmUg
+dG8gY3JlYXRlIGEgTGludXggZmlsZSBtYXBwZXIgKGluc3RlYWQgb2YgcnRkbSBmaWxlIG1hcHBl
+cikgd2l0aG91dCBYZW5vbWFpIGludm9sdmVtZW50LCAoaWUuIGVxdWl2YWxlbnQgdG8gdWRkX3Jl
+Z2lzdGVyX2RldmljZSgpIGZ1bmN0aW9uYWxpdHkgYnV0IHN0cmljdGx5IExpbnV4KT8NCg0KUGhv
+bmcuDQoNCi0tLS0tT3JpZ2luYWwgTWVzc2FnZS0tLS0tDQpGcm9tOiBQaGlsaXBwZSBHZXJ1bSBb
+bWFpbHRvOnJwbUB4ZW5vbWFpLm9yZ10NClNlbnQ6IFdlZG5lc2RheSwgSnVuZSAxMywgMjAxOCAx
+MToxMCBQTQ0KVG86IFBoYW0sIFBob25nOyB4ZW5vbWFpQHhlbm9tYWkub3JnDQpDYzogSGlsbG1h
+biwgUm9iZXJ0DQpTdWJqZWN0OiBSZTogW1hlbm9tYWldIHRocmVhZCBleGVjdXRpbmcgdWRkX3Jl
+Z2lzdGVyX2RldmljZSgpIGlzIG5vdCByZXNjaGVkdWxlZCBhZ2Fpbg0KDQpPbiAwNi8xMy8yMDE4
+IDEwOjI2IFBNLCBQaGFtLCBQaG9uZyB3cm90ZToNCj4NCj4gSGksDQo+DQo+IEkgY3VycmVudGx5
+IGhhdmUgYSBidW5jaCBvZiBydGRtIGRldmljZXMuICBPbmUgb2YgdGhlIGRldmljZXMsIGZyb20g
+dXNlcnNwYWNlLCBJIHVzZSBpb2N0bCgpIHRvIGdldCB0byBrZXJuZWwgc3BhY2UuICBXaGVuIGlu
+IGtlcm5lbCBzcGFjZSwgSSBjcmVhdGUgYW50aGVyIHJ0ZG0gZGV2aWNlICh1c2luZyB1ZGRfcmVn
+aXN0ZXJfZGV2aWNlKCkgQVBJKS4gIFRoZSBBUEkgcmV0dXJucyBzdWNjZXNzIHdpdGhvdXQgYW55
+IGlzc3VlLiAgSG93ZXZlciwgdXBvbiBleGl0aW5nIHRoZSBrZXJuZWwgc3BhY2UsIGluIGhhbmRs
+ZV9yb290X3N5c2NhbGwgKCksIGV4ZWN1dGUgeG50aHJlYWRfcmVsYXgoKSx4bnRocmVhZF9zdXNw
+ZW5kKCksDQo+DQo+ICAgICAgICAgICAgICAgLyoNCj4gICAgICAgICAgICAgICAqIElmIHRoZSBj
+dXJyZW50IHRocmVhZCBpcyBiZWluZyByZWxheGVkLCB3ZSBtdXN0IGhhdmUgYmVlbg0KPiAgICAg
+ICAgICAgICAgICogY2FsbGVkIGZyb20geG50aHJlYWRfcmVsYXgoKSwgaW4gd2hpY2ggY2FzZSB3
+ZSBpbnRyb2R1Y2UgYW4NCj4gICAgICAgICAgICAgICAqIG9wcG9ydHVuaXR5IGZvciBpbnRlcnJ1
+cHQgZGVsaXZlcnkgcmlnaHQgYmVmb3JlIHN3aXRjaGluZw0KPiAgICAgICAgICAgICAgICogY29u
+dGV4dCwgd2hpY2ggc2hvcnRlbnMgdGhlIHVuaW50ZXJydXB0aWJsZSBjb2RlIHBhdGguDQo+ICAg
+ICAgICAgICAgICAgKg0KPiAgICAgICAgICAgICAgICogV2UgaGF2ZSB0byBzaHV0IGlycXMgb2Zm
+IGJlZm9yZSBfX3huc2NoZWRfcnVuKCkgdGhvdWdoOiBpZg0KPiAgICAgICAgICAgICAgICogYW4g
+aW50ZXJydXB0IGNvdWxkIHByZWVtcHQgdXMgaW4gX19feG5zY2hlZF9ydW4oKSByaWdodA0KPiAg
+ICAgICAgICAgICAgICogYWZ0ZXIgdGhlIGNhbGwgdG8geG5hcmNoX2VzY2FsYXRlKCkgYnV0IGJl
+Zm9yZSB3ZSBncmFiIHRoZQ0KPiAgICAgICAgICAgICAgICogbmtsb2NrLCB3ZSB3b3VsZCBlbnRl
+ciB0aGUgY3JpdGljYWwgc2VjdGlvbiBpbg0KPiAgICAgICAgICAgICAgICogeG5zY2hlZF9ydW4o
+KSB3aGlsZSBydW5uaW5nIGluIHNlY29uZGFyeSBtb2RlLCB3aGljaCB3b3VsZA0KPiAgICAgICAg
+ICAgICAgICogZGVmZWF0IHRoZSBwdXJwb3NlIG9mIHhuYXJjaF9lc2NhbGF0ZSgpLg0KPiAgICAg
+ICAgICAgICAgICovDQo+ICAgICAgICAgICAgICAgaWYgKGxpa2VseSh0aHJlYWQgPT0gc2NoZWQt
+PmN1cnIpKSB7DQo+ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgeG5zY2hlZF9zZXRfcmVz
+Y2hlZChzY2hlZCk7DQo+ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgaWYgKHVubGlrZWx5
+KG1hc2sgJiBYTlJFTEFYKSkgew0KPiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
+ICAgICAgICAgeG5sb2NrX2NsZWFyX2lycW9uKCZua2xvY2spOw0KPiAgICAgICAgICAgICAgICAg
+ICAgICAgICAgICAgICAgICAgICAgICAgICAgc3BsbWF4KCk7DQo+ICAgICAgICAgICAgICAgICAg
+ICAgICAgICAgICAgICAgICAgICAgICAgICBfX3huc2NoZWRfcnVuKHNjaGVkKTsNCj4gICAgICAg
+ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIHJldHVybjsNCj4gICAgICAgICAg
+ICAgICAgICAgICAgICAgICAgICB9DQo+ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgLyoN
+Cj4gICAgICAgICAgICAgICAgICAgICAgICAgICAgICAqIElmIHRoZSB0aHJlYWQgaXMgcnVubm5p
+bmcgb24gYW5vdGhlciBDUFUsDQo+ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgKiB4bnNj
+aGVkX3J1biB3aWxsIHRyaWdnZXIgdGhlIElQSSBhcyByZXF1aXJlZC4NCj4gICAgICAgICAgICAg
+ICAgICAgICAgICAgICAgICAqLw0KPiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIF9feG5z
+Y2hlZF9ydW4oc2NoZWQpOw0KPiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIGdvdG8gb3V0
+Ow0KPiAgICAgICAgICAgICAgIH0NCj4NCj4gYW5kIHRoZSBjdXJyZW50IHRocmVhZCBuZXZlciBy
+dW5zIGFnYWluIChpZS4gbmV2ZXIgZXhpdHMgeG50aHJlYWRfc3VzcGVuZCgpKS4NCj4NCj4gSSBu
+b3RpY2VkIHRoYXQgIHVkZF9yZWdpc3Rlcl9kZXZpY2UoKSBldmVudHVhbGx5IHVzZXMgZGV2aWNl
+X2NyZWF0ZSgpIExpbnV4IEFQSSB0byBjcmVhdGUgdGhlIGZpbGVzLiAgSWYgSSBkbyBub3QgY2Fs
+bCBkZXZpY2VfY3JlYXRlKCkgYW5kIGV4ZWN1dGUgZXZlcnl0aGluZyBlbHNlLCB0aGVuIG15IGN1
+cnJlbnQgdGhyZWFkIGRvZXMgbm90IGhhbmcgKGllLiBydW5zIHRpbCBjb21wbGV0aW9uKS4gIEFu
+eSBpbnNpZ2h0IGludG8gWGVub21haSBpbXBsZW1lbnRhdGlvbiBjYXVzZXMgdGhlIFhlbm9tYWkg
+c2NoZWR1bGVyIHRvIGJlaGF2ZSB0aGlzIHdheSB3aGVuIExpbnV4IGRldmljZV9jcmVhdGUoKSBB
+UEkgaXMgaW52b2tlZD8NCj4NCg0KWW91IGFyZSBiYXNpY2FsbHkgbG9va2luZyBhdCB5b3VyIHRo
+cmVhZCBydW5uaW5nIGluIHNlY29uZGFyeSBtb2RlIC0NCnRoZXJlZm9yZSBzdXNwZW5kZWQgWGVu
+b21haS13aXNlIC0gY2F1c2VkIGJ5IHRoZSBub24tcnQgaW9jdGwoKSBjYWxsIGl0DQpqdXN0IGlz
+c3VlZC4gSXQgc3RpbGwgcnVucywgYnV0IHVuZGVyIHRoZSBjb250cm9sIG9mIHRoZSBMaW51eA0K
+c2NoZWR1bGVyLiBJJ20gdW5zdXJlIHRvIHVuZGVyc3RhbmQgd2hpY2ggcHJvYmxlbSB5b3Ugd291
+bGQgbGlrZSB0byByZXBvcnQuDQoNCi0tDQpQaGlsaXBwZS4NCk5vdGljZTogVGhpcyBlLW1haWwg
+YW5kIGFueSBmaWxlcyB0cmFuc21pdHRlZCB3aXRoIGl0IG1heSBjb250YWluIERhdGEgRGV2aWNl
+IENvcnBvcmF0aW9uJ3MgYW5kIGl0cyBzdWJzaWRpYXJpZXMgcHJpdmlsZWdlZCBhbmQgcHJvcHJp
+ZXRhcnkgaW5mb3JtYXRpb24uIEl0IGlzIGludGVuZGVkIHNvbGVseSBmb3IgdGhlIHVzZSBvZiB0
+aGUgaW5kaXZpZHVhbCBvciBlbnRpdHkgdG8gd2hvbSBpdCBpcyBhZGRyZXNzZWQuIElmIHlvdSBh
+cmUgbm90IHRoZSBuYW1lZCByZWNpcGllbnQgb2YgdGhpcyB0cmFuc21pc3Npb24sIGFueSBkaXNj
+bG9zdXJlLCBjb3B5aW5nLCBkaXN0cmlidXRpb24gb3IgcmVsaWFuY2Ugb24gdGhlIGNvbnRlbnRz
+IG9mIHRoaXMgbWVzc2FnZSBpcyBwcm9oaWJpdGVkLiBJZiB5b3UgcmVjZWl2ZWQgdGhpcyBlLW1h
+aWwgaW4gZXJyb3IsIHBsZWFzZSBkZXN0cm95IGl0IGFuZCBhbnkgYXR0YWNoZWQgZmlsZXMgYW5k
+IG5vdGlmeSBtZSBpbW1lZGlhdGVseS4NCg0KQ2xpY2sgSGVyZTxodHRwOi8vd3d3LmRkYy13ZWIu
+Y29tL1Byb2ZpbGUvRW1haWxQcml2YWN5LmFzcHg+IHRvIHZpZXcgb3VyIHByaXZhY3kgc3RhdGVt
+ZW50Lg0K
 
