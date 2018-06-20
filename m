@@ -1,12 +1,11 @@
-From: "Bradley Valdenebro Peter (DC-AE/EHP2)"
- <Peter.BradleyValdenebro@boschrexroth.nl>
-Date: Wed, 20 Jun 2018 13:47:57 +0000
-Message-ID: <c585031876064cb6af24535985b55b8c@boschrexroth.nl>
-Content-Language: en-US
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Subject: [Xenomai] Xenomai system tick
+References: <b72f1080-adf6-6926-5757-b2c200714f41@xenomai.org>
+In-Reply-To: <b72f1080-adf6-6926-5757-b2c200714f41@xenomai.org>
+From: "karim.allah.ahmed@gmail.com" <karim.allah.ahmed@gmail.com>
+Date: Wed, 20 Jun 2018 18:09:43 +0200
+Message-ID: <CAOTdubt_GGDXGEWRb8LubOYUMFNRQxscx9dnxOvKiFs+jkuW5A@mail.gmail.com>
+Content-Type: text/plain; charset="UTF-8"
+Subject: Re: [Xenomai] [NOTICE] GIT migration completed
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,38 +14,34 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: rpm@xenomai.org
+Cc: Xenomai@xenomai.org
 
-Hello,
+Hello Philippe,
 
-First off, thanks to all the Xenomai community for making it possible to have a real-time framework in Linux.
+Is there still a public 'dovetail' repo somewhere?
 
-We are a group of engineers at Bosch-Rexroth which use Linux on one of our motion control products. Since we have real-time constraints within the control loops Xenomai is also used.
+Regards.
+On Sun, Jun 17, 2018 at 4:54 PM Philippe Gerum <rpm@xenomai.org> wrote:
+>
+>
+> Services are back to normal, with some changes as previously announced.
+> Please have a look at the web site [1] for details.
+>
+> Thanks,
+>
+> [1] https://xenomai.org
+>
+> --
+> Philippe.
+>
+> _______________________________________________
+> Xenomai mailing list
+> Xenomai@xenomai.org
+> https://xenomai.org/mailman/listinfo/xenomai
 
-We recently moved from a DSP based design to a more generic CPU/Linux design.
-We are using a Zynq Z-7020 SoC (2x ARM Cortex-A9 processors (ARM v7)) running Linux 4.4/Xenomai 3.0.6. We patch the linux kernel with  ipipe-core-4.4.43-arm-8 patch. Currently we are running Linux on one CPU and Xenomai on the other.
-
-Our high-level control loop runs at 8kHz (125us) and we must make sure deadlines are met.
-We are using ftrace to study the behaviour of our system. Linux is configured with a 1000Hz (1ms) system tick. We were expecting Xenomai to use this same tick.
-By looking at a recorded trace we can see that for every Linux tick there are 6-7 Xenomai ticks. Each Xenomai ISR tick takes around 15us-20us. This means that for every 1ms we are using around 10% to 15% to handle these interrupts. Find attached a screenshot of  the trace using kernelshark.
-
-We believe our 8kHz control loop is being impacted by this. If we change the interrupt tick affinity to the Linux CPU we see on average a 20us performance improvement on the loop. When the Xenomai tick takes place on the Linux CPU we experience problems on our Ethernet/PTP network (handled by Linux).
-
-At this point we are not looking for a workaround or a change in our system's architecture. We want to understand Xenomai's behaviour. For that we have some questions we were hoping you could help us with:
 
 
-*         Why is the Xenomai system tick running at such a "high" frequency?
+-- 
+Karim Allah Ahmed.
 
-*         How is this frequency established and can we modify it?
-
-*         How does Xenomai/ipipe make sure the Linux system tick is delivered accurately every 1ms?
-
-Thanks and best regards,
-Peter Bradley
--------------- next part --------------
-A non-text attachment was scrubbed...
-Name: VirtualBox_einx922v_20_06_2018_15_36_05.png
-Type: image/png
-Size: 269197 bytes
-Desc: VirtualBox_einx922v_20_06_2018_15_36_05.png
-URL: <http://xenomai.org/pipermail/xenomai/attachments/20180620/ad77f920/attachment.png>
