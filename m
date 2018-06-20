@@ -1,13 +1,14 @@
-References: <c585031876064cb6af24535985b55b8c@boschrexroth.nl>
+References: <b72f1080-adf6-6926-5757-b2c200714f41@xenomai.org>
+ <CAOTdubt_GGDXGEWRb8LubOYUMFNRQxscx9dnxOvKiFs+jkuW5A@mail.gmail.com>
 From: Philippe Gerum <rpm@xenomai.org>
-Message-ID: <114acc36-acb4-9e4b-6994-5e76133787bd@xenomai.org>
-Date: Wed, 20 Jun 2018 18:38:24 +0200
+Message-ID: <37c71623-082a-0cd7-44d2-3a2937254aee@xenomai.org>
+Date: Wed, 20 Jun 2018 18:39:40 +0200
 MIME-Version: 1.0
-In-Reply-To: <c585031876064cb6af24535985b55b8c@boschrexroth.nl>
+In-Reply-To: <CAOTdubt_GGDXGEWRb8LubOYUMFNRQxscx9dnxOvKiFs+jkuW5A@mail.gmail.com>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] Xenomai system tick
+Subject: Re: [Xenomai] [NOTICE] GIT migration completed
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,88 +17,16 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "Bradley Valdenebro Peter (DC-AE/EHP2)" <Peter.BradleyValdenebro@boschrexroth.nl>, "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: "karim.allah.ahmed@gmail.com" <karim.allah.ahmed@gmail.com>
+Cc: Xenomai@xenomai.org
 
-On 06/20/2018 03:47 PM, Bradley Valdenebro Peter (DC-AE/EHP2) wrote:
-> Hello,
+On 06/20/2018 06:09 PM, karim.allah.ahmed@gmail.com wrote:
+> Hello Philippe,
 > 
-> First off, thanks to all the Xenomai community for making it possible to have a real-time framework in Linux.
-> 
-> We are a group of engineers at Bosch-Rexroth which use Linux on one of our motion control products. Since we have real-time constraints within the control loops Xenomai is also used.
-> 
-> We recently moved from a DSP based design to a more generic CPU/Linux design.
-> We are using a Zynq Z-7020 SoC (2x ARM Cortex-A9 processors (ARM v7)) running Linux 4.4/Xenomai 3.0.6. We patch the linux kernel with  ipipe-core-4.4.43-arm-8 patch. Currently we are running Linux on one CPU and Xenomai on the other.
-> 
-> Our high-level control loop runs at 8kHz (125us) and we must make sure deadlines are met.
-> We are using ftrace to study the behaviour of our system. Linux is configured with a 1000Hz (1ms) system tick. We were expecting Xenomai to use this same tick.
-> By looking at a recorded trace we can see that for every Linux tick there are 6-7 Xenomai ticks. Each Xenomai ISR tick takes around 15us-20us. This means that for every 1ms we are using around 10% to 15% to handle these interrupts. Find attached a screenshot of  the trace using kernelshark.
-> 
-> We believe our 8kHz control loop is being impacted by this. If we change the interrupt tick affinity to the Linux CPU we see on average a 20us performance improvement on the loop. When the Xenomai tick takes place on the Linux CPU we experience problems on our Ethernet/PTP network (handled by Linux).
-> 
-> At this point we are not looking for a workaround or a change in our system's architecture. We want to understand Xenomai's behaviour. For that we have some questions we were hoping you could help us with:
-> 
-> 
-> *         Why is the Xenomai system tick running at such a "high" frequency?
+> Is there still a public 'dovetail' repo somewhere?
 > 
 
-Xenomai uses a purely oneshot mode for the core timer, so no useless
-periodic activity is to be expected on a normally running system.
-
-I would see three possibilities with the information at hand:
-
-- some activity is actually triggering those events, in which case you
-should see them by looking at this virtual file:
-
-~ # cat /proc/xenomai/timer/coreclk
-CPU  SCHED/SHOT            TIMEOUT     INTERVAL    NAME
-0    239162/150321         3ms467us    -           [host-timer/0]
-1    33839/31631           10ms657us   -           [host-timer/1]
-2    22189/19355           60us        -           [host-timer/2]
-3    45244/41172           90us        -           [host-timer/3]
-0    221555/221554         85us        100us       timerfd_handler
-
-Here we see a periodic thread running at 10Khz, and four per-cpu host
-timers (see below).
-
-- something is wrong in the I-pipe patch, which reprograms the clock
-chip hw with a wrong decrementer value, in the case of the TWD chip
-(which should be the one present on your Zynq IIRC). For some reason,
-early shots are being triggered, getting Xenomai to continuously ask for
-more delay since the current date is still not past the due one. That
-might correspond to those micro delays you have been tracing.
-
-- something is wrong in the clock source management, also in the I-pipe,
-which delivers wrong timestamps. If Xenomai's idea of time is off-base,
-the rest is obviously going to be slightly, ... rough.
-
-Options 2 and 3 are unlikely though, because most people running Xenomai
-on ARM these days have TWD and Global timer devices on their CPU. But
-4.4 is fairly old, so a glitch cannot be ruled out.
-
-If 1 is ruled out when your application runs, then I would check whether
-Xenomai's latency test works as expected, and does/does not generate the
-ticking noise by ftracing it too.
-
-> *         How is this frequency established and can we modify it?
-> 
-
-The only periodic events have to be generated by the application, e.g.
-using clock_nanosleep() for a trivial example. The Xenomai core (Cobalt)
-would only generate a single type of periodic event which is a 0.25hz
-watchdog if CONFIG_XENO_OPT_WATCHDOG is enabled.
-
-> *         How does Xenomai/ipipe make sure the Linux system tick is delivered accurately every 1ms?
-> 
-
-Xenomai interposes on Linux requests for programming the next tick event
-on the hw, scheduling one of its own software timers at due date
-instead. When that timer fires, Xenomai pushes a fake IRQ down to the
-interrupt pipeline, which Linux interprets as the expected tick event.
-
-In the meantime, Xenomai has been able to program the timer hw the way
-it wanted, any number of times, for serving its own software timers. One
-of which being the "synthetic" Linux tick event, aka "host timer, or
-htimer" in the Cobalt code.
+For the adventurous, there is git://lab@xenomai.org/linux-dovetail.git.
 
 -- 
 Philippe.
