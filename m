@@ -1,4 +1,5 @@
-From: Jan Kiszka <jan.kiszka@siemens.com>
+MIME-Version: 1.0
+In-Reply-To: <cef11113-e350-121e-9ec7-e09505f02600@huawei.com>
 References: <CAOuPNLg60S+am654fq55vTMoFV1=PfMp3as5MZtt5BHUacFRBQ@mail.gmail.com>
  <2ee8fa04-7ad4-58d5-603b-1d41ad2533ec@siemens.com>
  <CAOuPNLiE-Fy3LJrozgsLE9ga0ibC+GOSHO6ciJppU_bnZtbx0g@mail.gmail.com>
@@ -7,14 +8,12 @@ References: <CAOuPNLg60S+am654fq55vTMoFV1=PfMp3as5MZtt5BHUacFRBQ@mail.gmail.com>
  <CAOuPNLh2C8b1KC5D6+Lws_1UA0o0Sp_BaPb3mUTyebUPq_EduA@mail.gmail.com>
  <CAOuPNLiCfmUrDMWyX=N37hVJTBDEqwOtoOr1srf-55ks1qms+w@mail.gmail.com>
  <513744ad-f8fe-d54e-0618-fad492ed5bff@siemens.com>
-Message-ID: <5f46f00c-f09b-7439-93cf-4ff2a0343974@siemens.com>
-Date: Thu, 21 Jun 2018 15:41:16 +0200
-MIME-Version: 1.0
-In-Reply-To: <513744ad-f8fe-d54e-0618-fad492ed5bff@siemens.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] Kernel oops during rtnet loopback usage on x86_64
+ <cef11113-e350-121e-9ec7-e09505f02600@huawei.com>
+From: Greg Gallagher <greg@embeddedgreg.com>
+Date: Thu, 21 Jun 2018 09:47:47 -0400
+Message-ID: <CALLqZ8SseYm3z6-z6yUPDedNhw1NbrtCt+TWQG=NOTReN6CTAg@mail.gmail.com>
+Content-Type: text/plain; charset="UTF-8"
+Subject: Re: [Xenomai] Kernel panic during kernel bootup on arm64 qemu
 	(e1000e)
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
@@ -24,100 +23,571 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Pintu Kumar <pintu.ping@gmail.com>, Greg Gallagher <greg@embeddedgreg.com>, Philippe Gerum <rpm@xenomai.org>
-Cc: "Xenomai@xenomai.org" <xenomai@xenomai.org>
+To: gengdongjiu <gengdongjiu@huawei.com>
+Cc: Jan Kiszka <jan.kiszka@siemens.com>, "Xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On 2018-06-21 13:55, Jan Kiszka wrote:
-> On 2018-06-21 13:20, Pintu Kumar wrote:
->> Dear Jan, Greg,
->>
->> Is there any pointer about this issue?
->> This is blocking my next work..
-> 
-> Does this solve the issue AND still generate valid UDP checksums (please
-> check with wireshark or against a normal networking stack?
-> 
-> diff --git a/kernel/drivers/net/stack/ipv4/udp/udp.c b/kernel/drivers/net/stack/ipv4/udp/udp.c
-> index 8e80d3e0b..bb0b0fc12 100644
-> --- a/kernel/drivers/net/stack/ipv4/udp/udp.c
-> +++ b/kernel/drivers/net/stack/ipv4/udp/udp.c
-> @@ -556,18 +556,17 @@ static int rt_udp_getfrag(const void *p, unsigned char *to,
->      if (offset)
->  	    return rtnet_read_from_iov(ufh->fd, ufh->iov, ufh->iovlen, to, fraglen);
->  
-> -    /* Checksum of the complete data part of the UDP message: */
-> -    for (i = 0; i < ufh->iovlen; i++) {
-> -            ufh->wcheck = csum_partial(ufh->iov[i].iov_base, ufh->iov[i].iov_len,
-> -                                       ufh->wcheck);
-> -    }
-> -
->      ret = rtnet_read_from_iov(ufh->fd, ufh->iov, ufh->iovlen,
->  			      to + sizeof(struct udphdr),
->  			      fraglen - sizeof(struct udphdr));
->      if (ret)
->  	    return ret;
->  
-> +    /* Checksum of the complete data part of the UDP message: */
-> +    ufh->wcheck = csum_partial(to + sizeof(struct udphdr),
-> +			       fraglen - sizeof(struct udphdr),
-> +			       ufh->wcheck);
-> +
->      /* Checksum of the udp header: */
->      ufh->wcheck = csum_partial((unsigned char *)ufh,
->  			       sizeof(struct udphdr), ufh->wcheck);
-> 
+For ARM64 you need to use the Xenomai next branch not the stable release.
 
-This was definitely wrong. Here is another try:
+-Greg
 
-diff --git a/kernel/drivers/net/stack/ipv4/udp/udp.c b/kernel/drivers/net/stack/ipv4/udp/udp.c
-index 8e80d3e0b..6cf1d369e 100644
---- a/kernel/drivers/net/stack/ipv4/udp/udp.c
-+++ b/kernel/drivers/net/stack/ipv4/udp/udp.c
-@@ -549,6 +549,7 @@ static int rt_udp_getfrag(const void *p, unsigned char *to,
-                           unsigned int offset, unsigned int fraglen)
- {
-     struct udpfakehdr *ufh = (struct udpfakehdr *)p;
-+    unsigned int datalen = 0;
-     int i, ret;
- 
- 
-@@ -556,18 +557,18 @@ static int rt_udp_getfrag(const void *p, unsigned char *to,
-     if (offset)
- 	    return rtnet_read_from_iov(ufh->fd, ufh->iov, ufh->iovlen, to, fraglen);
- 
--    /* Checksum of the complete data part of the UDP message: */
--    for (i = 0; i < ufh->iovlen; i++) {
--            ufh->wcheck = csum_partial(ufh->iov[i].iov_base, ufh->iov[i].iov_len,
--                                       ufh->wcheck);
--    }
--
-     ret = rtnet_read_from_iov(ufh->fd, ufh->iov, ufh->iovlen,
- 			      to + sizeof(struct udphdr),
- 			      fraglen - sizeof(struct udphdr));
-     if (ret)
- 	    return ret;
- 
-+    /* Checksum of the complete data part of the UDP message: */
-+    for (i = 0; i < ufh->iovlen; i++)
-+	    datalen += ufh->iov[i].iov_len;
-+    ufh->wcheck = csum_partial(to + sizeof(struct udphdr), datalen,
-+			       ufh->wcheck);
-+
-     /* Checksum of the udp header: */
-     ufh->wcheck = csum_partial((unsigned char *)ufh,
- 			       sizeof(struct udphdr), ufh->wcheck);
-
-Jan
-
->>
->> If there is already a fix available for it, please let me know.
->> Or, should I need analyze this freshly....
->> I wonder why no body else is facing this issue....
-> 
-> Users may still have the related memory protection features off which
-> surface this issue.
-> 
-> Jan
-> 
-
+On Thu, Jun 21, 2018 at 8:27 AM, gengdongjiu <gengdongjiu@huawei.com> wrote:
+> Hi
+>    I use the stable 3.x Xenomai and ipipe-4.9.y, and run it using below qemu commands:
+>  qemu-kvm -enable-kvm -m 1024 -cpu host -machine virt,gic-version=3  -smp 10 -nographic -kernel Image -append "rdinit=/init console=ttyAMA0 mem=512M root=/dev/ram0 earlycon=pl011,0x9000000 rw" -initrd guestfs_new.cpio.gz
+>  it will happen below panic, do you know the reason? thanks
+>
+> [    1.286223] Hardware name: linux,dummy-virt (DT)
+> [    1.286773] I-pipe domain: Linux
+> [    1.287153] task: ffff80001d8d0000 task.stack: ffff80001d8a4000
+> [    1.287840] PC is at arch_itimer_ack_phys+0x0/0x18
+> [    1.288395] LR is at __ipipe_ack_hrtimer_irq+0x38/0x68
+> [    1.288982] pc : [<ffff0000087899d0>] lr : [<ffff000008156e18>] pstate: 800001c5
+> [    1.289818] sp : ffff80001ef12fd0
+> [    1.290201] x29: ffff80001ef12fd0 x28: ffff80001d8a4000
+> [    1.290866] x27: 0000000000000003 x26: ffff80001ef13090
+> [    1.291506] x25: ffff80001ef0f0a0 x24: ffff00000817ad00
+> [    1.292147] x23: ffff000008db2000 x22: 0000000000000003
+> [    1.292787] x21: 0000000000000000 x20: ffff80001ef1df80
+> [    1.293427] x19: ffff80001d804a00 x18: 000000000000000e
+> [    1.294066] x17: 00000000000045bf x16: 0140000000000000
+> [    1.294716] x15: ffff000049f61000 x14: ffff80001effd290
+> [    1.295357] x13: ffff000008e66078 x12: 0000000000000000
+> [    1.295998] x11: 0000000000000000 x10: 000000003b9aca00
+> [    1.296639] x9 : 0000000000000000 x8 : 0000000000000000
+> [    1.297281] x7 : 0000000000000000 x6 : 0000000000000000
+> [    1.297922] x5 : 00008000161bd000 x4 : ffff000009050000
+> [    1.298582] x3 : 0000000008000000 x2 : ffff0000083d5ae8
+> [    1.299223] x1 : ffff0000083d4ed8 x0 : ffff0000087899d0
+> [    1.299865]
+> [    1.300049] Process swapper/0 (pid: 1, stack limit = 0xffff80001d8a4038)
+> [    1.300816] Stack: (0xffff80001ef12fd0 to 0xffff80001d8a8000)
+> [    1.301474] Call trace:
+> [    1.301763] Exception stack(0xffff80001ef12e70 to 0xffff80001ef12fa0)
+> [    1.302500] 2e60:                                   ffff80001d804a00 0001000000000000
+> [    1.303403] 2e80: ffff80001ef12fd0 ffff0000087899d0 00000000800001c5 ffff0000083d5b04
+> [    1.304297] 2ea0: ffff0000087899d0 ffff0000083d4ed8 ffff0000083d5ae8 0000000008000000
+> [    1.305191] 2ec0: ffff000009050000 00008000161bd000 0000000000000000 0000000000000000
+> [    1.306084] 2ee0: 0000000000000000 0000000000000000 000000003b9aca00 0000000000000000
+> [    1.307000] 2f00: 0000000000000000 ffff000008e66078 ffff80001effd290 ffff000049f61000
+> [    1.307894] 2f20: 0140000000000000 00000000000045bf 000000000000000e ffff80001d804a00
+> [    1.308789] 2f40: ffff80001ef1df80 0000000000000000 0000000000000003 ffff000008db2000
+> [    1.309687] 2f60: ffff00000817ad00 ffff80001ef0f0a0 ffff80001ef13090 0000000000000003
+> [    1.310592] 2f80: ffff80001d8a4000 ffff80001ef12fd0 ffff000008156e18 ffff80001ef12fd0
+> [    1.311497] [<ffff0000087899d0>] arch_itimer_ack_phys+0x0/0x18
+> [    1.312176] [<ffff00000815663c>] __ipipe_dispatch_irq+0x7c/0x1d8
+> [    1.312873] [<ffff000008081308>] __ipipe_grab_irq+0x80/0x98
+> [    1.313519] Exception stack(0xffff80001d8a7b10 to 0xffff80001d8a7c40)
+> [    1.314262] 7b00:                                   0000000000000000 ffff000008eab1a8
+> [    1.315181] 7b20: 0000000000000000 0000000000000001 ffff000008eab188 00000000ffffffff
+> [    1.316081] 7b40: 0000000000000000 0000000000000000 0000000000000000 0000000000000000
+> [    1.316981] 7b60: 000000003b9aca00 0000000000000000 0000000000000000 ffff000008e66078
+> [    1.317880] 7b80: ffff80001effd290 ffff000049f61000 0140000000000000 00000000000045bf
+> [    1.318786] 7ba0: 000000000000000e ffff000008eab000 0000000000000040 ffff000008170738
+> [    1.319688] 7bc0: 0000000000000040 ffff00000817adf8 ffff00000817ad00 0000000000000001
+> [    1.320587] 7be0: ffff000008ecd000 0000000000000003 0000000000000000 ffff80001d8a7c40
+> [    1.321489] 7c00: ffff00000815558c ffff80001d8a7c40 ffff000008155594 0000000020000045
+> [    1.322390] 7c20: ffff80001ef3dc80 ffff80001ef38f80 ffffffffffffffff 0000000000000040
+> [    1.323306] [<ffff0000080817d0>] gic_handle_irq+0xa8/0x100
+> [    1.323942] Exception stack(0xffff80001d8a7b10 to 0xffff80001d8a7c40)
+> [    1.324687] 7b00:                                   0000000000000000 ffff000008eab1a8
+> [    1.325588] 7b20: 0000000000000000 0000000000000001 ffff000008eab188 00000000ffffffff
+> [    1.326490] 7b40: 0000000000000000 0000000000000000 0000000000000000 0000000000000000
+> [    1.327402] 7b60: 000000003b9aca00 0000000000000000 0000000000000000 ffff000008e66078
+> [    1.328308] 7b80: ffff80001effd290 ffff000049f61000 0140000000000000 00000000000045bf
+> [    1.329212] 7ba0: 000000000000000e ffff000008eab000 0000000000000040 ffff000008170738
+> [    1.330117] 7bc0: 0000000000000040 ffff00000817adf8 ffff00000817ad00 0000000000000001
+> [    1.331035] 7be0: ffff000008ecd000 0000000000000003 0000000000000000 ffff80001d8a7c40
+> [    1.331933] 7c00: ffff00000815558c ffff80001d8a7c40 ffff000008155594 0000000020000045
+> [    1.332830] 7c20: ffff80001ef3dc80 ffff80001ef38f80 ffffffffffffffff 0000000000000040
+> [    1.333730] [<ffff000008082fc8>] el1_irq+0xc8/0x108
+> [    1.334295] [<ffff000008155594>] ipipe_critical_exit+0x9c/0xa8
+> [    1.334976] [<ffff0000081576a0>] ipipe_timer_start+0x90/0x1d0
+> [    1.335654] [<ffff00000817b184>] xntimer_grab_hardware+0xfc/0x380
+> [    1.336368] [<ffff000008ca2660>] xenomai_init+0x3c8/0x4e0
+> [    1.336997] [<ffff000008083b08>] do_one_initcall+0x38/0x128
+> [    1.337654] [<ffff000008c90cf8>] kernel_init_freeable+0x1b8/0x254
+> [    1.338367] [<ffff0000088de8a8>] kernel_init+0x10/0x100
+> [    1.338991] [<ffff0000080837e4>] ret_from_fork+0x14/0x30
+> [    1.339609] Code: 321f0000 d51be320 d5033fdf d65f03c0 (d53be220)
+> [    1.340325] Internal error: undefined instruction: 0 [#2] PREEMPT SMP
+> [    1.340337] ---[ end trace ee076ceca10e9294 ]---
+> [    1.340351] Kernel panic - not syncing: Attempted to kill init! exitcode=0x0000000b
+> [    1.340351]
+> [    1.340352] SMP: stopping secondary CPUs
+> [    1.343408] Modules linked in:
+> [    1.343819] CPU: 4 PID: 0 Comm: swapper/4 Tainted: G      D         4.9.92-ipipe-00107-ge02d0928-dirty #10
+> [    1.345016] Hardware name: linux,dummy-virt (DT)
+> [    1.345596] I-pipe domain: Linux
+> [    1.346007] task: ffff80001d923e80 task.stack: ffff80001d93c000
+> [    1.346768] PC is at arch_itimer_ack_phys+0x0/0x18
+> [    1.347372] LR is at __ipipe_ack_hrtimer_irq+0x38/0x68
+> [    1.348018] pc : [<ffff0000087899d0>] lr : [<ffff000008156e18>] pstate: 800001c5
+> [    1.348936] sp : ffff80001ef48fd0
+> [    1.349357] x29: ffff80001ef48fd0 x28: ffff80001d93c000
+> [    1.350057] x27: ffff80001d93c000 x26: ffff80001ef49090
+> [    1.350779] x25: ffff80001ef450a0 x24: ffff000008d60d20
+> [    1.351482] x23: ffff000008db2000 x22: 0000000000000003
+> [    1.352186] x21: 0000000000000000 x20: ffff80001ef53f80
+> [    1.352885] x19: ffff80001d804a00 x18: 0000000000000007
+> [    1.353585] x17: 000000000000000e x16: 0000000000000001
+> [    1.354284] x15: 0000000000000019 x14: 0000000000000033
+> [    1.355005] x13: 000000000000004c x12: 0000000000000068
+> [    1.355710] x11: 0000000000000000 x10: ffff80001d923e88
+> [    1.356411] x9 : ffff80001d93c000 x8 : ffff80001d924760
+> [    1.357114] x7 : 0000000000000001 x6 : 003aa6a600000000
+> [    1.357818] x5 : 00008000161f3000 x4 : ffff000009090000
+> [    1.358521] x3 : 0000000008000000 x2 : ffff0000083d5ae8
+> [    1.359239] x1 : ffff0000083d4ed8 x0 : ffff0000087899d0
+> [    1.359940]
+> [    1.360141] Process swapper/4 (pid: 0, stack limit = 0xffff80001d93c038)
+> [    1.360979] Stack: (0xffff80001ef48fd0 to 0xffff80001d940000)
+> [    1.361699] Call trace:
+> [    1.362018] Exception stack(0xffff80001ef48e70 to 0xffff80001ef48fa0)
+> [    1.362842] 8e60:                                   ffff80001d804a00 0001000000000000
+> [    1.363823] 8e80: ffff80001ef48fd0 ffff0000087899d0 00000000800001c5 ffff00000811e52c
+> [    1.364801] 8ea0: ffff0000087899d0 ffff0000083d4ed8 ffff0000083d5ae8 0000000008000000
+> [    1.365780] 8ec0: ffff000009090000 00008000161f3000 003aa6a600000000 0000000000000001
+> [    1.366774] 8ee0: ffff80001d924760 ffff80001d93c000 ffff80001d923e88 0000000000000000
+> [    1.367752] 8f00: 0000000000000068 000000000000004c 0000000000000033 0000000000000019
+> [    1.368730] 8f20: 0000000000000001 000000000000000e 0000000000000007 ffff80001d804a00
+> [    1.369707] 8f40: ffff80001ef53f80 0000000000000000 0000000000000003 ffff000008db2000
+> [    1.370740] 8f60: ffff000008d60d20 ffff80001ef450a0 ffff80001ef49090 ffff80001d93c000
+> [    1.371723] 8f80: ffff80001d93c000 ffff80001ef48fd0 ffff000008156e18 ffff80001ef48fd0
+> [    1.372706] [<ffff0000087899d0>] arch_itimer_ack_phys+0x0/0x18
+> [    1.373442] [<ffff00000815663c>] __ipipe_dispatch_irq+0x7c/0x1d8
+> [    1.374197] [<ffff000008081308>] __ipipe_grab_irq+0x80/0x98
+> [    1.374916] Exception stack(0xffff80001d93fe10 to 0xffff80001d93ff40)
+> [    1.375726] fe00:                                   0000000000000000 00008000161f3000
+> [    1.376708] fe20: 0000000000000000 ffff80001ef4c8e8 0000000000000000 00008000161f3000
+> [    1.377688] fe40: 003aa6a600000000 0000000000000001 ffff80001d924760 ffff80001d93c000
+> [    1.378685] fe60: ffff80001d923e88 0000000000000000 0000000000000068 000000000000004c
+> [    1.379668] fe80: 0000000000000033 0000000000000019 0000000000000001 000000000000000e
+> [    1.380648] fea0: 0000000000000007 ffff000008d97258 ffff000008d972e8 0000000000000010
+> [    1.381630] fec0: 0000000000000000 0000000000000000 ffff000008d60d20 ffff80001d93c000
+> [    1.382627] fee0: ffff000008e68555 ffff80001d93c000 ffff000008d97000 ffff80001d93ff40
+> [    1.383609] ff00: ffff000008085d28 ffff80001d93ff40 ffff00000815601c 0000000060000045
+> [    1.384590] ff20: 0000000000000010 0000000000000000 ffffffffffffffff ffff000008d60d20
+> [    1.385572] [<ffff0000080817d0>] gic_handle_irq+0xa8/0x100
+> [    1.386263] Exception stack(0xffff80001d93fe10 to 0xffff80001d93ff40)
+> [    1.387089] fe00:                                   0000000000000000 00008000161f3000
+> [    1.388069] fe20: 0000000000000000 ffff80001ef4c8e8 0000000000000000 00008000161f3000
+> [    1.389049] fe40: 003aa6a600000000 0000000000000001 ffff80001d924760 ffff80001d93c000
+> [    1.390029] fe60: ffff80001d923e88 0000000000000000 0000000000000068 000000000000004c
+> [    1.391025] fe80: 0000000000000033 0000000000000019 0000000000000001 000000000000000e
+> [    1.392005] fea0: 0000000000000007 ffff000008d97258 ffff000008d972e8 0000000000000010
+> [    1.392986] fec0: 0000000000000000 0000000000000000 ffff000008d60d20 ffff80001d93c000
+> [    1.393967] fee0: ffff000008e68555 ffff80001d93c000 ffff000008d97000 ffff80001d93ff40
+> [    1.394962] ff00: ffff000008085d28 ffff80001d93ff40 ffff00000815601c 0000000060000045
+> [    1.395941] ff20: 0000000000000010 0000000000000000 ffffffffffffffff ffff000008d60d20
+> [    1.396921] [<ffff000008082fc8>] el1_irq+0xc8/0x108
+> [    1.397538] [<ffff00000815601c>] ipipe_unstall_root+0x34/0x50
+> [    1.398263] [<ffff000008085d28>] arch_cpu_idle+0x48/0x58
+> [    1.398958] [<ffff0000088e3f0c>] default_idle_call+0x34/0x40
+> [    1.399679] [<ffff0000080fac9c>] cpu_startup_entry+0x18c/0x1d0
+> [    1.400421] [<ffff00000808f0cc>] secondary_start_kernel+0x164/0x1a0
+> [    1.401211] [<00000000408ea1a4>] 0x408ea1a4
+> [    1.401745] Code: 321f0000 d51be320 d5033fdf d65f03c0 (d53be220)
+> [    1.402516] Internal error: undefined instruction: 0 [#3] PREEMPT SMP
+> [    1.403371] Modules linked in:
+> [    1.403780] CPU: 6 PID: 0 Comm: swapper/6 Tainted: G      D         4.9.92-ipipe-00107-ge02d0928-dirty #10
+> [    1.404974] Hardware name: linux,dummy-virt (DT)
+> [    1.405555] I-pipe domain: Linux
+> [    1.405965] task: ffff80001d925780 task.stack: ffff80001d94c000
+> [    1.406727] PC is at arch_itimer_ack_phys+0x0/0x18
+> [    1.407329] LR is at __ipipe_ack_hrtimer_irq+0x38/0x68
+> [    1.407972] pc : [<ffff0000087899d0>] lr : [<ffff000008156e18>] pstate: 800001c5
+> [    1.408889] sp : ffff80001ef7efd0
+> [    1.409311] x29: ffff80001ef7efd0 x28: ffff80001d94c000
+> [    1.410010] x27: ffff80001d94c000 x26: ffff80001ef7f090
+> [    1.410726] x25: ffff80001ef7b0a0 x24: ffff000008d60d20
+> [    1.411425] x23: ffff000008db2000 x22: 0000000000000003
+> [    1.412122] x21: 0000000000000000 x20: ffff80001ef89f80
+> [    1.412819] x19: ffff80001d804a00 x18: 0000000000000007
+> [    1.413516] x17: 000000000000000e x16: 0000000000000001
+> [    1.414214] x15: 0000000000000019 x14: 0000000000000033
+> [    1.414929] x13: 000000000000004c x12: 0000000000000068
+> [    1.415623] x11: 0000000000000000 x10: ffff80001d925788
+> [    1.416317] x9 : ffff80001d94c000 x8 : ffff80001d926060
+> [    1.417011] x7 : 0000000000000001 x6 : 003aa6a600000000
+> [    1.417703] x5 : 0000800016229000 x4 : ffff0000090d0000
+> [    1.418396] x3 : 0000000008000000 x2 : ffff0000083d5ae8
+> [    1.419107] x1 : ffff0000083d4ed8 x0 : ffff0000087899d0
+> [    1.419799]
+> [    1.419996] Process swapper/6 (pid: 0, stack limit = 0xffff80001d94c038)
+> [    1.420823] Stack: (0xffff80001ef7efd0 to 0xffff80001d950000)
+> [    1.421533] Call trace:
+> [    1.421846] Exception stack(0xffff80001ef7ee70 to 0xffff80001ef7efa0)
+> [    1.422680] ee60:                                   ffff80001d804a00 0001000000000000
+> [    1.423641] ee80: ffff80001ef7efd0 ffff0000087899d0 00000000800001c5 ffff00000811e52c
+> [    1.424601] eea0: ffff0000087899d0 ffff0000083d4ed8 ffff0000083d5ae8 0000000008000000
+> [    1.425559] eec0: ffff0000090d0000 0000800016229000 003aa6a600000000 0000000000000001
+> [    1.426518] eee0: ffff80001d926060 ffff80001d94c000 ffff80001d925788 0000000000000000
+> [    1.427497] ef00: 0000000000000068 000000000000004c 0000000000000033 0000000000000019
+> [    1.428456] ef20: 0000000000000001 000000000000000e 0000000000000007 ffff80001d804a00
+> [    1.429415] ef40: ffff80001ef89f80 0000000000000000 0000000000000003 ffff000008db2000
+> [    1.430375] ef60: ffff000008d60d20 ffff80001ef7b0a0 ffff80001ef7f090 ffff80001d94c000
+> [    1.431356] ef80: ffff80001d94c000 ffff80001ef7efd0 ffff000008156e18 ffff80001ef7efd0
+> [    1.432324] [<ffff0000087899d0>] arch_itimer_ack_phys+0x0/0x18
+> [    1.433050] [<ffff00000815663c>] __ipipe_dispatch_irq+0x7c/0x1d8
+> [    1.433796] [<ffff000008081308>] __ipipe_grab_irq+0x80/0x98
+> [    1.434488] Exception stack(0xffff80001d94fe10 to 0xffff80001d94ff40)
+> [    1.435312] fe00:                                   0000000000000000 0000800016229000
+> [    1.436272] fe20: 0000000000000000 ffff80001ef828e8 0000000000000000 0000800016229000
+> [    1.437234] fe40: 003aa6a600000000 0000000000000001 ffff80001d926060 ffff80001d94c000
+> [    1.438194] fe60: ffff80001d925788 0000000000000000 0000000000000068 000000000000004c
+> [    1.439174] fe80: 0000000000000033 0000000000000019 0000000000000001 000000000000000e
+> [    1.440137] fea0: 0000000000000007 ffff000008d97258 ffff000008d972e8 0000000000000040
+> [    1.441098] fec0: 0000000000000000 0000000000000000 ffff000008d60d20 ffff80001d94c000
+> [    1.442058] fee0: ffff000008e68555 ffff80001d94c000 ffff000008d97000 ffff80001d94ff40
+> [    1.443038] ff00: ffff000008085d28 ffff80001d94ff40 ffff00000815601c 0000000060000045
+> [    1.443999] ff20: 0000000000000040 0000000000000000 ffffffffffffffff ffff000008d60d20
+> [    1.444959] [<ffff0000080817d0>] gic_handle_irq+0xa8/0x100
+> [    1.445638] Exception stack(0xffff80001d94fe10 to 0xffff80001d94ff40)
+> [    1.446431] fe00:                                   0000000000000000 0000800016229000
+> [    1.447407] fe20: 0000000000000000 ffff80001ef828e8 0000000000000000 0000800016229000
+> [    1.448368] fe40: 003aa6a600000000 0000000000000001 ffff80001d926060 ffff80001d94c000
+> [    1.449328] fe60: ffff80001d925788 0000000000000000 0000000000000068 000000000000004c
+> [    1.450288] fe80: 0000000000000033 0000000000000019 0000000000000001 000000000000000e
+> [    1.451266] fea0: 0000000000000007 ffff000008d97258 ffff000008d972e8 0000000000000040
+> [    1.452226] fec0: 0000000000000000 0000000000000000 ffff000008d60d20 ffff80001d94c000
+> [    1.453186] fee0: ffff000008e68555 ffff80001d94c000 ffff000008d97000 ffff80001d94ff40
+> [    1.454146] ff00: ffff000008085d28 ffff80001d94ff40 ffff00000815601c 0000000060000045
+> [    1.455122] ff20: 0000000000000040 0000000000000000 ffffffffffffffff ffff000008d60d20
+> [    1.456083] [<ffff000008082fc8>] el1_irq+0xc8/0x108
+> [    1.456689] [<ffff00000815601c>] ipipe_unstall_root+0x34/0x50
+> [    1.457399] [<ffff000008085d28>] arch_cpu_idle+0x48/0x58
+> [    1.458059] [<ffff0000088e3f0c>] default_idle_call+0x34/0x40
+> [    1.458808] [<ffff0000080fac9c>] cpu_startup_entry+0x18c/0x1d0
+> [    1.459535] [<ffff00000808f0cc>] secondary_start_kernel+0x164/0x1a0
+> [    1.460310] [<00000000408ea1a4>] 0x408ea1a4
+> [    1.460833] Code: 321f0000 d51be320 d5033fdf d65f03c0 (d53be220)
+> [    1.461589] Internal error: undefined instruction: 0 [#4] PREEMPT SMP
+> [    1.462402] Modules linked in:
+> [    1.462822] CPU: 1 PID: 0 Comm: swapper/1 Tainted: G      D         4.9.92-ipipe-00107-ge02d0928-dirty #10
+> [    1.464019] Hardware name: linux,dummy-virt (DT)
+> [    1.464599] I-pipe domain: Linux
+> [    1.465010] task: ffff80001d921900 task.stack: ffff80001d930000
+> [    1.465748] PC is at arch_itimer_ack_phys+0x0/0x18
+> [    1.466347] LR is at __ipipe_ack_hrtimer_irq+0x38/0x68
+> [    1.467020] pc : [<ffff0000087899d0>] lr : [<ffff000008156e18>] pstate: 800001c5
+> [    1.467929] sp : ffff80001eef7fd0
+> [    1.468345] x29: ffff80001eef7fd0 x28: ffff80001d930000
+> [    1.469038] x27: ffff80001d930000 x26: ffff80001eef8090
+> [    1.469729] x25: ffff80001eef40a0 x24: ffff000008d60d20
+> [    1.470420] x23: ffff000008db2000 x22: 0000000000000003
+> [    1.471134] x21: 0000000000000000 x20: ffff80001ef02f80
+> [    1.471828] x19: ffff80001d804a00 x18: 0000000000000007
+> [    1.472522] x17: 000000000000000e x16: 0000000000000001
+> [    1.473215] x15: 0000000000000019 x14: 0000000000000033
+> [    1.473908] x13: 000000000000004c x12: 0000000000000068
+> [    1.474634] x11: 0000000000000000 x10: ffff80001d921908
+> [    1.475328] x9 : ffff80001d930000 x8 : ffff80001d9221e0
+> [    1.476022] x7 : 0000000000000001 x6 : 003aa6a600000000
+> [    1.476714] x5 : 00008000161a2000 x4 : ffff000009030000
+> [    1.477407] x3 : 0000000008000000 x2 : ffff0000083d5ae8
+> [    1.478100] x1 : ffff0000083d4ed8 x0 : ffff0000087899d0
+> [    1.478822]
+> [    1.479021] Process swapper/1 (pid: 0, stack limit = 0xffff80001d930038)
+> [    1.479851] Stack: (0xffff80001eef7fd0 to 0xffff80001d934000)
+> [    1.480563] Call trace:
+> [    1.480877] Exception stack(0xffff80001eef7e70 to 0xffff80001eef7fa0)
+> [    1.481675] 7e60:                                   ffff80001d804a00 0001000000000000
+> [    1.482676] 7e80: ffff80001eef7fd0 ffff0000087899d0 00000000800001c5 ffff000008128070
+> [    1.483640] 7ea0: ffff0000087899d0 ffff0000083d4ed8 ffff0000083d5ae8 0000000008000000
+> [    1.484603] 7ec0: ffff000009030000 00008000161a2000 003aa6a600000000 0000000000000001
+> [    1.485565] 7ee0: ffff80001d9221e0 ffff80001d930000 ffff80001d921908 0000000000000000
+> [    1.486526] 7f00: 0000000000000068 000000000000004c 0000000000000033 0000000000000019
+> [    1.487516] 7f20: 0000000000000001 000000000000000e 0000000000000007 ffff80001d804a00
+> [    1.488480] 7f40: ffff80001ef02f80 0000000000000000 0000000000000003 ffff000008db2000
+> [    1.489445] 7f60: ffff000008d60d20 ffff80001eef40a0 ffff80001eef8090 ffff80001d930000
+> [    1.490411] 7f80: ffff80001d930000 ffff80001eef7fd0 ffff000008156e18 ffff80001eef7fd0
+> [    1.491399] [<ffff0000087899d0>] arch_itimer_ack_phys+0x0/0x18
+> [    1.492124] [<ffff00000815663c>] __ipipe_dispatch_irq+0x7c/0x1d8
+> [    1.492869] [<ffff000008081308>] __ipipe_grab_irq+0x80/0x98
+> [    1.493562] Exception stack(0xffff80001d933e10 to 0xffff80001d933f40)
+> [    1.494360] 3e00:                                   0000000000000000 00008000161a2000
+> [    1.495344] 3e20: 0000000000000000 ffff80001eefb8e8 0000000000000000 00008000161a2000
+> [    1.496310] 3e40: 003aa6a600000000 0000000000000001 ffff80001d9221e0 ffff80001d930000
+> [    1.497275] 3e60: ffff80001d921908 0000000000000000 0000000000000068 000000000000004c
+> [    1.498240] 3e80: 0000000000000033 0000000000000019 0000000000000001 000000000000000e
+> [    1.499221] 3ea0: 0000000000000007 ffff000008d97258 ffff000008d972e8 0000000000000002
+> [    1.500189] 3ec0: 0000000000000000 0000000000000000 ffff000008d60d20 ffff80001d930000
+> [    1.501156] 3ee0: ffff000008e68555 ffff80001d930000 ffff000008d97000 ffff80001d933f40
+> [    1.502122] 3f00: ffff000008085d28 ffff80001d933f40 ffff00000815601c 0000000060000045
+> [    1.503107] 3f20: 0000000000000002 0000000000000000 ffffffffffffffff ffff000008d60d20
+> [    1.504074] [<ffff0000080817d0>] gic_handle_irq+0xa8/0x100
+> [    1.504756] Exception stack(0xffff80001d933e10 to 0xffff80001d933f40)
+> [    1.505555] 3e00:                                   0000000000000000 00008000161a2000
+> [    1.506522] 3e20: 0000000000000000 ffff80001eefb8e8 0000000000000000 00008000161a2000
+> [    1.507518] 3e40: 003aa6a600000000 0000000000000001 ffff80001d9221e0 ffff80001d930000
+> [    1.508488] 3e60: ffff80001d921908 0000000000000000 0000000000000068 000000000000004c
+> [    1.509457] 3e80: 0000000000000033 0000000000000019 0000000000000001 000000000000000e
+> [    1.510426] 3ea0: 0000000000000007 ffff000008d97258 ffff000008d972e8 0000000000000002
+> [    1.511427] 3ec0: 0000000000000000 0000000000000000 ffff000008d60d20 ffff80001d930000
+> [    1.512398] 3ee0: ffff000008e68555 ffff80001d930000 ffff000008d97000 ffff80001d933f40
+> [    1.513366] 3f00: ffff000008085d28 ffff80001d933f40 ffff00000815601c 0000000060000045
+> [    1.514334] 3f20: 0000000000000002 0000000000000000 ffffffffffffffff ffff000008d60d20
+> [    1.515321] [<ffff000008082fc8>] el1_irq+0xc8/0x108
+> [    1.515930] [<ffff00000815601c>] ipipe_unstall_root+0x34/0x50
+> [    1.516645] [<ffff000008085d28>] arch_cpu_idle+0x48/0x58
+> [    1.517309] [<ffff0000088e3f0c>] default_idle_call+0x34/0x40
+> [    1.518014] [<ffff0000080fac9c>] cpu_startup_entry+0x18c/0x1d0
+> [    1.518769] [<ffff00000808f0cc>] secondary_start_kernel+0x164/0x1a0
+> [    1.519549] [<00000000408ea1a4>] 0x408ea1a4
+> [    1.520076] Code: 321f0000 d51be320 d5033fdf d65f03c0 (d53be220)
+> [    1.520837] Internal error: undefined instruction: 0 [#5] PREEMPT SMP
+> [    1.521669] Modules linked in:
+> [    1.522075] CPU: 7 PID: 0 Comm: swapper/7 Tainted: G      D         4.9.92-ipipe-00107-ge02d0928-dirty #10
+> [    1.523272] Hardware name: linux,dummy-virt (DT)
+> [    1.523850] I-pipe domain: Linux
+> [    1.524260] task: ffff80001d926400 task.stack: ffff80001d950000
+> [    1.524999] PC is at arch_itimer_ack_phys+0x0/0x18
+> [    1.525600] LR is at __ipipe_ack_hrtimer_irq+0x38/0x68
+> [    1.526242] pc : [<ffff0000087899d0>] lr : [<ffff000008156e18>] pstate: 800001c5
+> [    1.527176] sp : ffff80001ef99fd0
+> [    1.527595] x29: ffff80001ef99fd0 x28: ffff80001d950000
+> [    1.528291] x27: ffff80001d950000 x26: ffff80001ef9a090
+> [    1.528988] x25: ffff80001ef960a0 x24: ffff000008d60d20
+> [    1.529685] x23: ffff000008db2000 x22: 0000000000000003
+> [    1.530381] x21: 0000000000000000 x20: ffff80001efa4f80
+> [    1.531143] x19: ffff80001d804a00 x18: 0000000000000007
+> [    1.531842] x17: 000000000000000e x16: 0000000000000001
+> [    1.532540] x15: 0000000000000019 x14: 0000000000000033
+> [    1.533236] x13: 000000000000004c x12: 0000000000000068
+> [    1.533933] x11: 0000000000000000 x10: ffff80001d926408
+> [    1.534655] x9 : ffff80001d950000 x8 : ffff80001d926ce0
+> [    1.535354] x7 : 0000000000000001 x6 : 003aa6a600000000
+> [    1.536052] x5 : 0000800016244000 x4 : ffff0000090f0000
+> [    1.536750] x3 : 0000000008000000 x2 : ffff0000083d5ae8
+> [    1.537449] x1 : ffff0000083d4ed8 x0 : ffff0000087899d0
+> [    1.538146]
+> [    1.538347] Process swapper/7 (pid: 0, stack limit = 0xffff80001d950038)
+> [    1.539207] Stack: (0xffff80001ef99fd0 to 0xffff80001d954000)
+> [    1.539926] Call trace:
+> [    1.540242] Exception stack(0xffff80001ef99e70 to 0xffff80001ef99fa0)
+> [    1.541046] 9e60:                                   ffff80001d804a00 0001000000000000
+> [    1.542019] 9e80: ffff80001ef99fd0 ffff0000087899d0 00000000800001c5 ffff00000811e52c
+> [    1.543010] 9ea0: ffff0000087899d0 ffff0000083d4ed8 ffff0000083d5ae8 0000000008000000
+> [    1.543987] 9ec0: ffff0000090f0000 0000800016244000 003aa6a600000000 0000000000000001
+> [    1.544963] 9ee0: ffff80001d926ce0 ffff80001d950000 ffff80001d926408 0000000000000000
+> [    1.545940] 9f00: 0000000000000068 000000000000004c 0000000000000033 0000000000000019
+> [    1.546947] 9f20: 0000000000000001 000000000000000e 0000000000000007 ffff80001d804a00
+> [    1.547905] 9f40: ffff80001efa4f80 0000000000000000 0000000000000003 ffff000008db2000
+> [    1.548862] 9f60: ffff000008d60d20 ffff80001ef960a0 ffff80001ef9a090 ffff80001d950000
+> [    1.549820] 9f80: ffff80001d950000 ffff80001ef99fd0 ffff000008156e18 ffff80001ef99fd0
+> [    1.550799] [<ffff0000087899d0>] arch_itimer_ack_phys+0x0/0x18
+> [    1.551520] [<ffff00000815663c>] __ipipe_dispatch_irq+0x7c/0x1d8
+> [    1.552260] [<ffff000008081308>] __ipipe_grab_irq+0x80/0x98
+> [    1.552947] Exception stack(0xffff80001d953e10 to 0xffff80001d953f40)
+> [    1.553739] 3e00:                                   0000000000000000 0000800016244000
+> [    1.554715] 3e20: 0000000000000000 ffff80001ef9d8e8 0000000000000000 0000800016244000
+> [    1.555676] 3e40: 003aa6a600000000 0000000000000001 ffff80001d926ce0 ffff80001d950000
+> [    1.556636] 3e60: ffff80001d926408 0000000000000000 0000000000000068 000000000000004c
+> [    1.557597] 3e80: 0000000000000033 0000000000000019 0000000000000001 000000000000000e
+> [    1.558573] 3ea0: 0000000000000007 ffff000008d97258 ffff000008d972e8 0000000000000080
+> [    1.559537] 3ec0: 0000000000000000 0000000000000000 ffff000008d60d20 ffff80001d950000
+> [    1.560496] 3ee0: ffff000008e68555 ffff80001d950000 ffff000008d97000 ffff80001d953f40
+> [    1.561454] 3f00: ffff000008085d28 ffff80001d953f40 ffff00000815601c 0000000060000045
+> [    1.562412] 3f20: 0000000000000080 0000000000000000 ffffffffffffffff ffff000008d60d20
+> [    1.563391] [<ffff0000080817d0>] gic_handle_irq+0xa8/0x100
+> [    1.564068] Exception stack(0xffff80001d953e10 to 0xffff80001d953f40)
+> [    1.564859] 3e00:                                   0000000000000000 0000800016244000
+> [    1.565816] 3e20: 0000000000000000 ffff80001ef9d8e8 0000000000000000 0000800016244000
+> [    1.566797] 3e40: 003aa6a600000000 0000000000000001 ffff80001d926ce0 ffff80001d950000
+> [    1.567758] 3e60: ffff80001d926408 0000000000000000 0000000000000068 000000000000004c
+> [    1.568718] 3e80: 0000000000000033 0000000000000019 0000000000000001 000000000000000e
+> [    1.569679] 3ea0: 0000000000000007 ffff000008d97258 ffff000008d972e8 0000000000000080
+> [    1.570657] 3ec0: 0000000000000000 0000000000000000 ffff000008d60d20 ffff80001d950000
+> [    1.571617] 3ee0: ffff000008e68555 ffff80001d950000 ffff000008d97000 ffff80001d953f40
+> [    1.572579] 3f00: ffff000008085d28 ffff80001d953f40 ffff00000815601c 0000000060000045
+> [    1.573540] 3f20: 0000000000000080 0000000000000000 ffffffffffffffff ffff000008d60d20
+> [    1.574502] [<ffff000008082fc8>] el1_irq+0xc8/0x108
+> [    1.575127] [<ffff00000815601c>] ipipe_unstall_root+0x34/0x50
+> [    1.575837] [<ffff000008085d28>] arch_cpu_idle+0x48/0x58
+> [    1.576497] [<ffff0000088e3f0c>] default_idle_call+0x34/0x40
+> [    1.577198] [<ffff0000080fac9c>] cpu_startup_entry+0x18c/0x1d0
+> [    1.577919] [<ffff00000808f0cc>] secondary_start_kernel+0x164/0x1a0
+> [    1.578716] [<00000000408ea1a4>] 0x408ea1a4
+> [    1.579238] Code: 321f0000 d51be320 d5033fdf d65f03c0 (d53be220)
+> [    1.579992] Internal error: undefined instruction: 0 [#6] PREEMPT SMP
+> [    1.580808] Modules linked in:
+> [    1.581208] CPU: 3 PID: 0 Comm: swapper/3 Tainted: G      D         4.9.92-ipipe-00107-ge02d0928-dirty #10
+> [    1.582377] Hardware name: linux,dummy-virt (DT)
+> [    1.582954] I-pipe domain: Linux
+> [    1.583356] task: ffff80001d923200 task.stack: ffff80001d938000
+> [    1.584081] PC is at arch_itimer_ack_phys+0x0/0x18
+> [    1.584671] LR is at __ipipe_ack_hrtimer_irq+0x38/0x68
+> [    1.585303] pc : [<ffff0000087899d0>] lr : [<ffff000008156e18>] pstate: 800001c5
+> [    1.586203] sp : ffff80001ef2dfd0
+> [    1.586633] x29: ffff80001ef2dfd0 x28: ffff80001d938000
+> [    1.587320] x27: ffff80001d938000 x26: ffff80001ef2e090
+> [    1.588006] x25: ffff80001ef2a0a0 x24: ffff000008d60d20
+> [    1.588691] x23: ffff000008db2000 x22: 0000000000000003
+> [    1.589377] x21: 0000000000000000 x20: ffff80001ef38f80
+> [    1.590061] x19: ffff80001d804a00 x18: 0000000000000007
+> [    1.590763] x17: 000000000000000e x16: 0000000000000001
+> [    1.591448] x15: 0000000000000019 x14: ffffffffffffffff
+> [    1.592133] x13: ffffffffffffffff x12: 0000000000000000
+> [    1.592817] x11: 0000000000000001 x10: ffff80001d923208
+> [    1.593502] x9 : ffff80001d938000 x8 : ffff80001d923ae0
+> [    1.594186] x7 : 0000000000000001 x6 : 003aa6a600000000
+> [    1.594888] x5 : 00008000161d8000 x4 : ffff000009070000
+> [    1.595574] x3 : 0000000008000000 x2 : ffff0000083d5ae8
+> [    1.596259] x1 : ffff0000083d4ed8 x0 : ffff0000087899d0
+> [    1.596945]
+> [    1.597140] Process swapper/3 (pid: 0, stack limit = 0xffff80001d938038)
+> [    1.597960] Stack: (0xffff80001ef2dfd0 to 0xffff80001d93c000)
+> [    1.598680] Call trace:
+> [    1.598991] Exception stack(0xffff80001ef2de70 to 0xffff80001ef2dfa0)
+> [    1.599781] de60:                                   ffff80001d804a00 0001000000000000
+> [    1.600737] de80: ffff80001ef2dfd0 ffff0000087899d0 00000000800001c5 ffff00000811e52c
+> [    1.601693] dea0: ffff0000087899d0 ffff0000083d4ed8 ffff0000083d5ae8 0000000008000000
+> [    1.602663] dec0: ffff000009070000 00008000161d8000 003aa6a600000000 0000000000000001
+> [    1.603618] dee0: ffff80001d923ae0 ffff80001d938000 ffff80001d923208 0000000000000001
+> [    1.604573] df00: 0000000000000000 ffffffffffffffff ffffffffffffffff 0000000000000019
+> [    1.605527] df20: 0000000000000001 000000000000000e 0000000000000007 ffff80001d804a00
+> [    1.606483] df40: ffff80001ef38f80 0000000000000000 0000000000000003 ffff000008db2000
+> [    1.607453] df60: ffff000008d60d20 ffff80001ef2a0a0 ffff80001ef2e090 ffff80001d938000
+> [    1.608408] df80: ffff80001d938000 ffff80001ef2dfd0 ffff000008156e18 ffff80001ef2dfd0
+> [    1.609363] [<ffff0000087899d0>] arch_itimer_ack_phys+0x0/0x18
+> [    1.610078] [<ffff00000815663c>] __ipipe_dispatch_irq+0x7c/0x1d8
+> [    1.610831] [<ffff000008081308>] __ipipe_grab_irq+0x80/0x98
+> [    1.611515] Exception stack(0xffff80001d93be10 to 0xffff80001d93bf40)
+> [    1.612302] be00:                                   0000000000000000 00008000161d8000
+> [    1.613256] be20: 0000000000000000 ffff80001ef318e8 0000000000000000 00008000161d8000
+> [    1.614209] be40: 003aa6a600000000 0000000000000001 ffff80001d923ae0 ffff80001d938000
+> [    1.615179] be60: ffff80001d923208 0000000000000001 0000000000000000 ffffffffffffffff
+> [    1.616134] be80: ffffffffffffffff 0000000000000019 0000000000000001 000000000000000e
+> [    1.617088] bea0: 0000000000000007 ffff000008d97258 ffff000008d972e8 0000000000000008
+> [    1.618085] bec0: 0000000000000000 0000000000000000 ffff000008d60d20 ffff80001d938000
+> [    1.619047] bee0: ffff000008e68555 ffff80001d938000 ffff000008d97000 ffff80001d93bf40
+> [    1.620003] bf00: ffff000008085d28 ffff80001d93bf40 ffff00000815601c 0000000060000045
+> [    1.620957] bf20: 0000000000000008 0000000000000000 ffffffffffffffff ffff000008d60d20
+> [    1.621912] [<ffff0000080817d0>] gic_handle_irq+0xa8/0x100
+> [    1.622608] Exception stack(0xffff80001d93be10 to 0xffff80001d93bf40)
+> [    1.623394] be00:                                   0000000000000000 00008000161d8000
+> [    1.624342] be20: 0000000000000000 ffff80001ef318e8 0000000000000000 00008000161d8000
+> [    1.625291] be40: 003aa6a600000000 0000000000000001 ffff80001d923ae0 ffff80001d938000
+> [    1.626240] be60: ffff80001d923208 0000000000000001 0000000000000000 ffffffffffffffff
+> [    1.627208] be80: ffffffffffffffff 0000000000000019 0000000000000001 000000000000000e
+> [    1.628156] bea0: 0000000000000007 ffff000008d97258 ffff000008d972e8 0000000000000008
+> [    1.629103] bec0: 0000000000000000 0000000000000000 ffff000008d60d20 ffff80001d938000
+> [    1.630049] bee0: ffff000008e68555 ffff80001d938000 ffff000008d97000 ffff80001d93bf40
+> [    1.631013] bf00: ffff000008085d28 ffff80001d93bf40 ffff00000815601c 0000000060000045
+> [    1.631960] bf20: 0000000000000008 0000000000000000 ffffffffffffffff ffff000008d60d20
+> [    1.632908] [<ffff000008082fc8>] el1_irq+0xc8/0x108
+> [    1.633505] [<ffff00000815601c>] ipipe_unstall_root+0x34/0x50
+> [    1.634206] [<ffff000008085d28>] arch_cpu_idle+0x48/0x58
+> [    1.634894] [<ffff0000088e3f0c>] default_idle_call+0x34/0x40
+> [    1.635595] [<ffff0000080fac9c>] cpu_startup_entry+0x18c/0x1d0
+> [    1.636314] [<ffff00000808f0cc>] secondary_start_kernel+0x164/0x1a0
+> [    1.637082] [<00000000408ea1a4>] 0x408ea1a4
+> [    1.637602] Code: 321f0000 d51be320 d5033fdf d65f03c0 (d53be220)
+> [    1.638352] Internal error: undefined instruction: 0 [#7] PREEMPT SMP
+> [    2.174474] Modules linked in:
+> [    2.174895] CPU: 0 PID: 0 Comm: swapper/0 Tainted: G      D         4.9.92-ipipe-00107-ge02d0928-dirty #10
+> [    2.175975] Hardware name: linux,dummy-virt (DT)
+> [    2.176500] I-pipe domain: Linux
+> [    2.176873] task: ffff000008da0080 task.stack: ffff000008d90000
+> [    2.177549] PC is at arch_itimer_ack_phys+0x0/0x18
+> [    2.178097] LR is at __ipipe_ack_hrtimer_irq+0x38/0x68
+> [    2.178698] pc : [<ffff0000087899d0>] lr : [<ffff000008156e18>] pstate: 800001c5
+> [    2.179532] sp : ffff80001eedcda0
+> [    2.179914] x29: ffff80001eedcda0 x28: ffff000008d90000
+> [    2.180548] x27: ffff000008d90000 x26: 0000000000000002
+> [    2.181181] x25: ffff80001eeddbb4 x24: ffff000008d60d20
+> [    2.181814] x23: ffff000008db2000 x22: 0000000000000003
+> [    2.182447] x21: 0000000000000000 x20: ffff80001eee7f80
+> [    2.183096] x19: ffff80001d804a00 x18: 0000000000000007
+> [    2.183728] x17: 000000000000000e x16: 0000000000000001
+> [    2.184361] x15: 0000000000000019 x14: ffffffffffffffff
+> [    2.184994] x13: ffffffffffffffff x12: 0000000000000000
+> [    2.185628] x11: 0000000000000004 x10: ffff80001eee0968
+> [    2.186260] x9 : ffff80001eee08f0 x8 : ffff80001eee0978
+> [    2.186909] x7 : ffff80001eee08e8 x6 : 0000000000000000
+> [    2.187543] x5 : 0000800016187000 x4 : ffff000009010000
+> [    2.188176] x3 : 0000000008000000 x2 : ffff0000083d5ae8
+> [    2.188810] x1 : ffff0000083d4ed8 x0 : ffff0000087899d0
+> [    2.189443]
+> [    2.189625] Process swapper/0 (pid: 0, stack limit = 0xffff000008d90038)
+> [    2.190382] Stack: (0xffff80001eedcda0 to 0xffff000008d94000)
+> [    2.191047] Call trace:
+> [    2.191334] Exception stack(0xffff80001eedcc40 to 0xffff80001eedcd70)
+> [    2.192063] cc40: ffff80001d804a00 0001000000000000 ffff80001eedcda0 ffff0000087899d0
+> [    2.192945] cc60: 00000000800001c5 0000000000000400 ffff0000087899d0 ffff0000083d4ed8
+> [    2.193827] cc80: ffff0000083d5ae8 0000000008000000 ffff000009010000 0000800016187000
+> [    2.194726] cca0: 0000000000000000 ffff80001eee08e8 ffff80001eee0978 ffff80001eee08f0
+> [    2.195607] ccc0: ffff80001eee0968 0000000000000004 0000000000000000 ffffffffffffffff
+> [    2.196491] cce0: ffffffffffffffff 0000000000000019 0000000000000001 000000000000000e
+> [    2.197373] cd00: 0000000000000007 ffff80001d804a00 ffff80001eee7f80 0000000000000000
+> [    2.198255] cd20: 0000000000000003 ffff000008db2000 ffff000008d60d20 ffff80001eeddbb4
+> [    2.199152] cd40: 0000000000000002 ffff000008d90000 ffff000008d90000 ffff80001eedcda0
+> [    2.200033] cd60: ffff000008156e18 ffff80001eedcda0
+> [    2.200589] [<ffff0000087899d0>] arch_itimer_ack_phys+0x0/0x18
+> [    2.201251] [<ffff00000815663c>] __ipipe_dispatch_irq+0x7c/0x1d8
+> [    2.201932] [<ffff000008081308>] __ipipe_grab_irq+0x80/0x98
+> [    2.202579] Exception stack(0xffff80001eedce10 to 0xffff80001eedcf40)
+> [    2.203307] ce00:                                   0000000000001fff ffff000008118c28
+> [    2.204188] ce20: ffff80001eedcf80 ffff000008082fc8 ffff80001eedce50 0001000000000000
+> [    2.205069] ce40: ffff80001eedcf80 ffff000008155e6c 0000000000000402 ffff000008eab880
+> [    2.205949] ce60: 0000000000000000 0000000000000002 0000000000010000 0000000000000000
+> [    2.206867] ce80: 0000000000000000 ffff80001eee08e8 ffff80001eee0978 ffff80001eee08f0
+> [    2.207743] cea0: ffff80001eee0968 0000000000000004 0000000000000000 ffffffffffffffff
+> [    2.208618] cec0: ffffffffffffffff 0000000000000019 0000000000000001 000000000000000e
+> [    2.209494] cee0: 0000000000000007 ffff000008d5df48 ffff000008e89080 0000000000000001
+> [    2.210369] cf00: 0000000000000402 ffff000008db2000 ffff000008d60d20 ffff80001eed90a0
+> [    2.211269] cf20: ffff80001eedd090 ffff000008d90000 ffff000008d90000 ffff80001eedcf80
+> [    2.212147] [<ffff0000080817d0>] gic_handle_irq+0xa8/0x100
+> [    2.212766] Exception stack(0xffff80001eedce30 to 0xffff80001eedcf60)
+> [    2.213490] ce20:                                   ffff80001eedce50 0001000000000000
+> [    2.214368] ce40: ffff80001eedcf80 ffff000008155e6c 0000000000000402 ffff000008eab880
+> [    2.215262] ce60: 0000000000000000 0000000000000002 0000000000010000 0000000000000000
+> [    2.216138] ce80: 0000000000000000 ffff80001eee08e8 ffff80001eee0978 ffff80001eee08f0
+> [    2.217015] cea0: ffff80001eee0968 0000000000000004 0000000000000000 ffffffffffffffff
+> [    2.217892] cec0: ffffffffffffffff 0000000000000019 0000000000000001 000000000000000e
+> [    2.218785] cee0: 0000000000000007 ffff000008d5df48 ffff000008e89080 0000000000000001
+> [    2.219664] cf00: 0000000000000402 ffff000008db2000 ffff000008d60d20 ffff80001eed90a0
+> [    2.220543] cf20: ffff80001eedd090 ffff000008d90000 ffff000008d90000 ffff80001eedcf80
+> [    2.221422] cf40: ffff000008155fd4 ffff80001eedcf80 ffff000008155e6c 0000000020000145
+> [    2.222300] [<ffff000008082fc8>] el1_irq+0xc8/0x108
+> [    2.222881] [<ffff000008155fd4>] __ipipe_do_sync_pipeline+0xa4/0xb8
+> [    2.223587] [<ffff000008156730>] __ipipe_dispatch_irq+0x170/0x1d8
+> [    2.224274] [<ffff000008081274>] __ipipe_grab_ipi+0x1c/0x30
+> [    2.224902] Exception stack(0xffff000008d93dc0 to 0xffff000008d93ef0)
+> [    2.225626] 3dc0: 0000000000000000 0000800016187000 0000000000000000 ffff80001eee08e8
+> [    2.226501] 3de0: 0000000000000000 0000000000000020 003aa6a600000000 0000000000000001
+> [    2.227442] 3e00: ffff000008da0960 ffff000008d90000 ffff000008da0088 0000000000000001
+> [    2.228329] 3e20: 0000000000000000 ffffffffffffffff ffffffffffffffff 0000000000000019
+> [    2.229215] 3e40: 0000000000000001 000000000000000e 0000000000000007 ffff000008d97258
+> [    2.230100] 3e60: ffff000008d972e8 0000000000000001 0000000000000000 0000000000000000
+> [    2.231007] 3e80: ffff000008d60d20 ffff000008d90000 ffff000008e68555 ffff000008d90000
+> [    2.231895] 3ea0: ffff000008d97000 ffff000008d93ef0 ffff000008085d28 ffff000008d93ef0
+> [    2.232782] 3ec0: ffff00000815601c 0000000060000045 0000000000000001 0000000000000000
+> [    2.233669] 3ee0: ffffffffffffffff ffff000008d60d20
+> [    2.234228] [<ffff00000808178c>] gic_handle_irq+0x64/0x100
+> [    2.234885] Exception stack(0xffff000008d93dc0 to 0xffff000008d93ef0)
+> [    2.235610] 3dc0: 0000000000000000 0000800016187000 0000000000000000 ffff80001eee08e8
+> [    2.236488] 3de0: 0000000000000000 0000000000000020 003aa6a600000000 0000000000000001
+> [    2.237365] 3e00: ffff000008da0960 ffff000008d90000 ffff000008da0088 0000000000000001
+> [    2.238241] 3e20: 0000000000000000 ffffffffffffffff ffffffffffffffff 0000000000000019
+> [    2.239151] 3e40: 0000000000000001 000000000000000e 0000000000000007 ffff000008d97258
+> [    2.240028] 3e60: ffff000008d972e8 0000000000000001 0000000000000000 0000000000000000
+> [    2.240906] 3e80: ffff000008d60d20 ffff000008d90000 ffff000008e68555 ffff000008d90000
+> [    2.241783] 3ea0: ffff000008d97000 ffff000008d93ef0 ffff000008085d28 ffff000008d93ef0
+> [    2.242686] 3ec0: ffff00000815601c 0000000060000045 0000000000000001 0000000000000000
+> [    2.243565] 3ee0: ffffffffffffffff ffff000008d60d20
+> [    2.244120] [<ffff000008082fc8>] el1_irq+0xc8/0x108
+> [    2.244675] [<ffff00000815601c>] ipipe_unstall_root+0x34/0x50
+> [    2.245326] [<ffff000008085d28>] arch_cpu_idle+0x48/0x58
+> [    2.245932] [<ffff0000088e3f0c>] default_idle_call+0x34/0x40
+> [    2.246594] [<ffff0000080fac9c>] cpu_startup_entry+0x18c/0x1d0
+> [    2.247256] [<ffff0000088de888>] rest_init+0x80/0x90
+> [    2.247824] [<ffff000008c90b2c>] start_kernel+0x380/0x394
+> [    2.248437] [<ffff000008c901d8>] __primary_switched+0x5c/0x64
+> [    2.249090] Code: 321f0000 d51be320 d5033fdf d65f03c0 (d53be220)
+> [    2.249784] ---[ end trace ee076ceca10e9295 ]---
+> [    2.837878] SMP: failed to stop secondary CPUs 0,2
+> [    2.838465] Kernel Offset: disabled
+> [    2.838887] Memory Limit: 512 MB
+>
 
