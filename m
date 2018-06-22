@@ -1,12 +1,12 @@
 From: Jan Kiszka <jan.kiszka@siemens.com>
-Date: Fri, 22 Jun 2018 17:42:35 +0200
-Message-Id: <ff9785e25bf415d3dc9715e2c974315a2bc58994.1529682156.git.jan.kiszka@siemens.com>
+Date: Fri, 22 Jun 2018 17:42:33 +0200
+Message-Id: <3dd233eb073399888f984dcad834e96264b5c77f.1529682156.git.jan.kiszka@siemens.com>
 In-Reply-To: <cover.1529682156.git.jan.kiszka@siemens.com>
 References: <cover.1529682156.git.jan.kiszka@siemens.com>
 In-Reply-To: <cover.1529682156.git.jan.kiszka@siemens.com>
 References: <cover.1529682156.git.jan.kiszka@siemens.com>
-Subject: [Xenomai] [PATCH 3/4] cobalt/posix: Provide compat version
-	signal_copyinfo extension
+Subject: [Xenomai] [PATCH 1/4] cobalt/posix: Move signal_put_siginfo
+	unmodified
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -19,64 +19,93 @@ To: xenomai@xenomai.org
 
 From: Jan Kiszka <jan.kiszka@siemens.com>
 
-Enables compat-capable implementations of this extension.
+We will need it inside signal_wait. No functional changes.
 
 Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
 ---
- kernel/cobalt/posix/extension.h |  4 ++++
- kernel/cobalt/posix/signal.c    | 20 +++++++++++++-------
- 2 files changed, 17 insertions(+), 7 deletions(-)
+ kernel/cobalt/posix/signal.c | 62 ++++++++++++++++++++++----------------------
+ 1 file changed, 31 insertions(+), 31 deletions(-)
 
-diff --git a/kernel/cobalt/posix/extension.h b/kernel/cobalt/posix/extension.h
-index b831a3a1a6..ae365c7874 100644
---- a/kernel/cobalt/posix/extension.h
-+++ b/kernel/cobalt/posix/extension.h
-@@ -54,6 +54,10 @@ struct cobalt_extension {
- 				       void __user *u_si,
- 				       const struct siginfo *si,
- 				       int overrun);
-+		int (*signal_copyinfo_compat)(struct cobalt_extref *refthread,
-+					      void __user *u_si,
-+					      const struct siginfo *si,
-+					      int overrun);
- 		int (*sched_yield)(struct cobalt_extref *curref);
- 		int (*thread_setsched)(struct cobalt_extref *refthread, /* nklocked, IRQs off. */
- 				       struct xnsched_class *sched_class,
 diff --git a/kernel/cobalt/posix/signal.c b/kernel/cobalt/posix/signal.c
-index c29b45ebd5..9d8353bbc2 100644
+index 2081af4e04..a71bb1085b 100644
 --- a/kernel/cobalt/posix/signal.c
 +++ b/kernel/cobalt/posix/signal.c
-@@ -337,17 +337,23 @@ done:
- 		goto out;	/* Return signo only. */
+@@ -201,6 +201,37 @@ void cobalt_signal_flush(struct cobalt_thread *thread)
+ 	sigemptyset(&thread->sigpending);
+ }
  
- #ifdef CONFIG_XENO_ARCH_SYS3264
--	if (compat)
-+	if (compat) {
- 		ret = sys32_put_siginfo(u_si, sip, overrun);
--	else
-+		if (!ret)
-+			/* Allow an extended target to receive more data. */
-+			cobalt_call_extension(signal_copyinfo_compat,
-+					      &curr->extref, ret, u_si, sip,
-+					      overrun);
-+	} else
- #endif
-+	{
- 		ret = signal_put_siginfo(u_si, sip, overrun);
--	if (ret)
--		goto out;
-+		if (!ret)
-+			/* Allow an extended target to receive more data. */
-+			cobalt_call_extension(signal_copyinfo, &curr->extref,
-+					      ret, u_si, sip, overrun);
++static int signal_put_siginfo(void __user *u_si, const struct siginfo *si,
++			      int overrun)
++{
++	struct siginfo __user *u_p = u_si;
++	int ret;
++
++	ret = __xn_put_user(si->si_signo, &u_p->si_signo);
++	ret |= __xn_put_user(si->si_errno, &u_p->si_errno);
++	ret |= __xn_put_user(si->si_code, &u_p->si_code);
++
++	/*
++	 * Copy the generic/standard siginfo bits to userland.
++	 */
++	switch (si->si_code) {
++	case SI_TIMER:
++		ret |= __xn_put_user(si->si_tid, &u_p->si_tid);
++		ret |= __xn_put_user(si->si_ptr, &u_p->si_ptr);
++		ret |= __xn_put_user(overrun, &u_p->si_overrun);
++		break;
++	case SI_QUEUE:
++	case SI_MESGQ:
++		ret |= __xn_put_user(si->si_ptr, &u_p->si_ptr);
++		/* falldown wanted. */
++	case SI_USER:
++		ret |= __xn_put_user(si->si_pid, &u_p->si_pid);
++		ret |= __xn_put_user(si->si_uid, &u_p->si_uid);
 +	}
++
++	return ret;
++}
++
+ static int signal_wait(sigset_t *set, xnticks_t timeout,
+ 		       void __user *u_si,
+ 		       int (*put_siginfo)(void __user *u_si,
+@@ -335,37 +366,6 @@ fail:
+ 	return ret;
+ }
  
--	/* Allow an extended target to receive more data. */
--	cobalt_call_extension(signal_copyinfo, &curr->extref,
--			      ret, u_si, sip, overrun);
- out:
- 	/*
- 	 * If we pulled the signal information from a sigpending
+-static int signal_put_siginfo(void __user *u_si, const struct siginfo *si,
+-			      int overrun)
+-{
+-	struct siginfo __user *u_p = u_si;
+-	int ret;
+-
+-	ret = __xn_put_user(si->si_signo, &u_p->si_signo);
+-	ret |= __xn_put_user(si->si_errno, &u_p->si_errno);
+-	ret |= __xn_put_user(si->si_code, &u_p->si_code);
+-
+-	/*
+-	 * Copy the generic/standard siginfo bits to userland.
+-	 */
+-	switch (si->si_code) {
+-	case SI_TIMER:
+-		ret |= __xn_put_user(si->si_tid, &u_p->si_tid);
+-		ret |= __xn_put_user(si->si_ptr, &u_p->si_ptr);
+-		ret |= __xn_put_user(overrun, &u_p->si_overrun);
+-		break;
+-	case SI_QUEUE:
+-	case SI_MESGQ:
+-		ret |= __xn_put_user(si->si_ptr, &u_p->si_ptr);
+-		/* falldown wanted. */
+-	case SI_USER:
+-		ret |= __xn_put_user(si->si_pid, &u_p->si_pid);
+-		ret |= __xn_put_user(si->si_uid, &u_p->si_uid);
+-	}
+-
+-	return ret;
+-}
+-
+ int __cobalt_sigwait(sigset_t *set)
+ {
+ 	return signal_wait(set, XN_INFINITE, NULL, NULL);
 -- 
 2.13.7
 
