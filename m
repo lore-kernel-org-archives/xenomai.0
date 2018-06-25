@@ -1,16 +1,10 @@
-From: Sagi Maimon <SMaimon@advaoptical.com>
-Date: Mon, 4 Jun 2018 10:50:26 +0000
-Message-ID: <cc8ae296c59040beb7ce90866b836776@advaoptical.com>
-References: <81447d4fbbd44e3ca473502b0755813a@advaoptical.com>
- <0f1a1752-d76c-70ec-516e-3dac3ec3d223@siemens.com>
- <13af28363d0f460eabe263c73142a309@advaoptical.com>
- <9539ed17-c287-b340-a881-a2ee7f5780ba@siemens.com>
-In-Reply-To: <9539ed17-c287-b340-a881-a2ee7f5780ba@siemens.com>
-Content-Language: en-US
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+From: Dongjiu Geng <gengdongjiu@huawei.com>
+Date: Mon, 25 Jun 2018 22:21:00 +0800
+Message-ID: <1529936460-16308-1-git-send-email-gengdongjiu@huawei.com>
 MIME-Version: 1.0
-Subject: Re: [Xenomai] xenomai scheduling
+Content-Type: text/plain
+Subject: [Xenomai] [PATCH] ipipe: arm_arch_timer: correct the wrong
+	ipipe_timer setup
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -19,70 +13,72 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jan Kiszka <jan.kiszka@siemens.com>
-Cc: "Xenomai@xenomai.org" <Xenomai@xenomai.org>
+To: rpm@xenomai.org, jan.kiszka@siemens.com, edouard.tisserant@gmail.com, xenomai@xenomai.org
+Cc: zhangjianwei8@huawei.com, ouyangzhaowei@huawei.com, linqiangmin@huawei.com, yangchuanlong@huawei.com, liupeifeng3@huawei.com
 
-SGkgSmFuLA0KVGhhbmtzIGZvciB5b3VyIGFuc3dlci4NCkNhbiB5b3UgcGxlYXNlIGV4cGxhaW4g
-c29tZXRoaW5nIGVsc2UgaW4gcmVnYXJkIHRvIHlvdXIgZXhwbGFuYXRpb24/DQoNClRoZSBMaW51
-eCB0aW1lciBJU1IgZG9lcyBtYW55IHRoaW5nIGFtb25nIHRoZW0gdGhlIEppZmZpZXMgdXBkYXRl
-ICh3aGljaCBlZmZlY3RzIHRoZSBMaW51eCB0aW1lIGhhbmRsZSkuDQpCdXQgc2luY2UgdGhlIHRp
-bWVyIGludGVycnVwdCBpcyBub3cgZGVsYXllZCAsIGl0IGNhbiBhZmZlY3QgdGhlIExpbnV4IHRp
-bWUgaGFuZGxpbmcgbWVjaGFuaXNtLg0KDQpDYW4geW91IHBsZWFzZSBleHBsYWluPw0KDQpUaGFu
-a3MsDQoNClNhZ2kNCg0KLS0tLS1PcmlnaW5hbCBNZXNzYWdlLS0tLS0NCkZyb206IEphbiBLaXN6
-a2EgPGphbi5raXN6a2FAc2llbWVucy5jb20+IA0KU2VudDog15nXldedwqDXkSAwNCDXmdeV16DX
-mSAyMDE4IDEzOjQ4DQpUbzogU2FnaSBNYWltb24gPFNNYWltb25AYWR2YW9wdGljYWwuY29tPg0K
-U3ViamVjdDogUmU6IHhlbm9tYWkgc2NoZWR1bGluZw0KDQpPZmYtbGlzdD8gTWF5YmUgYmV0dGVy
-IHJlc2VuZCB3aXRoIHRoZSBsaXN0IHJlLWFkZGVkLg0KDQpPbiAyMDE4LTA2LTA0IDEyOjQ2LCBT
-YWdpIE1haW1vbiB3cm90ZToNCj4gSGkgSmFuLA0KPiBUaGFua3MgYWdhaW4uDQo+IENhbiB5b3Ug
-cGxlYXNlIGV4cGxhaW4gc29tZXRoaW5nIGVsc2UgaW4gcmVnYXJkIHRvIHlvdXIgZXhwbGFuYXRp
-b24/DQo+IA0KPiBUaGUgTGludXggdGltZXIgSVNSIGRvZXMgbWFueSB0aGluZyBhbW9uZyB0aGVt
-IHRoZSBKaWZmaWVzIHVwZGF0ZSAod2hpY2ggZWZmZWN0cyB0aGUgTGludXggdGltZSBoYW5kbGUp
-Lg0KPiBCdXQgc2luY2UgdGhlIHRpbWVyIGludGVycnVwdCBpcyBub3cgZGVsYXllZCAsIGl0IGNh
-biBhZmZlY3QgdGhlIExpbnV4IHRpbWUgaGFuZGxpbmcgbWVjaGFuaXNtLg0KPiANCj4gQ2FuIHlv
-dSBwbGVhc2UgZXhwbGFpbj8NCj4gDQo+IFRoYW5rcywNCj4gDQo+IFNhZ2kgDQo+IA0KPiANCj4g
-DQo+IA0KPiAtLS0tLU9yaWdpbmFsIE1lc3NhZ2UtLS0tLQ0KPiBGcm9tOiBKYW4gS2lzemthIDxq
-YW4ua2lzemthQHNpZW1lbnMuY29tPiANCj4gU2VudDog15nXldedwqDXkSAwNCDXmdeV16DXmSAy
-MDE4IDEzOjE2DQo+IFRvOiBTYWdpIE1haW1vbiA8U01haW1vbkBhZHZhb3B0aWNhbC5jb20+OyBY
-ZW5vbWFpQHhlbm9tYWkub3JnDQo+IFN1YmplY3Q6IFJlOiB4ZW5vbWFpIHNjaGVkdWxpbmcNCj4g
-DQo+IE9uIDIwMTgtMDYtMDQgMTA6MjQsIFNhZ2kgTWFpbW9uIHdyb3RlOg0KPj4gSGkgYWxsLA0K
-Pj4gR29pbmcgb3ZlciB0aGUgeGVub21haSBkb2N1bWVudGF0aW9uIGFuZCBjb2RlIHRoZXJlIGlz
-IHNvbWV0aGluZyBJIGNhbid0IHF1aXRlIHVuZGVyc3RhbmQuDQo+Pg0KPj4gQXMgZmFyIGFzIEkg
-dW5kZXJzdGFuZCA6DQo+PiBPbmUgb2YgdGhlIHhlbm9tYWkvbnVjbGV1cyB0YXNrcyBpcyBJTklU
-IHRhc2ssIHRoaXMgdGFzayB0cmlnZ2VycyB0aGUgTGludXgga2VybmVsIHNjaGVkdWxlciB3aGVu
-IG5vIG90aGVyIHhlbm9tYWkgdGFzayBuZWVkcyB0aGUgQ1BVIHRpbWUuDQo+IA0KPiBJIHN1cHBv
-c2UgdGhhdCByZWZlcnMgdG8gd2hhdCBpcyBjYWxsZWQgdGhlIFJPT1QgdGFzazogQSBYZW5vbWFp
-IHRhc2sgd2hpY2ggcmVwcmVzZW50cyB0aGUgd2hvbGUgTGludXgga2VybmVsIG9uIGEgcGFydGlj
-dWxhciBjb3JlIHRvIHRoZSBYZW5vbWFpIHNjaGVkdWxlci4gSXQgcnVucyB3aXRoIGxvd2VzdCBw
-cmlvcml0eSwgYXMgWGVub21haSBpZGxlIHRhc2suDQo+IA0KPj4gSW4gdGhlIFJQSSBzeXN0ZW0g
-d2hlbiBhIHhlbm9tYWkgdGFzayBtaWdyYXRlIHRvIHNlY29uZGFyeSBkb21haW4gKExpbnV4KSwg
-dGhlIElOSVQgdGFzayBnZXRzIHRoZSBtaWdyYXRpbmcgdGFzayBwcmlvcml0eS4NCj4+IFRoYXQg
-d2F5IHhlbm9tYWkgcHJlc2VydmUgdGhlIHByaW9yaXR5IHNjaGVtZSBjb25zaXN0ZW50IGFjcm9z
-cyBib3RoIHNjaGVkdWxlcnMuDQo+IA0KPiBUaGlzIGxpa2VseSByZWZlcnMgdG8gdGhlIHByaW9y
-aXR5IGluaGVyaXRhbmNlIGZlYXR1cmUgZm9yIHRoYXQgUk9PVCB0YXNrIGluIGNhc2UgYSBYZW5v
-bWFpIHRhc2sgbWlncmF0ZWQgdG8gTGludXggbW9kZS4gVGhpcyBmZWF0dXJlcyB3YXMgb2Jzb2xl
-dGVkIGFuZCByZW1vdmVkLCBpZ25vcmUgYW55IHJlbGF0ZWQgZGVzY3JpcHRpb25zIGluIG9sZGVy
-IGRvY3VtZW50cy4NCj4gDQo+Pg0KPj4gQnV0IHdoYXQgYWJvdXQgTGludXggdGltZXIgaW50ZXJy
-dXB0Pw0KPj4gSW4gY2FzZSBvZiBMaW51eCB0aW1lciBpbnRlcnJ1cHQsIEFET1MveGVub21haSB3
-aWxsIHBhc3MgaW50ZXJydXB0IHRvIExpbnV4IGhhbmRsaW5nIHdoaWNoIGR1cmluZyBzY2hlZHVs
-ZXJfdGljaygpIHdpbGwgaW52b2tlIHRoZSBMaW51eCBzY2hlZHVsZXIuDQo+PiBJbiB0aGlzIGNh
-c2UgYSBMaW51eCBwcm9jZXNzIGNhbiBnZXQgcHJlY2VkZW5jZSBvdmVyIGEgeGVub21haSB0YXNr
-LCBob3cgY2FuIGl0IGJlPw0KPiANCj4gTGV0J3MgbG9vayBhdCB0aGUgc2ltcGxlIGNhc2UgZmly
-c3Q6IFRoZSB0aW1lciBpbnRlcnJ1cHQgaXMgZXhjbHVzaXZlbHkgdXNlZCBieSBMaW51eC4gSW4g
-dGhhdCBjYXNlLCBJLXBpcGUgd2lsbCByZWNvZ25pemUgdGhlIGhhcmR3YXJlIGludGVycnVwdCB3
-aGVuIGl0IGFycml2ZXMsIGJ1dCB0aGF0IGludGVycnVwdCB3aWxsIG9ubHkgYmUgcmVwbGF5ZWQg
-aW4gYSB2aXJ0dWFsaXplZCB3YXkgZm9yIExpbnV4IHdoZW4gd2Ugc3dpdGNoIHRvIHRoYXQgUk9P
-VCB0YXNrLCBpLmUuIHdoZW4gdGhlcmUgaXMgbm8gWGVub21haSBSVCB0YXNrIHJ1bm5hYmxlIGF0
-IHRoaXMgcG9pbnQuIFRoZXJlIGlzIG5vIGV4cGxpY2l0IGtpY2tpbmcgb2YgdGhlIExpbnV4IHNj
-aGVkdWxlciBoZXJlLCB0aGF0IGlzIGRvbmUgYnkgTGludXggaXRzZWxmIGFmdGVyIHJ1bm5pbmcg
-dGhhdCBkZWxheWVkIHRpbWVyIGludGVycnVwdCBoYW5kbGVyLg0KPiANCj4gSXQncyBhIGJpdCBt
-b3JlIGNvbXBsZXggd2hlbiB0aGUgdGltZXIgaXMgc2hhcmVkIGJ5IExpbnV4IGFuZCBYZW5vbWFp
-Lg0KPiBJbiB0aGF0IGNhc2UsIHRoZSBMaW51eCB0aW1lciBldmVudCBpcyBhYnN0cmFjdGVkIGJ5
-IFhlbm9tYWkgc29mdHdhcmUgdGltZXIgdGhhdCB1c2VzIHRoZSBzaGFyZWQgaGFyZHdhcmUgdGlt
-ZXIuIElmIHRoYXQgc29mdHdhcmUgdGltZXIgZXhwaXJlZCwgWGVub21haSB3aWxsIHBlbmQgYSB2
-aXJ0dWFsIHRpbWVyIGludGVycnVwdCBmb3IgTGludXggYW5kIGxldCB0aGF0IG9uZSBoYW5kbGUg
-d2hlbiBzd2l0Y2hpbmcgdG8gTGludXggdGhlIG5leHQgdGltZSAtIGp1c3QgbGlrZSBpbiB0aGUg
-YWJvdmUgY2FzZS4NCj4gDQo+IEhvcGUgdGhhdCBoZWxwcyB0byBjbGFyaWZ5IHRoZSBwaWN0dXJl
-Lg0KPiANCj4gSmFuDQo+IA0KPiAtLQ0KPiBTaWVtZW5zIEFHLCBDb3Jwb3JhdGUgVGVjaG5vbG9n
-eSwgQ1QgUkRBIElPVCBTRVMtREUgQ29ycG9yYXRlIENvbXBldGVuY2UgQ2VudGVyIEVtYmVkZGVk
-IExpbnV4DQo+IA0K
+The arch_timer_mem_use_virtual variable is used to judge the type
+of memory-mapped timer, it can not be used to judge the type of CP15
+timer, so fix this issue, otherwise it will lead to kernel panic when
+running as a VM.
+
+Signed-off-by: Dongjiu Geng <gengdongjiu@huawei.com>
+---
+How to produce:
+1. Attach the Xenomai patches to arm64 I-PIPE kernel tree, and build it
+2. Using below commands to run it:
+   "qemu-kvm -enable-kvm -m 1024 -cpu host -machine virt,gic-version=3 \
+   -smp 4  -nographic -kernel Image -append "rdinit=/init console=ttyAMA0 \
+   mem=512M root=/dev/ram0 earlycon=pl011,0x9000000 rw" -initrd guestfs_new.cpio.gz"
+3. Then it will happen this panic, KVM does not permit VM using physical timer, it
+   should use virtual timer.
+[    0.850140] CPU: 1 PID: 0 Comm: swapper/1 Not tainted 4.14.4-ipipe-g3403168 #3
+[    0.850141] Hardware name: linux,dummy-virt (DT)
+[    0.850143] I-pipe domain: Linux
+[    0.850145] task: ffff80001d9a9c00 task.stack: ffff000009278000
+[    0.850160] PC is at arch_itimer_ack_phys+0x0/0x18
+[    0.850166] LR is at __ipipe_ack_hrtimer_irq+0x38/0x68
+[    0.850168] pc : [<ffff00000885fd10>] lr : [<ffff00000816e988>] pstate: 800001c5
+[    0.850169] sp : ffff00000800bf40
+[    0.850170] x29: ffff00000800bf40 x28: ffff80001d9a9c00
+[    0.850173] x27: 0000000000000000 x26: ffff00000800c000
+[    0.850176] x25: ffff000008008000 x24: 0000000000000000
+[    0.850178] x23: ffff000008f8a000 x22: 0000000000000003
+[    0.850180] x21: 0000000000000000 x20: ffff80001ef9fd28
+[    0.850183] x19: ffff80001d805400 x18: 0000000000000007
+[    0.850184] x17: 000000000000000e x16: 0000000000000001
+[    0.850187] x15: 0000000000000019 x14: 0000000000000033
+[    0.850189] x13: 000000000000004c x12: 0000000000000068
+[    0.850191] x11: 0000000000000000 x10: ffff80001d9a9c80
+[    0.850193] x9 : ffff000009278000 x8 : ffff80001d9aa660
+[    0.850196] x7 : 00000000ffffffff x6 : 0000000000000001
+[    0.850198] x5 : 0000800016049000 x4 : ffff00000a030000
+[    0.850200] x3 : 0000000008000000 x2 : ffff00000840c5a0
+[    0.850203] x1 : ffff00000840b8c0 x0 : ffff00000885fd10
+[    0.850206] Process swapper/1 (pid: 0, stack limit = 0xffff000009278000)
+[    0.850207] Call trace:
+[    0.850210] Exception stack(0xffff00000800be00 to 0xffff00000800bf40)
+[    0.850212] be00: ffff00000885fd10 ffff00000840b8c0 ffff00000840c5a0 0000000008000000
+[    0.850214] be20: ffff00000a030000 0000800016049000 0000000000000001 00000000ffffffff
+[    0.850215] be40: ffff80001d9aa660 ffff000009278000 ffff80001d9a9c80 0000000000000000
+[    0.850217] be60: 0000000000000068 000000000000004c 0000000000000033 0000000000000019
+---
+ drivers/clocksource/arm_arch_timer.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/drivers/clocksource/arm_arch_timer.c b/drivers/clocksource/arm_arch_timer.c
+index eb18cf2..f68676f 100644
+--- a/drivers/clocksource/arm_arch_timer.c
++++ b/drivers/clocksource/arm_arch_timer.c
+@@ -753,7 +753,7 @@ static void __arch_timer_setup(unsigned type,
+ 		arch_timer_check_ool_workaround(ate_match_local_cap_id, NULL);
+ #ifdef CONFIG_IPIPE
+ 		clk->ipipe_timer = raw_cpu_ptr(&arch_itimer);
+-		if (arch_timer_mem_use_virtual) {
++		if (arch_timer_uses_ppi == ARCH_TIMER_VIRT_PPI) {
+ 			clk->ipipe_timer->irq = arch_timer_ppi[ARCH_TIMER_VIRT_PPI];
+ 			clk->ipipe_timer->ack = arch_itimer_ack_virt;
+ 		} else {
+-- 
+1.8.3.1
+
 
