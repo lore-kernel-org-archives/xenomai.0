@@ -1,21 +1,12 @@
+Date: Mon, 25 Jun 2018 16:18:07 +0200
+From: Henning Schild <henning.schild@siemens.com>
+Message-ID: <20180625161807.039269ef@md1pvb1c.ad001.siemens.net>
+In-Reply-To: <f9fc1bc9-5794-4408-8f85-f7ad3a12a05e@xenomai.org>
+References: <f9fc1bc9-5794-4408-8f85-f7ad3a12a05e@xenomai.org>
 MIME-Version: 1.0
-References: <CAOuPNLg60S+am654fq55vTMoFV1=PfMp3as5MZtt5BHUacFRBQ@mail.gmail.com>
- <2ee8fa04-7ad4-58d5-603b-1d41ad2533ec@siemens.com>
- <CAOuPNLiE-Fy3LJrozgsLE9ga0ibC+GOSHO6ciJppU_bnZtbx0g@mail.gmail.com>
- <73a5c9f6-5014-5113-1ddd-2fcf974273bb@siemens.com>
- <CAOuPNLjuB53ovnEBijNSqrgsKYcSGjLM-L=J4mfbRogwo_5kVA@mail.gmail.com>
- <CAOuPNLh2C8b1KC5D6+Lws_1UA0o0Sp_BaPb3mUTyebUPq_EduA@mail.gmail.com>
- <CAOuPNLiCfmUrDMWyX=N37hVJTBDEqwOtoOr1srf-55ks1qms+w@mail.gmail.com>
- <513744ad-f8fe-d54e-0618-fad492ed5bff@siemens.com>
- <5f46f00c-f09b-7439-93cf-4ff2a0343974@siemens.com>
- <6da8a3e2-7a76-afb2-c46c-7c173a8e444c@siemens.com>
-In-Reply-To: <6da8a3e2-7a76-afb2-c46c-7c173a8e444c@siemens.com>
-From: Pintu Kumar <pintu.ping@gmail.com>
-Date: Mon, 25 Jun 2018 18:26:22 +0530
-Message-ID: <CAOuPNLhYPGrP5s0y6e9HFUVrg2aDochOxF_fMkbjTmYnEvPOQQ@mail.gmail.com>
-Content-Type: text/plain; charset="UTF-8"
-Subject: Re: [Xenomai] Kernel oops during rtnet loopback usage on x86_64
-	(e1000e)
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai] Xenomai 3.0.7
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -24,116 +15,32 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jan Kiszka <jan.kiszka@siemens.com>
-Cc: "Xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Philippe Gerum <rpm@xenomai.org>
+Cc: "Xenomai@xenomai.org" <Xenomai@xenomai.org>
 
-> As a workaround, run the kernel with nosmap.
-OK, I guessed it correctly and tried with kernel commandline "nosmap".
-Because it works normally on virtual box.
+Sweet! But what is up with the new git branch "stable/v3.0.x" vs.
+"stable-3.0.x"?
 
-With "nosmap" I don't see any kernel oops, but there are no prints either.
-I mean in my rtnet-server/client, I have given some print statement.
-But I am not seeing those print statement coming on the console now.
-The print statements are coming for normal "xeno_task" application.
+Henning
 
-Is there any clue for this ?
+Am Mon, 25 Jun 2018 11:25:33 +0200
+schrieb Philippe Gerum <rpm@xenomai.org>:
 
+> Xenomai 3.0.7 is out [1]. The GIT repository can be cloned from [2].
+> 
+> Some GPIO driver updates, several bug fixes in the Cobalt core, and a
+> critical bug removed from the pshared heap (for users of non-POSIX
+> APIs building with --enable-pshared).
+> 
+> An effort to sanitize some legacy from RTnet causing invalid accesses
+> from kernel space to userland memory also stands out, although more
+> work remains in this area.
+> 
+> This release supports up to the Linux 4.14 series for ARM, ARM64 and
+> PPC32. Work is still ahead for running Cobalt over 4.14/x86 though.
+> 
+> [1] http://xenomai.org/downloads/xenomai/stable/latest/
+> [2] https://git.xenomai.org/xenomai/
+> 
 
-Thanks,
-Pintu
-
-
-
-
-
-On Thu, Jun 21, 2018 at 8:27 PM Jan Kiszka <jan.kiszka@siemens.com> wrote:
->
-> On 2018-06-21 15:41, Jan Kiszka wrote:
-> > On 2018-06-21 13:55, Jan Kiszka wrote:
-> >> On 2018-06-21 13:20, Pintu Kumar wrote:
-> >>> Dear Jan, Greg,
-> >>>
-> >>> Is there any pointer about this issue?
-> >>> This is blocking my next work..
-> >>
-> >> Does this solve the issue AND still generate valid UDP checksums (please
-> >> check with wireshark or against a normal networking stack?
-> >>
-> >> diff --git a/kernel/drivers/net/stack/ipv4/udp/udp.c b/kernel/drivers/net/stack/ipv4/udp/udp.c
-> >> index 8e80d3e0b..bb0b0fc12 100644
-> >> --- a/kernel/drivers/net/stack/ipv4/udp/udp.c
-> >> +++ b/kernel/drivers/net/stack/ipv4/udp/udp.c
-> >> @@ -556,18 +556,17 @@ static int rt_udp_getfrag(const void *p, unsigned char *to,
-> >>      if (offset)
-> >>          return rtnet_read_from_iov(ufh->fd, ufh->iov, ufh->iovlen, to, fraglen);
-> >>
-> >> -    /* Checksum of the complete data part of the UDP message: */
-> >> -    for (i = 0; i < ufh->iovlen; i++) {
-> >> -            ufh->wcheck = csum_partial(ufh->iov[i].iov_base, ufh->iov[i].iov_len,
-> >> -                                       ufh->wcheck);
-> >> -    }
-> >> -
-> >>      ret = rtnet_read_from_iov(ufh->fd, ufh->iov, ufh->iovlen,
-> >>                            to + sizeof(struct udphdr),
-> >>                            fraglen - sizeof(struct udphdr));
-> >>      if (ret)
-> >>          return ret;
-> >>
-> >> +    /* Checksum of the complete data part of the UDP message: */
-> >> +    ufh->wcheck = csum_partial(to + sizeof(struct udphdr),
-> >> +                           fraglen - sizeof(struct udphdr),
-> >> +                           ufh->wcheck);
-> >> +
-> >>      /* Checksum of the udp header: */
-> >>      ufh->wcheck = csum_partial((unsigned char *)ufh,
-> >>                             sizeof(struct udphdr), ufh->wcheck);
-> >>
-> >
-> > This was definitely wrong. Here is another try:
-> >
-> > diff --git a/kernel/drivers/net/stack/ipv4/udp/udp.c b/kernel/drivers/net/stack/ipv4/udp/udp.c
-> > index 8e80d3e0b..6cf1d369e 100644
-> > --- a/kernel/drivers/net/stack/ipv4/udp/udp.c
-> > +++ b/kernel/drivers/net/stack/ipv4/udp/udp.c
-> > @@ -549,6 +549,7 @@ static int rt_udp_getfrag(const void *p, unsigned char *to,
-> >                            unsigned int offset, unsigned int fraglen)
-> >  {
-> >      struct udpfakehdr *ufh = (struct udpfakehdr *)p;
-> > +    unsigned int datalen = 0;
-> >      int i, ret;
-> >
-> >
-> > @@ -556,18 +557,18 @@ static int rt_udp_getfrag(const void *p, unsigned char *to,
-> >      if (offset)
-> >           return rtnet_read_from_iov(ufh->fd, ufh->iov, ufh->iovlen, to, fraglen);
-> >
-> > -    /* Checksum of the complete data part of the UDP message: */
-> > -    for (i = 0; i < ufh->iovlen; i++) {
-> > -            ufh->wcheck = csum_partial(ufh->iov[i].iov_base, ufh->iov[i].iov_len,
-> > -                                       ufh->wcheck);
-> > -    }
-> > -
-> >      ret = rtnet_read_from_iov(ufh->fd, ufh->iov, ufh->iovlen,
-> >                             to + sizeof(struct udphdr),
-> >                             fraglen - sizeof(struct udphdr));
-> >      if (ret)
-> >           return ret;
-> >
-> > +    /* Checksum of the complete data part of the UDP message: */
-> > +    for (i = 0; i < ufh->iovlen; i++)
-> > +         datalen += ufh->iov[i].iov_len;
-> > +    ufh->wcheck = csum_partial(to + sizeof(struct udphdr), datalen,
-> > +                            ufh->wcheck);
-> > +
-> >      /* Checksum of the udp header: */
-> >      ufh->wcheck = csum_partial((unsigned char *)ufh,
-> >                              sizeof(struct udphdr), ufh->wcheck);
-> >
->
-> OK, this won't work either if fraglen < datalen. We have to rework this
-> more fundamentally.
->
-> As a workaround, run the kernel with nosmap.
->
-> Jan
 
