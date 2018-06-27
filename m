@@ -1,15 +1,10 @@
-MIME-Version: 1.0
-References: <CAOuPNLias38WgrA7SeQxC-Nh47q7kM8vRVR=ex_yFzQT1pnDZg@mail.gmail.com>
- <CAOuPNLgNoHKH5EA3aanAqSMXQn1Y25oM3rCWNN7-5DUJxc=sBQ@mail.gmail.com>
- <CALLqZ8TNfqRY0vqfCqExS+CxWGqTDe9Tm5-q3sMzbaY5Vi1nHQ@mail.gmail.com>
- <CAOuPNLjpiUzDTskhMHfRpqsoPU_1gd1n3PrXa=K0GGbsG+WoNA@mail.gmail.com>
-In-Reply-To: <CAOuPNLjpiUzDTskhMHfRpqsoPU_1gd1n3PrXa=K0GGbsG+WoNA@mail.gmail.com>
-From: Pintu Kumar <pintu.ping@gmail.com>
-Date: Tue, 26 Jun 2018 23:07:01 +0530
-Message-ID: <CAOuPNLi0k3KmzKJjyE5vqQmW-92DoRXyB+pGMqqwSiwY7Tz8Sw@mail.gmail.com>
-Content-Type: text/plain; charset="UTF-8"
-Subject: Re: [Xenomai] beaglebone: arm: xeno-test gives segmentation fault -
-	test dlopen failed
+Message-ID: <1530093228.2487.22.camel@sprinte.eu>
+From: Julien Blanc <julien.blanc@sprinte.eu>
+Content-Type: text/plain; charset="utf-8"
+Date: Wed, 27 Jun 2018 11:53:48 +0200
+Mime-Version: 1.0
+Content-Transfer-Encoding: 8bit
+Subject: [Xenomai] rtcan loopback behaviour when physical device is in error
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -18,78 +13,47 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Greg Gallagher <greg@embeddedgreg.com>
-Cc: "Xenomai@xenomai.org" <xenomai@xenomai.org>
+To: "Xenomai@xenomai.org" <xenomai@xenomai.org>
 
-One more thing,
-On x86 xeno-test works fine even with dlopen.
+Hi,
 
-This problem is seen only of arm and arm64 boards.
+With xenomai 3 (but i think the behaviour was the same with xenomai 2),
+with loopback enabled, when there is no physical device on the bus, the
+following happens :
+
+* the messages fill the internal socket buffers. this result in any
+blocking send call actually blocking the caller
+* when this happens, this also block the loopback interface, since can
+messages are only loopbacked if succesfully sent to the physical
+interface.
+
+We would like to change the behaviour in the following way :
+
+* if the physical interface is in error, and there is a single client,
+no change (ie, continue to block)
+* if the physical interface is in error, but there are multiple clients
+(ie, the loopback will be trigged), then :
+  * discard the message from the physical interface
+  * loopback the messages to the connected clients
+
+We believe this is a more logical behaviour if each program working
+with the rtcan is seen as a separate physical device -> the error of
+one device should not compromise the communication between others,
+while still remain the behaviour that if no one listens, then the
+message cannot be sent.
+
+This is a big change, and likely to break any code that rely on the
+previous behaviour.
+
+So, questions :
+
+* has such a change any chance to reach mainline xenomai ? (we're gonna
+do and provide the necessary patches)
+* if so, should this behaviour be made optional ? The loopback property
+could be changed from a single yes/no to a tri-valued easily in that
+regard.
 
 Thanks,
-Pintu
-On Tue, Jun 26, 2018 at 10:16 PM Pintu Kumar <pintu.ping@gmail.com> wrote:
->
-> Ok Greg thanks a lot.
->
-> Yes, I can recompile it, but for now I want to get rid of this dlopen
-> to pass rest of xeno-test.
-> Please let me know how to disable it from configure.ac
->
-> Thanks,
-> Pintu
-> On Tue, Jun 26, 2018 at 8:57 PM Greg Gallagher <greg@embeddedgreg.com> wrote:
-> >
-> > Hi,
-> >   I'll take a look at this tonight.  I'll confirm if this test  is
-> > crashing on all platforms or just BB.  To disable I believe you'll
-> > have to recompile the tests.
-> >
-> > -Greg
-> >
-> > On Tue, Jun 26, 2018 at 10:43 AM, Pintu Kumar <pintu.ping@gmail.com> wrote:
-> > > Dear Greg,
-> > >
-> > > Please let me know how to disable "dlopen" test in xenomai-next.
-> > >
-> > > I even tried, without dlopen parameter during ./configure but still I
-> > > get the same issue.
-> > > #  ./configure --enable-smp
-> > >
-> > > We did not face this issue earlier on xenomai-3 stable branch.
-> > > So, I am planning to disable it right now.
-> > > Please help!
-> > >
-> > >
-> > > Thanks,
-> > > Pintu
-> > >
-> > > On Tue, Jun 26, 2018 at 12:52 PM Pintu Kumar <pintu.ping@gmail.com> wrote:
-> > >>
-> > >> Hi,
-> > >> I am using Kernel 4.9.51 for beagle bone black with xenomai patches
-> > >> from xenomai-next repo.
-> > >>
-> > >> I have installed xenomai-3-next using below:
-> > >> # ./scripts/bootstrap
-> > >> # ./configure --with-pic --with-core=cobalt --enable-smp --disable-tls
-> > >> --enable-dlopen-libs
-> > >> # make
-> > >> # make install
-> > >>
-> > >> After that when I run xeno-test I get below error, and the test stopped.
-> > >>
-> > >> # root@bdk:~# /usr/xenomai/bin/xeno-test
-> > >> ....
-> > >> ....
-> > >> vdso_access OK
-> > >> xddp skipped (no kernel support)
-> > >> Segmentation fault
-> > >> /usr/xenomai/bin/smokey: test dlopen failed: Unknown error -1
-> > >>
-> > >> If you have any clue about this error, please let me know.
-> > >>
-> > >>
-> > >> Thanks,
-> > >> Pintu
+
+Julien
 
