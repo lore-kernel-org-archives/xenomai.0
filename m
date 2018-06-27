@@ -1,16 +1,24 @@
 MIME-Version: 1.0
-References: <CAOuPNLias38WgrA7SeQxC-Nh47q7kM8vRVR=ex_yFzQT1pnDZg@mail.gmail.com>
- <CAOuPNLgNoHKH5EA3aanAqSMXQn1Y25oM3rCWNN7-5DUJxc=sBQ@mail.gmail.com>
- <CALLqZ8TNfqRY0vqfCqExS+CxWGqTDe9Tm5-q3sMzbaY5Vi1nHQ@mail.gmail.com>
- <CAOuPNLjpiUzDTskhMHfRpqsoPU_1gd1n3PrXa=K0GGbsG+WoNA@mail.gmail.com>
- <CAOuPNLi0k3KmzKJjyE5vqQmW-92DoRXyB+pGMqqwSiwY7Tz8Sw@mail.gmail.com>
-In-Reply-To: <CAOuPNLi0k3KmzKJjyE5vqQmW-92DoRXyB+pGMqqwSiwY7Tz8Sw@mail.gmail.com>
+References: <CAOuPNLg60S+am654fq55vTMoFV1=PfMp3as5MZtt5BHUacFRBQ@mail.gmail.com>
+ <2ee8fa04-7ad4-58d5-603b-1d41ad2533ec@siemens.com>
+ <CAOuPNLiE-Fy3LJrozgsLE9ga0ibC+GOSHO6ciJppU_bnZtbx0g@mail.gmail.com>
+ <73a5c9f6-5014-5113-1ddd-2fcf974273bb@siemens.com>
+ <CAOuPNLjuB53ovnEBijNSqrgsKYcSGjLM-L=J4mfbRogwo_5kVA@mail.gmail.com>
+ <CAOuPNLh2C8b1KC5D6+Lws_1UA0o0Sp_BaPb3mUTyebUPq_EduA@mail.gmail.com>
+ <CAOuPNLiCfmUrDMWyX=N37hVJTBDEqwOtoOr1srf-55ks1qms+w@mail.gmail.com>
+ <513744ad-f8fe-d54e-0618-fad492ed5bff@siemens.com>
+ <5f46f00c-f09b-7439-93cf-4ff2a0343974@siemens.com>
+ <6da8a3e2-7a76-afb2-c46c-7c173a8e444c@siemens.com>
+ <CAOuPNLhYPGrP5s0y6e9HFUVrg2aDochOxF_fMkbjTmYnEvPOQQ@mail.gmail.com>
+ <CAOuPNLjXN531P13WddSAQ-ZmnNOF_EQ4R+3eZ09VtG5zNvUH0g@mail.gmail.com>
+ <aaa3a49e-ae7f-1696-199b-4ade86bd503f@siemens.com>
+In-Reply-To: <aaa3a49e-ae7f-1696-199b-4ade86bd503f@siemens.com>
 From: Pintu Kumar <pintu.ping@gmail.com>
-Date: Wed, 27 Jun 2018 16:11:43 +0530
-Message-ID: <CAOuPNLhQ-f_wm9u8ikWf_yB43f6c+8f8bm8zo36vEE+43ZpKtQ@mail.gmail.com>
+Date: Wed, 27 Jun 2018 16:26:22 +0530
+Message-ID: <CAOuPNLi-p3A9LvkbpAVDapjN-dKgD8hJ3RJwJV+P=FvK2Pa7SA@mail.gmail.com>
 Content-Type: text/plain; charset="UTF-8"
-Subject: Re: [Xenomai] beaglebone: arm: xeno-test gives segmentation fault -
-	test dlopen failed
+Subject: Re: [Xenomai] Kernel oops during rtnet loopback usage on x86_64
+	(e1000e)
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -19,102 +27,67 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Greg Gallagher <greg@embeddedgreg.com>, Henning Schild <henning.schild@siemens.com>
+To: Jan Kiszka <jan.kiszka@siemens.com>
 Cc: "Xenomai@xenomai.org" <xenomai@xenomai.org>
 
-Dear Henning,
+Dear Jan,
 
-I saw your commit regarding dlopen here:
-https://xenomai.org/pipermail/xenomai/2018-February/038351.html
+> What means "now"? Did it work before? What was the setup then?
+rtnet loopback test is working (even with older kernel) on my Virtual
+Box with Ubuntu 32-bit.
 
-We are facing dlopen error with xeno-test on arm (beagle bone) and
-arm64 (hikey) boards.
-Segmentation fault
-/usr/xenomai/bin/smokey: test dlopen failed: Unknown error -1
+But it never worked for me on x86_64 machine.
+So, at first I wonder what is the minimum criteria to make rtnet work
+on any system.
+I am sure it would have definitely worked in the past. No?
 
-Do you have any clue regarding this issue.
-Earlier xeno-test worked for us, but after this commit xeno-test is failing.
+> Either you drill deeper, systematically, and report your
+> findings for discussions and suggestions on the list
+Yes sure, I am ready to do that.
+Once I know the little bit of history and current problems with rtnet,
+I can definitely start contributing.
+At first I assumed that there might be some fix already available.
+So, instead of reinventing the wheel, I thought to first check out.
 
-Currently we dont need dlopen test.
-So, please let us know how to disable dlopen test to pass the xeno-test report.
+I am really sorry for troubling you!
+I will try to look into this issue and see if I can find something.
 
-
-Thanks,
+Thank you!
 Pintu
 
-
-
-On Tue, Jun 26, 2018 at 11:07 PM Pintu Kumar <pintu.ping@gmail.com> wrote:
+On Wed, Jun 27, 2018 at 3:50 PM Jan Kiszka <jan.kiszka@siemens.com> wrote:
 >
-> One more thing,
-> On x86 xeno-test works fine even with dlopen.
+> On 2018-06-26 13:08, Pintu Kumar wrote:
+> > Dear Jan,
+> >
+> > Till now I haven't had any success for running my rtnet demo test
+> > either or x86 or arm.
+> > I even upgraded to xenomai-next (both kernel and user space) but still no luck.
+> >
+> > Now even the "loopback" test is not working on xenomai-next.
 >
-> This problem is seen only of arm and arm64 boards.
+> What means "now"? Did it work before? What was the setup then?
 >
-> Thanks,
-> Pintu
-> On Tue, Jun 26, 2018 at 10:16 PM Pintu Kumar <pintu.ping@gmail.com> wrote:
 > >
-> > Ok Greg thanks a lot.
+> > Can you confirm, if any of the below rtnet test works for you with
+> > Kernel 4.9 and xenomai-next.
+> > - xenomai-3-next/testsuite/smokey/net_udp
+> > - url = https://git.code.sf.net/p/rtnet/code  => examples/generic/
+> > - Or a simple UDP client/server program, compiled with xenomai posix skin
 > >
-> > Yes, I can recompile it, but for now I want to get rid of this dlopen
-> > to pass rest of xeno-test.
-> > Please let me know how to disable it from configure.ac
+> > I already tried with "nosmap" but there are no response coming (I am
+> > getting no prints on console, but client is terminated).
+> > If there is any work around to make rtnet works, please let me know.
 > >
-> > Thanks,
-> > Pintu
-> > On Tue, Jun 26, 2018 at 8:57 PM Greg Gallagher <greg@embeddedgreg.com> wrote:
-> > >
-> > > Hi,
-> > >   I'll take a look at this tonight.  I'll confirm if this test  is
-> > > crashing on all platforms or just BB.  To disable I believe you'll
-> > > have to recompile the tests.
-> > >
-> > > -Greg
-> > >
-> > > On Tue, Jun 26, 2018 at 10:43 AM, Pintu Kumar <pintu.ping@gmail.com> wrote:
-> > > > Dear Greg,
-> > > >
-> > > > Please let me know how to disable "dlopen" test in xenomai-next.
-> > > >
-> > > > I even tried, without dlopen parameter during ./configure but still I
-> > > > get the same issue.
-> > > > #  ./configure --enable-smp
-> > > >
-> > > > We did not face this issue earlier on xenomai-3 stable branch.
-> > > > So, I am planning to disable it right now.
-> > > > Please help!
-> > > >
-> > > >
-> > > > Thanks,
-> > > > Pintu
-> > > >
-> > > > On Tue, Jun 26, 2018 at 12:52 PM Pintu Kumar <pintu.ping@gmail.com> wrote:
-> > > >>
-> > > >> Hi,
-> > > >> I am using Kernel 4.9.51 for beagle bone black with xenomai patches
-> > > >> from xenomai-next repo.
-> > > >>
-> > > >> I have installed xenomai-3-next using below:
-> > > >> # ./scripts/bootstrap
-> > > >> # ./configure --with-pic --with-core=cobalt --enable-smp --disable-tls
-> > > >> --enable-dlopen-libs
-> > > >> # make
-> > > >> # make install
-> > > >>
-> > > >> After that when I run xeno-test I get below error, and the test stopped.
-> > > >>
-> > > >> # root@bdk:~# /usr/xenomai/bin/xeno-test
-> > > >> ....
-> > > >> ....
-> > > >> vdso_access OK
-> > > >> xddp skipped (no kernel support)
-> > > >> Segmentation fault
-> > > >> /usr/xenomai/bin/smokey: test dlopen failed: Unknown error -1
-> > > >>
-> > > >> If you have any clue about this error, please let me know.
-> > > >>
-> > > >>
-> > > >> Thanks,
-> > > >> Pintu
+>
+> I'm afraid there is currently a lack of bandwidth here to dive into the
+> details. Either you drill deeper, systematically, and report your
+> findings for discussions and suggestions on the list, or you need to be
+> patient until someone finds the time to reproduce and resolve the issue(s).
+>
+> Jan
+>
+> --
+> Siemens AG, Corporate Technology, CT RDA IOT SES-DE
+> Corporate Competence Center Embedded Linux
 
