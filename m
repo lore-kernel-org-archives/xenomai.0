@@ -1,28 +1,11 @@
-References: <CAOuPNLg60S+am654fq55vTMoFV1=PfMp3as5MZtt5BHUacFRBQ@mail.gmail.com>
- <CAOuPNLiCfmUrDMWyX=N37hVJTBDEqwOtoOr1srf-55ks1qms+w@mail.gmail.com>
- <513744ad-f8fe-d54e-0618-fad492ed5bff@siemens.com>
- <5f46f00c-f09b-7439-93cf-4ff2a0343974@siemens.com>
- <6da8a3e2-7a76-afb2-c46c-7c173a8e444c@siemens.com>
- <CAOuPNLhYPGrP5s0y6e9HFUVrg2aDochOxF_fMkbjTmYnEvPOQQ@mail.gmail.com>
- <CAOuPNLjXN531P13WddSAQ-ZmnNOF_EQ4R+3eZ09VtG5zNvUH0g@mail.gmail.com>
- <aaa3a49e-ae7f-1696-199b-4ade86bd503f@siemens.com>
- <CAOuPNLi-p3A9LvkbpAVDapjN-dKgD8hJ3RJwJV+P=FvK2Pa7SA@mail.gmail.com>
- <8e8bd751-89b5-7006-a791-ae464838f5ed@siemens.com>
- <CAOuPNLh6ShYRG3E1Q+uad4phS3+QEtogzzu6RQpLz=N4qVQX1Q@mail.gmail.com>
- <b15f32c2-9bbc-c2f6-e65d-7331c0bc790a@siemens.com>
- <CAOuPNLiD8-WgbQYcZwzJPgp8XJXJFmzAxygEP9+ZsyCBQv--pA@mail.gmail.com>
- <CALLqZ8RxwJgP3ekWfJt-hGtxPY040p5rXW9DTGYDZfo=o8=3SA@mail.gmail.com>
- <CAOuPNLhFtzOGFX-pJ63Y520c+TnQ7qRGtvg05e6F4JybdwFoaQ@mail.gmail.com>
-From: Philippe Gerum <rpm@xenomai.org>
-Message-ID: <dc502512-b467-3e27-ec14-91fa11a5b698@xenomai.org>
-Date: Wed, 27 Jun 2018 20:10:22 +0200
+Date: Wed, 27 Jun 2018 14:54:54 -0400 (EDT)
+From: Jeff Melvile <jmelville@mitre.org>
+In-Reply-To: <f9fc1bc9-5794-4408-8f85-f7ad3a12a05e@xenomai.org>
+Message-ID: <alpine.DEB.2.20.1806271450060.17374@af78237-pc.mitre.org>
+References: <f9fc1bc9-5794-4408-8f85-f7ad3a12a05e@xenomai.org>
 MIME-Version: 1.0
-In-Reply-To: <CAOuPNLhFtzOGFX-pJ63Y520c+TnQ7qRGtvg05e6F4JybdwFoaQ@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] Kernel oops during rtnet loopback usage on x86_64
- (e1000e)
+Content-Type: text/plain; charset=US-ASCII
+Subject: Re: [Xenomai] Xenomai 3.0.7
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -31,27 +14,45 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Pintu Kumar <pintu.ping@gmail.com>, Greg Gallagher <greg@embeddedgreg.com>
-Cc: Jan Kiszka <jan.kiszka@siemens.com>, "Xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Philippe Gerum <rpm@xenomai.org>
+Cc: "Xenomai@xenomai.org" <Xenomai@xenomai.org>
 
-On 06/27/2018 07:29 PM, Pintu Kumar wrote:
-> On Wed, Jun 27, 2018 at 10:47 PM Greg Gallagher <greg@embeddedgreg.com> wrote:
->>
->> I don't think Beaglebone is supported currently in RTNet.
->>
+Philippe,
+
+Thanks again for all your work on this release.
+
+On Mon, 25 Jun 2018, Philippe Gerum wrote:
+
 > 
-> But I am just checking loopback interface with 127.0.0.1
-> I hope that should work on all boards and arch, even without
-> installing the net driver.
+> Xenomai 3.0.7 is out [1]. The GIT repository can be cloned from [2].
+> 
+> Some GPIO driver updates, several bug fixes in the Cobalt core, and a
+> critical bug removed from the pshared heap (for users of non-POSIX APIs
+> building with --enable-pshared).
+> 
+> An effort to sanitize some legacy from RTnet causing invalid accesses
+> from kernel space to userland memory also stands out, although more work
+> remains in this area.
+> 
+> This release supports up to the Linux 4.14 series for ARM, ARM64 and
+> PPC32. Work is still ahead for running Cobalt over 4.14/x86 though.
+
+Is ARM64 a typo? The v3.0.7 tag doesn't have ARM64 directories in 
+{kernel,lib}/cobalt/arch
+
+> 
+> [1] http://xenomai.org/downloads/xenomai/stable/latest/
+> [2] https://git.xenomai.org/xenomai/
+> 
+> -- 
+> Philippe.
+> 
+> _______________________________________________
+> Xenomai mailing list
+> Xenomai@xenomai.org
+> https://xenomai.org/mailman/listinfo/xenomai
 > 
 
-You must be the first and only user giving any feedback about rtnet over
-ARM if my memory serves me well. So either all others have been hiding
-behind for all these years, or you may be the only specimen of that species.
-
-FWIW, all of my rtnet fixes that went in since 3.0.6 have been tested on
-x86 exclusively.
-
--- 
-Philippe.
+Thanks,
+Jeff
 
