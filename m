@@ -1,4 +1,5 @@
 MIME-Version: 1.0
+In-Reply-To: <CAOuPNLiD8-WgbQYcZwzJPgp8XJXJFmzAxygEP9+ZsyCBQv--pA@mail.gmail.com>
 References: <CAOuPNLg60S+am654fq55vTMoFV1=PfMp3as5MZtt5BHUacFRBQ@mail.gmail.com>
  <2ee8fa04-7ad4-58d5-603b-1d41ad2533ec@siemens.com>
  <CAOuPNLiE-Fy3LJrozgsLE9ga0ibC+GOSHO6ciJppU_bnZtbx0g@mail.gmail.com>
@@ -16,10 +17,10 @@ References: <CAOuPNLg60S+am654fq55vTMoFV1=PfMp3as5MZtt5BHUacFRBQ@mail.gmail.com>
  <8e8bd751-89b5-7006-a791-ae464838f5ed@siemens.com>
  <CAOuPNLh6ShYRG3E1Q+uad4phS3+QEtogzzu6RQpLz=N4qVQX1Q@mail.gmail.com>
  <b15f32c2-9bbc-c2f6-e65d-7331c0bc790a@siemens.com>
-In-Reply-To: <b15f32c2-9bbc-c2f6-e65d-7331c0bc790a@siemens.com>
-From: Pintu Kumar <pintu.ping@gmail.com>
-Date: Wed, 27 Jun 2018 22:43:39 +0530
-Message-ID: <CAOuPNLiD8-WgbQYcZwzJPgp8XJXJFmzAxygEP9+ZsyCBQv--pA@mail.gmail.com>
+ <CAOuPNLiD8-WgbQYcZwzJPgp8XJXJFmzAxygEP9+ZsyCBQv--pA@mail.gmail.com>
+From: Greg Gallagher <greg@embeddedgreg.com>
+Date: Wed, 27 Jun 2018 13:17:07 -0400
+Message-ID: <CALLqZ8RxwJgP3ekWfJt-hGtxPY040p5rXW9DTGYDZfo=o8=3SA@mail.gmail.com>
 Content-Type: text/plain; charset="UTF-8"
 Subject: Re: [Xenomai] Kernel oops during rtnet loopback usage on x86_64
 	(e1000e)
@@ -31,44 +32,52 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jan Kiszka <jan.kiszka@siemens.com>
-Cc: "Xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Pintu Kumar <pintu.ping@gmail.com>
+Cc: Jan Kiszka <jan.kiszka@siemens.com>, "Xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On Wed, Jun 27, 2018 at 9:47 PM Jan Kiszka <jan.kiszka@siemens.com> wrote:
->
-> On 2018-06-27 16:12, Pintu Kumar wrote:
-> >> With nosmap, that particular issue should no longer occur (at least as
-> >> long as we can ask the kernel for this relaxation), so I suspect the
-> >> other effect you see now is something else.
-> >
-> > Just for the information, that issue occurred even on Beagle bone, and
-> > there is no smap on arm.
-> > However, it works on virtual box. how ?
->
-> Does it work when you go back to Xenomai 3.0.6? Then it would be a
-> regression of the copy-to/from-userspace improvements done after that
-> release, you could start bisecting which commit introduced it.
->
+I don't think Beaglebone is supported currently in RTNet.
 
-Nope, I never had success with rtnet on arm architecture (mainly
-beagle bone), even with the old 3.0.6.
-At least earlier, on x86_64 (SkyLake), I saw the loopback part working
-with 3.0.6 and my old xenomai kernel 4.9.51 (without those rtnet
-fixes) and with "nosmap" in commandline.
-
-But now it looks like the situation becomes more worse.
-I will have to freshly look into it, but since I use prepare_kernel to
-apply as single patch, it might be painful to bisect it.
-Will try to find the root cause though....
-
-Hoping for the best...
-
-> But I'm not sure right now if there isn't something similar to smap
-> (then just without a knob to turn it off) in the ARM architecture as well...
+On Wed, Jun 27, 2018 at 1:13 PM, Pintu Kumar <pintu.ping@gmail.com> wrote:
+> On Wed, Jun 27, 2018 at 9:47 PM Jan Kiszka <jan.kiszka@siemens.com> wrote:
+>>
+>> On 2018-06-27 16:12, Pintu Kumar wrote:
+>> >> With nosmap, that particular issue should no longer occur (at least as
+>> >> long as we can ask the kernel for this relaxation), so I suspect the
+>> >> other effect you see now is something else.
+>> >
+>> > Just for the information, that issue occurred even on Beagle bone, and
+>> > there is no smap on arm.
+>> > However, it works on virtual box. how ?
+>>
+>> Does it work when you go back to Xenomai 3.0.6? Then it would be a
+>> regression of the copy-to/from-userspace improvements done after that
+>> release, you could start bisecting which commit introduced it.
+>>
 >
-> Jan
+> Nope, I never had success with rtnet on arm architecture (mainly
+> beagle bone), even with the old 3.0.6.
+> At least earlier, on x86_64 (SkyLake), I saw the loopback part working
+> with 3.0.6 and my old xenomai kernel 4.9.51 (without those rtnet
+> fixes) and with "nosmap" in commandline.
 >
-> --
-> Siemens AG, Corporate Technology, CT RDA IOT SES-DE
-> Corporate Competence Center Embedded Linux
+> But now it looks like the situation becomes more worse.
+> I will have to freshly look into it, but since I use prepare_kernel to
+> apply as single patch, it might be painful to bisect it.
+> Will try to find the root cause though....
+>
+> Hoping for the best...
+>
+>> But I'm not sure right now if there isn't something similar to smap
+>> (then just without a knob to turn it off) in the ARM architecture as well...
+>>
+>> Jan
+>>
+>> --
+>> Siemens AG, Corporate Technology, CT RDA IOT SES-DE
+>> Corporate Competence Center Embedded Linux
+>
+> _______________________________________________
+> Xenomai mailing list
+> Xenomai@xenomai.org
+> https://xenomai.org/mailman/listinfo/xenomai
 
