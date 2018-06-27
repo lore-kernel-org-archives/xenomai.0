@@ -1,18 +1,20 @@
-From: Sagi Maimon <SMaimon@advaoptical.com>
-Date: Mon, 4 Jun 2018 11:01:20 +0000
-Message-ID: <f157fa6062bd4c35818862a8ea71b005@advaoptical.com>
-References: <81447d4fbbd44e3ca473502b0755813a@advaoptical.com>
- <0f1a1752-d76c-70ec-516e-3dac3ec3d223@siemens.com>
- <13af28363d0f460eabe263c73142a309@advaoptical.com>
- <9539ed17-c287-b340-a881-a2ee7f5780ba@siemens.com>
- <cc8ae296c59040beb7ce90866b836776@advaoptical.com>
- <495d4602-b883-c531-70c0-9a4767c4d44d@siemens.com>
-In-Reply-To: <495d4602-b883-c531-70c0-9a4767c4d44d@siemens.com>
-Content-Language: en-US
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-Subject: Re: [Xenomai] xenomai scheduling
+References: <CAOuPNLias38WgrA7SeQxC-Nh47q7kM8vRVR=ex_yFzQT1pnDZg@mail.gmail.com>
+ <CAOuPNLgNoHKH5EA3aanAqSMXQn1Y25oM3rCWNN7-5DUJxc=sBQ@mail.gmail.com>
+ <CALLqZ8TNfqRY0vqfCqExS+CxWGqTDe9Tm5-q3sMzbaY5Vi1nHQ@mail.gmail.com>
+ <CAOuPNLjpiUzDTskhMHfRpqsoPU_1gd1n3PrXa=K0GGbsG+WoNA@mail.gmail.com>
+ <CAOuPNLi0k3KmzKJjyE5vqQmW-92DoRXyB+pGMqqwSiwY7Tz8Sw@mail.gmail.com>
+ <CAOuPNLhQ-f_wm9u8ikWf_yB43f6c+8f8bm8zo36vEE+43ZpKtQ@mail.gmail.com>
+ <20180627143752.648bb696@md1pvb1c.ad001.siemens.net>
+ <CAOuPNLjW5AY1yMYux4FQXzvzd6FpyTP8tZ4JEJq3DZa3C5kiuA@mail.gmail.com>
+ <CAOuPNLgbE8iySGr12b8-eRdyr5iN3jhJ38iS9aZDprJUs+zRYw@mail.gmail.com>
+In-Reply-To: <CAOuPNLgbE8iySGr12b8-eRdyr5iN3jhJ38iS9aZDprJUs+zRYw@mail.gmail.com>
+From: Pintu Kumar <pintu.ping@gmail.com>
+Date: Wed, 27 Jun 2018 18:51:03 +0530
+Message-ID: <CAOuPNLg9Tw_MK2UrazRc2Bwg0Jsi2PU=aL2tzSaDRiY6qUhFww@mail.gmail.com>
+Content-Type: text/plain; charset="UTF-8"
+Subject: Re: [Xenomai] beaglebone: arm: xeno-test gives segmentation fault -
+	test dlopen failed
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -21,88 +23,184 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jan Kiszka <jan.kiszka@siemens.com>
-Cc: "Xenomai@xenomai.org" <Xenomai@xenomai.org>
+To: Henning Schild <henning.schild@siemens.com>
+Cc: "Xenomai@xenomai.org" <xenomai@xenomai.org>
 
-VGhhbmtzDQoNCi0tLS0tT3JpZ2luYWwgTWVzc2FnZS0tLS0tDQpGcm9tOiBKYW4gS2lzemthIDxq
-YW4ua2lzemthQHNpZW1lbnMuY29tPiANClNlbnQ6INeZ15XXncKg15EgMDQg15nXldeg15kgMjAx
-OCAxMzo1OQ0KVG86IFNhZ2kgTWFpbW9uIDxTTWFpbW9uQGFkdmFvcHRpY2FsLmNvbT4NCkNjOiBY
-ZW5vbWFpQHhlbm9tYWkub3JnDQpTdWJqZWN0OiBSZTogeGVub21haSBzY2hlZHVsaW5nDQoNCk9u
-IDIwMTgtMDYtMDQgMTI6NTAsIFNhZ2kgTWFpbW9uIHdyb3RlOg0KPiBIaSBKYW4sDQo+IFRoYW5r
-cyBmb3IgeW91ciBhbnN3ZXIuDQo+IENhbiB5b3UgcGxlYXNlIGV4cGxhaW4gc29tZXRoaW5nIGVs
-c2UgaW4gcmVnYXJkIHRvIHlvdXIgZXhwbGFuYXRpb24/DQo+IA0KPiBUaGUgTGludXggdGltZXIg
-SVNSIGRvZXMgbWFueSB0aGluZyBhbW9uZyB0aGVtIHRoZSBKaWZmaWVzIHVwZGF0ZSAod2hpY2gg
-ZWZmZWN0cyB0aGUgTGludXggdGltZSBoYW5kbGUpLg0KPiBCdXQgc2luY2UgdGhlIHRpbWVyIGlu
-dGVycnVwdCBpcyBub3cgZGVsYXllZCAsIGl0IGNhbiBhZmZlY3QgdGhlIExpbnV4IHRpbWUgaGFu
-ZGxpbmcgbWVjaGFuaXNtLg0KPiANCj4gQ2FuIHlvdSBwbGVhc2UgZXhwbGFpbj8NCg0KQWxyZWFk
-eSBvbiByZWFsIGhhcmR3YXJlLCB0aW1lciB0aWNrcyBtYXkgY29tZSBkZWxheWVkLiBUaGF0IGRv
-ZXMgbm90IGdldCBiZXR0ZXIgaW4gdmlydHVhbCBlbnZpcm9ubWVudHMgd2hlbiBhIGh5cGVydmlz
-b3IgdGltZS1zaGFyZXMgcGh5c2ljYWwgQ1BVcyBiZXR3ZWVuIG11bHRpcGxlIGd1ZXN0cy4gU28g
-TGludXggaXMgYWxyZWFkeSBwcmVwYXJlZCBmb3IgZGVsYXllZCB0aWNrcyAoZm9yIHRob3NlIGNh
-c2VzIHdoZXJlIHRpY2tzIGFyZSBzdGlsbCBuZWVkZWQgLSB0aW1la2VlcGluZyBpcyB0eXBpY2Fs
-bHkgdGlja2xlc3MgdGhlc2UgZGF5cykuDQoNCkJ1dCwgeW91IGFyZSByaWdodCwgaWYgYSBYZW5v
-bWFpIFJUIGFwcGxpY2F0aW9uIHN0YXJ2ZXMgTGludXggZm9yIHRvbyBsb25nIChodW5kcmVkcyBv
-ZiBtaWxsaXNlY29uZHMsIGlmIG5vdCBzZWNvbmRzKSwgTGludXggd2lsbCBydW4gaW50byB0cm91
-Ymxlcy4gVGhhdCdzIGFsc28gd2h5IHRoZXJlIGlzIGEgd2F0Y2hkb2cgaW4gWGVub21haSB0aGF0
-IG1vbml0b3JzIHJ1bi1hd2F5IFJUIHRhc2tzIGFuZCBpcyBhYmxlIHRvIGtpY2sgdGhlbSBvdXQg
-b2YgaGFyZCBSVC4gWW91IHNob3VsZCBkZXNpZ24geW91ciBhcHBsaWNhdGlvbiB0byBwcmV2ZW50
-IHRoYXQgc2FmZXR5IG1lYXN1cmUgaGF2aW5nIHRvIGZpcmUgaW4gdGhlIGZpcnN0IHBsYWNlLCB0
-aG91Z2guDQoNCkphbg0KDQo+IA0KPiBUaGFua3MsDQo+IA0KPiBTYWdpDQo+IA0KPiAtLS0tLU9y
-aWdpbmFsIE1lc3NhZ2UtLS0tLQ0KPiBGcm9tOiBKYW4gS2lzemthIDxqYW4ua2lzemthQHNpZW1l
-bnMuY29tPg0KPiBTZW50OiDXmdeV153CoNeRIDA0INeZ15XXoNeZIDIwMTggMTM6NDgNCj4gVG86
-IFNhZ2kgTWFpbW9uIDxTTWFpbW9uQGFkdmFvcHRpY2FsLmNvbT4NCj4gU3ViamVjdDogUmU6IHhl
-bm9tYWkgc2NoZWR1bGluZw0KPiANCj4gT2ZmLWxpc3Q/IE1heWJlIGJldHRlciByZXNlbmQgd2l0
-aCB0aGUgbGlzdCByZS1hZGRlZC4NCj4gDQo+IE9uIDIwMTgtMDYtMDQgMTI6NDYsIFNhZ2kgTWFp
-bW9uIHdyb3RlOg0KPj4gSGkgSmFuLA0KPj4gVGhhbmtzIGFnYWluLg0KPj4gQ2FuIHlvdSBwbGVh
-c2UgZXhwbGFpbiBzb21ldGhpbmcgZWxzZSBpbiByZWdhcmQgdG8geW91ciBleHBsYW5hdGlvbj8N
-Cj4+DQo+PiBUaGUgTGludXggdGltZXIgSVNSIGRvZXMgbWFueSB0aGluZyBhbW9uZyB0aGVtIHRo
-ZSBKaWZmaWVzIHVwZGF0ZSAod2hpY2ggZWZmZWN0cyB0aGUgTGludXggdGltZSBoYW5kbGUpLg0K
-Pj4gQnV0IHNpbmNlIHRoZSB0aW1lciBpbnRlcnJ1cHQgaXMgbm93IGRlbGF5ZWQgLCBpdCBjYW4g
-YWZmZWN0IHRoZSBMaW51eCB0aW1lIGhhbmRsaW5nIG1lY2hhbmlzbS4NCj4+DQo+PiBDYW4geW91
-IHBsZWFzZSBleHBsYWluPw0KPj4NCj4+IFRoYW5rcywNCj4+DQo+PiBTYWdpDQo+Pg0KPj4NCj4+
-DQo+Pg0KPj4gLS0tLS1PcmlnaW5hbCBNZXNzYWdlLS0tLS0NCj4+IEZyb206IEphbiBLaXN6a2Eg
-PGphbi5raXN6a2FAc2llbWVucy5jb20+DQo+PiBTZW50OiDXmdeV153CoNeRIDA0INeZ15XXoNeZ
-IDIwMTggMTM6MTYNCj4+IFRvOiBTYWdpIE1haW1vbiA8U01haW1vbkBhZHZhb3B0aWNhbC5jb20+
-OyBYZW5vbWFpQHhlbm9tYWkub3JnDQo+PiBTdWJqZWN0OiBSZTogeGVub21haSBzY2hlZHVsaW5n
-DQo+Pg0KPj4gT24gMjAxOC0wNi0wNCAxMDoyNCwgU2FnaSBNYWltb24gd3JvdGU6DQo+Pj4gSGkg
-YWxsLA0KPj4+IEdvaW5nIG92ZXIgdGhlIHhlbm9tYWkgZG9jdW1lbnRhdGlvbiBhbmQgY29kZSB0
-aGVyZSBpcyBzb21ldGhpbmcgSSBjYW4ndCBxdWl0ZSB1bmRlcnN0YW5kLg0KPj4+DQo+Pj4gQXMg
-ZmFyIGFzIEkgdW5kZXJzdGFuZCA6DQo+Pj4gT25lIG9mIHRoZSB4ZW5vbWFpL251Y2xldXMgdGFz
-a3MgaXMgSU5JVCB0YXNrLCB0aGlzIHRhc2sgdHJpZ2dlcnMgdGhlIExpbnV4IGtlcm5lbCBzY2hl
-ZHVsZXIgd2hlbiBubyBvdGhlciB4ZW5vbWFpIHRhc2sgbmVlZHMgdGhlIENQVSB0aW1lLg0KPj4N
-Cj4+IEkgc3VwcG9zZSB0aGF0IHJlZmVycyB0byB3aGF0IGlzIGNhbGxlZCB0aGUgUk9PVCB0YXNr
-OiBBIFhlbm9tYWkgdGFzayB3aGljaCByZXByZXNlbnRzIHRoZSB3aG9sZSBMaW51eCBrZXJuZWwg
-b24gYSBwYXJ0aWN1bGFyIGNvcmUgdG8gdGhlIFhlbm9tYWkgc2NoZWR1bGVyLiBJdCBydW5zIHdp
-dGggbG93ZXN0IHByaW9yaXR5LCBhcyBYZW5vbWFpIGlkbGUgdGFzay4NCj4+DQo+Pj4gSW4gdGhl
-IFJQSSBzeXN0ZW0gd2hlbiBhIHhlbm9tYWkgdGFzayBtaWdyYXRlIHRvIHNlY29uZGFyeSBkb21h
-aW4gKExpbnV4KSwgdGhlIElOSVQgdGFzayBnZXRzIHRoZSBtaWdyYXRpbmcgdGFzayBwcmlvcml0
-eS4NCj4+PiBUaGF0IHdheSB4ZW5vbWFpIHByZXNlcnZlIHRoZSBwcmlvcml0eSBzY2hlbWUgY29u
-c2lzdGVudCBhY3Jvc3MgYm90aCBzY2hlZHVsZXJzLg0KPj4NCj4+IFRoaXMgbGlrZWx5IHJlZmVy
-cyB0byB0aGUgcHJpb3JpdHkgaW5oZXJpdGFuY2UgZmVhdHVyZSBmb3IgdGhhdCBST09UIHRhc2sg
-aW4gY2FzZSBhIFhlbm9tYWkgdGFzayBtaWdyYXRlZCB0byBMaW51eCBtb2RlLiBUaGlzIGZlYXR1
-cmVzIHdhcyBvYnNvbGV0ZWQgYW5kIHJlbW92ZWQsIGlnbm9yZSBhbnkgcmVsYXRlZCBkZXNjcmlw
-dGlvbnMgaW4gb2xkZXIgZG9jdW1lbnRzLg0KPj4NCj4+Pg0KPj4+IEJ1dCB3aGF0IGFib3V0IExp
-bnV4IHRpbWVyIGludGVycnVwdD8NCj4+PiBJbiBjYXNlIG9mIExpbnV4IHRpbWVyIGludGVycnVw
-dCwgQURPUy94ZW5vbWFpIHdpbGwgcGFzcyBpbnRlcnJ1cHQgdG8gTGludXggaGFuZGxpbmcgd2hp
-Y2ggZHVyaW5nIHNjaGVkdWxlcl90aWNrKCkgd2lsbCBpbnZva2UgdGhlIExpbnV4IHNjaGVkdWxl
-ci4NCj4+PiBJbiB0aGlzIGNhc2UgYSBMaW51eCBwcm9jZXNzIGNhbiBnZXQgcHJlY2VkZW5jZSBv
-dmVyIGEgeGVub21haSB0YXNrLCBob3cgY2FuIGl0IGJlPw0KPj4NCj4+IExldCdzIGxvb2sgYXQg
-dGhlIHNpbXBsZSBjYXNlIGZpcnN0OiBUaGUgdGltZXIgaW50ZXJydXB0IGlzIGV4Y2x1c2l2ZWx5
-IHVzZWQgYnkgTGludXguIEluIHRoYXQgY2FzZSwgSS1waXBlIHdpbGwgcmVjb2duaXplIHRoZSBo
-YXJkd2FyZSBpbnRlcnJ1cHQgd2hlbiBpdCBhcnJpdmVzLCBidXQgdGhhdCBpbnRlcnJ1cHQgd2ls
-bCBvbmx5IGJlIHJlcGxheWVkIGluIGEgdmlydHVhbGl6ZWQgd2F5IGZvciBMaW51eCB3aGVuIHdl
-IHN3aXRjaCB0byB0aGF0IFJPT1QgdGFzaywgaS5lLiB3aGVuIHRoZXJlIGlzIG5vIFhlbm9tYWkg
-UlQgdGFzayBydW5uYWJsZSBhdCB0aGlzIHBvaW50LiBUaGVyZSBpcyBubyBleHBsaWNpdCBraWNr
-aW5nIG9mIHRoZSBMaW51eCBzY2hlZHVsZXIgaGVyZSwgdGhhdCBpcyBkb25lIGJ5IExpbnV4IGl0
-c2VsZiBhZnRlciBydW5uaW5nIHRoYXQgZGVsYXllZCB0aW1lciBpbnRlcnJ1cHQgaGFuZGxlci4N
-Cj4+DQo+PiBJdCdzIGEgYml0IG1vcmUgY29tcGxleCB3aGVuIHRoZSB0aW1lciBpcyBzaGFyZWQg
-YnkgTGludXggYW5kIFhlbm9tYWkuDQo+PiBJbiB0aGF0IGNhc2UsIHRoZSBMaW51eCB0aW1lciBl
-dmVudCBpcyBhYnN0cmFjdGVkIGJ5IFhlbm9tYWkgc29mdHdhcmUgdGltZXIgdGhhdCB1c2VzIHRo
-ZSBzaGFyZWQgaGFyZHdhcmUgdGltZXIuIElmIHRoYXQgc29mdHdhcmUgdGltZXIgZXhwaXJlZCwg
-WGVub21haSB3aWxsIHBlbmQgYSB2aXJ0dWFsIHRpbWVyIGludGVycnVwdCBmb3IgTGludXggYW5k
-IGxldCB0aGF0IG9uZSBoYW5kbGUgd2hlbiBzd2l0Y2hpbmcgdG8gTGludXggdGhlIG5leHQgdGlt
-ZSAtIGp1c3QgbGlrZSBpbiB0aGUgYWJvdmUgY2FzZS4NCj4+DQo+PiBIb3BlIHRoYXQgaGVscHMg
-dG8gY2xhcmlmeSB0aGUgcGljdHVyZS4NCj4+DQo+PiBKYW4NCj4+DQo+PiAtLQ0KPj4gU2llbWVu
-cyBBRywgQ29ycG9yYXRlIFRlY2hub2xvZ3ksIENUIFJEQSBJT1QgU0VTLURFIENvcnBvcmF0ZSAN
-Cj4+IENvbXBldGVuY2UgQ2VudGVyIEVtYmVkZGVkIExpbnV4DQo+Pg0K
+Hi,
+
+Sorry, but both the below patches are already applied to my xenomai-next repo:
+build: link dlopen libs with "nodelete"
+smokey/dlopen: fix testcase
+
+Still I am facing dlopen issue.
+Is there any other patches I am missing?
+
+
+Thanks,
+Pintu
+
+On Wed, Jun 27, 2018 at 6:47 PM Pintu Kumar <pintu.ping@gmail.com> wrote:
+>
+> Hi,
+>
+> One doubt, how do we clone 3.0.7 ?
+> Is it part of the following branches?
+>   remotes/origin/next
+>   remotes/origin/stable/v3.0.x
+>
+> I could not find any branch with the name 3.0.7.
+>
+> Is all 3 patches important, or only this is fine:
+> build: link dlopen libs with "nodelete"
+> smokey/dlopen: fix testcase
+>
+> Sorry, but can you list down all 3 commits.
+>
+>
+> Thanks,
+> Pintu
+>
+>
+>
+> Thanks,
+> Pintu
+> On Wed, Jun 27, 2018 at 6:30 PM Pintu Kumar <pintu.ping@gmail.com> wrote:
+> >
+> > Dear Henning,
+> >
+> > Thanks so much for your reply.
+> > I am actually using xenomai-next branch.
+> > With last commit as:
+> > commit ffb68112e2342a62a1f70916a35a3d68e875b12c
+> > Author: Philippe Gerum <rpm@xenomai.org>
+> > Date:   Mon May 21 12:54:59 2018 +0200
+> >
+> >     scripts/prepare-kernel.sh: drop left overs from obsolete ports
+> >
+> > Anyways, I will check with your reference commits.
+> >
+> > Thanks,
+> > Pintu
+> > On Wed, Jun 27, 2018 at 6:07 PM Henning Schild
+> > <henning.schild@siemens.com> wrote:
+> > >
+> > > Hi Pintu,
+> > >
+> > > i guess you might be using v3.0.6. There are a couple of commits on top
+> > > of that
+> > > https://gitlab.denx.de/Xenomai/xenomai/commit/aa008686091484c88cbb809bc190133a98769a30
+> > > and 2 parents
+> > > All three are in v3.0.7, which hopefully solves your problem.
+> > >
+> > > regards,
+> > > Henning
+> > >
+> > > Am Wed, 27 Jun 2018 16:11:43 +0530
+> > > schrieb Pintu Kumar <pintu.ping@gmail.com>:
+> > >
+> > > > Dear Henning,
+> > > >
+> > > > I saw your commit regarding dlopen here:
+> > > > https://xenomai.org/pipermail/xenomai/2018-February/038351.html
+> > > >
+> > > > We are facing dlopen error with xeno-test on arm (beagle bone) and
+> > > > arm64 (hikey) boards.
+> > > > Segmentation fault
+> > > > /usr/xenomai/bin/smokey: test dlopen failed: Unknown error -1
+> > > >
+> > > > Do you have any clue regarding this issue.
+> > > > Earlier xeno-test worked for us, but after this commit xeno-test is
+> > > > failing.
+> > > >
+> > > > Currently we dont need dlopen test.
+> > > > So, please let us know how to disable dlopen test to pass the
+> > > > xeno-test report.
+> > > >
+> > > >
+> > > > Thanks,
+> > > > Pintu
+> > > >
+> > > >
+> > > >
+> > > > On Tue, Jun 26, 2018 at 11:07 PM Pintu Kumar <pintu.ping@gmail.com>
+> > > > wrote:
+> > > > >
+> > > > > One more thing,
+> > > > > On x86 xeno-test works fine even with dlopen.
+> > > > >
+> > > > > This problem is seen only of arm and arm64 boards.
+> > > > >
+> > > > > Thanks,
+> > > > > Pintu
+> > > > > On Tue, Jun 26, 2018 at 10:16 PM Pintu Kumar <pintu.ping@gmail.com>
+> > > > > wrote:
+> > > > > >
+> > > > > > Ok Greg thanks a lot.
+> > > > > >
+> > > > > > Yes, I can recompile it, but for now I want to get rid of this
+> > > > > > dlopen to pass rest of xeno-test.
+> > > > > > Please let me know how to disable it from configure.ac
+> > > > > >
+> > > > > > Thanks,
+> > > > > > Pintu
+> > > > > > On Tue, Jun 26, 2018 at 8:57 PM Greg Gallagher
+> > > > > > <greg@embeddedgreg.com> wrote:
+> > > > > > >
+> > > > > > > Hi,
+> > > > > > >   I'll take a look at this tonight.  I'll confirm if this test
+> > > > > > > is crashing on all platforms or just BB.  To disable I believe
+> > > > > > > you'll have to recompile the tests.
+> > > > > > >
+> > > > > > > -Greg
+> > > > > > >
+> > > > > > > On Tue, Jun 26, 2018 at 10:43 AM, Pintu Kumar
+> > > > > > > <pintu.ping@gmail.com> wrote:
+> > > > > > > > Dear Greg,
+> > > > > > > >
+> > > > > > > > Please let me know how to disable "dlopen" test in
+> > > > > > > > xenomai-next.
+> > > > > > > >
+> > > > > > > > I even tried, without dlopen parameter during ./configure but
+> > > > > > > > still I get the same issue.
+> > > > > > > > #  ./configure --enable-smp
+> > > > > > > >
+> > > > > > > > We did not face this issue earlier on xenomai-3 stable branch.
+> > > > > > > > So, I am planning to disable it right now.
+> > > > > > > > Please help!
+> > > > > > > >
+> > > > > > > >
+> > > > > > > > Thanks,
+> > > > > > > > Pintu
+> > > > > > > >
+> > > > > > > > On Tue, Jun 26, 2018 at 12:52 PM Pintu Kumar
+> > > > > > > > <pintu.ping@gmail.com> wrote:
+> > > > > > > >>
+> > > > > > > >> Hi,
+> > > > > > > >> I am using Kernel 4.9.51 for beagle bone black with xenomai
+> > > > > > > >> patches from xenomai-next repo.
+> > > > > > > >>
+> > > > > > > >> I have installed xenomai-3-next using below:
+> > > > > > > >> # ./scripts/bootstrap
+> > > > > > > >> # ./configure --with-pic --with-core=cobalt --enable-smp
+> > > > > > > >> --disable-tls --enable-dlopen-libs
+> > > > > > > >> # make
+> > > > > > > >> # make install
+> > > > > > > >>
+> > > > > > > >> After that when I run xeno-test I get below error, and the
+> > > > > > > >> test stopped.
+> > > > > > > >>
+> > > > > > > >> # root@bdk:~# /usr/xenomai/bin/xeno-test
+> > > > > > > >> ....
+> > > > > > > >> ....
+> > > > > > > >> vdso_access OK
+> > > > > > > >> xddp skipped (no kernel support)
+> > > > > > > >> Segmentation fault
+> > > > > > > >> /usr/xenomai/bin/smokey: test dlopen failed: Unknown error -1
+> > > > > > > >>
+> > > > > > > >> If you have any clue about this error, please let me know.
+> > > > > > > >>
+> > > > > > > >>
+> > > > > > > >> Thanks,
+> > > > > > > >> Pintu
+> > >
 
