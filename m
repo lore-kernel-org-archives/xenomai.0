@@ -1,15 +1,13 @@
-References: <CAD5jUk8z4BibX8cQa4rnit2ihRjO0G0tg8TeyRHrHtRSHKKc5g@mail.gmail.com>
- <3eccc488-88c7-ce6f-50b2-0d85b9adefd7@xenomai.org>
- <CAD5jUk8_t05o5H+GfCfE_vU4ALgE6B==P-ukEZ3U-gOtBCafyA@mail.gmail.com>
-From: Philippe Gerum <rpm@xenomai.org>
-Message-ID: <3e6203e0-27cb-829f-5be1-3623dcca401a@xenomai.org>
-Date: Wed, 27 Jun 2018 17:54:00 +0200
+References: <0184EA26B2509940AA629AE1405DD7F201D0EFC5@dggema523-mbx.china.huawei.com>
+From: Jan Kiszka <jan.kiszka@siemens.com>
+Message-ID: <1722eb75-f2e5-3263-5246-61260ab99d4e@siemens.com>
+Date: Wed, 27 Jun 2018 18:03:49 +0200
 MIME-Version: 1.0
-In-Reply-To: <CAD5jUk8_t05o5H+GfCfE_vU4ALgE6B==P-ukEZ3U-gOtBCafyA@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8
+In-Reply-To: <0184EA26B2509940AA629AE1405DD7F201D0EFC5@dggema523-mbx.china.huawei.com>
+Content-Type: text/plain; charset="utf-8"
 Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] Migrating some kernel code from Xenomai 2.6 to 3.0
+Content-Transfer-Encoding: 8bit
+Subject: Re: [Xenomai] with/without RTmac to the RTnet
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -18,39 +16,34 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Radu Rendec <radu.rendec@gmail.com>
-Cc: xenomai@xenomai.org
+To: gengdongjiu <gengdongjiu@huawei.com>, Greg Gallagher <greg@embeddedgreg.com>, Pintu Kumar <pintu.ping@gmail.com>, Philippe Gerum <rpm@xenomai.org>, "Xenomai@xenomai.org" <xenomai@xenomai.org>
+Cc: "Ouyangzhaowei (Charles)" <ouyangzhaowei@huawei.com>, yangchuanlong <yangchuanlong@huawei.com>, "zhangjianwei (D)" <zhangjianwei8@huawei.com>, "liupeifeng (A)" <liupeifeng3@huawei.com>
 
-On 06/27/2018 05:30 PM, Radu Rendec wrote:
-> On Wed, Jun 27, 2018 at 10:55 AM Philippe Gerum <rpm@xenomai.org> wrote:
->> The only API available from kernel space is RTDM. Since you already have
->> a RTDM driver in place, all you need to do is to expose a read() or
->> ioctl() service to userland, which would wait on rtdm_sem_down to be
->> posted by your IRQ handler via rtdm_sem_up.
+On 2018-06-27 17:32, gengdongjiu wrote:
+> Hi,
 > 
-> Thanks for the detailed answer, Philippe! This should be enough to get
-> me going.
+> Sorry to disturb you, I want to consult with you two questions:
 > 
-> On the other hand, the same semaphore is sometimes posted from user
-> space and that complicates things (I guess I would have to create
-> another ioctl() that posts the semaphore from kernel space).
-> 
+> 1.       For the RTnet,  do you usually using the witout-RTmac mode or
+> with-RTmac mode?  From the spec and code, it seems the RTmac is very
+>  complex and reduce the real-time.
 
-That should not amount for a lot of additional kernel code. API-wise,
-you could also use read/write pairs to pend/post the sema4 instead of
-ioctls.
+RTmac was primarily designed for colliding networks, i.e. hub-based
+infrastructure. If you know your network load and all your applications
+on the network behave (no transmission bursts), you do not need RTmac
+(+TDMA).
 
-> Since the project is on a tight schedule, I'm also considering leaving
-> the code on Xenomai 2.6 for now. So here's another question: is there
-> any chance Xenomai 2.6 could work on kernel 4.4? How about ipipe-core?
+> 
+> 2.       Does the default Xenomai driver supports intel  I210 network
+> <?keyword=network> card <?keyword=card>?
 > 
 
-That support won't happen in mainline, 2.6 is EOL. The changes involved
-in supporting this on your end should amount to update Xenomai 2.6 for
-building over newer kernels. This may or may not be easy depending on
-the arch (x86 is unlikely to be that simple). The legacy I-pipe API is
-still there in 4.4 and 4.9 patch series, dropped by 4.14 though.
+That should be the rt_igb IIRC, or rt_e1000e. Give it a try (or compare
+PCI IDs in advance).
+
+Jan
 
 -- 
-Philippe.
+Siemens AG, Corporate Technology, CT RDA IOT SES-DE
+Corporate Competence Center Embedded Linux
 
