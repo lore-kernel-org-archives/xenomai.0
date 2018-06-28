@@ -1,13 +1,13 @@
+References: <77f54229.2964.1644403f006.Coremail.v907240791@163.com>
 From: Philippe Gerum <rpm@xenomai.org>
-References: <CAOuPNLiWw7R9j75OvFWq6RAcwgiaGaOt_4Ep0hXOz-ZOMkrrww@mail.gmail.com>
-Message-ID: <4e64e78c-0b25-c6e6-90cb-f48c7cdd5051@xenomai.org>
-Date: Tue, 5 Jun 2018 14:25:02 +0200
+Message-ID: <d8e6a576-fb31-92ed-a304-eb9f57c38f87@xenomai.org>
+Date: Thu, 28 Jun 2018 09:59:27 +0200
 MIME-Version: 1.0
-In-Reply-To: <CAOuPNLiWw7R9j75OvFWq6RAcwgiaGaOt_4Ep0hXOz-ZOMkrrww@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8
+In-Reply-To: <77f54229.2964.1644403f006.Coremail.v907240791@163.com>
+Content-Type: text/plain; charset="utf-8"
 Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-Subject: [Xenomai] Applying arch specific ipipe patches - commit by commit
+Content-Transfer-Encoding: 8bit
+Subject: Re: [Xenomai] Some Problem with build sam5d36 IMAGE
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,58 +16,42 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Pintu Kumar <pintu.ping@gmail.com>, "Xenomai@xenomai.org" <xenomai@xenomai.org>, Greg Gallagher <greg@embeddedgreg.com>
+To: =?UTF-8?B?MTDlubQ=?= <v907240791@163.com>, xenomai@xenomai.org
 
-On 06/04/2018 12:24 PM, Pintu Kumar wrote:
-> Dear Greg,
+On 06/28/2018 03:31 AM, 10年 wrote:
+> ./prepare-kernel.sh --arch=arm --adeos=/usr/src/linux/ipipe-core-4.14.36-arm-1.patch --linux=/usr/src/linux/linux-4.14.36
+> make menuconfig     ----and I load file in /usr/src/linux/linux-4.14.36/arch/arm/configs/sama5_defconfig   --and save in /usr/src/linux/linux-4.14.36/.config
 > 
-> I have one specific requirement regarding applying ipipe and xenomai
-> patches to our kernel.
+> make ARCH=arm CROSS_COMPILE=arm-none-linux-gnueabi- bzImage modules
 > 
-> I am using kernel version: 4.9.51> I have all arch (x86, arm, arm64) changes in single kernel itself.
+> That's all I do, while building, some errors coming that :
 > 
-> On this kernel I want to first apply "ipipe_4.9.51_x86" patches and
-> then in the same kernel I want to apply "ipipe_4.9.51_arm" and
-> "ipipe_4.9.51_arm64" patches.
 > 
-> I cannot do it because it may create several conflicts. It can contain
-> non-arch specific common changes that it will try to apply twice.
+>  AS      arch/arm/xenomai/switch.o
+>   CC      arch/arm/xenomai/syscall.o
+> In file included from arch/arm/xenomai/include/asm/xenomai/syscall.h:29:0,
+>                  from arch/arm/xenomai/syscall.c:22:
+> ./include/asm-generic/xenomai/syscall.h: In function 'cobalt_copy_from_user':
+> ./include/asm-generic/xenomai/syscall.h:49:3: error: implicit declaration of function '__copy_from_user_inatomic' [-Werror=implicit-function-declaration]
+>    __xn_copy_from_user(dst, src, size)) ? -EFAULT : 0;
+>    ^
+> ./include/asm-generic/xenomai/syscall.h: In function 'cobalt_copy_to_user':
+> ./include/asm-generic/xenomai/syscall.h:56:3: error: implicit declaration of function '__copy_to_user_inatomic' [-Werror=implicit-function-declaration]
+>    __xn_copy_to_user(dst, src, size)) ? -EFAULT : 0;
+>    ^
+> cc1: some warnings being treated as errors
+> scripts/Makefile.build:328: recipe for target 'arch/arm/xenomai/syscall.o' failed
+> make[1]: *** [arch/arm/xenomai/syscall.o] Error 1
+> Makefile:1040: recipe for target 'arch/arm/xenomai' failed
+> make: *** [arch/arm/xenomai] Error 2
 > 
-
-The tree at [1] precisely provides such integrated combo with all the
-supported archs. All patches are extracted from it. Rebasing your code
-on top of that tree would spare you those issues.
-
-> So, if you have any suggestions about applying the patches commit by
-> commit for each arch please let me know.
-> Or, if we can modify the prepare_kernel script to handle this case,
-> then that is also fine.
 > 
-> Currently, my idea is:
-> - First apply arch/x86 patches from ipipe-x86 kernel
-> - Then apply arch/arm patches from ipipe-arm kernel
-> - Then apply common patches between x86 and arm
-> - Then apply x86 specific non-arch patches
-> - Then apply arm specific non-arch patches
-> - Then resolve some of the conflicts
 > 
-> Do you think this process will work out easily?
-> Can I use prepare_kernel for the same?
-> If I have to apply commit by commit, how to decide which commit to start with?
 > 
-> If you have any better method please let me know.
+> Can any body help me ?
 > 
 
-Try this from the cloned top level directory of [1]:
-
-$ ./scripts/ipipe/genpatches.sh --split
-
-This is another way of getting the noarch and arch-specific bits of the
-I-pipe separately. If the script aborts in error, just pick the script
-from the latest I-pipe version in the series (e.g. 4.9.92 for the 4.9
-series).
-
-[1] git://git.xenomai.org/ipipe.git
+Support for kernel 4.14 was introduced in Xenomai 3.0.7.
 
 -- 
 Philippe.
