@@ -1,12 +1,22 @@
-From: =?UTF-8?Q?St=C3=A9phane_Reichert?= <sreichert@sepro-group.com>
-Date: Thu, 28 Jun 2018 17:28:29 +0200 (CEST)
-Message-ID: <008d01d40ef4$aa152ab0$fe3f8010$@sepro-group.com>
+Date: Thu, 28 Jun 2018 17:36:15 +0200
+From: Henning Schild <henning.schild@siemens.com>
+Message-ID: <20180628173615.10a16310@md1pvb1c.ad001.siemens.net>
+In-Reply-To: <CAOuPNLg9Tw_MK2UrazRc2Bwg0Jsi2PU=aL2tzSaDRiY6qUhFww@mail.gmail.com>
+References: <CAOuPNLias38WgrA7SeQxC-Nh47q7kM8vRVR=ex_yFzQT1pnDZg@mail.gmail.com>
+ <CAOuPNLgNoHKH5EA3aanAqSMXQn1Y25oM3rCWNN7-5DUJxc=sBQ@mail.gmail.com>
+ <CALLqZ8TNfqRY0vqfCqExS+CxWGqTDe9Tm5-q3sMzbaY5Vi1nHQ@mail.gmail.com>
+ <CAOuPNLjpiUzDTskhMHfRpqsoPU_1gd1n3PrXa=K0GGbsG+WoNA@mail.gmail.com>
+ <CAOuPNLi0k3KmzKJjyE5vqQmW-92DoRXyB+pGMqqwSiwY7Tz8Sw@mail.gmail.com>
+ <CAOuPNLhQ-f_wm9u8ikWf_yB43f6c+8f8bm8zo36vEE+43ZpKtQ@mail.gmail.com>
+ <20180627143752.648bb696@md1pvb1c.ad001.siemens.net>
+ <CAOuPNLjW5AY1yMYux4FQXzvzd6FpyTP8tZ4JEJq3DZa3C5kiuA@mail.gmail.com>
+ <CAOuPNLgbE8iySGr12b8-eRdyr5iN3jhJ38iS9aZDprJUs+zRYw@mail.gmail.com>
+ <CAOuPNLg9Tw_MK2UrazRc2Bwg0Jsi2PU=aL2tzSaDRiY6qUhFww@mail.gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain;
-	charset="UTF-8"
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
-Content-Language: fr
-Subject: [Xenomai] Assertion current-magic 0 failed
+Subject: Re: [Xenomai] beaglebone: arm: xeno-test gives segmentation fault -
+ test dlopen failed
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,93 +25,204 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
+To: Pintu Kumar <pintu.ping@gmail.com>
+Cc: "Xenomai@xenomai.org" <xenomai@xenomai.org>
 
 Hi,
 
-I am testing the new version 3.0.7 on our system (iMX 6 on 4.1.46 kernel), 
-and I would like to know
-if anybody else encountered this error :
+could you please try v3.0.7 (733a32b71f77dfb3e7a64039d0692e6c9d5d1cfe)
+this is a tag not a branch. Or use branch "stable/v3.0.x".
+The commit from "next" you mentioned does not exist anymore, one of the
+pleasures of using git ... do not use "next" unless you really have to!
 
-threadobj.c:1344: threadobj_prologue: Assertion `current->magic == 0' 
-failed.
+If you are not using dlopen just drop "--enable-dlopen-libs" from your
+configure options.
 
-I compile the kernel with --enable-pshared --enable 
-registry --enable-debug=full.
+Henning
 
-Here is a backtrace I get on the debug signal callback:
+Am Wed, 27 Jun 2018 18:51:03 +0530
+schrieb Pintu Kumar <pintu.ping@gmail.com>:
 
-# Mode switch (reason: triggered fault), aborting. Backtrace:
-Retrieve backtrace...
-./tests_integration_lib_ipc(Unable to handle kernel NULL pointer dereference 
-at virtual address 00000004
-4x180)[0[x01020206000]08l0e0r0+
-]]/ l*ipbd=39180831/libc.so.,6 (*+p0txe2=50105000)0[00, 
-*ppte=000000000x76ca3150
-
-/lib/libcopperplate.so.0(syncobj_lIonctke+r0nxa8l4 error: Oops: 17 [#1] 
-PREEMPT SMP ARM
-l0x76Meo1dau7lee8s]
- i/nlkiebd/in:libcopper pcltarte.so.0(syncluster_fin 
-dcocbmj+0x34)[0x76e18eec]
-/lib/li buaslbc_hfe_mayc.mso.0(al u_serialchemy_bind 
-_uosbbj_efc_te+c0mx98)[0x76e 3ge_1ccd0c]
-nlib/libalchemy.so. 0u(_rett_hheerap_bind+0x30 libcomposite)[0x76e411c 4c]o
- f/irgofost/libs/lib_ iwplc1.2sxox(init_local_data+0x6 0w)l[c0oxr7e6f1085c]
-/roo mac80211t/libs/li bc_figp8c0.2s1o1(rt_shm_open+ 0rxf7k0i)l[l0x76f10bfc]
- /tests _filnetxecgarnation_lib_ip wlcore_sdioc[0x12d68]
-dc/il_ihbd/rlci_biamlchemy. suos.b0m(i+s0cx_ai4m4x8)[0x76e43 4c4i8_]h
-]r/clib/libcoppe udc_corerplate.so. 0c(a+n0_xd8e3v14)[0x76e1a314
-
-Ulib/libcobalt.so.2(+0x1058c)[0x76df558cC]P
- : 1 PID: 296 Comm: Reception task  Not tainted 4.1.46-ipipe #6
-Hardware name: Freescale i.MX6 Quad/DualLite (Device Tree)
-task: a885dd80 ti: a97fa000 task.ti: a97fa000
-PC is at cobalt_signal_send+0xf8/0x1f8
-LR is at 0x18
-pc : [<800acedc>]    lr : [<00000018>]    psr: a0080093
-sp : a97fbf00  ip : a94ff948  fp : 8095f680
-r10: ab70e6e0  r9 : 00000124  r8 : 8088c880
-r7 : 00000001  r6 : 00000000  r5 : 00800000  r4 : a94ff4d8
-r3 : 00000017  r2 : 00000000  r1 : c08f9000  r0 : c09e5800
-Flags: NzCv  IRQs off  FIQs on  Mode SVC_32  ISA ARM  Segment user
-Control: 10c53c7d  Table: 38ec804a  DAC: 00000015
-Process Reception task  (pid: 296, stack limit = 0xa97fa220)
-Stack: (0xa97fbf00 to 0xa97fc000)
-bf00: 00000018 c08f9000 c09e5800 800ad534 c09e5800 00000018 00000001 
-00000000
-bf20: 8088c880 808945fc 00000018 800ad788 c09e9008 00000022 a97fbfb0 
-800ad71c
-bf40: 808945fc 00000001 ab70e6e0 800ae248 762bce38 a97fbfb0 808945fc 
-20080013
-bf60: 00000001 ab70d6e0 8095f680 8088b6e0 ab70e6e0 8008a14c 8095f680 
-a97fbfb0
-bf80: 8088b6e0 8088da20 04000004 762bce14 762bce38 00000000 000f0042 
-8000f028
-bfa0: a97fa000 00000002 762718cc 8000ef84 10000040 00000124 00000018 
-00000124
-bfc0: 762bce14 762bce38 00000000 000f0042 76f23594 0001e030 76271c74 
-762718cc
-bfe0: 00000018 76271870 000122ac 76df5148 20080010 10000040 8473a46f 
-c307ae3a
-[<800acedc>] (cobalt_signal_send) from [<800ad534>] 
-(__cobalt_kill+0x190/0x1b0)
-[<800ad534>] (__cobalt_kill) from [<800ad788>] (CoBaLt_kill+0x6c/0xcc)
-[<800ad788>] (CoBaLt_kill) from [<800ae248>] (ipipe_syscall_hook+0xfc/0x270)
-[<800ae248>] (ipipe_syscall_hook) from [<8008a14c>] 
-(__ipipe_notify_syscall+0xa8/0x1a4)
-[<8008a14c>] (__ipipe_notify_syscall) from [<8000ef84>] 
-(pipeline_syscall+0x8/0x24)
-Code: e5813084 e583c000 e8bd8070 e59421b0 (e592c004)
----[ end trace fcd211fc12a8e500 ]---
-tests_integration_lib_ipc: threadobj.c:1344: threadobj_prologue: Assertion 
-`current->magic == 0' failed.
-
-[2]+  Aborted                    ./tests_integration_lib_ipc --session=rct 
-cha
-#
-
-Best regards
-Stephane
+> Hi,
+> 
+> Sorry, but both the below patches are already applied to my
+> xenomai-next repo: build: link dlopen libs with "nodelete"
+> smokey/dlopen: fix testcase
+> 
+> Still I am facing dlopen issue.
+> Is there any other patches I am missing?
+> 
+> 
+> Thanks,
+> Pintu
+> 
+> On Wed, Jun 27, 2018 at 6:47 PM Pintu Kumar <pintu.ping@gmail.com>
+> wrote:
+> >
+> > Hi,
+> >
+> > One doubt, how do we clone 3.0.7 ?
+> > Is it part of the following branches?
+> >   remotes/origin/next
+> >   remotes/origin/stable/v3.0.x
+> >
+> > I could not find any branch with the name 3.0.7.
+> >
+> > Is all 3 patches important, or only this is fine:
+> > build: link dlopen libs with "nodelete"
+> > smokey/dlopen: fix testcase
+> >
+> > Sorry, but can you list down all 3 commits.
+> >
+> >
+> > Thanks,
+> > Pintu
+> >
+> >
+> >
+> > Thanks,
+> > Pintu
+> > On Wed, Jun 27, 2018 at 6:30 PM Pintu Kumar <pintu.ping@gmail.com>
+> > wrote:  
+> > >
+> > > Dear Henning,
+> > >
+> > > Thanks so much for your reply.
+> > > I am actually using xenomai-next branch.
+> > > With last commit as:
+> > > commit ffb68112e2342a62a1f70916a35a3d68e875b12c
+> > > Author: Philippe Gerum <rpm@xenomai.org>
+> > > Date:   Mon May 21 12:54:59 2018 +0200
+> > >
+> > >     scripts/prepare-kernel.sh: drop left overs from obsolete ports
+> > >
+> > > Anyways, I will check with your reference commits.
+> > >
+> > > Thanks,
+> > > Pintu
+> > > On Wed, Jun 27, 2018 at 6:07 PM Henning Schild
+> > > <henning.schild@siemens.com> wrote:  
+> > > >
+> > > > Hi Pintu,
+> > > >
+> > > > i guess you might be using v3.0.6. There are a couple of
+> > > > commits on top of that
+> > > > https://gitlab.denx.de/Xenomai/xenomai/commit/aa008686091484c88cbb809bc190133a98769a30
+> > > > and 2 parents
+> > > > All three are in v3.0.7, which hopefully solves your problem.
+> > > >
+> > > > regards,
+> > > > Henning
+> > > >
+> > > > Am Wed, 27 Jun 2018 16:11:43 +0530
+> > > > schrieb Pintu Kumar <pintu.ping@gmail.com>:
+> > > >  
+> > > > > Dear Henning,
+> > > > >
+> > > > > I saw your commit regarding dlopen here:
+> > > > > https://xenomai.org/pipermail/xenomai/2018-February/038351.html
+> > > > >
+> > > > > We are facing dlopen error with xeno-test on arm (beagle
+> > > > > bone) and arm64 (hikey) boards.
+> > > > > Segmentation fault
+> > > > > /usr/xenomai/bin/smokey: test dlopen failed: Unknown error -1
+> > > > >
+> > > > > Do you have any clue regarding this issue.
+> > > > > Earlier xeno-test worked for us, but after this commit
+> > > > > xeno-test is failing.
+> > > > >
+> > > > > Currently we dont need dlopen test.
+> > > > > So, please let us know how to disable dlopen test to pass the
+> > > > > xeno-test report.
+> > > > >
+> > > > >
+> > > > > Thanks,
+> > > > > Pintu
+> > > > >
+> > > > >
+> > > > >
+> > > > > On Tue, Jun 26, 2018 at 11:07 PM Pintu Kumar
+> > > > > <pintu.ping@gmail.com> wrote:  
+> > > > > >
+> > > > > > One more thing,
+> > > > > > On x86 xeno-test works fine even with dlopen.
+> > > > > >
+> > > > > > This problem is seen only of arm and arm64 boards.
+> > > > > >
+> > > > > > Thanks,
+> > > > > > Pintu
+> > > > > > On Tue, Jun 26, 2018 at 10:16 PM Pintu Kumar
+> > > > > > <pintu.ping@gmail.com> wrote:  
+> > > > > > >
+> > > > > > > Ok Greg thanks a lot.
+> > > > > > >
+> > > > > > > Yes, I can recompile it, but for now I want to get rid of
+> > > > > > > this dlopen to pass rest of xeno-test.
+> > > > > > > Please let me know how to disable it from configure.ac
+> > > > > > >
+> > > > > > > Thanks,
+> > > > > > > Pintu
+> > > > > > > On Tue, Jun 26, 2018 at 8:57 PM Greg Gallagher
+> > > > > > > <greg@embeddedgreg.com> wrote:  
+> > > > > > > >
+> > > > > > > > Hi,
+> > > > > > > >   I'll take a look at this tonight.  I'll confirm if
+> > > > > > > > this test is crashing on all platforms or just BB.  To
+> > > > > > > > disable I believe you'll have to recompile the tests.
+> > > > > > > >
+> > > > > > > > -Greg
+> > > > > > > >
+> > > > > > > > On Tue, Jun 26, 2018 at 10:43 AM, Pintu Kumar
+> > > > > > > > <pintu.ping@gmail.com> wrote:  
+> > > > > > > > > Dear Greg,
+> > > > > > > > >
+> > > > > > > > > Please let me know how to disable "dlopen" test in
+> > > > > > > > > xenomai-next.
+> > > > > > > > >
+> > > > > > > > > I even tried, without dlopen parameter
+> > > > > > > > > during ./configure but still I get the same issue.
+> > > > > > > > > #  ./configure --enable-smp
+> > > > > > > > >
+> > > > > > > > > We did not face this issue earlier on xenomai-3
+> > > > > > > > > stable branch. So, I am planning to disable it right
+> > > > > > > > > now. Please help!
+> > > > > > > > >
+> > > > > > > > >
+> > > > > > > > > Thanks,
+> > > > > > > > > Pintu
+> > > > > > > > >
+> > > > > > > > > On Tue, Jun 26, 2018 at 12:52 PM Pintu Kumar
+> > > > > > > > > <pintu.ping@gmail.com> wrote:  
+> > > > > > > > >>
+> > > > > > > > >> Hi,
+> > > > > > > > >> I am using Kernel 4.9.51 for beagle bone black with
+> > > > > > > > >> xenomai patches from xenomai-next repo.
+> > > > > > > > >>
+> > > > > > > > >> I have installed xenomai-3-next using below:
+> > > > > > > > >> # ./scripts/bootstrap
+> > > > > > > > >> # ./configure --with-pic --with-core=cobalt
+> > > > > > > > >> --enable-smp --disable-tls --enable-dlopen-libs
+> > > > > > > > >> # make
+> > > > > > > > >> # make install
+> > > > > > > > >>
+> > > > > > > > >> After that when I run xeno-test I get below error,
+> > > > > > > > >> and the test stopped.
+> > > > > > > > >>
+> > > > > > > > >> # root@bdk:~# /usr/xenomai/bin/xeno-test
+> > > > > > > > >> ....
+> > > > > > > > >> ....
+> > > > > > > > >> vdso_access OK
+> > > > > > > > >> xddp skipped (no kernel support)
+> > > > > > > > >> Segmentation fault
+> > > > > > > > >> /usr/xenomai/bin/smokey: test dlopen failed: Unknown
+> > > > > > > > >> error -1
+> > > > > > > > >>
+> > > > > > > > >> If you have any clue about this error, please let me
+> > > > > > > > >> know.
+> > > > > > > > >>
+> > > > > > > > >>
+> > > > > > > > >> Thanks,
+> > > > > > > > >> Pintu  
+> > > >  
 
 
