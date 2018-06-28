@@ -1,14 +1,10 @@
-References: <f9fc1bc9-5794-4408-8f85-f7ad3a12a05e@xenomai.org>
- <alpine.DEB.2.20.1806271450060.17374@af78237-pc.mitre.org>
-From: Philippe Gerum <rpm@xenomai.org>
-Message-ID: <57e502f2-b7d6-3a2f-29e6-d2876615492c@xenomai.org>
-Date: Wed, 27 Jun 2018 21:44:48 +0200
+Date: Thu, 28 Jun 2018 09:31:06 +0800 (CST)
+From: =?GBK?Q?10=C4=EA?= <v907240791@163.com>
 MIME-Version: 1.0
-In-Reply-To: <alpine.DEB.2.20.1806271450060.17374@af78237-pc.mitre.org>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] Xenomai 3.0.7
+Message-ID: <77f54229.2964.1644403f006.Coremail.v907240791@163.com>
+Content-Type: text/plain; charset=GBK
+Content-Transfer-Encoding: base64
+Subject: [Xenomai] Some Problem with build sam5d36 IMAGE
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,37 +13,32 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jeff Melvile <jmelville@mitre.org>
-Cc: "Xenomai@xenomai.org" <Xenomai@xenomai.org>
+To: xenomai@xenomai.org
 
-On 06/27/2018 08:54 PM, Jeff Melvile wrote:
-> Philippe,
-> 
-> Thanks again for all your work on this release.
-> 
-> On Mon, 25 Jun 2018, Philippe Gerum wrote:
-> 
->>
->> Xenomai 3.0.7 is out [1]. The GIT repository can be cloned from [2].
->>
->> Some GPIO driver updates, several bug fixes in the Cobalt core, and a
->> critical bug removed from the pshared heap (for users of non-POSIX APIs
->> building with --enable-pshared).
->>
->> An effort to sanitize some legacy from RTnet causing invalid accesses
->> from kernel space to userland memory also stands out, although more work
->> remains in this area.
->>
->> This release supports up to the Linux 4.14 series for ARM, ARM64 and
->> PPC32. Work is still ahead for running Cobalt over 4.14/x86 though.
-> 
-> Is ARM64 a typo? The v3.0.7 tag doesn't have ARM64 directories in 
-> {kernel,lib}/cobalt/arch
-> 
-
-Yes, ARM64 is supported over Xenomai's -next branch only. I-pipe/4.14
-does support ARM64 already though.
-
--- 
-Philippe.
-
+Li9wcmVwYXJlLWtlcm5lbC5zaCAtLWFyY2g9YXJtIC0tYWRlb3M9L3Vzci9zcmMvbGludXgvaXBp
+cGUtY29yZS00LjE0LjM2LWFybS0xLnBhdGNoIC0tbGludXg9L3Vzci9zcmMvbGludXgvbGludXgt
+NC4xNC4zNgptYWtlIG1lbnVjb25maWcgICAgIC0tLS1hbmQgSSBsb2FkIGZpbGUgaW4gL3Vzci9z
+cmMvbGludXgvbGludXgtNC4xNC4zNi9hcmNoL2FybS9jb25maWdzL3NhbWE1X2RlZmNvbmZpZyAg
+IC0tYW5kIHNhdmUgaW4gL3Vzci9zcmMvbGludXgvbGludXgtNC4xNC4zNi8uY29uZmlnCgptYWtl
+IEFSQ0g9YXJtIENST1NTX0NPTVBJTEU9YXJtLW5vbmUtbGludXgtZ251ZWFiaS0gYnpJbWFnZSBt
+b2R1bGVzCgpUaGF0J3MgYWxsIEkgZG8sIHdoaWxlIGJ1aWxkaW5nLCBzb21lIGVycm9ycyBjb21p
+bmcgdGhhdCA6CgoKIEFTICAgICAgYXJjaC9hcm0veGVub21haS9zd2l0Y2gubwogIENDICAgICAg
+YXJjaC9hcm0veGVub21haS9zeXNjYWxsLm8KSW4gZmlsZSBpbmNsdWRlZCBmcm9tIGFyY2gvYXJt
+L3hlbm9tYWkvaW5jbHVkZS9hc20veGVub21haS9zeXNjYWxsLmg6Mjk6MCwKICAgICAgICAgICAg
+ICAgICBmcm9tIGFyY2gvYXJtL3hlbm9tYWkvc3lzY2FsbC5jOjIyOgouL2luY2x1ZGUvYXNtLWdl
+bmVyaWMveGVub21haS9zeXNjYWxsLmg6IEluIGZ1bmN0aW9uICdjb2JhbHRfY29weV9mcm9tX3Vz
+ZXInOgouL2luY2x1ZGUvYXNtLWdlbmVyaWMveGVub21haS9zeXNjYWxsLmg6NDk6MzogZXJyb3I6
+IGltcGxpY2l0IGRlY2xhcmF0aW9uIG9mIGZ1bmN0aW9uICdfX2NvcHlfZnJvbV91c2VyX2luYXRv
+bWljJyBbLVdlcnJvcj1pbXBsaWNpdC1mdW5jdGlvbi1kZWNsYXJhdGlvbl0KICAgX194bl9jb3B5
+X2Zyb21fdXNlcihkc3QsIHNyYywgc2l6ZSkpID8gLUVGQVVMVCA6IDA7CiAgIF4KLi9pbmNsdWRl
+L2FzbS1nZW5lcmljL3hlbm9tYWkvc3lzY2FsbC5oOiBJbiBmdW5jdGlvbiAnY29iYWx0X2NvcHlf
+dG9fdXNlcic6Ci4vaW5jbHVkZS9hc20tZ2VuZXJpYy94ZW5vbWFpL3N5c2NhbGwuaDo1NjozOiBl
+cnJvcjogaW1wbGljaXQgZGVjbGFyYXRpb24gb2YgZnVuY3Rpb24gJ19fY29weV90b191c2VyX2lu
+YXRvbWljJyBbLVdlcnJvcj1pbXBsaWNpdC1mdW5jdGlvbi1kZWNsYXJhdGlvbl0KICAgX194bl9j
+b3B5X3RvX3VzZXIoZHN0LCBzcmMsIHNpemUpKSA/IC1FRkFVTFQgOiAwOwogICBeCmNjMTogc29t
+ZSB3YXJuaW5ncyBiZWluZyB0cmVhdGVkIGFzIGVycm9ycwpzY3JpcHRzL01ha2VmaWxlLmJ1aWxk
+OjMyODogcmVjaXBlIGZvciB0YXJnZXQgJ2FyY2gvYXJtL3hlbm9tYWkvc3lzY2FsbC5vJyBmYWls
+ZWQKbWFrZVsxXTogKioqIFthcmNoL2FybS94ZW5vbWFpL3N5c2NhbGwub10gRXJyb3IgMQpNYWtl
+ZmlsZToxMDQwOiByZWNpcGUgZm9yIHRhcmdldCAnYXJjaC9hcm0veGVub21haScgZmFpbGVkCm1h
+a2U6ICoqKiBbYXJjaC9hcm0veGVub21haV0gRXJyb3IgMgoKCgoKQ2FuIGFueSBib2R5IGhlbHAg
+bWUgPwoKCgoKIA==
