@@ -1,7 +1,4 @@
-Date: Fri, 29 Jun 2018 18:07:08 +0200
-From: Henning Schild <henning.schild@siemens.com>
-Message-ID: <20180629180708.52975276@md1pvb1c.ad001.siemens.net>
-In-Reply-To: <e7a00208-aa12-7896-9a59-4d821ec6e35c@xenomai.org>
+MIME-Version: 1.0
 References: <CAOuPNLias38WgrA7SeQxC-Nh47q7kM8vRVR=ex_yFzQT1pnDZg@mail.gmail.com>
  <CAOuPNLgNoHKH5EA3aanAqSMXQn1Y25oM3rCWNN7-5DUJxc=sBQ@mail.gmail.com>
  <CALLqZ8TNfqRY0vqfCqExS+CxWGqTDe9Tm5-q3sMzbaY5Vi1nHQ@mail.gmail.com>
@@ -16,11 +13,14 @@ References: <CAOuPNLias38WgrA7SeQxC-Nh47q7kM8vRVR=ex_yFzQT1pnDZg@mail.gmail.com>
  <CAOuPNLgBVJPHOyzOypiCG0VkAZMG+EjSe-cAjALKS=rXm8t27w@mail.gmail.com>
  <20180629174205.70feb18e@md1pvb1c.ad001.siemens.net>
  <e7a00208-aa12-7896-9a59-4d821ec6e35c@xenomai.org>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+ <20180629180708.52975276@md1pvb1c.ad001.siemens.net>
+In-Reply-To: <20180629180708.52975276@md1pvb1c.ad001.siemens.net>
+From: Pintu Kumar <pintu.ping@gmail.com>
+Date: Fri, 29 Jun 2018 22:42:09 +0530
+Message-ID: <CAOuPNLi-20WpAYQ=ZWg_JRqKWFarso-qhcHkkBdVomrbNda5sQ@mail.gmail.com>
+Content-Type: text/plain; charset="UTF-8"
 Subject: Re: [Xenomai] beaglebone: arm: xeno-test gives segmentation fault -
- test dlopen failed
+	test dlopen failed
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -29,47 +29,60 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Pintu Kumar <pintu.ping@gmail.com>
+To: Henning Schild <henning.schild@siemens.com>
 Cc: "Xenomai@xenomai.org" <xenomai@xenomai.org>
 
-Am Fri, 29 Jun 2018 17:52:44 +0200
-schrieb Philippe Gerum <rpm@xenomai.org>:
+On Fri, Jun 29, 2018 at 9:37 PM Henning Schild
+<henning.schild@siemens.com> wrote:
+>
+> Am Fri, 29 Jun 2018 17:52:44 +0200
+> schrieb Philippe Gerum <rpm@xenomai.org>:
+>
+> > On 06/29/2018 05:42 PM, Henning Schild wrote:
+> > > Hi,
+> > >
+> > > i had a closer look. You might want to revert the following commit
+> > > https://gitlab.denx.de/Xenomai/xenomai/commit/408c93e26438c83c08f216a2c8bd7079253cf71a
+> > >
+> > > It does include the testcase in the build even if the feature is
+> > > disabled.
+> > >
+> >
+> > I don't think so. It includes the testcase in the source distribution
+> > allowing "make distcheck" to succeed, even if the test has not be
+> > built in the smokey driver, which fixes a build regression introduced
+> > by dlopen. Tests built in the executable must be listed in
+> > COBALT_SUBDIRS, which dlopen isn't unless --enable-dlopen-libs has
+> > been given.
+>
+> Yes, you are right. I just saw a "+= dlopen" in the resulting Makefile
+> but that should not cause the problem.
+>
+> Pintu: Please build in a completely fresh environment i.e. "git clean
+> -dfx; autoreconf -i; ./configure". And now give me
+>
+> grep dlopening -A1 config.log
+> grep am__append_1 testsuite/smokey/Makefile
+> autoreconf --version
+>
 
-> On 06/29/2018 05:42 PM, Henning Schild wrote:
-> > Hi,
-> > 
-> > i had a closer look. You might want to revert the following commit
-> > https://gitlab.denx.de/Xenomai/xenomai/commit/408c93e26438c83c08f216a2c8bd7079253cf71a
-> > 
-> > It does include the testcase in the build even if the feature is
-> > disabled.
-> >   
-> 
-> I don't think so. It includes the testcase in the source distribution
-> allowing "make distcheck" to succeed, even if the test has not be
-> built in the smokey driver, which fixes a build regression introduced
-> by dlopen. Tests built in the executable must be listed in
-> COBALT_SUBDIRS, which dlopen isn't unless --enable-dlopen-libs has
-> been given.
+OK. Thank you so much.
+I will try this on Monday and let you know.
 
-Yes, you are right. I just saw a "+= dlopen" in the resulting Makefile
-but that should not cause the problem.
+> Ideally with a hash i can find on gitlab.denx.de.
+>
+> Henning
+>
+>
+> > If you want to exclude the dlopen test from the test series at
+> > runtime, you can pass "--exclude=dlopen" on the command line to
+> > smokey, as mentioned in the help strings (smokey --help).
+> >
 
-Pintu: Please build in a completely fresh environment i.e. "git clean
--dfx; autoreconf -i; ./configure". And now give me
+OK. Thanks for this info. However, when I run xeno-test it
+automatically includes smokey test.
+How do I exclude from xeno-test itself ?
+We have a criteria to attach xeno-test report as the success result.
 
-grep dlopening -A1 config.log
-grep am__append_1 testsuite/smokey/Makefile
-autoreconf --version
-
-Ideally with a hash i can find on gitlab.denx.de.
-
-Henning
-
-
-> If you want to exclude the dlopen test from the test series at
-> runtime, you can pass "--exclude=dlopen" on the command line to
-> smokey, as mentioned in the help strings (smokey --help).
-> 
-
+>
 
