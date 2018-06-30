@@ -1,10 +1,13 @@
+References: <CAFUnMknMngz+jwp5BQe5QhP6O4KrACCNs2Ka1MSC=irU9t9y9w@mail.gmail.com>
+From: Philippe Gerum <rpm@xenomai.org>
+Message-ID: <fefc6bf4-324b-092f-ba81-f4a67b93702f@xenomai.org>
+Date: Sat, 30 Jun 2018 11:03:16 +0200
 MIME-Version: 1.0
-From: Ashok kumar <ashokkumar.bb@gmail.com>
-Date: Sat, 30 Jun 2018 13:50:01 +0530
-Message-ID: <CAFUnMknMngz+jwp5BQe5QhP6O4KrACCNs2Ka1MSC=irU9t9y9w@mail.gmail.com>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Subject: [Xenomai] modules folder missing in usr/xenomai & modules not
+In-Reply-To: <CAFUnMknMngz+jwp5BQe5QhP6O4KrACCNs2Ka1MSC=irU9t9y9w@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai] modules folder missing in usr/xenomai & modules not
  getting compiled in xenomai 2.6.4 - xeno_hal.ko xeno_rtdm.ko
  xeno_nucleus.ko
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
@@ -15,44 +18,48 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "Xenomai@xenomai.org" <xenomai@xenomai.org>
+To: xenomai@xenomai.org
 
-SGksCgpJIGhhdmUgcGF0Y2hlZCB0aGUgeGVub21haS0yLjYuNCB3aXRoIGxpbnV4LTMuMTQuMTcK
-YWZ0ZXIgdGhhdCBJIGFtIHJ1bm5pbmcgeGVub21haSB1c2VyIGxpYnJhcnkKCmNkCi91c3Ivc3Jj
-CgpzdWRvCm1rZGlyIGJ1aWxkX3hlbm9tYWktMi42LjQKCmNkCmJ1aWxkX3hlbm9tYWktMi42LjQK
-CmluIGJ1aWxkX3hlbm9tYWktMi42LjQKSSBoYXZlICBjb25maWcubG9nLCBjb25maWcuc3RhdHVz
-IGFuZCBtYWtlZmlsZSBnZW5lcmF0ZWQKYWZ0ZXIgcnVubmluZyBjb25maWd1cmUgY29tbWFuZCBi
-ZWxvdwoKc3VkbyAgLi4veGVub21haS0yLjYuNC9jb25maWd1cmUgLS1lbmFibGUtc2hhcmVkIC0t
-ZW5hYmxlLXNtcAotLWVuYWJsZS14ODYtc2Vwc3VkbyBtYWtlCgptYWtlIGluc3RhbGwKCnRoZSBt
-b2R1bGVzIGZvbGRlciBtaXNzaW5nIGluIHVzci94ZW5vbWFpICYgbW9kdWxlcyBub3QgZ2V0dGlu
-Zwpjb21waWxlZCBpbiB4ZW5vbWFpIDIuNi40CgpJIGhhdmUgYXR0YWNoZWQgdGhlIGNvbmZpZy5s
-b2csIGNvbmZpZy5zdGF0dXMgYW5kIG1ha2VmaWxlIGZvciB5b3VyCnJlZmVyZW5jZSBhbmQgSSBh
-bSB1c2luZyBhdXRvY29uZiAoR05VIEF1dG9jb25mKSAyLjY5CmF1dG9tYWtlIChHTlUgYXV0b21h
-a2UpIDEuMTEuNiBhY2xvY2FsIChHTlUgYXV0b21ha2UpIDEuMTEuNgoKaGVscCBtZSB0byBnZXQg
-dGhlIG1vZHVsZXMgeGVub19oYWwua28geGVub19ydGRtLmtvIHhlbm9fbnVjbGV1cy5rbwoKZ2V0
-dGluZyBjb21waWxlZCBmcm9tIHRoZSBtYWtlZmlsZSBnZW5lcmF0ZWQuCgppcyB0aGVyZSBhbnkg
-Z3VpZGVsaW5lcyBmb3IgY29uZmlndXJpbmcgLGNvbXBpbGluZyB4ZW5vbWFpLTIuNi40Cix1c2Vy
-LXNwYWNlIGxpYnJhcmllcyBhbmQgaGVhZGVyIGZpbGVzCgpUaGFuayB5b3UKClIuQXNob2trdW1h
-cgotLS0tLS0tLS0tLS0tLSBuZXh0IHBhcnQgLS0tLS0tLS0tLS0tLS0KQSBub24tdGV4dCBhdHRh
-Y2htZW50IHdhcyBzY3J1YmJlZC4uLgpOYW1lOiBjb25maWcubG9nClR5cGU6IHRleHQveC1sb2cK
-U2l6ZTogODcxMDMgYnl0ZXMKRGVzYzogbm90IGF2YWlsYWJsZQpVUkw6IDxodHRwOi8veGVub21h
-aS5vcmcvcGlwZXJtYWlsL3hlbm9tYWkvYXR0YWNobWVudHMvMjAxODA2MzAvOGRmNDg4ZmMvYXR0
-YWNobWVudC5iaW4+Ci0tLS0tLS0tLS0tLS0tIG5leHQgcGFydCAtLS0tLS0tLS0tLS0tLQpBIG5v
-bi10ZXh0IGF0dGFjaG1lbnQgd2FzIHNjcnViYmVkLi4uCk5hbWU6IGNvbmZpZy5zdGF0dXMKVHlw
-ZTogYXBwbGljYXRpb24vb2N0ZXQtc3RyZWFtClNpemU6IDc1NzQxIGJ5dGVzCkRlc2M6IG5vdCBh
-dmFpbGFibGUKVVJMOiA8aHR0cDovL3hlbm9tYWkub3JnL3BpcGVybWFpbC94ZW5vbWFpL2F0dGFj
-aG1lbnRzLzIwMTgwNjMwLzhkZjQ4OGZjL2F0dGFjaG1lbnQub2JqPgotLS0tLS0tLS0tLS0tLSBu
-ZXh0IHBhcnQgLS0tLS0tLS0tLS0tLS0KQSBub24tdGV4dCBhdHRhY2htZW50IHdhcyBzY3J1YmJl
-ZC4uLgpOYW1lOiBsaWJ0b29sClR5cGU6IGFwcGxpY2F0aW9uL29jdGV0LXN0cmVhbQpTaXplOiAy
-OTM1OTMgYnl0ZXMKRGVzYzogbm90IGF2YWlsYWJsZQpVUkw6IDxodHRwOi8veGVub21haS5vcmcv
-cGlwZXJtYWlsL3hlbm9tYWkvYXR0YWNobWVudHMvMjAxODA2MzAvOGRmNDg4ZmMvYXR0YWNobWVu
-dC0wMDAxLm9iaj4KLS0tLS0tLS0tLS0tLS0gbmV4dCBwYXJ0IC0tLS0tLS0tLS0tLS0tCkEgbm9u
-LXRleHQgYXR0YWNobWVudCB3YXMgc2NydWJiZWQuLi4KTmFtZTogTWFrZWZpbGUKVHlwZTogYXBw
-bGljYXRpb24vb2N0ZXQtc3RyZWFtClNpemU6IDI3MTc0IGJ5dGVzCkRlc2M6IG5vdCBhdmFpbGFi
-bGUKVVJMOiA8aHR0cDovL3hlbm9tYWkub3JnL3BpcGVybWFpbC94ZW5vbWFpL2F0dGFjaG1lbnRz
-LzIwMTgwNjMwLzhkZjQ4OGZjL2F0dGFjaG1lbnQtMDAwMi5vYmo+Ci0tLS0tLS0tLS0tLS0tIG5l
-eHQgcGFydCAtLS0tLS0tLS0tLS0tLQpBIG5vbi10ZXh0IGF0dGFjaG1lbnQgd2FzIHNjcnViYmVk
-Li4uCk5hbWU6IE1ha2VmaWxlClR5cGU6IGFwcGxpY2F0aW9uL29jdGV0LXN0cmVhbQpTaXplOiAx
-MjIzNSBieXRlcwpEZXNjOiBub3QgYXZhaWxhYmxlClVSTDogPGh0dHA6Ly94ZW5vbWFpLm9yZy9w
-aXBlcm1haWwveGVub21haS9hdHRhY2htZW50cy8yMDE4MDYzMC84ZGY0ODhmYy9hdHRhY2htZW50
-LTAwMDMub2JqPgo=
+On 06/30/2018 10:20 AM, Ashok kumar wrote:
+> Hi,
+> 
+> I have patched the xenomai-2.6.4 with linux-3.14.17
+> after that I am running xenomai user library
+> 
+> cd
+> /usr/src
+> 
+> sudo
+> mkdir build_xenomai-2.6.4
+> 
+> cd
+> build_xenomai-2.6.4
+> 
+> in build_xenomai-2.6.4
+> I have  config.log, config.status and makefile generated
+> after running configure command below
+> 
+> sudo  ../xenomai-2.6.4/configure --enable-shared --enable-smp
+> --enable-x86-sepsudo make
+> 
+> make install
+> 
+> the modules folder missing in usr/xenomai & modules not getting
+> compiled in xenomai 2.6.4
+> 
+> I have attached the config.log, config.status and makefile for your
+> reference and I am using autoconf (GNU Autoconf) 2.69
+> automake (GNU automake) 1.11.6 aclocal (GNU automake) 1.11.6
+> 
+> help me to get the modules xeno_hal.ko xeno_rtdm.ko xeno_nucleus.ko
+> 
+> getting compiled from the makefile generated.
+> 
+> is there any guidelines for configuring ,compiling xenomai-2.6.4
+> ,user-space libraries and header files
+
+https://gitlab.denx.de/Xenomai/xenomai/wikis/Installing_Xenomai_2
+
+-- 
+Philippe.
+
