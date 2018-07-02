@@ -1,15 +1,11 @@
-References: <CAFUnMknMngz+jwp5BQe5QhP6O4KrACCNs2Ka1MSC=irU9t9y9w@mail.gmail.com>
-From: Philippe Gerum <rpm@xenomai.org>
-Message-ID: <fefc6bf4-324b-092f-ba81-f4a67b93702f@xenomai.org>
-Date: Sat, 30 Jun 2018 11:03:16 +0200
+From: Jan Kiszka <jan.kiszka@siemens.com>
+Message-ID: <5224b3e2-d316-d61b-347f-6a6cac8d6360@siemens.com>
+Date: Mon, 2 Jul 2018 15:18:39 +0200
 MIME-Version: 1.0
-In-Reply-To: <CAFUnMknMngz+jwp5BQe5QhP6O4KrACCNs2Ka1MSC=irU9t9y9w@mail.gmail.com>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] modules folder missing in usr/xenomai & modules not
- getting compiled in xenomai 2.6.4 - xeno_hal.ko xeno_rtdm.ko
- xeno_nucleus.ko
+Subject: [Xenomai] Cobalt __SIGPOOL_SIZE
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -18,48 +14,25 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
+To: Philippe Gerum <rpm@xenomai.org>, Xenomai <xenomai@xenomai.org>
 
-On 06/30/2018 10:20 AM, Ashok kumar wrote:
-> Hi,
-> 
-> I have patched the xenomai-2.6.4 with linux-3.14.17
-> after that I am running xenomai user library
-> 
-> cd
-> /usr/src
-> 
-> sudo
-> mkdir build_xenomai-2.6.4
-> 
-> cd
-> build_xenomai-2.6.4
-> 
-> in build_xenomai-2.6.4
-> I have  config.log, config.status and makefile generated
-> after running configure command below
-> 
-> sudo  ../xenomai-2.6.4/configure --enable-shared --enable-smp
-> --enable-x86-sepsudo make
-> 
-> make install
-> 
-> the modules folder missing in usr/xenomai & modules not getting
-> compiled in xenomai 2.6.4
-> 
-> I have attached the config.log, config.status and makefile for your
-> reference and I am using autoconf (GNU Autoconf) 2.69
-> automake (GNU automake) 1.11.6 aclocal (GNU automake) 1.11.6
-> 
-> help me to get the modules xeno_hal.ko xeno_rtdm.ko xeno_nucleus.ko
-> 
-> getting compiled from the makefile generated.
-> 
-> is there any guidelines for configuring ,compiling xenomai-2.6.4
-> ,user-space libraries and header files
+Hi Philippe,
 
-https://gitlab.denx.de/Xenomai/xenomai/wikis/Installing_Xenomai_2
+The comment for __SIGPOOL_SIZE in kernel/cobalt/posix/signal.c suggests
+that there can't be many signals in pending state at the same time, but
+I think it is wrong: Signal are collected per thread, and each of it can
+pile up multiple of them. Even if we assume that typical threads will
+not queue those for long and will not wait for many of them, the fact
+that the system-wide(!) number of threads is a scaling factor and the
+pool is system-wide as well makes me wonder if __SIGPOOL_SIZE shouldn't
+become a tunable.
+
+BTW, I think we are leaking pending signals on thread destruction.
+Currently writing a test case, and I already have a fix candidate at hand.
+
+Jan
 
 -- 
-Philippe.
+Siemens AG, Corporate Technology, CT RDA IOT SES-DE
+Corporate Competence Center Embedded Linux
 
