@@ -1,11 +1,10 @@
-From: Philippe Gerum <rpm@xenomai.org>
-Message-ID: <5f200447-e693-7597-faf2-88630cb2f153@xenomai.org>
-Date: Mon, 2 Jul 2018 22:12:13 +0200
-MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
+Message-ID: <1530603625.4507.9.camel@sprinte.eu>
+From: Julien Blanc <julien.blanc@sprinte.eu>
+Date: Tue, 03 Jul 2018 09:40:25 +0200
+Content-Type: text/plain; charset="UTF-8"
+Mime-Version: 1.0
 Content-Transfer-Encoding: 7bit
-Subject: [Xenomai] Dovetail documentation (WIP) is now online
+Subject: [Xenomai] [rtcan] Access to tx / rx / err counters
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,28 +15,25 @@ List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: "Xenomai@xenomai.org" <Xenomai@xenomai.org>
 
+Hi,
 
-In an attempt to organize the various notes, bits of documentation and
-unwritten knowledge floating around - my desk - about Dovetail, a site
-dedicated to this effort [1] is now online.
+/proc/rtcan/devices , as well as the respective
+/proc/rtcan/<device>/info both gives access to the TX-Counter, RX-
+Counter and Errors counter of the device.
 
-A lot remains to be documented, however this may be useful already to
-people who would like to dive into the details of the Dovetail
-implementation, including a section covering ports to other architecture
-or platforms. A section covering the usage of the Dovetail API is taking
-shape too.
+I'd like to access these counters from an application, but cannot find
+the appropriate ioctls to do this. Adding them is not an issue, but i
+would like to avoid duplicating any existing feature, or to read the
+/proc filesystem whose format is not really guaranted.
 
-Although Dovetail and the I-pipe follow quite different paths for
-integrating the pipeline services into the mainline kernel, they share
-many of the basic concepts which are described in this material. This
-may be worth a read for anyone interested in the I-pipe too.
+Is there a way to access these counters ? And if not, what would be the
+ioctl to add ? For example :
 
-This small website under the xenomai.org umbrella is intended to provide
-information about this ongoing effort, tracking progress of development
-(see the Status page for this).
+#define RTCAN_RTIOC_GET_RXCOUNTER _IOR(RTIOC_TYPE_CAN, 0xC, int)
+#define RTCAN_RTIOC_GET_TXCOUNTER _IOR(RTIOC_TYPE_CAN, 0xD, int)
+#define RTCAN_RTIOC_GET_ERRCOUNTER _IOR(RTIOC_TYPE_CAN, 0xE, int)
 
-[1] https://dovetail.xenomai.org/
+Regards,
 
--- 
-Philippe.
+Julien
 
