@@ -1,11 +1,12 @@
-From: "Zheng, Qi" <qi.zheng@intel.com>
-Date: Tue, 3 Jul 2018 08:59:52 +0000
-Message-ID: <0DD381DBF8F68D419C32ACFCEB28EB2553ADA8AD@SHSMSX101.ccr.corp.intel.com>
-Content-Language: en-US
-MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-Subject: [Xenomai] How to locate the max latency
+Message-ID: <1530610121.4507.12.camel@sprinte.eu>
+From: Julien Blanc <julien.blanc@sprinte.eu>
+Date: Tue, 03 Jul 2018 11:28:41 +0200
+In-Reply-To: <1530603625.4507.9.camel@sprinte.eu>
+References: <1530603625.4507.9.camel@sprinte.eu>
+Mime-Version: 1.0
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+Subject: Re: [Xenomai] [rtcan] Access to tx / rx / err counters
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -14,24 +15,20 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: "Xenomai@xenomai.org" <Xenomai@xenomai.org>
 
-I am using xenomai 3.0.5 (https://xenomai.org/downloads/xenomai/stable/xeno=
-mai-3.0.5.tar.bz2) on the Intel SKL platform.
-On console mode or accessed by vnc viewer (no i915 graphics interrupt), the=
- max latency values are usually below 20us no matter low or high loading (b=
-y stress-ng).
-But the max latency can reach up to 40us on GUI (gnome)  mode (dozens of i9=
-15 interrupt counts per second).
-I tried enabling the ipipe trace function, but couldn't find valuable infor=
-mation.
-Is there any other good ways to locate the max latency?
-Or does anybody have experience on reducing the latency caused by graphics =
-(such as i915) ?
-Many thanks.
-
-
-Best Regards
-
-SSG->OTC->One Linux Platform Engineering Team (Shanghai)
-
+TGUgbWFyZGkgMDMganVpbGxldCAyMDE4IMOgIDA5OjQwICswMjAwLCBKdWxpZW4gQmxhbmMgYSDD
+qWNyaXTCoDoKPsKgCj4gSXMgdGhlcmUgYSB3YXkgdG8gYWNjZXNzIHRoZXNlIGNvdW50ZXJzID8g
+QW5kIGlmIG5vdCwgd2hhdCB3b3VsZCBiZQo+IHRoZQo+IGlvY3RsIHRvIGFkZCA/IEZvciBleGFt
+cGxlIDoKPiAKPiAjZGVmaW5lIFJUQ0FOX1JUSU9DX0dFVF9SWENPVU5URVIgX0lPUihSVElPQ19U
+WVBFX0NBTiwgMHhDLCBpbnQpCj4gI2RlZmluZSBSVENBTl9SVElPQ19HRVRfVFhDT1VOVEVSIF9J
+T1IoUlRJT0NfVFlQRV9DQU4sIDB4RCwgaW50KQo+ICNkZWZpbmUgUlRDQU5fUlRJT0NfR0VUX0VS
+UkNPVU5URVIgX0lPUihSVElPQ19UWVBFX0NBTiwgMHhFLCBpbnQpCgpBdHRhY2hlZCBpcyBhIHBh
+dGNoIHRoYXQgZG9lcyBleGFjdGx5IHRoYXQgKGllLCBhZGRpbmcgdGhlIGlvY3RscykuCkJhc2Vk
+IG9uIHhlbm9tYWkgMy4wLjQsIHRlc3RlZCBvbmx5IHdpdGggdGhlIGZsZXhjYW4gZHJpdmVyIChi
+dXQgc2hvdWxkCndvcmsgd2l0aCBhbnkgb3RoZXIpLgoKUmVnYXJkcywKCkp1bGllbgotLS0tLS0t
+LS0tLS0tLSBuZXh0IHBhcnQgLS0tLS0tLS0tLS0tLS0KQSBub24tdGV4dCBhdHRhY2htZW50IHdh
+cyBzY3J1YmJlZC4uLgpOYW1lOiBydGNhbl9jb3VudGVyc19pb2N0bC5wYXRjaApUeXBlOiB0ZXh0
+L3gtcGF0Y2gKU2l6ZTogMTc5MiBieXRlcwpEZXNjOiBub3QgYXZhaWxhYmxlClVSTDogPGh0dHA6
+Ly94ZW5vbWFpLm9yZy9waXBlcm1haWwveGVub21haS9hdHRhY2htZW50cy8yMDE4MDcwMy8wMzRl
+MTc0Yy9hdHRhY2htZW50LmJpbj4K
