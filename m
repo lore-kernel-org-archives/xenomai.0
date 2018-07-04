@@ -1,11 +1,14 @@
-Date: Wed, 04 Jul 2018 07:10:35 -0400
-Message-ID: <5jq4alt84iqdnq3m9vvfpq1l.1530702635887@embeddedgreg.com>
-From: Greg Gallagher <greg@embeddedgreg.com>
-In-Reply-To: <0DD381DBF8F68D419C32ACFCEB28EB2553AEB8B7@SHSMSX101.ccr.corp.intel.com>
+References: <5224b3e2-d316-d61b-347f-6a6cac8d6360@siemens.com>
+ <6e81235e-95bb-b169-d2ed-4dd26a33c126@xenomai.org>
+From: Jan Kiszka <jan.kiszka@siemens.com>
+Message-ID: <ea4606c5-4014-0227-7555-c9a9cee8c57b@siemens.com>
+Date: Wed, 4 Jul 2018 13:46:29 +0200
 MIME-Version: 1.0
+In-Reply-To: <6e81235e-95bb-b169-d2ed-4dd26a33c126@xenomai.org>
 Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: base64
-Subject: Re: [Xenomai] How to locate the max latency
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai] Cobalt __SIGPOOL_SIZE
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -14,32 +17,49 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "Zheng, Qi" <qi.zheng@intel.com>, "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Philippe Gerum <rpm@xenomai.org>, Xenomai <xenomai@xenomai.org>
 
-RGlkIHlvdWFsZSBhbnkgY2hhbmdlcyBpbiBtZW51Y29uZmlnIHdoZW4gYnVpbGRpbmcgdGhlIGtl
-cm5lbD8KCkdyZWcKCsKgIE9yaWdpbmFsIE1lc3NhZ2UgwqAKRnJvbTogcWkuemhlbmdAaW50ZWwu
-Y29tClNlbnQ6IEp1bHkgNCwgMjAxOCAzOjI3IEFNClRvOiB4ZW5vbWFpQHhlbm9tYWkub3JnClN1
-YmplY3Q6IFtYZW5vbWFpXSBIb3cgdG8gbG9jYXRlIHRoZSBtYXggbGF0ZW5jeQoKQlRXLCBJIGFs
-cmVhZHkgZGlzYWJsZWQgdGhlIGk5MTUgcG93ZXIgc2F2aW5nIGJ5IGFkZGluZyAiaTkxNS5lbmFi
-bGVfZGM9MCBpOTE1LmVuYWJsZV9yYzY9MCBpOTE1LmVuYWJsZV9leGVjbGlzdHM9MCBpOTE1LmRp
-c2FibGVfcG93ZXJfd2VsbD0wIiBpbsKgIHRoZSBjbWRsaW5lLgoKQmVzdCBSZWdhcmRzCgpTU0ct
-Pk9UQy0+T25lIExpbnV4IFBsYXRmb3JtIEVuZ2luZWVyaW5nIFRlYW0gKFNoYW5naGFpKQoKRnJv
-bTogWmhlbmcsIFFpClNlbnQ6IFR1ZXNkYXksIEp1bHkgMywgMjAxOCA1OjAwIFBNClRvOiB4ZW5v
-bWFpQHhlbm9tYWkub3JnClN1YmplY3Q6IEhvdyB0byBsb2NhdGUgdGhlIG1heCBsYXRlbmN5CgpJ
-IGFtIHVzaW5nIHhlbm9tYWkgMy4wLjUgKGh0dHBzOi8veGVub21haS5vcmcvZG93bmxvYWRzL3hl
-bm9tYWkvc3RhYmxlL3hlbm9tYWktMy4wLjUudGFyLmJ6Mikgb24gdGhlIEludGVsIFNLTCBwbGF0
-Zm9ybS4KT24gY29uc29sZSBtb2RlIG9yIGFjY2Vzc2VkIGJ5IHZuYyB2aWV3ZXIgKG5vIGk5MTUg
-Z3JhcGhpY3MgaW50ZXJydXB0KSwgdGhlIG1heCBsYXRlbmN5IHZhbHVlcyBhcmUgdXN1YWxseSBi
-ZWxvdyAyMHVzIG5vIG1hdHRlciBsb3cgb3IgaGlnaCBsb2FkaW5nIChieSBzdHJlc3MtbmcpLgpC
-dXQgdGhlIG1heCBsYXRlbmN5IGNhbiByZWFjaCB1cCB0byA0MHVzIG9uIEdVSSAoZ25vbWUpwqAg
-bW9kZSAoZG96ZW5zIG9mIGk5MTUgaW50ZXJydXB0IGNvdW50cyBwZXIgc2Vjb25kKS4KSSB0cmll
-ZCBlbmFibGluZyB0aGUgaXBpcGUgdHJhY2UgZnVuY3Rpb24sIGJ1dCBjb3VsZG4ndCBmaW5kIHZh
-bHVhYmxlIGluZm9ybWF0aW9uLgpJcyB0aGVyZSBhbnkgb3RoZXIgZ29vZCB3YXlzIHRvIGxvY2F0
-ZSB0aGUgbWF4IGxhdGVuY3k/Ck9yIGRvZXMgYW55Ym9keSBoYXZlIGV4cGVyaWVuY2Ugb24gcmVk
-dWNpbmcgdGhlIGxhdGVuY3kgY2F1c2VkIGJ5IGdyYXBoaWNzIChzdWNoIGFzIGk5MTUpID8KTWFu
-eSB0aGFua3MuCgoKQmVzdCBSZWdhcmRzCgpTU0ctPk9UQy0+T25lIExpbnV4IFBsYXRmb3JtIEVu
-Z2luZWVyaW5nIFRlYW0gKFNoYW5naGFpKQoKX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
-X19fX19fX19fX19fX19fX18KWGVub21haSBtYWlsaW5nIGxpc3QKWGVub21haUB4ZW5vbWFpLm9y
-ZwpodHRwczovL3hlbm9tYWkub3JnL21haWxtYW4vbGlzdGluZm8veGVub21haQo=
+On 2018-07-03 19:23, Philippe Gerum wrote:
+> On 07/02/2018 03:18 PM, Jan Kiszka wrote:
+>> Hi Philippe,
+>>
+>> The comment for __SIGPOOL_SIZE in kernel/cobalt/posix/signal.c suggests
+>> that there can't be many signals in pending state at the same time, but
+>> I think it is wrong: Signal are collected per thread, and each of it can
+>> pile up multiple of them. Even if we assume that typical threads will
+>> not queue those for long and will not wait for many of them, the fact
+>> that the system-wide(!) number of threads is a scaling factor and the
+>> pool is system-wide as well makes me wonder if __SIGPOOL_SIZE shouldn't
+>> become a tunable.
+>>
+> 
+> Still pondering the idea here. A static tunable would be a way of
+> postponing the issue until after the point it should not happen anymore,
+> but picking a safe value would still be guess work.
+> 
+> We could pre-allocate a pool from the core heap, then pull extra
+> sigpending blocks from the same place upon starvation if need be. But
+> then, we'd need a way to figure out when a sigpending struct comes from
+> the pool, when it has been allocated elsewhere. I don't see any elegant
+> way to do that at the moment (meaning: without stuffing that struct with
+> some ugly boolean).
+> 
 
+Signals are just a clumsy API (I'm telling this again and again, but not
+many people are listining...).
+
+Anyway, the good news is that, although we are using them here a lot,
+the only complain about an empty pool so far came from that leak. So
+maybe my question is rather theoretic, don't know.
+
+What I would suggest, though, is to have per-process pools. That would
+avoid that a stalled process with lots of signals pending could starve
+another, well-behaving one. How to configure the size of that pools
+would remain an open topic, true.
+
+Jan
+
+-- 
+Siemens AG, Corporate Technology, CT RDA IOT SES-DE
+Corporate Competence Center Embedded Linux
 
