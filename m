@@ -1,13 +1,11 @@
-References: <ff4b8c3a-c8ca-09b5-d3ac-f1d6e127a4e5@sferapro.com>
-From: Philippe Gerum <rpm@xenomai.org>
-Message-ID: <b0b1ed38-3770-5236-8e04-30d913096306@xenomai.org>
-Date: Thu, 5 Jul 2018 11:14:11 +0200
+From: jimmyo <jimmyo@gmx.at>
+Message-ID: <6b3f6665-d424-9350-837f-cad1b3b54c7c@gmx.at>
+Date: Thu, 5 Jul 2018 11:37:05 +0200
 MIME-Version: 1.0
-In-Reply-To: <ff4b8c3a-c8ca-09b5-d3ac-f1d6e127a4e5@sferapro.com>
-Content-Type: text/plain; charset=iso-8859-15
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] i.MX6q memory write causes high latency
+Content-Language: en-GB
+Content-Type: text/plain; charset="utf-8"; format="flowed"
+Content-Transfer-Encoding: 8bit
+Subject: [Xenomai] context switch minimize
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,35 +14,25 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Federico Sbalchiero <f.sbalchiero@sferapro.com>, xenomai@xenomai.org
+To: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On 07/04/2018 07:06 PM, Federico Sbalchiero wrote:
-> Hi,
-> first I want to say thanks to everyone involved in Xenomai for their job.
-> 
-> I'm testing Xenomai 3.0.7 and ipipe-arm/4.14 on Freescale/NXP i.MX6q
-> sabresd board using Yocto. System boots fine and is stable, but latency
-> under load (xeno-test) is higher than in my reference system (Xenomai
-> 2.6.5 on Freescale kernel 3.10.17 + ipipe 3.10.18).
-> This is after disabling power management, frequency scaling, CMA,
-> graphics, tracing, debug.
-> 
-> I have found that a simple non-realtime user space process writing a
-> buffer in memory (memwrite) is able to trigger such high latencies.
-> Latency worsen a lot running a copy of the process on each core.
-> There is a correlation between buffer size and cache size suggesting
-> an L2 cache issue, like the L2 write allocate discussed in the mailing
-> list, but I can confirm L2 WA is disabled (see log).
-> 
-> I'm looking for comments or suggestions.
-> 
+Hello,
 
-A basic dd if=/dev/zero of=/dev/null loop in the background is enough to
-raise the latency actually. Could you try the Xenomai 3 + 3.18 combo on
-your hw and let us know whether you see the same regression?
+we have a running system on mx6 with Kernel 3.10.x and Xenomai 2.6.4.
+i known, it's very old.
+now we have to make some optmization.
+In one xenomai task we need to check, if a TCP/UDP socket handle has 
+data to receive.
+at this time we use select to detect if there are data available and with
+ioctl & FIONREAD we get count of data.
 
-TIA,
+Now we must search a way, to do this in the primary domain, without 
+switching to secondary domain.
 
--- 
-Philippe.
+Is there a way to solve it ?
 
+we have a exists rtdm interface to a own kernel module.
+And we use rt_dev_ioctl to communicate with this module.
+
+Thanx & best regards
+   Jimmy
