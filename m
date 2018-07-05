@@ -1,13 +1,12 @@
-From: "Zheng, Qi" <qi.zheng@intel.com>
-Date: Thu, 5 Jul 2018 00:29:50 +0000
-Message-ID: <0DD381DBF8F68D419C32ACFCEB28EB2553AED3EE@SHSMSX101.ccr.corp.intel.com>
-References: <0DD381DBF8F68D419C32ACFCEB28EB2553AEB8B7@SHSMSX101.ccr.corp.intel.com>
- <5jq4alt84iqdnq3m9vvfpq1l.1530702635887@embeddedgreg.com>
-In-Reply-To: <5jq4alt84iqdnq3m9vvfpq1l.1530702635887@embeddedgreg.com>
-Content-Language: en-US
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+References: <0DD381DBF8F68D419C32ACFCEB28EB2553ADA8AD@SHSMSX101.ccr.corp.intel.com>
+From: Jan Kiszka <jan.kiszka@siemens.com>
+Message-ID: <4b4d410e-5e3d-dc1c-9744-273e1a4c7e28@siemens.com>
+Date: Thu, 5 Jul 2018 08:02:07 +0200
 MIME-Version: 1.0
+In-Reply-To: <0DD381DBF8F68D419C32ACFCEB28EB2553ADA8AD@SHSMSX101.ccr.corp.intel.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Subject: Re: [Xenomai] How to locate the max latency
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
@@ -17,43 +16,28 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Greg Gallagher <greg@embeddedgreg.com>, "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: "Zheng, Qi" <qi.zheng@intel.com>, "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-WWVzLCBtb3N0IG9mIG15IG1vZGlmaWNhdGlvbnMgb24gdG9wIG9mIGdlbmVyYWwgeDg2XzY0IGNv
-bmZpZyB3ZXJlIGJhc2VkIG9uIHRoZSBodHRwczovL2dpdGxhYi5kZW54LmRlL1hlbm9tYWkveGVu
-b21haS93aWtpcy9Db25maWd1cmluZ19Gb3JfWDg2X0Jhc2VkX0R1YWxfS2VybmVscy4NCkJlc2lk
-ZXMsIEkgZW5hYmxlZCB0aGUgIkNPTkZJR19QUkVFTVBUIiwgZ2FpbmVkIGEgbGl0dGxlIGJpdCBs
-YXRlbmN5IGltcHJvdmVtZW50IGJ5IG15IHRlc3QuDQpBbmQgSSBhbHNvIGNvbmZpcm1lZCB0aGVy
-ZSB3YXMgbm8gU01JIGR1cmluZyB0aGUgdGVzdC4gDQoNCkJlc3QgUmVnYXJkcw0KDQpTU0ctPk9U
-Qy0+T25lIExpbnV4IFBsYXRmb3JtIEVuZ2luZWVyaW5nIFRlYW0gKFNoYW5naGFpKQ0KDQotLS0t
-LU9yaWdpbmFsIE1lc3NhZ2UtLS0tLQ0KRnJvbTogR3JlZyBHYWxsYWdoZXIgW21haWx0bzpncmVn
-QGVtYmVkZGVkZ3JlZy5jb21dIA0KU2VudDogV2VkbmVzZGF5LCBKdWx5IDQsIDIwMTggNzoxMSBQ
-TQ0KVG86IFpoZW5nLCBRaSA8cWkuemhlbmdAaW50ZWwuY29tPjsgeGVub21haUB4ZW5vbWFpLm9y
-Zw0KU3ViamVjdDogUmU6IFtYZW5vbWFpXSBIb3cgdG8gbG9jYXRlIHRoZSBtYXggbGF0ZW5jeQ0K
-DQpEaWQgeW91YWxlIGFueSBjaGFuZ2VzIGluIG1lbnVjb25maWcgd2hlbiBidWlsZGluZyB0aGUg
-a2VybmVsPw0KDQpHcmVnDQoNCsKgIE9yaWdpbmFsIE1lc3NhZ2UgwqANCkZyb206IHFpLnpoZW5n
-QGludGVsLmNvbQ0KU2VudDogSnVseSA0LCAyMDE4IDM6MjcgQU0NClRvOiB4ZW5vbWFpQHhlbm9t
-YWkub3JnDQpTdWJqZWN0OiBbWGVub21haV0gSG93IHRvIGxvY2F0ZSB0aGUgbWF4IGxhdGVuY3kN
-Cg0KQlRXLCBJIGFscmVhZHkgZGlzYWJsZWQgdGhlIGk5MTUgcG93ZXIgc2F2aW5nIGJ5IGFkZGlu
-ZyAiaTkxNS5lbmFibGVfZGM9MCBpOTE1LmVuYWJsZV9yYzY9MCBpOTE1LmVuYWJsZV9leGVjbGlz
-dHM9MCBpOTE1LmRpc2FibGVfcG93ZXJfd2VsbD0wIiBpbsKgIHRoZSBjbWRsaW5lLg0KDQpCZXN0
-IFJlZ2FyZHMNCg0KU1NHLT5PVEMtPk9uZSBMaW51eCBQbGF0Zm9ybSBFbmdpbmVlcmluZyBUZWFt
-IChTaGFuZ2hhaSkNCg0KRnJvbTogWmhlbmcsIFFpDQpTZW50OiBUdWVzZGF5LCBKdWx5IDMsIDIw
-MTggNTowMCBQTQ0KVG86IHhlbm9tYWlAeGVub21haS5vcmcNClN1YmplY3Q6IEhvdyB0byBsb2Nh
-dGUgdGhlIG1heCBsYXRlbmN5DQoNCkkgYW0gdXNpbmcgeGVub21haSAzLjAuNSAoaHR0cHM6Ly94
-ZW5vbWFpLm9yZy9kb3dubG9hZHMveGVub21haS9zdGFibGUveGVub21haS0zLjAuNS50YXIuYnoy
-KSBvbiB0aGUgSW50ZWwgU0tMIHBsYXRmb3JtLg0KT24gY29uc29sZSBtb2RlIG9yIGFjY2Vzc2Vk
-IGJ5IHZuYyB2aWV3ZXIgKG5vIGk5MTUgZ3JhcGhpY3MgaW50ZXJydXB0KSwgdGhlIG1heCBsYXRl
-bmN5IHZhbHVlcyBhcmUgdXN1YWxseSBiZWxvdyAyMHVzIG5vIG1hdHRlciBsb3cgb3IgaGlnaCBs
-b2FkaW5nIChieSBzdHJlc3MtbmcpLg0KQnV0IHRoZSBtYXggbGF0ZW5jeSBjYW4gcmVhY2ggdXAg
-dG8gNDB1cyBvbiBHVUkgKGdub21lKcKgIG1vZGUgKGRvemVucyBvZiBpOTE1IGludGVycnVwdCBj
-b3VudHMgcGVyIHNlY29uZCkuDQpJIHRyaWVkIGVuYWJsaW5nIHRoZSBpcGlwZSB0cmFjZSBmdW5j
-dGlvbiwgYnV0IGNvdWxkbid0IGZpbmQgdmFsdWFibGUgaW5mb3JtYXRpb24uDQpJcyB0aGVyZSBh
-bnkgb3RoZXIgZ29vZCB3YXlzIHRvIGxvY2F0ZSB0aGUgbWF4IGxhdGVuY3k/DQpPciBkb2VzIGFu
-eWJvZHkgaGF2ZSBleHBlcmllbmNlIG9uIHJlZHVjaW5nIHRoZSBsYXRlbmN5IGNhdXNlZCBieSBn
-cmFwaGljcyAoc3VjaCBhcyBpOTE1KSA/DQpNYW55IHRoYW5rcy4NCg0KDQpCZXN0IFJlZ2FyZHMN
-Cg0KU1NHLT5PVEMtPk9uZSBMaW51eCBQbGF0Zm9ybSBFbmdpbmVlcmluZyBUZWFtIChTaGFuZ2hh
-aSkNCg0KX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX18NClhl
-bm9tYWkgbWFpbGluZyBsaXN0DQpYZW5vbWFpQHhlbm9tYWkub3JnDQpodHRwczovL3hlbm9tYWku
-b3JnL21haWxtYW4vbGlzdGluZm8veGVub21haQ0K
+On 2018-07-03 10:59, Zheng, Qi wrote:
+> I am using xenomai 3.0.5 (https://xenomai.org/downloads/xenomai/stable/xenomai-3.0.5.tar.bz2) on the Intel SKL platform.
+> On console mode or accessed by vnc viewer (no i915 graphics interrupt), the max latency values are usually below 20us no matter low or high loading (by stress-ng).
+> But the max latency can reach up to 40us on GUI (gnome)  mode (dozens of i915 interrupt counts per second).
+> I tried enabling the ipipe trace function, but couldn't find valuable information.
+> Is there any other good ways to locate the max latency?
+> Or does anybody have experience on reducing the latency caused by graphics (such as i915) ?
+> Many thanks.
+>
+First of all, how long did you run the tests? Maybe enabling graphics
+just increases the probability to hit the peak, and the same is
+conceptually possible without it.
+
+It may also be the case that this is hardware-induced (GPU). Do you see
+a similar increase in the latency (even if from a different ground
+level) when using the PREEMPT-RT kernel?
+
+Jan
+
+-- 
+Siemens AG, Corporate Technology, CT RDA IOT SES-DE
+Corporate Competence Center Embedded Linux
 
