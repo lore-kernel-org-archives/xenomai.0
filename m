@@ -1,15 +1,13 @@
-References: <0DD381DBF8F68D419C32ACFCEB28EB2553ADA8AD@SHSMSX101.ccr.corp.intel.com>
- <4b4d410e-5e3d-dc1c-9744-273e1a4c7e28@siemens.com>
- <0DD381DBF8F68D419C32ACFCEB28EB2553AEE721@SHSMSX101.ccr.corp.intel.com>
-From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <c5555274-a2a8-84dd-3841-1f94e969741f@siemens.com>
-Date: Thu, 5 Jul 2018 08:59:57 +0200
+References: <ff4b8c3a-c8ca-09b5-d3ac-f1d6e127a4e5@sferapro.com>
+From: Philippe Gerum <rpm@xenomai.org>
+Message-ID: <b0b1ed38-3770-5236-8e04-30d913096306@xenomai.org>
+Date: Thu, 5 Jul 2018 11:14:11 +0200
 MIME-Version: 1.0
-In-Reply-To: <0DD381DBF8F68D419C32ACFCEB28EB2553AEE721@SHSMSX101.ccr.corp.intel.com>
-Content-Type: text/plain; charset=utf-8
+In-Reply-To: <ff4b8c3a-c8ca-09b5-d3ac-f1d6e127a4e5@sferapro.com>
+Content-Type: text/plain; charset=iso-8859-15
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] How to locate the max latency
+Subject: Re: [Xenomai] i.MX6q memory write causes high latency
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -18,54 +16,35 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "Zheng, Qi" <qi.zheng@intel.com>, "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Federico Sbalchiero <f.sbalchiero@sferapro.com>, xenomai@xenomai.org
 
-On 2018-07-05 08:55, Zheng, Qi wrote:
-> 1. I run the test one hour for a round, totally tested for 12 rounds.
->      The data were consistent, on console mode, max latency were between 10us to 19us, on GUI mode, they were between 28us to 42us.
-> 2. I tried the PREEMPT-RT kernel, yes, there was similar increase.
+On 07/04/2018 07:06 PM, Federico Sbalchiero wrote:
+> Hi,
+> first I want to say thanks to everyone involved in Xenomai for their job.
+> 
+> I'm testing Xenomai 3.0.7 and ipipe-arm/4.14 on Freescale/NXP i.MX6q
+> sabresd board using Yocto. System boots fine and is stable, but latency
+> under load (xeno-test) is higher than in my reference system (Xenomai
+> 2.6.5 on Freescale kernel 3.10.17 + ipipe 3.10.18).
+> This is after disabling power management, frequency scaling, CMA,
+> graphics, tracing, debug.
+> 
+> I have found that a simple non-realtime user space process writing a
+> buffer in memory (memwrite) is able to trigger such high latencies.
+> Latency worsen a lot running a copy of the process on each core.
+> There is a correlation between buffer size and cache size suggesting
+> an L2 cache issue, like the L2 write allocate discussed in the mailing
+> list, but I can confirm L2 WA is disabled (see log).
+> 
+> I'm looking for comments or suggestions.
 > 
 
-Then you should probably discuss this with your colleagues from the
-hardware design, if there are ways for software to avoid that increase
-at all. If there are, we can look for how they can be activated on Linux
-(but we likely need some hints from them).
+A basic dd if=/dev/zero of=/dev/null loop in the background is enough to
+raise the latency actually. Could you try the Xenomai 3 + 3.18 combo on
+your hw and let us know whether you see the same regression?
 
-Jan
-
-> 
-> Best Regards
-> 
-> SSG->OTC->One Linux Platform Engineering Team (Shanghai)
-> 
-> 
-> -----Original Message-----
-> From: Jan Kiszka [mailto:jan.kiszka@siemens.com] 
-> Sent: Thursday, July 5, 2018 2:02 PM
-> To: Zheng, Qi <qi.zheng@intel.com>; xenomai@xenomai.org
-> Subject: Re: How to locate the max latency
-> 
-> On 2018-07-03 10:59, Zheng, Qi wrote:
->> I am using xenomai 3.0.5 (https://xenomai.org/downloads/xenomai/stable/xenomai-3.0.5.tar.bz2) on the Intel SKL platform.
->> On console mode or accessed by vnc viewer (no i915 graphics interrupt), the max latency values are usually below 20us no matter low or high loading (by stress-ng).
->> But the max latency can reach up to 40us on GUI (gnome)  mode (dozens of i915 interrupt counts per second).
->> I tried enabling the ipipe trace function, but couldn't find valuable information.
->> Is there any other good ways to locate the max latency?
->> Or does anybody have experience on reducing the latency caused by graphics (such as i915) ?
->> Many thanks.
->>
-> First of all, how long did you run the tests? Maybe enabling graphics just increases the probability to hit the peak, and the same is conceptually possible without it.
-> 
-> It may also be the case that this is hardware-induced (GPU). Do you see a similar increase in the latency (even if from a different ground
-> level) when using the PREEMPT-RT kernel?
-> 
-> Jan
-> 
-> --
-> Siemens AG, Corporate Technology, CT RDA IOT SES-DE Corporate Competence Center Embedded Linux
-> 
+TIA,
 
 -- 
-Siemens AG, Corporate Technology, CT RDA IOT SES-DE
-Corporate Competence Center Embedded Linux
+Philippe.
 
