@@ -1,12 +1,11 @@
 From: Jan Kiszka <jan.kiszka@siemens.com>
-Date: Thu,  5 Jul 2018 17:46:08 +0200
-Message-Id: <1a0859d098395088200d9385b48c8e4687dc2d04.1530805570.git.jan.kiszka@siemens.com>
+Date: Thu,  5 Jul 2018 17:46:11 +0200
+Message-Id: <cc1c4ff31dbfcb79c5920038daf21f19941e6f54.1530805570.git.jan.kiszka@siemens.com>
 In-Reply-To: <cover.1530805570.git.jan.kiszka@siemens.com>
 References: <cover.1530805570.git.jan.kiszka@siemens.com>
 In-Reply-To: <cover.1530805570.git.jan.kiszka@siemens.com>
 References: <cover.1530805570.git.jan.kiszka@siemens.com>
-Subject: [Xenomai] [PATCH 1/4] cobalt/kernel/xnclock: Introduce
-	xnclock_ratelimit()
+Subject: [Xenomai] [PATCH 4/4] cobalt/rtdm: Remove rtdm_ratelimit()
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -19,103 +18,105 @@ To: xenomai@xenomai.org
 
 From: Jan Kiszka <jan.kiszka@siemens.com>
 
-This will service as an internal building block for RT-safe rate-limited
-printk (printk_ratelimit() is not suited). It's derived from the RTDM
-variant, but simplied (central lock, static parameters). We will switch
-rtdm_printk_ratelimited to this implementation later on.
+This should have been used only by rtdm_printk_ratelimited which was
+switched to xnclock_ratelimit.
 
 Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
 ---
- include/cobalt/kernel/clock.h | 22 ++++++++++++++++++++++
- kernel/cobalt/clock.c         | 35 +++++++++++++++++++++++++++++++++++
- 2 files changed, 57 insertions(+)
+ include/cobalt/kernel/rtdm/driver.h | 22 ------------------
+ kernel/cobalt/rtdm/drvlib.c         | 46 -------------------------------------
+ 2 files changed, 68 deletions(-)
 
-diff --git a/include/cobalt/kernel/clock.h b/include/cobalt/kernel/clock.h
-index 8792dcff94..c26776a0ba 100644
---- a/include/cobalt/kernel/clock.h
-+++ b/include/cobalt/kernel/clock.h
-@@ -92,6 +92,14 @@ struct xnclock {
- #endif
- };
+diff --git a/include/cobalt/kernel/rtdm/driver.h b/include/cobalt/kernel/rtdm/driver.h
+index 1c7dcab635..72f75388da 100644
+--- a/include/cobalt/kernel/rtdm/driver.h
++++ b/include/cobalt/kernel/rtdm/driver.h
+@@ -1214,28 +1214,6 @@ void rtdm_mutex_destroy(rtdm_mutex_t *mutex);
  
-+struct xnclock_ratelimit_state {
-+	xnticks_t interval;
-+	xnticks_t begin;
-+	int burst;
-+	int printed;
-+	int missed;
-+};
-+
- extern struct xnclock nkclock;
+ #define rtdm_printk(format, ...)	printk(format, ##__VA_ARGS__)
  
- extern unsigned long nktimerlat;
-@@ -125,6 +133,20 @@ static inline xnticks_t xnclock_core_read_raw(void)
- 	return t;
+-struct rtdm_ratelimit_state {
+-	rtdm_lock_t	lock;		/* protect the state */
+-	nanosecs_abs_t  interval;
+-	int		burst;
+-	int		printed;
+-	int		missed;
+-	nanosecs_abs_t	begin;
+-};
+-
+-int rtdm_ratelimit(struct rtdm_ratelimit_state *rs, const char *func);
+-
+-#define DEFINE_RTDM_RATELIMIT_STATE(name, interval_init, burst_init)	\
+-	struct rtdm_ratelimit_state name = {				\
+-		.lock		= RTDM_LOCK_UNLOCKED((name).lock),	\
+-		.interval	= interval_init,			\
+-		.burst		= burst_init,				\
+-	}
+-
+-/* We use the Linux defaults */
+-#define DEF_RTDM_RATELIMIT_INTERVAL	5000000000LL
+-#define DEF_RTDM_RATELIMIT_BURST	10
+-
+ #define rtdm_printk_ratelimited(fmt, ...)  do {				\
+ 	if (xnclock_ratelimit())					\
+ 		printk(fmt, ##__VA_ARGS__);				\
+diff --git a/kernel/cobalt/rtdm/drvlib.c b/kernel/cobalt/rtdm/drvlib.c
+index 4fdd9bc1f4..316d87b29d 100644
+--- a/kernel/cobalt/rtdm/drvlib.c
++++ b/kernel/cobalt/rtdm/drvlib.c
+@@ -2106,52 +2106,6 @@ int rtdm_munmap(void *ptr, size_t len)
  }
+ EXPORT_SYMBOL_GPL(rtdm_munmap);
  
-+/* We use the Linux defaults */
-+#define XN_RATELIMIT_INTERVAL	5000000000LL
-+#define XN_RATELIMIT_BURST	10
-+
-+int __xnclock_ratelimit(struct xnclock_ratelimit_state *rs, const char *func);
-+
-+#define xnclock_ratelimit()	({					\
-+	static struct xnclock_ratelimit_state __state = {		\
-+		.interval	= XN_RATELIMIT_INTERVAL,		\
-+		.burst		= XN_RATELIMIT_BURST,			\
-+	};								\
-+	__xnclock_ratelimit(&__state, __func__);			\
-+})
-+
- #ifdef CONFIG_XENO_OPT_EXTCLOCK
- 
- static inline void xnclock_program_shot(struct xnclock *clock,
-diff --git a/kernel/cobalt/clock.c b/kernel/cobalt/clock.c
-index 130cf340b2..272db32412 100644
---- a/kernel/cobalt/clock.c
-+++ b/kernel/cobalt/clock.c
-@@ -120,6 +120,41 @@ EXPORT_SYMBOL_GPL(xnclock_core_ticks_to_ns_rounded);
- EXPORT_SYMBOL_GPL(xnclock_core_ns_to_ticks);
- EXPORT_SYMBOL_GPL(xnclock_divrem_billion);
- 
-+DEFINE_PRIVATE_XNLOCK(ratelimit_lock);
-+
-+int __xnclock_ratelimit(struct xnclock_ratelimit_state *rs, const char *func)
-+{
-+	spl_t s;
-+	int ret;
-+
-+	if (!rs->interval)
-+		return 1;
-+
-+	xnlock_get_irqsave(&ratelimit_lock, s);
-+
-+	if (!rs->begin)
-+		rs->begin = xnclock_read_realtime(&nkclock);
-+	if (xnclock_read_realtime(&nkclock) >= rs->begin + rs->interval) {
-+		if (rs->missed)
-+			printk(KERN_WARNING "%s: %d callbacks suppressed\n",
-+			       func, rs->missed);
-+		rs->begin   = 0;
-+		rs->printed = 0;
-+		rs->missed  = 0;
-+	}
-+	if (rs->burst && rs->burst > rs->printed) {
-+		rs->printed++;
-+		ret = 1;
-+	} else {
-+		rs->missed++;
-+		ret = 0;
-+	}
-+	xnlock_put_irqrestore(&ratelimit_lock, s);
-+
-+	return ret;
-+}
-+EXPORT_SYMBOL_GPL(__xnclock_ratelimit);
-+
- void xnclock_core_local_shot(struct xnsched *sched)
- {
- 	struct xntimerdata *tmd;
+-/**
+- * @brief Enforces a rate limit
+- *
+- * This function enforces a rate limit: not more than @a rs->burst callbacks
+- * in every @a rs->interval.
+- *
+- * @param[in,out] rs rtdm_ratelimit_state data
+- * @param[in] func name of calling function
+- *
+- * @return 0 means callback will be suppressed and 1 means go ahead and do it
+- *
+- * @coretags{unrestricted}
+- */
+-int rtdm_ratelimit(struct rtdm_ratelimit_state *rs, const char *func)
+-{
+-	rtdm_lockctx_t lock_ctx;
+-	int ret;
+-
+-	if (!rs->interval)
+-		return 1;
+-
+-	rtdm_lock_get_irqsave(&rs->lock, lock_ctx);
+-
+-	if (!rs->begin)
+-		rs->begin = rtdm_clock_read();
+-	if (rtdm_clock_read() >= rs->begin + rs->interval) {
+-		if (rs->missed)
+-			printk(KERN_WARNING "%s: %d callbacks suppressed\n",
+-			       func, rs->missed);
+-		rs->begin   = 0;
+-		rs->printed = 0;
+-		rs->missed  = 0;
+-	}
+-	if (rs->burst && rs->burst > rs->printed) {
+-		rs->printed++;
+-		ret = 1;
+-	} else {
+-		rs->missed++;
+-		ret = 0;
+-	}
+-	rtdm_lock_put_irqrestore(&rs->lock, lock_ctx);
+-
+-	return ret;
+-}
+-EXPORT_SYMBOL_GPL(rtdm_ratelimit);
+-
+ int rtdm_get_iovec(struct rtdm_fd *fd, struct iovec **iovp,
+ 		   const struct user_msghdr *msg,
+ 		   struct iovec *iov_fast)
 -- 
 2.16.4
 
