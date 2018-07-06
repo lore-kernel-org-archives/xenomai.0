@@ -1,14 +1,14 @@
 References: <ff4b8c3a-c8ca-09b5-d3ac-f1d6e127a4e5@sferapro.com>
  <b0b1ed38-3770-5236-8e04-30d913096306@xenomai.org>
- <2ec21a09-acad-c747-a865-80ac952f1220@sferapro.com>
+ <7057e9d7-dab4-8c00-d868-01511953b9cd@sferapro.com>
 From: Philippe Gerum <rpm@xenomai.org>
-Message-ID: <007d99cb-757c-a00d-9e2c-f65242cf8dcb@xenomai.org>
-Date: Fri, 6 Jul 2018 11:10:29 +0200
+Message-ID: <de53c28e-468c-5c42-6985-22976fd2efa0@xenomai.org>
+Date: Fri, 6 Jul 2018 11:12:57 +0200
 MIME-Version: 1.0
-In-Reply-To: <2ec21a09-acad-c747-a865-80ac952f1220@sferapro.com>
-Content-Type: text/plain; charset="iso-8859-15"
+In-Reply-To: <7057e9d7-dab4-8c00-d868-01511953b9cd@sferapro.com>
+Content-Type: text/plain; charset=iso-8859-15
 Content-Language: en-US
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 7bit
 Subject: Re: [Xenomai] i.MX6q memory write causes high latency
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
@@ -20,7 +20,7 @@ List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: Federico Sbalchiero <f.sbalchiero@sferapro.com>, xenomai@xenomai.org
 
-On 07/06/2018 10:41 AM, Federico Sbalchiero wrote:
+On 07/06/2018 11:09 AM, Federico Sbalchiero wrote:
 > Il 05/07/2018 11:14, Philippe Gerum ha scritto:
 >> On 07/04/2018 07:06 PM, Federico Sbalchiero wrote:
 >>> Hi,
@@ -43,69 +43,22 @@ On 07/06/2018 10:41 AM, Federico Sbalchiero wrote:
 >>>
 >>> I'm looking for comments or suggestions.
 >>>
->> A basic dd if=3D/dev/zero of=3D/dev/null loop in the background is enoug=
-h to
+>> A basic dd if=/dev/zero of=/dev/null loop in the background is enough to
 >> raise the latency actually. Could you try the Xenomai 3 + 3.18 combo on
 >> your hw and let us know whether you see the same regression?
 >>
 >> TIA,
 >>
->=20
-> kernel 3.18.20-ipipe + xenomai 3.0.7
->=20
-> latency under load (four memwrite instances)
-> RTT|=A0 00:00:01=A0 (periodic user-mode task, 1000 us period, priority 99)
-> RTH|----lat min|----lat avg|----lat max|-overrun|---msw|---lat
-> best|--lat worst
-> RTD|=A0=A0=A0=A0 24.985|=A0=A0=A0=A0 41.374|=A0=A0=A0=A0 76.351|=A0=A0=A0=
-=A0=A0=A0 0| 0|=A0=A0=A0=A0 24.985|=A0=A0=A0=A0 76.351
-> RTD|=A0=A0=A0=A0 26.889|=A0=A0=A0=A0 41.203|=A0=A0=A0=A0 68.070|=A0=A0=A0=
-=A0=A0=A0 0| 0|=A0=A0=A0=A0 24.985|=A0=A0=A0=A0 76.351
-> RTD|=A0=A0=A0=A0 22.828|=A0=A0=A0=A0 41.376|=A0=A0=A0=A0 67.681|=A0=A0=A0=
-=A0=A0=A0 0| 0|=A0=A0=A0=A0 22.828|=A0=A0=A0=A0 76.351
-> RTD|=A0=A0=A0=A0 20.969|=A0=A0=A0=A0 41.043|=A0=A0=A0=A0 74.143|=A0=A0=A0=
-=A0=A0=A0 0| 0|=A0=A0=A0=A0 20.969|=A0=A0=A0=A0 76.351
-> RTD|=A0=A0=A0=A0 27.027|=A0=A0=A0=A0 41.441|=A0=A0=A0=A0 68.037|=A0=A0=A0=
-=A0=A0=A0 0| 0|=A0=A0=A0=A0 20.969|=A0=A0=A0=A0 76.351
-> RTD|=A0=A0=A0=A0 24.413|=A0=A0=A0=A0 41.585|=A0=A0=A0=A0 81.062|=A0=A0=A0=
-=A0=A0=A0 0| 0|=A0=A0=A0=A0 20.969|=A0=A0=A0=A0 81.062
-> RTD|=A0=A0=A0=A0 27.234|=A0=A0=A0=A0 41.168|=A0=A0=A0=A0 76.516|=A0=A0=A0=
-=A0=A0=A0 0| 0|=A0=A0=A0=A0 20.969|=A0=A0=A0=A0 81.062
-> RTD|=A0=A0=A0=A0 23.779|=A0=A0=A0=A0 41.141|=A0=A0=A0=A0 70.466|=A0=A0=A0=
-=A0=A0=A0 0| 0|=A0=A0=A0=A0 20.969|=A0=A0=A0=A0 81.062
-> RTD|=A0=A0=A0=A0 24.824|=A0=A0=A0=A0 41.273|=A0=A0=A0=A0 75.322|=A0=A0=A0=
-=A0=A0=A0 0| 0|=A0=A0=A0=A0 20.969|=A0=A0=A0=A0 81.062
-> RTD|=A0=A0=A0=A0 25.627|=A0=A0=A0=A0 41.195|=A0=A0=A0=A0 71.157|=A0=A0=A0=
-=A0=A0=A0 0| 0|=A0=A0=A0=A0 20.969|=A0=A0=A0=A0 81.062
-> RTD|=A0=A0=A0=A0 28.874|=A0=A0=A0=A0 41.089|=A0=A0=A0=A0 66.579|=A0=A0=A0=
-=A0=A0=A0 0| 0|=A0=A0=A0=A0 20.969|=A0=A0=A0=A0 81.062
-> RTD|=A0=A0=A0=A0 26.672|=A0=A0=A0=A0 41.638|=A0=A0=A0=A0 75.995|=A0=A0=A0=
-=A0=A0=A0 0| 0|=A0=A0=A0=A0 20.969|=A0=A0=A0=A0 81.062
-> RTD|=A0=A0=A0=A0 25.139|=A0=A0=A0=A0 41.040|=A0=A0=A0=A0 69.543|=A0=A0=A0=
-=A0=A0=A0 0| 0|=A0=A0=A0=A0 20.969|=A0=A0=A0=A0 81.062
-> RTD|=A0=A0=A0=A0 26.215|=A0=A0=A0=A0 41.099|=A0=A0=A0=A0 66.336|=A0=A0=A0=
-=A0=A0=A0 0| 0|=A0=A0=A0=A0 20.969|=A0=A0=A0=A0 81.062
-> RTD|=A0=A0=A0=A0 24.192|=A0=A0=A0=A0 41.117|=A0=A0=A0=A0 76.828|=A0=A0=A0=
-=A0=A0=A0 0| 0|=A0=A0=A0=A0 20.969|=A0=A0=A0=A0 81.062
-> RTD|=A0=A0=A0=A0 27.310|=A0=A0=A0=A0 41.942|=A0=A0=A0=A0 79.888|=A0=A0=A0=
-=A0=A0=A0 0| 0|=A0=A0=A0=A0 20.969|=A0=A0=A0=A0 81.062
-> RTD|=A0=A0=A0=A0 24.348|=A0=A0=A0=A0 40.955|=A0=A0=A0=A0 66.484|=A0=A0=A0=
-=A0=A0=A0 0| 0|=A0=A0=A0=A0 20.969|=A0=A0=A0=A0 81.062
-> RTD|=A0=A0=A0=A0 26.679|=A0=A0=A0=A0 41.260|=A0=A0=A0=A0 80.242|=A0=A0=A0=
-=A0=A0=A0 0| 0|=A0=A0=A0=A0 20.969|=A0=A0=A0=A0 81.062
-> RTD|=A0=A0=A0=A0 26.820|=A0=A0=A0=A0 41.251|=A0=A0=A0=A0 74.986|=A0=A0=A0=
-=A0=A0=A0 0| 0|=A0=A0=A0=A0 20.969|=A0=A0=A0=A0 81.062
-> RTD|=A0=A0=A0=A0 27.635|=A0=A0=A0=A0 41.301|=A0=A0=A0=A0 73.961|=A0=A0=A0=
-=A0=A0=A0 0| 0|=A0=A0=A0=A0 20.969|=A0=A0=A0=A0 81.062
-> RTD|=A0=A0=A0=A0 26.877|=A0=A0=A0=A0 41.305|=A0=A0=A0=A0 72.789|=A0=A0=A0=
-=A0=A0=A0 0| 0|=A0=A0=A0=A0 20.969|=A0=A0=A0=A0 81.062
->=20
->=20
+> 
+> in the same configuration (kernel 3.18.20-ipipe + xenomai 3.0.7)
+> dd if=/dev/zero of=/dev/null has almost no effect on latency.
+> I think all data write to a few small buffers, not stressing L2
+> cache.
+> 
 
-Ok, if all goes well, we should soon be able to see the worst-case
-latency drop to ~65 us under high mm stress on i.MX6q over 4.14, the
-fewer the cores, the better the results with the i.MX6 series.
+You need to set a large block size for dd.
 
---=20
+
+-- 
 Philippe.
 
