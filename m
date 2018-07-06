@@ -1,15 +1,13 @@
 References: <ff4b8c3a-c8ca-09b5-d3ac-f1d6e127a4e5@sferapro.com>
- <CALLqZ8SuY4K=PFP6LeCHXU9PXoXnmDv4UCLnqHmnz-8xc3CacA@mail.gmail.com>
- <CALLqZ8Q3uZm8jTmtJLHR=Yz3Cw5g+CGTrXaj-oUFPT=1Rh0JbA@mail.gmail.com>
- <c2d2a625-011c-1c79-0bcc-4830c1d30674@sferapro.com>
-From: Philippe Gerum <rpm@xenomai.org>
-Message-ID: <091bff54-d806-97ce-f418-9148af9bccb1@xenomai.org>
-Date: Fri, 6 Jul 2018 10:32:03 +0200
+ <b0b1ed38-3770-5236-8e04-30d913096306@xenomai.org>
+From: Federico Sbalchiero <f.sbalchiero@sferapro.com>
+Message-ID: <2ec21a09-acad-c747-a865-80ac952f1220@sferapro.com>
+Date: Fri, 6 Jul 2018 10:41:11 +0200
 MIME-Version: 1.0
-In-Reply-To: <c2d2a625-011c-1c79-0bcc-4830c1d30674@sferapro.com>
-Content-Type: text/plain; charset="utf-8"
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+In-Reply-To: <b0b1ed38-3770-5236-8e04-30d913096306@xenomai.org>
+Content-Type: text/plain; charset="iso-8859-15"; format="flowed"
+Content-Transfer-Encoding: quoted-printable
+Content-Language: it
 Subject: Re: [Xenomai] i.MX6q memory write causes high latency
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
@@ -19,58 +17,84 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Federico Sbalchiero <f.sbalchiero@sferapro.com>, xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-On 07/06/2018 10:07 AM, Federico Sbalchiero wrote:
-> adding a break at line 837 in file /arch/arm/mm/cache-l2x0.c enables L2
-> write allocate:
-> 
-> [    0.000000] L2C-310 errata 752271 769419 enabled
-> [    0.000000] L2C-310 enabling early BRESP for Cortex-A9
-> [    0.000000] L2C-310 full line of zeros enabled for Cortex-A9
-> [    0.000000] L2C-310 ID prefetch enabled, offset 16 lines
-> [    0.000000] L2C-310 dynamic clock gating enabled, standby mode enabled
-> [    0.000000] L2C-310 cache controller enabled, 16 ways, 1024 kB
-> [    0.000000] L2C-310: CACHE_ID 0x410000c7, AUX_CTRL 0x76470001
-> 
-> 
-> latency under load (four memwrite instances) is better but still high.
-> 
-> RTT|  00:00:01  (periodic user-mode task, 1000 us period, priority 99)
-> RTH|----lat min|----lat avg|----lat max|-overrun|---msw|---lat
-> best|--lat worst
-> RTD|     42.667|     58.521|     87.667|       0|     0| 42.667|     87.667
-> RTD|     42.000|     58.935|     89.000|       0|     0| 42.000|     89.000
-> RTD|     36.666|     58.707|     90.333|       0|     0| 36.666|     90.333
-> RTD|     38.333|     58.439|     92.666|       0|     0| 36.666|     92.666
-> RTD|     41.666|     58.595|     84.999|       0|     0| 36.666|     92.666
-> RTD|     42.666|     58.698|     89.666|       0|     0| 36.666|     92.666
-> RTD|     40.999|     58.999|     95.665|       0|     0| 36.666|     95.665
-> RTD|     42.665|     58.823|     88.665|       0|     0| 36.666|     95.665
-> RTD|     42.665|     58.570|     84.665|       0|     0| 36.666|     95.665
-> RTD|     41.331|     58.599|     86.998|       0|     0| 36.666|     95.665
-> RTD|     37.664|     58.596|     92.331|       0|     0| 36.666|     95.665
-> RTD|     35.331|     58.893|     85.997|       0|     0| 35.331|     95.665
-> RTD|     41.997|     58.704|     86.997|       0|     0| 35.331|     95.665
-> RTD|     40.997|     58.723|     94.997|       0|     0| 35.331|     95.665
-> RTD|     41.330|     58.710|     88.997|       0|     0| 35.331|     95.665
-> RTD|     41.330|     59.080|     92.663|       0|     0| 35.331|     95.665
-> RTD|     38.330|     58.733|     85.996|       0|     0| 35.331|     95.665
-> RTD|     39.996|     59.095|     90.663|       0|     0| 35.331|     95.665
-> RTD|     41.662|     58.967|     86.662|       0|     0| 35.331|     95.665
-> RTD|     42.662|     58.884|     86.995|       0|     0| 35.331|     95.665
-> RTD|     42.662|     58.852|     88.329|       0|     0| 35.331|     95.665
-> 
+Il 05/07/2018 11:14, Philippe Gerum ha scritto:
+> On 07/04/2018 07:06 PM, Federico Sbalchiero wrote:
+>> Hi,
+>> first I want to say thanks to everyone involved in Xenomai for their job.
+>>
+>> I'm testing Xenomai 3.0.7 and ipipe-arm/4.14 on Freescale/NXP i.MX6q
+>> sabresd board using Yocto. System boots fine and is stable, but latency
+>> under load (xeno-test) is higher than in my reference system (Xenomai
+>> 2.6.5 on Freescale kernel 3.10.17 + ipipe 3.10.18).
+>> This is after disabling power management, frequency scaling, CMA,
+>> graphics, tracing, debug.
+>>
+>> I have found that a simple non-realtime user space process writing a
+>> buffer in memory (memwrite) is able to trigger such high latencies.
+>> Latency worsen a lot running a copy of the process on each core.
+>> There is a correlation between buffer size and cache size suggesting
+>> an L2 cache issue, like the L2 write allocate discussed in the mailing
+>> list, but I can confirm L2 WA is disabled (see log).
+>>
+>> I'm looking for comments or suggestions.
+>>
+> A basic dd if=3D/dev/zero of=3D/dev/null loop in the background is enough=
+ to
+> raise the latency actually. Could you try the Xenomai 3 + 3.18 combo on
+> your hw and let us know whether you see the same regression?
+>
+> TIA,
+>
 
-According to my latest tests, waiting for operations to complete in the
-cache unit induces most of the delay. I'm under the impression that the
-way we deal with the outer L2 cache is obsolete, based on past
-assumptions which may not be valid anymore. Typically, some of them
-would involve events that might occur with VIVT caches, which we don't
-support in 4.14.
+kernel 3.18.20-ipipe + xenomai 3.0.7
 
-The whole logic requires a fresh review. I'll follow up on this.
+latency under load (four memwrite instances)
+RTT|=A0 00:00:01=A0 (periodic user-mode task, 1000 us period, priority 99)
+RTH|----lat min|----lat avg|----lat max|-overrun|---msw|---lat=20
+best|--lat worst
+RTD|=A0=A0=A0=A0 24.985|=A0=A0=A0=A0 41.374|=A0=A0=A0=A0 76.351|=A0=A0=A0=
+=A0=A0=A0 0| 0|=A0=A0=A0=A0 24.985|=A0=A0=A0=A0 76.351
+RTD|=A0=A0=A0=A0 26.889|=A0=A0=A0=A0 41.203|=A0=A0=A0=A0 68.070|=A0=A0=A0=
+=A0=A0=A0 0| 0|=A0=A0=A0=A0 24.985|=A0=A0=A0=A0 76.351
+RTD|=A0=A0=A0=A0 22.828|=A0=A0=A0=A0 41.376|=A0=A0=A0=A0 67.681|=A0=A0=A0=
+=A0=A0=A0 0| 0|=A0=A0=A0=A0 22.828|=A0=A0=A0=A0 76.351
+RTD|=A0=A0=A0=A0 20.969|=A0=A0=A0=A0 41.043|=A0=A0=A0=A0 74.143|=A0=A0=A0=
+=A0=A0=A0 0| 0|=A0=A0=A0=A0 20.969|=A0=A0=A0=A0 76.351
+RTD|=A0=A0=A0=A0 27.027|=A0=A0=A0=A0 41.441|=A0=A0=A0=A0 68.037|=A0=A0=A0=
+=A0=A0=A0 0| 0|=A0=A0=A0=A0 20.969|=A0=A0=A0=A0 76.351
+RTD|=A0=A0=A0=A0 24.413|=A0=A0=A0=A0 41.585|=A0=A0=A0=A0 81.062|=A0=A0=A0=
+=A0=A0=A0 0| 0|=A0=A0=A0=A0 20.969|=A0=A0=A0=A0 81.062
+RTD|=A0=A0=A0=A0 27.234|=A0=A0=A0=A0 41.168|=A0=A0=A0=A0 76.516|=A0=A0=A0=
+=A0=A0=A0 0| 0|=A0=A0=A0=A0 20.969|=A0=A0=A0=A0 81.062
+RTD|=A0=A0=A0=A0 23.779|=A0=A0=A0=A0 41.141|=A0=A0=A0=A0 70.466|=A0=A0=A0=
+=A0=A0=A0 0| 0|=A0=A0=A0=A0 20.969|=A0=A0=A0=A0 81.062
+RTD|=A0=A0=A0=A0 24.824|=A0=A0=A0=A0 41.273|=A0=A0=A0=A0 75.322|=A0=A0=A0=
+=A0=A0=A0 0| 0|=A0=A0=A0=A0 20.969|=A0=A0=A0=A0 81.062
+RTD|=A0=A0=A0=A0 25.627|=A0=A0=A0=A0 41.195|=A0=A0=A0=A0 71.157|=A0=A0=A0=
+=A0=A0=A0 0| 0|=A0=A0=A0=A0 20.969|=A0=A0=A0=A0 81.062
+RTD|=A0=A0=A0=A0 28.874|=A0=A0=A0=A0 41.089|=A0=A0=A0=A0 66.579|=A0=A0=A0=
+=A0=A0=A0 0| 0|=A0=A0=A0=A0 20.969|=A0=A0=A0=A0 81.062
+RTD|=A0=A0=A0=A0 26.672|=A0=A0=A0=A0 41.638|=A0=A0=A0=A0 75.995|=A0=A0=A0=
+=A0=A0=A0 0| 0|=A0=A0=A0=A0 20.969|=A0=A0=A0=A0 81.062
+RTD|=A0=A0=A0=A0 25.139|=A0=A0=A0=A0 41.040|=A0=A0=A0=A0 69.543|=A0=A0=A0=
+=A0=A0=A0 0| 0|=A0=A0=A0=A0 20.969|=A0=A0=A0=A0 81.062
+RTD|=A0=A0=A0=A0 26.215|=A0=A0=A0=A0 41.099|=A0=A0=A0=A0 66.336|=A0=A0=A0=
+=A0=A0=A0 0| 0|=A0=A0=A0=A0 20.969|=A0=A0=A0=A0 81.062
+RTD|=A0=A0=A0=A0 24.192|=A0=A0=A0=A0 41.117|=A0=A0=A0=A0 76.828|=A0=A0=A0=
+=A0=A0=A0 0| 0|=A0=A0=A0=A0 20.969|=A0=A0=A0=A0 81.062
+RTD|=A0=A0=A0=A0 27.310|=A0=A0=A0=A0 41.942|=A0=A0=A0=A0 79.888|=A0=A0=A0=
+=A0=A0=A0 0| 0|=A0=A0=A0=A0 20.969|=A0=A0=A0=A0 81.062
+RTD|=A0=A0=A0=A0 24.348|=A0=A0=A0=A0 40.955|=A0=A0=A0=A0 66.484|=A0=A0=A0=
+=A0=A0=A0 0| 0|=A0=A0=A0=A0 20.969|=A0=A0=A0=A0 81.062
+RTD|=A0=A0=A0=A0 26.679|=A0=A0=A0=A0 41.260|=A0=A0=A0=A0 80.242|=A0=A0=A0=
+=A0=A0=A0 0| 0|=A0=A0=A0=A0 20.969|=A0=A0=A0=A0 81.062
+RTD|=A0=A0=A0=A0 26.820|=A0=A0=A0=A0 41.251|=A0=A0=A0=A0 74.986|=A0=A0=A0=
+=A0=A0=A0 0| 0|=A0=A0=A0=A0 20.969|=A0=A0=A0=A0 81.062
+RTD|=A0=A0=A0=A0 27.635|=A0=A0=A0=A0 41.301|=A0=A0=A0=A0 73.961|=A0=A0=A0=
+=A0=A0=A0 0| 0|=A0=A0=A0=A0 20.969|=A0=A0=A0=A0 81.062
+RTD|=A0=A0=A0=A0 26.877|=A0=A0=A0=A0 41.305|=A0=A0=A0=A0 72.789|=A0=A0=A0=
+=A0=A0=A0 0| 0|=A0=A0=A0=A0 20.969|=A0=A0=A0=A0 81.062
 
--- 
-Philippe.
 
