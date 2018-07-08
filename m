@@ -1,13 +1,15 @@
 References: <ff4b8c3a-c8ca-09b5-d3ac-f1d6e127a4e5@sferapro.com>
- <fd18fc55-8cb3-70cf-10c2-00d056506360@xenomai.org>
-From: Federico Sbalchiero <f.sbalchiero@sferapro.com>
-Message-ID: <6f059d57-7475-2282-c589-75fba520e69c@sferapro.com>
-Date: Fri, 6 Jul 2018 12:35:23 +0200
+ <CALLqZ8SuY4K=PFP6LeCHXU9PXoXnmDv4UCLnqHmnz-8xc3CacA@mail.gmail.com>
+ <CALLqZ8Q3uZm8jTmtJLHR=Yz3Cw5g+CGTrXaj-oUFPT=1Rh0JbA@mail.gmail.com>
+ <c2d2a625-011c-1c79-0bcc-4830c1d30674@sferapro.com>
+From: Philippe Gerum <rpm@xenomai.org>
+Message-ID: <d496a293-e2b6-c7bb-7382-dc344f5dfd5f@xenomai.org>
+Date: Sun, 8 Jul 2018 11:41:10 +0200
 MIME-Version: 1.0
-In-Reply-To: <fd18fc55-8cb3-70cf-10c2-00d056506360@xenomai.org>
-Content-Type: text/plain; charset="iso-8859-15"; format="flowed"
-Content-Transfer-Encoding: quoted-printable
-Content-Language: it
+In-Reply-To: <c2d2a625-011c-1c79-0bcc-4830c1d30674@sferapro.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 Subject: Re: [Xenomai] i.MX6q memory write causes high latency
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
@@ -17,172 +19,48 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
+To: Federico Sbalchiero <f.sbalchiero@sferapro.com>, xenomai@xenomai.org
 
-Il 06/07/2018 11:04, Philippe Gerum ha scritto:
-> On 07/04/2018 07:06 PM, Federico Sbalchiero wrote:
->> Hi,
->> first I want to say thanks to everyone involved in Xenomai for their job.
->>
->> I'm testing Xenomai 3.0.7 and ipipe-arm/4.14 on Freescale/NXP i.MX6q
->> sabresd board using Yocto. System boots fine and is stable, but latency
->> under load (xeno-test) is higher than in my reference system (Xenomai
->> 2.6.5 on Freescale kernel 3.10.17 + ipipe 3.10.18).
->> This is after disabling power management, frequency scaling, CMA,
->> graphics, tracing, debug.
->>
->> I have found that a simple non-realtime user space process writing a
->> buffer in memory (memwrite) is able to trigger such high latencies.
->> Latency worsen a lot running a copy of the process on each core.
->> There is a correlation between buffer size and cache size suggesting
->> an L2 cache issue, like the L2 write allocate discussed in the mailing
->> list, but I can confirm L2 WA is disabled (see log).
->>
->> I'm looking for comments or suggestions.
->>
->> Thanks,
->> Federico
->>
->>
->> "memwrite" test case:
->> #include <stdlib.h>
->> #include <stdio.h>
->> #include <string.h>
->> unsigned char *buffer;
->> int main(int argc, char **argv)
->> {
->>  =A0=A0=A0 int i;
->>  =A0=A0=A0 int count =3D 0;
->>  =A0=A0=A0 int n;
->>  =A0=A0=A0 int size =3D 10 * 1024 * 1024;
->>  =A0=A0=A0 volatile unsigned *pt;
->>  =A0=A0=A0 printf("load system by writing in memory\n");
->>  =A0=A0=A0 buffer =3D malloc(size);
->>  =A0=A0=A0 if (buffer =3D=3D NULL) {
->>  =A0=A0=A0 =A0=A0=A0 printf("buffer allocation failed\n");
->>  =A0=A0=A0 =A0=A0=A0 exit(1);
->>  =A0=A0=A0 }
->>  =A0=A0=A0 n =3D size / sizeof(unsigned);
->>  =A0=A0=A0 while (1) {
->>  =A0=A0=A0 =A0=A0=A0 // write some data to memory buffer
->>  =A0=A0=A0 =A0=A0=A0 pt =3D (unsigned *) buffer;
->>  =A0=A0=A0 =A0=A0=A0 for (i =3D 0; i < n; i++)
->>  =A0=A0=A0 =A0=A0=A0 =A0=A0=A0 *pt++ =3D i;
->>  =A0=A0=A0 =A0=A0=A0 count++;
->>  =A0=A0=A0 }
->>  =A0=A0=A0 return 0;
->> }
->>
->> xeno-test on Xenomai 3.0.7 and ipipe-arm/4.14:
->> RTT|=A0 00:00:01=A0 (periodic user-mode task, 1000 us period, priority 9=
-9)
->> RTH|----lat min|----lat avg|----lat max|-overrun|---msw|---lat
->> best|--lat worst
->> RTD|=A0=A0=A0=A0 18.000|=A0=A0=A0=A0 26.504|=A0=A0=A0=A0 42.667|=A0=A0=
-=A0=A0=A0=A0 0|=A0=A0=A0=A0 0| 18.000|=A0=A0=A0=A0 42.667
->> RTD|=A0=A0=A0=A0 19.000|=A0=A0=A0=A0 25.198|=A0=A0=A0=A0 41.000|=A0=A0=
-=A0=A0=A0=A0 0|=A0=A0=A0=A0 0| 18.000|=A0=A0=A0=A0 42.667
->> RTD|=A0=A0=A0=A0 18.999|=A0=A0=A0=A0 25.494|=A0=A0=A0=A0 40.999|=A0=A0=
-=A0=A0=A0=A0 0|=A0=A0=A0=A0 0| 18.000|=A0=A0=A0=A0 42.667
->> RTD|=A0=A0=A0=A0 18.666|=A0=A0=A0=A0 25.060|=A0=A0=A0=A0 38.999|=A0=A0=
-=A0=A0=A0=A0 0|=A0=A0=A0=A0 0| 18.000|=A0=A0=A0=A0 42.667
->> RTD|=A0=A0=A0=A0 18.999|=A0=A0=A0=A0 24.464|=A0=A0=A0=A0 38.332|=A0=A0=
-=A0=A0=A0=A0 0|=A0=A0=A0=A0 0| 18.000|=A0=A0=A0=A0 42.667
->> RTD|=A0=A0=A0=A0 18.332|=A0=A0=A0=A0 24.546|=A0=A0=A0=A0 41.999|=A0=A0=
-=A0=A0=A0=A0 0|=A0=A0=A0=A0 0| 18.000|=A0=A0=A0=A0 42.667
->> RTD|=A0=A0=A0=A0 13.332|=A0=A0=A0=A0 22.445|=A0=A0=A0=A0 45.665|=A0=A0=
-=A0=A0=A0=A0 0|=A0=A0=A0=A0 0| 13.332|=A0=A0=A0=A0 45.665
->> RTD|=A0=A0=A0=A0 13.331|=A0=A0=A0=A0 21.164|=A0=A0=A0=A0 43.665|=A0=A0=
-=A0=A0=A0=A0 0|=A0=A0=A0=A0 0| 13.331|=A0=A0=A0=A0 45.665
->> RTD|=A0=A0=A0=A0 13.331|=A0=A0=A0=A0 21.930|=A0=A0=A0=A0 43.665|=A0=A0=
-=A0=A0=A0=A0 0|=A0=A0=A0=A0 0| 13.331|=A0=A0=A0=A0 45.665
->> RTD|=A0=A0=A0=A0 13.331|=A0=A0=A0=A0 22.254|=A0=A0=A0=A0 48.664|=A0=A0=
-=A0=A0=A0=A0 0|=A0=A0=A0=A0 0| 13.331|=A0=A0=A0=A0 48.664
->> RTD|=A0=A0=A0=A0 13.331|=A0=A0=A0=A0 22.037|=A0=A0=A0=A0 46.664|=A0=A0=
-=A0=A0=A0=A0 0|=A0=A0=A0=A0 0| 13.331|=A0=A0=A0=A0 48.664
->> RTD|=A0=A0=A0=A0 13.330|=A0=A0=A0=A0 21.053|=A0=A0=A0=A0 42.664|=A0=A0=
-=A0=A0=A0=A0 0|=A0=A0=A0=A0 0| 13.330|=A0=A0=A0=A0 48.664
->> RTD|=A0=A0=A0=A0 13.330|=A0=A0=A0=A0 20.610|=A0=A0=A0=A0 37.330|=A0=A0=
-=A0=A0=A0=A0 0|=A0=A0=A0=A0 0| 13.330|=A0=A0=A0=A0 48.664
->> RTD|=A0=A0=A0=A0 13.330|=A0=A0=A0=A0 20.520|=A0=A0=A0=A0 34.997|=A0=A0=
-=A0=A0=A0=A0 0|=A0=A0=A0=A0 0| 13.330|=A0=A0=A0=A0 48.664
->> RTD|=A0=A0=A0=A0 13.330|=A0=A0=A0=A0 20.398|=A0=A0=A0=A0 39.330|=A0=A0=
-=A0=A0=A0=A0 0|=A0=A0=A0=A0 0| 13.330|=A0=A0=A0=A0 48.664
->> RTD|=A0=A0=A0=A0 13.663|=A0=A0=A0=A0 21.249|=A0=A0=A0=A0 37.996|=A0=A0=
-=A0=A0=A0=A0 0|=A0=A0=A0=A0 0| 13.330|=A0=A0=A0=A0 48.664
->> RTD|=A0=A0=A0=A0 13.329|=A0=A0=A0=A0 20.983|=A0=A0=A0=A0 35.663|=A0=A0=
-=A0=A0=A0=A0 0|=A0=A0=A0=A0 0| 13.329|=A0=A0=A0=A0 48.664
->> RTD|=A0=A0=A0=A0 12.996|=A0=A0=A0=A0 20.039|=A0=A0=A0=A0 34.329|=A0=A0=
-=A0=A0=A0=A0 0|=A0=A0=A0=A0 0| 12.996|=A0=A0=A0=A0 48.664
->> RTD|=A0=A0=A0=A0 13.329|=A0=A0=A0=A0 20.580|=A0=A0=A0=A0 42.662|=A0=A0=
-=A0=A0=A0=A0 0|=A0=A0=A0=A0 0| 12.996|=A0=A0=A0=A0 48.664
->> RTD|=A0=A0=A0=A0 12.995|=A0=A0=A0=A0 20.518|=A0=A0=A0=A0 39.329|=A0=A0=
-=A0=A0=A0=A0 0|=A0=A0=A0=A0 0| 12.995|=A0=A0=A0=A0 48.664
->> RTD|=A0=A0=A0=A0 13.328|=A0=A0=A0=A0 20.168|=A0=A0=A0=A0 35.662|=A0=A0=
-=A0=A0=A0=A0 0|=A0=A0=A0=A0 0| 12.995|=A0=A0=A0=A0 48.664
->>
->> xeno-test on Xenomai 2.6.5 and Freescale Linux 3.10.17 + ipipe 3.10.18:
->> RTT|=A0 00:00:01=A0 (periodic user-mode task, 1000 us period, priority 9=
-9)
->> RTH|----lat min|----lat avg|----lat max|-overrun|---msw|---lat
->> best|--lat worst
->> RTD|=A0=A0=A0=A0=A0 4.957|=A0=A0=A0=A0 17.575|=A0=A0=A0=A0 28.088|=A0=A0=
-=A0=A0=A0=A0 0|=A0=A0=A0=A0 0| 4.957|=A0=A0=A0=A0 28.088
->> RTD|=A0=A0=A0=A0=A0 4.904|=A0=A0=A0=A0 17.560|=A0=A0=A0=A0 26.828|=A0=A0=
-=A0=A0=A0=A0 0|=A0=A0=A0=A0 0| 4.904|=A0=A0=A0=A0 28.088
->> RTD|=A0=A0=A0=A0=A0 4.479|=A0=A0=A0=A0 13.472|=A0=A0=A0=A0 29.767|=A0=A0=
-=A0=A0=A0=A0 0|=A0=A0=A0=A0 0| 4.479|=A0=A0=A0=A0 29.767
->> RTD|=A0=A0=A0=A0=A0 4.522|=A0=A0=A0=A0 12.724|=A0=A0=A0=A0 23.275|=A0=A0=
-=A0=A0=A0=A0 0|=A0=A0=A0=A0 0| 4.479|=A0=A0=A0=A0 29.767
->> RTD|=A0=A0=A0=A0=A0 4.512|=A0=A0=A0=A0 12.904|=A0=A0=A0=A0 25.641|=A0=A0=
-=A0=A0=A0=A0 0|=A0=A0=A0=A0 0| 4.479|=A0=A0=A0=A0 29.767
->> RTD|=A0=A0=A0=A0=A0 4.542|=A0=A0=A0=A0 12.818|=A0=A0=A0=A0 27.878|=A0=A0=
-=A0=A0=A0=A0 0|=A0=A0=A0=A0 0| 4.479|=A0=A0=A0=A0 29.767
->> RTD|=A0=A0=A0=A0=A0 4.520|=A0=A0=A0=A0 13.068|=A0=A0=A0=A0 27.926|=A0=A0=
-=A0=A0=A0=A0 0|=A0=A0=A0=A0 0| 4.479|=A0=A0=A0=A0 29.767
->> RTD|=A0=A0=A0=A0=A0 4.409|=A0=A0=A0=A0 12.770|=A0=A0=A0=A0 26.689|=A0=A0=
-=A0=A0=A0=A0 0|=A0=A0=A0=A0 0| 4.409|=A0=A0=A0=A0 29.767
->> RTD|=A0=A0=A0=A0=A0 4.568|=A0=A0=A0=A0 12.265|=A0=A0=A0=A0 27.065|=A0=A0=
-=A0=A0=A0=A0 0|=A0=A0=A0=A0 0| 4.409|=A0=A0=A0=A0 29.767
->> RTD|=A0=A0=A0=A0=A0 4.492|=A0=A0=A0=A0 12.017|=A0=A0=A0=A0 25.898|=A0=A0=
-=A0=A0=A0=A0 0|=A0=A0=A0=A0 0| 4.409|=A0=A0=A0=A0 29.767
->> RTD|=A0=A0=A0=A0=A0 4.469|=A0=A0=A0=A0 12.303|=A0=A0=A0=A0 24.540|=A0=A0=
-=A0=A0=A0=A0 0|=A0=A0=A0=A0 0| 4.409|=A0=A0=A0=A0 29.767
->> RTD|=A0=A0=A0=A0=A0 4.489|=A0=A0=A0=A0 12.030|=A0=A0=A0=A0 27.924|=A0=A0=
-=A0=A0=A0=A0 0|=A0=A0=A0=A0 0| 4.409|=A0=A0=A0=A0 29.767
->> RTD|=A0=A0=A0=A0=A0 4.590|=A0=A0=A0=A0 11.851|=A0=A0=A0=A0 23.651|=A0=A0=
-=A0=A0=A0=A0 0|=A0=A0=A0=A0 0| 4.409|=A0=A0=A0=A0 29.767
->> RTD|=A0=A0=A0=A0=A0 4.479|=A0=A0=A0=A0 13.371|=A0=A0=A0=A0 24.838|=A0=A0=
-=A0=A0=A0=A0 0|=A0=A0=A0=A0 0| 4.409|=A0=A0=A0=A0 29.767
->> RTD|=A0=A0=A0=A0=A0 4.396|=A0=A0=A0=A0 13.204|=A0=A0=A0=A0 28.797|=A0=A0=
-=A0=A0=A0=A0 0|=A0=A0=A0=A0 0| 4.396|=A0=A0=A0=A0 29.767
->> RTD|=A0=A0=A0=A0=A0 4.411|=A0=A0=A0=A0 12.454|=A0=A0=A0=A0 26.002|=A0=A0=
-=A0=A0=A0=A0 0|=A0=A0=A0=A0 0| 4.396|=A0=A0=A0=A0 29.767
->> RTD|=A0=A0=A0=A0=A0 4.560|=A0=A0=A0=A0 12.234|=A0=A0=A0=A0 27.146|=A0=A0=
-=A0=A0=A0=A0 0|=A0=A0=A0=A0 0| 4.396|=A0=A0=A0=A0 29.767
->> RTD|=A0=A0=A0=A0=A0 4.593|=A0=A0=A0=A0 12.441|=A0=A0=A0=A0 24.686|=A0=A0=
-=A0=A0=A0=A0 0|=A0=A0=A0=A0 0| 4.396|=A0=A0=A0=A0 29.767
->> RTD|=A0=A0=A0=A0=A0 4.520|=A0=A0=A0=A0 12.510|=A0=A0=A0=A0 24.275|=A0=A0=
-=A0=A0=A0=A0 0|=A0=A0=A0=A0 0| 4.396|=A0=A0=A0=A0 29.767
->> RTD|=A0=A0=A0=A0=A0 4.568|=A0=A0=A0=A0 11.797|=A0=A0=A0=A0 24.982|=A0=A0=
-=A0=A0=A0=A0 0|=A0=A0=A0=A0 0| 4.396|=A0=A0=A0=A0 29.767
->> RTD|=A0=A0=A0=A0=A0 4.482|=A0=A0=A0=A0 12.631|=A0=A0=A0=A0 24.972|=A0=A0=
-=A0=A0=A0=A0 0|=A0=A0=A0=A0 0| 4.396|=A0=A0=A0=A0 29.767
->>
-> Worst-case on 2.6.5 + 3.18.20 is 67 us here, after 10 hrs runtime on
-> imx6q - definitely not 30 us - stressing the latency test with:
->
-> - dd loop (zero -> null, 16M bs)
-> - switchtest -s 200
->
-30 us worst case are in very short term (1-2 minutes) with just one=20
-instance of
-memwrite in background.
-Using dd loop and switchtest gives 50 us in short term. I suppose this=20
-compares
-reasonably to 67 us after 10 hours.
+On 07/06/2018 10:07 AM, Federico Sbalchiero wrote:
+> adding a break at line 837 in file /arch/arm/mm/cache-l2x0.c enables L2
+> write allocate:
+> 
+> [    0.000000] L2C-310 errata 752271 769419 enabled
+> [    0.000000] L2C-310 enabling early BRESP for Cortex-A9
+> [    0.000000] L2C-310 full line of zeros enabled for Cortex-A9
+> [    0.000000] L2C-310 ID prefetch enabled, offset 16 lines
+> [    0.000000] L2C-310 dynamic clock gating enabled, standby mode enabled
+> [    0.000000] L2C-310 cache controller enabled, 16 ways, 1024 kB
+> [    0.000000] L2C-310: CACHE_ID 0x410000c7, AUX_CTRL 0x76470001
+> 
 
-I also confirm
-dd if=3D/dev/zero of=3D/dev/null bs=3D16M
-has the same effect on latency as memwrite, thanks
+Adding a break at this location defeats the purpose of the code, you
+want it to fall through in order to update the control bits, as seen
+from the value of the auxiliary control register above. 0x76470001 now
+clears bit 23 (0x800000) due to breaking out of the switch, which should
+be set for disabling fetch-on-write upon write misses instead. FWIW, I
+don't see any issue in the original code, although the logic should be
+made more obvious.
+
+> RTT|  00:00:01  (periodic user-mode task, 1000 us period, priority 99)
+> RTH|----lat min|----lat avg|----lat max|-overrun|---msw|---lat
+> best|--lat worst
+> RTD|     42.667|     58.521|     87.667|       0|     0| 42.667|
+87.667
+> RTD|     42.662|     58.884|     86.995|       0|     0| 35.331|
+<snip>
+95.665
+> RTD|     42.662|     58.852|     88.329|       0|     0| 35.331|
+95.665
+
+So these figures above are actually obtained with write_allocate=1, they
+are consistent with the results obtained with cache units older than
+r3p2. Your cache unit advertises as r3p1-50rel0, where enabling
+write-allocate leads to poor, even ugly, performances.
+
+Would you leave the test run for several hours with proper load, I
+believe that you should see the latency figures skyrocket way above 100 us.
+
+-- 
+Philippe.
 
