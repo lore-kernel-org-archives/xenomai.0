@@ -1,13 +1,10 @@
 MIME-Version: 1.0
-References: <CAOuPNLgkFZ7wwBM2N3HXYSh0fkGce8GytJdKHnbsmBN4zfwcFg@mail.gmail.com>
- <CAOuPNLiXWVRRpn_39VfakbSHZH4K8Vc9wM8aRrgpwhAqtYZFoQ@mail.gmail.com>
- <CALLqZ8QVh2dtRe13PudQ2n1bGm2ZheO9d4Hp4TWVNrcXYrNyow@mail.gmail.com>
-In-Reply-To: <CALLqZ8QVh2dtRe13PudQ2n1bGm2ZheO9d4Hp4TWVNrcXYrNyow@mail.gmail.com>
-From: Pintu Kumar <pintu.ping@gmail.com>
-Date: Mon, 20 Aug 2018 23:32:40 +0530
-Message-ID: <CAOuPNLipXN+iji4m91kkpegBYy_2q8BXyp2LRtLfXdA2j9No1Q@mail.gmail.com>
+From: Ashok kumar <ashokkumar.bb@gmail.com>
+Date: Thu, 12 Jul 2018 21:11:57 +0530
+Message-ID: <CAFUnMkmg4F8_TmSagDQdFqPUAK7q6e2imAObjPSJQsFyO0ei2g@mail.gmail.com>
 Content-Type: text/plain; charset="UTF-8"
-Subject: Re: [Xenomai] message pipe stream test application
+Subject: [Xenomai] can I install linux- 4.9.90 with xenomai 3.0.7 on i3
+	processor
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,68 +13,38 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Greg Gallagher <greg@embeddedgreg.com>
-Cc: "Xenomai@xenomai.org" <xenomai@xenomai.org>
+To: "Xenomai@xenomai.org" <xenomai@xenomai.org>
 
-May be both.
-Specially I want to know how to use may use of rt_pipe_steam with a use
-case example.
+can I install linux- 4.9.90 with xenomai 3.0.7 on i3 processor
+I have mentioned lscpu terminal output
 
-On Mon, 20 Aug 2018, 10:10 pm Greg Gallagher, <greg@embeddedgreg.com> wrote:
+root@texsonics:/usr/src# lscpu
+Architecture:          x86_64
+CPU op-mode(s):        32-bit, 64-bit
+Byte Order:            Little Endian
+CPU(s):                4
+On-line CPU(s) list:   0-3
+Thread(s) per core:    2
+Core(s) per socket:    2
+Socket(s):             1
+NUMA node(s):          1
+Vendor ID:             GenuineIntel
+CPU family:            6
+Model:                 158
+Stepping:              9
+CPU MHz:               800.000
+BogoMIPS:              7823.98
+Virtualization:        VT-x
+L1d cache:             32K
+L1i cache:             32K
+L2 cache:              256K
+L3 cache:              3072K
+NUMA node0 CPU(s):     0-3
 
-> On Mon, Aug 20, 2018 at 9:48 AM, Pintu Kumar <pintu.ping@gmail.com> wrote:
-> > Dear Greg,
-> >
-> > If you have any idea can you please explain how rt_pipe_stream works
-> > with an example.
-> > I need to prepare a demo, to demonstrate the usefulness of
-> rt_pipe_stream API.
-> >
-> >
-> > Thanks,
-> > Pintu
-> > On Fri, Aug 17, 2018 at 6:56 PM Pintu Kumar <pintu.ping@gmail.com>
-> wrote:
-> >>
-> >> Hi,
-> >>
-> >> I wanted to understand how rt_pipe_stream works and how it can be
-> useful.
-> >> I wanted to create a demo application using it.
-> >> But currently I could not figure out how to make use of it.
-> >>
-> >> I saw a sample pipe application under: lib/alchemy/testsuite/pipe-1.c.
-> >> Based on this I am trying to create a new application that uses
-> rt_pipe_stream.
-> >> The rt_pipe_stream is working fine, but I wanted to test the scenario
-> >> based on its description.
-> >>
-> >> My understanding is that:
-> >> Regular thread keeps write one by one char to rtipc, and the real-time
-> >> task reads one char at a time. Then real-time task call rt_pipe_stream
-> >> which keeps storing the char.
-> >> Finally, when regular thread calls "read" then all the data from
-> >> stream will be read by the regular thread at once.
-> >>
-> >> Hope my understanding is correct.
-> >> I want to prepare a sample application for the same.
-> >>
-> >> If any reference for rt_pipe_stream is available please let me know.
-> >>
-> >>
-> >> Thanks,
-> >> Pintu
-> >
-> > _______________________________________________
-> > Xenomai mailing list
-> > Xenomai@xenomai.org
-> > https://xenomai.org/mailman/listinfo/xenomai
->
-> HI,
->   Do you want an explaination how they worked in cobalt or an
-> exaplaination of how to use them?
->
-> Thanks
->
-> Greg
->
+or anyother specific processor mother board is there for this xenomai-3.0.7
+
+and can you suggest x86 architecture 64 bit processor and mother board for
+xenomai-3.0.7
+
+Thank you
+R.Ashokkumar
