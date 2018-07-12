@@ -1,16 +1,10 @@
-References: <CAK+-5=KE5pa1NUE4VY0uEVLH1+2P3dtbGWOBk9YxWLmAa16Juw@mail.gmail.com>
- <dcqod1d4ju4sjjl1d9q0fhov.1533726738829@embeddedgreg.com>
- <CAK+-5=L5_xoXskX2ZOww5zj=2=Ou2COwcsH=7MkfRcQ6y2dwuA@mail.gmail.com>
-From: greg gallagher <greg@embeddedgreg.com>
-Message-ID: <bc12761e-b015-5f48-580c-c4503650c7c3@embeddedgreg.com>
-Date: Wed, 8 Aug 2018 11:52:24 -0400
 MIME-Version: 1.0
-In-Reply-To: <CAK+-5=L5_xoXskX2ZOww5zj=2=Ou2COwcsH=7MkfRcQ6y2dwuA@mail.gmail.com>
-Content-Type: text/plain; charset="utf-8"; format="flowed"
-Content-Transfer-Encoding: 8bit
-Content-Language: en-US
-Subject: Re: [Xenomai] Xenomai on Raspberry pi 2,
- 3 - Userspace task is interrupted?
+From: Ashok kumar <ashokkumar.bb@gmail.com>
+Date: Thu, 12 Jul 2018 19:22:39 +0530
+Message-ID: <CAFUnMknWBmuLjGbQfv+uqy49xo-+SNUWAtAgjwULUgY6nybgmA@mail.gmail.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+Subject: [Xenomai] BUG: unable to handle kernel paging request
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -19,114 +13,24 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: mophong@gmail.com
-Cc: xenomai@xenomai.org
+To: "Xenomai@xenomai.org" <xenomai@xenomai.org>
 
-If you use these functions your test will run in secondary mode. You 
-need to install the rtdm bcm2835_gpio driver for your test to stay in 
-the primary domain.  Your tests at the moment are running as normal 
-linux applications even though you have built them with the Xenomai 
-libraries.  You'll need enable the gpio module in the kernel build.  You 
-should see the gpio pins under /dev/rtdm once the module is loaded.  It 
-might be worth while posting your steps for building the application so 
-you can ensure you are indeed building the application to correctly 
-interface with Xenomai.
-
-
--Greg
-
-
-On 2018-08-08 11:41 AM, Ho Tam wrote:
-> I used bcm2835 library for test, that library is implemented using 
-> memory map (mmap). You may check its copied code here: 
-> https://github.com/smart-facility/bcm2835/tree/master/src
-> The function I used bcm2835_gpio_write:
-> void bcm2835_gpio_write(uint8_t pin, uint8_t on)
-> {
->     if (on)
-> bcm2835_gpio_set(pin);
->     else
-> bcm2835_gpio_clr(pin);
-> }
->
-> I have also tested by direct using of bcm2835_gpio_set 
-> and bcm2835_gpio_clr fucntions, but result was same as previous test:
-> for (i=0; i<500; ++i)
-> {
-> bcm2835_gpio_set(TEST_PIN);
-> bcm2835_gpio_clr(TEST_PIN);
-> }
->
-> Since functions in bcm2835 library usually call many other functions, 
-> I have also implemented my own gpio library which directly read/write 
-> value to GPSET and GPCLR:
-> for (i=0; i<3000; ++i)
-> {
-> *(rpi_gpio_mem_base+7) =(1<<TEST_PIN);    //rpi_gpio_mem_base+7 ~ GPSET0
-> *(rpi_gpio_mem_base+10) =(1<<TEST_PIN);  //rpi_gpio_mem_base+10 ~ GPCLR0
-> }
-> Here rpi_gpio_mem_base has been initialized with mmap before. In this 
-> case, both process time and worst time reduce (for sure). But again, 
-> worst time on rpi2,3 is larger than 350% process time, while for 
-> rpi0,1 worst time ~ 120% process time.
-> Regards,
->
->
-> On Wed, Aug 8, 2018 at 8:12 PM Greg Gallagher <greg@embeddedgreg.com 
-> <mailto:greg@embeddedgreg.com>> wrote:
->
->
->     How are you setting up the gpio read and write? Is it possible to
->     post a code snippet for the read and write?
->
->     Greg
->
->       Original Message
->     From: mophong@gmail.com <mailto:mophong@gmail.com>
->     Sent: August 8, 2018 6:45 AM
->     To: xenomai@xenomai.org <mailto:xenomai@xenomai.org>
->     Reply-to: mophong@gmail.com <mailto:mophong@gmail.com>
->     Subject: [Xenomai] Xenomai on Raspberry pi 2, 3 - Userspace task
->     is interrupted?
->
->     Hello all,
->     I make a simple code to measure process time on Raspberry pi
->     0,1,2,3 like:
->
->     * previous = rt_timer_read();*
->     * for (i=0; i<500; ++i)*
->     * {*
->     * bcm2835_gpio_write(TEST_PIN, HIGH);*
->     * bcm2835_gpio_write(TEST_PIN, LOW);*
->     * }*
->     * now = rt_timer_read();*
->     * process_time = (long) (now - previous);*
->     * if (process_time>worst_time)*
->     * worst_time=process_time;*
->
->     And I result after several hours running:
->     rpi           process_time (us)             worst_time (us)
->     0,1           ~100                                     115
->     2,3           ~90                                        373
->
->     It is clear that process time on rpi2,3 is shorter than that on
->     rpi0,1 due
->     to higher speed CPU. However, I don't understand why worst case on
->     rpi2,3
->     is much larger than that on rpi0,1. I have repeated this test on both
->     xenomai 2 and 3, kernel  4.1 and 4.9 (only xenomai 3 in this case)
->     and with
->     different task priority, the result is quite consistent.
->     Does anyone have explanation and solution?
->     Thanks and regards,
->     _______________________________________________
->     Xenomai mailing list
->     Xenomai@xenomai.org <mailto:Xenomai@xenomai.org>
->     https://xenomai.org/mailman/listinfo/xenomai
->
->
->
-> -- 
-> http://www.mophong.com
-
-
+SGksCgpJIGFtIHBhdGNoaW5nICBsaW51eC0gMy4xNC40NCB3aXRoIC14ZW5vbWFpLTIuNi40LCAg
+SSBhbSB1c2luZwppcGlwZS1jb3JlLTMuMTQuNDQteDg2LTEyLnBhdGNoCgphbmQgaW4gbWVudSBj
+b25maWcKClJlcXVpcmVkIE9wdGlvbnM6CiogUmVhbC10aW1lIHN1Yi1zeXN0ZW0KICAtLT4gWGVu
+b21haSAoRW5hYmxlKQogIC0tPiBOdWNsZXVzIChFbmFibGUpCiogUG93ZXIgbWFuYWdlbWVudCBh
+bmQgQUNQSSBvcHRpb25zCiAgLS0+IFJ1bi10aW1lIFBNIGNvcmUgZnVuY3Rpb25hbGl0eSAoRGlz
+YWJsZSkKICAtLT4gQUNQSSAoQWR2YW5jZWQgQ29uZmlndXJhdGlvbiBhbmQgUG93ZXIgSW50ZXJm
+YWNlKSBTdXBwb3J0CiAgICAgIC0tPiBQcm9jZXNzb3IgKERpc2FibGUpCiAgLS0+IENQVSBGcmVx
+dWVuY3kgc2NhbGluZwogICAgICAtLT4gQ1BVIEZyZXF1ZW5jeSBzY2FsaW5nIChEaXNhYmxlKQog
+IC0tPiBDUFUgaWRsZQogICAgICAtLT4gQ1BVIGlkbGUgUE0gc3VwcG9ydCAoRGlzYWJsZSkKCmFm
+dGVyIGluc3RhbGxpbmcgdGhlIHhlbm9tYWkgdXNlciBsaWJyYXJ5LCB3aGlsZSAgY2hlY2tpbmcg
+bGF0ZW5jeSBJIGFtCmdldHRpbmcgdGhlIGZvbGxvd2luZyBlcnJvcgoKQlVHOiB1bmFibGUgdG8g
+aGFuZGxlIGtlcm5lbCBwYWdpbmcgIHJlcXVlc3QKCkkgaGF2ZSBhdHRhY2hlZCB0aGUgc2NyZWVu
+IHNob3Qgb2YgdGhpcyBidWcKCmFueWJvZHkgY2FuIGhlbHAgbWUgdG8gc29sdmUgdGhpcyBpc3N1
+ZQoKVGhhbmsgeW91ClIuQXNob2trdW1hcgotLS0tLS0tLS0tLS0tLSBuZXh0IHBhcnQgLS0tLS0t
+LS0tLS0tLS0KQSBub24tdGV4dCBhdHRhY2htZW50IHdhcyBzY3J1YmJlZC4uLgpOYW1lOiBTY3Jl
+ZW5zaG90IGZyb20gMjAxOC0wNy0xMiAxOToxNDowOC5wbmcKVHlwZTogaW1hZ2UvcG5nClNpemU6
+IDEyOTU1NiBieXRlcwpEZXNjOiBub3QgYXZhaWxhYmxlClVSTDogPGh0dHA6Ly94ZW5vbWFpLm9y
+Zy9waXBlcm1haWwveGVub21haS9hdHRhY2htZW50cy8yMDE4MDcxMi9kZjRjZTY0MS9hdHRhY2ht
+ZW50LnBuZz4K
