@@ -1,8 +1,12 @@
-From: Sebastian Smolorz <sebastian.smolorz@gmx.de>
-Date: Tue, 14 Aug 2018 09:07:50 +0200
-Message-Id: <1534230470-3290-1-git-send-email-sebastian.smolorz@gmx.de>
-Subject: [Xenomai] [PATCH] net: Split internal rtnet.h into rtdm/net.h and
- rtdm/uapi/net.h and install them
+Date: Thu, 12 Jul 2018 16:09:46 +0200
+From: Henning Schild <henning.schild@siemens.com>
+Message-ID: <20180712160946.551f3019@md1pvb1c.ad001.siemens.net>
+In-Reply-To: <CAFUnMknWBmuLjGbQfv+uqy49xo-+SNUWAtAgjwULUgY6nybgmA@mail.gmail.com>
+References: <CAFUnMknWBmuLjGbQfv+uqy49xo-+SNUWAtAgjwULUgY6nybgmA@mail.gmail.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai] BUG: unable to handle kernel paging request
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -11,477 +15,64 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
+To: Ashok kumar <ashokkumar.bb@gmail.com>
+Cc: "Xenomai@xenomai.org" <xenomai@xenomai.org>
 
-For external projects wanting to use RTnet with its special
-features like RTnet IOCTLs it is necessary to provide the API
-headers in the Xenomai installation directory.
----
- include/cobalt/kernel/rtdm/net.h                |  47 +++++++++
- include/rtdm/Makefile.am                        |   1 +
- include/rtdm/net.h                              |  46 +++++++++
- include/rtdm/uapi/Makefile.am                   |   1 +
- include/rtdm/uapi/net.h                         |  73 ++++++++++++++
- kernel/drivers/net/drivers/at91_ether.c         |   2 +-
- kernel/drivers/net/drivers/macb.c               |   2 +-
- kernel/drivers/net/stack/include/rtmac.h        |   2 -
- kernel/drivers/net/stack/include/rtnet.h        | 121 ------------------------
- kernel/drivers/net/stack/include/rtnet_socket.h |   4 +-
- kernel/drivers/net/stack/include/rtskb.h        |   2 +-
- kernel/drivers/net/stack/ipv4/tcp/timerwheel.h  |   2 +-
- kernel/drivers/net/stack/rtdev_mgr.c            |   2 +-
- kernel/drivers/net/stack/socket.c               |   2 +-
- 14 files changed, 175 insertions(+), 132 deletions(-)
- create mode 100644 include/cobalt/kernel/rtdm/net.h
- create mode 100644 include/rtdm/net.h
- create mode 100644 include/rtdm/uapi/net.h
- delete mode 100644 kernel/drivers/net/stack/include/rtnet.h
+Am Thu, 12 Jul 2018 19:22:39 +0530
+schrieb Ashok kumar <ashokkumar.bb@gmail.com>:
 
-diff --git a/include/cobalt/kernel/rtdm/net.h b/include/cobalt/kernel/rtdm/net.h
-new file mode 100644
-index 0000000..1f8eb78
---- /dev/null
-+++ b/include/cobalt/kernel/rtdm/net.h
-@@ -0,0 +1,47 @@
-+/*
-+ *  cobalt/kernel/rtdm/net.h
-+ *
-+ *  RTnet - real-time networking subsystem
-+ *  Copyright (C) 2005-2011 Jan Kiszka <jan.kiszka@web.de>
-+ *
-+ *  This program is free software; you can redistribute it and/or modify
-+ *  it under the terms of the GNU General Public License as published by
-+ *  the Free Software Foundation; either version 2 of the License, or
-+ *  (at your option) any later version.
-+ *
-+ *  This program is distributed in the hope that it will be useful,
-+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
-+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-+ *  GNU General Public License for more details.
-+ *
-+ *  You should have received a copy of the GNU General Public License
-+ *  along with this program; if not, write to the Free Software
-+ *  Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
-+ */
-+
-+#ifndef _COBALT_RTDM_NET_H
-+#define _COBALT_RTDM_NET_H
-+
-+#include <rtdm/rtdm.h>
-+#include <rtdm/uapi/net.h>
-+#include <rtdm/driver.h>
-+
-+struct rtnet_callback {
-+    void    (*func)(struct rtdm_fd *, void *);
-+    void    *arg;
-+};
-+
-+#define RTNET_RTIOC_CALLBACK    _IOW(RTIOC_TYPE_NETWORK, 0x12, \
-+				     struct rtnet_callback)
-+
-+/* utility functions */
-+
-+/* provided by rt_ipv4 */
-+unsigned long rt_inet_aton(const char *ip);
-+
-+/* provided by rt_packet */
-+int rt_eth_aton(unsigned char *addr_buf, const char *mac);
-+
-+#define RTNET_RTDM_VER 914
-+
-+#endif  /* _COBALT_RTDM_NET_H */
-diff --git a/include/rtdm/Makefile.am b/include/rtdm/Makefile.am
-index 9198595..828bf73 100644
---- a/include/rtdm/Makefile.am
-+++ b/include/rtdm/Makefile.am
-@@ -9,6 +9,7 @@ includesub_HEADERS +=	\
- 	can.h		\
- 	gpio.h		\
- 	ipc.h		\
-+	net.h		\
- 	serial.h	\
- 	spi.h		\
- 	testing.h	\
-diff --git a/include/rtdm/net.h b/include/rtdm/net.h
-new file mode 100644
-index 0000000..7f0ed40
---- /dev/null
-+++ b/include/rtdm/net.h
-@@ -0,0 +1,46 @@
-+/***
-+ *
-+ *  rtdm/net.h
-+ *
-+ *  RTnet - real-time networking subsystem
-+ *  Copyright (C) 2005-2011 Jan Kiszka <jan.kiszka@web.de>
-+ *
-+ *  This program is free software; you can redistribute it and/or modify
-+ *  it under the terms of the GNU General Public License as published by
-+ *  the Free Software Foundation; either version 2 of the License, or
-+ *  (at your option) any later version.
-+ *
-+ *  This program is distributed in the hope that it will be useful,
-+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
-+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-+ *  GNU General Public License for more details.
-+ *
-+ *  You should have received a copy of the GNU General Public License
-+ *  along with this program; if not, write to the Free Software
-+ *  Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
-+ */
-+
-+#ifndef _RTDM_NET_H
-+#define _RTDM_NET_H
-+
-+#include <rtdm/rtdm.h>
-+#include <rtdm/uapi/net.h>
-+#include <rtdm/driver.h>
-+
-+struct rtnet_callback {
-+    void    (*func)(struct rtdm_fd *, void *);
-+    void    *arg;
-+};
-+
-+#define RTNET_RTIOC_CALLBACK    _IOW(RTIOC_TYPE_NETWORK, 0x12, \
-+				     struct rtnet_callback)
-+
-+/* utility functions */
-+
-+/* provided by rt_ipv4 */
-+unsigned long rt_inet_aton(const char *ip);
-+
-+/* provided by rt_packet */
-+int rt_eth_aton(unsigned char *addr_buf, const char *mac);
-+
-+#endif  /* _RTDM_NET_H */
-diff --git a/include/rtdm/uapi/Makefile.am b/include/rtdm/uapi/Makefile.am
-index fec15db..c962552 100644
---- a/include/rtdm/uapi/Makefile.am
-+++ b/include/rtdm/uapi/Makefile.am
-@@ -9,6 +9,7 @@ includesub_HEADERS +=	\
- 	can.h		\
- 	gpio.h		\
- 	ipc.h		\
-+	net.h		\
- 	serial.h	\
- 	spi.h		\
- 	testing.h	\
-diff --git a/include/rtdm/uapi/net.h b/include/rtdm/uapi/net.h
-new file mode 100644
-index 0000000..15665fd
---- /dev/null
-+++ b/include/rtdm/uapi/net.h
-@@ -0,0 +1,73 @@
-+/***
-+ *
-+ *  rtdm/uapi/net.h
-+ *
-+ *  RTnet - real-time networking subsystem
-+ *  Copyright (C) 2005-2011 Jan Kiszka <jan.kiszka@web.de>
-+ *
-+ *  This program is free software; you can redistribute it and/or modify
-+ *  it under the terms of the GNU General Public License as published by
-+ *  the Free Software Foundation; either version 2 of the License, or
-+ *  (at your option) any later version.
-+ *
-+ *  This program is distributed in the hope that it will be useful,
-+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
-+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-+ *  GNU General Public License for more details.
-+ *
-+ *  You should have received a copy of the GNU General Public License
-+ *  along with this program; if not, write to the Free Software
-+ *  Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
-+ *
-+ *  As a special exception to the GNU General Public license, the RTnet
-+ *  project allows you to use this header file in unmodified form to produce
-+ *  application programs executing in user-space which use RTnet services by
-+ *  normal system calls. The resulting executable will not be covered by the
-+ *  GNU General Public License merely as a result of this header file use.
-+ *  Instead, this header file use will be considered normal use of RTnet and
-+ *  not a "derived work" in the sense of the GNU General Public License.
-+ *
-+ *  This exception does not apply when the application code is built as a
-+ *  static or dynamically loadable portion of the Linux kernel nor does the
-+ *  exception override other reasons justifying application of the GNU General
-+ *  Public License.
-+ */
-+
-+#ifndef _RTDM_UAPI_NET_H
-+#define _RTDM_UAPI_NET_H
-+
-+#include <rtdm/uapi/rtdm.h>
-+
-+/* sub-classes: RTDM_CLASS_NETWORK */
-+#define RTDM_SUBCLASS_RTNET     0
-+
-+#define RTIOC_TYPE_NETWORK      RTDM_CLASS_NETWORK
-+
-+/* RTnet-specific IOCTLs */
-+#define RTNET_RTIOC_XMITPARAMS  _IOW(RTIOC_TYPE_NETWORK, 0x10, unsigned int)
-+#define RTNET_RTIOC_PRIORITY    RTNET_RTIOC_XMITPARAMS  /* legacy */
-+#define RTNET_RTIOC_TIMEOUT     _IOW(RTIOC_TYPE_NETWORK, 0x11, int64_t)
-+/* RTNET_RTIOC_CALLBACK         _IOW(RTIOC_TYPE_NETWORK, 0x12, ...
-+ * IOCTL only usable inside the kernel. */
-+/* RTNET_RTIOC_NONBLOCK         _IOW(RTIOC_TYPE_NETWORK, 0x13, unsigned int)
-+ * This IOCTL is no longer supported (and it was buggy anyway).
-+ * Use RTNET_RTIOC_TIMEOUT with any negative timeout value instead. */
-+#define RTNET_RTIOC_EXTPOOL     _IOW(RTIOC_TYPE_NETWORK, 0x14, unsigned int)
-+#define RTNET_RTIOC_SHRPOOL     _IOW(RTIOC_TYPE_NETWORK, 0x15, unsigned int)
-+
-+/* socket transmission priorities */
-+#define SOCK_MAX_PRIO           0
-+#define SOCK_DEF_PRIO           SOCK_MAX_PRIO + \
-+				    (SOCK_MIN_PRIO-SOCK_MAX_PRIO+1)/2
-+#define SOCK_MIN_PRIO           SOCK_NRT_PRIO - 1
-+#define SOCK_NRT_PRIO           31
-+
-+/* socket transmission channels */
-+#define SOCK_DEF_RT_CHANNEL     0           /* default rt xmit channel     */
-+#define SOCK_DEF_NRT_CHANNEL    1           /* default non-rt xmit channel */
-+#define SOCK_USER_CHANNEL       2           /* first user-defined channel  */
-+
-+/* argument construction for RTNET_RTIOC_XMITPARAMS */
-+#define SOCK_XMIT_PARAMS(priority, channel) ((priority) | ((channel) << 16))
-+
-+#endif  /* _RTDM_UAPI_NET_H */
-diff --git a/kernel/drivers/net/drivers/at91_ether.c b/kernel/drivers/net/drivers/at91_ether.c
-index c697978..249b26b 100644
---- a/kernel/drivers/net/drivers/at91_ether.c
-+++ b/kernel/drivers/net/drivers/at91_ether.c
-@@ -34,7 +34,7 @@
- #include <linux/of_net.h>
+> Hi,
+> 
+> I am patching  linux- 3.14.44 with -xenomai-2.6.4,  I am using
+> ipipe-core-3.14.44-x86-12.patch
+
+Ok, have you tried 4.9.90 with xenomai 3.0.7? What you are using is far
+from still being supported.
+
+The only possible reason you are using such an outdated kernel is
+because you rely on other patches as well. Do you see the same bug when
+not applying these other patches?
  
- #include <rtdev.h>
--#include <rtnet.h>
-+#include <rtdm/net.h>
- #include <rtnet_port.h>
- #include <rtskb.h>
- #include "rt_macb.h"
-diff --git a/kernel/drivers/net/drivers/macb.c b/kernel/drivers/net/drivers/macb.c
-index 91a4346..4e43774 100644
---- a/kernel/drivers/net/drivers/macb.c
-+++ b/kernel/drivers/net/drivers/macb.c
-@@ -36,7 +36,7 @@
- #include <linux/pinctrl/consumer.h>
+> and in menu config
+> 
+> Required Options:
+> * Real-time sub-system
+>   --> Xenomai (Enable)
+>   --> Nucleus (Enable)  
+> * Power management and ACPI options
+>   --> Run-time PM core functionality (Disable)
+>   --> ACPI (Advanced Configuration and Power Interface) Support
+>       --> Processor (Disable)
+>   --> CPU Frequency scaling
+>       --> CPU Frequency scaling (Disable)
+>   --> CPU idle
+>       --> CPU idle PM support (Disable)  
+> 
+> after installing the xenomai user library, while  checking latency I
+> am getting the following error
+> 
+> BUG: unable to handle kernel paging  request
+> 
+> I have attached the screen shot of this bug
+
+Please attach a serial console and provide this as text.
+
+Henning
  
- #include <rtdev.h>
--#include <rtnet.h>
-+#include <rtdm/net.h>
- #include <rtnet_port.h>
- #include <rtskb.h>
- 
-diff --git a/kernel/drivers/net/stack/include/rtmac.h b/kernel/drivers/net/stack/include/rtmac.h
-index 33c8635..5ba7e00 100644
---- a/kernel/drivers/net/stack/include/rtmac.h
-+++ b/kernel/drivers/net/stack/include/rtmac.h
-@@ -44,8 +44,6 @@
- 
- #include <rtdm/rtdm.h>
- 
--#include <rtnet.h> /* for nanosecs wrapping */
--
- 
- /* sub-classes: RTDM_CLASS_RTMAC */
- #define RTDM_SUBCLASS_TDMA          0
-diff --git a/kernel/drivers/net/stack/include/rtnet.h b/kernel/drivers/net/stack/include/rtnet.h
-deleted file mode 100644
-index b9a3af3..0000000
---- a/kernel/drivers/net/stack/include/rtnet.h
-+++ /dev/null
-@@ -1,121 +0,0 @@
--/***
-- *
-- *  rtnet.h
-- *
-- *  RTnet - real-time networking subsystem
-- *  Copyright (C) 2005-2011 Jan Kiszka <jan.kiszka@web.de>
-- *
-- *  This program is free software; you can redistribute it and/or modify
-- *  it under the terms of the GNU General Public License as published by
-- *  the Free Software Foundation; either version 2 of the License, or
-- *  (at your option) any later version.
-- *
-- *  This program is distributed in the hope that it will be useful,
-- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
-- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-- *  GNU General Public License for more details.
-- *
-- *  You should have received a copy of the GNU General Public License
-- *  along with this program; if not, write to the Free Software
-- *  Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
-- *
-- *  As a special exception to the GNU General Public license, the RTnet
-- *  project allows you to use this header file in unmodified form to produce
-- *  application programs executing in user-space which use RTnet services by
-- *  normal system calls. The resulting executable will not be covered by the
-- *  GNU General Public License merely as a result of this header file use.
-- *  Instead, this header file use will be considered normal use of RTnet and
-- *  not a "derived work" in the sense of the GNU General Public License.
-- *
-- *  This exception does not apply when the application code is built as a
-- *  static or dynamically loadable portion of the Linux kernel nor does the
-- *  exception override other reasons justifying application of the GNU General
-- *  Public License.
-- *
-- *  This exception applies only to the code released by the RTnet project
-- *  under the name RTnet and bearing this exception notice. If you copy code
-- *  from other sources into a copy of RTnet, the exception does not apply to
-- *  the code that you add in this way.
-- *
-- */
--
--#ifndef __RTNET_H_
--#define __RTNET_H_
--
--#include <rtdm/rtdm.h>
--
--
--/* RTDM_API_VER < 5 is lacking generic time types */
--#if !(defined RTDM_API_VER) || (RTDM_API_VER < 5)
--
--#ifndef __KERNEL__
--#include <stdint.h>
--#endif /* !__KERNEL__ */
--
--typedef uint64_t                nanosecs_abs_t;
--typedef int64_t                 nanosecs_rel_t;
--
--#define RTDM_TIMEOUT_INFINITE   0
--#define RTDM_TIMEOUT_NONE       (-1)
--
--#endif /* !RTDM_API_VER */
--
--
--/* sub-classes: RTDM_CLASS_NETWORK */
--#define RTDM_SUBCLASS_RTNET     0
--
--#define RTIOC_TYPE_NETWORK      RTDM_CLASS_NETWORK
--
--/* RTnet-specific IOCTLs */
--#define RTNET_RTIOC_XMITPARAMS  _IOW(RTIOC_TYPE_NETWORK, 0x10, unsigned int)
--#define RTNET_RTIOC_PRIORITY    RTNET_RTIOC_XMITPARAMS  /* legacy */
--#define RTNET_RTIOC_TIMEOUT     _IOW(RTIOC_TYPE_NETWORK, 0x11, int64_t)
--/* RTNET_RTIOC_CALLBACK         _IOW(RTIOC_TYPE_NETWORK, 0x12, ...
-- * IOCTL only usable inside the kernel. */
--/* RTNET_RTIOC_NONBLOCK         _IOW(RTIOC_TYPE_NETWORK, 0x13, unsigned int)
-- * This IOCTL is no longer supported (and it was buggy anyway).
-- * Use RTNET_RTIOC_TIMEOUT with any negative timeout value instead. */
--#define RTNET_RTIOC_EXTPOOL     _IOW(RTIOC_TYPE_NETWORK, 0x14, unsigned int)
--#define RTNET_RTIOC_SHRPOOL     _IOW(RTIOC_TYPE_NETWORK, 0x15, unsigned int)
--
--/* socket transmission priorities */
--#define SOCK_MAX_PRIO           0
--#define SOCK_DEF_PRIO           SOCK_MAX_PRIO + \
--				    (SOCK_MIN_PRIO-SOCK_MAX_PRIO+1)/2
--#define SOCK_MIN_PRIO           SOCK_NRT_PRIO - 1
--#define SOCK_NRT_PRIO           31
--
--/* socket transmission channels */
--#define SOCK_DEF_RT_CHANNEL     0           /* default rt xmit channel     */
--#define SOCK_DEF_NRT_CHANNEL    1           /* default non-rt xmit channel */
--#define SOCK_USER_CHANNEL       2           /* first user-defined channel  */
--
--/* argument construction for RTNET_RTIOC_XMITPARAMS */
--#define SOCK_XMIT_PARAMS(priority, channel) ((priority) | ((channel) << 16))
--
--
--#ifdef __KERNEL__
--
--#include <rtdm/driver.h>
--
--struct rtnet_callback {
--    void    (*func)(struct rtdm_fd *, void *);
--    void    *arg;
--};
--
--#define RTNET_RTIOC_CALLBACK    _IOW(RTIOC_TYPE_NETWORK, 0x12, \
--				     struct rtnet_callback)
--
--/* utility functions */
--
--/* provided by rt_ipv4 */
--unsigned long rt_inet_aton(const char *ip);
--
--/* provided by rt_packet */
--int rt_eth_aton(unsigned char *addr_buf, const char *mac);
--
--#define RTNET_RTDM_VER 914
--
--#endif  /* __KERNEL__ */
--
--#endif  /* __RTNET_H_ */
-diff --git a/kernel/drivers/net/stack/include/rtnet_socket.h b/kernel/drivers/net/stack/include/rtnet_socket.h
-index 37f411a..351e62c 100644
---- a/kernel/drivers/net/stack/include/rtnet_socket.h
-+++ b/kernel/drivers/net/stack/include/rtnet_socket.h
-@@ -31,12 +31,10 @@
- #include <linux/list.h>
- 
- #include <rtdev.h>
--#include <rtnet.h>
-+#include <rtdm/net.h>
- #include <rtdm/driver.h>
- #include <stack_mgr.h>
- 
--#include <rtdm/driver.h>
--
- 
- struct rtsocket {
-     unsigned short          protocol;
-diff --git a/kernel/drivers/net/stack/include/rtskb.h b/kernel/drivers/net/stack/include/rtskb.h
-index 7489aa6..a1793e9 100644
---- a/kernel/drivers/net/stack/include/rtskb.h
-+++ b/kernel/drivers/net/stack/include/rtskb.h
-@@ -29,7 +29,7 @@
- 
- #include <linux/skbuff.h>
- 
--#include <rtnet.h>
-+#include <rtdm/net.h>
- #include <rtnet_internal.h>
- 
- 
-diff --git a/kernel/drivers/net/stack/ipv4/tcp/timerwheel.h b/kernel/drivers/net/stack/ipv4/tcp/timerwheel.h
-index 32a2365..78cc689 100644
---- a/kernel/drivers/net/stack/ipv4/tcp/timerwheel.h
-+++ b/kernel/drivers/net/stack/ipv4/tcp/timerwheel.h
-@@ -23,7 +23,7 @@
- #define __TIMERWHEEL_H_
- 
- #include <linux/list.h>
--#include <rtnet.h>
-+#include <rtdm/net.h>
- 
- #define TIMERWHEEL_TIMER_UNUSED    -1
- 
-diff --git a/kernel/drivers/net/stack/rtdev_mgr.c b/kernel/drivers/net/stack/rtdev_mgr.c
-index c3a1259..4482f0e 100644
---- a/kernel/drivers/net/stack/rtdev_mgr.c
-+++ b/kernel/drivers/net/stack/rtdev_mgr.c
-@@ -23,7 +23,7 @@
- #include <linux/netdevice.h>
- 
- #include <rtdev.h>
--#include <rtnet.h>
-+#include <rtdm/net.h>
- #include <rtnet_internal.h>
- 
- /***
-diff --git a/kernel/drivers/net/stack/socket.c b/kernel/drivers/net/stack/socket.c
-index 92cdb9f..ce4e4cb 100644
---- a/kernel/drivers/net/stack/socket.c
-+++ b/kernel/drivers/net/stack/socket.c
-@@ -32,7 +32,7 @@
- #include <linux/tcp.h>
- #include <asm/bitops.h>
- 
--#include <rtnet.h>
-+#include <rtdm/net.h>
- #include <rtnet_internal.h>
- #include <rtnet_iovec.h>
- #include <rtnet_socket.h>
--- 
-2.7.4
+> anybody can help me to solve this issue
+> 
+> Thank you
+> R.Ashokkumar
+> -------------- next part --------------
+> A non-text attachment was scrubbed...
+> Name: Screenshot from 2018-07-12 19:14:08.png
+> Type: image/png
+> Size: 129556 bytes
+> Desc: not available
+> URL:
+> <http://xenomai.org/pipermail/xenomai/attachments/20180712/df4ce641/attachment.png>
+> _______________________________________________ Xenomai mailing list
+> Xenomai@xenomai.org
+> https://xenomai.org/mailman/listinfo/xenomai
 
 
