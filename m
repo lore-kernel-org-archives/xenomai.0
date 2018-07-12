@@ -1,12 +1,15 @@
+References: <0184EA26B2509940AA629AE1405DD7F201D553EC@dggema523-mbx.china.huawei.com>
+ <CALLqZ8RKt78JkgsrAvYgO0DKSHvdoTritA9do+PyoSkxNsMqBg@mail.gmail.com>
+From: gengdongjiu <gengdongjiu@huawei.com>
+Message-ID: <ceac8f91-8d86-62af-79e1-571ccbd36427@huawei.com>
+Date: Thu, 12 Jul 2018 16:53:56 +0800
 MIME-Version: 1.0
-In-Reply-To: <9DA3CFDAD528B6408A6F2150A12D33CA51A776E1@SHSMSX103.ccr.corp.intel.com>
-References: <9DA3CFDAD528B6408A6F2150A12D33CA51A776E1@SHSMSX103.ccr.corp.intel.com>
-From: Greg Gallagher <greg@embeddedgreg.com>
-Date: Thu, 7 Jun 2018 12:42:26 -0400
-Message-ID: <CALLqZ8Rkja5WUYTaYw5DH2Wj46i7j+xEdi1sN+L8RUT5AmoRiA@mail.gmail.com>
-Content-Type: text/plain; charset="UTF-8"
-Subject: Re: [Xenomai] INTR-REMAP issue while enabling GPIO interrupt as
-	RTDM interrupt
+In-Reply-To: <CALLqZ8RKt78JkgsrAvYgO0DKSHvdoTritA9do+PyoSkxNsMqBg@mail.gmail.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
+Subject: Re: [Xenomai] [roscore issue for "Operation not permitted"]
+ pthread_mutex_lock failed: operation not permitted
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,59 +18,204 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "Yan, Hongliang" <archer.hl.yan@intel.com>
-Cc: "Xenomai@xenomai.org" <Xenomai@xenomai.org>
+To: Greg Gallagher <greg@embeddedgreg.com>
+Cc: "gilles.chanteperdrix@xenomai.org" <gilles.chanteperdrix@xenomai.org>, "gernot.hillier@siemens.com" <gernot.hillier@siemens.com>, "zhangjianwei (D)" <zhangjianwei8@huawei.com>, Jan Kiszka <jan.kiszka@siemens.com>, "andreasglatz@ruggedcom.com" <andreasglatz@ruggedcom.com>, "ma30002000@yahoo.de" <ma30002000@yahoo.de>, "wolfgang.mauerer@siemens.com" <wolfgang.mauerer@siemens.com>, "kisda@hispeed.ch" <kisda@hispeed.ch>, "jorge.ramirez-ortiz@linaro.org" <jorge.ramirez-ortiz@linaro.org>, "fabrice.gasnier@cenosys.com" <fabrice.gasnier@cenosys.com>, "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-I'm probably not much help but something similar was on the list a while ago:
+Hi Greg,
+   Thanks for the answer,
 
-https://xenomai.org/pipermail/xenomai/2017-November/038014.html
+On 2018/7/11 22:09, Greg Gallagher wrote:
+> Have you looked at any of the ROS frameworks that use Xenomai?  Is the
+> expectation that roscore runs in the secondary domain and your ros
+> based application runs in the primary domain?
 
-On Thu, Jun 7, 2018 at 11:55 AM, Yan, Hongliang <archer.hl.yan@intel.com> wrote:
-> Hi All,
->   I am trying to enable pinctrl-intel.c GPIO interrupt as RTDM interrupt. I use rtdm_irq_request to replace devm_request_irq in probe function.
->   code is as following:
-> =======================================================================
-> #if 1
->     if ((ret = rtdm_irq_request(&irq_rtdm,
->                     irq, handler_interruption,
->                     0,
->                     "test", NULL)) != 0) {
->         printk("rtdm request error\n");
-> }
->
-> #else
->     ret = devm_request_irq(pctrl->dev, irq, intel_gpio_irq, IRQF_SHARED,
->                    dev_name(pctrl->dev), pctrl);
->     if (ret) {
->         dev_err(pctrl->dev, "failed to request interrupt\n");
->         goto fail;
->     }
-> #endif
-> =========================================================================
->   I check /proc/xenomai/irq, it shows GPIO interrupt has been registered as XENOMAI interrupt.
-> =========================================================================
-> [root@localhost devices]# cat /proc/xenomai/irq
->   IRQ         CPU0        CPU1        CPU2        CPU3
->    14:           0           0           0           0         test
-> 4352:           0           0           0           0         [sync]
-> 4353:           0           0           0           1         [reschedule]
-> 4354:     1007738      987012     1007340     1082939         [timer/0]
-> 4355:           1           1           0           1         [timer-ipi]
-> 4419:           0           0           0           0         [virtual]
-> ===========================================================================
-> But once I trigger the GPIO interrupt, the interrupt handler can't be called. Instead, it shows:
-> <3>[  156.957511] DMAR: DRHD: handling fault status reg 2
-> <3>[  156.957541] DMAR: INTR-REMAP: Request device [[f0:1f.0] fault index 0
-> <3>[  156.957541] INTR-REMAP:[fault reason 37] Blocked a compatibility format interrupt request
->
-> I also list lspci -v, there is no device named f0:1f.0.
-> Could someone help me with this? Did I miss something when request RTDM interrupt?
->
-> Best Regards,
->
-> Archer Yan
-> _______________________________________________
-> Xenomai mailing list
-> Xenomai@xenomai.org
-> https://xenomai.org/mailman/listinfo/xenomai
+Yes, we have looked at the the ROS frameworks that use Xenomai. do you have any suggestion? we are not very familiar with the ROS.
+In our test, we used the ROS pub and sub to do communication. From our test, if roscore runs in the secondary (normal linux)domain, it will not have such issue.
+should the roscore run in the  secondary domain or the primary domain? I do not know which domain it should run into. thanks a lot.
+
+> 
+> -Greg
+> 
+> On Wed, Jul 11, 2018 at 10:03 AM, gengdongjiu <gengdongjiu@huawei.com> wrote:
+>> Hi, Philippe/ Gilles/ Jan/ Alexis/others,
+>>
+>>
+>>
+>> I’m running ros on Xenomai, with Xenomai-3.07 and linux kernel 4.4.71. I
+>> first export CFLAGS and LDFLAGS of posix skin. And compile ros project with
+>> posix skin successfully.
+>>
+>> Then, I run roscore as root user, it throws a std::system_error. So I debug
+>> roscore with gdb. According to the gdb backtrace frame #10, it’s the 62
+>> lines of participant.cpp that caused the problem. Which is
+>> “std::unique_lock<std::mutex> ul(_msg_lock);”. As far as I know,
+>> initializing a unique_lock will call _msg_lock.lock(),and _msg_lock is a
+>> std::mutex, _msg_lock.lock() will call pthread_mutex_lock(). According the
+>> to the error message “Operation not permitted”. Pthread_mutex_lock() must
+>> return EPERM, and pthread_mutex_lock return EPRM only if the mutex is not
+>> process-shared and does not belong to the current process or the caller
+>> context is invalid.
+>>
+>>
+>>
+>> So my question is why compiling and running ros on xenomai will cause
+>> pthread_mutex_lock() return EPERM? Does current calling context is invalid ?
+>> And how can I solve this problem, does anybody have any insight? By the way,
+>> it’s perfect fine to compiling and running ros on linux with the same code.
+>>
+>>
+>>
+>> Thanks.
+>>
+>>
+>>
+>> -----------------------------------------------------------------
+>>
+>> root@ros:/home/ros/zjw/ros/install/ros_x86_64/lib# roscore
+>>
+>> terminate called after throwing an instance of 'std::system_error'
+>>
+>>   what():  Operation not permitted
+>>
+>> Aborted (core dumped)
+>>
+>>
+>>
+>>
+>>
+>> (gdb) r `which roscore`
+>>
+>> Starting program: /usr/bin/python `which roscore`
+>>
+>> [Thread debugging using libthread_db enabled]
+>>
+>> Using host libthread_db library "/lib/x86_64-linux-gnu/libthread_db.so.1".
+>>
+>> [New Thread 0x7ffff3586700 (LWP 29315)]
+>>
+>> [New Thread 0x7ffff279b700 (LWP 29316)]
+>>
+>> [New Thread 0x7ffff1f9a700 (LWP 29317)]
+>>
+>> [New Thread 0x7ffff1799700 (LWP 29318)]
+>>
+>> [New Thread 0x7ffff0f98700 (LWP 29319)]
+>>
+>> [New Thread 0x7fffe3fff700 (LWP 29320)]
+>>
+>> [New Thread 0x7fffe37fe700 (LWP 29321)]
+>>
+>> [New Thread 0x7fffe2ffd700 (LWP 29322)]
+>>
+>> terminate called after throwing an instance of 'std::system_error'
+>>
+>>   what():  Operation not permitted
+>>
+>>
+>>
+>> Thread 9 "python" received signal SIGABRT, Aborted.
+>>
+>> [Switching to Thread 0x7fffe2ffd700 (LWP 29322)]
+>>
+>> 0x00007ffff7825428 in __GI_raise (sig=sig@entry=6) at
+>> ../sysdeps/unix/sysv/linux/raise.c:54
+>>
+>> 54      ../sysdeps/unix/sysv/linux/raise.c: No such file or directory.
+>>
+>> (gdb) bt
+>>
+>> #0  0x00007ffff7825428 in __GI_raise (sig=sig@entry=6) at
+>> ../sysdeps/unix/sysv/linux/raise.c:54
+>>
+>> #1  0x00007ffff782702a in __GI_abort () at abort.c:89
+>>
+>> #2  0x00007ffff3e6884d in __gnu_cxx::__verbose_terminate_handler () at
+>> ../../../../src/libstdc++-v3/libsupc++/vterminate.cc:95
+>>
+>> #3  0x00007ffff3e666b6 in __cxxabiv1::__terminate (handler=<optimized out>)
+>> at ../../../../src/libstdc++-v3/libsupc++/eh_terminate.cc:47
+>>
+>> #4  0x00007ffff3e66701 in std::terminate () at
+>> ../../../../src/libstdc++-v3/libsupc++/eh_terminate.cc:57
+>>
+>> #5  0x00007ffff3e66919 in __cxxabiv1::__cxa_throw
+>> (obj=obj@entry=0x7fffd00010d0, tinfo=0x7ffff414ec00 <typeinfo for
+>> std::system_error>, dest=0x7ffff3e91640
+>> <std::system_error::~system_error()>)
+>>
+>>     at ../../../../src/libstdc++-v3/libsupc++/eh_throw.cc:87
+>>
+>> #6  0x00007ffff3e8f7fe in std::__throw_system_error (__i=1) at
+>> ../../../../../src/libstdc++-v3/src/c++11/functexcept.cc:127
+>>
+>> #7  0x00007ffff4162451 in std::mutex::lock (this=0x25c7280) at
+>> /usr/include/c++/5/mutex:139
+>>
+>> #8  std::unique_lock<std::mutex>::lock (this=0x7fffe2ffc300) at
+>> /usr/include/c++/5/mutex:485
+>>
+>> #9  std::unique_lock<std::mutex>::unique_lock (__m=..., this=0x7fffe2ffc300)
+>> at /usr/include/c++/5/mutex:415
+>>
+>> #10 ros::Participant::read_msg[abi:cxx11]() (this=0x25c7200) at
+>> /home/ros/zjw/ros/src/ros_comm/roscpp/src/libros/discovery/participant.cpp:62
+>>
+>> #11 0x00007ffff4be9195 in _wrap_Participant_read_msg () from
+>> /home/ros/zjw/ros/install/ros_x86_64/lib/_participant.so
+>>
+>> #12 0x00000000004bc3fa in PyEval_EvalFrameEx ()
+>>
+>> #13 0x00000000004c136f in PyEval_EvalFrameEx ()
+>>
+>> #14 0x00000000004b9ab6 in PyEval_EvalCodeEx ()
+>>
+>> #15 0x00000000004d55f3 in ?? ()
+>>
+>> #16 0x00000000004a577e in PyObject_Call ()
+>>
+>> #17 0x00000000004bed3d in PyEval_EvalFrameEx ()
+>>
+>> #18 0x00000000004c136f in PyEval_EvalFrameEx ()
+>>
+>> #19 0x00000000004c136f in PyEval_EvalFrameEx ()
+>>
+>> #20 0x00000000004b9ab6 in PyEval_EvalCodeEx ()
+>>
+>> #21 0x00000000004d54b9 in ?? ()
+>>
+>> #22 0x00000000004eebee in ?? ()
+>>
+>> #23 0x00000000004a577e in PyObject_Call ()
+>>
+>> #24 0x00000000004c5e10 in PyEval_CallObjectWithKeywords ()
+>>
+>> #25 0x0000000000589172 in ?? ()
+>>
+>> #26 0x00007ffff7bc16ba in start_thread (arg=0x7fffe2ffd700) at
+>> pthread_create.c:333
+>>
+>> #27 0x00007ffff78f741d in clone () at
+>> ../sysdeps/unix/sysv/linux/x86_64/clone.S:109
+>>
+>> (gdb)
+>>
+>>
+>>
+>> root@ros:/home/ros/zjw/ros/install/ros_x86_64/lib# grep -nrIT -e "_msg_lock"
+>> /home/ros/zjw/ros/src/ros_comm/
+>>
+>> /home/ros/zjw/ros/src/ros_comm/roscpp/include/discovery/participant.h: 144
+>> :  std::mutex _msg_lock;
+>>
+>> /home/ros/zjw/ros/src/ros_comm/roscpp/src/libros/discovery/participant.cpp:
+>> 53:    std::lock_guard<std::mutex> lg(_msg_lock);
+>>
+>> /home/ros/zjw/ros/src/ros_comm/roscpp/src/libros/discovery/participant.cpp:
+>> 62:  std::unique_lock<std::mutex> ul(_msg_lock);
+>>
+>>
+> 
+> .
+> 
+
 
