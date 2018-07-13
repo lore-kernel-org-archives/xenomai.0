@@ -1,19 +1,14 @@
+Date: Fri, 13 Jul 2018 10:11:05 +0200
+From: Henning Schild <henning.schild@siemens.com>
+Message-ID: <20180713101105.156006cf@md1pvb1c.ad001.siemens.net>
+In-Reply-To: <CAFUnMknaxRKk6gp7ifPXL3OSnFz8j7-jernJqsRuQzg6zhWcQw@mail.gmail.com>
+References: <CAFUnMknWBmuLjGbQfv+uqy49xo-+SNUWAtAgjwULUgY6nybgmA@mail.gmail.com>
+ <20180712160946.551f3019@md1pvb1c.ad001.siemens.net>
+ <CAFUnMknaxRKk6gp7ifPXL3OSnFz8j7-jernJqsRuQzg6zhWcQw@mail.gmail.com>
 MIME-Version: 1.0
-In-Reply-To: <CAOuPNLg-L9U1AwuO_wKNsOWvvFMx93-knLQwz3NQ7Gb5h7UAyA@mail.gmail.com>
-References: <CAOuPNLgkFZ7wwBM2N3HXYSh0fkGce8GytJdKHnbsmBN4zfwcFg@mail.gmail.com>
- <CAOuPNLiXWVRRpn_39VfakbSHZH4K8Vc9wM8aRrgpwhAqtYZFoQ@mail.gmail.com>
- <CALLqZ8QVh2dtRe13PudQ2n1bGm2ZheO9d4Hp4TWVNrcXYrNyow@mail.gmail.com>
- <CAOuPNLipXN+iji4m91kkpegBYy_2q8BXyp2LRtLfXdA2j9No1Q@mail.gmail.com>
- <CALLqZ8QpWDnvGkKUGV7BYCXRw_ebxTq7+y7zGC973NqqFaYekA@mail.gmail.com>
- <CAOuPNLjHXLi6OsS9eqvqD-Fc7t7aHbA4kz31zoyrbF5KLVqxEQ@mail.gmail.com>
- <CAOuPNLiL=U1jzEm5a4Ymcgog=K9g=fXQDeW3VKU_8Wna2DCZ7A@mail.gmail.com>
- <CALLqZ8T-C_v=A+95pFZ4_EE0OggXmbGTPD9sK=M9ShfNhsThbQ@mail.gmail.com>
- <CAOuPNLg-L9U1AwuO_wKNsOWvvFMx93-knLQwz3NQ7Gb5h7UAyA@mail.gmail.com>
-From: Greg Gallagher <greg@embeddedgreg.com>
-Date: Wed, 22 Aug 2018 01:19:51 -0400
-Message-ID: <CALLqZ8QmNg6R1ExH=KmDqwjwPyOpknb3s-QYSXVmAtqCJpAnEA@mail.gmail.com>
-Content-Type: text/plain; charset="UTF-8"
-Subject: Re: [Xenomai] message pipe stream test application
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai] BUG: unable to handle kernel paging request
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -22,212 +17,118 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Pintu Kumar <pintu.ping@gmail.com>
+To: Ashok kumar <ashokkumar.bb@gmail.com>
 Cc: "Xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On Tue, Aug 21, 2018 at 1:47 PM, Pintu Kumar <pintu.ping@gmail.com> wrote:
-> On Tue, Aug 21, 2018 at 9:32 PM Greg Gallagher <greg@embeddedgreg.com> wrote:
->>
->> HI,
->>   I"m not sure if I understand how you are using stream.   Stream
->> stores data in an internal buffer until the reciever wakes up and
->> reads the data.
->
-> Yes I read this in the API description.
-> But how this is different from normal write.
-> I found the same behavior.
->
->> Your telling read just to read one message, usually I
->> loop through the messages until read blocks again.
-> Yes this way it works, but then what is the difference here with
-> normal read, if we keep reading the message at the same time.
->
->> Are you trying to
->> read all the messages you sent to the pipe using stream in a single
->> read?
-> Yes, exactly.
-> I though that is the purpose of streaming a messages.
->
-> I just want to create a scenario in which rt_pipe_stream works but
-> rt_pipe_write cannot.
-> Hope to demonstrate this?
->
->> -Greg
->>
->> On Tue, Aug 21, 2018 at 11:06 AM, Pintu Kumar <pintu.ping@gmail.com> wrote:
->> > Hi,
->> >
->> > This is the technique I am using:
->> >
->> > struct pipe_message {
->> >         char value[32];
->> > };
->> >
->> > volatile int terminate = 0;
->> >
->> > realtime_task()
->> > {
->> >      ret = rt_pipe_bind(&mpipe, "pipe", TM_INFINITE);
->> >      while (!terminate) {
->> >           ret = rt_pipe_read(&mpipe, &msg, sizeof(msg), TM_INFINITE);
->> >           printf("%s: rt_pipe_read: value: %c\n", __func__, msg.value[i]);
->> >           ret = rt_pipe_stream(&mpipe, &msg, sizeof(msg));
->> >           i++;
->> >      }
->> >      rt_pipe_unbind(&mpipe);
->> >      pthread_cancel(t_reg);
->> > }
->> >
->> > regular_thread(void *arg)
->> > {
->> >      char string[] = "realtime";
->> >      sprintf(device, "/dev/rtp%d", minor);
->> >      fd = open(device, O_RDWR);
->> >      for (read char by char from a string) {
->> >             msg.value[i] = ch;
->> >             ret = write(fd, &msg, sizeof(msg));
->> >             usleep(SLEEP_INTERVAL * MILLI_SECOND);
->> >             i++;
->> >      }
->> >      terminate = 1;
->> >      ret = read(fd, &msg, sizeof(msg));
->> >      printf("%s: read: value: %s\n", __func__, msg.value);
->> > }
->> >
->> > With this I want to read all the rt_pipe_stream message at once in regular
->> > thread.
->> > Is this the correct way to implement stream ?
->> > Or, please suggest how to modify this code to make stream work, which
->> > behavior should be different from normal rt_pipe_write.
->> >
->> > Currently, with this implement, only the first byte is getting printed after
->> > the read, in regular thread.
->> > I want the the whole stream of characters should be printed at once.
->> >
->> >
->> > Thanks,
->> > Pintu
->> >
->> > On Tue, Aug 21, 2018 at 1:39 PM Pintu Kumar <pintu.ping@gmail.com> wrote:
->> >>
->> >> Dear Greg,
->> >>
->> >> For your information, I already implemented sample application using
->> >> message pipe read/write API over RTIPC.
->> >> For the reference I saw lib/alchemy/testsuite/pipe-1.c
->> >>
->> >> But now I wanted to use rt_pipe_stream and understand how it work.
->> >> Mainly what is the real difference between rt_pipe_write and
->> >> rt_pipe_stream, and how to implement such difference.
->> >> According to my experiment, both behaves almost the same for me.
->> >>
->> >> I have read the description about rt_pipe_stream in the documentation.
->> >> I tried to implement the similar logic, but behavior is not same for me.
->> >>
->> >> My understanding is that:
->> >> Regular thread keeps writing one by one char to rtipc, and the real-time
->> >> task reads one char at a time. Then real-time task call rt_pipe_stream
->> >> which keeps storing all the characters until read is called.
->> >>
->> >> Finally, when regular thread calls "read" then all the data from
->> >> stream will be read by the regular thread at once.
->> >>
->> >> I implemented it in similar way, but in the end regular thread could
->> >> read only one char (first char) in the end.
->> >>
->> >>
->> >> Thanks,
->> >> Pintu
->> >> On Tue, Aug 21, 2018 at 12:12 AM Greg Gallagher <greg@embeddedgreg.com>
->> >> wrote:
->> >> >
->> >> > On Mon, Aug 20, 2018 at 2:02 PM, Pintu Kumar <pintu.ping@gmail.com>
->> >> > wrote:
->> >> > > May be both.
->> >> > > Specially I want to know how to use may use of rt_pipe_steam with a
->> >> > > use case
->> >> > > example.
->> >> > >
->> >> > >
->> >> > > On Mon, 20 Aug 2018, 10:10 pm Greg Gallagher, <greg@embeddedgreg.com>
->> >> > > wrote:
->> >> > >>
->> >> > >> On Mon, Aug 20, 2018 at 9:48 AM, Pintu Kumar <pintu.ping@gmail.com>
->> >> > >> wrote:
->> >> > >> > Dear Greg,
->> >> > >> >
->> >> > >> > If you have any idea can you please explain how rt_pipe_stream
->> >> > >> > works
->> >> > >> > with an example.
->> >> > >> > I need to prepare a demo, to demonstrate the usefulness of
->> >> > >> > rt_pipe_stream API.
->> >> > >> >
->> >> > >> >
->> >> > >> > Thanks,
->> >> > >> > Pintu
->> >> > >> > On Fri, Aug 17, 2018 at 6:56 PM Pintu Kumar <pintu.ping@gmail.com>
->> >> > >> > wrote:
->> >> > >> >>
->> >> > >> >> Hi,
->> >> > >> >>
->> >> > >> >> I wanted to understand how rt_pipe_stream works and how it can be
->> >> > >> >> useful.
->> >> > >> >> I wanted to create a demo application using it.
->> >> > >> >> But currently I could not figure out how to make use of it.
->> >> > >> >>
->> >> > >> >> I saw a sample pipe application under:
->> >> > >> >> lib/alchemy/testsuite/pipe-1.c.
->> >> > >> >> Based on this I am trying to create a new application that uses
->> >> > >> >> rt_pipe_stream.
->> >> > >> >> The rt_pipe_stream is working fine, but I wanted to test the
->> >> > >> >> scenario
->> >> > >> >> based on its description.
->> >> > >> >>
->> >> > >> >> My understanding is that:
->> >> > >> >> Regular thread keeps write one by one char to rtipc, and the
->> >> > >> >> real-time
->> >> > >> >> task reads one char at a time. Then real-time task call
->> >> > >> >> rt_pipe_stream
->> >> > >> >> which keeps storing the char.
->> >> > >> >> Finally, when regular thread calls "read" then all the data from
->> >> > >> >> stream will be read by the regular thread at once.
->> >> > >> >>
->> >> > >> >> Hope my understanding is correct.
->> >> > >> >> I want to prepare a sample application for the same.
->> >> > >> >>
->> >> > >> >> If any reference for rt_pipe_stream is available please let me
->> >> > >> >> know.
->> >> > >> >>
->> >> > >> >>
->> >> > >> >> Thanks,
->> >> > >> >> Pintu
->> >> > >> >
->> >> > >> > _______________________________________________
->> >> > >> > Xenomai mailing list
->> >> > >> > Xenomai@xenomai.org
->> >> > >> > https://xenomai.org/mailman/listinfo/xenomai
->> >> > >>
->> >> > >> HI,
->> >> > >>   Do you want an explaination how they worked in cobalt or an
->> >> > >> exaplaination of how to use them?
->> >> > >>
->> >> > >> Thanks
->> >> > >>
->> >> > >> Greg
->> >> >
->> >> > Start here:
->> >> >
->> >> >
->> >> > https://xenomai.org/documentation/xenomai-3/html/xeno3prm/group__alchemy__pipe.html#ga29521cc898afa0069963964955167aa5
->> >> >
->> >> > I'll see what I can for an example.
->> >> >
->> >> > -Greg
+Am Thu, 12 Jul 2018 20:46:08 +0530
+schrieb Ashok kumar <ashokkumar.bb@gmail.com>:
 
-For your example, you are sending a message in rt_pipe_stream not a
-stream of bytes.  You'll need to change what you are sending in the
-rt_pipe_stream call.  I have a rough example working, I should have
-time to post it hopefully in the next few days.
+> Thank you for your reply,
+> 
+> can I install linux- 4.9.90 with xenomai 3.0.7 on i3 processor
+> I have mentioned lscpu terminal output
 
--Greg
+Yes that should work. If you run into any problems with those versions
+get in touch and we will find a solution.
+
+> root@texsonics:/usr/src# lscpu
+> Architecture:          x86_64
+> CPU op-mode(s):        32-bit, 64-bit
+> Byte Order:            Little Endian
+> CPU(s):                4
+> On-line CPU(s) list:   0-3
+> Thread(s) per core:    2
+> Core(s) per socket:    2
+> Socket(s):             1
+> NUMA node(s):          1
+> Vendor ID:             GenuineIntel
+> CPU family:            6
+> Model:                 158
+> Stepping:              9
+> CPU MHz:               800.000
+> BogoMIPS:              7823.98
+> Virtualization:        VT-x
+> L1d cache:             32K
+> L1i cache:             32K
+> L2 cache:              256K
+> L3 cache:              3072K
+> NUMA node0 CPU(s):     0-3
+> 
+> or anyother specific processor mother board is there for this
+> xenomai-3.0.7
+> 
+> and can you suggest x86 architecture 64 bit processor and mother
+> board for xenomai-3.0.7
+
+Yes, you should get a SIMATIC Box PC ;). Just kidding, i can and will
+not suggest hardware.
+
+Henning
+
+> Thank you
+> R.Ashokkumar
+> 
+> On Thu, Jul 12, 2018 at 7:39 PM, Henning Schild
+> <henning.schild@siemens.com> wrote:
+> 
+> > Am Thu, 12 Jul 2018 19:22:39 +0530
+> > schrieb Ashok kumar <ashokkumar.bb@gmail.com>:
+> >  
+> > > Hi,
+> > >
+> > > I am patching  linux- 3.14.44 with -xenomai-2.6.4,  I am using
+> > > ipipe-core-3.14.44-x86-12.patch  
+> >
+> > Ok, have you tried 4.9.90 with xenomai 3.0.7? What you are using is
+> > far from still being supported.
+> >
+> > The only possible reason you are using such an outdated kernel is
+> > because you rely on other patches as well. Do you see the same bug
+> > when not applying these other patches?
+> >  
+> > > and in menu config
+> > >
+> > > Required Options:
+> > > * Real-time sub-system  
+> > >   --> Xenomai (Enable)
+> > >   --> Nucleus (Enable)  
+> > > * Power management and ACPI options  
+> > >   --> Run-time PM core functionality (Disable)
+> > >   --> ACPI (Advanced Configuration and Power Interface) Support
+> > >       --> Processor (Disable)
+> > >   --> CPU Frequency scaling
+> > >       --> CPU Frequency scaling (Disable)
+> > >   --> CPU idle
+> > >       --> CPU idle PM support (Disable)  
+> > >
+> > > after installing the xenomai user library, while  checking
+> > > latency I am getting the following error
+> > >
+> > > BUG: unable to handle kernel paging  request
+> > >
+> > > I have attached the screen shot of this bug  
+> >
+> > Please attach a serial console and provide this as text.
+> >
+> > Henning
+> >  
+> > > anybody can help me to solve this issue
+> > >
+> > > Thank you
+> > > R.Ashokkumar
+> > > -------------- next part --------------
+> > > A non-text attachment was scrubbed...
+> > > Name: Screenshot from 2018-07-12 19:14:08.png
+> > > Type: image/png
+> > > Size: 129556 bytes
+> > > Desc: not available
+> > > URL:
+> > > <http://xenomai.org/pipermail/xenomai/attachments/20180712/
+> > df4ce641/attachment.png>
+> > > _______________________________________________ Xenomai mailing
+> > > list Xenomai@xenomai.org
+> > > https://xenomai.org/mailman/listinfo/xenomai  
+> >
+> >  
+
 
