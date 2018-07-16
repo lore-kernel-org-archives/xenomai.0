@@ -1,16 +1,7 @@
-References: <E1fxEEU-0004LE-Ln@xenomai.org>
- <7bf36155-eb1a-30a3-42ce-5256342dc74f@siemens.com>
- <32880d1f-2a02-57bd-3465-9ebb0aee9aca@xenomai.org>
 From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <ebaacf7c-5fa5-1f5d-791e-6c4e01617303@siemens.com>
-Date: Wed, 5 Sep 2018 10:34:48 +0200
-MIME-Version: 1.0
-In-Reply-To: <32880d1f-2a02-57bd-3465-9ebb0aee9aca@xenomai.org>
-Content-Type: text/plain; charset="utf-8"; format="flowed"
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
-Subject: Re: [Xenomai] [PATCH] cobalt/kernel: always use explicit
- preprocessor conditionals
+Date: Mon, 16 Jul 2018 18:37:48 +0200
+Message-Id: <cover.1531759073.git.jan.kiszka@siemens.com>
+Subject: [Xenomai] [PATCH 0/6] Fix issues around setsched on remote threads
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -19,45 +10,32 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Philippe Gerum <rpm@xenomai.org>, xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-On 2018-09-05 10:16, Philippe Gerum wrote:
-> On 09/04/2018 07:48 PM, Jan Kiszka wrote:
->>> diff --git a/kernel/cobalt/synch.c b/kernel/cobalt/synch.c
->>> index 7773a08e5..32df635a8 100644
->>> --- a/kernel/cobalt/synch.c
->>> +++ b/kernel/cobalt/synch.c
->>> @@ -902,7 +902,7 @@ void xnsynch_release_all_ownerships(struct
->>> xnthread *thread)
->>>    }
->>>    EXPORT_SYMBOL_GPL(xnsynch_release_all_ownerships);
->>>    -#if XENO_DEBUG(MUTEX_RELAXED)
->>> +#ifdef CONFIG_XENO_OPT_DEBUG_MUTEX_RELAXED
->>>      /*
->>>     * Detect when a thread is about to sleep on a synchronization
->>>
->>
->> Confused: This is not for next, is it?
->>
->> E.g. that hunk above does not apply there anymore, for about a year...
->>
-> 
-> Something looks wrong here. The three patches apply on commit #e23d58715
-> [1] at [2], which is on top of stable/v3.0.x, post-3.0.7 material. Which
-> tree/branch are you looking at?
+This addresses http://xenomai.org/pipermail/xenomai/2018-July/039267.html.
 
-next - stable is yours.
-
-If you like review of stable backports, please tag those commits as 
-[stable] or so. And maybe also explain any deviation.
-
-My vision would be that only patches that are in next/master would make 
-it to stable. Ideally, no or only minor tweaking should be needed to 
-such commits for the backport.
+The last patch of the series may not be a stable candidate as it changes
+some return code of the kernel. The rest should go, though.
 
 Jan
 
+Jan Kiszka (6):
+  cobalt/posix: Harden cobalt_thread_shadow against invalid requests
+  cobalt/posix: Avoid mapping remote threads in
+    cobalt_sched_setscheduler_ex
+  cobalt/posix: Remove task parameter from cobalt_thread_shadow
+  lib/cobalt: Avoid requesting shadowing for remote threads
+  lib/cobalt: Pass setsched requests for unknown threads to glibc
+  cobalt: Fix error code of cobalt_thread_setschedparam_ex
+
+ kernel/cobalt/posix/sched.c  |  4 ++--
+ kernel/cobalt/posix/thread.c | 14 ++++++++------
+ kernel/cobalt/posix/thread.h |  3 +--
+ lib/cobalt/sched.c           | 10 ++++++++++
+ lib/cobalt/thread.c          | 18 ++++++++++++++++--
+ 5 files changed, 37 insertions(+), 12 deletions(-)
+
 -- 
-Siemens AG, Corporate Technology, CT RDA IOT SES-DE
-Corporate Competence Center Embedded Linux
+2.16.4
+
 
