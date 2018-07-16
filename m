@@ -1,14 +1,14 @@
-References: <CAFLxGvwUEfbNtAnx31vUOo0BwR8ZMpstO1=t=bZpa-jpjTUh4A@mail.gmail.com>
- <CAFLxGvwJx2-37mgD10VkpuR2WHnNCVcu6W8x6w+Yx2JXG_B7TQ@mail.gmail.com>
+References: <3319d6fa-2541-67bf-f03b-15b440a1b8a6@siemens.com>
+ <20180713143732.1bd0fc30@md1pvb1c.ad001.siemens.net>
 From: Philippe Gerum <rpm@xenomai.org>
-Message-ID: <5bb68a54-d174-e4ca-1bad-ce148440cbc9@xenomai.org>
-Date: Fri, 31 Aug 2018 12:03:33 +0200
+Message-ID: <db6854b7-e211-902f-03e1-ab493357199a@xenomai.org>
+Date: Mon, 16 Jul 2018 16:48:53 +0200
 MIME-Version: 1.0
-In-Reply-To: <CAFLxGvwJx2-37mgD10VkpuR2WHnNCVcu6W8x6w+Yx2JXG_B7TQ@mail.gmail.com>
+In-Reply-To: <20180713143732.1bd0fc30@md1pvb1c.ad001.siemens.net>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] Problem with read-only mmap'ed vmalloc area
+Subject: Re: [Xenomai] Eager FPU vs. recent kernels
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,36 +17,41 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Richard Weinberger <richard.weinberger@gmail.com>, xenomai@xenomai.org
+To: Henning Schild <henning.schild@siemens.com>, Jan Kiszka <jan.kiszka@siemens.com>
+Cc: Xenomai <xenomai@xenomai.org>
 
-On 08/31/2018 11:13 AM, Richard Weinberger wrote:
-> On Thu, Aug 30, 2018 at 1:35 PM Richard Weinberger
-> <richard.weinberger@gmail.com> wrote:
->> I think the problem is related on how Xenomai tries to pre-fault pages.
->> As soon I remove the call to xnarch_fault_range() from
->> rtdm_mmap_buffer(), the mapping works correctly
->> and my test passes.
+On 07/13/2018 02:37 PM, Henning Schild wrote:
+> Am Mon, 9 Jul 2018 19:48:28 +0200
+> schrieb Jan Kiszka <jan.kiszka@siemens.com>:
 > 
-> After reading more xenomai code I found something interesting.
-> In mach_arm_prefault() you set FAULT_FLAG_WRITE if VM_MAYWRITE
-> is present.
-> IMHO this is wrong and should check for VM_WRITE.
-> Otherwise a write fault is simulated even for read-only mappings.
+>> Hi,
+>>
+>> the x86 FPU changes that so far only affected 4.14 and delayed its
+>> ipipe progress on that arch. However, CVE-2018-3665 is not making it
+>> a topic for every ipipe kernel (that should be kept up to date): lazy
+>> FPU is history, now also for security reasons (before that only for
+>> performance reasons).
 > 
-> In fact, when I apply this change, my test passes.
+> I have just reached that point in the 4.14 x86 work. And from what i
+> can see right now is that it would be a good idea to look into the FPU
+> thing independent of 4.14. So i will start working on that for 4.9 and
+> probably 4.4 to understand what 4.14 needs.
 > 
 
-I suspect that the original intent might have been to address the issue
-of COW mappings (i.e.  (flags & (VM_SHARED | VM_MAYWRITE)) ==
-VM_MAYWRITE), force-breaking them.
+The Spectre mitigation code in 4.14 will require to use the regular
+__switch_to infrastructure for context switching, there are several key
+changes in entry_64.S which call for this. This should send fpu
+management over the head stage back to the pipeline core where it
+belongs, instead of open coding it into Cobalt for x86. At the end of
+the day, I believe that this should greatly simplify the implementation
+both on the I-pipe and Cobalt sides.
 
-This said, this particular issue may have been addressed earlier when
-mlocking the process address space with MCL_FUTURE, and further enforced
-by the call to disable_ondemand_memory() when installing the Cobalt
-thread which is going to map that memory into the current address space
-(cobalt_map_user()).
-
-IOW, why would we need more prefaulting here?
+PS: still bringing up I-pipe x86 on 4.14 piece by piece, based on a
+fully incremental commit stack. I'm able to boot the basic pipeline
+stuff by only introducing the virtual interrupt state management over
+KVM at the moment. Still some work ahead for adding the rest of the
+changes involving task migration to the head stage and notifiers. I'll
+stop before fpu handling and Cobalt port to 4.14.
 
 -- 
 Philippe.
