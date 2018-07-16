@@ -1,16 +1,13 @@
-References: <9807836c-9287-10a7-52bf-6b5947c87699@xenomai.org>
- <20180827132432.215475e3@md1pvb1c.ad001.siemens.net>
- <5e05ff77-579d-8dc2-d1a8-d645952f815d@xenomai.org>
- <20180827194452.49fc89bf@md1pvb1c.ad001.siemens.net>
-From: Philippe Gerum <rpm@xenomai.org>
-Message-ID: <54ecdb1e-e1be-c560-3105-7ee3b5cefd52@xenomai.org>
-Date: Mon, 27 Aug 2018 19:50:40 +0200
+From: Jan Kiszka <jan.kiszka@siemens.com>
+References: <a59535aa-62e7-7b74-c334-92b72d674558@siemens.com>
+Message-ID: <0a6f7577-441c-04f5-6e86-6e600c3ef93f@siemens.com>
+Date: Mon, 16 Jul 2018 16:20:50 +0200
 MIME-Version: 1.0
-In-Reply-To: <20180827194452.49fc89bf@md1pvb1c.ad001.siemens.net>
+In-Reply-To: <a59535aa-62e7-7b74-c334-92b72d674558@siemens.com>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] I-pipe split series
+Subject: Re: [Xenomai] pthread_setschedparam(invalid_thread)
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -19,103 +16,52 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Henning Schild <henning.schild@siemens.com>
-Cc: "Xenomai@xenomai.org" <Xenomai@xenomai.org>, Greg Gallagher <greg@embeddedgreg.com>, Dmitriy Cherkasov <dmitriy@oss-tech.org>, "Seeger, Steven D. (GSFC-444.0)[Embedded Flight Systems, Inc]" <steven.seeger@nasa.gov>, "Kiszka, Jan" <jan.kiszka@siemens.com>
+To: Xenomai <xenomai@xenomai.org>
 
-On 08/27/2018 07:44 PM, Henning Schild wrote:
-> Am Mon, 27 Aug 2018 16:15:21 +0200
-> schrieb Philippe Gerum <rpm@xenomai.org>:
+On 2018-07-13 19:48, Jan Kiszka wrote:
+> Hi all,
 > 
->> On 08/27/2018 01:24 PM, Henning Schild wrote:
->>> Hi Philippe,
->>>
->>> Am Mon, 30 Jul 2018 20:10:17 +0200
->>> schrieb Philippe Gerum <rpm@xenomai.org>:
->>>   
->>>> The generic I-pipe code is now available as a series of incremental
->>>> commits at [1] on top of the 4.14.58 kernel. This allows to port
->>>> the I-pipe patch gradually, first to enable IRQ pipelining per se,
->>>> then add the bits required for co-managing tasks between the
->>>> regular kernel and the co-kernel, which builds on the former. Most
->>>> patches have gained a description in their respective short log,
->>>> which added to Documentation/ipipe.rst, should help clarifying the
->>>> process of porting the pipeline.
->>>>
->>>> While I was at it, I did a pre-port of the x86 patch to kernel
->>>> 4.14.58, which has been useful for validating the split series. I
->>>> hope this will help the x86 maintainers to clear that hurdle
->>>> eventually.
->>>>
->>>> The whole pile of patches went through countless incremental builds
->>>> over multiple configurations, and tedious manual fixups over a few
->>>> weeks. However, there is room for issues, given the amount of code
->>>> involved, and the varying configurations one can apply. If you find
->>>> any problem with that split series, please report them here so that
->>>> we fix them.
->>>>
->>>> Please note that those trees are rebased from time to time.  
->>>
->>> Really cool! Thanks so much for your work, i quickly looked at the
->>> structure of the patches and the commit messages. I think that
->>> should greatly improve the documentation and we will see how well
->>> that works for the next rebase. But i hope and assume that will
->>> become much easier with this approach.
->>>   
->>>> == Generic changes
->>>>
->>>> - select HAVE_IPIPE_SUPPORT is needed from the arch-code (Kconfig)
->>>> to enable the generic I-pipe bits. This way we can have an
->>>> incremental build, without requiring the arch-code to be present
->>>> in the commit stack for testing generic changes.
->>>>
->>>> - Likewise, select HAVE_IPIPE_TRACER_SUPPORT is needed from the
->>>> arch-code when the tracer is available. Only ARM needs this
->>>> currently, due to the TSC emulation support we need to provide
->>>> there to get timestamps which is not part of the ARM-specific
->>>> pipeline core. x86 and ppc32 have their own tsc/timebase readily
->>>> available when the core bits are in.
->>>>
->>>> - __ipipe_init_threadflags() now receives struct thread_info *. To
->>>> be updated in the arch-specific bits.
->>>>
->>>> == x86
->>>>
->>>> The basic port available at [2] boots over KVM and a couple of real
->>>> hw I have here, x86_64 only, x86_32 is untested and likely not
->>>> complete - although little should be left. It enables the interrupt
->>>> pipeline, but has not been checked against Xenomai, since FPU
->>>> support is not there (*).  
->>>
->>> I have got a working eager-fpu 4.4 and 4.9 and looked into this
->>> 4.14 as well, in the hope to get the patch against xenomai in a
->>> shape that will work for all three kernels.
->>>
->>> So i ported my kernel patch to this 4.14 and adjusted xenomai to
->>> work on that as well. Unfortunately the kernel does not boot. It
->>> gets stuck right after switching the clocksource to tsc. My current
->>> assumption is that the timer does not work, maybe interrupts in
->>> general.
->>>
->>> Do you have a suggestion how to best debug that? I could also share
->>> the current state of the fpu-patches so you could have a direct
->>> look at it yourself.  
->>
->> I recently wrote a (short) piece about identifying and chasing those
->> issues:
->>
->> https://dovetail.xenomai.org/pipeline/porting/devnotes/#losing-the-timer-tick
+> this pattern causes a kernel crash:
 > 
-> Yes, that description sounds about right. I am still digging to see why
-> _no_ interrupts seem to be arriving.
+> int main()
+> {
+> 	struct sched_param schedpar;
 > 
-> But i imagine you are looking forward to seeing the 4.14 split series
-> in action as well and might want to have a look as well. Here is what i
-> am currently working with, fpu should work ... once we are up.
+> 	schedpar.sched_priority = 1;
+> 	pthread_setschedparam(pthread_self(), SCHED_FIFO, &schedpar);
+> 	pthread_setschedparam(0x1234, SCHED_FIFO, &schedpar);
+> 	return 0;
+> }
+> 
+> The second, invalid setschedparam makes the core try to shadow the
+> current thread - which is already shadowed - and that fails and then
+> causes a failure in the error cleanup path. But one after the other.
+> 
+> The semantic of pthread_setschedparam(unknown_remote_thread) should be
+> to just invoke the plain glibc function for that thread. But right now
+> the core's pthread_setschedparam_ex has no chance to tell a request to
+> promote the current thread to a shadow apart from a request on an
+> unknown (or invalid) remote thread ID. We would need to extend the
+> syscall ABI for that, I'm afraid (pass down pthread_self() as well). Any
+> better ideas?
+
+Turned out that there is simple, ABI-compatible solution: pass NULL as
+u_winoff in case the target thread ID is not one of the caller.
+Preparing patches, ...
+
+> 
+> The actual crash I'm seeing is related to cobalt_thread_shadow() running
+> over primary mode, failing with cobalt_map_user() (obviously), and then
+> calling pthread_discard() -> __xnthread_discard() which finally detects
+> the wrong caller mode. I guess we want secondary_mode_only() also in
+> cobalt_map_user() or cobalt_thread_shadow().
 > 
 
-The split series is already running several arm(32) and arm64 SoCs here.
-I'll have a look to your tree in the coming days.
+...also to harden the kernel against that issue.
+
+Jan
 
 -- 
-Philippe.
+Siemens AG, Corporate Technology, CT RDA IOT SES-DE
+Corporate Competence Center Embedded Linux
 
