@@ -1,13 +1,12 @@
-References: <CAFLxGvwYj_Yf210DV+GHv_bNuuR4uo0cC=7b37ZztQj4Y+cQPA@mail.gmail.com>
-From: Philippe Gerum <rpm@xenomai.org>
-Message-ID: <294b1675-ed0a-8018-fcfd-79c691209884@xenomai.org>
-Date: Tue, 4 Sep 2018 10:33:25 +0200
-MIME-Version: 1.0
-In-Reply-To: <CAFLxGvwYj_Yf210DV+GHv_bNuuR4uo0cC=7b37ZztQj4Y+cQPA@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] Question on internal_get_unmapped_area()
+From: Jan Kiszka <jan.kiszka@siemens.com>
+Date: Mon, 16 Jul 2018 18:37:52 +0200
+Message-Id: <9c316ea60ac2b083aa22654c6319ab9b789a6789.1531759073.git.jan.kiszka@siemens.com>
+In-Reply-To: <cover.1531759073.git.jan.kiszka@siemens.com>
+References: <cover.1531759073.git.jan.kiszka@siemens.com>
+In-Reply-To: <cover.1531759073.git.jan.kiszka@siemens.com>
+References: <cover.1531759073.git.jan.kiszka@siemens.com>
+Subject: [Xenomai] [PATCH 4/6] lib/cobalt: Avoid requesting shadowing for
+	remote threads
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,36 +15,48 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Richard Weinberger <richard.weinberger@gmail.com>, xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-On 09/04/2018 09:56 AM, Richard Weinberger wrote:
-> Hi!
-> 
-> In kernel/cobalt/rtdm/drvlib.c your internal_get_unmapped_area() just
-> returns the requested virtual address. Shouldn't it at least check for
-> the address being aligned to PAGE_SIZE?
+From: Jan Kiszka <jan.kiszka@siemens.com>
 
-Out of laziness, I believe that we expect get_unmapped_area() to check
-for this (!offset_in_page(addr)).
+Fix pthread_setschedparam_ex that it does not suggests the core to map
+the current thread if the target thread of the request is actually not
+pthread_self(). The core will reject such requests now, but we should
+avoid them in the first place so that we get a clear error code.
 
-> And much more important, on VIVT systems it has to enforce alignment to SHMLBA.
-> 
+Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
+---
+ lib/cobalt/thread.c | 7 +++++--
+ 1 file changed, 5 insertions(+), 2 deletions(-)
 
-Although Xenomai used to support platforms with VIVT caches for years,
-we practically stopped doing so a year ago or so. The reason for this
-move is that VIVT is just not usable for low-latency systems unless we
-mitigate the impact of the cache invalidation it requires on every
-context switch.
-
-We used to do that with an extension called FCSE [1], available with the
-interrupt pipeline for ARM, but that code became orphan many moons ago
-[2]. Since armv4/v5 lost all traction among the user base, we just
-stopped caring, focusing on v7/v8 instead.
-
-[1]
-https://www.denx.de/en/pub/News/Xum2009AbstractsAndPresentations/The_ARM_Fast_Context_Switch_Extension_for_Linux.pdf
-[2] git://archive.xenomai.org/ipipe-gch.git
-
+diff --git a/lib/cobalt/thread.c b/lib/cobalt/thread.c
+index 62ca0a02d9..fac23109c1 100644
+--- a/lib/cobalt/thread.c
++++ b/lib/cobalt/thread.c
+@@ -607,7 +607,7 @@ int pthread_setschedparam_ex(pthread_t thread,
+ {
+ 	int ret, promoted, std_policy;
+ 	struct sched_param std_param;
+-	__u32 u_winoff;
++	__u32 u_winoff, *u_winoff_ptr;
+ 
+ 	/*
+ 	 * If we enter this call over a relaxed context, take the
+@@ -637,9 +637,12 @@ int pthread_setschedparam_ex(pthread_t thread,
+ 			return ret;
+ 	}
+ 
++	/* only request promotion when this targets the current thread */
++	u_winoff_ptr = thread == pthread_self() ? &u_winoff : NULL;
++
+ 	ret = -XENOMAI_SYSCALL5(sc_cobalt_thread_setschedparam_ex,
+ 				thread, policy, param_ex,
+-				&u_winoff, &promoted);
++				u_winoff_ptr, &promoted);
+ 
+ 	if (ret == 0 && promoted) {
+ 		cobalt_sigshadow_install_once();
 -- 
-Philippe.
+2.16.4
+
 
