@@ -1,12 +1,12 @@
-From: =?gb2312?B?emhlbmdndWFuZy55YW5nKNHu1fm54ik=?=
- <zhengguang.yang@advantech.com.cn>
-Date: Fri, 31 Aug 2018 07:16:00 +0000
-Message-ID: <56466c708cde4eaf9f9f71c4404bd75a@acnmail2.ACN.ADVANTECH.CORP>
-Content-Language: zh-CN
-MIME-Version: 1.0
-Content-Type: text/plain; charset="gb2312"
-Content-Transfer-Encoding: base64
-Subject: [Xenomai] The cyclictest test shows high latencies
+From: Jan Kiszka <jan.kiszka@siemens.com>
+Date: Mon, 16 Jul 2018 18:37:49 +0200
+Message-Id: <c88831c6c7f0231853051628589a8532d411e2ab.1531759073.git.jan.kiszka@siemens.com>
+In-Reply-To: <cover.1531759073.git.jan.kiszka@siemens.com>
+References: <cover.1531759073.git.jan.kiszka@siemens.com>
+In-Reply-To: <cover.1531759073.git.jan.kiszka@siemens.com>
+References: <cover.1531759073.git.jan.kiszka@siemens.com>
+Subject: [Xenomai] [PATCH 1/6] cobalt/posix: Harden cobalt_thread_shadow
+	against invalid requests
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,24 +15,35 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: xenomai@xenomai.org
 
-RGVhciBYZW5vbWFpIFRlYW06DQpJIHdhbnQgdG8gdXNlIHhlbm9tYWkgb24gaW14NnEuDQpXaGVu
-IEkgaW5zdGFsbCBpdCBhY2NvcmRpbmcgdG8geW91ciB3aWtpLCB0aGVuIGNoZWNrIHRoZSBrZXJu
-ZWwgYm9vdCBsb2c6DQoNCiMgZG1lc2cgfGdyZXAgLWkgeGVub21haQ0KWyAgICAwLjQwODI3NF0g
-W1hlbm9tYWldIHNjaGVkdWxpbmcgY2xhc3MgaWRsZSByZWdpc3RlcmVkLg0KWyAgICAwLjQwODI4
-MV0gW1hlbm9tYWldIHNjaGVkdWxpbmcgY2xhc3MgcnQgcmVnaXN0ZXJlZC4NClsgICAgMC40MDg1
-MzhdIEktcGlwZTogaGVhZCBkb21haW4gWGVub21haSByZWdpc3RlcmVkLg0KWyAgICAwLjQxMjEy
-OV0gW1hlbm9tYWldIENvYmFsdCB2My4wLjcgKExpbmdlcmluZyBEYXduKQ0KDQpIb3dldmVyLCBh
-ZnRlciB0ZXN0aW5nIHdpdGggY3ljbGljdGVzdCwgaXQgc2VlbXMgdGhhdCB0aGVyZSBpcyBubyBk
-aWZmZXJlbmNlIGJldHdlZW4geGVub21haS1saW51eCBhbmQgbm9uX3hlbm9tYWktbGludXguDQoN
-Cg0KoaQgICAgICAgICBNYXliZSBJIGRpZCBzb21ldGhpbmcgd3JvbmcgYW5kIHdoYXQgZ29lcyB3
-cm9uZyB0aGF0IGxlYWRzIHRvIHRoaXMgcmVzdWx0Pw0KDQpCZXN0IFJlZ2FyZHMNCg0KWmhlbmdn
-dWFuZy55YW5nIC/R7tX5ueINCtHQyEG/xry8KNbQh/gp09DP3rmry74NCkUtbWFpbDogemhlbmdn
-dWFuZy55YW5nQGFkdmFudGVjaC5jb20uY248bWFpbHRvOnJhY2VyLmp1aUBhZHZhbnRlY2guY29t
-LmNuPg0KVGVsOiAwNTEyLTU3Nzc1NjY2IEV4dDo5ODEzDQpbY2lkOnBhcnQxMC4wMDAxMDcwNS4w
-ODA1MDMwMkBhZHZhbnRlY2guY29tLmNuXQ0KDQotLS0tLS0tLS0tLS0tLSBuZXh0IHBhcnQgLS0t
-LS0tLS0tLS0tLS0KQSBub24tdGV4dCBhdHRhY2htZW50IHdhcyBzY3J1YmJlZC4uLgpOYW1lOiBp
-bWFnZTAwMS5naWYKVHlwZTogaW1hZ2UvZ2lmClNpemU6IDIzMjIgYnl0ZXMKRGVzYzogaW1hZ2Uw
-MDEuZ2lmClVSTDogPGh0dHA6Ly94ZW5vbWFpLm9yZy9waXBlcm1haWwveGVub21haS9hdHRhY2ht
-ZW50cy8yMDE4MDgzMS9mZTA3N2YwZS9hdHRhY2htZW50LmdpZj4K
+From: Jan Kiszka <jan.kiszka@siemens.com>
+
+If the caller has already a Xenomai shadow, we will crash rather than
+failing gracefully. The reason is that pthread_discard expects secondary
+mode - which may not be the case if the caller is already able to
+migrate. So check early and avoid that we can run into this trap.
+
+Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
+---
+ kernel/cobalt/posix/thread.c | 3 +++
+ 1 file changed, 3 insertions(+)
+
+diff --git a/kernel/cobalt/posix/thread.c b/kernel/cobalt/posix/thread.c
+index b5809e840b..d75a593536 100644
+--- a/kernel/cobalt/posix/thread.c
++++ b/kernel/cobalt/posix/thread.c
+@@ -625,6 +625,9 @@ cobalt_thread_shadow(struct task_struct *p,
+ 	struct sched_param_ex param_ex;
+ 	int ret;
+ 
++	if (xnthread_current())
++		return ERR_PTR(-EBUSY);
++
+ 	param_ex.sched_priority = 0;
+ 	trace_cobalt_pthread_create(hkey->u_pth, SCHED_NORMAL, &param_ex);
+ 	ret = pthread_create(&thread, SCHED_NORMAL, &param_ex, p);
+-- 
+2.16.4
+
+
