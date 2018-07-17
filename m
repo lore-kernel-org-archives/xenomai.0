@@ -1,7 +1,7 @@
 MIME-Version: 1.0
 From: Ashok kumar <ashokkumar.bb@gmail.com>
-Date: Tue, 17 Jul 2018 18:29:35 +0530
-Message-ID: <CAFUnMkm=ZaZ5qY1Vbg=WVvt16x+rxfmttCA0mdWVi8wC2K3Duw@mail.gmail.com>
+Date: Tue, 17 Jul 2018 18:31:05 +0530
+Message-ID: <CAFUnMkkuQCr3XO4OYzGucLa5pVJr0YRkpZc+GQ0AUxj9qhz_WQ@mail.gmail.com>
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 Subject: [Xenomai] rt_e1000e is not getting loaded : e1000e: rteth0 NIC Link
@@ -33,7 +33,8 @@ I don=E2=80=99t find any difference in eth0 and rteth0,
 I am using SOEM ethercat protocol for controlling servo drive and *EL5101*
 | Incremental *encoder* interface
 
+and I am using xenomai-3.07 with linux 4.9.90 patch
+
 can you help to to get load the rt_e1000e.
 
 Thank you
-Ashok
