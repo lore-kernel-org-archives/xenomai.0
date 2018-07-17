@@ -1,13 +1,11 @@
-References: <4568407c.661a.164a6b8171f.Coremail.15084864580@163.com>
-From: Philippe Gerum <rpm@xenomai.org>
-Message-ID: <a29150bc-11e7-8099-7cca-e900d86fedd1@xenomai.org>
-Date: Tue, 17 Jul 2018 10:54:33 +0200
 MIME-Version: 1.0
-In-Reply-To: <4568407c.661a.164a6b8171f.Coremail.15084864580@163.com>
-Content-Type: text/plain; charset="utf-8"
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
-Subject: Re: [Xenomai] =?utf-8?q?About_interrupt_delivery_issues=EF=BC=9F?=
+From: Ashok kumar <ashokkumar.bb@gmail.com>
+Date: Tue, 17 Jul 2018 18:29:35 +0530
+Message-ID: <CAFUnMkm=ZaZ5qY1Vbg=WVvt16x+rxfmttCA0mdWVi8wC2K3Duw@mail.gmail.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+Subject: [Xenomai] rt_e1000e is not getting loaded : e1000e: rteth0 NIC Link
+ is Up 100 Mbps Full Duplex, Flow Control: None
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,17 +14,26 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: =?UTF-8?B?5piT5bKz5ZCN?= <15084864580@163.com>, xenomai@xenomai.org
+To: "Xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On 07/17/2018 07:30 AM, 易岳名 wrote:
-> In the old xenomai version, the ipipe_pass_mask flag was used to set the interrupt delivery. Currently I need to trigger an interrupt in the xenomai domain, respond in the xenomai domain, and then pass it to the linux domain and then respond. To verify the interrupt delivery function of ipipe, what should I do? Looking forward to your reply! bless you
+Hi,
 
-root:ipipe_raise_irq(irq) -> head:ipipe_post_irq_root(irq) ->
-root:verify(irq)
+I am starting rtnet and using dmesg I get this output
 
-ipipe_post_irq_root() must be called with hard IRQs off, which is the
-case when called from a head stage IRQ handler.
+e1000e: rteth0 NIC Link is Up 100 Mbps Full Duplex, Flow Control: None
+[ 2141.574339] rt_e1000e: 10/100 speed: disabling TSO
 
--- 
-Philippe.
+rt_e1000e is not getting loaded in rteth0
 
+e1000e: rteth0 NIC Link is Up 100 Mbps, e1000e is only getting loaded
+instead of rt_e1000e
+
+I don=E2=80=99t find any difference in eth0 and rteth0,
+
+I am using SOEM ethercat protocol for controlling servo drive and *EL5101*
+| Incremental *encoder* interface
+
+can you help to to get load the rt_e1000e.
+
+Thank you
+Ashok
