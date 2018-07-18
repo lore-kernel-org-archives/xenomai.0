@@ -1,17 +1,10 @@
-From: gengdongjiu <gengdongjiu@huawei.com>
-Date: Thu, 12 Jul 2018 11:39:16 +0000
-Message-ID: 104E91ED-F625-46AE-B301-204EC1438D3A
-References: <0184ea26b2509940aa629ae1405dd7f201d553ec@dggema523-mbx.china.huawei.com>
- <callqz8rkt78jkgsravygo0dkshvdotrita9do+pyoskxnsmqbg@mail.gmail.com>
- <ceac8f91-8d86-62af-79e1-571ccbd36427@huawei.com>,
- <af575344c0ab4d50b1ff22e15636e30f@grupawp.pl>
-In-Reply-To: <af575344c0ab4d50b1ff22e15636e30f@grupawp.pl>
-Content-Language: zh-CN
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Subject: Re: [Xenomai] Odp: Re: [roscore issue for "Operation not
- permitted"] pthread_mutex_lock failed: operation not permitted
+Date: Wed, 18 Jul 2018 16:00:10 +0200
+From: richer <richer@isir.upmc.fr>
+Message-ID: <c1b44e11327eb188cf547d3f61b3a461@mailhost.isir.upmc.fr>
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+Subject: [Xenomai] Analogy with high sample rates
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -20,132 +13,190 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Mariusz Janiak <mariuszjaniak@wp.pl>, Greg Gallagher <greg@embeddedgreg.com>
-Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: xenomai@xenomai.org
 
-dGhhbmtzIGZvciB0aGUgc3VnZ2VzdGlvbi4NCndlIGhhdmUgbW9kaWZpZWQgdGhlIFJPUzEgdG8g
-bWFrZSBpdCByZWFsdGltZSBhY2NvcmRpbmcgdG8gUk9TMiwgYnV0IGZvciBzb21lIHJlYXNvbnMs
-IHdlIGtlZXAgdGhlIHJvc2NvcmUgbWFzdGVyIG5vZGUsIHNvIGNhbiB5b3UgZ2l2ZSBzb21lIGFk
-dmljZSBob3cgdG8gZGVwbG95IHRoZSByb3Njb3JlID8gc2hvdWxkIHdlIGRlcGxveWVkIHRoZSBy
-b3Njb3JlIHRvIHByaW1hcnkgZG9tYWluIG9yIHNlY29uZGFyeSBkb21haW4/IE5vdyBkZXBsb3lp
-bmcgaXQgdG8gcHJpbWFyeSBkb21haW4gaGFzIHRoaXMgYnVnLCB0aGFua3MuDQoNCg0K5Y+R5Lu2
-5Lq677yaTWFyaXVzeiBKYW5pYWsNCuaUtuS7tuS6uu+8mkdyZWcgR2FsbGFnaGVyLGdlbmdkb25n
-aml1LA0K5oqE4oCD6YCB77yaeGVub21haUB4ZW5vbWFpLm9yZywNCuaXtumXtO+8mjIwMTgtMDct
-MTIgMTg6NTI6MDYNCuS4u+KAg+mimO+8mk9kcDogUmU6IFtYZW5vbWFpXSBbcm9zY29yZSBpc3N1
-ZSBmb3IgIk9wZXJhdGlvbiBub3QgcGVybWl0dGVkIl0gcHRocmVhZF9tdXRleF9sb2NrIGZhaWxl
-ZDogb3BlcmF0aW9uIG5vdCBwZXJtaXR0ZWQNCg0KDQoNCkRuaWEgMTIgbGlwY2EgMjAxOCAxMDo1
-NSBnZW5nZG9uZ2ppdSA8Z2VuZ2RvbmdqaXVAaHVhd2VpLmNvbT4gbmFwaXNhxYIoYSk6DQoNCkhp
-IEdyZWcsDQogVGhhbmtzIGZvciB0aGUgYW5zd2VyLA0KDQpPbiAyMDE4LzcvMTEgMjI6MDksIEdy
-ZWcgR2FsbGFnaGVyIHdyb3RlOg0KSGF2ZSB5b3UgbG9va2VkIGF0IGFueSBvZiB0aGUgUk9TIGZy
-YW1ld29ya3MgdGhhdCB1c2UgWGVub21haT8gIElzIHRoZQ0KZXhwZWN0YXRpb24gdGhhdCByb3Nj
-b3JlIHJ1bnMgaW4gdGhlIHNlY29uZGFyeSBkb21haW4gYW5kIHlvdXIgcm9zDQpiYXNlZCBhcHBs
-aWNhdGlvbiBydW5zIGluIHRoZSBwcmltYXJ5IGRvbWFpbj8NCg0KWWVzLCB3ZSBoYXZlIGxvb2tl
-ZCBhdCB0aGUgdGhlIFJPUyBmcmFtZXdvcmtzIHRoYXQgdXNlIFhlbm9tYWkuIGRvIHlvdSBoYXZl
-IGFueSBzdWdnZXN0aW9uPw0KDQpQbGVhc2UgY29uc2lkZXIgT1JPQ09TIGZvciBSVCBwYXJ0IGlu
-c3RlYWQgb2YgUk9TLiBFdmVudHVhbGx5IFJPUzIuDQoNCg0Kd2UgYXJlIG5vdCB2ZXJ5IGZhbWls
-aWFyIHdpdGggdGhlIFJPUy4NCkluIG91ciB0ZXN0LCB3ZSB1c2VkIHRoZSBST1MgcHViIGFuZCBz
-dWIgdG8gZG8gY29tbXVuaWNhdGlvbi4gRnJvbSBvdXIgdGVzdCwgaWYgcm9zY29yZSBydW5zIGlu
-IHRoZSBzZWNvbmRhcnkgKG5vcm1hbCBsaW51eClkb21haW4sIGl0IHdpbGwgbm90IGhhdmUgc3Vj
-aCBpc3N1ZS4NCnNob3VsZCB0aGUgcm9zY29yZSBydW4gaW4gdGhlICBzZWNvbmRhcnkgZG9tYWlu
-IG9yIHRoZSBwcmltYXJ5IGRvbWFpbj8gSSBkbyBub3Qga25vdyB3aGljaCBkb21haW4gaXQgc2hv
-dWxkIHJ1biBpbnRvLiB0aGFua3MgYSBsb3QuDQoNClJPUyBoYXZlbid0IGJlZW4gZGVzaWduZWQg
-YXMgYSByZWFsLXRpbWUgZnJhbWV3b3JrLCBlc3BlY2lhbGx5IGluIGNvbW11bmljYXRpb24gZG9t
-YWluIChyb3MgdG9waWNzICsgVENQICsgWE1MIFJQQykuDQoNCkJlc3QsDQpNYXJpdXN6DQoNCg0K
-LUdyZWcNCg0KT24gV2VkLCBKdWwgMTEsIDIwMTggYXQgMTA6MDMgQU0sIGdlbmdkb25naml1IDxn
-ZW5nZG9uZ2ppdUBodWF3ZWkuY29tPiB3cm90ZToNCkhpLCBQaGlsaXBwZS8gR2lsbGVzLyBKYW4v
-IEFsZXhpcy9vdGhlcnMsDQoNCg0KDQpJ4oCZbSBydW5uaW5nIHJvcyBvbiBYZW5vbWFpLCB3aXRo
-IFhlbm9tYWktMy4wNyBhbmQgbGludXgga2VybmVsIDQuNC43MS4gSQ0KZmlyc3QgZXhwb3J0IENG
-TEFHUyBhbmQgTERGTEFHUyBvZiBwb3NpeCBza2luLiBBbmQgY29tcGlsZSByb3MgcHJvamVjdCB3
-aXRoDQpwb3NpeCBza2luIHN1Y2Nlc3NmdWxseS4NCg0KVGhlbiwgSSBydW4gcm9zY29yZSBhcyBy
-b290IHVzZXIsIGl0IHRocm93cyBhIHN0ZDo6c3lzdGVtX2Vycm9yLiBTbyBJIGRlYnVnDQpyb3Nj
-b3JlIHdpdGggZ2RiLiBBY2NvcmRpbmcgdG8gdGhlIGdkYiBiYWNrdHJhY2UgZnJhbWUgIzEwLCBp
-dOKAmXMgdGhlIDYyDQpsaW5lcyBvZiBwYXJ0aWNpcGFudC5jcHAgdGhhdCBjYXVzZWQgdGhlIHBy
-b2JsZW0uIFdoaWNoIGlzDQrigJxzdGQ6OnVuaXF1ZV9sb2NrPHN0ZDo6bXV0ZXg+IHVsKF9tc2df
-bG9jayk74oCdLiBBcyBmYXIgYXMgSSBrbm93LA0KaW5pdGlhbGl6aW5nIGEgdW5pcXVlX2xvY2sg
-d2lsbCBjYWxsIF9tc2dfbG9jay5sb2NrKCksYW5kIF9tc2dfbG9jayBpcyBhDQpzdGQ6Om11dGV4
-LCBfbXNnX2xvY2subG9jaygpIHdpbGwgY2FsbCBwdGhyZWFkX211dGV4X2xvY2soKS4gQWNjb3Jk
-aW5nIHRoZQ0KdG8gdGhlIGVycm9yIG1lc3NhZ2Ug4oCcT3BlcmF0aW9uIG5vdCBwZXJtaXR0ZWTi
-gJ0uIFB0aHJlYWRfbXV0ZXhfbG9jaygpIG11c3QNCnJldHVybiBFUEVSTSwgYW5kIHB0aHJlYWRf
-bXV0ZXhfbG9jayByZXR1cm4gRVBSTSBvbmx5IGlmIHRoZSBtdXRleCBpcyBub3QNCnByb2Nlc3Mt
-c2hhcmVkIGFuZCBkb2VzIG5vdCBiZWxvbmcgdG8gdGhlIGN1cnJlbnQgcHJvY2VzcyBvciB0aGUg
-Y2FsbGVyDQpjb250ZXh0IGlzIGludmFsaWQuDQoNCg0KDQpTbyBteSBxdWVzdGlvbiBpcyB3aHkg
-Y29tcGlsaW5nIGFuZCBydW5uaW5nIHJvcyBvbiB4ZW5vbWFpIHdpbGwgY2F1c2UNCnB0aHJlYWRf
-bXV0ZXhfbG9jaygpIHJldHVybiBFUEVSTT8gRG9lcyBjdXJyZW50IGNhbGxpbmcgY29udGV4dCBp
-cyBpbnZhbGlkID8NCkFuZCBob3cgY2FuIEkgc29sdmUgdGhpcyBwcm9ibGVtLCBkb2VzIGFueWJv
-ZHkgaGF2ZSBhbnkgaW5zaWdodD8gQnkgdGhlIHdheSwNCml04oCZcyBwZXJmZWN0IGZpbmUgdG8g
-Y29tcGlsaW5nIGFuZCBydW5uaW5nIHJvcyBvbiBsaW51eCB3aXRoIHRoZSBzYW1lIGNvZGUuDQoN
-Cg0KDQpUaGFua3MuDQoNCg0KDQotLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0t
-LS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLQ0KDQpyb290QHJvczovaG9tZS9yb3Mvemp3L3Jv
-cy9pbnN0YWxsL3Jvc194ODZfNjQvbGliIyByb3Njb3JlDQoNCnRlcm1pbmF0ZSBjYWxsZWQgYWZ0
-ZXIgdGhyb3dpbmcgYW4gaW5zdGFuY2Ugb2YgJ3N0ZDo6c3lzdGVtX2Vycm9yJw0KDQogd2hhdCgp
-OiAgT3BlcmF0aW9uIG5vdCBwZXJtaXR0ZWQNCg0KQWJvcnRlZCAoY29yZSBkdW1wZWQpDQoNCg0K
-DQoNCg0KKGdkYikgciBgd2hpY2ggcm9zY29yZWANCg0KU3RhcnRpbmcgcHJvZ3JhbTogL3Vzci9i
-aW4vcHl0aG9uIGB3aGljaCByb3Njb3JlYA0KDQpbVGhyZWFkIGRlYnVnZ2luZyB1c2luZyBsaWJ0
-aHJlYWRfZGIgZW5hYmxlZF0NCg0KVXNpbmcgaG9zdCBsaWJ0aHJlYWRfZGIgbGlicmFyeSAiL2xp
-Yi94ODZfNjQtbGludXgtZ251L2xpYnRocmVhZF9kYi5zby4xIi4NCg0KW05ldyBUaHJlYWQgMHg3
-ZmZmZjM1ODY3MDAgKExXUCAyOTMxNSldDQoNCltOZXcgVGhyZWFkIDB4N2ZmZmYyNzliNzAwIChM
-V1AgMjkzMTYpXQ0KDQpbTmV3IFRocmVhZCAweDdmZmZmMWY5YTcwMCAoTFdQIDI5MzE3KV0NCg0K
-W05ldyBUaHJlYWQgMHg3ZmZmZjE3OTk3MDAgKExXUCAyOTMxOCldDQoNCltOZXcgVGhyZWFkIDB4
-N2ZmZmYwZjk4NzAwIChMV1AgMjkzMTkpXQ0KDQpbTmV3IFRocmVhZCAweDdmZmZlM2ZmZjcwMCAo
-TFdQIDI5MzIwKV0NCg0KW05ldyBUaHJlYWQgMHg3ZmZmZTM3ZmU3MDAgKExXUCAyOTMyMSldDQoN
-CltOZXcgVGhyZWFkIDB4N2ZmZmUyZmZkNzAwIChMV1AgMjkzMjIpXQ0KDQp0ZXJtaW5hdGUgY2Fs
-bGVkIGFmdGVyIHRocm93aW5nIGFuIGluc3RhbmNlIG9mICdzdGQ6OnN5c3RlbV9lcnJvcicNCg0K
-IHdoYXQoKTogIE9wZXJhdGlvbiBub3QgcGVybWl0dGVkDQoNCg0KDQpUaHJlYWQgOSAicHl0aG9u
-IiByZWNlaXZlZCBzaWduYWwgU0lHQUJSVCwgQWJvcnRlZC4NCg0KW1N3aXRjaGluZyB0byBUaHJl
-YWQgMHg3ZmZmZTJmZmQ3MDAgKExXUCAyOTMyMildDQoNCjB4MDAwMDdmZmZmNzgyNTQyOCBpbiBf
-X0dJX3JhaXNlIChzaWc9c2lnQGVudHJ5PTYpIGF0DQouLi9zeXNkZXBzL3VuaXgvc3lzdi9saW51
-eC9yYWlzZS5jOjU0DQoNCjU0ICAgICAgLi4vc3lzZGVwcy91bml4L3N5c3YvbGludXgvcmFpc2Uu
-YzogTm8gc3VjaCBmaWxlIG9yIGRpcmVjdG9yeS4NCg0KKGdkYikgYnQNCg0KIzAgIDB4MDAwMDdm
-ZmZmNzgyNTQyOCBpbiBfX0dJX3JhaXNlIChzaWc9c2lnQGVudHJ5PTYpIGF0DQouLi9zeXNkZXBz
-L3VuaXgvc3lzdi9saW51eC9yYWlzZS5jOjU0DQoNCiMxICAweDAwMDA3ZmZmZjc4MjcwMmEgaW4g
-X19HSV9hYm9ydCAoKSBhdCBhYm9ydC5jOjg5DQoNCiMyICAweDAwMDA3ZmZmZjNlNjg4NGQgaW4g
-X19nbnVfY3h4OjpfX3ZlcmJvc2VfdGVybWluYXRlX2hhbmRsZXIgKCkgYXQNCi4uLy4uLy4uLy4u
-L3NyYy9saWJzdGRjKystdjMvbGlic3VwYysrL3Z0ZXJtaW5hdGUuY2M6OTUNCg0KIzMgIDB4MDAw
-MDdmZmZmM2U2NjZiNiBpbiBfX2N4eGFiaXYxOjpfX3Rlcm1pbmF0ZSAoaGFuZGxlcj08b3B0aW1p
-emVkIG91dD4pDQphdCAuLi8uLi8uLi8uLi9zcmMvbGlic3RkYysrLXYzL2xpYnN1cGMrKy9laF90
-ZXJtaW5hdGUuY2M6NDcNCg0KIzQgIDB4MDAwMDdmZmZmM2U2NjcwMSBpbiBzdGQ6OnRlcm1pbmF0
-ZSAoKSBhdA0KLi4vLi4vLi4vLi4vc3JjL2xpYnN0ZGMrKy12My9saWJzdXBjKysvZWhfdGVybWlu
-YXRlLmNjOjU3DQoNCiM1ICAweDAwMDA3ZmZmZjNlNjY5MTkgaW4gX19jeHhhYml2MTo6X19jeGFf
-dGhyb3cNCihvYmo9b2JqQGVudHJ5PTB4N2ZmZmQwMDAxMGQwLCB0aW5mbz0weDdmZmZmNDE0ZWMw
-MCA8dHlwZWluZm8gZm9yDQpzdGQ6OnN5c3RlbV9lcnJvcj4sIGRlc3Q9MHg3ZmZmZjNlOTE2NDAN
-CjxzdGQ6OnN5c3RlbV9lcnJvcjo6fnN5c3RlbV9lcnJvcigpPikNCg0KICAgYXQgLi4vLi4vLi4v
-Li4vc3JjL2xpYnN0ZGMrKy12My9saWJzdXBjKysvZWhfdGhyb3cuY2M6ODcNCg0KIzYgIDB4MDAw
-MDdmZmZmM2U4ZjdmZSBpbiBzdGQ6Ol9fdGhyb3dfc3lzdGVtX2Vycm9yIChfX2k9MSkgYXQNCi4u
-Ly4uLy4uLy4uLy4uL3NyYy9saWJzdGRjKystdjMvc3JjL2MrKzExL2Z1bmN0ZXhjZXB0LmNjOjEy
-Nw0KDQojNyAgMHgwMDAwN2ZmZmY0MTYyNDUxIGluIHN0ZDo6bXV0ZXg6OmxvY2sgKHRoaXM9MHgy
-NWM3MjgwKSBhdA0KL3Vzci9pbmNsdWRlL2MrKy81L211dGV4OjEzOQ0KDQojOCAgc3RkOjp1bmlx
-dWVfbG9jazxzdGQ6Om11dGV4Pjo6bG9jayAodGhpcz0weDdmZmZlMmZmYzMwMCkgYXQNCi91c3Iv
-aW5jbHVkZS9jKysvNS9tdXRleDo0ODUNCg0KIzkgIHN0ZDo6dW5pcXVlX2xvY2s8c3RkOjptdXRl
-eD46OnVuaXF1ZV9sb2NrIChfX209Li4uLCB0aGlzPTB4N2ZmZmUyZmZjMzAwKQ0KYXQgL3Vzci9p
-bmNsdWRlL2MrKy81L211dGV4OjQxNQ0KDQojMTAgcm9zOjpQYXJ0aWNpcGFudDo6cmVhZF9tc2db
-YWJpOmN4eDExXSgpICh0aGlzPTB4MjVjNzIwMCkgYXQNCi9ob21lL3Jvcy96ancvcm9zL3NyYy9y
-b3NfY29tbS9yb3NjcHAvc3JjL2xpYnJvcy9kaXNjb3ZlcnkvcGFydGljaXBhbnQuY3BwOjYyDQoN
-CiMxMSAweDAwMDA3ZmZmZjRiZTkxOTUgaW4gX3dyYXBfUGFydGljaXBhbnRfcmVhZF9tc2cgKCkg
-ZnJvbQ0KL2hvbWUvcm9zL3pqdy9yb3MvaW5zdGFsbC9yb3NfeDg2XzY0L2xpYi9fcGFydGljaXBh
-bnQuc28NCg0KIzEyIDB4MDAwMDAwMDAwMDRiYzNmYSBpbiBQeUV2YWxfRXZhbEZyYW1lRXggKCkN
-Cg0KIzEzIDB4MDAwMDAwMDAwMDRjMTM2ZiBpbiBQeUV2YWxfRXZhbEZyYW1lRXggKCkNCg0KIzE0
-IDB4MDAwMDAwMDAwMDRiOWFiNiBpbiBQeUV2YWxfRXZhbENvZGVFeCAoKQ0KDQojMTUgMHgwMDAw
-MDAwMDAwNGQ1NWYzIGluID8/ICgpDQoNCiMxNiAweDAwMDAwMDAwMDA0YTU3N2UgaW4gUHlPYmpl
-Y3RfQ2FsbCAoKQ0KDQojMTcgMHgwMDAwMDAwMDAwNGJlZDNkIGluIFB5RXZhbF9FdmFsRnJhbWVF
-eCAoKQ0KDQojMTggMHgwMDAwMDAwMDAwNGMxMzZmIGluIFB5RXZhbF9FdmFsRnJhbWVFeCAoKQ0K
-DQojMTkgMHgwMDAwMDAwMDAwNGMxMzZmIGluIFB5RXZhbF9FdmFsRnJhbWVFeCAoKQ0KDQojMjAg
-MHgwMDAwMDAwMDAwNGI5YWI2IGluIFB5RXZhbF9FdmFsQ29kZUV4ICgpDQoNCiMyMSAweDAwMDAw
-MDAwMDA0ZDU0YjkgaW4gPz8gKCkNCg0KIzIyIDB4MDAwMDAwMDAwMDRlZWJlZSBpbiA/PyAoKQ0K
-DQojMjMgMHgwMDAwMDAwMDAwNGE1NzdlIGluIFB5T2JqZWN0X0NhbGwgKCkNCg0KIzI0IDB4MDAw
-MDAwMDAwMDRjNWUxMCBpbiBQeUV2YWxfQ2FsbE9iamVjdFdpdGhLZXl3b3JkcyAoKQ0KDQojMjUg
-MHgwMDAwMDAwMDAwNTg5MTcyIGluID8/ICgpDQoNCiMyNiAweDAwMDA3ZmZmZjdiYzE2YmEgaW4g
-c3RhcnRfdGhyZWFkIChhcmc9MHg3ZmZmZTJmZmQ3MDApIGF0DQpwdGhyZWFkX2NyZWF0ZS5jOjMz
-Mw0KDQojMjcgMHgwMDAwN2ZmZmY3OGY3NDFkIGluIGNsb25lICgpIGF0DQouLi9zeXNkZXBzL3Vu
-aXgvc3lzdi9saW51eC94ODZfNjQvY2xvbmUuUzoxMDkNCg0KKGdkYikNCg0KDQoNCnJvb3RAcm9z
-Oi9ob21lL3Jvcy96ancvcm9zL2luc3RhbGwvcm9zX3g4Nl82NC9saWIjIGdyZXAgLW5ySVQgLWUg
-Il9tc2dfbG9jayINCi9ob21lL3Jvcy96ancvcm9zL3NyYy9yb3NfY29tbS8NCg0KL2hvbWUvcm9z
-L3pqdy9yb3Mvc3JjL3Jvc19jb21tL3Jvc2NwcC9pbmNsdWRlL2Rpc2NvdmVyeS9wYXJ0aWNpcGFu
-dC5oOiAxNDQNCjogIHN0ZDo6bXV0ZXggX21zZ19sb2NrOw0KDQovaG9tZS9yb3Mvemp3L3Jvcy9z
-cmMvcm9zX2NvbW0vcm9zY3BwL3NyYy9saWJyb3MvZGlzY292ZXJ5L3BhcnRpY2lwYW50LmNwcDoN
-CjUzOiAgICBzdGQ6OmxvY2tfZ3VhcmQ8c3RkOjptdXRleD4gbGcoX21zZ19sb2NrKTsNCg0KL2hv
-bWUvcm9zL3pqdy9yb3Mvc3JjL3Jvc19jb21tL3Jvc2NwcC9zcmMvbGlicm9zL2Rpc2NvdmVyeS9w
-YXJ0aWNpcGFudC5jcHA6DQo2MjogIHN0ZDo6dW5pcXVlX2xvY2s8c3RkOjptdXRleD4gdWwoX21z
-Z19sb2NrKTsNCg0KDQoNCi4NCg0KDQoNCl9fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
-X19fX19fX19fX19fX19fDQpYZW5vbWFpIG1haWxpbmcgbGlzdA0KWGVub21haUB4ZW5vbWFpLm9y
-ZzxtYWlsdG86WGVub21haUB4ZW5vbWFpLm9yZz4NCmh0dHBzOi8veGVub21haS5vcmcvbWFpbG1h
-bi9saXN0aW5mby94ZW5vbWFpDQoNCg==
+Hi 
+
+I am trying to read from several DAQ devices (2 National Instruments
+6034E for now, 6 analog inputs on each card) at high frequencies
+(~10kHz) but my computer often locks up when I want to stop the
+acquisition (by calling a4l_snd_cancel and/or a4l_close) but before
+that, everything seems to be running fine. 
+
+I made a simple test program (code below) to check what was causing this
+and it seems related to the sampling period : 10kHz is a guaranteed
+crash on my machine (i5 7600 on an ASUS Prime Z270K, Xenomai 3.0.7,
+kernel 4.9.51), even when reading from just 1 channel on 1 card. 5kHz
+seems fine. 
+
+However, the lock-ups don't happen with a finite number of sample, ie
+when using :
+cmd_desc[i].stop_src = TRIG_COUNT;
+cmd_desc[i].stop_arg = num_samples; 
+
+Am I not using the API properly ? Or is this an expected behavior at
+this sampling rate ? 
+
+Thanks in advance 
+
+-------------------------------- 
+
+Config dump: 
+
+based on Xenomai/cobalt v3.0.7
+CONFIG_MMU=1
+CONFIG_SMP=1
+CONFIG_XENO_BUILD_ARGS=" '--with-core=cobalt' '--enable-smp'
+'--enable-registry' '--enable-assert'"
+CONFIG_XENO_BUILD_STRING="x86_64-pc-linux-gnu"
+CONFIG_XENO_COBALT=1
+CONFIG_XENO_COMPILER="gcc version 5.4.0 20160609 (Ubuntu
+5.4.0-6ubuntu1~16.04.10) "
+CONFIG_XENO_DEFAULT_PERIOD=100000
+CONFIG_XENO_FORTIFY=1
+CONFIG_XENO_HOST_STRING="x86_64-pc-linux-gnu"
+CONFIG_XENO_LORES_CLOCK_DISABLED=1
+CONFIG_XENO_PREFIX="/usr/xenomai"
+CONFIG_XENO_RAW_CLOCK_ENABLED=1
+CONFIG_XENO_REGISTRY=1
+CONFIG_XENO_REGISTRY_ROOT="/var/run/xenomai"
+CONFIG_XENO_REVISION_LEVEL=7
+CONFIG_XENO_SANITY=1
+CONFIG_XENO_TLSF=1
+CONFIG_XENO_TLS_MODEL="initial-exec"
+CONFIG_XENO_UAPI_LEVEL=14
+CONFIG_XENO_VERSION_MAJOR=3
+CONFIG_XENO_VERSION_MINOR=0
+CONFIG_XENO_VERSION_NAME="Lingering Dawn"
+CONFIG_XENO_VERSION_STRING="3.0.7"
+CONFIG_XENO_X86_VSYSCALL=1
+---
+CONFIG_XENO_ASYNC_CANCEL is OFF
+CONFIG_XENO_COPPERPLATE_CLOCK_RESTRICTED is OFF
+CONFIG_XENO_DEBUG is OFF
+CONFIG_XENO_DEBUG_FULL is OFF
+CONFIG_XENO_LIBS_DLOPEN is OFF
+CONFIG_XENO_MERCURY is OFF
+CONFIG_XENO_PSHARED is OFF
+CONFIG_XENO_VALGRIND_API is OFF
+CONFIG_XENO_WORKAROUND_CONDVAR_PI is OFF
+---
+PTHREAD_STACK_DEFAULT=65536
+AUTOMATIC_BOOTSTRAP=1 
+
+Output of lspci: 
+
+04:00.0 Unassigned class [ff00]: National Instruments PCI-6034E
+04:01.0 Unassigned class [ff00]: National Instruments PCI-6034E 
+
+The attach procedure: 
+
+/usr/xenomai/sbin/analogy_config analogy0 analogy_ni_pcimio 4,0
+/usr/xenomai/sbin/analogy_config analogy1 analogy_ni_pcimio 4,1 
+
+My code: 
+
+#include <stdlib.h>
+#include <rtdm/analogy.h>
+#include <alchemy/timer.h>
+
+int main()
+{
+    int ret;
+
+    const unsigned int num_devices = 1;
+    const unsigned int num_channels = 1;
+    const unsigned int num_samples = 50000;
+    const unsigned int daq_period_ns = 100000;
+
+    a4l_desc_t desc[num_devices] = {0};
+    a4l_cmd_desc cmd_desc[num_devices] = {0};
+    uint16_t buf[num_devices][num_samples*num_channels];
+    unsigned int offsets[num_devices] = {0};
+    unsigned int channels[num_devices][num_channels];
+
+    for(unsigned int i = 0; i < num_devices; ++i) {
+        char device_name[32] = {0};
+        sprintf(device_name,"analogy%d",i);
+
+        ret = a4l_open(&desc[i],device_name);
+        if(ret < 0) {
+            printf("a4l_open %s failed (%d).\r\n",device_name,ret);
+            exit(ret);
+        }
+
+        desc[i].sbdata = malloc(desc[i].sbsize);
+
+        ret = a4l_fill_desc(&desc[i]);
+        if(ret < 0) {
+            printf("a4l_fill_desc %s failed (%d).\r\n",device_name,ret);
+            exit(ret);
+        }
+
+        for(unsigned int j = 0; j < num_channels; ++j) {
+            channels[i][j] = PACK(j,0,AREF_GROUND);
+        }
+
+        cmd_desc[i].idx_subd = 0;
+        cmd_desc[i].flags = TRIG_WAKE_EOS;
+        cmd_desc[i].start_src = TRIG_NOW;
+        cmd_desc[i].start_arg = 0;
+        cmd_desc[i].scan_begin_src = TRIG_TIMER;
+        cmd_desc[i].scan_begin_arg = daq_period_ns;
+        cmd_desc[i].convert_src = TRIG_TIMER;
+        cmd_desc[i].convert_arg = 4000;
+        cmd_desc[i].scan_end_src = TRIG_COUNT;
+        cmd_desc[i].scan_end_arg = num_channels;
+        cmd_desc[i].stop_src = TRIG_NONE;
+        cmd_desc[i].stop_arg = 0;
+        cmd_desc[i].nb_chan = num_channels;
+        cmd_desc[i].chan_descs = channels[i];
+
+        a4l_snd_cancel(&desc[i], cmd_desc[i].idx_subd);
+    }
+
+    RTIME start = rt_timer_read();
+
+    for(unsigned int i = 0; i < num_devices; ++i) {
+        ret = a4l_snd_command(&desc[i],&cmd_desc[i]);
+        if(ret < 0) {
+            printf("a4l_snd_command failed on device %d
+(%d).\r\n",i,ret);
+            exit(ret);
+        }
+    }
+
+    bool done = true;
+    do {
+        done = true;
+        for(unsigned int i = 0; i < num_devices; ++i) {
+            ret = a4l_async_read(&desc[i],
+reinterpret_cast<char*>(buf[i])+offsets[i],
+2*num_channels*num_samples-offsets[i], A4L_INFINITE);
+
+            if(ret < 0) {
+                printf("a4l_async_read failed (%d).\r\n",ret);
+                exit(ret);
+            }
+
+            offsets[i] += ret;
+
+            done &= (offsets[i] >= 2*num_samples*num_channels);
+        }
+    } while(!done);
+    RTIME elapsed = rt_timer_read() - start;
+
+    printf("Done in %.2fs. Expected time was
+%.2fs.\r\n",rt_timer_ticks2ns(elapsed)/1000000000.0,num_samples*(daq_period_ns/1000000000.0));
+
+    for(unsigned int i = 0; i < num_devices; ++i) {
+        a4l_snd_cancel(&desc[i], cmd_desc[i].idx_subd);
+        a4l_close(&desc[i]);
+
+        if(desc[i].sbdata) {
+            free(desc[i].sbdata);
+        }
+    }
+
+    return 0;
+}
