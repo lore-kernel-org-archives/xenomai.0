@@ -1,11 +1,15 @@
-MIME-Version: 1.0
-From: Ashok kumar <ashokkumar.bb@gmail.com>
-Date: Tue, 17 Jul 2018 18:31:05 +0530
-Message-ID: <CAFUnMkkuQCr3XO4OYzGucLa5pVJr0YRkpZc+GQ0AUxj9qhz_WQ@mail.gmail.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-Subject: [Xenomai] rt_e1000e is not getting loaded : e1000e: rteth0 NIC Link
- is Up 100 Mbps Full Duplex, Flow Control: None
+In-Reply-To: <a29150bc-11e7-8099-7cca-e900d86fedd1@xenomai.org>
+References: <4568407c.661a.164a6b8171f.Coremail.15084864580@163.com>
+ <a29150bc-11e7-8099-7cca-e900d86fedd1@xenomai.org>
+From: "=?gb18030?B?0tfUwCDD+w==?=" <865740953@qq.com>
+Mime-Version: 1.0
+Date: Wed, 18 Jul 2018 10:08:10 +0800
+Message-ID: <tencent_8A136CEA01022322521FE935ABD1060A1905@qq.com>
+Content-Type: text/plain;
+	charset="gb18030"
+Content-Transfer-Encoding: base64
+Subject: [Xenomai] =?gb18030?q?=BB=D8=B8=B4=A3=BA__About_interrupt_deliver?=
+ =?gb18030?q?y_issues=A3=BF?=
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -14,27 +18,30 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "Xenomai@xenomai.org" <xenomai@xenomai.org>
+To: =?gb18030?B?UGhpbGlwcGUgR2VydW0=?= <rpm@xenomai.org>, =?gb18030?B?0tfUwMP7?= <15084864580@163.com>, =?gb18030?B?eGVub21haQ==?= <xenomai@xenomai.org>
 
-Hi,
-
-I am starting rtnet and using dmesg I get this output
-
-e1000e: rteth0 NIC Link is Up 100 Mbps Full Duplex, Flow Control: None
-[ 2141.574339] rt_e1000e: 10/100 speed: disabling TSO
-
-rt_e1000e is not getting loaded in rteth0
-
-e1000e: rteth0 NIC Link is Up 100 Mbps, e1000e is only getting loaded
-instead of rt_e1000e
-
-I don=E2=80=99t find any difference in eth0 and rteth0,
-
-I am using SOEM ethercat protocol for controlling servo drive and *EL5101*
-| Incremental *encoder* interface
-
-and I am using xenomai-3.07 with linux 4.9.90 patch
-
-can you help to to get load the rt_e1000e.
-
-Thank you
+TXVzdCBiZSBjYWxsZWQgaHcgSVJRcyBvZmYgaXMgYSBoYXJkd2FyZSByZWdpc3RlciB0aGF0
+IHdlIG5lZWQgdG8gbW9kaWZ5LCBvciB4ZW5vbWFpIGhhcyBhIHNwZWNpYWwgZnVuY3Rpb24g
+aW50ZXJmYWNlIHRvIG1ha2UgaXQgbWVldCB0aGUgY29uZGl0aW9ucy4gSXQgd2FzIGZvdW5k
+IHRoYXQgbWFueSBmdW5jdGlvbiBjYWxscyBpbiB4ZW5vbWFpIGxpbWl0IE11c3QgYmUgY2Fs
+bGVkIGh3IElSUXMgb2ZmLiBXaGF0IGlzIHRoZSBpbnRlbnRpb24gaW4gdGhlIG1pZGRsZT8g
+DQpsb29raW5nIGZvcndhcmQgdG8geW91ciByZXBseSwgYmxlc3MgeW91DQoNCg0KDQoNCi0t
+LS0tLS0tLS0tLS0tLS0tLSDUrcq808q8/iAtLS0tLS0tLS0tLS0tLS0tLS0NCreivP7Iyzog
+IlBoaWxpcHBlIEdlcnVtIjxycG1AeGVub21haS5vcmc+OyANCreiy83KsbzkOiAyMDE4xOo3
+1MIxN8jVKNDHxtq2/ikgz8LO5zQ6NTQNCsrVvP7IyzogItLX1MDD+yI8MTUwODQ4NjQ1ODBA
+MTYzLmNvbT47ICJ4ZW5vbWFpIjx4ZW5vbWFpQHhlbm9tYWkub3JnPjsgDQrW98ziOiBSZTog
+W1hlbm9tYWldIEFib3V0IGludGVycnVwdCBkZWxpdmVyeSBpc3N1ZXOjvw0KDQoNCg0KT24g
+MDcvMTcvMjAxOCAwNzozMCBBTSwg0tfUwMP7IHdyb3RlOg0KPiBJbiB0aGUgb2xkIHhlbm9t
+YWkgdmVyc2lvbiwgdGhlIGlwaXBlX3Bhc3NfbWFzayBmbGFnIHdhcyB1c2VkIHRvIHNldCB0
+aGUgaW50ZXJydXB0IGRlbGl2ZXJ5LiBDdXJyZW50bHkgSSBuZWVkIHRvIHRyaWdnZXIgYW4g
+aW50ZXJydXB0IGluIHRoZSB4ZW5vbWFpIGRvbWFpbiwgcmVzcG9uZCBpbiB0aGUgeGVub21h
+aSBkb21haW4sIGFuZCB0aGVuIHBhc3MgaXQgdG8gdGhlIGxpbnV4IGRvbWFpbiBhbmQgdGhl
+biByZXNwb25kLiBUbyB2ZXJpZnkgdGhlIGludGVycnVwdCBkZWxpdmVyeSBmdW5jdGlvbiBv
+ZiBpcGlwZSwgd2hhdCBzaG91bGQgSSBkbz8gTG9va2luZyBmb3J3YXJkIHRvIHlvdXIgcmVw
+bHkhIGJsZXNzIHlvdQ0KDQpyb290OmlwaXBlX3JhaXNlX2lycShpcnEpIC0+IGhlYWQ6aXBp
+cGVfcG9zdF9pcnFfcm9vdChpcnEpIC0+DQpyb290OnZlcmlmeShpcnEpDQoNCmlwaXBlX3Bv
+c3RfaXJxX3Jvb3QoKSBtdXN0IGJlIGNhbGxlZCB3aXRoIGhhcmQgSVJRcyBvZmYsIHdoaWNo
+IGlzIHRoZQ0KY2FzZSB3aGVuIGNhbGxlZCBmcm9tIGEgaGVhZCBzdGFnZSBJUlEgaGFuZGxl
+ci4NCg0KLS0gDQpQaGlsaXBwZS4NCg0KX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
+X19fX19fX19fX19fX19fX18NClhlbm9tYWkgbWFpbGluZyBsaXN0DQpYZW5vbWFpQHhlbm9t
+YWkub3JnDQpodHRwczovL3hlbm9tYWkub3JnL21haWxtYW4vbGlzdGluZm8veGVub21haQ==
