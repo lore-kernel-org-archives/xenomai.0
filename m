@@ -1,18 +1,10 @@
-References: <1529936460-16308-1-git-send-email-gengdongjiu@huawei.com>
- <3c1822ae-c546-fdab-9105-834e0e2b8fd3@xenomai.org>
- <36097679-8641-1f7a-5609-68f520d8d6ea@huawei.com>
- <fc6e924f-7e68-a4b0-a363-8a1db82d948e@xenomai.org>
- <8eb2d272-1561-681c-170b-85d3b4b7dc9a@oss-tech.org>
-From: gengdongjiu <gengdongjiu@huawei.com>
-Message-ID: <d3d8ea09-5401-3539-535a-02d55bda024e@huawei.com>
-Date: Thu, 19 Jul 2018 14:02:43 +0800
+Date: Thu, 19 Jul 2018 16:09:27 +0800 (CST)
+From: paper_tiger <15084864580@163.com>
 MIME-Version: 1.0
-In-Reply-To: <8eb2d272-1561-681c-170b-85d3b4b7dc9a@oss-tech.org>
-Content-Type: text/plain; charset="utf-8"
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] [PATCH] ipipe: arm_arch_timer: correct the wrong
- ipipe_timer setup
+Message-ID: <37624ece.98b8.164b1962f83.Coremail.15084864580@163.com>
+Content-Type: text/plain; charset=GBK
+Content-Transfer-Encoding: base64
+Subject: [Xenomai] =?gbk?q?About_interrupting_pipeline_problems=A3=BF?=
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -21,27 +13,13 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Dmitriy Cherkasov <dmitriy@oss-tech.org>, Philippe Gerum <rpm@xenomai.org>, jan.kiszka@siemens.com, edouard.tisserant@gmail.com, xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-
-
-On 2018/7/19 12:37, Dmitriy Cherkasov wrote:
-> On 06/25/2018 11:19 PM, Philippe Gerum wrote:
->> On 06/26/2018 03:32 AM, gengdongjiu wrote:
->>> Sorry for the noise, I see you just merge to "ipipe-arm" project(https://gitlab.denx.de/Xenomai/ipipe-arm).
->>> the ipipe-arm64" project also needs this patch, because arm arch timer driver is used by both arm32 and arm64 platforms.
->>> thanks.
->>>
->>>
->>
->> Dmitriy is maintaining arm64, CCing him.
->>
-> 
-> Merged, thank you!
-
-Thanks, Dmitriy!
-
-> 
-> 
-
-
+SXBpcGVfcG9zdF9pcnFfcm9vdChpcnEpIGRvZXMgYWxsb3cgYW4gaW50ZXJydXB0IHRvIGNvcnJl
+c3BvbmQgdG8gdGhlIHhlbm9tYWkgZG9tYWluIGFuZCB0aGUgbGludXggZG9tYWluIHJlc3BlY3Rp
+dmVseS4gQnV0IEkgd2FudCB0byB2ZXJpZnkgdGhlIHByaW9yaXR5IG9mIHRoZSBpbnRlcnJ1cHQg
+cGlwZWxpbmUuIFdoYXQgSSB3YW50ZWQgc2hvdWxkIGJlIGFuIGludGVycnVwdGlvbiwgZmlyc3Qg
+aW4gdGhlIGhpZ2gtcHJpb3JpdHkgeGVub21haSBkb21haW4sIHRoZW4gcGFzc2VkIHRvIHRoZSBs
+aW51eCBkb21haW4gYW5kIHRoZW4gcmVzcG9uZGVkLiBTaW1pbGFyIHRvIHRoZSBwcmV2aW91cyB2
+ZXJzaW9uIG9mIElQSVBFX0hBTkRMRV9NQVNLIHwgSVBJUEVfUEFTU19NQVNLLiBCdXQgd2hhdCBz
+aG91bGQgSSBkbyB3aXRoIHRoZSBjdXJyZW50IHZlcnNpb24gb2YgaXBpcGUuIApibGVzcyB5b3U=
