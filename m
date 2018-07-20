@@ -1,12 +1,9 @@
 MIME-Version: 1.0
-In-Reply-To: <425424954.22060203.1532010457838.JavaMail.zimbra@triolcorp.com.ua>
-References: <425424954.22060203.1532010457838.JavaMail.zimbra@triolcorp.com.ua>
-From: Greg Gallagher <greg@embeddedgreg.com>
-Date: Thu, 19 Jul 2018 10:34:12 -0400
-Message-ID: <CALLqZ8QEdWDxp+niLVVB0rCXAmstkDokgMb52Tr1ed5n6RuURw@mail.gmail.com>
+From: Jackson Jones <jackson.jones@gmail.com>
+Date: Fri, 20 Jul 2018 16:28:01 -0700
+Message-ID: <CADXNiGUL514kD3+aHJRRcru8E8Lz3XUd3mDF=ng4xTm4QnoKFA@mail.gmail.com>
 Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: base64
-Subject: Re: [Xenomai] wait for data from RTDM device
+Subject: [Xenomai] Cobalt Scheduling tasks on a single core
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,20 +12,62 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: =?UTF-8?B?0KjQtdCy0YfQtdC90LrQviDQotCw0YDQsNGBINCT0YDQuNCz0L7RgNGM0LXQstC40Yc=?= <shevchenko.taras@triolcorp.com.ua>
-Cc: xenomai <xenomai@xenomai.org>
+To: xenomai@xenomai.org
 
-SGF2ZSB5b3UgdHJpZWQgIHJ0ZG1fdGFza19zbGVlcD8NCg0KLUdyZWcNCg0KT24gVGh1LCBKdWwg
-MTksIDIwMTggYXQgMTA6MjcgQU0sINCo0LXQstGH0LXQvdC60L4g0KLQsNGA0LDRgSDQk9GA0LjQ
-s9C+0YDRjNC10LLQuNGHDQo8c2hldmNoZW5rby50YXJhc0B0cmlvbGNvcnAuY29tLnVhPiB3cm90
-ZToNCj4gR29vZCBkYXkhDQo+IEluIG15IHByb2plY3QgSSB3YW50IHRvIHNlbmQgZGF0YSBieSB1
-c2UgaW9jdGxfcnQgZnVuY3Rpb24NCj4gdGhhbiB3YWl0IDEgbXMgYW5kIHJldHVybiBkYXRhIGZy
-b20gZGV2aWNlIGlmIHByZXNlbnQgb3IgZXJyb3IgaWYgdGltZSBleHBpcmVkDQo+IHdoaWNoIGZ1
-bmN0aW9uIHByZWZlcmUgdG8gdXNlID8NCj4gSSBmb3VuZCBydGRtX3Rhc2tfYnVzeV93YWl0IGJ1
-dCBubyBleGFtcGxlcyB0byB1c2UgaXQsIHNvIEltIG5vdCBzaHVyZQ0KPiBwbGVhc2UgZ2l2ZSBt
-ZSBhbiBhZHZpY2UNCj4gVGhhbmsgeW91DQo+DQo+INChINGD0LLQsNC20LXQvdC40LXQvCDQuCDQ
-vdCw0LTQtdC20LTQvtC5INC90LAg0YHQvtGC0YDRg9C00L3QuNGH0LXRgdGC0LLQviwNCj4g0KjQ
-tdCy0YfQtdC90LrQviDQoi7Qky4NCj4gX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
-X19fX19fX19fX19fX18NCj4gWGVub21haSBtYWlsaW5nIGxpc3QNCj4gWGVub21haUB4ZW5vbWFp
-Lm9yZw0KPiBodHRwczovL3hlbm9tYWkub3JnL21haWxtYW4vbGlzdGluZm8veGVub21haQ0K
+We are running against xenomai 3.0.7 on a quad core arm (i.mx6).  Xenomai
+was configured with these arguments:
 
+#export CFLAGS=-O2 LIBS=-lposix
+./configure \
+    --with-core=cobalt \
+    --enable-smp \
+    --enable-registry \
+    --enable-pshared \
+    --enable-dlopen-libs \
+    --enable-sanity \
+    --disable-tls \
+    --enable-valgrind-client \
+    --disable-assert
+
+The main app spawns off several real time tasks. Cobalt is scheduling all
+the real-time tasks on one core. Is this normal behavior for Cobalt? I
+would expect it to take advantage of the multiple cores.
+
+Is there some incorrect configuration causing Cobalt to do this? Any
+insight would be helpful.
+
+While running the application:
+
+cat /proc/xenomai/sched/stat reports all tasks are running on the same CPU
+core.
+
+Sample output:
+CPU  PID    MSW        CSW        XSC        PF    STAT       %CPU  NAME
+  0  0      0          14173      0          0     00018000  100.0  [ROOT/0]
+  1  0      0          69132      0          0     00018000  100.0  [ROOT/1]
+  2  0      0          4306       0          0     00018000   98.1  [ROOT/2]
+  3  0      0          0          0          0     00018000  100.0  [ROOT/3]
+  2  8385   80         90         374        0     000680c0    0.0
+xenomai_test_ap
+  2  8388   10         10         49         0     000600c0    0.0  sysregd
+  2  8390   1          1          2          0     000600c0    0.0  sysregd
+  2  8393   1          1          2          0     000600c0    0.0
+xenomai_test_ap
+  2  8396   5          1046       1054       1     00048044    0.0  test
+task 1
+  2  8397   4          1045       1036       1     00048044    1.7  test
+task 2
+  2  8398   4          48         56         1     00048044    0.1  test
+task 3
+  2  8399   3          111        117        0     00048044    0.0  test
+task 4
+  2  8400   3          213        221        0     00048044    0.0  test
+task 5
+  0  0      0          120613     0          0     00000000    0.0  [IRQ16:
+[timer]]
+  1  0      0          142865     0          0     00000000    0.0  [IRQ16:
+[timer]]
+  2  0      0          46776      0          0     00000000    0.0  [IRQ16:
+[timer]]
+  3  0      0          37592      0          0     00000000    0.0  [IRQ16:
+[timer]]
