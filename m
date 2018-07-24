@@ -1,10 +1,10 @@
+From: Leopold Palomo-Avellaneda <leo@alaxarxa.net>
+Message-ID: <a80d9e75-9c00-d86a-c351-3c2889115542@alaxarxa.net>
+Date: Tue, 24 Jul 2018 17:11:59 +0200
 MIME-Version: 1.0
-From: Ashok kumar <ashokkumar.bb@gmail.com>
-Date: Tue, 24 Jul 2018 18:22:06 +0530
-Message-ID: <CAFUnMkn_+VVe63etwY7x917idQ6EODQ9WmykGrcPoimAg=NjDQ@mail.gmail.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-Subject: [Xenomai] task sleep time is getting added when I move my mouse
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+Subject: [Xenomai] Build order options
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,110 +15,110 @@ List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: "Xenomai@xenomai.org" <xenomai@xenomai.org>
 
-Hi,
-
-I mention below a sample code of my project using soem I use the task
-function as below.
-
-ret4 =3D rt_task_create(&Dc_Pll_task, "Dc_time_Pll_task", 0, 99, 0);
-
-
-void Dc_time_Pll_function()
-{
-
-     struct timespec   ts, tleft;
-
-     static int64 integral =3D 0;
-
-     int64 sec, nsec,delta, cycletime=3D1000000;
-
-     clock_gettime(CLOCK_MONOTONIC, &ts);
-     while(1)
-     {
-             previous1 =3D rt_timer_read();   //read time
-
-             input_ek1818  =3D (Ek1818_data_inputt *)
-ec_slave[slave_pos_beck_digitalIO].inputs;//struct
-pointers to slave I/O pointers inputs//
-             output_ek1818 =3D (Ek1818_data_outputt*) ec_slave[slave_pos_be=
-ck_
-digitalIO].outputs;
-             in_EL5101     =3D (in_EL5101t*) ec_slave[slave_pos_beck_
-encoderinterface].inputs;
-             out_EL5101    =3D (out_EL5101t*) ec_slave[slave_pos_beck_
-encoderinterface].outputs;
-
-             nsec =3D (cycletime + offsettime) % NSEC_PER_SEC;
-             sec  =3D ((cycletime + offsettime) - nsec) / NSEC_PER_SEC;
-
-             ts.tv_sec +=3D sec;
-             ts.tv_nsec +=3D nsec;
-
-             if (ts.tv_nsec >=3D NSEC_PER_SEC )
-             {
-               nsec =3D ts.tv_nsec % NSEC_PER_SEC;
-               ts.tv_sec +=3D (ts.tv_nsec - nsec) / NSEC_PER_SEC;
-               ts.tv_nsec =3D nsec;
-             }
-             clock_nanosleep(CLOCK_MONOTONIC, TIMER_ABSTIME, &ts,
-&tleft);
-           // Loop user code here
-
-        if (ec_slave[0].hasdc)
-            {
-          //ec_Dctime is the system time synchronised with Ethercat
-slave
-              delta =3D (ec_DCtime -(cycletime/4)) % cycletime;
-                  if(delta > (cycletime / 2))
-                  {
-                       delta=3D delta - cycletime;
-                  }
-
-                 if(delta>0)
-                  {
-                       integral++;
-                  }
-
-                 if(delta<0)
-                  {
-                      integral--;
-                  }
-                  offsettime =3D -(delta / 100) - (integral / 20);
-            }
-
-    }
-}
-
-and I am using clock_nanosleep(CLOCK_MONOTONIC, TIMER_ABSTIME, &ts,
-&tleft);     to wait for a time untill the sleep wakes up this routine
-works good,
-
-but when I move a mouse the clock_nanosleep(CLOCK_MONOTONIC, TIMER_ABSTIME,
-&ts, &tleft);  gets some amount of microsecond added then, and my ethercat
-slave loss frame but the slave is synchronised with master.
-
-
-can anybody solve the problem such that when I move my mouse or keyboard
-clock_nanosleep(CLOCK_MONOTONIC, TIMER_ABSTIME, &ts, &tleft);  nanosleep
-time should not get jumped or time get added to it so that
-
-
-I dont loss any ethercat frames.
-
-ret4 =3D rt_task_create(&Dc_Pll_task, "Dc_time_Pll_task", 0, 99, 0);
-and the task priority I set is high.
-
-
-Thank you
-
-R. Ashokkumar
-
-
-
-
-
-=E2=80=8C
-<https://mailtrack.io/> Sent with Mailtrack
-<https://chrome.google.com/webstore/detail/mailtrack-for-gmail-inbox/ndnaeh=
-gpjlnokgebbaldlmgkapkpjkkb?utm_source=3Dgmail&utm_medium=3Dsignature&utm_ca=
-mpaign=3Dsignaturevirality>
+SGksCgpJIGhhdmUgYW4gc3RyYW5nZSBwcm9ibGVtIGFuZCBJIHdvdWxkIGxpa2UgdG8gYXNrIGlm
+IHNvbWUgY2xldmVyIG1pbmQKY2FuIGhlbHAgbWUuCgpJJ20gdHJ5aW5nIHRvIGJ1aWxkIHdpdGgg
+Y21ha2UgKHRoaXMgc3RvcnkgaXMgZm9yIGFub3RoZXIgbWFpbCkgYSBzaW1wbGUKZXhhbXBsZSBb
+MV0gd2l0aCB4ZW5vbWFpIDMuMC43LiBJIGhhdmUgc29tZSBjdXN0b20gbWFjcm9zIHRoYXQgYmFz
+aWNhbGx5CnVzZXMgdGhlIGluZm9ybWF0aW9uIGZyb20geGVuby1jb25maWcuCgpJIGNhbiBidWls
+ZCBhbmQgcnVuIHRoZSBleGFtcGxlIHdpdGggdGhlIE1ha2VmaWxlIGJlbG93IGluIHRoZSBlbWFp
+bC4gSXQKanVzdCB3b3Jrcy4KCk5hcnJvd2luZyB0aGUgcHJvYmxlbSBJIGhhdmUgb2J0YWluZWQg
+dGhlIGV4YWN0bHkgY2FsbCBtYWRlIGJ5IHRoZQpNYWtlZmlsZSBjcmVhdGVkIGJ5IGNtYWtlLiBJ
+dCBjb21waWxlcyB0aGUgZmlsZSB1c2luZzoKCiQgL3Vzci9iaW4vY2MgICAtSS91c3IvaW5jbHVk
+ZS94ZW5vbWFpL3RyYW5rCi1JL3Vzci9pbmNsdWRlL3hlbm9tYWkvY29iYWx0IC1JL3Vzci9pbmNs
+dWRlL3hlbm9tYWkKLUkvdXNyL2luY2x1ZGUveGVub21haS9hbGNoZW15ICAtRF9fWEVOT19DT01Q
+QVRfXyAtZyAtTzIKLWZkZWJ1Zy1wcmVmaXgtbWFwPS9idWlsZC94ZW5vbWFpLTMuMC43K2RzMT0u
+IC1mc3RhY2stcHJvdGVjdG9yLXN0cm9uZwotV2Zvcm1hdCAtV2Vycm9yPWZvcm1hdC1zZWN1cml0
+eSAtV2RhdGUtdGltZSAtRF9GT1JUSUZZX1NPVVJDRT0yCi1mbm8tb21pdC1mcmFtZS1wb2ludGVy
+IC1EX0dOVV9TT1VSQ0UgLURfUkVFTlRSQU5UCi1mYXN5bmNocm9ub3VzLXVud2luZC10YWJsZXMg
+LURfX0NPQkFMVF9fIC1vCkNNYWtlRmlsZXMvcnRwcmludC5kaXIvcnRwcmludC5jLm8gICAtYwov
+aG9tZS9sZW9wb2xkLnBhbG9tby94ZW5vbWFpL2NtYWtlL3NyYy9uYXRpdmUvcnRwcmludC5jCgoK
+YW5kIGxpbmtzIHRoZSBmaWxlIHVzaW5nOgoKJCAvdXNyL2Jpbi9jYyAgICAtV2wsLS1uby1hcy1u
+ZWVkZWQKLVdsLEAvdXNyL2xpYi94ODZfNjQtbGludXgtZ251L21vZGVjaGsud3JhcHBlcnMKL3Vz
+ci9saWIveDg2XzY0LWxpbnV4LWdudS94ZW5vbWFpL2Jvb3RzdHJhcC5vIC1XbCwtLXdyYXA9bWFp
+bgotV2wsLS1keW5hbWljLWxpc3Q9L3Vzci9saWIveDg2XzY0LWxpbnV4LWdudS9keW5saXN0Lmxk
+IC1XbCwteixyZWxybwotV2wsLXosbm93IC1XbCwtLWFzLW5lZWRlZCAtcHRocmVhZCBDTWFrZUZp
+bGVzL3J0cHJpbnQuZGlyL3J0cHJpbnQuYy5vCi1vIHJ0cHJpbnQgLXJkeW5hbWljIC1sdHJhbmsg
+LWxhbGNoZW15IC1sY29wcGVycGxhdGUgLWxjb2JhbHQgLWxtb2RlY2hrCi1scHRocmVhZCAtbHJ0
+IC1sZnVzZQoKClVzaW5nIHRoZSBNYWtlZmlsZSBhdHRhY2hlZCwgdG8gY29tcGlsZSwgbWFrZSBj
+YWxsIGdjYyB3aXRoOgoKJCBtYWtlIHJ0cHJpbnQubwpnY2MgLWMgLW8gcnRwcmludC5vIHJ0cHJp
+bnQuYyAtSS91c3IvaW5jbHVkZS94ZW5vbWFpL3RyYW5rCi1EX19YRU5PX0NPTVBBVF9fIC1JL3Vz
+ci9pbmNsdWRlL3hlbm9tYWkvY29iYWx0IC1JL3Vzci9pbmNsdWRlL3hlbm9tYWkKLWcgLU8yIC1m
+ZGVidWctcHJlZml4LW1hcD0vYnVpbGQveGVub21haS0zLjAuNytkczE9LgotZnN0YWNrLXByb3Rl
+Y3Rvci1zdHJvbmcgLVdmb3JtYXQgLVdlcnJvcj1mb3JtYXQtc2VjdXJpdHkgLVdkYXRlLXRpbWUK
+LURfRk9SVElGWV9TT1VSQ0U9MiAtZm5vLW9taXQtZnJhbWUtcG9pbnRlciAtRF9HTlVfU09VUkNF
+IC1EX1JFRU5UUkFOVAotZmFzeW5jaHJvbm91cy11bndpbmQtdGFibGVzIC1EX19DT0JBTFRfXyAt
+SS91c3IvaW5jbHVkZS94ZW5vbWFpL2FsY2hlbXkKCmFuZCBsaW5rIHdpdGg6CgokIG1ha2UgcnRw
+cmludApnY2MgLW8gcnRwcmludCBydHByaW50Lm8gLVdsLC0tbm8tYXMtbmVlZGVkIC1sdHJhbmsK
+LVdsLEAvdXNyL2xpYi94ODZfNjQtbGludXgtZ251L21vZGVjaGsud3JhcHBlcnMgLWxhbGNoZW15
+IC1sY29wcGVycGxhdGUKL3Vzci9saWIveDg2XzY0LWxpbnV4LWdudS94ZW5vbWFpL2Jvb3RzdHJh
+cC5vIC1XbCwtLXdyYXA9bWFpbgotV2wsLS1keW5hbWljLWxpc3Q9L3Vzci9saWIveDg2XzY0LWxp
+bnV4LWdudS9keW5saXN0LmxkCi1ML3Vzci9saWIveDg2XzY0LWxpbnV4LWdudSAtbGNvYmFsdCAt
+bG1vZGVjaGsgLWxwdGhyZWFkIC1scnQKLVdsLC16LHJlbHJvIC1XbCwteixub3cgLVdsLC0tYXMt
+bmVlZGVkICAgLWxmdXNlIC1wdGhyZWFkCgoKVGhlIGJ1aWxkIHJlc3VsdCBtYWRlIGJ5IENNYWtl
+IGlzOiBydHByaW50ICgyNDgxNiBieXRlcykgYW5kIHJ0cHJpbnQubwooMTY0MDggYnl0ZXMpCgpU
+aGUgYnVpbGQgcmVzdWx0IG1ha2UgdXNpbmcgdGhlIG1ha2VmaWxlOiBydHByaW50ICgyNDcyMCBi
+eXRlcykgYW5kCnJ0cHJpbnQubyAoMTYzMTIgYnl0ZXMpLgoKSWYgSSBjYWxsIHRoZSBnY2MgZGly
+ZWN0bHkgSSBvYnRhaW4gdGhlIHNhbWUgYnl0ZXMuIFRoZSBkaWZmZXJlbmNlIGlzCnRoZSBzdG9y
+ZWQgcGF0aC4gSWYgSSBzdHJpcCB0aGUgZXhlY3V0YWJsZXMgdGhlIHNpemUgaXMgdGhlIHNhbWUg
+KDEwMjI0CmJ5dGVzKSBidXQgYmluYXJpZXMgZGlmZmVyLgoKQnV0LCBhbmQgaGVyZSBpcyB0aGUg
+cHJvYmxlbS4gSWYgSSBydW4gdGhlIGNtYWtlIHByb2R1Y3QgSSBvYnRhaW46CgovcnRwcmludAou
+L3J0cHJpbnQ6IHN5bWJvbCBsb29rdXAgZXJyb3I6Ci91c3IvbGliL3g4Nl82NC1saW51eC1nbnUv
+bGliY29wcGVycGxhdGUuc28uMDogdW5kZWZpbmVkIHN5bWJvbDoKX19yZWFsX21hbGxvYwoKCmFu
+ZCB0aGUgcHJvZHVjZWQgd2l0aCBtYWtlIHJ1bnMuCgpUaGUgcHJvZHVjZWQgdXNpbmcgY21ha2Ug
+aGFzOgoKJCBsZGQgcnRwcmludAoJbGludXgtdmRzby5zby4xICgweDAwMDA3ZmZkMGUxZTEwMDAp
+CglsaWJ0cmFuay5zby4wID0+IC91c3IvbGliL3g4Nl82NC1saW51eC1nbnUvbGlidHJhbmsuc28u
+MAooMHgwMDAwN2Y3YjVkZWM5MDAwKQoJbGliYWxjaGVteS5zby4wID0+IC91c3IvbGliL3g4Nl82
+NC1saW51eC1nbnUvbGliYWxjaGVteS5zby4wCigweDAwMDA3ZjdiNWRjYjcwMDApCglsaWJjb3Bw
+ZXJwbGF0ZS5zby4wID0+IC91c3IvbGliL3g4Nl82NC1saW51eC1nbnUvbGliY29wcGVycGxhdGUu
+c28uMAooMHgwMDAwN2Y3YjVkYTlmMDAwKQoJbGliY29iYWx0LnNvLjIgPT4gL3Vzci9saWIveDg2
+XzY0LWxpbnV4LWdudS9saWJjb2JhbHQuc28uMgooMHgwMDAwN2Y3YjVkODdkMDAwKQoJbGliZnVz
+ZS5zby4yID0+IC9saWIveDg2XzY0LWxpbnV4LWdudS9saWJmdXNlLnNvLjIgKDB4MDAwMDdmN2I1
+ZDYzZjAwMCkKCWxpYnB0aHJlYWQuc28uMCA9PiAvbGliL3g4Nl82NC1saW51eC1nbnUvbGlicHRo
+cmVhZC5zby4wCigweDAwMDA3ZjdiNWQ0MjIwMDApCglsaWJjLnNvLjYgPT4gL2xpYi94ODZfNjQt
+bGludXgtZ251L2xpYmMuc28uNiAoMHgwMDAwN2Y3YjVkMDgzMDAwKQoJL2xpYjY0L2xkLWxpbnV4
+LXg4Ni02NC5zby4yICgweDAwMDA3ZjdiNWUyZDAwMDApCglsaWJydC5zby4xID0+IC9saWIveDg2
+XzY0LWxpbnV4LWdudS9saWJydC5zby4xICgweDAwMDA3ZjdiNWNlN2IwMDApCglsaWJkbC5zby4y
+ID0+IC9saWIveDg2XzY0LWxpbnV4LWdudS9saWJkbC5zby4yICgweDAwMDA3ZjdiNWNjNzcwMDAp
+CgoKYW5kIHdpdGggbWFrZQoKJCBsZGQgcnRwcmludAoJbGludXgtdmRzby5zby4xICgweDAwMDA3
+ZmZmZmNmZTIwMDApCglsaWJ0cmFuay5zby4wID0+IC91c3IvbGliL3g4Nl82NC1saW51eC1nbnUv
+bGlidHJhbmsuc28uMAooMHgwMDAwN2Y2MjEzMDRmMDAwKQoJbGliYWxjaGVteS5zby4wID0+IC91
+c3IvbGliL3g4Nl82NC1saW51eC1nbnUvbGliYWxjaGVteS5zby4wCigweDAwMDA3ZjYyMTJlM2Qw
+MDApCglsaWJjb3BwZXJwbGF0ZS5zby4wID0+IC91c3IvbGliL3g4Nl82NC1saW51eC1nbnUvbGli
+Y29wcGVycGxhdGUuc28uMAooMHgwMDAwN2Y2MjEyYzI1MDAwKQoJbGliY29iYWx0LnNvLjIgPT4g
+L3Vzci9saWIveDg2XzY0LWxpbnV4LWdudS9saWJjb2JhbHQuc28uMgooMHgwMDAwN2Y2MjEyYTAz
+MDAwKQoJbGlibW9kZWNoay5zby4wID0+IC91c3IvbGliL3g4Nl82NC1saW51eC1nbnUvbGlibW9k
+ZWNoay5zby4wCigweDAwMDA3ZjYyMTI4MDEwMDApCglsaWJwdGhyZWFkLnNvLjAgPT4gL2xpYi94
+ODZfNjQtbGludXgtZ251L2xpYnB0aHJlYWQuc28uMAooMHgwMDAwN2Y2MjEyNWU0MDAwKQoJbGli
+cnQuc28uMSA9PiAvbGliL3g4Nl82NC1saW51eC1nbnUvbGlicnQuc28uMSAoMHgwMDAwN2Y2MjEy
+M2RjMDAwKQoJbGliZnVzZS5zby4yID0+IC9saWIveDg2XzY0LWxpbnV4LWdudS9saWJmdXNlLnNv
+LjIgKDB4MDAwMDdmNjIxMjE5ZTAwMCkKCWxpYmMuc28uNiA9PiAvbGliL3g4Nl82NC1saW51eC1n
+bnUvbGliYy5zby42ICgweDAwMDA3ZjYyMTFkZmYwMDApCgkvbGliNjQvbGQtbGludXgteDg2LTY0
+LnNvLjIgKDB4MDAwMDdmNjIxMzQ1NjAwMCkKCWxpYmRsLnNvLjIgPT4gL2xpYi94ODZfNjQtbGlu
+dXgtZ251L2xpYmRsLnNvLjIgKDB4MDAwMDdmNjIxMWJmYjAwMCkKCgpwYXkgYXR0ZW50aW9uIHRo
+YXQgZmlyc3Qgb25lIGlzIG5vdCBsaW5rZWQgYWdhaW5zdCBsaWJtb2RlY2hrLCBhbHRob3VnaApp
+cyBzcGVjaWZpZWQgaW4gdGhlIGNhbGwuCgoKSSBoYXZlIG5vdCBmb3VuZCBhbnkgZGlmZmVyZW5j
+ZSwgb25seSB0aGUgb3JkZXIsIHNvIEkgYW0gcmVhbGx5Cm92ZXJ3aGVsbWVkLiBBbnkgaWRlYT8K
+CgpCZXN0IHJlZ2FyZHMsCgoKTGVvcG9sZAoKCgpNYWtlZmlsZQotLS0tLS0tLS0tLS0tLS0tLS0t
+LS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tCiMjIyMjIyBD
+T05GSUdVUkFUSU9OICMjIyMjIwoKIyMjIExpc3Qgb2YgYXBwbGljYXRpb25zIHRvIGJlIGJ1aWxk
+CkFQUExJQ0FUSU9OUyA9IHJ0cHJpbnQKCiMjIyBEZWZhdWx0IFhlbm9tYWkgaW5zdGFsbGF0aW9u
+IHBhdGgKWEVOTyA/PSAvdXNyL3hlbm9tYWkKClhFTk9DT05GSUc9JChzaGVsbCBQQVRIPSQoWEVO
+Tyk6JChYRU5PKS9iaW46JChQQVRIKSB3aGljaCB4ZW5vLWNvbmZpZwoyPi9kZXYvbnVsbCkKCkND
+PSQoc2hlbGwgJChYRU5PQ09ORklHKSAtLWNjKQoKQ0ZMQUdTPSQoc2hlbGwgJChYRU5PQ09ORklH
+KSAtLXNraW49bmF0aXZlIC0tY2ZsYWdzKQoKTERGTEFHUz0kKHNoZWxsICQoWEVOT0NPTkZJRykg
+LS1za2luPW5hdGl2ZSAtLWxkZmxhZ3MpCgolLm86ICUuYwoJJChDQykgLWMgLW8gJEAgJDwgJChD
+RkxBR1MpCgpydHByaW50OiBydHByaW50Lm8KCSQoQ0MpIC1vICRAIHJ0cHJpbnQubyAkKExERkxB
+R1MpCgpjbGVhbjoKCSQoUk0pICQoQVBQTElDQVRJT05TKSAqLm8KCmFsbDogJChBUFBMSUNBVElP
+TlMpCi0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0t
+LS0tLS0tLS0tLS0tLS0KCgpbMV0KaHR0cHM6Ly9naXRsYWIuZGVueC5kZS9YZW5vbWFpL3hlbm9t
+YWkvYmxvYi9lb2wvdjIuNi54L2V4YW1wbGVzL25hdGl2ZS9ydHByaW50LmMKCi0tIAotLQpMaW51
+eCBVc2VyIDE1MjY5MiAgICAgR1BHOiAwNUY0QTdBOTQ5QTJEOUFBCkNhdGFsb25pYQotLS0tLS0t
+LS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tCkE6IEJlY2F1c2UgaXQgbWVzc2VzIHVwIHRo
+ZSBvcmRlciBpbiB3aGljaCBwZW9wbGUgbm9ybWFsbHkgcmVhZCB0ZXh0LgpROiBXaHkgaXMgdG9w
+LXBvc3Rpbmcgc3VjaCBhIGJhZCB0aGluZz8KQTogVG9wLXBvc3RpbmcuClE6IFdoYXQgaXMgdGhl
+IG1vc3QgYW5ub3lpbmcgdGhpbmcgaW4gZS1tYWlsPwoKLS0tLS0tLS0tLS0tLS0gbmV4dCBwYXJ0
+IC0tLS0tLS0tLS0tLS0tCkEgbm9uLXRleHQgYXR0YWNobWVudCB3YXMgc2NydWJiZWQuLi4KTmFt
+ZTogc2lnbmF0dXJlLmFzYwpUeXBlOiBhcHBsaWNhdGlvbi9wZ3Atc2lnbmF0dXJlClNpemU6IDgz
+MyBieXRlcwpEZXNjOiBPcGVuUEdQIGRpZ2l0YWwgc2lnbmF0dXJlClVSTDogPGh0dHA6Ly94ZW5v
+bWFpLm9yZy9waXBlcm1haWwveGVub21haS9hdHRhY2htZW50cy8yMDE4MDcyNC9jMDJmMGIxMC9h
+dHRhY2htZW50LnNpZz4K
