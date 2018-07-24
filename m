@@ -1,7 +1,7 @@
 MIME-Version: 1.0
 From: Ashok kumar <ashokkumar.bb@gmail.com>
-Date: Tue, 24 Jul 2018 18:18:39 +0530
-Message-ID: <CAFUnMkk+sHYi9oHYuVELc3kJzaBok0W=afaKkhXYvvNX4yS-OQ@mail.gmail.com>
+Date: Tue, 24 Jul 2018 18:22:06 +0530
+Message-ID: <CAFUnMkn_+VVe63etwY7x917idQ6EODQ9WmykGrcPoimAg=NjDQ@mail.gmail.com>
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 Subject: [Xenomai] task sleep time is getting added when I move my mouse
@@ -18,7 +18,10 @@ To: "Xenomai@xenomai.org" <xenomai@xenomai.org>
 Hi,
 
 I mention below a sample code of my project using soem I use the task
-function as below
+function as below.
+
+ret4 =3D rt_task_create(&Dc_Pll_task, "Dc_time_Pll_task", 0, 99, 0);
+
 
 void Dc_time_Pll_function()
 {
@@ -35,14 +38,15 @@ void Dc_time_Pll_function()
              previous1 =3D rt_timer_read();   //read time
 
              input_ek1818  =3D (Ek1818_data_inputt *)
-ec_slave[slave_pos_beck_digitalIO].inputs;//struct pointers to slave I/O
-pointers inputs//
-             output_ek1818 =3D (Ek1818_data_outputt*)
-ec_slave[slave_pos_beck_digitalIO].outputs;
-             in_EL5101     =3D (in_EL5101t*)
-ec_slave[slave_pos_beck_encoderinterface].inputs;
-             out_EL5101    =3D (out_EL5101t*)
-ec_slave[slave_pos_beck_encoderinterface].outputs;
+ec_slave[slave_pos_beck_digitalIO].inputs;//struct
+pointers to slave I/O pointers inputs//
+             output_ek1818 =3D (Ek1818_data_outputt*) ec_slave[slave_pos_be=
+ck_
+digitalIO].outputs;
+             in_EL5101     =3D (in_EL5101t*) ec_slave[slave_pos_beck_
+encoderinterface].inputs;
+             out_EL5101    =3D (out_EL5101t*) ec_slave[slave_pos_beck_
+encoderinterface].outputs;
 
              nsec =3D (cycletime + offsettime) % NSEC_PER_SEC;
              sec  =3D ((cycletime + offsettime) - nsec) / NSEC_PER_SEC;
@@ -98,12 +102,16 @@ can anybody solve the problem such that when I move my mouse or keyboard
 clock_nanosleep(CLOCK_MONOTONIC, TIMER_ABSTIME, &ts, &tleft);  nanosleep
 time should not get jumped or time get added to it so that
 
+
 I dont loss any ethercat frames.
+
+ret4 =3D rt_task_create(&Dc_Pll_task, "Dc_time_Pll_task", 0, 99, 0);
+and the task priority I set is high.
+
 
 Thank you
 
 R. Ashokkumar
-
 
 
 
