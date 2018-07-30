@@ -1,10 +1,11 @@
-From: Leopold Palomo-Avellaneda <leo@alaxarxa.net>
-Message-ID: <a80d9e75-9c00-d86a-c351-3c2889115542@alaxarxa.net>
-Date: Tue, 24 Jul 2018 17:11:59 +0200
+From: Philippe Gerum <rpm@xenomai.org>
+Message-ID: <9807836c-9287-10a7-52bf-6b5947c87699@xenomai.org>
+Date: Mon, 30 Jul 2018 20:10:17 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Subject: [Xenomai] Build order options
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+Subject: [Xenomai] I-pipe split series
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -13,112 +14,94 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "Xenomai@xenomai.org" <xenomai@xenomai.org>
+To: "Xenomai@xenomai.org" <Xenomai@xenomai.org>
+Cc: "Seeger, Steven D. (GSFC-444.0)[Embedded Flight Systems,
+ Inc]" <steven.seeger@nasa.gov>, "Kiszka, Jan" <jan.kiszka@siemens.com>
 
-SGksCgpJIGhhdmUgYW4gc3RyYW5nZSBwcm9ibGVtIGFuZCBJIHdvdWxkIGxpa2UgdG8gYXNrIGlm
-IHNvbWUgY2xldmVyIG1pbmQKY2FuIGhlbHAgbWUuCgpJJ20gdHJ5aW5nIHRvIGJ1aWxkIHdpdGgg
-Y21ha2UgKHRoaXMgc3RvcnkgaXMgZm9yIGFub3RoZXIgbWFpbCkgYSBzaW1wbGUKZXhhbXBsZSBb
-MV0gd2l0aCB4ZW5vbWFpIDMuMC43LiBJIGhhdmUgc29tZSBjdXN0b20gbWFjcm9zIHRoYXQgYmFz
-aWNhbGx5CnVzZXMgdGhlIGluZm9ybWF0aW9uIGZyb20geGVuby1jb25maWcuCgpJIGNhbiBidWls
-ZCBhbmQgcnVuIHRoZSBleGFtcGxlIHdpdGggdGhlIE1ha2VmaWxlIGJlbG93IGluIHRoZSBlbWFp
-bC4gSXQKanVzdCB3b3Jrcy4KCk5hcnJvd2luZyB0aGUgcHJvYmxlbSBJIGhhdmUgb2J0YWluZWQg
-dGhlIGV4YWN0bHkgY2FsbCBtYWRlIGJ5IHRoZQpNYWtlZmlsZSBjcmVhdGVkIGJ5IGNtYWtlLiBJ
-dCBjb21waWxlcyB0aGUgZmlsZSB1c2luZzoKCiQgL3Vzci9iaW4vY2MgICAtSS91c3IvaW5jbHVk
-ZS94ZW5vbWFpL3RyYW5rCi1JL3Vzci9pbmNsdWRlL3hlbm9tYWkvY29iYWx0IC1JL3Vzci9pbmNs
-dWRlL3hlbm9tYWkKLUkvdXNyL2luY2x1ZGUveGVub21haS9hbGNoZW15ICAtRF9fWEVOT19DT01Q
-QVRfXyAtZyAtTzIKLWZkZWJ1Zy1wcmVmaXgtbWFwPS9idWlsZC94ZW5vbWFpLTMuMC43K2RzMT0u
-IC1mc3RhY2stcHJvdGVjdG9yLXN0cm9uZwotV2Zvcm1hdCAtV2Vycm9yPWZvcm1hdC1zZWN1cml0
-eSAtV2RhdGUtdGltZSAtRF9GT1JUSUZZX1NPVVJDRT0yCi1mbm8tb21pdC1mcmFtZS1wb2ludGVy
-IC1EX0dOVV9TT1VSQ0UgLURfUkVFTlRSQU5UCi1mYXN5bmNocm9ub3VzLXVud2luZC10YWJsZXMg
-LURfX0NPQkFMVF9fIC1vCkNNYWtlRmlsZXMvcnRwcmludC5kaXIvcnRwcmludC5jLm8gICAtYwov
-aG9tZS9sZW9wb2xkLnBhbG9tby94ZW5vbWFpL2NtYWtlL3NyYy9uYXRpdmUvcnRwcmludC5jCgoK
-YW5kIGxpbmtzIHRoZSBmaWxlIHVzaW5nOgoKJCAvdXNyL2Jpbi9jYyAgICAtV2wsLS1uby1hcy1u
-ZWVkZWQKLVdsLEAvdXNyL2xpYi94ODZfNjQtbGludXgtZ251L21vZGVjaGsud3JhcHBlcnMKL3Vz
-ci9saWIveDg2XzY0LWxpbnV4LWdudS94ZW5vbWFpL2Jvb3RzdHJhcC5vIC1XbCwtLXdyYXA9bWFp
-bgotV2wsLS1keW5hbWljLWxpc3Q9L3Vzci9saWIveDg2XzY0LWxpbnV4LWdudS9keW5saXN0Lmxk
-IC1XbCwteixyZWxybwotV2wsLXosbm93IC1XbCwtLWFzLW5lZWRlZCAtcHRocmVhZCBDTWFrZUZp
-bGVzL3J0cHJpbnQuZGlyL3J0cHJpbnQuYy5vCi1vIHJ0cHJpbnQgLXJkeW5hbWljIC1sdHJhbmsg
-LWxhbGNoZW15IC1sY29wcGVycGxhdGUgLWxjb2JhbHQgLWxtb2RlY2hrCi1scHRocmVhZCAtbHJ0
-IC1sZnVzZQoKClVzaW5nIHRoZSBNYWtlZmlsZSBhdHRhY2hlZCwgdG8gY29tcGlsZSwgbWFrZSBj
-YWxsIGdjYyB3aXRoOgoKJCBtYWtlIHJ0cHJpbnQubwpnY2MgLWMgLW8gcnRwcmludC5vIHJ0cHJp
-bnQuYyAtSS91c3IvaW5jbHVkZS94ZW5vbWFpL3RyYW5rCi1EX19YRU5PX0NPTVBBVF9fIC1JL3Vz
-ci9pbmNsdWRlL3hlbm9tYWkvY29iYWx0IC1JL3Vzci9pbmNsdWRlL3hlbm9tYWkKLWcgLU8yIC1m
-ZGVidWctcHJlZml4LW1hcD0vYnVpbGQveGVub21haS0zLjAuNytkczE9LgotZnN0YWNrLXByb3Rl
-Y3Rvci1zdHJvbmcgLVdmb3JtYXQgLVdlcnJvcj1mb3JtYXQtc2VjdXJpdHkgLVdkYXRlLXRpbWUK
-LURfRk9SVElGWV9TT1VSQ0U9MiAtZm5vLW9taXQtZnJhbWUtcG9pbnRlciAtRF9HTlVfU09VUkNF
-IC1EX1JFRU5UUkFOVAotZmFzeW5jaHJvbm91cy11bndpbmQtdGFibGVzIC1EX19DT0JBTFRfXyAt
-SS91c3IvaW5jbHVkZS94ZW5vbWFpL2FsY2hlbXkKCmFuZCBsaW5rIHdpdGg6CgokIG1ha2UgcnRw
-cmludApnY2MgLW8gcnRwcmludCBydHByaW50Lm8gLVdsLC0tbm8tYXMtbmVlZGVkIC1sdHJhbmsK
-LVdsLEAvdXNyL2xpYi94ODZfNjQtbGludXgtZ251L21vZGVjaGsud3JhcHBlcnMgLWxhbGNoZW15
-IC1sY29wcGVycGxhdGUKL3Vzci9saWIveDg2XzY0LWxpbnV4LWdudS94ZW5vbWFpL2Jvb3RzdHJh
-cC5vIC1XbCwtLXdyYXA9bWFpbgotV2wsLS1keW5hbWljLWxpc3Q9L3Vzci9saWIveDg2XzY0LWxp
-bnV4LWdudS9keW5saXN0LmxkCi1ML3Vzci9saWIveDg2XzY0LWxpbnV4LWdudSAtbGNvYmFsdCAt
-bG1vZGVjaGsgLWxwdGhyZWFkIC1scnQKLVdsLC16LHJlbHJvIC1XbCwteixub3cgLVdsLC0tYXMt
-bmVlZGVkICAgLWxmdXNlIC1wdGhyZWFkCgoKVGhlIGJ1aWxkIHJlc3VsdCBtYWRlIGJ5IENNYWtl
-IGlzOiBydHByaW50ICgyNDgxNiBieXRlcykgYW5kIHJ0cHJpbnQubwooMTY0MDggYnl0ZXMpCgpU
-aGUgYnVpbGQgcmVzdWx0IG1ha2UgdXNpbmcgdGhlIG1ha2VmaWxlOiBydHByaW50ICgyNDcyMCBi
-eXRlcykgYW5kCnJ0cHJpbnQubyAoMTYzMTIgYnl0ZXMpLgoKSWYgSSBjYWxsIHRoZSBnY2MgZGly
-ZWN0bHkgSSBvYnRhaW4gdGhlIHNhbWUgYnl0ZXMuIFRoZSBkaWZmZXJlbmNlIGlzCnRoZSBzdG9y
-ZWQgcGF0aC4gSWYgSSBzdHJpcCB0aGUgZXhlY3V0YWJsZXMgdGhlIHNpemUgaXMgdGhlIHNhbWUg
-KDEwMjI0CmJ5dGVzKSBidXQgYmluYXJpZXMgZGlmZmVyLgoKQnV0LCBhbmQgaGVyZSBpcyB0aGUg
-cHJvYmxlbS4gSWYgSSBydW4gdGhlIGNtYWtlIHByb2R1Y3QgSSBvYnRhaW46CgovcnRwcmludAou
-L3J0cHJpbnQ6IHN5bWJvbCBsb29rdXAgZXJyb3I6Ci91c3IvbGliL3g4Nl82NC1saW51eC1nbnUv
-bGliY29wcGVycGxhdGUuc28uMDogdW5kZWZpbmVkIHN5bWJvbDoKX19yZWFsX21hbGxvYwoKCmFu
-ZCB0aGUgcHJvZHVjZWQgd2l0aCBtYWtlIHJ1bnMuCgpUaGUgcHJvZHVjZWQgdXNpbmcgY21ha2Ug
-aGFzOgoKJCBsZGQgcnRwcmludAoJbGludXgtdmRzby5zby4xICgweDAwMDA3ZmZkMGUxZTEwMDAp
-CglsaWJ0cmFuay5zby4wID0+IC91c3IvbGliL3g4Nl82NC1saW51eC1nbnUvbGlidHJhbmsuc28u
-MAooMHgwMDAwN2Y3YjVkZWM5MDAwKQoJbGliYWxjaGVteS5zby4wID0+IC91c3IvbGliL3g4Nl82
-NC1saW51eC1nbnUvbGliYWxjaGVteS5zby4wCigweDAwMDA3ZjdiNWRjYjcwMDApCglsaWJjb3Bw
-ZXJwbGF0ZS5zby4wID0+IC91c3IvbGliL3g4Nl82NC1saW51eC1nbnUvbGliY29wcGVycGxhdGUu
-c28uMAooMHgwMDAwN2Y3YjVkYTlmMDAwKQoJbGliY29iYWx0LnNvLjIgPT4gL3Vzci9saWIveDg2
-XzY0LWxpbnV4LWdudS9saWJjb2JhbHQuc28uMgooMHgwMDAwN2Y3YjVkODdkMDAwKQoJbGliZnVz
-ZS5zby4yID0+IC9saWIveDg2XzY0LWxpbnV4LWdudS9saWJmdXNlLnNvLjIgKDB4MDAwMDdmN2I1
-ZDYzZjAwMCkKCWxpYnB0aHJlYWQuc28uMCA9PiAvbGliL3g4Nl82NC1saW51eC1nbnUvbGlicHRo
-cmVhZC5zby4wCigweDAwMDA3ZjdiNWQ0MjIwMDApCglsaWJjLnNvLjYgPT4gL2xpYi94ODZfNjQt
-bGludXgtZ251L2xpYmMuc28uNiAoMHgwMDAwN2Y3YjVkMDgzMDAwKQoJL2xpYjY0L2xkLWxpbnV4
-LXg4Ni02NC5zby4yICgweDAwMDA3ZjdiNWUyZDAwMDApCglsaWJydC5zby4xID0+IC9saWIveDg2
-XzY0LWxpbnV4LWdudS9saWJydC5zby4xICgweDAwMDA3ZjdiNWNlN2IwMDApCglsaWJkbC5zby4y
-ID0+IC9saWIveDg2XzY0LWxpbnV4LWdudS9saWJkbC5zby4yICgweDAwMDA3ZjdiNWNjNzcwMDAp
-CgoKYW5kIHdpdGggbWFrZQoKJCBsZGQgcnRwcmludAoJbGludXgtdmRzby5zby4xICgweDAwMDA3
-ZmZmZmNmZTIwMDApCglsaWJ0cmFuay5zby4wID0+IC91c3IvbGliL3g4Nl82NC1saW51eC1nbnUv
-bGlidHJhbmsuc28uMAooMHgwMDAwN2Y2MjEzMDRmMDAwKQoJbGliYWxjaGVteS5zby4wID0+IC91
-c3IvbGliL3g4Nl82NC1saW51eC1nbnUvbGliYWxjaGVteS5zby4wCigweDAwMDA3ZjYyMTJlM2Qw
-MDApCglsaWJjb3BwZXJwbGF0ZS5zby4wID0+IC91c3IvbGliL3g4Nl82NC1saW51eC1nbnUvbGli
-Y29wcGVycGxhdGUuc28uMAooMHgwMDAwN2Y2MjEyYzI1MDAwKQoJbGliY29iYWx0LnNvLjIgPT4g
-L3Vzci9saWIveDg2XzY0LWxpbnV4LWdudS9saWJjb2JhbHQuc28uMgooMHgwMDAwN2Y2MjEyYTAz
-MDAwKQoJbGlibW9kZWNoay5zby4wID0+IC91c3IvbGliL3g4Nl82NC1saW51eC1nbnUvbGlibW9k
-ZWNoay5zby4wCigweDAwMDA3ZjYyMTI4MDEwMDApCglsaWJwdGhyZWFkLnNvLjAgPT4gL2xpYi94
-ODZfNjQtbGludXgtZ251L2xpYnB0aHJlYWQuc28uMAooMHgwMDAwN2Y2MjEyNWU0MDAwKQoJbGli
-cnQuc28uMSA9PiAvbGliL3g4Nl82NC1saW51eC1nbnUvbGlicnQuc28uMSAoMHgwMDAwN2Y2MjEy
-M2RjMDAwKQoJbGliZnVzZS5zby4yID0+IC9saWIveDg2XzY0LWxpbnV4LWdudS9saWJmdXNlLnNv
-LjIgKDB4MDAwMDdmNjIxMjE5ZTAwMCkKCWxpYmMuc28uNiA9PiAvbGliL3g4Nl82NC1saW51eC1n
-bnUvbGliYy5zby42ICgweDAwMDA3ZjYyMTFkZmYwMDApCgkvbGliNjQvbGQtbGludXgteDg2LTY0
-LnNvLjIgKDB4MDAwMDdmNjIxMzQ1NjAwMCkKCWxpYmRsLnNvLjIgPT4gL2xpYi94ODZfNjQtbGlu
-dXgtZ251L2xpYmRsLnNvLjIgKDB4MDAwMDdmNjIxMWJmYjAwMCkKCgpwYXkgYXR0ZW50aW9uIHRo
-YXQgZmlyc3Qgb25lIGlzIG5vdCBsaW5rZWQgYWdhaW5zdCBsaWJtb2RlY2hrLCBhbHRob3VnaApp
-cyBzcGVjaWZpZWQgaW4gdGhlIGNhbGwuCgoKSSBoYXZlIG5vdCBmb3VuZCBhbnkgZGlmZmVyZW5j
-ZSwgb25seSB0aGUgb3JkZXIsIHNvIEkgYW0gcmVhbGx5Cm92ZXJ3aGVsbWVkLiBBbnkgaWRlYT8K
-CgpCZXN0IHJlZ2FyZHMsCgoKTGVvcG9sZAoKCgpNYWtlZmlsZQotLS0tLS0tLS0tLS0tLS0tLS0t
-LS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tCiMjIyMjIyBD
-T05GSUdVUkFUSU9OICMjIyMjIwoKIyMjIExpc3Qgb2YgYXBwbGljYXRpb25zIHRvIGJlIGJ1aWxk
-CkFQUExJQ0FUSU9OUyA9IHJ0cHJpbnQKCiMjIyBEZWZhdWx0IFhlbm9tYWkgaW5zdGFsbGF0aW9u
-IHBhdGgKWEVOTyA/PSAvdXNyL3hlbm9tYWkKClhFTk9DT05GSUc9JChzaGVsbCBQQVRIPSQoWEVO
-Tyk6JChYRU5PKS9iaW46JChQQVRIKSB3aGljaCB4ZW5vLWNvbmZpZwoyPi9kZXYvbnVsbCkKCkND
-PSQoc2hlbGwgJChYRU5PQ09ORklHKSAtLWNjKQoKQ0ZMQUdTPSQoc2hlbGwgJChYRU5PQ09ORklH
-KSAtLXNraW49bmF0aXZlIC0tY2ZsYWdzKQoKTERGTEFHUz0kKHNoZWxsICQoWEVOT0NPTkZJRykg
-LS1za2luPW5hdGl2ZSAtLWxkZmxhZ3MpCgolLm86ICUuYwoJJChDQykgLWMgLW8gJEAgJDwgJChD
-RkxBR1MpCgpydHByaW50OiBydHByaW50Lm8KCSQoQ0MpIC1vICRAIHJ0cHJpbnQubyAkKExERkxB
-R1MpCgpjbGVhbjoKCSQoUk0pICQoQVBQTElDQVRJT05TKSAqLm8KCmFsbDogJChBUFBMSUNBVElP
-TlMpCi0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0t
-LS0tLS0tLS0tLS0tLS0KCgpbMV0KaHR0cHM6Ly9naXRsYWIuZGVueC5kZS9YZW5vbWFpL3hlbm9t
-YWkvYmxvYi9lb2wvdjIuNi54L2V4YW1wbGVzL25hdGl2ZS9ydHByaW50LmMKCi0tIAotLQpMaW51
-eCBVc2VyIDE1MjY5MiAgICAgR1BHOiAwNUY0QTdBOTQ5QTJEOUFBCkNhdGFsb25pYQotLS0tLS0t
-LS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tCkE6IEJlY2F1c2UgaXQgbWVzc2VzIHVwIHRo
-ZSBvcmRlciBpbiB3aGljaCBwZW9wbGUgbm9ybWFsbHkgcmVhZCB0ZXh0LgpROiBXaHkgaXMgdG9w
-LXBvc3Rpbmcgc3VjaCBhIGJhZCB0aGluZz8KQTogVG9wLXBvc3RpbmcuClE6IFdoYXQgaXMgdGhl
-IG1vc3QgYW5ub3lpbmcgdGhpbmcgaW4gZS1tYWlsPwoKLS0tLS0tLS0tLS0tLS0gbmV4dCBwYXJ0
-IC0tLS0tLS0tLS0tLS0tCkEgbm9uLXRleHQgYXR0YWNobWVudCB3YXMgc2NydWJiZWQuLi4KTmFt
-ZTogc2lnbmF0dXJlLmFzYwpUeXBlOiBhcHBsaWNhdGlvbi9wZ3Atc2lnbmF0dXJlClNpemU6IDgz
-MyBieXRlcwpEZXNjOiBPcGVuUEdQIGRpZ2l0YWwgc2lnbmF0dXJlClVSTDogPGh0dHA6Ly94ZW5v
-bWFpLm9yZy9waXBlcm1haWwveGVub21haS9hdHRhY2htZW50cy8yMDE4MDcyNC9jMDJmMGIxMC9h
-dHRhY2htZW50LnNpZz4K
+
+The generic I-pipe code is now available as a series of incremental
+commits at [1] on top of the 4.14.58 kernel. This allows to port the
+I-pipe patch gradually, first to enable IRQ pipelining per se, then add
+the bits required for co-managing tasks between the regular kernel and
+the co-kernel, which builds on the former. Most patches have gained a
+description in their respective short log, which added to
+Documentation/ipipe.rst, should help clarifying the process of porting
+the pipeline.
+
+While I was at it, I did a pre-port of the x86 patch to kernel 4.14.58,
+which has been useful for validating the split series. I hope this will
+help the x86 maintainers to clear that hurdle eventually.
+
+The whole pile of patches went through countless incremental builds over
+multiple configurations, and tedious manual fixups over a few weeks.
+However, there is room for issues, given the amount of code involved,
+and the varying configurations one can apply. If you find any problem
+with that split series, please report them here so that we fix them.
+
+Please note that those trees are rebased from time to time.
+
+== Generic changes
+
+- select HAVE_IPIPE_SUPPORT is needed from the arch-code (Kconfig) to
+enable the generic I-pipe bits. This way we can have an incremental
+build, without requiring the arch-code to be present in the commit stack
+for testing generic changes.
+
+- Likewise, select HAVE_IPIPE_TRACER_SUPPORT is needed from the
+arch-code when the tracer is available. Only ARM needs this currently,
+due to the TSC emulation support we need to provide there to get
+timestamps which is not part of the ARM-specific pipeline core. x86 and
+ppc32 have their own tsc/timebase readily available when the core bits
+are in.
+
+- __ipipe_init_threadflags() now receives struct thread_info *. To be
+updated in the arch-specific bits.
+
+== x86
+
+The basic port available at [2] boots over KVM and a couple of real hw I
+have here, x86_64 only, x86_32 is untested and likely not complete -
+although little should be left. It enables the interrupt pipeline, but
+has not been checked against Xenomai, since FPU support is not there (*).
+
+Some changes have been made compared to earlier x86 patch releases,
+building on reasonable assumptions - I believe - to make it simpler. The
+resulting patch is only a proposal, whether the suggested changes are
+kept or dropped by the x86 maintainers won't impact the -noarch tree.
+
+- dropped "select best clocksource for timings". This was only used for
+enabling the i8253 on x86_32. We assume the TSC is fine there too for
+the hw we want to support (constant, precise etc), timings with the
+ancient i8253 are crappy anyway. This is why we don't need to patch the
+PCSPEAKER code anymore either.
+
+- arch/x86/include/asm/preempt.h not instrumented anymore with
+ipipe_preempt_root_only() since we don't support legacy I-pipe contexts
+(i.e. regular task stacks are required, no hand-crafted kernel thread
+stacks as a la Xenomai 2.6).
+
+- __ipipe_trap_prologue() was rewritten in a saner way, building on
+several assumptions we may make since we don't have to care about
+CONFIG_IPIPE_LEGACY anymore (e.g. no foreign stacks etc).
+
+- LOCKDEP + IPIPE is almost available; there is still a warning produced
+by the lock validation engine due to a missing/mispaced trace_irq_on
+instrumentation in the asm entry code when pipelining is enabled, but
+the overall picture looks fairly sane already. A few additional fixups
+might be needed when we start traversing the asm entry code from the
+head domain though.
+
+(*) regarding FPU support, I would suggest to reuse the regular
+switch_to() interface for x86. I don't think that open coding context
+switching bits in the Xenomai core makes any sense these days, with the
+KPTI dance and Spectre mitigation code all around, stack protector
+instrumentation etc.
+
+Thanks,
+
+[1] https://gitlab.denx.de/Xenomai/ipipe-noarch.git, 4.14-split
+[2] https://gitlab.denx.de/Xenomai/ipipe-x86.git, wip/4.14-split
+
+-- 
+Philippe.
+
