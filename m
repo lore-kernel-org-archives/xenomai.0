@@ -1,10 +1,12 @@
-Date: Wed, 08 Aug 2018 07:12:18 -0400
-Message-ID: <dcqod1d4ju4sjjl1d9q0fhov.1533726738829@embeddedgreg.com>
-From: Greg Gallagher <greg@embeddedgreg.com>
-In-Reply-To: <CAK+-5=KE5pa1NUE4VY0uEVLH1+2P3dtbGWOBk9YxWLmAa16Juw@mail.gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: base64
+References: <CAK+-5=KE5pa1NUE4VY0uEVLH1+2P3dtbGWOBk9YxWLmAa16Juw@mail.gmail.com>
+ <dcqod1d4ju4sjjl1d9q0fhov.1533726738829@embeddedgreg.com>
+In-Reply-To: <dcqod1d4ju4sjjl1d9q0fhov.1533726738829@embeddedgreg.com>
+Reply-To: mophong@gmail.com
+From: Ho Tam <mophong@gmail.com>
+Date: Thu, 9 Aug 2018 00:41:43 +0900
+Message-ID: <CAK+-5=L5_xoXskX2ZOww5zj=2=Ou2COwcsH=7MkfRcQ6y2dwuA@mail.gmail.com>
+Content-Type: text/plain; charset="UTF-8"
 Subject: Re: [Xenomai] Xenomai on Raspberry pi 2,
  3 - Userspace task is interrupted?
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
@@ -15,35 +17,92 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Ho Tam <mophong@gmail.com>, xenomai <xenomai@xenomai.org>
+To: greg@embeddedgreg.com
+Cc: xenomai@xenomai.org
 
-CkhvdyBhcmUgeW91IHNldHRpbmcgdXAgdGhlIGdwaW8gcmVhZCBhbmQgd3JpdGU/IElzIGl0IHBv
-c3NpYmxlIHRvIHBvc3QgYSBjb2RlIHNuaXBwZXQgZm9yIHRoZSByZWFkIGFuZCB3cml0ZT8KCkdy
-ZWcKCsKgIE9yaWdpbmFsIE1lc3NhZ2UgwqAKRnJvbTogbW9waG9uZ0BnbWFpbC5jb20KU2VudDog
-QXVndXN0IDgsIDIwMTggNjo0NSBBTQpUbzogeGVub21haUB4ZW5vbWFpLm9yZwpSZXBseS10bzog
-bW9waG9uZ0BnbWFpbC5jb20KU3ViamVjdDogW1hlbm9tYWldIFhlbm9tYWkgb24gUmFzcGJlcnJ5
-IHBpIDIsIDMgLSBVc2Vyc3BhY2UgdGFzayBpcyBpbnRlcnJ1cHRlZD8KCkhlbGxvIGFsbCwKSSBt
-YWtlIGEgc2ltcGxlIGNvZGUgdG8gbWVhc3VyZSBwcm9jZXNzIHRpbWUgb24gUmFzcGJlcnJ5IHBp
-IDAsMSwyLDMgbGlrZToKCiogcHJldmlvdXMgPSBydF90aW1lcl9yZWFkKCk7KgoqIGZvciAoaT0w
-OyBpPDUwMDsgKytpKSoKKiB7KgoqIGJjbTI4MzVfZ3Bpb193cml0ZShURVNUX1BJTiwgSElHSCk7
-KgoqIGJjbTI4MzVfZ3Bpb193cml0ZShURVNUX1BJTiwgTE9XKTsqCiogfSoKKiBub3cgPSBydF90
-aW1lcl9yZWFkKCk7KgoqIHByb2Nlc3NfdGltZSA9IChsb25nKSAobm93IC0gcHJldmlvdXMpOyoK
-KiBpZiAocHJvY2Vzc190aW1lPndvcnN0X3RpbWUpKgoqIHdvcnN0X3RpbWU9cHJvY2Vzc190aW1l
-OyoKCkFuZCBJIHJlc3VsdCBhZnRlciBzZXZlcmFsIGhvdXJzIHJ1bm5pbmc6CnJwacKgwqDCoMKg
-wqDCoMKgwqDCoMKgIHByb2Nlc3NfdGltZSAodXMpwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgIHdv
-cnN0X3RpbWUgKHVzKQowLDHCoMKgwqDCoMKgwqDCoMKgwqDCoCB+MTAwwqDCoMKgwqDCoMKgwqDC
-oMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKg
-IDExNQoyLDPCoMKgwqDCoMKgwqDCoMKgwqDCoCB+OTDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDC
-oMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqAgMzcz
-CgpJdCBpcyBjbGVhciB0aGF0IHByb2Nlc3MgdGltZSBvbiBycGkyLDMgaXMgc2hvcnRlciB0aGFu
-IHRoYXQgb24gcnBpMCwxIGR1ZQp0byBoaWdoZXIgc3BlZWQgQ1BVLiBIb3dldmVyLCBJIGRvbid0
-IHVuZGVyc3RhbmQgd2h5IHdvcnN0IGNhc2Ugb24gcnBpMiwzCmlzIG11Y2ggbGFyZ2VyIHRoYW4g
-dGhhdCBvbiBycGkwLDEuIEkgaGF2ZSByZXBlYXRlZCB0aGlzIHRlc3Qgb24gYm90aAp4ZW5vbWFp
-IDIgYW5kIDMsIGtlcm5lbMKgIDQuMSBhbmQgNC45IChvbmx5IHhlbm9tYWkgMyBpbiB0aGlzIGNh
-c2UpIGFuZCB3aXRoCmRpZmZlcmVudCB0YXNrIHByaW9yaXR5LCB0aGUgcmVzdWx0IGlzIHF1aXRl
-IGNvbnNpc3RlbnQuCkRvZXMgYW55b25lIGhhdmUgZXhwbGFuYXRpb24gYW5kIHNvbHV0aW9uPwpU
-aGFua3MgYW5kIHJlZ2FyZHMsCl9fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
-X19fX19fX19fClhlbm9tYWkgbWFpbGluZyBsaXN0Clhlbm9tYWlAeGVub21haS5vcmcKaHR0cHM6
-Ly94ZW5vbWFpLm9yZy9tYWlsbWFuL2xpc3RpbmZvL3hlbm9tYWkK
+I used bcm2835 library for test, that library is implemented using memory
+map (mmap). You may check its copied code here:
+https://github.com/smart-facility/bcm2835/tree/master/src
+The function I used  bcm2835_gpio_write:
+void bcm2835_gpio_write(uint8_t pin, uint8_t on)
+{
+    if (on)
+bcm2835_gpio_set(pin);
+    else
+bcm2835_gpio_clr(pin);
+}
+
+I have also tested by direct using of bcm2835_gpio_set and bcm2835_gpio_clr
+fucntions, but result was same as previous test:
+for (i=0; i<500; ++i)
+{
+bcm2835_gpio_set(TEST_PIN);
+bcm2835_gpio_clr(TEST_PIN);
+}
+
+Since functions in bcm2835 library usually call many other functions, I
+have also implemented my own gpio library which directly read/write value
+to GPSET and GPCLR:
+for (i=0; i<3000; ++i)
+{
+*(rpi_gpio_mem_base+7) =(1<<TEST_PIN);    //rpi_gpio_mem_base+7 ~ GPSET0
+*(rpi_gpio_mem_base+10) =(1<<TEST_PIN);  //rpi_gpio_mem_base+10 ~ GPCLR0
+}
+Here rpi_gpio_mem_base has been initialized with mmap before. In this case,
+both process time and worst time reduce (for sure). But again, worst time
+on rpi2,3 is larger than 350% process time, while for rpi0,1 worst time ~
+120% process time.
+Regards,
 
 
+On Wed, Aug 8, 2018 at 8:12 PM Greg Gallagher <greg@embeddedgreg.com> wrote:
+
+>
+> How are you setting up the gpio read and write? Is it possible to post a
+> code snippet for the read and write?
+>
+> Greg
+>
+>   Original Message
+> From: mophong@gmail.com
+> Sent: August 8, 2018 6:45 AM
+> To: xenomai@xenomai.org
+> Reply-to: mophong@gmail.com
+> Subject: [Xenomai] Xenomai on Raspberry pi 2, 3 - Userspace task is
+> interrupted?
+>
+> Hello all,
+> I make a simple code to measure process time on Raspberry pi 0,1,2,3 like:
+>
+> * previous = rt_timer_read();*
+> * for (i=0; i<500; ++i)*
+> * {*
+> * bcm2835_gpio_write(TEST_PIN, HIGH);*
+> * bcm2835_gpio_write(TEST_PIN, LOW);*
+> * }*
+> * now = rt_timer_read();*
+> * process_time = (long) (now - previous);*
+> * if (process_time>worst_time)*
+> * worst_time=process_time;*
+>
+> And I result after several hours running:
+> rpi           process_time (us)             worst_time (us)
+> 0,1           ~100                                     115
+> 2,3           ~90                                        373
+>
+> It is clear that process time on rpi2,3 is shorter than that on rpi0,1 due
+> to higher speed CPU. However, I don't understand why worst case on rpi2,3
+> is much larger than that on rpi0,1. I have repeated this test on both
+> xenomai 2 and 3, kernel  4.1 and 4.9 (only xenomai 3 in this case) and with
+> different task priority, the result is quite consistent.
+> Does anyone have explanation and solution?
+> Thanks and regards,
+> _______________________________________________
+> Xenomai mailing list
+> Xenomai@xenomai.org
+> https://xenomai.org/mailman/listinfo/xenomai
+>
+
+
+-- 
+http://www.mophong.com
