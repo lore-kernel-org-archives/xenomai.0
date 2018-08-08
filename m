@@ -1,10 +1,11 @@
+Date: Wed, 08 Aug 2018 07:12:18 -0400
+Message-ID: <dcqod1d4ju4sjjl1d9q0fhov.1533726738829@embeddedgreg.com>
+From: Greg Gallagher <greg@embeddedgreg.com>
+In-Reply-To: <CAK+-5=KE5pa1NUE4VY0uEVLH1+2P3dtbGWOBk9YxWLmAa16Juw@mail.gmail.com>
 MIME-Version: 1.0
-Reply-To: mophong@gmail.com
-From: Ho Tam <mophong@gmail.com>
-Date: Wed, 8 Aug 2018 19:44:51 +0900
-Message-ID: <CAK+-5=KE5pa1NUE4VY0uEVLH1+2P3dtbGWOBk9YxWLmAa16Juw@mail.gmail.com>
-Content-Type: text/plain; charset="UTF-8"
-Subject: [Xenomai] Xenomai on Raspberry pi 2,
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: base64
+Subject: Re: [Xenomai] Xenomai on Raspberry pi 2,
  3 - Userspace task is interrupted?
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
@@ -14,31 +15,35 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
+To: Ho Tam <mophong@gmail.com>, xenomai <xenomai@xenomai.org>
 
-Hello all,
-I make a simple code to measure process time on Raspberry pi 0,1,2,3 like:
+CkhvdyBhcmUgeW91IHNldHRpbmcgdXAgdGhlIGdwaW8gcmVhZCBhbmQgd3JpdGU/IElzIGl0IHBv
+c3NpYmxlIHRvIHBvc3QgYSBjb2RlIHNuaXBwZXQgZm9yIHRoZSByZWFkIGFuZCB3cml0ZT8KCkdy
+ZWcKCsKgIE9yaWdpbmFsIE1lc3NhZ2UgwqAKRnJvbTogbW9waG9uZ0BnbWFpbC5jb20KU2VudDog
+QXVndXN0IDgsIDIwMTggNjo0NSBBTQpUbzogeGVub21haUB4ZW5vbWFpLm9yZwpSZXBseS10bzog
+bW9waG9uZ0BnbWFpbC5jb20KU3ViamVjdDogW1hlbm9tYWldIFhlbm9tYWkgb24gUmFzcGJlcnJ5
+IHBpIDIsIDMgLSBVc2Vyc3BhY2UgdGFzayBpcyBpbnRlcnJ1cHRlZD8KCkhlbGxvIGFsbCwKSSBt
+YWtlIGEgc2ltcGxlIGNvZGUgdG8gbWVhc3VyZSBwcm9jZXNzIHRpbWUgb24gUmFzcGJlcnJ5IHBp
+IDAsMSwyLDMgbGlrZToKCiogcHJldmlvdXMgPSBydF90aW1lcl9yZWFkKCk7KgoqIGZvciAoaT0w
+OyBpPDUwMDsgKytpKSoKKiB7KgoqIGJjbTI4MzVfZ3Bpb193cml0ZShURVNUX1BJTiwgSElHSCk7
+KgoqIGJjbTI4MzVfZ3Bpb193cml0ZShURVNUX1BJTiwgTE9XKTsqCiogfSoKKiBub3cgPSBydF90
+aW1lcl9yZWFkKCk7KgoqIHByb2Nlc3NfdGltZSA9IChsb25nKSAobm93IC0gcHJldmlvdXMpOyoK
+KiBpZiAocHJvY2Vzc190aW1lPndvcnN0X3RpbWUpKgoqIHdvcnN0X3RpbWU9cHJvY2Vzc190aW1l
+OyoKCkFuZCBJIHJlc3VsdCBhZnRlciBzZXZlcmFsIGhvdXJzIHJ1bm5pbmc6CnJwacKgwqDCoMKg
+wqDCoMKgwqDCoMKgIHByb2Nlc3NfdGltZSAodXMpwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgIHdv
+cnN0X3RpbWUgKHVzKQowLDHCoMKgwqDCoMKgwqDCoMKgwqDCoCB+MTAwwqDCoMKgwqDCoMKgwqDC
+oMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKg
+IDExNQoyLDPCoMKgwqDCoMKgwqDCoMKgwqDCoCB+OTDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDC
+oMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqAgMzcz
+CgpJdCBpcyBjbGVhciB0aGF0IHByb2Nlc3MgdGltZSBvbiBycGkyLDMgaXMgc2hvcnRlciB0aGFu
+IHRoYXQgb24gcnBpMCwxIGR1ZQp0byBoaWdoZXIgc3BlZWQgQ1BVLiBIb3dldmVyLCBJIGRvbid0
+IHVuZGVyc3RhbmQgd2h5IHdvcnN0IGNhc2Ugb24gcnBpMiwzCmlzIG11Y2ggbGFyZ2VyIHRoYW4g
+dGhhdCBvbiBycGkwLDEuIEkgaGF2ZSByZXBlYXRlZCB0aGlzIHRlc3Qgb24gYm90aAp4ZW5vbWFp
+IDIgYW5kIDMsIGtlcm5lbMKgIDQuMSBhbmQgNC45IChvbmx5IHhlbm9tYWkgMyBpbiB0aGlzIGNh
+c2UpIGFuZCB3aXRoCmRpZmZlcmVudCB0YXNrIHByaW9yaXR5LCB0aGUgcmVzdWx0IGlzIHF1aXRl
+IGNvbnNpc3RlbnQuCkRvZXMgYW55b25lIGhhdmUgZXhwbGFuYXRpb24gYW5kIHNvbHV0aW9uPwpU
+aGFua3MgYW5kIHJlZ2FyZHMsCl9fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
+X19fX19fX19fClhlbm9tYWkgbWFpbGluZyBsaXN0Clhlbm9tYWlAeGVub21haS5vcmcKaHR0cHM6
+Ly94ZW5vbWFpLm9yZy9tYWlsbWFuL2xpc3RpbmZvL3hlbm9tYWkK
 
-* previous = rt_timer_read();*
-* for (i=0; i<500; ++i)*
-* {*
-* bcm2835_gpio_write(TEST_PIN, HIGH);*
-* bcm2835_gpio_write(TEST_PIN, LOW);*
-* }*
-* now = rt_timer_read();*
-* process_time = (long) (now - previous);*
-* if (process_time>worst_time)*
-* worst_time=process_time;*
 
-And I result after several hours running:
-rpi           process_time (us)             worst_time (us)
-0,1           ~100                                     115
-2,3           ~90                                        373
-
-It is clear that process time on rpi2,3 is shorter than that on rpi0,1 due
-to higher speed CPU. However, I don't understand why worst case on rpi2,3
-is much larger than that on rpi0,1. I have repeated this test on both
-xenomai 2 and 3, kernel  4.1 and 4.9 (only xenomai 3 in this case) and with
-different task priority, the result is quite consistent.
-Does anyone have explanation and solution?
-Thanks and regards,
