@@ -1,13 +1,14 @@
-References: <973624104.26400815.1533887406369.JavaMail.zimbra@triolcorp.com.ua>
-From: greg gallagher <greg@embeddedgreg.com>
-Message-ID: <8ace4cad-88f1-f718-75b1-fa2012b429dd@embeddedgreg.com>
-Date: Fri, 10 Aug 2018 11:50:00 -0400
 MIME-Version: 1.0
-In-Reply-To: <973624104.26400815.1533887406369.JavaMail.zimbra@triolcorp.com.ua>
-Content-Type: text/plain; charset="utf-8"; format="flowed"
-Content-Transfer-Encoding: 8bit
-Content-Language: en-US
-Subject: Re: [Xenomai] ioctl call long time
+In-Reply-To: <eonumkfibhh2lfchip34ab4e.1524839402683@embeddedgreg.com>
+References: <37fdc1c7-ae40-8e39-5c86-5ef38f326627@nta-inc.net>
+ <eonumkfibhh2lfchip34ab4e.1524839402683@embeddedgreg.com>
+From: Greg Gallagher <greg@embeddedgreg.com>
+Date: Sat, 11 Aug 2018 22:19:31 -0400
+Message-ID: <CALLqZ8TUcb+JAo3PHKWuUdyO3BFjfPFzNWBNMUX0rFuVuDgWpA@mail.gmail.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+Subject: Re: [Xenomai] [SPAM] Re: Issue with Xenomai 3.0.6,
+ I-Pipe 4.9.51 and Linux 4.9.51 on Xilinx Zynq 7000 MPSOC
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,51 +17,60 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: =?UTF-8?B?0KjQtdCy0YfQtdC90LrQviDQotCw0YDQsNGBINCT0YDQuNCz0L7RgNGM0LU=?= =?UTF-8?B?0LLQuNGH?= <shevchenko.taras@triolcorp.com.ua>, xenomai <xenomai@xenomai.org>
+To: Jeff Webb <jeff.webb@nta-inc.net>, "xenomai@xenomai.org" <xenomai@xenomai.org>
 
+I know this is an old thread, but if anyone else is hitting this
+issue, the new 4.9.x release of the ipipe and the latest xenomai
+stable is working well on Zynq.  Please let me know if anyone is
+seeing errors.
 
+-Greg
 
-On 2018-08-10 03:50 AM, Шевченко Тарас Григорьевич wrote:
-> Good day!
-> I try to use ioctl from user space to call ioctl_rt in my module
+On Fri, Apr 27, 2018 at 10:30 AM, Greg Gallagher <greg@embeddedgreg.com> wr=
+ote:
+> I'll update my how-to this weekend and post my prebuilt images. I just ne=
+ed to make time to look into the 4.9.51 lock up. I'll post here with links =
+once things are ready.
 >
-> code user space
 >
-> QDateTime t1 = QDateTime::currentDateTime();
-> for (int ij =0; ij<1000; ij++) {
-> ret=ioctl(fpga_fd, XDMA_EXCHANGE_DATA, lenErpPcie_wr); // if comment this line , runtime abaut 1 mks
-> }
-> QDateTime t2 = QDateTime::currentDateTime();
-> qint64 tt = t2.toMSecsSinceEpoch() - t1.toMSecsSinceEpoch();
-> printf("readwriteFPGA 1000 time = %d \n",(int)tt);
+> Greg
 >
-> driver code:
 >
-> int xilinx_ioctl_rt( struct rtdm_fd *fd, unsigned int cmd, void __user *arg) {
-> long ret = -EINVAL;
-> case XDMA_EXCHANGE_DATA:
-> // printk(KERN_INFO "time start");
-> ret=rtdm_event_timedwait(&fpga_event,25000,NULL);
-> //printk(KERN_INFO "time end");
-> break;
+>   Original Message
+> From: jeff.webb@nta-inc.net
+> Sent: April 27, 2018 10:21 AM
+> To: xenomai@xenomai.org
+> Subject: Re: [Xenomai] [SPAM] Re: Issue with Xenomai 3.0.6, I-Pipe 4.9.51=
+ and Linux 4.9.51 on Xilinx Zynq 7000 MPSOC
 >
-> }
-> return ret;
-> }
+> On 04/27/2018 02:55 AM, Salvatore Barone wrote:
+>> It works! Thanks Greg!
+>> If you're interested, I can post a script that do all the work!
 >
-> the problem is I always get time aproximately 200mks + xxx 000 mks time to wait
-> but if I uncomment printk lines I can see time to wait are respected in kernel log
-> How I can minimaze ioctl call delay ? I need exchange data every 100 mks
+> I, for one, would appreciate that.  I am sure there are others who would =
+as well.  I am about to dust off an old Zynq-based Xenomai-2.6 project, and=
+ any hints as to the best set of kernel sources, i-pipe patches, config, an=
+d process for an up-to-date build would be helpful.
 >
-> Xenomai 3.0.6
-> skin posix
-> CONFIG_HZ=1000
+> Many thanks,
+>
+> -Jeff
+>
+> ________________________________
+>
+> CONFIDENTIALITY NOTICE: The contents of this e-mail message may be privil=
+eged, confidential, proprietary, Controlled Unclassified Information (CUI) =
+or otherwise protected against disclosure or dissemination. This e-mail mes=
+sage and any files transmitted with it are intended solely for the use of t=
+he individual/individuals or entity/entities to whom they are addressed. If=
+ you are not the intended recipient of this message, any dissemination, dis=
+tribution, printing or copying is strictly prohibited. If you have received=
+ this message in error, please e-mail or call the sender (jeff.webb@nta-inc=
+.net, (256) 842-7041) and destroy all copies.
+>
+>
 > _______________________________________________
 > Xenomai mailing list
 > Xenomai@xenomai.org
 > https://xenomai.org/mailman/listinfo/xenomai
-Do the QT functions call the Xenomai services under the hood?  Can you 
-confirm that rtdm_event_timedwait isn't timing out?
-
--Greg
 
