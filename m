@@ -1,10 +1,10 @@
-Date: Wed, 15 Aug 2018 05:12:33 -0500 (CDT)
+Date: Wed, 15 Aug 2018 05:17:20 -0500 (CDT)
 From: Per Oberg <pero@wolfram.com>
-Message-ID: <1704340582.14191010.1534327953483.JavaMail.zimbra@wolfram.com>
+Message-ID: <1998054025.14191234.1534328240874.JavaMail.zimbra@wolfram.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: quoted-printable
-Subject: [Xenomai] Download section not available to unregistered users
+Subject: [Xenomai] Build instructions for Xenomai outdated?
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,22 +15,18 @@ List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: xenomai <xenomai@xenomai.org>
 
-I noticed that the download-section of gitlab.denx.de is not available unle=
-ss you are registered.=20
+I find that the build instructions on the wiki seems outdated:
 
-That seems odd, is that intentionally?
+https://gitlab.denx.de/Xenomai/xenomai/wikis/Installing_Xenomai_3
 
-B.t.w. I'm referring to instruction on:=20
-https://gitlab.denx.de/Xenomai/xenomai/wikis/Installing_Xenomai_3 where the=
-re is a link to:=20
+I'm not completely sure about this however. It suggests in several places b=
+uilding using mainline kernel and a ipipe-patch. I haven't downloaded any t=
+arballs since I couldn't get in to the repo but I remembered something abou=
+t the patching being deprecated in favor of using the git version instead.=
+=20
 
-https://gitlab.denx.de/downloads/xenomai/
+Should this be reflected on the wiki?
 
-as well as=20
+Per =C3=96berg=20
 
-https://gitlab.denx.de/downloads/ipipe/
-
-
-Best regards
-Per =C3=96berg
 
