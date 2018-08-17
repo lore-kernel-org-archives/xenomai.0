@@ -2,8 +2,8 @@ From: =?utf-8?Q?St=C3=A9phane_Reichert?= <sreichert@sepro-group.com>
 References: <004e01d43564$4970d4c0$dc527e40$@sepro-group.com>
  <f5ec79d7-be26-3d87-8d1b-8714d4f3a14a@xenomai.org> 
 In-Reply-To: 
-Date: Fri, 17 Aug 2018 13:39:37 +0200 (CEST)
-Message-ID: <006e01d4361e$f9f3cbd0$eddb6370$@sepro-group.com>
+Date: Fri, 17 Aug 2018 13:39:50 +0200 (CEST)
+Message-ID: <007001d4361f$01d02010$05706030$@sepro-group.com>
 MIME-Version: 1.0
 Content-Type: text/plain;
 	charset="utf-8"
@@ -20,16 +20,18 @@ List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: xenomai@xenomai.org
 
+Hello Philippe,
 
-Thanks Philippe,
+I have noticed in the file fec.c that the function fec_enet_ioctl did not=
+=20
+match the prototype of do_ioctl (it looks like "request" and "arg"=20
+parameters are switched). Is it a mistake ?
 
-I tried this patch and now I can see the rteth0 RUNNING (in rtifconfig).
+(I tried to switch these parameters but it didn't solved my problem as=20
+well).
 
-Unfortunately, it doesn't change the rtping behavior (I still get the=20
-=E2=80=9Cioctl: Resource temporarily unavailable=E2=80=9D message).
+Stephane
 
-Best regards
-St=C3=A9phane
 
 -----Message d'origine-----
 De : Philippe Gerum [mailto:rpm@xenomai.org] Envoy=C3=A9 : vendredi 17 ao=
