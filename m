@@ -1,13 +1,11 @@
-References: <004e01d43564$4970d4c0$dc527e40$@sepro-group.com>
-From: Philippe Gerum <rpm@xenomai.org>
-Message-ID: <f5ec79d7-be26-3d87-8d1b-8714d4f3a14a@xenomai.org>
-Date: Fri, 17 Aug 2018 10:27:51 +0200
+Date: Fri, 17 Aug 2018 03:57:19 -0500 (CDT)
+From: Per Oberg <pero@wolfram.com>
+Message-ID: <1128666844.14578797.1534496239671.JavaMail.zimbra@wolfram.com>
 MIME-Version: 1.0
-In-Reply-To: <004e01d43564$4970d4c0$dc527e40$@sepro-group.com>
-Content-Type: text/plain; charset="utf-8"
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
-Subject: Re: [Xenomai] RTNet - how to setup rt_fec on IMX6Q (Xenomai 3.0.7)
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
+Subject: [Xenomai] Question about kernel warning (Yocto/meta-linux + xenomai
+ homebrew)
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,44 +14,66 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: =?UTF-8?Q?St=c3=a9phane_Reichert?= <sreichert@sepro-group.com>, xenomai@xenomai.org
+To: xenomai <xenomai@xenomai.org>
 
-On 08/16/2018 03:23 PM, Stéphane Reichert wrote:
-> Hello,
-> 
-> 
-> 
-> We are trying to use the rt_fec driver for RTNet on a iMX6Q board.
-> 
-> 
-> 
-> I have patched the KConfig to add this driver on buildroot and it compiles
-> perfectly.
-> 
-> 
-> 
-> But now, I am not able to use it on our board (it works when I rtping
-> the loopback,
-> 
-> but it doesnt work if I try to ping an external board).
+Hi there
 
-The fec driver does not seem to tell the stack about the carrier enable
-state. If so, you may want to try the following patch:
+could someone please help me understand what this warning is:
 
-diff --git a/kernel/drivers/net/drivers/fec.c
-b/kernel/drivers/net/drivers/fec.c
-index 36870ba16..d94ec690f 100644
---- a/kernel/drivers/net/drivers/fec.c
-+++ b/kernel/drivers/net/drivers/fec.c
-@@ -1323,6 +1323,7 @@ fec_enet_open(struct rtnet_device *ndev)
- 		return ret;
- 	}
- 	phy_start(fep->phy_dev);
-+	rtnetif_carrier_on(ndev);
- 	rtnetif_start_queue(ndev);
- 	fep->opened = 1;
- 	return 0;
 
--- 
-Philippe.
+[ 2932.508097] ------------[ cut here ]------------
+[ 2932.514724] WARNING: CPU: 0 PID: 20645 at /usr/src/kernel/arch/x86/inclu=
+de/asm/fpu/internal.h:538 fpu__drop+0x19e/0x200
+[ 2932.529155] Modules linked in:
+[ 2932.533513] CPU: 0 PID: 20645 Comm: cat Not tainted 4.9.90-xeno-cobolt #=
+1
+[ 2932.542067] Hardware name: Hewlett-Packard HP Z620 Workstation/158A, BIO=
+S J61 v03.65 12/19/2013
+[ 2932.552955] I-pipe domain: Linux
+[ 2932.557675]  ffffc90007f37dc8 ffffffff8143da78 0000000000000000 00000000=
+00000000
+[ 2932.566582]  ffffffff81ba4cc0 ffffc90007f37e08 ffffffff810785c1 0000021a=
+00000000
+[ 2932.576484]  0000000000025dc0 ffff88041a1d5780 0000000000000246 00000000=
+00000000
+[ 2932.585818] Call Trace:
+[ 2932.590167]  [<ffffffff8143da78>] dump_stack+0xbf/0xe7
+[ 2932.593148]  [<ffffffff810785c1>] __warn+0xe1/0x100
+[ 2932.595426]  [<ffffffff810786ad>] warn_slowpath_null+0x1d/0x20
+[ 2932.597715]  [<ffffffff8102754e>] fpu__drop+0x19e/0x200
+[ 2932.600849]  [<ffffffff81025a15>] exit_thread+0xa5/0xc0
+[ 2932.603976]  [<ffffffff8107bd7d>] do_exit+0x2bd/0xb40
+[ 2932.606097]  [<ffffffff81045605>] ? __do_page_fault+0x285/0x550
+[ 2932.608534]  [<ffffffff8107c683>] do_group_exit+0x43/0xb0
+[ 2932.610757]  [<ffffffff8107c704>] SyS_exit_group+0x14/0x20
+[ 2932.613920]  [<ffffffff81001c92>] do_syscall_64+0x82/0xf0
+[ 2932.617071]  [<ffffffff8190903e>] entry_SYSCALL_64_after_swapgs+0x58/0xc=
+6
+[ 2932.620705] ---[ end trace 8ef0d875e55c5ad1 ]---
+
+
+At the time of running I was doing=20
+> dohell 5&
+followed by=20
+> latency
+
+Long story:
+Xenomai version is 3.0.7,
+Kernel is 4.9.90-ish
+
+The kernel is a x86-64 yocto/meta-intel kernel patched with xenomai patches=
+. Unfortunately they didn't have their branch merged at Linux 4.9.90 so I h=
+ad to merge their mainline-linux branch into their project-branch myself, b=
+ut there were no changes from their part compared to their previous "releas=
+e-tag" and the merge was mostly ok except for some macros in intel hardware=
+ detection code for different sound chips.=20
+
+Also, patching the xenomai-patches (4.9.90-x86-6 something..) went ok,  (ex=
+cept for som stupid whitespace-stuff in a mmu-function).=20
+
+I will try with another kernel but I was having some troubles with module c=
+onfiguration since the default does not write any modules to the flash.
+
+Regards
+Per =C3=96berg=20
 
