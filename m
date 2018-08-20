@@ -1,15 +1,11 @@
-References: <1534446608-1303-1-git-send-email-sebastian.smolorz@gmx.de>
- <e677aecd-440f-8614-50f8-dd6105dfddc1@xenomai.org>
-From: Jan Kiszka <jan.kiszka@web.de>
-Message-ID: <9c746901-b2ed-61b2-6f27-bd9b8a2e089a@web.de>
-Date: Sun, 19 Aug 2018 22:15:07 +0200
 MIME-Version: 1.0
-In-Reply-To: <e677aecd-440f-8614-50f8-dd6105dfddc1@xenomai.org>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] [PATCH v2] net: Split internal rtnet.h and install
- rtdm/net.h and rtdm/uapi/net.h
+References: <CAOuPNLgkFZ7wwBM2N3HXYSh0fkGce8GytJdKHnbsmBN4zfwcFg@mail.gmail.com>
+In-Reply-To: <CAOuPNLgkFZ7wwBM2N3HXYSh0fkGce8GytJdKHnbsmBN4zfwcFg@mail.gmail.com>
+From: Pintu Kumar <pintu.ping@gmail.com>
+Date: Mon, 20 Aug 2018 19:18:18 +0530
+Message-ID: <CAOuPNLiXWVRRpn_39VfakbSHZH4K8Vc9wM8aRrgpwhAqtYZFoQ@mail.gmail.com>
+Content-Type: text/plain; charset="UTF-8"
+Subject: Re: [Xenomai] message pipe stream test application
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -18,25 +14,43 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Philippe Gerum <rpm@xenomai.org>, Sebastian Smolorz <sebastian.smolorz@gmx.de>, xenomai@xenomai.org
+To: "Xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On 2018-08-18 10:55, Philippe Gerum wrote:
-> On 08/16/2018 09:10 PM, Sebastian Smolorz wrote:
->> For external projects wanting to use RTnet with its special
->> features like RTnet IOCTLs it is necessary to provide the API
->> headers in the Xenomai installation directory.
-> 
-> Looks ok to me, pending a second ack from a RTnet-savvy maintainer (@Jan?).
-> 
+Dear Greg,
 
-The split-up looks good to me as well.
+If you have any idea can you please explain how rt_pipe_stream works
+with an example.
+I need to prepare a demo, to demonstrate the usefulness of rt_pipe_stream API.
 
-> PS: In a second round, maybe we should move the definitions from
-> rtnet_port.h used by the drivers to rtdm/net.h and get rid of the former
-> since including the latter is definitely about accessing the kernel
-> interface needed to implement a driver.
 
-Yeah, a lot of history and legacy is in that code base...
-
-Jan
+Thanks,
+Pintu
+On Fri, Aug 17, 2018 at 6:56 PM Pintu Kumar <pintu.ping@gmail.com> wrote:
+>
+> Hi,
+>
+> I wanted to understand how rt_pipe_stream works and how it can be useful.
+> I wanted to create a demo application using it.
+> But currently I could not figure out how to make use of it.
+>
+> I saw a sample pipe application under: lib/alchemy/testsuite/pipe-1.c.
+> Based on this I am trying to create a new application that uses rt_pipe_stream.
+> The rt_pipe_stream is working fine, but I wanted to test the scenario
+> based on its description.
+>
+> My understanding is that:
+> Regular thread keeps write one by one char to rtipc, and the real-time
+> task reads one char at a time. Then real-time task call rt_pipe_stream
+> which keeps storing the char.
+> Finally, when regular thread calls "read" then all the data from
+> stream will be read by the regular thread at once.
+>
+> Hope my understanding is correct.
+> I want to prepare a sample application for the same.
+>
+> If any reference for rt_pipe_stream is available please let me know.
+>
+>
+> Thanks,
+> Pintu
 
