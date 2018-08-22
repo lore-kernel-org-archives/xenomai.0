@@ -1,20 +1,13 @@
+Date: Wed, 22 Aug 2018 18:22:00 +0200
+From: Henning Schild <henning.schild@siemens.com>
+Message-ID: <20180822182200.15c4fe00@md1pvb1c.ad001.siemens.net>
+In-Reply-To: <20180713143732.1bd0fc30@md1pvb1c.ad001.siemens.net>
+References: <3319d6fa-2541-67bf-f03b-15b440a1b8a6@siemens.com>
+ <20180713143732.1bd0fc30@md1pvb1c.ad001.siemens.net>
 MIME-Version: 1.0
-References: <CAOuPNLgkFZ7wwBM2N3HXYSh0fkGce8GytJdKHnbsmBN4zfwcFg@mail.gmail.com>
- <CAOuPNLiXWVRRpn_39VfakbSHZH4K8Vc9wM8aRrgpwhAqtYZFoQ@mail.gmail.com>
- <CALLqZ8QVh2dtRe13PudQ2n1bGm2ZheO9d4Hp4TWVNrcXYrNyow@mail.gmail.com>
- <CAOuPNLipXN+iji4m91kkpegBYy_2q8BXyp2LRtLfXdA2j9No1Q@mail.gmail.com>
- <CALLqZ8QpWDnvGkKUGV7BYCXRw_ebxTq7+y7zGC973NqqFaYekA@mail.gmail.com>
- <CAOuPNLjHXLi6OsS9eqvqD-Fc7t7aHbA4kz31zoyrbF5KLVqxEQ@mail.gmail.com>
- <CAOuPNLiL=U1jzEm5a4Ymcgog=K9g=fXQDeW3VKU_8Wna2DCZ7A@mail.gmail.com>
- <CALLqZ8T-C_v=A+95pFZ4_EE0OggXmbGTPD9sK=M9ShfNhsThbQ@mail.gmail.com>
- <CAOuPNLg-L9U1AwuO_wKNsOWvvFMx93-knLQwz3NQ7Gb5h7UAyA@mail.gmail.com>
- <CALLqZ8QmNg6R1ExH=KmDqwjwPyOpknb3s-QYSXVmAtqCJpAnEA@mail.gmail.com>
-In-Reply-To: <CALLqZ8QmNg6R1ExH=KmDqwjwPyOpknb3s-QYSXVmAtqCJpAnEA@mail.gmail.com>
-From: Pintu Kumar <pintu.ping@gmail.com>
-Date: Wed, 22 Aug 2018 14:07:49 +0530
-Message-ID: <CAOuPNLj3DbjBqFz8TFnOQ4GahhF6w7sZ02pfzxhjxSL-7Mcm_w@mail.gmail.com>
-Content-Type: text/plain; charset="UTF-8"
-Subject: Re: [Xenomai] message pipe stream test application
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai] Eager FPU vs. recent kernels
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -23,33 +16,52 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Greg Gallagher <greg@embeddedgreg.com>
-Cc: "Xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Jan Kiszka <jan.kiszka@siemens.com>
+Cc: Xenomai <xenomai@xenomai.org>
 
-On Wed, Aug 22, 2018 at 10:49 AM Greg Gallagher <greg@embeddedgreg.com> wrote:
->
->
-> For your example, you are sending a message in rt_pipe_stream not a
-> stream of bytes.  You'll need to change what you are sending in the
-> rt_pipe_stream call.  I have a rough example working, I should have
-> time to post it hopefully in the next few days.
->
+Am Fri, 13 Jul 2018 14:37:32 +0200
+schrieb "[ext] Henning Schild" <henning.schild@siemens.com>:
 
-Dear Greg, Thank you so much for the clue.
-Yes, I could able to make it working, by changing the following:
-ret = rt_pipe_stream(&mpipe, msg.value + i, 1);
+> Am Mon, 9 Jul 2018 19:48:28 +0200
+> schrieb Jan Kiszka <jan.kiszka@siemens.com>:
+> 
+> > Hi,
+> > 
+> > the x86 FPU changes that so far only affected 4.14 and delayed its
+> > ipipe progress on that arch. However, CVE-2018-3665 is not making it
+> > a topic for every ipipe kernel (that should be kept up to date):
+> > lazy FPU is history, now also for security reasons (before that
+> > only for performance reasons).  
+> 
+> I have just reached that point in the 4.14 x86 work. And from what i
+> can see right now is that it would be a good idea to look into the FPU
+> thing independent of 4.14. So i will start working on that for 4.9 and
+> probably 4.4 to understand what 4.14 needs.
 
-Thus, each char is being streamed in the loop.
-After both the loop terminates, I could read the whole stream messages
-using single read command.
+After fighting with that topic for some time i finally came up with a
+version that works for 4.9. I will turn that into a patch or a series
+of patches for 4.4 and 4.9 and look at 4.14, which might be a little
+different.
 
-If you feel this could be one important demo. I can plan to contribute.
-Similarly I developed 4 different patterns.
+Henning
 
-Thanks,
-Pintu
+> Henning
+> 
+> > That raises the question how much the Xenomai 3 core depends on lazy
+> > FPU state switching. Philippe, can you describe the general flow of
+> > context switching /wrt the FPU state so far? Can we overcome lazy by
+> > just replacing the current FPU functions in
+> > kernel/cobalt/arch/x86/thread.c with eager ones, maybe depending on
+> > some CONFIG_IPIPE_X86_HAS_EAGER_FPU compile-time dependency?
+> > 
+> > Thanks,
+> > Jan
+> >   
+> 
+> 
+> _______________________________________________
+> Xenomai mailing list
+> Xenomai@xenomai.org
+> https://xenomai.org/mailman/listinfo/xenomai
 
-
-
-> -Greg
 
