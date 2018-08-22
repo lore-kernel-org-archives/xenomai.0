@@ -1,14 +1,18 @@
-Date: Fri, 13 Jul 2018 10:11:05 +0200
-From: Henning Schild <henning.schild@siemens.com>
-Message-ID: <20180713101105.156006cf@md1pvb1c.ad001.siemens.net>
-In-Reply-To: <CAFUnMknaxRKk6gp7ifPXL3OSnFz8j7-jernJqsRuQzg6zhWcQw@mail.gmail.com>
-References: <CAFUnMknWBmuLjGbQfv+uqy49xo-+SNUWAtAgjwULUgY6nybgmA@mail.gmail.com>
- <20180712160946.551f3019@md1pvb1c.ad001.siemens.net>
- <CAFUnMknaxRKk6gp7ifPXL3OSnFz8j7-jernJqsRuQzg6zhWcQw@mail.gmail.com>
+From: =?UTF-8?Q?St=C3=A9phane_Reichert?= <sreichert@sepro-group.com>
+References: <004e01d43564$4970d4c0$dc527e40$@sepro-group.com>
+ <f5ec79d7-be26-3d87-8d1b-8714d4f3a14a@xenomai.org>
+ <007001d4361f$01d02010$05706030$@sepro-group.com>
+ <346547f0-852d-ffe7-d1ff-f156db9a59d1@gmail.com>
+In-Reply-To: <346547f0-852d-ffe7-d1ff-f156db9a59d1@gmail.com>
+Date: Wed, 22 Aug 2018 10:24:31 +0200 (CEST)
+Message-ID: <00d201d439f1$8ccd3fb0$a667bf10$@sepro-group.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] BUG: unable to handle kernel paging request
+Content-Type: text/plain;
+	charset="UTF-8"
+Content-Language: fr
+Content-Transfer-Encoding: quoted-printable
+Subject: Re: [Xenomai] TR: RTNet - how to setup rt_fec on IMX6Q (Xenomai
+ 3.0.7)
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,118 +21,112 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Ashok kumar <ashokkumar.bb@gmail.com>
-Cc: "Xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Edouard Tisserant <edouard.tisserant@gmail.com>, xenomai@xenomai.org
 
-Am Thu, 12 Jul 2018 20:46:08 +0530
-schrieb Ashok kumar <ashokkumar.bb@gmail.com>:
+Hello Edouard,
 
-> Thank you for your reply,
-> 
-> can I install linux- 4.9.90 with xenomai 3.0.7 on i3 processor
-> I have mentioned lscpu terminal output
+Thanks again for your patch.
 
-Yes that should work. If you run into any problems with those versions
-get in touch and we will find a solution.
+I tried it on my kernel, but unfortunately I am facing the same issue
+(ioctl: Resource temporarily unavailable error message on rtping).
 
-> root@texsonics:/usr/src# lscpu
-> Architecture:          x86_64
-> CPU op-mode(s):        32-bit, 64-bit
-> Byte Order:            Little Endian
-> CPU(s):                4
-> On-line CPU(s) list:   0-3
-> Thread(s) per core:    2
-> Core(s) per socket:    2
-> Socket(s):             1
-> NUMA node(s):          1
-> Vendor ID:             GenuineIntel
-> CPU family:            6
-> Model:                 158
-> Stepping:              9
-> CPU MHz:               800.000
-> BogoMIPS:              7823.98
-> Virtualization:        VT-x
-> L1d cache:             32K
-> L1i cache:             32K
-> L2 cache:              256K
-> L3 cache:              3072K
-> NUMA node0 CPU(s):     0-3
-> 
-> or anyother specific processor mother board is there for this
-> xenomai-3.0.7
-> 
-> and can you suggest x86 architecture 64 bit processor and mother
-> board for xenomai-3.0.7
+Best regards
+St=C3=A9phane
 
-Yes, you should get a SIMATIC Box PC ;). Just kidding, i can and will
-not suggest hardware.
+-----Message d'origine-----
+De : Edouard Tisserant [mailto:edouard.tisserant@gmail.com]
+Envoy=C3=A9 : mardi 21 ao=C3=BBt 2018 23:19
+=C3=80 : St=C3=A9phane Reichert; xenomai@xenomai.org
+Objet : Re: [Xenomai] TR: RTNet - how to setup rt_fec on IMX6Q (Xenomai=20
+3.0.7)
 
-Henning
+Hello St=C3=A9phane.
 
-> Thank you
-> R.Ashokkumar
-> 
-> On Thu, Jul 12, 2018 at 7:39 PM, Henning Schild
-> <henning.schild@siemens.com> wrote:
-> 
-> > Am Thu, 12 Jul 2018 19:22:39 +0530
-> > schrieb Ashok kumar <ashokkumar.bb@gmail.com>:
-> >  
-> > > Hi,
-> > >
-> > > I am patching  linux- 3.14.44 with -xenomai-2.6.4,  I am using
-> > > ipipe-core-3.14.44-x86-12.patch  
-> >
-> > Ok, have you tried 4.9.90 with xenomai 3.0.7? What you are using is
-> > far from still being supported.
-> >
-> > The only possible reason you are using such an outdated kernel is
-> > because you rely on other patches as well. Do you see the same bug
-> > when not applying these other patches?
-> >  
-> > > and in menu config
-> > >
-> > > Required Options:
-> > > * Real-time sub-system  
-> > >   --> Xenomai (Enable)
-> > >   --> Nucleus (Enable)  
-> > > * Power management and ACPI options  
-> > >   --> Run-time PM core functionality (Disable)
-> > >   --> ACPI (Advanced Configuration and Power Interface) Support
-> > >       --> Processor (Disable)
-> > >   --> CPU Frequency scaling
-> > >       --> CPU Frequency scaling (Disable)
-> > >   --> CPU idle
-> > >       --> CPU idle PM support (Disable)  
-> > >
-> > > after installing the xenomai user library, while  checking
-> > > latency I am getting the following error
-> > >
-> > > BUG: unable to handle kernel paging  request
-> > >
-> > > I have attached the screen shot of this bug  
-> >
-> > Please attach a serial console and provide this as text.
-> >
-> > Henning
-> >  
-> > > anybody can help me to solve this issue
-> > >
-> > > Thank you
-> > > R.Ashokkumar
-> > > -------------- next part --------------
-> > > A non-text attachment was scrubbed...
-> > > Name: Screenshot from 2018-07-12 19:14:08.png
-> > > Type: image/png
-> > > Size: 129556 bytes
-> > > Desc: not available
-> > > URL:
-> > > <http://xenomai.org/pipermail/xenomai/attachments/20180712/
-> > df4ce641/attachment.png>
-> > > _______________________________________________ Xenomai mailing
-> > > list Xenomai@xenomai.org
-> > > https://xenomai.org/mailman/listinfo/xenomai  
-> >
-> >  
+I'm porting EtherLAB to Xenomai3 on Imx6, using RTNet instead of EtherLAB=
+=20
+provided drivers.
+
+This is still work in progress, but the fec.c patch I have now may help.
+Find it attached.
+
+I built it last time on kernel 4.9.51 and xenomai 3.0.6. This is largely=20
+untested, your feedback is welcome.
+
+Beware content of DTS for vanilla FEC from kernel 4.x may not be compatib=
+le=20
+anymore with the one expected by FEC from RTnet. You may have to patch yo=
+u=20
+DTS accordingly.
+
+Best regards,
+
+Edouard
+
+
+
+On 17/08/2018 13:39, St=C3=A9phane Reichert wrote:
+> Hello Philippe,
+>
+> I have noticed in the file fec.c that the function fec_enet_ioctl did
+> not match the prototype of do_ioctl (it looks like "request" and "arg"
+> parameters are switched). Is it a mistake ?
+>
+> (I tried to switch these parameters but it didn't solved my problem as
+> well).
+>
+> Stephane
+>
+>
+> -----Message d'origine-----
+> De : Philippe Gerum [mailto:rpm@xenomai.org] Envoy=C3=A9 : vendredi 17 =
+ao=C3=BBt
+> 2018
+> 10:28 =C3=80 : St=C3=A9phane Reichert; xenomai@xenomai.org Objet : Re: =
+[Xenomai]
+> RTNet - how to setup rt_fec on IMX6Q (Xenomai 3.0.7)
+>
+> On 08/16/2018 03:23 PM, St=C3=A9phane Reichert wrote:
+>> Hello,
+>>
+>>
+>>
+>> We are trying to use the rt_fec driver for RTNet on a iMX6Q board.
+>>
+>>
+>>
+>> I have patched the KConfig to add this driver on buildroot and it
+>> compiles perfectly.
+>>
+>>
+>>
+>> But now, I am not able to use it on our board (it works when I =E2=80=9C=
+rtping=E2=80=9D
+>> the loopback,
+>>
+>> but it doesn=E2=80=99t work if I try to ping an external board).
+> The fec driver does not seem to tell the stack about the carrier
+> enable state. If so, you may want to try the following patch:
+>
+> diff --git a/kernel/drivers/net/drivers/fec.c
+> b/kernel/drivers/net/drivers/fec.c
+> index 36870ba16..d94ec690f 100644
+> --- a/kernel/drivers/net/drivers/fec.c
+> +++ b/kernel/drivers/net/drivers/fec.c
+> @@ -1323,6 +1323,7 @@ fec_enet_open(struct rtnet_device *ndev)
+>  		return ret;
+>  	}
+>  	phy_start(fep->phy_dev);
+> +	rtnetif_carrier_on(ndev);
+>  	rtnetif_start_queue(ndev);
+>  	fep->opened =3D 1;
+>  	return 0;
+>
+> --
+> Philippe.
+>
+> _______________________________________________
+> Xenomai mailing list
+> Xenomai@xenomai.org
+> https://xenomai.org/mailman/listinfo/xenomai
 
 
