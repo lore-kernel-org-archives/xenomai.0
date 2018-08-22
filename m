@@ -1,16 +1,19 @@
-References: <004e01d43564$4970d4c0$dc527e40$@sepro-group.com>
- <f5ec79d7-be26-3d87-8d1b-8714d4f3a14a@xenomai.org>
- <007001d4361f$01d02010$05706030$@sepro-group.com>
-From: Edouard Tisserant <edouard.tisserant@gmail.com>
-Message-ID: <346547f0-852d-ffe7-d1ff-f156db9a59d1@gmail.com>
-Date: Tue, 21 Aug 2018 23:19:13 +0200
 MIME-Version: 1.0
-In-Reply-To: <007001d4361f$01d02010$05706030$@sepro-group.com>
-Content-Language: en-US
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Subject: Re: [Xenomai] TR: RTNet - how to setup rt_fec on IMX6Q (Xenomai
- 3.0.7)
+In-Reply-To: <CAOuPNLg-L9U1AwuO_wKNsOWvvFMx93-knLQwz3NQ7Gb5h7UAyA@mail.gmail.com>
+References: <CAOuPNLgkFZ7wwBM2N3HXYSh0fkGce8GytJdKHnbsmBN4zfwcFg@mail.gmail.com>
+ <CAOuPNLiXWVRRpn_39VfakbSHZH4K8Vc9wM8aRrgpwhAqtYZFoQ@mail.gmail.com>
+ <CALLqZ8QVh2dtRe13PudQ2n1bGm2ZheO9d4Hp4TWVNrcXYrNyow@mail.gmail.com>
+ <CAOuPNLipXN+iji4m91kkpegBYy_2q8BXyp2LRtLfXdA2j9No1Q@mail.gmail.com>
+ <CALLqZ8QpWDnvGkKUGV7BYCXRw_ebxTq7+y7zGC973NqqFaYekA@mail.gmail.com>
+ <CAOuPNLjHXLi6OsS9eqvqD-Fc7t7aHbA4kz31zoyrbF5KLVqxEQ@mail.gmail.com>
+ <CAOuPNLiL=U1jzEm5a4Ymcgog=K9g=fXQDeW3VKU_8Wna2DCZ7A@mail.gmail.com>
+ <CALLqZ8T-C_v=A+95pFZ4_EE0OggXmbGTPD9sK=M9ShfNhsThbQ@mail.gmail.com>
+ <CAOuPNLg-L9U1AwuO_wKNsOWvvFMx93-knLQwz3NQ7Gb5h7UAyA@mail.gmail.com>
+From: Greg Gallagher <greg@embeddedgreg.com>
+Date: Wed, 22 Aug 2018 01:19:51 -0400
+Message-ID: <CALLqZ8QmNg6R1ExH=KmDqwjwPyOpknb3s-QYSXVmAtqCJpAnEA@mail.gmail.com>
+Content-Type: text/plain; charset="UTF-8"
+Subject: Re: [Xenomai] message pipe stream test application
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -19,54 +22,212 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: =?UTF-8?Q?St=c3=a9phane_Reichert?= <sreichert@sepro-group.com>, xenomai@xenomai.org
+To: Pintu Kumar <pintu.ping@gmail.com>
+Cc: "Xenomai@xenomai.org" <xenomai@xenomai.org>
 
-SGVsbG8gU3TDqXBoYW5lLgoKSSdtIHBvcnRpbmcgRXRoZXJMQUIgdG8gWGVub21haTMgb24gSW14
-NiwgdXNpbmcgUlROZXQgaW5zdGVhZCBvZgpFdGhlckxBQiBwcm92aWRlZCBkcml2ZXJzLgoKVGhp
-cyBpcyBzdGlsbCB3b3JrIGluIHByb2dyZXNzLCBidXQgdGhlIGZlYy5jIHBhdGNoIEkgaGF2ZSBu
-b3cgbWF5IGhlbHAuCkZpbmQgaXQgYXR0YWNoZWQuCgpJIGJ1aWx0IGl0IGxhc3QgdGltZSBvbiBr
-ZXJuZWwgNC45LjUxIGFuZCB4ZW5vbWFpIDMuMC42LiBUaGlzIGlzIGxhcmdlbHkKdW50ZXN0ZWQs
-IHlvdXIgZmVlZGJhY2sgaXMgd2VsY29tZS4KCkJld2FyZSBjb250ZW50IG9mIERUUyBmb3IgdmFu
-aWxsYSBGRUMgZnJvbSBrZXJuZWwgNC54IG1heSBub3QgYmUKY29tcGF0aWJsZSBhbnltb3JlIHdp
-dGggdGhlIG9uZSBleHBlY3RlZCBieSBGRUMgZnJvbSBSVG5ldC4gWW91IG1heSBoYXZlCnRvIHBh
-dGNoIHlvdSBEVFMgYWNjb3JkaW5nbHkuCgpCZXN0IHJlZ2FyZHMsCgpFZG91YXJkCgoKCk9uIDE3
-LzA4LzIwMTggMTM6MzksIFN0w6lwaGFuZSBSZWljaGVydCB3cm90ZToKPiBIZWxsbyBQaGlsaXBw
-ZSwKPgo+IEkgaGF2ZSBub3RpY2VkIGluIHRoZSBmaWxlIGZlYy5jIHRoYXQgdGhlIGZ1bmN0aW9u
-IGZlY19lbmV0X2lvY3RsIGRpZCBub3QgCj4gbWF0Y2ggdGhlIHByb3RvdHlwZSBvZiBkb19pb2N0
-bCAoaXQgbG9va3MgbGlrZSAicmVxdWVzdCIgYW5kICJhcmciIAo+IHBhcmFtZXRlcnMgYXJlIHN3
-aXRjaGVkKS4gSXMgaXQgYSBtaXN0YWtlID8KPgo+IChJIHRyaWVkIHRvIHN3aXRjaCB0aGVzZSBw
-YXJhbWV0ZXJzIGJ1dCBpdCBkaWRuJ3Qgc29sdmVkIG15IHByb2JsZW0gYXMgCj4gd2VsbCkuCj4K
-PiBTdGVwaGFuZQo+Cj4KPiAtLS0tLU1lc3NhZ2UgZCdvcmlnaW5lLS0tLS0KPiBEZSA6IFBoaWxp
-cHBlIEdlcnVtIFttYWlsdG86cnBtQHhlbm9tYWkub3JnXSBFbnZvecOpIDogdmVuZHJlZGkgMTcg
-YW/Du3QgMjAxOCAKPiAxMDoyOCDDgCA6IFN0w6lwaGFuZSBSZWljaGVydDsgeGVub21haUB4ZW5v
-bWFpLm9yZyBPYmpldCA6IFJlOiBbWGVub21haV0gCj4gUlROZXQgLSBob3cgdG8gc2V0dXAgcnRf
-ZmVjIG9uIElNWDZRIChYZW5vbWFpIDMuMC43KQo+Cj4gT24gMDgvMTYvMjAxOCAwMzoyMyBQTSwg
-U3TDqXBoYW5lIFJlaWNoZXJ0IHdyb3RlOgo+PiBIZWxsbywKPj4KPj4KPj4KPj4gV2UgYXJlIHRy
-eWluZyB0byB1c2UgdGhlIHJ0X2ZlYyBkcml2ZXIgZm9yIFJUTmV0IG9uIGEgaU1YNlEgYm9hcmQu
-Cj4+Cj4+Cj4+Cj4+IEkgaGF2ZSBwYXRjaGVkIHRoZSBLQ29uZmlnIHRvIGFkZCB0aGlzIGRyaXZl
-ciBvbiBidWlsZHJvb3QgYW5kIGl0Cj4+IGNvbXBpbGVzIHBlcmZlY3RseS4KPj4KPj4KPj4KPj4g
-QnV0IG5vdywgSSBhbSBub3QgYWJsZSB0byB1c2UgaXQgb24gb3VyIGJvYXJkIChpdCB3b3JrcyB3
-aGVuIEkg4oCccnRwaW5n4oCdCj4+IHRoZSBsb29wYmFjaywKPj4KPj4gYnV0IGl0IGRvZXNu4oCZ
-dCB3b3JrIGlmIEkgdHJ5IHRvIHBpbmcgYW4gZXh0ZXJuYWwgYm9hcmQpLgo+IFRoZSBmZWMgZHJp
-dmVyIGRvZXMgbm90IHNlZW0gdG8gdGVsbCB0aGUgc3RhY2sgYWJvdXQgdGhlIGNhcnJpZXIgZW5h
-YmxlIAo+IHN0YXRlLiBJZiBzbywgeW91IG1heSB3YW50IHRvIHRyeSB0aGUgZm9sbG93aW5nIHBh
-dGNoOgo+Cj4gZGlmZiAtLWdpdCBhL2tlcm5lbC9kcml2ZXJzL25ldC9kcml2ZXJzL2ZlYy5jCj4g
-Yi9rZXJuZWwvZHJpdmVycy9uZXQvZHJpdmVycy9mZWMuYwo+IGluZGV4IDM2ODcwYmExNi4uZDk0
-ZWM2OTBmIDEwMDY0NAo+IC0tLSBhL2tlcm5lbC9kcml2ZXJzL25ldC9kcml2ZXJzL2ZlYy5jCj4g
-KysrIGIva2VybmVsL2RyaXZlcnMvbmV0L2RyaXZlcnMvZmVjLmMKPiBAQCAtMTMyMyw2ICsxMzIz
-LDcgQEAgZmVjX2VuZXRfb3BlbihzdHJ1Y3QgcnRuZXRfZGV2aWNlICpuZGV2KQo+ICAJCXJldHVy
-biByZXQ7Cj4gIAl9Cj4gIAlwaHlfc3RhcnQoZmVwLT5waHlfZGV2KTsKPiArCXJ0bmV0aWZfY2Fy
-cmllcl9vbihuZGV2KTsKPiAgCXJ0bmV0aWZfc3RhcnRfcXVldWUobmRldik7Cj4gIAlmZXAtPm9w
-ZW5lZCA9IDE7Cj4gIAlyZXR1cm4gMDsKPgo+IC0tCj4gUGhpbGlwcGUuCj4KPiBfX19fX19fX19f
-X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fXwo+IFhlbm9tYWkgbWFpbGluZyBs
-aXN0Cj4gWGVub21haUB4ZW5vbWFpLm9yZwo+IGh0dHBzOi8veGVub21haS5vcmcvbWFpbG1hbi9s
-aXN0aW5mby94ZW5vbWFpCgotLS0tLS0tLS0tLS0tLSBuZXh0IHBhcnQgLS0tLS0tLS0tLS0tLS0K
-QSBub24tdGV4dCBhdHRhY2htZW50IHdhcyBzY3J1YmJlZC4uLgpOYW1lOiAwMDAxLXhlbm9tYWkt
-ZW5hYmxlLUZFQy5wYXRjaApUeXBlOiB0ZXh0L3gtcGF0Y2gKU2l6ZTogNTc1IGJ5dGVzCkRlc2M6
-IG5vdCBhdmFpbGFibGUKVVJMOiA8aHR0cDovL3hlbm9tYWkub3JnL3BpcGVybWFpbC94ZW5vbWFp
-L2F0dGFjaG1lbnRzLzIwMTgwODIxLzNjMGIzNDBjL2F0dGFjaG1lbnQuYmluPgotLS0tLS0tLS0t
-LS0tLSBuZXh0IHBhcnQgLS0tLS0tLS0tLS0tLS0KQSBub24tdGV4dCBhdHRhY2htZW50IHdhcyBz
-Y3J1YmJlZC4uLgpOYW1lOiAwMDAyLXhlbm9tYWlfZml4X0ZFQy5wYXRjaApUeXBlOiB0ZXh0L3gt
-cGF0Y2gKU2l6ZTogMzIxNCBieXRlcwpEZXNjOiBub3QgYXZhaWxhYmxlClVSTDogPGh0dHA6Ly94
-ZW5vbWFpLm9yZy9waXBlcm1haWwveGVub21haS9hdHRhY2htZW50cy8yMDE4MDgyMS8zYzBiMzQw
-Yy9hdHRhY2htZW50LTAwMDEuYmluPgo=
+On Tue, Aug 21, 2018 at 1:47 PM, Pintu Kumar <pintu.ping@gmail.com> wrote:
+> On Tue, Aug 21, 2018 at 9:32 PM Greg Gallagher <greg@embeddedgreg.com> wrote:
+>>
+>> HI,
+>>   I"m not sure if I understand how you are using stream.   Stream
+>> stores data in an internal buffer until the reciever wakes up and
+>> reads the data.
+>
+> Yes I read this in the API description.
+> But how this is different from normal write.
+> I found the same behavior.
+>
+>> Your telling read just to read one message, usually I
+>> loop through the messages until read blocks again.
+> Yes this way it works, but then what is the difference here with
+> normal read, if we keep reading the message at the same time.
+>
+>> Are you trying to
+>> read all the messages you sent to the pipe using stream in a single
+>> read?
+> Yes, exactly.
+> I though that is the purpose of streaming a messages.
+>
+> I just want to create a scenario in which rt_pipe_stream works but
+> rt_pipe_write cannot.
+> Hope to demonstrate this?
+>
+>> -Greg
+>>
+>> On Tue, Aug 21, 2018 at 11:06 AM, Pintu Kumar <pintu.ping@gmail.com> wrote:
+>> > Hi,
+>> >
+>> > This is the technique I am using:
+>> >
+>> > struct pipe_message {
+>> >         char value[32];
+>> > };
+>> >
+>> > volatile int terminate = 0;
+>> >
+>> > realtime_task()
+>> > {
+>> >      ret = rt_pipe_bind(&mpipe, "pipe", TM_INFINITE);
+>> >      while (!terminate) {
+>> >           ret = rt_pipe_read(&mpipe, &msg, sizeof(msg), TM_INFINITE);
+>> >           printf("%s: rt_pipe_read: value: %c\n", __func__, msg.value[i]);
+>> >           ret = rt_pipe_stream(&mpipe, &msg, sizeof(msg));
+>> >           i++;
+>> >      }
+>> >      rt_pipe_unbind(&mpipe);
+>> >      pthread_cancel(t_reg);
+>> > }
+>> >
+>> > regular_thread(void *arg)
+>> > {
+>> >      char string[] = "realtime";
+>> >      sprintf(device, "/dev/rtp%d", minor);
+>> >      fd = open(device, O_RDWR);
+>> >      for (read char by char from a string) {
+>> >             msg.value[i] = ch;
+>> >             ret = write(fd, &msg, sizeof(msg));
+>> >             usleep(SLEEP_INTERVAL * MILLI_SECOND);
+>> >             i++;
+>> >      }
+>> >      terminate = 1;
+>> >      ret = read(fd, &msg, sizeof(msg));
+>> >      printf("%s: read: value: %s\n", __func__, msg.value);
+>> > }
+>> >
+>> > With this I want to read all the rt_pipe_stream message at once in regular
+>> > thread.
+>> > Is this the correct way to implement stream ?
+>> > Or, please suggest how to modify this code to make stream work, which
+>> > behavior should be different from normal rt_pipe_write.
+>> >
+>> > Currently, with this implement, only the first byte is getting printed after
+>> > the read, in regular thread.
+>> > I want the the whole stream of characters should be printed at once.
+>> >
+>> >
+>> > Thanks,
+>> > Pintu
+>> >
+>> > On Tue, Aug 21, 2018 at 1:39 PM Pintu Kumar <pintu.ping@gmail.com> wrote:
+>> >>
+>> >> Dear Greg,
+>> >>
+>> >> For your information, I already implemented sample application using
+>> >> message pipe read/write API over RTIPC.
+>> >> For the reference I saw lib/alchemy/testsuite/pipe-1.c
+>> >>
+>> >> But now I wanted to use rt_pipe_stream and understand how it work.
+>> >> Mainly what is the real difference between rt_pipe_write and
+>> >> rt_pipe_stream, and how to implement such difference.
+>> >> According to my experiment, both behaves almost the same for me.
+>> >>
+>> >> I have read the description about rt_pipe_stream in the documentation.
+>> >> I tried to implement the similar logic, but behavior is not same for me.
+>> >>
+>> >> My understanding is that:
+>> >> Regular thread keeps writing one by one char to rtipc, and the real-time
+>> >> task reads one char at a time. Then real-time task call rt_pipe_stream
+>> >> which keeps storing all the characters until read is called.
+>> >>
+>> >> Finally, when regular thread calls "read" then all the data from
+>> >> stream will be read by the regular thread at once.
+>> >>
+>> >> I implemented it in similar way, but in the end regular thread could
+>> >> read only one char (first char) in the end.
+>> >>
+>> >>
+>> >> Thanks,
+>> >> Pintu
+>> >> On Tue, Aug 21, 2018 at 12:12 AM Greg Gallagher <greg@embeddedgreg.com>
+>> >> wrote:
+>> >> >
+>> >> > On Mon, Aug 20, 2018 at 2:02 PM, Pintu Kumar <pintu.ping@gmail.com>
+>> >> > wrote:
+>> >> > > May be both.
+>> >> > > Specially I want to know how to use may use of rt_pipe_steam with a
+>> >> > > use case
+>> >> > > example.
+>> >> > >
+>> >> > >
+>> >> > > On Mon, 20 Aug 2018, 10:10 pm Greg Gallagher, <greg@embeddedgreg.com>
+>> >> > > wrote:
+>> >> > >>
+>> >> > >> On Mon, Aug 20, 2018 at 9:48 AM, Pintu Kumar <pintu.ping@gmail.com>
+>> >> > >> wrote:
+>> >> > >> > Dear Greg,
+>> >> > >> >
+>> >> > >> > If you have any idea can you please explain how rt_pipe_stream
+>> >> > >> > works
+>> >> > >> > with an example.
+>> >> > >> > I need to prepare a demo, to demonstrate the usefulness of
+>> >> > >> > rt_pipe_stream API.
+>> >> > >> >
+>> >> > >> >
+>> >> > >> > Thanks,
+>> >> > >> > Pintu
+>> >> > >> > On Fri, Aug 17, 2018 at 6:56 PM Pintu Kumar <pintu.ping@gmail.com>
+>> >> > >> > wrote:
+>> >> > >> >>
+>> >> > >> >> Hi,
+>> >> > >> >>
+>> >> > >> >> I wanted to understand how rt_pipe_stream works and how it can be
+>> >> > >> >> useful.
+>> >> > >> >> I wanted to create a demo application using it.
+>> >> > >> >> But currently I could not figure out how to make use of it.
+>> >> > >> >>
+>> >> > >> >> I saw a sample pipe application under:
+>> >> > >> >> lib/alchemy/testsuite/pipe-1.c.
+>> >> > >> >> Based on this I am trying to create a new application that uses
+>> >> > >> >> rt_pipe_stream.
+>> >> > >> >> The rt_pipe_stream is working fine, but I wanted to test the
+>> >> > >> >> scenario
+>> >> > >> >> based on its description.
+>> >> > >> >>
+>> >> > >> >> My understanding is that:
+>> >> > >> >> Regular thread keeps write one by one char to rtipc, and the
+>> >> > >> >> real-time
+>> >> > >> >> task reads one char at a time. Then real-time task call
+>> >> > >> >> rt_pipe_stream
+>> >> > >> >> which keeps storing the char.
+>> >> > >> >> Finally, when regular thread calls "read" then all the data from
+>> >> > >> >> stream will be read by the regular thread at once.
+>> >> > >> >>
+>> >> > >> >> Hope my understanding is correct.
+>> >> > >> >> I want to prepare a sample application for the same.
+>> >> > >> >>
+>> >> > >> >> If any reference for rt_pipe_stream is available please let me
+>> >> > >> >> know.
+>> >> > >> >>
+>> >> > >> >>
+>> >> > >> >> Thanks,
+>> >> > >> >> Pintu
+>> >> > >> >
+>> >> > >> > _______________________________________________
+>> >> > >> > Xenomai mailing list
+>> >> > >> > Xenomai@xenomai.org
+>> >> > >> > https://xenomai.org/mailman/listinfo/xenomai
+>> >> > >>
+>> >> > >> HI,
+>> >> > >>   Do you want an explaination how they worked in cobalt or an
+>> >> > >> exaplaination of how to use them?
+>> >> > >>
+>> >> > >> Thanks
+>> >> > >>
+>> >> > >> Greg
+>> >> >
+>> >> > Start here:
+>> >> >
+>> >> >
+>> >> > https://xenomai.org/documentation/xenomai-3/html/xeno3prm/group__alchemy__pipe.html#ga29521cc898afa0069963964955167aa5
+>> >> >
+>> >> > I'll see what I can for an example.
+>> >> >
+>> >> > -Greg
+
+For your example, you are sending a message in rt_pipe_stream not a
+stream of bytes.  You'll need to change what you are sending in the
+rt_pipe_stream call.  I have a rough example working, I should have
+time to post it hopefully in the next few days.
+
+-Greg
+
