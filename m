@@ -1,21 +1,14 @@
-From: "A.s. Dong" <aisheng.dong@nxp.com>
-Date: Mon, 27 Aug 2018 16:55:35 +0000
-Message-ID: <AM0PR04MB4211DDEF0D3A057C455EF39C800B0@AM0PR04MB4211.eurprd04.prod.outlook.com>
-References: <AM0PR04MB4211273F120B170AAEBBA391800B0@AM0PR04MB4211.eurprd04.prod.outlook.com>
- <f0344a17-e6ea-32a0-25d2-00781428ce21@xenomai.org>
- <AM0PR04MB4211596E8B94D8BCDD15BF50800B0@AM0PR04MB4211.eurprd04.prod.outlook.com>
- <d7abf9bf-a2f1-9157-d2fc-64ad244ecb12@xenomai.org>
- <AM0PR04MB4211A53BF9E080D93D36B3B6800B0@AM0PR04MB4211.eurprd04.prod.outlook.com>
- <ffd862c5-e29d-4f8b-7d1c-367155fa76ec@xenomai.org>
- <AM0PR04MB4211D9D2754835F588EBAE5E800B0@AM0PR04MB4211.eurprd04.prod.outlook.com>
- <dce6d7a9-bbb4-886f-93b7-c57581ff4b44@xenomai.org>
-In-Reply-To: <dce6d7a9-bbb4-886f-93b7-c57581ff4b44@xenomai.org>
-Content-Language: en-US
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+Date: Mon, 27 Aug 2018 19:29:33 +0200
+From: Henning Schild <henning.schild@siemens.com>
+Message-ID: <20180827192933.1c3cfe9f@md1pvb1c.ad001.siemens.net>
+In-Reply-To: <53ba70d2-0de4-8614-ed43-cb437162628a@siemens.com>
+References: <20180827133347.26289-1-henning.schild@siemens.com>
+ <20180827133347.26289-2-henning.schild@siemens.com>
+ <53ba70d2-0de4-8614-ed43-cb437162628a@siemens.com>
 MIME-Version: 1.0
-Subject: Re: [Xenomai] IPIPE issue causes kernel warning when
- CONFIG_DEBUG_MUTEXES enabled
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai] [PATCH 1/1] x86: make fpu switching eager
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -24,117 +17,305 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Philippe Gerum <rpm@xenomai.org>, "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Jan Kiszka <jan.kiszka@siemens.com>
+Cc: Xenomai <xenomai@xenomai.org>
 
-PiAtLS0tLU9yaWdpbmFsIE1lc3NhZ2UtLS0tLQ0KPiBGcm9tOiBQaGlsaXBwZSBHZXJ1bSBbbWFp
-bHRvOnJwbUB4ZW5vbWFpLm9yZ10NCj4gU2VudDogVHVlc2RheSwgQXVndXN0IDI4LCAyMDE4IDEy
-OjQ3IEFNDQo+IFRvOiBBLnMuIERvbmcgPGFpc2hlbmcuZG9uZ0BueHAuY29tPjsgeGVub21haUB4
-ZW5vbWFpLm9yZw0KPiBTdWJqZWN0OiBSZTogSVBJUEUgaXNzdWUgY2F1c2VzIGtlcm5lbCB3YXJu
-aW5nIHdoZW4gQ09ORklHX0RFQlVHX01VVEVYRVMNCj4gZW5hYmxlZA0KPiANCj4gT24gMDgvMjcv
-MjAxOCAwNjozNCBQTSwgQS5zLiBEb25nIHdyb3RlOg0KPiA+PiAtLS0tLU9yaWdpbmFsIE1lc3Nh
-Z2UtLS0tLQ0KPiA+PiBGcm9tOiBQaGlsaXBwZSBHZXJ1bSBbbWFpbHRvOnJwbUB4ZW5vbWFpLm9y
-Z10NCj4gPj4gU2VudDogVHVlc2RheSwgQXVndXN0IDI4LCAyMDE4IDEyOjAwIEFNDQo+ID4+IFRv
-OiBBLnMuIERvbmcgPGFpc2hlbmcuZG9uZ0BueHAuY29tPjsgeGVub21haUB4ZW5vbWFpLm9yZw0K
-PiA+PiBTdWJqZWN0OiBSZTogSVBJUEUgaXNzdWUgY2F1c2VzIGtlcm5lbCB3YXJuaW5nIHdoZW4N
-Cj4gPj4gQ09ORklHX0RFQlVHX01VVEVYRVMgZW5hYmxlZA0KPiA+Pg0KPiA+PiBPbiAwOC8yNy8y
-MDE4IDA1OjQ4IFBNLCBBLnMuIERvbmcgd3JvdGU6DQo+ID4+Pj4gLS0tLS1PcmlnaW5hbCBNZXNz
-YWdlLS0tLS0NCj4gPj4+PiBGcm9tOiBQaGlsaXBwZSBHZXJ1bSBbbWFpbHRvOnJwbUB4ZW5vbWFp
-Lm9yZ10NCj4gPj4+PiBTZW50OiBNb25kYXksIEF1Z3VzdCAyNywgMjAxOCAxMTozMiBQTQ0KPiA+
-Pj4+IFRvOiBBLnMuIERvbmcgPGFpc2hlbmcuZG9uZ0BueHAuY29tPjsgeGVub21haUB4ZW5vbWFp
-Lm9yZw0KPiA+Pj4+IFN1YmplY3Q6IFJlOiBJUElQRSBpc3N1ZSBjYXVzZXMga2VybmVsIHdhcm5p
-bmcgd2hlbg0KPiA+Pj4+IENPTkZJR19ERUJVR19NVVRFWEVTIGVuYWJsZWQNCj4gPj4+Pg0KPiA+
-Pj4+IE9uIDA4LzI3LzIwMTggMDU6MTcgUE0sIEEucy4gRG9uZyB3cm90ZToNCj4gPj4+Pj4+IC0t
-LS0tT3JpZ2luYWwgTWVzc2FnZS0tLS0tDQo+ID4+Pj4+PiBGcm9tOiBQaGlsaXBwZSBHZXJ1bSBb
-bWFpbHRvOnJwbUB4ZW5vbWFpLm9yZ10NCj4gPj4+Pj4+IFNlbnQ6IE1vbmRheSwgQXVndXN0IDI3
-LCAyMDE4IDEwOjQ2IFBNDQo+ID4+Pj4+PiBUbzogQS5zLiBEb25nIDxhaXNoZW5nLmRvbmdAbnhw
-LmNvbT47IHhlbm9tYWlAeGVub21haS5vcmcNCj4gPj4+Pj4+IFN1YmplY3Q6IFJlOiBJUElQRSBp
-c3N1ZSBjYXVzZXMga2VybmVsIHdhcm5pbmcgd2hlbg0KPiA+Pj4+Pj4gQ09ORklHX0RFQlVHX01V
-VEVYRVMgZW5hYmxlZA0KPiA+Pj4+Pj4NCj4gPj4+Pj4+IE9uIDA4LzI3LzIwMTggMDI6NDAgUE0s
-IEEucy4gRG9uZyB3cm90ZToNCj4gPj4+Pj4+PiBIaSBYZW5vbWFpIEV4cGVydHMsDQo+ID4+Pj4+
-Pj4NCj4gPj4+Pj4+Pg0KPiA+Pj4+Pj4+DQo+ID4+Pj4+Pj4gV2UgbWV0IHRoZSBmb2xsb3dpbmcg
-a2VybmVsIHdhcm5pbmcgb24gYSBNWDZRIFNEQiBib2FyZCB3aXRoDQo+ID4+Pj4+Pj4gWGVub21h
-aSBlbmFibGVkIDQuOSBrZXJuZWwuDQo+ID4+Pj4+Pj4NCj4gPj4+Pj4+PiAoQ09ORklHX0RFQlVH
-X01VVEVYRVMgaXMgZW5hYmxlZCkuDQo+ID4+Pj4+Pj4NCj4gPj4+Pj4+Pg0KPiA+Pj4+Pj4+DQo+
-ID4+Pj4+Pj4gQWZ0ZXIgc29tZSBkZWJ1ZywgSSBmb3VuZCBpdCBzZWVtcyB0byBiZSBjYXVzZWQg
-YnkgSVBJUEUgY2FsbGluZw0KPiA+Pj4+Pj4+IHNsZWVwYWJsZSBmdW5jdGlvbiBpbiBpbnRlcnJ1
-cHQgY29udGV4dC4NCj4gPj4+Pj4+Pg0KPiA+Pj4+Pj4+IGFyY2gvYXJtL2tlcm5lbC9pcGlwZV90
-c2MuYzoNCj4gPj4+Pj4+Pg0KPiA+Pj4+Pj4+IGludCBjcHVmcmVxX3RyYW5zaXRpb25faGFuZGxl
-cigpDQo+ID4+Pj4+Pj4NCj4gPj4+Pj4+PiB7DQo+ID4+Pj4+Pj4NCj4gPj4+Pj4+PiDCoMKgwqDC
-oMKgwqAgLg0KPiA+Pj4+Pj4+DQo+ID4+Pj4+Pj4gwqDCoMKgwqDCoMKgIHNtcF9jYWxsX2Z1bmN0
-aW9uX3NpbmdsZShmcmVxcy0+Y3B1LCB1cGRhdGVfdGltZXJfZnJlcSwNCj4gPj4+Pj4+PiAmZnJl
-cSwgMSk7DQo+ID4+Pj4+Pj4NCj4gPj4+Pj4+PiB9DQo+ID4+Pj4+Pj4NCj4gPj4+Pj4+Pg0KPiA+
-Pj4+Pj4+DQo+ID4+Pj4+Pj4gV2hlcmUgdXBkYXRlX3RpbWVyX2ZyZXEgaXMgbm90IGFsbG93ZWQg
-dG8gYmUgc2xlZXAuIEJ1dCBpdCB3aWxsDQo+ID4+Pj4+Pj4gZmluYWxseSBjYWxsIGNsa19nZXRf
-cmF0ZQ0KPiA+Pj4+Pj4+DQo+ID4+Pj4+Pj4gSW4gdHdkX3JlZnJlc2hfZnJlcSB3aGljaCBoYXMg
-YSBtdXRleCBhbmQgdGhlbiB0cmlnZ2VyIHRoZQ0KPiA+Pj4+Pj4+IGZvbGxvd2luZyB3YXJuaW5n
-Lg0KPiA+Pj4+Pj4+DQo+ID4+Pj4+Pj4NCj4gPj4+Pj4+Pg0KPiA+Pj4+Pj4+IE15IHF1ZXN0aW9u
-cyBpczoNCj4gPj4+Pj4+Pg0KPiA+Pj4+Pj4+IERvZXMgWGVub21haSBzdXBwb3J0IENPTkZJR19E
-RUJVR19NVVRFWEVTPw0KPiA+Pj4+Pj4+DQo+ID4+Pj4+Pj4gU2hvdWxkIHdlIGRpc2FibGUgaXQg
-dG8gYXZvaWQgc3VjaCBpc3N1ZT8NCj4gPj4+Pj4+DQo+ID4+Pj4+PiBObywgdGhlIHVuZGVybHlp
-bmcgYnVnIHJlcG9ydGVkIGJ5IHRoZSBtaWdodF9zbGVlcCgpIGFzc2VydGlvbg0KPiA+Pj4+Pj4g
-d291bGQgc3RpbGwgYmUgdGhlcmUgYW55d2F5LCByaWdodD8NCj4gPj4+Pj4NCj4gPj4+Pj4gWWVz
-LCB5b3UncmUgcmlnaHQuDQo+ID4+Pj4+DQo+ID4+Pj4+PiBGaXhpbmcgaXQgaXMgdGhlIG9ubHkg
-c2FuZSB3YXkgdG8gZ28uIFRoaXMgY291bGQgYmUgZG9uZSBieSBmaXJzdA0KPiA+Pj4+Pj4gY29s
-bGVjdGluZyB0aGUgbmV3IHBlci1jcHUgdGltZXIgZnJlcXVlbmNpZXMgaW4gdGhlIGNwdWZyZXEN
-Cj4gPj4+Pj4+IHRyYW5zaXRpb24gaGFuZGxlciwgdGhlbiBhcHBseWluZyB0aGUgY2hhbmdlIHZp
-YQ0KPiA+Pj4+Pj4gdXBkYXRlX3RpbWVyX2ZyZXEsIHBhc3NpbmcgdGhlIHBlci1jcHUgYXJyYXkg
-b2YgZnJlcXVlbmNpZXMganVzdA0KPiA+Pj4+Pj4gY29sbGVjdGVkLiBUaGF0IHdvdWxkIHNwYXJl
-IHVzIHRoZSBuZWVkIHRvIHJldHJpZXZlIHRoZW0gYnkgYQ0KPiA+Pj4+Pj4gY2FsbCB0bw0KPiA+
-Pj4+Pj4gY2xrX2dldF9yYXRlKCkgaW4gdGhlIGxlYWYgaGFuZGxlci4NCj4gPj4+Pj4+DQo+ID4+
-Pj4+DQo+ID4+Pj4+IElzIHRoZXJlIGEgcXVpY2sgZml4Pw0KPiA+Pj4+PiBJJ20gbm90IHF1aXRl
-IGZhbWlsaWFyIHdpdGggWGVub21haS9JUElQRSBpbXBsZW1lbnRhdGlvbi4gSXQgc2VlbXMNCj4g
-Pj4+Pj4gdGhlcmUncmUgdHdvIFRpbWVycywgdHNjIGFuZCBpcGlwZV90aW1lci4gTm90IHN1cmUg
-Y2FuIGRvIGEgcHJvcGVyDQo+ID4+Pj4+IGZpeCBhY2NvcmRpbmcgdG8geW91ciBhYm92ZSBzdWdn
-ZXN0aW9ucy4NCj4gPj4+Pj4NCj4gPj4+Pg0KPiA+Pj4+IFRoYXQgd2FzIHRoZSBxdWljayBmaXgu
-IFRoZSByZWFsIGFuZCBjb21wbGV4IGZpeCB3b3VsZCBiZSB0byBzdG9wDQo+ID4+Pj4gZXhwcmVz
-c2luZyBkZWxheXMgYmFzZWQgb24gY2xvY2sgYW5kIHRpbWVyIGZyZXF1ZW5jaWVzIGZvciBpbnRl
-cm5hbA0KPiA+Pj4+IFhlbm9tYWkgdGltaW5ncywgYnV0IGFzIGNvdW50cyBvZiBuYW5vc2Vjb25k
-cyBleGNsdXNpdmVseS4NCj4gPj4+Pg0KPiA+Pj4+IFRoZSB1Z2x5IGZpeCB3b3VsZCBiZSBhcyBm
-b2xsb3dzOiBpZiB5b3UgY2FuIHRlbGwgdS1ib290IHRvIHN3aXRjaA0KPiA+Pj4+IHRoZSBib290
-IENQVSBvZiB5b3VyIGkuTVg2IHRvIHRoZSBoaWdoZXN0IGZyZXF1ZW5jeSBhdmFpbGFibGUNCj4g
-Pj4+PiBiZWZvcmUgYnJhbmNoaW5nIHRvIHRoZSBrZXJuZWwsIHRoZW4geW91IGNvdWxkIGp1c3Qg
-ZGlzYWJsZQ0KPiA+Pj4+IENPTkZJR19DUFVfRlJFUSwgY29tcGlsaW5nIHRoZSBvZmZlbmRpbmcg
-Y29kZSBvdXQuDQo+ID4+Pj4NCj4gPj4+PiBUaGlzIGNvZGUgd2UgaGF2ZSBiZWVuIGRpc2N1c3Np
-bmcgaXMgYSBrbHVkZ2UgdG8gbWFrZSBzdXJlDQo+ID4+Pj4gQ1BVRlJFUSdzIHBlcmZvcm1hbmNl
-IHBvbGljeSBnb3Zlcm5vciBpcyBhbGxvd2VkIHRvIGNoYW5nZSB0aGUgQ1BVLA0KPiA+Pj4+IGhl
-bmNlIHRoZSBUV0QgZnJlcXVlbmN5IG9uY2UgYW5kIG9ubHkgb25jZSBhdCBib290IHRpbWUsIHdp
-dGhvdXQNCj4gPj4+PiB3cmVja2luZyBYZW5vbWFpJ3MgaWRlYSBvZiB0aW1lLCBzbyB0aGF0IHRo
-ZSBDUFVzIHJ1biBhdCB0aGUNCj4gPj4+PiBoaWdoZXN0IGF2YWlsYWJsZQ0KPiA+PiBmcmVxdWVu
-Y3kuDQo+ID4+Pg0KPiA+Pj4gVGhhbmtzIGZvciB0aGUgaW5mby4NCj4gPj4+IFRoZSBjdXJyZW50
-IHVib290IHNlZW1zIGRvZXMgbm90IHN1cHBvcnQgaXQuIEJ1dCBpbiB0aGVvcnksIGl0IGNhbiBi
-ZQ0KPiBoYWNrZWQuDQo+ID4+PiBEbyB3ZSBoYXZlIHRvIHVzZSBhcm0gZ2xvYmFsIHRpbWVyPyBF
-LmcuIGZvciBoaWdoIGFjY3VyYWN5IG9yDQo+ID4+PiBzb21ldGhpbmcNCj4gPj4gZWxzZT8NCj4g
-Pj4+IElmIG5vdCwgaW14IGhhcyBhbm90aGVyIEdQVCB0aW1lciB3aGljaCBpcyBub3QgYWZmZWN0
-ZWQgYnkgY3B1ZnJlcS4NCj4gPj4NCj4gPj4gQXMgYSBjbG9ja3NvdXJjZSwgbXhjMSB3b3VsZCBk
-by4gTm90IGFzIGEgY2xvY2tldmVudCBkZXZpY2UgdGhvdWdoLA0KPiA+PiB3ZSBuZWVkIGEgcGVy
-LWNwdSBiZWFzdCBmb3IgbGF0ZW5jeSByZWFzb25zLg0KPiA+DQo+ID4gSW14IGdwdCBhcyBjbG9j
-a3NvdXJjZSBhbmQgdHdkIGlzIHN0aWxsIGNsb2NrZXZlbnQgZGV2aWNlcy4NCj4gPg0KPiA+IEl0
-IHNlZW1zIGFybSBzbXBfdHdkIGhhcyBpdHMgb3duIHR3ZF9yYXRlX2NoYW5nZSgpIGJhc2VkIG9u
-IGNsayBub3RpZmllci4NCj4gPiBBIGJpdCBzdHJhbmdlIHdoeSBhcm0gZ2xvYmFsIHRpbWVyIGRv
-ZXMgbm90IGltcGxlbWVudCBpdCAobGF0ZXN0DQo+ID4gbWFpbmxpbmUgYWxzbyBub3Qgc3VwcG9y
-dCkuIERvbid0IGtub3cgdG9vIG11Y2ggaGlzdG9yeSBhYm91dCBpdC4NCj4gPiBJTVggaXNzdWUg
-aXMgdHJpZ2dlciBieSB1c2luZyBhcm0gZ2xvYmFsIHRpbWVyIHdoaWNoIGlzIHJlZ2lzdGVyZCBh
-cw0KPiA+IGlwaXBlX3RzYyB0aW1lciBhbmQgaGF2aW5nIHJlZnJlc2hfZnJlcS4NCj4gPg0KPiA+
-IE5vdCBxdWl0IHVuZGVyc3RhbmQgdGhlIHJlbGF0aW9uc2hpcCBiZXR3ZWVuIGlwaXBlX3RzYyB0
-aW1lciBhbmQNCj4gPiBwZXItY3B1IHRpbWVycyBVc2VkIGluIFhlbm9tYWkuDQo+ID4NCj4gDQo+
-IFhlbm9tYWkgdW5mb3J0dW5hdGVseSBleHByZXNzZXMgZGVsYXlzIGFzIGNvdW50cyBvZiB0aWNr
-cyBmcm9tIGEgaGFyZHdhcmUNCj4gY2xvY2sgc291cmNlLCBoaXN0b3JpY2FsbHkgdGhlIHg4NiBU
-U0MsIGhlbmNlIHRoZSBpcGlwZV90c2MgbmFtaW5nIHRoYXQgc3R1Y2sNCj4gZnJvbSB0aGF0IGVy
-YS4gaXBpcGVfdHNjIGlzIHRoZSBBUk0tc3BlY2lmaWMgZnJhbWV3b3JrIHRoZSBJLXBpcGUgcHJv
-dmlkZXMgZm9yDQo+IGludGVyZmFjaW5nIHRoZSBnZW5lcmljIHBpcGVsaW5lIGNvcmUgd2l0aCB0
-cnVja2xvYWRzIG9mIHRpbWVyIGNsb2NrIHNvdXJjZSBjaGlwDQo+IHZhcmlhbnRzIGZvdW5kIGlu
-IHRoZSBBUk0oMzIpIHdvcmxkLg0KPiANCj4gQmVjYXVzZSBYZW5vbWFpIGV4cHJlc3NlcyBkZWxh
-eXMgYXMgY2xvY2soc291cmNlKSB0aWNrcywgdGhlIGNvbnZlcnNpb24gZnJvbQ0KPiBjbG9jayB0
-aWNrcyB0byBoYXJkd2FyZSB0aW1lciB0aWNrcyBtdXN0IGJlIGRvbmUgYXQgc29tZSBwb2ludCBp
-biB0aGUgcHJvY2Vzcw0KPiBvZiBwcm9ncmFtbWluZyB0aGUgbmV4dCBzaG90IChlLmcuIHBva2lu
-ZyBzb21lIGRlY3JlbWVudGVyKS4NCj4gVGhlIEktcGlwZSBzb21ld2hhdCBwaWdneWJhY2tzIGl0
-cyBoYXJkd2FyZSB0aW1lciBsb2dpYyBvbiB0aGUgcmVndWxhcg0KPiBjbG9ja2V2ZW50IG9iamVj
-dCwgaW50ZXJwb3Npbmcgb24gdGhlIGNsb2NrX2V2ZW50X2RldmljZSBoYW5kbGVycywgaGVuY2Ug
-dGhlDQo+IHJlbGF0aW9uc2hpcCBiZXR3ZWVuIGlwaXBlX3RzYyBhbmQgdGhlIHBlci1jcHUgdGlt
-ZXJzLg0KPiANCg0KR290IGl0Lg0KVGhhbmtzIGZvciB0aGUgZGV0YWlsZWQgZXhwbGFuYXRpb24u
-DQoNClJlZ2FyZHMNCkRvbmcgQWlzaGVuZw0KDQo+ID4gQlRXIHRoZSBsYXN0ZXN0IG1haW5saW5l
-IGtlcm5lbCBzZWVtcyBoYXZlIHRoZSBzYW1lIGlzc3VlIGFzIHJlcG9ydGVkDQo+ID4gaW4gdGhp
-cyBtYWlsIElmIENPTU1PTl9DTEsgaXMgbm90IGVuYWJsZWQuIChzZWU6IHR3ZF9jcHVmcmVxX3Ry
-YW5zaXRpb24oKSkuDQo+ID4NCj4gDQo+IFllcywgdGhpcyBpcyBnb2luZyB0byBiZSBhIHJlY3Vy
-cmluZyBpc3N1ZS4NCj4gDQo+IC0tDQo+IFBoaWxpcHBlLg0K
+Am Mon, 27 Aug 2018 18:36:49 +0200
+schrieb Jan Kiszka <jan.kiszka@siemens.com>:
+
+> On 2018-08-27 15:33, Henning Schild wrote:
+> > Linux 4.14 dropped support for lazy fpu switching and in the 4.4
+> > and 4.9 series similar changes where backported.
+> > So we can assume that fpu switching is purely eager for those
+> > Linux  
+> 
+> My reading of this patch is that we do not "assume" them to be eager,
+> we enforce that for now - until the changes from the related stable
+> merge do that.
+
+Yes, that is the way it was developed.
+
+> > kernel versions. That simplifies things a lot and we can drop
+> > several changes from the IPIPE patch.
+> > On the Xenomai side the only thing we still have to care about is
+> > the kernel fpu state when we interrupt an in kernel fpu user. But
+> > we do that explicit and can drop the indirection active_(fp)state.
+> >   
+> 
+> That patch resolving a mechanical merge conflict ahead of the merge, 
+> right? Does it break the build?
+
+this 108+ would not build/work indeed, the following 109 would work and
+build
+
+I guess i can split that into a fully working/compiling series. But i
+am honestly not sure the pain is worth the gain. At the moment we are
+looking at code for the "final" state, intermediate steps would
+introduce more ifdefs just to remove them later.
+
+So i would suggest to introduce the patch with a double-merge where the
+second one becomes one bisectable-commit on ipipe-4.9.y while the magic
+stays visible as a single commit on a side-branch.
+
+Henning
+
+> > Signed-off-by: Henning Schild <henning.schild@siemens.com>
+> > ---
+> >   arch/x86/include/asm/fpu/internal.h | 30
+> > ++++++++---------------------- arch/x86/include/asm/fpu/types.h
+> > | 12 ------------ arch/x86/kernel/fpu/core.c          | 23
+> > +++++++++-------------- arch/x86/kernel/fpu/init.c          |  5
+> > +---- 4 files changed, 18 insertions(+), 52 deletions(-)
+> > 
+> > diff --git a/arch/x86/include/asm/fpu/internal.h
+> > b/arch/x86/include/asm/fpu/internal.h index
+> > 35ca184e83e1..6bdceba90f17 100644 ---
+> > a/arch/x86/include/asm/fpu/internal.h +++
+> > b/arch/x86/include/asm/fpu/internal.h @@ -13,7 +13,6 @@
+> >   #include <linux/compat.h>
+> >   #include <linux/sched.h>
+> >   #include <linux/slab.h>
+> > -#include <linux/kconfig.h>
+> >   #include <linux/ipipe.h>
+> >   
+> >   #include <asm/user.h>
+> > @@ -190,24 +189,12 @@ static inline int copy_user_to_fregs(struct
+> > fregs_state __user *fx) return user_insn(frstor %[fx], "=m" (*fx),
+> > [fx] "m" (*fx)); }
+> >   
+> > -#ifdef CONFIG_IPIPE
+> > -static inline union fpregs_state *active_fpstate(struct fpu *fpu)
+> > -{
+> > -	return fpu->active_state;
+> > -}
+> > -#else
+> > -static inline union fpregs_state *active_fpstate(struct fpu *fpu)
+> > -{
+> > -	return &fpu->state;
+> > -}
+> > -#endif
+> > -
+> >   static inline void copy_fxregs_to_kernel(struct fpu *fpu)
+> >   {
+> >   	if (IS_ENABLED(CONFIG_X86_32))
+> > -		asm volatile( "fxsave %[fx]" : [fx]
+> > "=m" (active_fpstate(fpu)->fxsave));
+> > +		asm volatile( "fxsave %[fx]" : [fx]
+> > "=m" (fpu->state.fxsave)); else if (IS_ENABLED(CONFIG_AS_FXSAVEQ))
+> > -		asm volatile("fxsaveq %[fx]" : [fx]
+> > "=m" (active_fpstate(fpu)->fxsave));
+> > +		asm volatile("fxsaveq %[fx]" : [fx]
+> > "=m" (fpu->state.fxsave)); else {
+> >   		/* Using "rex64; fxsave %0" is broken because, if
+> > the memory
+> >   		 * operand uses any extended registers for
+> > addressing, a second @@ -231,8 +218,8 @@ static inline void
+> > copy_fxregs_to_kernel(struct fpu *fpu)
+> >   		 * registers.
+> >   		 */
+> >   		asm volatile( "rex64/fxsave (%[fx])"
+> > -			      : "=m" (active_fpstate(fpu)->fxsave)
+> > -			      : [fx]
+> > "R" (&active_fpstate(fpu)->fxsave));
+> > +                             : "=m" (fpu->state.fxsave)
+> > +                             : [fx] "R" (&fpu->state.fxsave));
+> >   	}
+> >   }
+> >   
+> > @@ -441,7 +428,7 @@ static inline int copy_user_to_xregs(struct
+> > xregs_state __user *buf, u64 mask) static inline int
+> > copy_fpregs_to_fpstate(struct fpu *fpu) {
+> >   	if (likely(use_xsave())) {
+> > -		copy_xregs_to_kernel(&active_fpstate(fpu)->xsave);
+> > +		copy_xregs_to_kernel(&fpu->state.xsave);
+> >   		return 1;
+> >   	}
+> >   
+> > @@ -454,7 +441,7 @@ static inline int copy_fpregs_to_fpstate(struct
+> > fpu *fpu)
+> >   	 * Legacy FPU register saving, FNSAVE always clears FPU
+> > registers,
+> >   	 * so we have to mark them inactive:
+> >   	 */
+> > -	asm volatile("fnsave %[fp]; fwait" : [fp]
+> > "=m" (active_fpstate(fpu)->fsave));
+> > +	asm volatile("fnsave %[fp]; fwait" : [fp]
+> > "=m" (fpu->state.fsave)); 
+> >   	return 0;
+> >   }
+> > @@ -609,8 +596,7 @@ switch_fpu_prepare(struct fpu *old_fpu, struct
+> > fpu *new_fpu, int cpu)
+> >   	 * If the task has used the math, pre-load the FPU on
+> > xsave processors
+> >   	 * or if the past 5 consecutive context-switches used
+> > math. */
+> > -	fpu.preload = !IS_ENABLED(CONFIG_IPIPE) &&
+> > -		      static_cpu_has(X86_FEATURE_FPU) &&
+> > +	fpu.preload = static_cpu_has(X86_FEATURE_FPU) &&
+> >   		      new_fpu->fpstate_active &&
+> >   		      (use_eager_fpu() || new_fpu->counter > 5);
+> >   
+> > @@ -660,7 +646,7 @@ switch_fpu_prepare(struct fpu *old_fpu, struct
+> > fpu *new_fpu, int cpu) */
+> >   static inline void switch_fpu_finish(struct fpu *new_fpu,
+> > fpu_switch_t fpu_switch) {
+> > -	if (!IS_ENABLED(CONFIG_IPIPE) && fpu_switch.preload)
+> > +	if (fpu_switch.preload)
+> >   		copy_kernel_to_fpregs(&new_fpu->state);
+> >   }
+> >   
+> > diff --git a/arch/x86/include/asm/fpu/types.h
+> > b/arch/x86/include/asm/fpu/types.h index 497c551469ec..48df486b02f9
+> > 100644 --- a/arch/x86/include/asm/fpu/types.h
+> > +++ b/arch/x86/include/asm/fpu/types.h
+> > @@ -332,18 +332,6 @@ struct fpu {
+> >   	 * deal with bursty apps that only use the FPU for a
+> > short time: */
+> >   	unsigned char			counter;
+> > -
+> > -#ifdef CONFIG_IPIPE
+> > -	/*
+> > -	 * @active_state
+> > -	 *
+> > -	 * An indirection pointer to reach the active state context
+> > -	 * for the task.  This is used by co-kernels for dealing
+> > with
+> > -	 * preemption of kernel fpu contexts by their own tasks.
+> > -	 */
+> > -	union fpregs_state		*active_state;
+> > -#endif
+> > -	
+> >   	/*
+> >   	 * @state:
+> >   	 *
+> > diff --git a/arch/x86/kernel/fpu/core.c b/arch/x86/kernel/fpu/core.c
+> > index d31a73b2ab76..b065652845e1 100644
+> > --- a/arch/x86/kernel/fpu/core.c
+> > +++ b/arch/x86/kernel/fpu/core.c
+> > @@ -124,7 +124,7 @@ void __kernel_fpu_end(void)
+> >   
+> >   	flags = hard_cond_local_irq_save();
+> >   	if (fpu->fpregs_active)
+> > -		copy_kernel_to_fpregs(active_fpstate(fpu));
+> > +		copy_kernel_to_fpregs(&fpu->state);
+> >   	else
+> >   		__fpregs_deactivate_hw();
+> >   
+> > @@ -184,7 +184,7 @@ EXPORT_SYMBOL_GPL(irq_ts_restore);
+> >   void fpu__save(struct fpu *fpu)
+> >   {
+> >   	unsigned long flags;
+> > -	
+> > +  
+> 
+> That's removing a whitespace deviation to upstream or adding one?
+> 
+> >   	WARN_ON_FPU(fpu != &current->thread.fpu);
+> >   
+> >   	flags = hard_preempt_disable();
+> > @@ -192,7 +192,7 @@ void fpu__save(struct fpu *fpu)
+> >   	if (fpu->fpregs_active) {
+> >   		if (!copy_fpregs_to_fpstate(fpu)) {
+> >   			if (use_eager_fpu())
+> > -
+> > copy_kernel_to_fpregs(active_fpstate(fpu));
+> > +				copy_kernel_to_fpregs(&fpu->state);
+> >   			else
+> >   				fpregs_deactivate(fpu);
+> >   		}
+> > @@ -244,13 +244,8 @@ int fpu__copy(struct fpu *dst_fpu, struct fpu
+> > *src_fpu) dst_fpu->counter = 0;
+> >   	dst_fpu->fpregs_active = 0;
+> >   	dst_fpu->last_cpu = -1;
+> > -#ifdef CONFIG_IPIPE
+> > -	/* Must be set before FPU context is copied. */
+> > -	dst_fpu->active_state = &dst_fpu->state;
+> > -#endif
+> >   
+> > -	if (!IS_ENABLED(CONFIG_IPIPE) &&
+> > -	    (!src_fpu->fpstate_active
+> > || !static_cpu_has(X86_FEATURE_FPU)))
+> > +	if (!src_fpu->fpstate_active
+> > || !static_cpu_has(X86_FEATURE_FPU)) return 0;
+> >   
+> >   	WARN_ON_FPU(src_fpu != &current->thread.fpu);
+> > @@ -283,7 +278,7 @@ int fpu__copy(struct fpu *dst_fpu, struct fpu
+> > *src_fpu) fpu_kernel_xstate_size);
+> >   
+> >   		if (use_eager_fpu())
+> > -
+> > copy_kernel_to_fpregs(active_fpstate(src_fpu));
+> > +			copy_kernel_to_fpregs(&src_fpu->state);
+> >   		else
+> >   			fpregs_deactivate(src_fpu);
+> >   	}
+> > @@ -430,7 +425,7 @@ void fpu__current_fpstate_write_end(void)
+> >   	 * an XRSTOR if they are active.
+> >   	 */
+> >   	if (fpregs_active())
+> > -		copy_kernel_to_fpregs(active_fpstate(fpu));
+> > +		copy_kernel_to_fpregs(&fpu->state);
+> >   
+> >   	/*
+> >   	 * Our update is done and the fpregs/fpstate are in sync
+> > @@ -460,7 +455,7 @@ void fpu__restore(struct fpu *fpu)
+> >   	kernel_fpu_disable();
+> >   	trace_x86_fpu_before_restore(fpu);
+> >   	fpregs_activate(fpu);
+> > -	copy_kernel_to_fpregs(active_fpstate(fpu));
+> > +	copy_kernel_to_fpregs(&fpu->state);
+> >   	fpu->counter++;
+> >   	trace_x86_fpu_after_restore(fpu);
+> >   	kernel_fpu_enable();
+> > @@ -489,7 +484,7 @@ EXPORT_SYMBOL_GPL(fpu__restore);
+> >   void fpu__drop(struct fpu *fpu)
+> >   {
+> >   	unsigned long flags;
+> > -	
+> > +
+> >   	flags = hard_preempt_disable();
+> >   	fpu->counter = 0;
+> >   
+> > @@ -536,7 +531,7 @@ static inline void
+> > copy_init_fpstate_to_fpregs(void) void fpu__clear(struct fpu *fpu)
+> >   {
+> >   	unsigned long flags;
+> > -	
+> > +  
+> 
+> Same question applies to these to hunks as well.
+> 
+> >   	WARN_ON_FPU(fpu != &current->thread.fpu); /* Almost
+> > certainly an anomaly */ 
+> >   	fpu__drop(fpu);
+> > diff --git a/arch/x86/kernel/fpu/init.c b/arch/x86/kernel/fpu/init.c
+> > index 3eee35d3d6f8..a1fc061d03e1 100644
+> > --- a/arch/x86/kernel/fpu/init.c
+> > +++ b/arch/x86/kernel/fpu/init.c
+> > @@ -42,9 +42,6 @@ static void fpu__init_cpu_generic(void)
+> >   		cr0 |= X86_CR0_EM;
+> >   	write_cr0(cr0);
+> >   
+> > -#ifdef CONFIG_IPIPE
+> > -	current->thread.fpu.active_state =
+> > &current->thread.fpu.state; -#endif
+> >   	/* Flush out any pending x87 state: */
+> >   #ifdef CONFIG_MATH_EMULATION
+> >   	if (!boot_cpu_has(X86_FEATURE_FPU))
+> > @@ -329,7 +326,7 @@ static void __init
+> > fpu__init_system_ctx_switch(void) eagerfpu = ENABLE;
+> >   
+> >   	if (IS_ENABLED(CONFIG_IPIPE))
+> > -		eagerfpu = DISABLE;
+> > +		eagerfpu = ENABLE;  
+> 
+> Won't that be obsolete when we merge 4.9.109+?
+> 
+> >   
+> >   	if (eagerfpu == ENABLE)
+> >   		setup_force_cpu_cap(X86_FEATURE_EAGER_FPU);
+> >   
+> 
+> Jan
+
 
