@@ -1,18 +1,15 @@
-References: <AM0PR04MB4211273F120B170AAEBBA391800B0@AM0PR04MB4211.eurprd04.prod.outlook.com>
- <f0344a17-e6ea-32a0-25d2-00781428ce21@xenomai.org>
- <AM0PR04MB4211596E8B94D8BCDD15BF50800B0@AM0PR04MB4211.eurprd04.prod.outlook.com>
- <d7abf9bf-a2f1-9157-d2fc-64ad244ecb12@xenomai.org>
- <AM0PR04MB4211A53BF9E080D93D36B3B6800B0@AM0PR04MB4211.eurprd04.prod.outlook.com>
-From: Philippe Gerum <rpm@xenomai.org>
-Message-ID: <ffd862c5-e29d-4f8b-7d1c-367155fa76ec@xenomai.org>
-Date: Mon, 27 Aug 2018 17:59:50 +0200
+References: <cover.1535375976.git.henning.schild@siemens.com>
+ <9943ff4b424f1d12b00b2d087680e5c0047fbe00.1535375976.git.henning.schild@siemens.com>
+From: Jan Kiszka <jan.kiszka@siemens.com>
+Message-ID: <a609a61c-9035-b5cb-6e22-5dcf081cc5b2@siemens.com>
+Date: Mon, 27 Aug 2018 18:12:39 +0200
 MIME-Version: 1.0
-In-Reply-To: <AM0PR04MB4211A53BF9E080D93D36B3B6800B0@AM0PR04MB4211.eurprd04.prod.outlook.com>
-Content-Type: text/plain; charset="utf-8"
+In-Reply-To: <9943ff4b424f1d12b00b2d087680e5c0047fbe00.1535375976.git.henning.schild@siemens.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Language: en-US
-Content-Transfer-Encoding: 8bit
-Subject: Re: [Xenomai] IPIPE issue causes kernel warning when
- CONFIG_DEBUG_MUTEXES enabled
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai] [PATCH 1/3] cobalt/x86: add support for eager fpu
+ handling
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -21,109 +18,262 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "A.s. Dong" <aisheng.dong@nxp.com>, "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Henning Schild <henning.schild@siemens.com>, Xenomai <xenomai@xenomai.org>
 
-On 08/27/2018 05:48 PM, A.s. Dong wrote:
->> -----Original Message-----
->> From: Philippe Gerum [mailto:rpm@xenomai.org]
->> Sent: Monday, August 27, 2018 11:32 PM
->> To: A.s. Dong <aisheng.dong@nxp.com>; xenomai@xenomai.org
->> Subject: Re: IPIPE issue causes kernel warning when CONFIG_DEBUG_MUTEXES
->> enabled
->>
->> On 08/27/2018 05:17 PM, A.s. Dong wrote:
->>>> -----Original Message-----
->>>> From: Philippe Gerum [mailto:rpm@xenomai.org]
->>>> Sent: Monday, August 27, 2018 10:46 PM
->>>> To: A.s. Dong <aisheng.dong@nxp.com>; xenomai@xenomai.org
->>>> Subject: Re: IPIPE issue causes kernel warning when
->>>> CONFIG_DEBUG_MUTEXES enabled
->>>>
->>>> On 08/27/2018 02:40 PM, A.s. Dong wrote:
->>>>> Hi Xenomai Experts,
->>>>>
->>>>>
->>>>>
->>>>> We met the following kernel warning on a MX6Q SDB board with Xenomai
->>>>> enabled 4.9 kernel.
->>>>>
->>>>> (CONFIG_DEBUG_MUTEXES is enabled).
->>>>>
->>>>>
->>>>>
->>>>> After some debug, I found it seems to be caused by IPIPE calling
->>>>> sleepable function in interrupt context.
->>>>>
->>>>> arch/arm/kernel/ipipe_tsc.c:
->>>>>
->>>>> int cpufreq_transition_handler()
->>>>>
->>>>> {
->>>>>
->>>>>        .
->>>>>
->>>>>        smp_call_function_single(freqs->cpu, update_timer_freq,
->>>>> &freq, 1);
->>>>>
->>>>> }
->>>>>
->>>>>
->>>>>
->>>>> Where update_timer_freq is not allowed to be sleep. But it will
->>>>> finally call clk_get_rate
->>>>>
->>>>> In twd_refresh_freq which has a mutex and then trigger the following
->>>>> warning.
->>>>>
->>>>>
->>>>>
->>>>> My questions is:
->>>>>
->>>>> Does Xenomai support CONFIG_DEBUG_MUTEXES?
->>>>>
->>>>> Should we disable it to avoid such issue?
->>>>
->>>> No, the underlying bug reported by the might_sleep() assertion would
->>>> still be there anyway, right?
->>>
->>> Yes, you're right.
->>>
->>>> Fixing it is the only sane way to go. This could be done by first
->>>> collecting the new per-cpu timer frequencies in the cpufreq
->>>> transition handler, then applying the change via update_timer_freq,
->>>> passing the per-cpu array of frequencies just collected. That would
->>>> spare us the need to retrieve them by a call to
->>>> clk_get_rate() in the leaf handler.
->>>>
->>>
->>> Is there a quick fix?
->>> I'm not quite familiar with Xenomai/IPIPE implementation. It seems
->>> there're two Timers, tsc and ipipe_timer. Not sure can do a proper fix
->>> according to your above suggestions.
->>>
->>
->> That was the quick fix. The real and complex fix would be to stop expressing
->> delays based on clock and timer frequencies for internal Xenomai timings, but
->> as counts of nanoseconds exclusively.
->>
->> The ugly fix would be as follows: if you can tell u-boot to switch the boot CPU
->> of your i.MX6 to the highest frequency available before branching to the kernel,
->> then you could just disable CONFIG_CPU_FREQ, compiling the offending code
->> out.
->>
->> This code we have been discussing is a kludge to make sure CPUFREQ's
->> performance policy governor is allowed to change the CPU, hence the TWD
->> frequency once and only once at boot time, without wrecking Xenomai's idea
->> of time, so that the CPUs run at the highest available frequency.
+On 2018-08-27 15:28, Henning Schild wrote:
+> Upstream 4.14 switched to purely eager fpu switching. That was
+> backported to 4.4 and 4.9. This commit makes cobalt able to deal whith
+> the changed kernel behaviour.
 > 
-> Thanks for the info.
-> The current uboot seems does not support it. But in theory, it can be hacked.
-> Do we have to use arm global timer? E.g. for high accuracy or something else?
-> If not, imx has another GPT timer which is not affected by cpufreq. 
+> Introduce IPIPE_X86_FPU_EAGER to switch between the new and the old
+> implementations. The new implementation is much simpler than the old
+> one. We basically only deal with the odd case where Xenomai preempts
+> Linux in a kernel-fpu context.
+> In a regular Linux that can never happen and if it happens we need to
+> make sure to get things into a consistent state. We have to make
+> "current" as not owning the fpu anymore and allow others to use
+> in-kernel fpu (kernel_fpu_enable). __switch_to from Linux will do the
+> rest.
+> 
+> Signed-off-by: Henning Schild <henning.schild@siemens.com>
+> ---
+>   .../cobalt/arch/x86/include/asm/xenomai/thread.h   |  8 ++-
+>   .../cobalt/arch/x86/include/asm/xenomai/wrappers.h |  6 ++
+>   kernel/cobalt/arch/x86/thread.c                    | 67 +++++++++++++++++++++-
+>   3 files changed, 78 insertions(+), 3 deletions(-)
+> 
+> diff --git a/kernel/cobalt/arch/x86/include/asm/xenomai/thread.h b/kernel/cobalt/arch/x86/include/asm/xenomai/thread.h
+> index f174a82c0..0c5c4da9c 100644
+> --- a/kernel/cobalt/arch/x86/include/asm/xenomai/thread.h
+> +++ b/kernel/cobalt/arch/x86/include/asm/xenomai/thread.h
+> @@ -24,6 +24,7 @@
+>   #include <asm/xenomai/wrappers.h>
+>   #include <asm/traps.h>
+>   
+> +#ifndef IPIPE_X86_FPU_EAGER
+>   #if LINUX_VERSION_CODE < KERNEL_VERSION(4,4,0)
+>   typedef union thread_xstate x86_fpustate;
+>   #define x86_fpustate_ptr(t) ((t)->fpu.state)
+> @@ -31,6 +32,7 @@ typedef union thread_xstate x86_fpustate;
+>   typedef union fpregs_state x86_fpustate;
+>   #define x86_fpustate_ptr(t) ((t)->fpu.active_state)
+>   #endif
+> +#endif
+>   
+>   struct xnarchtcb {
+>   	struct xntcb core;
+> @@ -40,10 +42,14 @@ struct xnarchtcb {
+>   	unsigned long ip;
+>   	unsigned long *ipp;
+>   #endif
+> +#ifdef IPIPE_X86_FPU_EAGER
+> +	struct fpu *kfpu;
+> +#else
+>   	x86_fpustate *fpup;
+> -	unsigned int root_kfpu: 1;
+>   	unsigned int root_used_math: 1;
+>   	x86_fpustate *kfpu_state;
+> +#endif
+> +	unsigned int root_kfpu: 1;
+>   	struct {
+>   		unsigned long ip;
+>   		unsigned long ax;
+> diff --git a/kernel/cobalt/arch/x86/include/asm/xenomai/wrappers.h b/kernel/cobalt/arch/x86/include/asm/xenomai/wrappers.h
+> index 5f9cff3c9..73df60cc6 100644
+> --- a/kernel/cobalt/arch/x86/include/asm/xenomai/wrappers.h
+> +++ b/kernel/cobalt/arch/x86/include/asm/xenomai/wrappers.h
+> @@ -24,6 +24,12 @@
+>   #define __get_user_inatomic __get_user
+>   #define __put_user_inatomic __put_user
+>   
+> +#if LINUX_VERSION_CODE >= KERNEL_VERSION(4,9,0) && \
 
-As a clocksource, mxc1 would do. Not as a clockevent device though, we
-need a per-cpu beast for latency reasons.
+This condition it redundant to > 4.9.108.
+
+> +    LINUX_VERSION_CODE < KERNEL_VERSION(4,10,0) && \
+> +    LINUX_VERSION_CODE > KERNEL_VERSION(4,9,108)
+> +#define IPIPE_X86_FPU_EAGER
+> +#endif
+> +
+>   #if LINUX_VERSION_CODE < KERNEL_VERSION(4,2,0)
+>   #include <asm/i387.h>
+>   #include <asm/fpu-internal.h>
+> diff --git a/kernel/cobalt/arch/x86/thread.c b/kernel/cobalt/arch/x86/thread.c
+> index 7fb136300..54bc5c008 100644
+> --- a/kernel/cobalt/arch/x86/thread.c
+> +++ b/kernel/cobalt/arch/x86/thread.c
+> @@ -28,9 +28,13 @@
+>   
+>   static struct kmem_cache *xstate_cache;
+>   
+> +#ifdef IPIPE_X86_FPU_EAGER
+> +#define fpu_kernel_xstate_size sizeof(struct fpu)
+> +#else
+>   #if LINUX_VERSION_CODE < KERNEL_VERSION(4,7,0)
+>   #define fpu_kernel_xstate_size xstate_size
+>   #endif
+> +#endif
+>   
+>   #if LINUX_VERSION_CODE >= KERNEL_VERSION(4,6,0)
+>   #define cpu_has_xmm boot_cpu_has(X86_FEATURE_XMM)
+> @@ -199,20 +203,24 @@ void xnarch_switch_to(struct xnthread *out, struct xnthread *in)
+>   	struct mm_struct *prev_mm, *next_mm;
+>   
+>   	prev = out_tcb->core.host_task;
+> +#ifndef IPIPE_X86_FPU_EAGER
+>   	if (x86_fpregs_active(prev))
+>   		/*
+>   		 * __switch_to will try and use __unlazy_fpu, so we
+>   		 * need to clear the ts bit.
+>   		 */
+>   		clts();
+> +#endif
+>   
+>   	next = in_tcb->core.host_task;
+> +#ifndef IPIPE_X86_FPU_EAGER
+>   #if LINUX_VERSION_CODE >= KERNEL_VERSION(4,2,0)
+>   	next->thread.fpu.counter = 0;
+>   #elif LINUX_VERSION_CODE >= KERNEL_VERSION(3,13,0)
+>   	next->thread.fpu_counter = 0;
+>   #else
+>   	next->fpu_counter = 0;
+> +#endif
+>   #endif
+>   	prev_mm = out_tcb->core.active_mm;
+>   	next_mm = in_tcb->core.mm;
+> @@ -245,9 +253,13 @@ void xnarch_switch_to(struct xnthread *out, struct xnthread *in)
+>   	switch_to(prev, next, last);
+>   #endif /* LINUX_VERSION_CODE >= 4.8 */
+>   
+> +#ifndef IPIPE_X86_FPU_EAGER
+>   	stts();
+> +#endif
+>   }
+>   
+> +#ifndef IPIPE_X86_FPU_EAGER
+
+I would put the EAGER case in front, also to avoid the negation whenever 
+there is an #else.
+
+> +
+>   #ifdef CONFIG_X86_64
+>   #define XSAVE_PREFIX	"0x48,"
+>   #define XSAVE_SUFFIX	"q"
+> @@ -359,11 +371,20 @@ int xnarch_handle_fpu_fault(struct xnthread *from,
+>   
+>   	return 1;
+>   }
+> +#else /* !IPIPE_X86_FPU_EAGER */
+
+Would be "/* IPIPE_X86_FPU_EAGER */", until you reorder.
+
+> +
+> +int xnarch_handle_fpu_fault(struct xnthread *from,
+> +			struct xnthread *to, struct ipipe_trap_data *d)
+> +{
+> +	BUG_ON(1);
+> +}
+> +#endif /* IPIPE_X86_FPU_EAGER */
+>   
+>   #define current_task_used_kfpu() kernel_fpu_disabled()
+>   
+>   #define tcb_used_kfpu(t) ((t)->root_kfpu)
+>   
+> +#ifndef IPIPE_X86_FPU_EAGER
+
+Same here.
+
+>   void xnarch_leave_root(struct xnthread *root)
+>   {
+>   	struct xnarchtcb *const rootcb = xnthread_archtcb(root);
+> @@ -430,6 +451,35 @@ void xnarch_switch_fpu(struct xnthread *from, struct xnthread *to)
+>   		p->flags &= ~PF_USED_MATH;
+>   	}
+>   }
+> +#else
+> +void xnarch_leave_root(struct xnthread *root)
+> +{
+> +	struct xnarchtcb *const rootcb = xnthread_archtcb(root);
+> +
+> +	rootcb->root_kfpu = current_task_used_kfpu();
+> +
+> +	if (!tcb_used_kfpu(rootcb))
+> +		return;
+> +
+> +	// the kernel never marked the task as not being the fpu owner anymore
+
+No C++-style comments, please.
+
+> +	if (&current->thread.fpu.fpstate_active)
+> +		fpregs_deactivate(&current->thread.fpu);
+> +
+> +	copy_fpregs_to_fpstate(rootcb->kfpu);
+> +	kernel_fpu_enable();
+> +}
+> +
+> +void xnarch_switch_fpu(struct xnthread *from, struct xnthread *to)
+> +{
+> +	struct xnarchtcb *const to_tcb = xnthread_archtcb(to);
+> +
+> +	if (!tcb_used_kfpu(to_tcb))
+> +		return;
+> +
+> +	copy_kernel_to_fpregs(&to_tcb->kfpu->state);
+> +	kernel_fpu_disable();
+> +}
+> +#endif /* IPIPE_X86_FPU_EAGER */
+>   
+>   void xnarch_init_root_tcb(struct xnthread *thread)
+>   {
+> @@ -440,9 +490,13 @@ void xnarch_init_root_tcb(struct xnthread *thread)
+>   	tcb->spp = &tcb->sp;
+>   	tcb->ipp = &tcb->ip;
+>   #endif	
+> +#ifndef IPIPE_X86_FPU_EAGER
+
+Ordering
+
+>   	tcb->fpup = NULL;
+> -	tcb->root_kfpu = 0;
+>   	tcb->kfpu_state = kmem_cache_zalloc(xstate_cache, GFP_KERNEL);
+> +#else
+> +	tcb->kfpu = kmem_cache_zalloc(xstate_cache, GFP_KERNEL);
+> +#endif
+> +	tcb->root_kfpu = 0;
+>   }
+>   
+>   void xnarch_init_shadow_tcb(struct xnthread *thread)
+> @@ -459,12 +513,21 @@ void xnarch_init_shadow_tcb(struct xnthread *thread)
+>   	tcb->ipp = &p->thread.rip; /* <!> raw naming intended. */
+>   #endif
+>   #endif
+> +#ifndef IPIPE_X86_FPU_EAGER
+
+And again.
+
+>   	tcb->fpup = x86_fpustate_ptr(&p->thread);
+> -	tcb->root_kfpu = 0;
+>   	tcb->kfpu_state = NULL;
+> +#else
+> +	tcb->kfpu = NULL;
+> +#endif
+> +	tcb->root_kfpu = 0;
+>   
+>   	/* XNFPU is set upon first FPU fault */
+>   	xnthread_clear_state(thread, XNFPU);
+> +
+> +#ifdef IPIPE_X86_FPU_EAGER
+> +	xnthread_set_state(thread, XNFPU);
+> +	fpu__activate_fpstate_read(&p->thread.fpu);
+> +#endif
+>   }
+>   
+>   int mach_x86_thread_init(void)
+> 
+
+Jan
 
 -- 
-Philippe.
+Siemens AG, Corporate Technology, CT RDA IOT SES-DE
+Corporate Competence Center Embedded Linux
 
