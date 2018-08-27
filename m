@@ -1,15 +1,19 @@
-Date: Mon, 27 Aug 2018 18:32:30 +0200
-From: Henning Schild <henning.schild@siemens.com>
-Message-ID: <20180827183230.415539ea@md1pvb1c.ad001.siemens.net>
-In-Reply-To: <14df678f-9f1c-8588-4c73-5f64b010f0b9@siemens.com>
-References: <cover.1535375976.git.henning.schild@siemens.com>
- <8861ff377012947ab2239066c864253975ea5bad.1535375976.git.henning.schild@siemens.com>
- <14df678f-9f1c-8588-4c73-5f64b010f0b9@siemens.com>
+From: "A.s. Dong" <aisheng.dong@nxp.com>
+Date: Mon, 27 Aug 2018 16:34:54 +0000
+Message-ID: <AM0PR04MB4211D9D2754835F588EBAE5E800B0@AM0PR04MB4211.eurprd04.prod.outlook.com>
+References: <AM0PR04MB4211273F120B170AAEBBA391800B0@AM0PR04MB4211.eurprd04.prod.outlook.com>
+ <f0344a17-e6ea-32a0-25d2-00781428ce21@xenomai.org>
+ <AM0PR04MB4211596E8B94D8BCDD15BF50800B0@AM0PR04MB4211.eurprd04.prod.outlook.com>
+ <d7abf9bf-a2f1-9157-d2fc-64ad244ecb12@xenomai.org>
+ <AM0PR04MB4211A53BF9E080D93D36B3B6800B0@AM0PR04MB4211.eurprd04.prod.outlook.com>
+ <ffd862c5-e29d-4f8b-7d1c-367155fa76ec@xenomai.org>
+In-Reply-To: <ffd862c5-e29d-4f8b-7d1c-367155fa76ec@xenomai.org>
+Content-Language: en-US
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] [PATCH 2/3] cobalt/x86: add ipipe-4.4 eager fpu
- support
+Subject: Re: [Xenomai] IPIPE issue causes kernel warning when
+ CONFIG_DEBUG_MUTEXES enabled
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -18,65 +22,90 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jan Kiszka <jan.kiszka@siemens.com>
-Cc: Xenomai <xenomai@xenomai.org>
+To: Philippe Gerum <rpm@xenomai.org>, "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-Am Mon, 27 Aug 2018 18:18:01 +0200
-schrieb Jan Kiszka <jan.kiszka@siemens.com>:
-
-> On 2018-08-27 15:28, Henning Schild wrote:
-> > Signed-off-by: Henning Schild <henning.schild@siemens.com>
-> > ---
-> >   kernel/cobalt/arch/x86/include/asm/xenomai/wrappers.h | 6 ++++++
-> >   1 file changed, 6 insertions(+)
-> > 
-> > diff --git a/kernel/cobalt/arch/x86/include/asm/xenomai/wrappers.h
-> > b/kernel/cobalt/arch/x86/include/asm/xenomai/wrappers.h index
-> > 73df60cc6..0156e86f0 100644 ---
-> > a/kernel/cobalt/arch/x86/include/asm/xenomai/wrappers.h +++
-> > b/kernel/cobalt/arch/x86/include/asm/xenomai/wrappers.h @@ -29,6
-> > +29,12 @@ LINUX_VERSION_CODE > KERNEL_VERSION(4,9,108)
-> >   #define IPIPE_X86_FPU_EAGER
-> >   #endif
-> > +// actually 4.4.138 drops lazy, but in IPIPE we do it at 72  
-> 
-> Huh? We also do lazy up to 4.4.137, at least in x86 staging (latest 
-> release was .71, indeed). But nothing has been removed from that old 
-> version to prevent laziness.
-
-The idea of these numbers is to make them work right after a
-(small) merge has been done on the kernel side. ipipe-4.4.y is at 71 so
-i chose 72, because we can switch to eager before we have to.
-
-In fact i do not care but that was the easiest for testing, because it
-allowed testing without dealing with what happened between 71 and 152.
-I started off with that (big) merge and when conflicts came up i decided
-to devide the problem.
-
-What we could do to stay in line with 4.9 is merge in the minor right
-before the upstream change (137), apply the patch with the exact number
-(138), and possibly merge 152 after that. But hey we can go eager
-whenever we want ... So i prefer the current way. Go eager in 72 and
-later merge 152+.
-
-Where is that staging branch you are talking about?
-
-Henning
-
-> > +#if LINUX_VERSION_CODE >= KERNEL_VERSION(4,4,0) && \  
-> 
-> Again, redundant condition.
-> 
-> > +    LINUX_VERSION_CODE < KERNEL_VERSION(4,5,0) && \
-> > +    LINUX_VERSION_CODE > KERNEL_VERSION(4,4,71)
-> > +#define IPIPE_X86_FPU_EAGER
-> > +#endif
-> >   
-> >   #if LINUX_VERSION_CODE < KERNEL_VERSION(4,2,0)
-> >   #include <asm/i387.h>
-> >   
-> 
-> Jan
-> 
-
+PiAtLS0tLU9yaWdpbmFsIE1lc3NhZ2UtLS0tLQ0KPiBGcm9tOiBQaGlsaXBwZSBHZXJ1bSBbbWFp
+bHRvOnJwbUB4ZW5vbWFpLm9yZ10NCj4gU2VudDogVHVlc2RheSwgQXVndXN0IDI4LCAyMDE4IDEy
+OjAwIEFNDQo+IFRvOiBBLnMuIERvbmcgPGFpc2hlbmcuZG9uZ0BueHAuY29tPjsgeGVub21haUB4
+ZW5vbWFpLm9yZw0KPiBTdWJqZWN0OiBSZTogSVBJUEUgaXNzdWUgY2F1c2VzIGtlcm5lbCB3YXJu
+aW5nIHdoZW4gQ09ORklHX0RFQlVHX01VVEVYRVMNCj4gZW5hYmxlZA0KPiANCj4gT24gMDgvMjcv
+MjAxOCAwNTo0OCBQTSwgQS5zLiBEb25nIHdyb3RlOg0KPiA+PiAtLS0tLU9yaWdpbmFsIE1lc3Nh
+Z2UtLS0tLQ0KPiA+PiBGcm9tOiBQaGlsaXBwZSBHZXJ1bSBbbWFpbHRvOnJwbUB4ZW5vbWFpLm9y
+Z10NCj4gPj4gU2VudDogTW9uZGF5LCBBdWd1c3QgMjcsIDIwMTggMTE6MzIgUE0NCj4gPj4gVG86
+IEEucy4gRG9uZyA8YWlzaGVuZy5kb25nQG54cC5jb20+OyB4ZW5vbWFpQHhlbm9tYWkub3JnDQo+
+ID4+IFN1YmplY3Q6IFJlOiBJUElQRSBpc3N1ZSBjYXVzZXMga2VybmVsIHdhcm5pbmcgd2hlbg0K
+PiA+PiBDT05GSUdfREVCVUdfTVVURVhFUyBlbmFibGVkDQo+ID4+DQo+ID4+IE9uIDA4LzI3LzIw
+MTggMDU6MTcgUE0sIEEucy4gRG9uZyB3cm90ZToNCj4gPj4+PiAtLS0tLU9yaWdpbmFsIE1lc3Nh
+Z2UtLS0tLQ0KPiA+Pj4+IEZyb206IFBoaWxpcHBlIEdlcnVtIFttYWlsdG86cnBtQHhlbm9tYWku
+b3JnXQ0KPiA+Pj4+IFNlbnQ6IE1vbmRheSwgQXVndXN0IDI3LCAyMDE4IDEwOjQ2IFBNDQo+ID4+
+Pj4gVG86IEEucy4gRG9uZyA8YWlzaGVuZy5kb25nQG54cC5jb20+OyB4ZW5vbWFpQHhlbm9tYWku
+b3JnDQo+ID4+Pj4gU3ViamVjdDogUmU6IElQSVBFIGlzc3VlIGNhdXNlcyBrZXJuZWwgd2Fybmlu
+ZyB3aGVuDQo+ID4+Pj4gQ09ORklHX0RFQlVHX01VVEVYRVMgZW5hYmxlZA0KPiA+Pj4+DQo+ID4+
+Pj4gT24gMDgvMjcvMjAxOCAwMjo0MCBQTSwgQS5zLiBEb25nIHdyb3RlOg0KPiA+Pj4+PiBIaSBY
+ZW5vbWFpIEV4cGVydHMsDQo+ID4+Pj4+DQo+ID4+Pj4+DQo+ID4+Pj4+DQo+ID4+Pj4+IFdlIG1l
+dCB0aGUgZm9sbG93aW5nIGtlcm5lbCB3YXJuaW5nIG9uIGEgTVg2USBTREIgYm9hcmQgd2l0aA0K
+PiA+Pj4+PiBYZW5vbWFpIGVuYWJsZWQgNC45IGtlcm5lbC4NCj4gPj4+Pj4NCj4gPj4+Pj4gKENP
+TkZJR19ERUJVR19NVVRFWEVTIGlzIGVuYWJsZWQpLg0KPiA+Pj4+Pg0KPiA+Pj4+Pg0KPiA+Pj4+
+Pg0KPiA+Pj4+PiBBZnRlciBzb21lIGRlYnVnLCBJIGZvdW5kIGl0IHNlZW1zIHRvIGJlIGNhdXNl
+ZCBieSBJUElQRSBjYWxsaW5nDQo+ID4+Pj4+IHNsZWVwYWJsZSBmdW5jdGlvbiBpbiBpbnRlcnJ1
+cHQgY29udGV4dC4NCj4gPj4+Pj4NCj4gPj4+Pj4gYXJjaC9hcm0va2VybmVsL2lwaXBlX3RzYy5j
+Og0KPiA+Pj4+Pg0KPiA+Pj4+PiBpbnQgY3B1ZnJlcV90cmFuc2l0aW9uX2hhbmRsZXIoKQ0KPiA+
+Pj4+Pg0KPiA+Pj4+PiB7DQo+ID4+Pj4+DQo+ID4+Pj4+IMKgwqDCoMKgwqDCoCAuDQo+ID4+Pj4+
+DQo+ID4+Pj4+IMKgwqDCoMKgwqDCoCBzbXBfY2FsbF9mdW5jdGlvbl9zaW5nbGUoZnJlcXMtPmNw
+dSwgdXBkYXRlX3RpbWVyX2ZyZXEsDQo+ID4+Pj4+ICZmcmVxLCAxKTsNCj4gPj4+Pj4NCj4gPj4+
+Pj4gfQ0KPiA+Pj4+Pg0KPiA+Pj4+Pg0KPiA+Pj4+Pg0KPiA+Pj4+PiBXaGVyZSB1cGRhdGVfdGlt
+ZXJfZnJlcSBpcyBub3QgYWxsb3dlZCB0byBiZSBzbGVlcC4gQnV0IGl0IHdpbGwNCj4gPj4+Pj4g
+ZmluYWxseSBjYWxsIGNsa19nZXRfcmF0ZQ0KPiA+Pj4+Pg0KPiA+Pj4+PiBJbiB0d2RfcmVmcmVz
+aF9mcmVxIHdoaWNoIGhhcyBhIG11dGV4IGFuZCB0aGVuIHRyaWdnZXIgdGhlDQo+ID4+Pj4+IGZv
+bGxvd2luZyB3YXJuaW5nLg0KPiA+Pj4+Pg0KPiA+Pj4+Pg0KPiA+Pj4+Pg0KPiA+Pj4+PiBNeSBx
+dWVzdGlvbnMgaXM6DQo+ID4+Pj4+DQo+ID4+Pj4+IERvZXMgWGVub21haSBzdXBwb3J0IENPTkZJ
+R19ERUJVR19NVVRFWEVTPw0KPiA+Pj4+Pg0KPiA+Pj4+PiBTaG91bGQgd2UgZGlzYWJsZSBpdCB0
+byBhdm9pZCBzdWNoIGlzc3VlPw0KPiA+Pj4+DQo+ID4+Pj4gTm8sIHRoZSB1bmRlcmx5aW5nIGJ1
+ZyByZXBvcnRlZCBieSB0aGUgbWlnaHRfc2xlZXAoKSBhc3NlcnRpb24NCj4gPj4+PiB3b3VsZCBz
+dGlsbCBiZSB0aGVyZSBhbnl3YXksIHJpZ2h0Pw0KPiA+Pj4NCj4gPj4+IFllcywgeW91J3JlIHJp
+Z2h0Lg0KPiA+Pj4NCj4gPj4+PiBGaXhpbmcgaXQgaXMgdGhlIG9ubHkgc2FuZSB3YXkgdG8gZ28u
+IFRoaXMgY291bGQgYmUgZG9uZSBieSBmaXJzdA0KPiA+Pj4+IGNvbGxlY3RpbmcgdGhlIG5ldyBw
+ZXItY3B1IHRpbWVyIGZyZXF1ZW5jaWVzIGluIHRoZSBjcHVmcmVxDQo+ID4+Pj4gdHJhbnNpdGlv
+biBoYW5kbGVyLCB0aGVuIGFwcGx5aW5nIHRoZSBjaGFuZ2UgdmlhIHVwZGF0ZV90aW1lcl9mcmVx
+LA0KPiA+Pj4+IHBhc3NpbmcgdGhlIHBlci1jcHUgYXJyYXkgb2YgZnJlcXVlbmNpZXMganVzdCBj
+b2xsZWN0ZWQuIFRoYXQgd291bGQNCj4gPj4+PiBzcGFyZSB1cyB0aGUgbmVlZCB0byByZXRyaWV2
+ZSB0aGVtIGJ5IGEgY2FsbCB0bw0KPiA+Pj4+IGNsa19nZXRfcmF0ZSgpIGluIHRoZSBsZWFmIGhh
+bmRsZXIuDQo+ID4+Pj4NCj4gPj4+DQo+ID4+PiBJcyB0aGVyZSBhIHF1aWNrIGZpeD8NCj4gPj4+
+IEknbSBub3QgcXVpdGUgZmFtaWxpYXIgd2l0aCBYZW5vbWFpL0lQSVBFIGltcGxlbWVudGF0aW9u
+LiBJdCBzZWVtcw0KPiA+Pj4gdGhlcmUncmUgdHdvIFRpbWVycywgdHNjIGFuZCBpcGlwZV90aW1l
+ci4gTm90IHN1cmUgY2FuIGRvIGEgcHJvcGVyDQo+ID4+PiBmaXggYWNjb3JkaW5nIHRvIHlvdXIg
+YWJvdmUgc3VnZ2VzdGlvbnMuDQo+ID4+Pg0KPiA+Pg0KPiA+PiBUaGF0IHdhcyB0aGUgcXVpY2sg
+Zml4LiBUaGUgcmVhbCBhbmQgY29tcGxleCBmaXggd291bGQgYmUgdG8gc3RvcA0KPiA+PiBleHBy
+ZXNzaW5nIGRlbGF5cyBiYXNlZCBvbiBjbG9jayBhbmQgdGltZXIgZnJlcXVlbmNpZXMgZm9yIGlu
+dGVybmFsDQo+ID4+IFhlbm9tYWkgdGltaW5ncywgYnV0IGFzIGNvdW50cyBvZiBuYW5vc2Vjb25k
+cyBleGNsdXNpdmVseS4NCj4gPj4NCj4gPj4gVGhlIHVnbHkgZml4IHdvdWxkIGJlIGFzIGZvbGxv
+d3M6IGlmIHlvdSBjYW4gdGVsbCB1LWJvb3QgdG8gc3dpdGNoDQo+ID4+IHRoZSBib290IENQVSBv
+ZiB5b3VyIGkuTVg2IHRvIHRoZSBoaWdoZXN0IGZyZXF1ZW5jeSBhdmFpbGFibGUgYmVmb3JlDQo+
+ID4+IGJyYW5jaGluZyB0byB0aGUga2VybmVsLCB0aGVuIHlvdSBjb3VsZCBqdXN0IGRpc2FibGUg
+Q09ORklHX0NQVV9GUkVRLA0KPiA+PiBjb21waWxpbmcgdGhlIG9mZmVuZGluZyBjb2RlIG91dC4N
+Cj4gPj4NCj4gPj4gVGhpcyBjb2RlIHdlIGhhdmUgYmVlbiBkaXNjdXNzaW5nIGlzIGEga2x1ZGdl
+IHRvIG1ha2Ugc3VyZSBDUFVGUkVRJ3MNCj4gPj4gcGVyZm9ybWFuY2UgcG9saWN5IGdvdmVybm9y
+IGlzIGFsbG93ZWQgdG8gY2hhbmdlIHRoZSBDUFUsIGhlbmNlIHRoZQ0KPiA+PiBUV0QgZnJlcXVl
+bmN5IG9uY2UgYW5kIG9ubHkgb25jZSBhdCBib290IHRpbWUsIHdpdGhvdXQgd3JlY2tpbmcNCj4g
+Pj4gWGVub21haSdzIGlkZWEgb2YgdGltZSwgc28gdGhhdCB0aGUgQ1BVcyBydW4gYXQgdGhlIGhp
+Z2hlc3QgYXZhaWxhYmxlDQo+IGZyZXF1ZW5jeS4NCj4gPg0KPiA+IFRoYW5rcyBmb3IgdGhlIGlu
+Zm8uDQo+ID4gVGhlIGN1cnJlbnQgdWJvb3Qgc2VlbXMgZG9lcyBub3Qgc3VwcG9ydCBpdC4gQnV0
+IGluIHRoZW9yeSwgaXQgY2FuIGJlIGhhY2tlZC4NCj4gPiBEbyB3ZSBoYXZlIHRvIHVzZSBhcm0g
+Z2xvYmFsIHRpbWVyPyBFLmcuIGZvciBoaWdoIGFjY3VyYWN5IG9yIHNvbWV0aGluZw0KPiBlbHNl
+Pw0KPiA+IElmIG5vdCwgaW14IGhhcyBhbm90aGVyIEdQVCB0aW1lciB3aGljaCBpcyBub3QgYWZm
+ZWN0ZWQgYnkgY3B1ZnJlcS4NCj4gDQo+IEFzIGEgY2xvY2tzb3VyY2UsIG14YzEgd291bGQgZG8u
+IE5vdCBhcyBhIGNsb2NrZXZlbnQgZGV2aWNlIHRob3VnaCwgd2UgbmVlZA0KPiBhIHBlci1jcHUg
+YmVhc3QgZm9yIGxhdGVuY3kgcmVhc29ucy4NCg0KSW14IGdwdCBhcyBjbG9ja3NvdXJjZSBhbmQg
+dHdkIGlzIHN0aWxsIGNsb2NrZXZlbnQgZGV2aWNlcy4NCg0KSXQgc2VlbXMgYXJtIHNtcF90d2Qg
+aGFzIGl0cyBvd24gdHdkX3JhdGVfY2hhbmdlKCkgYmFzZWQgb24gY2xrIG5vdGlmaWVyLg0KQSBi
+aXQgc3RyYW5nZSB3aHkgYXJtIGdsb2JhbCB0aW1lciBkb2VzIG5vdCBpbXBsZW1lbnQgaXQgKGxh
+dGVzdCBtYWlubGluZSBhbHNvDQpub3Qgc3VwcG9ydCkuIERvbid0IGtub3cgdG9vIG11Y2ggaGlz
+dG9yeSBhYm91dCBpdC4NCklNWCBpc3N1ZSBpcyB0cmlnZ2VyIGJ5IHVzaW5nIGFybSBnbG9iYWwg
+dGltZXIgd2hpY2ggaXMgcmVnaXN0ZXJkIGFzIGlwaXBlX3RzYyB0aW1lcg0KYW5kIGhhdmluZyBy
+ZWZyZXNoX2ZyZXEuDQoNCk5vdCBxdWl0IHVuZGVyc3RhbmQgdGhlIHJlbGF0aW9uc2hpcCBiZXR3
+ZWVuIGlwaXBlX3RzYyB0aW1lciBhbmQgcGVyLWNwdSB0aW1lcnMNClVzZWQgaW4gWGVub21haS4N
+Cg0KQlRXIHRoZSBsYXN0ZXN0IG1haW5saW5lIGtlcm5lbCBzZWVtcyBoYXZlIHRoZSBzYW1lIGlz
+c3VlIGFzIHJlcG9ydGVkIGluIHRoaXMgbWFpbA0KSWYgQ09NTU9OX0NMSyBpcyBub3QgZW5hYmxl
+ZC4gKHNlZTogdHdkX2NwdWZyZXFfdHJhbnNpdGlvbigpKS4NCg0KUmVnYXJkcw0KRG9uZyBBaXNo
+ZW5nDQoNCj4gDQo+IC0tDQo+IFBoaWxpcHBlLg0K
 
