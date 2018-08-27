@@ -1,14 +1,14 @@
+Date: Mon, 27 Aug 2018 18:32:30 +0200
+From: Henning Schild <henning.schild@siemens.com>
+Message-ID: <20180827183230.415539ea@md1pvb1c.ad001.siemens.net>
+In-Reply-To: <14df678f-9f1c-8588-4c73-5f64b010f0b9@siemens.com>
 References: <cover.1535375976.git.henning.schild@siemens.com>
- <b213d887c6dafd679240fd9c92db81650fea9fd0.1535375976.git.henning.schild@siemens.com>
-From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <44d138fc-717e-6b56-c9db-49cd9b5ea4f5@siemens.com>
-Date: Mon, 27 Aug 2018 18:28:52 +0200
+ <8861ff377012947ab2239066c864253975ea5bad.1535375976.git.henning.schild@siemens.com>
+ <14df678f-9f1c-8588-4c73-5f64b010f0b9@siemens.com>
 MIME-Version: 1.0
-In-Reply-To: <b213d887c6dafd679240fd9c92db81650fea9fd0.1535375976.git.henning.schild@siemens.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] [PATCH 3/3] cobalt/x86: add ipipe-4.14 eager fpu
+Subject: Re: [Xenomai] [PATCH 2/3] cobalt/x86: add ipipe-4.4 eager fpu
  support
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
@@ -18,128 +18,65 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Henning Schild <henning.schild@siemens.com>, Xenomai <xenomai@xenomai.org>
+To: Jan Kiszka <jan.kiszka@siemens.com>
+Cc: Xenomai <xenomai@xenomai.org>
 
-On 2018-08-27 15:28, Henning Schild wrote:
-> Signed-off-by: Henning Schild <henning.schild@siemens.com>
+Am Mon, 27 Aug 2018 18:18:01 +0200
+schrieb Jan Kiszka <jan.kiszka@siemens.com>:
 
-As this is more than adding the version filter, some commit message 
-would be nice.
-
-> ---
->   kernel/cobalt/arch/x86/include/asm/xenomai/wrappers.h |  4 ++++
->   kernel/cobalt/arch/x86/thread.c                       | 18 +++++++++++++++---
->   kernel/cobalt/include/asm-generic/xenomai/syscall.h   |  4 ++++
->   3 files changed, 23 insertions(+), 3 deletions(-)
+> On 2018-08-27 15:28, Henning Schild wrote:
+> > Signed-off-by: Henning Schild <henning.schild@siemens.com>
+> > ---
+> >   kernel/cobalt/arch/x86/include/asm/xenomai/wrappers.h | 6 ++++++
+> >   1 file changed, 6 insertions(+)
+> > 
+> > diff --git a/kernel/cobalt/arch/x86/include/asm/xenomai/wrappers.h
+> > b/kernel/cobalt/arch/x86/include/asm/xenomai/wrappers.h index
+> > 73df60cc6..0156e86f0 100644 ---
+> > a/kernel/cobalt/arch/x86/include/asm/xenomai/wrappers.h +++
+> > b/kernel/cobalt/arch/x86/include/asm/xenomai/wrappers.h @@ -29,6
+> > +29,12 @@ LINUX_VERSION_CODE > KERNEL_VERSION(4,9,108)
+> >   #define IPIPE_X86_FPU_EAGER
+> >   #endif
+> > +// actually 4.4.138 drops lazy, but in IPIPE we do it at 72  
 > 
-> diff --git a/kernel/cobalt/arch/x86/include/asm/xenomai/wrappers.h b/kernel/cobalt/arch/x86/include/asm/xenomai/wrappers.h
-> index 0156e86f0..4389d1202 100644
-> --- a/kernel/cobalt/arch/x86/include/asm/xenomai/wrappers.h
-> +++ b/kernel/cobalt/arch/x86/include/asm/xenomai/wrappers.h
-> @@ -35,6 +35,10 @@
->       LINUX_VERSION_CODE > KERNEL_VERSION(4,4,71)
->   #define IPIPE_X86_FPU_EAGER
->   #endif
-> +#if LINUX_VERSION_CODE >= KERNEL_VERSION(4,14,0)
-> +#define IPIPE_X86_FPU_EAGER
-> +#endif
-> +
->   
->   #if LINUX_VERSION_CODE < KERNEL_VERSION(4,2,0)
->   #include <asm/i387.h>
-> diff --git a/kernel/cobalt/arch/x86/thread.c b/kernel/cobalt/arch/x86/thread.c
-> index 54bc5c008..30dd37dab 100644
-> --- a/kernel/cobalt/arch/x86/thread.c
-> +++ b/kernel/cobalt/arch/x86/thread.c
-> @@ -42,6 +42,7 @@ static struct kmem_cache *xstate_cache;
->   #define cpu_has_xsave boot_cpu_has(X86_FEATURE_XSAVE)
->   #endif
->   
-> +#ifndef IPIPE_X86_FPU_EAGER
->   #if LINUX_VERSION_CODE < KERNEL_VERSION(4,2,0)
->   #include <asm/i387.h>
->   #include <asm/fpu-internal.h>
-> @@ -68,11 +69,11 @@ static inline void x86_fpregs_activate(struct task_struct *t)
->   	if (!x86_fpregs_active(t))
->   		__fpregs_activate(&t->thread.fpu);
->   }
-> +#endif
+> Huh? We also do lazy up to 4.4.137, at least in x86 staging (latest 
+> release was .71, indeed). But nothing has been removed from that old 
+> version to prevent laziness.
 
-I suspect that this is "< 4.2.0", right?
+The idea of these numbers is to make them work right after a
+(small) merge has been done on the kernel side. ipipe-4.4.y is at 71 so
+i chose 72, because we can switch to eager before we have to.
 
-> +#endif /* !IPIPE_X86_FPU_EAGER */
->   
->   #define x86_xstate_alignment		__alignof__(union fpregs_state)
->   
-> -#endif
-> -
+In fact i do not care but that was the easiest for testing, because it
+allowed testing without dealing with what happened between 71 and 152.
+I started off with that (big) merge and when conflicts came up i decided
+to devide the problem.
 
-That looks weird. Are you sure you want to enable that define 
-unconditionally?
+What we could do to stay in line with 4.9 is merge in the minor right
+before the upstream change (137), apply the patch with the exact number
+(138), and possibly merge 152 after that. But hey we can go eager
+whenever we want ... So i prefer the current way. Go eager in 72 and
+later merge 152+.
 
->   #if LINUX_VERSION_CODE < KERNEL_VERSION(4,8,0)
->   /*
->    * This is obsolete context switch code uselessly duplicating
-> @@ -462,7 +463,9 @@ void xnarch_leave_root(struct xnthread *root)
->   		return;
->   
->   	// the kernel never marked the task as not being the fpu owner anymore
-> +#if LINUX_VERSION_CODE < KERNEL_VERSION(4,14,0)
+Where is that staging branch you are talking about?
 
-The comment should address the version differences.
+Henning
 
->   	if (&current->thread.fpu.fpstate_active)
-> +#endif
->   		fpregs_deactivate(&current->thread.fpu);
->   
->   	copy_fpregs_to_fpstate(rootcb->kfpu);
-> @@ -526,7 +529,11 @@ void xnarch_init_shadow_tcb(struct xnthread *thread)
->   
->   #ifdef IPIPE_X86_FPU_EAGER
->   	xnthread_set_state(thread, XNFPU);
-> +#if LINUX_VERSION_CODE < KERNEL_VERSION(4,14,0)
->   	fpu__activate_fpstate_read(&p->thread.fpu);
-> +#else
-> +	fpu__prepare_read(&p->thread.fpu);
-> +#endif
->   #endif
->   }
->   
-> @@ -535,7 +542,12 @@ int mach_x86_thread_init(void)
->   	xstate_cache = kmem_cache_create("cobalt_x86_xstate",
->   					 fpu_kernel_xstate_size,
->   					 x86_xstate_alignment,
-> -					 SLAB_NOTRACK, NULL);
-> +#if LINUX_VERSION_CODE < KERNEL_VERSION(4,14,0)
-> +					 SLAB_NOTRACK,
-> +#else
-> +					 0,
-> +#endif
-> +					 NULL);
->   	if (xstate_cache == NULL)
->   		return -ENOMEM;
->   
-> diff --git a/kernel/cobalt/include/asm-generic/xenomai/syscall.h b/kernel/cobalt/include/asm-generic/xenomai/syscall.h
-> index f11ade8e7..9d57eaf74 100644
-> --- a/kernel/cobalt/include/asm-generic/xenomai/syscall.h
-> +++ b/kernel/cobalt/include/asm-generic/xenomai/syscall.h
-> @@ -20,7 +20,11 @@
->   #define _COBALT_ASM_GENERIC_SYSCALL_H
->   
->   #include <linux/types.h>
-> +#if LINUX_VERSION_CODE < KERNEL_VERSION(4,14,0)
->   #include <asm/uaccess.h>
-> +#else
-> +#include <linux/uaccess.h>
-> +#endif
->   #include <asm/xenomai/features.h>
->   #include <asm/xenomai/wrappers.h>
->   #include <asm/xenomai/machine.h>
+> > +#if LINUX_VERSION_CODE >= KERNEL_VERSION(4,4,0) && \  
+> 
+> Again, redundant condition.
+> 
+> > +    LINUX_VERSION_CODE < KERNEL_VERSION(4,5,0) && \
+> > +    LINUX_VERSION_CODE > KERNEL_VERSION(4,4,71)
+> > +#define IPIPE_X86_FPU_EAGER
+> > +#endif
+> >   
+> >   #if LINUX_VERSION_CODE < KERNEL_VERSION(4,2,0)
+> >   #include <asm/i387.h>
+> >   
+> 
+> Jan
 > 
 
-Jan
-
--- 
-Siemens AG, Corporate Technology, CT RDA IOT SES-DE
-Corporate Competence Center Embedded Linux
 
