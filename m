@@ -1,12 +1,12 @@
-Date: Mon, 27 Aug 2018 13:24:32 +0200
-From: Henning Schild <henning.schild@siemens.com>
-Message-ID: <20180827132432.215475e3@md1pvb1c.ad001.siemens.net>
-In-Reply-To: <9807836c-9287-10a7-52bf-6b5947c87699@xenomai.org>
-References: <9807836c-9287-10a7-52bf-6b5947c87699@xenomai.org>
+From: "A.s. Dong" <aisheng.dong@nxp.com>
+Date: Mon, 27 Aug 2018 12:40:53 +0000
+Message-ID: <AM0PR04MB4211273F120B170AAEBBA391800B0@AM0PR04MB4211.eurprd04.prod.outlook.com>
+Content-Language: en-US
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] I-pipe split series
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+Subject: [Xenomai] IPIPE issue causes kernel warning when
+ CONFIG_DEBUG_MUTEXES enabled
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,128 +15,122 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Philippe Gerum <rpm@xenomai.org>
-Cc: "Xenomai@xenomai.org" <Xenomai@xenomai.org>, Greg Gallagher <greg@embeddedgreg.com>, Dmitriy Cherkasov <dmitriy@oss-tech.org>, "Seeger,
- Steven D. (GSFC-444.0)[Embedded Flight Systems, Inc]" <steven.seeger@nasa.gov>, "Kiszka, Jan" <jan.kiszka@siemens.com>
+To: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-Hi Philippe,
+Hi Xenomai Experts,
 
-Am Mon, 30 Jul 2018 20:10:17 +0200
-schrieb Philippe Gerum <rpm@xenomai.org>:
+We met the following kernel warning on a MX6Q SDB board with Xenomai enable=
+d 4.9 kernel.
+(CONFIG_DEBUG_MUTEXES is enabled).
 
-> The generic I-pipe code is now available as a series of incremental
-> commits at [1] on top of the 4.14.58 kernel. This allows to port the
-> I-pipe patch gradually, first to enable IRQ pipelining per se, then
-> add the bits required for co-managing tasks between the regular
-> kernel and the co-kernel, which builds on the former. Most patches
-> have gained a description in their respective short log, which added
-> to Documentation/ipipe.rst, should help clarifying the process of
-> porting the pipeline.
-> 
-> While I was at it, I did a pre-port of the x86 patch to kernel
-> 4.14.58, which has been useful for validating the split series. I
-> hope this will help the x86 maintainers to clear that hurdle
-> eventually.
-> 
-> The whole pile of patches went through countless incremental builds
-> over multiple configurations, and tedious manual fixups over a few
-> weeks. However, there is room for issues, given the amount of code
-> involved, and the varying configurations one can apply. If you find
-> any problem with that split series, please report them here so that
-> we fix them.
-> 
-> Please note that those trees are rebased from time to time.
+After some debug, I found it seems to be caused by IPIPE calling sleepable =
+function in interrupt context.
+arch/arm/kernel/ipipe_tsc.c:
+int cpufreq_transition_handler()
+{
+       ...
+       smp_call_function_single(freqs->cpu, update_timer_freq, &freq, 1);
+}
 
-Really cool! Thanks so much for your work, i quickly looked at the
-structure of the patches and the commit messages. I think that should
-greatly improve the documentation and we will see how well that works
-for the next rebase. But i hope and assume that will become much easier
-with this approach.
+Where update_timer_freq is not allowed to be sleep. But it will finally cal=
+l clk_get_rate
+In twd_refresh_freq which has a mutex and then trigger the following warnin=
+g.
 
-> == Generic changes
-> 
-> - select HAVE_IPIPE_SUPPORT is needed from the arch-code (Kconfig) to
-> enable the generic I-pipe bits. This way we can have an incremental
-> build, without requiring the arch-code to be present in the commit
-> stack for testing generic changes.
-> 
-> - Likewise, select HAVE_IPIPE_TRACER_SUPPORT is needed from the
-> arch-code when the tracer is available. Only ARM needs this currently,
-> due to the TSC emulation support we need to provide there to get
-> timestamps which is not part of the ARM-specific pipeline core. x86
-> and ppc32 have their own tsc/timebase readily available when the core
-> bits are in.
-> 
-> - __ipipe_init_threadflags() now receives struct thread_info *. To be
-> updated in the arch-specific bits.
-> 
-> == x86
-> 
-> The basic port available at [2] boots over KVM and a couple of real
-> hw I have here, x86_64 only, x86_32 is untested and likely not
-> complete - although little should be left. It enables the interrupt
-> pipeline, but has not been checked against Xenomai, since FPU support
-> is not there (*).
+My questions is:
+Does Xenomai support CONFIG_DEBUG_MUTEXES?
+Should we disable it to avoid such issue?
 
-I have got a working eager-fpu 4.4 and 4.9 and looked into this 4.14 as
-well, in the hope to get the patch against xenomai in a shape that will
-work for all three kernels.
+[    4.594173] ------------[ cut here ]------------
+[    4.600010] WARNING: CPU: 0 PID: 0 at kernel/locking/mutex.c:873 mutex_t=
+rylock+0x1a0/0x214
+[    4.610409] DEBUG_LOCKS_WARN_ON(in_interrupt())[    4.615892] Modules li=
+nked in:
+[    4.619753] CPU: 0 PID: 0 Comm: swapper/0 Not tainted 4.9.35-ipipe #1
+[    4.627856] Hardware name: Freescale i.MX6 Quad/DualLite (Device Tree)
+[    4.636067] I-pipe domain: Linux
+[    4.640130] Backtrace:
+[    4.643241] [<c010c3f4>] (dump_backtrace) from [<c010c66c>] (show_stack+=
+0x18/0x1c)
+[    4.652769]  r7:c0e20b1c r6:ffffffff r5:00000080 r4:00000000
+[    4.659902] [<c010c654>] (show_stack) from [<c03f2918>] (dump_stack+0x98=
+/0xbc)
+[    4.668999] [<c03f2880>] (dump_stack) from [<c0125e60>] (__warn+0xd8/0x1=
+04)
+[    4.677763]  r9:c0918614 r8:00000369 r7:00000009 r6:c0bf8ab4 r5:00000000=
+ r4:c0e01dd8
+[    4.687509] [<c0125d88>] (__warn) from [<c0125ec8>] (warn_slowpath_fmt+0=
+x3c/0x44)
+[    4.696929]  r9:ef79bcb0 r8:ef05798c r7:c0d06414 r6:00000000 r5:c0e6d624=
+ r4:c0bf864c
+[    4.706677] [<c0125e90>] (warn_slowpath_fmt) from [<c0918614>] (mutex_tr=
+ylock+0x1a0/0x214)
+[    4.717073]  r3:c0bf8aa4 r2:c0bf864c
+[    4.721573]  r4:c0e2331c
+[    4.724774] [<c0918474>] (mutex_trylock) from [<c046ee34>] (clk_prepare_=
+lock+0x14/0xf4)
+[    4.734846]  r7:c0d06414 r6:00000000 r5:1daee080 r4:ef010080
+[    4.741974] [<c046ee20>] (clk_prepare_lock) from [<c04707e8>] (clk_core_=
+get_rate+0x14/0x68)
+[    4.752480]  r5:1daee080 r4:ef010080
+[    4.756986] [<c04707d4>] (clk_core_get_rate) from [<c0470858>] (clk_get_=
+rate+0x1c/0x20)
+[    4.767055]  r5:1daee080 r4:ef796230
+[    4.771566] [<c047083c>] (clk_get_rate) from [<c01108e0>] (twd_refresh_f=
+req+0x18/0x20)
+[    4.781537] [<c01108c8>] (twd_refresh_freq) from [<c01aba50>] (__ipipe_t=
+imer_refresh_freq+0x40/0x84)
+[    4.793036] [<c01aba10>] (__ipipe_timer_refresh_freq) from [<c0d06428>] =
+(update_timer_freq+0x14/0x18)
+[    4.804635]  r6:00000000 r5:00000000 r4:ef057950
+[    4.810458] [<c0d06414>] (update_timer_freq) from [<c0197550>] (flush_sm=
+p_call_function_queue+0xac/0x1ac)
+[    4.822501] [<c01974a4>] (flush_smp_call_function_queue) from [<c0198390=
+>] (generic_smp_call_function_single_interrupt+0x14/0x18)
+[    4.837160]  r9:ef79bcb0 r8:00000000 r7:c0e042c8 r6:00000003 r5:00000000=
+ r4:c0d7d710
+[    4.846909] [<c019837c>] (generic_smp_call_function_single_interrupt) fr=
+om [<c010fd2c>] (handle_IPI+0x120/0x198)
+[    4.859714] [<c010fc0c>] (handle_IPI) from [<c010fdd0>] (__ipipe_do_IPI+=
+0x2c/0x38)
+[    4.869241]  r10:c0ef5200 r9:ef799974 r8:00000000 r7:ef799974 r6:ef79997=
+c r5:00000403
+[    4.879092]  r4:c0d7ccb0 r3:c0e042c8
+[    4.883599] [<c010fda4>] (__ipipe_do_IPI) from [<c01a9ebc>] (__ipipe_do_=
+sync_stage+0x238/0x288)
+[    4.894542]  r5:ef79996c r4:c0f052c0
+[    4.899047] [<c01a9c84>] (__ipipe_do_sync_stage) from [<c01aa028>] (ipip=
+e_unstall_root+0x48/0x58)
+[    4.910214]  r10:c0d7e7f0 r9:c0e0a378 r8:ef79d7f8 r7:c0e0417c r6:0000000=
+1 r5:c0e0412c
+[    4.920063]  r4:c0d7a96c
+[    4.923263] [<c01a9fe0>] (ipipe_unstall_root) from [<c0163240>] (cpu_sta=
+rtup_entry+0x1ec/0x234)
+[    4.934205]  r5:c0e0412c r4:c0e00000
+[    4.938712] [<c0163054>] (cpu_startup_entry) from [<c0915514>] (rest_ini=
+t+0x78/0x90)
+[    4.948454]  r7:c0e04100 r4:00000002
+[    4.952968] [<c091549c>] (rest_init) from [<c0d00cac>] (start_kernel+0x3=
+28/0x398)
+[    4.962383]  r5:ffffffff r4:c0e6b04c
+[    4.966892] [<c0d00984>] (start_kernel) from [<1000807c>] (0x1000807c)
+[    4.975111]  r10:00000000 r9:412fc09a r8:1000406a r7:c0e08c30 r6:c0d63a3=
+4 r5:c0e04118
+[    4.984960]  r4:c0e6b294
+[    4.988155] ---[ end trace 2b1c1dd9872fc29b ]---
+[    4.993987] clocksource: arm_global_timer: mask: 0xffffffffffffffff max_=
+cycles: 0xe5b5472f21, max_idle_ns: 881590440277 ns
+[    5.007934] clocksource: arm_global_timer: mask: 0xffffffffffffffff max_=
+cycles: 0xe5b5472f21, max_idle_ns: 881590440277 ns
+[    5.021875] clocksource: arm_global_timer: mask: 0xffffffffffffffff max_=
+cycles: 0xe5b5472f21, max_idle_ns: 881590440277 ns
+[    5.035911] Registering SWP/SWPB emulation handler
+[    5.062097] imx_thermal 2000000.aips-bus:tempmon: Extended Commercial CP=
+U temperature grade - max:105C critical:100C passive:95C
+[    5.078685] input: gpio-keys as /devices/soc0/gpio-keys/input/input2
+[    5.087393] snvs_rtc 20cc000.snvs:snvs-rtc-lp: setting system clock to 1=
+970-01-01 00:00:32 UTC (32)
+[    5.099482] usb_otg_vbus: disabling
 
-So i ported my kernel patch to this 4.14 and adjusted xenomai to work
-on that as well. Unfortunately the kernel does not boot. It gets stuck
-right after switching the clocksource to tsc. My current assumption is
-that the timer does not work, maybe interrupts in general.
-
-Do you have a suggestion how to best debug that? I could also share the
-current state of the fpu-patches so you could have a direct look at it
-yourself.
-
-Henning
-
-> Some changes have been made compared to earlier x86 patch releases,
-> building on reasonable assumptions - I believe - to make it simpler.
-> The resulting patch is only a proposal, whether the suggested changes
-> are kept or dropped by the x86 maintainers won't impact the -noarch
-> tree.
-> 
-> - dropped "select best clocksource for timings". This was only used
-> for enabling the i8253 on x86_32. We assume the TSC is fine there too
-> for the hw we want to support (constant, precise etc), timings with
-> the ancient i8253 are crappy anyway. This is why we don't need to
-> patch the PCSPEAKER code anymore either.
-> 
-> - arch/x86/include/asm/preempt.h not instrumented anymore with
-> ipipe_preempt_root_only() since we don't support legacy I-pipe
-> contexts (i.e. regular task stacks are required, no hand-crafted
-> kernel thread stacks as a la Xenomai 2.6).
-> 
-> - __ipipe_trap_prologue() was rewritten in a saner way, building on
-> several assumptions we may make since we don't have to care about
-> CONFIG_IPIPE_LEGACY anymore (e.g. no foreign stacks etc).
-> 
-> - LOCKDEP + IPIPE is almost available; there is still a warning
-> produced by the lock validation engine due to a missing/mispaced
-> trace_irq_on instrumentation in the asm entry code when pipelining is
-> enabled, but the overall picture looks fairly sane already. A few
-> additional fixups might be needed when we start traversing the asm
-> entry code from the head domain though.
-> 
-> (*) regarding FPU support, I would suggest to reuse the regular
-> switch_to() interface for x86. I don't think that open coding context
-> switching bits in the Xenomai core makes any sense these days, with
-> the KPTI dance and Spectre mitigation code all around, stack protector
-> instrumentation etc.
-
-The new way basically does that. The only case left for the co-kernel
-is the interruption of in-kernel-fpu. The save/restore for that is done
-eager as well.
-
-Henning
-
-> Thanks,
-> 
-> [1] https://gitlab.denx.de/Xenomai/ipipe-noarch.git, 4.14-split
-> [2] https://gitlab.denx.de/Xenomai/ipipe-x86.git, wip/4.14-split
-> 
-
-
+Regards
+Dong Aisheng
