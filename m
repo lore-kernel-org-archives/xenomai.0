@@ -1,14 +1,15 @@
+From: "A.s. Dong" <aisheng.dong@nxp.com>
+Date: Mon, 27 Aug 2018 15:48:06 +0000
+Message-ID: <AM0PR04MB4211A53BF9E080D93D36B3B6800B0@AM0PR04MB4211.eurprd04.prod.outlook.com>
 References: <AM0PR04MB4211273F120B170AAEBBA391800B0@AM0PR04MB4211.eurprd04.prod.outlook.com>
  <f0344a17-e6ea-32a0-25d2-00781428ce21@xenomai.org>
  <AM0PR04MB4211596E8B94D8BCDD15BF50800B0@AM0PR04MB4211.eurprd04.prod.outlook.com>
-From: Philippe Gerum <rpm@xenomai.org>
-Message-ID: <d7abf9bf-a2f1-9157-d2fc-64ad244ecb12@xenomai.org>
-Date: Mon, 27 Aug 2018 17:31:51 +0200
-MIME-Version: 1.0
-In-Reply-To: <AM0PR04MB4211596E8B94D8BCDD15BF50800B0@AM0PR04MB4211.eurprd04.prod.outlook.com>
-Content-Type: text/plain; charset="utf-8"
+ <d7abf9bf-a2f1-9157-d2fc-64ad244ecb12@xenomai.org>
+In-Reply-To: <d7abf9bf-a2f1-9157-d2fc-64ad244ecb12@xenomai.org>
 Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+MIME-Version: 1.0
 Subject: Re: [Xenomai] IPIPE issue causes kernel warning when
  CONFIG_DEBUG_MUTEXES enabled
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
@@ -19,93 +20,70 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "A.s. Dong" <aisheng.dong@nxp.com>, "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Philippe Gerum <rpm@xenomai.org>, "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On 08/27/2018 05:17 PM, A.s. Dong wrote:
->> -----Original Message-----
->> From: Philippe Gerum [mailto:rpm@xenomai.org]
->> Sent: Monday, August 27, 2018 10:46 PM
->> To: A.s. Dong <aisheng.dong@nxp.com>; xenomai@xenomai.org
->> Subject: Re: IPIPE issue causes kernel warning when CONFIG_DEBUG_MUTEXES
->> enabled
->>
->> On 08/27/2018 02:40 PM, A.s. Dong wrote:
->>> Hi Xenomai Experts,
->>>
->>>
->>>
->>> We met the following kernel warning on a MX6Q SDB board with Xenomai
->>> enabled 4.9 kernel.
->>>
->>> (CONFIG_DEBUG_MUTEXES is enabled).
->>>
->>>
->>>
->>> After some debug, I found it seems to be caused by IPIPE calling
->>> sleepable function in interrupt context.
->>>
->>> arch/arm/kernel/ipipe_tsc.c:
->>>
->>> int cpufreq_transition_handler()
->>>
->>> {
->>>
->>>        .
->>>
->>>        smp_call_function_single(freqs->cpu, update_timer_freq, &freq,
->>> 1);
->>>
->>> }
->>>
->>>
->>>
->>> Where update_timer_freq is not allowed to be sleep. But it will
->>> finally call clk_get_rate
->>>
->>> In twd_refresh_freq which has a mutex and then trigger the following
->>> warning.
->>>
->>>
->>>
->>> My questions is:
->>>
->>> Does Xenomai support CONFIG_DEBUG_MUTEXES?
->>>
->>> Should we disable it to avoid such issue?
->>
->> No, the underlying bug reported by the might_sleep() assertion would still be
->> there anyway, right?
-> 
-> Yes, you're right.
-> 
->> Fixing it is the only sane way to go. This could be done by
->> first collecting the new per-cpu timer frequencies in the cpufreq transition
->> handler, then applying the change via update_timer_freq, passing the per-cpu
->> array of frequencies just collected. That would spare us the need to retrieve
->> them by a call to
->> clk_get_rate() in the leaf handler.
->>
-> 
-> Is there a quick fix?
-> I'm not quite familiar with Xenomai/IPIPE implementation. It seems there're two
-> Timers, tsc and ipipe_timer. Not sure can do a proper fix according to your
-> above suggestions.
-> 
-
-That was the quick fix. The real and complex fix would be to stop
-expressing delays based on clock and timer frequencies for internal
-Xenomai timings, but as counts of nanoseconds exclusively.
-
-The ugly fix would be as follows: if you can tell u-boot to switch the
-boot CPU of your i.MX6 to the highest frequency available before
-branching to the kernel, then you could just disable CONFIG_CPU_FREQ,
-compiling the offending code out.
-
-This code we have been discussing is a kludge to make sure CPUFREQ's
-performance policy governor is allowed to change the CPU, hence the TWD
-frequency once and only once at boot time, without wrecking Xenomai's
-idea of time, so that the CPUs run at the highest available frequency.
-
--- 
-Philippe.
+PiAtLS0tLU9yaWdpbmFsIE1lc3NhZ2UtLS0tLQ0KPiBGcm9tOiBQaGlsaXBwZSBHZXJ1bSBbbWFp
+bHRvOnJwbUB4ZW5vbWFpLm9yZ10NCj4gU2VudDogTW9uZGF5LCBBdWd1c3QgMjcsIDIwMTggMTE6
+MzIgUE0NCj4gVG86IEEucy4gRG9uZyA8YWlzaGVuZy5kb25nQG54cC5jb20+OyB4ZW5vbWFpQHhl
+bm9tYWkub3JnDQo+IFN1YmplY3Q6IFJlOiBJUElQRSBpc3N1ZSBjYXVzZXMga2VybmVsIHdhcm5p
+bmcgd2hlbiBDT05GSUdfREVCVUdfTVVURVhFUw0KPiBlbmFibGVkDQo+IA0KPiBPbiAwOC8yNy8y
+MDE4IDA1OjE3IFBNLCBBLnMuIERvbmcgd3JvdGU6DQo+ID4+IC0tLS0tT3JpZ2luYWwgTWVzc2Fn
+ZS0tLS0tDQo+ID4+IEZyb206IFBoaWxpcHBlIEdlcnVtIFttYWlsdG86cnBtQHhlbm9tYWkub3Jn
+XQ0KPiA+PiBTZW50OiBNb25kYXksIEF1Z3VzdCAyNywgMjAxOCAxMDo0NiBQTQ0KPiA+PiBUbzog
+QS5zLiBEb25nIDxhaXNoZW5nLmRvbmdAbnhwLmNvbT47IHhlbm9tYWlAeGVub21haS5vcmcNCj4g
+Pj4gU3ViamVjdDogUmU6IElQSVBFIGlzc3VlIGNhdXNlcyBrZXJuZWwgd2FybmluZyB3aGVuDQo+
+ID4+IENPTkZJR19ERUJVR19NVVRFWEVTIGVuYWJsZWQNCj4gPj4NCj4gPj4gT24gMDgvMjcvMjAx
+OCAwMjo0MCBQTSwgQS5zLiBEb25nIHdyb3RlOg0KPiA+Pj4gSGkgWGVub21haSBFeHBlcnRzLA0K
+PiA+Pj4NCj4gPj4+DQo+ID4+Pg0KPiA+Pj4gV2UgbWV0IHRoZSBmb2xsb3dpbmcga2VybmVsIHdh
+cm5pbmcgb24gYSBNWDZRIFNEQiBib2FyZCB3aXRoIFhlbm9tYWkNCj4gPj4+IGVuYWJsZWQgNC45
+IGtlcm5lbC4NCj4gPj4+DQo+ID4+PiAoQ09ORklHX0RFQlVHX01VVEVYRVMgaXMgZW5hYmxlZCku
+DQo+ID4+Pg0KPiA+Pj4NCj4gPj4+DQo+ID4+PiBBZnRlciBzb21lIGRlYnVnLCBJIGZvdW5kIGl0
+IHNlZW1zIHRvIGJlIGNhdXNlZCBieSBJUElQRSBjYWxsaW5nDQo+ID4+PiBzbGVlcGFibGUgZnVu
+Y3Rpb24gaW4gaW50ZXJydXB0IGNvbnRleHQuDQo+ID4+Pg0KPiA+Pj4gYXJjaC9hcm0va2VybmVs
+L2lwaXBlX3RzYy5jOg0KPiA+Pj4NCj4gPj4+IGludCBjcHVmcmVxX3RyYW5zaXRpb25faGFuZGxl
+cigpDQo+ID4+Pg0KPiA+Pj4gew0KPiA+Pj4NCj4gPj4+IMKgwqDCoMKgwqDCoCAuDQo+ID4+Pg0K
+PiA+Pj4gwqDCoMKgwqDCoMKgIHNtcF9jYWxsX2Z1bmN0aW9uX3NpbmdsZShmcmVxcy0+Y3B1LCB1
+cGRhdGVfdGltZXJfZnJlcSwNCj4gPj4+ICZmcmVxLCAxKTsNCj4gPj4+DQo+ID4+PiB9DQo+ID4+
+Pg0KPiA+Pj4NCj4gPj4+DQo+ID4+PiBXaGVyZSB1cGRhdGVfdGltZXJfZnJlcSBpcyBub3QgYWxs
+b3dlZCB0byBiZSBzbGVlcC4gQnV0IGl0IHdpbGwNCj4gPj4+IGZpbmFsbHkgY2FsbCBjbGtfZ2V0
+X3JhdGUNCj4gPj4+DQo+ID4+PiBJbiB0d2RfcmVmcmVzaF9mcmVxIHdoaWNoIGhhcyBhIG11dGV4
+IGFuZCB0aGVuIHRyaWdnZXIgdGhlIGZvbGxvd2luZw0KPiA+Pj4gd2FybmluZy4NCj4gPj4+DQo+
+ID4+Pg0KPiA+Pj4NCj4gPj4+IE15IHF1ZXN0aW9ucyBpczoNCj4gPj4+DQo+ID4+PiBEb2VzIFhl
+bm9tYWkgc3VwcG9ydCBDT05GSUdfREVCVUdfTVVURVhFUz8NCj4gPj4+DQo+ID4+PiBTaG91bGQg
+d2UgZGlzYWJsZSBpdCB0byBhdm9pZCBzdWNoIGlzc3VlPw0KPiA+Pg0KPiA+PiBObywgdGhlIHVu
+ZGVybHlpbmcgYnVnIHJlcG9ydGVkIGJ5IHRoZSBtaWdodF9zbGVlcCgpIGFzc2VydGlvbiB3b3Vs
+ZA0KPiA+PiBzdGlsbCBiZSB0aGVyZSBhbnl3YXksIHJpZ2h0Pw0KPiA+DQo+ID4gWWVzLCB5b3Un
+cmUgcmlnaHQuDQo+ID4NCj4gPj4gRml4aW5nIGl0IGlzIHRoZSBvbmx5IHNhbmUgd2F5IHRvIGdv
+LiBUaGlzIGNvdWxkIGJlIGRvbmUgYnkgZmlyc3QNCj4gPj4gY29sbGVjdGluZyB0aGUgbmV3IHBl
+ci1jcHUgdGltZXIgZnJlcXVlbmNpZXMgaW4gdGhlIGNwdWZyZXENCj4gPj4gdHJhbnNpdGlvbiBo
+YW5kbGVyLCB0aGVuIGFwcGx5aW5nIHRoZSBjaGFuZ2UgdmlhIHVwZGF0ZV90aW1lcl9mcmVxLA0K
+PiA+PiBwYXNzaW5nIHRoZSBwZXItY3B1IGFycmF5IG9mIGZyZXF1ZW5jaWVzIGp1c3QgY29sbGVj
+dGVkLiBUaGF0IHdvdWxkDQo+ID4+IHNwYXJlIHVzIHRoZSBuZWVkIHRvIHJldHJpZXZlIHRoZW0g
+YnkgYSBjYWxsIHRvDQo+ID4+IGNsa19nZXRfcmF0ZSgpIGluIHRoZSBsZWFmIGhhbmRsZXIuDQo+
+ID4+DQo+ID4NCj4gPiBJcyB0aGVyZSBhIHF1aWNrIGZpeD8NCj4gPiBJJ20gbm90IHF1aXRlIGZh
+bWlsaWFyIHdpdGggWGVub21haS9JUElQRSBpbXBsZW1lbnRhdGlvbi4gSXQgc2VlbXMNCj4gPiB0
+aGVyZSdyZSB0d28gVGltZXJzLCB0c2MgYW5kIGlwaXBlX3RpbWVyLiBOb3Qgc3VyZSBjYW4gZG8g
+YSBwcm9wZXIgZml4DQo+ID4gYWNjb3JkaW5nIHRvIHlvdXIgYWJvdmUgc3VnZ2VzdGlvbnMuDQo+
+ID4NCj4gDQo+IFRoYXQgd2FzIHRoZSBxdWljayBmaXguIFRoZSByZWFsIGFuZCBjb21wbGV4IGZp
+eCB3b3VsZCBiZSB0byBzdG9wIGV4cHJlc3NpbmcNCj4gZGVsYXlzIGJhc2VkIG9uIGNsb2NrIGFu
+ZCB0aW1lciBmcmVxdWVuY2llcyBmb3IgaW50ZXJuYWwgWGVub21haSB0aW1pbmdzLCBidXQNCj4g
+YXMgY291bnRzIG9mIG5hbm9zZWNvbmRzIGV4Y2x1c2l2ZWx5Lg0KPiANCj4gVGhlIHVnbHkgZml4
+IHdvdWxkIGJlIGFzIGZvbGxvd3M6IGlmIHlvdSBjYW4gdGVsbCB1LWJvb3QgdG8gc3dpdGNoIHRo
+ZSBib290IENQVQ0KPiBvZiB5b3VyIGkuTVg2IHRvIHRoZSBoaWdoZXN0IGZyZXF1ZW5jeSBhdmFp
+bGFibGUgYmVmb3JlIGJyYW5jaGluZyB0byB0aGUga2VybmVsLA0KPiB0aGVuIHlvdSBjb3VsZCBq
+dXN0IGRpc2FibGUgQ09ORklHX0NQVV9GUkVRLCBjb21waWxpbmcgdGhlIG9mZmVuZGluZyBjb2Rl
+DQo+IG91dC4NCj4gDQo+IFRoaXMgY29kZSB3ZSBoYXZlIGJlZW4gZGlzY3Vzc2luZyBpcyBhIGts
+dWRnZSB0byBtYWtlIHN1cmUgQ1BVRlJFUSdzDQo+IHBlcmZvcm1hbmNlIHBvbGljeSBnb3Zlcm5v
+ciBpcyBhbGxvd2VkIHRvIGNoYW5nZSB0aGUgQ1BVLCBoZW5jZSB0aGUgVFdEDQo+IGZyZXF1ZW5j
+eSBvbmNlIGFuZCBvbmx5IG9uY2UgYXQgYm9vdCB0aW1lLCB3aXRob3V0IHdyZWNraW5nIFhlbm9t
+YWkncyBpZGVhDQo+IG9mIHRpbWUsIHNvIHRoYXQgdGhlIENQVXMgcnVuIGF0IHRoZSBoaWdoZXN0
+IGF2YWlsYWJsZSBmcmVxdWVuY3kuDQoNClRoYW5rcyBmb3IgdGhlIGluZm8uDQpUaGUgY3VycmVu
+dCB1Ym9vdCBzZWVtcyBkb2VzIG5vdCBzdXBwb3J0IGl0LiBCdXQgaW4gdGhlb3J5LCBpdCBjYW4g
+YmUgaGFja2VkLg0KRG8gd2UgaGF2ZSB0byB1c2UgYXJtIGdsb2JhbCB0aW1lcj8gRS5nLiBmb3Ig
+aGlnaCBhY2N1cmFjeSBvciBzb21ldGhpbmcgZWxzZT8NCklmIG5vdCwgaW14IGhhcyBhbm90aGVy
+IEdQVCB0aW1lciB3aGljaCBpcyBub3QgYWZmZWN0ZWQgYnkgY3B1ZnJlcS4gVGhlbiBpdCBtYXkN
+Ck5vdCBoYXZlIHN1Y2ggaXNzdWUuIEJ1dCBJSVJDIGl0IGhhcyBzb21lIHRpbWVyIGluYWNjdXJh
+Y3kgaXNzdWUuLi4gZm9yIGV4YW1wbGUNCnNsZWVwIDIgaW4gdXNlciBzcGFjZSBpcyBub3QgYWNj
+dXJhdGUuLi4gbWF5IHJlLWNoZWNrLi4NCg0KUmVnYXJkcw0KRG9uZyBBaXNoZW5nDQoNCj4gDQo+
+IC0tDQo+IFBoaWxpcHBlLg0K
 
