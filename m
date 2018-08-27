@@ -1,3 +1,6 @@
+From: "A.s. Dong" <aisheng.dong@nxp.com>
+Date: Mon, 27 Aug 2018 16:55:35 +0000
+Message-ID: <AM0PR04MB4211DDEF0D3A057C455EF39C800B0@AM0PR04MB4211.eurprd04.prod.outlook.com>
 References: <AM0PR04MB4211273F120B170AAEBBA391800B0@AM0PR04MB4211.eurprd04.prod.outlook.com>
  <f0344a17-e6ea-32a0-25d2-00781428ce21@xenomai.org>
  <AM0PR04MB4211596E8B94D8BCDD15BF50800B0@AM0PR04MB4211.eurprd04.prod.outlook.com>
@@ -5,14 +8,12 @@ References: <AM0PR04MB4211273F120B170AAEBBA391800B0@AM0PR04MB4211.eurprd04.prod.
  <AM0PR04MB4211A53BF9E080D93D36B3B6800B0@AM0PR04MB4211.eurprd04.prod.outlook.com>
  <ffd862c5-e29d-4f8b-7d1c-367155fa76ec@xenomai.org>
  <AM0PR04MB4211D9D2754835F588EBAE5E800B0@AM0PR04MB4211.eurprd04.prod.outlook.com>
-From: Philippe Gerum <rpm@xenomai.org>
-Message-ID: <dce6d7a9-bbb4-886f-93b7-c57581ff4b44@xenomai.org>
-Date: Mon, 27 Aug 2018 18:46:37 +0200
-MIME-Version: 1.0
-In-Reply-To: <AM0PR04MB4211D9D2754835F588EBAE5E800B0@AM0PR04MB4211.eurprd04.prod.outlook.com>
-Content-Type: text/plain; charset="utf-8"
+ <dce6d7a9-bbb4-886f-93b7-c57581ff4b44@xenomai.org>
+In-Reply-To: <dce6d7a9-bbb4-886f-93b7-c57581ff4b44@xenomai.org>
 Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+MIME-Version: 1.0
 Subject: Re: [Xenomai] IPIPE issue causes kernel warning when
  CONFIG_DEBUG_MUTEXES enabled
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
@@ -23,150 +24,117 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "A.s. Dong" <aisheng.dong@nxp.com>, "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Philippe Gerum <rpm@xenomai.org>, "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On 08/27/2018 06:34 PM, A.s. Dong wrote:
->> -----Original Message-----
->> From: Philippe Gerum [mailto:rpm@xenomai.org]
->> Sent: Tuesday, August 28, 2018 12:00 AM
->> To: A.s. Dong <aisheng.dong@nxp.com>; xenomai@xenomai.org
->> Subject: Re: IPIPE issue causes kernel warning when CONFIG_DEBUG_MUTEXES
->> enabled
->>
->> On 08/27/2018 05:48 PM, A.s. Dong wrote:
->>>> -----Original Message-----
->>>> From: Philippe Gerum [mailto:rpm@xenomai.org]
->>>> Sent: Monday, August 27, 2018 11:32 PM
->>>> To: A.s. Dong <aisheng.dong@nxp.com>; xenomai@xenomai.org
->>>> Subject: Re: IPIPE issue causes kernel warning when
->>>> CONFIG_DEBUG_MUTEXES enabled
->>>>
->>>> On 08/27/2018 05:17 PM, A.s. Dong wrote:
->>>>>> -----Original Message-----
->>>>>> From: Philippe Gerum [mailto:rpm@xenomai.org]
->>>>>> Sent: Monday, August 27, 2018 10:46 PM
->>>>>> To: A.s. Dong <aisheng.dong@nxp.com>; xenomai@xenomai.org
->>>>>> Subject: Re: IPIPE issue causes kernel warning when
->>>>>> CONFIG_DEBUG_MUTEXES enabled
->>>>>>
->>>>>> On 08/27/2018 02:40 PM, A.s. Dong wrote:
->>>>>>> Hi Xenomai Experts,
->>>>>>>
->>>>>>>
->>>>>>>
->>>>>>> We met the following kernel warning on a MX6Q SDB board with
->>>>>>> Xenomai enabled 4.9 kernel.
->>>>>>>
->>>>>>> (CONFIG_DEBUG_MUTEXES is enabled).
->>>>>>>
->>>>>>>
->>>>>>>
->>>>>>> After some debug, I found it seems to be caused by IPIPE calling
->>>>>>> sleepable function in interrupt context.
->>>>>>>
->>>>>>> arch/arm/kernel/ipipe_tsc.c:
->>>>>>>
->>>>>>> int cpufreq_transition_handler()
->>>>>>>
->>>>>>> {
->>>>>>>
->>>>>>>        .
->>>>>>>
->>>>>>>        smp_call_function_single(freqs->cpu, update_timer_freq,
->>>>>>> &freq, 1);
->>>>>>>
->>>>>>> }
->>>>>>>
->>>>>>>
->>>>>>>
->>>>>>> Where update_timer_freq is not allowed to be sleep. But it will
->>>>>>> finally call clk_get_rate
->>>>>>>
->>>>>>> In twd_refresh_freq which has a mutex and then trigger the
->>>>>>> following warning.
->>>>>>>
->>>>>>>
->>>>>>>
->>>>>>> My questions is:
->>>>>>>
->>>>>>> Does Xenomai support CONFIG_DEBUG_MUTEXES?
->>>>>>>
->>>>>>> Should we disable it to avoid such issue?
->>>>>>
->>>>>> No, the underlying bug reported by the might_sleep() assertion
->>>>>> would still be there anyway, right?
->>>>>
->>>>> Yes, you're right.
->>>>>
->>>>>> Fixing it is the only sane way to go. This could be done by first
->>>>>> collecting the new per-cpu timer frequencies in the cpufreq
->>>>>> transition handler, then applying the change via update_timer_freq,
->>>>>> passing the per-cpu array of frequencies just collected. That would
->>>>>> spare us the need to retrieve them by a call to
->>>>>> clk_get_rate() in the leaf handler.
->>>>>>
->>>>>
->>>>> Is there a quick fix?
->>>>> I'm not quite familiar with Xenomai/IPIPE implementation. It seems
->>>>> there're two Timers, tsc and ipipe_timer. Not sure can do a proper
->>>>> fix according to your above suggestions.
->>>>>
->>>>
->>>> That was the quick fix. The real and complex fix would be to stop
->>>> expressing delays based on clock and timer frequencies for internal
->>>> Xenomai timings, but as counts of nanoseconds exclusively.
->>>>
->>>> The ugly fix would be as follows: if you can tell u-boot to switch
->>>> the boot CPU of your i.MX6 to the highest frequency available before
->>>> branching to the kernel, then you could just disable CONFIG_CPU_FREQ,
->>>> compiling the offending code out.
->>>>
->>>> This code we have been discussing is a kludge to make sure CPUFREQ's
->>>> performance policy governor is allowed to change the CPU, hence the
->>>> TWD frequency once and only once at boot time, without wrecking
->>>> Xenomai's idea of time, so that the CPUs run at the highest available
->> frequency.
->>>
->>> Thanks for the info.
->>> The current uboot seems does not support it. But in theory, it can be hacked.
->>> Do we have to use arm global timer? E.g. for high accuracy or something
->> else?
->>> If not, imx has another GPT timer which is not affected by cpufreq.
->>
->> As a clocksource, mxc1 would do. Not as a clockevent device though, we need
->> a per-cpu beast for latency reasons.
-> 
-> Imx gpt as clocksource and twd is still clockevent devices.
-> 
-> It seems arm smp_twd has its own twd_rate_change() based on clk notifier.
-> A bit strange why arm global timer does not implement it (latest mainline also
-> not support). Don't know too much history about it.
-> IMX issue is trigger by using arm global timer which is registerd as ipipe_tsc timer
-> and having refresh_freq.
-> 
-> Not quit understand the relationship between ipipe_tsc timer and per-cpu timers
-> Used in Xenomai.
->
-
-Xenomai unfortunately expresses delays as counts of ticks from a
-hardware clock source, historically the x86 TSC, hence the ipipe_tsc
-naming that stuck from that era. ipipe_tsc is the ARM-specific framework
-the I-pipe provides for interfacing the generic pipeline core with
-truckloads of timer clock source chip variants found in the ARM(32) world.
-
-Because Xenomai expresses delays as clock(source) ticks, the conversion
-from clock ticks to hardware timer ticks must be done at some point in
-the process of programming the next shot (e.g. poking some decrementer).
-The I-pipe somewhat piggybacks its hardware timer logic on the regular
-clockevent object, interposing on the clock_event_device handlers, hence
-the relationship between ipipe_tsc and the per-cpu timers.
-
-> BTW the lastest mainline kernel seems have the same issue as reported in this mail
-> If COMMON_CLK is not enabled. (see: twd_cpufreq_transition()).
-> 
-
-Yes, this is going to be a recurring issue.
-
--- 
-Philippe.
+PiAtLS0tLU9yaWdpbmFsIE1lc3NhZ2UtLS0tLQ0KPiBGcm9tOiBQaGlsaXBwZSBHZXJ1bSBbbWFp
+bHRvOnJwbUB4ZW5vbWFpLm9yZ10NCj4gU2VudDogVHVlc2RheSwgQXVndXN0IDI4LCAyMDE4IDEy
+OjQ3IEFNDQo+IFRvOiBBLnMuIERvbmcgPGFpc2hlbmcuZG9uZ0BueHAuY29tPjsgeGVub21haUB4
+ZW5vbWFpLm9yZw0KPiBTdWJqZWN0OiBSZTogSVBJUEUgaXNzdWUgY2F1c2VzIGtlcm5lbCB3YXJu
+aW5nIHdoZW4gQ09ORklHX0RFQlVHX01VVEVYRVMNCj4gZW5hYmxlZA0KPiANCj4gT24gMDgvMjcv
+MjAxOCAwNjozNCBQTSwgQS5zLiBEb25nIHdyb3RlOg0KPiA+PiAtLS0tLU9yaWdpbmFsIE1lc3Nh
+Z2UtLS0tLQ0KPiA+PiBGcm9tOiBQaGlsaXBwZSBHZXJ1bSBbbWFpbHRvOnJwbUB4ZW5vbWFpLm9y
+Z10NCj4gPj4gU2VudDogVHVlc2RheSwgQXVndXN0IDI4LCAyMDE4IDEyOjAwIEFNDQo+ID4+IFRv
+OiBBLnMuIERvbmcgPGFpc2hlbmcuZG9uZ0BueHAuY29tPjsgeGVub21haUB4ZW5vbWFpLm9yZw0K
+PiA+PiBTdWJqZWN0OiBSZTogSVBJUEUgaXNzdWUgY2F1c2VzIGtlcm5lbCB3YXJuaW5nIHdoZW4N
+Cj4gPj4gQ09ORklHX0RFQlVHX01VVEVYRVMgZW5hYmxlZA0KPiA+Pg0KPiA+PiBPbiAwOC8yNy8y
+MDE4IDA1OjQ4IFBNLCBBLnMuIERvbmcgd3JvdGU6DQo+ID4+Pj4gLS0tLS1PcmlnaW5hbCBNZXNz
+YWdlLS0tLS0NCj4gPj4+PiBGcm9tOiBQaGlsaXBwZSBHZXJ1bSBbbWFpbHRvOnJwbUB4ZW5vbWFp
+Lm9yZ10NCj4gPj4+PiBTZW50OiBNb25kYXksIEF1Z3VzdCAyNywgMjAxOCAxMTozMiBQTQ0KPiA+
+Pj4+IFRvOiBBLnMuIERvbmcgPGFpc2hlbmcuZG9uZ0BueHAuY29tPjsgeGVub21haUB4ZW5vbWFp
+Lm9yZw0KPiA+Pj4+IFN1YmplY3Q6IFJlOiBJUElQRSBpc3N1ZSBjYXVzZXMga2VybmVsIHdhcm5p
+bmcgd2hlbg0KPiA+Pj4+IENPTkZJR19ERUJVR19NVVRFWEVTIGVuYWJsZWQNCj4gPj4+Pg0KPiA+
+Pj4+IE9uIDA4LzI3LzIwMTggMDU6MTcgUE0sIEEucy4gRG9uZyB3cm90ZToNCj4gPj4+Pj4+IC0t
+LS0tT3JpZ2luYWwgTWVzc2FnZS0tLS0tDQo+ID4+Pj4+PiBGcm9tOiBQaGlsaXBwZSBHZXJ1bSBb
+bWFpbHRvOnJwbUB4ZW5vbWFpLm9yZ10NCj4gPj4+Pj4+IFNlbnQ6IE1vbmRheSwgQXVndXN0IDI3
+LCAyMDE4IDEwOjQ2IFBNDQo+ID4+Pj4+PiBUbzogQS5zLiBEb25nIDxhaXNoZW5nLmRvbmdAbnhw
+LmNvbT47IHhlbm9tYWlAeGVub21haS5vcmcNCj4gPj4+Pj4+IFN1YmplY3Q6IFJlOiBJUElQRSBp
+c3N1ZSBjYXVzZXMga2VybmVsIHdhcm5pbmcgd2hlbg0KPiA+Pj4+Pj4gQ09ORklHX0RFQlVHX01V
+VEVYRVMgZW5hYmxlZA0KPiA+Pj4+Pj4NCj4gPj4+Pj4+IE9uIDA4LzI3LzIwMTggMDI6NDAgUE0s
+IEEucy4gRG9uZyB3cm90ZToNCj4gPj4+Pj4+PiBIaSBYZW5vbWFpIEV4cGVydHMsDQo+ID4+Pj4+
+Pj4NCj4gPj4+Pj4+Pg0KPiA+Pj4+Pj4+DQo+ID4+Pj4+Pj4gV2UgbWV0IHRoZSBmb2xsb3dpbmcg
+a2VybmVsIHdhcm5pbmcgb24gYSBNWDZRIFNEQiBib2FyZCB3aXRoDQo+ID4+Pj4+Pj4gWGVub21h
+aSBlbmFibGVkIDQuOSBrZXJuZWwuDQo+ID4+Pj4+Pj4NCj4gPj4+Pj4+PiAoQ09ORklHX0RFQlVH
+X01VVEVYRVMgaXMgZW5hYmxlZCkuDQo+ID4+Pj4+Pj4NCj4gPj4+Pj4+Pg0KPiA+Pj4+Pj4+DQo+
+ID4+Pj4+Pj4gQWZ0ZXIgc29tZSBkZWJ1ZywgSSBmb3VuZCBpdCBzZWVtcyB0byBiZSBjYXVzZWQg
+YnkgSVBJUEUgY2FsbGluZw0KPiA+Pj4+Pj4+IHNsZWVwYWJsZSBmdW5jdGlvbiBpbiBpbnRlcnJ1
+cHQgY29udGV4dC4NCj4gPj4+Pj4+Pg0KPiA+Pj4+Pj4+IGFyY2gvYXJtL2tlcm5lbC9pcGlwZV90
+c2MuYzoNCj4gPj4+Pj4+Pg0KPiA+Pj4+Pj4+IGludCBjcHVmcmVxX3RyYW5zaXRpb25faGFuZGxl
+cigpDQo+ID4+Pj4+Pj4NCj4gPj4+Pj4+PiB7DQo+ID4+Pj4+Pj4NCj4gPj4+Pj4+PiDCoMKgwqDC
+oMKgwqAgLg0KPiA+Pj4+Pj4+DQo+ID4+Pj4+Pj4gwqDCoMKgwqDCoMKgIHNtcF9jYWxsX2Z1bmN0
+aW9uX3NpbmdsZShmcmVxcy0+Y3B1LCB1cGRhdGVfdGltZXJfZnJlcSwNCj4gPj4+Pj4+PiAmZnJl
+cSwgMSk7DQo+ID4+Pj4+Pj4NCj4gPj4+Pj4+PiB9DQo+ID4+Pj4+Pj4NCj4gPj4+Pj4+Pg0KPiA+
+Pj4+Pj4+DQo+ID4+Pj4+Pj4gV2hlcmUgdXBkYXRlX3RpbWVyX2ZyZXEgaXMgbm90IGFsbG93ZWQg
+dG8gYmUgc2xlZXAuIEJ1dCBpdCB3aWxsDQo+ID4+Pj4+Pj4gZmluYWxseSBjYWxsIGNsa19nZXRf
+cmF0ZQ0KPiA+Pj4+Pj4+DQo+ID4+Pj4+Pj4gSW4gdHdkX3JlZnJlc2hfZnJlcSB3aGljaCBoYXMg
+YSBtdXRleCBhbmQgdGhlbiB0cmlnZ2VyIHRoZQ0KPiA+Pj4+Pj4+IGZvbGxvd2luZyB3YXJuaW5n
+Lg0KPiA+Pj4+Pj4+DQo+ID4+Pj4+Pj4NCj4gPj4+Pj4+Pg0KPiA+Pj4+Pj4+IE15IHF1ZXN0aW9u
+cyBpczoNCj4gPj4+Pj4+Pg0KPiA+Pj4+Pj4+IERvZXMgWGVub21haSBzdXBwb3J0IENPTkZJR19E
+RUJVR19NVVRFWEVTPw0KPiA+Pj4+Pj4+DQo+ID4+Pj4+Pj4gU2hvdWxkIHdlIGRpc2FibGUgaXQg
+dG8gYXZvaWQgc3VjaCBpc3N1ZT8NCj4gPj4+Pj4+DQo+ID4+Pj4+PiBObywgdGhlIHVuZGVybHlp
+bmcgYnVnIHJlcG9ydGVkIGJ5IHRoZSBtaWdodF9zbGVlcCgpIGFzc2VydGlvbg0KPiA+Pj4+Pj4g
+d291bGQgc3RpbGwgYmUgdGhlcmUgYW55d2F5LCByaWdodD8NCj4gPj4+Pj4NCj4gPj4+Pj4gWWVz
+LCB5b3UncmUgcmlnaHQuDQo+ID4+Pj4+DQo+ID4+Pj4+PiBGaXhpbmcgaXQgaXMgdGhlIG9ubHkg
+c2FuZSB3YXkgdG8gZ28uIFRoaXMgY291bGQgYmUgZG9uZSBieSBmaXJzdA0KPiA+Pj4+Pj4gY29s
+bGVjdGluZyB0aGUgbmV3IHBlci1jcHUgdGltZXIgZnJlcXVlbmNpZXMgaW4gdGhlIGNwdWZyZXEN
+Cj4gPj4+Pj4+IHRyYW5zaXRpb24gaGFuZGxlciwgdGhlbiBhcHBseWluZyB0aGUgY2hhbmdlIHZp
+YQ0KPiA+Pj4+Pj4gdXBkYXRlX3RpbWVyX2ZyZXEsIHBhc3NpbmcgdGhlIHBlci1jcHUgYXJyYXkg
+b2YgZnJlcXVlbmNpZXMganVzdA0KPiA+Pj4+Pj4gY29sbGVjdGVkLiBUaGF0IHdvdWxkIHNwYXJl
+IHVzIHRoZSBuZWVkIHRvIHJldHJpZXZlIHRoZW0gYnkgYQ0KPiA+Pj4+Pj4gY2FsbCB0bw0KPiA+
+Pj4+Pj4gY2xrX2dldF9yYXRlKCkgaW4gdGhlIGxlYWYgaGFuZGxlci4NCj4gPj4+Pj4+DQo+ID4+
+Pj4+DQo+ID4+Pj4+IElzIHRoZXJlIGEgcXVpY2sgZml4Pw0KPiA+Pj4+PiBJJ20gbm90IHF1aXRl
+IGZhbWlsaWFyIHdpdGggWGVub21haS9JUElQRSBpbXBsZW1lbnRhdGlvbi4gSXQgc2VlbXMNCj4g
+Pj4+Pj4gdGhlcmUncmUgdHdvIFRpbWVycywgdHNjIGFuZCBpcGlwZV90aW1lci4gTm90IHN1cmUg
+Y2FuIGRvIGEgcHJvcGVyDQo+ID4+Pj4+IGZpeCBhY2NvcmRpbmcgdG8geW91ciBhYm92ZSBzdWdn
+ZXN0aW9ucy4NCj4gPj4+Pj4NCj4gPj4+Pg0KPiA+Pj4+IFRoYXQgd2FzIHRoZSBxdWljayBmaXgu
+IFRoZSByZWFsIGFuZCBjb21wbGV4IGZpeCB3b3VsZCBiZSB0byBzdG9wDQo+ID4+Pj4gZXhwcmVz
+c2luZyBkZWxheXMgYmFzZWQgb24gY2xvY2sgYW5kIHRpbWVyIGZyZXF1ZW5jaWVzIGZvciBpbnRl
+cm5hbA0KPiA+Pj4+IFhlbm9tYWkgdGltaW5ncywgYnV0IGFzIGNvdW50cyBvZiBuYW5vc2Vjb25k
+cyBleGNsdXNpdmVseS4NCj4gPj4+Pg0KPiA+Pj4+IFRoZSB1Z2x5IGZpeCB3b3VsZCBiZSBhcyBm
+b2xsb3dzOiBpZiB5b3UgY2FuIHRlbGwgdS1ib290IHRvIHN3aXRjaA0KPiA+Pj4+IHRoZSBib290
+IENQVSBvZiB5b3VyIGkuTVg2IHRvIHRoZSBoaWdoZXN0IGZyZXF1ZW5jeSBhdmFpbGFibGUNCj4g
+Pj4+PiBiZWZvcmUgYnJhbmNoaW5nIHRvIHRoZSBrZXJuZWwsIHRoZW4geW91IGNvdWxkIGp1c3Qg
+ZGlzYWJsZQ0KPiA+Pj4+IENPTkZJR19DUFVfRlJFUSwgY29tcGlsaW5nIHRoZSBvZmZlbmRpbmcg
+Y29kZSBvdXQuDQo+ID4+Pj4NCj4gPj4+PiBUaGlzIGNvZGUgd2UgaGF2ZSBiZWVuIGRpc2N1c3Np
+bmcgaXMgYSBrbHVkZ2UgdG8gbWFrZSBzdXJlDQo+ID4+Pj4gQ1BVRlJFUSdzIHBlcmZvcm1hbmNl
+IHBvbGljeSBnb3Zlcm5vciBpcyBhbGxvd2VkIHRvIGNoYW5nZSB0aGUgQ1BVLA0KPiA+Pj4+IGhl
+bmNlIHRoZSBUV0QgZnJlcXVlbmN5IG9uY2UgYW5kIG9ubHkgb25jZSBhdCBib290IHRpbWUsIHdp
+dGhvdXQNCj4gPj4+PiB3cmVja2luZyBYZW5vbWFpJ3MgaWRlYSBvZiB0aW1lLCBzbyB0aGF0IHRo
+ZSBDUFVzIHJ1biBhdCB0aGUNCj4gPj4+PiBoaWdoZXN0IGF2YWlsYWJsZQ0KPiA+PiBmcmVxdWVu
+Y3kuDQo+ID4+Pg0KPiA+Pj4gVGhhbmtzIGZvciB0aGUgaW5mby4NCj4gPj4+IFRoZSBjdXJyZW50
+IHVib290IHNlZW1zIGRvZXMgbm90IHN1cHBvcnQgaXQuIEJ1dCBpbiB0aGVvcnksIGl0IGNhbiBi
+ZQ0KPiBoYWNrZWQuDQo+ID4+PiBEbyB3ZSBoYXZlIHRvIHVzZSBhcm0gZ2xvYmFsIHRpbWVyPyBF
+LmcuIGZvciBoaWdoIGFjY3VyYWN5IG9yDQo+ID4+PiBzb21ldGhpbmcNCj4gPj4gZWxzZT8NCj4g
+Pj4+IElmIG5vdCwgaW14IGhhcyBhbm90aGVyIEdQVCB0aW1lciB3aGljaCBpcyBub3QgYWZmZWN0
+ZWQgYnkgY3B1ZnJlcS4NCj4gPj4NCj4gPj4gQXMgYSBjbG9ja3NvdXJjZSwgbXhjMSB3b3VsZCBk
+by4gTm90IGFzIGEgY2xvY2tldmVudCBkZXZpY2UgdGhvdWdoLA0KPiA+PiB3ZSBuZWVkIGEgcGVy
+LWNwdSBiZWFzdCBmb3IgbGF0ZW5jeSByZWFzb25zLg0KPiA+DQo+ID4gSW14IGdwdCBhcyBjbG9j
+a3NvdXJjZSBhbmQgdHdkIGlzIHN0aWxsIGNsb2NrZXZlbnQgZGV2aWNlcy4NCj4gPg0KPiA+IEl0
+IHNlZW1zIGFybSBzbXBfdHdkIGhhcyBpdHMgb3duIHR3ZF9yYXRlX2NoYW5nZSgpIGJhc2VkIG9u
+IGNsayBub3RpZmllci4NCj4gPiBBIGJpdCBzdHJhbmdlIHdoeSBhcm0gZ2xvYmFsIHRpbWVyIGRv
+ZXMgbm90IGltcGxlbWVudCBpdCAobGF0ZXN0DQo+ID4gbWFpbmxpbmUgYWxzbyBub3Qgc3VwcG9y
+dCkuIERvbid0IGtub3cgdG9vIG11Y2ggaGlzdG9yeSBhYm91dCBpdC4NCj4gPiBJTVggaXNzdWUg
+aXMgdHJpZ2dlciBieSB1c2luZyBhcm0gZ2xvYmFsIHRpbWVyIHdoaWNoIGlzIHJlZ2lzdGVyZCBh
+cw0KPiA+IGlwaXBlX3RzYyB0aW1lciBhbmQgaGF2aW5nIHJlZnJlc2hfZnJlcS4NCj4gPg0KPiA+
+IE5vdCBxdWl0IHVuZGVyc3RhbmQgdGhlIHJlbGF0aW9uc2hpcCBiZXR3ZWVuIGlwaXBlX3RzYyB0
+aW1lciBhbmQNCj4gPiBwZXItY3B1IHRpbWVycyBVc2VkIGluIFhlbm9tYWkuDQo+ID4NCj4gDQo+
+IFhlbm9tYWkgdW5mb3J0dW5hdGVseSBleHByZXNzZXMgZGVsYXlzIGFzIGNvdW50cyBvZiB0aWNr
+cyBmcm9tIGEgaGFyZHdhcmUNCj4gY2xvY2sgc291cmNlLCBoaXN0b3JpY2FsbHkgdGhlIHg4NiBU
+U0MsIGhlbmNlIHRoZSBpcGlwZV90c2MgbmFtaW5nIHRoYXQgc3R1Y2sNCj4gZnJvbSB0aGF0IGVy
+YS4gaXBpcGVfdHNjIGlzIHRoZSBBUk0tc3BlY2lmaWMgZnJhbWV3b3JrIHRoZSBJLXBpcGUgcHJv
+dmlkZXMgZm9yDQo+IGludGVyZmFjaW5nIHRoZSBnZW5lcmljIHBpcGVsaW5lIGNvcmUgd2l0aCB0
+cnVja2xvYWRzIG9mIHRpbWVyIGNsb2NrIHNvdXJjZSBjaGlwDQo+IHZhcmlhbnRzIGZvdW5kIGlu
+IHRoZSBBUk0oMzIpIHdvcmxkLg0KPiANCj4gQmVjYXVzZSBYZW5vbWFpIGV4cHJlc3NlcyBkZWxh
+eXMgYXMgY2xvY2soc291cmNlKSB0aWNrcywgdGhlIGNvbnZlcnNpb24gZnJvbQ0KPiBjbG9jayB0
+aWNrcyB0byBoYXJkd2FyZSB0aW1lciB0aWNrcyBtdXN0IGJlIGRvbmUgYXQgc29tZSBwb2ludCBp
+biB0aGUgcHJvY2Vzcw0KPiBvZiBwcm9ncmFtbWluZyB0aGUgbmV4dCBzaG90IChlLmcuIHBva2lu
+ZyBzb21lIGRlY3JlbWVudGVyKS4NCj4gVGhlIEktcGlwZSBzb21ld2hhdCBwaWdneWJhY2tzIGl0
+cyBoYXJkd2FyZSB0aW1lciBsb2dpYyBvbiB0aGUgcmVndWxhcg0KPiBjbG9ja2V2ZW50IG9iamVj
+dCwgaW50ZXJwb3Npbmcgb24gdGhlIGNsb2NrX2V2ZW50X2RldmljZSBoYW5kbGVycywgaGVuY2Ug
+dGhlDQo+IHJlbGF0aW9uc2hpcCBiZXR3ZWVuIGlwaXBlX3RzYyBhbmQgdGhlIHBlci1jcHUgdGlt
+ZXJzLg0KPiANCg0KR290IGl0Lg0KVGhhbmtzIGZvciB0aGUgZGV0YWlsZWQgZXhwbGFuYXRpb24u
+DQoNClJlZ2FyZHMNCkRvbmcgQWlzaGVuZw0KDQo+ID4gQlRXIHRoZSBsYXN0ZXN0IG1haW5saW5l
+IGtlcm5lbCBzZWVtcyBoYXZlIHRoZSBzYW1lIGlzc3VlIGFzIHJlcG9ydGVkDQo+ID4gaW4gdGhp
+cyBtYWlsIElmIENPTU1PTl9DTEsgaXMgbm90IGVuYWJsZWQuIChzZWU6IHR3ZF9jcHVmcmVxX3Ry
+YW5zaXRpb24oKSkuDQo+ID4NCj4gDQo+IFllcywgdGhpcyBpcyBnb2luZyB0byBiZSBhIHJlY3Vy
+cmluZyBpc3N1ZS4NCj4gDQo+IC0tDQo+IFBoaWxpcHBlLg0K
 
