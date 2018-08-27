@@ -1,18 +1,15 @@
-References: <ff4b8c3a-c8ca-09b5-d3ac-f1d6e127a4e5@sferapro.com>
- <CALLqZ8SuY4K=PFP6LeCHXU9PXoXnmDv4UCLnqHmnz-8xc3CacA@mail.gmail.com>
- <CALLqZ8Q3uZm8jTmtJLHR=Yz3Cw5g+CGTrXaj-oUFPT=1Rh0JbA@mail.gmail.com>
- <c2d2a625-011c-1c79-0bcc-4830c1d30674@sferapro.com>
- <091bff54-d806-97ce-f418-9148af9bccb1@xenomai.org>
- <e23ed199-64ec-2863-7e9d-127c409e7d79@xenomai.org>
-From: Federico Sbalchiero <f.sbalchiero@sferapro.com>
-Message-ID: <9b673084-8bc6-58b4-3e06-810b5bfac492@sferapro.com>
-Date: Mon, 16 Jul 2018 11:05:38 +0200
+Date: Mon, 27 Aug 2018 18:44:03 +0200
+From: Henning Schild <henning.schild@siemens.com>
+Message-ID: <20180827184403.008c5db3@md1pvb1c.ad001.siemens.net>
+In-Reply-To: <44d138fc-717e-6b56-c9db-49cd9b5ea4f5@siemens.com>
+References: <cover.1535375976.git.henning.schild@siemens.com>
+ <b213d887c6dafd679240fd9c92db81650fea9fd0.1535375976.git.henning.schild@siemens.com>
+ <44d138fc-717e-6b56-c9db-49cd9b5ea4f5@siemens.com>
 MIME-Version: 1.0
-In-Reply-To: <e23ed199-64ec-2863-7e9d-127c409e7d79@xenomai.org>
-Content-Type: text/plain; charset="utf-8"; format="flowed"
-Content-Transfer-Encoding: 8bit
-Content-Language: it
-Subject: Re: [Xenomai] i.MX6q memory write causes high latency
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai] [PATCH 3/3] cobalt/x86: add ipipe-4.14 eager fpu
+ support
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -21,337 +18,140 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
+To: Jan Kiszka <jan.kiszka@siemens.com>
+Cc: Xenomai <xenomai@xenomai.org>
 
-Il 08/07/2018 15:45, Philippe Gerum ha scritto:
-> On 07/06/2018 10:32 AM, Philippe Gerum wrote:
->> On 07/06/2018 10:07 AM, Federico Sbalchiero wrote:
->>> adding a break at line 837 in file /arch/arm/mm/cache-l2x0.c enables L2
->>> write allocate:
->>>
->>> [    0.000000] L2C-310 errata 752271 769419 enabled
->>> [    0.000000] L2C-310 enabling early BRESP for Cortex-A9
->>> [    0.000000] L2C-310 full line of zeros enabled for Cortex-A9
->>> [    0.000000] L2C-310 ID prefetch enabled, offset 16 lines
->>> [    0.000000] L2C-310 dynamic clock gating enabled, standby mode enabled
->>> [    0.000000] L2C-310 cache controller enabled, 16 ways, 1024 kB
->>> [    0.000000] L2C-310: CACHE_ID 0x410000c7, AUX_CTRL 0x76470001
->>>
->>>
->>> latency under load (four memwrite instances) is better but still high.
->>>
->>> RTT|  00:00:01  (periodic user-mode task, 1000 us period, priority 99)
->>> RTH|----lat min|----lat avg|----lat max|-overrun|---msw|---lat
->>> best|--lat worst
->>> RTD|     42.667|     58.521|     87.667|       0|     0| 42.667|     87.667
->>> RTD|     42.000|     58.935|     89.000|       0|     0| 42.000|     89.000
->>> RTD|     36.666|     58.707|     90.333|       0|     0| 36.666|     90.333
->>> RTD|     38.333|     58.439|     92.666|       0|     0| 36.666|     92.666
->>> RTD|     41.666|     58.595|     84.999|       0|     0| 36.666|     92.666
->>> RTD|     42.666|     58.698|     89.666|       0|     0| 36.666|     92.666
->>> RTD|     40.999|     58.999|     95.665|       0|     0| 36.666|     95.665
->>> RTD|     42.665|     58.823|     88.665|       0|     0| 36.666|     95.665
->>> RTD|     42.665|     58.570|     84.665|       0|     0| 36.666|     95.665
->>> RTD|     41.331|     58.599|     86.998|       0|     0| 36.666|     95.665
->>> RTD|     37.664|     58.596|     92.331|       0|     0| 36.666|     95.665
->>> RTD|     35.331|     58.893|     85.997|       0|     0| 35.331|     95.665
->>> RTD|     41.997|     58.704|     86.997|       0|     0| 35.331|     95.665
->>> RTD|     40.997|     58.723|     94.997|       0|     0| 35.331|     95.665
->>> RTD|     41.330|     58.710|     88.997|       0|     0| 35.331|     95.665
->>> RTD|     41.330|     59.080|     92.663|       0|     0| 35.331|     95.665
->>> RTD|     38.330|     58.733|     85.996|       0|     0| 35.331|     95.665
->>> RTD|     39.996|     59.095|     90.663|       0|     0| 35.331|     95.665
->>> RTD|     41.662|     58.967|     86.662|       0|     0| 35.331|     95.665
->>> RTD|     42.662|     58.884|     86.995|       0|     0| 35.331|     95.665
->>> RTD|     42.662|     58.852|     88.329|       0|     0| 35.331|     95.665
->>>
->> According to my latest tests, waiting for operations to complete in the
->> cache unit induces most of the delay. I'm under the impression that the
->> way we deal with the outer L2 cache is obsolete, based on past
->> assumptions which may not be valid anymore. Typically, some of them
->> would involve events that might occur with VIVT caches, which we don't
->> support in 4.14.
->>
->> The whole logic requires a fresh review. I'll follow up on this.
->>
-> I ran extensive tests on two SoCs equipped with PL310 l2 caches,
-> i.MX6QP (sabresd) and a VIA pico-ITX which is also a quad-core i.MX6Q
-> (much older though).
->
-> Background stress load while sampling latencies:
->
-> - while :; do dd if=/dev/zero of=/dev/null bs=16M; done&
-> - switchtest -s 200
-> - ethernet bandwidth testing with iperf to and from the SoC, only for
-> the purpose of hammering the system with lots of DMA transfers via the
-> FEC driver, which in turn causes a continuous flow of l2 cache
-> maintenance operations for cleaning / invalidating ranges of DMA-ed
-> cachelines.
->
-> With the very same Xenomai 3.0.7 over kernel 4.14.36 configuration
-> (I-pipe/4.14 commit [1]), SMP, all debug switches and tracers disabled,
-> only toggling l2x0_write_allocate on/off, the results were:
->
-> ==========================================================
-> VIA (996 Mhz, L2 cache rev: L310_CACHE_ID_RTL_R3P1_50REL0)
-> ==========================================================
->
-> * kernel 4.14.36, WA=0, ipipe-core-4.14.36-arm-1
->
-> L2C: I-pipe: l2x0_write_allocate= not specified, defaults to 0 (disabled).
-> L2C: DT/platform modifies aux control register: 0x32070000 -> 0x32c70000
-> L2C-310 errata 752271 769419 enabled
-> L2C-310 enabling early BRESP for Cortex-A9
-> L2C-310 full line of zeros enabled for Cortex-A9
-> L2C-310 ID prefetch enabled, offset 16 lines
-> L2C-310 dynamic clock gating enabled, standby mode enabled
-> L2C-310 cache controller enabled, 16 ways, 1024 kB
-> L2C-310: CACHE_ID 0x410000c7, AUX_CTRL 0x76c70001
->
-> RTH|----lat min|----lat avg|----lat max|-overrun|---msw|
-> RTD|      4.212|      9.852|     57.243|       0|     0|
-> 07:07:43/07:07:43
->
-> -----------------------------------------------------------------------------
->
-> * kernel 4.14.36, WA=1, ipipe-core-4.14.36-arm-1
->
-> L2C: I-pipe: write-allocate enabled, induces high latencies.
-> L2C: DT/platform modifies aux control register: 0x32070000 -> 0x32470000
-> L2C-310 errata 752271 769419 enabled
-> L2C-310 enabling early BRESP for Cortex-A9
-> L2C-310 full line of zeros enabled for Cortex-A9
-> L2C-310 ID prefetch enabled, offset 16 lines
-> L2C-310 dynamic clock gating enabled, standby mode enabled
-> L2C-310 cache controller enabled, 16 ways, 1024 kB
-> L2C-310: CACHE_ID 0x410000c7, AUX_CTRL 0x76470001
->
-> RTH|----lat min|----lat avg|----lat max|-overrun|---msw|
-> RTS|      0.996|     16.472|     93.579|       0|     0|
-> 03:12:12/03:12:12
->
-> =====================================================
-> IMX6QP (996Mhz, L2 cache rev: L310_CACHE_ID_RTL_R3P2)
-> =====================================================
->
-> * kernel 4.14.36, WA=1, ipipe-core-4.14.36-arm-1
->
-> L2C: I-pipe: revision >= L310-r3p2 detected, forcing WA.
-> L2C: I-pipe: write-allocate enabled, induces high latencies.
-> L2C: DT/platform modifies aux control register: 0x32070000 -> 0x32470000
-> L2C-310 erratum 769419 enabled
-> L2C-310 enabling early BRESP for Cortex-A9
-> L2C-310 full line of zeros enabled for Cortex-A9
-> L2C-310 ID prefetch enabled, offset 16 lines
-> L2C-310 dynamic clock gating enabled, standby mode enabled
-> L2C-310 cache controller enabled, 16 ways, 1024 kB
-> L2C-310: CACHE_ID 0x410000c8, AUX_CTRL 0x76470001
->
-> RTH|----lat min|----lat avg|----lat max|-overrun|---msw|
-> RTS|      2.516|     14.070|     71.581|       0|     0|
-> 03:28:03/03:28:03
->
-> -----------------------------------------------------------------------------
->
-> * kernel 4.14.36, WA=0, ipipe-core-4.14.36-arm-1
->
-> L2C: DT/platform modifies aux control register: 0x32070000 -> 0x32c70000
-> L2C-310 erratum 769419 enabled
-> L2C-310 enabling early BRESP for Cortex-A9
-> L2C-310 full line of zeros enabled for Cortex-A9
-> L2C-310 ID prefetch enabled, offset 16 lines
-> L2C-310 dynamic clock gating enabled, standby mode enabled
-> L2C-310 cache controller enabled, 16 ways, 1024 kB
-> L2C-310: CACHE_ID 0x410000c8, AUX_CTRL 0x76c70001
->
-> RTH|----lat min|----lat avg|----lat max|-overrun|---msw|
-> RTS|      2.332|     14.991|     77.969|       0|     0|
-> 09:55:24/09:55:24
->
-> Some (partial) conclusions drawn from what I have been seeing here:
->
-> 1. The penalty with enabling write-allocate on PL310 caches with respect
-> to latency seems to have decreased since R3P2. Conversely, R3P1_50REL0
-> and earlier have better latency figures when write-allocate is disabled
-> (I seem to remember than early sabrelite boards would even have
-> pathological figures, in the 300 us range with WA=1). However, disabling
-> WA for PL310 cache revs >= R3P2 seems actually counter-productive since
-> it slows down memory accesses uselessly with no upside. This might even
-> cause cache coherency issues on SMP as observed with some SoCs which
-> died at booting the kernel in this configuration.
->
-> 2. The spinlock defined in the PL2xx/3xx L2 cache driver serializes
-> non-atomic maintenance operation requests on the cache unit. Converting
-> it to a hard lock is not required, as we cannot run any outer cache
-> maintenance operation from primary mode, all callers belong to the root
-> stage (including handle_pte_fault()). There is no issue in being
-> preempted by out-of-band code while performing such operation, virtually
-> disabling interrupt has to be enough. Conversely, hard locking increases
-> latency since it hard disables IRQs. Contexts that would be involved by
-> hard locking are infrequently seen these days though:
->
-> - all operations on PL220 caches
-> - PL310 with errata 588369 && id < R2P0
-> - PL310 with errata 727915 && id >= R2P0 && id < R3P1
->
->>> [    0.000000] L2C-310 errata 752271 769419 enabled
-> According to the errata advertised by your hardware, you should not be
-> affected by such locking issue.
->
-> All other combinations of cache types, revisions and errata do run
-> locklessly already, so they can't be affected by such hard locking. The
-> change introducing the hard lock in arch/arm/mm/cache-l2x0.c should be
-> reverted. As a consequence of this, limiting the bulk operations to 512
-> cache lines at a time would not be needed anymore either, since those
-> potentially lengthy operations could still be preempted by real-time
-> activities.
->
-> Tip #1: care for CPU frequency when comparing tests on similar hardware.
-> If CPU_FREQ is off, some processors may be left running at a lower speed
-> by the bootloader than they are capable of. CONFIG_ARM_IMX6Q_CPUFREQ can
-> be enabled with the "performance" CPU_FREQ governor to make sure the
-> highest speed is picked, and remain stable over time not to confuse
-> Xenomai timings. Disabling CPU_FREQ entirely has been an ancient mantra
-> for configuring Xenomai in the past, maybe the message should evolve
-> because things may not be that clear-cut depending on the SoC.
->
-> Tip #2: any test which does not run for hours under significant load is
-> unlikely to deliver any meaningful figure, at least not on my SoCs. In a
-> couple of occasions, the worst-case latency was reached after 2h+ of
-> runtime.
->
-> So, I would assume that ~70 us worst-case should be achievable under
-> high load on a typical i.MX6Q with WA=1 on l2 cache revision >= R3P2,
-> running at 1Ghz. For earlier revisions, WA=0 may be required for
-> reaching this target, possibly even less/better, but there is no
-> guarantee that the results seen on the VIA SoC with such settings could
-> be generalized though.
->
-> If anyone has different or similar results/conclusions about the impact
-> of l2 with the i.MX6Q series, please let us know.
->
-> Thanks,
->
-> [1]
-> https://git.xenomai.org/ipipe-arm/commit/a1bd0cc70391df28ad6678a86c77ce0bf275b5cd
->
-I did some more testing on sabresd comparing WA=0 to WA=1 and
-hard/soft lock.
+Am Mon, 27 Aug 2018 18:28:52 +0200
+schrieb Jan Kiszka <jan.kiszka@siemens.com>:
 
-I'm not confident with kernel locks at all, but I made this in
-arch/arm/mm/cache-l2x0.c to convert the hard lock into a soft lock:
-- defined l2x0_lock using IPIPE_DEFINE_SPINLOCK
-- replaced all raw_spin_lock functions with their spin_lock
-equivalents
-- removed CACHE_RANGE_ATOMIC_MAX definition and related unlock/lock
-sequences in cache bulk operations
+> On 2018-08-27 15:28, Henning Schild wrote:
+> > Signed-off-by: Henning Schild <henning.schild@siemens.com>  
+> 
+> As this is more than adding the version filter, some commit message 
+> would be nice.
 
-Base configuration used for tests:
-- Freescale sabresd board, i.MX6Q at 966MHz,
-- kernel 4.14.36, ipipe-core-4.14.36-arm-1 [1]
-- CPU_FREQ governor "performance", debug and trace disabled
+I know, i think the final one would just be all three in one patch. As
+said in the cover letter, that should be seen as an early version where
+i was looking for higher level review. ... general approach/correctness
 
-dmesg with WA=0:
-L2C: I-pipe: l2x0_write_allocate= not specified, defaults to 0 (disabled).
-L2C: DT/platform modifies aux control register: 0x32470000 -> 0x32c70000
-L2C-310 errata 752271 769419 enabled
-L2C-310 enabling early BRESP for Cortex-A9
-L2C-310 full line of zeros enabled for Cortex-A9
-L2C-310 ID prefetch enabled, offset 16 lines
-L2C-310 dynamic clock gating enabled, standby mode enabled
-L2C-310 cache controller enabled, 16 ways, 1024 kB
-L2C-310: CACHE_ID 0x410000c7, AUX_CTRL 0x76c70001
+And to share the current state with others, while i am still trying to
+get 4.14 with Xenomai to boot.
 
-dmesg with WA=1:
-L2C: I-pipe: write-allocate enabled, induces high latencies.
-L2C-310 errata 752271 769419 enabled
-L2C-310 enabling early BRESP for Cortex-A9
-L2C-310 full line of zeros enabled for Cortex-A9
-L2C-310 ID prefetch enabled, offset 16 lines
-L2C-310 dynamic clock gating enabled, standby mode enabled
-L2C-310 cache controller enabled, 16 ways, 1024 kB
-L2C-310: CACHE_ID 0x410000c7, AUX_CTRL 0x76470001
+Henning
 
---------------------------------------------------------
-     TEST 1
---------------------------------------------------------
-WA=0, hard l2x0_lock
-stress load: dd loop + switchtest + iperf
-
-RTH|----lat min|----lat avg|----lat max|-overrun|---msw|
-RTS|      0.811|     13.025|     72.505|       0|     0|
-03:38:14/03:38:14
-
-
---------------------------------------------------------
-     TEST 2
---------------------------------------------------------
-WA=1, hard l2x0_lock
-stress load: dd loop + switchtest + iperf
-
-RTH|----lat min|----lat avg|----lat max|-overrun|---msw|
-RTS|      2.292|     13.216|     66.989|       0|     0|
-04:08:19/04:08:19
-
-
---------------------------------------------------------
-     TEST 3
---------------------------------------------------------
-WA=0, hard l2x0_lock
-stress load: 4 dd loops (no switchtest, no iperf)
-
-RTH|----lat min|----lat avg|----lat max|-overrun|---msw|
-RTS|      4.612|     43.343|    101.798|       0|     0|
-02:20:11/00:20:11
-
-
---------------------------------------------------------
-     TEST 4
---------------------------------------------------------
-WA=0, soft l2x0_lock
-stress load: dd loop + switchtest + iperf
-
-RTH|----lat min|----lat avg|----lat max|-overrun|---msw|
-RTS|     -0.146|      9.265|     60.964|       0|     0|
-08:11:29/08:11:29
-
---------------------------------------------------------
-     TEST 5
---------------------------------------------------------
-WA=1, soft l2x0_lock
-stress load: dd loop + switchtest + iperf
-
-RTH|----lat min|----lat avg|----lat max|-overrun|---msw|
-RTS|      0.001|      9.508|     64.094|       0|     0|
-05:02:38/05:02:38
-
---------------------------------------------------------
-     TEST 6
---------------------------------------------------------
-WA=0, soft l2x0_lock
-stress load: 4 dd loops (no switchtest, no iperf)
-
-RTH|----lat min|----lat avg|----lat max|-overrun|---msw|
-RTS|      5.093|     28.399|     74.389|       0|     0|
-06:41:53/06:41:53
-
-
-My conclusions:
-
-1) Overall I see little correlation between WA settings and latency
-on my hardware, possibly just noise.
-
-2) Making cache bulk operations preemptible (as Philippe suggested)
-improves latency and is a big win in the "4 dd stress" test.
-
-3) This also confirms such test case is very good at exploiting L2
-cache issues.
-
-What's next?
-Any comment/suggestion is welcome. If there are other ideas to
-improve Xenomai/ipipe on i.MX6 I will try to explore them.
-
-If someone is interested I can post a "make l2x0 cache lock
-preemptible" patch for better testing.
+> > ---
+> >   kernel/cobalt/arch/x86/include/asm/xenomai/wrappers.h |  4 ++++
+> >   kernel/cobalt/arch/x86/thread.c                       | 18
+> > +++++++++++++++---
+> > kernel/cobalt/include/asm-generic/xenomai/syscall.h   |  4 ++++ 3
+> > files changed, 23 insertions(+), 3 deletions(-)
+> > 
+> > diff --git a/kernel/cobalt/arch/x86/include/asm/xenomai/wrappers.h
+> > b/kernel/cobalt/arch/x86/include/asm/xenomai/wrappers.h index
+> > 0156e86f0..4389d1202 100644 ---
+> > a/kernel/cobalt/arch/x86/include/asm/xenomai/wrappers.h +++
+> > b/kernel/cobalt/arch/x86/include/asm/xenomai/wrappers.h @@ -35,6
+> > +35,10 @@ LINUX_VERSION_CODE > KERNEL_VERSION(4,4,71)
+> >   #define IPIPE_X86_FPU_EAGER
+> >   #endif
+> > +#if LINUX_VERSION_CODE >= KERNEL_VERSION(4,14,0)
+> > +#define IPIPE_X86_FPU_EAGER
+> > +#endif
+> > +
+> >   
+> >   #if LINUX_VERSION_CODE < KERNEL_VERSION(4,2,0)
+> >   #include <asm/i387.h>
+> > diff --git a/kernel/cobalt/arch/x86/thread.c
+> > b/kernel/cobalt/arch/x86/thread.c index 54bc5c008..30dd37dab 100644
+> > --- a/kernel/cobalt/arch/x86/thread.c
+> > +++ b/kernel/cobalt/arch/x86/thread.c
+> > @@ -42,6 +42,7 @@ static struct kmem_cache *xstate_cache;
+> >   #define cpu_has_xsave boot_cpu_has(X86_FEATURE_XSAVE)
+> >   #endif
+> >   
+> > +#ifndef IPIPE_X86_FPU_EAGER
+> >   #if LINUX_VERSION_CODE < KERNEL_VERSION(4,2,0)
+> >   #include <asm/i387.h>
+> >   #include <asm/fpu-internal.h>
+> > @@ -68,11 +69,11 @@ static inline void x86_fpregs_activate(struct
+> > task_struct *t) if (!x86_fpregs_active(t))
+> >   		__fpregs_activate(&t->thread.fpu);
+> >   }
+> > +#endif  
+> 
+> I suspect that this is "< 4.2.0", right?
+> 
+> > +#endif /* !IPIPE_X86_FPU_EAGER */
+> >   
+> >   #define x86_xstate_alignment		__alignof__(union
+> > fpregs_state) 
+> > -#endif
+> > -  
+> 
+> That looks weird. Are you sure you want to enable that define 
+> unconditionally?
+> 
+> >   #if LINUX_VERSION_CODE < KERNEL_VERSION(4,8,0)
+> >   /*
+> >    * This is obsolete context switch code uselessly duplicating
+> > @@ -462,7 +463,9 @@ void xnarch_leave_root(struct xnthread *root)
+> >   		return;
+> >   
+> >   	// the kernel never marked the task as not being the fpu
+> > owner anymore +#if LINUX_VERSION_CODE < KERNEL_VERSION(4,14,0)  
+> 
+> The comment should address the version differences.
+> 
+> >   	if (&current->thread.fpu.fpstate_active)
+> > +#endif
+> >   		fpregs_deactivate(&current->thread.fpu);
+> >   
+> >   	copy_fpregs_to_fpstate(rootcb->kfpu);
+> > @@ -526,7 +529,11 @@ void xnarch_init_shadow_tcb(struct xnthread
+> > *thread) 
+> >   #ifdef IPIPE_X86_FPU_EAGER
+> >   	xnthread_set_state(thread, XNFPU);
+> > +#if LINUX_VERSION_CODE < KERNEL_VERSION(4,14,0)
+> >   	fpu__activate_fpstate_read(&p->thread.fpu);
+> > +#else
+> > +	fpu__prepare_read(&p->thread.fpu);
+> > +#endif
+> >   #endif
+> >   }
+> >   
+> > @@ -535,7 +542,12 @@ int mach_x86_thread_init(void)
+> >   	xstate_cache = kmem_cache_create("cobalt_x86_xstate",
+> >   					 fpu_kernel_xstate_size,
+> >   					 x86_xstate_alignment,
+> > -					 SLAB_NOTRACK, NULL);
+> > +#if LINUX_VERSION_CODE < KERNEL_VERSION(4,14,0)
+> > +					 SLAB_NOTRACK,
+> > +#else
+> > +					 0,
+> > +#endif
+> > +					 NULL);
+> >   	if (xstate_cache == NULL)
+> >   		return -ENOMEM;
+> >   
+> > diff --git a/kernel/cobalt/include/asm-generic/xenomai/syscall.h
+> > b/kernel/cobalt/include/asm-generic/xenomai/syscall.h index
+> > f11ade8e7..9d57eaf74 100644 ---
+> > a/kernel/cobalt/include/asm-generic/xenomai/syscall.h +++
+> > b/kernel/cobalt/include/asm-generic/xenomai/syscall.h @@ -20,7
+> > +20,11 @@ #define _COBALT_ASM_GENERIC_SYSCALL_H
+> >   
+> >   #include <linux/types.h>
+> > +#if LINUX_VERSION_CODE < KERNEL_VERSION(4,14,0)
+> >   #include <asm/uaccess.h>
+> > +#else
+> > +#include <linux/uaccess.h>
+> > +#endif
+> >   #include <asm/xenomai/features.h>
+> >   #include <asm/xenomai/wrappers.h>
+> >   #include <asm/xenomai/machine.h>
+> >   
+> 
+> Jan
+> 
 
 
