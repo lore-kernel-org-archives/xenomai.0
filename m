@@ -1,11 +1,7 @@
-From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <a59535aa-62e7-7b74-c334-92b72d674558@siemens.com>
-Date: Fri, 13 Jul 2018 19:48:57 +0200
-MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-Subject: [Xenomai] pthread_setschedparam(invalid_thread)
+From: Henning Schild <henning.schild@siemens.com>
+Date: Mon, 27 Aug 2018 15:33:46 +0200
+Message-Id: <20180827133347.26289-1-henning.schild@siemens.com>
+Subject: [Xenomai] [PATCH 0/1] Eager FPU switching for ipipe-4.9.y
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,41 +12,22 @@ List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: Xenomai <xenomai@xenomai.org>
 
-Hi all,
+After applying this one patch, one can merge in a newer minor release of
+4.9. v4.9.109 switched to eager-only and blocked us from moving beyond
+this release.
+A tree that contains the patch and a sample-merge can be found here:
+https://github.com/henning-schild-work/linux-ipipe/tree/henning/fpu/4.9
 
-this pattern causes a kernel crash:
+Henning Schild (1):
+  x86: make fpu switching eager
 
-int main()
-{
-	struct sched_param schedpar;
-
-	schedpar.sched_priority = 1;
-	pthread_setschedparam(pthread_self(), SCHED_FIFO, &schedpar);
-	pthread_setschedparam(0x1234, SCHED_FIFO, &schedpar);
-	return 0;
-}
-
-The second, invalid setschedparam makes the core try to shadow the
-current thread - which is already shadowed - and that fails and then
-causes a failure in the error cleanup path. But one after the other.
-
-The semantic of pthread_setschedparam(unknown_remote_thread) should be
-to just invoke the plain glibc function for that thread. But right now
-the core's pthread_setschedparam_ex has no chance to tell a request to
-promote the current thread to a shadow apart from a request on an
-unknown (or invalid) remote thread ID. We would need to extend the
-syscall ABI for that, I'm afraid (pass down pthread_self() as well). Any
-better ideas?
-
-The actual crash I'm seeing is related to cobalt_thread_shadow() running
-over primary mode, failing with cobalt_map_user() (obviously), and then
-calling pthread_discard() -> __xnthread_discard() which finally detects
-the wrong caller mode. I guess we want secondary_mode_only() also in
-cobalt_map_user() or cobalt_thread_shadow().
-
-Jan
+ arch/x86/include/asm/fpu/internal.h | 30 ++++++++----------------------
+ arch/x86/include/asm/fpu/types.h    | 12 ------------
+ arch/x86/kernel/fpu/core.c          | 23 +++++++++--------------
+ arch/x86/kernel/fpu/init.c          |  5 +----
+ 4 files changed, 18 insertions(+), 52 deletions(-)
 
 -- 
-Siemens AG, Corporate Technology, CT RDA IOT SES-DE
-Corporate Competence Center Embedded Linux
+2.16.4
+
 
