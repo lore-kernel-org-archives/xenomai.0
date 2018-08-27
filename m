@@ -1,13 +1,14 @@
-From: "A.s. Dong" <aisheng.dong@nxp.com>
-Date: Mon, 27 Aug 2018 15:17:32 +0000
-Message-ID: <AM0PR04MB4211596E8B94D8BCDD15BF50800B0@AM0PR04MB4211.eurprd04.prod.outlook.com>
 References: <AM0PR04MB4211273F120B170AAEBBA391800B0@AM0PR04MB4211.eurprd04.prod.outlook.com>
  <f0344a17-e6ea-32a0-25d2-00781428ce21@xenomai.org>
-In-Reply-To: <f0344a17-e6ea-32a0-25d2-00781428ce21@xenomai.org>
-Content-Language: en-US
-Content-Type: text/plain; charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
+ <AM0PR04MB4211596E8B94D8BCDD15BF50800B0@AM0PR04MB4211.eurprd04.prod.outlook.com>
+From: Philippe Gerum <rpm@xenomai.org>
+Message-ID: <d7abf9bf-a2f1-9157-d2fc-64ad244ecb12@xenomai.org>
+Date: Mon, 27 Aug 2018 17:31:51 +0200
 MIME-Version: 1.0
+In-Reply-To: <AM0PR04MB4211596E8B94D8BCDD15BF50800B0@AM0PR04MB4211.eurprd04.prod.outlook.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 Subject: Re: [Xenomai] IPIPE issue causes kernel warning when
  CONFIG_DEBUG_MUTEXES enabled
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
@@ -18,86 +19,93 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Philippe Gerum <rpm@xenomai.org>, "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: "A.s. Dong" <aisheng.dong@nxp.com>, "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-> -----Original Message-----
-> From: Philippe Gerum [mailto:rpm@xenomai.org]
-> Sent: Monday, August 27, 2018 10:46 PM
-> To: A.s. Dong <aisheng.dong@nxp.com>; xenomai@xenomai.org
-> Subject: Re: IPIPE issue causes kernel warning when CONFIG_DEBUG_MUTEXES
-> enabled
->=20
-> On 08/27/2018 02:40 PM, A.s. Dong wrote:
-> > Hi Xenomai Experts,
-> >
-> >
-> >
-> > We met the following kernel warning on a MX6Q SDB board with Xenomai
-> > enabled 4.9 kernel.
-> >
-> > (CONFIG_DEBUG_MUTEXES is enabled).
-> >
-> >
-> >
-> > After some debug, I found it seems to be caused by IPIPE calling
-> > sleepable function in interrupt context.
-> >
-> > arch/arm/kernel/ipipe_tsc.c:
-> >
-> > int cpufreq_transition_handler()
-> >
-> > {
-> >
-> > =A0=A0=A0=A0=A0=A0 .
-> >
-> > =A0=A0=A0=A0=A0=A0 smp_call_function_single(freqs->cpu, update_timer_fr=
-eq, &freq,
-> > 1);
-> >
-> > }
-> >
-> >
-> >
-> > Where update_timer_freq is not allowed to be sleep. But it will
-> > finally call clk_get_rate
-> >
-> > In twd_refresh_freq which has a mutex and then trigger the following
-> > warning.
-> >
-> >
-> >
-> > My questions is:
-> >
-> > Does Xenomai support CONFIG_DEBUG_MUTEXES?
-> >
-> > Should we disable it to avoid such issue?
->=20
-> No, the underlying bug reported by the might_sleep() assertion would stil=
-l be
-> there anyway, right?
+On 08/27/2018 05:17 PM, A.s. Dong wrote:
+>> -----Original Message-----
+>> From: Philippe Gerum [mailto:rpm@xenomai.org]
+>> Sent: Monday, August 27, 2018 10:46 PM
+>> To: A.s. Dong <aisheng.dong@nxp.com>; xenomai@xenomai.org
+>> Subject: Re: IPIPE issue causes kernel warning when CONFIG_DEBUG_MUTEXES
+>> enabled
+>>
+>> On 08/27/2018 02:40 PM, A.s. Dong wrote:
+>>> Hi Xenomai Experts,
+>>>
+>>>
+>>>
+>>> We met the following kernel warning on a MX6Q SDB board with Xenomai
+>>> enabled 4.9 kernel.
+>>>
+>>> (CONFIG_DEBUG_MUTEXES is enabled).
+>>>
+>>>
+>>>
+>>> After some debug, I found it seems to be caused by IPIPE calling
+>>> sleepable function in interrupt context.
+>>>
+>>> arch/arm/kernel/ipipe_tsc.c:
+>>>
+>>> int cpufreq_transition_handler()
+>>>
+>>> {
+>>>
+>>>        .
+>>>
+>>>        smp_call_function_single(freqs->cpu, update_timer_freq, &freq,
+>>> 1);
+>>>
+>>> }
+>>>
+>>>
+>>>
+>>> Where update_timer_freq is not allowed to be sleep. But it will
+>>> finally call clk_get_rate
+>>>
+>>> In twd_refresh_freq which has a mutex and then trigger the following
+>>> warning.
+>>>
+>>>
+>>>
+>>> My questions is:
+>>>
+>>> Does Xenomai support CONFIG_DEBUG_MUTEXES?
+>>>
+>>> Should we disable it to avoid such issue?
+>>
+>> No, the underlying bug reported by the might_sleep() assertion would still be
+>> there anyway, right?
+> 
+> Yes, you're right.
+> 
+>> Fixing it is the only sane way to go. This could be done by
+>> first collecting the new per-cpu timer frequencies in the cpufreq transition
+>> handler, then applying the change via update_timer_freq, passing the per-cpu
+>> array of frequencies just collected. That would spare us the need to retrieve
+>> them by a call to
+>> clk_get_rate() in the leaf handler.
+>>
+> 
+> Is there a quick fix?
+> I'm not quite familiar with Xenomai/IPIPE implementation. It seems there're two
+> Timers, tsc and ipipe_timer. Not sure can do a proper fix according to your
+> above suggestions.
+> 
 
-Yes, you're right.
+That was the quick fix. The real and complex fix would be to stop
+expressing delays based on clock and timer frequencies for internal
+Xenomai timings, but as counts of nanoseconds exclusively.
 
-> Fixing it is the only sane way to go. This could be done by
-> first collecting the new per-cpu timer frequencies in the cpufreq transit=
-ion
-> handler, then applying the change via update_timer_freq, passing the per-=
-cpu
-> array of frequencies just collected. That would spare us the need to retr=
-ieve
-> them by a call to
-> clk_get_rate() in the leaf handler.
->=20
+The ugly fix would be as follows: if you can tell u-boot to switch the
+boot CPU of your i.MX6 to the highest frequency available before
+branching to the kernel, then you could just disable CONFIG_CPU_FREQ,
+compiling the offending code out.
 
-Is there a quick fix?
-I'm not quite familiar with Xenomai/IPIPE implementation. It seems there're=
- two
-Timers, tsc and ipipe_timer. Not sure can do a proper fix according to your
-above suggestions.
+This code we have been discussing is a kludge to make sure CPUFREQ's
+performance policy governor is allowed to change the CPU, hence the TWD
+frequency once and only once at boot time, without wrecking Xenomai's
+idea of time, so that the CPUs run at the highest available frequency.
 
-Regards
-Dong Aisheng
-
-> --
-> Philippe.
+-- 
+Philippe.
 
