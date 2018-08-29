@@ -1,10 +1,13 @@
-Date: Wed, 29 Aug 2018 10:15:47 -0500 (CDT)
-From: Per Oberg <pero@wolfram.com>
-Message-ID: <368012593.481146.1535555747324.JavaMail.zimbra@wolfram.com>
+References: <368012593.481146.1535555747324.JavaMail.zimbra@wolfram.com>
+From: Philippe Gerum <rpm@xenomai.org>
+Message-ID: <8992f6ad-6627-cb28-32f8-a3e890567e3a@xenomai.org>
+Date: Wed, 29 Aug 2018 18:01:08 +0200
 MIME-Version: 1.0
+In-Reply-To: <368012593.481146.1535555747324.JavaMail.zimbra@wolfram.com>
 Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
-Subject: [Xenomai] Importance of missing modechk/cobolt.wrappers
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai] Importance of missing modechk/cobolt.wrappers
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -13,150 +16,63 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai <xenomai@xenomai.org>
+To: Per Oberg <pero@wolfram.com>, xenomai <xenomai@xenomai.org>
 
-Hello all
+On 08/29/2018 05:15 PM, Per Oberg wrote:
+> Hello all
+> 
+> 
+> I'm working with a Yocto build of xenomai. I have compiled a sdk for building on a build-host but I am doing something wrong because I get the wrong path to modechk.wrappers and cobalt.wrappers. I could probably fix this but I just want to know whether this is a real problem or not. 
+> 
+> When I run xeno-config i get :
+> Xenomai: wrappers cannot be read from /usr/lib/modechk.wrappers
+> Xenomai: wrappers cannot be read from /usr/lib/cobalt.wrappers
+> 
+> The contents of the wrapper files are listed below for completeness. It seems like a lot of stuff that is not getting wrapped when these files are missing, and that would mean that I am missing a lot of wrapping and that I definitely need to fix it. Or is is just a warning? 
+>
 
+It's an important warning, your build may be broken. This means that
+wrapping failed for any executable depending on it, which retrieved its
+linker flags from xeno-config --ldflags. Basically, all built-in Xenomai
+apps (e.g. latency, switchtest), and any user application depending on
+xeno-config for retrieving those flags.
 
-I'm working with a Yocto build of xenomai. I have compiled a sdk for buildi=
-ng on a build-host but I am doing something wrong because I get the wrong p=
-ath to modechk.wrappers and cobalt.wrappers. I could probably fix this but =
-I just want to know whether this is a real problem or not.=20
+> How do I know if the final software is wrapping stuff the way I want?
 
-When I run xeno-config i get :
-Xenomai: wrappers cannot be read from /usr/lib/modechk.wrappers
-Xenomai: wrappers cannot be read from /usr/lib/cobalt.wrappers
+Dumping the executable's namelist should always refer to the wrapper for
+any routine listed in the wrapper files. e.g.
 
-The contents of the wrapper files are listed below for completeness. It see=
-ms like a lot of stuff that is not getting wrapped when these files are mis=
-sing, and that would mean that I am missing a lot of wrapping and that I de=
-finitely need to fix it. Or is is just a warning?=20
+$ nm -u $executable | grep 'U __wrap_'
 
-How do I know if the final software is wrapping stuff the way I want?
+                 U __wrap_clock_gettime
+                 U __wrap_close
+                 U __wrap_fclose
+                 U __wrap_fprintf
+                 U __wrap_fputc
+                 U __wrap_fputs
+                 U __wrap_free
+                 U __wrap_fwrite
+                 U __wrap_ioctl
+                 U __wrap_kill
+                 U __wrap_malloc
+                 U __wrap_open
+                 U __wrap_printf
+                 U __wrap_pthread_attr_init
+                 U __wrap_pthread_create
+                 U __wrap_pthread_join
+                 U __wrap_pthread_setname_np
+                 U __wrap_puts
+                 U __wrap_read
+                 U __wrap_sem_close
+                 U __wrap_sem_open
+                 U __wrap_sem_post
+                 U __wrap_sem_unlink
+                 U __wrap_sem_wait
+                 U __wrap_time
+                 U __wrap_timerfd_create
+                 U __wrap_timerfd_settime
+                 U __wrap_write
 
-
-----------------------------------------------------------------=20
-modechk.wrappers :=20
-----------------------------------------------------------------=20
---wrap malloc
---wrap free
-
-and=20
-----------------------------------------------------------------=20
-cobalt.wrappers :
-----------------------------------------------------------------=20
---wrap pthread_attr_init
---wrap pthread_create
---wrap pthread_setschedparam
---wrap pthread_getschedparam
---wrap pthread_yield
---wrap sched_yield
---wrap sched_get_priority_min
---wrap sched_get_priority_max
---wrap sched_setscheduler
---wrap sched_getscheduler
---wrap pthread_kill
---wrap pthread_join
---wrap pthread_setname_np
---wrap sem_init
---wrap sem_destroy
---wrap sem_post
---wrap sem_timedwait
---wrap sem_wait
---wrap sem_trywait
---wrap sem_getvalue
---wrap sem_open
---wrap sem_close
---wrap sem_unlink
---wrap clock_getres
---wrap clock_gettime
---wrap clock_settime
---wrap clock_nanosleep
---wrap nanosleep
---wrap pthread_mutex_init
---wrap pthread_mutex_destroy
---wrap pthread_mutex_lock
---wrap pthread_mutex_trylock
---wrap pthread_mutex_timedlock
---wrap pthread_mutex_unlock
---wrap pthread_cond_init
---wrap pthread_cond_destroy
---wrap pthread_cond_wait
---wrap pthread_cond_timedwait
---wrap pthread_cond_signal
---wrap pthread_cond_broadcast
---wrap mq_open
---wrap mq_close
---wrap mq_unlink
---wrap mq_getattr
---wrap mq_setattr
---wrap mq_send
---wrap mq_timedsend
---wrap mq_receive
---wrap mq_timedreceive
---wrap mq_notify
---wrap open
---wrap open64
---wrap socket
---wrap close
---wrap ioctl
---wrap read
---wrap write
---wrap recvmsg
---wrap sendmsg
---wrap recvfrom
---wrap sendto
---wrap recv
---wrap send
---wrap getsockopt
---wrap setsockopt
---wrap bind
---wrap connect
---wrap listen
---wrap accept
---wrap getsockname
---wrap getpeername
---wrap shutdown
---wrap timer_create
---wrap timer_delete
---wrap timer_settime
---wrap timer_getoverrun
---wrap timer_gettime
---wrap timerfd_create
---wrap timerfd_gettime
---wrap timerfd_settime
---wrap select
---wrap vfprintf
---wrap vprintf
---wrap fprintf
---wrap printf
---wrap puts
---wrap fputs
---wrap fputc
---wrap putchar
---wrap fwrite
---wrap fclose
---wrap syslog
---wrap vsyslog
---wrap gettimeofday
---wrap __vfprintf_chk
---wrap __vprintf_chk
---wrap __fprintf_chk
---wrap __printf_chk
---wrap __vsyslog_chk
---wrap __syslog_chk
---wrap sigwait
---wrap sigwaitinfo
---wrap sigtimedwait
---wrap sigpending
---wrap sigqueue
---wrap kill
---wrap sleep
---wrap mmap
---wrap mmap64
---wrap time
---wrap fcntl
-
-Regards
-Per =C3=96berg=20
+-- 
+Philippe.
 
