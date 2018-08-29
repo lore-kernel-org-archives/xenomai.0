@@ -1,13 +1,7 @@
-From: Jan Kiszka <jan.kiszka@siemens.com>
-References: <a59535aa-62e7-7b74-c334-92b72d674558@siemens.com>
-Message-ID: <0a6f7577-441c-04f5-6e86-6e600c3ef93f@siemens.com>
-Date: Mon, 16 Jul 2018 16:20:50 +0200
-MIME-Version: 1.0
-In-Reply-To: <a59535aa-62e7-7b74-c334-92b72d674558@siemens.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] pthread_setschedparam(invalid_thread)
+From: Sebastian Smolorz <sebastian.smolorz@gmx.de>
+Date: Wed, 29 Aug 2018 12:00:58 +0200
+Message-Id: <1535536858-3022-1-git-send-email-sebastian.smolorz@gmx.de>
+Subject: [Xenomai] [PATCH] drivers/can: Add PCAN-PCI Express OEM ID.
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,52 +10,33 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Xenomai <xenomai@xenomai.org>
+To: xenomai@xenomai.org
 
-On 2018-07-13 19:48, Jan Kiszka wrote:
-> Hi all,
-> 
-> this pattern causes a kernel crash:
-> 
-> int main()
-> {
-> 	struct sched_param schedpar;
-> 
-> 	schedpar.sched_priority = 1;
-> 	pthread_setschedparam(pthread_self(), SCHED_FIFO, &schedpar);
-> 	pthread_setschedparam(0x1234, SCHED_FIFO, &schedpar);
-> 	return 0;
-> }
-> 
-> The second, invalid setschedparam makes the core try to shadow the
-> current thread - which is already shadowed - and that fails and then
-> causes a failure in the error cleanup path. But one after the other.
-> 
-> The semantic of pthread_setschedparam(unknown_remote_thread) should be
-> to just invoke the plain glibc function for that thread. But right now
-> the core's pthread_setschedparam_ex has no chance to tell a request to
-> promote the current thread to a shadow apart from a request on an
-> unknown (or invalid) remote thread ID. We would need to extend the
-> syscall ABI for that, I'm afraid (pass down pthread_self() as well). Any
-> better ideas?
+---
+ kernel/drivers/can/sja1000/rtcan_peak_pci.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-Turned out that there is simple, ABI-compatible solution: pass NULL as
-u_winoff in case the target thread ID is not one of the caller.
-Preparing patches, ...
-
-> 
-> The actual crash I'm seeing is related to cobalt_thread_shadow() running
-> over primary mode, failing with cobalt_map_user() (obviously), and then
-> calling pthread_discard() -> __xnthread_discard() which finally detects
-> the wrong caller mode. I guess we want secondary_mode_only() also in
-> cobalt_map_user() or cobalt_thread_shadow().
-> 
-
-...also to harden the kernel against that issue.
-
-Jan
-
+diff --git a/kernel/drivers/can/sja1000/rtcan_peak_pci.c b/kernel/drivers/can/sja1000/rtcan_peak_pci.c
+index 3da1657..0fdc598 100644
+--- a/kernel/drivers/can/sja1000/rtcan_peak_pci.c
++++ b/kernel/drivers/can/sja1000/rtcan_peak_pci.c
+@@ -78,6 +78,7 @@ struct rtcan_peak_pci
+ #define PEAK_PC_104P_DEVICE_ID  0x0006  // PCAN-PC/104+ cards
+ #define PEAK_PCI_104E_DEVICE_ID 0x0007  // PCAN-PCI/104 Express cards
+ #define PEAK_MPCIE_DEVICE_ID    0x0008  // The miniPCIe slot cards
++#define PEAK_PCIE_OEM_ID        0x0009  // PCAN-PCI Express OEM
+ 
+ #define PCI_CONFIG_PORT_SIZE 0x1000  // size of the config io-memory
+ #define PCI_PORT_SIZE        0x0400  // size of a channel io-memory
+@@ -90,6 +91,7 @@ static struct pci_device_id peak_pci_tbl[] = {
+ 	{PEAK_PCI_VENDOR_ID, PEAK_PC_104P_DEVICE_ID, PCI_ANY_ID, PCI_ANY_ID,},
+ 	{PEAK_PCI_VENDOR_ID, PEAK_PCI_104E_DEVICE_ID, PCI_ANY_ID, PCI_ANY_ID,},
+ 	{PEAK_PCI_VENDOR_ID, PEAK_CPCI_DEVICE_ID, PCI_ANY_ID, PCI_ANY_ID,},
++	{PEAK_PCI_VENDOR_ID, PEAK_PCIE_OEM_ID, PCI_ANY_ID, PCI_ANY_ID,},
+ 	{ }
+ };
+ MODULE_DEVICE_TABLE (pci, peak_pci_tbl);
 -- 
-Siemens AG, Corporate Technology, CT RDA IOT SES-DE
-Corporate Competence Center Embedded Linux
+2.7.4
+
 
