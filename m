@@ -1,10 +1,11 @@
 MIME-Version: 1.0
-From: Matheus Pinto <lpinto.matheus@gmail.com>
-Date: Thu, 30 Aug 2018 15:32:18 -0300
-Message-ID: <CAMDdWux5-RP3o6JmLOx-Wc3Se1q6ffyBarD7NueBLJP3X1ZPVw@mail.gmail.com>
+References: <CAFLxGvwUEfbNtAnx31vUOo0BwR8ZMpstO1=t=bZpa-jpjTUh4A@mail.gmail.com>
+In-Reply-To: <CAFLxGvwUEfbNtAnx31vUOo0BwR8ZMpstO1=t=bZpa-jpjTUh4A@mail.gmail.com>
+From: Richard Weinberger <richard.weinberger@gmail.com>
+Date: Fri, 31 Aug 2018 11:13:36 +0200
+Message-ID: <CAFLxGvwJx2-37mgD10VkpuR2WHnNCVcu6W8x6w+Yx2JXG_B7TQ@mail.gmail.com>
 Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-Subject: [Xenomai] how can I use the Xenomai functions in ROS1?
+Subject: Re: [Xenomai] Problem with read-only mmap'ed vmalloc area
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,49 +16,22 @@ List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: xenomai@xenomai.org
 
-Hi everbody,
+On Thu, Aug 30, 2018 at 1:35 PM Richard Weinberger
+<richard.weinberger@gmail.com> wrote:
+> I think the problem is related on how Xenomai tries to pre-fault pages.
+> As soon I remove the call to xnarch_fault_range() from
+> rtdm_mmap_buffer(), the mapping works correctly
+> and my test passes.
 
-I have my reasons for wanting to integrate ROS1 (Robot Operating System)
-with Xenomai.
+After reading more xenomai code I found something interesting.
+In mach_arm_prefault() you set FAULT_FLAG_WRITE if VM_MAYWRITE
+is present.
+IMHO this is wrong and should check for VM_WRITE.
+Otherwise a write fault is simulated even for read-only mappings.
 
-I would just like it to be possible to use the functions of ROS1 (create
-node, publish, subscribe, ...) within a real-time task (do not necessarily
-guarantee predictability in ROS functions).
+In fact, when I apply this change, my test passes.
 
-I created a question in ROS community for this subject:
+-- 
+Thanks,
+//richard
 
-https://answers.ros.org/question/301491/how-can-i-use-the-xenomai-functions=
--in-ros/?comment=3D301568#post-id-301568
-
-But as guided by them it might be a good idea to ask the Xenomai community
-to help me.
-
-As can be seen in ROS community question, using a ROS function inside a
-task generate a runtime error:
-
-'boost::exception_detail::clone_impl<boost::exception_detail::error_info_in=
-jector<boost::lock_error>
->'
-      what():  boost: mutex lock failed in pthread_mutex_lock: Invalid argu=
-ment
-    Aborted
-
-
-By the way, the ROS library when trying to use a mutex function of
-libboost, causes the program to be terminated from within the task.  Does
-not Xenomai allow you to use other thread functions within a real-time
-task? If yes, how could I get around this problem?
-
---=20
-Atenciosamente*,*
-
-*Matheus Leitzke Pinto*
-Professor de Sistemas Embarcados
-
-
-*Campus Chapec=C3=B3*
-+55 (49) 33 13 12 44 <callto:+5549333131244>
-
-*Instituto Federal de Santa Catarina - Campus Chapec=C3=B3*
-Rua Nereu Ramos, 3450 D - Semin=C3=A1rio, Chapec=C3=B3 - SC, 89813-000
-<http://www.chapeco.ifsc.edu.br>www.chapeco.ifsc.edu.br
