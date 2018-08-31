@@ -1,13 +1,12 @@
+From: =?gb2312?B?emhlbmdndWFuZy55YW5nKNHu1fm54ik=?=
+ <zhengguang.yang@advantech.com.cn>
+Date: Fri, 31 Aug 2018 07:16:00 +0000
+Message-ID: <56466c708cde4eaf9f9f71c4404bd75a@acnmail2.ACN.ADVANTECH.CORP>
+Content-Language: zh-CN
 MIME-Version: 1.0
-References: <CAFLxGvwUEfbNtAnx31vUOo0BwR8ZMpstO1=t=bZpa-jpjTUh4A@mail.gmail.com>
- <CAFLxGvwJx2-37mgD10VkpuR2WHnNCVcu6W8x6w+Yx2JXG_B7TQ@mail.gmail.com>
- <5bb68a54-d174-e4ca-1bad-ce148440cbc9@xenomai.org>
-In-Reply-To: <5bb68a54-d174-e4ca-1bad-ce148440cbc9@xenomai.org>
-From: Richard Weinberger <richard.weinberger@gmail.com>
-Date: Fri, 31 Aug 2018 22:27:24 +0200
-Message-ID: <CAFLxGvycjSkQrKTMYwrQyaB6OktzHATyG+22J56hMk2a+78EtA@mail.gmail.com>
-Content-Type: text/plain; charset="UTF-8"
-Subject: Re: [Xenomai] Problem with read-only mmap'ed vmalloc area
+Content-Type: text/plain; charset="gb2312"
+Content-Transfer-Encoding: base64
+Subject: [Xenomai] The cyclictest test shows high latencies
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,45 +15,24 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: rpm@xenomai.org
-Cc: xenomai@xenomai.org
+To: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On Fri, Aug 31, 2018 at 12:03 PM Philippe Gerum <rpm@xenomai.org> wrote:
->
-> On 08/31/2018 11:13 AM, Richard Weinberger wrote:
-> > On Thu, Aug 30, 2018 at 1:35 PM Richard Weinberger
-> > <richard.weinberger@gmail.com> wrote:
-> >> I think the problem is related on how Xenomai tries to pre-fault pages.
-> >> As soon I remove the call to xnarch_fault_range() from
-> >> rtdm_mmap_buffer(), the mapping works correctly
-> >> and my test passes.
-> >
-> > After reading more xenomai code I found something interesting.
-> > In mach_arm_prefault() you set FAULT_FLAG_WRITE if VM_MAYWRITE
-> > is present.
-> > IMHO this is wrong and should check for VM_WRITE.
-> > Otherwise a write fault is simulated even for read-only mappings.
-> >
-> > In fact, when I apply this change, my test passes.
-> >
->
-> I suspect that the original intent might have been to address the issue
-> of COW mappings (i.e.  (flags & (VM_SHARED | VM_MAYWRITE)) ==
-> VM_MAYWRITE), force-breaking them.
->
-> This said, this particular issue may have been addressed earlier when
-> mlocking the process address space with MCL_FUTURE, and further enforced
-> by the call to disable_ondemand_memory() when installing the Cobalt
-> thread which is going to map that memory into the current address space
-> (cobalt_map_user()).
->
-> IOW, why would we need more prefaulting here?
-
-Good point. It is also interesting that arm is the only machine where
-the .prefault
-handler is set. So, I guess this latency code which can be removed.
-
--- 
-Thanks,
-//richard
-
+RGVhciBYZW5vbWFpIFRlYW06DQpJIHdhbnQgdG8gdXNlIHhlbm9tYWkgb24gaW14NnEuDQpXaGVu
+IEkgaW5zdGFsbCBpdCBhY2NvcmRpbmcgdG8geW91ciB3aWtpLCB0aGVuIGNoZWNrIHRoZSBrZXJu
+ZWwgYm9vdCBsb2c6DQoNCiMgZG1lc2cgfGdyZXAgLWkgeGVub21haQ0KWyAgICAwLjQwODI3NF0g
+W1hlbm9tYWldIHNjaGVkdWxpbmcgY2xhc3MgaWRsZSByZWdpc3RlcmVkLg0KWyAgICAwLjQwODI4
+MV0gW1hlbm9tYWldIHNjaGVkdWxpbmcgY2xhc3MgcnQgcmVnaXN0ZXJlZC4NClsgICAgMC40MDg1
+MzhdIEktcGlwZTogaGVhZCBkb21haW4gWGVub21haSByZWdpc3RlcmVkLg0KWyAgICAwLjQxMjEy
+OV0gW1hlbm9tYWldIENvYmFsdCB2My4wLjcgKExpbmdlcmluZyBEYXduKQ0KDQpIb3dldmVyLCBh
+ZnRlciB0ZXN0aW5nIHdpdGggY3ljbGljdGVzdCwgaXQgc2VlbXMgdGhhdCB0aGVyZSBpcyBubyBk
+aWZmZXJlbmNlIGJldHdlZW4geGVub21haS1saW51eCBhbmQgbm9uX3hlbm9tYWktbGludXguDQoN
+Cg0KoaQgICAgICAgICBNYXliZSBJIGRpZCBzb21ldGhpbmcgd3JvbmcgYW5kIHdoYXQgZ29lcyB3
+cm9uZyB0aGF0IGxlYWRzIHRvIHRoaXMgcmVzdWx0Pw0KDQpCZXN0IFJlZ2FyZHMNCg0KWmhlbmdn
+dWFuZy55YW5nIC/R7tX5ueINCtHQyEG/xry8KNbQh/gp09DP3rmry74NCkUtbWFpbDogemhlbmdn
+dWFuZy55YW5nQGFkdmFudGVjaC5jb20uY248bWFpbHRvOnJhY2VyLmp1aUBhZHZhbnRlY2guY29t
+LmNuPg0KVGVsOiAwNTEyLTU3Nzc1NjY2IEV4dDo5ODEzDQpbY2lkOnBhcnQxMC4wMDAxMDcwNS4w
+ODA1MDMwMkBhZHZhbnRlY2guY29tLmNuXQ0KDQotLS0tLS0tLS0tLS0tLSBuZXh0IHBhcnQgLS0t
+LS0tLS0tLS0tLS0KQSBub24tdGV4dCBhdHRhY2htZW50IHdhcyBzY3J1YmJlZC4uLgpOYW1lOiBp
+bWFnZTAwMS5naWYKVHlwZTogaW1hZ2UvZ2lmClNpemU6IDIzMjIgYnl0ZXMKRGVzYzogaW1hZ2Uw
+MDEuZ2lmClVSTDogPGh0dHA6Ly94ZW5vbWFpLm9yZy9waXBlcm1haWwveGVub21haS9hdHRhY2ht
+ZW50cy8yMDE4MDgzMS9mZTA3N2YwZS9hdHRhY2htZW50LmdpZj4K
