@@ -1,15 +1,13 @@
-References: <368012593.481146.1535555747324.JavaMail.zimbra@wolfram.com>
- <8992f6ad-6627-cb28-32f8-a3e890567e3a@xenomai.org>
- <1401452424.613986.1535613456917.JavaMail.zimbra@wolfram.com>
+References: <d3673e3b3ef541a59dc6df0e9f884558@boschrexroth.nl>
 From: Philippe Gerum <rpm@xenomai.org>
-Message-ID: <483207e1-3b1d-26d6-3e5d-ae5b292aa035@xenomai.org>
-Date: Fri, 31 Aug 2018 12:19:52 +0200
+Message-ID: <bebaaee4-36e8-9796-7ac0-8420b12658cc@xenomai.org>
+Date: Fri, 31 Aug 2018 13:15:10 +0200
 MIME-Version: 1.0
-In-Reply-To: <1401452424.613986.1535613456917.JavaMail.zimbra@wolfram.com>
-Content-Type: text/plain; charset="utf-8"
+In-Reply-To: <d3673e3b3ef541a59dc6df0e9f884558@boschrexroth.nl>
+Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
-Content-Transfer-Encoding: 8bit
-Subject: Re: [Xenomai] Importance of missing modechk/cobolt.wrappers
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai] IPC between RT and nRT
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -18,96 +16,62 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Per Oberg <pero@wolfram.com>, xenomai <xenomai@xenomai.org>
+To: "Bradley Valdenebro Peter (DC-AE/EHP2)" <Peter.BradleyValdenebro@boschrexroth.nl>, "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On 08/30/2018 09:17 AM, Per Oberg wrote:
+On 08/30/2018 11:49 AM, Bradley Valdenebro Peter (DC-AE/EHP2) wrote:
+> Hello all,
+> We work in motion control. We execute our system on a zynq-7020. We are doing some redesign on our system.
 > 
-> ----- Den 29 aug 2018, på kl 18:01, Philippe Gerum rpm@xenomai.org skrev:
+> We have our control loop executing as a Xenomai RT thread at 8kHz. This is our highest priority thread.
+> We have the need to transfer around 512 bytes every sample from the Xenomai RT task to a Linux NR task that will later send that info through Ethernet using UDP.
+> We are currently using RT pipes to transfer that data but we would like to reduce the processing time of the data  as much as possible.
 > 
->> On 08/29/2018 05:15 PM, Per Oberg wrote:
->>> Hello all
-> 
-> 
->>> I'm working with a Yocto build of xenomai. I have compiled a sdk for building on
->>> a build-host but I am doing something wrong because I get the wrong path to
->>> modechk.wrappers and cobalt.wrappers. I could probably fix this but I just want
->>> to know whether this is a real problem or not.
-> 
->>> When I run xeno-config i get :
->>> Xenomai: wrappers cannot be read from /usr/lib/modechk.wrappers
->>> Xenomai: wrappers cannot be read from /usr/lib/cobalt.wrappers
-> 
->>> The contents of the wrapper files are listed below for completeness. It seems
->>> like a lot of stuff that is not getting wrapped when these files are missing,
->>> and that would mean that I am missing a lot of wrapping and that I definitely
->>> need to fix it. Or is is just a warning?
-> 
-> 
->> It's an important warning, your build may be broken. This means that
->> wrapping failed for any executable depending on it, which retrieved its
->> linker flags from xeno-config --ldflags. Basically, all built-in Xenomai
->> apps (e.g. latency, switchtest), and any user application depending on
->> xeno-config for retrieving those flags.
-> 
->>> How do I know if the final software is wrapping stuff the way I want?
-> 
->> Dumping the executable's namelist should always refer to the wrapper for
->> any routine listed in the wrapper files. e.g.
-> 
->> $ nm -u $executable | grep 'U __wrap_'
-> 
->> U __wrap_clock_gettime
->> U __wrap_close
->> U __wrap_fclose
->> U __wrap_fprintf
->> U __wrap_fputc
->> U __wrap_fputs
->> U __wrap_free
->> U __wrap_fwrite
->> U __wrap_ioctl
->> U __wrap_kill
->> U __wrap_malloc
->> U __wrap_open
->> U __wrap_printf
->> U __wrap_pthread_attr_init
->> U __wrap_pthread_create
->> U __wrap_pthread_join
->> U __wrap_pthread_setname_np
->> U __wrap_puts
->> U __wrap_read
->> U __wrap_sem_close
->> U __wrap_sem_open
->> U __wrap_sem_post
->> U __wrap_sem_unlink
->> U __wrap_sem_wait
->> U __wrap_time
->> U __wrap_timerfd_create
->> U __wrap_timerfd_settime
->> U __wrap_write
-> 
->> --
->> Philippe.
-> 
-> Thanks for that, I suspected this was the case. 
-> 
-> I did do some checking on the built-in Xenomai apps and they are compiled using the right flags. This does not puzzle me because we are usually able to trust the magic of the build system for solving this.
+> We see RT pipes as the only mechanism for RT-nRT communication. Is there a reason for this?
 
-Contradicting my original concern about this, the build rules for the
-built-in apps are picking the wrappers directly from the source tree, so
-this can't fail (which makes sense, as they should have been built
-before the installation process can take place anyway).
+Nobody came up with a better way which would entail no mode switch, no
+explicit synchronization between the peers, I guess. The send-and-forget
+scheme makes this possible, keeping the message boundaries also makes it
+easier on the receiver side.
 
- (Meaning: Since there are no libraries, linker files, or other
-dependencies in the "prefix" directories during the first build the
-tools must all be referring to the build-dir instead of the prefix
-destination.)
-> 
-> In my case, since I'm building for a target with no build tools installed (which I assume would be quite normal for a lot of people doing real time stuff) I need to prepare some kind of SDK. For the X86 platform I can install Xenomai on my laptop, and have the exact same setup on the target. But I rather not have it this way. Is there some kind of special flag I can use during build of the SDK or how do people generally go about this?
+Clearly, things like arinc653's blackboards, or a mailbox mechanism
+could be provided off-the-shelf, but the semantics there do not fit the
+most common use case of exchanging data between rt and non-rt domains.
+
+You could still have a non-RT Cobalt thread (SCHED_OTHER or SCHED_WEAK
+policies) synchronizing with a RT one for dealing with a buffer queue
+(all other policies including SCHED_FIFO) using some Cobalt-enabled
+POSIX IPC (e.g. mutexes, condvars, sema4s), but that would cause a round
+of mode switches back and forth each time the non-RT thread goes
+sleeping on them, waiting for the next event to be posted from the RT
+side. This would entail even more CPU consumption, especially at 8khz.
+
+> Is using shared memory between RT and nRT or other kind of IPC better suited for this?
+
+Shared memory would require peers to agree on some sort of explicit
+synchronization scheme. Factoring in the co-kernel requirements, this
+would make common serialization IPCs not usable for switch-less
+execution, so a lockless scheme would have to be involved for preventing
+mode switches.
+
+Still no showstopper here, but considering all the specifics the peers
+would have to agree on to make this work (should we poll locklessly for
+data on the reader side?, how do we queue data whether it is single-byte
+or represents longer messages? etc.), we would end up with something
+resembling the existing solution, reimplemented in user-space, or maybe
+with fairly similar message-based mechanism exporting a different
+API/window dressing.
+
+> By using shared memory I guess we would force some secondary switches but it might be worthwhile, right?
 > 
 
-Are you referring to a staging dir?
-https://gitlab.denx.de/Xenomai/xenomai/wikis/Installing_Xenomai_3
-discusses this I believe.
+Shared memory would be just fine, and would not entail any mode switch
+but as mentioned, it would come with more logic to be shared directly
+between peers - from the application code - on the way to synchronize
+accesses. It may be possible to abstract some of it into a set of
+generic lockless services, but getting 1) high frequency transactions +
+2) sleep-waiting for input + 3) low CPU consumption, may be quite tricky.
+
+Do you have other cross-domain IPC semantics we should consider in mind?
 
 -- 
 Philippe.
