@@ -1,12 +1,13 @@
-From: Jan Kiszka <jan.kiszka@siemens.com>
-Date: Mon, 16 Jul 2018 18:37:54 +0200
-Message-Id: <5508499edf9b57ef21d97750bdf0e26d9f7de109.1531759073.git.jan.kiszka@siemens.com>
-In-Reply-To: <cover.1531759073.git.jan.kiszka@siemens.com>
-References: <cover.1531759073.git.jan.kiszka@siemens.com>
-In-Reply-To: <cover.1531759073.git.jan.kiszka@siemens.com>
-References: <cover.1531759073.git.jan.kiszka@siemens.com>
-Subject: [Xenomai] [PATCH 6/6] cobalt: Fix error code of
-	cobalt_thread_setschedparam_ex
+MIME-Version: 1.0
+References: <CAMDdWux5-RP3o6JmLOx-Wc3Se1q6ffyBarD7NueBLJP3X1ZPVw@mail.gmail.com>
+ <CALLqZ8Rs4HT6kXJ1JF+K78sgcNQAmK4i=dHkM0AmX0cib=X=Kw@mail.gmail.com>
+In-Reply-To: <CALLqZ8Rs4HT6kXJ1JF+K78sgcNQAmK4i=dHkM0AmX0cib=X=Kw@mail.gmail.com>
+From: Matheus Pinto <lpinto.matheus@gmail.com>
+Date: Sat, 1 Sep 2018 11:34:47 -0300
+Message-ID: <CAMDdWuzT0SsrZB+YkE8OFTOcGeWxeuDrEv0ZRqER9bh-FEg5FA@mail.gmail.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+Subject: Re: [Xenomai] how can I use the Xenomai functions in ROS1?
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,48 +16,131 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
+To: greg@embeddedgreg.com
+Cc: xenomai@xenomai.org
 
-From: Jan Kiszka <jan.kiszka@siemens.com>
+Hi Greg,
 
-This aligns the return code with cobalt_sched_setschedparam_ex: If there
-is no u_winoff and no thread, we should return ESRCH so that userspace
-can easily detect that it should call the standard libc service instead.
-Fix the core and remove the related workaround from the userspace lib.
+This could be an issue where non RT threads try to use RT resources, many
+> errors can be generated if care isn't taken when using RT and non RT
+> resources in the same process. or thread  Look at the presentation that t=
+he
+> ROS community linked in your question, using the RTROS framework you shou=
+ld
+> be able to achieve what  you are looking for.
+>
 
-Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
----
- kernel/cobalt/posix/thread.c | 2 +-
- lib/cobalt/thread.c          | 2 +-
- 2 files changed, 2 insertions(+), 2 deletions(-)
+I looked at the video and got in touch with the presenters of this RTROS,
+because the source code is not available in any place for download.
+However, I got no response.
 
-diff --git a/kernel/cobalt/posix/thread.c b/kernel/cobalt/posix/thread.c
-index 86f667488c..44f655a300 100644
---- a/kernel/cobalt/posix/thread.c
-+++ b/kernel/cobalt/posix/thread.c
-@@ -478,7 +478,7 @@ int cobalt_thread_setschedparam_ex(unsigned long pth,
- 	thread = thread_lookup(&hkey);
- 	if (thread == NULL) {
- 		if (u_winoff == NULL)
--			return -EINVAL;
-+			return -ESRCH;
- 			
- 		thread = cobalt_thread_shadow(&hkey, u_winoff);
- 		if (IS_ERR(thread))
-diff --git a/lib/cobalt/thread.c b/lib/cobalt/thread.c
-index b3c11abbb7..86db6343c9 100644
---- a/lib/cobalt/thread.c
-+++ b/lib/cobalt/thread.c
-@@ -648,7 +648,7 @@ int pthread_setschedparam_ex(pthread_t thread,
- 	 * If the kernel has no reference to the target thread. let glibc
- 	 * handle the call.
- 	 */
--	if (!u_winoff_ptr && ret == EINVAL) {
-+	if (ret == ESRCH) {
- 		std_policy = cobalt_xlate_schedparam(policy, param_ex,
- 						     &std_param);
- 		return __STD(pthread_setschedparam(thread, std_policy,
--- 
-2.16.4
+Also, through an internet search, it can be seen that there is an paper
+about RTROS, but of other authors from a different university:
+https://www.sciencedirect.com/science/article/pii/S0167739X15001831. The
+source code is not available either.
+
+Thanks
+
+Em s=C3=A1b, 1 de set de 2018 =C3=A0s 01:12, Greg Gallagher <greg@embeddedg=
+reg.com>
+escreveu:
+
+> Hi,
+>
+> On Thu, Aug 30, 2018 at 2:32 PM Matheus Pinto <lpinto.matheus@gmail.com>
+> wrote:
+>
+>> Hi everbody,
+>>
+>> I have my reasons for wanting to integrate ROS1 (Robot Operating System)
+>> with Xenomai.
+>>
+>> I would just like it to be possible to use the functions of ROS1 (create
+>> node, publish, subscribe, ...) within a real-time task (do not necessari=
+ly
+>> guarantee predictability in ROS functions).
+>>
+>
+> Not directly, I'd recommend using a framework like RTROS to achieve this.
+>
+>
+>> I created a question in ROS community for this subject:
+>>
+>>
+>> https://answers.ros.org/question/301491/how-can-i-use-the-xenomai-functi=
+ons-in-ros/?comment=3D301568#post-id-301568
+>>
+>> But as guided by them it might be a good idea to ask the Xenomai communi=
+ty
+>> to help me.
+>>
+>> As can be seen in ROS community question, using a ROS function inside a
+>> task generate a runtime error:
+>>
+>>
+>> 'boost::exception_detail::clone_impl<boost::exception_detail::error_info=
+_injector<boost::lock_error>
+>> >'
+>>       what():  boost: mutex lock failed in pthread_mutex_lock: Invalid
+>> argument
+>>     Aborted
+>>
+>>
+>>
+>  This could be an issue where non RT threads try to use RT resources, man=
+y
+> errors can be generated if care isn't taken when using RT and non RT
+> resources in the same process. or thread  Look at the presentation that t=
+he
+> ROS community linked in your question, using the RTROS framework you shou=
+ld
+> be able to achieve what  you are looking for.
+>
+> By the way, the ROS library when trying to use a mutex function of
+>> libboost, causes the program to be terminated from within the task.  Doe=
+s
+>> not Xenomai allow you to use other thread functions within a real-time
+>> task? If yes, how could I get around this problem?
+>>
+>>
+> Please look over the getting starting area of the Xenomai wiki.  It shoul=
+d
+> answer some of your questions.
+>
+> thanks
+>
+> Greg
+>
+> --
+>> Atenciosamente*,*
+>>
+>> *Matheus Leitzke Pinto*
+>> Professor de Sistemas Embarcados
+>>
+>>
+>> *Campus Chapec=C3=B3*
+>> +55 (49) 33 13 12 44 <callto:+5549333131244>
+>>
+>> *Instituto Federal de Santa Catarina - Campus Chapec=C3=B3*
+>> Rua Nereu Ramos, 3450 D - Semin=C3=A1rio, Chapec=C3=B3 - SC, 89813-000
+>> <http://www.chapeco.ifsc.edu.br>www.chapeco.ifsc.edu.br
+>> _______________________________________________
+>> Xenomai mailing list
+>> Xenomai@xenomai.org
+>> https://xenomai.org/mailman/listinfo/xenomai
+>>
+>
+
+--=20
+Atenciosamente*,*
+
+*Matheus Leitzke Pinto*
+Professor de Sistemas Embarcados
 
 
+*Campus Chapec=C3=B3*
++55 (49) 33 13 12 44 <callto:+5549333131244>
+
+*Instituto Federal de Santa Catarina - Campus Chapec=C3=B3*
+Rua Nereu Ramos, 3450 D - Semin=C3=A1rio, Chapec=C3=B3 - SC, 89813-000
+<http://www.chapeco.ifsc.edu.br>www.chapeco.ifsc.edu.br
