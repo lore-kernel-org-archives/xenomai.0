@@ -1,13 +1,11 @@
-References: <1535536858-3022-1-git-send-email-sebastian.smolorz@gmx.de>
 From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <3a99a358-03b8-4bde-1814-8a75b78effd0@siemens.com>
-Date: Mon, 3 Sep 2018 19:10:42 +0200
+Message-ID: <b21c6a17-e180-11df-7051-e54102099d9c@siemens.com>
+Date: Mon, 3 Sep 2018 19:22:33 +0200
 MIME-Version: 1.0
-In-Reply-To: <1535536858-3022-1-git-send-email-sebastian.smolorz@gmx.de>
 Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] [PATCH] drivers/can: Add PCAN-PCI Express OEM ID.
+Subject: [Xenomai] Taking over the steering wheel
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,40 +14,26 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Sebastian Smolorz <sebastian.smolorz@gmx.de>, xenomai@xenomai.org
+To: Xenomai <xenomai@xenomai.org>, Philippe Gerum <rpm@xenomai.org>
 
-On 2018-08-29 12:00, Sebastian Smolorz wrote:
-> ---
->   kernel/drivers/can/sja1000/rtcan_peak_pci.c | 2 ++
->   1 file changed, 2 insertions(+)
-> 
-> diff --git a/kernel/drivers/can/sja1000/rtcan_peak_pci.c b/kernel/drivers/can/sja1000/rtcan_peak_pci.c
-> index 3da1657..0fdc598 100644
-> --- a/kernel/drivers/can/sja1000/rtcan_peak_pci.c
-> +++ b/kernel/drivers/can/sja1000/rtcan_peak_pci.c
-> @@ -78,6 +78,7 @@ struct rtcan_peak_pci
->   #define PEAK_PC_104P_DEVICE_ID  0x0006  // PCAN-PC/104+ cards
->   #define PEAK_PCI_104E_DEVICE_ID 0x0007  // PCAN-PCI/104 Express cards
->   #define PEAK_MPCIE_DEVICE_ID    0x0008  // The miniPCIe slot cards
-> +#define PEAK_PCIE_OEM_ID        0x0009  // PCAN-PCI Express OEM
->   
->   #define PCI_CONFIG_PORT_SIZE 0x1000  // size of the config io-memory
->   #define PCI_PORT_SIZE        0x0400  // size of a channel io-memory
-> @@ -90,6 +91,7 @@ static struct pci_device_id peak_pci_tbl[] = {
->   	{PEAK_PCI_VENDOR_ID, PEAK_PC_104P_DEVICE_ID, PCI_ANY_ID, PCI_ANY_ID,},
->   	{PEAK_PCI_VENDOR_ID, PEAK_PCI_104E_DEVICE_ID, PCI_ANY_ID, PCI_ANY_ID,},
->   	{PEAK_PCI_VENDOR_ID, PEAK_CPCI_DEVICE_ID, PCI_ANY_ID, PCI_ANY_ID,},
-> +	{PEAK_PCI_VENDOR_ID, PEAK_PCIE_OEM_ID, PCI_ANY_ID, PCI_ANY_ID,},
->   	{ }
->   };
->   MODULE_DEVICE_TABLE (pci, peak_pci_tbl);
-> 
+Hi all,
 
-Thanks, applied to next.
+as announce earlier this year, Philippe stepped back from maintaining 
+the Xenomai development tree and I finally picked up his role now. At 
+least technically this works fine already (just pushed the first 
+commit), the "minor rest" will surely take some time to evolve.
 
+Many thanks to Philippe for having created and steered this project for 
+such a long time, with so much personal investment! I hope you will find 
+more time now for thrilling technical challenges and new ideas in 
+Xenomai and beyond.
+
+For my part, I planning some smaller adjustments on the workflow, both 
+to align it to what I'm used to and to make it hopefully beneficial for 
+the Xenomai community as well. I'll send some patch which try to 
+document and explains that these days. Until that has been discussed, 
+everything stays as it was so far.
+
+Cheers,
 Jan
-
--- 
-Siemens AG, Corporate Technology, CT RDA IOT SES-DE
-Corporate Competence Center Embedded Linux
 
