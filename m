@@ -1,12 +1,13 @@
+References: <1535536858-3022-1-git-send-email-sebastian.smolorz@gmx.de>
 From: Jan Kiszka <jan.kiszka@siemens.com>
-Date: Mon, 16 Jul 2018 18:37:50 +0200
-Message-Id: <4edb914d1742cf4e6216efe866afd3dae22c40ac.1531759073.git.jan.kiszka@siemens.com>
-In-Reply-To: <cover.1531759073.git.jan.kiszka@siemens.com>
-References: <cover.1531759073.git.jan.kiszka@siemens.com>
-In-Reply-To: <cover.1531759073.git.jan.kiszka@siemens.com>
-References: <cover.1531759073.git.jan.kiszka@siemens.com>
-Subject: [Xenomai] [PATCH 2/6] cobalt/posix: Avoid mapping remote threads in
-	cobalt_sched_setscheduler_ex
+Message-ID: <3a99a358-03b8-4bde-1814-8a75b78effd0@siemens.com>
+Date: Mon, 3 Sep 2018 19:10:42 +0200
+MIME-Version: 1.0
+In-Reply-To: <1535536858-3022-1-git-send-email-sebastian.smolorz@gmx.de>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai] [PATCH] drivers/can: Add PCAN-PCI Express OEM ID.
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,33 +16,40 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
+To: Sebastian Smolorz <sebastian.smolorz@gmx.de>, xenomai@xenomai.org
 
-From: Jan Kiszka <jan.kiszka@siemens.com>
+On 2018-08-29 12:00, Sebastian Smolorz wrote:
+> ---
+>   kernel/drivers/can/sja1000/rtcan_peak_pci.c | 2 ++
+>   1 file changed, 2 insertions(+)
+> 
+> diff --git a/kernel/drivers/can/sja1000/rtcan_peak_pci.c b/kernel/drivers/can/sja1000/rtcan_peak_pci.c
+> index 3da1657..0fdc598 100644
+> --- a/kernel/drivers/can/sja1000/rtcan_peak_pci.c
+> +++ b/kernel/drivers/can/sja1000/rtcan_peak_pci.c
+> @@ -78,6 +78,7 @@ struct rtcan_peak_pci
+>   #define PEAK_PC_104P_DEVICE_ID  0x0006  // PCAN-PC/104+ cards
+>   #define PEAK_PCI_104E_DEVICE_ID 0x0007  // PCAN-PCI/104 Express cards
+>   #define PEAK_MPCIE_DEVICE_ID    0x0008  // The miniPCIe slot cards
+> +#define PEAK_PCIE_OEM_ID        0x0009  // PCAN-PCI Express OEM
+>   
+>   #define PCI_CONFIG_PORT_SIZE 0x1000  // size of the config io-memory
+>   #define PCI_PORT_SIZE        0x0400  // size of a channel io-memory
+> @@ -90,6 +91,7 @@ static struct pci_device_id peak_pci_tbl[] = {
+>   	{PEAK_PCI_VENDOR_ID, PEAK_PC_104P_DEVICE_ID, PCI_ANY_ID, PCI_ANY_ID,},
+>   	{PEAK_PCI_VENDOR_ID, PEAK_PCI_104E_DEVICE_ID, PCI_ANY_ID, PCI_ANY_ID,},
+>   	{PEAK_PCI_VENDOR_ID, PEAK_CPCI_DEVICE_ID, PCI_ANY_ID, PCI_ANY_ID,},
+> +	{PEAK_PCI_VENDOR_ID, PEAK_PCIE_OEM_ID, PCI_ANY_ID, PCI_ANY_ID,},
+>   	{ }
+>   };
+>   MODULE_DEVICE_TABLE (pci, peak_pci_tbl);
+> 
 
-Detect if the caller passed the PID of a remote thread that we do not
-know yet. In that case, do not try to shadow anything, that will only
-end up in a mess.
+Thanks, applied to next.
 
-Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
----
- kernel/cobalt/posix/sched.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+Jan
 
-diff --git a/kernel/cobalt/posix/sched.c b/kernel/cobalt/posix/sched.c
-index 4ae8738c7b..9b61193845 100644
---- a/kernel/cobalt/posix/sched.c
-+++ b/kernel/cobalt/posix/sched.c
-@@ -752,7 +752,7 @@ int cobalt_sched_setscheduler_ex(pid_t pid,
- 		thread = cobalt_current_thread();
- 
- 	if (thread == NULL) {
--		if (u_winoff == NULL)
-+		if (u_winoff == NULL || pid != task_pid_vnr(current))
- 			return -ESRCH;
- 			
- 		thread = cobalt_thread_shadow(current, &hkey, u_winoff);
 -- 
-2.16.4
-
+Siemens AG, Corporate Technology, CT RDA IOT SES-DE
+Corporate Competence Center Embedded Linux
 
