@@ -1,14 +1,14 @@
 From: Jan Kiszka <jan.kiszka@siemens.com>
-References: <cover.1530805570.git.jan.kiszka@siemens.com>
-Message-ID: <ac3360a7-532c-3d35-98ec-9ed9c7195909@siemens.com>
-Date: Tue, 4 Sep 2018 19:17:27 +0200
+References: <97d8ea3a-e038-af23-7032-a6522de81ab7@siemens.com>
+Message-ID: <a7c392f2-8673-3785-7b6f-7e97344dc69a@siemens.com>
+Date: Tue, 4 Sep 2018 19:22:52 +0200
 MIME-Version: 1.0
-In-Reply-To: <cover.1530805570.git.jan.kiszka@siemens.com>
+In-Reply-To: <97d8ea3a-e038-af23-7032-a6522de81ab7@siemens.com>
 Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] [PATCH 0/4] Avoid RT-unsafe printk_ratelimited,
- RTDM cleanup
+Subject: Re: [Xenomai] [PATCH] Revert "cobalt/posix: Evaluate return code of
+ signal_copyinfo extensions"
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,31 +17,51 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
+To: Xenomai <xenomai@xenomai.org>
 
-On 2018-07-05 17:46, Jan Kiszka wrote:
-> Patch 4 should likely be next-only, the others should go to stable as
-> well.
+On 2018-09-03 19:07, Jan Kiszka wrote:
+> This reverts commit e2520f8143c816b90d1531e36a405879fb640459.
 > 
-> Jan
+> The change was simply wrong, the return code was already passed, but
+> that is hidden in the parameter list of cobalt_call_extension. The
+> latter return 1 if a callback was invoked.
 > 
-> Jan Kiszka (4):
->    cobalt/kernel/xnclock: Introduce xnclock_ratelimit()
->    cobalt/posix/signal: Replace RT-unsafe printk_ratelimit with
->      xnclock_ratelimit
->    cobalt/rtdm: Switch rtdm_printk_ratelimited to xnclock_ratelimit
->    cobalt/rtdm: Remove rtdm_ratelimit()
+> Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
+> ---
+>   kernel/cobalt/posix/signal.c | 11 +++++------
+>   1 file changed, 5 insertions(+), 6 deletions(-)
 > 
->   include/cobalt/kernel/clock.h       | 22 ++++++++++++++++++
->   include/cobalt/kernel/rtdm/driver.h | 32 +++-----------------------
->   kernel/cobalt/clock.c               | 35 ++++++++++++++++++++++++++++
->   kernel/cobalt/posix/signal.c        |  2 +-
->   kernel/cobalt/rtdm/drvlib.c         | 46 -------------------------------------
->   5 files changed, 61 insertions(+), 76 deletions(-)
+> diff --git a/kernel/cobalt/posix/signal.c b/kernel/cobalt/posix/signal.c
+> index 8e4d920b2d..cea67cd435 100644
+> --- a/kernel/cobalt/posix/signal.c
+> +++ b/kernel/cobalt/posix/signal.c
+> @@ -349,18 +349,17 @@ done:
+>   		ret = sys32_put_siginfo(u_si, sip, overrun);
+>   		if (!ret)
+>   			/* Allow an extended target to receive more data. */
+> -			ret = cobalt_call_extension(signal_copyinfo_compat,
+> -						    &curr->extref, ret, u_si,
+> -						    sip, overrun);
+> +			cobalt_call_extension(signal_copyinfo_compat,
+> +					      &curr->extref, ret, u_si, sip,
+> +					      overrun);
+>   	} else
+>   #endif
+>   	{
+>   		ret = signal_put_siginfo(u_si, sip, overrun);
+>   		if (!ret)
+>   			/* Allow an extended target to receive more data. */
+> -			ret = cobalt_call_extension(signal_copyinfo,
+> -						    &curr->extref, ret, u_si,
+> -						    sip, overrun);
+> +			cobalt_call_extension(signal_copyinfo, &curr->extref,
+> +					      ret, u_si, sip, overrun);
+>   	}
+>   
+>   out:
 > 
 
-I haven't heard concerns about these, so I'm applying them the next now. 
-Patch 2 with patch 1 are stable candidates IMHO.
+As this is a clear regression, I'm taking it to fast-path: in next now.
 
 Jan
 
