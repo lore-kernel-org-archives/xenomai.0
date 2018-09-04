@@ -1,16 +1,8 @@
-MIME-Version: 1.0
-Date: Thu, 12 Jul 2018 13:03:51 +0200
-From: =?UTF-8?Q?Mariusz_Janiak?= <mariuszjaniak@wp.pl>
-Message-ID: <508cf45f9e7b42e09d87ab11b5e889b0@grupawp.pl>
-In-Reply-To: <<ceac8f91-8d86-62af-79e1-571ccbd36427@huawei.com>>
-References: <0184ea26b2509940aa629ae1405dd7f201d553ec@dggema523-mbx.china.huawei.com>
- <callqz8rkt78jkgsravygo0dkshvdotrita9do+pyoskxnsmqbg@mail.gmail.com>
- <ceac8f91-8d86-62af-79e1-571ccbd36427@huawei.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
-Subject: [Xenomai] =?utf-8?q?Odp=3A_Re=3A__=5Broscore_issue_for_=22Operati?=
-	=?utf-8?q?on_not_permitted=22=5D_pthread=5Fmutex=5Flock_failed=3A_?=
-	=?utf-8?q?operation_not_permitted?=
+From: Philippe Gerum <rpm@xenomai.org>
+Date: Tue, 4 Sep 2018 15:31:56 +0200
+Message-Id: <E1fxEEU-0004LE-Ln@xenomai.org>
+Subject: [Xenomai] [PATCH] cobalt/kernel: always use explicit preprocessor
+ conditionals
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -19,248 +11,262 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: gengdongjiu <gengdongjiu@huawei.com>
-Cc: =?UTF-8?Q?xenomai=40xenomai=2Eorg?= <xenomai@xenomai.org>
+To: xenomai@xenomai.org
 
-Sorry, the previous mail looks unreadable.=C2=A0 Once again   Please consid=
-er OROCOS for RT part instead of ROS. Eventually ROS2.   ROS haven&#39;t be=
-en designed as a real-time framework, especially in communication domain (r=
-os topics + TCP + XML RPC).   Best,  Mariusz  
-                
-              
-               
-                 
-                  Dnia 12 lipca 2018 10:55 gengdongjiu &lt;gengdongjiu@huaw=
-ei.com&gt; napisa=C5=82(a):
-                 
-                 
-                   Hi Greg, 
-  =C2=A0Thanks for the answer, 
-  
- On 2018/7/11 22:09, Greg Gallagher wrote: 
+Testing debug switches using '#if XENO_DEBUG(<feat>)' may confuse the
+build system's dependency tracker, breaking the build, or even
+producing a non-bootable kernel in extreme cases. Typically, turning
+on/off the lock debugging code - usually in absence of any other
+change - may cause the following error to pop up at the link stage:
+
+---
+MODPOST vmlinux.o
+kernel/xenomai/lock.o: In function `____xnlock_get':
+linux/include/xenomai/cobalt/kernel/lock.h:184: undefined reference to `xnlock_dbg_prepare_acquire'
+linux/include/xenomai/cobalt/kernel/lock.h:189: undefined reference to `xnlock_dbg_acquired'
+kernel/xenomai/lock.o: In function `____xnlock_put':
+linux/include/xenomai/cobalt/kernel/lock.h:196: undefined reference to `xnlock_dbg_release'
+---
+
+Replace all occurrences of the confusing conditionals with the
+equivalent expression explicitly testing the debug symbol.
+
+Signed-off-by: Philippe Gerum <rpm@xenomai.org>
+---
+ include/cobalt/kernel/assert.h         |  2 +-
+ include/cobalt/kernel/lock.h           |  6 +++---
+ include/cobalt/kernel/sched-sporadic.h |  2 +-
+ include/cobalt/kernel/synch.h          |  2 +-
+ include/cobalt/kernel/tree.h           |  2 +-
+ kernel/cobalt/bufd.c                   | 10 +++++-----
+ kernel/cobalt/debug.c                  |  2 +-
+ kernel/cobalt/intr.c                   |  2 +-
+ kernel/cobalt/posix/process.c          |  2 +-
+ kernel/cobalt/procfs.c                 |  2 +-
+ kernel/cobalt/sched-sporadic.c         |  4 ++--
+ kernel/cobalt/synch.c                  |  2 +-
+ 12 files changed, 19 insertions(+), 19 deletions(-)
+
+diff --git a/include/cobalt/kernel/assert.h b/include/cobalt/kernel/assert.h
+index 2d2d65396..86d0a480f 100644
+--- a/include/cobalt/kernel/assert.h
++++ b/include/cobalt/kernel/assert.h
+@@ -63,7 +63,7 @@
+ #define realtime_cpu_only()	XENO_BUG_ON(CONTEXT, !xnsched_supported_cpu(ipipe_processor_id()))
+ #define thread_only()		XENO_BUG_ON(CONTEXT, xnsched_interrupt_p())
+ #define irqoff_only()		XENO_BUG_ON(CONTEXT, hard_irqs_disabled() == 0)
+-#if XENO_DEBUG(LOCKING)
++#ifdef CONFIG_XENO_OPT_DEBUG_LOCKING
+ #define atomic_only()		XENO_BUG_ON(CONTEXT, (xnlock_is_owner(&nklock) && hard_irqs_disabled()) == 0)
+ #define preemptible_only()	XENO_BUG_ON(CONTEXT, xnlock_is_owner(&nklock) || hard_irqs_disabled())
+ #else
+diff --git a/include/cobalt/kernel/lock.h b/include/cobalt/kernel/lock.h
+index 36f81688a..99c7848e8 100644
+--- a/include/cobalt/kernel/lock.h
++++ b/include/cobalt/kernel/lock.h
+@@ -63,7 +63,7 @@ typedef unsigned long spl_t;
+  */
+ #define spltest()   ipipe_test_head()
  
- Have you looked at any of the ROS frameworks that use Xenomai? =C2=A0Is th=
-e 
- expectation that roscore runs in the secondary domain and your ros 
- based application runs in the primary domain? 
+-#if XENO_DEBUG(LOCKING)
++#ifdef CONFIG_XENO_OPT_DEBUG_LOCKING
  
-  
- Yes, we have looked at the the ROS frameworks that use Xenomai. do you hav=
-e any suggestion? we are not very familiar with the ROS. 
- In our test, we used the ROS pub and sub to do communication. From our tes=
-t, if roscore runs in the secondary (normal linux)domain, it will not have =
-such issue. 
- should the roscore run in the =C2=A0secondary domain or the primary domain=
-? I do not know which domain it should run into. thanks a lot. 
-  
+ struct xnlock {
+ 	unsigned owner;
+@@ -152,7 +152,7 @@ static inline int xnlock_dbg_release(struct xnlock *lock)
  
-  
- -Greg 
-  
- On Wed, Jul 11, 2018 at 10:03 AM, gengdongjiu &lt;gengdongjiu@huawei.com&g=
-t; wrote: 
+ #endif /* !XENO_DEBUG(LOCKING) */
  
- Hi, Philippe/ Gilles/ Jan/ Alexis/others, 
-  
-  
-  
- I=E2=80=99m running ros on Xenomai, with Xenomai-3.07 and linux kernel 4.4=
-.71. I 
- first export CFLAGS and LDFLAGS of posix skin. And compile ros project wit=
-h 
- posix skin successfully. 
-  
- Then, I run roscore as root user, it throws a std::system_error. So I debu=
-g 
- roscore with gdb. According to the gdb backtrace frame #10, it=E2=80=99s t=
-he 62 
- lines of participant.cpp that caused the problem. Which is 
- =E2=80=9Cstd::unique_lock&lt;std::mutex ul(_msg_lock);=E2=80=9D. As far as=
- I know, 
- initializing a unique_lock will call _msg_lock.lock(),and _msg_lock is a 
- std::mutex, _msg_lock.lock() will call pthread_mutex_lock(). According the=
+-#if defined(CONFIG_SMP) || XENO_DEBUG(LOCKING)
++#if defined(CONFIG_SMP) || defined(CONFIG_XENO_OPT_DEBUG_LOCKING)
  
- to the error message =E2=80=9COperation not permitted=E2=80=9D. Pthread_mu=
-tex_lock() must 
- return EPERM, and pthread_mutex_lock return EPRM only if the mutex is not 
- process-shared and does not belong to the current process or the caller 
- context is invalid. 
-  
-  
-  
- So my question is why compiling and running ros on xenomai will cause 
- pthread_mutex_lock() return EPERM? Does current calling context is invalid=
- ? 
- And how can I solve this problem, does anybody have any insight? By the wa=
-y, 
- it=E2=80=99s perfect fine to compiling and running ros on linux with the s=
-ame code. 
-  
-  
-  
- Thanks. 
-  
-  
-  
- ------------------------------ 
-  
- root@ros:/home/ros/zjw/ros/ins roscore 
-  
- terminate called after throwing an instance of &#39;std::system_error&#39;=
+ #define xnlock_get(lock)		__xnlock_get(lock  XNLOCK_DBG_CONTEXT)
+ #define xnlock_put(lock)		__xnlock_put(lock  XNLOCK_DBG_CONTEXT)
+@@ -209,7 +209,7 @@ int ___xnlock_get(struct xnlock *lock /*, */ XNLOCK_DBG_CONTEXT_ARGS);
+ void ___xnlock_put(struct xnlock *lock /*, */ XNLOCK_DBG_CONTEXT_ARGS);
+ #endif /* out of line xnlock */
  
-  
-  =C2=A0what(): =C2=A0Operation not permitted 
-  
- Aborted (core dumped) 
-  
-  
-  
-  
-  
- (gdb) r `which roscore` 
-  
- Starting program: /usr/bin/python `which roscore` 
-  
- [Thread debugging using libthread_db enabled] 
-  
- Using host libthread_db library &#34;/lib/x86_64-linux-gnu/libthre 
-  
- [New Thread 0x7ffff3586700 (LWP 29315)] 
-  
- [New Thread 0x7ffff279b700 (LWP 29316)] 
-  
- [New Thread 0x7ffff1f9a700 (LWP 29317)] 
-  
- [New Thread 0x7ffff1799700 (LWP 29318)] 
-  
- [New Thread 0x7ffff0f98700 (LWP 29319)] 
-  
- [New Thread 0x7fffe3fff700 (LWP 29320)] 
-  
- [New Thread 0x7fffe37fe700 (LWP 29321)] 
-  
- [New Thread 0x7fffe2ffd700 (LWP 29322)] 
-  
- terminate called after throwing an instance of &#39;std::system_error&#39;=
+-#if XENO_DEBUG(LOCKING)
++#ifdef CONFIG_XENO_OPT_DEBUG_LOCKING
+ /* Disable UP-over-SMP kernel optimization in debug mode. */
+ #define __locking_active__  1
+ #else
+diff --git a/include/cobalt/kernel/sched-sporadic.h b/include/cobalt/kernel/sched-sporadic.h
+index 0eade47b0..50ca406c4 100644
+--- a/include/cobalt/kernel/sched-sporadic.h
++++ b/include/cobalt/kernel/sched-sporadic.h
+@@ -56,7 +56,7 @@ struct xnsched_sporadic_data {
+ };
  
-  
-  =C2=A0what(): =C2=A0Operation not permitted 
-  
-  
-  
- Thread 9 &#34;python&#34; received signal SIGABRT, Aborted. 
-  
- [Switching to Thread 0x7fffe2ffd700 (LWP 29322)] 
-  
- 0x00007ffff7825428 in __GI_raise (sig=3Dsig@entry=3D6) at 
- ../sysdeps/unix/sysv/linux/rai 
-  
- 54 =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0../sysdeps/unix/sysv No such file or dire=
-ctory. 
-  
- (gdb) bt 
-  
- #0 =C2=A00x00007ffff7825428 in __GI_raise (sig=3Dsig@entry=3D6) at 
- ../sysdeps/unix/sysv/linux/rai 
-  
- #1 =C2=A00x00007ffff782702a in __GI_abort () at abort.c:89 
-  
- #2 =C2=A00x00007ffff3e6884d in __gnu_cxx::__verbose_terminate () at 
- ../../../../src/libstdc++-v3/l 
-  
- #3 =C2=A00x00007ffff3e666b6 in __cxxabiv1::__terminate (handler=3D&lt;opti=
-mized out&gt;) 
- at ../../../../src/libstdc++-v3/l 
-  
- #4 =C2=A00x00007ffff3e66701 in std::terminate () at 
- ../../../../src/libstdc++-v3/l 
-  
- #5 =C2=A00x00007ffff3e66919 in __cxxabiv1::__cxa_throw 
- (obj=3Dobj@entry=3D0x7fffd00010d0, tinfo=3D0x7ffff414ec00 &lt;typeinfo for=
+ struct xnsched_sporadic {
+-#if XENO_DEBUG(COBALT)
++#ifdef CONFIG_XENO_OPT_DEBUG_COBALT
+ 	unsigned long drop_retries;
+ #endif
+ };
+diff --git a/include/cobalt/kernel/synch.h b/include/cobalt/kernel/synch.h
+index f5ac217ed..08056055a 100644
+--- a/include/cobalt/kernel/synch.h
++++ b/include/cobalt/kernel/synch.h
+@@ -101,7 +101,7 @@ static inline struct xnthread *xnsynch_owner(struct xnsynch *synch)
+ #define xnsynch_owner_check(synch, thread) \
+ 	xnsynch_fast_owner_check((synch)->fastlock, thread->handle)
  
- std::system_error&gt;, dest=3D0x7ffff3e91640 
- &lt;std::system_error::~system_er 
-  
-  =C2=A0=C2=A0=C2=A0at ../../../../src/libstdc++-v3/l 
-  
- #6 =C2=A00x00007ffff3e8f7fe in std::__throw_system_error (__i=3D1) at 
- ../../../../../src/libstdc++-v 
-  
- #7 =C2=A00x00007ffff4162451 in std::mutex::lock (this=3D0x25c7280) at 
- /usr/include/c++/5/mutex:139 
-  
- #8 =C2=A0std::unique_lock&lt;std::mutex&gt; (this=3D0x7fffe2ffc300) at 
- /usr/include/c++/5/mutex:485 
-  
- #9 =C2=A0std::unique_lock&lt;std::mutex&gt; (__m=3D..., this=3D0x7fffe2ffc=
-300) 
- at /usr/include/c++/5/mutex:415 
-  
- #10 ros::Participant::read_msg[abi (this=3D0x25c7200) at 
- /home/ros/zjw/ros/src/ros_comm 
-  
- #11 0x00007ffff4be9195 in _wrap_Participant_read_msg () from 
- /home/ros/zjw/ros/install/ros_ 
-  
- #12 0x00000000004bc3fa in PyEval_EvalFrameEx () 
-  
- #13 0x00000000004c136f in PyEval_EvalFrameEx () 
-  
- #14 0x00000000004b9ab6 in PyEval_EvalCodeEx () 
-  
- #15 0x00000000004d55f3 in ?? () 
-  
- #16 0x00000000004a577e in PyObject_Call () 
-  
- #17 0x00000000004bed3d in PyEval_EvalFrameEx () 
-  
- #18 0x00000000004c136f in PyEval_EvalFrameEx () 
-  
- #19 0x00000000004c136f in PyEval_EvalFrameEx () 
-  
- #20 0x00000000004b9ab6 in PyEval_EvalCodeEx () 
-  
- #21 0x00000000004d54b9 in ?? () 
-  
- #22 0x00000000004eebee in ?? () 
-  
- #23 0x00000000004a577e in PyObject_Call () 
-  
- #24 0x00000000004c5e10 in PyEval_CallObjectWithKeywords () 
-  
- #25 0x0000000000589172 in ?? () 
-  
- #26 0x00007ffff7bc16ba in start_thread (arg=3D0x7fffe2ffd700) at 
- pthread_create.c:333 
-  
- #27 0x00007ffff78f741d in clone () at 
- ../sysdeps/unix/sysv/linux/x86 
-  
- (gdb) 
-  
-  
-  
- root@ros:/home/ros/zjw/ros/ins grep -nrIT -e &#34;_msg_lock&#34; 
- /home/ros/zjw/ros/src/ros_comm 
-  
- /home/ros/zjw/ros/src/ros_comm 144 
- : =C2=A0std::mutex _msg_lock; 
-  
- /home/ros/zjw/ros/src/ros_comm 
- 53: =C2=A0=C2=A0=C2=A0std::lock_guard&lt;std::mut lg(_msg_lock); 
-  
- /home/ros/zjw/ros/src/ros_comm 
- 62: =C2=A0std::unique_lock&lt;std::mutex&gt; ul(_msg_lock); 
-  
-  
+-#if XENO_DEBUG(MUTEX_RELAXED)
++#ifdef CONFIG_XENO_OPT_DEBUG_MUTEX_RELAXED
  
-  
- . 
-  
+ void xnsynch_detect_relaxed_owner(struct xnsynch *synch,
+ 				  struct xnthread *sleeper);
+diff --git a/include/cobalt/kernel/tree.h b/include/cobalt/kernel/tree.h
+index 9c751cc02..c52ee3220 100644
+--- a/include/cobalt/kernel/tree.h
++++ b/include/cobalt/kernel/tree.h
+@@ -83,7 +83,7 @@ struct xnid *xnid_fetch(struct rb_root *t, xnkey_t key)
  
-  
-  
- ______________________________ 
- Xenomai mailing list 
-  Xenomai@xenomai.org 
- xenomai.org xenomai.org=0D
+ static inline int xnid_remove(struct rb_root *t, struct xnid *xnid)
+ {
+-#if XENO_DEBUG(COBALT)
++#ifdef CONFIG_XENO_OPT_DEBUG_COBALT
+ 	if (xnid_fetch(t, xnid->key) != xnid)
+ 		return -ENOENT;
+ #endif
+diff --git a/kernel/cobalt/bufd.c b/kernel/cobalt/bufd.c
+index 9b41b6ad6..3b79505d5 100644
+--- a/kernel/cobalt/bufd.c
++++ b/kernel/cobalt/bufd.c
+@@ -493,7 +493,7 @@ ssize_t xnbufd_unmap_uread(struct xnbufd *bufd)
+ {
+ 	preemptible_only();
+ 
+-#if XENO_DEBUG(COBALT)
++#ifdef CONFIG_XENO_OPT_DEBUG_COBALT
+ 	bufd->b_ptr = (caddr_t)-1;
+ #endif
+ 	return bufd->b_off;
+@@ -551,7 +551,7 @@ ssize_t xnbufd_unmap_uwrite(struct xnbufd *bufd)
+ 	if (bufd->b_len > sizeof(bufd->b_buf))
+ 		xnfree(bufd->b_carry);
+ done:
+-#if XENO_DEBUG(COBALT)
++#ifdef CONFIG_XENO_OPT_DEBUG_COBALT
+ 	bufd->b_ptr = (caddr_t)-1;
+ #endif
+ 	return ret ?: (ssize_t)len;
+@@ -592,7 +592,7 @@ EXPORT_SYMBOL_GPL(xnbufd_unmap_uwrite);
+  */
+ void xnbufd_invalidate(struct xnbufd *bufd)
+ {
+-#if XENO_DEBUG(COBALT)
++#ifdef CONFIG_XENO_OPT_DEBUG_COBALT
+ 	bufd->b_ptr = (caddr_t)-1;
+ #endif
+ 	if (bufd->b_carry) {
+@@ -620,7 +620,7 @@ EXPORT_SYMBOL_GPL(xnbufd_invalidate);
+  */
+ ssize_t xnbufd_unmap_kread(struct xnbufd *bufd)
+ {
+-#if XENO_DEBUG(COBALT)
++#ifdef CONFIG_XENO_OPT_DEBUG_COBALT
+ 	bufd->b_ptr = (caddr_t)-1;
+ #endif
+ 	return bufd->b_off;
+@@ -643,7 +643,7 @@ EXPORT_SYMBOL_GPL(xnbufd_unmap_kread);
+  */
+ ssize_t xnbufd_unmap_kwrite(struct xnbufd *bufd)
+ {
+-#if XENO_DEBUG(COBALT)
++#ifdef CONFIG_XENO_OPT_DEBUG_COBALT
+ 	bufd->b_ptr = (caddr_t)-1;
+ #endif
+ 	return bufd->b_off;
+diff --git a/kernel/cobalt/debug.c b/kernel/cobalt/debug.c
+index 74022c516..af9a95ab6 100644
+--- a/kernel/cobalt/debug.c
++++ b/kernel/cobalt/debug.c
+@@ -549,7 +549,7 @@ static inline void init_thread_relax_trace(struct xnthread *thread)
+ 
+ #endif /* !XENO_OPT_DEBUG_TRACE_RELAX */
+ 
+-#if XENO_DEBUG(LOCKING)
++#ifdef CONFIG_XENO_OPT_DEBUG_LOCKING
+ 
+ void xnlock_dbg_prepare_acquire(unsigned long long *start)
+ {
+diff --git a/kernel/cobalt/intr.c b/kernel/cobalt/intr.c
+index fb27a3295..69faa23ba 100644
+--- a/kernel/cobalt/intr.c
++++ b/kernel/cobalt/intr.c
+@@ -531,7 +531,7 @@ static inline void xnintr_irq_detach(struct xnintr *intr)
+ #else /* !CONFIG_XENO_OPT_SHIRQ */
+ 
+ struct xnintr_vector {
+-#if defined(CONFIG_SMP) || XENO_DEBUG(LOCKING)
++#if defined(CONFIG_SMP) || defined(CONFIG_XENO_OPT_DEBUG_LOCKING)
+ 	DECLARE_XNLOCK(lock);
+ #endif /* CONFIG_SMP || XENO_DEBUG(LOCKING) */
+ } ____cacheline_aligned_in_smp;
+diff --git a/kernel/cobalt/posix/process.c b/kernel/cobalt/posix/process.c
+index dbcb81ef8..50f752f13 100644
+--- a/kernel/cobalt/posix/process.c
++++ b/kernel/cobalt/posix/process.c
+@@ -751,7 +751,7 @@ static inline int handle_exception(struct ipipe_trap_data *d)
+ 	 * running in primary mode, move it to the Linux domain,
+ 	 * leaving the kernel process the exception.
+ 	 */
+-#if XENO_DEBUG(COBALT) || XENO_DEBUG(USER)
++#if defined(CONFIG_XENO_OPT_DEBUG_COBALT) || defined(CONFIG_XENO_OPT_DEBUG_USER)
+ 	if (!user_mode(d->regs)) {
+ 		xntrace_panic_freeze();
+ 		printk(XENO_WARNING
+diff --git a/kernel/cobalt/procfs.c b/kernel/cobalt/procfs.c
+index ade13cf1c..d1f01f038 100644
+--- a/kernel/cobalt/procfs.c
++++ b/kernel/cobalt/procfs.c
+@@ -27,7 +27,7 @@
+ #include <xenomai/version.h>
+ #include "debug.h"
+ 
+-#if XENO_DEBUG(LOCKING)
++#ifdef CONFIG_XENO_OPT_DEBUG_LOCKING
+ 
+ static int lock_vfile_show(struct xnvfile_regular_iterator *it, void *data)
+ {
+diff --git a/kernel/cobalt/sched-sporadic.c b/kernel/cobalt/sched-sporadic.c
+index d2a1f76d0..9cbfa5be3 100644
+--- a/kernel/cobalt/sched-sporadic.c
++++ b/kernel/cobalt/sched-sporadic.c
+@@ -24,7 +24,7 @@
+ 
+ static void sporadic_post_recharge(struct xnthread *thread, xnticks_t budget);
+ 
+-#if XENO_DEBUG(COBALT)
++#ifdef CONFIG_XENO_OPT_DEBUG_COBALT
+ 
+ static inline void sporadic_note_late_drop(struct xnsched *sched)
+ {
+@@ -236,7 +236,7 @@ static void xnsched_sporadic_init(struct xnsched *sched)
+ 	 * share the same priority scale, with the addition of budget
+ 	 * management for the sporadic ones.
+ 	 */
+-#if XENO_DEBUG(COBALT)
++#ifdef CONFIG_XENO_OPT_DEBUG_COBALT
+ 	sched->pss.drop_retries = 0;
+ #endif
+ }
+diff --git a/kernel/cobalt/synch.c b/kernel/cobalt/synch.c
+index 7773a08e5..32df635a8 100644
+--- a/kernel/cobalt/synch.c
++++ b/kernel/cobalt/synch.c
+@@ -902,7 +902,7 @@ void xnsynch_release_all_ownerships(struct xnthread *thread)
+ }
+ EXPORT_SYMBOL_GPL(xnsynch_release_all_ownerships);
+ 
+-#if XENO_DEBUG(MUTEX_RELAXED)
++#ifdef CONFIG_XENO_OPT_DEBUG_MUTEX_RELAXED
+ 
+ /*
+  * Detect when a thread is about to sleep on a synchronization
+-- 
+2.14.4
+
+
