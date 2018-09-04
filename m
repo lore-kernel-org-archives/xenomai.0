@@ -1,12 +1,9 @@
-Date: Tue, 4 Sep 2018 02:09:36 -0500 (CDT)
-From: Per Oberg <pero@wolfram.com>
-Message-ID: <949827824.1868157.1536044976275.JavaMail.zimbra@wolfram.com>
-In-Reply-To: <b21c6a17-e180-11df-7051-e54102099d9c@siemens.com>
-References: <b21c6a17-e180-11df-7051-e54102099d9c@siemens.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
-Subject: Re: [Xenomai] Taking over the steering wheel
+From: Richard Weinberger <richard.weinberger@gmail.com>
+Date: Tue, 4 Sep 2018 09:56:50 +0200
+Message-ID: <CAFLxGvwYj_Yf210DV+GHv_bNuuR4uo0cC=7b37ZztQj4Y+cQPA@mail.gmail.com>
+Content-Type: text/plain; charset="UTF-8"
+Subject: [Xenomai] Question on internal_get_unmapped_area()
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,42 +12,16 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jan Kiszka <jan.kiszka@siemens.com>
-Cc: xenomai <xenomai@xenomai.org>, Philippe Gerum <rpm@xenomai.org>
+To: xenomai@xenomai.org
 
+Hi!
 
------ Den 3 sep 2018, p=C3=A5 kl 19:22, Jan Kiszka jan.kiszka@siemens.com s=
-krev:
+In kernel/cobalt/rtdm/drvlib.c your internal_get_unmapped_area() just
+returns the requested virtual address. Shouldn't it at least check for
+the address being aligned to PAGE_SIZE?
+And much more important, on VIVT systems it has to enforce alignment to SHMLBA.
 
-> Hi all,
-
-> as announce earlier this year, Philippe stepped back from maintaining
-> the Xenomai development tree and I finally picked up his role now. At
-> least technically this works fine already (just pushed the first
-> commit), the "minor rest" will surely take some time to evolve.
-
-> Many thanks to Philippe for having created and steered this project for
-> such a long time, with so much personal investment! I hope you will find
-> more time now for thrilling technical challenges and new ideas in
-> Xenomai and beyond.
-
-> For my part, I planning some smaller adjustments on the workflow, both
-> to align it to what I'm used to and to make it hopefully beneficial for
-> the Xenomai community as well. I'll send some patch which try to
-> document and explains that these days. Until that has been discussed,
-> everything stays as it was so far.
-
-> Cheers,
-> Jan
-
-> _______________________________________________
-> Xenomai mailing list
-> Xenomai@xenomai.org
-> https://xenomai.org/mailman/listinfo/xenomai
-
-Go Jan, thanks Philippe!
-
-Your contributions are invaluable!
-
-Per =C3=96berg=20
+-- 
+Thanks,
+//richard
 
