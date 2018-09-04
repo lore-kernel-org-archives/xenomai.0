@@ -1,14 +1,12 @@
-References: <E1fxEE3-0004CF-DU@xenomai.org>
 From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <5ab80ae3-d6f2-1b06-17ac-401dd564df99@siemens.com>
-Date: Tue, 4 Sep 2018 19:30:26 +0200
+Message-ID: <c18d4353-ec28-fcd3-884f-92cad7cf376e@siemens.com>
+Date: Tue, 4 Sep 2018 19:31:33 +0200
 MIME-Version: 1.0
-In-Reply-To: <E1fxEE3-0004CF-DU@xenomai.org>
-Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Type: text/plain; charset="utf-8"
 Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] [PATCH] cobalt/sched: group high-level init/cleanup
- code
+Content-Transfer-Encoding: 8bit
+Subject: [Xenomai] [RFC][PATCH] Add CONTRIBUTING guide and workflow
+ explanation
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,191 +15,144 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Philippe Gerum <rpm@xenomai.org>, xenomai@xenomai.org
+To: Xenomai <xenomai@xenomai.org>
 
-On 2018-09-04 12:54, Philippe Gerum wrote:
-> Move scheduler init/cleanup bits to dedicated routines.
-> 
+Shall both help new comers to understand in which form patches are
+requested and what will happen to them normally after submitting them.
 
-Looks good. I assume the underlying motivation is something like this:
-"This concentrates scheduler related code in the sched module."
-(I will insist on such reasoning for more complex code ;) ).
+Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
+---
 
-Thanks,
-Jan
+I'm looking for honest feedback on this! Is it too much? Is something
+missing? Is something seen differently?
 
-> Signed-off-by: Philippe Gerum <rpm@xenomai.org>
-> ---
->   include/cobalt/kernel/sched.h |  4 ++--
->   kernel/cobalt/init.c          | 41 +++-------------------------------
->   kernel/cobalt/sched.c         | 51 +++++++++++++++++++++++++++++++++++++++++--
->   3 files changed, 54 insertions(+), 42 deletions(-)
-> 
-> diff --git a/include/cobalt/kernel/sched.h b/include/cobalt/kernel/sched.h
-> index d525fb2cb..03436ee82 100644
-> --- a/include/cobalt/kernel/sched.h
-> +++ b/include/cobalt/kernel/sched.h
-> @@ -381,9 +381,9 @@ void xnsched_cleanup_proc(void);
->   
->   void xnsched_register_classes(void);
->   
-> -void xnsched_init(struct xnsched *sched, int cpu);
-> +void xnsched_init_all(void);
->   
-> -void xnsched_destroy(struct xnsched *sched);
-> +void xnsched_destroy_all(void);
->   
->   struct xnthread *xnsched_pick_next(struct xnsched *sched);
->   
-> diff --git a/kernel/cobalt/init.c b/kernel/cobalt/init.c
-> index bdd9f351b..22066953b 100644
-> --- a/kernel/cobalt/init.c
-> +++ b/kernel/cobalt/init.c
-> @@ -124,34 +124,10 @@ EXPORT_SYMBOL_GPL(cobalt_call_state_chain);
->   
->   static void sys_shutdown(void)
->   {
-> -	struct xnthread *thread, *tmp;
-> -	struct xnsched *sched;
->   	void *membase;
-> -	int cpu;
-> -	spl_t s;
->   
->   	xntimer_release_hardware();
-> -#ifdef CONFIG_SMP
-> -	ipipe_free_irq(&xnsched_realtime_domain, IPIPE_RESCHEDULE_IPI);
-> -#endif
-> -
-> -	xnlock_get_irqsave(&nklock, s);
-> -
-> -	/* NOTE: &nkthreadq can't be empty (root thread(s)). */
-> -	list_for_each_entry_safe(thread, tmp, &nkthreadq, glink) {
-> -		if (!xnthread_test_state(thread, XNROOT))
-> -			xnthread_cancel(thread);
-> -	}
-> -
-> -	xnsched_run();
-> -
-> -	for_each_online_cpu(cpu) {
-> -		sched = xnsched_struct(cpu);
-> -		xnsched_destroy(sched);
-> -	}
-> -
-> -	xnlock_put_irqrestore(&nklock, s);
-> -
-> +	xnsched_destroy_all();
->   	xnregistry_cleanup();
->   	membase = xnheap_get_membase(&cobalt_heap);
->   	xnheap_destroy(&cobalt_heap);
-> @@ -281,9 +257,8 @@ static void __init setup_init_state(void)
->   
->   static __init int sys_init(void)
->   {
-> -	struct xnsched *sched;
->   	void *heapaddr;
-> -	int ret, cpu;
-> +	int ret;
->   
->   	if (sysheap_size_arg == 0)
->   		sysheap_size_arg = CONFIG_XENO_OPT_SYS_HEAPSZ;
-> @@ -295,17 +270,7 @@ static __init int sys_init(void)
->   	}
->   	xnheap_set_name(&cobalt_heap, "system heap");
->   
-> -	for_each_online_cpu(cpu) {
-> -		sched = &per_cpu(nksched, cpu);
-> -		xnsched_init(sched, cpu);
-> -	}
-> -
-> -#ifdef CONFIG_SMP
-> -	ipipe_request_irq(&xnsched_realtime_domain,
-> -			  IPIPE_RESCHEDULE_IPI,
-> -			  (ipipe_irq_handler_t)__xnsched_run_handler,
-> -			  NULL, NULL);
-> -#endif
-> +	xnsched_init_all();
->   
->   	xnregistry_init();
->   
-> diff --git a/kernel/cobalt/sched.c b/kernel/cobalt/sched.c
-> index db7bb11f1..76e3bc5d7 100644
-> --- a/kernel/cobalt/sched.c
-> +++ b/kernel/cobalt/sched.c
-> @@ -149,7 +149,7 @@ static void roundrobin_handler(struct xntimer *timer)
->   	xnsched_tick(sched);
->   }
->   
-> -void xnsched_init(struct xnsched *sched, int cpu)
-> +static void xnsched_init(struct xnsched *sched, int cpu)
->   {
->   	char rrbtimer_name[XNOBJECT_NAME_LEN];
->   	char htimer_name[XNOBJECT_NAME_LEN];
-> @@ -219,7 +219,25 @@ void xnsched_init(struct xnsched *sched, int cpu)
->   #endif /* CONFIG_XENO_OPT_WATCHDOG */
->   }
->   
-> -void xnsched_destroy(struct xnsched *sched)
-> +void xnsched_init_all(void)
-> +{
-> +	struct xnsched *sched;
-> +	int cpu;
-> +
-> +	for_each_online_cpu(cpu) {
-> +		sched = &per_cpu(nksched, cpu);
-> +		xnsched_init(sched, cpu);
-> +	}
-> +
-> +#ifdef CONFIG_SMP
-> +	ipipe_request_irq(&xnsched_realtime_domain,
-> +			  IPIPE_RESCHEDULE_IPI,
-> +			  (ipipe_irq_handler_t)__xnsched_run_handler,
-> +			  NULL, NULL);
-> +#endif
-> +}
-> +
-> +static void xnsched_destroy(struct xnsched *sched)
->   {
->   	xntimer_destroy(&sched->htimer);
->   	xntimer_destroy(&sched->rrbtimer);
-> @@ -230,6 +248,35 @@ void xnsched_destroy(struct xnsched *sched)
->   #endif /* CONFIG_XENO_OPT_WATCHDOG */
->   }
->   
-> +void xnsched_destroy_all(void)
-> +{
-> +	struct xnthread *thread, *tmp;
-> +	struct xnsched *sched;
-> +	int cpu;
-> +	spl_t s;
-> +
-> +#ifdef CONFIG_SMP
-> +	ipipe_free_irq(&xnsched_realtime_domain, IPIPE_RESCHEDULE_IPI);
-> +#endif
-> +
-> +	xnlock_get_irqsave(&nklock, s);
-> +
-> +	/* NOTE: &nkthreadq can't be empty (root thread(s)). */
-> +	list_for_each_entry_safe(thread, tmp, &nkthreadq, glink) {
-> +		if (!xnthread_test_state(thread, XNROOT))
-> +			xnthread_cancel(thread);
-> +	}
-> +
-> +	xnsched_run();
-> +
-> +	for_each_online_cpu(cpu) {
-> +		sched = xnsched_struct(cpu);
-> +		xnsched_destroy(sched);
-> +	}
-> +
-> +	xnlock_put_irqrestore(&nklock, s);
-> +}
-> +
->   static inline void set_thread_running(struct xnsched *sched,
->   				      struct xnthread *thread)
->   {
-> 
+Basically, I took what I once created for Jailhouse and what we are also
+using elsewhere now, slightly adjusting it for Xenomai. Shall be a
+living document as we evolve workflows.
 
+ CONTRIBUTING.md | 113 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+ 1 file changed, 113 insertions(+)
+ create mode 100644 CONTRIBUTING.md
+
+diff --git a/CONTRIBUTING.md b/CONTRIBUTING.md
+new file mode 100644
+index 0000000000..4ee8b7cc1f
+--- /dev/null
++++ b/CONTRIBUTING.md
+@@ -0,0 +1,113 @@
++Contributing to Xenomai
++=======================
++
++Contributions to Xenomai are always welcome. This document explains the general
++requirements on contributions and the recommended preparation steps. It also
++sketches the typical integration process of patches.
++
++
++Contribution Checklist
++----------------------
++
++- use git to manage your changes [*recomended*]
++
++- follow Linux Kernel coding style, see also
++  [Linux kernel coding style](https://www.kernel.org/doc/html/latest/process/coding-style.html) [**required**]
++
++- add the required copyright header to each new file introduced [**required**]
++
++- structure patches logically, in small steps [**required**]
++    - one separable functionality/fix/refactoring = one patch
++    - do not mix those there in a single patch
++    - after each patch, the tree still has to build and work, i.e. do not add
++      even temporary breakages inside a patch series (helps when tracking down
++      bugs)
++    - use `git rebase -i` to restructure a patch series
++
++- base patches on top of latest master or - if there are dependencies - on next
++  (note: next is an integration branch that may change non-linearly)
++
++- test patches sufficiently AFTER the last edit (obvious, but...) [**required**]
++
++- add signed-off to all patches [**required**]
++    - to certify the "Developer's Certificate of Origin", see below
++    - check with your employer when not working on your own!
++
++- indicate if you think a patch fixes a bug present in a stable branch as well,
++  either in the cover letter of the patch series of after the "---" separator
++  of the patch itself
++
++- post patches to mailing list [**required**]
++    - use `git format-patch/send-email` if possible
++    - send patches inline, do not append them
++    - no HTML emails!
++    - CC people who you think should look at the patches, e.g.
++      - affected maintainers
++      - someone who wrote a change that is fixed or reverted by you now
++      - who commented on related changes in the recent past
++      - who otherwise has expertise and is interested in the topic
++    - pull requests on gitlab are only optional
++
++- post follow-up version(s) if feedback requires this
++
++- send reminder if nothing happened after about two weeks
++
++
++Developer's Certificate of Origin 1.1
++-------------------------------------
++
++When signing-off a patch for this project like this
++
++    Signed-off-by: Random J Developer <random@developer.example.org>
++
++using your real name (no pseudonyms or anonymous contributions), you declare the
++following:
++
++    By making a contribution to this project, I certify that:
++
++        (a) The contribution was created in whole or in part by me and I
++            have the right to submit it under the open source license
++            indicated in the file; or
++
++        (b) The contribution is based upon previous work that, to the best
++            of my knowledge, is covered under an appropriate open source
++            license and I have the right under that license to submit that
++            work with modifications, whether created in whole or in part
++            by me, under the same open source license (unless I am
++            permitted to submit under a different license), as indicated
++            in the file; or
++
++        (c) The contribution was provided directly to me by some other
++            person who certified (a), (b) or (c) and I have not modified
++            it.
++
++        (d) I understand and agree that this project and the contribution
++            are public and that a record of the contribution (including all
++            personal information I submit with it, including my sign-off) is
++            maintained indefinitely and may be redistributed consistent with
++            this project or the open source license(s) involved.
++
++See also [Sign your work - the Developer’s Certificate of Origin](https://www.kernel.org/doc/html/latest/process/submitting-patches.html#sign-your-work-the-developer-s-certificate-of-origin)
++for further background on this process which was adopted from the Linux kernel.
++
++
++Contribution Integration Process
++--------------------------------
++
++1. patch reviews performed on mailing list
++    * at least by maintainers, but everyone is invited
++    * feedback has to consider design, functionality and style
++    * simpler and clearer code preferred, even if original code works fine
++
++2. accepted patches merged into next branch
++
++3. further testing done by community, including CI build tests, code analyzer
++   runs, on-target tests
++
++4. if no new problems or discussions showed up, acceptance into master
++    * grace period for master: about 3 days
++    * urgent fixes may be applied sooner
++
++gitlab facilities are not used for the review process so that people can follow
++all changes and related discussions at a single stop, the mailing list. This
++may change in the future if gitlab should improve their email integration.
 -- 
-Siemens AG, Corporate Technology, CT RDA IOT SES-DE
-Corporate Competence Center Embedded Linux
+2.16.4
 
