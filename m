@@ -1,14 +1,16 @@
+From: =?gb2312?B?emhlbmdndWFuZy55YW5nKNHu1fm54ik=?=
+ <zhengguang.yang@advantech.com.cn>
+Date: Tue, 4 Sep 2018 03:28:21 +0000
+Message-ID: <10a8f759b3824480948324760e606921@acnmail2.ACN.ADVANTECH.CORP>
+References: <56466c708cde4eaf9f9f71c4404bd75a@acnmail2.ACN.ADVANTECH.CORP>
+ <82d805d4-67c1-ec7f-1d8f-c30f78799a91@siemens.com>
+In-Reply-To: <82d805d4-67c1-ec7f-1d8f-c30f78799a91@siemens.com>
+Content-Language: zh-CN
+Content-Type: text/plain; charset="gb2312"
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-References: <CAFLxGvwUEfbNtAnx31vUOo0BwR8ZMpstO1=t=bZpa-jpjTUh4A@mail.gmail.com>
- <CAFLxGvwJx2-37mgD10VkpuR2WHnNCVcu6W8x6w+Yx2JXG_B7TQ@mail.gmail.com>
- <5bb68a54-d174-e4ca-1bad-ce148440cbc9@xenomai.org>
- <CAFLxGvycjSkQrKTMYwrQyaB6OktzHATyG+22J56hMk2a+78EtA@mail.gmail.com>
-In-Reply-To: <CAFLxGvycjSkQrKTMYwrQyaB6OktzHATyG+22J56hMk2a+78EtA@mail.gmail.com>
-From: Richard Weinberger <richard.weinberger@gmail.com>
-Date: Mon, 3 Sep 2018 20:31:29 +0200
-Message-ID: <CAFLxGvz-Sjm5HCTAfq=-QU9izp8HjVc--8S=50hN8o21mKpEUw@mail.gmail.com>
-Content-Type: text/plain; charset="UTF-8"
-Subject: Re: [Xenomai] Problem with read-only mmap'ed vmalloc area
+Subject: [Xenomai] =?gb2312?b?tPC4tDogVGhlIGN5Y2xpY3Rlc3QgdGVzdCBzaG93cyBo?=
+ =?gb2312?b?aWdoIGxhdGVuY2llcw==?=
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,50 +19,37 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: rpm@xenomai.org
-Cc: xenomai@xenomai.org
+To: Jan Kiszka <jan.kiszka@siemens.com>, "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On Fri, Aug 31, 2018 at 10:27 PM Richard Weinberger
-<richard.weinberger@gmail.com> wrote:
->
-> On Fri, Aug 31, 2018 at 12:03 PM Philippe Gerum <rpm@xenomai.org> wrote:
-> >
-> > On 08/31/2018 11:13 AM, Richard Weinberger wrote:
-> > > On Thu, Aug 30, 2018 at 1:35 PM Richard Weinberger
-> > > <richard.weinberger@gmail.com> wrote:
-> > >> I think the problem is related on how Xenomai tries to pre-fault pages.
-> > >> As soon I remove the call to xnarch_fault_range() from
-> > >> rtdm_mmap_buffer(), the mapping works correctly
-> > >> and my test passes.
-> > >
-> > > After reading more xenomai code I found something interesting.
-> > > In mach_arm_prefault() you set FAULT_FLAG_WRITE if VM_MAYWRITE
-> > > is present.
-> > > IMHO this is wrong and should check for VM_WRITE.
-> > > Otherwise a write fault is simulated even for read-only mappings.
-> > >
-> > > In fact, when I apply this change, my test passes.
-> > >
-> >
-> > I suspect that the original intent might have been to address the issue
-> > of COW mappings (i.e.  (flags & (VM_SHARED | VM_MAYWRITE)) ==
-> > VM_MAYWRITE), force-breaking them.
-> >
-> > This said, this particular issue may have been addressed earlier when
-> > mlocking the process address space with MCL_FUTURE, and further enforced
-> > by the call to disable_ondemand_memory() when installing the Cobalt
-> > thread which is going to map that memory into the current address space
-> > (cobalt_map_user()).
-> >
-> > IOW, why would we need more prefaulting here?
->
-> Good point. It is also interesting that arm is the only machine where
-> the .prefault
-> handler is set. So, I guess this latency code which can be removed.
-
-BTW: Do you want me to send a patch?
-
--- 
-Thanks,
-//richard
+SGkgSmFuOg0KVGhhbmsgeW91IGZvciB5b3VyIHJlcGx5Lg0KDQpPdXIgYXBwbGljYXRpb24gaGFz
+IGJlZW4gZGV2ZWxvcGVkIG9uIFBSRUVNUFQtUlQuIENhbiB3ZSBhcHBseSBvdXIgYXBwbGljYXRp
+b24gZGlyZWN0bHkgdG8gWGVub21haV9MaW51eC4gSWYgbm90LCB3aGF0IHdlIG5lZWQgdG8gcGF5
+IGF0dGVudGlvbiB0bz8gDQoNCkRvIHlvdSBoYXZlIGEgZGV2ZWxvcG1lbnQgbWFudWFsIG9uIFhl
+bm9tYWlfTGludXg/DQoNCg0KLS0tLS3Tyrz+1K28/i0tLS0tDQq3orz+yMs6IEphbiBLaXN6a2Eg
+W21haWx0bzpqYW4ua2lzemthQHNpZW1lbnMuY29tXSANCreiy83KsbzkOiAyMDE4xOo51MIzyNUg
+MTg6MzMNCsrVvP7IyzogemhlbmdndWFuZy55YW5nKNHu1fm54ik7IHhlbm9tYWlAeGVub21haS5v
+cmcNCtb3zOI6IFJlOiBUaGUgY3ljbGljdGVzdCB0ZXN0IHNob3dzIGhpZ2ggbGF0ZW5jaWVzDQoN
+Ck9uIDIwMTgtMDgtMzEgMDk6MTYsIHpoZW5nZ3VhbmcueWFuZyjR7tX5ueIpIHdyb3RlOg0KPiBE
+ZWFyIFhlbm9tYWkgVGVhbToNCj4gSSB3YW50IHRvIHVzZSB4ZW5vbWFpIG9uIGlteDZxLg0KPiBX
+aGVuIEkgaW5zdGFsbCBpdCBhY2NvcmRpbmcgdG8geW91ciB3aWtpLCB0aGVuIGNoZWNrIHRoZSBr
+ZXJuZWwgYm9vdCBsb2c6DQo+IA0KPiAjIGRtZXNnIHxncmVwIC1pIHhlbm9tYWkNCj4gWyAgICAw
+LjQwODI3NF0gW1hlbm9tYWldIHNjaGVkdWxpbmcgY2xhc3MgaWRsZSByZWdpc3RlcmVkLg0KPiBb
+ICAgIDAuNDA4MjgxXSBbWGVub21haV0gc2NoZWR1bGluZyBjbGFzcyBydCByZWdpc3RlcmVkLg0K
+PiBbICAgIDAuNDA4NTM4XSBJLXBpcGU6IGhlYWQgZG9tYWluIFhlbm9tYWkgcmVnaXN0ZXJlZC4N
+Cj4gWyAgICAwLjQxMjEyOV0gW1hlbm9tYWldIENvYmFsdCB2My4wLjcgKExpbmdlcmluZyBEYXdu
+KQ0KPiANCj4gSG93ZXZlciwgYWZ0ZXIgdGVzdGluZyB3aXRoIGN5Y2xpY3Rlc3QsIGl0IHNlZW1z
+IHRoYXQgdGhlcmUgaXMgbm8gZGlmZmVyZW5jZSBiZXR3ZWVuIHhlbm9tYWktbGludXggYW5kIG5v
+bl94ZW5vbWFpLWxpbnV4Lg0KPiANCj4gDQo+IKGkICAgICAgICAgTWF5YmUgSSBkaWQgc29tZXRo
+aW5nIHdyb25nIGFuZCB3aGF0IGdvZXMgd3JvbmcgdGhhdCBsZWFkcyB0byB0aGlzIHJlc3VsdD8N
+Cj4gDQoNClhlbm9tYWkgaW4gQ29iYWx0IG1vZGUgKGR1YWwga2VybmVsKSBpcyBub3QgYW4gQVBJ
+LXRyYW5zcGFyZW50IGFwcHJvYWNoIGxpa2UgUFJFRU1QVC1SVC4gWW91IG5lZWQgdG8gdXNlIGFu
+IGFwcGxpY2F0aW9uIHRoYXQgaXMgYXQgbGVhc3QgY29tcGlsZWQgZm9yIFhlbm9tYWksIHR5cGlj
+YWxseSBpdCBzaG91bGQgYWxzbyBiZSBhZGp1c3RlZCBmb3IgaXQuDQoNClRoZXJlIGlzIGEgZGVt
+byB2YXJpYW50IG9mIGN5Y2xpY3Rlc3QgaW4gdGhlIHVzZXJzcGFjZSBwYWNrYWdlIG9mIFhlbm9t
+YWksIGFuZCB0aGVyZSBpcyB0aGUgZGVmYXVsdCBtZWFzdXJlbWVudCB0b29sICJsYXRlbmN5Ii4g
+RG9uJ3QgZm9yZ2V0IHRvIHJ1biBhdXRvdHVuZSBmaXJzdC4gQWxsIGRlc2NyaWJlZCBpbiBodHRw
+czovL2dpdGxhYi5kZW54LmRlL1hlbm9tYWkveGVub21haS93aWtpcy9JbnN0YWxsaW5nX1hlbm9t
+YWlfMy4NCg0KSmFuDQoNCi0tDQpTaWVtZW5zIEFHLCBDb3Jwb3JhdGUgVGVjaG5vbG9neSwgQ1Qg
+UkRBIElPVCBTRVMtREUgQ29ycG9yYXRlIENvbXBldGVuY2UgQ2VudGVyIEVtYmVkZGVkIExpbnV4
+DQo=
 
