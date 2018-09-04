@@ -1,17 +1,12 @@
-References: <CAFLxGvwUEfbNtAnx31vUOo0BwR8ZMpstO1=t=bZpa-jpjTUh4A@mail.gmail.com>
- <CAFLxGvwJx2-37mgD10VkpuR2WHnNCVcu6W8x6w+Yx2JXG_B7TQ@mail.gmail.com>
- <5bb68a54-d174-e4ca-1bad-ce148440cbc9@xenomai.org>
- <CAFLxGvycjSkQrKTMYwrQyaB6OktzHATyG+22J56hMk2a+78EtA@mail.gmail.com>
- <CAFLxGvz-Sjm5HCTAfq=-QU9izp8HjVc--8S=50hN8o21mKpEUw@mail.gmail.com>
-From: Philippe Gerum <rpm@xenomai.org>
-Message-ID: <f02e8cf4-b8f6-01f8-5633-5a3a11918ca2@xenomai.org>
-Date: Tue, 4 Sep 2018 08:27:00 +0200
+Date: Tue, 4 Sep 2018 02:09:36 -0500 (CDT)
+From: Per Oberg <pero@wolfram.com>
+Message-ID: <949827824.1868157.1536044976275.JavaMail.zimbra@wolfram.com>
+In-Reply-To: <b21c6a17-e180-11df-7051-e54102099d9c@siemens.com>
+References: <b21c6a17-e180-11df-7051-e54102099d9c@siemens.com>
 MIME-Version: 1.0
-In-Reply-To: <CAFLxGvz-Sjm5HCTAfq=-QU9izp8HjVc--8S=50hN8o21mKpEUw@mail.gmail.com>
 Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] Problem with read-only mmap'ed vmalloc area
+Content-Transfer-Encoding: quoted-printable
+Subject: Re: [Xenomai] Taking over the steering wheel
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -20,53 +15,42 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Richard Weinberger <richard.weinberger@gmail.com>
-Cc: xenomai@xenomai.org
+To: Jan Kiszka <jan.kiszka@siemens.com>
+Cc: xenomai <xenomai@xenomai.org>, Philippe Gerum <rpm@xenomai.org>
 
-On 09/03/2018 08:31 PM, Richard Weinberger wrote:
-> On Fri, Aug 31, 2018 at 10:27 PM Richard Weinberger
-> <richard.weinberger@gmail.com> wrote:
->>
->> On Fri, Aug 31, 2018 at 12:03 PM Philippe Gerum <rpm@xenomai.org> wrote:
->>>
->>> On 08/31/2018 11:13 AM, Richard Weinberger wrote:
->>>> On Thu, Aug 30, 2018 at 1:35 PM Richard Weinberger
->>>> <richard.weinberger@gmail.com> wrote:
->>>>> I think the problem is related on how Xenomai tries to pre-fault pages.
->>>>> As soon I remove the call to xnarch_fault_range() from
->>>>> rtdm_mmap_buffer(), the mapping works correctly
->>>>> and my test passes.
->>>>
->>>> After reading more xenomai code I found something interesting.
->>>> In mach_arm_prefault() you set FAULT_FLAG_WRITE if VM_MAYWRITE
->>>> is present.
->>>> IMHO this is wrong and should check for VM_WRITE.
->>>> Otherwise a write fault is simulated even for read-only mappings.
->>>>
->>>> In fact, when I apply this change, my test passes.
->>>>
->>>
->>> I suspect that the original intent might have been to address the issue
->>> of COW mappings (i.e.  (flags & (VM_SHARED | VM_MAYWRITE)) ==
->>> VM_MAYWRITE), force-breaking them.
->>>
->>> This said, this particular issue may have been addressed earlier when
->>> mlocking the process address space with MCL_FUTURE, and further enforced
->>> by the call to disable_ondemand_memory() when installing the Cobalt
->>> thread which is going to map that memory into the current address space
->>> (cobalt_map_user()).
->>>
->>> IOW, why would we need more prefaulting here?
->>
->> Good point. It is also interesting that arm is the only machine where
->> the .prefault
->> handler is set. So, I guess this latency code which can be removed.
-> 
-> BTW: Do you want me to send a patch?
-> 
 
-This would be great, thanks.
+----- Den 3 sep 2018, p=C3=A5 kl 19:22, Jan Kiszka jan.kiszka@siemens.com s=
+krev:
 
--- 
-Philippe.
+> Hi all,
+
+> as announce earlier this year, Philippe stepped back from maintaining
+> the Xenomai development tree and I finally picked up his role now. At
+> least technically this works fine already (just pushed the first
+> commit), the "minor rest" will surely take some time to evolve.
+
+> Many thanks to Philippe for having created and steered this project for
+> such a long time, with so much personal investment! I hope you will find
+> more time now for thrilling technical challenges and new ideas in
+> Xenomai and beyond.
+
+> For my part, I planning some smaller adjustments on the workflow, both
+> to align it to what I'm used to and to make it hopefully beneficial for
+> the Xenomai community as well. I'll send some patch which try to
+> document and explains that these days. Until that has been discussed,
+> everything stays as it was so far.
+
+> Cheers,
+> Jan
+
+> _______________________________________________
+> Xenomai mailing list
+> Xenomai@xenomai.org
+> https://xenomai.org/mailman/listinfo/xenomai
+
+Go Jan, thanks Philippe!
+
+Your contributions are invaluable!
+
+Per =C3=96berg=20
 
