@@ -1,12 +1,17 @@
+References: <56466c708cde4eaf9f9f71c4404bd75a@acnmail2.ACN.ADVANTECH.CORP>
+ <82d805d4-67c1-ec7f-1d8f-c30f78799a91@siemens.com>
+ <10a8f759b3824480948324760e606921@acnmail2.ACN.ADVANTECH.CORP>
 From: Jan Kiszka <jan.kiszka@siemens.com>
-Date: Mon, 16 Jul 2018 18:37:52 +0200
-Message-Id: <9c316ea60ac2b083aa22654c6319ab9b789a6789.1531759073.git.jan.kiszka@siemens.com>
-In-Reply-To: <cover.1531759073.git.jan.kiszka@siemens.com>
-References: <cover.1531759073.git.jan.kiszka@siemens.com>
-In-Reply-To: <cover.1531759073.git.jan.kiszka@siemens.com>
-References: <cover.1531759073.git.jan.kiszka@siemens.com>
-Subject: [Xenomai] [PATCH 4/6] lib/cobalt: Avoid requesting shadowing for
-	remote threads
+Message-ID: <0ceb99b6-8dad-4778-7c26-eb4109deabb2@siemens.com>
+Date: Tue, 4 Sep 2018 13:21:34 +0200
+MIME-Version: 1.0
+In-Reply-To: <10a8f759b3824480948324760e606921@acnmail2.ACN.ADVANTECH.CORP>
+Content-Type: text/plain; charset="gbk"; format="flowed"
+Content-Language: en-US
+Content-Transfer-Encoding: base64
+Subject: Re: [Xenomai] 
+ =?utf-8?b?562U5aSNOiBUaGUgY3ljbGljdGVzdCB0ZXN0IHNob3dz?=
+ =?utf-8?q?_high_latencies?=
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,48 +20,43 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
+To: =?UTF-8?B?emhlbmdndWFuZy55YW5nKOadqOS6ieWFiSk=?= <zhengguang.yang@advantech.com.cn>, "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-From: Jan Kiszka <jan.kiszka@siemens.com>
-
-Fix pthread_setschedparam_ex that it does not suggests the core to map
-the current thread if the target thread of the request is actually not
-pthread_self(). The core will reject such requests now, but we should
-avoid them in the first place so that we get a clear error code.
-
-Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
----
- lib/cobalt/thread.c | 7 +++++--
- 1 file changed, 5 insertions(+), 2 deletions(-)
-
-diff --git a/lib/cobalt/thread.c b/lib/cobalt/thread.c
-index 62ca0a02d9..fac23109c1 100644
---- a/lib/cobalt/thread.c
-+++ b/lib/cobalt/thread.c
-@@ -607,7 +607,7 @@ int pthread_setschedparam_ex(pthread_t thread,
- {
- 	int ret, promoted, std_policy;
- 	struct sched_param std_param;
--	__u32 u_winoff;
-+	__u32 u_winoff, *u_winoff_ptr;
- 
- 	/*
- 	 * If we enter this call over a relaxed context, take the
-@@ -637,9 +637,12 @@ int pthread_setschedparam_ex(pthread_t thread,
- 			return ret;
- 	}
- 
-+	/* only request promotion when this targets the current thread */
-+	u_winoff_ptr = thread == pthread_self() ? &u_winoff : NULL;
-+
- 	ret = -XENOMAI_SYSCALL5(sc_cobalt_thread_setschedparam_ex,
- 				thread, policy, param_ex,
--				&u_winoff, &promoted);
-+				u_winoff_ptr, &promoted);
- 
- 	if (ret == 0 && promoted) {
- 		cobalt_sigshadow_install_once();
--- 
-2.16.4
-
-
+T24gMjAxOC0wOS0wNCAwNToyOCwgemhlbmdndWFuZy55YW5nKNHu1fm54ikgd3JvdGU6Cj4gSGkg
+SmFuOgo+IFRoYW5rIHlvdSBmb3IgeW91ciByZXBseS4KPiAKPiBPdXIgYXBwbGljYXRpb24gaGFz
+IGJlZW4gZGV2ZWxvcGVkIG9uIFBSRUVNUFQtUlQuIENhbiB3ZSBhcHBseSBvdXIgYXBwbGljYXRp
+b24gZGlyZWN0bHkgdG8gWGVub21haV9MaW51eC4gSWYgbm90LCB3aGF0IHdlIG5lZWQgdG8gcGF5
+IGF0dGVudGlvbiB0bz8KPiAKPiBEbyB5b3UgaGF2ZSBhIGRldmVsb3BtZW50IG1hbnVhbCBvbiBY
+ZW5vbWFpX0xpbnV4Pwo+IAoKU2NhbiB0aGUgaG9tZXBhZ2UgYW5kIHRoZSBkb2N1bWVudHMgaW4g
+dGhlIFhlbm9tYWkgc291cmNlIHJlcG9zaXRvcnkgZm9yIAp3aGF0IHlvdSBhcmUgbG9va2luZyBm
+b3IuIFRoZXJlIGFyZSBtYW55IGhpbnRzIGFscmVhZHksIG1heWJlIG5vdCBhbGwsIApidXQgdGhh
+dCBpcyBiZXN0IHBvaW50ZWQgb3V0IGZyb20gYSAobmV3KSB1c2VyJ3MgcGVyc3BlY3RpdmUgbGlr
+ZSB5b3UgCmhhdmUuIFNvIHBsZWFzZSBwcm92aWRlIGZlZWRiYWNrIGFmdGVyd2FyZHMgLyBmZWVs
+IGZyZWUgdG8gYXNrIHNwZWNpZmljIApxdWVzdGlvbnMgb24gd2hhdCByZW1haW5zIHVuY2xlYXIh
+CgpKYW4KCj4gCj4gLS0tLS3Tyrz+1K28/i0tLS0tCj4gt6K8/sjLOiBKYW4gS2lzemthIFttYWls
+dG86amFuLmtpc3prYUBzaWVtZW5zLmNvbV0KPiC3osvNyrG85DogMjAxOMTqOdTCM8jVIDE4OjMz
+Cj4gytW8/sjLOiB6aGVuZ2d1YW5nLnlhbmco0e7V+bniKTsgeGVub21haUB4ZW5vbWFpLm9yZwo+
+INb3zOI6IFJlOiBUaGUgY3ljbGljdGVzdCB0ZXN0IHNob3dzIGhpZ2ggbGF0ZW5jaWVzCj4gCj4g
+T24gMjAxOC0wOC0zMSAwOToxNiwgemhlbmdndWFuZy55YW5nKNHu1fm54ikgd3JvdGU6Cj4+IERl
+YXIgWGVub21haSBUZWFtOgo+PiBJIHdhbnQgdG8gdXNlIHhlbm9tYWkgb24gaW14NnEuCj4+IFdo
+ZW4gSSBpbnN0YWxsIGl0IGFjY29yZGluZyB0byB5b3VyIHdpa2ksIHRoZW4gY2hlY2sgdGhlIGtl
+cm5lbCBib290IGxvZzoKPj4KPj4gIyBkbWVzZyB8Z3JlcCAtaSB4ZW5vbWFpCj4+IFsgICAgMC40
+MDgyNzRdIFtYZW5vbWFpXSBzY2hlZHVsaW5nIGNsYXNzIGlkbGUgcmVnaXN0ZXJlZC4KPj4gWyAg
+ICAwLjQwODI4MV0gW1hlbm9tYWldIHNjaGVkdWxpbmcgY2xhc3MgcnQgcmVnaXN0ZXJlZC4KPj4g
+WyAgICAwLjQwODUzOF0gSS1waXBlOiBoZWFkIGRvbWFpbiBYZW5vbWFpIHJlZ2lzdGVyZWQuCj4+
+IFsgICAgMC40MTIxMjldIFtYZW5vbWFpXSBDb2JhbHQgdjMuMC43IChMaW5nZXJpbmcgRGF3bikK
+Pj4KPj4gSG93ZXZlciwgYWZ0ZXIgdGVzdGluZyB3aXRoIGN5Y2xpY3Rlc3QsIGl0IHNlZW1zIHRo
+YXQgdGhlcmUgaXMgbm8gZGlmZmVyZW5jZSBiZXR3ZWVuIHhlbm9tYWktbGludXggYW5kIG5vbl94
+ZW5vbWFpLWxpbnV4Lgo+Pgo+Pgo+PiChpCAgICAgICAgIE1heWJlIEkgZGlkIHNvbWV0aGluZyB3
+cm9uZyBhbmQgd2hhdCBnb2VzIHdyb25nIHRoYXQgbGVhZHMgdG8gdGhpcyByZXN1bHQ/Cj4+Cj4g
+Cj4gWGVub21haSBpbiBDb2JhbHQgbW9kZSAoZHVhbCBrZXJuZWwpIGlzIG5vdCBhbiBBUEktdHJh
+bnNwYXJlbnQgYXBwcm9hY2ggbGlrZSBQUkVFTVBULVJULiBZb3UgbmVlZCB0byB1c2UgYW4gYXBw
+bGljYXRpb24gdGhhdCBpcyBhdCBsZWFzdCBjb21waWxlZCBmb3IgWGVub21haSwgdHlwaWNhbGx5
+IGl0IHNob3VsZCBhbHNvIGJlIGFkanVzdGVkIGZvciBpdC4KPiAKPiBUaGVyZSBpcyBhIGRlbW8g
+dmFyaWFudCBvZiBjeWNsaWN0ZXN0IGluIHRoZSB1c2Vyc3BhY2UgcGFja2FnZSBvZiBYZW5vbWFp
+LCBhbmQgdGhlcmUgaXMgdGhlIGRlZmF1bHQgbWVhc3VyZW1lbnQgdG9vbCAibGF0ZW5jeSIuIERv
+bid0IGZvcmdldCB0byBydW4gYXV0b3R1bmUgZmlyc3QuIEFsbCBkZXNjcmliZWQgaW4gaHR0cHM6
+Ly9naXRsYWIuZGVueC5kZS9YZW5vbWFpL3hlbm9tYWkvd2lraXMvSW5zdGFsbGluZ19YZW5vbWFp
+XzMuCj4gCj4gSmFuCj4gCj4gLS0KPiBTaWVtZW5zIEFHLCBDb3Jwb3JhdGUgVGVjaG5vbG9neSwg
+Q1QgUkRBIElPVCBTRVMtREUgQ29ycG9yYXRlIENvbXBldGVuY2UgQ2VudGVyIEVtYmVkZGVkIExp
+bnV4Cj4gCgoK
