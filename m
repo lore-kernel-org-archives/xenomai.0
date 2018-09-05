@@ -1,12 +1,8 @@
-From: Jan Kiszka <jan.kiszka@siemens.com>
-Date: Mon, 16 Jul 2018 18:37:51 +0200
-Message-Id: <cd18218973c91bd185c11a63b716a4a1e2537818.1531759073.git.jan.kiszka@siemens.com>
-In-Reply-To: <cover.1531759073.git.jan.kiszka@siemens.com>
-References: <cover.1531759073.git.jan.kiszka@siemens.com>
-In-Reply-To: <cover.1531759073.git.jan.kiszka@siemens.com>
-References: <cover.1531759073.git.jan.kiszka@siemens.com>
-Subject: [Xenomai] [PATCH 3/6] cobalt/posix: Remove task parameter from
-	cobalt_thread_shadow
+From: Philippe Gerum <rpm@xenomai.org>
+Date: Wed, 5 Sep 2018 17:21:58 +0200
+Message-Id: <E1fxZtQ-00064m-Eq@xenomai.org>
+Subject: [Xenomai] [I-PIPE][PATCH 3/7] arm64: ipipe: share context switch
+ code with the head domain
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,88 +11,162 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
+To: Dmitriy Cherkasov <dmitriy@oss-tech.org>
+Cc: xenomai@xenomai.org
 
-From: Jan Kiszka <jan.kiszka@siemens.com>
-
-It's always current, and it can only be current.
-
-Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
+This change enable a co-kernel to change the address space of a task
+using the common mm helpers. This is mainly a matter of strictly
+serializing context switching code among all callers regardless of
+their domain (head/root), by disabling hard irqs.
 ---
- kernel/cobalt/posix/sched.c  | 2 +-
- kernel/cobalt/posix/thread.c | 9 ++++-----
- kernel/cobalt/posix/thread.h | 3 +--
- 3 files changed, 6 insertions(+), 8 deletions(-)
+ arch/arm64/include/asm/mmu_context.h | 27 ++++++++++++++++++++++++++-
+ arch/arm64/kernel/entry.S            | 24 +++++++++++++++++++++++-
+ arch/arm64/kernel/ipipe.c            |  7 +++++++
+ 3 files changed, 56 insertions(+), 2 deletions(-)
 
-diff --git a/kernel/cobalt/posix/sched.c b/kernel/cobalt/posix/sched.c
-index 9b61193845..eca16f7647 100644
---- a/kernel/cobalt/posix/sched.c
-+++ b/kernel/cobalt/posix/sched.c
-@@ -755,7 +755,7 @@ int cobalt_sched_setscheduler_ex(pid_t pid,
- 		if (u_winoff == NULL || pid != task_pid_vnr(current))
- 			return -ESRCH;
- 			
--		thread = cobalt_thread_shadow(current, &hkey, u_winoff);
-+		thread = cobalt_thread_shadow(&hkey, u_winoff);
- 		if (IS_ERR(thread))
- 			return PTR_ERR(thread);
+diff --git a/arch/arm64/include/asm/mmu_context.h b/arch/arm64/include/asm/mmu_context.h
+index 779d7a2ec5ec..3454ee25d8f0 100644
+--- a/arch/arm64/include/asm/mmu_context.h
++++ b/arch/arm64/include/asm/mmu_context.h
+@@ -30,6 +30,7 @@
+ #include <asm/cpufeature.h>
+ #include <asm/proc-fns.h>
+ #include <asm-generic/mm_hooks.h>
++#include <asm-generic/ipipe.h>
+ #include <asm/cputype.h>
+ #include <asm/pgtable.h>
+ #include <asm/sysreg.h>
+@@ -57,9 +58,13 @@ static inline void cpu_set_reserved_ttbr0(void)
  
-diff --git a/kernel/cobalt/posix/thread.c b/kernel/cobalt/posix/thread.c
-index d75a593536..86f667488c 100644
---- a/kernel/cobalt/posix/thread.c
-+++ b/kernel/cobalt/posix/thread.c
-@@ -480,7 +480,7 @@ int cobalt_thread_setschedparam_ex(unsigned long pth,
- 		if (u_winoff == NULL)
- 			return -EINVAL;
- 			
--		thread = cobalt_thread_shadow(current, &hkey, u_winoff);
-+		thread = cobalt_thread_shadow(&hkey, u_winoff);
- 		if (IS_ERR(thread))
- 			return PTR_ERR(thread);
- 
-@@ -617,8 +617,7 @@ COBALT_SYSCALL(thread_create, init,
+ static inline void cpu_switch_mm(pgd_t *pgd, struct mm_struct *mm)
+ {
++	unsigned long flags;
++	
+ 	BUG_ON(pgd == swapper_pg_dir);
++	flags = hard_cond_local_irq_save();
+ 	cpu_set_reserved_ttbr0();
+ 	cpu_do_switch_mm(virt_to_phys(pgd),mm);
++	hard_cond_local_irq_restore(flags);
  }
  
- struct cobalt_thread *
--cobalt_thread_shadow(struct task_struct *p,
--		     struct cobalt_local_hkey *hkey,
-+cobalt_thread_shadow(struct cobalt_local_hkey *hkey,
- 		     __u32 __user *u_winoff)
+ /*
+@@ -211,7 +216,7 @@ static inline void __switch_mm(struct mm_struct *next)
+ }
+ 
+ static inline void
+-switch_mm(struct mm_struct *prev, struct mm_struct *next,
++do_switch_mm(struct mm_struct *prev, struct mm_struct *next,
+ 	  struct task_struct *tsk)
  {
- 	struct cobalt_thread *thread = NULL;
-@@ -630,7 +629,7 @@ cobalt_thread_shadow(struct task_struct *p,
+ 	if (prev != next)
+@@ -226,9 +231,29 @@ switch_mm(struct mm_struct *prev, struct mm_struct *next,
+ 	update_saved_ttbr0(tsk, next);
+ }
  
- 	param_ex.sched_priority = 0;
- 	trace_cobalt_pthread_create(hkey->u_pth, SCHED_NORMAL, &param_ex);
--	ret = pthread_create(&thread, SCHED_NORMAL, &param_ex, p);
-+	ret = pthread_create(&thread, SCHED_NORMAL, &param_ex, current);
- 	if (ret)
- 		return ERR_PTR(ret);
++static inline void
++switch_mm(struct mm_struct *prev, struct mm_struct *next,
++	  struct task_struct *tsk)
++{
++	unsigned long flags;
++
++	flags = hard_cond_local_irq_save();
++	do_switch_mm(prev, next, tsk);
++	hard_cond_local_irq_restore(flags);
++}
++
+ #define deactivate_mm(tsk,mm)	do { } while (0)
+ #define activate_mm(prev,next)	switch_mm(prev, next, current)
  
-@@ -640,7 +639,7 @@ cobalt_thread_shadow(struct task_struct *p,
- 		return ERR_PTR(ret);
- 	}
++#ifdef CONFIG_IPIPE
++static inline void
++ipipe_switch_mm_head(struct mm_struct *prev, struct mm_struct *next,
++			   struct task_struct *tsk)
++{
++	do_switch_mm(prev, next, tsk);
++}
++#endif
++
+ void verify_cpu_asid_bits(void);
+ void post_ttbr_update_workaround(void);
  
--	if (!thread_hash(hkey, thread, task_pid_vnr(p))) {
-+	if (!thread_hash(hkey, thread, task_pid_vnr(current))) {
- 		ret = -EAGAIN;
- 		goto fail;
- 	}
-diff --git a/kernel/cobalt/posix/thread.h b/kernel/cobalt/posix/thread.h
-index abbb203a13..5cc098afab 100644
---- a/kernel/cobalt/posix/thread.h
-+++ b/kernel/cobalt/posix/thread.h
-@@ -151,8 +151,7 @@ COBALT_SYSCALL_DECL(thread_create,
- 		     int xid, __u32 __user *u_winoff));
+diff --git a/arch/arm64/kernel/entry.S b/arch/arm64/kernel/entry.S
+index 551f6aeb8e31..6e6c396f9bb0 100644
+--- a/arch/arm64/kernel/entry.S
++++ b/arch/arm64/kernel/entry.S
+@@ -372,6 +372,21 @@ alternative_insn eret, nop, ARM64_UNMAP_KERNEL_AT_EL0
+ 	.macro	irq_stack_entry
+ 	mov	x19, sp			// preserve the original sp
  
- struct cobalt_thread *
--cobalt_thread_shadow(struct task_struct *p,
--		     struct cobalt_local_hkey *lhkey,
-+cobalt_thread_shadow(struct cobalt_local_hkey *lhkey,
- 		     __u32 __user *u_winoff);
++#ifdef CONFIG_IPIPE
++	/*
++	 * When the pipeline is enabled, context switches over the irq
++	 * stack are allowed (for the co-kernel), and more interrupts
++	 * can be taken over sibling stack contexts. So we need a not so
++	 * subtle way of figuring out whether the irq stack was actually
++	 * exited, which cannot depend on the current task pointer.
++	 */
++	adr_this_cpu x25, irq_nesting, x26
++	ldr	w26, [x25]
++	cmp	w26, #0
++	add	w26, w26, #1
++	str	w26, [x25]
++	b.ne	9998f
++#else
+ 	/*
+ 	 * Compare sp with the base of the task stack.
+ 	 * If the top ~(THREAD_SIZE - 1) bits match, we are on a task stack,
+@@ -381,6 +396,7 @@ alternative_insn eret, nop, ARM64_UNMAP_KERNEL_AT_EL0
+ 	eor	x25, x25, x19
+ 	and	x25, x25, #~(THREAD_SIZE - 1)
+ 	cbnz	x25, 9998f
++#endif
  
- COBALT_SYSCALL_DECL(thread_setmode,
+ 	ldr_this_cpu x25, irq_stack_ptr, x26
+ 	mov	x26, #IRQ_STACK_SIZE
+@@ -393,10 +409,16 @@ alternative_insn eret, nop, ARM64_UNMAP_KERNEL_AT_EL0
+ 
+ 	/*
+ 	 * x19 should be preserved between irq_stack_entry and
+-	 * irq_stack_exit.
++	 * irq_stack_exit. I-pipe: have to preserve w0 too.
+ 	 */
+ 	.macro	irq_stack_exit
+ 	mov	sp, x19
++#ifdef CONFIG_IPIPE
++	adr_this_cpu x1, irq_nesting, x2
++	ldr	w2, [x1]
++	add	w2, w2, #-1
++	str	w2, [x1]
++#endif
+ 	.endm
+ 
+ /*
+diff --git a/arch/arm64/kernel/ipipe.c b/arch/arm64/kernel/ipipe.c
+index 9c0e5913905f..f7d5e0ab8943 100644
+--- a/arch/arm64/kernel/ipipe.c
++++ b/arch/arm64/kernel/ipipe.c
+@@ -53,6 +53,9 @@
+ 
+ static void __ipipe_do_IRQ(unsigned irq, void *cookie);
+ 
++/* irq_nesting tracks the interrupt nesting level for a CPU. */
++DEFINE_PER_CPU(int, irq_nesting);
++
+ #ifdef CONFIG_IPIPE_DEBUG_INTERNAL
+ void (*__ipipe_mach_hrtimer_debug)(unsigned irq);
+ #endif
+@@ -237,6 +240,10 @@ void __ipipe_mach_get_tscinfo(struct __ipipe_tscinfo *info)
+ 
+ EXPORT_SYMBOL_GPL(do_munmap);
+ EXPORT_SYMBOL_GPL(show_stack);
++EXPORT_SYMBOL_GPL(init_mm);
++#ifndef MULTI_CPU
++EXPORT_SYMBOL_GPL(cpu_do_switch_mm);
++#endif
+ #if defined(CONFIG_SMP) || defined(CONFIG_DEBUG_SPINLOCK)
+ EXPORT_SYMBOL_GPL(tasklist_lock);
+ #endif /* CONFIG_SMP || CONFIG_DEBUG_SPINLOCK */
 -- 
-2.16.4
+2.14.4
 
 
