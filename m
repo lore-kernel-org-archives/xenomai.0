@@ -1,8 +1,8 @@
-From: Philippe Gerum <rpm@xenomai.org>
+From: Dmitriy Cherkasov <dmitriy@oss-tech.org>
 Date: Wed, 5 Sep 2018 17:21:58 +0200
-Message-Id: <E1fxZtZ-0006M0-8j@xenomai.org>
-Subject: [Xenomai] [I-PIPE][PATCH 5/7] arm64: ipipe: route syscalls to
- co-kernel
+Message-Id: <E1fxZtb-0006Po-Lm@xenomai.org>
+Subject: [Xenomai] [I-PIPE][PATCH 6/7] arm64: fpsimd: ipipe: enable sharing
+ with head domain
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -14,111 +14,305 @@ List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
 To: Dmitriy Cherkasov <dmitriy@oss-tech.org>
 Cc: xenomai@xenomai.org
 
-This commit introduces the changes redirecting "foreign" system calls
-to the co-kernel.
+Serialize accesses to the fpsimd so as to allow co-kernel activities
+(e.g. tasks) running in the head domain to share the unit with the
+host kernel.
 ---
- arch/arm64/include/asm/unistd.h |  2 ++
- arch/arm64/kernel/entry.S       | 51 +++++++++++++++++++++++++++++++++++++++++
- arch/arm64/kernel/ipipe.c       | 14 +++++++++++
- 3 files changed, 67 insertions(+)
+ arch/arm64/kernel/fpsimd.c | 138 ++++++++++++++++++++++++++++++++++++++++-----
+ 1 file changed, 123 insertions(+), 15 deletions(-)
 
-diff --git a/arch/arm64/include/asm/unistd.h b/arch/arm64/include/asm/unistd.h
-index a0baa9af5487..90e64fd5e50b 100644
---- a/arch/arm64/include/asm/unistd.h
-+++ b/arch/arm64/include/asm/unistd.h
-@@ -53,3 +53,5 @@
- #endif
+diff --git a/arch/arm64/kernel/fpsimd.c b/arch/arm64/kernel/fpsimd.c
+index 5d547deb6996..01f336ff9270 100644
+--- a/arch/arm64/kernel/fpsimd.c
++++ b/arch/arm64/kernel/fpsimd.c
+@@ -26,6 +26,7 @@
+ #include <linux/preempt.h>
+ #include <linux/sched/signal.h>
+ #include <linux/signal.h>
++#include <linux/ipipe.h>
  
- #define NR_syscalls (__NR_syscalls)
+ #include <asm/fpsimd.h>
+ #include <asm/cputype.h>
+@@ -104,6 +105,9 @@ static DEFINE_PER_CPU(struct fpsimd_state *, fpsimd_last_state);
+  */
+ void do_fpsimd_acc(unsigned int esr, struct pt_regs *regs)
+ {
++	if (__ipipe_report_trap(IPIPE_TRAP_FPU_ACC, regs))
++		return;
 +
-+#define __ARM_ipipe_syscall	0x10000000
-diff --git a/arch/arm64/kernel/entry.S b/arch/arm64/kernel/entry.S
-index 6e6c396f9bb0..29786c9baa69 100644
---- a/arch/arm64/kernel/entry.S
-+++ b/arch/arm64/kernel/entry.S
-@@ -964,6 +964,57 @@ el0_svc:
- el0_svc_naked:					// compat entry point
- 	stp	x0, xscno, [sp, #S_ORIG_X0]	// save the original x0 and syscall number
- 	enable_dbg_and_irq
-+
-+#ifdef CONFIG_IPIPE
-+	ldr     x16, [tsk, #TSK_TI_IPIPE]
-+	tst     wscno, __ARM_ipipe_syscall
-+	b.eq    fastcall_bypass
-+	tst     x16, #_TIP_HEAD
-+	b.eq    fastcall_bypass
-+	mov     x0, sp
-+	bl      ipipe_fastcall_hook
-+	cmp     w0, #0
-+	b.lt    no_fastcall
-+	ldr     x16, [tsk, #TSK_TI_IPIPE]
-+	tst     x16, #_TIP_HEAD
-+	b.ne    fastcall_exit
-+	bl      __ipipe_root_sync
-+fastcall_tail:
-+	ldr     x0, [sp, #S_X0]
-+	b       ret_fast_syscall
-+fastcall_exit:
-+	tst     x16, #_TIP_MAYDAY
-+	b.eq    fastcall_notail
-+	mov     x0, sp
-+	bl      __ipipe_call_mayday
-+fastcall_notail:
-+	ldr     x0, [sp, #S_X0]
-+	disable_irq
-+	ldr     x1, [tsk, #TSK_TI_FLAGS]
-+	enable_step_tsk x1, x2
-+	kernel_exit 0
-+no_fastcall:
-+	ldr     x16, [tsk, #TSK_TI_IPIPE]
-+fastcall_bypass:
-+	tst     x16, #_TIP_NOTIFY
-+	b.ne    syscall_pipeline
-+	tst     wscno, __ARM_ipipe_syscall
-+	b.eq    regular_syscall
-+syscall_pipeline:
-+	mov     x0, sp
-+	bl      __ipipe_notify_syscall
-+	ldr     x16, [tsk, #TSK_TI_IPIPE]
-+	tst     x16, #_TIP_HEAD
-+	b.ne    fastcall_notail
-+	cmp     w0, #0
-+	b.ne    fastcall_tail
-+regular_syscall:
-+	ldp     x0, x1, [sp, #S_X0]
-+	ldp     x2, x3, [sp, #S_X2]
-+	ldp     x4, x5, [sp, #S_X4]
-+	ldp     x6, x7, [sp, #S_X6]
-+#endif /* CONFIG_IPIPE */
-+
- 	ct_user_exit 1
+ 	/* TODO: implement lazy context saving/restoring */
+ 	WARN_ON(1);
+ }
+@@ -116,6 +120,9 @@ void do_fpsimd_exc(unsigned int esr, struct pt_regs *regs)
+ 	siginfo_t info;
+ 	unsigned int si_code = 0;
  
- 	ldr	x16, [tsk, #TSK_TI_FLAGS]	// check for syscall hooks
-diff --git a/arch/arm64/kernel/ipipe.c b/arch/arm64/kernel/ipipe.c
-index f7d5e0ab8943..10273ce8a846 100644
---- a/arch/arm64/kernel/ipipe.c
-+++ b/arch/arm64/kernel/ipipe.c
-@@ -225,6 +225,20 @@ static void __ipipe_do_IRQ(unsigned irq, void *cookie)
- 	__handle_domain_irq(NULL, irq, false, regs);
++	if (__ipipe_report_trap(IPIPE_TRAP_FPU_EXC, regs))
++		return;
++
+ 	if (esr & FPEXC_IOF)
+ 		si_code = FPE_FLTINV;
+ 	else if (esr & FPEXC_DZF)
+@@ -135,7 +142,7 @@ void do_fpsimd_exc(unsigned int esr, struct pt_regs *regs)
+ 	send_sig_info(SIGFPE, &info, current);
  }
  
-+void __ipipe_root_sync(void)
+-void fpsimd_thread_switch(struct task_struct *next)
++static void fpsimd_root_save(void)
+ {
+ 	if (!system_supports_fpsimd())
+ 		return;
+@@ -146,7 +153,10 @@ void fpsimd_thread_switch(struct task_struct *next)
+ 	 */
+ 	if (current->mm && !test_thread_flag(TIF_FOREIGN_FPSTATE))
+ 		fpsimd_save_state(&current->thread.fpsimd_state);
++}
+ 
++static void fpsimd_root_restore(struct task_struct *next)
 +{
-+	struct ipipe_percpu_domain_data *p;
+ 	if (next->mm) {
+ 		/*
+ 		 * If we are switching to a task whose most recent userland
+@@ -162,23 +172,112 @@ void fpsimd_thread_switch(struct task_struct *next)
+ 			clear_ti_thread_flag(task_thread_info(next),
+ 					     TIF_FOREIGN_FPSTATE);
+ 		else
++#ifdef CONFIG_IPIPE
++		{
++			fpsimd_load_state(st);
++			__this_cpu_write(fpsimd_last_state, st);
++			st->cpu = raw_smp_processor_id();
++		}
++#else
+ 			set_ti_thread_flag(task_thread_info(next),
+ 					   TIF_FOREIGN_FPSTATE);
++#endif
++	}
++}
++
++#if defined(CONFIG_IPIPE) || defined(CONFIG_KERNEL_MODE_NEON)
++DEFINE_PER_CPU(bool, kernel_neon_busy);
++#endif
++
++#if defined(CONFIG_IPIPE) || defined(CONFIG_EFI)
++static DEFINE_PER_CPU(bool, efi_fpsimd_state_used);
++#endif
++
++#ifdef CONFIG_IPIPE
++static DEFINE_PER_CPU(struct fpsimd_state, fpsimd_kernel_state);
++static DEFINE_PER_CPU(struct fpsimd_state, fpsimd_foreign_state);
++
++static void fpsimd_do_save(void)
++{
++	struct fpsimd_state *st;
++
++	if (__ipipe_root_p) {
++		fpsimd_root_save();
++	} else {
++		st = &current->thread.fpsimd_state;
++
++		if (__this_cpu_read(kernel_neon_busy) ||
++		    __this_cpu_read(efi_fpsimd_state_used))
++			st = this_cpu_ptr(&fpsimd_kernel_state);
++
++		if (test_thread_flag(TIF_FOREIGN_FPSTATE))
++			 st = this_cpu_ptr(&fpsimd_foreign_state);
++
++		fpsimd_save_state(st);
++	}
++}
++
++static void fpsimd_do_restore(struct task_struct *next)
++{
++	struct fpsimd_state *st;
++
++	if (__ipipe_root_p) {
++		fpsimd_root_restore(next);
++	} else {
++		st = &next->thread.fpsimd_state;
++
++		if (__this_cpu_read(kernel_neon_busy) ||
++		    __this_cpu_read(efi_fpsimd_state_used))
++			st = this_cpu_ptr(&fpsimd_kernel_state);
++
++		if (test_ti_thread_flag(task_thread_info(next),
++		    TIF_FOREIGN_FPSTATE))
++			st = this_cpu_ptr(&fpsimd_foreign_state);
++
++		fpsimd_load_state(st);
++		st->cpu = raw_smp_processor_id();
++		__this_cpu_write(fpsimd_last_state, NULL);
+ 	}
+ }
+ 
++#else  /* !CONFIG_IPIPE */
++
++static void fpsimd_do_save(void)
++{
++	fpsimd_root_save();
++}
++
++static void fpsimd_do_restore(struct task_struct *next)
++{
++	fpsimd_root_restore(next);
++}
++
++#endif  /* CONFIG_IPIPE */
++
++void fpsimd_thread_switch(struct task_struct *next)
++{
 +	unsigned long flags;
 +
 +	flags = hard_local_irq_save();
-+
-+	p = ipipe_this_cpu_root_context();
-+	if (__ipipe_ipending_p(p))
-+		__ipipe_sync_stage();
-+
++	fpsimd_do_save();
++	fpsimd_do_restore(next);
 +	hard_local_irq_restore(flags);
 +}
 +
- static struct __ipipe_tscinfo tsc_info;
+ void fpsimd_flush_thread(void)
+ {
++	unsigned long flags;
++
+ 	if (!system_supports_fpsimd())
+ 		return;
  
- void __init __ipipe_tsc_register(struct __ipipe_tscinfo *info)
+-	local_bh_disable();
++	flags = hard_preempt_disable();
+ 
+ 	memset(&current->thread.fpsimd_state, 0, sizeof(struct fpsimd_state));
+ 	fpsimd_flush_task_state(current);
+ 	set_thread_flag(TIF_FOREIGN_FPSTATE);
+ 
+-	local_bh_enable();
++	hard_preempt_enable(flags);
+ }
+ 
+ /*
+@@ -187,15 +286,15 @@ void fpsimd_flush_thread(void)
+  */
+ void fpsimd_preserve_current_state(void)
+ {
++	unsigned long flags;
++
+ 	if (!system_supports_fpsimd())
+ 		return;
+ 
+-	local_bh_disable();
+-
++	flags = hard_preempt_disable();
+ 	if (!test_thread_flag(TIF_FOREIGN_FPSTATE))
+ 		fpsimd_save_state(&current->thread.fpsimd_state);
+-
+-	local_bh_enable();
++	hard_preempt_enable(flags);
+ }
+ 
+ /*
+@@ -205,10 +304,12 @@ void fpsimd_preserve_current_state(void)
+  */
+ void fpsimd_restore_current_state(void)
+ {
++	unsigned long flags;
++
+ 	if (!system_supports_fpsimd())
+ 		return;
+ 
+-	local_bh_disable();
++	flags = hard_preempt_disable();
+ 
+ 	if (test_and_clear_thread_flag(TIF_FOREIGN_FPSTATE)) {
+ 		struct fpsimd_state *st = &current->thread.fpsimd_state;
+@@ -218,7 +319,7 @@ void fpsimd_restore_current_state(void)
+ 		st->cpu = smp_processor_id();
+ 	}
+ 
+-	local_bh_enable();
++	hard_preempt_enable(flags);
+ }
+ 
+ /*
+@@ -228,10 +329,12 @@ void fpsimd_restore_current_state(void)
+  */
+ void fpsimd_update_current_state(struct fpsimd_state *state)
+ {
++	unsigned long flags;
++
+ 	if (!system_supports_fpsimd())
+ 		return;
+ 
+-	local_bh_disable();
++	flags = hard_preempt_disable();
+ 
+ 	fpsimd_load_state(state);
+ 	if (test_and_clear_thread_flag(TIF_FOREIGN_FPSTATE)) {
+@@ -241,7 +344,7 @@ void fpsimd_update_current_state(struct fpsimd_state *state)
+ 		st->cpu = smp_processor_id();
+ 	}
+ 
+-	local_bh_enable();
++	hard_preempt_enable(flags);
+ }
+ 
+ /*
+@@ -254,7 +357,6 @@ void fpsimd_flush_task_state(struct task_struct *t)
+ 
+ #ifdef CONFIG_KERNEL_MODE_NEON
+ 
+-DEFINE_PER_CPU(bool, kernel_neon_busy);
+ EXPORT_PER_CPU_SYMBOL(kernel_neon_busy);
+ 
+ /*
+@@ -276,11 +378,15 @@ EXPORT_PER_CPU_SYMBOL(kernel_neon_busy);
+  */
+ void kernel_neon_begin(void)
+ {
++	unsigned long flags;
++
+ 	if (WARN_ON(!system_supports_fpsimd()))
+ 		return;
+ 
+ 	BUG_ON(!may_use_simd());
+ 
++	flags = hard_preempt_disable();
++
+ 	local_bh_disable();
+ 
+ 	__this_cpu_write(kernel_neon_busy, true);
+@@ -292,7 +398,7 @@ void kernel_neon_begin(void)
+ 	/* Invalidate any task state remaining in the fpsimd regs: */
+ 	__this_cpu_write(fpsimd_last_state, NULL);
+ 
+-	preempt_disable();
++	hard_local_irq_restore(flags);
+ 
+ 	local_bh_enable();
+ }
+@@ -310,21 +416,23 @@ EXPORT_SYMBOL(kernel_neon_begin);
+ void kernel_neon_end(void)
+ {
+ 	bool busy;
++	unsigned long flags;
+ 
+ 	if (!system_supports_fpsimd())
+ 		return;
+ 
++	flags = hard_local_irq_save();
+ 	busy = __this_cpu_xchg(kernel_neon_busy, false);
+ 	WARN_ON(!busy);	/* No matching kernel_neon_begin()? */
+ 
+-	preempt_enable();
++	hard_preempt_enable(flags);
++	hard_local_irq_enable();
+ }
+ EXPORT_SYMBOL(kernel_neon_end);
+ 
+ #ifdef CONFIG_EFI
+ 
+ static DEFINE_PER_CPU(struct fpsimd_state, efi_fpsimd_state);
+-static DEFINE_PER_CPU(bool, efi_fpsimd_state_used);
+ 
+ /*
+  * EFI runtime services support functions
 -- 
 2.14.4
 
