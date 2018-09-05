@@ -1,19 +1,8 @@
-References: <E1fxEEU-0004LE-Ln@xenomai.org>
- <7bf36155-eb1a-30a3-42ce-5256342dc74f@siemens.com>
- <32880d1f-2a02-57bd-3465-9ebb0aee9aca@xenomai.org>
- <ebaacf7c-5fa5-1f5d-791e-6c4e01617303@siemens.com>
- <e9af2ce8-1fc2-4fc5-d4fd-04ca030ffc49@xenomai.org>
- <8ff02c03-6cdf-10ab-0eb8-98edfcf9ffe5@siemens.com>
 From: Philippe Gerum <rpm@xenomai.org>
-Message-ID: <304c3c45-3381-7cde-ce9d-ab06f5bfbd7c@xenomai.org>
-Date: Wed, 5 Sep 2018 12:22:17 +0200
-MIME-Version: 1.0
-In-Reply-To: <8ff02c03-6cdf-10ab-0eb8-98edfcf9ffe5@siemens.com>
-Content-Type: text/plain; charset="utf-8"
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
-Subject: Re: [Xenomai] [PATCH] cobalt/kernel: always use explicit
- preprocessor conditionals
+Date: Wed, 5 Sep 2018 17:21:58 +0200
+Message-Id: <E1fxZtI-0005mj-NW@xenomai.org>
+Subject: [Xenomai] [I-PIPE][PATCH 0/7] arm64: interrupt pipeline rebased
+ over the split series
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -22,93 +11,73 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jan Kiszka <jan.kiszka@siemens.com>, xenomai@xenomai.org
+To: Dmitriy Cherkasov <dmitriy@oss-tech.org>
+Cc: xenomai@xenomai.org
 
-On 09/05/2018 11:44 AM, Jan Kiszka wrote:
-> On 2018-09-05 11:33, Philippe Gerum wrote:
->> On 09/05/2018 10:34 AM, Jan Kiszka wrote:
->>> On 2018-09-05 10:16, Philippe Gerum wrote:
->>>> On 09/04/2018 07:48 PM, Jan Kiszka wrote:
->>>>>> diff --git a/kernel/cobalt/synch.c b/kernel/cobalt/synch.c
->>>>>> index 7773a08e5..32df635a8 100644
->>>>>> --- a/kernel/cobalt/synch.c
->>>>>> +++ b/kernel/cobalt/synch.c
->>>>>> @@ -902,7 +902,7 @@ void xnsynch_release_all_ownerships(struct
->>>>>> xnthread *thread)
->>>>>>     }
->>>>>>     EXPORT_SYMBOL_GPL(xnsynch_release_all_ownerships);
->>>>>>     -#if XENO_DEBUG(MUTEX_RELAXED)
->>>>>> +#ifdef CONFIG_XENO_OPT_DEBUG_MUTEX_RELAXED
->>>>>>       /*
->>>>>>      * Detect when a thread is about to sleep on a synchronization
->>>>>>
->>>>>
->>>>> Confused: This is not for next, is it?
->>>>>
->>>>> E.g. that hunk above does not apply there anymore, for about a year...
->>>>>
->>>>
->>>> Something looks wrong here. The three patches apply on commit
->>>> #e23d58715
->>>> [1] at [2], which is on top of stable/v3.0.x, post-3.0.7 material.
->>>> Which
->>>> tree/branch are you looking at?
->>>
->>> next - stable is yours.
->>>
->>
->> Is it? Ok, for now, until a -stable maintainer is appointed eventually.
->>
->>> If you like review of stable backports, please tag those commits as
->>> [stable] or so. And maybe also explain any deviation.
->>>
->>
->> The way -stable was used is obviously different in the new process, and
->> the patches were consistent with the previous process, so let's drop
->> those patches if you can't review them, I'll rebase over the upcoming
->> -next branch to make it easier for everyone.
->>
->>> My vision would be that only patches that are in next/master would make
->>> it to stable.
->>
->> I understand that you want to align with the basics of the mainline
->> kernel workflow, I'm ok with this. Please set (or re-purpose) the
->> (existing) git branches on gitlab the way you want to, to clarify the
->> situation.
->>
->>   Ideally, no or only minor tweaking should be needed to
->>> such commits for the backport.
->>>
->>
->> This should be ok in most cases. Unfortunately, the XENO_DEBUG() fixes
->> are going to be an exception because they have to spread all over the
->> map - unless they don't go to stable, which could be an issue since the
->> corresponding bug may produce bad kernels.
->>
-> 
-> It seems we addressed most of the XENO_DEBUG cases in next. Are the
+Hi Dmitriy,
 
-Yes, there is only one missing:
+This patch set is a full rebase of the arm64 bits over the split
+series implementing the generic pipeline core sent a month ago
+[1]. The arch-specific code was rearranged as an incremental series in
+the process as well.
 
-kernel/cobalt/intr.c:#if defined(CONFIG_SMP) || XENO_DEBUG(LOCKING)
+The resulting pipeline now supports lockdep and plays nicely with the
+ARM/ARM64 CPU idle driver.
 
-> related commits no stable candidates because they do more? If they are,
-> I would start with backporting them, and then address what remains.
-> 
+With the combined generic+arm64 series in, the mainline kernel runs
+Xenomai -next over the following SoCs:
 
-The related commits are in essence -stable candidates, done at a time
-when -stable was actually the code base the -next branch would be
-rebased on periodically (we used to inherit bug fixes in next, not the
-other way around via backports).
+- HiKey LeMaker (hi6220)
+- Raspberry PI 3B
 
-The main issue with the conflicting patch stems from the fact that the
-XENO_DEBUG() changes were originally based on the -next branch, and I
-did not backport them to -stable. Now I'm kind of doing so, plugging the
-last hole in the process for -stable. That should be done for -next, ...
-next.
+It has also been tested with Xilinx's vendor kernel on a Zynq
+Ultrascale (expect ~50 us worst-case for scheduling latency on a
+highly stressed system, < 20 us for interrupt latency).
 
-I'll submit the proper patches.
+[1] https://www.xenomai.org/pipermail/xenomai/2018-July/039302.html
+
+Dmitriy Cherkasov (1):
+  arm64: fpsimd: ipipe: enable sharing with head domain
+
+Philippe Gerum (6):
+  arm64: ipipe: add pipeline core
+  arm64: context_tracking: disable if CONFIG_IPIPE
+  arm64: ipipe: share context switch code with the head domain
+  arm64: ipipe: route traps to co-kernel
+  arm64: ipipe: route syscalls to co-kernel
+  arm64: ipipe: turn hard irqs on when leaving the idle state
+
+ arch/arm64/Kconfig                   |   5 +-
+ arch/arm64/include/asm/assembler.h   |  12 ++
+ arch/arm64/include/asm/ipipe.h       | 205 +++++++++++++++++++++++++++
+ arch/arm64/include/asm/ipipe_base.h  |  96 +++++++++++++
+ arch/arm64/include/asm/ipipe_hwirq.h | 191 +++++++++++++++++++++++++
+ arch/arm64/include/asm/irqflags.h    |  18 ++-
+ arch/arm64/include/asm/mmu_context.h |  27 +++-
+ arch/arm64/include/asm/percpu.h      |   1 +
+ arch/arm64/include/asm/thread_info.h |  14 ++
+ arch/arm64/include/asm/uaccess.h     |   5 +-
+ arch/arm64/include/asm/unistd.h      |   2 +
+ arch/arm64/kernel/Makefile           |   1 +
+ arch/arm64/kernel/asm-offsets.c      |   3 +
+ arch/arm64/kernel/entry.S            | 113 ++++++++++++++-
+ arch/arm64/kernel/fpsimd.c           | 138 ++++++++++++++++--
+ arch/arm64/kernel/ipipe.c            | 267 +++++++++++++++++++++++++++++++++++
+ arch/arm64/kernel/irq.c              |  10 ++
+ arch/arm64/kernel/process.c          |   2 +-
+ arch/arm64/kernel/ptrace.c           |   6 +-
+ arch/arm64/kernel/signal.c           |  13 +-
+ arch/arm64/kernel/smp.c              | 150 ++++++++++++++++++--
+ arch/arm64/kernel/traps.c            |   9 +-
+ arch/arm64/mm/context.c              |   2 +-
+ arch/arm64/mm/fault.c                | 118 ++++++++++++++--
+ 24 files changed, 1345 insertions(+), 63 deletions(-)
+ create mode 100644 arch/arm64/include/asm/ipipe.h
+ create mode 100644 arch/arm64/include/asm/ipipe_base.h
+ create mode 100644 arch/arm64/include/asm/ipipe_hwirq.h
+ create mode 100644 arch/arm64/kernel/ipipe.c
 
 -- 
-Philippe.
+2.14.4
+
 
