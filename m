@@ -1,7 +1,17 @@
-From: Jan Kiszka <jan.kiszka@siemens.com>
-Date: Mon, 16 Jul 2018 18:37:48 +0200
-Message-Id: <cover.1531759073.git.jan.kiszka@siemens.com>
-Subject: [Xenomai] [PATCH 0/6] Fix issues around setsched on remote threads
+References: <E1fxEEU-0004LE-Ln@xenomai.org>
+ <7bf36155-eb1a-30a3-42ce-5256342dc74f@siemens.com>
+ <32880d1f-2a02-57bd-3465-9ebb0aee9aca@xenomai.org>
+ <ebaacf7c-5fa5-1f5d-791e-6c4e01617303@siemens.com>
+From: Philippe Gerum <rpm@xenomai.org>
+Message-ID: <e9af2ce8-1fc2-4fc5-d4fd-04ca030ffc49@xenomai.org>
+Date: Wed, 5 Sep 2018 11:33:39 +0200
+MIME-Version: 1.0
+In-Reply-To: <ebaacf7c-5fa5-1f5d-791e-6c4e01617303@siemens.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
+Subject: Re: [Xenomai] [PATCH] cobalt/kernel: always use explicit
+ preprocessor conditionals
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -10,32 +20,65 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
+To: Jan Kiszka <jan.kiszka@siemens.com>, xenomai@xenomai.org
 
-This addresses http://xenomai.org/pipermail/xenomai/2018-July/039267.html.
+On 09/05/2018 10:34 AM, Jan Kiszka wrote:
+> On 2018-09-05 10:16, Philippe Gerum wrote:
+>> On 09/04/2018 07:48 PM, Jan Kiszka wrote:
+>>>> diff --git a/kernel/cobalt/synch.c b/kernel/cobalt/synch.c
+>>>> index 7773a08e5..32df635a8 100644
+>>>> --- a/kernel/cobalt/synch.c
+>>>> +++ b/kernel/cobalt/synch.c
+>>>> @@ -902,7 +902,7 @@ void xnsynch_release_all_ownerships(struct
+>>>> xnthread *thread)
+>>>>    }
+>>>>    EXPORT_SYMBOL_GPL(xnsynch_release_all_ownerships);
+>>>>    -#if XENO_DEBUG(MUTEX_RELAXED)
+>>>> +#ifdef CONFIG_XENO_OPT_DEBUG_MUTEX_RELAXED
+>>>>      /*
+>>>>     * Detect when a thread is about to sleep on a synchronization
+>>>>
+>>>
+>>> Confused: This is not for next, is it?
+>>>
+>>> E.g. that hunk above does not apply there anymore, for about a year...
+>>>
+>>
+>> Something looks wrong here. The three patches apply on commit #e23d58715
+>> [1] at [2], which is on top of stable/v3.0.x, post-3.0.7 material. Which
+>> tree/branch are you looking at?
+> 
+> next - stable is yours.
+> 
 
-The last patch of the series may not be a stable candidate as it changes
-some return code of the kernel. The rest should go, though.
+Is it? Ok, for now, until a -stable maintainer is appointed eventually.
 
-Jan
+> If you like review of stable backports, please tag those commits as
+> [stable] or so. And maybe also explain any deviation.
+> 
 
-Jan Kiszka (6):
-  cobalt/posix: Harden cobalt_thread_shadow against invalid requests
-  cobalt/posix: Avoid mapping remote threads in
-    cobalt_sched_setscheduler_ex
-  cobalt/posix: Remove task parameter from cobalt_thread_shadow
-  lib/cobalt: Avoid requesting shadowing for remote threads
-  lib/cobalt: Pass setsched requests for unknown threads to glibc
-  cobalt: Fix error code of cobalt_thread_setschedparam_ex
+The way -stable was used is obviously different in the new process, and
+the patches were consistent with the previous process, so let's drop
+those patches if you can't review them, I'll rebase over the upcoming
+-next branch to make it easier for everyone.
 
- kernel/cobalt/posix/sched.c  |  4 ++--
- kernel/cobalt/posix/thread.c | 14 ++++++++------
- kernel/cobalt/posix/thread.h |  3 +--
- lib/cobalt/sched.c           | 10 ++++++++++
- lib/cobalt/thread.c          | 18 ++++++++++++++++--
- 5 files changed, 37 insertions(+), 12 deletions(-)
+> My vision would be that only patches that are in next/master would make
+> it to stable.
+
+I understand that you want to align with the basics of the mainline
+kernel workflow, I'm ok with this. Please set (or re-purpose) the
+(existing) git branches on gitlab the way you want to, to clarify the
+situation.
+
+ Ideally, no or only minor tweaking should be needed to
+> such commits for the backport.
+> 
+
+This should be ok in most cases. Unfortunately, the XENO_DEBUG() fixes
+are going to be an exception because they have to spread all over the
+map - unless they don't go to stable, which could be an issue since the
+corresponding bug may produce bad kernels.
 
 -- 
-2.16.4
-
+Philippe.
 
