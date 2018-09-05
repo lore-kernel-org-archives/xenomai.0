@@ -1,13 +1,13 @@
-References: <E1fxEEk-0004UH-R6@xenomai.org>
-From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <40e76345-95a5-8425-e787-b90d6655f672@siemens.com>
-Date: Tue, 4 Sep 2018 20:01:20 +0200
 MIME-Version: 1.0
-In-Reply-To: <E1fxEEk-0004UH-R6@xenomai.org>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] [PATCH] cobalt/sched: improve watchdog accuracy
+References: <c18d4353-ec28-fcd3-884f-92cad7cf376e@siemens.com>
+In-Reply-To: <c18d4353-ec28-fcd3-884f-92cad7cf376e@siemens.com>
+From: Greg Gallagher <greg@embeddedgreg.com>
+Date: Wed, 5 Sep 2018 00:26:07 -0400
+Message-ID: <CALLqZ8SOcRyv2CFebVmNNLkQV_ZhpuVHw5+7V7kLSWTYH3ELJw@mail.gmail.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+Subject: Re: [Xenomai] [RFC][PATCH] Add CONTRIBUTING guide and workflow
+ explanation
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,203 +16,191 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Philippe Gerum <rpm@xenomai.org>, xenomai@xenomai.org
+To: Jan Kiszka <jan.kiszka@siemens.com>
+Cc: "Xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On 2018-09-04 16:24, Philippe Gerum wrote:
-> The original watchdog mechanism was based on a sampling method: every
-> second (built-in value), it used to check the runtime mode of the
-> current task preempted on the ticking CPU. A per-cpu counter was
-> increased by one every time rt/primary mode was detected, then checked
-> against the trigger limit (CONFIG_XENO_OPT_WATCHDOG_TIMEOUT).
-> Otherwise, the counter was reset to zero.
-> 
-> With this fairly naive approach, it only takes a single hit with
-> CONFIG_XENO_OPT_WATCHDOG_TIMEOUT=1 to trigger the watchdog, i.e. if
-> the system-fixed 1s watchdog tick preempts any Xenomai task when it is
-> running in primary mode on the current CPU, the watchdog fires.
-> 
-> The default value of 4s papered over the inherent imprecision of such
-> a coarse-grained method, lengthening the odds of observing false
-> positive triggers.
-> 
-> To improve the accuracy of the watchdog, arm the watchdog timer to
-> fire at the final trigger date directly, right before switching the
-> CPU to primary mode (leave_root()), disarming it when the CPU is about
-> to switch back to secondary mode (enter_root()).
-> 
-> Better accuracy comes at the expense of slightly more overhead when
-> transitioning between primary and secondary modes, which should be
-> acceptable for a debug feature which is not affecting the hot path
-> anyway (i.e. there is no added cost for strictly rt context switches).
-> 
-> Signed-off-by: Philippe Gerum <rpm@xenomai.org>
+On Tue, Sep 4, 2018 at 1:31 PM Jan Kiszka <jan.kiszka@siemens.com> wrote:
+
+> Shall both help new comers to understand in which form patches are
+> requested and what will happen to them normally after submitting them.
+>
+> Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
 > ---
->   include/cobalt/kernel/sched.h | 13 -------------
->   kernel/cobalt/sched.c         | 41 ++++++++++++++++++++++++++---------------
->   kernel/cobalt/timer.c         |  7 -------
->   3 files changed, 26 insertions(+), 35 deletions(-)
-> 
-> diff --git a/include/cobalt/kernel/sched.h b/include/cobalt/kernel/sched.h
-> index 03436ee82..0d0c71b42 100644
-> --- a/include/cobalt/kernel/sched.h
-> +++ b/include/cobalt/kernel/sched.h
-> @@ -104,8 +104,6 @@ struct xnsched {
->   #ifdef CONFIG_XENO_OPT_WATCHDOG
->   	/*!< Watchdog timer object. */
->   	struct xntimer wdtimer;
-> -	/*!< Watchdog tick count. */
-> -	int wdcount;
->   #endif
->   #ifdef CONFIG_XENO_OPT_STATS
->   	/*!< Last account switch date (ticks). */
-> @@ -361,17 +359,6 @@ xnsched_maybe_resched_after_unlocked_switch(struct xnsched *sched)
->   
->   #endif /* !CONFIG_XENO_ARCH_UNLOCKED_SWITCH */
->   
-> -#ifdef CONFIG_XENO_OPT_WATCHDOG
-> -static inline void xnsched_reset_watchdog(struct xnsched *sched)
-> -{
-> -	sched->wdcount = 0;
-> -}
-> -#else /* !CONFIG_XENO_OPT_WATCHDOG */
-> -static inline void xnsched_reset_watchdog(struct xnsched *sched)
-> -{
-> -}
-> -#endif /* CONFIG_XENO_OPT_WATCHDOG */
-> -
->   #include <cobalt/kernel/sched-idle.h>
->   #include <cobalt/kernel/sched-rt.h>
->   
-> diff --git a/kernel/cobalt/sched.c b/kernel/cobalt/sched.c
-> index 76e3bc5d7..dd14d4975 100644
-> --- a/kernel/cobalt/sched.c
-> +++ b/kernel/cobalt/sched.c
-> @@ -93,14 +93,20 @@ void xnsched_register_classes(void)
->   static unsigned long wd_timeout_arg = CONFIG_XENO_OPT_WATCHDOG_TIMEOUT;
->   module_param_named(watchdog_timeout, wd_timeout_arg, ulong, 0644);
->   
-> +static inline xnticks_t get_watchdog_timeout(void)
-> +{
-> +	return wd_timeout_arg * 1000000000ULL;
-> +}
+>
+> I'm looking for honest feedback on this! Is it too much? Is something
+> missing? Is something seen differently?
+>
+> Basically, I took what I once created for Jailhouse and what we are also
+> using elsewhere now, slightly adjusting it for Xenomai. Shall be a
+> living document as we evolve workflows.
+>
+>  CONTRIBUTING.md | 113
+> ++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+>  1 file changed, 113 insertions(+)
+>  create mode 100644 CONTRIBUTING.md
+>
+> diff --git a/CONTRIBUTING.md b/CONTRIBUTING.md
+> new file mode 100644
+> index 0000000000..4ee8b7cc1f
+> --- /dev/null
+> +++ b/CONTRIBUTING.md
+> @@ -0,0 +1,113 @@
+> +Contributing to Xenomai
+> +=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
 > +
->   /**
->    * @internal
->    * @fn void watchdog_handler(struct xntimer *timer)
->    * @brief Process watchdog ticks.
->    *
-> - * This internal routine handles incoming watchdog ticks to detect
-> - * software lockups. It kills any offending thread which is found to
-> - * monopolize the CPU so as to starve the Linux kernel for too long.
-> + * This internal routine handles incoming watchdog triggers to detect
-> + * software lockups. It forces the offending thread to stop
-> + * monopolizing the CPU, either by kicking it out of primary mode if
-> + * running in user space, or cancelling it if kernel-based.
->    *
->    * @coretags{coreirq-only, atomic-entry}
->    */
-> @@ -109,14 +115,15 @@ static void watchdog_handler(struct xntimer *timer)
->   	struct xnsched *sched = xnsched_current();
->   	struct xnthread *curr = sched->curr;
->   
-> -	if (likely(xnthread_test_state(curr, XNROOT))) {
-> -		xnsched_reset_watchdog(sched);
-> -		return;
-> -	}
-> -
-> -	if (likely(++sched->wdcount < wd_timeout_arg))
-> +	/*
-> +	 * CAUTION: The watchdog tick might have been delayed while we
-> +	 * were busy switching the CPU to secondary mode at the
-> +	 * trigger date eventually. Make sure that we are not about to
-> +	 * kick the incoming root thread.
-> +	 */
-> +	if (xnthread_test_state(curr, XNROOT))
->   		return;
-> -
-> +	
-
-Stray whitespace change. Could fix that on merge but...
-
->   	trace_cobalt_watchdog_signal(curr);
->   
->   	if (xnthread_test_state(curr, XNUSER)) {
-> @@ -137,8 +144,6 @@ static void watchdog_handler(struct xntimer *timer)
->   		 */
->   		xnthread_set_info(curr, XNKICKED|XNCANCELD);
->   	}
-> -
-> -	xnsched_reset_watchdog(sched);
->   }
->   
->   #endif /* CONFIG_XENO_OPT_WATCHDOG */
-> @@ -818,6 +823,10 @@ static inline void enter_root(struct xnthread *root)
->   {
->   	struct xnarchtcb *rootcb __maybe_unused = xnthread_archtcb(root);
->   
-> +#ifdef CONFIG_XENO_OPT_WATCHDOG
-> +	xntimer_stop(&root->sched->wdtimer);
-> +#endif
+> +Contributions to Xenomai are always welcome. This document explains the
+> general
+> +requirements on contributions and the recommended preparation steps. It
+> also
+> +sketches the typical integration process of patches.
 > +
->   #ifdef CONFIG_XENO_ARCH_UNLOCKED_SWITCH
->   	if (rootcb->core.mm == NULL)
->   		set_ti_thread_flag(rootcb->core.tip, TIF_MMSWITCH_INT);
-> @@ -840,6 +849,11 @@ static inline void leave_root(struct xnthread *root)
->   	rootcb->core.tip = task_thread_info(p);
->   #endif
->   	xnarch_leave_root(root);
 > +
-> +#ifdef CONFIG_XENO_OPT_WATCHDOG
-> +	xntimer_start(&root->sched->wdtimer, get_watchdog_timeout(),
-> +		      XN_INFINITE, XN_RELATIVE);
-> +#endif
->   }
->   
->   void __xnsched_run_handler(void) /* hw interrupts off. */
-> @@ -889,9 +903,6 @@ reschedule:
->   
->   	trace_cobalt_switch_context(prev, next);
->   
-> -	if (xnthread_test_state(next, XNROOT))
-> -		xnsched_reset_watchdog(sched);
-> -
->   	sched->curr = next;
->   	shadow = 1;
->   
-> diff --git a/kernel/cobalt/timer.c b/kernel/cobalt/timer.c
-> index 6d985a995..5d8b3bc76 100644
-> --- a/kernel/cobalt/timer.c
-> +++ b/kernel/cobalt/timer.c
-> @@ -893,10 +893,6 @@ int xntimer_grab_hardware(void)
->   		else if (ret == 1)
->   			xntimer_start(&sched->htimer, 0, 0, XN_RELATIVE);
->   
-> -#ifdef CONFIG_XENO_OPT_WATCHDOG
-> -		xntimer_start(&sched->wdtimer, 1000000000UL, 1000000000UL, XN_RELATIVE);
-> -		xnsched_reset_watchdog(sched);
-> -#endif
->   		xnlock_put_irqrestore(&nklock, s);
->   	}
->   
-> @@ -908,9 +904,6 @@ fail:
->   		xnlock_get_irqsave(&nklock, s);
->   		sched = xnsched_struct(cpu);
->   		xntimer_stop(&sched->htimer);
-> -#ifdef CONFIG_XENO_OPT_WATCHDOG
-> -		xntimer_stop(&sched->wdtimer);
-> -#endif
->   		xnlock_put_irqrestore(&nklock, s);
->   		ipipe_timer_stop(_cpu);
->   	}
-> 
+> +Contribution Checklist
+> +----------------------
+> +
+> +- use git to manage your changes [*recomended*]
+> +
+> +- follow Linux Kernel coding style, see also
+> +  [Linux kernel coding style](
+> https://www.kernel.org/doc/html/latest/process/coding-style.html)
+> [**required**]
+> +
+> +- add the required copyright header to each new file introduced
+> [**required**]
+> +
+> +- structure patches logically, in small steps [**required**]
+> +    - one separable functionality/fix/refactoring =3D one patch
+> +    - do not mix those there in a single patch
+> +    - after each patch, the tree still has to build and work, i.e. do no=
+t
+> add
+> +      even temporary breakages inside a patch series (helps when trackin=
+g
+> down
+> +      bugs)
+> +    - use `git rebase -i` to restructure a patch series
+> +
+> +- base patches on top of latest master or - if there are dependencies -
+> on next
+> +  (note: next is an integration branch that may change non-linearly)
+> +
+> +- test patches sufficiently AFTER the last edit (obvious, but...)
+> [**required**]
+> +
+> +- add signed-off to all patches [**required**]
+> +    - to certify the "Developer's Certificate of Origin", see below
+> +    - check with your employer when not working on your own!
+> +
+> +- indicate if you think a patch fixes a bug present in a stable branch a=
+s
+> well,
+> +  either in the cover letter of the patch series of after the "---"
+> separator
+> +  of the patch itself
+> +
+> +- post patches to mailing list [**required**]
+> +    - use `git format-patch/send-email` if possible
+> +    - send patches inline, do not append them
+> +    - no HTML emails!
+> +    - CC people who you think should look at the patches, e.g.
+> +      - affected maintainers
+> +      - someone who wrote a change that is fixed or reverted by you now
+> +      - who commented on related changes in the recent past
+> +      - who otherwise has expertise and is interested in the topic
+> +    - pull requests on gitlab are only optional
+> +
+> +- post follow-up version(s) if feedback requires this
+> +
+> +- send reminder if nothing happened after about two weeks
+> +
+> +
+> +Developer's Certificate of Origin 1.1
+> +-------------------------------------
+> +
+> +When signing-off a patch for this project like this
+> +
+> +    Signed-off-by: Random J Developer <random@developer.example.org>
+> +
+> +using your real name (no pseudonyms or anonymous contributions), you
+> declare the
+> +following:
+> +
+> +    By making a contribution to this project, I certify that:
+> +
+> +        (a) The contribution was created in whole or in part by me and I
+> +            have the right to submit it under the open source license
+> +            indicated in the file; or
+> +
+> +        (b) The contribution is based upon previous work that, to the be=
+st
+> +            of my knowledge, is covered under an appropriate open source
+> +            license and I have the right under that license to submit th=
+at
+> +            work with modifications, whether created in whole or in part
+> +            by me, under the same open source license (unless I am
+> +            permitted to submit under a different license), as indicated
+> +            in the file; or
+> +
+> +        (c) The contribution was provided directly to me by some other
+> +            person who certified (a), (b) or (c) and I have not modified
+> +            it.
+> +
+> +        (d) I understand and agree that this project and the contributio=
+n
+> +            are public and that a record of the contribution (including
+> all
+> +            personal information I submit with it, including my sign-off=
+)
+> is
+> +            maintained indefinitely and may be redistributed consistent
+> with
+> +            this project or the open source license(s) involved.
+> +
+> +See also [Sign your work - the Developer=E2=80=99s Certificate of Origin=
+](
+> https://www.kernel.org/doc/html/latest/process/submitting-patches.html#si=
+gn-your-work-the-developer-s-certificate-of-origin
+> )
+> +for further background on this process which was adopted from the Linux
+> kernel.
+> +
+> +
+> +Contribution Integration Process
+> +--------------------------------
+> +
+> +1. patch reviews performed on mailing list
+> +    * at least by maintainers, but everyone is invited
+> +    * feedback has to consider design, functionality and style
+> +    * simpler and clearer code preferred, even if original code works fi=
+ne
+> +
+> +2. accepted patches merged into next branch
+> +
+> +3. further testing done by community, including CI build tests, code
+> analyzer
+> +   runs, on-target tests
+> +
+> +4. if no new problems or discussions showed up, acceptance into master
+> +    * grace period for master: about 3 days
+> +    * urgent fixes may be applied sooner
+> +
+> +gitlab facilities are not used for the review process so that people can
+> follow
+> +all changes and related discussions at a single stop, the mailing list.
+> This
+> +may change in the future if gitlab should improve their email integratio=
+n.
+> --
+> 2.16.4
+>
+> _______________________________________________
+> Xenomai mailing list
+> Xenomai@xenomai.org
+> https://xenomai.org/mailman/listinfo/xenomai
 
-... it does not apply to next. There must be something between this 
-patch and current next (and it's not "cobalt/sched: group high-level 
-init/cleanup code") which breaks things.
 
-Jan
+I like this, it puts us more inline with the mainline kernel work flow.
+ Is there any benefit to creating a maintainers file?  Should we ask that
+checkpatch.pl be run against patches as well?
 
--- 
-Siemens AG, Corporate Technology, CT RDA IOT SES-DE
-Corporate Competence Center Embedded Linux
-
+-Greg
