@@ -1,15 +1,14 @@
-References: <E1fxEEU-0004LE-Ln@xenomai.org>
- <7bf36155-eb1a-30a3-42ce-5256342dc74f@siemens.com>
+References: <E1fxEEk-0004UH-R6@xenomai.org>
+ <40e76345-95a5-8425-e787-b90d6655f672@siemens.com>
 From: Philippe Gerum <rpm@xenomai.org>
-Message-ID: <35f40a90-1ef5-323b-b1ef-7d282388347d@xenomai.org>
-Date: Wed, 5 Sep 2018 09:44:35 +0200
+Message-ID: <d8d75cfd-02f9-ef30-5f46-40c585c970c3@xenomai.org>
+Date: Wed, 5 Sep 2018 09:46:07 +0200
 MIME-Version: 1.0
-In-Reply-To: <7bf36155-eb1a-30a3-42ce-5256342dc74f@siemens.com>
+In-Reply-To: <40e76345-95a5-8425-e787-b90d6655f672@siemens.com>
 Content-Type: text/plain; charset="utf-8"
 Content-Language: en-US
 Content-Transfer-Encoding: 8bit
-Subject: Re: [Xenomai] [PATCH] cobalt/kernel: always use explicit
- preprocessor conditionals
+Subject: Re: [Xenomai] [PATCH] cobalt/sched: improve watchdog accuracy
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -20,276 +19,193 @@ List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: Jan Kiszka <jan.kiszka@siemens.com>, xenomai@xenomai.org
 
-On 09/04/2018 07:48 PM, Jan Kiszka wrote:
-> On 2018-09-04 15:31, Philippe Gerum wrote:
->> Testing debug switches using '#if XENO_DEBUG(<feat>)' may confuse the
->> build system's dependency tracker, breaking the build, or even
->> producing a non-bootable kernel in extreme cases. Typically, turning
->> on/off the lock debugging code - usually in absence of any other
->> change - may cause the following error to pop up at the link stage:
+On 09/04/2018 08:01 PM, Jan Kiszka wrote:
+> On 2018-09-04 16:24, Philippe Gerum wrote:
+>> The original watchdog mechanism was based on a sampling method: every
+>> second (built-in value), it used to check the runtime mode of the
+>> current task preempted on the ticking CPU. A per-cpu counter was
+>> increased by one every time rt/primary mode was detected, then checked
+>> against the trigger limit (CONFIG_XENO_OPT_WATCHDOG_TIMEOUT).
+>> Otherwise, the counter was reset to zero.
 >>
->> ---
->> MODPOST vmlinux.o
->> kernel/xenomai/lock.o: In function `____xnlock_get':
->> linux/include/xenomai/cobalt/kernel/lock.h:184: undefined reference to
->> `xnlock_dbg_prepare_acquire'
->> linux/include/xenomai/cobalt/kernel/lock.h:189: undefined reference to
->> `xnlock_dbg_acquired'
->> kernel/xenomai/lock.o: In function `____xnlock_put':
->> linux/include/xenomai/cobalt/kernel/lock.h:196: undefined reference to
->> `xnlock_dbg_release'
->> ---
+>> With this fairly naive approach, it only takes a single hit with
+>> CONFIG_XENO_OPT_WATCHDOG_TIMEOUT=1 to trigger the watchdog, i.e. if
+>> the system-fixed 1s watchdog tick preempts any Xenomai task when it is
+>> running in primary mode on the current CPU, the watchdog fires.
 >>
->> Replace all occurrences of the confusing conditionals with the
->> equivalent expression explicitly testing the debug symbol.
+>> The default value of 4s papered over the inherent imprecision of such
+>> a coarse-grained method, lengthening the odds of observing false
+>> positive triggers.
+>>
+>> To improve the accuracy of the watchdog, arm the watchdog timer to
+>> fire at the final trigger date directly, right before switching the
+>> CPU to primary mode (leave_root()), disarming it when the CPU is about
+>> to switch back to secondary mode (enter_root()).
+>>
+>> Better accuracy comes at the expense of slightly more overhead when
+>> transitioning between primary and secondary modes, which should be
+>> acceptable for a debug feature which is not affecting the hot path
+>> anyway (i.e. there is no added cost for strictly rt context switches).
 >>
 >> Signed-off-by: Philippe Gerum <rpm@xenomai.org>
 >> ---
->>   include/cobalt/kernel/assert.h         |  2 +-
->>   include/cobalt/kernel/lock.h           |  6 +++---
->>   include/cobalt/kernel/sched-sporadic.h |  2 +-
->>   include/cobalt/kernel/synch.h          |  2 +-
->>   include/cobalt/kernel/tree.h           |  2 +-
->>   kernel/cobalt/bufd.c                   | 10 +++++-----
->>   kernel/cobalt/debug.c                  |  2 +-
->>   kernel/cobalt/intr.c                   |  2 +-
->>   kernel/cobalt/posix/process.c          |  2 +-
->>   kernel/cobalt/procfs.c                 |  2 +-
->>   kernel/cobalt/sched-sporadic.c         |  4 ++--
->>   kernel/cobalt/synch.c                  |  2 +-
->>   12 files changed, 19 insertions(+), 19 deletions(-)
+>>   include/cobalt/kernel/sched.h | 13 -------------
+>>   kernel/cobalt/sched.c         | 41
+>> ++++++++++++++++++++++++++---------------
+>>   kernel/cobalt/timer.c         |  7 -------
+>>   3 files changed, 26 insertions(+), 35 deletions(-)
 >>
->> diff --git a/include/cobalt/kernel/assert.h
->> b/include/cobalt/kernel/assert.h
->> index 2d2d65396..86d0a480f 100644
->> --- a/include/cobalt/kernel/assert.h
->> +++ b/include/cobalt/kernel/assert.h
->> @@ -63,7 +63,7 @@
->>   #define realtime_cpu_only()    XENO_BUG_ON(CONTEXT,
->> !xnsched_supported_cpu(ipipe_processor_id()))
->>   #define thread_only()        XENO_BUG_ON(CONTEXT,
->> xnsched_interrupt_p())
->>   #define irqoff_only()        XENO_BUG_ON(CONTEXT,
->> hard_irqs_disabled() == 0)
->> -#if XENO_DEBUG(LOCKING)
->> +#ifdef CONFIG_XENO_OPT_DEBUG_LOCKING
->>   #define atomic_only()        XENO_BUG_ON(CONTEXT,
->> (xnlock_is_owner(&nklock) && hard_irqs_disabled()) == 0)
->>   #define preemptible_only()    XENO_BUG_ON(CONTEXT,
->> xnlock_is_owner(&nklock) || hard_irqs_disabled())
->>   #else
->> diff --git a/include/cobalt/kernel/lock.h b/include/cobalt/kernel/lock.h
->> index 36f81688a..99c7848e8 100644
->> --- a/include/cobalt/kernel/lock.h
->> +++ b/include/cobalt/kernel/lock.h
->> @@ -63,7 +63,7 @@ typedef unsigned long spl_t;
+>> diff --git a/include/cobalt/kernel/sched.h
+>> b/include/cobalt/kernel/sched.h
+>> index 03436ee82..0d0c71b42 100644
+>> --- a/include/cobalt/kernel/sched.h
+>> +++ b/include/cobalt/kernel/sched.h
+>> @@ -104,8 +104,6 @@ struct xnsched {
+>>   #ifdef CONFIG_XENO_OPT_WATCHDOG
+>>       /*!< Watchdog timer object. */
+>>       struct xntimer wdtimer;
+>> -    /*!< Watchdog tick count. */
+>> -    int wdcount;
+>>   #endif
+>>   #ifdef CONFIG_XENO_OPT_STATS
+>>       /*!< Last account switch date (ticks). */
+>> @@ -361,17 +359,6 @@
+>> xnsched_maybe_resched_after_unlocked_switch(struct xnsched *sched)
+>>     #endif /* !CONFIG_XENO_ARCH_UNLOCKED_SWITCH */
+>>   -#ifdef CONFIG_XENO_OPT_WATCHDOG
+>> -static inline void xnsched_reset_watchdog(struct xnsched *sched)
+>> -{
+>> -    sched->wdcount = 0;
+>> -}
+>> -#else /* !CONFIG_XENO_OPT_WATCHDOG */
+>> -static inline void xnsched_reset_watchdog(struct xnsched *sched)
+>> -{
+>> -}
+>> -#endif /* CONFIG_XENO_OPT_WATCHDOG */
+>> -
+>>   #include <cobalt/kernel/sched-idle.h>
+>>   #include <cobalt/kernel/sched-rt.h>
+>>   diff --git a/kernel/cobalt/sched.c b/kernel/cobalt/sched.c
+>> index 76e3bc5d7..dd14d4975 100644
+>> --- a/kernel/cobalt/sched.c
+>> +++ b/kernel/cobalt/sched.c
+>> @@ -93,14 +93,20 @@ void xnsched_register_classes(void)
+>>   static unsigned long wd_timeout_arg = CONFIG_XENO_OPT_WATCHDOG_TIMEOUT;
+>>   module_param_named(watchdog_timeout, wd_timeout_arg, ulong, 0644);
+>>   +static inline xnticks_t get_watchdog_timeout(void)
+>> +{
+>> +    return wd_timeout_arg * 1000000000ULL;
+>> +}
+>> +
+>>   /**
+>>    * @internal
+>>    * @fn void watchdog_handler(struct xntimer *timer)
+>>    * @brief Process watchdog ticks.
+>>    *
+>> - * This internal routine handles incoming watchdog ticks to detect
+>> - * software lockups. It kills any offending thread which is found to
+>> - * monopolize the CPU so as to starve the Linux kernel for too long.
+>> + * This internal routine handles incoming watchdog triggers to detect
+>> + * software lockups. It forces the offending thread to stop
+>> + * monopolizing the CPU, either by kicking it out of primary mode if
+>> + * running in user space, or cancelling it if kernel-based.
+>>    *
+>>    * @coretags{coreirq-only, atomic-entry}
 >>    */
->>   #define spltest()   ipipe_test_head()
->>   -#if XENO_DEBUG(LOCKING)
->> +#ifdef CONFIG_XENO_OPT_DEBUG_LOCKING
->>     struct xnlock {
->>       unsigned owner;
->> @@ -152,7 +152,7 @@ static inline int xnlock_dbg_release(struct xnlock
->> *lock)
->>     #endif /* !XENO_DEBUG(LOCKING) */
->>   -#if defined(CONFIG_SMP) || XENO_DEBUG(LOCKING)
->> +#if defined(CONFIG_SMP) || defined(CONFIG_XENO_OPT_DEBUG_LOCKING)
->>     #define xnlock_get(lock)        __xnlock_get(lock 
->> XNLOCK_DBG_CONTEXT)
->>   #define xnlock_put(lock)        __xnlock_put(lock  XNLOCK_DBG_CONTEXT)
->> @@ -209,7 +209,7 @@ int ___xnlock_get(struct xnlock *lock /*, */
->> XNLOCK_DBG_CONTEXT_ARGS);
->>   void ___xnlock_put(struct xnlock *lock /*, */ XNLOCK_DBG_CONTEXT_ARGS);
->>   #endif /* out of line xnlock */
->>   -#if XENO_DEBUG(LOCKING)
->> +#ifdef CONFIG_XENO_OPT_DEBUG_LOCKING
->>   /* Disable UP-over-SMP kernel optimization in debug mode. */
->>   #define __locking_active__  1
->>   #else
->> diff --git a/include/cobalt/kernel/sched-sporadic.h
->> b/include/cobalt/kernel/sched-sporadic.h
->> index 0eade47b0..50ca406c4 100644
->> --- a/include/cobalt/kernel/sched-sporadic.h
->> +++ b/include/cobalt/kernel/sched-sporadic.h
->> @@ -56,7 +56,7 @@ struct xnsched_sporadic_data {
->>   };
->>     struct xnsched_sporadic {
->> -#if XENO_DEBUG(COBALT)
->> +#ifdef CONFIG_XENO_OPT_DEBUG_COBALT
->>       unsigned long drop_retries;
->>   #endif
->>   };
->> diff --git a/include/cobalt/kernel/synch.h
->> b/include/cobalt/kernel/synch.h
->> index f5ac217ed..08056055a 100644
->> --- a/include/cobalt/kernel/synch.h
->> +++ b/include/cobalt/kernel/synch.h
->> @@ -101,7 +101,7 @@ static inline struct xnthread
->> *xnsynch_owner(struct xnsynch *synch)
->>   #define xnsynch_owner_check(synch, thread) \
->>       xnsynch_fast_owner_check((synch)->fastlock, thread->handle)
->>   -#if XENO_DEBUG(MUTEX_RELAXED)
->> +#ifdef CONFIG_XENO_OPT_DEBUG_MUTEX_RELAXED
->>     void xnsynch_detect_relaxed_owner(struct xnsynch *synch,
->>                     struct xnthread *sleeper);
->> diff --git a/include/cobalt/kernel/tree.h b/include/cobalt/kernel/tree.h
->> index 9c751cc02..c52ee3220 100644
->> --- a/include/cobalt/kernel/tree.h
->> +++ b/include/cobalt/kernel/tree.h
->> @@ -83,7 +83,7 @@ struct xnid *xnid_fetch(struct rb_root *t, xnkey_t key)
->>     static inline int xnid_remove(struct rb_root *t, struct xnid *xnid)
->>   {
->> -#if XENO_DEBUG(COBALT)
->> +#ifdef CONFIG_XENO_OPT_DEBUG_COBALT
->>       if (xnid_fetch(t, xnid->key) != xnid)
->>           return -ENOENT;
->>   #endif
->> diff --git a/kernel/cobalt/bufd.c b/kernel/cobalt/bufd.c
->> index 9b41b6ad6..3b79505d5 100644
->> --- a/kernel/cobalt/bufd.c
->> +++ b/kernel/cobalt/bufd.c
->> @@ -493,7 +493,7 @@ ssize_t xnbufd_unmap_uread(struct xnbufd *bufd)
->>   {
->>       preemptible_only();
->>   -#if XENO_DEBUG(COBALT)
->> +#ifdef CONFIG_XENO_OPT_DEBUG_COBALT
->>       bufd->b_ptr = (caddr_t)-1;
->>   #endif
->>       return bufd->b_off;
->> @@ -551,7 +551,7 @@ ssize_t xnbufd_unmap_uwrite(struct xnbufd *bufd)
->>       if (bufd->b_len > sizeof(bufd->b_buf))
->>           xnfree(bufd->b_carry);
->>   done:
->> -#if XENO_DEBUG(COBALT)
->> +#ifdef CONFIG_XENO_OPT_DEBUG_COBALT
->>       bufd->b_ptr = (caddr_t)-1;
->>   #endif
->>       return ret ?: (ssize_t)len;
->> @@ -592,7 +592,7 @@ EXPORT_SYMBOL_GPL(xnbufd_unmap_uwrite);
->>    */
->>   void xnbufd_invalidate(struct xnbufd *bufd)
->>   {
->> -#if XENO_DEBUG(COBALT)
->> +#ifdef CONFIG_XENO_OPT_DEBUG_COBALT
->>       bufd->b_ptr = (caddr_t)-1;
->>   #endif
->>       if (bufd->b_carry) {
->> @@ -620,7 +620,7 @@ EXPORT_SYMBOL_GPL(xnbufd_invalidate);
->>    */
->>   ssize_t xnbufd_unmap_kread(struct xnbufd *bufd)
->>   {
->> -#if XENO_DEBUG(COBALT)
->> +#ifdef CONFIG_XENO_OPT_DEBUG_COBALT
->>       bufd->b_ptr = (caddr_t)-1;
->>   #endif
->>       return bufd->b_off;
->> @@ -643,7 +643,7 @@ EXPORT_SYMBOL_GPL(xnbufd_unmap_kread);
->>    */
->>   ssize_t xnbufd_unmap_kwrite(struct xnbufd *bufd)
->>   {
->> -#if XENO_DEBUG(COBALT)
->> +#ifdef CONFIG_XENO_OPT_DEBUG_COBALT
->>       bufd->b_ptr = (caddr_t)-1;
->>   #endif
->>       return bufd->b_off;
->> diff --git a/kernel/cobalt/debug.c b/kernel/cobalt/debug.c
->> index 74022c516..af9a95ab6 100644
->> --- a/kernel/cobalt/debug.c
->> +++ b/kernel/cobalt/debug.c
->> @@ -549,7 +549,7 @@ static inline void init_thread_relax_trace(struct
->> xnthread *thread)
->>     #endif /* !XENO_OPT_DEBUG_TRACE_RELAX */
->>   -#if XENO_DEBUG(LOCKING)
->> +#ifdef CONFIG_XENO_OPT_DEBUG_LOCKING
->>     void xnlock_dbg_prepare_acquire(unsigned long long *start)
->>   {
->> diff --git a/kernel/cobalt/intr.c b/kernel/cobalt/intr.c
->> index fb27a3295..69faa23ba 100644
->> --- a/kernel/cobalt/intr.c
->> +++ b/kernel/cobalt/intr.c
->> @@ -531,7 +531,7 @@ static inline void xnintr_irq_detach(struct xnintr
->> *intr)
->>   #else /* !CONFIG_XENO_OPT_SHIRQ */
->>     struct xnintr_vector {
->> -#if defined(CONFIG_SMP) || XENO_DEBUG(LOCKING)
->> +#if defined(CONFIG_SMP) || defined(CONFIG_XENO_OPT_DEBUG_LOCKING)
->>       DECLARE_XNLOCK(lock);
->>   #endif /* CONFIG_SMP || XENO_DEBUG(LOCKING) */
->>   } ____cacheline_aligned_in_smp;
->> diff --git a/kernel/cobalt/posix/process.c
->> b/kernel/cobalt/posix/process.c
->> index dbcb81ef8..50f752f13 100644
->> --- a/kernel/cobalt/posix/process.c
->> +++ b/kernel/cobalt/posix/process.c
->> @@ -751,7 +751,7 @@ static inline int handle_exception(struct
->> ipipe_trap_data *d)
->>        * running in primary mode, move it to the Linux domain,
->>        * leaving the kernel process the exception.
->>        */
->> -#if XENO_DEBUG(COBALT) || XENO_DEBUG(USER)
->> +#if defined(CONFIG_XENO_OPT_DEBUG_COBALT) ||
->> defined(CONFIG_XENO_OPT_DEBUG_USER)
->>       if (!user_mode(d->regs)) {
->>           xntrace_panic_freeze();
->>           printk(XENO_WARNING
->> diff --git a/kernel/cobalt/procfs.c b/kernel/cobalt/procfs.c
->> index ade13cf1c..d1f01f038 100644
->> --- a/kernel/cobalt/procfs.c
->> +++ b/kernel/cobalt/procfs.c
->> @@ -27,7 +27,7 @@
->>   #include <xenomai/version.h>
->>   #include "debug.h"
->>   -#if XENO_DEBUG(LOCKING)
->> +#ifdef CONFIG_XENO_OPT_DEBUG_LOCKING
->>     static int lock_vfile_show(struct xnvfile_regular_iterator *it,
->> void *data)
->>   {
->> diff --git a/kernel/cobalt/sched-sporadic.c
->> b/kernel/cobalt/sched-sporadic.c
->> index d2a1f76d0..9cbfa5be3 100644
->> --- a/kernel/cobalt/sched-sporadic.c
->> +++ b/kernel/cobalt/sched-sporadic.c
->> @@ -24,7 +24,7 @@
->>     static void sporadic_post_recharge(struct xnthread *thread,
->> xnticks_t budget);
->>   -#if XENO_DEBUG(COBALT)
->> +#ifdef CONFIG_XENO_OPT_DEBUG_COBALT
->>     static inline void sporadic_note_late_drop(struct xnsched *sched)
->>   {
->> @@ -236,7 +236,7 @@ static void xnsched_sporadic_init(struct xnsched
->> *sched)
->>        * share the same priority scale, with the addition of budget
->>        * management for the sporadic ones.
->>        */
->> -#if XENO_DEBUG(COBALT)
->> +#ifdef CONFIG_XENO_OPT_DEBUG_COBALT
->>       sched->pss.drop_retries = 0;
->>   #endif
+>> @@ -109,14 +115,15 @@ static void watchdog_handler(struct xntimer *timer)
+>>       struct xnsched *sched = xnsched_current();
+>>       struct xnthread *curr = sched->curr;
+>>   -    if (likely(xnthread_test_state(curr, XNROOT))) {
+>> -        xnsched_reset_watchdog(sched);
+>> -        return;
+>> -    }
+>> -
+>> -    if (likely(++sched->wdcount < wd_timeout_arg))
+>> +    /*
+>> +     * CAUTION: The watchdog tick might have been delayed while we
+>> +     * were busy switching the CPU to secondary mode at the
+>> +     * trigger date eventually. Make sure that we are not about to
+>> +     * kick the incoming root thread.
+>> +     */
+>> +    if (xnthread_test_state(curr, XNROOT))
+>>           return;
+>> -
+>> +   
+> 
+> Stray whitespace change. Could fix that on merge but...
+> 
+>>       trace_cobalt_watchdog_signal(curr);
+>>         if (xnthread_test_state(curr, XNUSER)) {
+>> @@ -137,8 +144,6 @@ static void watchdog_handler(struct xntimer *timer)
+>>            */
+>>           xnthread_set_info(curr, XNKICKED|XNCANCELD);
+>>       }
+>> -
+>> -    xnsched_reset_watchdog(sched);
 >>   }
->> diff --git a/kernel/cobalt/synch.c b/kernel/cobalt/synch.c
->> index 7773a08e5..32df635a8 100644
->> --- a/kernel/cobalt/synch.c
->> +++ b/kernel/cobalt/synch.c
->> @@ -902,7 +902,7 @@ void xnsynch_release_all_ownerships(struct
->> xnthread *thread)
+>>     #endif /* CONFIG_XENO_OPT_WATCHDOG */
+>> @@ -818,6 +823,10 @@ static inline void enter_root(struct xnthread *root)
+>>   {
+>>       struct xnarchtcb *rootcb __maybe_unused = xnthread_archtcb(root);
+>>   +#ifdef CONFIG_XENO_OPT_WATCHDOG
+>> +    xntimer_stop(&root->sched->wdtimer);
+>> +#endif
+>> +
+>>   #ifdef CONFIG_XENO_ARCH_UNLOCKED_SWITCH
+>>       if (rootcb->core.mm == NULL)
+>>           set_ti_thread_flag(rootcb->core.tip, TIF_MMSWITCH_INT);
+>> @@ -840,6 +849,11 @@ static inline void leave_root(struct xnthread *root)
+>>       rootcb->core.tip = task_thread_info(p);
+>>   #endif
+>>       xnarch_leave_root(root);
+>> +
+>> +#ifdef CONFIG_XENO_OPT_WATCHDOG
+>> +    xntimer_start(&root->sched->wdtimer, get_watchdog_timeout(),
+>> +              XN_INFINITE, XN_RELATIVE);
+>> +#endif
 >>   }
->>   EXPORT_SYMBOL_GPL(xnsynch_release_all_ownerships);
->>   -#if XENO_DEBUG(MUTEX_RELAXED)
->> +#ifdef CONFIG_XENO_OPT_DEBUG_MUTEX_RELAXED
->>     /*
->>    * Detect when a thread is about to sleep on a synchronization
+>>     void __xnsched_run_handler(void) /* hw interrupts off. */
+>> @@ -889,9 +903,6 @@ reschedule:
+>>         trace_cobalt_switch_context(prev, next);
+>>   -    if (xnthread_test_state(next, XNROOT))
+>> -        xnsched_reset_watchdog(sched);
+>> -
+>>       sched->curr = next;
+>>       shadow = 1;
+>>   diff --git a/kernel/cobalt/timer.c b/kernel/cobalt/timer.c
+>> index 6d985a995..5d8b3bc76 100644
+>> --- a/kernel/cobalt/timer.c
+>> +++ b/kernel/cobalt/timer.c
+>> @@ -893,10 +893,6 @@ int xntimer_grab_hardware(void)
+>>           else if (ret == 1)
+>>               xntimer_start(&sched->htimer, 0, 0, XN_RELATIVE);
+>>   -#ifdef CONFIG_XENO_OPT_WATCHDOG
+>> -        xntimer_start(&sched->wdtimer, 1000000000UL, 1000000000UL,
+>> XN_RELATIVE);
+>> -        xnsched_reset_watchdog(sched);
+>> -#endif
+>>           xnlock_put_irqrestore(&nklock, s);
+>>       }
+>>   @@ -908,9 +904,6 @@ fail:
+>>           xnlock_get_irqsave(&nklock, s);
+>>           sched = xnsched_struct(cpu);
+>>           xntimer_stop(&sched->htimer);
+>> -#ifdef CONFIG_XENO_OPT_WATCHDOG
+>> -        xntimer_stop(&sched->wdtimer);
+>> -#endif
+>>           xnlock_put_irqrestore(&nklock, s);
+>>           ipipe_timer_stop(_cpu);
+>>       }
 >>
 > 
-> Confused: This is not for next, is it?
-> 
-> E.g. that hunk above does not apply there anymore, for about a year...
+> ... it does not apply to next. There must be something between this
+> patch and current next (and it's not "cobalt/sched: group high-level
+> init/cleanup code") which breaks things.
 > 
 
-This is preferably aimed at the upcoming master at the moment. This does
-not change any internal or external API, fixing an annoying limitation
-of the watchdog. I'll soon set up my private trees, rebasing on the new
-upstream branches as needed. The purpose of this patch is mainly to
-trigger a review.
+Same answer as previous patch. It also applies to the
+stable/future-master-base branch, mainly aimed at starting the review
+process.
 
 -- 
 Philippe.
