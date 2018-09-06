@@ -1,16 +1,11 @@
-References: <9807836c-9287-10a7-52bf-6b5947c87699@xenomai.org>
- <20180827132432.215475e3@md1pvb1c.ad001.siemens.net>
- <5e05ff77-579d-8dc2-d1a8-d645952f815d@xenomai.org>
- <20180827194452.49fc89bf@md1pvb1c.ad001.siemens.net>
-From: Philippe Gerum <rpm@xenomai.org>
-Message-ID: <f94adea2-fac0-3d85-12d2-a8d2e68f703b@xenomai.org>
-Date: Thu, 6 Sep 2018 10:08:57 +0200
+From: Leopold Palomo-Avellaneda <leo@alaxarxa.net>
+Message-ID: <a327adca-1576-0794-71cd-409b366dfdc8@alaxarxa.net>
+Date: Thu, 6 Sep 2018 11:52:39 +0200
 MIME-Version: 1.0
-In-Reply-To: <20180827194452.49fc89bf@md1pvb1c.ad001.siemens.net>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] I-pipe split series
+Subject: [Xenomai] Order options to build a Xenomai program
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -19,114 +14,196 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Henning Schild <henning.schild@siemens.com>
-Cc: "Xenomai@xenomai.org" <Xenomai@xenomai.org>, Greg Gallagher <greg@embeddedgreg.com>, Dmitriy Cherkasov <dmitriy@oss-tech.org>, "Seeger, Steven D. (GSFC-444.0)[Embedded Flight Systems, Inc]" <steven.seeger@nasa.gov>, "Kiszka, Jan" <jan.kiszka@siemens.com>
+To: "Xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On 08/27/2018 07:44 PM, Henning Schild wrote:
-> Am Mon, 27 Aug 2018 16:15:21 +0200
-> schrieb Philippe Gerum <rpm@xenomai.org>:
-> 
->> On 08/27/2018 01:24 PM, Henning Schild wrote:
->>> Hi Philippe,
->>>
->>> Am Mon, 30 Jul 2018 20:10:17 +0200
->>> schrieb Philippe Gerum <rpm@xenomai.org>:
->>>   
->>>> The generic I-pipe code is now available as a series of incremental
->>>> commits at [1] on top of the 4.14.58 kernel. This allows to port
->>>> the I-pipe patch gradually, first to enable IRQ pipelining per se,
->>>> then add the bits required for co-managing tasks between the
->>>> regular kernel and the co-kernel, which builds on the former. Most
->>>> patches have gained a description in their respective short log,
->>>> which added to Documentation/ipipe.rst, should help clarifying the
->>>> process of porting the pipeline.
->>>>
->>>> While I was at it, I did a pre-port of the x86 patch to kernel
->>>> 4.14.58, which has been useful for validating the split series. I
->>>> hope this will help the x86 maintainers to clear that hurdle
->>>> eventually.
->>>>
->>>> The whole pile of patches went through countless incremental builds
->>>> over multiple configurations, and tedious manual fixups over a few
->>>> weeks. However, there is room for issues, given the amount of code
->>>> involved, and the varying configurations one can apply. If you find
->>>> any problem with that split series, please report them here so that
->>>> we fix them.
->>>>
->>>> Please note that those trees are rebased from time to time.  
->>>
->>> Really cool! Thanks so much for your work, i quickly looked at the
->>> structure of the patches and the commit messages. I think that
->>> should greatly improve the documentation and we will see how well
->>> that works for the next rebase. But i hope and assume that will
->>> become much easier with this approach.
->>>   
->>>> == Generic changes
->>>>
->>>> - select HAVE_IPIPE_SUPPORT is needed from the arch-code (Kconfig)
->>>> to enable the generic I-pipe bits. This way we can have an
->>>> incremental build, without requiring the arch-code to be present
->>>> in the commit stack for testing generic changes.
->>>>
->>>> - Likewise, select HAVE_IPIPE_TRACER_SUPPORT is needed from the
->>>> arch-code when the tracer is available. Only ARM needs this
->>>> currently, due to the TSC emulation support we need to provide
->>>> there to get timestamps which is not part of the ARM-specific
->>>> pipeline core. x86 and ppc32 have their own tsc/timebase readily
->>>> available when the core bits are in.
->>>>
->>>> - __ipipe_init_threadflags() now receives struct thread_info *. To
->>>> be updated in the arch-specific bits.
->>>>
->>>> == x86
->>>>
->>>> The basic port available at [2] boots over KVM and a couple of real
->>>> hw I have here, x86_64 only, x86_32 is untested and likely not
->>>> complete - although little should be left. It enables the interrupt
->>>> pipeline, but has not been checked against Xenomai, since FPU
->>>> support is not there (*).  
->>>
->>> I have got a working eager-fpu 4.4 and 4.9 and looked into this
->>> 4.14 as well, in the hope to get the patch against xenomai in a
->>> shape that will work for all three kernels.
->>>
->>> So i ported my kernel patch to this 4.14 and adjusted xenomai to
->>> work on that as well. Unfortunately the kernel does not boot. It
->>> gets stuck right after switching the clocksource to tsc. My current
->>> assumption is that the timer does not work, maybe interrupts in
->>> general.
->>>
->>> Do you have a suggestion how to best debug that? I could also share
->>> the current state of the fpu-patches so you could have a direct
->>> look at it yourself.  
->>
->> I recently wrote a (short) piece about identifying and chasing those
->> issues:
->>
->> https://dovetail.xenomai.org/pipeline/porting/devnotes/#losing-the-timer-tick
-> 
-> Yes, that description sounds about right. I am still digging to see why
-> _no_ interrupts seem to be arriving.
-> 
-> But i imagine you are looking forward to seeing the 4.14 split series
-> in action as well and might want to have a look as well. Here is what i
-> am currently working with, fpu should work ... once we are up.
-> 
-> https://github.com/henning-schild-work/linux-ipipe/tree/henning/fpu/4.14
-> https://github.com/henning-schild-work/xenomai/tree/henning/fpu
-> 
+Hi,
 
-The only few x86 test systems I have at hand still boot with this
-kernel, so I would need more info to dig this issue, obtained when
-CONFIG_IPIPE is off, specifically:
 
-- .config
-- the entire kernel log since early boot
-- /proc/interrupts
-- /proc/timer_list
+I resend this message to the list now that it has again more activity. Maybe
+some of you cold help me to understand what is wrong here. I'm sorry if it's not
+appropriate to send again a message to the list.
 
-Thanks,
+=====
+
+I have an strange problem and I would like to ask if some clever mind
+can help me.
+
+I'm trying to build with cmake (this story is for another mail) a simple
+example [1] with xenomai 3.0.7. I have some custom macros that basically
+uses the information from xeno-config.
+
+I can build and run the example with the Makefile below in the email. It
+just works.
+
+Narrowing the problem I have obtained the exactly call made by the
+Makefile created by cmake. It compiles the file using:
+
+$ /usr/bin/cc   -I/usr/include/xenomai/trank
+-I/usr/include/xenomai/cobalt -I/usr/include/xenomai
+-I/usr/include/xenomai/alchemy  -D__XENO_COMPAT__ -g -O2
+-fdebug-prefix-map=/build/xenomai-3.0.7+ds1=. -fstack-protector-strong
+-Wformat -Werror=format-security -Wdate-time -D_FORTIFY_SOURCE=2
+-fno-omit-frame-pointer -D_GNU_SOURCE -D_REENTRANT
+-fasynchronous-unwind-tables -D__COBALT__ -o
+CMakeFiles/rtprint.dir/rtprint.c.o   -c
+/home/leopold.palomo/xenomai/cmake/src/native/rtprint.c
+
+
+and links the file using:
+
+$ /usr/bin/cc    -Wl,--no-as-needed
+-Wl,@/usr/lib/x86_64-linux-gnu/modechk.wrappers
+/usr/lib/x86_64-linux-gnu/xenomai/bootstrap.o -Wl,--wrap=main
+-Wl,--dynamic-list=/usr/lib/x86_64-linux-gnu/dynlist.ld -Wl,-z,relro
+-Wl,-z,now -Wl,--as-needed -pthread CMakeFiles/rtprint.dir/rtprint.c.o
+-o rtprint -rdynamic -ltrank -lalchemy -lcopperplate -lcobalt -lmodechk
+-lpthread -lrt -lfuse
+
+
+Using the Makefile attached, to compile, make call gcc with:
+
+$ make rtprint.o
+gcc -c -o rtprint.o rtprint.c -I/usr/include/xenomai/trank
+-D__XENO_COMPAT__ -I/usr/include/xenomai/cobalt -I/usr/include/xenomai
+-g -O2 -fdebug-prefix-map=/build/xenomai-3.0.7+ds1=.
+-fstack-protector-strong -Wformat -Werror=format-security -Wdate-time
+-D_FORTIFY_SOURCE=2 -fno-omit-frame-pointer -D_GNU_SOURCE -D_REENTRANT
+-fasynchronous-unwind-tables -D__COBALT__ -I/usr/include/xenomai/alchemy
+
+and link with:
+
+$ make rtprint
+gcc -o rtprint rtprint.o -Wl,--no-as-needed -ltrank
+-Wl,@/usr/lib/x86_64-linux-gnu/modechk.wrappers -lalchemy -lcopperplate
+/usr/lib/x86_64-linux-gnu/xenomai/bootstrap.o -Wl,--wrap=main
+-Wl,--dynamic-list=/usr/lib/x86_64-linux-gnu/dynlist.ld
+-L/usr/lib/x86_64-linux-gnu -lcobalt -lmodechk -lpthread -lrt
+-Wl,-z,relro -Wl,-z,now -Wl,--as-needed   -lfuse -pthread
+
+
+The build result made by CMake is: rtprint (24816 bytes) and rtprint.o
+(16408 bytes)
+
+The build result make using the makefile: rtprint (24720 bytes) and
+rtprint.o (16312 bytes).
+
+If I call the gcc directly I obtain the same bytes. The difference is
+the stored path. If I strip the executables the size is the same (10224
+bytes) but binaries differ.
+
+But, and here is the problem. If I run the cmake product I obtain:
+
+/rtprint
+./rtprint: symbol lookup error:
+/usr/lib/x86_64-linux-gnu/libcopperplate.so.0: undefined symbol:
+__real_malloc
+
+
+and the produced with make runs.
+
+The produced using cmake has:
+
+$ ldd rtprint
+	linux-vdso.so.1 (0x00007ffd0e1e1000)
+	libtrank.so.0 => /usr/lib/x86_64-linux-gnu/libtrank.so.0
+(0x00007f7b5dec9000)
+	libalchemy.so.0 => /usr/lib/x86_64-linux-gnu/libalchemy.so.0
+(0x00007f7b5dcb7000)
+	libcopperplate.so.0 => /usr/lib/x86_64-linux-gnu/libcopperplate.so.0
+(0x00007f7b5da9f000)
+	libcobalt.so.2 => /usr/lib/x86_64-linux-gnu/libcobalt.so.2
+(0x00007f7b5d87d000)
+	libfuse.so.2 => /lib/x86_64-linux-gnu/libfuse.so.2 (0x00007f7b5d63f000)
+	libpthread.so.0 => /lib/x86_64-linux-gnu/libpthread.so.0
+(0x00007f7b5d422000)
+	libc.so.6 => /lib/x86_64-linux-gnu/libc.so.6 (0x00007f7b5d083000)
+	/lib64/ld-linux-x86-64.so.2 (0x00007f7b5e2d0000)
+	librt.so.1 => /lib/x86_64-linux-gnu/librt.so.1 (0x00007f7b5ce7b000)
+	libdl.so.2 => /lib/x86_64-linux-gnu/libdl.so.2 (0x00007f7b5cc77000)
+
+
+and with make
+
+$ ldd rtprint
+	linux-vdso.so.1 (0x00007ffffcfe2000)
+	libtrank.so.0 => /usr/lib/x86_64-linux-gnu/libtrank.so.0
+(0x00007f621304f000)
+	libalchemy.so.0 => /usr/lib/x86_64-linux-gnu/libalchemy.so.0
+(0x00007f6212e3d000)
+	libcopperplate.so.0 => /usr/lib/x86_64-linux-gnu/libcopperplate.so.0
+(0x00007f6212c25000)
+	libcobalt.so.2 => /usr/lib/x86_64-linux-gnu/libcobalt.so.2
+(0x00007f6212a03000)
+	libmodechk.so.0 => /usr/lib/x86_64-linux-gnu/libmodechk.so.0
+(0x00007f6212801000)
+	libpthread.so.0 => /lib/x86_64-linux-gnu/libpthread.so.0
+(0x00007f62125e4000)
+	librt.so.1 => /lib/x86_64-linux-gnu/librt.so.1 (0x00007f62123dc000)
+	libfuse.so.2 => /lib/x86_64-linux-gnu/libfuse.so.2 (0x00007f621219e000)
+	libc.so.6 => /lib/x86_64-linux-gnu/libc.so.6 (0x00007f6211dff000)
+	/lib64/ld-linux-x86-64.so.2 (0x00007f6213456000)
+	libdl.so.2 => /lib/x86_64-linux-gnu/libdl.so.2 (0x00007f6211bfb000)
+
+
+pay attention that first one is not linked against libmodechk, although
+is specified in the call.
+
+
+I have not found any difference, only the order, so I am really
+overwhelmed. Any idea?
+
+
+Best regards,
+
+
+Leopold
+
+
+
+Makefile
+-------------------------------------------------------------------
+###### CONFIGURATION ######
+
+### List of applications to be build
+APPLICATIONS = rtprint
+
+### Default Xenomai installation path
+XENO ?= /usr/xenomai
+
+XENOCONFIG=$(shell PATH=$(XENO):$(XENO)/bin:$(PATH) which xeno-config
+2>/dev/null)
+
+CC=$(shell $(XENOCONFIG) --cc)
+
+CFLAGS=$(shell $(XENOCONFIG) --skin=native --cflags)
+
+LDFLAGS=$(shell $(XENOCONFIG) --skin=native --ldflags)
+
+%.o: %.c
+	$(CC) -c -o $@ $< $(CFLAGS)
+
+rtprint: rtprint.o
+	$(CC) -o $@ rtprint.o $(LDFLAGS)
+
+clean:
+	$(RM) $(APPLICATIONS) *.o
+
+all: $(APPLICATIONS)
+-------------------------------------------------------------------
+
+
+[1]
+https://gitlab.denx.de/Xenomai/xenomai/blob/eol/v2.6.x/examples/native/rtprint.c
+
+
 
 -- 
-Philippe.
+--
+Linux User 152692     GPG: 05F4A7A949A2D9AA
+Catalonia
+-------------------------------------
+A: Because it messes up the order in which people normally read text.
+Q: Why is top-posting such a bad thing?
+A: Top-posting.
+Q: What is the most annoying thing in e-mail?
 
