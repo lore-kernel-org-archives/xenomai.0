@@ -1,8 +1,16 @@
+References: <9807836c-9287-10a7-52bf-6b5947c87699@xenomai.org>
+ <20180827132432.215475e3@md1pvb1c.ad001.siemens.net>
+ <5e05ff77-579d-8dc2-d1a8-d645952f815d@xenomai.org>
+ <20180827194452.49fc89bf@md1pvb1c.ad001.siemens.net>
 From: Philippe Gerum <rpm@xenomai.org>
-Date: Wed, 5 Sep 2018 17:21:58 +0200
-Message-Id: <E1fxZtd-0006Wu-Nb@xenomai.org>
-Subject: [Xenomai] [I-PIPE][PATCH 7/7] arm64: ipipe: turn hard irqs on when
- leaving the idle state
+Message-ID: <f94adea2-fac0-3d85-12d2-a8d2e68f703b@xenomai.org>
+Date: Thu, 6 Sep 2018 10:08:57 +0200
+MIME-Version: 1.0
+In-Reply-To: <20180827194452.49fc89bf@md1pvb1c.ad001.siemens.net>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai] I-pipe split series
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -11,69 +19,114 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Dmitriy Cherkasov <dmitriy@oss-tech.org>
-Cc: xenomai@xenomai.org
+To: Henning Schild <henning.schild@siemens.com>
+Cc: "Xenomai@xenomai.org" <Xenomai@xenomai.org>, Greg Gallagher <greg@embeddedgreg.com>, Dmitriy Cherkasov <dmitriy@oss-tech.org>, "Seeger, Steven D. (GSFC-444.0)[Embedded Flight Systems, Inc]" <steven.seeger@nasa.gov>, "Kiszka, Jan" <jan.kiszka@siemens.com>
 
-As required to mimic the original behavior when interrupt pipelining
-is in effect.
----
- arch/arm64/kernel/process.c | 34 +---------------------------------
- 1 file changed, 1 insertion(+), 33 deletions(-)
+On 08/27/2018 07:44 PM, Henning Schild wrote:
+> Am Mon, 27 Aug 2018 16:15:21 +0200
+> schrieb Philippe Gerum <rpm@xenomai.org>:
+> 
+>> On 08/27/2018 01:24 PM, Henning Schild wrote:
+>>> Hi Philippe,
+>>>
+>>> Am Mon, 30 Jul 2018 20:10:17 +0200
+>>> schrieb Philippe Gerum <rpm@xenomai.org>:
+>>>   
+>>>> The generic I-pipe code is now available as a series of incremental
+>>>> commits at [1] on top of the 4.14.58 kernel. This allows to port
+>>>> the I-pipe patch gradually, first to enable IRQ pipelining per se,
+>>>> then add the bits required for co-managing tasks between the
+>>>> regular kernel and the co-kernel, which builds on the former. Most
+>>>> patches have gained a description in their respective short log,
+>>>> which added to Documentation/ipipe.rst, should help clarifying the
+>>>> process of porting the pipeline.
+>>>>
+>>>> While I was at it, I did a pre-port of the x86 patch to kernel
+>>>> 4.14.58, which has been useful for validating the split series. I
+>>>> hope this will help the x86 maintainers to clear that hurdle
+>>>> eventually.
+>>>>
+>>>> The whole pile of patches went through countless incremental builds
+>>>> over multiple configurations, and tedious manual fixups over a few
+>>>> weeks. However, there is room for issues, given the amount of code
+>>>> involved, and the varying configurations one can apply. If you find
+>>>> any problem with that split series, please report them here so that
+>>>> we fix them.
+>>>>
+>>>> Please note that those trees are rebased from time to time.  
+>>>
+>>> Really cool! Thanks so much for your work, i quickly looked at the
+>>> structure of the patches and the commit messages. I think that
+>>> should greatly improve the documentation and we will see how well
+>>> that works for the next rebase. But i hope and assume that will
+>>> become much easier with this approach.
+>>>   
+>>>> == Generic changes
+>>>>
+>>>> - select HAVE_IPIPE_SUPPORT is needed from the arch-code (Kconfig)
+>>>> to enable the generic I-pipe bits. This way we can have an
+>>>> incremental build, without requiring the arch-code to be present
+>>>> in the commit stack for testing generic changes.
+>>>>
+>>>> - Likewise, select HAVE_IPIPE_TRACER_SUPPORT is needed from the
+>>>> arch-code when the tracer is available. Only ARM needs this
+>>>> currently, due to the TSC emulation support we need to provide
+>>>> there to get timestamps which is not part of the ARM-specific
+>>>> pipeline core. x86 and ppc32 have their own tsc/timebase readily
+>>>> available when the core bits are in.
+>>>>
+>>>> - __ipipe_init_threadflags() now receives struct thread_info *. To
+>>>> be updated in the arch-specific bits.
+>>>>
+>>>> == x86
+>>>>
+>>>> The basic port available at [2] boots over KVM and a couple of real
+>>>> hw I have here, x86_64 only, x86_32 is untested and likely not
+>>>> complete - although little should be left. It enables the interrupt
+>>>> pipeline, but has not been checked against Xenomai, since FPU
+>>>> support is not there (*).  
+>>>
+>>> I have got a working eager-fpu 4.4 and 4.9 and looked into this
+>>> 4.14 as well, in the hope to get the patch against xenomai in a
+>>> shape that will work for all three kernels.
+>>>
+>>> So i ported my kernel patch to this 4.14 and adjusted xenomai to
+>>> work on that as well. Unfortunately the kernel does not boot. It
+>>> gets stuck right after switching the clocksource to tsc. My current
+>>> assumption is that the timer does not work, maybe interrupts in
+>>> general.
+>>>
+>>> Do you have a suggestion how to best debug that? I could also share
+>>> the current state of the fpu-patches so you could have a direct
+>>> look at it yourself.  
+>>
+>> I recently wrote a (short) piece about identifying and chasing those
+>> issues:
+>>
+>> https://dovetail.xenomai.org/pipeline/porting/devnotes/#losing-the-timer-tick
+> 
+> Yes, that description sounds about right. I am still digging to see why
+> _no_ interrupts seem to be arriving.
+> 
+> But i imagine you are looking forward to seeing the 4.14 split series
+> in action as well and might want to have a look as well. Here is what i
+> am currently working with, fpu should work ... once we are up.
+> 
+> https://github.com/henning-schild-work/linux-ipipe/tree/henning/fpu/4.14
+> https://github.com/henning-schild-work/xenomai/tree/henning/fpu
+> 
 
-diff --git a/arch/arm64/kernel/process.c b/arch/arm64/kernel/process.c
-index e958102fc69b..395a024d0ca3 100644
---- a/arch/arm64/kernel/process.c
-+++ b/arch/arm64/kernel/process.c
-@@ -73,36 +73,6 @@ EXPORT_SYMBOL_GPL(pm_power_off);
- 
- void (*arm_pm_restart)(enum reboot_mode reboot_mode, const char *cmd);
- 
--#ifdef CONFIG_IPIPE
--static void __ipipe_halt_root(void)
--{
--	struct ipipe_percpu_domain_data *p;
--
--	/*
--	 * Emulate idle entry sequence over the root domain, which is
--	 * stalled on entry.
--	 */
--	hard_local_irq_disable();
--
--	p = ipipe_this_cpu_root_context();
--	__clear_bit(IPIPE_STALL_FLAG, &p->status);
--
--	if (unlikely(__ipipe_ipending_p(p)))
--		__ipipe_sync_stage();
--	else {
--		cpu_do_idle();
--	}
--}
--
--#else /* !CONFIG_IPIPE */
--
--static void __ipipe_halt_root(void)
--{
--	cpu_do_idle();
--}
--
--#endif /* !CONFIG_IPIPE */
--
- /*
-  * This is our default idle handler.
-  */
-@@ -113,10 +83,8 @@ void arch_cpu_idle(void)
- 	 * tricks
- 	 */
- 	trace_cpu_idle_rcuidle(1, smp_processor_id());
--	if (!need_resched())
--		__ipipe_halt_root();
- 	cpu_do_idle();
--	local_irq_enable();
-+	local_irq_enable_full();
- 	trace_cpu_idle_rcuidle(PWR_EVENT_EXIT, smp_processor_id());
- }
- 
+The only few x86 test systems I have at hand still boot with this
+kernel, so I would need more info to dig this issue, obtained when
+CONFIG_IPIPE is off, specifically:
+
+- .config
+- the entire kernel log since early boot
+- /proc/interrupts
+- /proc/timer_list
+
+Thanks,
+
 -- 
-2.14.4
-
+Philippe.
 
