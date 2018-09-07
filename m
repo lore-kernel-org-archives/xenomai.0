@@ -1,8 +1,8 @@
 From: Philippe Gerum <rpm@xenomai.org>
-Date: Sun, 9 Sep 2018 17:54:16 +0200
-Message-Id: <E1fz3yF-0004Cb-HG@xenomai.org>
-Subject: [Xenomai] [PATCH 2/4] x86/fpu: ipipe: add inline qualifier to
- kernel_fpu_*() helpers
+Date: Fri, 7 Sep 2018 11:04:00 +0200
+Message-Id: <E1fzGi4-0003y4-3S@xenomai.org>
+Subject: [Xenomai] [PATCH 1/1] arm64: ipipe: route debug exceptions to
+ co-kernel
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -11,40 +11,27 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Henning Schild <henning.schild@siemens.com>
+To: Dmitriy Cherkasov <dmitriy@oss-tech.org>
 Cc: xenomai@xenomai.org
 
 ---
- arch/x86/include/asm/fpu/internal.h | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+ arch/arm64/mm/fault.c | 3 +++
+ 1 file changed, 3 insertions(+)
 
-diff --git a/arch/x86/include/asm/fpu/internal.h b/arch/x86/include/asm/fpu/internal.h
-index 5d37b192e866..9fe2c5d7308c 100644
---- a/arch/x86/include/asm/fpu/internal.h
-+++ b/arch/x86/include/asm/fpu/internal.h
-@@ -606,19 +606,19 @@ static inline void xsetbv(u32 index, u64 value)
+diff --git a/arch/arm64/mm/fault.c b/arch/arm64/mm/fault.c
+index 7dc5906d586f..70c72c2a7f7e 100644
+--- a/arch/arm64/mm/fault.c
++++ b/arch/arm64/mm/fault.c
+@@ -939,6 +939,9 @@ asmlinkage int __exception do_debug_exception(unsigned long addr,
+ 	struct siginfo info;
+ 	int rv;
  
- DECLARE_PER_CPU(bool, in_kernel_fpu);
- 
--static void kernel_fpu_disable(void)
-+static inline void kernel_fpu_disable(void)
- {
- 	WARN_ON_FPU(this_cpu_read(in_kernel_fpu));
- 	this_cpu_write(in_kernel_fpu, true);
- }
- 
--static void kernel_fpu_enable(void)
-+static inline void kernel_fpu_enable(void)
- {
- 	WARN_ON_FPU(!this_cpu_read(in_kernel_fpu));
- 	this_cpu_write(in_kernel_fpu, false);
- }
- 
--static bool kernel_fpu_disabled(void)
-+static inline bool kernel_fpu_disabled(void)
- {
- 	return this_cpu_read(in_kernel_fpu);
- }
++	if (__ipipe_report_trap(IPIPE_TRAP_BREAK, regs))
++		return 1;
++
+ 	/*
+ 	 * Tell lockdep we disabled irqs in entry.S. Do nothing if they were
+ 	 * already disabled to preserve the last enabled/disabled addresses.
 -- 
 2.14.4
 
