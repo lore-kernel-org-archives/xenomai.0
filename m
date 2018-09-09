@@ -1,8 +1,7 @@
-From: Sebastian Smolorz <sebastian.smolorz@gmx.de>
-Date: Tue, 16 Oct 2018 09:56:10 +0200
-Message-Id: <1539676570-4773-1-git-send-email-sebastian.smolorz@gmx.de>
-Subject: [Xenomai] [PATCH] rtdm: add integer file descriptor to struct
- rtdm_fd
+From: Philippe Gerum <rpm@xenomai.org>
+Date: Sun, 9 Sep 2018 18:30:55 +0200
+Message-Id: <E1fz3yJ-0004NP-VO@xenomai.org>
+Subject: [Xenomai] [PATCH 4/4] printk: ipipe: defer vprintk() output
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -11,58 +10,196 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
+To: Henning Schild <henning.schild@siemens.com>
+Cc: xenomai@xenomai.org
 
-RTDM drivers refer to open files or sockets by using struct rtdm_fd.
-Normally, the integer file descriptor returned by socket() or open() calls
-is not necessary for driver operations. However, in some special cases
-this value has to be determined. To ease the retrieval of this value for
-those drivers it is added directly to struct rtdm_fd. Otherwise it would
-be necessary to iterate over the fd's rb_tree.
-
-Signed-off-by: Sebastian Smolorz <sebastian.smolorz@gmx.de>
 ---
- include/cobalt/kernel/rtdm/fd.h | 6 ++++++
- kernel/cobalt/rtdm/fd.c         | 1 +
- 2 files changed, 7 insertions(+)
+ kernel/printk/printk.c | 136 ++++++++++++++++++++++++-------------------------
+ 1 file changed, 67 insertions(+), 69 deletions(-)
 
-diff --git a/include/cobalt/kernel/rtdm/fd.h b/include/cobalt/kernel/rtdm/fd.h
-index 58d3c4a..572b17e 100644
---- a/include/cobalt/kernel/rtdm/fd.h
-+++ b/include/cobalt/kernel/rtdm/fd.h
-@@ -298,6 +298,7 @@ struct rtdm_fd {
- 	struct rtdm_fd_ops *ops;
- 	struct cobalt_ppd *owner;
- 	unsigned int refs;
-+	int ufd;
- 	int minor;
- 	int oflags;
- #ifdef CONFIG_XENO_ARCH_SYS3264
-@@ -320,6 +321,11 @@ static inline struct cobalt_ppd *rtdm_fd_owner(const struct rtdm_fd *fd)
- 	return fd->owner;
+diff --git a/kernel/printk/printk.c b/kernel/printk/printk.c
+index 5500f9cc0658..965890eec38f 100644
+--- a/kernel/printk/printk.c
++++ b/kernel/printk/printk.c
+@@ -1762,44 +1762,6 @@ asmlinkage int vprintk_emit(int facility, int level,
+ }
+ EXPORT_SYMBOL(vprintk_emit);
+ 
+-asmlinkage int vprintk(const char *fmt, va_list args)
+-{
+-	return vprintk_func(fmt, args);
+-}
+-EXPORT_SYMBOL(vprintk);
+-
+-asmlinkage int printk_emit(int facility, int level,
+-			   const char *dict, size_t dictlen,
+-			   const char *fmt, ...)
+-{
+-	va_list args;
+-	int r;
+-
+-	va_start(args, fmt);
+-	r = vprintk_emit(facility, level, dict, dictlen, fmt, args);
+-	va_end(args);
+-
+-	return r;
+-}
+-EXPORT_SYMBOL(printk_emit);
+-
+-int vprintk_default(const char *fmt, va_list args)
+-{
+-	int r;
+-
+-#ifdef CONFIG_KGDB_KDB
+-	/* Allow to pass printk() to kdb but avoid a recursion. */
+-	if (unlikely(kdb_trap_printk && kdb_printf_cpu < 0)) {
+-		r = vkdb_printf(KDB_MSGSRC_PRINTK, fmt, args);
+-		return r;
+-	}
+-#endif
+-	r = vprintk_emit(0, LOGLEVEL_DEFAULT, NULL, 0, fmt, args);
+-
+-	return r;
+-}
+-EXPORT_SYMBOL_GPL(vprintk_default);
+-
+ #ifdef CONFIG_IPIPE
+ 
+ extern int __ipipe_printk_bypass;
+@@ -1859,37 +1821,12 @@ void __ipipe_flush_printk (unsigned virq, void *cookie)
+ 	raw_spin_unlock_irqrestore(&__ipipe_printk_lock, flags);
  }
  
-+static inline int rtdm_fd_ufd(const struct rtdm_fd *fd)
+-/**
+- * printk - print a kernel message
+- * @fmt: format string
+- *
+- * This is printk(). It can be called from any context. We want it to work.
+- *
+- * We try to grab the console_lock. If we succeed, it's easy - we log the
+- * output and call the console drivers.  If we fail to get the semaphore, we
+- * place the output into the log buffer and return. The current holder of
+- * the console_sem will notice the new output in console_unlock(); and will
+- * send it to the consoles before releasing the lock.
+- *
+- * One effect of this deferred printing is that code which calls printk() and
+- * then changes console_loglevel may break. This is because console_loglevel
+- * is inspected when the actual printing occurs.
+- *
+- * See also:
+- * printf(3)
+- *
+- * See the vsnprintf() documentation for format string extensions over C99.
+- */
+-
+-asmlinkage __visible int printk(const char *fmt, ...)
++static int do_vprintk(const char *fmt, va_list args)
+ {
+ 	int sprintk = 1, cs = -1;
+ 	unsigned long flags;
+-	va_list args;
+ 	int ret;
+ 
+-	va_start(args, fmt);
+-
+ 	flags = hard_local_irq_save();
+ 
+ 	if (__ipipe_printk_bypass || oops_in_progress)
+@@ -1911,27 +1848,88 @@ asmlinkage __visible int printk(const char *fmt, ...)
+ 	} else
+ 		ret = __ipipe_log_printk(fmt, args);
+ 
+-	va_end(args);
+-
+ 	return ret;
+ }
+ 
+ #else /* !CONFIG_IPIPE */
+ 
+-asmlinkage __visible int printk(const char *fmt, ...)
++static int do_vprintk(const char *fmt, va_list args)
 +{
-+	return fd->ufd;
++	return vprintk_func(fmt, args);
 +}
 +
- static inline int rtdm_fd_minor(const struct rtdm_fd *fd)
++#endif /* !CONFIG_IPIPE */
++
++asmlinkage int vprintk(const char *fmt, va_list args)
++{
++	return do_vprintk(fmt, args);
++}
++EXPORT_SYMBOL(vprintk);
++
++asmlinkage int printk_emit(int facility, int level,
++			   const char *dict, size_t dictlen,
++			   const char *fmt, ...)
  {
- 	return fd->minor;
-diff --git a/kernel/cobalt/rtdm/fd.c b/kernel/cobalt/rtdm/fd.c
-index 8d577b2..807a11e 100644
---- a/kernel/cobalt/rtdm/fd.c
-+++ b/kernel/cobalt/rtdm/fd.c
-@@ -166,6 +166,7 @@ int rtdm_fd_enter(struct rtdm_fd *fd, int ufd, unsigned int magic,
- 	fd->magic = magic;
- 	fd->ops = ops;
- 	fd->owner = ppd;
-+	fd->ufd = ufd;
- 	fd->refs = 1;
- 	set_compat_bit(fd);
+ 	va_list args;
+ 	int r;
  
+ 	va_start(args, fmt);
+-	r = vprintk_func(fmt, args);
++	r = vprintk_emit(facility, level, dict, dictlen, fmt, args);
+ 	va_end(args);
+ 
+ 	return r;
+ }
++EXPORT_SYMBOL(printk_emit);
++
++int vprintk_default(const char *fmt, va_list args)
++{
++	int r;
++
++#ifdef CONFIG_KGDB_KDB
++	/* Allow to pass printk() to kdb but avoid a recursion. */
++	if (unlikely(kdb_trap_printk && kdb_printf_cpu < 0)) {
++		r = vkdb_printf(KDB_MSGSRC_PRINTK, fmt, args);
++		return r;
++	}
++#endif
++	r = vprintk_emit(0, LOGLEVEL_DEFAULT, NULL, 0, fmt, args);
++
++	return r;
++}
++EXPORT_SYMBOL_GPL(vprintk_default);
++
++/**
++ * printk - print a kernel message
++ * @fmt: format string
++ *
++ * This is printk(). It can be called from any context. We want it to work.
++ *
++ * We try to grab the console_lock. If we succeed, it's easy - we log the
++ * output and call the console drivers.  If we fail to get the semaphore, we
++ * place the output into the log buffer and return. The current holder of
++ * the console_sem will notice the new output in console_unlock(); and will
++ * send it to the consoles before releasing the lock.
++ *
++ * One effect of this deferred printing is that code which calls printk() and
++ * then changes console_loglevel may break. This is because console_loglevel
++ * is inspected when the actual printing occurs.
++ *
++ * See also:
++ * printf(3)
++ *
++ * See the vsnprintf() documentation for format string extensions over C99.
++ */
++asmlinkage __visible int printk(const char *fmt, ...)
++{
++	va_list args;
++	int r;
+ 
+-#endif /* CONFIG_IPIPE */
++	va_start(args, fmt);
++	r = do_vprintk(fmt, args);
++	va_end(args);
+ 
++	return r;
++}
+ EXPORT_SYMBOL(printk);
+ 
+ #else /* CONFIG_PRINTK */
 -- 
-2.7.4
+2.14.4
 
 
