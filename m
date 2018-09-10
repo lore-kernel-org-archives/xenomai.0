@@ -1,17 +1,13 @@
-From: Lange Norbert <norbert.lange@andritz.com>
-Date: Fri, 14 Sep 2018 16:03:44 +0000
-Message-ID: <d08c2e82242c49fb90e0999caef2face@andritz.com>
-References: <a327adca-1576-0794-71cd-409b366dfdc8@alaxarxa.net>
- <28fd59c00f574c5a987ff73d72ffbc4c@andritz.com>
- <4078e730-9293-12b4-e3c2-843f0de5f637@alaxarxa.net>
- <c69b760a81bb4d3ab0bc78f3d4502b5f@andritz.com>,
- <89cbef00-21d4-eba1-2f49-4a1a0b822549@alaxarxa.net>
-In-Reply-To: <89cbef00-21d4-eba1-2f49-4a1a0b822549@alaxarxa.net>
-Content-Language: de-AT
-Content-Type: text/plain; charset="Windows-1252"
-Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-Subject: Re: [Xenomai] Order options to build a Xenomai program
+References: <6b63db30-c014-8d71-6efb-f5799945281c@siemens.com>
+In-Reply-To: <6b63db30-c014-8d71-6efb-f5799945281c@siemens.com>
+From: Greg Gallagher <greg@embeddedgreg.com>
+Date: Sun, 9 Sep 2018 23:41:09 -0400
+Message-ID: <CALLqZ8RSjyBT7PJ6kc6ZATcy0qhN14h6pPHsg1Q8pg5+mAXg3g@mail.gmail.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+Subject: Re: [Xenomai] [PATCH v2] Add CONTRIBUTING guide and workflow
+ explanation
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -20,184 +16,189 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Leopold Palomo-Avellaneda <leo@alaxarxa.net>, "Xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Jan Kiszka <jan.kiszka@siemens.com>
+Cc: "Xenomai@xenomai.org" <xenomai@xenomai.org>
 
+On Thu, Sep 6, 2018 at 8:48 AM Jan Kiszka <jan.kiszka@siemens.com> wrote:
 
-
->>> Norbert, I have followed your emails and your project. You did a good j=
-ob,
->>> but I don't agree with your approach. My points are:
->>>
->>> - You are trying to convert Xenomai a CMake project and this probably w=
-ill
->>> not happen because Upstream is very happy with the autotools. I don't l=
-ike
->>> to touch anything from upstream. Maybe some patch, but incorporated in
->>> Upstream.
->>
->> Sorry, that's nonsense, never thought about building Xenomai with CMake.
-
-> Sorry, you are right. It seemed that you tried to generated the config fi=
-les
-> generated usually with a cmake project.
-
-I do, but that's not happening during configuration or installation. I crea=
-ted
-the config templates with CMake as thast alot less error-prone and easier t=
-o maintain
-
->>> - I would prefer follow the Upstream guidelines that recommends use xen=
-o-
->>> config to obtain the needed parameters to build your application.
->>> So, any build tool should use xeno-config (maintained by upstream) that
->>> provide the correct flags or whatever to build your application.
->>
->> I tried multiple approaches, using xeno-config fell out shortly.
->> -   it's (logically) an target "executable".
->>=A0=A0=A0=A0 That imposes problems with CMake's normal search for those,
->>=A0=A0=A0=A0 not to mention CI when your builder works in a partition wit=
-h noexec.
->>=A0=A0=A0=A0 I would want to use config-files directly or with a host-exe=
-cutable,
->>=A0=A0=A0=A0 like pkg-config uses .pc files.
+> Shall both help new comers to understand in which form patches are
+> requested and what will happen to them normally after submitting them.
 >
-> I have not found any important problem with the xeno-config generate info=
- or any
-> problem with cmake. I agree with you that you need to exec an script to g=
-enerate
-> the info and it could have problems with partitions with noexec, etc.
-
-Well, I did find problems if you eg. create a "buildroot" and then move it.
-
->> -   I need to extract all information and not just flags for ONE configu=
-ration
+> Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
+> ---
 >
-> I don't extract the information for one configuration. I extract ALL the =
-modules
-> installed.
-
-yes, and xeno-config was not conceived for that.
-
->>=A0=A0=A0=A0 That=92s the most important issue, I need the "building bloc=
-ks" of the command
->>=A0=A0=A0=A0 line, not ONE commandline. This means you need to know xeno-=
-config
->>=A0=A0=A0=A0 and its flags precisely and figure out how to dissect multip=
-le outputs
->>=A0=A0=A0=A0 in those "building blocks".
->>=A0=A0=A0=A0 Fragile and not forwards-compatible.
+> Changes in v2:
+>  - hint to use checkpatch.pl
+>  - stable merge description
+>  - reformattings
 >
-> I don't agree. xeno-config is quite stable and well maintained. And it gi=
-ve you
-> the information that Upstream want that YOU use.
-
-figuring out the arguments and parsing them from within CMake is what I mea=
-nt with fragile
-and not forwards-compatible.
-If you have a project with Xenomai3 and a FindXenomai script,
-then you might have to update your code just to be able to use a future
-version. like for example if the linking order changed, which I suppose you=
- aren't
-deducing but use a fixed order.
-
->> Whats left is two variants:
->>
->> FindXenomai - this would be placed in your project or up streamed in CMa=
-ke.
->> Uses CMake functions to guess the paths, this might be hard to do with s=
-ome libdir / includedir
->> Configurations and would need to be updated independently of Xenomai.
+>  CONTRIBUTING.md | 117
+> ++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+>  1 file changed, 117 insertions(+)
+>  create mode 100644 CONTRIBUTING.md
 >
-> this is one way. Currently it just works.
-
-It works for a couple projects you are using.
-
->> CMake Config files - you place those in <libpath>/cmake/xenomai.
->> Those can be generated by config/install_cmakeconfig.sh from the repo (u=
-se same arguments as when configuring CMake).
->> The previously mentioned patchset adds those files to Xenomai and does t=
-his automatically when installing (using the autotools system).
->> Upstreaming in Xenomai would make everything hassle-free and forwards-co=
-mpatible (the config files would always match the version).
->>
->> The downside is of course that this would then be a burden to the Xenoma=
-i devs, but it should not need any changes outside of structural changes.
->> At which point someone will have to adapt CMake integration, however its=
- done - I would prefer it to be done just once
->>
->>
->> The repo contains other changes, attempting to sanitize the bootstrappin=
-g methods,
->> Without those the provided examples might not work (only the upstream bo=
-otstrapping method will work).
->> I hope atleast those can be upstreamed.
->
-> So, maybe that config files generated by the autotools, are to me the bes=
+> diff --git a/CONTRIBUTING.md b/CONTRIBUTING.md
+> new file mode 100644
+> index 0000000000..e6bb851471
+> --- /dev/null
+> +++ b/CONTRIBUTING.md
+> @@ -0,0 +1,117 @@
+> +Contributing to Xenomai
+> +=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+> +
+> +Contributions to Xenomai are always welcome. This document explains the
+> general
+> +requirements on contributions and the recommended preparation steps. It
+> also
+> +sketches the typical integration process of patches.
+> +
+> +
+> +Contribution Checklist
+> +----------------------
+> +
+> +- use git to manage your changes [*recomended*]
+> +
+> +- follow Linux Kernel coding style [**required**]
+> +    - see also [Linux kernel coding style](
+> https://www.kernel.org/doc/html/latest/process/coding-style.html)
+> +    - try out the checkpatch.pl script from the Linux kernel
+> +
+> +- add the required copyright header to each new file introduced
+> [**required**]
+> +
+> +- structure patches logically, in small steps [**required**]
+> +    - one separable functionality/fix/refactoring =3D one patch
+> +    - do not mix those there in a single patch
+> +    - after each patch, the tree still has to build and work, i.e. do no=
 t
-> solution. Then, the responsible of compile and install xenomai in a syste=
-m
-> will generate the config files to use it.
-
-the config files are not generated from scratch but have placeholders,
-the same placeholders xeno-config has. That's using the information
-right from the source =3D)
-
-> But for this solution you need that Jan or Phillipe accept that and maint=
-ain
-> that.
-
-Yep. I have to start somewhere though.
-
-> And looking your code and I would prefer a more simple way without module=
+> add
+> +      even temporary breakages inside a patch series (helps when trackin=
+g
+> down
+> +      bugs)
+> +    - use `git rebase -i` to restructure a patch series
+> +
+> +- base patches on top of latest master or - if there are dependencies -
+> on next
+> +  (note: next is an integration branch that may change non-linearly)
+> [**required**]
+> +
+> +- test patches sufficiently AFTER the last edit (obvious, but...)
+> [**required**]
+> +
+> +- add signed-off to all patches [**required**]
+> +    - to certify the "Developer's Certificate of Origin", see below
+> +    - check with your employer when not working on your own!
+> +
+> +- indicate if you think a patch fixes a bug present in a stable branch a=
 s
-> and simple, just fill some config vars. Because then it could be easy to =
-maintain.
-
-The repo deals with multiple issues, the config stuff is rather simple and =
-straightforward.
-not sure what you mean with modules? if you mean you prefer using CMake var=
-iables
-instead of imported libraries - sorry that's pretty much *the* CMake antipa=
-ttern.
-(To many reasons to list, just google for "modern CMake").
-
-*Using* Xenomai is as hard as adding this:
-
-find_package(Xenomai REQUIRED)
-
-xenomai_target_bootstrap(default_exe
-        SKINS posix
+> well [*recomended*]
+> +    - add a note to the cover letter of the patch series
+> +    - or add some remark after the "---" separator of the patch itself
+> +
+> +- post patches to mailing list [**required**]
+> +    - use `git format-patch/send-email` if possible
+> +    - send patches inline, do not append them
+> +    - no HTML emails!
+> +    - CC people who you think should look at the patches, e.g.
+> +      - affected maintainers
+> +      - someone who wrote a change that is fixed or reverted by you now
+> +      - who commented on related changes in the recent past
+> +      - who otherwise has expertise and is interested in the topic
+> +    - pull requests on gitlab are only optional
+> +
+> +- post follow-up version(s) if feedback requires this [**required**]
+> +
+> +- send reminder if nothing happened after about two weeks [*recomended*]
+> +
+> +
+> +Developer's Certificate of Origin 1.1
+> +-------------------------------------
+> +
+> +When signing-off a patch for this project like this
+> +
+> +    Signed-off-by: Random J Developer <random@developer.example.org>
+> +
+> +using your real name (no pseudonyms or anonymous contributions), you
+> declare the
+> +following:
+> +
+> +    By making a contribution to this project, I certify that:
+> +
+> +        (a) The contribution was created in whole or in part by me and I
+> +            have the right to submit it under the open source license
+> +            indicated in the file; or
+> +
+> +        (b) The contribution is based upon previous work that, to the be=
+st
+> +            of my knowledge, is covered under an appropriate open source
+> +            license and I have the right under that license to submit th=
+at
+> +            work with modifications, whether created in whole or in part
+> +            by me, under the same open source license (unless I am
+> +            permitted to submit under a different license), as indicated
+> +            in the file; or
+> +
+> +        (c) The contribution was provided directly to me by some other
+> +            person who certified (a), (b) or (c) and I have not modified
+> +            it.
+> +
+> +        (d) I understand and agree that this project and the contributio=
+n
+> +            are public and that a record of the contribution (including
+> all
+> +            personal information I submit with it, including my sign-off=
 )
+> is
+> +            maintained indefinitely and may be redistributed consistent
+> with
+> +            this project or the open source license(s) involved.
+> +
+> +See also [Sign your work - the Developer=E2=80=99s Certificate of Origin=
+](
+> https://www.kernel.org/doc/html/latest/process/submitting-patches.html#si=
+gn-your-work-the-developer-s-certificate-of-origin
+> )
+> +for further background on this process which was adopted from the Linux
+> kernel.
+> +
+> +
+> +Contribution Integration Process
+> +--------------------------------
+> +
+> +1. patch reviews performed on mailing list
+> +    * at least by maintainers, but everyone is invited
+> +    * feedback has to consider design, functionality and style
+> +    * simpler and clearer code preferred, even if original code works fi=
+ne
+> +
+> +2. accepted patches merged into next branch
+> +
+> +3. further testing done by community, including CI build tests, code
+> analyzer
+> +   runs, on-target tests
+> +
+> +4. if no new problems or discussions showed up, acceptance into master
+> +    * grace period for master: about 3 days
+> +    * urgent fixes may be applied sooner
+> +
+> +5. a stable-relevant patch is applied to the related stable branch after
+> it was
+> +   merged into master (except for patches that are stable-specific)
+> +
+> +gitlab facilities are not used for the review process so that people can
+> follow
+> +all changes and related discussions at a single stop, the mailing list.
+> This
+> +may change in the future if gitlab should improve their email integratio=
+n.
+> --
+> 2.16.4
+>
+> _______________________________________________
+> Xenomai mailing list
+> Xenomai@xenomai.org
+> https://xenomai.org/mailman/listinfo/xenomai
 
-Norbert
-________________________________
 
-This message and any attachments are solely for the use of the intended rec=
-ipients. They may contain privileged and/or confidential information or oth=
-er information protected from disclosure. If you are not an intended recipi=
-ent, you are hereby notified that you received this email in error and that=
- any review, dissemination, distribution or copying of this email and any a=
-ttachment is strictly prohibited. If you have received this email in error,=
- please contact the sender and delete the message and any attachment from y=
-our system.
-
-ANDRITZ HYDRO GmbH
-
-
-Rechtsform/ Legal form: Gesellschaft mit beschr=E4nkter Haftung / Corporati=
-on
-
-Firmensitz/ Registered seat: Wien
-
-Firmenbuchgericht/ Court of registry: Handelsgericht Wien
-
-Firmenbuchnummer/ Company registration: FN 61833 g
-
-DVR: 0605077
-
-UID-Nr.: ATU14756806
-
-
-Thank You
-________________________________
-
+Looks good to me :)
