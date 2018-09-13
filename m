@@ -1,14 +1,14 @@
-From: Jan Kiszka <jan.kiszka@siemens.com>
-References: <9e7eb4ea-6e66-473b-c29d-171085b165b0@siemens.com>
-Message-ID: <6a3e52ad-14d9-3991-eb8e-6f72880d3acc@siemens.com>
-Date: Tue, 2 Oct 2018 18:37:00 +0200
+References: <a327adca-1576-0794-71cd-409b366dfdc8@alaxarxa.net>
+ <28fd59c00f574c5a987ff73d72ffbc4c@andritz.com>
+From: Leopold Palomo-Avellaneda <leo@alaxarxa.net>
+Message-ID: <4078e730-9293-12b4-e3c2-843f0de5f637@alaxarxa.net>
+Date: Thu, 13 Sep 2018 23:36:17 +0200
 MIME-Version: 1.0
-In-Reply-To: <9e7eb4ea-6e66-473b-c29d-171085b165b0@siemens.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
+In-Reply-To: <28fd59c00f574c5a987ff73d72ffbc4c@andritz.com>
+Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] [PATCH] drivers/analogy: Fix improper memset in Intel
- 8255
+Content-Transfer-Encoding: 8bit
+Subject: Re: [Xenomai] Order options to build a Xenomai program
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,45 +17,82 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Xenomai <xenomai@xenomai.org>
+To: Lange Norbert <norbert.lange@andritz.com>, "Xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On 27.09.18 08:40, Jan Kiszka wrote:
-> This overwrote the pointer itself - and more. Long pending bugs.
-> 
-> Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
-> ---
->   kernel/drivers/analogy/intel/8255.c | 4 ++--
->   1 file changed, 2 insertions(+), 2 deletions(-)
-> 
-> diff --git a/kernel/drivers/analogy/intel/8255.c b/kernel/drivers/analogy/intel/8255.c
-> index ad8039b288..1abe250e0c 100644
-> --- a/kernel/drivers/analogy/intel/8255.c
-> +++ b/kernel/drivers/analogy/intel/8255.c
-> @@ -201,7 +201,7 @@ void a4l_subdev_8255_init(struct a4l_subdevice *subd)
->   {
->   	subd_8255_t *subd_8255 = (subd_8255_t *)subd->priv;
->   	/* Initializes the subdevice structure */
-> -	memset(&subd, 0, sizeof(struct a4l_subdevice));
-> +	memset(subd, 0, sizeof(struct a4l_subdevice));
->   
->   	/* Subdevice filling part */
->   
-> @@ -263,7 +263,7 @@ static int dev_8255_attach(struct a4l_device *dev, a4l_lnkdesc_t *arg)
->   			goto out_attach;
->   		}
->   
-> -		memset(&subd, 0, sizeof(struct a4l_subdevice));
-> +		memset(subd, 0, sizeof(struct a4l_subdevice));
->   		memset(subd->priv, 0, sizeof(subd_8255_t));
->   
->   		subd_8255 = (subd_8255_t *)subd->priv;
-> 
+Hi,
 
-Applied to master and stable.
+El 13/09/18 a les 14:42, Lange Norbert ha escrit:
 
-Jan
+> link order is important and goes left-to-right, this seems to include "wrappers",
+> which only wrap symbols that where already encountered (to the left of the wrapper argument)
+
+[...]
+
+
+> The call to malloc is wrapped to __wrap_malloc and __real_malloc is wrapped to malloc,
+> since there is no object file yet, this does nothing.
+> libmodechk exports __wrap_malloc and __real_malloc, yet no one cares and --as-needed
+> will remove it as dependency
+> The app objects depend on malloc.
+> 
+> I am not sure where your dependency to __real_malloc comes from, but I suppose
+> It's from the bootstrap code, which would be needed to be linked before the wrapper.
+> Probably weak dependencies further complicate things.
+
+I think that you got the point!!
+
+So, from my point of view it confirm my suspicious that the wrapper
+mechanism is fragile. I really didn't understand why Xenomai core team
+changed the native API for the POSIX. Although I saw the Jan Kiska
+conference video explaining it, tell me primitive or dump, but I prefer
+to have a RT API that links against RT libraries and you can mix the
+POSIX functions that you want in a clear way.
+
+OTOH I have to admit that convert a POSIX program to RT in an easy way
+is amazing.
+
+> As noted by Henning, please look at https://github.com/nolange/cmake_xenomai,
+> could use some feedback =).
+> Particularly look at the patchset which also removes some headaches with linking
+> precompiled object file for bootstrapping (but needs some upstream changes).
+
+Norbert, I have followed your emails and your project. You did a good
+job, but I don't agree with your approach. My points are:
+
+- You are trying to convert Xenomai a CMake project and this probably
+will not happen because Upstream is very happy with the autotools. I
+don't like to touch anything from upstream. Maybe some patch, but
+incorporated in Upstream.
+
+- I would prefer follow the Upstream guidelines that recommends use
+xeno-config to obtain the needed parameters to build your application.
+So, any build tool should use xeno-config (maintained by upstream) that
+provide the correct flags or whatever to build your application.
+
+- I agree with Norbert that bootstraped code is not a good idea. But
+this change should be done by upstream. But if I'm not wrong, Phillipe
+said that it hasn't an easy solution.
+
+But for the curious, I have done this example:
+
+https://github.com/iocroblab/xenomai-cmake
+
+but it's not polished and had some mistakes. The idea is to use any
+Xenomai installation without touched and then use CMake to build your
+application.
+
+Cheers,
+
+Leopold
+
 
 -- 
-Siemens AG, Corporate Technology, CT RDA IOT SES-DE
-Corporate Competence Center Embedded Linux
+--
+Linux User 152692     GPG: 05F4A7A949A2D9AA
+Catalonia
+-------------------------------------
+A: Because it messes up the order in which people normally read text.
+Q: Why is top-posting such a bad thing?
+A: Top-posting.
+Q: What is the most annoying thing in e-mail?
 
