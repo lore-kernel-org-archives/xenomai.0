@@ -1,10 +1,13 @@
 From: Philippe Gerum <rpm@xenomai.org>
-Date: Mon,  1 Oct 2018 15:56:14 +0200
-Message-Id: <20181001135619.24883-2-rpm@xenomai.org>
-In-Reply-To: <20181001135619.24883-1-rpm@xenomai.org>
-References: <20181001135619.24883-1-rpm@xenomai.org>
-Subject: [Xenomai] [PATCH 1/6] demo/cyclictest: turn on FIFO mode by default,
- detecting spurious relaxes
+References: <0cb43191-7b16-2e4b-cb49-807b26d3b45b@rambler.ru>
+Message-ID: <3cbfd2a4-e656-9b81-f5de-f71d1cec2ca5@xenomai.org>
+Date: Thu, 13 Sep 2018 18:30:38 +0200
+MIME-Version: 1.0
+In-Reply-To: <0cb43191-7b16-2e4b-cb49-807b26d3b45b@rambler.ru>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+Subject: [Xenomai]  kernel BUG
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -13,142 +16,51 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
-Cc: Jan Kiszka <jan.kiszka@siemens.com>, Philippe Gerum <rpm@xenomai.org>
+To: leo <feedcom@rambler.ru>, Xenomai@xenomai.org
 
-Make sure people do run the cyclictest the way it is intended to with
-Xenomai (i.e. using Xenomai's rt scheduler...).
+On 09/03/2018 04:27 PM, leo wrote:
+> 
+> Good day!
+> 
+> I'm learning Xenomai technology by reading the documentation.
+> The first small step is to try to push the ipipe-arm64 4.14.4 core
+> upstream.
+> Philippe's idea to consistently apply a set of patches is very good and
+> I almost got it.
 
-Also, detect and bail out upon spurious relaxes in dual kernel mode,
-so that latency results are dismissed as they should until the bug is
-fixed.
----
- demo/posix/cyclictest/cyclictest.c | 67 ++++++++++++++++++++++++++++++++++----
- 1 file changed, 60 insertions(+), 7 deletions(-)
+The learning curve may be shorter with the Dovetail interface [1], which
+is a much better co-kernel integration layer, I believe. This is still
+(not-so-early) work in progress and we don't support as many SoCs and
+architectures the I-pipe supports yet [2] though.
 
-diff --git a/demo/posix/cyclictest/cyclictest.c b/demo/posix/cyclictest/cyclictest.c
-index 31d9e5d0b..87f313836 100644
---- a/demo/posix/cyclictest/cyclictest.c
-+++ b/demo/posix/cyclictest/cyclictest.c
-@@ -343,16 +343,16 @@ static inline int tsgreater(struct timespec *a, struct timespec *b)
- static inline int64_t calcdiff(struct timespec t1, struct timespec t2)
- {
- 	int64_t diff;
--	diff = USEC_PER_SEC * (long long)((int) t1.tv_sec - (int) t2.tv_sec);
--	diff += ((int) t1.tv_nsec - (int) t2.tv_nsec) / 1000;
-+	diff = USEC_PER_SEC * (long long)(t1.tv_sec - t2.tv_sec);
-+	diff += (t1.tv_nsec - t2.tv_nsec) / 1000;
- 	return diff;
- }
- 
- static inline int64_t calcdiff_ns(struct timespec t1, struct timespec t2)
- {
- 	int64_t diff;
--	diff = NSEC_PER_SEC * (int64_t)((int) t1.tv_sec - (int) t2.tv_sec);
--	diff += ((int) t1.tv_nsec - (int) t2.tv_nsec);
-+	diff = NSEC_PER_SEC * (int64_t)(t1.tv_sec - t2.tv_sec);
-+	diff += (t1.tv_nsec - t2.tv_nsec);
- 	return diff;
- }
- 
-@@ -856,6 +856,10 @@ void *timerthread(void *param)
- 
- 	stat->threadstarted++;
- 
-+#ifdef CONFIG_XENO_COBALT
-+	if (pthread_setmode_np(0, PTHREAD_WARNSW, NULL))
-+		fatal("pthread_setmode_np()");
-+#endif
- 	while (!shutdown) {
- 
- 		uint64_t diff;
-@@ -1064,7 +1068,7 @@ static void display_help(int error)
- 	       "-N       --nsecs           print results in ns instead of us (default us)\n"
- 	       "-o RED   --oscope=RED      oscilloscope mode, reduce verbose output by RED\n"
- 	       "-O TOPT  --traceopt=TOPT   trace option\n"
--	       "-p PRIO  --prio=PRIO       priority of highest prio thread\n"
-+	       "-p PRIO  --prio=PRIO       priority of highest prio thread (defaults to 99)\n"
- 	       "-P       --preemptoff      Preempt off tracing (used with -b)\n"
- 	       "-q       --quiet           print only a summary on exit\n"
- 	       "	 --priospread       spread priority levels starting at specified value\n"
-@@ -1110,8 +1114,8 @@ void application_usage(void)
- static int use_nanosleep;
- static int timermode = TIMER_ABSTIME;
- static int use_system;
--static int priority;
--static int policy = SCHED_OTHER;	/* default policy if not specified */
-+static int priority = 99;
-+static int policy = SCHED_FIFO;	/* default policy if not specified */
- static int num_threads = 1;
- static int max_cycles;
- static int clocksel = 0;
-@@ -1805,9 +1809,52 @@ void *fifothread(void *param)
- 	return NULL;
- }
- 
-+#ifdef CONFIG_XENO_COBALT
-+#include <cobalt/uapi/syscall.h>
-+
-+static const char *reason_str[] = {
-+	[SIGDEBUG_UNDEFINED] = "received SIGDEBUG for unknown reason",
-+	[SIGDEBUG_MIGRATE_SIGNAL] = "received signal",
-+	[SIGDEBUG_MIGRATE_SYSCALL] = "invoked syscall",
-+	[SIGDEBUG_MIGRATE_FAULT] = "triggered fault",
-+	[SIGDEBUG_MIGRATE_PRIOINV] = "affected by priority inversion",
-+	[SIGDEBUG_NOMLOCK] = "process memory not locked",
-+	[SIGDEBUG_WATCHDOG] = "watchdog triggered (period too short?)",
-+	[SIGDEBUG_LOCK_BREAK] = "scheduler lock break",
-+};
-+
-+static void sigdebug(int sig, siginfo_t *si, void *context)
-+{
-+	const char fmt[] = "%s, aborting.\n"
-+		"(enabling CONFIG_XENO_OPT_DEBUG_TRACE_RELAX may help)\n";
-+	unsigned int reason = sigdebug_reason(si);
-+	int n __attribute__ ((unused));
-+	static char buffer[256];
-+
-+	if (reason > SIGDEBUG_WATCHDOG)
-+		reason = SIGDEBUG_UNDEFINED;
-+
-+	switch(reason) {
-+	case SIGDEBUG_UNDEFINED:
-+	case SIGDEBUG_NOMLOCK:
-+	case SIGDEBUG_WATCHDOG:
-+		n = snprintf(buffer, sizeof(buffer), "latency: %s\n",
-+			     reason_str[reason]);
-+		write_check(STDERR_FILENO, buffer, n);
-+		exit(EXIT_FAILURE);
-+	}
-+
-+	n = snprintf(buffer, sizeof(buffer), fmt, reason_str[reason]);
-+	write_check(STDERR_FILENO, buffer, n);
-+	signal(sig, SIG_DFL);
-+	kill(getpid(), sig);
-+}
-+
-+#endif
- 
- int main(int argc, char **argv)
- {
-+	struct sigaction sa __attribute__((unused));
- 	sigset_t sigset;
- 	int signum = SIGALRM;
- 	int mode;
-@@ -1952,6 +1999,12 @@ int main(int argc, char **argv)
- 	signal(SIGINT, sighand);
- 	signal(SIGTERM, sighand);
- 	signal(SIGUSR1, sighand);
-+#ifdef CONFIG_XENO_COBALT
-+	sigemptyset(&sa.sa_mask);
-+	sa.sa_sigaction = sigdebug;
-+	sa.sa_flags = SA_SIGINFO;
-+	sigaction(SIGDEBUG, &sa, NULL);
-+#endif
- 
- 	parameters = calloc(num_threads, sizeof(struct thread_param *));
- 	if (!parameters)
+However, documentation about porting Dovetail [3] is continuously
+updated, and it runs the latest 4.19-rc3 kernel unlike the I-pipe. Many
+basic concepts of Dovetail have been inherited from the I-pipe, so
+people familiar with the latter should find their way easily in the former.
+
+Bonus point: since Dovetail is all about deeply integrating a co-kernel
+interface logic into the regular kernel machinery, it would certainly be
+a better candidate for upstreaming than the I-pipe is.
+
+Btw, Dovetail has not been ported to any Allwinner SoC yet, including
+the H5. The co-kernel interface for arm64 is not complete yet, but the
+interrupt pipeline core is there and works pretty well already, so this
+may be an interesting challenge to port it to an Orange PI PC target, as
+a first step.
+
+> In both cases, /usr/xenomai/cyclictest shows:
+> 99.98% of results is in the range of 0 - 50 milliseconds.
+> 0.02% is in the range of 51-150 milliseconds.
+>
+
+Something looks wrong. Xenomai over the I-pipe on an Allwinner H5 SoC
+should be in the 50-70 us range, worst-case. Anything falling into the
+millisecond range is definitely a pathological case.
+
+[1] git://lab.xenomai.org/linux-dovetail.git
+[2] https://dovetail.xenomai.org/status/
+[3] https://dovetail.xenomai.org/
+
 -- 
-2.14.4
-
+Philippe.
 
