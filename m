@@ -1,8 +1,16 @@
-From: Sebastian Smolorz <sebastian.smolorz@gmx.de>
-Date: Wed, 17 Oct 2018 12:56:18 +0200
-Message-Id: <1539773778-4283-1-git-send-email-sebastian.smolorz@gmx.de>
-Subject: [Xenomai] [PATCH v3] rtdm: expose user-side file descriptors to
- drivers
+References: <a327adca-1576-0794-71cd-409b366dfdc8@alaxarxa.net>
+ <28fd59c00f574c5a987ff73d72ffbc4c@andritz.com>
+ <4078e730-9293-12b4-e3c2-843f0de5f637@alaxarxa.net>
+ <285343492.3950889.1536911128629.JavaMail.zimbra@wolfram.com>
+From: Leopold Palomo-Avellaneda <leo@alaxarxa.net>
+Message-ID: <32e5ed98-652a-bd2b-8b46-2424c42b9f7a@alaxarxa.net>
+Date: Fri, 14 Sep 2018 15:54:51 +0200
+MIME-Version: 1.0
+In-Reply-To: <285343492.3950889.1536911128629.JavaMail.zimbra@wolfram.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai] Order options to build a Xenomai program
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -11,58 +19,42 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
+To: Per Oberg <pero@wolfram.com>, xenomai <xenomai@xenomai.org>
 
-RTDM drivers refer to open files or sockets by using struct rtdm_fd.
-Normally, the user-side file descriptors returned by socket() or open()
-calls are not necessary for driver operations. However, in some special
-cases the user-side fd has to be determined, for example as return
-value of rt_tcp_accept() which is a driver function of RTnet's TCP
-protocol driver.
+On 14/09/18 09:45, Per Oberg wrote:
 
-Signed-off-by: Sebastian Smolorz <sebastian.smolorz@gmx.de>
----
- include/cobalt/kernel/rtdm/fd.h | 6 ++++++
- kernel/cobalt/rtdm/fd.c         | 1 +
- 2 files changed, 7 insertions(+)
+[...]
 
-diff --git a/include/cobalt/kernel/rtdm/fd.h b/include/cobalt/kernel/rtdm/fd.h
-index 58d3c4a..572b17e 100644
---- a/include/cobalt/kernel/rtdm/fd.h
-+++ b/include/cobalt/kernel/rtdm/fd.h
-@@ -298,6 +298,7 @@ struct rtdm_fd {
- 	struct rtdm_fd_ops *ops;
- 	struct cobalt_ppd *owner;
- 	unsigned int refs;
-+	int ufd;
- 	int minor;
- 	int oflags;
- #ifdef CONFIG_XENO_ARCH_SYS3264
-@@ -320,6 +321,11 @@ static inline struct cobalt_ppd *rtdm_fd_owner(const struct rtdm_fd *fd)
- 	return fd->owner;
- }
- 
-+static inline int rtdm_fd_ufd(const struct rtdm_fd *fd)
-+{
-+	return fd->ufd;
-+}
-+
- static inline int rtdm_fd_minor(const struct rtdm_fd *fd)
- {
- 	return fd->minor;
-diff --git a/kernel/cobalt/rtdm/fd.c b/kernel/cobalt/rtdm/fd.c
-index 8d577b2..807a11e 100644
---- a/kernel/cobalt/rtdm/fd.c
-+++ b/kernel/cobalt/rtdm/fd.c
-@@ -166,6 +166,7 @@ int rtdm_fd_enter(struct rtdm_fd *fd, int ufd, unsigned int magic,
- 	fd->magic = magic;
- 	fd->ops = ops;
- 	fd->owner = ppd;
-+	fd->ufd = ufd;
- 	fd->refs = 1;
- 	set_compat_bit(fd);
- 
+> 
+> Being able to use the same code, without patches or a lot of defines including other files is a very clean way of debugging your software. I often set up Simulations where I use my laptop running or our controller, possibly connected to remote hardware to debug stuff. For these cases  the POSIX skin is very useful.
+> 
+>>> As noted by Henning, please look at https://github.com/nolange/cmake_xenomai,
+>>> could use some feedback =).
+>>> Particularly look at the patchset which also removes some headaches with linking
+>>> precompiled object file for bootstrapping (but needs some upstream changes).
+> 
+>> Norbert, I have followed your emails and your project. You did a good
+>> job, but I don't agree with your approach. My points are:
+> 
+>> - You are trying to convert Xenomai a CMake project and this probably
+>> will not happen because Upstream is very happy with the autotools. I
+>> don't like to touch anything from upstream. Maybe some patch, but
+>> incorporated in Upstream.
+> 
+> What do you mean with "convert Xenomai a CMake project"? I feel that I am missing something...
+> Is it simply that  the "xeno-config" way of doing things isn't cmak-onic enough for a "real" CMake project or is there something deeper?
+
+well, I'm sorry I have been not clear. I'm saying the Norbert is trying to
+generate the config files that normally are generating by cmake.
+
+Leopold
 -- 
-2.7.4
-
+--
+Linux User 152692     GPG: 05F4A7A949A2D9AA
+Catalonia
+-------------------------------------
+A: Because it messes up the order in which people normally read text.
+Q: Why is top-posting such a bad thing?
+A: Top-posting.
+Q: What is the most annoying thing in e-mail?
 
