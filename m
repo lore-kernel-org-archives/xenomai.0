@@ -1,13 +1,11 @@
+From: Henning Schild <henning.schild@siemens.com>
+Date: Fri, 14 Sep 2018 18:14:42 +0200
+Message-Id: <20180914161442.2406-6-henning.schild@siemens.com>
+In-Reply-To: <20180914161442.2406-1-henning.schild@siemens.com>
+References: <20180914161442.2406-1-henning.schild@siemens.com>
 MIME-Version: 1.0
-References: <6b63db30-c014-8d71-6efb-f5799945281c@siemens.com>
-In-Reply-To: <6b63db30-c014-8d71-6efb-f5799945281c@siemens.com>
-From: Greg Gallagher <greg@embeddedgreg.com>
-Date: Sun, 9 Sep 2018 23:41:09 -0400
-Message-ID: <CALLqZ8RSjyBT7PJ6kc6ZATcy0qhN14h6pPHsg1Q8pg5+mAXg3g@mail.gmail.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-Subject: Re: [Xenomai] [PATCH v2] Add CONTRIBUTING guide and workflow
- explanation
+Content-Transfer-Encoding: 8bit
+Subject: [Xenomai] [PATCHv2 4/4] cobalt/x86: add ipipe-4.14 eager fpu support
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,189 +14,97 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jan Kiszka <jan.kiszka@siemens.com>
-Cc: "Xenomai@xenomai.org" <xenomai@xenomai.org>
+To: xenomai@xenomai.org
 
-On Thu, Sep 6, 2018 at 8:48 AM Jan Kiszka <jan.kiszka@siemens.com> wrote:
+4.14 is always eager, unfortunately we will need a few ifdefs inside the
+eager fpu support as well.
 
-> Shall both help new comers to understand in which form patches are
-> requested and what will happen to them normally after submitting them.
->
-> Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
-> ---
->
-> Changes in v2:
->  - hint to use checkpatch.pl
->  - stable merge description
->  - reformattings
->
->  CONTRIBUTING.md | 117
-> ++++++++++++++++++++++++++++++++++++++++++++++++++++++++
->  1 file changed, 117 insertions(+)
->  create mode 100644 CONTRIBUTING.md
->
-> diff --git a/CONTRIBUTING.md b/CONTRIBUTING.md
-> new file mode 100644
-> index 0000000000..e6bb851471
-> --- /dev/null
-> +++ b/CONTRIBUTING.md
-> @@ -0,0 +1,117 @@
-> +Contributing to Xenomai
-> +=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
-> +
-> +Contributions to Xenomai are always welcome. This document explains the
-> general
-> +requirements on contributions and the recommended preparation steps. It
-> also
-> +sketches the typical integration process of patches.
-> +
-> +
-> +Contribution Checklist
-> +----------------------
-> +
-> +- use git to manage your changes [*recomended*]
-> +
-> +- follow Linux Kernel coding style [**required**]
-> +    - see also [Linux kernel coding style](
-> https://www.kernel.org/doc/html/latest/process/coding-style.html)
-> +    - try out the checkpatch.pl script from the Linux kernel
-> +
-> +- add the required copyright header to each new file introduced
-> [**required**]
-> +
-> +- structure patches logically, in small steps [**required**]
-> +    - one separable functionality/fix/refactoring =3D one patch
-> +    - do not mix those there in a single patch
-> +    - after each patch, the tree still has to build and work, i.e. do no=
-t
-> add
-> +      even temporary breakages inside a patch series (helps when trackin=
-g
-> down
-> +      bugs)
-> +    - use `git rebase -i` to restructure a patch series
-> +
-> +- base patches on top of latest master or - if there are dependencies -
-> on next
-> +  (note: next is an integration branch that may change non-linearly)
-> [**required**]
-> +
-> +- test patches sufficiently AFTER the last edit (obvious, but...)
-> [**required**]
-> +
-> +- add signed-off to all patches [**required**]
-> +    - to certify the "Developer's Certificate of Origin", see below
-> +    - check with your employer when not working on your own!
-> +
-> +- indicate if you think a patch fixes a bug present in a stable branch a=
-s
-> well [*recomended*]
-> +    - add a note to the cover letter of the patch series
-> +    - or add some remark after the "---" separator of the patch itself
-> +
-> +- post patches to mailing list [**required**]
-> +    - use `git format-patch/send-email` if possible
-> +    - send patches inline, do not append them
-> +    - no HTML emails!
-> +    - CC people who you think should look at the patches, e.g.
-> +      - affected maintainers
-> +      - someone who wrote a change that is fixed or reverted by you now
-> +      - who commented on related changes in the recent past
-> +      - who otherwise has expertise and is interested in the topic
-> +    - pull requests on gitlab are only optional
-> +
-> +- post follow-up version(s) if feedback requires this [**required**]
-> +
-> +- send reminder if nothing happened after about two weeks [*recomended*]
-> +
-> +
-> +Developer's Certificate of Origin 1.1
-> +-------------------------------------
-> +
-> +When signing-off a patch for this project like this
-> +
-> +    Signed-off-by: Random J Developer <random@developer.example.org>
-> +
-> +using your real name (no pseudonyms or anonymous contributions), you
-> declare the
-> +following:
-> +
-> +    By making a contribution to this project, I certify that:
-> +
-> +        (a) The contribution was created in whole or in part by me and I
-> +            have the right to submit it under the open source license
-> +            indicated in the file; or
-> +
-> +        (b) The contribution is based upon previous work that, to the be=
-st
-> +            of my knowledge, is covered under an appropriate open source
-> +            license and I have the right under that license to submit th=
-at
-> +            work with modifications, whether created in whole or in part
-> +            by me, under the same open source license (unless I am
-> +            permitted to submit under a different license), as indicated
-> +            in the file; or
-> +
-> +        (c) The contribution was provided directly to me by some other
-> +            person who certified (a), (b) or (c) and I have not modified
-> +            it.
-> +
-> +        (d) I understand and agree that this project and the contributio=
-n
-> +            are public and that a record of the contribution (including
-> all
-> +            personal information I submit with it, including my sign-off=
-)
-> is
-> +            maintained indefinitely and may be redistributed consistent
-> with
-> +            this project or the open source license(s) involved.
-> +
-> +See also [Sign your work - the Developer=E2=80=99s Certificate of Origin=
-](
-> https://www.kernel.org/doc/html/latest/process/submitting-patches.html#si=
-gn-your-work-the-developer-s-certificate-of-origin
-> )
-> +for further background on this process which was adopted from the Linux
-> kernel.
-> +
-> +
-> +Contribution Integration Process
-> +--------------------------------
-> +
-> +1. patch reviews performed on mailing list
-> +    * at least by maintainers, but everyone is invited
-> +    * feedback has to consider design, functionality and style
-> +    * simpler and clearer code preferred, even if original code works fi=
-ne
-> +
-> +2. accepted patches merged into next branch
-> +
-> +3. further testing done by community, including CI build tests, code
-> analyzer
-> +   runs, on-target tests
-> +
-> +4. if no new problems or discussions showed up, acceptance into master
-> +    * grace period for master: about 3 days
-> +    * urgent fixes may be applied sooner
-> +
-> +5. a stable-relevant patch is applied to the related stable branch after
-> it was
-> +   merged into master (except for patches that are stable-specific)
-> +
-> +gitlab facilities are not used for the review process so that people can
-> follow
-> +all changes and related discussions at a single stop, the mailing list.
-> This
-> +may change in the future if gitlab should improve their email integratio=
-n.
-> --
-> 2.16.4
->
-> _______________________________________________
-> Xenomai mailing list
-> Xenomai@xenomai.org
-> https://xenomai.org/mailman/listinfo/xenomai
+Signed-off-by: Henning Schild <henning.schild@siemens.com>
+---
+ .../arch/x86/include/asm/xenomai/wrappers.h   |  4 ++++
+ kernel/cobalt/arch/x86/thread.c               | 21 ++++++++++++++++++-
+ 2 files changed, 24 insertions(+), 1 deletion(-)
+
+diff --git a/kernel/cobalt/arch/x86/include/asm/xenomai/wrappers.h b/kernel/cobalt/arch/x86/include/asm/xenomai/wrappers.h
+index a47730106..a4cc368a5 100644
+--- a/kernel/cobalt/arch/x86/include/asm/xenomai/wrappers.h
++++ b/kernel/cobalt/arch/x86/include/asm/xenomai/wrappers.h
+@@ -32,6 +32,10 @@
+     LINUX_VERSION_CODE < KERNEL_VERSION(4,5,0)
+ #define IPIPE_X86_FPU_EAGER
+ #endif
++#if LINUX_VERSION_CODE >= KERNEL_VERSION(4,14,0)
++#define IPIPE_X86_FPU_EAGER
++#endif
++
+ 
+ #if LINUX_VERSION_CODE < KERNEL_VERSION(4,2,0)
+ #include <asm/i387.h>
+diff --git a/kernel/cobalt/arch/x86/thread.c b/kernel/cobalt/arch/x86/thread.c
+index 18cf636e5..2668ce274 100644
+--- a/kernel/cobalt/arch/x86/thread.c
++++ b/kernel/cobalt/arch/x86/thread.c
+@@ -42,6 +42,7 @@ static struct kmem_cache *xstate_cache;
+ #define cpu_has_xsave boot_cpu_has(X86_FEATURE_XSAVE)
+ #endif
+ 
++#ifndef IPIPE_X86_FPU_EAGER
+ #if LINUX_VERSION_CODE < KERNEL_VERSION(4,2,0)
+ #include <asm/i387.h>
+ #include <asm/fpu-internal.h>
+@@ -72,6 +73,9 @@ static inline void x86_fpregs_activate(struct task_struct *t)
+ #define x86_xstate_alignment		__alignof__(union fpregs_state)
+ 
+ #endif
++#else /* IPIPE_X86_FPU_EAGER */
++#define x86_xstate_alignment		__alignof__(union fpregs_state)
++#endif /* ! IPIPE_X86_FPU_EAGER */
+ 
+ #if LINUX_VERSION_CODE < KERNEL_VERSION(4,8,0)
+ /*
+@@ -465,9 +469,15 @@ void xnarch_leave_root(struct xnthread *root)
+ 	// save fpregs from in-kernel use
+ 	copy_fpregs_to_fpstate(rootcb->kfpu);
+ 	kernel_fpu_enable();
++#if LINUX_VERSION_CODE >= KERNEL_VERSION(4,14,0)
++	// restore current's fpregs
++	__cpu_invalidate_fpregs_state();
++	switch_fpu_finish(&current->thread.fpu, smp_processor_id());
++#else
+ 	// mark current thread as not owning the FPU anymore
+ 	if (&current->thread.fpu.fpstate_active)
+ 		fpregs_deactivate(&current->thread.fpu);
++#endif
+ }
+ 
+ void xnarch_switch_fpu(struct xnthread *from, struct xnthread *to)
+@@ -528,7 +538,11 @@ void xnarch_init_shadow_tcb(struct xnthread *thread)
+ #else /* IPIPE_X86_FPU_EAGER */
+ 	/* XNFPU is always set */
+ 	xnthread_set_state(thread, XNFPU);
++#if LINUX_VERSION_CODE < KERNEL_VERSION(4,14,0)
+ 	fpu__activate_fpstate_read(&p->thread.fpu);
++#else
++	fpu__initialize(&p->thread.fpu);
++#endif
+ #endif /* ! IPIPE_X86_FPU_EAGER */
+ }
+ 
+@@ -537,7 +551,12 @@ int mach_x86_thread_init(void)
+ 	xstate_cache = kmem_cache_create("cobalt_x86_xstate",
+ 					 fpu_kernel_xstate_size,
+ 					 x86_xstate_alignment,
+-					 SLAB_NOTRACK, NULL);
++#if LINUX_VERSION_CODE < KERNEL_VERSION(4,14,0)
++					 SLAB_NOTRACK,
++#else
++					 0,
++#endif
++					 NULL);
+ 	if (xstate_cache == NULL)
+ 		return -ENOMEM;
+ 
+-- 
+2.19.0
 
 
-Looks good to me :)
