@@ -1,15 +1,11 @@
-Subject: Re: [Xenomai] [PATCH] boilerplate/avl: fix missing include
-References: <1539865220-1372-1-git-send-email-sebastian.smolorz@gmx.de>
- <2d0b645e-d23b-db0f-ea66-17dc8a75e918@xenomai.org> <2049752.DBDckmn0oA@lenni>
- <36670432.JDg3nDlJl9@lenni>
-From: Philippe Gerum <rpm@xenomai.org>
-Message-ID: <212cc963-4cb6-2e0d-67db-f74b2719f15f@xenomai.org>
-Date: Tue, 23 Oct 2018 11:11:21 +0200
+From: Henning Schild <henning.schild@siemens.com>
+Date: Fri, 14 Sep 2018 17:10:18 +0200
+Message-Id: <20180914151018.1226-5-henning.schild@siemens.com>
+In-Reply-To: <20180914151018.1226-1-henning.schild@siemens.com>
+References: <20180914151018.1226-1-henning.schild@siemens.com>
 MIME-Version: 1.0
-In-Reply-To: <36670432.JDg3nDlJl9@lenni>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+Subject: [Xenomai] [PATCHv2 4/4] cobalt/x86: add ipipe-4.14 eager fpu support
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -18,56 +14,97 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Sebastian Smolorz <Sebastian.Smolorz@gmx.de>, xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-On 10/19/18 5:10 PM, Sebastian Smolorz wrote:
-> Hello Philippe,
-> 
-> Sebastian Smolorz wrote:
->> On 10/19/2018 09:16 AM, Philippe Gerum wrote:
->>> On 10/18/2018 04:37 PM, Sebastian Smolorz wrote:
->>>> Nevertheless, I guess there is an issue with the definition of
->>>> const
->>>> (line 50) in include/boilerplate/compiler.h. It does work with gcc
->>>> 5.4 but not with gcc 4.3.5.
->>>
->>> Could you elaborate on this? Which error pops us, in which context?
->>
->> Compilation of libboilerplate and libiniparser (master and next) fails
->> with a cross gcc 4.3.5 for x86_32 (i586) targets. If I change the
->> line mentioned above into
->>
->> #define __const const
->>
->> the error does not pop up any more. Works also when I completely
->> remove the #define __const.
-> 
-> I've found two additional compile errors due to the usage of ancient gcc 
-> and glibc. I could prepare patches for that. But I'm not sure how to fix 
-> this __const issue properly. I've seen that you introduced those lines 
-> in commit  5632adb8 into -next. I suppose you faced an issue which 
-> needed this fix, am I correct?
-> 
+4.14 is always eager, unfortunately we will need a few ifdefs inside the
+eager fpu support as well.
 
-Adding constness to a function was needed at some point, __const was
-meant to be a shorthand for annotating the code. You did not provide the
-error message received from gcc 4.3 so I can't be sure, however the
-following change might fix the issue:
+Signed-off-by: Henning Schild <henning.schild@siemens.com>
+---
+ .../arch/x86/include/asm/xenomai/wrappers.h   |  4 ++++
+ kernel/cobalt/arch/x86/thread.c               | 21 ++++++++++++++++++-
+ 2 files changed, 24 insertions(+), 1 deletion(-)
 
-diff --git a/include/boilerplate/compiler.h b/include/boilerplate/compiler.h
-index f526eb269..469d0c249 100644
---- a/include/boilerplate/compiler.h
-+++ b/include/boilerplate/compiler.h
-@@ -47,7 +47,7 @@
+diff --git a/kernel/cobalt/arch/x86/include/asm/xenomai/wrappers.h b/kernel/cobalt/arch/x86/include/asm/xenomai/wrappers.h
+index a47730106..a4cc368a5 100644
+--- a/kernel/cobalt/arch/x86/include/asm/xenomai/wrappers.h
++++ b/kernel/cobalt/arch/x86/include/asm/xenomai/wrappers.h
+@@ -32,6 +32,10 @@
+     LINUX_VERSION_CODE < KERNEL_VERSION(4,5,0)
+ #define IPIPE_X86_FPU_EAGER
  #endif
-
- #ifndef __const
--#define __const		__attribute__((__const__))
-+#define __const		__attribute__((const))
++#if LINUX_VERSION_CODE >= KERNEL_VERSION(4,14,0)
++#define IPIPE_X86_FPU_EAGER
++#endif
++
+ 
+ #if LINUX_VERSION_CODE < KERNEL_VERSION(4,2,0)
+ #include <asm/i387.h>
+diff --git a/kernel/cobalt/arch/x86/thread.c b/kernel/cobalt/arch/x86/thread.c
+index 18cf636e5..2668ce274 100644
+--- a/kernel/cobalt/arch/x86/thread.c
++++ b/kernel/cobalt/arch/x86/thread.c
+@@ -42,6 +42,7 @@ static struct kmem_cache *xstate_cache;
+ #define cpu_has_xsave boot_cpu_has(X86_FEATURE_XSAVE)
  #endif
-
- #ifndef __pure
-
+ 
++#ifndef IPIPE_X86_FPU_EAGER
+ #if LINUX_VERSION_CODE < KERNEL_VERSION(4,2,0)
+ #include <asm/i387.h>
+ #include <asm/fpu-internal.h>
+@@ -72,6 +73,9 @@ static inline void x86_fpregs_activate(struct task_struct *t)
+ #define x86_xstate_alignment		__alignof__(union fpregs_state)
+ 
+ #endif
++#else /* IPIPE_X86_FPU_EAGER */
++#define x86_xstate_alignment		__alignof__(union fpregs_state)
++#endif /* ! IPIPE_X86_FPU_EAGER */
+ 
+ #if LINUX_VERSION_CODE < KERNEL_VERSION(4,8,0)
+ /*
+@@ -465,9 +469,15 @@ void xnarch_leave_root(struct xnthread *root)
+ 	// save fpregs from in-kernel use
+ 	copy_fpregs_to_fpstate(rootcb->kfpu);
+ 	kernel_fpu_enable();
++#if LINUX_VERSION_CODE >= KERNEL_VERSION(4,14,0)
++	// restore current's fpregs
++	__cpu_invalidate_fpregs_state();
++	switch_fpu_finish(&current->thread.fpu, smp_processor_id());
++#else
+ 	// mark current thread as not owning the FPU anymore
+ 	if (&current->thread.fpu.fpstate_active)
+ 		fpregs_deactivate(&current->thread.fpu);
++#endif
+ }
+ 
+ void xnarch_switch_fpu(struct xnthread *from, struct xnthread *to)
+@@ -528,7 +538,11 @@ void xnarch_init_shadow_tcb(struct xnthread *thread)
+ #else /* IPIPE_X86_FPU_EAGER */
+ 	/* XNFPU is always set */
+ 	xnthread_set_state(thread, XNFPU);
++#if LINUX_VERSION_CODE < KERNEL_VERSION(4,14,0)
+ 	fpu__activate_fpstate_read(&p->thread.fpu);
++#else
++	fpu__initialize(&p->thread.fpu);
++#endif
+ #endif /* ! IPIPE_X86_FPU_EAGER */
+ }
+ 
+@@ -537,7 +551,12 @@ int mach_x86_thread_init(void)
+ 	xstate_cache = kmem_cache_create("cobalt_x86_xstate",
+ 					 fpu_kernel_xstate_size,
+ 					 x86_xstate_alignment,
+-					 SLAB_NOTRACK, NULL);
++#if LINUX_VERSION_CODE < KERNEL_VERSION(4,14,0)
++					 SLAB_NOTRACK,
++#else
++					 0,
++#endif
++					 NULL);
+ 	if (xstate_cache == NULL)
+ 		return -ENOMEM;
+ 
 -- 
-Philippe.
+2.19.0
+
 
