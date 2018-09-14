@@ -1,14 +1,17 @@
-Date: Fri, 14 Sep 2018 17:16:58 +0200
-From: Henning Schild <henning.schild@siemens.com>
-Message-ID: <20180914171658.169ee9bf@md1pvb1c.ad001.siemens.net>
-In-Reply-To: <20180914151018.1226-5-henning.schild@siemens.com>
-References: <20180914151018.1226-1-henning.schild@siemens.com>
- <20180914151018.1226-5-henning.schild@siemens.com>
+From: Lange Norbert <norbert.lange@andritz.com>
+Date: Fri, 14 Sep 2018 16:03:44 +0000
+Message-ID: <d08c2e82242c49fb90e0999caef2face@andritz.com>
+References: <a327adca-1576-0794-71cd-409b366dfdc8@alaxarxa.net>
+ <28fd59c00f574c5a987ff73d72ffbc4c@andritz.com>
+ <4078e730-9293-12b4-e3c2-843f0de5f637@alaxarxa.net>
+ <c69b760a81bb4d3ab0bc78f3d4502b5f@andritz.com>,
+ <89cbef00-21d4-eba1-2f49-4a1a0b822549@alaxarxa.net>
+In-Reply-To: <89cbef00-21d4-eba1-2f49-4a1a0b822549@alaxarxa.net>
+Content-Language: de-AT
+Content-Type: text/plain; charset="Windows-1252"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] [PATCHv2 4/4] cobalt/x86: add ipipe-4.14 eager fpu
- support
+Subject: Re: [Xenomai] Order options to build a Xenomai program
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,116 +20,184 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
-
-All three kernels are tested now. I addressed comments from the first
-review. Unfortunately i did not find a nice split to reduce the ifdef
-hell we are in here.
-
-I guess once we drop lazy fpu, most of it will go away.
-
-Henning
-
-Am Fri, 14 Sep 2018 17:10:18 +0200
-schrieb Henning Schild <henning.schild@siemens.com>:
-
-> 4.14 is always eager, unfortunately we will need a few ifdefs inside
-> the eager fpu support as well.
-> 
-> Signed-off-by: Henning Schild <henning.schild@siemens.com>
-> ---
->  .../arch/x86/include/asm/xenomai/wrappers.h   |  4 ++++
->  kernel/cobalt/arch/x86/thread.c               | 21
-> ++++++++++++++++++- 2 files changed, 24 insertions(+), 1 deletion(-)
-> 
-> diff --git a/kernel/cobalt/arch/x86/include/asm/xenomai/wrappers.h
-> b/kernel/cobalt/arch/x86/include/asm/xenomai/wrappers.h index
-> a47730106..a4cc368a5 100644 ---
-> a/kernel/cobalt/arch/x86/include/asm/xenomai/wrappers.h +++
-> b/kernel/cobalt/arch/x86/include/asm/xenomai/wrappers.h @@ -32,6
-> +32,10 @@ LINUX_VERSION_CODE < KERNEL_VERSION(4,5,0)
->  #define IPIPE_X86_FPU_EAGER
->  #endif
-> +#if LINUX_VERSION_CODE >= KERNEL_VERSION(4,14,0)
-> +#define IPIPE_X86_FPU_EAGER
-> +#endif
-> +
->  
->  #if LINUX_VERSION_CODE < KERNEL_VERSION(4,2,0)
->  #include <asm/i387.h>
-> diff --git a/kernel/cobalt/arch/x86/thread.c
-> b/kernel/cobalt/arch/x86/thread.c index 18cf636e5..2668ce274 100644
-> --- a/kernel/cobalt/arch/x86/thread.c
-> +++ b/kernel/cobalt/arch/x86/thread.c
-> @@ -42,6 +42,7 @@ static struct kmem_cache *xstate_cache;
->  #define cpu_has_xsave boot_cpu_has(X86_FEATURE_XSAVE)
->  #endif
->  
-> +#ifndef IPIPE_X86_FPU_EAGER
->  #if LINUX_VERSION_CODE < KERNEL_VERSION(4,2,0)
->  #include <asm/i387.h>
->  #include <asm/fpu-internal.h>
-> @@ -72,6 +73,9 @@ static inline void x86_fpregs_activate(struct
-> task_struct *t) #define x86_xstate_alignment
-> __alignof__(union fpregs_state) 
->  #endif
-> +#else /* IPIPE_X86_FPU_EAGER */
-> +#define x86_xstate_alignment		__alignof__(union
-> fpregs_state) +#endif /* ! IPIPE_X86_FPU_EAGER */
->  
->  #if LINUX_VERSION_CODE < KERNEL_VERSION(4,8,0)
->  /*
-> @@ -465,9 +469,15 @@ void xnarch_leave_root(struct xnthread *root)
->  	// save fpregs from in-kernel use
->  	copy_fpregs_to_fpstate(rootcb->kfpu);
->  	kernel_fpu_enable();
-> +#if LINUX_VERSION_CODE >= KERNEL_VERSION(4,14,0)
-> +	// restore current's fpregs
-> +	__cpu_invalidate_fpregs_state();
-> +	switch_fpu_finish(&current->thread.fpu, smp_processor_id());
-> +#else
->  	// mark current thread as not owning the FPU anymore
->  	if (&current->thread.fpu.fpstate_active)
->  		fpregs_deactivate(&current->thread.fpu);
-> +#endif
->  }
->  
->  void xnarch_switch_fpu(struct xnthread *from, struct xnthread *to)
-> @@ -528,7 +538,11 @@ void xnarch_init_shadow_tcb(struct xnthread
-> *thread) #else /* IPIPE_X86_FPU_EAGER */
->  	/* XNFPU is always set */
->  	xnthread_set_state(thread, XNFPU);
-> +#if LINUX_VERSION_CODE < KERNEL_VERSION(4,14,0)
->  	fpu__activate_fpstate_read(&p->thread.fpu);
-> +#else
-> +	fpu__initialize(&p->thread.fpu);
-> +#endif
->  #endif /* ! IPIPE_X86_FPU_EAGER */
->  }
->  
-> @@ -537,7 +551,12 @@ int mach_x86_thread_init(void)
->  	xstate_cache = kmem_cache_create("cobalt_x86_xstate",
->  					 fpu_kernel_xstate_size,
->  					 x86_xstate_alignment,
-> -					 SLAB_NOTRACK, NULL);
-> +#if LINUX_VERSION_CODE < KERNEL_VERSION(4,14,0)
-> +					 SLAB_NOTRACK,
-> +#else
-> +					 0,
-> +#endif
-> +					 NULL);
->  	if (xstate_cache == NULL)
->  		return -ENOMEM;
->  
+To: Leopold Palomo-Avellaneda <leo@alaxarxa.net>, "Xenomai@xenomai.org" <xenomai@xenomai.org>
 
 
 
--- 
-Siemens AG
-Corporate Technology
-CT RDA IOT SES-DE
-Otto-Hahn-Ring 6
-81739 Muenchen, Germany
-Mobile: +49 172 8378927
-mailto: henning.schild@siemens.com
+>>> Norbert, I have followed your emails and your project. You did a good j=
+ob,
+>>> but I don't agree with your approach. My points are:
+>>>
+>>> - You are trying to convert Xenomai a CMake project and this probably w=
+ill
+>>> not happen because Upstream is very happy with the autotools. I don't l=
+ike
+>>> to touch anything from upstream. Maybe some patch, but incorporated in
+>>> Upstream.
+>>
+>> Sorry, that's nonsense, never thought about building Xenomai with CMake.
+
+> Sorry, you are right. It seemed that you tried to generated the config fi=
+les
+> generated usually with a cmake project.
+
+I do, but that's not happening during configuration or installation. I crea=
+ted
+the config templates with CMake as thast alot less error-prone and easier t=
+o maintain
+
+>>> - I would prefer follow the Upstream guidelines that recommends use xen=
+o-
+>>> config to obtain the needed parameters to build your application.
+>>> So, any build tool should use xeno-config (maintained by upstream) that
+>>> provide the correct flags or whatever to build your application.
+>>
+>> I tried multiple approaches, using xeno-config fell out shortly.
+>> -   it's (logically) an target "executable".
+>>=A0=A0=A0=A0 That imposes problems with CMake's normal search for those,
+>>=A0=A0=A0=A0 not to mention CI when your builder works in a partition wit=
+h noexec.
+>>=A0=A0=A0=A0 I would want to use config-files directly or with a host-exe=
+cutable,
+>>=A0=A0=A0=A0 like pkg-config uses .pc files.
+>
+> I have not found any important problem with the xeno-config generate info=
+ or any
+> problem with cmake. I agree with you that you need to exec an script to g=
+enerate
+> the info and it could have problems with partitions with noexec, etc.
+
+Well, I did find problems if you eg. create a "buildroot" and then move it.
+
+>> -   I need to extract all information and not just flags for ONE configu=
+ration
+>
+> I don't extract the information for one configuration. I extract ALL the =
+modules
+> installed.
+
+yes, and xeno-config was not conceived for that.
+
+>>=A0=A0=A0=A0 That=92s the most important issue, I need the "building bloc=
+ks" of the command
+>>=A0=A0=A0=A0 line, not ONE commandline. This means you need to know xeno-=
+config
+>>=A0=A0=A0=A0 and its flags precisely and figure out how to dissect multip=
+le outputs
+>>=A0=A0=A0=A0 in those "building blocks".
+>>=A0=A0=A0=A0 Fragile and not forwards-compatible.
+>
+> I don't agree. xeno-config is quite stable and well maintained. And it gi=
+ve you
+> the information that Upstream want that YOU use.
+
+figuring out the arguments and parsing them from within CMake is what I mea=
+nt with fragile
+and not forwards-compatible.
+If you have a project with Xenomai3 and a FindXenomai script,
+then you might have to update your code just to be able to use a future
+version. like for example if the linking order changed, which I suppose you=
+ aren't
+deducing but use a fixed order.
+
+>> Whats left is two variants:
+>>
+>> FindXenomai - this would be placed in your project or up streamed in CMa=
+ke.
+>> Uses CMake functions to guess the paths, this might be hard to do with s=
+ome libdir / includedir
+>> Configurations and would need to be updated independently of Xenomai.
+>
+> this is one way. Currently it just works.
+
+It works for a couple projects you are using.
+
+>> CMake Config files - you place those in <libpath>/cmake/xenomai.
+>> Those can be generated by config/install_cmakeconfig.sh from the repo (u=
+se same arguments as when configuring CMake).
+>> The previously mentioned patchset adds those files to Xenomai and does t=
+his automatically when installing (using the autotools system).
+>> Upstreaming in Xenomai would make everything hassle-free and forwards-co=
+mpatible (the config files would always match the version).
+>>
+>> The downside is of course that this would then be a burden to the Xenoma=
+i devs, but it should not need any changes outside of structural changes.
+>> At which point someone will have to adapt CMake integration, however its=
+ done - I would prefer it to be done just once
+>>
+>>
+>> The repo contains other changes, attempting to sanitize the bootstrappin=
+g methods,
+>> Without those the provided examples might not work (only the upstream bo=
+otstrapping method will work).
+>> I hope atleast those can be upstreamed.
+>
+> So, maybe that config files generated by the autotools, are to me the bes=
+t
+> solution. Then, the responsible of compile and install xenomai in a syste=
+m
+> will generate the config files to use it.
+
+the config files are not generated from scratch but have placeholders,
+the same placeholders xeno-config has. That's using the information
+right from the source =3D)
+
+> But for this solution you need that Jan or Phillipe accept that and maint=
+ain
+> that.
+
+Yep. I have to start somewhere though.
+
+> And looking your code and I would prefer a more simple way without module=
+s
+> and simple, just fill some config vars. Because then it could be easy to =
+maintain.
+
+The repo deals with multiple issues, the config stuff is rather simple and =
+straightforward.
+not sure what you mean with modules? if you mean you prefer using CMake var=
+iables
+instead of imported libraries - sorry that's pretty much *the* CMake antipa=
+ttern.
+(To many reasons to list, just google for "modern CMake").
+
+*Using* Xenomai is as hard as adding this:
+
+find_package(Xenomai REQUIRED)
+
+xenomai_target_bootstrap(default_exe
+        SKINS posix
+)
+
+Norbert
+________________________________
+
+This message and any attachments are solely for the use of the intended rec=
+ipients. They may contain privileged and/or confidential information or oth=
+er information protected from disclosure. If you are not an intended recipi=
+ent, you are hereby notified that you received this email in error and that=
+ any review, dissemination, distribution or copying of this email and any a=
+ttachment is strictly prohibited. If you have received this email in error,=
+ please contact the sender and delete the message and any attachment from y=
+our system.
+
+ANDRITZ HYDRO GmbH
+
+
+Rechtsform/ Legal form: Gesellschaft mit beschr=E4nkter Haftung / Corporati=
+on
+
+Firmensitz/ Registered seat: Wien
+
+Firmenbuchgericht/ Court of registry: Handelsgericht Wien
+
+Firmenbuchnummer/ Company registration: FN 61833 g
+
+DVR: 0605077
+
+UID-Nr.: ATU14756806
+
+
+Thank You
+________________________________
 
