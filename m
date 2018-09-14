@@ -1,16 +1,15 @@
-From: Wojciech Domski <wojciech.domski@gmail.com>
-References: <0320e06c-4014-9294-0ff6-8cd6515fba24@gmail.com>
- <6e5a44b3-2ad4-ee3f-cd89-247b0b0ad7ac@gmail.com>
- <CALLqZ8T+5WSdTYGMiJr8S6x8gFaAN8tmp8Dtri8Fu+uxPwXUMw@mail.gmail.com>
- <f735d7fe-da3f-da95-0aac-a5a77430dac9@gmail.com>
-Message-ID: <6fc75021-86b5-0120-a59e-fd81ba6f40f6@gmail.com>
-Date: Thu, 11 Oct 2018 19:23:15 +0200
-MIME-Version: 1.0
-In-Reply-To: <f735d7fe-da3f-da95-0aac-a5a77430dac9@gmail.com>
-Content-Language: en-GB
+Message-ID: <5aa5d267d8b80535427998f2bf4c9d9eceaae2c4.camel@sprinte.eu>
+From: Julien Blanc <julien.blanc@sprinte.eu>
+Date: Fri, 14 Sep 2018 10:22:18 +0200
+In-Reply-To: <285343492.3950889.1536911128629.JavaMail.zimbra@wolfram.com>
+References: <a327adca-1576-0794-71cd-409b366dfdc8@alaxarxa.net>
+ <28fd59c00f574c5a987ff73d72ffbc4c@andritz.com>
+ <4078e730-9293-12b4-e3c2-843f0de5f637@alaxarxa.net>
+ <285343492.3950889.1536911128629.JavaMail.zimbra@wolfram.com>
 Content-Type: text/plain; charset="utf-8"
+Mime-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [Xenomai] Xenomai v.3.0.7 on Ubuntu 18.04 and kernel 4.9.90
+Subject: Re: [Xenomai] Order options to build a Xenomai program
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -19,125 +18,34 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Greg Gallagher <greg@embeddedgreg.com>
-Cc: "Xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Per Oberg <pero@wolfram.com>, xenomai <xenomai@xenomai.org>
 
-Here are kernel configurations files:
+Le vendredi 14 septembre 2018 à 02:45 -0500, Per Oberg a écrit :
+> 
+> This! 
+> 
+> Being able to use the same code, without patches or a lot of defines
+> including other files is a very clean way of debugging your software.
+> I often set up Simulations where I use my laptop running or our
+> controller, possibly connected to remote hardware to debug stuff. For
+> these cases  the POSIX skin is very useful.
 
-https://pastebin.com/zuucW3WW (for clean 4.9.90)
+I thought that was the purpose of the mercury core.
 
-https://pastebin.com/AvD9T9Lx (for 4.9.90 with xenomai 3.0.7)
+For a full xenomai application, the wrapping mechanism is nice. For a
+mixed rt / non-rt executable, this tends to be full of pitfalls. The
+__RT and __STD macros are of a great help in this regard. 
 
-I have also checked if there is anything in /var/log/kern.log. Beside
-normal kernel's logs there is nothing for the Xenomai flavoured version.
-It seems about right because it is stuck at "Loading initial ramdisk".
+I also still wonder if there’s a way to make std::thread work in such a
+mixed environment.
 
+> What do you mean with "convert Xenomai a CMake project"? I feel that
+> I am missing something...
 
-Wojciech Domski
+I think it means "build xenomai with cmake" (which is unlikely to
+happen afaik).
 
-domski.pl | blog.domski.pl
+Regards,
 
-W dniu 11.10.2018 o 17:00, Wojciech Domski pisze:
->
-> I will post the kernel config file shortly and get back to you.
->
-> As for the prints, no, there is nothing only those two lines:
->
-> Loading Linux 4.9.90-xenomai-3.0.7 ...
-> Loading initial ramdisk ...
-> _ (here is the cursor)
->
-> Best regards,
->
-> Wojciech Domski
->
-> domski.pl | blog.domski.pl
-> W dniu 11.10.2018 o 16:34, Greg Gallagher pisze:
->> Posting the config may help.  Can you get any early printks?
->>
->> -Greg
->>
->> On Thu, Oct 11, 2018 at 7:48 AM Wojciech Domski
->> <wojciech.domski@gmail.com <mailto:wojciech.domski@gmail.com>> wrote:
->>
->>     Hi!
->>
->>     I did additional test to rule out that Xenomai is the issue.
->>
->>     I have compiled kernel 4.9.90 without Xenomai and it turns out
->>     that it
->>     works. Having this in mind what could cause problem on Xenomai side?
->>
->>     If needed I will add additional information to trace the problem.
->>
->>     Best regards,
->>
->>     Wojciech Domski
->>
->>     domski.pl <http://domski.pl> | blog.domski.pl <http://blog.domski.pl>
->>
->>     W dniu 10.10.2018 o 23:56, Wojciech Domski pisze:
->>     > Hi!
->>     >
->>     > I am trying to set up Xenomai v.3.0.7 on Ubuntu 18.04 with
->>     kernel 4.9.90.
->>     >
->>     > I have downloaded Xenomai from git and checked out the v.3.0.7
->>     tag for
->>     > stable version of Xenomai.
->>     >
->>     > To set up the new kernel I have copied the configuration from
->>     currently
->>     > running version (4.15.0-36-generic). Also I am preparing the
->>     kernel with
->>     > following
->>     >
->>     > sudo xenomai/scripts/prepare-kernel.sh --linux=/usr/src/linux
->>     > --arch=x86_64 --ipipe=/usr/src/ipipe-core-4.9.90-x86-6.patch
->>     >
->>     > In kernel configuration I have turned off the following:
->>     >
->>     > Power management and ACPI options -> ACPI (Advanced
->>     Configuration and
->>     > Power Interface) Support -> Processor
->>     > Power management and ACPI options -> CPU Frequency scaling -> CPU
->>     > Frequency scaling
->>     > Power management and ACPI options -> CPU Idle -> CPU idle PM
->>     support
->>     >
->>     > Unfortunately, I could not turn off page migration since it is
->>     build in
->>     > the kernel and "hard fixing" it in the kernel configuration
->>     file did not
->>     > seemed to the best idea.
->>     >
->>     > After that I have build the kernel with following:
->>     >
->>     > sudo make-kpkg --initrd --append-to-version=-xenomai-3.0.7 -j8
->>     > kernel-image kernel-headers modules
->>     >
->>     > and that
->>     >
->>     > sudo dpkg -i linux-image-*.deb
->>     > sudo dpkg -i linux-headers-*.deb
->>     > sudo update-initramfs -c -k "4.9.90-xenomai-3.0.7"
->>     >
->>     > What I am facing right now is the following problem. When I
->>     boot up the
->>     > PC freezes on "Loading initial ramdisk ...". Did I missed
->>     something? It
->>     > does not seem like it is Xenomai related problem since there is
->>     an issue
->>     > during mounting the temporary file system.
->>     >
->>     > Best regards,
->>     >
->>
->>
->>     _______________________________________________
->>     Xenomai mailing list
->>     Xenomai@xenomai.org <mailto:Xenomai@xenomai.org>
->>     https://xenomai.org/mailman/listinfo/xenomai
->>
->
+Julien
 
