@@ -1,15 +1,16 @@
-Date: Mon, 15 Oct 2018 21:01:14 +0000 (UTC)
-From: Alec Ari <neotheuser@ymail.com>
-Message-ID: <1840972159.10340438.1539637274299@mail.yahoo.com>
-In-Reply-To: <ddf9dee0-653d-b784-b01f-8d09a3fda629@siemens.com>
-References: <144decef-a102-1cee-a9b1-8be5ed0d1258@siemens.com>
- <1882419000.9157539.1539392168772@mail.yahoo.com>
- <ddf9dee0-653d-b784-b01f-8d09a3fda629@siemens.com>
+From: Giulio Moro <g.moro@qmul.ac.uk>
+Date: Fri, 14 Sep 2018 12:19:35 +0000
+Message-ID: <VI1PR0701MB212671005AEF3217529DF3F2B5190@VI1PR0701MB2126.eurprd07.prod.outlook.com>
+References: <a327adca-1576-0794-71cd-409b366dfdc8@alaxarxa.net>
+ <28fd59c00f574c5a987ff73d72ffbc4c@andritz.com>
+ <4078e730-9293-12b4-e3c2-843f0de5f637@alaxarxa.net>,
+ <c69b760a81bb4d3ab0bc78f3d4502b5f@andritz.com>
+In-Reply-To: <c69b760a81bb4d3ab0bc78f3d4502b5f@andritz.com>
+Content-Language: en-GB
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] [ipipe 4.14][PATCH] x86: ipipe: Fix trap hooking for
- userspace routes
+Subject: Re: [Xenomai] Order options to build a Xenomai program
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -18,16 +19,27 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jan Kiszka <jan.kiszka@siemens.com>, Xenomai <xenomai@xenomai.org>
+To: Lange Norbert <norbert.lange@andritz.com>, Leopold Palomo-Avellaneda <leo@alaxarxa.net>, "Xenomai@xenomai.org" <xenomai@xenomai.org>
 
->Those two commits install fundamental features of the I-pipe patch set, you 
->can't reasonably run Xenomai without them.
+> So, from my point of view it confirm my suspicious that the wrapper
+> mechanism is fragile. I really didn't understand why Xenomai core team
+> changed the native API for the POSIX. Although I saw the Jan Kiska
+> conference video explaining it, tell me primitive or dump, but I prefer t=
+o have
+> a RT API that links against RT libraries and you can mix the POSIX functi=
+ons
+> that you want in a clear way.
+>
+> OTOH I have to admit that convert a POSIX program to RT in an easy way is
+> amazing.
 
-The 3.18.20-x86-9 patch for example works just fine, and the only function I see that's related to e6b81a0ce7fb86cf1f1db9f80b982c9b5f95c4c1in that patch is __ipipe_trap_prologue.
+I normally disable wrappers and call explicitly the `__wrap_` equivalent wh=
+en I want to use a Xenomai function , that is for instance `__wrap_pthread_=
+create()` instead of `pthread_create()`.
+I also add my own forward declaration, e.g.:
 
-I only took a quick glance at any of this so don't mind me, but all those trapnrs weren't added to entry_64.S previously, and there wasn't massive breakage everywhere.
+int __wrap_pthread_create(pthread_t *thread, const pthread_attr_t *attr, vo=
+id *(*start_routine) (void *), void *arg);
 
-Assembly isn't my thing so my best bet is to just use whatever worked before, but if the fix is sufficient, then never mind. :)
-
-Alec
+But maybe this is already provided in some of the Cobalt headers.=
 
