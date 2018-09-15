@@ -1,11 +1,11 @@
 From: Edouard Tisserant <edouard.tisserant@gmail.com>
-Message-ID: <c152b2c4-d6a6-930a-3f6f-2fff032da08e@gmail.com>
-Date: Sat, 15 Sep 2018 15:02:39 +0200
+Message-ID: <91652cf8-9e03-50c0-bee0-06d0bc315a91@gmail.com>
+Date: Sat, 15 Sep 2018 15:02:45 +0200
 MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
 Content-Language: en-US
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Subject: [Xenomai] NRT send/recv with rtpacket
+Subject: [Xenomai] RTSKB_SIZE
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,24 +16,25 @@ List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: "Xenomai (xenomai@xenomai.org)" <xenomai@xenomai.org>, Jan Kiszka <jan.kiszka@siemens.com>
 
-SGkgYWxsLAoKV2hlbiB1c2luZyBFdGhlckxBQi1SVERNLU5ldCBhZGFwdGVyIFsxXSwgRXRoZXJD
-QVQgbWFzdGVyIGRpcmVjdGx5IGNhbGxzClJURE0gUkFXIHNvY2tldCBrZXJuZWwgQVBJIHRvIHNl
-bmQgYW5kIHJlY2VpdmUgRXRoZXJuZXQgcGFja2V0cy4KCkRlcGVuZGluZyBvbiBvcGVyYXRpb25h
-bCBzdGF0ZSwgRXRoZXJDQVQgbWFzdGVyIGNhbiBiZSBleGVjdXRlZCBhcyBhCnJlYWwtdGltZSBv
-ciBub24tcmVhbC10aW1lIGtlcm5lbCB0aHJlYWQuCgpSVHBhY2tldCBkaWQgbm90IHN1cHBvcnQg
-bm9uLXJlYWwtdGltZSBzZW5kbXNnIGFuZCByZWN2bXNnLiBBdHRhY2hlZApwYXRjaGVzIGZpeCB0
-aGlzIHByb2JsZW0uCgowMDA0LXhlbm9tYWlfYWxsb3dfbnJ0X29wZXJhdGlvbl9pbl9ydHBhY2tl
-dC5wYXRjaCA6CsKgwqDCoCBwYXRjaCBhZ2FpbnN0IHhlbm9tYWktMy4wLjYgLSBURVNURUQgT0sK
-CjAwMDEtQWRkLW5vbi1SVC1zZW5kbXNnLWFuZC1yZWN2bXNnLWluLXJ0cGFja2V0LnBhdGNoIDoK
-wqDCoMKgIHNhbWUgcGF0Y2gsICJnaXQtZm9ybWF0ZWQiIGFnYWluc3Qgc3RhYmxlLTMuMC54IFVO
-VEVTVEVECgpSZWdhcmRzLAoKRWRvdWFyZAoKLS0tLS0tLS0tLS0tLS0gbmV4dCBwYXJ0IC0tLS0t
-LS0tLS0tLS0tCkEgbm9uLXRleHQgYXR0YWNobWVudCB3YXMgc2NydWJiZWQuLi4KTmFtZTogMDAw
-NC14ZW5vbWFpX2FsbG93X25ydF9vcGVyYXRpb25faW5fcnRwYWNrZXQucGF0Y2gKVHlwZTogdGV4
-dC94LXBhdGNoClNpemU6IDIzODggYnl0ZXMKRGVzYzogbm90IGF2YWlsYWJsZQpVUkw6IDxodHRw
-Oi8veGVub21haS5vcmcvcGlwZXJtYWlsL3hlbm9tYWkvYXR0YWNobWVudHMvMjAxODA5MTUvY2Nj
-MWZhNjAvYXR0YWNobWVudC5iaW4+Ci0tLS0tLS0tLS0tLS0tIG5leHQgcGFydCAtLS0tLS0tLS0t
-LS0tLQpBIG5vbi10ZXh0IGF0dGFjaG1lbnQgd2FzIHNjcnViYmVkLi4uCk5hbWU6IDAwMDEtQWRk
-LW5vbi1SVC1zZW5kbXNnLWFuZC1yZWN2bXNnLWluLXJ0cGFja2V0LnBhdGNoClR5cGU6IHRleHQv
-eC1wYXRjaApTaXplOiAyOTQ1IGJ5dGVzCkRlc2M6IG5vdCBhdmFpbGFibGUKVVJMOiA8aHR0cDov
-L3hlbm9tYWkub3JnL3BpcGVybWFpbC94ZW5vbWFpL2F0dGFjaG1lbnRzLzIwMTgwOTE1L2NjYzFm
-YTYwL2F0dGFjaG1lbnQtMDAwMS5iaW4+Cg==
+Hi all.
+
+I'd like to send proper patches to fix RTNet's rt_fec, but I can't
+decide if this change of RTSKB_SIZE is acceptable.
+
+RTSKB_SIZE=3D1533 was having a nasty influence on RX ring
+allocation/handling. With RTSKB_SIZE set to the next power of 2 (2048),
+it works better. It might simply be another bug in rt_fec, but I stopped
+searching for now.
+
+In rtskb.h RTSKB_SIZE is hard-coded to 1533. Why such value ?
+
+Should RTSKB_SIZE be defined with KConfig, and then depend on what
+driver is selected ?
+
+Regards
+
+Edouard
+
+
+
+
