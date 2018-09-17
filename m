@@ -1,13 +1,14 @@
-References: <c152b2c4-d6a6-930a-3f6f-2fff032da08e@gmail.com>
-From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <ff2a8ac1-4054-bbbb-cfea-1277a926e498@siemens.com>
-Date: Mon, 17 Sep 2018 07:03:22 +0200
+From: Edouard Tisserant <edouard.tisserant@gmail.com>
+References: <91652cf8-9e03-50c0-bee0-06d0bc315a91@gmail.com>
+ <11012cd3-f1fb-b326-b396-5a71649f01f6@siemens.com>
+Message-ID: <4814c7e8-575d-58c2-f915-ddd9fa6f79c4@gmail.com>
+Date: Mon, 17 Sep 2018 08:52:29 +0200
 MIME-Version: 1.0
-In-Reply-To: <c152b2c4-d6a6-930a-3f6f-2fff032da08e@gmail.com>
-Content-Type: text/plain; charset="utf-8"; format="flowed"
+In-Reply-To: <11012cd3-f1fb-b326-b396-5a71649f01f6@siemens.com>
+Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
-Content-Transfer-Encoding: 8bit
-Subject: Re: [Xenomai] NRT send/recv with rtpacket
+Content-Transfer-Encoding: 7bit
+Subject: [Xenomai] RTSKB_SIZE
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,61 +17,37 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Edouard Tisserant <edouard.tisserant@gmail.com>, "Xenomai (xenomai@xenomai.org)" <xenomai@xenomai.org>
+To: "Xenomai (xenomai@xenomai.org)" <xenomai@xenomai.org>
 
-Hi Edouard,
 
-On 15.09.18 15:02, Edouard Tisserant wrote:
-> Hi all,
-> 
-> When using EtherLAB-RTDM-Net adapter [1], EtherCAT master directly calls
-> RTDM RAW socket kernel API to send and receive Ethernet packets.
-> 
-> Depending on operational state, EtherCAT master can be executed as a
-> real-time or non-real-time kernel thread.
-> 
-> RTpacket did not support non-real-time sendmsg and recvmsg. Attached
-> patches fix this problem.
-> 
-> 0004-xenomai_allow_nrt_operation_in_rtpacket.patch :
->      patch against xenomai-3.0.6 - TESTED OK
-> 
-> 0001-Add-non-RT-sendmsg-and-recvmsg-in-rtpacket.patch :
->      same patch, "git-formated" against stable-3.0.x UNTESTED
 
-Can you send the patches as separate emails, inlined (git send-email)? This is 
-not easily reviewable because...
+>> RTSKB_SIZE=1533 was having a nasty influence on RX ring
+>> allocation/handling. With RTSKB_SIZE set to the next power of 2 (2048),
+>> it works better. It might simply be another bug in rt_fec, but I stopped
+>> searching for now.
+>
+> What does "better" mean? "Crashes less frequently"? ;)
 
-> 
-> Regards,
-> 
-> Edouard
-> 
-> -------------- next part --------------
-> A non-text attachment was scrubbed...
-> Name: 0004-xenomai_allow_nrt_operation_in_rtpacket.patch
-> Type: text/x-patch
-> Size: 2388 bytes
-> Desc: not available
-> URL: <http://xenomai.org/pipermail/xenomai/attachments/20180915/ccc1fa60/attachment.bin>
-> -------------- next part --------------
-> A non-text attachment was scrubbed...
-> Name: 0001-Add-non-RT-sendmsg-and-recvmsg-in-rtpacket.patch
-> Type: text/x-patch
-> Size: 2945 bytes
-> Desc: not available
-> URL: <http://xenomai.org/pipermail/xenomai/attachments/20180915/ccc1fa60/attachment-0001.bin>
+Well... It comes from a pile of patch that was rotting in an archive
+since 2014. To be honest, it is not clear why I had to do that back then
+and I left no comment for my future self. As far as I remember, some Rx
+frames data were corrupted or missing. I'll come back with a patch and
+clear explanation once I'll have it tested with and without the patch,
+and found the origins of the problem, if any.
 
-...these attachments are not forwarded to the list.
+>> Should RTSKB_SIZE be defined with KConfig, and then depend on what
+>> driver is selected ?
+>
+> If there are good reasons for making the buffer larger here (that
+> should be understood, though), we could make it a configurable, or
+> select the maximum of all enabled drivers (though I don't think the
+> latter is expressible via kconfig).
 
-Also note that features should first be in next/master before we decide whether 
-pushing them to stable as well is OK (generally, only fixes should go there). 
-Patches should therefore target the next branch.
+I also think that Kconfig will not let us do that. Still we can make it
+configurable, and add some #if and #error in drivers that require some
+special RTSKB_SIZE. Then it would refuse to build if RTSKB_SIZE isn't
+set according to individual drivers requirement.
 
-Thanks,
-Jan
+Edouard
 
--- 
-Siemens AG, Corporate Technology, CT RDA IOT SES-DE
-Corporate Competence Center Embedded Linux
 
