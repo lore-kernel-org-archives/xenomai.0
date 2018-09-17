@@ -1,14 +1,14 @@
+References: <c152b2c4-d6a6-930a-3f6f-2fff032da08e@gmail.com>
+ <ff2a8ac1-4054-bbbb-cfea-1277a926e498@siemens.com>
 From: Edouard Tisserant <edouard.tisserant@gmail.com>
-References: <91652cf8-9e03-50c0-bee0-06d0bc315a91@gmail.com>
- <11012cd3-f1fb-b326-b396-5a71649f01f6@siemens.com>
-Message-ID: <4814c7e8-575d-58c2-f915-ddd9fa6f79c4@gmail.com>
-Date: Mon, 17 Sep 2018 08:52:29 +0200
+Message-ID: <eb90c876-85e3-0418-2c18-0a14ae15ff36@gmail.com>
+Date: Mon, 17 Sep 2018 09:52:49 +0200
 MIME-Version: 1.0
-In-Reply-To: <11012cd3-f1fb-b326-b396-5a71649f01f6@siemens.com>
+In-Reply-To: <ff2a8ac1-4054-bbbb-cfea-1277a926e498@siemens.com>
 Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
 Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-Subject: [Xenomai] RTSKB_SIZE
+Subject: Re: [Xenomai] NRT send/recv with rtpacket
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,37 +17,32 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "Xenomai (xenomai@xenomai.org)" <xenomai@xenomai.org>
+To: Jan Kiszka <jan.kiszka@siemens.com>, "Xenomai (xenomai@xenomai.org)" <xenomai@xenomai.org>
 
+Hi Jan
 
+Sorry for the mess.
 
->> RTSKB_SIZE=1533 was having a nasty influence on RX ring
->> allocation/handling. With RTSKB_SIZE set to the next power of 2 (2048),
->> it works better. It might simply be another bug in rt_fec, but I stopped
->> searching for now.
+> Can you send the patches as separate emails, inlined (git send-email)?
+> This is not easily reviewable because...
 >
-> What does "better" mean? "Crashes less frequently"? ;)
+> ...these attachments are not forwarded to the list.
 
-Well... It comes from a pile of patch that was rotting in an archive
-since 2014. To be honest, it is not clear why I had to do that back then
-and I left no comment for my future self. As far as I remember, some Rx
-frames data were corrupted or missing. I'll come back with a patch and
-clear explanation once I'll have it tested with and without the patch,
-and found the origins of the problem, if any.
+ok, will resend git email so that list can review.
 
->> Should RTSKB_SIZE be defined with KConfig, and then depend on what
->> driver is selected ?
->
-> If there are good reasons for making the buffer larger here (that
-> should be understood, though), we could make it a configurable, or
-> select the maximum of all enabled drivers (though I don't think the
-> latter is expressible via kconfig).
+> Also note that features should first be in next/master before we
+> decide whether pushing them to stable as well is OK (generally, only
+> fixes should go there). Patches should therefore target the next branch=
+=2E
 
-I also think that Kconfig will not let us do that. Still we can make it
-configurable, and add some #if and #error in drivers that require some
-special RTSKB_SIZE. Then it would refuse to build if RTSKB_SIZE isn't
-set according to individual drivers requirement.
+Sorry, I tried applying it on stable-3.0.x, and git feels to me like
+driving a tank with a trackball. I'll do it on next branch next time,
+and hope that rebasing this one won't be a problem... thanks in advance.
 
 Edouard
+
+PS: I also forgot this reference:
+[1] https://hg.beremiz.org/etherlabmaster/file/tip/devices/rtdmnet.c
+
 
 
