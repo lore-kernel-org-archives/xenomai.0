@@ -1,7 +1,13 @@
-From: Philippe Gerum <rpm@xenomai.org>
-Date: Mon, 10 Sep 2018 09:24:46 +0200
-Message-Id: <E1fzGi2-0003xx-IR@xenomai.org>
-Subject: [Xenomai] [PATCH 0/1] fix breakpoint handling
+References: <c152b2c4-d6a6-930a-3f6f-2fff032da08e@gmail.com>
+From: Jan Kiszka <jan.kiszka@siemens.com>
+Message-ID: <ff2a8ac1-4054-bbbb-cfea-1277a926e498@siemens.com>
+Date: Mon, 17 Sep 2018 07:03:22 +0200
+MIME-Version: 1.0
+In-Reply-To: <c152b2c4-d6a6-930a-3f6f-2fff032da08e@gmail.com>
+Content-Type: text/plain; charset="utf-8"; format="flowed"
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
+Subject: Re: [Xenomai] NRT send/recv with rtpacket
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -10,23 +16,61 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Dmitriy Cherkasov <dmitriy@oss-tech.org>
-Cc: xenomai@xenomai.org
+To: Edouard Tisserant <edouard.tisserant@gmail.com>, "Xenomai (xenomai@xenomai.org)" <xenomai@xenomai.org>
 
-Hi Dmitriy,
+Hi Edouard,
 
-This patch fixes a long-standing issue with handling breakpoints set
-by a debugger when hit by a thread running in primary mode. Hw
-breakpoint events are properly routed to the co-kernel,
-software-triggered ones are not.
+On 15.09.18 15:02, Edouard Tisserant wrote:
+> Hi all,
+> 
+> When using EtherLAB-RTDM-Net adapter [1], EtherCAT master directly calls
+> RTDM RAW socket kernel API to send and receive Ethernet packets.
+> 
+> Depending on operational state, EtherCAT master can be executed as a
+> real-time or non-real-time kernel thread.
+> 
+> RTpacket did not support non-real-time sendmsg and recvmsg. Attached
+> patches fix this problem.
+> 
+> 0004-xenomai_allow_nrt_operation_in_rtpacket.patch :
+>      patch against xenomai-3.0.6 - TESTED OK
+> 
+> 0001-Add-non-RT-sendmsg-and-recvmsg-in-rtpacket.patch :
+>      same patch, "git-formated" against stable-3.0.x UNTESTED
 
-Philippe Gerum (1):
-  arm64: ipipe: route debug exceptions to co-kernel
+Can you send the patches as separate emails, inlined (git send-email)? This is 
+not easily reviewable because...
 
- arch/arm64/mm/fault.c | 3 +++
- 1 file changed, 3 insertions(+)
+> 
+> Regards,
+> 
+> Edouard
+> 
+> -------------- next part --------------
+> A non-text attachment was scrubbed...
+> Name: 0004-xenomai_allow_nrt_operation_in_rtpacket.patch
+> Type: text/x-patch
+> Size: 2388 bytes
+> Desc: not available
+> URL: <http://xenomai.org/pipermail/xenomai/attachments/20180915/ccc1fa60/attachment.bin>
+> -------------- next part --------------
+> A non-text attachment was scrubbed...
+> Name: 0001-Add-non-RT-sendmsg-and-recvmsg-in-rtpacket.patch
+> Type: text/x-patch
+> Size: 2945 bytes
+> Desc: not available
+> URL: <http://xenomai.org/pipermail/xenomai/attachments/20180915/ccc1fa60/attachment-0001.bin>
+
+...these attachments are not forwarded to the list.
+
+Also note that features should first be in next/master before we decide whether 
+pushing them to stable as well is OK (generally, only fixes should go there). 
+Patches should therefore target the next branch.
+
+Thanks,
+Jan
 
 -- 
-2.14.4
-
+Siemens AG, Corporate Technology, CT RDA IOT SES-DE
+Corporate Competence Center Embedded Linux
 
