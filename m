@@ -1,8 +1,14 @@
-From: Philippe Gerum <rpm@xenomai.org>
-Date: Fri, 7 Sep 2018 11:04:00 +0200
-Message-Id: <E1fzGi4-0003y4-3S@xenomai.org>
-Subject: [Xenomai] [PATCH 1/1] arm64: ipipe: route debug exceptions to
- co-kernel
+From: Jan Kiszka <jan.kiszka@siemens.com>
+References: <6b63db30-c014-8d71-6efb-f5799945281c@siemens.com>
+Message-ID: <ae5e5862-c20a-1bac-8585-633f5d3e4f4d@siemens.com>
+Date: Mon, 17 Sep 2018 20:19:36 +0200
+MIME-Version: 1.0
+In-Reply-To: <6b63db30-c014-8d71-6efb-f5799945281c@siemens.com>
+Content-Type: text/plain; charset="utf-8"; format="flowed"
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
+Subject: Re: [Xenomai] [PATCH v2] Add CONTRIBUTING guide and workflow
+ explanation
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -11,28 +17,155 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Dmitriy Cherkasov <dmitriy@oss-tech.org>
-Cc: xenomai@xenomai.org
+To: Xenomai <xenomai@xenomai.org>
 
----
- arch/arm64/mm/fault.c | 3 +++
- 1 file changed, 3 insertions(+)
+On 06.09.18 14:48, Jan Kiszka wrote:
+> Shall both help new comers to understand in which form patches are
+> requested and what will happen to them normally after submitting them.
+> 
+> Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
+> ---
+> 
+> Changes in v2:
+>   - hint to use checkpatch.pl
+>   - stable merge description
+>   - reformattings
+> 
+>   CONTRIBUTING.md | 117 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+>   1 file changed, 117 insertions(+)
+>   create mode 100644 CONTRIBUTING.md
+> 
+> diff --git a/CONTRIBUTING.md b/CONTRIBUTING.md
+> new file mode 100644
+> index 0000000000..e6bb851471
+> --- /dev/null
+> +++ b/CONTRIBUTING.md
+> @@ -0,0 +1,117 @@
+> +Contributing to Xenomai
+> +=======================
+> +
+> +Contributions to Xenomai are always welcome. This document explains the general
+> +requirements on contributions and the recommended preparation steps. It also
+> +sketches the typical integration process of patches.
+> +
+> +
+> +Contribution Checklist
+> +----------------------
+> +
+> +- use git to manage your changes [*recomended*]
+> +
+> +- follow Linux Kernel coding style [**required**]
+> +    - see also [Linux kernel coding style](https://www.kernel.org/doc/html/latest/process/coding-style.html)
+> +    - try out the checkpatch.pl script from the Linux kernel
+> +
+> +- add the required copyright header to each new file introduced [**required**]
+> +
+> +- structure patches logically, in small steps [**required**]
+> +    - one separable functionality/fix/refactoring = one patch
+> +    - do not mix those there in a single patch
+> +    - after each patch, the tree still has to build and work, i.e. do not add
+> +      even temporary breakages inside a patch series (helps when tracking down
+> +      bugs)
+> +    - use `git rebase -i` to restructure a patch series
+> +
+> +- base patches on top of latest master or - if there are dependencies - on next
+> +  (note: next is an integration branch that may change non-linearly) [**required**]
+> +
+> +- test patches sufficiently AFTER the last edit (obvious, but...) [**required**]
+> +
+> +- add signed-off to all patches [**required**]
+> +    - to certify the "Developer's Certificate of Origin", see below
+> +    - check with your employer when not working on your own!
+> +
+> +- indicate if you think a patch fixes a bug present in a stable branch as well [*recomended*]
+> +    - add a note to the cover letter of the patch series
+> +    - or add some remark after the "---" separator of the patch itself
+> +
+> +- post patches to mailing list [**required**]
+> +    - use `git format-patch/send-email` if possible
+> +    - send patches inline, do not append them
+> +    - no HTML emails!
+> +    - CC people who you think should look at the patches, e.g.
+> +      - affected maintainers
+> +      - someone who wrote a change that is fixed or reverted by you now
+> +      - who commented on related changes in the recent past
+> +      - who otherwise has expertise and is interested in the topic
+> +    - pull requests on gitlab are only optional
+> +
+> +- post follow-up version(s) if feedback requires this [**required**]
+> +
+> +- send reminder if nothing happened after about two weeks [*recomended*]
+> +
+> +
+> +Developer's Certificate of Origin 1.1
+> +-------------------------------------
+> +
+> +When signing-off a patch for this project like this
+> +
+> +    Signed-off-by: Random J Developer <random@developer.example.org>
+> +
+> +using your real name (no pseudonyms or anonymous contributions), you declare the
+> +following:
+> +
+> +    By making a contribution to this project, I certify that:
+> +
+> +        (a) The contribution was created in whole or in part by me and I
+> +            have the right to submit it under the open source license
+> +            indicated in the file; or
+> +
+> +        (b) The contribution is based upon previous work that, to the best
+> +            of my knowledge, is covered under an appropriate open source
+> +            license and I have the right under that license to submit that
+> +            work with modifications, whether created in whole or in part
+> +            by me, under the same open source license (unless I am
+> +            permitted to submit under a different license), as indicated
+> +            in the file; or
+> +
+> +        (c) The contribution was provided directly to me by some other
+> +            person who certified (a), (b) or (c) and I have not modified
+> +            it.
+> +
+> +        (d) I understand and agree that this project and the contribution
+> +            are public and that a record of the contribution (including all
+> +            personal information I submit with it, including my sign-off) is
+> +            maintained indefinitely and may be redistributed consistent with
+> +            this project or the open source license(s) involved.
+> +
+> +See also [Sign your work - the Developer’s Certificate of Origin](https://www.kernel.org/doc/html/latest/process/submitting-patches.html#sign-your-work-the-developer-s-certificate-of-origin)
+> +for further background on this process which was adopted from the Linux kernel.
+> +
+> +
+> +Contribution Integration Process
+> +--------------------------------
+> +
+> +1. patch reviews performed on mailing list
+> +    * at least by maintainers, but everyone is invited
+> +    * feedback has to consider design, functionality and style
+> +    * simpler and clearer code preferred, even if original code works fine
+> +
+> +2. accepted patches merged into next branch
+> +
+> +3. further testing done by community, including CI build tests, code analyzer
+> +   runs, on-target tests
+> +
+> +4. if no new problems or discussions showed up, acceptance into master
+> +    * grace period for master: about 3 days
+> +    * urgent fixes may be applied sooner
+> +
+> +5. a stable-relevant patch is applied to the related stable branch after it was
+> +   merged into master (except for patches that are stable-specific)
+> +
+> +gitlab facilities are not used for the review process so that people can follow
+> +all changes and related discussions at a single stop, the mailing list. This
+> +may change in the future if gitlab should improve their email integration.
+> 
 
-diff --git a/arch/arm64/mm/fault.c b/arch/arm64/mm/fault.c
-index 7dc5906d586f..70c72c2a7f7e 100644
---- a/arch/arm64/mm/fault.c
-+++ b/arch/arm64/mm/fault.c
-@@ -939,6 +939,9 @@ asmlinkage int __exception do_debug_exception(unsigned long addr,
- 	struct siginfo info;
- 	int rv;
- 
-+	if (__ipipe_report_trap(IPIPE_TRAP_BREAK, regs))
-+		return 1;
-+
- 	/*
- 	 * Tell lockdep we disabled irqs in entry.S. Do nothing if they were
- 	 * already disabled to preserve the last enabled/disabled addresses.
+Merged to next. I didn't restart the master branch yet, will try to do so next 
+week (rather busy the upcoming days).
+
+Jan
+
 -- 
-2.14.4
-
+Siemens AG, Corporate Technology, CT RDA IOT SES-DE
+Corporate Competence Center Embedded Linux
 
