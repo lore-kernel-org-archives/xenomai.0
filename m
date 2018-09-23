@@ -1,20 +1,7 @@
-References: <004e01d43564$4970d4c0$dc527e40$@sepro-group.com>
- <f5ec79d7-be26-3d87-8d1b-8714d4f3a14a@xenomai.org>
- <007001d4361f$01d02010$05706030$@sepro-group.com>
- <346547f0-852d-ffe7-d1ff-f156db9a59d1@gmail.com>
- <00d201d439f1$8ccd3fb0$a667bf10$@sepro-group.com>
- <CAOgDLiEp0SzdwJ9G5+T_zUSM-CAKMompHqWE3SXwfmbJhx1meg@mail.gmail.com>
- <011a01d43b79$28463b80$78d2b280$@sepro-group.com>
-From: Edouard Tisserant <edouard.tisserant@gmail.com>
-Message-ID: <3a158c17-45b9-1a97-9b9c-c6e4981cae51@gmail.com>
-Date: Mon, 10 Sep 2018 17:24:46 +0200
-MIME-Version: 1.0
-In-Reply-To: <011a01d43b79$28463b80$78d2b280$@sepro-group.com>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-Content-Language: en-US
-Subject: Re: [Xenomai] TR: RTNet - how to setup rt_fec on IMX6Q (Xenomai
- 3.0.7)
+From: Philippe Gerum <rpm@xenomai.org>
+Date: Sun, 23 Sep 2018 17:37:38 +0200
+Message-Id: <20180923153738.32331-1-rpm@xenomai.org>
+Subject: [Xenomai] [PATCH 3/3] cobalt: use generic linux/uaccess.h header
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -23,226 +10,337 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: =?UTF-8?Q?St=c3=a9phane_Reichert?= <sreichert@sepro-group.com>
-Cc: Xenomai <xenomai@xenomai.org>
+To: xenomai@xenomai.org
 
-Hi Stéphane.
+asm/uaccess.h is an arch-local, partial header which may cause build
+issues if included directly.
 
-With Xenomai 3.0.6 / Linux 4.9.51 build, together with the rt_fec patch
-I sent, and with RTNet IP layer enabled (I usually only using raw packet
-level), I could reproduce your experiment, but couldn't reproduce the
-bug. It just works :
+Signed-off-by: Philippe Gerum <rpm@xenomai.org>
+---
+ include/cobalt/kernel/rtdm/analogy/rtdm_helpers.h      | 2 +-
+ kernel/cobalt/arch/arm/include/asm/xenomai/syscall.h   | 2 +-
+ kernel/cobalt/arch/arm64/include/asm/xenomai/syscall.h | 2 +-
+ kernel/cobalt/include/asm-generic/xenomai/syscall.h    | 4 ----
+ kernel/cobalt/pipe.c                                   | 2 +-
+ kernel/drivers/analogy/rtdm_interface.c                | 2 +-
+ kernel/drivers/net/drivers/8139too.c                   | 2 +-
+ kernel/drivers/net/drivers/eepro100.c                  | 2 +-
+ kernel/drivers/net/drivers/eth1394.c                   | 2 +-
+ kernel/drivers/net/drivers/experimental/3c59x.c        | 2 +-
+ kernel/drivers/net/drivers/mpc8260_fcc_enet.c          | 2 +-
+ kernel/drivers/net/drivers/mpc8xx_enet.c               | 2 +-
+ kernel/drivers/net/drivers/mpc8xx_fec.c                | 2 +-
+ kernel/drivers/net/drivers/natsemi.c                   | 2 +-
+ kernel/drivers/net/drivers/pcnet32.c                   | 2 +-
+ kernel/drivers/net/drivers/tulip/tulip_core.c          | 2 +-
+ kernel/drivers/net/drivers/via-rhine.c                 | 2 +-
+ kernel/drivers/net/stack/ipv4/af_inet.c                | 2 +-
+ kernel/drivers/net/stack/rtmac/nomac/nomac_ioctl.c     | 2 +-
+ kernel/drivers/net/stack/rtmac/tdma/tdma_ioctl.c       | 2 +-
+ 20 files changed, 19 insertions(+), 23 deletions(-)
 
-
-# modprobe rtnet
-[   54.424453]
-[   54.424453] *** RTnet for Xenomai v3.0.6 ***
-[   54.424453]
-[   54.431748] RTnet: initialising real-time networking
-# modprobe rtipv4
-# modprobe rt_fec
-# modprobe rtudp
-# modprobe rtpacket
-# echo 2188000.ethernet > /sys/bus/platform/drivers/fec/unbind
-# echo 2188000.ethernet > /sys/bus/platform/drivers/rt_fec/bind
-[  440.299232] libphy: fec_enet_mii_bus: probed
-[  440.303524] RTnet: registered rteth0
-# rtifconfig rteth0
-rteth0    Medium: Ethernet  Hardware address: 00:1E:AC:00:B0:63
-          BROADCAST  MTU: 1500
-          RX packets:0 errors:0 dropped:0 overruns:0 frame:0
-          TX packets:0 errors:0 dropped:0 overruns:0 carrier:0
-          collisions:0
-          RX bytes:0 (0.0 b)  TX bytes:0 (0.0 b)
- 
-# rtifconfig rteth0 up 192.168.42.10
-[  500.575716] Atheros 8035 ethernet 2188000.ethernet:01: attached PHY
-driver [Atheros 8035 ethernet] (mii_bus:phy
-#
-# [  505.755173] rt_fec 2188000.ethernet (unnamed net_device)
-(uninitialized): Link is Up - 1Gbps/Full - flow cont
-[  507.835111] rt_fec 2188000.ethernet (unnamed net_device)
-(uninitialized): Link is Down
-[  508.875169] rt_fec 2188000.ethernet (unnamed net_device)
-(uninitialized): Link is Up - 1Gbps/Full - flow contro
-[  510.955108] rt_fec 2188000.ethernet (unnamed net_device)
-(uninitialized): Link is Down
-[  511.995166] rt_fec 2188000.ethernet (unnamed net_device)
-(uninitialized): Link is Up - 100Mbps/Full - flow cont
-# rtroute add 192.168.42.3 00:0e:c6:d3:d3:e0 dev rteth0
-# rtping 192.168.42.3
-Real-time PING 192.168.42.3 56(84) bytes of data.
-64 bytes from 192.168.42.3: icmp_seq=1 time=394.4 us
-64 bytes from 192.168.42.3: icmp_seq=2 time=288.3 us
-64 bytes from 192.168.42.3: icmp_seq=3 time=343.3 us
-64 bytes from 192.168.42.3: icmp_seq=4 time=384.8 us
-....
-
-Note that Ethernet speed negotiation seems to be failing, since it falls
-back to 100M after a few seconds, whereas at the the other end of the
-cable is supposed to be another Gigabit Ethernet controller as well. I
-also saw that behavior with non-real time fec driver, I should check the
-cable it looks prehistorical.
-
-Please if possible give a shot to 3.0.6, just to see if this is the cause.
-
-FYI, my test board is an APF6 dev board from OpossSOM, fec related DTS
-looks like :
-
-&fec {
-    pinctrl-names = "default";
-    pinctrl-0 = <&pinctrl_enet>;
-    phy-mode = "rgmii";
-    phy-reset-duration = <10>;
-    phy-reset-gpios = <&gpio1 24 GPIO_ACTIVE_LOW>;
-    status = "okay";
-};
-
-Best regards,
-
-Edouard
-
-
-On 24/08/2018 09:07, Stéphane Reichert wrote:
-> Hello Edouard,
->
-> Thanks for your mail.
->
-> We already applied these changes in our file fec.c, but it didn"t solve our 
-> issue.
->
-> Il will let you know if we find an issue.
->
-> Best regards
-> Stéphane
->
-> -----Message d'origine-----
-> De : Edouard Tisserant [mailto:edouard.tisserant@gmail.com]
-> Envoyé : jeudi 23 août 2018 23:10
-> À : Stéphane Reichert
-> Cc : Xenomai (xenomai@xenomai.org)
-> Objet : Re: [Xenomai] TR: RTNet - how to setup rt_fec on IMX6Q (Xenomai 
-> 3.0.7)
->
-> Hi Stéphane.
->
-> Well, sorry for untested patch, and thanks for your help in debugging it !
->
-> Looking back in recent changes in rtnet, this problem may be related to this 
-> commit (changes on 8139too.c are explicit):
-> https://gitlab.denx.de/Xenomai/xenomai/commit/3e97e64ee27ce01e8488d06c52bc4681729b30b9
->
-> Patching fec.c in a similar way may certainly help, since apparently 
-> signatures are now incompatible.
->
-> Please let me know if it helps.
->
-> Best regards,
-> Edouard.
->
->
-> Le mer. 22 août 2018 à 10:24, Stéphane Reichert <sreichert@sepro-group.com> 
-> a écrit :
->> Hello Edouard,
->>
->> Thanks again for your patch.
->>
->> I tried it on my kernel, but unfortunately I am facing the same issue
->> (ioctl: Resource temporarily unavailable error message on rtping).
->>
->> Best regards
->> Stéphane
->>
->> -----Message d'origine-----
->> De : Edouard Tisserant [mailto:edouard.tisserant@gmail.com]
->> Envoyé : mardi 21 août 2018 23:19
->> À : Stéphane Reichert; xenomai@xenomai.org Objet : Re: [Xenomai] TR:
->> RTNet - how to setup rt_fec on IMX6Q (Xenomai
->> 3.0.7)
->>
->> Hello Stéphane.
->>
->> I'm porting EtherLAB to Xenomai3 on Imx6, using RTNet instead of
->> EtherLAB provided drivers.
->>
->> This is still work in progress, but the fec.c patch I have now may help.
->> Find it attached.
->>
->> I built it last time on kernel 4.9.51 and xenomai 3.0.6. This is
->> largely untested, your feedback is welcome.
->>
->> Beware content of DTS for vanilla FEC from kernel 4.x may not be
->> compatible anymore with the one expected by FEC from RTnet. You may
->> have to patch you DTS accordingly.
->>
->> Best regards,
->>
->> Edouard
->>
->>
->>
->> On 17/08/2018 13:39, Stéphane Reichert wrote:
->>> Hello Philippe,
->>>
->>> I have noticed in the file fec.c that the function fec_enet_ioctl
->>> did not match the prototype of do_ioctl (it looks like "request" and 
->>> "arg"
->>> parameters are switched). Is it a mistake ?
->>>
->>> (I tried to switch these parameters but it didn't solved my problem
->>> as well).
->>>
->>> Stephane
->>>
->>>
->>> -----Message d'origine-----
->>> De : Philippe Gerum [mailto:rpm@xenomai.org] Envoyé : vendredi 17
->>> août
->>> 2018
->>> 10:28 À : Stéphane Reichert; xenomai@xenomai.org Objet : Re:
->>> [Xenomai] RTNet - how to setup rt_fec on IMX6Q (Xenomai 3.0.7)
->>>
->>> On 08/16/2018 03:23 PM, Stéphane Reichert wrote:
->>>> Hello,
->>>>
->>>>
->>>>
->>>> We are trying to use the rt_fec driver for RTNet on a iMX6Q board.
->>>>
->>>>
->>>>
->>>> I have patched the KConfig to add this driver on buildroot and it
->>>> compiles perfectly.
->>>>
->>>>
->>>>
->>>> But now, I am not able to use it on our board (it works when I “rtping”
->>>> the loopback,
->>>>
->>>> but it doesn’t work if I try to ping an external board).
->>> The fec driver does not seem to tell the stack about the carrier
->>> enable state. If so, you may want to try the following patch:
->>>
->>> diff --git a/kernel/drivers/net/drivers/fec.c
->>> b/kernel/drivers/net/drivers/fec.c
->>> index 36870ba16..d94ec690f 100644
->>> --- a/kernel/drivers/net/drivers/fec.c
->>> +++ b/kernel/drivers/net/drivers/fec.c
->>> @@ -1323,6 +1323,7 @@ fec_enet_open(struct rtnet_device *ndev)
->>>               return ret;
->>>       }
->>>       phy_start(fep->phy_dev);
->>> +     rtnetif_carrier_on(ndev);
->>>       rtnetif_start_queue(ndev);
->>>       fep->opened = 1;
->>>       return 0;
->>>
->>> --
->>> Philippe.
->>>
->>> _______________________________________________
->>> Xenomai mailing list
->>> Xenomai@xenomai.org
->>> https://xenomai.org/mailman/listinfo/xenomai
+diff --git a/include/cobalt/kernel/rtdm/analogy/rtdm_helpers.h b/include/cobalt/kernel/rtdm/analogy/rtdm_helpers.h
+index 1f6bfea11..1de219f96 100644
+--- a/include/cobalt/kernel/rtdm/analogy/rtdm_helpers.h
++++ b/include/cobalt/kernel/rtdm/analogy/rtdm_helpers.h
+@@ -27,7 +27,7 @@
+ #include <linux/time.h>
+ #include <linux/delay.h>
+ #include <linux/interrupt.h>
+-#include <asm/uaccess.h>
++#include <linux/uaccess.h>
+ #include <rtdm/driver.h>
+ 
+ /* --- Trace section  --- */
+diff --git a/kernel/cobalt/arch/arm/include/asm/xenomai/syscall.h b/kernel/cobalt/arch/arm/include/asm/xenomai/syscall.h
+index 120713612..362f0ebd8 100644
+--- a/kernel/cobalt/arch/arm/include/asm/xenomai/syscall.h
++++ b/kernel/cobalt/arch/arm/include/asm/xenomai/syscall.h
+@@ -23,7 +23,7 @@
+ #define _COBALT_ARM_ASM_SYSCALL_H
+ 
+ #include <linux/errno.h>
+-#include <asm/uaccess.h>
++#include <linux/uaccess.h>
+ #include <asm/unistd.h>
+ #include <asm/ptrace.h>
+ #include <asm-generic/xenomai/syscall.h>
+diff --git a/kernel/cobalt/arch/arm64/include/asm/xenomai/syscall.h b/kernel/cobalt/arch/arm64/include/asm/xenomai/syscall.h
+index e345c9aca..6b8b71d3b 100644
+--- a/kernel/cobalt/arch/arm64/include/asm/xenomai/syscall.h
++++ b/kernel/cobalt/arch/arm64/include/asm/xenomai/syscall.h
+@@ -23,7 +23,7 @@
+ #define _COBALT_ARM64_ASM_SYSCALL_H
+ 
+ #include <linux/errno.h>
+-#include <asm/uaccess.h>
++#include <linux/uaccess.h>
+ #include <asm/unistd.h>
+ #include <asm/ptrace.h>
+ #include <asm-generic/xenomai/syscall.h>
+diff --git a/kernel/cobalt/include/asm-generic/xenomai/syscall.h b/kernel/cobalt/include/asm-generic/xenomai/syscall.h
+index 3873fa634..7909fc310 100644
+--- a/kernel/cobalt/include/asm-generic/xenomai/syscall.h
++++ b/kernel/cobalt/include/asm-generic/xenomai/syscall.h
+@@ -21,11 +21,7 @@
+ 
+ #include <linux/types.h>
+ #include <linux/version.h>
+-#if LINUX_VERSION_CODE < KERNEL_VERSION(4,14,0)
+-#include <asm/uaccess.h>
+-#else
+ #include <linux/uaccess.h>
+-#endif
+ #include <asm/xenomai/features.h>
+ #include <asm/xenomai/wrappers.h>
+ #include <asm/xenomai/machine.h>
+diff --git a/kernel/cobalt/pipe.c b/kernel/cobalt/pipe.c
+index 76db67277..0b8f8cbf8 100644
+--- a/kernel/cobalt/pipe.c
++++ b/kernel/cobalt/pipe.c
+@@ -26,8 +26,8 @@
+ #include <linux/termios.h>
+ #include <linux/spinlock.h>
+ #include <linux/device.h>
++#include <linux/uaccess.h>
+ #include <asm/io.h>
+-#include <asm/uaccess.h>
+ #include <cobalt/kernel/sched.h>
+ #include <cobalt/kernel/heap.h>
+ #include <cobalt/kernel/pipe.h>
+diff --git a/kernel/drivers/analogy/rtdm_interface.c b/kernel/drivers/analogy/rtdm_interface.c
+index 23fd7b393..4fb2b5ca5 100644
+--- a/kernel/drivers/analogy/rtdm_interface.c
++++ b/kernel/drivers/analogy/rtdm_interface.c
+@@ -22,7 +22,7 @@
+ #include <linux/ioport.h>
+ #include <linux/fs.h>
+ #include <linux/proc_fs.h>
+-#include <asm/uaccess.h>
++#include <linux/uaccess.h>
+ #include <rtdm/driver.h>
+ #include <rtdm/analogy/device.h>
+ 
+diff --git a/kernel/drivers/net/drivers/8139too.c b/kernel/drivers/net/drivers/8139too.c
+index c61c06ab0..05a4042f4 100644
+--- a/kernel/drivers/net/drivers/8139too.c
++++ b/kernel/drivers/net/drivers/8139too.c
+@@ -47,8 +47,8 @@
+ #include <linux/mii.h>
+ #include <linux/completion.h>
+ #include <linux/crc32.h>
++#include <linux/uaccess.h>
+ #include <asm/io.h>
+-#include <asm/uaccess.h>
+ 
+ /* *** RTnet *** */
+ #include <rtnet_port.h>
+diff --git a/kernel/drivers/net/drivers/eepro100.c b/kernel/drivers/net/drivers/eepro100.c
+index 863f72b75..414eb7a45 100644
+--- a/kernel/drivers/net/drivers/eepro100.c
++++ b/kernel/drivers/net/drivers/eepro100.c
+@@ -95,10 +95,10 @@ static int local_debug = -1;	/* The debug level */
+ #include <linux/init.h>
+ #include <linux/mii.h>
+ #include <linux/delay.h>
++#include <linux/uaccess.h>
+ 
+ #include <asm/bitops.h>
+ #include <asm/io.h>
+-#include <asm/uaccess.h>
+ 
+ #include <linux/netdevice.h>
+ #include <linux/etherdevice.h>
+diff --git a/kernel/drivers/net/drivers/eth1394.c b/kernel/drivers/net/drivers/eth1394.c
+index 7c6494e33..e6bf2d6ca 100644
+--- a/kernel/drivers/net/drivers/eth1394.c
++++ b/kernel/drivers/net/drivers/eth1394.c
+@@ -28,7 +28,7 @@
+ #include <linux/ip.h>
+ #include <linux/in.h>
+ #include <linux/bitops.h>
+-#include <asm/uaccess.h>
++#include <linux/uaccess.h>
+ #include <net/arp.h>
+ 
+ #define rtos_spinlock_t rtdm_lock_t
+diff --git a/kernel/drivers/net/drivers/experimental/3c59x.c b/kernel/drivers/net/drivers/experimental/3c59x.c
+index bae330869..c2cf4786c 100644
+--- a/kernel/drivers/net/drivers/experimental/3c59x.c
++++ b/kernel/drivers/net/drivers/experimental/3c59x.c
+@@ -255,10 +255,10 @@ static int vortex_debug = 1;
+ #include <linux/skbuff.h>
+ #include <linux/ethtool.h>
+ #include <linux/highmem.h>
++#include <linux/uaccess.h>
+ #include <asm/irq.h>			/* For NR_IRQS only. */
+ #include <asm/bitops.h>
+ #include <asm/io.h>
+-#include <asm/uaccess.h>
+ 
+ // *** RTnet ***
+ #include <rtnet_port.h>
+diff --git a/kernel/drivers/net/drivers/mpc8260_fcc_enet.c b/kernel/drivers/net/drivers/mpc8260_fcc_enet.c
+index ad64407b7..5167dd77c 100644
+--- a/kernel/drivers/net/drivers/mpc8260_fcc_enet.c
++++ b/kernel/drivers/net/drivers/mpc8260_fcc_enet.c
+@@ -37,13 +37,13 @@
+ #include <linux/etherdevice.h>
+ #include <linux/skbuff.h>
+ #include <linux/spinlock.h>
++#include <linux/uaccess.h>
+ 
+ #include <asm/immap_8260.h>
+ #include <asm/pgtable.h>
+ #include <asm/mpc8260.h>
+ #include <asm/irq.h>
+ #include <asm/bitops.h>
+-#include <asm/uaccess.h>
+ #include <asm/cpm_8260.h>
+ 
+ #ifdef CONFIG_XENO_DRIVERS_NET_USE_MDIO
+diff --git a/kernel/drivers/net/drivers/mpc8xx_enet.c b/kernel/drivers/net/drivers/mpc8xx_enet.c
+index 943053264..7fb0fcf80 100644
+--- a/kernel/drivers/net/drivers/mpc8xx_enet.c
++++ b/kernel/drivers/net/drivers/mpc8xx_enet.c
+@@ -45,12 +45,12 @@
+ #include <linux/etherdevice.h>
+ #include <linux/skbuff.h>
+ #include <linux/spinlock.h>
++#include <linux/uaccess.h>
+ 
+ #include <asm/8xx_immap.h>
+ #include <asm/pgtable.h>
+ #include <asm/mpc8xx.h>
+ #include <asm/bitops.h>
+-#include <asm/uaccess.h>
+ #include <asm/irq.h>
+ #include <asm/commproc.h>
+ 
+diff --git a/kernel/drivers/net/drivers/mpc8xx_fec.c b/kernel/drivers/net/drivers/mpc8xx_fec.c
+index df31f99a5..e57f85aa9 100644
+--- a/kernel/drivers/net/drivers/mpc8xx_fec.c
++++ b/kernel/drivers/net/drivers/mpc8xx_fec.c
+@@ -56,13 +56,13 @@
+ #include <linux/spinlock.h>
+ #include <linux/mii.h>
+ #include <linux/ethtool.h>
++#include <linux/uaccess.h>
+ 
+ #include <asm/8xx_immap.h>
+ #include <asm/pgtable.h>
+ #include <asm/mpc8xx.h>
+ #include <asm/irq.h>
+ #include <asm/bitops.h>
+-#include <asm/uaccess.h>
+ #include <asm/commproc.h>
+ 
+ #ifdef CONFIG_XENO_DRIVERS_NET_USE_MDIO
+diff --git a/kernel/drivers/net/drivers/natsemi.c b/kernel/drivers/net/drivers/natsemi.c
+index e3392d4ed..b46d0ffef 100644
+--- a/kernel/drivers/net/drivers/natsemi.c
++++ b/kernel/drivers/net/drivers/natsemi.c
+@@ -165,11 +165,11 @@
+ #include <linux/delay.h>
+ #include <linux/rtnetlink.h>
+ #include <linux/mii.h>
++#include <linux/uaccess.h>
+ #include <asm/processor.h>	/* Processor type for cache alignment. */
+ #include <asm/bitops.h>
+ #include <asm/io.h>
+ #include <asm/irq.h>
+-#include <asm/uaccess.h>
+ 
+ /*** RTnet ***/
+ #include <rtnet_port.h>
+diff --git a/kernel/drivers/net/drivers/pcnet32.c b/kernel/drivers/net/drivers/pcnet32.c
+index b0f8b1a60..d2bd42525 100644
+--- a/kernel/drivers/net/drivers/pcnet32.c
++++ b/kernel/drivers/net/drivers/pcnet32.c
+@@ -46,10 +46,10 @@ DRV_NAME ".c:v" DRV_VERSION " " DRV_RELDATE " Jan.Kiszka@web.de\n";
+ #include <linux/ethtool.h>
+ #include <linux/mii.h>
+ #include <linux/crc32.h>
++#include <linux/uaccess.h>
+ #include <asm/bitops.h>
+ #include <asm/io.h>
+ #include <asm/dma.h>
+-#include <asm/uaccess.h>
+ 
+ #include <linux/netdevice.h>
+ #include <linux/etherdevice.h>
+diff --git a/kernel/drivers/net/drivers/tulip/tulip_core.c b/kernel/drivers/net/drivers/tulip/tulip_core.c
+index 0a7a86ea0..0d68ef387 100644
+--- a/kernel/drivers/net/drivers/tulip/tulip_core.c
++++ b/kernel/drivers/net/drivers/tulip/tulip_core.c
+@@ -29,8 +29,8 @@
+ #include <linux/mii.h>
+ #include <linux/ethtool.h>
+ #include <linux/crc32.h>
++#include <linux/uaccess.h>
+ #include <asm/unaligned.h>
+-#include <asm/uaccess.h>
+ 
+ #ifdef __sparc__
+ #include <asm/pbm.h>
+diff --git a/kernel/drivers/net/drivers/via-rhine.c b/kernel/drivers/net/drivers/via-rhine.c
+index bd02161dd..9618d23e3 100644
+--- a/kernel/drivers/net/drivers/via-rhine.c
++++ b/kernel/drivers/net/drivers/via-rhine.c
+@@ -199,11 +199,11 @@ static const int multicast_filter_limit = 32;
+ #include <linux/mii.h>
+ #include <linux/ethtool.h>
+ #include <linux/crc32.h>
++#include <linux/uaccess.h>
+ #include <asm/processor.h>		/* Processor type for cache alignment. */
+ #include <asm/bitops.h>
+ #include <asm/io.h>
+ #include <asm/irq.h>
+-#include <asm/uaccess.h>
+ 
+ /*** RTnet ***/
+ #include <rtnet_port.h>
+diff --git a/kernel/drivers/net/stack/ipv4/af_inet.c b/kernel/drivers/net/stack/ipv4/af_inet.c
+index 3780ffdcd..e5108137e 100644
+--- a/kernel/drivers/net/stack/ipv4/af_inet.c
++++ b/kernel/drivers/net/stack/ipv4/af_inet.c
+@@ -24,7 +24,7 @@
+  */
+ 
+ #include <linux/module.h>
+-#include <asm/uaccess.h>
++#include <linux/uaccess.h>
+ 
+ #include <ipv4_chrdev.h>
+ #include <rtnet_internal.h>
+diff --git a/kernel/drivers/net/stack/rtmac/nomac/nomac_ioctl.c b/kernel/drivers/net/stack/rtmac/nomac/nomac_ioctl.c
+index 6945ac12f..ac6fbd6d9 100644
+--- a/kernel/drivers/net/stack/rtmac/nomac/nomac_ioctl.c
++++ b/kernel/drivers/net/stack/rtmac/nomac/nomac_ioctl.c
+@@ -23,7 +23,7 @@
+  */
+ 
+ #include <linux/module.h>
+-#include <asm/uaccess.h>
++#include <linux/uaccess.h>
+ 
+ #include <nomac_chrdev.h>
+ #include <rtmac/nomac/nomac.h>
+diff --git a/kernel/drivers/net/stack/rtmac/tdma/tdma_ioctl.c b/kernel/drivers/net/stack/rtmac/tdma/tdma_ioctl.c
+index a1f5e5b36..151e4dfab 100644
+--- a/kernel/drivers/net/stack/rtmac/tdma/tdma_ioctl.c
++++ b/kernel/drivers/net/stack/rtmac/tdma/tdma_ioctl.c
+@@ -24,8 +24,8 @@
+ 
+ #include <linux/module.h>
+ #include <linux/delay.h>
++#include <linux/uaccess.h>
+ #include <asm/div64.h>
+-#include <asm/uaccess.h>
+ 
+ #include <tdma_chrdev.h>
+ #include <rtmac/rtmac_vnic.h>
+-- 
+2.14.4
 
 
