@@ -1,9 +1,9 @@
 From: Philippe Gerum <rpm@xenomai.org>
-Date: Tue, 25 Sep 2018 12:37:55 +0200
-Message-Id: <20180925103809.4932-19-rpm@xenomai.org>
+Date: Tue, 25 Sep 2018 12:37:56 +0200
+Message-Id: <20180925103809.4932-20-rpm@xenomai.org>
 In-Reply-To: <20180925103809.4932-1-rpm@xenomai.org>
 References: <20180925103809.4932-1-rpm@xenomai.org>
-Subject: [Xenomai] [PATCH 18/32] x86: ipipe: route traps to co-kernel
+Subject: [Xenomai] [PATCH 19/32] x86: ipipe: route syscalls to co-kernel
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -14,355 +14,139 @@ List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: xenomai@xenomai.org
 
-This commit introduces the changes redirecting traps and exceptions to
-the interrupt pipeline, so that the co-kernel can be made aware early
-on. The co-kernel may then decide whether the fault should be
-propagated to the regular kernel for actual handling.
-
-This is typically useful for allowing the co-kernel to downgrade the
-current context from the head domain to the root domain, when leaving
-the burden of handling major faults to the regular kernel makes more
-sense than expecting the co-kernel to reinvent such a wheel
-(e.g. memory violations, illegal instructions, divide by zero etc). As
-a matter of fact, optimizing latency upon such events would not make
-much sense anyway.
+This commit introduces the changes redirecting "foreign" system calls
+to the co-kernel.
 ---
- arch/x86/entry/entry_64.S |  80 +++++++++++++++++++++--------
- arch/x86/kernel/ipipe.c   | 127 ++++++++++++++++++++++++++++++++++++++++++++++
- arch/x86/kernel/traps.c   |   9 ++--
- arch/x86/mm/fault.c       |   4 ++
- 4 files changed, 196 insertions(+), 24 deletions(-)
+ arch/x86/entry/common.c | 75 +++++++++++++++++++++++++++++++++++++++++++++++--
+ 1 file changed, 72 insertions(+), 3 deletions(-)
 
-diff --git a/arch/x86/entry/entry_64.S b/arch/x86/entry/entry_64.S
-index 4f29114cb2a1..c304b11facb5 100644
---- a/arch/x86/entry/entry_64.S
-+++ b/arch/x86/entry/entry_64.S
-@@ -899,7 +899,7 @@ ENTRY(switch_to_thread_stack)
- 	ret
- END(switch_to_thread_stack)
+diff --git a/arch/x86/entry/common.c b/arch/x86/entry/common.c
+index 5cc2f617a2e3..c75d32d8873f 100644
+--- a/arch/x86/entry/common.c
++++ b/arch/x86/entry/common.c
+@@ -274,7 +274,9 @@ __visible inline void syscall_return_slowpath(struct pt_regs *regs)
+ 	 * First do one-time work.  If these work items are enabled, we
+ 	 * want to run them exactly once per syscall exit with IRQs on.
+ 	 */
+-	if (unlikely(cached_flags & SYSCALL_EXIT_WORK_FLAGS))
++	if (unlikely((!IS_ENABLED(CONFIG_IPIPE) ||
++		      syscall_get_nr(current, regs) < NR_syscalls) &&
++		     (cached_flags & SYSCALL_EXIT_WORK_FLAGS)))
+ 		syscall_slow_exit_work(regs, cached_flags);
  
--.macro idtentry sym do_sym has_error_code:req paranoid=0 shift_ist=-1
-+.macro idtentry sym do_sym has_error_code:req paranoid=0 shift_ist=-1 trapnr=-1
- ENTRY(\sym)
- 	UNWIND_HINT_IRET_REGS offset=\has_error_code*8
- 
-@@ -935,6 +935,21 @@ ENTRY(\sym)
- 	.endif
- 	.endif
- 
-+#ifdef CONFIG_IPIPE
-+	movq	EFLAGS(%rsp), %r14		/* regs->flags */
-+	movq	%rsp, %rdi			/* pt_regs pointer */
-+	movl	$\trapnr, %esi			/* trap number */
-+	subq	$8, %rsp
-+	movq	%rsp, %rdx			/* &flags */
-+	call	__ipipe_trap_prologue
-+	popq	%r13
-+	mov	%rax, %r12			/* save propagation status */
-+	.if \paranoid == 0			/* paranoid may not skip handler */
-+	testl	%eax, %eax
-+	jg	98f				/* skip regular handler if > 0 */
-+	.endif
-+#endif
-+
- 	movq	%rsp, %rdi			/* pt_regs pointer */
- 
- 	.if \has_error_code
-@@ -950,6 +965,27 @@ ENTRY(\sym)
- 
- 	call	\do_sym
- 
-+#ifdef CONFIG_IPIPE
-+	testl	%r12d, %r12d
-+	jnz	97f
-+	movq	%rsp, %rdi			/* pt_regs pointer */
-+	movq	%r13, %rsi			/* &flags from prologue */
-+	movq	%r14, %rdx			/* original regs->flags before fixup */
-+	call	__ipipe_trap_epilogue
-+97:
-+	.if \paranoid == 0			/* paranoid implies normal epilogue */
-+	testl	%r12d, %r12d
-+	jz	99f
-+98:
-+	UNWIND_HINT_REGS
-+	DISABLE_INTERRUPTS(CLBR_ANY)
-+	testl	%ebx, %ebx	/* %ebx: return to kernel mode */
-+	jnz	retint_kernel_early
-+	jmp	retint_user_early
-+	.endif
-+99:
-+#endif
-+
- 	.if \shift_ist != -1
- 	addq	$EXCEPTION_STKSZ, CPU_TSS_IST(\shift_ist)
- 	.endif
-@@ -986,19 +1022,19 @@ ENTRY(\sym)
- END(\sym)
- .endm
- 
--idtentry divide_error			do_divide_error			has_error_code=0
--idtentry overflow			do_overflow			has_error_code=0
--idtentry bounds				do_bounds			has_error_code=0
--idtentry invalid_op			do_invalid_op			has_error_code=0
--idtentry device_not_available		do_device_not_available		has_error_code=0
--idtentry double_fault			do_double_fault			has_error_code=1 paranoid=2
--idtentry coprocessor_segment_overrun	do_coprocessor_segment_overrun	has_error_code=0
--idtentry invalid_TSS			do_invalid_TSS			has_error_code=1
--idtentry segment_not_present		do_segment_not_present		has_error_code=1
--idtentry spurious_interrupt_bug		do_spurious_interrupt_bug	has_error_code=0
--idtentry coprocessor_error		do_coprocessor_error		has_error_code=0
--idtentry alignment_check		do_alignment_check		has_error_code=1
--idtentry simd_coprocessor_error		do_simd_coprocessor_error	has_error_code=0
-+idtentry divide_error			do_divide_error			has_error_code=0	trapnr=0
-+idtentry overflow			do_overflow			has_error_code=0	trapnr=4
-+idtentry bounds				do_bounds			has_error_code=0	trapnr=5
-+idtentry invalid_op			do_invalid_op			has_error_code=0	trapnr=6
-+idtentry device_not_available		do_device_not_available		has_error_code=0	trapnr=7
-+idtentry double_fault			do_double_fault			has_error_code=1 paranoid=2	trapnr=8
-+idtentry coprocessor_segment_overrun	do_coprocessor_segment_overrun	has_error_code=0	trapnr=9
-+idtentry invalid_TSS			do_invalid_TSS			has_error_code=1	trapnr=10
-+idtentry segment_not_present		do_segment_not_present		has_error_code=1	trapnr=11
-+idtentry spurious_interrupt_bug		do_spurious_interrupt_bug	has_error_code=0	trapnr=15
-+idtentry coprocessor_error		do_coprocessor_error		has_error_code=0	trapnr=16
-+idtentry alignment_check		do_alignment_check		has_error_code=1	trapnr=17
-+idtentry simd_coprocessor_error		do_simd_coprocessor_error	has_error_code=0	trapnr=19
- 
- 
- 	/*
-@@ -1142,9 +1178,13 @@ apicinterrupt3 HYPERVISOR_CALLBACK_VECTOR \
- 	hyperv_callback_vector hyperv_vector_handler
- #endif /* CONFIG_HYPERV */
- 
-+#ifdef CONFIG_IPIPE
-+idtentry debug			do_debug		has_error_code=0	paranoid=1	trapnr=1
-+#else
- idtentry debug			do_debug		has_error_code=0	paranoid=1 shift_ist=DEBUG_STACK
--idtentry int3			do_int3			has_error_code=0
--idtentry stack_segment		do_stack_segment	has_error_code=1
-+#endif
-+idtentry int3			do_int3			has_error_code=0	trapnr=3
-+idtentry stack_segment		do_stack_segment	has_error_code=1	trapnr=12
- 
- #ifdef CONFIG_XEN
- idtentry xennmi			do_nmi			has_error_code=0
-@@ -1152,15 +1192,15 @@ idtentry xendebug		do_debug		has_error_code=0
- idtentry xenint3		do_int3			has_error_code=0
- #endif
- 
--idtentry general_protection	do_general_protection	has_error_code=1
--idtentry page_fault		do_page_fault		has_error_code=1
-+idtentry general_protection	do_general_protection	has_error_code=1	trapnr=13
-+idtentry page_fault		do_page_fault		has_error_code=1	trapnr=14
- 
- #ifdef CONFIG_KVM_GUEST
--idtentry async_page_fault	do_async_page_fault	has_error_code=1
-+idtentry async_page_fault	do_async_page_fault	has_error_code=1	trapnr=14
- #endif
- 
- #ifdef CONFIG_X86_MCE
--idtentry machine_check		do_mce			has_error_code=0	paranoid=1
-+idtentry machine_check		do_mce			has_error_code=0	paranoid=1	trapnr=18
- #endif
- 
- /*
-diff --git a/arch/x86/kernel/ipipe.c b/arch/x86/kernel/ipipe.c
-index 6ee39d76e173..fa92ee3c13cf 100644
---- a/arch/x86/kernel/ipipe.c
-+++ b/arch/x86/kernel/ipipe.c
-@@ -325,6 +325,133 @@ void __ipipe_halt_root(int use_mwait)
+ 	local_irq_disable();
+@@ -282,15 +284,74 @@ __visible inline void syscall_return_slowpath(struct pt_regs *regs)
+ 	prepare_exit_to_usermode(regs);
  }
- EXPORT_SYMBOL_GPL(__ipipe_halt_root);
  
-+static inline void __ipipe_fixup_if(bool stalled, struct pt_regs *regs)
++#ifdef CONFIG_IPIPE
++
++#ifdef CONFIG_X86_32
++static inline int pipeline_syscall_32(struct thread_info *ti,
++				   unsigned long nr, struct pt_regs *regs)
 +{
-+	/*
-+	 * Have the saved hw state look like the domain stall bit, so
-+	 * that __ipipe_unstall_iret_root() restores the proper
-+	 * pipeline state for the root stage upon exit.
-+	 */
-+	if (stalled)
-+		regs->flags &= ~X86_EFLAGS_IF;
-+	else
-+		regs->flags |= X86_EFLAGS_IF;
++	return ipipe_handle_syscall(ti, nr, regs);
++}
++#else
++static inline int pipeline_syscall_64(struct thread_info *ti,
++				   unsigned long nr, struct pt_regs *regs)
++{
++	return ipipe_handle_syscall(ti, nr, regs);
 +}
 +
-+dotraplinkage int __ipipe_trap_prologue(struct pt_regs *regs, int trapnr, unsigned long *flags)
++static inline int pipeline_syscall_32(struct thread_info *ti,
++				   unsigned long nr, struct pt_regs *regs)
 +{
-+	bool entry_irqs_off = hard_irqs_disabled();
-+	struct ipipe_domain *ipd;
-+	unsigned long cr2;
++	struct pt_regs regs64 = *regs;
++	int ret;
 +
-+	if (trapnr == X86_TRAP_PF)
-+		cr2 = native_read_cr2();
++	regs64.di = (unsigned int)regs->bx;
++	regs64.si = (unsigned int)regs->cx;
++	regs64.r10 = (unsigned int)regs->si;
++	regs64.r8 = (unsigned int)regs->di;
++	regs64.r9 = (unsigned int)regs->bp;
++	ret = ipipe_handle_syscall(ti, nr, &regs64);
++	regs->ax = (unsigned int)regs64.ax;
 +
-+	/*
-+	 * KGDB and ftrace may poke int3/debug ops into the kernel
-+	 * code. Trap those exceptions early, do conditional fixups to
-+	 * the interrupt state depending on the current domain, let
-+	 * the regular handler see them.
-+	 */
-+	if (unlikely(!user_mode(regs) &&
-+		     (trapnr == X86_TRAP_DB || trapnr == X86_TRAP_BP))) {
++	return ret;
++}
++#endif /* CONFIG_X86_32 */
 +
-+		if (ipipe_root_p)
-+			goto root_fixup;
++#else  /* CONFIG_IPIPE */
 +
-+		/*
-+		 * Skip interrupt state fixup from the head domain,
-+		 * but do call the regular handler which is assumed to
-+		 * run fine within such context.
-+		 */
-+		return -1;
-+	}
-+
-+	/*
-+	 * Now that we have filtered out all debug traps which might
-+	 * happen anywhere in kernel code in theory, detect attempts
-+	 * to probe kernel memory (i.e. calls to probe_kernel_{read,
-+	 * write}()). If that happened over the head domain, do the
-+	 * fixup immediately then return right after upon success. If
-+	 * that fails, the kernel is likely to crash but let's follow
-+	 * the standard recovery procedure in that case anyway.
-+	 */
-+	if (unlikely(!ipipe_root_p && faulthandler_disabled())) {
-+		if (fixup_exception(regs, trapnr))
-+			return 1;
-+	}
-+
-+	if (unlikely(__ipipe_notify_trap(trapnr, regs)))
-+		return 1;
-+
-+	if (likely(ipipe_root_p)) {
-+	root_fixup:
-+		/*
-+		 * If no head domain is installed, or in case we faulted in
-+		 * the iret path of x86-32, regs->flags does not match the root
-+		 * domain state. The fault handler may evaluate it. So fix this
-+		 * up with the current state.
-+		 */
-+		local_save_flags(*flags);
-+		__ipipe_fixup_if(raw_irqs_disabled_flags(*flags), regs);
-+
-+		/*
-+		 * Sync Linux interrupt state with hardware state on
-+		 * entry.
-+		 */
-+		if (entry_irqs_off)
-+			local_irq_disable();
-+	} else {
-+		/* Plan for restoring the original flags at fault. */
-+		*flags = regs->flags;
-+
-+		/*
-+		 * Detect unhandled faults over the head domain,
-+		 * switching to root so that it can handle the fault
-+		 * cleanly.
-+		 */
-+		hard_local_irq_disable();
-+		ipd = __ipipe_current_domain;
-+		__ipipe_set_current_domain(ipipe_root_domain);
-+
-+		/* Sync Linux interrupt state with hardware state on entry. */
-+		if (entry_irqs_off)
-+			local_irq_disable();
-+
-+		ipipe_trace_panic_freeze();
-+
-+		/* Always warn about user land and unfixable faults. */
-+		if (user_mode(regs) ||
-+		    !search_exception_tables(instruction_pointer(regs))) {
-+			printk(KERN_ERR "BUG: Unhandled exception over domain"
-+			       " %s at 0x%lx - switching to ROOT\n",
-+			       ipd->name, instruction_pointer(regs));
-+			dump_stack();
-+			ipipe_trace_panic_dump();
-+		} else if (IS_ENABLED(CONFIG_IPIPE_DEBUG)) {
-+			/* Also report fixable ones when debugging is enabled. */
-+			printk(KERN_WARNING "WARNING: Fixable exception over "
-+			       "domain %s at 0x%lx - switching to ROOT\n",
-+			       ipd->name, instruction_pointer(regs));
-+			dump_stack();
-+			ipipe_trace_panic_dump();
-+		}
-+	}
-+
-+	if (trapnr == X86_TRAP_PF)
-+		write_cr2(cr2);
-+
++static inline int pipeline_syscall_32(struct thread_info *ti,
++				   unsigned long nr, struct pt_regs *regs)
++{
 +	return 0;
 +}
 +
-+dotraplinkage
-+void __ipipe_trap_epilogue(struct pt_regs *regs,
-+			   unsigned long flags, unsigned long regs_flags)
++static inline int pipeline_syscall_64(struct thread_info *ti,
++				   unsigned long nr, struct pt_regs *regs)
 +{
-+	ipipe_restore_root(raw_irqs_disabled_flags(flags));
-+	__ipipe_fixup_if(raw_irqs_disabled_flags(regs_flags), regs);
++	return 0;
 +}
 +
- int __ipipe_handle_irq(struct pt_regs *regs)
++#endif /* CONFIG_IPIPE */
++
+ #ifdef CONFIG_X86_64
+ __visible void do_syscall_64(struct pt_regs *regs)
  {
- 	struct ipipe_percpu_data *p = __ipipe_raw_cpu_ptr(&ipipe_percpu);
-diff --git a/arch/x86/kernel/traps.c b/arch/x86/kernel/traps.c
-index ed8d78fd4f8c..3f8723dbc29d 100644
---- a/arch/x86/kernel/traps.c
-+++ b/arch/x86/kernel/traps.c
-@@ -14,6 +14,7 @@
+ 	struct thread_info *ti = current_thread_info();
+ 	unsigned long nr = regs->orig_ax;
++	int ret;
  
- #include <linux/context_tracking.h>
- #include <linux/interrupt.h>
-+#include <linux/ipipe.h>
- #include <linux/kallsyms.h>
- #include <linux/spinlock.h>
- #include <linux/kprobes.h>
-@@ -76,13 +77,13 @@ DECLARE_BITMAP(used_vectors, NR_VECTORS);
- static inline void cond_local_irq_enable(struct pt_regs *regs)
- {
- 	if (regs->flags & X86_EFLAGS_IF)
--		local_irq_enable();
-+		hard_local_irq_enable_notrace();
- }
+ 	enter_from_user_mode();
+ 	local_irq_enable();
  
- static inline void cond_local_irq_disable(struct pt_regs *regs)
- {
- 	if (regs->flags & X86_EFLAGS_IF)
--		local_irq_disable();
-+		hard_local_irq_disable_notrace();
- }
++	ret = pipeline_syscall_64(ti, nr, regs);
++	if (ret > 0) {
++		local_irq_disable();
++		hard_cond_local_irq_disable();
++		return;
++	}
++	if (ret < 0)
++		goto done;
++
+ 	if (READ_ONCE(ti->flags) & _TIF_WORK_SYSCALL_ENTRY)
+ 		nr = syscall_trace_enter(regs);
  
- /*
-@@ -537,7 +538,7 @@ do_general_protection(struct pt_regs *regs, long error_code)
- 	cond_local_irq_enable(regs);
- 
- 	if (v8086_mode(regs)) {
--		local_irq_enable();
-+		hard_local_irq_enable();
- 		handle_vm86_fault((struct kernel_vm86_regs *) regs, error_code);
- 		return;
+@@ -305,7 +366,7 @@ __visible void do_syscall_64(struct pt_regs *regs)
+ 			regs->di, regs->si, regs->dx,
+ 			regs->r10, regs->r8, regs->r9);
  	}
-@@ -923,7 +924,7 @@ dotraplinkage void do_iret_error(struct pt_regs *regs, long error_code)
- 	siginfo_t info;
+-
++done:
+ 	syscall_return_slowpath(regs);
+ }
+ #endif
+@@ -321,11 +382,19 @@ static __always_inline void do_syscall_32_irqs_on(struct pt_regs *regs)
+ {
+ 	struct thread_info *ti = current_thread_info();
+ 	unsigned int nr = (unsigned int)regs->orig_ax;
++	int ret;
  
- 	RCU_LOCKDEP_WARN(!rcu_is_watching(), "entry code didn't wake RCU");
--	local_irq_enable();
-+	hard_local_irq_enable();
+ #ifdef CONFIG_IA32_EMULATION
+ 	ti->status |= TS_COMPAT;
+ #endif
  
- 	info.si_signo = SIGILL;
- 	info.si_errno = 0;
-diff --git a/arch/x86/mm/fault.c b/arch/x86/mm/fault.c
-index cac86d740686..878aeb980d34 100644
---- a/arch/x86/mm/fault.c
-+++ b/arch/x86/mm/fault.c
-@@ -1248,6 +1248,10 @@ __do_page_fault(struct pt_regs *regs, unsigned long error_code,
- 	unsigned int flags = FAULT_FLAG_ALLOW_RETRY | FAULT_FLAG_KILLABLE;
- 	u32 pkey;
- 
-+#ifdef CONFIG_IPIPE
-+	if (ipipe_root_domain != ipipe_head_domain)
-+		hard_cond_local_irq_enable();
-+#endif
- 	tsk = current;
- 	mm = tsk->mm;
++	ret = pipeline_syscall_32(ti, nr, regs);
++	if (ret > 0)
++		return;
++
++	if (ret < 0)
++		goto done;
++
+ 	if (READ_ONCE(ti->flags) & _TIF_WORK_SYSCALL_ENTRY) {
+ 		/*
+ 		 * Subtlety here: if ptrace pokes something larger than
+@@ -349,7 +418,7 @@ static __always_inline void do_syscall_32_irqs_on(struct pt_regs *regs)
+ 			(unsigned int)regs->dx, (unsigned int)regs->si,
+ 			(unsigned int)regs->di, (unsigned int)regs->bp);
+ 	}
+-
++done:
+ 	syscall_return_slowpath(regs);
+ }
  
 -- 
 2.14.4
