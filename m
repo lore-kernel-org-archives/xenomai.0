@@ -1,10 +1,10 @@
 From: Philippe Gerum <rpm@xenomai.org>
-Date: Tue, 25 Sep 2018 12:37:52 +0200
-Message-Id: <20180925103809.4932-16-rpm@xenomai.org>
+Date: Tue, 25 Sep 2018 12:37:53 +0200
+Message-Id: <20180925103809.4932-17-rpm@xenomai.org>
 In-Reply-To: <20180925103809.4932-1-rpm@xenomai.org>
 References: <20180925103809.4932-1-rpm@xenomai.org>
-Subject: [Xenomai] [PATCH 15/32] x86/kvm: ipipe: enable shared control with
- head domain
+Subject: [Xenomai] [PATCH 16/32] x86/mmx32: ipipe: use slow copy from head
+ domain
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,263 +15,27 @@ List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: xenomai@xenomai.org
 
+Using the MMX unit from the head domain requires the co-kernel to deal
+with preemption of sections delimited by kernel_fpu_begin <->
+kernel_fpu_end, which is a burden when it comes to scheduling its own
+fpu-enabled tasks in between. Branch to the generic memcpy instead.
 ---
- arch/x86/Kconfig             |  1 +
- arch/x86/include/asm/ipipe.h |  5 ++++
- arch/x86/kvm/svm.c           |  5 ++--
- arch/x86/kvm/vmx.c           | 13 +++++++--
- arch/x86/kvm/x86.c           | 66 +++++++++++++++++++++++++++++++++++++-------
- 5 files changed, 76 insertions(+), 14 deletions(-)
+ arch/x86/lib/mmx_32.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/arch/x86/Kconfig b/arch/x86/Kconfig
-index e09fdf5025e0..81a5afe38b18 100644
---- a/arch/x86/Kconfig
-+++ b/arch/x86/Kconfig
-@@ -149,6 +149,7 @@ config X86
- 	select HAVE_IPIPE_TRACER_SUPPORT
- 	select IPIPE_HAVE_SAFE_THREAD_INFO if IPIPE
- 	select IPIPE_WANT_PTE_PINNING if IPIPE
-+	select IPIPE_HAVE_VM_NOTIFIER if IPIPE
- 	select HAVE_KERNEL_BZIP2
- 	select HAVE_KERNEL_GZIP
- 	select HAVE_KERNEL_LZ4
-diff --git a/arch/x86/include/asm/ipipe.h b/arch/x86/include/asm/ipipe.h
-index 280f173dd004..9cf07017ee6b 100644
---- a/arch/x86/include/asm/ipipe.h
-+++ b/arch/x86/include/asm/ipipe.h
-@@ -50,6 +50,11 @@ void __ipipe_enable_pipeline(void);
+diff --git a/arch/x86/lib/mmx_32.c b/arch/x86/lib/mmx_32.c
+index 4321fa02e18d..1d9ad8f0bc4b 100644
+--- a/arch/x86/lib/mmx_32.c
++++ b/arch/x86/lib/mmx_32.c
+@@ -31,7 +31,7 @@ void *_mmx_memcpy(void *to, const void *from, size_t len)
+ 	void *p;
+ 	int i;
  
- #define __ipipe_root_tick_p(regs)	((regs)->flags & X86_EFLAGS_IF)
+-	if (unlikely(in_interrupt()))
++	if (unlikely(!ipipe_root_p || in_interrupt()))
+ 		return __memcpy(to, from, len);
  
-+static inline void ipipe_notify_root_preemption(void)
-+{
-+	__ipipe_notify_vm_preemption();
-+}
-+
- #endif /* CONFIG_IPIPE */
- 
- #if defined(CONFIG_SMP) && defined(CONFIG_IPIPE)
-diff --git a/arch/x86/kvm/svm.c b/arch/x86/kvm/svm.c
-index f6bebcec60b4..47d65733be18 100644
---- a/arch/x86/kvm/svm.c
-+++ b/arch/x86/kvm/svm.c
-@@ -5075,7 +5075,7 @@ static void svm_vcpu_run(struct kvm_vcpu *vcpu)
- 	 */
- 	x86_spec_ctrl_set_guest(svm->spec_ctrl, svm->virt_spec_ctrl);
- 
--	local_irq_enable();
-+	hard_local_irq_enable();
- 
- 	asm volatile (
- 		"push %%" _ASM_BP "; \n\t"
-@@ -5201,7 +5201,7 @@ static void svm_vcpu_run(struct kvm_vcpu *vcpu)
- 
- 	reload_tss(vcpu);
- 
--	local_irq_disable();
-+	hard_local_irq_disable();
- 
- 	x86_spec_ctrl_restore_host(svm->spec_ctrl, svm->virt_spec_ctrl);
- 
-@@ -5572,6 +5572,7 @@ static int svm_check_intercept(struct kvm_vcpu *vcpu,
- 
- static void svm_handle_external_intr(struct kvm_vcpu *vcpu)
- {
-+	hard_cond_local_irq_enable();
- 	local_irq_enable();
- 	/*
- 	 * We must have an instruction with interrupts enabled, so
-diff --git a/arch/x86/kvm/vmx.c b/arch/x86/kvm/vmx.c
-index fd46d890296c..367d93a13360 100644
---- a/arch/x86/kvm/vmx.c
-+++ b/arch/x86/kvm/vmx.c
-@@ -2434,9 +2434,11 @@ static void __vmx_load_host_state(struct vcpu_vmx *vmx)
- 
- static void vmx_load_host_state(struct vcpu_vmx *vmx)
- {
--	preempt_disable();
-+	unsigned long flags;
-+
-+	flags = hard_preempt_disable();
- 	__vmx_load_host_state(vmx);
--	preempt_enable();
-+	hard_preempt_enable(flags);
- }
- 
- static void vmx_vcpu_pi_load(struct kvm_vcpu *vcpu, int cpu)
-@@ -2809,6 +2811,7 @@ static void setup_msrs(struct vcpu_vmx *vmx)
- {
- 	int save_nmsrs, index;
- 
-+	hard_cond_local_irq_disable();
- 	save_nmsrs = 0;
- #ifdef CONFIG_X86_64
- 	if (is_long_mode(&vmx->vcpu)) {
-@@ -2838,6 +2841,7 @@ static void setup_msrs(struct vcpu_vmx *vmx)
- 		move_msr_up(vmx, index, save_nmsrs++);
- 
- 	vmx->save_nmsrs = save_nmsrs;
-+	hard_cond_local_irq_enable();
- 
- 	if (cpu_has_vmx_msr_bitmap())
- 		vmx_update_msr_bitmap(&vmx->vcpu);
-@@ -10044,8 +10048,13 @@ static struct kvm_vcpu *vmx_create_vcpu(struct kvm *kvm, unsigned int id)
- 	cpu = get_cpu();
- 	vmx_vcpu_load(&vmx->vcpu, cpu);
- 	vmx->vcpu.cpu = cpu;
-+#ifdef CONFIG_IPIPE
-+	vmx->vcpu.ipipe_notifier.handler = __ipipe_handle_vm_preemption;
-+#endif
- 	err = vmx_vcpu_setup(vmx);
-+	hard_cond_local_irq_disable();
- 	vmx_vcpu_put(&vmx->vcpu);
-+	hard_cond_local_irq_enable();
- 	put_cpu();
- 	if (err)
- 		goto free_vmcs;
-diff --git a/arch/x86/kvm/x86.c b/arch/x86/kvm/x86.c
-index 3856828ee1dc..76097c641661 100644
---- a/arch/x86/kvm/x86.c
-+++ b/arch/x86/kvm/x86.c
-@@ -42,6 +42,7 @@
- #include <linux/iommu.h>
- #include <linux/intel-iommu.h>
- #include <linux/cpufreq.h>
-+#include <linux/ipipe.h>
- #include <linux/user-return-notifier.h>
- #include <linux/srcu.h>
- #include <linux/slab.h>
-@@ -145,6 +146,7 @@ struct kvm_shared_msrs_global {
- struct kvm_shared_msrs {
- 	struct user_return_notifier urn;
- 	bool registered;
-+	bool dirty;
- 	struct kvm_shared_msr_values {
- 		u64 host;
- 		u64 curr;
-@@ -208,12 +210,31 @@ static inline void kvm_async_pf_hash_reset(struct kvm_vcpu *vcpu)
- 		vcpu->arch.apf.gfns[i] = ~0;
- }
- 
-+static void kvm_restore_shared_msrs(struct kvm_shared_msrs *locals)
-+{
-+	struct kvm_shared_msr_values *values;
-+	unsigned long flags;
-+	unsigned int slot;
-+
-+	flags = hard_cond_local_irq_save();
-+	if (locals->dirty) {
-+		for (slot = 0; slot < shared_msrs_global.nr; ++slot) {
-+			values = &locals->values[slot];
-+			if (values->host != values->curr) {
-+				wrmsrl(shared_msrs_global.msrs[slot],
-+				       values->host);
-+				values->curr = values->host;
-+			}
-+		}
-+		locals->dirty = false;
-+	}
-+	hard_cond_local_irq_restore(flags);
-+}
-+
- static void kvm_on_user_return(struct user_return_notifier *urn)
- {
--	unsigned slot;
- 	struct kvm_shared_msrs *locals
- 		= container_of(urn, struct kvm_shared_msrs, urn);
--	struct kvm_shared_msr_values *values;
- 	unsigned long flags;
- 
- 	/*
-@@ -226,13 +247,8 @@ static void kvm_on_user_return(struct user_return_notifier *urn)
- 		user_return_notifier_unregister(urn);
- 	}
- 	local_irq_restore(flags);
--	for (slot = 0; slot < shared_msrs_global.nr; ++slot) {
--		values = &locals->values[slot];
--		if (values->host != values->curr) {
--			wrmsrl(shared_msrs_global.msrs[slot], values->host);
--			values->curr = values->host;
--		}
--	}
-+	kvm_restore_shared_msrs(locals);
-+	__ipipe_exit_vm();
- }
- 
- static void shared_msr_update(unsigned slot, u32 msr)
-@@ -282,6 +298,7 @@ int kvm_set_shared_msr(unsigned slot, u64 value, u64 mask)
- 	if (err)
- 		return 1;
- 
-+	smsr->dirty = true;
- 	if (!smsr->registered) {
- 		smsr->urn.on_user_return = kvm_on_user_return;
- 		user_return_notifier_register(&smsr->urn);
-@@ -2995,11 +3012,15 @@ static void kvm_steal_time_set_preempted(struct kvm_vcpu *vcpu)
- 
- void kvm_arch_vcpu_put(struct kvm_vcpu *vcpu)
- {
-+	unsigned int cpu = smp_processor_id();
-+	struct kvm_shared_msrs *smsr = per_cpu_ptr(shared_msrs, cpu);
-+	unsigned long flags;
- 	int idx;
- 
- 	if (vcpu->preempted)
- 		vcpu->arch.preempted_in_kernel = !kvm_x86_ops->get_cpl(vcpu);
- 
-+	flags = hard_cond_local_irq_save();
- 	/*
- 	 * Disable page faults because we're in atomic context here.
- 	 * kvm_write_guest_offset_cached() would call might_fault()
-@@ -3026,7 +3047,29 @@ void kvm_arch_vcpu_put(struct kvm_vcpu *vcpu)
- 	 * guest. do_debug expects dr6 to be cleared after it runs, do the same.
- 	 */
- 	set_debugreg(0, 6);
-+
-+	if (!smsr->dirty)
-+		__ipipe_exit_vm();
-+
-+	hard_cond_local_irq_restore(flags);
-+}
-+
-+#ifdef CONFIG_IPIPE
-+
-+void __ipipe_handle_vm_preemption(struct ipipe_vm_notifier *nfy)
-+{
-+	unsigned int cpu = raw_smp_processor_id();
-+	struct kvm_shared_msrs *smsr = per_cpu_ptr(shared_msrs, cpu);
-+	struct kvm_vcpu *vcpu;
-+
-+	vcpu = container_of(nfy, struct kvm_vcpu, ipipe_notifier);
-+	kvm_arch_vcpu_put(vcpu);
-+	kvm_restore_shared_msrs(smsr);
-+	__ipipe_exit_vm();
- }
-+EXPORT_SYMBOL_GPL(__ipipe_handle_vm_preemption);
-+
-+#endif
- 
- static int kvm_vcpu_ioctl_get_lapic(struct kvm_vcpu *vcpu,
- 				    struct kvm_lapic_state *s)
-@@ -7077,6 +7120,10 @@ static int vcpu_enter_guest(struct kvm_vcpu *vcpu)
- 	}
- 
- 	preempt_disable();
-+	local_irq_disable();
-+	hard_cond_local_irq_disable();
-+
-+	__ipipe_enter_vm(&vcpu->ipipe_notifier);
- 
- 	kvm_x86_ops->prepare_guest_switch(vcpu);
- 	kvm_load_guest_fpu(vcpu);
-@@ -7086,7 +7133,6 @@ static int vcpu_enter_guest(struct kvm_vcpu *vcpu)
- 	 * IPI are then delayed after guest entry, which ensures that they
- 	 * result in virtual interrupt delivery.
- 	 */
--	local_irq_disable();
- 	vcpu->mode = IN_GUEST_MODE;
- 
- 	srcu_read_unlock(&vcpu->kvm->srcu, vcpu->srcu_idx);
+ 	p = to;
 -- 
 2.14.4
 
