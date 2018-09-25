@@ -1,7 +1,10 @@
 From: Philippe Gerum <rpm@xenomai.org>
-Date: Tue, 25 Sep 2018 12:37:37 +0200
-Message-Id: <20180925103809.4932-1-rpm@xenomai.org>
-Subject: [Xenomai] [I-PIPE][PATCH 00/32] 4.14.71/x86_64 port (split series)
+Date: Tue, 25 Sep 2018 12:37:38 +0200
+Message-Id: <20180925103809.4932-2-rpm@xenomai.org>
+In-Reply-To: <20180925103809.4932-1-rpm@xenomai.org>
+References: <20180925103809.4932-1-rpm@xenomai.org>
+Subject: [Xenomai] [PATCH 01/32] x86: lockdep: ipipe: make the logic aware
+ of interrupt pipelining
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -12,120 +15,74 @@ List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: xenomai@xenomai.org
 
-This is a port of the interrupt pipeline to kernel 4.14.71 for x86_64,
-based on the split series published earlier this year [1].
+Call trace_hardirqs_on_virt() on kernel exit path to userland. This
+makes sure that the interrupt state is only tracked for the root
+domain (i.e. by testing the virtual interrupt disable flag when
+applicable).
+---
+ arch/x86/entry/entry_64.S       | 2 +-
+ arch/x86/entry/thunk_32.S       | 1 +
+ arch/x86/entry/thunk_64.S       | 1 +
+ arch/x86/include/asm/irqflags.h | 6 ++++++
+ 4 files changed, 9 insertions(+), 1 deletion(-)
 
-The architecture-specific bits have been reworked to become a series
-of incremental changes on top of the -noarch tree [2], enabling a
-feature one at a time, which should ease future kernel upgrades.
-
-The topmost patch disables native 32bit support which was not
-ported. Support for x32 and ia32 emulation ABIs over long mode is
-still there and working though.
-
-[1] https://www.xenomai.org/pipermail/xenomai/2018-July/039302.html
-[2] https://git.xenomai.org/ipipe-noarch
-
-
-Henning Schild (2):
-  x86: fix include for drivers
-  x86: ipipe fpu support
-
-Philippe Gerum (30):
-  x86: lockdep: ipipe: make the logic aware of interrupt pipelining
-  x86: ipipe: add pipeline core
-  x86: context_tracking: disable if CONFIG_IPIPE
-  x86: paravirt: disable if CONFIG_IPIPE
-  x86/iommu: enable interrupt pipelining
-  x86/htirq: ipipe: enable interrupt pipelining
-  x86/i8259: ipipe: enable interrupt pipelining
-  x86/mm: enable PTE pinning
-  x86: ipipe: share context switch code with head domain
-  x86/mtrr: ipipe: protect against preemption from head stage
-  x86/tsc: ipipe: keep calibration accurate
-  x86: ipipe: notify about GTOD update
-  x86/kgdb: ipipe: enable support from head domain
-  x86/vm86_32: ipipe: protect against preemption from head domain
-  x86/kvm: ipipe: enable shared control with head domain
-  x86/mmx32: ipipe: use slow copy from head domain
-  x86/nmi: ipipe: disallow user copy from head domain
-  x86: ipipe: route traps to co-kernel
-  x86: ipipe: route syscalls to co-kernel
-  x86/irq: ipipe: map the cleanup vector to a legit IRQ number
-  x86/fpu: ipipe: add inline qualifier to kernel_fpu_*() helpers
-  x86: ipipe: fix interrupt state in syscall routing
-  x86/irq: ipipe: reconcile lockdep tracing with virtual IRQ state
-  x86/mm: ipipe: fix lockdep tracing upon PF
-  x86/msi: ipipe: advertise pipelining support
-  x86: ipipe: fix stack overflow detection
-  x86: ipipe: restrict WARN_ON_IN_IRQ() to the root domain
-  x86: ipipe: remove 32bit support from shared context switch code
-  x86: ipipe: drop (obsolete) declarations
-  x86: ipipe: disable 32bit support
-
- arch/x86/Kconfig                        |  10 +-
- arch/x86/entry/common.c                 |  98 +++++-
- arch/x86/entry/entry_64.S               | 145 +++++++--
- arch/x86/entry/thunk_32.S               |   1 +
- arch/x86/entry/thunk_64.S               |   1 +
- arch/x86/entry/vsyscall/vsyscall_gtod.c |   4 +
- arch/x86/include/asm/apic.h             |  10 +
- arch/x86/include/asm/debugreg.h         |   2 +-
- arch/x86/include/asm/desc.h             |   2 +-
- arch/x86/include/asm/fpu/internal.h     |  20 ++
- arch/x86/include/asm/i8259.h            |   2 +-
- arch/x86/include/asm/ipipe.h            |  73 +++++
- arch/x86/include/asm/ipipe_base.h       | 151 +++++++++
- arch/x86/include/asm/irq_vectors.h      |  17 +-
- arch/x86/include/asm/irqflags.h         | 198 +++++++++++-
- arch/x86/include/asm/mmu_context.h      |   6 +-
- arch/x86/include/asm/thread_info.h      |  14 +
- arch/x86/include/asm/tsc.h              |   1 +
- arch/x86/include/asm/uaccess.h          |   3 +-
- arch/x86/kernel/Makefile                |   1 +
- arch/x86/kernel/apic/apic.c             |  46 ++-
- arch/x86/kernel/apic/apic_flat_64.c     |   4 +-
- arch/x86/kernel/apic/htirq.c            |   5 +-
- arch/x86/kernel/apic/io_apic.c          | 182 ++++++++++-
- arch/x86/kernel/apic/ipi.c              |  29 +-
- arch/x86/kernel/apic/msi.c              |  20 +-
- arch/x86/kernel/apic/vector.c           |  13 +-
- arch/x86/kernel/apic/x2apic_cluster.c   |   4 +-
- arch/x86/kernel/apic/x2apic_phys.c      |   4 +-
- arch/x86/kernel/asm-offsets.c           |   3 +
- arch/x86/kernel/cpu/common.c            |   2 +
- arch/x86/kernel/cpu/mtrr/cyrix.c        |  12 +-
- arch/x86/kernel/cpu/mtrr/generic.c      |  12 +-
- arch/x86/kernel/fpu/core.c              |  58 ++--
- arch/x86/kernel/i8259.c                 |  31 +-
- arch/x86/kernel/idt.c                   |  24 ++
- arch/x86/kernel/ipipe.c                 | 528 ++++++++++++++++++++++++++++++++
- arch/x86/kernel/irq.c                   |   5 +-
- arch/x86/kernel/irq_64.c                |  12 +-
- arch/x86/kernel/kgdb.c                  |   4 +-
- arch/x86/kernel/process.c               |  20 +-
- arch/x86/kernel/process_32.c            |   2 +-
- arch/x86/kernel/process_64.c            |   2 +-
- arch/x86/kernel/smp.c                   |   4 +-
- arch/x86/kernel/smpboot.c               |   8 +-
- arch/x86/kernel/traps.c                 |   9 +-
- arch/x86/kernel/tsc.c                   |  12 +-
- arch/x86/kernel/vm86_32.c               |   4 +
- arch/x86/kvm/svm.c                      |   5 +-
- arch/x86/kvm/vmx.c                      |  13 +-
- arch/x86/kvm/x86.c                      |  66 +++-
- arch/x86/lib/mmx_32.c                   |   2 +-
- arch/x86/lib/usercopy.c                 |   3 +-
- arch/x86/mm/fault.c                     |  53 ++++
- arch/x86/mm/tlb.c                       |  14 +-
- drivers/iommu/irq_remapping.c           |   2 +-
- drivers/pci/htirq.c                     |   2 +-
- include/linux/gpio.h                    |   1 +
- 58 files changed, 1787 insertions(+), 192 deletions(-)
- create mode 100644 arch/x86/include/asm/ipipe.h
- create mode 100644 arch/x86/include/asm/ipipe_base.h
- create mode 100644 arch/x86/kernel/ipipe.c
-
+diff --git a/arch/x86/entry/entry_64.S b/arch/x86/entry/entry_64.S
+index 0fae7096ae23..92a7471a5e7b 100644
+--- a/arch/x86/entry/entry_64.S
++++ b/arch/x86/entry/entry_64.S
+@@ -57,7 +57,7 @@ END(native_usergs_sysret64)
+ #ifdef CONFIG_TRACE_IRQFLAGS
+ 	bt	$9, EFLAGS(%rsp)		/* interrupts off? */
+ 	jnc	1f
+-	TRACE_IRQS_ON
++	TRACE_IRQS_ON_VIRT
+ 1:
+ #endif
+ .endm
+diff --git a/arch/x86/entry/thunk_32.S b/arch/x86/entry/thunk_32.S
+index fee6bc79b987..d331e7f30e53 100644
+--- a/arch/x86/entry/thunk_32.S
++++ b/arch/x86/entry/thunk_32.S
+@@ -31,6 +31,7 @@
+ 
+ #ifdef CONFIG_TRACE_IRQFLAGS
+ 	THUNK trace_hardirqs_on_thunk,trace_hardirqs_on_caller,1
++	THUNK trace_hardirqs_on_virt_thunk,trace_hardirqs_on_virt_caller,1
+ 	THUNK trace_hardirqs_off_thunk,trace_hardirqs_off_caller,1
+ #endif
+ 
+diff --git a/arch/x86/entry/thunk_64.S b/arch/x86/entry/thunk_64.S
+index be36bf4e0957..5a0bb83eeff0 100644
+--- a/arch/x86/entry/thunk_64.S
++++ b/arch/x86/entry/thunk_64.S
+@@ -40,6 +40,7 @@
+ 
+ #ifdef CONFIG_TRACE_IRQFLAGS
+ 	THUNK trace_hardirqs_on_thunk,trace_hardirqs_on_caller,1
++	THUNK trace_hardirqs_on_virt_thunk,trace_hardirqs_on_virt_caller,1
+ 	THUNK trace_hardirqs_off_thunk,trace_hardirqs_off_caller,1
+ #endif
+ 
+diff --git a/arch/x86/include/asm/irqflags.h b/arch/x86/include/asm/irqflags.h
+index 15450a675031..63d29a6eabce 100644
+--- a/arch/x86/include/asm/irqflags.h
++++ b/arch/x86/include/asm/irqflags.h
+@@ -175,9 +175,15 @@ static inline int arch_irqs_disabled(void)
+ #ifdef __ASSEMBLY__
+ #ifdef CONFIG_TRACE_IRQFLAGS
+ #  define TRACE_IRQS_ON		call trace_hardirqs_on_thunk;
++#ifdef CONFIG_IPIPE
++#  define TRACE_IRQS_ON_VIRT	call trace_hardirqs_on_virt_thunk;
++#else
++#  define TRACE_IRQS_ON_VIRT	TRACE_IRQS_ON
++#endif
+ #  define TRACE_IRQS_OFF	call trace_hardirqs_off_thunk;
+ #else
+ #  define TRACE_IRQS_ON
++#  define TRACE_IRQS_ON_VIRT
+ #  define TRACE_IRQS_OFF
+ #endif
+ #ifdef CONFIG_DEBUG_LOCK_ALLOC
 -- 
 2.14.4
 
