@@ -1,10 +1,7 @@
 From: Philippe Gerum <rpm@xenomai.org>
-Date: Tue, 25 Sep 2018 12:27:16 +0200
-Message-Id: <20180925102716.4492-12-rpm@xenomai.org>
-In-Reply-To: <20180925102716.4492-1-rpm@xenomai.org>
-References: <20180925102716.4492-1-rpm@xenomai.org>
-Subject: [Xenomai] [PATCH 11/11] arm64: ipipe: preserve the hard interrupt
- state across mayday trap
+Date: Tue, 25 Sep 2018 12:37:37 +0200
+Message-Id: <20180925103809.4932-1-rpm@xenomai.org>
+Subject: [Xenomai] [I-PIPE][PATCH 00/32] 4.14.71/x86_64 port (split series)
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,47 +12,120 @@ List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: xenomai@xenomai.org
 
-The mayday trap asks the co-kernel to deal with a runaway context
-which has been detected earlier. When doing so, the co-kernel might
-re-enable hard interrupts, which we have to disable again before
-unwinding the IRQ context which triggered the whole process (like a
-watchdog event).
+This is a port of the interrupt pipeline to kernel 4.14.71 for x86_64,
+based on the split series published earlier this year [1].
 
-Use __ipipe_call_mayday() to fire the notification to the co-kernel
-instead of the open coded version, so that we do restore the hard
-interrupt state properly before leaving __ipipe_exit_irq().
----
- arch/arm64/kernel/ipipe.c | 17 ++---------------
- 1 file changed, 2 insertions(+), 15 deletions(-)
+The architecture-specific bits have been reworked to become a series
+of incremental changes on top of the -noarch tree [2], enabling a
+feature one at a time, which should ease future kernel upgrades.
 
-diff --git a/arch/arm64/kernel/ipipe.c b/arch/arm64/kernel/ipipe.c
-index 10273ce8a846..0488936bf2ea 100644
---- a/arch/arm64/kernel/ipipe.c
-+++ b/arch/arm64/kernel/ipipe.c
-@@ -165,21 +165,8 @@ void __ipipe_enable_pipeline(void)
- 
- void __ipipe_exit_irq(struct pt_regs *regs)
- {
--	/*
--	 * Testing for user_regs() eliminates foreign stack contexts,
--	 * including from legacy domains which did not set the foreign
--	 * stack bit (foreign stacks are always kernel-based).
--	 */
--	if (user_mode(regs) &&
--	    ipipe_test_thread_flag(TIP_MAYDAY)) {
--		/*
--		 * MAYDAY is never raised under normal circumstances,
--		 * so prefer test then maybe clear over
--		 * test_and_clear.
--		 */
--		ipipe_clear_thread_flag(TIP_MAYDAY);
--		__ipipe_notify_trap(IPIPE_TRAP_MAYDAY, regs);
--	}
-+	if (user_mode(regs) && ipipe_test_thread_flag(TIP_MAYDAY))
-+		__ipipe_call_mayday(regs);
- }
- 
- /* hw irqs off */
+The topmost patch disables native 32bit support which was not
+ported. Support for x32 and ia32 emulation ABIs over long mode is
+still there and working though.
+
+[1] https://www.xenomai.org/pipermail/xenomai/2018-July/039302.html
+[2] https://git.xenomai.org/ipipe-noarch
+
+
+Henning Schild (2):
+  x86: fix include for drivers
+  x86: ipipe fpu support
+
+Philippe Gerum (30):
+  x86: lockdep: ipipe: make the logic aware of interrupt pipelining
+  x86: ipipe: add pipeline core
+  x86: context_tracking: disable if CONFIG_IPIPE
+  x86: paravirt: disable if CONFIG_IPIPE
+  x86/iommu: enable interrupt pipelining
+  x86/htirq: ipipe: enable interrupt pipelining
+  x86/i8259: ipipe: enable interrupt pipelining
+  x86/mm: enable PTE pinning
+  x86: ipipe: share context switch code with head domain
+  x86/mtrr: ipipe: protect against preemption from head stage
+  x86/tsc: ipipe: keep calibration accurate
+  x86: ipipe: notify about GTOD update
+  x86/kgdb: ipipe: enable support from head domain
+  x86/vm86_32: ipipe: protect against preemption from head domain
+  x86/kvm: ipipe: enable shared control with head domain
+  x86/mmx32: ipipe: use slow copy from head domain
+  x86/nmi: ipipe: disallow user copy from head domain
+  x86: ipipe: route traps to co-kernel
+  x86: ipipe: route syscalls to co-kernel
+  x86/irq: ipipe: map the cleanup vector to a legit IRQ number
+  x86/fpu: ipipe: add inline qualifier to kernel_fpu_*() helpers
+  x86: ipipe: fix interrupt state in syscall routing
+  x86/irq: ipipe: reconcile lockdep tracing with virtual IRQ state
+  x86/mm: ipipe: fix lockdep tracing upon PF
+  x86/msi: ipipe: advertise pipelining support
+  x86: ipipe: fix stack overflow detection
+  x86: ipipe: restrict WARN_ON_IN_IRQ() to the root domain
+  x86: ipipe: remove 32bit support from shared context switch code
+  x86: ipipe: drop (obsolete) declarations
+  x86: ipipe: disable 32bit support
+
+ arch/x86/Kconfig                        |  10 +-
+ arch/x86/entry/common.c                 |  98 +++++-
+ arch/x86/entry/entry_64.S               | 145 +++++++--
+ arch/x86/entry/thunk_32.S               |   1 +
+ arch/x86/entry/thunk_64.S               |   1 +
+ arch/x86/entry/vsyscall/vsyscall_gtod.c |   4 +
+ arch/x86/include/asm/apic.h             |  10 +
+ arch/x86/include/asm/debugreg.h         |   2 +-
+ arch/x86/include/asm/desc.h             |   2 +-
+ arch/x86/include/asm/fpu/internal.h     |  20 ++
+ arch/x86/include/asm/i8259.h            |   2 +-
+ arch/x86/include/asm/ipipe.h            |  73 +++++
+ arch/x86/include/asm/ipipe_base.h       | 151 +++++++++
+ arch/x86/include/asm/irq_vectors.h      |  17 +-
+ arch/x86/include/asm/irqflags.h         | 198 +++++++++++-
+ arch/x86/include/asm/mmu_context.h      |   6 +-
+ arch/x86/include/asm/thread_info.h      |  14 +
+ arch/x86/include/asm/tsc.h              |   1 +
+ arch/x86/include/asm/uaccess.h          |   3 +-
+ arch/x86/kernel/Makefile                |   1 +
+ arch/x86/kernel/apic/apic.c             |  46 ++-
+ arch/x86/kernel/apic/apic_flat_64.c     |   4 +-
+ arch/x86/kernel/apic/htirq.c            |   5 +-
+ arch/x86/kernel/apic/io_apic.c          | 182 ++++++++++-
+ arch/x86/kernel/apic/ipi.c              |  29 +-
+ arch/x86/kernel/apic/msi.c              |  20 +-
+ arch/x86/kernel/apic/vector.c           |  13 +-
+ arch/x86/kernel/apic/x2apic_cluster.c   |   4 +-
+ arch/x86/kernel/apic/x2apic_phys.c      |   4 +-
+ arch/x86/kernel/asm-offsets.c           |   3 +
+ arch/x86/kernel/cpu/common.c            |   2 +
+ arch/x86/kernel/cpu/mtrr/cyrix.c        |  12 +-
+ arch/x86/kernel/cpu/mtrr/generic.c      |  12 +-
+ arch/x86/kernel/fpu/core.c              |  58 ++--
+ arch/x86/kernel/i8259.c                 |  31 +-
+ arch/x86/kernel/idt.c                   |  24 ++
+ arch/x86/kernel/ipipe.c                 | 528 ++++++++++++++++++++++++++++++++
+ arch/x86/kernel/irq.c                   |   5 +-
+ arch/x86/kernel/irq_64.c                |  12 +-
+ arch/x86/kernel/kgdb.c                  |   4 +-
+ arch/x86/kernel/process.c               |  20 +-
+ arch/x86/kernel/process_32.c            |   2 +-
+ arch/x86/kernel/process_64.c            |   2 +-
+ arch/x86/kernel/smp.c                   |   4 +-
+ arch/x86/kernel/smpboot.c               |   8 +-
+ arch/x86/kernel/traps.c                 |   9 +-
+ arch/x86/kernel/tsc.c                   |  12 +-
+ arch/x86/kernel/vm86_32.c               |   4 +
+ arch/x86/kvm/svm.c                      |   5 +-
+ arch/x86/kvm/vmx.c                      |  13 +-
+ arch/x86/kvm/x86.c                      |  66 +++-
+ arch/x86/lib/mmx_32.c                   |   2 +-
+ arch/x86/lib/usercopy.c                 |   3 +-
+ arch/x86/mm/fault.c                     |  53 ++++
+ arch/x86/mm/tlb.c                       |  14 +-
+ drivers/iommu/irq_remapping.c           |   2 +-
+ drivers/pci/htirq.c                     |   2 +-
+ include/linux/gpio.h                    |   1 +
+ 58 files changed, 1787 insertions(+), 192 deletions(-)
+ create mode 100644 arch/x86/include/asm/ipipe.h
+ create mode 100644 arch/x86/include/asm/ipipe_base.h
+ create mode 100644 arch/x86/kernel/ipipe.c
+
 -- 
 2.14.4
 
