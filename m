@@ -1,9 +1,9 @@
 From: Philippe Gerum <rpm@xenomai.org>
-Date: Tue, 25 Sep 2018 12:37:43 +0200
-Message-Id: <20180925103809.4932-7-rpm@xenomai.org>
+Date: Tue, 25 Sep 2018 12:37:44 +0200
+Message-Id: <20180925103809.4932-8-rpm@xenomai.org>
 In-Reply-To: <20180925103809.4932-1-rpm@xenomai.org>
 References: <20180925103809.4932-1-rpm@xenomai.org>
-Subject: [Xenomai] [PATCH 06/32] x86/htirq: ipipe: enable interrupt
+Subject: [Xenomai] [PATCH 07/32] x86/i8259: ipipe: enable interrupt
  pipelining
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
@@ -15,49 +15,99 @@ List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: xenomai@xenomai.org
 
-The Hypertransport handlers for masking/unmasking IRQs are invoked by
-the pipeline core for dealing with incoming PCI interrupts from an
-out-of-band context.
-
-To this end, we have to turn the original spinlock into a hard
-pipeline lock for proper serialization.
-
-In addition, make sure to fix up the HT irq_chip descriptor
-appropriately.
+Fix up the legacy 8259 PIC driver to enable out-of-band calls from the
+pipeline core for acknowledging incoming IRQs.
 ---
- arch/x86/kernel/apic/htirq.c | 5 ++++-
- drivers/pci/htirq.c          | 2 +-
- 2 files changed, 5 insertions(+), 2 deletions(-)
+ arch/x86/include/asm/i8259.h |  2 +-
+ arch/x86/kernel/i8259.c      | 31 ++++++++++++++++++++++++-------
+ 2 files changed, 25 insertions(+), 8 deletions(-)
 
-diff --git a/arch/x86/kernel/apic/htirq.c b/arch/x86/kernel/apic/htirq.c
-index 741de281ed5d..940ca3a1c110 100644
---- a/arch/x86/kernel/apic/htirq.c
-+++ b/arch/x86/kernel/apic/htirq.c
-@@ -59,7 +59,10 @@ static struct irq_chip ht_irq_chip = {
- 	.irq_ack		= irq_chip_ack_parent,
- 	.irq_set_affinity	= ht_set_affinity,
- 	.irq_retrigger		= irq_chip_retrigger_hierarchy,
--	.flags			= IRQCHIP_SKIP_SET_WAKE,
-+#if defined(CONFIG_IPIPE) && defined(CONFIG_SMP)
-+	.irq_move		= move_xxapic_irq,
-+#endif
-+	.flags			= IRQCHIP_SKIP_SET_WAKE|IRQCHIP_PIPELINE_SAFE,
+diff --git a/arch/x86/include/asm/i8259.h b/arch/x86/include/asm/i8259.h
+index 89789e8c80f6..dc376e53aa2a 100644
+--- a/arch/x86/include/asm/i8259.h
++++ b/arch/x86/include/asm/i8259.h
+@@ -26,7 +26,7 @@ extern unsigned int cached_irq_mask;
+ #define SLAVE_ICW4_DEFAULT	0x01
+ #define PIC_ICW4_AEOI		2
+ 
+-extern raw_spinlock_t i8259A_lock;
++IPIPE_DECLARE_RAW_SPINLOCK(i8259A_lock);
+ 
+ /* the PIC may need a careful delay on some platforms, hence specific calls */
+ static inline unsigned char inb_pic(unsigned int port)
+diff --git a/arch/x86/kernel/i8259.c b/arch/x86/kernel/i8259.c
+index 02abc134367f..60726586b796 100644
+--- a/arch/x86/kernel/i8259.c
++++ b/arch/x86/kernel/i8259.c
+@@ -33,7 +33,7 @@
+ static void init_8259A(int auto_eoi);
+ 
+ static int i8259A_auto_eoi;
+-DEFINE_RAW_SPINLOCK(i8259A_lock);
++IPIPE_DEFINE_RAW_SPINLOCK(i8259A_lock);
+ 
+ /*
+  * 8259A PIC functions to handle ISA devices:
+@@ -61,6 +61,7 @@ static void mask_8259A_irq(unsigned int irq)
+ 	unsigned long flags;
+ 
+ 	raw_spin_lock_irqsave(&i8259A_lock, flags);
++	ipipe_lock_irq(irq);
+ 	cached_irq_mask |= mask;
+ 	if (irq & 8)
+ 		outb(cached_slave_mask, PIC_SLAVE_IMR);
+@@ -76,15 +77,18 @@ static void disable_8259A_irq(struct irq_data *data)
+ 
+ static void unmask_8259A_irq(unsigned int irq)
+ {
+-	unsigned int mask = ~(1 << irq);
++	unsigned int mask = (1 << irq);
+ 	unsigned long flags;
+ 
+ 	raw_spin_lock_irqsave(&i8259A_lock, flags);
+-	cached_irq_mask &= mask;
+-	if (irq & 8)
+-		outb(cached_slave_mask, PIC_SLAVE_IMR);
+-	else
+-		outb(cached_master_mask, PIC_MASTER_IMR);
++	if (cached_irq_mask & mask) {
++		cached_irq_mask &= ~mask;
++		if (irq & 8)
++			outb(cached_slave_mask, PIC_SLAVE_IMR);
++		else
++			outb(cached_master_mask, PIC_MASTER_IMR);
++		ipipe_unlock_irq(irq);
++	}
+ 	raw_spin_unlock_irqrestore(&i8259A_lock, flags);
+ }
+ 
+@@ -170,6 +174,18 @@ static void mask_and_ack_8259A(struct irq_data *data)
+ 	 */
+ 	if (cached_irq_mask & irqmask)
+ 		goto spurious_8259A_irq;
++#ifdef CONFIG_IPIPE
++	if (irq == 0) {
++		/*
++		 * Fast timer ack -- don't mask (unless supposedly
++		 * spurious). We trace outb's in order to detect
++		 * broken hardware inducing large delays.
++		 */
++		outb(0x60, PIC_MASTER_CMD);	/* Specific EOI to master. */
++		raw_spin_unlock_irqrestore(&i8259A_lock, flags);
++		return;
++	}
++#endif /* CONFIG_IPIPE */
+ 	cached_irq_mask |= irqmask;
+ 
+ handle_real_irq:
+@@ -226,6 +242,7 @@ struct irq_chip i8259A_chip = {
+ 	.irq_disable	= disable_8259A_irq,
+ 	.irq_unmask	= enable_8259A_irq,
+ 	.irq_mask_ack	= mask_and_ack_8259A,
++	.flags		= IRQCHIP_PIPELINE_SAFE,
  };
  
- static int htirq_domain_alloc(struct irq_domain *domain, unsigned int virq,
-diff --git a/drivers/pci/htirq.c b/drivers/pci/htirq.c
-index bb88c26f5144..15be65199b79 100644
---- a/drivers/pci/htirq.c
-+++ b/drivers/pci/htirq.c
-@@ -22,7 +22,7 @@
-  * With multiple simultaneous hypertransport irq devices it might pay
-  * to make this more fine grained.  But start with simple, stupid, and correct.
-  */
--static DEFINE_SPINLOCK(ht_irq_lock);
-+static IPIPE_DEFINE_SPINLOCK(ht_irq_lock);
- 
- void write_ht_irq_msg(unsigned int irq, struct ht_irq_msg *msg)
- {
+ static char irq_trigger[2];
 -- 
 2.14.4
 
