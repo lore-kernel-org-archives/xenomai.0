@@ -1,10 +1,9 @@
 From: Philippe Gerum <rpm@xenomai.org>
-Date: Tue, 25 Sep 2018 12:37:40 +0200
-Message-Id: <20180925103809.4932-4-rpm@xenomai.org>
+Date: Tue, 25 Sep 2018 12:37:41 +0200
+Message-Id: <20180925103809.4932-5-rpm@xenomai.org>
 In-Reply-To: <20180925103809.4932-1-rpm@xenomai.org>
 References: <20180925103809.4932-1-rpm@xenomai.org>
-Subject: [Xenomai] [PATCH 03/32] x86: context_tracking: disable if
- CONFIG_IPIPE
+Subject: [Xenomai] [PATCH 04/32] x86: paravirt: disable if CONFIG_IPIPE
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,25 +14,24 @@ List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: xenomai@xenomai.org
 
-Context tracking does not cope well with interrupt pipelining
-currently: disable the former for now.
+Some changes introduced by the basic interrupt pipeline code for x86
+break the paravirtualization code. Disable the latter.
 ---
- arch/x86/Kconfig | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ arch/x86/Kconfig | 1 +
+ 1 file changed, 1 insertion(+)
 
 diff --git a/arch/x86/Kconfig b/arch/x86/Kconfig
-index 607c73288a16..f92d4bad04e5 100644
+index f92d4bad04e5..400864c3c932 100644
 --- a/arch/x86/Kconfig
 +++ b/arch/x86/Kconfig
-@@ -123,7 +123,7 @@ config X86
- 	select HAVE_CC_STACKPROTECTOR
- 	select HAVE_CMPXCHG_DOUBLE
- 	select HAVE_CMPXCHG_LOCAL
--	select HAVE_CONTEXT_TRACKING		if X86_64
-+	select HAVE_CONTEXT_TRACKING		if X86_64 && !IPIPE
- 	select HAVE_COPY_THREAD_TLS
- 	select HAVE_C_RECORDMCOUNT
- 	select HAVE_DEBUG_KMEMLEAK
+@@ -743,6 +743,7 @@ if HYPERVISOR_GUEST
+ 
+ config PARAVIRT
+ 	bool "Enable paravirtualization code"
++	depends on !IPIPE
+ 	---help---
+ 	  This changes the kernel so it can modify itself when it is run
+ 	  under a hypervisor, potentially improving performance significantly
 -- 
 2.14.4
 
