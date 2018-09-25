@@ -1,10 +1,10 @@
 From: Philippe Gerum <rpm@xenomai.org>
-Date: Tue, 25 Sep 2018 12:27:15 +0200
-Message-Id: <20180925102716.4492-11-rpm@xenomai.org>
+Date: Tue, 25 Sep 2018 12:27:16 +0200
+Message-Id: <20180925102716.4492-12-rpm@xenomai.org>
 In-Reply-To: <20180925102716.4492-1-rpm@xenomai.org>
 References: <20180925102716.4492-1-rpm@xenomai.org>
-Subject: [Xenomai] [PATCH 10/11] arm64: ipipe: route all access traps to
- co-kernel
+Subject: [Xenomai] [PATCH 11/11] arm64: ipipe: preserve the hard interrupt
+ state across mayday trap
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,38 +15,47 @@ List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: xenomai@xenomai.org
 
-Notifying the co-kernel about major faults occurring in kernel context
-or user-space was overlooked. We need the co-kernel to restore the
-root stage whenever applicable before we may attempt to handle the
-fault.
----
- arch/arm64/mm/fault.c | 6 ++++++
- 1 file changed, 6 insertions(+)
+The mayday trap asks the co-kernel to deal with a runaway context
+which has been detected earlier. When doing so, the co-kernel might
+re-enable hard interrupts, which we have to disable again before
+unwinding the IRQ context which triggered the whole process (like a
+watchdog event).
 
-diff --git a/arch/arm64/mm/fault.c b/arch/arm64/mm/fault.c
-index 70c72c2a7f7e..afef7738fc63 100644
---- a/arch/arm64/mm/fault.c
-+++ b/arch/arm64/mm/fault.c
-@@ -401,6 +401,9 @@ static void do_bad_area(unsigned long addr, unsigned int esr, struct pt_regs *re
- 	const struct fault_info *inf;
- 	unsigned long irqflags;
+Use __ipipe_call_mayday() to fire the notification to the co-kernel
+instead of the open coded version, so that we do restore the hard
+interrupt state properly before leaving __ipipe_exit_irq().
+---
+ arch/arm64/kernel/ipipe.c | 17 ++---------------
+ 1 file changed, 2 insertions(+), 15 deletions(-)
+
+diff --git a/arch/arm64/kernel/ipipe.c b/arch/arm64/kernel/ipipe.c
+index 10273ce8a846..0488936bf2ea 100644
+--- a/arch/arm64/kernel/ipipe.c
++++ b/arch/arm64/kernel/ipipe.c
+@@ -165,21 +165,8 @@ void __ipipe_enable_pipeline(void)
  
-+	if (__ipipe_report_trap(IPIPE_TRAP_ACCESS, regs))
-+		return;
-+
- 	/*
- 	 * If we are in kernel mode at this point, we have no context to
- 	 * handle this fault with.
-@@ -473,6 +476,9 @@ static int __kprobes do_page_fault(unsigned long addr, unsigned int esr,
- 	unsigned long vm_flags = VM_READ | VM_WRITE, irqflags;
- 	unsigned int mm_flags = FAULT_FLAG_ALLOW_RETRY | FAULT_FLAG_KILLABLE;
+ void __ipipe_exit_irq(struct pt_regs *regs)
+ {
+-	/*
+-	 * Testing for user_regs() eliminates foreign stack contexts,
+-	 * including from legacy domains which did not set the foreign
+-	 * stack bit (foreign stacks are always kernel-based).
+-	 */
+-	if (user_mode(regs) &&
+-	    ipipe_test_thread_flag(TIP_MAYDAY)) {
+-		/*
+-		 * MAYDAY is never raised under normal circumstances,
+-		 * so prefer test then maybe clear over
+-		 * test_and_clear.
+-		 */
+-		ipipe_clear_thread_flag(TIP_MAYDAY);
+-		__ipipe_notify_trap(IPIPE_TRAP_MAYDAY, regs);
+-	}
++	if (user_mode(regs) && ipipe_test_thread_flag(TIP_MAYDAY))
++		__ipipe_call_mayday(regs);
+ }
  
-+	if (__ipipe_report_trap(IPIPE_TRAP_ACCESS, regs))
-+		return 0;
-+
- 	irqflags = fault_entry(regs);
- 
- 	if (notify_page_fault(regs, esr))
+ /* hw irqs off */
 -- 
 2.14.4
 
