@@ -1,10 +1,10 @@
 From: Philippe Gerum <rpm@xenomai.org>
-Date: Tue, 25 Sep 2018 12:37:50 +0200
-Message-Id: <20180925103809.4932-14-rpm@xenomai.org>
+Date: Tue, 25 Sep 2018 12:37:51 +0200
+Message-Id: <20180925103809.4932-15-rpm@xenomai.org>
 In-Reply-To: <20180925103809.4932-1-rpm@xenomai.org>
 References: <20180925103809.4932-1-rpm@xenomai.org>
-Subject: [Xenomai] [PATCH 13/32] x86/kgdb: ipipe: enable support from head
- domain
+Subject: [Xenomai] [PATCH 14/32] x86/vm86_32: ipipe: protect against
+ preemption from head domain
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,28 +15,45 @@ List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: xenomai@xenomai.org
 
-Make sure the KGDB notifier can run over the head domain sanely by
-manipulating the hardware interrupt state (not the virtual one).
 ---
- arch/x86/kernel/kgdb.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ arch/x86/kernel/vm86_32.c | 4 ++++
+ 1 file changed, 4 insertions(+)
 
-diff --git a/arch/x86/kernel/kgdb.c b/arch/x86/kernel/kgdb.c
-index 8e36f249646e..c9ff690c23ca 100644
---- a/arch/x86/kernel/kgdb.c
-+++ b/arch/x86/kernel/kgdb.c
-@@ -598,9 +598,9 @@ kgdb_notify(struct notifier_block *self, unsigned long cmd, void *ptr)
- 	unsigned long flags;
- 	int ret;
+diff --git a/arch/x86/kernel/vm86_32.c b/arch/x86/kernel/vm86_32.c
+index 9d0b5af7db91..a7faa29ab4f7 100644
+--- a/arch/x86/kernel/vm86_32.c
++++ b/arch/x86/kernel/vm86_32.c
+@@ -147,12 +147,14 @@ void save_v86_state(struct kernel_vm86_regs *regs, int retval)
+ 	}
  
--	local_irq_save(flags);
-+	flags = hard_local_irq_save();
- 	ret = __kgdb_notify(ptr, cmd);
--	local_irq_restore(flags);
-+	hard_local_irq_restore(flags);
+ 	preempt_disable();
++	hard_cond_local_irq_disable();
+ 	tsk->thread.sp0 = vm86->saved_sp0;
+ 	tsk->thread.sysenter_cs = __KERNEL_CS;
+ 	update_sp0(tsk);
+ 	refresh_sysenter_cs(&tsk->thread);
+ 	vm86->saved_sp0 = 0;
+ 	preempt_enable();
++	hard_cond_local_irq_enable();
  
- 	return ret;
- }
+ 	memcpy(&regs->pt, &vm86->regs32, sizeof(struct pt_regs));
+ 
+@@ -365,6 +367,7 @@ static long do_sys_vm86(struct vm86plus_struct __user *user_vm86, bool plus)
+ 	vm86->saved_sp0 = tsk->thread.sp0;
+ 	lazy_save_gs(vm86->regs32.gs);
+ 
++	hard_cond_local_irq_disable();
+ 	/* make room for real-mode segments */
+ 	preempt_disable();
+ 	tsk->thread.sp0 += 16;
+@@ -376,6 +379,7 @@ static long do_sys_vm86(struct vm86plus_struct __user *user_vm86, bool plus)
+ 
+ 	update_sp0(tsk);
+ 	preempt_enable();
++	hard_cond_local_irq_enable();
+ 
+ 	if (vm86->flags & VM86_SCREEN_BITMAP)
+ 		mark_screen_rdonly(tsk->mm);
 -- 
 2.14.4
 
