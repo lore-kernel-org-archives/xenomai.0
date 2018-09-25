@@ -1,10 +1,9 @@
 From: Philippe Gerum <rpm@xenomai.org>
-Date: Tue, 25 Sep 2018 12:37:44 +0200
-Message-Id: <20180925103809.4932-8-rpm@xenomai.org>
+Date: Tue, 25 Sep 2018 12:37:45 +0200
+Message-Id: <20180925103809.4932-9-rpm@xenomai.org>
 In-Reply-To: <20180925103809.4932-1-rpm@xenomai.org>
 References: <20180925103809.4932-1-rpm@xenomai.org>
-Subject: [Xenomai] [PATCH 07/32] x86/i8259: ipipe: enable interrupt
- pipelining
+Subject: [Xenomai] [PATCH 08/32] x86/mm: enable PTE pinning
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,99 +14,86 @@ List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: xenomai@xenomai.org
 
-Fix up the legacy 8259 PIC driver to enable out-of-band calls from the
-pipeline core for acknowledging incoming IRQs.
----
- arch/x86/include/asm/i8259.h |  2 +-
- arch/x86/kernel/i8259.c      | 31 ++++++++++++++++++++++++-------
- 2 files changed, 25 insertions(+), 8 deletions(-)
+Ask the generic pipeline core to call us for pre-loading page table
+entries upon ioremap/vmalloc, for preventing further minor faults
+accessing such memory due to PTE misses.
 
-diff --git a/arch/x86/include/asm/i8259.h b/arch/x86/include/asm/i8259.h
-index 89789e8c80f6..dc376e53aa2a 100644
---- a/arch/x86/include/asm/i8259.h
-+++ b/arch/x86/include/asm/i8259.h
-@@ -26,7 +26,7 @@ extern unsigned int cached_irq_mask;
- #define SLAVE_ICW4_DEFAULT	0x01
- #define PIC_ICW4_AEOI		2
- 
--extern raw_spinlock_t i8259A_lock;
-+IPIPE_DECLARE_RAW_SPINLOCK(i8259A_lock);
- 
- /* the PIC may need a careful delay on some platforms, hence specific calls */
- static inline unsigned char inb_pic(unsigned int port)
-diff --git a/arch/x86/kernel/i8259.c b/arch/x86/kernel/i8259.c
-index 02abc134367f..60726586b796 100644
---- a/arch/x86/kernel/i8259.c
-+++ b/arch/x86/kernel/i8259.c
-@@ -33,7 +33,7 @@
- static void init_8259A(int auto_eoi);
- 
- static int i8259A_auto_eoi;
--DEFINE_RAW_SPINLOCK(i8259A_lock);
-+IPIPE_DEFINE_RAW_SPINLOCK(i8259A_lock);
- 
- /*
-  * 8259A PIC functions to handle ISA devices:
-@@ -61,6 +61,7 @@ static void mask_8259A_irq(unsigned int irq)
- 	unsigned long flags;
- 
- 	raw_spin_lock_irqsave(&i8259A_lock, flags);
-+	ipipe_lock_irq(irq);
- 	cached_irq_mask |= mask;
- 	if (irq & 8)
- 		outb(cached_slave_mask, PIC_SLAVE_IMR);
-@@ -76,15 +77,18 @@ static void disable_8259A_irq(struct irq_data *data)
- 
- static void unmask_8259A_irq(unsigned int irq)
- {
--	unsigned int mask = ~(1 << irq);
-+	unsigned int mask = (1 << irq);
- 	unsigned long flags;
- 
- 	raw_spin_lock_irqsave(&i8259A_lock, flags);
--	cached_irq_mask &= mask;
--	if (irq & 8)
--		outb(cached_slave_mask, PIC_SLAVE_IMR);
--	else
--		outb(cached_master_mask, PIC_MASTER_IMR);
-+	if (cached_irq_mask & mask) {
-+		cached_irq_mask &= ~mask;
-+		if (irq & 8)
-+			outb(cached_slave_mask, PIC_SLAVE_IMR);
-+		else
-+			outb(cached_master_mask, PIC_MASTER_IMR);
-+		ipipe_unlock_irq(irq);
-+	}
- 	raw_spin_unlock_irqrestore(&i8259A_lock, flags);
+Revisit: a better way may be to make the code handling minor faults
+runnable safely and quickly from the head domain, by reorganizing a
+couple of code paths in the fault handler. All other I-pipe ports
+actually do just that.
+---
+ arch/x86/Kconfig    |  1 +
+ arch/x86/mm/fault.c | 47 +++++++++++++++++++++++++++++++++++++++++++++++
+ 2 files changed, 48 insertions(+)
+
+diff --git a/arch/x86/Kconfig b/arch/x86/Kconfig
+index 400864c3c932..e09fdf5025e0 100644
+--- a/arch/x86/Kconfig
++++ b/arch/x86/Kconfig
+@@ -148,6 +148,7 @@ config X86
+ 	select HAVE_IPIPE_SUPPORT
+ 	select HAVE_IPIPE_TRACER_SUPPORT
+ 	select IPIPE_HAVE_SAFE_THREAD_INFO if IPIPE
++	select IPIPE_WANT_PTE_PINNING if IPIPE
+ 	select HAVE_KERNEL_BZIP2
+ 	select HAVE_KERNEL_GZIP
+ 	select HAVE_KERNEL_LZ4
+diff --git a/arch/x86/mm/fault.c b/arch/x86/mm/fault.c
+index 794c35c4ca73..cac86d740686 100644
+--- a/arch/x86/mm/fault.c
++++ b/arch/x86/mm/fault.c
+@@ -1501,3 +1501,50 @@ do_page_fault(struct pt_regs *regs, unsigned long error_code)
+ 	exception_exit(prev_state);
  }
- 
-@@ -170,6 +174,18 @@ static void mask_and_ack_8259A(struct irq_data *data)
- 	 */
- 	if (cached_irq_mask & irqmask)
- 		goto spurious_8259A_irq;
+ NOKPROBE_SYMBOL(do_page_fault);
++
 +#ifdef CONFIG_IPIPE
-+	if (irq == 0) {
-+		/*
-+		 * Fast timer ack -- don't mask (unless supposedly
-+		 * spurious). We trace outb's in order to detect
-+		 * broken hardware inducing large delays.
-+		 */
-+		outb(0x60, PIC_MASTER_CMD);	/* Specific EOI to master. */
-+		raw_spin_unlock_irqrestore(&i8259A_lock, flags);
++
++void __ipipe_pin_mapping_globally(unsigned long start, unsigned long end)
++{
++#ifdef CONFIG_X86_32
++	unsigned long next, addr = start;
++
++	do {
++		unsigned long flags;
++		struct page *page;
++
++		next = pgd_addr_end(addr, end);
++		spin_lock_irqsave(&pgd_lock, flags);
++		list_for_each_entry(page, &pgd_list, lru)
++			vmalloc_sync_one(page_address(page), addr);
++		spin_unlock_irqrestore(&pgd_lock, flags);
++
++	} while (addr = next, addr != end);
++#else
++	unsigned long next, addr = start;
++	pgd_t *pgd, *pgd_ref;
++	struct page *page;
++
++	if (!(start >= VMALLOC_START && start < VMALLOC_END))
 +		return;
-+	}
++
++	do {
++		next = pgd_addr_end(addr, end);
++		pgd_ref = pgd_offset_k(addr);
++		if (pgd_none(*pgd_ref))
++			continue;
++		spin_lock(&pgd_lock);
++		list_for_each_entry(page, &pgd_list, lru) {
++			pgd = page_address(page) + pgd_index(addr);
++			if (pgd_none(*pgd))
++				set_pgd(pgd, *pgd_ref);
++		}
++		spin_unlock(&pgd_lock);
++		addr = next;
++	} while (addr != end);
++
++	arch_flush_lazy_mmu_mode();
++#endif
++}
++
 +#endif /* CONFIG_IPIPE */
- 	cached_irq_mask |= irqmask;
- 
- handle_real_irq:
-@@ -226,6 +242,7 @@ struct irq_chip i8259A_chip = {
- 	.irq_disable	= disable_8259A_irq,
- 	.irq_unmask	= enable_8259A_irq,
- 	.irq_mask_ack	= mask_and_ack_8259A,
-+	.flags		= IRQCHIP_PIPELINE_SAFE,
- };
- 
- static char irq_trigger[2];
 -- 
 2.14.4
 
