@@ -1,9 +1,9 @@
 From: Philippe Gerum <rpm@xenomai.org>
-Date: Tue, 25 Sep 2018 12:38:04 +0200
-Message-Id: <20180925103809.4932-28-rpm@xenomai.org>
+Date: Tue, 25 Sep 2018 12:38:05 +0200
+Message-Id: <20180925103809.4932-29-rpm@xenomai.org>
 In-Reply-To: <20180925103809.4932-1-rpm@xenomai.org>
 References: <20180925103809.4932-1-rpm@xenomai.org>
-Subject: [Xenomai] [PATCH 27/32] x86/msi: ipipe: advertise pipelining support
+Subject: [Xenomai] [PATCH 28/32] x86: ipipe: fix stack overflow detection
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -14,50 +14,73 @@ List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: xenomai@xenomai.org
 
----
- arch/x86/kernel/apic/msi.c | 8 ++++----
- 1 file changed, 4 insertions(+), 4 deletions(-)
+Since do_IRQ() may be called from a plain regular task context if the
+original interrupt was deferred by the pipeline core for the root
+stage, we cannot assume regs->sp should within the current task's
+stack page if it does not point within the IRQ stack.
 
-diff --git a/arch/x86/kernel/apic/msi.c b/arch/x86/kernel/apic/msi.c
-index 5a1006a8e66d..8ee66f4d1237 100644
---- a/arch/x86/kernel/apic/msi.c
-+++ b/arch/x86/kernel/apic/msi.c
-@@ -68,7 +68,7 @@ static struct irq_chip pci_msi_controller = {
- #if defined(CONFIG_IPIPE) && defined(CONFIG_SMP)
- 	.irq_move		= move_xxapic_irq,
- #endif
--	.flags			= IRQCHIP_SKIP_SET_WAKE,
-+	.flags			= IRQCHIP_SKIP_SET_WAKE | IRQCHIP_PIPELINE_SAFE,
- };
+Make sure to test the right stack pointer against the proper stack
+space, removing the previous attempt to force regs->sp to
+current_stack_pointer, which won't work if the static tick regs space
+is reused by another timer IRQ piling up on pipeline entry, preempting
+the do_IRQ() context.
+---
+ arch/x86/kernel/ipipe.c  |  1 -
+ arch/x86/kernel/irq_64.c | 12 +++++++-----
+ 2 files changed, 7 insertions(+), 6 deletions(-)
+
+diff --git a/arch/x86/kernel/ipipe.c b/arch/x86/kernel/ipipe.c
+index fa92ee3c13cf..c9a8104d359f 100644
+--- a/arch/x86/kernel/ipipe.c
++++ b/arch/x86/kernel/ipipe.c
+@@ -102,7 +102,6 @@ static void __ipipe_do_IRQ(unsigned int irq, void *cookie)
  
- int native_setup_msi_irqs(struct pci_dev *dev, int nvec, int type)
-@@ -169,7 +169,7 @@ static struct irq_chip pci_msi_ir_controller = {
- #if defined(CONFIG_IPIPE) && defined(CONFIG_SMP)
- 	.irq_move		= move_xxapic_irq,
- #endif
--	.flags			= IRQCHIP_SKIP_SET_WAKE,
-+	.flags			= IRQCHIP_SKIP_SET_WAKE | IRQCHIP_PIPELINE_SAFE,
- };
+ 	regs = raw_cpu_ptr(&ipipe_percpu.tick_regs);
+ 	regs->orig_ax = ~__ipipe_get_irq_vector(irq);
+-	regs->sp = current_stack_pointer; /* stack_overflow_check(). */
+ 	handler = (typeof(handler))cookie;
+ 	handler(regs);
+ }
+diff --git a/arch/x86/kernel/irq_64.c b/arch/x86/kernel/irq_64.c
+index 0469cd078db1..1ba593b21009 100644
+--- a/arch/x86/kernel/irq_64.c
++++ b/arch/x86/kernel/irq_64.c
+@@ -38,28 +38,30 @@ static inline void stack_overflow_check(struct pt_regs *regs)
+ 	u64 irq_stack_top, irq_stack_bottom;
+ 	u64 estack_top, estack_bottom;
+ 	u64 curbase = (u64)task_stack_page(current);
++	unsigned long sp;
  
- static struct msi_domain_info pci_msi_ir_domain_info = {
-@@ -214,7 +214,7 @@ static struct irq_chip dmar_msi_controller = {
- #if defined(CONFIG_IPIPE) && defined(CONFIG_SMP)
- 	.irq_move		= move_xxapic_irq,
- #endif
--	.flags			= IRQCHIP_SKIP_SET_WAKE,
-+	.flags			= IRQCHIP_SKIP_SET_WAKE | IRQCHIP_PIPELINE_SAFE,
- };
+ 	if (user_mode(regs))
+ 		return;
  
- static irq_hw_number_t dmar_msi_get_hwirq(struct msi_domain_info *info,
-@@ -314,7 +314,7 @@ static struct irq_chip hpet_msi_controller __ro_after_init = {
- #if defined(CONFIG_IPIPE) && defined(CONFIG_SMP)
- 	.irq_move = move_xxapic_irq,
- #endif
--	.flags = IRQCHIP_SKIP_SET_WAKE,
-+	.flags = IRQCHIP_SKIP_SET_WAKE | IRQCHIP_PIPELINE_SAFE,
- };
+-	if (regs->sp >= curbase + sizeof(struct pt_regs) + STACK_TOP_MARGIN &&
+-	    regs->sp <= curbase + THREAD_SIZE)
++	sp = IS_ENABLED(CONFIG_IPIPE) ? current_stack_pointer : regs->sp;
++	if (sp >= curbase + sizeof(struct pt_regs) + STACK_TOP_MARGIN &&
++	    sp <= curbase + THREAD_SIZE)
+ 		return;
  
- static irq_hw_number_t hpet_msi_get_hwirq(struct msi_domain_info *info,
+ 	irq_stack_top = (u64)this_cpu_ptr(irq_stack_union.irq_stack) +
+ 			STACK_TOP_MARGIN;
+ 	irq_stack_bottom = (u64)__this_cpu_read(irq_stack_ptr);
+-	if (regs->sp >= irq_stack_top && regs->sp <= irq_stack_bottom)
++	if (sp >= irq_stack_top && sp <= irq_stack_bottom)
+ 		return;
+ 
+ 	oist = this_cpu_ptr(&orig_ist);
+ 	estack_top = (u64)oist->ist[0] - EXCEPTION_STKSZ + STACK_TOP_MARGIN;
+ 	estack_bottom = (u64)oist->ist[N_EXCEPTION_STACKS - 1];
+-	if (regs->sp >= estack_top && regs->sp <= estack_bottom)
++	if (sp >= estack_top && sp <= estack_bottom)
+ 		return;
+ 
+ 	WARN_ONCE(1, "do_IRQ(): %s has overflown the kernel stack (cur:%Lx,sp:%lx,irq stk top-bottom:%Lx-%Lx,exception stk top-bottom:%Lx-%Lx,ip:%pF)\n",
+-		current->comm, curbase, regs->sp,
++		current->comm, curbase, sp,
+ 		irq_stack_top, irq_stack_bottom,
+ 		estack_top, estack_bottom, (void *)regs->ip);
+ 
 -- 
 2.14.4
 
