@@ -1,9 +1,10 @@
 From: Philippe Gerum <rpm@xenomai.org>
-Date: Tue, 25 Sep 2018 12:37:42 +0200
-Message-Id: <20180925103809.4932-6-rpm@xenomai.org>
+Date: Tue, 25 Sep 2018 12:37:43 +0200
+Message-Id: <20180925103809.4932-7-rpm@xenomai.org>
 In-Reply-To: <20180925103809.4932-1-rpm@xenomai.org>
 References: <20180925103809.4932-1-rpm@xenomai.org>
-Subject: [Xenomai] [PATCH 05/32] x86/iommu: enable interrupt pipelining
+Subject: [Xenomai] [PATCH 06/32] x86/htirq: ipipe: enable interrupt
+ pipelining
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -14,31 +15,49 @@ List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: xenomai@xenomai.org
 
-Fix up the IRQ remapping code from the IOMMU controller driver in
-order to actually ack the APIC upon incoming edge interrupts. A
-previous change made ack_APIC_irq() a null placeholder, since the
-original interrupt handlers calling it should not ack the APIC
-anymore, once pipelining is in place.
+The Hypertransport handlers for masking/unmasking IRQs are invoked by
+the pipeline core for dealing with incoming PCI interrupts from an
+out-of-band context.
 
-We must revert this change in the acknowledge handler though, since
-the pipeline core needs it to issue such ack.
+To this end, we have to turn the original spinlock into a hard
+pipeline lock for proper serialization.
+
+In addition, make sure to fix up the HT irq_chip descriptor
+appropriately.
 ---
- drivers/iommu/irq_remapping.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ arch/x86/kernel/apic/htirq.c | 5 ++++-
+ drivers/pci/htirq.c          | 2 +-
+ 2 files changed, 5 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/iommu/irq_remapping.c b/drivers/iommu/irq_remapping.c
-index 49721b4e1975..d26506a24c61 100644
---- a/drivers/iommu/irq_remapping.c
-+++ b/drivers/iommu/irq_remapping.c
-@@ -158,7 +158,7 @@ void panic_if_irq_remap(const char *msg)
+diff --git a/arch/x86/kernel/apic/htirq.c b/arch/x86/kernel/apic/htirq.c
+index 741de281ed5d..940ca3a1c110 100644
+--- a/arch/x86/kernel/apic/htirq.c
++++ b/arch/x86/kernel/apic/htirq.c
+@@ -59,7 +59,10 @@ static struct irq_chip ht_irq_chip = {
+ 	.irq_ack		= irq_chip_ack_parent,
+ 	.irq_set_affinity	= ht_set_affinity,
+ 	.irq_retrigger		= irq_chip_retrigger_hierarchy,
+-	.flags			= IRQCHIP_SKIP_SET_WAKE,
++#if defined(CONFIG_IPIPE) && defined(CONFIG_SMP)
++	.irq_move		= move_xxapic_irq,
++#endif
++	.flags			= IRQCHIP_SKIP_SET_WAKE|IRQCHIP_PIPELINE_SAFE,
+ };
  
- void ir_ack_apic_edge(struct irq_data *data)
+ static int htirq_domain_alloc(struct irq_domain *domain, unsigned int virq,
+diff --git a/drivers/pci/htirq.c b/drivers/pci/htirq.c
+index bb88c26f5144..15be65199b79 100644
+--- a/drivers/pci/htirq.c
++++ b/drivers/pci/htirq.c
+@@ -22,7 +22,7 @@
+  * With multiple simultaneous hypertransport irq devices it might pay
+  * to make this more fine grained.  But start with simple, stupid, and correct.
+  */
+-static DEFINE_SPINLOCK(ht_irq_lock);
++static IPIPE_DEFINE_SPINLOCK(ht_irq_lock);
+ 
+ void write_ht_irq_msg(unsigned int irq, struct ht_irq_msg *msg)
  {
--	ack_APIC_irq();
-+	__ack_APIC_irq();
- }
- 
- /**
 -- 
 2.14.4
 
