@@ -1,17 +1,11 @@
+From: Jan Kiszka <jan.kiszka@siemens.com>
+Message-ID: <9e7eb4ea-6e66-473b-c29d-171085b165b0@siemens.com>
+Date: Thu, 27 Sep 2018 08:40:37 +0200
 MIME-Version: 1.0
-In-Reply-To: <CAPN7LrGyu_deQ1Jhg3wW+f7HPpAOmqE1AiRXDL7x=e=U2es=2A@mail.gmail.com>
-References: <CAPN7LrHBjkFqi8x3KGmZDn810GuYTij4gpyQc1pxhFMiifdycQ@mail.gmail.com>
- <CAPN7LrGe_wmRLdbvdcznMMqeyo1PgbrZnyUKVCWbfZAuF+t75A@mail.gmail.com>
- <20180926142128.4a127510@md1pvb1c.ad001.siemens.net>
- <CAPN7LrFNhNHoyPBW387vC15GF4n7JKyUKqVR2f1wZ3an67XQPg@mail.gmail.com>
- <4cbf5f1c-0381-8fcd-9e52-1221ca8e1b11@siemens.com>
- <CAPN7LrGyu_deQ1Jhg3wW+f7HPpAOmqE1AiRXDL7x=e=U2es=2A@mail.gmail.com>
-From: c ww <cww230@gmail.com>
-Date: Thu, 27 Sep 2018 09:55:29 +0800
-Message-ID: <CAPN7LrHhqfiK_uZKDL6Km0B1pVMmhaqYoyLB3q35r1hA0fji7w@mail.gmail.com>
-Content-Type: text/plain; charset="UTF-8"
-Subject: Re: [Xenomai] ipipe 4.14 causing kernel stuck at "Loading initial
- ramdisk...", failed to boot on x86
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+Subject: [Xenomai] [PATCH] drivers/analogy: Fix improper memset in Intel 8255
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -20,45 +14,37 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jan Kiszka <jan.kiszka@siemens.com>
-Cc: Henning Schild <henning.schild@siemens.com>, "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Xenomai <xenomai@xenomai.org>
 
-Hi,
-Ignore this as i added autoconf package to make it work. I'll proceed and
-see everything else working correctly.
+This overwrote the pointer itself - and more. Long pending bugs.
 
-Thanks!
+Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
+---
+ kernel/drivers/analogy/intel/8255.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-On Thursday, September 27, 2018, c ww <cww230@gmail.com> wrote:
+diff --git a/kernel/drivers/analogy/intel/8255.c b/kernel/drivers/analogy/intel/8255.c
+index ad8039b288..1abe250e0c 100644
+--- a/kernel/drivers/analogy/intel/8255.c
++++ b/kernel/drivers/analogy/intel/8255.c
+@@ -201,7 +201,7 @@ void a4l_subdev_8255_init(struct a4l_subdevice *subd)
+ {
+ 	subd_8255_t *subd_8255 = (subd_8255_t *)subd->priv;
+ 	/* Initializes the subdevice structure */
+-	memset(&subd, 0, sizeof(struct a4l_subdevice));
++	memset(subd, 0, sizeof(struct a4l_subdevice));
+ 
+ 	/* Subdevice filling part */
+ 
+@@ -263,7 +263,7 @@ static int dev_8255_attach(struct a4l_device *dev, a4l_lnkdesc_t *arg)
+ 			goto out_attach;
+ 		}
+ 
+-		memset(&subd, 0, sizeof(struct a4l_subdevice));
++		memset(subd, 0, sizeof(struct a4l_subdevice));
+ 		memset(subd->priv, 0, sizeof(subd_8255_t));
+ 
+ 		subd_8255 = (subd_8255_t *)subd->priv;
+-- 
+2.16.4
 
-> Hi Jan,
->
-> Yes, i did that but it gave an error 'autoreconf: not found'. Am i missing
-> something else? Or the file could be missing in the 'next' branch?
->
-> Appreciate your advise!
->
-> On Thursday, September 27, 2018, Jan Kiszka <jan.kiszka@siemens.com>
-> wrote:
->
->> On 26.09.18 18:01, c ww wrote:
->>
->>> Hi Henning,
->>> Awesome, now the kernel compilation looks great and no more fpu errors.
->>> But
->>> one thing i noticed, in the unreleased xenomai 'next' branch it seems the
->>> configure file is missing. In this case, are there different method to
->>> configure the xenomai prior to install it?
->>>
->>
->> When you work against the Xenomai git tree, you need to call
->> scripts/bootstrap first. It will generate the files that are only part of
->> the release tarball (we do not version-control generated artifacts).
->>
->> Jan
->>
->> --
->> Siemens AG, Corporate Technology, CT RDA IOT SES-DE
->> Corporate Competence Center Embedded Linux
->>
->
