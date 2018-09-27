@@ -1,11 +1,12 @@
-From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <688c02d5-bcd2-f43c-7e7a-af4e586919b4@siemens.com>
-Date: Thu, 27 Sep 2018 19:05:37 +0200
+Date: Thu, 27 Sep 2018 20:52:47 +0200
+From: Henning Schild <henning.schild@siemens.com>
+Message-ID: <20180927205247.33b94428@md1pvb1c.ad001.siemens.net>
+In-Reply-To: <CAFLxGvwW583A2NoHKEETzGju13PXqSMmQ2uxSbAsBa7sRFumvQ@mail.gmail.com>
+References: <CAFLxGvwW583A2NoHKEETzGju13PXqSMmQ2uxSbAsBa7sRFumvQ@mail.gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
-Subject: [Xenomai] [ipipe][PULL] x86 update to 4.4.158
+Subject: Re: [Xenomai] ipipe for 4.14 x86?
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -14,39 +15,27 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Philippe Gerum <rpm@xenomai.org>
-Cc: Xenomai <xenomai@xenomai.org>, Henning Schild <henning.schild@siemens.com>
+To: Richard Weinberger <richard.weinberger@gmail.com>
+Cc: xenomai@xenomai.org, c ww <cww230@gmail.com>, Jan Kiszka <jan.kiszka@siemens.com>, Philippe Gerum <rpm@xenomai.org>
 
-The following changes since commit f4dfbe3f8ecff040c66cd13c49861bb4cb3a2009:
+Am Mon, 17 Sep 2018 15:39:08 +0200
+schrieb Richard Weinberger <richard.weinberger@gmail.com>:
 
-  ipipe: fix preemption damage in hard_preempt_enable() (2018-03-26 19:30:20 +0200)
+> Hi!
+> 
+> Are there plans to have an x86 ipipe for kernel 4.14?
+> If there is something missing or needs testing I'm all open to help!
+> 
 
-are available in the Git repository at:
+I have pushed the latest version from Philippe to "wip/4.14-split". So 
+everyone interested in the topic should maybe use that.
 
-  https://gitlab.denx.de/Xenomai/ipipe-x86.git for-upstream/4.4
+https://gitlab.denx.de/Xenomai/ipipe-x86/tree/wip/4.14-split
 
-for you to fetch changes up to 9e6ffc487727f214e510c746ebc1a36538530170:
+This is what Philippe sent as "[I-PIPE][PATCH 00/32] 4.14.71/x86_64
+port (split series)".
 
-  Merge tag 'v4.4.158' into for-upstream/4.4 (2018-09-27 08:40:17 +0200)
+That was a force push the branches "henning/wip/*" are gone now.
 
-This has been tested on x86-64 so far.
-
-----------------------------------------------------------------
-(removing all upstream stable commits)
-
-Henning Schild (1):
-      x86: make fpu switching eager
-
-Jan Kiszka (11):
-      Merge tag 'v4.4.109' into for-upstream/4.4-update
-      x86/ipipe: Disable access_ok context under I-pipe
-      Merge tag 'v4.4.120' into for-upstream/4.4-update
-      Merge tag 'v4.4.126' into for-upstream/4.4-update
-      Merge tag 'v4.4.131' into for-upstream/4.4-update
-      Merge tag 'v4.4.136' into for-upstream/4.4-update
-      Merge tag 'v4.4.137' into for-upstream/4.4-update
-      x86/ipipe: Fix kgdb hook skipping
-      Merge tag 'v4.4.138' into for-upstream/4.4
-      Merge tag 'v4.4.157' into for-upstream/4.4
-      Merge tag 'v4.4.158' into for-upstream/4.4
+Henning
 
