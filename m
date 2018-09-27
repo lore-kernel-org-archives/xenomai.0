@@ -1,11 +1,11 @@
 From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <53bec799-ebd2-016f-c5d5-d6668ea19d74@siemens.com>
-Date: Thu, 27 Sep 2018 19:04:30 +0200
+Message-ID: <688c02d5-bcd2-f43c-7e7a-af4e586919b4@siemens.com>
+Date: Thu, 27 Sep 2018 19:05:37 +0200
 MIME-Version: 1.0
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
-Subject: [Xenomai] [ipipe][PULL] x86 update to 4.9.129
+Subject: [Xenomai] [ipipe][PULL] x86 update to 4.4.158
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,17 +17,17 @@ List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
 To: Philippe Gerum <rpm@xenomai.org>
 Cc: Xenomai <xenomai@xenomai.org>, Henning Schild <henning.schild@siemens.com>
 
-The following changes since commit 75fbf58518bdcf438eb07613976dd3842b3921c4:
+The following changes since commit f4dfbe3f8ecff040c66cd13c49861bb4cb3a2009:
 
-  arm: Kconfig: make LOCKDEP depend on !IPIPE (2018-06-22 09:50:52 +0200)
+  ipipe: fix preemption damage in hard_preempt_enable() (2018-03-26 19:30:20 +0200)
 
 are available in the Git repository at:
 
-  https://gitlab.denx.de/Xenomai/ipipe-x86.git for-upstream/4.9
+  https://gitlab.denx.de/Xenomai/ipipe-x86.git for-upstream/4.4
 
-for you to fetch changes up to 7bc5eb4bd16441fc6de2d9bd18916c3a7d71bdb3:
+for you to fetch changes up to 9e6ffc487727f214e510c746ebc1a36538530170:
 
-  Merge tag 'v4.9.129' into for-upstream/4.9 (2018-09-27 12:41:58 +0200)
+  Merge tag 'v4.4.158' into for-upstream/4.4 (2018-09-27 08:40:17 +0200)
 
 This has been tested on x86-64 so far.
 
@@ -37,8 +37,16 @@ This has been tested on x86-64 so far.
 Henning Schild (1):
       x86: make fpu switching eager
 
-Jan Kiszka (3):
-      Merge tag 'v4.9.109' into for-upstream/4.9
-      Merge tag 'v4.9.128' into for-upstream/4.9
-      Merge tag 'v4.9.129' into for-upstream/4.9
+Jan Kiszka (11):
+      Merge tag 'v4.4.109' into for-upstream/4.4-update
+      x86/ipipe: Disable access_ok context under I-pipe
+      Merge tag 'v4.4.120' into for-upstream/4.4-update
+      Merge tag 'v4.4.126' into for-upstream/4.4-update
+      Merge tag 'v4.4.131' into for-upstream/4.4-update
+      Merge tag 'v4.4.136' into for-upstream/4.4-update
+      Merge tag 'v4.4.137' into for-upstream/4.4-update
+      x86/ipipe: Fix kgdb hook skipping
+      Merge tag 'v4.4.138' into for-upstream/4.4
+      Merge tag 'v4.4.157' into for-upstream/4.4
+      Merge tag 'v4.4.158' into for-upstream/4.4
 
