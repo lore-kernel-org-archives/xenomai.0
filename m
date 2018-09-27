@@ -1,11 +1,14 @@
 From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <9e7eb4ea-6e66-473b-c29d-171085b165b0@siemens.com>
-Date: Thu, 27 Sep 2018 08:40:37 +0200
+References: <1535536858-3022-1-git-send-email-sebastian.smolorz@gmx.de>
+ <3a99a358-03b8-4bde-1814-8a75b78effd0@siemens.com>
+Message-ID: <b6b62e91-10b3-f498-d858-ee62cd7287d8@siemens.com>
+Date: Thu, 27 Sep 2018 09:05:53 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+In-Reply-To: <3a99a358-03b8-4bde-1814-8a75b78effd0@siemens.com>
+Content-Type: text/plain; charset="utf-8"; format="flowed"
 Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-Subject: [Xenomai] [PATCH] drivers/analogy: Fix improper memset in Intel 8255
+Content-Transfer-Encoding: 8bit
+Subject: Re: [Xenomai] [PATCH] drivers/can: Add PCAN-PCI Express OEM ID.
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -14,37 +17,43 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Xenomai <xenomai@xenomai.org>
+To: Sebastian Smolorz <sebastian.smolorz@gmx.de>, xenomai@xenomai.org
 
-This overwrote the pointer itself - and more. Long pending bugs.
+On 03.09.18 19:10, Jan Kiszka wrote:
+> On 2018-08-29 12:00, Sebastian Smolorz wrote:
+>> ---
+>>   kernel/drivers/can/sja1000/rtcan_peak_pci.c | 2 ++
+>>   1 file changed, 2 insertions(+)
+>>
+>> diff --git a/kernel/drivers/can/sja1000/rtcan_peak_pci.c 
+>> b/kernel/drivers/can/sja1000/rtcan_peak_pci.c
+>> index 3da1657..0fdc598 100644
+>> --- a/kernel/drivers/can/sja1000/rtcan_peak_pci.c
+>> +++ b/kernel/drivers/can/sja1000/rtcan_peak_pci.c
+>> @@ -78,6 +78,7 @@ struct rtcan_peak_pci
+>>   #define PEAK_PC_104P_DEVICE_ID  0x0006  // PCAN-PC/104+ cards
+>>   #define PEAK_PCI_104E_DEVICE_ID 0x0007  // PCAN-PCI/104 Express cards
+>>   #define PEAK_MPCIE_DEVICE_ID    0x0008  // The miniPCIe slot cards
+>> +#define PEAK_PCIE_OEM_ID        0x0009  // PCAN-PCI Express OEM
+>>   #define PCI_CONFIG_PORT_SIZE 0x1000  // size of the config io-memory
+>>   #define PCI_PORT_SIZE        0x0400  // size of a channel io-memory
+>> @@ -90,6 +91,7 @@ static struct pci_device_id peak_pci_tbl[] = {
+>>       {PEAK_PCI_VENDOR_ID, PEAK_PC_104P_DEVICE_ID, PCI_ANY_ID, PCI_ANY_ID,},
+>>       {PEAK_PCI_VENDOR_ID, PEAK_PCI_104E_DEVICE_ID, PCI_ANY_ID, PCI_ANY_ID,},
+>>       {PEAK_PCI_VENDOR_ID, PEAK_CPCI_DEVICE_ID, PCI_ANY_ID, PCI_ANY_ID,},
+>> +    {PEAK_PCI_VENDOR_ID, PEAK_PCIE_OEM_ID, PCI_ANY_ID, PCI_ANY_ID,},
+>>       { }
+>>   };
+>>   MODULE_DEVICE_TABLE (pci, peak_pci_tbl);
+>>
+> 
+> Thanks, applied to next.
 
-Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
----
- kernel/drivers/analogy/intel/8255.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+...and to stable. Trivial enough.
 
-diff --git a/kernel/drivers/analogy/intel/8255.c b/kernel/drivers/analogy/intel/8255.c
-index ad8039b288..1abe250e0c 100644
---- a/kernel/drivers/analogy/intel/8255.c
-+++ b/kernel/drivers/analogy/intel/8255.c
-@@ -201,7 +201,7 @@ void a4l_subdev_8255_init(struct a4l_subdevice *subd)
- {
- 	subd_8255_t *subd_8255 = (subd_8255_t *)subd->priv;
- 	/* Initializes the subdevice structure */
--	memset(&subd, 0, sizeof(struct a4l_subdevice));
-+	memset(subd, 0, sizeof(struct a4l_subdevice));
- 
- 	/* Subdevice filling part */
- 
-@@ -263,7 +263,7 @@ static int dev_8255_attach(struct a4l_device *dev, a4l_lnkdesc_t *arg)
- 			goto out_attach;
- 		}
- 
--		memset(&subd, 0, sizeof(struct a4l_subdevice));
-+		memset(subd, 0, sizeof(struct a4l_subdevice));
- 		memset(subd->priv, 0, sizeof(subd_8255_t));
- 
- 		subd_8255 = (subd_8255_t *)subd->priv;
+Jan
+
 -- 
-2.16.4
+Siemens AG, Corporate Technology, CT RDA IOT SES-DE
+Corporate Competence Center Embedded Linux
 
