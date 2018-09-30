@@ -1,12 +1,11 @@
-Date: Thu, 27 Sep 2018 20:52:47 +0200
-From: Henning Schild <henning.schild@siemens.com>
-Message-ID: <20180927205247.33b94428@md1pvb1c.ad001.siemens.net>
-In-Reply-To: <CAFLxGvwW583A2NoHKEETzGju13PXqSMmQ2uxSbAsBa7sRFumvQ@mail.gmail.com>
-References: <CAFLxGvwW583A2NoHKEETzGju13PXqSMmQ2uxSbAsBa7sRFumvQ@mail.gmail.com>
+Date: Sun, 30 Sep 2018 20:38:22 +0000 (UTC)
+From: Alec Ari <neotheuser@ymail.com>
+Message-ID: <1736385944.1779097.1538339902687@mail.yahoo.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] ipipe for 4.14 x86?
+References: <1736385944.1779097.1538339902687.ref@mail.yahoo.com>
+Subject: [Xenomai] ipipe for 4.14 x86?
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,27 +14,21 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Richard Weinberger <richard.weinberger@gmail.com>
-Cc: xenomai@xenomai.org, c ww <cww230@gmail.com>, Jan Kiszka <jan.kiszka@siemens.com>, Philippe Gerum <rpm@xenomai.org>
+To: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-Am Mon, 17 Sep 2018 15:39:08 +0200
-schrieb Richard Weinberger <richard.weinberger@gmail.com>:
+This message is meant to be part of the preexisting thread, "ipipe for 4.14 x86?"
 
-> Hi!
-> 
-> Are there plans to have an x86 ipipe for kernel 4.14?
-> If there is something missing or needs testing I'm all open to help!
-> 
+I see that 4.14 development is in a branch labeled "split." I read through this already:
+https://www.xenomai.org/pipermail/xenomai/2018-September/039458.html
 
-I have pushed the latest version from Philippe to "wip/4.14-split". So 
-everyone interested in the topic should maybe use that.
+So the base functionality of IPIPE is still the same, but with the split series, this makes commits and code changes easier to dissect?
 
-https://gitlab.denx.de/Xenomai/ipipe-x86/tree/wip/4.14-split
+When 4.14 support reaches this page:
+https://xenomai.org/downloads/ipipe/v4.x/x86/
 
-This is what Philippe sent as "[I-PIPE][PATCH 00/32] 4.14.71/x86_64
-port (split series)".
+How different will the final patch be to the rest of the patches? Is the structure for the most part the same and follow the same pattern as the other patches, or will a patch derived from "split" have other changes in the final patch? Are all the changes in the split series purely cosmetic compared to the other IPIPE patches? Are there even any changes to the kernel compared to the other IPIPE patches, or is this purely breaking up commits? I'm a bit confused as to how this affects the final ipipe-core patches as that is what I use for a baseline, not the IPIPE git repos.
 
-That was a force push the branches "henning/wip/*" are gone now.
+Thank you!
 
-Henning
+Alec
 
