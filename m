@@ -1,13 +1,14 @@
-References: <1544c287-5653-6117-cba0-eb355b936887@xenomai.org>
+References: <20181001135619.24883-1-rpm@xenomai.org>
 From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <060fda40-0ed3-5eff-f09a-7814547a3f9a@siemens.com>
-Date: Mon, 1 Oct 2018 16:03:46 +0200
+Message-ID: <0f37705c-cacc-2f70-b2d2-0b6473a1a456@siemens.com>
+Date: Mon, 1 Oct 2018 16:05:15 +0200
 MIME-Version: 1.0
-In-Reply-To: <1544c287-5653-6117-cba0-eb355b936887@xenomai.org>
+In-Reply-To: <20181001135619.24883-1-rpm@xenomai.org>
 Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] [PULL] A couple of fixes to the split series for x86
+Subject: Re: [Xenomai] [PATCH 0/6] Cobalt fixes (CPU affinity handling,
+ cyclictest)
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,39 +17,51 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Philippe Gerum <rpm@xenomai.org>, Henning Schild <henning.schild@siemens.com>
-Cc: "Xenomai@xenomai.org" <Xenomai@xenomai.org>
+To: Philippe Gerum <rpm@xenomai.org>, xenomai@xenomai.org
 
-On 01.10.18 15:28, Philippe Gerum wrote:
+On 01.10.18 15:56, Philippe Gerum wrote:
+> This series mainly fixes CPU affinity issues when the set of rt CPUs
+> is restricted via xenomai.supported_cpus=<mask>, specifically:
 > 
-> The following changes since commit be45333e3af13c3b7cb12ecd200cb9be7a8fb439:
+> - handle user requests for domain migration to the head stage over
+>    non-rt CPUs gracefully. This builds on the I-pipe patch sent earlier:
 > 
->    x86: ipipe: do not panic on unexpected IRQ trap (2018-09-27 09:09:52 +0200)
+>    sched/core: ipipe: do not panic on failed migration to the head stage
 > 
-> are available in the Git repository at:
+> - set the default CPU affinity for userland apps to the restricted CPU
+>    set if given on the kernel command line (instead of any
+>    CPU). Typically, running switchtest on a system with a restricted rt
+>    CPU set without passing --cpu-affinity should implicitly select
+>    available (rt) CPUs exclusively.
 > 
->    https://lab.xenomai.org/ipipe-rpm.git x86/4.14.71
+> As I have been running benchmarks lately, I fixed a bug in cyclictest
+> which caused weird latency results with long-running tests too.
 > 
-> for you to fetch changes up to c5540da918650be520d8f5331ec1944ccfcf6c53:
+> Philippe Gerum (6):
+>    demo/cyclictest: turn on FIFO mode by default, detecting spurious
+>      relaxes
+>    cobalt/thread: handle case of invalid domain migration over non-rt CPU
+>    cobalt/intr: IRQ affinity depends on xnsched_realtime_cpus
+>    cobalt/sched: fix mismatches between supported CPUs and affinity set
+>    boilerplate/setup: cobalt: retrieve the default CPU affinity
+>    demo/cyclictest: fix time delta calculation
 > 
->    sched/core: ipipe: do not panic on failed migration to the head stage (2018-10-01 15:10:59 +0200)
-> 
-> ----------------------------------------------------------------
-> Philippe Gerum (2):
->        ipipe: timer: prevent double-ack if host timer is not grabbed
->        sched/core: ipipe: do not panic on failed migration to the head stage
-> 
->   kernel/ipipe/timer.c | 11 +++++++----
->   kernel/sched/core.c  |  2 --
->   2 files changed, 7 insertions(+), 6 deletions(-)
+>   demo/posix/cyclictest/cyclictest.c | 82 ++++++++++++++++++++++++++++++++------
+>   include/cobalt/kernel/sched.h      | 10 +++++
+>   kernel/cobalt/intr.c               |  2 +-
+>   kernel/cobalt/posix/process.c      | 21 ++++++----
+>   kernel/cobalt/posix/sched.c        |  2 +-
+>   kernel/cobalt/thread.c             |  1 +
+>   lib/boilerplate/setup.c            | 33 ++++++++++++++-
+>   7 files changed, 126 insertions(+), 25 deletions(-)
 > 
 
-I suppose both are not related to the sigdebug issue Henning noticed, are they? 
-Just the confirm if that issue is still open, or if we could start removing the 
-"wip" from the 4.14 branch.
+Will have a look. Already noticed: missing signed-off. In the kernel community, 
+this sometimes indicated "not yet for merge", but I suppose you just forgot 
+them. If you confirm that and I have no other remarks, I can fix that up while 
+merging.
 
-BTW, we should sign-off kernel commits as well.
-
+Thanks,
 Jan
 
 -- 
