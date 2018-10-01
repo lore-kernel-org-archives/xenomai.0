@@ -1,10 +1,10 @@
 From: Philippe Gerum <rpm@xenomai.org>
-Date: Mon,  1 Oct 2018 15:56:17 +0200
-Message-Id: <20181001135619.24883-5-rpm@xenomai.org>
+Date: Mon,  1 Oct 2018 15:56:18 +0200
+Message-Id: <20181001135619.24883-6-rpm@xenomai.org>
 In-Reply-To: <20181001135619.24883-1-rpm@xenomai.org>
 References: <20181001135619.24883-1-rpm@xenomai.org>
-Subject: [Xenomai] [PATCH 4/6] cobalt/sched: fix mismatches between
- supported CPUs and affinity set
+Subject: [Xenomai] [PATCH 5/6] boilerplate/setup: cobalt: retrieve the
+ default CPU affinity
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,71 +16,71 @@ List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
 To: xenomai@xenomai.org
 Cc: Jan Kiszka <jan.kiszka@siemens.com>, Philippe Gerum <rpm@xenomai.org>
 
-xnsched_realtime_cpus is a misnomer defining the set of CPUs which may
-handle timer events.
-
-cobalt_cpu_affinity is a subset of xnsched_realtime_cpus which defines
-which CPU(s) may run Cobalt threads.
+Over Cobalt, make sure the default CPU affinity mask reflects the set
+of CPUs available for running real-time threads
+(i.e. /proc/xenomai/affinity).
 ---
- include/cobalt/kernel/sched.h | 10 ++++++++++
- kernel/cobalt/posix/process.c |  2 +-
- kernel/cobalt/posix/sched.c   |  2 +-
- 3 files changed, 12 insertions(+), 2 deletions(-)
+ lib/boilerplate/setup.c | 33 +++++++++++++++++++++++++++++++--
+ 1 file changed, 31 insertions(+), 2 deletions(-)
 
-diff --git a/include/cobalt/kernel/sched.h b/include/cobalt/kernel/sched.h
-index eab80c340..d2b3d0c63 100644
---- a/include/cobalt/kernel/sched.h
-+++ b/include/cobalt/kernel/sched.h
-@@ -259,6 +259,11 @@ static inline int xnsched_supported_cpu(int cpu)
- 	return cpumask_test_cpu(cpu, &xnsched_realtime_cpus);
+diff --git a/lib/boilerplate/setup.c b/lib/boilerplate/setup.c
+index 8b363efee..3214d7f04 100644
+--- a/lib/boilerplate/setup.c
++++ b/lib/boilerplate/setup.c
+@@ -173,6 +173,8 @@ static int collect_cpu_affinity(const char *cpu_list)
+ 		return ret;
+ 	}
+ 
++	CPU_ZERO(&__base_setup_data.cpu_affinity);
++
+ 	s = n = strdup(cpu_list);
+ 	while ((range = strtok_r(n, ",", &range_p)) != NULL) {
+ 		if (*range == '\0')
+@@ -232,6 +234,33 @@ fail:
+ 	return -EINVAL;
  }
  
-+static inline int xnsched_threading_cpu(int cpu)
++static void retrieve_default_cpu_affinity(void)
 +{
-+	return cpumask_test_cpu(cpu, &cobalt_cpu_affinity);
++	CPU_ZERO(&__base_setup_data.cpu_affinity);
++
++#ifdef CONFIG_XENO_COBALT
++	/*
++	 * If the Cobalt core has restricted the CPU set, update our
++	 * mask accordingly.
++	 */
++	unsigned long cpumask;
++	FILE *fp;
++	int cpu;
++
++	fp = fopen("/proc/xenomai/affinity", "r");
++	if (fp == NULL)
++		return;	/* uhh? */
++
++	if (fscanf(fp, "%lx", &cpumask) == 1) {
++		for (cpu = 0; cpumask; cpumask >>= 1, cpu++)
++			if (cpumask & 1)
++				CPU_SET(cpu, &__base_setup_data.cpu_affinity);
++	}
++
++	fclose(fp);
++#endif
 +}
 +
- #else /* !CONFIG_SMP */
+ static inline char **prep_args(int argc, char *const argv[])
+ {
+ 	char **uargv;
+@@ -528,8 +557,8 @@ static void __xenomai_init(int *argcp, char *const **argvp, const char *me)
+ 	/* No ifs, no buts: we must be called over the main thread. */
+ 	assert(getpid() == __node_id);
  
- static inline void xnsched_set_resched(struct xnsched *sched)
-@@ -273,6 +278,11 @@ static inline int xnsched_supported_cpu(int cpu)
- 	return 1;
- }
+-	/* Define default CPU affinity, i.e. no particular affinity. */
+-	CPU_ZERO(&__base_setup_data.cpu_affinity);
++	/* Retrieve the default CPU affinity. */
++	retrieve_default_cpu_affinity();
  
-+static inline int xnsched_threading_cpu(int cpu)
-+{
-+	return 1;
-+}
-+
- #endif /* !CONFIG_SMP */
- 
- #define for_each_realtime_cpu(cpu)		\
-diff --git a/kernel/cobalt/posix/process.c b/kernel/cobalt/posix/process.c
-index a708833ef..d0f2f3725 100644
---- a/kernel/cobalt/posix/process.c
-+++ b/kernel/cobalt/posix/process.c
-@@ -897,7 +897,7 @@ static inline bool affinity_ok(struct task_struct *p) /* nklocked, IRQs off */
- 	 * in secondary mode. If so, do the fixups to reflect the
- 	 * change.
- 	 */
--	if (!xnsched_supported_cpu(cpu)) {
-+	if (!xnsched_threading_cpu(cpu)) {
- 		/*
- 		 * The thread is about to switch to primary mode on a
- 		 * non-rt CPU, which is damn wrong and hopeless.
-diff --git a/kernel/cobalt/posix/sched.c b/kernel/cobalt/posix/sched.c
-index eca16f764..103f85534 100644
---- a/kernel/cobalt/posix/sched.c
-+++ b/kernel/cobalt/posix/sched.c
-@@ -622,7 +622,7 @@ int __cobalt_sched_setconfig_np(int cpu, int policy,
- 
- 	trace_cobalt_sched_setconfig(cpu, policy, len);
- 
--	if (cpu < 0 || cpu >= NR_CPUS || !xnsched_supported_cpu(cpu))
-+	if (cpu < 0 || cpu >= NR_CPUS || !xnsched_threading_cpu(cpu))
- 		return -EINVAL;
- 
- 	if (len == 0)
+ 	/*
+ 	 * Parse the base options first, to bootstrap the core with
 -- 
 2.14.4
 
