@@ -1,13 +1,12 @@
-References: <CAAjAsiy=cp_nZsSpfcsE=0YDWppHuT1ZTpFgW4F-b1f6ovbQ+w@mail.gmail.com>
-From: Philippe Gerum <rpm@xenomai.org>
-Message-ID: <d759381b-04de-574e-b3fc-a18873dbb1dc@xenomai.org>
-Date: Thu, 13 Sep 2018 15:57:26 +0200
+Date: Mon, 1 Oct 2018 02:42:18 -0500 (CDT)
+From: Per Oberg <pero@wolfram.com>
+Message-ID: <590994061.262338.1538379738455.JavaMail.zimbra@wolfram.com>
+In-Reply-To: <759115071.1538372023382.JavaMail.root@webmail>
+References: <759115071.1538372023382.JavaMail.root@webmail>
 MIME-Version: 1.0
-In-Reply-To: <CAAjAsiy=cp_nZsSpfcsE=0YDWppHuT1ZTpFgW4F-b1f6ovbQ+w@mail.gmail.com>
 Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] kernel crash when debugging userspace realtime task
+Content-Transfer-Encoding: quoted-printable
+Subject: Re: [Xenomai] What does activating SMP mean?
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,41 +15,69 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Matteo Facchinetti <matteo.facchinetti@sirius-es.it>, xenomai@xenomai.org
+To: xenomai <xenomai@xenomai.org>
 
-On 09/04/2018 05:59 PM, Matteo Facchinetti wrote:
-> Hi,
-> 
-> I'm using the xenomai cobalt kernel with ipipe-core-4.9.51-arm-4.patch over
-> a Sitara AM335x custom board.
-> Occur a strange problem  when debugging an userspace task with
-> gdb/gdbserver.
-> In detail, sometimes into a debugging session, kernel crash at the moment
-> that I add a breakpoint in a realtime task.
-> 
->   Unhandled fault: page domain fault (0x01b) at 0x001412dc
->   (see below for the complete kernel panic)
-> 
-> This problem is not easily reproducible because occurs only with the
-> Windows toolchain (gdb in windows environment).
-> With the linux toolcahin never occur but I don't exclude that problem exist
-> and it's shadow for any timing reason...
-> With boot toolchain program works correctly if running unless debugging.
-> 
-> So, using FTRACE, I take a snapshot of the kernel internals at the moment
-> when problem occurs:
-> 
->   killer-0-510   [000]   152.421095: function:
->  preempt_count_sub <-- finish_task_switch
->   killer-0-510   [000]   152.421100: function:             do_DataAbort <--
-> __dabt_svc
->   (see below for the complete FTRACE snapshot)
-> 
+Hello
 
-Please make sure to have the following fix in:
+----- Den 1 okt 2018, p=C3=A5 kl 7:33, =EB=B0=95=EC=9E=AC=ED=98=B8 jaeho@se=
+oultech.ac.kr skrev:
 
-https://gitlab.denx.de/Xenomai/ipipe/commit/54ae43b8a64c0bc86b7a34dbb481221f12e75751
+> Hi, all
 
--- 
-Philippe.
+> I thought that activating SMP makes tasks using all cpu cores, but I real=
+ized
+> that it doesn't.
+
+> I did not explicitly specify the CPU when I created the task.
+
+> I have created two xenomai tasks and checked to see how much cpu share th=
+e task
+> has on any cpu with / proc / xenomai / stat.
+
+> As a result, we confirmed that only one cpu of two cpu works.
+
+> So we used T_CPU () to allocate different CPU cores for each task when we
+> created the task.
+
+> As a result, you can see that both tasks are running on two CPUs.
+
+> I expected to use both CPUs when I enabled SMP, but I did not. Why is not=
+ it?
+
+> Also, does one task only run on one cpu?
+
+> The environment I used is shown below.
+
+> ------------------------------------------------------------------------
+
+> zybo-z7-20(zynq-7000)
+
+> Dual-Core ARM Coretex-A9 MPCore Up to 866MHz
+
+> xenomai 2.6.5
+
+> kernel 3.14.2
+
+> ubuntu 14.04
+
+> ------------------------------------------------------------------------
+
+> thank you for your advice.
+
+> _______________________________________________
+> Xenomai mailing list
+> Xenomai@xenomai.org
+> https://xenomai.org/mailman/listinfo/xenomai
+
+Not sure that I can answer your question as it was formulated, but perhaps =
+I can contribute with something. Do your test-task use all your CPU time or=
+ do you have idling? I would -guess- that as long as one CPU is sufficient =
+the scheduler won't use any other unless it was specified on the command-li=
+ne.
+
+I answer, even though I am not sure about this  because I would like to be =
+corrected if I'm wrong.=20
+
+Regards
+Per =C3=96berg
 
