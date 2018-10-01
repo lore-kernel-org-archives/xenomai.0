@@ -1,9 +1,13 @@
-From: Philippe Gerum <rpm@xenomai.org>
-Date: Mon,  1 Oct 2018 15:56:19 +0200
-Message-Id: <20181001135619.24883-7-rpm@xenomai.org>
-In-Reply-To: <20181001135619.24883-1-rpm@xenomai.org>
-References: <20181001135619.24883-1-rpm@xenomai.org>
-Subject: [Xenomai] [PATCH 6/6] demo/cyclictest: fix time delta calculation
+References: <1544c287-5653-6117-cba0-eb355b936887@xenomai.org>
+From: Jan Kiszka <jan.kiszka@siemens.com>
+Message-ID: <060fda40-0ed3-5eff-f09a-7814547a3f9a@siemens.com>
+Date: Mon, 1 Oct 2018 16:03:46 +0200
+MIME-Version: 1.0
+In-Reply-To: <1544c287-5653-6117-cba0-eb355b936887@xenomai.org>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai] [PULL] A couple of fixes to the split series for x86
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -12,56 +16,42 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
-Cc: Jan Kiszka <jan.kiszka@siemens.com>, Philippe Gerum <rpm@xenomai.org>
+To: Philippe Gerum <rpm@xenomai.org>, Henning Schild <henning.schild@siemens.com>
+Cc: "Xenomai@xenomai.org" <Xenomai@xenomai.org>
 
-Otherwise, weird results could be seen when the second wraps, leading
-to t1.nsec < t2.nsec, e.g.:
+On 01.10.18 15:28, Philippe Gerum wrote:
+> 
+> The following changes since commit be45333e3af13c3b7cb12ecd200cb9be7a8fb439:
+> 
+>    x86: ipipe: do not panic on unexpected IRQ trap (2018-09-27 09:09:52 +0200)
+> 
+> are available in the Git repository at:
+> 
+>    https://lab.xenomai.org/ipipe-rpm.git x86/4.14.71
+> 
+> for you to fetch changes up to c5540da918650be520d8f5331ec1944ccfcf6c53:
+> 
+>    sched/core: ipipe: do not panic on failed migration to the head stage (2018-10-01 15:10:59 +0200)
+> 
+> ----------------------------------------------------------------
+> Philippe Gerum (2):
+>        ipipe: timer: prevent double-ack if host timer is not grabbed
+>        sched/core: ipipe: do not panic on failed migration to the head stage
+> 
+>   kernel/ipipe/timer.c | 11 +++++++----
+>   kernel/sched/core.c  |  2 --
+>   2 files changed, 7 insertions(+), 6 deletions(-)
+> 
 
-T: 0 ( 1107) P:98 I:1000 C:1886710 Min:      0 Act:    4 Avg:2147483647 Max:      -1
----
- demo/posix/cyclictest/cyclictest.c | 23 +++++++++++++----------
- 1 file changed, 13 insertions(+), 10 deletions(-)
+I suppose both are not related to the sigdebug issue Henning noticed, are they? 
+Just the confirm if that issue is still open, or if we could start removing the 
+"wip" from the 4.14 branch.
 
-diff --git a/demo/posix/cyclictest/cyclictest.c b/demo/posix/cyclictest/cyclictest.c
-index 87f313836..ebe5461db 100644
---- a/demo/posix/cyclictest/cyclictest.c
-+++ b/demo/posix/cyclictest/cyclictest.c
-@@ -340,20 +340,23 @@ static inline int tsgreater(struct timespec *a, struct timespec *b)
- 		(a->tv_sec == b->tv_sec && a->tv_nsec > b->tv_nsec));
- }
- 
--static inline int64_t calcdiff(struct timespec t1, struct timespec t2)
-+static inline int64_t calcdiff_ns(struct timespec t1, struct timespec t2)
- {
--	int64_t diff;
--	diff = USEC_PER_SEC * (long long)(t1.tv_sec - t2.tv_sec);
--	diff += (t1.tv_nsec - t2.tv_nsec) / 1000;
--	return diff;
-+	struct timespec r;
-+	
-+	r.tv_sec = t1.tv_sec - t2.tv_sec;
-+	r.tv_nsec = t1.tv_nsec - t2.tv_nsec;
-+	if (r.tv_nsec < 0) {
-+		r.tv_sec--;
-+		r.tv_nsec += NSEC_PER_SEC;
-+	}
-+
-+	return r.tv_sec * NSEC_PER_SEC + r.tv_nsec;
- }
- 
--static inline int64_t calcdiff_ns(struct timespec t1, struct timespec t2)
-+static inline int64_t calcdiff(struct timespec t1, struct timespec t2)
- {
--	int64_t diff;
--	diff = NSEC_PER_SEC * (int64_t)(t1.tv_sec - t2.tv_sec);
--	diff += (t1.tv_nsec - t2.tv_nsec);
--	return diff;
-+	return calcdiff_ns(t1, t2) / 1000;
- }
- 
- void traceopt(char *option)
+BTW, we should sign-off kernel commits as well.
+
+Jan
+
 -- 
-2.14.4
-
+Siemens AG, Corporate Technology, CT RDA IOT SES-DE
+Corporate Competence Center Embedded Linux
 
