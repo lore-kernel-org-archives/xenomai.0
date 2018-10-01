@@ -1,10 +1,9 @@
 From: Philippe Gerum <rpm@xenomai.org>
-Date: Mon,  1 Oct 2018 15:56:18 +0200
-Message-Id: <20181001135619.24883-6-rpm@xenomai.org>
+Date: Mon,  1 Oct 2018 15:56:19 +0200
+Message-Id: <20181001135619.24883-7-rpm@xenomai.org>
 In-Reply-To: <20181001135619.24883-1-rpm@xenomai.org>
 References: <20181001135619.24883-1-rpm@xenomai.org>
-Subject: [Xenomai] [PATCH 5/6] boilerplate/setup: cobalt: retrieve the
- default CPU affinity
+Subject: [Xenomai] [PATCH 6/6] demo/cyclictest: fix time delta calculation
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,71 +15,52 @@ List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
 To: xenomai@xenomai.org
 Cc: Jan Kiszka <jan.kiszka@siemens.com>, Philippe Gerum <rpm@xenomai.org>
 
-Over Cobalt, make sure the default CPU affinity mask reflects the set
-of CPUs available for running real-time threads
-(i.e. /proc/xenomai/affinity).
----
- lib/boilerplate/setup.c | 33 +++++++++++++++++++++++++++++++--
- 1 file changed, 31 insertions(+), 2 deletions(-)
+Otherwise, weird results could be seen when the second wraps, leading
+to t1.nsec < t2.nsec, e.g.:
 
-diff --git a/lib/boilerplate/setup.c b/lib/boilerplate/setup.c
-index 8b363efee..3214d7f04 100644
---- a/lib/boilerplate/setup.c
-+++ b/lib/boilerplate/setup.c
-@@ -173,6 +173,8 @@ static int collect_cpu_affinity(const char *cpu_list)
- 		return ret;
- 	}
- 
-+	CPU_ZERO(&__base_setup_data.cpu_affinity);
-+
- 	s = n = strdup(cpu_list);
- 	while ((range = strtok_r(n, ",", &range_p)) != NULL) {
- 		if (*range == '\0')
-@@ -232,6 +234,33 @@ fail:
- 	return -EINVAL;
+T: 0 ( 1107) P:98 I:1000 C:1886710 Min:      0 Act:    4 Avg:2147483647 Max:      -1
+---
+ demo/posix/cyclictest/cyclictest.c | 23 +++++++++++++----------
+ 1 file changed, 13 insertions(+), 10 deletions(-)
+
+diff --git a/demo/posix/cyclictest/cyclictest.c b/demo/posix/cyclictest/cyclictest.c
+index 87f313836..ebe5461db 100644
+--- a/demo/posix/cyclictest/cyclictest.c
++++ b/demo/posix/cyclictest/cyclictest.c
+@@ -340,20 +340,23 @@ static inline int tsgreater(struct timespec *a, struct timespec *b)
+ 		(a->tv_sec == b->tv_sec && a->tv_nsec > b->tv_nsec));
  }
  
-+static void retrieve_default_cpu_affinity(void)
-+{
-+	CPU_ZERO(&__base_setup_data.cpu_affinity);
-+
-+#ifdef CONFIG_XENO_COBALT
-+	/*
-+	 * If the Cobalt core has restricted the CPU set, update our
-+	 * mask accordingly.
-+	 */
-+	unsigned long cpumask;
-+	FILE *fp;
-+	int cpu;
-+
-+	fp = fopen("/proc/xenomai/affinity", "r");
-+	if (fp == NULL)
-+		return;	/* uhh? */
-+
-+	if (fscanf(fp, "%lx", &cpumask) == 1) {
-+		for (cpu = 0; cpumask; cpumask >>= 1, cpu++)
-+			if (cpumask & 1)
-+				CPU_SET(cpu, &__base_setup_data.cpu_affinity);
+-static inline int64_t calcdiff(struct timespec t1, struct timespec t2)
++static inline int64_t calcdiff_ns(struct timespec t1, struct timespec t2)
+ {
+-	int64_t diff;
+-	diff = USEC_PER_SEC * (long long)(t1.tv_sec - t2.tv_sec);
+-	diff += (t1.tv_nsec - t2.tv_nsec) / 1000;
+-	return diff;
++	struct timespec r;
++	
++	r.tv_sec = t1.tv_sec - t2.tv_sec;
++	r.tv_nsec = t1.tv_nsec - t2.tv_nsec;
++	if (r.tv_nsec < 0) {
++		r.tv_sec--;
++		r.tv_nsec += NSEC_PER_SEC;
 +	}
 +
-+	fclose(fp);
-+#endif
-+}
-+
- static inline char **prep_args(int argc, char *const argv[])
++	return r.tv_sec * NSEC_PER_SEC + r.tv_nsec;
+ }
+ 
+-static inline int64_t calcdiff_ns(struct timespec t1, struct timespec t2)
++static inline int64_t calcdiff(struct timespec t1, struct timespec t2)
  {
- 	char **uargv;
-@@ -528,8 +557,8 @@ static void __xenomai_init(int *argcp, char *const **argvp, const char *me)
- 	/* No ifs, no buts: we must be called over the main thread. */
- 	assert(getpid() == __node_id);
+-	int64_t diff;
+-	diff = NSEC_PER_SEC * (int64_t)(t1.tv_sec - t2.tv_sec);
+-	diff += (t1.tv_nsec - t2.tv_nsec);
+-	return diff;
++	return calcdiff_ns(t1, t2) / 1000;
+ }
  
--	/* Define default CPU affinity, i.e. no particular affinity. */
--	CPU_ZERO(&__base_setup_data.cpu_affinity);
-+	/* Retrieve the default CPU affinity. */
-+	retrieve_default_cpu_affinity();
- 
- 	/*
- 	 * Parse the base options first, to bootstrap the core with
+ void traceopt(char *option)
 -- 
 2.14.4
 
