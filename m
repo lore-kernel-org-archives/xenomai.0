@@ -1,13 +1,10 @@
 From: Philippe Gerum <rpm@xenomai.org>
-References: <0cb43191-7b16-2e4b-cb49-807b26d3b45b@rambler.ru>
-Message-ID: <3cbfd2a4-e656-9b81-f5de-f71d1cec2ca5@xenomai.org>
-Date: Thu, 13 Sep 2018 18:30:38 +0200
-MIME-Version: 1.0
-In-Reply-To: <0cb43191-7b16-2e4b-cb49-807b26d3b45b@rambler.ru>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-Subject: [Xenomai]  kernel BUG
+Date: Mon,  1 Oct 2018 15:56:15 +0200
+Message-Id: <20181001135619.24883-3-rpm@xenomai.org>
+In-Reply-To: <20181001135619.24883-1-rpm@xenomai.org>
+References: <20181001135619.24883-1-rpm@xenomai.org>
+Subject: [Xenomai] [PATCH 2/6] cobalt/thread: handle case of invalid domain
+ migration over non-rt CPU
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,51 +13,116 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: leo <feedcom@rambler.ru>, Xenomai@xenomai.org
+To: xenomai@xenomai.org
+Cc: Jan Kiszka <jan.kiszka@siemens.com>, Philippe Gerum <rpm@xenomai.org>
 
-On 09/03/2018 04:27 PM, leo wrote:
-> 
-> Good day!
-> 
-> I'm learning Xenomai technology by reading the documentation.
-> The first small step is to try to push the ipipe-arm64 4.14.4 core
-> upstream.
-> Philippe's idea to consistently apply a set of patches is very good and
-> I almost got it.
+Attempting to migrate to the head domain while running on a CPU which
+is not in part of the real-time set is a bug, and must be detected by
+the core.
 
-The learning curve may be shorter with the Dovetail interface [1], which
-is a much better co-kernel integration layer, I believe. This is still
-(not-so-early) work in progress and we don't support as many SoCs and
-architectures the I-pipe supports yet [2] though.
+Furthermore, for this detection to work, the I-pipe must not BUG()
+unconditionally when failing to schedule out such thread in
+__ipipe_migrate_head(), but rather let the real-time core handle the
+situation (i.e. Xenomai in xnthread_harden()).
 
-However, documentation about porting Dovetail [3] is continuously
-updated, and it runs the latest 4.19-rc3 kernel unlike the I-pipe. Many
-basic concepts of Dovetail have been inherited from the I-pipe, so
-people familiar with the latter should find their way easily in the former.
+Until both changes are in place, running a thread issuing a real-time
+call over a non-RT CPU would trigger a BUG() assertion, e.g.:
 
-Bonus point: since Dovetail is all about deeply integrating a co-kernel
-interface logic into the regular kernel machinery, it would certainly be
-a better candidate for upstreaming than the I-pipe is.
+With kernel parameter "xenomai.supported_cpus=2", running:
 
-Btw, Dovetail has not been ported to any Allwinner SoC yet, including
-the H5. The co-kernel interface for arm64 is not complete yet, but the
-interrupt pipeline core is there and works pretty well already, so this
-may be an interesting challenge to port it to an Orange PI PC target, as
-a first step.
+$ switchtest --cpu-affinity=0
 
-> In both cases, /usr/xenomai/cyclictest shows:
-> 99.98% of results is in the range of 0 - 50 milliseconds.
-> 0.02% is in the range of 51-150 milliseconds.
->
+would lead to:
 
-Something looks wrong. Xenomai over the I-pipe on an Allwinner H5 SoC
-should be in the 50-70 us range, worst-case. Anything falling into the
-millisecond range is definitely a pathological case.
+[   11.681486] kernel BUG at kernel/sched/core.c:5816!
+[   11.686343] Internal error: Oops - BUG: 0 [#1] PREEMPT SMP ARM
+---
+ kernel/cobalt/posix/process.c | 19 ++++++++++++-------
+ kernel/cobalt/thread.c        |  1 +
+ 2 files changed, 13 insertions(+), 7 deletions(-)
 
-[1] git://lab.xenomai.org/linux-dovetail.git
-[2] https://dovetail.xenomai.org/status/
-[3] https://dovetail.xenomai.org/
-
+diff --git a/kernel/cobalt/posix/process.c b/kernel/cobalt/posix/process.c
+index 9a2bf83c2..a708833ef 100644
+--- a/kernel/cobalt/posix/process.c
++++ b/kernel/cobalt/posix/process.c
+@@ -856,7 +856,7 @@ static int handle_setaffinity_event(struct ipipe_cpu_migration_data *d)
+ 	 * take place on behalf of the target thread itself while
+ 	 * running in secondary mode. Therefore, that thread needs to
+ 	 * go through secondary mode first, then move back to primary
+-	 * mode, so that check_affinity() does the fixup work.
++	 * mode, so that affinity_ok() does the fixup work.
+ 	 *
+ 	 * We force this by sending a SIGSHADOW signal to the migrated
+ 	 * thread, asking it to switch back to primary mode from the
+@@ -873,7 +873,7 @@ static int handle_setaffinity_event(struct ipipe_cpu_migration_data *d)
+ 	return KEVENT_PROPAGATE;
+ }
+ 
+-static inline void check_affinity(struct task_struct *p) /* nklocked, IRQs off */
++static inline bool affinity_ok(struct task_struct *p) /* nklocked, IRQs off */
+ {
+ 	struct xnthread *thread = xnthread_from_task(p);
+ 	struct xnsched *sched;
+@@ -912,12 +912,12 @@ static inline void check_affinity(struct task_struct *p) /* nklocked, IRQs off *
+ 		 * in xnthread_harden().
+ 		 */
+ 		xnthread_set_info(thread, XNCANCELD);
+-		return;
++		return false;
+ 	}
+ 
+ 	sched = xnsched_struct(cpu);
+ 	if (sched == thread->sched)
+-		return;
++		return true;
+ 
+ 	/*
+ 	 * The current thread moved to a supported real-time CPU,
+@@ -929,6 +929,8 @@ static inline void check_affinity(struct task_struct *p) /* nklocked, IRQs off *
+ 
+ 	xnthread_run_handler_stack(thread, move_thread, cpu);
+ 	xnthread_migrate_passive(thread, sched);
++
++	return true;
+ }
+ 
+ #else /* !CONFIG_SMP */
+@@ -940,7 +942,10 @@ static int handle_setaffinity_event(struct ipipe_cpu_migration_data *d)
+ 	return KEVENT_PROPAGATE;
+ }
+ 
+-static inline void check_affinity(struct task_struct *p) { }
++static inline bool affinity_ok(struct task_struct *p)
++{
++	return true;
++}
+ 
+ #endif /* CONFIG_SMP */
+ 
+@@ -955,8 +960,8 @@ void ipipe_migration_hook(struct task_struct *p) /* hw IRQs off */
+ 	 */
+ 	xnlock_get(&nklock);
+ 	xnthread_run_handler_stack(thread, harden_thread);
+-	check_affinity(p);
+-	xnthread_resume(thread, XNRELAX);
++	if (affinity_ok(p))
++		xnthread_resume(thread, XNRELAX);
+ 	xnlock_put(&nklock);
+ 
+ 	xnsched_run();
+diff --git a/kernel/cobalt/thread.c b/kernel/cobalt/thread.c
+index 2ffe1f8f0..04c0b62d3 100644
+--- a/kernel/cobalt/thread.c
++++ b/kernel/cobalt/thread.c
+@@ -1945,6 +1945,7 @@ int xnthread_harden(void)
+ 
+ 	ret = __ipipe_migrate_head();
+ 	if (ret) {
++		xnthread_test_cancel();
+ 		xnthread_set_sync_window(thread, XNRELAX);
+ 		return ret;
+ 	}
 -- 
-Philippe.
+2.14.4
+
 
