@@ -1,11 +1,11 @@
-Date: Sun, 30 Sep 2018 20:38:22 +0000 (UTC)
-From: Alec Ari <neotheuser@ymail.com>
-Message-ID: <1736385944.1779097.1538339902687@mail.yahoo.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-References: <1736385944.1779097.1538339902687.ref@mail.yahoo.com>
-Subject: [Xenomai] ipipe for 4.14 x86?
+Message-ID: <759115071.1538372023382.JavaMail.root@webmail>
+Date: Mon, 1 Oct 2018 14:33:43 +0900 (KST)
+From: =?EUC-KR?B?udrA58ij?= <jaeho@seoultech.ac.kr>
+Reply-To: =?EUC-KR?B?udrA58ij?= <jaeho@seoultech.ac.kr>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=EUC-KR
+Content-Transfer-Encoding: 8bit
+Subject: [Xenomai] What does activating SMP mean?
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -14,21 +14,55 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: xenomai@xenomai.org
 
-This message is meant to be part of the preexisting thread, "ipipe for 4.14 x86?"
+Hi, all
 
-I see that 4.14 development is in a branch labeled "split." I read through this already:
-https://www.xenomai.org/pipermail/xenomai/2018-September/039458.html
 
-So the base functionality of IPIPE is still the same, but with the split series, this makes commits and code changes easier to dissect?
 
-When 4.14 support reaches this page:
-https://xenomai.org/downloads/ipipe/v4.x/x86/
+I thought that activating SMP makes tasks using all cpu cores, but I realized that it doesn't.
 
-How different will the final patch be to the rest of the patches? Is the structure for the most part the same and follow the same pattern as the other patches, or will a patch derived from "split" have other changes in the final patch? Are all the changes in the split series purely cosmetic compared to the other IPIPE patches? Are there even any changes to the kernel compared to the other IPIPE patches, or is this purely breaking up commits? I'm a bit confused as to how this affects the final ipipe-core patches as that is what I use for a baseline, not the IPIPE git repos.
+I did not explicitly specify the CPU when I created the task.
 
-Thank you!
+I have created two xenomai tasks and checked to see how much cpu share the task has on any cpu with / proc / xenomai / stat.
 
-Alec
+As a result, we confirmed that only one cpu of two cpu works.
+
+
+
+So we used T_CPU () to allocate different CPU cores for each task when we created the task.
+
+As a result, you can see that both tasks are running on two CPUs.
+
+
+
+I expected to use both CPUs when I enabled SMP, but I did not. Why is not it?
+
+Also, does one task only run on one cpu?
+
+
+
+
+
+The environment I used is shown below.
+
+------------------------------------------------------------------------
+
+zybo-z7-20(zynq-7000)
+
+Dual-Core ARM Coretex-A9 MPCore Up to 866MHz
+
+
+
+xenomai 2.6.5
+
+kernel 3.14.2
+
+ubuntu 14.04
+
+------------------------------------------------------------------------
+
+
+
+thank you for your advice.
 
