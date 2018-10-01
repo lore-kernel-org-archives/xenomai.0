@@ -1,8 +1,10 @@
 From: Philippe Gerum <rpm@xenomai.org>
-Date: Mon,  1 Oct 2018 15:56:13 +0200
-Message-Id: <20181001135619.24883-1-rpm@xenomai.org>
-Subject: [Xenomai] [PATCH 0/6] Cobalt fixes (CPU affinity handling,
- cyclictest)
+Date: Mon,  1 Oct 2018 15:56:14 +0200
+Message-Id: <20181001135619.24883-2-rpm@xenomai.org>
+In-Reply-To: <20181001135619.24883-1-rpm@xenomai.org>
+References: <20181001135619.24883-1-rpm@xenomai.org>
+Subject: [Xenomai] [PATCH 1/6] demo/cyclictest: turn on FIFO mode by default,
+ detecting spurious relaxes
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -14,41 +16,138 @@ List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
 To: xenomai@xenomai.org
 Cc: Jan Kiszka <jan.kiszka@siemens.com>, Philippe Gerum <rpm@xenomai.org>
 
-This series mainly fixes CPU affinity issues when the set of rt CPUs
-is restricted via xenomai.supported_cpus=<mask>, specifically:
+Make sure people do run the cyclictest the way it is intended to with
+Xenomai (i.e. using Xenomai's rt scheduler...).
 
-- handle user requests for domain migration to the head stage over
-  non-rt CPUs gracefully. This builds on the I-pipe patch sent earlier:
+Also, detect and bail out upon spurious relaxes in dual kernel mode,
+so that latency results are dismissed as they should until the bug is
+fixed.
+---
+ demo/posix/cyclictest/cyclictest.c | 67 ++++++++++++++++++++++++++++++++++----
+ 1 file changed, 60 insertions(+), 7 deletions(-)
 
-  sched/core: ipipe: do not panic on failed migration to the head stage
-
-- set the default CPU affinity for userland apps to the restricted CPU
-  set if given on the kernel command line (instead of any
-  CPU). Typically, running switchtest on a system with a restricted rt
-  CPU set without passing --cpu-affinity should implicitly select
-  available (rt) CPUs exclusively.
-
-As I have been running benchmarks lately, I fixed a bug in cyclictest
-which caused weird latency results with long-running tests too.
-
-Philippe Gerum (6):
-  demo/cyclictest: turn on FIFO mode by default, detecting spurious
-    relaxes
-  cobalt/thread: handle case of invalid domain migration over non-rt CPU
-  cobalt/intr: IRQ affinity depends on xnsched_realtime_cpus
-  cobalt/sched: fix mismatches between supported CPUs and affinity set
-  boilerplate/setup: cobalt: retrieve the default CPU affinity
-  demo/cyclictest: fix time delta calculation
-
- demo/posix/cyclictest/cyclictest.c | 82 ++++++++++++++++++++++++++++++++------
- include/cobalt/kernel/sched.h      | 10 +++++
- kernel/cobalt/intr.c               |  2 +-
- kernel/cobalt/posix/process.c      | 21 ++++++----
- kernel/cobalt/posix/sched.c        |  2 +-
- kernel/cobalt/thread.c             |  1 +
- lib/boilerplate/setup.c            | 33 ++++++++++++++-
- 7 files changed, 126 insertions(+), 25 deletions(-)
-
+diff --git a/demo/posix/cyclictest/cyclictest.c b/demo/posix/cyclictest/cyclictest.c
+index 31d9e5d0b..87f313836 100644
+--- a/demo/posix/cyclictest/cyclictest.c
++++ b/demo/posix/cyclictest/cyclictest.c
+@@ -343,16 +343,16 @@ static inline int tsgreater(struct timespec *a, struct timespec *b)
+ static inline int64_t calcdiff(struct timespec t1, struct timespec t2)
+ {
+ 	int64_t diff;
+-	diff = USEC_PER_SEC * (long long)((int) t1.tv_sec - (int) t2.tv_sec);
+-	diff += ((int) t1.tv_nsec - (int) t2.tv_nsec) / 1000;
++	diff = USEC_PER_SEC * (long long)(t1.tv_sec - t2.tv_sec);
++	diff += (t1.tv_nsec - t2.tv_nsec) / 1000;
+ 	return diff;
+ }
+ 
+ static inline int64_t calcdiff_ns(struct timespec t1, struct timespec t2)
+ {
+ 	int64_t diff;
+-	diff = NSEC_PER_SEC * (int64_t)((int) t1.tv_sec - (int) t2.tv_sec);
+-	diff += ((int) t1.tv_nsec - (int) t2.tv_nsec);
++	diff = NSEC_PER_SEC * (int64_t)(t1.tv_sec - t2.tv_sec);
++	diff += (t1.tv_nsec - t2.tv_nsec);
+ 	return diff;
+ }
+ 
+@@ -856,6 +856,10 @@ void *timerthread(void *param)
+ 
+ 	stat->threadstarted++;
+ 
++#ifdef CONFIG_XENO_COBALT
++	if (pthread_setmode_np(0, PTHREAD_WARNSW, NULL))
++		fatal("pthread_setmode_np()");
++#endif
+ 	while (!shutdown) {
+ 
+ 		uint64_t diff;
+@@ -1064,7 +1068,7 @@ static void display_help(int error)
+ 	       "-N       --nsecs           print results in ns instead of us (default us)\n"
+ 	       "-o RED   --oscope=RED      oscilloscope mode, reduce verbose output by RED\n"
+ 	       "-O TOPT  --traceopt=TOPT   trace option\n"
+-	       "-p PRIO  --prio=PRIO       priority of highest prio thread\n"
++	       "-p PRIO  --prio=PRIO       priority of highest prio thread (defaults to 99)\n"
+ 	       "-P       --preemptoff      Preempt off tracing (used with -b)\n"
+ 	       "-q       --quiet           print only a summary on exit\n"
+ 	       "	 --priospread       spread priority levels starting at specified value\n"
+@@ -1110,8 +1114,8 @@ void application_usage(void)
+ static int use_nanosleep;
+ static int timermode = TIMER_ABSTIME;
+ static int use_system;
+-static int priority;
+-static int policy = SCHED_OTHER;	/* default policy if not specified */
++static int priority = 99;
++static int policy = SCHED_FIFO;	/* default policy if not specified */
+ static int num_threads = 1;
+ static int max_cycles;
+ static int clocksel = 0;
+@@ -1805,9 +1809,52 @@ void *fifothread(void *param)
+ 	return NULL;
+ }
+ 
++#ifdef CONFIG_XENO_COBALT
++#include <cobalt/uapi/syscall.h>
++
++static const char *reason_str[] = {
++	[SIGDEBUG_UNDEFINED] = "received SIGDEBUG for unknown reason",
++	[SIGDEBUG_MIGRATE_SIGNAL] = "received signal",
++	[SIGDEBUG_MIGRATE_SYSCALL] = "invoked syscall",
++	[SIGDEBUG_MIGRATE_FAULT] = "triggered fault",
++	[SIGDEBUG_MIGRATE_PRIOINV] = "affected by priority inversion",
++	[SIGDEBUG_NOMLOCK] = "process memory not locked",
++	[SIGDEBUG_WATCHDOG] = "watchdog triggered (period too short?)",
++	[SIGDEBUG_LOCK_BREAK] = "scheduler lock break",
++};
++
++static void sigdebug(int sig, siginfo_t *si, void *context)
++{
++	const char fmt[] = "%s, aborting.\n"
++		"(enabling CONFIG_XENO_OPT_DEBUG_TRACE_RELAX may help)\n";
++	unsigned int reason = sigdebug_reason(si);
++	int n __attribute__ ((unused));
++	static char buffer[256];
++
++	if (reason > SIGDEBUG_WATCHDOG)
++		reason = SIGDEBUG_UNDEFINED;
++
++	switch(reason) {
++	case SIGDEBUG_UNDEFINED:
++	case SIGDEBUG_NOMLOCK:
++	case SIGDEBUG_WATCHDOG:
++		n = snprintf(buffer, sizeof(buffer), "latency: %s\n",
++			     reason_str[reason]);
++		write_check(STDERR_FILENO, buffer, n);
++		exit(EXIT_FAILURE);
++	}
++
++	n = snprintf(buffer, sizeof(buffer), fmt, reason_str[reason]);
++	write_check(STDERR_FILENO, buffer, n);
++	signal(sig, SIG_DFL);
++	kill(getpid(), sig);
++}
++
++#endif
+ 
+ int main(int argc, char **argv)
+ {
++	struct sigaction sa __attribute__((unused));
+ 	sigset_t sigset;
+ 	int signum = SIGALRM;
+ 	int mode;
+@@ -1952,6 +1999,12 @@ int main(int argc, char **argv)
+ 	signal(SIGINT, sighand);
+ 	signal(SIGTERM, sighand);
+ 	signal(SIGUSR1, sighand);
++#ifdef CONFIG_XENO_COBALT
++	sigemptyset(&sa.sa_mask);
++	sa.sa_sigaction = sigdebug;
++	sa.sa_flags = SA_SIGINFO;
++	sigaction(SIGDEBUG, &sa, NULL);
++#endif
+ 
+ 	parameters = calloc(num_threads, sizeof(struct thread_param *));
+ 	if (!parameters)
 -- 
 2.14.4
 
