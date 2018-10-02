@@ -1,16 +1,15 @@
-References: <20180925103809.4932-1-rpm@xenomai.org>
- <20180927144203.5e7d006b@md1pvb1c.ad001.siemens.net>
- <20181001165112.18eafb36@md1pvb1c.ad001.siemens.net>
-From: Philippe Gerum <rpm@xenomai.org>
-Message-ID: <0d0ab124-f861-da42-433c-d61195a5e13f@xenomai.org>
-Date: Mon, 1 Oct 2018 17:03:52 +0200
+References: <20181001135619.24883-1-rpm@xenomai.org>
+ <20181001135619.24883-6-rpm@xenomai.org>
+From: Jan Kiszka <jan.kiszka@siemens.com>
+Message-ID: <9cd23077-9f88-e06f-dbb5-6c1a39b7f578@siemens.com>
+Date: Tue, 2 Oct 2018 17:26:40 +0200
 MIME-Version: 1.0
-In-Reply-To: <20181001165112.18eafb36@md1pvb1c.ad001.siemens.net>
-Content-Type: text/plain; charset=utf-8
+In-Reply-To: <20181001135619.24883-6-rpm@xenomai.org>
+Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] [I-PIPE][PATCH 00/32] 4.14.71/x86_64 port (split
- series)
+Subject: Re: [Xenomai] [PATCH 5/6] boilerplate/setup: cobalt: retrieve the
+ default CPU affinity
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -19,35 +18,87 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Henning Schild <henning.schild@siemens.com>
-Cc: xenomai@xenomai.org
+To: Philippe Gerum <rpm@xenomai.org>, xenomai@xenomai.org
 
-On 10/01/2018 04:51 PM, Henning Schild wrote:
-> Am Thu, 27 Sep 2018 14:42:03 +0200
-> schrieb "[ext] Henning Schild" <henning.schild@siemens.com>:
-> 
->> Thanks! I just tried it on my test setup. All looking good except for
->> one smokey test.
->>
->>>  ./smokey --trace --run=sigdebug  
->>
->> Crashes the box without any further feedback, also nothing on the
->> serial.
->>
->> Will look into that.
-> 
-> I already found that the page-fault caused by sigdebug is causing the
-> problem.
-> 
-> ./smokey --verbose=42 --trace=42 --run=sigdebug
-> 
-> Gave me more output. The "*mem = 0xff;" is the last thing it does. Did
-> not look into the kernel(s) and the page-fault handler yet.
+On 01.10.18 15:56, Philippe Gerum wrote:
+> Over Cobalt, make sure the default CPU affinity mask reflects the set
+> of CPUs available for running real-time threads
+> (i.e. /proc/xenomai/affinity).
 
-This looks like the PF event not being reported through the pipeline via
-the __ipipe_notify_trap() call. This points the finger to
-__ipipe_trap_prologue() (or whatever code should call it but does not).
+"This avoids that thread will be created on CPU that is not support by Xenomai 
+and first needs to be migrated when it is hardened."
+
+Correct? I'm a fan of rather describing the "why" than the "what" in commit log. 
+The latter is often already in the code.
+
+Jan
+
+> ---
+>   lib/boilerplate/setup.c | 33 +++++++++++++++++++++++++++++++--
+>   1 file changed, 31 insertions(+), 2 deletions(-)
+> 
+> diff --git a/lib/boilerplate/setup.c b/lib/boilerplate/setup.c
+> index 8b363efee..3214d7f04 100644
+> --- a/lib/boilerplate/setup.c
+> +++ b/lib/boilerplate/setup.c
+> @@ -173,6 +173,8 @@ static int collect_cpu_affinity(const char *cpu_list)
+>   		return ret;
+>   	}
+>   
+> +	CPU_ZERO(&__base_setup_data.cpu_affinity);
+> +
+>   	s = n = strdup(cpu_list);
+>   	while ((range = strtok_r(n, ",", &range_p)) != NULL) {
+>   		if (*range == '\0')
+> @@ -232,6 +234,33 @@ fail:
+>   	return -EINVAL;
+>   }
+>   
+> +static void retrieve_default_cpu_affinity(void)
+> +{
+> +	CPU_ZERO(&__base_setup_data.cpu_affinity);
+> +
+> +#ifdef CONFIG_XENO_COBALT
+> +	/*
+> +	 * If the Cobalt core has restricted the CPU set, update our
+> +	 * mask accordingly.
+> +	 */
+> +	unsigned long cpumask;
+> +	FILE *fp;
+> +	int cpu;
+> +
+> +	fp = fopen("/proc/xenomai/affinity", "r");
+> +	if (fp == NULL)
+> +		return;	/* uhh? */
+> +
+> +	if (fscanf(fp, "%lx", &cpumask) == 1) {
+> +		for (cpu = 0; cpumask; cpumask >>= 1, cpu++)
+> +			if (cpumask & 1)
+> +				CPU_SET(cpu, &__base_setup_data.cpu_affinity);
+> +	}
+> +
+> +	fclose(fp);
+> +#endif
+> +}
+> +
+>   static inline char **prep_args(int argc, char *const argv[])
+>   {
+>   	char **uargv;
+> @@ -528,8 +557,8 @@ static void __xenomai_init(int *argcp, char *const **argvp, const char *me)
+>   	/* No ifs, no buts: we must be called over the main thread. */
+>   	assert(getpid() == __node_id);
+>   
+> -	/* Define default CPU affinity, i.e. no particular affinity. */
+> -	CPU_ZERO(&__base_setup_data.cpu_affinity);
+> +	/* Retrieve the default CPU affinity. */
+> +	retrieve_default_cpu_affinity();
+>   
+>   	/*
+>   	 * Parse the base options first, to bootstrap the core with
+> 
 
 -- 
-Philippe.
+-- 
+Siemens AG, Corporate Technology, CT RDA IOT SES-DE
+Corporate Competence Center Embedded Linux
 
