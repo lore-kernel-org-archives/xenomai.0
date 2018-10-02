@@ -1,14 +1,9 @@
-References: <a327adca-1576-0794-71cd-409b366dfdc8@alaxarxa.net>
- <28fd59c00f574c5a987ff73d72ffbc4c@andritz.com>
-From: Leopold Palomo-Avellaneda <leo@alaxarxa.net>
-Message-ID: <4078e730-9293-12b4-e3c2-843f0de5f637@alaxarxa.net>
-Date: Thu, 13 Sep 2018 23:36:17 +0200
+Message-ID: <trinity-1ef46b53-74c5-4379-96b4-54a2dac80070-1538499509655@3c-app-webde-bap30>
+From: "Sascha-Carsten Wedler" <FXMaveric@web.de>
+Date: Tue, 2 Oct 2018 18:58:29 +0200
 MIME-Version: 1.0
-In-Reply-To: <28fd59c00f574c5a987ff73d72ffbc4c@andritz.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
-Subject: Re: [Xenomai] Order options to build a Xenomai program
+Content-Type: text/plain; charset="UTF-8"
+Subject: [Xenomai] rt_pipe_write Latencies at alchemy skin
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,82 +12,25 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Lange Norbert <norbert.lange@andritz.com>, "Xenomai@xenomai.org" <xenomai@xenomai.org>
+To: xenomai@xenomai.org
 
-Hi,
+   Hello,
 
-El 13/09/18 a les 14:42, Lange Norbert ha escrit:
+   i'm using xenomai 3.0.2 on a SMP Kernel and have running a periodic
+   alchemy xenomai task at 10kHz.
+   This task sends data to a non xenomai (linux) task running in an other
+   process using rt_pipe_write and will be read out by a file read
+   operation.
+   I sends every 50x per sec about 25K to the linux process.
+   About every 500ms it occurs, that the call of the rt_pipe_write command
+   takes upto 100x more time, than it normaly does.
+   I've  measured this using rt_timer_read before and after the call.
+   I can't find out why this happend.
+   The size of the pipe buffer has no influence to this and will be read
+   out from linux side fast engough.
+   Can there be any dependencies to the "read process" at linux side?
+   Are there any circumstances which can affect this issue?
 
-> link order is important and goes left-to-right, this seems to include "wrappers",
-> which only wrap symbols that where already encountered (to the left of the wrapper argument)
+   Hope you can help me with a hint.
 
-[...]
-
-
-> The call to malloc is wrapped to __wrap_malloc and __real_malloc is wrapped to malloc,
-> since there is no object file yet, this does nothing.
-> libmodechk exports __wrap_malloc and __real_malloc, yet no one cares and --as-needed
-> will remove it as dependency
-> The app objects depend on malloc.
-> 
-> I am not sure where your dependency to __real_malloc comes from, but I suppose
-> It's from the bootstrap code, which would be needed to be linked before the wrapper.
-> Probably weak dependencies further complicate things.
-
-I think that you got the point!!
-
-So, from my point of view it confirm my suspicious that the wrapper
-mechanism is fragile. I really didn't understand why Xenomai core team
-changed the native API for the POSIX. Although I saw the Jan Kiska
-conference video explaining it, tell me primitive or dump, but I prefer
-to have a RT API that links against RT libraries and you can mix the
-POSIX functions that you want in a clear way.
-
-OTOH I have to admit that convert a POSIX program to RT in an easy way
-is amazing.
-
-> As noted by Henning, please look at https://github.com/nolange/cmake_xenomai,
-> could use some feedback =).
-> Particularly look at the patchset which also removes some headaches with linking
-> precompiled object file for bootstrapping (but needs some upstream changes).
-
-Norbert, I have followed your emails and your project. You did a good
-job, but I don't agree with your approach. My points are:
-
-- You are trying to convert Xenomai a CMake project and this probably
-will not happen because Upstream is very happy with the autotools. I
-don't like to touch anything from upstream. Maybe some patch, but
-incorporated in Upstream.
-
-- I would prefer follow the Upstream guidelines that recommends use
-xeno-config to obtain the needed parameters to build your application.
-So, any build tool should use xeno-config (maintained by upstream) that
-provide the correct flags or whatever to build your application.
-
-- I agree with Norbert that bootstraped code is not a good idea. But
-this change should be done by upstream. But if I'm not wrong, Phillipe
-said that it hasn't an easy solution.
-
-But for the curious, I have done this example:
-
-https://github.com/iocroblab/xenomai-cmake
-
-but it's not polished and had some mistakes. The idea is to use any
-Xenomai installation without touched and then use CMake to build your
-application.
-
-Cheers,
-
-Leopold
-
-
--- 
---
-Linux User 152692     GPG: 05F4A7A949A2D9AA
-Catalonia
--------------------------------------
-A: Because it messes up the order in which people normally read text.
-Q: Why is top-posting such a bad thing?
-A: Top-posting.
-Q: What is the most annoying thing in e-mail?
-
+   Regards Sascha
