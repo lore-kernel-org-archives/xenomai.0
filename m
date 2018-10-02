@@ -1,17 +1,14 @@
-References: <20181001135619.24883-1-rpm@xenomai.org>
- <20181001135619.24883-6-rpm@xenomai.org>
- <9cd23077-9f88-e06f-dbb5-6c1a39b7f578@siemens.com>
- <7f72d34f-22cd-757d-9dcc-f1f84b41d105@siemens.com>
-From: Philippe Gerum <rpm@xenomai.org>
-Message-ID: <69325d5b-0558-b764-8d93-fb40825ff182@xenomai.org>
-Date: Tue, 2 Oct 2018 18:30:03 +0200
+From: Jan Kiszka <jan.kiszka@siemens.com>
+References: <9e7eb4ea-6e66-473b-c29d-171085b165b0@siemens.com>
+Message-ID: <6a3e52ad-14d9-3991-eb8e-6f72880d3acc@siemens.com>
+Date: Tue, 2 Oct 2018 18:37:00 +0200
 MIME-Version: 1.0
-In-Reply-To: <7f72d34f-22cd-757d-9dcc-f1f84b41d105@siemens.com>
-Content-Type: text/plain; charset=utf-8
+In-Reply-To: <9e7eb4ea-6e66-473b-c29d-171085b165b0@siemens.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] [PATCH 5/6] boilerplate/setup: cobalt: retrieve the
- default CPU affinity
+Subject: Re: [Xenomai] [PATCH] drivers/analogy: Fix improper memset in Intel
+ 8255
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -20,36 +17,45 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jan Kiszka <jan.kiszka@siemens.com>, xenomai@xenomai.org
+To: Xenomai <xenomai@xenomai.org>
 
-On 10/02/2018 05:38 PM, Jan Kiszka wrote:
-> On 02.10.18 17:26, Jan Kiszka wrote:
->> On 01.10.18 15:56, Philippe Gerum wrote:
->>> Over Cobalt, make sure the default CPU affinity mask reflects the set
->>> of CPUs available for running real-time threads
->>> (i.e. /proc/xenomai/affinity).
->>
->> "This avoids that thread will be created on CPU that is not support by
->> Xenomai and first needs to be migrated when it is hardened."
->>
+On 27.09.18 08:40, Jan Kiszka wrote:
+> This overwrote the pointer itself - and more. Long pending bugs.
 > 
-> After proof-reading:
+> Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
+> ---
+>   kernel/drivers/analogy/intel/8255.c | 4 ++--
+>   1 file changed, 2 insertions(+), 2 deletions(-)
 > 
-> "This avoids that a thread will be created on a CPU that is not
-> supported by Xenomai and first needs to be migrated when it is hardened."
+> diff --git a/kernel/drivers/analogy/intel/8255.c b/kernel/drivers/analogy/intel/8255.c
+> index ad8039b288..1abe250e0c 100644
+> --- a/kernel/drivers/analogy/intel/8255.c
+> +++ b/kernel/drivers/analogy/intel/8255.c
+> @@ -201,7 +201,7 @@ void a4l_subdev_8255_init(struct a4l_subdevice *subd)
+>   {
+>   	subd_8255_t *subd_8255 = (subd_8255_t *)subd->priv;
+>   	/* Initializes the subdevice structure */
+> -	memset(&subd, 0, sizeof(struct a4l_subdevice));
+> +	memset(subd, 0, sizeof(struct a4l_subdevice));
+>   
+>   	/* Subdevice filling part */
+>   
+> @@ -263,7 +263,7 @@ static int dev_8255_attach(struct a4l_device *dev, a4l_lnkdesc_t *arg)
+>   			goto out_attach;
+>   		}
+>   
+> -		memset(&subd, 0, sizeof(struct a4l_subdevice));
+> +		memset(subd, 0, sizeof(struct a4l_subdevice));
+>   		memset(subd->priv, 0, sizeof(subd_8255_t));
+>   
+>   		subd_8255 = (subd_8255_t *)subd->priv;
+> 
 
-Not really. The issue is not with the creation phase, we have
-xnthread_pin_initial() making sure that any emerging thread switches to
-a CPU from the rt set already.
+Applied to master and stable.
 
-The issue is with manual CPU migration outside of the rt set applied to
-a thread, which leads to a denial from the core (automatic
-cancellation). You may want to factor in commit 2dc780e42 when reviewing
-the changes.
-
-So yes, it looks like reading the code is not that obvious. I'll rework
-the log.
+Jan
 
 -- 
-Philippe.
+Siemens AG, Corporate Technology, CT RDA IOT SES-DE
+Corporate Competence Center Embedded Linux
 
