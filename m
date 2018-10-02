@@ -1,12 +1,17 @@
-Date: Tue, 2 Oct 2018 17:58:38 +0200
-From: Henning Schild <henning.schild@siemens.com>
-Message-ID: <20181002175838.1e9ad8f0@md1pvb1c.ad001.siemens.net>
-In-Reply-To: <1544c287-5653-6117-cba0-eb355b936887@xenomai.org>
-References: <1544c287-5653-6117-cba0-eb355b936887@xenomai.org>
+References: <20181001135619.24883-1-rpm@xenomai.org>
+ <20181001135619.24883-6-rpm@xenomai.org>
+ <9cd23077-9f88-e06f-dbb5-6c1a39b7f578@siemens.com>
+ <7f72d34f-22cd-757d-9dcc-f1f84b41d105@siemens.com>
+From: Philippe Gerum <rpm@xenomai.org>
+Message-ID: <69325d5b-0558-b764-8d93-fb40825ff182@xenomai.org>
+Date: Tue, 2 Oct 2018 18:30:03 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+In-Reply-To: <7f72d34f-22cd-757d-9dcc-f1f84b41d105@siemens.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] [PULL] A couple of fixes to the split series for x86
+Subject: Re: [Xenomai] [PATCH 5/6] boilerplate/setup: cobalt: retrieve the
+ default CPU affinity
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,43 +20,36 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Philippe Gerum <rpm@xenomai.org>
-Cc: "Kiszka, Jan" <jan.kiszka@siemens.com>, "Xenomai@xenomai.org" <Xenomai@xenomai.org>
+To: Jan Kiszka <jan.kiszka@siemens.com>, xenomai@xenomai.org
 
-Applied to https://git.xenomai.org/ipipe-x86.git wip/4.14-split
+On 10/02/2018 05:38 PM, Jan Kiszka wrote:
+> On 02.10.18 17:26, Jan Kiszka wrote:
+>> On 01.10.18 15:56, Philippe Gerum wrote:
+>>> Over Cobalt, make sure the default CPU affinity mask reflects the set
+>>> of CPUs available for running real-time threads
+>>> (i.e. /proc/xenomai/affinity).
+>>
+>> "This avoids that thread will be created on CPU that is not support by
+>> Xenomai and first needs to be migrated when it is hardened."
+>>
+> 
+> After proof-reading:
+> 
+> "This avoids that a thread will be created on a CPU that is not
+> supported by Xenomai and first needs to be migrated when it is hardened."
 
-Thanks!
-Henning
+Not really. The issue is not with the creation phase, we have
+xnthread_pin_initial() making sure that any emerging thread switches to
+a CPU from the rt set already.
 
+The issue is with manual CPU migration outside of the rt set applied to
+a thread, which leads to a denial from the core (automatic
+cancellation). You may want to factor in commit 2dc780e42 when reviewing
+the changes.
 
-Am Mon, 1 Oct 2018 15:28:06 +0200
-schrieb Philippe Gerum <rpm@xenomai.org>:
+So yes, it looks like reading the code is not that obvious. I'll rework
+the log.
 
-> The following changes since commit
-> be45333e3af13c3b7cb12ecd200cb9be7a8fb439:
-> 
->   x86: ipipe: do not panic on unexpected IRQ trap (2018-09-27
-> 09:09:52 +0200)
-> 
-> are available in the Git repository at:
-> 
->   https://lab.xenomai.org/ipipe-rpm.git x86/4.14.71
-> 
-> for you to fetch changes up to
-> c5540da918650be520d8f5331ec1944ccfcf6c53:
-> 
->   sched/core: ipipe: do not panic on failed migration to the head
-> stage (2018-10-01 15:10:59 +0200)
-> 
-> ----------------------------------------------------------------
-> Philippe Gerum (2):
->       ipipe: timer: prevent double-ack if host timer is not grabbed
->       sched/core: ipipe: do not panic on failed migration to the head
-> stage
-> 
->  kernel/ipipe/timer.c | 11 +++++++----
->  kernel/sched/core.c  |  2 --
->  2 files changed, 7 insertions(+), 6 deletions(-)
-> 
-
+-- 
+Philippe.
 
