@@ -1,14 +1,12 @@
-Date: Fri, 14 Sep 2018 02:45:28 -0500 (CDT)
-From: Per Oberg <pero@wolfram.com>
-Message-ID: <285343492.3950889.1536911128629.JavaMail.zimbra@wolfram.com>
-In-Reply-To: <4078e730-9293-12b4-e3c2-843f0de5f637@alaxarxa.net>
-References: <a327adca-1576-0794-71cd-409b366dfdc8@alaxarxa.net>
- <28fd59c00f574c5a987ff73d72ffbc4c@andritz.com>
- <4078e730-9293-12b4-e3c2-843f0de5f637@alaxarxa.net>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
-Subject: Re: [Xenomai] Order options to build a Xenomai program
+Message-ID: <835858898.1538735255720.JavaMail.root@webmail>
+Date: Fri, 5 Oct 2018 19:27:35 +0900 (KST)
+From: =?EUC-KR?B?udrA58ij?= <jaeho@seoultech.ac.kr>
+Reply-To: =?EUC-KR?B?udrA58ij?= <jaeho@seoultech.ac.kr>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=EUC-KR
+Content-Transfer-Encoding: 8bit
+Subject: [Xenomai] Xenomai priority does not work properly under certain
+ circumstances.
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,119 +15,175 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai <xenomai@xenomai.org>
+To: xenomai@xenomai.org
+
+It seems that task priority does not work properly under certain circumstances.
 
 
------ Den 13 sep 2018, p=C3=A5 kl 23:36, Leopold Palomo-Avellaneda leo@alax=
-arxa.net skrev:
 
-> Hi,
+I created two xenomai tasks and assigned each task as a control task and a stress task.
 
-> El 13/09/18 a les 14:42, Lange Norbert ha escrit:
-
->> link order is important and goes left-to-right, this seems to include
-> > "wrappers",
->> which only wrap symbols that where already encountered (to the left of t=
-he
-> > wrapper argument)
-
-> [...]
-
->> The call to malloc is wrapped to __wrap_malloc and __real_malloc is wrap=
-ped to
-> > malloc,
-> > since there is no object file yet, this does nothing.
->> libmodechk exports __wrap_malloc and __real_malloc, yet no one cares and
-> > --as-needed
-> > will remove it as dependency
-> > The app objects depend on malloc.
-
-> > I am not sure where your dependency to __real_malloc comes from, but I =
-suppose
->> It's from the bootstrap code, which would be needed to be linked before =
-the
-> > wrapper.
-> > Probably weak dependencies further complicate things.
-
-> I think that you got the point!!
-
-> So, from my point of view it confirm my suspicious that the wrapper
-> mechanism is fragile. I really didn't understand why Xenomai core team
-> changed the native API for the POSIX. Although I saw the Jan Kiska
-> conference video explaining it, tell me primitive or dump, but I prefer
-> to have a RT API that links against RT libraries and you can mix the
-> POSIX functions that you want in a clear way.
-
-> OTOH I have to admit that convert a POSIX program to RT in an easy way
-> is amazing.
+experimenting with the beaglebone black, Zybo-z7-20 (ZYNQ-7000) board to verify the periodicity of the xenomai task.
 
 
-This!=20
 
-Being able to use the same code, without patches or a lot of defines includ=
-ing other files is a very clean way of debugging your software. I often set=
- up Simulations where I use my laptop running or our controller, possibly c=
-onnected to remote hardware to debug stuff. For these cases  the POSIX skin=
- is very useful.
+Priority of control task: 99
 
-> > As noted by Henning, please look at https://github.com/nolange/cmake_xe=
-nomai,
-> > could use some feedback =3D).
-> > Particularly look at the patchset which also removes some headaches wit=
-h linking
-> > precompiled object file for bootstrapping (but needs some upstream chan=
-ges).
+Priority of stress task: 98
 
-> Norbert, I have followed your emails and your project. You did a good
-> job, but I don't agree with your approach. My points are:
 
-> - You are trying to convert Xenomai a CMake project and this probably
-> will not happen because Upstream is very happy with the autotools. I
-> don't like to touch anything from upstream. Maybe some patch, but
-> incorporated in Upstream.
 
-What do you mean with "convert Xenomai a CMake project"? I feel that I am m=
-issing something...
+control task cycle: 1ms
 
-Is it simply that  the "xeno-config" way of doing things isn't cmak-onic en=
-ough for a "real" CMake project or is there something deeper?
+stress task cycle: 1ms
 
-> - I would prefer follow the Upstream guidelines that recommends use
-> xeno-config to obtain the needed parameters to build your application.
-> So, any build tool should use xeno-config (maintained by upstream) that
-> provide the correct flags or whatever to build your application.
 
-> - I agree with Norbert that bootstraped code is not a good idea. But
-> this change should be done by upstream. But if I'm not wrong, Phillipe
-> said that it hasn't an easy solution.
 
-> But for the curious, I have done this example:
+For the stress task, the rt_timer_spin () function is used to consume the cpu cycle to give xenomai stress.
 
-> https://github.com/iocroblab/xenomai-cmake
+I tested for 25%, 50%, and 75% cases by specifying 250,500,750 as an argument to rt_timer_spin ().
 
-> but it's not polished and had some mistakes. The idea is to use any
-> Xenomai installation without touched and then use CMake to build your
-> application.
 
-> Cheers,
 
-> Leopold
+Check / proc / xenomai / stat
 
-> --
-> --
-> Linux User 152692 GPG: 05F4A7A949A2D9AA
-> Catalonia
-> -------------------------------------
-> A: Because it messes up the order in which people normally read text.
-> Q: Why is top-posting such a bad thing?
-> A: Top-posting.
-> Q: What is the most annoying thing in e-mail?
+stress task's cpu usage. The figure shows the zybo-z7-20 board, and the same CPU usage was confirmed on BBB and PC.
 
-> _______________________________________________
-> Xenomai mailing list
-> Xenomai@xenomai.org
-> https://xenomai.org/mailman/listinfo/xenomai
+The Cpu Spin task is the stress task and the EtherCAT Control task is the control task.
 
-Thanks,
-Per =C3=96berg=20
+
+
+stress 25% = https://imgur.com/a/PIOueUI
+
+stress 50% = https://imgur.com/a/sl7EAoI
+
+stress 75% = https://imgur.com/a/AGWE0ff
+
+
+
+When the xenoami task was run for 30 minutes and the control task and the stress task period were checked, 
+
+both the BeagleBone Black and the Zybo-z7-20 had stress tasks occupying 75% of the cpu. 
+
+As expected, The control task has a better periodicity than the stress task.
+
+However, at 25% and 50%, the lower priority stress task has a better periodicity than the higher priority control task.
+
+
+
+I did the same experiment on the PC because the result did not come out as expected.
+
+The results show that task priority is normally applied to all 25%, 50%, and 75% stresses and that the control task periodicity is better.
+
+
+
+The figure below shows the period data obtained from the test results using boxplot.
+
+BeagleBone Black  = https://imgur.com/a/hpUpkH8
+
+Zybo-z7-20             = https://imgur.com/a/J47zCoa
+
+PC                          =https://imgur.com/a/zfzMdjr
+
+
+
+What causes these results in the BeagleBone Black and Zybo-z7-20?
+
+
+
+The test environment is shown below.
+
+------------------------------------------------------------------------------------------------------------------
+
+BeagleBone Black
+
+
+
+kernel version  = 3.8.13
+
+kernel download =  https://github.com/RobertCNelson/bb-kernel
+
+
+
+xenomai version = 2.6.5
+
+xenomai download = http://xenomai.org/downloads/xenomai/stable/xenomai-2.6.5.tar.bz2
+
+
+
+ipipe patch     = ipipe-core-3.8.13-beaglebone-pre.patch
+
+ipipe-core-3.8.13-arm-4
+
+ipipe-core-3.8.13-beaglebone-post.patch
+
+
+
+filesystem          = ubuntu 14.04
+
+filesystem download = https://rcn-ee.com/rootfs/eewiki/minfs/ubuntu-14.04.4-minimal-armhf-2016-04-02.tar.xz
+
+------------------------------------------------------------------------------------------------------------------
+
+Zybo-z7-20(ZYNQ-7000)
+
+
+
+kernel version  =  3.14.2
+
+kernel download =  https://github.com/Xilinx/u-boot-xlnx.git
+
+
+
+xenomai version = 2.6.5
+
+xenomai download = http://xenomai.org/downloads/xenomai/stable/xenomai-2.6.5.tar.bz2
+
+
+
+ipipe patch     = ipipe-core-3.14.17-zynq-pre.patch
+
+ipipe-core-3.14.17-arm-4.patch
+
+ipipe-core-3.14.17-zynq-post.patch
+
+
+
+filesystem          = ubuntu 14.04
+
+filesystem download = https://rcn-ee.com/rootfs/eewiki/minfs/ubuntu-14.04.4-minimal-armhf-2016-04-02.tar.xz
+
+
+
+------------------------------------------------------------------------------------------------------------------
+
+PC (i7-6700)
+
+
+
+kernel version = 3.14.28
+
+kernel download =  https://www.kernel.org/pub/linux/kernel/v3.x/linux-3.14.28.tar.gz
+
+
+
+xenomai version = 2.6.5
+
+xenomai download = http://xenomai.org/downloads/xenomai/stable/xenomai-2.6.5.tar.bz2
+
+
+
+ipipe patch     = ipipe-core-3.14.28-x86-7.patch
+
+
+
+
+
+filesystem          = ubuntu 14.04
+
+------------------------------------------------------------------------------------------------------------------
+
+
+
+thank you for your advice
 
