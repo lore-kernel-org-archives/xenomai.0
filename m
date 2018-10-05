@@ -1,15 +1,11 @@
-References: <0ab5b536-2e75-fdfe-96e9-f6321aca107d@siemens.com>
- <8e002d9f-6357-2177-f53e-59580707c27b@xenomai.org>
-From: Jan Kiszka <jan.kiszka@web.de>
-Message-ID: <3fcdb522-6088-6649-0f53-dcdfad5c28d9@web.de>
-Date: Wed, 3 Oct 2018 20:43:11 +0200
-MIME-Version: 1.0
-In-Reply-To: <8e002d9f-6357-2177-f53e-59580707c27b@xenomai.org>
-Content-Type: text/plain; charset=utf-8; format=flowed
+From: "Pham, Phong" <phamp@ddc-web.com>
+Date: Fri, 5 Oct 2018 01:02:46 +0000
+Message-ID: <C2EC5BA46D13CD44B5915A8FEEB4C44ED1819D8C@DDCEXCH.ddc-ny.com>
 Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] [PATCH] cobalt/posix/mqueue: Remove unused cobalt_mqq
- and fix error cleanup bug
+MIME-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+Subject: [Xenomai] Does RTNET supports TCP?
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -18,46 +14,46 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Philippe Gerum <rpm@xenomai.org>, Xenomai <xenomai@xenomai.org>
+To: "xenomai@xenomai.org" <xenomai@xenomai.org>
+Cc: "Hillman, Robert" <hillman@ddc-web.com>
 
-On 03.10.18 19:24, Philippe Gerum wrote:
-> On 10/02/2018 07:03 PM, Jan Kiszka wrote:
->> cobalt_mqq was only maintained but never queried. Remove it.
->>
->> This also simplify the fix for the broken error recovery in mq_open: If
->> xnregistry_enter, we never entered the new element in cobalt_mqq and
->> also already decremented the reference counter. But then we asked via
->> rtdm_fd_close to remove the entry as if it was registered. That could
->> easily crash the system.
->>
-> 
-> This looks like a logic which got orphaned when Cobalt stopped being a
-> module unlike the 2.6.x nucleus. However, Cobalt services can be
-> dynamically stopped via corectl, and we should reclaim the named queues
-> that may have persisted until that happens. Re-connecting that logic
-> when the core is switched to the stopped state may be a better choice.
 
-Do we do this for other resources already, or would this be a start?
+Hi,
 
-> 
->> @@ -354,10 +349,6 @@ static int mq_open(int uqd, const char *name, int oflags,
->>   
->>   		xnlock_get_irqsave(&nklock, s);
->>   		err = xnregistry_enter(mq->name, mq, &mq->handle, NULL);
->> -		if (err < 0)
->> -			--mq->refs;
-> 
-> AFAICS, this change would make mq memory stale. ->refs starts at 2 from
-> mq_init(), and rtdm_fd_close->mqd_close->mq_unref[_inner] would never
-> drop the refcount to zero.
-> 
+I noticed starting Xenomai 3.0.1 until now (3.0.7), there is net/ in .../ke=
+rnel/drivers/ and in ../kernel/drivers/net/stack/ipv4/Kconfig
 
-Indeed.
+# source "drivers/xenomai/net/stack/ipv4/tcp/Kconfig"
 
-OK, what likely triggered the crash that we saw was related to the broken 
-cobalt_mqq management: mq_destroy tried to unlink the never registered object. I 
-suppose that could be resolved by simply calling INIT_LIST_HEAD(&mq->link) so 
-that a list_del will cause no harm, even if the mq wasn't registered, right?
+If I uncomment out the above line, it leads to compilation error in tcp.c.
 
-Jan
+Questions:
 
+1)      Is the commented out line intentional? (short run and long run)
+
+2)      When will TCP be supported in RTnet?
+
+3)      Will it ever be supported?
+
+4)      Will this statement still holds true in tcp/Kconfig? "When the RTne=
+t IPv4 is enabled while this feature is disabled, TCP will be forwarded to =
+the Linux network stack."
+
+5)      When I created a socket with rt_dev_socket(AF_INET, SOCK_STREAM, 0)=
+; and attempting to rt_dev_connect(fd, server_ip_addr, sizeof(server_ip_add=
+r)), I get errno =3D 25 (Inappropriate ioctl for device).  Does it mean b/c=
+ TCP is not supported in RTnet and I attempt to connect via TCP (w/ socket =
+SOCK_STREAM)?
+
+Phong.
+
+Notice: This e-mail and any files transmitted with it may contain Data Devi=
+ce Corporation's and its subsidiaries privileged and proprietary informatio=
+n. It is intended solely for the use of the individual or entity to whom it=
+ is addressed. If you are not the named recipient of this transmission, any=
+ disclosure, copying, distribution or reliance on the contents of this mess=
+age is prohibited. If you received this e-mail in error, please destroy it =
+and any attached files and notify me immediately.
+
+Click Here<http://www.ddc-web.com/Profile/EmailPrivacy.aspx> to view our pr=
+ivacy statement.
