@@ -1,15 +1,17 @@
-References: <0B8B4C90A6FEA34E9EA10570C016C358BB7D9D8A@DEMUC-SMX001.data-modul.local>
- <c371a628-edc2-0713-767b-80efac64833e@siemens.com>
- <0B8B4C90A6FEA34E9EA10570C016C358BB7DA2CC@DEMUC-SMX001.data-modul.local>
-From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <0c0a94e6-6650-88e2-7b89-3b6fa92efa65@siemens.com>
-Date: Tue, 9 Oct 2018 18:24:59 +0200
+References: <0ab5b536-2e75-fdfe-96e9-f6321aca107d@siemens.com>
+ <8e002d9f-6357-2177-f53e-59580707c27b@xenomai.org>
+ <3fcdb522-6088-6649-0f53-dcdfad5c28d9@web.de>
+ <a76f6572-90bd-1dfd-a6c4-c62af253f989@siemens.com>
+From: Philippe Gerum <rpm@xenomai.org>
+Message-ID: <1e423b89-fe5a-0c33-64dd-fc7d840b72a2@xenomai.org>
+Date: Tue, 9 Oct 2018 19:58:43 +0200
 MIME-Version: 1.0
-In-Reply-To: <0B8B4C90A6FEA34E9EA10570C016C358BB7DA2CC@DEMUC-SMX001.data-modul.local>
-Content-Type: text/plain; charset="windows-1252"; format="flowed"
+In-Reply-To: <a76f6572-90bd-1dfd-a6c4-c62af253f989@siemens.com>
+Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
-Content-Transfer-Encoding: quoted-printable
-Subject: Re: [Xenomai] ipipe-4.14: planned release date
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai] [PATCH] cobalt/posix/mqueue: Remove unused cobalt_mqq
+ and fix error cleanup bug
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -18,72 +20,38 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "Schrenkhammer, Martin" <MSchrenkhammer@data-modul.com>, "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Jan Kiszka <jan.kiszka@siemens.com>, Xenomai <xenomai@xenomai.org>
 
-On 05.10.18 10:59, Schrenkhammer, Martin wrote:
-> Hello Jan,
->=20
-> unfortunately I got build errors with 4.14-split
-> I used xenomai-next and prepared kernel with scripts/prepare-kernel.sh --=
-linux=3D../ipipe-x86-wip-4.14-split --arch=3Dx86_64
->=20
-> make results in:
->=20
-> arch/x86/kernel/process.c: In function =91mwait_idle=92:
-> arch/x86/kernel/process.c:626:4: error: implicit declaration of function =
-=91__ipipe_halt_root=92; did you mean =91ipipe_test_root=92? [-Werror=3Dimp=
-licit-function-declaration]
->      __ipipe_halt_root(1);
->      ^~~~~~~~~~~~~~~~~
->      ipipe_test_root
-> cc1: some warnings being treeated as errors
-> scripts/Makefile.build:328: recipe for target 'arch/x86/kernel/process.o'=
- failed
-> make[2]: *** [arch/x86/kernel/process.o] Error 1
-> scripts/Makefile.build:587: recipe for target 'arch/x86/kernel' failed
-> make[1]: *** [arch/x86/kernel] Error 2
-> make[1]: *** Waiting for unfinished jobs....
->=20
-> and
->=20
-> kernel/ipipe/core.c: In function =91__ipipe_spin_lock_irqsave=92:
-> kernel/ipipe/core.c:548:9: error: implicit declaration of function =91arc=
-h_mangle_irq_bits=92; did you mean =91arch_early_irq_init=92? [-Werror=3Dim=
-plicit-function-declaration]
->    return arch_mangle_irq_bits(s, flags);
->           ^~~~~~~~~~~~~~~~~~~~
->           arch_early_irq_init
-> kernel/ipipe/core.c: In function =91__ipipe_spin_unlock_irqrestore=92:
-> kernel/ipipe/core.c:575:7: error: implicit declaration of function =91arc=
-h_demangle_irq_bits=92; did you mean =91arch_early_irq_init=92? [-Werror=3D=
-implicit-function-declaration]
->    if (!arch_demangle_irq_bits(&x))
->         ^~~~~~~~~~~~~~~~~~~~~~
->         arch_early_irq_init
->    CC      fs/filesystems.o
-> kernel/ipipe/core.c: In function =91ipipe_critical_enter.part.6=92:
-> kernel/ipipe/core.c:1713:1: warning: the frame size of 2064 bytes is larg=
-er than 1024 bytes [-Wframe-larger-than=3D]
->   }
->   ^
->    CC      mm/page_vma_mapped.o
->    CC      kernel/events/uprobes.o
-> cc1: some warnings being treated as errors
-> scripts/Makefile.build:328: recipe for target 'kernel/ipipe/core.o' failed
-> make[2]: *** [kernel/ipipe/core.o] Error 1
-> scripts/Makefile.build:587: recipe for target 'kernel/ipipe' failed
-> make[1]: *** [kernel/ipipe] Error 2
-> make[1]: *** Waiting for unfinished jobs....
->=20
+On 10/09/2018 11:27 AM, Jan Kiszka wrote:
+> On 03.10.18 20:43, Jan Kiszka wrote:
+>> On 03.10.18 19:24, Philippe Gerum wrote:
+>>> On 10/02/2018 07:03 PM, Jan Kiszka wrote:
+>>>> cobalt_mqq was only maintained but never queried. Remove it.
+>>>>
+>>>> This also simplify the fix for the broken error recovery in mq_open: If
+>>>> xnregistry_enter, we never entered the new element in cobalt_mqq and
+>>>> also already decremented the reference counter. But then we asked via
+>>>> rtdm_fd_close to remove the entry as if it was registered. That could
+>>>> easily crash the system.
+>>>>
+>>>
+>>> This looks like a logic which got orphaned when Cobalt stopped being a
+>>> module unlike the 2.6.x nucleus. However, Cobalt services can be
+>>> dynamically stopped via corectl, and we should reclaim the named queues
+>>> that may have persisted until that happens. Re-connecting that logic
+>>> when the core is switched to the stopped state may be a better choice.
+>>
+>> Do we do this for other resources already, or would this be a start?
+>>
+> 
+> Ping.
+> 
+> Seems everything was migrated with e0e2775ad335 to
+> cobalt_global_resources - except for the message queues - why?
 
-Cannot reproduce both issues. Are you on c5540da91865? Then please share yo=
-ur=20
-.config.
+Because named mqs are persistent, survive the exit of the process which
+created them.
 
-Thanks,
-Jan
-
---=20
-Siemens AG, Corporate Technology, CT RDA IOT SES-DE
-Corporate Competence Center Embedded Linux
+-- 
+Philippe.
 
