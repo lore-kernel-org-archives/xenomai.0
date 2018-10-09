@@ -1,12 +1,16 @@
 From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <7b1856bc-f10c-443d-a342-36ce6f330fe9@siemens.com>
-Date: Tue, 9 Oct 2018 11:20:40 +0200
+References: <0ab5b536-2e75-fdfe-96e9-f6321aca107d@siemens.com>
+ <8e002d9f-6357-2177-f53e-59580707c27b@xenomai.org>
+ <3fcdb522-6088-6649-0f53-dcdfad5c28d9@web.de>
+Message-ID: <a76f6572-90bd-1dfd-a6c4-c62af253f989@siemens.com>
+Date: Tue, 9 Oct 2018 11:27:58 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+In-Reply-To: <3fcdb522-6088-6649-0f53-dcdfad5c28d9@web.de>
+Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
-Subject: [Xenomai] [PATCH] cobalt/posix/mqueue: Fix crash after failing
- registration
+Subject: Re: [Xenomai] [PATCH] cobalt/posix/mqueue: Remove unused cobalt_mqq
+ and fix error cleanup bug
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,35 +19,37 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Xenomai <xenomai@xenomai.org>
+To: Philippe Gerum <rpm@xenomai.org>, Xenomai <xenomai@xenomai.org>
 
-If xnregistry_enter in mq_open fails, the new entry will not be added to
-cobalt_mqq. But the cleanup path taken afterwards will nevertheless try
-to remove it from there. That will cause a crash because the mq->link is
-uninitialized. Fix that by initializing it as list head so that list
-removal becomes harmless, even when the entry is not on any list..
+On 03.10.18 20:43, Jan Kiszka wrote:
+> On 03.10.18 19:24, Philippe Gerum wrote:
+>> On 10/02/2018 07:03 PM, Jan Kiszka wrote:
+>>> cobalt_mqq was only maintained but never queried. Remove it.
+>>>
+>>> This also simplify the fix for the broken error recovery in mq_open: If
+>>> xnregistry_enter, we never entered the new element in cobalt_mqq and
+>>> also already decremented the reference counter. But then we asked via
+>>> rtdm_fd_close to remove the entry as if it was registered. That could
+>>> easily crash the system.
+>>>
+>>
+>> This looks like a logic which got orphaned when Cobalt stopped being a
+>> module unlike the 2.6.x nucleus. However, Cobalt services can be
+>> dynamically stopped via corectl, and we should reclaim the named queues
+>> that may have persisted until that happens. Re-connecting that logic
+>> when the core is switched to the stopped state may be a better choice.
+> 
+> Do we do this for other resources already, or would this be a start?
+> 
 
-Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
----
+Ping.
 
-This replaces "cobalt/posix/mqueue: Remove unused cobalt_mqq and fix
-error cleanup bug".
+Seems everything was migrated with e0e2775ad335 to cobalt_global_resources - 
+except for the message queues - why?
 
- kernel/cobalt/posix/mqueue.c | 1 +
- 1 file changed, 1 insertion(+)
+Jan
 
-diff --git a/kernel/cobalt/posix/mqueue.c b/kernel/cobalt/posix/mqueue.c
-index 859e12ed7b..5c644b2c41 100644
---- a/kernel/cobalt/posix/mqueue.c
-+++ b/kernel/cobalt/posix/mqueue.c
-@@ -151,6 +151,7 @@ static inline int mq_init(struct cobalt_mq *mq, const struct mq_attr *attr)
- 	xnselect_init(&mq->write_select);
- 	mq->magic = COBALT_MQ_MAGIC;
- 	mq->refs = 2;
-+	INIT_LIST_HEAD(&mq->link);
- 
- 	return 0;
- }
 -- 
-2.16.4
+Siemens AG, Corporate Technology, CT RDA IOT SES-DE
+Corporate Competence Center Embedded Linux
 
