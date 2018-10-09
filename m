@@ -1,15 +1,12 @@
-From: Steven Seeger <steven.seeger@nasa.gov>
-Reply-To: <steven.seeger@nasa.gov>
-Date: Mon, 8 Oct 2018 15:46:29 -0400
-Message-ID: <6875132.RugRrNzuTl@wirbelwind>
-In-Reply-To: <29051082.nZQKAztGnQ@lenni>
-References: <C2EC5BA46D13CD44B5915A8FEEB4C44ED1819D8C@DDCEXCH.ddc-ny.com>
- <C2EC5BA46D13CD44B5915A8FEEB4C44ED1819FA9@DDCEXCH.ddc-ny.com>
- <29051082.nZQKAztGnQ@lenni>
+From: Jan Kiszka <jan.kiszka@siemens.com>
+Message-ID: <7b1856bc-f10c-443d-a342-36ce6f330fe9@siemens.com>
+Date: Tue, 9 Oct 2018 11:20:40 +0200
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7Bit
-Content-Type: text/plain; charset="us-ascii"
-Subject: Re: [Xenomai] Does RTNET supports TCP?
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+Subject: [Xenomai] [PATCH] cobalt/posix/mqueue: Fix crash after failing
+ registration
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -18,20 +15,35 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Sebastian Smolorz <Sebastian.Smolorz@gmx.de>
-Cc: "Pham, Phong" <phamp@ddc-web.com>, "xenomai@xenomai.org" <xenomai@xenomai.org>, "Hillman, Robert" <hillman@ddc-web.com>
+To: Xenomai <xenomai@xenomai.org>
 
-On Monday, October 8, 2018 2:49:55 PM EDT Sebastian Smolorz wrote:
-> 
-> Hm ... then why don't you fetch your files in non-realtime context? This
-> would be much easier I suppose.
+If xnregistry_enter in mq_open fails, the new entry will not be added to
+cobalt_mqq. But the cleanup path taken afterwards will nevertheless try
+to remove it from there. That will cause a crash because the mq->link is
+uninitialized. Fix that by initializing it as list head so that list
+removal becomes harmless, even when the entry is not on any list..
 
-Yes I agree. Based on what Phong has said, it would make more sense to fetch 
-the files in a non-realtime context and then use some realtime primitive (e.g., 
-pipe) to send any data from those files to a necessary realtime context.
+Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
+---
 
-Steven
+This replaces "cobalt/posix/mqueue: Remove unused cobalt_mqq and fix
+error cleanup bug".
 
+ kernel/cobalt/posix/mqueue.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-
+diff --git a/kernel/cobalt/posix/mqueue.c b/kernel/cobalt/posix/mqueue.c
+index 859e12ed7b..5c644b2c41 100644
+--- a/kernel/cobalt/posix/mqueue.c
++++ b/kernel/cobalt/posix/mqueue.c
+@@ -151,6 +151,7 @@ static inline int mq_init(struct cobalt_mq *mq, const struct mq_attr *attr)
+ 	xnselect_init(&mq->write_select);
+ 	mq->magic = COBALT_MQ_MAGIC;
+ 	mq->refs = 2;
++	INIT_LIST_HEAD(&mq->link);
+ 
+ 	return 0;
+ }
+-- 
+2.16.4
 
