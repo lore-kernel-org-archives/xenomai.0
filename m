@@ -1,15 +1,11 @@
-Date: Wed, 10 Oct 2018 19:54:23 +0000 (UTC)
-From: Alec Ari <neotheuser@ymail.com>
-Message-ID: <53708266.7817924.1539201263618@mail.yahoo.com>
-In-Reply-To: <0c0a94e6-6650-88e2-7b89-3b6fa92efa65@siemens.com>
-References: <0B8B4C90A6FEA34E9EA10570C016C358BB7D9D8A@DEMUC-SMX001.data-modul.local>
- <c371a628-edc2-0713-767b-80efac64833e@siemens.com>
- <0B8B4C90A6FEA34E9EA10570C016C358BB7DA2CC@DEMUC-SMX001.data-modul.local>
- <0c0a94e6-6650-88e2-7b89-3b6fa92efa65@siemens.com>
+From: Wojciech Domski <wojciech.domski@gmail.com>
+Message-ID: <0320e06c-4014-9294-0ff6-8cd6515fba24@gmail.com>
+Date: Wed, 10 Oct 2018 23:56:58 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] ipipe-4.14: planned release date
+Content-Language: en-GB
+Subject: [Xenomai] Xenomai v.3.0.7 on Ubuntu 18.04 and kernel 4.9.90
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -18,14 +14,55 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "Schrenkhammer, Martin" <MSchrenkhammer@data-modul.com>, "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: xenomai@xenomai.org
 
-Have you tried simply just doing this instead:
+Hi!
 
-$ git clone https://gitlab.denx.de/Xenomai/ipipe-x86.git
-$ cd ipipe-x86 && git checkout wip/4.14-split
+I am trying to set up Xenomai v.3.0.7 on Ubuntu 18.04 with kernel 4.9.90.
 
-Just keep it simple..
+I have downloaded Xenomai from git and checked out the v.3.0.7 tag for
+stable version of Xenomai.
 
-Alec
+To set up the new kernel I have copied the configuration from currently
+running version (4.15.0-36-generic). Also I am preparing the kernel with
+following
+
+sudo xenomai/scripts/prepare-kernel.sh --linux=/usr/src/linux
+--arch=x86_64 --ipipe=/usr/src/ipipe-core-4.9.90-x86-6.patch
+
+In kernel configuration I have turned off the following:
+
+Power management and ACPI options -> ACPI (Advanced Configuration and
+Power Interface) Support -> Processor
+Power management and ACPI options -> CPU Frequency scaling -> CPU
+Frequency scaling
+Power management and ACPI options -> CPU Idle -> CPU idle PM support
+
+Unfortunately, I could not turn off page migration since it is build in
+the kernel and "hard fixing" it in the kernel configuration file did not
+seemed to the best idea.
+
+After that I have build the kernel with following:
+
+sudo make-kpkg --initrd --append-to-version=-xenomai-3.0.7 -j8
+kernel-image kernel-headers modules
+
+and that
+
+sudo dpkg -i linux-image-*.deb
+sudo dpkg -i linux-headers-*.deb
+sudo update-initramfs -c -k "4.9.90-xenomai-3.0.7"
+
+What I am facing right now is the following problem. When I boot up the
+PC freezes on "Loading initial ramdisk ...". Did I missed something? It
+does not seem like it is Xenomai related problem since there is an issue
+during mounting the temporary file system.
+
+Best regards,
+
+-- 
+Wojciech Domski
+
+domski.pl | blog.domski.pl
+
 
