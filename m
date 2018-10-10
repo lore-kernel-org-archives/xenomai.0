@@ -1,20 +1,12 @@
-References: <0ab5b536-2e75-fdfe-96e9-f6321aca107d@siemens.com>
- <8e002d9f-6357-2177-f53e-59580707c27b@xenomai.org>
- <3fcdb522-6088-6649-0f53-dcdfad5c28d9@web.de>
- <a76f6572-90bd-1dfd-a6c4-c62af253f989@siemens.com>
- <1e423b89-fe5a-0c33-64dd-fc7d840b72a2@xenomai.org>
- <0cce82f0-f5af-de7a-c208-10c66320cd9e@xenomai.org>
- <624b5290-2187-a329-d2bb-5fb0f8c6006a@siemens.com>
-From: Philippe Gerum <rpm@xenomai.org>
-Message-ID: <d973d0e7-729f-eb10-fbea-bbc3cee36bae@xenomai.org>
-Date: Wed, 10 Oct 2018 09:42:06 +0200
+From: Jan Kiszka <jan.kiszka@siemens.com>
+Message-ID: <144decef-a102-1cee-a9b1-8be5ed0d1258@siemens.com>
+Date: Wed, 10 Oct 2018 13:05:28 +0200
 MIME-Version: 1.0
-In-Reply-To: <624b5290-2187-a329-d2bb-5fb0f8c6006a@siemens.com>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] [PATCH] cobalt/posix/mqueue: Remove unused cobalt_mqq
- and fix error cleanup bug
+Subject: [Xenomai] [ipipe 4.14][PATCH] x86: ipipe: Fix trap hooking for
+ userspace routes
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -23,61 +15,144 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jan Kiszka <jan.kiszka@siemens.com>, Xenomai <xenomai@xenomai.org>
+To: Xenomai <xenomai@xenomai.org>, Philippe Gerum <rpm@xenomai.org>
 
-On 10/10/2018 09:31 AM, Jan Kiszka wrote:
-> On 09.10.18 20:21, Philippe Gerum wrote:
->> On 10/09/2018 07:58 PM, Philippe Gerum wrote:
->>> On 10/09/2018 11:27 AM, Jan Kiszka wrote:
->>>> On 03.10.18 20:43, Jan Kiszka wrote:
->>>>> On 03.10.18 19:24, Philippe Gerum wrote:
->>>>>> On 10/02/2018 07:03 PM, Jan Kiszka wrote:
->>>>>>> cobalt_mqq was only maintained but never queried. Remove it.
->>>>>>>
->>>>>>> This also simplify the fix for the broken error recovery in
->>>>>>> mq_open: If
->>>>>>> xnregistry_enter, we never entered the new element in cobalt_mqq and
->>>>>>> also already decremented the reference counter. But then we asked
->>>>>>> via
->>>>>>> rtdm_fd_close to remove the entry as if it was registered. That
->>>>>>> could
->>>>>>> easily crash the system.
->>>>>>>
->>>>>>
->>>>>> This looks like a logic which got orphaned when Cobalt stopped
->>>>>> being a
->>>>>> module unlike the 2.6.x nucleus. However, Cobalt services can be
->>>>>> dynamically stopped via corectl, and we should reclaim the named
->>>>>> queues
->>>>>> that may have persisted until that happens. Re-connecting that logic
->>>>>> when the core is switched to the stopped state may be a better
->>>>>> choice.
->>>>>
->>>>> Do we do this for other resources already, or would this be a start?
->>>>>
->>>>
->>>> Ping.
->>>>
->>>> Seems everything was migrated with e0e2775ad335 to
->>>> cobalt_global_resources - except for the message queues - why?
->>>
->>> Because named mqs are persistent, survive the exit of the process which
->>> created them.
->>>
->>
->> 'global' as an identifier may be confusing in __reclaim_resources. This
->> is the list of objects which are (p)shared between processes, with a
->> well-identified owner though; their lifetime is bound to their
->> respective owner's.
->>
-> 
-> OK - but aren't named semaphores, e.g., of the same kind? Something
-> looks inconsistent here.
-> 
+Also hook into the trap path when the exception was taken over userspace
+code.
 
-Yes, as long as we have sem_open() just like shm_open(), we'd have to
-deal with persistence the same way for both.
+Fixes: e6b81a0ce7fb (x86: ipipe: route traps to co-kernel)
+Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
+---
 
+Makes sense? I'm not feeling 100% safe yet /wrt paranoid and the
+userspace path. Should we handle this identically to the kernel path or
+not?
+
+Eventually this should be merged into the original patch, at least on
+next major rebase.
+
+ arch/x86/entry/entry_64.S | 80 +++++++++++++++++++++++++++--------------------
+ 1 file changed, 46 insertions(+), 34 deletions(-)
+
+diff --git a/arch/x86/entry/entry_64.S b/arch/x86/entry/entry_64.S
+index f6fe849d66ed..42e31d1fddc6 100644
+--- a/arch/x86/entry/entry_64.S
++++ b/arch/x86/entry/entry_64.S
+@@ -904,6 +904,46 @@ ENTRY(switch_to_thread_stack)
+ 	ret
+ END(switch_to_thread_stack)
+ 
++.macro ipipe_idtentry_prologue paranoid=0 trapnr=-1 skip_label=-invalid-
++#ifdef CONFIG_IPIPE
++	movq	EFLAGS(%rsp), %r14		/* regs->flags */
++	movq	%rsp, %rdi			/* pt_regs pointer */
++	movl	$\trapnr, %esi			/* trap number */
++	subq	$8, %rsp
++	movq	%rsp, %rdx			/* &flags */
++	call	__ipipe_trap_prologue
++	popq	%r13
++	mov	%rax, %r12			/* save propagation status */
++	.if \paranoid == 0			/* paranoid may not skip handler */
++	testl	%eax, %eax
++	jg	\skip_label			/* skip regular handler if > 0 */
++	.endif
++#endif
++.endm
++
++.macro ipipe_idtentry_epilogue paranoid=0 skip_label=-invalid-
++#ifdef CONFIG_IPIPE
++	testl	%r12d, %r12d
++	jnz	1000f
++	movq	%rsp, %rdi			/* pt_regs pointer */
++	movq	%r13, %rsi			/* &flags from prologue */
++	movq	%r14, %rdx			/* original regs->flags before fixup */
++	call	__ipipe_trap_epilogue
++1000:
++	.if \paranoid == 0			/* paranoid implies normal epilogue */
++	testl	%r12d, %r12d
++	jz	1001f
++\skip_label:
++	UNWIND_HINT_REGS
++	DISABLE_INTERRUPTS(CLBR_ANY)
++	testl	%ebx, %ebx	/* %ebx: return to kernel mode */
++	jnz	retint_kernel_early
++	jmp	retint_user_early
++	.endif
++1001:
++#endif
++.endm
++
+ .macro idtentry sym do_sym has_error_code:req paranoid=0 shift_ist=-1 trapnr=-1
+ ENTRY(\sym)
+ 	UNWIND_HINT_IRET_REGS offset=\has_error_code*8
+@@ -940,20 +980,7 @@ ENTRY(\sym)
+ 	.endif
+ 	.endif
+ 
+-#ifdef CONFIG_IPIPE
+-	movq	EFLAGS(%rsp), %r14		/* regs->flags */
+-	movq	%rsp, %rdi			/* pt_regs pointer */
+-	movl	$\trapnr, %esi			/* trap number */
+-	subq	$8, %rsp
+-	movq	%rsp, %rdx			/* &flags */
+-	call	__ipipe_trap_prologue
+-	popq	%r13
+-	mov	%rax, %r12			/* save propagation status */
+-	.if \paranoid == 0			/* paranoid may not skip handler */
+-	testl	%eax, %eax
+-	jg	98f				/* skip regular handler if > 0 */
+-	.endif
+-#endif
++	ipipe_idtentry_prologue paranoid=\paranoid trapnr=\trapnr skip_label=kernel_skip_\@
+ 
+ 	movq	%rsp, %rdi			/* pt_regs pointer */
+ 
+@@ -970,26 +997,7 @@ ENTRY(\sym)
+ 
+ 	call	\do_sym
+ 
+-#ifdef CONFIG_IPIPE
+-	testl	%r12d, %r12d
+-	jnz	97f
+-	movq	%rsp, %rdi			/* pt_regs pointer */
+-	movq	%r13, %rsi			/* &flags from prologue */
+-	movq	%r14, %rdx			/* original regs->flags before fixup */
+-	call	__ipipe_trap_epilogue
+-97:
+-	.if \paranoid == 0			/* paranoid implies normal epilogue */
+-	testl	%r12d, %r12d
+-	jz	99f
+-98:
+-	UNWIND_HINT_REGS
+-	DISABLE_INTERRUPTS(CLBR_ANY)
+-	testl	%ebx, %ebx	/* %ebx: return to kernel mode */
+-	jnz	retint_kernel_early
+-	jmp	retint_user_early
+-	.endif
+-99:
+-#endif
++	ipipe_idtentry_epilogue paranoid=\paranoid skip_label=kernel_skip_\@
+ 
+ 	.if \shift_ist != -1
+ 	addq	$EXCEPTION_STKSZ, CPU_TSS_IST(\shift_ist)
+@@ -1011,6 +1019,8 @@ ENTRY(\sym)
+ .Lfrom_usermode_switch_stack_\@:
+ 	call	error_entry
+ 
++	ipipe_idtentry_prologue paranoid=\paranoid trapnr=\trapnr skip_label=user_skip_\@
++
+ 	movq	%rsp, %rdi			/* pt_regs pointer */
+ 
+ 	.if \has_error_code
+@@ -1022,6 +1032,8 @@ ENTRY(\sym)
+ 
+ 	call	\do_sym
+ 
++	ipipe_idtentry_epilogue paranoid=\paranoid skip_label=user_skip_\@
++
+ 	jmp	error_exit
+ 	.endif
+ END(\sym)
 -- 
-Philippe.
+2.16.4
 
