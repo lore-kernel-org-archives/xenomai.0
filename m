@@ -1,13 +1,17 @@
-From: Wojciech Domski <wojciech.domski@gmail.com>
-References: <0320e06c-4014-9294-0ff6-8cd6515fba24@gmail.com>
-Message-ID: <6e5a44b3-2ad4-ee3f-cd89-247b0b0ad7ac@gmail.com>
-Date: Thu, 11 Oct 2018 13:48:08 +0200
+References: <0B8B4C90A6FEA34E9EA10570C016C358BB7D9D8A@DEMUC-SMX001.data-modul.local>
+ <c371a628-edc2-0713-767b-80efac64833e@siemens.com>
+ <0B8B4C90A6FEA34E9EA10570C016C358BB7DA2CC@DEMUC-SMX001.data-modul.local>
+ <0c0a94e6-6650-88e2-7b89-3b6fa92efa65@siemens.com>
+ <0B8B4C90A6FEA34E9EA10570C016C358BB7DA73C@DEMUC-SMX001.data-modul.local>
+From: Jan Kiszka <jan.kiszka@siemens.com>
+Message-ID: <52b6df12-fbb5-871a-7c4c-5208e7e04978@siemens.com>
+Date: Thu, 11 Oct 2018 14:23:11 +0200
 MIME-Version: 1.0
-In-Reply-To: <0320e06c-4014-9294-0ff6-8cd6515fba24@gmail.com>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-Content-Language: en-GB
-Subject: Re: [Xenomai] Xenomai v.3.0.7 on Ubuntu 18.04 and kernel 4.9.90
+In-Reply-To: <0B8B4C90A6FEA34E9EA10570C016C358BB7DA73C@DEMUC-SMX001.data-modul.local>
+Content-Type: text/plain; charset=windows-1252; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai] ipipe-4.14: planned release date
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,67 +20,29 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
+To: "Schrenkhammer, Martin" <MSchrenkhammer@data-modul.com>, "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-Hi!
+On 11.10.18 11:21, Schrenkhammer, Martin wrote:
+> Thanks for your reply.
+> Checked again today with your latest commit 20db5ea2eee38b123c9641003fe55c895a1fd514 with same errors.
+> I wanted to run a first build without modifications (beside prepare-kernel.sh and make menuconfig to append a local version.
+> Maybe you can send my your actual x86 config and I can check differences and adopt to my platform.
+> Mine .config is enclosed.
 
-I did additional test to rule out that Xenomai is the issue.
+Reproduced: The actual problem is related to CONFIG_HYPERV which selects 
+CONFIG_PARAVIRT which conflicts with CONFIG_IPIPE.
 
-I have compiled kernel 4.9.90 without Xenomai and it turns out that it
-works. Having this in mind what could cause problem on Xenomai side?
+Furthermore, you want to disable CONFIG_SCHED_MC so that you can also turn off 
+the power management features Xenomai complains about.
 
-If needed I will add additional information to trace the problem.
+And then there is CONFIG_TRANSPARENT_HUGEPAGE and CONFIG_CMA. When both are off, 
+you can also disable COMPACTION and MIGRATION.
 
-Best regards,
+In general, it's not optimal to start from a distro config without further tuning.
 
-Wojciech Domski
+Jan
 
-domski.pl | blog.domski.pl
-
-W dniu 10.10.2018 o 23:56, Wojciech Domski pisze:
-> Hi!
->
-> I am trying to set up Xenomai v.3.0.7 on Ubuntu 18.04 with kernel 4.9.90.
->
-> I have downloaded Xenomai from git and checked out the v.3.0.7 tag for
-> stable version of Xenomai.
->
-> To set up the new kernel I have copied the configuration from currently
-> running version (4.15.0-36-generic). Also I am preparing the kernel with
-> following
->
-> sudo xenomai/scripts/prepare-kernel.sh --linux=/usr/src/linux
-> --arch=x86_64 --ipipe=/usr/src/ipipe-core-4.9.90-x86-6.patch
->
-> In kernel configuration I have turned off the following:
->
-> Power management and ACPI options -> ACPI (Advanced Configuration and
-> Power Interface) Support -> Processor
-> Power management and ACPI options -> CPU Frequency scaling -> CPU
-> Frequency scaling
-> Power management and ACPI options -> CPU Idle -> CPU idle PM support
->
-> Unfortunately, I could not turn off page migration since it is build in
-> the kernel and "hard fixing" it in the kernel configuration file did not
-> seemed to the best idea.
->
-> After that I have build the kernel with following:
->
-> sudo make-kpkg --initrd --append-to-version=-xenomai-3.0.7 -j8
-> kernel-image kernel-headers modules
->
-> and that
->
-> sudo dpkg -i linux-image-*.deb
-> sudo dpkg -i linux-headers-*.deb
-> sudo update-initramfs -c -k "4.9.90-xenomai-3.0.7"
->
-> What I am facing right now is the following problem. When I boot up the
-> PC freezes on "Loading initial ramdisk ...". Did I missed something? It
-> does not seem like it is Xenomai related problem since there is an issue
-> during mounting the temporary file system.
->
-> Best regards,
->
-
+-- 
+Siemens AG, Corporate Technology, CT RDA IOT SES-DE
+Corporate Competence Center Embedded Linux
 
