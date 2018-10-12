@@ -1,18 +1,17 @@
-From: "Schrenkhammer, Martin" <MSchrenkhammer@data-modul.com>
-Date: Thu, 11 Oct 2018 19:00:16 +0000
-Message-ID: <cuc1u0s6krjua13us78v6n9g.1539284434958@email.android.com>
-References: <0B8B4C90A6FEA34E9EA10570C016C358BB7D9D8A@DEMUC-SMX001.data-modul.local>
- <c371a628-edc2-0713-767b-80efac64833e@siemens.com>
- <0B8B4C90A6FEA34E9EA10570C016C358BB7DA2CC@DEMUC-SMX001.data-modul.local>
- <0c0a94e6-6650-88e2-7b89-3b6fa92efa65@siemens.com>
- <0B8B4C90A6FEA34E9EA10570C016C358BB7DA73C@DEMUC-SMX001.data-modul.local>,
- <52b6df12-fbb5-871a-7c4c-5208e7e04978@siemens.com>
-In-Reply-To: <52b6df12-fbb5-871a-7c4c-5208e7e04978@siemens.com>
-Content-Language: de-DE
+References: <0320e06c-4014-9294-0ff6-8cd6515fba24@gmail.com>
+ <6e5a44b3-2ad4-ee3f-cd89-247b0b0ad7ac@gmail.com>
+ <CALLqZ8T+5WSdTYGMiJr8S6x8gFaAN8tmp8Dtri8Fu+uxPwXUMw@mail.gmail.com>
+ <f735d7fe-da3f-da95-0aac-a5a77430dac9@gmail.com>
+ <6fc75021-86b5-0120-a59e-fd81ba6f40f6@gmail.com>
+From: Florian Richer <florian.richer@sorbonne-universite.fr>
+Message-ID: <c624d9c1-09be-1e48-a962-cbb5f84ed9a7@sorbonne-universite.fr>
+Date: Fri, 12 Oct 2018 09:57:35 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset="windows-1252"
-Content-Transfer-Encoding: quoted-printable
-Subject: Re: [Xenomai] ipipe-4.14: planned release date
+In-Reply-To: <6fc75021-86b5-0120-a59e-fd81ba6f40f6@gmail.com>
+Content-Type: text/plain; charset="utf-8"; format="flowed"
+Content-Transfer-Encoding: 8bit
+Content-Language: en-US-large
+Subject: Re: [Xenomai] Xenomai v.3.0.7 on Ubuntu 18.04 and kernel 4.9.90
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -21,57 +20,134 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jan Kiszka <jan.kiszka@siemens.com>, "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: xenomai@xenomai.org
 
-That solved the problem. Thanks a lot for your help!
+Hi,
 
-Martin
-11.10.2018 2:22 nachm. schrieb Jan Kiszka <jan.kiszka@siemens.com> :
-On 11.10.18 11:21, Schrenkhammer, Martin wrote:
-> Thanks for your reply.
-> Checked again today with your latest commit 20db5ea2eee38b123c9641003fe55=
-c895a1fd514 with same errors.
-> I wanted to run a first build without modifications (beside prepare-kerne=
-l.sh and make menuconfig to append a local version.
-> Maybe you can send my your actual x86 config and I can check differences =
-and adopt to my platform.
-> Mine .config is enclosed.
+You may want to disable CONFIG_MAXSMP, some people reported similar 
+issues with this option enabled.
 
-Reproduced: The actual problem is related to CONFIG_HYPERV which selects
-CONFIG_PARAVIRT which conflicts with CONFIG_IPIPE.
+Florian
 
-Furthermore, you want to disable CONFIG_SCHED_MC so that you can also turn =
-off
-the power management features Xenomai complains about.
+On 10/11/18 7:23 PM, Wojciech Domski wrote:
+> Here are kernel configurations files:
+>
+> https://pastebin.com/zuucW3WW (for clean 4.9.90)
+>
+> https://pastebin.com/AvD9T9Lx (for 4.9.90 with xenomai 3.0.7)
+>
+> I have also checked if there is anything in /var/log/kern.log. Beside
+> normal kernel's logs there is nothing for the Xenomai flavoured version.
+> It seems about right because it is stuck at "Loading initial ramdisk".
+>
+>
+> Wojciech Domski
+>
+> domski.pl | blog.domski.pl
+>
+> W dniu 11.10.2018 o 17:00, Wojciech Domski pisze:
+>> I will post the kernel config file shortly and get back to you.
+>>
+>> As for the prints, no, there is nothing only those two lines:
+>>
+>> Loading Linux 4.9.90-xenomai-3.0.7 ...
+>> Loading initial ramdisk ...
+>> _ (here is the cursor)
+>>
+>> Best regards,
+>>
+>> Wojciech Domski
+>>
+>> domski.pl | blog.domski.pl
+>> W dniu 11.10.2018 o 16:34, Greg Gallagher pisze:
+>>> Posting the config may help.  Can you get any early printks?
+>>>
+>>> -Greg
+>>>
+>>> On Thu, Oct 11, 2018 at 7:48 AM Wojciech Domski
+>>> <wojciech.domski@gmail.com <mailto:wojciech.domski@gmail.com>> wrote:
+>>>
+>>>      Hi!
+>>>
+>>>      I did additional test to rule out that Xenomai is the issue.
+>>>
+>>>      I have compiled kernel 4.9.90 without Xenomai and it turns out
+>>>      that it
+>>>      works. Having this in mind what could cause problem on Xenomai side?
+>>>
+>>>      If needed I will add additional information to trace the problem.
+>>>
+>>>      Best regards,
+>>>
+>>>      Wojciech Domski
+>>>
+>>>      domski.pl <http://domski.pl> | blog.domski.pl <http://blog.domski.pl>
+>>>
+>>>      W dniu 10.10.2018 o 23:56, Wojciech Domski pisze:
+>>>      > Hi!
+>>>      >
+>>>      > I am trying to set up Xenomai v.3.0.7 on Ubuntu 18.04 with
+>>>      kernel 4.9.90.
+>>>      >
+>>>      > I have downloaded Xenomai from git and checked out the v.3.0.7
+>>>      tag for
+>>>      > stable version of Xenomai.
+>>>      >
+>>>      > To set up the new kernel I have copied the configuration from
+>>>      currently
+>>>      > running version (4.15.0-36-generic). Also I am preparing the
+>>>      kernel with
+>>>      > following
+>>>      >
+>>>      > sudo xenomai/scripts/prepare-kernel.sh --linux=/usr/src/linux
+>>>      > --arch=x86_64 --ipipe=/usr/src/ipipe-core-4.9.90-x86-6.patch
+>>>      >
+>>>      > In kernel configuration I have turned off the following:
+>>>      >
+>>>      > Power management and ACPI options -> ACPI (Advanced
+>>>      Configuration and
+>>>      > Power Interface) Support -> Processor
+>>>      > Power management and ACPI options -> CPU Frequency scaling -> CPU
+>>>      > Frequency scaling
+>>>      > Power management and ACPI options -> CPU Idle -> CPU idle PM
+>>>      support
+>>>      >
+>>>      > Unfortunately, I could not turn off page migration since it is
+>>>      build in
+>>>      > the kernel and "hard fixing" it in the kernel configuration
+>>>      file did not
+>>>      > seemed to the best idea.
+>>>      >
+>>>      > After that I have build the kernel with following:
+>>>      >
+>>>      > sudo make-kpkg --initrd --append-to-version=-xenomai-3.0.7 -j8
+>>>      > kernel-image kernel-headers modules
+>>>      >
+>>>      > and that
+>>>      >
+>>>      > sudo dpkg -i linux-image-*.deb
+>>>      > sudo dpkg -i linux-headers-*.deb
+>>>      > sudo update-initramfs -c -k "4.9.90-xenomai-3.0.7"
+>>>      >
+>>>      > What I am facing right now is the following problem. When I
+>>>      boot up the
+>>>      > PC freezes on "Loading initial ramdisk ...". Did I missed
+>>>      something? It
+>>>      > does not seem like it is Xenomai related problem since there is
+>>>      an issue
+>>>      > during mounting the temporary file system.
+>>>      >
+>>>      > Best regards,
+>>>      >
+>>>
+>>>
+>>>      _______________________________________________
+>>>      Xenomai mailing list
+>>>      Xenomai@xenomai.org <mailto:Xenomai@xenomai.org>
+>>>      https://xenomai.org/mailman/listinfo/xenomai
+>>>
+> _______________________________________________
+> Xenomai mailing list
+> Xenomai@xenomai.org
+> https://xenomai.org/mailman/listinfo/xenomai
 
-And then there is CONFIG_TRANSPARENT_HUGEPAGE and CONFIG_CMA. When both are=
- off,
-you can also disable COMPACTION and MIGRATION.
-
-In general, it's not optimal to start from a distro config without further =
-tuning.
-
-Jan
-
---
-Siemens AG, Corporate Technology, CT RDA IOT SES-DE
-Corporate Competence Center Embedded Linux
-
-________________________________
-Vertrauliche E-Mail von / Confidential e-mail from Data Modul AG
-Vorstand / CEO: Dr. Florian Pesahl
-Vorsitzende des Aufsichtsrates / Chairwoman of the Supervisory Board: Krist=
-in D. Russell
-Sitz der Gesellschaft / Registered Office: M=FCnchen
-Registergericht / Registration Court: M=FCnchen - Handelsregister B 85 591
-
-Datamodul
-[cid:0021-0001@01d46194.a5f3ebae]
--------------- next part --------------
-A non-text attachment was scrubbed...
-Name: ECS-electronica_2018_d.gif
-Type: image/gif
-Size: 8162 bytes
-Desc: ECS-electronica_2018_d.gif
-URL: <http://xenomai.org/pipermail/xenomai/attachments/20181011/a6d2cc1d/at=
-tachment.gif>
