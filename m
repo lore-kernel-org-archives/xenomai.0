@@ -1,13 +1,14 @@
-References: <fd7363b0-ea79-3f59-08ea-b6617e1d5422@siemens.com>
+References: <144decef-a102-1cee-a9b1-8be5ed0d1258@siemens.com>
 From: Philippe Gerum <rpm@xenomai.org>
-Message-ID: <9e2bae5d-e53a-aef4-8ede-3f0b955ce7bd@xenomai.org>
-Date: Sat, 13 Oct 2018 15:07:21 +0200
+Message-ID: <04a6b929-41ea-1024-6c01-11a5072d1c20@xenomai.org>
+Date: Sat, 13 Oct 2018 15:52:48 +0200
 MIME-Version: 1.0
-In-Reply-To: <fd7363b0-ea79-3f59-08ea-b6617e1d5422@siemens.com>
+In-Reply-To: <144decef-a102-1cee-a9b1-8be5ed0d1258@siemens.com>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] [PATCH] build: Modernize device installation
+Subject: Re: [Xenomai] [ipipe 4.14][PATCH] x86: ipipe: Fix trap hooking for
+ userspace routes
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -18,23 +19,22 @@ List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: Jan Kiszka <jan.kiszka@siemens.com>, Xenomai <xenomai@xenomai.org>
 
-On 10/10/2018 05:23 PM, Jan Kiszka wrote:
-> Drop the obsoleted mknod calls - all modern systems use devtmpfs, and
-> that creates the rtp nodes for us.
+On 10/10/2018 01:05 PM, Jan Kiszka wrote:
+> Also hook into the trap path when the exception was taken over userspace
+> code.
 > 
-> Furthermore, switch the remaining installation of udev rules to proper
-> automake, using sysconfdir, INSTALL_DATA etc., dropping sudo from those
-> steps (installation into privileged folders implies "sudo make install"
-> or running as root in the first place).
-> 
-> Finally, only differentiate between pre-existing udev.rules and default
-> installation into rules.d.
-> 
-> This removes the need for the install-user target - drop it.
-> 
+> Fixes: e6b81a0ce7fb (x86: ipipe: route traps to co-kernel)
 > Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
+> ---
+> 
+> Makes sense? I'm not feeling 100% safe yet /wrt paranoid and the
+> userspace path. Should we handle this identically to the kernel path or
+> not?
+> 
 
-Ack.
+It looks ok to me. We should always branch to error_exit in the paranoid
+case for the user path, never taking the fast path out. This is
+particularly important for handling debug traps properly.
 
 -- 
 Philippe.
