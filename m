@@ -1,19 +1,15 @@
-From: "Schrenkhammer, Martin" <MSchrenkhammer@data-modul.com>
-Date: Mon, 15 Oct 2018 10:56:41 +0000
-Message-ID: <0B8B4C90A6FEA34E9EA10570C016C358BB7DB540@DEMUC-SMX001.data-modul.local>
-References: <0B8B4C90A6FEA34E9EA10570C016C358BB7D9D8A@DEMUC-SMX001.data-modul.local>
- <c371a628-edc2-0713-767b-80efac64833e@siemens.com>
- <0B8B4C90A6FEA34E9EA10570C016C358BB7DA2CC@DEMUC-SMX001.data-modul.local>
- <0c0a94e6-6650-88e2-7b89-3b6fa92efa65@siemens.com>
- <0B8B4C90A6FEA34E9EA10570C016C358BB7DA73C@DEMUC-SMX001.data-modul.local>,
- <52b6df12-fbb5-871a-7c4c-5208e7e04978@siemens.com>
- <cuc1u0s6krjua13us78v6n9g.1539284434958@email.android.com>
-In-Reply-To: <cuc1u0s6krjua13us78v6n9g.1539284434958@email.android.com>
-Content-Language: de-DE
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+References: <144decef-a102-1cee-a9b1-8be5ed0d1258@siemens.com>
+ <1882419000.9157539.1539392168772@mail.yahoo.com>
+From: Jan Kiszka <jan.kiszka@siemens.com>
+Message-ID: <ddf9dee0-653d-b784-b01f-8d09a3fda629@siemens.com>
+Date: Mon, 15 Oct 2018 13:18:13 +0200
 MIME-Version: 1.0
-Subject: Re: [Xenomai] ipipe-4.14: planned release date
+In-Reply-To: <1882419000.9157539.1539392168772@mail.yahoo.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai] [ipipe 4.14][PATCH] x86: ipipe: Fix trap hooking for
+ userspace routes
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -22,57 +18,21 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jan Kiszka <jan.kiszka@siemens.com>, "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Alec Ari <neotheuser@ymail.com>, Xenomai <xenomai@xenomai.org>
 
-SGkgSmFuLA0KDQpub3cgSSBydW4gaW50byBhbm90aGVyIHByb2JsZW0uIE15IEJvYXJkIGRvZXMg
-YSByZXNldCByaWdodCBhZnRlciAiTG9hZGluZyBpbml0aWFsIHJhbWRpc2suLi4iIEl0IGlzIGFu
-IEFNRCBSeXpvbiBFbWJlZGRlZCBWMTAwMC4NClRoZXJlIGFyZSBubyBsb2dzIHRvIGtlcm4ubG9n
-DQpJIGFscmVhZHkgdHJpZWQgZGlzYWJsaW5nIENPTkZJR19NQVhTTVAuDQpPcmlnaW5hbCA0LjE0
-LjcxIGJvb3RzIHdpdGhvdXQgcHJvYmxlbXMuDQoNCkFueSBpZGVhcz8NCg0KVGhhbmtzLA0KTWFy
-dGluDQoNCg0KLS0tLS1VcnNwcsO8bmdsaWNoZSBOYWNocmljaHQtLS0tLQ0KVm9uOiBYZW5vbWFp
-IFttYWlsdG86eGVub21haS1ib3VuY2VzQHhlbm9tYWkub3JnXSBJbSBBdWZ0cmFnIHZvbiBTY2hy
-ZW5raGFtbWVyLCBNYXJ0aW4NCkdlc2VuZGV0OiBEb25uZXJzdGFnLCAxMS4gT2t0b2JlciAyMDE4
-IDIxOjAwDQpBbjogSmFuIEtpc3prYTsgeGVub21haUB4ZW5vbWFpLm9yZw0KQmV0cmVmZjogUmU6
-IFtYZW5vbWFpXSBpcGlwZS00LjE0OiBwbGFubmVkIHJlbGVhc2UgZGF0ZQ0KDQpUaGF0IHNvbHZl
-ZCB0aGUgcHJvYmxlbS4gVGhhbmtzIGEgbG90IGZvciB5b3VyIGhlbHAhDQoNCk1hcnRpbg0KMTEu
-MTAuMjAxOCAyOjIyIG5hY2htLiBzY2hyaWViIEphbiBLaXN6a2EgPGphbi5raXN6a2FAc2llbWVu
-cy5jb20+IDoNCk9uIDExLjEwLjE4IDExOjIxLCBTY2hyZW5raGFtbWVyLCBNYXJ0aW4gd3JvdGU6
-DQo+IFRoYW5rcyBmb3IgeW91ciByZXBseS4NCj4gQ2hlY2tlZCBhZ2FpbiB0b2RheSB3aXRoIHlv
-dXIgbGF0ZXN0IGNvbW1pdCAyMGRiNWVhMmVlZTM4YjEyM2M5NjQxMDAzZmU1NWM4OTVhMWZkNTE0
-IHdpdGggc2FtZSBlcnJvcnMuDQo+IEkgd2FudGVkIHRvIHJ1biBhIGZpcnN0IGJ1aWxkIHdpdGhv
-dXQgbW9kaWZpY2F0aW9ucyAoYmVzaWRlIHByZXBhcmUta2VybmVsLnNoIGFuZCBtYWtlIG1lbnVj
-b25maWcgdG8gYXBwZW5kIGEgbG9jYWwgdmVyc2lvbi4NCj4gTWF5YmUgeW91IGNhbiBzZW5kIG15
-IHlvdXIgYWN0dWFsIHg4NiBjb25maWcgYW5kIEkgY2FuIGNoZWNrIGRpZmZlcmVuY2VzIGFuZCBh
-ZG9wdCB0byBteSBwbGF0Zm9ybS4NCj4gTWluZSAuY29uZmlnIGlzIGVuY2xvc2VkLg0KDQpSZXBy
-b2R1Y2VkOiBUaGUgYWN0dWFsIHByb2JsZW0gaXMgcmVsYXRlZCB0byBDT05GSUdfSFlQRVJWIHdo
-aWNoIHNlbGVjdHMNCkNPTkZJR19QQVJBVklSVCB3aGljaCBjb25mbGljdHMgd2l0aCBDT05GSUdf
-SVBJUEUuDQoNCkZ1cnRoZXJtb3JlLCB5b3Ugd2FudCB0byBkaXNhYmxlIENPTkZJR19TQ0hFRF9N
-QyBzbyB0aGF0IHlvdSBjYW4gYWxzbyB0dXJuIG9mZg0KdGhlIHBvd2VyIG1hbmFnZW1lbnQgZmVh
-dHVyZXMgWGVub21haSBjb21wbGFpbnMgYWJvdXQuDQoNCkFuZCB0aGVuIHRoZXJlIGlzIENPTkZJ
-R19UUkFOU1BBUkVOVF9IVUdFUEFHRSBhbmQgQ09ORklHX0NNQS4gV2hlbiBib3RoIGFyZSBvZmYs
-DQp5b3UgY2FuIGFsc28gZGlzYWJsZSBDT01QQUNUSU9OIGFuZCBNSUdSQVRJT04uDQoNCkluIGdl
-bmVyYWwsIGl0J3Mgbm90IG9wdGltYWwgdG8gc3RhcnQgZnJvbSBhIGRpc3RybyBjb25maWcgd2l0
-aG91dCBmdXJ0aGVyIHR1bmluZy4NCg0KSmFuDQoNCi0tDQpTaWVtZW5zIEFHLCBDb3Jwb3JhdGUg
-VGVjaG5vbG9neSwgQ1QgUkRBIElPVCBTRVMtREUNCkNvcnBvcmF0ZSBDb21wZXRlbmNlIENlbnRl
-ciBFbWJlZGRlZCBMaW51eA0KDQpfX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fXw0KVmVy
-dHJhdWxpY2hlIEUtTWFpbCB2b24gLyBDb25maWRlbnRpYWwgZS1tYWlsIGZyb20gRGF0YSBNb2R1
-bCBBRw0KVm9yc3RhbmQgLyBDRU86IERyLiBGbG9yaWFuIFBlc2FobA0KVm9yc2l0emVuZGUgZGVz
-IEF1ZnNpY2h0c3JhdGVzIC8gQ2hhaXJ3b21hbiBvZiB0aGUgU3VwZXJ2aXNvcnkgQm9hcmQ6IEty
-aXN0aW4gRC4gUnVzc2VsbA0KU2l0eiBkZXIgR2VzZWxsc2NoYWZ0IC8gUmVnaXN0ZXJlZCBPZmZp
-Y2U6IE3DvG5jaGVuDQpSZWdpc3RlcmdlcmljaHQgLyBSZWdpc3RyYXRpb24gQ291cnQ6IE3DvG5j
-aGVuIC0gSGFuZGVsc3JlZ2lzdGVyIEIgODUgNTkxDQoNCkRhdGFtb2R1bA0KW2NpZDowMDIxLTAw
-MDFAMDFkNDYxOTQuYTVmM2ViYWVdDQotLS0tLS0tLS0tLS0tLSBuZXh0IHBhcnQgLS0tLS0tLS0t
-LS0tLS0NCkEgbm9uLXRleHQgYXR0YWNobWVudCB3YXMgc2NydWJiZWQuLi4NCk5hbWU6IEVDUy1l
-bGVjdHJvbmljYV8yMDE4X2QuZ2lmDQpUeXBlOiBpbWFnZS9naWYNClNpemU6IDgxNjIgYnl0ZXMN
-CkRlc2M6IEVDUy1lbGVjdHJvbmljYV8yMDE4X2QuZ2lmDQpVUkw6IDxodHRwOi8veGVub21haS5v
-cmcvcGlwZXJtYWlsL3hlbm9tYWkvYXR0YWNobWVudHMvMjAxODEwMTEvYTZkMmNjMWQvYXR0YWNo
-bWVudC5naWY+DQpfX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
-Xw0KWGVub21haSBtYWlsaW5nIGxpc3QNClhlbm9tYWlAeGVub21haS5vcmcNCmh0dHBzOi8veGVu
-b21haS5vcmcvbWFpbG1hbi9saXN0aW5mby94ZW5vbWFpDQoNClZlcnRyYXVsaWNoZSBFLU1haWwg
-dm9uIC8gQ29uZmlkZW50aWFsIGUtbWFpbCBmcm9tOiBEQVRBIE1PRFVMIEFHDQpWb3JzdGFuZCAv
-IENFTzogRHIuIEZsb3JpYW4gUGVzYWhsDQpWb3JzaXR6ZW5kZSBkZXMgQXVmc2ljaHRzcmF0ZXMg
-LyBDaGFpcndvbWFuIG9mIHRoZSBTdXBlcnZpc29yeSBCb2FyZDogS3Jpc3RpbiBELiBSdXNzZWxs
-DQpTaXR6IGRlciBHZXNlbGxzY2hhZnQgLyBSZWdpc3RlcmVkIE9mZmljZTogTcO8bmNoZW4NClJl
-Z2lzdGVyZ2VyaWNodCAvIFJlZ2lzdHJhdGlvbiBDb3VydDogTcO8bmNoZW4gSGFuZGVsc3JlZ2lz
-dGVyIEIgODUgNTkxDQoNCg0KDQo=
+On 13.10.18 02:56, Alec Ari wrote:
+> Until this bug is properly sorted out, would it be a good idea to revert e6b81a0ce7fb86cf1f1db9f80b982c9b5f95c4c1 and 20db5ea2eee38b123c9641003fe55c895a1fd514 for the time being? The assembly code worked fine the way it was before. At least I never had any issues with it.
+
+Those two commits install fundamental features of the I-pipe patch set, you 
+can't reasonably run Xenomai without them. E.g., hell will break loose if a 
+Xenomai thread triggers a memory-mapped file access fault during startup while 
+it happened to be in RT mode. And debugging will not work either.
+
+The proposed fix may not yet be optimal, but it is apparently sufficient.
+
+Jan
+
+-- 
+Siemens AG, Corporate Technology, CT RDA IOT SES-DE
+Corporate Competence Center Embedded Linux
 
