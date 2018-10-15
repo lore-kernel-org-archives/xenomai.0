@@ -1,15 +1,13 @@
-References: <144decef-a102-1cee-a9b1-8be5ed0d1258@siemens.com>
- <1882419000.9157539.1539392168772@mail.yahoo.com>
+References: <2060132.jtzqTOXOF1@lenni>
 From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <ddf9dee0-653d-b784-b01f-8d09a3fda629@siemens.com>
-Date: Mon, 15 Oct 2018 13:18:13 +0200
+Message-ID: <72ed3f20-e3c6-abc9-244f-6bc3c2f32f75@siemens.com>
+Date: Mon, 15 Oct 2018 13:18:36 +0200
 MIME-Version: 1.0
-In-Reply-To: <1882419000.9157539.1539392168772@mail.yahoo.com>
+In-Reply-To: <2060132.jtzqTOXOF1@lenni>
 Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] [ipipe 4.14][PATCH] x86: ipipe: Fix trap hooking for
- userspace routes
+Subject: Re: [Xenomai] Retrieval of user fd from struct rtdm_fd
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -18,17 +16,33 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Alec Ari <neotheuser@ymail.com>, Xenomai <xenomai@xenomai.org>
+To: Sebastian Smolorz <Sebastian.Smolorz@gmx.de>, "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On 13.10.18 02:56, Alec Ari wrote:
-> Until this bug is properly sorted out, would it be a good idea to revert e6b81a0ce7fb86cf1f1db9f80b982c9b5f95c4c1 and 20db5ea2eee38b123c9641003fe55c895a1fd514 for the time being? The assembly code worked fine the way it was before. At least I never had any issues with it.
+On 14.10.18 21:27, Sebastian Smolorz wrote:
+> Hello Philippe or Jan,
+> 
+> I need to retrieve the socket file descriptor from an RTDM device driver
+> routine. From what I have seen there is no simple way to obtain this int
+> value from struct rtdm_fd. I have identified three possible ways to do
+> this, all of them necessitate modification of Xenomai code outside the
+> driver:
+> 
+> 1. Iterate over the rb_tree rtdm_fd->owner->fds by means of the macro
+> xntree_for_each_entry(pos, root, member). For this macro to work the
+> definition of struct rtdm_fd_index must be known to the driver which
+> means that it would have to be moved from kernel/cobalt/rtdm/fd.c to
+> e.g. include/cobalt/kernel/rtdm/fd.h.
+> 
+> 2. Similar to 1. but offer a new function rtdm_fd_get_ufd(struct rtdm_fd
+> *fd) in which the rb_tree is searched.
+> 
+> 3. Introduce a new value "int ufd" in struct rtdm_fd for setting and
+> getting the ufd directly (which would be overkill I suppose because the
+> vast majority of drivers don't need it).
 
-Those two commits install fundamental features of the I-pipe patch set, you 
-can't reasonably run Xenomai without them. E.g., hell will break loose if a 
-Xenomai thread triggers a memory-mapped file access fault during startup while 
-it happened to be in RT mode. And debugging will not work either.
-
-The proposed fix may not yet be optimal, but it is apparently sufficient.
+OTOH, that structure is not really optimized for size. So I do not see why it 
+shouldn't take yet another int, which would also be a faster API than the other 
+options.
 
 Jan
 
