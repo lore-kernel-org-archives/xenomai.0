@@ -1,20 +1,12 @@
-References: <0B8B4C90A6FEA34E9EA10570C016C358BB7D9D8A@DEMUC-SMX001.data-modul.local>
- <c371a628-edc2-0713-767b-80efac64833e@siemens.com>
- <0B8B4C90A6FEA34E9EA10570C016C358BB7DA2CC@DEMUC-SMX001.data-modul.local>
- <0c0a94e6-6650-88e2-7b89-3b6fa92efa65@siemens.com>
- <0B8B4C90A6FEA34E9EA10570C016C358BB7DA73C@DEMUC-SMX001.data-modul.local>
- <52b6df12-fbb5-871a-7c4c-5208e7e04978@siemens.com>
- <cuc1u0s6krjua13us78v6n9g.1539284434958@email.android.com>
- <0B8B4C90A6FEA34E9EA10570C016C358BB7DB540@DEMUC-SMX001.data-modul.local>
-From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <d1c7004d-c205-4ee2-c8c6-fa39e9bf1583@siemens.com>
-Date: Mon, 15 Oct 2018 14:15:24 +0200
 MIME-Version: 1.0
-In-Reply-To: <0B8B4C90A6FEA34E9EA10570C016C358BB7DB540@DEMUC-SMX001.data-modul.local>
-Content-Language: en-US
-Content-Transfer-Encoding: base64
-Content-Type: text/plain; charset="utf-8"; Format="flowed"
-Subject: Re: [Xenomai] ipipe-4.14: planned release date
+Message-ID: <trinity-bc2081b0-04b8-43e1-b7da-c86f08ec0d13-1539609474671@msvc-mesg-gmx123>
+From: "Sebastian Smolorz" <Sebastian.Smolorz@gmx.de>
+Content-Type: text/plain; charset=UTF-8
+Date: Mon, 15 Oct 2018 15:17:54 +0200
+In-Reply-To: <72ed3f20-e3c6-abc9-244f-6bc3c2f32f75@siemens.com>
+References: <2060132.jtzqTOXOF1@lenni>
+ <72ed3f20-e3c6-abc9-244f-6bc3c2f32f75@siemens.com>
+Subject: Re: [Xenomai] Retrieval of user fd from struct rtdm_fd
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -23,28 +15,41 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "Schrenkhammer, Martin" <MSchrenkhammer@data-modul.com>, "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Jan Kiszka <jan.kiszka@siemens.com>
+Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-T24gMTUuMTAuMTggMTI6NTYsIFNjaHJlbmtoYW1tZXIsIE1hcnRpbiB3cm90ZToKPiBIaSBKYW4s
-Cj4gCj4gbm93IEkgcnVuIGludG8gYW5vdGhlciBwcm9ibGVtLiBNeSBCb2FyZCBkb2VzIGEgcmVz
-ZXQgcmlnaHQgYWZ0ZXIgIkxvYWRpbmcgaW5pdGlhbCByYW1kaXNrLi4uIiBJdCBpcyBhbiBBTUQg
-Unl6b24gRW1iZWRkZWQgVjEwMDAuCj4gVGhlcmUgYXJlIG5vIGxvZ3MgdG8ga2Vybi5sb2cKPiBJ
-IGFscmVhZHkgdHJpZWQgZGlzYWJsaW5nIENPTkZJR19NQVhTTVAuCj4gT3JpZ2luYWwgNC4xNC43
-MSBib290cyB3aXRob3V0IHByb2JsZW1zLgo+IAo+IEFueSBpZGVhcz8KCk5vcGUsIG5vdCB5ZXQu
-IE1pZ2h0IGJlIHNvbWV0aGluZyBBTUQtc3BlY2lmaWMuIEkgZG9uJ3QgaGF2ZSBzdWNoIGEgcHJv
-Y2Vzc29yIGluIApyZWFjaCBBVE0sIG9ubHkgb2xkZXIgb25lcy4KCkZXSVcsIEkndmUgYXR0YWNo
-ZWQgb25lIG9mIG15IHdvcmtpbmcgY29uZmlncy4gTWF5YmUgd2UgY2FuIHRyYWNrIHRoaXMgZG93
-biB0byBhIApjZXJ0YWluIGZlYXR1cmUgZGlmZmVyZW5jZSwgYW5kIEkgd2lsbCB0aGVuIGJlIGFi
-bGUgdG8gcmVwcm9kdWNlLgoKVGhlIGFsdGVybmF0aXZlIGhhY2tpbmcgYXBwcm9hY2ggLSB1bmxl
-c3MgeW91IGhhdmUgYSBKVEFHIGRlYnVnZ2VyIC0gd291bGQgdGhlbiAKYmUgc3RpY2tpbmcgdGhl
-IHdob2xlIFhlbm9tYWkgYm9vdCBpbnRvIGEgUUVNVS9LVk0gbWFjaGluZSBvbiB0aGUgdmVyeSBz
-YW1lIApoYXJkd2FyZSwgY2F0Y2hpbmcgdGhlIHJlYm9vdCBhbmQgZHVtcGluZyB0aGUgc3RhdGUu
-IEJ1dCB0aGF0J3MgbXVjaCBtb3JlIApjb21wbGV4IHRvIHNldCB1cCwgcGx1cyB0aGVyZSBpcyB0
-aGUgcmlzayB0aGF0IHRoZSBpc3N1ZSBvbmx5IHRyaWdnZXJzIG9uIHJlYWwgCmhhcmR3YXJlLgoK
-SmFuCgotLSAKU2llbWVucyBBRywgQ29ycG9yYXRlIFRlY2hub2xvZ3ksIENUIFJEQSBJT1QgU0VT
-LURFCkNvcnBvcmF0ZSBDb21wZXRlbmNlIENlbnRlciBFbWJlZGRlZCBMaW51eAotLS0tLS0tLS0t
-LS0tLSBuZXh0IHBhcnQgLS0tLS0tLS0tLS0tLS0KQSBub24tdGV4dCBhdHRhY2htZW50IHdhcyBz
-Y3J1YmJlZC4uLgpOYW1lOiAuY29uZmlnLnh6ClR5cGU6IGFwcGxpY2F0aW9uL3gteHoKU2l6ZTog
-MjI5NjggYnl0ZXMKRGVzYzogbm90IGF2YWlsYWJsZQpVUkw6IDxodHRwOi8veGVub21haS5vcmcv
-cGlwZXJtYWlsL3hlbm9tYWkvYXR0YWNobWVudHMvMjAxODEwMTUvYWM4ZDg4Y2YvYXR0YWNobWVu
-dC5iaW4+Cg==
+Jan Kiszka wrote:
+
+> On 14.10.18 21:27, Sebastian Smolorz wrote:
+> > Hello Philippe or Jan,
+> > 
+> > I need to retrieve the socket file descriptor from an RTDM device driver
+> > routine. From what I have seen there is no simple way to obtain this int
+> > value from struct rtdm_fd. I have identified three possible ways to do
+> > this, all of them necessitate modification of Xenomai code outside the
+> > driver:
+> > 
+> > 1. Iterate over the rb_tree rtdm_fd->owner->fds by means of the macro
+> > xntree_for_each_entry(pos, root, member). For this macro to work the
+> > definition of struct rtdm_fd_index must be known to the driver which
+> > means that it would have to be moved from kernel/cobalt/rtdm/fd.c to
+> > e.g. include/cobalt/kernel/rtdm/fd.h.
+> > 
+> > 2. Similar to 1. but offer a new function rtdm_fd_get_ufd(struct rtdm_fd
+> > *fd) in which the rb_tree is searched.
+> > 
+> > 3. Introduce a new value "int ufd" in struct rtdm_fd for setting and
+> > getting the ufd directly (which would be overkill I suppose because the
+> > vast majority of drivers don't need it).
+> 
+> OTOH, that structure is not really optimized for size. So I do not see why it 
+> shouldn't take yet another int, which would also be a faster API than the other 
+> options.
+
+Correct. Nevertheless, we could mitigate the effect of this change by
+surrounding the new ufd field with
+#ifdef CONFIG_XENO_DRIVERS_NET_RTIPV4_TCP
+
+-- 
+Sebastian
+
