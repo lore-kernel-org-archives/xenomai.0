@@ -1,7 +1,11 @@
-From: Philippe Gerum <rpm@xenomai.org>
-Date: Sun, 9 Sep 2018 18:30:55 +0200
-Message-Id: <E1fz3yJ-0004NP-VO@xenomai.org>
-Subject: [Xenomai] [PATCH 4/4] printk: ipipe: defer vprintk() output
+From: Lange Norbert <norbert.lange@andritz.com>
+Date: Tue, 16 Oct 2018 09:23:31 +0000
+Message-ID: <aa8ff35f59804fe08c8ed79d2861eebd@andritz.com>
+Content-Language: en-US
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: quoted-printable
+MIME-Version: 1.0
+Subject: [Xenomai] Fun with cobalt interposing fcntl
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -10,196 +14,93 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Henning Schild <henning.schild@siemens.com>
-Cc: xenomai@xenomai.org
+To: "Xenomai (xenomai@xenomai.org)" <xenomai@xenomai.org>
 
----
- kernel/printk/printk.c | 136 ++++++++++++++++++++++++-------------------------
- 1 file changed, 67 insertions(+), 69 deletions(-)
+Hello,
 
-diff --git a/kernel/printk/printk.c b/kernel/printk/printk.c
-index 5500f9cc0658..965890eec38f 100644
---- a/kernel/printk/printk.c
-+++ b/kernel/printk/printk.c
-@@ -1762,44 +1762,6 @@ asmlinkage int vprintk_emit(int facility, int level,
- }
- EXPORT_SYMBOL(vprintk_emit);
- 
--asmlinkage int vprintk(const char *fmt, va_list args)
--{
--	return vprintk_func(fmt, args);
--}
--EXPORT_SYMBOL(vprintk);
--
--asmlinkage int printk_emit(int facility, int level,
--			   const char *dict, size_t dictlen,
--			   const char *fmt, ...)
--{
--	va_list args;
--	int r;
--
--	va_start(args, fmt);
--	r = vprintk_emit(facility, level, dict, dictlen, fmt, args);
--	va_end(args);
--
--	return r;
--}
--EXPORT_SYMBOL(printk_emit);
--
--int vprintk_default(const char *fmt, va_list args)
--{
--	int r;
--
--#ifdef CONFIG_KGDB_KDB
--	/* Allow to pass printk() to kdb but avoid a recursion. */
--	if (unlikely(kdb_trap_printk && kdb_printf_cpu < 0)) {
--		r = vkdb_printf(KDB_MSGSRC_PRINTK, fmt, args);
--		return r;
--	}
--#endif
--	r = vprintk_emit(0, LOGLEVEL_DEFAULT, NULL, 0, fmt, args);
--
--	return r;
--}
--EXPORT_SYMBOL_GPL(vprintk_default);
--
- #ifdef CONFIG_IPIPE
- 
- extern int __ipipe_printk_bypass;
-@@ -1859,37 +1821,12 @@ void __ipipe_flush_printk (unsigned virq, void *cookie)
- 	raw_spin_unlock_irqrestore(&__ipipe_printk_lock, flags);
- }
- 
--/**
-- * printk - print a kernel message
-- * @fmt: format string
-- *
-- * This is printk(). It can be called from any context. We want it to work.
-- *
-- * We try to grab the console_lock. If we succeed, it's easy - we log the
-- * output and call the console drivers.  If we fail to get the semaphore, we
-- * place the output into the log buffer and return. The current holder of
-- * the console_sem will notice the new output in console_unlock(); and will
-- * send it to the consoles before releasing the lock.
-- *
-- * One effect of this deferred printing is that code which calls printk() and
-- * then changes console_loglevel may break. This is because console_loglevel
-- * is inspected when the actual printing occurs.
-- *
-- * See also:
-- * printf(3)
-- *
-- * See the vsnprintf() documentation for format string extensions over C99.
-- */
--
--asmlinkage __visible int printk(const char *fmt, ...)
-+static int do_vprintk(const char *fmt, va_list args)
- {
- 	int sprintk = 1, cs = -1;
- 	unsigned long flags;
--	va_list args;
- 	int ret;
- 
--	va_start(args, fmt);
--
- 	flags = hard_local_irq_save();
- 
- 	if (__ipipe_printk_bypass || oops_in_progress)
-@@ -1911,27 +1848,88 @@ asmlinkage __visible int printk(const char *fmt, ...)
- 	} else
- 		ret = __ipipe_log_printk(fmt, args);
- 
--	va_end(args);
--
- 	return ret;
- }
- 
- #else /* !CONFIG_IPIPE */
- 
--asmlinkage __visible int printk(const char *fmt, ...)
-+static int do_vprintk(const char *fmt, va_list args)
-+{
-+	return vprintk_func(fmt, args);
-+}
-+
-+#endif /* !CONFIG_IPIPE */
-+
-+asmlinkage int vprintk(const char *fmt, va_list args)
-+{
-+	return do_vprintk(fmt, args);
-+}
-+EXPORT_SYMBOL(vprintk);
-+
-+asmlinkage int printk_emit(int facility, int level,
-+			   const char *dict, size_t dictlen,
-+			   const char *fmt, ...)
- {
- 	va_list args;
- 	int r;
- 
- 	va_start(args, fmt);
--	r = vprintk_func(fmt, args);
-+	r = vprintk_emit(facility, level, dict, dictlen, fmt, args);
- 	va_end(args);
- 
- 	return r;
- }
-+EXPORT_SYMBOL(printk_emit);
-+
-+int vprintk_default(const char *fmt, va_list args)
-+{
-+	int r;
-+
-+#ifdef CONFIG_KGDB_KDB
-+	/* Allow to pass printk() to kdb but avoid a recursion. */
-+	if (unlikely(kdb_trap_printk && kdb_printf_cpu < 0)) {
-+		r = vkdb_printf(KDB_MSGSRC_PRINTK, fmt, args);
-+		return r;
-+	}
-+#endif
-+	r = vprintk_emit(0, LOGLEVEL_DEFAULT, NULL, 0, fmt, args);
-+
-+	return r;
-+}
-+EXPORT_SYMBOL_GPL(vprintk_default);
-+
-+/**
-+ * printk - print a kernel message
-+ * @fmt: format string
-+ *
-+ * This is printk(). It can be called from any context. We want it to work.
-+ *
-+ * We try to grab the console_lock. If we succeed, it's easy - we log the
-+ * output and call the console drivers.  If we fail to get the semaphore, we
-+ * place the output into the log buffer and return. The current holder of
-+ * the console_sem will notice the new output in console_unlock(); and will
-+ * send it to the consoles before releasing the lock.
-+ *
-+ * One effect of this deferred printing is that code which calls printk() and
-+ * then changes console_loglevel may break. This is because console_loglevel
-+ * is inspected when the actual printing occurs.
-+ *
-+ * See also:
-+ * printf(3)
-+ *
-+ * See the vsnprintf() documentation for format string extensions over C99.
-+ */
-+asmlinkage __visible int printk(const char *fmt, ...)
-+{
-+	va_list args;
-+	int r;
- 
--#endif /* CONFIG_IPIPE */
-+	va_start(args, fmt);
-+	r = do_vprintk(fmt, args);
-+	va_end(args);
- 
-+	return r;
-+}
- EXPORT_SYMBOL(printk);
- 
- #else /* CONFIG_PRINTK */
--- 
-2.14.4
+I ran into an annoying problem with cobalt, namely that it interposes funct=
+ions with varargs like fcntl,
+The issue is that it won't ever be able to correctly forward the varags.
+In the example, fcntl will be interpreted as having an additional int param=
+eter, while some functionality has a pointer instead,
+This yields to truncation and errors.
 
+Unfortunatly I don't see any way of fixing this easily, but I consider this=
+ harmful (silently breaking code).
+IMHO  Would be better to remove the wrapping for fcntl and use an explicit =
+cobalt function where necessary.
+
+King regards,  Norbert
+
+----- offending code
+
+bool lockfile(const char *fname)
+{
+    int fd =3D open(fname, O_WRONLY | O_CREAT, S_IRUSR | S_IWUSR | S_IRGRP =
+| S_IROTH);
+    if (fd < 0)
+    {
+        perror("Opening Component Lock");
+        return false;
+    }
+    struct flock fl =3D {F_WRLCK, SEEK_SET};
+
+    int ret =3D fcntl(fd, F_SETLK, &fl);
+    if (ret !=3D 0)
+    {
+        perror("Acquiring Component Lock");
+        return false;
+    }
+    return true;
+}
+
+----- wrapping in rtdm.c
+
+COBALT_IMPL(int, fcntl, (int fd, int cmd, ...))
+{
+        va_list ap;
+        int arg;
+        int ret;
+
+        va_start(ap, cmd);
+        arg =3D va_arg(ap, int);
+        va_end(ap);
+
+        ret =3D XENOMAI_SYSCALL3(sc_cobalt_fcntl, fd, cmd, arg);
+
+        if (ret !=3D -EBADF && ret !=3D -ENOSYS)
+                return set_errno(ret);
+
+        return __STD(fcntl(fd, cmd, arg));
+}
+________________________________
+
+This message and any attachments are solely for the use of the intended rec=
+ipients. They may contain privileged and/or confidential information or oth=
+er information protected from disclosure. If you are not an intended recipi=
+ent, you are hereby notified that you received this email in error and that=
+ any review, dissemination, distribution or copying of this email and any a=
+ttachment is strictly prohibited. If you have received this email in error,=
+ please contact the sender and delete the message and any attachment from y=
+our system.
+
+ANDRITZ HYDRO GmbH
+
+
+Rechtsform/ Legal form: Gesellschaft mit beschr=C3=A4nkter Haftung / Corpor=
+ation
+
+Firmensitz/ Registered seat: Wien
+
+Firmenbuchgericht/ Court of registry: Handelsgericht Wien
+
+Firmenbuchnummer/ Company registration: FN 61833 g
+
+DVR: 0605077
+
+UID-Nr.: ATU14756806
+
+
+Thank You
+________________________________
 
