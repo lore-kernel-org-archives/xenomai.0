@@ -1,16 +1,8 @@
-From: Giulio Moro <g.moro@qmul.ac.uk>
-Date: Fri, 14 Sep 2018 12:19:35 +0000
-Message-ID: <VI1PR0701MB212671005AEF3217529DF3F2B5190@VI1PR0701MB2126.eurprd07.prod.outlook.com>
-References: <a327adca-1576-0794-71cd-409b366dfdc8@alaxarxa.net>
- <28fd59c00f574c5a987ff73d72ffbc4c@andritz.com>
- <4078e730-9293-12b4-e3c2-843f0de5f637@alaxarxa.net>,
- <c69b760a81bb4d3ab0bc78f3d4502b5f@andritz.com>
-In-Reply-To: <c69b760a81bb4d3ab0bc78f3d4502b5f@andritz.com>
-Content-Language: en-GB
-Content-Type: text/plain; charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
-MIME-Version: 1.0
-Subject: Re: [Xenomai] Order options to build a Xenomai program
+From: Sebastian Smolorz <sebastian.smolorz@gmx.de>
+Date: Tue, 16 Oct 2018 09:56:10 +0200
+Message-Id: <1539676570-4773-1-git-send-email-sebastian.smolorz@gmx.de>
+Subject: [Xenomai] [PATCH] rtdm: add integer file descriptor to struct
+ rtdm_fd
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -19,27 +11,58 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Lange Norbert <norbert.lange@andritz.com>, Leopold Palomo-Avellaneda <leo@alaxarxa.net>, "Xenomai@xenomai.org" <xenomai@xenomai.org>
+To: xenomai@xenomai.org
 
-> So, from my point of view it confirm my suspicious that the wrapper
-> mechanism is fragile. I really didn't understand why Xenomai core team
-> changed the native API for the POSIX. Although I saw the Jan Kiska
-> conference video explaining it, tell me primitive or dump, but I prefer t=
-o have
-> a RT API that links against RT libraries and you can mix the POSIX functi=
-ons
-> that you want in a clear way.
->
-> OTOH I have to admit that convert a POSIX program to RT in an easy way is
-> amazing.
+RTDM drivers refer to open files or sockets by using struct rtdm_fd.
+Normally, the integer file descriptor returned by socket() or open() calls
+is not necessary for driver operations. However, in some special cases
+this value has to be determined. To ease the retrieval of this value for
+those drivers it is added directly to struct rtdm_fd. Otherwise it would
+be necessary to iterate over the fd's rb_tree.
 
-I normally disable wrappers and call explicitly the `__wrap_` equivalent wh=
-en I want to use a Xenomai function , that is for instance `__wrap_pthread_=
-create()` instead of `pthread_create()`.
-I also add my own forward declaration, e.g.:
+Signed-off-by: Sebastian Smolorz <sebastian.smolorz@gmx.de>
+---
+ include/cobalt/kernel/rtdm/fd.h | 6 ++++++
+ kernel/cobalt/rtdm/fd.c         | 1 +
+ 2 files changed, 7 insertions(+)
 
-int __wrap_pthread_create(pthread_t *thread, const pthread_attr_t *attr, vo=
-id *(*start_routine) (void *), void *arg);
+diff --git a/include/cobalt/kernel/rtdm/fd.h b/include/cobalt/kernel/rtdm/fd.h
+index 58d3c4a..572b17e 100644
+--- a/include/cobalt/kernel/rtdm/fd.h
++++ b/include/cobalt/kernel/rtdm/fd.h
+@@ -298,6 +298,7 @@ struct rtdm_fd {
+ 	struct rtdm_fd_ops *ops;
+ 	struct cobalt_ppd *owner;
+ 	unsigned int refs;
++	int ufd;
+ 	int minor;
+ 	int oflags;
+ #ifdef CONFIG_XENO_ARCH_SYS3264
+@@ -320,6 +321,11 @@ static inline struct cobalt_ppd *rtdm_fd_owner(const struct rtdm_fd *fd)
+ 	return fd->owner;
+ }
+ 
++static inline int rtdm_fd_ufd(const struct rtdm_fd *fd)
++{
++	return fd->ufd;
++}
++
+ static inline int rtdm_fd_minor(const struct rtdm_fd *fd)
+ {
+ 	return fd->minor;
+diff --git a/kernel/cobalt/rtdm/fd.c b/kernel/cobalt/rtdm/fd.c
+index 8d577b2..807a11e 100644
+--- a/kernel/cobalt/rtdm/fd.c
++++ b/kernel/cobalt/rtdm/fd.c
+@@ -166,6 +166,7 @@ int rtdm_fd_enter(struct rtdm_fd *fd, int ufd, unsigned int magic,
+ 	fd->magic = magic;
+ 	fd->ops = ops;
+ 	fd->owner = ppd;
++	fd->ufd = ufd;
+ 	fd->refs = 1;
+ 	set_compat_bit(fd);
+ 
+-- 
+2.7.4
 
-But maybe this is already provided in some of the Cobalt headers.=
 
