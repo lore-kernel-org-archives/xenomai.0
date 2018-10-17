@@ -1,8 +1,9 @@
 From: Sebastian Smolorz <sebastian.smolorz@gmx.de>
-Date: Wed, 17 Oct 2018 13:31:43 +0200
-Message-Id: <1539775907-5124-1-git-send-email-sebastian.smolorz@gmx.de>
-Subject: [Xenomai] [PATCH 0/4] net/tcp: Fix several bugs and allow rttcp to
- be built
+Date: Wed, 17 Oct 2018 13:31:44 +0200
+Message-Id: <1539775907-5124-2-git-send-email-sebastian.smolorz@gmx.de>
+In-Reply-To: <1539775907-5124-1-git-send-email-sebastian.smolorz@gmx.de>
+References: <1539775907-5124-1-git-send-email-sebastian.smolorz@gmx.de>
+Subject: [Xenomai] [PATCH 1/4] net/tcp: return ufd in rt_tcp_accept()
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -13,21 +14,27 @@ List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: xenomai@xenomai.org
 
-This patch series makes RTnet's tcp module usable again. It was not
-selectable in Kconfig for a long time. Now it is supposed to work in
-the way it worked when RTnet was a separate project for Xenomai 2.
+Fix compilation error in rt_tcp_accept() when returning its socket's own file
+descriptor.
 
-Sebastian Smolorz (4):
-  net/tcp: return ufd in rt_tcp_accept()
-  net/tcp: fix listen() and shutdown() IOCTL calls
-  net/tcp: Fix bug when obtaining RST socket's private structure from
-    its rtdm_fd pointer
-  net/tcp: Allow choice of rttcp protocol in Kconfig
+Signed-off-by: Sebastian Smolorz <sebastian.smolorz@gmx.de>
+---
+ kernel/drivers/net/stack/ipv4/tcp/tcp.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
- kernel/drivers/net/stack/ipv4/Kconfig   |  2 +-
- kernel/drivers/net/stack/ipv4/tcp/tcp.c | 16 ++++------------
- 2 files changed, 5 insertions(+), 13 deletions(-)
-
+diff --git a/kernel/drivers/net/stack/ipv4/tcp/tcp.c b/kernel/drivers/net/stack/ipv4/tcp/tcp.c
+index c5e42bc..c713635 100644
+--- a/kernel/drivers/net/stack/ipv4/tcp/tcp.c
++++ b/kernel/drivers/net/stack/ipv4/tcp/tcp.c
+@@ -1668,7 +1668,7 @@ static int rt_tcp_accept(struct tcp_socket *ts, struct sockaddr *addr,
+     ts->is_accepted = 1;
+     rtdm_lock_put_irqrestore(&ts->socket_lock, context);
+ 
+-    ret = rt_socket_fd(&ts->sock)->fd;
++    ret = rtdm_fd_ufd(rt_socket_fd(&ts->sock));
+ 
+  err:
+     /* it is not critical to leave this unlocked
 -- 
 2.7.4
 
