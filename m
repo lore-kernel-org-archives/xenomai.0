@@ -1,9 +1,10 @@
-From: Norbert Lange <nolange79@gmail.com>
-Date: Tue, 16 Oct 2018 12:34:50 +0200
-Message-Id: <20181016103450.3189-1-norbert.lange@andritz.com>
+Date: Wed, 17 Oct 2018 02:25:40 -0500 (CDT)
+From: Per Oberg <pero@wolfram.com>
+Message-ID: <1910322472.5076643.1539761140698.JavaMail.zimbra@wolfram.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: [Xenomai] [PATCH] cobalt: fcntl uses void* instead of int
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
+Subject: [Xenomai] Similarities between UIO and RTDM
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -12,51 +13,19 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
+To: xenomai <xenomai@xenomai.org>
 
-this is consistent with glibc internals,
-and fixes truncation when passing 64bit pointers
----
- lib/cobalt/rtdm.c     | 4 ++--
- lib/cobalt/wrappers.c | 4 ++--
- 2 files changed, 4 insertions(+), 4 deletions(-)
+Hello all
 
-diff --git a/lib/cobalt/rtdm.c b/lib/cobalt/rtdm.c
-index 6b8898e70..a01752cdd 100644
---- a/lib/cobalt/rtdm.c
-+++ b/lib/cobalt/rtdm.c
-@@ -139,11 +139,11 @@ static int do_ioctl(int fd, unsigned int request, void *arg)
- COBALT_IMPL(int, fcntl, (int fd, int cmd, ...))
- {
- 	va_list ap;
--	int arg;
-+	void *arg;
- 	int ret;
- 
- 	va_start(ap, cmd);
--	arg = va_arg(ap, int);
-+	arg = va_arg(ap, void *);
- 	va_end(ap);
- 
- 	ret = XENOMAI_SYSCALL3(sc_cobalt_fcntl, fd, cmd, arg);
-diff --git a/lib/cobalt/wrappers.c b/lib/cobalt/wrappers.c
-index 20ad63a61..2540e3c50 100644
---- a/lib/cobalt/wrappers.c
-+++ b/lib/cobalt/wrappers.c
-@@ -216,10 +216,10 @@ __weak
- int __real_fcntl(int fd, int cmd, ...)
- {
- 	va_list ap;
--	int arg;
-+	void *arg;
- 
- 	va_start(ap, cmd);
--	arg = va_arg(ap, int);
-+	arg = va_arg(ap, void *);
- 	va_end(ap);
- 
- 	return fcntl(fd, cmd, arg);
--- 
-2.19.1
+I am looking at a piece of hardware that is supported in linux using a user=
+space library together with the UIO kernel module. The UIO kernel module is=
+ available in the standard linux kernel.=20
 
+Could someone make an educated guess whether it's feasible to port this use=
+rspace library to Xenomai and RDTM ?=20
+
+How similar are the UIO and RTDM interfaces?
+
+Regards
+Per =C3=96berg=20
 
