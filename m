@@ -1,14 +1,8 @@
-From: Lange Norbert <norbert.lange@andritz.com>
-Date: Wed, 17 Oct 2018 11:30:25 +0000
-Message-ID: <d62437da1905437abadb9c24fa9384eb@andritz.com>
-References: <20181016103450.3189-1-norbert.lange@andritz.com>
- <457aa74c-8fde-8e95-3065-41d41de0a15e@xenomai.org>
-In-Reply-To: <457aa74c-8fde-8e95-3065-41d41de0a15e@xenomai.org>
-Content-Language: en-US
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-MIME-Version: 1.0
-Subject: Re: [Xenomai] [PATCH] cobalt: fcntl uses void* instead of int
+From: Sebastian Smolorz <sebastian.smolorz@gmx.de>
+Date: Wed, 17 Oct 2018 13:31:43 +0200
+Message-Id: <1539775907-5124-1-git-send-email-sebastian.smolorz@gmx.de>
+Subject: [Xenomai] [PATCH 0/4] net/tcp: Fix several bugs and allow rttcp to
+ be built
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,62 +11,24 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Philippe Gerum <rpm@xenomai.org>, "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: xenomai@xenomai.org
 
-PiA+IEBAIC0xMzksMTEgKzEzOSwxMSBAQCBzdGF0aWMgaW50IGRvX2lvY3RsKGludCBmZCwgdW5z
-aWduZWQgaW50DQo+ID4gcmVxdWVzdCwgdm9pZCAqYXJnKSAgQ09CQUxUX0lNUEwoaW50LCBmY250
-bCwgKGludCBmZCwgaW50IGNtZCwgLi4uKSkNCj4gPiB7DQo+ID4gICAgICAgdmFfbGlzdCBhcDsN
-Cj4gPiAtICAgICBpbnQgYXJnOw0KPiA+ICsgICAgIHZvaWQgKmFyZzsNCj4gPiAgICAgICBpbnQg
-cmV0Ow0KPiA+DQo+ID4gICAgICAgdmFfc3RhcnQoYXAsIGNtZCk7DQo+ID4gLSAgICAgYXJnID0g
-dmFfYXJnKGFwLCBpbnQpOw0KPiA+ICsgICAgIGFyZyA9IHZhX2FyZyhhcCwgdm9pZCAqKTsNCj4g
-PiAgICAgICB2YV9lbmQoYXApOw0KPiA+DQo+ID4gICAgICAgcmV0ID0gWEVOT01BSV9TWVNDQUxM
-MyhzY19jb2JhbHRfZmNudGwsIGZkLCBjbWQsIGFyZyk7IGRpZmYNCj4gPiAtLWdpdCBhL2xpYi9j
-b2JhbHQvd3JhcHBlcnMuYyBiL2xpYi9jb2JhbHQvd3JhcHBlcnMuYyBpbmRleA0KPiA+IDIwYWQ2
-M2E2MS4uMjU0MGUzYzUwIDEwMDY0NA0KPiA+IC0tLSBhL2xpYi9jb2JhbHQvd3JhcHBlcnMuYw0K
-PiA+ICsrKyBiL2xpYi9jb2JhbHQvd3JhcHBlcnMuYw0KPiA+IEBAIC0yMTYsMTAgKzIxNiwxMCBA
-QCBfX3dlYWsNCj4gPiAgaW50IF9fcmVhbF9mY250bChpbnQgZmQsIGludCBjbWQsIC4uLikgIHsN
-Cj4gPiAgICAgICB2YV9saXN0IGFwOw0KPiA+IC0gICAgIGludCBhcmc7DQo+ID4gKyAgICAgdm9p
-ZCAqYXJnOw0KPiA+DQo+ID4gICAgICAgdmFfc3RhcnQoYXAsIGNtZCk7DQo+ID4gLSAgICAgYXJn
-ID0gdmFfYXJnKGFwLCBpbnQpOw0KPiA+ICsgICAgIGFyZyA9IHZhX2FyZyhhcCwgdm9pZCAqKTsN
-Cj4gPiAgICAgICB2YV9lbmQoYXApOw0KPiA+DQo+ID4gICAgICAgcmV0dXJuIGZjbnRsKGZkLCBj
-bWQsIGFyZyk7DQo+ID4NCj4NCj4gRmFpciBlbm91Z2gsIGhvd2V2ZXIgYSBnZW5lcmljICdsb25n
-JyBtYXkgYmUgYSBiZXR0ZXIgcGljayB0aGFuIGFuDQo+IG9wYXF1ZSBwb2ludGVyIHR5cGUgaW4g
-dGhpcyBjYXNlICgqKSwgdGhlbiB5b3Ugd291bGQgbmVlZCB0byBmaXggdXAgdGhlDQo+IENvYmFs
-dCBrZXJuZWwgc2lkZSBpbXBsZW1lbnRpbmcgdGhlIGFjdHVhbCBzeXNjYWxsIHRvIHJlZmxlY3Qg
-dGhpcyBjaGFuZ2UuDQoNClNvbWUgZmNudGwgY2FsbHMgdXNlIGEgcG9pbnRlci10by1zdHJ1Y3Qs
-IHNvIHZvaWQqIG9yIHVpbnRwdHJfdCBzZWVtcyBmaXR0aW5nIGZvciB0aGlzPw0KIChUQkggSSBq
-dXN0IGxvb2tlZCBhdCB3aGF0IGdsaWJjIGlzIGRvaW5nLCBhbmQgc29tZSB3ZWlyZCBhcmNocyBt
-aWdodCBoYXZlIHNpemVvZihsb25nKSA8IHNpemVvZih2b2lkKikpDQoNCklmIFhlbm9tYWkgb25s
-eSBzdXBwb3J0cyBjYWxscyB3aXRoIGFuIGludCwgbWF5YmUgdHJ1bmNhdGUgaXQganVzdCBmb3Ig
-dGhlIHN5c2NhbGw/DQogICAgICAgcmV0ID0gWEVOT01BSV9TWVNDQUxMMyhzY19jb2JhbHRfZmNu
-dGwsIGZkLCBjbWQsIChpbnQpYXJnKTsNCihyZXN0IG9mIHRoZSBwYXRjaCB1bnRvdWNoZWQpDQoN
-Ck5vdCBzdXJlIGhvdyBzeXNjYWxscyBhcmUgZG9uZSwgSSBleHBlY3RlZCB0aGUgYXJndW1lbnRz
-IGFyZSBqdXN0IHBhc3NlZCBpbiByZWdpc3RlcnMsDQpJbiB3aGljaCBjYXNlIGl0IGRvZXMgbm90
-IG1hdHRlciAodW5sZXNzIHlvdSBkb27igJl0IGZpdCBhIHBvaW50ZXIgaW4gYSByZWdpc3RlcikN
-Cg0KPiBNb3ZpbmcgYXdheSBmcm9tICdpbnQnIHRvIGEgbG9uZ2VyIHR5cGUgd2lsbCBhbHNvIHJl
-cXVpcmUgdG8gbWFrZQ0KPiBDb2JhbHQncyBmY250bCgpIHN5c2NhbGwgaW1wbGVtZW50YXRpb24g
-YXdhcmUgb2YgdGhlIG1peGVkIEFCSSBtb2RlbHMNCj4gd2hlbiBDT05GSUdfWEVOT19BUkNIX1NZ
-UzMyNjQgaXMgZW5hYmxlZC4gaS5lLiB0aGUgYXJndW1lbnQgd291bGQNCj4gc3RpbGwNCj4gYmUg
-Y29udmV5ZWQgYXMgYSAzMmJpdCB2YWx1ZSBmb3IgYXBwbGljYXRpb25zIGNvbmZvcm1pbmcgdG8g
-dGhlIGlhMzJlbXUNCj4gb3IgeDMyIEFCSXMgcnVubmluZyBvdmVyIGEgNjRiaXQga2VybmVsLg0K
-DQpPaywgSSBoYXZlbid0IHRob3VnaHQgYWJvdXQgdGhhdCBhdCBhbGwuIEJ1dCBzaW5jZSB5b3Ug
-YXBwYXJlbnRseSBkb24ndCBleHBlY3QgYSBwb2ludGVyIG5vdywNCnRydW5jYXRpbmcgdGhlIHZh
-bHVlIHRvIGFuIGludCBmb3IgdGhlIHN5c2NhbGwgc2VlbXMgZml0dGluZy4NCg0KTm9yYmVydA0K
-DQpfX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fXw0KDQpUaGlzIG1lc3NhZ2UgYW5kIGFu
-eSBhdHRhY2htZW50cyBhcmUgc29sZWx5IGZvciB0aGUgdXNlIG9mIHRoZSBpbnRlbmRlZCByZWNp
-cGllbnRzLiBUaGV5IG1heSBjb250YWluIHByaXZpbGVnZWQgYW5kL29yIGNvbmZpZGVudGlhbCBp
-bmZvcm1hdGlvbiBvciBvdGhlciBpbmZvcm1hdGlvbiBwcm90ZWN0ZWQgZnJvbSBkaXNjbG9zdXJl
-LiBJZiB5b3UgYXJlIG5vdCBhbiBpbnRlbmRlZCByZWNpcGllbnQsIHlvdSBhcmUgaGVyZWJ5IG5v
-dGlmaWVkIHRoYXQgeW91IHJlY2VpdmVkIHRoaXMgZW1haWwgaW4gZXJyb3IgYW5kIHRoYXQgYW55
-IHJldmlldywgZGlzc2VtaW5hdGlvbiwgZGlzdHJpYnV0aW9uIG9yIGNvcHlpbmcgb2YgdGhpcyBl
-bWFpbCBhbmQgYW55IGF0dGFjaG1lbnQgaXMgc3RyaWN0bHkgcHJvaGliaXRlZC4gSWYgeW91IGhh
-dmUgcmVjZWl2ZWQgdGhpcyBlbWFpbCBpbiBlcnJvciwgcGxlYXNlIGNvbnRhY3QgdGhlIHNlbmRl
-ciBhbmQgZGVsZXRlIHRoZSBtZXNzYWdlIGFuZCBhbnkgYXR0YWNobWVudCBmcm9tIHlvdXIgc3lz
-dGVtLg0KDQpBTkRSSVRaIEhZRFJPIEdtYkgNCg0KDQpSZWNodHNmb3JtLyBMZWdhbCBmb3JtOiBH
-ZXNlbGxzY2hhZnQgbWl0IGJlc2NocsOkbmt0ZXIgSGFmdHVuZyAvIENvcnBvcmF0aW9uDQoNCkZp
-cm1lbnNpdHovIFJlZ2lzdGVyZWQgc2VhdDogV2llbg0KDQpGaXJtZW5idWNoZ2VyaWNodC8gQ291
-cnQgb2YgcmVnaXN0cnk6IEhhbmRlbHNnZXJpY2h0IFdpZW4NCg0KRmlybWVuYnVjaG51bW1lci8g
-Q29tcGFueSByZWdpc3RyYXRpb246IEZOIDYxODMzIGcNCg0KRFZSOiAwNjA1MDc3DQoNClVJRC1O
-ci46IEFUVTE0NzU2ODA2DQoNCg0KVGhhbmsgWW91DQpfX19fX19fX19fX19fX19fX19fX19fX19f
-X19fX19fXw0K
+This patch series makes RTnet's tcp module usable again. It was not
+selectable in Kconfig for a long time. Now it is supposed to work in
+the way it worked when RTnet was a separate project for Xenomai 2.
+
+Sebastian Smolorz (4):
+  net/tcp: return ufd in rt_tcp_accept()
+  net/tcp: fix listen() and shutdown() IOCTL calls
+  net/tcp: Fix bug when obtaining RST socket's private structure from
+    its rtdm_fd pointer
+  net/tcp: Allow choice of rttcp protocol in Kconfig
+
+ kernel/drivers/net/stack/ipv4/Kconfig   |  2 +-
+ kernel/drivers/net/stack/ipv4/tcp/tcp.c | 16 ++++------------
+ 2 files changed, 5 insertions(+), 13 deletions(-)
+
+-- 
+2.7.4
+
 
