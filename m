@@ -1,14 +1,14 @@
-References: <20181014085405.9326-1-rpm@xenomai.org>
+References: <1539773778-4283-1-git-send-email-sebastian.smolorz@gmx.de>
 From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <559fb50e-2a3d-9d4b-4877-937cccbf64cb@siemens.com>
-Date: Wed, 17 Oct 2018 13:19:11 +0200
+Message-ID: <5db67cb1-18b8-4b08-4e9e-cbeacbe65b6a@siemens.com>
+Date: Wed, 17 Oct 2018 13:20:39 +0200
 MIME-Version: 1.0
-In-Reply-To: <20181014085405.9326-1-rpm@xenomai.org>
+In-Reply-To: <1539773778-4283-1-git-send-email-sebastian.smolorz@gmx.de>
 Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] [PATCH] boilerplate/setup: cobalt: do not advertise
- non-RT CPUs to applications
+Subject: Re: [Xenomai] [PATCH v3] rtdm: expose user-side file descriptors to
+ drivers
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,97 +17,63 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Philippe Gerum <rpm@xenomai.org>, xenomai@xenomai.org
+To: Sebastian Smolorz <sebastian.smolorz@gmx.de>, xenomai@xenomai.org
 
-On 14.10.18 10:54, Philippe Gerum wrote:
-> The CPU affinity mask in __base_setup_data.cpu_affinity - which may be
-> set by --cpu-affinity - is conventionally checked by applications for
-> determining which CPUs are usable for real-time duties.
+On 17.10.18 12:56, Sebastian Smolorz wrote:
+> RTDM drivers refer to open files or sockets by using struct rtdm_fd.
+> Normally, the user-side file descriptors returned by socket() or open()
+> calls are not necessary for driver operations. However, in some special
+> cases the user-side fd has to be determined, for example as return
+> value of rt_tcp_accept() which is a driver function of RTnet's TCP
+> protocol driver.
 > 
-> Over Cobalt, we need to make sure that such mask reflects the set of
-> CPUs available for running real-time threads as defined by the core
-> (i.e. /proc/xenomai/affinity), in absence of --cpu-affinity
-> setting.
-> 
-> Otherwise, some applications like switchest looking at an empty
-> affinity mask may wrongly assume that all CPUs are available for
-> running RT threads, leading to a failure when manually pinning such
-> thread to an invalid (non-RT) CPU.
-> 
-> With current Cobalt core and I-pipe releases not fixed for gracefully
-> handling invalid domain migration requests over a non-RT CPU, such a
-> failure may trigger a kernel panic.
-> 
-> Signed-off-by: Philippe Gerum <rpm@xenomai.org>
+> Signed-off-by: Sebastian Smolorz <sebastian.smolorz@gmx.de>
 > ---
->   lib/boilerplate/setup.c | 33 +++++++++++++++++++++++++++++++--
->   1 file changed, 31 insertions(+), 2 deletions(-)
+>   include/cobalt/kernel/rtdm/fd.h | 6 ++++++
+>   kernel/cobalt/rtdm/fd.c         | 1 +
+>   2 files changed, 7 insertions(+)
 > 
-> diff --git a/lib/boilerplate/setup.c b/lib/boilerplate/setup.c
-> index 8b363efee..3214d7f04 100644
-> --- a/lib/boilerplate/setup.c
-> +++ b/lib/boilerplate/setup.c
-> @@ -173,6 +173,8 @@ static int collect_cpu_affinity(const char *cpu_list)
->   		return ret;
->   	}
->   
-> +	CPU_ZERO(&__base_setup_data.cpu_affinity);
-> +
->   	s = n = strdup(cpu_list);
->   	while ((range = strtok_r(n, ",", &range_p)) != NULL) {
->   		if (*range == '\0')
-> @@ -232,6 +234,33 @@ fail:
->   	return -EINVAL;
+> diff --git a/include/cobalt/kernel/rtdm/fd.h b/include/cobalt/kernel/rtdm/fd.h
+> index 58d3c4a..572b17e 100644
+> --- a/include/cobalt/kernel/rtdm/fd.h
+> +++ b/include/cobalt/kernel/rtdm/fd.h
+> @@ -298,6 +298,7 @@ struct rtdm_fd {
+>   	struct rtdm_fd_ops *ops;
+>   	struct cobalt_ppd *owner;
+>   	unsigned int refs;
+> +	int ufd;
+>   	int minor;
+>   	int oflags;
+>   #ifdef CONFIG_XENO_ARCH_SYS3264
+> @@ -320,6 +321,11 @@ static inline struct cobalt_ppd *rtdm_fd_owner(const struct rtdm_fd *fd)
+>   	return fd->owner;
 >   }
 >   
-> +static void retrieve_default_cpu_affinity(void)
+> +static inline int rtdm_fd_ufd(const struct rtdm_fd *fd)
 > +{
-> +	CPU_ZERO(&__base_setup_data.cpu_affinity);
-> +
-> +#ifdef CONFIG_XENO_COBALT
-> +	/*
-> +	 * If the Cobalt core has restricted the CPU set, update our
-> +	 * mask accordingly.
-> +	 */
-> +	unsigned long cpumask;
-> +	FILE *fp;
-> +	int cpu;
-> +
-> +	fp = fopen("/proc/xenomai/affinity", "r");
-> +	if (fp == NULL)
-> +		return;	/* uhh? */
-> +
-> +	if (fscanf(fp, "%lx", &cpumask) == 1) {
-> +		for (cpu = 0; cpumask; cpumask >>= 1, cpu++)
-> +			if (cpumask & 1)
-> +				CPU_SET(cpu, &__base_setup_data.cpu_affinity);
-> +	}
-> +
-> +	fclose(fp);
-> +#endif
+> +	return fd->ufd;
 > +}
 > +
->   static inline char **prep_args(int argc, char *const argv[])
+>   static inline int rtdm_fd_minor(const struct rtdm_fd *fd)
 >   {
->   	char **uargv;
-> @@ -528,8 +557,8 @@ static void __xenomai_init(int *argcp, char *const **argvp, const char *me)
->   	/* No ifs, no buts: we must be called over the main thread. */
->   	assert(getpid() == __node_id);
+>   	return fd->minor;
+> diff --git a/kernel/cobalt/rtdm/fd.c b/kernel/cobalt/rtdm/fd.c
+> index 8d577b2..807a11e 100644
+> --- a/kernel/cobalt/rtdm/fd.c
+> +++ b/kernel/cobalt/rtdm/fd.c
+> @@ -166,6 +166,7 @@ int rtdm_fd_enter(struct rtdm_fd *fd, int ufd, unsigned int magic,
+>   	fd->magic = magic;
+>   	fd->ops = ops;
+>   	fd->owner = ppd;
+> +	fd->ufd = ufd;
+>   	fd->refs = 1;
+>   	set_compat_bit(fd);
 >   
-> -	/* Define default CPU affinity, i.e. no particular affinity. */
-> -	CPU_ZERO(&__base_setup_data.cpu_affinity);
-> +	/* Retrieve the default CPU affinity. */
-> +	retrieve_default_cpu_affinity();
->   
->   	/*
->   	 * Parse the base options first, to bootstrap the core with
 > 
 
-Thanks, applied to next.
+Applied to next.
 
-Am I right that this as well as most of the patches in the original series are 
-also stable candidates?
-
+Thanks,
 Jan
 
 -- 
