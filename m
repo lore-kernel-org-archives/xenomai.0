@@ -1,13 +1,14 @@
-References: <20181016103450.3189-1-norbert.lange@andritz.com>
+References: <1539676570-4773-1-git-send-email-sebastian.smolorz@gmx.de>
 From: Philippe Gerum <rpm@xenomai.org>
-Message-ID: <457aa74c-8fde-8e95-3065-41d41de0a15e@xenomai.org>
-Date: Wed, 17 Oct 2018 11:52:28 +0200
+Message-ID: <9ffd6617-9f49-0c2a-a828-d406381693c9@xenomai.org>
+Date: Wed, 17 Oct 2018 11:57:18 +0200
 MIME-Version: 1.0
-In-Reply-To: <20181016103450.3189-1-norbert.lange@andritz.com>
+In-Reply-To: <1539676570-4773-1-git-send-email-sebastian.smolorz@gmx.de>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] [PATCH] cobalt: fcntl uses void* instead of int
+Subject: Re: [Xenomai] [PATCH] rtdm: add integer file descriptor to struct
+ rtdm_fd
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,62 +17,64 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Norbert Lange <nolange79@gmail.com>, xenomai@xenomai.org
+To: Sebastian Smolorz <sebastian.smolorz@gmx.de>, xenomai@xenomai.org
 
-On 10/16/2018 12:34 PM, Norbert Lange wrote:
-> this is consistent with glibc internals,
-> and fixes truncation when passing 64bit pointers
+On 10/16/2018 09:56 AM, Sebastian Smolorz wrote:
+> RTDM drivers refer to open files or sockets by using struct rtdm_fd.
+> Normally, the integer file descriptor returned by socket() or open() calls
+> is not necessary for driver operations. However, in some special cases
+> this value has to be determined. To ease the retrieval of this value for
+> those drivers it is added directly to struct rtdm_fd. Otherwise it would
+> be necessary to iterate over the fd's rb_tree.
+> 
+> Signed-off-by: Sebastian Smolorz <sebastian.smolorz@gmx.de>
 > ---
->  lib/cobalt/rtdm.c     | 4 ++--
->  lib/cobalt/wrappers.c | 4 ++--
->  2 files changed, 4 insertions(+), 4 deletions(-)
+>  include/cobalt/kernel/rtdm/fd.h | 6 ++++++
+>  kernel/cobalt/rtdm/fd.c         | 1 +
+>  2 files changed, 7 insertions(+)
 > 
-> diff --git a/lib/cobalt/rtdm.c b/lib/cobalt/rtdm.c
-> index 6b8898e70..a01752cdd 100644
-> --- a/lib/cobalt/rtdm.c
-> +++ b/lib/cobalt/rtdm.c
-> @@ -139,11 +139,11 @@ static int do_ioctl(int fd, unsigned int request, void *arg)
->  COBALT_IMPL(int, fcntl, (int fd, int cmd, ...))
+> diff --git a/include/cobalt/kernel/rtdm/fd.h b/include/cobalt/kernel/rtdm/fd.h
+> index 58d3c4a..572b17e 100644
+> --- a/include/cobalt/kernel/rtdm/fd.h
+> +++ b/include/cobalt/kernel/rtdm/fd.h
+> @@ -298,6 +298,7 @@ struct rtdm_fd {
+>  	struct rtdm_fd_ops *ops;
+>  	struct cobalt_ppd *owner;
+>  	unsigned int refs;
+> +	int ufd;
+>  	int minor;
+>  	int oflags;
+>  #ifdef CONFIG_XENO_ARCH_SYS3264
+> @@ -320,6 +321,11 @@ static inline struct cobalt_ppd *rtdm_fd_owner(const struct rtdm_fd *fd)
+>  	return fd->owner;
+>  }
+>  
+> +static inline int rtdm_fd_ufd(const struct rtdm_fd *fd)
+> +{
+> +	return fd->ufd;
+> +}
+> +
+>  static inline int rtdm_fd_minor(const struct rtdm_fd *fd)
 >  {
->  	va_list ap;
-> -	int arg;
-> +	void *arg;
->  	int ret;
+>  	return fd->minor;
+> diff --git a/kernel/cobalt/rtdm/fd.c b/kernel/cobalt/rtdm/fd.c
+> index 8d577b2..807a11e 100644
+> --- a/kernel/cobalt/rtdm/fd.c
+> +++ b/kernel/cobalt/rtdm/fd.c
+> @@ -166,6 +166,7 @@ int rtdm_fd_enter(struct rtdm_fd *fd, int ufd, unsigned int magic,
+>  	fd->magic = magic;
+>  	fd->ops = ops;
+>  	fd->owner = ppd;
+> +	fd->ufd = ufd;
+>  	fd->refs = 1;
+>  	set_compat_bit(fd);
 >  
->  	va_start(ap, cmd);
-> -	arg = va_arg(ap, int);
-> +	arg = va_arg(ap, void *);
->  	va_end(ap);
->  
->  	ret = XENOMAI_SYSCALL3(sc_cobalt_fcntl, fd, cmd, arg);
-> diff --git a/lib/cobalt/wrappers.c b/lib/cobalt/wrappers.c
-> index 20ad63a61..2540e3c50 100644
-> --- a/lib/cobalt/wrappers.c
-> +++ b/lib/cobalt/wrappers.c
-> @@ -216,10 +216,10 @@ __weak
->  int __real_fcntl(int fd, int cmd, ...)
->  {
->  	va_list ap;
-> -	int arg;
-> +	void *arg;
->  
->  	va_start(ap, cmd);
-> -	arg = va_arg(ap, int);
-> +	arg = va_arg(ap, void *);
->  	va_end(ap);
->  
->  	return fcntl(fd, cmd, arg);
 > 
 
-Fair enough, however a generic 'long' may be a better pick than an
-opaque pointer type in this case (*), then you would need to fix up the
-Cobalt kernel side implementing the actual syscall to reflect this change.
-
-Moving away from 'int' to a longer type will also require to make
-Cobalt's fcntl() syscall implementation aware of the mixed ABI models
-when CONFIG_XENO_ARCH_SYS3264 is enabled. i.e. the argument would still
-be conveyed as a 32bit value for applications conforming to the ia32emu
-or x32 ABIs running over a 64bit kernel.
+Ack. Nitpicking: I would rephrase the short log to express the fact that
+we are exposing the user-side fd to drivers; how we do it - by adding
+ufd to rtdm_fd - is an implementation detail which can't be overlooked
+when reading the patch anyway.
 
 -- 
 Philippe.
