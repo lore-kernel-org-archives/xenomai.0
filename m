@@ -1,15 +1,15 @@
-References: <a327adca-1576-0794-71cd-409b366dfdc8@alaxarxa.net>
- <28fd59c00f574c5a987ff73d72ffbc4c@andritz.com>
- <4078e730-9293-12b4-e3c2-843f0de5f637@alaxarxa.net>
- <c69b760a81bb4d3ab0bc78f3d4502b5f@andritz.com>
-From: Leopold Palomo-Avellaneda <leo@alaxarxa.net>
-Message-ID: <89cbef00-21d4-eba1-2f49-4a1a0b822549@alaxarxa.net>
-Date: Fri, 14 Sep 2018 16:16:28 +0200
+References: <20181014085405.9326-1-rpm@xenomai.org>
+ <559fb50e-2a3d-9d4b-4877-937cccbf64cb@siemens.com>
+From: Philippe Gerum <rpm@xenomai.org>
+Message-ID: <6433fe56-8fb1-c0b3-a2ae-43f036eac629@xenomai.org>
+Date: Wed, 17 Oct 2018 14:57:53 +0200
 MIME-Version: 1.0
-In-Reply-To: <c69b760a81bb4d3ab0bc78f3d4502b5f@andritz.com>
+In-Reply-To: <559fb50e-2a3d-9d4b-4877-937cccbf64cb@siemens.com>
 Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Subject: Re: [Xenomai] Order options to build a Xenomai program
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
+Subject: Re: [Xenomai] [PATCH] boilerplate/setup: cobalt: do not advertise
+ non-RT CPUs to applications
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -18,110 +18,98 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Lange Norbert <norbert.lange@andritz.com>, "Xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Jan Kiszka <jan.kiszka@siemens.com>, xenomai@xenomai.org
 
-T24gMTQvMDkvMTggMTE6MTQsIExhbmdlIE5vcmJlcnQgd3JvdGU6Cj4+IFNvLCBmcm9tIG15IHBv
-aW50IG9mIHZpZXcgaXQgY29uZmlybSBteSBzdXNwaWNpb3VzIHRoYXQgdGhlIHdyYXBwZXIKPj4g
-bWVjaGFuaXNtIGlzIGZyYWdpbGUuIEkgcmVhbGx5IGRpZG4ndCB1bmRlcnN0YW5kIHdoeSBYZW5v
-bWFpIGNvcmUgdGVhbQo+PiBjaGFuZ2VkIHRoZSBuYXRpdmUgQVBJIGZvciB0aGUgUE9TSVguIEFs
-dGhvdWdoIEkgc2F3IHRoZSBKYW4gS2lza2EKPj4gY29uZmVyZW5jZSB2aWRlbyBleHBsYWluaW5n
-IGl0LCB0ZWxsIG1lIHByaW1pdGl2ZSBvciBkdW1wLCBidXQgSSBwcmVmZXIgdG8gaGF2ZQo+PiBh
-IFJUIEFQSSB0aGF0IGxpbmtzIGFnYWluc3QgUlQgbGlicmFyaWVzIGFuZCB5b3UgY2FuIG1peCB0
-aGUgUE9TSVggZnVuY3Rpb25zCj4+IHRoYXQgeW91IHdhbnQgaW4gYSBjbGVhciB3YXkuCj4+Cj4+
-IE9UT0ggSSBoYXZlIHRvIGFkbWl0IHRoYXQgY29udmVydCBhIFBPU0lYIHByb2dyYW0gdG8gUlQg
-aW4gYW4gZWFzeSB3YXkgaXMKPj4gYW1hemluZy4KPiAKPiBZb3UgY2FuIGV4cGxpY2l0bHkgdXNl
-IHRoZSBjb2JhbHQgb3Igc3RkIGZ1bmN0aW9uIHdpdGggbWFjcm9zLgo+IFRoYXQgc2FpZCBJIGhh
-dmUgbXkgaXNzdWVzIHdpdGggY2FzY2FkaW5nIGhlYWRlcnMgZnJvbSBsaW51eCwgYyBsaWJyYXJ5
-IGFuZCBjb2JhbHQsCj4gdGhpcyBpcyBoYXJkIHRvIGZvbGxvdyB3aXRoIHN5bWJvbHMgcG90ZW50
-aWFsbHkgY29taW5nIGZyb20gYW55d2hlcmUuCgpyaWdodAoKPj4gTm9yYmVydCwgSSBoYXZlIGZv
-bGxvd2VkIHlvdXIgZW1haWxzIGFuZCB5b3VyIHByb2plY3QuIFlvdSBkaWQgYSBnb29kIGpvYiwK
-Pj4gYnV0IEkgZG9uJ3QgYWdyZWUgd2l0aCB5b3VyIGFwcHJvYWNoLiBNeSBwb2ludHMgYXJlOgo+
-Pgo+PiAtIFlvdSBhcmUgdHJ5aW5nIHRvIGNvbnZlcnQgWGVub21haSBhIENNYWtlIHByb2plY3Qg
-YW5kIHRoaXMgcHJvYmFibHkgd2lsbAo+PiBub3QgaGFwcGVuIGJlY2F1c2UgVXBzdHJlYW0gaXMg
-dmVyeSBoYXBweSB3aXRoIHRoZSBhdXRvdG9vbHMuIEkgZG9uJ3QgbGlrZQo+PiB0byB0b3VjaCBh
-bnl0aGluZyBmcm9tIHVwc3RyZWFtLiBNYXliZSBzb21lIHBhdGNoLCBidXQgaW5jb3Jwb3JhdGVk
-IGluCj4+IFVwc3RyZWFtLgo+IAo+IFNvcnJ5LCB0aGF0J3Mgbm9uc2Vuc2UsIG5ldmVyIHRob3Vn
-aHQgYWJvdXQgYnVpbGRpbmcgWGVub21haSB3aXRoIENNYWtlLgoKU29ycnksIHlvdSBhcmUgcmln
-aHQuIEl0IHNlZW1lZCB0aGF0IHlvdSB0cmllZCB0byBnZW5lcmF0ZWQgdGhlIGNvbmZpZyBmaWxl
-cwpnZW5lcmF0ZWQgdXN1YWxseSB3aXRoIGEgY21ha2UgcHJvamVjdC4KCgo+PiAtIEkgd291bGQg
-cHJlZmVyIGZvbGxvdyB0aGUgVXBzdHJlYW0gZ3VpZGVsaW5lcyB0aGF0IHJlY29tbWVuZHMgdXNl
-IHhlbm8tCj4+IGNvbmZpZyB0byBvYnRhaW4gdGhlIG5lZWRlZCBwYXJhbWV0ZXJzIHRvIGJ1aWxk
-IHlvdXIgYXBwbGljYXRpb24uCj4+IFNvLCBhbnkgYnVpbGQgdG9vbCBzaG91bGQgdXNlIHhlbm8t
-Y29uZmlnIChtYWludGFpbmVkIGJ5IHVwc3RyZWFtKSB0aGF0Cj4+IHByb3ZpZGUgdGhlIGNvcnJl
-Y3QgZmxhZ3Mgb3Igd2hhdGV2ZXIgdG8gYnVpbGQgeW91ciBhcHBsaWNhdGlvbi4KPiAKPiBJIHRy
-aWVkIG11bHRpcGxlIGFwcHJvYWNoZXMsIHVzaW5nIHhlbm8tY29uZmlnIGZlbGwgb3V0IHNob3J0
-bHkuCj4gLSAgIGl0J3MgKGxvZ2ljYWxseSkgYW4gdGFyZ2V0ICJleGVjdXRhYmxlIi4KPiAgICAg
-VGhhdCBpbXBvc2VzIHByb2JsZW1zIHdpdGggQ01ha2UncyBub3JtYWwgc2VhcmNoIGZvciB0aG9z
-ZSwKPiAgICAgbm90IHRvIG1lbnRpb24gQ0kgd2hlbiB5b3VyIGJ1aWxkZXIgd29ya3MgaW4gYSBw
-YXJ0aXRpb24gd2l0aCBub2V4ZWMuCj4gICAgIEkgd291bGQgd2FudCB0byB1c2UgY29uZmlnLWZp
-bGVzIGRpcmVjdGx5IG9yIHdpdGggYSBob3N0LWV4ZWN1dGFibGUsCj4gICAgIGxpa2UgcGtnLWNv
-bmZpZyB1c2VzIC5wYyBmaWxlcy4KCkkgaGF2ZSBub3QgZm91bmQgYW55IGltcG9ydGFudCBwcm9i
-bGVtIHdpdGggdGhlIHhlbm8tY29uZmlnIGdlbmVyYXRlIGluZm8gb3IgYW55CnByb2JsZW0gd2l0
-aCBjbWFrZS4gSSBhZ3JlZSB3aXRoIHlvdSB0aGF0IHlvdSBuZWVkIHRvIGV4ZWMgYW4gc2NyaXB0
-IHRvIGdlbmVyYXRlCnRoZSBpbmZvIGFuZCBpdCBjb3VsZCBoYXZlIHByb2JsZW1zIHdpdGggcGFy
-dGl0aW9ucyB3aXRoIG5vZXhlYywgZXRjLgoKWy4uLl0KCj4gLSAgIEkgbmVlZCB0byBleHRyYWN0
-IGFsbCBpbmZvcm1hdGlvbiBhbmQgbm90IGp1c3QgZmxhZ3MgZm9yIE9ORSBjb25maWd1cmF0aW9u
-CgpJIGRvbid0IGV4dHJhY3QgdGhlIGluZm9ybWF0aW9uIGZvciBvbmUgY29uZmlndXJhdGlvbi4g
-SSBleHRyYWN0IEFMTCB0aGUgbW9kdWxlcwppbnN0YWxsZWQuCgo+ICAgICBUaGF04oCZcyB0aGUg
-bW9zdCBpbXBvcnRhbnQgaXNzdWUsIEkgbmVlZCB0aGUgImJ1aWxkaW5nIGJsb2NrcyIgb2YgdGhl
-IGNvbW1hbmQKPiAgICAgbGluZSwgbm90IE9ORSBjb21tYW5kbGluZS4gVGhpcyBtZWFucyB5b3Ug
-bmVlZCB0byBrbm93IHhlbm8tY29uZmlnCj4gICAgIGFuZCBpdHMgZmxhZ3MgcHJlY2lzZWx5IGFu
-ZCBmaWd1cmUgb3V0IGhvdyB0byBkaXNzZWN0IG11bHRpcGxlIG91dHB1dHMKPiAgICAgaW4gdGhv
-c2UgImJ1aWxkaW5nIGJsb2NrcyIuCj4gICAgIEZyYWdpbGUgYW5kIG5vdCBmb3J3YXJkcy1jb21w
-YXRpYmxlLgoKSSBkb24ndCBhZ3JlZS4geGVuby1jb25maWcgaXMgcXVpdGUgc3RhYmxlIGFuZCB3
-ZWxsIG1haW50YWluZWQuIEFuZCBpdCBnaXZlIHlvdQp0aGUgaW5mb3JtYXRpb24gdGhhdCBVcHN0
-cmVhbSB3YW50IHRoYXQgWU9VIHVzZS4KCj4gV2hhdHMgbGVmdCBpcyB0d28gdmFyaWFudHM6Cj4g
-Cj4gRmluZFhlbm9tYWkgLSB0aGlzIHdvdWxkIGJlIHBsYWNlZCBpbiB5b3VyIHByb2plY3Qgb3Ig
-dXAgc3RyZWFtZWQgaW4gQ01ha2UuCj4gVXNlcyBDTWFrZSBmdW5jdGlvbnMgdG8gZ3Vlc3MgdGhl
-IHBhdGhzLCB0aGlzIG1pZ2h0IGJlIGhhcmQgdG8gZG8gd2l0aCBzb21lIGxpYmRpciAvIGluY2x1
-ZGVkaXIKPiBDb25maWd1cmF0aW9ucyBhbmQgd291bGQgbmVlZCB0byBiZSB1cGRhdGVkIGluZGVw
-ZW5kZW50bHkgb2YgWGVub21haS4KCnRoaXMgaXMgb25lIHdheS4gQ3VycmVudGx5IGl0IGp1c3Qg
-d29ya3MuCgoKPiBDTWFrZSBDb25maWcgZmlsZXMgLSB5b3UgcGxhY2UgdGhvc2UgaW4gPGxpYnBh
-dGg+L2NtYWtlL3hlbm9tYWkuCj4gVGhvc2UgY2FuIGJlIGdlbmVyYXRlZCBieSBjb25maWcvaW5z
-dGFsbF9jbWFrZWNvbmZpZy5zaCBmcm9tIHRoZSByZXBvICh1c2Ugc2FtZSBhcmd1bWVudHMgYXMg
-d2hlbiBjb25maWd1cmluZyBDTWFrZSkuCj4gVGhlIHByZXZpb3VzbHkgbWVudGlvbmVkIHBhdGNo
-c2V0IGFkZHMgdGhvc2UgZmlsZXMgdG8gWGVub21haSBhbmQgZG9lcyB0aGlzIGF1dG9tYXRpY2Fs
-bHkgd2hlbiBpbnN0YWxsaW5nICh1c2luZyB0aGUgYXV0b3Rvb2xzIHN5c3RlbSkuCj4gVXBzdHJl
-YW1pbmcgaW4gWGVub21haSB3b3VsZCBtYWtlIGV2ZXJ5dGhpbmcgaGFzc2xlLWZyZWUgYW5kIGZv
-cndhcmRzLWNvbXBhdGlibGUgKHRoZSBjb25maWcgZmlsZXMgd291bGQgYWx3YXlzIG1hdGNoIHRo
-ZSB2ZXJzaW9uKS4KPiAKPiBUaGUgZG93bnNpZGUgaXMgb2YgY291cnNlIHRoYXQgdGhpcyB3b3Vs
-ZCB0aGVuIGJlIGEgYnVyZGVuIHRvIHRoZSBYZW5vbWFpIGRldnMsIGJ1dCBpdCBzaG91bGQgbm90
-IG5lZWQgYW55IGNoYW5nZXMgb3V0c2lkZSBvZiBzdHJ1Y3R1cmFsIGNoYW5nZXMuCj4gQXQgd2hp
-Y2ggcG9pbnQgc29tZW9uZSB3aWxsIGhhdmUgdG8gYWRhcHQgQ01ha2UgaW50ZWdyYXRpb24sIGhv
-d2V2ZXIgaXRzIGRvbmUgLSBJIHdvdWxkIHByZWZlciBpdCB0byBiZSBkb25lIGp1c3Qgb25jZQo+
-IAo+IAo+IFRoZSByZXBvIGNvbnRhaW5zIG90aGVyIGNoYW5nZXMsIGF0dGVtcHRpbmcgdG8gc2Fu
-aXRpemUgdGhlIGJvb3RzdHJhcHBpbmcgbWV0aG9kcywKPiBXaXRob3V0IHRob3NlIHRoZSBwcm92
-aWRlZCBleGFtcGxlcyBtaWdodCBub3Qgd29yayAob25seSB0aGUgdXBzdHJlYW0gYm9vdHN0cmFw
-cGluZyBtZXRob2Qgd2lsbCB3b3JrKS4KPiBJIGhvcGUgYXRsZWFzdCB0aG9zZSBjYW4gYmUgdXBz
-dHJlYW1lZC4KClNvLCBtYXliZSB0aGF0IGNvbmZpZyBmaWxlcyBnZW5lcmF0ZWQgYnkgdGhlIGF1
-dG90b29scywgYXJlIHRvIG1lIHRoZSBiZXN0CnNvbHV0aW9uLiBUaGVuLCB0aGUgcmVzcG9uc2li
-bGUgb2YgY29tcGlsZSBhbmQgaW5zdGFsbCB4ZW5vbWFpIGluIGEgc3lzdGVtCndpbGwgZ2VuZXJh
-dGUgdGhlIGNvbmZpZyBmaWxlcyB0byB1c2UgaXQuCgpCdXQgZm9yIHRoaXMgc29sdXRpb24geW91
-IG5lZWQgdGhhdCBKYW4gb3IgUGhpbGxpcGUgYWNjZXB0IHRoYXQgYW5kIG1haW50YWluCnRoYXQu
-IEFuZCBsb29raW5nIHlvdXIgY29kZSBhbmQgSSB3b3VsZCBwcmVmZXIgYSBtb3JlIHNpbXBsZSB3
-YXkgd2l0aG91dCBtb2R1bGVzCmFuZCBzaW1wbGUsIGp1c3QgZmlsbCBzb21lIGNvbmZpZyB2YXJz
-LiBCZWNhdXNlIHRoZW4gaXQgY291bGQgYmUgZWFzeSB0byBtYWludGFpbi4KCgo+PiAtIEkgYWdy
-ZWUgd2l0aCBOb3JiZXJ0IHRoYXQgYm9vdHN0cmFwZWQgY29kZSBpcyBub3QgYSBnb29kIGlkZWEu
-IEJ1dCB0aGlzCj4+IGNoYW5nZSBzaG91bGQgYmUgZG9uZSBieSB1cHN0cmVhbS4gQnV0IGlmIEkn
-bSBub3Qgd3JvbmcsIFBoaWxsaXBlIHNhaWQgdGhhdCBpdAo+PiBoYXNuJ3QgYW4gZWFzeSBzb2x1
-dGlvbi4KPiAKPiBJdCBoYXMgbm8gZWFzeSBzb2x1dGlvbiBpZiB5b3Ugd2FudCB0byBkbyBidWls
-ZCBhIFBPU0lYLW9ubHkgcHJvamVjdCBwdXJlbHkgd2l0aCBsaW5rZXIgYXJndW1lbnRzLgo+IFdo
-ZW4geW91IGNhbiBhZmZvcmQgYWRkIHNvbWUgbGluZXMgb2YgKFhlbm9tYWktc3BlY2lmaWMpIGNv
-ZGUgdG8geW91ciBwcm9qZWN0LCBpdCBvcGVucyBhIGxvdCBwb3NzaWJpbGl0aWVzLgo+IAo+Pgo+
-PiBCdXQgZm9yIHRoZSBjdXJpb3VzLCBJIGhhdmUgZG9uZSB0aGlzIGV4YW1wbGU6Cj4+Cj4+IGh0
-dHBzOi8vZ2l0aHViLmNvbS9pb2Nyb2JsYWIveGVub21haS1jbWFrZQo+Pgo+PiBidXQgaXQncyBu
-b3QgcG9saXNoZWQgYW5kIGhhZCBzb21lIG1pc3Rha2VzLiBUaGUgaWRlYSBpcyB0byB1c2UgYW55
-IFhlbm9tYWkKPj4gaW5zdGFsbGF0aW9uIHdpdGhvdXQgdG91Y2hlZCBhbmQgdGhlbiB1c2UgQ01h
-a2UgdG8gYnVpbGQgeW91ciBhcHBsaWNhdGlvbi4KPiAKPiBZZXMgSSBnZXQgdGhhdCwgYW5kIEkg
-dHJpZWQgdGhlIHNhbWUgd2l0aCBGaW5kWGVub21haS4gSSBjb25zaWRlciB0aGUgQ01ha2UgQ29u
-ZmlnIGFwcHJvYWNoCj4gYSBsb3QgYmV0dGVyLgoKOi0pCgpDaGVlcnMsCgpMZW9wb2xkCgoKCi0t
-IAotLQpMaW51eCBVc2VyIDE1MjY5MiAgICAgR1BHOiAwNUY0QTdBOTQ5QTJEOUFBCkNhdGFsb25p
-YQotLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tCkE6IEJlY2F1c2UgaXQgbWVz
-c2VzIHVwIHRoZSBvcmRlciBpbiB3aGljaCBwZW9wbGUgbm9ybWFsbHkgcmVhZCB0ZXh0LgpROiBX
-aHkgaXMgdG9wLXBvc3Rpbmcgc3VjaCBhIGJhZCB0aGluZz8KQTogVG9wLXBvc3RpbmcuClE6IFdo
-YXQgaXMgdGhlIG1vc3QgYW5ub3lpbmcgdGhpbmcgaW4gZS1tYWlsPwoKLS0tLS0tLS0tLS0tLS0g
-bmV4dCBwYXJ0IC0tLS0tLS0tLS0tLS0tCkEgbm9uLXRleHQgYXR0YWNobWVudCB3YXMgc2NydWJi
-ZWQuLi4KTmFtZTogc2lnbmF0dXJlLmFzYwpUeXBlOiBhcHBsaWNhdGlvbi9wZ3Atc2lnbmF0dXJl
-ClNpemU6IDgzMyBieXRlcwpEZXNjOiBPcGVuUEdQIGRpZ2l0YWwgc2lnbmF0dXJlClVSTDogPGh0
-dHA6Ly94ZW5vbWFpLm9yZy9waXBlcm1haWwveGVub21haS9hdHRhY2htZW50cy8yMDE4MDkxNC9i
-MDM4YmFmZi9hdHRhY2htZW50LnNpZz4K
+On 10/17/2018 01:19 PM, Jan Kiszka wrote:
+> On 14.10.18 10:54, Philippe Gerum wrote:
+>> The CPU affinity mask in __base_setup_data.cpu_affinity - which may be
+>> set by --cpu-affinity - is conventionally checked by applications for
+>> determining which CPUs are usable for real-time duties.
+>>
+>> Over Cobalt, we need to make sure that such mask reflects the set of
+>> CPUs available for running real-time threads as defined by the core
+>> (i.e. /proc/xenomai/affinity), in absence of --cpu-affinity
+>> setting.
+>>
+>> Otherwise, some applications like switchest looking at an empty
+>> affinity mask may wrongly assume that all CPUs are available for
+>> running RT threads, leading to a failure when manually pinning such
+>> thread to an invalid (non-RT) CPU.
+>>
+>> With current Cobalt core and I-pipe releases not fixed for gracefully
+>> handling invalid domain migration requests over a non-RT CPU, such a
+>> failure may trigger a kernel panic.
+>>
+>> Signed-off-by: Philippe Gerum <rpm@xenomai.org>
+>> ---
+>>   lib/boilerplate/setup.c | 33 +++++++++++++++++++++++++++++++--
+>>   1 file changed, 31 insertions(+), 2 deletions(-)
+>>
+>> diff --git a/lib/boilerplate/setup.c b/lib/boilerplate/setup.c
+>> index 8b363efee..3214d7f04 100644
+>> --- a/lib/boilerplate/setup.c
+>> +++ b/lib/boilerplate/setup.c
+>> @@ -173,6 +173,8 @@ static int collect_cpu_affinity(const char *cpu_list)
+>>           return ret;
+>>       }
+>>   +    CPU_ZERO(&__base_setup_data.cpu_affinity);
+>> +
+>>       s = n = strdup(cpu_list);
+>>       while ((range = strtok_r(n, ",", &range_p)) != NULL) {
+>>           if (*range == '\0')
+>> @@ -232,6 +234,33 @@ fail:
+>>       return -EINVAL;
+>>   }
+>>   +static void retrieve_default_cpu_affinity(void)
+>> +{
+>> +    CPU_ZERO(&__base_setup_data.cpu_affinity);
+>> +
+>> +#ifdef CONFIG_XENO_COBALT
+>> +    /*
+>> +     * If the Cobalt core has restricted the CPU set, update our
+>> +     * mask accordingly.
+>> +     */
+>> +    unsigned long cpumask;
+>> +    FILE *fp;
+>> +    int cpu;
+>> +
+>> +    fp = fopen("/proc/xenomai/affinity", "r");
+>> +    if (fp == NULL)
+>> +        return;    /* uhh? */
+>> +
+>> +    if (fscanf(fp, "%lx", &cpumask) == 1) {
+>> +        for (cpu = 0; cpumask; cpumask >>= 1, cpu++)
+>> +            if (cpumask & 1)
+>> +                CPU_SET(cpu, &__base_setup_data.cpu_affinity);
+>> +    }
+>> +
+>> +    fclose(fp);
+>> +#endif
+>> +}
+>> +
+>>   static inline char **prep_args(int argc, char *const argv[])
+>>   {
+>>       char **uargv;
+>> @@ -528,8 +557,8 @@ static void __xenomai_init(int *argcp, char *const
+>> **argvp, const char *me)
+>>       /* No ifs, no buts: we must be called over the main thread. */
+>>       assert(getpid() == __node_id);
+>>   -    /* Define default CPU affinity, i.e. no particular affinity. */
+>> -    CPU_ZERO(&__base_setup_data.cpu_affinity);
+>> +    /* Retrieve the default CPU affinity. */
+>> +    retrieve_default_cpu_affinity();
+>>         /*
+>>        * Parse the base options first, to bootstrap the core with
+>>
+> 
+> Thanks, applied to next.
+> 
+> Am I right that this as well as most of the patches in the original
+> series are also stable candidates?
+> 
+
+I believe so.
+
+-- 
+Philippe.
+
