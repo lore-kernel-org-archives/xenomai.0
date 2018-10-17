@@ -1,14 +1,8 @@
-References: <1539676570-4773-1-git-send-email-sebastian.smolorz@gmx.de>
-From: Philippe Gerum <rpm@xenomai.org>
-Message-ID: <9ffd6617-9f49-0c2a-a828-d406381693c9@xenomai.org>
-Date: Wed, 17 Oct 2018 11:57:18 +0200
-MIME-Version: 1.0
-In-Reply-To: <1539676570-4773-1-git-send-email-sebastian.smolorz@gmx.de>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] [PATCH] rtdm: add integer file descriptor to struct
- rtdm_fd
+From: Sebastian Smolorz <sebastian.smolorz@gmx.de>
+Date: Wed, 17 Oct 2018 12:16:51 +0200
+Message-Id: <1539771411-3952-1-git-send-email-sebastian.smolorz@gmx.de>
+Subject: [Xenomai] [PATCH v2] rtdm: expose user-side file descriptors to
+ drivers
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,65 +11,56 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Sebastian Smolorz <sebastian.smolorz@gmx.de>, xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-On 10/16/2018 09:56 AM, Sebastian Smolorz wrote:
-> RTDM drivers refer to open files or sockets by using struct rtdm_fd.
-> Normally, the integer file descriptor returned by socket() or open() calls
-> is not necessary for driver operations. However, in some special cases
-> this value has to be determined. To ease the retrieval of this value for
-> those drivers it is added directly to struct rtdm_fd. Otherwise it would
-> be necessary to iterate over the fd's rb_tree.
-> 
-> Signed-off-by: Sebastian Smolorz <sebastian.smolorz@gmx.de>
-> ---
->  include/cobalt/kernel/rtdm/fd.h | 6 ++++++
->  kernel/cobalt/rtdm/fd.c         | 1 +
->  2 files changed, 7 insertions(+)
-> 
-> diff --git a/include/cobalt/kernel/rtdm/fd.h b/include/cobalt/kernel/rtdm/fd.h
-> index 58d3c4a..572b17e 100644
-> --- a/include/cobalt/kernel/rtdm/fd.h
-> +++ b/include/cobalt/kernel/rtdm/fd.h
-> @@ -298,6 +298,7 @@ struct rtdm_fd {
->  	struct rtdm_fd_ops *ops;
->  	struct cobalt_ppd *owner;
->  	unsigned int refs;
-> +	int ufd;
->  	int minor;
->  	int oflags;
->  #ifdef CONFIG_XENO_ARCH_SYS3264
-> @@ -320,6 +321,11 @@ static inline struct cobalt_ppd *rtdm_fd_owner(const struct rtdm_fd *fd)
->  	return fd->owner;
->  }
->  
-> +static inline int rtdm_fd_ufd(const struct rtdm_fd *fd)
-> +{
-> +	return fd->ufd;
-> +}
-> +
->  static inline int rtdm_fd_minor(const struct rtdm_fd *fd)
->  {
->  	return fd->minor;
-> diff --git a/kernel/cobalt/rtdm/fd.c b/kernel/cobalt/rtdm/fd.c
-> index 8d577b2..807a11e 100644
-> --- a/kernel/cobalt/rtdm/fd.c
-> +++ b/kernel/cobalt/rtdm/fd.c
-> @@ -166,6 +166,7 @@ int rtdm_fd_enter(struct rtdm_fd *fd, int ufd, unsigned int magic,
->  	fd->magic = magic;
->  	fd->ops = ops;
->  	fd->owner = ppd;
-> +	fd->ufd = ufd;
->  	fd->refs = 1;
->  	set_compat_bit(fd);
->  
-> 
+RTDM drivers refer to open files or sockets by using struct rtdm_fd.
+Normally, the user-side file descriptors returned by socket() or open()
+calls are not necessary for driver operations. However, in some special
+cases the user-side fd has to be determined.
 
-Ack. Nitpicking: I would rephrase the short log to express the fact that
-we are exposing the user-side fd to drivers; how we do it - by adding
-ufd to rtdm_fd - is an implementation detail which can't be overlooked
-when reading the patch anyway.
+Signed-off-by: Sebastian Smolorz <sebastian.smolorz@gmx.de>
+---
+ include/cobalt/kernel/rtdm/fd.h | 6 ++++++
+ kernel/cobalt/rtdm/fd.c         | 1 +
+ 2 files changed, 7 insertions(+)
 
+diff --git a/include/cobalt/kernel/rtdm/fd.h b/include/cobalt/kernel/rtdm/fd.h
+index 58d3c4a..572b17e 100644
+--- a/include/cobalt/kernel/rtdm/fd.h
++++ b/include/cobalt/kernel/rtdm/fd.h
+@@ -298,6 +298,7 @@ struct rtdm_fd {
+ 	struct rtdm_fd_ops *ops;
+ 	struct cobalt_ppd *owner;
+ 	unsigned int refs;
++	int ufd;
+ 	int minor;
+ 	int oflags;
+ #ifdef CONFIG_XENO_ARCH_SYS3264
+@@ -320,6 +321,11 @@ static inline struct cobalt_ppd *rtdm_fd_owner(const struct rtdm_fd *fd)
+ 	return fd->owner;
+ }
+ 
++static inline int rtdm_fd_ufd(const struct rtdm_fd *fd)
++{
++	return fd->ufd;
++}
++
+ static inline int rtdm_fd_minor(const struct rtdm_fd *fd)
+ {
+ 	return fd->minor;
+diff --git a/kernel/cobalt/rtdm/fd.c b/kernel/cobalt/rtdm/fd.c
+index 8d577b2..807a11e 100644
+--- a/kernel/cobalt/rtdm/fd.c
++++ b/kernel/cobalt/rtdm/fd.c
+@@ -166,6 +166,7 @@ int rtdm_fd_enter(struct rtdm_fd *fd, int ufd, unsigned int magic,
+ 	fd->magic = magic;
+ 	fd->ops = ops;
+ 	fd->owner = ppd;
++	fd->ufd = ufd;
+ 	fd->refs = 1;
+ 	set_compat_bit(fd);
+ 
 -- 
-Philippe.
+2.7.4
+
 
