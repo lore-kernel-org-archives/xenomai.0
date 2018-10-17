@@ -1,14 +1,11 @@
-From: Sebastian Smolorz <Sebastian.Smolorz@gmx.de>
-Date: Wed, 17 Oct 2018 18:09:33 +0200
-Message-ID: <6420434.4R09zZnBme@lenni>
-In-Reply-To: <efacce14-b2b0-4961-1694-06d5f4041d22@siemens.com>
-References: <1539775907-5124-1-git-send-email-sebastian.smolorz@gmx.de>
- <efacce14-b2b0-4961-1694-06d5f4041d22@siemens.com>
+From: Wojciech Domski <wojciech.domski@gmail.com>
+Message-ID: <ec2acd9e-c708-3d6f-65b0-bc6729ebe333@gmail.com>
+Date: Wed, 17 Oct 2018 22:38:53 +0200
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7Bit
-Content-Type: text/plain; charset="us-ascii"
-Subject: Re: [Xenomai] [PATCH 0/4] net/tcp: Fix several bugs and allow rttcp
- to be built
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+Content-Language: en-GB
+Subject: [Xenomai] Developing RTDM driver for Xenomai Mercury
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,25 +14,44 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jan Kiszka <jan.kiszka@siemens.com>
-Cc: xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-On 17.10.18 13:44, Jan Kiszka wrote:
-> On 17.10.18 13:31, Sebastian Smolorz wrote:
-> > This patch series makes RTnet's tcp module usable again. It was not
-> > selectable in Kconfig for a long time. Now it is supposed to work in
-> > the way it worked when RTnet was a separate project for Xenomai 2.
-> 
-> Despite the "supposed", can I assume you tested it already
-> successfully with some real workload?
+Hi!
 
-Tested it under QEMU with the rttcp example (rttcp-server and rttcp-
-client) over rtlo. Tests on real hardware are pending and planned in the 
-next few days. No problem if you want to postpone the patches until I 
-report the successful outcome of those tests.
+Is it possible to create a RTDM driver as a kernel module under Mercury
+and use it?
+
+I have patched kernel with preempt_rt and installed Xenomai 3.0.7
+Mercury. However, when I try to compile my driver it says that it can
+not find <rtdm/driver.h> header file.
+
+I have checked the /usr/xenomai/include and there is no rtdm/driver.h
+only rtdm/rtdm.h. Does this mean that I can not develop driver under the
+Xenomai Mercury and I have to install Xenomai Cobalt? Or there is
+something wrong with my Xenomai installation? I have referred to
+https://gitlab.denx.de/Xenomai/xenomai/wikis/Start_Here and it does not
+mention that I can not use RTDM drivers in Mercury, actually the
+opposite but this is only showed in the Figures that for Mercury a RTDM
+driver is being used. On the other hand, it is said that:
+
+"the stock kernel drivers can be reused by real-time applications
+with no change (provided they don’t create latency issues due to
+an unfortunate implementation). On the other hand, drivers need
+to be specifically implemented for running over a dual kernel
+configuration, i.e. over the in-kernel RTDM interface."
+
+If the answer to my question is yes then what steps should I take to
+compile the RTDM driver for Mercury?
+
+And, maybe a naive question, if the answer is no then what I really gain
+from using the Mercury instead of a kernel patched with preempt_rt
+besides neat IPC mechanisms etc.?
+
+Best regards,
 
 -- 
-Sebastian
+Wojciech Domski
 
+domski.pl | blog.domski.pl
 
 
