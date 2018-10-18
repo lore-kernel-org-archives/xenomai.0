@@ -1,14 +1,13 @@
-Date: Fri, 14 Sep 2018 16:58:29 +0200
-From: Henning Schild <henning.schild@siemens.com>
-Message-ID: <20180914165829.51454a75@md1pvb1c.ad001.siemens.net>
-In-Reply-To: <53ba70d2-0de4-8614-ed43-cb437162628a@siemens.com>
-References: <20180827133347.26289-1-henning.schild@siemens.com>
- <20180827133347.26289-2-henning.schild@siemens.com>
- <53ba70d2-0de4-8614-ed43-cb437162628a@siemens.com>
+References: <ec2acd9e-c708-3d6f-65b0-bc6729ebe333@gmail.com>
+From: Philippe Gerum <rpm@xenomai.org>
+Message-ID: <d1f81ff1-a502-78a3-0898-b38eeeb35b8d@xenomai.org>
+Date: Thu, 18 Oct 2018 09:52:15 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] [PATCH 1/1] x86: make fpu switching eager
+In-Reply-To: <ec2acd9e-c708-3d6f-65b0-bc6729ebe333@gmail.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
+Subject: Re: [Xenomai] Developing RTDM driver for Xenomai Mercury
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,295 +16,52 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jan Kiszka <jan.kiszka@siemens.com>
-Cc: Xenomai <xenomai@xenomai.org>
+To: Wojciech Domski <wojciech.domski@gmail.com>, xenomai@xenomai.org
 
-Am Mon, 27 Aug 2018 18:36:49 +0200
-schrieb Jan Kiszka <jan.kiszka@siemens.com>:
+On 10/17/2018 10:38 PM, Wojciech Domski wrote:
+> Hi!
+> 
+> Is it possible to create a RTDM driver as a kernel module under Mercury
+> and use it?
+> 
+> I have patched kernel with preempt_rt and installed Xenomai 3.0.7
+> Mercury. However, when I try to compile my driver it says that it can
+> not find <rtdm/driver.h> header file.
+> 
+> I have checked the /usr/xenomai/include and there is no rtdm/driver.h
+> only rtdm/rtdm.h. Does this mean that I can not develop driver under the
+> Xenomai Mercury and I have to install Xenomai Cobalt? Or there is
+> something wrong with my Xenomai installation? I have referred to
+> https://gitlab.denx.de/Xenomai/xenomai/wikis/Start_Here and it does not
+> mention that I can not use RTDM drivers in Mercury, actually the
+> opposite but this is only showed in the Figures that for Mercury a RTDM
+> driver is being used. On the other hand, it is said that:
+> 
+> "the stock kernel drivers can be reused by real-time applications
+> with no change (provided they don’t create latency issues due to
+> an unfortunate implementation). On the other hand, drivers need
+> to be specifically implemented for running over a dual kernel
+> configuration, i.e. over the in-kernel RTDM interface."
+> 
+> If the answer to my question is yes then what steps should I take to
+> compile the RTDM driver for Mercury?
+> 
+> And, maybe a naive question, if the answer is no then what I really gain
+> from using the Mercury instead of a kernel patched with preempt_rt
+> besides neat IPC mechanisms etc.?
+> 
 
-> On 2018-08-27 15:33, Henning Schild wrote:
-> > Linux 4.14 dropped support for lazy fpu switching and in the 4.4
-> > and 4.9 series similar changes where backported.
-> > So we can assume that fpu switching is purely eager for those
-> > Linux  
-> 
-> My reading of this patch is that we do not "assume" them to be eager,
-> we enforce that for now - until the changes from the related stable
-> merge do that.
-> 
-> > kernel versions. That simplifies things a lot and we can drop
-> > several changes from the IPIPE patch.
-> > On the Xenomai side the only thing we still have to care about is
-> > the kernel fpu state when we interrupt an in kernel fpu user. But
-> > we do that explicit and can drop the indirection active_(fp)state.
-> >   
-> 
-> That patch resolving a mechanical merge conflict ahead of the merge, 
-> right? Does it break the build?
-> 
-> > Signed-off-by: Henning Schild <henning.schild@siemens.com>
-> > ---
-> >   arch/x86/include/asm/fpu/internal.h | 30
-> > ++++++++---------------------- arch/x86/include/asm/fpu/types.h
-> > | 12 ------------ arch/x86/kernel/fpu/core.c          | 23
-> > +++++++++-------------- arch/x86/kernel/fpu/init.c          |  5
-> > +---- 4 files changed, 18 insertions(+), 52 deletions(-)
-> > 
-> > diff --git a/arch/x86/include/asm/fpu/internal.h
-> > b/arch/x86/include/asm/fpu/internal.h index
-> > 35ca184e83e1..6bdceba90f17 100644 ---
-> > a/arch/x86/include/asm/fpu/internal.h +++
-> > b/arch/x86/include/asm/fpu/internal.h @@ -13,7 +13,6 @@
-> >   #include <linux/compat.h>
-> >   #include <linux/sched.h>
-> >   #include <linux/slab.h>
-> > -#include <linux/kconfig.h>
-> >   #include <linux/ipipe.h>
-> >   
-> >   #include <asm/user.h>
-> > @@ -190,24 +189,12 @@ static inline int copy_user_to_fregs(struct
-> > fregs_state __user *fx) return user_insn(frstor %[fx], "=m" (*fx),
-> > [fx] "m" (*fx)); }
-> >   
-> > -#ifdef CONFIG_IPIPE
-> > -static inline union fpregs_state *active_fpstate(struct fpu *fpu)
-> > -{
-> > -	return fpu->active_state;
-> > -}
-> > -#else
-> > -static inline union fpregs_state *active_fpstate(struct fpu *fpu)
-> > -{
-> > -	return &fpu->state;
-> > -}
-> > -#endif
-> > -
-> >   static inline void copy_fxregs_to_kernel(struct fpu *fpu)
-> >   {
-> >   	if (IS_ENABLED(CONFIG_X86_32))
-> > -		asm volatile( "fxsave %[fx]" : [fx]
-> > "=m" (active_fpstate(fpu)->fxsave));
-> > +		asm volatile( "fxsave %[fx]" : [fx]
-> > "=m" (fpu->state.fxsave)); else if (IS_ENABLED(CONFIG_AS_FXSAVEQ))
-> > -		asm volatile("fxsaveq %[fx]" : [fx]
-> > "=m" (active_fpstate(fpu)->fxsave));
-> > +		asm volatile("fxsaveq %[fx]" : [fx]
-> > "=m" (fpu->state.fxsave)); else {
-> >   		/* Using "rex64; fxsave %0" is broken because, if
-> > the memory
-> >   		 * operand uses any extended registers for
-> > addressing, a second @@ -231,8 +218,8 @@ static inline void
-> > copy_fxregs_to_kernel(struct fpu *fpu)
-> >   		 * registers.
-> >   		 */
-> >   		asm volatile( "rex64/fxsave (%[fx])"
-> > -			      : "=m" (active_fpstate(fpu)->fxsave)
-> > -			      : [fx]
-> > "R" (&active_fpstate(fpu)->fxsave));
-> > +                             : "=m" (fpu->state.fxsave)
-> > +                             : [fx] "R" (&fpu->state.fxsave));
-> >   	}
-> >   }
-> >   
-> > @@ -441,7 +428,7 @@ static inline int copy_user_to_xregs(struct
-> > xregs_state __user *buf, u64 mask) static inline int
-> > copy_fpregs_to_fpstate(struct fpu *fpu) {
-> >   	if (likely(use_xsave())) {
-> > -		copy_xregs_to_kernel(&active_fpstate(fpu)->xsave);
-> > +		copy_xregs_to_kernel(&fpu->state.xsave);
-> >   		return 1;
-> >   	}
-> >   
-> > @@ -454,7 +441,7 @@ static inline int copy_fpregs_to_fpstate(struct
-> > fpu *fpu)
-> >   	 * Legacy FPU register saving, FNSAVE always clears FPU
-> > registers,
-> >   	 * so we have to mark them inactive:
-> >   	 */
-> > -	asm volatile("fnsave %[fp]; fwait" : [fp]
-> > "=m" (active_fpstate(fpu)->fsave));
-> > +	asm volatile("fnsave %[fp]; fwait" : [fp]
-> > "=m" (fpu->state.fsave)); 
-> >   	return 0;
-> >   }
-> > @@ -609,8 +596,7 @@ switch_fpu_prepare(struct fpu *old_fpu, struct
-> > fpu *new_fpu, int cpu)
-> >   	 * If the task has used the math, pre-load the FPU on
-> > xsave processors
-> >   	 * or if the past 5 consecutive context-switches used
-> > math. */
-> > -	fpu.preload = !IS_ENABLED(CONFIG_IPIPE) &&
-> > -		      static_cpu_has(X86_FEATURE_FPU) &&
-> > +	fpu.preload = static_cpu_has(X86_FEATURE_FPU) &&
-> >   		      new_fpu->fpstate_active &&
-> >   		      (use_eager_fpu() || new_fpu->counter > 5);
-> >   
-> > @@ -660,7 +646,7 @@ switch_fpu_prepare(struct fpu *old_fpu, struct
-> > fpu *new_fpu, int cpu) */
-> >   static inline void switch_fpu_finish(struct fpu *new_fpu,
-> > fpu_switch_t fpu_switch) {
-> > -	if (!IS_ENABLED(CONFIG_IPIPE) && fpu_switch.preload)
-> > +	if (fpu_switch.preload)
-> >   		copy_kernel_to_fpregs(&new_fpu->state);
-> >   }
-> >   
-> > diff --git a/arch/x86/include/asm/fpu/types.h
-> > b/arch/x86/include/asm/fpu/types.h index 497c551469ec..48df486b02f9
-> > 100644 --- a/arch/x86/include/asm/fpu/types.h
-> > +++ b/arch/x86/include/asm/fpu/types.h
-> > @@ -332,18 +332,6 @@ struct fpu {
-> >   	 * deal with bursty apps that only use the FPU for a
-> > short time: */
-> >   	unsigned char			counter;
-> > -
-> > -#ifdef CONFIG_IPIPE
-> > -	/*
-> > -	 * @active_state
-> > -	 *
-> > -	 * An indirection pointer to reach the active state context
-> > -	 * for the task.  This is used by co-kernels for dealing
-> > with
-> > -	 * preemption of kernel fpu contexts by their own tasks.
-> > -	 */
-> > -	union fpregs_state		*active_state;
-> > -#endif
-> > -	
-> >   	/*
-> >   	 * @state:
-> >   	 *
-> > diff --git a/arch/x86/kernel/fpu/core.c b/arch/x86/kernel/fpu/core.c
-> > index d31a73b2ab76..b065652845e1 100644
-> > --- a/arch/x86/kernel/fpu/core.c
-> > +++ b/arch/x86/kernel/fpu/core.c
-> > @@ -124,7 +124,7 @@ void __kernel_fpu_end(void)
-> >   
-> >   	flags = hard_cond_local_irq_save();
-> >   	if (fpu->fpregs_active)
-> > -		copy_kernel_to_fpregs(active_fpstate(fpu));
-> > +		copy_kernel_to_fpregs(&fpu->state);
-> >   	else
-> >   		__fpregs_deactivate_hw();
-> >   
-> > @@ -184,7 +184,7 @@ EXPORT_SYMBOL_GPL(irq_ts_restore);
-> >   void fpu__save(struct fpu *fpu)
-> >   {
-> >   	unsigned long flags;
-> > -	
-> > +  
-> 
-> That's removing a whitespace deviation to upstream or adding one?
-> 
-> >   	WARN_ON_FPU(fpu != &current->thread.fpu);
-> >   
-> >   	flags = hard_preempt_disable();
-> > @@ -192,7 +192,7 @@ void fpu__save(struct fpu *fpu)
-> >   	if (fpu->fpregs_active) {
-> >   		if (!copy_fpregs_to_fpstate(fpu)) {
-> >   			if (use_eager_fpu())
-> > -
-> > copy_kernel_to_fpregs(active_fpstate(fpu));
-> > +				copy_kernel_to_fpregs(&fpu->state);
-> >   			else
-> >   				fpregs_deactivate(fpu);
-> >   		}
-> > @@ -244,13 +244,8 @@ int fpu__copy(struct fpu *dst_fpu, struct fpu
-> > *src_fpu) dst_fpu->counter = 0;
-> >   	dst_fpu->fpregs_active = 0;
-> >   	dst_fpu->last_cpu = -1;
-> > -#ifdef CONFIG_IPIPE
-> > -	/* Must be set before FPU context is copied. */
-> > -	dst_fpu->active_state = &dst_fpu->state;
-> > -#endif
-> >   
-> > -	if (!IS_ENABLED(CONFIG_IPIPE) &&
-> > -	    (!src_fpu->fpstate_active
-> > || !static_cpu_has(X86_FEATURE_FPU)))
-> > +	if (!src_fpu->fpstate_active
-> > || !static_cpu_has(X86_FEATURE_FPU)) return 0;
-> >   
-> >   	WARN_ON_FPU(src_fpu != &current->thread.fpu);
-> > @@ -283,7 +278,7 @@ int fpu__copy(struct fpu *dst_fpu, struct fpu
-> > *src_fpu) fpu_kernel_xstate_size);
-> >   
-> >   		if (use_eager_fpu())
-> > -
-> > copy_kernel_to_fpregs(active_fpstate(src_fpu));
-> > +			copy_kernel_to_fpregs(&src_fpu->state);
-> >   		else
-> >   			fpregs_deactivate(src_fpu);
-> >   	}
-> > @@ -430,7 +425,7 @@ void fpu__current_fpstate_write_end(void)
-> >   	 * an XRSTOR if they are active.
-> >   	 */
-> >   	if (fpregs_active())
-> > -		copy_kernel_to_fpregs(active_fpstate(fpu));
-> > +		copy_kernel_to_fpregs(&fpu->state);
-> >   
-> >   	/*
-> >   	 * Our update is done and the fpregs/fpstate are in sync
-> > @@ -460,7 +455,7 @@ void fpu__restore(struct fpu *fpu)
-> >   	kernel_fpu_disable();
-> >   	trace_x86_fpu_before_restore(fpu);
-> >   	fpregs_activate(fpu);
-> > -	copy_kernel_to_fpregs(active_fpstate(fpu));
-> > +	copy_kernel_to_fpregs(&fpu->state);
-> >   	fpu->counter++;
-> >   	trace_x86_fpu_after_restore(fpu);
-> >   	kernel_fpu_enable();
-> > @@ -489,7 +484,7 @@ EXPORT_SYMBOL_GPL(fpu__restore);
-> >   void fpu__drop(struct fpu *fpu)
-> >   {
-> >   	unsigned long flags;
-> > -	
-> > +
-> >   	flags = hard_preempt_disable();
-> >   	fpu->counter = 0;
-> >   
-> > @@ -536,7 +531,7 @@ static inline void
-> > copy_init_fpstate_to_fpregs(void) void fpu__clear(struct fpu *fpu)
-> >   {
-> >   	unsigned long flags;
-> > -	
-> > +  
-> 
-> Same question applies to these to hunks as well.
-> 
-> >   	WARN_ON_FPU(fpu != &current->thread.fpu); /* Almost
-> > certainly an anomaly */ 
-> >   	fpu__drop(fpu);
-> > diff --git a/arch/x86/kernel/fpu/init.c b/arch/x86/kernel/fpu/init.c
-> > index 3eee35d3d6f8..a1fc061d03e1 100644
-> > --- a/arch/x86/kernel/fpu/init.c
-> > +++ b/arch/x86/kernel/fpu/init.c
-> > @@ -42,9 +42,6 @@ static void fpu__init_cpu_generic(void)
-> >   		cr0 |= X86_CR0_EM;
-> >   	write_cr0(cr0);
-> >   
-> > -#ifdef CONFIG_IPIPE
-> > -	current->thread.fpu.active_state =
-> > &current->thread.fpu.state; -#endif
-> >   	/* Flush out any pending x87 state: */
-> >   #ifdef CONFIG_MATH_EMULATION
-> >   	if (!boot_cpu_has(X86_FEATURE_FPU))
-> > @@ -329,7 +326,7 @@ static void __init
-> > fpu__init_system_ctx_switch(void) eagerfpu = ENABLE;
-> >   
-> >   	if (IS_ENABLED(CONFIG_IPIPE))
-> > -		eagerfpu = DISABLE;
-> > +		eagerfpu = ENABLE;  
-> 
-> Won't that be obsolete when we merge 4.9.109+?
+Short answer: although envisioned at the beginning of the Xenomai 3.x
+development cycle, RTDM over Mercury never was, and I don't know of any
+plan about implementing this. As Greg mentioned earlier, the RTDM-native
+work was an early PoC over Xenomai 2.3 back in 2007, but nobody kept
+that effort alive.
 
-Yes, the whole block will be dropped. It is still usefull if you
-enforce eager fpu in cobalt, independant of the ipipe version.
-Something only developers would do ...
+RTDM over Mercury would allow porting existing Cobalt drivers to a
+native kernel with almost no change, but as I just mentioned, nobody
+cared eventually so the idea was dropped. For new developments targeting
+a native kernel, using the regular kernel interface is definitely best.
 
-Henning
- 
-> >   
-> >   	if (eagerfpu == ENABLE)
-> >   		setup_force_cpu_cap(X86_FEATURE_EAGER_FPU);
-> >   
-> 
-> Jan
-
+-- 
+Philippe.
 
