@@ -1,12 +1,10 @@
 MIME-Version: 1.0
-References: <ec2acd9e-c708-3d6f-65b0-bc6729ebe333@gmail.com>
-In-Reply-To: <ec2acd9e-c708-3d6f-65b0-bc6729ebe333@gmail.com>
-From: Greg Gallagher <greg@embeddedgreg.com>
-Date: Wed, 17 Oct 2018 16:53:20 -0400
-Message-ID: <CALLqZ8T5RHym-_GfgseLVG2_ZmZBKCzHsM_RRVsCGXivTp1suQ@mail.gmail.com>
+From: "Ramappa. Hugar." <rainbow2ramu@gmail.com>
+Date: Thu, 18 Oct 2018 12:02:40 +0530
+Message-ID: <CABJm_X0vbaGg-vdNf87EB_Qck4ftzkixEtC5oBW5ZJONN4jeKw@mail.gmail.com>
 Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-Subject: Re: [Xenomai] Developing RTDM driver for Xenomai Mercury
+Subject: [Xenomai] [ipipe-arm64] Xenomai porting on msm-4.9 kernel for
+ DB410C SOC
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,63 +13,121 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Wojciech Domski <wojciech.domski@gmail.com>
-Cc: "Xenomai@xenomai.org" <xenomai@xenomai.org>
+To: xenomai@xenomai.org
 
-As far as I know there was a proof of concept for RTDM to run in Mercury if
-you search the mailing list you should be able to find some info on it.  I
-don't think that work made it's way in, so for the moment RTDM would only
-be availiable in the Cobalt core.  I don't use Mercury that much so I can't
-speak to it's advantages at the moment.  This thread
-https://xenomai.org/pipermail/xenomai/2017-February/037161.html may also
-help.
+Ramappa. Hugar. <rainbow2ramu@gmail.com>
+10:34 AM (1 hour ago)
+to xenomai
 
--Greg
+Dear all,
 
-On Wed, Oct 17, 2018 at 4:38 PM Wojciech Domski <wojciech.domski@gmail.com>
-wrote:
 
-> Hi!
->
-> Is it possible to create a RTDM driver as a kernel module under Mercury
-> and use it?
->
-> I have patched kernel with preempt_rt and installed Xenomai 3.0.7
-> Mercury. However, when I try to compile my driver it says that it can
-> not find <rtdm/driver.h> header file.
->
-> I have checked the /usr/xenomai/include and there is no rtdm/driver.h
-> only rtdm/rtdm.h. Does this mean that I can not develop driver under the
-> Xenomai Mercury and I have to install Xenomai Cobalt? Or there is
-> something wrong with my Xenomai installation? I have referred to
-> https://gitlab.denx.de/Xenomai/xenomai/wikis/Start_Here and it does not
-> mention that I can not use RTDM drivers in Mercury, actually the
-> opposite but this is only showed in the Figures that for Mercury a RTDM
-> driver is being used. On the other hand, it is said that:
->
-> "the stock kernel drivers can be reused by real-time applications
-> with no change (provided they don=E2=80=99t create latency issues due to
-> an unfortunate implementation). On the other hand, drivers need
-> to be specifically implemented for running over a dual kernel
-> configuration, i.e. over the in-kernel RTDM interface."
->
-> If the answer to my question is yes then what steps should I take to
-> compile the RTDM driver for Mercury?
->
-> And, maybe a naive question, if the answer is no then what I really gain
-> from using the Mercury instead of a kernel patched with preempt_rt
-> besides neat IPC mechanisms etc.?
->
-> Best regards,
->
-> --
-> Wojciech Domski
->
-> domski.pl | blog.domski.pl
->
->
-> _______________________________________________
-> Xenomai mailing list
-> Xenomai@xenomai.org
-> https://xenomai.org/mailman/listinfo/xenomai
->
+
+Trying to port the xenomai on DB410c soc with kernel
+https://source.codeaurora.org/kernel/msm-4.9.git
+
+
+
+Ported the arm64 ipipe and xenomai patches. Trying to make soc related
+changes
+
+.
+
+Following '
+https://gitlab.denx.de/Xenomai/xenomai/wikis/Porting_Xenomai_To_A_New_Arm_SOC#flow-handler'
+link to port xenomai on new SOC.
+
+Here we could find three interrupt controller drivers in which we need to
+add .mask and .unmask callbacks.
+
+   - drivers/gpio/gpio-msm-smp2p.c
+
+   - drivers/pinctrl/qcom/pinctrl-msm.c
+
+   - drivers/irqchip/qcom/pdc.c
+
+
+
+1.  'drivers/irqchip/qcom/pdc.c' made following changes to support xenomai.
+
+*----------------------  *
+
+*diff --git a/drivers/irqchip/qcom/pdc.c b/drivers/irqchip/qcom/pdc.c*
+
+*index ba7b6da..5772760 100644*
+
+*--- a/drivers/irqchip/qcom/pdc.c*
+
+*+++ b/drivers/irqchip/qcom/pdc.c*
+
+*@@ -40,7 +40,8 @@ enum pdc_register_offsets {*
+
+*        IRQ_i_CFG = 0x110,*
+
+* };*
+
+
+
+*-static DEFINE_SPINLOCK(pdc_lock);*
+
+*+//static DEFINE_SPINLOCK(pdc_lock);*
+
+*+static IPIPE_DEFINE_SPINLOCK(pdc_lock);*
+
+* static void __iomem *pdc_base;*
+
+
+
+* static int get_pdc_pin(irq_hw_number_t hwirq, void *data)*
+
+*@@ -228,8 +229,14 @@ static struct irq_chip qcom_pdc_gic_chip = {*
+
+*        .irq_disable            = qcom_pdc_gic_disable,*
+
+*        .irq_retrigger          = irq_chip_retrigger_hierarchy,*
+
+*        .irq_set_type           = qcom_pdc_gic_set_type,*
+
+*+#ifdef CONFIG_IPIPE*
+
+*+       .irq_hold               = qcom_pdc_gic_mask,*
+
+*+       .irq_release            = qcom_pdc_gic_unmask,*
+
+*+#endif*
+
+*+*
+
+*        .flags                  = IRQCHIP_MASK_ON_SUSPEND |*
+
+*                                        IRQCHIP_SET_TYPE_MASKED |*
+
+*+                                       IRQCHIP_PIPELINE_SAFE |*
+
+*                                        IRQCHIP_SKIP_SET_WAKE,*
+
+*----------------------*
+
+Not  finding equivalent API for 'irq_domain_add_hierarchy'.
+
+*---------------------- *
+
+*       pdc_domain = irq_domain_add_hierarchy(parent_domain, 0, MAX_IRQS,*
+
+*                        node, &qcom_pdc_ops, data);*
+
+*---------------------- *
+
+
+
+After this changes target is getting hang while booting.
+
+
+
+Could you please help me to port this driver ?
+
+
+
+Thanks,
+
+Ramappa
