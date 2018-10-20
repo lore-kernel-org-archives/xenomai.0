@@ -1,13 +1,20 @@
-From: Sebastian Smolorz <Sebastian.Smolorz@gmx.de>
-Date: Fri, 19 Oct 2018 17:10:17 +0200
-Message-ID: <36670432.JDg3nDlJl9@lenni>
-In-Reply-To: <2049752.DBDckmn0oA@lenni>
-References: <1539865220-1372-1-git-send-email-sebastian.smolorz@gmx.de>
- <2d0b645e-d23b-db0f-ea66-17dc8a75e918@xenomai.org> <2049752.DBDckmn0oA@lenni>
+Date: Sat, 20 Oct 2018 19:27:13 +0000 (UTC)
+From: Alec Ari <neotheuser@ymail.com>
+Message-ID: <1521267485.13306337.1540063633073@mail.yahoo.com>
+In-Reply-To: <d1c7004d-c205-4ee2-c8c6-fa39e9bf1583@siemens.com>
+References: <0B8B4C90A6FEA34E9EA10570C016C358BB7D9D8A@DEMUC-SMX001.data-modul.local>
+ <c371a628-edc2-0713-767b-80efac64833e@siemens.com>
+ <0B8B4C90A6FEA34E9EA10570C016C358BB7DA2CC@DEMUC-SMX001.data-modul.local>
+ <0c0a94e6-6650-88e2-7b89-3b6fa92efa65@siemens.com>
+ <0B8B4C90A6FEA34E9EA10570C016C358BB7DA73C@DEMUC-SMX001.data-modul.local>
+ <52b6df12-fbb5-871a-7c4c-5208e7e04978@siemens.com>
+ <cuc1u0s6krjua13us78v6n9g.1539284434958@email.android.com>
+ <0B8B4C90A6FEA34E9EA10570C016C358BB7DB540@DEMUC-SMX001.data-modul.local>
+ <d1c7004d-c205-4ee2-c8c6-fa39e9bf1583@siemens.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7Bit
-Content-Type: text/plain; charset="us-ascii"
-Subject: Re: [Xenomai] [PATCH] boilerplate/avl: fix missing include
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
+Subject: [Xenomai] Cobolt core not enabled in kernel
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,39 +23,49 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
+To: Xenomai <xenomai@xenomai.org>
 
-Hello Philippe,
+Wanted to take a quick jab at wip/4.14-split -- kernel boots up fine:
 
-Sebastian Smolorz wrote:
-> On 10/19/2018 09:16 AM, Philippe Gerum wrote:
-> > On 10/18/2018 04:37 PM, Sebastian Smolorz wrote:
-> > > Nevertheless, I guess there is an issue with the definition of
-> > > const
-> > > (line 50) in include/boilerplate/compiler.h. It does work with gcc
-> > > 5.4 but not with gcc 4.3.5.
-> > 
-> > Could you elaborate on this? Which error pops us, in which context?
-> 
-> Compilation of libboilerplate and libiniparser (master and next) fails
-> with a cross gcc 4.3.5 for x86_32 (i586) targets. If I change the
-> line mentioned above into
-> 
-> #define __const const
-> 
-> the error does not pop up any more. Works also when I completely
-> remove the #define __const.
+[=C2=A0=C2=A0=C2=A0 0.000000] Interrupt pipeline (release #2112)
 
-I've found two additional compile errors due to the usage of ancient gcc 
-and glibc. I could prepare patches for that. But I'm not sure how to fix 
-this __const issue properly. I've seen that you introduced those lines 
-in commit  5632adb8 into -next. I suppose you faced an issue which 
-needed this fix, am I correct?
+However when trying to do anything with Xenomai, I get this:
 
-Thanks,
+0"000.000| BUG in low_init(): [main] Cobalt core not enabled in kernel
 
--- 
-Sebastian
+Everything is set accordingly:
 
+CONFIG_LOCALVERSION=3D"-IPIPE"
+CONFIG_HAVE_IPIPE_SUPPORT=3Dy
+CONFIG_IPIPE=3Dy
+CONFIG_IPIPE_CORE=3Dy
+CONFIG_IPIPE_WANT_PTE_PINNING=3Dy
+CONFIG_IPIPE_CORE_APIREV=3D2
+CONFIG_IPIPE_TARGET_APIREV=3D2
+CONFIG_IPIPE_DEBUG=3Dy
+CONFIG_IPIPE_DEBUG_CONTEXT=3Dy
+CONFIG_IPIPE_DEBUG_INTERNAL=3Dy
 
+Wanted debugging on so I can report back any problems with meaningful stack=
+ traces.
+
+Yes, I'm sure I'm running the correct kernel; this is definitely an IPIPE-e=
+nabled 4.14 kernel. What am I missing?
+
+$ git clone https://gitlab.denx.de/Xenomai/ipipe-x86.git
+$ git clone https://gitlab.denx.de/Xenomai/xenomai.git
+$ cd ipipe-x86 ; make menuconfig ; make ; copy stuff to /boot ; modify grub=
+ ; reboot
+$ cd xenomai ; ./scripts/bootstrap ; ./configure ; make ; make install ; no=
+thing works, same error:
+
+0"000.000| BUG in low_init(): [main] Cobalt core not enabled in kernel
+
+Tried things in /usr/xenomai/bin{,demo} and ~/xenomai/testsuite and same pr=
+oblem. Without me having to dig through enormous PDFs, source code and such=
+, can you simply just tell me what I'm doing wrong?
+
+Thank you!
+
+Alec
 
