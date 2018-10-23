@@ -1,13 +1,12 @@
-From: Sebastian Smolorz <Sebastian.Smolorz@gmx.de>
-Subject: Re: [PATCH 0/4] net/tcp: Fix several bugs and allow rttcp to be built
-Date: Fri, 02 Nov 2018 17:12:28 +0100
-Message-ID: <2257961.2rJi6RV1SI@lenni>
-In-Reply-To: <4717946.93qni4ym1a@lenni>
-References: <1539775907-5124-1-git-send-email-sebastian.smolorz@gmx.de>
- <62f6ce84-8672-c6d4-a1a2-d9bc996c9ef0@siemens.com> <4717946.93qni4ym1a@lenni>
+From: Norbert Lange <nolange79@gmail.com>
+Subject: [PATCH 1/2] separate bootstrap code to get commandline,
+ move it into library
+Date: Tue, 23 Oct 2018 17:16:46 +0200
+Message-Id: <20181023151647.25508-2-norbert.lange@andritz.com>
+In-Reply-To: <20181023151647.25508-1-norbert.lange@andritz.com>
+References: <20181023151647.25508-1-norbert.lange@andritz.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7Bit
-Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 8bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,75 +16,230 @@ List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: xenomai@xenomai.org
-Cc: Jan Kiszka <jan.kiszka@siemens.com>, "Hillman,
- Robert" <hillman@ddc-web.com>
 
-Sebastian Smolorz wrote:
-> On 31.10.18 19:18, Jan Kiszka wrote:
-> > On 31.10.18 17:55, Pham, Phong wrote:
-> > > Hi Sebastian,
-> > > 
-> > > The issue has to do with endianness.  We are running PowerPC (big
-> > > endian).  So in rt_tcp_set_flags(), flags is 32-bit wide and *tf
-> > > is
-> > > 16-bit wide.  I modified the line from:
-> > > 
-> > > *tf = flags;
-> > > 
-> > > to
-> > > 
-> > > *tf = *(__be16 *)&flags;
-> > 
-> > Something is fishy with rt_tcp_set_flags. Shouldn't we rather ensure
-> > that only a __be16 flag value is passed to it?
-> 
-> I think the reason why flags are passed as __be32 is that they are
-> defined with the help of __constant_cpu_to_be32().
-> 
-> After reading some TCP related code in the kernel I think that this
-> issue is properly fixed by
-> 
-> tcp_flag_word(th) = flags;
-> 
-> I will test this for little endian. Phong, can you test this on your
-> machine?
+to allow fallbacks, define a macro to indicate the function exists
+in the library
 
-The following patch works for me on little endian:
+Signed-off-by: Norbert Lange <norbert.lange@andritz.com>
+---
+ include/xenomai/init.h           |  4 +++
+ lib/boilerplate/init/bootstrap.c | 48 ++++++++++++++++---------
+ lib/boilerplate/setup.c          | 62 ++++++++++++++++++++++++++++++++
+ 3 files changed, 97 insertions(+), 17 deletions(-)
 
-diff --git a/kernel/drivers/net/stack/ipv4/tcp/tcp.c b/kernel/drivers/net/stack/ipv4/tcp/tcp.c
-index c066e06..134469c 100644
---- a/kernel/drivers/net/stack/ipv4/tcp/tcp.c
-+++ b/kernel/drivers/net/stack/ipv4/tcp/tcp.c
-@@ -280,12 +280,6 @@ static inline int rt_tcp_after(__u32 seq1, __u32 seq2)
-     return (__s32)(seq2-seq1) <= 0;
- }
- 
--static inline void rt_tcp_set_flags(struct tcphdr* th, __be32 flags)
--{
--    __be16 *tf = ((__be16*)th) + 6;
--    *tf = flags;
--}
--
- static inline u32 rt_tcp_compute_ack_seq(struct tcphdr* th, u32 len)
+diff --git a/include/xenomai/init.h b/include/xenomai/init.h
+index 598bf5329..7ab5c60bb 100644
+--- a/include/xenomai/init.h
++++ b/include/xenomai/init.h
+@@ -25,6 +25,10 @@
+ extern "C" {
+ #endif
+
++#define _XENOMAI_INIT_HASFETCHARGV
++
++int xenomai_init_fetchargv(int *argcp, char *const **argvp);
++
+ void xenomai_init(int *argcp, char *const **argvp);
+
+ void xenomai_init_dso(int *argcp, char *const **argvp);
+diff --git a/lib/boilerplate/init/bootstrap.c b/lib/boilerplate/init/bootstrap.c
+index 64a11c2d2..8e4fc93d8 100644
+--- a/lib/boilerplate/init/bootstrap.c
++++ b/lib/boilerplate/init/bootstrap.c
+@@ -17,7 +17,7 @@
+  *
+  * The above copyright notice and this permission notice shall be included
+  * in all copies or substantial portions of the Software.
+- *
++ *
+  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+  * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+  * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+@@ -44,11 +44,6 @@
+  * License along with this library; if not, write to the Free Software
+  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA.
+  */
+-#include <sys/types.h>
+-#include <unistd.h>
+-#include <stdlib.h>
+-#include <string.h>
+-#include <fcntl.h>
+ #include <xenomai/init.h>
+
+ static int early_argc;
+@@ -62,7 +57,7 @@ static char *const *early_argv;
+  *   should include a wrapper interposing on the main() routine for
+  *   auto-init purpose. Such wrapper is activated when symbol wrapping
+  *   is enabled at link time (--wrap).
+- *
++ *
+  * - in dynamic object form, to be included in a shared library target
+  *   which enables the auto-init feature. This form should not include
+  *   any wrapper to a main() routine - which does not exist - but only
+@@ -94,7 +89,7 @@ int xenomai_main(int argc, char *const argv[])
  {
-     u32 ack_seq = ntohl(th->seq) + len;
-@@ -625,11 +619,10 @@ static void rt_tcp_build_header(struct tcp_socket *ts, struct rtskb *skb,
-     if (unlikely(is_keepalive))
- 	th->seq--;
- 
-+    tcp_flag_word(th) = flags;
-     th->ack_seq = htonl(ts->sync.ack_seq);
-     th->window  = htons(ts->sync.window);
- 
--    rt_tcp_set_flags(th, flags);
+ 	if (early_argc)
+ 		return __real_main(early_argc, early_argv);
 -
-     th->doff = tcphdrlen >> 2; /* No options for now */
-     th->res1 = 0;
-     th->check   = 0;
++
+ 	xenomai_init(&argc, &argv);
 
--- 
-Sebastian
+ 	return __real_main(argc, argv);
+@@ -107,23 +102,30 @@ static inline void call_init(int *argcp, char *const **argvp)
 
+ #endif /* !__BOOTSTRAP_DSO__ */
 
+-__bootstrap_ctor static void xenomai_bootstrap(void)
++#if !defined(_XENOMAI_INIT_HASFETCHARGV)
++#include <sys/types.h>
++#include <unistd.h>
++#include <stdlib.h>
++#include <string.h>
++#include <fcntl.h>
++
++static int xenomai_init_fetchargv(int *argcp, char *const **argvp)
+ {
+-	char *arglist, *argend, *p, **v, *const *argv;
++	char *arglist, *argend, *p, **v;
+ 	ssize_t len, ret;
+-	int fd, n, argc;
++	int fd, n;
+
+ 	len = 1024;
+
+ 	for (;;) {
+ 		fd = __STD(open("/proc/self/cmdline", O_RDONLY));
+ 		if (fd < 0)
+-			return;
++			return -1;
+
+ 		arglist = __STD(malloc(len));
+ 		if (arglist == NULL) {
+ 			__STD(close(fd));
+-			return;
++			return -1;
+ 		}
+
+ 		ret = __STD(read(fd, arglist, len));
+@@ -131,7 +133,7 @@ __bootstrap_ctor static void xenomai_bootstrap(void)
+
+ 		if (ret < 0) {
+ 			__STD(free(arglist));
+-			return;
++			return -1;
+ 		}
+
+ 		if (ret < len)
+@@ -152,7 +154,7 @@ __bootstrap_ctor static void xenomai_bootstrap(void)
+ 	v = __STD(malloc((n + 1) * sizeof(char *)));
+ 	if (v == NULL) {
+ 		__STD(free(arglist));
+-		return;
++		return -1;
+ 	}
+
+ 	p = arglist;
+@@ -163,8 +165,20 @@ __bootstrap_ctor static void xenomai_bootstrap(void)
+ 	}
+
+ 	v[n] = NULL;
+-	argv = v;
+-	argc = n;
++	*argcp = n;
++	*argvp = v;
++	return 0;
++}
++#endif
++
++
++__bootstrap_ctor static void xenomai_bootstrap(void)
++{
++	char *const *argv;
++	int argc;
++
++	if (xenomai_init_fetchargv(&argc, &argv) != 0)
++		return;
+
+ 	call_init(&argc, &argv);
+ 	early_argc = argc;
+diff --git a/lib/boilerplate/setup.c b/lib/boilerplate/setup.c
+index 8b363efee..89a8c6841 100644
+--- a/lib/boilerplate/setup.c
++++ b/lib/boilerplate/setup.c
+@@ -23,6 +23,7 @@
+ #include <errno.h>
+ #include <stdlib.h>
+ #include <unistd.h>
++#include <fcntl.h>
+ #include <ctype.h>
+ #include <memory.h>
+ #include <malloc.h>
+@@ -705,3 +706,64 @@ const char *get_program_name(void)
+ {
+ 	return basename(__base_setup_data.arg0 ?: "program");
+ }
++
++int xenomai_init_fetchargv(int *argcp, char *const **argvp)
++{
++	char *arglist, *argend, *p, **v;
++	ssize_t len, ret;
++	int fd, n;
++
++	len = 1024;
++
++	for (;;) {
++		fd = open("/proc/self/cmdline", O_RDONLY);
++		if (fd < 0)
++			return -1;
++
++		arglist = malloc(len);
++		if (arglist == NULL) {
++			close(fd);
++			return -1;
++		}
++
++		ret = read(fd, arglist, len);
++		close(fd);
++
++		if (ret < 0) {
++			free(arglist);
++			return -1;
++		}
++
++		if (ret < len)
++			break;
++
++		free(arglist);
++		len <<= 1;
++	}
++
++	argend = arglist + ret;
++	p = arglist;
++	n = 0;
++	while (p < argend) {
++		n++;
++		p += strlen(p) + 1;
++	}
++
++	v = malloc((n + 1) * sizeof(char *));
++	if (v == NULL) {
++		free(arglist);
++		return -1;
++	}
++
++	p = arglist;
++	n = 0;
++	while (p < argend) {
++		v[n++] = p;
++		p += strlen(p) + 1;
++	}
++
++	v[n] = NULL;
++	*argcp = n;
++	*argvp = v;
++	return 0;
++}
+--
+2.19.1
 
 
