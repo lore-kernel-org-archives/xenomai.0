@@ -1,17 +1,14 @@
-From: "Pham, Phong" <phamp@ddc-web.com>
-Subject: RE: [Xenomai] [PATCH 0/4] net/tcp: Fix several bugs and allow rttcp
- to be built
-Date: Tue, 30 Oct 2018 21:52:22 +0000
-Message-ID: <C2EC5BA46D13CD44B5915A8FEEB4C44EE545BBF2@DDCEXCH.ddc-ny.com>
-References: <1539775907-5124-1-git-send-email-sebastian.smolorz@gmx.de>
- <6420434.4R09zZnBme@lenni>
- <C2EC5BA46D13CD44B5915A8FEEB4C44EE54593B5@DDCEXCH.ddc-ny.com>
- <2247681.JhopzYo4NN@lenni>
-In-Reply-To: <2247681.JhopzYo4NN@lenni>
-Content-Language: en-US
+From: Sebastian Smolorz <Sebastian.Smolorz@gmx.de>
+Subject: Re: [Xenomai] [PATCH] boilerplate/avl: fix missing include
+Date: Wed, 24 Oct 2018 12:58:52 +0200
+Message-ID: <1812793.iOoPjXJ5t6@lenni>
+In-Reply-To: <2f0067c2-d262-3f6c-af18-8d4beddd5c77@xenomai.org>
+References: <1539865220-1372-1-git-send-email-sebastian.smolorz@gmx.de>
+ <13058881.nZKSyxvzTL@lenni>
+ <2f0067c2-d262-3f6c-af18-8d4beddd5c77@xenomai.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+Content-Transfer-Encoding: 7Bit
+Content-Type: text/plain; charset="us-ascii"
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -20,49 +17,86 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Sebastian Smolorz <Sebastian.Smolorz@gmx.de>
-Cc: Jan Kiszka <jan.kiszka@siemens.com>, "xenomai@xenomai.org" <xenomai@xenomai.org>, "Hillman, Robert" <hillman@ddc-web.com>
+To: Philippe Gerum <rpm@xenomai.org>
+Cc: xenomai@xenomai.org
 
-CkhpIFNlYmFzdGlhbiwKClRoaXMgaXMgd2hhdCBJIHNlZSB3aGVuIG15IFJUbmV0IGJveCwgbXkg
-bGFwdG9wLCBhbmQgbXkgRlRQIHNlcnZlciAobG9jYWwgb24gbGFwdG9wKSBpcyBvbiB0aGUgc2Ft
-ZSBzdWJuZXQgMTkyLjE2OC43LjA6CgoxOTIuMTY4LjcuNzkgaXMgbXkgUlRuZXQgYm94LiAgSSB1
-c2VkIG15IGxhcHRvcCAoMTkyLjE2OC43LjEwNikgdG8gcGluZyB0aGUgUlRuZXQgYm94IHdoaWNo
-IGlzIHdoYXQgeW91IHNlZSB3aXRoIElDTVAgcHJvdG9jb2wuICBUaGUgZmlyc3QgVENQIHBhY2tl
-dCBzZW50IGJ5IG15IFJUbmV0IGJveCAocGFja2V0ICMgMTEpIGhhcyB0aGUgU1lOIGJpdCBub3Qg
-c2V0LiAgKHNlZSBhdHRhY2hlZCBpbWFnZS4gIEkgcHVsbGVkIGluIHlvdXIgcGF0Y2ggYWxvbmcg
-d2l0aCB0aGUgcGF0Y2ggbmFtZWQgInJ0ZG06IGFkZCBpbnRlZ2VyIGZpbGUgZGVzY3JpcHRvciB0
-byBzdHJ1Y3QgcnRkbV9mZCIgdG8gZ2V0IFRDUCB0byBjb21waWxlLiAgQW55IGFkdmljZSB5b3Ug
-bWF5IGhhdmU/ICBEbyB5b3Uga25vdyB3aGljaCByZWxldmFudCByb3V0aW5lIGdvZXMgYW5kIHNl
-dCB0aGUgVENQIFNZTiBiaXQgdGhhdCBJIGNhbiBzdGFydCBsb29raW5nPwoKUGhvbmcuCgoKLS0t
-LS1PcmlnaW5hbCBNZXNzYWdlLS0tLS0KRnJvbTogU2ViYXN0aWFuIFNtb2xvcnogW21haWx0bzpT
-ZWJhc3RpYW4uU21vbG9yekBnbXguZGVdClNlbnQ6IFR1ZXNkYXksIE9jdG9iZXIgMzAsIDIwMTgg
-MToxNyBQTQpUbzogUGhhbSwgUGhvbmcKQ2M6IEphbiBLaXN6a2E7IHhlbm9tYWlAeGVub21haS5v
-cmc7IEhpbGxtYW4sIFJvYmVydApTdWJqZWN0OiBSZTogW1hlbm9tYWldIFtQQVRDSCAwLzRdIG5l
-dC90Y3A6IEZpeCBzZXZlcmFsIGJ1Z3MgYW5kIGFsbG93IHJ0dGNwIHRvIGJlIGJ1aWx0CgpIaSwK
-Cm9uIDEwLzE5LzE4IDA0OjAwIEFNLCBQaGFtLCBQaG9uZyB3cm90ZToKPiBJIGRvIHNlZSBhIFRD
-UCBwYWNrZXQgc2VudCBvdXQgb24gdGhlIExBTiB3aGVuIHJ0X2Rldl9jb25uZWN0KCkgaXMKPiBp
-bnZva2VkOyBob3dldmVyLCB0aGUgcGFja2V0IGl0c2VsZiBpcyBub3QgdmFsaWQuICBUaGUgU1lO
-IGZsYWcgaW4KPiB0aGUgVENQIHByb3RvY29sIGlzIG5vdCBzZXQgd2hlbiB0aGUgZmlyc3QgVENQ
-IHBhY2tldCB3YXMgc2VudC4KClN0cmFuZ2UuIFdpcmVzaGFyayBzaG93cyBtZSB0aGF0IGEgY29u
-bmVjdGlvbiBpbml0aWF0ZWQgYnkgYSBSVG5ldCBib3gKY2FuIGJlIHN1Y2Nlc3NmdWxseSBlc3Rh
-Ymxpc2hlZCBhbmQgdGhhdCB0aGUgU1lOIGZsYWcgaW5kZWVkIGlzIHNldC4KCi0tClNlYmFzdGlh
-bgoKCgpOb3RpY2U6IFRoaXMgZS1tYWlsIGFuZCBhbnkgZmlsZXMgdHJhbnNtaXR0ZWQgd2l0aCBp
-dCBtYXkgY29udGFpbiBEYXRhIERldmljZSBDb3Jwb3JhdGlvbidzIGFuZCBpdHMgc3Vic2lkaWFy
-aWVzIHByaXZpbGVnZWQgYW5kIHByb3ByaWV0YXJ5IGluZm9ybWF0aW9uLiBJdCBpcyBpbnRlbmRl
-ZCBzb2xlbHkgZm9yIHRoZSB1c2Ugb2YgdGhlIGluZGl2aWR1YWwgb3IgZW50aXR5IHRvIHdob20g
-aXQgaXMgYWRkcmVzc2VkLiBJZiB5b3UgYXJlIG5vdCB0aGUgbmFtZWQgcmVjaXBpZW50IG9mIHRo
-aXMgdHJhbnNtaXNzaW9uLCBhbnkgZGlzY2xvc3VyZSwgY29weWluZywgZGlzdHJpYnV0aW9uIG9y
-IHJlbGlhbmNlIG9uIHRoZSBjb250ZW50cyBvZiB0aGlzIG1lc3NhZ2UgaXMgcHJvaGliaXRlZC4g
-SWYgeW91IHJlY2VpdmVkIHRoaXMgZS1tYWlsIGluIGVycm9yLCBwbGVhc2UgZGVzdHJveSBpdCBh
-bmQgYW55IGF0dGFjaGVkIGZpbGVzIGFuZCBub3RpZnkgbWUgaW1tZWRpYXRlbHkuCgpDbGljayBI
-ZXJlPGh0dHA6Ly93d3cuZGRjLXdlYi5jb20vUHJvZmlsZS9FbWFpbFByaXZhY3kuYXNweD4gdG8g
-dmlldyBvdXIgcHJpdmFjeSBzdGF0ZW1lbnQuCi0tLS0tLS0tLS0tLS0tIG5leHQgcGFydCAtLS0t
-LS0tLS0tLS0tLQpBIG5vbi10ZXh0IGF0dGFjaG1lbnQgd2FzIHNjcnViYmVkLi4uCk5hbWU6IHdp
-cmVzaGFya19jYXB0dXJlLnBuZwpUeXBlOiBpbWFnZS9wbmcKU2l6ZTogMTM1MDY4IGJ5dGVzCkRl
-c2M6IHdpcmVzaGFya19jYXB0dXJlLnBuZwpVUkw6IDxodHRwOi8veGVub21haS5vcmcvcGlwZXJt
-YWlsL3hlbm9tYWkvYXR0YWNobWVudHMvMjAxODEwMzAvM2ZhZjUxMTkvYXR0YWNobWVudC5wbmc+
-Ci0tLS0tLS0tLS0tLS0tIG5leHQgcGFydCAtLS0tLS0tLS0tLS0tLQpBIG5vbi10ZXh0IGF0dGFj
-aG1lbnQgd2FzIHNjcnViYmVkLi4uCk5hbWU6IHdpcmVzaGFya19jYXB0dXJlLnBuZwpUeXBlOiBp
-bWFnZS9wbmcKU2l6ZTogMTM1MDY4IGJ5dGVzCkRlc2M6IHdpcmVzaGFya19jYXB0dXJlLnBuZwpV
-Ukw6IDxodHRwOi8veGVub21haS5vcmcvcGlwZXJtYWlsL3hlbm9tYWkvYXR0YWNobWVudHMvMjAx
-ODEwMzAvM2ZhZjUxMTkvYXR0YWNobWVudC0wMDAxLnBuZz4K
+On 10/24/18 12:47 PM, Philippe Gerum wrote:
+> On 10/24/18 12:33 PM, Sebastian Smolorz wrote:
+> > On 10/23/18 11:11 AM, Philippe Gerum wrote:
+> >> On 10/19/18 5:10 PM, Sebastian Smolorz wrote:
+> >>> Hello Philippe,
+> >>> 
+> >>> Sebastian Smolorz wrote:
+> >>>> On 10/19/2018 09:16 AM, Philippe Gerum wrote:
+> >>>>> On 10/18/2018 04:37 PM, Sebastian Smolorz wrote:
+> >>>>>> Nevertheless, I guess there is an issue with the definition of
+> >>>>>> const
+> >>>>>> (line 50) in include/boilerplate/compiler.h. It does work with
+> >>>>>> gcc
+> >>>>>> 5.4 but not with gcc 4.3.5.
+> >>>>> 
+> >>>>> Could you elaborate on this? Which error pops us, in which
+> >>>>> context?
+> >>>> 
+> >>>> Compilation of libboilerplate and libiniparser (master and next)
+> >>>> fails with a cross gcc 4.3.5 for x86_32 (i586) targets. If I
+> >>>> change the line mentioned above into
+> >>>> 
+> >>>> #define __const const
+> >>>> 
+> >>>> the error does not pop up any more. Works also when I completely
+> >>>> remove the #define __const.
+> >>> 
+> >>> I've found two additional compile errors due to the usage of
+> >>> ancient
+> >>> gcc and glibc. I could prepare patches for that. But I'm not sure
+> >>> how to fix this __const issue properly. I've seen that you
+> >>> introduced those lines in commit  5632adb8 into -next. I suppose
+> >>> you faced an issue which needed this fix, am I correct?
+> >> 
+> >> Adding constness to a function was needed at some point, __const
+> >> was
+> >> meant to be a shorthand for annotating the code. You did not
+> >> provide
+> >> the error message received from gcc 4.3 so I can't be sure, however
+> >> the following change might fix the issue:
+> >> 
+> >> diff --git a/include/boilerplate/compiler.h
+> >> b/include/boilerplate/compiler.h index f526eb269..469d0c249 100644
+> >> --- a/include/boilerplate/compiler.h
+> >> +++ b/include/boilerplate/compiler.h
+> >> @@ -47,7 +47,7 @@
+> >> 
+> >>  #endif
+> >>  
+> >>  #ifndef __const
+> >> 
+> >> -#define __const		__attribute__((__const__))
+> >> +#define __const		__attribute__((const))
+> >> 
+> >>  #endif
+> >>  
+> >>  #ifndef __pure
+> > 
+> > That does not change the error. The condensed error output is:
+> >   CC       libboilerplate_la-ancillaries.lo
+> > 
+> > cc1: warnings being treated as errors
+> > lib/boilerplate/iniparser/dictionary.c: In function 'xstrdup':
+> > lib/boilerplate/iniparser/dictionary.c:72: error: passing argument 1
+> > of 'strlen' discards qualifiers from pointer target type
+> > lib/boilerplate/iniparser/dictionary.c:74: error: passing argument 2
+> > of
+> Ok, so this is a conflict with older libc headers defining their own
+> wrappers for the const qualifier; we have no in-tree users of __pure
+> and __const definitions anymore, so we should drop them, fixing the
+> issue in the same move.
+
+Thanks. Will you send out a patch for this or should I do this?
+
+-- 
+Sebastian
+
+
+
+
