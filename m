@@ -1,17 +1,15 @@
-Subject: Re: [PATCH 8/9] net/igb: down interface upon PCI unregister
-References: <20181026140825.5251-1-rpm@xenomai.org>
- <20181026140825.5251-8-rpm@xenomai.org>
- <bafeb896-bfcb-78a1-2558-8c389c73a065@siemens.com>
- <45d95e25-aa65-e537-4221-7a43d397159d@xenomai.org>
- <62c5765a-3491-313f-5cef-1140850c9b37@siemens.com>
+Subject: Re: [Xenomai] [PATCH] boilerplate/avl: fix missing include
+References: <1539865220-1372-1-git-send-email-sebastian.smolorz@gmx.de>
+ <13058881.nZKSyxvzTL@lenni>
+ <2f0067c2-d262-3f6c-af18-8d4beddd5c77@xenomai.org> <1812793.iOoPjXJ5t6@lenni>
 From: Philippe Gerum <rpm@xenomai.org>
-Message-ID: <2ac0ee5b-4aea-dc87-ffb3-a585ba8f2684@xenomai.org>
-Date: Wed, 31 Oct 2018 17:32:01 +0100
+Message-ID: <aa85caea-d7fb-7817-b804-b05d22fd4917@xenomai.org>
+Date: Wed, 24 Oct 2018 16:53:51 +0200
 MIME-Version: 1.0
-In-Reply-To: <62c5765a-3491-313f-5cef-1140850c9b37@siemens.com>
-Content-Type: text/plain; charset="utf-8"
+In-Reply-To: <1812793.iOoPjXJ5t6@lenni>
+Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -20,55 +18,86 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jan Kiszka <jan.kiszka@siemens.com>, xenomai@xenomai.org
+To: Sebastian Smolorz <Sebastian.Smolorz@gmx.de>
+Cc: xenomai@xenomai.org
 
-On 10/31/18 4:10 PM, Jan Kiszka wrote:
-> On 31.10.18 15:18, Philippe Gerum wrote:
->> On 10/31/18 1:32 PM, Jan Kiszka wrote:
->>> On 26.10.18 16:08, Philippe Gerum wrote:
->>>> Allow to safely unload the IGB driver module still hosting an active
->>>> rtnet interface, by forcing this interface down on behalf on the PCI
->>>> device removal handler.
->>>> ---
->>>>    kernel/drivers/net/drivers/igb/igb_main.c | 1 +
->>>>    1 file changed, 1 insertion(+)
+On 10/24/18 12:58 PM, Sebastian Smolorz wrote:
+> On 10/24/18 12:47 PM, Philippe Gerum wrote:
+>> On 10/24/18 12:33 PM, Sebastian Smolorz wrote:
+>>> On 10/23/18 11:11 AM, Philippe Gerum wrote:
+>>>> On 10/19/18 5:10 PM, Sebastian Smolorz wrote:
+>>>>> Hello Philippe,
+>>>>>
+>>>>> Sebastian Smolorz wrote:
+>>>>>> On 10/19/2018 09:16 AM, Philippe Gerum wrote:
+>>>>>>> On 10/18/2018 04:37 PM, Sebastian Smolorz wrote:
+>>>>>>>> Nevertheless, I guess there is an issue with the definition of
+>>>>>>>> const
+>>>>>>>> (line 50) in include/boilerplate/compiler.h. It does work with
+>>>>>>>> gcc
+>>>>>>>> 5.4 but not with gcc 4.3.5.
+>>>>>>>
+>>>>>>> Could you elaborate on this? Which error pops us, in which
+>>>>>>> context?
+>>>>>>
+>>>>>> Compilation of libboilerplate and libiniparser (master and next)
+>>>>>> fails with a cross gcc 4.3.5 for x86_32 (i586) targets. If I
+>>>>>> change the line mentioned above into
+>>>>>>
+>>>>>> #define __const const
+>>>>>>
+>>>>>> the error does not pop up any more. Works also when I completely
+>>>>>> remove the #define __const.
+>>>>>
+>>>>> I've found two additional compile errors due to the usage of
+>>>>> ancient
+>>>>> gcc and glibc. I could prepare patches for that. But I'm not sure
+>>>>> how to fix this __const issue properly. I've seen that you
+>>>>> introduced those lines in commit  5632adb8 into -next. I suppose
+>>>>> you faced an issue which needed this fix, am I correct?
 >>>>
->>>> diff --git a/kernel/drivers/net/drivers/igb/igb_main.c
->>>> b/kernel/drivers/net/drivers/igb/igb_main.c
->>>> index 67a34b539..0a6cd4bd6 100644
->>>> --- a/kernel/drivers/net/drivers/igb/igb_main.c
->>>> +++ b/kernel/drivers/net/drivers/igb/igb_main.c
->>>> @@ -2432,6 +2432,7 @@ static void igb_remove(struct pci_dev *pdev)
->>>>        struct igb_adapter *adapter = rtnetdev_priv(netdev);
->>>>        struct e1000_hw *hw = &adapter->hw;
->>>>    +    rtdev_down(netdev);
->>>>        igb_down(adapter);
->>>>          pm_runtime_get_noresume(&pdev->dev);
+>>>> Adding constness to a function was needed at some point, __const
+>>>> was
+>>>> meant to be a shorthand for annotating the code. You did not
+>>>> provide
+>>>> the error message received from gcc 4.3 so I can't be sure, however
+>>>> the following change might fix the issue:
 >>>>
+>>>> diff --git a/include/boilerplate/compiler.h
+>>>> b/include/boilerplate/compiler.h index f526eb269..469d0c249 100644
+>>>> --- a/include/boilerplate/compiler.h
+>>>> +++ b/include/boilerplate/compiler.h
+>>>> @@ -47,7 +47,7 @@
+>>>>
+>>>>  #endif
+>>>>  
+>>>>  #ifndef __const
+>>>>
+>>>> -#define __const		__attribute__((__const__))
+>>>> +#define __const		__attribute__((const))
+>>>>
+>>>>  #endif
+>>>>  
+>>>>  #ifndef __pure
 >>>
->>> Is that igb-only? Or should be add such call to all driver removals?
+>>> That does not change the error. The condensed error output is:
+>>>   CC       libboilerplate_la-ancillaries.lo
 >>>
->>
->> This is a use case for the new rtnet_down() call applied to IGB which
->> I'm interested in ATM. If the new up/down API is merged, all drivers
->> should be updated the same way eventually.
->>
+>>> cc1: warnings being treated as errors
+>>> lib/boilerplate/iniparser/dictionary.c: In function 'xstrdup':
+>>> lib/boilerplate/iniparser/dictionary.c:72: error: passing argument 1
+>>> of 'strlen' discards qualifiers from pointer target type
+>>> lib/boilerplate/iniparser/dictionary.c:74: error: passing argument 2
+>>> of
+>> Ok, so this is a conflict with older libc headers defining their own
+>> wrappers for the const qualifier; we have no in-tree users of __pure
+>> and __const definitions anymore, so we should drop them, fixing the
+>> issue in the same move.
 > 
-> Then we should probably think about the best pattern now:
-> 
-> Why not do this implicitly when the driver unregisters itself from the
-> RTnet core? If that unregistration comes too late with some of them,
-> that would become the driver patches.
+> Thanks. Will you send out a patch for this or should I do this?
 > 
 
-Fine by me, however code inspection may not be enough for determining if
-such change introduces a regression in some drivers, until actual
-testing is done.
-
-Since we don't have all the netdevices at hand and certainly not the
-time to test that change against all of them by ourselves, merging the
-call into the unregistration service would probably offload this task on
-to the users of such adapters in the end.
+I've queued one, thanks.
 
 -- 
 Philippe.
