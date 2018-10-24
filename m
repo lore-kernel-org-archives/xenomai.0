@@ -1,8 +1,13 @@
-From: Jan Kiszka <jan.kiszka@siemens.com>
-Subject: RTnet splash with current next and stable
-Message-ID: <473fdfe5-e761-e51c-a54c-90a520ca7816@siemens.com>
-Date: Tue, 30 Oct 2018 11:28:38 +0100
+Subject: Re: [Xenomai] [PATCH] boilerplate/avl: fix missing include
+References: <1539865220-1372-1-git-send-email-sebastian.smolorz@gmx.de>
+ <36670432.JDg3nDlJl9@lenni>
+ <212cc963-4cb6-2e0d-67db-f74b2719f15f@xenomai.org>
+ <13058881.nZKSyxvzTL@lenni>
+From: Philippe Gerum <rpm@xenomai.org>
+Message-ID: <2f0067c2-d262-3f6c-af18-8d4beddd5c77@xenomai.org>
+Date: Wed, 24 Oct 2018 12:47:07 +0200
 MIME-Version: 1.0
+In-Reply-To: <13058881.nZKSyxvzTL@lenni>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -14,56 +19,74 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Xenomai <xenomai@xenomai.org>, Philippe Gerum <rpm@xenomai.org>, Sebastian Smolorz <Sebastian.Smolorz@gmx.de>
+To: Sebastian Smolorz <Sebastian.Smolorz@gmx.de>
+Cc: xenomai@xenomai.org
 
-Hi all,
+On 10/24/18 12:33 PM, Sebastian Smolorz wrote:
+> On 10/23/18 11:11 AM, Philippe Gerum wrote:
+>> On 10/19/18 5:10 PM, Sebastian Smolorz wrote:
+>>> Hello Philippe,
+>>>
+>>> Sebastian Smolorz wrote:
+>>>> On 10/19/2018 09:16 AM, Philippe Gerum wrote:
+>>>>> On 10/18/2018 04:37 PM, Sebastian Smolorz wrote:
+>>>>>> Nevertheless, I guess there is an issue with the definition of
+>>>>>> const
+>>>>>> (line 50) in include/boilerplate/compiler.h. It does work with
+>>>>>> gcc
+>>>>>> 5.4 but not with gcc 4.3.5.
+>>>>>
+>>>>> Could you elaborate on this? Which error pops us, in which
+>>>>> context?
+>>>>
+>>>> Compilation of libboilerplate and libiniparser (master and next)
+>>>> fails with a cross gcc 4.3.5 for x86_32 (i586) targets. If I
+>>>> change the line mentioned above into
+>>>>
+>>>> #define __const const
+>>>>
+>>>> the error does not pop up any more. Works also when I completely
+>>>> remove the #define __const.
+>>>
+>>> I've found two additional compile errors due to the usage of ancient
+>>> gcc and glibc. I could prepare patches for that. But I'm not sure
+>>> how to fix this __const issue properly. I've seen that you
+>>> introduced those lines in commit  5632adb8 into -next. I suppose
+>>> you faced an issue which needed this fix, am I correct?
+>>
+>> Adding constness to a function was needed at some point, __const was
+>> meant to be a shorthand for annotating the code. You did not provide
+>> the error message received from gcc 4.3 so I can't be sure, however
+>> the following change might fix the issue:
+>>
+>> diff --git a/include/boilerplate/compiler.h
+>> b/include/boilerplate/compiler.h index f526eb269..469d0c249 100644
+>> --- a/include/boilerplate/compiler.h
+>> +++ b/include/boilerplate/compiler.h
+>> @@ -47,7 +47,7 @@
+>>  #endif
+>>
+>>  #ifndef __const
+>> -#define __const		__attribute__((__const__))
+>> +#define __const		__attribute__((const))
+>>  #endif
+>>
+>>  #ifndef __pure
+> 
+> That does not change the error. The condensed error output is:
+> 
+>   CC       libboilerplate_la-ancillaries.lo
+> cc1: warnings being treated as errors
+> lib/boilerplate/iniparser/dictionary.c: In function 'xstrdup':
+> lib/boilerplate/iniparser/dictionary.c:72: error: passing argument 1 of 
+> 'strlen' discards qualifiers from pointer target type
+> lib/boilerplate/iniparser/dictionary.c:74: error: passing argument 2 of 
 
-just testing new kernels with smokey, and one of them had RTnet on. This
-triggered a bug with the net_packat_dgram test:
-
-[   50.610997] initializing loopback...
-[   50.613799] RTnet: registered rtlo
-[   50.692154] ------------[ cut here ]------------
-[   50.693577] WARNING: CPU: 1 PID: 1119 at ../lib/list_debug.c:29 __list_add+0x62/0xb0
-[   50.696832] list_add corruption. next->prev should be prev (ffffffffa0007d20), but was           (null). (next=ffff88003a8bb700).
-[   50.700751] Modules linked in: rtpacket rtipv4 rt_loopback rt_e1000e rtnet
-[   50.702518] CPU: 1 PID: 1119 Comm: smokey Not tainted 4.9.135+ #26
-[   50.704188] Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS rel-1.11.2-0-gf9626ccb91-prebuilt.qemu-project.org 04/01/2014
-[   50.707861] I-pipe domain: Linux
-[   50.709295]  ffffc90002943c10 ffffffff8146a31a ffffc90002943c60 0000000000000000
-[   50.710335]  ffffc90002943c50 ffffffff810e9441 0000001da0007ca8 ffff88003a8bb700
-[   50.710335]  ffffffffa0007d20 ffff88003a8bb700 000000000001d230 ffff88003a8bb640
-[   50.710335] Call Trace:
-[   50.710335]  [<ffffffff8146a31a>] dump_stack+0xa2/0xc8
-[   50.710335]  [<ffffffff810e9441>] __warn+0xe1/0x100
-[   50.710335]  [<ffffffff810e94af>] warn_slowpath_fmt+0x4f/0x60
-[   50.710335]  [<ffffffff812b0b61>] ? __slab_alloc.isra.88+0xa1/0xd0
-[   50.710335]  [<ffffffffa0003edb>] ? rtskb_pool_extend+0xbb/0x220 [rtnet]
-[   50.710335]  [<ffffffff81498862>] __list_add+0x62/0xb0
-[   50.710335]  [<ffffffffa000160a>] rtdev_map_rtskb+0x7a/0xa0 [rtnet]
-[   50.710335]  [<ffffffffa0003f12>] rtskb_pool_extend+0xf2/0x220 [rtnet]
-[   50.710335]  [<ffffffffa0004072>] rtskb_pool_init+0x32/0x70 [rtnet]
-[   50.710335]  [<ffffffffa00043d2>] __rt_bare_socket_init+0x42/0x90 [rtnet]
-[   50.710335]  [<ffffffffa0004501>] __rt_socket_init+0x81/0xd0 [rtnet]
-[   50.710335]  [<ffffffffa0054477>] rt_packet_socket+0x27/0xb0 [rtpacket]
-[   50.710335]  [<ffffffff81219dd7>] ? create_instance+0x67/0x80
-[   50.710335]  [<ffffffff8121a772>] __rtdm_dev_socket+0x112/0x440
-[   50.710335]  [<ffffffff8113bb09>] ? lock_release+0x2c9/0x440
-[   50.710335]  [<ffffffff8122b200>] ? CoBaLt_open+0x40/0x40
-[   50.710335]  [<ffffffff8122b20e>] CoBaLt_socket+0xe/0x20
-[   50.710335]  [<ffffffff812412ca>] ipipe_syscall_hook+0x19a/0x460
-[   50.710335]  [<ffffffff811ad8e9>] __ipipe_notify_syscall+0x79/0x400
-[   50.710335]  [<ffffffff811adc9a>] ipipe_handle_syscall+0x2a/0xd0
-[   50.710335]  [<ffffffff81002d6c>] do_syscall_64+0x3c/0x1c0
-[   50.710335]  [<ffffffff8184f2c3>] entry_SYSCALL_64_after_swapgs+0x5d/0xdb
-[   50.761499] ---[ end trace 633f1ec8aecb0735 ]---
-[   50.762893] ------------[ cut here ]------------
-
-Anyone who hacked on this recently have a feeling?
-
-Jan
+Ok, so this is a conflict with older libc headers defining their own
+wrappers for the const qualifier; we have no in-tree users of __pure and
+__const definitions anymore, so we should drop them, fixing the issue in
+the same move.
 
 -- 
-Siemens AG, Corporate Technology, CT RDA IOT SES-DE
-Corporate Competence Center Embedded Linux
+Philippe.
 
