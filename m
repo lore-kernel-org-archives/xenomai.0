@@ -1,10 +1,8 @@
-MIME-Version: 1.0
-From: Matheus Pinto <lpinto.matheus@gmail.com>
-Date: Wed, 31 Oct 2018 19:00:22 -0300
-Message-ID: <CAMDdWuz_CkFKsE1oo5AjLEUOEpmVNQhQxGbJ8pP7hdOPQnqONg@mail.gmail.com>
-Subject: Problem when binding a queue (rt_queue_bind) on Xenomai 3
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+From: Philippe Gerum <rpm@xenomai.org>
+Subject: [PATCH] x86/process: ipipe: prevent false positive in testing for
+ preemptible section
+Date: Thu, 25 Oct 2018 15:20:21 +0200
+Message-Id: <20181025132021.5278-1-rpm@xenomai.org>
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -13,34 +11,33 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
+To: Henning Schild <henning.schild@siemens.com>
+Cc: xenomai@xenomai.org, Jan Kiszka <jan.kiszka@siemens.com>, Philippe Gerum <rpm@xenomai.org>
 
-I am trying to simple bind a queue in a task on a executable file, where
-the queue is created on another task on another executable file.
-The queue is created normally, no error is sent. In both task I use the
-exactly same string name to identify the queue when created in one task
-(rt_queue_create) and binded in the other task (rt_queue_bind). When I try
-bind the queue in another task with rt_queue_bind, a error is returned.
-However, the error dont fit in anyone errors described on API, or in
-"/usr/include/asm-generic/errno-base.h"  and
-"/usr/include/asm-generic/errno.h" . The error value is -110.
+We may call switch_to_bitmap() from the head stage when a co-kernel
+switches to a new thread context, in which case IRQs are hard
+disabled, although the root stage might be unstalled.
 
-My system is:
+Make sure the preemption debug code in refresh_tss_limit() is aware of
+this.
+---
+ arch/x86/include/asm/desc.h | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
--Ubuntu Mate 16.04.2 (Xenial)
--Xenomai/cobalt v3.0.6
--Raspberry Pi 3 with Broadcom BCM2837
+diff --git a/arch/x86/include/asm/desc.h b/arch/x86/include/asm/desc.h
+index 0e3758c0c954..7a4cb4333df3 100644
+--- a/arch/x86/include/asm/desc.h
++++ b/arch/x86/include/asm/desc.h
+@@ -309,7 +309,7 @@ static inline void force_reload_TR(void)
+  */
+ static inline void refresh_tss_limit(void)
+ {
+-	DEBUG_LOCKS_WARN_ON(preemptible());
++	DEBUG_LOCKS_WARN_ON(!hard_irqs_disabled() && preemptible());
+ 
+ 	if (unlikely(this_cpu_read(__tss_limit_invalid)))
+ 		force_reload_TR();
+-- 
+2.17.2
 
---=20
-Atenciosamente*,*
 
-*Matheus Leitzke Pinto*
-Professor de Sistemas Embarcados
-
-
-*Campus Chapec=C3=B3*
-+55 (49) 33 13 12 44 <callto:+5549333131244>
-
-*Instituto Federal de Santa Catarina - Campus Chapec=C3=B3*
-Rua Nereu Ramos, 3450 D - Semin=C3=A1rio, Chapec=C3=B3 - SC, 89813-000
-<http://www.chapeco.ifsc.edu.br>www.chapeco.ifsc.edu.br
