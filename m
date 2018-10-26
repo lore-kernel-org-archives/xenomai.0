@@ -1,13 +1,14 @@
-Subject: Re: Segmentation error 6 in rt_heap_create() without --enable-pshared
-References: <20181105120636.B8E60FC0@centrum.cz>
+Subject: Re: [PATCH] x86/process: ipipe: prevent false positive in testing for
+ preemptible section
+References: <20181025132021.5278-1-rpm@xenomai.org>
 From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <f5430687-f110-0973-3de6-5ede3acb79c7@siemens.com>
-Date: Mon, 5 Nov 2018 12:10:12 +0100
+Message-ID: <510946c4-61a7-6e53-2ab6-d96ad1752027@siemens.com>
+Date: Fri, 26 Oct 2018 14:28:50 +0100
 MIME-Version: 1.0
-In-Reply-To: <20181105120636.B8E60FC0@centrum.cz>
-Content-Type: text/plain; charset="utf-8"; format="flowed"
+In-Reply-To: <20181025132021.5278-1-rpm@xenomai.org>
+Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,15 +17,36 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: =?UTF-8?Q?Petr_=c4=8cervenka?= <grugh@centrum.cz>, Xenomai <xenomai@xenomai.org>
+To: Philippe Gerum <rpm@xenomai.org>, Henning Schild <henning.schild@siemens.com>
+Cc: xenomai@xenomai.org
 
-On 05.11.18 12:06, Petr Červenka via Xenomai wrote:
-> Hello.
-> I'm continuing to test newest Xenomai (git clone).
-> If I configure Xenomai without --enable-pshared, I will always get an segmentation error 6 in rt_heap_create() call. It doesn't matter, if I use NULL as heap name or not.
-> With --enable-pshared everything works fine.
+On 25.10.18 14:20, Philippe Gerum wrote:
+> We may call switch_to_bitmap() from the head stage when a co-kernel
+> switches to a new thread context, in which case IRQs are hard
+> disabled, although the root stage might be unstalled.
+> 
+> Make sure the preemption debug code in refresh_tss_limit() is aware of
+> this.
+> ---
+>   arch/x86/include/asm/desc.h | 2 +-
+>   1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/arch/x86/include/asm/desc.h b/arch/x86/include/asm/desc.h
+> index 0e3758c0c954..7a4cb4333df3 100644
+> --- a/arch/x86/include/asm/desc.h
+> +++ b/arch/x86/include/asm/desc.h
+> @@ -309,7 +309,7 @@ static inline void force_reload_TR(void)
+>    */
+>   static inline void refresh_tss_limit(void)
+>   {
+> -	DEBUG_LOCKS_WARN_ON(preemptible());
+> +	DEBUG_LOCKS_WARN_ON(!hard_irqs_disabled() && preemptible());
+>   
+>   	if (unlikely(this_cpu_read(__tss_limit_invalid)))
+>   		force_reload_TR();
+> 
 
-stable or master (or both)?
+This is 4.14-only, right?
 
 Jan
 
