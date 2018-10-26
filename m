@@ -1,13 +1,12 @@
-Message-ID: <1542977379.2348.5.camel@smigroup.net>
-Subject: Re: rtping differences between master and slaves
-From: Mauro Salvini <mauro.salvini@smigroup.net>
-Date: Fri, 23 Nov 2018 13:49:39 +0100
-In-Reply-To: <043f0216-fb11-e022-66b8-738f5cd93aee@siemens.com>
-References: <1542970266.2348.3.camel@smigroup.net>
- <043f0216-fb11-e022-66b8-738f5cd93aee@siemens.com>
+MIME-Version: 1.0
+References: <20181023151647.25508-1-norbert.lange@andritz.com>
+ <7571eedc-7844-2703-e553-72cf9a1abbe0@siemens.com>
+In-Reply-To: <7571eedc-7844-2703-e553-72cf9a1abbe0@siemens.com>
+From: Norbert Lange <nolange79@gmail.com>
+Date: Fri, 26 Oct 2018 18:35:40 +0200
+Message-ID: <CADYdroNgOFKaEQ0UfcxhdniU54PYt119g+Y9Gnz7SGrCtBGiUA@mail.gmail.com>
+Subject: Re: improve and provide a header for bootstrapping
 Content-Type: text/plain; charset="UTF-8"
-Mime-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,110 +15,134 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jan Kiszka <jan.kiszka@siemens.com>, xenomai <xenomai@xenomai.org>
+To: jan.kiszka@siemens.com
+Cc: Xenomai <xenomai@xenomai.org>
 
-On Fri, 2018-11-23 at 12:49 +0100, Jan Kiszka wrote:
-> On 23.11.18 11:51, Mauro Salvini via Xenomai wrote:
-> > Hi all,
-> >=20
-> > I'm trying RTNet (an old version: 0.9.13) on Xenomai (yet another
-> > old
-> > version, 2.5.6: unluckily I cannot move to newer versions).
-> >=20
-> > My setup has 3 identical nodes on isolated RT network: cycle time
-> > of
-> > 5000us, master with slot offset 0, slave A with slot offset 200us
-> > and
-> > slave B with slot offset 400us; network is configured using rtnet
-> > utility script.
-> >=20
-> > Using rtping I observe two different behaviors on slaves and
-> > master.
-> >=20
-> > For example, pinging slave A from B:
-> >=20
-> > ...
-> > 64 bytes from 10.0.43.91: icmp_seq=3D1 time=3D7777.7 us
-> > 64 bytes from 10.0.43.91: icmp_seq=3D2 time=3D7846.3 us
-> > 64 bytes from 10.0.43.91: icmp_seq=3D3 time=3D7966.6 us
-> > 64 bytes from 10.0.43.91: icmp_seq=3D4 time=3D8096.6 us
-> > ...
-> > 64 bytes from 10.0.43.91: icmp_seq=3D15 time=3D9461.7 us
-> > 64 bytes from 10.0.43.91: icmp_seq=3D16 time=3D9604.2 us
-> > 64 bytes from 10.0.43.91: icmp_seq=3D17 time=3D4719.5 us
-> > 64 bytes from 10.0.43.91: icmp_seq=3D18 time=3D4844.7 us
-> > 64 bytes from 10.0.43.91: icmp_seq=3D19 time=3D4968.3 us
-> > 64 bytes from 10.0.43.91: icmp_seq=3D20 time=3D5124.4 us
-> > ...
-> > 64 bytes from 10.0.43.91: icmp_seq=3D53 time=3D9215.4 us
-> > 64 bytes from 10.0.43.91: icmp_seq=3D54 time=3D9331.5 us
-> > 64 bytes from 10.0.43.91: icmp_seq=3D55 time=3D9461.0 us
-> > 64 bytes from 10.0.43.91: icmp_seq=3D56 time=3D9585.3 us
-> > 64 bytes from 10.0.43.91: icmp_seq=3D57 time=3D4712.5 us
-> > 64 bytes from 10.0.43.91: icmp_seq=3D58 time=3D4847.0 us
-> > 64 bytes from 10.0.43.91: icmp_seq=3D59 time=3D4967.2 us
-> > ...
-> >=20
-> > so time varies between a minimum equal to time distance between two
-> > slots and a maximum equal to this time plus cycle duration. This
-> > can
-> > makes sense supposing that Linux timer used to generate ping
-> > request in
-> > rtping.c slowly drifts from real-time timer that governs tx slot,
-> > so
-> > the duration changes between requests depending on when request
-> > happens
-> > into the TDMA cycle. Same behavior if I ping A from B or if I ping
-> > master from A or B.
-> >=20
-> > On master I instead observe this (pinging slave A or B equally):
-> >=20
-> > ...
-> > 64 bytes from 10.0.43.89: icmp_seq=3D1 time=3D2434.1 us
-> > 64 bytes from 10.0.43.89: icmp_seq=3D2 time=3D2443.1 us
-> > 64 bytes from 10.0.43.89: icmp_seq=3D3 time=3D2438.7 us
-> > 64 bytes from 10.0.43.89: icmp_seq=3D4 time=3D2450.0 us
-> > 64 bytes from 10.0.43.89: icmp_seq=3D5 time=3D2447.9 us
-> > 64 bytes from 10.0.43.89: icmp_seq=3D6 time=3D2450.6 us
-> > 64 bytes from 10.0.43.89: icmp_seq=3D7 time=3D2428.5 us
-> > 64 bytes from 10.0.43.89: icmp_seq=3D8 time=3D2442.8 us
-> > 64 bytes from 10.0.43.89: icmp_seq=3D9 time=3D2442.3 us
-> > ...
-> >=20
-> > ping duration is constant into a rtping execution (changes between
-> > different executions).
-> >=20
-> > So I'm puzzling about this difference and I wonder if this is
-> > normal or
-> > if there could be problems.
-> >=20
->=20
-> As you are running RTmac/TDMA: The latency is affected by when during
-> some cycle=C2=A0
-> you issue the ICMP request. This is not synchronized with the cycle,
-> so you will=C2=A0
-> see random shifts there already. Furthermore, if station A has a time
-> slot=C2=A0
-> before station B and A issues the ping, B may have a change to reply
-> in the same=C2=A0
-> cycle. If you change roles, this is surely not possible, thus you get
-> different=C2=A0
-> round trip times.
+Am Fr., 26. Okt. 2018 um 15:48 Uhr schrieb Jan Kiszka <jan.kiszka@siemens.com>:
+>
+> On 23.10.18 16:16, Norbert Lange wrote:
+> > Hello,
+> >
+> > the following patches allow a variety of options additional
+> > to the linker magic involved for hijacking the aplications main
+> > function.
+> >
+> > the original method will still continue to work, differences are
+> >
+> > *   the code dealing with retrieving the commandline arguments
+> >      is moved into libcobale/libmercury. Making the necessary per-application
+> >      code much smaller.
+> >
+> > *   the implementation was moved into a header, with several macros
+> >      controlling functionality (not everyone wants to define a main function).
+> >
+> >
+> > The approach I use personally is to compile and link my own bootstrap code,
+> > which is preferable in many build systems as source-files are understood while
+> > objects files generally need some special care. (And it cant hurt if the compiler
+> > flags match exactly).
+> >
+> > As example:
+> >
+> > ----- add this to your file  containing main
+> >
+> > int xenomai_init_getargv(int *argc, char *const** argv);
+> >
+> > int main(int argc, char *const argv[])
+> > {
+> > #if defined(__COBALT__) || defined(__MERCURY__)
+> >      xenomai_init_getargv(&argc, &argv);
+> > #endif
+> >       ....
+> > }
+> >
+> > ----- create another file, lets call it mybootstrap.c
+> >
+> > #define _XENOMAI_BOOTSTRAP_GLIBC_CONSTRUCTORS
+> > #include <xenomai/bootstrap-template.h>
+> >
+> > ----------------------------------------------
+> >
+> > Norbert
+> >
+> > [PATCH 1/2] separate bootstrap code to get commandline, move it into
+> > [PATCH 2/2] add a header to create flexible bootstrap code
+> >
+> >
+>
+> I need to look more carefully at the details and your use case, but my first
+> impression is that at least patch 2 is not very beautiful due to that large
+> template header. Could you explain again why explicitly calling the bootstrap
+> code in a library is not sufficient?
 
-Thank Jan for quick answer.
+Just so that we are on the same page, the bootstrap code thats
+generated looks like this
+(in a couple variants):
+----------------
+#include <xenomai/init.h>
 
-Yes, I understood your explanation, that perfectly clarify rtping
-between A and B.
+static int early_argc;
+static char *const *early_argv;
 
-Instead, about the constant ping duration when master pings a slave: is
-due to the fact that on master ICMP requests are synchronized with the
-cycle?
+int xenomai_bootstrap_getargv(int *argc, char *const** argv)
+{
+if (early_argc)
+{
+*argc = early_argc;
+*argv = early_argv;
+return 1;
+}
+return 0;
+}
 
-Thanks in advance, regards
+__bootstrap_ctor static void xenomai_bootstrap(void)
+{
+char *const *argv;
+int argc;
+if (xenomai_init_fetchargv(&argc, &argv) != 0)
+return;
+xenomai_init(&argc, &argv);
+early_argc = argc;
+early_argv = argv;
+}
+----------------------
 
-Mauro
+I believe what you meant with bootstrap code is called with 'xenomai_init',
+and I dont plan to touch or replace that.
 
->=20
-> Jan
->=20
+The code further replicates the code from lib/boilerplate/init/bootstrap.c,
+with the important difference, that you can chose not to define a main
+function and assorted wrappers (one of my main motivations is to
+disable/separate that).
+
+>
+> Also note that this pattern may make it harder to maintain a compatible
+> interface along updates, increasing the risk of having to recompile your
+> application, rather than just replacing some central library, when Xenomai changes.
+
+before Patch #2:
+your-app --links-> lib/xenomai/bootstrap.o --calls->xenomai_init
+
+after Patch #2 (and an optional variant):
+your-app --contains-> include/xenomai/bootstrap-template.h
+--calls->xenomai_init
+
+this means I need no precompiled object 'lib/xenomai/bootstrap.o', and
+the ABI to the libs has not changed.
+
+You call a large header with functions not beautiful, I would call
+precompiled objects and the linker wrapping not beautiful.
+If we are pragmatic, with Patch #2 you can pick between 2 not
+beautiful solutions =)
+
+Patch #1 is the one changing the ABI in a not BW-compatible manner
+(adds one function),
+but Patch #2 arguably improves on that, as the .o objects from a
+compiler have no ABI stability guarantee whatsoever.
+
+Further I can freely use no-pic/pic/pie and other ABI-changing
+settings, as there is no need to link a object
+with potentially incompatible ABI (compiler,-version or settings).
+
+Norbert
 
