@@ -1,13 +1,15 @@
-Subject: Re: [PATCH][xenomai-images] start-qemu.sh: detect if DISPLAY is set
-References: <20181122204348.17730-1-holzmayr@rsi-elektrotechnik.de>
-From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <4a809d39-ed55-cbef-f8b5-74f6d8b590c5@siemens.com>
-Date: Fri, 23 Nov 2018 12:14:21 +0100
+Subject: Re: [PATCH] x86/process: ipipe: prevent false positive in testing for
+ preemptible section
+References: <20181025132021.5278-1-rpm@xenomai.org>
+ <510946c4-61a7-6e53-2ab6-d96ad1752027@siemens.com>
+From: Philippe Gerum <rpm@xenomai.org>
+Message-ID: <0a942134-ff39-d865-4611-3c534d4187b8@xenomai.org>
+Date: Fri, 26 Oct 2018 16:34:59 +0200
 MIME-Version: 1.0
-In-Reply-To: <20181122204348.17730-1-holzmayr@rsi-elektrotechnik.de>
-Content-Type: text/plain; charset=utf-8; format=flowed
+In-Reply-To: <510946c4-61a7-6e53-2ab6-d96ad1752027@siemens.com>
+Content-Type: text/plain; charset="utf-8"
 Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,41 +18,40 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Josef Holzmayr <holzmayr@rsi-elektrotechnik.de>
+To: Jan Kiszka <jan.kiszka@siemens.com>, Henning Schild <henning.schild@siemens.com>
 Cc: xenomai@xenomai.org
 
-On 22.11.18 21:43, Josef Holzmayr wrote:
-> If DISPLAY is not set and therefore the SDL-based
-> GUI of QEMU is most likely to fail, we resort to the
-> -nographic variant.
+On 10/26/18 3:28 PM, Jan Kiszka wrote:
+> On 25.10.18 14:20, Philippe Gerum wrote:
+>> We may call switch_to_bitmap() from the head stage when a co-kernel
+>> switches to a new thread context, in which case IRQs are hard
+>> disabled, although the root stage might be unstalled.
+>>
+>> Make sure the preemption debug code in refresh_tss_limit() is aware of
+>> this.
+>> ---
+>>   arch/x86/include/asm/desc.h | 2 +-
+>>   1 file changed, 1 insertion(+), 1 deletion(-)
+>>
+>> diff --git a/arch/x86/include/asm/desc.h b/arch/x86/include/asm/desc.h
+>> index 0e3758c0c954..7a4cb4333df3 100644
+>> --- a/arch/x86/include/asm/desc.h
+>> +++ b/arch/x86/include/asm/desc.h
+>> @@ -309,7 +309,7 @@ static inline void force_reload_TR(void)
+>>    */
+>>   static inline void refresh_tss_limit(void)
+>>   {
+>> -    DEBUG_LOCKS_WARN_ON(preemptible());
+>> +    DEBUG_LOCKS_WARN_ON(!hard_irqs_disabled() && preemptible());
+>>         if (unlikely(this_cpu_read(__tss_limit_invalid)))
+>>           force_reload_TR();
+>>
 > 
-> Signed-off-by: Josef Holzmayr <holzmayr@rsi-elektrotechnik.de>
-> ---
->   start-qemu.sh | 4 ++++
->   1 file changed, 4 insertions(+)
-> 
-> diff --git a/start-qemu.sh b/start-qemu.sh
-> index 3d1117e..0daf69c 100755
-> --- a/start-qemu.sh
-> +++ b/start-qemu.sh
-> @@ -63,6 +63,10 @@ IMAGE_FILE=$(ls ${IMAGE_PREFIX}.ext4.img)
->   KERNEL_FILE=$(ls ${IMAGE_PREFIX}.vmlinuz* | tail -1)
->   INITRD_FILE=$(ls ${IMAGE_PREFIX}.initrd.img* | tail -1)
->   
-> +if [ -z "${DISPLAY}" ]; then
-> +	QEMU_EXTRA_ARGS="${QEMU_EXTRA_ARGS} -nographic"
-> +fi
-> +
->   shift 1
->   
->   ${QEMU_PATH}${QEMU} \
+> This is 4.14-only, right?
 > 
 
-Thanks, applied to https://gitlab.denx.de/Xenomai/xenomai-images
-
-Jan
+it is.
 
 -- 
-Siemens AG, Corporate Technology, CT RDA IOT SES-DE
-Corporate Competence Center Embedded Linux
+Philippe.
 
