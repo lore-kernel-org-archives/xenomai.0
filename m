@@ -1,18 +1,13 @@
-From: "Pham, Phong" <phamp@ddc-web.com>
-Subject: RE: [PATCH 0/4] net/tcp: Fix several bugs and allow rttcp to be built
-Date: Tue, 6 Nov 2018 18:53:53 +0000
-Message-ID: <C2EC5BA46D13CD44B5915A8FEEB4C44EE54700F0@DDCEXCH.ddc-ny.com>
-References: <1539775907-5124-1-git-send-email-sebastian.smolorz@gmx.de>
- <C2EC5BA46D13CD44B5915A8FEEB4C44EE545BC96@DDCEXCH.ddc-ny.com>
- <62f6ce84-8672-c6d4-a1a2-d9bc996c9ef0@siemens.com>
- <4717946.93qni4ym1a@lenni>
- <C2EC5BA46D13CD44B5915A8FEEB4C44EE546DFAD@DDCEXCH.ddc-ny.com>
- <trinity-a484b3cc-c55e-4a1f-93b3-01027a957713-1541443052918@msvc-mesg-gmx022>
-In-Reply-To: <trinity-a484b3cc-c55e-4a1f-93b3-01027a957713-1541443052918@msvc-mesg-gmx022>
-Content-Language: en-US
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+Subject: Re: improve and provide a header for bootstrapping
+References: <20181023151647.25508-1-norbert.lange@andritz.com>
+From: Jan Kiszka <jan.kiszka@siemens.com>
+Message-ID: <7571eedc-7844-2703-e553-72cf9a1abbe0@siemens.com>
+Date: Fri, 26 Oct 2018 14:48:50 +0100
 MIME-Version: 1.0
+In-Reply-To: <20181023151647.25508-1-norbert.lange@andritz.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -21,32 +16,70 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Sebastian Smolorz <Sebastian.Smolorz@gmx.de>
-Cc: Jan Kiszka <jan.kiszka@siemens.com>, "Hillman, Robert" <hillman@ddc-web.com>, "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Norbert Lange <nolange79@gmail.com>, xenomai@xenomai.org
 
-DQpIaSBTZWJhc3RpYW4sDQoNCllvdXIgcGF0Y2ggKGZpeGluZyBUQ1AgZmxhZ3MgZW5kaWFubmVz
-cyBpc3N1ZSkgZG9lcyB3b3JrLiAgKEkgd2FzIHVuZGVyIHRoZSBpbXByZXNzaW9uIHRvIHVzZSB0
-Y3BfZmxhZ193b3JkIGFuZCBmaXggaXQgaW4gcnRfdGNwX3NldF9mbGFncygpIHdoaWNoIEkgcmVw
-b3J0ZWQgZG9lc24ndCB3b3JrIGVhcmxpZXIuKQ0KDQpQaG9uZy4NCg0KLS0tLS1PcmlnaW5hbCBN
-ZXNzYWdlLS0tLS0NCkZyb206IFNlYmFzdGlhbiBTbW9sb3J6IFttYWlsdG86U2ViYXN0aWFuLlNt
-b2xvcnpAZ214LmRlXQ0KU2VudDogTW9uZGF5LCBOb3ZlbWJlciAwNSwgMjAxOCAxMDozOCBBTQ0K
-VG86IFBoYW0sIFBob25nDQpDYzogSmFuIEtpc3prYTsgSGlsbG1hbiwgUm9iZXJ0OyB4ZW5vbWFp
-QHhlbm9tYWkub3JnDQpTdWJqZWN0OiBSZTogW1BBVENIIDAvNF0gbmV0L3RjcDogRml4IHNldmVy
-YWwgYnVncyBhbmQgYWxsb3cgcnR0Y3AgdG8gYmUgYnVpbHQNCg0KSGksDQoNClBoYW0sIFBob25n
-IHdyb3RlOg0KPiBIaSBTZWJhc3RpYW4sDQo+DQo+ICIgUGhvbmcsIGNhbiB5b3UgdGVzdCB0aGlz
-IG9uIHlvdXIgbWFjaGluZT8iDQo+IE5vIHRoZSBmaXggZG9lcyBub3Qgd29yay4gIEl0IG92ZXJ3
-cml0ZXMgdGhlIHdpbmRvdyBmaWVsZC4NCg0KRGlkIHlvdSB0cnkgdGhlIHBhdGNoIEkgc2VudCBo
-ZXJlPw0KDQpodHRwczovL3d3dy54ZW5vbWFpLm9yZy9waXBlcm1haWwveGVub21haS8yMDE4LU5v
-dmVtYmVyLzAzOTgzMS5odG1sDQoNCi0tDQpTZWJhc3RpYW4NCk5vdGljZTogVGhpcyBlLW1haWwg
-YW5kIGFueSBmaWxlcyB0cmFuc21pdHRlZCB3aXRoIGl0IG1heSBjb250YWluIERhdGEgRGV2aWNl
-IENvcnBvcmF0aW9uJ3MgYW5kIGl0cyBzdWJzaWRpYXJpZXMgcHJpdmlsZWdlZCBhbmQgcHJvcHJp
-ZXRhcnkgaW5mb3JtYXRpb24uIEl0IGlzIGludGVuZGVkIHNvbGVseSBmb3IgdGhlIHVzZSBvZiB0
-aGUgaW5kaXZpZHVhbCBvciBlbnRpdHkgdG8gd2hvbSBpdCBpcyBhZGRyZXNzZWQuIElmIHlvdSBh
-cmUgbm90IHRoZSBuYW1lZCByZWNpcGllbnQgb2YgdGhpcyB0cmFuc21pc3Npb24sIGFueSBkaXNj
-bG9zdXJlLCBjb3B5aW5nLCBkaXN0cmlidXRpb24gb3IgcmVsaWFuY2Ugb24gdGhlIGNvbnRlbnRz
-IG9mIHRoaXMgbWVzc2FnZSBpcyBwcm9oaWJpdGVkLiBJZiB5b3UgcmVjZWl2ZWQgdGhpcyBlLW1h
-aWwgaW4gZXJyb3IsIHBsZWFzZSBkZXN0cm95IGl0IGFuZCBhbnkgYXR0YWNoZWQgZmlsZXMgYW5k
-IG5vdGlmeSBtZSBpbW1lZGlhdGVseS4NCg0KQ2xpY2sgSGVyZTxodHRwOi8vd3d3LmRkYy13ZWIu
-Y29tL1Byb2ZpbGUvRW1haWxQcml2YWN5LmFzcHg+IHRvIHZpZXcgb3VyIHByaXZhY3kgc3RhdGVt
-ZW50Lg0K
+On 23.10.18 16:16, Norbert Lange wrote:
+> Hello,
+> 
+> the following patches allow a variety of options additional
+> to the linker magic involved for hijacking the aplications main
+> function.
+> 
+> the original method will still continue to work, differences are
+> 
+> *   the code dealing with retrieving the commandline arguments
+>      is moved into libcobale/libmercury. Making the necessary per-application
+>      code much smaller.
+> 
+> *   the implementation was moved into a header, with several macros
+>      controlling functionality (not everyone wants to define a main function).
+> 
+> 
+> The approach I use personally is to compile and link my own bootstrap code,
+> which is preferable in many build systems as source-files are understood while
+> objects files generally need some special care. (And it cant hurt if the compiler
+> flags match exactly).
+> 
+> As example:
+> 
+> ----- add this to your file  containing main
+> 
+> int xenomai_init_getargv(int *argc, char *const** argv);
+> 
+> int main(int argc, char *const argv[])
+> {
+> #if defined(__COBALT__) || defined(__MERCURY__)
+>      xenomai_init_getargv(&argc, &argv);
+> #endif
+> 	....
+> }
+> 
+> ----- create another file, lets call it mybootstrap.c
+> 
+> #define _XENOMAI_BOOTSTRAP_GLIBC_CONSTRUCTORS
+> #include <xenomai/bootstrap-template.h>
+> 
+> ----------------------------------------------
+> 
+> Norbert
+> 
+> [PATCH 1/2] separate bootstrap code to get commandline, move it into
+> [PATCH 2/2] add a header to create flexible bootstrap code
+> 
+> 
+
+I need to look more carefully at the details and your use case, but my first 
+impression is that at least patch 2 is not very beautiful due to that large 
+template header. Could you explain again why explicitly calling the bootstrap 
+code in a library is not sufficient?
+
+Also note that this pattern may make it harder to maintain a compatible 
+interface along updates, increasing the risk of having to recompile your 
+application, rather than just replacing some central library, when Xenomai changes.
+
+Jan
+
+-- 
+Siemens AG, Corporate Technology, CT RDA IOT SES-DE
+Corporate Competence Center Embedded Linux
 
