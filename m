@@ -1,12 +1,10 @@
-MIME-Version: 1.0
-References: <CAPNo5QJdOpN8cztKGNZjifmP-Bx4wRyOq0XAw7HM1UQ+Op5E3Q@mail.gmail.com>
- <69c8bfc1-f7d5-b935-6db1-99d496a80dc7@siemens.com>
-In-Reply-To: <69c8bfc1-f7d5-b935-6db1-99d496a80dc7@siemens.com>
-From: Manikanta Mylavarapu <mylavarapumanikanta23@gmail.com>
-Date: Wed, 7 Nov 2018 12:36:20 +0530
-Message-ID: <CAPNo5QJ4WHKnajbYB-RF9CqX8ZtF2Mss6FRNubjYECwh_wmUjg@mail.gmail.com>
-Subject: Re: 32bit on 64bit in xenomai 2.6.0
-Content-Type: text/plain; charset="UTF-8"
+From: Philippe Gerum <rpm@xenomai.org>
+Subject: [PATCH 3/9] boilerplate/ancillaries: prevent false positive with
+ -Wstringop-truncation
+Date: Fri, 26 Oct 2018 16:08:19 +0200
+Message-Id: <20181026140825.5251-3-rpm@xenomai.org>
+In-Reply-To: <20181026140825.5251-1-rpm@xenomai.org>
+References: <20181026140825.5251-1-rpm@xenomai.org>
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,44 +13,31 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jan Kiszka <jan.kiszka@siemens.com>
-Cc: xenomai@xenomai.org
+To: xenomai@xenomai.org
+Cc: Jan Kiszka <jan.kiszka@siemens.com>, Philippe Gerum <rpm@xenomai.org>
 
-Thank you Jan.
+namecpy() is meant to copying NUL terminated strings even if this
+incurs potential truncation of the source argument if need be, prevent
+GCC 8.x from detecting a false positive when -Wstringop-truncation is
+in effect.
+---
+ include/boilerplate/ancillaries.h | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-For my project requirement I am working with xenomai 2.6.0 on fedora 13.
+diff --git a/include/boilerplate/ancillaries.h b/include/boilerplate/ancillaries.h
+index f3b55668c..319d22f66 100644
+--- a/include/boilerplate/ancillaries.h
++++ b/include/boilerplate/ancillaries.h
+@@ -34,7 +34,7 @@ void __namecpy_requires_character_array_as_destination(void);
+ 	({								\
+ 		if (!__builtin_types_compatible_p(typeof(__dst), char[])) \
+ 			__namecpy_requires_character_array_as_destination();	\
+-		strncpy((__dst), __src, sizeof(__dst) - 1);		\
++		strncpy((__dst), __src, sizeof(__dst));			\
+ 		__dst[sizeof(__dst) - 1] = '\0';			\
+ 		__dst;							\
+ 	 })
+-- 
+2.17.2
 
-My doubt is at least sample app compiled as a 32bit exe on 64bit kernel
-should work. But it is not running on xenomai patched 64bit os,why?
 
-On Wed, Nov 7, 2018, 12:13 PM Jan Kiszka <jan.kiszka@siemens.com> wrote:
-
-> On 07.11.18 07:15, Manikanta Mylavarapu via Xenomai wrote:
-> > Dear all,
-> >
-> > I am trying to run 32bit applications on 64bit xenomai. I installed
-> xenomai
-> > 2.6.0 on fedora 13 x86_64. I installed all 32bit GCC lib & c librarys
-> > (glibc-devel.i686 & going.i686).
-> >
-> > I made one hello world sample (non-rt) app, it is giving error while
-> running
-> >  "-bash: ./a.out: cannot execute binary file" but the same a.out is
-> running
-> > fine on "plain fedora13 x86_64".
-> >
-> > My question is on xenomai 2.x can we run 32bit rt & non-rt app on 64bit
-> > kernel? Please help me.
-> >
->
-> Xenomai 2 is EOL, no longer supported. And compat support (32-on-64 bit)
-> has
-> only be added to Xenomai 3. So you should migrate to the current stable
-> version.
->
-> Jan
->
-> --
-> Siemens AG, Corporate Technology, CT RDA IOT SES-DE
-> Corporate Competence Center Embedded Linux
->
