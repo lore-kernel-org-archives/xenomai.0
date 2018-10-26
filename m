@@ -1,13 +1,8 @@
-Subject: Re: Debian packages for Xenomai 3.x
-References: <b440d689-399e-32f1-c981-c66e655d955a@alaxarxa.net>
- <14f0f364-5733-deeb-370b-975462860e56@siemens.com>
-From: Leopold Palomo-Avellaneda <leo@alaxarxa.net>
-Message-ID: <db7d19ce-f221-6261-6f68-75ec30eac1c7@alaxarxa.net>
-Date: Thu, 8 Nov 2018 15:15:05 +0100
-MIME-Version: 1.0
-In-Reply-To: <14f0f364-5733-deeb-370b-975462860e56@siemens.com>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+From: Philippe Gerum <rpm@xenomai.org>
+Subject: [PATCH 1/9] utils/can: prevent unterminated destination buffer with
+ strncpy()
+Date: Fri, 26 Oct 2018 16:08:17 +0200
+Message-Id: <20181026140825.5251-1-rpm@xenomai.org>
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,47 +11,96 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jan Kiszka <jan.kiszka@siemens.com>, Xenomai List <xenomai@xenomai.org>, Henning Schild <henning.schild@siemens.com>
+To: xenomai@xenomai.org
+Cc: Jan Kiszka <jan.kiszka@siemens.com>, Philippe Gerum <rpm@xenomai.org>
 
-RWwgNi8xMS8xOCBhIGxlcyAxOTowNCwgSmFuIEtpc3prYSBoYSBlc2NyaXQ6Cj4gT24gMzAuMTEu
-MTcgMTI6MjcsIExlb3BvbGQgUGFsb21vLUF2ZWxsYW5lZGEgd3JvdGU6Cj4+IEhpLAo+Pgo+Pgo+
-PiBpZiBzb21lb25lIGlzIGludGVyZXN0ZWQgSSBoYXZlIGJlZW4gd29ya2luZyBhIGJpdCB3aXRo
-IHRoZSBkZWJpYW4gZGlyZWN0b3J5IGluCj4+IHhlbm9tYWkzLgo+Pgo+PiBJIGhhdmUgY2hhbmdl
-ZCB0aGUgYXBwcm9hY2ggdG8gdGhlIGxpYnJhcmllcy4gSSB0aGluayB0aGF0IG5vdyBpdCBoYXMg
-bm90IHNlbnNlCj4+IHRvIGhhdmUgYSBsaWJ4ZW5vbWFpMSBzbyBJIGhhdmUgY2hhbmdlZCBpdCB0
-byB4ZW5vbWFpMy1saWJzLgo+Pgo+PiBUaGUgc291cmNlLCBhbmQgdGhlIHBhdGNoZXMgYXBwbGll
-ZCBhcmUgaGVyZToKPj4KPj4gaHR0cHM6Ly9hbm9uc2NtLmRlYmlhbi5vcmcvY2dpdC9jb2xsYWIt
-bWFpbnQveGVub21haS5naXQvCj4+Cj4+IEluIGNhc2UgdGhlcmUncyBzb21lIGludGVyZXN0LCBJ
-IGNhbiB0cnkgdG8gcHVzaCBpdCBhZ2FpbiB0byB0aGUgb2ZmaWNpYWwgRGViaWFuCj4+IHJlcG9z
-aXRvcmllcy4KPj4KPiAKPiBQaWNraW5nIHVwIHRoaXMgdG9waWMgYWdhaW46Cj4gCj4gSSdtIGFs
-c28gaW4gZmF2b3Igb2YgcmVhbmltYXRpbmcgdGhlIHVwc3RyZWFtIERlYmlhbiBwYWNrYWdlLCBw
-cm92aWRlZCBpdCBhZGRzCj4gdmFsdWUgdG8gdXNlcnMuIEluIHRoZSBwYXN0LCBhIGRvd25zaWRl
-IHdhcyB0aGUgdW5oYW5keSBrZXJuZWwgYnVpbGQgcHJvY2VzcywKPiBidXQgbWF5YmUgdXNlcnMg
-d2VyZSBzdGlsbCBoYXBweS4gT1RILCB3ZSBtYXkgaGF2ZSBhIGNoYW5jZSB0byBwcm92aWRlIGJp
-bmFyaWVzCj4gYXQgbGVhc3QgZm9yIHRoZSBzdGFuZGFyZCB0YXJnZXQgeDg2LTY0Lgo+IAo+IEkn
-bSBjdXJyZW50bHkgcHJlcGFyaW5nIERlYmlhbi1iYXNlZCBkZW1vIGFuZCB0ZXN0IGltYWdlcywg
-Z2VuZXJhdGVkCj4gYXV0b21hdGljYWxseSB2aWEgc29tZSAibWFnaWMiIChJc2FyIGltYWdlIGJ1
-aWxkZXIpLiBGb3IgdGhhdCwgd2Ugd2lsbCBuZWVkCj4gY2xlYW4gZGViaWFuIGNvbnRyb2wgZmls
-ZXMgYWxzbyBpbiB0aGUgWGVub21haSByZXBvLiBUaGF0IHJhaXNlcyB0aGUgcXVlc3Rpb24KPiBo
-b3cgdG8ga2VlcCBib3RoIGRlYmlhbiBmb2xkZXJzIGJlc3QgaW4gc3luYyAtIGlmIGJvdGggc2hv
-dWxkIGJlIHVzZWQuIFN1Z2dlc3Rpb25zPwoKRGViaWFuIHJlcG9zIGNvbnRhaW4gc2V2ZXJhbCBi
-cmFuY2hlcyBhbmQgb25lIG9mIHRoZW0gaXMgdXBzdHJlYW0gdGhhdCBkb2Vzbid0CmNvbnRhaW4g
-YW55IHJlZmVyZW5jZSB0byBEZWJpYW4uCgpTbywgbWF5YmUgeW91IGNvdWxkIGNyZWF0ZSBhIGJy
-YW5jaCwgd2l0aCBhIHNuYXBzaG90IG9mIHRoZSBkZXZlbG9wbWVudCB3aGVyZQp5b3Ugd29yayB3
-aXRoIHRoZSBkZWJpYW4gZGlyZWN0b3J5LiBTb21ldGhpbmcgc2ltaWxhciBhcyBEZWJpYW4gZG9l
-cy4gVGhlbiwgeW91CmNvdWxkIGNyZWF0ZSBhbm90aGVyIG9uZSB3aXRoIHRoZSBEZWJpYW4gb2Zm
-aWNpYWwgb3Igc2ltcGx5IHdlIGNvdWxkIGRyb3AgdGhlCkRlYmlhbiBvZmZpY2lhbCBhbmQgY2hh
-bmdlIGZvciB0aGlzIG9uZS4KCkluIGFueSBjYXNlLCBJIGFncmVlIHRoYXQgdGhpcyBzaG91bGQg
-YmUgcmVhbmltYXRpbmcuIEkgcHJvcG9zZWQgc29tZSByZW5hbWluZwpvZiB0aGUgcGFja2FnZXMg
-YnV0IHRoZXkgZGlkbid0IGhhdmUgdG9vIG11Y2ggaW50ZXJlc3QsIGJ1dCBJJ20gcXVpdGUgaW50
-ZXJlc3RlZAp0byBoYXZlIGl0IGFjdGl2ZS4KCkJlc3QgcmVnYXJkcywKCkxlb3BvbGQKCgotLSAK
-LS0KTGludXggVXNlciAxNTI2OTIgICAgIEdQRzogMDVGNEE3QTk0OUEyRDlBQQpDYXRhbG9uaWEK
-LS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLQpBOiBCZWNhdXNlIGl0IG1lc3Nl
-cyB1cCB0aGUgb3JkZXIgaW4gd2hpY2ggcGVvcGxlIG5vcm1hbGx5IHJlYWQgdGV4dC4KUTogV2h5
-IGlzIHRvcC1wb3N0aW5nIHN1Y2ggYSBiYWQgdGhpbmc/CkE6IFRvcC1wb3N0aW5nLgpROiBXaGF0
-IGlzIHRoZSBtb3N0IGFubm95aW5nIHRoaW5nIGluIGUtbWFpbD8KCi0tLS0tLS0tLS0tLS0tIG5l
-eHQgcGFydCAtLS0tLS0tLS0tLS0tLQpBIG5vbi10ZXh0IGF0dGFjaG1lbnQgd2FzIHNjcnViYmVk
-Li4uCk5hbWU6IHNpZ25hdHVyZS5hc2MKVHlwZTogYXBwbGljYXRpb24vcGdwLXNpZ25hdHVyZQpT
-aXplOiA4MzMgYnl0ZXMKRGVzYzogT3BlblBHUCBkaWdpdGFsIHNpZ25hdHVyZQpVUkw6IDxodHRw
-Oi8veGVub21haS5vcmcvcGlwZXJtYWlsL3hlbm9tYWkvYXR0YWNobWVudHMvMjAxODExMDgvNzQ4
-ZTYyZTkvYXR0YWNobWVudC5zaWc+Cg==
+GCC 8.x introduced -Wstringop-truncation to help detecting likely
+unwanted outcomes of strncpy(dst, src, n), such as omitting the NUL
+character into the destination buffer whenever n < sizeof(src).
+
+Fix unsafe strncpy() calls when we do expect a null-terminated
+destination buffer.
+---
+ utils/can/rtcanconfig.c | 7 ++++---
+ utils/can/rtcanrecv.c   | 3 ++-
+ utils/can/rtcansend.c   | 3 ++-
+ 3 files changed, 8 insertions(+), 5 deletions(-)
+
+diff --git a/utils/can/rtcanconfig.c b/utils/can/rtcanconfig.c
+index a285ec73d..395e0368d 100644
+--- a/utils/can/rtcanconfig.c
++++ b/utils/can/rtcanconfig.c
+@@ -31,6 +31,7 @@
+ #include <errno.h>
+ #include <getopt.h>
+ #include <sys/mman.h>
++#include <boilerplate/ancillaries.h>
+ 
+ #include <rtdm/can.h>
+ 
+@@ -81,7 +82,7 @@ static int string_to_ctrlmode(char *str)
+ 
+ int main(int argc, char *argv[])
+ {
+-    char    ifname[16];
++    char    ifname[IFNAMSIZ];
+     int     can_fd = -1;
+     int     new_baudrate = -1;
+     int     new_mode = -1;
+@@ -159,8 +160,8 @@ int main(int argc, char *argv[])
+ 	return 0;
+     }
+ 
+-    strncpy(ifname, argv[optind], IFNAMSIZ);
+-    strncpy(ifr.ifr_name, ifname, IFNAMSIZ);
++    namecpy(ifname, argv[optind]);
++    namecpy(ifr.ifr_name, ifname);
+ 
+     if (optind == argc - 2) {   /* Get mode setting */
+ 	new_mode = string_to_mode(argv[optind + 1]);
+diff --git a/utils/can/rtcanrecv.c b/utils/can/rtcanrecv.c
+index 8155ab76d..71e68cc5c 100644
+--- a/utils/can/rtcanrecv.c
++++ b/utils/can/rtcanrecv.c
+@@ -7,6 +7,7 @@
+ #include <getopt.h>
+ 
+ #include <alchemy/task.h>
++#include <boilerplate/ancillaries.h>
+ 
+ #include <rtdm/can.h>
+ 
+@@ -248,7 +249,7 @@ int main(int argc, char **argv)
+ 	if (verbose)
+ 	    printf("interface %s\n", argv[optind]);
+ 
+-	strncpy(ifr.ifr_name, argv[optind], IFNAMSIZ);
++	namecpy(ifr.ifr_name, argv[optind]);
+ 	if (verbose)
+ 	    printf("s=%d, ifr_name=%s\n", s, ifr.ifr_name);
+ 
+diff --git a/utils/can/rtcansend.c b/utils/can/rtcansend.c
+index 4a692b3bf..bfa3054c2 100644
+--- a/utils/can/rtcansend.c
++++ b/utils/can/rtcansend.c
+@@ -6,6 +6,7 @@
+ #include <errno.h>
+ #include <getopt.h>
+ 
++#include <boilerplate/ancillaries.h>
+ #include <alchemy/task.h>
+ #include <alchemy/timer.h>
+ 
+@@ -231,7 +232,7 @@ int main(int argc, char **argv)
+ 	    printf("Using loopback=%d\n", loopback);
+     }
+ 
+-    strncpy(ifr.ifr_name, argv[optind], IFNAMSIZ);
++    namecpy(ifr.ifr_name, argv[optind]);
+     if (verbose)
+ 	printf("s=%d, ifr_name=%s\n", s, ifr.ifr_name);
+ 
+-- 
+2.17.2
+
+
