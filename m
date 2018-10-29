@@ -1,18 +1,7 @@
-Subject: Re: [PATCH 1/2] cobalt: Return error from xnsched_setparam
-References: <a0ae52fe-fa52-124e-b3e2-b82d2755fa10@siemens.com>
- <d90c8eb0-dce1-df0f-4e31-b4c8ba85425e@xenomai.org>
- <4f8f9e52-02a6-2df7-04b3-96a0e6bf56a2@siemens.com>
- <b9383b95-705d-3d75-139a-d07efbe00958@xenomai.org>
- <04be3111-ca5c-7a81-a52a-9f6b83d2c534@xenomai.org>
- <09ac449f-6663-1592-cbe8-9fd7a2dbe71b@siemens.com>
-From: Philippe Gerum <rpm@xenomai.org>
-Message-ID: <58413957-539c-9a94-1bfc-5220d9487ea1@xenomai.org>
-Date: Fri, 23 Nov 2018 16:04:38 +0100
-MIME-Version: 1.0
-In-Reply-To: <09ac449f-6663-1592-cbe8-9fd7a2dbe71b@siemens.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+From: Christophe BLAESS <christophe.blaess@logilin.fr>
+Subject: [PATCH] Add the xsc field when rtps reads the sched/acct file.
+Date: Mon, 29 Oct 2018 06:22:38 +0000
+Message-Id: <20181029062239.2566-1-christophe.blaess@logilin.fr>
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -21,48 +10,58 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jan Kiszka <jan.kiszka@siemens.com>, Xenomai <xenomai@xenomai.org>
+To: xenomai@xenomai.org
+Cc: Christophe BLAESS <christophe.blaess@logilin.fr>
 
-On 11/23/18 12:41 PM, Jan Kiszka wrote:
-> On 23.11.18 12:29, Philippe Gerum wrote:
->> On 11/23/18 12:26 PM, Philippe Gerum via Xenomai wrote:
->>> On 11/23/18 12:11 PM, Jan Kiszka wrote:
->>>> On 23.11.18 11:56, Philippe Gerum wrote:
->>>>> On 11/22/18 6:57 PM, Jan Kiszka via Xenomai wrote:
->>>>>> This allows to remove the user-triggerable XENO_BUG from
->>>>>> xnsched_quota_setparam().
->>>>>
->>>>> Could you elaborate on the user trigger point you detected in the
->>>>> code?
->>>>
->>>> pthread_setschedparam_ex(pthread_self(), SCHED_QUOTA, <invalid-tgid>)
->>>
->>> Ouch. That is where the bug is rooted, xnthread_set_schedparam() is a
->>> broken obsolete interface which must be dropped entirely. The right way
->>> to change the scheduling class and/or parameters of a thread is by
->>> calling xnsched_set_policy().
->>
->> Nope, that won't work either. This needs more thought.
->>
-> 
-> I don't see why catching the invalid tgid down in the sched class this
-> way is a problem, except that we need to enhance the involved callback
-> API a bit. The benefit is that no caller needs to deal with this check
-> and has to become sched-class-aware.
-> 
+The rtps tools reads the /proc/xenomai/sched/acct file but didn't
+take the xsc field in account and failed to display some Xenomai
+threads. This patch adds the missing field when rtps reads a line.
 
-The code says:
+Signed-off-by: Christophe Blaess <christophe.blaess@logilin.fr>
+---
+ utils/ps/rtps.c | 12 ++++++------
+ 1 file changed, 6 insertions(+), 6 deletions(-)
 
-	/*
-	 * This is the ONLY place where calling
-	 * steely_set_schedparam() is legit, sane and safe.
-	 */
-	effective = steely_set_schedparam(thread, p);
-
-This dates back to the implementation of priority protction; there must
-have been a reason at that time to document this specifically. I'll
-review this code.
-
+diff --git a/utils/ps/rtps.c b/utils/ps/rtps.c
+index bf5400e8d..6a07f110d 100644
+--- a/utils/ps/rtps.c
++++ b/utils/ps/rtps.c
+@@ -25,15 +25,15 @@
+ #define PROC_ACCT  "/proc/xenomai/sched/acct"
+ #define PROC_PID  "/proc/%d/cmdline"
+ 
+-#define ACCT_FMT_1  "%u %d %lu %lu %lu %lx %Lu %Lu %Lu"
++#define ACCT_FMT_1  "%u %d %lu %lu %lu %lu %lx %Lu %Lu %Lu"
+ #define ACCT_FMT_2  ACCT_FMT_1 " %[^\n]"
+-#define ACCT_NFMT_1 9
+-#define ACCT_NFMT_2 10
++#define ACCT_NFMT_1 10
++#define ACCT_NFMT_2 11
+ 
+ int main(int argc, char *argv[])
+ {
+ 	char cmdpath[sizeof(PROC_PID) + 32], cmdbuf[BUFSIZ], acctbuf[BUFSIZ], name[64];
+-	unsigned long ssw, csw, pf, state, sec;
++	unsigned long ssw, csw, xsc, pf, state, sec;
+ 	unsigned long long account_period,
+ 		exectime_period, exectime_total, v;
+ 	unsigned int cpu, hr, min, msec, usec;
+@@ -49,12 +49,12 @@ int main(int argc, char *argv[])
+ 
+ 	while (fgets(acctbuf, sizeof(acctbuf), acctfp) != NULL) {
+ 		if (sscanf(acctbuf, ACCT_FMT_2,
+-		      &cpu, &pid, &ssw, &csw, &pf, &state,
++		      &cpu, &pid, &ssw, &csw, &xsc, &pf, &state,
+ 		      &account_period, &exectime_period,
+ 		      &exectime_total, name) != ACCT_NFMT_2) {
+ 			strcpy(name, "");
+ 			if (sscanf(acctbuf, ACCT_FMT_1,
+-			      &cpu, &pid, &ssw, &csw, &pf, &state,
++			      &cpu, &pid, &ssw, &csw, &xsc, &pf, &state,
+ 			     &account_period, &exectime_period,
+ 			     &exectime_total) != ACCT_NFMT_1) {
+ 				break;
 -- 
-Philippe.
+2.11.0
+
 
