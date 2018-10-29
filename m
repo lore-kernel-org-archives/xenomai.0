@@ -1,17 +1,19 @@
-Subject: Re: rt_e1000e: Detected Hardware Unit Hang
-References: <CALUpYNbg342eACKbNoxZkKV-ykGjRxJhS_xz0oJxzyeSKgxh6Q@mail.gmail.com>
- <07cfdeae-695f-127d-c38f-f3b6503946d2@siemens.com>
- <CALUpYNYPdbVMJ0Yc5kQV8SzhxWJwRKByyJhWYyUJSgpajZjCLA@mail.gmail.com>
- <8d5abaed-466d-cdf7-a933-0973e4174932@siemens.com>
- <CALUpYNYvpLS8r+bC5fOA2mhVPuVtcB6o8oY_7Bh7q_3QcPGeuA@mail.gmail.com>
-From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <e18a5494-424f-f1ea-6082-1232630a98f9@siemens.com>
-Date: Tue, 27 Nov 2018 18:41:03 +0100
+Date: Mon, 29 Oct 2018 11:07:56 +0100
+From: Henning Schild <henning.schild@siemens.com>
+Subject: Re: [Xenomai] ipipe-4.14: planned release date
+Message-ID: <20181029110756.67447340@md1pvb1c.ad001.siemens.net>
+In-Reply-To: <0B8B4C90A6FEA34E9EA10570C016C358BB7DB540@DEMUC-SMX001.data-modul.local>
+References: <0B8B4C90A6FEA34E9EA10570C016C358BB7D9D8A@DEMUC-SMX001.data-modul.local>
+ <c371a628-edc2-0713-767b-80efac64833e@siemens.com>
+ <0B8B4C90A6FEA34E9EA10570C016C358BB7DA2CC@DEMUC-SMX001.data-modul.local>
+ <0c0a94e6-6650-88e2-7b89-3b6fa92efa65@siemens.com>
+ <0B8B4C90A6FEA34E9EA10570C016C358BB7DA73C@DEMUC-SMX001.data-modul.local>
+ <52b6df12-fbb5-871a-7c4c-5208e7e04978@siemens.com>
+ <cuc1u0s6krjua13us78v6n9g.1539284434958@email.android.com>
+ <0B8B4C90A6FEA34E9EA10570C016C358BB7DB540@DEMUC-SMX001.data-modul.local>
 MIME-Version: 1.0
-In-Reply-To: <CALUpYNYvpLS8r+bC5fOA2mhVPuVtcB6o8oY_7Bh7q_3QcPGeuA@mail.gmail.com>
-Content-Type: text/plain; charset="utf-8"; format="flowed"
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -20,71 +22,105 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Means Lee <leemeaner@gmail.com>
-Cc: xenomai@xenomai.org
+To: "Schrenkhammer, Martin" <MSchrenkhammer@data-modul.com>
+Cc: Jan Kiszka <jan.kiszka@siemens.com>, "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On 27.11.18 10:47, Means Lee wrote:
-> I can't reduce the size of my patch for the e1000e realtime driver existed in 
-> Xenomai, because the non-realtime driver evolutions a lot. So I offered the diff 
-> file of three files I changed when porting the driver. On my view, the hardware 
-> oprations shall be unchanged so I focused on the change of netdev.c. I modfied 
-> param.c and e1000.h changed the private data structure and parameters a little.
-> 
-> For the question you asked:
-> - the upstream Linux driver I ported over works fine with my hardware, even when 
-> I try to put a strong pressure on it(UDP broadcast storm).
-> - when I meet the hardware unit hang, the Tx completion interrupt didn't 
-> dissapper but it do reduced a lot.
-> - I didn't enable CONFIG_IPIPE_DEBUG_CONTEXT, but I do uses lock in several places.
+Am Mon, 15 Oct 2018 10:56:41 +0000
+schrieb "Schrenkhammer, Martin" <MSchrenkhammer@data-modul.com>:
 
-Then this should be the next thing to do. This not only detects direct locking 
-issues but also those triggered by calling into Linux functions that take normal 
-locks.
+> Hi Jan,
+>=20
+> now I run into another problem. My Board does a reset right after
+> "Loading initial ramdisk..." It is an AMD Ryzon Embedded V1000. There
+> are no logs to kern.log I already tried disabling CONFIG_MAXSMP.
+> Original 4.14.71 boots without problems.
+>=20
+> Any ideas?
 
-> - then the TX path
->     - the interrupt registertion code was shown below:
->              err = rtdm_irq_request(&adapter->irq_handle,
->                    adapter->pdev->irq, e1000_intr_msi, 0,
->                    netdev->name, adapter);
->     - I write a new index of ring buffer to TDT register to notify the hardware 
-> there is an packet should be sent.
->              writel(tx_ring->next_to_use, tx_ring->tail);//after writel, the 
-> interrupt routine shall be launched.
->     - If the 'event flow' means the event during the transmit process, the event 
+Any updates on that? We are about to release 4.14 amd64 so any known
+open issues should be fixed before.
 
-I mean specifically if both the vanilla driver as well as the ported version 
-take the code path and receive the same interrupts when sending packets. Of 
-course, you can put identical package load on both because higher RTnet layers 
-do no exist for vanilla Linux. You may capture the outgoing traffic under RTnet 
-(RTcap) and replay that under Linux.
+Please check 361b1bac5d903d2199903a5cb3d6e0fbc3c604ae together with
+xenomai/master.
 
-> flow is shown below:
->      e1000e_xmit_frame                        send an packet atomicly
->           e1000_tx_map                           use DMA to map the packet(maped 
-> before,so just get the DMA address)
->           e1000_tx_queue                        make sure the tx ring buffer 
-> index right
->           write the TDT register to tell hardware to send an packet
-> after the hardware sent an packet, it supposed to trigger an TX completion 
-> interrupt and the driver shall response:
->      e1000_intr_msi                                triggered when Tx/Rx completion
->           e1000_clean_tx_irq                    recycle the transmit resource
-> 
-> By the way, I found that every time master station sent an Ready frame belongs 
-> to RTcfg, this Tx hung shows up. And the comunication
->   before that works fine: the TDMA sync frame send properly and every stage 
-> before the Ready frame goes well.
-> If I let it stay in the RTCFG_MAIN_CLIENT_2 stage(so far the master and slave 
-> known each other), master and slave could comunicate
-> properly. So the Ready frame triggers this problem, but why? An frame of 
-> specific format triggers the hardware hung, why it happens?
+Henning
 
-RTcfg is unlikely to be the reason, but maybe the transmission pattern triggers 
-the issue in the driver.
+> Thanks,
+> Martin
+>=20
+>=20
+> -----Urspr=C3=BCngliche Nachricht-----
+> Von: Xenomai [mailto:xenomai-bounces@xenomai.org] Im Auftrag von
+> Schrenkhammer, Martin Gesendet: Donnerstag, 11. Oktober 2018 21:00
+> An: Jan Kiszka; xenomai@xenomai.org
+> Betreff: Re: [Xenomai] ipipe-4.14: planned release date
+>=20
+> That solved the problem. Thanks a lot for your help!
+>=20
+> Martin
+> 11.10.2018 2:22 nachm. schrieb Jan Kiszka <jan.kiszka@siemens.com> :
+> On 11.10.18 11:21, Schrenkhammer, Martin wrote:
+> > Thanks for your reply.
+> > Checked again today with your latest commit
+> > 20db5ea2eee38b123c9641003fe55c895a1fd514 with same errors. I wanted
+> > to run a first build without modifications (beside
+> > prepare-kernel.sh and make menuconfig to append a local version.
+> > Maybe you can send my your actual x86 config and I can check
+> > differences and adopt to my platform. Mine .config is enclosed. =20
+>=20
+> Reproduced: The actual problem is related to CONFIG_HYPERV which
+> selects CONFIG_PARAVIRT which conflicts with CONFIG_IPIPE.
+>=20
+> Furthermore, you want to disable CONFIG_SCHED_MC so that you can also
+> turn off the power management features Xenomai complains about.
+>=20
+> And then there is CONFIG_TRANSPARENT_HUGEPAGE and CONFIG_CMA. When
+> both are off, you can also disable COMPACTION and MIGRATION.
+>=20
+> In general, it's not optimal to start from a distro config without
+> further tuning.
+>=20
+> Jan
+>=20
+> --
+> Siemens AG, Corporate Technology, CT RDA IOT SES-DE
+> Corporate Competence Center Embedded Linux
+>=20
+> ________________________________
+> Vertrauliche E-Mail von / Confidential e-mail from Data Modul AG
+> Vorstand / CEO: Dr. Florian Pesahl
+> Vorsitzende des Aufsichtsrates / Chairwoman of the Supervisory Board:
+> Kristin D. Russell Sitz der Gesellschaft / Registered Office: M=C3=BCnchen
+> Registergericht / Registration Court: M=C3=BCnchen - Handelsregister B 85
+> 591
+>=20
+> Datamodul
+> [cid:0021-0001@01d46194.a5f3ebae]
+> -------------- next part --------------
+> A non-text attachment was scrubbed...
+> Name: ECS-electronica_2018_d.gif
+> Type: image/gif
+> Size: 8162 bytes
+> Desc: ECS-electronica_2018_d.gif
+> URL:
+> <http://xenomai.org/pipermail/xenomai/attachments/20181011/a6d2cc1d/attac=
+hment.gif>
+> _______________________________________________ Xenomai mailing list
+> Xenomai@xenomai.org
+> https://xenomai.org/mailman/listinfo/xenomai
+>=20
+> Vertrauliche E-Mail von / Confidential e-mail from: DATA MODUL AG
+> Vorstand / CEO: Dr. Florian Pesahl
+> Vorsitzende des Aufsichtsrates / Chairwoman of the Supervisory Board:
+> Kristin D. Russell Sitz der Gesellschaft / Registered Office: M=C3=BCnchen
+> Registergericht / Registration Court: M=C3=BCnchen Handelsregister B 85 5=
+91
+>=20
+>=20
+>=20
+> _______________________________________________
+> Xenomai mailing list
+> Xenomai@xenomai.org
+> https://xenomai.org/mailman/listinfo/xenomai
 
-Jan
-
--- 
-Siemens AG, Corporate Technology, CT RDA IOT SES-DE
-Corporate Competence Center Embedded Linux
 
