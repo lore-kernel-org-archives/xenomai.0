@@ -1,12 +1,10 @@
-Subject: Re: [PATCH 3/3] utils/analogy: fix compilation of analogy_calibrate
- with old toolchains
-References: <1540895354-16866-1-git-send-email-sebastian.smolorz@gmx.de>
- <1540895354-16866-4-git-send-email-sebastian.smolorz@gmx.de>
+Subject: Re: [PATCH] Add the xsc field when rtps reads the sched/acct file.
+References: <20181029062239.2566-1-christophe.blaess@logilin.fr>
 From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <1e713d2f-6d7c-b2ac-1ceb-b45af63ab85c@siemens.com>
-Date: Wed, 31 Oct 2018 18:47:42 +0100
+Message-ID: <bdcbded6-a0c9-5aa9-3a4a-4371a62387a6@siemens.com>
+Date: Wed, 31 Oct 2018 18:47:48 +0100
 MIME-Version: 1.0
-In-Reply-To: <1540895354-16866-4-git-send-email-sebastian.smolorz@gmx.de>
+In-Reply-To: <20181029062239.2566-1-christophe.blaess@logilin.fr>
 Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -18,37 +16,60 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Sebastian Smolorz <sebastian.smolorz@gmx.de>, xenomai@xenomai.org
+To: Christophe BLAESS <christophe.blaess@logilin.fr>, xenomai@xenomai.org
 
-On 30.10.18 11:29, Sebastian Smolorz wrote:
-> The previous commit introduced a fix for old toolchains by including
-> sys/timex.h in include/cobalt/time.h. However, that breaks the
-> compilation of analogy_calibrate. Removing #include <sys/time.h>
-> from analogy_calibrate.c fixes compilation again.
+On 29.10.18 07:22, Christophe BLAESS wrote:
+> The rtps tools reads the /proc/xenomai/sched/acct file but didn't
+> take the xsc field in account and failed to display some Xenomai
+> threads. This patch adds the missing field when rtps reads a line.
 > 
-
-Can you explain why? :)
-
-> Signed-off-by: Sebastian Smolorz <sebastian.smolorz@gmx.de>
+> Signed-off-by: Christophe Blaess <christophe.blaess@logilin.fr>
 > ---
->   utils/analogy/analogy_calibrate.c | 1 -
->   1 file changed, 1 deletion(-)
+>   utils/ps/rtps.c | 12 ++++++------
+>   1 file changed, 6 insertions(+), 6 deletions(-)
 > 
-> diff --git a/utils/analogy/analogy_calibrate.c b/utils/analogy/analogy_calibrate.c
-> index c5990a7..b927ee2 100644
-> --- a/utils/analogy/analogy_calibrate.c
-> +++ b/utils/analogy/analogy_calibrate.c
-> @@ -20,7 +20,6 @@
->    * Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
->    */
+> diff --git a/utils/ps/rtps.c b/utils/ps/rtps.c
+> index bf5400e8d..6a07f110d 100644
+> --- a/utils/ps/rtps.c
+> +++ b/utils/ps/rtps.c
+> @@ -25,15 +25,15 @@
+>   #define PROC_ACCT  "/proc/xenomai/sched/acct"
+>   #define PROC_PID  "/proc/%d/cmdline"
 >   
-> -#include <sys/time.h>
->   #include <sys/resource.h>
->   #include <getopt.h>
->   #include <pthread.h>
+> -#define ACCT_FMT_1  "%u %d %lu %lu %lu %lx %Lu %Lu %Lu"
+> +#define ACCT_FMT_1  "%u %d %lu %lu %lu %lu %lx %Lu %Lu %Lu"
+>   #define ACCT_FMT_2  ACCT_FMT_1 " %[^\n]"
+> -#define ACCT_NFMT_1 9
+> -#define ACCT_NFMT_2 10
+> +#define ACCT_NFMT_1 10
+> +#define ACCT_NFMT_2 11
+>   
+>   int main(int argc, char *argv[])
+>   {
+>   	char cmdpath[sizeof(PROC_PID) + 32], cmdbuf[BUFSIZ], acctbuf[BUFSIZ], name[64];
+> -	unsigned long ssw, csw, pf, state, sec;
+> +	unsigned long ssw, csw, xsc, pf, state, sec;
+>   	unsigned long long account_period,
+>   		exectime_period, exectime_total, v;
+>   	unsigned int cpu, hr, min, msec, usec;
+> @@ -49,12 +49,12 @@ int main(int argc, char *argv[])
+>   
+>   	while (fgets(acctbuf, sizeof(acctbuf), acctfp) != NULL) {
+>   		if (sscanf(acctbuf, ACCT_FMT_2,
+> -		      &cpu, &pid, &ssw, &csw, &pf, &state,
+> +		      &cpu, &pid, &ssw, &csw, &xsc, &pf, &state,
+>   		      &account_period, &exectime_period,
+>   		      &exectime_total, name) != ACCT_NFMT_2) {
+>   			strcpy(name, "");
+>   			if (sscanf(acctbuf, ACCT_FMT_1,
+> -			      &cpu, &pid, &ssw, &csw, &pf, &state,
+> +			      &cpu, &pid, &ssw, &csw, &xsc, &pf, &state,
+>   			     &account_period, &exectime_period,
+>   			     &exectime_total) != ACCT_NFMT_1) {
+>   				break;
 > 
 
-Please fold patch 3 into 2 so that we do not have a build breakage in the middle.
+Thanks, applied.
 
 Jan
 
