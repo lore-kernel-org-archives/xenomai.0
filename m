@@ -1,12 +1,13 @@
-From: Philippe Gerum <rpm@xenomai.org>
-Subject: [PULL REQUEST] fixes for GCC 8.x, automatic RTnet interface
- dismantling
-Message-ID: <f5969ceb-572d-ffc5-c516-3810fb33a8fe@xenomai.org>
-Date: Thu, 25 Oct 2018 11:43:44 +0200
+Subject: Re: [PATCH] copperplate/clockobj: prevent warning with -Wconversion
+References: <1540883612.2354.2.camel@smigroup.net>
+From: Jan Kiszka <jan.kiszka@siemens.com>
+Message-ID: <43f0ce47-d677-3600-1826-2f696d258936@siemens.com>
+Date: Wed, 31 Oct 2018 18:42:22 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+In-Reply-To: <1540883612.2354.2.camel@smigroup.net>
+Content-Type: text/plain; charset="utf-8"; format="flowed"
 Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,67 +16,48 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "Xenomai@xenomai.org" <Xenomai@xenomai.org>
-Cc: "Kiszka, Jan" <jan.kiszka@siemens.com>
+To: Mauro Salvini <mauro.salvini@smigroup.net>, xenomai <xenomai@xenomai.org>
 
+On 30.10.18 08:13, Mauro Salvini wrote:
+> make cast explicit to avoid warning when user code is compiled with
+> -Wconversion
 
-This patch set addresses a couple of issues with GCC 8.x, and a current RTnet
-limitation too.
+Please sign-off your patches, according to CONTRIBUTING.md.
 
-Regarding the latter, I'd like a thorough review of 809847c58, to make sure it's
-not breaking some assumption wrt interface management in RTnet. The motivation
-for the change is to expose the necessary API bits in order to match the common
-behavior for regular netdevices, dismantling any open interface prior to unloading
-a driver module. The converse rtdev_up() call is there for consistency but has
-no user yet.
+> ---
+>   include/copperplate/clockobj.h | 2 +-
+>   1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/include/copperplate/clockobj.h
+> b/include/copperplate/clockobj.h
+> index 8568794d9..063bcce90 100644
+> --- a/include/copperplate/clockobj.h
+> +++ b/include/copperplate/clockobj.h
+> @@ -136,7 +136,7 @@ void clockobj_ns_to_timespec(ticks_t ns, struct
+> timespec *ts)
 
-Rationale: currently, modunloading drivers may leave stale information about
-active interfaces, which leads to bad situations. b28741eb6 illustrates the
-usage of the new call for the IGB driver. I don't think we could fold the
-rtdev_down() call into rt_unregister_rtnetdev() yet, unless the latter could
-be called earlier from the uninstall code of most drivers.
+Something mangled this line, probably your mail client.
 
----
+>   {
+>   	unsigned long rem;
+>   
+> -	ts->tv_sec = cobalt_divrem_billion(ns, &rem);
+> +	ts->tv_sec = (__kernel_time_t)cobalt_divrem_billion(ns, &rem);
 
-The following changes since commit 04df93890befa4e5a642ecdef38eebed4660b217:
+Why not time_t, the public target type?
 
-  rtdm: expose user-side file descriptors to drivers (2018-10-17 13:20:06 +0200)
+>   	ts->tv_nsec = rem;
+>   }
+>   
+> -- 
+> 2.11.0
+> 
+> 
 
-are available in the Git repository at:
-
-  git://lab.xenomai.org/xenomai-rpm.git for-upstream/next
-
-for you to fetch changes up to 2b819466ecb5d260c81edc32f0f032954df1759b:
-
-  net/igb: igb_ioctl() requires execution in secondary mode (2018-10-25 10:57:22 +0200)
-
-----------------------------------------------------------------
-Philippe Gerum (9):
-      utils/can: prevent unterminated destination buffer with strncpy()
-      demos/posix: prevent unterminated destination buffer with strncpy()
-      boilerplate/ancillaries: prevent false positive with -Wstringop-truncation
-      cobalt/ancillaries: prevent false positive with -Wstringop-truncation
-      boilerplate/compiler: drop __const and __pure shorthands
-      net/stack: export services to switch interface up/down
-      net/stack: ignore extraneous interface UP/DOWN calls
-      net/igb: down interface upon PCI unregister
-      net/igb: igb_ioctl() requires execution in secondary mode
-
- demo/posix/cobalt/can-rtt.c               |   4 ++--
- demo/posix/cobalt/eth_p_all.c             |   3 ++-
- demo/posix/cyclictest/cyclictest.c        |   4 ++--
- include/boilerplate/ancillaries.h         |   2 +-
- include/boilerplate/compiler.h            |   8 --------
- include/cobalt/kernel/ancillaries.h       |   2 +-
- kernel/drivers/net/drivers/igb/igb_main.c |   4 ++++
- kernel/drivers/net/stack/include/rtdev.h  |   4 ++++
- kernel/drivers/net/stack/rtdev.c          | 102 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
- kernel/drivers/net/stack/rtnet_chrdev.c   |  85 ++-----------------------------------------------------------------------------------
- utils/can/rtcanconfig.c                   |   7 ++++---
- utils/can/rtcanrecv.c                     |   3 ++-
- utils/can/rtcansend.c                     |   3 ++-
- 13 files changed, 128 insertions(+), 103 deletions(-)
+Thanks,
+Jan
 
 -- 
-Philippe.
+Siemens AG, Corporate Technology, CT RDA IOT SES-DE
+Corporate Competence Center Embedded Linux
 
