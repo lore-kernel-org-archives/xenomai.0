@@ -1,10 +1,14 @@
-Subject: Re: [PATCH] Add the xsc field when rtps reads the sched/acct file.
-References: <20181029062239.2566-1-christophe.blaess@logilin.fr>
+Subject: Re: [PATCH 0/4] net/tcp: Fix several bugs and allow rttcp to be built
+References: <1539775907-5124-1-git-send-email-sebastian.smolorz@gmx.de>
+ <2247681.JhopzYo4NN@lenni>
+ <C2EC5BA46D13CD44B5915A8FEEB4C44EE545BBF2@DDCEXCH.ddc-ny.com>
+ <7041379.eS1cmEbPlD@lenni>
+ <C2EC5BA46D13CD44B5915A8FEEB4C44EE545BC96@DDCEXCH.ddc-ny.com>
 From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <bdcbded6-a0c9-5aa9-3a4a-4371a62387a6@siemens.com>
-Date: Wed, 31 Oct 2018 18:47:48 +0100
+Message-ID: <62f6ce84-8672-c6d4-a1a2-d9bc996c9ef0@siemens.com>
+Date: Wed, 31 Oct 2018 19:18:53 +0100
 MIME-Version: 1.0
-In-Reply-To: <20181029062239.2566-1-christophe.blaess@logilin.fr>
+In-Reply-To: <C2EC5BA46D13CD44B5915A8FEEB4C44EE545BC96@DDCEXCH.ddc-ny.com>
 Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -16,60 +20,38 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Christophe BLAESS <christophe.blaess@logilin.fr>, xenomai@xenomai.org
+To: "Pham, Phong" <phamp@ddc-web.com>, Sebastian Smolorz <Sebastian.Smolorz@gmx.de>
+Cc: "Hillman, Robert" <hillman@ddc-web.com>, "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On 29.10.18 07:22, Christophe BLAESS wrote:
-> The rtps tools reads the /proc/xenomai/sched/acct file but didn't
-> take the xsc field in account and failed to display some Xenomai
-> threads. This patch adds the missing field when rtps reads a line.
+On 31.10.18 17:55, Pham, Phong wrote:
 > 
-> Signed-off-by: Christophe Blaess <christophe.blaess@logilin.fr>
-> ---
->   utils/ps/rtps.c | 12 ++++++------
->   1 file changed, 6 insertions(+), 6 deletions(-)
+> Hi Sebastian,
 > 
-> diff --git a/utils/ps/rtps.c b/utils/ps/rtps.c
-> index bf5400e8d..6a07f110d 100644
-> --- a/utils/ps/rtps.c
-> +++ b/utils/ps/rtps.c
-> @@ -25,15 +25,15 @@
->   #define PROC_ACCT  "/proc/xenomai/sched/acct"
->   #define PROC_PID  "/proc/%d/cmdline"
->   
-> -#define ACCT_FMT_1  "%u %d %lu %lu %lu %lx %Lu %Lu %Lu"
-> +#define ACCT_FMT_1  "%u %d %lu %lu %lu %lu %lx %Lu %Lu %Lu"
->   #define ACCT_FMT_2  ACCT_FMT_1 " %[^\n]"
-> -#define ACCT_NFMT_1 9
-> -#define ACCT_NFMT_2 10
-> +#define ACCT_NFMT_1 10
-> +#define ACCT_NFMT_2 11
->   
->   int main(int argc, char *argv[])
->   {
->   	char cmdpath[sizeof(PROC_PID) + 32], cmdbuf[BUFSIZ], acctbuf[BUFSIZ], name[64];
-> -	unsigned long ssw, csw, pf, state, sec;
-> +	unsigned long ssw, csw, xsc, pf, state, sec;
->   	unsigned long long account_period,
->   		exectime_period, exectime_total, v;
->   	unsigned int cpu, hr, min, msec, usec;
-> @@ -49,12 +49,12 @@ int main(int argc, char *argv[])
->   
->   	while (fgets(acctbuf, sizeof(acctbuf), acctfp) != NULL) {
->   		if (sscanf(acctbuf, ACCT_FMT_2,
-> -		      &cpu, &pid, &ssw, &csw, &pf, &state,
-> +		      &cpu, &pid, &ssw, &csw, &xsc, &pf, &state,
->   		      &account_period, &exectime_period,
->   		      &exectime_total, name) != ACCT_NFMT_2) {
->   			strcpy(name, "");
->   			if (sscanf(acctbuf, ACCT_FMT_1,
-> -			      &cpu, &pid, &ssw, &csw, &pf, &state,
-> +			      &cpu, &pid, &ssw, &csw, &xsc, &pf, &state,
->   			     &account_period, &exectime_period,
->   			     &exectime_total) != ACCT_NFMT_1) {
->   				break;
+> The issue has to do with endianness.  We are running PowerPC (big endian).  So in rt_tcp_set_flags(), flags is 32-bit wide and *tf is 16-bit wide.  I modified the line
+> from:
 > 
+> *tf = flags;
+> 
+> to
+> 
+> *tf = *(__be16 *)&flags;
 
-Thanks, applied.
+Something is fishy with rt_tcp_set_flags. Shouldn't we rather ensure that only a 
+__be16 flag value is passed to it?
+
+> 
+> and that does the job.
+> 
+> Now I encounter a different problem,
+> 
+> recv() returns 0 bytes but I know my FTP server sends a packet (seen by WireShark).  Can you point me where is the recv() implemented in tcp.c?  Is it rt_tcp_rcv or rt_tcp_recvmsg?
+
+The incoming packet is forwarded to rt_tcp_rcv. rt_tcp_recvmsg is called when an 
+application does some recvmsg-like call.
+
+
+You are probably the first one to try the tcp implementation on big endian. IOW: 
+There might be more endianness issues ahead.
 
 Jan
 
