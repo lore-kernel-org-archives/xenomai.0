@@ -1,10 +1,10 @@
-Subject: Re: RTnet splash with current next and stable
-References: <473fdfe5-e761-e51c-a54c-90a520ca7816@siemens.com>
+Subject: Re: rtdm_fd_is_compat () in xenomai 3.0
+References: <CAPNo5QK_QktkN1=g733uRGZwM11FMWgdWi_z1_orvYBM6iY9JA@mail.gmail.com>
 From: Philippe Gerum <rpm@xenomai.org>
-Message-ID: <a8292038-34ff-fcb5-0def-c764fd4e0b94@xenomai.org>
-Date: Wed, 31 Oct 2018 18:10:36 +0100
+Message-ID: <98448477-32b7-ed90-95cd-4ee614993261@xenomai.org>
+Date: Wed, 31 Oct 2018 18:14:08 +0100
 MIME-Version: 1.0
-In-Reply-To: <473fdfe5-e761-e51c-a54c-90a520ca7816@siemens.com>
+In-Reply-To: <CAPNo5QK_QktkN1=g733uRGZwM11FMWgdWi_z1_orvYBM6iY9JA@mail.gmail.com>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -16,57 +16,22 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jan Kiszka <jan.kiszka@siemens.com>, Xenomai <xenomai@xenomai.org>, Sebastian Smolorz <Sebastian.Smolorz@gmx.de>
+To: Manikanta Mylavarapu <mylavarapumanikanta23@gmail.com>, xenomai@xenomai.org
 
-On 10/30/18 11:28 AM, Jan Kiszka wrote:
-> Hi all,
+On 10/30/18 6:15 PM, Manikanta Mylavarapu wrote:
+> Hi to all,
 > 
-> just testing new kernels with smokey, and one of them had RTnet on. This
-> triggered a bug with the net_packat_dgram test:
+> I am running 32bit application on 64bit kernel i.e my driver compiled on
+> 64bit.
 > 
-> [   50.610997] initializing loopback...
-> [   50.613799] RTnet: registered rtlo
-> [   50.692154] ------------[ cut here ]------------
-> [   50.693577] WARNING: CPU: 1 PID: 1119 at ../lib/list_debug.c:29 __list_add+0x62/0xb0
-> [   50.696832] list_add corruption. next->prev should be prev (ffffffffa0007d20), but was           (null). (next=ffff88003a8bb700).
-> [   50.700751] Modules linked in: rtpacket rtipv4 rt_loopback rt_e1000e rtnet
-> [   50.702518] CPU: 1 PID: 1119 Comm: smokey Not tainted 4.9.135+ #26
-> [   50.704188] Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS rel-1.11.2-0-gf9626ccb91-prebuilt.qemu-project.org 04/01/2014
-> [   50.707861] I-pipe domain: Linux
-> [   50.709295]  ffffc90002943c10 ffffffff8146a31a ffffc90002943c60 0000000000000000
-> [   50.710335]  ffffc90002943c50 ffffffff810e9441 0000001da0007ca8 ffff88003a8bb700
-> [   50.710335]  ffffffffa0007d20 ffff88003a8bb700 000000000001d230 ffff88003a8bb640
-> [   50.710335] Call Trace:
-> [   50.710335]  [<ffffffff8146a31a>] dump_stack+0xa2/0xc8
-> [   50.710335]  [<ffffffff810e9441>] __warn+0xe1/0x100
-> [   50.710335]  [<ffffffff810e94af>] warn_slowpath_fmt+0x4f/0x60
-> [   50.710335]  [<ffffffff812b0b61>] ? __slab_alloc.isra.88+0xa1/0xd0
-> [   50.710335]  [<ffffffffa0003edb>] ? rtskb_pool_extend+0xbb/0x220 [rtnet]
-> [   50.710335]  [<ffffffff81498862>] __list_add+0x62/0xb0
-> [   50.710335]  [<ffffffffa000160a>] rtdev_map_rtskb+0x7a/0xa0 [rtnet]
-> [   50.710335]  [<ffffffffa0003f12>] rtskb_pool_extend+0xf2/0x220 [rtnet]
-> [   50.710335]  [<ffffffffa0004072>] rtskb_pool_init+0x32/0x70 [rtnet]
-> [   50.710335]  [<ffffffffa00043d2>] __rt_bare_socket_init+0x42/0x90 [rtnet]
-> [   50.710335]  [<ffffffffa0004501>] __rt_socket_init+0x81/0xd0 [rtnet]
-> [   50.710335]  [<ffffffffa0054477>] rt_packet_socket+0x27/0xb0 [rtpacket]
-> [   50.710335]  [<ffffffff81219dd7>] ? create_instance+0x67/0x80
-> [   50.710335]  [<ffffffff8121a772>] __rtdm_dev_socket+0x112/0x440
-> [   50.710335]  [<ffffffff8113bb09>] ? lock_release+0x2c9/0x440
-> [   50.710335]  [<ffffffff8122b200>] ? CoBaLt_open+0x40/0x40
-> [   50.710335]  [<ffffffff8122b20e>] CoBaLt_socket+0xe/0x20
-> [   50.710335]  [<ffffffff812412ca>] ipipe_syscall_hook+0x19a/0x460
-> [   50.710335]  [<ffffffff811ad8e9>] __ipipe_notify_syscall+0x79/0x400
-> [   50.710335]  [<ffffffff811adc9a>] ipipe_handle_syscall+0x2a/0xd0
-> [   50.710335]  [<ffffffff81002d6c>] do_syscall_64+0x3c/0x1c0
-> [   50.710335]  [<ffffffff8184f2c3>] entry_SYSCALL_64_after_swapgs+0x5d/0xdb
-> [   50.761499] ---[ end trace 633f1ec8aecb0735 ]---
-> [   50.762893] ------------[ cut here ]------------
+> In my driver I used rtdm_fd_is_compat(), to know user land request came
+> from 32-bit or 64bit app.
 > 
-> Anyone who hacked on this recently have a feeling?
+> My doubt is what it will return if both the driver & app are different?
 > 
 
-No idea. I'll have a look.
-
+rtdm_fd_is_compat() returns true when the current request to the 64bit
+kernel originates from a 32bit app.
 
 -- 
 Philippe.
