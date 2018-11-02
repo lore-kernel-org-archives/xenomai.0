@@ -1,15 +1,13 @@
-Subject: Re: [I-PIPE] ipipe-core-4.9.135-x86-7 released
-References: <E1gHtmu-0002xR-FI@xenomai.org>
- <653100543.20966555.1541129646273@mail.yahoo.com>
- <009db19b-cb18-095c-2fda-eb9beaa7767c@siemens.com>
-From: Philippe Gerum <rpm@xenomai.org>
-Message-ID: <3235bdf5-2ad7-10ea-ff33-f45ddb8197e6@xenomai.org>
-Date: Fri, 2 Nov 2018 10:34:44 +0100
+Date: Fri, 2 Nov 2018 11:07:50 +0100
+From: Henning Schild <henning.schild@siemens.com>
+Subject: Re: [I-PIPE] ipipe-core-4.14.71-x86-1 released
+Message-ID: <20181102110750.24650a70@md1za8fc.ad001.siemens.net>
+In-Reply-To: <33f0bc4d-f8ef-9950-74ac-8b62bca6f015@xenomai.org>
+References: <20181101175938.D29167FB@centrum.cz>
+ <33f0bc4d-f8ef-9950-74ac-8b62bca6f015@xenomai.org>
 MIME-Version: 1.0
-In-Reply-To: <009db19b-cb18-095c-2fda-eb9beaa7767c@siemens.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -18,20 +16,44 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jan Kiszka <jan.kiszka@siemens.com>, Alec Ari <neotheuser@ymail.com>, "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Philippe Gerum <rpm@xenomai.org>
+Cc: Petr =?UTF-8?B?xIxlcnZlbmth?= <grugh@centrum.cz>, Xenomai <xenomai@xenomai.org>
 
-On 11/2/18 9:22 AM, Jan Kiszka wrote:
-> On 02.11.18 04:34, Alec Ari wrote:
->> This isn't just for x86, this patch includes ppc and arm64 as well. I
->> was wondering why it was so big! Same story on the latest 4.4 patch.
-> 
-> Huh! Philippe, did I mess something up?
-> 
+Am Thu, 1 Nov 2018 18:38:47 +0100
+schrieb Philippe Gerum <rpm@xenomai.org>:
 
-This is unlikely on your side, you don't control how the patch generator
-runs remotely anyway. This does not happen with the ARM architecture, so
-I did not notice. I'll have a look asap.
+> On 11/1/18 5:59 PM, Petr =C4=8Cervenka wrote:
+> > Hello.
+> > =C2=A0
+> > Is it really finished?
+> > I have problems to compile the patched kernel.
+> > =C2=A0
+> > At first, when it compiles machine.c, there is such error:
+> > =C2=A0 CC=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 arch/x86/xenomai/machine.o
+> > In file included from ./include/asm-generic/xenomai/syscall.h:23:0,
+> > =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
+=A0=C2=A0=C2=A0=C2=A0=C2=A0 from
+> > arch/x86/xenomai/include/asm/xenomai/syscall.h:24, from
+> > arch/x86/xenomai/machine.c:22: ./arch/x86/include/asm/uaccess.h: In
+> > function =E2=80=98set_fs=E2=80=99: ./arch/x86/include/asm/uaccess.h:33:=
+9: error:
+> > dereferencing pointer to incomplete type =E2=80=98struct task_struct=E2=
+=80=99
+> > current->thread.addr_limit =3D fs; ^~
+> > =C2=A0
+> > After an ad-hoc fix, there are some other errors for example during
+> > compiling of thread.c, mostly connected to fpu: fpu.fpregs_active,
+> > fpu.active_state, __fpregs_deactivate(), __fpregs_activate(),
+> > clts(), stts(), SLAB_NOTRACK, ... Am I doing something wrong?
+> > =C2=A0 =20
+>=20
+> You are likely not using the proper Xenomai branch, you need -next.
 
--- 
-Philippe.
+I would not suggest next, master and stable/v3.0.x should do. But
+v3.0.7 and older will not work.
+
+As far as i understood we will soon have a v3.1, for people that like
+their releases ;).
+
+Henning
 
