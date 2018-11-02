@@ -1,14 +1,15 @@
-From: Sebastian Smolorz <Sebastian.Smolorz@gmx.de>
-Subject: Re: [PATCH 0/4] net/tcp: Fix several bugs and allow rttcp to be built
-Date: Fri, 02 Nov 2018 15:41:46 +0100
-Message-ID: <4717946.93qni4ym1a@lenni>
-In-Reply-To: <62f6ce84-8672-c6d4-a1a2-d9bc996c9ef0@siemens.com>
-References: <1539775907-5124-1-git-send-email-sebastian.smolorz@gmx.de>
- <C2EC5BA46D13CD44B5915A8FEEB4C44EE545BC96@DDCEXCH.ddc-ny.com>
- <62f6ce84-8672-c6d4-a1a2-d9bc996c9ef0@siemens.com>
+Subject: Re: [I-PIPE] ipipe-core-4.14.71-x86-1 released
+References: <20181101175938.D29167FB@centrum.cz>
+ <33f0bc4d-f8ef-9950-74ac-8b62bca6f015@xenomai.org>
+ <20181102142031.712D8BE3@centrum.cz>
+From: Jan Kiszka <jan.kiszka@siemens.com>
+Message-ID: <77dbbfd9-f575-b361-45b8-2d299597a0d2@siemens.com>
+Date: Fri, 2 Nov 2018 15:49:41 +0100
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7Bit
-Content-Type: text/plain; charset="us-ascii"
+In-Reply-To: <20181102142031.712D8BE3@centrum.cz>
+Content-Type: text/plain; charset="utf-8"; format="flowed"
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,40 +18,27 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jan Kiszka <jan.kiszka@siemens.com>
-Cc: "Pham, Phong" <phamp@ddc-web.com>, "Hillman, Robert" <hillman@ddc-web.com>, "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: =?UTF-8?Q?Petr_=c4=8cervenka?= <grugh@centrum.cz>, Henning Schild <henning.schild@siemens.com>, Philippe Gerum <rpm@xenomai.org>
+Cc: Xenomai <xenomai@xenomai.org>
 
-On 31.10.18 19:18, Jan Kiszka wrote:
-> On 31.10.18 17:55, Pham, Phong wrote:
-> > Hi Sebastian,
-> > 
-> > The issue has to do with endianness.  We are running PowerPC (big
-> > endian).  So in rt_tcp_set_flags(), flags is 32-bit wide and *tf is
-> > 16-bit wide.  I modified the line from:
-> > 
-> > *tf = flags;
-> > 
-> > to
-> > 
-> > *tf = *(__be16 *)&flags;
-> 
-> Something is fishy with rt_tcp_set_flags. Shouldn't we rather ensure
-> that only a __be16 flag value is passed to it?
+On 02.11.18 14:20, Petr Červenka via Xenomai wrote:
+> You are right.
+> The errors were because of version 3.0.7. I didn't realize, that prepare-kernel.sh script doesn't only apply the patch. But it also copies part of the xenomai to the kernel.
+>   
+> Meanwhile I tried the latest git (probably master branch). I got another error (simple to fix) in one of the rtnet drivers:
+> drivers/xenomai/net/drivers/e1000e/netdev.c: In function ‘e1000e_set_interrupt_capability’:
+> drivers/xenomai/net/drivers/e1000e/netdev.c:1225:11: error: implicit declaration of function ‘pci_enable_msix’; did you mean ‘pci_enable_msi’? [-Werror=implicit-function-declaration]
+>       err = pci_enable_msix(adapter->pdev,
+>             ^~~~~~~~~~~~~~~
+>             pci_enable_msi
 
-I think the reason why flags are passed as __be32 is that they are defined 
-with the help of __constant_cpu_to_be32().
+Known issue: There is now pci_alloc_irq_vectors only. We need to switch to that 
+API and provide backward compatible wrappers for < 4.8. If you do not need this 
+driver, disable it for now.
 
-After reading some TCP related code in the kernel I think that this 
-issue is properly fixed by
-
-tcp_flag_word(th) = flags;
-
-I will test this for little endian. Phong, can you test this on your 
-machine?
+Jan
 
 -- 
-Sebastian
-
-
-
+Siemens AG, Corporate Technology, CT RDA IOT SES-DE
+Corporate Competence Center Embedded Linux
 
