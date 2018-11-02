@@ -1,12 +1,12 @@
-From: =?UTF-8?Q?Christoph_M=c3=bcllner?=
- <christoph.muellner@theobroma-systems.com>
-Subject: Xenomai arm64 plans?
-Message-ID: <fb2b5a6b-007e-9f2c-bcac-8df84fbaac84@theobroma-systems.com>
-Date: Fri, 2 Nov 2018 17:19:55 +0100
+From: Sebastian Smolorz <Sebastian.Smolorz@gmx.de>
+Subject: Re: Towards v3.0.8
+Date: Fri, 02 Nov 2018 17:21:38 +0100
+Message-ID: <7042112.Wjj8qF6Hl9@lenni>
+In-Reply-To: <1474931b-ac27-330d-eec4-92dda612e819@siemens.com>
+References: <1474931b-ac27-330d-eec4-92dda612e819@siemens.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 7Bit
+Content-Type: text/plain; charset="us-ascii"
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,17 +15,23 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jan Kiszka <jan.kiszka@siemens.com>
-Cc: xenomai@xenomai.org
+To: xenomai@xenomai.org, Jan Kiszka <jan.kiszka@siemens.com>
 
-Hi Jan,
+Hi Jan, 
 
-I was wondering if there are any plans for a Xenomai release,
-which includes arm64.
+Jan Kiszka wrote:
+> Hi all,
+> 
+> I think it would be good to release a new stable version, now that we
+> have updated x86 I-pipe patches that require changes from it. I'm
+> currently only aware of one open issue affecting also stable, and
+> that's [1].
 
-I'm familiar with the next branch, but I'd love to work with
-code from a branch, which is not subject to force-pushing.
+What is [1]?
 
-Thanks,
-Christoph
+-- 
+Sebastian
+
+
+
 
