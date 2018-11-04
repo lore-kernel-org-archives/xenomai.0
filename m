@@ -1,13 +1,15 @@
+Subject: Re: [I-PIPE] ipipe-core-4.9.135-x86-7 released
+References: <E1gHtmu-0002xR-FI@xenomai.org>
+ <653100543.20966555.1541129646273@mail.yahoo.com>
+ <009db19b-cb18-095c-2fda-eb9beaa7767c@siemens.com>
+From: Philippe Gerum <rpm@xenomai.org>
+Message-ID: <1378793b-2c18-1e51-937c-3ce14a7bb9e9@xenomai.org>
+Date: Sun, 4 Nov 2018 11:52:11 +0100
 MIME-Version: 1.0
-References: <E1gHtmt-0002wf-OO@xenomai.org>
- <1032757701.21003417.1541129675475@mail.yahoo.com>
-In-Reply-To: <1032757701.21003417.1541129675475@mail.yahoo.com>
-From: Alex Wu <bluegene@gmail.com>
-Date: Sun, 4 Nov 2018 18:08:39 +0800
-Message-ID: <CAHix4qO6sB48aMcVgaaB8vMpAvL9RkWyMuXo2J45CzejTBXj+g@mail.gmail.com>
-Subject: Re: [I-PIPE] ipipe-core-4.4.162-x86-11 released
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+In-Reply-To: <009db19b-cb18-095c-2fda-eb9beaa7767c@siemens.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,17 +18,21 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: neotheuser@ymail.com
-Cc: xenomai@xenomai.org
+To: Jan Kiszka <jan.kiszka@siemens.com>, Alec Ari <neotheuser@ymail.com>, "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-I think the patch is for ARM? wrong name?
-ipipe-core-4.4.71-x86-10.patch works for me but this one compile error.
+On 11/2/18 9:22 AM, Jan Kiszka wrote:
+> On 02.11.18 04:34, Alec Ari wrote:
+>> This isn't just for x86, this patch includes ppc and arm64 as well. I
+>> was wondering why it was so big! Same story on the latest 4.4 patch.
+> 
+> Huh! Philippe, did I mess something up?
+> 
 
-Alec Ari <neotheuser@ymail.com> =E4=BA=8E2018=E5=B9=B411=E6=9C=882=E6=97=A5=
-=E5=91=A8=E4=BA=94 =E4=B8=8A=E5=8D=8811:34=E5=86=99=E9=81=93=EF=BC=9A
+ipipe-tags was only meant to receive tags from current single-arch
+I-pipe trees, not the legacy ipipe.git tree, hence the issue. I need to
+integrate the legacy patch generator which does the proper per-arch
+split for pre-4.14 kernel releases.
 
-> This x86 patch is not just for x86, too much got clobbered together.
->
-> Alec
->
->
+-- 
+Philippe.
+
