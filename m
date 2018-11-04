@@ -1,15 +1,13 @@
-Subject: Re: Xenomai arm64 plans?
-References: <fb2b5a6b-007e-9f2c-bcac-8df84fbaac84@theobroma-systems.com>
- <96f3c66c-816c-b2d8-071e-198488ad05be@siemens.com>
-From: =?UTF-8?Q?Christoph_M=c3=bcllner?=
- <christoph.muellner@theobroma-systems.com>
-Message-ID: <f735da35-123d-7352-46ec-420998540d61@theobroma-systems.com>
-Date: Fri, 2 Nov 2018 17:30:08 +0100
 MIME-Version: 1.0
-In-Reply-To: <96f3c66c-816c-b2d8-071e-198488ad05be@siemens.com>
-Content-Type: text/plain; charset="utf-8"
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+References: <E1gHtmt-0002wf-OO@xenomai.org>
+ <1032757701.21003417.1541129675475@mail.yahoo.com>
+In-Reply-To: <1032757701.21003417.1541129675475@mail.yahoo.com>
+From: Alex Wu <bluegene@gmail.com>
+Date: Sun, 4 Nov 2018 18:08:39 +0800
+Message-ID: <CAHix4qO6sB48aMcVgaaB8vMpAvL9RkWyMuXo2J45CzejTBXj+g@mail.gmail.com>
+Subject: Re: [I-PIPE] ipipe-core-4.4.162-x86-11 released
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -18,34 +16,17 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jan Kiszka <jan.kiszka@siemens.com>
+To: neotheuser@ymail.com
 Cc: xenomai@xenomai.org
 
+I think the patch is for ARM? wrong name?
+ipipe-core-4.4.71-x86-10.patch works for me but this one compile error.
 
+Alec Ari <neotheuser@ymail.com> =E4=BA=8E2018=E5=B9=B411=E6=9C=882=E6=97=A5=
+=E5=91=A8=E4=BA=94 =E4=B8=8A=E5=8D=8811:34=E5=86=99=E9=81=93=EF=BC=9A
 
-On 11/2/18 5:25 PM, Jan Kiszka wrote:
-> On 02.11.18 17:19, Christoph Müllner wrote:
->> Hi Jan,
->>
->> I was wondering if there are any plans for a Xenomai release,
->> which includes arm64.
-> 
-> Yes, there are. The exact timeline is not settled yet, but somewhere
-> within the next month, I would say.
-
-That's excellent news!
-
->> I'm familiar with the next branch, but I'd love to work with
->> code from a branch, which is not subject to force-pushing.
-> 
-> Actually there was a change: next is still potentially rebasing as I'm
-> integrating over it and may - when things go wrong - pull back or
-> reorder in that queue. But master is back, and that is forward-only.
-> It's not comparable to a release but it could help to bridge the time to
-> v3.1.
-
-Ok, thank's for clarifying that.
-
-Thanks,
-Christoph
-
+> This x86 patch is not just for x86, too much got clobbered together.
+>
+> Alec
+>
+>
