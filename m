@@ -1,14 +1,14 @@
-Subject: Re: Segmentation error 6 in rt_heap_create() without --enable-pshared
-References: <20181105120636.B8E60FC0@centrum.cz>
- <20181105143157.57E0DF0D@centrum.cz>
+Subject: Re: [PATCH] cobalt/kernel: Simplify mayday processing
+References: <3e868e4f-7bd5-2874-d72b-fc2449ef4b65@siemens.com>
+ <12435406.IbBufnaqfE@wirbelwind>
 From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <464a3cec-5095-c0ef-0331-acd63079dd6a@siemens.com>
-Date: Mon, 5 Nov 2018 14:49:41 +0100
+Message-ID: <fba23077-6155-a747-42f0-4b0a890cb98f@siemens.com>
+Date: Mon, 5 Nov 2018 14:50:28 +0100
 MIME-Version: 1.0
-In-Reply-To: <20181105143157.57E0DF0D@centrum.cz>
-Content-Type: text/plain; charset="utf-8"
+In-Reply-To: <12435406.IbBufnaqfE@wirbelwind>
+Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,22 +17,21 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: =?UTF-8?Q?Petr_=c4=8cervenka?= <grugh@centrum.cz>, Xenomai <xenomai@xenomai.org>
+To: steven.seeger@nasa.gov
+Cc: Xenomai <xenomai@xenomai.org>, Philippe Gerum <rpm@xenomai.org>, Dmitriy Cherkasov <dmitriy@oss-tech.org>
 
-On 05.11.18 14:31, Petr Červenka wrote:
+On 05.11.18 14:48, Steven Seeger wrote:
+> On Monday, November 5, 2018 7:20:33 AM EST Jan Kiszka wrote:
 >>
->> stable or master (or both)?
->  > 
->  > Jan
->  >
->  
-> master
->  
+>> I would appreciate if you could test ARM64 and PowerPC for me. Until we
+>> have QEMU test images for both, it's still tricky for me to do that.
+> 
+> I have something I've got to get done before I can do anything else, but once 
+> that's done I can take a look a this on a PowerPC board.
+> 
 
-Only? Sorry for insisting, but it may help to reduce the search space, and it's
-also important as I'd like to release a new stable version - without known issues.
+Great, TIA! The key test is likely sigdebug from smokey.
 
-Thanks,
 Jan
 
 -- 
