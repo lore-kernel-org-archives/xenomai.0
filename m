@@ -1,15 +1,7 @@
-MIME-Version: 1.0
-Message-ID: <trinity-a484b3cc-c55e-4a1f-93b3-01027a957713-1541443052918@msvc-mesg-gmx022>
-From: "Sebastian Smolorz" <Sebastian.Smolorz@gmx.de>
-Subject: Re: [PATCH 0/4] net/tcp: Fix several bugs and allow rttcp to be built
-Content-Type: text/plain; charset=UTF-8
-Date: Mon, 5 Nov 2018 19:37:32 +0100
-In-Reply-To: <C2EC5BA46D13CD44B5915A8FEEB4C44EE546DFAD@DDCEXCH.ddc-ny.com>
-References: <1539775907-5124-1-git-send-email-sebastian.smolorz@gmx.de>
- <C2EC5BA46D13CD44B5915A8FEEB4C44EE545BC96@DDCEXCH.ddc-ny.com>
- <62f6ce84-8672-c6d4-a1a2-d9bc996c9ef0@siemens.com>
- <4717946.93qni4ym1a@lenni>
- <C2EC5BA46D13CD44B5915A8FEEB4C44EE546DFAD@DDCEXCH.ddc-ny.com>
+From: Sebastian Smolorz <sebastian.smolorz@gmx.de>
+Subject: [PATCH v2 0/8] net/tcp: Fix several bugs and allow rttcp to be built
+Date: Tue,  6 Nov 2018 11:00:18 +0100
+Message-Id: <1541498426-2916-1-git-send-email-sebastian.smolorz@gmx.de>
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -18,21 +10,33 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "Pham, Phong" <phamp@ddc-web.com>
-Cc: Jan Kiszka <jan.kiszka@siemens.com>, "Hillman, Robert" <hillman@ddc-web.com>, "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: xenomai@xenomai.org
 
-Hi,
+This patch series makes RTnet's tcp module usable again. It was not
+working due to several bugs which showed up in combination with reworked
+RTDM of Xenomai 3.
 
-Pham, Phong wrote:
-> Hi Sebastian,
-> 
-> " Phong, can you test this on your machine?"
-> No the fix does not work.  It overwrites the window field.
+Tests on real hardware (little endian) were successful. A test on big
+endian is still pending.
 
-Did you try the patch I sent here?
+Sebastian Smolorz (8):
+  net/tcp: return ufd in rt_tcp_accept()
+  net/tcp: fix listen() and shutdown() IOCTL calls
+  net/tcp: Fix bug when obtaining RST socket's private structure from
+    its rtdm_fd pointer
+  net/tcp: Copy data back to user buffer in rt_tcp_recvmsg
+  net/tcp: fix TCP connection termination
+  net/tcp: Set valid flags in struct tcphdr on little and big endian
+    machines
+  net/tcp: return already copied number of bytes to recv() callers when
+    peer socket terminates
+  net/tcp: Allow choice of rttcp protocol in Kconfig
 
-https://www.xenomai.org/pipermail/xenomai/2018-November/039831.html
+ kernel/drivers/net/stack/ipv4/Kconfig   |  2 +-
+ kernel/drivers/net/stack/ipv4/tcp/tcp.c | 54 ++++++++++++---------------------
+ 2 files changed, 21 insertions(+), 35 deletions(-)
 
 -- 
-Sebastian
+2.7.4
+
 
