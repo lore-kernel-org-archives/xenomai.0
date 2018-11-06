@@ -1,7 +1,8 @@
 From: Sebastian Smolorz <sebastian.smolorz@gmx.de>
-Subject: [PATCH v2 5/8] net/tcp: fix TCP connection termination
-Date: Tue,  6 Nov 2018 11:00:23 +0100
-Message-Id: <1541498426-2916-6-git-send-email-sebastian.smolorz@gmx.de>
+Subject: [PATCH v2 6/8] net/tcp: Set valid flags in struct tcphdr on little
+ and big endian machines
+Date: Tue,  6 Nov 2018 11:00:24 +0100
+Message-Id: <1541498426-2916-7-git-send-email-sebastian.smolorz@gmx.de>
 In-Reply-To: <1541498426-2916-1-git-send-email-sebastian.smolorz@gmx.de>
 References: <1541498426-2916-1-git-send-email-sebastian.smolorz@gmx.de>
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
@@ -14,45 +15,45 @@ List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: xenomai@xenomai.org
 
-Closing a connected TCP socket initiates a handshake procedure. The
-closing socket is supposed to receive two more packets and send one
-ACK at the end. RTnet's TCP stack tries to get a reference to a
-socket before writing data to its buffer. Taking a reference to an
-RTnet socket in Xenomai 3 is realized by calling rtdm_fd_lock() which
-fails when a socket is about to be closed.
+Setting TCP header flags like ACK was fragile and not working when
+RTnet was running on big endian processors. Use the macro provided
+by the linux kernel for setting the TCP flags instead.
 
 Signed-off-by: Sebastian Smolorz <sebastian.smolorz@gmx.de>
 ---
- kernel/drivers/net/stack/ipv4/tcp/tcp.c | 11 +++++++----
- 1 file changed, 7 insertions(+), 4 deletions(-)
+ kernel/drivers/net/stack/ipv4/tcp/tcp.c | 9 +--------
+ 1 file changed, 1 insertion(+), 8 deletions(-)
 
 diff --git a/kernel/drivers/net/stack/ipv4/tcp/tcp.c b/kernel/drivers/net/stack/ipv4/tcp/tcp.c
-index 3242a08..c066e06 100644
+index c066e06..134469c 100644
 --- a/kernel/drivers/net/stack/ipv4/tcp/tcp.c
 +++ b/kernel/drivers/net/stack/ipv4/tcp/tcp.c
-@@ -249,15 +249,18 @@ static struct rtsocket *rt_tcp_v4_lookup(u32 daddr, u16 dport)
- {
-     rtdm_lockctx_t  context;
-     struct tcp_socket *ts;
-+    int ret;
+@@ -280,12 +280,6 @@ static inline int rt_tcp_after(__u32 seq1, __u32 seq2)
+     return (__s32)(seq2-seq1) <= 0;
+ }
  
-     rtdm_lock_get_irqsave(&tcp_socket_base_lock, context);
-     ts = port_hash_search(daddr, dport);
- 
--    if (ts && rt_socket_reference(&ts->sock) == 0) {
+-static inline void rt_tcp_set_flags(struct tcphdr* th, __be32 flags)
+-{
+-    __be16 *tf = ((__be16*)th) + 6;
+-    *tf = flags;
+-}
 -
--	rtdm_lock_put_irqrestore(&tcp_socket_base_lock, context);
-+    if (ts != NULL) {
-+	ret = rt_socket_reference(&ts->sock);
-+	if (ret == 0 || (ret == -EIDRM && ts->is_closed)) {
-+		rtdm_lock_put_irqrestore(&tcp_socket_base_lock, context);
+ static inline u32 rt_tcp_compute_ack_seq(struct tcphdr* th, u32 len)
+ {
+     u32 ack_seq = ntohl(th->seq) + len;
+@@ -625,11 +619,10 @@ static void rt_tcp_build_header(struct tcp_socket *ts, struct rtskb *skb,
+     if (unlikely(is_keepalive))
+ 	th->seq--;
  
--	return &ts->sock;
-+		return &ts->sock;
-+	}
-     }
++    tcp_flag_word(th) = flags;
+     th->ack_seq = htonl(ts->sync.ack_seq);
+     th->window  = htons(ts->sync.window);
  
-     rtdm_lock_put_irqrestore(&tcp_socket_base_lock, context);
+-    rt_tcp_set_flags(th, flags);
+-
+     th->doff = tcphdrlen >> 2; /* No options for now */
+     th->res1 = 0;
+     th->check   = 0;
 -- 
 2.7.4
 
