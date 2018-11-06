@@ -1,15 +1,18 @@
-Subject: Re: [PATCH v2 4/8] net/tcp: Copy data back to user buffer in
- rt_tcp_recvmsg
-References: <1541498426-2916-1-git-send-email-sebastian.smolorz@gmx.de>
- <1541498426-2916-5-git-send-email-sebastian.smolorz@gmx.de>
-From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <87bbe98f-1799-8dbc-0a7f-763380cace8c@siemens.com>
-Date: Tue, 6 Nov 2018 19:52:55 +0100
-MIME-Version: 1.0
-In-Reply-To: <1541498426-2916-5-git-send-email-sebastian.smolorz@gmx.de>
-Content-Type: text/plain; charset=utf-8
+From: "Pham, Phong" <phamp@ddc-web.com>
+Subject: RE: [PATCH 0/4] net/tcp: Fix several bugs and allow rttcp to be built
+Date: Tue, 6 Nov 2018 18:53:53 +0000
+Message-ID: <C2EC5BA46D13CD44B5915A8FEEB4C44EE54700F0@DDCEXCH.ddc-ny.com>
+References: <1539775907-5124-1-git-send-email-sebastian.smolorz@gmx.de>
+ <C2EC5BA46D13CD44B5915A8FEEB4C44EE545BC96@DDCEXCH.ddc-ny.com>
+ <62f6ce84-8672-c6d4-a1a2-d9bc996c9ef0@siemens.com>
+ <4717946.93qni4ym1a@lenni>
+ <C2EC5BA46D13CD44B5915A8FEEB4C44EE546DFAD@DDCEXCH.ddc-ny.com>
+ <trinity-a484b3cc-c55e-4a1f-93b3-01027a957713-1541443052918@msvc-mesg-gmx022>
+In-Reply-To: <trinity-a484b3cc-c55e-4a1f-93b3-01027a957713-1541443052918@msvc-mesg-gmx022>
 Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+MIME-Version: 1.0
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -18,52 +21,32 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Sebastian Smolorz <sebastian.smolorz@gmx.de>, xenomai@xenomai.org
+To: Sebastian Smolorz <Sebastian.Smolorz@gmx.de>
+Cc: Jan Kiszka <jan.kiszka@siemens.com>, "Hillman, Robert" <hillman@ddc-web.com>, "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On 06.11.18 11:00, Sebastian Smolorz via Xenomai wrote:
-> A bug in rt_tcp_recvmsg() prevented an application to receive data
-> over an RTTCP socket. Data was not copied back to the application's
-> buffer but rather into a temporary kernel buffer.
-> 
-> Signed-off-by: Sebastian Smolorz <sebastian.smolorz@gmx.de>
-> ---
->  kernel/drivers/net/stack/ipv4/tcp/tcp.c | 13 +++----------
->  1 file changed, 3 insertions(+), 10 deletions(-)
-> 
-> diff --git a/kernel/drivers/net/stack/ipv4/tcp/tcp.c b/kernel/drivers/net/stack/ipv4/tcp/tcp.c
-> index 2678e6a..3242a08 100644
-> --- a/kernel/drivers/net/stack/ipv4/tcp/tcp.c
-> +++ b/kernel/drivers/net/stack/ipv4/tcp/tcp.c
-> @@ -2084,17 +2084,10 @@ static ssize_t rt_tcp_recvmsg(struct rtdm_fd *fd, struct user_msghdr *msg, int m
->  
->  	len = iov[0].iov_len;
->  	if (len > 0) {
-> -		buf = xnmalloc(len);
-> -		if (buf == NULL) {
-> -			ret = -ENOMEM;
-> -			goto out;
-> -		}
-> -		ret = rtdm_copy_from_user(fd, buf, iov[0].iov_base, len);
-> -		if (!ret)
-> -			ret = rt_tcp_read(fd, buf, len);
-> -		xnfree(buf);
-> +		buf = iov[0].iov_base;
-> +		ret = rt_tcp_read(fd, buf, len);
-
-Does this go well with smap? IOW: Was everything testing on a system with smap
-support available and enabled?
-
->  	}
-> -out:
-> +
->  	rtdm_drop_iovec(iov, iov_fast);
->  
->  	return ret;
-> 
-
-Jan
-
--- 
-Siemens AG, Corporate Technology, CT RDA IOT SES-DE
-Corporate Competence Center Embedded Linux
+DQpIaSBTZWJhc3RpYW4sDQoNCllvdXIgcGF0Y2ggKGZpeGluZyBUQ1AgZmxhZ3MgZW5kaWFubmVz
+cyBpc3N1ZSkgZG9lcyB3b3JrLiAgKEkgd2FzIHVuZGVyIHRoZSBpbXByZXNzaW9uIHRvIHVzZSB0
+Y3BfZmxhZ193b3JkIGFuZCBmaXggaXQgaW4gcnRfdGNwX3NldF9mbGFncygpIHdoaWNoIEkgcmVw
+b3J0ZWQgZG9lc24ndCB3b3JrIGVhcmxpZXIuKQ0KDQpQaG9uZy4NCg0KLS0tLS1PcmlnaW5hbCBN
+ZXNzYWdlLS0tLS0NCkZyb206IFNlYmFzdGlhbiBTbW9sb3J6IFttYWlsdG86U2ViYXN0aWFuLlNt
+b2xvcnpAZ214LmRlXQ0KU2VudDogTW9uZGF5LCBOb3ZlbWJlciAwNSwgMjAxOCAxMDozOCBBTQ0K
+VG86IFBoYW0sIFBob25nDQpDYzogSmFuIEtpc3prYTsgSGlsbG1hbiwgUm9iZXJ0OyB4ZW5vbWFp
+QHhlbm9tYWkub3JnDQpTdWJqZWN0OiBSZTogW1BBVENIIDAvNF0gbmV0L3RjcDogRml4IHNldmVy
+YWwgYnVncyBhbmQgYWxsb3cgcnR0Y3AgdG8gYmUgYnVpbHQNCg0KSGksDQoNClBoYW0sIFBob25n
+IHdyb3RlOg0KPiBIaSBTZWJhc3RpYW4sDQo+DQo+ICIgUGhvbmcsIGNhbiB5b3UgdGVzdCB0aGlz
+IG9uIHlvdXIgbWFjaGluZT8iDQo+IE5vIHRoZSBmaXggZG9lcyBub3Qgd29yay4gIEl0IG92ZXJ3
+cml0ZXMgdGhlIHdpbmRvdyBmaWVsZC4NCg0KRGlkIHlvdSB0cnkgdGhlIHBhdGNoIEkgc2VudCBo
+ZXJlPw0KDQpodHRwczovL3d3dy54ZW5vbWFpLm9yZy9waXBlcm1haWwveGVub21haS8yMDE4LU5v
+dmVtYmVyLzAzOTgzMS5odG1sDQoNCi0tDQpTZWJhc3RpYW4NCk5vdGljZTogVGhpcyBlLW1haWwg
+YW5kIGFueSBmaWxlcyB0cmFuc21pdHRlZCB3aXRoIGl0IG1heSBjb250YWluIERhdGEgRGV2aWNl
+IENvcnBvcmF0aW9uJ3MgYW5kIGl0cyBzdWJzaWRpYXJpZXMgcHJpdmlsZWdlZCBhbmQgcHJvcHJp
+ZXRhcnkgaW5mb3JtYXRpb24uIEl0IGlzIGludGVuZGVkIHNvbGVseSBmb3IgdGhlIHVzZSBvZiB0
+aGUgaW5kaXZpZHVhbCBvciBlbnRpdHkgdG8gd2hvbSBpdCBpcyBhZGRyZXNzZWQuIElmIHlvdSBh
+cmUgbm90IHRoZSBuYW1lZCByZWNpcGllbnQgb2YgdGhpcyB0cmFuc21pc3Npb24sIGFueSBkaXNj
+bG9zdXJlLCBjb3B5aW5nLCBkaXN0cmlidXRpb24gb3IgcmVsaWFuY2Ugb24gdGhlIGNvbnRlbnRz
+IG9mIHRoaXMgbWVzc2FnZSBpcyBwcm9oaWJpdGVkLiBJZiB5b3UgcmVjZWl2ZWQgdGhpcyBlLW1h
+aWwgaW4gZXJyb3IsIHBsZWFzZSBkZXN0cm95IGl0IGFuZCBhbnkgYXR0YWNoZWQgZmlsZXMgYW5k
+IG5vdGlmeSBtZSBpbW1lZGlhdGVseS4NCg0KQ2xpY2sgSGVyZTxodHRwOi8vd3d3LmRkYy13ZWIu
+Y29tL1Byb2ZpbGUvRW1haWxQcml2YWN5LmFzcHg+IHRvIHZpZXcgb3VyIHByaXZhY3kgc3RhdGVt
+ZW50Lg0K
 
