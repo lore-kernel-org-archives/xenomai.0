@@ -1,8 +1,7 @@
 From: Sebastian Smolorz <sebastian.smolorz@gmx.de>
-Subject: [PATCH v2 4/8] net/tcp: Copy data back to user buffer in
- rt_tcp_recvmsg
-Date: Tue,  6 Nov 2018 11:00:22 +0100
-Message-Id: <1541498426-2916-5-git-send-email-sebastian.smolorz@gmx.de>
+Subject: [PATCH v2 2/8] net/tcp: fix listen() and shutdown() IOCTL calls
+Date: Tue,  6 Nov 2018 11:00:20 +0100
+Message-Id: <1541498426-2916-3-git-send-email-sebastian.smolorz@gmx.de>
 In-Reply-To: <1541498426-2916-1-git-send-email-sebastian.smolorz@gmx.de>
 References: <1541498426-2916-1-git-send-email-sebastian.smolorz@gmx.de>
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
@@ -15,40 +14,51 @@ List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: xenomai@xenomai.org
 
-A bug in rt_tcp_recvmsg() prevented an application to receive data
-over an RTTCP socket. Data was not copied back to the application's
-buffer but rather into a temporary kernel buffer.
+listen() and shutdown() pass their simple int argument directly casted to
+void *arg, not as a pointer to their value.
 
 Signed-off-by: Sebastian Smolorz <sebastian.smolorz@gmx.de>
 ---
- kernel/drivers/net/stack/ipv4/tcp/tcp.c | 13 +++----------
- 1 file changed, 3 insertions(+), 10 deletions(-)
+ kernel/drivers/net/stack/ipv4/tcp/tcp.c | 12 ++----------
+ 1 file changed, 2 insertions(+), 10 deletions(-)
 
 diff --git a/kernel/drivers/net/stack/ipv4/tcp/tcp.c b/kernel/drivers/net/stack/ipv4/tcp/tcp.c
-index 2678e6a..3242a08 100644
+index c713635..8605a8c 100644
 --- a/kernel/drivers/net/stack/ipv4/tcp/tcp.c
 +++ b/kernel/drivers/net/stack/ipv4/tcp/tcp.c
-@@ -2084,17 +2084,10 @@ static ssize_t rt_tcp_recvmsg(struct rtdm_fd *fd, struct user_msghdr *msg, int m
+@@ -1790,8 +1790,6 @@ static int rt_tcp_ioctl(struct rtdm_fd *fd,
+     struct _rtdm_getsockopt_args _getopt;
+     const struct _rtdm_setsockopt_args *setopt;
+     struct _rtdm_setsockopt_args _setopt;
+-    const long *val;
+-    long _val;
+     int in_rt;
  
- 	len = iov[0].iov_len;
- 	if (len > 0) {
--		buf = xnmalloc(len);
--		if (buf == NULL) {
--			ret = -ENOMEM;
--			goto out;
--		}
--		ret = rtdm_copy_from_user(fd, buf, iov[0].iov_base, len);
--		if (!ret)
--			ret = rt_tcp_read(fd, buf, len);
--		xnfree(buf);
-+		buf = iov[0].iov_base;
-+		ret = rt_tcp_read(fd, buf, len);
- 	}
--out:
-+
- 	rtdm_drop_iovec(iov, iov_fast);
+     /* fast path for common socket IOCTLs */
+@@ -1815,10 +1813,7 @@ static int rt_tcp_ioctl(struct rtdm_fd *fd,
+ 		return rt_tcp_connect(ts, setaddr->addr, setaddr->addrlen);
  
- 	return ret;
+ 	case _RTIOC_LISTEN:
+-		val = rtnet_get_arg(fd, &_val, arg, sizeof(long));
+-		if (IS_ERR(val))
+-			return PTR_ERR(val);
+-		return rt_tcp_listen(ts, *val);
++		return rt_tcp_listen(ts, (unsigned long)arg);
+ 
+ 	case _RTIOC_ACCEPT:
+ 		if (!in_rt)
+@@ -1829,10 +1824,7 @@ static int rt_tcp_ioctl(struct rtdm_fd *fd,
+ 		return rt_tcp_accept(ts, getaddr->addr, getaddr->addrlen);
+ 
+ 	case _RTIOC_SHUTDOWN:
+-		val = rtnet_get_arg(fd, &_val, arg, sizeof(long));
+-		if (IS_ERR(val))
+-			return PTR_ERR(val);
+-		return rt_tcp_shutdown(ts, *val);
++		return rt_tcp_shutdown(ts, (unsigned long)arg);
+ 
+ 	case _RTIOC_SETSOCKOPT:
+ 		setopt = rtnet_get_arg(fd, &_setopt, arg, sizeof(_setopt));
 -- 
 2.7.4
 
