@@ -1,10 +1,8 @@
-Subject: Re: Debian packages for Xenomai 3.x
-References: <b440d689-399e-32f1-c981-c66e655d955a@alaxarxa.net>
 From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <14f0f364-5733-deeb-370b-975462860e56@siemens.com>
-Date: Tue, 6 Nov 2018 19:04:56 +0100
+Subject: [PATCH] debian: Enable SMP in userspace package
+Message-ID: <642220e6-22b9-a4fa-691b-1829db4f8ada@siemens.com>
+Date: Tue, 6 Nov 2018 19:41:53 +0100
 MIME-Version: 1.0
-In-Reply-To: <b440d689-399e-32f1-c981-c66e655d955a@alaxarxa.net>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -16,41 +14,30 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Leopold Palomo-Avellaneda <leo@alaxarxa.net>, Xenomai List <xenomai@xenomai.org>, Henning Schild <henning.schild@siemens.com>
+To: Xenomai <xenomai@xenomai.org>
 
-On 30.11.17 12:27, Leopold Palomo-Avellaneda wrote:
-> Hi,
-> 
-> 
-> if someone is interested I have been working a bit with the debian directory in
-> xenomai3.
-> 
-> I have changed the approach to the libraries. I think that now it has not sense
-> to have a libxenomai1 so I have changed it to xenomai3-libs.
-> 
-> The source, and the patches applied are here:
-> 
-> https://anonscm.debian.org/cgit/collab-maint/xenomai.git/
-> 
-> In case there's some interest, I can try to push it again to the official Debian
-> repositories.
-> 
+Hard to find a UP target these days, and we definitely want to be
+generic with Debian packages.
 
-Picking up this topic again:
+Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
+---
+ debian/rules | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-I'm also in favor of reanimating the upstream Debian package, provided it adds
-value to users. In the past, a downside was the unhandy kernel build process,
-but maybe users were still happy. OTH, we may have a chance to provide binaries
-at least for the standard target x86-64.
-
-I'm currently preparing Debian-based demo and test images, generated
-automatically via some "magic" (Isar image builder). For that, we will need
-clean debian control files also in the Xenomai repo. That raises the question
-how to keep both debian folders best in sync - if both should be used. Suggestions?
-
-Jan
-
+diff --git a/debian/rules b/debian/rules
+index 99ed8982ce..883ae3ed8c 100755
+--- a/debian/rules
++++ b/debian/rules
+@@ -16,7 +16,8 @@ DEB_BUILD_GNU_TYPE=$(shell dpkg-architecture -qDEB_BUILD_GNU_TYPE)
+ CONFIG_OPTS = --prefix=/usr \
+             --includedir=/usr/include/xenomai \
+             --mandir=/usr/share/man \
+-	    --with-testdir=/usr/lib/xenomai/testsuite
++            --with-testdir=/usr/lib/xenomai/testsuite \
++            --enable-smp
+ 
+ ifneq ($(DEB_HOST_GNU_TYPE),$(DEB_BUILD_GNU_TYPE))
+ 	CONFIG_OPTS += --build $(DEB_BUILD_GNU_TYPE) --host $(DEB_HOST_GNU_TYPE)
 -- 
-Siemens AG, Corporate Technology, CT RDA IOT SES-DE
-Corporate Competence Center Embedded Linux
+2.16.4
 
