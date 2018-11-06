@@ -1,17 +1,11 @@
+From: Jan Kiszka <jan.kiszka@siemens.com>
+Subject: [PATCH] debian: Add config folder to xenomai-kernel-source
+Message-ID: <387c3deb-4c48-97c9-04e8-e5bf349048e4@siemens.com>
+Date: Tue, 6 Nov 2018 14:20:36 +0100
 MIME-Version: 1.0
-Message-ID: <trinity-2874bf98-ddbf-4e83-a13e-fac0159b7c7f-1541499106089@msvc-mesg-gmx021>
-From: "Sebastian Smolorz" <Sebastian.Smolorz@gmx.de>
-Subject: Re: [PATCH 0/4] net/tcp: Fix several bugs and allow rttcp to be built
-Content-Type: text/plain; charset=UTF-8
-Date: Tue, 6 Nov 2018 11:11:46 +0100
-In-Reply-To: <trinity-a484b3cc-c55e-4a1f-93b3-01027a957713-1541443052918@msvc-mesg-gmx022>
-References: <1539775907-5124-1-git-send-email-sebastian.smolorz@gmx.de>
- <C2EC5BA46D13CD44B5915A8FEEB4C44EE545BC96@DDCEXCH.ddc-ny.com>
- <62f6ce84-8672-c6d4-a1a2-d9bc996c9ef0@siemens.com>
- <4717946.93qni4ym1a@lenni>
- <C2EC5BA46D13CD44B5915A8FEEB4C44EE546DFAD@DDCEXCH.ddc-ny.com>
- <trinity-a484b3cc-c55e-4a1f-93b3-01027a957713-1541443052918@msvc-mesg-gmx022>
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -20,26 +14,28 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Sebastian Smolorz via Xenomai <xenomai@xenomai.org>
-Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>, "Hillman, Robert" <hillman@ddc-web.com>, "Pham, Phong" <phamp@ddc-web.com>, Jan Kiszka <jan.kiszka@siemens.com>
+To: Xenomai <xenomai@xenomai.org>
 
-Hi Phong,
+Meanwhile required for prepare-kernel.sh.
 
-Sebastian Smolorz wrote:
-> Pham, Phong wrote:
-> > Hi Sebastian,
-> >
-> > " Phong, can you test this on your machine?"
-> > No the fix does not work.  It overwrites the window field.
->
-> Did you try the patch I sent here?
->
-> https://www.xenomai.org/pipermail/xenomai/2018-November/039831.html
+Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
+---
+ debian/rules | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-I have sent out a new patch series. You can fetch it and apply
-it on top of master. This should also fix your problem of
-receiving zero bytes although there was data sent.
-
-=2D-
-Sebastian
+diff --git a/debian/rules b/debian/rules
+index 8b871a4882..99ed8982ce 100755
+--- a/debian/rules
++++ b/debian/rules
+@@ -73,7 +73,7 @@ install: build
+ 	cp debian/libxenomai1.lintian $(CURDIR)/debian/libxenomai1/usr/share/lintian/overrides/libxenomai1
+ 	cp debian/libxenomai-dev.lintian $(CURDIR)/debian/libxenomai-dev/usr/share/lintian/overrides/libxenomai-dev
+ 	mkdir -p $(CURDIR)/debian/xenomai-kernel-source/usr/src/xenomai-kernel-source $(CURDIR)/debian/xenomai-kernel-source/usr/share/doc/xenomai-kernel-source
+-	cp -a kernel include scripts $(CURDIR)/debian/xenomai-kernel-source/usr/src/xenomai-kernel-source
++	cp -a config kernel include scripts $(CURDIR)/debian/xenomai-kernel-source/usr/src/xenomai-kernel-source
+ 
+ # Build architecture-independent files here.
+ binary-indep: build install
+-- 
+2.16.4
 
