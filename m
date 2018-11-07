@@ -1,10 +1,15 @@
-From: Philippe Gerum <rpm@xenomai.org>
-Subject: [PATCH 3/9] boilerplate/ancillaries: prevent false positive with
- -Wstringop-truncation
-Date: Fri, 26 Oct 2018 16:08:19 +0200
-Message-Id: <20181026140825.5251-3-rpm@xenomai.org>
-In-Reply-To: <20181026140825.5251-1-rpm@xenomai.org>
-References: <20181026140825.5251-1-rpm@xenomai.org>
+Subject: Re: [RFC] xenomai-images: test and demo image generator
+From: Jan Kiszka <jan.kiszka@siemens.com>
+References: <c32e5b83-4eec-f6f2-dd63-c1e5b753a78f@siemens.com>
+ <CALLqZ8RSY9Kc4vwS7D_JnVm3GNRNGQV6PAv7Mi7fmrGPPQ88WQ@mail.gmail.com>
+ <43dccda9-1b84-4169-7d83-621053387994@siemens.com>
+Message-ID: <93b9e79e-e8ae-04f3-4234-598b38f75206@siemens.com>
+Date: Wed, 7 Nov 2018 08:49:53 +0100
+MIME-Version: 1.0
+In-Reply-To: <43dccda9-1b84-4169-7d83-621053387994@siemens.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -13,31 +18,77 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
-Cc: Jan Kiszka <jan.kiszka@siemens.com>, Philippe Gerum <rpm@xenomai.org>
+To: Greg Gallagher <greg@embeddedgreg.com>
+Cc: "Xenomai@xenomai.org" <xenomai@xenomai.org>, Steven Seeger <steven.seeger@nasa.gov>
 
-namecpy() is meant to copying NUL terminated strings even if this
-incurs potential truncation of the source argument if need be, prevent
-GCC 8.x from detecting a false positive when -Wstringop-truncation is
-in effect.
----
- include/boilerplate/ancillaries.h | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+On 07.11.18 07:37, Jan Kiszka wrote:
+> On 06.11.18 20:28, Greg Gallagher wrote:
+>> This looks really good.  How easy is it to add more targets?  I looked
+>> at the jailhouse-images commits to see how to add a board, is that a
+>> good place to start to see how to add a new board?
+>>
+> 
+> Yes, it is. But I'll likely commit at least one real example later today also to
+> this project.
 
-diff --git a/include/boilerplate/ancillaries.h b/include/boilerplate/ancillaries.h
-index f3b55668c..319d22f66 100644
---- a/include/boilerplate/ancillaries.h
-+++ b/include/boilerplate/ancillaries.h
-@@ -34,7 +34,7 @@ void __namecpy_requires_character_array_as_destination(void);
- 	({								\
- 		if (!__builtin_types_compatible_p(typeof(__dst), char[])) \
- 			__namecpy_requires_character_array_as_destination();	\
--		strncpy((__dst), __src, sizeof(__dst) - 1);		\
-+		strncpy((__dst), __src, sizeof(__dst));			\
- 		__dst[sizeof(__dst) - 1] = '\0';			\
- 		__dst;							\
- 	 })
+Done, was almost too simple. Good to see that we support arm64 that well already.
+
+Jan
+
+> 
+> The tricky thing is generally enabling the board to boot at all. By now, we have
+> covered a pretty broad range of cases, but each board remains different. E.g., I
+> still have the enabling of the Ultra96 on my to-do list because building of the
+> boot loader is so complicated, even more than the MACCHITObin which was recently
+> added to jailhouse-images. You will find good examples in that repo, and I also
+> just posted some cases to Isar upstream [1].
+> 
+> Once that is done and you have Debian running, only I-pipe issues should remain,
+> unless the board has been manually enabled before for this.
+> 
+> What would definitely be more "interesting" is enabling PowerPC for the first
+> time because this is not supported by Isar yet (though that should only be about
+> adding some arch definitions), I have no clue about the general Debian status,
+> and I do not know which QEMU target would be best to start with (as many of us
+> will likely not have any board in reach). But I do want this see this working as
+> well.
+> 
+> Jan
+> 
+> [1] https://groups.google.com/forum/#!topic/isar-users/AvDmjp2z9Zo
+> 
+>> -Greg
+>>
+>> On Tue, Nov 6, 2018 at 1:58 PM Jan Kiszka via Xenomai
+>> <xenomai@xenomai.org> wrote:
+>>>
+>>> Hi all,
+>>>
+>>> as I was (and still am) in the need to test also non-x86 from time to time, I
+>>> hacked up a little framework for generating bootable Debian images with Xenomai
+>>> pre-installed. It's currently hosted on my personal github space:
+>>>
+>>> https://github.com/jan-kiszka/xenomai-images
+>>>
+>>> I think we should move this over to the Xenomai group at gitlab.denx.de and
+>>> expand this step-wise with more archs (that QEMU support) as well as real
+>>> targets. I think I will add the HiKey board tomorrow, should be rather simple as
+>>> I did this for jailhouse-images [1], the inspiration and source of this layer,
+>>> just recently. Provided the ipipe kernel works fine with it.
+>>>
+>>> Comments? Suggestions? Opinions?
+>>>
+>>> Jan
+>>>
+>>> [1] https://github.com/siemens/jailhouse-images
+>>>
+>>> --
+>>> Siemens AG, Corporate Technology, CT RDA IOT SES-DE
+>>> Corporate Competence Center Embedded Linux
+>>>
+> 
+>
 -- 
-2.17.2
-
+Siemens AG, Corporate Technology, CT RDA IOT SES-DE
+Corporate Competence Center Embedded Linux
 
