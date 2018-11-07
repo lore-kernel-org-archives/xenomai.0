@@ -13,11 +13,12 @@ References: <CAOuPNLg60S+am654fq55vTMoFV1=PfMp3as5MZtt5BHUacFRBQ@mail.gmail.com>
  <c83d2fbd-086d-d6de-86cf-eaee4d041f02@siemens.com>
  <b2a5f99f-2157-5a87-3c9d-17d36460f312@xenomai.org>
  <89d73502-9f36-93c4-75f1-bdc9fe31ff0d@siemens.com>
-From: Philippe Gerum <rpm@xenomai.org>
-Message-ID: <b20480f3-4b8a-f1b3-baf0-841ccecaca9b@xenomai.org>
-Date: Wed, 7 Nov 2018 11:31:26 +0100
+ <b20480f3-4b8a-f1b3-baf0-841ccecaca9b@xenomai.org>
+From: Jan Kiszka <jan.kiszka@siemens.com>
+Message-ID: <4538b18d-9ccb-050f-3f34-8503d03dc1d2@siemens.com>
+Date: Wed, 7 Nov 2018 12:19:28 +0100
 MIME-Version: 1.0
-In-Reply-To: <89d73502-9f36-93c4-75f1-bdc9fe31ff0d@siemens.com>
+In-Reply-To: <b20480f3-4b8a-f1b3-baf0-841ccecaca9b@xenomai.org>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -29,233 +30,37 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jan Kiszka <jan.kiszka@siemens.com>, Pintu Kumar <pintu.ping@gmail.com>, Greg Gallagher <greg@embeddedgreg.com>
+To: Philippe Gerum <rpm@xenomai.org>, Pintu Kumar <pintu.ping@gmail.com>, Greg Gallagher <greg@embeddedgreg.com>
 Cc: "Xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On 11/7/18 11:19 AM, Jan Kiszka wrote:
-> On 07.11.18 11:04, Philippe Gerum wrote:
->> On 11/6/18 7:57 PM, Jan Kiszka wrote:
->>> On 04.11.18 17:17, Philippe Gerum wrote:
->>>> On 6/21/18 4:57 PM, Jan Kiszka wrote:
->>>>> On 2018-06-21 15:41, Jan Kiszka wrote:
->>>>>> On 2018-06-21 13:55, Jan Kiszka wrote:
->>>>>>> On 2018-06-21 13:20, Pintu Kumar wrote:
->>>>>>>> Dear Jan, Greg,
->>>>>>>>
->>>>>>>> Is there any pointer about this issue?
->>>>>>>> This is blocking my next work..
->>>>>>>
->>>>>>> Does this solve the issue AND still generate valid UDP checksums (please
->>>>>>> check with wireshark or against a normal networking stack?
->>>>>>>
->>>>>>> diff --git a/kernel/drivers/net/stack/ipv4/udp/udp.c b/kernel/drivers/net/stack/ipv4/udp/udp.c
->>>>>>> index 8e80d3e0b..bb0b0fc12 100644
->>>>>>> --- a/kernel/drivers/net/stack/ipv4/udp/udp.c
->>>>>>> +++ b/kernel/drivers/net/stack/ipv4/udp/udp.c
->>>>>>> @@ -556,18 +556,17 @@ static int rt_udp_getfrag(const void *p, unsigned char *to,
->>>>>>>      if (offset)
->>>>>>>  	    return rtnet_read_from_iov(ufh->fd, ufh->iov, ufh->iovlen, to, fraglen);
->>>>>>>  
->>>>>>> -    /* Checksum of the complete data part of the UDP message: */
->>>>>>> -    for (i = 0; i < ufh->iovlen; i++) {
->>>>>>> -            ufh->wcheck = csum_partial(ufh->iov[i].iov_base, ufh->iov[i].iov_len,
->>>>>>> -                                       ufh->wcheck);
->>>>>>> -    }
->>>>>>> -
->>>>>>>      ret = rtnet_read_from_iov(ufh->fd, ufh->iov, ufh->iovlen,
->>>>>>>  			      to + sizeof(struct udphdr),
->>>>>>>  			      fraglen - sizeof(struct udphdr));
->>>>>>>      if (ret)
->>>>>>>  	    return ret;
->>>>>>>  
->>>>>>> +    /* Checksum of the complete data part of the UDP message: */
->>>>>>> +    ufh->wcheck = csum_partial(to + sizeof(struct udphdr),
->>>>>>> +			       fraglen - sizeof(struct udphdr),
->>>>>>> +			       ufh->wcheck);
->>>>>>> +
->>>>>>>      /* Checksum of the udp header: */
->>>>>>>      ufh->wcheck = csum_partial((unsigned char *)ufh,
->>>>>>>  			       sizeof(struct udphdr), ufh->wcheck);
->>>>>>>
->>>>>>
->>>>>> This was definitely wrong. Here is another try:
->>>>>>
->>>>>> diff --git a/kernel/drivers/net/stack/ipv4/udp/udp.c b/kernel/drivers/net/stack/ipv4/udp/udp.c
->>>>>> index 8e80d3e0b..6cf1d369e 100644
->>>>>> --- a/kernel/drivers/net/stack/ipv4/udp/udp.c
->>>>>> +++ b/kernel/drivers/net/stack/ipv4/udp/udp.c
->>>>>> @@ -549,6 +549,7 @@ static int rt_udp_getfrag(const void *p, unsigned char *to,
->>>>>>                            unsigned int offset, unsigned int fraglen)
->>>>>>  {
->>>>>>      struct udpfakehdr *ufh = (struct udpfakehdr *)p;
->>>>>> +    unsigned int datalen = 0;
->>>>>>      int i, ret;
->>>>>>  
->>>>>>  
->>>>>> @@ -556,18 +557,18 @@ static int rt_udp_getfrag(const void *p, unsigned char *to,
->>>>>>      if (offset)
->>>>>>  	    return rtnet_read_from_iov(ufh->fd, ufh->iov, ufh->iovlen, to, fraglen);
->>>>>>  
->>>>>> -    /* Checksum of the complete data part of the UDP message: */
->>>>>> -    for (i = 0; i < ufh->iovlen; i++) {
->>>>>> -            ufh->wcheck = csum_partial(ufh->iov[i].iov_base, ufh->iov[i].iov_len,
->>>>>> -                                       ufh->wcheck);
->>>>>> -    }
->>>>>> -
->>>>>>      ret = rtnet_read_from_iov(ufh->fd, ufh->iov, ufh->iovlen,
->>>>>>  			      to + sizeof(struct udphdr),
->>>>>>  			      fraglen - sizeof(struct udphdr));
->>>>>>      if (ret)
->>>>>>  	    return ret;
->>>>>>  
->>>>>> +    /* Checksum of the complete data part of the UDP message: */
->>>>>> +    for (i = 0; i < ufh->iovlen; i++)
->>>>>> +	    datalen += ufh->iov[i].iov_len;
->>>>>> +    ufh->wcheck = csum_partial(to + sizeof(struct udphdr), datalen,
->>>>>> +			       ufh->wcheck);
->>>>>> +
->>>>>>      /* Checksum of the udp header: */
->>>>>>      ufh->wcheck = csum_partial((unsigned char *)ufh,
->>>>>>  			       sizeof(struct udphdr), ufh->wcheck);
->>>>>>
->>>>>
->>>>> OK, this won't work either if fraglen < datalen. We have to rework this
->>>>> more fundamentally.
->>>>>
->>>>> As a workaround, run the kernel with nosmap.
->>>>>
->>>>> Jan
->>>>>
->>>>
->>>> There is no point in debugging the splash with UDP until this one is addressed since running with nosmap won't be acceptable in many cases, so I took a stab at fixing this issue first. This fix is somewhat ugly, but a clean solution would involve reworking the entire handling of fragmented packets, so let's see if the logic is right first. Comments and testing welcome:
->>>>
->>>> diff --git a/kernel/drivers/net/stack/ipv4/udp/udp.c b/kernel/drivers/net/stack/ipv4/udp/udp.c
->>>> index 8e80d3e0b..44616269f 100644
->>>> --- a/kernel/drivers/net/stack/ipv4/udp/udp.c
->>>> +++ b/kernel/drivers/net/stack/ipv4/udp/udp.c
->>>> @@ -538,6 +538,7 @@ struct udpfakehdr
->>>>      struct iovec *iov;
->>>>      int iovlen;
->>>>      u32 wcheck;
->>>> +    size_t rawlen;
->>>>  };
->>>>  
->>>>  
->>>> @@ -549,24 +550,42 @@ static int rt_udp_getfrag(const void *p, unsigned char *to,
->>>>                            unsigned int offset, unsigned int fraglen)
->>>>  {
->>>>      struct udpfakehdr *ufh = (struct udpfakehdr *)p;
->>>> -    int i, ret;
->>>> -
->>>> +    void *ckdata, *tmp = NULL;
->>>> +    size_t cklen, len, iovsz;
->>>> +    struct iovec *tmpiov;
->>>> +    int ret;
->>>>  
->>>>      // We should optimize this function a bit (copy+csum...)!
->>>>      if (offset)
->>>> -	    return rtnet_read_from_iov(ufh->fd, ufh->iov, ufh->iovlen, to, fraglen);
->>>> -
->>>> -    /* Checksum of the complete data part of the UDP message: */
->>>> -    for (i = 0; i < ufh->iovlen; i++) {
->>>> -            ufh->wcheck = csum_partial(ufh->iov[i].iov_base, ufh->iov[i].iov_len,
->>>> -                                       ufh->wcheck);
->>>> +	    return rtnet_read_from_iov(ufh->fd, ufh->iov, ufh->iovlen,
->>>> +				       to, fraglen);
->>>> +
->>>> +    len = fraglen - sizeof(struct udphdr);
->>>> +    if (len < ufh->rawlen) {
->>>> +	    iovsz = sizeof(*tmpiov) * ufh->iovlen;
->>>> +	    tmp = xnmalloc(ufh->rawlen + iovsz);
->>>> +	    if (tmp == NULL)
->>>> +		    return -ENOMEM;
->>>> +	    tmpiov = tmp;
->>>> +	    memcpy(tmpiov, ufh->iov, iovsz);
->>>> +	    ckdata = tmp + iovsz;
->>>> +	    cklen = ufh->rawlen;
->>>> +	    ret = rtnet_read_from_iov(ufh->fd, tmpiov, ufh->iovlen,
->>>> +				      ckdata, cklen);
->>>> +	    if (ret)
->>>> +		    goto out;
->>>> +	    memcpy(to + sizeof(struct udphdr), ckdata, len);
->>>> +    } else {
->>>> +	    ckdata = to + sizeof(struct udphdr);
->>>> +	    cklen = len;
->>>> +	    ret = rtnet_read_from_iov(ufh->fd, ufh->iov, ufh->iovlen,
->>>> +				      ckdata, cklen);
->>>> +	    if (ret)
->>>> +		    goto out;
->>>>      }
->>>>  
->>>> -    ret = rtnet_read_from_iov(ufh->fd, ufh->iov, ufh->iovlen,
->>>> -			      to + sizeof(struct udphdr),
->>>> -			      fraglen - sizeof(struct udphdr));
->>>> -    if (ret)
->>>> -	    return ret;
->>>> +    /* Checksum of the complete data part of the UDP message: */
->>>> +    ufh->wcheck = csum_partial(ckdata, cklen, ufh->wcheck);
->>>>  
->>>>      /* Checksum of the udp header: */
->>>>      ufh->wcheck = csum_partial((unsigned char *)ufh,
->>>> @@ -580,7 +599,11 @@ static int rt_udp_getfrag(const void *p, unsigned char *to,
->>>>  
->>>>      memcpy(to, ufh, sizeof(struct udphdr));
->>>>  
->>>> -    return 0;
->>>> +out:
->>>> +    if (tmp)
->>>> +	    xnfree(tmp);
->>>> +
->>>> +    return ret;
->>>>  }
->>>>  
->>>>  
->>>> @@ -682,9 +705,10 @@ ssize_t rt_udp_sendmsg(struct rtdm_fd *fd, const struct user_msghdr *msg, int ms
->>>>      ufh.uh.len    = htons(ulen);
->>>>      ufh.uh.check  = 0;
->>>>      ufh.fd        = fd;
->>>> -    ufh.iov       = msg->msg_iov;
->>>> +    ufh.iov       = iov;
->>>>      ufh.iovlen    = msg->msg_iovlen;
->>>>      ufh.wcheck    = 0;
->>>> +    ufh.rawlen    = len;
->>>>  
->>>>      err = rt_ip_build_xmit(sock, rt_udp_getfrag, &ufh, ulen, &rt, msg_flags);
->>>>
->>>>
->>>
->>> Nasty, very nasty. That dynamic allocation could easily cause a performance
->>> regression for existing users.
->>>
+On 07.11.18 11:31, Philippe Gerum wrote:
+> On 11/7/18 11:19 AM, Jan Kiszka wrote:
+>> On 07.11.18 11:04, Philippe Gerum wrote:
+>>> Would be nice. How would that cope with rt_ip_build_xmit_slow() in case
+>>> the packet size exceeds the MTU? AFAICT, the header and payload data are
+>>> sent over the wire on the fly as they are collected by the getfrag()
+>>> callback.
 >>
->> Yes, this is my version of ugliness.
+>> What exactly is the problem there? Sorry, this code structure is no longer in my
+>> cache.
 >>
->>> For my memory: The smap-trigger is doing csum_partial on a userspace buffer,
->>> right?
->>
->> Right, dereferencing the iov_base pointer(s).
->>
->>  So we would need a user-safe csum_partial. I think the kernel does that...
->>>
->>
->> Would be nice. How would that cope with rt_ip_build_xmit_slow() in case
->> the packet size exceeds the MTU? AFAICT, the header and payload data are
->> sent over the wire on the fly as they are collected by the getfrag()
->> callback.
 > 
-> What exactly is the problem there? Sorry, this code structure is no longer in my
-> cache.
+> The underlying question was: don't we need the checksum value early in
+> the process of scanning all frags so that we can send it over the wire
+> into the first packet as part of the header?
+> 
+> If so, the callback mechanism which collects one fragment then
+> hard-xmits that data at each iteration does not seem to fit this
+> requirement. Unless we are ok loading the payload twice: once for
+> building the checksum, twice for sending the data the way it is done now.
 > 
 
-The underlying question was: don't we need the checksum value early in
-the process of scanning all frags so that we can send it over the wire
-into the first packet as part of the header?
+IIRC, there is no need to have a checksum over the whole data in the first
+fragment, only a per-fragment (i.e. per-packet) checksum.
 
-If so, the callback mechanism which collects one fragment then
-hard-xmits that data at each iteration does not seem to fit this
-requirement. Unless we are ok loading the payload twice: once for
-building the checksum, twice for sending the data the way it is done now.
+Jan
 
 -- 
-Philippe.
+Siemens AG, Corporate Technology, CT RDA IOT SES-DE
+Corporate Competence Center Embedded Linux
 
