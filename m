@@ -1,28 +1,10 @@
-Subject: Re: Kernel oops during rtnet loopback usage on x86_64 (e1000e)
-References: <CAOuPNLg60S+am654fq55vTMoFV1=PfMp3as5MZtt5BHUacFRBQ@mail.gmail.com>
- <2ee8fa04-7ad4-58d5-603b-1d41ad2533ec@siemens.com>
- <CAOuPNLiE-Fy3LJrozgsLE9ga0ibC+GOSHO6ciJppU_bnZtbx0g@mail.gmail.com>
- <73a5c9f6-5014-5113-1ddd-2fcf974273bb@siemens.com>
- <CAOuPNLjuB53ovnEBijNSqrgsKYcSGjLM-L=J4mfbRogwo_5kVA@mail.gmail.com>
- <CAOuPNLh2C8b1KC5D6+Lws_1UA0o0Sp_BaPb3mUTyebUPq_EduA@mail.gmail.com>
- <CAOuPNLiCfmUrDMWyX=N37hVJTBDEqwOtoOr1srf-55ks1qms+w@mail.gmail.com>
- <513744ad-f8fe-d54e-0618-fad492ed5bff@siemens.com>
- <5f46f00c-f09b-7439-93cf-4ff2a0343974@siemens.com>
- <6da8a3e2-7a76-afb2-c46c-7c173a8e444c@siemens.com>
- <9d89227b-fea0-be7c-7e50-c68dccf80053@xenomai.org>
- <c83d2fbd-086d-d6de-86cf-eaee4d041f02@siemens.com>
- <b2a5f99f-2157-5a87-3c9d-17d36460f312@xenomai.org>
- <89d73502-9f36-93c4-75f1-bdc9fe31ff0d@siemens.com>
- <b20480f3-4b8a-f1b3-baf0-841ccecaca9b@xenomai.org>
- <4538b18d-9ccb-050f-3f34-8503d03dc1d2@siemens.com>
-From: Philippe Gerum <rpm@xenomai.org>
-Message-ID: <51f59918-c5a6-5648-6a21-e60e12a48e51@xenomai.org>
-Date: Wed, 7 Nov 2018 12:29:55 +0100
+Date: Wed, 7 Nov 2018 14:00:07 +0100
+From: Henning Schild <henning.schild@siemens.com>
+Subject: Fw: Segmentation error 6 in rt_heap_create() without --enable-pshared
+Message-ID: <20181107140007.2730e228@md1za8fc.ad001.siemens.net>
 MIME-Version: 1.0
-In-Reply-To: <4538b18d-9ccb-050f-3f34-8503d03dc1d2@siemens.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -31,38 +13,57 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jan Kiszka <jan.kiszka@siemens.com>, Pintu Kumar <pintu.ping@gmail.com>, Greg Gallagher <greg@embeddedgreg.com>
-Cc: "Xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Xenomai <xenomai@xenomai.org>
 
-On 11/7/18 12:19 PM, Jan Kiszka wrote:
-> On 07.11.18 11:31, Philippe Gerum wrote:
->> On 11/7/18 11:19 AM, Jan Kiszka wrote:
->>> On 07.11.18 11:04, Philippe Gerum wrote:
->>>> Would be nice. How would that cope with rt_ip_build_xmit_slow() in case
->>>> the packet size exceeds the MTU? AFAICT, the header and payload data are
->>>> sent over the wire on the fly as they are collected by the getfrag()
->>>> callback.
->>>
->>> What exactly is the problem there? Sorry, this code structure is no longer in my
->>> cache.
->>>
->>
->> The underlying question was: don't we need the checksum value early in
->> the process of scanning all frags so that we can send it over the wire
->> into the first packet as part of the header?
->>
->> If so, the callback mechanism which collects one fragment then
->> hard-xmits that data at each iteration does not seem to fit this
->> requirement. Unless we are ok loading the payload twice: once for
->> building the checksum, twice for sending the data the way it is done now.
->>
-> 
-> IIRC, there is no need to have a checksum over the whole data in the first
-> fragment, only a per-fragment (i.e. per-packet) checksum.
-> 
+Readding list ...
 
-Ok, so csum_partial_copy_from_user() would likely do.
+Beginn der weitergeleiteten Nachricht:
 
--- 
-Philippe.
+Datum: Wed, 7 Nov 2018 13:55:53 +0100
+Von: Henning Schild <henning.schild@siemens.com>
+An: Xenomai <xenomai-bounces@xenomai.org>
+Cc: Jan Kiszka <jan.kiszka@siemens.com>, Philippe Gerum
+<rpm@xenomai.org>, Petr =C4=8Cervenka <grugh@centrum.cz> Betreff: Re:
+Segmentation error 6 in rt_heap_create() without --enable-pshared
+
+
+Am Wed, 7 Nov 2018 13:10:34 +0100
+schrieb Henning Schild <henning.schild@siemens.com>:
+
+> Am Tue, 6 Nov 2018 19:04:51 +0100
+> schrieb Jan Kiszka via Xenomai <xenomai@xenomai.org>:
+>  =20
+> > On 05.11.18 16:48, Petr =C4=8Cervenka wrote:   =20
+> > >> Only? Sorry for insisting, but it may help to reduce the search
+> > >> space, and it's also important as I'd like to release a new
+> > >> stable version - without known issues.
+> > >  >=20
+> > >> Thanks,
+> > >> Jan
+> > >  >     =20
+> > > =C2=A0
+> > > I can confirm now, that the problem happens only with the master
+> > > branch. Petr
+> > >      =20
+> >=20
+> > Thanks. Philippe, any idea?   =20
+>=20
+> I was just looking into an issue in the dlopen-test. Turns out it is a
+> segfault from rt_queue_create that only shows in "--enable-dlopen-libs
+> --disable-pshared".
+>=20
+> Will at least try and bisect my way to where that was introduced. =20
+
+Got it:
+# first new commit: [fa39f253518101d0d31dc946ecdde55afb1b88b2]
+copperplate/heapobj: enable heapmem for private memory
+
+Henning
+
+> Henning
+>  =20
+> > Jan
+> >    =20
+>  =20
+
 
