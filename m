@@ -14,11 +14,12 @@ References: <CAOuPNLg60S+am654fq55vTMoFV1=PfMp3as5MZtt5BHUacFRBQ@mail.gmail.com>
  <b2a5f99f-2157-5a87-3c9d-17d36460f312@xenomai.org>
  <89d73502-9f36-93c4-75f1-bdc9fe31ff0d@siemens.com>
  <b20480f3-4b8a-f1b3-baf0-841ccecaca9b@xenomai.org>
-From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <4538b18d-9ccb-050f-3f34-8503d03dc1d2@siemens.com>
-Date: Wed, 7 Nov 2018 12:19:28 +0100
+ <4538b18d-9ccb-050f-3f34-8503d03dc1d2@siemens.com>
+From: Philippe Gerum <rpm@xenomai.org>
+Message-ID: <51f59918-c5a6-5648-6a21-e60e12a48e51@xenomai.org>
+Date: Wed, 7 Nov 2018 12:29:55 +0100
 MIME-Version: 1.0
-In-Reply-To: <b20480f3-4b8a-f1b3-baf0-841ccecaca9b@xenomai.org>
+In-Reply-To: <4538b18d-9ccb-050f-3f34-8503d03dc1d2@siemens.com>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -30,37 +31,38 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Philippe Gerum <rpm@xenomai.org>, Pintu Kumar <pintu.ping@gmail.com>, Greg Gallagher <greg@embeddedgreg.com>
+To: Jan Kiszka <jan.kiszka@siemens.com>, Pintu Kumar <pintu.ping@gmail.com>, Greg Gallagher <greg@embeddedgreg.com>
 Cc: "Xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On 07.11.18 11:31, Philippe Gerum wrote:
-> On 11/7/18 11:19 AM, Jan Kiszka wrote:
->> On 07.11.18 11:04, Philippe Gerum wrote:
->>> Would be nice. How would that cope with rt_ip_build_xmit_slow() in case
->>> the packet size exceeds the MTU? AFAICT, the header and payload data are
->>> sent over the wire on the fly as they are collected by the getfrag()
->>> callback.
+On 11/7/18 12:19 PM, Jan Kiszka wrote:
+> On 07.11.18 11:31, Philippe Gerum wrote:
+>> On 11/7/18 11:19 AM, Jan Kiszka wrote:
+>>> On 07.11.18 11:04, Philippe Gerum wrote:
+>>>> Would be nice. How would that cope with rt_ip_build_xmit_slow() in case
+>>>> the packet size exceeds the MTU? AFAICT, the header and payload data are
+>>>> sent over the wire on the fly as they are collected by the getfrag()
+>>>> callback.
+>>>
+>>> What exactly is the problem there? Sorry, this code structure is no longer in my
+>>> cache.
+>>>
 >>
->> What exactly is the problem there? Sorry, this code structure is no longer in my
->> cache.
+>> The underlying question was: don't we need the checksum value early in
+>> the process of scanning all frags so that we can send it over the wire
+>> into the first packet as part of the header?
+>>
+>> If so, the callback mechanism which collects one fragment then
+>> hard-xmits that data at each iteration does not seem to fit this
+>> requirement. Unless we are ok loading the payload twice: once for
+>> building the checksum, twice for sending the data the way it is done now.
 >>
 > 
-> The underlying question was: don't we need the checksum value early in
-> the process of scanning all frags so that we can send it over the wire
-> into the first packet as part of the header?
-> 
-> If so, the callback mechanism which collects one fragment then
-> hard-xmits that data at each iteration does not seem to fit this
-> requirement. Unless we are ok loading the payload twice: once for
-> building the checksum, twice for sending the data the way it is done now.
+> IIRC, there is no need to have a checksum over the whole data in the first
+> fragment, only a per-fragment (i.e. per-packet) checksum.
 > 
 
-IIRC, there is no need to have a checksum over the whole data in the first
-fragment, only a per-fragment (i.e. per-packet) checksum.
-
-Jan
+Ok, so csum_partial_copy_from_user() would likely do.
 
 -- 
-Siemens AG, Corporate Technology, CT RDA IOT SES-DE
-Corporate Competence Center Embedded Linux
+Philippe.
 
