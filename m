@@ -1,11 +1,10 @@
-Subject: Re: [RFC] xenomai-images: test and demo image generator
-References: <c32e5b83-4eec-f6f2-dd63-c1e5b753a78f@siemens.com>
- <CALLqZ8RSY9Kc4vwS7D_JnVm3GNRNGQV6PAv7Mi7fmrGPPQ88WQ@mail.gmail.com>
+Subject: Re: 32bit on 64bit in xenomai 2.6.0
+References: <CAPNo5QJdOpN8cztKGNZjifmP-Bx4wRyOq0XAw7HM1UQ+Op5E3Q@mail.gmail.com>
 From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <43dccda9-1b84-4169-7d83-621053387994@siemens.com>
-Date: Wed, 7 Nov 2018 07:37:19 +0100
+Message-ID: <69c8bfc1-f7d5-b935-6db1-99d496a80dc7@siemens.com>
+Date: Wed, 7 Nov 2018 07:43:43 +0100
 MIME-Version: 1.0
-In-Reply-To: <CALLqZ8RSY9Kc4vwS7D_JnVm3GNRNGQV6PAv7Mi7fmrGPPQ88WQ@mail.gmail.com>
+In-Reply-To: <CAPNo5QJdOpN8cztKGNZjifmP-Bx4wRyOq0XAw7HM1UQ+Op5E3Q@mail.gmail.com>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -17,69 +16,27 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Greg Gallagher <greg@embeddedgreg.com>
-Cc: "Xenomai@xenomai.org" <xenomai@xenomai.org>, Steven Seeger <steven.seeger@nasa.gov>
+To: Manikanta Mylavarapu <mylavarapumanikanta23@gmail.com>, xenomai@xenomai.org
 
-On 06.11.18 20:28, Greg Gallagher wrote:
-> This looks really good.  How easy is it to add more targets?  I looked
-> at the jailhouse-images commits to see how to add a board, is that a
-> good place to start to see how to add a new board?
+On 07.11.18 07:15, Manikanta Mylavarapu via Xenomai wrote:
+> Dear all,
+> 
+> I am trying to run 32bit applications on 64bit xenomai. I installed xenomai
+> 2.6.0 on fedora 13 x86_64. I installed all 32bit GCC lib & c librarys
+> (glibc-devel.i686 & going.i686).
+> 
+> I made one hello world sample (non-rt) app, it is giving error while running
+>  "-bash: ./a.out: cannot execute binary file" but the same a.out is running
+> fine on "plain fedora13 x86_64".
+> 
+> My question is on xenomai 2.x can we run 32bit rt & non-rt app on 64bit
+> kernel? Please help me.
 > 
 
-Yes, it is. But I'll likely commit at least one real example later today also to
-this project.
-
-The tricky thing is generally enabling the board to boot at all. By now, we have
-covered a pretty broad range of cases, but each board remains different. E.g., I
-still have the enabling of the Ultra96 on my to-do list because building of the
-boot loader is so complicated, even more than the MACCHITObin which was recently
-added to jailhouse-images. You will find good examples in that repo, and I also
-just posted some cases to Isar upstream [1].
-
-Once that is done and you have Debian running, only I-pipe issues should remain,
-unless the board has been manually enabled before for this.
-
-What would definitely be more "interesting" is enabling PowerPC for the first
-time because this is not supported by Isar yet (though that should only be about
-adding some arch definitions), I have no clue about the general Debian status,
-and I do not know which QEMU target would be best to start with (as many of us
-will likely not have any board in reach). But I do want this see this working as
-well.
+Xenomai 2 is EOL, no longer supported. And compat support (32-on-64 bit) has
+only be added to Xenomai 3. So you should migrate to the current stable version.
 
 Jan
-
-[1] https://groups.google.com/forum/#!topic/isar-users/AvDmjp2z9Zo
-
-> -Greg
-> 
-> On Tue, Nov 6, 2018 at 1:58 PM Jan Kiszka via Xenomai
-> <xenomai@xenomai.org> wrote:
->>
->> Hi all,
->>
->> as I was (and still am) in the need to test also non-x86 from time to time, I
->> hacked up a little framework for generating bootable Debian images with Xenomai
->> pre-installed. It's currently hosted on my personal github space:
->>
->> https://github.com/jan-kiszka/xenomai-images
->>
->> I think we should move this over to the Xenomai group at gitlab.denx.de and
->> expand this step-wise with more archs (that QEMU support) as well as real
->> targets. I think I will add the HiKey board tomorrow, should be rather simple as
->> I did this for jailhouse-images [1], the inspiration and source of this layer,
->> just recently. Provided the ipipe kernel works fine with it.
->>
->> Comments? Suggestions? Opinions?
->>
->> Jan
->>
->> [1] https://github.com/siemens/jailhouse-images
->>
->> --
->> Siemens AG, Corporate Technology, CT RDA IOT SES-DE
->> Corporate Competence Center Embedded Linux
->>
-
 
 -- 
 Siemens AG, Corporate Technology, CT RDA IOT SES-DE
