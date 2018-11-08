@@ -1,8 +1,15 @@
-From: Philippe Gerum <rpm@xenomai.org>
-Subject: [PATCH 1/9] utils/can: prevent unterminated destination buffer with
- strncpy()
-Date: Fri, 26 Oct 2018 16:08:17 +0200
-Message-Id: <20181026140825.5251-1-rpm@xenomai.org>
+Date: Thu, 8 Nov 2018 16:03:53 +0100
+From: Henning Schild <henning.schild@siemens.com>
+Subject: Re: Segmentation error 6 in rt_heap_create() without --enable-pshared
+Message-ID: <20181108160353.3624a2e9@md1za8fc.ad001.siemens.net>
+In-Reply-To: <ae00964e-6ba4-5c56-b5e4-e107b2c2ae36@xenomai.org>
+References: <20181107140007.2730e228@md1za8fc.ad001.siemens.net>
+ <d9daa769-4782-8d60-8150-81dfb601ca43@xenomai.org>
+ <20181107160958.020f4bc0@md1za8fc.ad001.siemens.net>
+ <ae00964e-6ba4-5c56-b5e4-e107b2c2ae36@xenomai.org>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -11,96 +18,77 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
-Cc: Jan Kiszka <jan.kiszka@siemens.com>, Philippe Gerum <rpm@xenomai.org>
+To: Philippe Gerum <rpm@xenomai.org>
+Cc: Xenomai <xenomai@xenomai.org>
 
-GCC 8.x introduced -Wstringop-truncation to help detecting likely
-unwanted outcomes of strncpy(dst, src, n), such as omitting the NUL
-character into the destination buffer whenever n < sizeof(src).
+Am Thu, 8 Nov 2018 10:17:44 +0100
+schrieb Philippe Gerum <rpm@xenomai.org>:
 
-Fix unsafe strncpy() calls when we do expect a null-terminated
-destination buffer.
----
- utils/can/rtcanconfig.c | 7 ++++---
- utils/can/rtcanrecv.c   | 3 ++-
- utils/can/rtcansend.c   | 3 ++-
- 3 files changed, 8 insertions(+), 5 deletions(-)
+> On 11/7/18 4:09 PM, Henning Schild wrote:
+> > Am Wed, 7 Nov 2018 14:31:10 +0100
+> > schrieb Philippe Gerum <rpm@xenomai.org>:
+> >   
+> >> On 11/7/18 2:00 PM, Henning Schild via Xenomai wrote:  
+> >>> Readding list ...
+> >>>     
+> >>
+> >> Does this help?
+> >>
+> >> diff --git a/lib/copperplate/heapobj-heapmem.c
+> >> b/lib/copperplate/heapobj-heapmem.c index 5c0ce9b2d..124fe564a
+> >> 100644 --- a/lib/copperplate/heapobj-heapmem.c
+> >> +++ b/lib/copperplate/heapobj-heapmem.c
+> >> @@ -33,8 +33,8 @@ int __heapobj_init_private(struct heapobj *hobj,
+> >> const char *name, int ret;
+> >>  
+> >>  	if (mem == NULL) {
+> >> -		_mem = __STD(malloc(size));
+> >> -		if (_mem == NULL)
+> >> +		mem = __STD(malloc(size));
+> >> +		if (mem == NULL)
+> >>  			return -ENOMEM;
+> >>  	}
+> >>  	
+> >> @@ -43,16 +43,16 @@ int __heapobj_init_private(struct heapobj
+> >> *hobj, const char *name, else
+> >>  		snprintf(hobj->name, sizeof(hobj->name), "%p",
+> >> hobj); 
+> >> -	ret = heapmem_init(hobj->pool, _mem, size);
+> >> +	hobj->pool = mem;
+> >> +	hobj->size = size;
+> >> +
+> >> +	ret = heapmem_init(hobj->pool, mem, size);  
+> > 
+> > ret = -EINVAL  
+> 
+> Part of the solution in this patch (on top of the previous one), but
+> more changes are needed for a complete fix:
 
-diff --git a/utils/can/rtcanconfig.c b/utils/can/rtcanconfig.c
-index a285ec73d..395e0368d 100644
---- a/utils/can/rtcanconfig.c
-+++ b/utils/can/rtcanconfig.c
-@@ -31,6 +31,7 @@
- #include <errno.h>
- #include <getopt.h>
- #include <sys/mman.h>
-+#include <boilerplate/ancillaries.h>
- 
- #include <rtdm/can.h>
- 
-@@ -81,7 +82,7 @@ static int string_to_ctrlmode(char *str)
- 
- int main(int argc, char *argv[])
- {
--    char    ifname[16];
-+    char    ifname[IFNAMSIZ];
-     int     can_fd = -1;
-     int     new_baudrate = -1;
-     int     new_mode = -1;
-@@ -159,8 +160,8 @@ int main(int argc, char *argv[])
- 	return 0;
-     }
- 
--    strncpy(ifname, argv[optind], IFNAMSIZ);
--    strncpy(ifr.ifr_name, ifname, IFNAMSIZ);
-+    namecpy(ifname, argv[optind]);
-+    namecpy(ifr.ifr_name, ifname);
- 
-     if (optind == argc - 2) {   /* Get mode setting */
- 	new_mode = string_to_mode(argv[optind + 1]);
-diff --git a/utils/can/rtcanrecv.c b/utils/can/rtcanrecv.c
-index 8155ab76d..71e68cc5c 100644
---- a/utils/can/rtcanrecv.c
-+++ b/utils/can/rtcanrecv.c
-@@ -7,6 +7,7 @@
- #include <getopt.h>
- 
- #include <alchemy/task.h>
-+#include <boilerplate/ancillaries.h>
- 
- #include <rtdm/can.h>
- 
-@@ -248,7 +249,7 @@ int main(int argc, char **argv)
- 	if (verbose)
- 	    printf("interface %s\n", argv[optind]);
- 
--	strncpy(ifr.ifr_name, argv[optind], IFNAMSIZ);
-+	namecpy(ifr.ifr_name, argv[optind]);
- 	if (verbose)
- 	    printf("s=%d, ifr_name=%s\n", s, ifr.ifr_name);
- 
-diff --git a/utils/can/rtcansend.c b/utils/can/rtcansend.c
-index 4a692b3bf..bfa3054c2 100644
---- a/utils/can/rtcansend.c
-+++ b/utils/can/rtcansend.c
-@@ -6,6 +6,7 @@
- #include <errno.h>
- #include <getopt.h>
- 
-+#include <boilerplate/ancillaries.h>
- #include <alchemy/task.h>
- #include <alchemy/timer.h>
- 
-@@ -231,7 +232,7 @@ int main(int argc, char **argv)
- 	    printf("Using loopback=%d\n", loopback);
-     }
- 
--    strncpy(ifr.ifr_name, argv[optind], IFNAMSIZ);
-+    namecpy(ifr.ifr_name, argv[optind]);
-     if (verbose)
- 	printf("s=%d, ifr_name=%s\n", s, ifr.ifr_name);
- 
--- 
-2.17.2
+Ok, that helps. Can you prepare a patch?
+
+Henning
+
+> diff --git a/lib/copperplate/heapobj-heapmem.c
+> b/lib/copperplate/heapobj-heapmem.c index 124fe564a..3961bd054 100644
+> --- a/lib/copperplate/heapobj-heapmem.c
+> +++ b/lib/copperplate/heapobj-heapmem.c
+> @@ -33,6 +33,7 @@ int __heapobj_init_private(struct heapobj *hobj,
+> const char *name, int ret;
+>  
+>  	if (mem == NULL) {
+> +		size = HEAPMEM_ARENA_SIZE(size); /* Count meta-data
+> in. */ mem = __STD(malloc(size));
+>  		if (mem == NULL)
+>  			return -ENOMEM;
+> @@ -60,7 +61,7 @@ int heapobj_init_array_private(struct heapobj
+> *hobj, const char *name, size_t size, int elems)
+>  {
+>  	return __bt(__heapobj_init_private(hobj, name,
+> -			   HEAPMEM_ARENA_SIZE(size * elems), NULL));
+> +					   size * elems, NULL));
+>  }
+>  
+>  int heapobj_pkg_init_private(void)
+> 
 
 
