@@ -1,11 +1,9 @@
-From: Fazio Maurizio <maurizio.fazio@leonardocompany.com>
-Subject: Xenomai 3.0.6 - libgnat problem
-Date: Thu, 8 Nov 2018 11:08:16 +0000
-Message-ID: <2e3cb0dd41b04de1a4916c990befb543@ocnapvsw3301.ocr.priv>
-Content-Language: it-IT
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+From: Henning Schild <henning.schild@siemens.com>
+Subject: [PATCH] testsuite/xeno-test: do not swallow exit status anymore
+Date: Thu,  8 Nov 2018 13:42:02 +0100
+Message-Id: <20181108124202.28018-1-henning.schild@siemens.com>
 MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -14,49 +12,59 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: xenomai@xenomai.org
 
-SGVsbG8sDQppJ20gdHJ5aW5nIHRvIGludGVncmF0ZSBzb21lIHNvZnR3YXJlIHdyaXR0ZW4gaW4g
-QURBIGxhbmd1YWdlLiAgSSBjb21waWxlZCBpdCB1c2luZyBnbmF0bWFrZSBhbmQgaSBjcmVhdGVk
-IGFuIGFyY2hpdmUgdXNpbmcgYXIuIFRoZSBhcmNoaXZlIGlzIGxpbmtlZCBpbiBteSB4ZW5vbWFp
-IGFwcGxpY2F0aW9uLg0KDQpJcyB0aGVyZSBzb21lIHByb2JsZW1zIGluIHVzaW5nIHRoZSBsaWJn
-bmF0IHdpdGggeGVub21haT8NCkFmdGVyIGEgd2hpbGUgdGhlIHN5c3RlbSBnb2VzIGluIGtlcm5l
-bCBwYW5pYy4uLg0KDQpCZXN0IHJlZ2FyZHMNCg0KTWF1cml6aW8gRmF6aW8NCg0KQ2hpZWYgVGVj
-aG5pY2FsIE9mZmljZSAvIEFpcmNyYWZ0IFN5c3RlbXMgU29mdHdhcmUgRW5naW5lZXINCg0KDQoN
-Ckxlb25hcmRvIFMucC5BLg0KQy5zbyBGcmFuY2lhLCA0MjYgLSBUb3Jpbm8gLSAxMDE0NiAtIEl0
-YWx5IFRlbC4gKzM5IDAxMSA3NTYgMzMwOCAvIDM3NjENCg0KbWF1cml6aW8uZmF6aW9AbGVvbmFy
-ZG9jb21wYW55LmNvbQ0Kd3d3Lmxlb25hcmRvY29tcGFueS5jb20NCg0K4oCU4oCU4oCU4oCU4oCU
-4oCU4oCU4oCU4oCU4oCU4oCU4oCU4oCU4oCU4oCU4oCU4oCU4oCU4oCU4oCU4oCU4oCU4oCU4oCU
-4oCU4oCU4oCU4oCU4oCU4oCU4oCU4oCU4oCT4oCU4oCU4oCU4oCU4oCU4oCUDQpIRUxJQ09QVEVS
-Uy9BRVJPTkFVVElDUy9FTEVDVFJPTklDUywgREVGRU5DRSAmIFNFQ1VSSVRZIFNZU1RFTVMvU1BB
-Q0Ug4oCU4oCU4oCU4oCU4oCU4oCU4oCU4oCU4oCU4oCU4oCU4oCU4oCU4oCU4oCU4oCU4oCU4oCU
-4oCU4oCU4oCU4oCU4oCU4oCU4oCU4oCU4oCU4oCU4oCU4oCU4oCU4oCU4oCT4oCU4oCU4oCU4oCU
-4oCU4oCUDQoNCg0KDQoNCkNvbXBhbnkgR2VuZXJhbCBVc2UNCg0KSWwgcHJlc2VudGUgbWVzc2Fn
-Z2lvIGUtbWFpbCBlIG9nbmkgc3VvIGFsbGVnYXRvIGRldm9ubyBpbnRlbmRlcnNpIGluZGlyaXp6
-YXRpIGVzY2x1c2l2YW1lbnRlIGFsIGRlc3RpbmF0YXJpbyBpbmRpY2F0byBlIGNvbnNpZGVyYXJz
-aSBkYWwgY29udGVudXRvIHN0cmV0dGFtZW50ZSByaXNlcnZhdG8gZSBjb25maWRlbnppYWxlLiBT
-ZSBub24gc2lldGUgbCdlZmZldHRpdm8gZGVzdGluYXRhcmlvIG8gYXZldGUgcmljZXZ1dG8gaWwg
-bWVzc2FnZ2lvIGUtbWFpbCBwZXIgZXJyb3JlLCBzaWV0ZSBwcmVnYXRpIGRpIGF2dmVydGlyZSBp
-bW1lZGlhdGFtZW50ZSBpbCBtaXR0ZW50ZSBlIGRpIGNhbmNlbGxhcmUgaWwgc3VkZGV0dG8gbWVz
-c2FnZ2lvIGUgb2duaSBzdW8gYWxsZWdhdG8gZGFsIHZvc3RybyBzaXN0ZW1hIGluZm9ybWF0aWNv
-LiBRdWFsc2lhc2kgdXRpbGl6em8sIGRpZmZ1c2lvbmUsIGNvcGlhIG8gYXJjaGl2aWF6aW9uZSBk
-ZWwgcHJlc2VudGUgbWVzc2FnZ2lvIGRhIHBhcnRlIGRpIGNoaSBub24gbmUgw6ggaWwgZGVzdGlu
-YXRhcmlvIMOoIHN0cmV0dGFtZW50ZSBwcm9pYml0byBlIHB1w7IgZGFyIGx1b2dvIGEgcmVzcG9u
-c2FiaWxpdMOgIGRpIGNhcmF0dGVyZSBjaXZpbGUgZSBwZW5hbGUgcHVuaWJpbGkgYWkgc2Vuc2kg
-ZGkgbGVnZ2UuDQpRdWVzdGEgZS1tYWlsIGhhIHZhbG9yZSBsZWdhbGUgc29sbyBzZSBmaXJtYXRh
-IGRpZ2l0YWxtZW50ZSBhaSBzZW5zaSBkZWxsYSBub3JtYXRpdmEgdmlnZW50ZS4NCg0KVGhlIGNv
-bnRlbnRzIG9mIHRoaXMgZW1haWwgbWVzc2FnZSBhbmQgYW55IGF0dGFjaG1lbnRzIGFyZSBpbnRl
-bmRlZCBzb2xlbHkgZm9yIHRoZSBhZGRyZXNzZWUocykgYW5kIGNvbnRhaW4gY29uZmlkZW50aWFs
-IGFuZC9vciBwcml2aWxlZ2VkIGluZm9ybWF0aW9uLg0KSWYgeW91IGFyZSBub3QgdGhlIGludGVu
-ZGVkIHJlY2lwaWVudCBvZiB0aGlzIG1lc3NhZ2UsIG9yIGlmIHRoaXMgbWVzc2FnZSBoYXMgYmVl
-biBhZGRyZXNzZWQgdG8geW91IGluIGVycm9yLCBwbGVhc2UgaW1tZWRpYXRlbHkgbm90aWZ5IHRo
-ZSBzZW5kZXIgYW5kIHRoZW4gZGVsZXRlIHRoaXMgbWVzc2FnZSBhbmQgYW55IGF0dGFjaG1lbnRz
-IGZyb20geW91ciBzeXN0ZW0uIElmIHlvdSBhcmUgbm90IHRoZSBpbnRlbmRlZCByZWNpcGllbnQs
-IHlvdSBhcmUgaGVyZWJ5IG5vdGlmaWVkIHRoYXQgYW55IHVzZSwgZGlzc2VtaW5hdGlvbiwgY29w
-eWluZywgb3Igc3RvcmFnZSBvZiB0aGlzIG1lc3NhZ2Ugb3IgaXRzIGF0dGFjaG1lbnRzIGlzIHN0
-cmljdGx5IHByb2hpYml0ZWQuIFVuYXV0aG9yaXplZCBkaXNjbG9zdXJlIGFuZC9vciB1c2Ugb2Yg
-aW5mb3JtYXRpb24gY29udGFpbmVkIGluIHRoaXMgZW1haWwgbWVzc2FnZSBtYXkgcmVzdWx0IGlu
-IGNpdmlsIGFuZCBjcmltaW5hbCBsaWFiaWxpdHkuIOKAnA0KVGhpcyBlLW1haWwgaGFzIGxlZ2Fs
-IHZhbHVlIGFjY29yZGluZyB0byB0aGUgYXBwbGljYWJsZSBsYXdzIG9ubHkgaWYgaXQgaXMgZGln
-aXRhbGx5IHNpZ25lZCBieSB0aGUgc2VuZGVyDQo=
+xeno-test-run always returned SUCCESS, even if its children exited with
+non zero. So xeno-test can not be used programmatically i.e. in CI.
+
+This patch adds some more verbosity and makes xeno-test-run exit FAILURE
+if at least one child returned non-zero.
+
+Signed-off-by: Henning Schild <henning.schild@siemens.com>
+---
+ testsuite/xeno-test/xeno-test-run.c | 16 +++++++++++++++-
+ 1 file changed, 15 insertions(+), 1 deletion(-)
+
+diff --git a/testsuite/xeno-test/xeno-test-run.c b/testsuite/xeno-test/xeno-test-run.c
+index bfede63fd..6d1bb96c0 100644
+--- a/testsuite/xeno-test/xeno-test-run.c
++++ b/testsuite/xeno-test/xeno-test-run.c
+@@ -51,6 +51,8 @@ void handle_checked_child(struct child *child, fd_set *fds);
+ void handle_script_child(struct child *child, fd_set *fds);
+ void handle_load_child(struct child *child, fd_set *fds);
+ 
++static int exit_global = EXIT_SUCCESS;
++
+ static inline time_t mono_time(void)
+ {
+ 	struct timespec ts;
+@@ -319,6 +321,18 @@ void sigchld_handler(int sig)
+ 
+ 		child->exit_status = status;
+ 		child->dead = 1;
++		fprintf(stderr, "child %d returned: ", pid);
++		if (WIFEXITED(status)) {
++			if (WEXITSTATUS(status))
++				exit_global = EXIT_FAILURE;
++			fprintf(stderr, "exited with status %d\n",
++				WEXITSTATUS(status));
++		} else if WIFSIGNALED(status) {
++			fprintf(stderr, "killed by signal %d\n",
++				WTERMSIG(status));
++		} else {
++			fprintf(stderr, "unknown reason\n");
++		}
+ 	}
+ }
+ 
+@@ -660,5 +674,5 @@ int main(int argc, char *argv[])
+ 		signal(sigexit, SIG_DFL);
+ 		raise(sigexit);
+ 	}
+-	exit(EXIT_SUCCESS);
++	exit(exit_global);
+ }
+-- 
+2.19.1
+
 
