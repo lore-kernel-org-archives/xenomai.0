@@ -1,16 +1,13 @@
-Subject: Re: [PATCH] cobalt/kernel: Simplify mayday processing
-References: <3e868e4f-7bd5-2874-d72b-fc2449ef4b65@siemens.com>
- <111becaa-9e0f-f8ad-4802-62f51379fc07@xenomai.org>
- <08f84d9f-594c-8d82-1da8-f747430226e3@xenomai.org>
- <3b2d567d-b489-723c-41de-9c73fb755763@siemens.com>
-From: Philippe Gerum <rpm@xenomai.org>
-Message-ID: <3327fb5d-3718-3e79-222a-d5730286af2e@xenomai.org>
-Date: Thu, 8 Nov 2018 14:24:33 +0100
+Subject: Re: Debian packages for Xenomai 3.x
+References: <b440d689-399e-32f1-c981-c66e655d955a@alaxarxa.net>
+ <14f0f364-5733-deeb-370b-975462860e56@siemens.com>
+From: Leopold Palomo-Avellaneda <leo@alaxarxa.net>
+Message-ID: <db7d19ce-f221-6261-6f68-75ec30eac1c7@alaxarxa.net>
+Date: Thu, 8 Nov 2018 15:15:05 +0100
 MIME-Version: 1.0
-In-Reply-To: <3b2d567d-b489-723c-41de-9c73fb755763@siemens.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+In-Reply-To: <14f0f364-5733-deeb-370b-975462860e56@siemens.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -19,43 +16,47 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jan Kiszka <jan.kiszka@siemens.com>, Xenomai <xenomai@xenomai.org>, Steven Seeger <steven.seeger@nasa.gov>, Dmitriy Cherkasov <dmitriy@oss-tech.org>
+To: Jan Kiszka <jan.kiszka@siemens.com>, Xenomai List <xenomai@xenomai.org>, Henning Schild <henning.schild@siemens.com>
 
-On 11/8/18 2:15 PM, Jan Kiszka wrote:
-> On 08.11.18 14:09, Philippe Gerum wrote:
->> On 11/8/18 2:05 PM, Philippe Gerum via Xenomai wrote:
->>> On 11/5/18 1:20 PM, Jan Kiszka wrote:
->>>> The mayday mechanism exists in order to kick a xenomai userspace task
->>>> into secondary mode while it is running userspace code. For that, we
->>>> ask
->>>> I-pipe to call us back when the task was interrupted and is about to
->>>> return to userspace.
->>>>
->>>> So far we defer the relaxation from that callback via a VDSO-like
->>>> mechanism that triggers a special syscall to the return path of that
->>>> very same syscall. However, that is not desirable because it is a
->>>> complex, arch-specific mechanism that can easily break and,
->>>> specifically, that destroys the backtrace of ptraced tasks.
->>>>
->>>> Fortunately, we can fulfill the needs of mayday also by relaxing
->>>> the task directly from the mayday callback. Tested successfully on
->>>> x86-64 and ARM.
->>>
->>> ARM-wise, this change requires ipipe-core-4.14.71-arm-3 or later to work
->>> properly. This method would cause an interrupt state breakage with any
->>> older ARM patch.
->>>
->>
->> ppc32 is fine back to kernel 4.1 regarding this (did not check earlier
->> stuff), and arm64 needs the 4.14-based split series to work properly
->> (4.9 is wrong).
-> 
-> Is the reason for arm64 on 4.9 the same as for arm?
-> 
-
-Yes, same pattern.
-
-
--- 
-Philippe.
-
+RWwgNi8xMS8xOCBhIGxlcyAxOTowNCwgSmFuIEtpc3prYSBoYSBlc2NyaXQ6Cj4gT24gMzAuMTEu
+MTcgMTI6MjcsIExlb3BvbGQgUGFsb21vLUF2ZWxsYW5lZGEgd3JvdGU6Cj4+IEhpLAo+Pgo+Pgo+
+PiBpZiBzb21lb25lIGlzIGludGVyZXN0ZWQgSSBoYXZlIGJlZW4gd29ya2luZyBhIGJpdCB3aXRo
+IHRoZSBkZWJpYW4gZGlyZWN0b3J5IGluCj4+IHhlbm9tYWkzLgo+Pgo+PiBJIGhhdmUgY2hhbmdl
+ZCB0aGUgYXBwcm9hY2ggdG8gdGhlIGxpYnJhcmllcy4gSSB0aGluayB0aGF0IG5vdyBpdCBoYXMg
+bm90IHNlbnNlCj4+IHRvIGhhdmUgYSBsaWJ4ZW5vbWFpMSBzbyBJIGhhdmUgY2hhbmdlZCBpdCB0
+byB4ZW5vbWFpMy1saWJzLgo+Pgo+PiBUaGUgc291cmNlLCBhbmQgdGhlIHBhdGNoZXMgYXBwbGll
+ZCBhcmUgaGVyZToKPj4KPj4gaHR0cHM6Ly9hbm9uc2NtLmRlYmlhbi5vcmcvY2dpdC9jb2xsYWIt
+bWFpbnQveGVub21haS5naXQvCj4+Cj4+IEluIGNhc2UgdGhlcmUncyBzb21lIGludGVyZXN0LCBJ
+IGNhbiB0cnkgdG8gcHVzaCBpdCBhZ2FpbiB0byB0aGUgb2ZmaWNpYWwgRGViaWFuCj4+IHJlcG9z
+aXRvcmllcy4KPj4KPiAKPiBQaWNraW5nIHVwIHRoaXMgdG9waWMgYWdhaW46Cj4gCj4gSSdtIGFs
+c28gaW4gZmF2b3Igb2YgcmVhbmltYXRpbmcgdGhlIHVwc3RyZWFtIERlYmlhbiBwYWNrYWdlLCBw
+cm92aWRlZCBpdCBhZGRzCj4gdmFsdWUgdG8gdXNlcnMuIEluIHRoZSBwYXN0LCBhIGRvd25zaWRl
+IHdhcyB0aGUgdW5oYW5keSBrZXJuZWwgYnVpbGQgcHJvY2VzcywKPiBidXQgbWF5YmUgdXNlcnMg
+d2VyZSBzdGlsbCBoYXBweS4gT1RILCB3ZSBtYXkgaGF2ZSBhIGNoYW5jZSB0byBwcm92aWRlIGJp
+bmFyaWVzCj4gYXQgbGVhc3QgZm9yIHRoZSBzdGFuZGFyZCB0YXJnZXQgeDg2LTY0Lgo+IAo+IEkn
+bSBjdXJyZW50bHkgcHJlcGFyaW5nIERlYmlhbi1iYXNlZCBkZW1vIGFuZCB0ZXN0IGltYWdlcywg
+Z2VuZXJhdGVkCj4gYXV0b21hdGljYWxseSB2aWEgc29tZSAibWFnaWMiIChJc2FyIGltYWdlIGJ1
+aWxkZXIpLiBGb3IgdGhhdCwgd2Ugd2lsbCBuZWVkCj4gY2xlYW4gZGViaWFuIGNvbnRyb2wgZmls
+ZXMgYWxzbyBpbiB0aGUgWGVub21haSByZXBvLiBUaGF0IHJhaXNlcyB0aGUgcXVlc3Rpb24KPiBo
+b3cgdG8ga2VlcCBib3RoIGRlYmlhbiBmb2xkZXJzIGJlc3QgaW4gc3luYyAtIGlmIGJvdGggc2hv
+dWxkIGJlIHVzZWQuIFN1Z2dlc3Rpb25zPwoKRGViaWFuIHJlcG9zIGNvbnRhaW4gc2V2ZXJhbCBi
+cmFuY2hlcyBhbmQgb25lIG9mIHRoZW0gaXMgdXBzdHJlYW0gdGhhdCBkb2Vzbid0CmNvbnRhaW4g
+YW55IHJlZmVyZW5jZSB0byBEZWJpYW4uCgpTbywgbWF5YmUgeW91IGNvdWxkIGNyZWF0ZSBhIGJy
+YW5jaCwgd2l0aCBhIHNuYXBzaG90IG9mIHRoZSBkZXZlbG9wbWVudCB3aGVyZQp5b3Ugd29yayB3
+aXRoIHRoZSBkZWJpYW4gZGlyZWN0b3J5LiBTb21ldGhpbmcgc2ltaWxhciBhcyBEZWJpYW4gZG9l
+cy4gVGhlbiwgeW91CmNvdWxkIGNyZWF0ZSBhbm90aGVyIG9uZSB3aXRoIHRoZSBEZWJpYW4gb2Zm
+aWNpYWwgb3Igc2ltcGx5IHdlIGNvdWxkIGRyb3AgdGhlCkRlYmlhbiBvZmZpY2lhbCBhbmQgY2hh
+bmdlIGZvciB0aGlzIG9uZS4KCkluIGFueSBjYXNlLCBJIGFncmVlIHRoYXQgdGhpcyBzaG91bGQg
+YmUgcmVhbmltYXRpbmcuIEkgcHJvcG9zZWQgc29tZSByZW5hbWluZwpvZiB0aGUgcGFja2FnZXMg
+YnV0IHRoZXkgZGlkbid0IGhhdmUgdG9vIG11Y2ggaW50ZXJlc3QsIGJ1dCBJJ20gcXVpdGUgaW50
+ZXJlc3RlZAp0byBoYXZlIGl0IGFjdGl2ZS4KCkJlc3QgcmVnYXJkcywKCkxlb3BvbGQKCgotLSAK
+LS0KTGludXggVXNlciAxNTI2OTIgICAgIEdQRzogMDVGNEE3QTk0OUEyRDlBQQpDYXRhbG9uaWEK
+LS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLQpBOiBCZWNhdXNlIGl0IG1lc3Nl
+cyB1cCB0aGUgb3JkZXIgaW4gd2hpY2ggcGVvcGxlIG5vcm1hbGx5IHJlYWQgdGV4dC4KUTogV2h5
+IGlzIHRvcC1wb3N0aW5nIHN1Y2ggYSBiYWQgdGhpbmc/CkE6IFRvcC1wb3N0aW5nLgpROiBXaGF0
+IGlzIHRoZSBtb3N0IGFubm95aW5nIHRoaW5nIGluIGUtbWFpbD8KCi0tLS0tLS0tLS0tLS0tIG5l
+eHQgcGFydCAtLS0tLS0tLS0tLS0tLQpBIG5vbi10ZXh0IGF0dGFjaG1lbnQgd2FzIHNjcnViYmVk
+Li4uCk5hbWU6IHNpZ25hdHVyZS5hc2MKVHlwZTogYXBwbGljYXRpb24vcGdwLXNpZ25hdHVyZQpT
+aXplOiA4MzMgYnl0ZXMKRGVzYzogT3BlblBHUCBkaWdpdGFsIHNpZ25hdHVyZQpVUkw6IDxodHRw
+Oi8veGVub21haS5vcmcvcGlwZXJtYWlsL3hlbm9tYWkvYXR0YWNobWVudHMvMjAxODExMDgvNzQ4
+ZTYyZTkvYXR0YWNobWVudC5zaWc+Cg==
