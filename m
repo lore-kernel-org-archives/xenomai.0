@@ -1,9 +1,13 @@
-From: Henning Schild <henning.schild@siemens.com>
-Subject: [PATCH] testsuite/xeno-test: do not swallow exit status anymore
-Date: Thu,  8 Nov 2018 13:42:02 +0100
-Message-Id: <20181108124202.28018-1-henning.schild@siemens.com>
+Subject: Re: [PATCH] cobalt/kernel: Simplify mayday processing
+References: <3e868e4f-7bd5-2874-d72b-fc2449ef4b65@siemens.com>
+From: Philippe Gerum <rpm@xenomai.org>
+Message-ID: <111becaa-9e0f-f8ad-4802-62f51379fc07@xenomai.org>
+Date: Thu, 8 Nov 2018 14:05:05 +0100
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+In-Reply-To: <3e868e4f-7bd5-2874-d72b-fc2449ef4b65@siemens.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -12,59 +16,28 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
+To: Jan Kiszka <jan.kiszka@siemens.com>, Xenomai <xenomai@xenomai.org>, Steven Seeger <steven.seeger@nasa.gov>, Dmitriy Cherkasov <dmitriy@oss-tech.org>
 
-xeno-test-run always returned SUCCESS, even if its children exited with
-non zero. So xeno-test can not be used programmatically i.e. in CI.
+On 11/5/18 1:20 PM, Jan Kiszka wrote:
+> The mayday mechanism exists in order to kick a xenomai userspace task
+> into secondary mode while it is running userspace code. For that, we ask
+> I-pipe to call us back when the task was interrupted and is about to
+> return to userspace.
+> 
+> So far we defer the relaxation from that callback via a VDSO-like
+> mechanism that triggers a special syscall to the return path of that
+> very same syscall. However, that is not desirable because it is a
+> complex, arch-specific mechanism that can easily break and,
+> specifically, that destroys the backtrace of ptraced tasks.
+> 
+> Fortunately, we can fulfill the needs of mayday also by relaxing
+> the task directly from the mayday callback. Tested successfully on
+> x86-64 and ARM.
 
-This patch adds some more verbosity and makes xeno-test-run exit FAILURE
-if at least one child returned non-zero.
+ARM-wise, this change requires ipipe-core-4.14.71-arm-3 or later to work
+properly. This method would cause an interrupt state breakage with any
+older ARM patch.
 
-Signed-off-by: Henning Schild <henning.schild@siemens.com>
----
- testsuite/xeno-test/xeno-test-run.c | 16 +++++++++++++++-
- 1 file changed, 15 insertions(+), 1 deletion(-)
-
-diff --git a/testsuite/xeno-test/xeno-test-run.c b/testsuite/xeno-test/xeno-test-run.c
-index bfede63fd..6d1bb96c0 100644
---- a/testsuite/xeno-test/xeno-test-run.c
-+++ b/testsuite/xeno-test/xeno-test-run.c
-@@ -51,6 +51,8 @@ void handle_checked_child(struct child *child, fd_set *fds);
- void handle_script_child(struct child *child, fd_set *fds);
- void handle_load_child(struct child *child, fd_set *fds);
- 
-+static int exit_global = EXIT_SUCCESS;
-+
- static inline time_t mono_time(void)
- {
- 	struct timespec ts;
-@@ -319,6 +321,18 @@ void sigchld_handler(int sig)
- 
- 		child->exit_status = status;
- 		child->dead = 1;
-+		fprintf(stderr, "child %d returned: ", pid);
-+		if (WIFEXITED(status)) {
-+			if (WEXITSTATUS(status))
-+				exit_global = EXIT_FAILURE;
-+			fprintf(stderr, "exited with status %d\n",
-+				WEXITSTATUS(status));
-+		} else if WIFSIGNALED(status) {
-+			fprintf(stderr, "killed by signal %d\n",
-+				WTERMSIG(status));
-+		} else {
-+			fprintf(stderr, "unknown reason\n");
-+		}
- 	}
- }
- 
-@@ -660,5 +674,5 @@ int main(int argc, char *argv[])
- 		signal(sigexit, SIG_DFL);
- 		raise(sigexit);
- 	}
--	exit(EXIT_SUCCESS);
-+	exit(exit_global);
- }
 -- 
-2.19.1
-
+Philippe.
 
