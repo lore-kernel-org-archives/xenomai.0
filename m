@@ -1,15 +1,11 @@
-Subject: Re: Segmentation error 6 in rt_heap_create() without --enable-pshared
-References: <20181107140007.2730e228@md1za8fc.ad001.siemens.net>
- <d9daa769-4782-8d60-8150-81dfb601ca43@xenomai.org>
- <20181107160958.020f4bc0@md1za8fc.ad001.siemens.net>
-From: Philippe Gerum <rpm@xenomai.org>
-Message-ID: <ae00964e-6ba4-5c56-b5e4-e107b2c2ae36@xenomai.org>
-Date: Thu, 8 Nov 2018 10:17:44 +0100
+From: Fazio Maurizio <maurizio.fazio@leonardocompany.com>
+Subject: Xenomai 3.0.6 - libgnat problem
+Date: Thu, 8 Nov 2018 11:08:16 +0000
+Message-ID: <2e3cb0dd41b04de1a4916c990befb543@ocnapvsw3301.ocr.priv>
+Content-Language: it-IT
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-In-Reply-To: <20181107160958.020f4bc0@md1za8fc.ad001.siemens.net>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -18,70 +14,49 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Henning Schild <henning.schild@siemens.com>
-Cc: Xenomai <xenomai@xenomai.org>
+To: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On 11/7/18 4:09 PM, Henning Schild wrote:
-> Am Wed, 7 Nov 2018 14:31:10 +0100
-> schrieb Philippe Gerum <rpm@xenomai.org>:
-> 
->> On 11/7/18 2:00 PM, Henning Schild via Xenomai wrote:
->>> Readding list ...
->>>   
->>
->> Does this help?
->>
->> diff --git a/lib/copperplate/heapobj-heapmem.c
->> b/lib/copperplate/heapobj-heapmem.c index 5c0ce9b2d..124fe564a 100644
->> --- a/lib/copperplate/heapobj-heapmem.c
->> +++ b/lib/copperplate/heapobj-heapmem.c
->> @@ -33,8 +33,8 @@ int __heapobj_init_private(struct heapobj *hobj,
->> const char *name, int ret;
->>  
->>  	if (mem == NULL) {
->> -		_mem = __STD(malloc(size));
->> -		if (_mem == NULL)
->> +		mem = __STD(malloc(size));
->> +		if (mem == NULL)
->>  			return -ENOMEM;
->>  	}
->>  	
->> @@ -43,16 +43,16 @@ int __heapobj_init_private(struct heapobj *hobj,
->> const char *name, else
->>  		snprintf(hobj->name, sizeof(hobj->name), "%p", hobj);
->>  
->> -	ret = heapmem_init(hobj->pool, _mem, size);
->> +	hobj->pool = mem;
->> +	hobj->size = size;
->> +
->> +	ret = heapmem_init(hobj->pool, mem, size);
-> 
-> ret = -EINVAL
-
-Part of the solution in this patch (on top of the previous one), but more changes are needed for a complete fix:
-
-diff --git a/lib/copperplate/heapobj-heapmem.c b/lib/copperplate/heapobj-heapmem.c
-index 124fe564a..3961bd054 100644
---- a/lib/copperplate/heapobj-heapmem.c
-+++ b/lib/copperplate/heapobj-heapmem.c
-@@ -33,6 +33,7 @@ int __heapobj_init_private(struct heapobj *hobj, const char *name,
- 	int ret;
- 
- 	if (mem == NULL) {
-+		size = HEAPMEM_ARENA_SIZE(size); /* Count meta-data in. */
- 		mem = __STD(malloc(size));
- 		if (mem == NULL)
- 			return -ENOMEM;
-@@ -60,7 +61,7 @@ int heapobj_init_array_private(struct heapobj *hobj, const char *name,
- 			       size_t size, int elems)
- {
- 	return __bt(__heapobj_init_private(hobj, name,
--			   HEAPMEM_ARENA_SIZE(size * elems), NULL));
-+					   size * elems, NULL));
- }
- 
- int heapobj_pkg_init_private(void)
-
--- 
-Philippe.
+SGVsbG8sDQppJ20gdHJ5aW5nIHRvIGludGVncmF0ZSBzb21lIHNvZnR3YXJlIHdyaXR0ZW4gaW4g
+QURBIGxhbmd1YWdlLiAgSSBjb21waWxlZCBpdCB1c2luZyBnbmF0bWFrZSBhbmQgaSBjcmVhdGVk
+IGFuIGFyY2hpdmUgdXNpbmcgYXIuIFRoZSBhcmNoaXZlIGlzIGxpbmtlZCBpbiBteSB4ZW5vbWFp
+IGFwcGxpY2F0aW9uLg0KDQpJcyB0aGVyZSBzb21lIHByb2JsZW1zIGluIHVzaW5nIHRoZSBsaWJn
+bmF0IHdpdGggeGVub21haT8NCkFmdGVyIGEgd2hpbGUgdGhlIHN5c3RlbSBnb2VzIGluIGtlcm5l
+bCBwYW5pYy4uLg0KDQpCZXN0IHJlZ2FyZHMNCg0KTWF1cml6aW8gRmF6aW8NCg0KQ2hpZWYgVGVj
+aG5pY2FsIE9mZmljZSAvIEFpcmNyYWZ0IFN5c3RlbXMgU29mdHdhcmUgRW5naW5lZXINCg0KDQoN
+Ckxlb25hcmRvIFMucC5BLg0KQy5zbyBGcmFuY2lhLCA0MjYgLSBUb3Jpbm8gLSAxMDE0NiAtIEl0
+YWx5IFRlbC4gKzM5IDAxMSA3NTYgMzMwOCAvIDM3NjENCg0KbWF1cml6aW8uZmF6aW9AbGVvbmFy
+ZG9jb21wYW55LmNvbQ0Kd3d3Lmxlb25hcmRvY29tcGFueS5jb20NCg0K4oCU4oCU4oCU4oCU4oCU
+4oCU4oCU4oCU4oCU4oCU4oCU4oCU4oCU4oCU4oCU4oCU4oCU4oCU4oCU4oCU4oCU4oCU4oCU4oCU
+4oCU4oCU4oCU4oCU4oCU4oCU4oCU4oCU4oCT4oCU4oCU4oCU4oCU4oCU4oCUDQpIRUxJQ09QVEVS
+Uy9BRVJPTkFVVElDUy9FTEVDVFJPTklDUywgREVGRU5DRSAmIFNFQ1VSSVRZIFNZU1RFTVMvU1BB
+Q0Ug4oCU4oCU4oCU4oCU4oCU4oCU4oCU4oCU4oCU4oCU4oCU4oCU4oCU4oCU4oCU4oCU4oCU4oCU
+4oCU4oCU4oCU4oCU4oCU4oCU4oCU4oCU4oCU4oCU4oCU4oCU4oCU4oCU4oCT4oCU4oCU4oCU4oCU
+4oCU4oCUDQoNCg0KDQoNCkNvbXBhbnkgR2VuZXJhbCBVc2UNCg0KSWwgcHJlc2VudGUgbWVzc2Fn
+Z2lvIGUtbWFpbCBlIG9nbmkgc3VvIGFsbGVnYXRvIGRldm9ubyBpbnRlbmRlcnNpIGluZGlyaXp6
+YXRpIGVzY2x1c2l2YW1lbnRlIGFsIGRlc3RpbmF0YXJpbyBpbmRpY2F0byBlIGNvbnNpZGVyYXJz
+aSBkYWwgY29udGVudXRvIHN0cmV0dGFtZW50ZSByaXNlcnZhdG8gZSBjb25maWRlbnppYWxlLiBT
+ZSBub24gc2lldGUgbCdlZmZldHRpdm8gZGVzdGluYXRhcmlvIG8gYXZldGUgcmljZXZ1dG8gaWwg
+bWVzc2FnZ2lvIGUtbWFpbCBwZXIgZXJyb3JlLCBzaWV0ZSBwcmVnYXRpIGRpIGF2dmVydGlyZSBp
+bW1lZGlhdGFtZW50ZSBpbCBtaXR0ZW50ZSBlIGRpIGNhbmNlbGxhcmUgaWwgc3VkZGV0dG8gbWVz
+c2FnZ2lvIGUgb2duaSBzdW8gYWxsZWdhdG8gZGFsIHZvc3RybyBzaXN0ZW1hIGluZm9ybWF0aWNv
+LiBRdWFsc2lhc2kgdXRpbGl6em8sIGRpZmZ1c2lvbmUsIGNvcGlhIG8gYXJjaGl2aWF6aW9uZSBk
+ZWwgcHJlc2VudGUgbWVzc2FnZ2lvIGRhIHBhcnRlIGRpIGNoaSBub24gbmUgw6ggaWwgZGVzdGlu
+YXRhcmlvIMOoIHN0cmV0dGFtZW50ZSBwcm9pYml0byBlIHB1w7IgZGFyIGx1b2dvIGEgcmVzcG9u
+c2FiaWxpdMOgIGRpIGNhcmF0dGVyZSBjaXZpbGUgZSBwZW5hbGUgcHVuaWJpbGkgYWkgc2Vuc2kg
+ZGkgbGVnZ2UuDQpRdWVzdGEgZS1tYWlsIGhhIHZhbG9yZSBsZWdhbGUgc29sbyBzZSBmaXJtYXRh
+IGRpZ2l0YWxtZW50ZSBhaSBzZW5zaSBkZWxsYSBub3JtYXRpdmEgdmlnZW50ZS4NCg0KVGhlIGNv
+bnRlbnRzIG9mIHRoaXMgZW1haWwgbWVzc2FnZSBhbmQgYW55IGF0dGFjaG1lbnRzIGFyZSBpbnRl
+bmRlZCBzb2xlbHkgZm9yIHRoZSBhZGRyZXNzZWUocykgYW5kIGNvbnRhaW4gY29uZmlkZW50aWFs
+IGFuZC9vciBwcml2aWxlZ2VkIGluZm9ybWF0aW9uLg0KSWYgeW91IGFyZSBub3QgdGhlIGludGVu
+ZGVkIHJlY2lwaWVudCBvZiB0aGlzIG1lc3NhZ2UsIG9yIGlmIHRoaXMgbWVzc2FnZSBoYXMgYmVl
+biBhZGRyZXNzZWQgdG8geW91IGluIGVycm9yLCBwbGVhc2UgaW1tZWRpYXRlbHkgbm90aWZ5IHRo
+ZSBzZW5kZXIgYW5kIHRoZW4gZGVsZXRlIHRoaXMgbWVzc2FnZSBhbmQgYW55IGF0dGFjaG1lbnRz
+IGZyb20geW91ciBzeXN0ZW0uIElmIHlvdSBhcmUgbm90IHRoZSBpbnRlbmRlZCByZWNpcGllbnQs
+IHlvdSBhcmUgaGVyZWJ5IG5vdGlmaWVkIHRoYXQgYW55IHVzZSwgZGlzc2VtaW5hdGlvbiwgY29w
+eWluZywgb3Igc3RvcmFnZSBvZiB0aGlzIG1lc3NhZ2Ugb3IgaXRzIGF0dGFjaG1lbnRzIGlzIHN0
+cmljdGx5IHByb2hpYml0ZWQuIFVuYXV0aG9yaXplZCBkaXNjbG9zdXJlIGFuZC9vciB1c2Ugb2Yg
+aW5mb3JtYXRpb24gY29udGFpbmVkIGluIHRoaXMgZW1haWwgbWVzc2FnZSBtYXkgcmVzdWx0IGlu
+IGNpdmlsIGFuZCBjcmltaW5hbCBsaWFiaWxpdHkuIOKAnA0KVGhpcyBlLW1haWwgaGFzIGxlZ2Fs
+IHZhbHVlIGFjY29yZGluZyB0byB0aGUgYXBwbGljYWJsZSBsYXdzIG9ubHkgaWYgaXQgaXMgZGln
+aXRhbGx5IHNpZ25lZCBieSB0aGUgc2VuZGVyDQo=
 
