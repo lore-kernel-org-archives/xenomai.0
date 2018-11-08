@@ -1,13 +1,13 @@
 Subject: Re: [PATCH] cobalt/kernel: Simplify mayday processing
 References: <3e868e4f-7bd5-2874-d72b-fc2449ef4b65@siemens.com>
  <111becaa-9e0f-f8ad-4802-62f51379fc07@xenomai.org>
- <08f84d9f-594c-8d82-1da8-f747430226e3@xenomai.org>
-From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <3b2d567d-b489-723c-41de-9c73fb755763@siemens.com>
-Date: Thu, 8 Nov 2018 14:15:49 +0100
+ <efcd107e-d48d-6dac-96e0-890203c072ba@siemens.com>
+From: Philippe Gerum <rpm@xenomai.org>
+Message-ID: <5c1fae9d-3098-1f5b-bc51-fa7f9a798f1e@xenomai.org>
+Date: Thu, 8 Nov 2018 14:24:18 +0100
 MIME-Version: 1.0
-In-Reply-To: <08f84d9f-594c-8d82-1da8-f747430226e3@xenomai.org>
-Content-Type: text/plain; charset=utf-8; format=flowed
+In-Reply-To: <efcd107e-d48d-6dac-96e0-890203c072ba@siemens.com>
+Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
@@ -18,10 +18,10 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Philippe Gerum <rpm@xenomai.org>, Xenomai <xenomai@xenomai.org>, Steven Seeger <steven.seeger@nasa.gov>, Dmitriy Cherkasov <dmitriy@oss-tech.org>
+To: Jan Kiszka <jan.kiszka@siemens.com>, Xenomai <xenomai@xenomai.org>, Steven Seeger <steven.seeger@nasa.gov>, Dmitriy Cherkasov <dmitriy@oss-tech.org>
 
-On 08.11.18 14:09, Philippe Gerum wrote:
-> On 11/8/18 2:05 PM, Philippe Gerum via Xenomai wrote:
+On 11/8/18 2:14 PM, Jan Kiszka wrote:
+> On 08.11.18 14:05, Philippe Gerum wrote:
 >> On 11/5/18 1:20 PM, Jan Kiszka wrote:
 >>> The mayday mechanism exists in order to kick a xenomai userspace task
 >>> into secondary mode while it is running userspace code. For that, we ask
@@ -41,17 +41,15 @@ On 08.11.18 14:09, Philippe Gerum wrote:
 >> ARM-wise, this change requires ipipe-core-4.14.71-arm-3 or later to work
 >> properly. This method would cause an interrupt state breakage with any
 >> older ARM patch.
->>
 > 
-> ppc32 is fine back to kernel 4.1 regarding this (did not check earlier
-> stuff), and arm64 needs the 4.14-based split series to work properly
-> (4.9 is wrong).
+> That would be a change compared to my past ARM experiments (4.x, if not
+> 3.x based). Can you point me to the problem in more details?
+> 
 
-Is the reason for arm64 on 4.9 the same as for arm?
-
-Jan
+Calling	__ipipe_notify_trap(IPIPE_TRAP_MAYDAY, regs) may result in
+re-enabling IRQs unexpectedly for the caller, due to the callee
+relaxing. AFAIR, a core debug level assertion should trip when that happens.
 
 -- 
-Siemens AG, Corporate Technology, CT RDA IOT SES-DE
-Corporate Competence Center Embedded Linux
+Philippe.
 
