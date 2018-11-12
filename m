@@ -1,9 +1,16 @@
-From: Henning Schild <henning.schild@siemens.com>
-Subject: [PATCH] testsuite/smokey: relax posix-clock time dependancy
-Date: Fri,  9 Nov 2018 10:14:30 +0100
-Message-Id: <20181109091430.24559-1-henning.schild@siemens.com>
+Subject: Xenomai support for arm64
+References: <3e868e4f-7bd5-2874-d72b-fc2449ef4b65@siemens.com>
+ <111becaa-9e0f-f8ad-4802-62f51379fc07@xenomai.org>
+ <08f84d9f-594c-8d82-1da8-f747430226e3@xenomai.org>
+ <3b2d567d-b489-723c-41de-9c73fb755763@siemens.com>
+From: duanwujie <wjduan@linx-info.com>
+Message-ID: <8ced9265-1312-0e13-d2dc-3813de0bccbf@linx-info.com>
+Date: Mon, 12 Nov 2018 15:15:40 +0800
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+In-Reply-To: <3b2d567d-b489-723c-41de-9c73fb755763@siemens.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 7bit
+Content-Language: en-US
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -12,55 +19,12 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
+To: rpm@xenomai.org, teven.seeger@nasa.gov, dmitriy@oss-tech.org, Xenomai <xenomai@xenomai.org>, =?UTF-8?B?5b2t5b+X6Iiq?= <zhpeng@linx-info.com>
 
-The test often asserted. This patch gives the thread a priority,
-introduces a 25us margin and prints the value in case we still fail.
+On the arm64 already have ipipe patch , but the Xenomai not properly 
+worked on the arm64.
 
-Signed-off-by: Henning Schild <henning.schild@siemens.com>
----
- testsuite/smokey/posix-clock/posix-clock.c | 15 ++++++++++++++-
- 1 file changed, 14 insertions(+), 1 deletion(-)
-
-diff --git a/testsuite/smokey/posix-clock/posix-clock.c b/testsuite/smokey/posix-clock/posix-clock.c
-index f672a9d52..36e0f5dea 100644
---- a/testsuite/smokey/posix-clock/posix-clock.c
-+++ b/testsuite/smokey/posix-clock/posix-clock.c
-@@ -417,8 +417,10 @@ static int clock_decrease_after_periodic_timer_first_tick(void)
- 
- 	diff = now.tv_sec * 1000000000ULL + now.tv_nsec -
- 		(timer.it_value.tv_sec * 1000000000ULL + timer.it_value.tv_nsec);
--	if (!smokey_assert(diff < 1000000000))
-+	if (!smokey_assert(diff < 1000000000ULL + 25000ULL)) {
-+		fprintf(stderr, "diff = %llu\n", diff);
- 		return -EINVAL;
-+	}
- 	
- 	ret = smokey_check_errno(read(t, &ticks, sizeof(ticks)));
- 	if (ret < 0)
-@@ -430,10 +432,21 @@ static int clock_decrease_after_periodic_timer_first_tick(void)
- 	return smokey_check_errno(close(t));
- }
- 
-+static int init_posix_clock(void)
-+{
-+	struct sched_param params = {.sched_priority = 1};
-+
-+	return pthread_setschedparam(pthread_self(), SCHED_FIFO, &params);
-+}
-+
- static int run_posix_clock(struct smokey_test *t, int argc, char *const argv[])
- {
- 	int ret;
- 
-+	ret = init_posix_clock();
-+	if (ret)
-+		return ret;
-+
- 	ret = clock_increase_before_oneshot_timer_first_tick();
- 	if (ret)
- 		return ret;
--- 
-2.19.1
+In order to support arm64, what other work needs to be done! Can you 
+provide some clues?
 
 
