@@ -1,10 +1,12 @@
-Subject: Re: [PATCH] testsuite/xeno-test: do not swallow exit status anymore
-References: <20181108124202.28018-1-henning.schild@siemens.com>
+Subject: Re: [PATCH 3/3] vxworks/mempart: fix error status upon failure to
+ create partition
+References: <20181114104152.11627-1-rpm@xenomai.org>
+ <20181114104152.11627-3-rpm@xenomai.org>
 From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <8222c0a6-1c36-f255-bcc4-895e7ef9acb5@siemens.com>
-Date: Fri, 16 Nov 2018 07:28:51 +0100
+Message-ID: <ead0852a-5bf9-090b-cbba-7e185753f83d@siemens.com>
+Date: Fri, 16 Nov 2018 07:33:49 +0100
 MIME-Version: 1.0
-In-Reply-To: <20181108124202.28018-1-henning.schild@siemens.com>
+In-Reply-To: <20181114104152.11627-3-rpm@xenomai.org>
 Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -16,64 +18,49 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Henning Schild <henning.schild@siemens.com>, xenomai@xenomai.org
+To: Philippe Gerum <rpm@xenomai.org>, xenomai@xenomai.org
 
-On 08.11.18 13:42, Henning Schild via Xenomai wrote:
-> xeno-test-run always returned SUCCESS, even if its children exited with
-> non zero. So xeno-test can not be used programmatically i.e. in CI.
-> 
-> This patch adds some more verbosity and makes xeno-test-run exit FAILURE
-> if at least one child returned non-zero.
-> 
-> Signed-off-by: Henning Schild <henning.schild@siemens.com>
+On 14.11.18 11:41, Philippe Gerum wrote:
+> Signed-off-by: Philippe Gerum <rpm@xenomai.org>
 > ---
->   testsuite/xeno-test/xeno-test-run.c | 16 +++++++++++++++-
->   1 file changed, 15 insertions(+), 1 deletion(-)
+>   lib/vxworks/memPartLib.c | 10 +++++++---
+>   1 file changed, 7 insertions(+), 3 deletions(-)
 > 
-> diff --git a/testsuite/xeno-test/xeno-test-run.c b/testsuite/xeno-test/xeno-test-run.c
-> index bfede63fd..6d1bb96c0 100644
-> --- a/testsuite/xeno-test/xeno-test-run.c
-> +++ b/testsuite/xeno-test/xeno-test-run.c
-> @@ -51,6 +51,8 @@ void handle_checked_child(struct child *child, fd_set *fds);
->   void handle_script_child(struct child *child, fd_set *fds);
->   void handle_load_child(struct child *child, fd_set *fds);
+> diff --git a/lib/vxworks/memPartLib.c b/lib/vxworks/memPartLib.c
+> index 22d77bdcf..c8eeb3617 100644
+> --- a/lib/vxworks/memPartLib.c
+> +++ b/lib/vxworks/memPartLib.c
+> @@ -48,17 +48,21 @@ PART_ID memPartCreate(char *pPool, unsigned int poolSize)
+>   	pthread_mutexattr_t mattr;
+>   	struct wind_mempart *mp;
+>   	struct service svc;
+> +	int ret;
 >   
-> +static int exit_global = EXIT_SUCCESS;
-> +
->   static inline time_t mono_time(void)
->   {
->   	struct timespec ts;
-> @@ -319,6 +321,18 @@ void sigchld_handler(int sig)
+>   	CANCEL_DEFER(svc);
 >   
->   		child->exit_status = status;
->   		child->dead = 1;
-> +		fprintf(stderr, "child %d returned: ", pid);
-> +		if (WIFEXITED(status)) {
-> +			if (WEXITSTATUS(status))
-> +				exit_global = EXIT_FAILURE;
-> +			fprintf(stderr, "exited with status %d\n",
-> +				WEXITSTATUS(status));
-> +		} else if WIFSIGNALED(status) {
-> +			fprintf(stderr, "killed by signal %d\n",
-> +				WTERMSIG(status));
-> +		} else {
-> +			fprintf(stderr, "unknown reason\n");
-> +		}
+>   	mp = xnmalloc(sizeof(*mp));
+> -	if (mp == NULL)
+> +	if (mp == NULL) {
+> +		errno = S_memLib_NOT_ENOUGH_MEMORY;
+>   		goto fail;
+> +	}
+>   
+> -	if (__heapobj_init(&mp->hobj, NULL, poolSize, pPool)) {
+> +	ret = __heapobj_init(&mp->hobj, NULL, poolSize, pPool);
+> +	if (ret) {
+>   		xnfree(mp);
+> +		errno = S_memLib_INVALID_NBYTES;
+>   	fail:
+> -		errno = S_memLib_NOT_ENOUGH_MEMORY;
+>   		CANCEL_RESTORE(svc);
+>   		return (PART_ID)0;
 >   	}
->   }
->   
-> @@ -660,5 +674,5 @@ int main(int argc, char *argv[])
->   		signal(sigexit, SIG_DFL);
->   		raise(sigexit);
->   	}
-> -	exit(EXIT_SUCCESS);
-> +	exit(exit_global);
->   }
 > 
 
-Merged to next.
+Thanks, all three applied to next.
 
-Thanks,
+This 3rd patch I've also queued for stable.
+
 Jan
 
 -- 
