@@ -1,11 +1,9 @@
-Subject: Re: [PATCH] testsuite/smokey: relax posix-clock time dependancy
-References: <20181109091430.24559-1-henning.schild@siemens.com>
 From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <6bcda9af-aea0-970d-59f2-ed7a49222fe2@siemens.com>
-Date: Fri, 16 Nov 2018 07:23:47 +0100
+Subject: [PATCH] debian: Add arm64 as target architecture
+Message-ID: <ea1c6a1f-9982-9461-31d8-5af8b43c634b@siemens.com>
+Date: Fri, 16 Nov 2018 07:27:25 +0100
 MIME-Version: 1.0
-In-Reply-To: <20181109091430.24559-1-henning.schild@siemens.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
@@ -16,65 +14,44 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Henning Schild <henning.schild@siemens.com>, xenomai@xenomai.org, Philippe Gerum <rpm@xenomai.org>
+To: Xenomai <xenomai@xenomai.org>
 
-On 09.11.18 10:14, Henning Schild via Xenomai wrote:
-> The test often asserted. This patch gives the thread a priority,
-> introduces a 25us margin and prints the value in case we still fail.
-> 
-> Signed-off-by: Henning Schild <henning.schild@siemens.com>
-> ---
->   testsuite/smokey/posix-clock/posix-clock.c | 15 ++++++++++++++-
->   1 file changed, 14 insertions(+), 1 deletion(-)
-> 
-> diff --git a/testsuite/smokey/posix-clock/posix-clock.c b/testsuite/smokey/posix-clock/posix-clock.c
-> index f672a9d52..36e0f5dea 100644
-> --- a/testsuite/smokey/posix-clock/posix-clock.c
-> +++ b/testsuite/smokey/posix-clock/posix-clock.c
-> @@ -417,8 +417,10 @@ static int clock_decrease_after_periodic_timer_first_tick(void)
->   
->   	diff = now.tv_sec * 1000000000ULL + now.tv_nsec -
->   		(timer.it_value.tv_sec * 1000000000ULL + timer.it_value.tv_nsec);
-> -	if (!smokey_assert(diff < 1000000000))
-> +	if (!smokey_assert(diff < 1000000000ULL + 25000ULL)) {
+Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
+---
+ debian/control | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
-Philippe, is this margin also reasonable from your perspective? Or are we 
-risking to miss a problem this way? I'm currently lacking a feeling.
-
-Thanks,
-Jan
-
-> +		fprintf(stderr, "diff = %llu\n", diff);
->   		return -EINVAL;
-> +	}
->   	
->   	ret = smokey_check_errno(read(t, &ticks, sizeof(ticks)));
->   	if (ret < 0)
-> @@ -430,10 +432,21 @@ static int clock_decrease_after_periodic_timer_first_tick(void)
->   	return smokey_check_errno(close(t));
->   }
->   
-> +static int init_posix_clock(void)
-> +{
-> +	struct sched_param params = {.sched_priority = 1};
-> +
-> +	return pthread_setschedparam(pthread_self(), SCHED_FIFO, &params);
-> +}
-> +
->   static int run_posix_clock(struct smokey_test *t, int argc, char *const argv[])
->   {
->   	int ret;
->   
-> +	ret = init_posix_clock();
-> +	if (ret)
-> +		return ret;
-> +
->   	ret = clock_increase_before_oneshot_timer_first_tick();
->   	if (ret)
->   		return ret;
-> 
-
+diff --git a/debian/control b/debian/control
+index 3427987e15..477b16d9fd 100644
+--- a/debian/control
++++ b/debian/control
+@@ -8,7 +8,7 @@ Homepage: http://www.xenomai.org/
+ 
+ Package: xenomai-runtime
+ Section: devel
+-Architecture: amd64 arm armeb armel armhf i386 powerpc powerpcspe
++Architecture: amd64 arm armeb armel armhf arm64 i386 powerpc powerpcspe
+ Depends: ${shlibs:Depends}, ${misc:Depends}
+ Suggests: xenomai-kernel-source
+ Replaces: xenomai
+@@ -45,7 +45,7 @@ Description: Source for Xenomai kernel-space support
+ 
+ Package: libxenomai1
+ Section: libs
+-Architecture: amd64 arm armeb armel armhf i386 powerpc powerpcspe
++Architecture: amd64 arm armeb armel armhf arm64 i386 powerpc powerpcspe
+ Depends: ${shlibs:Depends}, ${misc:Depends}
+ Suggests: xenomai-kernel-source
+ Replaces: xenomai
+@@ -61,7 +61,7 @@ Description: Shared libraries for Xenomai
+ 
+ Package: libxenomai-dev
+ Section: libdevel
+-Architecture: amd64 arm armeb armel armhf i386 powerpc powerpcspe
++Architecture: amd64 arm armeb armel armhf arm64 i386 powerpc powerpcspe
+ Depends: libxenomai1 (= ${binary:Version}), ${misc:Depends}
+ Suggests: xenomai-kernel-source
+ Replaces: xenomai
 -- 
-Siemens AG, Corporate Technology, CT RDA IOT SES-DE
-Corporate Competence Center Embedded Linux
+2.16.4
 
