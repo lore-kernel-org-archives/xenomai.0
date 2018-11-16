@@ -1,12 +1,10 @@
-Subject: Re: [PATCH 3/3] vxworks/mempart: fix error status upon failure to
- create partition
-References: <20181114104152.11627-1-rpm@xenomai.org>
- <20181114104152.11627-3-rpm@xenomai.org>
+Subject: Re: Xenomai 3.0.6 - libgnat problem
+References: <2e3cb0dd41b04de1a4916c990befb543@ocnapvsw3301.ocr.priv>
 From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <ead0852a-5bf9-090b-cbba-7e185753f83d@siemens.com>
-Date: Fri, 16 Nov 2018 07:33:49 +0100
+Message-ID: <fd6fb58f-b934-cddf-8282-6dab373555c7@siemens.com>
+Date: Fri, 16 Nov 2018 07:36:20 +0100
 MIME-Version: 1.0
-In-Reply-To: <20181114104152.11627-3-rpm@xenomai.org>
+In-Reply-To: <2e3cb0dd41b04de1a4916c990befb543@ocnapvsw3301.ocr.priv>
 Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -18,49 +16,23 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Philippe Gerum <rpm@xenomai.org>, xenomai@xenomai.org
+To: Fazio Maurizio <maurizio.fazio@leonardocompany.com>, "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On 14.11.18 11:41, Philippe Gerum wrote:
-> Signed-off-by: Philippe Gerum <rpm@xenomai.org>
-> ---
->   lib/vxworks/memPartLib.c | 10 +++++++---
->   1 file changed, 7 insertions(+), 3 deletions(-)
+On 08.11.18 12:08, Fazio Maurizio via Xenomai wrote:
+> Hello,
+> i'm trying to integrate some software written in ADA language.  I compiled it using gnatmake and i created an archive using ar. The archive is linked in my xenomai application.
 > 
-> diff --git a/lib/vxworks/memPartLib.c b/lib/vxworks/memPartLib.c
-> index 22d77bdcf..c8eeb3617 100644
-> --- a/lib/vxworks/memPartLib.c
-> +++ b/lib/vxworks/memPartLib.c
-> @@ -48,17 +48,21 @@ PART_ID memPartCreate(char *pPool, unsigned int poolSize)
->   	pthread_mutexattr_t mattr;
->   	struct wind_mempart *mp;
->   	struct service svc;
-> +	int ret;
->   
->   	CANCEL_DEFER(svc);
->   
->   	mp = xnmalloc(sizeof(*mp));
-> -	if (mp == NULL)
-> +	if (mp == NULL) {
-> +		errno = S_memLib_NOT_ENOUGH_MEMORY;
->   		goto fail;
-> +	}
->   
-> -	if (__heapobj_init(&mp->hobj, NULL, poolSize, pPool)) {
-> +	ret = __heapobj_init(&mp->hobj, NULL, poolSize, pPool);
-> +	if (ret) {
->   		xnfree(mp);
-> +		errno = S_memLib_INVALID_NBYTES;
->   	fail:
-> -		errno = S_memLib_NOT_ENOUGH_MEMORY;
->   		CANCEL_RESTORE(svc);
->   		return (PART_ID)0;
->   	}
-> 
+> Is there some problems in using the libgnat with xenomai?
+> After a while the system goes in kernel panic...
 
-Thanks, all three applied to next.
+I've never used gnat before, not to speak of the combination with Xenomai. But 
+even if combining it with Xenomai userland may not work, that should not crash 
+the kernel.
 
-This 3rd patch I've also queued for stable.
+Could you specify in more details what you did, what setup you used and which 
+crash you got?
 
+Thanks,
 Jan
 
 -- 
