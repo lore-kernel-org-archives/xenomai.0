@@ -1,9 +1,14 @@
-From: Philippe Gerum <rpm@xenomai.org>
-Subject: [PATCH 6/9] net/stack: export services to switch interface up/down
-Date: Fri, 26 Oct 2018 16:08:22 +0200
-Message-Id: <20181026140825.5251-6-rpm@xenomai.org>
-In-Reply-To: <20181026140825.5251-1-rpm@xenomai.org>
-References: <20181026140825.5251-1-rpm@xenomai.org>
+Subject: Re: [PATCH v2 0/8] net/tcp: Fix several bugs and allow rttcp to be
+ built
+References: <1541498426-2916-1-git-send-email-sebastian.smolorz@gmx.de>
+From: Jan Kiszka <jan.kiszka@siemens.com>
+Message-ID: <1cd6ad7e-d42e-88ff-94a6-74e61aca6d80@siemens.com>
+Date: Fri, 16 Nov 2018 07:28:12 +0100
+MIME-Version: 1.0
+In-Reply-To: <1541498426-2916-1-git-send-email-sebastian.smolorz@gmx.de>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -12,259 +17,39 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
-Cc: Jan Kiszka <jan.kiszka@siemens.com>, Philippe Gerum <rpm@xenomai.org>
+To: Sebastian Smolorz <sebastian.smolorz@gmx.de>, xenomai@xenomai.org
 
-We may want to force a rtnet interface up, and more likely down before
-unloading a driver module.
+On 06.11.18 11:00, Sebastian Smolorz via Xenomai wrote:
+> This patch series makes RTnet's tcp module usable again. It was not
+> working due to several bugs which showed up in combination with reworked
+> RTDM of Xenomai 3.
+> 
+> Tests on real hardware (little endian) were successful. A test on big
+> endian is still pending.
+> 
+> Sebastian Smolorz (8):
+>    net/tcp: return ufd in rt_tcp_accept()
+>    net/tcp: fix listen() and shutdown() IOCTL calls
+>    net/tcp: Fix bug when obtaining RST socket's private structure from
+>      its rtdm_fd pointer
+>    net/tcp: Copy data back to user buffer in rt_tcp_recvmsg
+>    net/tcp: fix TCP connection termination
+>    net/tcp: Set valid flags in struct tcphdr on little and big endian
+>      machines
+>    net/tcp: return already copied number of bytes to recv() callers when
+>      peer socket terminates
+>    net/tcp: Allow choice of rttcp protocol in Kconfig
+> 
+>   kernel/drivers/net/stack/ipv4/Kconfig   |  2 +-
+>   kernel/drivers/net/stack/ipv4/tcp/tcp.c | 54 ++++++++++++---------------------
+>   2 files changed, 21 insertions(+), 35 deletions(-)
+> 
 
-Export the ioctl() code which handles the IOC_RT_IFUP/IFDOWN core
-ioctl requests as standalone routines. The locking model remains
-unchanged, with ioctl() requests and direct service calls serializing
-on the per-device lock.
----
- kernel/drivers/net/stack/include/rtdev.h |  4 +
- kernel/drivers/net/stack/rtdev.c         | 98 ++++++++++++++++++++++++
- kernel/drivers/net/stack/rtnet_chrdev.c  | 85 +-------------------
- 3 files changed, 104 insertions(+), 83 deletions(-)
+Thanks, applied to next.
 
-diff --git a/kernel/drivers/net/stack/include/rtdev.h b/kernel/drivers/net/stack/include/rtdev.h
-index ad29cfaf2..ddc7aebcd 100644
---- a/kernel/drivers/net/stack/include/rtdev.h
-+++ b/kernel/drivers/net/stack/include/rtdev.h
-@@ -231,6 +231,10 @@ unsigned int rt_hard_mtu(struct rtnet_device *rtdev, unsigned int priority);
- int rtdev_open(struct rtnet_device *rtdev);
- int rtdev_close(struct rtnet_device *rtdev);
- 
-+int rtdev_up(struct rtnet_device *rtdev,
-+	     struct rtnet_core_cmd *cmd);
-+int rtdev_down(struct rtnet_device *rtdev);
-+
- int rtdev_map_rtskb(struct rtskb *skb);
- void rtdev_unmap_rtskb(struct rtskb *skb);
- 
-diff --git a/kernel/drivers/net/stack/rtdev.c b/kernel/drivers/net/stack/rtdev.c
-index ed6e55fcf..8f3460afd 100644
---- a/kernel/drivers/net/stack/rtdev.c
-+++ b/kernel/drivers/net/stack/rtdev.c
-@@ -650,7 +650,105 @@ void rtdev_del_event_hook(struct rtdev_event_hook *hook)
-     mutex_unlock(&rtnet_devices_nrt_lock);
- }
- 
-+int rtdev_up(struct rtnet_device *rtdev, struct rtnet_core_cmd *cmd)
-+{
-+	struct list_head        *entry;
-+	struct rtdev_event_hook *hook;
-+	int ret = 0;
-+
-+	if (mutex_lock_interruptible(&rtdev->nrt_lock))
-+		return -ERESTARTSYS;
-+
-+	/* We cannot change the promisc flag or the hardware address if
-+	   the device is already up. */
-+	if ((rtdev->flags & IFF_UP) &&
-+	    (((cmd->args.up.set_dev_flags | cmd->args.up.clear_dev_flags) &
-+	      IFF_PROMISC) ||
-+	     (cmd->args.up.dev_addr_type != ARPHRD_VOID))) {
-+		ret = -EBUSY;
-+		goto up_out;
-+	}
-+
-+	rtdev->flags |= cmd->args.up.set_dev_flags;
-+	rtdev->flags &= ~cmd->args.up.clear_dev_flags;
-+
-+	if (cmd->args.up.dev_addr_type != ARPHRD_VOID) {
-+		if (cmd->args.up.dev_addr_type != rtdev->type) {
-+			ret = -EINVAL;
-+			goto up_out;
-+		}
-+		memcpy(rtdev->dev_addr, cmd->args.up.dev_addr, MAX_ADDR_LEN);
-+	}
-+
-+	set_bit(PRIV_FLAG_UP, &rtdev->priv_flags);
-+
-+	ret = rtdev_open(rtdev);    /* also == 0 if rtdev is already up */
-+
-+	if (ret == 0) {
-+		mutex_lock(&rtnet_devices_nrt_lock);
-+
-+		list_for_each(entry, &event_hook_list) {
-+			hook = list_entry(entry, struct rtdev_event_hook, entry);
-+			if (hook->ifup)
-+				hook->ifup(rtdev, cmd);
-+		}
-+
-+		mutex_unlock(&rtnet_devices_nrt_lock);
-+	} else
-+		clear_bit(PRIV_FLAG_UP, &rtdev->priv_flags);
-+
-+up_out:
-+	mutex_unlock(&rtdev->nrt_lock);
-+
-+	return ret;
-+}
-+EXPORT_SYMBOL_GPL(rtdev_up);
-+
-+int rtdev_down(struct rtnet_device *rtdev)
-+{
-+	struct list_head        *entry;
-+	struct rtdev_event_hook *hook;
-+	rtdm_lockctx_t          context;
-+	int ret = 0;
- 
-+	if (mutex_lock_interruptible(&rtdev->nrt_lock))
-+		return -ERESTARTSYS;
-+
-+	/* spin lock required for sync with routing code */
-+	rtdm_lock_get_irqsave(&rtdev->rtdev_lock, context);
-+
-+	if (test_bit(PRIV_FLAG_ADDING_ROUTE, &rtdev->priv_flags)) {
-+		rtdm_lock_put_irqrestore(&rtdev->rtdev_lock, context);
-+
-+		mutex_unlock(&rtdev->nrt_lock);
-+		return -EBUSY;
-+	}
-+	clear_bit(PRIV_FLAG_UP, &rtdev->priv_flags);
-+
-+	rtdm_lock_put_irqrestore(&rtdev->rtdev_lock, context);
-+
-+	if (rtdev->mac_detach != NULL)
-+		ret = rtdev->mac_detach(rtdev);
-+
-+	if (ret == 0) {
-+		mutex_lock(&rtnet_devices_nrt_lock);
-+
-+		list_for_each(entry, &event_hook_list) {
-+			hook = list_entry(entry, struct rtdev_event_hook, entry);
-+			if (hook->ifdown)
-+				hook->ifdown(rtdev);
-+		}
-+
-+		mutex_unlock(&rtnet_devices_nrt_lock);
-+
-+		ret = rtdev_close(rtdev);
-+	}
-+
-+	mutex_unlock(&rtdev->nrt_lock);
-+
-+	return ret;
-+}
-+EXPORT_SYMBOL_GPL(rtdev_down);
- 
- /***
-  *  rtdev_open
-diff --git a/kernel/drivers/net/stack/rtnet_chrdev.c b/kernel/drivers/net/stack/rtnet_chrdev.c
-index f5f32c978..14ccbabaf 100644
---- a/kernel/drivers/net/stack/rtnet_chrdev.c
-+++ b/kernel/drivers/net/stack/rtnet_chrdev.c
-@@ -88,16 +88,11 @@ static long rtnet_ioctl(struct file *file,
-     return -ENOTTY;
- }
- 
--
--
- static int rtnet_core_ioctl(struct rtnet_device *rtdev, unsigned int request,
- 			    unsigned long arg)
- {
-     struct rtnet_core_cmd   cmd;
--    struct list_head        *entry;
--    struct rtdev_event_hook *hook;
-     int                     ret;
--    rtdm_lockctx_t          context;
- 
- 
-     ret = copy_from_user(&cmd, (void *)arg, sizeof(cmd));
-@@ -106,87 +101,11 @@ static int rtnet_core_ioctl(struct rtnet_device *rtdev, unsigned int request,
- 
-     switch (request) {
- 	case IOC_RT_IFUP:
--	    if (mutex_lock_interruptible(&rtdev->nrt_lock))
--		return -ERESTARTSYS;
--
--	    /* We cannot change the promisc flag or the hardware address if
--	       the device is already up. */
--	    if ((rtdev->flags & IFF_UP) &&
--		(((cmd.args.up.set_dev_flags | cmd.args.up.clear_dev_flags) &
--		  IFF_PROMISC) ||
--		 (cmd.args.up.dev_addr_type != ARPHRD_VOID))) {
--		ret = -EBUSY;
--		goto up_out;
--	    }
--
--	    rtdev->flags |= cmd.args.up.set_dev_flags;
--	    rtdev->flags &= ~cmd.args.up.clear_dev_flags;
--
--	    if (cmd.args.up.dev_addr_type != ARPHRD_VOID) {
--		if (cmd.args.up.dev_addr_type != rtdev->type) {
--		    ret = -EINVAL;
--		    goto up_out;
--		}
--		memcpy(rtdev->dev_addr, cmd.args.up.dev_addr, MAX_ADDR_LEN);
--	    }
--
--	    set_bit(PRIV_FLAG_UP, &rtdev->priv_flags);
--
--	    ret = rtdev_open(rtdev);    /* also == 0 if rtdev is already up */
--
--	    if (ret == 0) {
--		mutex_lock(&rtnet_devices_nrt_lock);
--
--		list_for_each(entry, &event_hook_list) {
--		    hook = list_entry(entry, struct rtdev_event_hook, entry);
--		    if (hook->ifup)
--			hook->ifup(rtdev, &cmd);
--		}
--
--		mutex_unlock(&rtnet_devices_nrt_lock);
--	    } else
--		clear_bit(PRIV_FLAG_UP, &rtdev->priv_flags);
--
--	  up_out:
--	    mutex_unlock(&rtdev->nrt_lock);
-+	    ret = rtdev_up(rtdev, &cmd);
- 	    break;
- 
- 	case IOC_RT_IFDOWN:
--	    if (mutex_lock_interruptible(&rtdev->nrt_lock))
--		return -ERESTARTSYS;
--
--	    /* spin lock required for sync with routing code */
--	    rtdm_lock_get_irqsave(&rtdev->rtdev_lock, context);
--
--	    if (test_bit(PRIV_FLAG_ADDING_ROUTE, &rtdev->priv_flags)) {
--		rtdm_lock_put_irqrestore(&rtdev->rtdev_lock, context);
--
--		mutex_unlock(&rtdev->nrt_lock);
--		return -EBUSY;
--	    }
--	    clear_bit(PRIV_FLAG_UP, &rtdev->priv_flags);
--
--	    rtdm_lock_put_irqrestore(&rtdev->rtdev_lock, context);
--
--	    ret = 0;
--	    if (rtdev->mac_detach != NULL)
--		ret = rtdev->mac_detach(rtdev);
--
--	    if (ret == 0) {
--		mutex_lock(&rtnet_devices_nrt_lock);
--
--		list_for_each(entry, &event_hook_list) {
--		    hook = list_entry(entry, struct rtdev_event_hook, entry);
--		    if (hook->ifdown)
--			hook->ifdown(rtdev);
--		}
--
--		mutex_unlock(&rtnet_devices_nrt_lock);
--
--		ret = rtdev_close(rtdev);
--	    }
--
--	    mutex_unlock(&rtdev->nrt_lock);
-+	    ret = rtdev_down(rtdev);
- 	    break;
- 
- 	case IOC_RT_IFINFO:
+Jan
+
 -- 
-2.17.2
-
+Siemens AG, Corporate Technology, CT RDA IOT SES-DE
+Corporate Competence Center Embedded Linux
 
