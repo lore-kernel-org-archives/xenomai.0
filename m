@@ -1,11 +1,10 @@
-Subject: Re: [PATCH v2 0/8] net/tcp: Fix several bugs and allow rttcp to be
- built
-References: <1541498426-2916-1-git-send-email-sebastian.smolorz@gmx.de>
+Subject: Re: [PATCH] testsuite/xeno-test: do not swallow exit status anymore
+References: <20181108124202.28018-1-henning.schild@siemens.com>
 From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <1cd6ad7e-d42e-88ff-94a6-74e61aca6d80@siemens.com>
-Date: Fri, 16 Nov 2018 07:28:12 +0100
+Message-ID: <8222c0a6-1c36-f255-bcc4-895e7ef9acb5@siemens.com>
+Date: Fri, 16 Nov 2018 07:28:51 +0100
 MIME-Version: 1.0
-In-Reply-To: <1541498426-2916-1-git-send-email-sebastian.smolorz@gmx.de>
+In-Reply-To: <20181108124202.28018-1-henning.schild@siemens.com>
 Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -17,36 +16,64 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Sebastian Smolorz <sebastian.smolorz@gmx.de>, xenomai@xenomai.org
+To: Henning Schild <henning.schild@siemens.com>, xenomai@xenomai.org
 
-On 06.11.18 11:00, Sebastian Smolorz via Xenomai wrote:
-> This patch series makes RTnet's tcp module usable again. It was not
-> working due to several bugs which showed up in combination with reworked
-> RTDM of Xenomai 3.
+On 08.11.18 13:42, Henning Schild via Xenomai wrote:
+> xeno-test-run always returned SUCCESS, even if its children exited with
+> non zero. So xeno-test can not be used programmatically i.e. in CI.
 > 
-> Tests on real hardware (little endian) were successful. A test on big
-> endian is still pending.
+> This patch adds some more verbosity and makes xeno-test-run exit FAILURE
+> if at least one child returned non-zero.
 > 
-> Sebastian Smolorz (8):
->    net/tcp: return ufd in rt_tcp_accept()
->    net/tcp: fix listen() and shutdown() IOCTL calls
->    net/tcp: Fix bug when obtaining RST socket's private structure from
->      its rtdm_fd pointer
->    net/tcp: Copy data back to user buffer in rt_tcp_recvmsg
->    net/tcp: fix TCP connection termination
->    net/tcp: Set valid flags in struct tcphdr on little and big endian
->      machines
->    net/tcp: return already copied number of bytes to recv() callers when
->      peer socket terminates
->    net/tcp: Allow choice of rttcp protocol in Kconfig
+> Signed-off-by: Henning Schild <henning.schild@siemens.com>
+> ---
+>   testsuite/xeno-test/xeno-test-run.c | 16 +++++++++++++++-
+>   1 file changed, 15 insertions(+), 1 deletion(-)
 > 
->   kernel/drivers/net/stack/ipv4/Kconfig   |  2 +-
->   kernel/drivers/net/stack/ipv4/tcp/tcp.c | 54 ++++++++++++---------------------
->   2 files changed, 21 insertions(+), 35 deletions(-)
+> diff --git a/testsuite/xeno-test/xeno-test-run.c b/testsuite/xeno-test/xeno-test-run.c
+> index bfede63fd..6d1bb96c0 100644
+> --- a/testsuite/xeno-test/xeno-test-run.c
+> +++ b/testsuite/xeno-test/xeno-test-run.c
+> @@ -51,6 +51,8 @@ void handle_checked_child(struct child *child, fd_set *fds);
+>   void handle_script_child(struct child *child, fd_set *fds);
+>   void handle_load_child(struct child *child, fd_set *fds);
+>   
+> +static int exit_global = EXIT_SUCCESS;
+> +
+>   static inline time_t mono_time(void)
+>   {
+>   	struct timespec ts;
+> @@ -319,6 +321,18 @@ void sigchld_handler(int sig)
+>   
+>   		child->exit_status = status;
+>   		child->dead = 1;
+> +		fprintf(stderr, "child %d returned: ", pid);
+> +		if (WIFEXITED(status)) {
+> +			if (WEXITSTATUS(status))
+> +				exit_global = EXIT_FAILURE;
+> +			fprintf(stderr, "exited with status %d\n",
+> +				WEXITSTATUS(status));
+> +		} else if WIFSIGNALED(status) {
+> +			fprintf(stderr, "killed by signal %d\n",
+> +				WTERMSIG(status));
+> +		} else {
+> +			fprintf(stderr, "unknown reason\n");
+> +		}
+>   	}
+>   }
+>   
+> @@ -660,5 +674,5 @@ int main(int argc, char *argv[])
+>   		signal(sigexit, SIG_DFL);
+>   		raise(sigexit);
+>   	}
+> -	exit(EXIT_SUCCESS);
+> +	exit(exit_global);
+>   }
 > 
 
-Thanks, applied to next.
+Merged to next.
 
+Thanks,
 Jan
 
 -- 
