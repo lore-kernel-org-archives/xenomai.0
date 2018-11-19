@@ -1,15 +1,12 @@
-Date: Mon, 19 Nov 2018 14:52:09 +0100
-From: Henning Schild <henning.schild@siemens.com>
-Subject: Re: [PATCH] testsuite/smokey: relax posix-clock time dependancy
-Message-ID: <20181119145209.294cf0ca@md1za8fc.ad001.siemens.net>
-In-Reply-To: <4b5a46a2-7683-8522-9570-2a04d590338d@xenomai.org>
-References: <20181109091430.24559-1-henning.schild@siemens.com>
- <6bcda9af-aea0-970d-59f2-ed7a49222fe2@siemens.com>
- <20181119104016.7f303e5c@md1za8fc.ad001.siemens.net>
- <4b5a46a2-7683-8522-9570-2a04d590338d@xenomai.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+References: <CA+K1mPFcJwvsSJQP_qAs0F01zPqzPtHD7fA6AqFXX71vrSyD0w@mail.gmail.com>
+ <b3921461-be89-e33c-8904-4709847903ea@siemens.com>
+In-Reply-To: <b3921461-be89-e33c-8904-4709847903ea@siemens.com>
+From: C Smith <csmithquestions@gmail.com>
+Date: Mon, 19 Nov 2018 10:10:03 -0800
+Message-ID: <CA+K1mPEH+RkvcOX4QXGRzdu1FwA2+u6mmb_7uyP0cDvGPBtKVw@mail.gmail.com>
+Subject: Re: spinlock_irq...() supported in Xenomai 2.6.5 ?
+Content-Type: text/plain; charset="UTF-8"
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -18,54 +15,45 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Philippe Gerum <rpm@xenomai.org>
-Cc: Jan Kiszka <jan.kiszka@siemens.com>, xenomai@xenomai.org
+Cc: xenomai@xenomai.org
 
-Am Mon, 19 Nov 2018 10:52:34 +0100
-schrieb Philippe Gerum <rpm@xenomai.org>:
+On Sun, Nov 18, 2018 at 11:39 PM Jan Kiszka <jan.kiszka@siemens.com> wrote:
 
-> On 11/19/18 10:40 AM, Henning Schild wrote:
-> > Am Fri, 16 Nov 2018 07:23:47 +0100
-> > schrieb Jan Kiszka <jan.kiszka@siemens.com>:
-> >   
-> >> On 09.11.18 10:14, Henning Schild via Xenomai wrote:  
-> >>> The test often asserted. This patch gives the thread a priority,
-> >>> introduces a 25us margin and prints the value in case we still
-> >>> fail.
-> >>>
-> >>> Signed-off-by: Henning Schild <henning.schild@siemens.com>
-> >>> ---
-> >>>   testsuite/smokey/posix-clock/posix-clock.c | 15 ++++++++++++++-
-> >>>   1 file changed, 14 insertions(+), 1 deletion(-)
-> >>>
-> >>> diff --git a/testsuite/smokey/posix-clock/posix-clock.c
-> >>> b/testsuite/smokey/posix-clock/posix-clock.c index
-> >>> f672a9d52..36e0f5dea 100644 ---
-> >>> a/testsuite/smokey/posix-clock/posix-clock.c +++
-> >>> b/testsuite/smokey/posix-clock/posix-clock.c @@ -417,8 +417,10 @@
-> >>> static int clock_decrease_after_periodic_timer_first_tick(void) 
-> >>>   	diff = now.tv_sec * 1000000000ULL + now.tv_nsec -
-> >>>   		(timer.it_value.tv_sec * 1000000000ULL +
-> >>> timer.it_value.tv_nsec);
-> >>> -	if (!smokey_assert(diff < 1000000000))
-> >>> +	if (!smokey_assert(diff < 1000000000ULL + 25000ULL))
-> >>> {    
-> >>
-> >> Philippe, is this margin also reasonable from your perspective? Or
-> >> are we risking to miss a problem this way? I'm currently lacking a
-> >> feeling.  
-> > 
-> > Good question. That is an estimate suitable for x86. While it should
-> > not defeat the test, the test failing 60% of the time renders it not
-> > too useful.
-> >   
-> 
-> Did you calibrate the timer shot with the autotune utility before
-> running that test?
+> On 19.11.18 07:38, C Smith via Xenomai wrote:
+> > I am porting an old Linux kernelspace driver to Xenomai 2.6.5 using RTDM
+> > API.
+> > I see calls to spinlock_irq_save() and spin_unlock_irqrestore() in the
+> old
+> > kernel driver code, right in the middle of an interrupt handler.
+> >
+> > Are those spinlock calls 'wrapped' by Xenomai 2.6.5 such that they work,
+> > and execute in Primary mode? Is calling these a bad thing to do in the
+> > middle of an RTDM interrupt, will it try to switch to Secondary mode ?
+> >
+>
+> Neither the obsolete 2.6 (don't use it anymore!) nor current Xenomai 3 can
+> perform any magic here. If your driver's IRQ routine shall run in primary
+> mode,
+> you need to migrate it explicitly to the RTDM API.
+>
+> OK, that's what I suspected. Yes my interrupts must be Primary mode (hard
+RT), so should I use rtdm_lock_irqsave () and  rtdm_lock_irqrestore () as a
+substitute?
 
-I also saw it failing after calibration, otherwise i would have added
-the calibration to xeno-test.
+Also, the old kernel driver used writel(), is that magically wrapped so it
+would just become a Xenomai Primary mode call ?
 
-Henning
+We will port to Xenomai 3 in the coming year. In the meantime there are
+tens of thousands of lines of code to so I must maintain our 2.6.5 code for
+now. Please don't abandon discussions of 2.6, it's the stable and debugged
+pinnacle of your excellent work, after all.
 
+thanks,
+-C Smith
 
+Jan
+>
+> --
+> Siemens AG, Corporate Technology, CT RDA IOT SES-DE
+> Corporate Competence Center Embedded Linux
+>
