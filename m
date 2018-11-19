@@ -1,10 +1,10 @@
-Subject: Re: spinlock_irq...() supported in Xenomai 2.6.5 ?
-References: <CA+K1mPFcJwvsSJQP_qAs0F01zPqzPtHD7fA6AqFXX71vrSyD0w@mail.gmail.com>
+Subject: Re: include/boilerplate/compiler.h breaks clang 3.9's arm_acle.h
+References: <VI1PR0701MB21264AF72FDA99A8694C2E6AB5DE0@VI1PR0701MB2126.eurprd07.prod.outlook.com>
 From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <b3921461-be89-e33c-8904-4709847903ea@siemens.com>
-Date: Mon, 19 Nov 2018 08:39:00 +0100
+Message-ID: <d0e4aced-93eb-1e3c-ed39-7b406df3ee53@siemens.com>
+Date: Mon, 19 Nov 2018 08:41:43 +0100
 MIME-Version: 1.0
-In-Reply-To: <CA+K1mPFcJwvsSJQP_qAs0F01zPqzPtHD7fA6AqFXX71vrSyD0w@mail.gmail.com>
+In-Reply-To: <VI1PR0701MB21264AF72FDA99A8694C2E6AB5DE0@VI1PR0701MB2126.eurprd07.prod.outlook.com>
 Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -16,23 +16,104 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: C Smith <csmithquestions@gmail.com>, xenomai@xenomai.org
+To: Giulio Moro <g.moro@qmul.ac.uk>, "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On 19.11.18 07:38, C Smith via Xenomai wrote:
-> I am porting an old Linux kernelspace driver to Xenomai 2.6.5 using RTDM
-> API.
-> I see calls to spinlock_irq_save() and spin_unlock_irqrestore() in the old
-> kernel driver code, right in the middle of an interrupt handler.
+On 17.11.18 01:38, Giulio Moro via Xenomai wrote:
+> I have clang 3.9.1 (on Debian Stretch) on armv7.
 > 
-> Are those spinlock calls 'wrapped' by Xenomai 2.6.5 such that they work,
-> and execute in Primary mode? Is calling these a bad thing to do in the
-> middle of an RTDM interrupt, will it try to switch to Secondary mode ?
+> the below minimal program clz-test.c:
+> 
+> ```
+> #include <stdlib.h>
+> #include <arm_acle.h>
+> 
+> int main()
+> {
+>      return __clz(0);
+> }
+> ```
+> 
+> will fail to build when compiled with
+> 
+> `clang -I/usr/xenomai/include/cobalt -I/usr/xenomai/include clz-test.c` , as follows:
+> ```
+> In file included from test-clz.c:2:
+> /usr/lib/llvm-3.9/bin/../lib/clang/3.9.1/include/arm_acle.h:142:1: error: expected identifier or '('
+> __clz(uint32_t __t) {
+> ^
+> /usr/xenomai/include/boilerplate/compiler.h:87:3: note: expanded from macro '__clz'
+>          ({                                                              \
+>           ^
+> In file included from test-clz.c:2:
+> /usr/lib/llvm-3.9/bin/../lib/clang/3.9.1/include/arm_acle.h:142:1: error: expected ')'
+> /usr/xenomai/include/boilerplate/compiler.h:87:3: note: expanded from macro '__clz'
+>          ({                                                              \
+>           ^
+> /usr/lib/llvm-3.9/bin/../lib/clang/3.9.1/include/arm_acle.h:142:1: note: to match this '('
+> /usr/xenomai/include/boilerplate/compiler.h:87:2: note: expanded from macro '__clz'
+>          ({                                                              \
+>          ^
+> 2 errors generated.
+> ```
+> 
+> (compiler.h is included indirectly by `stdlib.h`)
+> 
+> This is because clang provides a definition of __clz as an inline function in /usr/lib/llvm-3.9/lib/clang/3.9.1/include/arm_acle.h :
+> 
+> static __inline__ uint32_t __attribute__((__always_inline__, __nodebug__))
+> __clz(uint32_t __t) {
+>    return __builtin_clz(__t);
+> }
+> 
+> however, xenomai-3/include/boilerplate/compiler.h defines __clz() as a macro, hence the issue.
+> 
+> Note that compiler.h similarly defines a macro for __ctz , but that is not defined in clang's arm_acle.h, so no issue with that one.
+> 
+> The patch below addresses the issue, leveraging clang's `__has_builtin()` feature, while keeping things the same for gcc:
+> 
+> diff --git a/include/boilerplate/compiler.h b/include/boilerplate/compiler.h
+> index bcef7d4cc..8697a24b0 100644
+> --- a/include/boilerplate/compiler.h
+> +++ b/include/boilerplate/compiler.h
+> @@ -83,6 +83,15 @@ void __invalid_operand_size(void);
+>                  __ret;                                                  \
+>          })
+> 
+> +#ifdef __clang__
+> +#if __has_builtin(__builtin_clz)
+> +#define DONT_DEF_CLZ
+> +#endif /* has_builtin */
+> +#endif /* __clang_ */
+> +
+> +#ifdef DONT_DEF_CLZ
+> +#undef DONT_DEF_CLZ
+> +#else /* DONT_DEF_CLZ */
+>   #define __clz(__v)                                                     \
+>          ({                                                              \
+>                  int __ret;                                              \
+> @@ -101,6 +110,7 @@ void __invalid_operand_size(void);
+>                          }                                               \
+>                  __ret;                                                  \
+>          })
+> +#endif /* DONT_DEF_CLZ */
+> 
+>   #ifdef __cplusplus
+>   }
+> 
 > 
 
-Neither the obsolete 2.6 (don't use it anymore!) nor current Xenomai 3 can 
-perform any magic here. If your driver's IRQ routine shall run in primary mode, 
-you need to migrate it explicitly to the RTDM API.
+We should do
 
+#define __clz	__clz
+
+in the clang case and then
+
+#ifndef __clz
+
+That should save some boilerplate code. Could you send a proper patch (see 
+CONTRIBUTING.md)?
+
+Thanks!
 Jan
 
 -- 
