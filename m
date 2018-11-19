@@ -1,12 +1,12 @@
-Subject: Re: include/boilerplate/compiler.h breaks clang 3.9's arm_acle.h
-References: <VI1PR0701MB21264AF72FDA99A8694C2E6AB5DE0@VI1PR0701MB2126.eurprd07.prod.outlook.com>
-From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <d0e4aced-93eb-1e3c-ed39-7b406df3ee53@siemens.com>
-Date: Mon, 19 Nov 2018 08:41:43 +0100
+Date: Mon, 19 Nov 2018 10:40:16 +0100
+From: Henning Schild <henning.schild@siemens.com>
+Subject: Re: [PATCH] testsuite/smokey: relax posix-clock time dependancy
+Message-ID: <20181119104016.7f303e5c@md1za8fc.ad001.siemens.net>
+In-Reply-To: <6bcda9af-aea0-970d-59f2-ed7a49222fe2@siemens.com>
+References: <20181109091430.24559-1-henning.schild@siemens.com>
+ <6bcda9af-aea0-970d-59f2-ed7a49222fe2@siemens.com>
 MIME-Version: 1.0
-In-Reply-To: <VI1PR0701MB21264AF72FDA99A8694C2E6AB5DE0@VI1PR0701MB2126.eurprd07.prod.outlook.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
@@ -16,107 +16,75 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Giulio Moro <g.moro@qmul.ac.uk>, "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Jan Kiszka <jan.kiszka@siemens.com>
+Cc: xenomai@xenomai.org, Philippe Gerum <rpm@xenomai.org>
 
-On 17.11.18 01:38, Giulio Moro via Xenomai wrote:
-> I have clang 3.9.1 (on Debian Stretch) on armv7.
+Am Fri, 16 Nov 2018 07:23:47 +0100
+schrieb Jan Kiszka <jan.kiszka@siemens.com>:
+
+> On 09.11.18 10:14, Henning Schild via Xenomai wrote:
+> > The test often asserted. This patch gives the thread a priority,
+> > introduces a 25us margin and prints the value in case we still fail.
+> > 
+> > Signed-off-by: Henning Schild <henning.schild@siemens.com>
+> > ---
+> >   testsuite/smokey/posix-clock/posix-clock.c | 15 ++++++++++++++-
+> >   1 file changed, 14 insertions(+), 1 deletion(-)
+> > 
+> > diff --git a/testsuite/smokey/posix-clock/posix-clock.c
+> > b/testsuite/smokey/posix-clock/posix-clock.c index
+> > f672a9d52..36e0f5dea 100644 ---
+> > a/testsuite/smokey/posix-clock/posix-clock.c +++
+> > b/testsuite/smokey/posix-clock/posix-clock.c @@ -417,8 +417,10 @@
+> > static int clock_decrease_after_periodic_timer_first_tick(void) 
+> >   	diff = now.tv_sec * 1000000000ULL + now.tv_nsec -
+> >   		(timer.it_value.tv_sec * 1000000000ULL +
+> > timer.it_value.tv_nsec);
+> > -	if (!smokey_assert(diff < 1000000000))
+> > +	if (!smokey_assert(diff < 1000000000ULL + 25000ULL)) {  
 > 
-> the below minimal program clz-test.c:
+> Philippe, is this margin also reasonable from your perspective? Or
+> are we risking to miss a problem this way? I'm currently lacking a
+> feeling.
+
+Good question. That is an estimate suitable for x86. While it should
+not defeat the test, the test failing 60% of the time renders it not
+too useful.
+
+Henning
+
+> Thanks,
+> Jan
 > 
-> ```
-> #include <stdlib.h>
-> #include <arm_acle.h>
-> 
-> int main()
-> {
->      return __clz(0);
-> }
-> ```
-> 
-> will fail to build when compiled with
-> 
-> `clang -I/usr/xenomai/include/cobalt -I/usr/xenomai/include clz-test.c` , as follows:
-> ```
-> In file included from test-clz.c:2:
-> /usr/lib/llvm-3.9/bin/../lib/clang/3.9.1/include/arm_acle.h:142:1: error: expected identifier or '('
-> __clz(uint32_t __t) {
-> ^
-> /usr/xenomai/include/boilerplate/compiler.h:87:3: note: expanded from macro '__clz'
->          ({                                                              \
->           ^
-> In file included from test-clz.c:2:
-> /usr/lib/llvm-3.9/bin/../lib/clang/3.9.1/include/arm_acle.h:142:1: error: expected ')'
-> /usr/xenomai/include/boilerplate/compiler.h:87:3: note: expanded from macro '__clz'
->          ({                                                              \
->           ^
-> /usr/lib/llvm-3.9/bin/../lib/clang/3.9.1/include/arm_acle.h:142:1: note: to match this '('
-> /usr/xenomai/include/boilerplate/compiler.h:87:2: note: expanded from macro '__clz'
->          ({                                                              \
->          ^
-> 2 errors generated.
-> ```
-> 
-> (compiler.h is included indirectly by `stdlib.h`)
-> 
-> This is because clang provides a definition of __clz as an inline function in /usr/lib/llvm-3.9/lib/clang/3.9.1/include/arm_acle.h :
-> 
-> static __inline__ uint32_t __attribute__((__always_inline__, __nodebug__))
-> __clz(uint32_t __t) {
->    return __builtin_clz(__t);
-> }
-> 
-> however, xenomai-3/include/boilerplate/compiler.h defines __clz() as a macro, hence the issue.
-> 
-> Note that compiler.h similarly defines a macro for __ctz , but that is not defined in clang's arm_acle.h, so no issue with that one.
-> 
-> The patch below addresses the issue, leveraging clang's `__has_builtin()` feature, while keeping things the same for gcc:
-> 
-> diff --git a/include/boilerplate/compiler.h b/include/boilerplate/compiler.h
-> index bcef7d4cc..8697a24b0 100644
-> --- a/include/boilerplate/compiler.h
-> +++ b/include/boilerplate/compiler.h
-> @@ -83,6 +83,15 @@ void __invalid_operand_size(void);
->                  __ret;                                                  \
->          })
-> 
-> +#ifdef __clang__
-> +#if __has_builtin(__builtin_clz)
-> +#define DONT_DEF_CLZ
-> +#endif /* has_builtin */
-> +#endif /* __clang_ */
-> +
-> +#ifdef DONT_DEF_CLZ
-> +#undef DONT_DEF_CLZ
-> +#else /* DONT_DEF_CLZ */
->   #define __clz(__v)                                                     \
->          ({                                                              \
->                  int __ret;                                              \
-> @@ -101,6 +110,7 @@ void __invalid_operand_size(void);
->                          }                                               \
->                  __ret;                                                  \
->          })
-> +#endif /* DONT_DEF_CLZ */
-> 
->   #ifdef __cplusplus
->   }
-> 
+> > +		fprintf(stderr, "diff = %llu\n", diff);
+> >   		return -EINVAL;
+> > +	}
+> >   	
+> >   	ret = smokey_check_errno(read(t, &ticks, sizeof(ticks)));
+> >   	if (ret < 0)
+> > @@ -430,10 +432,21 @@ static int
+> > clock_decrease_after_periodic_timer_first_tick(void) return
+> > smokey_check_errno(close(t)); }
+> >   
+> > +static int init_posix_clock(void)
+> > +{
+> > +	struct sched_param params = {.sched_priority = 1};
+> > +
+> > +	return pthread_setschedparam(pthread_self(), SCHED_FIFO,
+> > &params); +}
+> > +
+> >   static int run_posix_clock(struct smokey_test *t, int argc, char
+> > *const argv[]) {
+> >   	int ret;
+> >   
+> > +	ret = init_posix_clock();
+> > +	if (ret)
+> > +		return ret;
+> > +
+> >   	ret = clock_increase_before_oneshot_timer_first_tick();
+> >   	if (ret)
+> >   		return ret;
+> >   
 > 
 
-We should do
-
-#define __clz	__clz
-
-in the clang case and then
-
-#ifndef __clz
-
-That should save some boilerplate code. Could you send a proper patch (see 
-CONTRIBUTING.md)?
-
-Thanks!
-Jan
-
--- 
-Siemens AG, Corporate Technology, CT RDA IOT SES-DE
-Corporate Competence Center Embedded Linux
 
