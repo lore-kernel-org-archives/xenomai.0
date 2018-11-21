@@ -1,12 +1,13 @@
-From: Giulio Moro <g.moro@qmul.ac.uk>
-Subject: [PATCH] Rename __clz to xenomai_count_leading_zeros to avoid
- namespace conflicts (e.g.: with Clang's arm_acle.h)
-Date: Tue, 20 Nov 2018 22:34:07 +0000
-Message-ID: <VI1PR0701MB21263CB2A981011DCA7BEA7BB5D90@VI1PR0701MB2126.eurprd07.prod.outlook.com>
-Content-Language: en-GB
-Content-Type: text/plain; charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
+References: <CALUpYNbg342eACKbNoxZkKV-ykGjRxJhS_xz0oJxzyeSKgxh6Q@mail.gmail.com>
+ <07cfdeae-695f-127d-c38f-f3b6503946d2@siemens.com>
+In-Reply-To: <07cfdeae-695f-127d-c38f-f3b6503946d2@siemens.com>
+From: Means Lee <leemeaner@gmail.com>
+Date: Wed, 21 Nov 2018 09:36:09 +0800
+Message-ID: <CALUpYNYPdbVMJ0Yc5kQV8SzhxWJwRKByyJhWYyUJSgpajZjCLA@mail.gmail.com>
+Subject: Re: rt_e1000e: Detected Hardware Unit Hang
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,83 +16,48 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: jan.kiszka@siemens.com
+Cc: xenomai@xenomai.org
 
->From de7bf8033570f15b68b00b6386097ceb8a402d6b Mon Sep 17 00:00:00 2001
-From: Giulio Moro <giuliomoro@yahoo.it>
-Date: Tue, 20 Nov 2018 22:32:00 +0000
-Subject: [PATCH] Rename __clz to xenomai_count_leading_zeros to avoid
- namespace conflicts (e.g.: with Clang's arm_acle.h)
-
-Signed-off-by: Giulio Moro <giuliomoro@yahoo.it>
----
- include/boilerplate/compiler.h    | 2 +-
- lib/boilerplate/heapmem.c         | 2 +-
- lib/copperplate/heapobj-heapmem.c | 2 +-
- lib/copperplate/heapobj-pshared.c | 2 +-
- 4 files changed, 4 insertions(+), 4 deletions(-)
-
-diff --git a/include/boilerplate/compiler.h b/include/boilerplate/compiler.=
-h
-index ffeb6a4db..0fcc17be1 100644
---- a/include/boilerplate/compiler.h
-+++ b/include/boilerplate/compiler.h
-@@ -93,7 +93,7 @@ void __invalid_operand_size(void);
- 		__ret;							\
- 	})
-
--#define __clz(__v)							\
-+#define xenomai_count_leading_zeros(__v)				\
- 	({								\
- 		int __ret;						\
- 		if (!__v)						\
-diff --git a/lib/boilerplate/heapmem.c b/lib/boilerplate/heapmem.c
-index 9b5e1a636..81702d6db 100644
---- a/lib/boilerplate/heapmem.c
-+++ b/lib/boilerplate/heapmem.c
-@@ -435,7 +435,7 @@ void *heapmem_alloc(struct heap_memory *heap, size_t si=
-ze)
- 		bsize =3D size =3D HEAPMEM_MIN_ALIGN;
- 		log2size =3D HEAPMEM_MIN_LOG2;
- 	} else {
--		log2size =3D sizeof(size) * CHAR_BIT - 1 - __clz(size);
-+		log2size =3D sizeof(size) * CHAR_BIT - 1 - xenomai_count_leading_zeros(s=
-ize);
- 		if (log2size < HEAPMEM_PAGE_SHIFT) {
- 			if (size & (size - 1))
- 				log2size++;
-diff --git a/lib/copperplate/heapobj-heapmem.c b/lib/copperplate/heapobj-he=
-apmem.c
-index 2b99b3d39..60f16f95d 100644
---- a/lib/copperplate/heapobj-heapmem.c
-+++ b/lib/copperplate/heapobj-heapmem.c
-@@ -68,7 +68,7 @@ int __heapobj_init_private(struct heapobj *hobj, const ch=
-ar *name,
- int heapobj_init_array_private(struct heapobj *hobj, const char *name,
- 			       size_t size, int elems)
- {
--	size_t log2 =3D sizeof(size) * CHAR_BIT - 1 - __clz(size);
-+	size_t log2 =3D sizeof(size) * CHAR_BIT - 1 - xenomai_count_leading_zeros=
-(size);
-
- 	/*
- 	 * Heapmem aligns individual object sizes on the next ^2
-diff --git a/lib/copperplate/heapobj-pshared.c b/lib/copperplate/heapobj-ps=
-hared.c
-index 77b45844f..5f17e6198 100644
---- a/lib/copperplate/heapobj-pshared.c
-+++ b/lib/copperplate/heapobj-pshared.c
-@@ -488,7 +488,7 @@ static void *sheapmem_alloc(struct shared_heap_memory *=
-heap, size_t size)
- 		bsize =3D size =3D SHEAPMEM_MIN_ALIGN;
- 		log2size =3D SHEAPMEM_MIN_LOG2;
- 	} else {
--		log2size =3D sizeof(size) * CHAR_BIT - 1 - __clz(size);
-+		log2size =3D sizeof(size) * CHAR_BIT - 1 - xenomai_count_leading_zeros(s=
-ize);
- 		if (log2size < SHEAPMEM_PAGE_SHIFT) {
- 			if (size & (size - 1))
- 				log2size++;
---
-2.11.0
-
+U3VyZSB0aGluZy4gQXMgSSBwb3J0ZWQgZTEwMDBlLXJ0IGRyaXZlciBmcm9tIG1haW5saW5lIGtl
+cm5lbCBlMTAwMGUKZHJpdmVyLCB3aGljaAp0aGUgY29tbWl0IGlkIGlzIDA4OWQ3NzIwMzgzZDdi
+YzljYTZiODgyNGEwNWRmYTY2ZjgwZDFmNDEsIHRoZSBwYXRjaCBmaWxlIGlzCiBraW5kIG9mIGh1
+Z2Ugc28gSSBhdHRhY2ggdGhlbSBoZXJlIGluIHRoaXMgbWFpbC4KZGlmZi13aXRoLW5ydC5kaWZm
+IGlzIHRoZSBkaWZmIGZpbGUgb2YgbWFpbmxpbmUgZHJpdmVyIGUxMDAwZSBhbmQgbXkgcG9ydGVk
+CmRyaXZlci4KZGlmZi13aXRoLW9sZC1ydC1lMTAwMGUuZGlmZiBpcyB0aGUgZGlmZiBmaWxlIG9m
+IHhlbm9tYWkgdjMuMC43IGRyaXZlciBhbmQKbXkgcG9ydGVkIGRyaXZlci4KCkphbiBLaXN6a2Eg
+PGphbi5raXN6a2FAc2llbWVucy5jb20+IOS6jjIwMTjlubQxMeaciDIw5pel5ZGo5LqMIOS4i+WN
+iDU6NDLlhpnpgZPvvJoKCj4gT24gMTkuMTEuMTggMjI6NTcsIE1lYW5zIExlZSB2aWEgWGVub21h
+aSB3cm90ZToKPiA+IEkgYW0gcG9ydGluZyBuZXdlciBlMTAwMGUgZHJpdmVyIHRvIFhlbm9tYWkg
+My4wLjcuIFdoZW4gSSB1c2luZyBteSBwb3J0ZWQKPiA+IGRyaXZlciB0byBzZXR1cCBhbgo+ID4g
+UlRuZXQgY29ubmVjdGlvbiwgc29tZXRoaW5nIGdvZXMgd3JvbmcuIFdoYXQgSSBnb3QgaXMgYW4g
+SGFyZHdhcmUgVW5pdAo+IGhhbmc6Cj4KPiBDYW4geW91IHNoYXJlIHRoZSBkaWZmIHRvL3BhdGNo
+IG9mIHRoZSBleGlzdGluZyBvbmU/Cj4KPiBKYW4KPgo+ID4KPiA+IFsgMTU5OC43ODMxMzNdIHJ0
+X2UxMDAwZTogRGV0ZWN0ZWQgSGFyZHdhcmUgVW5pdCBIYW5nOgo+ID4gICAgICAgICAgICAgICAg
+ICAgVERIICAgICAgICAgICAgICAgICAgPGY1Pgo+ID4gICAgICAgICAgICAgICAgICAgVERUICAg
+ICAgICAgICAgICAgICAgPDFlPgo+ID4gICAgICAgICAgICAgICAgICAgbmV4dF90b191c2UgICAg
+ICAgICAgPDFlPgo+ID4gICAgICAgICAgICAgICAgICAgbmV4dF90b19jbGVhbiAgICAgICAgPGY1
+Pgo+ID4gICAgICAgICAgICAgICAgIGJ1ZmZlcl9pbmZvW25leHRfdG9fY2xlYW5dOgo+ID4gICAg
+ICAgICAgICAgICAgICAgdGltZV9zdGFtcCAgICAgICAgICAgPDEwMDA0ZWExND4KPiA+ICAgICAg
+ICAgICAgICAgICAgIG5leHRfdG9fd2F0Y2ggICAgICAgIDxmNT4KPiA+ICAgICAgICAgICAgICAg
+ICAgIGppZmZpZXMgICAgICAgICAgICAgIDwxMDAwNGY0NTg+Cj4gPiAgICAgICAgICAgICAgICAg
+ICBuZXh0X3RvX3dhdGNoLnN0YXR1cyA8MD4KPiA+ICAgICAgICAgICAgICAgICBNQUMgU3RhdHVz
+ICAgICAgICAgICAgIDw0MDA4MDA4Mz4KPiA+ICAgICAgICAgICAgICAgICBQSFkgU3RhdHVzICAg
+ICAgICAgICAgIDw3OTZkPgo+ID4gICAgICAgICAgICAgICAgIFBIWSAxMDAwQkFTRS1UIFN0YXR1
+cyAgPDM4MDA+Cj4gPiAgICAgICAgICAgICAgICAgUEhZIEV4dGVuZGVkIFN0YXR1cyAgICA8MzAw
+MD4KPiA+ICAgICAgICAgICAgICAgICBQQ0kgU3RhdHVzICAgICAgICAgICAgIDwxMD4KPiA+Cj4g
+PiBJJ20gc3VyZSB0aGF0IHRyYW5zbWl0IGFuZCByZWNlaXZlIGZ1bmN0aW9uIHdvcmtzIGZpbmUg
+Zm9yIEkgY2FuIHNlbmQKPiBURE1BCj4gPiBzeW5jIGZyYW1lIG5vcm1hbGx5Lgo+ID4gQnV0IHRo
+aXMgbWVzc2FnZSBzaG93biBkdXJpbmcgdGhlIGVuZCBvZiBSVGNmZyByZWFkeSBzdGFnZS4gSXMg
+YW55Ym9keQo+IGhhcwo+ID4gYW55IGNsdWUgYWJvdXQgaG93IHRvIGZpeCB0aGlzIGJ1Zz8KPiA+
+Cj4KPiAtLQo+IFNpZW1lbnMgQUcsIENvcnBvcmF0ZSBUZWNobm9sb2d5LCBDVCBSREEgSU9UIFNF
+Uy1ERQo+IENvcnBvcmF0ZSBDb21wZXRlbmNlIENlbnRlciBFbWJlZGRlZCBMaW51eAo+Ci0tLS0t
+LS0tLS0tLS0tIG5leHQgcGFydCAtLS0tLS0tLS0tLS0tLQpBIG5vbi10ZXh0IGF0dGFjaG1lbnQg
+d2FzIHNjcnViYmVkLi4uCk5hbWU6IGRpZmYtd2l0aC1vbGQtcnQtZTEwMDBlLmRpZmYKVHlwZTog
+dGV4dC94LXBhdGNoClNpemU6IDQxMDAzMiBieXRlcwpEZXNjOiBub3QgYXZhaWxhYmxlClVSTDog
+PGh0dHA6Ly94ZW5vbWFpLm9yZy9waXBlcm1haWwveGVub21haS9hdHRhY2htZW50cy8yMDE4MTEy
+MS8wYzNiMDIyYS9hdHRhY2htZW50LmJpbj4KLS0tLS0tLS0tLS0tLS0gbmV4dCBwYXJ0IC0tLS0t
+LS0tLS0tLS0tCkEgbm9uLXRleHQgYXR0YWNobWVudCB3YXMgc2NydWJiZWQuLi4KTmFtZTogZGlm
+Zi13aXRoLW5ydC5kaWZmClR5cGU6IHRleHQveC1wYXRjaApTaXplOiA5ODI5NyBieXRlcwpEZXNj
+OiBub3QgYXZhaWxhYmxlClVSTDogPGh0dHA6Ly94ZW5vbWFpLm9yZy9waXBlcm1haWwveGVub21h
+aS9hdHRhY2htZW50cy8yMDE4MTEyMS8wYzNiMDIyYS9hdHRhY2htZW50LTAwMDEuYmluPgo=
