@@ -1,13 +1,9 @@
-Subject: [PATCH 2/2] cobalt: Make some private functions static
-From: Jan Kiszka <jan.kiszka@siemens.com>
-References: <a0ae52fe-fa52-124e-b3e2-b82d2755fa10@siemens.com>
-Message-ID: <c7330a0c-3655-1495-fade-682f6678a1f7@siemens.com>
-Date: Thu, 22 Nov 2018 18:58:17 +0100
+From: Josef Holzmayr <holzmayr@rsi-elektrotechnik.de>
+Subject: [PATCH][xenomai-images] start-qemu.sh: detect if DISPLAY is set
+Date: Thu, 22 Nov 2018 21:43:48 +0100
+Message-Id: <20181122204348.17730-1-holzmayr@rsi-elektrotechnik.de>
 MIME-Version: 1.0
-In-Reply-To: <a0ae52fe-fa52-124e-b3e2-b82d2755fa10@siemens.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,105 +12,49 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Xenomai <xenomai@xenomai.org>
+To: jan.kiszka@siemens.com
+Cc: xenomai@xenomai.org, Josef Holzmayr <holzmayr@rsi-elektrotechnik.de>
 
-Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
+If DISPLAY is not set and therefore the SDL-based
+GUI of QEMU is most likely to fail, we resort to the
+-nographic variant.
+
+Signed-off-by: Josef Holzmayr <holzmayr@rsi-elektrotechnik.de>
 ---
- kernel/cobalt/sched-idle.c | 10 +++++-----
- kernel/cobalt/sched-rt.c   | 10 +++++-----
- kernel/cobalt/sched-weak.c | 10 +++++-----
- 3 files changed, 15 insertions(+), 15 deletions(-)
+ start-qemu.sh | 4 ++++
+ 1 file changed, 4 insertions(+)
 
-diff --git a/kernel/cobalt/sched-idle.c b/kernel/cobalt/sched-idle.c
-index e810294409..1f040c355e 100644
---- a/kernel/cobalt/sched-idle.c
-+++ b/kernel/cobalt/sched-idle.c
-@@ -29,19 +29,19 @@ static int xnsched_idle_setparam(struct xnthread *thread,
- 	return __xnsched_idle_setparam(thread, p);
- }
+diff --git a/start-qemu.sh b/start-qemu.sh
+index 3d1117e..0daf69c 100755
+--- a/start-qemu.sh
++++ b/start-qemu.sh
+@@ -63,6 +63,10 @@ IMAGE_FILE=$(ls ${IMAGE_PREFIX}.ext4.img)
+ KERNEL_FILE=$(ls ${IMAGE_PREFIX}.vmlinuz* | tail -1)
+ INITRD_FILE=$(ls ${IMAGE_PREFIX}.initrd.img* | tail -1)
  
--void xnsched_idle_getparam(struct xnthread *thread,
--			   union xnsched_policy_param *p)
-+static void xnsched_idle_getparam(struct xnthread *thread,
-+				  union xnsched_policy_param *p)
- {
- 	__xnsched_idle_getparam(thread, p);
- }
++if [ -z "${DISPLAY}" ]; then
++	QEMU_EXTRA_ARGS="${QEMU_EXTRA_ARGS} -nographic"
++fi
++
+ shift 1
  
--void xnsched_idle_trackprio(struct xnthread *thread,
--			   const union xnsched_policy_param *p)
-+static void xnsched_idle_trackprio(struct xnthread *thread,
-+				   const union xnsched_policy_param *p)
- {
- 	__xnsched_idle_trackprio(thread, p);
- }
- 
--void xnsched_idle_protectprio(struct xnthread *thread, int prio)
-+static void xnsched_idle_protectprio(struct xnthread *thread, int prio)
- {
- 	__xnsched_idle_protectprio(thread, prio);
- }
-diff --git a/kernel/cobalt/sched-rt.c b/kernel/cobalt/sched-rt.c
-index 834b242605..66ad3d4d0d 100644
---- a/kernel/cobalt/sched-rt.c
-+++ b/kernel/cobalt/sched-rt.c
-@@ -97,19 +97,19 @@ static int xnsched_rt_setparam(struct xnthread *thread,
- 	return __xnsched_rt_setparam(thread, p);
- }
- 
--void xnsched_rt_getparam(struct xnthread *thread,
--			 union xnsched_policy_param *p)
-+static void xnsched_rt_getparam(struct xnthread *thread,
-+				union xnsched_policy_param *p)
- {
- 	__xnsched_rt_getparam(thread, p);
- }
- 
--void xnsched_rt_trackprio(struct xnthread *thread,
--			  const union xnsched_policy_param *p)
-+static void xnsched_rt_trackprio(struct xnthread *thread,
-+				 const union xnsched_policy_param *p)
- {
- 	__xnsched_rt_trackprio(thread, p);
- }
- 
--void xnsched_rt_protectprio(struct xnthread *thread, int prio)
-+static void xnsched_rt_protectprio(struct xnthread *thread, int prio)
- {
- 	__xnsched_rt_protectprio(thread, prio);
- }
-diff --git a/kernel/cobalt/sched-weak.c b/kernel/cobalt/sched-weak.c
-index a9933e48a8..3b42a8e987 100644
---- a/kernel/cobalt/sched-weak.c
-+++ b/kernel/cobalt/sched-weak.c
-@@ -53,14 +53,14 @@ static int xnsched_weak_setparam(struct xnthread *thread,
- 	return xnsched_set_effective_priority(thread, p->weak.prio);
- }
- 
--void xnsched_weak_getparam(struct xnthread *thread,
--			   union xnsched_policy_param *p)
-+static void xnsched_weak_getparam(struct xnthread *thread,
-+				  union xnsched_policy_param *p)
- {
- 	p->weak.prio = thread->cprio;
- }
- 
--void xnsched_weak_trackprio(struct xnthread *thread,
--			    const union xnsched_policy_param *p)
-+static void xnsched_weak_trackprio(struct xnthread *thread,
-+				   const union xnsched_policy_param *p)
- {
- 	if (p)
- 		thread->cprio = p->weak.prio;
-@@ -68,7 +68,7 @@ void xnsched_weak_trackprio(struct xnthread *thread,
- 		thread->cprio = thread->bprio;
- }
- 
--void xnsched_weak_protectprio(struct xnthread *thread, int prio)
-+static void xnsched_weak_protectprio(struct xnthread *thread, int prio)
- {
-   	if (prio > XNSCHED_WEAK_MAX_PRIO)
- 		prio = XNSCHED_WEAK_MAX_PRIO;
+ ${QEMU_PATH}${QEMU} \
 -- 
-2.16.4
+2.19.1
+
+
+-- 
+_____________________________________________________________
+R-S-I Elektrotechnik GmbH & Co. KG
+Woelkestrasse 11
+D-85301 Schweitenkirchen
+Fon: +49 8444 9204-0
+Fax: +49 8444 9204-50
+www.rsi-elektrotechnik.de
+
+_____________________________________________________________
+Amtsgericht Ingolstadt - GmbH: HRB 191328 - KG: HRA 170363
+Gesch���ftsf���hrer: Dr.-Ing. Michael Sorg, Dipl.-Ing. Franz Sorg
+USt-IdNr.: DE 128592548
+
 
