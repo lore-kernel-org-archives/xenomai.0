@@ -1,7 +1,9 @@
-Date: Thu, 22 Nov 2018 01:59:44 -0600 (CST)
+Date: Thu, 22 Nov 2018 02:04:39 -0600 (CST)
 From: Per Oberg <pero@wolfram.com>
-Message-ID: <115121299.13397017.1542873584121.JavaMail.zimbra@wolfram.com>
-Subject: Wiki href-link issue
+Message-ID: <661662801.13397182.1542873879441.JavaMail.zimbra@wolfram.com>
+In-Reply-To: <115121299.13397017.1542873584121.JavaMail.zimbra@wolfram.com>
+References: <115121299.13397017.1542873584121.JavaMail.zimbra@wolfram.com>
+Subject: Re: Wiki href-link issue
 MIME-Version: 1.0
 Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: quoted-printable
@@ -15,28 +17,41 @@ List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: xenomai <xenomai@xenomai.org>
 
-There is an issue with a link on the wiki
+----- Den 22 nov 2018, p=C3=A5 kl 8:59, Per =C3=96berg pero@wolfram.com skr=
+ev:
 
-Page:
-https://gitlab.denx.de/Xenomai/xenomai/wikis/Building_Applications_For_Xeno=
-mai_3
+> There is an issue with a link on the wiki
 
-In the paragraph that reads:=20
+> Page:
+> https://gitlab.denx.de/Xenomai/xenomai/wikis/Building_Applications_For_Xe=
+nomai_3
 
-"Compiling a Xenomai 3 application
-Please refer to this document for
-detailed explanations on the build and setup processes of a Xenomai
-application."
+> In the paragraph that reads:
 
-The link from "this document" is wrong.
+> "Compiling a Xenomai 3 application
+> Please refer to this document for
+> detailed explanations on the build and setup processes of a Xenomai
+> application."
 
-Real link:=20
+> The link from "this document" is wrong.
+
+Oops, should have been the other way around...
+Lets rephrase that.
+
+Current link:
 https://gitlab.denx.de/Xenomai/xenomai/wikis/Application_Setup_And_Init
 
-Wrong link:
+Should be:
 https://gitlab.denx.de/Xenomai/xenomai/wikis/App_Setup_And_Init
 
+> Real link:
+> https://gitlab.denx.de/Xenomai/xenomai/wikis/Application_Setup_And_Init
 
-Regards
+> Wrong link:
+> https://gitlab.denx.de/Xenomai/xenomai/wikis/App_Setup_And_Init
+
+> Regards
+> Per =C3=96berg
+
 Per =C3=96berg=20
 
