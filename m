@@ -1,14 +1,11 @@
-Subject: Re: Wiki href-link issue
-References: <115121299.13397017.1542873584121.JavaMail.zimbra@wolfram.com>
- <661662801.13397182.1542873879441.JavaMail.zimbra@wolfram.com>
-From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <39c36888-5f45-649e-4a85-13aef4b13325@siemens.com>
-Date: Thu, 22 Nov 2018 14:17:22 +0100
+From: leo <feedcom@rambler.ru>
+Subject: xenomai-doc.deb is not built for the next branch
+Message-ID: <06dad7fa-7579-9565-97d3-68cb8c33e7a9@rambler.ru>
+Date: Thu, 22 Nov 2018 20:57:16 +0300
 MIME-Version: 1.0
-In-Reply-To: <661662801.13397182.1542873879441.JavaMail.zimbra@wolfram.com>
-Content-Type: text/plain; charset="utf-8"; format="flowed"
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+Content-Language: ru-RU
+Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset="utf-8"; Format="flowed"
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,52 +14,33 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Per Oberg <pero@wolfram.com>, xenomai <xenomai@xenomai.org>
+To: Xenomai@xenomai.org
 
-On 22.11.18 09:04, Per Oberg via Xenomai wrote:
-> ----- Den 22 nov 2018, på kl 8:59, Per Öberg pero@wolfram.com skrev:
-> 
->> There is an issue with a link on the wiki
-> 
->> Page:
->> https://gitlab.denx.de/Xenomai/xenomai/wikis/Building_Applications_For_Xenomai_3
-> 
->> In the paragraph that reads:
-> 
->> "Compiling a Xenomai 3 application
->> Please refer to this document for
->> detailed explanations on the build and setup processes of a Xenomai
->> application."
-> 
->> The link from "this document" is wrong.
-> 
-> Oops, should have been the other way around...
-> Lets rephrase that.
-> 
-> Current link:
-> https://gitlab.denx.de/Xenomai/xenomai/wikis/Application_Setup_And_Init
-> 
-> Should be:
-> https://gitlab.denx.de/Xenomai/xenomai/wikis/App_Setup_And_Init
-> 
->> Real link:
->> https://gitlab.denx.de/Xenomai/xenomai/wikis/Application_Setup_And_Init
-> 
->> Wrong link:
->> https://gitlab.denx.de/Xenomai/xenomai/wikis/App_Setup_And_Init
-> 
->> Regards
->> Per Öberg
-> 
-> Per Öberg
-> 
-> 
-
-Fixed, thanks for reporting!
-
-Jan
-
--- 
-Siemens AG, Corporate Technology, CT RDA IOT SES-DE
-Corporate Competence Center Embedded Linux
-
+QWxsIGdvb2QgaGVhbHRoLgoKSSBhbSB0cnlpbmcgdG8gYnVpbGQgYWxsIHhlbm9tYWkgcGFja2Fn
+ZXMgZm9yIFVidW50dS0xOC4wNApmcm9tIHRoZSBuZXh0IGJyYW5jaCBmb3IgYXJtNjQgYXJjaGl0
+ZWN0dXJlLgpodHRwczovL2dpdGxhYi5kZW54LmRlL1hlbm9tYWkveGVub21haS90cmVlL25leHQK
+CkNvbmZpZ3VyYXRpb24gc2V0dGluZ3MgaW4gLi8gZGViaWFuL3J1bGVzIGxlZCB0bzoKQ09ORklH
+X09QVFMgPSAtLXByZWZpeD0vdXNyIFwKICAgICAgICAgICAgIC0taW5jbHVkZWRpcj0vdXNyL2lu
+Y2x1ZGUveGVub21haSBcCiAgICAgICAgICAgICAtLW1hbmRpcj0vdXNyL3NoYXJlL21hbiBcCiAg
+ICAgICAgICAgICAtLXdpdGgtdGVzdGRpcj0vdXNyL2xpYi94ZW5vbWFpL3Rlc3RzdWl0ZSBcCiAg
+ICAgICAgICAgICAtLWVuYWJsZS1zbXAgXAoJICAgIC0tZW5hYmxlLWRvYy1idWlsZAoKV2hpbGUg
+b24gSEVBRCwgY29tbWl0IDA0ZDg3NGNlLCBhbGwgcGFja2FnZXMgYXJlIG5vdCBidWlsdC4KRXJy
+b3IgcmVsYXRlZCB0byB0aGUgYWJzZW5jZSBvZiBodG1sL2FzY2lpZG9jLWljb25zIGRpcmVjdG9y
+eQphbmQgaXRzIGNvbnRlbnRzLgoKSW4gVWJ1bnR1IC91c3Ivc2hhcmUvYXNjaWlkb2MvaW1hZ2Vz
+L2ljb25zIHRoaXMgaXMgYSBsaW5rIHRvIC4uL2ljb25zCnNvIHRoZSBjb21tYW5kIGZyb20gdGhl
+IGZpbGUgZG9jL2FzY2lpZG9jL01ha2VmaWxlLmFtCgpjcCAtYSAvdXNyL3NoYXJlL2FzY2lpZG9j
+L2ltYWdlcy9pY29ucyBodG1sL2FzY2lpZG9jLWljb25zIHx8IFwKY3AgLWEgL3Vzci9zaGFyZS9h
+c2NpaWRvYy9pY29ucyBodG1sL2FzY2lpZG9jLWljb25zCgpzaW1wbHkgY29waWVzIGEgc3ltYm9s
+aWMgbGluayB0byB0aGUgZGlyZWN0b3J5IGFuZApjb21wbGV0ZXMgd2l0aG91dCBlcnJvci4KQXMg
+YSByZXN1bHQsIHdlIGhhdmUgYSBicm9rZW4gbGluayBpbiB0aGUgdGFyZ2V0IGRpcmVjdG9yeS4K
+CkZvciBleGFtcGxlIGluIE9wZW5TVVNFIC91c3Ivc2hhcmUvYXNjaWlkb2MvaW1hZ2VzL2ljb25z
+CnRoaXMgaXMgdGhlIGRpcmVjdG9yeSBhbmQgbm8gZXJyb3Igb2NjdXJzLgoKUGF0Y2ggMDAxLWZp
+eC1jb3BpLWljb25zLnBhdGNoIGZpeGVzIHRoaXMgaXNzdWUuCgpBZnRlciBhcHBseWluZyB0aGUg
+cGF0Y2gsIHRoZSBjb21waWxhdGlvbiBwYXNzZXMgd2l0aG91dCBlcnJvcnMsCnRoZSBkb2N1bWVu
+dGF0aW9uIGluIHRoZSAkKERFU1RESVIpIGZvbGRlciBpcyBwcmVzZW50CmJ1dCB0aGUgeGVub21h
+aS1kb2MuZGViIHBhY2thZ2UgaXMgbWlzc2luZy4KCi0tCkxlb25pZAotLS0tLS0tLS0tLS0tLSBu
+ZXh0IHBhcnQgLS0tLS0tLS0tLS0tLS0KQSBub24tdGV4dCBhdHRhY2htZW50IHdhcyBzY3J1YmJl
+ZC4uLgpOYW1lOiAwMDEtZml4LWNvcHktaWNvbnMucGF0Y2gKVHlwZTogdGV4dC94LXBhdGNoClNp
+emU6IDg2MCBieXRlcwpEZXNjOiBub3QgYXZhaWxhYmxlClVSTDogPGh0dHA6Ly94ZW5vbWFpLm9y
+Zy9waXBlcm1haWwveGVub21haS9hdHRhY2htZW50cy8yMDE4MTEyMi8wYWIwNGZiNC9hdHRhY2ht
+ZW50LmJpbj4K
