@@ -1,9 +1,10 @@
-From: Philippe Gerum <rpm@xenomai.org>
-Subject: [PATCH 9/9] net/igb: igb_ioctl() requires execution in secondary mode
-Date: Fri, 26 Oct 2018 16:08:25 +0200
-Message-Id: <20181026140825.5251-9-rpm@xenomai.org>
-In-Reply-To: <20181026140825.5251-1-rpm@xenomai.org>
-References: <20181026140825.5251-1-rpm@xenomai.org>
+Date: Thu, 22 Nov 2018 01:59:44 -0600 (CST)
+From: Per Oberg <pero@wolfram.com>
+Message-ID: <115121299.13397017.1542873584121.JavaMail.zimbra@wolfram.com>
+Subject: Wiki href-link issue
+MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -12,29 +13,30 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
-Cc: Jan Kiszka <jan.kiszka@siemens.com>, Philippe Gerum <rpm@xenomai.org>
+To: xenomai <xenomai@xenomai.org>
 
-We may have to call the regular MII layer from this routine.
----
- kernel/drivers/net/drivers/igb/igb_main.c | 3 +++
- 1 file changed, 3 insertions(+)
+There is an issue with a link on the wiki
 
-diff --git a/kernel/drivers/net/drivers/igb/igb_main.c b/kernel/drivers/net/drivers/igb/igb_main.c
-index 0a6cd4bd6..c1d1000ea 100644
---- a/kernel/drivers/net/drivers/igb/igb_main.c
-+++ b/kernel/drivers/net/drivers/igb/igb_main.c
-@@ -5067,6 +5067,9 @@ static int igb_mii_ioctl(struct rtnet_device *netdev, struct ifreq *ifr, int cmd
-  **/
- static int igb_ioctl(struct rtnet_device *netdev, struct ifreq *ifr, int cmd)
- {
-+	if (rtdm_in_rt_context())
-+		return -ENOSYS;
-+	
- 	switch (cmd) {
- 	case SIOCGMIIPHY:
- 	case SIOCGMIIREG:
--- 
-2.17.2
+Page:
+https://gitlab.denx.de/Xenomai/xenomai/wikis/Building_Applications_For_Xeno=
+mai_3
 
+In the paragraph that reads:=20
+
+"Compiling a Xenomai 3 application
+Please refer to this document for
+detailed explanations on the build and setup processes of a Xenomai
+application."
+
+The link from "this document" is wrong.
+
+Real link:=20
+https://gitlab.denx.de/Xenomai/xenomai/wikis/Application_Setup_And_Init
+
+Wrong link:
+https://gitlab.denx.de/Xenomai/xenomai/wikis/App_Setup_And_Init
+
+
+Regards
+Per =C3=96berg=20
 
