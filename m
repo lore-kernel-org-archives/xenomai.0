@@ -1,14 +1,11 @@
-Subject: [PATCH][stable/v3.0.x] Rename __clz to xenomai_count_leading_zeros
-References: <VI1PR0701MB21260355274B872433DC1B60B5DA0@VI1PR0701MB2126.eurprd07.prod.outlook.com>
- <b4ce6760-78c2-e6ca-ca5b-e7e30a1006e9@siemens.com>
 From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <72fff697-1d69-fd39-8a30-d5eb1794650a@siemens.com>
-Date: Fri, 23 Nov 2018 14:51:56 +0100
-MIME-Version: 1.0
-In-Reply-To: <b4ce6760-78c2-e6ca-ca5b-e7e30a1006e9@siemens.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Subject: [xenomai-images][PATCH 2/3] Update to latest Isar next
+Date: Fri, 23 Nov 2018 14:54:29 +0100
+Message-Id: <d826a32bc4373de7b89837c969f120a1598be6ab.1542981269.git.jan.kiszka@siemens.com>
+In-Reply-To: <cover.1542981269.git.jan.kiszka@siemens.com>
+References: <cover.1542981269.git.jan.kiszka@siemens.com>
+In-Reply-To: <cover.1542981269.git.jan.kiszka@siemens.com>
+References: <cover.1542981269.git.jan.kiszka@siemens.com>
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,47 +14,124 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Giulio Moro <g.moro@qmul.ac.uk>, "Xenomai@xenomai.org" <Xenomai@xenomai.org>
+To: xenomai@xenomai.org
 
-From: Giulio Moro <giuliomoro@yahoo.it>
+From: Jan Kiszka <jan.kiszka@siemens.com>
 
-This is to avoid namespace conflicts (e.g.: with Clang's arm_acle.h)
+This allows to drop the local patch, requires to set uid:gid on chroot
+and set LAYERSERIES_COMPAT_xenomai.
 
-Signed-off-by: Giulio Moro <giuliomoro@yahoo.it>
-[Jan: back-ported to 3.0.x]
 Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
 ---
- include/boilerplate/compiler.h    | 2 +-
- lib/copperplate/heapobj-pshared.c | 3 ++-
- 2 files changed, 3 insertions(+), 2 deletions(-)
+ conf/layer.conf                                    |  2 ++
+ ...m-Update-isar-apt-prior-to-installing-bui.patch | 38 ----------------------
+ kas.yml                                            |  6 +---
+ recipes-kernel/linux/linux-xenomai.inc             |  2 +-
+ recipes-xenomai/xenomai/xenomai_next.bb            |  3 +-
+ 5 files changed, 6 insertions(+), 45 deletions(-)
+ delete mode 100644 isar-patches/0001-linux-custom-Update-isar-apt-prior-to-installing-bui.patch
 
-diff --git a/include/boilerplate/compiler.h b/include/boilerplate/compiler.h
-index bcef7d4cc8..846cd79e82 100644
---- a/include/boilerplate/compiler.h
-+++ b/include/boilerplate/compiler.h
-@@ -83,7 +83,7 @@ void __invalid_operand_size(void);
- 		__ret;							\
- 	})
+diff --git a/conf/layer.conf b/conf/layer.conf
+index d4fb919..f665993 100644
+--- a/conf/layer.conf
++++ b/conf/layer.conf
+@@ -18,4 +18,6 @@ BBFILE_COLLECTIONS += "xenomai"
+ BBFILE_PATTERN_xenomai = "^${LAYERDIR}/"
+ BBFILE_PRIORITY_xenomai = "6"
  
--#define __clz(__v)							\
-+#define xenomai_count_leading_zeros(__v)				\
- 	({								\
- 		int __ret;						\
- 		if (!__v)						\
-diff --git a/lib/copperplate/heapobj-pshared.c b/lib/copperplate/heapobj-pshared.c
-index d4324dfd11..0d640ca5b5 100644
---- a/lib/copperplate/heapobj-pshared.c
-+++ b/lib/copperplate/heapobj-pshared.c
-@@ -439,7 +439,8 @@ static void *alloc_block(struct shared_heap *heap, size_t size)
- 	 */
- 	if (size <= HOBJ_PAGE_SIZE * 2) {
- 		/* Find log2(size). */
--		log2size = sizeof(size) * 8 - 1 - __clz(size);
-+		log2size = sizeof(size) * 8 - 1 -
-+			xenomai_count_leading_zeros(size);
- 		if (size & (size - 1))
- 			log2size++;
- 		/* That is the actual block size we need. */
++LAYERSERIES_COMPAT_xenomai = "next"
++
+ LAYERDIR_xenomai = "${LAYERDIR}"
+diff --git a/isar-patches/0001-linux-custom-Update-isar-apt-prior-to-installing-bui.patch b/isar-patches/0001-linux-custom-Update-isar-apt-prior-to-installing-bui.patch
+deleted file mode 100644
+index 5953ae8..0000000
+--- a/isar-patches/0001-linux-custom-Update-isar-apt-prior-to-installing-bui.patch
++++ /dev/null
+@@ -1,38 +0,0 @@
+-From 1951178503036e47931e5bccbab241c11e949c52 Mon Sep 17 00:00:00 2001
+-From: Jan Kiszka <jan.kiszka@siemens.com>
+-Date: Tue, 6 Nov 2018 09:43:22 +0100
+-Subject: [PATCH] linux-custom: Update isar-apt prior to installing build deps
+-
+-Some of them may have been built by a recipe.
+-
+-Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
+----
+- meta/recipes-kernel/linux/linux-custom.inc | 7 +++++++
+- 1 file changed, 7 insertions(+)
+-
+-diff --git a/meta/recipes-kernel/linux/linux-custom.inc b/meta/recipes-kernel/linux/linux-custom.inc
+-index e9a68fd..d9b2935 100644
+---- a/meta/recipes-kernel/linux/linux-custom.inc
+-+++ b/meta/recipes-kernel/linux/linux-custom.inc
+-@@ -27,11 +27,18 @@ KERNEL_DEBIAN_DEPENDS ?= "initramfs-tools | linux-initramfs-tool, kmod, linux-ba
+- KERNEL_HEADERS_DEBIAN_DEPENDS ?= "libc6, libssl1.1"
+- 
+- do_install_builddeps() {
+-+	dpkg_do_mounts
+- 	E="${@ bb.utils.export_proxies(d)}"
+-+	sudo -E chroot ${BUILDCHROOT_DIR} \
+-+		apt-get update \
+-+			-o Dir::Etc::sourcelist="sources.list.d/isar-apt.list" \
+-+			-o Dir::Etc::sourceparts="-" \
+-+			-o APT::Get::List-Cleanup="0"
+- 	sudo -E chroot ${BUILDCHROOT_DIR} \
+- 		apt-get install \
+- 			-y -o Debug::pkgProblemResolver=yes \
+- 			--no-install-recommends ${KBUILD_DEPENDS}
+-+	dpkg_undo_mounts
+- }
+- 
+- addtask install_builddeps after do_prepare_build before do_build
+--- 
+-2.16.4
+-
+diff --git a/kas.yml b/kas.yml
+index 4bbfcaa..2af48a6 100644
+--- a/kas.yml
++++ b/kas.yml
+@@ -19,14 +19,10 @@ repos:
+ 
+   isar:
+     url: https://github.com/ilbers/isar
+-    refspec: be291cd991bd64051f5e34af24b04feddaaea48c
++    refspec: 1e24c4b477142925834eee29a4b5cdb317599a29
+     layers:
+       meta:
+       meta-isar:
+-    patches:
+-      fixes:
+-        repo: xenomai
+-        path: isar-patches/0001-linux-custom-Update-isar-apt-prior-to-installing-bui.patch
+ 
+ bblayers_conf_header:
+   standard: |
+diff --git a/recipes-kernel/linux/linux-xenomai.inc b/recipes-kernel/linux/linux-xenomai.inc
+index 07747f7..d93e614 100644
+--- a/recipes-kernel/linux/linux-xenomai.inc
++++ b/recipes-kernel/linux/linux-xenomai.inc
+@@ -34,7 +34,7 @@ dpkg_runbuild_prepend() {
+ 		exit 1
+ 	esac
+ 
+-	sudo chroot ${BUILDCHROOT_DIR} \
++	sudo chroot --userspec=$( id -u ):$( id -g ) ${BUILDCHROOT_DIR} \
+ 		/usr/src/xenomai-kernel-source/scripts/prepare-kernel.sh \
+ 			--linux=${PP}/${PPS} --arch=$ARCH
+ }
+diff --git a/recipes-xenomai/xenomai/xenomai_next.bb b/recipes-xenomai/xenomai/xenomai_next.bb
+index 6bc43ac..72e5758 100644
+--- a/recipes-xenomai/xenomai/xenomai_next.bb
++++ b/recipes-xenomai/xenomai/xenomai_next.bb
+@@ -22,5 +22,6 @@ dpkg_runbuild_prepend() {
+     bbplain $(printf "xenomai-next: Building revision %.12s\n" \
+                      $(cat ${S}/.git/refs/heads/next))
+ 
+-    sudo chroot ${BUILDCHROOT_DIR} sh -c "cd ${PP}/${PPS}; scripts/bootstrap"
++    sudo chroot --userspec=$( id -u ):$( id -g ) ${BUILDCHROOT_DIR} \
++        sh -c "cd ${PP}/${PPS}; scripts/bootstrap"
+ }
 -- 
 2.16.4
+
 
