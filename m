@@ -1,13 +1,13 @@
-Subject: Re: [PATCH] Rename __clz to xenomai_count_leading_zeros
-References: <VI1PR0701MB21260355274B872433DC1B60B5DA0@VI1PR0701MB2126.eurprd07.prod.outlook.com>
-From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <b4ce6760-78c2-e6ca-ca5b-e7e30a1006e9@siemens.com>
-Date: Fri, 23 Nov 2018 13:49:56 +0100
-MIME-Version: 1.0
-In-Reply-To: <VI1PR0701MB21260355274B872433DC1B60B5DA0@VI1PR0701MB2126.eurprd07.prod.outlook.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Message-ID: <1542977379.2348.5.camel@smigroup.net>
+Subject: Re: rtping differences between master and slaves
+From: Mauro Salvini <mauro.salvini@smigroup.net>
+Date: Fri, 23 Nov 2018 13:49:39 +0100
+In-Reply-To: <043f0216-fb11-e022-66b8-738f5cd93aee@siemens.com>
+References: <1542970266.2348.3.camel@smigroup.net>
+ <043f0216-fb11-e022-66b8-738f5cd93aee@siemens.com>
+Content-Type: text/plain; charset="UTF-8"
+Mime-Version: 1.0
+Content-Transfer-Encoding: quoted-printable
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,90 +16,110 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Giulio Moro <g.moro@qmul.ac.uk>
-Cc: "Xenomai@xenomai.org" <Xenomai@xenomai.org>
+To: Jan Kiszka <jan.kiszka@siemens.com>, xenomai <xenomai@xenomai.org>
 
-On 22.11.18 13:41, Giulio Moro via Xenomai wrote:
->  From 398a77d3d172c10cda9826a7cc2a15266ff4c6a9 Mon Sep 17 00:00:00 2001
-> From: Giulio Moro <giuliomoro@yahoo.it>
-> Date: Sat, 10 Nov 2018 20:23:10 +0000
-> Subject: [PATCH] Rename __clz to xenomai_count_leading_zeros.
-> 
-> This is to avoid namespace conflicts (e.g.: with Clang's arm_acle.h)
-> 
-> Signed-off-by: Giulio Moro <giuliomoro@yahoo.it>
-> ---
->   include/boilerplate/compiler.h    | 2 +-
->   lib/boilerplate/heapmem.c         | 3 ++-
->   lib/copperplate/heapobj-heapmem.c | 3 ++-
->   lib/copperplate/heapobj-pshared.c | 3 ++-
->   4 files changed, 7 insertions(+), 4 deletions(-)
-> 
-> diff --git a/include/boilerplate/compiler.h b/include/boilerplate/compiler.h
-> index ffeb6a4db..0fcc17be1 100644
-> --- a/include/boilerplate/compiler.h
-> +++ b/include/boilerplate/compiler.h
-> @@ -93,7 +93,7 @@ void __invalid_operand_size(void);
->   		__ret;							\
->   	})
-> 
-> -#define __clz(__v)							\
-> +#define xenomai_count_leading_zeros(__v)				\
->   	({								\
->   		int __ret;						\
->   		if (!__v)						\
-> diff --git a/lib/boilerplate/heapmem.c b/lib/boilerplate/heapmem.c
-> index 9b5e1a636..8728e0d15 100644
-> --- a/lib/boilerplate/heapmem.c
-> +++ b/lib/boilerplate/heapmem.c
-> @@ -435,7 +435,8 @@ void *heapmem_alloc(struct heap_memory *heap, size_t size)
->   		bsize = size = HEAPMEM_MIN_ALIGN;
->   		log2size = HEAPMEM_MIN_LOG2;
->   	} else {
-> -		log2size = sizeof(size) * CHAR_BIT - 1 - __clz(size);
-> +		log2size = sizeof(size) * CHAR_BIT - 1 -
-> +			xenomai_count_leading_zeros(size);
->   		if (log2size < HEAPMEM_PAGE_SHIFT) {
->   			if (size & (size - 1))
->   				log2size++;
-> diff --git a/lib/copperplate/heapobj-heapmem.c b/lib/copperplate/heapobj-heapmem.c
-> index 2b99b3d39..2737fa7ac 100644
-> --- a/lib/copperplate/heapobj-heapmem.c
-> +++ b/lib/copperplate/heapobj-heapmem.c
-> @@ -68,7 +68,8 @@ int __heapobj_init_private(struct heapobj *hobj, const char *name,
->   int heapobj_init_array_private(struct heapobj *hobj, const char *name,
->   			       size_t size, int elems)
->   {
-> -	size_t log2 = sizeof(size) * CHAR_BIT - 1 - __clz(size);
-> +	size_t log2 = sizeof(size) * CHAR_BIT - 1 -
-> +		xenomai_count_leading_zeros(size);
-> 
->   	/*
->   	 * Heapmem aligns individual object sizes on the next ^2
-> diff --git a/lib/copperplate/heapobj-pshared.c b/lib/copperplate/heapobj-pshared.c
-> index 77b45844f..5310d9092 100644
-> --- a/lib/copperplate/heapobj-pshared.c
-> +++ b/lib/copperplate/heapobj-pshared.c
-> @@ -488,7 +488,8 @@ static void *sheapmem_alloc(struct shared_heap_memory *heap, size_t size)
->   		bsize = size = SHEAPMEM_MIN_ALIGN;
->   		log2size = SHEAPMEM_MIN_LOG2;
->   	} else {
-> -		log2size = sizeof(size) * CHAR_BIT - 1 - __clz(size);
-> +		log2size = sizeof(size) * CHAR_BIT - 1 -
-> +			xenomai_count_leading_zeros(size);
->   		if (log2size < SHEAPMEM_PAGE_SHIFT) {
->   			if (size & (size - 1))
->   				log2size++;
-> --
-> 2.11.0
-> 
-> 
+On Fri, 2018-11-23 at 12:49 +0100, Jan Kiszka wrote:
+> On 23.11.18 11:51, Mauro Salvini via Xenomai wrote:
+> > Hi all,
+> >=20
+> > I'm trying RTNet (an old version: 0.9.13) on Xenomai (yet another
+> > old
+> > version, 2.5.6: unluckily I cannot move to newer versions).
+> >=20
+> > My setup has 3 identical nodes on isolated RT network: cycle time
+> > of
+> > 5000us, master with slot offset 0, slave A with slot offset 200us
+> > and
+> > slave B with slot offset 400us; network is configured using rtnet
+> > utility script.
+> >=20
+> > Using rtping I observe two different behaviors on slaves and
+> > master.
+> >=20
+> > For example, pinging slave A from B:
+> >=20
+> > ...
+> > 64 bytes from 10.0.43.91: icmp_seq=3D1 time=3D7777.7 us
+> > 64 bytes from 10.0.43.91: icmp_seq=3D2 time=3D7846.3 us
+> > 64 bytes from 10.0.43.91: icmp_seq=3D3 time=3D7966.6 us
+> > 64 bytes from 10.0.43.91: icmp_seq=3D4 time=3D8096.6 us
+> > ...
+> > 64 bytes from 10.0.43.91: icmp_seq=3D15 time=3D9461.7 us
+> > 64 bytes from 10.0.43.91: icmp_seq=3D16 time=3D9604.2 us
+> > 64 bytes from 10.0.43.91: icmp_seq=3D17 time=3D4719.5 us
+> > 64 bytes from 10.0.43.91: icmp_seq=3D18 time=3D4844.7 us
+> > 64 bytes from 10.0.43.91: icmp_seq=3D19 time=3D4968.3 us
+> > 64 bytes from 10.0.43.91: icmp_seq=3D20 time=3D5124.4 us
+> > ...
+> > 64 bytes from 10.0.43.91: icmp_seq=3D53 time=3D9215.4 us
+> > 64 bytes from 10.0.43.91: icmp_seq=3D54 time=3D9331.5 us
+> > 64 bytes from 10.0.43.91: icmp_seq=3D55 time=3D9461.0 us
+> > 64 bytes from 10.0.43.91: icmp_seq=3D56 time=3D9585.3 us
+> > 64 bytes from 10.0.43.91: icmp_seq=3D57 time=3D4712.5 us
+> > 64 bytes from 10.0.43.91: icmp_seq=3D58 time=3D4847.0 us
+> > 64 bytes from 10.0.43.91: icmp_seq=3D59 time=3D4967.2 us
+> > ...
+> >=20
+> > so time varies between a minimum equal to time distance between two
+> > slots and a maximum equal to this time plus cycle duration. This
+> > can
+> > makes sense supposing that Linux timer used to generate ping
+> > request in
+> > rtping.c slowly drifts from real-time timer that governs tx slot,
+> > so
+> > the duration changes between requests depending on when request
+> > happens
+> > into the TDMA cycle. Same behavior if I ping A from B or if I ping
+> > master from A or B.
+> >=20
+> > On master I instead observe this (pinging slave A or B equally):
+> >=20
+> > ...
+> > 64 bytes from 10.0.43.89: icmp_seq=3D1 time=3D2434.1 us
+> > 64 bytes from 10.0.43.89: icmp_seq=3D2 time=3D2443.1 us
+> > 64 bytes from 10.0.43.89: icmp_seq=3D3 time=3D2438.7 us
+> > 64 bytes from 10.0.43.89: icmp_seq=3D4 time=3D2450.0 us
+> > 64 bytes from 10.0.43.89: icmp_seq=3D5 time=3D2447.9 us
+> > 64 bytes from 10.0.43.89: icmp_seq=3D6 time=3D2450.6 us
+> > 64 bytes from 10.0.43.89: icmp_seq=3D7 time=3D2428.5 us
+> > 64 bytes from 10.0.43.89: icmp_seq=3D8 time=3D2442.8 us
+> > 64 bytes from 10.0.43.89: icmp_seq=3D9 time=3D2442.3 us
+> > ...
+> >=20
+> > ping duration is constant into a rtping execution (changes between
+> > different executions).
+> >=20
+> > So I'm puzzling about this difference and I wonder if this is
+> > normal or
+> > if there could be problems.
+> >=20
+>=20
+> As you are running RTmac/TDMA: The latency is affected by when during
+> some cycle=C2=A0
+> you issue the ICMP request. This is not synchronized with the cycle,
+> so you will=C2=A0
+> see random shifts there already. Furthermore, if station A has a time
+> slot=C2=A0
+> before station B and A issues the ping, B may have a change to reply
+> in the same=C2=A0
+> cycle. If you change roles, this is surely not possible, thus you get
+> different=C2=A0
+> round trip times.
 
-Thanks, applied to next.
+Thank Jan for quick answer.
 
-Jan
+Yes, I understood your explanation, that perfectly clarify rtping
+between A and B.
 
--- 
-Siemens AG, Corporate Technology, CT RDA IOT SES-DE
-Corporate Competence Center Embedded Linux
+Instead, about the constant ping duration when master pings a slave: is
+due to the fact that on master ICMP requests are synchronized with the
+cycle?
+
+Thanks in advance, regards
+
+Mauro
+
+>=20
+> Jan
+>=20
 
