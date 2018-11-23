@@ -1,13 +1,13 @@
-Subject: Re: Testing of 4.4/Ipipe + Xenomai 3.0.X on ARM32
-References: <20181123122716.tgg3utytwyrkzyid@jholzmayr.localdomain>
+Subject: Re: [PATCH] Rename __clz to xenomai_count_leading_zeros
+References: <VI1PR0701MB21260355274B872433DC1B60B5DA0@VI1PR0701MB2126.eurprd07.prod.outlook.com>
 From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <d1808069-d213-7e9f-010f-abd2c88b0480@siemens.com>
-Date: Fri, 23 Nov 2018 13:48:27 +0100
+Message-ID: <b4ce6760-78c2-e6ca-ca5b-e7e30a1006e9@siemens.com>
+Date: Fri, 23 Nov 2018 13:49:56 +0100
 MIME-Version: 1.0
-In-Reply-To: <20181123122716.tgg3utytwyrkzyid@jholzmayr.localdomain>
-Content-Type: text/plain; charset="utf-8"; format="flowed"
+In-Reply-To: <VI1PR0701MB21260355274B872433DC1B60B5DA0@VI1PR0701MB2126.eurprd07.prod.outlook.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,61 +16,88 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Josef Holzmayr <holzmayr@rsi-elektrotechnik.de>, xenomai@xenomai.org
+To: Giulio Moro <g.moro@qmul.ac.uk>
+Cc: "Xenomai@xenomai.org" <Xenomai@xenomai.org>
 
-Hi Sepp,
-
-On 23.11.18 13:27, Josef Holzmayr via Xenomai wrote:
-> Hello!
+On 22.11.18 13:41, Giulio Moro via Xenomai wrote:
+>  From 398a77d3d172c10cda9826a7cc2a15266ff4c6a9 Mon Sep 17 00:00:00 2001
+> From: Giulio Moro <giuliomoro@yahoo.it>
+> Date: Sat, 10 Nov 2018 20:23:10 +0000
+> Subject: [PATCH] Rename __clz to xenomai_count_leading_zeros.
 > 
-> To improve the testing situation for the 4.4 Kernel family on ARM32, I
-> created a set of layers [1] for OpenEmbedded. Currently the features are
-> rather limited:
+> This is to avoid namespace conflicts (e.g.: with Clang's arm_acle.h)
 > 
-> - only the Morty branch exists, as this one natively includes Linux 4.4
->    and therefore the GCC version etc. matches.
-
-To my best knowledge, there is no dependency (yet) between a too new compiler 
-and kernel 4.4. We are building 4.4-cip with pyro, e.g.
-
-> - only one BSP layer so far, namely the Beaglebone. This was chosen for
->    two major reasons: a) it is supported well enough in 4.4. to not need
->    additional patches which might introduce new issues, and b) it is
->    hardware that I have here ready for testing.
-
-I was thinking about which ARMv7 board to add to xenomai-images (enabling qemu 
-will be first, though), and that is a good candidate there as well.
-
-Another half-done topic here: CI builds. For that, the BB defconfig could be 
-useful too.
-
-> - no higher automation like a kas cofiguration so far. Yet this probably
->    will be the first limitation to be gotten rid of.
+> Signed-off-by: Giulio Moro <giuliomoro@yahoo.it>
+> ---
+>   include/boilerplate/compiler.h    | 2 +-
+>   lib/boilerplate/heapmem.c         | 3 ++-
+>   lib/copperplate/heapobj-heapmem.c | 3 ++-
+>   lib/copperplate/heapobj-pshared.c | 3 ++-
+>   4 files changed, 7 insertions(+), 4 deletions(-)
 > 
-> My current planning is to add a set of testing scripts based of
-> Philippe's suggestion, and run that suite on each new release for a
-> couple of days and post the results to the ML.
-
-That sounds very helpful! We should try to keep common parts (anything unrelated 
-to the image build system) in the core so that we can reuse that in 
-xenomai-images as well.
-
+> diff --git a/include/boilerplate/compiler.h b/include/boilerplate/compiler.h
+> index ffeb6a4db..0fcc17be1 100644
+> --- a/include/boilerplate/compiler.h
+> +++ b/include/boilerplate/compiler.h
+> @@ -93,7 +93,7 @@ void __invalid_operand_size(void);
+>   		__ret;							\
+>   	})
 > 
-> Preliminary results to kick off things:
-> - xeno-test completes successfully
-> - latency -t0 under load maxes at ~58µs
-> - latency -t2 under load maxes at ~18µs
+> -#define __clz(__v)							\
+> +#define xenomai_count_leading_zeros(__v)				\
+>   	({								\
+>   		int __ret;						\
+>   		if (!__v)						\
+> diff --git a/lib/boilerplate/heapmem.c b/lib/boilerplate/heapmem.c
+> index 9b5e1a636..8728e0d15 100644
+> --- a/lib/boilerplate/heapmem.c
+> +++ b/lib/boilerplate/heapmem.c
+> @@ -435,7 +435,8 @@ void *heapmem_alloc(struct heap_memory *heap, size_t size)
+>   		bsize = size = HEAPMEM_MIN_ALIGN;
+>   		log2size = HEAPMEM_MIN_LOG2;
+>   	} else {
+> -		log2size = sizeof(size) * CHAR_BIT - 1 - __clz(size);
+> +		log2size = sizeof(size) * CHAR_BIT - 1 -
+> +			xenomai_count_leading_zeros(size);
+>   		if (log2size < HEAPMEM_PAGE_SHIFT) {
+>   			if (size & (size - 1))
+>   				log2size++;
+> diff --git a/lib/copperplate/heapobj-heapmem.c b/lib/copperplate/heapobj-heapmem.c
+> index 2b99b3d39..2737fa7ac 100644
+> --- a/lib/copperplate/heapobj-heapmem.c
+> +++ b/lib/copperplate/heapobj-heapmem.c
+> @@ -68,7 +68,8 @@ int __heapobj_init_private(struct heapobj *hobj, const char *name,
+>   int heapobj_init_array_private(struct heapobj *hobj, const char *name,
+>   			       size_t size, int elems)
+>   {
+> -	size_t log2 = sizeof(size) * CHAR_BIT - 1 - __clz(size);
+> +	size_t log2 = sizeof(size) * CHAR_BIT - 1 -
+> +		xenomai_count_leading_zeros(size);
+> 
+>   	/*
+>   	 * Heapmem aligns individual object sizes on the next ^2
+> diff --git a/lib/copperplate/heapobj-pshared.c b/lib/copperplate/heapobj-pshared.c
+> index 77b45844f..5310d9092 100644
+> --- a/lib/copperplate/heapobj-pshared.c
+> +++ b/lib/copperplate/heapobj-pshared.c
+> @@ -488,7 +488,8 @@ static void *sheapmem_alloc(struct shared_heap_memory *heap, size_t size)
+>   		bsize = size = SHEAPMEM_MIN_ALIGN;
+>   		log2size = SHEAPMEM_MIN_LOG2;
+>   	} else {
+> -		log2size = sizeof(size) * CHAR_BIT - 1 - __clz(size);
+> +		log2size = sizeof(size) * CHAR_BIT - 1 -
+> +			xenomai_count_leading_zeros(size);
+>   		if (log2size < SHEAPMEM_PAGE_SHIFT) {
+>   			if (size & (size - 1))
+>   				log2size++;
+> --
+> 2.11.0
+> 
 > 
 
-Great! According to [1], we could then tag 63637800 also for ARM? Or do you want 
-to run more of the tests you have in mind first?
+Thanks, applied to next.
 
 Jan
-
-> Greetz
-> 
-> [1] https://github.com/LetoThe2nd/meta-xenomai
-> 
 
 -- 
 Siemens AG, Corporate Technology, CT RDA IOT SES-DE
