@@ -1,11 +1,10 @@
-Subject: Re: [PATCH 1/2] cobalt: Return error from xnsched_setparam
-References: <a0ae52fe-fa52-124e-b3e2-b82d2755fa10@siemens.com>
- <d90c8eb0-dce1-df0f-4e31-b4c8ba85425e@xenomai.org>
+Subject: Re: [PATCH][xenomai-images] start-qemu.sh: detect if DISPLAY is set
+References: <20181122204348.17730-1-holzmayr@rsi-elektrotechnik.de>
 From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <4f8f9e52-02a6-2df7-04b3-96a0e6bf56a2@siemens.com>
-Date: Fri, 23 Nov 2018 12:11:37 +0100
+Message-ID: <4a809d39-ed55-cbef-f8b5-74f6d8b590c5@siemens.com>
+Date: Fri, 23 Nov 2018 12:14:21 +0100
 MIME-Version: 1.0
-In-Reply-To: <d90c8eb0-dce1-df0f-4e31-b4c8ba85425e@xenomai.org>
+In-Reply-To: <20181122204348.17730-1-holzmayr@rsi-elektrotechnik.de>
 Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -17,16 +16,37 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Philippe Gerum <rpm@xenomai.org>, Xenomai <xenomai@xenomai.org>
+To: Josef Holzmayr <holzmayr@rsi-elektrotechnik.de>
+Cc: xenomai@xenomai.org
 
-On 23.11.18 11:56, Philippe Gerum wrote:
-> On 11/22/18 6:57 PM, Jan Kiszka via Xenomai wrote:
->> This allows to remove the user-triggerable XENO_BUG from
->> xnsched_quota_setparam().
+On 22.11.18 21:43, Josef Holzmayr wrote:
+> If DISPLAY is not set and therefore the SDL-based
+> GUI of QEMU is most likely to fail, we resort to the
+> -nographic variant.
 > 
-> Could you elaborate on the user trigger point you detected in the code?
+> Signed-off-by: Josef Holzmayr <holzmayr@rsi-elektrotechnik.de>
+> ---
+>   start-qemu.sh | 4 ++++
+>   1 file changed, 4 insertions(+)
+> 
+> diff --git a/start-qemu.sh b/start-qemu.sh
+> index 3d1117e..0daf69c 100755
+> --- a/start-qemu.sh
+> +++ b/start-qemu.sh
+> @@ -63,6 +63,10 @@ IMAGE_FILE=$(ls ${IMAGE_PREFIX}.ext4.img)
+>   KERNEL_FILE=$(ls ${IMAGE_PREFIX}.vmlinuz* | tail -1)
+>   INITRD_FILE=$(ls ${IMAGE_PREFIX}.initrd.img* | tail -1)
+>   
+> +if [ -z "${DISPLAY}" ]; then
+> +	QEMU_EXTRA_ARGS="${QEMU_EXTRA_ARGS} -nographic"
+> +fi
+> +
+>   shift 1
+>   
+>   ${QEMU_PATH}${QEMU} \
+> 
 
-pthread_setschedparam_ex(pthread_self(), SCHED_QUOTA, <invalid-tgid>)
+Thanks, applied to https://gitlab.denx.de/Xenomai/xenomai-images
 
 Jan
 
