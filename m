@@ -6,14 +6,15 @@ References: <a0ae52fe-fa52-124e-b3e2-b82d2755fa10@siemens.com>
  <04be3111-ca5c-7a81-a52a-9f6b83d2c534@xenomai.org>
  <09ac449f-6663-1592-cbe8-9fd7a2dbe71b@siemens.com>
  <58413957-539c-9a94-1bfc-5220d9487ea1@xenomai.org>
-From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <8b6a53a6-46f4-7e56-165e-d7e3a2444b19@siemens.com>
-Date: Fri, 23 Nov 2018 16:17:45 +0100
+ <8b6a53a6-46f4-7e56-165e-d7e3a2444b19@siemens.com>
+From: Philippe Gerum <rpm@xenomai.org>
+Message-ID: <876be802-1978-af4c-ef26-14ce72eee5bc@xenomai.org>
+Date: Fri, 23 Nov 2018 16:21:37 +0100
 MIME-Version: 1.0
-In-Reply-To: <58413957-539c-9a94-1bfc-5220d9487ea1@xenomai.org>
-Content-Type: text/plain; charset=utf-8; format=flowed
+In-Reply-To: <8b6a53a6-46f4-7e56-165e-d7e3a2444b19@siemens.com>
+Content-Type: text/plain; charset="utf-8"
 Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -22,58 +23,64 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Philippe Gerum <rpm@xenomai.org>, Xenomai <xenomai@xenomai.org>
+To: Jan Kiszka <jan.kiszka@siemens.com>, Xenomai <xenomai@xenomai.org>
 
-On 23.11.18 16:04, Philippe Gerum wrote:
-> On 11/23/18 12:41 PM, Jan Kiszka wrote:
->> On 23.11.18 12:29, Philippe Gerum wrote:
->>> On 11/23/18 12:26 PM, Philippe Gerum via Xenomai wrote:
->>>> On 11/23/18 12:11 PM, Jan Kiszka wrote:
->>>>> On 23.11.18 11:56, Philippe Gerum wrote:
->>>>>> On 11/22/18 6:57 PM, Jan Kiszka via Xenomai wrote:
->>>>>>> This allows to remove the user-triggerable XENO_BUG from
->>>>>>> xnsched_quota_setparam().
+On 11/23/18 4:17 PM, Jan Kiszka wrote:
+> On 23.11.18 16:04, Philippe Gerum wrote:
+>> On 11/23/18 12:41 PM, Jan Kiszka wrote:
+>>> On 23.11.18 12:29, Philippe Gerum wrote:
+>>>> On 11/23/18 12:26 PM, Philippe Gerum via Xenomai wrote:
+>>>>> On 11/23/18 12:11 PM, Jan Kiszka wrote:
+>>>>>> On 23.11.18 11:56, Philippe Gerum wrote:
+>>>>>>> On 11/22/18 6:57 PM, Jan Kiszka via Xenomai wrote:
+>>>>>>>> This allows to remove the user-triggerable XENO_BUG from
+>>>>>>>> xnsched_quota_setparam().
+>>>>>>>
+>>>>>>> Could you elaborate on the user trigger point you detected in the
+>>>>>>> code?
 >>>>>>
->>>>>> Could you elaborate on the user trigger point you detected in the
->>>>>> code?
+>>>>>> pthread_setschedparam_ex(pthread_self(), SCHED_QUOTA, <invalid-tgid>)
 >>>>>
->>>>> pthread_setschedparam_ex(pthread_self(), SCHED_QUOTA, <invalid-tgid>)
+>>>>> Ouch. That is where the bug is rooted, xnthread_set_schedparam() is a
+>>>>> broken obsolete interface which must be dropped entirely. The right
+>>>>> way
+>>>>> to change the scheduling class and/or parameters of a thread is by
+>>>>> calling xnsched_set_policy().
 >>>>
->>>> Ouch. That is where the bug is rooted, xnthread_set_schedparam() is a
->>>> broken obsolete interface which must be dropped entirely. The right way
->>>> to change the scheduling class and/or parameters of a thread is by
->>>> calling xnsched_set_policy().
+>>>> Nope, that won't work either. This needs more thought.
+>>>>
 >>>
->>> Nope, that won't work either. This needs more thought.
+>>> I don't see why catching the invalid tgid down in the sched class this
+>>> way is a problem, except that we need to enhance the involved callback
+>>> API a bit. The benefit is that no caller needs to deal with this check
+>>> and has to become sched-class-aware.
 >>>
 >>
->> I don't see why catching the invalid tgid down in the sched class this
->> way is a problem, except that we need to enhance the involved callback
->> API a bit. The benefit is that no caller needs to deal with this check
->> and has to become sched-class-aware.
+>> The code says:
 >>
+>>     /*
+>>      * This is the ONLY place where calling
+>>      * steely_set_schedparam() is legit, sane and safe.
+>>      */
+>>     effective = steely_set_schedparam(thread, p);
 > 
-> The code says:
-> 
-> 	/*
-> 	 * This is the ONLY place where calling
-> 	 * steely_set_schedparam() is legit, sane and safe.
-> 	 */
-> 	effective = steely_set_schedparam(thread, p);
-
-steely?
-
-> 
-> This dates back to the implementation of priority protction; there must
-> have been a reason at that time to document this specifically. I'll
-> review this code.
+> steely?
 > 
 
-OK, TIA.
+Same on the xenomai side:
 
-Jan
+	/*
+	 * This is the ONLY place where calling xnsched_setparam() is
+	 * legit, sane and safe.
+	 */
+	effective = xnsched_setparam(thread, p);
+	if (effective) {
+		thread->sched_class = sched_class;
+		thread->wprio = xnsched_calc_wprio(sched_class, thread->cprio);
+	} else if (XENO_DEBUG(COBALT))
+		thread->sched_class = orig_effective_class;
+
 
 -- 
-Siemens AG, Corporate Technology, CT RDA IOT SES-DE
-Corporate Competence Center Embedded Linux
+Philippe.
 
