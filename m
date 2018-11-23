@@ -1,15 +1,11 @@
-Subject: Re: rt_e1000e: Detected Hardware Unit Hang
-References: <CALUpYNbg342eACKbNoxZkKV-ykGjRxJhS_xz0oJxzyeSKgxh6Q@mail.gmail.com>
- <07cfdeae-695f-127d-c38f-f3b6503946d2@siemens.com>
- <CALUpYNYPdbVMJ0Yc5kQV8SzhxWJwRKByyJhWYyUJSgpajZjCLA@mail.gmail.com>
-From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <8d5abaed-466d-cdf7-a933-0973e4174932@siemens.com>
-Date: Fri, 23 Nov 2018 12:59:41 +0100
+Date: Fri, 23 Nov 2018 13:27:16 +0100
+From: Josef Holzmayr <holzmayr@rsi-elektrotechnik.de>
+Subject: Testing of 4.4/Ipipe + Xenomai 3.0.X on ARM32
+Message-ID: <20181123122716.tgg3utytwyrkzyid@jholzmayr.localdomain>
 MIME-Version: 1.0
-In-Reply-To: <CALUpYNYPdbVMJ0Yc5kQV8SzhxWJwRKByyJhWYyUJSgpajZjCLA@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="utf-8"
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -18,40 +14,55 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Means Lee <leemeaner@gmail.com>
-Cc: xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-On 21.11.18 02:36, Means Lee via Xenomai wrote:
-> Sure thing. As I ported e1000e-rt driver from mainline kernel e1000e
-> driver, which
-> the commit id is 089d7720383d7bc9ca6b8824a05dfa66f80d1f41, the patch file is
->   kind of huge so I attach them here in this mail.
-> diff-with-nrt.diff is the diff file of mainline driver e1000e and my ported
-> driver.
-> diff-with-old-rt-e1000e.diff is the diff file of xenomai v3.0.7 driver and
-> my ported driver.
-> 
+Hello!
 
-Unified diff ("diff -u"), please. I got that offlist, which is more readable, 
-but it remains huge.
+To improve the testing situation for the 4.4 Kernel family on ARM32, I
+created a set of layers [1] for OpenEmbedded. Currently the features are
+rather limited:
 
-So, let's analyze systematically:
-  - the upstream Linux driver you ported over works fine with your
-    hardware, correct?
-  - hardware unit hand may mean that no TX completion interrupt arrived -
-    can you confirm this based on /proc/xenomai/irq?
-  - did you enable CONFIG_IPIPE_DEBUG_CONTEXT? It can reveal invalid lock
-    usage (common mistake when porting linux drivers over)
-  - then look into the TX path
-     - is the interrupt registered properly?
-     - is packet submission happening?
-     - is any interrupt arriving?
-     - compare event flow to vanilla Linux driver (add instrumentation to
-       both)
+- only the Morty branch exists, as this one natively includes Linux 4.4
+  and therefore the GCC version etc. matches.
+- only one BSP layer so far, namely the Beaglebone. This was chosen for
+  two major reasons: a) it is supported well enough in 4.4. to not need
+  additional patches which might introduce new issues, and b) it is
+  hardware that I have here ready for testing.
+- no higher automation like a kas cofiguration so far. Yet this probably
+  will be the first limitation to be gotten rid of.
 
-Jan
+My current planning is to add a set of testing scripts based of
+Philippe's suggestion, and run that suite on each new release for a
+couple of days and post the results to the ML.
 
+Preliminary results to kick off things:
+- xeno-test completes successfully
+- latency -t0 under load maxes at ~58µs
+- latency -t2 under load maxes at ~18µs
+
+Greetz
+
+[1] https://github.com/LetoThe2nd/meta-xenomai
 -- 
-Siemens AG, Corporate Technology, CT RDA IOT SES-DE
-Corporate Competence Center Embedded Linux
+———————————————
+Josef Holzmayr
+Software Developer Embedded Systems
+
+Tel: +49 8444 9204-48
+Fax: +49 8444 9204-50
+
+R-S-I Elektrotechnik GmbH & Co. KG
+Woelkestrasse 11
+D-85301 Schweitenkirchen
+www.rsi-elektrotechnik.de
+———————————————
+Amtsgericht Ingolstadt – GmbH: HRB 191328 – KG: HRA 170393
+Geschäftsführer: Dr.-Ing. Michael Sorg, Dipl.-Ing. Franz Sorg
+Ust-IdNr: DE 128592548 
+
+_____________________________________________________________
+Amtsgericht Ingolstadt - GmbH: HRB 191328 - KG: HRA 170363
+Geschäftsführer: Dr.-Ing. Michael Sorg, Dipl.-Ing. Franz Sorg
+USt-IdNr.: DE 128592548
+
 
