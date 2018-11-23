@@ -1,15 +1,15 @@
-Subject: Re: [PATCH] x86/process: ipipe: prevent false positive in testing for
- preemptible section
-References: <20181025132021.5278-1-rpm@xenomai.org>
- <510946c4-61a7-6e53-2ab6-d96ad1752027@siemens.com>
+Subject: Re: [PATCH 1/2] cobalt: Return error from xnsched_setparam
+References: <a0ae52fe-fa52-124e-b3e2-b82d2755fa10@siemens.com>
+ <d90c8eb0-dce1-df0f-4e31-b4c8ba85425e@xenomai.org>
+ <4f8f9e52-02a6-2df7-04b3-96a0e6bf56a2@siemens.com>
 From: Philippe Gerum <rpm@xenomai.org>
-Message-ID: <0a942134-ff39-d865-4611-3c534d4187b8@xenomai.org>
-Date: Fri, 26 Oct 2018 16:34:59 +0200
+Message-ID: <b9383b95-705d-3d75-139a-d07efbe00958@xenomai.org>
+Date: Fri, 23 Nov 2018 12:26:55 +0100
 MIME-Version: 1.0
-In-Reply-To: <510946c4-61a7-6e53-2ab6-d96ad1752027@siemens.com>
-Content-Type: text/plain; charset="utf-8"
+In-Reply-To: <4f8f9e52-02a6-2df7-04b3-96a0e6bf56a2@siemens.com>
+Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -18,39 +18,28 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jan Kiszka <jan.kiszka@siemens.com>, Henning Schild <henning.schild@siemens.com>
-Cc: xenomai@xenomai.org
+To: Jan Kiszka <jan.kiszka@siemens.com>, Xenomai <xenomai@xenomai.org>
 
-On 10/26/18 3:28 PM, Jan Kiszka wrote:
-> On 25.10.18 14:20, Philippe Gerum wrote:
->> We may call switch_to_bitmap() from the head stage when a co-kernel
->> switches to a new thread context, in which case IRQs are hard
->> disabled, although the root stage might be unstalled.
+On 11/23/18 12:11 PM, Jan Kiszka wrote:
+> On 23.11.18 11:56, Philippe Gerum wrote:
+>> On 11/22/18 6:57 PM, Jan Kiszka via Xenomai wrote:
+>>> This allows to remove the user-triggerable XENO_BUG from
+>>> xnsched_quota_setparam().
 >>
->> Make sure the preemption debug code in refresh_tss_limit() is aware of
->> this.
->> ---
->>   arch/x86/include/asm/desc.h | 2 +-
->>   1 file changed, 1 insertion(+), 1 deletion(-)
->>
->> diff --git a/arch/x86/include/asm/desc.h b/arch/x86/include/asm/desc.h
->> index 0e3758c0c954..7a4cb4333df3 100644
->> --- a/arch/x86/include/asm/desc.h
->> +++ b/arch/x86/include/asm/desc.h
->> @@ -309,7 +309,7 @@ static inline void force_reload_TR(void)
->>    */
->>   static inline void refresh_tss_limit(void)
->>   {
->> -    DEBUG_LOCKS_WARN_ON(preemptible());
->> +    DEBUG_LOCKS_WARN_ON(!hard_irqs_disabled() && preemptible());
->>         if (unlikely(this_cpu_read(__tss_limit_invalid)))
->>           force_reload_TR();
->>
+>> Could you elaborate on the user trigger point you detected in the code?
 > 
-> This is 4.14-only, right?
-> 
+> pthread_setschedparam_ex(pthread_self(), SCHED_QUOTA, <invalid-tgid>)
 
-it is.
+Ouch. That is where the bug is rooted, xnthread_set_schedparam() is a
+broken obsolete interface which must be dropped entirely. The right way
+to change the scheduling class and/or parameters of a thread is by
+calling xnsched_set_policy().
+
+rtdm_task_set_priority() and pthread_setschedparam_ex() direly need a fix.
+
+With that changes in place, there is no way the .sched_setparam handler
+of a scheduling class implementation could fail, unless .sched_declare
+is badly broken in the first place. Which would be yet another issue.
 
 -- 
 Philippe.
