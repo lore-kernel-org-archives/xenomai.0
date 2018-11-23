@@ -2,11 +2,12 @@ Subject: Re: [PATCH 1/2] cobalt: Return error from xnsched_setparam
 References: <a0ae52fe-fa52-124e-b3e2-b82d2755fa10@siemens.com>
  <d90c8eb0-dce1-df0f-4e31-b4c8ba85425e@xenomai.org>
  <4f8f9e52-02a6-2df7-04b3-96a0e6bf56a2@siemens.com>
+ <b9383b95-705d-3d75-139a-d07efbe00958@xenomai.org>
 From: Philippe Gerum <rpm@xenomai.org>
-Message-ID: <b9383b95-705d-3d75-139a-d07efbe00958@xenomai.org>
-Date: Fri, 23 Nov 2018 12:26:55 +0100
+Message-ID: <04be3111-ca5c-7a81-a52a-9f6b83d2c534@xenomai.org>
+Date: Fri, 23 Nov 2018 12:29:23 +0100
 MIME-Version: 1.0
-In-Reply-To: <4f8f9e52-02a6-2df7-04b3-96a0e6bf56a2@siemens.com>
+In-Reply-To: <b9383b95-705d-3d75-139a-d07efbe00958@xenomai.org>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -20,26 +21,24 @@ List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: Jan Kiszka <jan.kiszka@siemens.com>, Xenomai <xenomai@xenomai.org>
 
-On 11/23/18 12:11 PM, Jan Kiszka wrote:
-> On 23.11.18 11:56, Philippe Gerum wrote:
->> On 11/22/18 6:57 PM, Jan Kiszka via Xenomai wrote:
->>> This allows to remove the user-triggerable XENO_BUG from
->>> xnsched_quota_setparam().
+On 11/23/18 12:26 PM, Philippe Gerum via Xenomai wrote:
+> On 11/23/18 12:11 PM, Jan Kiszka wrote:
+>> On 23.11.18 11:56, Philippe Gerum wrote:
+>>> On 11/22/18 6:57 PM, Jan Kiszka via Xenomai wrote:
+>>>> This allows to remove the user-triggerable XENO_BUG from
+>>>> xnsched_quota_setparam().
+>>>
+>>> Could you elaborate on the user trigger point you detected in the code?
 >>
->> Could you elaborate on the user trigger point you detected in the code?
+>> pthread_setschedparam_ex(pthread_self(), SCHED_QUOTA, <invalid-tgid>)
 > 
-> pthread_setschedparam_ex(pthread_self(), SCHED_QUOTA, <invalid-tgid>)
+> Ouch. That is where the bug is rooted, xnthread_set_schedparam() is a
+> broken obsolete interface which must be dropped entirely. The right way
+> to change the scheduling class and/or parameters of a thread is by
+> calling xnsched_set_policy().
 
-Ouch. That is where the bug is rooted, xnthread_set_schedparam() is a
-broken obsolete interface which must be dropped entirely. The right way
-to change the scheduling class and/or parameters of a thread is by
-calling xnsched_set_policy().
+Nope, that won't work either. This needs more thought.
 
-rtdm_task_set_priority() and pthread_setschedparam_ex() direly need a fix.
-
-With that changes in place, there is no way the .sched_setparam handler
-of a scheduling class implementation could fail, unless .sched_declare
-is badly broken in the first place. Which would be yet another issue.
 
 -- 
 Philippe.
