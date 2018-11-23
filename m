@@ -1,7 +1,7 @@
 From: Jan Kiszka <jan.kiszka@siemens.com>
-Subject: [xenomai-images][PATCH 3/3] Improve README, add COPYING
-Date: Fri, 23 Nov 2018 14:54:30 +0100
-Message-Id: <c7b7c2682cae5e17860049e79727291ce7c38fdb.1542981269.git.jan.kiszka@siemens.com>
+Subject: [xenomai-images][PATCH 1/3] xenomai: Remove patches
+Date: Fri, 23 Nov 2018 14:54:28 +0100
+Message-Id: <9fdcb5c0e812d89a1959cf0ade62cb4eb0a24605.1542981269.git.jan.kiszka@siemens.com>
 In-Reply-To: <cover.1542981269.git.jan.kiszka@siemens.com>
 References: <cover.1542981269.git.jan.kiszka@siemens.com>
 In-Reply-To: <cover.1542981269.git.jan.kiszka@siemens.com>
@@ -18,76 +18,155 @@ To: xenomai@xenomai.org
 
 From: Jan Kiszka <jan.kiszka@siemens.com>
 
-Refer to Xenomai upstream for community and contribution. Add a
-top-level COPYING with the MIT license and explain the licensing scheme
-also in the README.
+By now merged even into master.
 
 Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
 ---
- COPYING   | 17 +++++++++++++++++
- README.md | 21 +++++++++++++++++++--
- 2 files changed, 36 insertions(+), 2 deletions(-)
- create mode 100644 COPYING
+ ...dd-config-folder-to-xenomai-kernel-source.patch | 28 --------------
+ ...2-debian-Add-arm64-as-target-architecture.patch | 44 ----------------------
+ ...03-debian-Enable-SMP-in-userspace-package.patch | 30 ---------------
+ recipes-xenomai/xenomai/xenomai_next.bb            |  5 +--
+ 4 files changed, 1 insertion(+), 106 deletions(-)
+ delete mode 100644 recipes-xenomai/xenomai/files/0001-debian-Add-config-folder-to-xenomai-kernel-source.patch
+ delete mode 100644 recipes-xenomai/xenomai/files/0002-debian-Add-arm64-as-target-architecture.patch
+ delete mode 100644 recipes-xenomai/xenomai/files/0003-debian-Enable-SMP-in-userspace-package.patch
 
-diff --git a/COPYING b/COPYING
-new file mode 100644
-index 0000000..89de354
---- /dev/null
-+++ b/COPYING
-@@ -0,0 +1,17 @@
-+Permission is hereby granted, free of charge, to any person obtaining a copy
-+of this software and associated documentation files (the "Software"), to deal
-+in the Software without restriction, including without limitation the rights
-+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-+copies of the Software, and to permit persons to whom the Software is
-+furnished to do so, subject to the following conditions:
-+
-+The above copyright notice and this permission notice shall be included in
-+all copies or substantial portions of the Software.
-+
-+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-+THE SOFTWARE.
-diff --git a/README.md b/README.md
-index ae07de9..44d056d 100644
---- a/README.md
-+++ b/README.md
-@@ -1,8 +1,9 @@
- # Xenomai Demonstration and Test Images
+diff --git a/recipes-xenomai/xenomai/files/0001-debian-Add-config-folder-to-xenomai-kernel-source.patch b/recipes-xenomai/xenomai/files/0001-debian-Add-config-folder-to-xenomai-kernel-source.patch
+deleted file mode 100644
+index d3de9c4..0000000
+--- a/recipes-xenomai/xenomai/files/0001-debian-Add-config-folder-to-xenomai-kernel-source.patch
++++ /dev/null
+@@ -1,28 +0,0 @@
+-From 07d87b9b2ca45f81024056720b28f6cdbcb3b9c7 Mon Sep 17 00:00:00 2001
+-From: Jan Kiszka <jan.kiszka@siemens.com>
+-Date: Tue, 6 Nov 2018 13:37:21 +0100
+-Subject: [PATCH] debian: Add config folder to xenomai-kernel-source
+-
+-Meanwhile required for prepare-kernel.sh.
+-
+-Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
+----
+- debian/rules | 2 +-
+- 1 file changed, 1 insertion(+), 1 deletion(-)
+-
+-diff --git a/debian/rules b/debian/rules
+-index 8b871a4882..99ed8982ce 100755
+---- a/debian/rules
+-+++ b/debian/rules
+-@@ -73,7 +73,7 @@ install: build
+- 	cp debian/libxenomai1.lintian $(CURDIR)/debian/libxenomai1/usr/share/lintian/overrides/libxenomai1
+- 	cp debian/libxenomai-dev.lintian $(CURDIR)/debian/libxenomai-dev/usr/share/lintian/overrides/libxenomai-dev
+- 	mkdir -p $(CURDIR)/debian/xenomai-kernel-source/usr/src/xenomai-kernel-source $(CURDIR)/debian/xenomai-kernel-source/usr/share/doc/xenomai-kernel-source
+--	cp -a kernel include scripts $(CURDIR)/debian/xenomai-kernel-source/usr/src/xenomai-kernel-source
+-+	cp -a config kernel include scripts $(CURDIR)/debian/xenomai-kernel-source/usr/src/xenomai-kernel-source
+- 
+- # Build architecture-independent files here.
+- binary-indep: build install
+--- 
+-2.16.4
+-
+diff --git a/recipes-xenomai/xenomai/files/0002-debian-Add-arm64-as-target-architecture.patch b/recipes-xenomai/xenomai/files/0002-debian-Add-arm64-as-target-architecture.patch
+deleted file mode 100644
+index fbcb344..0000000
+--- a/recipes-xenomai/xenomai/files/0002-debian-Add-arm64-as-target-architecture.patch
++++ /dev/null
+@@ -1,44 +0,0 @@
+-From d8db92eb66ebd314d339a5faa5245b52ce093bef Mon Sep 17 00:00:00 2001
+-From: Jan Kiszka <jan.kiszka@siemens.com>
+-Date: Tue, 6 Nov 2018 16:34:17 +0100
+-Subject: [PATCH] debian: Add arm64 as target architecture
+-
+-Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
+----
+- debian/control | 6 +++---
+- 1 file changed, 3 insertions(+), 3 deletions(-)
+-
+-diff --git a/debian/control b/debian/control
+-index 3427987e15..477b16d9fd 100644
+---- a/debian/control
+-+++ b/debian/control
+-@@ -8,7 +8,7 @@ Homepage: http://www.xenomai.org/
+- 
+- Package: xenomai-runtime
+- Section: devel
+--Architecture: amd64 arm armeb armel armhf i386 powerpc powerpcspe
+-+Architecture: amd64 arm armeb armel armhf arm64 i386 powerpc powerpcspe
+- Depends: ${shlibs:Depends}, ${misc:Depends}
+- Suggests: xenomai-kernel-source
+- Replaces: xenomai
+-@@ -45,7 +45,7 @@ Description: Source for Xenomai kernel-space support
+- 
+- Package: libxenomai1
+- Section: libs
+--Architecture: amd64 arm armeb armel armhf i386 powerpc powerpcspe
+-+Architecture: amd64 arm armeb armel armhf arm64 i386 powerpc powerpcspe
+- Depends: ${shlibs:Depends}, ${misc:Depends}
+- Suggests: xenomai-kernel-source
+- Replaces: xenomai
+-@@ -61,7 +61,7 @@ Description: Shared libraries for Xenomai
+- 
+- Package: libxenomai-dev
+- Section: libdevel
+--Architecture: amd64 arm armeb armel armhf i386 powerpc powerpcspe
+-+Architecture: amd64 arm armeb armel armhf arm64 i386 powerpc powerpcspe
+- Depends: libxenomai1 (= ${binary:Version}), ${misc:Depends}
+- Suggests: xenomai-kernel-source
+- Replaces: xenomai
+--- 
+-2.16.4
+-
+diff --git a/recipes-xenomai/xenomai/files/0003-debian-Enable-SMP-in-userspace-package.patch b/recipes-xenomai/xenomai/files/0003-debian-Enable-SMP-in-userspace-package.patch
+deleted file mode 100644
+index 98632b4..0000000
+--- a/recipes-xenomai/xenomai/files/0003-debian-Enable-SMP-in-userspace-package.patch
++++ /dev/null
+@@ -1,30 +0,0 @@
+-From a4ec3f654a4be50aaf268c3a540e8b110ad2ded3 Mon Sep 17 00:00:00 2001
+-From: Jan Kiszka <jan.kiszka@siemens.com>
+-Date: Tue, 6 Nov 2018 18:59:47 +0100
+-Subject: [PATCH] debian: Enable SMP in userspace package
+-
+-Hard to find a UP target these days, and we definitely want to be
+-generic with Debian packages.
+-
+-Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
+----
+- debian/rules | 3 ++-
+- 1 file changed, 2 insertions(+), 1 deletion(-)
+-
+-diff --git a/debian/rules b/debian/rules
+-index 99ed8982ce..883ae3ed8c 100755
+---- a/debian/rules
+-+++ b/debian/rules
+-@@ -16,7 +16,8 @@ DEB_BUILD_GNU_TYPE=$(shell dpkg-architecture -qDEB_BUILD_GNU_TYPE)
+- CONFIG_OPTS = --prefix=/usr \
+-             --includedir=/usr/include/xenomai \
+-             --mandir=/usr/share/man \
+--	    --with-testdir=/usr/lib/xenomai/testsuite
+-+            --with-testdir=/usr/lib/xenomai/testsuite \
+-+            --enable-smp
+- 
+- ifneq ($(DEB_HOST_GNU_TYPE),$(DEB_BUILD_GNU_TYPE))
+- 	CONFIG_OPTS += --build $(DEB_BUILD_GNU_TYPE) --host $(DEB_HOST_GNU_TYPE)
+--- 
+-2.16.4
+-
+diff --git a/recipes-xenomai/xenomai/xenomai_next.bb b/recipes-xenomai/xenomai/xenomai_next.bb
+index 3541d2d..6bc43ac 100644
+--- a/recipes-xenomai/xenomai/xenomai_next.bb
++++ b/recipes-xenomai/xenomai/xenomai_next.bb
+@@ -12,10 +12,7 @@
+ require xenomai.inc
  
- This generates a number of bootable image for virtual and real targets in order
--to run the Xenomai real-time system, for evaluation or testing purposes. The
--layer may also be used to build real applications on top.
-+to run the [Xenomai](https://www.xenomai.org) real-time system, for evaluation
-+or testing purposes. The layer may also be used to build real applications on
-+top.
+ SRC_URI = " \
+-    git://gitlab.denx.de/Xenomai/xenomai.git;protocol=https;branch=next \
+-    file://0001-debian-Add-config-folder-to-xenomai-kernel-source.patch \
+-    file://0002-debian-Add-arm64-as-target-architecture.patch \
+-    file://0003-debian-Enable-SMP-in-userspace-package.patch"
++    git://gitlab.denx.de/Xenomai/xenomai.git;protocol=https;branch=next"
+ SRCREV = "next"
+ PV = "9999-next"
  
- The build system used for this is [Isar](https://github.com/ilbers/isar), an
- image generator that assembles Debian binaries or builds individual packages
-@@ -34,3 +35,19 @@ Physical targets will generate read-to-boot images under
- 
-     dd if=build/tmp/deploy/images/ebsy-image-base-long-life-ebsy-simatic-ipc227e.wic.img \
-        of=/dev/<medium-device> bs=1M status=progress
-+
-+## Community Resources
-+
-+See [Xenomai project](https://www.xenomai.org/).
-+
-+Contributions are always welcome. They follow the same
-+[process](https://gitlab.denx.de/Xenomai/xenomai/blob/master/CONTRIBUTING.md)
-+that Xenomai is using as well. Please tag you patches additional with
-+"[xenomai-images]" to indicate which repository they are targeting.
-+
-+## License
-+
-+Unless otherwise stated in the respective file, files in this layer are
-+provided under the MIT license, see COPYING file. Patches (files ending with
-+.patch) are licensed according to their target project and file, typically
-+GPLv2.
 -- 
 2.16.4
 
