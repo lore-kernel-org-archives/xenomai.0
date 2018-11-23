@@ -1,14 +1,10 @@
-Subject: Re: [PATCH 1/2] cobalt: Return error from xnsched_setparam
-References: <a0ae52fe-fa52-124e-b3e2-b82d2755fa10@siemens.com>
- <d90c8eb0-dce1-df0f-4e31-b4c8ba85425e@xenomai.org>
- <4f8f9e52-02a6-2df7-04b3-96a0e6bf56a2@siemens.com>
- <b9383b95-705d-3d75-139a-d07efbe00958@xenomai.org>
- <04be3111-ca5c-7a81-a52a-9f6b83d2c534@xenomai.org>
+Subject: Re: rtping differences between master and slaves
+References: <1542970266.2348.3.camel@smigroup.net>
 From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <09ac449f-6663-1592-cbe8-9fd7a2dbe71b@siemens.com>
-Date: Fri, 23 Nov 2018 12:41:02 +0100
+Message-ID: <043f0216-fb11-e022-66b8-738f5cd93aee@siemens.com>
+Date: Fri, 23 Nov 2018 12:49:28 +0100
 MIME-Version: 1.0
-In-Reply-To: <04be3111-ca5c-7a81-a52a-9f6b83d2c534@xenomai.org>
+In-Reply-To: <1542970266.2348.3.camel@smigroup.net>
 Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -20,32 +16,80 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Philippe Gerum <rpm@xenomai.org>, Xenomai <xenomai@xenomai.org>
+To: Mauro Salvini <mauro.salvini@smigroup.net>, xenomai <xenomai@xenomai.org>
 
-On 23.11.18 12:29, Philippe Gerum wrote:
-> On 11/23/18 12:26 PM, Philippe Gerum via Xenomai wrote:
->> On 11/23/18 12:11 PM, Jan Kiszka wrote:
->>> On 23.11.18 11:56, Philippe Gerum wrote:
->>>> On 11/22/18 6:57 PM, Jan Kiszka via Xenomai wrote:
->>>>> This allows to remove the user-triggerable XENO_BUG from
->>>>> xnsched_quota_setparam().
->>>>
->>>> Could you elaborate on the user trigger point you detected in the code?
->>>
->>> pthread_setschedparam_ex(pthread_self(), SCHED_QUOTA, <invalid-tgid>)
->>
->> Ouch. That is where the bug is rooted, xnthread_set_schedparam() is a
->> broken obsolete interface which must be dropped entirely. The right way
->> to change the scheduling class and/or parameters of a thread is by
->> calling xnsched_set_policy().
+On 23.11.18 11:51, Mauro Salvini via Xenomai wrote:
+> Hi all,
 > 
-> Nope, that won't work either. This needs more thought.
+> I'm trying RTNet (an old version: 0.9.13) on Xenomai (yet another old
+> version, 2.5.6: unluckily I cannot move to newer versions).
+> 
+> My setup has 3 identical nodes on isolated RT network: cycle time of
+> 5000us, master with slot offset 0, slave A with slot offset 200us and
+> slave B with slot offset 400us; network is configured using rtnet
+> utility script.
+> 
+> Using rtping I observe two different behaviors on slaves and master.
+> 
+> For example, pinging slave A from B:
+> 
+> ...
+> 64 bytes from 10.0.43.91: icmp_seq=1 time=7777.7 us
+> 64 bytes from 10.0.43.91: icmp_seq=2 time=7846.3 us
+> 64 bytes from 10.0.43.91: icmp_seq=3 time=7966.6 us
+> 64 bytes from 10.0.43.91: icmp_seq=4 time=8096.6 us
+> ...
+> 64 bytes from 10.0.43.91: icmp_seq=15 time=9461.7 us
+> 64 bytes from 10.0.43.91: icmp_seq=16 time=9604.2 us
+> 64 bytes from 10.0.43.91: icmp_seq=17 time=4719.5 us
+> 64 bytes from 10.0.43.91: icmp_seq=18 time=4844.7 us
+> 64 bytes from 10.0.43.91: icmp_seq=19 time=4968.3 us
+> 64 bytes from 10.0.43.91: icmp_seq=20 time=5124.4 us
+> ...
+> 64 bytes from 10.0.43.91: icmp_seq=53 time=9215.4 us
+> 64 bytes from 10.0.43.91: icmp_seq=54 time=9331.5 us
+> 64 bytes from 10.0.43.91: icmp_seq=55 time=9461.0 us
+> 64 bytes from 10.0.43.91: icmp_seq=56 time=9585.3 us
+> 64 bytes from 10.0.43.91: icmp_seq=57 time=4712.5 us
+> 64 bytes from 10.0.43.91: icmp_seq=58 time=4847.0 us
+> 64 bytes from 10.0.43.91: icmp_seq=59 time=4967.2 us
+> ...
+> 
+> so time varies between a minimum equal to time distance between two
+> slots and a maximum equal to this time plus cycle duration. This can
+> makes sense supposing that Linux timer used to generate ping request in
+> rtping.c slowly drifts from real-time timer that governs tx slot, so
+> the duration changes between requests depending on when request happens
+> into the TDMA cycle. Same behavior if I ping A from B or if I ping
+> master from A or B.
+> 
+> On master I instead observe this (pinging slave A or B equally):
+> 
+> ...
+> 64 bytes from 10.0.43.89: icmp_seq=1 time=2434.1 us
+> 64 bytes from 10.0.43.89: icmp_seq=2 time=2443.1 us
+> 64 bytes from 10.0.43.89: icmp_seq=3 time=2438.7 us
+> 64 bytes from 10.0.43.89: icmp_seq=4 time=2450.0 us
+> 64 bytes from 10.0.43.89: icmp_seq=5 time=2447.9 us
+> 64 bytes from 10.0.43.89: icmp_seq=6 time=2450.6 us
+> 64 bytes from 10.0.43.89: icmp_seq=7 time=2428.5 us
+> 64 bytes from 10.0.43.89: icmp_seq=8 time=2442.8 us
+> 64 bytes from 10.0.43.89: icmp_seq=9 time=2442.3 us
+> ...
+> 
+> ping duration is constant into a rtping execution (changes between
+> different executions).
+> 
+> So I'm puzzling about this difference and I wonder if this is normal or
+> if there could be problems.
 > 
 
-I don't see why catching the invalid tgid down in the sched class this way is a 
-problem, except that we need to enhance the involved callback API a bit. The 
-benefit is that no caller needs to deal with this check and has to become 
-sched-class-aware.
+As you are running RTmac/TDMA: The latency is affected by when during some cycle 
+you issue the ICMP request. This is not synchronized with the cycle, so you will 
+see random shifts there already. Furthermore, if station A has a time slot 
+before station B and A issues the ping, B may have a change to reply in the same 
+cycle. If you change roles, this is surely not possible, thus you get different 
+round trip times.
 
 Jan
 
