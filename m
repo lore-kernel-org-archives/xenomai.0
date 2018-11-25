@@ -1,13 +1,14 @@
-Subject: Re: xenomai-doc.deb is not built for the next branch
-References: <06dad7fa-7579-9565-97d3-68cb8c33e7a9@rambler.ru>
-From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <66958f4a-8f10-b727-77f3-bc3ae9772d44@siemens.com>
-Date: Fri, 23 Nov 2018 18:48:49 +0100
+From: Philippe Gerum <rpm@xenomai.org>
+Subject: [PATCH] cobalt/sched-quota: Account for already consumed time on
+ limit update
+References: <b886e67a-66e2-c0d0-c646-65bccd58dc0f@siemens.com>
+Message-ID: <c1e43c4c-acec-cf03-dc16-2b7da1654aed@xenomai.org>
+Date: Sun, 25 Nov 2018 18:14:10 +0100
 MIME-Version: 1.0
-In-Reply-To: <06dad7fa-7579-9565-97d3-68cb8c33e7a9@rambler.ru>
-Content-Type: text/plain; charset="utf-8"; format="flowed"
+In-Reply-To: <b886e67a-66e2-c0d0-c646-65bccd58dc0f@siemens.com>
+Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,57 +17,51 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: leo <feedcom@rambler.ru>, Xenomai@xenomai.org
+To: Jan Kiszka <jan.kiszka@siemens.com>, Xenomai <xenomai@xenomai.org>
 
-On 22.11.18 18:57, leo via Xenomai wrote:
-> All good health.
+On 11/21/18 5:59 PM, Jan Kiszka wrote:
+> If we change the quota value of thread group, we should take its already
+> consumed time during the current cycle into account. So far, we refilled
+> the budget blindly, which could have given the group an uncontrolled
+> "peak".
 > 
-> I am trying to build all xenomai packages for Ubuntu-18.04
-> from the next branch for arm64 architecture.
-> https://gitlab.denx.de/Xenomai/xenomai/tree/next
+> This commit first update the run_budget_ns of an active group and kills
+> its limit timer. Then it refills run_budget_ns only with the remaining
+> budget of the current cycle, taking the new quota as limit.
 > 
-> Configuration settings in ./ debian/rules led to:
-> CONFIG_OPTS = --prefix=/usr \
->              --includedir=/usr/include/xenomai \
->              --mandir=/usr/share/man \
->              --with-testdir=/usr/lib/xenomai/testsuite \
->              --enable-smp \
->          --enable-doc-build
+> Accumulated credits are still dropped - not worth to deal with their
+> complexity in this scenario.
+>> Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
+> ---
 > 
-> While on HEAD, commit 04d874ce, all packages are not built.
-> Error related to the absence of html/asciidoc-icons directory
-> and its contents.
-> 
-> In Ubuntu /usr/share/asciidoc/images/icons this is a link to ../icons
-> so the command from the file doc/asciidoc/Makefile.am
-> 
-> cp -a /usr/share/asciidoc/images/icons html/asciidoc-icons || \
-> cp -a /usr/share/asciidoc/icons html/asciidoc-icons
-> 
-> simply copies a symbolic link to the directory and
-> completes without error.
-> As a result, we have a broken link in the target directory.
-> 
-> For example in OpenSUSE /usr/share/asciidoc/images/icons
-> this is the directory and no error occurs.
-> 
-> Patch 001-fix-copi-icons.patch fixes this issue.
-> 
-> After applying the patch, the compilation passes without errors,
-> the documentation in the $(DESTDIR) folder is present
-> but the xenomai-doc.deb package is missing.
+> Philippe, review would be appreciated.
+>
 
-Please send patches inlined, not attached, and also check CONTRIBUTING.md for 
-the format.
+Looks good.
 
-I'm not seeing all details yet, but I agree that we need a clean installation 
-pattern: first create dirs as needed (BTW, "install-d" does not need that 
-additional test), then install (not cp) the files.
+> I'm still struggling with writing a good test case for that.
+> 
 
-Thanks,
-Jan
+Absolutely untested, but what about doing this: calibrate some number
+crunching loop to have it running for a given time you would use as the
+initial quota value (e.g. 1s). Then,
+
+. set the initial quota value
+. run a test loop for 2/3 of the iterations spent in the calibration loop,
+. decrease the initial quota value by half
+. re-run the test loop, it should not have run more than half of the
+calibrated iterations (+/- some error margin and fluctuations). A broken
+quota implementation would have allowed 2/3 if IIUC.
+
+Checking for the actual number of iterations performed during the second
+run could be done from a low priority thread which resumes when the test
+runner is dequeued as the quota expires.
+
+Both the test runner and the checker should be pinned on the same CPU.
+With QUOTA_PERIOD larger and not too close to the initial quota value,
+this should leave enough time for the low priority thread to check the
+result.
 
 -- 
-Siemens AG, Corporate Technology, CT RDA IOT SES-DE
-Corporate Competence Center Embedded Linux
+Philippe.
 
