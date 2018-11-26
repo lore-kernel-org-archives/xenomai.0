@@ -1,7 +1,12 @@
 From: Jan Kiszka <jan.kiszka@siemens.com>
-Subject: [xenomai-images][PATCH 0/3] Cleanups & qemu-armhf target addition
-Date: Mon, 26 Nov 2018 16:08:22 +0100
-Message-Id: <cover.1543244905.git.jan.kiszka@siemens.com>
+Subject: [xenomai-images][PATCH 1/3] customizations: Remove obsolete cleanup
+ and chown
+Date: Mon, 26 Nov 2018 16:08:23 +0100
+Message-Id: <edd6ad88d06f8deb1160ee225f4909a5d29d1c29.1543244905.git.jan.kiszka@siemens.com>
+In-Reply-To: <cover.1543244905.git.jan.kiszka@siemens.com>
+References: <cover.1543244905.git.jan.kiszka@siemens.com>
+In-Reply-To: <cover.1543244905.git.jan.kiszka@siemens.com>
+References: <cover.1543244905.git.jan.kiszka@siemens.com>
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -12,29 +17,33 @@ List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: xenomai@xenomai.org
 
-Mostly brings the qemu-armhf target. See patches for other details.
+From: Jan Kiszka <jan.kiszka@siemens.com>
 
-Jan
+Isar does that for us now.
 
-Jan Kiszka (3):
-  customizations: Remove obsolete cleanup and chown
-  linux-xenomai: Fix arm64 SRC_URI
-  Add qemu-armhf target
+Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
+---
+ recipes-core/customizations/customizations.bb | 4 ----
+ 1 file changed, 4 deletions(-)
 
- .../files/ethernet => board-qemu-armhf.yml         |   11 +-
- .../files/ethernet => conf/machine/qemu-armhf.conf |    9 +-
- .../multiconfig/qemu-armhf-xenomai-demo.conf       |    9 +-
- recipes-core/customizations/customizations.bb      |    4 -
- recipes-core/customizations/files/ethernet         |    2 +-
- recipes-kernel/linux/files/armhf_defconfig         | 7248 ++++++++++++++++++++
- recipes-kernel/linux/linux-xenomai_4.14.bb         |    6 +-
- start-qemu.sh                                      |   14 +
- 8 files changed, 7276 insertions(+), 27 deletions(-)
- copy recipes-core/customizations/files/ethernet => board-qemu-armhf.yml (54%)
- copy recipes-core/customizations/files/ethernet => conf/machine/qemu-armhf.conf (54%)
- copy recipes-core/customizations/files/ethernet => conf/multiconfig/qemu-armhf-xenomai-demo.conf (54%)
- create mode 100644 recipes-kernel/linux/files/armhf_defconfig
-
+diff --git a/recipes-core/customizations/customizations.bb b/recipes-core/customizations/customizations.bb
+index fd41a09..e35c0a5 100644
+--- a/recipes-core/customizations/customizations.bb
++++ b/recipes-core/customizations/customizations.bb
+@@ -21,13 +21,9 @@ SRC_URI = " \
+ DEBIAN_DEPENDS = "passwd"
+ 
+ do_install() {
+-	sudo rm -rf ${D}/etc ${D}/root
+-
+ 	install -v -d ${D}/etc/network/interfaces.d
+ 	install -v -m 644 ${WORKDIR}/ethernet ${D}/etc/network/interfaces.d/
+ 
+ 	install -v -d ${D}/etc/sysctl.d
+ 	install -v -m 644 ${WORKDIR}/99-silent-printk.conf ${D}/etc/sysctl.d/
+-
+-	sudo chown -R root:root ${D}/etc
+ }
 -- 
 2.16.4
 
