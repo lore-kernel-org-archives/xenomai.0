@@ -1,15 +1,27 @@
 MIME-Version: 1.0
-References: <CALUpYNbg342eACKbNoxZkKV-ykGjRxJhS_xz0oJxzyeSKgxh6Q@mail.gmail.com>
- <07cfdeae-695f-127d-c38f-f3b6503946d2@siemens.com>
- <CALUpYNYPdbVMJ0Yc5kQV8SzhxWJwRKByyJhWYyUJSgpajZjCLA@mail.gmail.com>
- <8d5abaed-466d-cdf7-a933-0973e4174932@siemens.com>
-In-Reply-To: <8d5abaed-466d-cdf7-a933-0973e4174932@siemens.com>
-From: Means Lee <leemeaner@gmail.com>
-Date: Tue, 27 Nov 2018 17:47:45 +0800
-Message-ID: <CALUpYNYvpLS8r+bC5fOA2mhVPuVtcB6o8oY_7Bh7q_3QcPGeuA@mail.gmail.com>
-Subject: Re: rt_e1000e: Detected Hardware Unit Hang
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+References: <CAOuPNLias38WgrA7SeQxC-Nh47q7kM8vRVR=ex_yFzQT1pnDZg@mail.gmail.com>
+ <CAOuPNLgNoHKH5EA3aanAqSMXQn1Y25oM3rCWNN7-5DUJxc=sBQ@mail.gmail.com>
+ <CALLqZ8TNfqRY0vqfCqExS+CxWGqTDe9Tm5-q3sMzbaY5Vi1nHQ@mail.gmail.com>
+ <CAOuPNLjpiUzDTskhMHfRpqsoPU_1gd1n3PrXa=K0GGbsG+WoNA@mail.gmail.com>
+ <CAOuPNLi0k3KmzKJjyE5vqQmW-92DoRXyB+pGMqqwSiwY7Tz8Sw@mail.gmail.com>
+ <CAOuPNLhQ-f_wm9u8ikWf_yB43f6c+8f8bm8zo36vEE+43ZpKtQ@mail.gmail.com>
+ <20180627143752.648bb696@md1pvb1c.ad001.siemens.net>
+ <CAOuPNLjW5AY1yMYux4FQXzvzd6FpyTP8tZ4JEJq3DZa3C5kiuA@mail.gmail.com>
+ <CAOuPNLgbE8iySGr12b8-eRdyr5iN3jhJ38iS9aZDprJUs+zRYw@mail.gmail.com>
+ <CAOuPNLg9Tw_MK2UrazRc2Bwg0Jsi2PU=aL2tzSaDRiY6qUhFww@mail.gmail.com>
+ <20180628173615.10a16310@md1pvb1c.ad001.siemens.net>
+ <CAOuPNLgBVJPHOyzOypiCG0VkAZMG+EjSe-cAjALKS=rXm8t27w@mail.gmail.com>
+ <20180629174205.70feb18e@md1pvb1c.ad001.siemens.net>
+ <e7a00208-aa12-7896-9a59-4d821ec6e35c@xenomai.org>
+ <20180629180708.52975276@md1pvb1c.ad001.siemens.net>
+ <CAOuPNLi-20WpAYQ=ZWg_JRqKWFarso-qhcHkkBdVomrbNda5sQ@mail.gmail.com>
+In-Reply-To: <CAOuPNLi-20WpAYQ=ZWg_JRqKWFarso-qhcHkkBdVomrbNda5sQ@mail.gmail.com>
+From: Pintu Agarwal <pintu.ping@gmail.com>
+Date: Tue, 27 Nov 2018 15:28:01 +0530
+Message-ID: <CAOuPNLj1YCGUN9wSmP01d6k_YQZUgRim3kRQk_5ni0g_X+yvRQ@mail.gmail.com>
+Subject: Re: beaglebone: arm: xeno-test gives segmentation fault - test dlopen
+ failed
+Content-Type: text/plain; charset="UTF-8"
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -18,87 +30,131 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "J. Kiszka" <jan.kiszka@siemens.com>
-Cc: xenomai@xenomai.org
+To: Henning Schild <henning.schild@siemens.com>
+Cc: Philippe Gerum <rpm@xenomai.org>, Greg Gallagher <greg@embeddedgreg.com>, "Xenomai@xenomai.org" <xenomai@xenomai.org>
 
-SSBjYW4ndCByZWR1Y2UgdGhlIHNpemUgb2YgbXkgcGF0Y2ggZm9yIHRoZSBlMTAwMGUgcmVhbHRp
-bWUgZHJpdmVyIGV4aXN0ZWQKaW4gWGVub21haSwgYmVjYXVzZSB0aGUgbm9uLXJlYWx0aW1lIGRy
-aXZlciBldm9sdXRpb25zIGEgbG90LiBTbyBJIG9mZmVyZWQKdGhlIGRpZmYgZmlsZSBvZiB0aHJl
-ZSBmaWxlcyBJIGNoYW5nZWQgd2hlbiBwb3J0aW5nIHRoZSBkcml2ZXIuIE9uIG15IHZpZXcsCnRo
-ZSBoYXJkd2FyZSBvcHJhdGlvbnMgc2hhbGwgYmUgdW5jaGFuZ2VkIHNvIEkgZm9jdXNlZCBvbiB0
-aGUgY2hhbmdlIG9mCm5ldGRldi5jLiBJIG1vZGZpZWQgcGFyYW0uYyBhbmQgZTEwMDAuaCBjaGFu
-Z2VkIHRoZSBwcml2YXRlIGRhdGEgc3RydWN0dXJlCmFuZCBwYXJhbWV0ZXJzIGEgbGl0dGxlLgoK
-Rm9yIHRoZSBxdWVzdGlvbiB5b3UgYXNrZWQ6Ci0gdGhlIHVwc3RyZWFtIExpbnV4IGRyaXZlciBJ
-IHBvcnRlZCBvdmVyIHdvcmtzIGZpbmUgd2l0aCBteSBoYXJkd2FyZSwgZXZlbgp3aGVuIEkgdHJ5
-IHRvIHB1dCBhIHN0cm9uZyBwcmVzc3VyZSBvbiBpdChVRFAgYnJvYWRjYXN0IHN0b3JtKS4KLSB3
-aGVuIEkgbWVldCB0aGUgaGFyZHdhcmUgdW5pdCBoYW5nLCB0aGUgVHggY29tcGxldGlvbiBpbnRl
-cnJ1cHQgZGlkbid0CmRpc3NhcHBlciBidXQgaXQgZG8gcmVkdWNlZCBhIGxvdC4KLSBJIGRpZG4n
-dCBlbmFibGUgQ09ORklHX0lQSVBFX0RFQlVHX0NPTlRFWFQsIGJ1dCBJIGRvIHVzZXMgbG9jayBp
-biBzZXZlcmFsCnBsYWNlcy4KLSB0aGVuIHRoZSBUWCBwYXRoCiAgIC0gdGhlIGludGVycnVwdCBy
-ZWdpc3RlcnRpb24gY29kZSB3YXMgc2hvd24gYmVsb3c6CiAgICAgICAgICAgIGVyciA9IHJ0ZG1f
-aXJxX3JlcXVlc3QoJmFkYXB0ZXItPmlycV9oYW5kbGUsCiAgICAgICAgICAgICAgICAgIGFkYXB0
-ZXItPnBkZXYtPmlycSwgZTEwMDBfaW50cl9tc2ksIDAsCiAgICAgICAgICAgICAgICAgIG5ldGRl
-di0+bmFtZSwgYWRhcHRlcik7CiAgIC0gSSB3cml0ZSBhIG5ldyBpbmRleCBvZiByaW5nIGJ1ZmZl
-ciB0byBURFQgcmVnaXN0ZXIgdG8gbm90aWZ5IHRoZQpoYXJkd2FyZSB0aGVyZSBpcyBhbiBwYWNr
-ZXQgc2hvdWxkIGJlIHNlbnQuCiAgICAgICAgICAgIHdyaXRlbCh0eF9yaW5nLT5uZXh0X3RvX3Vz
-ZSwgdHhfcmluZy0+dGFpbCk7Ly9hZnRlciB3cml0ZWwsIHRoZQppbnRlcnJ1cHQgcm91dGluZSBz
-aGFsbCBiZSBsYXVuY2hlZC4KICAgLSBJZiB0aGUgJ2V2ZW50IGZsb3cnIG1lYW5zIHRoZSBldmVu
-dCBkdXJpbmcgdGhlIHRyYW5zbWl0IHByb2Nlc3MsIHRoZQpldmVudCBmbG93IGlzIHNob3duIGJl
-bG93OgogICAgZTEwMDBlX3htaXRfZnJhbWUgICAgICAgICAgICAgICAgICAgICAgICBzZW5kIGFu
-IHBhY2tldCBhdG9taWNseQogICAgICAgICBlMTAwMF90eF9tYXAgICAgICAgICAgICAgICAgICAg
-ICAgICAgICB1c2UgRE1BIHRvIG1hcCB0aGUKcGFja2V0KG1hcGVkIGJlZm9yZSxzbyBqdXN0IGdl
-dCB0aGUgRE1BIGFkZHJlc3MpCiAgICAgICAgIGUxMDAwX3R4X3F1ZXVlICAgICAgICAgICAgICAg
-ICAgICAgICAgbWFrZSBzdXJlIHRoZSB0eCByaW5nIGJ1ZmZlcgppbmRleCByaWdodAogICAgICAg
-ICB3cml0ZSB0aGUgVERUIHJlZ2lzdGVyIHRvIHRlbGwgaGFyZHdhcmUgdG8gc2VuZCBhbiBwYWNr
-ZXQKYWZ0ZXIgdGhlIGhhcmR3YXJlIHNlbnQgYW4gcGFja2V0LCBpdCBzdXBwb3NlZCB0byB0cmln
-Z2VyIGFuIFRYIGNvbXBsZXRpb24KaW50ZXJydXB0IGFuZCB0aGUgZHJpdmVyIHNoYWxsIHJlc3Bv
-bnNlOgogICAgZTEwMDBfaW50cl9tc2kgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIHRy
-aWdnZXJlZCB3aGVuIFR4L1J4CmNvbXBsZXRpb24KICAgICAgICAgZTEwMDBfY2xlYW5fdHhfaXJx
-ICAgICAgICAgICAgICAgICAgICByZWN5Y2xlIHRoZSB0cmFuc21pdCByZXNvdXJjZQoKQnkgdGhl
-IHdheSwgSSBmb3VuZCB0aGF0IGV2ZXJ5IHRpbWUgbWFzdGVyIHN0YXRpb24gc2VudCBhbiBSZWFk
-eSBmcmFtZQpiZWxvbmdzIHRvIFJUY2ZnLCB0aGlzIFR4IGh1bmcgc2hvd3MgdXAuIEFuZCB0aGUg
-Y29tdW5pY2F0aW9uCiBiZWZvcmUgdGhhdCB3b3JrcyBmaW5lOiB0aGUgVERNQSBzeW5jIGZyYW1l
-IHNlbmQgcHJvcGVybHkgYW5kIGV2ZXJ5IHN0YWdlCmJlZm9yZSB0aGUgUmVhZHkgZnJhbWUgZ29l
-cyB3ZWxsLgpJZiBJIGxldCBpdCBzdGF5IGluIHRoZSBSVENGR19NQUlOX0NMSUVOVF8yIHN0YWdl
-KHNvIGZhciB0aGUgbWFzdGVyIGFuZApzbGF2ZSBrbm93biBlYWNoIG90aGVyKSwgbWFzdGVyIGFu
-ZCBzbGF2ZSBjb3VsZCBjb211bmljYXRlCnByb3Blcmx5LiBTbyB0aGUgUmVhZHkgZnJhbWUgdHJp
-Z2dlcnMgdGhpcyBwcm9ibGVtLCBidXQgd2h5PyBBbiBmcmFtZSBvZgpzcGVjaWZpYyBmb3JtYXQg
-dHJpZ2dlcnMgdGhlIGhhcmR3YXJlIGh1bmcsIHdoeSBpdCBoYXBwZW5zPwoKSmFuIEtpc3prYSA8
-amFuLmtpc3prYUBzaWVtZW5zLmNvbT4g5LqOMjAxOOW5tDEx5pyIMjPml6XlkajkupQg5LiL5Y2I
-Nzo1OeWGmemBk++8mgoKPiBPbiAyMS4xMS4xOCAwMjozNiwgTWVhbnMgTGVlIHZpYSBYZW5vbWFp
-IHdyb3RlOgo+ID4gU3VyZSB0aGluZy4gQXMgSSBwb3J0ZWQgZTEwMDBlLXJ0IGRyaXZlciBmcm9t
-IG1haW5saW5lIGtlcm5lbCBlMTAwMGUKPiA+IGRyaXZlciwgd2hpY2gKPiA+IHRoZSBjb21taXQg
-aWQgaXMgMDg5ZDc3MjAzODNkN2JjOWNhNmI4ODI0YTA1ZGZhNjZmODBkMWY0MSwgdGhlIHBhdGNo
-Cj4gZmlsZSBpcwo+ID4gICBraW5kIG9mIGh1Z2Ugc28gSSBhdHRhY2ggdGhlbSBoZXJlIGluIHRo
-aXMgbWFpbC4KPiA+IGRpZmYtd2l0aC1ucnQuZGlmZiBpcyB0aGUgZGlmZiBmaWxlIG9mIG1haW5s
-aW5lIGRyaXZlciBlMTAwMGUgYW5kIG15Cj4gcG9ydGVkCj4gPiBkcml2ZXIuCj4gPiBkaWZmLXdp
-dGgtb2xkLXJ0LWUxMDAwZS5kaWZmIGlzIHRoZSBkaWZmIGZpbGUgb2YgeGVub21haSB2My4wLjcg
-ZHJpdmVyCj4gYW5kCj4gPiBteSBwb3J0ZWQgZHJpdmVyLgo+ID4KPgo+IFVuaWZpZWQgZGlmZiAo
-ImRpZmYgLXUiKSwgcGxlYXNlLiBJIGdvdCB0aGF0IG9mZmxpc3QsIHdoaWNoIGlzIG1vcmUKPiBy
-ZWFkYWJsZSwKPiBidXQgaXQgcmVtYWlucyBodWdlLgo+Cj4gU28sIGxldCdzIGFuYWx5emUgc3lz
-dGVtYXRpY2FsbHk6Cj4gICAtIHRoZSB1cHN0cmVhbSBMaW51eCBkcml2ZXIgeW91IHBvcnRlZCBv
-dmVyIHdvcmtzIGZpbmUgd2l0aCB5b3VyCj4gICAgIGhhcmR3YXJlLCBjb3JyZWN0Pwo+ICAgLSBo
-YXJkd2FyZSB1bml0IGhhbmQgbWF5IG1lYW4gdGhhdCBubyBUWCBjb21wbGV0aW9uIGludGVycnVw
-dCBhcnJpdmVkIC0KPiAgICAgY2FuIHlvdSBjb25maXJtIHRoaXMgYmFzZWQgb24gL3Byb2MveGVu
-b21haS9pcnE/Cj4gICAtIGRpZCB5b3UgZW5hYmxlIENPTkZJR19JUElQRV9ERUJVR19DT05URVhU
-PyBJdCBjYW4gcmV2ZWFsIGludmFsaWQgbG9jawo+ICAgICB1c2FnZSAoY29tbW9uIG1pc3Rha2Ug
-d2hlbiBwb3J0aW5nIGxpbnV4IGRyaXZlcnMgb3ZlcikKPiAgIC0gdGhlbiBsb29rIGludG8gdGhl
-IFRYIHBhdGgKPiAgICAgIC0gaXMgdGhlIGludGVycnVwdCByZWdpc3RlcmVkIHByb3Blcmx5Pwo+
-ICAgICAgLSBpcyBwYWNrZXQgc3VibWlzc2lvbiBoYXBwZW5pbmc/Cj4gICAgICAtIGlzIGFueSBp
-bnRlcnJ1cHQgYXJyaXZpbmc/Cj4gICAgICAtIGNvbXBhcmUgZXZlbnQgZmxvdyB0byB2YW5pbGxh
-IExpbnV4IGRyaXZlciAoYWRkIGluc3RydW1lbnRhdGlvbiB0bwo+ICAgICAgICBib3RoKQo+Cj4g
-SmFuCj4KPiAtLQo+IFNpZW1lbnMgQUcsIENvcnBvcmF0ZSBUZWNobm9sb2d5LCBDVCBSREEgSU9U
-IFNFUy1ERQo+IENvcnBvcmF0ZSBDb21wZXRlbmNlIENlbnRlciBFbWJlZGRlZCBMaW51eAo+Ci0t
-LS0tLS0tLS0tLS0tIG5leHQgcGFydCAtLS0tLS0tLS0tLS0tLQpBIG5vbi10ZXh0IGF0dGFjaG1l
-bnQgd2FzIHNjcnViYmVkLi4uCk5hbWU6IGUxMDAwLmRpZmYKVHlwZTogdGV4dC94LXBhdGNoClNp
-emU6IDI1NjkgYnl0ZXMKRGVzYzogbm90IGF2YWlsYWJsZQpVUkw6IDxodHRwOi8veGVub21haS5v
-cmcvcGlwZXJtYWlsL3hlbm9tYWkvYXR0YWNobWVudHMvMjAxODExMjcvZjdkMTE2ODEvYXR0YWNo
-bWVudC5iaW4+Ci0tLS0tLS0tLS0tLS0tIG5leHQgcGFydCAtLS0tLS0tLS0tLS0tLQpBIG5vbi10
-ZXh0IGF0dGFjaG1lbnQgd2FzIHNjcnViYmVkLi4uCk5hbWU6IHBhcmFtLmRpZmYKVHlwZTogdGV4
-dC94LXBhdGNoClNpemU6IDgwMCBieXRlcwpEZXNjOiBub3QgYXZhaWxhYmxlClVSTDogPGh0dHA6
-Ly94ZW5vbWFpLm9yZy9waXBlcm1haWwveGVub21haS9hdHRhY2htZW50cy8yMDE4MTEyNy9mN2Qx
-MTY4MS9hdHRhY2htZW50LTAwMDEuYmluPgotLS0tLS0tLS0tLS0tLSBuZXh0IHBhcnQgLS0tLS0t
-LS0tLS0tLS0KQSBub24tdGV4dCBhdHRhY2htZW50IHdhcyBzY3J1YmJlZC4uLgpOYW1lOiBuZXRk
-ZXYuZGlmZgpUeXBlOiB0ZXh0L3gtcGF0Y2gKU2l6ZTogMTE4OTI2IGJ5dGVzCkRlc2M6IG5vdCBh
-dmFpbGFibGUKVVJMOiA8aHR0cDovL3hlbm9tYWkub3JnL3BpcGVybWFpbC94ZW5vbWFpL2F0dGFj
-aG1lbnRzLzIwMTgxMTI3L2Y3ZDExNjgxL2F0dGFjaG1lbnQtMDAwMi5iaW4+Cg==
+Dear Henning, Greg and all,
+
+Sorry, re-checking after a long time.
+
+The dlopen test is still failing on Beagle Bone black with xenomai-3.
+Yesterday, I just freshly cloned the xenomai-3 repo, build and install
+on beagle bone black, then run xeno-test/smokey test.
+Found that dlopen test is still crashing. I though this issue is
+already fixed, but not.
+
+Here are the results:
+
+~/xenomai-3# cat .git/config
+url = https://git.xenomai.org/xenomai-3.git
+
+~/xenomai-3# git branch
+* master
+
+./configure --with-pic --with-core=cobalt --enable-smp --disable-tls
+--enable-dlopen-libs
+make
+make install
+
+:/usr/xenomai/bin# ./smokey --run
+arith OK
+bufp skipped (no kernel support)
+cpu_affinity OK
+fpu_stress OK
+iddp skipped (no kernel support)
+leaks OK
+memory_coreheap OK
+memory_heapmem OK
+memory_tlsf OK
+net_packet_dgram skipped (no kernel support)
+net_packet_raw skipped (no kernel support)
+net_udp skipped (no kernel support)
+posix_clock OK
+posix_cond OK
+posix_fork OK
+posix_mutex OK
+posix_select OK
+rtdm skipped (no kernel support)
+sched_quota skipped (no kernel support)
+sched_tp skipped (no kernel support)
+setsched OK
+sigdebug skipped (no kernel support)
+timerfd OK
+tsc OK
+vdso_access OK
+xddp skipped (no kernel support)
+Segmentation fault
+./smokey: test dlopen failed: Unknown error -1
+
+~/xenomai-3# /usr/xenomai/bin/dlopentest
+Segmentation fault
+
+So, basically, dlopentest results into Segmentation Fault on arm.
+
+Note:
+Disabling dlopen from "configure" does not cause this issue, and
+xeno-test/smokey test pass successfully.
+But I am wondering why dlopen test may fail on arm (on x86 it works).
+
+So, it some packages or configuration that I am missing on my Beagle Bone ?
+Can anybody describe the root cause (if already investigated earlier)...
+
+Thanks,
+Pintu
+
+On Fri, Jun 29, 2018 at 10:42 PM Pintu Kumar <pintu.ping@gmail.com> wrote:
+>
+> On Fri, Jun 29, 2018 at 9:37 PM Henning Schild
+> <henning.schild@siemens.com> wrote:
+> >
+> > Am Fri, 29 Jun 2018 17:52:44 +0200
+> > schrieb Philippe Gerum <rpm@xenomai.org>:
+> >
+> > > On 06/29/2018 05:42 PM, Henning Schild wrote:
+> > > > Hi,
+> > > >
+> > > > i had a closer look. You might want to revert the following commit
+> > > > https://gitlab.denx.de/Xenomai/xenomai/commit/408c93e26438c83c08f216a2c8bd7079253cf71a
+> > > >
+> > > > It does include the testcase in the build even if the feature is
+> > > > disabled.
+> > > >
+> > >
+> > > I don't think so. It includes the testcase in the source distribution
+> > > allowing "make distcheck" to succeed, even if the test has not be
+> > > built in the smokey driver, which fixes a build regression introduced
+> > > by dlopen. Tests built in the executable must be listed in
+> > > COBALT_SUBDIRS, which dlopen isn't unless --enable-dlopen-libs has
+> > > been given.
+> >
+> > Yes, you are right. I just saw a "+= dlopen" in the resulting Makefile
+> > but that should not cause the problem.
+> >
+> > Pintu: Please build in a completely fresh environment i.e. "git clean
+> > -dfx; autoreconf -i; ./configure". And now give me
+> >
+> > grep dlopening -A1 config.log
+> > grep am__append_1 testsuite/smokey/Makefile
+> > autoreconf --version
+> >
+>
+> OK. Thank you so much.
+> I will try this on Monday and let you know.
+>
+> > Ideally with a hash i can find on gitlab.denx.de.
+> >
+> > Henning
+> >
+> >
+> > > If you want to exclude the dlopen test from the test series at
+> > > runtime, you can pass "--exclude=dlopen" on the command line to
+> > > smokey, as mentioned in the help strings (smokey --help).
+> > >
+>
+> OK. Thanks for this info. However, when I run xeno-test it
+> automatically includes smokey test.
+> How do I exclude from xeno-test itself ?
+> We have a criteria to attach xeno-test report as the success result.
+>
+> >
+
