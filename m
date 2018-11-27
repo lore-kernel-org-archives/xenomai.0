@@ -1,14 +1,28 @@
-Subject: Re: xenomai-doc.deb is not built for the next branch
-References: <06dad7fa-7579-9565-97d3-68cb8c33e7a9@rambler.ru>
- <66958f4a-8f10-b727-77f3-bc3ae9772d44@siemens.com>
-From: leo <feedcom@rambler.ru>
-Message-ID: <e04bbfef-7dee-07ce-6932-143c0eab3298@rambler.ru>
-Date: Tue, 27 Nov 2018 15:14:42 +0300
 MIME-Version: 1.0
-In-Reply-To: <66958f4a-8f10-b727-77f3-bc3ae9772d44@siemens.com>
-Content-Type: text/plain; charset="utf-8"; format="flowed"
-Content-Language: ru-RU
-Content-Transfer-Encoding: 8bit
+References: <CAOuPNLias38WgrA7SeQxC-Nh47q7kM8vRVR=ex_yFzQT1pnDZg@mail.gmail.com>
+ <CAOuPNLgNoHKH5EA3aanAqSMXQn1Y25oM3rCWNN7-5DUJxc=sBQ@mail.gmail.com>
+ <CALLqZ8TNfqRY0vqfCqExS+CxWGqTDe9Tm5-q3sMzbaY5Vi1nHQ@mail.gmail.com>
+ <CAOuPNLjpiUzDTskhMHfRpqsoPU_1gd1n3PrXa=K0GGbsG+WoNA@mail.gmail.com>
+ <CAOuPNLi0k3KmzKJjyE5vqQmW-92DoRXyB+pGMqqwSiwY7Tz8Sw@mail.gmail.com>
+ <CAOuPNLhQ-f_wm9u8ikWf_yB43f6c+8f8bm8zo36vEE+43ZpKtQ@mail.gmail.com>
+ <20180627143752.648bb696@md1pvb1c.ad001.siemens.net>
+ <CAOuPNLjW5AY1yMYux4FQXzvzd6FpyTP8tZ4JEJq3DZa3C5kiuA@mail.gmail.com>
+ <CAOuPNLgbE8iySGr12b8-eRdyr5iN3jhJ38iS9aZDprJUs+zRYw@mail.gmail.com>
+ <CAOuPNLg9Tw_MK2UrazRc2Bwg0Jsi2PU=aL2tzSaDRiY6qUhFww@mail.gmail.com>
+ <20180628173615.10a16310@md1pvb1c.ad001.siemens.net>
+ <CAOuPNLgBVJPHOyzOypiCG0VkAZMG+EjSe-cAjALKS=rXm8t27w@mail.gmail.com>
+ <20180629174205.70feb18e@md1pvb1c.ad001.siemens.net>
+ <e7a00208-aa12-7896-9a59-4d821ec6e35c@xenomai.org>
+ <20180629180708.52975276@md1pvb1c.ad001.siemens.net>
+ <CAOuPNLi-20WpAYQ=ZWg_JRqKWFarso-qhcHkkBdVomrbNda5sQ@mail.gmail.com>
+ <CAOuPNLj1YCGUN9wSmP01d6k_YQZUgRim3kRQk_5ni0g_X+yvRQ@mail.gmail.com>
+In-Reply-To: <CAOuPNLj1YCGUN9wSmP01d6k_YQZUgRim3kRQk_5ni0g_X+yvRQ@mail.gmail.com>
+From: Pintu Agarwal <pintu.ping@gmail.com>
+Date: Tue, 27 Nov 2018 18:30:54 +0530
+Message-ID: <CAOuPNLi9YWoy2a=_LovkA5yuSgzwjmbkXAtuffcrZWdv7prKbA@mail.gmail.com>
+Subject: Re: beaglebone: arm: xeno-test gives segmentation fault - test dlopen
+ failed
+Content-Type: text/plain; charset="UTF-8"
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,82 +31,146 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Xenomai@xenomai.org
+To: Henning Schild <henning.schild@siemens.com>
+Cc: Philippe Gerum <rpm@xenomai.org>, Greg Gallagher <greg@embeddedgreg.com>, "Xenomai@xenomai.org" <xenomai@xenomai.org>
 
-23.11.2018 20:48, Jan Kiszka пишет:
-> On 22.11.18 18:57, leo via Xenomai wrote:
->> All good health.
->>
->> I am trying to build all xenomai packages for Ubuntu-18.04
->> from the next branch for arm64 architecture.
->> https://gitlab.denx.de/Xenomai/xenomai/tree/next
->>
->> Configuration settings in ./ debian/rules led to:
->> CONFIG_OPTS = --prefix=/usr \
->>              --includedir=/usr/include/xenomai \
->>              --mandir=/usr/share/man \
->>              --with-testdir=/usr/lib/xenomai/testsuite \
->>              --enable-smp \
->>          --enable-doc-build
->>
->> While on HEAD, commit 04d874ce, all packages are not built.
->> Error related to the absence of html/asciidoc-icons directory
->> and its contents.
->>
->> In Ubuntu /usr/share/asciidoc/images/icons this is a link to ../icons
->> so the command from the file doc/asciidoc/Makefile.am
->>
->> cp -a /usr/share/asciidoc/images/icons html/asciidoc-icons || \
->> cp -a /usr/share/asciidoc/icons html/asciidoc-icons
->>
->> simply copies a symbolic link to the directory and
->> completes without error.
->> As a result, we have a broken link in the target directory.
->>
->> For example in OpenSUSE /usr/share/asciidoc/images/icons
->> this is the directory and no error occurs.
->>
->> Patch 001-fix-copi-icons.patch fixes this issue.
->>
->> After applying the patch, the compilation passes without errors,
->> the documentation in the $(DESTDIR) folder is present
->> but the xenomai-doc.deb package is missing.
-> 
-> Please send patches inlined, not attached, and also check 
-> CONTRIBUTING.md for the format.
-> 
-> I'm not seeing all details yet, but I agree that we need a clean 
-> installation pattern: first create dirs as needed (BTW, "install-d" does 
-> not need that additional test), then install (not cp) the files.
-> 
+On Tue, Nov 27, 2018 at 3:28 PM Pintu Agarwal <pintu.ping@gmail.com> wrote:
+>
+> Dear Henning, Greg and all,
+>
+> Sorry, re-checking after a long time.
+>
+> The dlopen test is still failing on Beagle Bone black with xenomai-3.
+> Yesterday, I just freshly cloned the xenomai-3 repo, build and install
+> on beagle bone black, then run xeno-test/smokey test.
+> Found that dlopen test is still crashing. I though this issue is
+> already fixed, but not.
+>
+> Here are the results:
+>
+> ~/xenomai-3# cat .git/config
+> url = https://git.xenomai.org/xenomai-3.git
+>
+> ~/xenomai-3# git branch
+> * master
+>
+> ./configure --with-pic --with-core=cobalt --enable-smp --disable-tls
+> --enable-dlopen-libs
+> make
+> make install
+>
+> :/usr/xenomai/bin# ./smokey --run
+> arith OK
+> bufp skipped (no kernel support)
+> cpu_affinity OK
+> fpu_stress OK
+> iddp skipped (no kernel support)
+> leaks OK
+> memory_coreheap OK
+> memory_heapmem OK
+> memory_tlsf OK
+> net_packet_dgram skipped (no kernel support)
+> net_packet_raw skipped (no kernel support)
+> net_udp skipped (no kernel support)
+> posix_clock OK
+> posix_cond OK
+> posix_fork OK
+> posix_mutex OK
+> posix_select OK
+> rtdm skipped (no kernel support)
+> sched_quota skipped (no kernel support)
+> sched_tp skipped (no kernel support)
+> setsched OK
+> sigdebug skipped (no kernel support)
+> timerfd OK
+> tsc OK
+> vdso_access OK
+> xddp skipped (no kernel support)
+> Segmentation fault
+> ./smokey: test dlopen failed: Unknown error -1
+>
+> ~/xenomai-3# /usr/xenomai/bin/dlopentest
+> Segmentation fault
+>
+> So, basically, dlopentest results into Segmentation Fault on arm.
+>
+> Note:
+> Disabling dlopen from "configure" does not cause this issue, and
+> xeno-test/smokey test pass successfully.
+> But I am wondering why dlopen test may fail on arm (on x86 it works).
+>
+> So, it some packages or configuration that I am missing on my Beagle Bone ?
+> Can anybody describe the root cause (if already investigated earlier)...
+>
+
+Hi,
+
+I am investigating this issue.
+Currently I found that normal "dlopen" tests is working fine on Beagle Bone.
+There is some crash happening in: my_dlopen()
+
+Hopefully, I might be able to fix this issue and release a patch, in 2
+weeks times.
+
+Thanks,
+Pintu
+
 > Thanks,
-> Jan
-> 
-
-Good health, Jan.
-
-It seems that the problem with copying files to html/asciidoc-icons 
-related to the traditions of different operating systems is not the only 
-one.
-One of several inaccuracies:
-https://xenomai.org/documentation/xenomai-3/html/man1/xeno-config/
-Icons are missing. Broken reference to the file which is in another place.
-I am currently trying to unravel this. The problem is that I do not 
-understand the mechanism of packet formation *.deb.
-So the question is.
-Whether the xenomai-doc.deb package should is built automatically
-or I need to write additional rules for the build, as is done for 
-xenomai-dev.deb libxenomai1....?
-
-A message is printed during compilation:
-
-/root/build/xenomai/kernel/cobalt/timer.c:611: warning: The following 
-parameters of xntimer_get_overruns(struct xntimer *timer, struct 
-xnthread *waiter, xnticks_t now) are not documented:
-   parameter 'waiter'
-
-But this should not affect the build of packages.
-
---
-Leonid
+> Pintu
+>
+> On Fri, Jun 29, 2018 at 10:42 PM Pintu Kumar <pintu.ping@gmail.com> wrote:
+> >
+> > On Fri, Jun 29, 2018 at 9:37 PM Henning Schild
+> > <henning.schild@siemens.com> wrote:
+> > >
+> > > Am Fri, 29 Jun 2018 17:52:44 +0200
+> > > schrieb Philippe Gerum <rpm@xenomai.org>:
+> > >
+> > > > On 06/29/2018 05:42 PM, Henning Schild wrote:
+> > > > > Hi,
+> > > > >
+> > > > > i had a closer look. You might want to revert the following commit
+> > > > > https://gitlab.denx.de/Xenomai/xenomai/commit/408c93e26438c83c08f216a2c8bd7079253cf71a
+> > > > >
+> > > > > It does include the testcase in the build even if the feature is
+> > > > > disabled.
+> > > > >
+> > > >
+> > > > I don't think so. It includes the testcase in the source distribution
+> > > > allowing "make distcheck" to succeed, even if the test has not be
+> > > > built in the smokey driver, which fixes a build regression introduced
+> > > > by dlopen. Tests built in the executable must be listed in
+> > > > COBALT_SUBDIRS, which dlopen isn't unless --enable-dlopen-libs has
+> > > > been given.
+> > >
+> > > Yes, you are right. I just saw a "+= dlopen" in the resulting Makefile
+> > > but that should not cause the problem.
+> > >
+> > > Pintu: Please build in a completely fresh environment i.e. "git clean
+> > > -dfx; autoreconf -i; ./configure". And now give me
+> > >
+> > > grep dlopening -A1 config.log
+> > > grep am__append_1 testsuite/smokey/Makefile
+> > > autoreconf --version
+> > >
+> >
+> > OK. Thank you so much.
+> > I will try this on Monday and let you know.
+> >
+> > > Ideally with a hash i can find on gitlab.denx.de.
+> > >
+> > > Henning
+> > >
+> > >
+> > > > If you want to exclude the dlopen test from the test series at
+> > > > runtime, you can pass "--exclude=dlopen" on the command line to
+> > > > smokey, as mentioned in the help strings (smokey --help).
+> > > >
+> >
+> > OK. Thanks for this info. However, when I run xeno-test it
+> > automatically includes smokey test.
+> > How do I exclude from xeno-test itself ?
+> > We have a criteria to attach xeno-test report as the success result.
+> >
+> > >
 
