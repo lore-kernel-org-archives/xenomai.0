@@ -1,9 +1,18 @@
+Subject: Re: Testing of 4.4/Ipipe + Xenomai 3.0.X on ARM32
+From: Jan Kiszka <jan.kiszka@siemens.com>
+References: <20181123122716.tgg3utytwyrkzyid@jholzmayr.localdomain>
+ <d1808069-d213-7e9f-010f-abd2c88b0480@siemens.com>
+ <20181126143029.6jts36bo267l776s@jholzmayr.localdomain>
+ <47252724-7145-7e15-2df8-a5d625b1f95d@siemens.com>
+ <20181128124039.ppsitvbbqbtge3im@jholzmayr.localdomain>
+ <cb0a1231-e0ef-ac55-eb32-63c87b9a5b58@siemens.com>
+Message-ID: <28bcb7c5-5c35-9adb-3528-d4d5cdd9a111@siemens.com>
+Date: Wed, 28 Nov 2018 19:23:42 +0100
 MIME-Version: 1.0
-From: Evandro Sestrem <sestrem@gmail.com>
-Date: Tue, 4 Dec 2018 09:40:20 -0200
-Message-ID: <CADeNpu+DzZU9_eW5fVq2kqRNm8F0N3XVnpfsK2RbM_aj887UfA@mail.gmail.com>
-Subject: HelloWorld with CMake
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <cb0a1231-e0ef-ac55-eb32-63c87b9a5b58@siemens.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -12,80 +21,40 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
+To: Josef Holzmayr <holzmayr@rsi-elektrotechnik.de>, Philippe Gerum <rpm@xenomai.org>
+Cc: xenomai@xenomai.org
 
-Hello,
+On 28.11.18 15:42, Jan Kiszka wrote:
+> On 28.11.18 13:40, Josef Holzmayr wrote:
+>> Digging deeper, I now have a couple of questions. xeno-test gives me
+>>
+>> net_packet_dgram skipped (no kernel support)
+>> net_packet_raw skipped (no kernel support)
+>> net_udp skipped (no kernel support)
+> 
+> That should be
+> 
+> CONFIG_XENO_DRIVERS_NET=m
+> CONFIG_XENO_DRIVERS_NET_RTIPV4_UDP=m
+> CONFIG_XENO_DRIVERS_NET_RTPACKET=m
+> 
+> at least. But you may see crashes then (reminds me of that open issue).
+> 
+>> ...
+>> mutex_trylock not supported
+> 
+> Hmm, I don't recall ATM what triggers this... need to dig.
+> 
 
-Is it possible to use CMake to compile a Xenomai program?
+Philippe can likely recall this. Comparing stable to next, where this message
+disappeared, leads to commit 43d383cc that says: "At this chance, the lock
+stealing test is also fixed."
 
-I want to use Xenomai in a ROS 2 node. To do this, I need to be able to
-compile it with CMake.
+Probably means we cannot do better than "not supported" over stable.
 
-I'm trying to compile a HelloWorld Xenomai program using CMake.
+Jan
 
-I put this project in https://github.com/sestrem/xenomai_helloworld_cmake
+-- 
+Siemens AG, Corporate Technology, CT RDA IOT SES-DE
+Corporate Competence Center Embedded Linux
 
-The main files are:
-helloWorld.c
-CMakeLists.txt
-
-When I execute "cmake .", everything is fine:
-
--- The C compiler identification is GNU 6.3.0
--- The CXX compiler identification is GNU 6.3.0
--- Check for working C compiler: /usr/bin/cc
--- Check for working C compiler: /usr/bin/cc -- works
--- Detecting C compiler ABI info
--- Detecting C compiler ABI info - done
--- Detecting C compile features
--- Detecting C compile features - done
--- Check for working CXX compiler: /usr/bin/c++
--- Check for working CXX compiler: /usr/bin/c++ -- works
--- Detecting CXX compiler ABI info
--- Detecting CXX compiler ABI info - done
--- Detecting CXX compile features
--- Detecting CXX compile features - done
--- Configuring done
--- Generating done
--- Build files have been written to: /home/pi/testes/xenomai/helloWorld
-
-
-But, after this, when I execute "make":
-
-Scanning dependencies of target helloWorld
-[ 50%] Building C object CMakeFiles/helloWorld.dir/helloWorld.c.o
-In file included from /usr/xenomai/include/copperplate/threadobj.h:28:0,
-                 from /usr/xenomai/include/alchemy/task.h:25,
-                 from /home/pi/testes/xenomai/helloWorld/helloWorld.c:5:
-/usr/xenomai/include/boilerplate/lock.h:23:34: fatal error:
-boilerplate/wrappers.h: file or directory not found
- #include <boilerplate/wrappers.h>
-                                  ^
-compilation terminated.
-CMakeFiles/helloWorld.dir/build.make:62: recipe for target
-'CMakeFiles/helloWorld.dir/helloWorld.c.o' failed
-make[2]: *** [CMakeFiles/helloWorld.dir/helloWorld.c.o] Error 1
-CMakeFiles/Makefile2:67: recipe for target 'CMakeFiles/helloWorld.dir/all'
-failed
-make[1]: *** [CMakeFiles/helloWorld.dir/all] Error 2
-Makefile:83: recipe for target 'all' failed
-make: *** [all] Error 2
-
-
-** cmake_xenomai attempt **
----------------------
-I also tried to use the cmake_xenomai github project:
-git clone https://github.com/nolange/cmake_xenomai
-
-But when I check the patch:
-git apply --check
-/home/pi/cmake_xenomai/patchset/0001-add-an-flexible-bootstrap-template-header.patch
-
-I got these errors, so I didn't applied it:
-error: include/xenomai/Makefile.am: no such file or directory
-error: include/xenomai/init.h: no such file or directory
-error: lib/boilerplate/init/Makefile.am: no such file or directory
-error: lib/boilerplate/init/bootstrap.c: no such file or directory
-
-
-Evandro Sestrem
