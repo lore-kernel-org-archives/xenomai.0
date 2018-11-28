@@ -1,19 +1,13 @@
-Subject: Re: [PATCH] cobalt/kernel: Simplify mayday processing
-References: <3e868e4f-7bd5-2874-d72b-fc2449ef4b65@siemens.com>
- <111becaa-9e0f-f8ad-4802-62f51379fc07@xenomai.org>
- <efcd107e-d48d-6dac-96e0-890203c072ba@siemens.com>
- <5c1fae9d-3098-1f5b-bc51-fa7f9a798f1e@xenomai.org>
- <967ff4fb-2272-88be-f46c-4b7c40e64956@siemens.com>
- <bef5cc29-6379-8cd8-4a1e-4cc8a10761a4@xenomai.org>
- <6000a5c2-2944-d078-7df7-2efe271cb7f6@siemens.com>
-From: Philippe Gerum <rpm@xenomai.org>
-Message-ID: <696eebe3-7899-691c-04f9-4ec82deb76c2@xenomai.org>
-Date: Wed, 28 Nov 2018 09:58:48 +0100
+Date: Wed, 28 Nov 2018 10:05:57 +0100
+From: Henning Schild <henning.schild@siemens.com>
+Subject: Re: [PATCH] testsuite/xeno-test: do not swallow exit status anymore
+Message-ID: <20181128100557.24e73baf@md1za8fc.ad001.siemens.net>
+In-Reply-To: <8222c0a6-1c36-f255-bcc4-895e7ef9acb5@siemens.com>
+References: <20181108124202.28018-1-henning.schild@siemens.com>
+ <8222c0a6-1c36-f255-bcc4-895e7ef9acb5@siemens.com>
 MIME-Version: 1.0
-In-Reply-To: <6000a5c2-2944-d078-7df7-2efe271cb7f6@siemens.com>
-Content-Type: text/plain; charset="utf-8"
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -22,84 +16,75 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jan Kiszka <jan.kiszka@siemens.com>, Xenomai <xenomai@xenomai.org>, Steven Seeger <steven.seeger@nasa.gov>, Dmitriy Cherkasov <dmitriy@oss-tech.org>
+To: Jan Kiszka <jan.kiszka@siemens.com>
+Cc: xenomai@xenomai.org
 
-On 11/28/18 7:56 AM, Jan Kiszka wrote:
-> On 27.11.18 19:54, Philippe Gerum wrote:
->> On 11/27/18 6:44 PM, Jan Kiszka wrote:
->>> On 08.11.18 14:24, Philippe Gerum wrote:
->>>> On 11/8/18 2:14 PM, Jan Kiszka wrote:
->>>>> On 08.11.18 14:05, Philippe Gerum wrote:
->>>>>> On 11/5/18 1:20 PM, Jan Kiszka wrote:
->>>>>>> The mayday mechanism exists in order to kick a xenomai userspace
->>>>>>> task
->>>>>>> into secondary mode while it is running userspace code. For that,
->>>>>>> we ask
->>>>>>> I-pipe to call us back when the task was interrupted and is about to
->>>>>>> return to userspace.
->>>>>>>
->>>>>>> So far we defer the relaxation from that callback via a VDSO-like
->>>>>>> mechanism that triggers a special syscall to the return path of that
->>>>>>> very same syscall. However, that is not desirable because it is a
->>>>>>> complex, arch-specific mechanism that can easily break and,
->>>>>>> specifically, that destroys the backtrace of ptraced tasks.
->>>>>>>
->>>>>>> Fortunately, we can fulfill the needs of mayday also by relaxing
->>>>>>> the task directly from the mayday callback. Tested successfully on
->>>>>>> x86-64 and ARM.
->>>>>>
->>>>>> ARM-wise, this change requires ipipe-core-4.14.71-arm-3 or later to
->>>>>> work
->>>>>> properly. This method would cause an interrupt state breakage with
->>>>>> any
->>>>>> older ARM patch.
->>>>>
->>>>> That would be a change compared to my past ARM experiments (4.x, if
->>>>> not
->>>>> 3.x based). Can you point me to the problem in more details?
->>>>>
->>>>
->>>> Calling    __ipipe_notify_trap(IPIPE_TRAP_MAYDAY, regs) may result in
->>>> re-enabling IRQs unexpectedly for the caller, due to the callee
->>>> relaxing. AFAIR, a core debug level assertion should trip when that
->>>> happens.
->>>>
->>>
->>> Coming back to that topic: Just tested ARM on 4.4 with all debug
->>> switches of core and ipipe enabled but nothing triggered. So, either the
->>> issue is more subtle, or it not really an issue.
->>
->> xnthread_relax() forces hard irqs on:
->>
->> __ipipe_exit_irq -> back from irq_handler (entry-armv.S), so you end up
->> running the interrupt return path with irqs on both for svc or usr
->> modes, including the regular preemption management stuff which assumes
->> the opposite.
->>
->> WARN_ON_ONCE(!hard_irqs_disabled()) should trigger from
->> __ipipe_check_root_interruptible() if added there.
->>
-> 
-> Ah! Now we are on the same page. But this does not trigger anymore, and
-> that's because of these two:
-> 
-> -
-> https://gitlab.denx.de/Xenomai/ipipe/commit/b2bb695a1ece2320ab04cba9aa359bed8953baf7
-> 
-> -
-> https://gitlab.denx.de/Xenomai/ipipe/commit/da42030eb2e1afc6f3f8f4f6d40ae9b336e3d635
-> 
-> 
-> I've noticed that issue back then and urged on addressing it. So we are
-> already safe on ARM as well. That's good.
+Am Fri, 16 Nov 2018 07:28:51 +0100
+schrieb Jan Kiszka <jan.kiszka@siemens.com>:
 
-ipipe-core-4.4.71-arm-9 is not safe, and that one is the latest patch I
-pushed for the 4.4 series over ARM, back in 2015. At the very least, a
-new 4.4 patch which includes the commit you refer to should be issued
-(which I'm going to do since the patch maker bot is not fixed yet), but
-that also means that any version prior to the upcoming
-ipipe-core-4.4.71-arm-10 would break with these mayday changes.
+> On 08.11.18 13:42, Henning Schild via Xenomai wrote:
+> > xeno-test-run always returned SUCCESS, even if its children exited
+> > with non zero. So xeno-test can not be used programmatically i.e.
+> > in CI.
+> > 
+> > This patch adds some more verbosity and makes xeno-test-run exit
+> > FAILURE if at least one child returned non-zero.
+> > 
+> > Signed-off-by: Henning Schild <henning.schild@siemens.com>
+> > ---
+> >   testsuite/xeno-test/xeno-test-run.c | 16 +++++++++++++++-
+> >   1 file changed, 15 insertions(+), 1 deletion(-)
+> > 
+> > diff --git a/testsuite/xeno-test/xeno-test-run.c
+> > b/testsuite/xeno-test/xeno-test-run.c index bfede63fd..6d1bb96c0
+> > 100644 --- a/testsuite/xeno-test/xeno-test-run.c
+> > +++ b/testsuite/xeno-test/xeno-test-run.c
+> > @@ -51,6 +51,8 @@ void handle_checked_child(struct child *child,
+> > fd_set *fds); void handle_script_child(struct child *child, fd_set
+> > *fds); void handle_load_child(struct child *child, fd_set *fds);
+> >   
+> > +static int exit_global = EXIT_SUCCESS;
+> > +
+> >   static inline time_t mono_time(void)
+> >   {
+> >   	struct timespec ts;
+> > @@ -319,6 +321,18 @@ void sigchld_handler(int sig)
+> >   
+> >   		child->exit_status = status;
+> >   		child->dead = 1;
+> > +		fprintf(stderr, "child %d returned: ", pid);
+> > +		if (WIFEXITED(status)) {
+> > +			if (WEXITSTATUS(status))
+> > +				exit_global = EXIT_FAILURE;
+> > +			fprintf(stderr, "exited with status %d\n",
+> > +				WEXITSTATUS(status));
+> > +		} else if WIFSIGNALED(status) {
+> > +			fprintf(stderr, "killed by signal %d\n",
+> > +				WTERMSIG(status));
+> > +		} else {
+> > +			fprintf(stderr, "unknown reason\n");
+> > +		}
+> >   	}
+> >   }
+> >   
+> > @@ -660,5 +674,5 @@ int main(int argc, char *argv[])
+> >   		signal(sigexit, SIG_DFL);
+> >   		raise(sigexit);
+> >   	}
+> > -	exit(EXIT_SUCCESS);
+> > +	exit(exit_global);
+> >   }
+> >   
+> 
+> Merged to next.
 
--- 
-Philippe.
+With author "via Xenomai", i will always include a "From:" from now on.
+But should be something to double-check before merging.
+
+Henning
+
+> Thanks,
+> Jan
+> 
+
 
