@@ -1,12 +1,14 @@
-Date: Wed, 28 Nov 2018 10:05:57 +0100
-From: Henning Schild <henning.schild@siemens.com>
 Subject: Re: [PATCH] testsuite/xeno-test: do not swallow exit status anymore
-Message-ID: <20181128100557.24e73baf@md1za8fc.ad001.siemens.net>
-In-Reply-To: <8222c0a6-1c36-f255-bcc4-895e7ef9acb5@siemens.com>
 References: <20181108124202.28018-1-henning.schild@siemens.com>
  <8222c0a6-1c36-f255-bcc4-895e7ef9acb5@siemens.com>
+ <20181128100557.24e73baf@md1za8fc.ad001.siemens.net>
+From: Jan Kiszka <jan.kiszka@siemens.com>
+Message-ID: <1fb05e4d-57d0-dd59-5a53-e528d51a5533@siemens.com>
+Date: Wed, 28 Nov 2018 10:10:23 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+In-Reply-To: <20181128100557.24e73baf@md1za8fc.ad001.siemens.net>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
 Content-Transfer-Encoding: 7bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
@@ -16,75 +18,78 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jan Kiszka <jan.kiszka@siemens.com>
+To: Henning Schild <henning.schild@siemens.com>
 Cc: xenomai@xenomai.org
 
-Am Fri, 16 Nov 2018 07:28:51 +0100
-schrieb Jan Kiszka <jan.kiszka@siemens.com>:
-
-> On 08.11.18 13:42, Henning Schild via Xenomai wrote:
-> > xeno-test-run always returned SUCCESS, even if its children exited
-> > with non zero. So xeno-test can not be used programmatically i.e.
-> > in CI.
-> > 
-> > This patch adds some more verbosity and makes xeno-test-run exit
-> > FAILURE if at least one child returned non-zero.
-> > 
-> > Signed-off-by: Henning Schild <henning.schild@siemens.com>
-> > ---
-> >   testsuite/xeno-test/xeno-test-run.c | 16 +++++++++++++++-
-> >   1 file changed, 15 insertions(+), 1 deletion(-)
-> > 
-> > diff --git a/testsuite/xeno-test/xeno-test-run.c
-> > b/testsuite/xeno-test/xeno-test-run.c index bfede63fd..6d1bb96c0
-> > 100644 --- a/testsuite/xeno-test/xeno-test-run.c
-> > +++ b/testsuite/xeno-test/xeno-test-run.c
-> > @@ -51,6 +51,8 @@ void handle_checked_child(struct child *child,
-> > fd_set *fds); void handle_script_child(struct child *child, fd_set
-> > *fds); void handle_load_child(struct child *child, fd_set *fds);
-> >   
-> > +static int exit_global = EXIT_SUCCESS;
-> > +
-> >   static inline time_t mono_time(void)
-> >   {
-> >   	struct timespec ts;
-> > @@ -319,6 +321,18 @@ void sigchld_handler(int sig)
-> >   
-> >   		child->exit_status = status;
-> >   		child->dead = 1;
-> > +		fprintf(stderr, "child %d returned: ", pid);
-> > +		if (WIFEXITED(status)) {
-> > +			if (WEXITSTATUS(status))
-> > +				exit_global = EXIT_FAILURE;
-> > +			fprintf(stderr, "exited with status %d\n",
-> > +				WEXITSTATUS(status));
-> > +		} else if WIFSIGNALED(status) {
-> > +			fprintf(stderr, "killed by signal %d\n",
-> > +				WTERMSIG(status));
-> > +		} else {
-> > +			fprintf(stderr, "unknown reason\n");
-> > +		}
-> >   	}
-> >   }
-> >   
-> > @@ -660,5 +674,5 @@ int main(int argc, char *argv[])
-> >   		signal(sigexit, SIG_DFL);
-> >   		raise(sigexit);
-> >   	}
-> > -	exit(EXIT_SUCCESS);
-> > +	exit(exit_global);
-> >   }
-> >   
+On 28.11.18 10:05, Henning Schild wrote:
+> Am Fri, 16 Nov 2018 07:28:51 +0100
+> schrieb Jan Kiszka <jan.kiszka@siemens.com>:
 > 
-> Merged to next.
-
-With author "via Xenomai", i will always include a "From:" from now on.
-But should be something to double-check before merging.
-
-Henning
-
-> Thanks,
-> Jan
+>> On 08.11.18 13:42, Henning Schild via Xenomai wrote:
+>>> xeno-test-run always returned SUCCESS, even if its children exited
+>>> with non zero. So xeno-test can not be used programmatically i.e.
+>>> in CI.
+>>>
+>>> This patch adds some more verbosity and makes xeno-test-run exit
+>>> FAILURE if at least one child returned non-zero.
+>>>
+>>> Signed-off-by: Henning Schild <henning.schild@siemens.com>
+>>> ---
+>>>    testsuite/xeno-test/xeno-test-run.c | 16 +++++++++++++++-
+>>>    1 file changed, 15 insertions(+), 1 deletion(-)
+>>>
+>>> diff --git a/testsuite/xeno-test/xeno-test-run.c
+>>> b/testsuite/xeno-test/xeno-test-run.c index bfede63fd..6d1bb96c0
+>>> 100644 --- a/testsuite/xeno-test/xeno-test-run.c
+>>> +++ b/testsuite/xeno-test/xeno-test-run.c
+>>> @@ -51,6 +51,8 @@ void handle_checked_child(struct child *child,
+>>> fd_set *fds); void handle_script_child(struct child *child, fd_set
+>>> *fds); void handle_load_child(struct child *child, fd_set *fds);
+>>>    
+>>> +static int exit_global = EXIT_SUCCESS;
+>>> +
+>>>    static inline time_t mono_time(void)
+>>>    {
+>>>    	struct timespec ts;
+>>> @@ -319,6 +321,18 @@ void sigchld_handler(int sig)
+>>>    
+>>>    		child->exit_status = status;
+>>>    		child->dead = 1;
+>>> +		fprintf(stderr, "child %d returned: ", pid);
+>>> +		if (WIFEXITED(status)) {
+>>> +			if (WEXITSTATUS(status))
+>>> +				exit_global = EXIT_FAILURE;
+>>> +			fprintf(stderr, "exited with status %d\n",
+>>> +				WEXITSTATUS(status));
+>>> +		} else if WIFSIGNALED(status) {
+>>> +			fprintf(stderr, "killed by signal %d\n",
+>>> +				WTERMSIG(status));
+>>> +		} else {
+>>> +			fprintf(stderr, "unknown reason\n");
+>>> +		}
+>>>    	}
+>>>    }
+>>>    
+>>> @@ -660,5 +674,5 @@ int main(int argc, char *argv[])
+>>>    		signal(sigexit, SIG_DFL);
+>>>    		raise(sigexit);
+>>>    	}
+>>> -	exit(EXIT_SUCCESS);
+>>> +	exit(exit_global);
+>>>    }
+>>>    
+>>
+>> Merged to next.
+> 
+> With author "via Xenomai", i will always include a "From:" from now on.
+> But should be something to double-check before merging.
 > 
 
+Hmpf, yeah, missed that.
+
+Jan
+
+-- 
+Siemens AG, Corporate Technology, CT RDA IOT SES-DE
+Corporate Competence Center Embedded Linux
 
