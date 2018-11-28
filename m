@@ -1,17 +1,9 @@
-Subject: Re: [PATCH] cobalt/kernel: Simplify mayday processing
-References: <3e868e4f-7bd5-2874-d72b-fc2449ef4b65@siemens.com>
- <111becaa-9e0f-f8ad-4802-62f51379fc07@xenomai.org>
- <08f84d9f-594c-8d82-1da8-f747430226e3@xenomai.org>
- <3b2d567d-b489-723c-41de-9c73fb755763@siemens.com>
- <3327fb5d-3718-3e79-222a-d5730286af2e@xenomai.org>
- <3e3f0811-5528-2c7e-ef29-98b43c08c8a9@siemens.com>
- <d0c9d33a-6656-492c-7b42-7d37a37cb8a9@xenomai.org>
 From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <44456958-6ebe-65aa-53e1-be118f838758@siemens.com>
-Date: Wed, 28 Nov 2018 07:58:29 +0100
+Subject: [PATCH v2] cobalt: Make some private functions static
+Message-ID: <d01096f3-3796-f341-b8ca-7844b956babc@siemens.com>
+Date: Wed, 28 Nov 2018 08:06:27 +0100
 MIME-Version: 1.0
-In-Reply-To: <d0c9d33a-6656-492c-7b42-7d37a37cb8a9@xenomai.org>
-Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
@@ -22,63 +14,137 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Philippe Gerum <rpm@xenomai.org>, Xenomai <xenomai@xenomai.org>, Steven Seeger <steven.seeger@nasa.gov>, Dmitriy Cherkasov <dmitriy@oss-tech.org>
+To: Xenomai <xenomai@xenomai.org>
 
-On 27.11.18 19:57, Philippe Gerum wrote:
-> On 11/27/18 7:15 PM, Jan Kiszka wrote:
->> On 08.11.18 14:24, Philippe Gerum wrote:
->>> On 11/8/18 2:15 PM, Jan Kiszka wrote:
->>>> On 08.11.18 14:09, Philippe Gerum wrote:
->>>>> On 11/8/18 2:05 PM, Philippe Gerum via Xenomai wrote:
->>>>>> On 11/5/18 1:20 PM, Jan Kiszka wrote:
->>>>>>> The mayday mechanism exists in order to kick a xenomai userspace task
->>>>>>> into secondary mode while it is running userspace code. For that, we
->>>>>>> ask
->>>>>>> I-pipe to call us back when the task was interrupted and is about to
->>>>>>> return to userspace.
->>>>>>>
->>>>>>> So far we defer the relaxation from that callback via a VDSO-like
->>>>>>> mechanism that triggers a special syscall to the return path of that
->>>>>>> very same syscall. However, that is not desirable because it is a
->>>>>>> complex, arch-specific mechanism that can easily break and,
->>>>>>> specifically, that destroys the backtrace of ptraced tasks.
->>>>>>>
->>>>>>> Fortunately, we can fulfill the needs of mayday also by relaxing
->>>>>>> the task directly from the mayday callback. Tested successfully on
->>>>>>> x86-64 and ARM.
->>>>>>
->>>>>> ARM-wise, this change requires ipipe-core-4.14.71-arm-3 or later to
->>>>>> work
->>>>>> properly. This method would cause an interrupt state breakage with any
->>>>>> older ARM patch.
->>>>>>
->>>>>
->>>>> ppc32 is fine back to kernel 4.1 regarding this (did not check earlier
->>>>> stuff), and arm64 needs the 4.14-based split series to work properly
->>>>> (4.9 is wrong).
->>>>
->>>> Is the reason for arm64 on 4.9 the same as for arm?
->>>>
->>>
->>> Yes, same pattern.
->>>
->>
->> Is ARM64 on 4.9 considered stable?
-> 
-> I don't think so. I would recommend 4.14 as a stable starting point for
-> Xenomai/arm64.
-> 
+Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
+---
 
-Should we add a warning to the nucleus that triggers when ARM64 is built against 
-<4.14?
+Changes in v2:
+ - decouple from "cobalt: Return error from xnsched_setparam" which is
+   going to be addressed differently
 
-The mayday issue would also be trivial to address in 4.9, 100% analogously to 
-the ARM patches, but that would be pointless if no one should use that kernel 
-for ARM64.
+ kernel/cobalt/sched-idle.c | 14 +++++++-------
+ kernel/cobalt/sched-rt.c   | 14 +++++++-------
+ kernel/cobalt/sched-weak.c | 14 +++++++-------
+ 3 files changed, 21 insertions(+), 21 deletions(-)
 
-Jan
-
+diff --git a/kernel/cobalt/sched-idle.c b/kernel/cobalt/sched-idle.c
+index e5ca8aee87..e6799824a8 100644
+--- a/kernel/cobalt/sched-idle.c
++++ b/kernel/cobalt/sched-idle.c
+@@ -23,25 +23,25 @@ static struct xnthread *xnsched_idle_pick(struct xnsched *sched)
+ 	return &sched->rootcb;
+ }
+ 
+-bool xnsched_idle_setparam(struct xnthread *thread,
+-			   const union xnsched_policy_param *p)
++static bool xnsched_idle_setparam(struct xnthread *thread,
++				  const union xnsched_policy_param *p)
+ {
+ 	return __xnsched_idle_setparam(thread, p);
+ }
+ 
+-void xnsched_idle_getparam(struct xnthread *thread,
+-			   union xnsched_policy_param *p)
++static void xnsched_idle_getparam(struct xnthread *thread,
++				  union xnsched_policy_param *p)
+ {
+ 	__xnsched_idle_getparam(thread, p);
+ }
+ 
+-void xnsched_idle_trackprio(struct xnthread *thread,
+-			   const union xnsched_policy_param *p)
++static void xnsched_idle_trackprio(struct xnthread *thread,
++				   const union xnsched_policy_param *p)
+ {
+ 	__xnsched_idle_trackprio(thread, p);
+ }
+ 
+-void xnsched_idle_protectprio(struct xnthread *thread, int prio)
++static void xnsched_idle_protectprio(struct xnthread *thread, int prio)
+ {
+ 	__xnsched_idle_protectprio(thread, prio);
+ }
+diff --git a/kernel/cobalt/sched-rt.c b/kernel/cobalt/sched-rt.c
+index 114ddad214..24570322a0 100644
+--- a/kernel/cobalt/sched-rt.c
++++ b/kernel/cobalt/sched-rt.c
+@@ -91,25 +91,25 @@ void xnsched_rt_tick(struct xnsched *sched)
+ 	xnsched_putback(sched->curr);
+ }
+ 
+-bool xnsched_rt_setparam(struct xnthread *thread,
+-			 const union xnsched_policy_param *p)
++static bool xnsched_rt_setparam(struct xnthread *thread,
++				const union xnsched_policy_param *p)
+ {
+ 	return __xnsched_rt_setparam(thread, p);
+ }
+ 
+-void xnsched_rt_getparam(struct xnthread *thread,
+-			 union xnsched_policy_param *p)
++static void xnsched_rt_getparam(struct xnthread *thread,
++				union xnsched_policy_param *p)
+ {
+ 	__xnsched_rt_getparam(thread, p);
+ }
+ 
+-void xnsched_rt_trackprio(struct xnthread *thread,
+-			  const union xnsched_policy_param *p)
++static void xnsched_rt_trackprio(struct xnthread *thread,
++				 const union xnsched_policy_param *p)
+ {
+ 	__xnsched_rt_trackprio(thread, p);
+ }
+ 
+-void xnsched_rt_protectprio(struct xnthread *thread, int prio)
++static void xnsched_rt_protectprio(struct xnthread *thread, int prio)
+ {
+ 	__xnsched_rt_protectprio(thread, prio);
+ }
+diff --git a/kernel/cobalt/sched-weak.c b/kernel/cobalt/sched-weak.c
+index fc778b8535..bd3872f104 100644
+--- a/kernel/cobalt/sched-weak.c
++++ b/kernel/cobalt/sched-weak.c
+@@ -44,8 +44,8 @@ static struct xnthread *xnsched_weak_pick(struct xnsched *sched)
+ 	return xnsched_getq(&sched->weak.runnable);
+ }
+ 
+-bool xnsched_weak_setparam(struct xnthread *thread,
+-			   const union xnsched_policy_param *p)
++static bool xnsched_weak_setparam(struct xnthread *thread,
++				  const union xnsched_policy_param *p)
+ {
+ 	if (!xnthread_test_state(thread, XNBOOST))
+ 		xnthread_set_state(thread, XNWEAK);
+@@ -53,14 +53,14 @@ bool xnsched_weak_setparam(struct xnthread *thread,
+ 	return xnsched_set_effective_priority(thread, p->weak.prio);
+ }
+ 
+-void xnsched_weak_getparam(struct xnthread *thread,
+-			   union xnsched_policy_param *p)
++static void xnsched_weak_getparam(struct xnthread *thread,
++				  union xnsched_policy_param *p)
+ {
+ 	p->weak.prio = thread->cprio;
+ }
+ 
+-void xnsched_weak_trackprio(struct xnthread *thread,
+-			    const union xnsched_policy_param *p)
++static void xnsched_weak_trackprio(struct xnthread *thread,
++				   const union xnsched_policy_param *p)
+ {
+ 	if (p)
+ 		thread->cprio = p->weak.prio;
+@@ -68,7 +68,7 @@ void xnsched_weak_trackprio(struct xnthread *thread,
+ 		thread->cprio = thread->bprio;
+ }
+ 
+-void xnsched_weak_protectprio(struct xnthread *thread, int prio)
++static void xnsched_weak_protectprio(struct xnthread *thread, int prio)
+ {
+   	if (prio > XNSCHED_WEAK_MAX_PRIO)
+ 		prio = XNSCHED_WEAK_MAX_PRIO;
 -- 
-Siemens AG, Corporate Technology, CT RDA IOT SES-DE
-Corporate Competence Center Embedded Linux
+2.16.4
 
