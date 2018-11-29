@@ -1,16 +1,14 @@
-Subject: Re: [PATCH 02/12] drivers/gpio: provide optional timestamped readouts
-References: <20190124153428.21006-1-rpm@xenomai.org>
- <20190124153428.21006-3-rpm@xenomai.org>
- <4d1c39af-7a6f-1637-7727-ab6ad6d533c1@siemens.com>
- <40b168af-98d1-955d-ff01-ae5e70113744@xenomai.org>
-From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <bff391b7-e457-c91c-cf68-3229a4492e4d@siemens.com>
-Date: Fri, 25 Jan 2019 10:23:19 +0100
+Subject: Re: every millicsecond interrupt in xenomai domain on a am355x board
+ can cause something wrong?
+References: <6a75de9a.bb14.1675e7e151a.Coremail.liang_1911@163.com>
+From: Philippe Gerum <rpm@xenomai.org>
+Message-ID: <934350e0-912b-4090-e4ba-e9b130d1e1f2@xenomai.org>
+Date: Thu, 29 Nov 2018 17:40:49 +0100
 MIME-Version: 1.0
-In-Reply-To: <40b168af-98d1-955d-ff01-ae5e70113744@xenomai.org>
-Content-Type: text/plain; charset="utf-8"; format="flowed"
+In-Reply-To: <6a75de9a.bb14.1675e7e151a.Coremail.liang_1911@163.com>
+Content-Type: text/plain; charset="gbk"
 Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: base64
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -19,82 +17,26 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Philippe Gerum <rpm@xenomai.org>, xenomai@xenomai.org
+To: =?UTF-8?B?5qKB5p2D?= <liang_1911@163.com>, xenomai@xenomai.org
 
-On 25.01.19 10:15, Philippe Gerum wrote:
-> On 1/24/19 7:17 PM, Jan Kiszka wrote:
->> On 24.01.19 16:34, Philippe Gerum wrote:
->>> In timestamping mode, read() returns the timestamp of the latest event
->>> receipt on the pin based on CLOCK_MONOTONIC, along with the pin
->>> state. This is an optional pin readout mode controlled by the
->>> GPIO_RTIOC_TS request, e.g.:
->>>
->>> struct rtdm_gpio_readout rdo;
->>> int ret, on, val;
->>>
->>> on = 1;
->>> ret = ioctl(pinfd, GPIO_RTIOC_TS, &on);
->>> ret = read(pinfd, &rdo, sizeof(rdo));
->>> /* pin state changed to rdo.value at time rdo.timestamp */
->>>
->>> on = 0;
->>> ret = ioctl(pinfd, GPIO_RTIOC_TS, &on);
->>> ret = read(pinfd, &val, sizeof(val));
->>> /* pin state changed to value (time of change unspecified) */
->>>
->>> By default, timestamping mode is disabled, which corresponds to the
->>> original behavior.
->>>
->>> Signed-off-by: Philippe Gerum <rpm@xenomai.org>
->>> ---
->>>    include/cobalt/kernel/rtdm/gpio.h |  1 +
->>>    include/rtdm/uapi/gpio.h          | 18 +++++++----
->>>    kernel/drivers/gpio/gpio-core.c   | 54 +++++++++++++++++++++++--------
->>>    3 files changed, 54 insertions(+), 19 deletions(-)
->>>
->>> diff --git a/include/cobalt/kernel/rtdm/gpio.h
->>> b/include/cobalt/kernel/rtdm/gpio.h
->>> index cdb472f8a..00055ec0a 100644
->>> --- a/include/cobalt/kernel/rtdm/gpio.h
->>> +++ b/include/cobalt/kernel/rtdm/gpio.h
->>> @@ -33,6 +33,7 @@ struct rtdm_gpio_pin {
->>>        rtdm_event_t event;
->>>        char *name;
->>>        struct gpio_desc *desc;
->>> +    nanosecs_abs_t timestamp;
->>>    };
->>>      struct rtdm_gpio_chip {
->>> diff --git a/include/rtdm/uapi/gpio.h b/include/rtdm/uapi/gpio.h
->>> index b745f156c..ac14be66c 100644
->>> --- a/include/rtdm/uapi/gpio.h
->>> +++ b/include/rtdm/uapi/gpio.h
->>> @@ -18,12 +18,18 @@
->>>    #ifndef _RTDM_UAPI_GPIO_H
->>>    #define _RTDM_UAPI_GPIO_H
->>>    -#define GPIO_RTIOC_DIR_OUT        _IOW(RTDM_CLASS_GPIO, 0, int)
->>> -#define GPIO_RTIOC_DIR_IN        _IO(RTDM_CLASS_GPIO, 1)
->>> -#define GPIO_RTIOC_IRQEN        _IOW(RTDM_CLASS_GPIO, 2, int) /* GPIO
->>> trigger */
->>> -#define GPIO_RTIOC_IRQDIS        _IO(RTDM_CLASS_GPIO, 3)
->>> -#define GPIO_RTIOC_REQS                _IO(RTDM_CLASS_GPIO, 4)
->>> -#define GPIO_RTIOC_RELS                _IO(RTDM_CLASS_GPIO, 5)
->>> +struct rtdm_gpio_readout {
->>> +    __u64 timestamp;
->>
->> nanosecs_abs_t - we use this type also in to userspace interface.
->>
-> 
-> Nope. This is ABI stuff, nanosecs_abs_t is not guaranteed to have the
-> same size regardless of the ABI models, which is unsafe in mixed 32/64
-> model configurations. OTOH, __u64 is safe.
-
-If nanosecs_abs_t is alread an ABI, and it is used as such for a long time (see 
-include/rtdm/uapi/serial.h). If you see a bug in its definition, that needs to 
-be fixed. We should not resolve that by choosing open-coded local workarounds.
-
-Jan
-
--- 
-Siemens AG, Corporate Technology, CT RDA IOT SES-DE
-Corporate Competence Center Embedded Linux
-
+T24gMTEvMjkvMTggOTowMyBBTSwgwbrIqCB2aWEgWGVub21haSB3cm90ZToKPiBoaaOsCj4gaSdt
+IHdvcmsgb24gYSBjdXN0b21lZCBib2FyZCB3aXRoIFRJIGFtMzM1WDsgaSBoYXZlIGluc3RhbGxl
+ZCB4ZW5vbWFpIDMgb24gaXQgY29ycmVjdHRseSAsIGFuZCBjYW4gcnVuIHRoZSBsYXRlbmN5IHRl
+c3QuCj4gT24gdGhpcyBib2FyZCwgYW4gaW50ZXJydXB0IHdoaWNoIGNhbm5vdCBiZSBtYXNrZWQg
+YW5kIGRlbGF5ZWQgd2lsbCBiZSBnZW5lcmF0ZWQgZXZlcnkgbWlsbGljc2Vjb25kIGJ5IGEgRlBH
+QSA7IAo+IHRvICBoYW5kbGVyIHRoaXMgaW50ZXJydXB0IGltbWVkaWF0ZWx5LCBpIHJlZ2lzdGVy
+ICB0aGUgaW50ZXJydXB0IGhhbmRsZXIgaW4geGVub21haSBkb21haW4uQWxzbyB0aGVyZSBpcyBh
+IFFUIGFwcGxpY3RhdGlvbiBydW5uaW5nIG9uIHRoZSBib2FyZDsgIGFuZCBoZXJlIGlzIHRoZSBw
+cm9ibGVtIGkgZW5jb3VudGVyOgo+IGlmIGkgb3BlbiB0aGUgaW50ZXJydXB0IGFuZCBydW4gdGhl
+IFFUIGFwcGxpY2F0aW9uIHNpbXVsdGFuZW91c2x5LCB0aGUgUVQgYXBwbGljYXRpb24gd2lsbCBn
+ZXQgd3JvbmcgbGlrZSB0aGlzIGFmdGVyIGEgZmV3IG1pbnV0ZXMoYnV0IHRoZSBsaW51eCBpcyBz
+dGlsbCBydW5uaW5nIGZpbmUpOgo+IFsgMTYwMS40OTY4MjhdIFVuaGFuZGxlZCBmYXVsdDogcGFn
+ZSBkb21haW4gZmF1bHQgKDB4MDFiKSBhdCAweGI2ZmExMzVjCgpBbnkgaW1wcm92ZW1lbnQgd2l0
+aCB0aGlzIHBhdGNoIGluPwoKZGlmZiAtLWdpdCBhL2FyY2gvYXJtL2tlcm5lbC9lbnRyeS1hcm12
+LlMgYi9hcmNoL2FybS9rZXJuZWwvZW50cnktYXJtdi5TCmluZGV4IDM1NjliMzE3NDM3Mi4uYzUz
+ZjUxMzU3YjNjIDEwMDY0NAotLS0gYS9hcmNoL2FybS9rZXJuZWwvZW50cnktYXJtdi5TCisrKyBi
+L2FyY2gvYXJtL2tlcm5lbC9lbnRyeS1hcm12LlMKQEAgLTI5Niw2ICsyOTYsNyBAQCBfX3VuZF9z
+dmM6CiAJYmwJX19pcGlwZV9ub3RpZnlfdHJhcAkJQCBicmFuY2ggdG8gdHJhcCBoYW5kbGVyCiAJ
+Y21wCXIwLCAjMAogCWJuZQlfX3VuZF9zdmNfZmluaXNoCisJdWFjY2Vzc19lbmFibGUgaXAKICNl
+bmRpZiAvKiBDT05GSUdfSVBJUEUgKi8KIAlACiAJQCBjYWxsIGVtdWxhdGlvbiBjb2RlLCB3aGlj
+aCByZXR1cm5zIHVzaW5nIHI5IGlmIGl0IGhhcyBlbXVsYXRlZAoKLS0gClBoaWxpcHBlLgoK
