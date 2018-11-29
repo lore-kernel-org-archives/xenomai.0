@@ -1,14 +1,14 @@
-Message-ID: <1547214716.2322.9.camel@smigroup.net>
-Subject: Re: FPU warn on ipipe 4.9.146-8 i386
-From: Mauro Salvini <mauro.salvini@smigroup.net>
-Date: Fri, 11 Jan 2019 14:51:56 +0100
-In-Reply-To: <6f418e82-c1ff-404c-797b-eea318a4dd5c@linx-info.com>
-References: <1547197070.2322.4.camel@smigroup.net>
- <20190111104056.71950ea6@md1za8fc.ad001.siemens.net>
- <6f418e82-c1ff-404c-797b-eea318a4dd5c@linx-info.com>
-Content-Type: text/plain; charset="UTF-8"
-Mime-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
+Subject: Re: every millicsecond interrupt in xenomai domain on a am355x board
+ can cause something wrong?
+References: <6a75de9a.bb14.1675e7e151a.Coremail.liang_1911@163.com>
+From: Philippe Gerum <rpm@xenomai.org>
+Message-ID: <6c00eb9f-37b7-1500-0da5-ceab4f4db112@xenomai.org>
+Date: Thu, 29 Nov 2018 15:34:03 +0100
+MIME-Version: 1.0
+In-Reply-To: <6a75de9a.bb14.1675e7e151a.Coremail.liang_1911@163.com>
+Content-Type: text/plain; charset="gbk"
+Content-Language: en-US
+Content-Transfer-Encoding: base64
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,33 +17,12 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: limingyu <myli@linx-info.com>, xenomai@xenomai.org
+To: =?UTF-8?B?5qKB5p2D?= <liang_1911@163.com>, xenomai@xenomai.org
 
-On Fri, 2019-01-11 at 17:53 +0800, limingyu via Xenomai wrote:
-> Hi, Mauro
->=20
-> Maybe you could refer to this disscusion below, and try the latesst=C2=A0
-> stable xenomai code branch
->=20
-> v3.0.x/stable.=C2=A0
-> https://xenomai.org/pipermail/xenomai/2018-December/040086.html
->=20
-> And the lasted xenomai code is here:=C2=A0
-> https://gitlab.denx.de/Xenomai/xenomai/tree/stable/v3.0.x
->=20
-> On 1/11/19 5:40 PM, Henning Schild via Xenomai wrote:
-> > I got this dump in dmesg, sometimes=C2=A0just after latency starts,
->=20
->=20
-
-Hi Limingyu,
-
-Thank you, but I already am on top of v3.0.x/stable (I'm on same
-version used at https://xenomai.org/pipermail/xenomai/2018-December/040
-142.html)
-
-Regards
-
-Mauro
-
-
+T24gMTEvMjkvMTggOTowMyBBTSwgwbrIqCB2aWEgWGVub21haSB3cm90ZToKPiBoaaOsCj4gaSdt
+IHdvcmsgb24gYSBjdXN0b21lZCBib2FyZCB3aXRoIFRJIGFtMzM1WDsgaSBoYXZlIGluc3RhbGxl
+ZCB4ZW5vbWFpIDMgb24gaXQgY29ycmVjdHRseSAsIGFuZCBjYW4gcnVuIHRoZSBsYXRlbmN5IHRl
+c3QuCj4gT24gdGhpcyBib2FyZCwgYW4gaW50ZXJydXB0IHdoaWNoIGNhbm5vdCBiZSBtYXNrZWQg
+YW5kIGRlbGF5ZWQgd2lsbCBiZSBnZW5lcmF0ZWQgZXZlcnkgbWlsbGljc2Vjb25kIGJ5IGEgRlBH
+QSA7IAoKV2hhdCBkbyB5b3UgbWVhbiBwcmVjaXNlbHkgYnkgImNhbm5vdCBiZSBtYXNrZWQiPyBB
+cmUgeW91IHJlZmVycmluZyB0bwpOTUkgb3IgRklRPwoKLS0gClBoaWxpcHBlLgoK
