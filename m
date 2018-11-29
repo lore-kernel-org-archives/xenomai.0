@@ -1,15 +1,15 @@
-From: Giulio Moro <g.moro@qmul.ac.uk>
-Subject: Re: Re:Help: System freeze when edge interrupt trigger,
- Xenomain3.0.8, ipipe-arm main line, am335x
-Date: Tue, 22 Jan 2019 12:29:42 +0000
-Message-ID: <AM0PR07MB557203E7692AAA92D4BC22E3B5980@AM0PR07MB5572.eurprd07.prod.outlook.com>
-References: <mailman.3.1547809201.5156.xenomai@xenomai.org>,
- <4ddd614.76d7.168751f9385.Coremail.kunzj@126.com>
-In-Reply-To: <4ddd614.76d7.168751f9385.Coremail.kunzj@126.com>
-Content-Language: en-GB
-Content-Type: text/plain; charset="gb2312"
-Content-Transfer-Encoding: base64
 MIME-Version: 1.0
+References: <6a75de9a.bb14.1675e7e151a.Coremail.liang_1911@163.com>
+ <6c00eb9f-37b7-1500-0da5-ceab4f4db112@xenomai.org>
+ <5ff90fcc.1120f.16760156d36.Coremail.liang_1911@163.com>
+In-Reply-To: <5ff90fcc.1120f.16760156d36.Coremail.liang_1911@163.com>
+From: Greg Gallagher <greg@embeddedgreg.com>
+Date: Thu, 29 Nov 2018 10:39:03 -0500
+Message-ID: <CALLqZ8QSQjNQDpfYx-gjodj+9PR7J7nzi=S09CDkOw=eQhRLyQ@mail.gmail.com>
+Subject: Re: Re: every millicsecond interrupt in xenomai domain on a am355x
+ board can cause something wrong?
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -18,70 +18,51 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "Xenomai@xenomai.org" <Xenomai@xenomai.org>, =?gb2312?B?1cW9qMCl?= <kunzj@126.com>
+To: liang_1911@163.com
+Cc: Philippe Gerum <rpm@xenomai.org>, "Xenomai@xenomai.org" <xenomai@xenomai.org>
 
-PkRhdGU6IEZyaSwgMTggSmFuIDIwMTkgMTE6NDg6MTIgKzA4MDAgKENTVCkNCj5Gcm9tOiDVxb2o
-wKUgPGt1bnpqQDEyNi5jb20+DQo+ICAgIFRoZSBzeXN0ZW0gZnJlZXplIHdoZW4gaW50ZXJydXB0
-IGlzIHRyaWdnZXJlZC4gSSBjbG9uZSBpcGlwZS1hcm0gbWFzdGVyLCBhbmQgdXNlIHhlbm9tYWkg
-My4wLjggZm9sbG93aW5nIHhlbm9tYWkgc3RhcnR1cCB0dXRvcmlhbC4NCj5UaGUgaGFyZHdhcmUg
-Y3B1IGlzIGFtMzM1OC4gU3lzdGVtIHdvcmtzIGZpbmUgYWZ0ZXIgc3RhcnQgdXAsIGJ1dCB0aGUg
-c3lzdGVtIGltbWVkaWF0ZWx5IGxvY2tzIHVwIHdoZW4gYSBlZGdlIGludGVycnVwdC4gRm9yIGV4
-YW1wbGUsDQo+IEhlbGxvIGV2ZXJ5b25lLCBoZXJlIGlzIHNvbWUgbmV3IGNsdWVzOg0KPiAxLiBJ
-IHRyaWVkIHhlbm9tYWkgMy4wLjgsIGtlcm5lbCAzLjE0LjE3IGFuZCBpcGlwZS1jb3JlLTQuMTQu
-NzEtYXJtLTQucGF0Y2guIFN0aWxsIHRoZSBzYW1lIHF1ZXN0aW9uLg0KDQpUaGlzIE1BWSBvcmln
-aW5hdGUgZnJvbSB0aGUgc2FtZSBpc3N1ZSBhcyBbMV0sIGFscmVhZHkgZGlzY3Vzc2VkIG9uIHRo
-aXMgbGlzdCBvbiBbMl0gYW5kIFszXSwgYWxyZWFkeS4gSW4gZmFjdCwgIFs0XSBhY2hpZXZlcyBh
-IHNpbWlsYXIgZnJlZXplIG9uIDQuMTQgYW5kIFs1XSBzdWdnZXN0cyBhIHdheSB0byBmaXggaXQu
-IEkgdHJpZWQgaXQgbXlzZWxmIGJ1dCB3aXRoIG5vIHN1Y2Nlc3MgKGJ1dCBJIGFtIG5vdCBrZXJu
-ZWwgZXhwZXJ0ISkuIEhvd2V2ZXIsIEkgbXVzdCBzYXkgdGhhdCBpbiBteSBjYXNlLCBJIGdldCBu
-byBmcmVlemUsIG5vciBhIHN0cmVhbSBvZiBtZXNzYWdlcyBpbiB0aGUga2VybmVsIGxvZywgcmF0
-aGVyIHdoYXQgaGFwcGVucyBpcyB0aGF0IGV2ZXJ5IHRpbWUgdGhlIGludGVycnVwdCBpcyB0cmln
-Z2VyZWQsIHdlIGdldCBhIHN0YWNrdHJhY2UgaW4gdGhlIGtlcm5lbCBsb2cuDQoNClsxXSBodHRw
-czovL2dpdGh1Yi5jb20vUm9iZXJ0Q05lbHNvbi90aS1saW51eC1rZXJuZWwtZGV2L2lzc3Vlcy8x
-Ng0KWzJdIGh0dHBzOi8vd3d3Lnhlbm9tYWkub3JnL3BpcGVybWFpbC94ZW5vbWFpLzIwMTctSnVu
-ZS8wMzc0MjcuaHRtbA0KWzNdIGh0dHBzOi8vd3d3Lnhlbm9tYWkub3JnL3BpcGVybWFpbC94ZW5v
-bWFpLzIwMTgtRmVicnVhcnkvMDM4MzgwLmh0bWwNCls0XSBodHRwczovL3d3dy54ZW5vbWFpLm9y
-Zy9waXBlcm1haWwveGVub21haS8yMDE4LUZlYnJ1YXJ5LzAzODM5Ny5odG1sDQpbNV0gaHR0cHM6
-Ly93d3cueGVub21haS5vcmcvcGlwZXJtYWlsL3hlbm9tYWkvMjAxOC1GZWJydWFyeS8wMzgzODku
-aHRtbA0KX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fXw0KRnJvbTogWGVu
-b21haSA8eGVub21haS1ib3VuY2VzQHhlbm9tYWkub3JnPiBvbiBiZWhhbGYgb2Yg1cW9qMClIHZp
-YSBYZW5vbWFpIDx4ZW5vbWFpQHhlbm9tYWkub3JnPg0KU2VudDogMjIgSmFudWFyeSAyMDE5IDEw
-OjMzDQpUbzogeGVub21haUB4ZW5vbWFpLm9yZw0KU3ViamVjdDogUmU6SGVscDogU3lzdGVtIGZy
-ZWV6ZSB3aGVuIGVkZ2UgaW50ZXJydXB0IHRyaWdnZXIsICBYZW5vbWFpbjMuMC44LCBpcGlwZS1h
-cm0gbWFpbiBsaW5lLCBhbTMzNXgNCg0KSGVsbG8gZXZlcnlvbmUsIGhlcmUgaXMgc29tZSBuZXcg
-Y2x1ZXM6DQoxLiBJIHRyaWVkIHhlbm9tYWkgMy4wLjgsIGtlcm5lbCAzLjE0LjE3IGFuZCBpcGlw
-ZS1jb3JlLTQuMTQuNzEtYXJtLTQucGF0Y2guIFN0aWxsIHRoZSBzYW1lIHF1ZXN0aW9uLg0KDQoy
-LiBJdCBzZWVtcyB0aGUgc3lzdGVtIGlzIGxvY2tlZCB1cCBvbmNlIGEgZ3BpbyBpbnRlcnJ1cHQg
-aXMgdHJpZ2dlcmVkLg0KDQozLiBTb21lIGRlYnVnIGluZm9ybWF0aW9uIHNob3cgdGhhdCwgb25j
-ZSBhIGdwaW8gaW50ZXJydXB0IGlzIHRyaWdnZXJlZCwgdGhlIGZ1bmN0aW9uDQoNCiAgICAnb21h
-cF9ncGlvX2lycV9oYW5kbGVyJyBpcyB0cmlnZ2VyZWQgYWxsIHRoZSB0aW1lLg0KDQpUaGVyZSBt
-YXkgYmUgYSBsaXR0bGUgYnVnIGV4aXN0cywgYnV0IGkgZG9uJ3Qga25vdyBob3cgdG8gYW1lbmQg
-aXQuIFRoYW5rIHlvdSB2ZXJ5IG11Y2gsIGlmIGFueW9uZSBjYW4gaGVscC4NCg0KPi0tLS0tLS0t
-LS0tLS0tLS0tLS0tLS0tLS0tLS0tLQ0KPg0KPk1lc3NhZ2U6IDMNCj5EYXRlOiBGcmksIDE4IEph
-biAyMDE5IDExOjQ4OjEyICswODAwIChDU1QpDQo+RnJvbTog1cW9qMClIDxrdW56akAxMjYuY29t
-Pg0KPlRvOiB4ZW5vbWFpQHhlbm9tYWkub3JnDQo+U3ViamVjdDogSGVscDogU3lzdGVtIGZyZWV6
-ZSB3aGVuIGVkZ2UgaW50ZXJydXB0IHRyaWdnZXIsDQo+ICAgICAgIFhlbm9tYWluMy4wLjgsIGlw
-aXBlLWFybSBtYWluIGxpbmUsIGFtMzM1eA0KPk1lc3NhZ2UtSUQ6IDw1NWM4OWM3Ni4zNDIwLjE2
-ODVmMTJjNDg4LkNvcmVtYWlsLmt1bnpqQDEyNi5jb20+DQo+Q29udGVudC1UeXBlOiB0ZXh0L3Bs
-YWluOyBjaGFyc2V0PSJnYmsiDQo+DQo+SGVsbG8hDQo+ICAgIFRoZSBzeXN0ZW0gZnJlZXplIHdo
-ZW4gaW50ZXJydXB0IGlzIHRyaWdnZXJlZC4gSSBjbG9uZSBpcGlwZS1hcm0gbWFzdGVyLCBhbmQg
-dXNlIHhlbm9tYWkgMy4wLjggZm9sbG93aW5nIHhlbm9tYWkgc3RhcnR1cCB0dXRvcmlhbC4NCj5U
-aGUgaGFyZHdhcmUgY3B1IGlzIGFtMzM1OC4gU3lzdGVtIHdvcmtzIGZpbmUgYWZ0ZXIgc3RhcnQg
-dXAsIGJ1dCB0aGUgc3lzdGVtIGltbWVkaWF0ZWx5IGxvY2tzIHVwIHdoZW4gYSBlZGdlIGludGVy
-cnVwdC4gRm9yIGV4YW1wbGUsDQo+dGhlIG1tYyBjYXJkIGluIHBsdWdlZCBpbi4gSXMgaXQgc29t
-ZXRoaW5nIHdvcm5nID8gVGhhbmsgeW91IHZlcnkgbXVjaCENCj4NCj4gICAgVGhlIGtlcm5lbCBj
-b25maWcgZmlsZSBhbmQgZHRzIGF0dGFjaGVkLg0KPg0KPg0KPi0tLS0tLS0tLS0tLS0tIG5leHQg
-cGFydCAtLS0tLS0tLS0tLS0tLQ0KPkEgbm9uLXRleHQgYXR0YWNobWVudCB3YXMgc2NydWJiZWQu
-Li4NCj5OYW1lOiAuY29uZmlnDQo+VHlwZTogYXBwbGljYXRpb24vb2N0ZXQtc3RyZWFtDQo+U2l6
-ZTogMTI5NTkxIGJ5dGVzDQo+RGVzYzogbm90IGF2YWlsYWJsZQ0KPlVSTDogPGh0dHA6Ly94ZW5v
-bWFpLm9yZy9waXBlcm1haWwveGVub21haS9hdHRhY2htZW50cy8yMDE5MDExOC81MzgxNzVmOS9h
-dHRhY2htZW50Lm9iaj4NCj4tLS0tLS0tLS0tLS0tLSBuZXh0IHBhcnQgLS0tLS0tLS0tLS0tLS0N
-Cj5BIG5vbi10ZXh0IGF0dGFjaG1lbnQgd2FzIHNjcnViYmVkLi4uDQo+TmFtZTogYW0zMzV4LWRu
-ay12MV9MQ0Q4MDB4NDgwX1RNMDcwUkRIMTMuZHRzDQo+VHlwZTogYXBwbGljYXRpb24vb2N0ZXQt
-c3RyZWFtDQo+U2l6ZTogMjk0MzYgYnl0ZXMNCj5EZXNjOiBub3QgYXZhaWxhYmxlDQo+VVJMOiA8
-aHR0cDovL3hlbm9tYWkub3JnL3BpcGVybWFpbC94ZW5vbWFpL2F0dGFjaG1lbnRzLzIwMTkwMTE4
-LzUzODE3NWY5L2F0dGFjaG1lbnQtMDAwMS5vYmo+DQo+DQo+LS0tLS0tLS0tLS0tLS0tLS0tLS0t
-LS0tLS0tLS0tDQo+DQo+U3ViamVjdDogRGlnZXN0IEZvb3Rlcg0KPg0KPg0KPg0KPg0KPi0tLS0t
-LS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLQ0KPg0KPkVuZCBvZiBYZW5vbWFpIERpZ2VzdCwgVm9s
-IDgxLCBJc3N1ZSAxNw0KPioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKg0K
+This doc will help explain how the ipipe handles interrupts.
+
+https://gitlab.denx.de/Xenomai/ipipe-noarch/blob/master/Documentation/ipipe=
+.rst
+
+
+I don't think the interrupt is being missed, what domain do you want
+to handle the interrupt?
+
+-Greg
+On Thu, Nov 29, 2018 at 10:28 AM =E6=A2=81=E6=9D=83 via Xenomai <xenomai@xe=
+nomai.org> wrote:
+>
+> it is neither NMI nor FIQ; "cannot be mask" just for emphasize this inter=
+rupt is so important that cannot be missed even once.
+>  it maybe my fault for this unclear expression
+>
+>
+>
+>
+> --
+>
+> ----------------------------------------------
+>           =E6=A2=81=E6=9D=83
+> THANKS & BR!
+>
+>
+>
+>
+>
+> =E5=9C=A8 2018-11-29 22:34:03=EF=BC=8C"Philippe Gerum" <rpm@xenomai.org> =
+=E5=86=99=E9=81=93=EF=BC=9A
+> >On 11/29/18 9:03 AM, =E6=A2=81=E6=9D=83 via Xenomai wrote:
+> >> hi=EF=BC=8C
+> >> i'm work on a customed board with TI am335X; i have installed xenomai =
+3 on it correcttly , and can run the latency test.
+> >> On this board, an interrupt which cannot be masked and delayed will be=
+ generated every millicsecond by a FPGA ;
+> >
+> >What do you mean precisely by "cannot be masked"? Are you referring to
+> >NMI or FIQ?
+> >
+> >--
+> >Philippe.
 
