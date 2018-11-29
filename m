@@ -1,9 +1,8 @@
-MIME-Version: 1.0
-From: Pintu Agarwal <pintu.ping@gmail.com>
-Date: Thu, 13 Dec 2018 16:43:49 +0530
-Message-ID: <CAOuPNLj7oWkbq9jMNQD4WLp67hVbYO8gd2t-qKwYDTpa+OQrZA@mail.gmail.com>
-Subject: ipipe-arm64 patches for qualcomm dragonboard 410c
-Content-Type: text/plain; charset="UTF-8"
+From: Philippe Gerum <rpm@xenomai.org>
+Subject: [PATCH 1/5] cobalt/sched: add per-policy handler for early parameter
+ checking
+Date: Thu, 29 Nov 2018 14:54:13 +0100
+Message-Id: <20181129135417.29797-1-rpm@xenomai.org>
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -12,35 +11,66 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "Xenomai@xenomai.org" <xenomai@xenomai.org>, Philippe Gerum <rpm@xenomai.org>, Greg Gallagher <greg@embeddedgreg.com>
+To: xenomai@xenomai.org
+Cc: Jan Kiszka <jan.kiszka@siemens.com>, Philippe Gerum <rpm@xenomai.org>
 
-Dear Philippe,
+We need policy-specific scheduling parameters to be checked early and
+unconditionally before applying them in xnsched_setparam(), even if
+the current scheduling policy does not change for the target thread
+(i.e. sched_declare() is not called).
 
-Currently I am working on Xenomai-3.0.6 bring up on QualComm Dragon
-Board 410c using QualComm Linux Kernel 4.9.xxx
+Signed-off-by: Philippe Gerum <rpm@xenomai.org>
+---
+ include/cobalt/kernel/sched.h | 12 ++++++++++++
+ kernel/cobalt/sched.c         |  4 ++++
+ 2 files changed, 16 insertions(+)
 
-First I wanted to know if this part already available.
-So, for the initial search, I came across this:
-- Download ipipe-jro-410c.linaro-15.07
-- (From URL: http://git.xenomai.org/ipipe-jro.git/tag/?h=410c.linaro-15.07
-- File name:     ipipe-jro-410c.linaro-15.07.tar.bz2  )
+diff --git a/include/cobalt/kernel/sched.h b/include/cobalt/kernel/sched.h
+index d2b3d0c63..3b0825d67 100644
+--- a/include/cobalt/kernel/sched.h
++++ b/include/cobalt/kernel/sched.h
+@@ -138,6 +138,8 @@ struct xnsched_class {
+ 			     const union xnsched_policy_param *p);
+ 	void (*sched_migrate)(struct xnthread *thread,
+ 			      struct xnsched *sched);
++	int (*sched_chkparam)(struct xnthread *thread,
++			      const union xnsched_policy_param *p);
+ 	/**
+ 	 * Set base scheduling parameters. This routine is indirectly
+ 	 * called upon a change of base scheduling settings through
+@@ -513,6 +515,16 @@ static inline void xnsched_tick(struct xnsched *sched)
+ 		sched_class->sched_tick(sched);
+ }
+ 
++static inline int xnsched_chkparam(struct xnsched_class *sched_class,
++				   struct xnthread *thread,
++				   const union xnsched_policy_param *p)
++{
++	if (sched_class->sched_chkparam)
++		return sched_class->sched_chkparam(thread, p);
++
++	return 0;
++}
++
+ static inline int xnsched_declare(struct xnsched_class *sched_class,
+ 				  struct xnthread *thread,
+ 				  const union xnsched_policy_param *p)
+diff --git a/kernel/cobalt/sched.c b/kernel/cobalt/sched.c
+index a3c963bfe..f7d16fa37 100644
+--- a/kernel/cobalt/sched.c
++++ b/kernel/cobalt/sched.c
+@@ -434,6 +434,10 @@ int xnsched_set_policy(struct xnthread *thread,
+ 	bool effective;
+ 	int ret;
+ 
++	ret = xnsched_chkparam(sched_class, thread, p);
++	if (ret)
++		return ret;
++
+ 	/*
+ 	 * Declaring a thread to a new scheduling class may fail, so
+ 	 * we do that early, while the thread is still a member of the
+-- 
+2.17.2
 
-But, I am not able to access these links.
-It requires user name/password for sign-in.
-Also the sign-up/register link is not available.
-If you are aware about this, can you tell me how to access it?
-
-Also, I came  across this link:
-https://discuss.96boards.org/t/dragonboard-for-real-time-robotics/3710
-http://www.cs.technion.ac.il/~cs234313/projects_sites/S17/15/site/
-
-Xenomai installation Guide for Dragon 410c:
-http://www.cs.technion.ac.il/~cs234313/projects_sites/S17/15/site/files/Install%20Xenomai%20on%20dragonboard%20410c%20guide.docx
-
-Is this means that Xenomai is already up in Dragon Board 410c?
-Or in any other QualComm MSM chipset ?
-
-
-Thanks,
-Pintu
 
