@@ -1,15 +1,14 @@
-Date: Wed, 16 Jan 2019 16:08:02 +0100
-From: Josef Holzmayr <holzmayr@rsi-elektrotechnik.de>
-Subject: Re: [ANNOUNCE] Xenomai 3.0.8 released
-Message-ID: <20190116150802.r4j7inbpho3zaq2j@jholzmayr.localdomain>
-References: <17a9dbe5-59c5-04b9-e4fa-5fbc7bacd108@siemens.com>
- <20190115142311.jtks7iuuqf4dvrcw@jholzmayr.localdomain>
- <f89c12c7-50fb-3ecd-e40b-ec8b7c7057c8@siemens.com>
+Date: Thu, 29 Nov 2018 23:27:56 +0800 (CST)
+From: =?GBK?B?wbrIqA==?= <liang_1911@163.com>
+Subject: Re:Re: every millicsecond interrupt in xenomai domain on a am355x
+ board can cause something wrong?
+In-Reply-To: <6c00eb9f-37b7-1500-0da5-ceab4f4db112@xenomai.org>
+References: <6a75de9a.bb14.1675e7e151a.Coremail.liang_1911@163.com>
+ <6c00eb9f-37b7-1500-0da5-ceab4f4db112@xenomai.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <f89c12c7-50fb-3ecd-e40b-ec8b7c7057c8@siemens.com>
+Message-ID: <5ff90fcc.1120f.16760156d36.Coremail.liang_1911@163.com>
+Content-Type: text/plain; charset=GBK
+Content-Transfer-Encoding: base64
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -18,49 +17,19 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jan Kiszka <jan.kiszka@siemens.com>
-Cc: Xenomai <xenomai@xenomai.org>
+To: Philippe Gerum <rpm@xenomai.org>
+Cc: xenomai@xenomai.org
 
-On Tue, Jan 15, 2019 at 06:02:09PM +0100, Jan Kiszka wrote:
-> On 15.01.19 15:23, Josef Holzmayr wrote:
-> > Hi Jan,
-> > 
-> > On Mon, Jan 14, 2019 at 04:12:32PM +0100, Jan Kiszka via Xenomai wrote:
-> > > An overdue stable release has just been completed.
-> > 
-> > Do you see any value in a test cycle comparable to the CIP kernel on the BBB?
-> > 
-> 
-> If your other test was using master and you didn't run anything against
-> stable for a while, yes.
-
-The tests were conducted against 9741e102 which is stable, yet not
-exactly HEAD. Will hopefully have some updated results next week.
-
-> Ideally, we should do more of those tests in the future before a release :).
-
-:-)
-
--- 
-———————————————
-Josef Holzmayr
-Software Developer Embedded Systems
-
-Tel: +49 8444 9204-48
-Fax: +49 8444 9204-50
-
-R-S-I Elektrotechnik GmbH & Co. KG
-Woelkestrasse 11
-D-85301 Schweitenkirchen
-www.rsi-elektrotechnik.de
-———————————————
-Amtsgericht Ingolstadt – GmbH: HRB 191328 – KG: HRA 170393
-Geschäftsführer: Dr.-Ing. Michael Sorg, Dipl.-Ing. Franz Sorg
-Ust-IdNr: DE 128592548 
-
-_____________________________________________________________
-Amtsgericht Ingolstadt - GmbH: HRB 191328 - KG: HRA 170363
-Geschäftsführer: Dr.-Ing. Michael Sorg, Dipl.-Ing. Franz Sorg
-USt-IdNr.: DE 128592548
-
-
+aXQgaXMgbmVpdGhlciBOTUkgbm9yIEZJUTsgImNhbm5vdCBiZSBtYXNrIiBqdXN0IGZvciBlbXBo
+YXNpemUgdGhpcyBpbnRlcnJ1cHQgaXMgc28gaW1wb3J0YW50IHRoYXQgY2Fubm90IGJlIG1pc3Nl
+ZCBldmVuIG9uY2UuCiBpdCBtYXliZSBteSBmYXVsdCBmb3IgdGhpcyB1bmNsZWFyIGV4cHJlc3Np
+b24KCgoKCi0tCgotLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0t
+CiAgICAgICAgICDBusioClRIQU5LUyAmIEJSIQoKCgoKCtTaIDIwMTgtMTEtMjkgMjI6MzQ6MDOj
+rCJQaGlsaXBwZSBHZXJ1bSIgPHJwbUB4ZW5vbWFpLm9yZz4g0LS1wKO6Cj5PbiAxMS8yOS8xOCA5
+OjAzIEFNLCDBusioIHZpYSBYZW5vbWFpIHdyb3RlOgo+PiBoaaOsCj4+IGknbSB3b3JrIG9uIGEg
+Y3VzdG9tZWQgYm9hcmQgd2l0aCBUSSBhbTMzNVg7IGkgaGF2ZSBpbnN0YWxsZWQgeGVub21haSAz
+IG9uIGl0IGNvcnJlY3R0bHkgLCBhbmQgY2FuIHJ1biB0aGUgbGF0ZW5jeSB0ZXN0Lgo+PiBPbiB0
+aGlzIGJvYXJkLCBhbiBpbnRlcnJ1cHQgd2hpY2ggY2Fubm90IGJlIG1hc2tlZCBhbmQgZGVsYXll
+ZCB3aWxsIGJlIGdlbmVyYXRlZCBldmVyeSBtaWxsaWNzZWNvbmQgYnkgYSBGUEdBIDsgCj4KPldo
+YXQgZG8geW91IG1lYW4gcHJlY2lzZWx5IGJ5ICJjYW5ub3QgYmUgbWFza2VkIj8gQXJlIHlvdSBy
+ZWZlcnJpbmcgdG8KPk5NSSBvciBGSVE/Cj4KPi0tIAo+UGhpbGlwcGUuCg==
