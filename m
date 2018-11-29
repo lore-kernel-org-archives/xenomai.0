@@ -1,13 +1,17 @@
-From: Lange Norbert <norbert.lange@andritz.com>
-Subject: FW: LD_PRELOAD checker for clock_gettime and consorts
-Date: Thu, 10 Jan 2019 18:14:38 +0000
-Message-ID: <77dd1ba999524c1fb408af59693caf3e@andritz.com>
-References: <b79c8b2eb4074371a41bf54872a1c0a2@andritz.com>
-In-Reply-To: <b79c8b2eb4074371a41bf54872a1c0a2@andritz.com>
-Content-Language: en-US
+Subject: Re: Testing of 4.4/Ipipe + Xenomai 3.0.X on ARM32
+References: <20181123122716.tgg3utytwyrkzyid@jholzmayr.localdomain>
+ <d1808069-d213-7e9f-010f-abd2c88b0480@siemens.com>
+ <20181126143029.6jts36bo267l776s@jholzmayr.localdomain>
+ <47252724-7145-7e15-2df8-a5d625b1f95d@siemens.com>
+ <20181128124039.ppsitvbbqbtge3im@jholzmayr.localdomain>
+From: Philippe Gerum <rpm@xenomai.org>
+Message-ID: <4f94437b-acf9-c6ed-9401-f3344ba2468c@xenomai.org>
+Date: Thu, 29 Nov 2018 15:29:52 +0100
 MIME-Version: 1.0
+In-Reply-To: <20181128124039.ppsitvbbqbtge3im@jholzmayr.localdomain>
 Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,73 +20,151 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "Xenomai (xenomai@xenomai.org)" <xenomai@xenomai.org>
+To: Josef Holzmayr <holzmayr@rsi-elektrotechnik.de>, Jan Kiszka <jan.kiszka@siemens.com>
+Cc: xenomai@xenomai.org
 
-QW5kIGhlcmVzIGEgY2hlY2tlciBmb3IgbWFsbG9jL2ZyZWUgYW5kIGNvbnNvcnRzLiBUaGlzIG9u
-ZSBpcyBhIGJpdCB0cmlja2llciBhbmQgSSBoYXZlIGJhcmVseSB0ZXN0ZWQgaXQuDQoNCj4gLS0t
-LS1PcmlnaW5hbCBNZXNzYWdlLS0tLS0NCj4gRnJvbTogWGVub21haSA8eGVub21haS1ib3VuY2Vz
-QHhlbm9tYWkub3JnPiBPbiBCZWhhbGYgT2YgTGFuZ2UNCj4gTm9yYmVydCB2aWEgWGVub21haQ0K
-PiBTZW50OiBEb25uZXJzdGFnLCAxMC4gSsOkbm5lciAyMDE5IDE0OjQ3DQo+IFRvOiBYZW5vbWFp
-ICh4ZW5vbWFpQHhlbm9tYWkub3JnKSA8eGVub21haUB4ZW5vbWFpLm9yZz4NCj4gU3ViamVjdDog
-TERfUFJFTE9BRCBjaGVja2VyIGZvciBjbG9ja19nZXR0aW1lIGFuZCBjb25zb3J0cw0KPg0KPiBF
-LU1BSUwgRlJPTSBBIE5PTi1BTkRSSVRaIFNPVVJDRTogQVMgQSBTRUNVUklUWSBNRUFTVVJFLCBQ
-TEVBU0UNCj4gRVhFUkNJU0UgQ0FVVElPTiBXSVRIIEUtTUFJTCBDT05URU5UIEFORCBBTlkgTElO
-S1MgT1INCj4gQVRUQUNITUVOVFMuDQo+DQo+DQo+IEhlbGxvLA0KPg0KPiBhcyB5b3UgbWlnaHQg
-a25vdywgSSBydW4gaW50byBhbG90IG9mIHRyb3VibGVzIHdpdGggcmVhbHRpbWUgY29kZSBjYWxs
-aW5nDQo+IGNsb2NrX2dldHRpbWUuDQo+IFRoaXMgZnVuY3Rpb24gaXMgbm93IGEgc3lzY2FsbCBv
-biBtYW55IGFyY2hpdGVjdHVyZXMgYW5kIGRlcGVuZHMgb24gYSBsaW51eA0KPiBrZXJuZWwgc3Bp
-bmxvY2ssIHNvIGEgUlQgdGhyZWFkIG1pZ2h0IGRlYWRsb2NrIGl0c2VsZiB3aGVuIGJvdGggdHJ5
-aW5nIHRvDQo+IGNsYWltIHRoYXQgbG9jayBhbmQgcHJldmVudGluZyB0aGUgbGludXgga2VybmVs
-IHRvIGZyZWUgaXQuDQo+DQo+IFVzYWdlIGlzIHJhdGhlciBzaW1wbGUsIHRoZSBjb2RlIGNvbXBp
-bGVzIHdpdGhvdXQgYW55IENvYmFsdC9YZW5vbWFpDQo+IGhlYWRlcnMuDQo+IFJULXRocmVhZHMg
-bmVlZCB0byBlbmFibGUgUFRIUkVBRF9XQVJOU1c6DQo+IHB0aHJlYWRfc2V0bW9kZV9ucCgwLCBQ
-VEhSRUFEX1dBUk5TVywgTlVMTCk7DQo+DQo+IEFuZCB0aGUgY2hlY2tlciBsaWJyYXJ5IG5lZWRz
-IHRvIGJlIHByZWxvYWRlZDoNCj4gTERfUFJFTE9BRD1saWJjb2JhbHQtZ2V0dGltZV9jaGVja2Vy
-LnNvIC4veW91cmFwcCAtYW5kIC15b3VyIC1wYXJhbXMuDQo+DQo+IFVubGlrZSB0aGUgZXhpc3Rp
-bmcgbW9kZS1jaGVja2VyLCB0aGlzIGRvZXMgbm90IG5lZWQgYW55IGNoYW5nZXMgdG8gdGhlDQo+
-IGJpbmFyeSwgYW5kIHdpbGwgYWxzbyBjYXRjaCBjYWxscyBmcm9tIGFsbCBkaXJlY3RseSBhbmQg
-aW5kaXJlY3RseSBsb2FkZWQgRFNPcy4NCj4NCj4gT3RoZXIgc2tpbnMgc2hvdWxkIGJlIHN1cHBv
-cnRlZCBhc3dlbGwsIGFzbG9uZyBhcyBsaWJjb2JhbHQgaXMgbG9hZGVkIChvciBtb3JlDQo+IHNw
-ZWNpZmljLCB0aGUgY29kZSBsb29rcyBmb3IgYSBzeW1ib2wgImNvYmFsdF9hc3NlcnRfbnJ0Iiku
-DQo+DQo+IEtpbmQgcmVnYXJkcywNCj4gTm9yYmVydA0KPiBfX19fX19fX19fX19fX19fX19fX19f
-X19fX19fX19fXw0KPg0KPiBUaGlzIG1lc3NhZ2UgYW5kIGFueSBhdHRhY2htZW50cyBhcmUgc29s
-ZWx5IGZvciB0aGUgdXNlIG9mIHRoZSBpbnRlbmRlZA0KPiByZWNpcGllbnRzLiBUaGV5IG1heSBj
-b250YWluIHByaXZpbGVnZWQgYW5kL29yIGNvbmZpZGVudGlhbCBpbmZvcm1hdGlvbiBvcg0KPiBv
-dGhlciBpbmZvcm1hdGlvbiBwcm90ZWN0ZWQgZnJvbSBkaXNjbG9zdXJlLiBJZiB5b3UgYXJlIG5v
-dCBhbiBpbnRlbmRlZA0KPiByZWNpcGllbnQsIHlvdSBhcmUgaGVyZWJ5IG5vdGlmaWVkIHRoYXQg
-eW91IHJlY2VpdmVkIHRoaXMgZW1haWwgaW4gZXJyb3IgYW5kDQo+IHRoYXQgYW55IHJldmlldywg
-ZGlzc2VtaW5hdGlvbiwgZGlzdHJpYnV0aW9uIG9yIGNvcHlpbmcgb2YgdGhpcyBlbWFpbCBhbmQg
-YW55DQo+IGF0dGFjaG1lbnQgaXMgc3RyaWN0bHkgcHJvaGliaXRlZC4gSWYgeW91IGhhdmUgcmVj
-ZWl2ZWQgdGhpcyBlbWFpbCBpbiBlcnJvciwNCj4gcGxlYXNlIGNvbnRhY3QgdGhlIHNlbmRlciBh
-bmQgZGVsZXRlIHRoZSBtZXNzYWdlIGFuZCBhbnkgYXR0YWNobWVudCBmcm9tDQo+IHlvdXIgc3lz
-dGVtLg0KPg0KPiBBTkRSSVRaIEhZRFJPIEdtYkgNCj4NCj4NCj4gUmVjaHRzZm9ybS8gTGVnYWwg
-Zm9ybTogR2VzZWxsc2NoYWZ0IG1pdCBiZXNjaHLDpG5rdGVyIEhhZnR1bmcgLyBDb3Jwb3JhdGlv
-bg0KPg0KPiBGaXJtZW5zaXR6LyBSZWdpc3RlcmVkIHNlYXQ6IFdpZW4NCj4NCj4gRmlybWVuYnVj
-aGdlcmljaHQvIENvdXJ0IG9mIHJlZ2lzdHJ5OiBIYW5kZWxzZ2VyaWNodCBXaWVuDQo+DQo+IEZp
-cm1lbmJ1Y2hudW1tZXIvIENvbXBhbnkgcmVnaXN0cmF0aW9uOiBGTiA2MTgzMyBnDQo+DQo+IERW
-UjogMDYwNTA3Nw0KPg0KPiBVSUQtTnIuOiBBVFUxNDc1NjgwNg0KPg0KPg0KPiBUaGFuayBZb3UN
-Cj4gX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX18NCj4gLS0tLS0tLS0tLS0tLS0gbmV4
-dCBwYXJ0IC0tLS0tLS0tLS0tLS0tDQo+IEFuIGVtYmVkZGVkIGFuZCBjaGFyc2V0LXVuc3BlY2lm
-aWVkIHRleHQgd2FzIHNjcnViYmVkLi4uDQo+IE5hbWU6IGxpYmNvYmFsdC1nZXR0aW1lX2NoZWNr
-ZXIuYw0KPiBVUkw6DQo+IDxodHRwOi8veGVub21haS5vcmcvcGlwZXJtYWlsL3hlbm9tYWkvYXR0
-YWNobWVudHMvMjAxOTAxMTAvYmMyNzIwZjIvYQ0KPiB0dGFjaG1lbnQuYz4NCl9fX19fX19fX19f
-X19fX19fX19fX19fX19fX19fX19fDQoNClRoaXMgbWVzc2FnZSBhbmQgYW55IGF0dGFjaG1lbnRz
-IGFyZSBzb2xlbHkgZm9yIHRoZSB1c2Ugb2YgdGhlIGludGVuZGVkIHJlY2lwaWVudHMuIFRoZXkg
-bWF5IGNvbnRhaW4gcHJpdmlsZWdlZCBhbmQvb3IgY29uZmlkZW50aWFsIGluZm9ybWF0aW9uIG9y
-IG90aGVyIGluZm9ybWF0aW9uIHByb3RlY3RlZCBmcm9tIGRpc2Nsb3N1cmUuIElmIHlvdSBhcmUg
-bm90IGFuIGludGVuZGVkIHJlY2lwaWVudCwgeW91IGFyZSBoZXJlYnkgbm90aWZpZWQgdGhhdCB5
-b3UgcmVjZWl2ZWQgdGhpcyBlbWFpbCBpbiBlcnJvciBhbmQgdGhhdCBhbnkgcmV2aWV3LCBkaXNz
-ZW1pbmF0aW9uLCBkaXN0cmlidXRpb24gb3IgY29weWluZyBvZiB0aGlzIGVtYWlsIGFuZCBhbnkg
-YXR0YWNobWVudCBpcyBzdHJpY3RseSBwcm9oaWJpdGVkLiBJZiB5b3UgaGF2ZSByZWNlaXZlZCB0
-aGlzIGVtYWlsIGluIGVycm9yLCBwbGVhc2UgY29udGFjdCB0aGUgc2VuZGVyIGFuZCBkZWxldGUg
-dGhlIG1lc3NhZ2UgYW5kIGFueSBhdHRhY2htZW50IGZyb20geW91ciBzeXN0ZW0uDQoNCkFORFJJ
-VFogSFlEUk8gR21iSA0KDQoNClJlY2h0c2Zvcm0vIExlZ2FsIGZvcm06IEdlc2VsbHNjaGFmdCBt
-aXQgYmVzY2hyw6Rua3RlciBIYWZ0dW5nIC8gQ29ycG9yYXRpb24NCg0KRmlybWVuc2l0ei8gUmVn
-aXN0ZXJlZCBzZWF0OiBXaWVuDQoNCkZpcm1lbmJ1Y2hnZXJpY2h0LyBDb3VydCBvZiByZWdpc3Ry
-eTogSGFuZGVsc2dlcmljaHQgV2llbg0KDQpGaXJtZW5idWNobnVtbWVyLyBDb21wYW55IHJlZ2lz
-dHJhdGlvbjogRk4gNjE4MzMgZw0KDQpEVlI6IDA2MDUwNzcNCg0KVUlELU5yLjogQVRVMTQ3NTY4
-MDYNCg0KDQpUaGFuayBZb3UNCl9fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fDQotLS0t
-LS0tLS0tLS0tLSBuZXh0IHBhcnQgLS0tLS0tLS0tLS0tLS0KQW4gZW1iZWRkZWQgYW5kIGNoYXJz
-ZXQtdW5zcGVjaWZpZWQgdGV4dCB3YXMgc2NydWJiZWQuLi4KTmFtZTogbGliY29iYWx0LW1hbGxv
-Y19jaGVja2VyLmMKVVJMOiA8aHR0cDovL3hlbm9tYWkub3JnL3BpcGVybWFpbC94ZW5vbWFpL2F0
-dGFjaG1lbnRzLzIwMTkwMTEwLzRhODAzMDRhL2F0dGFjaG1lbnQuYz4K
+On 11/28/18 1:40 PM, Josef Holzmayr via Xenomai wrote:
+> Hi Jan,
+> 
+> On Mon, Nov 26, 2018 at 03:40:38PM +0100, Jan Kiszka wrote:
+>> On 26.11.18 15:30, Josef Holzmayr wrote:
+>>> On Fri, Nov 23, 2018 at 01:48:27PM +0100, Jan Kiszka wrote:
+>>>> On 23.11.18 13:27, Josef Holzmayr via Xenomai wrote:
+>>>>> - only one BSP layer so far, namely the Beaglebone. This was chosen for
+>>>>>     two major reasons: a) it is supported well enough in 4.4. to not need
+>>>>>     additional patches which might introduce new issues, and b) it is
+>>>>>     hardware that I have here ready for testing.
+>>>>
+>>>> I was thinking about which ARMv7 board to add to xenomai-images (enabling
+>>>> qemu will be first, though), and that is a good candidate there as well.
+>>>>
+>>>> Another half-done topic here: CI builds. For that, the BB defconfig could be
+>>>> useful too.
+>>>
+>>> My local tinkering of xenoami-images to create a qemu-armhf build is
+>>> still in progress. But yes, we should have a build there too. But I
+>>
+>> Oh, we might have worked in parallel, sorry: I've qemu-armhf for
+>> xenomai-images locally already (just started today). Will post later.
+> 
+> Saw that, thanks. Given my limited time investment, I'm happy to see it
+> happening, and thats it.
+> 
+>>
+>>> don't think the BB defconfig I'm using at the moment is really suited
+>>> for xenomai testing. I'll certainly need to tinker with it some more.
+>>
+>> Yes, configs is a good topic. I was playing with them a lot today, to get
+>> some output first, then to find some reasonable debug setup. Considering to
+>> have a "release" (measurement) and "debug" profile for configs.
+>>
+>>>
+>>>>
+>>>>> - no higher automation like a kas cofiguration so far. Yet this probably
+>>>>>     will be the first limitation to be gotten rid of.
+> 
+> kas files are now in place, equivalent to the ones in xenomai-images
+> 
+>>>>> Preliminary results to kick off things:
+>>>>> - xeno-test completes successfully
+>>>>> - latency -t0 under load maxes at ~58µs
+>>>>> - latency -t2 under load maxes at ~18µs
+>>>>>
+>>>>
+>>>> Great! According to [1], we could then tag 63637800 also for ARM? Or do you
+>>>> want to run more of the tests you have in mind first?
+>>>
+>>> Given my current testing experience, I would like to not say yes or no,
+>>> as I'm not knowledgeable enough to judge. So please decide yourself upon
+>>> the given information, with those additional "hints":
+>>> - xeno-test "only" runs for 15minutes by default.
+>>> - the latency tests I did were not really more long-lived, I don't think
+>>>    any one exceeded 30minutes.
+>>> - it will be at least two more weeks until I have the long-run results.
+>>>    Could also be three. So if you want to tag rather soon, I can't rally
+>>>    help more.
+>>
+>> OK, then I will not hurry.
+> 
+> Digging deeper, I now have a couple of questions. xeno-test gives me
+> 
+> net_packet_dgram skipped (no kernel support)
+> net_packet_raw skipped (no kernel support)
+> net_udp skipped (no kernel support)
+> ...
+> mutex_trylock not supported
+> ...
+> sched_quota skipped (no kernel support)
+> sched_tp skipped (no kernel support)
+> ...
+> sigdebug "SIGDEBUG_MIGRATE_PRIOINV" skipped (no kernel support)
+> 
+> So what do I need to increase test coverage here?
+
+You need to enable a set of Xenomai kernel options, something like:
+
+CONFIG_XENO_OPT_SCHED_CLASSES=y
+CONFIG_XENO_OPT_SCHED_WEAK=y
+CONFIG_XENO_OPT_SCHED_TP=y
+CONFIG_XENO_OPT_SCHED_TP_NRPART=4
+CONFIG_XENO_OPT_SCHED_SPORADIC=y
+CONFIG_XENO_OPT_SCHED_SPORADIC_MAXREPL=8
+CONFIG_XENO_OPT_SCHED_QUOTA=y
+CONFIG_XENO_OPT_SCHED_QUOTA_PERIOD=10000
+CONFIG_XENO_OPT_SCHED_QUOTA_NR_GROUPS=32
+CONFIG_XENO_OPT_PIPE=y
+CONFIG_XENO_OPT_MAP=y
+CONFIG_XENO_OPT_EXTCLOCK=y
+CONFIG_XENO_OPT_PIPE_NRDEV=32
+CONFIG_XENO_DRIVERS_TIMERBENCH=y
+CONFIG_XENO_DRIVERS_SWITCHTEST=y
+CONFIG_XENO_DRIVERS_HEAPCHECK=y
+CONFIG_XENO_DRIVERS_RTDMTEST=m
+CONFIG_XENO_DRIVERS_NET=m
+CONFIG_XENO_DRIVERS_NET_RX_FIFO_SIZE=32
+CONFIG_XENO_DRIVERS_NET_ETH_P_ALL=y
+CONFIG_XENO_DRIVERS_NET_RTIPV4=m
+CONFIG_XENO_DRIVERS_NET_RTIPV4_ICMP=y
+CONFIG_XENO_DRIVERS_NET_RTIPV4_HOST_ROUTES=32
+CONFIG_XENO_DRIVERS_NET_RTIPV4_UDP=m
+CONFIG_XENO_DRIVERS_NET_RTPACKET=m
+CONFIG_XENO_DRIVERS_NET_RTMAC=m
+CONFIG_XENO_DRIVERS_NET_TDMA=m
+CONFIG_XENO_DRIVERS_NET_TDMA_MASTER=y
+CONFIG_XENO_DRIVERS_NET_RTCFG=m
+CONFIG_XENO_DRIVERS_NET_DRV_LOOPBACK=m
+CONFIG_XENO_DRIVERS_NET_ADDON_RTCAP=m
+CONFIG_XENO_DRIVERS_NET_ADDON_PROXY=m
+CONFIG_XENO_DRIVERS_NET_ADDON_PROXY_ARP=y
+CONFIG_XENO_DRIVERS_RTIPC=y
+CONFIG_XENO_DRIVERS_RTIPC_XDDP=y
+CONFIG_XENO_DRIVERS_RTIPC_IDDP=y
+CONFIG_XENO_OPT_IDDP_NRPORT=32
+CONFIG_XENO_DRIVERS_RTIPC_BUFP=y
+CONFIG_XENO_OPT_BUFP_NRPORT=32
+CONFIG_XENO_OPT_DEBUG_USER=y
+CONFIG_XENO_OPT_DEBUG_MUTEX_RELAXED=y
+CONFIG_XENO_OPT_WATCHDOG=y
+
+> 
+> And, during the run I get 
+> 
+> [   75.650644] [Xenomai] watchdog triggered on CPU #0 -- runaway thread 'test' signaled
+> [   75.658601] sched: RT throttling activated
+> 
+> Is that good, bad, upgly, or expected?
+> 
+
+If that happens with the 'sigdebug' test, then this is good and
+expected: this means that Cobalt did pull the break when detecting a
+runaway thread, which is what this test verifies.
+
+If you get -EPROTO (out of quota) with the sched_quota smoke test, this
+may not be a real issue if the error margin is within 1%. The test
+currently complains about a deviation above 0.5%, which might be a bit
+too strict on some (SMP) platforms - triggers on 0.7% have been observed
+here.
+
+-- 
+Philippe.
+
