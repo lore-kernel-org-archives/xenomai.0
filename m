@@ -1,11 +1,13 @@
-Message-ID: <1546945006.2392.6.camel@smigroup.net>
-Subject: [Fwd: Re: Help:About xenomai service]
-From: Mauro Salvini <mauro.salvini@smigroup.net>
-Date: Tue, 08 Jan 2019 11:56:46 +0100
-References: <tencent_7347717E6F9FF64B31770117@qq.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+Subject: Re: ipipe-arm64 kernel config questions
+References: <47AB2CE9-6B2A-4C41-A82C-E07AA672AAFB@korgrd.com>
+From: Philippe Gerum <rpm@xenomai.org>
+Message-ID: <6acf0040-bd82-8d97-70d2-2e52aff5c392@xenomai.org>
+Date: Thu, 29 Nov 2018 15:15:04 +0100
+MIME-Version: 1.0
+In-Reply-To: <47AB2CE9-6B2A-4C41-A82C-E07AA672AAFB@korgrd.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -14,40 +16,27 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai <xenomai@xenomai.org>
+To: Steve Pavao <stevep@korgrd.com>, xenomai@xenomai.org
 
-LS0tLS0tLS0gRm9yd2FyZGVkIE1lc3NhZ2UgLS0tLS0tLS0KRnJvbTogUGVyU2lTdGVuQ2UgPDI2
-MzExNDA2OThAcXEuY29tPgpUbzogTWF1cm8gU2FsdmluaSA8bWF1cm8uc2FsdmluaUBzbWlncm91
-cC5uZXQ+ClN1YmplY3Q6IFJlOiBIZWxwOkFib3V0IHhlbm9tYWkgc2VydmljZQpEYXRlOiBUdWUs
-IDggSmFuIDIwMTkgMTM6NTg6MzcgKzA4MDAKCj4gSGkKPiDCoCDCoCBJIGRpZG4ndCBzZWUgYW55
-IHN0YWNrIGR1bXAsYnV0IHNvbWV0aGluZyBtYWtlIG1lIGNvbmZ1c2VkIMKgdGhhdAo+IHdoeSBz
-b21lIGhpZ2ggbGF0ZW5jeSBvY2N1cmVkIHdoZW4gSSByYW4gbGF0ZW5jeSB0ZXN0IHByb2dyYW0g
-aW4KPiBzaGVsbCB3aW5kb3coYWx0aG91Z2ggSSBoYXZlIGF2b2lkIHRob3NlIG9wdGlvbnMgdGhh
-dCBtYXkgY2F1c2UgaGlnaAo+IGxhdGVuY3kpLkkgaGF2ZSB0cmllZCBhbGwgb2YgbWV0aG9kcyB0
-aGF0IGFyZSBtZW50aW9uZWQgaW4geGVub21haQo+IHJlZmVyZW5jZSBtYW51YWwsbGlrZSBkaXNh
-YmxlIGxlZ2FjeSBVU0IsZGlzYWJsZSBTTUksYnV0IGl0IGRvZXNuJ3QKPiB3b3JrIGFuZCBoaWdo
-IGxhdGVuY3kgYWxzbyBvY2N1cnMuCj4gwqAgwqAgSW4gdGhlIHBvc3NpYmxlIHJlYXNvbnMsSSdt
-IG5vdCBzdXJlIHRoYXQgd2hldGhlciBhbGwgb2YgVVNCCj4gY29udHJvbGxlcnMgYXJlIGNvdmVy
-ZCBieSB0aGVpciBkcml2ZXJzLkRpZCB0aGV5IHBvc3NpYmx5IGNhdXNlIG91cgo+IGhpZ2ggbGF0
-ZW5jeT9CVFcsbXkgdGVzdCBzbmFwc2hvdCBoYXMgYmVlbiB1cGxvYWRlZC4KPiDCoCDCoCDCoCBS
-ZWdhcmRzLgo+IMKgIMKgIMKgIHdlbnFpYW5nIExpYW5nCj4gwqAgwqAgwqDCoFpodWFoYWkgR1JF
-RSBlbGV0cmljIExpdGltaXRlZCBieSBTaGFyZSBMdGQKPiAtLS1PcmlnaW5hbC0tLQo+IEZyb206
-ICJNYXVybyBTYWx2aW5pIjxtYXVyby5zYWx2aW5pQHNtaWdyb3VwLm5ldD4KPiBEYXRlOiBNb24s
-IEphbiA3LCAyMDE5IDE3OjU2IFBNCj4gVG86ICJQZXJTaVN0ZW5DZSI8MjYzMTE0MDY5OEBxcS5j
-b20+OyJ4ZW5vbWFpIjx4ZW5vbWFpQHhlbm9tYWkub3JnPjsKPiBTdWJqZWN0OiBSZTogSGVscDpB
-Ym91dCB4ZW5vbWFpIHNlcnZpY2UKPiAKPiBPbiBNb24sIDIwMTktMDEtMDcgYXQgMDk6MjMgKzA4
-MDAsIFBlclNpU3RlbkNlIHZpYSBYZW5vbWFpIHdyb3RlOgo+ID4gSGkKPiA+IMKgIMKgIEkgYW0g
-dGVzdGluZyB4ZW5vbWFpIDMgb24gS2FieSBMYWtlIGJvYXJkKEludGVsIGk1LTcyMDB1KSB3aXRo
-Cj4gPiB4ZW5vbWFpIDMuMC41ICYgTGludXggNC45LjM4KHVidW50dSAxNi4wNCk7d2hlbiBJIHJ1
-biAibGF0ZW5jeSIKPiB0ZXN0Cj4gPiBwcm9ncmFtLHNvbWUgb3ZlcnJ1bnMgYWx3YXlzIGNvbWUg
-b3V0IGR1cmluZyB0aGUgdGVzdGluZyBwZXJpb2Q7aXMKPiA+IHRoZXJlIGFueSBjb25zdWx0YW50
-IHNlcnZpY2Ugb3Igb3RoZXIgZm9ybWF0IHNlcnZpY2UgYXZhaWxhYmxlPwo+IAo+IEhpLAo+IHRo
-aXMgY291bGQgYmUgcmVsYXRlZCB0byB3aGF0IHJlcG9ydGVkIGF0IFsxXS4KPiAKPiBQbGVhc2Ug
-Y2hlY2sgZG1lc2cgdG8gc2VlIGlmIGEgc3RhY2sgZHVtcCBpcyBnZW5lcmF0ZWQgd2hlbiBvdmVy
-cnVucwo+IG9jY291cnMuCj4gCj4gCj4gWzFdIGh0dHBzOi8veGVub21haS5vcmcvcGlwZXJtYWls
-L3hlbm9tYWkvMjAxOC1EZWNlbWJlci8wNDAxNDIuaHRtbAo+IAoKUGxlYXNlIGtlZXAgbWFpbGlu
-Zy1saXN0IGluIENDLgoKUmVnYXJkcwpNYXVybwotLS0tLS0tLS0tLS0tLSBuZXh0IHBhcnQgLS0t
-LS0tLS0tLS0tLS0KQSBub24tdGV4dCBhdHRhY2htZW50IHdhcyBzY3J1YmJlZC4uLgpOYW1lOiBz
-bmFwc2hvdC5wbmcKVHlwZTogYXBwbGljYXRpb24vb2N0ZXQtc3RyZWFtClNpemU6IDExMzk4OSBi
-eXRlcwpEZXNjOiBub3QgYXZhaWxhYmxlClVSTDogPGh0dHA6Ly94ZW5vbWFpLm9yZy9waXBlcm1h
-aWwveGVub21haS9hdHRhY2htZW50cy8yMDE5MDEwOC9mNGRmNWE0Ni9hdHRhY2htZW50Lm9iaj4K
+On 11/26/18 9:08 PM, Steve Pavao via Xenomai wrote:
+> Is there a kernel config snippet available which contains only the real-time specific options of the ipipe-arm64 kernel?  If so, could someone please point me to it?  If not, could someone please make it available?  I need it so I can merge it with the config I use in Yocto to build my customized Linux system.
+> 
+
+It really depends on the features you need, but using Cobalt's default
+Kconfig settings is a safe bet if you want to enable the real-time core
+with no bells and whistles.
+
+A diff between a properly tuned .config for running a vanilla kernel on
+your arm64 SoC, and the [make] defconfig output for that kernel with
+Xenomai patched in may be what you are looking for.
+
+> Background: Sometimes, I build my customized system to use the raspberrypi/linux kernel; other times I build it to use the ipipe-arm64 kernel.  I need to merge the real-time specific options of the ipipe-arm64 default config into my existing default config for my Yocto build, such that I can have an acceptable minimal default config for ipipe-arm64.  Currently, the two configs are wildly divergent, thus the desire to merge only the minimal config changes needed for ipipe-arm64 real-time benefits.
+> 
+> If this is possible, I plan to use the Linux utility script merge-configs to achieve this.  If this is not possible, I can provide the output of the diffconfig script, which shows a concise diff of the differences between the two config files.  Given that, maybe someone could analyze that, and inform me as to which of the kernel options that are different or added for ipie-arm64are the ones that truly have an impact on real-time performance.
+> 
+
+If this is concise, please post it there.
+
+-- 
+Philippe.
+
