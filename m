@@ -1,10 +1,8 @@
-Subject: [PATCH 2/2][noarch-4.14] ipipe: Introduce ptrace resume notifier
 From: Jan Kiszka <jan.kiszka@siemens.com>
-References: <8575c954-19f8-feaf-98bc-4153728579c9@siemens.com>
-Message-ID: <a5e47987-34f6-b361-0adb-4da58ef91de9@siemens.com>
-Date: Fri, 30 Nov 2018 21:07:17 +0100
+Subject: [PATCH][4.14] x86/ipipe: Add support for userspace return notifier
+Message-ID: <0bbfd08c-19a8-b04f-fa1d-f7d4312d03e6@siemens.com>
+Date: Fri, 30 Nov 2018 21:08:11 +0100
 MIME-Version: 1.0
-In-Reply-To: <8575c954-19f8-feaf-98bc-4153728579c9@siemens.com>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -16,81 +14,62 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Xenomai <xenomai@xenomai.org>, Philippe Gerum <rpm@xenomai.org>
+To: Xenomai <xenomai@xenomai.org>
 
-This I-pipe hook reports the desired resumption mode to the subscriber:
-resume all process tasks or just single-step a particular one? The use
-case is to enable synchronous stopping / resuming of all head tasks of
-a ptraced real-time process.
+This adds the x86-specific bits to implement the userspace return
+notifier.
 
 Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
 ---
- include/linux/ipipe_base.h   | 18 ++++++++++++++++++
- include/linux/ipipe_domain.h |  1 +
- kernel/ptrace.c              |  2 ++
- 3 files changed, 21 insertions(+)
+ arch/x86/entry/common.c            | 12 ++++++++++++
+ arch/x86/include/asm/thread_info.h |  2 ++
+ 2 files changed, 14 insertions(+)
 
-diff --git a/include/linux/ipipe_base.h b/include/linux/ipipe_base.h
-index d8429171a550..a59e1d19eb40 100644
---- a/include/linux/ipipe_base.h
-+++ b/include/linux/ipipe_base.h
-@@ -164,6 +164,21 @@ do {									\
- #define __ipipe_report_clockfreq_update(freq)				\
- 	__ipipe_notify_kevent(IPIPE_KEVT_CLOCKFREQ, &(freq))
+diff --git a/arch/x86/entry/common.c b/arch/x86/entry/common.c
+index c27b10d1dce1..568f45c47063 100644
+--- a/arch/x86/entry/common.c
++++ b/arch/x86/entry/common.c
+@@ -209,11 +209,23 @@ __visible inline void prepare_exit_to_usermode(struct pt_regs *regs)
  
-+struct ipipe_ptrace_resume_data {
-+	struct task_struct *task;
-+	long request;
-+};
+ 	lockdep_sys_exit();
+ 
++again:
+ 	cached_flags = READ_ONCE(ti->flags);
+ 
+ 	if (unlikely(cached_flags & EXIT_TO_USERMODE_LOOP_FLAGS))
+ 		exit_to_usermode_loop(regs, cached_flags);
+ 
++	if (ipipe_user_intret_notifier_enabled(ti)) {
++		int ret;
 +
-+#define __ipipe_report_ptrace_resume(__p, __request)			\
-+	do {								\
-+		struct ipipe_ptrace_resume_data d = {			\
-+			.task = (__p),					\
-+			.request = (__request),				\
-+		};							\
-+		if (ipipe_notifier_enabled_p(__p))			\
-+			__ipipe_notify_kevent(IPIPE_KEVT_PTRESUME, &d); \
-+	} while (0)
++		enable_local_irqs();
++		ret = __ipipe_notify_user_intreturn();
++		disable_local_irqs();
 +
- int __ipipe_notify_syscall(struct pt_regs *regs);
- 
- int __ipipe_notify_trap(int exception, struct pt_regs *regs);
-@@ -203,6 +218,9 @@ static inline void __ipipe_report_exit(struct task_struct *p) { }
- 
- static inline void __ipipe_report_cleanup(struct mm_struct *mm) { }
- 
-+static inline void __ipipe_report_ptrace_resume(struct task_struct *p,
-+						long request) { }
++		if (ret == 0)
++			goto again;
++	}
 +
- #define __ipipe_report_trap(exception, regs)  0
- 
- #define hard_preempt_disable()		({ preempt_disable(); 0; })
-diff --git a/include/linux/ipipe_domain.h b/include/linux/ipipe_domain.h
-index f2ce31528389..2255659a9891 100644
---- a/include/linux/ipipe_domain.h
-+++ b/include/linux/ipipe_domain.h
-@@ -93,6 +93,7 @@ struct ipipe_vm_notifier;
- #define IPIPE_KEVT_HOSTRT	6
- #define IPIPE_KEVT_CLOCKFREQ	7
- #define IPIPE_KEVT_USERINTRET	8
-+#define IPIPE_KEVT_PTRESUME	9
- 
- typedef void (*ipipe_irq_ackfn_t)(struct irq_desc *desc);
- 
-diff --git a/kernel/ptrace.c b/kernel/ptrace.c
-index 84b1367935e4..942d71363a0c 100644
---- a/kernel/ptrace.c
-+++ b/kernel/ptrace.c
-@@ -809,6 +809,8 @@ static int ptrace_resume(struct task_struct *child, long request,
- 		user_disable_single_step(child);
- 	}
- 
-+	__ipipe_report_ptrace_resume(child, request);
-+
+ #ifdef CONFIG_COMPAT
  	/*
- 	 * Change ->exit_code and ->state under siglock to avoid the race
- 	 * with wait_task_stopped() in between; a non-zero ->exit_code will
+ 	 * Compat syscalls set TS_COMPAT.  Make sure we clear it before
+diff --git a/arch/x86/include/asm/thread_info.h b/arch/x86/include/asm/thread_info.h
+index 28622abbd84b..28f3bc7df5be 100644
+--- a/arch/x86/include/asm/thread_info.h
++++ b/arch/x86/include/asm/thread_info.h
+@@ -162,10 +162,12 @@ struct thread_info {
+ #define TIP_HEAD	0	/* Runs in head domain */
+ #define TIP_NOTIFY	1	/* Notify head domain about kernel events */
+ #define TIP_MAYDAY	2	/* MAYDAY call is pending */
++#define TIP_USERINTRET	3	/* Notify on IRQ/trap return to root userspace */
+ 
+ #define _TIP_HEAD	(1 << TIP_HEAD)
+ #define _TIP_NOTIFY	(1 << TIP_NOTIFY)
+ #define _TIP_MAYDAY	(1 << TIP_MAYDAY)
++#define _TIP_USERINTRET	(1 << TIP_USERINTRET)
+ 
+ #define STACK_WARN		(THREAD_SIZE/8)
+ 
 -- 
 2.16.4
 
