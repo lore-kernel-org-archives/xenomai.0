@@ -1,10 +1,11 @@
-Subject: Re: [PATCH][4.14] arm/ipipe: Fix IPIPE_TRAP_UNDEFINSTR reporting
-References: <6be2fdec-0246-1169-67ad-882abb73cc5e@siemens.com>
+Subject: Re: [PATCH 1/2][noarch-4.14] ipipe: Introduce infrastructure for
+ userspace return notifier
+References: <0a31a0d9-3161-fd05-91a2-1d39266415ea@siemens.com>
 From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <84b6d0fc-97e3-e543-3d56-98daba195512@siemens.com>
-Date: Fri, 30 Nov 2018 21:14:01 +0100
+Message-ID: <4bbeb999-50d3-7b35-eacc-63b8034d0fd1@siemens.com>
+Date: Fri, 30 Nov 2018 21:16:21 +0100
 MIME-Version: 1.0
-In-Reply-To: <6be2fdec-0246-1169-67ad-882abb73cc5e@siemens.com>
+In-Reply-To: <0a31a0d9-3161-fd05-91a2-1d39266415ea@siemens.com>
 Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -16,82 +17,120 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Philippe Gerum <rpm@xenomai.org>, Xenomai <xenomai@xenomai.org>
+To: Xenomai <xenomai@xenomai.org>, Philippe Gerum <rpm@xenomai.org>
 
-On 30.11.18 21:09, Jan Kiszka via Xenomai wrote:
-> Something moved the value of this constant but didn't update the
-> hard-coded instances. Fix this and avoid future problems by using the
-> proper symbolic value.
+Grr, I forgot the
+
+From: Jan Kiszka <jan.kiszka@siemens.com>
+
+in all I-pipe patches. Please adjust that before applying to avoid that the 
+wrong author (the list) is recorded.
+
+On 30.11.18 21:07, Jan Kiszka via Xenomai wrote:
+> A little bit inspired by the kernel's user return notifier, this
+> introduces an I-pipe hook before the kernel jumps back to a userspace
+> context from the root domain. The hook is design to allow a switch back
+> to the head domain, thus will not run through signal/preemption checks
+> when returning from the callback over head. It is guaranteed to fire on
+> return from interrupts and exceptions but may also fire on certain
+> syscall-return paths.
 > 
-> That just requires harding asm/ipipe_base.h for assembly use.
+> The first use case for the hook is resumption of ptraced tasks over
+> head if they were stopped in that domain.
+> 
+> This provides just the generic infrastructure, the invocation of
+> __ipipe_notify_user_intreturn as well as the definition of
+> TIP_USERINTRET are architecture-specific.
 > 
 > Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
 > ---
-
-Just checked: This is a regression of 4.14 over previous versions.
-
->   arch/arm/include/asm/ipipe_base.h | 6 ++++++
->   arch/arm/kernel/entry-armv.S      | 5 +++--
->   2 files changed, 9 insertions(+), 2 deletions(-)
+>   include/linux/ipipe.h        | 11 +++++++++++
+>   include/linux/ipipe_base.h   |  4 ++++
+>   include/linux/ipipe_domain.h |  1 +
+>   kernel/ipipe/core.c          |  7 +++++++
+>   4 files changed, 23 insertions(+)
 > 
-> diff --git a/arch/arm/include/asm/ipipe_base.h b/arch/arm/include/asm/ipipe_base.h
-> index 34de7a0402aa..3cf11a0242a2 100644
-> --- a/arch/arm/include/asm/ipipe_base.h
-> +++ b/arch/arm/include/asm/ipipe_base.h
-> @@ -23,10 +23,14 @@
->   #ifndef __ASM_ARM_IPIPE_BASE_H
->   #define __ASM_ARM_IPIPE_BASE_H
+> diff --git a/include/linux/ipipe.h b/include/linux/ipipe.h
+> index 692f59c20827..f30af6f7f905 100644
+> --- a/include/linux/ipipe.h
+> +++ b/include/linux/ipipe.h
+> @@ -409,6 +409,15 @@ int ipipe_test_ti_thread_flag(struct thread_info *ti, int flag)
+>   			ipipe_set_ti_thread_flag(ti, TIP_MAYDAY);	\
+>   	} while (0)
 >   
-> +#ifndef __ASSEMBLY__
->   #include <asm-generic/ipipe.h>
-> +#endif
->   
->   #ifdef CONFIG_IPIPE
->   
-> +#ifndef __ASSEMBLY__
+> +#define ipipe_enable_user_intret_notifier()				\
+> +	ipipe_set_thread_flag(TIP_USERINTRET)
 > +
->   #ifdef CONFIG_SMP
->   
->   extern unsigned __ipipe_first_ipi;
-> @@ -72,6 +76,8 @@ unsigned __ipipe_processor_id(void);
->   #define ipipe_processor_id()  (0)
->   #endif /* !CONFIG_IPIPE */
->   
-> +#endif /* !__ASSEMBLY__ */
+> +#define ipipe_disable_user_intret_notifier()				\
+> +	ipipe_clear_thread_flag(TIP_USERINTRET)
 > +
->   #define IPIPE_TRAP_MAYDAY        0	/* Internal recovery trap */
+> +#define ipipe_user_intret_notifier_enabled(ti)				\
+> +	ipipe_test_ti_thread_flag(ti, TIP_USERINTRET)
+> +
+>   #ifdef CONFIG_IPIPE_TRACE
+>   void __ipipe_tracer_hrclock_initialized(void);
+>   #else /* !CONFIG_IPIPE_TRACE */
+> @@ -473,6 +482,8 @@ bool ipipe_enter_cpuidle(struct cpuidle_device *dev,
+>   	return true;
+>   }
 >   
->   /* ARM traps */
-> diff --git a/arch/arm/kernel/entry-armv.S b/arch/arm/kernel/entry-armv.S
-> index 3569b3174372..311308e15485 100644
-> --- a/arch/arm/kernel/entry-armv.S
-> +++ b/arch/arm/kernel/entry-armv.S
-> @@ -35,6 +35,7 @@
->   #include "entry-header.S"
->   #include <asm/entry-macro-multi.S>
->   #include <asm/probes.h>
-> +#include <asm/ipipe_base.h>
+> +#define ipipe_user_intret_notifier_enabled(ti)	0
+> +
+>   #endif	/* !CONFIG_IPIPE */
 >   
->   /*
->    * Interrupt handling.
-> @@ -291,7 +292,7 @@ __und_svc:
->   #endif
+>   #endif	/* !__LINUX_IPIPE_H */
+> diff --git a/include/linux/ipipe_base.h b/include/linux/ipipe_base.h
+> index cbc3568bd0a7..d8429171a550 100644
+> --- a/include/linux/ipipe_base.h
+> +++ b/include/linux/ipipe_base.h
+> @@ -175,6 +175,8 @@ void __ipipe_call_mayday(struct pt_regs *regs);
 >   
->   #ifdef CONFIG_IPIPE
-> -	mov	r0, #7				@ r0 = IPIPE_TRAP_UNDEFINSTR
-> +	mov	r0, #IPIPE_TRAP_UNDEFINSTR
->   	mov	r1, sp				@ r1 = &regs
->   	bl	__ipipe_notify_trap		@ branch to trap handler
->   	cmp	r0, #0
-> @@ -519,7 +520,7 @@ __und_usr:
->   	usr_entry uaccess=0
+>   void __ipipe_notify_vm_preemption(void);
 >   
->   #ifdef CONFIG_IPIPE
-> -	mov	r0, #7				@ r0 = IPIPE_TRAP_UNDEFINSTR
-> +	mov	r0, #IPIPE_TRAP_UNDEFINSTR
->   	mov	r1, sp				@ r1 = &regs
->   	bl	__ipipe_notify_trap		@ branch to trap handler
->   	cmp	r0, #0
+> +int __ipipe_notify_user_intreturn(void);
+> +
+>   #define __ipipe_serial_debug(__fmt, __args...)	raw_printk(__fmt, ##__args)
+>   
+>   #else /* !CONFIG_IPIPE */
+> @@ -226,6 +228,8 @@ static inline void __ipipe_exit_vm(void) { }
+>   
+>   static inline void __ipipe_notify_vm_preemption(void) { }
+>   
+> +#define __ipipe_notify_user_intreturn()	0
+> +
+>   #define __ipipe_serial_debug(__fmt, __args...)	do { } while (0)
+>   
+>   #endif	/* !CONFIG_IPIPE */
+> diff --git a/include/linux/ipipe_domain.h b/include/linux/ipipe_domain.h
+> index bbc26e9592d5..f2ce31528389 100644
+> --- a/include/linux/ipipe_domain.h
+> +++ b/include/linux/ipipe_domain.h
+> @@ -92,6 +92,7 @@ struct ipipe_vm_notifier;
+>   #define IPIPE_KEVT_CLEANUP	5
+>   #define IPIPE_KEVT_HOSTRT	6
+>   #define IPIPE_KEVT_CLOCKFREQ	7
+> +#define IPIPE_KEVT_USERINTRET	8
+>   
+>   typedef void (*ipipe_irq_ackfn_t)(struct irq_desc *desc);
+>   
+> diff --git a/kernel/ipipe/core.c b/kernel/ipipe/core.c
+> index 7ac520817a83..4d61c0e57ba1 100644
+> --- a/kernel/ipipe/core.c
+> +++ b/kernel/ipipe/core.c
+> @@ -1164,6 +1164,13 @@ int __ipipe_notify_trap(int exception, struct pt_regs *regs)
+>   	return ret;
+>   }
+>   
+> +int __ipipe_notify_user_intreturn(void)
+> +{
+> +	__ipipe_notify_kevent(IPIPE_KEVT_USERINTRET, current);
+> +
+> +	return !ipipe_root_p;
+> +}
+> +
+>   int __weak ipipe_kevent_hook(int kevent, void *data)
+>   {
+>   	return 0;
 > 
 
 -- 
