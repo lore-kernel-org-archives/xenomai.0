@@ -1,9 +1,11 @@
+Subject: Re: [PATCH][4.14] arm/ipipe: Fix IPIPE_TRAP_UNDEFINSTR reporting
+References: <6be2fdec-0246-1169-67ad-882abb73cc5e@siemens.com>
 From: Jan Kiszka <jan.kiszka@siemens.com>
-Subject: [PATCH][4.14] arm/ipipe: Add support for userspace return notifier
-Message-ID: <517520dc-cae1-3b74-be4f-8baf0e43399d@siemens.com>
-Date: Fri, 30 Nov 2018 21:10:17 +0100
+Message-ID: <84b6d0fc-97e3-e543-3d56-98daba195512@siemens.com>
+Date: Fri, 30 Nov 2018 21:14:01 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+In-Reply-To: <6be2fdec-0246-1169-67ad-882abb73cc5e@siemens.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
@@ -16,62 +18,83 @@ List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: Philippe Gerum <rpm@xenomai.org>, Xenomai <xenomai@xenomai.org>
 
-This adds the arm-specific bits to implement the userspace return
-notifier.
+On 30.11.18 21:09, Jan Kiszka via Xenomai wrote:
+> Something moved the value of this constant but didn't update the
+> hard-coded instances. Fix this and avoid future problems by using the
+> proper symbolic value.
+> 
+> That just requires harding asm/ipipe_base.h for assembly use.
+> 
+> Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
+> ---
 
-Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
----
- arch/arm/include/asm/thread_info.h |  2 ++
- arch/arm/kernel/entry-common.S     | 17 +++++++++++++++++
- 2 files changed, 19 insertions(+)
+Just checked: This is a regression of 4.14 over previous versions.
 
-diff --git a/arch/arm/include/asm/thread_info.h b/arch/arm/include/asm/thread_info.h
-index 50ccf302c1db..e788080b8aaa 100644
---- a/arch/arm/include/asm/thread_info.h
-+++ b/arch/arm/include/asm/thread_info.h
-@@ -182,10 +182,12 @@ extern int vfp_restore_user_hwstate(struct user_vfp __user *,
- #define TIP_MAYDAY	0	/* MAYDAY call is pending */
- #define TIP_NOTIFY	1	/* Notify head domain about kernel events */
- #define TIP_HEAD	2	/* Runs in head domain */
-+#define TIP_USERINTRET	3	/* Notify on IRQ/trap return to root userspace */
- 
- #define _TIP_MAYDAY	(1 << TIP_MAYDAY)
- #define _TIP_NOTIFY	(1 << TIP_NOTIFY)
- #define _TIP_HEAD	(1 << TIP_HEAD)
-+#define _TIP_USERINTRET	(1 << TIP_USERINTRET)
- 
- #endif /* __KERNEL__ */
- #endif /* __ASM_ARM_THREAD_INFO_H */
-diff --git a/arch/arm/kernel/entry-common.S b/arch/arm/kernel/entry-common.S
-index be94f2a56c13..d6c0ebd3f166 100644
---- a/arch/arm/kernel/entry-common.S
-+++ b/arch/arm/kernel/entry-common.S
-@@ -152,8 +152,25 @@ ENTRY(ret_to_user_from_irq)
- 	tst	r1, #_TIF_WORK_MASK
- 	bne	slow_work_pending
- no_work_pending:
-+#ifdef CONFIG_IPIPE
-+	get_thread_info tsk
-+	ldr	r1, [tsk, #TI_IPIPE]
-+	tst	r1, #_TIP_USERINTRET
-+	bne	call_user_intret_notifier
-+goto_user:
-+#endif
- 	asm_trace_hardirqs_on save = 0
- 	slow_restore_user_regs
-+
-+#ifdef CONFIG_IPIPE
-+call_user_intret_notifier:
-+	enable_irq_notrace
-+	bl	__ipipe_notify_user_intreturn
-+	cmp	r0, #0
-+	beq	ret_slow_syscall
-+	disable_irq_notrace
-+	b	goto_user
-+#endif
- ENDPROC(ret_to_user_from_irq)
- ENDPROC(ret_to_user)
- 
+>   arch/arm/include/asm/ipipe_base.h | 6 ++++++
+>   arch/arm/kernel/entry-armv.S      | 5 +++--
+>   2 files changed, 9 insertions(+), 2 deletions(-)
+> 
+> diff --git a/arch/arm/include/asm/ipipe_base.h b/arch/arm/include/asm/ipipe_base.h
+> index 34de7a0402aa..3cf11a0242a2 100644
+> --- a/arch/arm/include/asm/ipipe_base.h
+> +++ b/arch/arm/include/asm/ipipe_base.h
+> @@ -23,10 +23,14 @@
+>   #ifndef __ASM_ARM_IPIPE_BASE_H
+>   #define __ASM_ARM_IPIPE_BASE_H
+>   
+> +#ifndef __ASSEMBLY__
+>   #include <asm-generic/ipipe.h>
+> +#endif
+>   
+>   #ifdef CONFIG_IPIPE
+>   
+> +#ifndef __ASSEMBLY__
+> +
+>   #ifdef CONFIG_SMP
+>   
+>   extern unsigned __ipipe_first_ipi;
+> @@ -72,6 +76,8 @@ unsigned __ipipe_processor_id(void);
+>   #define ipipe_processor_id()  (0)
+>   #endif /* !CONFIG_IPIPE */
+>   
+> +#endif /* !__ASSEMBLY__ */
+> +
+>   #define IPIPE_TRAP_MAYDAY        0	/* Internal recovery trap */
+>   
+>   /* ARM traps */
+> diff --git a/arch/arm/kernel/entry-armv.S b/arch/arm/kernel/entry-armv.S
+> index 3569b3174372..311308e15485 100644
+> --- a/arch/arm/kernel/entry-armv.S
+> +++ b/arch/arm/kernel/entry-armv.S
+> @@ -35,6 +35,7 @@
+>   #include "entry-header.S"
+>   #include <asm/entry-macro-multi.S>
+>   #include <asm/probes.h>
+> +#include <asm/ipipe_base.h>
+>   
+>   /*
+>    * Interrupt handling.
+> @@ -291,7 +292,7 @@ __und_svc:
+>   #endif
+>   
+>   #ifdef CONFIG_IPIPE
+> -	mov	r0, #7				@ r0 = IPIPE_TRAP_UNDEFINSTR
+> +	mov	r0, #IPIPE_TRAP_UNDEFINSTR
+>   	mov	r1, sp				@ r1 = &regs
+>   	bl	__ipipe_notify_trap		@ branch to trap handler
+>   	cmp	r0, #0
+> @@ -519,7 +520,7 @@ __und_usr:
+>   	usr_entry uaccess=0
+>   
+>   #ifdef CONFIG_IPIPE
+> -	mov	r0, #7				@ r0 = IPIPE_TRAP_UNDEFINSTR
+> +	mov	r0, #IPIPE_TRAP_UNDEFINSTR
+>   	mov	r1, sp				@ r1 = &regs
+>   	bl	__ipipe_notify_trap		@ branch to trap handler
+>   	cmp	r0, #0
+> 
+
 -- 
-2.16.4
+Siemens AG, Corporate Technology, CT RDA IOT SES-DE
+Corporate Competence Center Embedded Linux
 
