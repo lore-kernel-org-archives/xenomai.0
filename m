@@ -1,14 +1,11 @@
-Date: Sat, 1 Dec 2018 00:44:10 +0800 (CST)
-From: =?GBK?B?wbrIqA==?= <liang_1911@163.com>
-Subject: Re:Re: every millicsecond interrupt in xenomai domain on a am355x
- board can cause something wrong?
-In-Reply-To: <934350e0-912b-4090-e4ba-e9b130d1e1f2@xenomai.org>
-References: <6a75de9a.bb14.1675e7e151a.Coremail.liang_1911@163.com>
- <934350e0-912b-4090-e4ba-e9b130d1e1f2@xenomai.org>
-MIME-Version: 1.0
-Message-ID: <955d187.1042f.16765819578.Coremail.liang_1911@163.com>
-Content-Type: text/plain; charset=GBK
-Content-Transfer-Encoding: base64
+From: Jan Kiszka <jan.kiszka@siemens.com>
+Subject: [RFC][PATCH 3/7] cobalt/kernel: Reintroduce process-local thread list
+Date: Fri, 30 Nov 2018 21:03:17 +0100
+Message-Id: <fee35ce4d1a7a24ffaf52d266ea170b049f9c7aa.1543608201.git.jan.kiszka@siemens.com>
+In-Reply-To: <cover.1543608201.git.jan.kiszka@siemens.com>
+References: <cover.1543608201.git.jan.kiszka@siemens.com>
+In-Reply-To: <cover.1543608201.git.jan.kiszka@siemens.com>
+References: <cover.1543608201.git.jan.kiszka@siemens.com>
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,114 +14,99 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Philippe Gerum <rpm@xenomai.org>
-Cc: xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-aSB0cnkgdGhpcyBwYXRjaCAgc2V2ZXJhbCB0aW1lcywgIHRoZSBRVCBhcHAgc3RpbGwgY3Jhc2hl
-ZCBhZnRlciBydW5pbmcgZmV3IG1pbnV0ZXMuIGFuZCB0aGUga2VuZXJsIHJlcG9ydCB0aGUgZXJy
-b3IgbGlrZSB0aGlzOgpyb290QGFtMzM1eC1ldm06fi90bXAjIFsgMTY5Ni4zMTMxMjFdIEludGVy
-bmFsIGVycm9yOiBPb3BzIC0gdW5kZWZpbmVkIGluc3RydWN0aW9uOiAwIFsjMV0gUFJFRU1QVCBB
-Uk0KWyAxNjk2LjMyMDI1OF0gTW9kdWxlcyBsaW5rZWQgaW46IG1vdGlvbkRydihPKSBGUEdBKE8p
-ClsgMTY5Ni4zMjUxNjldIENQVTogMCBQSUQ6IDYwNiBDb21tOiBITUlfVjIgVGFpbnRlZDogRyAg
-ICAgICAgICAgTyAgICA0LjE0LjY3LWdkMzE1YTliYjAwICMxMTUKWyAxNjk2LjMzMzU1N10gSGFy
-ZHdhcmUgbmFtZTogR2VuZXJpYyBBTTMzWFggKEZsYXR0ZW5lZCBEZXZpY2UgVHJlZSkKWyAxNjk2
-LjMzOTY1N10gSS1waXBlIGRvbWFpbjogTGludXgKWyAxNjk2LjM0MjkyMF0gdGFzazogY2RhNmM2
-MDAgdGFzay5zdGFjazogY2RhZDYwMDAKWyAxNjk2LjM0NzQ2NV0gUEMgaXMgYXQgMHhiNWMyN2M2
-NApbIDE2OTYuMzUwNjA3XSBMUiBpcyBhdCAweGI1YzI3YzYwClsgMTY5Ni4zNTM3NzldIHBjIDog
-WzxiNWMyN2M2ND5dICAgIGxyIDogWzxiNWMyN2M2MD5dICAgIHBzcjogNjAwNzAxMTMKWyAxNjk2
-LjM2MDA2Ml0gc3AgOiBjZGFkN2ZmOCAgaXAgOiBiNjEwNjBlYyAgZnAgOiAwMDAwMDAwMApbIDE2
-OTYuMzY1MzA4XSByMTA6IDAwMDAwMDAwICByOSA6IGI2MTAwZmE4ICByOCA6IDAwMzFlMmE4Clsg
-MTY5Ni4zNzA1NTRdIHI3IDogMDAzNjJiMTggIHI2IDogYmVmMTZhODQgIHI1IDogMDAzNjIzYTgg
-IHI0IDogYjYxMGI0MGMKWyAxNjk2LjM3NzA4MV0gcjMgOiAwMDAwODNkMCAgcjIgOiAwMDAwMDAw
-MCAgcjEgOiAwMDAwMDAwMCAgcjAgOiAwMDM1ZjhiMApbIDE2OTYuMzgzNjM5XSBGbGFnczogblpD
-diAgSVJRcyBvbiAgRklRcyBvbiAgTW9kZSBTVkNfMzIgIElTQSBBUk0gIFNlZ21lbnQgdXNlcgpb
-IDE2OTYuMzkwODA3XSBDb250cm9sOiAxMGM1Mzg3ZCAgVGFibGU6IDhlN2I4MDE5ICBEQUM6IDAw
-MDAwMDU1ClsgMTY5Ni4zOTY1NzFdIFByb2Nlc3MgSE1JX1YyIChwaWQ6IDYwNiwgc3RhY2sgbGlt
-aXQgPSAweGNkYWQ2MjE4KQpbIDE2OTYuNDAyNTE5XSBTdGFjazogKDB4Y2RhZDdmZjggdG8gMHhj
-ZGFkODAwMCkKWyAxNjk2LjQwNjkxMV0gN2ZlMDogICAgICAgICAgICAgICAgICAgICAgICAgICAg
-ICAgICAgICAgICAgICAgICAgICAgICAgICAgMDAwMDAwMDAgMDAwMDAwMDAKWyAxNjk2LjQxNTEx
-Nl0gQmFja3RyYWNlOiBubyBmcmFtZSBwb2ludGVyClsgMTY5Ni40MTg5NTldIENvZGU6IDY4MjBl
-ODNjIDQwMTBlOGJkIGJhMjBmNzZmIDQ2MDRiNTEwIChmNzZjNjgwMCkgClsgMTY5Ni40Mjc2NTJd
-IC0tLVsgZW5kIHRyYWNlIDRmMmEwNjVkYjE0OTQ0NGEgXS0tLQpvciBsaWtlIHRoaXM6ClsgIDgw
-MS4wMzgwMDRdIFVuYWJsZSB0byBoYW5kbGUga2VybmVsIHBhZ2luZyByZXF1ZXN0IGF0IHZpcnR1
-YWwgYWRkcmVzcyAzMDJlMzAyMApbICA4MDEuMDQ1NDc2XSBwZ2QgPSBjZGEwNDAwMApbICA4MDEu
-MDQ4MzEzXSBbMzAyZTMwMjBdICpwZ2Q9MDAwMDAwMDAKWyAgODAxLjA1Mjg1N10gSW50ZXJuYWwg
-ZXJyb3I6IE9vcHM6IDgwMDAwMDA1IFsjMV0gUFJFRU1QVCBBUk0KWyAgODAxLjA1ODU5Ml0gTW9k
-dWxlcyBsaW5rZWQgaW46IG1vdGlvbkRydihPKSBGUEdBKE8pClsgIDgwMS4wNjQxNzNdIENQVTog
-MCBQSUQ6IDYwMSBDb21tOiBITUlfVjIgVGFpbnRlZDogRyAgICAgICAgICAgTyAgICA0LjE0LjY3
-LWdkMzE1YTliYjAwICMxMTMKWyAgODAxLjA3MzAxOV0gSGFyZHdhcmUgbmFtZTogR2VuZXJpYyBB
-TTMzWFggKEZsYXR0ZW5lZCBEZXZpY2UgVHJlZSkKWyAgODAxLjA3OTI0MV0gSS1waXBlIGRvbWFp
-bjogTGludXgKWyAgODAxLjA4MzAyM10gdGFzazogY2RhYWE0MDAgdGFzay5zdGFjazogY2YwNGMw
-MDAKWyAgODAxLjA4NzcyMF0gUEMgaXMgYXQgMHgzMDJlMzAyMApbICA4MDEuMDkwOTIzXSBMUiBp
-cyBhdCAweGI1ODg4ZjJjClsgIDgwMS4wOTQ0OTFdIHBjIDogWzwzMDJlMzAyMD5dICAgIGxyIDog
-WzxiNTg4OGYyYz5dICAgIHBzcjogNjAwNzAxMTMKWyAgODAxLjEwMDg2Nl0gc3AgOiBjZjA0ZGZm
-OCAgaXAgOiAwMDAwMDBhYyAgZnAgOiBiZTk0MmEwOApbICA4MDEuMTA2NDE3XSByMTA6IDAwMDAw
-MDM5ICByOSA6IDAwMDAwMzIxICByOCA6IDAwMDAwMDMyClsgIDgwMS4xMTE4MTZdIHI3IDogMDAz
-OGY2ZTggIHI2IDogMDAzOTg4MDAgIHI1IDogMDAwMDAwMDAgIHI0IDogMDAxMDI0YTAKWyAgODAx
-LjExODQzNF0gcjMgOiAwMDAwMDAwMCAgcjIgOiAwMDAwMDAwNiAgcjEgOiAwMDM5ODgwMCAgcjAg
-OiBiZTk0MjRhNApbICA4MDEuMTI1Mzg4XSBGbGFnczogblpDdiAgSVJRcyBvbiAgRklRcyBvbiAg
-TW9kZSBTVkNfMzIgIElTQSBBUk0gIFNlZ21lbnQgdXNlcgpbICA4MDEuMTMyNzA5XSBDb250cm9s
-OiAxMGM1Mzg3ZCAgVGFibGU6IDhkYTA0MDE5ICBEQUM6IDAwMDAwMDU1ClsgIDgwMS4xMzg1NjVd
-IFByb2Nlc3MgSE1JX1YyIChwaWQ6IDYwMSwgc3RhY2sgbGltaXQgPSAweGNmMDRjMjE4KQpbICA4
-MDEuMTQ0OTA5XSBTdGFjazogKDB4Y2YwNGRmZjggdG8gMHhjZjA0ZTAwMCkKWyAgODAxLjE0OTQy
-M10gZGZlMDogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
-ICAgICAgMDAwMDAwMDAgMDAwMDAwMDAKWyAgODAxLjE1Nzk2M10gQmFja3RyYWNlOiBpbnZhbGlk
-IGZyYW1lIHBvaW50ZXIgMHhiZTk0MmEwOApbICA4MDEuMTYzMzMxXSBDb2RlOiBiYWQgUEMgdmFs
-dWUKWyAgODAxLjE2NjUzNF0gLS0tWyBlbmQgdHJhY2UgOThmYThlZjE1NmRkZjM5ZSBdLS0tCm9y
-IHRoaXM6ClsgMTQxNy40NTExOThdIFVuYWJsZSB0byBoYW5kbGUga2VybmVsIE5VTEwgcG9pbnRl
-ciBkZXJlZmVyZW5jZSBhdCB2aXJ0dWFsIGFkZHJlc3MgMDAwMDAwMDAKWyAxNDE3LjQ1OTU1Nl0g
-cGdkID0gY2Q4NzAwMDAKWyAxNDE3LjQ2MzE4NV0gWzAwMDAwMDAwXSAqcGdkPThkOGI5ODMxLCAq
-cHRlPTAwMDAwMDAwLCAqcHB0ZT0wMDAwMDAwMApbIDE0MTcuNDY5NjIxXSBJbnRlcm5hbCBlcnJv
-cjogT29wczogODE3IFsjMl0gUFJFRU1QVCBBUk0KWyAxNDE3LjQ3NDgwNl0gTW9kdWxlcyBsaW5r
-ZWQgaW46IG1vdGlvbkRydihPKSBGUEdBKE8pClsgMTQxNy40Nzk3MTddIENQVTogMCBQSUQ6IDYy
-OCBDb21tOiBITUlfVjIgVGFpbnRlZDogRyAgICAgIEQgICAgTyAgICA0LjE0LjY3LWdkMzE1YTli
-YjAwICMxMTMKWyAxNDE3LjQ4ODEwNF0gSGFyZHdhcmUgbmFtZTogR2VuZXJpYyBBTTMzWFggKEZs
-YXR0ZW5lZCBEZXZpY2UgVHJlZSkKWyAxNDE3LjQ5NDIwNF0gSS1waXBlIGRvbWFpbjogTGludXgK
-WyAxNDE3LjQ5NzQ2OF0gdGFzazogY2RiMTE4MDAgdGFzay5zdGFjazogY2Q4YmUwMDAKWyAxNDE3
-LjUwMjAxM10gUEMgaXMgYXQgMHhiNWI1NmE0OApbIDE0MTcuNTA1MTU0XSBMUiBpcyBhdCAweGI1
-YjU2YTQ0ClsgMTQxNy41MDgyOTZdIHBjIDogWzxiNWI1NmE0OD5dICAgIGxyIDogWzxiNWI1NmE0
-ND5dICAgIHBzcjogNjAwNzAxMTMKWyAxNDE3LjUxNDYwOV0gc3AgOiBjZDhiZmZmOCAgaXAgOiBi
-NjA5NmZmOCAgZnAgOiAwMDAwMDAwMApbIDE0MTcuNTE5ODU2XSByMTA6IDAwMzQ3MTMwICByOSA6
-IGI2MDhmZmE4ICByOCA6IDAwNGQ5NTZhClsgMTQxNy41MjUxMDJdIHI3IDogMDAzMzBjOTggIHI2
-IDogMDAwMDAwMDAgIHI1IDogZmZmZmZmZmYgIHI0IDogZmZmZmZmZmYKWyAxNDE3LjUzMTYyOV0g
-cjMgOiAwMDM1ZTljMCAgcjIgOiAwMDAwMDAwMCAgcjEgOiBiZWU4OWEwOCAgcjAgOiAwMDMzMGM5
-OApbIDE0MTcuNTM4MTg3XSBGbGFnczogblpDdiAgSVJRcyBvbiAgRklRcyBvbiAgTW9kZSBTVkNf
-MzIgIElTQSBBUk0gIFNlZ21lbnQgdXNlcgpbIDE0MTcuNTQ1MzU0XSBDb250cm9sOiAxMGM1Mzg3
-ZCAgVGFibGU6IDhkODcwMDE5ICBEQUM6IDAwMDAwMDU1ClsgMTQxNy41NTExMTldIFByb2Nlc3Mg
-SE1JX1YyIChwaWQ6IDYyOCwgc3RhY2sgbGltaXQgPSAweGNkOGJlMjE4KQpbIDE0MTcuNTU3MDY3
-XSBTdGFjazogKDB4Y2Q4YmZmZjggdG8gMHhjZDhjMDAwMCkKWyAxNDE3LjU2MTQ1OV0gZmZlMDog
-ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgMDAw
-MDAwMDAgMDAwMDAwMDAKWyAxNDE3LjU2OTY2M10gQmFja3RyYWNlOiBubyBmcmFtZSBwb2ludGVy
-ClsgMTQxNy41NzM1MDddIENvZGU6IDQ2MWZkYTA0IDY4NWIxOWJiIGQxZjU0Mjk4IDFjNTYzYTAx
-ICgwNjgyZWE0ZikgClsgMTQxNy41ODE4OTRdIC0tLVsgZW5kIHRyYWNlIDk4ZmE4ZWYxNTZkZGYz
-OWYgXS0tLQoKCmJlc2lkZXMgdGhhdCwgdGhlcmUgaXMgYW5vdGhlciB0aGluZyBpIHdhcyBjdXJp
-b3VzIG9uOyBhdCB0aGUgYmVnaW5uaW5nIGkgcmVnaXN0ZXIgdGhlIGludGVycnVwdCBieSB1c2lu
-ZyB0aGUKcnRkbV9yZXF1ZXN0X2lycSBmdW5jOyBob3dldmVyIGl0IGhhdmUgbm8gZWZmZWN0OyB0
-aGVuIGkgYWRkIHRoZSBmb2xsb3dpbmcgY29kZSBiZWZvcmUgaSBjYWxsIHJ0ZG1fcmVxdWVzdF9p
-cnE6CmlycV9zZXRfaGFuZGxlcihpcnFObyxoYW5kbGVfc2ltcGxlX2lycSk7IAppdCB3b3JrIGFy
-b3VuZC4gIGkgdGhpbmsgdGhpcyBjb2RlIGhhcyBub3RoaW5nIHRvIGRvIHdpdGggdGhlIHByb2Js
-ZW0sIHNvIGkgZGlkbid0IG1lbnRpb24gaXQgYmVmb3JloaMKLS0tLS0tLS0tLS0tLS0tLS0tLS0t
-LS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLQogICAgICAgICAgwbrIqApUSEFOS1MgJiBCUiEKQXQg
-MjAxOC0xMS0zMCAwMDo0MDo0OSwgIlBoaWxpcHBlIEdlcnVtIiA8cnBtQHhlbm9tYWkub3JnPiB3
-cm90ZToKPk9uIDExLzI5LzE4IDk6MDMgQU0sIMG6yKggdmlhIFhlbm9tYWkgd3JvdGU6Cj4+IGhp
-o6wKPj4gaSdtIHdvcmsgb24gYSBjdXN0b21lZCBib2FyZCB3aXRoIFRJIGFtMzM1WDsgaSBoYXZl
-IGluc3RhbGxlZCB4ZW5vbWFpIDMgb24gaXQgY29ycmVjdHRseSAsIGFuZCBjYW4gcnVuIHRoZSBs
-YXRlbmN5IHRlc3QuCj4+IE9uIHRoaXMgYm9hcmQsIGFuIGludGVycnVwdCB3aGljaCBjYW5ub3Qg
-YmUgbWFza2VkIGFuZCBkZWxheWVkIHdpbGwgYmUgZ2VuZXJhdGVkIGV2ZXJ5IG1pbGxpY3NlY29u
-ZCBieSBhIEZQR0EgOyAKPj4gdG8gIGhhbmRsZXIgdGhpcyBpbnRlcnJ1cHQgaW1tZWRpYXRlbHks
-IGkgcmVnaXN0ZXIgIHRoZSBpbnRlcnJ1cHQgaGFuZGxlciBpbiB4ZW5vbWFpIGRvbWFpbi5BbHNv
-IHRoZXJlIGlzIGEgUVQgYXBwbGljdGF0aW9uIHJ1bm5pbmcgb24gdGhlIGJvYXJkOyAgYW5kIGhl
-cmUgaXMgdGhlIHByb2JsZW0gaSBlbmNvdW50ZXI6Cj4+IGlmIGkgb3BlbiB0aGUgaW50ZXJydXB0
-IGFuZCBydW4gdGhlIFFUIGFwcGxpY2F0aW9uIHNpbXVsdGFuZW91c2x5LCB0aGUgUVQgYXBwbGlj
-YXRpb24gd2lsbCBnZXQgd3JvbmcgbGlrZSB0aGlzIGFmdGVyIGEgZmV3IG1pbnV0ZXMoYnV0IHRo
-ZSBsaW51eCBpcyBzdGlsbCBydW5uaW5nIGZpbmUpOgo+PiBbIDE2MDEuNDk2ODI4XSBVbmhhbmRs
-ZWQgZmF1bHQ6IHBhZ2UgZG9tYWluIGZhdWx0ICgweDAxYikgYXQgMHhiNmZhMTM1Ywo+Cj5Bbnkg
-aW1wcm92ZW1lbnQgd2l0aCB0aGlzIHBhdGNoIGluPwo+Cj5kaWZmIC0tZ2l0IGEvYXJjaC9hcm0v
-a2VybmVsL2VudHJ5LWFybXYuUyBiL2FyY2gvYXJtL2tlcm5lbC9lbnRyeS1hcm12LlMKPmluZGV4
-IDM1NjliMzE3NDM3Mi4uYzUzZjUxMzU3YjNjIDEwMDY0NAo+LS0tIGEvYXJjaC9hcm0va2VybmVs
-L2VudHJ5LWFybXYuUwo+KysrIGIvYXJjaC9hcm0va2VybmVsL2VudHJ5LWFybXYuUwo+QEAgLTI5
-Niw2ICsyOTYsNyBAQCBfX3VuZF9zdmM6Cj4gCWJsCV9faXBpcGVfbm90aWZ5X3RyYXAJCUAgYnJh
-bmNoIHRvIHRyYXAgaGFuZGxlcgo+IAljbXAJcjAsICMwCj4gCWJuZQlfX3VuZF9zdmNfZmluaXNo
-Cj4rCXVhY2Nlc3NfZW5hYmxlIGlwCj4gI2VuZGlmIC8qIENPTkZJR19JUElQRSAqLwo+IAlACj4g
-CUAgY2FsbCBlbXVsYXRpb24gY29kZSwgd2hpY2ggcmV0dXJucyB1c2luZyByOSBpZiBpdCBoYXMg
-ZW11bGF0ZWQKPgo+LS0gCj5QaGlsaXBwZS4K
+From: Jan Kiszka <jan.kiszka@siemens.com>
+
+Track threads on a per-process basis again to make walking through them
+cheaper.
+
+Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
+---
+ kernel/cobalt/posix/process.c | 3 ++-
+ kernel/cobalt/posix/process.h | 3 ++-
+ kernel/cobalt/posix/thread.c  | 4 +++-
+ kernel/cobalt/posix/thread.h  | 2 +-
+ 4 files changed, 8 insertions(+), 4 deletions(-)
+
+diff --git a/kernel/cobalt/posix/process.c b/kernel/cobalt/posix/process.c
+index 1e679762aa..1b89ab7580 100644
+--- a/kernel/cobalt/posix/process.c
++++ b/kernel/cobalt/posix/process.c
+@@ -83,7 +83,7 @@ struct xnthread_personality *cobalt_personalities[NR_PERSONALITIES];
+ 
+ static struct xnsynch yield_sync;
+ 
+-LIST_HEAD(cobalt_thread_list);
++LIST_HEAD(cobalt_global_thread_list);
+ 
+ struct cobalt_resources cobalt_global_resources = {
+ 	.condq = LIST_HEAD_INIT(cobalt_global_resources.condq),
+@@ -1434,6 +1434,7 @@ static void *cobalt_process_attach(void)
+ 	INIT_LIST_HEAD(&process->resources.eventq);
+ 	INIT_LIST_HEAD(&process->resources.schedq);
+ 	INIT_LIST_HEAD(&process->sigwaiters);
++	INIT_LIST_HEAD(&process->thread_list);
+ 	xntree_init(&process->usems);
+ 	bitmap_fill(process->timers_map, CONFIG_XENO_OPT_NRTIMERS);
+ 	cobalt_set_process(process);
+diff --git a/kernel/cobalt/posix/process.h b/kernel/cobalt/posix/process.h
+index ad1f4c56bb..f867b8a919 100644
+--- a/kernel/cobalt/posix/process.h
++++ b/kernel/cobalt/posix/process.h
+@@ -51,6 +51,7 @@ struct cobalt_process {
+ 	struct rb_root usems;
+ 	struct list_head sigwaiters;
+ 	struct cobalt_resources resources;
++	struct list_head thread_list;
+ 	DECLARE_BITMAP(timers_map, CONFIG_XENO_OPT_NRTIMERS);
+ 	struct cobalt_timer *timers[CONFIG_XENO_OPT_NRTIMERS];
+ 	void *priv[NR_PERSONALITIES];
+@@ -86,7 +87,7 @@ int cobalt_yield(xnticks_t min, xnticks_t max);
+ 
+ int cobalt_process_init(void);
+ 
+-extern struct list_head cobalt_thread_list;
++extern struct list_head cobalt_global_thread_list;
+ 
+ extern struct cobalt_resources cobalt_global_resources;
+ 
+diff --git a/kernel/cobalt/posix/thread.c b/kernel/cobalt/posix/thread.c
+index 44f655a300..30c31bb6d9 100644
+--- a/kernel/cobalt/posix/thread.c
++++ b/kernel/cobalt/posix/thread.c
+@@ -359,6 +359,7 @@ static int pthread_create(struct cobalt_thread **thread_p,
+ 			  const struct sched_param_ex *param_ex,
+ 			  struct task_struct *task)
+ {
++	struct cobalt_process *process = cobalt_current_process();
+ 	struct xnsched_class *sched_class;
+ 	union xnsched_policy_param param;
+ 	struct xnthread_init_attr iattr;
+@@ -413,7 +414,8 @@ static int pthread_create(struct cobalt_thread **thread_p,
+ 	}
+ 
+ 	xnlock_get_irqsave(&nklock, s);
+-	list_add_tail(&thread->next, &cobalt_thread_list);
++	list_add_tail(&thread->next, process ? &process->thread_list
++					     : &cobalt_global_thread_list);
+ 	xnlock_put_irqrestore(&nklock, s);
+ 
+ 	thread->hkey.u_pth = 0;
+diff --git a/kernel/cobalt/posix/thread.h b/kernel/cobalt/posix/thread.h
+index 5cc098afab..fec9d17859 100644
+--- a/kernel/cobalt/posix/thread.h
++++ b/kernel/cobalt/posix/thread.h
+@@ -91,7 +91,7 @@ struct cobalt_thread {
+ 	struct xnthread threadbase;
+ 	struct cobalt_extref extref;
+ 	struct cobalt_process *process;
+-	struct list_head next;	/* in cobalt_thread_list */
++	struct list_head next;	/* in global/process thread_list */
+ 
+ 	/** Signal management. */
+ 	sigset_t sigpending;
+-- 
+2.16.4
+
+
