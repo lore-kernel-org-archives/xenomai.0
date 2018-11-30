@@ -1,8 +1,8 @@
 From: Jan Kiszka <jan.kiszka@siemens.com>
-Subject: [RFC][PATCH 5/7] cobalt/kernel: Implement synchronous stop and resume
- for process debugging
-Date: Fri, 30 Nov 2018 21:03:19 +0100
-Message-Id: <43beca14b954c2170f79c456dc3a2ea99b755d08.1543608201.git.jan.kiszka@siemens.com>
+Subject: [RFC][PATCH 2/7] cobalt/kernel: Switch back ptraced primary mode
+ threads on resume
+Date: Fri, 30 Nov 2018 21:03:16 +0100
+Message-Id: <0b395c00c364fa8fe93a8766b3c5bc516e807698.1543608201.git.jan.kiszka@siemens.com>
 In-Reply-To: <cover.1543608201.git.jan.kiszka@siemens.com>
 References: <cover.1543608201.git.jan.kiszka@siemens.com>
 In-Reply-To: <cover.1543608201.git.jan.kiszka@siemens.com>
@@ -19,275 +19,170 @@ To: xenomai@xenomai.org
 
 From: Jan Kiszka <jan.kiszka@siemens.com>
 
-When a thread in primary mode currently hits a breakpoint, it will
-immediately be relaxed, leaving space for other runnable RT threads of
-the process to take over. This can delay gdb to finally take control and
-stop the whole process.
+When a thread is stopped in primary mode for debugging, make sure it
+will migrate back before resuming in user space. This is a building
+block for making real-time process debugging more deterministic.
 
-To prevent this unexpected and often undesired behavior, this introduces
-a mechanism to stop all threads of a process in primary mode when one of
-them runs into a breakpoint or a single-step event. The new XNDBGSTOP
-thread state is used for this purpose.
+The information if a thread should resume in primary is transported via
+a new thread info flag XNCONTHI. It is set either by the exception
+handler detecting a breakpoint hit in primary user mode or by
+xnthread_relax when invoked for a thread under XNSSTEP which indicates
+it was signaled to stop.
 
-On resumption, no thread can continue in primary mode until all that
-should do so have reached this state. Then the last one will wake up all
-threads waiting on XNDBGSTOP.
+The feature depends on the new I-pipe notifier for user interrupt
+return, i.e. a callback from the point that a secondary mode thread is
+about to return to user space after an exception or an interrupt.
 
 Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
 ---
- kernel/cobalt/posix/process.c | 131 +++++++++++++++++++++++++++++++++++++++---
- kernel/cobalt/posix/process.h |   1 +
- kernel/cobalt/thread.c        |   4 +-
- 3 files changed, 126 insertions(+), 10 deletions(-)
+ include/cobalt/uapi/kernel/thread.h |  1 +
+ kernel/cobalt/posix/process.c       | 68 ++++++++++++++++++++++++++++++++++++-
+ kernel/cobalt/thread.c              | 12 +++++++
+ 3 files changed, 80 insertions(+), 1 deletion(-)
 
+diff --git a/include/cobalt/uapi/kernel/thread.h b/include/cobalt/uapi/kernel/thread.h
+index f583ae3854..04982ee0e4 100644
+--- a/include/cobalt/uapi/kernel/thread.h
++++ b/include/cobalt/uapi/kernel/thread.h
+@@ -72,6 +72,7 @@
+ #define XNCANCELD 0x00000040 /**< Cancellation request is pending */
+ #define XNPIALERT 0x00000080 /**< Priority inversion alert (SIGDEBUG sent) */
+ #define XNSCHEDP  0x00000100 /**< schedparam propagation is pending */
++#define XNCONTHI  0x00000200 /**< Continue in primary mode after debugging */
+ 
+ /* Local information flags (private to current thread) */
+ 
 diff --git a/kernel/cobalt/posix/process.c b/kernel/cobalt/posix/process.c
-index 1b89ab7580..e748c4fbdf 100644
+index f4ebf194f6..1e679762aa 100644
 --- a/kernel/cobalt/posix/process.c
 +++ b/kernel/cobalt/posix/process.c
-@@ -94,6 +94,12 @@ struct cobalt_resources cobalt_global_resources = {
- 	.schedq = LIST_HEAD_INIT(cobalt_global_resources.schedq),
- };
+@@ -745,6 +745,18 @@ static inline int handle_exception(struct ipipe_trap_data *d)
  
-+static inline struct cobalt_process *
-+process_from_thread(struct xnthread *thread)
-+{
-+	return container_of(thread, struct cobalt_thread, threadbase)->process;
-+}
-+
- static unsigned __attribute__((pure)) process_hash_crunch(struct mm_struct *mm)
- {
- 	unsigned long hash = ((unsigned long)mm - PAGE_OFFSET) / sizeof(*mm);
-@@ -720,16 +726,73 @@ int cobalt_map_user(struct xnthread *thread, __u32 __user *u_winoff)
- 	return 0;
- }
+ 	trace_cobalt_thread_fault(d);
  
-+#ifdef IPIPE_KEVT_PTRESUME
-+static void stop_debugged_process(struct xnthread *thread)
-+{
-+	struct cobalt_process *process = process_from_thread(thread);
-+	struct cobalt_thread *cth;
++#ifdef IPIPE_KEVT_USERINTRET
++	if (xnarch_fault_bp_p(d) && user_mode(d->regs)) {
++		spl_t s;
 +
-+	if (process->debugged_threads > 0)
-+		return;
++		xnlock_get_irqsave(&nklock, s);
++		xnthread_set_info(thread, XNCONTHI);
++		xnlock_put_irqrestore(&nklock, s);
 +
-+	list_for_each_entry(cth, &process->thread_list, next) {
-+		if (&cth->threadbase == thread)
-+			continue;
-+
-+		xnthread_suspend(&cth->threadbase, XNDBGSTOP, XN_INFINITE,
-+				 XN_RELATIVE, NULL);
++		ipipe_enable_user_intret_notifier();
 +	}
-+}
-+
-+static void resume_debugged_process(struct cobalt_process *process)
-+{
-+	struct cobalt_thread *cth;
-+
-+	xnsched_lock();
-+
-+	list_for_each_entry(cth, &process->thread_list, next)
-+		if (xnthread_test_state(&cth->threadbase, XNDBGSTOP))
-+			xnthread_resume(&cth->threadbase, XNDBGSTOP);
-+
-+	xnsched_unlock();
-+}
-+
-+#else /* IPIPE_KEVT_PTRESUME unavailable */
-+
-+static inline void stop_debugged_process(struct xnthread *thread)
-+{
-+}
-+
-+static inline void resume_debugged_process(struct cobalt_process *process)
-+{
-+}
-+#endif /* IPIPE_KEVT_PTRESUME unavailable */
-+
- /* called with nklock held */
- static void cobalt_register_debugged_thread(struct xnthread *thread)
- {
-+	struct cobalt_process *process = process_from_thread(thread);
-+
- 	xnthread_set_state(thread, XNSSTEP);
-+
-+	stop_debugged_process(thread);
-+	process->debugged_threads++;
-+
-+	if (xnthread_test_state(thread, XNRELAX))
-+		xnthread_suspend(thread, XNDBGSTOP, XN_INFINITE, XN_RELATIVE,
-+				 NULL);
- }
- 
- /* called with nklock held */
- static void cobalt_unregister_debugged_thread(struct xnthread *thread)
- {
-+	struct cobalt_process *process = process_from_thread(thread);
-+
-+	process->debugged_threads--;
- 	xnthread_clear_state(thread, XNSSTEP);
-+
-+	if (process->debugged_threads == 0)
-+		resume_debugged_process(process);
- }
- 
- static inline int handle_exception(struct ipipe_trap_data *d)
-@@ -740,23 +803,25 @@ static inline int handle_exception(struct ipipe_trap_data *d)
- 	sched = xnsched_current();
- 	thread = sched->curr;
- 
--	if (xnthread_test_state(thread, XNROOT))
--		return 0;
--
--	trace_cobalt_thread_fault(d);
--
- #ifdef IPIPE_KEVT_USERINTRET
- 	if (xnarch_fault_bp_p(d) && user_mode(d->regs)) {
- 		spl_t s;
- 
- 		xnlock_get_irqsave(&nklock, s);
--		xnthread_set_info(thread, XNCONTHI);
-+		if (!xnthread_test_state(thread, XNRELAX)) {
-+			xnthread_set_info(thread, XNCONTHI);
-+			ipipe_enable_user_intret_notifier();
-+		}
-+		stop_debugged_process(thread);
- 		xnlock_put_irqrestore(&nklock, s);
--
--		ipipe_enable_user_intret_notifier();
- 	}
- #endif
- 
-+	if (xnthread_test_state(thread, XNROOT))
-+		return 0;
-+
-+	trace_cobalt_thread_fault(d);
++#endif
 +
  	if (xnarch_fault_fpu_p(d)) {
  #ifdef CONFIG_XENO_ARCH_FPU
  		spl_t s;
-@@ -991,6 +1056,10 @@ void ipipe_migration_hook(struct task_struct *p) /* hw IRQs off */
- 	}
- #endif
+@@ -957,15 +969,28 @@ void ipipe_migration_hook(struct task_struct *p) /* hw IRQs off */
+ {
+ 	struct xnthread *thread = xnthread_from_task(p);
  
-+	/* Unregister as debugged thread in case we postponed this. */
-+	if (unlikely(xnthread_test_state(thread, XNSSTEP)))
-+		cobalt_unregister_debugged_thread(thread);
++	xnlock_get(&nklock);
++
+ 	/*
+ 	 * We fire the handler before the thread is migrated, so that
+ 	 * thread->sched does not change between paired invocations of
+ 	 * relax_thread/harden_thread handlers.
+ 	 */
+-	xnlock_get(&nklock);
+ 	xnthread_run_handler_stack(thread, harden_thread);
+ 	if (affinity_ok(p))
+ 		xnthread_resume(thread, XNRELAX);
++
++#ifdef IPIPE_KEVT_USERINTRET
++	/*
++	 * In case we migrated independently of the user return notifier, clear
++	 * XNCONTHI here and also disable the notifier - we are already done.
++	 */
++	if (unlikely(xnthread_test_info(thread, XNCONTHI))) {
++		xnthread_clear_info(thread, XNCONTHI);
++		ipipe_disable_user_intret_notifier();
++	}
++#endif
 +
  	xnlock_put(&nklock);
  
  	xnsched_run();
-@@ -1151,7 +1220,15 @@ static int handle_schedule_event(struct task_struct *next_task)
- 			    sigismember(&pending, SIGINT))
- 				goto no_ptrace;
- 		}
--		cobalt_unregister_debugged_thread(next);
-+
-+		/*
-+		 * Do not unregister before the thread migrated.
-+		 * cobalt_unregister_debugged_thread will then be called by our
-+		 * ipipe_migration_hook.
-+		 */
-+		if (!xnthread_test_info(next, XNCONTHI))
-+			cobalt_unregister_debugged_thread(next);
-+
- 		xnthread_set_localinfo(next, XNHICCUP);
- 	}
- 
-@@ -1230,6 +1307,13 @@ static int handle_sigwake_event(struct task_struct *p)
- 	if (p->state & (TASK_INTERRUPTIBLE|TASK_UNINTERRUPTIBLE))
- 		cobalt_set_task_state(p, p->state | TASK_NOWAKEUP);
- 
-+	/*
-+	 * Allow a thread stopped for debugging to resume briefly in order to
-+	 * migrate to secondary mode. xnthread_relax will reapply XNDBGSTOP.
-+	 */
-+	if (xnthread_test_state(thread, XNDBGSTOP))
-+		xnthread_resume(thread, XNDBGSTOP);
-+
- 	__xnthread_kick(thread);
- 
- 	xnsched_run();
-@@ -1335,6 +1419,30 @@ static int handle_user_return(struct task_struct *task)
+@@ -1274,6 +1299,42 @@ static inline int handle_clockfreq_event(unsigned int *p)
+ 	return KEVENT_PROPAGATE;
  }
- #endif /* IPIPE_KEVT_USERINTRET */
  
-+#ifdef IPIPE_KEVT_PTRESUME
-+int handle_ptrace_resume(struct ipipe_ptrace_resume_data *resume)
++#ifdef IPIPE_KEVT_USERINTRET
++static int handle_user_return(struct task_struct *task)
 +{
 +	struct xnthread *thread;
 +	spl_t s;
++	int err;
 +
-+	thread = xnthread_from_task(resume->task);
++	ipipe_disable_user_intret_notifier();
++
++	thread = xnthread_from_task(task);
 +	if (thread == NULL)
 +		return KEVENT_PROPAGATE;
 +
-+	if (resume->request == PTRACE_SINGLESTEP &&
-+	    xnthread_test_state(thread, XNSSTEP)) {
++	if (xnthread_test_info(thread, XNCONTHI)) {
 +		xnlock_get_irqsave(&nklock, s);
-+
-+		xnthread_resume(thread, XNDBGSTOP);
-+		cobalt_unregister_debugged_thread(thread);
-+
++		xnthread_clear_info(thread, XNCONTHI);
 +		xnlock_put_irqrestore(&nklock, s);
++
++		err = xnthread_harden();
++
++		/*
++		 * XNCONTHI may or may not have been re-applied if
++		 * harden bailed out due to pending signals. Make sure
++		 * it is set in that case.
++		 */
++		if (err == -ERESTARTSYS) {
++			xnlock_get_irqsave(&nklock, s);
++			xnthread_set_info(thread, XNCONTHI);
++			xnlock_put_irqrestore(&nklock, s);
++		}
 +	}
 +
 +	return KEVENT_PROPAGATE;
 +}
-+#endif /* IPIPE_KEVT_PTRESUME */
++#endif /* IPIPE_KEVT_USERINTRET */
 +
  int ipipe_kevent_hook(int kevent, void *data)
  {
  	int ret;
-@@ -1367,6 +1475,11 @@ int ipipe_kevent_hook(int kevent, void *data)
- 	case IPIPE_KEVT_USERINTRET:
- 		ret = handle_user_return(data);
+@@ -1301,6 +1362,11 @@ int ipipe_kevent_hook(int kevent, void *data)
+ 	case IPIPE_KEVT_CLOCKFREQ:
+ 		ret = handle_clockfreq_event(data);
  		break;
 +#endif
-+#ifdef IPIPE_KEVT_PTRESUME
-+	case IPIPE_KEVT_PTRESUME:
-+		ret = handle_ptrace_resume(data);
++#ifdef IPIPE_KEVT_USERINTRET
++	case IPIPE_KEVT_USERINTRET:
++		ret = handle_user_return(data);
 +		break;
  #endif
  	default:
  		ret = KEVENT_PROPAGATE;
-diff --git a/kernel/cobalt/posix/process.h b/kernel/cobalt/posix/process.h
-index f867b8a919..375b4cbbb8 100644
---- a/kernel/cobalt/posix/process.h
-+++ b/kernel/cobalt/posix/process.h
-@@ -56,6 +56,7 @@ struct cobalt_process {
- 	struct cobalt_timer *timers[CONFIG_XENO_OPT_NRTIMERS];
- 	void *priv[NR_PERSONALITIES];
- 	int ufeatures;
-+	unsigned int debugged_threads;
- };
- 
- struct cobalt_resnode {
 diff --git a/kernel/cobalt/thread.c b/kernel/cobalt/thread.c
-index 902a9b8f1a..6597749a20 100644
+index 1a069d07c9..902a9b8f1a 100644
 --- a/kernel/cobalt/thread.c
 +++ b/kernel/cobalt/thread.c
-@@ -2070,6 +2070,7 @@ void xnthread_relax(int notify, int reason)
- {
- 	struct xnthread *thread = xnthread_current();
- 	struct task_struct *p = current;
-+	int suspension = XNRELAX;
- 	int cpu __maybe_unused;
- 	siginfo_t si;
- 
-@@ -2110,11 +2111,12 @@ void xnthread_relax(int notify, int reason)
- 	if (xnthread_test_state(thread, XNSSTEP)) {
- 		xnthread_set_info(thread, XNCONTHI);
- 		ipipe_enable_user_intret_notifier();
-+		suspension |= XNDBGSTOP;
- 	}
- #endif
+@@ -2100,6 +2100,18 @@ void xnthread_relax(int notify, int reason)
+ 	 * dropped by xnthread_suspend().
+ 	 */
+ 	xnlock_get(&nklock);
++#ifdef IPIPE_KEVT_USERINTRET
++	/*
++	 * If the thread is being debugged, record that it should migrate back
++	 * in case it resumes in userspace. If it resumes in kernel space, i.e.
++	 * over a restarting syscall, the associated hardening will both clear
++	 * XNCONTHI and disable the user return notifier again.
++	 */
++	if (xnthread_test_state(thread, XNSSTEP)) {
++		xnthread_set_info(thread, XNCONTHI);
++		ipipe_enable_user_intret_notifier();
++	}
++#endif
  	set_current_state(p->state & ~TASK_NOWAKEUP);
  	xnthread_run_handler_stack(thread, relax_thread);
--	xnthread_suspend(thread, XNRELAX, XN_INFINITE, XN_RELATIVE, NULL);
-+	xnthread_suspend(thread, suspension, XN_INFINITE, XN_RELATIVE, NULL);
- 	splnone();
- 
- 	/*
+ 	xnthread_suspend(thread, XNRELAX, XN_INFINITE, XN_RELATIVE, NULL);
 -- 
 2.16.4
 
