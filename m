@@ -1,16 +1,14 @@
-Date: Wed, 28 Nov 2018 13:40:39 +0100
-From: Josef Holzmayr <holzmayr@rsi-elektrotechnik.de>
-Subject: Re: Testing of 4.4/Ipipe + Xenomai 3.0.X on ARM32
-Message-ID: <20181128124039.ppsitvbbqbtge3im@jholzmayr.localdomain>
-References: <20181123122716.tgg3utytwyrkzyid@jholzmayr.localdomain>
- <d1808069-d213-7e9f-010f-abd2c88b0480@siemens.com>
- <20181126143029.6jts36bo267l776s@jholzmayr.localdomain>
- <47252724-7145-7e15-2df8-a5d625b1f95d@siemens.com>
+From: =?utf-8?B?7JqwIOywve2YhA==?= <baramir@msn.com>
+Subject: Re: IRQ WARNING message occurred on the ZynqMP(Xilinx)
+Date: Fri, 30 Nov 2018 00:29:24 +0000
+Message-ID: <PS1PR06MB1195A329D28385BBDE7589D2A3D30@PS1PR06MB1195.apcprd06.prod.outlook.com>
+References: <HK2PR06MB1187DCC67A2AB77E7674E2FDA3D20@HK2PR06MB1187.apcprd06.prod.outlook.com>
+ <CALLqZ8Qx218=Yj8SXsCGrUHAWaNE824dxcv6bFBUTVvhmdTUPA@mail.gmail.com>
+In-Reply-To: <CALLqZ8Qx218=Yj8SXsCGrUHAWaNE824dxcv6bFBUTVvhmdTUPA@mail.gmail.com>
+Content-Language: en-US
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <47252724-7145-7e15-2df8-a5d625b1f95d@siemens.com>
+Content-Transfer-Encoding: base64
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -19,114 +17,35 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jan Kiszka <jan.kiszka@siemens.com>
-Cc: xenomai@xenomai.org
+To: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-Hi Jan,
-
-On Mon, Nov 26, 2018 at 03:40:38PM +0100, Jan Kiszka wrote:
-> On 26.11.18 15:30, Josef Holzmayr wrote:
-> > On Fri, Nov 23, 2018 at 01:48:27PM +0100, Jan Kiszka wrote:
-> > > On 23.11.18 13:27, Josef Holzmayr via Xenomai wrote:
-> > > > - only one BSP layer so far, namely the Beaglebone. This was chosen for
-> > > >     two major reasons: a) it is supported well enough in 4.4. to not need
-> > > >     additional patches which might introduce new issues, and b) it is
-> > > >     hardware that I have here ready for testing.
-> > > 
-> > > I was thinking about which ARMv7 board to add to xenomai-images (enabling
-> > > qemu will be first, though), and that is a good candidate there as well.
-> > > 
-> > > Another half-done topic here: CI builds. For that, the BB defconfig could be
-> > > useful too.
-> > 
-> > My local tinkering of xenoami-images to create a qemu-armhf build is
-> > still in progress. But yes, we should have a build there too. But I
-> 
-> Oh, we might have worked in parallel, sorry: I've qemu-armhf for
-> xenomai-images locally already (just started today). Will post later.
-
-Saw that, thanks. Given my limited time investment, I'm happy to see it
-happening, and thats it.
-
-> 
-> > don't think the BB defconfig I'm using at the moment is really suited
-> > for xenomai testing. I'll certainly need to tinker with it some more.
-> 
-> Yes, configs is a good topic. I was playing with them a lot today, to get
-> some output first, then to find some reasonable debug setup. Considering to
-> have a "release" (measurement) and "debug" profile for configs.
-> 
-> > 
-> > > 
-> > > > - no higher automation like a kas cofiguration so far. Yet this probably
-> > > >     will be the first limitation to be gotten rid of.
-
-kas files are now in place, equivalent to the ones in xenomai-images
-
-> > > > Preliminary results to kick off things:
-> > > > - xeno-test completes successfully
-> > > > - latency -t0 under load maxes at ~58µs
-> > > > - latency -t2 under load maxes at ~18µs
-> > > > 
-> > > 
-> > > Great! According to [1], we could then tag 63637800 also for ARM? Or do you
-> > > want to run more of the tests you have in mind first?
-> > 
-> > Given my current testing experience, I would like to not say yes or no,
-> > as I'm not knowledgeable enough to judge. So please decide yourself upon
-> > the given information, with those additional "hints":
-> > - xeno-test "only" runs for 15minutes by default.
-> > - the latency tests I did were not really more long-lived, I don't think
-> >    any one exceeded 30minutes.
-> > - it will be at least two more weeks until I have the long-run results.
-> >    Could also be three. So if you want to tag rather soon, I can't rally
-> >    help more.
-> 
-> OK, then I will not hurry.
-
-Digging deeper, I now have a couple of questions. xeno-test gives me
-
-net_packet_dgram skipped (no kernel support)
-net_packet_raw skipped (no kernel support)
-net_udp skipped (no kernel support)
-...
-mutex_trylock not supported
-...
-sched_quota skipped (no kernel support)
-sched_tp skipped (no kernel support)
-...
-sigdebug "SIGDEBUG_MIGRATE_PRIOINV" skipped (no kernel support)
-
-So what do I need to increase test coverage here?
-
-And, during the run I get 
-
-[   75.650644] [Xenomai] watchdog triggered on CPU #0 -- runaway thread 'test' signaled
-[   75.658601] sched: RT throttling activated
-
-Is that good, bad, upgly, or expected?
-
-Greetz
--- 
-———————————————
-Josef Holzmayr
-Software Developer Embedded Systems
-
-Tel: +49 8444 9204-48
-Fax: +49 8444 9204-50
-
-R-S-I Elektrotechnik GmbH & Co. KG
-Woelkestrasse 11
-D-85301 Schweitenkirchen
-www.rsi-elektrotechnik.de
-———————————————
-Amtsgericht Ingolstadt – GmbH: HRB 191328 – KG: HRA 170393
-Geschäftsführer: Dr.-Ing. Michael Sorg, Dipl.-Ing. Franz Sorg
-Ust-IdNr: DE 128592548 
-
-_____________________________________________________________
-Amtsgericht Ingolstadt - GmbH: HRB 191328 - KG: HRA 170363
-Geschäftsführer: Dr.-Ing. Michael Sorg, Dipl.-Ing. Franz Sorg
-USt-IdNr.: DE 128592548
-
-
+SSB1c2UgTGludXggcmVwb3NpdG9yeSBwcm92aWRlZCBieSBYaWxpbngsIGxpa2UgYmVsb3cuDQoN
+Cmh0dHBzOi8vZ2l0aHViLmNvbS9YaWxpbngvbGludXgteGxueA0KDQpBbmQgSSB1c2UgaXBpcGUt
+YXJtNjQgcmVwb3NpdG9yeSwgbGlrZSBiZWxvdy4NCg0KaHR0cHM6Ly9naXRsYWIuZGVueC5kZS9Y
+ZW5vbWFpL2lwaXBlLWFybTY0DQoNCkZpcnN0IEkgbWFkZSBhIHBhdGNoIGZpbGUgYmV0d2VlbiBp
+cGlwZS1hcm02NCBhbmQgbGludXgtc3RhYmxlLTQuMTQuNCB0YWcuDQoNCk5leHQgSSBwYWNoZWQg
+dG8gbGludXgteGxueC4NCg0KQW5kIEkgc3VjY2VlZGVkIHRoZSBwZXRhbGludXggYnVpbGQgd2l0
+aCBwYXRjaGVkIGxpbnV4LXhsaW54Lg0KDQpUaGlzIG1ldGhvZCBpcyB3cm9uZz8NCg0KQ291bGQg
+eW91IGdpdmUgbWUgc29tZSBhZHZpY2U/DQoNCkkgYW0gbm90IHlldCBmYW1pbGlhciB3aXRoIHRo
+ZSBtYWlsIGxpc3QgYW5kIGhhdmUgcmV3cml0dGVuIGl0Lg0KDQotIFRob21hcw0KDQoNCjIwMTjr
+hYQgMTHsm5QgMjnsnbwgKOuqqSkg7Jik7ZuEIDg6NTnsl5AgR3JlZyBHYWxsYWdoZXIgPGdyZWdA
+ZW1iZWRkZWRncmVnLmNvbTxtYWlsdG86Z3JlZ0BlbWJlZGRlZGdyZWcuY29tPj7ri5jsnbQg7J6R
+7ISxOg0KV2hhdCB2ZXJzaW9uIG9mIHRoZSBrZXJuZWwvaXBpcGUgYXJlIHlvdSB1c2luZz8gSWYg
+eW91IHdhbnQgdG8gdXNlIHBldGFsaW51eCB5b3UnbGwgbmVlZCB0byBhcHBseSB0byBpcGlwZSBw
+YXRjaCB0byBpdC4NCg0KLUdyZWcNCg0KT24gV2VkLiwgTm92LiAyOCwgMjAxOCwgOTozOSBwLm0u
+IOyasCDssL3tmIQgdmlhIFhlbm9tYWkgPHhlbm9tYWlAeGVub21haS5vcmc8bWFpbHRvOnhlbm9t
+YWlAeGVub21haS5vcmc+IHdyb3RlOg0KSGkuDQoNCkknbSBwb3J0aW5nIHRoZSAzLjEtZGV2IHhl
+bm9tYWkgb24gdGhlIFp5bnFNUC4NCg0KSSBzdWNjZWVkIGJ1aWxkIGZyb20gcGV0YWxpbnV4IGJ1
+dCBhIFdBUk5JTkcgbWVzc2FnZSBvY2N1cnJlZCBvbiB0aGUgZG1lc2csIGxpa2UgYmVsb3cuDQoN
+ClsgICAgMS4zMjU5MjZdIC0tLS0tLS0tLS0tLVsgY3V0IGhlcmUgXS0tLS0tLS0tLS0tLQ0KWyAg
+ICAxLjMyNTk1NF0gV0FSTklORzogQ1BVOiAxIFBJRDogMSBhdCAva2VybmVsLXNvdXJjZS8va2Vy
+bmVsL2lycS9jaGlwLmM6NTcgaXJxX3NldF9jaGlwKzB4OTQvMHhhOA0KWyAgICAxLjMyNTk2NV0g
+TW9kdWxlcyBsaW5rZWQgaW46DQpbICAgIDEuMzI1OTc4XSBDUFU6IDEgUElEOiAxIENvbW06IHN3
+YXBwZXIvMCBOb3QgdGFpbnRlZCA0LjE0LjAtaXBpcGUgIzENClsgICAgMS4zMjU5ODddIEhhcmR3
+YXJlIG5hbWU6IHhsbngsenlucW1wIChEVCkNClsgICAgMS4zMjU5OTRdIEktcGlwZSBkb21haW46
+IExpbnV4DQoNCkkgZm91bmQgYSBzaW1pbGFyIGlzc3VlIG9uIHRoaXMgbWFpbGluZyBsaXN0Lg0K
+DQpodHRwczovL3hlbm9tYWkub3JnL3BpcGVybWFpbC94ZW5vbWFpLzIwMTgtRmVicnVhcnkvMDM4
+MzE4Lmh0bWwNCg0KSSB0aGluayB0aGF0IHRoZSAnSVJRQ0hJUF9QSVBFTElORV9TQUZFJyBmbGFn
+IGlzbid0IHNldCBmb3IgWGlsaW54IElSUSBzb3VyY2UgY29kZS4NCg0KU28gY291bGQgeW91IGlu
+dmVzdGlnYXRlIGZvciB0aGlzIHdhcm5pbmcgbGlrZSBCQ00yODM1Pw0KDQpCZXN0IFJlZ2FyZHMs
+DQpUaG9tYXMgV29vDQo=
