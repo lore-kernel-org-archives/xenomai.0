@@ -1,11 +1,7 @@
 From: Jan Kiszka <jan.kiszka@siemens.com>
-Subject: [RFC][PATCH 6/7] cobalt/kernel: Clear mayday request of relaxed task
-Date: Fri, 30 Nov 2018 21:03:20 +0100
-Message-Id: <b4ebe287b44c9ca1965cde0b14718221b8637e29.1543608201.git.jan.kiszka@siemens.com>
-In-Reply-To: <cover.1543608201.git.jan.kiszka@siemens.com>
-References: <cover.1543608201.git.jan.kiszka@siemens.com>
-In-Reply-To: <cover.1543608201.git.jan.kiszka@siemens.com>
-References: <cover.1543608201.git.jan.kiszka@siemens.com>
+Subject: [RFC][PATCH 0/7] Make debugging more deterministic
+Date: Fri, 30 Nov 2018 21:03:14 +0100
+Message-Id: <cover.1543608201.git.jan.kiszka@siemens.com>
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,31 +12,68 @@ List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: xenomai@xenomai.org
 
-From: Jan Kiszka <jan.kiszka@siemens.com>
+These patches are sticking in my queue for more than 3 years now which
+is bad. The good thing is that they were able to mature, at least on
+x86, over that time because we are actually using them.
 
-If a task relaxes on its own, before processing a mayday request, clear
-this request to avoid redundant calls of the machinery. This is
-particularly important for ensuring XNCONTHI works as expected after
-ptrace resumption.
+Two issues are addressed with these changes:
 
-Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
----
- kernel/cobalt/thread.c | 2 ++
- 1 file changed, 2 insertions(+)
+1. Ensure that threads that were stopped for debugging in primary mode
+   will also be resumed in that mode. This prevents deviating behavior
+   compared to non-debugged execution.
 
-diff --git a/kernel/cobalt/thread.c b/kernel/cobalt/thread.c
-index 6597749a20..bb1eda1052 100644
---- a/kernel/cobalt/thread.c
-+++ b/kernel/cobalt/thread.c
-@@ -2174,6 +2174,8 @@ void xnthread_relax(int notify, int reason)
- 	}
- #endif
- 
-+	ipipe_clear_thread_flag(TIP_MAYDAY);
-+
- 	trace_cobalt_shadow_relaxed(thread);
- }
- EXPORT_SYMBOL_GPL(xnthread_relax);
+2. If one thread in a process hits a debugging condition and is about to
+   bring the whole process into stopped state, ensure that all other RT
+   threads are stopped immediately. This prevents that, because the
+   interrupted thread first needs to go to Linux in order to start the
+   process stop, other threads can continue running too far, changing
+   the process state so that debugging becomes harder if not impossible.
+
+To provide these properties, the core needs two small new hooks from
+I-pipe. Separate patches will be sent against 4.14 that provide these,
+so far for x86 and ARM only.
+
+Furthermore, this series likely depends on the mayday cleanup I sent
+earlier, at least it was never used without that (you don't want to
+debug without it). That also raises the question how to manage the
+I-pipe feature dependencies best in order work around or simply exclude
+old I-pipe releases.
+
+Please review carefully if the design and implementation make sense. As
+I said, we are using it, so it is not completely broken. But I may have
+overseen some ugly corner cases nevertheless.
+
+Unless too many issues surface, I would like to get this feature into
+master before 3.1, along with the needed hooks in I-pipe (including
+active stable trees).
+
+Jan
+
+Jan Kiszka (7):
+  cobalt/kernel: Rework register/unregister_debugged_thread
+  cobalt/kernel: Switch back ptraced primary mode threads on resume
+  cobalt/kernel: Reintroduce process-local thread list
+  cobalt/kernel: Introduce XNDBGSTOP
+  cobalt/kernel: Implement synchronous stop and resume for process
+    debugging
+  cobalt/kernel: Clear mayday request of relaxed task
+  testsuite/smokey: gdb-based debugging test
+
+ configure.ac                        |   1 +
+ include/cobalt/kernel/thread.h      |   2 +-
+ include/cobalt/uapi/kernel/thread.h |   5 +-
+ kernel/cobalt/posix/process.c       | 218 ++++++++++++++++++++++++-
+ kernel/cobalt/posix/process.h       |   4 +-
+ kernel/cobalt/posix/thread.c        |   4 +-
+ kernel/cobalt/posix/thread.h        |   2 +-
+ kernel/cobalt/thread.c              |  18 ++-
+ testsuite/smokey/Makefile.am        |   1 +
+ testsuite/smokey/gdb/Makefile.am    |  13 ++
+ testsuite/smokey/gdb/gdb.c          | 310 ++++++++++++++++++++++++++++++++++++
+ 11 files changed, 564 insertions(+), 14 deletions(-)
+ create mode 100644 testsuite/smokey/gdb/Makefile.am
+ create mode 100644 testsuite/smokey/gdb/gdb.c
+
 -- 
 2.16.4
 
