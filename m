@@ -1,7 +1,7 @@
 From: Jan Kiszka <jan.kiszka@siemens.com>
-Subject: [PATCH][4.14] x86/ipipe: Add support for userspace return notifier
-Message-ID: <0bbfd08c-19a8-b04f-fa1d-f7d4312d03e6@siemens.com>
-Date: Fri, 30 Nov 2018 21:08:11 +0100
+Subject: [PATCH][4.14] arm/ipipe: Fix IPIPE_TRAP_UNDEFINSTR reporting
+Message-ID: <6be2fdec-0246-1169-67ad-882abb73cc5e@siemens.com>
+Date: Fri, 30 Nov 2018 21:09:11 +0100
 MIME-Version: 1.0
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
@@ -14,62 +14,78 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Xenomai <xenomai@xenomai.org>
+To: Philippe Gerum <rpm@xenomai.org>, Xenomai <xenomai@xenomai.org>
 
-This adds the x86-specific bits to implement the userspace return
-notifier.
+Something moved the value of this constant but didn't update the
+hard-coded instances. Fix this and avoid future problems by using the
+proper symbolic value.
+
+That just requires harding asm/ipipe_base.h for assembly use.
 
 Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
 ---
- arch/x86/entry/common.c            | 12 ++++++++++++
- arch/x86/include/asm/thread_info.h |  2 ++
- 2 files changed, 14 insertions(+)
+ arch/arm/include/asm/ipipe_base.h | 6 ++++++
+ arch/arm/kernel/entry-armv.S      | 5 +++--
+ 2 files changed, 9 insertions(+), 2 deletions(-)
 
-diff --git a/arch/x86/entry/common.c b/arch/x86/entry/common.c
-index c27b10d1dce1..568f45c47063 100644
---- a/arch/x86/entry/common.c
-+++ b/arch/x86/entry/common.c
-@@ -209,11 +209,23 @@ __visible inline void prepare_exit_to_usermode(struct pt_regs *regs)
+diff --git a/arch/arm/include/asm/ipipe_base.h b/arch/arm/include/asm/ipipe_base.h
+index 34de7a0402aa..3cf11a0242a2 100644
+--- a/arch/arm/include/asm/ipipe_base.h
++++ b/arch/arm/include/asm/ipipe_base.h
+@@ -23,10 +23,14 @@
+ #ifndef __ASM_ARM_IPIPE_BASE_H
+ #define __ASM_ARM_IPIPE_BASE_H
  
- 	lockdep_sys_exit();
++#ifndef __ASSEMBLY__
+ #include <asm-generic/ipipe.h>
++#endif
  
-+again:
- 	cached_flags = READ_ONCE(ti->flags);
+ #ifdef CONFIG_IPIPE
  
- 	if (unlikely(cached_flags & EXIT_TO_USERMODE_LOOP_FLAGS))
- 		exit_to_usermode_loop(regs, cached_flags);
- 
-+	if (ipipe_user_intret_notifier_enabled(ti)) {
-+		int ret;
++#ifndef __ASSEMBLY__
 +
-+		enable_local_irqs();
-+		ret = __ipipe_notify_user_intreturn();
-+		disable_local_irqs();
+ #ifdef CONFIG_SMP
+ 
+ extern unsigned __ipipe_first_ipi;
+@@ -72,6 +76,8 @@ unsigned __ipipe_processor_id(void);
+ #define ipipe_processor_id()  (0)
+ #endif /* !CONFIG_IPIPE */
+ 
++#endif /* !__ASSEMBLY__ */
 +
-+		if (ret == 0)
-+			goto again;
-+	}
-+
- #ifdef CONFIG_COMPAT
- 	/*
- 	 * Compat syscalls set TS_COMPAT.  Make sure we clear it before
-diff --git a/arch/x86/include/asm/thread_info.h b/arch/x86/include/asm/thread_info.h
-index 28622abbd84b..28f3bc7df5be 100644
---- a/arch/x86/include/asm/thread_info.h
-+++ b/arch/x86/include/asm/thread_info.h
-@@ -162,10 +162,12 @@ struct thread_info {
- #define TIP_HEAD	0	/* Runs in head domain */
- #define TIP_NOTIFY	1	/* Notify head domain about kernel events */
- #define TIP_MAYDAY	2	/* MAYDAY call is pending */
-+#define TIP_USERINTRET	3	/* Notify on IRQ/trap return to root userspace */
+ #define IPIPE_TRAP_MAYDAY        0	/* Internal recovery trap */
  
- #define _TIP_HEAD	(1 << TIP_HEAD)
- #define _TIP_NOTIFY	(1 << TIP_NOTIFY)
- #define _TIP_MAYDAY	(1 << TIP_MAYDAY)
-+#define _TIP_USERINTRET	(1 << TIP_USERINTRET)
+ /* ARM traps */
+diff --git a/arch/arm/kernel/entry-armv.S b/arch/arm/kernel/entry-armv.S
+index 3569b3174372..311308e15485 100644
+--- a/arch/arm/kernel/entry-armv.S
++++ b/arch/arm/kernel/entry-armv.S
+@@ -35,6 +35,7 @@
+ #include "entry-header.S"
+ #include <asm/entry-macro-multi.S>
+ #include <asm/probes.h>
++#include <asm/ipipe_base.h>
  
- #define STACK_WARN		(THREAD_SIZE/8)
+ /*
+  * Interrupt handling.
+@@ -291,7 +292,7 @@ __und_svc:
+ #endif
  
+ #ifdef CONFIG_IPIPE
+-	mov	r0, #7				@ r0 = IPIPE_TRAP_UNDEFINSTR
++	mov	r0, #IPIPE_TRAP_UNDEFINSTR
+ 	mov	r1, sp				@ r1 = &regs
+ 	bl	__ipipe_notify_trap		@ branch to trap handler
+ 	cmp	r0, #0
+@@ -519,7 +520,7 @@ __und_usr:
+ 	usr_entry uaccess=0
+ 
+ #ifdef CONFIG_IPIPE
+-	mov	r0, #7				@ r0 = IPIPE_TRAP_UNDEFINSTR
++	mov	r0, #IPIPE_TRAP_UNDEFINSTR
+ 	mov	r1, sp				@ r1 = &regs
+ 	bl	__ipipe_notify_trap		@ branch to trap handler
+ 	cmp	r0, #0
 -- 
 2.16.4
 
