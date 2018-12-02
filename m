@@ -1,10 +1,15 @@
+Date: Sun, 2 Dec 2018 15:07:38 +0800 (CST)
+From: =?GBK?B?wbrIqA==?= <liang_1911@163.com>
+Subject: Re:Re:Re: every millicsecond interrupt in xenomai domain on a
+ am355x board can cause something wrong?
+In-Reply-To: <955d187.1042f.16765819578.Coremail.liang_1911@163.com>
+References: <6a75de9a.bb14.1675e7e151a.Coremail.liang_1911@163.com>
+ <934350e0-912b-4090-e4ba-e9b130d1e1f2@xenomai.org>
+ <955d187.1042f.16765819578.Coremail.liang_1911@163.com>
 MIME-Version: 1.0
-From: Matheus Pinto <lpinto.matheus@gmail.com>
-Date: Sat, 1 Dec 2018 18:52:58 -0200
-Message-ID: <CAMDdWuyGGTx5VthAWDkyM127aWE8X97cag7nZPrrVx0vyvEt+Q@mail.gmail.com>
-Subject: rt_task_delete is resuming a task in a C++ environment
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Message-ID: <29ea1621.1e55.1676dbe7a00.Coremail.liang_1911@163.com>
+Content-Type: text/plain; charset=GBK
+Content-Transfer-Encoding: base64
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -13,249 +18,160 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
+To: =?GBK?B?wbrIqA==?= <liang_1911@163.com>
+Cc: Philippe Gerum <rpm@xenomai.org>, xenomai@xenomai.org
 
-Hi,
-
-I want use the Xenomai library as underlayer for objects classes in C++.
-For that, I am using the follow system:
-
--Ubuntu Mate 16.04.2 (Xenial)
--Xenomai/cobalt v3.0.6
--Raspberry Pi 3 with Broadcom BCM2837
-
-This prototype code is in a .cpp main file:
-
-#include "test_led.hpp"
-#include <stdio.h>
-#include <stdlib.h>
-#include <iostream>
-#include <signal.h>
-#include <unistd.h>
-#include <sys/mman.h>
-#include <alchemy/task.h>
-#include <alchemy/timer.h>
-#include <alchemy/heap.h>
-
-using namespace std;
-
-/*******************TASKS PROTOTYPES*********************/
-
-void PubFunc(void * arg);
-
-void ManFunc(void* arg);
-
-void TopicTaskFunc(void * args);
-
-/*******************************************************/
-
-
-class Topic
-{
-private:
-    RT_TASK task;
-public:
-
-    Topic(void)
-    {
-        rt_task_create(&task, "", 100000, 20, 0);
-    }
-
-    ~Topic(void)
-    {
-        rt_task_delete(&task);
-    }
-
-    RT_TASK* GetTask(void)
-    {
-        return &task;
-    }
-
-private:
-    friend void TopicTaskFunc(void* args);
-};
-
-
-class Communic{
-private:
-    Topic *top;
-    RT_HEAP heap;
-public:
-
-    Communic():
-        top(NULL)
-    {
-        /*******************Create heap to allocate dynamically the
-objects*********************/
-        if(rt_heap_create(&(this->heap), "commHeap", 83886080, H_PRIO) !=3D=
- 0)
-        {
-            rt_printf("Impossible create heap.\n");
-            exit(1);
-        }
-    }
-
-    void InitComm()
-    {
-        void *temp;
-
-
-        /*******************Allocate memory for Topic object and call
-constructor****************/
-        if(rt_heap_alloc(&(this->heap),
-                         sizeof(Topic),
-                         TM_INFINITE,
-                         (void**)&(temp))
-            !=3D 0)
-        {
-            rt_printf("Problem to create topic: impossible allocate heap
-for topic.\n");
-            exit(1);
-        }
-
-        this->top =3D new(temp) Topic();
-
-        /*****************Initiate the topic task, that will start after
-management task sleep***/
-        rt_task_start(this->top->GetTask(),
-                      TopicTaskFunc,
-                      (void*)this->top);
-    }
-
-    void DeinitComm(void)
-    {
-        this->top->~Topic();
-        led_TurnOn(9); // This led never is ON.
-        rt_heap_free(&(this->heap), this->top);
-    }
-
-};
-
-/*******************TASKS IMPLEMENTATIONS*********************/
-
-void PubFunc(void * arg)
-{
-    uint16_t id =3D *((uint16_t*)arg);
-    size_t execNum =3D 0;
-
-    RT_TASK_INFO info;
-
-    rt_task_inquire(rt_task_self(), &info);
-
-    rt_printf("Start Task with PID: %d.\n", info.pid);
-
-    /*Sleep for 1 second and show the current execution number*/
-    for(;;)
-    {
-        execNum++;
-        rt_printf("Task %d -> Execution %d.\n", id, execNum);
-        rt_task_sleep(1000000000);
-    }
-}
-
-void ManFunc(void* arg)
-{
-    RT_TASK taskHand;
-    Communic comm;
-    size_t id =3D 1;
-
-    /* Create the task for "PubFunc above" and init the comm object.
-     * After 5 seconds, sleep for "Pub Func execute and delete it and
-     * deinitialize comm object (with its own task )"*/
-    for(;;)
-    {
-        rt_task_create(&taskHand, "", 500, 5, 0);
-        rt_task_start(&taskHand,
-                      PubFunc,
-                      (void*)&id);
-
-        comm.InitComm();
-        rt_task_sleep((uint64_t)(((uint64_t)1000000000)*5));
-        comm.DeinitComm();
-
-        rt_task_delete(&taskHand);
-        rt_task_sleep(1000000000);
-    }
-}
-
-void TopicTaskFunc(void * args)
-{
-    RT_TASK_INFO info;
-
-    rt_task_inquire(rt_task_self(), &info);
-
-    rt_printf("topic task PID =3D %d.\n",info.pid);
-
-    /* Just stay suspend and wait be deleted.
-     * HINT: the task is awaken when management task call delete
-     * through "comm.Deinit()", The led being ON confirmed that,
-     * besides that the program is freeze when led is ON.*/
-    for(;;)
-    {
-        rt_task_suspend(rt_task_self());
-        led_TurnOn(8);
-    }
-}
-
-/*************************************************************************/
-
-int main(int argc, char* argv[])
-{
-    RT_TASK taskHand;
-
-    // Lock memory : avoid memory swapping for this program
-    mlockall(MCL_CURRENT|MCL_FUTURE);
-
-    led_Init(8);
-    led_Init(9);
-    led_TurnOff(8);
-    led_TurnOff(9);
-
-    rt_task_create(&taskHand, "", 500, 40, 0);
-    rt_task_start(&taskHand,
-                  ManFunc,
-                  NULL);
-
-    for(;;)
-    {
-
-        getchar();
-    }
-}
-
-The first thing I do was create a management task (ManFunc) in main with
-the higher priority (40). Inside this task another task (PubFunc) is create
-directly with priority 5, and other is create indirectly (TopicTaskFunc)
-with the call oh method "comm.InitComm" with priority 20.
-
-After creation, ManFunc  sleep for 5 seconds, to PubFunc execute is
-workload (Just print). The TopicTaskFunc do nothing, because is stuck in a
-"rt_task_suspend" inside a loop.
-
-Passed the 5 seconds, the PubFunc stop its execution because its lower
-priority. However, in call of "comm.DeinitComm" the program freeze. It was
-confirmed that the reason is because in the call of "rt_task_delete"
-for  TopicTaskFunc,
-it is awaken from its blocked state and get stuck in its own loop.
-
-This is a weird behavior, because:
-  - rt_task_delete resumes the TopicTaskFunc, instead just removing it from
-schedule and:
-  - TopicTaskFunc have a lower priority than ManFunc, but execute instead
-that.
-
-Any tip for this problem?
-
---=20
-Atenciosamente*,*
-
-*Matheus Leitzke Pinto*
-Professor de Sistemas Embarcados
-
-
-*Campus Chapec=C3=B3*
-+55 (49) 33 13 12 44 <callto:+5549333131244>
-
-*Instituto Federal de Santa Catarina - Campus Chapec=C3=B3*
-Rua Nereu Ramos, 3450 D - Semin=C3=A1rio, Chapec=C3=B3 - SC, 89813-000
-<http://www.chapeco.ifsc.edu.br>www.chapeco.ifsc.edu.br
+VG8gc2ltcGxpZnkgdGhlIHByb2JsZW2jrCBpIGRvIGEgdGVzdCB3aXRob3V0IFFUIGxpa2UgdGhl
+IGZvbGxvd2luZyBwcm9ncmFtOgojZGVmaW5lIE1BTExPQ19TSVpFIDgqMTAyNCoxMDI0CmludCBt
+YWluKCkKewppbnQgZXJyOwpjaGFyICphZGRyPShjaGFyICopMDsKdGltZV90IG5vdzsKc3RydWN0
+IHRtICp0aW1lbm93Owp0aW1lKCZub3cpOwp0aW1lbm93ID0gbG9jYWx0aW1lKCZub3cpOwpwcmlu
+dGYoIiVzXG4iLCBhc2N0aW1lKHRpbWVub3cpKTsKYWRkciA9IChjaGFyICopbWFsbG9jKE1BTExP
+Q19TSVpFKTsKaWYgKGFkZHIpCnByaW50ZigibWFsbG9jIG9rXG4iKTsKZG8KewppZiAoYWRkcil7
+Cm1lbXNldChhZGRyLCAweDEyLCBNQUxMT0NfU0laRS8yKTsKICAgICAgICAgICAgICAgICAgICAg
+ICAgbWVtc2V0KGFkZHIgKyBNQUxMT0NfU0laRS8yLCAweDM0LCBNQUxMT0NfU0laRS8yKTsKfQp1
+c2xlZXAoMTAwMCk7Cn13aGlsZSgxKTsKcmV0dXJuIDA7Cn0KQWZ0ZXIgaSBlbmFibGUgdGhlIGlu
+dGVycnVwdCBmb3Igc2V2ZXJhbCBtaW51dGVzLCAgdGhlIGVycm9yIG9jY3VyOgpyb290QGFtMzM1
+eC1ldm06fi90bXAjIC4vdGVzdE1lbXNldCAKU3VuIERlYyAgMiAxNDozODoxMSAyMDE4Cm1hbGxv
+YyBvawpbICAzMTEuNzAwOTM5XSBVbmFibGUgdG8gaGFuZGxlIGtlcm5lbCBwYWdpbmcgcmVxdWVz
+dCBhdCB2aXJ0dWFsIGFkZHJlc3MgYjZlNzYwMDAKWyAgMzExLjcwODI5MF0gcGdkID0gY2RmZDgw
+MDAKWyAgMzExLjcxMTAwNF0gW2I2ZTc2MDAwXSAqcGdkPThlN2I3ODMxLCAqcHRlPTgwYmQxMThm
+LCAqcHB0ZT04MGJkMWEzZQpbICAzMTEuNzE4MTQxXSBJbnRlcm5hbCBlcnJvcjogT29wczogODFm
+IFsjMV0gUFJFRU1QVCBBUk0KWyAgMzExLjcyMzMyN10gTW9kdWxlcyBsaW5rZWQgaW46IG1vdGlv
+bkRydihPKSBGUEdBKE8pClsgIDMxMS43MjgyMzddIENQVTogMCBQSUQ6IDY1OSBDb21tOiB0ZXN0
+TWVtc2V0IFRhaW50ZWQ6IEcgICAgICAgICAgIE8gICAgNC4xNC42Ny1nZDMxNWE5YmIwMCAjMTE1
+ClsgIDMxMS43MzY5NjBdIEhhcmR3YXJlIG5hbWU6IEdlbmVyaWMgQU0zM1hYIChGbGF0dGVuZWQg
+RGV2aWNlIFRyZWUpClsgIDMxMS43NDMwOTFdIEktcGlwZSBkb21haW46IExpbnV4ClsgIDMxMS43
+NDYzMjRdIHRhc2s6IGNkZWRmNjAwIHRhc2suc3RhY2s6IGNkYjkyMDAwClsgIDMxMS43NTA4OTld
+IFBDIGlzIGF0IDB4YjZlY2VlNzgKWyAgMzExLjc1NDA0MV0gTFIgaXMgYXQgMHhiNmVjZWU1OApb
+ICAzMTEuNzU3MTgyXSBwYyA6IFs8YjZlY2VlNzg+XSAgICBsciA6IFs8YjZlY2VlNTg+XSAgICBw
+c3I6IDIwMDAwMTEzClsgIDMxMS43NjM0NjZdIHNwIDogY2RiOTNmZjggIGlwIDogMzQzNDM0MzQg
+IGZwIDogMDAwMDAwMDAKWyAgMzExLjc2ODcxMl0gcjEwOiBiNmY3NzAwMCAgcjkgOiAwMDAwMDAw
+MCAgcjggOiAwMDAwMDAwMApbICAzMTEuNzczOTU4XSByNyA6IGJlYjBkYzIwICByNiA6IDAwMDA4
+NTI1ICByNSA6IGJlYjBkYzQ4ICByNCA6IDAwMDAwMDAwClsgIDMxMS43ODA1MTZdIHIzIDogYjZl
+NzYwMDAgIHIyIDogMDAwMDAwMDYgIHIxIDogMzQzNDM0MzQgIHIwIDogYjZhNzUwMDgKWyAgMzEx
+Ljc4NzA3M10gRmxhZ3M6IG56Q3YgIElSUXMgb24gIEZJUXMgb24gIE1vZGUgU1ZDXzMyICBJU0Eg
+QVJNICBTZWdtZW50IHVzZXIKWyAgMzExLjc5NDI0MV0gQ29udHJvbDogMTBjNTM4N2QgIFRhYmxl
+OiA4ZGZkODAxOSAgREFDOiAwMDAwMDA1NQpbICAzMTEuODAwMDA2XSBQcm9jZXNzIHRlc3RNZW1z
+ZXQgKHBpZDogNjU5LCBzdGFjayBsaW1pdCA9IDB4Y2RiOTIyMTgpClsgIDMxMS44MDYyODldIFN0
+YWNrOiAoMHhjZGI5M2ZmOCB0byAweGNkYjk0MDAwKQpbICAzMTEuODEwNjgxXSAzZmUwOiAgICAg
+ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAwMDAwMDAw
+MCAwMDAwMDAwMApbICAzMTEuODE4ODg2XSBCYWNrdHJhY2U6IG5vIGZyYW1lIHBvaW50ZXIKWyAg
+MzExLjgyMjcyOV0gQ29kZTogMjhhMzEwMDIgMmFmZmZmZjYgZTIwMjIwMDcgZTI1MjIwMDEgKDI0
+YzMxMDAxKSAKWyAgMzExLjgzMDYyOF0gLS0tWyBlbmQgdHJhY2UgYTQxYTQyNjA4M2I4MjZjYSBd
+LS0tClNlZ21lbnRhdGlvbiBmYXVsdAp3ZXRoZXIgdGhlIGtlcm5lbCAgaGF2ZSB0aGUgUGhpbGlw
+cGUncyBwYXRoYyBvciBub3QgLCB0aGUgc2l0dWF0aW9uIGlzIHRoZSBzYW1lLgoKc28gaW4gbXkg
+b3BpbmlvbqOsaXQgaXMgbWF5YmUgdGhlIHJvYnVzdCAgb2YgdGhpcyB2ZXJzaW9uIG9mIHRoZSBp
+cGlwZS1wYXRjaCBvciAgeGVub21haSBpcyBub3Qgc28gd2VsbCAgdG8gbWFrZSB0aGlzIGhhcHBl
+bqO/IAppIHdpbGwgaGF2ZSBhIHRyeSB3aXRoIHRoZSA0Ljkga2VuZXJsICB0b21vcnJvdywgYW5k
+ICBob3BlIGNhbiBlbGltaW5hdGUgdGhpcyBwcm9ibGVtLiBpZiBub3QgLCBpIGFtIGFmcmFpZCBp
+IGhhdmUgdG8gZ2l2ZSB1cCB0aGUgeGVub21haSBvbiBteSBwcm9qZWN0LgotLQoKLS0tLS0tLS0t
+LS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLQogICAgICAgICAgwbrIqApUSEFO
+S1MgJiBCUiEKCgoKQXQgMjAxOC0xMi0wMSAwMDo0NDoxMCwgIsG6yKgiIDxsaWFuZ18xOTExQDE2
+My5jb20+IHdyb3RlOgoKaSB0cnkgdGhpcyBwYXRjaCAgc2V2ZXJhbCB0aW1lcywgIHRoZSBRVCBh
+cHAgc3RpbGwgY3Jhc2hlZCBhZnRlciBydW5pbmcgZmV3IG1pbnV0ZXMuIGFuZCB0aGUga2VuZXJs
+IHJlcG9ydCB0aGUgZXJyb3IgbGlrZSB0aGlzOgpyb290QGFtMzM1eC1ldm06fi90bXAjIFsgMTY5
+Ni4zMTMxMjFdIEludGVybmFsIGVycm9yOiBPb3BzIC0gdW5kZWZpbmVkIGluc3RydWN0aW9uOiAw
+IFsjMV0gUFJFRU1QVCBBUk0KWyAxNjk2LjMyMDI1OF0gTW9kdWxlcyBsaW5rZWQgaW46IG1vdGlv
+bkRydihPKSBGUEdBKE8pClsgMTY5Ni4zMjUxNjldIENQVTogMCBQSUQ6IDYwNiBDb21tOiBITUlf
+VjIgVGFpbnRlZDogRyAgICAgICAgICAgTyAgICA0LjE0LjY3LWdkMzE1YTliYjAwICMxMTUKWyAx
+Njk2LjMzMzU1N10gSGFyZHdhcmUgbmFtZTogR2VuZXJpYyBBTTMzWFggKEZsYXR0ZW5lZCBEZXZp
+Y2UgVHJlZSkKWyAxNjk2LjMzOTY1N10gSS1waXBlIGRvbWFpbjogTGludXgKWyAxNjk2LjM0Mjky
+MF0gdGFzazogY2RhNmM2MDAgdGFzay5zdGFjazogY2RhZDYwMDAKWyAxNjk2LjM0NzQ2NV0gUEMg
+aXMgYXQgMHhiNWMyN2M2NApbIDE2OTYuMzUwNjA3XSBMUiBpcyBhdCAweGI1YzI3YzYwClsgMTY5
+Ni4zNTM3NzldIHBjIDogWzxiNWMyN2M2ND5dICAgIGxyIDogWzxiNWMyN2M2MD5dICAgIHBzcjog
+NjAwNzAxMTMKWyAxNjk2LjM2MDA2Ml0gc3AgOiBjZGFkN2ZmOCAgaXAgOiBiNjEwNjBlYyAgZnAg
+OiAwMDAwMDAwMApbIDE2OTYuMzY1MzA4XSByMTA6IDAwMDAwMDAwICByOSA6IGI2MTAwZmE4ICBy
+OCA6IDAwMzFlMmE4ClsgMTY5Ni4zNzA1NTRdIHI3IDogMDAzNjJiMTggIHI2IDogYmVmMTZhODQg
+IHI1IDogMDAzNjIzYTggIHI0IDogYjYxMGI0MGMKWyAxNjk2LjM3NzA4MV0gcjMgOiAwMDAwODNk
+MCAgcjIgOiAwMDAwMDAwMCAgcjEgOiAwMDAwMDAwMCAgcjAgOiAwMDM1ZjhiMApbIDE2OTYuMzgz
+NjM5XSBGbGFnczogblpDdiAgSVJRcyBvbiAgRklRcyBvbiAgTW9kZSBTVkNfMzIgIElTQSBBUk0g
+IFNlZ21lbnQgdXNlcgpbIDE2OTYuMzkwODA3XSBDb250cm9sOiAxMGM1Mzg3ZCAgVGFibGU6IDhl
+N2I4MDE5ICBEQUM6IDAwMDAwMDU1ClsgMTY5Ni4zOTY1NzFdIFByb2Nlc3MgSE1JX1YyIChwaWQ6
+IDYwNiwgc3RhY2sgbGltaXQgPSAweGNkYWQ2MjE4KQpbIDE2OTYuNDAyNTE5XSBTdGFjazogKDB4
+Y2RhZDdmZjggdG8gMHhjZGFkODAwMCkKWyAxNjk2LjQwNjkxMV0gN2ZlMDogICAgICAgICAgICAg
+ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgMDAwMDAwMDAgMDAwMDAw
+MDAKWyAxNjk2LjQxNTExNl0gQmFja3RyYWNlOiBubyBmcmFtZSBwb2ludGVyClsgMTY5Ni40MTg5
+NTldIENvZGU6IDY4MjBlODNjIDQwMTBlOGJkIGJhMjBmNzZmIDQ2MDRiNTEwIChmNzZjNjgwMCkg
+ClsgMTY5Ni40Mjc2NTJdIC0tLVsgZW5kIHRyYWNlIDRmMmEwNjVkYjE0OTQ0NGEgXS0tLQpvciBs
+aWtlIHRoaXM6ClsgIDgwMS4wMzgwMDRdIFVuYWJsZSB0byBoYW5kbGUga2VybmVsIHBhZ2luZyBy
+ZXF1ZXN0IGF0IHZpcnR1YWwgYWRkcmVzcyAzMDJlMzAyMApbICA4MDEuMDQ1NDc2XSBwZ2QgPSBj
+ZGEwNDAwMApbICA4MDEuMDQ4MzEzXSBbMzAyZTMwMjBdICpwZ2Q9MDAwMDAwMDAKWyAgODAxLjA1
+Mjg1N10gSW50ZXJuYWwgZXJyb3I6IE9vcHM6IDgwMDAwMDA1IFsjMV0gUFJFRU1QVCBBUk0KWyAg
+ODAxLjA1ODU5Ml0gTW9kdWxlcyBsaW5rZWQgaW46IG1vdGlvbkRydihPKSBGUEdBKE8pClsgIDgw
+MS4wNjQxNzNdIENQVTogMCBQSUQ6IDYwMSBDb21tOiBITUlfVjIgVGFpbnRlZDogRyAgICAgICAg
+ICAgTyAgICA0LjE0LjY3LWdkMzE1YTliYjAwICMxMTMKWyAgODAxLjA3MzAxOV0gSGFyZHdhcmUg
+bmFtZTogR2VuZXJpYyBBTTMzWFggKEZsYXR0ZW5lZCBEZXZpY2UgVHJlZSkKWyAgODAxLjA3OTI0
+MV0gSS1waXBlIGRvbWFpbjogTGludXgKWyAgODAxLjA4MzAyM10gdGFzazogY2RhYWE0MDAgdGFz
+ay5zdGFjazogY2YwNGMwMDAKWyAgODAxLjA4NzcyMF0gUEMgaXMgYXQgMHgzMDJlMzAyMApbICA4
+MDEuMDkwOTIzXSBMUiBpcyBhdCAweGI1ODg4ZjJjClsgIDgwMS4wOTQ0OTFdIHBjIDogWzwzMDJl
+MzAyMD5dICAgIGxyIDogWzxiNTg4OGYyYz5dICAgIHBzcjogNjAwNzAxMTMKWyAgODAxLjEwMDg2
+Nl0gc3AgOiBjZjA0ZGZmOCAgaXAgOiAwMDAwMDBhYyAgZnAgOiBiZTk0MmEwOApbICA4MDEuMTA2
+NDE3XSByMTA6IDAwMDAwMDM5ICByOSA6IDAwMDAwMzIxICByOCA6IDAwMDAwMDMyClsgIDgwMS4x
+MTE4MTZdIHI3IDogMDAzOGY2ZTggIHI2IDogMDAzOTg4MDAgIHI1IDogMDAwMDAwMDAgIHI0IDog
+MDAxMDI0YTAKWyAgODAxLjExODQzNF0gcjMgOiAwMDAwMDAwMCAgcjIgOiAwMDAwMDAwNiAgcjEg
+OiAwMDM5ODgwMCAgcjAgOiBiZTk0MjRhNApbICA4MDEuMTI1Mzg4XSBGbGFnczogblpDdiAgSVJR
+cyBvbiAgRklRcyBvbiAgTW9kZSBTVkNfMzIgIElTQSBBUk0gIFNlZ21lbnQgdXNlcgpbICA4MDEu
+MTMyNzA5XSBDb250cm9sOiAxMGM1Mzg3ZCAgVGFibGU6IDhkYTA0MDE5ICBEQUM6IDAwMDAwMDU1
+ClsgIDgwMS4xMzg1NjVdIFByb2Nlc3MgSE1JX1YyIChwaWQ6IDYwMSwgc3RhY2sgbGltaXQgPSAw
+eGNmMDRjMjE4KQpbICA4MDEuMTQ0OTA5XSBTdGFjazogKDB4Y2YwNGRmZjggdG8gMHhjZjA0ZTAw
+MCkKWyAgODAxLjE0OTQyM10gZGZlMDogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
+ICAgICAgICAgICAgICAgICAgICAgMDAwMDAwMDAgMDAwMDAwMDAKWyAgODAxLjE1Nzk2M10gQmFj
+a3RyYWNlOiBpbnZhbGlkIGZyYW1lIHBvaW50ZXIgMHhiZTk0MmEwOApbICA4MDEuMTYzMzMxXSBD
+b2RlOiBiYWQgUEMgdmFsdWUKWyAgODAxLjE2NjUzNF0gLS0tWyBlbmQgdHJhY2UgOThmYThlZjE1
+NmRkZjM5ZSBdLS0tCm9yIHRoaXM6ClsgMTQxNy40NTExOThdIFVuYWJsZSB0byBoYW5kbGUga2Vy
+bmVsIE5VTEwgcG9pbnRlciBkZXJlZmVyZW5jZSBhdCB2aXJ0dWFsIGFkZHJlc3MgMDAwMDAwMDAK
+WyAxNDE3LjQ1OTU1Nl0gcGdkID0gY2Q4NzAwMDAKWyAxNDE3LjQ2MzE4NV0gWzAwMDAwMDAwXSAq
+cGdkPThkOGI5ODMxLCAqcHRlPTAwMDAwMDAwLCAqcHB0ZT0wMDAwMDAwMApbIDE0MTcuNDY5NjIx
+XSBJbnRlcm5hbCBlcnJvcjogT29wczogODE3IFsjMl0gUFJFRU1QVCBBUk0KWyAxNDE3LjQ3NDgw
+Nl0gTW9kdWxlcyBsaW5rZWQgaW46IG1vdGlvbkRydihPKSBGUEdBKE8pClsgMTQxNy40Nzk3MTdd
+IENQVTogMCBQSUQ6IDYyOCBDb21tOiBITUlfVjIgVGFpbnRlZDogRyAgICAgIEQgICAgTyAgICA0
+LjE0LjY3LWdkMzE1YTliYjAwICMxMTMKWyAxNDE3LjQ4ODEwNF0gSGFyZHdhcmUgbmFtZTogR2Vu
+ZXJpYyBBTTMzWFggKEZsYXR0ZW5lZCBEZXZpY2UgVHJlZSkKWyAxNDE3LjQ5NDIwNF0gSS1waXBl
+IGRvbWFpbjogTGludXgKWyAxNDE3LjQ5NzQ2OF0gdGFzazogY2RiMTE4MDAgdGFzay5zdGFjazog
+Y2Q4YmUwMDAKWyAxNDE3LjUwMjAxM10gUEMgaXMgYXQgMHhiNWI1NmE0OApbIDE0MTcuNTA1MTU0
+XSBMUiBpcyBhdCAweGI1YjU2YTQ0ClsgMTQxNy41MDgyOTZdIHBjIDogWzxiNWI1NmE0OD5dICAg
+IGxyIDogWzxiNWI1NmE0ND5dICAgIHBzcjogNjAwNzAxMTMKWyAxNDE3LjUxNDYwOV0gc3AgOiBj
+ZDhiZmZmOCAgaXAgOiBiNjA5NmZmOCAgZnAgOiAwMDAwMDAwMApbIDE0MTcuNTE5ODU2XSByMTA6
+IDAwMzQ3MTMwICByOSA6IGI2MDhmZmE4ICByOCA6IDAwNGQ5NTZhClsgMTQxNy41MjUxMDJdIHI3
+IDogMDAzMzBjOTggIHI2IDogMDAwMDAwMDAgIHI1IDogZmZmZmZmZmYgIHI0IDogZmZmZmZmZmYK
+WyAxNDE3LjUzMTYyOV0gcjMgOiAwMDM1ZTljMCAgcjIgOiAwMDAwMDAwMCAgcjEgOiBiZWU4OWEw
+OCAgcjAgOiAwMDMzMGM5OApbIDE0MTcuNTM4MTg3XSBGbGFnczogblpDdiAgSVJRcyBvbiAgRklR
+cyBvbiAgTW9kZSBTVkNfMzIgIElTQSBBUk0gIFNlZ21lbnQgdXNlcgpbIDE0MTcuNTQ1MzU0XSBD
+b250cm9sOiAxMGM1Mzg3ZCAgVGFibGU6IDhkODcwMDE5ICBEQUM6IDAwMDAwMDU1ClsgMTQxNy41
+NTExMTldIFByb2Nlc3MgSE1JX1YyIChwaWQ6IDYyOCwgc3RhY2sgbGltaXQgPSAweGNkOGJlMjE4
+KQpbIDE0MTcuNTU3MDY3XSBTdGFjazogKDB4Y2Q4YmZmZjggdG8gMHhjZDhjMDAwMCkKWyAxNDE3
+LjU2MTQ1OV0gZmZlMDogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
+ICAgICAgICAgICAgMDAwMDAwMDAgMDAwMDAwMDAKWyAxNDE3LjU2OTY2M10gQmFja3RyYWNlOiBu
+byBmcmFtZSBwb2ludGVyClsgMTQxNy41NzM1MDddIENvZGU6IDQ2MWZkYTA0IDY4NWIxOWJiIGQx
+ZjU0Mjk4IDFjNTYzYTAxICgwNjgyZWE0ZikgClsgMTQxNy41ODE4OTRdIC0tLVsgZW5kIHRyYWNl
+IDk4ZmE4ZWYxNTZkZGYzOWYgXS0tLQoKCmJlc2lkZXMgdGhhdCwgdGhlcmUgaXMgYW5vdGhlciB0
+aGluZyBpIHdhcyBjdXJpb3VzIG9uOyBhdCB0aGUgYmVnaW5uaW5nIGkgcmVnaXN0ZXIgdGhlIGlu
+dGVycnVwdCBieSB1c2luZyB0aGUKcnRkbV9yZXF1ZXN0X2lycSBmdW5jOyBob3dldmVyIGl0IGhh
+dmUgbm8gZWZmZWN0OyB0aGVuIGkgYWRkIHRoZSBmb2xsb3dpbmcgY29kZSBiZWZvcmUgaSBjYWxs
+IHJ0ZG1fcmVxdWVzdF9pcnE6CmlycV9zZXRfaGFuZGxlcihpcnFObyxoYW5kbGVfc2ltcGxlX2ly
+cSk7IAppdCB3b3JrIGFyb3VuZC4gIGkgdGhpbmsgdGhpcyBjb2RlIGhhcyBub3RoaW5nIHRvIGRv
+IHdpdGggdGhlIHByb2JsZW0sIHNvIGkgZGlkbid0IG1lbnRpb24gaXQgYmVmb3JloaMKLS0tLS0t
+LS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLQogICAgICAgICAgwbrIqApU
+SEFOS1MgJiBCUiEKQXQgMjAxOC0xMS0zMCAwMDo0MDo0OSwgIlBoaWxpcHBlIEdlcnVtIiA8cnBt
+QHhlbm9tYWkub3JnPiB3cm90ZToKPk9uIDExLzI5LzE4IDk6MDMgQU0sIMG6yKggdmlhIFhlbm9t
+YWkgd3JvdGU6Cj4+IGhpo6wKPj4gaSdtIHdvcmsgb24gYSBjdXN0b21lZCBib2FyZCB3aXRoIFRJ
+IGFtMzM1WDsgaSBoYXZlIGluc3RhbGxlZCB4ZW5vbWFpIDMgb24gaXQgY29ycmVjdHRseSAsIGFu
+ZCBjYW4gcnVuIHRoZSBsYXRlbmN5IHRlc3QuCj4+IE9uIHRoaXMgYm9hcmQsIGFuIGludGVycnVw
+dCB3aGljaCBjYW5ub3QgYmUgbWFza2VkIGFuZCBkZWxheWVkIHdpbGwgYmUgZ2VuZXJhdGVkIGV2
+ZXJ5IG1pbGxpY3NlY29uZCBieSBhIEZQR0EgOyAKPj4gdG8gIGhhbmRsZXIgdGhpcyBpbnRlcnJ1
+cHQgaW1tZWRpYXRlbHksIGkgcmVnaXN0ZXIgIHRoZSBpbnRlcnJ1cHQgaGFuZGxlciBpbiB4ZW5v
+bWFpIGRvbWFpbi5BbHNvIHRoZXJlIGlzIGEgUVQgYXBwbGljdGF0aW9uIHJ1bm5pbmcgb24gdGhl
+IGJvYXJkOyAgYW5kIGhlcmUgaXMgdGhlIHByb2JsZW0gaSBlbmNvdW50ZXI6Cj4+IGlmIGkgb3Bl
+biB0aGUgaW50ZXJydXB0IGFuZCBydW4gdGhlIFFUIGFwcGxpY2F0aW9uIHNpbXVsdGFuZW91c2x5
+LCB0aGUgUVQgYXBwbGljYXRpb24gd2lsbCBnZXQgd3JvbmcgbGlrZSB0aGlzIGFmdGVyIGEgZmV3
+IG1pbnV0ZXMoYnV0IHRoZSBsaW51eCBpcyBzdGlsbCBydW5uaW5nIGZpbmUpOgo+PiBbIDE2MDEu
+NDk2ODI4XSBVbmhhbmRsZWQgZmF1bHQ6IHBhZ2UgZG9tYWluIGZhdWx0ICgweDAxYikgYXQgMHhi
+NmZhMTM1Ywo+Cj5BbnkgaW1wcm92ZW1lbnQgd2l0aCB0aGlzIHBhdGNoIGluPwo+Cj5kaWZmIC0t
+Z2l0IGEvYXJjaC9hcm0va2VybmVsL2VudHJ5LWFybXYuUyBiL2FyY2gvYXJtL2tlcm5lbC9lbnRy
+eS1hcm12LlMKPmluZGV4IDM1NjliMzE3NDM3Mi4uYzUzZjUxMzU3YjNjIDEwMDY0NAo+LS0tIGEv
+YXJjaC9hcm0va2VybmVsL2VudHJ5LWFybXYuUwo+KysrIGIvYXJjaC9hcm0va2VybmVsL2VudHJ5
+LWFybXYuUwo+QEAgLTI5Niw2ICsyOTYsNyBAQCBfX3VuZF9zdmM6Cj4gCWJsCV9faXBpcGVfbm90
+aWZ5X3RyYXAJCUAgYnJhbmNoIHRvIHRyYXAgaGFuZGxlcgo+IAljbXAJcjAsICMwCj4gCWJuZQlf
+X3VuZF9zdmNfZmluaXNoCj4rCXVhY2Nlc3NfZW5hYmxlIGlwCj4gI2VuZGlmIC8qIENPTkZJR19J
+UElQRSAqLwo+IAlACj4gCUAgY2FsbCBlbXVsYXRpb24gY29kZSwgd2hpY2ggcmV0dXJucyB1c2lu
+ZyByOSBpZiBpdCBoYXMgZW11bGF0ZWQKPgo+LS0gCj5QaGlsaXBwZS4K
