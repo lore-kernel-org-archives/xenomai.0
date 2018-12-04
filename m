@@ -1,10 +1,13 @@
-Date: Tue, 4 Dec 2018 07:55:52 -0600 (CST)
-From: Per Oberg <pero@wolfram.com>
-Message-ID: <460522296.16134757.1543931752769.JavaMail.zimbra@wolfram.com>
-Subject: Re: HelloWorld with CMake
+From: Lange Norbert <norbert.lange@andritz.com>
+Subject: RE: HelloWorld with CMake
+Date: Tue, 4 Dec 2018 15:21:44 +0000
+Message-ID: <88ee39c2a47449f4a5232797f0ec4fc3@andritz.com>
+References: <CADeNpu+DzZU9_eW5fVq2kqRNm8F0N3XVnpfsK2RbM_aj887UfA@mail.gmail.com>
+In-Reply-To: <CADeNpu+DzZU9_eW5fVq2kqRNm8F0N3XVnpfsK2RbM_aj887UfA@mail.gmail.com>
+Content-Language: en-US
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -13,104 +16,49 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai <xenomai@xenomai.org>
-Cc: Evandro Sestrem <sestrem@gmail.com>
+To: Evandro Sestrem <sestrem@gmail.com>, "Xenomai (xenomai@xenomai.org)" <xenomai@xenomai.org>
 
------ Den 4 dec 2018, p=C3=A5 kl 12:40, xenomai xenomai@xenomai.org skrev:=
-=20
+DQoNCj4gLS0tLS1PcmlnaW5hbCBNZXNzYWdlLS0tLS0NCj4gRnJvbTogWGVub21haSA8eGVub21h
+aS1ib3VuY2VzQHhlbm9tYWkub3JnPiBPbiBCZWhhbGYgT2YgRXZhbmRybw0KPiBTZXN0cmVtIHZp
+YSBYZW5vbWFpDQo+IFNlbnQ6IERpZW5zdGFnLCA0LiBEZXplbWJlciAyMDE4IDEyOjQwDQo+IFRv
+OiB4ZW5vbWFpQHhlbm9tYWkub3JnDQo+IFN1YmplY3Q6IEhlbGxvV29ybGQgd2l0aCBDTWFrZQ0K
+Pg0KPiAqKiBjbWFrZV94ZW5vbWFpIGF0dGVtcHQgKioNCj4gLS0tLS0tLS0tLS0tLS0tLS0tLS0t
+DQo+IEkgYWxzbyB0cmllZCB0byB1c2UgdGhlIGNtYWtlX3hlbm9tYWkgZ2l0aHViIHByb2plY3Q6
+DQo+IGdpdCBjbG9uZSBodHRwczovL2dpdGh1Yi5jb20vbm9sYW5nZS9jbWFrZV94ZW5vbWFpDQo+
+DQo+IEJ1dCB3aGVuIEkgY2hlY2sgdGhlIHBhdGNoOg0KPiBnaXQgYXBwbHkgLS1jaGVjaw0KPiAv
+aG9tZS9waS9jbWFrZV94ZW5vbWFpL3BhdGNoc2V0LzAwMDEtYWRkLWFuLWZsZXhpYmxlLWJvb3Rz
+dHJhcC0NCj4gdGVtcGxhdGUtaGVhZGVyLnBhdGNoDQo+DQo+IEkgZ290IHRoZXNlIGVycm9ycywg
+c28gSSBkaWRuJ3QgYXBwbGllZCBpdDoNCj4gZXJyb3I6IGluY2x1ZGUveGVub21haS9NYWtlZmls
+ZS5hbTogbm8gc3VjaCBmaWxlIG9yIGRpcmVjdG9yeQ0KPiBlcnJvcjogaW5jbHVkZS94ZW5vbWFp
+L2luaXQuaDogbm8gc3VjaCBmaWxlIG9yIGRpcmVjdG9yeQ0KPiBlcnJvcjogbGliL2JvaWxlcnBs
+YXRlL2luaXQvTWFrZWZpbGUuYW06IG5vIHN1Y2ggZmlsZSBvciBkaXJlY3RvcnkNCj4gZXJyb3I6
+IGxpYi9ib2lsZXJwbGF0ZS9pbml0L2Jvb3RzdHJhcC5jOiBubyBzdWNoIGZpbGUgb3IgZGlyZWN0
+b3J5DQo+DQo+DQo+IEV2YW5kcm8gU2VzdHJlbQ0KDQpJIGRpZCByZWJhc2VkIHRoYXQgcGF0Y2hz
+ZXQgb24gdGhlIGxhdGVzdCBzdGFibGUgYnJhbmNoLCBidXQgeW91IHByb2JhYmx5IHRyaWVkIHRv
+IGFwcGx5IGl0IGluIHRoZSB3cm9uZyBkaXJlY3Rvcnk/DQoNCllvdSBhcmUgc3VwcG9zZWQgdG8N
+CiopIGNoYW5nZSB0byAgdGhlIHhlbm9tYWkgIHNvdXJjZXMgZGlyZWN0b3kNCiopIGFwcGx5IHRo
+b3NlIHBhdGNoZXMNCiAgICBmb3IgcCBpbiBQQVRIX1RPL3hlbm9fY21ha2UvcGF0Y2hzZXQvKjsg
+ZG8gZ2l0IGFtICRwOyBkb25lDQoqKSBjb25maWd1cmUsIGJ1aWxkIGFuZCBpbnN0YWxsIHhlbm9t
+YWkuDQoNCkFmdGVyIHRoYXQgQ01ha2Ugc3VwcG9ydCBzaG91bGQgYmUgIGVpdGhlciBhdXRvbWF0
+aWMgKGlmIHlvdSBpbnN0YWxsZWQgWGVub21haSBpbiB5b3VyIHJvb3Qvc3lzcm9vdCksDQpvciB5
+b3UgY2FuIHNwZWNpZml5IHRoZSBsb2NhdGlvbiB3aXRoICdjbWFrZSAtRFhlbm9tYWlfRElSPTxE
+SVI+Jy4NCg0KQW4gZW1wdHkgcHJvamVjdCBpcyBhdmFpbGFibGUgaGVyZToNCmh0dHBzOi8vZ2l0
+aHViLmNvbS9ub2xhbmdlL2NtYWtlX3hlbm9tYWkvdHJlZS9tYXN0ZXIvZXhhbXBsZXMvdGVtcGxh
+dGUNCg0KTm9yYmVydA0KX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX18NCg0KVGhpcyBt
+ZXNzYWdlIGFuZCBhbnkgYXR0YWNobWVudHMgYXJlIHNvbGVseSBmb3IgdGhlIHVzZSBvZiB0aGUg
+aW50ZW5kZWQgcmVjaXBpZW50cy4gVGhleSBtYXkgY29udGFpbiBwcml2aWxlZ2VkIGFuZC9vciBj
+b25maWRlbnRpYWwgaW5mb3JtYXRpb24gb3Igb3RoZXIgaW5mb3JtYXRpb24gcHJvdGVjdGVkIGZy
+b20gZGlzY2xvc3VyZS4gSWYgeW91IGFyZSBub3QgYW4gaW50ZW5kZWQgcmVjaXBpZW50LCB5b3Ug
+YXJlIGhlcmVieSBub3RpZmllZCB0aGF0IHlvdSByZWNlaXZlZCB0aGlzIGVtYWlsIGluIGVycm9y
+IGFuZCB0aGF0IGFueSByZXZpZXcsIGRpc3NlbWluYXRpb24sIGRpc3RyaWJ1dGlvbiBvciBjb3B5
+aW5nIG9mIHRoaXMgZW1haWwgYW5kIGFueSBhdHRhY2htZW50IGlzIHN0cmljdGx5IHByb2hpYml0
+ZWQuIElmIHlvdSBoYXZlIHJlY2VpdmVkIHRoaXMgZW1haWwgaW4gZXJyb3IsIHBsZWFzZSBjb250
+YWN0IHRoZSBzZW5kZXIgYW5kIGRlbGV0ZSB0aGUgbWVzc2FnZSBhbmQgYW55IGF0dGFjaG1lbnQg
+ZnJvbSB5b3VyIHN5c3RlbS4NCg0KQU5EUklUWiBIWURSTyBHbWJIDQoNCg0KUmVjaHRzZm9ybS8g
+TGVnYWwgZm9ybTogR2VzZWxsc2NoYWZ0IG1pdCBiZXNjaHLDpG5rdGVyIEhhZnR1bmcgLyBDb3Jw
+b3JhdGlvbg0KDQpGaXJtZW5zaXR6LyBSZWdpc3RlcmVkIHNlYXQ6IFdpZW4NCg0KRmlybWVuYnVj
+aGdlcmljaHQvIENvdXJ0IG9mIHJlZ2lzdHJ5OiBIYW5kZWxzZ2VyaWNodCBXaWVuDQoNCkZpcm1l
+bmJ1Y2hudW1tZXIvIENvbXBhbnkgcmVnaXN0cmF0aW9uOiBGTiA2MTgzMyBnDQoNCkRWUjogMDYw
+NTA3Nw0KDQpVSUQtTnIuOiBBVFUxNDc1NjgwNg0KDQoNClRoYW5rIFlvdQ0KX19fX19fX19fX19f
+X19fX19fX19fX19fX19fX19fX18NCg==
 
-> Hello,=20
-
-Hi,=20
-
-I accindently posted my answer directly to Evandro. So for completeness I i=
-nclude Xenomai list.=20
-You have some answers already, however my Xenomai 2 vs 3 comment was not me=
-ntioned earlier.=20
-
-> Is it possible to use CMake to compile a Xenomai program?=20
-
-Yes, I use CMake for compilation. I have found that a lot of examples out t=
-here needs Xenomai 2 and does not work with Xenomai 3.=20
-
-You may have a look at https://github.com/iocroblab/xenomai-cmake which i f=
-ound worked quite well.=20
-
-
-> I want to use Xenomai in a ROS 2 node. To do this, I need to be able to=
-=20
-> compile it with CMake.=20
-
-> I'm trying to compile a HelloWorld Xenomai program using CMake.=20
-
-> I put this project in https://github.com/sestrem/xenomai_helloworld_cmake=
-=20
-
-> The main files are:=20
-> helloWorld.c=20
-> CMakeLists.txt=20
-
-> When I execute "cmake .", everything is fine:=20
-
-> -- The C compiler identification is GNU 6.3.0=20
-> -- The CXX compiler identification is GNU 6.3.0=20
-> -- Check for working C compiler: /usr/bin/cc=20
-> -- Check for working C compiler: /usr/bin/cc -- works=20
-> -- Detecting C compiler ABI info=20
-> -- Detecting C compiler ABI info - done=20
-> -- Detecting C compile features=20
-> -- Detecting C compile features - done=20
-> -- Check for working CXX compiler: /usr/bin/c++=20
-> -- Check for working CXX compiler: /usr/bin/c++ -- works=20
-> -- Detecting CXX compiler ABI info=20
-> -- Detecting CXX compiler ABI info - done=20
-> -- Detecting CXX compile features=20
-> -- Detecting CXX compile features - done=20
-> -- Configuring done=20
-> -- Generating done=20
-> -- Build files have been written to: /home/pi/testes/xenomai/helloWorld=
-=20
-
-> But, after this, when I execute "make":=20
-
-> Scanning dependencies of target helloWorld=20
-> [ 50%] Building C object CMakeFiles/helloWorld.dir/helloWorld.c.o=20
-> In file included from /usr/xenomai/include/copperplate/threadobj.h:28:0,=
-=20
-> from /usr/xenomai/include/alchemy/task.h:25,=20
-> from /home/pi/testes/xenomai/helloWorld/helloWorld.c:5:=20
-> /usr/xenomai/include/boilerplate/lock.h:23:34: fatal error:=20
-> boilerplate/wrappers.h: file or directory not found=20
-> #include <boilerplate/wrappers.h>=20
-> ^=20
-> compilation terminated.=20
-> CMakeFiles/helloWorld.dir/build.make:62: recipe for target=20
-> 'CMakeFiles/helloWorld.dir/helloWorld.c.o' failed=20
-> make[2]: *** [CMakeFiles/helloWorld.dir/helloWorld.c.o] Error 1=20
-> CMakeFiles/Makefile2:67: recipe for target 'CMakeFiles/helloWorld.dir/all=
-'=20
-> failed=20
-> make[1]: *** [CMakeFiles/helloWorld.dir/all] Error 2=20
-> Makefile:83: recipe for target 'all' failed=20
-> make: *** [all] Error 2=20
-
-> ** cmake_xenomai attempt **=20
-> ---------------------=20
-> I also tried to use the cmake_xenomai github project:=20
-> git clone https://github.com/nolange/cmake_xenomai=20
-
-> But when I check the patch:=20
-> git apply --check=20
-> /home/pi/cmake_xenomai/patchset/0001-add-an-flexible-bootstrap-template-h=
-eader.patch=20
-
-> I got these errors, so I didn't applied it:=20
-> error: include/xenomai/Makefile.am: no such file or directory=20
-> error: include/xenomai/init.h: no such file or directory=20
-> error: lib/boilerplate/init/Makefile.am: no such file or directory=20
-> error: lib/boilerplate/init/bootstrap.c: no such file or directory=20
-
-> Evandro Sestrem=20
-
-Regards=20
-Per =C3=96berg=20
