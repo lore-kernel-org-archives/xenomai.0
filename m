@@ -1,13 +1,12 @@
 Subject: Re: HelloWorld with CMake
 References: <CADeNpu+DzZU9_eW5fVq2kqRNm8F0N3XVnpfsK2RbM_aj887UfA@mail.gmail.com>
-From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <6bbd588e-9e81-ccd3-7b56-2bdcb18d2a55@siemens.com>
-Date: Tue, 4 Dec 2018 14:48:03 +0100
+From: Leopold Palomo-Avellaneda <leo@alaxarxa.net>
+Message-ID: <c00fc5ec-1b2b-cf8b-251e-fbd88e0d695a@alaxarxa.net>
+Date: Tue, 4 Dec 2018 14:51:32 +0100
 MIME-Version: 1.0
 In-Reply-To: <CADeNpu+DzZU9_eW5fVq2kqRNm8F0N3XVnpfsK2RbM_aj887UfA@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -18,89 +17,66 @@ List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: Evandro Sestrem <sestrem@gmail.com>, xenomai@xenomai.org
 
-On 04.12.18 12:40, Evandro Sestrem via Xenomai wrote:
-> Hello,
-> 
-> Is it possible to use CMake to compile a Xenomai program?
-> 
-> I want to use Xenomai in a ROS 2 node. To do this, I need to be able to
-> compile it with CMake.
-> 
-> I'm trying to compile a HelloWorld Xenomai program using CMake.
-> 
-> I put this project in https://github.com/sestrem/xenomai_helloworld_cmake
-> 
-> The main files are:
-> helloWorld.c
-> CMakeLists.txt
-> 
-> When I execute "cmake .", everything is fine:
-> 
-> -- The C compiler identification is GNU 6.3.0
-> -- The CXX compiler identification is GNU 6.3.0
-> -- Check for working C compiler: /usr/bin/cc
-> -- Check for working C compiler: /usr/bin/cc -- works
-> -- Detecting C compiler ABI info
-> -- Detecting C compiler ABI info - done
-> -- Detecting C compile features
-> -- Detecting C compile features - done
-> -- Check for working CXX compiler: /usr/bin/c++
-> -- Check for working CXX compiler: /usr/bin/c++ -- works
-> -- Detecting CXX compiler ABI info
-> -- Detecting CXX compiler ABI info - done
-> -- Detecting CXX compile features
-> -- Detecting CXX compile features - done
-> -- Configuring done
-> -- Generating done
-> -- Build files have been written to: /home/pi/testes/xenomai/helloWorld
-> 
-> 
-> But, after this, when I execute "make":
-> 
-> Scanning dependencies of target helloWorld
-> [ 50%] Building C object CMakeFiles/helloWorld.dir/helloWorld.c.o
-> In file included from /usr/xenomai/include/copperplate/threadobj.h:28:0,
->                   from /usr/xenomai/include/alchemy/task.h:25,
->                   from /home/pi/testes/xenomai/helloWorld/helloWorld.c:5:
-> /usr/xenomai/include/boilerplate/lock.h:23:34: fatal error:
-> boilerplate/wrappers.h: file or directory not found
->   #include <boilerplate/wrappers.h>
->                                    ^
-> compilation terminated.
-> CMakeFiles/helloWorld.dir/build.make:62: recipe for target
-> 'CMakeFiles/helloWorld.dir/helloWorld.c.o' failed
-> make[2]: *** [CMakeFiles/helloWorld.dir/helloWorld.c.o] Error 1
-> CMakeFiles/Makefile2:67: recipe for target 'CMakeFiles/helloWorld.dir/all'
-> failed
-> make[1]: *** [CMakeFiles/helloWorld.dir/all] Error 2
-> Makefile:83: recipe for target 'all' failed
-> make: *** [all] Error 2
-> 
-> 
-> ** cmake_xenomai attempt **
-> ---------------------
-> I also tried to use the cmake_xenomai github project:
-> git clone https://github.com/nolange/cmake_xenomai
-> 
-> But when I check the patch:
-> git apply --check
-> /home/pi/cmake_xenomai/patchset/0001-add-an-flexible-bootstrap-template-header.patch
-> 
-> I got these errors, so I didn't applied it:
-> error: include/xenomai/Makefile.am: no such file or directory
-> error: include/xenomai/init.h: no such file or directory
-> error: lib/boilerplate/init/Makefile.am: no such file or directory
-> error: lib/boilerplate/init/bootstrap.c: no such file or directory
-> 
-> 
-> Evandro Sestrem
-> 
-
-I think someone once posted cmake templates, did you check the mailing list archive?
-
-Jan
-
--- 
-Siemens AG, Corporate Technology, CT RDA IOT SES-DE
-Corporate Competence Center Embedded Linux
-
+RWwgNC8xMi8xOCBhIGxlcyAxMjo0MCwgRXZhbmRybyBTZXN0cmVtIHZpYSBYZW5vbWFpIGhhIGVz
+Y3JpdDoKPiBIZWxsbywKPiAKPiBJcyBpdCBwb3NzaWJsZSB0byB1c2UgQ01ha2UgdG8gY29tcGls
+ZSBhIFhlbm9tYWkgcHJvZ3JhbT8KClllcwoKPiBJIHdhbnQgdG8gdXNlIFhlbm9tYWkgaW4gYSBS
+T1MgMiBub2RlLiBUbyBkbyB0aGlzLCBJIG5lZWQgdG8gYmUgYWJsZSB0bwo+IGNvbXBpbGUgaXQg
+d2l0aCBDTWFrZS4KCkhvd2V2ZXIgSSBkb24ndCBrbm93IGlmIGFtZW5kIGlzIGFibGUgdG8gZG8g
+aXQuCgo+IEknbSB0cnlpbmcgdG8gY29tcGlsZSBhIEhlbGxvV29ybGQgWGVub21haSBwcm9ncmFt
+IHVzaW5nIENNYWtlLgo+IAo+IEkgcHV0IHRoaXMgcHJvamVjdCBpbiBodHRwczovL2dpdGh1Yi5j
+b20vc2VzdHJlbS94ZW5vbWFpX2hlbGxvd29ybGRfY21ha2UKPiAKPiBUaGUgbWFpbiBmaWxlcyBh
+cmU6Cj4gaGVsbG9Xb3JsZC5jCj4gQ01ha2VMaXN0cy50eHQKPiAKPiBXaGVuIEkgZXhlY3V0ZSAi
+Y21ha2UgLiIsIGV2ZXJ5dGhpbmcgaXMgZmluZToKPiAKPiAtLSBUaGUgQyBjb21waWxlciBpZGVu
+dGlmaWNhdGlvbiBpcyBHTlUgNi4zLjAKPiAtLSBUaGUgQ1hYIGNvbXBpbGVyIGlkZW50aWZpY2F0
+aW9uIGlzIEdOVSA2LjMuMAo+IC0tIENoZWNrIGZvciB3b3JraW5nIEMgY29tcGlsZXI6IC91c3Iv
+YmluL2NjCj4gLS0gQ2hlY2sgZm9yIHdvcmtpbmcgQyBjb21waWxlcjogL3Vzci9iaW4vY2MgLS0g
+d29ya3MKPiAtLSBEZXRlY3RpbmcgQyBjb21waWxlciBBQkkgaW5mbwo+IC0tIERldGVjdGluZyBD
+IGNvbXBpbGVyIEFCSSBpbmZvIC0gZG9uZQo+IC0tIERldGVjdGluZyBDIGNvbXBpbGUgZmVhdHVy
+ZXMKPiAtLSBEZXRlY3RpbmcgQyBjb21waWxlIGZlYXR1cmVzIC0gZG9uZQo+IC0tIENoZWNrIGZv
+ciB3b3JraW5nIENYWCBjb21waWxlcjogL3Vzci9iaW4vYysrCj4gLS0gQ2hlY2sgZm9yIHdvcmtp
+bmcgQ1hYIGNvbXBpbGVyOiAvdXNyL2Jpbi9jKysgLS0gd29ya3MKPiAtLSBEZXRlY3RpbmcgQ1hY
+IGNvbXBpbGVyIEFCSSBpbmZvCj4gLS0gRGV0ZWN0aW5nIENYWCBjb21waWxlciBBQkkgaW5mbyAt
+IGRvbmUKPiAtLSBEZXRlY3RpbmcgQ1hYIGNvbXBpbGUgZmVhdHVyZXMKPiAtLSBEZXRlY3Rpbmcg
+Q1hYIGNvbXBpbGUgZmVhdHVyZXMgLSBkb25lCj4gLS0gQ29uZmlndXJpbmcgZG9uZQo+IC0tIEdl
+bmVyYXRpbmcgZG9uZQo+IC0tIEJ1aWxkIGZpbGVzIGhhdmUgYmVlbiB3cml0dGVuIHRvOiAvaG9t
+ZS9waS90ZXN0ZXMveGVub21haS9oZWxsb1dvcmxkCj4gCj4gCj4gQnV0LCBhZnRlciB0aGlzLCB3
+aGVuIEkgZXhlY3V0ZSAibWFrZSI6Cj4gCj4gU2Nhbm5pbmcgZGVwZW5kZW5jaWVzIG9mIHRhcmdl
+dCBoZWxsb1dvcmxkCj4gWyA1MCVdIEJ1aWxkaW5nIEMgb2JqZWN0IENNYWtlRmlsZXMvaGVsbG9X
+b3JsZC5kaXIvaGVsbG9Xb3JsZC5jLm8KPiBJbiBmaWxlIGluY2x1ZGVkIGZyb20gL3Vzci94ZW5v
+bWFpL2luY2x1ZGUvY29wcGVycGxhdGUvdGhyZWFkb2JqLmg6Mjg6MCwKPiAgICAgICAgICAgICAg
+ICAgIGZyb20gL3Vzci94ZW5vbWFpL2luY2x1ZGUvYWxjaGVteS90YXNrLmg6MjUsCj4gICAgICAg
+ICAgICAgICAgICBmcm9tIC9ob21lL3BpL3Rlc3Rlcy94ZW5vbWFpL2hlbGxvV29ybGQvaGVsbG9X
+b3JsZC5jOjU6Cj4gL3Vzci94ZW5vbWFpL2luY2x1ZGUvYm9pbGVycGxhdGUvbG9jay5oOjIzOjM0
+OiBmYXRhbCBlcnJvcjoKPiBib2lsZXJwbGF0ZS93cmFwcGVycy5oOiBmaWxlIG9yIGRpcmVjdG9y
+eSBub3QgZm91bmQKPiAgI2luY2x1ZGUgPGJvaWxlcnBsYXRlL3dyYXBwZXJzLmg+CgppZiBmYWls
+cyB3aXRoIHRoZSBpbmNsdWRlcy4KCj4gICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
+IF4KPiBjb21waWxhdGlvbiB0ZXJtaW5hdGVkLgo+IENNYWtlRmlsZXMvaGVsbG9Xb3JsZC5kaXIv
+YnVpbGQubWFrZTo2MjogcmVjaXBlIGZvciB0YXJnZXQKPiAnQ01ha2VGaWxlcy9oZWxsb1dvcmxk
+LmRpci9oZWxsb1dvcmxkLmMubycgZmFpbGVkCj4gbWFrZVsyXTogKioqIFtDTWFrZUZpbGVzL2hl
+bGxvV29ybGQuZGlyL2hlbGxvV29ybGQuYy5vXSBFcnJvciAxCj4gQ01ha2VGaWxlcy9NYWtlZmls
+ZTI6Njc6IHJlY2lwZSBmb3IgdGFyZ2V0ICdDTWFrZUZpbGVzL2hlbGxvV29ybGQuZGlyL2FsbCcK
+PiBmYWlsZWQKPiBtYWtlWzFdOiAqKiogW0NNYWtlRmlsZXMvaGVsbG9Xb3JsZC5kaXIvYWxsXSBF
+cnJvciAyCj4gTWFrZWZpbGU6ODM6IHJlY2lwZSBmb3IgdGFyZ2V0ICdhbGwnIGZhaWxlZAo+IG1h
+a2U6ICoqKiBbYWxsXSBFcnJvciAyCj4gCj4gCj4gKiogY21ha2VfeGVub21haSBhdHRlbXB0ICoq
+Cj4gLS0tLS0tLS0tLS0tLS0tLS0tLS0tCj4gSSBhbHNvIHRyaWVkIHRvIHVzZSB0aGUgY21ha2Vf
+eGVub21haSBnaXRodWIgcHJvamVjdDoKPiBnaXQgY2xvbmUgaHR0cHM6Ly9naXRodWIuY29tL25v
+bGFuZ2UvY21ha2VfeGVub21haQo+IAo+IEJ1dCB3aGVuIEkgY2hlY2sgdGhlIHBhdGNoOgo+IGdp
+dCBhcHBseSAtLWNoZWNrCj4gL2hvbWUvcGkvY21ha2VfeGVub21haS9wYXRjaHNldC8wMDAxLWFk
+ZC1hbi1mbGV4aWJsZS1ib290c3RyYXAtdGVtcGxhdGUtaGVhZGVyLnBhdGNoCj4gCj4gSSBnb3Qg
+dGhlc2UgZXJyb3JzLCBzbyBJIGRpZG4ndCBhcHBsaWVkIGl0Ogo+IGVycm9yOiBpbmNsdWRlL3hl
+bm9tYWkvTWFrZWZpbGUuYW06IG5vIHN1Y2ggZmlsZSBvciBkaXJlY3RvcnkKPiBlcnJvcjogaW5j
+bHVkZS94ZW5vbWFpL2luaXQuaDogbm8gc3VjaCBmaWxlIG9yIGRpcmVjdG9yeQo+IGVycm9yOiBs
+aWIvYm9pbGVycGxhdGUvaW5pdC9NYWtlZmlsZS5hbTogbm8gc3VjaCBmaWxlIG9yIGRpcmVjdG9y
+eQo+IGVycm9yOiBsaWIvYm9pbGVycGxhdGUvaW5pdC9ib290c3RyYXAuYzogbm8gc3VjaCBmaWxl
+IG9yIGRpcmVjdG9yeQo+IAo+IAo+IEV2YW5kcm8gU2VzdHJlbQo+IAoKaWYgeW91IHdhbnQsIGNv
+dWxkIHlvdSB0cnkgdG8gdXNlOgoKaHR0cHM6Ly9naXRodWIuY29tL2lvY3JvYmxhYi94ZW5vbWFp
+LWNtYWtlCgpDaGVlcnMsCgpMZW9wb2xkCgoKLS0gCi0tCkxpbnV4IFVzZXIgMTUyNjkyICAgICBH
+UEc6IDA1RjRBN0E5NDlBMkQ5QUEKQ2F0YWxvbmlhCi0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0t
+LS0tLS0tLS0tLS0KQTogQmVjYXVzZSBpdCBtZXNzZXMgdXAgdGhlIG9yZGVyIGluIHdoaWNoIHBl
+b3BsZSBub3JtYWxseSByZWFkIHRleHQuClE6IFdoeSBpcyB0b3AtcG9zdGluZyBzdWNoIGEgYmFk
+IHRoaW5nPwpBOiBUb3AtcG9zdGluZy4KUTogV2hhdCBpcyB0aGUgbW9zdCBhbm5veWluZyB0aGlu
+ZyBpbiBlLW1haWw/CgotLS0tLS0tLS0tLS0tLSBuZXh0IHBhcnQgLS0tLS0tLS0tLS0tLS0KQSBu
+b24tdGV4dCBhdHRhY2htZW50IHdhcyBzY3J1YmJlZC4uLgpOYW1lOiBzaWduYXR1cmUuYXNjClR5
+cGU6IGFwcGxpY2F0aW9uL3BncC1zaWduYXR1cmUKU2l6ZTogODMzIGJ5dGVzCkRlc2M6IE9wZW5Q
+R1AgZGlnaXRhbCBzaWduYXR1cmUKVVJMOiA8aHR0cDovL3hlbm9tYWkub3JnL3BpcGVybWFpbC94
+ZW5vbWFpL2F0dGFjaG1lbnRzLzIwMTgxMjA0LzFjNGE4NmIxL2F0dGFjaG1lbnQuc2lnPgo=
