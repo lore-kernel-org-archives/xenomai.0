@@ -1,14 +1,17 @@
-Subject: Re: RTnet splash with current next and stable
-References: <473fdfe5-e761-e51c-a54c-90a520ca7816@siemens.com>
- <a8292038-34ff-fcb5-0def-c764fd4e0b94@xenomai.org>
-From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <086d41ad-b4a7-b3f2-945b-96c9f6eeecfb@siemens.com>
-Date: Tue, 4 Dec 2018 18:00:03 +0100
-MIME-Version: 1.0
-In-Reply-To: <a8292038-34ff-fcb5-0def-c764fd4e0b94@xenomai.org>
-Content-Type: text/plain; charset=utf-8; format=flowed
+From: Lange Norbert <norbert.lange@andritz.com>
+Subject: RE: improve and provide a header for bootstrapping
+Date: Tue, 4 Dec 2018 17:21:06 +0000
+Message-ID: <f86296ea09fb43b483179cea784c3f66@andritz.com>
+References: <20181023151647.25508-1-norbert.lange@andritz.com>
+ <7571eedc-7844-2703-e553-72cf9a1abbe0@siemens.com>
+ <CADYdroNgOFKaEQ0UfcxhdniU54PYt119g+Y9Gnz7SGrCtBGiUA@mail.gmail.com>
+ <d36e64a62d0d42b6981fc4657025acea@andritz.com>
+ <d110a7bf-4017-87b5-5eff-2ee1900dbd88@siemens.com>
+In-Reply-To: <d110a7bf-4017-87b5-5eff-2ee1900dbd88@siemens.com>
 Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+MIME-Version: 1.0
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,69 +20,70 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Philippe Gerum <rpm@xenomai.org>, Xenomai <xenomai@xenomai.org>, Sebastian Smolorz <Sebastian.Smolorz@gmx.de>
+To: Jan Kiszka <jan.kiszka@siemens.com>
+Cc: Xenomai <xenomai@xenomai.org>, Philippe Gerum <rpm@xenomai.org>
 
-On 31.10.18 18:10, Philippe Gerum wrote:
-> On 10/30/18 11:28 AM, Jan Kiszka wrote:
->> Hi all,
->>
->> just testing new kernels with smokey, and one of them had RTnet on. This
->> triggered a bug with the net_packat_dgram test:
->>
->> [   50.610997] initializing loopback...
->> [   50.613799] RTnet: registered rtlo
->> [   50.692154] ------------[ cut here ]------------
->> [   50.693577] WARNING: CPU: 1 PID: 1119 at ../lib/list_debug.c:29 __list_add+0x62/0xb0
->> [   50.696832] list_add corruption. next->prev should be prev (ffffffffa0007d20), but was           (null). (next=ffff88003a8bb700).
->> [   50.700751] Modules linked in: rtpacket rtipv4 rt_loopback rt_e1000e rtnet
->> [   50.702518] CPU: 1 PID: 1119 Comm: smokey Not tainted 4.9.135+ #26
->> [   50.704188] Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS rel-1.11.2-0-gf9626ccb91-prebuilt.qemu-project.org 04/01/2014
->> [   50.707861] I-pipe domain: Linux
->> [   50.709295]  ffffc90002943c10 ffffffff8146a31a ffffc90002943c60 0000000000000000
->> [   50.710335]  ffffc90002943c50 ffffffff810e9441 0000001da0007ca8 ffff88003a8bb700
->> [   50.710335]  ffffffffa0007d20 ffff88003a8bb700 000000000001d230 ffff88003a8bb640
->> [   50.710335] Call Trace:
->> [   50.710335]  [<ffffffff8146a31a>] dump_stack+0xa2/0xc8
->> [   50.710335]  [<ffffffff810e9441>] __warn+0xe1/0x100
->> [   50.710335]  [<ffffffff810e94af>] warn_slowpath_fmt+0x4f/0x60
->> [   50.710335]  [<ffffffff812b0b61>] ? __slab_alloc.isra.88+0xa1/0xd0
->> [   50.710335]  [<ffffffffa0003edb>] ? rtskb_pool_extend+0xbb/0x220 [rtnet]
->> [   50.710335]  [<ffffffff81498862>] __list_add+0x62/0xb0
->> [   50.710335]  [<ffffffffa000160a>] rtdev_map_rtskb+0x7a/0xa0 [rtnet]
->> [   50.710335]  [<ffffffffa0003f12>] rtskb_pool_extend+0xf2/0x220 [rtnet]
->> [   50.710335]  [<ffffffffa0004072>] rtskb_pool_init+0x32/0x70 [rtnet]
->> [   50.710335]  [<ffffffffa00043d2>] __rt_bare_socket_init+0x42/0x90 [rtnet]
->> [   50.710335]  [<ffffffffa0004501>] __rt_socket_init+0x81/0xd0 [rtnet]
->> [   50.710335]  [<ffffffffa0054477>] rt_packet_socket+0x27/0xb0 [rtpacket]
->> [   50.710335]  [<ffffffff81219dd7>] ? create_instance+0x67/0x80
->> [   50.710335]  [<ffffffff8121a772>] __rtdm_dev_socket+0x112/0x440
->> [   50.710335]  [<ffffffff8113bb09>] ? lock_release+0x2c9/0x440
->> [   50.710335]  [<ffffffff8122b200>] ? CoBaLt_open+0x40/0x40
->> [   50.710335]  [<ffffffff8122b20e>] CoBaLt_socket+0xe/0x20
->> [   50.710335]  [<ffffffff812412ca>] ipipe_syscall_hook+0x19a/0x460
->> [   50.710335]  [<ffffffff811ad8e9>] __ipipe_notify_syscall+0x79/0x400
->> [   50.710335]  [<ffffffff811adc9a>] ipipe_handle_syscall+0x2a/0xd0
->> [   50.710335]  [<ffffffff81002d6c>] do_syscall_64+0x3c/0x1c0
->> [   50.710335]  [<ffffffff8184f2c3>] entry_SYSCALL_64_after_swapgs+0x5d/0xdb
->> [   50.761499] ---[ end trace 633f1ec8aecb0735 ]---
->> [   50.762893] ------------[ cut here ]------------
->>
->> Anyone who hacked on this recently have a feeling?
->>
-> 
-> No idea. I'll have a look.
-> 
-> 
-
-I think this one is still open. At least I do not remember having merged 
-anything related to that since then.
-
-As everyone is busy right now, I only wonder if we have a regression here, or if 
-it's just a preexisting issue that we can safely ignore for some v3.0.8.
-
-Jan
-
--- 
-Siemens AG, Corporate Technology, CT RDA IOT SES-DE
-Corporate Competence Center Embedded Linux
+DQoNCj4gLS0tLS1PcmlnaW5hbCBNZXNzYWdlLS0tLS0NCj4gRnJvbTogSmFuIEtpc3prYSA8amFu
+Lmtpc3prYUBzaWVtZW5zLmNvbT4NCj4gU2VudDogRGllbnN0YWcsIDQuIERlemVtYmVyIDIwMTgg
+MTc6MzANCj4gVG86IExhbmdlIE5vcmJlcnQgPG5vcmJlcnQubGFuZ2VAYW5kcml0ei5jb20+DQo+
+IENjOiBYZW5vbWFpIDx4ZW5vbWFpQHhlbm9tYWkub3JnPjsgUGhpbGlwcGUgR2VydW0NCj4gPHJw
+bUB4ZW5vbWFpLm9yZz4NCj4gU3ViamVjdDogUmU6IGltcHJvdmUgYW5kIHByb3ZpZGUgYSBoZWFk
+ZXIgZm9yIGJvb3RzdHJhcHBpbmcNCj4NCj4gRS1NQUlMIEZST00gQSBOT04tQU5EUklUWiBTT1VS
+Q0U6IEFTIEEgU0VDVVJJVFkgTUVBU1VSRSwgUExFQVNFDQo+IEVYRVJDSVNFIENBVVRJT04gV0lU
+SCBFLU1BSUwgQ09OVEVOVCBBTkQgQU5ZIExJTktTIE9SDQo+IEFUVEFDSE1FTlRTLg0KPg0KPg0K
+PiBPbiAwNC4xMi4xOCAxNjo1MywgTGFuZ2UgTm9yYmVydCB3cm90ZToNCj4gPiBTbyBhbnkgdXBk
+YXRlIG9uIHRoaXMuDQo+ID4gRG8geW91IGhhdmUgc29tZXRoaW5nIHNpbWlsYXIgdG8gcGF0Y2h3
+b3JrIHRvIGtlZXAgdXAgb24gdGhvc2UgbG9vc2UNCj4gZW1haWwtdGhyZWFkcz8NCj4gPg0KPg0K
+PiBUaGlzIHdhcyBsZXNzIGEgcGF0Y2ggdHJhY2tpbmcgaXNzdWUgdGhhbiB0aGUgbWlzc2luZyBk
+ZWNpc2lvbiBob3cgdG8gYWRkcmVzcw0KPiB0aGUgdG9waWMuDQoNCkkgdW5kZXJzdGFuZCB0aGF0
+LCBidXQgdGhlcmUgaXMgc3RpbGwgYSBsYWNrIG9mIGZlZWRiYWNrLiAoQW5kIEkgYWxyZWFkeSBi
+cm91Z2h0IHRoYXQgdG9waWMNCnVwIHNvbWUgbW9udGhzIGFnbywgc28gdGhlcmUgaXMgc29tZSBy
+ZWR1bmRhbmN5IGV4cGxhaW5pbmcgaXQgYWdhaW4pLg0KDQo+IE9uIHRoZSBvbmUgaGFuZCwgSSBz
+ZWUgYSBkZXNpcmUgdG8gY29udHJvbCBib290c3RyYXBwaW5nIGluIG1vcmUgZGV0YWlscy4gT24N
+Cj4gdGhlIG90aGVyIGhhbmQsIEkgd29uZGVyIGhvdyBtdWNoICphZGRpdGlvbmFsKiBjb250cm9s
+IGlzIHByYWN0aWNhbGx5DQo+IG5lZWRlZCAtIGRpZCB5b3Ugc3R1ZHkgLS1uby1hdXRvLWluaXQg
+c3VmZmljaWVudGx5PyBBbmQgSSB3b25kZXIgaG93IG11Y2gNCj4gbmV3IGludGVyZmFjZXMgd2Ug
+d2FudCB0byBvcGVuIHVwIHRoYXQgd2F5Lg0KDQpZZXMgSSBrbm93IC0tbm8tYXV0by1pbml0LCBi
+dXQgdGhhdOKAmXMgb25seSBvbmUgc2lkZSBvZiB0aGUgc3RvcnkuIFdoYXQgYXJlIHlvdSBkb2lu
+Zw0KaW4gcGxhY2Ugb2YgYXV0by1pbml0Pw0KVG8gbWUsIHRoZSBtb3N0IHNlbnNpYmxlIGFwcHJv
+YWNoIGlzIHRvIHBsYWNlIGJ1aWxkaW5nIGJsb2NrcyBpbiB0aGUgeGVub21haQ0KSGVhZGVycyBh
+bmQgbGlicmFyaWVzLg0KDQoqICAgcGFyc2luZyBvZiB0aGUgY29tbWFuZGxpbmUgYXJncyBnb3Qg
+bW92ZWQgZnJvbSB0aGUgYm9vdHN0cmFwIChsaWIvYm9pbGVycGxhdGUvaW5pdC9ib290c3RyYXAu
+YykNCiAgICB0byB0aGUgRFNPLiBEb27igJl0IHdhbnQgdG8gcmVwbGljYXRlIHRoaXMgZXZlcnl3
+aGVyZQ0KKiAgIHRoZSBzZXR1cCBjb2RlIGZyb20gYm9vdHN0cmFwcGluZyBpcyBzZXBhcmF0ZWQg
+ZnJvbSB0aGUgbWFpbiB3cmFwcGluZyBtYWdpYyAoY3VycmVudGx5IHRoaXMgaXMgZWl0aGVyIGJv
+dGggb3Igbm9uZSkNCiAgICBUaGF04oCZcyBjdXJyZW50bHkgZG9uZSB3aXRoIGEgaGVhZGVyLCBh
+cyBxdWl0ZSBmcmFua2x5IHByb3Zpbmcgb2JqZWN0IGNvZGUgZG9lcyBub3Qgc2NhbGUgd2VsbCB3
+aXRoIGNvbXBpbGVyZmxhZ3MgYW5kIG9wdGlvbnMuDQoNCldoYXQgSSBnZW5lcmFsbHkgd2FudCBp
+cyB0byBlYXNpbHkgYWRkIHRoZSBzZXR1cCBjb2RlIGludG8gYW4gYXBwbGljYXRpb24sIHdoaWxl
+IGF2b2lkaW5nIHRoZSBhZGRpdGlvbmFsIHdyYXBwaW5nIG1hZ2ljLg0KVGhlIGNhdXNlIG9mIGFj
+dGlvbiBpcyBlaXRoZXIgdG8gZG8gZXZlcnl0aGluZyBteXNlbGYgb3IgdHJ5IHRvIG1vZHVsaXpl
+IHRoZSB1cHN0cmVhbSBib290c3RyYXBwaW5nLg0KDQpJbiB0ZXJtcyBvZiBleHRlcm5hbCBpbnRl
+cmZhY2VzLCBvbmx5ICd4ZW5vbWFpX2luaXRfZmV0Y2hhcmd2JyB3b3VsZCBiZSBhZGRlZCB0byBs
+aWJjb2JhbHQvbGlibWVyY3VyeS4NCkEgc2Vjb25kIGZ1bmN0aW9uICd4ZW5vbWFpX2Jvb3RzdHJh
+cF9nZXRhcmd2JyBpcyBkZWZpbmVkIGJ5IHRoZSBib290c3RyYXBwaW5nIGNvZGUsDQp0byBiZSBj
+b25zdW1lZCBieSB0aGUgYXBwbGljYXRpb24gKG9yIGNhbiBiZSBpZ25vcmVkKS4NCg0KPg0KPiBQ
+cm92aWRpbmcgYSB1c2VyIGludGVyZmFjZSBiYXNlZCBvbiBsYXJnZXIgY29kZSB0ZW1wbGF0ZXMg
+ZG9lcyBub3QgbWFrZSBtZQ0KPiBmZWVsIGNvbWZvcnRhYmxlIGF0IGFsbC4gVGhhdCdzIHdoeSBJ
+J20gcmVsdWN0YW50IHRvIG1vdmUgaW50byB0aGF0IGRpcmVjdGlvbi4NCj4NCj4gUGhpbGlwcGUg
+aXMgYnVzeSB0aGVzZSBkYXlzLCBidXQgbWF5YmUgbGF0ZXIgaGUgLSBhcyB0aGUgb3JpZ2luYWwg
+ZGVzaWduZXIgb2YNCj4gdGhpcyBjb2RlIC0gY2FuIGNvbW1lbnQgb24gdGhlIGVudmlzaW9uZWQg
+dXNlIGNhc2VzIGFuZCBwb3RlbnRpYWwNCj4gbGltaXRhdGlvbnMuDQoNCk5vcmJlcnQNCl9fX19f
+X19fX19fX19fX19fX19fX19fX19fX19fX19fDQoNClRoaXMgbWVzc2FnZSBhbmQgYW55IGF0dGFj
+aG1lbnRzIGFyZSBzb2xlbHkgZm9yIHRoZSB1c2Ugb2YgdGhlIGludGVuZGVkIHJlY2lwaWVudHMu
+IFRoZXkgbWF5IGNvbnRhaW4gcHJpdmlsZWdlZCBhbmQvb3IgY29uZmlkZW50aWFsIGluZm9ybWF0
+aW9uIG9yIG90aGVyIGluZm9ybWF0aW9uIHByb3RlY3RlZCBmcm9tIGRpc2Nsb3N1cmUuIElmIHlv
+dSBhcmUgbm90IGFuIGludGVuZGVkIHJlY2lwaWVudCwgeW91IGFyZSBoZXJlYnkgbm90aWZpZWQg
+dGhhdCB5b3UgcmVjZWl2ZWQgdGhpcyBlbWFpbCBpbiBlcnJvciBhbmQgdGhhdCBhbnkgcmV2aWV3
+LCBkaXNzZW1pbmF0aW9uLCBkaXN0cmlidXRpb24gb3IgY29weWluZyBvZiB0aGlzIGVtYWlsIGFu
+ZCBhbnkgYXR0YWNobWVudCBpcyBzdHJpY3RseSBwcm9oaWJpdGVkLiBJZiB5b3UgaGF2ZSByZWNl
+aXZlZCB0aGlzIGVtYWlsIGluIGVycm9yLCBwbGVhc2UgY29udGFjdCB0aGUgc2VuZGVyIGFuZCBk
+ZWxldGUgdGhlIG1lc3NhZ2UgYW5kIGFueSBhdHRhY2htZW50IGZyb20geW91ciBzeXN0ZW0uDQoN
+CkFORFJJVFogSFlEUk8gR21iSA0KDQoNClJlY2h0c2Zvcm0vIExlZ2FsIGZvcm06IEdlc2VsbHNj
+aGFmdCBtaXQgYmVzY2hyw6Rua3RlciBIYWZ0dW5nIC8gQ29ycG9yYXRpb24NCg0KRmlybWVuc2l0
+ei8gUmVnaXN0ZXJlZCBzZWF0OiBXaWVuDQoNCkZpcm1lbmJ1Y2hnZXJpY2h0LyBDb3VydCBvZiBy
+ZWdpc3RyeTogSGFuZGVsc2dlcmljaHQgV2llbg0KDQpGaXJtZW5idWNobnVtbWVyLyBDb21wYW55
+IHJlZ2lzdHJhdGlvbjogRk4gNjE4MzMgZw0KDQpEVlI6IDA2MDUwNzcNCg0KVUlELU5yLjogQVRV
+MTQ3NTY4MDYNCg0KDQpUaGFuayBZb3UNCl9fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
+DQo=
 
