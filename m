@@ -1,15 +1,16 @@
-From: Lange Norbert <norbert.lange@andritz.com>
-Subject: RE: improve and provide a header for bootstrapping
-Date: Tue, 4 Dec 2018 15:53:28 +0000
-Message-ID: <d36e64a62d0d42b6981fc4657025acea@andritz.com>
+Subject: Re: improve and provide a header for bootstrapping
 References: <20181023151647.25508-1-norbert.lange@andritz.com>
  <7571eedc-7844-2703-e553-72cf9a1abbe0@siemens.com>
  <CADYdroNgOFKaEQ0UfcxhdniU54PYt119g+Y9Gnz7SGrCtBGiUA@mail.gmail.com>
-In-Reply-To: <CADYdroNgOFKaEQ0UfcxhdniU54PYt119g+Y9Gnz7SGrCtBGiUA@mail.gmail.com>
-Content-Language: en-US
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+ <d36e64a62d0d42b6981fc4657025acea@andritz.com>
+From: Jan Kiszka <jan.kiszka@siemens.com>
+Message-ID: <d110a7bf-4017-87b5-5eff-2ee1900dbd88@siemens.com>
+Date: Tue, 4 Dec 2018 17:30:02 +0100
 MIME-Version: 1.0
+In-Reply-To: <d36e64a62d0d42b6981fc4657025acea@andritz.com>
+Content-Type: text/plain; charset="utf-8"; format="flowed"
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -18,110 +19,180 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "jan.kiszka@siemens.com" <jan.kiszka@siemens.com>
-Cc: Xenomai <xenomai@xenomai.org>
+To: Lange Norbert <norbert.lange@andritz.com>
+Cc: Xenomai <xenomai@xenomai.org>, Philippe Gerum <rpm@xenomai.org>
 
-U28gYW55IHVwZGF0ZSBvbiB0aGlzLg0KRG8geW91IGhhdmUgc29tZXRoaW5nIHNpbWlsYXIgdG8g
-cGF0Y2h3b3JrIHRvIGtlZXAgdXAgb24gdGhvc2UgbG9vc2UgZW1haWwtdGhyZWFkcz8NCg0KTm9y
-YmVydA0KDQo+IC0tLS0tT3JpZ2luYWwgTWVzc2FnZS0tLS0tDQo+IEZyb206IFhlbm9tYWkgPHhl
-bm9tYWktYm91bmNlc0B4ZW5vbWFpLm9yZz4gT24gQmVoYWxmIE9mIE5vcmJlcnQNCj4gTGFuZ2UN
-Cj4gU2VudDogRnJlaXRhZywgMjYuIE9rdG9iZXIgMjAxOCAxODozNg0KPiBUbzogamFuLmtpc3pr
-YUBzaWVtZW5zLmNvbQ0KPiBDYzogWGVub21haSA8eGVub21haUB4ZW5vbWFpLm9yZz4NCj4gU3Vi
-amVjdDogUmU6IGltcHJvdmUgYW5kIHByb3ZpZGUgYSBoZWFkZXIgZm9yIGJvb3RzdHJhcHBpbmcN
-Cj4NCj4gRS1NQUlMIEZST00gQSBOT04tQU5EUklUWiBTT1VSQ0U6IEFTIEEgU0VDVVJJVFkgTUVB
-U1VSRSwgUExFQVNFDQo+IEVYRVJDSVNFIENBVVRJT04gV0lUSCBFLU1BSUwgQ09OVEVOVCBBTkQg
-QU5ZIExJTktTIE9SDQo+IEFUVEFDSE1FTlRTLg0KPg0KPg0KPiBBbSBGci4sIDI2LiBPa3QuIDIw
-MTggdW0gMTU6NDggVWhyIHNjaHJpZWIgSmFuIEtpc3prYQ0KPiA8amFuLmtpc3prYUBzaWVtZW5z
-LmNvbT46DQo+ID4NCj4gPiBPbiAyMy4xMC4xOCAxNjoxNiwgTm9yYmVydCBMYW5nZSB3cm90ZToN
-Cj4gPiA+IEhlbGxvLA0KPiA+ID4NCj4gPiA+IHRoZSBmb2xsb3dpbmcgcGF0Y2hlcyBhbGxvdyBh
-IHZhcmlldHkgb2Ygb3B0aW9ucyBhZGRpdGlvbmFsIHRvIHRoZQ0KPiA+ID4gbGlua2VyIG1hZ2lj
-IGludm9sdmVkIGZvciBoaWphY2tpbmcgdGhlIGFwbGljYXRpb25zIG1haW4gZnVuY3Rpb24uDQo+
-ID4gPg0KPiA+ID4gdGhlIG9yaWdpbmFsIG1ldGhvZCB3aWxsIHN0aWxsIGNvbnRpbnVlIHRvIHdv
-cmssIGRpZmZlcmVuY2VzIGFyZQ0KPiA+ID4NCj4gPiA+ICogICB0aGUgY29kZSBkZWFsaW5nIHdp
-dGggcmV0cmlldmluZyB0aGUgY29tbWFuZGxpbmUgYXJndW1lbnRzDQo+ID4gPiAgICAgIGlzIG1v
-dmVkIGludG8gbGliY29iYWxlL2xpYm1lcmN1cnkuIE1ha2luZyB0aGUgbmVjZXNzYXJ5IHBlci0N
-Cj4gYXBwbGljYXRpb24NCj4gPiA+ICAgICAgY29kZSBtdWNoIHNtYWxsZXIuDQo+ID4gPg0KPiA+
-ID4gKiAgIHRoZSBpbXBsZW1lbnRhdGlvbiB3YXMgbW92ZWQgaW50byBhIGhlYWRlciwgd2l0aCBz
-ZXZlcmFsIG1hY3Jvcw0KPiA+ID4gICAgICBjb250cm9sbGluZyBmdW5jdGlvbmFsaXR5IChub3Qg
-ZXZlcnlvbmUgd2FudHMgdG8gZGVmaW5lIGEgbWFpbg0KPiBmdW5jdGlvbikuDQo+ID4gPg0KPiA+
-ID4NCj4gPiA+IFRoZSBhcHByb2FjaCBJIHVzZSBwZXJzb25hbGx5IGlzIHRvIGNvbXBpbGUgYW5k
-IGxpbmsgbXkgb3duDQo+ID4gPiBib290c3RyYXAgY29kZSwgd2hpY2ggaXMgcHJlZmVyYWJsZSBp
-biBtYW55IGJ1aWxkIHN5c3RlbXMgYXMNCj4gPiA+IHNvdXJjZS1maWxlcyBhcmUgdW5kZXJzdG9v
-ZCB3aGlsZSBvYmplY3RzIGZpbGVzIGdlbmVyYWxseSBuZWVkIHNvbWUNCj4gPiA+IHNwZWNpYWwg
-Y2FyZS4gKEFuZCBpdCBjYW50IGh1cnQgaWYgdGhlIGNvbXBpbGVyIGZsYWdzIG1hdGNoIGV4YWN0
-bHkpLg0KPiA+ID4NCj4gPiA+IEFzIGV4YW1wbGU6DQo+ID4gPg0KPiA+ID4gLS0tLS0gYWRkIHRo
-aXMgdG8geW91ciBmaWxlICBjb250YWluaW5nIG1haW4NCj4gPiA+DQo+ID4gPiBpbnQgeGVub21h
-aV9pbml0X2dldGFyZ3YoaW50ICphcmdjLCBjaGFyICpjb25zdCoqIGFyZ3YpOw0KPiA+ID4NCj4g
-PiA+IGludCBtYWluKGludCBhcmdjLCBjaGFyICpjb25zdCBhcmd2W10pIHsgI2lmIGRlZmluZWQo
-X19DT0JBTFRfXykgfHwNCj4gPiA+IGRlZmluZWQoX19NRVJDVVJZX18pDQo+ID4gPiAgICAgIHhl
-bm9tYWlfaW5pdF9nZXRhcmd2KCZhcmdjLCAmYXJndik7ICNlbmRpZg0KPiA+ID4gICAgICAgLi4u
-Lg0KPiA+ID4gfQ0KPiA+ID4NCj4gPiA+IC0tLS0tIGNyZWF0ZSBhbm90aGVyIGZpbGUsIGxldHMg
-Y2FsbCBpdCBteWJvb3RzdHJhcC5jDQo+ID4gPg0KPiA+ID4gI2RlZmluZSBfWEVOT01BSV9CT09U
-U1RSQVBfR0xJQkNfQ09OU1RSVUNUT1JTDQo+ID4gPiAjaW5jbHVkZSA8eGVub21haS9ib290c3Ry
-YXAtdGVtcGxhdGUuaD4NCj4gPiA+DQo+ID4gPiAtLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0t
-LS0tLS0tLS0tLS0tLS0tLS0tDQo+ID4gPg0KPiA+ID4gTm9yYmVydA0KPiA+ID4NCj4gPiA+IFtQ
-QVRDSCAxLzJdIHNlcGFyYXRlIGJvb3RzdHJhcCBjb2RlIHRvIGdldCBjb21tYW5kbGluZSwgbW92
-ZSBpdCBpbnRvDQo+ID4gPiBbUEFUQ0ggMi8yXSBhZGQgYSBoZWFkZXIgdG8gY3JlYXRlIGZsZXhp
-YmxlIGJvb3RzdHJhcCBjb2RlDQo+ID4gPg0KPiA+ID4NCj4gPg0KPiA+IEkgbmVlZCB0byBsb29r
-IG1vcmUgY2FyZWZ1bGx5IGF0IHRoZSBkZXRhaWxzIGFuZCB5b3VyIHVzZSBjYXNlLCBidXQgbXkN
-Cj4gPiBmaXJzdCBpbXByZXNzaW9uIGlzIHRoYXQgYXQgbGVhc3QgcGF0Y2ggMiBpcyBub3QgdmVy
-eSBiZWF1dGlmdWwgZHVlIHRvDQo+ID4gdGhhdCBsYXJnZSB0ZW1wbGF0ZSBoZWFkZXIuIENvdWxk
-IHlvdSBleHBsYWluIGFnYWluIHdoeSBleHBsaWNpdGx5DQo+ID4gY2FsbGluZyB0aGUgYm9vdHN0
-cmFwIGNvZGUgaW4gYSBsaWJyYXJ5IGlzIG5vdCBzdWZmaWNpZW50Pw0KPg0KPiBKdXN0IHNvIHRo
-YXQgd2UgYXJlIG9uIHRoZSBzYW1lIHBhZ2UsIHRoZSBib290c3RyYXAgY29kZSB0aGF0cyBnZW5l
-cmF0ZWQNCj4gbG9va3MgbGlrZSB0aGlzIChpbiBhIGNvdXBsZSB2YXJpYW50cyk6DQo+IC0tLS0t
-LS0tLS0tLS0tLS0NCj4gI2luY2x1ZGUgPHhlbm9tYWkvaW5pdC5oPg0KPg0KPiBzdGF0aWMgaW50
-IGVhcmx5X2FyZ2M7DQo+IHN0YXRpYyBjaGFyICpjb25zdCAqZWFybHlfYXJndjsNCj4NCj4gaW50
-IHhlbm9tYWlfYm9vdHN0cmFwX2dldGFyZ3YoaW50ICphcmdjLCBjaGFyICpjb25zdCoqIGFyZ3Yp
-IHsgaWYNCj4gKGVhcmx5X2FyZ2MpIHsgKmFyZ2MgPSBlYXJseV9hcmdjOyAqYXJndiA9IGVhcmx5
-X2FyZ3Y7IHJldHVybiAxOyB9IHJldHVybiAwOyB9DQo+DQo+IF9fYm9vdHN0cmFwX2N0b3Igc3Rh
-dGljIHZvaWQgeGVub21haV9ib290c3RyYXAodm9pZCkgeyBjaGFyICpjb25zdCAqYXJndjsNCj4g
-aW50IGFyZ2M7IGlmICh4ZW5vbWFpX2luaXRfZmV0Y2hhcmd2KCZhcmdjLCAmYXJndikgIT0gMCkg
-cmV0dXJuOw0KPiB4ZW5vbWFpX2luaXQoJmFyZ2MsICZhcmd2KTsgZWFybHlfYXJnYyA9IGFyZ2M7
-IGVhcmx5X2FyZ3YgPSBhcmd2OyB9DQo+IC0tLS0tLS0tLS0tLS0tLS0tLS0tLS0NCj4NCj4gSSBi
-ZWxpZXZlIHdoYXQgeW91IG1lYW50IHdpdGggYm9vdHN0cmFwIGNvZGUgaXMgY2FsbGVkIHdpdGgg
-J3hlbm9tYWlfaW5pdCcsDQo+IGFuZCBJIGRvbnQgcGxhbiB0byB0b3VjaCBvciByZXBsYWNlIHRo
-YXQuDQo+DQo+IFRoZSBjb2RlIGZ1cnRoZXIgcmVwbGljYXRlcyB0aGUgY29kZSBmcm9tIGxpYi9i
-b2lsZXJwbGF0ZS9pbml0L2Jvb3RzdHJhcC5jLA0KPiB3aXRoIHRoZSBpbXBvcnRhbnQgZGlmZmVy
-ZW5jZSwgdGhhdCB5b3UgY2FuIGNob3NlIG5vdCB0byBkZWZpbmUgYSBtYWluDQo+IGZ1bmN0aW9u
-IGFuZCBhc3NvcnRlZCB3cmFwcGVycyAob25lIG9mIG15IG1haW4gbW90aXZhdGlvbnMgaXMgdG8N
-Cj4gZGlzYWJsZS9zZXBhcmF0ZSB0aGF0KS4NCj4NCj4gPg0KPiA+IEFsc28gbm90ZSB0aGF0IHRo
-aXMgcGF0dGVybiBtYXkgbWFrZSBpdCBoYXJkZXIgdG8gbWFpbnRhaW4gYQ0KPiA+IGNvbXBhdGli
-bGUgaW50ZXJmYWNlIGFsb25nIHVwZGF0ZXMsIGluY3JlYXNpbmcgdGhlIHJpc2sgb2YgaGF2aW5n
-IHRvDQo+ID4gcmVjb21waWxlIHlvdXIgYXBwbGljYXRpb24sIHJhdGhlciB0aGFuIGp1c3QgcmVw
-bGFjaW5nIHNvbWUgY2VudHJhbCBsaWJyYXJ5LA0KPiB3aGVuIFhlbm9tYWkgY2hhbmdlcy4NCj4N
-Cj4gYmVmb3JlIFBhdGNoICMyOg0KPiB5b3VyLWFwcCAtLWxpbmtzLT4gbGliL3hlbm9tYWkvYm9v
-dHN0cmFwLm8gLS1jYWxscy0+eGVub21haV9pbml0DQo+DQo+IGFmdGVyIFBhdGNoICMyIChhbmQg
-YW4gb3B0aW9uYWwgdmFyaWFudCk6DQo+IHlvdXItYXBwIC0tY29udGFpbnMtPiBpbmNsdWRlL3hl
-bm9tYWkvYm9vdHN0cmFwLXRlbXBsYXRlLmgNCj4gLS1jYWxscy0+eGVub21haV9pbml0DQo+DQo+
-IHRoaXMgbWVhbnMgSSBuZWVkIG5vIHByZWNvbXBpbGVkIG9iamVjdCAnbGliL3hlbm9tYWkvYm9v
-dHN0cmFwLm8nLCBhbmQgdGhlDQo+IEFCSSB0byB0aGUgbGlicyBoYXMgbm90IGNoYW5nZWQuDQo+
-DQo+IFlvdSBjYWxsIGEgbGFyZ2UgaGVhZGVyIHdpdGggZnVuY3Rpb25zIG5vdCBiZWF1dGlmdWws
-IEkgd291bGQgY2FsbCBwcmVjb21waWxlZA0KPiBvYmplY3RzIGFuZCB0aGUgbGlua2VyIHdyYXBw
-aW5nIG5vdCBiZWF1dGlmdWwuDQo+IElmIHdlIGFyZSBwcmFnbWF0aWMsIHdpdGggUGF0Y2ggIzIg
-eW91IGNhbiBwaWNrIGJldHdlZW4gMiBub3QgYmVhdXRpZnVsDQo+IHNvbHV0aW9ucyA9KQ0KPg0K
-PiBQYXRjaCAjMSBpcyB0aGUgb25lIGNoYW5naW5nIHRoZSBBQkkgaW4gYSBub3QgQlctY29tcGF0
-aWJsZSBtYW5uZXIgKGFkZHMNCj4gb25lIGZ1bmN0aW9uKSwgYnV0IFBhdGNoICMyIGFyZ3VhYmx5
-IGltcHJvdmVzIG9uIHRoYXQsIGFzIHRoZSAubyBvYmplY3RzIGZyb20NCj4gYSBjb21waWxlciBo
-YXZlIG5vIEFCSSBzdGFiaWxpdHkgZ3VhcmFudGVlIHdoYXRzb2V2ZXIuDQo+DQo+IEZ1cnRoZXIg
-SSBjYW4gZnJlZWx5IHVzZSBuby1waWMvcGljL3BpZSBhbmQgb3RoZXIgQUJJLWNoYW5naW5nIHNl
-dHRpbmdzLCBhcw0KPiB0aGVyZSBpcyBubyBuZWVkIHRvIGxpbmsgYSBvYmplY3Qgd2l0aCBwb3Rl
-bnRpYWxseSBpbmNvbXBhdGlibGUgQUJJIChjb21waWxlciwtDQo+IHZlcnNpb24gb3Igc2V0dGlu
-Z3MpLg0KPg0KPiBOb3JiZXJ0DQoNCl9fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fDQoN
-ClRoaXMgbWVzc2FnZSBhbmQgYW55IGF0dGFjaG1lbnRzIGFyZSBzb2xlbHkgZm9yIHRoZSB1c2Ug
-b2YgdGhlIGludGVuZGVkIHJlY2lwaWVudHMuIFRoZXkgbWF5IGNvbnRhaW4gcHJpdmlsZWdlZCBh
-bmQvb3IgY29uZmlkZW50aWFsIGluZm9ybWF0aW9uIG9yIG90aGVyIGluZm9ybWF0aW9uIHByb3Rl
-Y3RlZCBmcm9tIGRpc2Nsb3N1cmUuIElmIHlvdSBhcmUgbm90IGFuIGludGVuZGVkIHJlY2lwaWVu
-dCwgeW91IGFyZSBoZXJlYnkgbm90aWZpZWQgdGhhdCB5b3UgcmVjZWl2ZWQgdGhpcyBlbWFpbCBp
-biBlcnJvciBhbmQgdGhhdCBhbnkgcmV2aWV3LCBkaXNzZW1pbmF0aW9uLCBkaXN0cmlidXRpb24g
-b3IgY29weWluZyBvZiB0aGlzIGVtYWlsIGFuZCBhbnkgYXR0YWNobWVudCBpcyBzdHJpY3RseSBw
-cm9oaWJpdGVkLiBJZiB5b3UgaGF2ZSByZWNlaXZlZCB0aGlzIGVtYWlsIGluIGVycm9yLCBwbGVh
-c2UgY29udGFjdCB0aGUgc2VuZGVyIGFuZCBkZWxldGUgdGhlIG1lc3NhZ2UgYW5kIGFueSBhdHRh
-Y2htZW50IGZyb20geW91ciBzeXN0ZW0uDQoNCkFORFJJVFogSFlEUk8gR21iSA0KDQoNClJlY2h0
-c2Zvcm0vIExlZ2FsIGZvcm06IEdlc2VsbHNjaGFmdCBtaXQgYmVzY2hyw6Rua3RlciBIYWZ0dW5n
-IC8gQ29ycG9yYXRpb24NCg0KRmlybWVuc2l0ei8gUmVnaXN0ZXJlZCBzZWF0OiBXaWVuDQoNCkZp
-cm1lbmJ1Y2hnZXJpY2h0LyBDb3VydCBvZiByZWdpc3RyeTogSGFuZGVsc2dlcmljaHQgV2llbg0K
-DQpGaXJtZW5idWNobnVtbWVyLyBDb21wYW55IHJlZ2lzdHJhdGlvbjogRk4gNjE4MzMgZw0KDQpE
-VlI6IDA2MDUwNzcNCg0KVUlELU5yLjogQVRVMTQ3NTY4MDYNCg0KDQpUaGFuayBZb3UNCl9fX19f
-X19fX19fX19fX19fX19fX19fX19fX19fX19fDQo=
+On 04.12.18 16:53, Lange Norbert wrote:
+> So any update on this.
+> Do you have something similar to patchwork to keep up on those loose email-threads?
+> 
+
+This was less a patch tracking issue than the missing decision how to address 
+the topic.
+
+On the one hand, I see a desire to control bootstrapping in more details. On the 
+other hand, I wonder how much *additional* control is practically needed - did 
+you study --no-auto-init sufficiently? And I wonder how much new interfaces we 
+want to open up that way.
+
+Providing a user interface based on larger code templates does not make me feel 
+comfortable at all. That's why I'm reluctant to move into that direction.
+
+Philippe is busy these days, but maybe later he - as the original designer of 
+this code - can comment on the envisioned use cases and potential limitations.
+
+Jan
+
+>> -----Original Message-----
+>> From: Xenomai <xenomai-bounces@xenomai.org> On Behalf Of Norbert
+>> Lange
+>> Sent: Freitag, 26. Oktober 2018 18:36
+>> To: jan.kiszka@siemens.com
+>> Cc: Xenomai <xenomai@xenomai.org>
+>> Subject: Re: improve and provide a header for bootstrapping
+>>
+>> E-MAIL FROM A NON-ANDRITZ SOURCE: AS A SECURITY MEASURE, PLEASE
+>> EXERCISE CAUTION WITH E-MAIL CONTENT AND ANY LINKS OR
+>> ATTACHMENTS.
+>>
+>>
+>> Am Fr., 26. Okt. 2018 um 15:48 Uhr schrieb Jan Kiszka
+>> <jan.kiszka@siemens.com>:
+>>>
+>>> On 23.10.18 16:16, Norbert Lange wrote:
+>>>> Hello,
+>>>>
+>>>> the following patches allow a variety of options additional to the
+>>>> linker magic involved for hijacking the aplications main function.
+>>>>
+>>>> the original method will still continue to work, differences are
+>>>>
+>>>> *   the code dealing with retrieving the commandline arguments
+>>>>       is moved into libcobale/libmercury. Making the necessary per-
+>> application
+>>>>       code much smaller.
+>>>>
+>>>> *   the implementation was moved into a header, with several macros
+>>>>       controlling functionality (not everyone wants to define a main
+>> function).
+>>>>
+>>>>
+>>>> The approach I use personally is to compile and link my own
+>>>> bootstrap code, which is preferable in many build systems as
+>>>> source-files are understood while objects files generally need some
+>>>> special care. (And it cant hurt if the compiler flags match exactly).
+>>>>
+>>>> As example:
+>>>>
+>>>> ----- add this to your file  containing main
+>>>>
+>>>> int xenomai_init_getargv(int *argc, char *const** argv);
+>>>>
+>>>> int main(int argc, char *const argv[]) { #if defined(__COBALT__) ||
+>>>> defined(__MERCURY__)
+>>>>       xenomai_init_getargv(&argc, &argv); #endif
+>>>>        ....
+>>>> }
+>>>>
+>>>> ----- create another file, lets call it mybootstrap.c
+>>>>
+>>>> #define _XENOMAI_BOOTSTRAP_GLIBC_CONSTRUCTORS
+>>>> #include <xenomai/bootstrap-template.h>
+>>>>
+>>>> ----------------------------------------------
+>>>>
+>>>> Norbert
+>>>>
+>>>> [PATCH 1/2] separate bootstrap code to get commandline, move it into
+>>>> [PATCH 2/2] add a header to create flexible bootstrap code
+>>>>
+>>>>
+>>>
+>>> I need to look more carefully at the details and your use case, but my
+>>> first impression is that at least patch 2 is not very beautiful due to
+>>> that large template header. Could you explain again why explicitly
+>>> calling the bootstrap code in a library is not sufficient?
+>>
+>> Just so that we are on the same page, the bootstrap code thats generated
+>> looks like this (in a couple variants):
+>> ----------------
+>> #include <xenomai/init.h>
+>>
+>> static int early_argc;
+>> static char *const *early_argv;
+>>
+>> int xenomai_bootstrap_getargv(int *argc, char *const** argv) { if
+>> (early_argc) { *argc = early_argc; *argv = early_argv; return 1; } return 0; }
+>>
+>> __bootstrap_ctor static void xenomai_bootstrap(void) { char *const *argv;
+>> int argc; if (xenomai_init_fetchargv(&argc, &argv) != 0) return;
+>> xenomai_init(&argc, &argv); early_argc = argc; early_argv = argv; }
+>> ----------------------
+>>
+>> I believe what you meant with bootstrap code is called with 'xenomai_init',
+>> and I dont plan to touch or replace that.
+>>
+>> The code further replicates the code from lib/boilerplate/init/bootstrap.c,
+>> with the important difference, that you can chose not to define a main
+>> function and assorted wrappers (one of my main motivations is to
+>> disable/separate that).
+>>
+>>>
+>>> Also note that this pattern may make it harder to maintain a
+>>> compatible interface along updates, increasing the risk of having to
+>>> recompile your application, rather than just replacing some central library,
+>> when Xenomai changes.
+>>
+>> before Patch #2:
+>> your-app --links-> lib/xenomai/bootstrap.o --calls->xenomai_init
+>>
+>> after Patch #2 (and an optional variant):
+>> your-app --contains-> include/xenomai/bootstrap-template.h
+>> --calls->xenomai_init
+>>
+>> this means I need no precompiled object 'lib/xenomai/bootstrap.o', and the
+>> ABI to the libs has not changed.
+>>
+>> You call a large header with functions not beautiful, I would call precompiled
+>> objects and the linker wrapping not beautiful.
+>> If we are pragmatic, with Patch #2 you can pick between 2 not beautiful
+>> solutions =)
+>>
+>> Patch #1 is the one changing the ABI in a not BW-compatible manner (adds
+>> one function), but Patch #2 arguably improves on that, as the .o objects from
+>> a compiler have no ABI stability guarantee whatsoever.
+>>
+>> Further I can freely use no-pic/pic/pie and other ABI-changing settings, as
+>> there is no need to link a object with potentially incompatible ABI (compiler,-
+>> version or settings).
+>>
+>> Norbert
+> 
+> ________________________________
+> 
+> This message and any attachments are solely for the use of the intended recipients. They may contain privileged and/or confidential information or other information protected from disclosure. If you are not an intended recipient, you are hereby notified that you received this email in error and that any review, dissemination, distribution or copying of this email and any attachment is strictly prohibited. If you have received this email in error, please contact the sender and delete the message and any attachment from your system.
+> 
+> ANDRITZ HYDRO GmbH
+> 
+> 
+> Rechtsform/ Legal form: Gesellschaft mit beschränkter Haftung / Corporation
+> 
+> Firmensitz/ Registered seat: Wien
+> 
+> Firmenbuchgericht/ Court of registry: Handelsgericht Wien
+> 
+> Firmenbuchnummer/ Company registration: FN 61833 g
+> 
+> DVR: 0605077
+> 
+> UID-Nr.: ATU14756806
+> 
+> 
+> Thank You
+> ________________________________
+> 
+
+-- 
+Siemens AG, Corporate Technology, CT RDA IOT SES-DE
+Corporate Competence Center Embedded Linux
 
