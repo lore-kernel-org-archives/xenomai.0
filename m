@@ -1,11 +1,9 @@
-From: Johannes Holtz <johannes.holtz@compador.de>
-Subject: EAFNOSUPPORT despite kernel build in
-Message-ID: <c84647b1-bdc6-87f3-2f56-3d9e1b3264b6@compador.de>
-Date: Tue, 4 Dec 2018 12:04:01 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"; format="flowed"
-Content-Transfer-Encoding: 8bit
-Content-Language: en-US
+From: Evandro Sestrem <sestrem@gmail.com>
+Date: Tue, 4 Dec 2018 09:40:20 -0200
+Message-ID: <CADeNpu+DzZU9_eW5fVq2kqRNm8F0N3XVnpfsK2RbM_aj887UfA@mail.gmail.com>
+Subject: HelloWorld with CMake
+Content-Type: text/plain; charset="UTF-8"
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,37 +14,78 @@ List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: xenomai@xenomai.org
 
-
 Hello,
 
-When I request a socket with AF_RTIPC I get an EAFNOSUPPORT in return.
-int sock = socket(AF_RTIPC, SOCK_DGRAM, IPCPROTO_IDDP);
+Is it possible to use CMake to compile a Xenomai program?
 
-rtipc.h is included
-#include <rtdm/rtipc.h>
+I want to use Xenomai in a ROS 2 node. To do this, I need to be able to
+compile it with CMake.
 
-I have build the support for RTIPC into the kernel (not a module) and
-expected this to work more or less out of the box. Did I forget something
-or must this feature be a module?
-I have searched for a solution but haven't found anything.
+I'm trying to compile a HelloWorld Xenomai program using CMake.
 
-Here information about the system:
+I put this project in https://github.com/sestrem/xenomai_helloworld_cmake
 
-virtual machine (VBox) with 1 CPU,  2.5GB RAM, 15GB disk
+The main files are:
+helloWorld.c
+CMakeLists.txt
 
-base kernel version is 3.18.20
+When I execute "cmake .", everything is fine:
 
-xenomai  version is 2.6.5 (from the download page not from the git repo)
+-- The C compiler identification is GNU 6.3.0
+-- The CXX compiler identification is GNU 6.3.0
+-- Check for working C compiler: /usr/bin/cc
+-- Check for working C compiler: /usr/bin/cc -- works
+-- Detecting C compiler ABI info
+-- Detecting C compiler ABI info - done
+-- Detecting C compile features
+-- Detecting C compile features - done
+-- Check for working CXX compiler: /usr/bin/c++
+-- Check for working CXX compiler: /usr/bin/c++ -- works
+-- Detecting CXX compiler ABI info
+-- Detecting CXX compiler ABI info - done
+-- Detecting CXX compile features
+-- Detecting CXX compile features - done
+-- Configuring done
+-- Generating done
+-- Build files have been written to: /home/pi/testes/xenomai/helloWorld
 
-using the included ipipe patch
-xenomai-2.6.5/ksrc/arch/x86/patches/ipipe-core-3.18.20-x86-7.patch
 
-the kernel config has the feature enabled
-root@xeno:~/kernelbuild# grep RTIPC /boot/config-3.18.20
-CONFIG_XENO_DRIVERS_RTIPC=y
-CONFIG_XENO_DRIVERS_RTIPC_XDDP=y
-CONFIG_XENO_DRIVERS_RTIPC_IDDP=y
-CONFIG_XENO_DRIVERS_RTIPC_BUFP=y
+But, after this, when I execute "make":
+
+Scanning dependencies of target helloWorld
+[ 50%] Building C object CMakeFiles/helloWorld.dir/helloWorld.c.o
+In file included from /usr/xenomai/include/copperplate/threadobj.h:28:0,
+                 from /usr/xenomai/include/alchemy/task.h:25,
+                 from /home/pi/testes/xenomai/helloWorld/helloWorld.c:5:
+/usr/xenomai/include/boilerplate/lock.h:23:34: fatal error:
+boilerplate/wrappers.h: file or directory not found
+ #include <boilerplate/wrappers.h>
+                                  ^
+compilation terminated.
+CMakeFiles/helloWorld.dir/build.make:62: recipe for target
+'CMakeFiles/helloWorld.dir/helloWorld.c.o' failed
+make[2]: *** [CMakeFiles/helloWorld.dir/helloWorld.c.o] Error 1
+CMakeFiles/Makefile2:67: recipe for target 'CMakeFiles/helloWorld.dir/all'
+failed
+make[1]: *** [CMakeFiles/helloWorld.dir/all] Error 2
+Makefile:83: recipe for target 'all' failed
+make: *** [all] Error 2
 
 
+** cmake_xenomai attempt **
+---------------------
+I also tried to use the cmake_xenomai github project:
+git clone https://github.com/nolange/cmake_xenomai
 
+But when I check the patch:
+git apply --check
+/home/pi/cmake_xenomai/patchset/0001-add-an-flexible-bootstrap-template-header.patch
+
+I got these errors, so I didn't applied it:
+error: include/xenomai/Makefile.am: no such file or directory
+error: include/xenomai/init.h: no such file or directory
+error: lib/boilerplate/init/Makefile.am: no such file or directory
+error: lib/boilerplate/init/bootstrap.c: no such file or directory
+
+
+Evandro Sestrem
