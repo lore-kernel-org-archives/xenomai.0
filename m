@@ -1,15 +1,12 @@
-Subject: Re: [Xenomai] [PATCH] cobalt: fcntl uses void* instead of int
-References: <20181016103450.3189-1-norbert.lange@andritz.com>
- <457aa74c-8fde-8e95-3065-41d41de0a15e@xenomai.org>
- <d62437da1905437abadb9c24fa9384eb@andritz.com>
- <b8fc3972-99be-eee3-1779-8f1927710ef0@xenomai.org>
- <d0f48a1c927646b489a6ef5b78146305@andritz.com>
-From: Philippe Gerum <rpm@xenomai.org>
-Message-ID: <f8aca114-0f8e-4aef-d193-5d13acc1b3d7@xenomai.org>
-Date: Wed, 5 Dec 2018 16:30:30 +0100
+Subject: Re: [PATCH] cobalt/posix: fcntl: turn the generic argument into a
+ long value
+References: <20181205152900.28540-1-rpm@xenomai.org>
+From: Jan Kiszka <jan.kiszka@siemens.com>
+Message-ID: <aac330ac-5baa-0141-b056-2516eb68cead@siemens.com>
+Date: Wed, 5 Dec 2018 17:17:57 +0100
 MIME-Version: 1.0
-In-Reply-To: <d0f48a1c927646b489a6ef5b78146305@andritz.com>
-Content-Type: text/plain; charset=utf-8
+In-Reply-To: <20181205152900.28540-1-rpm@xenomai.org>
+Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
@@ -20,18 +17,79 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Lange Norbert <norbert.lange@andritz.com>, "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Philippe Gerum <rpm@xenomai.org>, xenomai@xenomai.org
 
-On 12/4/18 4:51 PM, Lange Norbert wrote:
-> To close this up,
+On 05.12.18 16:29, Philippe Gerum wrote:
+> In order to prevent unexpected truncation of pointer args in userland
+> with the LP64 data model, libcobalt's fcntl() wrapper should accept a
+> long (3rd) argument.
 > 
-> is there anything expected from my side? I am not able to fix up the kernel side, esp. with the x32 API,
-> and my disagreement with long vs void*/uintptr_t likely won't end up getting us anywhere.
+> Anticipate this change in the corresponding syscall implementation in
+> the Cobalt core.  The updated ABI remains backward-compatible for
+> current users.
+> 
+> Signed-off-by: Philippe Gerum <rpm@xenomai.org>
+> ---
+>   kernel/cobalt/posix/io.c | 2 +-
+>   kernel/cobalt/posix/io.h | 2 +-
+>   kernel/cobalt/rtdm/fd.c  | 4 ++--
+>   3 files changed, 4 insertions(+), 4 deletions(-)
+> 
+> diff --git a/kernel/cobalt/posix/io.c b/kernel/cobalt/posix/io.c
+> index ef4a0fea2..f35aaf8cd 100644
+> --- a/kernel/cobalt/posix/io.c
+> +++ b/kernel/cobalt/posix/io.c
+> @@ -53,7 +53,7 @@ COBALT_SYSCALL(close, lostage, (int fd))
+>   	return rtdm_fd_close(fd, 0);
+>   }
+>   
+> -COBALT_SYSCALL(fcntl, current, (int fd, int cmd, int arg))
+> +COBALT_SYSCALL(fcntl, current, (int fd, int cmd, long arg))
+>   {
+>   	return rtdm_fd_fcntl(fd, cmd, arg);
+>   }
+> diff --git a/kernel/cobalt/posix/io.h b/kernel/cobalt/posix/io.h
+> index 647f7f3e9..6f20dbedd 100644
+> --- a/kernel/cobalt/posix/io.h
+> +++ b/kernel/cobalt/posix/io.h
+> @@ -37,7 +37,7 @@ COBALT_SYSCALL_DECL(socket,
+>   
+>   COBALT_SYSCALL_DECL(close, (int fd));
+>   
+> -COBALT_SYSCALL_DECL(fcntl, (int fd, int cmd, int arg));
+> +COBALT_SYSCALL_DECL(fcntl, (int fd, int cmd, long arg));
+>   
+>   COBALT_SYSCALL_DECL(ioctl,
+>   		    (int fd, unsigned int request, void __user *arg));
+> diff --git a/kernel/cobalt/rtdm/fd.c b/kernel/cobalt/rtdm/fd.c
+> index 807a11eae..f3b6444c3 100644
+> --- a/kernel/cobalt/rtdm/fd.c
+> +++ b/kernel/cobalt/rtdm/fd.c
+> @@ -371,7 +371,7 @@ int rtdm_fd_fcntl(int ufd, int cmd, ...)
+>   {
+>   	struct rtdm_fd *fd;
+>   	va_list ap;
+> -	int arg;
+> +	long arg;
+>   	int ret;
+>   
+>   	fd = rtdm_fd_get(ufd, 0);
+> @@ -379,7 +379,7 @@ int rtdm_fd_fcntl(int ufd, int cmd, ...)
+>   		return PTR_ERR(fd);
+>   
+>   	va_start(ap, cmd);
+> -	arg = va_arg(ap, int);
+> +	arg = va_arg(ap, long);
+>   	va_end(ap);
+>   
+>   	switch (cmd) {
 > 
 
-The kernel patch is on its way. Contributing the userland changes would
-help.
+And we no longer need to do anything for compat?
+
+Jan
 
 -- 
-Philippe.
+Siemens AG, Corporate Technology, CT RDA IOT SES-DE
+Corporate Competence Center Embedded Linux
 
