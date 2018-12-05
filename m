@@ -1,14 +1,19 @@
-Subject: Re: Fwd: Re: EAFNOSUPPORT despite kernel build in
-References: <b24704e2-25c6-80fc-5e9e-b0ec19a15c4b@compador.de>
- <b4e63339-021e-93d1-93fe-2560b69817a2@compador.de>
-From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <7a1f426d-1eb1-4440-08dc-d27c2aa37e1c@siemens.com>
-Date: Wed, 5 Dec 2018 10:48:07 +0100
-MIME-Version: 1.0
-In-Reply-To: <b4e63339-021e-93d1-93fe-2560b69817a2@compador.de>
-Content-Type: text/plain; charset="utf-8"; format="flowed"
+From: Lange Norbert <norbert.lange@andritz.com>
+Subject: RE: improve and provide a header for bootstrapping
+Date: Wed, 5 Dec 2018 13:23:35 +0000
+Message-ID: <acb75cc2dab04c7cad9198900adbe761@andritz.com>
+References: <20181023151647.25508-1-norbert.lange@andritz.com>
+ <7571eedc-7844-2703-e553-72cf9a1abbe0@siemens.com>
+ <CADYdroNgOFKaEQ0UfcxhdniU54PYt119g+Y9Gnz7SGrCtBGiUA@mail.gmail.com>
+ <d36e64a62d0d42b6981fc4657025acea@andritz.com>
+ <d110a7bf-4017-87b5-5eff-2ee1900dbd88@siemens.com>
+ <f86296ea09fb43b483179cea784c3f66@andritz.com>
+ <d7521284-01f5-4ba2-4ccd-e8cbf7ad2cb5@siemens.com>
+In-Reply-To: <d7521284-01f5-4ba2-4ccd-e8cbf7ad2cb5@siemens.com>
 Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+MIME-Version: 1.0
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,118 +22,125 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Johannes Holtz <johannes.holtz@compador.de>
-Cc: xenomai@xenomai.org
+To: Jan Kiszka <jan.kiszka@siemens.com>
+Cc: Xenomai <xenomai@xenomai.org>, Philippe Gerum <rpm@xenomai.org>
 
-On 05.12.18 10:32, Johannes Holtz wrote:
-> Am 04.12.18 um 14:46 schrieb Jan Kiszka:
->> On 04.12.18 12:04, Johannes Holtz via Xenomai wrote:
->>>
->>> Hello,
->>>
->>> When I request a socket with AF_RTIPC I get an EAFNOSUPPORT in return.
->>> int sock = socket(AF_RTIPC, SOCK_DGRAM, IPCPROTO_IDDP);
->>
->> You likely didn't wrap this posix application to link against the Xenomai 
->> libs, rather than normal libc. See manuals / wikis.
->>
->>>
->>> rtipc.h is included
->>> #include <rtdm/rtipc.h>
->>>
->>> I have build the support for RTIPC into the kernel (not a module) and
->>> expected this to work more or less out of the box. Did I forget something
->>> or must this feature be a module?
->>> I have searched for a solution but haven't found anything.
->>>
->>> Here information about the system:
->>>
->>> virtual machine (VBox) with 1 CPU,  2.5GB RAM, 15GB disk
->>>
->>> base kernel version is 3.18.20
->>>
->>> xenomai  version is 2.6.5 (from the download page not from the git repo)
->>
->> Don't start anything new on 2.6 anymore, it's long retired.
->>
->>>
->>> using the included ipipe patch
->>> xenomai-2.6.5/ksrc/arch/x86/patches/ipipe-core-3.18.20-x86-7.patch
->>
->> Same goes for such old kernels and patches.
->>
->>>
->>> the kernel config has the feature enabled
->>> root@xeno:~/kernelbuild# grep RTIPC /boot/config-3.18.20
->>> CONFIG_XENO_DRIVERS_RTIPC=y
->>> CONFIG_XENO_DRIVERS_RTIPC_XDDP=y
->>> CONFIG_XENO_DRIVERS_RTIPC_IDDP=y
->>> CONFIG_XENO_DRIVERS_RTIPC_BUFP=y
->>>
->>
->> Jan
->>
-> Ok I understand you made two points here:
-> 
-> 1. there might be a wrapper for these standard system calls thatneeds to be 
-> activated, presumably with the right xeno-config parameter
-> 
-> 2. In general the 2,x Xenomai version shouldn't be used anymore.
-> 
-> Regarding 1:
-> 
-> After your answer I looked again if I had overlooked any wrappers or 
-> documentation but couldn't find any. The xeno-config man page was not helping 
-> either and I tried a multitude of different variations and look into what each 
-> skin switch does.
-> 
-> Maybe I have a general problem here. My code only compiles if I use 
-> --skin=native PLUS the -rtdm flag.
-> 
-> To elaborate: My application uses rt threads rt can devices and rt IPC. Perhaps 
-> you can point me to documentation where I can find out which LD flags I really 
-> need for this scenario.
-> 
-
-If you are using plain POSIX APIs (such as socket & Co.) under real-time 
-constraints, check 
-https://gitlab.denx.de/Xenomai/xenomai/wikis/Porting_To_Xenomai_POSIX (should 
-apply to 2.6 as well).
-
-If you prefer the Native/Alchemy API without having to wrap anything, use 
-rt_dev_ prefixes for those POSIX I/O calls that target Xenomai. The latter is no 
-longer prominently documented because in 3.x we recommend treating RTDM usage 
-like POSIX.
-
-> 
-> Regarding 2:
-> 
-> The application I write is an upgrade of an existing Codebase which is bound to 
-> a certain Environment. Upgrading is not an option at this time.
-
-I can only recommend to *plan* an update, develop an idea of what needs to be 
-done and a strategy for how. I've seen too many projects that were "suddenly" 
-forced to do that without such a plan, and that always causes massive problems.
-
-I assume, security plays no role for that target device because you are using an 
-unfixed kernel. But even if that is true, keep in mind that one day the hardware 
-will have to be upgraded (old chips no longer available) and newer hardware 
-tends to have smaller or bigger issues with running on such old kernels.
-
-> 
-> However, I looked into the compatibility mode to run my 2.x application on a 
-> Xenomai 3.x but had no success getting it to compile correctly. If there is a 
-> document where you can point me to resolve this would also be appreciated.
-> 
-
-Check 
-https://gitlab.denx.de/Xenomai/xenomai/blob/master/doc/asciidoc/MIGRATION.adoc. 
-If anything should not be addressed, just let us know.
-
-HTH,
-Jan
-
--- 
-Siemens AG, Corporate Technology, CT RDA IOT SES-DE
-Corporate Competence Center Embedded Linux
+DQoNCj4gLS0tLS1PcmlnaW5hbCBNZXNzYWdlLS0tLS0NCj4gRnJvbTogSmFuIEtpc3prYSA8amFu
+Lmtpc3prYUBzaWVtZW5zLmNvbT4NCj4gU2VudDogRGllbnN0YWcsIDQuIERlemVtYmVyIDIwMTgg
+MTg6NTkNCj4gVG86IExhbmdlIE5vcmJlcnQgPG5vcmJlcnQubGFuZ2VAYW5kcml0ei5jb20+DQo+
+IENjOiBYZW5vbWFpIDx4ZW5vbWFpQHhlbm9tYWkub3JnPjsgUGhpbGlwcGUgR2VydW0NCj4gPHJw
+bUB4ZW5vbWFpLm9yZz4NCj4gU3ViamVjdDogUmU6IGltcHJvdmUgYW5kIHByb3ZpZGUgYSBoZWFk
+ZXIgZm9yIGJvb3RzdHJhcHBpbmcNCj4NCj4gRS1NQUlMIEZST00gQSBOT04tQU5EUklUWiBTT1VS
+Q0U6IEFTIEEgU0VDVVJJVFkgTUVBU1VSRSwgUExFQVNFDQo+IEVYRVJDSVNFIENBVVRJT04gV0lU
+SCBFLU1BSUwgQ09OVEVOVCBBTkQgQU5ZIExJTktTIE9SDQo+IEFUVEFDSE1FTlRTLg0KPg0KPg0K
+PiBPbiAwNC4xMi4xOCAxODoyMSwgTGFuZ2UgTm9yYmVydCB3cm90ZToNCj4gPg0KPiA+DQo+ID4+
+IC0tLS0tT3JpZ2luYWwgTWVzc2FnZS0tLS0tDQo+ID4+IEZyb206IEphbiBLaXN6a2EgPGphbi5r
+aXN6a2FAc2llbWVucy5jb20+DQo+ID4+IFNlbnQ6IERpZW5zdGFnLCA0LiBEZXplbWJlciAyMDE4
+IDE3OjMwDQo+ID4+IFRvOiBMYW5nZSBOb3JiZXJ0IDxub3JiZXJ0LmxhbmdlQGFuZHJpdHouY29t
+Pg0KPiA+PiBDYzogWGVub21haSA8eGVub21haUB4ZW5vbWFpLm9yZz47IFBoaWxpcHBlIEdlcnVt
+DQo+IDxycG1AeGVub21haS5vcmc+DQo+ID4+IFN1YmplY3Q6IFJlOiBpbXByb3ZlIGFuZCBwcm92
+aWRlIGEgaGVhZGVyIGZvciBib290c3RyYXBwaW5nDQo+ID4+DQo+ID4+IEUtTUFJTCBGUk9NIEEg
+Tk9OLUFORFJJVFogU09VUkNFOiBBUyBBIFNFQ1VSSVRZIE1FQVNVUkUsDQo+IFBMRUFTRQ0KPiA+
+PiBFWEVSQ0lTRSBDQVVUSU9OIFdJVEggRS1NQUlMIENPTlRFTlQgQU5EIEFOWSBMSU5LUyBPUg0K
+PiBBVFRBQ0hNRU5UUy4NCj4gPj4NCj4gPj4NCj4gPj4gT24gMDQuMTIuMTggMTY6NTMsIExhbmdl
+IE5vcmJlcnQgd3JvdGU6DQo+ID4+PiBTbyBhbnkgdXBkYXRlIG9uIHRoaXMuDQo+ID4+PiBEbyB5
+b3UgaGF2ZSBzb21ldGhpbmcgc2ltaWxhciB0byBwYXRjaHdvcmsgdG8ga2VlcCB1cCBvbiB0aG9z
+ZSBsb29zZQ0KPiA+PiBlbWFpbC10aHJlYWRzPw0KPiA+Pj4NCj4gPj4NCj4gPj4gVGhpcyB3YXMg
+bGVzcyBhIHBhdGNoIHRyYWNraW5nIGlzc3VlIHRoYW4gdGhlIG1pc3NpbmcgZGVjaXNpb24gaG93
+IHRvDQo+ID4+IGFkZHJlc3MgdGhlIHRvcGljLg0KPiA+DQo+ID4gSSB1bmRlcnN0YW5kIHRoYXQs
+IGJ1dCB0aGVyZSBpcyBzdGlsbCBhIGxhY2sgb2YgZmVlZGJhY2suIChBbmQgSQ0KPiA+IGFscmVh
+ZHkgYnJvdWdodCB0aGF0IHRvcGljIHVwIHNvbWUgbW9udGhzIGFnbywgc28gdGhlcmUgaXMgc29t
+ZQ0KPiByZWR1bmRhbmN5IGV4cGxhaW5pbmcgaXQgYWdhaW4pLg0KPg0KPiBKdXN0IHNhdyB5b3Vy
+IGZpcnN0IHJvdW5kIGZyb20gQXByaWwgd2hpY2ggZGlkbid0IGdldCBhbnkgZmVlZGJhY2sgYXQg
+YWxsIC0gbm90DQo+IG9wdGltYWwsIEkgYWdyZWUuDQoNClNvbWUgcHVibGljIGlzc3VlIHRyYWNr
+ZXIgd291bGQgYmUgYmFkbHkgbmVlZGVkIElNSE8NCj4NCj4gPg0KPiA+PiBPbiB0aGUgb25lIGhh
+bmQsIEkgc2VlIGEgZGVzaXJlIHRvIGNvbnRyb2wgYm9vdHN0cmFwcGluZyBpbiBtb3JlDQo+ID4+
+IGRldGFpbHMuIE9uIHRoZSBvdGhlciBoYW5kLCBJIHdvbmRlciBob3cgbXVjaCAqYWRkaXRpb25h
+bCogY29udHJvbCBpcw0KPiA+PiBwcmFjdGljYWxseSBuZWVkZWQgLSBkaWQgeW91IHN0dWR5IC0t
+bm8tYXV0by1pbml0IHN1ZmZpY2llbnRseT8gQW5kIEkNCj4gPj4gd29uZGVyIGhvdyBtdWNoIG5l
+dyBpbnRlcmZhY2VzIHdlIHdhbnQgdG8gb3BlbiB1cCB0aGF0IHdheS4NCj4gPg0KPiA+IFllcyBJ
+IGtub3cgLS1uby1hdXRvLWluaXQsIGJ1dCB0aGF04oCZcyBvbmx5IG9uZSBzaWRlIG9mIHRoZSBz
+dG9yeS4gV2hhdA0KPiA+IGFyZSB5b3UgZG9pbmcgaW4gcGxhY2Ugb2YgYXV0by1pbml0Pw0KPg0K
+PiBDYWxsIHhlbm9tYWlfaW5pdCgpIC0gb3Igd2hhdCBhcmUgeW91IG1pc3NpbmcgdGhlbj8NCg0K
+Q2FsbCBpdCB3aGVuIGZyb20gd2hlcmU/IElmIGl0cyBjYWxsZWQgbWFudWFsbHkgZnJvbSBtYWlu
+LCB0aGVuIHlvdSBtdXN0IG5vdCB1c2UgeGVub21haSBmcm9tICJjb25zdHJ1Y3RvciIgZnVuY3Rp
+b25zIChnbG9iYWwgQysrIG9iamVjdCBpbml0aWFsaXplcnMpLiBBbmQgaXRzIHNsaWdodGx5IGRp
+ZmZlcmVudCBmb3IgRFNPcy4NCg0KV2hhdCBJIHdvdWxkIHdhbnQgaXMgYSB0ZW1wbGF0ZSBmb3Ig
+dGhpcywgbGlrZSBhYSBtaW5pbXVtOg0KDQpfX2Jvb3RzdHJhcF9jdG9yIHN0YXRpYyB2b2lkIHhl
+bm9tYWlfYm9vdHN0cmFwKHZvaWQpDQp7DQojaWZkZWYgX1hFTk9NQUlfQk9PVFNUUkFQX0RTTw0K
+ICAgICAgICB4ZW5vbWFpX2luaXRfZHNvKC4uLik7DQojZWxzZQ0KICAgICAgICB4ZW5vbWFpX2lu
+aXQoLi4uLik7DQojZW5kaWYNCn0NCg0KX19ib290c3RyYXBfY3RvciwgeGVub21haV9pbml0X2Rz
+bywgeGVub21haV9pbml0IGFsbCBhcmUgaW50ZXJmYWNlIGRldGFpbHMsDQp0aGF0IHdvdWxkIGZp
+dCBiZXN0IGluIGFuIHVwc3RyZWFtIGhlYWRlci4NCg0KPg0KPiA+IFRvIG1lLCB0aGUgbW9zdCBz
+ZW5zaWJsZSBhcHByb2FjaCBpcyB0byBwbGFjZSBidWlsZGluZyBibG9ja3MgaW4gdGhlDQo+ID4g
+eGVub21haSBIZWFkZXJzIGFuZCBsaWJyYXJpZXMuDQo+ID4NCj4gPiAqICAgcGFyc2luZyBvZiB0
+aGUgY29tbWFuZGxpbmUgYXJncyBnb3QgbW92ZWQgZnJvbSB0aGUgYm9vdHN0cmFwDQo+IChsaWIv
+Ym9pbGVycGxhdGUvaW5pdC9ib290c3RyYXAuYykNCj4gPiAgICAgIHRvIHRoZSBEU08uIERvbuKA
+mXQgd2FudCB0byByZXBsaWNhdGUgdGhpcyBldmVyeXdoZXJlDQo+DQo+IEFyZSB5b3UgdXNpbmcg
+Y29tbWFuZCBsaW5lIHBhcmFtZXRlIC0gbWFpbiBmdW50aW9ucnMgdG8gdHVuZSB0aGUgWGVub21h
+aSBjb3JlPw0KDQpObywgYW5kICpJKiBkb27igJl0IHdhbnQgdG8uIFRoZSBsYXJnZXIgY29udGV4
+dCBpcyBodHRwczovL2dpdGh1Yi5jb20vbm9sYW5nZS9jbWFrZV94ZW5vbWFpL3RyZWUvbWFzdGVy
+L3BhdGNoc2V0LA0KSSB3b3VsZCB3YW50IHRvIGhhdmUgQ01ha2Ugc3VwcG9ydCwgd2hpY2ggc2hv
+dWxkIGluY2x1ZGUgdGhlIGV4aXN0aW5nIHVzZWNhc2VzLg0KDQpUaGUgYWltIHdvdWxkIGJlIHRv
+IGhhdmUgQ01ha2UgYXV0b21hdGljYWxseSB1c2UgdGhlIHJpZ2h0IGJvb3RzdHJhcCBtZXRob2Qs
+DQpBbmQgYmUgYWdub3N0aWMgdG8gY29tcGlsZXIgc2V0dGluZ3MgKG1lYW5zIEkgd291bGQgd2Fu
+dCB0byBjb21waWxlIHRoZSBib29zdHJhcCBjb2RlDQppZGVudGljYWwgdG8gdGhlIHJlc3Qgb2Yg
+dGhlIGFwcGxpY2F0aW9uKS4NCg0KPg0KPiA+ICogICB0aGUgc2V0dXAgY29kZSBmcm9tIGJvb3Rz
+dHJhcHBpbmcgaXMgc2VwYXJhdGVkIGZyb20gdGhlIG1haW4gd3JhcHBpbmcNCj4gbWFnaWMgKGN1
+cnJlbnRseSB0aGlzIGlzIGVpdGhlciBib3RoIG9yIG5vbmUpDQo+ID4gICAgICBUaGF04oCZcyBj
+dXJyZW50bHkgZG9uZSB3aXRoIGEgaGVhZGVyLCBhcyBxdWl0ZSBmcmFua2x5IHByb3Zpbmcgb2Jq
+ZWN0IGNvZGUNCj4gZG9lcyBub3Qgc2NhbGUgd2VsbCB3aXRoIGNvbXBpbGVyZmxhZ3MgYW5kIG9w
+dGlvbnMuDQo+ID4NCj4gPiBXaGF0IEkgZ2VuZXJhbGx5IHdhbnQgaXMgdG8gZWFzaWx5IGFkZCB0
+aGUgc2V0dXAgY29kZSBpbnRvIGFuIGFwcGxpY2F0aW9uLA0KPiB3aGlsZSBhdm9pZGluZyB0aGUg
+YWRkaXRpb25hbCB3cmFwcGluZyBtYWdpYy4NCj4gPiBUaGUgY2F1c2Ugb2YgYWN0aW9uIGlzIGVp
+dGhlciB0byBkbyBldmVyeXRoaW5nIG15c2VsZiBvciB0cnkgdG8gbW9kdWxpemUgdGhlDQo+IHVw
+c3RyZWFtIGJvb3RzdHJhcHBpbmcuDQo+ID4NCj4gPiBJbiB0ZXJtcyBvZiBleHRlcm5hbCBpbnRl
+cmZhY2VzLCBvbmx5ICd4ZW5vbWFpX2luaXRfZmV0Y2hhcmd2JyB3b3VsZCBiZQ0KPiBhZGRlZCB0
+byBsaWJjb2JhbHQvbGlibWVyY3VyeS4NCj4gPiBBIHNlY29uZCBmdW5jdGlvbiAneGVub21haV9i
+b290c3RyYXBfZ2V0YXJndicgaXMgZGVmaW5lZCBieSB0aGUNCj4gPiBib290c3RyYXBwaW5nIGNv
+ZGUsIHRvIGJlIGNvbnN1bWVkIGJ5IHRoZSBhcHBsaWNhdGlvbiAob3IgY2FuIGJlIGlnbm9yZWQp
+Lg0KPg0KPiBJbiBmYWN0LCB0aGUgb3RoZXIgcmVhc29uIEknbSByZWx1Y3RhbnQgdG8gY3JlYXRl
+IG5ldyBpbnRlcmZhY2VzIGhlcmUgaXMgdGhhdCBJDQo+IGRvbid0IGJlbGlldmUgaG9va2luZyBp
+bnRvIHRoZSBjb21tYW5kIGxpbmUgb2YgdGhlIG1haW4gcHJvY2VzcyBpcyBhIGdvb2QNCj4gaW50
+ZXJmYWNlIGZvciBhIGxpYnJhcnkgbGlrZSBYZW5vbWFpIGluIHRoZSBmaXJzdCBwbGFjZS4gV2Ug
+aGFkIHByb2JsZW1zIHdpdGgNCj4gdGhhdCBiZWZvcmUsIGFuZCBJIHdvdWxkIHJhdGhlciBsaWtl
+IHRvIHRoaW5rIGFib3V0IG1vdmluZyBhd2F5IGZyb20gaXQuDQo+IFdpdGhvdXQgYWxsIHRoYXQg
+cGFyYW1ldGVyIHBhcnNpbmcsIHhlbm9tYWlfaW5pdCB3b3VsZCB0YWtlIHZvaWQgYXMNCj4gYXJn
+dW1lbnRzLCBhbmQgd2UgaGFkIG5vIG5lZWQgZm9yIG1vdmluZyBjb2RlIGFyb3VuZCBoZXJlLg0K
+DQpIb3cgYWJvdXQgYmFja3dhcmRzIGNvbXBhdGliaWxpdHkgKG90aGVyd2lzZSBJIGFncmVlKT8N
+Ckkgd2FzIHRyeWluZyB0byBzdGF5IDEwMCUgY29tcGF0aWJsZSB3aXRoIHRoZSBvbGQgYXBwcm9h
+Y2gNCndoaWxlIGFsbG93aW5nIG1vZGlmaWNhdGlvbnMuDQoNCj4NCj4gQSBiZXR0ZXIgaW50ZXJm
+YWNlIGZvciBYZW5vbWFpIHdvdWxkIGFjdHVhbGx5IGJlIHByZWZpeGVkIChlLmcuICJYRU5PXyIp
+DQo+IGVudmlyb25tZW50IHZhcmlhYmxlcywgYmVjYXVzZSB0aGV5IGRvIG5vdCBpbnRlcmZlcmUg
+d2l0aCB0aGUgcHJvY2VzcycNCj4gY29tbWFuZCBsaW5lIGFuZCBjYW4gYmUgcGlja2VkIHVwIG9y
+IGV2ZW4gbW9kaWZpZWQgd2l0aG91dCBtdWNoIGVmZm9ydCBhdA0KPiBhbnkgcG9pbnQgYmV0d2Vl
+biBhcHBsaWNhdGlvbiBzdGFydCBhbmQgeGVub21haSBpbml0aWFsaXphdGlvbi4NCg0KRW52IHZh
+cmlhYmxlcyBhcmUga2luZGEgaW52aXNpYmxlIGZvciB0aGUgdXNlciB0aG91Z2gsIGFuZCBJIHdv
+dWxkIG5vdCB3YW50IHRvIHR3ZWFrIHBhcmFtZXRlcnMNCihvciBiZSBhYmxlIHRvKSBvdXRzaWRl
+IG9mIGRldmVsb3BtZW50Lg0KV2hhdCBhYm91dCByaXBwaW5nIG91dCBldmVyeSBhdXRvbWF0aXNt
+IGFuZCBtYWtlIHRoaXMgZXhwbGljaXQ/IEllLg0KeGVub21haV9pbml0IHRha2luZyBhbiBhcnJh
+eSBvZiB0dW5lYWJsZSBwYXJhbWV0ZXJzLg0KDQpUaGUgYXBwIGNhbiB0aGVuIGRlY2lkZSB3aGVy
+ZSBpdCBmZXRjaGVzIHRob3NlIHBhcmFtZXRlciBmcm9tLA0KU29tZSAoTUlULWxpY2Vuc2VkKSB0
+ZW1wbGF0ZSBmdW5jdGlvbnMgY291bGQgYmUgYXZhaWxhYmxlIGluIFhlbm9tYWkuDQpUaGF0IHdh
+eSB5b3UgZG9u4oCZdCBhZGQgYW55IHRlY2hub2xvZ2ljYWwgZGVidCB0byB0aGUgaW50ZXJmYWNl
+Lg0KKEkgd291bGQgcHJlZmVyIHRoZXNlIHRvIGJlIGluc3RhbGxlZCBhcyBzb3VyY2UsIGFuZCBj
+b21waWxlZCB3aXRoIGFwcGxpY2F0aW9ucy4pDQoNCkEgbmljZSBzb2x1dGlvbiB3b3VsZCBiZSBs
+aWJyYXJpZXMgeW91IGNhbiBMRF9QUkVMT0FELCB3aGljaCBpbnRlcmNlcHQNClRoZSB4ZW5vbWFp
+X2luaXQgY2FsbCB0byBhZGQgcGFyYW1ldGVycw0KDQpOb3JiZXJ0DQpfX19fX19fX19fX19fX19f
+X19fX19fX19fX19fX19fXw0KDQpUaGlzIG1lc3NhZ2UgYW5kIGFueSBhdHRhY2htZW50cyBhcmUg
+c29sZWx5IGZvciB0aGUgdXNlIG9mIHRoZSBpbnRlbmRlZCByZWNpcGllbnRzLiBUaGV5IG1heSBj
+b250YWluIHByaXZpbGVnZWQgYW5kL29yIGNvbmZpZGVudGlhbCBpbmZvcm1hdGlvbiBvciBvdGhl
+ciBpbmZvcm1hdGlvbiBwcm90ZWN0ZWQgZnJvbSBkaXNjbG9zdXJlLiBJZiB5b3UgYXJlIG5vdCBh
+biBpbnRlbmRlZCByZWNpcGllbnQsIHlvdSBhcmUgaGVyZWJ5IG5vdGlmaWVkIHRoYXQgeW91IHJl
+Y2VpdmVkIHRoaXMgZW1haWwgaW4gZXJyb3IgYW5kIHRoYXQgYW55IHJldmlldywgZGlzc2VtaW5h
+dGlvbiwgZGlzdHJpYnV0aW9uIG9yIGNvcHlpbmcgb2YgdGhpcyBlbWFpbCBhbmQgYW55IGF0dGFj
+aG1lbnQgaXMgc3RyaWN0bHkgcHJvaGliaXRlZC4gSWYgeW91IGhhdmUgcmVjZWl2ZWQgdGhpcyBl
+bWFpbCBpbiBlcnJvciwgcGxlYXNlIGNvbnRhY3QgdGhlIHNlbmRlciBhbmQgZGVsZXRlIHRoZSBt
+ZXNzYWdlIGFuZCBhbnkgYXR0YWNobWVudCBmcm9tIHlvdXIgc3lzdGVtLg0KDQpBTkRSSVRaIEhZ
+RFJPIEdtYkgNCg0KDQpSZWNodHNmb3JtLyBMZWdhbCBmb3JtOiBHZXNlbGxzY2hhZnQgbWl0IGJl
+c2NocsOkbmt0ZXIgSGFmdHVuZyAvIENvcnBvcmF0aW9uDQoNCkZpcm1lbnNpdHovIFJlZ2lzdGVy
+ZWQgc2VhdDogV2llbg0KDQpGaXJtZW5idWNoZ2VyaWNodC8gQ291cnQgb2YgcmVnaXN0cnk6IEhh
+bmRlbHNnZXJpY2h0IFdpZW4NCg0KRmlybWVuYnVjaG51bW1lci8gQ29tcGFueSByZWdpc3RyYXRp
+b246IEZOIDYxODMzIGcNCg0KRFZSOiAwNjA1MDc3DQoNClVJRC1Oci46IEFUVTE0NzU2ODA2DQoN
+Cg0KVGhhbmsgWW91DQpfX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fXw0K
 
