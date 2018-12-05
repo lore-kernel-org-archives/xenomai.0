@@ -1,18 +1,17 @@
-Subject: Re: improve and provide a header for bootstrapping
-References: <20181023151647.25508-1-norbert.lange@andritz.com>
- <7571eedc-7844-2703-e553-72cf9a1abbe0@siemens.com>
- <CADYdroNgOFKaEQ0UfcxhdniU54PYt119g+Y9Gnz7SGrCtBGiUA@mail.gmail.com>
- <d36e64a62d0d42b6981fc4657025acea@andritz.com>
- <d110a7bf-4017-87b5-5eff-2ee1900dbd88@siemens.com>
- <f86296ea09fb43b483179cea784c3f66@andritz.com>
-From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <d7521284-01f5-4ba2-4ccd-e8cbf7ad2cb5@siemens.com>
-Date: Tue, 4 Dec 2018 18:59:05 +0100
+Date: Wed, 5 Dec 2018 12:17:05 +0800 (CST)
+From: =?GBK?B?wbrIqA==?= <liang_1911@163.com>
+Subject: Re:Re: every millicsecond interrupt in xenomai domain on a am355x
+ board can cause something wrong?
+In-Reply-To: <889b8735-6c75-fd3a-ef82-616bdd4b74a4@xenomai.org>
+References: <6a75de9a.bb14.1675e7e151a.Coremail.liang_1911@163.com>
+ <934350e0-912b-4090-e4ba-e9b130d1e1f2@xenomai.org>
+ <955d187.1042f.16765819578.Coremail.liang_1911@163.com>
+ <29ea1621.1e55.1676dbe7a00.Coremail.liang_1911@163.com>
+ <889b8735-6c75-fd3a-ef82-616bdd4b74a4@xenomai.org>
 MIME-Version: 1.0
-In-Reply-To: <f86296ea09fb43b483179cea784c3f66@andritz.com>
-Content-Type: text/plain; charset="utf-8"; format="flowed"
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+Message-ID: <145386a7.5a99.1677c95662b.Coremail.liang_1911@163.com>
+Content-Type: text/plain; charset=GBK
+Content-Transfer-Encoding: base64
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -21,84 +20,46 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Lange Norbert <norbert.lange@andritz.com>
-Cc: Xenomai <xenomai@xenomai.org>, Philippe Gerum <rpm@xenomai.org>
+To: Philippe Gerum <rpm@xenomai.org>
+Cc: xenomai@xenomai.org
 
-On 04.12.18 18:21, Lange Norbert wrote:
-> 
-> 
->> -----Original Message-----
->> From: Jan Kiszka <jan.kiszka@siemens.com>
->> Sent: Dienstag, 4. Dezember 2018 17:30
->> To: Lange Norbert <norbert.lange@andritz.com>
->> Cc: Xenomai <xenomai@xenomai.org>; Philippe Gerum
->> <rpm@xenomai.org>
->> Subject: Re: improve and provide a header for bootstrapping
->>
->> E-MAIL FROM A NON-ANDRITZ SOURCE: AS A SECURITY MEASURE, PLEASE
->> EXERCISE CAUTION WITH E-MAIL CONTENT AND ANY LINKS OR
->> ATTACHMENTS.
->>
->>
->> On 04.12.18 16:53, Lange Norbert wrote:
->>> So any update on this.
->>> Do you have something similar to patchwork to keep up on those loose
->> email-threads?
->>>
->>
->> This was less a patch tracking issue than the missing decision how to address
->> the topic.
-> 
-> I understand that, but there is still a lack of feedback. (And I already brought that topic
-> up some months ago, so there is some redundancy explaining it again).
-
-Just saw your first round from April which didn't get any feedback at all - not 
-optimal, I agree.
-
-> 
->> On the one hand, I see a desire to control bootstrapping in more details. On
->> the other hand, I wonder how much *additional* control is practically
->> needed - did you study --no-auto-init sufficiently? And I wonder how much
->> new interfaces we want to open up that way.
-> 
-> Yes I know --no-auto-init, but that’s only one side of the story. What are you doing
-> in place of auto-init?
-
-Call xenomai_init() - or what are you missing then?
-
-> To me, the most sensible approach is to place building blocks in the xenomai
-> Headers and libraries.
-> 
-> *   parsing of the commandline args got moved from the bootstrap (lib/boilerplate/init/bootstrap.c)
->      to the DSO. Don’t want to replicate this everywhere
-
-Are you using command line parameters to tune the Xenomai core?
-
-> *   the setup code from bootstrapping is separated from the main wrapping magic (currently this is either both or none)
->      That’s currently done with a header, as quite frankly proving object code does not scale well with compilerflags and options.
-> 
-> What I generally want is to easily add the setup code into an application, while avoiding the additional wrapping magic.
-> The cause of action is either to do everything myself or try to modulize the upstream bootstrapping.
-> 
-> In terms of external interfaces, only 'xenomai_init_fetchargv' would be added to libcobalt/libmercury.
-> A second function 'xenomai_bootstrap_getargv' is defined by the bootstrapping code,
-> to be consumed by the application (or can be ignored).
-
-In fact, the other reason I'm reluctant to create new interfaces here is that I 
-don't believe hooking into the command line of the main process is a good 
-interface for a library like Xenomai in the first place. We had problems with 
-that before, and I would rather like to think about moving away from it. Without 
-all that parameter parsing, xenomai_init would take void as arguments, and we 
-had no need for moving code around here.
-
-A better interface for Xenomai would actually be prefixed (e.g. "XENO_") 
-environment variables, because they do not interfere with the process' command 
-line and can be picked up or even modified without much effort at any point 
-between application start and xenomai initialization.
-
-Jan
-
--- 
-Siemens AG, Corporate Technology, CT RDA IOT SES-DE
-Corporate Competence Center Embedded Linux
-
+aGksIFBoaWxpcHBlLiBpIGhhdmUgdHJpZWQgd2l0aCBsaW51eCBrZXJuZWwgNC45LjI4K2lwaXBl
+LWNvcmUtNC45LjM4LWFybS0zLnBhdGNoOyBpdCB3b3JrcyBmaW5lIGZvciBob3Vycy4KQW5kIGkg
+d2lsbCBkbyBhIGxvbmcgdGltZSB0ZXN0IHRvbmlnaHQuCkhlcmUsaSBhbHNvIHdhbnQgdG8gYXNr
+IGFub3RoZXIgcXVlc3Rpb246IGJlY2F1c2UgdGhlcmUgaXMgc29tZXRoaW5nIHdyb25nIHdpdGgg
+dGhlIGFtMzM1MidzIHRpbWVyMSBvbiBteSBib2FyZCwKYWZ0ZXIgaSBwb3dlciBvbiB0aGUgYm9h
+cmQgZm9yIHNlcnZlcmwgaG91cnMsIHRoZSBrZXJuZWwgdG9sZCBtZSB0aGF0OgpbIDczMTMuODg3
+ODk2XSBXQVJOSU5HOiBVbmRlcmZsb3cgaW4gY2xvY2tzb3VyY2UgJ2lwaXBlX3RzYycgb2JzZXJ2
+ZWQsIHRpbWUgdXBkYXRlIGlnbm9yZWQuClsgNzMxMy44ODc5MDRdICAgICAgICAgIFBsZWFzZSBy
+ZXBvcnQgdGhpcywgY29uc2lkZXIgdXNpbmcgYSBkaWZmZXJlbnQgY2xvY2tzb3VyY2UsIGlmIHBv
+c3NpYmxlLgpbIDczMTMuODg3OTA3XSAgICAgICAgICBZb3VyIGtlcm5lbCBpcyBwcm9iYWJseSBz
+dGlsbCBmaW5lLgppIHdvbmRlciB0byBrbm93IGhvdyBtdWNoIHRoaXMgaXNzdWUgd291bGQgaW1w
+YWN0IHRoZSB4ZW5vbWFpJ3MgcmVhbC10aW1lIHBlcmZvcm1hY2U/IApJZiBpdCBqdXN0IGhhdmUg
+ZG96ZW5zIG9mIG1pY3Jvc2Vjb25kcyBhZGR0aW9uYWwgbGF0ZW5jeSB0byB0aGUgeGVub21haSdz
+IHJlYWwtdGltZSB0YXNrLCAgaSB0aGluayBpdCBpcyBhY2NlcHRhbGJlIG9uIG15IHByb2plY3Qu
+CkFuZCBhbHNvLCB0aGVyZSBpcyBhbHNvIGFub3RoZXIgc29sdXRpb24gdG8gZ2V0IHJpZCBvZiB0
+aGlzIHByb2JsZW0uIFRoYXQgaXMgY2hhbmdpbmcgdGhlIGlucHV0IGNsb2NrIHNvdXJjZSBvZiBh
+bTMzNTIncyB0aW1lcjEgZnJvbSAyNE0gdG8gMzJLLiBXaGVuIGNoYW5nZSB0byAzMksgaW5wdXQg
+c291cmNlLCB0aGUga2VybmVsIHByaW50IGFzIGZvbGxvd2luZyB3aGVuIGJvb3Rpbmc6ClsgICAg
+MC4wMDAwMDBdIEktcGlwZSwgMC4wMzIgTUh6IGNsb2Nrc291cmNlLCB3cmFwIGluIDEzNDIxNzcy
+NyBtcwpXZXRoZXIgdGhpcyBjaGFuZ2Ugd2lsbCBpbXBhY3QgdGhlIHhlbm9tYWkncyBwZXJmb3Jt
+YW5jZSB2ZXJ5IG11Y2ijvyAKQ29tcGFyZWQgd2l0aCB0aGUgZm9ybWVyICwgd2hpY2ggaXMgdGhl
+IGJldHRlciBzb2x1dGlvbj8gIEFueSByZXBseXMgd2lsbCBiZSBhcHByZWNpYXRlLgotLQoKLS0t
+LS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLQogICAgICAgICAgwbrI
+qApUSEFOS1MgJiBCUiEKQXQgMjAxOC0xMi0wMiAxODowMDo0NCwgIlBoaWxpcHBlIEdlcnVtIiA8
+cnBtQHhlbm9tYWkub3JnPiB3cm90ZToKPk9uIDEyLzIvMTggODowNyBBTSwgwbrIqCB3cm90ZToK
+Pj4gVG8gc2ltcGxpZnkgdGhlIHByb2JsZW2jrCBpIGRvIGEgdGVzdCB3aXRob3V0IFFUIGxpa2Ug
+dGhlIGZvbGxvd2luZyBwcm9ncmFtOgo+PiAjZGVmaW5lIE1BTExPQ19TSVpFIDgqMTAyNCoxMDI0
+Cj4+IGludCBtYWluKCkKPj4gewo+PiBpbnQgZXJyOwo+PiBjaGFyICphZGRyPShjaGFyICopMDsK
+Pj4gdGltZV90IG5vdzsKPj4gc3RydWN0IHRtICp0aW1lbm93Owo+PiB0aW1lKCZub3cpOwo+PiB0
+aW1lbm93ID0gbG9jYWx0aW1lKCZub3cpOwo+PiBwcmludGYoIiVzXG4iLCBhc2N0aW1lKHRpbWVu
+b3cpKTsKPj4gYWRkciA9IChjaGFyICopbWFsbG9jKE1BTExPQ19TSVpFKTsKPj4gaWYgKGFkZHIp
+Cj4+IHByaW50ZigibWFsbG9jIG9rXG4iKTsKPj4gZG8KPj4gewo+PiBpZiAoYWRkcil7Cj4+IG1l
+bXNldChhZGRyLCAweDEyLCBNQUxMT0NfU0laRS8yKTsKPj4gICAgICAgICAgICAgICAgICAgICAg
+ICAgbWVtc2V0KGFkZHIgKyBNQUxMT0NfU0laRS8yLCAweDM0LCBNQUxMT0NfU0laRS8yKTsKPj4g
+fQo+PiB1c2xlZXAoMTAwMCk7Cj4+IH13aGlsZSgxKTsKPj4gcmV0dXJuIDA7Cj4+IH0KPj4gQWZ0
+ZXIgaSBlbmFibGUgdGhlIGludGVycnVwdCBmb3Igc2V2ZXJhbCBtaW51dGVzLCAgdGhlIGVycm9y
+IG9jY3VyOgo+PiByb290QGFtMzM1eC1ldm06fi90bXAjIC4vdGVzdE1lbXNldAo+Cj5PaywgdGhh
+bmtzIGZvciBpbnZlc3RpbmcgdGltZSBpbiBjcmVhdGluZyB0aGlzIHRlc3Qgc25pcHBldC4gSSds
+bCBkaXZlcnQKPnNvbWUgY3ljbGVzIGluIGEgZmV3IGRheXMgdG8gbG9vayBpbnRvIHRoaXMuCj4K
+Pi0tIAo+UGhpbGlwcGUuCg==
