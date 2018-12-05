@@ -1,9 +1,8 @@
 From: Philippe Gerum <rpm@xenomai.org>
-Subject: [PATCH 2/2] ipipe: drop build left-over
-Date: Wed,  5 Dec 2018 16:25:34 +0100
-Message-Id: <20181205152534.28290-2-rpm@xenomai.org>
-In-Reply-To: <20181205152534.28290-1-rpm@xenomai.org>
-References: <20181205152534.28290-1-rpm@xenomai.org>
+Subject: [PATCH] cobalt/posix: fcntl: turn the generic argument into a long
+ value
+Date: Wed,  5 Dec 2018 16:29:00 +0100
+Message-Id: <20181205152900.28540-1-rpm@xenomai.org>
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,43 +14,69 @@ List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
 To: xenomai@xenomai.org
 Cc: Jan Kiszka <jan.kiszka@siemens.com>, Philippe Gerum <rpm@xenomai.org>
 
+In order to prevent unexpected truncation of pointer args in userland
+with the LP64 data model, libcobalt's fcntl() wrapper should accept a
+long (3rd) argument.
+
+Anticipate this change in the corresponding syscall implementation in
+the Cobalt core.  The updated ABI remains backward-compatible for
+current users.
+
 Signed-off-by: Philippe Gerum <rpm@xenomai.org>
 ---
- drivers/scsi/scsi_devinfo_tbl.c | 25 -------------------------
- 1 file changed, 25 deletions(-)
- delete mode 100644 drivers/scsi/scsi_devinfo_tbl.c
+ kernel/cobalt/posix/io.c | 2 +-
+ kernel/cobalt/posix/io.h | 2 +-
+ kernel/cobalt/rtdm/fd.c  | 4 ++--
+ 3 files changed, 4 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/scsi/scsi_devinfo_tbl.c b/drivers/scsi/scsi_devinfo_tbl.c
-deleted file mode 100644
-index 6a7f155b1f13..000000000000
---- a/drivers/scsi/scsi_devinfo_tbl.c
-+++ /dev/null
-@@ -1,25 +0,0 @@
--BLIST_FLAG_NAME(NOLUN),
--BLIST_FLAG_NAME(FORCELUN),
--BLIST_FLAG_NAME(BORKEN),
--BLIST_FLAG_NAME(KEY),
--BLIST_FLAG_NAME(SINGLELUN),
--BLIST_FLAG_NAME(NOTQ),
--BLIST_FLAG_NAME(SPARSELUN),
--BLIST_FLAG_NAME(MAX5LUN),
--BLIST_FLAG_NAME(ISROM),
--BLIST_FLAG_NAME(LARGELUN),
--BLIST_FLAG_NAME(INQUIRY_36),
--BLIST_FLAG_NAME(NOSTARTONADD),
--BLIST_FLAG_NAME(REPORTLUN2),
--BLIST_FLAG_NAME(NOREPORTLUN),
--BLIST_FLAG_NAME(NOT_LOCKABLE),
--BLIST_FLAG_NAME(NO_ULD_ATTACH),
--BLIST_FLAG_NAME(SELECT_NO_ATN),
--BLIST_FLAG_NAME(RETRY_HWERROR),
--BLIST_FLAG_NAME(MAX_512),
--BLIST_FLAG_NAME(NO_DIF),
--BLIST_FLAG_NAME(SKIP_VPD_PAGES),
--BLIST_FLAG_NAME(TRY_VPD_PAGES),
--BLIST_FLAG_NAME(NO_RSOC),
--BLIST_FLAG_NAME(MAX_1024),
--BLIST_FLAG_NAME(UNMAP_LIMIT_WS),
+diff --git a/kernel/cobalt/posix/io.c b/kernel/cobalt/posix/io.c
+index ef4a0fea2..f35aaf8cd 100644
+--- a/kernel/cobalt/posix/io.c
++++ b/kernel/cobalt/posix/io.c
+@@ -53,7 +53,7 @@ COBALT_SYSCALL(close, lostage, (int fd))
+ 	return rtdm_fd_close(fd, 0);
+ }
+ 
+-COBALT_SYSCALL(fcntl, current, (int fd, int cmd, int arg))
++COBALT_SYSCALL(fcntl, current, (int fd, int cmd, long arg))
+ {
+ 	return rtdm_fd_fcntl(fd, cmd, arg);
+ }
+diff --git a/kernel/cobalt/posix/io.h b/kernel/cobalt/posix/io.h
+index 647f7f3e9..6f20dbedd 100644
+--- a/kernel/cobalt/posix/io.h
++++ b/kernel/cobalt/posix/io.h
+@@ -37,7 +37,7 @@ COBALT_SYSCALL_DECL(socket,
+ 
+ COBALT_SYSCALL_DECL(close, (int fd));
+ 
+-COBALT_SYSCALL_DECL(fcntl, (int fd, int cmd, int arg));
++COBALT_SYSCALL_DECL(fcntl, (int fd, int cmd, long arg));
+ 
+ COBALT_SYSCALL_DECL(ioctl,
+ 		    (int fd, unsigned int request, void __user *arg));
+diff --git a/kernel/cobalt/rtdm/fd.c b/kernel/cobalt/rtdm/fd.c
+index 807a11eae..f3b6444c3 100644
+--- a/kernel/cobalt/rtdm/fd.c
++++ b/kernel/cobalt/rtdm/fd.c
+@@ -371,7 +371,7 @@ int rtdm_fd_fcntl(int ufd, int cmd, ...)
+ {
+ 	struct rtdm_fd *fd;
+ 	va_list ap;
+-	int arg;
++	long arg;
+ 	int ret;
+ 
+ 	fd = rtdm_fd_get(ufd, 0);
+@@ -379,7 +379,7 @@ int rtdm_fd_fcntl(int ufd, int cmd, ...)
+ 		return PTR_ERR(fd);
+ 
+ 	va_start(ap, cmd);
+-	arg = va_arg(ap, int);
++	arg = va_arg(ap, long);
+ 	va_end(ap);
+ 
+ 	switch (cmd) {
 -- 
 2.17.2
 
