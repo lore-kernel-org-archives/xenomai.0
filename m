@@ -1,14 +1,25 @@
-Subject: Re: every millicsecond interrupt in xenomai domain on a am355x board
- can cause something wrong?
-References: <6a75de9a.bb14.1675e7e151a.Coremail.liang_1911@163.com>
+Subject: Re: [I-PIPE] ipipe-core-4.9.135-x86-7 released
+References: <E1gHtmu-0002xR-FI@xenomai.org>
+ <653100543.20966555.1541129646273@mail.yahoo.com>
+ <009db19b-cb18-095c-2fda-eb9beaa7767c@siemens.com>
+ <1378793b-2c18-1e51-937c-3ce14a7bb9e9@xenomai.org>
+ <af13cc5e-a076-5618-e8f2-a62284a8493c@xenomai.org>
+ <1782609254.2693150.1544069354612@mail.yahoo.com>
+ <648d4857-fd53-7cbf-974f-e18ce5759f71@linx-info.com>
+ <1139e58e-ca54-29cf-119a-3be099b9ff38@siemens.com>
+ <ca1cbe13-9c2d-8b0d-933f-f5a5da27b70d@linx-info.com>
+ <15d77171-f5c9-e69b-3e10-dec6ada23e39@siemens.com>
+ <719a212a-ce87-49af-23f1-41f4bd02c4e4@linx-info.com>
+ <12f81dbf-16d9-dc28-5fff-6d91d58ce2c1@siemens.com>
+ <6bed742a-92a3-1ec1-1be2-09ce407ac2ec@linx-info.com>
 From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <197e47f6-23b4-83c6-432d-f10996d4fc6f@siemens.com>
-Date: Thu, 29 Nov 2018 12:14:28 +0100
+Message-ID: <9e97f42e-00f9-d709-2105-526d4325e40f@siemens.com>
+Date: Thu, 6 Dec 2018 08:26:43 +0100
 MIME-Version: 1.0
-In-Reply-To: <6a75de9a.bb14.1675e7e151a.Coremail.liang_1911@163.com>
-Content-Type: text/plain; charset="gbk"
+In-Reply-To: <6bed742a-92a3-1ec1-1be2-09ce407ac2ec@linx-info.com>
+Content-Type: text/plain; charset="utf-8"; format="flowed"
 Content-Language: en-US
-Content-Transfer-Encoding: base64
+Content-Transfer-Encoding: 8bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,95 +28,54 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: =?UTF-8?B?5qKB5p2D?= <liang_1911@163.com>, xenomai@xenomai.org
+To: duanwujie <wjduan@linx-info.com>
+Cc: Xenomai <xenomai@xenomai.org>, =?UTF-8?B?5b2t5b+X6Iiq?= <zhpeng@linx-info.com>, yuening <ynliu@linx-info.com>
 
-T24gMjkuMTEuMTggMDk6MDMsIMG6yKggdmlhIFhlbm9tYWkgd3JvdGU6Cj4gaGmjrAo+IGknbSB3
-b3JrIG9uIGEgY3VzdG9tZWQgYm9hcmQgd2l0aCBUSSBhbTMzNVg7IGkgaGF2ZSBpbnN0YWxsZWQg
-eGVub21haSAzIG9uIGl0IGNvcnJlY3R0bHkgLCBhbmQgY2FuIHJ1biB0aGUgbGF0ZW5jeSB0ZXN0
-Lgo+IE9uIHRoaXMgYm9hcmQsIGFuIGludGVycnVwdCB3aGljaCBjYW5ub3QgYmUgbWFza2VkIGFu
-ZCBkZWxheWVkIHdpbGwgYmUgZ2VuZXJhdGVkIGV2ZXJ5IG1pbGxpY3NlY29uZCBieSBhIEZQR0Eg
-OyAKPiB0byAgaGFuZGxlciB0aGlzIGludGVycnVwdCBpbW1lZGlhdGVseSwgaSByZWdpc3RlciAg
-dGhlIGludGVycnVwdCBoYW5kbGVyIGluIHhlbm9tYWkgZG9tYWluLkFsc28gdGhlcmUgaXMgYSBR
-VCBhcHBsaWN0YXRpb24gcnVubmluZyBvbiB0aGUgYm9hcmQ7ICBhbmQgaGVyZSBpcyB0aGUgcHJv
-YmxlbSBpIGVuY291bnRlcjoKPiBpZiBpIG9wZW4gdGhlIGludGVycnVwdCBhbmQgcnVuIHRoZSBR
-VCBhcHBsaWNhdGlvbiBzaW11bHRhbmVvdXNseSwgdGhlIFFUIGFwcGxpY2F0aW9uIHdpbGwgZ2V0
-IHdyb25nIGxpa2UgdGhpcyBhZnRlciBhIGZldyBtaW51dGVzKGJ1dCB0aGUgbGludXggaXMgc3Rp
-bGwgcnVubmluZyBmaW5lKToKPiBbIDE2MDEuNDk2ODI4XSBVbmhhbmRsZWQgZmF1bHQ6IHBhZ2Ug
-ZG9tYWluIGZhdWx0ICgweDAxYikgYXQgMHhiNmZhMTM1Ywo+IFsgMTYwMS41MDMyMzNdIHBnZCA9
-IGM1ZWE0MDAwCj4gWyAxNjAxLjUwNTk0N10gW2I2ZmExMzVjXSAqcGdkPTg1NzFlODMxLCAqcHRl
-PTgwYmU4MThmLCAqcHB0ZT04MGJlOGEzZQo+IFsgMTYwMS41MTIyOTFdIEludGVybmFsIGVycm9y
-OiA6IDFiIFsjMl0gUFJFRU1QVCBBUk0KPiBbIDE2MDEuNTE3MDE5XSBNb2R1bGVzIGxpbmtlZCBp
-bjogbW90aW9uRHJ2KE8pIEZQR0EoTykKPiBbIDE2MDEuNTIxOTMwXSBDUFU6IDAgUElEOiA4ODIg
-Q29tbTogSE1JX1YyIFRhaW50ZWQ6IEcgICAgICBEICAgIE8gICAgNC4xNC42Ny1nZDMxNWE5YmIw
-MCAjMTA0Cj4gWyAxNjAxLjUzMDMxN10gSGFyZHdhcmUgbmFtZTogR2VuZXJpYyBBTTMzWFggKEZs
-YXR0ZW5lZCBEZXZpY2UgVHJlZSkKPiBbIDE2MDEuNTM2NDE4XSBJLXBpcGUgZG9tYWluOiBMaW51
-eAo+IFsgMTYwMS41Mzk2NTFdIHRhc2s6IGM1NTM3NjAwIHRhc2suc3RhY2s6IGM1MmY0MDAwCj4g
-WyAxNjAxLjU0NDIyNl0gUEMgaXMgYXQgX191bmRfc3ZjKzB4NzAvMHg4NAo+IFsgMTYwMS41NDgx
-NjBdIExSIGlzIGF0IF9fdW5kX3N2YysweDY4LzB4ODQKPiBbIDE2MDEuNTUyMDk1XSBwYyA6IFs8
-YzAxMGNlZjA+XSAgICBsciA6IFs8YzAxMGNlZTg+XSAgICBwc3I6IDYwMDAwMTkzCj4gWyAxNjAx
-LjU1ODQwOV0gc3AgOiBjNTJmNWZhOCAgaXAgOiAyMDAwMDE5MyAgZnAgOiAzMjQ1MGU4Ywo+IFsg
-MTYwMS41NjM2MjRdIHIxMDogYjZmYjhkYzggIHI5IDogYzUyZjQwMDAgIHI4IDogMDAwMDAwMWEK
-PiBbIDE2MDEuNTY4ODcwXSByNyA6IGM1MmY1ZmRjICByNiA6IGZmZmZmZmZmICByNSA6IDYwMDAw
-MTEzICByNCA6IGI2ZmExMzYwCj4gWyAxNjAxLjU3NTQyOF0gcjMgOiBjMGM5MDFjMCAgcjIgOiAy
-MDAwMDE5MyAgcjEgOiBjNTJmNWZhOCAgcjAgOiAwMDAwMDAwMAo+IFsgMTYwMS41ODE5ODZdIEZs
-YWdzOiBuWkN2ICBJUlFzIG9mZiAgRklRcyBvbiAgTW9kZSBTVkNfMzIgIElTQSBBUk0gIFNlZ21l
-bnQgbm9uZQo+IFsgMTYwMS41ODkyNDVdIENvbnRyb2w6IDEwYzUzODdkICBUYWJsZTogODVlYTQw
-MTkgIERBQzogMDAwMDAwNTEKPiBbIDE2MDEuNTk1MDEwXSBQcm9jZXNzIEhNSV9WMiAocGlkOiA4
-ODIsIHN0YWNrIGxpbWl0ID0gMHhjNTJmNDIxOCkKPiBbIDE2MDEuNjAwOTU3XSBTdGFjazogKDB4
-YzUyZjVmYTggdG8gMHhjNTJmNjAwMCkKPiBbIDE2MDEuNjA1MzE5XSA1ZmEwOiAgICAgICAgICAg
-ICAgICAgICAwMDAwMDAwMCAwMDAwMDIxYiAwMDAwMDNlYiBiNjE2ZjEwMCAwMDAwMDAwNCAwMDAw
-MDAwMAo+IFsgMTYwMS42MTM1NTRdIDVmYzA6IGI1NDAwNzA4IGI2ZmIzNTUwIDAwMDAwMDFhIDAw
-MDAwMDAwIGI2ZmI4ZGM4IDMyNDUwZThjIGJlZGZkN2I4IGM1MmY1ZmY4Cj4gWyAxNjAxLjYyMTc1
-OV0gNWZlMDogYjZmYTEzNWEgYjZmYTEzNjAgNjAwMDAxMTMgZmZmZmZmZmYgMDAwMDAwNTUgYmYw
-MDAwMDAgMDAwMDAwMDAgMDAwMDAwMDAKPiBbIDE2MDEuNjI5OTY0XSBCYWNrdHJhY2U6IGludmFs
-aWQgZnJhbWUgcG9pbnRlciAweDMyNDUwZThjCj4gWyAxNjAxLjYzNTIxMF0gQ29kZTogZTFhMDEw
-MGQgZWIwMjY1ZTAgZTM1MDAwMDAgMWEwMDAwMDYgKGU1MTQwMDA0KSAKPiBbIDE2MDEuNjQxMzQw
-XSAtLS1bIGVuZCB0cmFjZSAwZWVmNDUxZmFhOWI3YTI0IF0tLS0KPiBvciBsaWtlIHRoaXM6Cj4g
-IFVuYWJsZSB0byBoYW5kbGUga2VybmVsIHBhZ2luZyByZXF1ZXN0IGF0IHZpcnR1YWwgYWRkcmVz
-cyBlNWJjZmU4NAo+IFsgMTc4OS43NzU1NzVdIHBnZCA9IGM1ZWYwMDAwCj4gWyAxNzg5Ljc3ODMy
-MF0gW2U1YmNmZTg0XSAqcGdkPTAwMDAwMDAwCj4gWyAxNzg5Ljc4MTkxOV0gSW50ZXJuYWwgZXJy
-b3I6IE9vcHM6IDgwMDAwMDA1IFsjNF0gUFJFRU1QVCBBUk0KPiBbIDE3ODkuNzg3NTAwXSBNb2R1
-bGVzIGxpbmtlZCBpbjogbW90aW9uRHJ2KE8pIEZQR0EoTykKPiBbIDE3ODkuNzkyNDQyXSBDUFU6
-IDAgUElEOiAxMTM1IENvbW06IEhNSV9WMiBUYWludGVkOiBHICAgICAgRCAgICBPICAgIDQuMTQu
-NjctZ2QzMTVhOWJiMDAgIzEwNAo+IFsgMTc4OS44MDA4OTBdIEhhcmR3YXJlIG5hbWU6IEdlbmVy
-aWMgQU0zM1hYIChGbGF0dGVuZWQgRGV2aWNlIFRyZWUpCj4gWyAxNzg5LjgwNzAyMV0gSS1waXBl
-IGRvbWFpbjogTGludXgKPiBbIDE3ODkuODEwMjU0XSB0YXNrOiBjNTQyMzYwMCB0YXNrLnN0YWNr
-OiBjNWUxNDAwMAo+IFsgMTc4OS44MTQ3OTldIFBDIGlzIGF0IDB4ZTViY2ZlODQKPiBbIDE3ODku
-ODE3OTcxXSBMUiBpcyBhdCAweGI1N2EwMGZiCj4gWyAxNzg5LjgyMTExMl0gcGMgOiBbPGU1YmNm
-ZTg0Pl0gICAgbHIgOiBbPGI1N2EwMGZiPl0gICAgcHNyOiAwMDBmMDExMwo+IFsgMTc4OS44Mjcz
-OTVdIHNwIDogYzVlMTVmZjggIGlwIDogYjU5YjFjZGMgIGZwIDogMDAxNmU2MzQKPiBbIDE3ODku
-ODMyNjQyXSByMTA6IDAwMTZlNjM2ICByOSA6IDAwMDAwMDBhICByOCA6IGJlYzM4MzUwCj4gWyAx
-Nzg5LjgzNzg4OF0gcjcgOiAwMDMxYzdlOCAgcjYgOiBiZWMzODIxOCAgcjUgOiBiZWMzODIwNCAg
-cjQgOiAwMDhjMmEzOAo+IFsgMTc4OS44NDQ0NDVdIHIzIDogMDAwMDAwMDAgIHIyIDogMDAwMDAw
-MDAgIHIxIDogMDAwMDAwM2EgIHIwIDogMDAwMDAwMDEKPiBbIDE3ODkuODUxMDAzXSBGbGFnczog
-bnpjdiAgSVJRcyBvbiAgRklRcyBvbiAgTW9kZSBTVkNfMzIgIElTQSBBUk0gIFNlZ21lbnQgdXNl
-cgo+IFsgMTc4OS44NTgxNzFdIENvbnRyb2w6IDEwYzUzODdkICBUYWJsZTogODVlZjAwMTkgIERB
-QzogMDAwMDAwNTUKPiBbIDE3ODkuODYzOTM1XSBQcm9jZXNzIEhNSV9WMiAocGlkOiAxMTM1LCBz
-dGFjayBsaW1pdCA9IDB4YzVlMTQyMTgpCj4gWyAxNzg5Ljg2OTk3NV0gU3RhY2s6ICgweGM1ZTE1
-ZmY4IHRvIDB4YzVlMTYwMDApCj4gWyAxNzg5Ljg3NDMzNl0gNWZlMDogICAgICAgICAgICAgICAg
-ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgMDAwMDAwMDAgMDAwMDAwMDAK
-PiBbIDE3ODkuODgyNTQxXSBCYWNrdHJhY2U6IGludmFsaWQgZnJhbWUgcG9pbnRlciAweDAwMTZl
-NjM0Cj4gWyAxNzg5Ljg4Nzc4N10gQ29kZTogYmFkIFBDIHZhbHVlCj4gWyAxNzg5Ljg5MDg2OF0g
-LS0tWyBlbmQgdHJhY2UgMGVlZjQ1MWZhYTliN2EyNiBdLS0tCj4gaSBkb24ndCB0aGluayBpdCBp
-cyBzb21ldGhpbmcgd3Jvbmcgd2l0aCB0aGUgUVQgYXBwbGljYXRpb247IGJlY2FzZSBpZiBpIHNo
-dXQgZG93biB0aGUgZXZlcnkgbWlsbGljc2Vjb25kIGludGVycnVwdCwKPiAgaXQgY2FuIHJ1biBm
-aW5lIGZvciAyNCBob3VycyBvciBtb3JlLiBBbmQgaSB1c2UgdGhlICd0b3AnIGNvbW1hbmQgdG8g
-Y2hlY2sgdGhlIFFUIGFwcGxpY2F0aW9uICwgZm91bmQgdGhhdAo+ICBpdCBvbmx5IG9jY3VweSAl
-Mn4lMyBjcHUgdXNhZ2UsIGFuZCBpdHMgcGh5c2ljYWwgbWVtb3J5IGNvbnN1bXB0aW9uIGlzIGFi
-b3V0IDQwTSwgdGhlIHN5c3RlbSBzdGlsbCBnZXQgMzVNIG1lbW9yeSBmcmVlLgo+ICBoZXJlIGlz
-ICB0aGUgaXNyIG9mIHRoZSBpbnRlcnJ1cHQsIGkganVzdCBkbyB2ZXJ5IHNpbXBsZSB0aGluZ3M6
-Cj4gIHN0YXRpYyBpbnQgaW50MW1zSGFuZGxlcihydGRtX2lycV90ICppcnFfaGFuZGxlKQo+ICB7
-Cj4gKih1bnNpZ25lZCBpbnQgKikoaW50Y19yZWdfYmFzZSArIE9GRlNFVF9JTlRDX0NPTlRST0wp
-ID0gMHgxOy8vZW5hYmxlIG5ldyBJUlEgZ2VuZXJhdGlvbgo+ICAgdGltZXMxbXMrKzsgLy9qdXN0
-IGZvciB0ZXN0Cj4gICAvL3VkZF9ub3RpZnlfZXZlbnQoJmRldmljZSk7Cj4gICByZXR1cm4gUlRE
-TV9JUlFfSEFORExFRDsKPiAgfQo+IHNvICBpdCBpcyBwb3NzaWJsZSB0aGF0IHRoZSB4ZW5vbWFp
-IGRvbWFpbiBpbnRlcnJ1cHQgaXMgdG9vIGZyZXF1ZW50bHkgdGhhdCB0aGUgbGludXggZG9tYWlu
-IHN5c3RlbSBjYWxsIGNhbm5vdCBiZSBoYW5kbGUgc29tdGltZXMgPyBhbmQgaG93IHRvIHNsb3Zl
-IHRoaXMgcHJvYmxlbT8KPiBhbmQgaGVyZSBpcyBteSBib2FyZCBpbmZvOiBsaW51eCA0LjE0ICsg
-aXBpcGUtY29yZS00LjE0LjcxLWFybS00LnBhdGNoICsgeGVub21haTMuMC43IDsgdGhlIGFtMzM1
-MiBpcyBydW5pbmcgYXQgODAwTSBIWiBmcmVxdWVuY3kgCgpUaGlzIGlzIG5vdCBpbiBsaW5lIHdp
-dGggdGhlIGJhY2t0cmFjZS4gSXQgdGFsa3MgYWJvdXQgcmV2aXNpb24KNC4xNC42Ny1nZDMxNWE5
-YmIwMCwgd2hpY2ggaXMgbm90IGFuIG9mZmljaWFsIGNvbW1pdC4gRGlkIHlvdSBuZWVkIHRvIGNo
-YW5nZQphbnl0aGluZz8KCkphbgoKLS0gClNpZW1lbnMgQUcsIENvcnBvcmF0ZSBUZWNobm9sb2d5
-LCBDVCBSREEgSU9UIFNFUy1ERQpDb3Jwb3JhdGUgQ29tcGV0ZW5jZSBDZW50ZXIgRW1iZWRkZWQg
-TGludXgKCg==
+On 06.12.18 08:24, duanwujie wrote:
+> We use the xenomai 3.0.7 stable version. Is okay for this ?
+> 
+
+No, as I said. You need the latest stable/3.0.x branch because you need 
+adjustments to the FPU changes.
+
+Jan
+
+> 在 2018/12/6 下午3:21, Jan Kiszka 写道:
+>> On 06.12.18 08:18, duanwujie wrote:
+>>> I am not so sure, bellow code exist in ipipe-core-4.9.51-x86-2.patch but 
+>>> ipipe-core-4.9.135-x86-7.patch didn't。
+>>>
+>>> arch/x86/include/asm/fpu/internal.h:
+>>>
+>>> #ifdef CONFIG_IPIPE
+>>> static inline union fpregs_state *active_fpstate(struct fpu *fpu)
+>>> {
+>>> return fpu->active_state;
+>>> }
+>>> #else
+>>> static inline union fpregs_state *active_fpstate(struct fpu *fpu)
+>>> {
+>>> return &fpu->state;
+>>> }
+>>> #endif
+>>
+>> That's because of 
+>> https://gitlab.denx.de/Xenomai/ipipe/commit/6152df8928a5a8c3cbba81490109e041a2ca95fd 
+>> and is correct.
+>>
+>> Again: Did you update Xenomai?
+>>
+>> Jan
+>>
+> -- 
+> *Linx Software Corportaion Sichuan Branch
+> Name：wujie duan
+> Tel：028-65182023-6202
+> E-mail: wjduan@linx-info.com
+> *
+
+
+-- 
+Siemens AG, Corporate Technology, CT RDA IOT SES-DE
+Corporate Competence Center Embedded Linux
+
