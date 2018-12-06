@@ -9,13 +9,14 @@ References: <E1gHtmu-0002xR-FI@xenomai.org>
  <1139e58e-ca54-29cf-119a-3be099b9ff38@siemens.com>
  <ca1cbe13-9c2d-8b0d-933f-f5a5da27b70d@linx-info.com>
  <15d77171-f5c9-e69b-3e10-dec6ada23e39@siemens.com>
-From: duanwujie <wjduan@linx-info.com>
-Message-ID: <719a212a-ce87-49af-23f1-41f4bd02c4e4@linx-info.com>
-Date: Thu, 6 Dec 2018 15:18:26 +0800
+ <719a212a-ce87-49af-23f1-41f4bd02c4e4@linx-info.com>
+From: Jan Kiszka <jan.kiszka@siemens.com>
+Message-ID: <12f81dbf-16d9-dc28-5fff-6d91d58ce2c1@siemens.com>
+Date: Thu, 6 Dec 2018 08:21:16 +0100
 MIME-Version: 1.0
-In-Reply-To: <15d77171-f5c9-e69b-3e10-dec6ada23e39@siemens.com>
-Content-Language: en-US
+In-Reply-To: <719a212a-ce87-49af-23f1-41f4bd02c4e4@linx-info.com>
 Content-Type: text/plain; charset="utf-8"; format="flowed"
+Content-Language: en-US
 Content-Transfer-Encoding: 8bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
@@ -25,59 +26,36 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jan Kiszka <jan.kiszka@siemens.com>
+To: duanwujie <wjduan@linx-info.com>
 Cc: Xenomai <xenomai@xenomai.org>, =?UTF-8?B?5b2t5b+X6Iiq?= <zhpeng@linx-info.com>, yuening <ynliu@linx-info.com>
 
-I am not so sure, bellow code exist in ipipe-core-4.9.51-x86-2.patch but 
-ipipe-core-4.9.135-x86-7.patch didn't。
+On 06.12.18 08:18, duanwujie wrote:
+> I am not so sure, bellow code exist in ipipe-core-4.9.51-x86-2.patch but 
+> ipipe-core-4.9.135-x86-7.patch didn't。
+> 
+> arch/x86/include/asm/fpu/internal.h:
+> 
+> #ifdef CONFIG_IPIPE
+> static inline union fpregs_state *active_fpstate(struct fpu *fpu)
+> {
+> return fpu->active_state;
+> }
+> #else
+> static inline union fpregs_state *active_fpstate(struct fpu *fpu)
+> {
+> return &fpu->state;
+> }
+> #endif
 
-arch/x86/include/asm/fpu/internal.h:
+That's because of 
+https://gitlab.denx.de/Xenomai/ipipe/commit/6152df8928a5a8c3cbba81490109e041a2ca95fd 
+and is correct.
 
-#ifdef CONFIG_IPIPE
-static inline union fpregs_state *active_fpstate(struct fpu *fpu)
-{
-return fpu->active_state;
-}
-#else
-static inline union fpregs_state *active_fpstate(struct fpu *fpu)
-{
-return &fpu->state;
-}
-#endif
+Again: Did you update Xenomai?
 
-在 2018/12/6 下午3:06, Jan Kiszka 写道:
-> On 06.12.18 08:04, duanwujie wrote:
->> It seem to forget port the arch/x86/include/asm/fpu/internal.h in the 
->> ipipe-core-4.9.135-x86-7.patch
->>
->
-> You mean that file is missing in the generated patch?
->
-> Jan
->
->>
->> 在 2018/12/6 下午3:00, Jan Kiszka via Xenomai 写道:
->>> On 06.12.18 06:45, limingyu via Xenomai wrote:
->>>> I have used this patch(ipipe-core-4.9.135-x86-7.patch) for a test 
->>>> usage and I got a machine halt after I run the latency test program 
->>>> of Xenomai.The problem seems caused by  the fpu_restore function. 
->>>> Could you please fix it in the next patch release?
->>>
->>> Did you also update Xenomai to the latest stable or master branch 
->>> state? That is required on x86.
->>>
->>> Jan
->>>
->> -- 
->> *Linx Software Corportaion Sichuan Branch
->> Name：wujie duan
->> Tel：028-65182023-6202
->> E-mail: wjduan@linx-info.com
->> *
->
+Jan
+
 -- 
-*Linx Software Corportaion Sichuan Branch
-Name：wujie duan
-Tel：028-65182023-6202
-E-mail: wjduan@linx-info.com
-*
+Siemens AG, Corporate Technology, CT RDA IOT SES-DE
+Corporate Competence Center Embedded Linux
+
