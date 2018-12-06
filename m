@@ -14,8 +14,8 @@ References: <E1gHtmu-0002xR-FI@xenomai.org>
  <6bed742a-92a3-1ec1-1be2-09ce407ac2ec@linx-info.com>
  <9e97f42e-00f9-d709-2105-526d4325e40f@siemens.com>
 From: duanwujie <wjduan@linx-info.com>
-Message-ID: <82cfb885-d173-de30-0227-dd17e0009261@linx-info.com>
-Date: Thu, 6 Dec 2018 15:42:35 +0800
+Message-ID: <a427034a-6d5d-ac38-99ec-ed7f02992bf7@linx-info.com>
+Date: Thu, 6 Dec 2018 16:58:18 +0800
 MIME-Version: 1.0
 In-Reply-To: <9e97f42e-00f9-d709-2105-526d4325e40f@siemens.com>
 Content-Language: en-US
@@ -32,7 +32,8 @@ List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
 To: Jan Kiszka <jan.kiszka@siemens.com>
 Cc: Xenomai <xenomai@xenomai.org>, =?UTF-8?B?5b2t5b+X6Iiq?= <zhpeng@linx-info.com>, yuening <ynliu@linx-info.com>
 
-Okay we will try and do other's test!   thank you!
+We test the  ipipe-core-4.9.135-x86-7  with the latest branch 
+stable/v3.0.x but the same error occur !
 
 
 在 2018/12/6 下午3:26, Jan Kiszka 写道:
