@@ -15,14 +15,15 @@ References: <E1gHtmu-0002xR-FI@xenomai.org>
  <9e97f42e-00f9-d709-2105-526d4325e40f@siemens.com>
  <82cfb885-d173-de30-0227-dd17e0009261@linx-info.com>
  <9e57b91b-edf6-f8cd-54c9-3ab3030ea1ff@siemens.com>
-From: limingyu <myli@linx-info.com>
-Message-ID: <da761d83-4a96-d7a1-552d-c94897f26d32@linx-info.com>
-Date: Thu, 6 Dec 2018 20:22:19 +0800
+ <da761d83-4a96-d7a1-552d-c94897f26d32@linx-info.com>
+From: Jan Kiszka <jan.kiszka@siemens.com>
+Message-ID: <e53f72ee-6d95-2cd2-fe57-3dde9b8e1b1d@siemens.com>
+Date: Thu, 6 Dec 2018 13:55:51 +0100
 MIME-Version: 1.0
-In-Reply-To: <9e57b91b-edf6-f8cd-54c9-3ab3030ea1ff@siemens.com>
-Content-Type: text/plain; charset="utf-8"; format="flowed"
-Content-Transfer-Encoding: 8bit
+In-Reply-To: <da761d83-4a96-d7a1-552d-c94897f26d32@linx-info.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -31,86 +32,23 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jan Kiszka <jan.kiszka@siemens.com>
-Cc: xenomai@xenomai.org, =?UTF-8?B?5b+X6IiqIOW9rQ==?= <zhpeng@linx-info.com>, =?UTF-8?B?5YiY5bKz5a6B?= <ynliu@linx-info.com>, duanwujie <wjduan@linx-info.com>
+To: limingyu <myli@linx-info.com>
+Cc: =?UTF-8?B?5b+X6IiqIOW9rQ==?= <zhpeng@linx-info.com>, =?UTF-8?B?5YiY5bKz5a6B?= <ynliu@linx-info.com>, xenomai@xenomai.org
 
-Sorry, Jan, I have rechecked the patched kernel tree and found that I 
-forgot to patch the Xenomai(stable/v3.0.x branch) to the kernel source, 
-that's just the reason why I meet the problem. I repatched the kernel 
-and everything works fine now. Thanks for your warm heart help and 
-apologize for my unprofessional behavior.
+On 06.12.18 13:22, limingyu via Xenomai wrote:
+> Sorry, Jan, I have rechecked the patched kernel tree and found that I forgot to 
+> patch the Xenomai(stable/v3.0.x branch) to the kernel source, that's just the 
+> reason why I meet the problem. I repatched the kernel and everything works fine 
+> now. Thanks for your warm heart help and apologize for my unprofessional behavior.
+> 
 
-On 12/6/18 7:21 PM, Jan Kiszka via Xenomai wrote:
-> On 06.12.18 08:42, duanwujie wrote:
->> Okay we will try and do other's test! thank you!
->>
->
-> Could you do me a favor and check if your patched kernel tree (without 
-> Xenomai preparation) is identical to the corresponding git tree on 
-> gitlab.denx.de?
->
-> If so, we would then need your kernel config and executed steps on the 
-> target in order to try reproducing locally.
->
-> TIA,
-> Jan
->
->>
->> 在 2018/12/6 下午3:26, Jan Kiszka 写道:
->>> On 06.12.18 08:24, duanwujie wrote:
->>>> We use the xenomai 3.0.7 stable version. Is okay for this ?
->>>>
->>>
->>> No, as I said. You need the latest stable/3.0.x branch because you 
->>> need adjustments to the FPU changes.
->>>
->>> Jan
->>>
->>>> 在 2018/12/6 下午3:21, Jan Kiszka 写道:
->>>>> On 06.12.18 08:18, duanwujie wrote:
->>>>>> I am not so sure, bellow code exist in 
->>>>>> ipipe-core-4.9.51-x86-2.patch but ipipe-core-4.9.135-x86-7.patch 
->>>>>> didn't。
->>>>>>
->>>>>> arch/x86/include/asm/fpu/internal.h:
->>>>>>
->>>>>> #ifdef CONFIG_IPIPE
->>>>>> static inline union fpregs_state *active_fpstate(struct fpu *fpu)
->>>>>> {
->>>>>> return fpu->active_state;
->>>>>> }
->>>>>> #else
->>>>>> static inline union fpregs_state *active_fpstate(struct fpu *fpu)
->>>>>> {
->>>>>> return &fpu->state;
->>>>>> }
->>>>>> #endif
->>>>>
->>>>> That's because of 
->>>>> https://gitlab.denx.de/Xenomai/ipipe/commit/6152df8928a5a8c3cbba81490109e041a2ca95fd 
->>>>> and is correct.
->>>>>
->>>>> Again: Did you update Xenomai?
->>>>>
->>>>> Jan
->>>>>
->>>> -- 
->>>> *Linx Software Corportaion Sichuan Branch
->>>> Name：wujie duan
->>>> Tel：028-65182023-6202
->>>> E-mail: wjduan@linx-info.com
->>>> *
->>>
->>>
->> -- 
->> *Linx Software Corportaion Sichuan Branch
->> Name：wujie duan
->> Tel：028-65182023-6202
->> E-mail: wjduan@linx-info.com
->> *
->
+Oh, don't worry, such things happen to me as well.
+
+Thanks for the clarification!
+
+Jan
+
 -- 
-Linx Software Co. Ltd. Sichuan Branch
-E-mail: myli@linx-info.com
-
+Siemens AG, Corporate Technology, CT RDA IOT SES-DE
+Corporate Competence Center Embedded Linux
 
