@@ -1,14 +1,17 @@
-Mime-Version: 1.0 (Mac OS X Mail 11.5 \(3445.9.1\))
-Subject: Re: ipipe-arm64 kernel issue
-From: Steve Pavao <stevep@korgrd.com>
-In-Reply-To: <58308e88-38d2-e4ea-232e-8f84dfe1fbd4@xenomai.org>
-Date: Wed, 12 Dec 2018 10:38:09 -0500
-Message-Id: <22FE4891-75C8-48DB-BCBC-DBEB01828623@korgrd.com>
-References: <8C8014A3-6A93-4E44-B753-49AC9FA313A3@korgrd.com>
- <58308e88-38d2-e4ea-232e-8f84dfe1fbd4@xenomai.org>
-Content-Type: text/plain;
-	charset=utf-8
-Content-Transfer-Encoding: quoted-printable
+Subject: Re: Xenomai support for arm64
+References: <3e868e4f-7bd5-2874-d72b-fc2449ef4b65@siemens.com>
+ <111becaa-9e0f-f8ad-4802-62f51379fc07@xenomai.org>
+ <08f84d9f-594c-8d82-1da8-f747430226e3@xenomai.org>
+ <3b2d567d-b489-723c-41de-9c73fb755763@siemens.com>
+ <8ced9265-1312-0e13-d2dc-3813de0bccbf@linx-info.com>
+From: Philippe Gerum <rpm@xenomai.org>
+Message-ID: <3ae28e1d-a080-65fa-3836-e3e8e3a0c04d@xenomai.org>
+Date: Wed, 12 Dec 2018 22:32:41 +0100
+MIME-Version: 1.0
+In-Reply-To: <8ced9265-1312-0e13-d2dc-3813de0bccbf@linx-info.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,73 +20,22 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Philippe Gerum <rpm@xenomai.org>
-Cc: xenomai@xenomai.org
+To: duanwujie <wjduan@linx-info.com>, teven.seeger@nasa.gov, dmitriy@oss-tech.org, Xenomai <xenomai@xenomai.org>, =?UTF-8?B?5b2t5b+X6Iiq?= <zhpeng@linx-info.com>
 
-I'm actually using 4.1.14 at change Id =
-133bbf97672ff6e72fc21784b8ae44b194b76626 in master branch.
+On 11/12/18 8:15 AM, duanwujie wrote:
+> On the arm64 already have ipipe patch , but the Xenomai not properly
+> worked on the arm64.
+> 
+> In order to support arm64, what other work needs to be done! Can you
+> provide some clues?
+> 
+> 
 
-I will build at the latest head, however, to see if the problem goes =
-away.
+Please consider reading the document at [1]. I don't see any way to help
+you at the moment.
 
-Thank you.
+[1] https://gitlab.denx.de/Xenomai/xenomai/wikis/Getting_Help
 
-- Steve Pavao
-Korg R&D
-
-
-> On Dec 12, 2018, at 5:21 AM, Philippe Gerum <rpm@xenomai.org> wrote:
->=20
-> On 12/11/18 10:25 PM, Steve Pavao via Xenomai wrote:
->> I have 2 different, basic apps that oops in a very similar way on =
-ipipe-arm64 running on R Pi 3B.  One of them is rpm, another is my own =
-program.
->>=20
->> Here is the partial backtrace for the =E2=80=98rpm=E2=80=99 oops.  =
-The backtrace for my other program is almost identical.  (I=E2=80=99ve =
-left out interim calls to keep this email concise.)
->>=20
->> [  124.816179] [<ffffff8008260480>] __find_get_block+0x2a0/0x400
->> ...
->> [  124.816311] [<ffffff8008778b88>] do_page_fault+0x268/0x4e0
->> [  124.816320] [<ffffff8008778e6c>] do_translation_fault+0x6c/0x7c
->> [  124.816330] [<ffffff80080814ec>] do_mem_abort+0x54/0xc8
->>=20
->> The BUG finally occurs at line 1279 of buffer.c:
->>=20
->> static inline void check_irqs_on(void)
->> {
->> #ifdef irqs_disabled
->> 	BUG_ON(irqs_disabled());   //  <=E2=80=94=E2=80=94=E2=80=94=E2=80=94=
- here
->> #endif
->> }
->>=20
->> The above BUG happens during the page fault recovery process.  (FYI, =
-some of the calls between do_page_fault_and __find_get_block are ext4 =
-calls.)
->>=20
->> In both apps, the oops happens around the time of file creation on =
-the SD card:  For rpm, it is during an install of a valid rpm package, =
-for the other app, it occurs at the time a sqlite database is opened.  =
-This is basic stuff that should just work.
->>=20
->> I am looking for ideas about what could be wrong with the =
-setup/configuration of my ipipe-arm64 system, such that some apps that =
-read/write to the SD card are oopsing this way when doing page fault =
-recovery.
->=20
-> This is a bug in the I-pipe layer. Assuming you are still running =
-kernel
-> 4.9, please try 4.14 from [1], it fixes several issues which still =
-exist
-> in the 4.9 pipeline.
->=20
-> [1] =
-https://gitlab.denx.de/Xenomai/ipipe-arm64/commits/stable/4.14.71-arm64 =
-<https://gitlab.denx.de/Xenomai/ipipe-arm64/commits/stable/4.14.71-arm64>
->=20
->=20
-> --=20
-> Philippe.
+-- 
+Philippe.
 
