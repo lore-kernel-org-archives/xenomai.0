@@ -1,17 +1,15 @@
-Subject: Re: RTnet splash with current next and stable
-From: Jan Kiszka <jan.kiszka@siemens.com>
-References: <473fdfe5-e761-e51c-a54c-90a520ca7816@siemens.com>
- <a8292038-34ff-fcb5-0def-c764fd4e0b94@xenomai.org>
- <086d41ad-b4a7-b3f2-945b-96c9f6eeecfb@siemens.com>
- <CAOuPNLh-Jfow-bCbdteF9dWNH_QBhnjdPW8Qb8qY_PfxfXgOcg@mail.gmail.com>
- <8ef30c9e-8964-4f12-112e-e1ef848b9778@siemens.com>
-Message-ID: <98eed01f-3769-0dc9-9198-88344ac0f3c5@siemens.com>
-Date: Thu, 13 Dec 2018 18:24:32 +0100
-MIME-Version: 1.0
-In-Reply-To: <8ef30c9e-8964-4f12-112e-e1ef848b9778@siemens.com>
-Content-Type: text/plain; charset="utf-8"; format="flowed"
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain;
+	charset=utf-8
+Mime-Version: 1.0 (Mac OS X Mail 11.5 \(3445.9.1\))
+Subject: Re: ipipe-arm64 kernel issue
+From: Steve Pavao <stevep@korgrd.com>
+In-Reply-To: <8AAA419E-875B-4CC7-9118-8DC45BE270A2@korgrd.com>
+Date: Thu, 13 Dec 2018 15:04:09 -0500
+Content-Transfer-Encoding: quoted-printable
+Message-Id: <C780EA8A-B534-42F5-BE91-CC3A04010F10@korgrd.com>
+References: <8C8014A3-6A93-4E44-B753-49AC9FA313A3@korgrd.com>
+ <58308e88-38d2-e4ea-232e-8f84dfe1fbd4@xenomai.org>
+ <8AAA419E-875B-4CC7-9118-8DC45BE270A2@korgrd.com>
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -20,100 +18,35 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Pintu Agarwal <pintu.ping@gmail.com>
-Cc: Philippe Gerum <rpm@xenomai.org>, "Xenomai@xenomai.org" <xenomai@xenomai.org>, Sebastian.Smolorz@gmx.de
+To: Philippe Gerum <rpm@xenomai.org>
+Cc: xenomai@xenomai.org
 
-On 13.12.18 17:21, Jan Kiszka wrote:
-> On 13.12.18 10:55, Pintu Agarwal wrote:
->> On Tue, Dec 4, 2018 at 10:30 PM Jan Kiszka via Xenomai
->> <xenomai@xenomai.org> wrote:
->>>
->>> On 31.10.18 18:10, Philippe Gerum wrote:
->>>> On 10/30/18 11:28 AM, Jan Kiszka wrote:
->>>>> Hi all,
->>>>>
->>>>> just testing new kernels with smokey, and one of them had RTnet on. This
->>>>> triggered a bug with the net_packat_dgram test:
->>>>>
->>>>> [   50.610997] initializing loopback...
->>>>> [   50.613799] RTnet: registered rtlo
->>>>> [   50.692154] ------------[ cut here ]------------
->>>>> [   50.693577] WARNING: CPU: 1 PID: 1119 at ../lib/list_debug.c:29 
->>>>> __list_add+0x62/0xb0
->>>>> [   50.696832] list_add corruption. next->prev should be prev 
->>>>> (ffffffffa0007d20), but was           (null). (next=ffff88003a8bb700).
->>>>> [   50.700751] Modules linked in: rtpacket rtipv4 rt_loopback rt_e1000e rtnet
->>>>> [   50.702518] CPU: 1 PID: 1119 Comm: smokey Not tainted 4.9.135+ #26
->>>>> [   50.704188] Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 
->>>>> rel-1.11.2-0-gf9626ccb91-prebuilt.qemu-project.org 04/01/2014
->>>>> [   50.707861] I-pipe domain: Linux
->>>>> [   50.709295]  ffffc90002943c10 ffffffff8146a31a ffffc90002943c60 
->>>>> 0000000000000000
->>>>> [   50.710335]  ffffc90002943c50 ffffffff810e9441 0000001da0007ca8 
->>>>> ffff88003a8bb700
->>>>> [   50.710335]  ffffffffa0007d20 ffff88003a8bb700 000000000001d230 
->>>>> ffff88003a8bb640
->>>>> [   50.710335] Call Trace:
->>>>> [   50.710335]  [<ffffffff8146a31a>] dump_stack+0xa2/0xc8
->>>>> [   50.710335]  [<ffffffff810e9441>] __warn+0xe1/0x100
->>>>> [   50.710335]  [<ffffffff810e94af>] warn_slowpath_fmt+0x4f/0x60
->>>>> [   50.710335]  [<ffffffff812b0b61>] ? __slab_alloc.isra.88+0xa1/0xd0
->>>>> [   50.710335]  [<ffffffffa0003edb>] ? rtskb_pool_extend+0xbb/0x220 [rtnet]
->>>>> [   50.710335]  [<ffffffff81498862>] __list_add+0x62/0xb0
->>>>> [   50.710335]  [<ffffffffa000160a>] rtdev_map_rtskb+0x7a/0xa0 [rtnet]
->>>>> [   50.710335]  [<ffffffffa0003f12>] rtskb_pool_extend+0xf2/0x220 [rtnet]
->>>>> [   50.710335]  [<ffffffffa0004072>] rtskb_pool_init+0x32/0x70 [rtnet]
->>>>> [   50.710335]  [<ffffffffa00043d2>] __rt_bare_socket_init+0x42/0x90 [rtnet]
->>>>> [   50.710335]  [<ffffffffa0004501>] __rt_socket_init+0x81/0xd0 [rtnet]
->>>>> [   50.710335]  [<ffffffffa0054477>] rt_packet_socket+0x27/0xb0 [rtpacket]
->>>>> [   50.710335]  [<ffffffff81219dd7>] ? create_instance+0x67/0x80
->>>>> [   50.710335]  [<ffffffff8121a772>] __rtdm_dev_socket+0x112/0x440
->>>>> [   50.710335]  [<ffffffff8113bb09>] ? lock_release+0x2c9/0x440
->>>>> [   50.710335]  [<ffffffff8122b200>] ? CoBaLt_open+0x40/0x40
->>>>> [   50.710335]  [<ffffffff8122b20e>] CoBaLt_socket+0xe/0x20
->>>>> [   50.710335]  [<ffffffff812412ca>] ipipe_syscall_hook+0x19a/0x460
->>>>> [   50.710335]  [<ffffffff811ad8e9>] __ipipe_notify_syscall+0x79/0x400
->>>>> [   50.710335]  [<ffffffff811adc9a>] ipipe_handle_syscall+0x2a/0xd0
->>>>> [   50.710335]  [<ffffffff81002d6c>] do_syscall_64+0x3c/0x1c0
->>>>> [   50.710335]  [<ffffffff8184f2c3>] entry_SYSCALL_64_after_swapgs+0x5d/0xdb
->>>>> [   50.761499] ---[ end trace 633f1ec8aecb0735 ]---
->>>>> [   50.762893] ------------[ cut here ]------------
->>>>>
->>>>> Anyone who hacked on this recently have a feeling?
->>>>>
->>>>
->>>> No idea. I'll have a look.
->>>>
->>>>
->>>
->>> I think this one is still open. At least I do not remember having merged
->>> anything related to that since then.
->>>
->>> As everyone is busy right now, I only wonder if we have a regression here, or if
->>> it's just a preexisting issue that we can safely ignore for some v3.0.8.
->>>
->>> Jan
->>>
->>
->> I think I already reported similar rtnet loopback issue around 6
->> months ago with 3.0.6 itself.
->> This kind of issues are visible on x86, Beagle Bone/Raspberry Pi
->> (arm), Hikey (arm64) , even with SMAP disabled in Kernel 4.9.x
->> However, I did not see this issue with Virtual Box (Ubuntu guest).
->>
-> 
-> Thanks for the hint - though I failed to find your concrete email in the archive 
-> so far. I'm planning to try this out soon and then decide in which order to 
-> proceed (release and fix later, or the other way around).
-> 
+> On Dec 13, 2018, at 7:50 AM, Steve Pavao <stevep@korgrd.com> wrote:
 
-Confirmed, the problem existed in 3.0.6 already.
+> As I continue to bring up my app, I notice I=E2=80=99m having a =
+segfault (SIGSEGV) trying to access the general purpose IO pins.
+>=20
+> I notice that /dev/gpiomem is missing from the environment.
 
-I'm having a brief look nevertheless. I feel like it could be simple...
+> I am using the dtb from the ipipe-arm64 build.
+>=20
+> Steve Pavao
+> Korg R&D
 
-Jan
+I learned there is a kernel config option to load a driver for this.  =
+The config option is named CONFIG_BCM2835_DEVGPIOMEM.  It is set to Y in =
+the config.  In the raspberrypi-linux kernel, the driver is here =
+https://github.com/raspberrypi/linux/tree/rpi-4.14.y/drivers/char/broadcom=
+ , but I don=E2=80=99t see the file in the ipipe-arm64 repo.
 
--- 
-Siemens AG, Corporate Technology, CT RDA IOT SES-DE
-Corporate Competence Center Embedded Linux
+Do the ipipe-arm repos tend to allow support for vendor-specific drivers =
+for features like this, and if so, would the Xenomai team be willing to =
+add the gpiomem driver to the ipipe-arm64 kernel build?  I don=E2=80=99t =
+know the policy for something like this, so thought I would ask to add =
+support for it, and see what is customary.
+
+Steve Pavao
+Korg R&D
+
+
 
