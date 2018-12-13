@@ -1,12 +1,8 @@
 MIME-Version: 1.0
-References: <473fdfe5-e761-e51c-a54c-90a520ca7816@siemens.com>
- <a8292038-34ff-fcb5-0def-c764fd4e0b94@xenomai.org>
- <086d41ad-b4a7-b3f2-945b-96c9f6eeecfb@siemens.com>
-In-Reply-To: <086d41ad-b4a7-b3f2-945b-96c9f6eeecfb@siemens.com>
 From: Pintu Agarwal <pintu.ping@gmail.com>
-Date: Thu, 13 Dec 2018 15:25:58 +0530
-Message-ID: <CAOuPNLh-Jfow-bCbdteF9dWNH_QBhnjdPW8Qb8qY_PfxfXgOcg@mail.gmail.com>
-Subject: Re: RTnet splash with current next and stable
+Date: Thu, 13 Dec 2018 16:43:49 +0530
+Message-ID: <CAOuPNLj7oWkbq9jMNQD4WLp67hVbYO8gd2t-qKwYDTpa+OQrZA@mail.gmail.com>
+Subject: ipipe-arm64 patches for qualcomm dragonboard 410c
 Content-Type: text/plain; charset="UTF-8"
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
@@ -16,81 +12,35 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jan Kiszka <jan.kiszka@siemens.com>
-Cc: Philippe Gerum <rpm@xenomai.org>, "Xenomai@xenomai.org" <xenomai@xenomai.org>, Sebastian.Smolorz@gmx.de
+To: "Xenomai@xenomai.org" <xenomai@xenomai.org>, Philippe Gerum <rpm@xenomai.org>, Greg Gallagher <greg@embeddedgreg.com>
 
-On Tue, Dec 4, 2018 at 10:30 PM Jan Kiszka via Xenomai
-<xenomai@xenomai.org> wrote:
->
-> On 31.10.18 18:10, Philippe Gerum wrote:
-> > On 10/30/18 11:28 AM, Jan Kiszka wrote:
-> >> Hi all,
-> >>
-> >> just testing new kernels with smokey, and one of them had RTnet on. This
-> >> triggered a bug with the net_packat_dgram test:
-> >>
-> >> [   50.610997] initializing loopback...
-> >> [   50.613799] RTnet: registered rtlo
-> >> [   50.692154] ------------[ cut here ]------------
-> >> [   50.693577] WARNING: CPU: 1 PID: 1119 at ../lib/list_debug.c:29 __list_add+0x62/0xb0
-> >> [   50.696832] list_add corruption. next->prev should be prev (ffffffffa0007d20), but was           (null). (next=ffff88003a8bb700).
-> >> [   50.700751] Modules linked in: rtpacket rtipv4 rt_loopback rt_e1000e rtnet
-> >> [   50.702518] CPU: 1 PID: 1119 Comm: smokey Not tainted 4.9.135+ #26
-> >> [   50.704188] Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS rel-1.11.2-0-gf9626ccb91-prebuilt.qemu-project.org 04/01/2014
-> >> [   50.707861] I-pipe domain: Linux
-> >> [   50.709295]  ffffc90002943c10 ffffffff8146a31a ffffc90002943c60 0000000000000000
-> >> [   50.710335]  ffffc90002943c50 ffffffff810e9441 0000001da0007ca8 ffff88003a8bb700
-> >> [   50.710335]  ffffffffa0007d20 ffff88003a8bb700 000000000001d230 ffff88003a8bb640
-> >> [   50.710335] Call Trace:
-> >> [   50.710335]  [<ffffffff8146a31a>] dump_stack+0xa2/0xc8
-> >> [   50.710335]  [<ffffffff810e9441>] __warn+0xe1/0x100
-> >> [   50.710335]  [<ffffffff810e94af>] warn_slowpath_fmt+0x4f/0x60
-> >> [   50.710335]  [<ffffffff812b0b61>] ? __slab_alloc.isra.88+0xa1/0xd0
-> >> [   50.710335]  [<ffffffffa0003edb>] ? rtskb_pool_extend+0xbb/0x220 [rtnet]
-> >> [   50.710335]  [<ffffffff81498862>] __list_add+0x62/0xb0
-> >> [   50.710335]  [<ffffffffa000160a>] rtdev_map_rtskb+0x7a/0xa0 [rtnet]
-> >> [   50.710335]  [<ffffffffa0003f12>] rtskb_pool_extend+0xf2/0x220 [rtnet]
-> >> [   50.710335]  [<ffffffffa0004072>] rtskb_pool_init+0x32/0x70 [rtnet]
-> >> [   50.710335]  [<ffffffffa00043d2>] __rt_bare_socket_init+0x42/0x90 [rtnet]
-> >> [   50.710335]  [<ffffffffa0004501>] __rt_socket_init+0x81/0xd0 [rtnet]
-> >> [   50.710335]  [<ffffffffa0054477>] rt_packet_socket+0x27/0xb0 [rtpacket]
-> >> [   50.710335]  [<ffffffff81219dd7>] ? create_instance+0x67/0x80
-> >> [   50.710335]  [<ffffffff8121a772>] __rtdm_dev_socket+0x112/0x440
-> >> [   50.710335]  [<ffffffff8113bb09>] ? lock_release+0x2c9/0x440
-> >> [   50.710335]  [<ffffffff8122b200>] ? CoBaLt_open+0x40/0x40
-> >> [   50.710335]  [<ffffffff8122b20e>] CoBaLt_socket+0xe/0x20
-> >> [   50.710335]  [<ffffffff812412ca>] ipipe_syscall_hook+0x19a/0x460
-> >> [   50.710335]  [<ffffffff811ad8e9>] __ipipe_notify_syscall+0x79/0x400
-> >> [   50.710335]  [<ffffffff811adc9a>] ipipe_handle_syscall+0x2a/0xd0
-> >> [   50.710335]  [<ffffffff81002d6c>] do_syscall_64+0x3c/0x1c0
-> >> [   50.710335]  [<ffffffff8184f2c3>] entry_SYSCALL_64_after_swapgs+0x5d/0xdb
-> >> [   50.761499] ---[ end trace 633f1ec8aecb0735 ]---
-> >> [   50.762893] ------------[ cut here ]------------
-> >>
-> >> Anyone who hacked on this recently have a feeling?
-> >>
-> >
-> > No idea. I'll have a look.
-> >
-> >
->
-> I think this one is still open. At least I do not remember having merged
-> anything related to that since then.
->
-> As everyone is busy right now, I only wonder if we have a regression here, or if
-> it's just a preexisting issue that we can safely ignore for some v3.0.8.
->
-> Jan
->
+Dear Philippe,
 
-I think I already reported similar rtnet loopback issue around 6
-months ago with 3.0.6 itself.
-This kind of issues are visible on x86, Beagle Bone/Raspberry Pi
-(arm), Hikey (arm64) , even with SMAP disabled in Kernel 4.9.x
-However, I did not see this issue with Virtual Box (Ubuntu guest).
+Currently I am working on Xenomai-3.0.6 bring up on QualComm Dragon
+Board 410c using QualComm Linux Kernel 4.9.xxx
 
-> --
-> Siemens AG, Corporate Technology, CT RDA IOT SES-DE
-> Corporate Competence Center Embedded Linux
->
+First I wanted to know if this part already available.
+So, for the initial search, I came across this:
+- Download ipipe-jro-410c.linaro-15.07
+- (From URL: http://git.xenomai.org/ipipe-jro.git/tag/?h=410c.linaro-15.07
+- File name:     ipipe-jro-410c.linaro-15.07.tar.bz2  )
+
+But, I am not able to access these links.
+It requires user name/password for sign-in.
+Also the sign-up/register link is not available.
+If you are aware about this, can you tell me how to access it?
+
+Also, I came  across this link:
+https://discuss.96boards.org/t/dragonboard-for-real-time-robotics/3710
+http://www.cs.technion.ac.il/~cs234313/projects_sites/S17/15/site/
+
+Xenomai installation Guide for Dragon 410c:
+http://www.cs.technion.ac.il/~cs234313/projects_sites/S17/15/site/files/Install%20Xenomai%20on%20dragonboard%20410c%20guide.docx
+
+Is this means that Xenomai is already up in Dragon Board 410c?
+Or in any other QualComm MSM chipset ?
+
+
+Thanks,
+Pintu
 
