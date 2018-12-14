@@ -1,11 +1,13 @@
-From: duanwujie <wjduan@linx-info.com>
-Subject: Question about synchronization object
-Message-ID: <4c930380-38d1-ccc2-8d6e-bc422d4f97b9@linx-info.com>
-Date: Fri, 14 Dec 2018 17:14:09 +0800
+Subject: Re: ipipe-arm64 patches for qualcomm dragonboard 410c
+References: <CAOuPNLj7oWkbq9jMNQD4WLp67hVbYO8gd2t-qKwYDTpa+OQrZA@mail.gmail.com>
+From: Philippe Gerum <rpm@xenomai.org>
+Message-ID: <f8edae00-ad7c-5191-e875-66c1aed6e968@xenomai.org>
+Date: Fri, 14 Dec 2018 10:17:56 +0100
 MIME-Version: 1.0
+In-Reply-To: <CAOuPNLj7oWkbq9jMNQD4WLp67hVbYO8gd2t-qKwYDTpa+OQrZA@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
-Content-Type: text/plain; charset="utf-8"; format="flowed"
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -14,64 +16,42 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Philippe Gerum <rpm@xenomai.org>, jan.kiszka@siemens.com
-Cc: Xenomai <xenomai@xenomai.org>, =?UTF-8?B?5b2t5b+X6Iiq?= <zhpeng@linx-info.com>
+To: Pintu Agarwal <pintu.ping@gmail.com>, "Xenomai@xenomai.org" <xenomai@xenomai.org>, Greg Gallagher <greg@embeddedgreg.com>, Jorge Ramirez-Ortiz <jro@xenomai.org>
 
-Hi, Phi and Jan:
+On 12/13/18 12:13 PM, Pintu Agarwal wrote:
+> Dear Philippe,
+> 
+> Currently I am working on Xenomai-3.0.6 bring up on QualComm Dragon
+> Board 410c using QualComm Linux Kernel 4.9.xxx
+> 
+> First I wanted to know if this part already available.
+> So, for the initial search, I came across this:
+> - Download ipipe-jro-410c.linaro-15.07
+> - (From URL: http://git.xenomai.org/ipipe-jro.git/tag/?h=410c.linaro-15.07
+> - File name:     ipipe-jro-410c.linaro-15.07.tar.bz2  )
+> 
+> But, I am not able to access these links.
 
-I have question about  synchronization object.Consider under condition.
+Check https://lab.xenomai.org/ipipe-jro.git/
 
-*
-*
+> It requires user name/password for sign-in.
+> Also the sign-up/register link is not available.
+> If you are aware about this, can you tell me how to access it?
+> 
+> Also, I came  across this link:
+> https://discuss.96boards.org/t/dragonboard-for-real-time-robotics/3710
+> http://www.cs.technion.ac.il/~cs234313/projects_sites/S17/15/site/
+> 
+> Xenomai installation Guide for Dragon 410c:
+> http://www.cs.technion.ac.il/~cs234313/projects_sites/S17/15/site/files/Install%20Xenomai%20on%20dragonboard%20410c%20guide.docx
+> 
+> Is this means that Xenomai is already up in Dragon Board 410c?
+> Or in any other QualComm MSM chipset ?
+> 
+> 
 
-*Thread A*
-
-     mutex_lock(lock)  //O1
-
-     ...
-
-     ...
-
-     mutex_unlock(lock)//O2
-
-*Thread B*
-
-     mutex_lock(lock) //O3
-
-     ....
-
-     ....
-
-     mutex_unlock(lock);
-
-
-O1:  become xnsynch's owner.
-
-O3:  blocked to wait thread A unlock mutex.
-
-O2:  this will call sc_cobalt_mutex_unlock syscall then transfer owner 
-to thread B.
-
-        But in the xnsynch_release's  "likely condition" seems that  
-transfer_ownership will  not be called. Therefore, how to resume thread B ?
-
-       Is there something i misunderstood  for xnsynch_fast_release ?
-
-
-struct xnthread *xnsynch_release(struct xnsynch *synch,
-                  struct xnthread *thread)
-{
-    /* .................................. */
-     if (likely(xnsynch_fast_release(lockp, threadh)))//This condition
-         return NULL;
-
-     return transfer_ownership(synch, thread);
-}
-
+Jorge did that work. He is the right person to ask those questions to.
 
 -- 
-*Linx Software Corportaion Sichuan Branch
-Name：wujie duan
-Tel：028-65182023-6202
-E-mail: wjduan@linx-info.com
-*
+Philippe.
+
