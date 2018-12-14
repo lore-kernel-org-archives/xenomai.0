@@ -1,12 +1,16 @@
+Subject: Re: Waking up a linux thread from a xenomai thread, without mode
+ switch
+References: <9716cf94f871edebb580b4010a5c24465299514f.camel@sprinte.eu>
+ <53dd5690-8997-6434-549d-fdb4a2b2a8b8@xenomai.org>
+ <825e119a24df931fec5e9938006abe921637195f.camel@sprinte.eu>
+From: Philippe Gerum <rpm@xenomai.org>
+Message-ID: <6d143284-475d-5514-68d7-716089130740@xenomai.org>
+Date: Fri, 14 Dec 2018 16:06:16 +0100
 MIME-Version: 1.0
-References: <CAOuPNLj7oWkbq9jMNQD4WLp67hVbYO8gd2t-qKwYDTpa+OQrZA@mail.gmail.com>
- <f8edae00-ad7c-5191-e875-66c1aed6e968@xenomai.org>
-In-Reply-To: <f8edae00-ad7c-5191-e875-66c1aed6e968@xenomai.org>
-From: Pintu Agarwal <pintu.ping@gmail.com>
-Date: Fri, 14 Dec 2018 19:01:31 +0530
-Message-ID: <CAOuPNLia1ZRvwyUjtqEh2zqKniviQbH9VDtd+wiMG4sLDn4Uog@mail.gmail.com>
-Subject: Re: ipipe-arm64 patches for qualcomm dragonboard 410c
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <825e119a24df931fec5e9938006abe921637195f.camel@sprinte.eu>
+Content-Type: text/plain; charset="utf-8"
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,54 +19,30 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Philippe Gerum <rpm@xenomai.org>
-Cc: "Xenomai@xenomai.org" <xenomai@xenomai.org>, Greg Gallagher <greg@embeddedgreg.com>, jro@xenomai.org
+To: Julien Blanc <julien.blanc@sprinte.eu>, "Xenomai@xenomai.org" <Xenomai@xenomai.org>
 
-On Fri, Dec 14, 2018 at 2:48 PM Philippe Gerum <rpm@xenomai.org> wrote:
->
-> On 12/13/18 12:13 PM, Pintu Agarwal wrote:
-> > Dear Philippe,
-> >
-> > Currently I am working on Xenomai-3.0.6 bring up on QualComm Dragon
-> > Board 410c using QualComm Linux Kernel 4.9.xxx
-> >
-> > First I wanted to know if this part already available.
-> > So, for the initial search, I came across this:
-> > - Download ipipe-jro-410c.linaro-15.07
-> > - (From URL: http://git.xenomai.org/ipipe-jro.git/tag/?h=410c.linaro-15.07
-> > - File name:     ipipe-jro-410c.linaro-15.07.tar.bz2  )
-> >
-> > But, I am not able to access these links.
->
-> Check https://lab.xenomai.org/ipipe-jro.git/
->
+On 12/14/18 2:16 PM, Julien Blanc wrote:
+> Le vendredi 14 décembre 2018 à 12:07 +0100, Philippe Gerum a écrit :
+>>
+>> You could use non-rt Xenomai threads on the linux side with policies
+>> SCHED_FIFO+prio=0 or SCHED_WEAK, allowing the thread to issue
+>> blocking
+>> Xenomai syscalls (such as waiting on a Cobalt sema4).
+>>
+>> But, since this would incur two mode switches for the caller - one to
+>> switch to primary, then a converse switch to relax when returning
+>> from
+>> the blocking syscall - you certainly don't want to use that method in
+>> high-frequency loops, because this would be very costly CPU-wise.
+> 
+> Do you mean, using a third thread acting as a proxy, so that the
+> xenomai thread never leaves the primary domain ?
 
-Thank you so much. Yes I am able to clone this.
-One question:
->From the ipipe repo, how can I prepare ipipe-arm64 patches that can be
-applied to my Kernel using prepare-kernel.sh or normal patching?
+You need no proxy, if what you call the "linux" thread is in fact a
+Xenomai thread undergoing Xenomai "weak" scheduling policy. It would run
+in secondary mode except when calling into the rt core for waiting for a
+rt event.
 
-> > It requires user name/password for sign-in.
-> > Also the sign-up/register link is not available.
-> > If you are aware about this, can you tell me how to access it?
-> >
-> > Also, I came  across this link:
-> > https://discuss.96boards.org/t/dragonboard-for-real-time-robotics/3710
-> > http://www.cs.technion.ac.il/~cs234313/projects_sites/S17/15/site/
-> >
-> > Xenomai installation Guide for Dragon 410c:
-> > http://www.cs.technion.ac.il/~cs234313/projects_sites/S17/15/site/files/Install%20Xenomai%20on%20dragonboard%20410c%20guide.docx
-> >
-> > Is this means that Xenomai is already up in Dragon Board 410c?
-> > Or in any other QualComm MSM chipset ?
-> >
-> >
->
-> Jorge did that work. He is the right person to ask those questions to.
->
-Okay Thanks.
-Once I try some hands on, I will definitely contact Jorge for help.
-
-> --
-> Philippe.
+-- 
+Philippe.
 
