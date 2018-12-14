@@ -1,9 +1,11 @@
-From: Philippe Gerum <rpm@xenomai.org>
-Subject: [PATCH 2/5] cobalt/sched: quota: add early parameter checking handler
-Date: Thu, 29 Nov 2018 14:54:14 +0100
-Message-Id: <20181129135417.29797-2-rpm@xenomai.org>
-In-Reply-To: <20181129135417.29797-1-rpm@xenomai.org>
-References: <20181129135417.29797-1-rpm@xenomai.org>
+From: duanwujie <wjduan@linx-info.com>
+Subject: Question about synchronization object
+Message-ID: <4c930380-38d1-ccc2-8d6e-bc422d4f97b9@linx-info.com>
+Date: Fri, 14 Dec 2018 17:14:09 +0800
+MIME-Version: 1.0
+Content-Language: en-US
+Content-Type: text/plain; charset="utf-8"; format="flowed"
+Content-Transfer-Encoding: 8bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -12,50 +14,64 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
-Cc: Jan Kiszka <jan.kiszka@siemens.com>, Philippe Gerum <rpm@xenomai.org>
+To: Philippe Gerum <rpm@xenomai.org>, jan.kiszka@siemens.com
+Cc: Xenomai <xenomai@xenomai.org>, =?UTF-8?B?5b2t5b+X6Iiq?= <zhpeng@linx-info.com>
 
-This is actually a plain conversion of the former sched_declare()
-handler to the recently introduced sched_chkparam(), which solely
-checks the parameter block.
+Hi, Phi and Jan:
 
-By doing so, we ensure that those checks are done early and
-unconditionally in xnsched_set_policy().
+I have question about  synchronization object.Consider under condition.
 
-Signed-off-by: Philippe Gerum <rpm@xenomai.org>
----
- kernel/cobalt/sched-quota.c | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+*
+*
 
-diff --git a/kernel/cobalt/sched-quota.c b/kernel/cobalt/sched-quota.c
-index 7e58f1b37..b2f24cbb9 100644
---- a/kernel/cobalt/sched-quota.c
-+++ b/kernel/cobalt/sched-quota.c
-@@ -293,8 +293,8 @@ static void xnsched_quota_protectprio(struct xnthread *thread, int prio)
- 	thread->cprio = prio;
- }
- 
--static int xnsched_quota_declare(struct xnthread *thread,
--				 const union xnsched_policy_param *p)
-+static int xnsched_quota_chkparam(struct xnthread *thread,
-+				  const union xnsched_policy_param *p)
- {
- 	struct xnsched_quota_group *tg;
- 	struct xnsched_quota *qs;
-@@ -789,11 +789,11 @@ struct xnsched_class xnsched_class_quota = {
- 	.sched_tick		=	NULL,
- 	.sched_rotate		=	NULL,
- 	.sched_migrate		=	xnsched_quota_migrate,
-+	.sched_chkparam		=	xnsched_quota_chkparam,
- 	.sched_setparam		=	xnsched_quota_setparam,
- 	.sched_getparam		=	xnsched_quota_getparam,
- 	.sched_trackprio	=	xnsched_quota_trackprio,
- 	.sched_protectprio	=	xnsched_quota_protectprio,
--	.sched_declare		=	xnsched_quota_declare,
- 	.sched_forget		=	xnsched_quota_forget,
- 	.sched_kick		=	xnsched_quota_kick,
- #ifdef CONFIG_XENO_OPT_VFILE
+*Thread A*
+
+     mutex_lock(lock)  //O1
+
+     ...
+
+     ...
+
+     mutex_unlock(lock)//O2
+
+*Thread B*
+
+     mutex_lock(lock) //O3
+
+     ....
+
+     ....
+
+     mutex_unlock(lock);
+
+
+O1:  become xnsynch's owner.
+
+O3:  blocked to wait thread A unlock mutex.
+
+O2:  this will call sc_cobalt_mutex_unlock syscall then transfer owner 
+to thread B.
+
+        But in the xnsynch_release's  "likely condition" seems that  
+transfer_ownership will  not be called. Therefore, how to resume thread B ?
+
+       Is there something i misunderstood  for xnsynch_fast_release ?
+
+
+struct xnthread *xnsynch_release(struct xnsynch *synch,
+                  struct xnthread *thread)
+{
+    /* .................................. */
+     if (likely(xnsynch_fast_release(lockp, threadh)))//This condition
+         return NULL;
+
+     return transfer_ownership(synch, thread);
+}
+
+
 -- 
-2.17.2
-
-
+*Linx Software Corportaion Sichuan Branch
+Name：wujie duan
+Tel：028-65182023-6202
+E-mail: wjduan@linx-info.com
+*
