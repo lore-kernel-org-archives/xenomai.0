@@ -1,15 +1,14 @@
 MIME-Version: 1.0
-References: <8C8014A3-6A93-4E44-B753-49AC9FA313A3@korgrd.com>
- <58308e88-38d2-e4ea-232e-8f84dfe1fbd4@xenomai.org>
- <8AAA419E-875B-4CC7-9118-8DC45BE270A2@korgrd.com>
- <C780EA8A-B534-42F5-BE91-CC3A04010F10@korgrd.com>
-In-Reply-To: <C780EA8A-B534-42F5-BE91-CC3A04010F10@korgrd.com>
-From: Greg Gallagher <greg@embeddedgreg.com>
-Date: Thu, 13 Dec 2018 15:14:43 -0500
-Message-ID: <CALLqZ8Ty4F4dhY+6RCY6taA5vaH8GejY2wNXmm6wYtFS14wX9A@mail.gmail.com>
-Subject: Re: ipipe-arm64 kernel issue
+References: <CAK+-5=KyqTMv7+Dw_zZWyrWjeyF6P43kvS5iwWWtNWkqrsqvQA@mail.gmail.com>
+ <CALLqZ8R9bC0F2t14-a-jktCRUvwMLJPXf3h+09=MDAdVciSj2Q@mail.gmail.com>
+ <CAK+-5=+syrQHzNJUgK270XfSrgdDxxg9pkO_Qs5009SU4H9S1w@mail.gmail.com>
+ <CALLqZ8T1L9tswtU1P6CGZTzu2GfkvCfo1zk-BzyL_POQ1p2obg@mail.gmail.com>
+In-Reply-To: <CALLqZ8T1L9tswtU1P6CGZTzu2GfkvCfo1zk-BzyL_POQ1p2obg@mail.gmail.com>
+From: =?UTF-8?B?SOG7kyBUw6Jt?= <mophong@gmail.com>
+Date: Fri, 14 Dec 2018 09:26:20 +0900
+Message-ID: <CADTN-FkKu+dt+ws=6tk6YFrDfXYGVvhSO4kw1CJGHvECqjJTrw@mail.gmail.com>
+Subject: Re: rtdm spi demo on Raspberri pi
 Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -18,50 +17,68 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Steve Pavao <stevep@korgrd.com>
-Cc: Philippe Gerum <rpm@xenomai.org>, "Xenomai@xenomai.org" <xenomai@xenomai.org>
+To: greg@embeddedgreg.com
+Cc: xenomai@xenomai.org
 
-Hi Steve,
+Thank Greg, I will try with this.
+Regards,
 
-On Thu, Dec 13, 2018 at 3:04 PM Steve Pavao via Xenomai
-<xenomai@xenomai.org> wrote:
->
-> > On Dec 13, 2018, at 7:50 AM, Steve Pavao <stevep@korgrd.com> wrote:
->
-> > As I continue to bring up my app, I notice I=E2=80=99m having a segfaul=
-t (SIGSEGV) trying to access the general purpose IO pins.
-> >
-> > I notice that /dev/gpiomem is missing from the environment.
->
-> > I am using the dtb from the ipipe-arm64 build.
-> >
-> > Steve Pavao
-> > Korg R&D
->
-> I learned there is a kernel config option to load a driver for this.  The=
- config option is named CONFIG_BCM2835_DEVGPIOMEM.  It is set to Y in the c=
-onfig.  In the raspberrypi-linux kernel, the driver is here https://github.=
-com/raspberrypi/linux/tree/rpi-4.14.y/drivers/char/broadcom , but I don=E2=
-=80=99t see the file in the ipipe-arm64 repo.
 
-If it's not in the mainline repo then it won't be in the arm64 ipipe tree.
->
-> Do the ipipe-arm repos tend to allow support for vendor-specific drivers =
-for features like this, and if so, would the Xenomai team be willing to add=
- the gpiomem driver to the ipipe-arm64 kernel build?  I don=E2=80=99t know =
-the policy for something like this, so thought I would ask to add support f=
-or it, and see what is customary.
->
-Do the pins need realtime response?  If you don't need realtime
-response have you looked at using the /dev/gpiochipX character driver?
- If they need to be realtime we have a rtdm gpio driver that can be
-used to control the pins.
 
-> Steve Pavao
-> Korg R&D
->
->
->
 
--Greg
+On Thu, Dec 13, 2018 at 11:35 PM Greg Gallagher <greg@embeddedgreg.com>
+wrote:
 
+> I haven't been bale to dig up my example code for this but I base it off
+> this test:
+>
+>
+> https://gitlab.denx.de/Xenomai/xenomai/blob/master/testsuite/spitest/spitest.c
+>
+> I'll hopefully have some time in the very near future to put together a
+> quick example.
+>
+> Thanks
+>
+> Greg
+>
+> On Sat, Dec 8, 2018 at 3:06 AM Ho Tam <mophong@gmail.com> wrote:
+>
+>> Yes, linux spi driver has been isolated. I am waiting for your example
+>> code.
+>> Thank you,
+>>
+>>
+>> <https://www.avast.com/sig-email?utm_medium=email&utm_source=link&utm_campaign=sig-email&utm_content=webmail&utm_term=icon> Virus-free.
+>> www.avast.com
+>> <https://www.avast.com/sig-email?utm_medium=email&utm_source=link&utm_campaign=sig-email&utm_content=webmail&utm_term=link>
+>> <#m_-9123614012483961053_m_-1121549771311806162_DAB4FAD8-2DD7-40BB-A1B8-4E2AA1F9FDF2>
+>>
+>> On Fri, Dec 7, 2018 at 11:32 PM Greg Gallagher <greg@embeddedgreg.com>
+>> wrote:
+>>
+>>> I've played with it a bit, I'll see if I have any example code laying
+>>> around.  Did you unbind the linux spi driver?
+>>>
+>>> Thanks
+>>>
+>>> Greg
+>>> On Thu, Dec 6, 2018 at 9:50 PM Ho Tam via Xenomai <xenomai@xenomai.org>
+>>> wrote:
+>>> >
+>>> > Hello group,
+>>> > I can see there is rtdm spi driver for raspberry pi but can't see any
+>>> > userspace demo for it.
+>>> > I have built and inserted xeno_spi_bcm2835, xeno_spi modules but
+>>> couldn't
+>>> > see any spi device in '/dev/rtdm/'.
+>>> > Does anyone have example using this driver?
+>>> > Thank you
+>>> > --
+>>>
+>>
+>>
+>> --
+>> http://www.mophong.com
+>>
+>
