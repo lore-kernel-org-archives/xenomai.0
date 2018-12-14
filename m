@@ -1,13 +1,10 @@
-Subject: Re: ipipe-arm64 patches for qualcomm dragonboard 410c
-References: <CAOuPNLj7oWkbq9jMNQD4WLp67hVbYO8gd2t-qKwYDTpa+OQrZA@mail.gmail.com>
-From: Philippe Gerum <rpm@xenomai.org>
-Message-ID: <f8edae00-ad7c-5191-e875-66c1aed6e968@xenomai.org>
-Date: Fri, 14 Dec 2018 10:17:56 +0100
-MIME-Version: 1.0
-In-Reply-To: <CAOuPNLj7oWkbq9jMNQD4WLp67hVbYO8gd2t-qKwYDTpa+OQrZA@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Message-ID: <9716cf94f871edebb580b4010a5c24465299514f.camel@sprinte.eu>
+Subject: Waking up a linux thread from a xenomai thread, without mode switch
+From: Julien Blanc <julien.blanc@sprinte.eu>
+Date: Fri, 14 Dec 2018 11:48:41 +0100
+Content-Type: text/plain; charset="utf-8"
+Mime-Version: 1.0
+Content-Transfer-Encoding: 8bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,42 +13,32 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Pintu Agarwal <pintu.ping@gmail.com>, "Xenomai@xenomai.org" <xenomai@xenomai.org>, Greg Gallagher <greg@embeddedgreg.com>, Jorge Ramirez-Ortiz <jro@xenomai.org>
+To: "Xenomai@xenomai.org" <Xenomai@xenomai.org>
 
-On 12/13/18 12:13 PM, Pintu Agarwal wrote:
-> Dear Philippe,
-> 
-> Currently I am working on Xenomai-3.0.6 bring up on QualComm Dragon
-> Board 410c using QualComm Linux Kernel 4.9.xxx
-> 
-> First I wanted to know if this part already available.
-> So, for the initial search, I came across this:
-> - Download ipipe-jro-410c.linaro-15.07
-> - (From URL: http://git.xenomai.org/ipipe-jro.git/tag/?h=410c.linaro-15.07
-> - File name:     ipipe-jro-410c.linaro-15.07.tar.bz2  )
-> 
-> But, I am not able to access these links.
+Hi,
 
-Check https://lab.xenomai.org/ipipe-jro.git/
+We’re currently using semaphores and a shared buffer to allow
+communication between a xenomai cobalt thread and a linux regular
+thread (the xddp interface has been tested and does not perform well
+for our use case, which is exchanging a lot a very small messages).
 
-> It requires user name/password for sign-in.
-> Also the sign-up/register link is not available.
-> If you are aware about this, can you tell me how to access it?
-> 
-> Also, I came  across this link:
-> https://discuss.96boards.org/t/dragonboard-for-real-time-robotics/3710
-> http://www.cs.technion.ac.il/~cs234313/projects_sites/S17/15/site/
-> 
-> Xenomai installation Guide for Dragon 410c:
-> http://www.cs.technion.ac.il/~cs234313/projects_sites/S17/15/site/files/Install%20Xenomai%20on%20dragonboard%20410c%20guide.docx
-> 
-> Is this means that Xenomai is already up in Dragon Board 410c?
-> Or in any other QualComm MSM chipset ?
-> 
-> 
+While this works fine most of the time, we’ve noticed that this incurs
+a mode switch when the xenomai rt-thread calls real_sem_post, and,
+under heavy load, it can results in that specific thread being
+suspended for too long.
 
-Jorge did that work. He is the right person to ask those questions to.
+I couldn’t find in the documentation how to do this properly :
+* waiting on a xenomai semaphore from a linux thread is forbidden
+* posting a linux semaphore from a xenomai thread incurs a mode switch
 
--- 
-Philippe.
+I’d like each thread to stay in its mode. I can live with the linux
+thread entering the primary mode for a small amount of time, but not
+the xenomai thread entering the secondary mode.
+
+Did i miss something obvious ?
+
+Regards,
+
+Julien
+
 
