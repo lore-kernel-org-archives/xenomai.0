@@ -1,11 +1,14 @@
-From: Jan Kiszka <jan.kiszka@siemens.com>
-Subject: RTnet tests in smokey
-Message-ID: <9f8fd2ac-368b-8ce9-4982-108e923fad23@siemens.com>
-Date: Fri, 14 Dec 2018 13:24:15 +0100
-MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Message-ID: <825e119a24df931fec5e9938006abe921637195f.camel@sprinte.eu>
+Subject: Re: Waking up a linux thread from a xenomai thread, without mode
+ switch
+From: Julien Blanc <julien.blanc@sprinte.eu>
+Date: Fri, 14 Dec 2018 14:16:29 +0100
+In-Reply-To: <53dd5690-8997-6434-549d-fdb4a2b2a8b8@xenomai.org>
+References: <9716cf94f871edebb580b4010a5c24465299514f.camel@sprinte.eu>
+ <53dd5690-8997-6434-549d-fdb4a2b2a8b8@xenomai.org>
+Content-Type: text/plain; charset="utf-8"
+Mime-Version: 1.0
+Content-Transfer-Encoding: 8bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -14,65 +17,41 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Philippe Gerum <rpm@xenomai.org>, Xenomai <xenomai@xenomai.org>, Sebastian Smolorz <Sebastian.Smolorz@gmx.de>
+To: Philippe Gerum <rpm@xenomai.org>, "Xenomai@xenomai.org" <Xenomai@xenomai.org>
 
-Hi all,
-
-while debugging that list corruption in Rtnet I noticed that the related
-smokey tests are in a rather improvable state. First of all, they are
-never working automatically unless the rtnet core is built into the
-kernel. When it is just a model, the corectl check will always fail
-because the core feature is not present. That can be fixed like this:
-
-diff --git a/testsuite/smokey/net_common/setup.c b/testsuite/smokey/net_common/setup.c
-index ea3daceca5..86ebf988ff 100644
---- a/testsuite/smokey/net_common/setup.c
-+++ b/testsuite/smokey/net_common/setup.c
-@@ -352,6 +352,10 @@ int smokey_net_setup(const char *driver, const char *intf, int tested_config,
- 	struct sockaddr_in *in_peer = vpeer;
- 	struct sockaddr *peer = vpeer;
- 
-+	err = smokey_net_modprobe("rtnet");
-+	if (err < 0)
-+		return err;
-+
- 	err = cobalt_corectl(_CC_COBALT_GET_NET_CONFIG,
- 			&net_config, sizeof(net_config));
- 	if (err == -EINVAL)
-
-But when you built more of the core into the kernel, the cleanup of the tests will start to fail.
-
-I was considering to add the above change as patch, but then we will always fail on net_udp test unless the user also had some physical link set up. That is at least my impression because the test reports
-
-> RTnet UDP test failed, all packets lost (is smokey_net_server running ?)
-
-while even running "smokey_net_server rtlo" does not work:
-
-> smokey_net_server options [ <interface> ]:
+Le vendredi 14 décembre 2018 à 12:07 +0100, Philippe Gerum a écrit :
 > 
-> Runs server for smokey network tests, on interface named <interface>
-> (rtlo if unspecified)
-   ^^^^^^^^^^^^^^^^^^^
-
+> You could use non-rt Xenomai threads on the linux side with policies
+> SCHED_FIFO+prio=0 or SCHED_WEAK, allowing the thread to issue
+> blocking
+> Xenomai syscalls (such as waiting on a Cobalt sema4).
 > 
-> Available options:
-> -f | --file <file>              Answers clients from file named <file>
->         (uses standard input if unspecified)
->         Where every line contains a mac address and an IP address
->    0"000.007| WARNING: [main] Xenomai compiled with partial debug enabled,
->                               high latencies expected [--enable-debug=partial]
-> 
-> Running smokey_net_server on rtlo makes no sense
-                               ^^^^^^^^^^^^^^^^^^^
+> But, since this would incur two mode switches for the caller - one to
+> switch to primary, then a converse switch to relax when returning
+> from
+> the blocking syscall - you certainly don't want to use that method in
+> high-frequency loops, because this would be very costly CPU-wise.
 
-As we now have a fix for the bug this test revealed but digging deeper
-into it and making it a working default test is likely much more effort,
-I'm going to tag v3.0.8 after this fix settled and is merged over. But
-the above should be addressed eventually.
+Do you mean, using a third thread acting as a proxy, so that the
+xenomai thread never leaves the primary domain ? This is something i
+identified as a « possible solution », but yes, the overhead seems
+pretty high. At this rate it may be cheaper to just use an active
+waiting loop (in the linux domain) with a ~5ms period in the linux
+domain, instead of waiting on a semaphore.
 
-Jan
+> Did you try the streaming output mode with MSG_MORE as illustrated in
+> demo/posix/cobalt/xddp-stream.c? The streaming mode attempts to pack
+> multiple messages from the rt-side into a single message delivered to
+> the read() side, until the latter eventually resumes.
 
--- 
-Siemens AG, Corporate Technology, CT RDA IOT SES-DE
-Corporate Competence Center Embedded Linux
+> IOW, if the rt-side is able to send N messages before the linux side
+> eventually wakes up, then the latter will receive all the streamed
+> output packed into a single read().
+
+I don’t remember having tried that, thanks for the pointer.
+
+Regards,
+
+Julien
+
 
