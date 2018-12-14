@@ -1,10 +1,13 @@
-From: Philippe Gerum <rpm@xenomai.org>
-Subject: [PATCH 3/5] cobalt/sched: sporadic: add early parameter checking
- handler
-Date: Thu, 29 Nov 2018 14:54:15 +0100
-Message-Id: <20181129135417.29797-3-rpm@xenomai.org>
-In-Reply-To: <20181129135417.29797-1-rpm@xenomai.org>
-References: <20181129135417.29797-1-rpm@xenomai.org>
+Subject: Re: Question about synchronization object
+References: <4c930380-38d1-ccc2-8d6e-bc422d4f97b9@linx-info.com>
+From: Jan Kiszka <jan.kiszka@siemens.com>
+Message-ID: <72323c84-a5eb-23a4-d26f-ee0eac8615f3@siemens.com>
+Date: Fri, 14 Dec 2018 13:07:17 +0100
+MIME-Version: 1.0
+In-Reply-To: <4c930380-38d1-ccc2-8d6e-bc422d4f97b9@linx-info.com>
+Content-Type: text/plain; charset="utf-8"; format="flowed"
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -13,60 +16,70 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
-Cc: Jan Kiszka <jan.kiszka@siemens.com>, Philippe Gerum <rpm@xenomai.org>
+To: duanwujie <wjduan@linx-info.com>, Philippe Gerum <rpm@xenomai.org>
+Cc: Xenomai <xenomai@xenomai.org>, =?UTF-8?B?5b2t5b+X6Iiq?= <zhpeng@linx-info.com>
 
-Move parameter checks from sched_declare() to the new sched_chkparam()
-handler, which runs early and unconditionally from
-xnsched_set_policy().
+On 14.12.18 10:14, duanwujie wrote:
+> Hi, Phi and Jan:
+> 
+> I have question about  synchronization object.Consider under condition.
+> 
+> *
+> *
+> 
+> *Thread A*
+> 
+>      mutex_lock(lock)  //O1
+> 
+>      ...
+> 
+>      ...
+> 
+>      mutex_unlock(lock)//O2
+> 
+> *Thread B*
+> 
+>      mutex_lock(lock) //O3
+> 
+>      ....
+> 
+>      ....
+> 
+>      mutex_unlock(lock);
+> 
+> 
+> O1:  become xnsynch's owner.
+> 
+> O3:  blocked to wait thread A unlock mutex.
+> 
+> O2:  this will call sc_cobalt_mutex_unlock syscall then transfer owner to thread B.
+> 
+>         But in the xnsynch_release's  "likely condition" seems that  
+> transfer_ownership will  not be called. Therefore, how to resume thread B ?
+> 
+>        Is there something i misunderstood  for xnsynch_fast_release ?
+> 
+> 
+> struct xnthread *xnsynch_release(struct xnsynch *synch,
+>                   struct xnthread *thread)
+> {
+>     /* .................................. */
+>      if (likely(xnsynch_fast_release(lockp, threadh)))//This condition
+>          return NULL;
 
-Signed-off-by: Philippe Gerum <rpm@xenomai.org>
----
- kernel/cobalt/sched-sporadic.c | 15 +++++++++++----
- 1 file changed, 11 insertions(+), 4 deletions(-)
+xnsynch_fast_release() is just a double-check - before going into the slow path 
+with the leaving owner - if there is still a waiter for the lock. If there is 
+(the fastlock word does *not* only contain the handler of the current owner, 
+also has XNSYNCH_FLCLAIM set), we will branch into transfer_ownership.
 
-diff --git a/kernel/cobalt/sched-sporadic.c b/kernel/cobalt/sched-sporadic.c
-index 4d307a803..77f1d00fd 100644
---- a/kernel/cobalt/sched-sporadic.c
-+++ b/kernel/cobalt/sched-sporadic.c
-@@ -290,11 +290,9 @@ static void xnsched_sporadic_protectprio(struct xnthread *thread, int prio)
- 	thread->cprio = prio;
- }
- 
--static int xnsched_sporadic_declare(struct xnthread *thread,
--				    const union xnsched_policy_param *p)
-+static int xnsched_sporadic_chkparam(struct xnthread *thread,
-+				     const union xnsched_policy_param *p)
- {
--	struct xnsched_sporadic_data *pss;
--
- 	if (p->pss.low_prio != -1 &&
- 	    (p->pss.low_prio < XNSCHED_SPORADIC_MIN_PRIO ||
- 	     p->pss.low_prio > XNSCHED_SPORADIC_MAX_PRIO))
-@@ -319,6 +317,14 @@ static int xnsched_sporadic_declare(struct xnthread *thread,
- 	if (p->pss.max_repl < 1 || p->pss.max_repl > MAX_REPLENISH)
- 		return -EINVAL;
- 
-+	return 0;
-+}
-+
-+static int xnsched_sporadic_declare(struct xnthread *thread,
-+				    const union xnsched_policy_param *p)
-+{
-+	struct xnsched_sporadic_data *pss;
-+
- 	pss = xnmalloc(sizeof(*pss));
- 	if (pss == NULL)
- 		return -ENOMEM;
-@@ -535,6 +541,7 @@ struct xnsched_class xnsched_class_sporadic = {
- 	.sched_tick		=	NULL,
- 	.sched_rotate		=	NULL,
- 	.sched_migrate		=	NULL,
-+	.sched_chkparam		=	xnsched_sporadic_chkparam,
- 	.sched_setparam		=	xnsched_sporadic_setparam,
- 	.sched_getparam		=	xnsched_sporadic_getparam,
- 	.sched_trackprio	=	xnsched_sporadic_trackprio,
+BTW, to understand the real flow, you can try turning on the function graph 
+tracer of the Linux kernel and catch the call graph of an interesting syscall. 
+Or you use the gdb stub of QEMU[/KVM] running a Xenomai kernel for symbolic 
+kernel debugging (stepping through the source code).
+
+Jan
+
 -- 
-2.17.2
-
+Siemens AG, Corporate Technology, CT RDA IOT SES-DE
+Corporate Competence Center Embedded Linux
 
