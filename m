@@ -1,9 +1,11 @@
-From: Philippe Gerum <rpm@xenomai.org>
-Subject: [PATCH 4/5] cobalt/sched: tp: add early parameter checking handler
-Date: Thu, 29 Nov 2018 14:54:16 +0100
-Message-Id: <20181129135417.29797-4-rpm@xenomai.org>
-In-Reply-To: <20181129135417.29797-1-rpm@xenomai.org>
-References: <20181129135417.29797-1-rpm@xenomai.org>
+From: Lange Norbert <norbert.lange@andritz.com>
+Subject: Cobalt Preemption of kernel update_fast_timekeeper can cause deadlocks
+Date: Wed, 19 Dec 2018 10:20:35 +0000
+Message-ID: <f4c18591165c4b919c85ac90a756af9f@andritz.com>
+Content-Language: en-US
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
+MIME-Version: 1.0
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -12,60 +14,72 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
-Cc: Jan Kiszka <jan.kiszka@siemens.com>, Philippe Gerum <rpm@xenomai.org>
+To: "Xenomai (xenomai@xenomai.org)" <xenomai@xenomai.org>
 
-Move parameter checks from sched_declare() to the new sched_chkparam()
-handler, which runs early and unconditionally from
-xnsched_set_policy().
+There is a deadlock issue that haunted me for several weeks,
+it is caused by the kernels update of the user-visible
+timekeeping structures used by the VDSO clock_gettime functions.
 
-Signed-off-by: Philippe Gerum <rpm@xenomai.org>
----
- kernel/cobalt/sched-tp.c | 16 ++++++++++++----
- 1 file changed, 12 insertions(+), 4 deletions(-)
+The kernel regularly updates a Timestamp structure, which is accessible in =
+user-mode,
+it does so by something akin to a rw-lock in update_fast_timekeeper.
 
-diff --git a/kernel/cobalt/sched-tp.c b/kernel/cobalt/sched-tp.c
-index 982d95e6e..d3e2586b0 100644
---- a/kernel/cobalt/sched-tp.c
-+++ b/kernel/cobalt/sched-tp.c
-@@ -163,17 +163,24 @@ static void xnsched_tp_protectprio(struct xnthread *thread, int prio)
- 	thread->cprio = prio;
- }
- 
--static int xnsched_tp_declare(struct xnthread *thread,
--			      const union xnsched_policy_param *p)
-+static int xnsched_tp_chkparam(struct xnthread *thread,
-+			       const union xnsched_policy_param *p)
- {
--	struct xnsched *sched = thread->sched;
--	struct xnsched_tp *tp = &sched->tp;
-+	struct xnsched_tp *tp = &thread->sched->tp;
- 
- 	if (tp->gps == NULL ||
- 	    p->tp.prio < XNSCHED_TP_MIN_PRIO ||
- 	    p->tp.prio > XNSCHED_TP_MAX_PRIO)
- 		return -EINVAL;
- 
-+	return 0;
-+}
-+
-+static int xnsched_tp_declare(struct xnthread *thread,
-+			      const union xnsched_policy_param *p)
-+{
-+	struct xnsched *sched = thread->sched;
-+
- 	list_add_tail(&thread->tp_link, &sched->tp.threads);
- 
- 	return 0;
-@@ -434,6 +441,7 @@ struct xnsched_class xnsched_class_tp = {
- 	.sched_tick		=	NULL,
- 	.sched_rotate		=	NULL,
- 	.sched_migrate		=	xnsched_tp_migrate,
-+	.sched_chkparam		=	xnsched_tp_chkparam,
- 	.sched_setparam		=	xnsched_tp_setparam,
- 	.sched_getparam		=	xnsched_tp_getparam,
- 	.sched_trackprio	=	xnsched_tp_trackprio,
--- 
-2.17.2
+If cobalt preempts the core during holding the lock, any thread trying to r=
+ead the time
+will continue to spin. (This alone is an issue IMHO).
+If the cobalt thread itself now call the vDSO function as reader,
+it will spin on the lock and block the lock from getting released.
 
+
+Either the update_fast_timekeeper funtion should not be preemptible by coba=
+lt,
+or the spin-lock on reading could fallback to the syscall after a certain a=
+mount of retries.
+
+The later is probably easier to implement, but then could randomly demote c=
+obalt threads.
+(on the other hand, this would be always a demotion on platforms without th=
+e vdso function)
+
+Mit besten Gr=FC=DFen / Kind regards
+
+NORBERT LANGE
+AT-DES
+
+ANDRITZ HYDRO GmbH
+Eibesbrunnergasse 20
+1120 Vienna / AUSTRIA
+p: +43 50805 56684
+norbert.lange@andritz.com
+andritz.com
+________________________________
+
+This message and any attachments are solely for the use of the intended rec=
+ipients. They may contain privileged and/or confidential information or oth=
+er information protected from disclosure. If you are not an intended recipi=
+ent, you are hereby notified that you received this email in error and that=
+ any review, dissemination, distribution or copying of this email and any a=
+ttachment is strictly prohibited. If you have received this email in error,=
+ please contact the sender and delete the message and any attachment from y=
+our system.
+
+ANDRITZ HYDRO GmbH
+
+
+Rechtsform/ Legal form: Gesellschaft mit beschr=E4nkter Haftung / Corporati=
+on
+
+Firmensitz/ Registered seat: Wien
+
+Firmenbuchgericht/ Court of registry: Handelsgericht Wien
+
+Firmenbuchnummer/ Company registration: FN 61833 g
+
+DVR: 0605077
+
+UID-Nr.: ATU14756806
+
+
+Thank You
+________________________________
 
