@@ -1,16 +1,16 @@
-From: Lange Norbert <norbert.lange@andritz.com>
-Subject: RE: Cobalt Preemption of kernel update_fast_timekeeper can cause
+Subject: Re: Cobalt Preemption of kernel update_fast_timekeeper can cause
  deadlocks
-Date: Wed, 19 Dec 2018 13:08:58 +0000
-Message-ID: <b369081f6f694c458505a6f400655788@andritz.com>
 References: <f4c18591165c4b919c85ac90a756af9f@andritz.com>
  <159d2a96-fb82-b974-7958-79367a00a546@xenomai.org>
  <cdc2d93e-3d5b-0d5b-bf17-1a813e0622e2@siemens.com>
-In-Reply-To: <cdc2d93e-3d5b-0d5b-bf17-1a813e0622e2@siemens.com>
-Content-Language: en-US
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+From: Philippe Gerum <rpm@xenomai.org>
+Message-ID: <264d7453-7832-f647-9df4-45197a67bbb8@xenomai.org>
+Date: Wed, 19 Dec 2018 14:47:15 +0100
 MIME-Version: 1.0
+In-Reply-To: <cdc2d93e-3d5b-0d5b-bf17-1a813e0622e2@siemens.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -19,96 +19,83 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jan Kiszka <jan.kiszka@siemens.com>, Philippe Gerum <rpm@xenomai.org>, "Xenomai (xenomai@xenomai.org)" <xenomai@xenomai.org>
+To: Jan Kiszka <jan.kiszka@siemens.com>, Lange Norbert <norbert.lange@andritz.com>, "Xenomai (xenomai@xenomai.org)" <xenomai@xenomai.org>
 
-DQoNCj4gLS0tLS1PcmlnaW5hbCBNZXNzYWdlLS0tLS0NCj4gRnJvbTogSmFuIEtpc3prYSA8amFu
-Lmtpc3prYUBzaWVtZW5zLmNvbT4NCj4gU2VudDogTWl0dHdvY2gsIDE5LiBEZXplbWJlciAyMDE4
-IDEzOjQ1DQo+IFRvOiBQaGlsaXBwZSBHZXJ1bSA8cnBtQHhlbm9tYWkub3JnPjsgTGFuZ2UgTm9y
-YmVydA0KPiA8bm9yYmVydC5sYW5nZUBhbmRyaXR6LmNvbT47IFhlbm9tYWkgKHhlbm9tYWlAeGVu
-b21haS5vcmcpDQo+IDx4ZW5vbWFpQHhlbm9tYWkub3JnPg0KPiBTdWJqZWN0OiBSZTogQ29iYWx0
-IFByZWVtcHRpb24gb2Yga2VybmVsIHVwZGF0ZV9mYXN0X3RpbWVrZWVwZXIgY2FuIGNhdXNlDQo+
-IGRlYWRsb2Nrcw0KPg0KPiBFLU1BSUwgRlJPTSBBIE5PTi1BTkRSSVRaIFNPVVJDRTogQVMgQSBT
-RUNVUklUWSBNRUFTVVJFLCBQTEVBU0UNCj4gRVhFUkNJU0UgQ0FVVElPTiBXSVRIIEUtTUFJTCBD
-T05URU5UIEFORCBBTlkgTElOS1MgT1INCj4gQVRUQUNITUVOVFMuDQo+DQo+DQo+IE9uIDE5LjEy
-LjE4IDEzOjA5LCBQaGlsaXBwZSBHZXJ1bSB2aWEgWGVub21haSB3cm90ZToNCj4gPiBPbiAxMi8x
-OS8xOCAxMToyMCBBTSwgTGFuZ2UgTm9yYmVydCB2aWEgWGVub21haSB3cm90ZToNCj4gPj4gVGhl
-cmUgaXMgYSBkZWFkbG9jayBpc3N1ZSB0aGF0IGhhdW50ZWQgbWUgZm9yIHNldmVyYWwgd2Vla3Ms
-IGl0IGlzDQo+ID4+IGNhdXNlZCBieSB0aGUga2VybmVscyB1cGRhdGUgb2YgdGhlIHVzZXItdmlz
-aWJsZSB0aW1la2VlcGluZw0KPiA+PiBzdHJ1Y3R1cmVzIHVzZWQgYnkgdGhlIFZEU08gY2xvY2tf
-Z2V0dGltZSBmdW5jdGlvbnMuDQo+ID4+DQo+ID4+IFRoZSBrZXJuZWwgcmVndWxhcmx5IHVwZGF0
-ZXMgYSBUaW1lc3RhbXAgc3RydWN0dXJlLCB3aGljaCBpcw0KPiA+PiBhY2Nlc3NpYmxlIGluIHVz
-ZXItbW9kZSwgaXQgZG9lcyBzbyBieSBzb21ldGhpbmcgYWtpbiB0byBhIHJ3LWxvY2sgaW4NCj4g
-dXBkYXRlX2Zhc3RfdGltZWtlZXBlci4NCj4gPj4NCj4gPj4gSWYgY29iYWx0IHByZWVtcHRzIHRo
-ZSBjb3JlIGR1cmluZyBob2xkaW5nIHRoZSBsb2NrLCBhbnkgdGhyZWFkDQo+ID4+IHRyeWluZyB0
-byByZWFkIHRoZSB0aW1lIHdpbGwgY29udGludWUgdG8gc3Bpbi4gKFRoaXMgYWxvbmUgaXMgYW4g
-aXNzdWUgSU1ITykuDQo+ID4+IElmIHRoZSBjb2JhbHQgdGhyZWFkIGl0c2VsZiBub3cgY2FsbCB0
-aGUgdkRTTyBmdW5jdGlvbiBhcyByZWFkZXIsIGl0DQo+ID4+IHdpbGwgc3BpbiBvbiB0aGUgbG9j
-ayBhbmQgYmxvY2sgdGhlIGxvY2sgZnJvbSBnZXR0aW5nIHJlbGVhc2VkLg0KPiA+Pg0KPiA+Pg0K
-PiA+PiBFaXRoZXIgdGhlIHVwZGF0ZV9mYXN0X3RpbWVrZWVwZXIgZnVudGlvbiBzaG91bGQgbm90
-IGJlIHByZWVtcHRpYmxlDQo+ID4+IGJ5IGNvYmFsdCwgb3IgdGhlIHNwaW4tbG9jayBvbiByZWFk
-aW5nIGNvdWxkIGZhbGxiYWNrIHRvIHRoZSBzeXNjYWxsIGFmdGVyIGENCj4gY2VydGFpbiBhbW91
-bnQgb2YgcmV0cmllcy4NCj4gPj4NCj4gPj4gVGhlIGxhdGVyIGlzIHByb2JhYmx5IGVhc2llciB0
-byBpbXBsZW1lbnQsIGJ1dCB0aGVuIGNvdWxkIHJhbmRvbWx5DQo+IGRlbW90ZSBjb2JhbHQgdGhy
-ZWFkcy4NCj4gPj4gKG9uIHRoZSBvdGhlciBoYW5kLCB0aGlzIHdvdWxkIGJlIGFsd2F5cyBhIGRl
-bW90aW9uIG9uIHBsYXRmb3Jtcw0KPiA+PiB3aXRob3V0IHRoZSB2ZHNvIGZ1bmN0aW9uKQ0KPiA+
-Pg0KPiA+DQo+ID4gdXBkYXRlX3ZzeXNjYWxsKCkgaXMgbG9ja2luZyB0aGUgd3JpdGUtc2lkZS4g
-SWYgdGhlIGFuYWx5c2lzIGlzIGNvcnJlY3QsIHRoaXMNCj4gcGF0Y2ggbWF5IGhlbHAgYXQgdGhl
-IGV4cGVuc2Ugb2YgYSBzb21lIGN5Y2xlcyBtb3JlIHNwZW50IHVuaW50ZXJydXB0aWJsZToNCj4g
-Pg0KPiA+IGRpZmYgLS1naXQgYS9hcmNoL3g4Ni9lbnRyeS92c3lzY2FsbC92c3lzY2FsbF9ndG9k
-LmMNCj4gPiBiL2FyY2gveDg2L2VudHJ5L3ZzeXNjYWxsL3ZzeXNjYWxsX2d0b2QuYw0KPiA+IGlu
-ZGV4IDlmYjg5YjZlODhjMy4uZTliYWE1N2U4Mzg1IDEwMDY0NA0KPiA+IC0tLSBhL2FyY2gveDg2
-L2VudHJ5L3ZzeXNjYWxsL3ZzeXNjYWxsX2d0b2QuYw0KPiA+ICsrKyBiL2FyY2gveDg2L2VudHJ5
-L3ZzeXNjYWxsL3ZzeXNjYWxsX2d0b2QuYw0KPiA+IEBAIC0zMiwxMSArMzIsMTQgQEAgdm9pZCB1
-cGRhdGVfdnN5c2NhbGwoc3RydWN0IHRpbWVrZWVwZXIgKnRrKQ0KPiA+ICAgew0KPiA+ICAgICAg
-IGludCB2Y2xvY2tfbW9kZSA9IHRrLT50a3JfbW9uby5jbG9jay0+YXJjaGRhdGEudmNsb2NrX21v
-ZGU7DQo+ID4gICAgICAgc3RydWN0IHZzeXNjYWxsX2d0b2RfZGF0YSAqdmRhdGEgPSAmdnN5c2Nh
-bGxfZ3RvZF9kYXRhOw0KPiA+ICsgICAgIHVuc2lnbmVkIGxvbmcgZmxhZ3M7DQo+ID4NCj4gPiAg
-ICAgICAvKiBNYXJrIHRoZSBuZXcgdmNsb2NrIHVzZWQuICovDQo+ID4gICAgICAgQlVJTERfQlVH
-X09OKFZDTE9DS19NQVggPj0gMzIpOw0KPiA+ICAgICAgIFdSSVRFX09OQ0UodmNsb2Nrc191c2Vk
-LCBSRUFEX09OQ0UodmNsb2Nrc191c2VkKSB8ICgxIDw8DQo+ID4gdmNsb2NrX21vZGUpKTsNCj4g
-Pg0KPiA+ICsgICAgIGZsYWdzID0gaGFyZF9jb25kX2xvY2FsX2lycV9zYXZlKCk7DQo+ID4gKw0K
-PiA+ICAgICAgIGd0b2Rfd3JpdGVfYmVnaW4odmRhdGEpOw0KPiA+DQo+ID4gICAgICAgLyogY29w
-eSB2c3lzY2FsbCBkYXRhICovDQo+ID4gQEAgLTc3LDYgKzgwLDggQEAgdm9pZCB1cGRhdGVfdnN5
-c2NhbGwoc3RydWN0IHRpbWVrZWVwZXIgKnRrKQ0KPiA+DQo+ID4gICAgICAgZ3RvZF93cml0ZV9l
-bmQodmRhdGEpOw0KPiA+DQo+ID4gKyAgICAgaGFyZF9jb25kX2xvY2FsX2lycV9yZXN0b3JlKGZs
-YWdzKTsNCj4gPiArDQo+ID4gICAgICAgaWYgKHRrLT50a3JfbW9uby5jbG9jayA9PSAmY2xvY2tz
-b3VyY2VfdHNjKQ0KPiA+ICAgICAgICAgICAgICAgaXBpcGVfdXBkYXRlX2hvc3RydCh0ayk7DQo+
-ID4gICB9DQo+ID4NCj4NCj4gVGhpcyBzaG91bGQgcmF0aGVyIGJlIGFuIGFwcGxpY2F0aW9uIGJ1
-ZzogQW4gUlQgKFhlbm9tYWkpIHRocmVhZCBpcw0KPiBhcHBhcmVudGx5IHVzaW5nIExpbnV4IGdl
-dHRpbWVvZmRheSAmIENvLiAoZ2xpYmMpIGZyb20gUlQgY29udGV4dC4gVGhhdCB3YXMNCj4gbmV2
-ZXIgc3VwcG9ydGVkLCB3ZSByYXRoZXIgaGF2ZSBSVCBzZXJ2aWNlcyBmb3IgdGhhdA0KPiAoQ0xP
-Q0tfSE9TVF9SRUFMVElNRSkuDQoNCkFueSBSVCB0aHJlYWQgY2FuIHByZWVtcHQgdGhlIGtlcm5l
-bCBob2xkaW5nIHRoZSB3cml0ZS1sb2NrLiBBIGRlYWRsb2NrIG9ubHkgb2NjdXJzIGlmDQoqdGhh
-dCogdGhyZWFkIHRoZW4gdHJpZXMgdG8gcmVhZC1sb2NrIC0gdHJ1ZS4NCktlZXBpbmcgYW55IG51
-bWJlciBvZiBsaW51eCB0aHJlYWRzIGluIHRoZSByZWFkZXIgInNwaW4tbG9jayIgZm9yIHRoZSBk
-dXJhdGlvbiBvZiB0aGUgY29iYWxkIG1vZGUgd2lsbCBhbHdheXMgaGFwcGVuDQooSSBhc3N1bWUg
-dXBkYXRlX3ZzeXNjYWxsIGlzIGNhbGxlZCByZWd1bGFybHkpDQoNCj4NCj4gV2UgbWF5IHRoaW5r
-IGFib3V0IGRldGVjdGluZyBzdWNoIGNhc2VzIGJldHRlciwgdGhvdWdoLiBOb3JiZXJ0LCBhcmUg
-eW91DQo+IHVzaW5nIG5hdGl2ZS9hbGNoZW15IEFQSXM/DQoNCk5hdGl2ZS4NCkJ0dy4gSSB0aG91
-Z2h0IG1peGluZyBBUElzIGlzIGV4cGxpY2l0bHkgc3VwcG9ydGVkIGFuZCBvbmUgb2YgdGhlIG1h
-aW4gZmVhdHVyZXMgb2YgWGVub21haSAobGlrZSByZWFkaW5nIHN0YXRlLCBzeW5jaHJvbml6ZWQg
-d2l0aCBSVCBtdXRleGVzIGFuZCBsb2dnaW5nIGl0IHRvIHRoZSBmaWxlc3lzdGVtKSwgdGhlIGV4
-aXN0ZW5jZSBvZiBwcmlvLWluaGVyaXRhbmNlIHdvdWxkIHN0cm9uZ2x5IGltcGx5IHRoYXQgYXN3
-ZWxsLiBPdGhlcndpc2UsIGl0J3MgcmF0aGVyIGhhcmQgdG8gZ3Vlc3Mgd2hpY2ggdGhyZWFkIHJ1
-bnMgaW4gdGhlIGNvYmFsdCBjb250ZXh0LCBwYXJ0aWN1bGFybHkgaXQgaWYgbWlnaHQgYmUganVz
-dCBhIHRlbXBvcmFsIHByaW9yaXR5IGJvb3N0Lg0KQ29tcGlsaW5nIHlvdXIgb3duIGNvZGUgd2l0
-aCB0aGUgImNvYmFsdCB3cmFwcGVycyIgaXMgbm8gaXNzdWUsIHRoZSBkZWFkbG9jayBhYm92ZSB3
-YXMgY2F1c2VkIGJ5DQpJbmRpcmVjdGx5IGJ5IGFub3RoZXIgImxpbnV4IiBEU08gKGxpYnN0ZGMr
-KykuDQoNCk5vcmJlcnQNCl9fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fDQoNClRoaXMg
-bWVzc2FnZSBhbmQgYW55IGF0dGFjaG1lbnRzIGFyZSBzb2xlbHkgZm9yIHRoZSB1c2Ugb2YgdGhl
-IGludGVuZGVkIHJlY2lwaWVudHMuIFRoZXkgbWF5IGNvbnRhaW4gcHJpdmlsZWdlZCBhbmQvb3Ig
-Y29uZmlkZW50aWFsIGluZm9ybWF0aW9uIG9yIG90aGVyIGluZm9ybWF0aW9uIHByb3RlY3RlZCBm
-cm9tIGRpc2Nsb3N1cmUuIElmIHlvdSBhcmUgbm90IGFuIGludGVuZGVkIHJlY2lwaWVudCwgeW91
-IGFyZSBoZXJlYnkgbm90aWZpZWQgdGhhdCB5b3UgcmVjZWl2ZWQgdGhpcyBlbWFpbCBpbiBlcnJv
-ciBhbmQgdGhhdCBhbnkgcmV2aWV3LCBkaXNzZW1pbmF0aW9uLCBkaXN0cmlidXRpb24gb3IgY29w
-eWluZyBvZiB0aGlzIGVtYWlsIGFuZCBhbnkgYXR0YWNobWVudCBpcyBzdHJpY3RseSBwcm9oaWJp
-dGVkLiBJZiB5b3UgaGF2ZSByZWNlaXZlZCB0aGlzIGVtYWlsIGluIGVycm9yLCBwbGVhc2UgY29u
-dGFjdCB0aGUgc2VuZGVyIGFuZCBkZWxldGUgdGhlIG1lc3NhZ2UgYW5kIGFueSBhdHRhY2htZW50
-IGZyb20geW91ciBzeXN0ZW0uDQoNCkFORFJJVFogSFlEUk8gR21iSA0KDQoNClJlY2h0c2Zvcm0v
-IExlZ2FsIGZvcm06IEdlc2VsbHNjaGFmdCBtaXQgYmVzY2hyw6Rua3RlciBIYWZ0dW5nIC8gQ29y
-cG9yYXRpb24NCg0KRmlybWVuc2l0ei8gUmVnaXN0ZXJlZCBzZWF0OiBXaWVuDQoNCkZpcm1lbmJ1
-Y2hnZXJpY2h0LyBDb3VydCBvZiByZWdpc3RyeTogSGFuZGVsc2dlcmljaHQgV2llbg0KDQpGaXJt
-ZW5idWNobnVtbWVyLyBDb21wYW55IHJlZ2lzdHJhdGlvbjogRk4gNjE4MzMgZw0KDQpEVlI6IDA2
-MDUwNzcNCg0KVUlELU5yLjogQVRVMTQ3NTY4MDYNCg0KDQpUaGFuayBZb3UNCl9fX19fX19fX19f
-X19fX19fX19fX19fX19fX19fX19fDQo=
+On 12/19/18 1:44 PM, Jan Kiszka wrote:
+> On 19.12.18 13:09, Philippe Gerum via Xenomai wrote:
+>> On 12/19/18 11:20 AM, Lange Norbert via Xenomai wrote:
+>>> There is a deadlock issue that haunted me for several weeks,
+>>> it is caused by the kernels update of the user-visible
+>>> timekeeping structures used by the VDSO clock_gettime functions.
+>>>
+>>> The kernel regularly updates a Timestamp structure, which is
+>>> accessible in user-mode,
+>>> it does so by something akin to a rw-lock in update_fast_timekeeper.
+>>>
+>>> If cobalt preempts the core during holding the lock, any thread
+>>> trying to read the time
+>>> will continue to spin. (This alone is an issue IMHO).
+>>> If the cobalt thread itself now call the vDSO function as reader,
+>>> it will spin on the lock and block the lock from getting released.
+>>>
+>>>
+>>> Either the update_fast_timekeeper funtion should not be preemptible
+>>> by cobalt,
+>>> or the spin-lock on reading could fallback to the syscall after a
+>>> certain amount of retries.
+>>>
+>>> The later is probably easier to implement, but then could randomly
+>>> demote cobalt threads.
+>>> (on the other hand, this would be always a demotion on platforms
+>>> without the vdso function)
+>>>
+>>
+>> update_vsyscall() is locking the write-side. If the analysis is
+>> correct, this patch may help at the expense of a some cycles more
+>> spent uninterruptible:
+>>
+>> diff --git a/arch/x86/entry/vsyscall/vsyscall_gtod.c
+>> b/arch/x86/entry/vsyscall/vsyscall_gtod.c
+>> index 9fb89b6e88c3..e9baa57e8385 100644
+>> --- a/arch/x86/entry/vsyscall/vsyscall_gtod.c
+>> +++ b/arch/x86/entry/vsyscall/vsyscall_gtod.c
+>> @@ -32,11 +32,14 @@ void update_vsyscall(struct timekeeper *tk)
+>>   {
+>>       int vclock_mode = tk->tkr_mono.clock->archdata.vclock_mode;
+>>       struct vsyscall_gtod_data *vdata = &vsyscall_gtod_data;
+>> +    unsigned long flags;
+>>         /* Mark the new vclock used. */
+>>       BUILD_BUG_ON(VCLOCK_MAX >= 32);
+>>       WRITE_ONCE(vclocks_used, READ_ONCE(vclocks_used) | (1 <<
+>> vclock_mode));
+>>   +    flags = hard_cond_local_irq_save();
+>> +
+>>       gtod_write_begin(vdata);
+>>         /* copy vsyscall data */
+>> @@ -77,6 +80,8 @@ void update_vsyscall(struct timekeeper *tk)
+>>         gtod_write_end(vdata);
+>>   +    hard_cond_local_irq_restore(flags);
+>> +
+>>       if (tk->tkr_mono.clock == &clocksource_tsc)
+>>           ipipe_update_hostrt(tk);
+>>   }
+>>
+> 
+> This should rather be an application bug: An RT (Xenomai) thread is
+> apparently using Linux gettimeofday & Co. (glibc) from RT context.
+
+Yes, it definitely is. But the issue is with coping with legacy.
+CLOCK_HOST_REALTIME is indeed the best way around this.
+
+ That
+> was never supported, we rather have RT services for that
+> (CLOCK_HOST_REALTIME).
+> 
+> We may think about detecting such cases better, though. Norbert, are you
+> using native/alchemy APIs?
+> 
+
+
+-- 
+Philippe.
 
