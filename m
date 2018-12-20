@@ -1,17 +1,7 @@
-Subject: Re: [PATCH] testsuite/smokey: relax posix-clock time dependancy
-References: <20181109091430.24559-1-henning.schild@siemens.com>
- <6bcda9af-aea0-970d-59f2-ed7a49222fe2@siemens.com>
- <20181119104016.7f303e5c@md1za8fc.ad001.siemens.net>
- <4b5a46a2-7683-8522-9570-2a04d590338d@xenomai.org>
- <20181119145209.294cf0ca@md1za8fc.ad001.siemens.net>
-From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <83e86e76-813a-d37f-3a3b-66d72c8a37c5@siemens.com>
-Date: Thu, 20 Dec 2018 18:21:56 +0100
-MIME-Version: 1.0
-In-Reply-To: <20181119145209.294cf0ca@md1za8fc.ad001.siemens.net>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+From: xenomai@xenomai.org
+Subject: [I-PIPE] ipipe-core-4.9.146-x86-8 released
+Message-Id: <E1ga2GP-0005pt-U3@xenomai.org>
+Date: Thu, 20 Dec 2018 18:37:37 +0100
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -20,63 +10,10 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Henning Schild <henning.schild@siemens.com>, Philippe Gerum <rpm@xenomai.org>
-Cc: xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-On 19.11.18 14:52, Henning Schild wrote:
-> Am Mon, 19 Nov 2018 10:52:34 +0100
-> schrieb Philippe Gerum <rpm@xenomai.org>:
-> 
->> On 11/19/18 10:40 AM, Henning Schild wrote:
->>> Am Fri, 16 Nov 2018 07:23:47 +0100
->>> schrieb Jan Kiszka <jan.kiszka@siemens.com>:
->>>    
->>>> On 09.11.18 10:14, Henning Schild via Xenomai wrote:
->>>>> The test often asserted. This patch gives the thread a priority,
->>>>> introduces a 25us margin and prints the value in case we still
->>>>> fail.
->>>>>
->>>>> Signed-off-by: Henning Schild <henning.schild@siemens.com>
->>>>> ---
->>>>>    testsuite/smokey/posix-clock/posix-clock.c | 15 ++++++++++++++-
->>>>>    1 file changed, 14 insertions(+), 1 deletion(-)
->>>>>
->>>>> diff --git a/testsuite/smokey/posix-clock/posix-clock.c
->>>>> b/testsuite/smokey/posix-clock/posix-clock.c index
->>>>> f672a9d52..36e0f5dea 100644 ---
->>>>> a/testsuite/smokey/posix-clock/posix-clock.c +++
->>>>> b/testsuite/smokey/posix-clock/posix-clock.c @@ -417,8 +417,10 @@
->>>>> static int clock_decrease_after_periodic_timer_first_tick(void)
->>>>>    	diff = now.tv_sec * 1000000000ULL + now.tv_nsec -
->>>>>    		(timer.it_value.tv_sec * 1000000000ULL +
->>>>> timer.it_value.tv_nsec);
->>>>> -	if (!smokey_assert(diff < 1000000000))
->>>>> +	if (!smokey_assert(diff < 1000000000ULL + 25000ULL))
->>>>> {
->>>>
->>>> Philippe, is this margin also reasonable from your perspective? Or
->>>> are we risking to miss a problem this way? I'm currently lacking a
->>>> feeling.
->>>
->>> Good question. That is an estimate suitable for x86. While it should
->>> not defeat the test, the test failing 60% of the time renders it not
->>> too useful.
->>>    
->>
->> Did you calibrate the timer shot with the autotune utility before
->> running that test?
-> 
-> I also saw it failing after calibration, otherwise i would have added
-> the calibration to xeno-test.
-> 
+Download URL: https://xenomai.org/downloads/ipipe/v4.x/x86/ipipe-core-4.9.146-x86-8.patch
 
-This discussion stranded. Philippe, if you have any further input on the value, 
-that could help to resolve this.
-
-Thanks,
-Jan
-
--- 
-Siemens AG, Corporate Technology, CT RDA IOT SES-DE
-Corporate Competence Center Embedded Linux
+Repository: https://git.xenomai.org/ipipe-x86
+Release tag: ipipe-core-4.9.146-x86-8
 
