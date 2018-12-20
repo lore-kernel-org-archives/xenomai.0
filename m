@@ -1,18 +1,19 @@
-From: Lange Norbert <norbert.lange@andritz.com>
-Subject: RE: Cobalt Preemption of kernel update_fast_timekeeper can cause
+Subject: Re: Cobalt Preemption of kernel update_fast_timekeeper can cause
  deadlocks
-Date: Thu, 20 Dec 2018 12:29:05 +0000
-Message-ID: <3e000509f1c449a1bf20b25875bce3f8@andritz.com>
 References: <f4c18591165c4b919c85ac90a756af9f@andritz.com>
  <159d2a96-fb82-b974-7958-79367a00a546@xenomai.org>
  <cdc2d93e-3d5b-0d5b-bf17-1a813e0622e2@siemens.com>
  <70702a6f3a2e47e58a54bc88e8298caf@P10-EX02.3DSystems.Internal>
  <4aebca73-7231-e92f-2424-0d44ee12e2a8@siemens.com>
-In-Reply-To: <4aebca73-7231-e92f-2424-0d44ee12e2a8@siemens.com>
-Content-Language: en-US
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+ <3e000509f1c449a1bf20b25875bce3f8@andritz.com>
+From: Jan Kiszka <jan.kiszka@siemens.com>
+Message-ID: <1dfb945e-1188-b9cd-5928-7765ebf665f0@siemens.com>
+Date: Thu, 20 Dec 2018 14:32:49 +0100
 MIME-Version: 1.0
+In-Reply-To: <3e000509f1c449a1bf20b25875bce3f8@andritz.com>
+Content-Type: text/plain; charset="utf-8"; format="flowed"
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -21,76 +22,79 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "Xenomai (xenomai@xenomai.org)" <xenomai@xenomai.org>
+To: Lange Norbert <norbert.lange@andritz.com>, "Xenomai (xenomai@xenomai.org)" <xenomai@xenomai.org>
 
-PiBPbiAxOS4xMi4xOCAxOToyNiwgQXVlbCwgS2VuZGFsbCB2aWEgWGVub21haSB3cm90ZToNCj4g
-PiBKYW4sDQo+ID4NCj4gPiBJJ20gdmVyeSBtdWNoIGluIGZhdm9yIG9mIHByb3ZpZGluZyBhIHdh
-eSB0byBwcmV2ZW50IFhlbm9tYWkgbW9kdWxlcw0KPiBmcm9tIHVzaW5nIGZlYXR1cmVzIHdoaWNo
-IGNhbiByZXN1bHQgaW4gZGVhZGxvY2ssIGlmIHRoZXJlIGlzIGEgY2xlYW4gd2F5IHRvDQo+IGRl
-dGVjdCBzdWNoIGEgc2l0dWF0aW9uLg0KPiA+DQo+ID4gV2UgdXNlZCBnZXR0aW1lb2ZkYXkgaW4g
-b25lIG9mIG91ciBtb2R1bGVzIGFuZCBpdCBtb3N0bHkgd29ya2VkIGdyZWF0Lg0KPiBCdXQgb25j
-ZSBpbiBhIGdyZWF0IHdoaWxlIHRoZSBzeXN0ZW0gd291bGQgZGVhZGxvY2suIE1vc3QgY2FsbHMg
-dG8NCj4gZ2V0dGltZW9mZGF5IGFyZSBiZW5pZ24gYW5kIGFwcGVhciB0byB3b3JrIG5vcm1hbGx5
-LCB3aGljaCBpcyB3aHkgaXQgaXMNCj4gZXNwZWNpYWxseSBwcm9ibGVtYXRpYy4gSXQgd291bGQg
-aGF2ZSBzYXZlZCBzb21lIGRlYnVnIGN5Y2xlcyBpZiB0aGVyZSB3YXMgYQ0KPiBrZXJuZWwgbG9n
-IG1lc3NhZ2UgdG8gd2FybiB1cyBvZiBvdXIgZGFuZ2VyLg0KPiA+DQo+ID4gT3IgcGVyaGFwcyB3
-ZSBjb3VsZCBjb2xsZWN0IGEgYmxhY2tsaXN0IG9mIHJlZmVyZW5jZXMgd2hpY2ggd2lsbCBwcm9k
-dWNlDQo+IHdhcm5pbmdzIHdoZW4gbGlua2luZyBhIFhlbm9tYWkgbW9kdWxlLiBBbGwgb2YgdGhl
-c2UgdGhpbmdzIGFyZSAnbmljZSB0bw0KPiBoYXZlJyBidXQgY2VydGFpbmx5IG5vdCB1cmdlbnQg
-bWF0dGVycy4NCj4NCj4gV2UgZG8gaGF2ZSB0aGUgaW5mcmFzdHJ1Y3R1cmUgYW5kIGEgc21hbGwg
-dXNlIGNhc2UgZm9yIHN1Y2ggUlQgdHJhcHMgYWxyZWFkeToNCj4gSWYgeW91IHVzZSAtLW1vZGUt
-Y2hlY2sgb24geGVuby1jb25maWcsIGFueSB1c2FnZSBvZiBtYWxsb2MgYW5kIGZyZWUgZnJvbQ0K
-PiBSVCBjb250ZXh0cyB3aWxsIGJlIGRldGVjdGVkIGFuZCByZXBvcnRlZC4gVGhlc2UgY2FsbHMg
-YXJlIGV2aWwgYXMgd2VsbA0KPiBiZWNhdXNlIHRoZXkgdGVuZCBubyBub3QgdHJpZ2dlciBhIHN5
-c2NhbGwgaW4gdGhlIGZhc3QgcGF0aCBhbmQgb25seSBmYWlsIG9uDQo+IGNvbnRlbnRpb24gb3Ig
-ZW1wdHktcG9vbCBzaXR1YXRpb25zIG9mIHRoZSB1c2Vyc3BhY2UgYWxsb2NhdG9yLg0KDQpUaGVy
-ZSBpcyBzdGlsbCB0aGUgaXNzdWUgdGhhdCB0aGUgY29iYWxkIGtlcm5lbCBjYW4gaW50ZXJydXB0
-IHRoZSBsaW51eCBrZXJuZWwNCndoaWxlIGhvbGRpbmcgYSBsb2NrLg0KQ29uc2lkZXIgdGhlIGNh
-c2UgdGhhdCB5b3UgaGF2ZSBhIDQgY29yZSBDUFUsIHNldmVyYWwgY29iYWx0IHRocmVhZHMgYXJl
-IGJvdW5kIHRvIGVnLiBDb3JlIDAgKGxlZ2FjeSBjb2RlIGFzc3VtaW5nIHNpbmdsZSBjb3JlKS4N
-Cg0KMSkgbGludXggd2FudHMgdG8gdXBkYXRlIHRoZSB0aW1la2VlcGVyIHN0cnVjdA0KMikgbm93
-IGNvYmFsdCBwcmVlbXB0cyB0aGUgbGludXgga2VybmVsIHdoaWxlIGhvbGRpbmcgdGhlIGxvY2sg
-b24gQ29yZSAwDQozKSB0aGUgY29iYWx0IHRocmVhZHMgcnVuIGNsb3NlIHRvIGVhY2ggb3RoZXIg
-YW5kIHRodXMgQ29yZSAwIHJlbWFpbnMgaW4gY29iYWx0IGRvbWFpbiBmb3IgaHVuZHJlZHMgb2Yg
-bXMuDQo0KSBmaW5hbGx5IGFsbCBjb2JhbHQgdGhyZWFkcyAodGhhdCBhcmUgYm91bmQgdG8gY29y
-ZSAwKSBpZGxlIGFuZCBsaW51eCBjYW4gZnJlZSB0aGUgbG9jaw0KDQpUaGlzIG1lYW5zIHRoYXQg
-YWxsIExpbnV4IHRocmVhZHMgb24gKmFueSBjb3JlKiB0aGF0IHRyeSB0byBjYWxsIHNvbWUgKmdl
-dHRpbWUgZnVuY3Rpb25zIChwb3NzaWJsZSBvdGhlcnMpIHdpbGwgYnVzeXdhaXQgb24gdGhlIGxv
-Y2suDQoNClRoYXQgYSBydCB0aHJlYWQgKHBvdGVudGlhbGx5IGp1c3QgdGVtcG9yYXJ5IHByb21v
-dGVkIG5vbi1ydCB0aHJlYWQsIG9yIG5vdCBsYXppbHkgZGVtb3RlZCB5ZXQpIGNhbiBhZGRpdGlv
-bmFsbHkgZGVhZGxvY2sgdGhlIHN5c3RlbSBzaXRzIGp1c3Qgb24gdG9wIG9mIHRoaXMgaXNzdWUu
-DQoNClJlZ2FyZGluZyB0byB3aGF0IEkgYW0gYWxsb3dlZCB0byBkbzoNCkFGQUlLIGEgdGhyZWFk
-IHN0YXJ0ZWQgYXMgY29iYWx0IHRocmVhZCBjYW4gZnJlZWx5IHN3aXRjaCBiZXR3ZWVuIGRvbWFp
-bnMsIHR5cGljYWxseSBhcm91bmQgc3lzY2FsbHMgYW5kIHRoZSBzd2l0Y2hlcyBhcmUgImxhenki
-LiBXaGF0IGFyZSB0aGUgcnVsZXMgZm9yIGEgdGhyZWFkIHRoYXQgbmVlZHMgdG8gY29sbGVjdCBz
-b21lIGRhdGEgUlQgKHBvdGVudGlhbGx5IHVzaW5nIHNvbWUgUlQgTXV0ZXhlcyB3aXRoIHByaW8g
-aW5oZXJpdGFuY2UpIGNhbGxpbmcgaW50byBEU09zIHRoYXQgYXJlbuKAmXQgY29tcGlsZWQgd2l0
-aCB0aGUgImNvYmFsdCB3cmFwcGluZ3MiIGFjdGl2ZSAoc2F5IGEgbG9nZ2luZyBmcmFtZXdvcmsg
-dGhhdCB1c2VzIGxpYmNzIGNsb2NrX2dldHRpbWUpLg0KRG8gSSBtYW51YWxseSBoYXZlIHRvIGRl
-bW90ZSB0aGUgdGhyZWFkIHNvbWVob3cgYmVmb3JlIGNhbGxpbmcgRFNPIGZ1bmN0aW9ucywgaXMg
-aXQgbm90IGFsbG93ZWQgYXQgYWxsIHRvIHVzZSBEU09zIHRoYXQgd2VyZSBjb21waWxlZCB3aXRo
-ICJjb2JhbHQgd3JhcHBpbmdzIj8NCg0KPiB3aXRoIHBvc2l4LCB5b3UgYXJlIGFscmVhZHkNCj4g
-cmVkaXJlY3RlZCB0byB0aGUgUlQtc2FmZSBpbXBsZW1lbnRhdGlvbnMgb2YgdGhvc2UgZnVuY3Rp
-b25zLg0KDQpJbiBteSBjYXNlIChwb3NpeCBza2luLCBub3QgIm5hdGl2ZSIgYXMgSSByZXBsaWVk
-IGVhcmxpZXIpLCB0aGUgY2FsbCBjYW1lIGZyb20gYW5vdGhlciBEU08gd2hpY2ggaXMgdW5hZmZl
-Y3RlZCBieSB0aGUNCmxpbmstdGltZSB3cmFwcGluZy4NCkkgd291bGQgbGlrZWx5IGhhdmUgdG8g
-TERfUFJFTE9BRCBhIGNoZWNrZXIgRFNPLCBzZWVtcyBtb3JlIHNhbmUgdG8gbWUsDQphcyB0aGUg
-Y2FsbHMgY291bGQgb3JpZ2luYXRlIGZyb20gaW1wbGljaXRseSBsaW5rZWQgRFNPIGFzd2VsbCAo
-QysrIHJ1bnRpbWUgbGlicmFyeSkNCg0KTm9yYmVydA0KX19fX19fX19fX19fX19fX19fX19fX19f
-X19fX19fX18NCg0KVGhpcyBtZXNzYWdlIGFuZCBhbnkgYXR0YWNobWVudHMgYXJlIHNvbGVseSBm
-b3IgdGhlIHVzZSBvZiB0aGUgaW50ZW5kZWQgcmVjaXBpZW50cy4gVGhleSBtYXkgY29udGFpbiBw
-cml2aWxlZ2VkIGFuZC9vciBjb25maWRlbnRpYWwgaW5mb3JtYXRpb24gb3Igb3RoZXIgaW5mb3Jt
-YXRpb24gcHJvdGVjdGVkIGZyb20gZGlzY2xvc3VyZS4gSWYgeW91IGFyZSBub3QgYW4gaW50ZW5k
-ZWQgcmVjaXBpZW50LCB5b3UgYXJlIGhlcmVieSBub3RpZmllZCB0aGF0IHlvdSByZWNlaXZlZCB0
-aGlzIGVtYWlsIGluIGVycm9yIGFuZCB0aGF0IGFueSByZXZpZXcsIGRpc3NlbWluYXRpb24sIGRp
-c3RyaWJ1dGlvbiBvciBjb3B5aW5nIG9mIHRoaXMgZW1haWwgYW5kIGFueSBhdHRhY2htZW50IGlz
-IHN0cmljdGx5IHByb2hpYml0ZWQuIElmIHlvdSBoYXZlIHJlY2VpdmVkIHRoaXMgZW1haWwgaW4g
-ZXJyb3IsIHBsZWFzZSBjb250YWN0IHRoZSBzZW5kZXIgYW5kIGRlbGV0ZSB0aGUgbWVzc2FnZSBh
-bmQgYW55IGF0dGFjaG1lbnQgZnJvbSB5b3VyIHN5c3RlbS4NCg0KQU5EUklUWiBIWURSTyBHbWJI
-DQoNCg0KUmVjaHRzZm9ybS8gTGVnYWwgZm9ybTogR2VzZWxsc2NoYWZ0IG1pdCBiZXNjaHLDpG5r
-dGVyIEhhZnR1bmcgLyBDb3Jwb3JhdGlvbg0KDQpGaXJtZW5zaXR6LyBSZWdpc3RlcmVkIHNlYXQ6
-IFdpZW4NCg0KRmlybWVuYnVjaGdlcmljaHQvIENvdXJ0IG9mIHJlZ2lzdHJ5OiBIYW5kZWxzZ2Vy
-aWNodCBXaWVuDQoNCkZpcm1lbmJ1Y2hudW1tZXIvIENvbXBhbnkgcmVnaXN0cmF0aW9uOiBGTiA2
-MTgzMyBnDQoNCkRWUjogMDYwNTA3Nw0KDQpVSUQtTnIuOiBBVFUxNDc1NjgwNg0KDQoNClRoYW5r
-IFlvdQ0KX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX18NCg==
+On 20.12.18 13:29, Lange Norbert via Xenomai wrote:
+>> On 19.12.18 19:26, Auel, Kendall via Xenomai wrote:
+>>> Jan,
+>>>
+>>> I'm very much in favor of providing a way to prevent Xenomai modules
+>> from using features which can result in deadlock, if there is a clean way to
+>> detect such a situation.
+>>>
+>>> We used gettimeofday in one of our modules and it mostly worked great.
+>> But once in a great while the system would deadlock. Most calls to
+>> gettimeofday are benign and appear to work normally, which is why it is
+>> especially problematic. It would have saved some debug cycles if there was a
+>> kernel log message to warn us of our danger.
+>>>
+>>> Or perhaps we could collect a blacklist of references which will produce
+>> warnings when linking a Xenomai module. All of these things are 'nice to
+>> have' but certainly not urgent matters.
+>>
+>> We do have the infrastructure and a small use case for such RT traps already:
+>> If you use --mode-check on xeno-config, any usage of malloc and free from
+>> RT contexts will be detected and reported. These calls are evil as well
+>> because they tend no not trigger a syscall in the fast path and only fail on
+>> contention or empty-pool situations of the userspace allocator.
+> 
+> There is still the issue that the cobald kernel can interrupt the linux kernel
+> while holding a lock.
+> Consider the case that you have a 4 core CPU, several cobalt threads are bound to eg. Core 0 (legacy code assuming single core).
+> 
+> 1) linux wants to update the timekeeper struct
+> 2) now cobalt preempts the linux kernel while holding the lock on Core 0
+> 3) the cobalt threads run close to each other and thus Core 0 remains in cobalt domain for hundreds of ms.
+> 4) finally all cobalt threads (that are bound to core 0) idle and linux can free the lock
+> 
+> This means that all Linux threads on *any core* that try to call some *gettime functions (possible others) will busywait on the lock.
+> 
+
+You do not need to look at the GTOD lock to construct such delays: every Linux 
+spinlock taken on one core that is then interrupted by RT workload for a longer 
+period can delay other cores doing Linux stuff that needs that lock. That is a 
+generic property of the co-kernel architecture - and the reason you should allow 
+Linux to run every few ms, on *every* core.
+
+> That a rt thread (potentially just temporary promoted non-rt thread, or not lazily demoted yet) can additionally deadlock the system sits just on top of this issue.
+> 
+> Regarding to what I am allowed to do:
+> AFAIK a thread started as cobalt thread can freely switch between domains, typically around syscalls and the switches are "lazy". What are the rules for a thread that needs to collect some data RT (potentially using some RT Mutexes with prio inheritance) calling into DSOs that aren’t compiled with the "cobalt wrappings" active (say a logging framework that uses libcs clock_gettime).
+> Do I manually have to demote the thread somehow before calling DSO functions, is it not allowed at all to use DSOs that were compiled with "cobalt wrappings"?
+
+If you are calling into an "unknown" non-RT blob, dropping from RT may actually 
+be required. We do not promote explicit mode switches because they are not 
+needed if you control (wrap) all your code. This might be  an exception.
+
+> 
+>> with posix, you are already
+>> redirected to the RT-safe implementations of those functions.
+> 
+> In my case (posix skin, not "native" as I replied earlier), the call came from another DSO which is unaffected by the
+> link-time wrapping.
+> I would likely have to LD_PRELOAD a checker DSO, seems more sane to me,
+> as the calls could originate from implicitly linked DSO aswell (C++ runtime library)
+
+Is the reason that the other DSOs are not caught at link-time generic or 
+specific to your build? The former case should be documented if it exists.
+
+Irrespective of that, I would definitely be interested in a LD_PRELOAD-based 
+checker that you can attach to an application easily, without the need to switch 
+to link-time wrapping (which is not needed with non-posix skins).
+
+Jan
+
+-- 
+Siemens AG, Corporate Technology, CT RDA IOT SES-DE
+Corporate Competence Center Embedded Linux
 
