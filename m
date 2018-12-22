@@ -1,13 +1,11 @@
-Date: Fri, 21 Dec 2018 20:37:33 +0100
-From: Josef Holzmayr <holzmayr@rsi-elektrotechnik.de>
-Subject: Re: I-pipe 4.4.x-cip
-Message-ID: <20181221193733.6egh3lx3ezjfpg3o@jholzmayr.localdomain>
-References: <169e6cda-32e6-0dd9-f709-ef2de587a77a@siemens.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <169e6cda-32e6-0dd9-f709-ef2de587a77a@siemens.com>
+References: <52697293.XgM39KIdf6@soho> <20160929124918.4f33e69d@md1em3qc>
+In-Reply-To: <20160929124918.4f33e69d@md1em3qc>
+From: C Smith <csmithquestions@gmail.com>
+Date: Sat, 22 Dec 2018 00:34:34 -0800
+Message-ID: <CA+K1mPHPp5mCwXSmwi=_dcCzRDr7SnD_xovxtbee08TyJN0EsQ@mail.gmail.com>
+Subject: Re: [Xenomai] rthal_strncpy_from_user bug
+Content-Type: text/plain; charset="UTF-8"
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,58 +14,81 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jan Kiszka <jan.kiszka@siemens.com>
-Cc: Xenomai <xenomai@xenomai.org>
+To: Henning Schild <henning.schild@siemens.com>
+Cc: Leopold Palomo-Avellaneda <leo@alaxarxa.net>, xenomai@xenomai.org
 
-Hi Jan,
+I can confirm that this is not fixed in Xenomai 2.6.5. (I too am on that
+branch because of legacy code). I found that certain I5 processors generate
+the memory exception during cpy_from_user() calls, and certain I5
+processors don't. I successfully worked around the problem, as Henning
+Schild explains, by disabling CONFIG_SMAP in the kernel config. I am on
+kernel 3.18.20 and in order to reveal that setting in 'make menuconfig' in
+the processor features - you'll need to first enable 'kernel debugging' and
+also choose 'Embedded' as well.
 
-On Thu, Dec 20, 2018 at 05:32:37PM +0100, Jan Kiszka wrote:
-> Hi all,
-> 
-> just a quick note that I started a 4.4-cip based I-pipe tree:
-> 
-> https://gitlab.denx.de/Xenomai/ipipe/tree/ipipe-4.4.y-cip
-> 
-> So far it's just a merge of ipipe-4.4.y @ipipe-core-4.4.166-x86-12 with the
-> CIP tree @4.4.166-cip29. I'm not yet sure whether to switch 4.4 completely
-> to -cip or have both running in parallel for some more time.
+-C Smith
 
-Thanks, https://github.com/LetoThe2nd/meta-xenomai has been updated
-accordingly.
+On Thu, Sep 29, 2016 at 3:49 AM Henning Schild <henning.schild@siemens.com>
+wrote:
 
-> 
-> For now, I would ask everyone interested in this baseline, may it be on x86
-> or ARM, to try out the new branch.
-
-Preliminary results on Beaglebone Black:
-- xeno-test passes
-- latency -t 0 maxes out at ~70µs
-- latency -t 2 maxes out at ~23µs
-
-Our companys long term testing booth is unavailable until Jan 7th, so
-more delay again for proper results, sorry.
-
-Greetz
--- 
-———————————————
-Josef Holzmayr
-Software Developer Embedded Systems
-
-Tel: +49 8444 9204-48
-Fax: +49 8444 9204-50
-
-R-S-I Elektrotechnik GmbH & Co. KG
-Woelkestrasse 11
-D-85301 Schweitenkirchen
-www.rsi-elektrotechnik.de
-———————————————
-Amtsgericht Ingolstadt – GmbH: HRB 191328 – KG: HRA 170393
-Geschäftsführer: Dr.-Ing. Michael Sorg, Dipl.-Ing. Franz Sorg
-Ust-IdNr: DE 128592548 
-
-_____________________________________________________________
-Amtsgericht Ingolstadt - GmbH: HRB 191328 - KG: HRA 170363
-Geschäftsführer: Dr.-Ing. Michael Sorg, Dipl.-Ing. Franz Sorg
-USt-IdNr.: DE 128592548
-
-
+> Am Wed, 28 Sep 2016 13:12:12 +0200
+> schrieb Leopold Palomo-Avellaneda <leo@alaxarxa.net>:
+>
+> > Hi,
+> >
+> >
+> > I'm trapped between 2.6.x and 3.x versions. The question to not
+> > boring you is that I'm having a lot of problems with this soft 3.x so
+> > I try to go back again to 2.6.
+> >
+> > However, I need to use a modern hardware (new development) and 2.6
+> > have some issues especially rtnet that doesn't work without some
+> > patch with kernels greater than 3.17 (or at least I'm not able to).
+> >
+> > After solving some other issues my tests fails with some ugly message
+> > (killed!!!!)
+> >
+> > [ 5761.024502] RIP  [<ffffffff8143079d>]
+> > rthal_strncpy_from_user+0xd/0x20 [ 5761.027017]  RSP
+> > <ffff88045a493e20> [ 5761.029456] CR2: 000000000040445d
+> > [ 5761.031859] ---[ end trace f092b4db2a9a9654 ]---
+> > [ 5773.810428] BUG: unable to handle kernel paging request at
+> > 000000000040445d [ 5773.812909] IP: [<ffffffff8143079d>]
+> > rthal_strncpy_from_user+0xd/0x20 [ 5773.815389] PGD 45a00c067 PUD
+> > 456d4e067 PMD 45aa42067 PTE 4517f5025 [ 5773.817864] Oops: 0001 [#16]
+> > SMP [ 5773.820293] Modules linked in: rt_igb(O) rt_e1000e(O)
+> > rt_loopback(O) rtcfg(O) rtudp(O) rtipv4(O) rtmac(O) rtpacket(O)
+> > rtnet(O) ctr ccm binfmt_misc nfsd auth_rpcgss nfs_acl nfs lockd
+> > fscache sunrpc nls_utf8 nls_cp437 vfat fat xeno_can_peak_pci
+> > xeno_can_sja1000 xeno_can x86_pkg_temp_thermal coretemp kvm_intel kvm
+> > peak_pci sja1000 joydev crc32_pclmul hid_generic usbhid
+> > ghash_clmulni_intel aesni_intel ppdev aes_x86_64 lrw can_dev gf128mul
+> > glue_helper xeno_rtdm snd_pcm snd_timer ablk_help
+> >
+> >
+> > looking on the web, I have found that his issue was solved:
+> >
+> >
+> http://git.xenomai.org/xenomai-jki.git/commit/?h=maintenance-2.6&id=2eceef4c62bc8d6b3713787c26882fdcd9b87842
+> >
+> > However, although it was on December 2015, 2.6.5 (July 2016) doesn't
+> > have it.
+> >
+> > So, there's any reason why this patch was not pushed to 2.6.5?
+>
+> I guess the reason is that 2.6 is not officially maintained anymore, so
+> patches like this one do not get backported. You should see if you can
+> switch to 3.0 and solve your issues there!
+>
+> If that really is not an option, this particular problem can be
+> addressed by disabling CONFIG_SMAP in your kernel. Or you could port
+> the patch back to 2.6. If you do that post it here, might get accepted
+> after all.
+>
+> Henning
+>
+> _______________________________________________
+> Xenomai mailing list
+> Xenomai@xenomai.org
+> https://xenomai.org/mailman/listinfo/xenomai
+>
