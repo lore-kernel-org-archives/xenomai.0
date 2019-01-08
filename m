@@ -1,14 +1,15 @@
-Message-ID: <1546957031.2392.10.camel@smigroup.net>
-Subject: Re: [PATCHv2] cobalt/x86: fix condition in eager fpu code for
- kernels < 4.14
-From: Mauro Salvini <mauro.salvini@smigroup.net>
-Date: Tue, 08 Jan 2019 15:17:11 +0100
-In-Reply-To: <20190107130416.25271-1-henning.schild@siemens.com>
-References: <20181221134452.15743-1-henning.schild@siemens.com>
- <20190107130416.25271-1-henning.schild@siemens.com>
-Content-Type: text/plain; charset="UTF-8"
-Mime-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
+From: Lange Norbert <norbert.lange@andritz.com>
+Subject: RE: [PATCH] cobalt/posix: fcntl: turn the generic argument into a
+ long value
+Date: Tue, 8 Jan 2019 17:18:27 +0000
+Message-ID: <101ddeeb5c124793a0f851dfd30f6313@andritz.com>
+References: <20181205152900.28540-1-rpm@xenomai.org>
+ <1fc1841a-699f-1482-a411-911f95c85c25@siemens.com>
+In-Reply-To: <1fc1841a-699f-1482-a411-911f95c85c25@siemens.com>
+Content-Language: en-US
+MIME-Version: 1.0
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,48 +18,85 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Henning Schild <henning.schild@siemens.com>, xenomai <xenomai@xenomai.org>
+To: "Xenomai (xenomai@xenomai.org)" <xenomai@xenomai.org>
 
-On Mon, 2019-01-07 at 14:04 +0100, Henning Schild wrote:
-> From: Henning Schild <henning.schild@siemens.com>
->=20
-> We should mark the current task as not owning the fpu anymore if it
-> does
-> actually own the fpu, not if the fpu itself is active.
->=20
-> Fixes cb52e6c7438fa
->=20
-> Reported-by: Mauro Salvini <mauro.salvini@smigroup.net>
-> Signed-off-by: Henning Schild <henning.schild@siemens.com>
-> ---
-> =C2=A0kernel/cobalt/arch/x86/thread.c | 2 +-
-> =C2=A01 file changed, 1 insertion(+), 1 deletion(-)
->=20
-> diff --git a/kernel/cobalt/arch/x86/thread.c
-> b/kernel/cobalt/arch/x86/thread.c
-> index a09560075..ba807ac1e 100644
-> --- a/kernel/cobalt/arch/x86/thread.c
-> +++ b/kernel/cobalt/arch/x86/thread.c
-> @@ -475,7 +475,7 @@ void xnarch_leave_root(struct xnthread *root)
-> =C2=A0	switch_fpu_finish(&current->thread.fpu, smp_processor_id());
-> =C2=A0#else
-> =C2=A0	/* mark current thread as not owning the FPU anymore */
-> -	if (&current->thread.fpu.fpstate_active)
-> +	if (fpregs_active())
-> =C2=A0		fpregs_deactivate(&current->thread.fpu);
-> =C2=A0#endif
-> =C2=A0}
-
-Hi all,
-
-I tried to launch xeno-test several times under same previous
-conditions and I confirm that this patch fixes the bug.
-
-A side note: would not #include in
-kernel/cobalt/arch/x86/thread.c=C2=A0lines 47,48 and 54 be redundant with
-same includes in kernel/cobalt/arch/x86/include/asm/xenomai/thread.h
-(that is indirectly included in thread.c)?
-
-Thanks, regards
-Mauro
-
+QWRkZWQgcGF0Y2ggZm9yIHVzZXJzcGFjZSAoaG9wZSBvdXIgYmVuZXZvbGVudCBJVCBkb2VzIG5v
+dCBnYXJibGUgd2hpdGVzcGFjZXMpLg0KDQpJdCBpcyBub3cgdXNpbmcgICdsb25nJyBmb3IgdGhl
+IGFyZ3VtZW50IGluc3RlYWQgb2YgJ3ZvaWQgKicgLSBhcyByZXF1ZXN0ZWQuDQpXaGF0IHN0aWNr
+cyBvdXQgdG8gbWUsDQpsb29raW5nIGEgZmV3IGxpbmVzIGJlbG93IHRoZSBjaGFuZ2VzIGluIHJ0
+ZG0uYyB0aGUgaW9jdGwgaW1wbGVtZW50YXRpb24gdXNlcyAndm9pZCAqJy4NCg0Ka2luZCByZWdh
+cmRzLCBOb3JiZXJ0IExhbmdlDQoNCg0KDQoNCj4gLS0tLS1PcmlnaW5hbCBNZXNzYWdlLS0tLS0N
+Cj4gRnJvbTogWGVub21haSA8eGVub21haS1ib3VuY2VzQHhlbm9tYWkub3JnPiBPbiBCZWhhbGYg
+T2YgSmFuIEtpc3prYQ0KPiB2aWEgWGVub21haQ0KPiBTZW50OiBEb25uZXJzdGFnLCA2LiBEZXpl
+bWJlciAyMDE4IDA4OjA0DQo+IFRvOiBQaGlsaXBwZSBHZXJ1bSA8cnBtQHhlbm9tYWkub3JnPjsg
+eGVub21haUB4ZW5vbWFpLm9yZw0KPiBTdWJqZWN0OiBSZTogW1BBVENIXSBjb2JhbHQvcG9zaXg6
+IGZjbnRsOiB0dXJuIHRoZSBnZW5lcmljIGFyZ3VtZW50IGludG8gYQ0KPiBsb25nIHZhbHVlDQo+
+DQo+IEUtTUFJTCBGUk9NIEEgTk9OLUFORFJJVFogU09VUkNFOiBBUyBBIFNFQ1VSSVRZIE1FQVNV
+UkUsIFBMRUFTRQ0KPiBFWEVSQ0lTRSBDQVVUSU9OIFdJVEggRS1NQUlMIENPTlRFTlQgQU5EIEFO
+WSBMSU5LUyBPUg0KPiBBVFRBQ0hNRU5UUy4NCj4NCj4NCj4gT24gMDUuMTIuMTggMTY6MjksIFBo
+aWxpcHBlIEdlcnVtIHdyb3RlOg0KPiA+IEluIG9yZGVyIHRvIHByZXZlbnQgdW5leHBlY3RlZCB0
+cnVuY2F0aW9uIG9mIHBvaW50ZXIgYXJncyBpbiB1c2VybGFuZA0KPiA+IHdpdGggdGhlIExQNjQg
+ZGF0YSBtb2RlbCwgbGliY29iYWx0J3MgZmNudGwoKSB3cmFwcGVyIHNob3VsZCBhY2NlcHQgYQ0K
+PiA+IGxvbmcgKDNyZCkgYXJndW1lbnQuDQo+ID4NCj4gPiBBbnRpY2lwYXRlIHRoaXMgY2hhbmdl
+IGluIHRoZSBjb3JyZXNwb25kaW5nIHN5c2NhbGwgaW1wbGVtZW50YXRpb24gaW4NCj4gPiB0aGUg
+Q29iYWx0IGNvcmUuICBUaGUgdXBkYXRlZCBBQkkgcmVtYWlucyBiYWNrd2FyZC1jb21wYXRpYmxl
+IGZvcg0KPiA+IGN1cnJlbnQgdXNlcnMuDQo+ID4NCj4gPiBTaWduZWQtb2ZmLWJ5OiBQaGlsaXBw
+ZSBHZXJ1bSA8cnBtQHhlbm9tYWkub3JnPg0KPiA+IC0tLQ0KPiA+ICAga2VybmVsL2NvYmFsdC9w
+b3NpeC9pby5jIHwgMiArLQ0KPiA+ICAga2VybmVsL2NvYmFsdC9wb3NpeC9pby5oIHwgMiArLQ0K
+PiA+ICAga2VybmVsL2NvYmFsdC9ydGRtL2ZkLmMgIHwgNCArKy0tDQo+ID4gICAzIGZpbGVzIGNo
+YW5nZWQsIDQgaW5zZXJ0aW9ucygrKSwgNCBkZWxldGlvbnMoLSkNCj4gPg0KPiA+IGRpZmYgLS1n
+aXQgYS9rZXJuZWwvY29iYWx0L3Bvc2l4L2lvLmMgYi9rZXJuZWwvY29iYWx0L3Bvc2l4L2lvLmMg
+aW5kZXgNCj4gPiBlZjRhMGZlYTIuLmYzNWFhZjhjZCAxMDA2NDQNCj4gPiAtLS0gYS9rZXJuZWwv
+Y29iYWx0L3Bvc2l4L2lvLmMNCj4gPiArKysgYi9rZXJuZWwvY29iYWx0L3Bvc2l4L2lvLmMNCj4g
+PiBAQCAtNTMsNyArNTMsNyBAQCBDT0JBTFRfU1lTQ0FMTChjbG9zZSwgbG9zdGFnZSwgKGludCBm
+ZCkpDQo+ID4gICAgICAgcmV0dXJuIHJ0ZG1fZmRfY2xvc2UoZmQsIDApOw0KPiA+ICAgfQ0KPiA+
+DQo+ID4gLUNPQkFMVF9TWVNDQUxMKGZjbnRsLCBjdXJyZW50LCAoaW50IGZkLCBpbnQgY21kLCBp
+bnQgYXJnKSkNCj4gPiArQ09CQUxUX1NZU0NBTEwoZmNudGwsIGN1cnJlbnQsIChpbnQgZmQsIGlu
+dCBjbWQsIGxvbmcgYXJnKSkNCj4gPiAgIHsNCj4gPiAgICAgICByZXR1cm4gcnRkbV9mZF9mY250
+bChmZCwgY21kLCBhcmcpOw0KPiA+ICAgfQ0KPiA+IGRpZmYgLS1naXQgYS9rZXJuZWwvY29iYWx0
+L3Bvc2l4L2lvLmggYi9rZXJuZWwvY29iYWx0L3Bvc2l4L2lvLmggaW5kZXgNCj4gPiA2NDdmN2Yz
+ZTkuLjZmMjBkYmVkZCAxMDA2NDQNCj4gPiAtLS0gYS9rZXJuZWwvY29iYWx0L3Bvc2l4L2lvLmgN
+Cj4gPiArKysgYi9rZXJuZWwvY29iYWx0L3Bvc2l4L2lvLmgNCj4gPiBAQCAtMzcsNyArMzcsNyBA
+QCBDT0JBTFRfU1lTQ0FMTF9ERUNMKHNvY2tldCwNCj4gPg0KPiA+ICAgQ09CQUxUX1NZU0NBTExf
+REVDTChjbG9zZSwgKGludCBmZCkpOw0KPiA+DQo+ID4gLUNPQkFMVF9TWVNDQUxMX0RFQ0woZmNu
+dGwsIChpbnQgZmQsIGludCBjbWQsIGludCBhcmcpKTsNCj4gPiArQ09CQUxUX1NZU0NBTExfREVD
+TChmY250bCwgKGludCBmZCwgaW50IGNtZCwgbG9uZyBhcmcpKTsNCj4gPg0KPiA+ICAgQ09CQUxU
+X1NZU0NBTExfREVDTChpb2N0bCwNCj4gPiAgICAgICAgICAgICAgICAgICAoaW50IGZkLCB1bnNp
+Z25lZCBpbnQgcmVxdWVzdCwgdm9pZCBfX3VzZXIgKmFyZykpOw0KPiA+IGRpZmYgLS1naXQgYS9r
+ZXJuZWwvY29iYWx0L3J0ZG0vZmQuYyBiL2tlcm5lbC9jb2JhbHQvcnRkbS9mZC5jIGluZGV4DQo+
+ID4gODA3YTExZWFlLi5mM2I2NDQ0YzMgMTAwNjQ0DQo+ID4gLS0tIGEva2VybmVsL2NvYmFsdC9y
+dGRtL2ZkLmMNCj4gPiArKysgYi9rZXJuZWwvY29iYWx0L3J0ZG0vZmQuYw0KPiA+IEBAIC0zNzEs
+NyArMzcxLDcgQEAgaW50IHJ0ZG1fZmRfZmNudGwoaW50IHVmZCwgaW50IGNtZCwgLi4uKQ0KPiA+
+ICAgew0KPiA+ICAgICAgIHN0cnVjdCBydGRtX2ZkICpmZDsNCj4gPiAgICAgICB2YV9saXN0IGFw
+Ow0KPiA+IC0gICAgIGludCBhcmc7DQo+ID4gKyAgICAgbG9uZyBhcmc7DQo+ID4gICAgICAgaW50
+IHJldDsNCj4gPg0KPiA+ICAgICAgIGZkID0gcnRkbV9mZF9nZXQodWZkLCAwKTsNCj4gPiBAQCAt
+Mzc5LDcgKzM3OSw3IEBAIGludCBydGRtX2ZkX2ZjbnRsKGludCB1ZmQsIGludCBjbWQsIC4uLikN
+Cj4gPiAgICAgICAgICAgICAgIHJldHVybiBQVFJfRVJSKGZkKTsNCj4gPg0KPiA+ICAgICAgIHZh
+X3N0YXJ0KGFwLCBjbWQpOw0KPiA+IC0gICAgIGFyZyA9IHZhX2FyZyhhcCwgaW50KTsNCj4gPiAr
+ICAgICBhcmcgPSB2YV9hcmcoYXAsIGxvbmcpOw0KPiA+ICAgICAgIHZhX2VuZChhcCk7DQo+ID4N
+Cj4gPiAgICAgICBzd2l0Y2ggKGNtZCkgew0KPiA+DQo+DQo+IEFwcGxpZWQgdG8gbmV4dC4NCj4N
+Cj4gVGhhbmtzLA0KPiBKYW4NCj4NCj4gLS0NCj4gU2llbWVucyBBRywgQ29ycG9yYXRlIFRlY2hu
+b2xvZ3ksIENUIFJEQSBJT1QgU0VTLURFIENvcnBvcmF0ZQ0KPiBDb21wZXRlbmNlIENlbnRlciBF
+bWJlZGRlZCBMaW51eA0KDQpfX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fXw0KDQpUaGlz
+IG1lc3NhZ2UgYW5kIGFueSBhdHRhY2htZW50cyBhcmUgc29sZWx5IGZvciB0aGUgdXNlIG9mIHRo
+ZSBpbnRlbmRlZCByZWNpcGllbnRzLiBUaGV5IG1heSBjb250YWluIHByaXZpbGVnZWQgYW5kL29y
+IGNvbmZpZGVudGlhbCBpbmZvcm1hdGlvbiBvciBvdGhlciBpbmZvcm1hdGlvbiBwcm90ZWN0ZWQg
+ZnJvbSBkaXNjbG9zdXJlLiBJZiB5b3UgYXJlIG5vdCBhbiBpbnRlbmRlZCByZWNpcGllbnQsIHlv
+dSBhcmUgaGVyZWJ5IG5vdGlmaWVkIHRoYXQgeW91IHJlY2VpdmVkIHRoaXMgZW1haWwgaW4gZXJy
+b3IgYW5kIHRoYXQgYW55IHJldmlldywgZGlzc2VtaW5hdGlvbiwgZGlzdHJpYnV0aW9uIG9yIGNv
+cHlpbmcgb2YgdGhpcyBlbWFpbCBhbmQgYW55IGF0dGFjaG1lbnQgaXMgc3RyaWN0bHkgcHJvaGli
+aXRlZC4gSWYgeW91IGhhdmUgcmVjZWl2ZWQgdGhpcyBlbWFpbCBpbiBlcnJvciwgcGxlYXNlIGNv
+bnRhY3QgdGhlIHNlbmRlciBhbmQgZGVsZXRlIHRoZSBtZXNzYWdlIGFuZCBhbnkgYXR0YWNobWVu
+dCBmcm9tIHlvdXIgc3lzdGVtLg0KDQpBTkRSSVRaIEhZRFJPIEdtYkgNCg0KDQpSZWNodHNmb3Jt
+LyBMZWdhbCBmb3JtOiBHZXNlbGxzY2hhZnQgbWl0IGJlc2NocsOkbmt0ZXIgSGFmdHVuZyAvIENv
+cnBvcmF0aW9uDQoNCkZpcm1lbnNpdHovIFJlZ2lzdGVyZWQgc2VhdDogV2llbg0KDQpGaXJtZW5i
+dWNoZ2VyaWNodC8gQ291cnQgb2YgcmVnaXN0cnk6IEhhbmRlbHNnZXJpY2h0IFdpZW4NCg0KRmly
+bWVuYnVjaG51bW1lci8gQ29tcGFueSByZWdpc3RyYXRpb246IEZOIDYxODMzIGcNCg0KRFZSOiAw
+NjA1MDc3DQoNClVJRC1Oci46IEFUVTE0NzU2ODA2DQoNCg0KVGhhbmsgWW91DQpfX19fX19fX19f
+X19fX19fX19fX19fX19fX19fX19fXw0KLS0tLS0tLS0tLS0tLS0gbmV4dCBwYXJ0IC0tLS0tLS0t
+LS0tLS0tCkEgbm9uLXRleHQgYXR0YWNobWVudCB3YXMgc2NydWJiZWQuLi4KTmFtZTogY29iYWx0
+LWZpeC1mY250bC10by1mb3J3YXJkLWEtbG9uZy1hcmd1bWVudC5wYXRjaApUeXBlOiBhcHBsaWNh
+dGlvbi9vY3RldC1zdHJlYW0KU2l6ZTogMTI0OCBieXRlcwpEZXNjOiBjb2JhbHQtZml4LWZjbnRs
+LXRvLWZvcndhcmQtYS1sb25nLWFyZ3VtZW50LnBhdGNoClVSTDogPGh0dHA6Ly94ZW5vbWFpLm9y
+Zy9waXBlcm1haWwveGVub21haS9hdHRhY2htZW50cy8yMDE5MDEwOC84YTdhMTY4MS9hdHRhY2ht
+ZW50Lm9iaj4K
