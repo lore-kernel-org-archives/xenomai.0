@@ -1,16 +1,15 @@
-Mime-Version: 1.0 (Mac OS X Mail 11.5 \(3445.9.1\))
-Subject: Re: ipipe-arm64 kernel issue
-From: Steve Pavao <stevep@korgrd.com>
-In-Reply-To: <CAOuPNLgpGtGJbZU=XH7OuHzn0eiLbRvU+chdTaP=4mYGCQh+mA@mail.gmail.com>
-Date: Tue, 8 Jan 2019 15:38:59 -0500
-Message-Id: <6FA47D47-047F-493D-8B5C-5011CAF3F1F3@korgrd.com>
-References: <8C8014A3-6A93-4E44-B753-49AC9FA313A3@korgrd.com>
- <58308e88-38d2-e4ea-232e-8f84dfe1fbd4@xenomai.org>
- <8AAA419E-875B-4CC7-9118-8DC45BE270A2@korgrd.com>
- <CAOuPNLg_KYO6T9MxkEeJskHJjYV+go3HuOs6m3z_X6VHyOKqgg@mail.gmail.com>
- <CAOuPNLgpGtGJbZU=XH7OuHzn0eiLbRvU+chdTaP=4mYGCQh+mA@mail.gmail.com>
-Content-Type: text/plain;
-	charset=utf-8
+Message-ID: <1547017908.2348.4.camel@smigroup.net>
+Subject: Re: [PATCHv2] cobalt/x86: fix condition in eager fpu code for
+ kernels < 4.14
+From: Mauro Salvini <mauro.salvini@smigroup.net>
+Date: Wed, 09 Jan 2019 08:11:48 +0100
+In-Reply-To: <20190108185139.33b25164@md1za8fc.ad001.siemens.net>
+References: <20181221134452.15743-1-henning.schild@siemens.com>
+ <20190107130416.25271-1-henning.schild@siemens.com>
+ <1546957031.2392.10.camel@smigroup.net>
+ <20190108185139.33b25164@md1za8fc.ad001.siemens.net>
+Content-Type: text/plain; charset="UTF-8"
+Mime-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
@@ -20,104 +19,77 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Pintu Agarwal <pintu.ping@gmail.com>
-Cc: Philippe Gerum <rpm@xenomai.org>, "Xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Henning Schild <henning.schild@siemens.com>
+Cc: xenomai <xenomai@xenomai.org>
 
-Hi Pintu,
-
-1. I am not using a Dragon board.  I mentioned I was using a R Pi 3B.  =
-You can see it is mentioned just a few lines below.
-
-2. I did not do any special patches.  I am simply using the branch that =
-Phillipe suggested: =
-https://gitlab.denx.de/Xenomai/ipipe-arm64/commits/stable/4.14.71-arm64 =
-<https://gitlab.denx.de/Xenomai/ipipe-arm64/commits/stable/4.14.71-arm64>
-That is also mentioned below.
-
-- Steve Pavao
-
-
-> On Jan 8, 2019, at 7:58 AM, Pintu Agarwal <pintu.ping@gmail.com> =
-wrote:
+On Tue, 2019-01-08 at 18:51 +0100, Henning Schild wrote:
+> Am Tue, 8 Jan 2019 15:17:11 +0100
+> schrieb Mauro Salvini <mauro.salvini@smigroup.net>:
 >=20
-> Dear Steve,
+> > On Mon, 2019-01-07 at 14:04 +0100, Henning Schild wrote:
+> > > From: Henning Schild <henning.schild@siemens.com>
+> > >=20
+> > > We should mark the current task as not owning the fpu anymore if
+> > > it
+> > > does
+> > > actually own the fpu, not if the fpu itself is active.
+> > >=20
+> > > Fixes cb52e6c7438fa
+> > >=20
+> > > Reported-by: Mauro Salvini <mauro.salvini@smigroup.net>
+> > > Signed-off-by: Henning Schild <henning.schild@siemens.com>
+> > > ---
+> > > =C2=A0kernel/cobalt/arch/x86/thread.c | 2 +-
+> > > =C2=A01 file changed, 1 insertion(+), 1 deletion(-)
+> > >=20
+> > > diff --git a/kernel/cobalt/arch/x86/thread.c
+> > > b/kernel/cobalt/arch/x86/thread.c
+> > > index a09560075..ba807ac1e 100644
+> > > --- a/kernel/cobalt/arch/x86/thread.c
+> > > +++ b/kernel/cobalt/arch/x86/thread.c
+> > > @@ -475,7 +475,7 @@ void xnarch_leave_root(struct xnthread *root)
+> > > =C2=A0	switch_fpu_finish(&current->thread.fpu,
+> > > smp_processor_id()); #else
+> > > =C2=A0	/* mark current thread as not owning the FPU anymore */
+> > > -	if (&current->thread.fpu.fpstate_active)
+> > > +	if (fpregs_active())
+> > > =C2=A0		fpregs_deactivate(&current->thread.fpu);
+> > > =C2=A0#endif
+> > > =C2=A0}=C2=A0=C2=A0
+> >=20
+> > Hi all,
+> >=20
+> > I tried to launch xeno-test several times under same previous
+> > conditions and I confirm that this patch fixes the bug.
 >=20
-> Can you help me in identifying the patches for this issue?
-> Can you tell me which ipipe repo you used for your Dragon board ?
+> Good to hear, thanks!
 >=20
-> Thanks,
-> Pintu
+> > A side note: would not #include in
+> > kernel/cobalt/arch/x86/thread.c=C2=A0lines 47,48 and 54 be redundant
+> > with
+> > same includes in
+> > kernel/cobalt/arch/x86/include/asm/xenomai/thread.h
+> > (that is indirectly included in thread.c)?
 >=20
-> On Fri, Dec 21, 2018 at 6:18 PM Pintu Agarwal <pintu.ping@gmail.com> =
-wrote:
->>=20
->> On Thu, Dec 13, 2018 at 6:20 PM Steve Pavao via Xenomai
->> <xenomai@xenomai.org> wrote:
->>>=20
->>>=20
->>>> On Dec 12, 2018, at 5:21 AM, Philippe Gerum <rpm@xenomai.org> =
-wrote:
->>>>=20
->>>> On 12/11/18 10:25 PM, Steve Pavao via Xenomai wrote:
->>>>> I have 2 different, basic apps that oops in a very similar way on =
-ipipe-arm64 running on R Pi 3B.  One of them is rpm, another is my own =
-program.
->>>>>=20
->>>>> Here is the partial backtrace for the =E2=80=98rpm=E2=80=99 oops.  =
-The backtrace for my other program is almost identical.  (I=E2=80=99ve =
-left out interim calls to keep this email concise.)
->>>>>=20
->>>>> [  124.816179] [<ffffff8008260480>] __find_get_block+0x2a0/0x400
->>>>> ...
->>>>> [  124.816311] [<ffffff8008778b88>] do_page_fault+0x268/0x4e0
->>>>> [  124.816320] [<ffffff8008778e6c>] do_translation_fault+0x6c/0x7c
->>>>> [  124.816330] [<ffffff80080814ec>] do_mem_abort+0x54/0xc8
->>>>>=20
->>>>> The BUG finally occurs at line 1279 of buffer.c:
->>>>>=20
->>>>> static inline void check_irqs_on(void)
->>>>> {
->>>>> #ifdef irqs_disabled
->>>>>     BUG_ON(irqs_disabled());   //  <=E2=80=94=E2=80=94=E2=80=94=E2=80=
-=94 here
->>>>> #endif
->>>>> }
->>>>>=20
->>>>> The above BUG happens during the page fault recovery process.  =
-(FYI, some of the calls between do_page_fault_and __find_get_block are =
-ext4 calls.)
->>>>>=20
->>>>> In both apps, the oops happens around the time of file creation on =
-the SD card:  For rpm, it is during an install of a valid rpm package, =
-for the other app, it occurs at the time a sqlite database is opened.  =
-This is basic stuff that should just work.
->>>>>=20
->>>>> I am looking for ideas about what could be wrong with the =
-setup/configuration of my ipipe-arm64 system, such that some apps that =
-read/write to the SD card are oopsing this way when doing page fault =
-recovery.
->>>>=20
->>>> This is a bug in the I-pipe layer. Assuming you are still running =
-kernel
->>>> 4.9, please try 4.14 from [1], it fixes several issues which still =
-exist
->>>> in the 4.9 pipeline.
->>>>=20
->>>> [1] =
-https://gitlab.denx.de/Xenomai/ipipe-arm64/commits/stable/4.14.71-arm64 =
-<https://gitlab.denx.de/Xenomai/ipipe-arm64/commits/stable/4.14.71-arm64>
->>>>=20
->>>>=20
->>>> --
->>>> Philippe.
->>>=20
->>> Thank you very much!  That code does fix the kernel oops problem.
->>>=20
->>=20
->> Hello Steve,
->> I am also facing the similar issue.
->> Can you point me to the exact patch that fixes this issue.
->> Actually I am using a vendor kernel repo, so I cannot upgrade the =
-kernel.
->> I can only apply the fix patches.
+> The latter does not have those includes. It is still very possible
+> that there are a few too many but that is what you have inclusion
+> guards
+> for. And the code you are looking at 47,48 and 54 is all to support
+> legacy/old kernels. You are in the IPIPE_X86_FPU_EAGER case.
+
+Yes, sorry, I wanted to write
+kernel/cobalt/arch/x86/include/asm/xenomai/wrappers.h
+
+Anyway no problem to have them in both files.
+
+Regards
+Mauro
+
+>=20
+> Henning
+>=20
+> > Thanks, regards
+> > Mauro
+>=20
+>=20
 
