@@ -1,12 +1,11 @@
-Subject: Re: [PATCHv2] cobalt/x86: fix condition in eager fpu code for kernels
- < 4.14
-References: <20181221134452.15743-1-henning.schild@siemens.com>
- <20190107130416.25271-1-henning.schild@siemens.com>
+Subject: Re: [PATCH 2/2] Add release generator script
+References: <98fe2e20-bad6-7c24-945c-f2c0bd20a743@siemens.com>
+ <72dd2779-fce3-f21f-279a-90115c6f70ee@siemens.com>
 From: Jan Kiszka <jan.kiszka@web.de>
-Message-ID: <fee3a41a-b90c-9432-8f59-d3c93ed5aac1@web.de>
-Date: Wed, 9 Jan 2019 22:22:06 +0800
+Message-ID: <73e3a880-517b-3163-6962-9869ddf1f980@web.de>
+Date: Wed, 9 Jan 2019 22:24:00 +0800
 MIME-Version: 1.0
-In-Reply-To: <20190107130416.25271-1-henning.schild@siemens.com>
+In-Reply-To: <72dd2779-fce3-f21f-279a-90115c6f70ee@siemens.com>
 Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -18,38 +17,64 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Henning Schild <henning.schild@siemens.com>, xenomai <xenomai@xenomai.org>
+To: Xenomai <xenomai@xenomai.org>
 
-On 07.01.19 21:04, Henning Schild via Xenomai wrote:
-> From: Henning Schild <henning.schild@siemens.com>
+On 20.12.18 15:58, Jan Kiszka via Xenomai wrote:
+> This encodes
+> - updating version-code/label
+> - committing the changes
+> - tagging the result
 > 
-> We should mark the current task as not owning the fpu anymore if it does
-> actually own the fpu, not if the fpu itself is active.
-> 
-> Fixes cb52e6c7438fa
-> 
-> Reported-by: Mauro Salvini <mauro.salvini@smigroup.net>
-> Signed-off-by: Henning Schild <henning.schild@siemens.com>
+> Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
 > ---
->   kernel/cobalt/arch/x86/thread.c | 2 +-
->   1 file changed, 1 insertion(+), 1 deletion(-)
+>   scripts/make-release.sh | 35 +++++++++++++++++++++++++++++++++++
+>   1 file changed, 35 insertions(+)
+>   create mode 100755 scripts/make-release.sh
 > 
-> diff --git a/kernel/cobalt/arch/x86/thread.c b/kernel/cobalt/arch/x86/thread.c
-> index a09560075..ba807ac1e 100644
-> --- a/kernel/cobalt/arch/x86/thread.c
-> +++ b/kernel/cobalt/arch/x86/thread.c
-> @@ -475,7 +475,7 @@ void xnarch_leave_root(struct xnthread *root)
->   	switch_fpu_finish(&current->thread.fpu, smp_processor_id());
->   #else
->   	/* mark current thread as not owning the FPU anymore */
-> -	if (&current->thread.fpu.fpstate_active)
-> +	if (fpregs_active())
->   		fpregs_deactivate(&current->thread.fpu);
->   #endif
->   }
+> diff --git a/scripts/make-release.sh b/scripts/make-release.sh
+> new file mode 100755
+> index 0000000000..67a191d44e
+> --- /dev/null
+> +++ b/scripts/make-release.sh
+> @@ -0,0 +1,35 @@
+> +#! /bin/bash
+> +
+> +usage() {
+> +	echo "usage: $0 name"
+> +	exit 1
+> +}
+> +
+> +name=$1
+> +
+> +if [ -z "$name" ]; then
+> +	usage
+> +fi
+> +
+> +if [ ! -f config/version-code ] || [ ! -d .git ]; then
+> +	echo "Must be run from top-level directory"
+> +	exit 1
+> +fi
+> +
+> +if [ -n "`git status -s -uno`" ]; then
+> +	echo "Working directory is dirty!"
+> +	exit 1
+> +fi
+> +
+> +echo -e "Tag commit\n\n    `git log -1 --oneline`"
+> +echo -e "\nof branch\n\n    `git branch | sed -n 's/^\* //p'`"
+> +echo -ne "\nas $name? (y/N) "
+> +read answer
+> +if [ "$answer" != "y" ]; then
+> +	exit 1
+> +fi
+> +
+> +echo $name | sed "s/v//" > config/version-code
+> +cp  config/version-code config/version-label
+> +git commit -sv config/version-code config/version-label -m "config: Bump version number"
+> +git tag -as $name -m "Release $name"
 > 
 
-Thanks, applied it next.
+Both applied to next now.
 
 Jan
 
