@@ -1,14 +1,10 @@
-Subject: Re: [PATCH 2/2] Add release generator script
-References: <98fe2e20-bad6-7c24-945c-f2c0bd20a743@siemens.com>
- <72dd2779-fce3-f21f-279a-90115c6f70ee@siemens.com>
-From: Jan Kiszka <jan.kiszka@web.de>
-Message-ID: <73e3a880-517b-3163-6962-9869ddf1f980@web.de>
-Date: Wed, 9 Jan 2019 22:24:00 +0800
+Subject: interrupt type from user mode
+From: "Stefano Franzoni" <stefano.franzoni@marposs.com>
+Date: Thu, 10 Jan 2019 11:34:45 +0100
 MIME-Version: 1.0
-In-Reply-To: <72dd2779-fce3-f21f-279a-90115c6f70ee@siemens.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Message-Id: <OFB0192583.FFDDFA25-ONC125837E.00397C29-C125837E.003A1D77@notes.ce.collabserv.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,64 +13,40 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Xenomai <xenomai@xenomai.org>
+To: xenomai@xenomai.org
 
-On 20.12.18 15:58, Jan Kiszka via Xenomai wrote:
-> This encodes
-> - updating version-code/label
-> - committing the changes
-> - tagging the result
-> 
-> Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
-> ---
->   scripts/make-release.sh | 35 +++++++++++++++++++++++++++++++++++
->   1 file changed, 35 insertions(+)
->   create mode 100755 scripts/make-release.sh
-> 
-> diff --git a/scripts/make-release.sh b/scripts/make-release.sh
-> new file mode 100755
-> index 0000000000..67a191d44e
-> --- /dev/null
-> +++ b/scripts/make-release.sh
-> @@ -0,0 +1,35 @@
-> +#! /bin/bash
-> +
-> +usage() {
-> +	echo "usage: $0 name"
-> +	exit 1
-> +}
-> +
-> +name=$1
-> +
-> +if [ -z "$name" ]; then
-> +	usage
-> +fi
-> +
-> +if [ ! -f config/version-code ] || [ ! -d .git ]; then
-> +	echo "Must be run from top-level directory"
-> +	exit 1
-> +fi
-> +
-> +if [ -n "`git status -s -uno`" ]; then
-> +	echo "Working directory is dirty!"
-> +	exit 1
-> +fi
-> +
-> +echo -e "Tag commit\n\n    `git log -1 --oneline`"
-> +echo -e "\nof branch\n\n    `git branch | sed -n 's/^\* //p'`"
-> +echo -ne "\nas $name? (y/N) "
-> +read answer
-> +if [ "$answer" != "y" ]; then
-> +	exit 1
-> +fi
-> +
-> +echo $name | sed "s/v//" > config/version-code
-> +cp  config/version-code config/version-label
-> +git commit -sv config/version-code config/version-label -m "config: Bump version number"
-> +git tag -as $name -m "Release $name"
-> 
-
-Both applied to next now.
-
-Jan
-
+RGVhciBleHBlcnRzDQoNCkkgaGF2ZSB0byBtYWtlIGNoYW5nZXMgdG8gYSBwcm9qZWN0IGRldmVs
+b3BlZCB5ZWFycyBhZ28gd2l0aCBhcm0gDQphcmNoaXRlY3R1cmUgKGF0bWVsIEFUOTFTQU05RzIw
+KSB3aXRoIGxpbnV4IDIuNi4zMCBhbmQgeGVub21haSAyLjUuNC4NCg0KVGhlIHByb2dyYW0gdXNl
+cyBhIHhlbm9tYWkgYXBwbGljYXRpb24gaW4gdXNlciBtb2RlIGFuZCBpcyBjb25uZWN0ZWQgdG8g
+YW4gDQppbnRlcnJ1cHQgKElSUTApLg0KDQpJIHNob3VsZCByZXByb2dyYW0gdGhlIGludGVycnVw
+dCBjb250cm9sbGVyIHRvIHJlY2VpdmUgaW50ZXJydXB0IG9uIHRoZSANCnJpc2luZyBlZGdlLCBi
+dXQgSSBkaWQgbm90IHVuZGVyc3RhbmQgaWYgdGhpcyBpcyBwb3NzaWJsZSBmcm9tIFhlbm9tYWkg
+DQp1c2VyIG1vZGUuDQpJIGtub3cgdGhhdCBJIHNob3VsZCBkZXZlbG9wIGFuIFJURE0gcHJvamVj
+dCBidXQgSSdtIHRyeWluZyB0byByZXVzZSBhIA0KY29kZSBhbHJlYWR5IHdyaXR0ZW4gdGhhdCB3
+YXMgZW50aXJlbHkgaW4gdXNlciBtb2RlLg0KDQpUaGFua3MgaW4gYWR2YW5jZQ0KDQpTdGVmYW5v
+IEZyYW56b25pDQpSJkQgTWVhc3VyaW5nIFN5c3RlbXMgLSBTZW5pb3IgU29mdHdhcmUgRGVzaWdu
+ZXINCnBob25lICszOSAwNTEgODk5IDYzMyB8IGZheCArMzkgMDUxIDg5OSA4MDINCnN0ZWZhbm8u
+ZnJhbnpvbmlAbWFycG9zcy5jb20NCg0KDQoNCl9fX19fX19fX19fX19fX19fX19fX19fX19fX19f
+X19fX19fX19fX19fX19fX19fX19fX19fXw0KDQpNQVJQT1NTIFMucC5BLiwgd2l0aCBhIHNvbGUg
+c2hhcmVob2xkZXINClZpYSBTYWxpY2V0bywgMTMgLSA0MDAxMCBCRU5USVZPR0xJTyAoQk8pIC0g
+SVRBTFkNCg0KU2hhcmUgQ2FwaXRhbCBldXJvIDE1LDAwMCwwMDAgcGFpZCBpbiBmdWxsIC0gVGF4
+IENvZGUgYW5kIFJlZ2lzdHJhdGlvbiBOby4gYXQgDQpCdXNpbmVzcyBSZWdpc3RlciBvZiBCb2xv
+Z25hIDAzMzU0MDgxMjA0DQpFY29ub21pYyBhbmQgQWRtaW5pc3RyYXRpdmUgSW5kZXggTm8uIDUx
+NjMxOCAtIFZBVCBJVCAwMzM1NDA4MTIwNA0KIA0KDQoNCg0KX19fX19fX19fX19fX19fX19fX19f
+X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fDQoNCg0KDQpUaGUgICBpbmZvcm1hdGlv
+biAgY29udGFpbmVkICBpbiAgdGhpcyBlLW1haWwgIGFuZCAgYW55ICBhdHRhY2htZW50cyBpcyAN
+CmNvbmZpZGVudGlhbCAgYW5kICBtYXkgIGFsc28gIGJlICBwcml2aWxlZ2VkLiBJZiB5b3UgaGF2
+ZSByZWNlaXZlZCB0aGUgZS1tYWlsIA0KYW5kIGFueSBhdHRhY2htZW50cyBieSBtaXN0YWtlLCBw
+bGVhc2UgaW5mb3JtIHVzICBpbW1lZGlhdGVseSwgZGVzdHJveSB0aGVtIA0Kd2l0aG91dCBzdG9y
+aW5nIG9yIGNvcHlpbmcgdGhlbSBvbiBhbnkgbWVkaXVtLCBhbmQgZG8gbm90IGRpc2Nsb3NlIG9y
+IHVzZSB0aGUgDQpjb250ZW50cyBmb3IgYW55IHB1cnBvc2UuDQpBbHRob3VnaCBvdXIgc3lzdGVt
+cyBpbXBsZW1lbnQgcmVhc29uYWJsZSBwcmVjYXV0aW9ucyBhZ2FpbnN0IHZpcnVzZXMgYW5kIG90
+aGVyIA0KdGhyZWF0cywgd2UgY2Fubm90IGFjY2VwdCByZXNwb25zaWJpbGl0eSBmb3IgYW55IGxv
+c3Mgb3IgZGFtYWdlIGFyaXNpbmcgZnJvbSANCm1hbmFnaW5nIHRoZSBjb250ZW50cyBvZiB0aGlz
+IGUtbWFpbC4gDQoNClAgIFBsZWFzZSBjb25zaWRlciB0aGUgZW52aXJvbm1lbnQgYmVmb3JlIHBy
+aW50aW5nIHRoaXMgZS1tYWlsDQoKLS0tLS0tLS0tLS0tLS0gbmV4dCBwYXJ0IC0tLS0tLS0tLS0t
+LS0tCkEgbm9uLXRleHQgYXR0YWNobWVudCB3YXMgc2NydWJiZWQuLi4KTmFtZTogbm90IGF2YWls
+YWJsZQpUeXBlOiBpbWFnZS9qcGVnClNpemU6IDIwOTYxIGJ5dGVzCkRlc2M6IG5vdCBhdmFpbGFi
+bGUKVVJMOiA8aHR0cDovL3hlbm9tYWkub3JnL3BpcGVybWFpbC94ZW5vbWFpL2F0dGFjaG1lbnRz
+LzIwMTkwMTEwL2ViNDJlZGNiL2F0dGFjaG1lbnQuanBlPgo=
