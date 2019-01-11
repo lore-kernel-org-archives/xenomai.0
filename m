@@ -1,15 +1,12 @@
-Subject: Re: Testing of 4.4/Ipipe + Xenomai 3.0.X on ARM32
-References: <20181123122716.tgg3utytwyrkzyid@jholzmayr.localdomain>
- <d1808069-d213-7e9f-010f-abd2c88b0480@siemens.com>
- <20181126143029.6jts36bo267l776s@jholzmayr.localdomain>
- <47252724-7145-7e15-2df8-a5d625b1f95d@siemens.com>
- <20181128124039.ppsitvbbqbtge3im@jholzmayr.localdomain>
-From: Philippe Gerum <rpm@xenomai.org>
-Message-ID: <4f94437b-acf9-c6ed-9401-f3344ba2468c@xenomai.org>
-Date: Thu, 29 Nov 2018 15:29:52 +0100
+Subject: Re: FW: LD_PRELOAD checker for clock_gettime and consorts
+References: <b79c8b2eb4074371a41bf54872a1c0a2@andritz.com>
+ <77dd1ba999524c1fb408af59693caf3e@andritz.com>
+From: Jan Kiszka <jan.kiszka@siemens.com>
+Message-ID: <fd6b20e3-f5e4-f618-e7cc-ad9006e2cc36@siemens.com>
+Date: Fri, 11 Jan 2019 10:25:57 +0800
 MIME-Version: 1.0
-In-Reply-To: <20181128124039.ppsitvbbqbtge3im@jholzmayr.localdomain>
-Content-Type: text/plain; charset="utf-8"
+In-Reply-To: <77dd1ba999524c1fb408af59693caf3e@andritz.com>
+Content-Type: text/plain; charset="utf-8"; format="flowed"
 Content-Language: en-US
 Content-Transfer-Encoding: 8bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
@@ -20,151 +17,125 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Josef Holzmayr <holzmayr@rsi-elektrotechnik.de>, Jan Kiszka <jan.kiszka@siemens.com>
-Cc: xenomai@xenomai.org
+To: Lange Norbert <norbert.lange@andritz.com>, "Xenomai (xenomai@xenomai.org)" <xenomai@xenomai.org>
 
-On 11/28/18 1:40 PM, Josef Holzmayr via Xenomai wrote:
-> Hi Jan,
+On 11.01.19 02:14, Lange Norbert via Xenomai wrote:
+> And heres a checker for malloc/free and consorts. This one is a bit trickier and I have barely tested it.
 > 
-> On Mon, Nov 26, 2018 at 03:40:38PM +0100, Jan Kiszka wrote:
->> On 26.11.18 15:30, Josef Holzmayr wrote:
->>> On Fri, Nov 23, 2018 at 01:48:27PM +0100, Jan Kiszka wrote:
->>>> On 23.11.18 13:27, Josef Holzmayr via Xenomai wrote:
->>>>> - only one BSP layer so far, namely the Beaglebone. This was chosen for
->>>>>     two major reasons: a) it is supported well enough in 4.4. to not need
->>>>>     additional patches which might introduce new issues, and b) it is
->>>>>     hardware that I have here ready for testing.
->>>>
->>>> I was thinking about which ARMv7 board to add to xenomai-images (enabling
->>>> qemu will be first, though), and that is a good candidate there as well.
->>>>
->>>> Another half-done topic here: CI builds. For that, the BB defconfig could be
->>>> useful too.
->>>
->>> My local tinkering of xenoami-images to create a qemu-armhf build is
->>> still in progress. But yes, we should have a build there too. But I
+
+Looks useful, thanks for sharing!
+
+In order to make it more easily accessible to users, we could provide it as 
+"libcobalt-modecheck.so" or so in-tree and descibe its usage.
+
+I think, rather than the gcc-dependent open-coded solution, pthread_once should 
+address your needs to initialize pointers and state on first invocation.
+
+What would also be good is to have a couple of tests for it that stress the 
+basic and also non-trival cases the tool should catch.
+
+Jan
+
+>> -----Original Message-----
+>> From: Xenomai <xenomai-bounces@xenomai.org> On Behalf Of Lange
+>> Norbert via Xenomai
+>> Sent: Donnerstag, 10. Jänner 2019 14:47
+>> To: Xenomai (xenomai@xenomai.org) <xenomai@xenomai.org>
+>> Subject: LD_PRELOAD checker for clock_gettime and consorts
 >>
->> Oh, we might have worked in parallel, sorry: I've qemu-armhf for
->> xenomai-images locally already (just started today). Will post later.
-> 
-> Saw that, thanks. Given my limited time investment, I'm happy to see it
-> happening, and thats it.
-> 
+>> E-MAIL FROM A NON-ANDRITZ SOURCE: AS A SECURITY MEASURE, PLEASE
+>> EXERCISE CAUTION WITH E-MAIL CONTENT AND ANY LINKS OR
+>> ATTACHMENTS.
 >>
->>> don't think the BB defconfig I'm using at the moment is really suited
->>> for xenomai testing. I'll certainly need to tinker with it some more.
 >>
->> Yes, configs is a good topic. I was playing with them a lot today, to get
->> some output first, then to find some reasonable debug setup. Considering to
->> have a "release" (measurement) and "debug" profile for configs.
+>> Hello,
 >>
->>>
->>>>
->>>>> - no higher automation like a kas cofiguration so far. Yet this probably
->>>>>     will be the first limitation to be gotten rid of.
-> 
-> kas files are now in place, equivalent to the ones in xenomai-images
-> 
->>>>> Preliminary results to kick off things:
->>>>> - xeno-test completes successfully
->>>>> - latency -t0 under load maxes at ~58µs
->>>>> - latency -t2 under load maxes at ~18µs
->>>>>
->>>>
->>>> Great! According to [1], we could then tag 63637800 also for ARM? Or do you
->>>> want to run more of the tests you have in mind first?
->>>
->>> Given my current testing experience, I would like to not say yes or no,
->>> as I'm not knowledgeable enough to judge. So please decide yourself upon
->>> the given information, with those additional "hints":
->>> - xeno-test "only" runs for 15minutes by default.
->>> - the latency tests I did were not really more long-lived, I don't think
->>>    any one exceeded 30minutes.
->>> - it will be at least two more weeks until I have the long-run results.
->>>    Could also be three. So if you want to tag rather soon, I can't rally
->>>    help more.
+>> as you might know, I run into alot of troubles with realtime code calling
+>> clock_gettime.
+>> This function is now a syscall on many architectures and depends on a linux
+>> kernel spinlock, so a RT thread might deadlock itself when both trying to
+>> claim that lock and preventing the linux kernel to free it.
 >>
->> OK, then I will not hurry.
+>> Usage is rather simple, the code compiles without any Cobalt/Xenomai
+>> headers.
+>> RT-threads need to enable PTHREAD_WARNSW:
+>> pthread_setmode_np(0, PTHREAD_WARNSW, NULL);
+>>
+>> And the checker library needs to be preloaded:
+>> LD_PRELOAD=libcobalt-gettime_checker.so ./yourapp -and -your -params.
+>>
+>> Unlike the existing mode-checker, this does not need any changes to the
+>> binary, and will also catch calls from all directly and indirectly loaded DSOs.
+>>
+>> Other skins should be supported aswell, aslong as libcobalt is loaded (or more
+>> specific, the code looks for a symbol "cobalt_assert_nrt").
+>>
+>> Kind regards,
+>> Norbert
+>> ________________________________
+>>
+>> This message and any attachments are solely for the use of the intended
+>> recipients. They may contain privileged and/or confidential information or
+>> other information protected from disclosure. If you are not an intended
+>> recipient, you are hereby notified that you received this email in error and
+>> that any review, dissemination, distribution or copying of this email and any
+>> attachment is strictly prohibited. If you have received this email in error,
+>> please contact the sender and delete the message and any attachment from
+>> your system.
+>>
+>> ANDRITZ HYDRO GmbH
+>>
+>>
+>> Rechtsform/ Legal form: Gesellschaft mit beschränkter Haftung / Corporation
+>>
+>> Firmensitz/ Registered seat: Wien
+>>
+>> Firmenbuchgericht/ Court of registry: Handelsgericht Wien
+>>
+>> Firmenbuchnummer/ Company registration: FN 61833 g
+>>
+>> DVR: 0605077
+>>
+>> UID-Nr.: ATU14756806
+>>
+>>
+>> Thank You
+>> ________________________________
+>> -------------- next part --------------
+>> An embedded and charset-unspecified text was scrubbed...
+>> Name: libcobalt-gettime_checker.c
+>> URL:
+>> <http://xenomai.org/pipermail/xenomai/attachments/20190110/bc2720f2/a
+>> ttachment.c>
+> ________________________________
 > 
-> Digging deeper, I now have a couple of questions. xeno-test gives me
+> This message and any attachments are solely for the use of the intended recipients. They may contain privileged and/or confidential information or other information protected from disclosure. If you are not an intended recipient, you are hereby notified that you received this email in error and that any review, dissemination, distribution or copying of this email and any attachment is strictly prohibited. If you have received this email in error, please contact the sender and delete the message and any attachment from your system.
 > 
-> net_packet_dgram skipped (no kernel support)
-> net_packet_raw skipped (no kernel support)
-> net_udp skipped (no kernel support)
-> ...
-> mutex_trylock not supported
-> ...
-> sched_quota skipped (no kernel support)
-> sched_tp skipped (no kernel support)
-> ...
-> sigdebug "SIGDEBUG_MIGRATE_PRIOINV" skipped (no kernel support)
+> ANDRITZ HYDRO GmbH
 > 
-> So what do I need to increase test coverage here?
-
-You need to enable a set of Xenomai kernel options, something like:
-
-CONFIG_XENO_OPT_SCHED_CLASSES=y
-CONFIG_XENO_OPT_SCHED_WEAK=y
-CONFIG_XENO_OPT_SCHED_TP=y
-CONFIG_XENO_OPT_SCHED_TP_NRPART=4
-CONFIG_XENO_OPT_SCHED_SPORADIC=y
-CONFIG_XENO_OPT_SCHED_SPORADIC_MAXREPL=8
-CONFIG_XENO_OPT_SCHED_QUOTA=y
-CONFIG_XENO_OPT_SCHED_QUOTA_PERIOD=10000
-CONFIG_XENO_OPT_SCHED_QUOTA_NR_GROUPS=32
-CONFIG_XENO_OPT_PIPE=y
-CONFIG_XENO_OPT_MAP=y
-CONFIG_XENO_OPT_EXTCLOCK=y
-CONFIG_XENO_OPT_PIPE_NRDEV=32
-CONFIG_XENO_DRIVERS_TIMERBENCH=y
-CONFIG_XENO_DRIVERS_SWITCHTEST=y
-CONFIG_XENO_DRIVERS_HEAPCHECK=y
-CONFIG_XENO_DRIVERS_RTDMTEST=m
-CONFIG_XENO_DRIVERS_NET=m
-CONFIG_XENO_DRIVERS_NET_RX_FIFO_SIZE=32
-CONFIG_XENO_DRIVERS_NET_ETH_P_ALL=y
-CONFIG_XENO_DRIVERS_NET_RTIPV4=m
-CONFIG_XENO_DRIVERS_NET_RTIPV4_ICMP=y
-CONFIG_XENO_DRIVERS_NET_RTIPV4_HOST_ROUTES=32
-CONFIG_XENO_DRIVERS_NET_RTIPV4_UDP=m
-CONFIG_XENO_DRIVERS_NET_RTPACKET=m
-CONFIG_XENO_DRIVERS_NET_RTMAC=m
-CONFIG_XENO_DRIVERS_NET_TDMA=m
-CONFIG_XENO_DRIVERS_NET_TDMA_MASTER=y
-CONFIG_XENO_DRIVERS_NET_RTCFG=m
-CONFIG_XENO_DRIVERS_NET_DRV_LOOPBACK=m
-CONFIG_XENO_DRIVERS_NET_ADDON_RTCAP=m
-CONFIG_XENO_DRIVERS_NET_ADDON_PROXY=m
-CONFIG_XENO_DRIVERS_NET_ADDON_PROXY_ARP=y
-CONFIG_XENO_DRIVERS_RTIPC=y
-CONFIG_XENO_DRIVERS_RTIPC_XDDP=y
-CONFIG_XENO_DRIVERS_RTIPC_IDDP=y
-CONFIG_XENO_OPT_IDDP_NRPORT=32
-CONFIG_XENO_DRIVERS_RTIPC_BUFP=y
-CONFIG_XENO_OPT_BUFP_NRPORT=32
-CONFIG_XENO_OPT_DEBUG_USER=y
-CONFIG_XENO_OPT_DEBUG_MUTEX_RELAXED=y
-CONFIG_XENO_OPT_WATCHDOG=y
-
 > 
-> And, during the run I get 
+> Rechtsform/ Legal form: Gesellschaft mit beschränkter Haftung / Corporation
 > 
-> [   75.650644] [Xenomai] watchdog triggered on CPU #0 -- runaway thread 'test' signaled
-> [   75.658601] sched: RT throttling activated
+> Firmensitz/ Registered seat: Wien
 > 
-> Is that good, bad, upgly, or expected?
+> Firmenbuchgericht/ Court of registry: Handelsgericht Wien
 > 
-
-If that happens with the 'sigdebug' test, then this is good and
-expected: this means that Cobalt did pull the break when detecting a
-runaway thread, which is what this test verifies.
-
-If you get -EPROTO (out of quota) with the sched_quota smoke test, this
-may not be a real issue if the error margin is within 1%. The test
-currently complains about a deviation above 0.5%, which might be a bit
-too strict on some (SMP) platforms - triggers on 0.7% have been observed
-here.
+> Firmenbuchnummer/ Company registration: FN 61833 g
+> 
+> DVR: 0605077
+> 
+> UID-Nr.: ATU14756806
+> 
+> 
+> Thank You
+> ________________________________
+> -------------- next part --------------
+> An embedded and charset-unspecified text was scrubbed...
+> Name: libcobalt-malloc_checker.c
+> URL: <http://xenomai.org/pipermail/xenomai/attachments/20190110/4a80304a/attachment.c>
+> 
 
 -- 
-Philippe.
+Siemens AG, Corporate Technology, CT RDA IOT SES-DE
+Corporate Competence Center Embedded Linux
 
