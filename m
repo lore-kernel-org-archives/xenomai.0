@@ -1,11 +1,11 @@
-From: Johannes Holtz <johannes.holtz@compador.de>
-Subject: How to close orphan FDs
-Message-ID: <1c7af21b-d6db-fdd6-6083-bad2b877cf1d@compador.de>
-Date: Fri, 11 Jan 2019 15:55:52 +0100
+From: Giulio Moro <g.moro@qmul.ac.uk>
+Subject: =?Windows-1252?Q?=91SCHED=5FNORMAL=92_not_provided_by_Xenomai_headers?=
+Date: Sat, 12 Jan 2019 20:08:29 +0000
+Message-ID: <AM0PR07MB5572F0A0E8B2B7C0DE7D5C87B5860@AM0PR07MB5572.eurprd07.prod.outlook.com>
+Content-Language: en-GB
+Content-Type: text/plain; charset="Windows-1252"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"; format="flowed"
-Content-Transfer-Encoding: 8bit
-Content-Language: en-US
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -14,16 +14,16 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
+To: "Xenomai@xenomai.org" <Xenomai@xenomai.org>
 
-Hi,
+The docs for sched_setscheduler_ex() [1] and pthread_setscheparam_ex()[2]  =
+claim that among the valid values for policy there is  "SCHED_NORMAL"
 
-I managed to leave some labeled XDDP and IDDP FDs  open after a segfault.
-Even though the process is killed the resources/FDs are not freed. Is 
-there a
-way to close them or do I have to restart the box?
+however, SCHED_NORMAL is not provided by any of the Xenomai headers, so you=
+ get a compile-time error.
 
-Cheers,
-Johannes
-
+[1] https://xenomai.org/documentation/xenomai-3/html/xeno3prm/group__cobalt=
+__api__scheduler.html#ga796071f20fd35a5e05972157745728af
+[2] https://xenomai.org/documentation/xenomai-3/html/xeno3prm/group__cobalt=
+__api__sched.html#ga405020019f5df8c7e74d30fd457384ed=
 
