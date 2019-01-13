@@ -1,13 +1,13 @@
-Subject: Re: How to close orphan FDs
-References: <1c7af21b-d6db-fdd6-6083-bad2b877cf1d@compador.de>
+Subject: Re: "cheap", RT-safe way of detecting if a thread is Xenomai or Linux
+References: <AM0PR07MB5572ECC01EEA3054C3B02A59B5870@AM0PR07MB5572.eurprd07.prod.outlook.com>
 From: Jan Kiszka <jan.kiszka@web.de>
-Message-ID: <3ed8dc64-20ce-1c3c-05fd-5fe6ab7dee55@web.de>
-Date: Sun, 13 Jan 2019 11:27:30 +0800
+Message-ID: <25b1c9ee-362f-b45f-4615-1f458e04a576@web.de>
+Date: Sun, 13 Jan 2019 11:30:51 +0800
 MIME-Version: 1.0
-In-Reply-To: <1c7af21b-d6db-fdd6-6083-bad2b877cf1d@compador.de>
-Content-Type: text/plain; charset="utf-8"; format="flowed"
+In-Reply-To: <AM0PR07MB5572ECC01EEA3054C3B02A59B5870@AM0PR07MB5572.eurprd07.prod.outlook.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,20 +16,17 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Johannes Holtz <johannes.holtz@compador.de>, xenomai@xenomai.org
+To: Giulio Moro <g.moro@qmul.ac.uk>, "Xenomai@xenomai.org" <Xenomai@xenomai.org>
 
-On 11.01.19 22:55, Johannes Holtz via Xenomai wrote:
-> Hi,
+On 13.01.19 10:33, Giulio Moro via Xenomai wrote:
+> Hi all,
+> is there a "cheap", RT-safe call that can be made in order to find out if the current thread is a Xenomai thread or a Linux thread? Also, to detect whether the Xenomai thread is in primary or secondary mode?
 > 
-> I managed to leave some labeled XDDP and IDDP FDs  open after a segfault.
-> Even though the process is killed the resources/FDs are not freed. Is there a
-> way to close them or do I have to restart the box?
+> It seems that cobalt_thread_mode() gives some (all?) of these details. Is it RT-safe? How much overhead does it incur? Is it the recommended way?
 
-Could you describe in more details - or even with a small test program - how you 
-created the resources that then leaked?
-
-Conceptually, everything should be cleaned up automatically when the last owner 
-of a resource vanished.
+What is the use case of this query? Debugging purposes? We expose APIs for the 
+latter (e.g. cobalt_assert_nrt(), typically only called by internal wrappers) 
+but we are intentionally not proposing them for production purposes.
 
 Jan
 
