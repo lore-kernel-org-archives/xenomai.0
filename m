@@ -1,10 +1,8 @@
 From: Philippe Gerum <rpm@xenomai.org>
-Subject: [PATCH 5/5] testsuite/smokey: posix_clock: prevent false positive in
- timing-depending test
-Date: Mon, 14 Jan 2019 18:35:22 +0100
-Message-Id: <20190114173522.25750-5-rpm@xenomai.org>
-In-Reply-To: <20190114173522.25750-1-rpm@xenomai.org>
-References: <20190114173522.25750-1-rpm@xenomai.org>
+Subject: [PATCH] testsuite/smokey: posix_clock: prevent false positive in
+ timing-dependent test
+Date: Mon, 14 Jan 2019 18:47:08 +0100
+Message-Id: <20190114174708.26505-1-rpm@xenomai.org>
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
