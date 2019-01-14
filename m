@@ -1,11 +1,8 @@
-From: Jan Kiszka <jan.kiszka@siemens.com>
-Subject: [ANNOUNCE] Xenomai 3.0.8 released
-Message-ID: <17a9dbe5-59c5-04b9-e4fa-5fbc7bacd108@siemens.com>
-Date: Mon, 14 Jan 2019 16:12:32 +0100
-MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+From: Philippe Gerum <rpm@xenomai.org>
+Subject: [PATCH 1/5] cobalt/intr: vfile: do not assume all irqs are
+ cobalt-managed
+Date: Mon, 14 Jan 2019 18:35:18 +0100
+Message-Id: <20190114173522.25750-1-rpm@xenomai.org>
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -14,60 +11,111 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Xenomai <xenomai@xenomai.org>
+To: xenomai@xenomai.org
+Cc: Jan Kiszka <jan.kiszka@siemens.com>, Philippe Gerum <rpm@xenomai.org>
 
-An overdue stable release has just been completed. The git repo is
-already filled and also provide source download tarballs:
+Non-cobalt kernel code may hook interrupts using ipipe_request_irq()
+directly, which means that xnintr_vec_first() cannot assume that
+__ipipe_irq_cookie() always returns a valid xnintr struct for all
+irqs.
 
-https://gitlab.denx.de/Xenomai/xenomai/tags/v3.0.8
+We need to detect those irqs while iterating over the interrupt
+namespace when pulling data from /proc files not to dereference
+invalid memory.
 
-Just those downloads at the usual places () will follow later.
+Fixes:
+/proc/xenomai/irq
+/proc/xenomai/sched/stat
+/proc/xenomai/sched/acct
 
-Changes since 3.0.7:
+Signed-off-by: Philippe Gerum <rpm@xenomai.org>
+---
+ kernel/cobalt/intr.c | 48 +++++++++++++++++++++++++++++++++++---------
+ 1 file changed, 38 insertions(+), 10 deletions(-)
 
-Christophe BLAESS (1):
-      Add the xsc field when rtps reads the sched/acct file.
-
-Giulio Moro (1):
-      Rename __clz to xenomai_count_leading_zeros
-
-Henning Schild (5):
-      cobalt/x86: add support for eager fpu handling
-      cobalt/x86: add ipipe-4.4 eager fpu support
-      cobalt: fixup for kernel 4.14+
-      cobalt/x86: add ipipe-4.14 eager fpu support
-      cobalt/x86: fix condition in eager fpu code for kernels < 4.14
-
-Jan Kiszka (10):
-      can: Fix compiler warning about missing braces
-      cobalt/posix/signal: Plug leak of pending signal struct on thread deletion
-      drivers/analogy: Fix improper memset in Intel 8255
-      cobalt/posix/mqueue: Fix crash after failing registration
-      cobalt/sched-quota: Account for already consumed time on limit update
-      rtnet: Fix lifecycle management of mapped rtskbs
-      Remove version name
-      Add release generator script
-      Remove last version naming fragment
-      config: Bump version number
-
-Philippe Gerum (9):
-      cobalt/kernel: always use explicit preprocessor conditionals
-      cobalt: use generic linux/uaccess.h header
-      demo/cyclictest: turn on FIFO mode by default, detecting spurious relaxes
-      cobalt/thread: handle case of invalid domain migration over non-rt CPU
-      cobalt/intr: IRQ affinity depends on xnsched_realtime_cpus
-      cobalt/sched: fix mismatches between supported CPUs and affinity set
-      demo/cyclictest: fix time delta calculation
-      boilerplate/setup: cobalt: do not advertise non-RT CPUs to applications
-      vxworks/mempart: fix error status upon failure to create partition
-
-Sebastian Smolorz (2):
-      net: Split internal rtnet.h and install rtdm/net.h and rtdm/uapi/net.h
-      drivers/can: Add PCAN-PCI Express OEM ID.
-
-Jan
-
+diff --git a/kernel/cobalt/intr.c b/kernel/cobalt/intr.c
+index 184ffad13..ba6409ebb 100644
+--- a/kernel/cobalt/intr.c
++++ b/kernel/cobalt/intr.c
+@@ -449,6 +449,17 @@ out:
+ 	}
+ }
+ 
++static inline bool cobalt_owns_irq(int irq)
++{
++	ipipe_irq_handler_t h;
++
++	h = __ipipe_irq_handler(&xnsched_realtime_domain, irq);
++
++	return h == xnintr_vec_handler ||
++		h == xnintr_edge_vec_handler ||
++		h == xnintr_irq_handler;
++}
++
+ static inline int xnintr_irq_attach(struct xnintr *intr)
+ {
+ 	struct xnintr_vector *vec = vectors + intr->irq;
+@@ -538,9 +549,19 @@ struct xnintr_vector {
+ 
+ static struct xnintr_vector vectors[IPIPE_NR_IRQS];
+ 
++static inline bool cobalt_owns_irq(int irq)
++{
++	ipipe_irq_handler_t h;
++
++	h = __ipipe_irq_handler(&xnsched_realtime_domain, irq);
++
++	return h == xnintr_irq_handler;
++}
++
+ static inline struct xnintr *xnintr_vec_first(unsigned int irq)
+ {
+-	return __ipipe_irq_cookie(&xnsched_realtime_domain, irq);
++	return cobalt_owns_irq(irq) ?
++		__ipipe_irq_cookie(&xnsched_realtime_domain, irq) : NULL;
+ }
+ 
+ static inline struct xnintr *xnintr_vec_next(struct xnintr *prev)
+@@ -1067,6 +1088,7 @@ static inline int format_irq_proc(unsigned int irq,
+ 				  struct xnvfile_regular_iterator *it)
+ {
+ 	struct xnintr *intr;
++	struct irq_desc *d;
+ 	int cpu;
+ 
+ 	for_each_realtime_cpu(cpu)
+@@ -1100,15 +1122,21 @@ static inline int format_irq_proc(unsigned int irq,
+ 
+ 	mutex_lock(&intrlock);
+ 
+-	intr = xnintr_vec_first(irq);
+-	if (intr) {
+-		xnvfile_puts(it, "        ");
+-
+-		do {
+-			xnvfile_putc(it, ' ');
+-			xnvfile_puts(it, intr->name);
+-			intr = xnintr_vec_next(intr);
+-		} while (intr);
++	if (!cobalt_owns_irq(irq)) {
++		xnvfile_puts(it, "         ");
++		d = irq_to_desc(irq);
++		xnvfile_puts(it, d && d->name ? d->name : "-");
++	} else {
++		intr = xnintr_vec_first(irq);
++		if (intr) {
++			xnvfile_puts(it, "        ");
++
++			do {
++				xnvfile_putc(it, ' ');
++				xnvfile_puts(it, intr->name);
++				intr = xnintr_vec_next(intr);
++			} while (intr);
++		}
+ 	}
+ 
+ 	mutex_unlock(&intrlock);
 -- 
-Siemens AG, Corporate Technology, CT RDA IOT SES-DE
-Corporate Competence Center Embedded Linux
+2.17.2
+
 
