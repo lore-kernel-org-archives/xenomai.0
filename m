@@ -1,11 +1,11 @@
-Subject: Re: [ANNOUNCE] Xenomai 3.0.8 released
-References: <17a9dbe5-59c5-04b9-e4fa-5fbc7bacd108@siemens.com>
- <20190115142311.jtks7iuuqf4dvrcw@jholzmayr.localdomain>
+Subject: Re: [PATCH 1/5] cobalt/intr: vfile: do not assume all irqs are
+ cobalt-managed
+References: <20190114173522.25750-1-rpm@xenomai.org>
 From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <f89c12c7-50fb-3ecd-e40b-ec8b7c7057c8@siemens.com>
-Date: Tue, 15 Jan 2019 18:02:09 +0100
+Message-ID: <85f70313-fccd-7c3f-a5e2-b1b4f2d8219a@siemens.com>
+Date: Tue, 15 Jan 2019 18:12:31 +0100
 MIME-Version: 1.0
-In-Reply-To: <20190115142311.jtks7iuuqf4dvrcw@jholzmayr.localdomain>
+In-Reply-To: <20190114173522.25750-1-rpm@xenomai.org>
 Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -17,22 +17,114 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Josef Holzmayr <holzmayr@rsi-elektrotechnik.de>
-Cc: Xenomai <xenomai@xenomai.org>
+To: Philippe Gerum <rpm@xenomai.org>, xenomai@xenomai.org
 
-On 15.01.19 15:23, Josef Holzmayr wrote:
-> Hi Jan,
-> 
-> On Mon, Jan 14, 2019 at 04:12:32PM +0100, Jan Kiszka via Xenomai wrote:
->> An overdue stable release has just been completed.
-> 
-> Do you see any value in a test cycle comparable to the CIP kernel on the BBB?
-> 
+On 14.01.19 18:35, Philippe Gerum wrote:
+> Non-cobalt kernel code may hook interrupts using ipipe_request_irq()
+> directly, which means that xnintr_vec_first() cannot assume that
+> __ipipe_irq_cookie() always returns a valid xnintr struct for all
+> irqs.
 
-If your other test was using master and you didn't run anything against stable 
-for a while, yes.
+Is there an out-of-tree use case for that already, or is this rather defensive?
 
-Ideally, we should do more of those tests in the future before a release :).
+> 
+> We need to detect those irqs while iterating over the interrupt
+> namespace when pulling data from /proc files not to dereference
+> invalid memory.
+> 
+> Fixes:
+> /proc/xenomai/irq
+> /proc/xenomai/sched/stat
+> /proc/xenomai/sched/acct
+> 
+> Signed-off-by: Philippe Gerum <rpm@xenomai.org>
+> ---
+>   kernel/cobalt/intr.c | 48 +++++++++++++++++++++++++++++++++++---------
+>   1 file changed, 38 insertions(+), 10 deletions(-)
+> 
+> diff --git a/kernel/cobalt/intr.c b/kernel/cobalt/intr.c
+> index 184ffad13..ba6409ebb 100644
+> --- a/kernel/cobalt/intr.c
+> +++ b/kernel/cobalt/intr.c
+> @@ -449,6 +449,17 @@ out:
+>   	}
+>   }
+>   
+> +static inline bool cobalt_owns_irq(int irq)
+> +{
+> +	ipipe_irq_handler_t h;
+> +
+> +	h = __ipipe_irq_handler(&xnsched_realtime_domain, irq);
+> +
+> +	return h == xnintr_vec_handler ||
+> +		h == xnintr_edge_vec_handler ||
+> +		h == xnintr_irq_handler;
+> +}
+> +
+>   static inline int xnintr_irq_attach(struct xnintr *intr)
+>   {
+>   	struct xnintr_vector *vec = vectors + intr->irq;
+> @@ -538,9 +549,19 @@ struct xnintr_vector {
+>   
+>   static struct xnintr_vector vectors[IPIPE_NR_IRQS];
+>   
+> +static inline bool cobalt_owns_irq(int irq)
+> +{
+> +	ipipe_irq_handler_t h;
+> +
+> +	h = __ipipe_irq_handler(&xnsched_realtime_domain, irq);
+> +
+> +	return h == xnintr_irq_handler;
+> +}
+> +
+>   static inline struct xnintr *xnintr_vec_first(unsigned int irq)
+>   {
+> -	return __ipipe_irq_cookie(&xnsched_realtime_domain, irq);
+> +	return cobalt_owns_irq(irq) ?
+> +		__ipipe_irq_cookie(&xnsched_realtime_domain, irq) : NULL;
+>   }
+>   
+>   static inline struct xnintr *xnintr_vec_next(struct xnintr *prev)
+> @@ -1067,6 +1088,7 @@ static inline int format_irq_proc(unsigned int irq,
+>   				  struct xnvfile_regular_iterator *it)
+>   {
+>   	struct xnintr *intr;
+> +	struct irq_desc *d;
+>   	int cpu;
+>   
+>   	for_each_realtime_cpu(cpu)
+> @@ -1100,15 +1122,21 @@ static inline int format_irq_proc(unsigned int irq,
+>   
+>   	mutex_lock(&intrlock);
+>   
+> -	intr = xnintr_vec_first(irq);
+> -	if (intr) {
+> -		xnvfile_puts(it, "        ");
+> -
+> -		do {
+> -			xnvfile_putc(it, ' ');
+> -			xnvfile_puts(it, intr->name);
+> -			intr = xnintr_vec_next(intr);
+> -		} while (intr);
+> +	if (!cobalt_owns_irq(irq)) {
+> +		xnvfile_puts(it, "         ");
+> +		d = irq_to_desc(irq);
+> +		xnvfile_puts(it, d && d->name ? d->name : "-");
+> +	} else {
+> +		intr = xnintr_vec_first(irq);
+> +		if (intr) {
+> +			xnvfile_puts(it, "        ");
+> +
+> +			do {
+> +				xnvfile_putc(it, ' ');
+> +				xnvfile_puts(it, intr->name);
+> +				intr = xnintr_vec_next(intr);
+> +			} while (intr);
+> +		}
+>   	}
+>   
+>   	mutex_unlock(&intrlock);
+> 
 
 Jan
 
