@@ -1,22 +1,11 @@
-Subject: Re: [PATCH] rtnet: Fix lifecycle management of mapped rtskbs
-References: <473fdfe5-e761-e51c-a54c-90a520ca7816@siemens.com>
- <a8292038-34ff-fcb5-0def-c764fd4e0b94@xenomai.org>
- <086d41ad-b4a7-b3f2-945b-96c9f6eeecfb@siemens.com>
- <CAOuPNLh-Jfow-bCbdteF9dWNH_QBhnjdPW8Qb8qY_PfxfXgOcg@mail.gmail.com>
- <8ef30c9e-8964-4f12-112e-e1ef848b9778@siemens.com>
- <98eed01f-3769-0dc9-9198-88344ac0f3c5@siemens.com>
- <350a191c-eeb4-a3b1-a9d7-0c27b9504c30@siemens.com>
- <6c43f22e-ae31-baec-03bb-a4e969735a93@siemens.com>
- <1b42bc10-f891-b6e1-bb12-a1ef2272197a@xenomai.org>
- <7fbe5c1d-ed94-3f56-8403-47491bfd1645@xenomai.org>
-From: Jan Kiszka <jan.kiszka@web.de>
-Message-ID: <f4622187-21a8-ee32-eec6-f6f68a79d87a@web.de>
-Date: Fri, 18 Jan 2019 13:37:36 +0100
-MIME-Version: 1.0
-In-Reply-To: <7fbe5c1d-ed94-3f56-8403-47491bfd1645@xenomai.org>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
+From: "Baur, Elias" <st153286@stud.uni-stuttgart.de>
+Subject: problems with rt libraries in C
+Date: Fri, 18 Jan 2019 15:38:38 +0000
+Message-ID: <26e9fa502d054d85a1777508a99fd762@stud.uni-stuttgart.de>
+Content-Language: de-DE
+Content-Type: text/plain; charset="iso-8859-1"
 Content-Transfer-Encoding: quoted-printable
+MIME-Version: 1.0
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -25,208 +14,42 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Philippe Gerum <rpm@xenomai.org>, "Xenomai@xenomai.org" <xenomai@xenomai.org>
+To: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On 18.01.19 12:58, Philippe Gerum via Xenomai wrote:
-> On 1/17/19 1:56 PM, Philippe Gerum wrote:
->> On 12/18/18 7:46 AM, Jan Kiszka via Xenomai wrote:
->>> On 14.12.18 12:22, Jan Kiszka via Xenomai wrote:
->>>> Do not add rtskbs to the rtskb_list which are not mappend because
->>>> rtdev_unmap_rtskb will not remove such rtskbs again (buf_dma_addr =3D=
-=3D
->>>> RTSKB_UNMAPPED). In fact, rtskb_list should be called rtskb_mapped_li=
-st,
->>>> so refactor this while at it.
->>>>
->>>> Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
->>>> ---
->>>>  =C2=A0 kernel/drivers/net/stack/rtdev.c | 10 +++++-----
->>>>  =C2=A0 1 file changed, 5 insertions(+), 5 deletions(-)
->>>>
->>>> diff --git a/kernel/drivers/net/stack/rtdev.c
->>>> b/kernel/drivers/net/stack/rtdev.c
->>>> index 5eb73ce1a4..7b267f2a7c 100644
->>>> --- a/kernel/drivers/net/stack/rtdev.c
->>>> +++ b/kernel/drivers/net/stack/rtdev.c
->>>> @@ -44,9 +44,9 @@ MODULE_PARM_DESC(device_rtskbs, "Number of
->>>> additional global realtime socket "
->>>>  =C2=A0 struct rtnet_device=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
-=C2=A0 *rtnet_devices[MAX_RT_DEVICES];
->>>>  =C2=A0 static struct rtnet_device=C2=A0 *loopback_device;
->>>>  =C2=A0 static DEFINE_RTDM_LOCK(rtnet_devices_rt_lock);
->>>> +static LIST_HEAD(rtskb_mapped_list);
->>>>  =C2=A0 =C2=A0 LIST_HEAD(event_hook_list);
->>>> -LIST_HEAD(rtskb_list);
->>>>  =C2=A0 DEFINE_MUTEX(rtnet_devices_nrt_lock);
->>>>  =C2=A0 =C2=A0 static int rtdev_locked_xmit(struct rtskb *skb, struct
->>>> rtnet_device *rtdev);
->>>> @@ -412,8 +412,8 @@ int rtdev_map_rtskb(struct rtskb *skb)
->>>>  =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 }
->>>>  =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 }
->>>>  =C2=A0 -=C2=A0=C2=A0=C2=A0 if (!err)
->>>> -=C2=A0=C2=A0=C2=A0 list_add(&skb->entry, &rtskb_list);
->>>> +=C2=A0=C2=A0=C2=A0 if (!err && skb->buf_dma_addr !=3D RTSKB_UNMAPPED=
-)
->>>> +=C2=A0=C2=A0=C2=A0 list_add(&skb->entry, &rtskb_mapped_list);
->>>>  =C2=A0 =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 mutex_unlock(&rtnet_devices_nr=
-t_lock);
->>>>  =C2=A0 @@ -430,7 +430,7 @@ static int rtdev_map_all_rtskbs(struct
->>>> rtnet_device *rtdev)
->>>>  =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 if (!rtdev->map_rtskb)
->>>>  =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 return 0;
->>>>  =C2=A0 -=C2=A0=C2=A0=C2=A0 list_for_each_entry(skb, &rtskb_list, ent=
-ry) {
->>>> +=C2=A0=C2=A0=C2=A0 list_for_each_entry(skb, &rtskb_mapped_list, entr=
-y) {
->>>>  =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 err =3D rtskb_map(rtdev, skb);
->>>>  =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 if (err)
->>>>  =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 break;
->>>> @@ -474,7 +474,7 @@ static void rtdev_unmap_all_rtskbs(struct
->>>> rtnet_device *rtdev)
->>>>  =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 if (!rtdev->unmap_rtskb)
->>>>  =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 return;
->>>>  =C2=A0 -=C2=A0=C2=A0=C2=A0 list_for_each_entry(skb, &rtskb_list, ent=
-ry) {
->>>> +=C2=A0=C2=A0=C2=A0 list_for_each_entry(skb, &rtskb_mapped_list, entr=
-y) {
->>>>  =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 rtdev->unmap_rtskb(rtdev, skb);
->>>>  =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 }
->>>>  =C2=A0 }
->>>>
->>>
->>> Applied to master and stable.
->>>
->>> Jan
->>>
->>
->> Unfortunately, this breaks RTnet for any driver using DMA, apparently
->> uncovering a pre-existing issue in the device init->registration logic
->> wrt mapping skb from per-device pools.
->>
->> In short, filtering skbs we can't immediately map out of the rtskb list
->> in rtdev_map_rtskb() prevents rt_register_rtnetdev(dev) from finding
->> @dev's skbs in rtskb_mapped_list when running rtdev_map_all_skbs().
->> In turn this prevents the driver from setting up the hw's RX/TX rings
->> with proper DMA mapping addresses, as none of its skbs has valid bus
->> addresses for DMA.
->>
->> There may be a simple fix, but the rtdev init logic is a bit too
->> convoluted for my after lunch. I'll try to come up with a fix later.
->>
->
-> So there is a catch 22 situation with skb mapping for DMA operations. It
-> stems from the fact that creating a netdevice via a call to
-> rt_alloc_etherdev(dev) can't successfully map the skbs attached to that
-> new device, because rtdev_map_rtskb() only operates on registered
-> netdevices, which the new one cannot be just yet as it is only half-bake=
-d.
->
-> Prior to that change, the code worked almost by accident because
-> registering that new device would end up calling rtdev_map_all_rtskbs(),
-> which would eventually find the unmapped skbs left in the global
-> rtskb_list and map them through the driver's ->map_rtskb handler.
->
-> There are only two in-tree drivers using the ->map_rtskb handler, namely
-> igb and e1000e, I'm working on adding a 3rd one with a refactoring of
-> the fec for i.MX SoCs, which is why I hit this bug.
->
-> I suspect ->map_rtskb was introduced to address yet another issue with
-> all other DMA-capable drivers: calling dma_{map, unmap}_single() from
-> I/O handlers in primary mode like they all do is unsafe, and this
-> handler may have been intended to ensure those operations happen from
-> regular Linux context instead. As a matter of fact, most existing RTnet
-> drivers are unsafe regarding this. Generally speaking, it looks like the
-> process of initializing a new netdevice has evolved over time in RTnet,
-> leading to a lot of open coding on the driver developer's end, which is
-> quite error-prone.
->
-> My take on this is that the init->registration logic may need a rework
-> and a better API, solving the issue of skb mapping in the same move,
-> fixing or simply dropping obsolete driver code too. However, doing so
-> without breaking more stuff would require significant RTnet background I
-> don't have, so I'm leaving this to the grown-ups.
->
-> In the meantime, this is a workaround addressing the skb mapping bug
-> introduced by this commit (only lightly tested so far):
->
-> commit 31ae7b2154bc0d8df841835d699087876bec3014
-> Author: Philippe Gerum <rpm@xenomai.org>
-> Date:   Thu Jan 17 18:17:43 2019 +0100
->
->      net/rtdev: ensure per-device skbs get mapped at registration
->
->      This patch works around a regression introduced by #74464ee37d0,
->      causing a new device's skbs not to be passed to its ->map_rtskb()
->      handler when registered, breaking further DMA inits in the driver.
->
-> diff --git a/kernel/drivers/net/stack/rtdev.c
-> b/kernel/drivers/net/stack/rtdev.c
-> index 2982740d0..c5f8c73c6 100644
-> --- a/kernel/drivers/net/stack/rtdev.c
-> +++ b/kernel/drivers/net/stack/rtdev.c
-> @@ -45,6 +45,7 @@ struct rtnet_device
-> *rtnet_devices[MAX_RT_DEVICES];
->   static struct rtnet_device  *loopback_device;
->   static DEFINE_RTDM_LOCK(rtnet_devices_rt_lock);
->   static LIST_HEAD(rtskb_mapped_list);
-> +static LIST_HEAD(rtskb_mapwait_list);
->    LIST_HEAD(event_hook_list);
->   DEFINE_MUTEX(rtnet_devices_nrt_lock);
-> @@ -459,8 +460,12 @@ int rtdev_map_rtskb(struct rtskb *skb)
->   	}
->       }
->   -    if (!err && skb->buf_dma_addr !=3D RTSKB_UNMAPPED)
-> -	list_add(&skb->entry, &rtskb_mapped_list);
-> +    if (!err) {
-> +	    if (skb->buf_dma_addr !=3D RTSKB_UNMAPPED)
-> +		    list_add(&skb->entry, &rtskb_mapped_list);
-> +	    else
-> +		    list_add(&skb->entry, &rtskb_mapwait_list);
-> +    }
->        mutex_unlock(&rtnet_devices_nrt_lock);
->   @@ -471,19 +476,31 @@ int rtdev_map_rtskb(struct rtskb *skb)
->    static int rtdev_map_all_rtskbs(struct rtnet_device *rtdev)
->   {
-> -    struct rtskb *skb;
-> -    int err =3D 0;
-> +    struct rtskb *skb, *n;
-> +    int err;
->        if (!rtdev->map_rtskb)
-> -	return 0;
-> +	    return 0;
->   -    list_for_each_entry(skb, &rtskb_mapped_list, entry) {
-> -	err =3D rtskb_map(rtdev, skb);
-> -	if (err)
-> -	   break;
-> +    if (!list_empty(&rtskb_mapped_list)) {
-> +	    list_for_each_entry(skb, &rtskb_mapped_list, entry) {
-> +		    err =3D rtskb_map(rtdev, skb);
-> +		    if (err)
-> +			    return err;
-> +	    }
->       }
->   -    return err;
-> +    if (!list_empty(&rtskb_mapwait_list)) {
-> +	    list_for_each_entry_safe(skb, n, &rtskb_mapwait_list, entry) {
-> +		    err =3D rtskb_map(rtdev, skb);
-> +		    if (err)
-> +			    return err;
-> +		    list_del(&skb->entry);
-> +		    list_add(&skb->entry, &rtskb_mapped_list);
-> +	    }
-> +    }
-> +
-> +    return 0;
->   }
->
->
+Hello everyone,
 
-OK, thanks for digging into that. Yes, the RTnet code carries a lot of his=
-tory,
-and parts that I completely forgot by now (it's 15 years old, or more).
+First of all, I've got Xenomai running on a SanCloud Beaglebone Enhanced an=
+d the latency test works.
+I am using Xenomai 3.0.7 on Linux kernel 4.4.
 
-If that workaround also pleases our smokey test via lookback dev, I can me=
-rge.
+I am currently building a tiny program in C to get some UDP-messages sent a=
+nd received. This works perfectly on a non-realtime beaglebone but, as I am=
+ trying to rewrite the code using rt-functions provided by Xenomai, I am fa=
+cing problems:
 
-Jan
+To create a socket, I am using the "rt_dev_socket ()"-function which is def=
+ined in the "rtdm.h"-header-file and described in the xenomai documentation=
+. But, I am not able to find and include the correct library which defines =
+the correct reference. Therefore, I replaced the "rt_dev_" commands with "r=
+tdm_" which I have found a couple of times in the newer xenomai documentati=
+on. So my command to create a socket now is "rtdm_socket()". Nevertheless, =
+I am still getting the same error code, which looks like the following:
+
+rtt_rt.c: (.text+0x76): undefined reference to 'rtdm_socket'
+
+My command to compile the file is provided below:
+
+gcc rtt_rt.c -o rtt:rt -I/usr/xenomai/include/ -I/usr/xenomai/include/cobal=
+t -I/usr/xenomai/include/trank/ -L/usr/xenomai/lib -ltrank -lalchemy -lcoba=
+lt -lcopperplate -lmodechk
+
+So I am already including the libraries provided by xenomai which helped to=
+ solve the same problem for functions like "rt_task_create". However, I am =
+not able to find the correct library which is providing reference for rtdm_=
+socket or rt_dev_socket. That is why I am asking you for help. What am I do=
+ing wrong?
+
+I am looking forward to get an answer! Thank you very much!
+
+Best, Eloa=
 
