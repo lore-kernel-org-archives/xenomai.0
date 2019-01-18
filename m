@@ -1,11 +1,11 @@
-From: Nihar Unadkat <Nihar@deltatau.com>
-Subject: RE: Xenomai IRQ move frpm cpu0 to cpu1
-Date: Fri, 18 Jan 2019 00:24:56 +0000
-Message-ID: <DM5PR11MB19476886419C6FF55B87B32DD19C0@DM5PR11MB1947.namprd11.prod.outlook.com>
-Content-Language: en-US
+Date: Fri, 18 Jan 2019 11:48:12 +0800 (CST)
+From: =?GBK?B?1cW9qMCl?= <kunzj@126.com>
+Subject: Help: System freeze when edge interrupt trigger, Xenomain3.0.8,
+ ipipe-arm main line, am335x
 MIME-Version: 1.0
-Content-Type: text/plain; charset="windows-1252"
-Content-Transfer-Encoding: quoted-printable
+Message-ID: <55c89c76.3420.1685f12c488.Coremail.kunzj@126.com>
+Content-Type: text/plain; charset="gbk"
+Content-Transfer-Encoding: base64
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -14,64 +14,22 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: xenomai@xenomai.org
 
-Hello
-
-I need some help.
-
-I want to move my IRQ27 which is a phase interrupt that is on cpu0 to cpu1.=
- Please see below
-I used the following command to see the info below.
-$ cat /proc/xenomai/irq
-
-IRQ         CPU0            CPU1        CPU2        CPU3
-17:       96300          133398       19460       15531                  [t=
-imer]
-27:      267379           0                   0           0                =
-              UBUS_Phase
-28:           0                 0                   0           0          =
-                    UBUS_Servo
-29:           0                0                    0           0          =
-                    UBUS_Capture
-1033:        0                0                    0           0           =
-                   [sync]
-1034:        1                1                    1           0           =
-                   [timer-ipi]
-1035:        3            65233              4           3                 =
-             [reschedule]
-1036:        0               0                     0           0           =
-                    [virtual]
-1040:        62             64                  0           0              =
-                [virtual]
-
-How can I move my IRQ27 from cpu0 to cpu1 using xenomai functions.  Could y=
-ou please given me an example or advise me as to how to do so.
-
-I was able to do the above move for IRQ27 from cpu0 to cpu1 in Linux, but I=
- cannot do it in xenomai.
-
-Any help would greatly be appreciated
-
-Thank you.
-[NiharUnadkatSignature]
-Nihar Unadkat
-Senior Firmware Engineer
-Direct: 818-444-5206
-nihar@deltatau.com<mailto:nihar@deltatau.com>
-
-OMRON DELTA TAU
-21314 Lassen Street, Chatsworth, CA 91311
-deltatau.com<https://www.youtube.com/user/DeltaTauDataSystems> <https://www=
-.youtube.com/user/DeltaTauDataSystems>
-youtube.com/DeltaTauDataSystems<https://www.youtube.com/user/DeltaTauDataSy=
-stems>
-
--------------- next part --------------
-A non-text attachment was scrubbed...
-Name: image001.png
-Type: image/png
-Size: 28011 bytes
-Desc: image001.png
-URL: <http://xenomai.org/pipermail/xenomai/attachments/20190118/28214caf/at=
-tachment.png>
+SGVsbG8hCiAgICBUaGUgc3lzdGVtIGZyZWV6ZSB3aGVuIGludGVycnVwdCBpcyB0cmlnZ2VyZWQu
+IEkgY2xvbmUgaXBpcGUtYXJtIG1hc3RlciwgYW5kIHVzZSB4ZW5vbWFpIDMuMC44IGZvbGxvd2lu
+ZyB4ZW5vbWFpIHN0YXJ0dXAgdHV0b3JpYWwuClRoZSBoYXJkd2FyZSBjcHUgaXMgYW0zMzU4LiBT
+eXN0ZW0gd29ya3MgZmluZSBhZnRlciBzdGFydCB1cCwgYnV0IHRoZSBzeXN0ZW0gaW1tZWRpYXRl
+bHkgbG9ja3MgdXAgd2hlbiBhIGVkZ2UgaW50ZXJydXB0LiBGb3IgZXhhbXBsZSwKdGhlIG1tYyBj
+YXJkIGluIHBsdWdlZCBpbi4gSXMgaXQgc29tZXRoaW5nIHdvcm5nID8gVGhhbmsgeW91IHZlcnkg
+bXVjaCEKCiAgICBUaGUga2VybmVsIGNvbmZpZyBmaWxlIGFuZCBkdHMgYXR0YWNoZWQuCgoKLS0t
+LS0tLS0tLS0tLS0gbmV4dCBwYXJ0IC0tLS0tLS0tLS0tLS0tCkEgbm9uLXRleHQgYXR0YWNobWVu
+dCB3YXMgc2NydWJiZWQuLi4KTmFtZTogLmNvbmZpZwpUeXBlOiBhcHBsaWNhdGlvbi9vY3RldC1z
+dHJlYW0KU2l6ZTogMTI5NTkxIGJ5dGVzCkRlc2M6IG5vdCBhdmFpbGFibGUKVVJMOiA8aHR0cDov
+L3hlbm9tYWkub3JnL3BpcGVybWFpbC94ZW5vbWFpL2F0dGFjaG1lbnRzLzIwMTkwMTE4LzUzODE3
+NWY5L2F0dGFjaG1lbnQub2JqPgotLS0tLS0tLS0tLS0tLSBuZXh0IHBhcnQgLS0tLS0tLS0tLS0t
+LS0KQSBub24tdGV4dCBhdHRhY2htZW50IHdhcyBzY3J1YmJlZC4uLgpOYW1lOiBhbTMzNXgtZG5r
+LXYxX0xDRDgwMHg0ODBfVE0wNzBSREgxMy5kdHMKVHlwZTogYXBwbGljYXRpb24vb2N0ZXQtc3Ry
+ZWFtClNpemU6IDI5NDM2IGJ5dGVzCkRlc2M6IG5vdCBhdmFpbGFibGUKVVJMOiA8aHR0cDovL3hl
+bm9tYWkub3JnL3BpcGVybWFpbC94ZW5vbWFpL2F0dGFjaG1lbnRzLzIwMTkwMTE4LzUzODE3NWY5
+L2F0dGFjaG1lbnQtMDAwMS5vYmo+Cg==
