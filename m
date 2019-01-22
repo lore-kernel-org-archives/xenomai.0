@@ -1,11 +1,13 @@
-From: "Baur, Elias" <st153286@stud.uni-stuttgart.de>
-Subject: problems with rt libraries in C
-Date: Fri, 18 Jan 2019 15:38:38 +0000
-Message-ID: <26e9fa502d054d85a1777508a99fd762@stud.uni-stuttgart.de>
-Content-Language: de-DE
-Content-Type: text/plain; charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
+Date: Tue, 22 Jan 2019 18:33:50 +0800 (CST)
+From: =?GBK?B?1cW9qMCl?= <kunzj@126.com>
+Subject: Re:Help: System freeze when edge interrupt trigger,  Xenomain3.0.8,
+ ipipe-arm main line, am335x
+In-Reply-To: <mailman.3.1547809201.5156.xenomai@xenomai.org>
+References: <mailman.3.1547809201.5156.xenomai@xenomai.org>
 MIME-Version: 1.0
+Message-ID: <4ddd614.76d7.168751f9385.Coremail.kunzj@126.com>
+Content-Type: text/plain; charset=GBK
+Content-Transfer-Encoding: base64
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -14,42 +16,40 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: xenomai@xenomai.org
 
-Hello everyone,
-
-First of all, I've got Xenomai running on a SanCloud Beaglebone Enhanced an=
-d the latency test works.
-I am using Xenomai 3.0.7 on Linux kernel 4.4.
-
-I am currently building a tiny program in C to get some UDP-messages sent a=
-nd received. This works perfectly on a non-realtime beaglebone but, as I am=
- trying to rewrite the code using rt-functions provided by Xenomai, I am fa=
-cing problems:
-
-To create a socket, I am using the "rt_dev_socket ()"-function which is def=
-ined in the "rtdm.h"-header-file and described in the xenomai documentation=
-. But, I am not able to find and include the correct library which defines =
-the correct reference. Therefore, I replaced the "rt_dev_" commands with "r=
-tdm_" which I have found a couple of times in the newer xenomai documentati=
-on. So my command to create a socket now is "rtdm_socket()". Nevertheless, =
-I am still getting the same error code, which looks like the following:
-
-rtt_rt.c: (.text+0x76): undefined reference to 'rtdm_socket'
-
-My command to compile the file is provided below:
-
-gcc rtt_rt.c -o rtt:rt -I/usr/xenomai/include/ -I/usr/xenomai/include/cobal=
-t -I/usr/xenomai/include/trank/ -L/usr/xenomai/lib -ltrank -lalchemy -lcoba=
-lt -lcopperplate -lmodechk
-
-So I am already including the libraries provided by xenomai which helped to=
- solve the same problem for functions like "rt_task_create". However, I am =
-not able to find the correct library which is providing reference for rtdm_=
-socket or rt_dev_socket. That is why I am asking you for help. What am I do=
-ing wrong?
-
-I am looking forward to get an answer! Thank you very much!
-
-Best, Eloa=
-
+SGVsbG8gZXZlcnlvbmUsIGhlcmUgaXMgc29tZSBuZXcgY2x1ZXM6CjEuIEkgdHJpZWQgeGVub21h
+aSAzLjAuOCwga2VybmVsIDMuMTQuMTcgYW5kIGlwaXBlLWNvcmUtNC4xNC43MS1hcm0tNC5wYXRj
+aC4gU3RpbGwgdGhlIHNhbWUgcXVlc3Rpb24uCgoyLiBJdCBzZWVtcyB0aGUgc3lzdGVtIGlzIGxv
+Y2tlZCB1cCBvbmNlIGEgZ3BpbyBpbnRlcnJ1cHQgaXMgdHJpZ2dlcmVkLgoKMy4gU29tZSBkZWJ1
+ZyBpbmZvcm1hdGlvbiBzaG93IHRoYXQsIG9uY2UgYSBncGlvIGludGVycnVwdCBpcyB0cmlnZ2Vy
+ZWQsIHRoZSBmdW5jdGlvbgoKICAgICdvbWFwX2dwaW9faXJxX2hhbmRsZXInIGlzIHRyaWdnZXJl
+ZCBhbGwgdGhlIHRpbWUuCgpUaGVyZSBtYXkgYmUgYSBsaXR0bGUgYnVnIGV4aXN0cywgYnV0IGkg
+ZG9uJ3Qga25vdyBob3cgdG8gYW1lbmQgaXQuIFRoYW5rIHlvdSB2ZXJ5IG11Y2gsIGlmIGFueW9u
+ZSBjYW4gaGVscC4KCj4tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0KPgo+TWVzc2FnZTog
+Mwo+RGF0ZTogRnJpLCAxOCBKYW4gMjAxOSAxMTo0ODoxMiArMDgwMCAoQ1NUKQo+RnJvbTog1cW9
+qMClIDxrdW56akAxMjYuY29tPgo+VG86IHhlbm9tYWlAeGVub21haS5vcmcKPlN1YmplY3Q6IEhl
+bHA6IFN5c3RlbSBmcmVlemUgd2hlbiBlZGdlIGludGVycnVwdCB0cmlnZ2VyLAo+CVhlbm9tYWlu
+My4wLjgsIGlwaXBlLWFybSBtYWluIGxpbmUsIGFtMzM1eAo+TWVzc2FnZS1JRDogPDU1Yzg5Yzc2
+LjM0MjAuMTY4NWYxMmM0ODguQ29yZW1haWwua3VuempAMTI2LmNvbT4KPkNvbnRlbnQtVHlwZTog
+dGV4dC9wbGFpbjsgY2hhcnNldD0iZ2JrIgo+Cj5IZWxsbyEKPiAgICBUaGUgc3lzdGVtIGZyZWV6
+ZSB3aGVuIGludGVycnVwdCBpcyB0cmlnZ2VyZWQuIEkgY2xvbmUgaXBpcGUtYXJtIG1hc3Rlciwg
+YW5kIHVzZSB4ZW5vbWFpIDMuMC44IGZvbGxvd2luZyB4ZW5vbWFpIHN0YXJ0dXAgdHV0b3JpYWwu
+Cj5UaGUgaGFyZHdhcmUgY3B1IGlzIGFtMzM1OC4gU3lzdGVtIHdvcmtzIGZpbmUgYWZ0ZXIgc3Rh
+cnQgdXAsIGJ1dCB0aGUgc3lzdGVtIGltbWVkaWF0ZWx5IGxvY2tzIHVwIHdoZW4gYSBlZGdlIGlu
+dGVycnVwdC4gRm9yIGV4YW1wbGUsCj50aGUgbW1jIGNhcmQgaW4gcGx1Z2VkIGluLiBJcyBpdCBz
+b21ldGhpbmcgd29ybmcgPyBUaGFuayB5b3UgdmVyeSBtdWNoIQo+Cj4gICAgVGhlIGtlcm5lbCBj
+b25maWcgZmlsZSBhbmQgZHRzIGF0dGFjaGVkLgo+Cj4KPi0tLS0tLS0tLS0tLS0tIG5leHQgcGFy
+dCAtLS0tLS0tLS0tLS0tLQo+QSBub24tdGV4dCBhdHRhY2htZW50IHdhcyBzY3J1YmJlZC4uLgo+
+TmFtZTogLmNvbmZpZwo+VHlwZTogYXBwbGljYXRpb24vb2N0ZXQtc3RyZWFtCj5TaXplOiAxMjk1
+OTEgYnl0ZXMKPkRlc2M6IG5vdCBhdmFpbGFibGUKPlVSTDogPGh0dHA6Ly94ZW5vbWFpLm9yZy9w
+aXBlcm1haWwveGVub21haS9hdHRhY2htZW50cy8yMDE5MDExOC81MzgxNzVmOS9hdHRhY2htZW50
+Lm9iaj4KPi0tLS0tLS0tLS0tLS0tIG5leHQgcGFydCAtLS0tLS0tLS0tLS0tLQo+QSBub24tdGV4
+dCBhdHRhY2htZW50IHdhcyBzY3J1YmJlZC4uLgo+TmFtZTogYW0zMzV4LWRuay12MV9MQ0Q4MDB4
+NDgwX1RNMDcwUkRIMTMuZHRzCj5UeXBlOiBhcHBsaWNhdGlvbi9vY3RldC1zdHJlYW0KPlNpemU6
+IDI5NDM2IGJ5dGVzCj5EZXNjOiBub3QgYXZhaWxhYmxlCj5VUkw6IDxodHRwOi8veGVub21haS5v
+cmcvcGlwZXJtYWlsL3hlbm9tYWkvYXR0YWNobWVudHMvMjAxOTAxMTgvNTM4MTc1ZjkvYXR0YWNo
+bWVudC0wMDAxLm9iaj4KPgo+LS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tCj4KPlN1Ympl
+Y3Q6IERpZ2VzdCBGb290ZXIKPgo+Cj4KPgo+LS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0t
+Cj4KPkVuZCBvZiBYZW5vbWFpIERpZ2VzdCwgVm9sIDgxLCBJc3N1ZSAxNwo+KioqKioqKioqKioq
+KioqKioqKioqKioqKioqKioqKioqKioqKioqCg==
