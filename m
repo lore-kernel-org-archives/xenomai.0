@@ -1,13 +1,12 @@
 MIME-Version: 1.0
-References: <6a75de9a.bb14.1675e7e151a.Coremail.liang_1911@163.com>
- <6c00eb9f-37b7-1500-0da5-ceab4f4db112@xenomai.org>
- <5ff90fcc.1120f.16760156d36.Coremail.liang_1911@163.com>
-In-Reply-To: <5ff90fcc.1120f.16760156d36.Coremail.liang_1911@163.com>
+References: <mailman.3.1547809201.5156.xenomai@xenomai.org>
+ <4ddd614.76d7.168751f9385.Coremail.kunzj@126.com>
+In-Reply-To: <4ddd614.76d7.168751f9385.Coremail.kunzj@126.com>
 From: Greg Gallagher <greg@embeddedgreg.com>
-Date: Thu, 29 Nov 2018 10:39:03 -0500
-Message-ID: <CALLqZ8QSQjNQDpfYx-gjodj+9PR7J7nzi=S09CDkOw=eQhRLyQ@mail.gmail.com>
-Subject: Re: Re: every millicsecond interrupt in xenomai domain on a am355x
- board can cause something wrong?
+Date: Tue, 22 Jan 2019 10:18:03 -0500
+Message-ID: <CALLqZ8RZHCDBur7ewCKnKJXu9j4VOdeucgJchF9rKCC_oeGVWA@mail.gmail.com>
+Subject: Re: Help: System freeze when edge interrupt trigger, Xenomain3.0.8,
+ ipipe-arm main line, am335x
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
@@ -18,51 +17,81 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: liang_1911@163.com
-Cc: Philippe Gerum <rpm@xenomai.org>, "Xenomai@xenomai.org" <xenomai@xenomai.org>
+To: =?UTF-8?B?5byg5bu65piG?= <kunzj@126.com>
+Cc: "Xenomai@xenomai.org" <xenomai@xenomai.org>
 
-This doc will help explain how the ipipe handles interrupts.
+On Tue, Jan 22, 2019 at 5:34 AM =E5=BC=A0=E5=BB=BA=E6=98=86 via Xenomai <xe=
+nomai@xenomai.org> wrote:
+>
+> Hello everyone, here is some new clues:
+> 1. I tried xenomai 3.0.8, kernel 3.14.17 and ipipe-core-4.14.71-arm-4.pat=
+ch. Still the same question.
 
-https://gitlab.denx.de/Xenomai/ipipe-noarch/blob/master/Documentation/ipipe=
-.rst
+Have you tried this with the 4.9 or 4.4 kernel and ipipe patch?  I
+think 4.4 (which is based on a SLTS) has been tested on beaglebone
+(similar processor). Did you mean kernel 4.14 not 3.14?
 
+> 2. It seems the system is locked up once a gpio interrupt is triggered.
+>
+> 3. Some debug information show that, once a gpio interrupt is triggered, =
+the function
+>
+>     'omap_gpio_irq_handler' is triggered all the time.
+I think I've reproduced this on a Beaglebone which is based on a
+similar processor, I'll look into it this week.
 
-I don't think the interrupt is being missed, what domain do you want
-to handle the interrupt?
+> There may be a little bug exists, but i don't know how to amend it. Thank=
+ you very much, if anyone can help.
+>
 
 -Greg
-On Thu, Nov 29, 2018 at 10:28 AM =E6=A2=81=E6=9D=83 via Xenomai <xenomai@xe=
-nomai.org> wrote:
->
-> it is neither NMI nor FIQ; "cannot be mask" just for emphasize this inter=
-rupt is so important that cannot be missed even once.
->  it maybe my fault for this unclear expression
->
->
->
->
-> --
->
-> ----------------------------------------------
->           =E6=A2=81=E6=9D=83
-> THANKS & BR!
->
->
->
->
->
-> =E5=9C=A8 2018-11-29 22:34:03=EF=BC=8C"Philippe Gerum" <rpm@xenomai.org> =
-=E5=86=99=E9=81=93=EF=BC=9A
-> >On 11/29/18 9:03 AM, =E6=A2=81=E6=9D=83 via Xenomai wrote:
-> >> hi=EF=BC=8C
-> >> i'm work on a customed board with TI am335X; i have installed xenomai =
-3 on it correcttly , and can run the latency test.
-> >> On this board, an interrupt which cannot be masked and delayed will be=
- generated every millicsecond by a FPGA ;
+> >------------------------------
 > >
-> >What do you mean precisely by "cannot be masked"? Are you referring to
-> >NMI or FIQ?
+> >Message: 3
+> >Date: Fri, 18 Jan 2019 11:48:12 +0800 (CST)
+> >From: =E5=BC=A0=E5=BB=BA=E6=98=86 <kunzj@126.com>
+> >To: xenomai@xenomai.org
+> >Subject: Help: System freeze when edge interrupt trigger,
+> >       Xenomain3.0.8, ipipe-arm main line, am335x
+> >Message-ID: <55c89c76.3420.1685f12c488.Coremail.kunzj@126.com>
+> >Content-Type: text/plain; charset=3D"gbk"
 > >
-> >--
-> >Philippe.
+> >Hello!
+> >    The system freeze when interrupt is triggered. I clone ipipe-arm mas=
+ter, and use xenomai 3.0.8 following xenomai startup tutorial.
+> >The hardware cpu is am3358. System works fine after start up, but the sy=
+stem immediately locks up when a edge interrupt. For example,
+> >the mmc card in pluged in. Is it something worng ? Thank you very much!
+> >
+> >    The kernel config file and dts attached.
+> >
+> >
+> >-------------- next part --------------
+> >A non-text attachment was scrubbed...
+> >Name: .config
+> >Type: application/octet-stream
+> >Size: 129591 bytes
+> >Desc: not available
+> >URL: <http://xenomai.org/pipermail/xenomai/attachments/20190118/538175f9=
+/attachment.obj>
+> >-------------- next part --------------
+> >A non-text attachment was scrubbed...
+> >Name: am335x-dnk-v1_LCD800x480_TM070RDH13.dts
+> >Type: application/octet-stream
+> >Size: 29436 bytes
+> >Desc: not available
+> >URL: <http://xenomai.org/pipermail/xenomai/attachments/20190118/538175f9=
+/attachment-0001.obj>
+> >
+> >------------------------------
+> >
+> >Subject: Digest Footer
+> >
+> >
+> >
+> >
+> >------------------------------
+> >
+> >End of Xenomai Digest, Vol 81, Issue 17
+> >***************************************
 
