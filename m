@@ -1,12 +1,12 @@
-Subject: Re: [PATCH 4/9] cobalt/ancillaries: prevent false positive with
- -Wstringop-truncation
-References: <20181026140825.5251-1-rpm@xenomai.org>
- <20181026140825.5251-4-rpm@xenomai.org>
+Subject: Re: [PATCH 5/5] cobalt/sched: weak: add early parameter checking
+ handler
+References: <20181129135417.29797-1-rpm@xenomai.org>
+ <20181129135417.29797-5-rpm@xenomai.org>
 From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <0d3ff214-e0a2-9ddd-70b3-cc0b3071b4ed@siemens.com>
-Date: Thu, 24 Jan 2019 19:35:31 +0100
+Message-ID: <785410d8-656b-6e4f-31e7-d4a828bcdca7@siemens.com>
+Date: Thu, 24 Jan 2019 19:49:28 +0100
 MIME-Version: 1.0
-In-Reply-To: <20181026140825.5251-4-rpm@xenomai.org>
+In-Reply-To: <20181129135417.29797-5-rpm@xenomai.org>
 Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -20,32 +20,47 @@ List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: Philippe Gerum <rpm@xenomai.org>, xenomai@xenomai.org
 
-On 26.10.18 16:08, Philippe Gerum wrote:
-> knamecpy() is meant to copying NUL terminated strings even if this
-> incurs potential truncation of the source argument if need be, prevent
-> GCC 8.x from detecting a false positive when -Wstringop-truncation is
-> in effect.
-> ---
->   include/cobalt/kernel/ancillaries.h | 2 +-
->   1 file changed, 1 insertion(+), 1 deletion(-)
+On 29.11.18 14:54, Philippe Gerum via Xenomai wrote:
+> This is actually a plain conversion of the former sched_declare()
+> handler to the recently introduced sched_chkparam(), which only checks
+> the weak scheduling parameters.
 > 
-> diff --git a/include/cobalt/kernel/ancillaries.h b/include/cobalt/kernel/ancillaries.h
-> index cde9856da..b957310c7 100644
-> --- a/include/cobalt/kernel/ancillaries.h
-> +++ b/include/cobalt/kernel/ancillaries.h
-> @@ -58,7 +58,7 @@ void __knamecpy_requires_character_array_as_destination(void);
->   	({								\
->   		if (!__builtin_types_compatible_p(typeof(__dst), char[])) \
->   			__knamecpy_requires_character_array_as_destination();	\
-> -		strncpy((__dst), __src, sizeof(__dst) - 1);		\
-> +		strncpy((__dst), __src, sizeof(__dst));			\
->   		__dst[sizeof(__dst) - 1] = '\0';			\
->   		__dst;							\
->   	 })
+> By doing so, we ensure that those checks are done early and
+> unconditionally in xnsched_set_policy().
+> 
+> Signed-off-by: Philippe Gerum <rpm@xenomai.org>
+> ---
+>   kernel/cobalt/sched-weak.c | 6 +++---
+>   1 file changed, 3 insertions(+), 3 deletions(-)
+> 
+> diff --git a/kernel/cobalt/sched-weak.c b/kernel/cobalt/sched-weak.c
+> index bd3872f10..dd6a78e63 100644
+> --- a/kernel/cobalt/sched-weak.c
+> +++ b/kernel/cobalt/sched-weak.c
+> @@ -76,8 +76,8 @@ static void xnsched_weak_protectprio(struct xnthread *thread, int prio)
+>   	thread->cprio = prio;
+>   }
+>   
+> -static int xnsched_weak_declare(struct xnthread *thread,
+> -				const union xnsched_policy_param *p)
+> +static int xnsched_weak_chkparam(struct xnthread *thread,
+> +				 const union xnsched_policy_param *p)
+>   {
+>   	if (p->weak.prio < XNSCHED_WEAK_MIN_PRIO ||
+>   	    p->weak.prio > XNSCHED_WEAK_MAX_PRIO)
+> @@ -208,7 +208,7 @@ struct xnsched_class xnsched_class_weak = {
+>   	.sched_rotate		=	NULL,
+>   	.sched_forget		=	NULL,
+>   	.sched_kick		=	NULL,
+> -	.sched_declare		=	xnsched_weak_declare,
+> +	.sched_chkparam		=	xnsched_weak_chkparam,
+>   	.sched_setparam		=	xnsched_weak_setparam,
+>   	.sched_trackprio	=	xnsched_weak_trackprio,
+>   	.sched_protectprio	=	xnsched_weak_protectprio,
 > 
 
-Belatedly picking patch 1-4 of this series into stable to address compilation 
-issues against gcc 8.
+I received a request internally to have these 5 in stable as well - just 
+backported (only mechanical conflicts had to be resolved).
 
 Jan
 
