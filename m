@@ -1,11 +1,7 @@
-Mime-Version: 1.0
-Message-ID: 
-Subject: Re: Help: System freeze when edge interrupt trigger, Xenomain3.0.8,
- ipipe-arm main line, am335x
-Date: Thu, 24 Jan 2019 00:18:46 +0800 (GMT+08:00)
-From: =?UTF-8?B?a3VuempAMTI2LmNvbQ==?=<kunzj@126.com>
-Content-Type: text/plain; charset=us-ascii
-Content-Transfer-Encoding: base64
+From: Philippe Gerum <rpm@xenomai.org>
+Subject: [PATCH 00/12] Assorted updates: RTnet, GPIO, smokey tests
+Date: Thu, 24 Jan 2019 16:34:16 +0100
+Message-Id: <20190124153428.21006-1-rpm@xenomai.org>
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -14,6 +10,53 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: =?UTF-8?B?R3JlZyBHYWxsYWdoZXI=?= <greg@embeddedgreg.com>
-Cc: =?UTF-8?B?WGVub21haUB4ZW5vbWFpLm9yZw==?= <xenomai@xenomai.org>
+To: xenomai@xenomai.org
+Cc: Jan Kiszka <jan.kiszka@siemens.com>, Philippe Gerum <rpm@xenomai.org>
+
+Patch 1 addresses the issue in the posix_clock fix as discussed in
+[1]. Patch 6 works around a recent regression in RTnet as mentioned in
+[2] (tested with the IGB driver which implements a map_rtskb
+handler). Both commits are also -stable candidates.
+
+A couple of other changes extend the GPIO support with a timestamping
+feature, so that we may ask for the date of the latest state change of
+an input pin when reported by an interrupt event.
+
+The rest is RTnet-related. In addition to patch 6, I would recommend
+picking 7 and 8 for -stable.
+
+[1] https://www.xenomai.org/pipermail/xenomai/2019-January/040225.html
+[2] https://www.xenomai.org/pipermail/xenomai/2019-January/040230.html
+
+Philippe Gerum (12):
+  testsuite/smokey: posix_clock: prevent false positive in
+    time-dependent test
+  drivers/gpio: provide optional timestamped readouts
+  testsuite/gpiotest: enable timestamping on 'timestamp' argument
+  net/stack: allow initializing pre-allocated device structs
+  net/stack: fresh rtskb should have ip_summed set to CHECKSUM_NONE
+  net/rtdev: ensure per-device skbs get mapped at registration
+  net/udp: getfrag: fix frag preparation status
+  net/udp: getfrag: remove direct reference to user memory
+  testsuite/smokey: net: do not unload pre-loaded modules
+  testsuite/smokey: net: do not down a previously running test interface
+  net/stack: rtskb: do not run nop locking calls
+  testsuite/smokey: net_client: improve stats readability
+
+ include/cobalt/kernel/rtdm/gpio.h          |   1 +
+ include/rtdm/uapi/gpio.h                   |  18 ++-
+ kernel/drivers/gpio/gpio-core.c            |  54 +++++--
+ kernel/drivers/net/stack/include/rtdev.h   |   9 ++
+ kernel/drivers/net/stack/ipv4/udp/udp.c    |  21 +--
+ kernel/drivers/net/stack/rtdev.c           | 167 ++++++++++++++-------
+ kernel/drivers/net/stack/rtskb.c           |  26 +---
+ testsuite/gpiotest/gpiotest.c              |  37 ++++-
+ testsuite/smokey/net_common/client.c       |  26 ++--
+ testsuite/smokey/net_common/setup.c        | 108 ++++++++++---
+ testsuite/smokey/posix-clock/posix-clock.c |   2 +-
+ 11 files changed, 325 insertions(+), 144 deletions(-)
+
+-- 
+2.17.2
+
 
