@@ -1,10 +1,11 @@
-Subject: Re: [PATCH 00/12] Assorted updates: RTnet, GPIO, smokey tests
+Subject: Re: [PATCH 02/12] drivers/gpio: provide optional timestamped readouts
 References: <20190124153428.21006-1-rpm@xenomai.org>
+ <20190124153428.21006-3-rpm@xenomai.org>
 From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <0d503429-a5ac-9a81-fe6c-c1df064fd7dd@siemens.com>
-Date: Thu, 24 Jan 2019 19:10:23 +0100
+Message-ID: <4d1c39af-7a6f-1637-7727-ab6ad6d533c1@siemens.com>
+Date: Thu, 24 Jan 2019 19:17:54 +0100
 MIME-Version: 1.0
-In-Reply-To: <20190124153428.21006-1-rpm@xenomai.org>
+In-Reply-To: <20190124153428.21006-3-rpm@xenomai.org>
 Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -19,57 +20,184 @@ List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
 To: Philippe Gerum <rpm@xenomai.org>, xenomai@xenomai.org
 
 On 24.01.19 16:34, Philippe Gerum wrote:
-> Patch 1 addresses the issue in the posix_clock fix as discussed in
-
-And I'm still seeing a 100% identical patch and commit log...
-
-> [1]. Patch 6 works around a recent regression in RTnet as mentioned in
-> [2] (tested with the IGB driver which implements a map_rtskb
-> handler). Both commits are also -stable candidates.
+> In timestamping mode, read() returns the timestamp of the latest event
+> receipt on the pin based on CLOCK_MONOTONIC, along with the pin
+> state. This is an optional pin readout mode controlled by the
+> GPIO_RTIOC_TS request, e.g.:
 > 
-> A couple of other changes extend the GPIO support with a timestamping
-> feature, so that we may ask for the date of the latest state change of
-> an input pin when reported by an interrupt event.
+> struct rtdm_gpio_readout rdo;
+> int ret, on, val;
 > 
-> The rest is RTnet-related. In addition to patch 6, I would recommend
-> picking 7 and 8 for -stable.
+> on = 1;
+> ret = ioctl(pinfd, GPIO_RTIOC_TS, &on);
+> ret = read(pinfd, &rdo, sizeof(rdo));
+> /* pin state changed to rdo.value at time rdo.timestamp */
 > 
+> on = 0;
+> ret = ioctl(pinfd, GPIO_RTIOC_TS, &on);
+> ret = read(pinfd, &val, sizeof(val));
+> /* pin state changed to value (time of change unspecified) */
+> 
+> By default, timestamping mode is disabled, which corresponds to the
+> original behavior.
+> 
+> Signed-off-by: Philippe Gerum <rpm@xenomai.org>
+> ---
+>   include/cobalt/kernel/rtdm/gpio.h |  1 +
+>   include/rtdm/uapi/gpio.h          | 18 +++++++----
+>   kernel/drivers/gpio/gpio-core.c   | 54 +++++++++++++++++++++++--------
+>   3 files changed, 54 insertions(+), 19 deletions(-)
+> 
+> diff --git a/include/cobalt/kernel/rtdm/gpio.h b/include/cobalt/kernel/rtdm/gpio.h
+> index cdb472f8a..00055ec0a 100644
+> --- a/include/cobalt/kernel/rtdm/gpio.h
+> +++ b/include/cobalt/kernel/rtdm/gpio.h
+> @@ -33,6 +33,7 @@ struct rtdm_gpio_pin {
+>   	rtdm_event_t event;
+>   	char *name;
+>   	struct gpio_desc *desc;
+> +	nanosecs_abs_t timestamp;
+>   };
+>   
+>   struct rtdm_gpio_chip {
+> diff --git a/include/rtdm/uapi/gpio.h b/include/rtdm/uapi/gpio.h
+> index b745f156c..ac14be66c 100644
+> --- a/include/rtdm/uapi/gpio.h
+> +++ b/include/rtdm/uapi/gpio.h
+> @@ -18,12 +18,18 @@
+>   #ifndef _RTDM_UAPI_GPIO_H
+>   #define _RTDM_UAPI_GPIO_H
+>   
+> -#define GPIO_RTIOC_DIR_OUT		_IOW(RTDM_CLASS_GPIO, 0, int)
+> -#define GPIO_RTIOC_DIR_IN		_IO(RTDM_CLASS_GPIO, 1)
+> -#define GPIO_RTIOC_IRQEN		_IOW(RTDM_CLASS_GPIO, 2, int) /* GPIO trigger */
+> -#define GPIO_RTIOC_IRQDIS		_IO(RTDM_CLASS_GPIO, 3)
+> -#define GPIO_RTIOC_REQS                _IO(RTDM_CLASS_GPIO, 4)
+> -#define GPIO_RTIOC_RELS                _IO(RTDM_CLASS_GPIO, 5)
+> +struct rtdm_gpio_readout {
+> +	__u64 timestamp;
 
-Thanks, looking through them now.
+nanosecs_abs_t - we use this type also in to userspace interface.
+
+> +	__s32 value;
+> +};
+> +
+> +#define GPIO_RTIOC_DIR_OUT	_IOW(RTDM_CLASS_GPIO, 0, int)
+> +#define GPIO_RTIOC_DIR_IN	_IO(RTDM_CLASS_GPIO, 1)
+> +#define GPIO_RTIOC_IRQEN	_IOW(RTDM_CLASS_GPIO, 2, int) /* GPIO trigger */
+> +#define GPIO_RTIOC_IRQDIS	_IO(RTDM_CLASS_GPIO, 3)
+> +#define GPIO_RTIOC_REQS		_IO(RTDM_CLASS_GPIO, 4)
+> +#define GPIO_RTIOC_RELS		_IO(RTDM_CLASS_GPIO, 5)
+> +#define GPIO_RTIOC_TS		_IOR(RTDM_CLASS_GPIO, 7, int)
+>   
+>   #define GPIO_TRIGGER_NONE		0x0 /* unspecified */
+>   #define GPIO_TRIGGER_EDGE_RISING	0x1
+> diff --git a/kernel/drivers/gpio/gpio-core.c b/kernel/drivers/gpio/gpio-core.c
+> index 3ce73dbd5..81f9653f1 100644
+> --- a/kernel/drivers/gpio/gpio-core.c
+> +++ b/kernel/drivers/gpio/gpio-core.c
+> @@ -28,7 +28,8 @@ struct rtdm_gpio_chan {
+>   	int requested : 1,
+>   		has_direction : 1,
+>   		is_output : 1,
+> -		is_interrupt : 1;
+> +	        is_interrupt : 1,
+> +		want_timestamp : 1;
+>   };
+>   
+>   static LIST_HEAD(rtdm_gpio_chips);
+> @@ -41,6 +42,7 @@ static int gpio_pin_interrupt(rtdm_irq_t *irqh)
+>   
+>   	pin = rtdm_irq_get_arg(irqh, struct rtdm_gpio_pin);
+>   
+> +	pin->timestamp = rtdm_clock_read_monotonic();
+>   	rtdm_event_signal(&pin->event);
+>   
+>   	return RTDM_IRQ_HANDLED;
+> @@ -187,6 +189,12 @@ static int gpio_pin_ioctl_nrt(struct rtdm_fd *fd,
+>   		gpio_free(gpio);
+>   		chan->requested = false;
+>   		break;
+> +	case GPIO_RTIOC_TS:
+> +		ret = rtdm_safe_copy_from_user(fd, &val, arg, sizeof(val));
+> +		if (ret)
+> +			return ret;
+> +		chan->want_timestamp = !!val;
+> +		break;
+>   	default:
+>   		return -EINVAL;
+>   	}
+> @@ -199,11 +207,9 @@ static ssize_t gpio_pin_read_rt(struct rtdm_fd *fd,
+>   {
+>   	struct rtdm_gpio_chan *chan = rtdm_fd_to_private(fd);
+>   	struct rtdm_device *dev = rtdm_fd_device(fd);
+> +	struct rtdm_gpio_readout rdo;
+>   	struct rtdm_gpio_pin *pin;
+> -	int value, ret;
+> -
+> -	if (len < sizeof(value))
+> -		return -EINVAL;
+> +	int ret;
+>   
+>   	if (!chan->has_direction)
+>   		return -EAGAIN;
+> @@ -213,16 +219,37 @@ static ssize_t gpio_pin_read_rt(struct rtdm_fd *fd,
+>   
+>   	pin = container_of(dev, struct rtdm_gpio_pin, dev);
+>   
+> -	if (!(fd->oflags & O_NONBLOCK)) {
+> -		ret = rtdm_event_wait(&pin->event);
+> -		if (ret)
+> -			return ret;
+> -	}
+> +	if (chan->want_timestamp) {
+> +		if (len < sizeof(rdo))
+> +			return -EINVAL;
+> +
+> +		if (!(fd->oflags & O_NONBLOCK)) {
+> +			ret = rtdm_event_wait(&pin->event);
+> +			if (ret)
+> +				return ret;
+> +			rdo.timestamp = pin->timestamp;
+> +		} else
+> +			rdo.timestamp = rtdm_clock_read_monotonic();
+> +
+> +		len = sizeof(rdo);
+> +		rdo.value = gpiod_get_raw_value(pin->desc);
+> +		ret = rtdm_safe_copy_to_user(fd, buf, &rdo, len);
+> +	} else {
+> +		if (len < sizeof(rdo.value))
+> +			return -EINVAL;
+>   
+> -	value = gpiod_get_raw_value(pin->desc);
+> -	ret = rtdm_safe_copy_to_user(fd, buf, &value, sizeof(value));
+> +		if (!(fd->oflags & O_NONBLOCK)) {
+> +			ret = rtdm_event_wait(&pin->event);
+> +			if (ret)
+> +				return ret;
+> +		}
+> +
+> +		len = sizeof(rdo.value);
+> +		rdo.value = gpiod_get_raw_value(pin->desc);
+> +		ret = rtdm_safe_copy_to_user(fd, buf, &rdo.value, len);
+> +	}
+>   	
+> -	return ret ?: sizeof(value);
+> +	return ret ?: len;
+>   }
+>   
+>   static ssize_t gpio_pin_write_rt(struct rtdm_fd *fd,
+> @@ -462,6 +489,7 @@ int rtdm_gpiochip_post_event(struct rtdm_gpio_chip *rgc,
+>   		return -EINVAL;
+>   
+>   	pin = rgc->pins + offset;
+> +	pin->timestamp = rtdm_clock_read_monotonic();
+>   	rtdm_event_signal(&pin->event);
+>   	
+>   	return 0;
+> 
 
 Jan
-
-> [1] https://www.xenomai.org/pipermail/xenomai/2019-January/040225.html
-> [2] https://www.xenomai.org/pipermail/xenomai/2019-January/040230.html
-> 
-> Philippe Gerum (12):
->    testsuite/smokey: posix_clock: prevent false positive in
->      time-dependent test
->    drivers/gpio: provide optional timestamped readouts
->    testsuite/gpiotest: enable timestamping on 'timestamp' argument
->    net/stack: allow initializing pre-allocated device structs
->    net/stack: fresh rtskb should have ip_summed set to CHECKSUM_NONE
->    net/rtdev: ensure per-device skbs get mapped at registration
->    net/udp: getfrag: fix frag preparation status
->    net/udp: getfrag: remove direct reference to user memory
->    testsuite/smokey: net: do not unload pre-loaded modules
->    testsuite/smokey: net: do not down a previously running test interface
->    net/stack: rtskb: do not run nop locking calls
->    testsuite/smokey: net_client: improve stats readability
-> 
->   include/cobalt/kernel/rtdm/gpio.h          |   1 +
->   include/rtdm/uapi/gpio.h                   |  18 ++-
->   kernel/drivers/gpio/gpio-core.c            |  54 +++++--
->   kernel/drivers/net/stack/include/rtdev.h   |   9 ++
->   kernel/drivers/net/stack/ipv4/udp/udp.c    |  21 +--
->   kernel/drivers/net/stack/rtdev.c           | 167 ++++++++++++++-------
->   kernel/drivers/net/stack/rtskb.c           |  26 +---
->   testsuite/gpiotest/gpiotest.c              |  37 ++++-
->   testsuite/smokey/net_common/client.c       |  26 ++--
->   testsuite/smokey/net_common/setup.c        | 108 ++++++++++---
->   testsuite/smokey/posix-clock/posix-clock.c |   2 +-
->   11 files changed, 325 insertions(+), 144 deletions(-)
-> 
 
 -- 
 Siemens AG, Corporate Technology, CT RDA IOT SES-DE
