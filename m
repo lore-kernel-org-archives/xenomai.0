@@ -1,9 +1,13 @@
+Subject: Re: [PATCH 00/12] Assorted updates: RTnet, GPIO, smokey tests
+References: <20190124153428.21006-1-rpm@xenomai.org>
+From: Jan Kiszka <jan.kiszka@siemens.com>
+Message-ID: <0d503429-a5ac-9a81-fe6c-c1df064fd7dd@siemens.com>
+Date: Thu, 24 Jan 2019 19:10:23 +0100
 MIME-Version: 1.0
-From: Ari Mozes <arimozes@neocisinc.com>
-Date: Thu, 24 Jan 2019 11:35:35 -0500
-Message-ID: <CAJA_znn4P=_tmbcKCipcmYrhPUhFw4JrMWv2VAMVR0DYSx9iMA@mail.gmail.com>
-Subject: Debugging system freeze, SIGXCPU
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <20190124153428.21006-1-rpm@xenomai.org>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -12,130 +16,62 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
+To: Philippe Gerum <rpm@xenomai.org>, xenomai@xenomai.org
 
-I am new to Xenomai and trying to troubleshoot a repeatable Linux
-freeze I was experiencing (nothing in the system logs I could find,
-unresponsive to any keystrokes like REISUB, etc.)  I then switched
-from cobalt 3.0.7 running on Linux 4.4.71 to cobalt 3.0.8 on 4.14.89,
-but the problem remained.  I then turned on all Xenomai debugging
-options when building the kernel, and I am now seeing SIGXCPU.  I
-assume this is the same issue that was causing the freeze before I
-enabled Xenomai debugging options, but I am not certain.  Below is the
-info from my system as well as a reduced testcase which can reproduce
-the SIGXCPU on my system.  Most important (to me) is gaining a better
-understanding of what to expect from Xenomai and how to identify
-problematic code as I try to transition a much larger code base to an
-RTOS (specifically Xenomai).  Any help and insight would be
-appreciated.  Happy to provide any missing information and/or run
-experiments to help further troubleshoot.
+On 24.01.19 16:34, Philippe Gerum wrote:
+> Patch 1 addresses the issue in the posix_clock fix as discussed in
 
-- Ari
+And I'm still seeing a 100% identical patch and commit log...
 
-Result from running /usr/xenomai/bin/xeno-config --info:
-Xenomai version: Xenomai/cobalt v3.0.7
-Linux fire 4.14.89 #3 SMP PREEMPT Sat Jan 19 15:34:03 EST 2019 x86_64
-x86_64 x86_64 GNU/Linux
-Kernel parameters: BOOT_IMAGE=/boot/vmlinuz-4.14.89
-root=UUID=2ffdfd76-c81d-4252-88df-b51b6b0fcc9b ro quiet splash
-i915.enable_rc6=0 i915.enable_dc=0 xeno_nucleus.xenomai_gid=129 nosmap
-i915.modset=0 noapic intremap=off xenomai.allowed_group=129
-crashkernel=64M@16M vt.handoff=7
-I-pipe release #2 detected
-Cobalt core 3.0.8 detected
-Compiler: gcc version 6.5.0 20181026 (Ubuntu 6.5.0-2ubuntu1~16.04)
-Build args: --with-pic --with-core=cobalt --enable-smp --disable-tls
---enable-dlopen-libs --disable-clock-monotonic-raw
+> [1]. Patch 6 works around a recent regression in RTnet as mentioned in
+> [2] (tested with the IGB driver which implements a map_rtskb
+> handler). Both commits are also -stable candidates.
+> 
+> A couple of other changes extend the GPIO support with a timestamping
+> feature, so that we may ask for the date of the latest state change of
+> an input pin when reported by an interrupt event.
+> 
+> The rest is RTnet-related. In addition to patch 6, I would recommend
+> picking 7 and 8 for -stable.
+> 
 
-Test case file xenapp.cpp:
+Thanks, looking through them now.
 
-#include <stdio.h>
-#include <sys/mman.h>
-#include <alchemy/task.h>
-#include <alchemy/timer.h>
-#include <chrono>
-#include <unistd.h>
+Jan
 
-// All times are in nanoseconds
-#define TIME_10ms  10000000
-#define TIME_100us   100000
+> [1] https://www.xenomai.org/pipermail/xenomai/2019-January/040225.html
+> [2] https://www.xenomai.org/pipermail/xenomai/2019-January/040230.html
+> 
+> Philippe Gerum (12):
+>    testsuite/smokey: posix_clock: prevent false positive in
+>      time-dependent test
+>    drivers/gpio: provide optional timestamped readouts
+>    testsuite/gpiotest: enable timestamping on 'timestamp' argument
+>    net/stack: allow initializing pre-allocated device structs
+>    net/stack: fresh rtskb should have ip_summed set to CHECKSUM_NONE
+>    net/rtdev: ensure per-device skbs get mapped at registration
+>    net/udp: getfrag: fix frag preparation status
+>    net/udp: getfrag: remove direct reference to user memory
+>    testsuite/smokey: net: do not unload pre-loaded modules
+>    testsuite/smokey: net: do not down a previously running test interface
+>    net/stack: rtskb: do not run nop locking calls
+>    testsuite/smokey: net_client: improve stats readability
+> 
+>   include/cobalt/kernel/rtdm/gpio.h          |   1 +
+>   include/rtdm/uapi/gpio.h                   |  18 ++-
+>   kernel/drivers/gpio/gpio-core.c            |  54 +++++--
+>   kernel/drivers/net/stack/include/rtdev.h   |   9 ++
+>   kernel/drivers/net/stack/ipv4/udp/udp.c    |  21 +--
+>   kernel/drivers/net/stack/rtdev.c           | 167 ++++++++++++++-------
+>   kernel/drivers/net/stack/rtskb.c           |  26 +---
+>   testsuite/gpiotest/gpiotest.c              |  37 ++++-
+>   testsuite/smokey/net_common/client.c       |  26 ++--
+>   testsuite/smokey/net_common/setup.c        | 108 ++++++++++---
+>   testsuite/smokey/posix-clock/posix-clock.c |   2 +-
+>   11 files changed, 325 insertions(+), 144 deletions(-)
+> 
 
-#define TASK_PERIOD TIME_10ms
-#define TASK_TICKS (rt_timer_ns2ticks(SRTIME(TASK_PERIOD)))
-
-#define SLEEP_TIME TIME_100us
-#define SLEEP_TICKS (rt_timer_ns2ticks(SRTIME(SLEEP_TIME)))
-
-#define TASK_BUSY (TASK_PERIOD / 4) // "work" for about 1/4 of the period
-#define LOOP_COUNT ((int)(TASK_BUSY / SLEEP_TIME))
-
-void xenTaskFunc(void *cookie)
-{
-    int errno;
-    std::chrono::high_resolution_clock::time_point curTime;
-    unsigned long overruns = 0;
-
-    errno = rt_task_set_periodic(NULL, TM_NOW, TASK_TICKS);
-    if (errno) {
-        printf("rt_task_set_periodic error: %d %s\n", errno, strerror(-errno));
-    }
-
-    while(true) {
-        // If I alternate between the std::chrono call and rt_task_sleep for
-        // part of the task period, SIGXCPU is thrown.
-        for (int i = 0; i < LOOP_COUNT; i++) {
-            curTime = std::chrono::high_resolution_clock::now();
-            errno = rt_task_sleep(SLEEP_TICKS);
-            if (errno) {
-                printf("rt_task_sleep error: %d %s\n", errno, strerror(-errno));
-            }
-        }
-        errno = rt_task_wait_period(&overruns);
-        if (errno) {
-            if (errno == -ETIMEDOUT) {
-                printf("rt_task_wait_period overruns: %ld\n", overruns);
-            }
-            else {
-                printf("rt_task_wait_period error: %d %s\n", errno,
-strerror(-errno));
-                break;
-            }
-        }
-  }
-}
-
-int main(int argc, char **argv)
-{
-    mlockall(MCL_CURRENT | MCL_FUTURE);
-
-    int errno;
-    RT_TASK xenTask;
-    errno = rt_task_create(&xenTask, "xenTestTask", 0, 50, 0);
-    if (errno) {
-        printf("rt_task_create error: %d %s\n", errno, strerror(-errno));
-    }
-    errno = rt_task_start(&xenTask, &xenTaskFunc, NULL);
-    if (errno) {
-        printf("rt_task_start error: %d %s\n", errno, strerror(-errno));
-    }
-
-    printf("TASK_TICKS %lld, SLEEP_TICKS %lld, LOOP_COUNT %d\n",
-        TASK_TICKS, SLEEP_TICKS, LOOP_COUNT);
-
-    // wait for signal
-    pause();
-}
-
-
-Test case Makefile:
-
-XENO_CONFIG := /usr/xenomai/bin/xeno-config
-CFLAGS := $(shell $(XENO_CONFIG) --alchemy --cflags)
-LDFLAGS := $(shell $(XENO_CONFIG) --alchemy --ldflags)
-CC := $(shell $(XENO_CONFIG) --cc)
-
-all: xenapp
-
-xenapp: xenapp.cpp
-    $(CC) -o $@ $< $(CFLAGS) $(LDFLAGS) -lstdc++
+-- 
+Siemens AG, Corporate Technology, CT RDA IOT SES-DE
+Corporate Competence Center Embedded Linux
 
