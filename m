@@ -1,16 +1,9 @@
-Date: Thu, 29 Nov 2018 23:50:12 +0800 (CST)
-From: =?GBK?B?wbrIqA==?= <liang_1911@163.com>
-Subject: Re:Re: Re: every millicsecond interrupt in xenomai domain on a
- am355x board can cause something wrong?
-In-Reply-To: <CALLqZ8QSQjNQDpfYx-gjodj+9PR7J7nzi=S09CDkOw=eQhRLyQ@mail.gmail.com>
-References: <6a75de9a.bb14.1675e7e151a.Coremail.liang_1911@163.com>
- <6c00eb9f-37b7-1500-0da5-ceab4f4db112@xenomai.org>
- <5ff90fcc.1120f.16760156d36.Coremail.liang_1911@163.com>
- <CALLqZ8QSQjNQDpfYx-gjodj+9PR7J7nzi=S09CDkOw=eQhRLyQ@mail.gmail.com>
-MIME-Version: 1.0
-Message-ID: <72d4425.1146a.1676029cfb8.Coremail.liang_1911@163.com>
-Content-Type: text/plain; charset=GBK
-Content-Transfer-Encoding: base64
+From: Philippe Gerum <rpm@xenomai.org>
+Subject: [PATCH 07/12] net/udp: getfrag: fix frag preparation status
+Date: Thu, 24 Jan 2019 16:34:23 +0100
+Message-Id: <20190124153428.21006-8-rpm@xenomai.org>
+In-Reply-To: <20190124153428.21006-1-rpm@xenomai.org>
+References: <20190124153428.21006-1-rpm@xenomai.org>
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -19,33 +12,45 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Greg Gallagher <greg@embeddedgreg.com>
-Cc: Philippe Gerum <rpm@xenomai.org>, "Xenomai@xenomai.org" <xenomai@xenomai.org>
+To: xenomai@xenomai.org
+Cc: Jan Kiszka <jan.kiszka@siemens.com>, Philippe Gerum <rpm@xenomai.org>
 
-Tm93IGkgaGFuZGxlIHRoZSBpbnRlcnJ1cHQgaW4geGVub21haSBkb21haW4gLCBhbmQgYWZ0ZXIg
-bXkgbG9uZyB0aW1lIHRlc3QsIHRoZSBpbnRlcnJ1cHQgbmV2ZXIgYmUgbWlzc2VkIG9uY2UuCkJ1
-dCB0aGUgUXQgYXBwbGljYXRpb24gcnVuIG9uIHRoZSBib2FyZCBjcmFzaGVkIHdoZW4gaSBlbmFi
-bGUgdGhpcyBpbnRlcnJ1cHQgaW4geGVub21haSBkb21haW4uIAoKCi0tCgotLS0tLS0tLS0tLS0t
-LS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tCiAgICAgICAgICDBusioClRIQU5LUyAm
-IEJSIQpBdCAyMDE4LTExLTI5IDIzOjM5OjAzLCAiR3JlZyBHYWxsYWdoZXIiIDxncmVnQGVtYmVk
-ZGVkZ3JlZy5jb20+IHdyb3RlOgo+VGhpcyBkb2Mgd2lsbCBoZWxwIGV4cGxhaW4gaG93IHRoZSBp
-cGlwZSBoYW5kbGVzIGludGVycnVwdHMuCj4KPmh0dHBzOi8vZ2l0bGFiLmRlbnguZGUvWGVub21h
-aS9pcGlwZS1ub2FyY2gvYmxvYi9tYXN0ZXIvRG9jdW1lbnRhdGlvbi9pcGlwZS5yc3QKPgo+Cj5J
-IGRvbid0IHRoaW5rIHRoZSBpbnRlcnJ1cHQgaXMgYmVpbmcgbWlzc2VkLCB3aGF0IGRvbWFpbiBk
-byB5b3Ugd2FudAo+dG8gaGFuZGxlIHRoZSBpbnRlcnJ1cHQ/Cj4KPi1HcmVnCj5PbiBUaHUsIE5v
-diAyOSwgMjAxOCBhdCAxMDoyOCBBTSDBusioIHZpYSBYZW5vbWFpIDx4ZW5vbWFpQHhlbm9tYWku
-b3JnPiB3cm90ZToKPj4KPj4gaXQgaXMgbmVpdGhlciBOTUkgbm9yIEZJUTsgImNhbm5vdCBiZSBt
-YXNrIiBqdXN0IGZvciBlbXBoYXNpemUgdGhpcyBpbnRlcnJ1cHQgaXMgc28gaW1wb3J0YW50IHRo
-YXQgY2Fubm90IGJlIG1pc3NlZCBldmVuIG9uY2UuCj4+ICBpdCBtYXliZSBteSBmYXVsdCBmb3Ig
-dGhpcyB1bmNsZWFyIGV4cHJlc3Npb24KPj4KPj4KPj4KPj4KPj4gLS0KPj4KPj4gLS0tLS0tLS0t
-LS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLQo+PiAgICAgICAgICAgwbrIqAo+
-PiBUSEFOS1MgJiBCUiEKPj4KPj4KPj4KPj4KPj4KPj4g1NogMjAxOC0xMS0yOSAyMjozNDowM6Os
-IlBoaWxpcHBlIEdlcnVtIiA8cnBtQHhlbm9tYWkub3JnPiDQtLXAo7oKPj4gPk9uIDExLzI5LzE4
-IDk6MDMgQU0sIMG6yKggdmlhIFhlbm9tYWkgd3JvdGU6Cj4+ID4+IGhpo6wKPj4gPj4gaSdtIHdv
-cmsgb24gYSBjdXN0b21lZCBib2FyZCB3aXRoIFRJIGFtMzM1WDsgaSBoYXZlIGluc3RhbGxlZCB4
-ZW5vbWFpIDMgb24gaXQgY29ycmVjdHRseSAsIGFuZCBjYW4gcnVuIHRoZSBsYXRlbmN5IHRlc3Qu
-Cj4+ID4+IE9uIHRoaXMgYm9hcmQsIGFuIGludGVycnVwdCB3aGljaCBjYW5ub3QgYmUgbWFza2Vk
-IGFuZCBkZWxheWVkIHdpbGwgYmUgZ2VuZXJhdGVkIGV2ZXJ5IG1pbGxpY3NlY29uZCBieSBhIEZQ
-R0EgOwo+PiA+Cj4+ID5XaGF0IGRvIHlvdSBtZWFuIHByZWNpc2VseSBieSAiY2Fubm90IGJlIG1h
-c2tlZCI/IEFyZSB5b3UgcmVmZXJyaW5nIHRvCj4+ID5OTUkgb3IgRklRPwo+PiA+Cj4+ID4tLQo+
-PiA+UGhpbGlwcGUuCg==
+This fixes a regression introduced by #a69c4ac5d, making the UDP stack
+basically unusable since no xmit could ever take place due to the
+wrong return value.
+
+Signed-off-by: Philippe Gerum <rpm@xenomai.org>
+---
+ kernel/drivers/net/stack/ipv4/udp/udp.c | 8 +++++---
+ 1 file changed, 5 insertions(+), 3 deletions(-)
+
+diff --git a/kernel/drivers/net/stack/ipv4/udp/udp.c b/kernel/drivers/net/stack/ipv4/udp/udp.c
+index 8e80d3e0b..e580dac08 100644
+--- a/kernel/drivers/net/stack/ipv4/udp/udp.c
++++ b/kernel/drivers/net/stack/ipv4/udp/udp.c
+@@ -553,8 +553,10 @@ static int rt_udp_getfrag(const void *p, unsigned char *to,
+ 
+ 
+     // We should optimize this function a bit (copy+csum...)!
+-    if (offset)
+-	    return rtnet_read_from_iov(ufh->fd, ufh->iov, ufh->iovlen, to, fraglen);
++    if (offset) {
++	    ret = rtnet_read_from_iov(ufh->fd, ufh->iov, ufh->iovlen, to, fraglen);
++	    return ret < 0 ? ret : 0;
++    }
+ 
+     /* Checksum of the complete data part of the UDP message: */
+     for (i = 0; i < ufh->iovlen; i++) {
+@@ -565,7 +567,7 @@ static int rt_udp_getfrag(const void *p, unsigned char *to,
+     ret = rtnet_read_from_iov(ufh->fd, ufh->iov, ufh->iovlen,
+ 			      to + sizeof(struct udphdr),
+ 			      fraglen - sizeof(struct udphdr));
+-    if (ret)
++    if (ret < 0)
+ 	    return ret;
+ 
+     /* Checksum of the udp header: */
+-- 
+2.17.2
+
+
