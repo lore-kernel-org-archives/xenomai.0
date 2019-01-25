@@ -1,22 +1,23 @@
-Subject: Re: RTCan missing frames
-References: <aea6afe6-99e3-9e60-6004-05d7a3d0eb42@compador.de>
- <5f653b5a-e82f-ce42-c8c6-3fa05ccce53d@grandegger.com>
- <f6a62138-a1fa-f631-25b4-5acb1037273d@compador.de>
- <063773f9-ac33-fb9c-7cf4-7c971f882041@grandegger.com>
- <4d3e3575-e29d-0ba7-50b3-97fbc108d70d@compador.de>
- <b643dfd1-9648-ad5a-05ff-164c58574bff@grandegger.com>
- <e469590e-a04f-657d-9563-efbaa62e27c8@compador.de>
- <154ddc3c-8813-14c1-53e8-61d337ab0d69@grandegger.com>
- <0e83a1f6-e7cd-abd2-6a4f-24b3d46c0b67@compador.de>
- <0e808ef5-c3b3-ec7a-fe98-f27a483462d3@grandegger.com>
-From: Johannes Holtz <johannes.holtz@compador.de>
-Message-ID: <8a8e8f99-f4fe-0a7c-4b50-c6737c5a7217@compador.de>
-Date: Tue, 12 Feb 2019 15:38:50 +0100
+Subject: Re: [PATCH 02/12] drivers/gpio: provide optional timestamped readouts
+References: <20190124153428.21006-1-rpm@xenomai.org>
+ <20190124153428.21006-3-rpm@xenomai.org>
+ <4d1c39af-7a6f-1637-7727-ab6ad6d533c1@siemens.com>
+ <40b168af-98d1-955d-ff01-ae5e70113744@xenomai.org>
+ <bff391b7-e457-c91c-cf68-3229a4492e4d@siemens.com>
+ <197faf1a-c056-36fd-28ce-d8eee333b9cd@xenomai.org>
+ <214e962e-f725-f056-7153-7225b21a4112@siemens.com>
+ <1215ea5d-5ba7-348e-20b9-7d46cc77c183@xenomai.org>
+ <76d6c198-2c6a-fa2c-8e0e-3ae92f7c2210@siemens.com>
+ <d1fc3b18-1b4e-0690-b10b-71890e6b8075@xenomai.org>
+ <015cdb61-fdbe-81e7-f609-9c9c795977bd@siemens.com>
+From: Philippe Gerum <rpm@xenomai.org>
+Message-ID: <94ceea47-fef5-a361-63fe-ccc02aaa42d4@xenomai.org>
+Date: Fri, 25 Jan 2019 12:42:41 +0100
 MIME-Version: 1.0
-In-Reply-To: <0e808ef5-c3b3-ec7a-fe98-f27a483462d3@grandegger.com>
+In-Reply-To: <015cdb61-fdbe-81e7-f609-9c9c795977bd@siemens.com>
+Content-Type: text/plain; charset="utf-8"
 Content-Language: en-US
-Content-Transfer-Encoding: base64
-Content-Type: text/plain; charset="utf-8"; Format="flowed"
+Content-Transfer-Encoding: 8bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -25,81 +26,150 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Wolfgang Grandegger <wg@grandegger.com>, xenomai@xenomai.org
+To: Jan Kiszka <jan.kiszka@siemens.com>, xenomai@xenomai.org
 
-QW0gMTIuMDIuMTkgdW0gMTI6MjQgc2NocmllYiBXb2xmZ2FuZyBHcmFuZGVnZ2VyOgo+IEhlbGxv
-LAo+Cj4gQW0gMTIuMDIuMTkgdW0gMTE6NDIgc2NocmllYiBKb2hhbm5lcyBIb2x0ejoKPj4gQW0g
-MTEuMDIuMTkgdW0gMTc6NDYgc2NocmllYiBXb2xmZ2FuZyBHcmFuZGVnZ2VyOgo+IC4uLiBzbmlw
-IC4uLgo+Pj4gVUkgc3VnZ2VzdCB0byB3cml0ZSBhIHNpbXBsZSB0ZXN0IHByb2dyYW0gdG8gZGVt
-b25zdHJhdGUgdGhlIGlzc3VlLiBJdAo+Pj4gc2hvdWxkIGp1c3Qgb3BlbiB0aGUgc29ja2V0IGFu
-ZCB0cnlpbmcgdG8gcmVjZWl2ZSBtZXNzYWdlcy4uLiBqdXN0IHRoZQo+Pj4gbmVjZXNzYXJ5IHN0
-dWZmLiBGaXJzdCB3aXRoIGEgYmxvY2tpbmcgcmVjdigpIGFuZCB0aGVuIG5vbi1ibG9ja2luZy4K
-Pj4+Cj4+PiBXaGF0IGhhcmR3YXJlIGFuZCBzb2Z0d2FyZSBhcmUgeW91IHVzaW5nIChhcmNoLCBi
-b2FyZCwgbGludXgsIHhlbm9tYWkpPwo+ID8KPgo+Pj4gV29sZmdhbmcuCj4+IFRoZSBzb3VyY2Ug
-Y29kZSBpcyBhdHRhY2hlZDoKPj4KPj4gY29tcGlsZWQgd2l0aCAtSS9vcHQveGVub21haS9pbmNs
-dWRlIC1EX0dOVV9TT1VSQ0UgLURfUkVFTlRSQU5UCj4+IC1EX19YRU5PX18gLWxydGRtIC1ML29w
-dC94ZW5vbWFpL2xpYiAtbHhlbm9tYWkgLWxwdGhyZWFkIC1scnQgLWxuYXRpdmUKPj4KPj4gY2Fu
-IGZyYW1lcyBzZW50IGJ5IHJ0Y2Fuc2VuZAo+Pgo+PiBUZXN0IDE6IGJsb2NraW5nOgo+Pgo+PiBJ
-RDowIERMQzoyaGV4OsKgIDgxIDAwwqDCoMKgIMKgwqAgPC0tIE5NVCByZXF1ZXN0Cj4+IElEOjcw
-OSBETEM6MWhleDrCoCAwMMKgwqDCoCDCoMKgwqAgPC0tIGFuc3dlciBub2RlICM5Cj4+IElEOjcw
-OCBETEM6MWhleDrCoCAwMMKgwqDCoCDCoMKgwqAgPC0tIGFuc3dlciBub2RlICM4Cj4+IElEOjcw
-MyBETEM6MWhleDrCoCAwMMKgwqDCoCDCoMKgwqAgPC0tIGFuc3dlciBub2RlICMzCj4+IElEOjcw
-NSBETEM6MGhleDogwqDCoMKgIMKgwqDCoCDCoMKgwqAgPC0tIGhlcmUgaXQgZ2V0cyB3ZWlyZCAh
-IERMQyA9PSAwCj4+IElEOjcwNDAwIERMQzoxaGV4OsKgIDAxCj4+IElEOjcwNjAwIERMQzoxaGV4
-OsKgIDAxCj4+IElEOjcwMTAwIERMQzoxaGV4OsKgIDAxCj4+IElEOjcwMjAwIERMQzoxaGV4OsKg
-IDAxCj4+IElEOjEwMTAwMDAgRExDOjFoZXg6wqAgMDgKPiBUaGlzIG1lYW5zIHRoYXQgeW91IGNh
-biByZWNlaXZlIG1lc3NhZ2VzIGZyb20gdGhlIENBTiBidXMuCj4KPj4gSUQ6NTMyMjAgRExDOjEy
-NCBvdXQgb2YgYm91bmRzLiBhYm9ydC4KPiBCdXQgdGhhdCdzIHdpcmVkLgo+Cj4+IFRlc3QgMjog
-bm9uIGJsb2NraW5nOgo+Pgo+PiBJRDowIERMQzoyaGV4OsKgIDgxIDAwwqDCoMKgIDwtLSBOTVQg
-cmVxdWVzdAo+PiBJRDo3MDkgRExDOjFoZXg6wqAgMDDCoMKgwqDCoCA8LS0gYW5zd2VyIG5vZGUg
-IzkKPj4gSUQ6NzA4IERMQzoxaGV4OsKgIDAwwqDCoMKgwqAgPC0tIGFuc3dlciBub2RlICM4Cj4+
-IElEOjcwMyBETEM6MWhleDrCoCAwMMKgwqDCoMKgIDwtLSBhbnN3ZXIgbm9kZSAjMwo+PiBJRDo3
-MDUgRExDOjBoZXg6IMKgwqDCoMKgIMKgwqDCoCA8LS0gc2FtZSBpc3N1ZSBETEMgaXMgMAo+PiBJ
-RDo3MDYwMCBETEM6MWhleDrCoCAwMQo+PiBJRDo3MDQwMCBETEM6MWhleDrCoCAwMQo+PiBJRDo3
-MDIwMCBETEM6MWhleDrCoCAwMQo+PiBJRDo3MDEwMCBETEM6MWhleDrCoCAwMQo+PiBJRDoxMDEw
-MDAwIERMQzoxaGV4OsKgIDA4Cj4+IElEOjUzMjIwIERMQzoxMjQgb3V0IG9mIGJvdW5kcy4gYWJv
-cnQuCj4gTG9va3MgaWRlbnRpY2FsLgo+Cj4+IEFsc28sIEkgZm91bmQgYW5vdGhlciBwb3NzaWJs
-ZSBlcnJvciBzb3VyY2UgYW5kIEkgZG9uJ3Qga25vdyBpZiB0aGlzCj4+IGVycm9yIHBpY3R1cmUg
-d291bGQgY29ycmVzcG9uZHMgdG8gdGhpcy4KPj4KPj4gSG93ZXZlcizCoCBXaGlsZSByZXZpZXdp
-bmcgYWxsIHNldHRpbmdzLCBJIG5vdGljZWQgdGhhdCBJIG1hZGUgYSBtaXN0YWtlCj4+IHdpdGgg
-dGhlIFJYQlVGX1NJWkUgd2hpY2ggaXMgc2V0IHRvIDgwOTYgaW5zdGVhZCBvZiA4MTkyLiBNdXN0
-IGhhdmUgYmVlbgo+PiBhc2xlZXAgd2hlbiB3cml0aW5nIHRoaXMuIEknbSBnb2luZyB0byByZWJ1
-aWxkIHRoaXMgbW9kdWxlLgo+IExldCdzIHRyeSB0byB1bmRlcnN0YW5kIHdoeSBydF9kZXZfcmVj
-digpIGRvZXMgcmV0dXJuIGJvZ3VzIGRsYy4KPgo+IFdoYXQgaGFyZHdhcmUgYW5kIHNvZnR3YXJl
-IGFyZSB5b3UgdXNpbmcgKGFyY2gsIGJvYXJkLCBjYW4gY29udHJvbGVsciwKPiBsaW51eCwgeGVu
-b21haSk/Cj4KPiBXb2xmZ2FuZy4KCkkgbW9kaWZpZWQgdGhlIHByb2dyYW0gYSBsaXR0bGUgdG8g
-c2VuZCBpdCdzIG93biByZXF1ZXN0cyB2aWEgb25lIHNpbmdsZSAKc29ja2V0LiBUaGUgb3V0cHV0
-IGxvb2sgbGlrZSB0aGlzLgoKc2VuZCBzdWNjZWVkZWQKSUQ6NzA4IERMQzoxaGV4OsKgIDAwCklE
-OjcwOSBETEM6MWhleDrCoCAwMApJRDo3MDMgRExDOjFoZXg6wqAgMDAKSUQ6NzA2IERMQzoxaGV4
-OsKgIDAwCklEOjcwNSBETEM6N2hleDrCoCAwMCAwMCAwMSAwMSAwMCAwOSAwNwpzZW5kIHN1Y2Nl
-ZWRlZApzZW5kIHN1Y2NlZWRlZApzZW5kIHN1Y2NlZWRlZApzZW5kIHN1Y2NlZWRlZApzZW5kIHN1
-Y2NlZWRlZAoKQW5kIGEgcGFyYWxsZWwgcnRjYW5yZWN2IG91dHB1dMKgIGxpa2UgdGhpczoKCnJv
-b3RAbWFjaGluZWN0cmw6fiMgcnRjYW5yZWN2IHJ0Y2FuMAojMDogKDEpIDwweDAwMD4gWzJdIDgx
-IDAwCiMxOiAoMSkgPDB4NzA4PiBbMV0gMDAKIzI6ICgxKSA8MHg3MDk+IFsxXSAwMAojMzogKDEp
-IDwweDcwMz4gWzFdIDAwCiM0OiAoMCkgPDB4NzA2PiBbMF0KIzU6ICgwKSA8MHg1MDA+IFsxXSAw
-MQojNjogKDApIDwweDQwMD4gWzFdIDAxCiM3OiAoMCkgPDB4MTAwPiBbMV0gMDEKIzg6ICgwKSA8
-MHgyMDA+IFsxXSAwMQojOTogKDApIDwweDAwMD4gWzFdIDA4CiMxMDogKDI0KSA8MHgyMjA+IFsx
-MjRdIDAwIDAwIDgyIDAwIDAwIDAwIDAxIDA4IDAxIDAwIDAwIDAwIGYwIDg0IDA0IDA4IAowMCBh
-ZiAwNCAwOCBjMCA2OCA5MSBiZiAwMCAwMCAwMCAwMCAwMCAwMCAwMCAwMCBjMCAwNiA2MCBiNyAx
-OCA2OCA5MSBiZiAKNzggNjkgOTEgYmYgODAgMGQgN2MgYjcgY2UgNjggOTEgYmYgYzAgNjggOTEg
-YmYgMDAgOWIgMDQgMDggNjAgNjkgOTEgYmYgCjc4IDY5IDkxIGJmIGNmIDhlIDA0IDA4IDAwIGFm
-IDA0IDA4IGMwIDY4IDkxIGJmIDAwIDAwIDAwIDAwIDAwIDAwIDAwIDAwIAowMCAwMCAwMCAwMCA2
-OCAwMCAwZiBjMSBlMCBiOCA3YSBiNyAwMCAwMCAwMCAwMCAwMSAwMCAwMCAwMCAzMCBhZSAxMCBm
-NyAKMDQgNWUgNjAgYjcgZTAgNjggOTEgYmYgYjAgNjggOTEgYmYKIzExOiAoMjQpIDwweDIyMD4g
-WzEyNF0gMDAgMDAgMDUgMDcgMDAgMDAgMDEgMDcgMDEgMDAgMDAgMDAgZjAgODQgMDQgMDggCjAw
-IGFmIDA0IDA4IGMwIDY4IDkxIGJmIDAwIDAwIDAwIDAwIDAwIDAwIDAwIDAwIGMwIDA2IDYwIGI3
-IDE4IDY4IDkxIGJmIAo3OCA2OSA5MSBiZiA4MCAwZCA3YyBiNyBjZSA2OCA5MSBiZiBjMCA2OCA5
-MSBiZiAwMCA5YiAwNCAwOCA2MCA2OSA5MSBiZiAKNzggNjkgOTEgYmYgY2YgOGUgMDQgMDggMDAg
-YWYgMDQgMDggYzAgNjggOTEgYmYgMDAgMDAgMDAgMDAgMDAgMDAgMDAgMDAgCjAwIDAwIDAwIDAw
-IDY4IDAwIDBmIGMxIGUwIGI4IDdhIGI3IDAwIDAwIDAwIDAwIDAxIDAwIDAwIDAwIDMwIGFlIDEw
-IGY3IAowNCA1ZSA2MCBiNyBlMCA2OCA5MSBiZiBiMCA2OCA5MSBiZgojMTI6ICgzMikgPDB4MDAw
-PiBbNTBdIDA1IDA1IDA3IDAwIDAwIDAxIDA3IDAwIDAxIDAwIDAwIDAwIGYwIDg0IDA0IDA4IAow
-MCBhZiAwNCAwOCBjMCA2OCA5MSBiZiAwMCAwMCAwMCAwMCAwMCAwMCAwMCAwMCBjMCAwNiA2MCBi
-NyAxOCA2OCA5MSBiZiAKNzggNjkgOTEgYmYgODAgMGQgN2MgYjcgY2UgNjgKIzEzOiAoOSkgPDB4
-MTAwPiBbN10gMDUgMDcgMDAgMDAgMDEgMDcgMDAKIzE0OiAoMCkgPDB4MTAwPiBbMF0KIzE1OiAo
-MSkgPDB4NzA1PiBbN10gMDAgMDAgMDEgMDEgMDAgMDkgMDcKCk5vbmUgb2YgdGhpcyBtYWtlcyBz
-ZW5zZSB0byBtZS4KCgotLS0tLS0tLS0tLS0tLSBuZXh0IHBhcnQgLS0tLS0tLS0tLS0tLS0KQSBu
-b24tdGV4dCBhdHRhY2htZW50IHdhcyBzY3J1YmJlZC4uLgpOYW1lOiBjYW5fcmVjdi5jClR5cGU6
-IHRleHQveC1jc3JjClNpemU6IDcwNjYgYnl0ZXMKRGVzYzogbm90IGF2YWlsYWJsZQpVUkw6IDxo
-dHRwOi8veGVub21haS5vcmcvcGlwZXJtYWlsL3hlbm9tYWkvYXR0YWNobWVudHMvMjAxOTAyMTIv
-ZTU3Y2NkODkvYXR0YWNobWVudC5jPgo=
+On 1/25/19 12:32 PM, Jan Kiszka wrote:
+> On 25.01.19 11:11, Philippe Gerum wrote:
+>> On 1/25/19 10:48 AM, Jan Kiszka wrote:
+>>> On 25.01.19 10:38, Philippe Gerum wrote:
+>>>> On 1/25/19 10:33 AM, Jan Kiszka wrote:
+>>>>> On 25.01.19 10:31, Philippe Gerum wrote:
+>>>>>> On 1/25/19 10:23 AM, Jan Kiszka wrote:
+>>>>>>> On 25.01.19 10:15, Philippe Gerum wrote:
+>>>>>>>> On 1/24/19 7:17 PM, Jan Kiszka wrote:
+>>>>>>>>> On 24.01.19 16:34, Philippe Gerum wrote:
+>>>>>>>>>> In timestamping mode, read() returns the timestamp of the latest
+>>>>>>>>>> event
+>>>>>>>>>> receipt on the pin based on CLOCK_MONOTONIC, along with the pin
+>>>>>>>>>> state. This is an optional pin readout mode controlled by the
+>>>>>>>>>> GPIO_RTIOC_TS request, e.g.:
+>>>>>>>>>>
+>>>>>>>>>> struct rtdm_gpio_readout rdo;
+>>>>>>>>>> int ret, on, val;
+>>>>>>>>>>
+>>>>>>>>>> on = 1;
+>>>>>>>>>> ret = ioctl(pinfd, GPIO_RTIOC_TS, &on);
+>>>>>>>>>> ret = read(pinfd, &rdo, sizeof(rdo));
+>>>>>>>>>> /* pin state changed to rdo.value at time rdo.timestamp */
+>>>>>>>>>>
+>>>>>>>>>> on = 0;
+>>>>>>>>>> ret = ioctl(pinfd, GPIO_RTIOC_TS, &on);
+>>>>>>>>>> ret = read(pinfd, &val, sizeof(val));
+>>>>>>>>>> /* pin state changed to value (time of change unspecified) */
+>>>>>>>>>>
+>>>>>>>>>> By default, timestamping mode is disabled, which corresponds
+>>>>>>>>>> to the
+>>>>>>>>>> original behavior.
+>>>>>>>>>>
+>>>>>>>>>> Signed-off-by: Philippe Gerum <rpm@xenomai.org>
+>>>>>>>>>> ---
+>>>>>>>>>>       include/cobalt/kernel/rtdm/gpio.h |  1 +
+>>>>>>>>>>       include/rtdm/uapi/gpio.h          | 18 +++++++----
+>>>>>>>>>>       kernel/drivers/gpio/gpio-core.c   | 54
+>>>>>>>>>> +++++++++++++++++++++++--------
+>>>>>>>>>>       3 files changed, 54 insertions(+), 19 deletions(-)
+>>>>>>>>>>
+>>>>>>>>>> diff --git a/include/cobalt/kernel/rtdm/gpio.h
+>>>>>>>>>> b/include/cobalt/kernel/rtdm/gpio.h
+>>>>>>>>>> index cdb472f8a..00055ec0a 100644
+>>>>>>>>>> --- a/include/cobalt/kernel/rtdm/gpio.h
+>>>>>>>>>> +++ b/include/cobalt/kernel/rtdm/gpio.h
+>>>>>>>>>> @@ -33,6 +33,7 @@ struct rtdm_gpio_pin {
+>>>>>>>>>>           rtdm_event_t event;
+>>>>>>>>>>           char *name;
+>>>>>>>>>>           struct gpio_desc *desc;
+>>>>>>>>>> +    nanosecs_abs_t timestamp;
+>>>>>>>>>>       };
+>>>>>>>>>>         struct rtdm_gpio_chip {
+>>>>>>>>>> diff --git a/include/rtdm/uapi/gpio.h b/include/rtdm/uapi/gpio.h
+>>>>>>>>>> index b745f156c..ac14be66c 100644
+>>>>>>>>>> --- a/include/rtdm/uapi/gpio.h
+>>>>>>>>>> +++ b/include/rtdm/uapi/gpio.h
+>>>>>>>>>> @@ -18,12 +18,18 @@
+>>>>>>>>>>       #ifndef _RTDM_UAPI_GPIO_H
+>>>>>>>>>>       #define _RTDM_UAPI_GPIO_H
+>>>>>>>>>>       -#define GPIO_RTIOC_DIR_OUT        _IOW(RTDM_CLASS_GPIO, 0,
+>>>>>>>>>> int)
+>>>>>>>>>> -#define GPIO_RTIOC_DIR_IN        _IO(RTDM_CLASS_GPIO, 1)
+>>>>>>>>>> -#define GPIO_RTIOC_IRQEN        _IOW(RTDM_CLASS_GPIO, 2, int) /*
+>>>>>>>>>> GPIO
+>>>>>>>>>> trigger */
+>>>>>>>>>> -#define GPIO_RTIOC_IRQDIS        _IO(RTDM_CLASS_GPIO, 3)
+>>>>>>>>>> -#define GPIO_RTIOC_REQS                _IO(RTDM_CLASS_GPIO, 4)
+>>>>>>>>>> -#define GPIO_RTIOC_RELS                _IO(RTDM_CLASS_GPIO, 5)
+>>>>>>>>>> +struct rtdm_gpio_readout {
+>>>>>>>>>> +    __u64 timestamp;
+>>>>>>>>>
+>>>>>>>>> nanosecs_abs_t - we use this type also in to userspace interface.
+>>>>>>>>>
+>>>>>>>>
+>>>>>>>> Nope. This is ABI stuff, nanosecs_abs_t is not guaranteed to
+>>>>>>>> have the
+>>>>>>>> same size regardless of the ABI models, which is unsafe in mixed
+>>>>>>>> 32/64
+>>>>>>>> model configurations. OTOH, __u64 is safe.
+>>>>>>>
+>>>>>>> If nanosecs_abs_t is alread an ABI, and it is used as such for a
+>>>>>>> long
+>>>>>>> time (see include/rtdm/uapi/serial.h). If you see a bug in its
+>>>>>>> definition, that needs to be fixed. We should not resolve that by
+>>>>>>> choosing open-coded local workarounds.
+>>>>>>>
+>>>>>>
+>>>>>> nanosecs_t is not defined in the Xenomai ABI, never has been. Using
+>>>>>> nanosecs_t in structs actually abuses such ABI. So we may either keep
+>>>>>> adding even more nanosecs, or fix the spots where it should be
+>>>>>> replaced
+>>>>>> with __u64.
+>>>>>
+>>>>> Xenomai ABI includes the driver ABI - so your assumption might have
+>>>>> been
+>>>>> it's not while it was de facto.
+>>>>>
+>>>>> Again, let's address the issue, not work around it.
+>>>>>
+>>>>
+>>>> __u64 is the fix, using nanosecs*_t in uapi/ is wrong. So please merge
+>>>> this fix, and we'll see how we can progress fixing other abuses.
+>>>
+>>> Nope: Adjust nanosecs_*_t if it has a problem ([u]int64_t vs. __u/s64 -
+>>> what's the problem exactly?), and use that. That will both address
+>>> existing users and future ones. No special solution for the GPIO driver
+>>> here.
+>>>
+>>
+>> I'm not pushing for a GPIO-specific solution, I'm pushing for using
+>> ABI-specific types which state their size explicitly in uapi/ data as
+>> much as possible, which is safer with mixed ABI models and would have
+>> spared me a lot of trouble back when I implemented the 32/64 ABI support
+>> for Xenomai. nanosecs_* is originally a kernel-side type which slipped
+>> in uapi/ structs, which does not state its size.
+> 
+> No, it was designed and used for both side. I know best as I wrote and
+> first used that abstraction.
+> 
+
+Please avoid the "I know best" non-argument. I don't think it is
+particularly relevant in this context, and the last thing we want is to
+lose relevance when discussing technical matters.
+
+>>
+>> The fact that nanosecs_* is defined as uint64_t but the kernel today
+>> does not address the issue at stake: there would be no obvious way to
+>> detect that a discrepancy might exist with what userland expects once
+>> such definition is modified for a different with if ever (which might be
+>> highly unlikely for nanosecs, but could happen for other types).
+> 
+> So the good news is that a) we do not have a problem today and b) we can
+> safely prevent any hypothetical future by changing the definition of
+> nanosecs_*_t towards __u64/__s64 backing. So, if you are concerned about
+> the stability of standard-int, let's switch to the kernel uapi types for
+> nanosecs, use that also for the GPIO ABI, and call it a day.
+> 
+
+Ok, you don't seem to understand my point. I'll switch to nanosecs*,
+time is a scarce resource for me too.
+
+-- 
+Philippe.
+
