@@ -1,16 +1,22 @@
-Subject: Re: RTCan missing frames
-References: <aea6afe6-99e3-9e60-6004-05d7a3d0eb42@compador.de>
- <5f653b5a-e82f-ce42-c8c6-3fa05ccce53d@grandegger.com>
- <f6a62138-a1fa-f631-25b4-5acb1037273d@compador.de>
- <063773f9-ac33-fb9c-7cf4-7c971f882041@grandegger.com>
-From: Johannes Holtz <johannes.holtz@compador.de>
-Message-ID: <4d3e3575-e29d-0ba7-50b3-97fbc108d70d@compador.de>
-Date: Mon, 11 Feb 2019 14:13:47 +0100
+Subject: Re: [PATCH 02/12] drivers/gpio: provide optional timestamped readouts
+References: <20190124153428.21006-1-rpm@xenomai.org>
+ <20190124153428.21006-3-rpm@xenomai.org>
+ <4d1c39af-7a6f-1637-7727-ab6ad6d533c1@siemens.com>
+ <40b168af-98d1-955d-ff01-ae5e70113744@xenomai.org>
+ <bff391b7-e457-c91c-cf68-3229a4492e4d@siemens.com>
+ <197faf1a-c056-36fd-28ce-d8eee333b9cd@xenomai.org>
+ <214e962e-f725-f056-7153-7225b21a4112@siemens.com>
+ <1215ea5d-5ba7-348e-20b9-7d46cc77c183@xenomai.org>
+ <76d6c198-2c6a-fa2c-8e0e-3ae92f7c2210@siemens.com>
+ <d1fc3b18-1b4e-0690-b10b-71890e6b8075@xenomai.org>
+From: Jan Kiszka <jan.kiszka@siemens.com>
+Message-ID: <015cdb61-fdbe-81e7-f609-9c9c795977bd@siemens.com>
+Date: Fri, 25 Jan 2019 12:32:16 +0100
 MIME-Version: 1.0
-In-Reply-To: <063773f9-ac33-fb9c-7cf4-7c971f882041@grandegger.com>
+In-Reply-To: <d1fc3b18-1b4e-0690-b10b-71890e6b8075@xenomai.org>
 Content-Type: text/plain; charset="utf-8"; format="flowed"
-Content-Transfer-Encoding: 8bit
 Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -19,245 +25,138 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Wolfgang Grandegger <wg@grandegger.com>, xenomai@xenomai.org
+To: Philippe Gerum <rpm@xenomai.org>, xenomai@xenomai.org
 
-Am 11.02.19 um 13:40 schrieb Wolfgang Grandegger:
-> Hello,
->
-> Am 11.02.19 um 12:55 schrieb Johannes Holtz:
->> Am 11.02.19 um 12:26 schrieb Wolfgang Grandegger:
->>> Hello,
+On 25.01.19 11:11, Philippe Gerum wrote:
+> On 1/25/19 10:48 AM, Jan Kiszka wrote:
+>> On 25.01.19 10:38, Philippe Gerum wrote:
+>>> On 1/25/19 10:33 AM, Jan Kiszka wrote:
+>>>> On 25.01.19 10:31, Philippe Gerum wrote:
+>>>>> On 1/25/19 10:23 AM, Jan Kiszka wrote:
+>>>>>> On 25.01.19 10:15, Philippe Gerum wrote:
+>>>>>>> On 1/24/19 7:17 PM, Jan Kiszka wrote:
+>>>>>>>> On 24.01.19 16:34, Philippe Gerum wrote:
+>>>>>>>>> In timestamping mode, read() returns the timestamp of the latest
+>>>>>>>>> event
+>>>>>>>>> receipt on the pin based on CLOCK_MONOTONIC, along with the pin
+>>>>>>>>> state. This is an optional pin readout mode controlled by the
+>>>>>>>>> GPIO_RTIOC_TS request, e.g.:
+>>>>>>>>>
+>>>>>>>>> struct rtdm_gpio_readout rdo;
+>>>>>>>>> int ret, on, val;
+>>>>>>>>>
+>>>>>>>>> on = 1;
+>>>>>>>>> ret = ioctl(pinfd, GPIO_RTIOC_TS, &on);
+>>>>>>>>> ret = read(pinfd, &rdo, sizeof(rdo));
+>>>>>>>>> /* pin state changed to rdo.value at time rdo.timestamp */
+>>>>>>>>>
+>>>>>>>>> on = 0;
+>>>>>>>>> ret = ioctl(pinfd, GPIO_RTIOC_TS, &on);
+>>>>>>>>> ret = read(pinfd, &val, sizeof(val));
+>>>>>>>>> /* pin state changed to value (time of change unspecified) */
+>>>>>>>>>
+>>>>>>>>> By default, timestamping mode is disabled, which corresponds to the
+>>>>>>>>> original behavior.
+>>>>>>>>>
+>>>>>>>>> Signed-off-by: Philippe Gerum <rpm@xenomai.org>
+>>>>>>>>> ---
+>>>>>>>>>       include/cobalt/kernel/rtdm/gpio.h |  1 +
+>>>>>>>>>       include/rtdm/uapi/gpio.h          | 18 +++++++----
+>>>>>>>>>       kernel/drivers/gpio/gpio-core.c   | 54
+>>>>>>>>> +++++++++++++++++++++++--------
+>>>>>>>>>       3 files changed, 54 insertions(+), 19 deletions(-)
+>>>>>>>>>
+>>>>>>>>> diff --git a/include/cobalt/kernel/rtdm/gpio.h
+>>>>>>>>> b/include/cobalt/kernel/rtdm/gpio.h
+>>>>>>>>> index cdb472f8a..00055ec0a 100644
+>>>>>>>>> --- a/include/cobalt/kernel/rtdm/gpio.h
+>>>>>>>>> +++ b/include/cobalt/kernel/rtdm/gpio.h
+>>>>>>>>> @@ -33,6 +33,7 @@ struct rtdm_gpio_pin {
+>>>>>>>>>           rtdm_event_t event;
+>>>>>>>>>           char *name;
+>>>>>>>>>           struct gpio_desc *desc;
+>>>>>>>>> +    nanosecs_abs_t timestamp;
+>>>>>>>>>       };
+>>>>>>>>>         struct rtdm_gpio_chip {
+>>>>>>>>> diff --git a/include/rtdm/uapi/gpio.h b/include/rtdm/uapi/gpio.h
+>>>>>>>>> index b745f156c..ac14be66c 100644
+>>>>>>>>> --- a/include/rtdm/uapi/gpio.h
+>>>>>>>>> +++ b/include/rtdm/uapi/gpio.h
+>>>>>>>>> @@ -18,12 +18,18 @@
+>>>>>>>>>       #ifndef _RTDM_UAPI_GPIO_H
+>>>>>>>>>       #define _RTDM_UAPI_GPIO_H
+>>>>>>>>>       -#define GPIO_RTIOC_DIR_OUT        _IOW(RTDM_CLASS_GPIO, 0,
+>>>>>>>>> int)
+>>>>>>>>> -#define GPIO_RTIOC_DIR_IN        _IO(RTDM_CLASS_GPIO, 1)
+>>>>>>>>> -#define GPIO_RTIOC_IRQEN        _IOW(RTDM_CLASS_GPIO, 2, int) /*
+>>>>>>>>> GPIO
+>>>>>>>>> trigger */
+>>>>>>>>> -#define GPIO_RTIOC_IRQDIS        _IO(RTDM_CLASS_GPIO, 3)
+>>>>>>>>> -#define GPIO_RTIOC_REQS                _IO(RTDM_CLASS_GPIO, 4)
+>>>>>>>>> -#define GPIO_RTIOC_RELS                _IO(RTDM_CLASS_GPIO, 5)
+>>>>>>>>> +struct rtdm_gpio_readout {
+>>>>>>>>> +    __u64 timestamp;
+>>>>>>>>
+>>>>>>>> nanosecs_abs_t - we use this type also in to userspace interface.
+>>>>>>>>
+>>>>>>>
+>>>>>>> Nope. This is ABI stuff, nanosecs_abs_t is not guaranteed to have the
+>>>>>>> same size regardless of the ABI models, which is unsafe in mixed
+>>>>>>> 32/64
+>>>>>>> model configurations. OTOH, __u64 is safe.
+>>>>>>
+>>>>>> If nanosecs_abs_t is alread an ABI, and it is used as such for a long
+>>>>>> time (see include/rtdm/uapi/serial.h). If you see a bug in its
+>>>>>> definition, that needs to be fixed. We should not resolve that by
+>>>>>> choosing open-coded local workarounds.
+>>>>>>
+>>>>>
+>>>>> nanosecs_t is not defined in the Xenomai ABI, never has been. Using
+>>>>> nanosecs_t in structs actually abuses such ABI. So we may either keep
+>>>>> adding even more nanosecs, or fix the spots where it should be replaced
+>>>>> with __u64.
+>>>>
+>>>> Xenomai ABI includes the driver ABI - so your assumption might have been
+>>>> it's not while it was de facto.
+>>>>
+>>>> Again, let's address the issue, not work around it.
+>>>>
 >>>
->>> Am 11.02.19 um 10:16 schrieb Johannes Holtz via Xenomai:
->>>> Hi,
->>>>
->>>> In my application i set up a RTCAN socket and a pair of rt-threads. One
->>>> to read and one to write. Writing works perfectly and I receive answers
->>>> in the initial phase of the program.
->>>>
->>>> In particular I send CANopen NMT messages out and receive the responses
->>>> from the other Nodes in the Network.
->>>>
->>>> 2019-02-11 09:52:13.309[       500][    CAN TX] > NMT Node 0:0:
->>>> CAN ID 0x000 FC 0x0 DLC 2
->>>>           0       82 00
->>>> 2019-02-11 09:52:13.310[       503][    CAN RX] > NMT Error Control Node
->>>> 0:8:
->>>> CAN ID 0x708 FC 0xe DLC 1
->>>>           0       00
->>>> 2019-02-11 09:52:13.311[       503][    CAN RX] > NMT Error Control Node
->>>> 0:9:
->>>> CAN ID 0x709 FC 0xe DLC 1
->>>>           0       00
->>>> 2019-02-11 09:52:13.317[       509][    CAN RX] > NMT Error Control Node
->>>> 0:3:
->>>> CAN ID 0x703 FC 0xe DLC 1
->>>>           0       00
->>>> 2019-02-11 09:52:13.317[       509][    CAN RX] > NMT Error Control Node
->>>> 0:4:
->>>> CAN ID 0x704 FC 0xe DLC 1
->>>>           0       00
->>>> 2019-02-11 09:52:13.317[       509][    CAN RX] > NMT Error Control Node
->>>> 0:5:
->>>> CAN ID 0x705 FC 0xe DLC 7
->>>>           0       00 06 07 00
->>>>           4       00 01 01
->>>> 2019-02-11 09:52:13.317[       509][    CAN RX] > NMT Node 0:0:
->>>> CAN ID 0x000 FC 0x0 DLC 3
->>>>           0       07 00 00
->>>> 2019-02-11 09:52:13.326[       519][    CAN RX] > TIME Node 0:1:
->>>> CAN ID 0x101 FC 0x2 DLC 0
->>>>
->>>> As you can see, I capture 7 frames. However, the RX count from
->>>> /proc/rtcan/devices is 10.
->>>>
->>>> If I send specific SDO requests to one of the node which have answered I
->>>> don't capture a response but the RX count increases and rtcanrecv
->>>> program captures the correct response. Only my application's read
->>>> doesn't return.
->>> Then there seem to be a problem with the read in you application. Can
->>> you show use the related code?
->>>
->>> Wolfgang.
->> Here is the main function of the rx thread. This will be executed every
->> 1ms.
+>>> __u64 is the fix, using nanosecs*_t in uapi/ is wrong. So please merge
+>>> this fix, and we'll see how we can progress fixing other abuses.
 >>
->> void can_rx_run(rt_thread_data_t *rt_data) {
->>      can_thread_data_t *data = (can_thread_data_t *) rt_data->data;
->>      data->time++;
->>      static can_frame_t frame_buffer[RX_BUF_SZ];
->>      static can_frame_t *frame   = NULL;
->>      static can_bus_t *bus       = NULL;
->>      int bytes = 1, ret, buf_i = 0;
->>      uint32_t bus_idx = 0;
->>      if ((data->time > 10)&& (data->time%2)) {
->>          bytes       = 1;
->>          for (bus_idx = 0; bus_idx < data->n_buses; bus_idx++) {
->>              bus     = &data->buses[bus_idx];
->>              if(!bus->ready) continue;
->>              while (bytes > 0 && (buf_i<2)) {
->>                  frame   = &frame_buffer[buf_i];
->>                  memset(frame, 0, sizeof (*frame));
->>                  bytes   = rt_dev_recv(bus->socket, frame, sizeof
->> (*frame), MSG_DONTWAIT);
->>                  if (bytes < 0) {
->>                      if ((bytes != -ETIMEDOUT) && (bytes != -EAGAIN)) {
->>                          rtlog(data->log, data->time, LOG_TAG_ERROR,
->> "Connection ended unexpected ret %d errno %d", bytes);
->>                      }else{
->>                          bytes = 1;
->>                      }
->>                      break;
->>                  } else if (bytes == 0) {
->>                      rtlog(data->log, data->time, LOG_TAG_ERROR, "CAN Bus
->> Connection closed by peer");
->>                      break;
->>                  }
->>                  // move pointer forward for the next frame
->>                  buf_i = (buf_i + 1) % RX_BUF_SZ;
+>> Nope: Adjust nanosecs_*_t if it has a problem ([u]int64_t vs. __u/s64 -
+>> what's the problem exactly?), and use that. That will both address
+>> existing users and future ones. No special solution for the GPIO driver
+>> here.
 >>
->>                  log_frame(data->log, data->time, frame, bus_idx);
->>                  ret = check_frame_integrity(data->log, data->time, frame);
->>                  if (ret) {
->>                      rtlog(data->log, data->time, LOG_TAG_ERROR,
->>                            "Frame didn't pass integrity check %d", ret);
->>                      continue;
->>                  }
->>                  ret = process_frame(data->ipc_socket, frame, bus_idx);
->>                  if (ret < 0) {
->>                      rtlog(data->log, data->time, LOG_TAG_ERROR,
->>                            "failed to accept RX CAN frame %d from Node %u",
->>                            ret);
->>                  }
->>              }
->>          }
->>      }
->> }
-> And the code setting up the socket?
->
-> Wolfgang.
+> 
+> I'm not pushing for a GPIO-specific solution, I'm pushing for using
+> ABI-specific types which state their size explicitly in uapi/ data as
+> much as possible, which is safer with mixed ABI models and would have
+> spared me a lot of trouble back when I implemented the 32/64 ABI support
+> for Xenomai. nanosecs_* is originally a kernel-side type which slipped
+> in uapi/ structs, which does not state its size.
 
-static int set_bus_mode(can_bus_t* bus, int mode) {
-     uint32_t *new_mode = (can_mode_t *) &bus->device.ifr_ifru;
-     *new_mode = mode;
-     int res = rt_dev_ioctl(bus->socket, SIOCSCANMODE, &bus->device);
-     if(res) {
-         return CAN_BUS_INIT_ERROR_MODESET;
-     }
-     return 0;
-}
+No, it was designed and used for both side. I know best as I wrote and first 
+used that abstraction.
 
-void bus_shutdown (can_bus_t *bus) {
+> 
+> The fact that nanosecs_* is defined as uint64_t but the kernel today
+> does not address the issue at stake: there would be no obvious way to
+> detect that a discrepancy might exist with what userland expects once
+> such definition is modified for a different with if ever (which might be
+> highly unlikely for nanosecs, but could happen for other types).
 
-     set_bus_mode(bus, CAN_MODE_STOP);
+So the good news is that a) we do not have a problem today and b) we can safely 
+prevent any hypothetical future by changing the definition of nanosecs_*_t 
+towards __u64/__s64 backing. So, if you are concerned about the stability of 
+standard-int, let's switch to the kernel uapi types for nanosecs, use that also 
+for the GPIO ABI, and call it a day.
 
-     if (bus->socket < 0)
-         return;
+Jan
 
-     rt_dev_close (bus->socket);
-     bus->socket = -1;
-
-     printf("shutdown bus %d\n", bus->bus_index);
-     return;
-}
-
-int bus_init (can_bus_t *bus, const int BUS, const uint32_t BAUDRATE, 
-const int64_t TIMEOUT_SEND, const int64_t TIMEOUT_RECV) {
-     struct sockaddr_can addr;
-     bus->bus_index = BUS;
-     int res;
-     static unsigned int err_mask = CAN_ERR_MASK;
-     /*
-     static unsigned int err_mask =  CAN_ERR_CRTL         // Controller 
-Problems (see data[1])
-                                     | CAN_ERR_BUSOFF            // Bus Off
-                                     | CAN_ERR_RESTARTED     // 
-Controller Restarted
-                                     | CAN_ERR_TX_TIMEOUT    // TX 
-timeout (netdevice driver).
-                                     | CAN_ERR_LOSTARB           // Lost 
-arbitration (see data[0]).
-                                     | CAN_ERR_PROT        // Protocol 
-violations (see data[2], data[3]).
-                                     | CAN_ERR_TRX        // Transceiver 
-status (see data[4]).
-                                     | CAN_ERR_ACK        // Received no 
-ACK on transmission.
-                                     //| CAN_ERR_BUSERROR        // Bus 
-error (may flood!).
-                                     //| CAN_ERR_MASK            // All 
-error flags.
-                                     ;
-     */
-     // create socket
-     bus->socket = rt_dev_socket (PF_CAN, SOCK_RAW, CAN_RAW);
-     if (bus->socket < 0) {
-         printf("%s > failed to get socket %d\n",__func__, bus->socket);
-         return CAN_BUS_INIT_ERROR_RT_DEV_SOCKET;
-     }
-
-     // device index
-     snprintf (bus->device.ifr_ifrn.ifrn_name, IF_NAMESIZE, "rtcan%d", 
-bus->bus_index);
-     res = rt_dev_ioctl (bus->socket, SIOCGIFINDEX, &bus->device);
-     if (res) {
-         printf("%s > failed to set IF name %s error %d\n", __func__, 
-bus->device.ifr_ifrn.ifrn_name, res);
-         bus_shutdown (bus);
-         return CAN_BUS_INIT_ERROR_SIOCGIFINDEX;
-     }
-
-     // receive CAN error frames (also pseudo frames)
-     res = rt_dev_setsockopt (bus->socket, SOL_CAN_RAW, 
-CAN_RAW_ERR_FILTER, &err_mask, sizeof (err_mask));
-     if (res) {
-         bus_shutdown (bus);
-         return CAN_BUS_INIT_ERROR_SETSOCKOPT;
-     }
-
-     // bind recv
-     addr.can_family     = AF_CAN;
-     addr.can_ifindex    = bus->device.ifr_ifindex;
-     res = rt_dev_bind (bus->socket, (struct sockaddr *) &addr, sizeof 
-(addr));
-     if (res < 0) {
-         printf("%s > rt_dev_bind failed with %d\n", __func__, res);
-         bus_shutdown (bus);
-         return CAN_BUS_INIT_ERROR_BIND;
-     }
-
-     // baudrate
-     can_baudrate_t *baudrate = (can_baudrate_t *) &bus->device.ifr_ifru;
-     *baudrate = BAUDRATE;
-     res = rt_dev_ioctl (bus->socket, SIOCSCANBAUDRATE, &bus->device);
-     if (res) {
-         bus_shutdown (bus);
-         return CAN_BUS_INIT_ERROR_BAUDRATE;
-     }
-
-     // timeout send
-     if (TIMEOUT_SEND) {
-         res = rt_dev_ioctl (bus->socket, RTCAN_RTIOC_SND_TIMEOUT, 
-&TIMEOUT_SEND);
-         if (res) {
-             bus_shutdown (bus);
-             return CAN_BUS_INIT_ERROR_TIMEOUT_SEND;
-         }
-     }
-
-     // timeout recv
-     if (TIMEOUT_RECV) {
-         res = rt_dev_ioctl (bus->socket, RTCAN_RTIOC_RCV_TIMEOUT, 
-&TIMEOUT_RECV);
-         if (res) {
-             bus_shutdown (bus);
-             return CAN_BUS_INIT_ERROR_TIMEOUT_RECV;
-         }
-     }
-
-     bus->ready = true;
-     return set_bus_mode(bus, CAN_MODE_START);
-}
-
-
+-- 
+Siemens AG, Corporate Technology, CT RDA IOT SES-DE
+Corporate Competence Center Embedded Linux
 
