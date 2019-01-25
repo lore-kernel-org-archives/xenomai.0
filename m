@@ -1,18 +1,18 @@
+Subject: Re: [PATCH 02/12] drivers/gpio: provide optional timestamped readouts
+References: <20190124153428.21006-1-rpm@xenomai.org>
+ <20190124153428.21006-3-rpm@xenomai.org>
+ <4d1c39af-7a6f-1637-7727-ab6ad6d533c1@siemens.com>
+ <40b168af-98d1-955d-ff01-ae5e70113744@xenomai.org>
+ <bff391b7-e457-c91c-cf68-3229a4492e4d@siemens.com>
+ <197faf1a-c056-36fd-28ce-d8eee333b9cd@xenomai.org>
+From: Jan Kiszka <jan.kiszka@siemens.com>
+Message-ID: <214e962e-f725-f056-7153-7225b21a4112@siemens.com>
+Date: Fri, 25 Jan 2019 10:33:55 +0100
 MIME-Version: 1.0
-References: <mailman.3.1547809201.5156.xenomai@xenomai.org>
- <4ddd614.76d7.168751f9385.Coremail.kunzj@126.com>
- <CALLqZ8RZHCDBur7ewCKnKJXu9j4VOdeucgJchF9rKCC_oeGVWA@mail.gmail.com>
- <2a791fcc.20e9.16889759d7f.Coremail.kunzj@126.com>
- <CAOf5uwki6gaSPg=6zCOxHEvWh8X0mOORazXmNczazzmVD4U54g@mail.gmail.com>
- <41880ccc.22f4.168899ba6f6.Coremail.kunzj@126.com>
-In-Reply-To: <41880ccc.22f4.168899ba6f6.Coremail.kunzj@126.com>
-From: Michael Nazzareno Trimarchi <michael@amarulasolutions.com>
-Date: Sat, 26 Jan 2019 11:18:28 +0100
-Message-ID: <CAOf5uwn6GMtmDUj0O_zs5092ToX52APnKqqzax+jeJ19mhOFtQ@mail.gmail.com>
-Subject: Re: Re: Re: Help: System freeze when edge interrupt trigger,
- Xenomain3.0.8, ipipe-arm main line, am335x
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+In-Reply-To: <197faf1a-c056-36fd-28ce-d8eee333b9cd@xenomai.org>
+Content-Type: text/plain; charset="utf-8"; format="flowed"
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -21,152 +21,97 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: JackZhang <kunzj@126.com>
-Cc: Greg Gallagher <greg@embeddedgreg.com>, "Xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Philippe Gerum <rpm@xenomai.org>, xenomai@xenomai.org
 
-Hi JackZhang
+On 25.01.19 10:31, Philippe Gerum wrote:
+> On 1/25/19 10:23 AM, Jan Kiszka wrote:
+>> On 25.01.19 10:15, Philippe Gerum wrote:
+>>> On 1/24/19 7:17 PM, Jan Kiszka wrote:
+>>>> On 24.01.19 16:34, Philippe Gerum wrote:
+>>>>> In timestamping mode, read() returns the timestamp of the latest event
+>>>>> receipt on the pin based on CLOCK_MONOTONIC, along with the pin
+>>>>> state. This is an optional pin readout mode controlled by the
+>>>>> GPIO_RTIOC_TS request, e.g.:
+>>>>>
+>>>>> struct rtdm_gpio_readout rdo;
+>>>>> int ret, on, val;
+>>>>>
+>>>>> on = 1;
+>>>>> ret = ioctl(pinfd, GPIO_RTIOC_TS, &on);
+>>>>> ret = read(pinfd, &rdo, sizeof(rdo));
+>>>>> /* pin state changed to rdo.value at time rdo.timestamp */
+>>>>>
+>>>>> on = 0;
+>>>>> ret = ioctl(pinfd, GPIO_RTIOC_TS, &on);
+>>>>> ret = read(pinfd, &val, sizeof(val));
+>>>>> /* pin state changed to value (time of change unspecified) */
+>>>>>
+>>>>> By default, timestamping mode is disabled, which corresponds to the
+>>>>> original behavior.
+>>>>>
+>>>>> Signed-off-by: Philippe Gerum <rpm@xenomai.org>
+>>>>> ---
+>>>>>     include/cobalt/kernel/rtdm/gpio.h |  1 +
+>>>>>     include/rtdm/uapi/gpio.h          | 18 +++++++----
+>>>>>     kernel/drivers/gpio/gpio-core.c   | 54
+>>>>> +++++++++++++++++++++++--------
+>>>>>     3 files changed, 54 insertions(+), 19 deletions(-)
+>>>>>
+>>>>> diff --git a/include/cobalt/kernel/rtdm/gpio.h
+>>>>> b/include/cobalt/kernel/rtdm/gpio.h
+>>>>> index cdb472f8a..00055ec0a 100644
+>>>>> --- a/include/cobalt/kernel/rtdm/gpio.h
+>>>>> +++ b/include/cobalt/kernel/rtdm/gpio.h
+>>>>> @@ -33,6 +33,7 @@ struct rtdm_gpio_pin {
+>>>>>         rtdm_event_t event;
+>>>>>         char *name;
+>>>>>         struct gpio_desc *desc;
+>>>>> +    nanosecs_abs_t timestamp;
+>>>>>     };
+>>>>>       struct rtdm_gpio_chip {
+>>>>> diff --git a/include/rtdm/uapi/gpio.h b/include/rtdm/uapi/gpio.h
+>>>>> index b745f156c..ac14be66c 100644
+>>>>> --- a/include/rtdm/uapi/gpio.h
+>>>>> +++ b/include/rtdm/uapi/gpio.h
+>>>>> @@ -18,12 +18,18 @@
+>>>>>     #ifndef _RTDM_UAPI_GPIO_H
+>>>>>     #define _RTDM_UAPI_GPIO_H
+>>>>>     -#define GPIO_RTIOC_DIR_OUT        _IOW(RTDM_CLASS_GPIO, 0, int)
+>>>>> -#define GPIO_RTIOC_DIR_IN        _IO(RTDM_CLASS_GPIO, 1)
+>>>>> -#define GPIO_RTIOC_IRQEN        _IOW(RTDM_CLASS_GPIO, 2, int) /* GPIO
+>>>>> trigger */
+>>>>> -#define GPIO_RTIOC_IRQDIS        _IO(RTDM_CLASS_GPIO, 3)
+>>>>> -#define GPIO_RTIOC_REQS                _IO(RTDM_CLASS_GPIO, 4)
+>>>>> -#define GPIO_RTIOC_RELS                _IO(RTDM_CLASS_GPIO, 5)
+>>>>> +struct rtdm_gpio_readout {
+>>>>> +    __u64 timestamp;
+>>>>
+>>>> nanosecs_abs_t - we use this type also in to userspace interface.
+>>>>
+>>>
+>>> Nope. This is ABI stuff, nanosecs_abs_t is not guaranteed to have the
+>>> same size regardless of the ABI models, which is unsafe in mixed 32/64
+>>> model configurations. OTOH, __u64 is safe.
+>>
+>> If nanosecs_abs_t is alread an ABI, and it is used as such for a long
+>> time (see include/rtdm/uapi/serial.h). If you see a bug in its
+>> definition, that needs to be fixed. We should not resolve that by
+>> choosing open-coded local workarounds.
+>>
+> 
+> nanosecs_t is not defined in the Xenomai ABI, never has been. Using
+> nanosecs_t in structs actually abuses such ABI. So we may either keep
+> adding even more nanosecs, or fix the spots where it should be replaced
+> with __u64.
 
-On Sat, Jan 26, 2019 at 11:01 AM JackZhang <kunzj@126.com> wrote:
->
-> Thanks, Michael
-> I have kernel 4.1.18 + xenomai 3.0.6 works too, but can't work with ti's =
-drm drivers.
-> Ti's sdk[1] with own kernel based on 4.1.18, can not work with ipipe patc=
-h, and i it's
-> hard to solve the conflict.
->
-> Now, Ti's drm driver code is in the new kernel 4.14, so the best way is t=
-hat ipipe-arm
-> can work with the 4.14 kernel.
+Xenomai ABI includes the driver ABI - so your assumption might have been it's 
+not while it was de facto.
 
-What is you requirement? Running opengl qt application + realtime?
+Again, let's address the issue, not work around it.
 
-Michael
+Jan
 
->
-> [1]. http://processors.wiki.ti.com/index.php?title=3DProcessor_SDK_Linux_=
-Release_Notes&oldid=3D214754
->
-> At 2019-01-26 17:36:34, "Michael Nazzareno Trimarchi" <michael@amarulasol=
-utions.com> wrote:
->
-> >Hi Jack
-> >
-> >
-> >On Sat, Jan 26, 2019 at 10:20 AM JackZhang via Xenomai
-> ><xenomai@xenomai.org> wrote:
-> >>
-> >> Hi, Grep, thanks.
-> >>
-> >>
-> >>
-> >> >Have you tried this with the 4.9 or 4.4 kernel and ipipe patch? I
-> >> >think 4.4 (which is based on a SLTS) has been tested on beaglebone
-> >> >(similar processor). Did you mean kernel 4.14 not 3.14?
-> >>
-> >>   I mean kernel 4.14. Sorry for mistake.
-> >> >I think I've reproduced this on a Beaglebone which is based on a
-> >> >similar processor, I'll look into it this week.
-> >>   Thank you very much!
-> >
-> >I have 4.1.6 + xenomai 3.0.7 and seems that it works
-> >
-> >Michael
-> >
-> >>
-> >>
-> >> =E5=9C=A8 2019-01-22 23:18:03=EF=BC=8C"Greg Gallagher" <greg@embeddedg=
-reg.com> =E5=86=99=E9=81=93=EF=BC=9A
-> >> >On Tue, Jan 22, 2019 at 5:34 AM =E5=BC=A0=E5=BB=BA=E6=98=86 via Xenom=
-ai <xenomai@xenomai.org> wrote:
-> >> >>
-> >> >> Hello everyone, here is some new clues:
-> >> >> 1. I tried xenomai 3.0.8, kernel 3.14.17 and ipipe-core-4.14.71-arm=
--4.patch. Still the same question.
-> >> >
-> >> >Have you tried this with the 4.9 or 4.4 kernel and ipipe patch?  I
-> >> >think 4.4 (which is based on a SLTS) has been tested on beaglebone
-> >> >(similar processor). Did you mean kernel 4.14 not 3.14?
-> >> >
-> >> >> 2. It seems the system is locked up once a gpio interrupt is trigge=
-red.
-> >> >>
-> >> >> 3. Some debug information show that, once a gpio interrupt is trigg=
-ered, the function
-> >> >>
-> >> >>     'omap_gpio_irq_handler' is triggered all the time.
-> >> >I think I've reproduced this on a Beaglebone which is based on a
-> >> >similar processor, I'll look into it this week.
-> >> >
-> >> >> There may be a little bug exists, but i don't know how to amend it.=
- Thank you very much, if anyone can help.
-> >> >>
-> >> >
-> >> >-Greg
-> >> >> >------------------------------
-> >> >> >
-> >> >> >Message: 3
-> >> >> >Date: Fri, 18 Jan 2019 11:48:12 +0800 (CST)
-> >> >> >From: =E5=BC=A0=E5=BB=BA=E6=98=86 <kunzj@126.com>
-> >> >> >To: xenomai@xenomai.org
-> >> >> >Subject: Help: System freeze when edge interrupt trigger,
-> >> >> >       Xenomain3.0.8, ipipe-arm main line, am335x
-> >> >> >Message-ID: <55c89c76.3420.1685f12c488.Coremail.kunzj@126.com>
-> >> >> >Content-Type: text/plain; charset=3D"gbk"
-> >> >> >
-> >> >> >Hello!
-> >> >> >    The system freeze when interrupt is triggered. I clone ipipe-a=
-rm master, and use xenomai 3.0.8 following xenomai startup tutorial.
-> >> >> >The hardware cpu is am3358. System works fine after start up, but =
-the system immediately locks up when a edge interrupt. For example,
-> >> >> >the mmc card in pluged in. Is it something worng ? Thank you very =
-much!
-> >> >> >
-> >> >> >    The kernel config file and dts attached.
-> >> >> >
-> >> >> >
-> >> >> >-------------- next part --------------
-> >> >> >A non-text attachment was scrubbed...
-> >> >> >Name: .config
-> >> >> >Type: application/octet-stream
-> >> >> >Size: 129591 bytes
-> >> >> >Desc: not available
-> >> >> >URL: <http://xenomai.org/pipermail/xenomai/attachments/20190118/53=
-8175f9/attachment.obj>
-> >> >> >-------------- next part --------------
-> >> >> >A non-text attachment was scrubbed...
-> >> >> >Name: am335x-dnk-v1_LCD800x480_TM070RDH13.dts
-> >> >> >Type: application/octet-stream
-> >> >> >Size: 29436 bytes
-> >> >> >Desc: not available
-> >> >> >URL: <http://xenomai.org/pipermail/xenomai/attachments/20190118/53=
-8175f9/attachment-0001.obj>
-> >> >> >
-> >> >> >------------------------------
-> >> >> >
-> >> >> >Subject: Digest Footer
-> >> >> >
-> >> >> >
-> >> >> >
-> >> >> >
-> >> >> >------------------------------
-> >> >> >
-> >> >> >End of Xenomai Digest, Vol 81, Issue 17
-> >> >> >***************************************
-> >
-> >
-> >
-> >--
-> >| Michael Nazzareno Trimarchi                     Amarula Solutions BV |
-> >| COO  -  Founder                                      Cruquiuskade 47 |
-> >| +31(0)851119172                                 Amsterdam 1018 AM NL |
-> >|                  [`as] http://www.amarulasolutions.com               |
-
-
-
---=20
-| Michael Nazzareno Trimarchi                     Amarula Solutions BV |
-| COO  -  Founder                                      Cruquiuskade 47 |
-| +31(0)851119172                                 Amsterdam 1018 AM NL |
-|                  [`as] http://www.amarulasolutions.com               |
+-- 
+Siemens AG, Corporate Technology, CT RDA IOT SES-DE
+Corporate Competence Center Embedded Linux
 
