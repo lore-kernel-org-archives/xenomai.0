@@ -1,13 +1,12 @@
+Date: Sat, 26 Jan 2019 13:01:04 +0800 (CST)
+From: liang_1911  <liang_1911@163.com>
+Subject: Re:Xenomai Digest, Vol 81, Issue 19
+In-Reply-To: <mailman.1.1548154801.18919.xenomai@xenomai.org>
+References: <mailman.1.1548154801.18919.xenomai@xenomai.org>
 MIME-Version: 1.0
-References: <fe936315-6db1-d542-e80e-d4bc31d091d0@bluewin.ch>
- <CALLqZ8TNa2TAXxwnBVFu4SbxmuspWQWhsUOWw319eW=Crf_Uhg@mail.gmail.com>
- <37e844bb-f50d-115f-fe63-1526119114f8@bluewin.ch>
-In-Reply-To: <37e844bb-f50d-115f-fe63-1526119114f8@bluewin.ch>
-From: Greg Gallagher <greg@embeddedgreg.com>
-Date: Thu, 21 Feb 2019 09:31:28 -0500
-Message-ID: <CALLqZ8QzAOYVyOuHODez1z9nckgQD01kQJRtkSA5q3h0jUxW-w@mail.gmail.com>
-Subject: Re: NXP i.MX RT support
-Content-Type: text/plain; charset="UTF-8"
+Message-ID: <2af28b92.3f7c.16888885ce4.Coremail.liang_1911@163.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: base64
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,56 +15,68 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Stephan Brauss <sbrauss@bluewin.ch>
-Cc: "Xenomai@xenomai.org" <xenomai@xenomai.org>
+To: xenomai@xenomai.org
 
-Hi,
-  So the imx series has good support in Xenomai.  I have tested
-Xenomai on the imx7d, with good results.  I have some unpublished work
-for pwm and a couple other drivers that I'm hoping to publish soon as
-well. There's also a lot of people who have used Xenomai on the i.mx6
-series with good results as well.  There's lots of information in the
-mailing list archive on common bugs people have run into.
-
--Greg
-
-On Thu, Feb 21, 2019 at 2:33 AM Stephan Brauss via Xenomai
-<xenomai@xenomai.org> wrote:
->
-> Hi!
->
-> I'm still in the process of finding the best suited device for my needs
-> (already or nearly ported Linux/Xenomai, "some MCU features" (GPIO, CAN,
-> ADC, if possible PWM), graphics core with "good" 2D speed, <10$).
-> Am I right that the support of the i.MX6 family only means the Corted-A9
-> based devices? - NXP offers also an i.MX6ULL that probably would also be
-> a good choice for me, but this is Corted-A7 based and is also different
-> in many other aspects.
->
-> Thanks & best regards,
-> Stephan
->
->
->
-> Am 20.02.2019 um 17:25 schrieb Greg Gallagher:
-> > As far as I know Xenomai hasn't run on the Cortex-M series processors.
-> > Having said that I've seen some presentations about getting Linux to
-> > run on the larger M7 and M4 cores so it's possible you could try to
-> > get Xenomai to run.
-> >
-> > -Greg
-> >
-> > On Wed, Feb 20, 2019 at 3:16 AM Stephan Brauss via Xenomai
-> > <xenomai@xenomai.org> wrote:
-> >>
-> >> Hi!
-> >>
-> >> I have not found it in the list of supported devices, but maybe someone
-> >> has already experiences with the NXP i.MX RT? - It has an Arm Cortex-M7
-> >> core.
-> >>
-> >> Thanks & best regards,
-> >> Stephan
-> >>
->
-
+SGksIEppYW5LdW4KSG93IGRvIHlvdSByZWdpc3RlciB0aGUgIGlycSBoYW5kbGVyPwpZb3UgY2Fu
+IHJlZmVyIHRvIHRoaXMgbGluazoKYmJi5p2/5a2QeGVub21haSBHUElPIGlycempseWKqOWHuueO
+sOW8guW4uCAtIFNpdGFyYeKEoiBDb3J0ZXgtQTgg5ZKMIEFSTTkg5b6u5aSE55CG5ZmoIC0gU2l0
+YXJh4oSiIENvcnRleC1BOCDlkowgQVJNOSDlvq7lpITnkIblmaggLSBUSSBFMkXihKIg5Lit5paH
+56S+5Yy6CgoKLS0KCi0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0t
+LS0KICAgICAgICAgUXVhbgpUSEFOS1MgJiBCUiEKCgoKCgpBdCAyMDE5LTAxLTIyIDE5OjAwOjAx
+LCB4ZW5vbWFpLXJlcXVlc3RAeGVub21haS5vcmcgd3JvdGU6Cj5TZW5kIFhlbm9tYWkgbWFpbGlu
+ZyBsaXN0IHN1Ym1pc3Npb25zIHRvCj4JeGVub21haUB4ZW5vbWFpLm9yZwo+Cj5UbyBzdWJzY3Jp
+YmUgb3IgdW5zdWJzY3JpYmUgdmlhIHRoZSBXb3JsZCBXaWRlIFdlYiwgdmlzaXQKPglodHRwczov
+L3hlbm9tYWkub3JnL21haWxtYW4vbGlzdGluZm8veGVub21haQo+b3IsIHZpYSBlbWFpbCwgc2Vu
+ZCBhIG1lc3NhZ2Ugd2l0aCBzdWJqZWN0IG9yIGJvZHkgJ2hlbHAnIHRvCj4JeGVub21haS1yZXF1
+ZXN0QHhlbm9tYWkub3JnCj4KPllvdSBjYW4gcmVhY2ggdGhlIHBlcnNvbiBtYW5hZ2luZyB0aGUg
+bGlzdCBhdAo+CXhlbm9tYWktb3duZXJAeGVub21haS5vcmcKPgo+V2hlbiByZXBseWluZywgcGxl
+YXNlIGVkaXQgeW91ciBTdWJqZWN0IGxpbmUgc28gaXQgaXMgbW9yZSBzcGVjaWZpYwo+dGhhbiAi
+UmU6IENvbnRlbnRzIG9mIFhlbm9tYWkgZGlnZXN0Li4uIgo+Cj4KPlRvZGF5J3MgVG9waWNzOgo+
+Cj4gICAxLiBSZTpIZWxwOiBTeXN0ZW0gZnJlZXplIHdoZW4gZWRnZSBpbnRlcnJ1cHQgdHJpZ2dl
+ciwKPiAgICAgIFhlbm9tYWluMy4wLjgsIGlwaXBlLWFybSBtYWluIGxpbmUsIGFtMzM1eCAo5byg
+5bu65piGKQo+Cj4KPi0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0t
+LS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0KPgo+TWVzc2FnZTogMQo+RGF0ZTogVHVlLCAyMiBK
+YW4gMjAxOSAxODozMzo1MCArMDgwMCAoQ1NUKQo+RnJvbTog5byg5bu65piGIDxrdW56akAxMjYu
+Y29tPgo+VG86IHhlbm9tYWlAeGVub21haS5vcmcKPlN1YmplY3Q6IFJlOkhlbHA6IFN5c3RlbSBm
+cmVlemUgd2hlbiBlZGdlIGludGVycnVwdCB0cmlnZ2VyLAo+CVhlbm9tYWluMy4wLjgsIGlwaXBl
+LWFybSBtYWluIGxpbmUsIGFtMzM1eAo+TWVzc2FnZS1JRDogPDRkZGQ2MTQuNzZkNy4xNjg3NTFm
+OTM4NS5Db3JlbWFpbC5rdW56akAxMjYuY29tPgo+Q29udGVudC1UeXBlOiB0ZXh0L3BsYWluOyBj
+aGFyc2V0PUdCSwo+Cj5IZWxsbyBldmVyeW9uZSwgaGVyZSBpcyBzb21lIG5ldyBjbHVlczoKPjEu
+IEkgdHJpZWQgeGVub21haSAzLjAuOCwga2VybmVsIDMuMTQuMTcgYW5kIGlwaXBlLWNvcmUtNC4x
+NC43MS1hcm0tNC5wYXRjaC4gU3RpbGwgdGhlIHNhbWUgcXVlc3Rpb24uCj4KPjIuIEl0IHNlZW1z
+IHRoZSBzeXN0ZW0gaXMgbG9ja2VkIHVwIG9uY2UgYSBncGlvIGludGVycnVwdCBpcyB0cmlnZ2Vy
+ZWQuCj4KPjMuIFNvbWUgZGVidWcgaW5mb3JtYXRpb24gc2hvdyB0aGF0LCBvbmNlIGEgZ3BpbyBp
+bnRlcnJ1cHQgaXMgdHJpZ2dlcmVkLCB0aGUgZnVuY3Rpb24KPgo+ICAgICdvbWFwX2dwaW9faXJx
+X2hhbmRsZXInIGlzIHRyaWdnZXJlZCBhbGwgdGhlIHRpbWUuCj4KPlRoZXJlIG1heSBiZSBhIGxp
+dHRsZSBidWcgZXhpc3RzLCBidXQgaSBkb24ndCBrbm93IGhvdyB0byBhbWVuZCBpdC4gVGhhbmsg
+eW91IHZlcnkgbXVjaCwgaWYgYW55b25lIGNhbiBoZWxwLgo+Cj4+LS0tLS0tLS0tLS0tLS0tLS0t
+LS0tLS0tLS0tLS0tCj4+Cj4+TWVzc2FnZTogMwo+PkRhdGU6IEZyaSwgMTggSmFuIDIwMTkgMTE6
+NDg6MTIgKzA4MDAgKENTVCkKPj5Gcm9tOiDlvKDlu7rmmIYgPGt1bnpqQDEyNi5jb20+Cj4+VG86
+IHhlbm9tYWlAeGVub21haS5vcmcKPj5TdWJqZWN0OiBIZWxwOiBTeXN0ZW0gZnJlZXplIHdoZW4g
+ZWRnZSBpbnRlcnJ1cHQgdHJpZ2dlciwKPj4JWGVub21haW4zLjAuOCwgaXBpcGUtYXJtIG1haW4g
+bGluZSwgYW0zMzV4Cj4+TWVzc2FnZS1JRDogPDU1Yzg5Yzc2LjM0MjAuMTY4NWYxMmM0ODguQ29y
+ZW1haWwua3VuempAMTI2LmNvbT4KPj5Db250ZW50LVR5cGU6IHRleHQvcGxhaW47IGNoYXJzZXQ9
+ImdiayIKPj4KPj5IZWxsbyEKPj4gICAgVGhlIHN5c3RlbSBmcmVlemUgd2hlbiBpbnRlcnJ1cHQg
+aXMgdHJpZ2dlcmVkLiBJIGNsb25lIGlwaXBlLWFybSBtYXN0ZXIsIGFuZCB1c2UgeGVub21haSAz
+LjAuOCBmb2xsb3dpbmcgeGVub21haSBzdGFydHVwIHR1dG9yaWFsLgo+PlRoZSBoYXJkd2FyZSBj
+cHUgaXMgYW0zMzU4LiBTeXN0ZW0gd29ya3MgZmluZSBhZnRlciBzdGFydCB1cCwgYnV0IHRoZSBz
+eXN0ZW0gaW1tZWRpYXRlbHkgbG9ja3MgdXAgd2hlbiBhIGVkZ2UgaW50ZXJydXB0LiBGb3IgZXhh
+bXBsZSwKPj50aGUgbW1jIGNhcmQgaW4gcGx1Z2VkIGluLiBJcyBpdCBzb21ldGhpbmcgd29ybmcg
+PyBUaGFuayB5b3UgdmVyeSBtdWNoIQo+Pgo+PiAgICBUaGUga2VybmVsIGNvbmZpZyBmaWxlIGFu
+ZCBkdHMgYXR0YWNoZWQuCj4+Cj4+Cj4+LS0tLS0tLS0tLS0tLS0gbmV4dCBwYXJ0IC0tLS0tLS0t
+LS0tLS0tCj4+QSBub24tdGV4dCBhdHRhY2htZW50IHdhcyBzY3J1YmJlZC4uLgo+Pk5hbWU6IC5j
+b25maWcKPj5UeXBlOiBhcHBsaWNhdGlvbi9vY3RldC1zdHJlYW0KPj5TaXplOiAxMjk1OTEgYnl0
+ZXMKPj5EZXNjOiBub3QgYXZhaWxhYmxlCj4+VVJMOiA8aHR0cDovL3hlbm9tYWkub3JnL3BpcGVy
+bWFpbC94ZW5vbWFpL2F0dGFjaG1lbnRzLzIwMTkwMTE4LzUzODE3NWY5L2F0dGFjaG1lbnQub2Jq
+Pgo+Pi0tLS0tLS0tLS0tLS0tIG5leHQgcGFydCAtLS0tLS0tLS0tLS0tLQo+PkEgbm9uLXRleHQg
+YXR0YWNobWVudCB3YXMgc2NydWJiZWQuLi4KPj5OYW1lOiBhbTMzNXgtZG5rLXYxX0xDRDgwMHg0
+ODBfVE0wNzBSREgxMy5kdHMKPj5UeXBlOiBhcHBsaWNhdGlvbi9vY3RldC1zdHJlYW0KPj5TaXpl
+OiAyOTQzNiBieXRlcwo+PkRlc2M6IG5vdCBhdmFpbGFibGUKPj5VUkw6IDxodHRwOi8veGVub21h
+aS5vcmcvcGlwZXJtYWlsL3hlbm9tYWkvYXR0YWNobWVudHMvMjAxOTAxMTgvNTM4MTc1ZjkvYXR0
+YWNobWVudC0wMDAxLm9iaj4KPj4KPj4tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0KPj4K
+Pj5TdWJqZWN0OiBEaWdlc3QgRm9vdGVyCj4+Cj4+Cj4+Cj4+Cj4+LS0tLS0tLS0tLS0tLS0tLS0t
+LS0tLS0tLS0tLS0tCj4+Cj4+RW5kIG9mIFhlbm9tYWkgRGlnZXN0LCBWb2wgODEsIElzc3VlIDE3
+Cj4+KioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqCj4KPi0tLS0tLS0tLS0t
+LS0tLS0tLS0tLS0tLS0tLS0tLQo+Cj5TdWJqZWN0OiBEaWdlc3QgRm9vdGVyCj4KPgo+Cj4KPi0t
+LS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLQo+Cj5FbmQgb2YgWGVub21haSBEaWdlc3QsIFZv
+bCA4MSwgSXNzdWUgMTkKPioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKgo=
