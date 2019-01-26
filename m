@@ -1,14 +1,17 @@
-Subject: Re: Clean up noarch ipipe queue
-References: <b5b40eb8-2add-fa43-3d17-70d111362ab9@siemens.com>
- <cf910c00-0686-5321-32fb-0bc0561e0dd7@xenomai.org>
-From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <8c926e3b-f7f6-2db9-5b4a-5aee5108f0f4@siemens.com>
-Date: Thu, 28 Feb 2019 09:50:44 +0100
+Date: Sat, 26 Jan 2019 18:01:45 +0800 (CST)
+From: JackZhang  <kunzj@126.com>
+Subject: Re:Re: Re: Help: System freeze when edge interrupt trigger,
+ Xenomain3.0.8, ipipe-arm main line, am335x
+In-Reply-To: <CAOf5uwki6gaSPg=6zCOxHEvWh8X0mOORazXmNczazzmVD4U54g@mail.gmail.com>
+References: <mailman.3.1547809201.5156.xenomai@xenomai.org>
+ <4ddd614.76d7.168751f9385.Coremail.kunzj@126.com>
+ <CALLqZ8RZHCDBur7ewCKnKJXu9j4VOdeucgJchF9rKCC_oeGVWA@mail.gmail.com>
+ <2a791fcc.20e9.16889759d7f.Coremail.kunzj@126.com>
+ <CAOf5uwki6gaSPg=6zCOxHEvWh8X0mOORazXmNczazzmVD4U54g@mail.gmail.com>
 MIME-Version: 1.0
-In-Reply-To: <cf910c00-0686-5321-32fb-0bc0561e0dd7@xenomai.org>
-Content-Type: text/plain; charset="utf-8"; format="flowed"
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+Message-ID: <41880ccc.22f4.168899ba6f6.Coremail.kunzj@126.com>
+Content-Type: text/plain; charset=GBK
+Content-Transfer-Encoding: base64
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,41 +20,81 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Philippe Gerum <rpm@xenomai.org>
-Cc: Xenomai <xenomai@xenomai.org>
+To: Michael Nazzareno Trimarchi <michael@amarulasolutions.com>
+Cc: Greg Gallagher <greg@embeddedgreg.com>, "Xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On 27.02.19 09:13, Philippe Gerum wrote:
-> On 2/27/19 7:21 AM, Jan Kiszka wrote:
->> Hi Philippe,
->>
->> I started to revert the patches in the x86 tree that are touching
->> arch/arm. One fragment may be reverted for everyone:
->>> --- a/arch/arm/include/asm/arch_timer.h
->> +++ b/arch/arm/include/asm/arch_timer.h
->> @@ -106,10 +106,6 @@ static inline u32 arch_timer_get_cntkctl(void)
->>
->>   static inline void arch_timer_set_cntkctl(u32 cntkctl)
->>   {
->> -#ifdef CONFIG_IPIPE
->> -    /* Enable access to user-space (may not be needed) */
->> -    cntkctl |= ARCH_TIMER_USR_PCT_ACCESS_EN;
->> -#endif
->>       asm volatile("mcr p15, 0, %0, c14, c1, 0" : : "r" (cntkctl));
->>   }
->>
->>
->> Or are we exploiting user space access?
-> 
-> We are, for reading the timer counter directly via a memory mapping on
-> arm and arm64. This is a prerequisite for the ipipe_tsc abstraction on
-> these archs.
-
-OK, then I will sent a revert of this hunk for noarch and a patch re-adding this 
-to the ARM tree with this explanation.
-
-Jan
-
--- 
-Siemens AG, Corporate Technology, CT RDA IOT SES-DE
-Corporate Competence Center Embedded Linux
-
+VGhhbmtzLCBNaWNoYWVsCkkgaGF2ZSBrZXJuZWwgNC4xLjE4ICsgeGVub21haSAzLjAuNiB3b3Jr
+cyB0b28sIGJ1dCBjYW4ndCB3b3JrIHdpdGggdGkncyBkcm0gZHJpdmVycy4KVGkncyBzZGtbMV0g
+d2l0aCBvd24ga2VybmVsIGJhc2VkIG9uIDQuMS4xOCwgY2FuIG5vdCB3b3JrIHdpdGggaXBpcGUg
+cGF0Y2gsIGFuZCBpIGl0J3MKaGFyZCB0byBzb2x2ZSB0aGUgY29uZmxpY3QuCgoKTm93LCBUaSdz
+IGRybSBkcml2ZXIgY29kZSBpcyBpbiB0aGUgbmV3IGtlcm5lbCA0LjE0LCBzbyB0aGUgYmVzdCB3
+YXkgaXMgdGhhdCBpcGlwZS1hcm0KY2FuIHdvcmsgd2l0aCB0aGUgNC4xNCBrZXJuZWwuCgoKWzFd
+LiBodHRwOi8vcHJvY2Vzc29ycy53aWtpLnRpLmNvbS9pbmRleC5waHA/dGl0bGU9UHJvY2Vzc29y
+X1NES19MaW51eF9SZWxlYXNlX05vdGVzJm9sZGlkPTIxNDc1NAoKCgpBdCAyMDE5LTAxLTI2IDE3
+OjM2OjM0LCAiTWljaGFlbCBOYXp6YXJlbm8gVHJpbWFyY2hpIiA8bWljaGFlbEBhbWFydWxhc29s
+dXRpb25zLmNvbT4gd3JvdGU6Cj5IaSBKYWNrCj4KPgo+T24gU2F0LCBKYW4gMjYsIDIwMTkgYXQg
+MTA6MjAgQU0gSmFja1poYW5nIHZpYSBYZW5vbWFpCj48eGVub21haUB4ZW5vbWFpLm9yZz4gd3Jv
+dGU6Cj4+Cj4+IEhpLCBHcmVwLCB0aGFua3MuCj4+Cj4+Cj4+Cj4+ID5IYXZlIHlvdSB0cmllZCB0
+aGlzIHdpdGggdGhlIDQuOSBvciA0LjQga2VybmVsIGFuZCBpcGlwZSBwYXRjaD8gSQo+PiA+dGhp
+bmsgNC40ICh3aGljaCBpcyBiYXNlZCBvbiBhIFNMVFMpIGhhcyBiZWVuIHRlc3RlZCBvbiBiZWFn
+bGVib25lCj4+ID4oc2ltaWxhciBwcm9jZXNzb3IpLiBEaWQgeW91IG1lYW4ga2VybmVsIDQuMTQg
+bm90IDMuMTQ/Cj4+Cj4+ICAgSSBtZWFuIGtlcm5lbCA0LjE0LiBTb3JyeSBmb3IgbWlzdGFrZS4K
+Pj4gPkkgdGhpbmsgSSd2ZSByZXByb2R1Y2VkIHRoaXMgb24gYSBCZWFnbGVib25lIHdoaWNoIGlz
+IGJhc2VkIG9uIGEKPj4gPnNpbWlsYXIgcHJvY2Vzc29yLCBJJ2xsIGxvb2sgaW50byBpdCB0aGlz
+IHdlZWsuCj4+ICAgVGhhbmsgeW91IHZlcnkgbXVjaCEKPgo+SSBoYXZlIDQuMS42ICsgeGVub21h
+aSAzLjAuNyBhbmQgc2VlbXMgdGhhdCBpdCB3b3Jrcwo+Cj5NaWNoYWVsCj4KPj4KPj4KPj4g1Nog
+MjAxOS0wMS0yMiAyMzoxODowM6OsIkdyZWcgR2FsbGFnaGVyIiA8Z3JlZ0BlbWJlZGRlZGdyZWcu
+Y29tPiDQtLXAo7oKPj4gPk9uIFR1ZSwgSmFuIDIyLCAyMDE5IGF0IDU6MzQgQU0g1cW9qMClIHZp
+YSBYZW5vbWFpIDx4ZW5vbWFpQHhlbm9tYWkub3JnPiB3cm90ZToKPj4gPj4KPj4gPj4gSGVsbG8g
+ZXZlcnlvbmUsIGhlcmUgaXMgc29tZSBuZXcgY2x1ZXM6Cj4+ID4+IDEuIEkgdHJpZWQgeGVub21h
+aSAzLjAuOCwga2VybmVsIDMuMTQuMTcgYW5kIGlwaXBlLWNvcmUtNC4xNC43MS1hcm0tNC5wYXRj
+aC4gU3RpbGwgdGhlIHNhbWUgcXVlc3Rpb24uCj4+ID4KPj4gPkhhdmUgeW91IHRyaWVkIHRoaXMg
+d2l0aCB0aGUgNC45IG9yIDQuNCBrZXJuZWwgYW5kIGlwaXBlIHBhdGNoPyAgSQo+PiA+dGhpbmsg
+NC40ICh3aGljaCBpcyBiYXNlZCBvbiBhIFNMVFMpIGhhcyBiZWVuIHRlc3RlZCBvbiBiZWFnbGVi
+b25lCj4+ID4oc2ltaWxhciBwcm9jZXNzb3IpLiBEaWQgeW91IG1lYW4ga2VybmVsIDQuMTQgbm90
+IDMuMTQ/Cj4+ID4KPj4gPj4gMi4gSXQgc2VlbXMgdGhlIHN5c3RlbSBpcyBsb2NrZWQgdXAgb25j
+ZSBhIGdwaW8gaW50ZXJydXB0IGlzIHRyaWdnZXJlZC4KPj4gPj4KPj4gPj4gMy4gU29tZSBkZWJ1
+ZyBpbmZvcm1hdGlvbiBzaG93IHRoYXQsIG9uY2UgYSBncGlvIGludGVycnVwdCBpcyB0cmlnZ2Vy
+ZWQsIHRoZSBmdW5jdGlvbgo+PiA+Pgo+PiA+PiAgICAgJ29tYXBfZ3Bpb19pcnFfaGFuZGxlcicg
+aXMgdHJpZ2dlcmVkIGFsbCB0aGUgdGltZS4KPj4gPkkgdGhpbmsgSSd2ZSByZXByb2R1Y2VkIHRo
+aXMgb24gYSBCZWFnbGVib25lIHdoaWNoIGlzIGJhc2VkIG9uIGEKPj4gPnNpbWlsYXIgcHJvY2Vz
+c29yLCBJJ2xsIGxvb2sgaW50byBpdCB0aGlzIHdlZWsuCj4+ID4KPj4gPj4gVGhlcmUgbWF5IGJl
+IGEgbGl0dGxlIGJ1ZyBleGlzdHMsIGJ1dCBpIGRvbid0IGtub3cgaG93IHRvIGFtZW5kIGl0LiBU
+aGFuayB5b3UgdmVyeSBtdWNoLCBpZiBhbnlvbmUgY2FuIGhlbHAuCj4+ID4+Cj4+ID4KPj4gPi1H
+cmVnCj4+ID4+ID4tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0KPj4gPj4gPgo+PiA+PiA+
+TWVzc2FnZTogMwo+PiA+PiA+RGF0ZTogRnJpLCAxOCBKYW4gMjAxOSAxMTo0ODoxMiArMDgwMCAo
+Q1NUKQo+PiA+PiA+RnJvbTog1cW9qMClIDxrdW56akAxMjYuY29tPgo+PiA+PiA+VG86IHhlbm9t
+YWlAeGVub21haS5vcmcKPj4gPj4gPlN1YmplY3Q6IEhlbHA6IFN5c3RlbSBmcmVlemUgd2hlbiBl
+ZGdlIGludGVycnVwdCB0cmlnZ2VyLAo+PiA+PiA+ICAgICAgIFhlbm9tYWluMy4wLjgsIGlwaXBl
+LWFybSBtYWluIGxpbmUsIGFtMzM1eAo+PiA+PiA+TWVzc2FnZS1JRDogPDU1Yzg5Yzc2LjM0MjAu
+MTY4NWYxMmM0ODguQ29yZW1haWwua3VuempAMTI2LmNvbT4KPj4gPj4gPkNvbnRlbnQtVHlwZTog
+dGV4dC9wbGFpbjsgY2hhcnNldD0iZ2JrIgo+PiA+PiA+Cj4+ID4+ID5IZWxsbyEKPj4gPj4gPiAg
+ICBUaGUgc3lzdGVtIGZyZWV6ZSB3aGVuIGludGVycnVwdCBpcyB0cmlnZ2VyZWQuIEkgY2xvbmUg
+aXBpcGUtYXJtIG1hc3RlciwgYW5kIHVzZSB4ZW5vbWFpIDMuMC44IGZvbGxvd2luZyB4ZW5vbWFp
+IHN0YXJ0dXAgdHV0b3JpYWwuCj4+ID4+ID5UaGUgaGFyZHdhcmUgY3B1IGlzIGFtMzM1OC4gU3lz
+dGVtIHdvcmtzIGZpbmUgYWZ0ZXIgc3RhcnQgdXAsIGJ1dCB0aGUgc3lzdGVtIGltbWVkaWF0ZWx5
+IGxvY2tzIHVwIHdoZW4gYSBlZGdlIGludGVycnVwdC4gRm9yIGV4YW1wbGUsCj4+ID4+ID50aGUg
+bW1jIGNhcmQgaW4gcGx1Z2VkIGluLiBJcyBpdCBzb21ldGhpbmcgd29ybmcgPyBUaGFuayB5b3Ug
+dmVyeSBtdWNoIQo+PiA+PiA+Cj4+ID4+ID4gICAgVGhlIGtlcm5lbCBjb25maWcgZmlsZSBhbmQg
+ZHRzIGF0dGFjaGVkLgo+PiA+PiA+Cj4+ID4+ID4KPj4gPj4gPi0tLS0tLS0tLS0tLS0tIG5leHQg
+cGFydCAtLS0tLS0tLS0tLS0tLQo+PiA+PiA+QSBub24tdGV4dCBhdHRhY2htZW50IHdhcyBzY3J1
+YmJlZC4uLgo+PiA+PiA+TmFtZTogLmNvbmZpZwo+PiA+PiA+VHlwZTogYXBwbGljYXRpb24vb2N0
+ZXQtc3RyZWFtCj4+ID4+ID5TaXplOiAxMjk1OTEgYnl0ZXMKPj4gPj4gPkRlc2M6IG5vdCBhdmFp
+bGFibGUKPj4gPj4gPlVSTDogPGh0dHA6Ly94ZW5vbWFpLm9yZy9waXBlcm1haWwveGVub21haS9h
+dHRhY2htZW50cy8yMDE5MDExOC81MzgxNzVmOS9hdHRhY2htZW50Lm9iaj4KPj4gPj4gPi0tLS0t
+LS0tLS0tLS0tIG5leHQgcGFydCAtLS0tLS0tLS0tLS0tLQo+PiA+PiA+QSBub24tdGV4dCBhdHRh
+Y2htZW50IHdhcyBzY3J1YmJlZC4uLgo+PiA+PiA+TmFtZTogYW0zMzV4LWRuay12MV9MQ0Q4MDB4
+NDgwX1RNMDcwUkRIMTMuZHRzCj4+ID4+ID5UeXBlOiBhcHBsaWNhdGlvbi9vY3RldC1zdHJlYW0K
+Pj4gPj4gPlNpemU6IDI5NDM2IGJ5dGVzCj4+ID4+ID5EZXNjOiBub3QgYXZhaWxhYmxlCj4+ID4+
+ID5VUkw6IDxodHRwOi8veGVub21haS5vcmcvcGlwZXJtYWlsL3hlbm9tYWkvYXR0YWNobWVudHMv
+MjAxOTAxMTgvNTM4MTc1ZjkvYXR0YWNobWVudC0wMDAxLm9iaj4KPj4gPj4gPgo+PiA+PiA+LS0t
+LS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tCj4+ID4+ID4KPj4gPj4gPlN1YmplY3Q6IERpZ2Vz
+dCBGb290ZXIKPj4gPj4gPgo+PiA+PiA+Cj4+ID4+ID4KPj4gPj4gPgo+PiA+PiA+LS0tLS0tLS0t
+LS0tLS0tLS0tLS0tLS0tLS0tLS0tCj4+ID4+ID4KPj4gPj4gPkVuZCBvZiBYZW5vbWFpIERpZ2Vz
+dCwgVm9sIDgxLCBJc3N1ZSAxNwo+PiA+PiA+KioqKioqKioqKioqKioqKioqKioqKioqKioqKioq
+KioqKioqKioqCj4KPgo+Cj4tLSAKPnwgTWljaGFlbCBOYXp6YXJlbm8gVHJpbWFyY2hpICAgICAg
+ICAgICAgICAgICAgICAgQW1hcnVsYSBTb2x1dGlvbnMgQlYgfAo+fCBDT08gIC0gIEZvdW5kZXIg
+ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIENydXF1aXVza2FkZSA0NyB8Cj58
+ICszMSgwKTg1MTExOTE3MiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIEFtc3RlcmRh
+bSAxMDE4IEFNIE5MIHwKPnwgICAgICAgICAgICAgICAgICBbYGFzXSBodHRwOi8vd3d3LmFtYXJ1
+bGFzb2x1dGlvbnMuY29tICAgICAgICAgICAgICAgfAo=
