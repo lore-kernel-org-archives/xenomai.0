@@ -1,11 +1,14 @@
-From: Philippe Gerum <rpm@xenomai.org>
-Subject: Re: PCI UDD Questions
-References: <MQAHYHsv-KztU7kmKMe1zEyj1YMioxUAHWXO8cjixmGgcY0FuEcPL73Bj0NZxsH9mlyrmGJ1rhAWMr7ii-ErIRz9qSqRXvnyBibYa3AZSAE=@codecraftsmen.org>
-Message-ID: <ecf0bf08-f93e-3c67-a71e-fb25d683930c@xenomai.org>
-Date: Wed, 6 Mar 2019 12:24:29 +0100
+Subject: Re: [I-PIPE] ipipe-core-4.14.89-x86-2 released
+References: <E1gaKub-0002DE-4r@xenomai.org>
+ <1368965303.3936165.1545600892860@mail.yahoo.com>
+ <91ae88c0-4fb5-9e98-e08b-669ffe607bd1@xenomai.org>
+ <7d356b91-90bb-ddd1-30a4-9b52ac362e62@web.de>
+From: Jan Kiszka <jan.kiszka@siemens.com>
+Message-ID: <123395f3-a80e-c883-3fea-f3a6a5c39ed5@siemens.com>
+Date: Mon, 28 Jan 2019 12:22:17 +0100
 MIME-Version: 1.0
-In-Reply-To: <MQAHYHsv-KztU7kmKMe1zEyj1YMioxUAHWXO8cjixmGgcY0FuEcPL73Bj0NZxsH9mlyrmGJ1rhAWMr7ii-ErIRz9qSqRXvnyBibYa3AZSAE=@codecraftsmen.org>
-Content-Type: text/plain; charset=utf-8
+In-Reply-To: <7d356b91-90bb-ddd1-30a4-9b52ac362e62@web.de>
+Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
@@ -16,76 +19,42 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jeff Webb <w1@codecraftsmen.org>, "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Philippe Gerum <rpm@xenomai.org>, Alec Ari <neotheuser@ymail.com>, "xenomai@xenomai.org" <xenomai@xenomai.org>, Henning Schild <henning.schild@siemens.com>
 
-On 3/2/19 1:25 PM, Jeff Webb via Xenomai wrote:
-> I would like to write a generic UDD mini-driver that handles interrupts from a PCI card like uio_pci_generic does using the UIO framework.
+On 27.12.18 17:17, Jan Kiszka via Xenomai wrote:
+> On 24.12.18 11:06, Philippe Gerum via Xenomai wrote:
+>> On 12/23/18 10:34 PM, Alec Ari via Xenomai wrote:
+>>> Hello,
+>>>
+>>>
+>>> I'm not sure if the patch generator was believed to be fixed yet or not, but 
+>>> files for other arches (arch/arm/include/asm/arch_timer.h) are still 
+>>> included. If this still being worked on, disregard this message.
+>>>
+>>>
+>>
+>> The upstream tree at https://gitlab.denx.de/Xenomai/ipipe-x86 still
+>> exports I-pipe bits for multiple architectures (at least for x86 and
+>> arm) but does not include scripts/ipipe/genpatches.sh, so the generator
+>> does a plain diff, assuming a single-arch tree.
+>>
+>> The ARM bits are likely left-overs and should be dropped to fix the tree.
+>>
 > 
-> In uio_pci_generic.c, I see this code:
-> 
-> /* Interrupt handler. Read/modify/write the command register to disable
->  * the interrupt. */
-> static irqreturn_t irqhandler(int irq, struct uio_info *info)
-> {
-> 	struct uio_pci_generic_dev *gdev =3D to_uio_pci_generic_dev(info);
-> 
-> 	if (!pci_check_and_mask_intx(gdev->pdev))
-> 		return IRQ_NONE;
-> 
-> 	/* UIO core will signal the user process. */
-> 	return IRQ_HANDLED;
-> }
-> 
-> Can the pci_check_and_mask_intx() function be called like this from the UDD mini-driver in a real-time context, or is there an alternate method that should be used?  From looking at the source for the pci_* functions, I would guess that this function cannot be called from RTDM, but I am not sure.  I am not experienced with writing RTDM drivers.
+> Going through the commits, it seems we have a couple of ARM-only driver and 
+> timer patches in the x86 tree but no general ARM enabling. Those should be 
+> removed, indeed.
 
-Your assumption is correct, you generally can't call the PCI layer from
-the real-time context. First there is the global pci_lock which could be
-unwise to convert to a hard lock for supporting this, then there are the
-per-bus handlers pci_check_and_mask_intx() indirectly calls, which might
-re-enter the main kernel badly.
+In fact, the problem is imported from ipipe-noarch: There are many ARM-related 
+driver changes that, strictly spoken, do not belong into the noarch tree. Some 
+touch arch/arm, others just change drivers that are practically ARM-only.
 
-> 
-> Conversely, on the user-space side, what is the right way to umask the interrupt?  The example in the "Userspace I/O HOWTO" uses the "pci sysfs interface, or the libpci library that wraps it", but how to we do this in realtime?  If there is not a good way to do this directly from userspace, then it sounds like a UDD_RTIOC_IRQEN ioctl call could accomplish this if the UDD mini-driver's ioctl handler implements UDD_RTIOC_IRQEN by unmasking the interrupt in the PCI command register using something equivalent to the pci_intx() function.  Is this the best solution, or does making this ioctl call introduce additional overhead?
+Philippe, do we want to remove those commits from noarch and add them to ARM? Or 
+should we filter out arch-unrelated diffs when generating the patches?
 
-No particular overhead to expect, but that would still not allow you to
-call the PCI layer from the real-time context.
-
-> 
-> I could also avoid using the PCI command register entirely and just write to a device-specific mask bit in my peripheral, but I would rather implement a generic solution if there is not a performance penalty for using the PCI command register.
-> 
-
-I don't think that using the PCI layer would be cheaper than tweaking
-some bit in your device. The former involves a serialization on
-pci_lock, then a read-update-write sequence to send the
-masking/unmasking command to the bus layer. Sending the acknowledge to
-the device in order to stop it from interrupting is the usual way for rt
-sources.
-
-> If the UDD_RTIOC_IRQEN/IRQDIS are implemented in the mini-driver to mask/unmask interrupts using device or PCI registers instead of masking at the IRQ controller level as described above, is there a need to call udd_enable/disable_irq() at all in the mini-driver (e.g. enable interrupts when the driver is loaded, disable when the driver is unloaded)?
-
-The latter would be enough. If the device is quiet, there would be no
-reason to mask the IRQ line.
-
->  It seems like disabling interrupts in this way (at the controller) wouldn't work if the IRQ line is shared with another device.
-
-Definitely. Even worse if some of the devices sharing the IRQ line are
-dealt with in rt mode, and others in non-rt mode (which would be a
-design issue in the first place anyway).
-
->  I am not sure whether interrupts are already enabled at the controller level, or if I need to enable them myself.
-
-rtdm_irq_request() automatically enables the IRQ line on success.
-
-> 
-> Also, if the default UDD ioctl handler is used, it sounds like the UDD_RTIOC_IRQEN/IRQDIS ioctls can be used to enable/disable interrupts at the controller from userspace, but this requires a switch to secondary mode, which would be problematic for real-time performance.  Is this correct?
-> 
-
-Yes, IRQ enabling/disabling in the irqchip should not be called from rt
-context, so the line switcher in UDD will defer to the root domain for
-handling such request. UDD_RTIOC_IRQxx should be used from
-init/recovery/cleanup code, they are not supposed to be called from the
-time-critical loop.
+Jan
 
 -- 
-Philippe.
+Siemens AG, Corporate Technology, CT RDA IOT SES-DE
+Corporate Competence Center Embedded Linux
 
