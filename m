@@ -8,8 +8,8 @@ References: <E1gaKub-0002DE-4r@xenomai.org>
  <5051b042-b2c2-ecee-e3ef-c4457e6663c2@xenomai.org>
  <419440a3-79aa-2e38-08b1-ab2761777fdd@siemens.com>
 From: Philippe Gerum <rpm@xenomai.org>
-Message-ID: <799f77aa-774d-c69c-dd30-60e715723ac6@xenomai.org>
-Date: Mon, 28 Jan 2019 18:15:23 +0100
+Message-ID: <6dd3272a-2422-393e-fce9-ed932bebcef6@xenomai.org>
+Date: Mon, 28 Jan 2019 18:15:57 +0100
 MIME-Version: 1.0
 In-Reply-To: <419440a3-79aa-2e38-08b1-ab2761777fdd@siemens.com>
 Content-Type: text/plain; charset="utf-8"
@@ -99,16 +99,10 @@ On 1/28/19 5:48 PM, Jan Kiszka wrote:
 > There is also 9f33ef39090f5f100f056e208733fef2e02bd373, which also
 > contains a "FIXME" in the commit log.
 > 
-> If we get rid of these, there will be no further need for filtering of
-> arch/.
-> 
 
-Actually, after a second look, if the idea is to strip anything an arch
-does not use, there are many more commits to drop from arm64 and other
-archs. Most of them live in drivers/irqchip and drivers/clocksource.
-Either we go for a manifest of files to include, or an exclude filter.
-genpatches.sh used to build the former dynamically, maybe this has to be
-reinstated for 4.14+ eventually.
+This is a timer vs clocksource split for arm, this won't impact your
+architecture.
+
 
 -- 
 Philippe.
