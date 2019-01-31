@@ -1,10 +1,8 @@
-Subject: [PATCH 2/2] x86/ipipe: Define and use ipipe_root_nr_syscalls
 From: Jan Kiszka <jan.kiszka@siemens.com>
-References: <56901bab-a85d-2c35-83d7-df8521f72076@siemens.com>
-Message-ID: <8c746606-4d4c-8ea6-ce6d-f92d39bb0e63@siemens.com>
-Date: Thu, 31 Jan 2019 18:01:37 +0100
+Subject: [PATCH] cobalt: x86: Use ipipe_root_nr_syscalls
+Message-ID: <cf2852a2-8000-d545-4d32-fcdab5ba4522@siemens.com>
+Date: Thu, 31 Jan 2019 18:09:53 +0100
 MIME-Version: 1.0
-In-Reply-To: <56901bab-a85d-2c35-83d7-df8521f72076@siemens.com>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -20,45 +18,48 @@ To: Xenomai <xenomai@xenomai.org>
 
 From: Jan Kiszka <jan.kiszka@siemens.com>
 
-If we support compat mode, we need to account for IA32_NR_syscalls being
-different than NR_syscalls.
+Required to handle compat syscalls correctly.
 
 Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
 ---
- arch/x86/entry/common.c           | 3 ++-
- arch/x86/include/asm/ipipe_base.h | 5 +++++
+
+This is against next. The stable patch needs to touch kernel/cobalt
+/posix/syscall.c instead.
+
+Testing all these would be very appreciated!
+
+ kernel/cobalt/arch/x86/include/asm/xenomai/syscall.h | 2 +-
+ kernel/cobalt/include/linux/xenomai/wrappers.h       | 6 ++++++
  2 files changed, 7 insertions(+), 1 deletion(-)
 
-diff --git a/arch/x86/entry/common.c b/arch/x86/entry/common.c
-index 568f45c47063..8b729d9386b3 100644
---- a/arch/x86/entry/common.c
-+++ b/arch/x86/entry/common.c
-@@ -290,7 +290,8 @@ __visible inline void syscall_return_slowpath(struct pt_regs *regs)
- 	 * want to run them exactly once per syscall exit with IRQs on.
- 	 */
- 	if (unlikely((!IS_ENABLED(CONFIG_IPIPE) ||
--		      syscall_get_nr(current, regs) < NR_syscalls) &&
-+		      syscall_get_nr(current, regs) <
-+				ipipe_root_nr_syscalls(ti)) &&
- 		     (cached_flags & SYSCALL_EXIT_WORK_FLAGS)))
- 		syscall_slow_exit_work(regs, cached_flags);
+diff --git a/kernel/cobalt/arch/x86/include/asm/xenomai/syscall.h b/kernel/cobalt/arch/x86/include/asm/xenomai/syscall.h
+index 992f1cd9c4..ea0e6fcb16 100644
+--- a/kernel/cobalt/arch/x86/include/asm/xenomai/syscall.h
++++ b/kernel/cobalt/arch/x86/include/asm/xenomai/syscall.h
+@@ -62,7 +62,7 @@
+ #define __xn_rootcall_p(__regs, __code)			\
+ 	({						\
+ 		*(__code) = __xn_reg_sys(__regs);	\
+-		*(__code) < NR_syscalls;		\
++		*(__code) < ipipe_root_nr_syscalls(current_thread_info()); \
+ 	})
  
-diff --git a/arch/x86/include/asm/ipipe_base.h b/arch/x86/include/asm/ipipe_base.h
-index e0debe840abd..c09697b1f20c 100644
---- a/arch/x86/include/asm/ipipe_base.h
-+++ b/arch/x86/include/asm/ipipe_base.h
-@@ -115,6 +115,11 @@ static inline unsigned long __ipipe_ffnz(unsigned long ul)
-       return ul;
- }
+ static inline void __xn_error_return(struct pt_regs *regs, int v)
+diff --git a/kernel/cobalt/include/linux/xenomai/wrappers.h b/kernel/cobalt/include/linux/xenomai/wrappers.h
+index 1d16db4218..7d00aa9d40 100644
+--- a/kernel/cobalt/include/linux/xenomai/wrappers.h
++++ b/kernel/cobalt/include/linux/xenomai/wrappers.h
+@@ -43,4 +43,10 @@
+ 		smp_store_mb((tsk)->state, (state_value))
+ #endif
  
-+#ifdef CONFIG_IA32_EMULATION
-+#define ipipe_root_nr_syscalls(ti)	\
-+	((ti->status & TS_COMPAT) ? IA32_NR_syscalls : NR_syscalls)
-+#endif /* CONFIG_IA32_EMULATION */
++#include <linux/ipipe.h>
 +
- #endif	/* X86_64 */
- 
- struct pt_regs;
++#ifndef ipipe_root_nr_syscalls
++#define ipipe_root_nr_syscalls(ti)	NR_syscalls
++#endif
++
+ #endif /* !_COBALT_LINUX_WRAPPERS_H */
 -- 
 2.16.4
 
