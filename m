@@ -1,8 +1,11 @@
-From: Jan Kiszka <jan.kiszka@siemens.com>
-Subject: [PATCH] cobalt: x86: Use ipipe_root_nr_syscalls
-Message-ID: <cf2852a2-8000-d545-4d32-fcdab5ba4522@siemens.com>
-Date: Thu, 31 Jan 2019 18:09:53 +0100
+Subject: Re: Wiki Home page broken.
+References: <58e3aa2e-a02b-7b6d-788c-157df5112f15@linx-info.com>
+ <354e0727-af45-2a9d-9db8-c251e7117374@siemens.com>
+From: Philippe Gerum <rpm@xenomai.org>
+Message-ID: <6ba06a1f-47e7-480d-8939-846a378521bc@xenomai.org>
+Date: Sun, 3 Feb 2019 17:37:27 +0100
 MIME-Version: 1.0
+In-Reply-To: <354e0727-af45-2a9d-9db8-c251e7117374@siemens.com>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -14,52 +17,31 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Xenomai <xenomai@xenomai.org>
+To: Jan Kiszka <jan.kiszka@siemens.com>, limingyu <myli@linx-info.com>, xenomai@xenomai.org, Wolfgang Denk <wd@denx.de>
+Cc: =?UTF-8?B?5b+X6IiqIOW9rQ==?= <zhpeng@linx-info.com>, =?UTF-8?B?5YiY5bKz5a6B?= <ynliu@linx-info.com>
 
-From: Jan Kiszka <jan.kiszka@siemens.com>
+On 1/30/19 10:31 AM, Jan Kiszka wrote:
+> On 30.01.19 10:04, limingyu via Xenomai wrote:
+>> The xenomai.org Wiki Home page has been broken, the broken link is as
+>> follows: https://gitlab.denx.de/Xenomai/xenomai/wikis/home. The
+>> Programming and Start here link on this page has been broken right now.
+>>
+>> Please fix it.
+>>
+> 
+> Thanks for the heads-up. The link is fine, it's rather some rendering
+> issue on the gitlab side.
+> 
+> Wolfgang, was there some update on your side recently?
+> 
+> Philippe, is the asciidoc format actually correct? Maybe an older gitlab
+> version was more flexible, and now it's upset. I'm unfortunately not
+> into asciidoc.
+> 
 
-Required to handle compat syscalls correctly.
+done.
 
-Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
----
 
-This is against next. The stable patch needs to touch kernel/cobalt
-/posix/syscall.c instead.
-
-Testing all these would be very appreciated!
-
- kernel/cobalt/arch/x86/include/asm/xenomai/syscall.h | 2 +-
- kernel/cobalt/include/linux/xenomai/wrappers.h       | 6 ++++++
- 2 files changed, 7 insertions(+), 1 deletion(-)
-
-diff --git a/kernel/cobalt/arch/x86/include/asm/xenomai/syscall.h b/kernel/cobalt/arch/x86/include/asm/xenomai/syscall.h
-index 992f1cd9c4..ea0e6fcb16 100644
---- a/kernel/cobalt/arch/x86/include/asm/xenomai/syscall.h
-+++ b/kernel/cobalt/arch/x86/include/asm/xenomai/syscall.h
-@@ -62,7 +62,7 @@
- #define __xn_rootcall_p(__regs, __code)			\
- 	({						\
- 		*(__code) = __xn_reg_sys(__regs);	\
--		*(__code) < NR_syscalls;		\
-+		*(__code) < ipipe_root_nr_syscalls(current_thread_info()); \
- 	})
- 
- static inline void __xn_error_return(struct pt_regs *regs, int v)
-diff --git a/kernel/cobalt/include/linux/xenomai/wrappers.h b/kernel/cobalt/include/linux/xenomai/wrappers.h
-index 1d16db4218..7d00aa9d40 100644
---- a/kernel/cobalt/include/linux/xenomai/wrappers.h
-+++ b/kernel/cobalt/include/linux/xenomai/wrappers.h
-@@ -43,4 +43,10 @@
- 		smp_store_mb((tsk)->state, (state_value))
- #endif
- 
-+#include <linux/ipipe.h>
-+
-+#ifndef ipipe_root_nr_syscalls
-+#define ipipe_root_nr_syscalls(ti)	NR_syscalls
-+#endif
-+
- #endif /* !_COBALT_LINUX_WRAPPERS_H */
 -- 
-2.16.4
+Philippe.
 
