@@ -1,11 +1,11 @@
-Subject: Re: [PATCH 17/18] net/stack: fix assertion testing checksum init value
+Subject: Re: [PATCH 00/18] Assorted fixes: Cobalt, RTnet, GPIO, serial, smokey
+ tests
 References: <20190204105647.5034-1-rpm@xenomai.org>
- <20190204105647.5034-18-rpm@xenomai.org>
 From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <66e888a6-bda1-e207-fd20-8520df9157e4@siemens.com>
-Date: Mon, 4 Feb 2019 19:43:38 +0100
+Message-ID: <c7245d42-2d9d-f64c-f9d8-2d76192861cc@siemens.com>
+Date: Mon, 4 Feb 2019 19:46:52 +0100
 MIME-Version: 1.0
-In-Reply-To: <20190204105647.5034-18-rpm@xenomai.org>
+In-Reply-To: <20190204105647.5034-1-rpm@xenomai.org>
 Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -20,46 +20,52 @@ List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
 To: Philippe Gerum <rpm@xenomai.org>, xenomai@xenomai.org
 
 On 04.02.19 11:56, Philippe Gerum wrote:
-> ---
->   kernel/drivers/net/stack/include/rtskb.h | 5 +++--
->   1 file changed, 3 insertions(+), 2 deletions(-)
+> This is v2, addressing concerns about the previous series, plus a fix
+> to the i.MX UART driver for recent kernels.
 > 
-> diff --git a/kernel/drivers/net/stack/include/rtskb.h b/kernel/drivers/net/stack/include/rtskb.h
-> index a1793e9a8..2d95d6ff8 100644
-> --- a/kernel/drivers/net/stack/include/rtskb.h
-> +++ b/kernel/drivers/net/stack/include/rtskb.h
-> @@ -282,6 +282,9 @@ extern unsigned int rtskb_amount_max;   /* maximum number of allocated rtskbs */
->   #ifdef CONFIG_XENO_DRIVERS_NET_CHECKED
->   extern void rtskb_over_panic(struct rtskb *skb, int len, void *here);
->   extern void rtskb_under_panic(struct rtskb *skb, int len, void *here);
-> +#define rtskb_checksum_none_assert(skb) (WARN_ON_ONCE(skb->ip_summed != CHECKSUM_NONE))
-> +#else
-> +#define rtskb_checksum_none_assert(skb) do { (void)skb; } while (0)
->   #endif
->   
->   extern struct rtskb *rtskb_pool_dequeue(struct rtskb_pool *pool);
-> @@ -294,8 +297,6 @@ extern void kfree_rtskb(struct rtskb *skb);
->   #define dev_kfree_rtskb(a)  kfree_rtskb(a)
->   
->   
-> -#define rtskb_checksum_none_assert(skb) (skb->ip_summed = CHECKSUM_NONE)
-> -
->   static inline void rtskb_tx_timestamp(struct rtskb *skb)
->   {
->   	nanosecs_abs_t *ts = skb->xmit_stamp;
+> Philippe Gerum (18):
+>    cobalt/intr: vfile: do not assume all irqs are cobalt-managed
+>    drivers/autotune: do not read user data we should not expect
+>    cobalt/thread: skip boundary check for infinite round-robin time slice
+>    drivers/ipc: bufp: fix read-write, write-write preemption cases
+>    testsuite/smokey: posix_clock: prevent false positive in
+>      time-dependent test
+>    drivers/gpio: provide optional timestamped readouts
+>    testsuite/gpiotest: enable timestamping on 'timestamp' argument
+>    net/stack: allow initializing pre-allocated device structs
+>    net/stack: fresh rtskb should have ip_summed set to CHECKSUM_NONE
+>    net/rtdev: ensure per-device skbs get mapped at registration
+>    net/udp: getfrag: fix frag preparation status
+>    net/udp: getfrag: remove direct reference to user memory
+>    testsuite/smokey: net: do not unload pre-loaded modules
+>    testsuite/smokey: net: do not down a previously running test interface
+>    net/stack: rtskb: do not run nop locking calls
+>    testsuite/smokey: net_client: improve stats readability
+>    net/stack: fix assertion testing checksum init value
+>    drivers/serial: imx: add required clock preparation
+> 
+>   include/cobalt/kernel/rtdm/gpio.h          |   1 +
+>   include/rtdm/uapi/gpio.h                   |  18 ++-
+>   kernel/cobalt/intr.c                       |  48 +++++--
+>   kernel/cobalt/thread.c                     |   6 +-
+>   kernel/drivers/autotune/autotune.c         |   6 +-
+>   kernel/drivers/gpio/gpio-core.c            |  54 ++++++--
+>   kernel/drivers/ipc/bufp.c                  | 118 +++++++---------
+>   kernel/drivers/net/stack/include/rtdev.h   |   9 ++
+>   kernel/drivers/net/stack/include/rtskb.h   |   5 +-
+>   kernel/drivers/net/stack/ipv4/udp/udp.c    |  21 +--
+>   kernel/drivers/net/stack/rtdev.c           | 151 ++++++++++++++-------
+>   kernel/drivers/net/stack/rtskb.c           |  26 +---
+>   kernel/drivers/serial/rt_imx_uart.c        |   6 +-
+>   testsuite/gpiotest/gpiotest.c              |  37 +++--
+>   testsuite/smokey/net_common/client.c       |  26 ++--
+>   testsuite/smokey/net_common/setup.c        | 108 +++++++++++----
+>   testsuite/smokey/posix-clock/posix-clock.c |   2 +-
+>   17 files changed, 413 insertions(+), 229 deletions(-)
 > 
 
-This commit disables the check, effectively. CONFIG_XENO_DRIVERS_NET_CHECKED 
-likely corresponds to CONFIG_RTNET_CHECKED in the original code base. There, it 
-was a Kconfig switch for internal bug checks, but that got lost during migration.
-
-rtskb_checksum_none_assert corresponds to skb_checksum_none_assert in the 
-kernel. The kernel's variant is in heavy use. In RTnet, we never left it in, 
-except for the macb. For that, Gilles added 0d903b8b4f1c. At the same time, the 
-last driver I touched, e1000e, simple got this removed: 
-https://sourceforge.net/p/rtnet/code/ci/7dbf1a4b910d849f28ea74783541e8f40572912d
-
-So I would rather vote for removing the wrapper completely.
+Thanks, applied all but patch 1..4 (already there) and patch 17 (see discussion) 
+to next.
 
 Jan
 
