@@ -1,7 +1,8 @@
 From: Philippe Gerum <rpm@xenomai.org>
-Subject: [PATCH 13/18] testsuite/smokey: net: do not unload pre-loaded modules
-Date: Mon,  4 Feb 2019 11:56:42 +0100
-Message-Id: <20190204105647.5034-14-rpm@xenomai.org>
+Subject: [PATCH 14/18] testsuite/smokey: net: do not down a previously running
+ test interface
+Date: Mon,  4 Feb 2019 11:56:43 +0100
+Message-Id: <20190204105647.5034-15-rpm@xenomai.org>
 In-Reply-To: <20190204105647.5034-1-rpm@xenomai.org>
 References: <20190204105647.5034-1-rpm@xenomai.org>
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
@@ -15,222 +16,51 @@ List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
 To: xenomai@xenomai.org
 Cc: Jan Kiszka <jan.kiszka@siemens.com>, Philippe Gerum <rpm@xenomai.org>
 
-We may want to use those tests in pre-configured situations, where a
-set of RTnet modules is already in place at startup, which we don't
-want the test to remove on exit.
-
-Those changes ensure that only the modules we had to push for running
-the test are actually removed on exit, leaving the pre-loaded ones
-running.
+If the test interface is already up on entry, keep it that way on
+exit, so that we may run this test multiple times without having to
+reconfigure.
 
 Signed-off-by: Philippe Gerum <rpm@xenomai.org>
 ---
- testsuite/smokey/net_common/setup.c | 97 +++++++++++++++++++++++------
- 1 file changed, 77 insertions(+), 20 deletions(-)
+ testsuite/smokey/net_common/setup.c | 11 +++++++----
+ 1 file changed, 7 insertions(+), 4 deletions(-)
 
 diff --git a/testsuite/smokey/net_common/setup.c b/testsuite/smokey/net_common/setup.c
-index ea3daceca..d3791038f 100644
+index d3791038f..1badabdfb 100644
 --- a/testsuite/smokey/net_common/setup.c
 +++ b/testsuite/smokey/net_common/setup.c
-@@ -28,6 +28,7 @@
- struct module {
- 	int option;
- 	const char *name;
-+	bool loaded;
- };
- 
- #define TIMEOUT 10
-@@ -37,6 +38,15 @@ static int fd;
+@@ -36,7 +36,7 @@ struct module {
+ static struct rtnet_core_cmd cmd;
+ static int fd;
  static pthread_t loopback_server_tid;
- static bool loopback_thread_created;
+-static bool loopback_thread_created;
++static bool loopback_thread_created, ifup;
  static struct module modules[] = {
-+	{
-+		.name = "rtnet",
-+	},
-+	{
-+		.name = "rtipv4",
-+	},
-+	{
-+		.name = "rtcfg",
-+	},
  	{
- 		.option = _CC_COBALT_NET_UDP,
- 		.name = "rtudp",
-@@ -45,9 +55,19 @@ static struct module modules[] = {
- 		.option = _CC_COBALT_NET_AF_PACKET,
- 		.name = "rtpacket",
- 	},
-+	{
-+		.name = NULL,	/* driver */
-+	},
- };
- 
--static const char *option_to_module(int option)
-+#define MODID_RTNET  0
-+#define MODID_IPV4   1
-+#define MODID_CFG    2
-+#define MODID_UDP    3
-+#define MODID_PACKET 4
-+#define MODID_DRIVER 5
-+
-+static int option_to_modid(int option)
- {
- 	unsigned i;
- 
-@@ -55,10 +75,10 @@ static const char *option_to_module(int option)
- 		if (modules[i].option != option)
- 			continue;
- 
--		return modules[i].name;
-+		return i;
+ 		.name = "rtnet",
+@@ -447,6 +447,7 @@ int smokey_net_setup(const char *driver, const char *intf, int tested_config,
+ 		err = do_up(intf);
+ 		if (err < 0)
+ 			goto err;
++		ifup = true;
  	}
  
--	return NULL;
-+	return -1;
- }
+ 	smokey_trace("Waiting for interface %s to be running", intf);
+@@ -543,9 +544,11 @@ int smokey_net_teardown(const char *driver, const char *intf, int tested_config)
+ 				err = tmp;
+ 		}
  
- static int get_info(const char *intf)
-@@ -118,13 +138,37 @@ static int do_down(const char *intf)
- 	return 0;
- }
- 
--static int smokey_net_modprobe(const char *mod)
-+static int smokey_net_modprobe(int modid)
- {
-+	struct module *m = modules + modid;
- 	char buffer[128];
--	int err;
-+	int err, len;
-+	FILE *fp;
-+
-+	if (modid < 0)
-+		return -EINVAL;
-+
-+	fp = fopen("/proc/modules", "r");
-+	if (fp == NULL)
-+		return -errno;
-+
-+	len = strlen(m->name);
-+
-+	while (fgets(buffer, sizeof(buffer), fp)) {
-+		if (strncmp(buffer, m->name, len) == 0 &&
-+		    len < sizeof(buffer) && buffer[len] == ' ') {
-+			smokey_trace("%s module already loaded", m->name);
-+			fclose(fp);
-+			return 0;
+-		tmp = do_down(intf);
+-		if (err == 0)
+-			err = tmp;
++		if (ifup) {
++			tmp = do_down(intf);
++			if (err == 0)
++				err = tmp;
 +		}
-+	}
-+
-+	fclose(fp);
-+
-+	smokey_trace("%s module not there: modprobing", m->name);
  
- 	err = smokey_check_errno(
--		snprintf(buffer, sizeof(buffer), "modprobe %s", mod));
-+		snprintf(buffer, sizeof(buffer), "modprobe %s", m->name));
- 	if (err < 0)
- 		return err;
- 
-@@ -137,16 +181,26 @@ static int smokey_net_modprobe(const char *mod)
- 		return -EINVAL;
- 	}
- 
-+	m->loaded = true;
-+
- 	return err;
- }
- 
--static int smokey_net_rmmod(const char *mod)
-+static int smokey_net_rmmod(int modid)
- {
-+	struct module *m = modules + modid;
- 	char buffer[128];
- 	int err;
- 
-+	if (!m->loaded) {
-+		smokey_trace("%s module was there on entry, keeping it", m->name);
-+		return 0;
-+	}
-+
-+	smokey_trace("unloading %s module", m->name);
-+
- 	err = smokey_check_errno(
--		snprintf(buffer, sizeof(buffer), "rmmod %s", mod));
-+		snprintf(buffer, sizeof(buffer), "rmmod %s", m->name));
- 	if (err < 0)
- 		return err;
- 
-@@ -170,7 +224,7 @@ static int smokey_net_setup_rtcfg_client(const char *intf, int net_config)
- 	if ((net_config & _CC_COBALT_NET_CFG) == 0)
- 		return -ENOSYS;
- 
--	err = smokey_net_modprobe("rtcfg");
-+	err = smokey_net_modprobe(MODID_CFG);
- 	if (err < 0)
- 		return err;
- 
-@@ -213,11 +267,13 @@ static int smokey_net_teardown_rtcfg(const char *intf)
- 	if (err < 0)
- 		return err;
- 
--	err = smokey_check_errno(ioctl(fd, RTCFG_IOC_DETACH, &cmd));
--	if (err < 0)
--		return err;
-+	/*
-+	 * We may or may not be acting as a server; don't check the
-+	 * status.
-+	 */
-+	ioctl(fd, RTCFG_IOC_DETACH, &cmd);
- 
--	return smokey_net_rmmod("rtcfg");
-+	return smokey_net_rmmod(MODID_CFG);
- }
- 
- static int find_peer(const char *intf, void *vpeer)
-@@ -366,15 +422,16 @@ int smokey_net_setup(const char *driver, const char *intf, int tested_config,
- 	if ((net_config & tested_config) == 0)
- 		return -ENOSYS;
- 
--	err = smokey_net_modprobe(driver);
-+	modules[MODID_DRIVER].name = driver;
-+	err = smokey_net_modprobe(MODID_DRIVER);
- 	if (err < 0)
- 		return err;
- 
--	err = smokey_net_modprobe("rtipv4");
-+	err = smokey_net_modprobe(MODID_IPV4);
- 	if (err < 0)
- 		return err;
- 
--	err = smokey_net_modprobe(option_to_module(tested_config));
-+	err = smokey_net_modprobe(option_to_modid(tested_config));
- 	if (err < 0)
- 		return err;
- 
-@@ -494,19 +551,19 @@ int smokey_net_teardown(const char *driver, const char *intf, int tested_config)
+ 		close(fd);
  	} else
- 		err = tmp;
- 
--	tmp = smokey_net_rmmod(option_to_module(tested_config));
-+	tmp = smokey_net_rmmod(option_to_modid(tested_config));
- 	if (err == 0)
- 		err = tmp;
- 
--	tmp = smokey_net_rmmod(driver);
-+	tmp = smokey_net_rmmod(MODID_DRIVER);
- 	if (err == 0)
- 		err = tmp;
- 
--	tmp = smokey_net_rmmod("rtipv4");
-+	tmp = smokey_net_rmmod(MODID_IPV4);
- 	if (err == 0)
- 		err = tmp;
- 
--	tmp = smokey_net_rmmod("rtnet");
-+	tmp = smokey_net_rmmod(MODID_RTNET);
- 	if (err == 0)
- 		err = tmp;
- 
 -- 
 2.17.2
 
