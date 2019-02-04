@@ -1,8 +1,8 @@
 From: Philippe Gerum <rpm@xenomai.org>
-Subject: [PATCH 01/18] cobalt/intr: vfile: do not assume all irqs are
- cobalt-managed
-Date: Mon,  4 Feb 2019 11:56:30 +0100
-Message-Id: <20190204105647.5034-2-rpm@xenomai.org>
+Subject: [PATCH 02/18] drivers/autotune: do not read user data we should not
+ expect
+Date: Mon,  4 Feb 2019 11:56:31 +0100
+Message-Id: <20190204105647.5034-3-rpm@xenomai.org>
 In-Reply-To: <20190204105647.5034-1-rpm@xenomai.org>
 References: <20190204105647.5034-1-rpm@xenomai.org>
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
@@ -16,107 +16,39 @@ List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
 To: xenomai@xenomai.org
 Cc: Jan Kiszka <jan.kiszka@siemens.com>, Philippe Gerum <rpm@xenomai.org>
 
-Non-cobalt kernel code may hook interrupts using ipipe_request_irq()
-directly, which means that xnintr_vec_first() cannot assume that
-__ipipe_irq_cookie() always returns a valid xnintr struct for all
-irqs.
-
-We need to detect those irqs while iterating over the interrupt
-namespace when pulling data from /proc files not to dereference
-invalid memory.
-
-Fixes:
-/proc/xenomai/irq
-/proc/xenomai/sched/stat
-/proc/xenomai/sched/acct
+We receive the sampling period from the setup struct attached to the
+AUTOTUNE_RTIOC_{IRQ,KERN,USER} requests, drop the last copy from user
+from autotune_ioctl_nrt() which is spurious.
 
 Signed-off-by: Philippe Gerum <rpm@xenomai.org>
 ---
- kernel/cobalt/intr.c | 48 +++++++++++++++++++++++++++++++++++---------
- 1 file changed, 38 insertions(+), 10 deletions(-)
+ kernel/drivers/autotune/autotune.c | 6 +-----
+ 1 file changed, 1 insertion(+), 5 deletions(-)
 
-diff --git a/kernel/cobalt/intr.c b/kernel/cobalt/intr.c
-index 184ffad13..ba6409ebb 100644
---- a/kernel/cobalt/intr.c
-+++ b/kernel/cobalt/intr.c
-@@ -449,6 +449,17 @@ out:
+diff --git a/kernel/drivers/autotune/autotune.c b/kernel/drivers/autotune/autotune.c
+index 46a34bf36..2629bf9d4 100644
+--- a/kernel/drivers/autotune/autotune.c
++++ b/kernel/drivers/autotune/autotune.c
+@@ -644,7 +644,7 @@ static int autotune_ioctl_nrt(struct rtdm_fd *fd, unsigned int request, void *ar
+ 	struct autotune_context *context;
+ 	struct autotune_setup setup;
+ 	struct gravity_tuner *tuner;
+-	int period, ret;
++	int ret;
+ 
+ 	if (request == AUTOTUNE_RTIOC_RESET) {
+ 		xnclock_reset_gravity(&nkclock);
+@@ -678,10 +678,6 @@ static int autotune_ioctl_nrt(struct rtdm_fd *fd, unsigned int request, void *ar
+ 		return -EINVAL;
  	}
- }
  
-+static inline bool cobalt_owns_irq(int irq)
-+{
-+	ipipe_irq_handler_t h;
-+
-+	h = __ipipe_irq_handler(&xnsched_realtime_domain, irq);
-+
-+	return h == xnintr_vec_handler ||
-+		h == xnintr_edge_vec_handler ||
-+		h == xnintr_irq_handler;
-+}
-+
- static inline int xnintr_irq_attach(struct xnintr *intr)
- {
- 	struct xnintr_vector *vec = vectors + intr->irq;
-@@ -538,9 +549,19 @@ struct xnintr_vector {
- 
- static struct xnintr_vector vectors[IPIPE_NR_IRQS];
- 
-+static inline bool cobalt_owns_irq(int irq)
-+{
-+	ipipe_irq_handler_t h;
-+
-+	h = __ipipe_irq_handler(&xnsched_realtime_domain, irq);
-+
-+	return h == xnintr_irq_handler;
-+}
-+
- static inline struct xnintr *xnintr_vec_first(unsigned int irq)
- {
--	return __ipipe_irq_cookie(&xnsched_realtime_domain, irq);
-+	return cobalt_owns_irq(irq) ?
-+		__ipipe_irq_cookie(&xnsched_realtime_domain, irq) : NULL;
- }
- 
- static inline struct xnintr *xnintr_vec_next(struct xnintr *prev)
-@@ -1067,6 +1088,7 @@ static inline int format_irq_proc(unsigned int irq,
- 				  struct xnvfile_regular_iterator *it)
- {
- 	struct xnintr *intr;
-+	struct irq_desc *d;
- 	int cpu;
- 
- 	for_each_realtime_cpu(cpu)
-@@ -1100,15 +1122,21 @@ static inline int format_irq_proc(unsigned int irq,
- 
- 	mutex_lock(&intrlock);
- 
--	intr = xnintr_vec_first(irq);
--	if (intr) {
--		xnvfile_puts(it, "        ");
+-	ret = rtdm_safe_copy_from_user(fd, &period, arg, sizeof(period));
+-	if (ret)
+-		return ret;
 -
--		do {
--			xnvfile_putc(it, ' ');
--			xnvfile_puts(it, intr->name);
--			intr = xnintr_vec_next(intr);
--		} while (intr);
-+	if (!cobalt_owns_irq(irq)) {
-+		xnvfile_puts(it, "         ");
-+		d = irq_to_desc(irq);
-+		xnvfile_puts(it, d && d->name ? d->name : "-");
-+	} else {
-+		intr = xnintr_vec_first(irq);
-+		if (intr) {
-+			xnvfile_puts(it, "        ");
-+
-+			do {
-+				xnvfile_putc(it, ' ');
-+				xnvfile_puts(it, intr->name);
-+				intr = xnintr_vec_next(intr);
-+			} while (intr);
-+		}
- 	}
- 
- 	mutex_unlock(&intrlock);
+ 	ret = tuner->init_tuner(tuner);
+ 	if (ret)
+ 		return ret;
 -- 
 2.17.2
 
