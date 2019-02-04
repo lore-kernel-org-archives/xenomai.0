@@ -1,16 +1,9 @@
-Subject: Re: [PATCH 4/5] drivers/ipc: bufp: fix read-write, write-write
- preemption cases
-References: <20190114173522.25750-1-rpm@xenomai.org>
- <20190114173522.25750-4-rpm@xenomai.org>
- <4f815fc1-cc62-0ecf-8f60-e604a748a8d9@siemens.com>
 From: Philippe Gerum <rpm@xenomai.org>
-Message-ID: <20be4097-7f8b-2b05-4a2f-22dbaca89fd3@xenomai.org>
-Date: Fri, 25 Jan 2019 10:49:05 +0100
-MIME-Version: 1.0
-In-Reply-To: <4f815fc1-cc62-0ecf-8f60-e604a748a8d9@siemens.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Subject: [PATCH 17/18] net/stack: fix assertion testing checksum init value
+Date: Mon,  4 Feb 2019 11:56:46 +0100
+Message-Id: <20190204105647.5034-18-rpm@xenomai.org>
+In-Reply-To: <20190204105647.5034-1-rpm@xenomai.org>
+References: <20190204105647.5034-1-rpm@xenomai.org>
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -19,22 +12,37 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jan Kiszka <jan.kiszka@siemens.com>, xenomai@xenomai.org
+To: xenomai@xenomai.org
+Cc: Jan Kiszka <jan.kiszka@siemens.com>, Philippe Gerum <rpm@xenomai.org>
 
-On 1/24/19 7:28 PM, Jan Kiszka wrote:
+---
+ kernel/drivers/net/stack/include/rtskb.h | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
 
-> 
-> Applied up to this patch to next, still waiting for The Final Version of
-> patch 5.
-> 
-
-AFAIU, patch 5 would be [1], which should be [2] in its final state.
-
-[1] https://www.xenomai.org/pipermail/xenomai/2019-January/040215.html
-[2] https://www.xenomai.org/pipermail/xenomai/2019-January/040238.html
-
-or are you referring to another patch?
-
+diff --git a/kernel/drivers/net/stack/include/rtskb.h b/kernel/drivers/net/stack/include/rtskb.h
+index a1793e9a8..2d95d6ff8 100644
+--- a/kernel/drivers/net/stack/include/rtskb.h
++++ b/kernel/drivers/net/stack/include/rtskb.h
+@@ -282,6 +282,9 @@ extern unsigned int rtskb_amount_max;   /* maximum number of allocated rtskbs */
+ #ifdef CONFIG_XENO_DRIVERS_NET_CHECKED
+ extern void rtskb_over_panic(struct rtskb *skb, int len, void *here);
+ extern void rtskb_under_panic(struct rtskb *skb, int len, void *here);
++#define rtskb_checksum_none_assert(skb) (WARN_ON_ONCE(skb->ip_summed != CHECKSUM_NONE))
++#else
++#define rtskb_checksum_none_assert(skb) do { (void)skb; } while (0)
+ #endif
+ 
+ extern struct rtskb *rtskb_pool_dequeue(struct rtskb_pool *pool);
+@@ -294,8 +297,6 @@ extern void kfree_rtskb(struct rtskb *skb);
+ #define dev_kfree_rtskb(a)  kfree_rtskb(a)
+ 
+ 
+-#define rtskb_checksum_none_assert(skb) (skb->ip_summed = CHECKSUM_NONE)
+-
+ static inline void rtskb_tx_timestamp(struct rtskb *skb)
+ {
+ 	nanosecs_abs_t *ts = skb->xmit_stamp;
 -- 
-Philippe.
+2.17.2
+
 
