@@ -1,8 +1,7 @@
 From: Philippe Gerum <rpm@xenomai.org>
-Subject: [PATCH 14/18] testsuite/smokey: net: do not down a previously running
- test interface
-Date: Mon,  4 Feb 2019 11:56:43 +0100
-Message-Id: <20190204105647.5034-15-rpm@xenomai.org>
+Subject: [PATCH 15/18] net/stack: rtskb: do not run nop locking calls
+Date: Mon,  4 Feb 2019 11:56:44 +0100
+Message-Id: <20190204105647.5034-16-rpm@xenomai.org>
 In-Reply-To: <20190204105647.5034-1-rpm@xenomai.org>
 References: <20190204105647.5034-1-rpm@xenomai.org>
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
@@ -16,51 +15,73 @@ List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
 To: xenomai@xenomai.org
 Cc: Jan Kiszka <jan.kiszka@siemens.com>, Philippe Gerum <rpm@xenomai.org>
 
-If the test interface is already up on entry, keep it that way on
-exit, so that we may run this test multiple times without having to
-reconfigure.
+Checking whether calling a lock operation is actually needed is better
+wrt I-cache performance.
 
 Signed-off-by: Philippe Gerum <rpm@xenomai.org>
 ---
- testsuite/smokey/net_common/setup.c | 11 +++++++----
- 1 file changed, 7 insertions(+), 4 deletions(-)
+ kernel/drivers/net/stack/rtskb.c | 25 ++++++-------------------
+ 1 file changed, 6 insertions(+), 19 deletions(-)
 
-diff --git a/testsuite/smokey/net_common/setup.c b/testsuite/smokey/net_common/setup.c
-index d3791038f..1badabdfb 100644
---- a/testsuite/smokey/net_common/setup.c
-+++ b/testsuite/smokey/net_common/setup.c
-@@ -36,7 +36,7 @@ struct module {
- static struct rtnet_core_cmd cmd;
- static int fd;
- static pthread_t loopback_server_tid;
--static bool loopback_thread_created;
-+static bool loopback_thread_created, ifup;
- static struct module modules[] = {
- 	{
- 		.name = "rtnet",
-@@ -447,6 +447,7 @@ int smokey_net_setup(const char *driver, const char *intf, int tested_config,
- 		err = do_up(intf);
- 		if (err < 0)
- 			goto err;
-+		ifup = true;
- 	}
+diff --git a/kernel/drivers/net/stack/rtskb.c b/kernel/drivers/net/stack/rtskb.c
+index cc7563719..a19ef9f2d 100644
+--- a/kernel/drivers/net/stack/rtskb.c
++++ b/kernel/drivers/net/stack/rtskb.c
+@@ -156,10 +156,11 @@ static struct rtskb *__rtskb_pool_dequeue(struct rtskb_pool *pool)
+     struct rtskb_queue *queue = &pool->queue;
+     struct rtskb *skb;
  
- 	smokey_trace("Waiting for interface %s to be running", intf);
-@@ -543,9 +544,11 @@ int smokey_net_teardown(const char *driver, const char *intf, int tested_config)
- 				err = tmp;
- 		}
+-    if (!pool->lock_ops->trylock(pool->lock_cookie))
++    if (pool->lock_ops &&
++	!pool->lock_ops->trylock(pool->lock_cookie))
+ 	    return NULL;
+     skb = __rtskb_dequeue(queue);
+-    if (skb == NULL)
++    if (skb == NULL && pool->lock_ops)
+ 	    pool->lock_ops->unlock(pool->lock_cookie);
  
--		tmp = do_down(intf);
--		if (err == 0)
--			err = tmp;
-+		if (ifup) {
-+			tmp = do_down(intf);
-+			if (err == 0)
-+				err = tmp;
-+		}
+     return skb;
+@@ -184,7 +185,8 @@ static void __rtskb_pool_queue_tail(struct rtskb_pool *pool, struct rtskb *skb)
+     struct rtskb_queue *queue = &pool->queue;
  
- 		close(fd);
- 	} else
+     __rtskb_queue_tail(queue,skb);
+-    pool->lock_ops->unlock(pool->lock_cookie);
++    if (pool->lock_ops)
++	    pool->lock_ops->unlock(pool->lock_cookie);
+ }
+ 
+ void rtskb_pool_queue_tail(struct rtskb_pool *pool, struct rtskb *skb)
+@@ -292,21 +294,6 @@ void kfree_rtskb(struct rtskb *skb)
+ EXPORT_SYMBOL_GPL(kfree_rtskb);
+ 
+ 
+-static int rtskb_nop_pool_trylock(void *cookie)
+-{
+-    return 1;
+-}
+-
+-static void rtskb_nop_pool_unlock(void *cookie)
+-{
+-}
+-
+-static const struct rtskb_pool_lock_ops rtskb_nop_pool_lock_ops = {
+-    .trylock = rtskb_nop_pool_trylock,
+-    .unlock = rtskb_nop_pool_unlock,
+-};
+-
+-
+ /***
+  *  rtskb_pool_init
+  *  @pool: pool to be initialized
+@@ -328,7 +315,7 @@ unsigned int rtskb_pool_init(struct rtskb_pool *pool,
+     if (rtskb_pools > rtskb_pools_max)
+ 	rtskb_pools_max = rtskb_pools;
+ 
+-    pool->lock_ops = lock_ops ?: &rtskb_nop_pool_lock_ops;
++    pool->lock_ops = lock_ops;
+     pool->lock_cookie = lock_cookie;
+ 
+     return i;
 -- 
 2.17.2
 
