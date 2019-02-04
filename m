@@ -1,8 +1,10 @@
 From: Philippe Gerum <rpm@xenomai.org>
-Subject: [PATCH 00/18] Assorted fixes: Cobalt, RTnet, GPIO, serial,
- smokey tests
-Date: Mon,  4 Feb 2019 11:56:29 +0100
-Message-Id: <20190204105647.5034-1-rpm@xenomai.org>
+Subject: [PATCH 01/18] cobalt/intr: vfile: do not assume all irqs are
+ cobalt-managed
+Date: Mon,  4 Feb 2019 11:56:30 +0100
+Message-Id: <20190204105647.5034-2-rpm@xenomai.org>
+In-Reply-To: <20190204105647.5034-1-rpm@xenomai.org>
+References: <20190204105647.5034-1-rpm@xenomai.org>
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -14,49 +16,107 @@ List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
 To: xenomai@xenomai.org
 Cc: Jan Kiszka <jan.kiszka@siemens.com>, Philippe Gerum <rpm@xenomai.org>
 
-This is v2, addressing concerns about the previous series, plus a fix
-to the i.MX UART driver for recent kernels.
+Non-cobalt kernel code may hook interrupts using ipipe_request_irq()
+directly, which means that xnintr_vec_first() cannot assume that
+__ipipe_irq_cookie() always returns a valid xnintr struct for all
+irqs.
 
-Philippe Gerum (18):
-  cobalt/intr: vfile: do not assume all irqs are cobalt-managed
-  drivers/autotune: do not read user data we should not expect
-  cobalt/thread: skip boundary check for infinite round-robin time slice
-  drivers/ipc: bufp: fix read-write, write-write preemption cases
-  testsuite/smokey: posix_clock: prevent false positive in
-    time-dependent test
-  drivers/gpio: provide optional timestamped readouts
-  testsuite/gpiotest: enable timestamping on 'timestamp' argument
-  net/stack: allow initializing pre-allocated device structs
-  net/stack: fresh rtskb should have ip_summed set to CHECKSUM_NONE
-  net/rtdev: ensure per-device skbs get mapped at registration
-  net/udp: getfrag: fix frag preparation status
-  net/udp: getfrag: remove direct reference to user memory
-  testsuite/smokey: net: do not unload pre-loaded modules
-  testsuite/smokey: net: do not down a previously running test interface
-  net/stack: rtskb: do not run nop locking calls
-  testsuite/smokey: net_client: improve stats readability
-  net/stack: fix assertion testing checksum init value
-  drivers/serial: imx: add required clock preparation
+We need to detect those irqs while iterating over the interrupt
+namespace when pulling data from /proc files not to dereference
+invalid memory.
 
- include/cobalt/kernel/rtdm/gpio.h          |   1 +
- include/rtdm/uapi/gpio.h                   |  18 ++-
- kernel/cobalt/intr.c                       |  48 +++++--
- kernel/cobalt/thread.c                     |   6 +-
- kernel/drivers/autotune/autotune.c         |   6 +-
- kernel/drivers/gpio/gpio-core.c            |  54 ++++++--
- kernel/drivers/ipc/bufp.c                  | 118 +++++++---------
- kernel/drivers/net/stack/include/rtdev.h   |   9 ++
- kernel/drivers/net/stack/include/rtskb.h   |   5 +-
- kernel/drivers/net/stack/ipv4/udp/udp.c    |  21 +--
- kernel/drivers/net/stack/rtdev.c           | 151 ++++++++++++++-------
- kernel/drivers/net/stack/rtskb.c           |  26 +---
- kernel/drivers/serial/rt_imx_uart.c        |   6 +-
- testsuite/gpiotest/gpiotest.c              |  37 +++--
- testsuite/smokey/net_common/client.c       |  26 ++--
- testsuite/smokey/net_common/setup.c        | 108 +++++++++++----
- testsuite/smokey/posix-clock/posix-clock.c |   2 +-
- 17 files changed, 413 insertions(+), 229 deletions(-)
+Fixes:
+/proc/xenomai/irq
+/proc/xenomai/sched/stat
+/proc/xenomai/sched/acct
 
+Signed-off-by: Philippe Gerum <rpm@xenomai.org>
+---
+ kernel/cobalt/intr.c | 48 +++++++++++++++++++++++++++++++++++---------
+ 1 file changed, 38 insertions(+), 10 deletions(-)
+
+diff --git a/kernel/cobalt/intr.c b/kernel/cobalt/intr.c
+index 184ffad13..ba6409ebb 100644
+--- a/kernel/cobalt/intr.c
++++ b/kernel/cobalt/intr.c
+@@ -449,6 +449,17 @@ out:
+ 	}
+ }
+ 
++static inline bool cobalt_owns_irq(int irq)
++{
++	ipipe_irq_handler_t h;
++
++	h = __ipipe_irq_handler(&xnsched_realtime_domain, irq);
++
++	return h == xnintr_vec_handler ||
++		h == xnintr_edge_vec_handler ||
++		h == xnintr_irq_handler;
++}
++
+ static inline int xnintr_irq_attach(struct xnintr *intr)
+ {
+ 	struct xnintr_vector *vec = vectors + intr->irq;
+@@ -538,9 +549,19 @@ struct xnintr_vector {
+ 
+ static struct xnintr_vector vectors[IPIPE_NR_IRQS];
+ 
++static inline bool cobalt_owns_irq(int irq)
++{
++	ipipe_irq_handler_t h;
++
++	h = __ipipe_irq_handler(&xnsched_realtime_domain, irq);
++
++	return h == xnintr_irq_handler;
++}
++
+ static inline struct xnintr *xnintr_vec_first(unsigned int irq)
+ {
+-	return __ipipe_irq_cookie(&xnsched_realtime_domain, irq);
++	return cobalt_owns_irq(irq) ?
++		__ipipe_irq_cookie(&xnsched_realtime_domain, irq) : NULL;
+ }
+ 
+ static inline struct xnintr *xnintr_vec_next(struct xnintr *prev)
+@@ -1067,6 +1088,7 @@ static inline int format_irq_proc(unsigned int irq,
+ 				  struct xnvfile_regular_iterator *it)
+ {
+ 	struct xnintr *intr;
++	struct irq_desc *d;
+ 	int cpu;
+ 
+ 	for_each_realtime_cpu(cpu)
+@@ -1100,15 +1122,21 @@ static inline int format_irq_proc(unsigned int irq,
+ 
+ 	mutex_lock(&intrlock);
+ 
+-	intr = xnintr_vec_first(irq);
+-	if (intr) {
+-		xnvfile_puts(it, "        ");
+-
+-		do {
+-			xnvfile_putc(it, ' ');
+-			xnvfile_puts(it, intr->name);
+-			intr = xnintr_vec_next(intr);
+-		} while (intr);
++	if (!cobalt_owns_irq(irq)) {
++		xnvfile_puts(it, "         ");
++		d = irq_to_desc(irq);
++		xnvfile_puts(it, d && d->name ? d->name : "-");
++	} else {
++		intr = xnintr_vec_first(irq);
++		if (intr) {
++			xnvfile_puts(it, "        ");
++
++			do {
++				xnvfile_putc(it, ' ');
++				xnvfile_puts(it, intr->name);
++				intr = xnintr_vec_next(intr);
++			} while (intr);
++		}
+ 	}
+ 
+ 	mutex_unlock(&intrlock);
 -- 
 2.17.2
 
