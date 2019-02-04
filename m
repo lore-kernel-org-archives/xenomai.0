@@ -1,7 +1,7 @@
 From: Philippe Gerum <rpm@xenomai.org>
-Subject: [PATCH 11/18] net/udp: getfrag: fix frag preparation status
-Date: Mon,  4 Feb 2019 11:56:40 +0100
-Message-Id: <20190204105647.5034-12-rpm@xenomai.org>
+Subject: [PATCH 12/18] net/udp: getfrag: remove direct reference to user memory
+Date: Mon,  4 Feb 2019 11:56:41 +0100
+Message-Id: <20190204105647.5034-13-rpm@xenomai.org>
 In-Reply-To: <20190204105647.5034-1-rpm@xenomai.org>
 References: <20190204105647.5034-1-rpm@xenomai.org>
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
@@ -15,41 +15,59 @@ List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
 To: xenomai@xenomai.org
 Cc: Jan Kiszka <jan.kiszka@siemens.com>, Philippe Gerum <rpm@xenomai.org>
 
-This fixes a regression introduced by #a69c4ac5d, making the UDP stack
-basically unusable since no xmit could ever take place due to the
-wrong return value.
+This issue triggers domain violation on ARM, SMAP violation on x86.
 
 Signed-off-by: Philippe Gerum <rpm@xenomai.org>
 ---
- kernel/drivers/net/stack/ipv4/udp/udp.c | 8 +++++---
- 1 file changed, 5 insertions(+), 3 deletions(-)
+ kernel/drivers/net/stack/ipv4/udp/udp.c | 15 +++++++--------
+ 1 file changed, 7 insertions(+), 8 deletions(-)
 
 diff --git a/kernel/drivers/net/stack/ipv4/udp/udp.c b/kernel/drivers/net/stack/ipv4/udp/udp.c
-index 8e80d3e0b..e580dac08 100644
+index e580dac08..d0d35c324 100644
 --- a/kernel/drivers/net/stack/ipv4/udp/udp.c
 +++ b/kernel/drivers/net/stack/ipv4/udp/udp.c
-@@ -553,8 +553,10 @@ static int rt_udp_getfrag(const void *p, unsigned char *to,
+@@ -549,7 +549,7 @@ static int rt_udp_getfrag(const void *p, unsigned char *to,
+                           unsigned int offset, unsigned int fraglen)
+ {
+     struct udpfakehdr *ufh = (struct udpfakehdr *)p;
+-    int i, ret;
++    int ret;
  
  
      // We should optimize this function a bit (copy+csum...)!
--    if (offset)
--	    return rtnet_read_from_iov(ufh->fd, ufh->iov, ufh->iovlen, to, fraglen);
-+    if (offset) {
-+	    ret = rtnet_read_from_iov(ufh->fd, ufh->iov, ufh->iovlen, to, fraglen);
-+	    return ret < 0 ? ret : 0;
-+    }
+@@ -558,18 +558,17 @@ static int rt_udp_getfrag(const void *p, unsigned char *to,
+ 	    return ret < 0 ? ret : 0;
+     }
  
-     /* Checksum of the complete data part of the UDP message: */
-     for (i = 0; i < ufh->iovlen; i++) {
-@@ -565,7 +567,7 @@ static int rt_udp_getfrag(const void *p, unsigned char *to,
+-    /* Checksum of the complete data part of the UDP message: */
+-    for (i = 0; i < ufh->iovlen; i++) {
+-            ufh->wcheck = csum_partial(ufh->iov[i].iov_base, ufh->iov[i].iov_len,
+-                                       ufh->wcheck);
+-    }
+-
      ret = rtnet_read_from_iov(ufh->fd, ufh->iov, ufh->iovlen,
  			      to + sizeof(struct udphdr),
  			      fraglen - sizeof(struct udphdr));
--    if (ret)
-+    if (ret < 0)
+     if (ret < 0)
  	    return ret;
  
++    /* Checksum of the complete data part of the UDP message: */
++    ufh->wcheck = csum_partial(to + sizeof(struct udphdr),
++			       fraglen - sizeof(struct udphdr),
++			       ufh->wcheck);
++
      /* Checksum of the udp header: */
+     ufh->wcheck = csum_partial((unsigned char *)ufh,
+ 			       sizeof(struct udphdr), ufh->wcheck);
+@@ -684,7 +683,7 @@ ssize_t rt_udp_sendmsg(struct rtdm_fd *fd, const struct user_msghdr *msg, int ms
+     ufh.uh.len    = htons(ulen);
+     ufh.uh.check  = 0;
+     ufh.fd        = fd;
+-    ufh.iov       = msg->msg_iov;
++    ufh.iov       = iov;
+     ufh.iovlen    = msg->msg_iovlen;
+     ufh.wcheck    = 0;
+ 
 -- 
 2.17.2
 
