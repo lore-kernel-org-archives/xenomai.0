@@ -1,14 +1,20 @@
-Subject: Re: driver make files and target architecture size
-References: <ba52d8a1-4012-dbd9-6d34-e10d0237cd35@gmail.com>
- <31b61932-40c0-2719-24ee-6be9d8a2520d@xenomai.org>
-From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <2cf526aa-4fc2-91e0-dd9a-7bc65c3c7bca@siemens.com>
-Date: Tue, 12 Feb 2019 11:03:30 +0100
+Subject: Re: RTCan missing frames
+References: <aea6afe6-99e3-9e60-6004-05d7a3d0eb42@compador.de>
+ <5f653b5a-e82f-ce42-c8c6-3fa05ccce53d@grandegger.com>
+ <f6a62138-a1fa-f631-25b4-5acb1037273d@compador.de>
+ <063773f9-ac33-fb9c-7cf4-7c971f882041@grandegger.com>
+ <4d3e3575-e29d-0ba7-50b3-97fbc108d70d@compador.de>
+ <b643dfd1-9648-ad5a-05ff-164c58574bff@grandegger.com>
+ <e469590e-a04f-657d-9563-efbaa62e27c8@compador.de>
+ <154ddc3c-8813-14c1-53e8-61d337ab0d69@grandegger.com>
+From: Johannes Holtz <johannes.holtz@compador.de>
+Message-ID: <0e83a1f6-e7cd-abd2-6a4f-24b3d46c0b67@compador.de>
+Date: Tue, 12 Feb 2019 11:42:55 +0100
 MIME-Version: 1.0
-In-Reply-To: <31b61932-40c0-2719-24ee-6be9d8a2520d@xenomai.org>
-Content-Type: text/plain; charset=utf-8; format=flowed
+In-Reply-To: <154ddc3c-8813-14c1-53e8-61d337ab0d69@grandegger.com>
 Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset="utf-8"; Format="flowed"
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,47 +23,94 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Philippe Gerum <rpm@xenomai.org>, Don Newbold <d.o.newbold@gmail.com>, xenomai@xenomai.org
+To: Wolfgang Grandegger <wg@grandegger.com>, xenomai@xenomai.org
 
-On 12.02.19 09:20, Philippe Gerum via Xenomai wrote:
-> On 2/12/19 5:25 AM, Don Newbold via Xenomai wrote:
->> Hi all,
->>
->> This is my first post, so please excuse my shortcomings.
->>
->> I've been writing and maintaining Linux drivers for over 15 years, and
->> am now being tasked with Xenomai support.
->>
->> 1. When I look at the driver make files included with the latest Xenomai
->> download they look totally foreign. Is the existing Linux driver module
->> makefile format usable or must another format be generated?
-> 
-> Xenomai uses regular Makefiles for the kernel bits it provides. It also
-> uses autoconf-generated Makefiles for the userland components. E.g.
-> kernel/cobalt/Makefile describes the build recipe for the Xenomai core
-> in a way that should be familiar to you. This makefile and the related
-> sources are introduced into a regular kernel tree by a script called
-> "prepare-kernel.sh".
-> 
-> You may find detailed information there:
-> https://gitlab.denx.de/Xenomai/xenomai/wikis/Installing_Xenomai_3
-> 
->>
->> 2. I'm familiar with building drivers to support 32-bit vs 64-bit
->> targets. I see that Xenomai has in the past had x64 support, but I now
->> only see x86. Please clarify the current x86 vs x64 support.
->>
-> 
-> kernel/cobalt/arch/x86 includes both 32 and 64 bit support.
-> 
-
-...but 32-bit is suffering from diminishing interest, even in upstream Linux, so 
-it's not recommended if you have the choice (and it may even be subtly broken in 
-Xenomai today).
-
-Jan
-
--- 
-Siemens AG, Corporate Technology, CT RDA IOT SES-DE
-Corporate Competence Center Embedded Linux
-
+QW0gMTEuMDIuMTkgdW0gMTc6NDYgc2NocmllYiBXb2xmZ2FuZyBHcmFuZGVnZ2VyOgo+IEhlbGxv
+LAo+Cj4gQW0gMTEuMDIuMTkgdW0gMTY6MTIgc2NocmllYiBKb2hhbm5lcyBIb2x0ejoKPj4gQW0g
+MTEuMDIuMTkgdW0gMTY6MDcgc2NocmllYiBXb2xmZ2FuZyBHcmFuZGVnZ2VyOgo+Pj4gSGVsbG8s
+Cj4+Pgo+Pj4gYXQgYSBmaXJzdCBnbGFuY2UsIHlvdXIgY29kZSBsb29rcyBnb29kLCBidXQgeW91
+IGFyZSB1c2luZyB0aGUgbmF0aXZlCj4+PiBhcGkuLiBtb3JlIGlubGluZS4uLgo+Pj4KPj4+IEFt
+IDExLjAyLjE5IHVtIDE0OjEzIHNjaHJpZWIgSm9oYW5uZXMgSG9sdHo6Cj4+Pj4gQW0gMTEuMDIu
+MTkgdW0gMTM6NDAgc2NocmllYiBXb2xmZ2FuZyBHcmFuZGVnZ2VyOgo+Pj4+PiBIZWxsbywKPj4+
+Pj4KPj4+Pj4gQW0gMTEuMDIuMTkgdW0gMTI6NTUgc2NocmllYiBKb2hhbm5lcyBIb2x0ejoKPj4+
+Pj4+IEFtIDExLjAyLjE5IHVtIDEyOjI2IHNjaHJpZWIgV29sZmdhbmcgR3JhbmRlZ2dlcjoKPj4+
+Pj4+PiBIZWxsbywKPj4+Pj4+Pgo+Pj4+Pj4+IEFtIDExLjAyLjE5IHVtIDEwOjE2IHNjaHJpZWIg
+Sm9oYW5uZXMgSG9sdHogdmlhIFhlbm9tYWk6Cj4+Pj4+Pj4+IEhpLAo+Pj4+Pj4+Pgo+Pj4+Pj4+
+PiBJbiBteSBhcHBsaWNhdGlvbiBpIHNldCB1cCBhIFJUQ0FOIHNvY2tldCBhbmQgYSBwYWlyIG9m
+IHJ0LXRocmVhZHMuCj4+Pj4+Pj4+IE9uZQo+Pj4+Pj4+PiB0byByZWFkIGFuZCBvbmUgdG8gd3Jp
+dGUuIFdyaXRpbmcgd29ya3MgcGVyZmVjdGx5IGFuZCBJIHJlY2VpdmUKPj4+Pj4+Pj4gYW5zd2Vy
+cwo+Pj4+Pj4+PiBpbiB0aGUgaW5pdGlhbCBwaGFzZSBvZiB0aGUgcHJvZ3JhbS4KPj4+Pj4+Pj4K
+Pj4+Pj4+Pj4gSW4gcGFydGljdWxhciBJIHNlbmQgQ0FOb3BlbiBOTVQgbWVzc2FnZXMgb3V0IGFu
+ZCByZWNlaXZlIHRoZQo+Pj4+Pj4+PiByZXNwb25zZXMKPj4+Pj4+Pj4gZnJvbSB0aGUgb3RoZXIg
+Tm9kZXMgaW4gdGhlIE5ldHdvcmsuCj4+Pj4+Pj4+Cj4+Pj4+Pj4+IDIwMTktMDItMTEgMDk6NTI6
+MTMuMzA5W8KgwqDCoMKgwqDCoCA1MDBdW8KgwqDCoCBDQU4gVFhdID4gTk1UIE5vZGUgMDowOgo+
+Pj4+Pj4+PiBDQU4gSUQgMHgwMDAgRkMgMHgwIERMQyAyCj4+Pj4+Pj4+ICDCoMKgwqDCoMKgwqDC
+oMKgwqDCoCAwwqDCoMKgwqDCoMKgIDgyIDAwCj4+Pj4+Pj4+IDIwMTktMDItMTEgMDk6NTI6MTMu
+MzEwW8KgwqDCoMKgwqDCoCA1MDNdW8KgwqDCoCBDQU4gUlhdID4gTk1UIEVycm9yIENvbnRyb2wK
+Pj4+Pj4+Pj4gTm9kZQo+Pj4+Pj4+PiAwOjg6Cj4+Pj4+Pj4+IENBTiBJRCAweDcwOCBGQyAweGUg
+RExDIDEKPj4+Pj4+Pj4gIMKgwqDCoMKgwqDCoMKgwqDCoMKgIDDCoMKgwqDCoMKgwqAgMDAKPj4+
+Pj4+Pj4gMjAxOS0wMi0xMSAwOTo1MjoxMy4zMTFbwqDCoMKgwqDCoMKgIDUwM11bwqDCoMKgIENB
+TiBSWF0gPiBOTVQgRXJyb3IgQ29udHJvbAo+Pj4+Pj4+PiBOb2RlCj4+Pj4+Pj4+IDA6OToKPj4+
+Pj4+Pj4gQ0FOIElEIDB4NzA5IEZDIDB4ZSBETEMgMQo+Pj4+Pj4+PiAgwqDCoMKgwqDCoMKgwqDC
+oMKgwqAgMMKgwqDCoMKgwqDCoCAwMAo+Pj4+Pj4+PiAyMDE5LTAyLTExIDA5OjUyOjEzLjMxN1vC
+oMKgwqDCoMKgwqAgNTA5XVvCoMKgwqAgQ0FOIFJYXSA+IE5NVCBFcnJvciBDb250cm9sCj4+Pj4+
+Pj4+IE5vZGUKPj4+Pj4+Pj4gMDozOgo+Pj4+Pj4+PiBDQU4gSUQgMHg3MDMgRkMgMHhlIERMQyAx
+Cj4+Pj4+Pj4+ICDCoMKgwqDCoMKgwqDCoMKgwqDCoCAwwqDCoMKgwqDCoMKgIDAwCj4+Pj4+Pj4+
+IDIwMTktMDItMTEgMDk6NTI6MTMuMzE3W8KgwqDCoMKgwqDCoCA1MDldW8KgwqDCoCBDQU4gUlhd
+ID4gTk1UIEVycm9yIENvbnRyb2wKPj4+Pj4+Pj4gTm9kZQo+Pj4+Pj4+PiAwOjQ6Cj4+Pj4+Pj4+
+IENBTiBJRCAweDcwNCBGQyAweGUgRExDIDEKPj4+Pj4+Pj4gIMKgwqDCoMKgwqDCoMKgwqDCoMKg
+IDDCoMKgwqDCoMKgwqAgMDAKPj4+Pj4+Pj4gMjAxOS0wMi0xMSAwOTo1MjoxMy4zMTdbwqDCoMKg
+wqDCoMKgIDUwOV1bwqDCoMKgIENBTiBSWF0gPiBOTVQgRXJyb3IgQ29udHJvbAo+Pj4+Pj4+PiBO
+b2RlCj4+Pj4+Pj4+IDA6NToKPj4+Pj4+Pj4gQ0FOIElEIDB4NzA1IEZDIDB4ZSBETEMgNwo+Pj4+
+Pj4+PiAgwqDCoMKgwqDCoMKgwqDCoMKgwqAgMMKgwqDCoMKgwqDCoCAwMCAwNiAwNyAwMAo+Pj4+
+Pj4+PiAgwqDCoMKgwqDCoMKgwqDCoMKgwqAgNMKgwqDCoMKgwqDCoCAwMCAwMSAwMQo+Pj4+Pj4+
+PiAyMDE5LTAyLTExIDA5OjUyOjEzLjMxN1vCoMKgwqDCoMKgwqAgNTA5XVvCoMKgwqAgQ0FOIFJY
+XSA+IE5NVCBOb2RlIDA6MDoKPj4+Pj4+Pj4gQ0FOIElEIDB4MDAwIEZDIDB4MCBETEMgMwo+Pj4+
+Pj4+PiAgwqDCoMKgwqDCoMKgwqDCoMKgwqAgMMKgwqDCoMKgwqDCoCAwNyAwMCAwMAo+Pj4+Pj4+
+PiAyMDE5LTAyLTExIDA5OjUyOjEzLjMyNlvCoMKgwqDCoMKgwqAgNTE5XVvCoMKgwqAgQ0FOIFJY
+XSA+IFRJTUUgTm9kZSAwOjE6Cj4+Pj4+Pj4+IENBTiBJRCAweDEwMSBGQyAweDIgRExDIDAKPj4+
+Pj4+Pj4KPj4+Pj4+Pj4gQXMgeW91IGNhbiBzZWUsIEkgY2FwdHVyZSA3IGZyYW1lcy4gSG93ZXZl
+ciwgdGhlIFJYIGNvdW50IGZyb20KPj4+Pj4+Pj4gL3Byb2MvcnRjYW4vZGV2aWNlcyBpcyAxMC4K
+Pj4+Pj4+Pj4KPj4+Pj4+Pj4gSWYgSSBzZW5kIHNwZWNpZmljIFNETyByZXF1ZXN0cyB0byBvbmUg
+b2YgdGhlIG5vZGUgd2hpY2ggaGF2ZQo+Pj4+Pj4+PiBhbnN3ZXJlZCBJCj4+Pj4+Pj4+IGRvbid0
+IGNhcHR1cmUgYSByZXNwb25zZSBidXQgdGhlIFJYIGNvdW50IGluY3JlYXNlcyBhbmQgcnRjYW5y
+ZWN2Cj4+Pj4+Pj4+IHByb2dyYW0gY2FwdHVyZXMgdGhlIGNvcnJlY3QgcmVzcG9uc2UuIE9ubHkg
+bXkgYXBwbGljYXRpb24ncyByZWFkCj4+Pj4+Pj4+IGRvZXNuJ3QgcmV0dXJuLgo+Pj4gV2hhdCBk
+byB5b3UgbWVhbiB3aXRoICJkb2Vzbid0IHJldHVybiIuIHJ0X2Nhbl9yZWN2KE1TR19ET05UV0FJ
+VCkgc2hvdWxkCj4+PiBub3QgYmxvY2suIFdoYXQgZG9lcyBpdCByZXR1cm4/Cj4+IEl0IG9ubHkg
+cmV0dXJucyBFQUdBSU4gbGlrZSB0aGVyZSBpcyBub3RoaW5nIHRvIHJlYWQuCj4gVUkgc3VnZ2Vz
+dCB0byB3cml0ZSBhIHNpbXBsZSB0ZXN0IHByb2dyYW0gdG8gZGVtb25zdHJhdGUgdGhlIGlzc3Vl
+LiBJdAo+IHNob3VsZCBqdXN0IG9wZW4gdGhlIHNvY2tldCBhbmQgdHJ5aW5nIHRvIHJlY2VpdmUg
+bWVzc2FnZXMuLi4ganVzdCB0aGUKPiBuZWNlc3Nhcnkgc3R1ZmYuIEZpcnN0IHdpdGggYSBibG9j
+a2luZyByZWN2KCkgYW5kIHRoZW4gbm9uLWJsb2NraW5nLgo+Cj4gV2hhdCBoYXJkd2FyZSBhbmQg
+c29mdHdhcmUgYXJlIHlvdSB1c2luZyAoYXJjaCwgYm9hcmQsIGxpbnV4LCB4ZW5vbWFpKT8KPgo+
+IFdvbGZnYW5nLgoKVGhlIHNvdXJjZSBjb2RlIGlzIGF0dGFjaGVkOgoKY29tcGlsZWQgd2l0aCAt
+SS9vcHQveGVub21haS9pbmNsdWRlIC1EX0dOVV9TT1VSQ0UgLURfUkVFTlRSQU5UIAotRF9fWEVO
+T19fIC1scnRkbSAtTC9vcHQveGVub21haS9saWIgLWx4ZW5vbWFpIC1scHRocmVhZCAtbHJ0IC1s
+bmF0aXZlCgpjYW4gZnJhbWVzIHNlbnQgYnkgcnRjYW5zZW5kCgpUZXN0IDE6IGJsb2NraW5nOgoK
+SUQ6MCBETEM6MmhleDrCoCA4MSAwMMKgwqDCoCDCoMKgIDwtLSBOTVQgcmVxdWVzdApJRDo3MDkg
+RExDOjFoZXg6wqAgMDDCoMKgwqAgwqDCoMKgIDwtLSBhbnN3ZXIgbm9kZSAjOQpJRDo3MDggRExD
+OjFoZXg6wqAgMDDCoMKgwqAgwqDCoMKgIDwtLSBhbnN3ZXIgbm9kZSAjOApJRDo3MDMgRExDOjFo
+ZXg6wqAgMDDCoMKgwqAgwqDCoMKgIDwtLSBhbnN3ZXIgbm9kZSAjMwpJRDo3MDUgRExDOjBoZXg6
+IMKgwqDCoCDCoMKgwqAgwqDCoMKgIDwtLSBoZXJlIGl0IGdldHMgd2VpcmQgISBETEMgPT0gMApJ
+RDo3MDQwMCBETEM6MWhleDrCoCAwMQpJRDo3MDYwMCBETEM6MWhleDrCoCAwMQpJRDo3MDEwMCBE
+TEM6MWhleDrCoCAwMQpJRDo3MDIwMCBETEM6MWhleDrCoCAwMQpJRDoxMDEwMDAwIERMQzoxaGV4
+OsKgIDA4CklEOjUzMjIwIERMQzoxMjQgb3V0IG9mIGJvdW5kcy4gYWJvcnQuCgpUZXN0IDI6IG5v
+biBibG9ja2luZzoKCklEOjAgRExDOjJoZXg6wqAgODEgMDDCoMKgwqAgPC0tIE5NVCByZXF1ZXN0
+CklEOjcwOSBETEM6MWhleDrCoCAwMMKgwqDCoMKgIDwtLSBhbnN3ZXIgbm9kZSAjOQpJRDo3MDgg
+RExDOjFoZXg6wqAgMDDCoMKgwqDCoCA8LS0gYW5zd2VyIG5vZGUgIzgKSUQ6NzAzIERMQzoxaGV4
+OsKgIDAwwqDCoMKgwqAgPC0tIGFuc3dlciBub2RlICMzCklEOjcwNSBETEM6MGhleDogwqDCoMKg
+wqAgwqDCoMKgIDwtLSBzYW1lIGlzc3VlIERMQyBpcyAwCklEOjcwNjAwIERMQzoxaGV4OsKgIDAx
+CklEOjcwNDAwIERMQzoxaGV4OsKgIDAxCklEOjcwMjAwIERMQzoxaGV4OsKgIDAxCklEOjcwMTAw
+IERMQzoxaGV4OsKgIDAxCklEOjEwMTAwMDAgRExDOjFoZXg6wqAgMDgKSUQ6NTMyMjAgRExDOjEy
+NCBvdXQgb2YgYm91bmRzLiBhYm9ydC4KCgpBbHNvLCBJIGZvdW5kIGFub3RoZXIgcG9zc2libGUg
+ZXJyb3Igc291cmNlIGFuZCBJIGRvbid0IGtub3cgaWYgdGhpcyAKZXJyb3IgcGljdHVyZSB3b3Vs
+ZCBjb3JyZXNwb25kcyB0byB0aGlzLgoKSG93ZXZlcizCoCBXaGlsZSByZXZpZXdpbmcgYWxsIHNl
+dHRpbmdzLCBJIG5vdGljZWQgdGhhdCBJIG1hZGUgYSBtaXN0YWtlIAp3aXRoIHRoZSBSWEJVRl9T
+SVpFIHdoaWNoIGlzIHNldCB0byA4MDk2IGluc3RlYWQgb2YgODE5Mi4gTXVzdCBoYXZlIGJlZW4g
+CmFzbGVlcCB3aGVuIHdyaXRpbmcgdGhpcy4gSSdtIGdvaW5nIHRvIHJlYnVpbGQgdGhpcyBtb2R1
+bGUuCgoKCi0tLS0tLS0tLS0tLS0tIG5leHQgcGFydCAtLS0tLS0tLS0tLS0tLQpBIG5vbi10ZXh0
+IGF0dGFjaG1lbnQgd2FzIHNjcnViYmVkLi4uCk5hbWU6IGNhbl9yZWN2LmMKVHlwZTogdGV4dC94
+LWNzcmMKU2l6ZTogNjUxNiBieXRlcwpEZXNjOiBub3QgYXZhaWxhYmxlClVSTDogPGh0dHA6Ly94
+ZW5vbWFpLm9yZy9waXBlcm1haWwveGVub21haS9hdHRhY2htZW50cy8yMDE5MDIxMi8zYTRhZDJl
+NC9hdHRhY2htZW50LmM+Cg==
