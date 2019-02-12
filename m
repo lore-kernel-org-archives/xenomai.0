@@ -1,22 +1,22 @@
-Subject: Re: [PATCH 02/12] drivers/gpio: provide optional timestamped readouts
-References: <20190124153428.21006-1-rpm@xenomai.org>
- <20190124153428.21006-3-rpm@xenomai.org>
- <4d1c39af-7a6f-1637-7727-ab6ad6d533c1@siemens.com>
- <40b168af-98d1-955d-ff01-ae5e70113744@xenomai.org>
- <bff391b7-e457-c91c-cf68-3229a4492e4d@siemens.com>
- <197faf1a-c056-36fd-28ce-d8eee333b9cd@xenomai.org>
- <214e962e-f725-f056-7153-7225b21a4112@siemens.com>
- <1215ea5d-5ba7-348e-20b9-7d46cc77c183@xenomai.org>
- <76d6c198-2c6a-fa2c-8e0e-3ae92f7c2210@siemens.com>
- <d1fc3b18-1b4e-0690-b10b-71890e6b8075@xenomai.org>
- <015cdb61-fdbe-81e7-f609-9c9c795977bd@siemens.com>
-From: Philippe Gerum <rpm@xenomai.org>
-Message-ID: <94ceea47-fef5-a361-63fe-ccc02aaa42d4@xenomai.org>
-Date: Fri, 25 Jan 2019 12:42:41 +0100
+Subject: Re: RTCan missing frames
+References: <aea6afe6-99e3-9e60-6004-05d7a3d0eb42@compador.de>
+ <5f653b5a-e82f-ce42-c8c6-3fa05ccce53d@grandegger.com>
+ <f6a62138-a1fa-f631-25b4-5acb1037273d@compador.de>
+ <063773f9-ac33-fb9c-7cf4-7c971f882041@grandegger.com>
+ <4d3e3575-e29d-0ba7-50b3-97fbc108d70d@compador.de>
+ <b643dfd1-9648-ad5a-05ff-164c58574bff@grandegger.com>
+ <e469590e-a04f-657d-9563-efbaa62e27c8@compador.de>
+ <154ddc3c-8813-14c1-53e8-61d337ab0d69@grandegger.com>
+ <0e83a1f6-e7cd-abd2-6a4f-24b3d46c0b67@compador.de>
+ <0e808ef5-c3b3-ec7a-fe98-f27a483462d3@grandegger.com>
+ <8a8e8f99-f4fe-0a7c-4b50-c6737c5a7217@compador.de>
+From: Wolfgang Grandegger <wg@grandegger.com>
+Message-ID: <d7ab7bd0-84a4-cf95-aa3d-bb33fc31b94d@grandegger.com>
+Date: Tue, 12 Feb 2019 16:00:34 +0100
 MIME-Version: 1.0
-In-Reply-To: <015cdb61-fdbe-81e7-f609-9c9c795977bd@siemens.com>
+In-Reply-To: <8a8e8f99-f4fe-0a7c-4b50-c6737c5a7217@compador.de>
 Content-Type: text/plain; charset="utf-8"
-Content-Language: en-US
+Content-Language: en-GB
 Content-Transfer-Encoding: 8bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
@@ -26,150 +26,131 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jan Kiszka <jan.kiszka@siemens.com>, xenomai@xenomai.org
+To: Johannes Holtz <johannes.holtz@compador.de>, xenomai@xenomai.org
 
-On 1/25/19 12:32 PM, Jan Kiszka wrote:
-> On 25.01.19 11:11, Philippe Gerum wrote:
->> On 1/25/19 10:48 AM, Jan Kiszka wrote:
->>> On 25.01.19 10:38, Philippe Gerum wrote:
->>>> On 1/25/19 10:33 AM, Jan Kiszka wrote:
->>>>> On 25.01.19 10:31, Philippe Gerum wrote:
->>>>>> On 1/25/19 10:23 AM, Jan Kiszka wrote:
->>>>>>> On 25.01.19 10:15, Philippe Gerum wrote:
->>>>>>>> On 1/24/19 7:17 PM, Jan Kiszka wrote:
->>>>>>>>> On 24.01.19 16:34, Philippe Gerum wrote:
->>>>>>>>>> In timestamping mode, read() returns the timestamp of the latest
->>>>>>>>>> event
->>>>>>>>>> receipt on the pin based on CLOCK_MONOTONIC, along with the pin
->>>>>>>>>> state. This is an optional pin readout mode controlled by the
->>>>>>>>>> GPIO_RTIOC_TS request, e.g.:
->>>>>>>>>>
->>>>>>>>>> struct rtdm_gpio_readout rdo;
->>>>>>>>>> int ret, on, val;
->>>>>>>>>>
->>>>>>>>>> on = 1;
->>>>>>>>>> ret = ioctl(pinfd, GPIO_RTIOC_TS, &on);
->>>>>>>>>> ret = read(pinfd, &rdo, sizeof(rdo));
->>>>>>>>>> /* pin state changed to rdo.value at time rdo.timestamp */
->>>>>>>>>>
->>>>>>>>>> on = 0;
->>>>>>>>>> ret = ioctl(pinfd, GPIO_RTIOC_TS, &on);
->>>>>>>>>> ret = read(pinfd, &val, sizeof(val));
->>>>>>>>>> /* pin state changed to value (time of change unspecified) */
->>>>>>>>>>
->>>>>>>>>> By default, timestamping mode is disabled, which corresponds
->>>>>>>>>> to the
->>>>>>>>>> original behavior.
->>>>>>>>>>
->>>>>>>>>> Signed-off-by: Philippe Gerum <rpm@xenomai.org>
->>>>>>>>>> ---
->>>>>>>>>>       include/cobalt/kernel/rtdm/gpio.h |  1 +
->>>>>>>>>>       include/rtdm/uapi/gpio.h          | 18 +++++++----
->>>>>>>>>>       kernel/drivers/gpio/gpio-core.c   | 54
->>>>>>>>>> +++++++++++++++++++++++--------
->>>>>>>>>>       3 files changed, 54 insertions(+), 19 deletions(-)
->>>>>>>>>>
->>>>>>>>>> diff --git a/include/cobalt/kernel/rtdm/gpio.h
->>>>>>>>>> b/include/cobalt/kernel/rtdm/gpio.h
->>>>>>>>>> index cdb472f8a..00055ec0a 100644
->>>>>>>>>> --- a/include/cobalt/kernel/rtdm/gpio.h
->>>>>>>>>> +++ b/include/cobalt/kernel/rtdm/gpio.h
->>>>>>>>>> @@ -33,6 +33,7 @@ struct rtdm_gpio_pin {
->>>>>>>>>>           rtdm_event_t event;
->>>>>>>>>>           char *name;
->>>>>>>>>>           struct gpio_desc *desc;
->>>>>>>>>> +    nanosecs_abs_t timestamp;
->>>>>>>>>>       };
->>>>>>>>>>         struct rtdm_gpio_chip {
->>>>>>>>>> diff --git a/include/rtdm/uapi/gpio.h b/include/rtdm/uapi/gpio.h
->>>>>>>>>> index b745f156c..ac14be66c 100644
->>>>>>>>>> --- a/include/rtdm/uapi/gpio.h
->>>>>>>>>> +++ b/include/rtdm/uapi/gpio.h
->>>>>>>>>> @@ -18,12 +18,18 @@
->>>>>>>>>>       #ifndef _RTDM_UAPI_GPIO_H
->>>>>>>>>>       #define _RTDM_UAPI_GPIO_H
->>>>>>>>>>       -#define GPIO_RTIOC_DIR_OUT        _IOW(RTDM_CLASS_GPIO, 0,
->>>>>>>>>> int)
->>>>>>>>>> -#define GPIO_RTIOC_DIR_IN        _IO(RTDM_CLASS_GPIO, 1)
->>>>>>>>>> -#define GPIO_RTIOC_IRQEN        _IOW(RTDM_CLASS_GPIO, 2, int) /*
->>>>>>>>>> GPIO
->>>>>>>>>> trigger */
->>>>>>>>>> -#define GPIO_RTIOC_IRQDIS        _IO(RTDM_CLASS_GPIO, 3)
->>>>>>>>>> -#define GPIO_RTIOC_REQS                _IO(RTDM_CLASS_GPIO, 4)
->>>>>>>>>> -#define GPIO_RTIOC_RELS                _IO(RTDM_CLASS_GPIO, 5)
->>>>>>>>>> +struct rtdm_gpio_readout {
->>>>>>>>>> +    __u64 timestamp;
->>>>>>>>>
->>>>>>>>> nanosecs_abs_t - we use this type also in to userspace interface.
->>>>>>>>>
->>>>>>>>
->>>>>>>> Nope. This is ABI stuff, nanosecs_abs_t is not guaranteed to
->>>>>>>> have the
->>>>>>>> same size regardless of the ABI models, which is unsafe in mixed
->>>>>>>> 32/64
->>>>>>>> model configurations. OTOH, __u64 is safe.
->>>>>>>
->>>>>>> If nanosecs_abs_t is alread an ABI, and it is used as such for a
->>>>>>> long
->>>>>>> time (see include/rtdm/uapi/serial.h). If you see a bug in its
->>>>>>> definition, that needs to be fixed. We should not resolve that by
->>>>>>> choosing open-coded local workarounds.
->>>>>>>
->>>>>>
->>>>>> nanosecs_t is not defined in the Xenomai ABI, never has been. Using
->>>>>> nanosecs_t in structs actually abuses such ABI. So we may either keep
->>>>>> adding even more nanosecs, or fix the spots where it should be
->>>>>> replaced
->>>>>> with __u64.
->>>>>
->>>>> Xenomai ABI includes the driver ABI - so your assumption might have
->>>>> been
->>>>> it's not while it was de facto.
->>>>>
->>>>> Again, let's address the issue, not work around it.
->>>>>
+Hello Johannes,
+
+Am 12.02.19 um 15:38 schrieb Johannes Holtz:
+> Am 12.02.19 um 12:24 schrieb Wolfgang Grandegger:
+>> Hello,
+>>
+>> Am 12.02.19 um 11:42 schrieb Johannes Holtz:
+>>> Am 11.02.19 um 17:46 schrieb Wolfgang Grandegger:
+>> ... snip ...
+>>>> UI suggest to write a simple test program to demonstrate the issue. It
+>>>> should just open the socket and trying to receive messages... just the
+>>>> necessary stuff. First with a blocking recv() and then non-blocking.
 >>>>
->>>> __u64 is the fix, using nanosecs*_t in uapi/ is wrong. So please merge
->>>> this fix, and we'll see how we can progress fixing other abuses.
->>>
->>> Nope: Adjust nanosecs_*_t if it has a problem ([u]int64_t vs. __u/s64 -
->>> what's the problem exactly?), and use that. That will both address
->>> existing users and future ones. No special solution for the GPIO driver
->>> here.
->>>
+>>>> What hardware and software are you using (arch, board, linux, xenomai)?
+>> ?
 >>
->> I'm not pushing for a GPIO-specific solution, I'm pushing for using
->> ABI-specific types which state their size explicitly in uapi/ data as
->> much as possible, which is safer with mixed ABI models and would have
->> spared me a lot of trouble back when I implemented the 32/64 ABI support
->> for Xenomai. nanosecs_* is originally a kernel-side type which slipped
->> in uapi/ structs, which does not state its size.
-> 
-> No, it was designed and used for both side. I know best as I wrote and
-> first used that abstraction.
-> 
-
-Please avoid the "I know best" non-argument. I don't think it is
-particularly relevant in this context, and the last thing we want is to
-lose relevance when discussing technical matters.
-
+>>>> Wolfgang.
+>>> The source code is attached:
+>>>
+>>> compiled with -I/opt/xenomai/include -D_GNU_SOURCE -D_REENTRANT
+>>> -D__XENO__ -lrtdm -L/opt/xenomai/lib -lxenomai -lpthread -lrt -lnative
+>>>
+>>> can frames sent by rtcansend
+>>>
+>>> Test 1: blocking:
+>>>
+>>> ID:0 DLC:2hex:  81 00       <-- NMT request
+>>> ID:709 DLC:1hex:  00        <-- answer node #9
+>>> ID:708 DLC:1hex:  00        <-- answer node #8
+>>> ID:703 DLC:1hex:  00        <-- answer node #3
+>>> ID:705 DLC:0hex:             <-- here it gets weird ! DLC == 0
+>>> ID:70400 DLC:1hex:  01
+>>> ID:70600 DLC:1hex:  01
+>>> ID:70100 DLC:1hex:  01
+>>> ID:70200 DLC:1hex:  01
+>>> ID:1010000 DLC:1hex:  08
+>> This means that you can receive messages from the CAN bus.
 >>
->> The fact that nanosecs_* is defined as uint64_t but the kernel today
->> does not address the issue at stake: there would be no obvious way to
->> detect that a discrepancy might exist with what userland expects once
->> such definition is modified for a different with if ever (which might be
->> highly unlikely for nanosecs, but could happen for other types).
+>>> ID:53220 DLC:124 out of bounds. abort.
+>> But that's wired.
+>>
+>>> Test 2: non blocking:
+>>>
+>>> ID:0 DLC:2hex:  81 00    <-- NMT request
+>>> ID:709 DLC:1hex:  00     <-- answer node #9
+>>> ID:708 DLC:1hex:  00     <-- answer node #8
+>>> ID:703 DLC:1hex:  00     <-- answer node #3
+>>> ID:705 DLC:0hex:          <-- same issue DLC is 0
+>>> ID:70600 DLC:1hex:  01
+>>> ID:70400 DLC:1hex:  01
+>>> ID:70200 DLC:1hex:  01
+>>> ID:70100 DLC:1hex:  01
+>>> ID:1010000 DLC:1hex:  08
+>>> ID:53220 DLC:124 out of bounds. abort.
+>> Looks identical.
+>>
+>>> Also, I found another possible error source and I don't know if this
+>>> error picture would corresponds to this.
+>>>
+>>> However,  While reviewing all settings, I noticed that I made a mistake
+>>> with the RXBUF_SIZE which is set to 8096 instead of 8192. Must have been
+>>> asleep when writing this. I'm going to rebuild this module.
+>> Let's try to understand why rt_dev_recv() does return bogus dlc.
+>>
+>> What hardware and software are you using (arch, board, can controlelr,
+>> linux, xenomai)?
+>>
+>> Wolfgang.
 > 
-> So the good news is that a) we do not have a problem today and b) we can
-> safely prevent any hypothetical future by changing the definition of
-> nanosecs_*_t towards __u64/__s64 backing. So, if you are concerned about
-> the stability of standard-int, let's switch to the kernel uapi types for
-> nanosecs, use that also for the GPIO ABI, and call it a day.
+> I modified the program a little to send it's own requests via one single
+> socket. The output look like this.
 > 
+> send succeeded
+> ID:708 DLC:1hex:  00
+> ID:709 DLC:1hex:  00
+> ID:703 DLC:1hex:  00
+> ID:706 DLC:1hex:  00
+> ID:705 DLC:7hex:  00 00 01 01 00 09 07
+> send succeeded
+> send succeeded
+> send succeeded
+> send succeeded
+> send succeeded
+> 
+> And a parallel rtcanrecv output  like this:
+> 
+> root@machinectrl:~# rtcanrecv rtcan0
+> #0: (1) <0x000> [2] 81 00
+> #1: (1) <0x708> [1] 00
+> #2: (1) <0x709> [1] 00
+> #3: (1) <0x703> [1] 00
+> #4: (0) <0x706> [0]
+> #5: (0) <0x500> [1] 01
+> #6: (0) <0x400> [1] 01
+> #7: (0) <0x100> [1] 01
+> #8: (0) <0x200> [1] 01
+> #9: (0) <0x000> [1] 08
+> #10: (24) <0x220> [124] 00 00 82 00 00 00 01 08 01 00 00 00 f0 84 04 08
 
-Ok, you don't seem to understand my point. I'll switch to nanosecs*,
-time is a scarce resource for me too.
+Why is "addr.can_ifindex = 24"? Something is broken in you build.
 
--- 
-Philippe.
+> 00 af 04 08 c0 68 91 bf 00 00 00 00 00 00 00 00 c0 06 60 b7 18 68 91 bf
+> 78 69 91 bf 80 0d 7c b7 ce 68 91 bf c0 68 91 bf 00 9b 04 08 60 69 91 bf
+> 78 69 91 bf cf 8e 04 08 00 af 04 08 c0 68 91 bf 00 00 00 00 00 00 00 00
+> 00 00 00 00 68 00 0f c1 e0 b8 7a b7 00 00 00 00 01 00 00 00 30 ae 10 f7
+> 04 5e 60 b7 e0 68 91 bf b0 68 91 bf
+> #11: (24) <0x220> [124] 00 00 05 07 00 00 01 07 01 00 00 00 f0 84 04 08
+> 00 af 04 08 c0 68 91 bf 00 00 00 00 00 00 00 00 c0 06 60 b7 18 68 91 bf
+> 78 69 91 bf 80 0d 7c b7 ce 68 91 bf c0 68 91 bf 00 9b 04 08 60 69 91 bf
+> 78 69 91 bf cf 8e 04 08 00 af 04 08 c0 68 91 bf 00 00 00 00 00 00 00 00
+> 00 00 00 00 68 00 0f c1 e0 b8 7a b7 00 00 00 00 01 00 00 00 30 ae 10 f7
+> 04 5e 60 b7 e0 68 91 bf b0 68 91 bf
+> #12: (32) <0x000> [50] 05 05 07 00 00 01 07 00 01 00 00 00 f0 84 04 08
+> 00 af 04 08 c0 68 91 bf 00 00 00 00 00 00 00 00 c0 06 60 b7 18 68 91 bf
+> 78 69 91 bf 80 0d 7c b7 ce 68
+> #13: (9) <0x100> [7] 05 07 00 00 01 07 00
+> #14: (0) <0x100> [0]
+> #15: (1) <0x705> [7] 00 00 01 01 00 09 07
+> 
+> None of this makes sense to me.
+
+I'm really puzzled what's going on. The CAN controller you use is well
+supported.
+
+Wolfgang.
 
