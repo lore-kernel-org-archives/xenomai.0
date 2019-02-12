@@ -12,14 +12,15 @@ References: <aea6afe6-99e3-9e60-6004-05d7a3d0eb42@compador.de>
  <8a8e8f99-f4fe-0a7c-4b50-c6737c5a7217@compador.de>
  <d7ab7bd0-84a4-cf95-aa3d-bb33fc31b94d@grandegger.com>
  <56a692eb-bb3b-ef07-6057-13b33770f8a4@compador.de>
-From: Wolfgang Grandegger <wg@grandegger.com>
-Message-ID: <14f04ce2-7e03-7d0c-07bb-6c3ca936f58f@grandegger.com>
-Date: Tue, 12 Feb 2019 18:05:20 +0100
+ <14f04ce2-7e03-7d0c-07bb-6c3ca936f58f@grandegger.com>
+From: Johannes Holtz <johannes.holtz@compador.de>
+Message-ID: <ef288fdc-bc0d-6449-5cfc-3db4904863ff@compador.de>
+Date: Tue, 12 Feb 2019 18:24:12 +0100
 MIME-Version: 1.0
-In-Reply-To: <56a692eb-bb3b-ef07-6057-13b33770f8a4@compador.de>
-Content-Type: text/plain; charset="utf-8"
-Content-Language: en-GB
-Content-Transfer-Encoding: 8bit
+In-Reply-To: <14f04ce2-7e03-7d0c-07bb-6c3ca936f58f@grandegger.com>
+Content-Language: en-US
+Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset="utf-8"; Format="flowed"
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -28,129 +29,89 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Johannes Holtz <johannes.holtz@compador.de>, xenomai@xenomai.org
+To: Wolfgang Grandegger <wg@grandegger.com>, xenomai@xenomai.org
 
-Am 12.02.19 um 16:19 schrieb Johannes Holtz:
-> Am 12.02.19 um 16:00 schrieb Wolfgang Grandegger:
->> Hello Johannes,
->>
->> Am 12.02.19 um 15:38 schrieb Johannes Holtz:
->>> Am 12.02.19 um 12:24 schrieb Wolfgang Grandegger:
->>>> Hello,
->>>>
->>>> Am 12.02.19 um 11:42 schrieb Johannes Holtz:
->>>>> Am 11.02.19 um 17:46 schrieb Wolfgang Grandegger:
->>>> ... snip ...
->>>>>> UI suggest to write a simple test program to demonstrate the
->>>>>> issue. It
->>>>>> should just open the socket and trying to receive messages... just
->>>>>> the
->>>>>> necessary stuff. First with a blocking recv() and then non-blocking.
->>>>>>
->>>>>> What hardware and software are you using (arch, board, linux,
->>>>>> xenomai)?
->>>> ?
->>>>
->>>>>> Wolfgang.
->>>>> The source code is attached:
->>>>>
->>>>> compiled with -I/opt/xenomai/include -D_GNU_SOURCE -D_REENTRANT
->>>>> -D__XENO__ -lrtdm -L/opt/xenomai/lib -lxenomai -lpthread -lrt -lnative
->>>>>
->>>>> can frames sent by rtcansend
->>>>>
->>>>> Test 1: blocking:
->>>>>
->>>>> ID:0 DLC:2hex:  81 00       <-- NMT request
->>>>> ID:709 DLC:1hex:  00        <-- answer node #9
->>>>> ID:708 DLC:1hex:  00        <-- answer node #8
->>>>> ID:703 DLC:1hex:  00        <-- answer node #3
->>>>> ID:705 DLC:0hex:             <-- here it gets weird ! DLC == 0
->>>>> ID:70400 DLC:1hex:  01
->>>>> ID:70600 DLC:1hex:  01
->>>>> ID:70100 DLC:1hex:  01
->>>>> ID:70200 DLC:1hex:  01
->>>>> ID:1010000 DLC:1hex:  08
->>>> This means that you can receive messages from the CAN bus.
->>>>
->>>>> ID:53220 DLC:124 out of bounds. abort.
->>>> But that's wired.
->>>>
->>>>> Test 2: non blocking:
->>>>>
->>>>> ID:0 DLC:2hex:  81 00    <-- NMT request
->>>>> ID:709 DLC:1hex:  00     <-- answer node #9
->>>>> ID:708 DLC:1hex:  00     <-- answer node #8
->>>>> ID:703 DLC:1hex:  00     <-- answer node #3
->>>>> ID:705 DLC:0hex:          <-- same issue DLC is 0
->>>>> ID:70600 DLC:1hex:  01
->>>>> ID:70400 DLC:1hex:  01
->>>>> ID:70200 DLC:1hex:  01
->>>>> ID:70100 DLC:1hex:  01
->>>>> ID:1010000 DLC:1hex:  08
->>>>> ID:53220 DLC:124 out of bounds. abort.
->>>> Looks identical.
->>>>
->>>>> Also, I found another possible error source and I don't know if this
->>>>> error picture would corresponds to this.
->>>>>
->>>>> However,  While reviewing all settings, I noticed that I made a
->>>>> mistake
->>>>> with the RXBUF_SIZE which is set to 8096 instead of 8192. Must have
->>>>> been
->>>>> asleep when writing this. I'm going to rebuild this module.
->>>> Let's try to understand why rt_dev_recv() does return bogus dlc.
->>>>
->>>> What hardware and software are you using (arch, board, can controlelr,
->>>> linux, xenomai)?
->>>>
->>>> Wolfgang.
->>> I modified the program a little to send it's own requests via one single
->>> socket. The output look like this.
->>>
->>> send succeeded
->>> ID:708 DLC:1hex:  00
->>> ID:709 DLC:1hex:  00
->>> ID:703 DLC:1hex:  00
->>> ID:706 DLC:1hex:  00
->>> ID:705 DLC:7hex:  00 00 01 01 00 09 07
->>> send succeeded
->>> send succeeded
->>> send succeeded
->>> send succeeded
->>> send succeeded
->>>
->>> And a parallel rtcanrecv output  like this:
->>>
->>> root@machinectrl:~# rtcanrecv rtcan0
->>> #0: (1) <0x000> [2] 81 00
->>> #1: (1) <0x708> [1] 00
->>> #2: (1) <0x709> [1] 00
->>> #3: (1) <0x703> [1] 00
->>> #4: (0) <0x706> [0]
->>> #5: (0) <0x500> [1] 01
->>> #6: (0) <0x400> [1] 01
->>> #7: (0) <0x100> [1] 01
->>> #8: (0) <0x200> [1] 01
->>> #9: (0) <0x000> [1] 08
->>> #10: (24) <0x220> [124] 00 00 82 00 00 00 01 08 01 00 00 00 f0 84 04 08
->> Why is "addr.can_ifindex = 24"? Something is broken in you build.
-> 
-> In the xenomai build? how do I find out what? it all compiled well.
-> 
-> I patched the driver  before building tkernel with
-> 0001-rtcan-ems_pci-driver-update-to-support-more-devices.patch.gz
-
-Can you show me that patch.
-
-> 
-> I used the ipipe patch from the stable release,
-> 
-> and then build it normally.
-> 
-> Might the RX buf size that I changed a problem?
-
-What exactly did you change? I think "rtcanrecv" does not use it.
-
-Wolfgang
-
+QW0gMTIuMDIuMTkgdW0gMTg6MDUgc2NocmllYiBXb2xmZ2FuZyBHcmFuZGVnZ2VyOgo+IEFtIDEy
+LjAyLjE5IHVtIDE2OjE5IHNjaHJpZWIgSm9oYW5uZXMgSG9sdHo6Cj4+IEFtIDEyLjAyLjE5IHVt
+IDE2OjAwIHNjaHJpZWIgV29sZmdhbmcgR3JhbmRlZ2dlcjoKPj4+IEhlbGxvIEpvaGFubmVzLAo+
+Pj4KPj4+IEFtIDEyLjAyLjE5IHVtIDE1OjM4IHNjaHJpZWIgSm9oYW5uZXMgSG9sdHo6Cj4+Pj4g
+QW0gMTIuMDIuMTkgdW0gMTI6MjQgc2NocmllYiBXb2xmZ2FuZyBHcmFuZGVnZ2VyOgo+Pj4+PiBI
+ZWxsbywKPj4+Pj4KPj4+Pj4gQW0gMTIuMDIuMTkgdW0gMTE6NDIgc2NocmllYiBKb2hhbm5lcyBI
+b2x0ejoKPj4+Pj4+IEFtIDExLjAyLjE5IHVtIDE3OjQ2IHNjaHJpZWIgV29sZmdhbmcgR3JhbmRl
+Z2dlcjoKPj4+Pj4gLi4uIHNuaXAgLi4uCj4+Pj4+Pj4gVUkgc3VnZ2VzdCB0byB3cml0ZSBhIHNp
+bXBsZSB0ZXN0IHByb2dyYW0gdG8gZGVtb25zdHJhdGUgdGhlCj4+Pj4+Pj4gaXNzdWUuIEl0Cj4+
+Pj4+Pj4gc2hvdWxkIGp1c3Qgb3BlbiB0aGUgc29ja2V0IGFuZCB0cnlpbmcgdG8gcmVjZWl2ZSBt
+ZXNzYWdlcy4uLiBqdXN0Cj4+Pj4+Pj4gdGhlCj4+Pj4+Pj4gbmVjZXNzYXJ5IHN0dWZmLiBGaXJz
+dCB3aXRoIGEgYmxvY2tpbmcgcmVjdigpIGFuZCB0aGVuIG5vbi1ibG9ja2luZy4KPj4+Pj4+Pgo+
+Pj4+Pj4+IFdoYXQgaGFyZHdhcmUgYW5kIHNvZnR3YXJlIGFyZSB5b3UgdXNpbmcgKGFyY2gsIGJv
+YXJkLCBsaW51eCwKPj4+Pj4+PiB4ZW5vbWFpKT8KPj4+Pj4gPwo+Pj4+Pgo+Pj4+Pj4+IFdvbGZn
+YW5nLgo+Pj4+Pj4gVGhlIHNvdXJjZSBjb2RlIGlzIGF0dGFjaGVkOgo+Pj4+Pj4KPj4+Pj4+IGNv
+bXBpbGVkIHdpdGggLUkvb3B0L3hlbm9tYWkvaW5jbHVkZSAtRF9HTlVfU09VUkNFIC1EX1JFRU5U
+UkFOVAo+Pj4+Pj4gLURfX1hFTk9fXyAtbHJ0ZG0gLUwvb3B0L3hlbm9tYWkvbGliIC1seGVub21h
+aSAtbHB0aHJlYWQgLWxydCAtbG5hdGl2ZQo+Pj4+Pj4KPj4+Pj4+IGNhbiBmcmFtZXMgc2VudCBi
+eSBydGNhbnNlbmQKPj4+Pj4+Cj4+Pj4+PiBUZXN0IDE6IGJsb2NraW5nOgo+Pj4+Pj4KPj4+Pj4+
+IElEOjAgRExDOjJoZXg6wqAgODEgMDDCoMKgwqAgwqDCoCA8LS0gTk1UIHJlcXVlc3QKPj4+Pj4+
+IElEOjcwOSBETEM6MWhleDrCoCAwMMKgwqDCoCDCoMKgwqAgPC0tIGFuc3dlciBub2RlICM5Cj4+
+Pj4+PiBJRDo3MDggRExDOjFoZXg6wqAgMDDCoMKgwqAgwqDCoMKgIDwtLSBhbnN3ZXIgbm9kZSAj
+OAo+Pj4+Pj4gSUQ6NzAzIERMQzoxaGV4OsKgIDAwwqDCoMKgIMKgwqDCoCA8LS0gYW5zd2VyIG5v
+ZGUgIzMKPj4+Pj4+IElEOjcwNSBETEM6MGhleDogwqDCoMKgIMKgwqDCoCDCoMKgwqAgPC0tIGhl
+cmUgaXQgZ2V0cyB3ZWlyZCAhIERMQyA9PSAwCj4+Pj4+PiBJRDo3MDQwMCBETEM6MWhleDrCoCAw
+MQo+Pj4+Pj4gSUQ6NzA2MDAgRExDOjFoZXg6wqAgMDEKPj4+Pj4+IElEOjcwMTAwIERMQzoxaGV4
+OsKgIDAxCj4+Pj4+PiBJRDo3MDIwMCBETEM6MWhleDrCoCAwMQo+Pj4+Pj4gSUQ6MTAxMDAwMCBE
+TEM6MWhleDrCoCAwOAo+Pj4+PiBUaGlzIG1lYW5zIHRoYXQgeW91IGNhbiByZWNlaXZlIG1lc3Nh
+Z2VzIGZyb20gdGhlIENBTiBidXMuCj4+Pj4+Cj4+Pj4+PiBJRDo1MzIyMCBETEM6MTI0IG91dCBv
+ZiBib3VuZHMuIGFib3J0Lgo+Pj4+PiBCdXQgdGhhdCdzIHdpcmVkLgo+Pj4+Pgo+Pj4+Pj4gVGVz
+dCAyOiBub24gYmxvY2tpbmc6Cj4+Pj4+Pgo+Pj4+Pj4gSUQ6MCBETEM6MmhleDrCoCA4MSAwMMKg
+wqDCoCA8LS0gTk1UIHJlcXVlc3QKPj4+Pj4+IElEOjcwOSBETEM6MWhleDrCoCAwMMKgwqDCoMKg
+IDwtLSBhbnN3ZXIgbm9kZSAjOQo+Pj4+Pj4gSUQ6NzA4IERMQzoxaGV4OsKgIDAwwqDCoMKgwqAg
+PC0tIGFuc3dlciBub2RlICM4Cj4+Pj4+PiBJRDo3MDMgRExDOjFoZXg6wqAgMDDCoMKgwqDCoCA8
+LS0gYW5zd2VyIG5vZGUgIzMKPj4+Pj4+IElEOjcwNSBETEM6MGhleDogwqDCoMKgwqAgwqDCoMKg
+IDwtLSBzYW1lIGlzc3VlIERMQyBpcyAwCj4+Pj4+PiBJRDo3MDYwMCBETEM6MWhleDrCoCAwMQo+
+Pj4+Pj4gSUQ6NzA0MDAgRExDOjFoZXg6wqAgMDEKPj4+Pj4+IElEOjcwMjAwIERMQzoxaGV4OsKg
+IDAxCj4+Pj4+PiBJRDo3MDEwMCBETEM6MWhleDrCoCAwMQo+Pj4+Pj4gSUQ6MTAxMDAwMCBETEM6
+MWhleDrCoCAwOAo+Pj4+Pj4gSUQ6NTMyMjAgRExDOjEyNCBvdXQgb2YgYm91bmRzLiBhYm9ydC4K
+Pj4+Pj4gTG9va3MgaWRlbnRpY2FsLgo+Pj4+Pgo+Pj4+Pj4gQWxzbywgSSBmb3VuZCBhbm90aGVy
+IHBvc3NpYmxlIGVycm9yIHNvdXJjZSBhbmQgSSBkb24ndCBrbm93IGlmIHRoaXMKPj4+Pj4+IGVy
+cm9yIHBpY3R1cmUgd291bGQgY29ycmVzcG9uZHMgdG8gdGhpcy4KPj4+Pj4+Cj4+Pj4+PiBIb3dl
+dmVyLMKgIFdoaWxlIHJldmlld2luZyBhbGwgc2V0dGluZ3MsIEkgbm90aWNlZCB0aGF0IEkgbWFk
+ZSBhCj4+Pj4+PiBtaXN0YWtlCj4+Pj4+PiB3aXRoIHRoZSBSWEJVRl9TSVpFIHdoaWNoIGlzIHNl
+dCB0byA4MDk2IGluc3RlYWQgb2YgODE5Mi4gTXVzdCBoYXZlCj4+Pj4+PiBiZWVuCj4+Pj4+PiBh
+c2xlZXAgd2hlbiB3cml0aW5nIHRoaXMuIEknbSBnb2luZyB0byByZWJ1aWxkIHRoaXMgbW9kdWxl
+Lgo+Pj4+PiBMZXQncyB0cnkgdG8gdW5kZXJzdGFuZCB3aHkgcnRfZGV2X3JlY3YoKSBkb2VzIHJl
+dHVybiBib2d1cyBkbGMuCj4+Pj4+Cj4+Pj4+IFdoYXQgaGFyZHdhcmUgYW5kIHNvZnR3YXJlIGFy
+ZSB5b3UgdXNpbmcgKGFyY2gsIGJvYXJkLCBjYW4gY29udHJvbGVsciwKPj4+Pj4gbGludXgsIHhl
+bm9tYWkpPwo+Pj4+Pgo+Pj4+PiBXb2xmZ2FuZy4KPj4+PiBJIG1vZGlmaWVkIHRoZSBwcm9ncmFt
+IGEgbGl0dGxlIHRvIHNlbmQgaXQncyBvd24gcmVxdWVzdHMgdmlhIG9uZSBzaW5nbGUKPj4+PiBz
+b2NrZXQuIFRoZSBvdXRwdXQgbG9vayBsaWtlIHRoaXMuCj4+Pj4KPj4+PiBzZW5kIHN1Y2NlZWRl
+ZAo+Pj4+IElEOjcwOCBETEM6MWhleDrCoCAwMAo+Pj4+IElEOjcwOSBETEM6MWhleDrCoCAwMAo+
+Pj4+IElEOjcwMyBETEM6MWhleDrCoCAwMAo+Pj4+IElEOjcwNiBETEM6MWhleDrCoCAwMAo+Pj4+
+IElEOjcwNSBETEM6N2hleDrCoCAwMCAwMCAwMSAwMSAwMCAwOSAwNwo+Pj4+IHNlbmQgc3VjY2Vl
+ZGVkCj4+Pj4gc2VuZCBzdWNjZWVkZWQKPj4+PiBzZW5kIHN1Y2NlZWRlZAo+Pj4+IHNlbmQgc3Vj
+Y2VlZGVkCj4+Pj4gc2VuZCBzdWNjZWVkZWQKPj4+Pgo+Pj4+IEFuZCBhIHBhcmFsbGVsIHJ0Y2Fu
+cmVjdiBvdXRwdXTCoCBsaWtlIHRoaXM6Cj4+Pj4KPj4+PiByb290QG1hY2hpbmVjdHJsOn4jIHJ0
+Y2FucmVjdiBydGNhbjAKPj4+PiAjMDogKDEpIDwweDAwMD4gWzJdIDgxIDAwCj4+Pj4gIzE6ICgx
+KSA8MHg3MDg+IFsxXSAwMAo+Pj4+ICMyOiAoMSkgPDB4NzA5PiBbMV0gMDAKPj4+PiAjMzogKDEp
+IDwweDcwMz4gWzFdIDAwCj4+Pj4gIzQ6ICgwKSA8MHg3MDY+IFswXQo+Pj4+ICM1OiAoMCkgPDB4
+NTAwPiBbMV0gMDEKPj4+PiAjNjogKDApIDwweDQwMD4gWzFdIDAxCj4+Pj4gIzc6ICgwKSA8MHgx
+MDA+IFsxXSAwMQo+Pj4+ICM4OiAoMCkgPDB4MjAwPiBbMV0gMDEKPj4+PiAjOTogKDApIDwweDAw
+MD4gWzFdIDA4Cj4+Pj4gIzEwOiAoMjQpIDwweDIyMD4gWzEyNF0gMDAgMDAgODIgMDAgMDAgMDAg
+MDEgMDggMDEgMDAgMDAgMDAgZjAgODQgMDQgMDgKPj4+IFdoeSBpcyAiYWRkci5jYW5faWZpbmRl
+eCA9IDI0Ij8gU29tZXRoaW5nIGlzIGJyb2tlbiBpbiB5b3UgYnVpbGQuCj4+IEluIHRoZSB4ZW5v
+bWFpIGJ1aWxkPyBob3cgZG8gSSBmaW5kIG91dCB3aGF0PyBpdCBhbGwgY29tcGlsZWQgd2VsbC4K
+Pj4KPj4gSSBwYXRjaGVkIHRoZSBkcml2ZXLCoCBiZWZvcmUgYnVpbGRpbmcgdGtlcm5lbCB3aXRo
+Cj4+IDAwMDEtcnRjYW4tZW1zX3BjaS1kcml2ZXItdXBkYXRlLXRvLXN1cHBvcnQtbW9yZS1kZXZp
+Y2VzLnBhdGNoLmd6Cj4gQ2FuIHlvdSBzaG93IG1lIHRoYXQgcGF0Y2guClNlZSBhdHRhY2htZW50
+Lgo+Cj4+IEkgdXNlZCB0aGUgaXBpcGUgcGF0Y2ggZnJvbSB0aGUgc3RhYmxlIHJlbGVhc2UsCj4+
+Cj4+IGFuZCB0aGVuIGJ1aWxkIGl0IG5vcm1hbGx5Lgo+Pgo+PiBNaWdodCB0aGUgUlggYnVmIHNp
+emUgdGhhdCBJIGNoYW5nZWQgYSBwcm9ibGVtPwo+IFdoYXQgZXhhY3RseSBkaWQgeW91IGNoYW5n
+ZT8gSSB0aGluayAicnRjYW5yZWN2IiBkb2VzIG5vdCB1c2UgaXQuCj4KPiBXb2xmZ2FuZwoKVGhl
+IGtlcm5lbCBvcHRpb24gQ09ORklHX1hFTk9fRFJJVkVSU19DQU5fUlhCVUZfU0laRSBJIGF0IGZp
+cnN0IEkgc2V0IGl0IAp0byBhIHdyb25nIHZhbHVlwqAgODA5NiBidXQgZXZlIGFmdGVyIEkgY2hh
+bmdlZCBpdCB0byA4MTkyIGl0IGRpZG50IApjaGFuZ2UgYW55dGhpbmdhbmQgbm93IGkgc2V0IGl0
+IGJhY2sgdG8gMTAyNCB3aXRoIG5vIGltcHJvdmVtZW50IGVpdGhlci4KCgoKLS0tLS0tLS0tLS0t
+LS0gbmV4dCBwYXJ0IC0tLS0tLS0tLS0tLS0tCkEgbm9uLXRleHQgYXR0YWNobWVudCB3YXMgc2Ny
+dWJiZWQuLi4KTmFtZTogMDAwMS1ydGNhbi1lbXNfcGNpLWRyaXZlci11cGRhdGUtdG8tc3VwcG9y
+dC1tb3JlLWRldmljZXMucGF0Y2guZ3oKVHlwZTogYXBwbGljYXRpb24vZ3ppcApTaXplOiA2MDAz
+IGJ5dGVzCkRlc2M6IG5vdCBhdmFpbGFibGUKVVJMOiA8aHR0cDovL3hlbm9tYWkub3JnL3BpcGVy
+bWFpbC94ZW5vbWFpL2F0dGFjaG1lbnRzLzIwMTkwMjEyLzdkZWIwNDVhL2F0dGFjaG1lbnQuYmlu
+Pgo=
