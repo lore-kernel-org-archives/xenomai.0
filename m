@@ -1,29 +1,13 @@
-Subject: Re: RTCan missing frames
-References: <aea6afe6-99e3-9e60-6004-05d7a3d0eb42@compador.de>
- <5f653b5a-e82f-ce42-c8c6-3fa05ccce53d@grandegger.com>
- <f6a62138-a1fa-f631-25b4-5acb1037273d@compador.de>
- <063773f9-ac33-fb9c-7cf4-7c971f882041@grandegger.com>
- <4d3e3575-e29d-0ba7-50b3-97fbc108d70d@compador.de>
- <b643dfd1-9648-ad5a-05ff-164c58574bff@grandegger.com>
- <e469590e-a04f-657d-9563-efbaa62e27c8@compador.de>
- <154ddc3c-8813-14c1-53e8-61d337ab0d69@grandegger.com>
- <0e83a1f6-e7cd-abd2-6a4f-24b3d46c0b67@compador.de>
- <0e808ef5-c3b3-ec7a-fe98-f27a483462d3@grandegger.com>
- <8a8e8f99-f4fe-0a7c-4b50-c6737c5a7217@compador.de>
- <d7ab7bd0-84a4-cf95-aa3d-bb33fc31b94d@grandegger.com>
- <56a692eb-bb3b-ef07-6057-13b33770f8a4@compador.de>
- <14f04ce2-7e03-7d0c-07bb-6c3ca936f58f@grandegger.com>
- <ef288fdc-bc0d-6449-5cfc-3db4904863ff@compador.de>
- <78dc65ba-778c-7c8f-2b58-8fce0141c276@grandegger.com>
- <086c1e2a-04a2-16b3-5269-6e10fe315fd7@compador.de>
-From: Wolfgang Grandegger <wg@grandegger.com>
-Message-ID: <2daab8d2-f785-8c10-5a8f-2f26f53346ff@grandegger.com>
-Date: Wed, 13 Feb 2019 11:20:33 +0100
 MIME-Version: 1.0
-In-Reply-To: <086c1e2a-04a2-16b3-5269-6e10fe315fd7@compador.de>
-Content-Type: text/plain; charset="utf-8"
-Content-Language: en-GB
-Content-Transfer-Encoding: 8bit
+References: <CAOuPNLgaDJm27nECxq1jtny=+ixt=GPf2C7zyDsVgbsLvtDarA@mail.gmail.com>
+ <6183c865-2e90-5fb9-9e10-1339ae491b71@codeaurora.org>
+In-Reply-To: <6183c865-2e90-5fb9-9e10-1339ae491b71@codeaurora.org>
+From: Pintu Agarwal <pintu.ping@gmail.com>
+Date: Wed, 13 Feb 2019 20:10:55 +0530
+Message-ID: <CAOuPNLgUvECE6XBjszFggY3efmEBKywzKNWupjfQ2svsCMqd7w@mail.gmail.com>
+Subject: Re: BUG: sleeping function called from invalid context at
+ kernel/locking/rwsem.c:65
+Content-Type: text/plain; charset="UTF-8"
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -32,161 +16,80 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Johannes Holtz <johannes.holtz@compador.de>, xenomai@xenomai.org
+To: Sai Prakash Ranjan <saiprakash.ranjan@codeaurora.org>
+Cc: open list <linux-kernel@vger.kernel.org>, linux-arm-kernel@lists.infradead.org, linux-rt-users@vger.kernel.org, linux-mm@kvack.org, Jorge Ramirez <jorge.ramirez-ortiz@linaro.org>, "Xenomai@xenomai.org" <xenomai@xenomai.org>
 
-Am 13.02.19 um 10:37 schrieb Johannes Holtz:
-> Am 12.02.19 um 18:53 schrieb Wolfgang Grandegger:
->> Am 12.02.19 um 18:24 schrieb Johannes Holtz:
->>> Am 12.02.19 um 18:05 schrieb Wolfgang Grandegger:
->>>> Am 12.02.19 um 16:19 schrieb Johannes Holtz:
->>>>> Am 12.02.19 um 16:00 schrieb Wolfgang Grandegger:
->>>>>> Hello Johannes,
->>>>>>
->>>>>> Am 12.02.19 um 15:38 schrieb Johannes Holtz:
->>>>>>> Am 12.02.19 um 12:24 schrieb Wolfgang Grandegger:
->>>>>>>> Hello,
->>>>>>>>
->>>>>>>> Am 12.02.19 um 11:42 schrieb Johannes Holtz:
->>>>>>>>> Am 11.02.19 um 17:46 schrieb Wolfgang Grandegger:
->>>>>>>> ... snip ...
->>>>>>>>>> UI suggest to write a simple test program to demonstrate the
->>>>>>>>>> issue. It
->>>>>>>>>> should just open the socket and trying to receive messages...
->>>>>>>>>> just
->>>>>>>>>> the
->>>>>>>>>> necessary stuff. First with a blocking recv() and then
->>>>>>>>>> non-blocking.
->>>>>>>>>>
->>>>>>>>>> What hardware and software are you using (arch, board, linux,
->>>>>>>>>> xenomai)?
->>>>>>>> ?
->>>>>>>>
->>>>>>>>>> Wolfgang.
->>>>>>>>> The source code is attached:
->>>>>>>>>
->>>>>>>>> compiled with -I/opt/xenomai/include -D_GNU_SOURCE -D_REENTRANT
->>>>>>>>> -D__XENO__ -lrtdm -L/opt/xenomai/lib -lxenomai -lpthread -lrt
->>>>>>>>> -lnative
->>>>>>>>>
->>>>>>>>> can frames sent by rtcansend
->>>>>>>>>
->>>>>>>>> Test 1: blocking:
->>>>>>>>>
->>>>>>>>> ID:0 DLC:2hex:  81 00       <-- NMT request
->>>>>>>>> ID:709 DLC:1hex:  00        <-- answer node #9
->>>>>>>>> ID:708 DLC:1hex:  00        <-- answer node #8
->>>>>>>>> ID:703 DLC:1hex:  00        <-- answer node #3
->>>>>>>>> ID:705 DLC:0hex:             <-- here it gets weird ! DLC == 0
->>>>>>>>> ID:70400 DLC:1hex:  01
->>>>>>>>> ID:70600 DLC:1hex:  01
->>>>>>>>> ID:70100 DLC:1hex:  01
->>>>>>>>> ID:70200 DLC:1hex:  01
->>>>>>>>> ID:1010000 DLC:1hex:  08
->>>>>>>> This means that you can receive messages from the CAN bus.
->>>>>>>>
->>>>>>>>> ID:53220 DLC:124 out of bounds. abort.
->>>>>>>> But that's wired.
->>>>>>>>
->>>>>>>>> Test 2: non blocking:
->>>>>>>>>
->>>>>>>>> ID:0 DLC:2hex:  81 00    <-- NMT request
->>>>>>>>> ID:709 DLC:1hex:  00     <-- answer node #9
->>>>>>>>> ID:708 DLC:1hex:  00     <-- answer node #8
->>>>>>>>> ID:703 DLC:1hex:  00     <-- answer node #3
->>>>>>>>> ID:705 DLC:0hex:          <-- same issue DLC is 0
->>>>>>>>> ID:70600 DLC:1hex:  01
->>>>>>>>> ID:70400 DLC:1hex:  01
->>>>>>>>> ID:70200 DLC:1hex:  01
->>>>>>>>> ID:70100 DLC:1hex:  01
->>>>>>>>> ID:1010000 DLC:1hex:  08
->>>>>>>>> ID:53220 DLC:124 out of bounds. abort.
->>>>>>>> Looks identical.
->>>>>>>>
->>>>>>>>> Also, I found another possible error source and I don't know if
->>>>>>>>> this
->>>>>>>>> error picture would corresponds to this.
->>>>>>>>>
->>>>>>>>> However,  While reviewing all settings, I noticed that I made a
->>>>>>>>> mistake
->>>>>>>>> with the RXBUF_SIZE which is set to 8096 instead of 8192. Must
->>>>>>>>> have
->>>>>>>>> been
->>>>>>>>> asleep when writing this. I'm going to rebuild this module.
->>>>>>>> Let's try to understand why rt_dev_recv() does return bogus dlc.
->>>>>>>>
->>>>>>>> What hardware and software are you using (arch, board, can
->>>>>>>> controlelr,
->>>>>>>> linux, xenomai)?
->>>>>>>>
->>>>>>>> Wolfgang.
->>>>>>> I modified the program a little to send it's own requests via one
->>>>>>> single
->>>>>>> socket. The output look like this.
->>>>>>>
->>>>>>> send succeeded
->>>>>>> ID:708 DLC:1hex:  00
->>>>>>> ID:709 DLC:1hex:  00
->>>>>>> ID:703 DLC:1hex:  00
->>>>>>> ID:706 DLC:1hex:  00
->>>>>>> ID:705 DLC:7hex:  00 00 01 01 00 09 07
->>>>>>> send succeeded
->>>>>>> send succeeded
->>>>>>> send succeeded
->>>>>>> send succeeded
->>>>>>> send succeeded
->>>>>>>
->>>>>>> And a parallel rtcanrecv output  like this:
->>>>>>>
->>>>>>> root@machinectrl:~# rtcanrecv rtcan0
->>>>>>> #0: (1) <0x000> [2] 81 00
->>>>>>> #1: (1) <0x708> [1] 00
->>>>>>> #2: (1) <0x709> [1] 00
->>>>>>> #3: (1) <0x703> [1] 00
->>>>>>> #4: (0) <0x706> [0]
->>>>>>> #5: (0) <0x500> [1] 01
->>>>>>> #6: (0) <0x400> [1] 01
->>>>>>> #7: (0) <0x100> [1] 01
->>>>>>> #8: (0) <0x200> [1] 01
->>>>>>> #9: (0) <0x000> [1] 08
->>>>>>> #10: (24) <0x220> [124] 00 00 82 00 00 00 01 08 01 00 00 00 f0 84
->>>>>>> 04 08
->>>>>> Why is "addr.can_ifindex = 24"? Something is broken in you build.
->>>>> In the xenomai build? how do I find out what? it all compiled well.
->>>>>
->>>>> I patched the driver  before building tkernel with
->>>>> 0001-rtcan-ems_pci-driver-update-to-support-more-devices.patch.gz
->>>> Can you show me that patch.
->>> See attachment.
->>>>> I used the ipipe patch from the stable release,
->>>>>
->>>>> and then build it normally.
->>>>>
->>>>> Might the RX buf size that I changed a problem?
->>>> What exactly did you change? I think "rtcanrecv" does not use it.
->>>>
->>>> Wolfgang
->>> The kernel option CONFIG_XENO_DRIVERS_CAN_RXBUF_SIZE I at first I set it
->>> to a wrong value  8096 but eve after I changed it to 8192 it didnt
->>> change anythingand now i set it back to 1024 with no improvement either.
->> Ah, a value of 8096 does make trouble, e.g. with expression like the
->> following:
->>
->>          sock->recv_tail = (sock->recv_tail + cpy_size) &
->>              (RTCAN_RXBUF_SIZE - 1);
->>
->> Could you please make a *clean* rebuild from scratch with a value 2^N,
->> either 8192 or 1024.
->>
->> Wolfgang.
-> 
-> Building the complete Kernel anew did the trick. Don't really understand
-> why re-building (and installing) just the module didn't work.
-> 
-> Anyway, I'm happy that it works now. So, as a takeaway: Don't mess with
-> the CAN_RXBUF_SIZE.
+On Wed, Feb 13, 2019 at 3:21 PM Sai Prakash Ranjan
+<saiprakash.ranjan@codeaurora.org> wrote:
+>
+> Hi Pintu,
+>
+> On 2/13/2019 2:04 PM, Pintu Agarwal wrote:
+> >
+> > This is the complete logs at the time of crash:
+> >
+> > [   21.681020] VFS: Mounted root (ext4 filesystem) readonly on device 8:6.
+> > [   21.690441] devtmpfs: mounted
+> > [   21.702517] Freeing unused kernel memory: 6528K
+> > [   21.766665] BUG: sleeping function called from invalid context at
+> > kernel/locking/rwsem.c:65
+> > [   21.775108] in_atomic(): 0, irqs_disabled(): 128, pid: 1, name: init
+> > [   21.781532] ------------[ cut here ]------------
+> > [   21.786209] kernel BUG at kernel/sched/core.c:8490!
+> > [   21.791157] ------------[ cut here ]------------
+> > [   21.795831] kernel BUG at kernel/sched/core.c:8490!
+> > [   21.800763] Internal error: Oops - BUG: 0 [#1] PREEMPT SMP
+> > [   21.806319] Modules linked in:
+> > [   21.809474] CPU: 0 PID: 1 Comm: init Not tainted 4.9.103+ #115
+> > [   21.815375] Hardware name: Qualcomm Technologies, Inc. MSM XXXX
+> > [   21.822584] task: ffffffe330440080 task.stack: ffffffe330448000
+> > [   21.828584] PC is at ___might_sleep+0x140/0x188
+> > [   21.833175] LR is at ___might_sleep+0x128/0x188
+> > [   21.837759] pc : [<ffffff88b8ce65a8>] lr : [<ffffff88b8ce6590>]
+> > pstate: 604001c5
+>
+> <snip...>
+>
+> > 0000000000000000 ffffffe33044b8d0
+> > [   22.135279] bac0: 0000000000000462 0000000000000006
+> > [   22.140224] [<ffffff88b8ce65a8>] ___might_sleep+0x140/0x188
+> > [   22.145862] [<ffffff88b8ce6648>] __might_sleep+0x58/0x90
+> > [   22.151249] [<ffffff88b9d43f84>] down_write_killable+0x2c/0x80
+> > [   22.157155] [<ffffff88b8e53cd8>] setup_arg_pages+0xb8/0x208
+> > [   22.162792] [<ffffff88b8eb7534>] load_elf_binary+0x434/0x1298
+> > [   22.168600] [<ffffff88b8e55674>] search_binary_handler+0xac/0x1f0
+> > [   22.174763] [<ffffff88b8e560ec>] do_execveat_common.isra.15+0x504/0x6c8
+> > [   22.181452] [<ffffff88b8e562f4>] do_execve+0x44/0x58
+> > [   22.186481] [<ffffff88b8c84030>] run_init_process+0x38/0x48
+> > [   22.192122] [<ffffff88b9d3db1c>] kernel_init+0x8c/0x108
+> > [   22.197411] [<ffffff88b8c83f00>] ret_from_fork+0x10/0x50
+> > [   22.202790] Code: b9453800 0b000020 6b00027f 540000c1 (d4210000)
+> > [   22.208965] ---[ end trace d775a851176a61ec ]---
+> > [   22.220051] Kernel panic - not syncing: Attempted to kill init!
+> > exitcode=0x0000000b
+> >
+>
+> This might be the work of CONFIG_PANIC_ON_SCHED_BUG which is extra debug
+> option enabled in *sdm845_defconfig*. You can disable it or better
+> I would suggest to use *sdm845-perf_defconfig* instead of
+> sdm845_defconfig since there are a lot of debug options enabled
+> in the latter which may be not compatible when IPIPE patches
+> are applied.
 
-Yes, but also the code should check as much as possible... it's normal
-that the human being makes mistakes.
+OK thanks for your suggestions. sdm845-perf_defconfig did not work for
+me. The target did not boot.
+However, disabling CONFIG_PANIC_ON_SCHED_BUG works, and I got a root
+shell at least.
+This at least proves that there is no issue in core ipipe patches, and
+I can proceed.
 
-Wolfgang
+But this seems to be a work around.
+I still get a back trace in kernel logs from many different places.
+So, it looks like there is some code in qualcomm specific drivers that
+is calling a sleeping method from invalid context.
+How to find that...
+If this fix is already available in latest version, please let me know.
+
+Thanks,
+Pintu
 
