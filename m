@@ -1,24 +1,14 @@
-Subject: Re: [PATCH 02/12] drivers/gpio: provide optional timestamped readouts
-References: <20190124153428.21006-1-rpm@xenomai.org>
- <20190124153428.21006-3-rpm@xenomai.org>
- <4d1c39af-7a6f-1637-7727-ab6ad6d533c1@siemens.com>
- <40b168af-98d1-955d-ff01-ae5e70113744@xenomai.org>
- <bff391b7-e457-c91c-cf68-3229a4492e4d@siemens.com>
- <197faf1a-c056-36fd-28ce-d8eee333b9cd@xenomai.org>
- <214e962e-f725-f056-7153-7225b21a4112@siemens.com>
- <1215ea5d-5ba7-348e-20b9-7d46cc77c183@xenomai.org>
- <76d6c198-2c6a-fa2c-8e0e-3ae92f7c2210@siemens.com>
- <d1fc3b18-1b4e-0690-b10b-71890e6b8075@xenomai.org>
- <015cdb61-fdbe-81e7-f609-9c9c795977bd@siemens.com>
- <94ceea47-fef5-a361-63fe-ccc02aaa42d4@xenomai.org>
+Subject: Re: [PATCH] cobalt: x86: Use ipipe_root_nr_syscalls
+References: <cf2852a2-8000-d545-4d32-fcdab5ba4522@siemens.com>
+ <16324092.S9KuMY5lOr@blindfold>
 From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <1ddd3c47-edbf-9339-1921-5fb5bd85b9d5@siemens.com>
-Date: Fri, 25 Jan 2019 14:46:06 +0100
+Message-ID: <849bae3d-90b4-9950-cdd6-73a51a7a3589@siemens.com>
+Date: Fri, 15 Feb 2019 15:21:24 +0100
 MIME-Version: 1.0
-In-Reply-To: <94ceea47-fef5-a361-63fe-ccc02aaa42d4@xenomai.org>
-Content-Type: text/plain; charset="utf-8"; format="flowed"
+In-Reply-To: <16324092.S9KuMY5lOr@blindfold>
+Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -27,162 +17,34 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Philippe Gerum <rpm@xenomai.org>, xenomai@xenomai.org
+To: Richard Weinberger <richard@nod.at>, Philippe Gerum <rpm@xenomai.org>
+Cc: Xenomai <xenomai@xenomai.org>
 
-On 25.01.19 12:42, Philippe Gerum wrote:
-> On 1/25/19 12:32 PM, Jan Kiszka wrote:
->> On 25.01.19 11:11, Philippe Gerum wrote:
->>> On 1/25/19 10:48 AM, Jan Kiszka wrote:
->>>> On 25.01.19 10:38, Philippe Gerum wrote:
->>>>> On 1/25/19 10:33 AM, Jan Kiszka wrote:
->>>>>> On 25.01.19 10:31, Philippe Gerum wrote:
->>>>>>> On 1/25/19 10:23 AM, Jan Kiszka wrote:
->>>>>>>> On 25.01.19 10:15, Philippe Gerum wrote:
->>>>>>>>> On 1/24/19 7:17 PM, Jan Kiszka wrote:
->>>>>>>>>> On 24.01.19 16:34, Philippe Gerum wrote:
->>>>>>>>>>> In timestamping mode, read() returns the timestamp of the latest
->>>>>>>>>>> event
->>>>>>>>>>> receipt on the pin based on CLOCK_MONOTONIC, along with the pin
->>>>>>>>>>> state. This is an optional pin readout mode controlled by the
->>>>>>>>>>> GPIO_RTIOC_TS request, e.g.:
->>>>>>>>>>>
->>>>>>>>>>> struct rtdm_gpio_readout rdo;
->>>>>>>>>>> int ret, on, val;
->>>>>>>>>>>
->>>>>>>>>>> on = 1;
->>>>>>>>>>> ret = ioctl(pinfd, GPIO_RTIOC_TS, &on);
->>>>>>>>>>> ret = read(pinfd, &rdo, sizeof(rdo));
->>>>>>>>>>> /* pin state changed to rdo.value at time rdo.timestamp */
->>>>>>>>>>>
->>>>>>>>>>> on = 0;
->>>>>>>>>>> ret = ioctl(pinfd, GPIO_RTIOC_TS, &on);
->>>>>>>>>>> ret = read(pinfd, &val, sizeof(val));
->>>>>>>>>>> /* pin state changed to value (time of change unspecified) */
->>>>>>>>>>>
->>>>>>>>>>> By default, timestamping mode is disabled, which corresponds
->>>>>>>>>>> to the
->>>>>>>>>>> original behavior.
->>>>>>>>>>>
->>>>>>>>>>> Signed-off-by: Philippe Gerum <rpm@xenomai.org>
->>>>>>>>>>> ---
->>>>>>>>>>>        include/cobalt/kernel/rtdm/gpio.h |  1 +
->>>>>>>>>>>        include/rtdm/uapi/gpio.h          | 18 +++++++----
->>>>>>>>>>>        kernel/drivers/gpio/gpio-core.c   | 54
->>>>>>>>>>> +++++++++++++++++++++++--------
->>>>>>>>>>>        3 files changed, 54 insertions(+), 19 deletions(-)
->>>>>>>>>>>
->>>>>>>>>>> diff --git a/include/cobalt/kernel/rtdm/gpio.h
->>>>>>>>>>> b/include/cobalt/kernel/rtdm/gpio.h
->>>>>>>>>>> index cdb472f8a..00055ec0a 100644
->>>>>>>>>>> --- a/include/cobalt/kernel/rtdm/gpio.h
->>>>>>>>>>> +++ b/include/cobalt/kernel/rtdm/gpio.h
->>>>>>>>>>> @@ -33,6 +33,7 @@ struct rtdm_gpio_pin {
->>>>>>>>>>>            rtdm_event_t event;
->>>>>>>>>>>            char *name;
->>>>>>>>>>>            struct gpio_desc *desc;
->>>>>>>>>>> +    nanosecs_abs_t timestamp;
->>>>>>>>>>>        };
->>>>>>>>>>>          struct rtdm_gpio_chip {
->>>>>>>>>>> diff --git a/include/rtdm/uapi/gpio.h b/include/rtdm/uapi/gpio.h
->>>>>>>>>>> index b745f156c..ac14be66c 100644
->>>>>>>>>>> --- a/include/rtdm/uapi/gpio.h
->>>>>>>>>>> +++ b/include/rtdm/uapi/gpio.h
->>>>>>>>>>> @@ -18,12 +18,18 @@
->>>>>>>>>>>        #ifndef _RTDM_UAPI_GPIO_H
->>>>>>>>>>>        #define _RTDM_UAPI_GPIO_H
->>>>>>>>>>>        -#define GPIO_RTIOC_DIR_OUT        _IOW(RTDM_CLASS_GPIO, 0,
->>>>>>>>>>> int)
->>>>>>>>>>> -#define GPIO_RTIOC_DIR_IN        _IO(RTDM_CLASS_GPIO, 1)
->>>>>>>>>>> -#define GPIO_RTIOC_IRQEN        _IOW(RTDM_CLASS_GPIO, 2, int) /*
->>>>>>>>>>> GPIO
->>>>>>>>>>> trigger */
->>>>>>>>>>> -#define GPIO_RTIOC_IRQDIS        _IO(RTDM_CLASS_GPIO, 3)
->>>>>>>>>>> -#define GPIO_RTIOC_REQS                _IO(RTDM_CLASS_GPIO, 4)
->>>>>>>>>>> -#define GPIO_RTIOC_RELS                _IO(RTDM_CLASS_GPIO, 5)
->>>>>>>>>>> +struct rtdm_gpio_readout {
->>>>>>>>>>> +    __u64 timestamp;
->>>>>>>>>>
->>>>>>>>>> nanosecs_abs_t - we use this type also in to userspace interface.
->>>>>>>>>>
->>>>>>>>>
->>>>>>>>> Nope. This is ABI stuff, nanosecs_abs_t is not guaranteed to
->>>>>>>>> have the
->>>>>>>>> same size regardless of the ABI models, which is unsafe in mixed
->>>>>>>>> 32/64
->>>>>>>>> model configurations. OTOH, __u64 is safe.
->>>>>>>>
->>>>>>>> If nanosecs_abs_t is alread an ABI, and it is used as such for a
->>>>>>>> long
->>>>>>>> time (see include/rtdm/uapi/serial.h). If you see a bug in its
->>>>>>>> definition, that needs to be fixed. We should not resolve that by
->>>>>>>> choosing open-coded local workarounds.
->>>>>>>>
->>>>>>>
->>>>>>> nanosecs_t is not defined in the Xenomai ABI, never has been. Using
->>>>>>> nanosecs_t in structs actually abuses such ABI. So we may either keep
->>>>>>> adding even more nanosecs, or fix the spots where it should be
->>>>>>> replaced
->>>>>>> with __u64.
->>>>>>
->>>>>> Xenomai ABI includes the driver ABI - so your assumption might have
->>>>>> been
->>>>>> it's not while it was de facto.
->>>>>>
->>>>>> Again, let's address the issue, not work around it.
->>>>>>
->>>>>
->>>>> __u64 is the fix, using nanosecs*_t in uapi/ is wrong. So please merge
->>>>> this fix, and we'll see how we can progress fixing other abuses.
->>>>
->>>> Nope: Adjust nanosecs_*_t if it has a problem ([u]int64_t vs. __u/s64 -
->>>> what's the problem exactly?), and use that. That will both address
->>>> existing users and future ones. No special solution for the GPIO driver
->>>> here.
->>>>
->>>
->>> I'm not pushing for a GPIO-specific solution, I'm pushing for using
->>> ABI-specific types which state their size explicitly in uapi/ data as
->>> much as possible, which is safer with mixed ABI models and would have
->>> spared me a lot of trouble back when I implemented the 32/64 ABI support
->>> for Xenomai. nanosecs_* is originally a kernel-side type which slipped
->>> in uapi/ structs, which does not state its size.
+On 14.02.19 16:12, Richard Weinberger wrote:
+> Am Donnerstag, 31. Januar 2019, 18:09:53 CET schrieb Jan Kiszka:
+>> From: Jan Kiszka <jan.kiszka@siemens.com>
 >>
->> No, it was designed and used for both side. I know best as I wrote and
->> first used that abstraction.
+>> Required to handle compat syscalls correctly.
 >>
+>> Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
+>> ---
+>>
+>> This is against next. The stable patch needs to touch kernel/cobalt
+>> /posix/syscall.c instead.
+>>
+>> Testing all these would be very appreciated!
 > 
-> Please avoid the "I know best" non-argument. I don't think it is
-> particularly relevant in this context, and the last thing we want is to
-> lose relevance when discussing technical matters.
-
-I just wanted to clarify the author's intention with and the usage of this type. 
-It seems you interpreted those differently, and we never talked about 
-assumptions regarding this detail. That's all.
-
+> Finally had time to test and review the patches.
+> The Problem I saw is gone. :-)
 > 
->>>
->>> The fact that nanosecs_* is defined as uint64_t but the kernel today
->>> does not address the issue at stake: there would be no obvious way to
->>> detect that a discrepancy might exist with what userland expects once
->>> such definition is modified for a different with if ever (which might be
->>> highly unlikely for nanosecs, but could happen for other types).
->>
->> So the good news is that a) we do not have a problem today and b) we can
->> safely prevent any hypothetical future by changing the definition of
->> nanosecs_*_t towards __u64/__s64 backing. So, if you are concerned about
->> the stability of standard-int, let's switch to the kernel uapi types for
->> nanosecs, use that also for the GPIO ABI, and call it a day.
->>
+> For all three patches:
+> Reviewed-by: Richard Weinberger <richard@nod.at>
+> Tested-by: Richard Weinberger <richard@nod.at>
 > 
-> Ok, you don't seem to understand my point. I'll switch to nanosecs*,
-> time is a scarce resource for me too.
 
-I thought you were referring to how nanosecs_*_t is implemented. If you concern 
-is how it's being used: We can clarify / state explicitly that it is today and 
-will remain tomorrow part of the RTDM ABI. But the fact that it is already ABI 
-will not change by implementing things differently only in the GPIO driver.
+Thanks for testing!
 
-Thanks for following my change request.
+Philippe, could you pick up the generic ipipe patch? I'll take care of the rest.
 
 Jan
 
