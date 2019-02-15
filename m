@@ -1,12 +1,9 @@
-From: Richard Weinberger <richard@nod.at>
-Subject: Re: [PATCH] cobalt: x86: Use ipipe_root_nr_syscalls
-Date: Thu, 14 Feb 2019 16:12:35 +0100
-Message-ID: <16324092.S9KuMY5lOr@blindfold>
-In-Reply-To: <cf2852a2-8000-d545-4d32-fcdab5ba4522@siemens.com>
-References: <cf2852a2-8000-d545-4d32-fcdab5ba4522@siemens.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7Bit
-Content-Type: text/plain; charset="us-ascii"
+From: Edouard Tisserant <edouard.tisserant@gmail.com>
+Date: Fri, 15 Feb 2019 13:54:16 +0100
+Message-ID: <CAOgDLiHxPvfY=7zUA-1nW-dP=kvbNRf_aogaFm5uuACUkKLTjw@mail.gmail.com>
+Subject: Missing include/cobalt/kernel/rtdm/net.h in 3.0.8 tarball.
+Content-Type: text/plain; charset="UTF-8"
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,31 +12,24 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jan Kiszka <jan.kiszka@siemens.com>, Philippe Gerum <rpm@xenomai.org>
-Cc: Xenomai <xenomai@xenomai.org>
+To: "Xenomai (xenomai@xenomai.org)" <xenomai@xenomai.org>
 
-Am Donnerstag, 31. Januar 2019, 18:09:53 CET schrieb Jan Kiszka:
-> From: Jan Kiszka <jan.kiszka@siemens.com>
-> 
-> Required to handle compat syscalls correctly.
-> 
-> Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
-> ---
-> 
-> This is against next. The stable patch needs to touch kernel/cobalt
-> /posix/syscall.c instead.
-> 
-> Testing all these would be very appreciated!
+Hi
 
-Finally had time to test and review the patches.
-The Problem I saw is gone. :-)
+Apparently, recently added include/cobalt/kernel/rtdm/net.h is missing
+in 3.0.8 tarball.
 
-For all three patches:
-Reviewed-by: Richard Weinberger <richard@nod.at>
-Tested-by: Richard Weinberger <richard@nod.at>
+Steps to reproduce :
 
-Thanks,
-//richard
+wget -q -O - https://gitlab.denx.de/Xenomai/xenomai/-/archive/v3.0.8/xenomai-v3.0.8.tar.gz
+| tar tz | grep include/cobalt/kernel/rtdm/net.h
+--> OK, file exist
 
+wget -q -O - https://www.xenomai.org/downloads/xenomai/stable/xenomai-3.0.8.tar.bz2
+| tar tj | grep include/cobalt/kernel/rtdm/net.h
+--> Not OK ! File is missing
 
+Best regards,
+
+Edouard
 
