@@ -1,13 +1,16 @@
-Date: Mon, 18 Feb 2019 07:08:55 -0600 (CST)
-From: Per Oberg <pero@wolfram.com>
-Message-ID: <731343616.4059321.1550495335135.JavaMail.zimbra@wolfram.com>
-In-Reply-To: <f51b37b7-4293-4b29-6d78-3eb460de3015@siemens.com>
-References: <1798013633.4056474.1550493375498.JavaMail.zimbra@wolfram.com>
- <f51b37b7-4293-4b29-6d78-3eb460de3015@siemens.com>
-Subject: Re: Cyclic hardware reset for e1000e
+Subject: [rtnet] e1000e/netdev.c deprecated pci_enable_msix
+References: <20181101175938.D29167FB@centrum.cz>
+ <33f0bc4d-f8ef-9950-74ac-8b62bca6f015@xenomai.org>
+ <20181102142031.712D8BE3@centrum.cz>
+ <77dbbfd9-f575-b361-45b8-2d299597a0d2@siemens.com>
+From: alessio margan <alessio.margan@iit.it>
+Message-ID: <5fe69155-3ecd-d8fe-3cfe-93cc6d3bea94@iit.it>
+Date: Mon, 18 Feb 2019 14:31:31 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
+In-Reply-To: <77dbbfd9-f575-b361-45b8-2d299597a0d2@siemens.com>
+Content-Type: text/plain; charset="utf-8"; format="flowed"
+Content-Transfer-Encoding: 8bit
+Content-Language: en-US
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,82 +19,75 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai <xenomai@xenomai.org>
+To: xenomai@xenomai.org
+
+Hi all,
+
+when compile the kernel linux-4.14.89-xeno-next I got this error, and I 
+need to use the e1000e driver.
+
+I come from a 4.9.51-xeno-3.0.6 and I would like to update xenomai with 
+the last changes
+
+For the moment I just comment the call to pci_enable_msix, there are any 
+progress for the API switch ?
+
+TIA
+
+Alessio
 
 
------ Den 18 feb 2019, p=C3=A5 kl 13:43, Jan Kiszka jan.kiszka@siemens.com =
-skrev:
 
-> On 18.02.19 13:36, Per Oberg via Xenomai wrote:
-> > Hello list
+On 02/11/18 15:49, Jan Kiszka via Xenomai wrote:
+> On 02.11.18 14:20, Petr Červenka via Xenomai wrote:
+>> You are right.
+>> The errors were because of version 3.0.7. I didn't realize, that 
+>> prepare-kernel.sh script doesn't only apply the patch. But it also 
+>> copies part of the xenomai to the kernel.
+>>   Meanwhile I tried the latest git (probably master branch). I got 
+>> another error (simple to fix) in one of the rtnet drivers:
+>> drivers/xenomai/net/drivers/e1000e/netdev.c: In function 
+>> ‘e1000e_set_interrupt_capability’:
+>> drivers/xenomai/net/drivers/e1000e/netdev.c:1225:11: error: implicit 
+>> declaration of function ‘pci_enable_msix’; did you mean 
+>> ‘pci_enable_msi’? [-Werror=implicit-function-declaration]
+>>       err = pci_enable_msix(adapter->pdev,
+>>             ^~~~~~~~~~~~~~~
+>>             pci_enable_msi
+>
+> Known issue: There is now pci_alloc_irq_vectors only. We need to 
+> switch to that API and provide backward compatible wrappers for < 4.8. 
+> If you do not need this driver, disable it for now.
+>
+> Jan
+>
+-- 
 
->> I have this issue where my e1000e network card gets into some kind of cy=
-clic
->> hardware reset during operation. The weird thing is that this only happe=
-ns when
->> I let systemd start the application. If it's started manually it always =
-works
-> > as intended.
+ISTITUTO ITALIANO DI TECNOLOGIA
 
->> I am running xenomai 3.0.7 with a linux-4.9.38 kernel and I use the netw=
-ork
-> > connection in Linux non-rt mode. I use systemd and NetworkManager.
+Alessio Margan
+Chief Technician
+Advanced Robotics Department
 
->> I do realize that once I get into the reset it will continue resetting b=
-ecause I
->> keep flooding the buffers. My issue is that it -never- happens when I st=
-art my
->> process manually, only when systemd starts it. Because the network goes =
-down
->> quite badly I cannot log in and disable the service once it happens and
->> therefore I cannot really try starting it manually after letting the net=
-work
-> > recover.
+alessio.margan@iit.it
+Via Morego 30, 16163 Genova
+Tel. +39 010 71781-754
 
->> There is some information from intel in [1] below. There is talk about p=
-ower
-> > management function and EPROM etc. They specifically write:
+www.iit.it
 
-> > "82573(V/L/E) TX Unit Hang Messages
->> Several adapters with the 82573 chipset display "TX unit hang" messages =
-during
->> normal operation with the e1000 driver. The issue appears both with TSO =
-enabled
->> and disabled, and is caused by a power management function that is enabl=
-ed in
->> the EEPROM. Early releases of the chipsets to vendors had the EEPROM bit=
- that
->> enabled the feature. After the issue was discovered newer adapters were
-> > released with the feature disabled in the EEPROM."
+Legal Disclaimer
+This electronic message contains information that is confidential. The information is intended for the use of the addressee only.
+If you are not the addressee we would appreciate your notification in this respect.
+Please note that any disclosure, copy, distribution or use of the contents of this message is prohibited and may be unlawful.
+We have taken every reasonable precaution to ensure that any kind of attachment to this e-mail has been swept for viruses.
+However, we cannot accept liability for any damage sustained as a result of software viruses
+and would advise you to carry out your own virus checks before opening any attachment.
+Avvertenza legale
+Questo messaggio Email contiene informazioni confidenziali riservate ai soli destinatari.
+Qualora  veniate in possesso di tali informazioni senza essere definito come destinatario vi reghiamo di leggere le seguenti note.
+Ogni apertura, copia, distribuzione del contenuto del messaggio e dei suoi allegati è proibito e potrebbe violare le presenti leggi.
+Abbiamo attivato ogni possibile e ragionevole precauzione per assicurare che gli allegati non contengano virus.
+Comunque non assumeremo alcuna responsabilità per ogni eventuale danno causato da virus software e simili
+in quanto è onere del destinatario verificarne l’assenza in ogni allegato attuando propri indipendenti controlli.
 
-
-> > I also read something about disabling GRO/TSO/GSO that helped some peop=
-le.
-
-> > My questions to the list are:
-
-> > 1. Have you guys any experience with this?
-> > 2. Would I be better of using the RT Net drivers?
->> 3. What could cause the issue to trigger only when run by systemd. (I th=
-ought
-> > about timing issues and NetworkManager, but how do I debug this?)
-
->> [1]
-> > https://serverfault.com/questions/193114/linux-e1000e-intel-networking-=
-driver-problems-galore-where-do-i-start
-
-> > Thoughts anyone?
-
-> Are you giving Linux enough time to work (no 100% RT domination of any co=
-re for
-> hundreds of milliseconds or longer)?
-
-I am not sure, yet. I have this logging function for reporting back to me w=
-hen I loose samples. Loosing samples would currently make the software try =
-to catch up and this would mean 100% cpu till it does. I do see this being =
-logged around the time it resets but I'm not sure if it's much worse than "=
-usual". If for some reason the hardware reset happens because linux gets st=
-arved I can easily see this going cyclic.
-
-Per =C3=96berg=20
 
