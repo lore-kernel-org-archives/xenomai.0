@@ -1,15 +1,11 @@
-Subject: Re: [PATCH] cobalt: x86: Use ipipe_root_nr_syscalls
-References: <cf2852a2-8000-d545-4d32-fcdab5ba4522@siemens.com>
- <16324092.S9KuMY5lOr@blindfold>
- <849bae3d-90b4-9950-cdd6-73a51a7a3589@siemens.com>
-From: Philippe Gerum <rpm@xenomai.org>
-Message-ID: <5f052b02-b5d5-8ed6-9880-11ea7eb58450@xenomai.org>
-Date: Fri, 15 Feb 2019 15:38:49 +0100
+From: Giulio Moro <g.moro@qmul.ac.uk>
+Subject: Disable watchdog
+Date: Mon, 18 Feb 2019 11:23:19 +0000
+Message-ID: <AM0PR07MB5572185C22361C2A197A5324B5630@AM0PR07MB5572.eurprd07.prod.outlook.com>
+Content-Language: en-GB
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-In-Reply-To: <849bae3d-90b4-9950-cdd6-73a51a7a3589@siemens.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -18,40 +14,31 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jan Kiszka <jan.kiszka@siemens.com>, Richard Weinberger <richard@nod.at>
-Cc: Xenomai <xenomai@xenomai.org>
+To: "Xenomai@xenomai.org" <Xenomai@xenomai.org>
 
-On 2/15/19 3:21 PM, Jan Kiszka wrote:
-> On 14.02.19 16:12, Richard Weinberger wrote:
->> Am Donnerstag, 31. Januar 2019, 18:09:53 CET schrieb Jan Kiszka:
->>> From: Jan Kiszka <jan.kiszka@siemens.com>
->>>
->>> Required to handle compat syscalls correctly.
->>>
->>> Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
->>> ---
->>>
->>> This is against next. The stable patch needs to touch kernel/cobalt
->>> /posix/syscall.c instead.
->>>
->>> Testing all these would be very appreciated!
->>
->> Finally had time to test and review the patches.
->> The Problem I saw is gone. :-)
->>
->> For all three patches:
->> Reviewed-by: Richard Weinberger <richard@nod.at>
->> Tested-by: Richard Weinberger <richard@nod.at>
->>
-> 
-> Thanks for testing!
-> 
-> Philippe, could you pick up the generic ipipe patch? I'll take care of
-> the rest.
-> 
+Hi there,
+I have my kernel (4.4.113-ti-xenomai-r149 on BeagleBone BlacK) compiled wit=
+h=20
+CONFIG_XENO_OPT_WATCHDOG=3Dy
+CONFIG_XENO_OPT_WATCHDOG_TIMEOUT=3D4
 
-It's already there.
+I would like to experience the breeze of running without watchdog, to see w=
+hat the bare-metal performance of the board are, removing the overhead of c=
+ontext switching and thread scheduling. I know this could be harmful for Li=
+nux, but I'd like to see what happens there. Is there any way I could disab=
+le the watchdog and have a thread busy waiting on a hardware flag, without =
+recompiling the kernel with CONFIG_XENO_OPT_WATCHDOG=3D0 ?
 
--- 
-Philippe.
+I have tried  catching SIGXCPU, and also using pthread_sigmask, e.g.:
+        sigset_t set;
+        int s;
+        sigemptyset(&set);
+        sigaddset(&set, SIGXCPU);
+        s =3D pthread_sigmask(SIG_BLOCK, &set, NULL);
+
+but in both cases my thread is temporarily preempted when the watchdog trig=
+gers.
+
+Thanks,
+Giulio=
 
