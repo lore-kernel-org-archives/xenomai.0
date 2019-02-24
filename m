@@ -1,12 +1,9 @@
-Date: Fri, 22 Feb 2019 12:33:17 +0100
-From: Henning Schild <henning.schild@siemens.com>
-Subject: Re: xenomai-3.0.5 include path
-Message-ID: <20190222123317.62f7fb3f@md1za8fc.ad001.siemens.net>
-In-Reply-To: <2019022210543291904613@aliyun.com>
-References: <2019022210543291904613@aliyun.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+From: C Smith <csmithquestions@gmail.com>
+Date: Sat, 23 Feb 2019 22:57:06 -0800
+Message-ID: <CA+K1mPFRVPqD_Gg2_7_PqcpegJ+ADJm3hea2AHxiHzwwBBG_iw@mail.gmail.com>
+Subject: Periodic timing varies across boots
+Content-Type: text/plain; charset="UTF-8"
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,39 +12,29 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "demon.han--- via Xenomai" <xenomai@xenomai.org>
-Cc: "demon.han@aliyun.com" <demon.han@aliyun.com>
+To: xenomai@xenomai.org
 
-Hi,
+I am using Xenomai 2.6.5, x86 32bit SMP kernel 3.18.20, Intel Core
+i5-4460,  and I have found a periodic timing problem on one particular type
+of motherboard.
 
-did you compare the two files? My guess would be that you are on a
-system where a careless "make install" was run on multiple versions of
-xenomai, possibly with prefix dirs set.
+I have a Xenomai RT periodic task which outputs a pulse to the PC parallel
+port, and this pulse is measured on a frequency counter. This has been
+working fine for years on several motherboards. I am able to adjust the
+period of my task to within +/-10nsec, according to the frequency counter.
+I can calibrate the periodic timing down to a period +/-10nsec on this
+motherboard, and I cna restart my xenomai process many times and the timing
+is fine. But if I cold-reboot the machine the measured period is wrong by
+up to  +/-300nsec. Thus I cannot get consistent periodic timing from day to
+day without recalibrating, which is unacceptable in my application.
 
-Once you are sure that both headers are indeed coming out of the same
-installation, it would be time to look the the install target of make.
+In my kernel config, I am using the TSC: CONFIG_X86_TSC=y
+I use rt_timer_read() to determine what time it is, and my periodic task
+sleeps in a while loop, like this:
+      next += period_ns + adjust_ns;
+      rt_task_sleep_until(next);
 
-Henning
+I don't know what to test. Can you suggest anything?
 
-Am Fri, 22 Feb 2019 10:54:33 +0800
-schrieb demon.han--- via Xenomai <xenomai@xenomai.org>:
-
-> Hi,
-> I am working on xenomai3.0.5 with Eherlab Ethercat.
-> Here I got a problem.
-> After installing xenomai,I got 2 include directory:
-> 1. /usr/include/xenomai
-> 2./usr/xenomai/include
-> I find rtdm_driver.h in /usr/include/xenomai but
-> out /usr/xenomai/include. This cause a problem,I think:
-> when I compile Etherlab,I got error as"/master/rtdm.c:37:30: fatal
-> error: rtdm/rtdm_driver.h: No such file or directory", so I copy the
-> header to /usr/xenomai/include/rtdm,and the error is fixed. Is there
-> another way to fix the problem? Best Wishes.
-> demon.
-> 
-> 
-> 
-> demon.han@aliyun.com
-
-
+Thanks,
+-C Smith
