@@ -1,13 +1,16 @@
-Date: Sat, 26 Jan 2019 16:04:17 +0800 (CST)
-From: =?UTF-8?B?5byg5bu65piG?= <kunzj@126.com>
-Subject: =?UTF-8?Q?=E5=9B=9E=E5=A4=8D:Re:Xenomai_Digest,_Vol_81,_Issue_19?=
-In-Reply-To: <2af28b92.3f7c.16888885ce4.Coremail.liang_1911@163.com>
-References: <mailman.1.1548154801.18919.xenomai@xenomai.org>
- <2af28b92.3f7c.16888885ce4.Coremail.liang_1911@163.com>
+Subject: Re: Fwd: Debugging system freeze, SIGXCPU
+References: <CAJA_znn4P=_tmbcKCipcmYrhPUhFw4JrMWv2VAMVR0DYSx9iMA@mail.gmail.com>
+ <CAJA_znnmCr7QSjsnSQbLRYTM+CyBex05sBV0gbOdVQgYuBK0Tw@mail.gmail.com>
+ <0509ec7d-20b3-bc38-7a04-7516f24249a1@xenomai.org>
+ <CAJA_znmGTe3C5-YoxYH1ufN7j8rrRgA_Pd8+7cYtP673C8Bhiw@mail.gmail.com>
+From: Jan Kiszka <jan.kiszka@siemens.com>
+Message-ID: <22ae4956-2359-6fda-02ed-c174df3dd015@siemens.com>
+Date: Mon, 25 Feb 2019 18:28:12 +0100
 MIME-Version: 1.0
-Message-ID: <24db6455.1cf3.1688930190c.Coremail.kunzj@126.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: base64
+In-Reply-To: <CAJA_znmGTe3C5-YoxYH1ufN7j8rrRgA_Pd8+7cYtP673C8Bhiw@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,88 +19,68 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: liang_1911 <liang_1911@163.com>, xenomai@xenomai.org
+To: Ari Mozes <arimozes@neocisinc.com>, xenomai@xenomai.org
 
-SGkgbGlhbmcsIFRoYW5rcyEKCkkndmUgcmVhZCB5b3VyIGxpbmssIHdpbGwgdHJ5IGxhdGVyLgoK
-VGhpcyBpcyB0aGUgd2F5IGkgcmVnaXN0ZXIgdGhlIGlycSBoYW5kbGVyOgogICAgZXJyb3IgPSBy
-ZXF1ZXN0X3RocmVhZGVkX2lycShjbGllbnQtPmlycSwgTlVMTCwgZWR0X2Z0NXgwNl90c19pc3Is
-CiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIElSUUZfVFJJR0dFUl9GQUxMSU5HIHwg
-SVJRRl9PTkVTSE9UIHwgSVJRRl9OT19TVVNQRU5ELAogICAgICAgICAgICAgICAgICAgICAgICAg
-ICAgICAgICBjbGllbnQtPm5hbWUsIHRzZGF0YSk7ClRoZSBjb2RlIGlzIGluIG15IGRyaXZlciBm
-dW5jdGlvbiBlZHRfZnQ1eDA2X3RzX3Byb2JlOwoKClRoZSBjYWxsIHRyYWNlIGF0IHN0YXJ0IHVw
-IHdpdGggaXBpcGUgYXJlOgoKMS4KZWR0X2Z0NXgwNl90c19wcm9iZQogZ3Bpb2RfdG9faXJxCiAg
-Z3Bpb2NoaXBfdG9faXJxCiAgIGlycV9jcmVhdGVfbWFwcGluZwogICAgaXJxX2RvbWFpbl9hc3Nv
-Y2lhdGUKICAgICBncGlvY2hpcF9pcnFfbWFwCiAgICAgIGlycV9zZXRfY2hpcF9hbmRfaGFuZGxl
-cl9uYW1lCiAgICAgICBfX2lycV9zZXRfaGFuZGxlcgogICAgICAgIF9faXJxX2RvX3NldF9oYW5k
-bGVyCiAgICAgICAgIF9fZml4dXBfaXJxX2hhbmRsZXIKMi4Kb21hcF9ncGlvX3Byb2JlCiBvbWFw
-X2dwaW9fY2hpcF9pbml0CiAgZ3Bpb2NoaXBfaXJxY2hpcF9hZGQoJmJhbmstPmNoaXAsIGlycWMs
-IGlycV9iYXNlLCBoYW5kbGVfYmFkX2lycSwgSVJRX1RZUEVfTk9ORSk7CiAgIGdwaW9jaGlwX2ly
-cWNoaXBfYWRkX2tleSAgICAgc3RydWN0IGdwaW9fY2hpcC0+aXJxX2hhbmRsZXIKICBpcnFfc2V0
-X2NoYWluZWRfaGFuZGxlcl9hbmRfZGF0YSAgc3RydWN0IGdwaW9fY2hpcC0+aXJxX2hhbmRsZXIg
-b21hcF9ncGlvX2lycV9oYW5kbGVyCgoKCgoKCgrlnKggMjAxOS0wMS0yNiAxMzowMTowNO+8jCJs
-aWFuZ18xOTExIHZpYSBYZW5vbWFpIiA8eGVub21haUB4ZW5vbWFpLm9yZz4g5YaZ6YGT77yaCj5I
-aSwgSmlhbkt1bgo+SG93IGRvIHlvdSByZWdpc3RlciB0aGUgIGlycSBoYW5kbGVyPwo+WW91IGNh
-biByZWZlciB0byB0aGlzIGxpbms6Cj5iYmLmnb/lrZB4ZW5vbWFpIEdQSU8gaXJx6amx5Yqo5Ye6
-546w5byC5bi4IC0gU2l0YXJh4oSiIENvcnRleC1BOCDlkowgQVJNOSDlvq7lpITnkIblmaggLSBT
-aXRhcmHihKIgQ29ydGV4LUE4IOWSjCBBUk05IOW+ruWkhOeQhuWZqCAtIFRJIEUyReKEoiDkuK3m
-lofnpL7ljLoKPgo+Cj4tLQo+Cj4tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0t
-LS0tLS0tLS0tCj4gICAgICAgICBRdWFuCj5USEFOS1MgJiBCUiEKPgo+Cj4KPgo+Cj5BdCAyMDE5
-LTAxLTIyIDE5OjAwOjAxLCB4ZW5vbWFpLXJlcXVlc3RAeGVub21haS5vcmcgd3JvdGU6Cj4+U2Vu
-ZCBYZW5vbWFpIG1haWxpbmcgbGlzdCBzdWJtaXNzaW9ucyB0bwo+Pgl4ZW5vbWFpQHhlbm9tYWku
-b3JnCj4+Cj4+VG8gc3Vic2NyaWJlIG9yIHVuc3Vic2NyaWJlIHZpYSB0aGUgV29ybGQgV2lkZSBX
-ZWIsIHZpc2l0Cj4+CWh0dHBzOi8veGVub21haS5vcmcvbWFpbG1hbi9saXN0aW5mby94ZW5vbWFp
-Cj4+b3IsIHZpYSBlbWFpbCwgc2VuZCBhIG1lc3NhZ2Ugd2l0aCBzdWJqZWN0IG9yIGJvZHkgJ2hl
-bHAnIHRvCj4+CXhlbm9tYWktcmVxdWVzdEB4ZW5vbWFpLm9yZwo+Pgo+PllvdSBjYW4gcmVhY2gg
-dGhlIHBlcnNvbiBtYW5hZ2luZyB0aGUgbGlzdCBhdAo+Pgl4ZW5vbWFpLW93bmVyQHhlbm9tYWku
-b3JnCj4+Cj4+V2hlbiByZXBseWluZywgcGxlYXNlIGVkaXQgeW91ciBTdWJqZWN0IGxpbmUgc28g
-aXQgaXMgbW9yZSBzcGVjaWZpYwo+PnRoYW4gIlJlOiBDb250ZW50cyBvZiBYZW5vbWFpIGRpZ2Vz
-dC4uLiIKPj4KPj4KPj5Ub2RheSdzIFRvcGljczoKPj4KPj4gICAxLiBSZTpIZWxwOiBTeXN0ZW0g
-ZnJlZXplIHdoZW4gZWRnZSBpbnRlcnJ1cHQgdHJpZ2dlciwKPj4gICAgICBYZW5vbWFpbjMuMC44
-LCBpcGlwZS1hcm0gbWFpbiBsaW5lLCBhbTMzNXggKOW8oOW7uuaYhikKPj4KPj4KPj4tLS0tLS0t
-LS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0t
-LS0tLS0tCj4+Cj4+TWVzc2FnZTogMQo+PkRhdGU6IFR1ZSwgMjIgSmFuIDIwMTkgMTg6MzM6NTAg
-KzA4MDAgKENTVCkKPj5Gcm9tOiDlvKDlu7rmmIYgPGt1bnpqQDEyNi5jb20+Cj4+VG86IHhlbm9t
-YWlAeGVub21haS5vcmcKPj5TdWJqZWN0OiBSZTpIZWxwOiBTeXN0ZW0gZnJlZXplIHdoZW4gZWRn
-ZSBpbnRlcnJ1cHQgdHJpZ2dlciwKPj4JWGVub21haW4zLjAuOCwgaXBpcGUtYXJtIG1haW4gbGlu
-ZSwgYW0zMzV4Cj4+TWVzc2FnZS1JRDogPDRkZGQ2MTQuNzZkNy4xNjg3NTFmOTM4NS5Db3JlbWFp
-bC5rdW56akAxMjYuY29tPgo+PkNvbnRlbnQtVHlwZTogdGV4dC9wbGFpbjsgY2hhcnNldD1HQksK
-Pj4KPj5IZWxsbyBldmVyeW9uZSwgaGVyZSBpcyBzb21lIG5ldyBjbHVlczoKPj4xLiBJIHRyaWVk
-IHhlbm9tYWkgMy4wLjgsIGtlcm5lbCAzLjE0LjE3IGFuZCBpcGlwZS1jb3JlLTQuMTQuNzEtYXJt
-LTQucGF0Y2guIFN0aWxsIHRoZSBzYW1lIHF1ZXN0aW9uLgo+Pgo+PjIuIEl0IHNlZW1zIHRoZSBz
-eXN0ZW0gaXMgbG9ja2VkIHVwIG9uY2UgYSBncGlvIGludGVycnVwdCBpcyB0cmlnZ2VyZWQuCj4+
-Cj4+My4gU29tZSBkZWJ1ZyBpbmZvcm1hdGlvbiBzaG93IHRoYXQsIG9uY2UgYSBncGlvIGludGVy
-cnVwdCBpcyB0cmlnZ2VyZWQsIHRoZSBmdW5jdGlvbgo+Pgo+PiAgICAnb21hcF9ncGlvX2lycV9o
-YW5kbGVyJyBpcyB0cmlnZ2VyZWQgYWxsIHRoZSB0aW1lLgo+Pgo+PlRoZXJlIG1heSBiZSBhIGxp
-dHRsZSBidWcgZXhpc3RzLCBidXQgaSBkb24ndCBrbm93IGhvdyB0byBhbWVuZCBpdC4gVGhhbmsg
-eW91IHZlcnkgbXVjaCwgaWYgYW55b25lIGNhbiBoZWxwLgo+Pgo+Pj4tLS0tLS0tLS0tLS0tLS0t
-LS0tLS0tLS0tLS0tLS0KPj4+Cj4+Pk1lc3NhZ2U6IDMKPj4+RGF0ZTogRnJpLCAxOCBKYW4gMjAx
-OSAxMTo0ODoxMiArMDgwMCAoQ1NUKQo+Pj5Gcm9tOiDlvKDlu7rmmIYgPGt1bnpqQDEyNi5jb20+
-Cj4+PlRvOiB4ZW5vbWFpQHhlbm9tYWkub3JnCj4+PlN1YmplY3Q6IEhlbHA6IFN5c3RlbSBmcmVl
-emUgd2hlbiBlZGdlIGludGVycnVwdCB0cmlnZ2VyLAo+Pj4JWGVub21haW4zLjAuOCwgaXBpcGUt
-YXJtIG1haW4gbGluZSwgYW0zMzV4Cj4+Pk1lc3NhZ2UtSUQ6IDw1NWM4OWM3Ni4zNDIwLjE2ODVm
-MTJjNDg4LkNvcmVtYWlsLmt1bnpqQDEyNi5jb20+Cj4+PkNvbnRlbnQtVHlwZTogdGV4dC9wbGFp
-bjsgY2hhcnNldD0iZ2JrIgo+Pj4KPj4+SGVsbG8hCj4+PiAgICBUaGUgc3lzdGVtIGZyZWV6ZSB3
-aGVuIGludGVycnVwdCBpcyB0cmlnZ2VyZWQuIEkgY2xvbmUgaXBpcGUtYXJtIG1hc3RlciwgYW5k
-IHVzZSB4ZW5vbWFpIDMuMC44IGZvbGxvd2luZyB4ZW5vbWFpIHN0YXJ0dXAgdHV0b3JpYWwuCj4+
-PlRoZSBoYXJkd2FyZSBjcHUgaXMgYW0zMzU4LiBTeXN0ZW0gd29ya3MgZmluZSBhZnRlciBzdGFy
-dCB1cCwgYnV0IHRoZSBzeXN0ZW0gaW1tZWRpYXRlbHkgbG9ja3MgdXAgd2hlbiBhIGVkZ2UgaW50
-ZXJydXB0LiBGb3IgZXhhbXBsZSwKPj4+dGhlIG1tYyBjYXJkIGluIHBsdWdlZCBpbi4gSXMgaXQg
-c29tZXRoaW5nIHdvcm5nID8gVGhhbmsgeW91IHZlcnkgbXVjaCEKPj4+Cj4+PiAgICBUaGUga2Vy
-bmVsIGNvbmZpZyBmaWxlIGFuZCBkdHMgYXR0YWNoZWQuCj4+Pgo+Pj4KPj4+LS0tLS0tLS0tLS0t
-LS0gbmV4dCBwYXJ0IC0tLS0tLS0tLS0tLS0tCj4+PkEgbm9uLXRleHQgYXR0YWNobWVudCB3YXMg
-c2NydWJiZWQuLi4KPj4+TmFtZTogLmNvbmZpZwo+Pj5UeXBlOiBhcHBsaWNhdGlvbi9vY3RldC1z
-dHJlYW0KPj4+U2l6ZTogMTI5NTkxIGJ5dGVzCj4+PkRlc2M6IG5vdCBhdmFpbGFibGUKPj4+VVJM
-OiA8aHR0cDovL3hlbm9tYWkub3JnL3BpcGVybWFpbC94ZW5vbWFpL2F0dGFjaG1lbnRzLzIwMTkw
-MTE4LzUzODE3NWY5L2F0dGFjaG1lbnQub2JqPgo+Pj4tLS0tLS0tLS0tLS0tLSBuZXh0IHBhcnQg
-LS0tLS0tLS0tLS0tLS0KPj4+QSBub24tdGV4dCBhdHRhY2htZW50IHdhcyBzY3J1YmJlZC4uLgo+
-Pj5OYW1lOiBhbTMzNXgtZG5rLXYxX0xDRDgwMHg0ODBfVE0wNzBSREgxMy5kdHMKPj4+VHlwZTog
-YXBwbGljYXRpb24vb2N0ZXQtc3RyZWFtCj4+PlNpemU6IDI5NDM2IGJ5dGVzCj4+PkRlc2M6IG5v
-dCBhdmFpbGFibGUKPj4+VVJMOiA8aHR0cDovL3hlbm9tYWkub3JnL3BpcGVybWFpbC94ZW5vbWFp
-L2F0dGFjaG1lbnRzLzIwMTkwMTE4LzUzODE3NWY5L2F0dGFjaG1lbnQtMDAwMS5vYmo+Cj4+Pgo+
-Pj4tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0KPj4+Cj4+PlN1YmplY3Q6IERpZ2VzdCBG
-b290ZXIKPj4+Cj4+Pgo+Pj4KPj4+Cj4+Pi0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLQo+
-Pj4KPj4+RW5kIG9mIFhlbm9tYWkgRGlnZXN0LCBWb2wgODEsIElzc3VlIDE3Cj4+PioqKioqKioq
-KioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKgo+Pgo+Pi0tLS0tLS0tLS0tLS0tLS0tLS0t
-LS0tLS0tLS0tLQo+Pgo+PlN1YmplY3Q6IERpZ2VzdCBGb290ZXIKPj4KPj4KPj4KPj4KPj4tLS0t
-LS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0KPj4KPj5FbmQgb2YgWGVub21haSBEaWdlc3QsIFZv
-bCA4MSwgSXNzdWUgMTkKPj4qKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioK
+On 25.02.19 17:57, Ari Mozes via Xenomai wrote:
+> Philippe,
+> Thank you for the information and the URL.
+> I read through the thread, and I agree with comments that it would be
+> helpful to be able to identify/blacklist/etc problematic calls when
+> porting over existing code to a true RT scenario.  In our case the
+> original code was written with "RT-like" behavior in mind, but as
+> there is a lot of code already in place, approaches to identify
+> existing problematic calls would be helpful.
+
+You could wrap such calls like we do for malloc/free in libcobalt. But wrapping 
+only works if the direct caller is processed that way - and is not some 
+pre-built external library.
+
+Therefore: Do not use libraries that you didn't validate from within 
+time-sensitive code paths. Also libstdc++ may contain more surprises.
+
+Jan
+
+> I will continue to familiarize myself with the nitty-gritty details,
+> but anything that makes the process easier is always welcome :-)
+> 
+> Ari
+> 
+> 
+> On Mon, Feb 25, 2019 at 11:08 AM Philippe Gerum <rpm@xenomai.org> wrote:
+>>
+>> On 2/25/19 2:32 PM, Ari Mozes via Xenomai wrote:
+>>> Resending this question with testcase.
+>>> Can someone give the testcase a try to see if it reproduces the problem I
+>>> am seeing?  Is more information needed?
+>>> It takes a couple of minutes before I see the issue occur.
+>>
+>> The random lockup is due to std::chrono::high_resolution_clock::now()
+>> invoking the vDSO form of clock_gettime().
+>>
+>> SIGXCPU aka Xenomai's SIGDEBUG may be sent by the core in various
+>> situations, but since the code does not set the T_WARNSW for any task,
+>> the only explanation is receiving a Xenomai watchdog notification. See
+>> the help information about CONFIG_XENO_OPT_WATCHDOG in your kernel
+>> configuration.
+>>
+>> After a few secs spinning in the vDSO code which may not be called from
+>> real-time context, the Xenomai core pulls the break and sends SIGXCPU to
+>> the offending process, unless the system locks up before the watchdog
+>> could even trigger.
+>>
+>> Solution: use clock_gettime(CLOCK_HOST_REALTIME) instead of
+>> std::chrono::high_resolution_clock::now() for getting timestamps.
+>>
+>> A related discussion is available at this URL:
+>> https://www.xenomai.org/pipermail/xenomai/2018-December/040133.html
+>>
+>> --
+>> Philippe.
+> 
+> 
+> 
+
+-- 
+Siemens AG, Corporate Technology, CT RDA IOT SES-DE
+Corporate Competence Center Embedded Linux
+
