@@ -1,17 +1,13 @@
-Subject: Re: [PATCH 04/18] drivers/ipc: bufp: fix read-write, write-write
- preemption cases
-References: <20190204105647.5034-1-rpm@xenomai.org>
- <20190204105647.5034-5-rpm@xenomai.org>
- <65e6852d-df81-258e-3d1b-804009f44570@siemens.com>
- <b6c4e80e-bf05-7fb9-c27a-b191d341f232@xenomai.org>
-From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <bdd13d46-aefe-7e74-0f46-235fb52bd660@siemens.com>
-Date: Mon, 25 Feb 2019 19:17:22 +0100
+Subject: Re: Possible Cobalt mqueue issue
+References: <5C741D7B.5080108@freyder.net>
+ <1a1a8dfe-e56c-5d1f-5880-7d4100cf4a23@siemens.com>
+From: Steve Freyder <steve@freyder.net>
+Message-ID: <5C74362A.6090505@freyder.net>
+Date: Mon, 25 Feb 2019 12:38:34 -0600
 MIME-Version: 1.0
-In-Reply-To: <b6c4e80e-bf05-7fb9-c27a-b191d341f232@xenomai.org>
-Content-Type: text/plain; charset="utf-8"; format="flowed"
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+In-Reply-To: <1a1a8dfe-e56c-5d1f-5880-7d4100cf4a23@siemens.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 7bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -20,47 +16,40 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Philippe Gerum <rpm@xenomai.org>, xenomai@xenomai.org
+To: Jan Kiszka <jan.kiszka@siemens.com>, "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On 05.02.19 12:20, Philippe Gerum via Xenomai wrote:
-> On 2/4/19 7:55 PM, Jan Kiszka wrote:
->>> -             * Release the lock while copying the data to
->>> -             * keep latency low.
->>> +             * We have to drop the lock while reading in
->>> +             * data, but we can't rollback on bad read
->>> +             * from user because some other thread might
->>> +             * have populated the memory ahead of our
->>> +             * write slot already: bluntly clear the
->>> +             * unavailable bytes on copy error.
->>>                 */
->>>                cobalt_atomic_leave(s);
->>> -            ret = xnbufd_copy_to_kmem(rsk->bufmem + wroff, bufd, n);
->>> -            if (ret < 0)
->>> -                return ret;
->>> +            xret = xnbufd_copy_to_kmem(rsk->bufmem + wroff, bufd, n);
->>>                cobalt_atomic_enter(s);
->>> -            /*
->>> -             * In case we were preempted while copying the
->>> -             * message, we have to write the whole thing
->>> -             * again.
->>> -             */
->>> -            if (rsk->wrtoken != wrtoken) {
->>> -                xnbufd_reset(bufd);
->>> -                goto redo;
->>> +            if (xret < 0) {
->>> +                memset(rsk->bufmem + wroff + n - xret, 0, xret);
+
+
+On 2/25/2019 11:15 AM, Jan Kiszka wrote:
+> On 25.02.19 17:53, Steve Freyder via Xenomai wrote:
+>> Greetings again,
 >>
->> This looks fishy, to the compiler and also to me.
+>> Recently I have converted my codebase from using Alchemy-based queues 
+>> (rt_queue_xx) to Cobalt (Posix) mqueues for all inter-process 
+>> communication, and using rt_queue queues only for communication 
+>> between threads in the same process.
 >>
-> Oh, well. Paste&copy blunder, the fix originates from a distinct
-> co-kernel implementation. I'll resubmit.
-> 
+>> This is running on Xenomai 3.0.7 built from -next (our vendor does 
+>> the Xenomai/kernel builds):
+>
+> Was that really 3.0.7, not 3.0.8 or latest stable-3.0.x? There e.g. 
+> https://gitlab.denx.de/Xenomai/xenomai/commit/4924717ec5cbc694afc1b91ba7d525b80901d44d 
+> since 3.0.7, and you backtrace kind of looks familiar /wrt that.
+>
+> Jan
+>
+>>
+>> Linux g3l-36 4.1.18_C01571-15S01-00.002.zimg+83fdace666 #4 SMP Tue 
+>> Aug 21 11:22:31 CDT 2018 armv7l GNU/Linux
+Now that I see that, you're absolutely right and I do apologize for 
+bothering you with this.  After looking at that patch (from October 
+2018) I do remember when you originally posted it and thinking at the 
+time that I needed to pick it up in a future build.  The build from Aug 
+21 2018 was 3.0.7 and didn't include your 4924717e fix.  I guess it is 
+time for me to move to a stable-3.0.9 build!
 
-Did I get that update already? I don't think so.
+Thanks,
+Steve
 
-Jan
 
--- 
-Siemens AG, Corporate Technology, CT RDA IOT SES-DE
-Corporate Competence Center Embedded Linux
 
