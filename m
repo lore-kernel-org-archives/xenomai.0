@@ -1,14 +1,9 @@
-Subject: Re: Fwd: Debugging system freeze, SIGXCPU
-References: <CAJA_znn4P=_tmbcKCipcmYrhPUhFw4JrMWv2VAMVR0DYSx9iMA@mail.gmail.com>
- <CAJA_znnmCr7QSjsnSQbLRYTM+CyBex05sBV0gbOdVQgYuBK0Tw@mail.gmail.com>
- <0509ec7d-20b3-bc38-7a04-7516f24249a1@xenomai.org>
- <CAJA_znmGTe3C5-YoxYH1ufN7j8rrRgA_Pd8+7cYtP673C8Bhiw@mail.gmail.com>
 From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <22ae4956-2359-6fda-02ed-c174df3dd015@siemens.com>
-Date: Mon, 25 Feb 2019 18:28:12 +0100
+Subject: [PATCH] ipipe: Clean up per-CPU host timers on hotplug
+Message-ID: <218c3aa3-11cf-8b4e-63e7-ee168e4133c0@siemens.com>
+Date: Mon, 25 Feb 2019 18:42:18 +0100
 MIME-Version: 1.0
-In-Reply-To: <CAJA_znmGTe3C5-YoxYH1ufN7j8rrRgA_Pd8+7cYtP673C8Bhiw@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
@@ -19,68 +14,88 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Ari Mozes <arimozes@neocisinc.com>, xenomai@xenomai.org
+To: Philippe Gerum <rpm@xenomai.org>
+Cc: Xenomai <xenomai@xenomai.org>
 
-On 25.02.19 17:57, Ari Mozes via Xenomai wrote:
-> Philippe,
-> Thank you for the information and the URL.
-> I read through the thread, and I agree with comments that it would be
-> helpful to be able to identify/blacklist/etc problematic calls when
-> porting over existing code to a true RT scenario.  In our case the
-> original code was written with "RT-like" behavior in mind, but as
-> there is a lot of code already in place, approaches to identify
-> existing problematic calls would be helpful.
+From: Jan Kiszka <jan.kiszka@siemens.com>
 
-You could wrap such calls like we do for malloc/free in libcobalt. But wrapping 
-only works if the direct caller is processed that way - and is not some 
-pre-built external library.
+When a CPU is unplugged, make sure to drop all per-CPU ipipe timer
+devices when removing the CPU. Otherwise, we will corrupt the device
+list when re-registering the host timer on CPU onlining.
 
-Therefore: Do not use libraries that you didn't validate from within 
-time-sensitive code paths. Also libstdc++ may contain more surprises.
+Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
+---
+ include/linux/ipipe_tickdev.h |  5 +++++
+ kernel/ipipe/timer.c          | 15 +++++++++++++++
+ kernel/time/clockevents.c     |  5 ++++-
+ 3 files changed, 24 insertions(+), 1 deletion(-)
 
-Jan
-
-> I will continue to familiarize myself with the nitty-gritty details,
-> but anything that makes the process easier is always welcome :-)
-> 
-> Ari
-> 
-> 
-> On Mon, Feb 25, 2019 at 11:08 AM Philippe Gerum <rpm@xenomai.org> wrote:
->>
->> On 2/25/19 2:32 PM, Ari Mozes via Xenomai wrote:
->>> Resending this question with testcase.
->>> Can someone give the testcase a try to see if it reproduces the problem I
->>> am seeing?  Is more information needed?
->>> It takes a couple of minutes before I see the issue occur.
->>
->> The random lockup is due to std::chrono::high_resolution_clock::now()
->> invoking the vDSO form of clock_gettime().
->>
->> SIGXCPU aka Xenomai's SIGDEBUG may be sent by the core in various
->> situations, but since the code does not set the T_WARNSW for any task,
->> the only explanation is receiving a Xenomai watchdog notification. See
->> the help information about CONFIG_XENO_OPT_WATCHDOG in your kernel
->> configuration.
->>
->> After a few secs spinning in the vDSO code which may not be called from
->> real-time context, the Xenomai core pulls the break and sends SIGXCPU to
->> the offending process, unless the system locks up before the watchdog
->> could even trigger.
->>
->> Solution: use clock_gettime(CLOCK_HOST_REALTIME) instead of
->> std::chrono::high_resolution_clock::now() for getting timestamps.
->>
->> A related discussion is available at this URL:
->> https://www.xenomai.org/pipermail/xenomai/2018-December/040133.html
->>
->> --
->> Philippe.
-> 
-> 
-> 
-
+diff --git a/include/linux/ipipe_tickdev.h b/include/linux/ipipe_tickdev.h
+index 90395095e115..e222e839c3be 100644
+--- a/include/linux/ipipe_tickdev.h
++++ b/include/linux/ipipe_tickdev.h
+@@ -102,6 +102,11 @@ extern unsigned long __ipipe_hrtimer_freq;
+  */
+ void ipipe_host_timer_register(struct clock_event_device *clkevt);
+ 
++/*
++ * Called by tick_cleanup_dead_cpu, to drop per-CPU timer devices
++ */
++void ipipe_host_timer_cleanup(struct clock_event_device *clkevt);
++
+ /*
+  * Register a standalone ipipe timer
+  */
+diff --git a/kernel/ipipe/timer.c b/kernel/ipipe/timer.c
+index bbb3c8f4a7ab..5532be93e951 100644
+--- a/kernel/ipipe/timer.c
++++ b/kernel/ipipe/timer.c
+@@ -145,6 +145,21 @@ void ipipe_host_timer_register(struct clock_event_device *evtdev)
+ 	ipipe_timer_register(timer);
+ }
+ 
++#ifdef CONFIG_HOTPLUG_CPU
++void ipipe_host_timer_cleanup(struct clock_event_device *evtdev)
++{
++	struct ipipe_timer *timer = evtdev->ipipe_timer;
++	unsigned long flags;
++
++	if (timer == NULL)
++		return;
++
++	raw_spin_lock_irqsave(&lock, flags);
++	list_del(&timer->link);
++	raw_spin_unlock_irqrestore(&lock, flags);
++}
++#endif /* CONFIG_HOTPLUG_CPU */
++
+ /*
+  * register a timer: maintain them in a list sorted by rating
+  */
+diff --git a/kernel/time/clockevents.c b/kernel/time/clockevents.c
+index fd6894afff6b..1db5e25abde3 100644
+--- a/kernel/time/clockevents.c
++++ b/kernel/time/clockevents.c
+@@ -630,8 +630,10 @@ void tick_cleanup_dead_cpu(int cpu)
+ 	 * Unregister the clock event devices which were
+ 	 * released from the users in the notify chain.
+ 	 */
+-	list_for_each_entry_safe(dev, tmp, &clockevents_released, list)
++	list_for_each_entry_safe(dev, tmp, &clockevents_released, list) {
+ 		list_del(&dev->list);
++		ipipe_host_timer_cleanup(dev);
++	}
+ 	/*
+ 	 * Now check whether the CPU has left unused per cpu devices
+ 	 */
+@@ -641,6 +643,7 @@ void tick_cleanup_dead_cpu(int cpu)
+ 		    !tick_is_broadcast_device(dev)) {
+ 			BUG_ON(!clockevent_state_detached(dev));
+ 			list_del(&dev->list);
++			ipipe_host_timer_cleanup(dev);
+ 		}
+ 	}
+ 	raw_spin_unlock_irqrestore(&clockevents_lock, flags);
 -- 
-Siemens AG, Corporate Technology, CT RDA IOT SES-DE
-Corporate Competence Center Embedded Linux
+2.16.4
 
