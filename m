@@ -1,15 +1,9 @@
-Subject: Re: Possible Cobalt mqueue issue
-References: <5C741D7B.5080108@freyder.net>
- <1a1a8dfe-e56c-5d1f-5880-7d4100cf4a23@siemens.com>
- <5C74362A.6090505@freyder.net>
-From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <a2f21c87-e46f-141e-8141-b5d992eede58@siemens.com>
-Date: Mon, 25 Feb 2019 19:56:55 +0100
 MIME-Version: 1.0
-In-Reply-To: <5C74362A.6090505@freyder.net>
-Content-Type: text/plain; charset="utf-8"; format="flowed"
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+From: Norbert Lange <nolange79@gmail.com>
+Date: Tue, 26 Feb 2019 00:10:27 +0100
+Message-ID: <CADYdroMXfpiF0Yv+tGg2FGZmKxOiz9e7eUfRE5u9EGgVBzDH_g@mail.gmail.com>
+Subject: Re: Fwd: Debugging system freeze, SIGXCPU
+Content-Type: text/plain; charset="UTF-8"
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -18,43 +12,19 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Steve Freyder <steve@freyder.net>, "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: xenomai@xenomai.org, arimozes@neocisinc.com
 
-On 25.02.19 19:38, Steve Freyder wrote:
-> 
-> 
-> On 2/25/2019 11:15 AM, Jan Kiszka wrote:
->> On 25.02.19 17:53, Steve Freyder via Xenomai wrote:
->>> Greetings again,
->>>
->>> Recently I have converted my codebase from using Alchemy-based queues 
->>> (rt_queue_xx) to Cobalt (Posix) mqueues for all inter-process communication, 
->>> and using rt_queue queues only for communication between threads in the same 
->>> process.
->>>
->>> This is running on Xenomai 3.0.7 built from -next (our vendor does the 
->>> Xenomai/kernel builds):
->>
->> Was that really 3.0.7, not 3.0.8 or latest stable-3.0.x? There e.g. 
->> https://gitlab.denx.de/Xenomai/xenomai/commit/4924717ec5cbc694afc1b91ba7d525b80901d44d 
->> since 3.0.7, and you backtrace kind of looks familiar /wrt that.
->>
->> Jan
->>
->>>
->>> Linux g3l-36 4.1.18_C01571-15S01-00.002.zimg+83fdace666 #4 SMP Tue Aug 21 
->>> 11:22:31 CDT 2018 armv7l GNU/Linux
-> Now that I see that, you're absolutely right and I do apologize for bothering 
-> you with this.  After looking at that patch (from October 2018) I do remember 
-> when you originally posted it and thinking at the time that I needed to pick it 
-> up in a future build.  The build from Aug 21 2018 was 3.0.7 and didn't include 
-> your 4924717e fix.  I guess it is time for me to move to a stable-3.0.9 build!
+> Sure - make sense - IMO just knowing which calls are potentially
+problematic is
+> the difficult part here.  I expect I will just continue to stumble
+through them
+> and learn more as I go.
 
-Every testing and reporting is highly appreciated!
+I wrote some checkers that should be able to catch those calls
+(had pretty much the same issue, legacy code...).
 
-Jan
+https://github.com/nolange/preload_checkers
 
--- 
-Siemens AG, Corporate Technology, CT RDA IOT SES-DE
-Corporate Competence Center Embedded Linux
+Guinea pigs welcome.
 
+Norbert
