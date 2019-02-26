@@ -1,15 +1,10 @@
 MIME-Version: 1.0
-References: <CAJA_znn4P=_tmbcKCipcmYrhPUhFw4JrMWv2VAMVR0DYSx9iMA@mail.gmail.com>
- <CAJA_znnmCr7QSjsnSQbLRYTM+CyBex05sBV0gbOdVQgYuBK0Tw@mail.gmail.com>
- <0509ec7d-20b3-bc38-7a04-7516f24249a1@xenomai.org>
- <CAJA_znmGTe3C5-YoxYH1ufN7j8rrRgA_Pd8+7cYtP673C8Bhiw@mail.gmail.com>
- <47f2a72c-829b-4924-4346-8d640b305172@xenomai.org>
-In-Reply-To: <47f2a72c-829b-4924-4346-8d640b305172@xenomai.org>
-From: Ari Mozes <arimozes@neocisinc.com>
-Date: Tue, 26 Feb 2019 08:52:08 -0500
-Message-ID: <CAJA_znm0u2X2BCa4cMp=5OWmGURsOTPCy1uW755Sd3sGTiTb2Q@mail.gmail.com>
-Subject: Re: Fwd: Debugging system freeze, SIGXCPU
-Content-Type: text/plain; charset="UTF-8"
+From: cagnulein <cagnulein@gmail.com>
+Date: Tue, 26 Feb 2019 17:35:37 +0100
+Message-ID: <CAPR3TAj=fvbOHCy2qXhdR9g=QBvq81LM89XLw6uTvqoHhgPayw@mail.gmail.com>
+Subject: Intel Turbo Mode
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -20,113 +15,20 @@ List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: xenomai@xenomai.org
 
-On Tue, Feb 26, 2019 at 3:40 AM Philippe Gerum <rpm@xenomai.org> wrote:
->
-> On 2/25/19 5:57 PM, Ari Mozes via Xenomai wrote:
-> > Philippe,
-> > Thank you for the information and the URL.
-> > I read through the thread, and I agree with comments that it would be
-> > helpful to be able to identify/blacklist/etc problematic calls when
-> > porting over existing code to a true RT scenario.  In our case the
-> > original code was written with "RT-like" behavior in mind, but as
-> > there is a lot of code already in place, approaches to identify
-> > existing problematic calls would be helpful.
-> > I will continue to familiarize myself with the nitty-gritty details,
-> > but anything that makes the process easier is always welcome :-)
-> >
->
-> User-oriented documentation is lacking for Xenomai, that is a fact.
-> Until somebody tackles the task of contributing it gradually, the
-> situation won't change. This being said, the following may help as a
-> survival kit for programming with Xenomai.
->
-> This is a dual kernel system, so we have two competing cores: the
-> regular kernel and cobalt. The latter can preempt the former for running
-> its own tasks at almost any point in time, including within its critical
-> sections.
->
-> With that in mind, it becomes clear that calling regular kernel routines
-> from the runtime context of the cobalt core may cause severe re-entry bugs.
->
-> To mitigate this issue, cobalt detects when one of its tasks issues a
-> regular kernel system call from a real-time context, transferring
-> control over it to the regular kernel when this happens. The cobalt task
-> is demoted to non real-time mode during this process, which incurs
-> unbounded latency down the road, but that is still better than breaking
-> the whole kernel system.
->
-> Because such detection happens when a task transitions between user and
-> kernel space due to a syscall, vDSO-based services and intra-kernel
-> function calls escape it, since there is no intervening syscall. In
-> these particular cases, the real-time core most often breaks basic
-> assumptions of the non real-time linux kernel with respect to locking
-> rules and interrupt-free sections by running code it should not, and
-> things start to fall apart.
->
-> C++ libraries may call into standard glibc services such as malloc/free,
-> POSIX mutex support, which in turn may issue regular linux syscalls in
-> some cases (e.g. access to a non-contended mutex won't, the contended
-> case will definitely ask the kernel for putting the caller to sleep
-> until the lock is available). This is going to be the major issue to
-> solve when porting a large C++ code base to a dual kernel system such as
-> Xenomai: figuring out which C++ abstraction is real-time safe in such
-> environment, which is not.
->
-> Typical solutions may involve overloading the new/delete operators so
-> that an allocator which does not rely on regular system calls is picked
-> instead of malloc/free, possibly staying away from C++ exception
-> handling too if it implicitly allocates memory the same way.
->
-> To help you in detecting the situations where your application is being
-> demoted to non real-time mode (aka "secondary" mode) by cobalt in order
-> to process a regular syscall, you can trap the SIGDEBUG signal. This is
-> a regular linux signal (SIGXCPU in disguise) which is sent to the thread
-> crossing the domain boundaries from rt to non-rt. For this to happen,
-> the thread should arm the "warn on mode switch" flag using a Xenomai
-> system call. The application should catch the SIGDEBUG signal, which
-> comes with some bits of information detailing which action specifically
-> triggered the mode switch.
->
-> With the "alchemy" API, rt_task_set_mode(0, T_WARNSW, NULL) can be used,
-> or the task can be created with such init flag as illustrated in
-> demo/alchemy/altency.c. With the POSIX API, one can use
-> pthread_setmode_np(0, PTHREAD_WARNSW, NULL) as illustrated in
-> testsuite/latency/latency.c.
->
-> These particular services are described there:
->
-> https://xenomai.org/documentation/xenomai-3/html/xeno3prm/group__alchemy__task.html#ga915e7edfb0aaddb643794d7abc7093bf
-> https://xenomai.org/documentation/xenomai-3/html/xeno3prm/group__cobalt__api__thread.html#gae3b7df7f77c04253ed19fb6346f0f9b2
->
-> In the Xenomai documentation, the "api-tags" information mentions
-> "switch-primary" for any call that forces the caller to switch to
-> real-time mode. Conversely, "switch-secondary" tags services which
-> demote the caller to non-rt mode.
->
-> As a rule of thumb, most calls from the glibc should be considered as
-> potentially rt-unsafe in a dual kernel environment, because they may
-> rely on regular system calls for performing their work. Specifically,
-> any service which in essence allocates memory, synchronizes threads,
-> does messaging, or affects the scheduling state of POSIX threads may
-> have to call into the regular kernel for doing so.
->
-> This is fine to use them during the initialization/cleanup stages of any
-> Xenomai application, but you certainly want to avoid them from the
-> time-critical work loop.
->
-> --
-> Philippe.
-
-Thank you Philippe.
-Much appreciated, and it will help as I re-read the existing doc/examples/etc.
-I had previously looked at Mercury, but comments such as
-https://www.xenomai.org/pipermail/xenomai/2018-October/039733.html
-made the choice a bit murky.
-In any case there is clearly a lot of existing information to absorb, but
-thanks again for this aptly named cut at a "survival kit."
-
-Ari
-
-
-. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
-
+SGkgZXZlcnlib2R5LAogIGkgd291bGQgbGlrZSB0byBnaXZlIG15IGNvbnRyaWJ1dGlvbiB0byB0
+aGlzIGluY3JlZGlibGUgcHJvamVjdC4KIEluIHRoZXNlIGRheXMgaSdtIHdvcmtpbmcgb24gYSBJ
+bnRlbCBBdG9tIEUzOTMwICgyIGNvcmVzIDEuM0dIeiB3aXRoIFR1cmJvCk1vZGUgdG8gMS44R0h6
+KSBhbmQgWGVub21haS4KIEV2ZXJ5dGhpbmcgd29ya2luZyBmbGF3bGVzcywgZXhjZXB0IHRoZSB0
+dXJibyBtb2RlLgogSW5mYWN0LCBpbiBvcmRlciB0byBlbmFibGluZyB0aGUgdHVyYm8gbW9kZSwg
+d2l0aCB0aGUgdmFuaWxsYSBrZXJuZWwsIGkKaGF2ZSB0byBlbmFibGluZyBBQ1BJIFByb2Nlc3Nv
+ciBjYXVzaW5nIGhpZ2ggbGF0ZW5jeSBvbiBYZW5vbWFpIChvdmVyIDM1MAp1cykuCgogSSd2ZSBj
+cmVhdGUgYSBwYXRjaCBmb3IgdGhlIHZhbmlsbGEga2VybmVsLCB0aGF0IGFsbG93cyB0byBlbmFi
+bGluZyB0aGUKVHVyYm8gTW9kZSB3aXRob3V0IGFkZGluZyB0aGUgQUNQSSBQcm9jZXNzb3IhCiBJ
+biB0aGlzIHdheSBpIGNhbiBoYXZlIGNwdSBhdCBtYXhpbXVtIHNwZWVkIHdpdGggYSBkZXRlcm1p
+bmlzdGljIGFuZCBsb3cKbGF0ZW5jeSAodW5kZXIgMzYgdXMhKS4KCiBIZXJlIHlvdSBjYW4gZmlu
+ZCB0aGUgcGF0Y2guIE1heWJlIHlvdSBjYW4gYWRkIGl0IG9uIGlwaXBlPwoKIFJvYmVydG8KLS0t
+LS0tLS0tLS0tLS0gbmV4dCBwYXJ0IC0tLS0tLS0tLS0tLS0tCkEgbm9uLXRleHQgYXR0YWNobWVu
+dCB3YXMgc2NydWJiZWQuLi4KTmFtZTogOTk2NDYKVHlwZTogdHlwZS91bmtub3duClNpemU6IDQ1
+ODAgYnl0ZXMKRGVzYzogbm90IGF2YWlsYWJsZQpVUkw6IDxodHRwOi8veGVub21haS5vcmcvcGlw
+ZXJtYWlsL3hlbm9tYWkvYXR0YWNobWVudHMvMjAxOTAyMjYvNjZlZjYxMzUvYXR0YWNobWVudC5i
+aW4+Cg==
