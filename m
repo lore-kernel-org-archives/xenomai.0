@@ -1,9 +1,18 @@
+Subject: Re: [PATCH 04/18] drivers/ipc: bufp: fix read-write, write-write
+ preemption cases
+References: <20190204105647.5034-1-rpm@xenomai.org>
+ <20190204105647.5034-5-rpm@xenomai.org>
+ <65e6852d-df81-258e-3d1b-804009f44570@siemens.com>
+ <b6c4e80e-bf05-7fb9-c27a-b191d341f232@xenomai.org>
+ <bdd13d46-aefe-7e74-0f46-235fb52bd660@siemens.com>
+From: Philippe Gerum <rpm@xenomai.org>
+Message-ID: <5004d0f0-ebb4-e83d-5252-957be3945370@xenomai.org>
+Date: Tue, 26 Feb 2019 08:03:56 +0100
 MIME-Version: 1.0
-From: Norbert Lange <nolange79@gmail.com>
-Date: Tue, 26 Feb 2019 00:10:27 +0100
-Message-ID: <CADYdroMXfpiF0Yv+tGg2FGZmKxOiz9e7eUfRE5u9EGgVBzDH_g@mail.gmail.com>
-Subject: Re: Fwd: Debugging system freeze, SIGXCPU
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <bdd13d46-aefe-7e74-0f46-235fb52bd660@siemens.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -12,19 +21,52 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org, arimozes@neocisinc.com
+To: Jan Kiszka <jan.kiszka@siemens.com>, xenomai@xenomai.org
 
-> Sure - make sense - IMO just knowing which calls are potentially
-problematic is
-> the difficult part here.  I expect I will just continue to stumble
-through them
-> and learn more as I go.
+On 2/25/19 7:17 PM, Jan Kiszka wrote:
+> On 05.02.19 12:20, Philippe Gerum via Xenomai wrote:
+>> On 2/4/19 7:55 PM, Jan Kiszka wrote:
+>>>> -             * Release the lock while copying the data to
+>>>> -             * keep latency low.
+>>>> +             * We have to drop the lock while reading in
+>>>> +             * data, but we can't rollback on bad read
+>>>> +             * from user because some other thread might
+>>>> +             * have populated the memory ahead of our
+>>>> +             * write slot already: bluntly clear the
+>>>> +             * unavailable bytes on copy error.
+>>>>                 */
+>>>>                cobalt_atomic_leave(s);
+>>>> -            ret = xnbufd_copy_to_kmem(rsk->bufmem + wroff, bufd, n);
+>>>> -            if (ret < 0)
+>>>> -                return ret;
+>>>> +            xret = xnbufd_copy_to_kmem(rsk->bufmem + wroff, bufd, n);
+>>>>                cobalt_atomic_enter(s);
+>>>> -            /*
+>>>> -             * In case we were preempted while copying the
+>>>> -             * message, we have to write the whole thing
+>>>> -             * again.
+>>>> -             */
+>>>> -            if (rsk->wrtoken != wrtoken) {
+>>>> -                xnbufd_reset(bufd);
+>>>> -                goto redo;
+>>>> +            if (xret < 0) {
+>>>> +                memset(rsk->bufmem + wroff + n - xret, 0, xret);
+>>>
+>>> This looks fishy, to the compiler and also to me.
+>>>
+>> Oh, well. Paste&copy blunder, the fix originates from a distinct
+>> co-kernel implementation. I'll resubmit.
+>>
+> 
+> Did I get that update already? I don't think so.
+> 
 
-I wrote some checkers that should be able to catch those calls
-(had pretty much the same issue, legacy code...).
+You may want to check my local dev. tree. I generally don't send every
+trivial change to a reviewed patch to the mailing list, but I'm
+certainly maintaining a branch for you to pick from there:
 
-https://github.com/nolange/preload_checkers
+https://lab.xenomai.org/xenomai-rpm.git/commit/?h=for-upstream/next&id=99dc7076ee757c2c82ffa6c58930388974808c09
 
-Guinea pigs welcome.
+-- 
+Philippe.
 
-Norbert
