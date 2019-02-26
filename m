@@ -1,11 +1,11 @@
-From: Jan Kiszka <jan.kiszka@siemens.com>
-Subject: [PATCH] cobalt: Improve cobalt_copy_from/to_user
-Message-ID: <6313fbe6-b76c-b89d-6cbd-65066a7bfd94@siemens.com>
-Date: Tue, 26 Feb 2019 14:23:32 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+References: <CADYdroMXfpiF0Yv+tGg2FGZmKxOiz9e7eUfRE5u9EGgVBzDH_g@mail.gmail.com>
+In-Reply-To: <CADYdroMXfpiF0Yv+tGg2FGZmKxOiz9e7eUfRE5u9EGgVBzDH_g@mail.gmail.com>
+From: Ari Mozes <arimozes@neocisinc.com>
+Date: Tue, 26 Feb 2019 08:34:17 -0500
+Message-ID: <CAJA_znnp2FeaTUsiQO-YhhEoZijbLqm3o1kzTLGRWCefQnk5Cw@mail.gmail.com>
+Subject: Re: Fwd: Debugging system freeze, SIGXCPU
+Content-Type: text/plain; charset="UTF-8"
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -14,56 +14,25 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Xenomai <xenomai@xenomai.org>
+To: xenomai@xenomai.org
 
-From: Jan Kiszka <jan.kiszka@siemens.com>
+On Mon, Feb 25, 2019 at 6:10 PM Norbert Lange <nolange79@gmail.com> wrote:
+>
+> > Sure - make sense - IMO just knowing which calls are potentially problematic is
+> > the difficult part here.  I expect I will just continue to stumble through them
+> > and learn more as I go.
+>
+> I wrote some checkers that should be able to catch those calls
+> (had pretty much the same issue, legacy code...).
+>
+> https://github.com/nolange/preload_checkers
+>
+> Guinea pigs welcome.
+>
+> Norbert
 
-This aligns the definition of our user copy services with the kernel in
-two aspects:
- - use unlikely to mark the fast path
- - memset the remaining bits of the target region if the copy fails;
-   this avoids false-positive compiler warnings and reduces the risk to
-   evaluate undefined data in case the return value is not checked
+I will definitely give this a try - thanks much!
 
-Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
----
- kernel/cobalt/include/asm-generic/xenomai/syscall.h | 18 ++++++++++++++----
- 1 file changed, 14 insertions(+), 4 deletions(-)
-
-diff --git a/kernel/cobalt/include/asm-generic/xenomai/syscall.h b/kernel/cobalt/include/asm-generic/xenomai/syscall.h
-index 7909fc310a..e14a9d1e3b 100644
---- a/kernel/cobalt/include/asm-generic/xenomai/syscall.h
-+++ b/kernel/cobalt/include/asm-generic/xenomai/syscall.h
-@@ -46,15 +46,25 @@
- static inline int cobalt_copy_from_user(void *dst, const void __user *src,
- 					size_t size)
- {
--	return (!access_rok(src, size) ||
--		__xn_copy_from_user(dst, src, size)) ? -EFAULT : 0;
-+	size_t remaining = size;
-+
-+	if (likely(access_rok(src, size)))
-+		remaining = __xn_copy_from_user(dst, src, size);
-+
-+	if (unlikely(remaining > 0)) {
-+		memset(dst + (size - remaining), 0, remaining);
-+		return -EFAULT;
-+	}
-+	return 0;
- }
- 
- static inline int cobalt_copy_to_user(void __user *dst, const void *src,
- 				      size_t size)
- {
--	return (!access_wok(dst, size) ||
--		__xn_copy_to_user(dst, src, size)) ? -EFAULT : 0;
-+	if (unlikely(!access_wok(dst, size) ||
-+	    __xn_copy_to_user(dst, src, size)))
-+		return -EFAULT;
-+	return 0;
- }
- 
- static inline int cobalt_strncpy_from_user(char *dst, const char __user *src,
--- 
-2.16.4
+Ari
+. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
 
