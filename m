@@ -1,9 +1,11 @@
 MIME-Version: 1.0
-From: Ashok kumar <ashokkumar.bb@gmail.com>
-Date: Wed, 27 Feb 2019 21:00:51 +0530
-Message-ID: <CAFUnMkkGg9R8fVBVg7Jd9nSExnGM3HW=+CXH_yC6_8v1NED8pA@mail.gmail.com>
-Subject: (rteth0): failed to find device 4 'rteth0' with udev device
- (rteth0-mac): failed to find device 5 'rteth0-mac' with udev
+References: <CAPR3TAj=fvbOHCy2qXhdR9g=QBvq81LM89XLw6uTvqoHhgPayw@mail.gmail.com>
+ <57ea6eb3-52a0-a29c-77b8-a5a4f8d24127@siemens.com>
+In-Reply-To: <57ea6eb3-52a0-a29c-77b8-a5a4f8d24127@siemens.com>
+From: cagnulein <cagnulein@gmail.com>
+Date: Wed, 27 Feb 2019 19:54:09 +0100
+Message-ID: <CAPR3TAhJwcKno7LDorC5LnZA4mZtPh2-gAc-vX8kv3bqsbBHwA@mail.gmail.com>
+Subject: Re: Intel Turbo Mode
 Content-Type: text/plain; charset="UTF-8"
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
@@ -13,132 +15,51 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "Xenomai@xenomai.org" <xenomai@xenomai.org>
-Cc: "J. Kiszka" <jan.kiszka@siemens.com>
+To: Jan Kiszka <jan.kiszka@siemens.com>
+Cc: xenomai@xenomai.org
 
-Hi,
-while starting rtnet I found the below message and I am not able to rtping
-(rteth0): failed to find device 4 'rteth0' with udev   device (rteth0-mac):
-failed to find device 5 'rteth0-mac' with udev
+Thank you for the proposal but I don't have more spare time right now. I
+hope to help you in the future.
+Roberto Viola
 
-start running ordered scripts...
-Feb 27 20:54:48 texsonics-AmITX-SL-G kernel: [   63.223795] RTnet:
-registered rteth0
-Feb 27 20:54:48 texsonics-AmITX-SL-G kernel: [   63.223797] rt_e1000e: (PCI
-Express:2.5GT/s:Width x1) 00:1b:21:63:5e:5b
-Feb 27 20:54:48 texsonics-AmITX-SL-G kernel: [   63.223797] rt_e1000e:
-Intel(R) PRO/1000 Network Connection
-Feb 27 20:54:48 texsonics-AmITX-SL-G kernel: [   63.223809] rt_e1000e: MAC:
-3, PHY: 8, PBA No: E25867-006
-Feb 27 20:54:48 texsonics-AmITX-SL-G kernel: [   63.232336] initializing
-loopback...
-Feb 27 20:54:48 texsonics-AmITX-SL-G kernel: [   63.232345] RTnet:
-registered rtlo
-Feb 27 20:54:48 texsonics-AmITX-SL-G NetworkManager[967]: <warn>
-[1551281088.7894] device (rteth0): failed to find device 4 'rteth0' with
-udev
-Feb 27 20:54:48 texsonics-AmITX-SL-G NetworkManager[967]: <info>
-[1551281088.7894] device (rteth0): driver '(null)' does not support carrier
-detection.
-Feb 27 20:54:48 texsonics-AmITX-SL-G NetworkManager[967]: <info>
-[1551281088.7896] device (rteth0): driver 'unknown' does not support
-carrier detection.
-Feb 27 20:54:48 texsonics-AmITX-SL-G kernel: [   63.235327] RTcap:
-real-time capturing interface
-Feb 27 20:54:48 texsonics-AmITX-SL-G NetworkManager[967]: <info>
-[1551281088.7903] manager: (rteth0): new Ethernet device
-(/org/freedesktop/NetworkManager/Devices/3)
-Feb 27 20:54:48 texsonics-AmITX-SL-G NetworkManager[967]: <warn>
-[1551281088.7906] device (rteth0-mac): failed to find device 5 'rteth0-mac'
-with udev
-Feb 27 20:54:48 texsonics-AmITX-SL-G NetworkManager[967]: <info>
-[1551281088.7907] device (rteth0-mac): driver '(null)' does not support
-carrier detection.
-Feb 27 20:54:48 texsonics-AmITX-SL-G NetworkManager[967]: <info>
-[1551281088.7908] device (rteth0-mac): driver 'unknown' does not support
-carrier detection.
-Feb 27 20:54:48 texsonics-AmITX-SL-G NetworkManager[967]: <info>
-[1551281088.7915] manager: (rteth0-mac): new Ethernet device
-(/org/freedesktop/NetworkManager/Devices/4)
-Feb 27 20:54:48 texsonics-AmITX-SL-G NetworkManager[967]: <warn>
-[1551281088.7918] device (rtlo): failed to find device 6 'rtlo' with udev
-Feb 27 20:54:48 texsonics-AmITX-SL-G NetworkManager[967]: <info>
-[1551281088.7918] device (rtlo): driver '(null)' does not support carrier
-detection.
-Feb 27 20:54:48 texsonics-AmITX-SL-G NetworkManager[967]: <info>
-[1551281088.7920] device (rtlo): driver 'unknown' does not support carrier
-detection.
-Feb 27 20:54:48 texsonics-AmITX-SL-G NetworkManager[967]: <info>
-[1551281088.7928] manager: (rtlo): new Ethernet device
-(/org/freedesktop/NetworkManager/Devices/5)
-Feb 27 20:54:48 texsonics-AmITX-SL-G whoopsie[1956]: [20:54:48] Cannot
-reach: https://daisy.ubuntu.com
-Feb 27 20:54:48 texsonics-AmITX-SL-G systemd-udevd[2624]: Process
-'bridge-network-interface' failed with exit code 1.
-Feb 27 20:54:48 texsonics-AmITX-SL-G systemd-udevd[2625]: Process
-'bridge-network-interface' failed with exit code 1.
-Feb 27 20:54:48 texsonics-AmITX-SL-G systemd-udevd[2624]: Process
-'/lib/resolvconf/net-interface-handler start' failed with exit code 1.
-Feb 27 20:54:48 texsonics-AmITX-SL-G systemd-udevd[2625]: Process
-'/lib/resolvconf/net-interface-handler start' failed with exit code 1.
-Feb 27 20:54:48 texsonics-AmITX-SL-G systemd-udevd[2623]: Process
-'bridge-network-interface' failed with exit code 1.
-Feb 27 20:54:48 texsonics-AmITX-SL-G systemd-udevd[2623]: Process
-'/lib/resolvconf/net-interface-handler start' failed with exit code 1.
-Feb 27 20:54:48 texsonics-AmITX-SL-G ifupdown-hotplug[2646]: Bad ifupdown
-udev helper invocation: $INTERFACE is not set
-Feb 27 20:54:48 texsonics-AmITX-SL-G ifupdown-hotplug[2645]: Bad ifupdown
-udev helper invocation: $INTERFACE is not set
-Feb 27 20:54:48 texsonics-AmITX-SL-G ifupdown-hotplug[2650]: Bad ifupdown
-udev helper invocation: $INTERFACE is not set
-Feb 27 20:54:48 texsonics-AmITX-SL-G systemd-udevd[2625]: Process
-'ifupdown-hotplug' failed with exit code 1.
-Feb 27 20:54:48 texsonics-AmITX-SL-G systemd-udevd[2624]: Process
-'ifupdown-hotplug' failed with exit code 1.
-Feb 27 20:54:48 texsonics-AmITX-SL-G systemd-udevd[2623]: Process
-'ifupdown-hotplug' failed with exit code 1.
-Feb 27 20:54:48 texsonics-AmITX-SL-G kernel: [   63.247081] RTcfg: init
-real-time configuration distribution protocol
-Feb 27 20:54:48 texsonics-AmITX-SL-G kernel: [   63.252087] RTmac: init
-realtime media access control
-Feb 27 20:54:48 texsonics-AmITX-SL-G kernel: [   63.255033] RTmac/TDMA:
-init time division multiple access control mechanism
-Feb 27 20:54:48 texsonics-AmITX-SL-G kernel: [   63.255956] RTcfg:
-rtcfg_do_main_event() rtdev=1, event=RTCFG_CMD_SERVER, state=RTCFG_MAIN_OFF
-Feb 27 20:54:48 texsonics-AmITX-SL-G kernel: [   63.255957] RTcfg: next
-main state=RTCFG_MAIN_SERVER_RUNNING
-Feb 27 20:54:48 texsonics-AmITX-SL-G NetworkManager[967]: <warn>
-[1551281088.8792] device (vnic0): failed to find device 7 'vnic0' with udev
-Feb 27 20:54:48 texsonics-AmITX-SL-G NetworkManager[967]: <info>
-[1551281088.8793] device (vnic0): driver '(null)' does not support carrier
-detection.
-Feb 27 20:54:48 texsonics-AmITX-SL-G NetworkManager[967]: <info>
-[1551281088.8794] device (vnic0): driver 'unknown' does not support carrier
-detection.
-Feb 27 20:54:48 texsonics-AmITX-SL-G NetworkManager[967]: <info>
-[1551281088.8802] manager: (vnic0): new Ethernet device
-(/org/freedesktop/NetworkManager/Devices/6)
-Feb 27 20:54:48 texsonics-AmITX-SL-G systemd-udevd[2671]: Process
-'bridge-network-interface' failed with exit code 1.
-Feb 27 20:54:48 texsonics-AmITX-SL-G systemd-udevd[2671]: Process
-'/lib/resolvconf/net-interface-handler start' failed with exit code 1.
-Feb 27 20:54:48 texsonics-AmITX-SL-G ifupdown-hotplug[2677]: Bad ifupdown
-udev helper invocation: $INTERFACE is not set
-Feb 27 20:54:48 texsonics-AmITX-SL-G systemd-udevd[2671]: Process
-'ifupdown-hotplug' failed with exit code 1.
-Feb 27 20:54:48 texsonics-AmITX-SL-G whoopsie[1956]: [20:54:48] Cannot
-reach: https://daisy.ubuntu.com
-Feb 27 20:54:48 texsonics-AmITX-SL-G kernel: [   63.354228] RTcfg:
-rtcfg_do_main_event() rtdev=1, event=RTCFG_CMD_ADD,
-state=RTCFG_MAIN_SERVER_RUNNING
-Feb 27 20:54:48 texsonics-AmITX-SL-G kernel: [   63.354709] RTcfg:
-rtcfg_do_main_event() rtdev=1, event=RTCFG_CMD_ADD,
-state=RTCFG_MAIN_SERVER_RUNNING
-Feb 27 20:54:48 texsonics-AmITX-SL-G kernel: [   63.355134] RTcfg:
-rtcfg_do_main_event() rtdev=1, event=RTCFG_CMD_ADD,
-state=RTCFG_MAIN_SERVER_RUNNING
-Feb 27 20:54:48 texsonics-AmITX-SL-G kernel: [   63.356391] RTcfg:
-rtcfg_do_main_event() rtdev=1, event=RTCFG_CMD_WAIT,
-state=RTCFG_MAIN_SERVER_RUNNING
-Feb 27 20:54:49 texsonics-AmITX-SL-G kernel: [   63.518258] TDMA: Failed to
-transmit sync frame!
+Il mar 26 feb 2019, 19:41 Jan Kiszka <jan.kiszka@siemens.com> ha scritto:
+
+> On 26.02.19 17:35, cagnulein via Xenomai wrote:
+> > Hi everybody,
+> >    i would like to give my contribution to this incredible project.
+> >   In these days i'm working on a Intel Atom E3930 (2 cores 1.3GHz with
+> Turbo
+> > Mode to 1.8GHz) and Xenomai.
+> >   Everything working flawless, except the turbo mode.
+> >   Infact, in order to enabling the turbo mode, with the vanilla kernel, i
+> > have to enabling ACPI Processor causing high latency on Xenomai (over 350
+> > us).
+> >
+> >   I've create a patch for the vanilla kernel, that allows to enabling the
+> > Turbo Mode without adding the ACPI Processor!
+> >   In this way i can have cpu at maximum speed with a deterministic and
+> low
+> > latency (under 36 us!).
+> >
+> >   Here you can find the patch. Maybe you can add it on ipipe?
+> >
+>
+> Thanks for your contribution! We can consider adding this, I would just
+> like to
+> double-check first if there aren't also patch-free ways today:
+>
+> I always wanted to try out the runtime tunings described e.g. on
+>
+> https://wiki.linuxfoundation.org/realtime/documentation/howto/applications/cpuidle
+> to see if we could relax our build-time feature-exclusion set and rather
+> do that
+> tuning e.g. on Xenomai application startup.
+>
+> Would you be interested in in playing with such an approach?
+>
+> Jan
+>
+> --
+> Siemens AG, Corporate Technology, CT RDA IOT SES-DE
+> Corporate Competence Center Embedded Linux
+>
