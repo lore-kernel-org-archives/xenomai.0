@@ -1,13 +1,13 @@
-Subject: Re: [PATCH] cobalt: Improve cobalt_copy_from/to_user
-From: Jan Kiszka <jan.kiszka@siemens.com>
-References: <6313fbe6-b76c-b89d-6cbd-65066a7bfd94@siemens.com>
-Message-ID: <767a38f5-97d1-30f0-264c-a9d7804b9d21@siemens.com>
-Date: Wed, 27 Feb 2019 07:34:25 +0100
+Subject: Re: Clean up noarch ipipe queue
+References: <b5b40eb8-2add-fa43-3d17-70d111362ab9@siemens.com>
+From: Philippe Gerum <rpm@xenomai.org>
+Message-ID: <cf910c00-0686-5321-32fb-0bc0561e0dd7@xenomai.org>
+Date: Wed, 27 Feb 2019 09:13:50 +0100
 MIME-Version: 1.0
-In-Reply-To: <6313fbe6-b76c-b89d-6cbd-65066a7bfd94@siemens.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
+In-Reply-To: <b5b40eb8-2add-fa43-3d17-70d111362ab9@siemens.com>
+Content-Type: text/plain; charset="utf-8"
 Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,66 +16,42 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Xenomai <xenomai@xenomai.org>
+To: Jan Kiszka <jan.kiszka@siemens.com>
+Cc: Xenomai <xenomai@xenomai.org>
 
-On 26.02.19 14:23, Jan Kiszka wrote:
-> From: Jan Kiszka <jan.kiszka@siemens.com>
+On 2/27/19 7:21 AM, Jan Kiszka wrote:
+> Hi Philippe,
 > 
-> This aligns the definition of our user copy services with the kernel in
-> two aspects:
->   - use unlikely to mark the fast path
->   - memset the remaining bits of the target region if the copy fails;
->     this avoids false-positive compiler warnings and reduces the risk to
->     evaluate undefined data in case the return value is not checked
+> I started to revert the patches in the x86 tree that are touching
+> arch/arm. One fragment may be reverted for everyone:
+>> --- a/arch/arm/include/asm/arch_timer.h
+> +++ b/arch/arm/include/asm/arch_timer.h
+> @@ -106,10 +106,6 @@ static inline u32 arch_timer_get_cntkctl(void)
 > 
-> Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
-> ---
->   kernel/cobalt/include/asm-generic/xenomai/syscall.h | 18 ++++++++++++++----
->   1 file changed, 14 insertions(+), 4 deletions(-)
+>  static inline void arch_timer_set_cntkctl(u32 cntkctl)
+>  {
+> -#ifdef CONFIG_IPIPE
+> -    /* Enable access to user-space (may not be needed) */
+> -    cntkctl |= ARCH_TIMER_USR_PCT_ACCESS_EN;
+> -#endif
+>      asm volatile("mcr p15, 0, %0, c14, c1, 0" : : "r" (cntkctl));
+>  }
 > 
-> diff --git a/kernel/cobalt/include/asm-generic/xenomai/syscall.h b/kernel/cobalt/include/asm-generic/xenomai/syscall.h
-> index 7909fc310a..e14a9d1e3b 100644
-> --- a/kernel/cobalt/include/asm-generic/xenomai/syscall.h
-> +++ b/kernel/cobalt/include/asm-generic/xenomai/syscall.h
-> @@ -46,15 +46,25 @@
->   static inline int cobalt_copy_from_user(void *dst, const void __user *src,
->   					size_t size)
->   {
-> -	return (!access_rok(src, size) ||
-> -		__xn_copy_from_user(dst, src, size)) ? -EFAULT : 0;
-> +	size_t remaining = size;
-> +
-> +	if (likely(access_rok(src, size)))
-> +		remaining = __xn_copy_from_user(dst, src, size);
-> +
-> +	if (unlikely(remaining > 0)) {
-> +		memset(dst + (size - remaining), 0, remaining);
-> +		return -EFAULT;
-> +	}
-> +	return 0;
->   }
->   
->   static inline int cobalt_copy_to_user(void __user *dst, const void *src,
->   				      size_t size)
->   {
-> -	return (!access_wok(dst, size) ||
-> -		__xn_copy_to_user(dst, src, size)) ? -EFAULT : 0;
-> +	if (unlikely(!access_wok(dst, size) ||
-> +	    __xn_copy_to_user(dst, src, size)))
-> +		return -EFAULT;
-> +	return 0;
->   }
->   
->   static inline int cobalt_strncpy_from_user(char *dst, const char __user *src,
 > 
+> Or are we exploiting user space access?
 
-FWIW, I've just realized that we still use a lot of rtdm_copy_*_user without 
-rtdm_read/rw_user_ok. Those should be migrated to rtdm_safe_copy_* eventually. 
-I'm even considering to deprecate the split API, but one after the other.
+We are, for reading the timer counter directly via a memory mapping on
+arm and arm64. This is a prerequisite for the ipipe_tsc abstraction on
+these archs.
 
-Jan
+> 
+> FWIW, I've reverted now these three:
+> 
+> e219c3bbc14e4d00178b50bb7b992c9817a2aa16
+> 259c0c09953d3559618c69f29f5c2aa9fe570a24
+> 77361f93e4be1bf23025b01d0d64379a681e11a3
+> 
 
 -- 
-Siemens AG, Corporate Technology, CT RDA IOT SES-DE
-Corporate Competence Center Embedded Linux
+Philippe.
 
