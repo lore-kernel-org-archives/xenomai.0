@@ -1,17 +1,20 @@
-Date: Sat, 26 Jan 2019 18:01:45 +0800 (CST)
-From: JackZhang  <kunzj@126.com>
-Subject: Re:Re: Re: Help: System freeze when edge interrupt trigger,
- Xenomain3.0.8, ipipe-arm main line, am335x
-In-Reply-To: <CAOf5uwki6gaSPg=6zCOxHEvWh8X0mOORazXmNczazzmVD4U54g@mail.gmail.com>
-References: <mailman.3.1547809201.5156.xenomai@xenomai.org>
- <4ddd614.76d7.168751f9385.Coremail.kunzj@126.com>
- <CALLqZ8RZHCDBur7ewCKnKJXu9j4VOdeucgJchF9rKCC_oeGVWA@mail.gmail.com>
- <2a791fcc.20e9.16889759d7f.Coremail.kunzj@126.com>
- <CAOf5uwki6gaSPg=6zCOxHEvWh8X0mOORazXmNczazzmVD4U54g@mail.gmail.com>
+Subject: [PATCH v2] drivers/ipc: bufp: fix read-write, write-write preemption
+ cases
+From: Jan Kiszka <jan.kiszka@siemens.com>
+References: <20190204105647.5034-1-rpm@xenomai.org>
+ <20190204105647.5034-5-rpm@xenomai.org>
+ <65e6852d-df81-258e-3d1b-804009f44570@siemens.com>
+ <b6c4e80e-bf05-7fb9-c27a-b191d341f232@xenomai.org>
+ <bdd13d46-aefe-7e74-0f46-235fb52bd660@siemens.com>
+ <5004d0f0-ebb4-e83d-5252-957be3945370@xenomai.org>
+ <d0c39c8b-fd2c-77de-7265-f658be2d0e69@siemens.com>
+Message-ID: <11c6bf52-553e-4d72-018c-4b8eb5497042@siemens.com>
+Date: Thu, 28 Feb 2019 13:51:59 +0100
 MIME-Version: 1.0
-Message-ID: <41880ccc.22f4.168899ba6f6.Coremail.kunzj@126.com>
-Content-Type: text/plain; charset=GBK
-Content-Transfer-Encoding: base64
+In-Reply-To: <d0c39c8b-fd2c-77de-7265-f658be2d0e69@siemens.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -20,81 +23,245 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Michael Nazzareno Trimarchi <michael@amarulasolutions.com>
-Cc: Greg Gallagher <greg@embeddedgreg.com>, "Xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Philippe Gerum <rpm@xenomai.org>, xenomai@xenomai.org
 
-VGhhbmtzLCBNaWNoYWVsCkkgaGF2ZSBrZXJuZWwgNC4xLjE4ICsgeGVub21haSAzLjAuNiB3b3Jr
-cyB0b28sIGJ1dCBjYW4ndCB3b3JrIHdpdGggdGkncyBkcm0gZHJpdmVycy4KVGkncyBzZGtbMV0g
-d2l0aCBvd24ga2VybmVsIGJhc2VkIG9uIDQuMS4xOCwgY2FuIG5vdCB3b3JrIHdpdGggaXBpcGUg
-cGF0Y2gsIGFuZCBpIGl0J3MKaGFyZCB0byBzb2x2ZSB0aGUgY29uZmxpY3QuCgoKTm93LCBUaSdz
-IGRybSBkcml2ZXIgY29kZSBpcyBpbiB0aGUgbmV3IGtlcm5lbCA0LjE0LCBzbyB0aGUgYmVzdCB3
-YXkgaXMgdGhhdCBpcGlwZS1hcm0KY2FuIHdvcmsgd2l0aCB0aGUgNC4xNCBrZXJuZWwuCgoKWzFd
-LiBodHRwOi8vcHJvY2Vzc29ycy53aWtpLnRpLmNvbS9pbmRleC5waHA/dGl0bGU9UHJvY2Vzc29y
-X1NES19MaW51eF9SZWxlYXNlX05vdGVzJm9sZGlkPTIxNDc1NAoKCgpBdCAyMDE5LTAxLTI2IDE3
-OjM2OjM0LCAiTWljaGFlbCBOYXp6YXJlbm8gVHJpbWFyY2hpIiA8bWljaGFlbEBhbWFydWxhc29s
-dXRpb25zLmNvbT4gd3JvdGU6Cj5IaSBKYWNrCj4KPgo+T24gU2F0LCBKYW4gMjYsIDIwMTkgYXQg
-MTA6MjAgQU0gSmFja1poYW5nIHZpYSBYZW5vbWFpCj48eGVub21haUB4ZW5vbWFpLm9yZz4gd3Jv
-dGU6Cj4+Cj4+IEhpLCBHcmVwLCB0aGFua3MuCj4+Cj4+Cj4+Cj4+ID5IYXZlIHlvdSB0cmllZCB0
-aGlzIHdpdGggdGhlIDQuOSBvciA0LjQga2VybmVsIGFuZCBpcGlwZSBwYXRjaD8gSQo+PiA+dGhp
-bmsgNC40ICh3aGljaCBpcyBiYXNlZCBvbiBhIFNMVFMpIGhhcyBiZWVuIHRlc3RlZCBvbiBiZWFn
-bGVib25lCj4+ID4oc2ltaWxhciBwcm9jZXNzb3IpLiBEaWQgeW91IG1lYW4ga2VybmVsIDQuMTQg
-bm90IDMuMTQ/Cj4+Cj4+ICAgSSBtZWFuIGtlcm5lbCA0LjE0LiBTb3JyeSBmb3IgbWlzdGFrZS4K
-Pj4gPkkgdGhpbmsgSSd2ZSByZXByb2R1Y2VkIHRoaXMgb24gYSBCZWFnbGVib25lIHdoaWNoIGlz
-IGJhc2VkIG9uIGEKPj4gPnNpbWlsYXIgcHJvY2Vzc29yLCBJJ2xsIGxvb2sgaW50byBpdCB0aGlz
-IHdlZWsuCj4+ICAgVGhhbmsgeW91IHZlcnkgbXVjaCEKPgo+SSBoYXZlIDQuMS42ICsgeGVub21h
-aSAzLjAuNyBhbmQgc2VlbXMgdGhhdCBpdCB3b3Jrcwo+Cj5NaWNoYWVsCj4KPj4KPj4KPj4g1Nog
-MjAxOS0wMS0yMiAyMzoxODowM6OsIkdyZWcgR2FsbGFnaGVyIiA8Z3JlZ0BlbWJlZGRlZGdyZWcu
-Y29tPiDQtLXAo7oKPj4gPk9uIFR1ZSwgSmFuIDIyLCAyMDE5IGF0IDU6MzQgQU0g1cW9qMClIHZp
-YSBYZW5vbWFpIDx4ZW5vbWFpQHhlbm9tYWkub3JnPiB3cm90ZToKPj4gPj4KPj4gPj4gSGVsbG8g
-ZXZlcnlvbmUsIGhlcmUgaXMgc29tZSBuZXcgY2x1ZXM6Cj4+ID4+IDEuIEkgdHJpZWQgeGVub21h
-aSAzLjAuOCwga2VybmVsIDMuMTQuMTcgYW5kIGlwaXBlLWNvcmUtNC4xNC43MS1hcm0tNC5wYXRj
-aC4gU3RpbGwgdGhlIHNhbWUgcXVlc3Rpb24uCj4+ID4KPj4gPkhhdmUgeW91IHRyaWVkIHRoaXMg
-d2l0aCB0aGUgNC45IG9yIDQuNCBrZXJuZWwgYW5kIGlwaXBlIHBhdGNoPyAgSQo+PiA+dGhpbmsg
-NC40ICh3aGljaCBpcyBiYXNlZCBvbiBhIFNMVFMpIGhhcyBiZWVuIHRlc3RlZCBvbiBiZWFnbGVi
-b25lCj4+ID4oc2ltaWxhciBwcm9jZXNzb3IpLiBEaWQgeW91IG1lYW4ga2VybmVsIDQuMTQgbm90
-IDMuMTQ/Cj4+ID4KPj4gPj4gMi4gSXQgc2VlbXMgdGhlIHN5c3RlbSBpcyBsb2NrZWQgdXAgb25j
-ZSBhIGdwaW8gaW50ZXJydXB0IGlzIHRyaWdnZXJlZC4KPj4gPj4KPj4gPj4gMy4gU29tZSBkZWJ1
-ZyBpbmZvcm1hdGlvbiBzaG93IHRoYXQsIG9uY2UgYSBncGlvIGludGVycnVwdCBpcyB0cmlnZ2Vy
-ZWQsIHRoZSBmdW5jdGlvbgo+PiA+Pgo+PiA+PiAgICAgJ29tYXBfZ3Bpb19pcnFfaGFuZGxlcicg
-aXMgdHJpZ2dlcmVkIGFsbCB0aGUgdGltZS4KPj4gPkkgdGhpbmsgSSd2ZSByZXByb2R1Y2VkIHRo
-aXMgb24gYSBCZWFnbGVib25lIHdoaWNoIGlzIGJhc2VkIG9uIGEKPj4gPnNpbWlsYXIgcHJvY2Vz
-c29yLCBJJ2xsIGxvb2sgaW50byBpdCB0aGlzIHdlZWsuCj4+ID4KPj4gPj4gVGhlcmUgbWF5IGJl
-IGEgbGl0dGxlIGJ1ZyBleGlzdHMsIGJ1dCBpIGRvbid0IGtub3cgaG93IHRvIGFtZW5kIGl0LiBU
-aGFuayB5b3UgdmVyeSBtdWNoLCBpZiBhbnlvbmUgY2FuIGhlbHAuCj4+ID4+Cj4+ID4KPj4gPi1H
-cmVnCj4+ID4+ID4tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0KPj4gPj4gPgo+PiA+PiA+
-TWVzc2FnZTogMwo+PiA+PiA+RGF0ZTogRnJpLCAxOCBKYW4gMjAxOSAxMTo0ODoxMiArMDgwMCAo
-Q1NUKQo+PiA+PiA+RnJvbTog1cW9qMClIDxrdW56akAxMjYuY29tPgo+PiA+PiA+VG86IHhlbm9t
-YWlAeGVub21haS5vcmcKPj4gPj4gPlN1YmplY3Q6IEhlbHA6IFN5c3RlbSBmcmVlemUgd2hlbiBl
-ZGdlIGludGVycnVwdCB0cmlnZ2VyLAo+PiA+PiA+ICAgICAgIFhlbm9tYWluMy4wLjgsIGlwaXBl
-LWFybSBtYWluIGxpbmUsIGFtMzM1eAo+PiA+PiA+TWVzc2FnZS1JRDogPDU1Yzg5Yzc2LjM0MjAu
-MTY4NWYxMmM0ODguQ29yZW1haWwua3VuempAMTI2LmNvbT4KPj4gPj4gPkNvbnRlbnQtVHlwZTog
-dGV4dC9wbGFpbjsgY2hhcnNldD0iZ2JrIgo+PiA+PiA+Cj4+ID4+ID5IZWxsbyEKPj4gPj4gPiAg
-ICBUaGUgc3lzdGVtIGZyZWV6ZSB3aGVuIGludGVycnVwdCBpcyB0cmlnZ2VyZWQuIEkgY2xvbmUg
-aXBpcGUtYXJtIG1hc3RlciwgYW5kIHVzZSB4ZW5vbWFpIDMuMC44IGZvbGxvd2luZyB4ZW5vbWFp
-IHN0YXJ0dXAgdHV0b3JpYWwuCj4+ID4+ID5UaGUgaGFyZHdhcmUgY3B1IGlzIGFtMzM1OC4gU3lz
-dGVtIHdvcmtzIGZpbmUgYWZ0ZXIgc3RhcnQgdXAsIGJ1dCB0aGUgc3lzdGVtIGltbWVkaWF0ZWx5
-IGxvY2tzIHVwIHdoZW4gYSBlZGdlIGludGVycnVwdC4gRm9yIGV4YW1wbGUsCj4+ID4+ID50aGUg
-bW1jIGNhcmQgaW4gcGx1Z2VkIGluLiBJcyBpdCBzb21ldGhpbmcgd29ybmcgPyBUaGFuayB5b3Ug
-dmVyeSBtdWNoIQo+PiA+PiA+Cj4+ID4+ID4gICAgVGhlIGtlcm5lbCBjb25maWcgZmlsZSBhbmQg
-ZHRzIGF0dGFjaGVkLgo+PiA+PiA+Cj4+ID4+ID4KPj4gPj4gPi0tLS0tLS0tLS0tLS0tIG5leHQg
-cGFydCAtLS0tLS0tLS0tLS0tLQo+PiA+PiA+QSBub24tdGV4dCBhdHRhY2htZW50IHdhcyBzY3J1
-YmJlZC4uLgo+PiA+PiA+TmFtZTogLmNvbmZpZwo+PiA+PiA+VHlwZTogYXBwbGljYXRpb24vb2N0
-ZXQtc3RyZWFtCj4+ID4+ID5TaXplOiAxMjk1OTEgYnl0ZXMKPj4gPj4gPkRlc2M6IG5vdCBhdmFp
-bGFibGUKPj4gPj4gPlVSTDogPGh0dHA6Ly94ZW5vbWFpLm9yZy9waXBlcm1haWwveGVub21haS9h
-dHRhY2htZW50cy8yMDE5MDExOC81MzgxNzVmOS9hdHRhY2htZW50Lm9iaj4KPj4gPj4gPi0tLS0t
-LS0tLS0tLS0tIG5leHQgcGFydCAtLS0tLS0tLS0tLS0tLQo+PiA+PiA+QSBub24tdGV4dCBhdHRh
-Y2htZW50IHdhcyBzY3J1YmJlZC4uLgo+PiA+PiA+TmFtZTogYW0zMzV4LWRuay12MV9MQ0Q4MDB4
-NDgwX1RNMDcwUkRIMTMuZHRzCj4+ID4+ID5UeXBlOiBhcHBsaWNhdGlvbi9vY3RldC1zdHJlYW0K
-Pj4gPj4gPlNpemU6IDI5NDM2IGJ5dGVzCj4+ID4+ID5EZXNjOiBub3QgYXZhaWxhYmxlCj4+ID4+
-ID5VUkw6IDxodHRwOi8veGVub21haS5vcmcvcGlwZXJtYWlsL3hlbm9tYWkvYXR0YWNobWVudHMv
-MjAxOTAxMTgvNTM4MTc1ZjkvYXR0YWNobWVudC0wMDAxLm9iaj4KPj4gPj4gPgo+PiA+PiA+LS0t
-LS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tCj4+ID4+ID4KPj4gPj4gPlN1YmplY3Q6IERpZ2Vz
-dCBGb290ZXIKPj4gPj4gPgo+PiA+PiA+Cj4+ID4+ID4KPj4gPj4gPgo+PiA+PiA+LS0tLS0tLS0t
-LS0tLS0tLS0tLS0tLS0tLS0tLS0tCj4+ID4+ID4KPj4gPj4gPkVuZCBvZiBYZW5vbWFpIERpZ2Vz
-dCwgVm9sIDgxLCBJc3N1ZSAxNwo+PiA+PiA+KioqKioqKioqKioqKioqKioqKioqKioqKioqKioq
-KioqKioqKioqCj4KPgo+Cj4tLSAKPnwgTWljaGFlbCBOYXp6YXJlbm8gVHJpbWFyY2hpICAgICAg
-ICAgICAgICAgICAgICAgQW1hcnVsYSBTb2x1dGlvbnMgQlYgfAo+fCBDT08gIC0gIEZvdW5kZXIg
-ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIENydXF1aXVza2FkZSA0NyB8Cj58
-ICszMSgwKTg1MTExOTE3MiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIEFtc3RlcmRh
-bSAxMDE4IEFNIE5MIHwKPnwgICAgICAgICAgICAgICAgICBbYGFzXSBodHRwOi8vd3d3LmFtYXJ1
-bGFzb2x1dGlvbnMuY29tICAgICAgICAgICAgICAgfAo=
+From: Philippe Gerum <rpm@xenomai.org>
+
+The token-based approach for detecting preemption while data is being
+moved into or out of the ring only protects from read vs read races,
+not from races involving a write side. For instance, a reader might
+read dirty data being changed by a writer concurrently, or two writers
+might compete writing two distinct messages at the same place in the
+ring space.
+
+To address this issue, use a slot-based implementation which
+atomically reserves exclusive portions of the ring space readers and
+writers will be accessing locklessly. Those slots are guaranteed to
+never overlap among read and write requests, until the lockless
+operation finishes.
+
+Signed-off-by: Philippe Gerum <rpm@xenomai.org>
+---
+
+To move forward...
+
+ kernel/drivers/ipc/bufp.c | 118 ++++++++++++++++++++--------------------------
+ 1 file changed, 50 insertions(+), 68 deletions(-)
+
+diff --git a/kernel/drivers/ipc/bufp.c b/kernel/drivers/ipc/bufp.c
+index e1c8672882..3d0929df75 100644
+--- a/kernel/drivers/ipc/bufp.c
++++ b/kernel/drivers/ipc/bufp.c
+@@ -42,10 +42,10 @@ struct bufp_socket {
+ 	char label[XNOBJECT_NAME_LEN];
+ 
+ 	off_t rdoff;
++	off_t rdrsvd;
+ 	off_t wroff;
++	off_t wrrsvd;
+ 	size_t fillsz;
+-	u_long wrtoken;
+-	u_long rdtoken;
+ 	rtdm_event_t i_event;
+ 	rtdm_event_t o_event;
+ 
+@@ -115,8 +115,8 @@ static int bufp_socket(struct rtdm_fd *fd)
+ 	sk->rdoff = 0;
+ 	sk->wroff = 0;
+ 	sk->fillsz = 0;
+-	sk->rdtoken = 0;
+-	sk->wrtoken = 0;
++	sk->rdrsvd = 0;
++	sk->wrrsvd = 0;
+ 	sk->status = 0;
+ 	sk->handle = 0;
+ 	sk->rx_timeout = RTDM_TIMEOUT_INFINITE;
+@@ -162,11 +162,10 @@ static ssize_t __bufp_readbuf(struct bufp_socket *sk,
+ 	struct bufp_wait_context wait, *bufwc;
+ 	struct rtipc_wait_context *wc;
+ 	struct xnthread *waiter;
++	size_t rbytes, n, avail;
++	ssize_t len, ret, xret;
+ 	rtdm_toseq_t toseq;
+-	ssize_t len, ret;
+-	size_t rbytes, n;
+ 	rtdm_lockctx_t s;
+-	u_long rdtoken;
+ 	off_t rdoff;
+ 	int resched;
+ 
+@@ -181,18 +180,15 @@ redo:
+ 		 * We should be able to read a complete message of the
+ 		 * requested length, or block.
+ 		 */
+-		if (sk->fillsz < len)
++		avail = sk->fillsz - sk->rdrsvd;
++		if (avail < len)
+ 			goto wait;
+ 
+-		/*
+-		 * Draw the next read token so that we can later
+-		 * detect preemption.
+-		 */
+-		rdtoken = ++sk->rdtoken;
+-
+-		/* Read from the buffer in a circular way. */
++		/* Reserve a read slot into the circular buffer. */
+ 		rdoff = sk->rdoff;
+-		rbytes = len;
++		sk->rdoff = (rdoff + len) % sk->bufsz;
++		sk->rdrsvd += len;
++		rbytes = ret = len;
+ 
+ 		do {
+ 			if (rdoff + rbytes > sk->bufsz)
+@@ -200,37 +196,30 @@ redo:
+ 			else
+ 				n = rbytes;
+ 			/*
+-			 * Release the lock while retrieving the data
+-			 * to keep latency low.
++			 * Drop the lock before copying data to
++			 * user. The read slot is consumed in any
++			 * case: the non-copied portion of the message
++			 * is lost on bad write.
+ 			 */
+ 			cobalt_atomic_leave(s);
+-			ret = xnbufd_copy_from_kmem(bufd, sk->bufmem + rdoff, n);
+-			if (ret < 0)
+-				return ret;
+-
++			xret = xnbufd_copy_from_kmem(bufd, sk->bufmem + rdoff, n);
+ 			cobalt_atomic_enter(s);
+-			/*
+-			 * In case we were preempted while retrieving
+-			 * the message, we have to re-read the whole
+-			 * thing.
+-			 */
+-			if (sk->rdtoken != rdtoken) {
+-				xnbufd_reset(bufd);
+-				goto redo;
++			if (xret < 0) {
++				ret = -EFAULT;
++				break;
+ 			}
+ 
+-			rdoff = (rdoff + n) % sk->bufsz;
+ 			rbytes -= n;
++			rdoff = (rdoff + n) % sk->bufsz;
+ 		} while (rbytes > 0);
+ 
+-		sk->fillsz -= len;
+-		sk->rdoff = rdoff;
+-		ret = len;
+-
+ 		resched = 0;
+-		if (sk->fillsz + len == sk->bufsz) /* -> writable */
++		if (sk->fillsz == sk->bufsz) /* -> writable */
+ 			resched |= xnselect_signal(&sk->priv->send_block, POLLOUT);
+ 
++		sk->rdrsvd -= len;
++		sk->fillsz -= len;
++
+ 		if (sk->fillsz == 0) /* -> non-readable */
+ 			resched |= xnselect_signal(&sk->priv->recv_block, 0);
+ 
+@@ -416,11 +405,10 @@ static ssize_t __bufp_writebuf(struct bufp_socket *rsk,
+ 	struct bufp_wait_context wait, *bufwc;
+ 	struct rtipc_wait_context *wc;
+ 	struct xnthread *waiter;
++	size_t wbytes, n, avail;
++	ssize_t len, ret, xret;
+ 	rtdm_toseq_t toseq;
+ 	rtdm_lockctx_t s;
+-	ssize_t len, ret;
+-	size_t wbytes, n;
+-	u_long wrtoken;
+ 	off_t wroff;
+ 	int resched;
+ 
+@@ -429,24 +417,21 @@ static ssize_t __bufp_writebuf(struct bufp_socket *rsk,
+ 	rtdm_toseq_init(&toseq, sk->tx_timeout);
+ 
+ 	cobalt_atomic_enter(s);
+-redo:
++
+ 	for (;;) {
+ 		/*
+-		 * We should be able to write the entire message at
+-		 * once or block.
++		 * No short or scattered writes: we should write the
++		 * entire message atomically or block.
+ 		 */
+-		if (rsk->fillsz + len > rsk->bufsz)
++		avail = rsk->fillsz + rsk->wrrsvd;
++		if (avail + len > rsk->bufsz)
+ 			goto wait;
+ 
+-		/*
+-		 * Draw the next write token so that we can later
+-		 * detect preemption.
+-		 */
+-		wrtoken = ++rsk->wrtoken;
+-
+-		/* Write to the buffer in a circular way. */
++		/* Reserve a write slot into the circular buffer. */
+ 		wroff = rsk->wroff;
+-		wbytes = len;
++		rsk->wroff = (wroff + len) % rsk->bufsz;
++		rsk->wrrsvd += len;
++		wbytes = ret = len;
+ 
+ 		do {
+ 			if (wroff + wbytes > rsk->bufsz)
+@@ -454,33 +439,30 @@ redo:
+ 			else
+ 				n = wbytes;
+ 			/*
+-			 * Release the lock while copying the data to
+-			 * keep latency low.
++			 * We have to drop the lock while reading in
++			 * data, but we can't rollback on bad read
++			 * from user because some other thread might
++			 * have populated the memory ahead of our
++			 * write slot already: bluntly clear the
++			 * unavailable bytes on copy error.
+ 			 */
+ 			cobalt_atomic_leave(s);
+-			ret = xnbufd_copy_to_kmem(rsk->bufmem + wroff, bufd, n);
+-			if (ret < 0)
+-				return ret;
++			xret = xnbufd_copy_to_kmem(rsk->bufmem + wroff, bufd, n);
+ 			cobalt_atomic_enter(s);
+-			/*
+-			 * In case we were preempted while copying the
+-			 * message, we have to write the whole thing
+-			 * again.
+-			 */
+-			if (rsk->wrtoken != wrtoken) {
+-				xnbufd_reset(bufd);
+-				goto redo;
++			if (xret < 0) {
++				memset(rsk->bufmem + wroff, 0, n);
++				ret = -EFAULT;
++				break;
+ 			}
+ 
+-			wroff = (wroff + n) % rsk->bufsz;
+ 			wbytes -= n;
++			wroff = (wroff + n) % rsk->bufsz;
+ 		} while (wbytes > 0);
+ 
+ 		rsk->fillsz += len;
+-		rsk->wroff = wroff;
+-		ret = len;
+-		resched = 0;
++		rsk->wrrsvd -= len;
+ 
++		resched = 0;
+ 		if (rsk->fillsz == len) /* -> readable */
+ 			resched |= xnselect_signal(&rsk->priv->recv_block, POLLIN);
+ 
+-- 
+2.16.4
+
