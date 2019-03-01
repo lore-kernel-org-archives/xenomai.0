@@ -1,11 +1,12 @@
 From: Jan Kiszka <jan.kiszka@siemens.com>
-Subject: [PATCH] ARM/ARM64: ipipe: Enable access to arch timer from user-space
-Message-ID: <3f7612eb-07a0-166b-0ce6-dd6d4bfd8ee2@siemens.com>
-Date: Fri, 1 Mar 2019 13:03:16 +0100
-MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Subject: [PATCH 2/4] Revert "clocksource: imx/imx53: ipipe: add support for
+ user-visible TSC"
+Date: Fri,  1 Mar 2019 13:03:12 +0100
+Message-Id: <6e78b116f900eac2622f7c8de1b27e28d977d399.1551441793.git.jan.kiszka@siemens.com>
+In-Reply-To: <cover.1551441793.git.jan.kiszka@siemens.com>
+References: <cover.1551441793.git.jan.kiszka@siemens.com>
+In-Reply-To: <cover.1551441793.git.jan.kiszka@siemens.com>
+References: <cover.1551441793.git.jan.kiszka@siemens.com>
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -14,37 +15,36 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Philippe Gerum <rpm@xenomai.org>, Xenomai <xenomai@xenomai.org>
+To: Philippe Gerum <rpm@xenomai.org>, xenomai@xenomai.org
 
 From: Jan Kiszka <jan.kiszka@siemens.com>
 
-This allows to expose the timer as clocksource directly to user-space by
-memory-mapping its registers.
+This reverts commit de53c9b26caa1c28785bb642350c07cfac6ebc3a.
+
+Belongs into the ARM tree.
 
 Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
 ---
+ arch/arm/mach-imx/mach-imx53.c | 5 -----
+ 1 file changed, 5 deletions(-)
 
-To be applied when splitting b597d0dec360 or after importing the partial
-revert of it from noarch.
-
- arch/arm/include/asm/arch_timer.h | 4 ++++
- 1 file changed, 4 insertions(+)
-
-diff --git a/arch/arm/include/asm/arch_timer.h b/arch/arm/include/asm/arch_timer.h
-index 9327e3a101dc..e9e7656bc137 100644
---- a/arch/arm/include/asm/arch_timer.h
-+++ b/arch/arm/include/asm/arch_timer.h
-@@ -106,6 +106,10 @@ static inline u32 arch_timer_get_cntkctl(void)
+diff --git a/arch/arm/mach-imx/mach-imx53.c b/arch/arm/mach-imx/mach-imx53.c
+index a02550b5ef7b..07c2e8dca494 100644
+--- a/arch/arm/mach-imx/mach-imx53.c
++++ b/arch/arm/mach-imx/mach-imx53.c
+@@ -37,11 +37,6 @@ static void __init imx53_dt_init(void)
  
- static inline void arch_timer_set_cntkctl(u32 cntkctl)
+ static void __init imx53_init_late(void)
  {
-+#ifdef CONFIG_IPIPE
-+	/* Enable access to user-space (may not be needed) */
-+	cntkctl |= ARCH_TIMER_USR_PCT_ACCESS_EN;
-+#endif
- 	asm volatile("mcr p15, 0, %0, c14, c1, 0" : : "r" (cntkctl));
+-#ifdef CONFIG_IPIPE
+-	/* Allow user-space access to emulated tsc */
+-	imx_set_aips(IMX_IO_ADDRESS(0x53f00000));
+-	imx_set_aips(IMX_IO_ADDRESS(0x63f00000));
+-#endif
+ 	imx53_pm_init();
  }
  
 -- 
 2.16.4
+
 
