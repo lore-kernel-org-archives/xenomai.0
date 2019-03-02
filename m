@@ -1,12 +1,11 @@
+Date: Sat, 02 Mar 2019 12:25:02 +0000
+From: Jeff Webb <w1@codecraftsmen.org>
+Reply-To: Jeff Webb <w1@codecraftsmen.org>
+Subject: PCI UDD Questions
+Message-ID: <MQAHYHsv-KztU7kmKMe1zEyj1YMioxUAHWXO8cjixmGgcY0FuEcPL73Bj0NZxsH9mlyrmGJ1rhAWMr7ii-ErIRz9qSqRXvnyBibYa3AZSAE=@codecraftsmen.org>
 MIME-Version: 1.0
-References: <CA+WNq=WXhcDcibmNQeO1WCkOmHVKFB32Fu5DVWWKPTyq2EtFzw@mail.gmail.com>
- <20190301133206.0b723b80@md1za8fc.ad001.siemens.net>
-In-Reply-To: <20190301133206.0b723b80@md1za8fc.ad001.siemens.net>
-From: Sumitabh Ghosh <sumitabhg12@gmail.com>
-Date: Sat, 2 Mar 2019 11:27:04 +0530
-Message-ID: <CA+WNq=Vo0p6CAWp_V5JzWK47JGJZVDvj0j1Os8AdF9FStvBncw@mail.gmail.com>
-Subject: Re: Qt application on Xenomai
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,54 +14,63 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: henning.schild@siemens.com
-Cc: Sumitabh Ghosh via Xenomai <xenomai@xenomai.org>
+To: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-Hi Henning,
+I would like to write a generic UDD mini-driver that handles interrupts fro=
+m a PCI card like uio_pci_generic does using the UIO framework.
 
-Thanks for your confirmation. Just to understand your set up further, does
-the POSIX layer used by QT is of the Xenomai skin ? Is This the way Qt is
-leveraging the rt features ?
+In uio_pci_generic.c, I see this code:
 
-I guess the rendering of graphics is handled through non rt Linux
-framebuffer /opengl apis.
+/* Interrupt handler. Read/modify/write the command register to disable
+ * the interrupt. */
+static irqreturn_t irqhandler(int irq, struct uio_info *info)
+{
+=09struct uio_pci_generic_dev *gdev =3D3D to_uio_pci_generic_dev(info);
 
-Let me know if my above understanding is correct.
+=09if (!pci_check_and_mask_intx(gdev->pdev))
+=09=09return IRQ_NONE;
 
-Thanks,
-Sumit
+=09/* UIO core will signal the user process. */
+=09return IRQ_HANDLED;
+}
+
+Can the pci_check_and_mask_intx() function be called like this from the UDD=
+ mini-driver in a real-time context, or is there an alternate method that s=
+hould be used?  From looking at the source for the pci_* functions, I would=
+ guess that this function cannot be called from RTDM, but I am not sure.  I=
+ am not experienced with writing RTDM drivers.
+
+Conversely, on the user-space side, what is the right way to umask the inte=
+rrupt?  The example in the "Userspace I/O HOWTO" uses the "pci sysfs interf=
+ace, or the libpci library that wraps it", but how to we do this in realtim=
+e?  If there is not a good way to do this directly from userspace, then it =
+sounds like a UDD_RTIOC_IRQEN ioctl call could accomplish this if the UDD m=
+ini-driver's ioctl handler implements UDD_RTIOC_IRQEN by unmasking the inte=
+rrupt in the PCI command register using something equivalent to the pci_int=
+x() function.  Is this the best solution, or does making this ioctl call in=
+troduce additional overhead?
+
+I could also avoid using the PCI command register entirely and just write t=
+o a device-specific mask bit in my peripheral, but I would rather implement=
+ a generic solution if there is not a performance penalty for using the PCI=
+ command register.
+
+If the UDD_RTIOC_IRQEN/IRQDIS are implemented in the mini-driver to mask/un=
+mask interrupts using device or PCI registers instead of masking at the IRQ=
+ controller level as described above, is there a need to call udd_enable/di=
+sable_irq() at all in the mini-driver (e.g. enable interrupts when the driv=
+er is loaded, disable when the driver is unloaded)?  It seems like disablin=
+g interrupts in this way (at the controller) wouldn't work if the IRQ line =
+is shared with another device.  I am not sure whether interrupts are alread=
+y enabled at the controller level, or if I need to enable them myself.
+
+Also, if the default UDD ioctl handler is used, it sounds like the UDD_RTIO=
+C_IRQEN/IRQDIS ioctls can be used to enable/disable interrupts at the contr=
+oller from userspace, but this requires a switch to secondary mode, which w=
+ould be problematic for real-time performance.  Is this correct?
+
+Thanks in advance for any advice on this subject.
+
+-Jeff
 
 
-
-
-On Fri, Mar 1, 2019, 18:02 Henning Schild <henning.schild@siemens.com>
-wrote:
-
-> Hi,
->
-> i am not sure i fully understand the question. In case you are worried
-> about combining Xenomai and Qt, i can assure you that it is possible.
-> We do have big c++/Qt applications running both rt and non-rt on
-> xenomai.
->
-> regards,
-> Henning
->
-> Am Fri, 1 Mar 2019 14:10:42 +0530
-> schrieb Sumitabh Ghosh via Xenomai <xenomai@xenomai.org>:
->
-> > Hi,
-> >
-> > I have a generic question not specific to any platform. If I want to
-> > run a small graphics application on Xenomai 3.x what would be the
-> > correct approach. e.g. Qt application framework which needs POSIX
-> > apis and a linux frame buffer to be able to render 2D applications.
-> >
-> > Kindly provide me some pointers.
-> >
-> > Thanks in advance.
-> >
-> > Cheers!
-> > Sumit
->
->
