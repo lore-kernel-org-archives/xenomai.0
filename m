@@ -1,15 +1,13 @@
+Subject: Re: net.h missing in 3.0.8 tarball release
+References: <5c7a0de93fef_@_imoxion.com>
+From: Jan Kiszka <jan.kiszka@siemens.com>
+Message-ID: <52a41083-22ee-16e5-ca9a-761e852256a6@siemens.com>
+Date: Mon, 4 Mar 2019 10:14:45 +0100
 MIME-Version: 1.0
-References: <CA+WNq=WXhcDcibmNQeO1WCkOmHVKFB32Fu5DVWWKPTyq2EtFzw@mail.gmail.com>
- <20190301133206.0b723b80@md1za8fc.ad001.siemens.net>
- <CA+WNq=Vo0p6CAWp_V5JzWK47JGJZVDvj0j1Os8AdF9FStvBncw@mail.gmail.com>
- <f2711dc9-497a-2aac-391d-c30a02c306b0@numalliance.com>
-In-Reply-To: <f2711dc9-497a-2aac-391d-c30a02c306b0@numalliance.com>
-From: C Smith <csmithquestions@gmail.com>
-Date: Mon, 4 Mar 2019 00:38:50 -0800
-Message-ID: <CA+K1mPE=X0G7N1DZde0hYvJSAytydP9QgdacZGzaj=2vJAQ=nw@mail.gmail.com>
-Subject: Re: Qt application on Xenomai
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+In-Reply-To: <5c7a0de93fef_@_imoxion.com>
+Content-Type: text/plain; charset="utf-8"; format="flowed"
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -18,111 +16,20 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: =?UTF-8?Q?St=C3=A9phane_Ancelot?= <sancelot@numalliance.com>
-Cc: Sumitabh Ghosh via Xenomai <xenomai@xenomai.org>
+To: =?UTF-8?B?6rmA67OR7KeE?= <geniuskpj@kaist.ac.kr>, xenomai@xenomai.org
 
-QT will allocate/destruct memory and its overhead and timing are
-unpredictable because of its signal/slot architecture - don't try to run QT
-in RT space.
-Instead, run your QT (C++,etc) application in userspace. Have your QT
-application attach to a static shared memory segment which a xenomai RT
-thread creates, and put any time-critical code into the RT thread. Send
-messages on XDDP sockets (or similar fifos) between the two processes if
-necessary. Your UI and multimedia graphics don't really need determinism,
-they have only 'soft real time' timing requirements (they can drop frames
-or finish late and the human viewer doesn't care). We've done this
-architecture for years, on uniprocessor systems, it works well.
-- C Smith
+On 02.03.19 05:52, 김병진 via Xenomai wrote:
+> i got tarball of 3.0.8 from this linkhttps://xenomai.org/downloads/xenomai/stable/xenomai-3.0.8.tar.bz2In this file, there is no 'net.h' in 'xenomai-3.0.8/include/cobalt/kernel/rtdm/'It makes some error when i build kernel.i checked 'include/rtdm/net.h'. but this is different from original one.Gitlab has 'net.h' in same path.https://gitlab.denx.de/Xenomai/xenomai/tree/v3.0.8/include/cobalt/kernel/rtdmSo is there someone to check this?
+> 
 
-On Sun, Mar 3, 2019 at 11:56 PM St=C3=A9phane Ancelot via Xenomai <
-xenomai@xenomai.org> wrote:
+This is a known issue of the release package, addressed by 
+https://gitlab.denx.de/Xenomai/xenomai/commit/7c9032348eac6641f2bdbb691c77caa42f4bb70f, 
+but that will only have effect in the next release. For this one, I would 
+suggest importing the file from git or using a git snapshot directly.
 
-> Hi,
->
-> I will share some points from my viewpoint :
->
-> The Xenomai impact will depend on the processor architecture selected
-> (uniprocessor or multiprocessor).
->
-> In uniprocessor context, while your rt application will consume cpu
-> time, meanwhile the other scheduled application will be waiting for
-> their time slice.
->
-> And thus GUI application is interrupted and may be slow in some cases
-> (that really depends on the impact of the RT process). In multiprocessor
-> context, this becomes no more a problem.
->
-> Performance is then dependant on the cpu architecture (x86/x64/arm...)
-> and their graphics chip device.
->
-> Depending on the graphics chip, the performance needed to drive a 19inch
-> size display is not the same as driving a 7inch size display.
->
-> There are two kinds of Qt applications these days : Native Qt and QML
-> applications.
->
-> * Qt is native and can use 2D OpenGL or display framebuffer,
->
-> * QML is no more than a javascript application layer running in a
-> javascript web engine , in this case you will be performance mainly
-> impacted by the QML architecture.
->
-> If your GUI application fits only few buttons in a display, then, that's
-> not a problem.
->
-> Regards.
->
-> St=C3=A9phane ANCELOT
->
->
-> Le 02/03/2019 =C3=A0 06:57, Sumitabh Ghosh via Xenomai a =C3=A9crit :
-> > Hi Henning,
-> >
-> > Thanks for your confirmation. Just to understand your set up further,
-> does
-> > the POSIX layer used by QT is of the Xenomai skin ? Is This the way Qt =
-is
-> > leveraging the rt features ?
-> >
-> > I guess the rendering of graphics is handled through non rt Linux
-> > framebuffer /opengl apis.
-> >
-> > Let me know if my above understanding is correct.
-> >
-> > Thanks,
-> > Sumit
-> >
-> >
-> >
-> >
-> > On Fri, Mar 1, 2019, 18:02 Henning Schild <henning.schild@siemens.com>
-> > wrote:
-> >
-> >> Hi,
-> >>
-> >> i am not sure i fully understand the question. In case you are worried
-> >> about combining Xenomai and Qt, i can assure you that it is possible.
-> >> We do have big c++/Qt applications running both rt and non-rt on
-> >> xenomai.
-> >>
-> >> regards,
-> >> Henning
-> >>
-> >> Am Fri, 1 Mar 2019 14:10:42 +0530
-> >> schrieb Sumitabh Ghosh via Xenomai <xenomai@xenomai.org>:
-> >>
-> >>> Hi,
-> >>>
-> >>> I have a generic question not specific to any platform. If I want to
-> >>> run a small graphics application on Xenomai 3.x what would be the
-> >>> correct approach. e.g. Qt application framework which needs POSIX
-> >>> apis and a linux frame buffer to be able to render 2D applications.
-> >>>
-> >>> Kindly provide me some pointers.
-> >>>
-> >>> Thanks in advance.
-> >>>
-> >>> Cheers!
-> >>> Sumit
-> >>
->
+Jan
+
+-- 
+Siemens AG, Corporate Technology, CT RDA IOT SES-DE
+Corporate Competence Center Embedded Linux
+
