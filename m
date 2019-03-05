@@ -1,7 +1,7 @@
 From: roman.stratiienko@globallogic.com
-Subject: [PATCH 4/7] kernel: cobalt: add missing quotes
-Date: Tue,  5 Mar 2019 16:45:18 +0200
-Message-Id: <20190305144521.2567-4-roman.stratiienko@globallogic.com>
+Subject: [PATCH 5/7] kernel: cobalt: support building against v5.0
+Date: Tue,  5 Mar 2019 16:45:19 +0200
+Message-Id: <20190305144521.2567-5-roman.stratiienko@globallogic.com>
 In-Reply-To: <20190305144521.2567-1-roman.stratiienko@globallogic.com>
 References: <20190305144521.2567-1-roman.stratiienko@globallogic.com>
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
@@ -17,55 +17,36 @@ Cc: Roman Stratiienko <roman.stratiienko@globallogic.com>
 
 From: Roman Stratiienko <roman.stratiienko@globallogic.com>
 
+Since kernel v5.0 upstream commit 96d4f267e40f
+("Remove 'type' argument from access_ok() function")
+ access_ok() funcion takes only 2 parameters
+
+Change access_rok and access_wok wrappers for kernels
+ starting from v5.0, and preserve them for earlier versions
+
 Signed-off-by: Roman Stratiienko <roman.stratiienko@globallogic.com>
 ---
- kernel/drivers/analogy/Kconfig | 8 ++++----
- kernel/drivers/can/Kconfig     | 4 ++--
- scripts/Kconfig.frag           | 2 +-
- 3 files changed, 7 insertions(+), 7 deletions(-)
+ kernel/cobalt/include/asm-generic/xenomai/syscall.h | 5 +++++
+ 1 file changed, 5 insertions(+)
 
-diff --git a/kernel/drivers/analogy/Kconfig b/kernel/drivers/analogy/Kconfig
-index e8fa953d5..858762bda 100644
---- a/kernel/drivers/analogy/Kconfig
-+++ b/kernel/drivers/analogy/Kconfig
-@@ -48,9 +48,9 @@ config XENO_DRIVERS_ANALOGY_DRIVER_DEBUG_LEVEL
-        WARNING: this threshold is only applied on the Analogy
-        driver. That will not affect the core.
+diff --git a/kernel/cobalt/include/asm-generic/xenomai/syscall.h b/kernel/cobalt/include/asm-generic/xenomai/syscall.h
+index e14a9d1e3..0d50d4107 100644
+--- a/kernel/cobalt/include/asm-generic/xenomai/syscall.h
++++ b/kernel/cobalt/include/asm-generic/xenomai/syscall.h
+@@ -27,8 +27,13 @@
+ #include <asm/xenomai/machine.h>
+ #include <cobalt/uapi/asm-generic/syscall.h>
  
--source drivers/xenomai/analogy/testing/Kconfig
--source drivers/xenomai/analogy/intel/Kconfig
--source drivers/xenomai/analogy/national_instruments/Kconfig
--source drivers/xenomai/analogy/sensoray/Kconfig
-+source "drivers/xenomai/analogy/testing/Kconfig"
-+source "drivers/xenomai/analogy/intel/Kconfig"
-+source "drivers/xenomai/analogy/national_instruments/Kconfig"
-+source "drivers/xenomai/analogy/sensoray/Kconfig"
++#if LINUX_VERSION_CODE >= KERNEL_VERSION(5, 0, 0)
++#define access_rok(addr, size)	access_ok((addr), (size))
++#define access_wok(addr, size)	access_ok((addr), (size))
++#else
+ #define access_rok(addr, size)	access_ok(VERIFY_READ, (addr), (size))
+ #define access_wok(addr, size)	access_ok(VERIFY_WRITE, (addr), (size))
++#endif
  
- endmenu
-diff --git a/kernel/drivers/can/Kconfig b/kernel/drivers/can/Kconfig
-index 33ca722ad..0bbfcc9d1 100644
---- a/kernel/drivers/can/Kconfig
-+++ b/kernel/drivers/can/Kconfig
-@@ -85,7 +85,7 @@ config XENO_DRIVERS_CAN_FLEXCAN
- 
- 	Say Y here if you want to support for Freescale FlexCAN.
- 
--source drivers/xenomai/can/mscan/Kconfig
--source drivers/xenomai/can/sja1000/Kconfig
-+source "drivers/xenomai/can/mscan/Kconfig"
-+source "drivers/xenomai/can/sja1000/Kconfig"
- 
- endmenu
-diff --git a/scripts/Kconfig.frag b/scripts/Kconfig.frag
-index c9655d43a..f2e89a896 100644
---- a/scripts/Kconfig.frag
-+++ b/scripts/Kconfig.frag
-@@ -48,4 +48,4 @@ config XENO_REVISION_LEVEL
- 
- config XENO_VERSION_STRING
-        string
--       default @VERSION_STRING@
-+       default "@VERSION_STRING@"
+ #define __xn_reg_arglist(regs)	\
+ 	__xn_reg_arg1(regs),	\
 -- 
 2.17.1
 
