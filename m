@@ -1,11 +1,7 @@
-Date: Sat, 02 Mar 2019 11:51:38 +0000
-From: Jeff Webb <jeff.webb@protonmail.com>
-Reply-To: Jeff Webb <jeff.webb@protonmail.com>
-Subject: PCI UDD Questions
-Message-ID: <9bPAY4qRJV9drHvKeB8cPL0ezW1gWwEDsDT_Guxrarl-Utu5nWJzEN3otONd_f_m6QxDg_f6lPQ3VqvsJ1Cnzs6kC6c3mZCul1uZmqCwvuY=@protonmail.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+From: roman.stratiienko@globallogic.com
+Subject: [PATCH 1/7] travis: add basic CI support
+Date: Tue,  5 Mar 2019 16:45:15 +0200
+Message-Id: <20190305144521.2567-1-roman.stratiienko@globallogic.com>
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -14,62 +10,97 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: xenomai@xenomai.org
+Cc: Roman Stratiienko <roman.stratiienko@globallogic.com>
 
-I would like to write a generic UDD mini-driver that handles interrupts fro=
-m a PCI card like uio_pci_generic does using the UIO framework.
+From: Roman Stratiienko <roman.stratiienko@globallogic.com>
 
-In uio_pci_generic.c, I see this code:
+Signed-off-by: Roman Stratiienko <roman.stratiienko@globallogic.com>
+---
+ .travis.yml | 73 +++++++++++++++++++++++++++++++++++++++++++++++++++++
+ 1 file changed, 73 insertions(+)
+ create mode 100644 .travis.yml
 
-/* Interrupt handler. Read/modify/write the command register to disable
- * the interrupt. */
-static irqreturn_t irqhandler(int irq, struct uio_info *info)
-{
-=09struct uio_pci_generic_dev *gdev =3D to_uio_pci_generic_dev(info);
+diff --git a/.travis.yml b/.travis.yml
+new file mode 100644
+index 000000000..0807760f4
+--- /dev/null
++++ b/.travis.yml
+@@ -0,0 +1,73 @@
++language: c
++dist: xenial
++
++addons:
++  apt:
++    packages:
++      - gcc-aarch64-linux-gnu
++      - gcc-arm-linux-gnueabihf
++      - patch
++      - quilt
++      - wget
++
++env:
++  global:
++    - KDIR=/tmp/kernel
++
++install:
++  - if [[ "${KERNEL_VERSION}" == *-rc* ]]; then
++      KERNEL_URL=https://git.kernel.org/torvalds/t/linux-${KERNEL_VERSION}.tar.gz;
++    else
++      KERNEL_URL=https://www.kernel.org/pub/linux/kernel/v${KERNEL_VERSION::1}.x/linux-${KERNEL_VERSION}.tar.xz;
++    fi
++  - wget -O kernel.tar.xz ${KERNEL_URL} && mkdir ${KDIR} && tar -C ${KDIR} --strip=1 -xf kernel.tar.xz
++  - wget -O /tmp/ipipe.patch ${IPIPE_URL}
++
++before_script:
++  - case "${ARCH}" in
++      "arm64") export CROSS_COMPILE=aarch64-linux-gnu-
++          ;;
++      "arm"  ) export CROSS_COMPILE=arm-linux-gnueabihf-
++          ;;
++      "x86"  ) export CROSS_COMPILE=
++          ;;
++    esac
++  - pushd ${KDIR}
++  - make -j $(nproc) ${KERNEL_DEFCONFIG}
++  - ./scripts/config -e CONFIG_IPIPE
++  - ./scripts/config -e CONFIG_XENOMAI
++  - popd
++
++script:
++  - ./scripts/prepare-kernel.sh --ipipe=/tmp/ipipe.patch --arch=${ARCH} --linux=${KDIR}
++  - cd ${KDIR}
++  - make -j $(nproc) olddefconfig
++  - make -j $(nproc) all
++
++matrix:
++  include:
++    - env:
++      - ARCH: arm
++        KERNEL_VERSION: 4.20.7
++        KERNEL_DEFCONFIG: multi_v7_defconfig
++        IPIPE_URL: https://github.com/devel-opi/linux-ipipe-arm-porting/releases/download/draft-v4.20.7/0001-Draft-version-of-ipipe-arm-ported-on-v4.20.7.patch
++    - env:
++      - ARCH: arm
++        KERNEL_VERSION: 4.14.85
++        KERNEL_DEFCONFIG: multi_v7_defconfig
++        IPIPE_URL: https://xenomai.org/downloads/ipipe/v4.x/arm/ipipe-core-4.14.85-arm-6.patch
++    - env:
++      - ARCH: arm
++        KERNEL_VERSION: 4.1.18
++        KERNEL_DEFCONFIG: multi_v7_defconfig
++        IPIPE_URL: https://xenomai.org/downloads/ipipe/v4.x/arm/older/ipipe-core-4.1.18-arm-9.patch
++    - env:
++      - ARCH: x86
++        KERNEL_VERSION: 4.14.89
++        KERNEL_DEFCONFIG: x86_64_defconfig
++        IPIPE_URL: https://xenomai.org/downloads/ipipe/v4.x/x86/ipipe-core-4.14.89-x86-2.patch
++    - env:
++      - ARCH: x86
++        KERNEL_VERSION: 4.4.166
++        KERNEL_DEFCONFIG: i386_defconfig
++        IPIPE_URL: https://xenomai.org/downloads/ipipe/v4.x/x86/ipipe-core-4.4.166-x86-12.patch
+-- 
+2.17.1
 
-=09if (!pci_check_and_mask_intx(gdev->pdev))
-=09=09return IRQ_NONE;
-
-=09/* UIO core will signal the user process. */
-=09return IRQ_HANDLED;
-}
-
-Can the pci_check_and_mask_intx() function be called like this from the UDD=
- mini-driver in a real-time context, or is there an alternate method that s=
-hould be used?  From looking at the source for the pci_* functions, I would=
- guess that this function cannot be called from RTDM, but I am not sure.  I=
- am not experienced with writing RTDM drivers.
-
-Conversely, on the user-space side, what is the right way to umask the inte=
-rrupt?  The example in the "Userspace I/O HOWTO" uses the "pci sysfs interf=
-ace, or the libpci library that wraps it", but how to we do this in realtim=
-e?  If there is not a good way to do this directly from userspace, then it =
-sounds like a UDD_RTIOC_IRQEN ioctl call could accomplish this if the UDD m=
-ini-driver's ioctl handler implements UDD_RTIOC_IRQEN by unmasking the inte=
-rrupt in the PCI command register using something equivalent to the pci_int=
-x() function.  Is this the best solution, or does making this ioctl call in=
-troduce additional overhead?
-
-I could also avoid using the PCI command register entirely and just write t=
-o a device-specific mask bit in my peripheral, but I would rather implement=
- a generic solution if there is not a performance penalty for using the PCI=
- command register.
-
-If the UDD_RTIOC_IRQEN/IRQDIS are implemented in the mini-driver to mask/un=
-mask interrupts using device or PCI registers instead of masking at the IRQ=
- controller level as described above, is there a need to call udd_enable/di=
-sable_irq() at all in the mini-driver (e.g. enable interrupts when the driv=
-er is loaded, disable when the driver is unloaded)?  It seems like disablin=
-g interrupts in this way (at the controller) wouldn't work if the IRQ line =
-is shared with another device.  I am not sure whether interrupts are alread=
-y enabled at the controller level, or if I need to enable them myself.
-
-Also, if the default UDD ioctl handler is used, it sounds like the UDD_RTIO=
-C_IRQEN/IRQDIS ioctls can be used to enable/disable interrupts at the contr=
-oller from userspace, but this requires a switch to secondary mode, which w=
-ould be problematic for real-time performance.  Is this correct?
-
-Thanks in advance for any advice on this subject.
-
--Jeff
 
