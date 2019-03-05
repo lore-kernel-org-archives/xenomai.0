@@ -1,11 +1,11 @@
-Subject: Re: [PATCH 6/7] kernel: cobalt: migrate to ktime_t
+Subject: Re: [PATCH 7/7] travis: append v5.0 to the matrix
 References: <20190305144521.2567-1-roman.stratiienko@globallogic.com>
- <20190305144521.2567-6-roman.stratiienko@globallogic.com>
+ <20190305144521.2567-7-roman.stratiienko@globallogic.com>
 From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <74cba403-be71-2e9f-c125-a6e2b6b84728@siemens.com>
-Date: Tue, 5 Mar 2019 19:16:09 +0100
+Message-ID: <0a6780c1-d0c8-66a3-9930-6012c491aebc@siemens.com>
+Date: Tue, 5 Mar 2019 19:24:22 +0100
 MIME-Version: 1.0
-In-Reply-To: <20190305144521.2567-6-roman.stratiienko@globallogic.com>
+In-Reply-To: <20190305144521.2567-7-roman.stratiienko@globallogic.com>
 Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -17,55 +17,47 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: roman.stratiienko@globallogic.com, xenomai@xenomai.org
+To: roman.stratiienko@globallogic.com, xenomai@xenomai.org, Philippe Gerum <rpm@xenomai.org>
 
 On 05.03.19 15:45, roman.stratiienko--- via Xenomai wrote:
 > From: Roman Stratiienko <roman.stratiienko@globallogic.com>
 > 
 > Signed-off-by: Roman Stratiienko <roman.stratiienko@globallogic.com>
 > ---
->   kernel/cobalt/clock.c                 | 4 +---
->   kernel/drivers/analogy/rtdm_helpers.c | 5 +----
->   2 files changed, 2 insertions(+), 7 deletions(-)
+>   .travis.yml | 5 +++++
+>   1 file changed, 5 insertions(+)
 > 
-> diff --git a/kernel/cobalt/clock.c b/kernel/cobalt/clock.c
-> index 272db3241..f8291b006 100644
-> --- a/kernel/cobalt/clock.c
-> +++ b/kernel/cobalt/clock.c
-> @@ -350,9 +350,7 @@ EXPORT_SYMBOL_GPL(xnclock_adjust);
+> diff --git a/.travis.yml b/.travis.yml
+> index 0807760f4..ab23b745d 100644
+> --- a/.travis.yml
+> +++ b/.travis.yml
+> @@ -46,6 +46,11 @@ script:
 >   
->   xnticks_t xnclock_get_host_time(void)
->   {
-> -	struct timeval tv;
-> -	do_gettimeofday(&tv);
-> -	return tv.tv_sec * 1000000000ULL + tv.tv_usec * 1000;
-> +	return ktime_to_ns(ktime_get_real());
->   }
->   EXPORT_SYMBOL_GPL(xnclock_get_host_time);
->   
-> diff --git a/kernel/drivers/analogy/rtdm_helpers.c b/kernel/drivers/analogy/rtdm_helpers.c
-> index 8330d0676..675594152 100644
-> --- a/kernel/drivers/analogy/rtdm_helpers.c
-> +++ b/kernel/drivers/analogy/rtdm_helpers.c
-> @@ -32,11 +32,8 @@ static nanosecs_abs_t a4l_clkofs;
->   void a4l_init_time(void)
->   {
->   	nanosecs_abs_t t1, t2;
-> -	struct timeval tv;
->   	t1 = rtdm_clock_read();
-> -	do_gettimeofday(&tv);
-> -	t2 = 1000000000 * ((nanosecs_abs_t)tv.tv_sec) +
-> -		1000000 * ((nanosecs_abs_t)tv.tv_usec);
-
-Hmm.... I think this even fixes a bug: Should have been "1000 * ...".
-
-> +	t2 = ktime_to_ns(ktime_get_real());
->   	a4l_clkofs = t2 - t1;
->   }
->   
+>   matrix:
+>     include:
+> +    - env:
+> +      - ARCH: arm
+> +        KERNEL_VERSION: 5.0
+> +        KERNEL_DEFCONFIG: multi_v7_defconfig
+> +        IPIPE_URL: https://github.com/devel-opi/linux-ipipe-arm-porting/releases/download/v5.0-draft1/ipipe-arm-v5.0-draft.patch
+>       - env:
+>         - ARCH: arm
+>           KERNEL_VERSION: 4.20.7
 > 
 
-For the record: This pattern is supported since 3.17. So we are fine.
+OK, looking at this and also the full matrix, I think we need to discuss what 
+variation we want to test and from which sources.
+
+It is generally useful to have the patch application process tested as well, but 
+I think the primary, more easily maintainable source for CI would be git 
+branches that reflect the latest version of the patch and the kernel series. So, 
+one for 4.4, one for 4.14, one for tip, and all that multiplied by supported arch.
+
+I'm not maintaining I-pipe on ARM - Philippe can better comment on how to ensure 
+best that your effort is integrated smoothly into mainline. But I would prefer 
+to pull your contributions from the I-pipe kernel tree for CI.
+
+Thanks a lot for your patches! They are very valuable contributions.
 
 Jan
 
