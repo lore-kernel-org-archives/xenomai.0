@@ -1,20 +1,13 @@
-Date: Mon, 28 Jan 2019 09:09:49 +0800 (CST)
-From: "Jack Zhang" <kunzj@126.com>
-Subject: Re:Re: Re: Re: Help: System freeze when edge interrupt trigger,
- Xenomain3.0.8, ipipe-arm main line, am335x
-In-Reply-To: <CAOf5uw=HBHHppJHJ+nboFW7WO7CmB8mbA8rU09707U5BddETBA@mail.gmail.com>
-References: <mailman.3.1547809201.5156.xenomai@xenomai.org>
- <4ddd614.76d7.168751f9385.Coremail.kunzj@126.com>
- <CALLqZ8RZHCDBur7ewCKnKJXu9j4VOdeucgJchF9rKCC_oeGVWA@mail.gmail.com>
- <2a791fcc.20e9.16889759d7f.Coremail.kunzj@126.com>
- <CAOf5uwki6gaSPg=6zCOxHEvWh8X0mOORazXmNczazzmVD4U54g@mail.gmail.com>
- <41880ccc.22f4.168899ba6f6.Coremail.kunzj@126.com>
- <CAOf5uwn6GMtmDUj0O_zs5092ToX52APnKqqzax+jeJ19mhOFtQ@mail.gmail.com>
- <CAOf5uw=HBHHppJHJ+nboFW7WO7CmB8mbA8rU09707U5BddETBA@mail.gmail.com>
+Subject: Re: [PATCH 1/7] travis: add basic CI support
+References: <20190305144521.2567-1-roman.stratiienko@globallogic.com>
+From: Jan Kiszka <jan.kiszka@siemens.com>
+Message-ID: <937d0f10-347e-873f-42cf-39569350367a@siemens.com>
+Date: Tue, 5 Mar 2019 18:53:39 +0100
 MIME-Version: 1.0
-Message-ID: <187fd842.940.16892015ccf.Coremail.kunzj@126.com>
-Content-Type: text/plain; charset=GBK
-Content-Transfer-Encoding: base64
+In-Reply-To: <20190305144521.2567-1-roman.stratiienko@globallogic.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -23,111 +16,115 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Michael Nazzareno Trimarchi <michael@amarulasolutions.com>
-Cc: Greg Gallagher <greg@embeddedgreg.com>, "Xenomai@xenomai.org" <xenomai@xenomai.org>
+To: roman.stratiienko@globallogic.com, xenomai@xenomai.org
 
-SGkgTWljaGFlbCwKPj4gV2hhdCBpcyB5b3UgcmVxdWlyZW1lbnQ/IFJ1bm5pbmcgb3BlbmdsIHF0
-IGFwcGxpY2F0aW9uICsgcmVhbHRpbWU/ClllcywgYW55IHByb2JsZW0/CgoKCkF0IDIwMTktMDEt
-MjYgMTg6MjY6MjMsICJNaWNoYWVsIE5henphcmVubyBUcmltYXJjaGkiIDxtaWNoYWVsQGFtYXJ1
-bGFzb2x1dGlvbnMuY29tPiB3cm90ZToKPkhpIEphY2taaGFuZwo+Cj5PbiBTYXQsIEphbiAyNiwg
-MjAxOSBhdCAxMToxOCBBTSBNaWNoYWVsIE5henphcmVubyBUcmltYXJjaGkKPjxtaWNoYWVsQGFt
-YXJ1bGFzb2x1dGlvbnMuY29tPiB3cm90ZToKPj4KPj4gSGkgSmFja1poYW5nCj4+Cj4+IE9uIFNh
-dCwgSmFuIDI2LCAyMDE5IGF0IDExOjAxIEFNIEphY2taaGFuZyA8a3VuempAMTI2LmNvbT4gd3Jv
-dGU6Cj4+ID4KPj4gPiBUaGFua3MsIE1pY2hhZWwKPj4gPiBJIGhhdmUga2VybmVsIDQuMS4xOCAr
-IHhlbm9tYWkgMy4wLjYgd29ya3MgdG9vLCBidXQgY2FuJ3Qgd29yayB3aXRoIHRpJ3MgZHJtIGRy
-aXZlcnMuCj4+ID4gVGkncyBzZGtbMV0gd2l0aCBvd24ga2VybmVsIGJhc2VkIG9uIDQuMS4xOCwg
-Y2FuIG5vdCB3b3JrIHdpdGggaXBpcGUgcGF0Y2gsIGFuZCBpIGl0J3MKPj4gPiBoYXJkIHRvIHNv
-bHZlIHRoZSBjb25mbGljdC4KPj4gPgo+PiA+IE5vdywgVGkncyBkcm0gZHJpdmVyIGNvZGUgaXMg
-aW4gdGhlIG5ldyBrZXJuZWwgNC4xNCwgc28gdGhlIGJlc3Qgd2F5IGlzIHRoYXQgaXBpcGUtYXJt
-Cj4+ID4gY2FuIHdvcmsgd2l0aCB0aGUgNC4xNCBrZXJuZWwuCj4+Cj4+IFdoYXQgaXMgeW91IHJl
-cXVpcmVtZW50PyBSdW5uaW5nIG9wZW5nbCBxdCBhcHBsaWNhdGlvbiArIHJlYWx0aW1lPwo+Cj5S
-ZWFkIG5vdyB0aGUgbGluay4gQW55IGxvZz8KPgo+TWljaGFlbAo+Pgo+PiBNaWNoYWVsCj4+Cj4+
-ID4KPj4gPiBbMV0uIGh0dHA6Ly9wcm9jZXNzb3JzLndpa2kudGkuY29tL2luZGV4LnBocD90aXRs
-ZT1Qcm9jZXNzb3JfU0RLX0xpbnV4X1JlbGVhc2VfTm90ZXMmb2xkaWQ9MjE0NzU0Cj4+ID4KPj4g
-PiBBdCAyMDE5LTAxLTI2IDE3OjM2OjM0LCAiTWljaGFlbCBOYXp6YXJlbm8gVHJpbWFyY2hpIiA8
-bWljaGFlbEBhbWFydWxhc29sdXRpb25zLmNvbT4gd3JvdGU6Cj4+ID4KPj4gPiA+SGkgSmFjawo+
-PiA+ID4KPj4gPiA+Cj4+ID4gPk9uIFNhdCwgSmFuIDI2LCAyMDE5IGF0IDEwOjIwIEFNIEphY2ta
-aGFuZyB2aWEgWGVub21haQo+PiA+ID48eGVub21haUB4ZW5vbWFpLm9yZz4gd3JvdGU6Cj4+ID4g
-Pj4KPj4gPiA+PiBIaSwgR3JlcCwgdGhhbmtzLgo+PiA+ID4+Cj4+ID4gPj4KPj4gPiA+Pgo+PiA+
-ID4+ID5IYXZlIHlvdSB0cmllZCB0aGlzIHdpdGggdGhlIDQuOSBvciA0LjQga2VybmVsIGFuZCBp
-cGlwZSBwYXRjaD8gSQo+PiA+ID4+ID50aGluayA0LjQgKHdoaWNoIGlzIGJhc2VkIG9uIGEgU0xU
-UykgaGFzIGJlZW4gdGVzdGVkIG9uIGJlYWdsZWJvbmUKPj4gPiA+PiA+KHNpbWlsYXIgcHJvY2Vz
-c29yKS4gRGlkIHlvdSBtZWFuIGtlcm5lbCA0LjE0IG5vdCAzLjE0Pwo+PiA+ID4+Cj4+ID4gPj4g
-ICBJIG1lYW4ga2VybmVsIDQuMTQuIFNvcnJ5IGZvciBtaXN0YWtlLgo+PiA+ID4+ID5JIHRoaW5r
-IEkndmUgcmVwcm9kdWNlZCB0aGlzIG9uIGEgQmVhZ2xlYm9uZSB3aGljaCBpcyBiYXNlZCBvbiBh
-Cj4+ID4gPj4gPnNpbWlsYXIgcHJvY2Vzc29yLCBJJ2xsIGxvb2sgaW50byBpdCB0aGlzIHdlZWsu
-Cj4+ID4gPj4gICBUaGFuayB5b3UgdmVyeSBtdWNoIQo+PiA+ID4KPj4gPiA+SSBoYXZlIDQuMS42
-ICsgeGVub21haSAzLjAuNyBhbmQgc2VlbXMgdGhhdCBpdCB3b3Jrcwo+PiA+ID4KPj4gPiA+TWlj
-aGFlbAo+PiA+ID4KPj4gPiA+Pgo+PiA+ID4+Cj4+ID4gPj4g1NogMjAxOS0wMS0yMiAyMzoxODow
-M6OsIkdyZWcgR2FsbGFnaGVyIiA8Z3JlZ0BlbWJlZGRlZGdyZWcuY29tPiDQtLXAo7oKPj4gPiA+
-PiA+T24gVHVlLCBKYW4gMjIsIDIwMTkgYXQgNTozNCBBTSDVxb2owKUgdmlhIFhlbm9tYWkgPHhl
-bm9tYWlAeGVub21haS5vcmc+IHdyb3RlOgo+PiA+ID4+ID4+Cj4+ID4gPj4gPj4gSGVsbG8gZXZl
-cnlvbmUsIGhlcmUgaXMgc29tZSBuZXcgY2x1ZXM6Cj4+ID4gPj4gPj4gMS4gSSB0cmllZCB4ZW5v
-bWFpIDMuMC44LCBrZXJuZWwgMy4xNC4xNyBhbmQgaXBpcGUtY29yZS00LjE0LjcxLWFybS00LnBh
-dGNoLiBTdGlsbCB0aGUgc2FtZSBxdWVzdGlvbi4KPj4gPiA+PiA+Cj4+ID4gPj4gPkhhdmUgeW91
-IHRyaWVkIHRoaXMgd2l0aCB0aGUgNC45IG9yIDQuNCBrZXJuZWwgYW5kIGlwaXBlIHBhdGNoPyAg
-SQo+PiA+ID4+ID50aGluayA0LjQgKHdoaWNoIGlzIGJhc2VkIG9uIGEgU0xUUykgaGFzIGJlZW4g
-dGVzdGVkIG9uIGJlYWdsZWJvbmUKPj4gPiA+PiA+KHNpbWlsYXIgcHJvY2Vzc29yKS4gRGlkIHlv
-dSBtZWFuIGtlcm5lbCA0LjE0IG5vdCAzLjE0Pwo+PiA+ID4+ID4KPj4gPiA+PiA+PiAyLiBJdCBz
-ZWVtcyB0aGUgc3lzdGVtIGlzIGxvY2tlZCB1cCBvbmNlIGEgZ3BpbyBpbnRlcnJ1cHQgaXMgdHJp
-Z2dlcmVkLgo+PiA+ID4+ID4+Cj4+ID4gPj4gPj4gMy4gU29tZSBkZWJ1ZyBpbmZvcm1hdGlvbiBz
-aG93IHRoYXQsIG9uY2UgYSBncGlvIGludGVycnVwdCBpcyB0cmlnZ2VyZWQsIHRoZSBmdW5jdGlv
-bgo+PiA+ID4+ID4+Cj4+ID4gPj4gPj4gICAgICdvbWFwX2dwaW9faXJxX2hhbmRsZXInIGlzIHRy
-aWdnZXJlZCBhbGwgdGhlIHRpbWUuCj4+ID4gPj4gPkkgdGhpbmsgSSd2ZSByZXByb2R1Y2VkIHRo
-aXMgb24gYSBCZWFnbGVib25lIHdoaWNoIGlzIGJhc2VkIG9uIGEKPj4gPiA+PiA+c2ltaWxhciBw
-cm9jZXNzb3IsIEknbGwgbG9vayBpbnRvIGl0IHRoaXMgd2Vlay4KPj4gPiA+PiA+Cj4+ID4gPj4g
-Pj4gVGhlcmUgbWF5IGJlIGEgbGl0dGxlIGJ1ZyBleGlzdHMsIGJ1dCBpIGRvbid0IGtub3cgaG93
-IHRvIGFtZW5kIGl0LiBUaGFuayB5b3UgdmVyeSBtdWNoLCBpZiBhbnlvbmUgY2FuIGhlbHAuCj4+
-ID4gPj4gPj4KPj4gPiA+PiA+Cj4+ID4gPj4gPi1HcmVnCj4+ID4gPj4gPj4gPi0tLS0tLS0tLS0t
-LS0tLS0tLS0tLS0tLS0tLS0tLQo+PiA+ID4+ID4+ID4KPj4gPiA+PiA+PiA+TWVzc2FnZTogMwo+
-PiA+ID4+ID4+ID5EYXRlOiBGcmksIDE4IEphbiAyMDE5IDExOjQ4OjEyICswODAwIChDU1QpCj4+
-ID4gPj4gPj4gPkZyb206INXFvajApSA8a3VuempAMTI2LmNvbT4KPj4gPiA+PiA+PiA+VG86IHhl
-bm9tYWlAeGVub21haS5vcmcKPj4gPiA+PiA+PiA+U3ViamVjdDogSGVscDogU3lzdGVtIGZyZWV6
-ZSB3aGVuIGVkZ2UgaW50ZXJydXB0IHRyaWdnZXIsCj4+ID4gPj4gPj4gPiAgICAgICBYZW5vbWFp
-bjMuMC44LCBpcGlwZS1hcm0gbWFpbiBsaW5lLCBhbTMzNXgKPj4gPiA+PiA+PiA+TWVzc2FnZS1J
-RDogPDU1Yzg5Yzc2LjM0MjAuMTY4NWYxMmM0ODguQ29yZW1haWwua3VuempAMTI2LmNvbT4KPj4g
-PiA+PiA+PiA+Q29udGVudC1UeXBlOiB0ZXh0L3BsYWluOyBjaGFyc2V0PSJnYmsiCj4+ID4gPj4g
-Pj4gPgo+PiA+ID4+ID4+ID5IZWxsbyEKPj4gPiA+PiA+PiA+ICAgIFRoZSBzeXN0ZW0gZnJlZXpl
-IHdoZW4gaW50ZXJydXB0IGlzIHRyaWdnZXJlZC4gSSBjbG9uZSBpcGlwZS1hcm0gbWFzdGVyLCBh
-bmQgdXNlIHhlbm9tYWkgMy4wLjggZm9sbG93aW5nIHhlbm9tYWkgc3RhcnR1cCB0dXRvcmlhbC4K
-Pj4gPiA+PiA+PiA+VGhlIGhhcmR3YXJlIGNwdSBpcyBhbTMzNTguIFN5c3RlbSB3b3JrcyBmaW5l
-IGFmdGVyIHN0YXJ0IHVwLCBidXQgdGhlIHN5c3RlbSBpbW1lZGlhdGVseSBsb2NrcyB1cCB3aGVu
-IGEgZWRnZSBpbnRlcnJ1cHQuIEZvciBleGFtcGxlLAo+PiA+ID4+ID4+ID50aGUgbW1jIGNhcmQg
-aW4gcGx1Z2VkIGluLiBJcyBpdCBzb21ldGhpbmcgd29ybmcgPyBUaGFuayB5b3UgdmVyeSBtdWNo
-IQo+PiA+ID4+ID4+ID4KPj4gPiA+PiA+PiA+ICAgIFRoZSBrZXJuZWwgY29uZmlnIGZpbGUgYW5k
-IGR0cyBhdHRhY2hlZC4KPj4gPiA+PiA+PiA+Cj4+ID4gPj4gPj4gPgo+PiA+ID4+ID4+ID4tLS0t
-LS0tLS0tLS0tLSBuZXh0IHBhcnQgLS0tLS0tLS0tLS0tLS0KPj4gPiA+PiA+PiA+QSBub24tdGV4
-dCBhdHRhY2htZW50IHdhcyBzY3J1YmJlZC4uLgo+PiA+ID4+ID4+ID5OYW1lOiAuY29uZmlnCj4+
-ID4gPj4gPj4gPlR5cGU6IGFwcGxpY2F0aW9uL29jdGV0LXN0cmVhbQo+PiA+ID4+ID4+ID5TaXpl
-OiAxMjk1OTEgYnl0ZXMKPj4gPiA+PiA+PiA+RGVzYzogbm90IGF2YWlsYWJsZQo+PiA+ID4+ID4+
-ID5VUkw6IDxodHRwOi8veGVub21haS5vcmcvcGlwZXJtYWlsL3hlbm9tYWkvYXR0YWNobWVudHMv
-MjAxOTAxMTgvNTM4MTc1ZjkvYXR0YWNobWVudC5vYmo+Cj4+ID4gPj4gPj4gPi0tLS0tLS0tLS0t
-LS0tIG5leHQgcGFydCAtLS0tLS0tLS0tLS0tLQo+PiA+ID4+ID4+ID5BIG5vbi10ZXh0IGF0dGFj
-aG1lbnQgd2FzIHNjcnViYmVkLi4uCj4+ID4gPj4gPj4gPk5hbWU6IGFtMzM1eC1kbmstdjFfTENE
-ODAweDQ4MF9UTTA3MFJESDEzLmR0cwo+PiA+ID4+ID4+ID5UeXBlOiBhcHBsaWNhdGlvbi9vY3Rl
-dC1zdHJlYW0KPj4gPiA+PiA+PiA+U2l6ZTogMjk0MzYgYnl0ZXMKPj4gPiA+PiA+PiA+RGVzYzog
-bm90IGF2YWlsYWJsZQo+PiA+ID4+ID4+ID5VUkw6IDxodHRwOi8veGVub21haS5vcmcvcGlwZXJt
-YWlsL3hlbm9tYWkvYXR0YWNobWVudHMvMjAxOTAxMTgvNTM4MTc1ZjkvYXR0YWNobWVudC0wMDAx
-Lm9iaj4KPj4gPiA+PiA+PiA+Cj4+ID4gPj4gPj4gPi0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0t
-LS0tLQo+PiA+ID4+ID4+ID4KPj4gPiA+PiA+PiA+U3ViamVjdDogRGlnZXN0IEZvb3Rlcgo+PiA+
-ID4+ID4+ID4KPj4gPiA+PiA+PiA+Cj4+ID4gPj4gPj4gPgo+PiA+ID4+ID4+ID4KPj4gPiA+PiA+
-PiA+LS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tCj4+ID4gPj4gPj4gPgo+PiA+ID4+ID4+
-ID5FbmQgb2YgWGVub21haSBEaWdlc3QsIFZvbCA4MSwgSXNzdWUgMTcKPj4gPiA+PiA+PiA+Kioq
-KioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqCj4+ID4gPgo+PiA+ID4KPj4gPiA+
-Cj4+ID4gPi0tCj4+ID4gPnwgTWljaGFlbCBOYXp6YXJlbm8gVHJpbWFyY2hpICAgICAgICAgICAg
-ICAgICAgICAgQW1hcnVsYSBTb2x1dGlvbnMgQlYgfAo+PiA+ID58IENPTyAgLSAgRm91bmRlciAg
-ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgQ3J1cXVpdXNrYWRlIDQ3IHwKPj4g
-PiA+fCArMzEoMCk4NTExMTkxNzIgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICBBbXN0
-ZXJkYW0gMTAxOCBBTSBOTCB8Cj4+ID4gPnwgICAgICAgICAgICAgICAgICBbYGFzXSBodHRwOi8v
-d3d3LmFtYXJ1bGFzb2x1dGlvbnMuY29tICAgICAgICAgICAgICAgfAo+Pgo+Pgo+Pgo+PiAtLQo+
-PiB8IE1pY2hhZWwgTmF6emFyZW5vIFRyaW1hcmNoaSAgICAgICAgICAgICAgICAgICAgIEFtYXJ1
-bGEgU29sdXRpb25zIEJWIHwKPj4gfCBDT08gIC0gIEZvdW5kZXIgICAgICAgICAgICAgICAgICAg
-ICAgICAgICAgICAgICAgICAgIENydXF1aXVza2FkZSA0NyB8Cj4+IHwgKzMxKDApODUxMTE5MTcy
-ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgQW1zdGVyZGFtIDEwMTggQU0gTkwgfAo+
-PiB8ICAgICAgICAgICAgICAgICAgW2Bhc10gaHR0cDovL3d3dy5hbWFydWxhc29sdXRpb25zLmNv
-bSAgICAgICAgICAgICAgIHwKPgo+Cj4KPi0tIAo+fCBNaWNoYWVsIE5henphcmVubyBUcmltYXJj
-aGkgICAgICAgICAgICAgICAgICAgICBBbWFydWxhIFNvbHV0aW9ucyBCViB8Cj58IENPTyAgLSAg
-Rm91bmRlciAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgQ3J1cXVpdXNrYWRl
-IDQ3IHwKPnwgKzMxKDApODUxMTE5MTcyICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
-QW1zdGVyZGFtIDEwMTggQU0gTkwgfAo+fCAgICAgICAgICAgICAgICAgIFtgYXNdIGh0dHA6Ly93
-d3cuYW1hcnVsYXNvbHV0aW9ucy5jb20gICAgICAgICAgICAgICB8Cg==
+On 05.03.19 15:45, roman.stratiienko--- via Xenomai wrote:
+> From: Roman Stratiienko <roman.stratiienko@globallogic.com>
+> 
+> Signed-off-by: Roman Stratiienko <roman.stratiienko@globallogic.com>
+> ---
+>   .travis.yml | 73 +++++++++++++++++++++++++++++++++++++++++++++++++++++
+>   1 file changed, 73 insertions(+)
+>   create mode 100644 .travis.yml
+> 
+> diff --git a/.travis.yml b/.travis.yml
+> new file mode 100644
+> index 000000000..0807760f4
+> --- /dev/null
+> +++ b/.travis.yml
+> @@ -0,0 +1,73 @@
+> +language: c
+> +dist: xenial
+> +
+> +addons:
+> +  apt:
+> +    packages:
+> +      - gcc-aarch64-linux-gnu
+> +      - gcc-arm-linux-gnueabihf
+> +      - patch
+> +      - quilt
+> +      - wget
+> +
+> +env:
+> +  global:
+> +    - KDIR=/tmp/kernel
+> +
+> +install:
+> +  - if [[ "${KERNEL_VERSION}" == *-rc* ]]; then
+> +      KERNEL_URL=https://git.kernel.org/torvalds/t/linux-${KERNEL_VERSION}.tar.gz;
+> +    else
+> +      KERNEL_URL=https://www.kernel.org/pub/linux/kernel/v${KERNEL_VERSION::1}.x/linux-${KERNEL_VERSION}.tar.xz;
+> +    fi
+> +  - wget -O kernel.tar.xz ${KERNEL_URL} && mkdir ${KDIR} && tar -C ${KDIR} --strip=1 -xf kernel.tar.xz
+> +  - wget -O /tmp/ipipe.patch ${IPIPE_URL}
+> +
+> +before_script:
+> +  - case "${ARCH}" in
+> +      "arm64") export CROSS_COMPILE=aarch64-linux-gnu-
+> +          ;;
+> +      "arm"  ) export CROSS_COMPILE=arm-linux-gnueabihf-
+> +          ;;
+> +      "x86"  ) export CROSS_COMPILE=
+> +          ;;
+> +    esac
+> +  - pushd ${KDIR}
+> +  - make -j $(nproc) ${KERNEL_DEFCONFIG}
+> +  - ./scripts/config -e CONFIG_IPIPE
+> +  - ./scripts/config -e CONFIG_XENOMAI
+> +  - popd
+> +
+> +script:
+> +  - ./scripts/prepare-kernel.sh --ipipe=/tmp/ipipe.patch --arch=${ARCH} --linux=${KDIR}
+> +  - cd ${KDIR}
+> +  - make -j $(nproc) olddefconfig
+> +  - make -j $(nproc) all
+> +
+> +matrix:
+> +  include:
+> +    - env:
+> +      - ARCH: arm
+> +        KERNEL_VERSION: 4.20.7
+> +        KERNEL_DEFCONFIG: multi_v7_defconfig
+> +        IPIPE_URL: https://github.com/devel-opi/linux-ipipe-arm-porting/releases/download/draft-v4.20.7/0001-Draft-version-of-ipipe-arm-ported-on-v4.20.7.patch
+
+Ah, nice, a port to a more recent kernel. Do you also have a queue according to 
+our noarch / arch split? Would enable reuse for other archs.
+
+> +    - env:
+> +      - ARCH: arm
+> +        KERNEL_VERSION: 4.14.85
+> +        KERNEL_DEFCONFIG: multi_v7_defconfig
+> +        IPIPE_URL: https://xenomai.org/downloads/ipipe/v4.x/arm/ipipe-core-4.14.85-arm-6.patch
+> +    - env:
+> +      - ARCH: arm
+> +        KERNEL_VERSION: 4.1.18
+> +        KERNEL_DEFCONFIG: multi_v7_defconfig
+> +        IPIPE_URL: https://xenomai.org/downloads/ipipe/v4.x/arm/older/ipipe-core-4.1.18-arm-9.patch
+> +    - env:
+> +      - ARCH: x86
+> +        KERNEL_VERSION: 4.14.89
+> +        KERNEL_DEFCONFIG: x86_64_defconfig
+> +        IPIPE_URL: https://xenomai.org/downloads/ipipe/v4.x/x86/ipipe-core-4.14.89-x86-2.patch
+> +    - env:
+> +      - ARCH: x86
+> +        KERNEL_VERSION: 4.4.166
+> +        KERNEL_DEFCONFIG: i386_defconfig
+
+Actually, we haven't tested 32-bit even on 4.4 in a while.
+
+> +        IPIPE_URL: https://xenomai.org/downloads/ipipe/v4.x/x86/ipipe-core-4.4.166-x86-12.patch
+> 
+
+Cool! This is a valuable step forward /wrt CI. How long do these builds run 
+each, roughly? We scale by spawning a separate build per kernel, right?
+
+I had travis on the to-do list for a while, but everyone around lacked time to 
+finish what we started internally. I'll dig out what we had to ensure we can 
+merge valuable ideas. But that may even happen after creating a baseline with this.
+
+Jan
+
+-- 
+Siemens AG, Corporate Technology, CT RDA IOT SES-DE
+Corporate Competence Center Embedded Linux
+
