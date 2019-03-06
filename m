@@ -1,17 +1,14 @@
-From: Philippe Gerum <rpm@xenomai.org>
-Subject: Re: [I-PIPE] ipipe-core-4.14.89-x86-2 released
-References: <E1gaKub-0002DE-4r@xenomai.org>
- <1368965303.3936165.1545600892860@mail.yahoo.com>
- <91ae88c0-4fb5-9e98-e08b-669ffe607bd1@xenomai.org>
- <7d356b91-90bb-ddd1-30a4-9b52ac362e62@web.de>
- <123395f3-a80e-c883-3fea-f3a6a5c39ed5@siemens.com>
-Message-ID: <b8b577f7-0ac3-92dd-92e2-6a2f4fc244d9@xenomai.org>
-Date: Mon, 28 Jan 2019 16:18:08 +0100
+From: Richard Weinberger <richard@nod.at>
+Subject: Re: x86_64 kernel does not start under qemu
+Date: Wed, 06 Mar 2019 16:33:31 +0100
+Message-ID: <3942851.pmMsEQ3ikD@blindfold>
+In-Reply-To: <089ad64d-f76c-44a7-a1f4-75c215b6ab29@siemens.com>
+References: <CAFLxGvyyMEJ3t4K3dShxXMZccXCkuLN=bkTaTKLDugMieFD8ZA@mail.gmail.com>
+ <d2d0dff8-bfb6-6df2-6d0c-2fa0b4127d5f@siemens.com>
+ <089ad64d-f76c-44a7-a1f4-75c215b6ab29@siemens.com>
 MIME-Version: 1.0
-In-Reply-To: <123395f3-a80e-c883-3fea-f3a6a5c39ed5@siemens.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset="iso-8859-1"
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -20,58 +17,41 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jan Kiszka <jan.kiszka@siemens.com>, Alec Ari <neotheuser@ymail.com>, "xenomai@xenomai.org" <xenomai@xenomai.org>, Henning Schild <henning.schild@siemens.com>
+To: Jan Kiszka <jan.kiszka@siemens.com>, "henning.schild@siemens.com" <henning.schild@siemens.com>
+Cc: Lange Norbert <norbert.lange@andritz.com>, "Xenomai (xenomai@xenomai.org)" <xenomai@xenomai.org>
 
-On 1/28/19 12:22 PM, Jan Kiszka wrote:
-> On 27.12.18 17:17, Jan Kiszka via Xenomai wrote:
->> On 24.12.18 11:06, Philippe Gerum via Xenomai wrote:
->>> On 12/23/18 10:34 PM, Alec Ari via Xenomai wrote:
->>>> Hello,
->>>>
->>>>
->>>> I'm not sure if the patch generator was believed to be fixed yet or
->>>> not, but files for other arches (arch/arm/include/asm/arch_timer.h)
->>>> are still included. If this still being worked on, disregard this
->>>> message.
->>>>
->>>>
->>>
->>> The upstream tree at https://gitlab.denx.de/Xenomai/ipipe-x86 still
->>> exports I-pipe bits for multiple architectures (at least for x86 and
->>> arm) but does not include scripts/ipipe/genpatches.sh, so the generator
->>> does a plain diff, assuming a single-arch tree.
->>>
->>> The ARM bits are likely left-overs and should be dropped to fix the
->>> tree.
->>>
->>
->> Going through the commits, it seems we have a couple of ARM-only
->> driver and timer patches in the x86 tree but no general ARM enabling.
->> Those should be removed, indeed.
-> 
-> In fact, the problem is imported from ipipe-noarch: There are many
-> ARM-related driver changes that, strictly spoken, do not belong into the
-> noarch tree. Some touch arch/arm, others just change drivers that are
-> practically ARM-only.
-> 
-> Philippe, do we want to remove those commits from noarch and add them to
-> ARM? Or should we filter out arch-unrelated diffs when generating the
-> patches?
-> 
+Am Mittwoch, 6. M=E4rz 2019, 14:43:55 CET schrieb Jan Kiszka:
+> On 06.03.19 14:10, Jan Kiszka wrote:
+> > On 06.03.19 12:28, Lange Norbert via Xenomai wrote:
+> >> Hello,
+> >>
+> >> I have a similar issue on real hardware (cc Philippe). Can you try boo=
+ting=20
+> >> with notscdeadline?
+> >>
+> >=20
+> > I would be surprised if it's that: QEMU does not emulate this APIC feat=
+ure, only=20
+> > KVM does.
+> >=20
+> > I need to reproduce. Which QEMU version?
+> >=20
+>=20
+> Just booted current ipipe-x86-4.14.y (4.14.103) in QEMU 3.1+ (some develo=
+pment=20
+> snapshot) with -smp 4 - works fine. But these are likely quite a few vari=
+ations=20
+> from your setup.
 
-The drivers you mention are shared between different archs (several arm/
-drivers are used by arm64) so instead of maintaining multiple copies,
-all these drivers have  been merged into noarch eventually.
+I'm on qemu 2.11.2.
+Is this plain ipipe? Just figured that you need to prepare the kernel
+with Xenomai to trigger the problem.
+Xenomai is 3.0.8.
 
-This is a patch generation issue for kernel series 4.14+, the easiest
-way may be to provide an exclude file to the generator on a per-arch
-basis. A filter rule excluding arm/ for anything but arm and arm64
-should be enough. I'll have a look at this.
+Kernel config is defconfig.
 
-Please note that this does not apply to pre-4.14 trees; those should
-provide scripts/ipipe/genpatches.sh as the legacy I-pipe series normally
-does, which should filter contents appropriately.
+Thanks,
+//richard
 
--- 
-Philippe.
+
 
