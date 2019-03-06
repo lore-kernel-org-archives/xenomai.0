@@ -1,7 +1,9 @@
 From: roman.stratiienko@globallogic.com
-Subject: [PATCH v2 01/10] travis: add basic CI support
-Date: Wed,  6 Mar 2019 19:53:22 +0200
-Message-Id: <20190306175331.25444-1-roman.stratiienko@globallogic.com>
+Subject: [PATCH v2 02/10] kernel: cobalt: replace ACCESS_ONCE with READ_ONCE
+Date: Wed,  6 Mar 2019 19:53:23 +0200
+Message-Id: <20190306175331.25444-2-roman.stratiienko@globallogic.com>
+In-Reply-To: <20190306175331.25444-1-roman.stratiienko@globallogic.com>
+References: <20190306175331.25444-1-roman.stratiienko@globallogic.com>
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,87 +17,41 @@ Cc: Roman Stratiienko <roman.stratiienko@globallogic.com>
 
 From: Roman Stratiienko <roman.stratiienko@globallogic.com>
 
+READ_ONCE() introduced from v3.19 commit 230fa253df63
+("kernel: Provide READ_ONCE and ASSIGN_ONCE")
+and ACCESS_ONCE() removed startibg from v4.15-rc4 commit
+b899a850431e ("compiler.h: Remove ACCESS_ONCE()")
+Replace ACCESS_ONCE with READ_ONCE and make READ_ONCE wrapper
+for case when READ_ONCE is not available (<v3.19)
+
+This will fix build with v4.15
+
 Signed-off-by: Roman Stratiienko <roman.stratiienko@globallogic.com>
 ---
-Since v1: v4.20 removed and added to last commit
- .travis.yml | 68 +++++++++++++++++++++++++++++++++++++++++++++++++++++
- 1 file changed, 68 insertions(+)
- create mode 100644 .travis.yml
+ include/cobalt/uapi/kernel/urw.h | 6 +++++-
+ 1 file changed, 5 insertions(+), 1 deletion(-)
 
-diff --git a/.travis.yml b/.travis.yml
-new file mode 100644
-index 000000000..24889ca5f
---- /dev/null
-+++ b/.travis.yml
-@@ -0,0 +1,68 @@
-+language: c
-+dist: xenial
+diff --git a/include/cobalt/uapi/kernel/urw.h b/include/cobalt/uapi/kernel/urw.h
+index 40a1eb5ff..fcfde21a0 100644
+--- a/include/cobalt/uapi/kernel/urw.h
++++ b/include/cobalt/uapi/kernel/urw.h
+@@ -53,11 +53,15 @@ typedef struct {
+ #define URW_INITIALIZER     { 0 }
+ #define DEFINE_URW(__name)  urw_t __name = URW_INITIALIZER
+ 
++#ifndef READ_ONCE
++#define READ_ONCE ACCESS_ONCE
++#endif
 +
-+addons:
-+  apt:
-+    packages:
-+      - gcc-aarch64-linux-gnu
-+      - gcc-arm-linux-gnueabihf
-+      - patch
-+      - quilt
-+      - wget
-+
-+env:
-+  global:
-+    - KDIR=/tmp/kernel
-+
-+install:
-+  - if [[ "${KERNEL_VERSION}" == *-rc* ]]; then
-+      KERNEL_URL=https://git.kernel.org/torvalds/t/linux-${KERNEL_VERSION}.tar.gz;
-+    else
-+      KERNEL_URL=https://www.kernel.org/pub/linux/kernel/v${KERNEL_VERSION::1}.x/linux-${KERNEL_VERSION}.tar.xz;
-+    fi
-+  - wget -O kernel.tar.xz ${KERNEL_URL} && mkdir ${KDIR} && tar -C ${KDIR} --strip=1 -xf kernel.tar.xz
-+  - wget -O /tmp/ipipe.patch ${IPIPE_URL}
-+
-+before_script:
-+  - case "${ARCH}" in
-+      "arm64") export CROSS_COMPILE=aarch64-linux-gnu-
-+          ;;
-+      "arm"  ) export CROSS_COMPILE=arm-linux-gnueabihf-
-+          ;;
-+      "x86"  ) export CROSS_COMPILE=
-+          ;;
-+    esac
-+  - pushd ${KDIR}
-+  - make -j $(nproc) ${KERNEL_DEFCONFIG}
-+  - ./scripts/config -e CONFIG_IPIPE
-+  - ./scripts/config -e CONFIG_XENOMAI
-+  - popd
-+
-+script:
-+  - ./scripts/prepare-kernel.sh --ipipe=/tmp/ipipe.patch --arch=${ARCH} --linux=${KDIR}
-+  - cd ${KDIR}
-+  - make -j $(nproc) olddefconfig
-+  - make -j $(nproc) all
-+
-+matrix:
-+  include:
-+    - env:
-+      - ARCH: arm
-+        KERNEL_VERSION: 4.14.85
-+        KERNEL_DEFCONFIG: multi_v7_defconfig
-+        IPIPE_URL: https://xenomai.org/downloads/ipipe/v4.x/arm/ipipe-core-4.14.85-arm-6.patch
-+    - env:
-+      - ARCH: arm
-+        KERNEL_VERSION: 4.1.18
-+        KERNEL_DEFCONFIG: multi_v7_defconfig
-+        IPIPE_URL: https://xenomai.org/downloads/ipipe/v4.x/arm/older/ipipe-core-4.1.18-arm-9.patch
-+    - env:
-+      - ARCH: x86
-+        KERNEL_VERSION: 4.14.89
-+        KERNEL_DEFCONFIG: x86_64_defconfig
-+        IPIPE_URL: https://xenomai.org/downloads/ipipe/v4.x/x86/ipipe-core-4.14.89-x86-2.patch
-+    - env:
-+      - ARCH: x86
-+        KERNEL_VERSION: 4.4.166
-+        KERNEL_DEFCONFIG: i386_defconfig
-+        IPIPE_URL: https://xenomai.org/downloads/ipipe/v4.x/x86/ipipe-core-4.4.166-x86-12.patch
+ static inline void __try_read_start(const urw_t *urw, urwstate_t *tmp)
+ {
+ 	__u32 token;
+ repeat:
+-	token = ACCESS_ONCE(urw->sequence);
++	token = READ_ONCE(urw->sequence);
+ 	smp_rmb();
+ 	if (token & 1) {
+ 		cpu_relax();
 -- 
 2.17.1
 
