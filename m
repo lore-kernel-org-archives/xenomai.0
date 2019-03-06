@@ -1,8 +1,8 @@
 From: roman.stratiienko@globallogic.com
-Subject: [PATCH v2 04/10] kernel: cobalt: forward SRCARCH from the
- scripts/prepare-kernel.sh
-Date: Wed,  6 Mar 2019 19:53:25 +0200
-Message-Id: <20190306175331.25444-4-roman.stratiienko@globallogic.com>
+Subject: [PATCH v2 06/10] kernel: cobalt: replace siginfo_t with
+ kernel_siginfo_t
+Date: Wed,  6 Mar 2019 19:53:27 +0200
+Message-Id: <20190306175331.25444-6-roman.stratiienko@globallogic.com>
 In-Reply-To: <20190306175331.25444-1-roman.stratiienko@globallogic.com>
 References: <20190306175331.25444-1-roman.stratiienko@globallogic.com>
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
@@ -18,42 +18,65 @@ Cc: Roman Stratiienko <roman.stratiienko@globallogic.com>
 
 From: Roman Stratiienko <roman.stratiienko@globallogic.com>
 
-$SRCARCH removed since v4.18-rc1, upstream commit 104daea149c4
-("kconfig: reference environment variables directly and remove 'option env='")
-
-This will fix build with v4.18
+siginfo_t can't be used in kernel-space starting from v4.20-rc1 commit
+ae7795bc6187 ("signal: Distinguish between kernel_siginfo and siginfo")
+replace all siginfo_t to kernel_siginfo_t and create wrapper for kernel < v4.20
 
 Signed-off-by: Roman Stratiienko <roman.stratiienko@globallogic.com>
 ---
- scripts/Kconfig.frag      | 2 +-
- scripts/prepare-kernel.sh | 1 +
- 2 files changed, 2 insertions(+), 1 deletion(-)
+ kernel/cobalt/include/linux/xenomai/wrappers.h | 4 ++++
+ kernel/cobalt/posix/process.c                  | 2 +-
+ kernel/cobalt/thread.c                         | 4 ++--
+ 3 files changed, 7 insertions(+), 3 deletions(-)
 
-diff --git a/scripts/Kconfig.frag b/scripts/Kconfig.frag
-index cd39f7670..c9655d43a 100644
---- a/scripts/Kconfig.frag
-+++ b/scripts/Kconfig.frag
-@@ -16,7 +16,7 @@ menuconfig XENOMAI
- 	  Please visit http://xenomai.org for more information.
+diff --git a/kernel/cobalt/include/linux/xenomai/wrappers.h b/kernel/cobalt/include/linux/xenomai/wrappers.h
+index 7d00aa9d4..847d68088 100644
+--- a/kernel/cobalt/include/linux/xenomai/wrappers.h
++++ b/kernel/cobalt/include/linux/xenomai/wrappers.h
+@@ -49,4 +49,8 @@
+ #define ipipe_root_nr_syscalls(ti)	NR_syscalls
+ #endif
  
- if XENOMAI
--source "arch/$SRCARCH/xenomai/Kconfig"
-+source "arch/@SRCARCH@/xenomai/Kconfig"
- endif
++#if LINUX_VERSION_CODE < KERNEL_VERSION(4, 20, 0)
++typedef siginfo_t kernel_siginfo_t;
++#endif
++
+ #endif /* !_COBALT_LINUX_WRAPPERS_H */
+diff --git a/kernel/cobalt/posix/process.c b/kernel/cobalt/posix/process.c
+index 85dd3cfb7..ee4b70984 100644
+--- a/kernel/cobalt/posix/process.c
++++ b/kernel/cobalt/posix/process.c
+@@ -583,7 +583,7 @@ static inline void clear_threadinfo(void)
+ static inline int disable_ondemand_memory(void)
+ {
+ 	struct task_struct *p = current;
+-	siginfo_t si;
++	kernel_siginfo_t si;
  
- if MIGRATION
-diff --git a/scripts/prepare-kernel.sh b/scripts/prepare-kernel.sh
-index 964e42e83..8707b1198 100755
---- a/scripts/prepare-kernel.sh
-+++ b/scripts/prepare-kernel.sh
-@@ -376,6 +376,7 @@ case $linux_VERSION.$linux_PATCHLEVEL in
- 	    -e "s,@VERSION_MINOR@,$version_minor,g" \
- 	    -e "s,@REVISION_LEVEL@,$revision_level,g" \
- 	    -e "s,@VERSION_STRING@,$version_string,g" \
-+	    -e "s,@SRCARCH@,$linux_arch,g" \
- 	    $xenomai_root/scripts/Kconfig.frag |
-             patch_append init/Kconfig
-     fi
+ 	if ((p->mm->def_flags & VM_LOCKED) == 0) {
+ 		memset(&si, 0, sizeof(si));
+diff --git a/kernel/cobalt/thread.c b/kernel/cobalt/thread.c
+index a43d2f1ad..fa7a65569 100644
+--- a/kernel/cobalt/thread.c
++++ b/kernel/cobalt/thread.c
+@@ -2070,7 +2070,7 @@ void xnthread_relax(int notify, int reason)
+ 	struct xnthread *thread = xnthread_current();
+ 	struct task_struct *p = current;
+ 	int cpu __maybe_unused;
+-	siginfo_t si;
++	kernel_siginfo_t si;
+ 
+ 	primary_mode_only();
+ 
+@@ -2183,7 +2183,7 @@ static void lostage_task_signal(struct ipipe_work_header *work)
+ 	struct lostage_signal *rq;
+ 	struct xnthread *thread;
+ 	struct task_struct *p;
+-	siginfo_t si;
++	kernel_siginfo_t si;
+ 	int signo;
+ 
+ 	rq = container_of(work, struct lostage_signal, work);
 -- 
 2.17.1
 
