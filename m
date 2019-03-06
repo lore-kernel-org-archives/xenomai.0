@@ -1,16 +1,13 @@
-Subject: Re: x86_64 kernel does not start under qemu
-References: <CAFLxGvyyMEJ3t4K3dShxXMZccXCkuLN=bkTaTKLDugMieFD8ZA@mail.gmail.com>
- <d2d0dff8-bfb6-6df2-6d0c-2fa0b4127d5f@siemens.com>
- <089ad64d-f76c-44a7-a1f4-75c215b6ab29@siemens.com>
- <3942851.pmMsEQ3ikD@blindfold>
+Subject: Re: Mixing cobalt and alchemy?
+References: <CAFLxGvxXBx+7UWD0aySskKxbrZHjvTBmJNvCEdfoBgLQOACHcw@mail.gmail.com>
 From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <77bd8c5c-9961-35f0-e2fd-4c6df8a78a14@siemens.com>
-Date: Wed, 6 Mar 2019 17:39:38 +0100
+Message-ID: <bd50d09d-fe52-a7c5-c733-4d8ad50030bf@siemens.com>
+Date: Wed, 6 Mar 2019 18:25:56 +0100
 MIME-Version: 1.0
-In-Reply-To: <3942851.pmMsEQ3ikD@blindfold>
-Content-Type: text/plain; charset="utf-8"; format="flowed"
+In-Reply-To: <CAFLxGvxXBx+7UWD0aySskKxbrZHjvTBmJNvCEdfoBgLQOACHcw@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -19,49 +16,31 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Richard Weinberger <richard@nod.at>, "henning.schild@siemens.com" <henning.schild@siemens.com>
-Cc: Lange Norbert <norbert.lange@andritz.com>, "Xenomai (xenomai@xenomai.org)" <xenomai@xenomai.org>
+To: Richard Weinberger <richard.weinberger@gmail.com>, xenomai@xenomai.org
 
-On 06.03.19 16:33, Richard Weinberger wrote:
-> Am Mittwoch, 6. März 2019, 14:43:55 CET schrieb Jan Kiszka:
->> On 06.03.19 14:10, Jan Kiszka wrote:
->>> On 06.03.19 12:28, Lange Norbert via Xenomai wrote:
->>>> Hello,
->>>>
->>>> I have a similar issue on real hardware (cc Philippe). Can you try booting
->>>> with notscdeadline?
->>>>
->>>
->>> I would be surprised if it's that: QEMU does not emulate this APIC feature, only
->>> KVM does.
->>>
->>> I need to reproduce. Which QEMU version?
->>>
->>
->> Just booted current ipipe-x86-4.14.y (4.14.103) in QEMU 3.1+ (some development
->> snapshot) with -smp 4 - works fine. But these are likely quite a few variations
->> from your setup.
+On 06.03.19 10:59, Richard Weinberger via Xenomai wrote:
+> Hi!
 > 
-> I'm on qemu 2.11.2.
+> I have a Xenomai 2.6 application which makes heavy usage of
+> rt_dev_ioctl() and shadow threads
+> with rt_task_shadow().
+> 
+> If I understand the new Xenomai 3 API correctly, rt_dev_ioctl() for
+> userspace is gone and the cobalt wrappers should be used such that
+> plain ioctl() calls will be routed through libcobalt.
+> What I don't fully understand is how to mix these with the alchemy
+> skin such that the application can use rt_task_shadow() and friends
+> because the cobalt wrapper also wraps pthread_create().
+> The application simply does not fully fit in either cobalt nor alchemy skins.
+> 
+> Is it legal to modify lib/cobalt/cobalt.wrappers to wrap only read/close/ioctl?
+> Or can I directly issue cobalt syscalls from the application?
+> 
 
-That one might still be serializing SMP, thus only use one core on the host. 
-Currently trying to emulate that as it changes timing.
-
-> Is this plain ipipe? Just figured that you need to prepare the kernel
-> with Xenomai to trigger the problem.
-> Xenomai is 3.0.8.
-
-I have Xenomai stable/v3.0.x running as well.
+You can do __RT(ioctl(...)), that's also what the transition kit (trank) does to 
+provide rt_dev_ioctl.
 
 Jan
-
-> 
-> Kernel config is defconfig.
-> 
-> Thanks,
-> //richard
-> 
-> 
 
 -- 
 Siemens AG, Corporate Technology, CT RDA IOT SES-DE
