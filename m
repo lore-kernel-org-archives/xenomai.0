@@ -1,14 +1,7 @@
-Subject: Re: [PATCH 7/7] travis: append v5.0 to the matrix
-References: <20190305144521.2567-1-roman.stratiienko@globallogic.com>
- <20190305144521.2567-7-roman.stratiienko@globallogic.com>
-From: Philippe Gerum <rpm@xenomai.org>
-Message-ID: <2985e73a-4e62-547c-9147-5325c3f65733@xenomai.org>
-Date: Wed, 6 Mar 2019 18:52:25 +0100
-MIME-Version: 1.0
-In-Reply-To: <20190305144521.2567-7-roman.stratiienko@globallogic.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+From: roman.stratiienko@globallogic.com
+Subject: [PATCH v2 01/10] travis: add basic CI support
+Date: Wed,  6 Mar 2019 19:53:22 +0200
+Message-Id: <20190306175331.25444-1-roman.stratiienko@globallogic.com>
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,92 +10,93 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: roman.stratiienko@globallogic.com, xenomai@xenomai.org
+To: xenomai@xenomai.org
+Cc: Roman Stratiienko <roman.stratiienko@globallogic.com>
 
+From: Roman Stratiienko <roman.stratiienko@globallogic.com>
 
-Hi,
+Signed-off-by: Roman Stratiienko <roman.stratiienko@globallogic.com>
+---
+Since v1: v4.20 removed and added to last commit
+ .travis.yml | 68 +++++++++++++++++++++++++++++++++++++++++++++++++++++
+ 1 file changed, 68 insertions(+)
+ create mode 100644 .travis.yml
 
-On 3/5/19 3:45 PM, roman.stratiienko--- via Xenomai wrote:
-> From: Roman Stratiienko <roman.stratiienko@globallogic.com>
-> 
-> Signed-off-by: Roman Stratiienko <roman.stratiienko@globallogic.com>
-> ---
->  .travis.yml | 5 +++++
->  1 file changed, 5 insertions(+)
-> 
-> diff --git a/.travis.yml b/.travis.yml
-> index 0807760f4..ab23b745d 100644
-> --- a/.travis.yml
-> +++ b/.travis.yml
-> @@ -46,6 +46,11 @@ script:
->  
->  matrix:
->    include:
-> +    - env:
-> +      - ARCH: arm
-> +        KERNEL_VERSION: 5.0
-> +        KERNEL_DEFCONFIG: multi_v7_defconfig
-> +        IPIPE_URL: https://github.com/devel-opi/linux-ipipe-arm-porting/releases/download/v5.0-draft1/ipipe-arm-v5.0-draft.patch
->      - env:
->        - ARCH: arm
->          KERNEL_VERSION: 4.20.7
-> 
-
-I'm looking at [1] ATM, assuming this is where the patch above came from:
-
-> 2a4faac5245b ipipe: kconfig: fix missing quotes
-
-This is ARM stuff which should go to [2], where the latest ARM port of
-the pipeline lives. Nitpicking: "arm/ipipe: kconfig: ..." would match
-the current convention for the shortlog.
-
-> 5231f75b1e8e Create readme.md
-
-Do we need a separate file mentioning this info (compared to adding it
-to a commit log)?
-
-> 2d82784ecaad Fix uild
-
-This is adapting the stm32 chip for IRQ pipeling, we did not have that
-one fixed up yet, nice. This is material for [2] as well. However, some
-changes are missing for this to work as expected:
-
-- ipipe_handle_demuxed_irq should be substituted to generic_handle_irq,
-to push the incoming IRQ stream from this device to the pipeline entry.
-Otherwise nasty things may happen. Because this is a chained interrupt
-decoded from a primary vector, we use the demuxed_irq form, otherwise we
-would have used the plain domain_irq form.
-
-- gc->chip_types->chip.flags should be or'ed with IRQCHIP_PIPELINE_SAFE.
-This tells the genirq core that this irqchip is fine with interrupt
-pipelining.
-
-> 835db6f1c35e Fix build
-
-This won't be enough for enabling the pipeline with this broadcom chip.
-generic_handle_irq should be replaced by ipipe_handle_demuxed_irq in
-brcmstb_l2_intc_irq_handle(). Also, taking the descriptor lock there in
-case of bad irq is a no-go. This is a regular spinlock, we can take it
-from a code running the low-level IRQ handling for the pipeline.
-
-> 06b790f344cc Build fix
-> 0b6098a739be Build fix
-
-I'm unsure where the patched code came from, the original stuff from [1]
-looks ok, and needs no patching.
-
-> 461360fe54d1 travis: add .travis.yml
-
-No issue to have that in the mainline I-pipe tree if you need so.
-
-> d458d8321d83 Build Fixes
-
-This commit should be be split, explaining the rationale for the changes
-such as those to the TSC emulation code.
-
-[1] https://github.com/devel-opi/linux-ipipe-arm-porting/tree/v5.0-draft2
-[2] https://gitlab.denx.de/Xenomai/ipipe-arm
-
+diff --git a/.travis.yml b/.travis.yml
+new file mode 100644
+index 000000000..24889ca5f
+--- /dev/null
++++ b/.travis.yml
+@@ -0,0 +1,68 @@
++language: c
++dist: xenial
++
++addons:
++  apt:
++    packages:
++      - gcc-aarch64-linux-gnu
++      - gcc-arm-linux-gnueabihf
++      - patch
++      - quilt
++      - wget
++
++env:
++  global:
++    - KDIR=/tmp/kernel
++
++install:
++  - if [[ "${KERNEL_VERSION}" == *-rc* ]]; then
++      KERNEL_URL=https://git.kernel.org/torvalds/t/linux-${KERNEL_VERSION}.tar.gz;
++    else
++      KERNEL_URL=https://www.kernel.org/pub/linux/kernel/v${KERNEL_VERSION::1}.x/linux-${KERNEL_VERSION}.tar.xz;
++    fi
++  - wget -O kernel.tar.xz ${KERNEL_URL} && mkdir ${KDIR} && tar -C ${KDIR} --strip=1 -xf kernel.tar.xz
++  - wget -O /tmp/ipipe.patch ${IPIPE_URL}
++
++before_script:
++  - case "${ARCH}" in
++      "arm64") export CROSS_COMPILE=aarch64-linux-gnu-
++          ;;
++      "arm"  ) export CROSS_COMPILE=arm-linux-gnueabihf-
++          ;;
++      "x86"  ) export CROSS_COMPILE=
++          ;;
++    esac
++  - pushd ${KDIR}
++  - make -j $(nproc) ${KERNEL_DEFCONFIG}
++  - ./scripts/config -e CONFIG_IPIPE
++  - ./scripts/config -e CONFIG_XENOMAI
++  - popd
++
++script:
++  - ./scripts/prepare-kernel.sh --ipipe=/tmp/ipipe.patch --arch=${ARCH} --linux=${KDIR}
++  - cd ${KDIR}
++  - make -j $(nproc) olddefconfig
++  - make -j $(nproc) all
++
++matrix:
++  include:
++    - env:
++      - ARCH: arm
++        KERNEL_VERSION: 4.14.85
++        KERNEL_DEFCONFIG: multi_v7_defconfig
++        IPIPE_URL: https://xenomai.org/downloads/ipipe/v4.x/arm/ipipe-core-4.14.85-arm-6.patch
++    - env:
++      - ARCH: arm
++        KERNEL_VERSION: 4.1.18
++        KERNEL_DEFCONFIG: multi_v7_defconfig
++        IPIPE_URL: https://xenomai.org/downloads/ipipe/v4.x/arm/older/ipipe-core-4.1.18-arm-9.patch
++    - env:
++      - ARCH: x86
++        KERNEL_VERSION: 4.14.89
++        KERNEL_DEFCONFIG: x86_64_defconfig
++        IPIPE_URL: https://xenomai.org/downloads/ipipe/v4.x/x86/ipipe-core-4.14.89-x86-2.patch
++    - env:
++      - ARCH: x86
++        KERNEL_VERSION: 4.4.166
++        KERNEL_DEFCONFIG: i386_defconfig
++        IPIPE_URL: https://xenomai.org/downloads/ipipe/v4.x/x86/ipipe-core-4.4.166-x86-12.patch
 -- 
-Philippe.
+2.17.1
+
 
