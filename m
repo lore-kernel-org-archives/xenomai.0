@@ -1,10 +1,13 @@
-From: roman.stratiienko@globallogic.com
-Subject: [PATCH v2 10/10] travis: append i-pipe arm-v4.20.7 and arm-v5.0 to
- the matrix
-Date: Wed,  6 Mar 2019 19:53:31 +0200
-Message-Id: <20190306175331.25444-10-roman.stratiienko@globallogic.com>
-In-Reply-To: <20190306175331.25444-1-roman.stratiienko@globallogic.com>
-References: <20190306175331.25444-1-roman.stratiienko@globallogic.com>
+From: Richard Weinberger <richard@nod.at>
+Subject: Re: Mixing cobalt and alchemy?
+Date: Wed, 06 Mar 2019 21:20:17 +0100
+Message-ID: <1763748.uoOIHctIBT@blindfold>
+In-Reply-To: <bd50d09d-fe52-a7c5-c733-4d8ad50030bf@siemens.com>
+References: <CAFLxGvxXBx+7UWD0aySskKxbrZHjvTBmJNvCEdfoBgLQOACHcw@mail.gmail.com>
+ <bd50d09d-fe52-a7c5-c733-4d8ad50030bf@siemens.com>
+MIME-Version: 1.0
+Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset="iso-8859-1"
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -13,38 +16,39 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
-Cc: Roman Stratiienko <roman.stratiienko@globallogic.com>
+To: Jan Kiszka <jan.kiszka@siemens.com>, xenomai@xenomai.org
 
-From: Roman Stratiienko <roman.stratiienko@globallogic.com>
+Am Mittwoch, 6. M=E4rz 2019, 18:25:56 CET schrieb Jan Kiszka:
+> On 06.03.19 10:59, Richard Weinberger via Xenomai wrote:
+> > Hi!
+> >=20
+> > I have a Xenomai 2.6 application which makes heavy usage of
+> > rt_dev_ioctl() and shadow threads
+> > with rt_task_shadow().
+> >=20
+> > If I understand the new Xenomai 3 API correctly, rt_dev_ioctl() for
+> > userspace is gone and the cobalt wrappers should be used such that
+> > plain ioctl() calls will be routed through libcobalt.
+> > What I don't fully understand is how to mix these with the alchemy
+> > skin such that the application can use rt_task_shadow() and friends
+> > because the cobalt wrapper also wraps pthread_create().
+> > The application simply does not fully fit in either cobalt nor alchemy =
+skins.
+> >=20
+> > Is it legal to modify lib/cobalt/cobalt.wrappers to wrap only read/clos=
+e/ioctl?
+> > Or can I directly issue cobalt syscalls from the application?
+> >=20
+>=20
+> You can do __RT(ioctl(...)), that's also what the transition kit (trank) =
+does to=20
+> provide rt_dev_ioctl.
 
-Signed-off-by: Roman Stratiienko <roman.stratiienko@globallogic.com>
----
- .travis.yml | 10 ++++++++++
- 1 file changed, 10 insertions(+)
+Good to know!
+Then I'll use alchemy and the __RT() wrappers.
 
-diff --git a/.travis.yml b/.travis.yml
-index 24889ca5f..ab23b745d 100644
---- a/.travis.yml
-+++ b/.travis.yml
-@@ -46,6 +46,16 @@ script:
- 
- matrix:
-   include:
-+    - env:
-+      - ARCH: arm
-+        KERNEL_VERSION: 5.0
-+        KERNEL_DEFCONFIG: multi_v7_defconfig
-+        IPIPE_URL: https://github.com/devel-opi/linux-ipipe-arm-porting/releases/download/v5.0-draft1/ipipe-arm-v5.0-draft.patch
-+    - env:
-+      - ARCH: arm
-+        KERNEL_VERSION: 4.20.7
-+        KERNEL_DEFCONFIG: multi_v7_defconfig
-+        IPIPE_URL: https://github.com/devel-opi/linux-ipipe-arm-porting/releases/download/draft-v4.20.7/0001-Draft-version-of-ipipe-arm-ported-on-v4.20.7.patch
-     - env:
-       - ARCH: arm
-         KERNEL_VERSION: 4.14.85
--- 
-2.17.1
+Thanks,
+//richard
+
 
 
