@@ -1,10 +1,11 @@
-Subject: Re: Posix skin and Mutex initialisation/destruction inconsistencies
-References: <0e040cd1aa3b4df6ba3c61eb6c1a4adf@andritz.com>
+Subject: Re: PCI UDD Questions
+References: <MQAHYHsv-KztU7kmKMe1zEyj1YMioxUAHWXO8cjixmGgcY0FuEcPL73Bj0NZxsH9mlyrmGJ1rhAWMr7ii-ErIRz9qSqRXvnyBibYa3AZSAE=@codecraftsmen.org>
+ <ecf0bf08-f93e-3c67-a71e-fb25d683930c@xenomai.org>
 From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <4a289496-aad1-5a44-d4bb-288ccc12d68a@siemens.com>
-Date: Wed, 6 Mar 2019 18:35:00 +0100
+Message-ID: <827166fb-a317-e42c-dda3-dd83fcfdbbf5@siemens.com>
+Date: Wed, 6 Mar 2019 18:38:47 +0100
 MIME-Version: 1.0
-In-Reply-To: <0e040cd1aa3b4df6ba3c61eb6c1a4adf@andritz.com>
+In-Reply-To: <ecf0bf08-f93e-3c67-a71e-fb25d683930c@xenomai.org>
 Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -16,41 +17,23 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Lange Norbert <norbert.lange@andritz.com>, "Xenomai (xenomai@xenomai.org)" <xenomai@xenomai.org>
+To: Philippe Gerum <rpm@xenomai.org>, Jeff Webb <w1@codecraftsmen.org>, "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On 06.03.19 10:39, Lange Norbert via Xenomai wrote:
-> Hello,
+On 06.03.19 12:24, Philippe Gerum via Xenomai wrote:
+> On 3/2/19 1:25 PM, Jeff Webb via Xenomai wrote:
+>> I could also avoid using the PCI command register entirely and just write to a device-specific mask bit in my peripheral, but I would rather implement a generic solution if there is not a performance penalty for using the PCI command register.
+>>
 > 
-> 1)
-> There is an inconsistency with the documentation [1], which claims that mutex and condition variables
-> need to be explicitly initialized with the *_init functions.
-> The implementation however checks the state via a flag and calls *_init if necessary, and the program below works correctly.
+> I don't think that using the PCI layer would be cheaper than tweaking
+> some bit in your device. The former involves a serialization on
+> pci_lock, then a read-update-write sequence to send the
+> masking/unmasking command to the bus layer. Sending the acknowledge to
+> the device in order to stop it from interrupting is the usual way for rt
+> sources.
 
-Lazy init is not a recommended pattern as it implies high costs and potentially 
-unexpected (and often unhandled) errors for typically critical lock/unlock 
-operations. I would guess that this is why it was not explicitly mentioned.
-
-> 
-> 2)
-> There is some further issue, if you depend on the "lazy initialization", demonstrated by running the
-> program below with an argument. This case can happen for example if some subsystem was removed
-> before being used (never needed the lock).
-> In other words, the "lazy initialization" scheme is working with lock/unlock but not with destroy.
-> 
-> 
-> #include <assert.h>
-> #include <pthread.h>
-> 
-> int main(int argc, char const *argv[]) {
->          pthread_mutex_t mymutex = PTHREAD_ERRORCHECK_MUTEX_INITIALIZER_NP;
-> 
->    if (argc == 1) {
->      assert(0 == pthread_mutex_lock(&mymutex));
->      assert(0 == pthread_mutex_unlock(&mymutex));
->    }
->    assert(0 == pthread_mutex_destroy(&mymutex));
-
-That should probably be fixed. Patch welcome.
+Plus PCI config accesses (which are needed for generic INTx masking) are 
+generally more expensive than device register accesses. So don't use them for 
+masking, whenever possible.
 
 Jan
 
