@@ -1,7 +1,8 @@
 From: roman.stratiienko@globallogic.com
-Subject: [PATCH v2 09/10] kernel: cobalt: migrate to ktime_t
-Date: Wed,  6 Mar 2019 19:53:30 +0200
-Message-Id: <20190306175331.25444-9-roman.stratiienko@globallogic.com>
+Subject: [PATCH v2 10/10] travis: append i-pipe arm-v4.20.7 and arm-v5.0 to
+ the matrix
+Date: Wed,  6 Mar 2019 19:53:31 +0200
+Message-Id: <20190306175331.25444-10-roman.stratiienko@globallogic.com>
 In-Reply-To: <20190306175331.25444-1-roman.stratiienko@globallogic.com>
 References: <20190306175331.25444-1-roman.stratiienko@globallogic.com>
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
@@ -17,46 +18,32 @@ Cc: Roman Stratiienko <roman.stratiienko@globallogic.com>
 
 From: Roman Stratiienko <roman.stratiienko@globallogic.com>
 
-As do_gettimeofday is very old and deprecated, use ktime instead
-
 Signed-off-by: Roman Stratiienko <roman.stratiienko@globallogic.com>
 ---
- kernel/cobalt/clock.c                 | 4 +---
- kernel/drivers/analogy/rtdm_helpers.c | 5 +----
- 2 files changed, 2 insertions(+), 7 deletions(-)
+ .travis.yml | 10 ++++++++++
+ 1 file changed, 10 insertions(+)
 
-diff --git a/kernel/cobalt/clock.c b/kernel/cobalt/clock.c
-index 272db3241..f8291b006 100644
---- a/kernel/cobalt/clock.c
-+++ b/kernel/cobalt/clock.c
-@@ -350,9 +350,7 @@ EXPORT_SYMBOL_GPL(xnclock_adjust);
+diff --git a/.travis.yml b/.travis.yml
+index 24889ca5f..ab23b745d 100644
+--- a/.travis.yml
++++ b/.travis.yml
+@@ -46,6 +46,16 @@ script:
  
- xnticks_t xnclock_get_host_time(void)
- {
--	struct timeval tv;
--	do_gettimeofday(&tv);
--	return tv.tv_sec * 1000000000ULL + tv.tv_usec * 1000;
-+	return ktime_to_ns(ktime_get_real());
- }
- EXPORT_SYMBOL_GPL(xnclock_get_host_time);
- 
-diff --git a/kernel/drivers/analogy/rtdm_helpers.c b/kernel/drivers/analogy/rtdm_helpers.c
-index 8330d0676..675594152 100644
---- a/kernel/drivers/analogy/rtdm_helpers.c
-+++ b/kernel/drivers/analogy/rtdm_helpers.c
-@@ -32,11 +32,8 @@ static nanosecs_abs_t a4l_clkofs;
- void a4l_init_time(void)
- {
- 	nanosecs_abs_t t1, t2;
--	struct timeval tv;
- 	t1 = rtdm_clock_read();
--	do_gettimeofday(&tv);
--	t2 = 1000000000 * ((nanosecs_abs_t)tv.tv_sec) +
--		1000000 * ((nanosecs_abs_t)tv.tv_usec);
-+	t2 = ktime_to_ns(ktime_get_real());
- 	a4l_clkofs = t2 - t1;
- }
- 
+ matrix:
+   include:
++    - env:
++      - ARCH: arm
++        KERNEL_VERSION: 5.0
++        KERNEL_DEFCONFIG: multi_v7_defconfig
++        IPIPE_URL: https://github.com/devel-opi/linux-ipipe-arm-porting/releases/download/v5.0-draft1/ipipe-arm-v5.0-draft.patch
++    - env:
++      - ARCH: arm
++        KERNEL_VERSION: 4.20.7
++        KERNEL_DEFCONFIG: multi_v7_defconfig
++        IPIPE_URL: https://github.com/devel-opi/linux-ipipe-arm-porting/releases/download/draft-v4.20.7/0001-Draft-version-of-ipipe-arm-ported-on-v4.20.7.patch
+     - env:
+       - ARCH: arm
+         KERNEL_VERSION: 4.14.85
 -- 
 2.17.1
 
