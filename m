@@ -1,7 +1,7 @@
 From: roman.stratiienko@globallogic.com
-Subject: [PATCH v2 08/10] kernel: cobalt: add missing quotes in Kconfig
-Date: Wed,  6 Mar 2019 19:53:29 +0200
-Message-Id: <20190306175331.25444-8-roman.stratiienko@globallogic.com>
+Subject: [PATCH v2 09/10] kernel: cobalt: migrate to ktime_t
+Date: Wed,  6 Mar 2019 19:53:30 +0200
+Message-Id: <20190306175331.25444-9-roman.stratiienko@globallogic.com>
 In-Reply-To: <20190306175331.25444-1-roman.stratiienko@globallogic.com>
 References: <20190306175331.25444-1-roman.stratiienko@globallogic.com>
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
@@ -17,59 +17,46 @@ Cc: Roman Stratiienko <roman.stratiienko@globallogic.com>
 
 From: Roman Stratiienko <roman.stratiienko@globallogic.com>
 
-Starting from kernel v5.0 commit f5451582c4e2
-("kconfig: stop supporting '.' and '/' in unquoted words")
-quotes are mandatory for usage
+As do_gettimeofday is very old and deprecated, use ktime instead
 
 Signed-off-by: Roman Stratiienko <roman.stratiienko@globallogic.com>
 ---
- kernel/drivers/analogy/Kconfig | 8 ++++----
- kernel/drivers/can/Kconfig     | 4 ++--
- scripts/Kconfig.frag           | 2 +-
- 3 files changed, 7 insertions(+), 7 deletions(-)
+ kernel/cobalt/clock.c                 | 4 +---
+ kernel/drivers/analogy/rtdm_helpers.c | 5 +----
+ 2 files changed, 2 insertions(+), 7 deletions(-)
 
-diff --git a/kernel/drivers/analogy/Kconfig b/kernel/drivers/analogy/Kconfig
-index e8fa953d5..858762bda 100644
---- a/kernel/drivers/analogy/Kconfig
-+++ b/kernel/drivers/analogy/Kconfig
-@@ -48,9 +48,9 @@ config XENO_DRIVERS_ANALOGY_DRIVER_DEBUG_LEVEL
-        WARNING: this threshold is only applied on the Analogy
-        driver. That will not affect the core.
+diff --git a/kernel/cobalt/clock.c b/kernel/cobalt/clock.c
+index 272db3241..f8291b006 100644
+--- a/kernel/cobalt/clock.c
++++ b/kernel/cobalt/clock.c
+@@ -350,9 +350,7 @@ EXPORT_SYMBOL_GPL(xnclock_adjust);
  
--source drivers/xenomai/analogy/testing/Kconfig
--source drivers/xenomai/analogy/intel/Kconfig
--source drivers/xenomai/analogy/national_instruments/Kconfig
--source drivers/xenomai/analogy/sensoray/Kconfig
-+source "drivers/xenomai/analogy/testing/Kconfig"
-+source "drivers/xenomai/analogy/intel/Kconfig"
-+source "drivers/xenomai/analogy/national_instruments/Kconfig"
-+source "drivers/xenomai/analogy/sensoray/Kconfig"
+ xnticks_t xnclock_get_host_time(void)
+ {
+-	struct timeval tv;
+-	do_gettimeofday(&tv);
+-	return tv.tv_sec * 1000000000ULL + tv.tv_usec * 1000;
++	return ktime_to_ns(ktime_get_real());
+ }
+ EXPORT_SYMBOL_GPL(xnclock_get_host_time);
  
- endmenu
-diff --git a/kernel/drivers/can/Kconfig b/kernel/drivers/can/Kconfig
-index 33ca722ad..0bbfcc9d1 100644
---- a/kernel/drivers/can/Kconfig
-+++ b/kernel/drivers/can/Kconfig
-@@ -85,7 +85,7 @@ config XENO_DRIVERS_CAN_FLEXCAN
+diff --git a/kernel/drivers/analogy/rtdm_helpers.c b/kernel/drivers/analogy/rtdm_helpers.c
+index 8330d0676..675594152 100644
+--- a/kernel/drivers/analogy/rtdm_helpers.c
++++ b/kernel/drivers/analogy/rtdm_helpers.c
+@@ -32,11 +32,8 @@ static nanosecs_abs_t a4l_clkofs;
+ void a4l_init_time(void)
+ {
+ 	nanosecs_abs_t t1, t2;
+-	struct timeval tv;
+ 	t1 = rtdm_clock_read();
+-	do_gettimeofday(&tv);
+-	t2 = 1000000000 * ((nanosecs_abs_t)tv.tv_sec) +
+-		1000000 * ((nanosecs_abs_t)tv.tv_usec);
++	t2 = ktime_to_ns(ktime_get_real());
+ 	a4l_clkofs = t2 - t1;
+ }
  
- 	Say Y here if you want to support for Freescale FlexCAN.
- 
--source drivers/xenomai/can/mscan/Kconfig
--source drivers/xenomai/can/sja1000/Kconfig
-+source "drivers/xenomai/can/mscan/Kconfig"
-+source "drivers/xenomai/can/sja1000/Kconfig"
- 
- endmenu
-diff --git a/scripts/Kconfig.frag b/scripts/Kconfig.frag
-index c9655d43a..f2e89a896 100644
---- a/scripts/Kconfig.frag
-+++ b/scripts/Kconfig.frag
-@@ -48,4 +48,4 @@ config XENO_REVISION_LEVEL
- 
- config XENO_VERSION_STRING
-        string
--       default @VERSION_STRING@
-+       default "@VERSION_STRING@"
 -- 
 2.17.1
 
