@@ -1,10 +1,10 @@
-Subject: Re: Mixing cobalt and alchemy?
-References: <CAFLxGvxXBx+7UWD0aySskKxbrZHjvTBmJNvCEdfoBgLQOACHcw@mail.gmail.com>
+Subject: Re: Posix skin and Mutex initialisation/destruction inconsistencies
+References: <0e040cd1aa3b4df6ba3c61eb6c1a4adf@andritz.com>
 From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <bd50d09d-fe52-a7c5-c733-4d8ad50030bf@siemens.com>
-Date: Wed, 6 Mar 2019 18:25:56 +0100
+Message-ID: <4a289496-aad1-5a44-d4bb-288ccc12d68a@siemens.com>
+Date: Wed, 6 Mar 2019 18:35:00 +0100
 MIME-Version: 1.0
-In-Reply-To: <CAFLxGvxXBx+7UWD0aySskKxbrZHjvTBmJNvCEdfoBgLQOACHcw@mail.gmail.com>
+In-Reply-To: <0e040cd1aa3b4df6ba3c61eb6c1a4adf@andritz.com>
 Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -16,29 +16,41 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Richard Weinberger <richard.weinberger@gmail.com>, xenomai@xenomai.org
+To: Lange Norbert <norbert.lange@andritz.com>, "Xenomai (xenomai@xenomai.org)" <xenomai@xenomai.org>
 
-On 06.03.19 10:59, Richard Weinberger via Xenomai wrote:
-> Hi!
+On 06.03.19 10:39, Lange Norbert via Xenomai wrote:
+> Hello,
 > 
-> I have a Xenomai 2.6 application which makes heavy usage of
-> rt_dev_ioctl() and shadow threads
-> with rt_task_shadow().
-> 
-> If I understand the new Xenomai 3 API correctly, rt_dev_ioctl() for
-> userspace is gone and the cobalt wrappers should be used such that
-> plain ioctl() calls will be routed through libcobalt.
-> What I don't fully understand is how to mix these with the alchemy
-> skin such that the application can use rt_task_shadow() and friends
-> because the cobalt wrapper also wraps pthread_create().
-> The application simply does not fully fit in either cobalt nor alchemy skins.
-> 
-> Is it legal to modify lib/cobalt/cobalt.wrappers to wrap only read/close/ioctl?
-> Or can I directly issue cobalt syscalls from the application?
-> 
+> 1)
+> There is an inconsistency with the documentation [1], which claims that mutex and condition variables
+> need to be explicitly initialized with the *_init functions.
+> The implementation however checks the state via a flag and calls *_init if necessary, and the program below works correctly.
 
-You can do __RT(ioctl(...)), that's also what the transition kit (trank) does to 
-provide rt_dev_ioctl.
+Lazy init is not a recommended pattern as it implies high costs and potentially 
+unexpected (and often unhandled) errors for typically critical lock/unlock 
+operations. I would guess that this is why it was not explicitly mentioned.
+
+> 
+> 2)
+> There is some further issue, if you depend on the "lazy initialization", demonstrated by running the
+> program below with an argument. This case can happen for example if some subsystem was removed
+> before being used (never needed the lock).
+> In other words, the "lazy initialization" scheme is working with lock/unlock but not with destroy.
+> 
+> 
+> #include <assert.h>
+> #include <pthread.h>
+> 
+> int main(int argc, char const *argv[]) {
+>          pthread_mutex_t mymutex = PTHREAD_ERRORCHECK_MUTEX_INITIALIZER_NP;
+> 
+>    if (argc == 1) {
+>      assert(0 == pthread_mutex_lock(&mymutex));
+>      assert(0 == pthread_mutex_unlock(&mymutex));
+>    }
+>    assert(0 == pthread_mutex_destroy(&mymutex));
+
+That should probably be fixed. Patch welcome.
 
 Jan
 
