@@ -1,13 +1,9 @@
-From: Richard Weinberger <richard@nod.at>
-Subject: Re: Mixing cobalt and alchemy?
-Date: Wed, 06 Mar 2019 21:20:17 +0100
-Message-ID: <1763748.uoOIHctIBT@blindfold>
-In-Reply-To: <bd50d09d-fe52-a7c5-c733-4d8ad50030bf@siemens.com>
-References: <CAFLxGvxXBx+7UWD0aySskKxbrZHjvTBmJNvCEdfoBgLQOACHcw@mail.gmail.com>
- <bd50d09d-fe52-a7c5-c733-4d8ad50030bf@siemens.com>
+From: Norbert Lange <nolange79@gmail.com>
+Subject: [PATCH 1/5] libcobalt: improve mutex autoinit support
+Date: Thu,  7 Mar 2019 14:21:55 +0100
+Message-Id: <20190307132159.31206-1-norbert.lange@andritz.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: 8bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,39 +12,347 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jan Kiszka <jan.kiszka@siemens.com>, xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-Am Mittwoch, 6. M=E4rz 2019, 18:25:56 CET schrieb Jan Kiszka:
-> On 06.03.19 10:59, Richard Weinberger via Xenomai wrote:
-> > Hi!
-> >=20
-> > I have a Xenomai 2.6 application which makes heavy usage of
-> > rt_dev_ioctl() and shadow threads
-> > with rt_task_shadow().
-> >=20
-> > If I understand the new Xenomai 3 API correctly, rt_dev_ioctl() for
-> > userspace is gone and the cobalt wrappers should be used such that
-> > plain ioctl() calls will be routed through libcobalt.
-> > What I don't fully understand is how to mix these with the alchemy
-> > skin such that the application can use rt_task_shadow() and friends
-> > because the cobalt wrapper also wraps pthread_create().
-> > The application simply does not fully fit in either cobalt nor alchemy =
-skins.
-> >=20
-> > Is it legal to modify lib/cobalt/cobalt.wrappers to wrap only read/clos=
-e/ioctl?
-> > Or can I directly issue cobalt syscalls from the application?
-> >=20
->=20
-> You can do __RT(ioctl(...)), that's also what the transition kit (trank) =
-does to=20
-> provide rt_dev_ioctl.
+contrary to some comments, mutexes are automatically
+initialised on lock/unlock.
+Correct the destroy method to not report an
+error on such mutexes.
 
-Good to know!
-Then I'll use alchemy and the __RT() wrappers.
+{get,set}prioceiling requires mutexes that were explicitely
+initialised, so no change needed there
 
-Thanks,
-//richard
+Signed-off-by: Norbert Lange <norbert.lange@andritz.com>
+---
+ lib/cobalt/mutex.c | 190 +++++++++++++++++++++++----------------------
+ 1 file changed, 98 insertions(+), 92 deletions(-)
 
+diff --git a/lib/cobalt/mutex.c b/lib/cobalt/mutex.c
+index ed32bba32..be9f6ed80 100644
+--- a/lib/cobalt/mutex.c
++++ b/lib/cobalt/mutex.c
+@@ -164,70 +164,51 @@ COBALT_IMPL(int, pthread_mutex_init, (pthread_mutex_t *mutex,
+ }
+ 
+ /**
+- * Destroy a mutex.
+- *
+- * This service destroys the mutex @a mx, if it is unlocked and not referenced
+- * by any condition variable. The mutex becomes invalid for all mutex services
+- * (they all return the EINVAL error) except pthread_mutex_init().
+- *
+- * @param mutex the mutex to be destroyed.
+- *
+- * @return 0 on success,
+- * @return an error number if:
+- * - EINVAL, the mutex @a mx is invalid;
+- * - EPERM, the mutex is not process-shared and does not belong to the current
+- *   process;
+- * - EBUSY, the mutex is locked, or used by a condition variable.
++ * Test if a mutex structure contains an valid autoinitializer.
+  *
+- * @see
+- * <a href="http://www.opengroup.org/onlinepubs/000095399/functions/pthread_mutex_destroy.html">
+- * Specification.</a>
+- *
+- * @apitags{thread-unrestricted}
++ * @return the mutex type on success,
++ * @return -1 if not in supported autoinitializer state
+  */
+-COBALT_IMPL(int, pthread_mutex_destroy, (pthread_mutex_t *mutex))
++static int __attribute__((cold)) _cobalt_mutex_autoinit_type(const pthread_mutex_t *mutex)
+ {
+-	struct cobalt_mutex_shadow *_mutex =
+-		&((union cobalt_mutex_union *)mutex)->shadow_mutex;
+-	int err;
+-
+-	if (_mutex->magic != COBALT_MUTEX_MAGIC)
+-		return EINVAL;
+-
+-	err = XENOMAI_SYSCALL1(sc_cobalt_mutex_destroy, _mutex);
+-
+-	return -err;
+-}
+-
+-static int __attribute__((cold)) cobalt_mutex_autoinit(pthread_mutex_t *mutex)
+-{
+-	static pthread_mutex_t uninit_normal_mutex =
+-		PTHREAD_MUTEX_INITIALIZER;
++	static const pthread_mutex_t mutex_initializers[] = {
++#if HAVE_DECL_PTHREAD_ERRORCHECK_MUTEX_INITIALIZER_NP
++		PTHREAD_ERRORCHECK_MUTEX_INITIALIZER_NP,
++#endif
+ #if HAVE_DECL_PTHREAD_RECURSIVE_MUTEX_INITIALIZER_NP
+-	static pthread_mutex_t uninit_recursive_mutex =
+-		PTHREAD_RECURSIVE_MUTEX_INITIALIZER_NP;
++		PTHREAD_RECURSIVE_MUTEX_INITIALIZER_NP,
+ #endif
++		PTHREAD_MUTEX_INITIALIZER
++	};
++	static const int mutex_types[] =
++	{
+ #if HAVE_DECL_PTHREAD_ERRORCHECK_MUTEX_INITIALIZER_NP
+-	static pthread_mutex_t uninit_errorcheck_mutex =
+-		PTHREAD_ERRORCHECK_MUTEX_INITIALIZER_NP;
++		PTHREAD_MUTEX_ERRORCHECK_NP,
+ #endif
+-	struct cobalt_mutex_shadow *_mutex =
+-		&((union cobalt_mutex_union *)mutex)->shadow_mutex;
++#if HAVE_DECL_PTHREAD_RECURSIVE_MUTEX_INITIALIZER_NP
++		PTHREAD_MUTEX_RECURSIVE_NP,
++#endif
++		PTHREAD_MUTEX_DEFAULT
++	};
++
++	unsigned i = sizeof(mutex_types) / sizeof(mutex_types[0]);
++	while (i-- > 0)
++	{
++		if (memcmp(mutex, &mutex_initializers[i], sizeof(mutex_initializers[0])) == 0)
++			return mutex_types[i];
++	}
++	return -1;
++}
++
++static int __attribute__((cold)) _cobalt_mutex_doautoinit(union cobalt_mutex_union *umutex)
++{
++	struct cobalt_mutex_shadow *_mutex = &umutex->shadow_mutex;
+ 	int err __attribute__((unused));
+ 	pthread_mutexattr_t mattr;
+ 	int ret = 0, type;
+ 
+-	if (memcmp(mutex, &uninit_normal_mutex, sizeof(*mutex)) == 0)
+-		type = PTHREAD_MUTEX_DEFAULT;
+-#if HAVE_DECL_PTHREAD_RECURSIVE_MUTEX_INITIALIZER_NP
+-	else if (memcmp(mutex, &uninit_recursive_mutex, sizeof(*mutex)) == 0)
+-		type = PTHREAD_MUTEX_RECURSIVE_NP;
+-#endif
+-#if HAVE_DECL_PTHREAD_ERRORCHECK_MUTEX_INITIALIZER_NP
+-	else if (memcmp(mutex, &uninit_errorcheck_mutex, sizeof(*mutex)) == 0)
+-		type = PTHREAD_MUTEX_ERRORCHECK_NP;
+-#endif
+-	else
++	type = _cobalt_mutex_autoinit_type(&umutex->native_mutex);
++	if (type < 0)
+ 		return EINVAL;
+ 
+ 	pthread_mutexattr_init(&mattr);
+@@ -238,7 +219,7 @@ static int __attribute__((cold)) cobalt_mutex_autoinit(pthread_mutex_t *mutex)
+ 		goto out;
+ 	}
+ 	if (_mutex->magic != COBALT_MUTEX_MAGIC)
+-		ret = __COBALT(pthread_mutex_init(mutex, &mattr));
++		ret = __COBALT(pthread_mutex_init(&umutex->native_mutex, &mattr));
+ 	err = __COBALT(pthread_mutex_unlock(cobalt_autoinit_mutex));
+ 	if (err) {
+ 		if (ret == 0)
+@@ -251,6 +232,49 @@ static int __attribute__((cold)) cobalt_mutex_autoinit(pthread_mutex_t *mutex)
+ 	return ret;
+ }
+ 
++static inline int _cobalt_mutex_autoinit(union cobalt_mutex_union *umutex)
++{
++	if (unlikely(umutex->shadow_mutex.magic != COBALT_MUTEX_MAGIC))
++		return _cobalt_mutex_doautoinit(umutex);
++	return 0;
++}
++
++/**
++ * Destroy a mutex.
++ *
++ * This service destroys the mutex @a mx, if it is unlocked and not referenced
++ * by any condition variable. The mutex becomes invalid for all mutex services
++ * (they all return the EINVAL error) except pthread_mutex_init().
++ *
++ * @param mutex the mutex to be destroyed.
++ *
++ * @return 0 on success,
++ * @return an error number if:
++ * - EINVAL, the mutex @a mx is invalid;
++ * - EPERM, the mutex is not process-shared and does not belong to the current
++ *   process;
++ * - EBUSY, the mutex is locked, or used by a condition variable.
++ *
++ * @see
++ * <a href="http://www.opengroup.org/onlinepubs/000095399/functions/pthread_mutex_destroy.html">
++ * Specification.</a>
++ *
++ * @apitags{thread-unrestricted}
++ */
++COBALT_IMPL(int, pthread_mutex_destroy, (pthread_mutex_t *mutex))
++{
++	struct cobalt_mutex_shadow *_mutex =
++		&((union cobalt_mutex_union *)mutex)->shadow_mutex;
++	int err;
++
++	if (unlikely(_mutex->magic != COBALT_MUTEX_MAGIC))
++		return (_cobalt_mutex_autoinit_type(mutex) < 0) ? EINVAL : 0;
++
++	err = XENOMAI_SYSCALL1(sc_cobalt_mutex_destroy, _mutex);
++
++	return -err;
++}
++
+ /**
+  * Lock a mutex.
+  *
+@@ -296,15 +320,15 @@ COBALT_IMPL(int, pthread_mutex_lock, (pthread_mutex_t *mutex))
+ 	if (cur == XN_NO_HANDLE)
+ 		return EPERM;
+ 
+-	if (_mutex->magic != COBALT_MUTEX_MAGIC)
+-		goto autoinit;
++	ret = _cobalt_mutex_autoinit((union cobalt_mutex_union *)mutex);
++	if (ret)
++		return ret;
+ 
+ 	/*
+ 	 * We track resource ownership for auto-relax of non real-time
+ 	 * shadows and some debug features, so we must always obtain
+ 	 * them via a syscall.
+ 	 */
+-start:
+ 	status = cobalt_get_current_mode();
+ 	if ((status & (XNRELAX|XNWEAK|XNDEBUG)) == 0) {
+ 		if (_mutex->attr.protocol == PTHREAD_PRIO_PROTECT)
+@@ -349,7 +373,7 @@ slow_path:
+ 		_mutex->lockcnt = 1;
+ 
+ 	return -ret;
+-protect:	
++protect:
+ 	u_window = cobalt_get_current_window();
+ 	/*
+ 	 * Can't nest lazy ceiling requests, have to take the slow
+@@ -360,11 +384,6 @@ protect:
+ 	u_window->pp_pending = _mutex->handle;
+ 	lazy_protect = 1;
+ 	goto fast_path;
+-autoinit:
+-	ret = cobalt_mutex_autoinit(mutex);
+-	if (ret)
+-		return ret;
+-	goto start;
+ }
+ 
+ /**
+@@ -411,11 +430,11 @@ COBALT_IMPL(int, pthread_mutex_timedlock, (pthread_mutex_t *mutex,
+ 	if (cur == XN_NO_HANDLE)
+ 		return EPERM;
+ 
+-	if (_mutex->magic != COBALT_MUTEX_MAGIC)
+-		goto autoinit;
++	ret = _cobalt_mutex_autoinit((union cobalt_mutex_union *)mutex);
++	if (ret)
++		return ret;
+ 
+ 	/* See __cobalt_pthread_mutex_lock() */
+-start:
+ 	status = cobalt_get_current_mode();
+ 	if ((status & (XNRELAX|XNWEAK|XNDEBUG)) == 0) {
+ 		if (_mutex->attr.protocol == PTHREAD_PRIO_PROTECT)
+@@ -436,7 +455,7 @@ slow_path:
+ 	if (ret == -EBUSY) {
+ 		if (lazy_protect)
+ 			u_window->pp_pending = XN_NO_HANDLE;
+-			
++
+ 		switch(_mutex->attr.type) {
+ 		case PTHREAD_MUTEX_NORMAL:
+ 			break;
+@@ -460,7 +479,7 @@ slow_path:
+ 	if (ret == 0)
+ 		_mutex->lockcnt = 1;
+ 	return -ret;
+-protect:	
++protect:
+ 	u_window = cobalt_get_current_window();
+ 	/*
+ 	 * Can't nest lazy ceiling requests, have to take the slow
+@@ -471,11 +490,6 @@ protect:
+ 	u_window->pp_pending = _mutex->handle;
+ 	lazy_protect = 1;
+ 	goto fast_path;
+-autoinit:
+-	ret = cobalt_mutex_autoinit(mutex);
+-	if (ret)
+-		return ret;
+-	goto start;
+ }
+ 
+ /**
+@@ -515,9 +529,10 @@ COBALT_IMPL(int, pthread_mutex_trylock, (pthread_mutex_t *mutex))
+ 	if (cur == XN_NO_HANDLE)
+ 		return EPERM;
+ 
+-	if (_mutex->magic != COBALT_MUTEX_MAGIC)
+-		goto autoinit;
+-start:
++	ret = _cobalt_mutex_autoinit((union cobalt_mutex_union *)mutex);
++	if (ret)
++		return ret;
++
+ 	status = cobalt_get_current_mode();
+ 	if ((status & (XNRELAX|XNWEAK|XNDEBUG)) == 0) {
+ 		if (_mutex->attr.protocol == PTHREAD_PRIO_PROTECT)
+@@ -558,12 +573,7 @@ slow_path:
+ 		_mutex->lockcnt = 1;
+ 
+ 	return -ret;
+-autoinit:
+-	ret = cobalt_mutex_autoinit(mutex);
+-	if (ret)
+-		return ret;
+-	goto start;
+-protect:	
++protect:
+ 	u_window = cobalt_get_current_window();
+ 	/*
+ 	 * Can't nest lazy ceiling requests, have to take the slow
+@@ -611,9 +621,10 @@ COBALT_IMPL(int, pthread_mutex_unlock, (pthread_mutex_t *mutex))
+ 	xnhandle_t cur;
+ 	int err;
+ 
+-	if (_mutex->magic != COBALT_MUTEX_MAGIC)
+-		goto autoinit;
+-start:
++	err = _cobalt_mutex_autoinit((union cobalt_mutex_union *)mutex);
++	if (err)
++		return err;
++
+ 	cur = cobalt_get_current();
+ 	if (cur == XN_NO_HANDLE)
+ 		return EPERM;
+@@ -645,11 +656,6 @@ do_syscall:
+ 
+ 	return -err;
+ 
+-autoinit:
+-	err = cobalt_mutex_autoinit(mutex);
+-	if (err)
+-		return err;
+-	goto start;
+ unprotect:
+ 	u_window = cobalt_get_current_window();
+ 	u_window->pp_pending = XN_NO_HANDLE;
+@@ -707,7 +713,7 @@ COBALT_IMPL(int, pthread_mutex_setprioceiling,
+ 	if (_mutex->magic != COBALT_MUTEX_MAGIC ||
+ 	    _mutex->attr.protocol != PTHREAD_PRIO_PROTECT)
+ 		return EINVAL;
+-	
++
+ 	if (prioceiling < __cobalt_std_fifo_minpri ||
+ 	    prioceiling > __cobalt_std_fifo_maxpri)
+ 		return EINVAL;
+@@ -757,7 +763,7 @@ COBALT_IMPL(int, pthread_mutex_getprioceiling,
+ 	if (_mutex->magic != COBALT_MUTEX_MAGIC ||
+ 	    _mutex->attr.protocol != PTHREAD_PRIO_PROTECT)
+ 		return EINVAL;
+-	
++
+ 	state = mutex_get_state(_mutex);
+ 	*prioceiling = state->ceiling;
+ 
+-- 
+2.20.1
 
 
