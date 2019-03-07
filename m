@@ -1,16 +1,12 @@
-From: Lange Norbert <norbert.lange@andritz.com>
-Subject: RE: smokey's fork tests hangs with glibc 2.28+ ?
-Date: Mon, 11 Mar 2019 14:41:52 +0000
-Message-ID: <3ecf3b2ce17f4bc8acf34e668eb26171@andritz.com>
-References: <c57ea289db8a425da4d09d89d0de5d96@andritz.com>
- <76f0e9a2-f783-df4f-d736-4f0e246d44c2@siemens.com>
- <f6c647a090744868b23a138ad213e96c@andritz.com>
- <b9e0b39a-e3e9-f99e-eb44-a1e8ddf34aae@xenomai.org>
-In-Reply-To: <b9e0b39a-e3e9-f99e-eb44-a1e8ddf34aae@xenomai.org>
-Content-Language: en-US
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+From: Norbert Lange <nolange79@gmail.com>
+Subject: [PATCH v2 2/5] libcobalt: improve documentation regarding mutex
+ initializers
+Date: Thu,  7 Mar 2019 14:31:53 +0100
+Message-Id: <20190307133156.31749-3-norbert.lange@andritz.com>
+In-Reply-To: <20190307133156.31749-1-norbert.lange@andritz.com>
+References: <20190307133156.31749-1-norbert.lange@andritz.com>
 MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -19,48 +15,33 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Philippe Gerum <rpm@xenomai.org>, Jan Kiszka <jan.kiszka@siemens.com>, "Xenomai (xenomai@xenomai.org)" <xenomai@xenomai.org>
+To: xenomai@xenomai.org
 
-VGhhbmtzIFBoaWxsaXBlLA0KDQphc3N1bWUganVzdCBmb3IgYSBtb21lbnQgdGhhdCBJIGtub3cg
-bGl0dGxlIG9mIHRoZSBpc3N1ZXMsDQppcyB0aGVyZSBhbnkgaGFybSB1c2luZyBnbGliYyAyLjI4
-IGZvciBub3csIGdpdmVuIHRoYXQgSSBkb27igJl0DQpydW4gaW50byB0aG9zZSBkZWFkbG9ja3Mg
-b3IgY291bGQgdGhlcmUgYmUgc29tZSBtb3JlDQpzdWJ0aWxlIGJyZWFrYWdlIGludm9sdmVkPw0K
-DQpOb3JiZXJ0DQoNCj4gLS0tLS1PcmlnaW5hbCBNZXNzYWdlLS0tLS0NCj4gRnJvbTogUGhpbGlw
-cGUgR2VydW0gPHJwbUB4ZW5vbWFpLm9yZz4NCj4gU2VudDogTW9udGFnLCAxMS4gTcOkcnogMjAx
-OSAxNToxOQ0KPiBUbzogTGFuZ2UgTm9yYmVydCA8bm9yYmVydC5sYW5nZUBhbmRyaXR6LmNvbT47
-IEphbiBLaXN6a2ENCj4gPGphbi5raXN6a2FAc2llbWVucy5jb20+OyBYZW5vbWFpICh4ZW5vbWFp
-QHhlbm9tYWkub3JnKQ0KPiA8eGVub21haUB4ZW5vbWFpLm9yZz4NCj4gU3ViamVjdDogUmU6IHNt
-b2tleSdzIGZvcmsgdGVzdHMgaGFuZ3Mgd2l0aCBnbGliYyAyLjI4KyA/DQo+DQo+IEUtTUFJTCBG
-Uk9NIEEgTk9OLUFORFJJVFogU09VUkNFOiBBUyBBIFNFQ1VSSVRZIE1FQVNVUkUsIFBMRUFTRQ0K
-PiBFWEVSQ0lTRSBDQVVUSU9OIFdJVEggRS1NQUlMIENPTlRFTlQgQU5EIEFOWSBMSU5LUyBPUg0K
-PiBBVFRBQ0hNRU5UUy4NCj4NCj4NCj4gT24gMy8xMS8xOSAzOjA4IFBNLCBMYW5nZSBOb3JiZXJ0
-IHZpYSBYZW5vbWFpIHdyb3RlOg0KPiA+IFRoYXRzIGEgcm9vdGZzIHdoaWNoIHJlcHJvZHVjZXMg
-dGhlIGlzc3VlLiBJZGVudGljYWwgc2V0dXAsIGJ1dCBnbGliYyAyLjI3IHdpbGwNCj4gbm90IHJl
-cHJvZHVjZS4NCj4NCj4gVGhlIGlzc3VlIHdhcyBpbnRyb2R1Y2VkIGJ5IFsxXSwgd2hpY2ggYWxy
-ZWFkeSB0cmlnZ2VyZWQgYSBidWcgaW4gdGhlIGdsaWJjDQo+IHRlc3Qgc3VpdGUgWzJdLiBJbiBz
-aG9ydCwgY2FsbGluZyBwdGhyZWFkX2F0Zm9yaygpIGxpa2UNCj4gX19jb2JhbHRfaW5pdCgpIGRv
-ZXMgb3ZlciB0aGUgY29udGV4dCBvZiBhIGZvcmsgaGFuZGxlciBpcyBub3cgaW52YWxpZCwNCj4g
-YmVjYXVzZSB0aGUgZ2xpYmMgbm93IGhvbGRzIHRoZSBpbnRlcm5hbCBhdGZvcmtfbG9jayB3aGls
-ZSBydW5uaW5nIHRoZSBmb3JrDQo+IGhhbmRsZXJzLiBUaGUgY29iYWx0IGZvcmsgaGFuZGxlciBu
-ZWVkcyB0byBiZSByZWdpc3RlcmVkIGVhcmxpZXIsIG91dHNpZGUgb2YNCj4gc3VjaCBjb250ZXh0
-Lg0KPg0KPiBUaGlzIGNoYW5nZSB3YXMgaW50cm9kdWNlZCBiZXR3ZWVuIGdsaWJjLTIuMjcuOTAw
-MCBhbmQgZ2xpYmMtMi4yOC4NCj4NCj4gWzFdIGdpdDovL3NvdXJjZXdhcmUub3JnL2dpdC9nbGli
-Yy5naXQsIDI3NzYxYTEwNCBbMl0NCj4gZ2l0Oi8vc291cmNld2FyZS5vcmcvZ2l0L2dsaWJjLmdp
-dCwgNjY5ZmY5MTFlDQo+DQo+IC0tDQo+IFBoaWxpcHBlLg0KX19fX19fX19fX19fX19fX19fX19f
-X19fX19fX19fX18NCg0KVGhpcyBtZXNzYWdlIGFuZCBhbnkgYXR0YWNobWVudHMgYXJlIHNvbGVs
-eSBmb3IgdGhlIHVzZSBvZiB0aGUgaW50ZW5kZWQgcmVjaXBpZW50cy4gVGhleSBtYXkgY29udGFp
-biBwcml2aWxlZ2VkIGFuZC9vciBjb25maWRlbnRpYWwgaW5mb3JtYXRpb24gb3Igb3RoZXIgaW5m
-b3JtYXRpb24gcHJvdGVjdGVkIGZyb20gZGlzY2xvc3VyZS4gSWYgeW91IGFyZSBub3QgYW4gaW50
-ZW5kZWQgcmVjaXBpZW50LCB5b3UgYXJlIGhlcmVieSBub3RpZmllZCB0aGF0IHlvdSByZWNlaXZl
-ZCB0aGlzIGVtYWlsIGluIGVycm9yIGFuZCB0aGF0IGFueSByZXZpZXcsIGRpc3NlbWluYXRpb24s
-IGRpc3RyaWJ1dGlvbiBvciBjb3B5aW5nIG9mIHRoaXMgZW1haWwgYW5kIGFueSBhdHRhY2htZW50
-IGlzIHN0cmljdGx5IHByb2hpYml0ZWQuIElmIHlvdSBoYXZlIHJlY2VpdmVkIHRoaXMgZW1haWwg
-aW4gZXJyb3IsIHBsZWFzZSBjb250YWN0IHRoZSBzZW5kZXIgYW5kIGRlbGV0ZSB0aGUgbWVzc2Fn
-ZSBhbmQgYW55IGF0dGFjaG1lbnQgZnJvbSB5b3VyIHN5c3RlbS4NCg0KQU5EUklUWiBIWURSTyBH
-bWJIDQoNCg0KUmVjaHRzZm9ybS8gTGVnYWwgZm9ybTogR2VzZWxsc2NoYWZ0IG1pdCBiZXNjaHLD
-pG5rdGVyIEhhZnR1bmcgLyBDb3Jwb3JhdGlvbg0KDQpGaXJtZW5zaXR6LyBSZWdpc3RlcmVkIHNl
-YXQ6IFdpZW4NCg0KRmlybWVuYnVjaGdlcmljaHQvIENvdXJ0IG9mIHJlZ2lzdHJ5OiBIYW5kZWxz
-Z2VyaWNodCBXaWVuDQoNCkZpcm1lbmJ1Y2hudW1tZXIvIENvbXBhbnkgcmVnaXN0cmF0aW9uOiBG
-TiA2MTgzMyBnDQoNCkRWUjogMDYwNTA3Nw0KDQpVSUQtTnIuOiBBVFUxNDc1NjgwNg0KDQoNClRo
-YW5rIFlvdQ0KX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX18NCg==
+Signed-off-by: Norbert Lange <norbert.lange@andritz.com>
+---
+ lib/cobalt/mutex.c | 8 ++++++--
+ 1 file changed, 6 insertions(+), 2 deletions(-)
+
+diff --git a/lib/cobalt/mutex.c b/lib/cobalt/mutex.c
+index be9f6ed80..125981d40 100644
+--- a/lib/cobalt/mutex.c
++++ b/lib/cobalt/mutex.c
+@@ -49,8 +49,12 @@
+  * By default, Cobalt mutexes are of the normal type, use no
+  * priority protocol and may not be shared between several processes.
+  *
+- * Note that only pthread_mutex_init() may be used to initialize a mutex, using
+- * the static initializer @a PTHREAD_MUTEX_INITIALIZER is not supported.
++ * Note that pthread_mutex_init() should be used to initialize a mutex, using
++ * the static initializer @a PTHREAD_MUTEX_INITIALIZER will delay the
++ * initialization to the first method called on the mutex and will
++ * most likely introduce switches to secondary mode.
++ * The documentation (and specififcally api-tags) of the mutex services assumes
++ * a mutex was explicitely initialised with pthread_mutex_init().
+  *
+  *@{
+  */
+-- 
+2.20.1
+
 
