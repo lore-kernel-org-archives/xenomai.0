@@ -1,19 +1,11 @@
-Subject: Re: [I-PIPE] ipipe-core-4.14.89-x86-2 released
-References: <E1gaKub-0002DE-4r@xenomai.org>
- <1368965303.3936165.1545600892860@mail.yahoo.com>
- <91ae88c0-4fb5-9e98-e08b-669ffe607bd1@xenomai.org>
- <7d356b91-90bb-ddd1-30a4-9b52ac362e62@web.de>
- <123395f3-a80e-c883-3fea-f3a6a5c39ed5@siemens.com>
- <b8b577f7-0ac3-92dd-92e2-6a2f4fc244d9@xenomai.org>
- <5051b042-b2c2-ecee-e3ef-c4457e6663c2@xenomai.org>
-From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <419440a3-79aa-2e38-08b1-ab2761777fdd@siemens.com>
-Date: Mon, 28 Jan 2019 17:48:03 +0100
+From: Norbert Lange <nolange79@gmail.com>
+Subject: [PATCH v2 1/5] libcobalt: improve mutex autoinit support
+Date: Thu,  7 Mar 2019 14:31:52 +0100
+Message-Id: <20190307133156.31749-2-norbert.lange@andritz.com>
+In-Reply-To: <20190307133156.31749-1-norbert.lange@andritz.com>
+References: <20190307133156.31749-1-norbert.lange@andritz.com>
 MIME-Version: 1.0
-In-Reply-To: <5051b042-b2c2-ecee-e3ef-c4457e6663c2@xenomai.org>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -22,83 +14,300 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Philippe Gerum <rpm@xenomai.org>, Alec Ari <neotheuser@ymail.com>, "xenomai@xenomai.org" <xenomai@xenomai.org>, Henning Schild <henning.schild@siemens.com>
+To: xenomai@xenomai.org
 
-On 28.01.19 16:31, Philippe Gerum wrote:
-> On 1/28/19 4:18 PM, Philippe Gerum via Xenomai wrote:
->> On 1/28/19 12:22 PM, Jan Kiszka wrote:
->>> On 27.12.18 17:17, Jan Kiszka via Xenomai wrote:
->>>> On 24.12.18 11:06, Philippe Gerum via Xenomai wrote:
->>>>> On 12/23/18 10:34 PM, Alec Ari via Xenomai wrote:
->>>>>> Hello,
->>>>>>
->>>>>>
->>>>>> I'm not sure if the patch generator was believed to be fixed yet or
->>>>>> not, but files for other arches (arch/arm/include/asm/arch_timer.h)
->>>>>> are still included. If this still being worked on, disregard this
->>>>>> message.
->>>>>>
->>>>>>
->>>>>
->>>>> The upstream tree at https://gitlab.denx.de/Xenomai/ipipe-x86 still
->>>>> exports I-pipe bits for multiple architectures (at least for x86 and
->>>>> arm) but does not include scripts/ipipe/genpatches.sh, so the generator
->>>>> does a plain diff, assuming a single-arch tree.
->>>>>
->>>>> The ARM bits are likely left-overs and should be dropped to fix the
->>>>> tree.
->>>>>
->>>>
->>>> Going through the commits, it seems we have a couple of ARM-only
->>>> driver and timer patches in the x86 tree but no general ARM enabling.
->>>> Those should be removed, indeed.
->>>
->>> In fact, the problem is imported from ipipe-noarch: There are many
->>> ARM-related driver changes that, strictly spoken, do not belong into the
->>> noarch tree. Some touch arch/arm, others just change drivers that are
->>> practically ARM-only.
->>>
->>> Philippe, do we want to remove those commits from noarch and add them to
->>> ARM? Or should we filter out arch-unrelated diffs when generating the
->>> patches?
->>>
->>
->> The drivers you mention are shared between different archs (several arm/
->> drivers are used by arm64) so instead of maintaining multiple copies,
->> all these drivers have  been merged into noarch eventually.
->>
->> This is a patch generation issue for kernel series 4.14+, the easiest
->> way may be to provide an exclude file to the generator on a per-arch
->> basis. A filter rule excluding arm/ for anything but arm and arm64
->> should be enough. I'll have a look at this.
->>
->> Please note that this does not apply to pre-4.14 trees; those should
->> provide scripts/ipipe/genpatches.sh as the legacy I-pipe series normally
->> does, which should filter contents appropriately.
->>
-> 
-> Those files should not be part of noarch though:
-> 
->   arch/arm/mach-imx/mach-imx51.c            |    5 +
->   arch/arm/mach-imx/mach-imx53.c            |    5 +
->   arch/arm/plat-omap/dmtimer.c              |   17 +-
->   arch/arm/plat-omap/include/plat/dmtimer.h |    6 +
-> 
+contrary to some comments, mutexes are automatically
+initialised on lock/unlock.
+Correct the destroy method to not report an
+error on such mutexes.
 
-So these three should go:
+{get,set}prioceiling requires mutexes that were explicitely
+initialised, so no change needed there
 
-a1edb318ad047d0582de66482efa3b76b30b6e1a
-09cafa0ee6b1547133eee438c37c8703e70a88d1
-5fc1baae9cc27adc771c67aee131993612e88ff2
+Signed-off-by: Norbert Lange <norbert.lange@andritz.com>
+---
+ lib/cobalt/mutex.c | 178 +++++++++++++++++++++++----------------------
+ 1 file changed, 92 insertions(+), 86 deletions(-)
 
-There is also 9f33ef39090f5f100f056e208733fef2e02bd373, which also contains a 
-"FIXME" in the commit log.
-
-If we get rid of these, there will be no further need for filtering of arch/.
-
-Jan
-
+diff --git a/lib/cobalt/mutex.c b/lib/cobalt/mutex.c
+index ed32bba32..be9f6ed80 100644
+--- a/lib/cobalt/mutex.c
++++ b/lib/cobalt/mutex.c
+@@ -164,70 +164,51 @@ COBALT_IMPL(int, pthread_mutex_init, (pthread_mutex_t *mutex,
+ }
+ 
+ /**
+- * Destroy a mutex.
+- *
+- * This service destroys the mutex @a mx, if it is unlocked and not referenced
+- * by any condition variable. The mutex becomes invalid for all mutex services
+- * (they all return the EINVAL error) except pthread_mutex_init().
+- *
+- * @param mutex the mutex to be destroyed.
+- *
+- * @return 0 on success,
+- * @return an error number if:
+- * - EINVAL, the mutex @a mx is invalid;
+- * - EPERM, the mutex is not process-shared and does not belong to the current
+- *   process;
+- * - EBUSY, the mutex is locked, or used by a condition variable.
++ * Test if a mutex structure contains an valid autoinitializer.
+  *
+- * @see
+- * <a href="http://www.opengroup.org/onlinepubs/000095399/functions/pthread_mutex_destroy.html">
+- * Specification.</a>
+- *
+- * @apitags{thread-unrestricted}
++ * @return the mutex type on success,
++ * @return -1 if not in supported autoinitializer state
+  */
+-COBALT_IMPL(int, pthread_mutex_destroy, (pthread_mutex_t *mutex))
++static int __attribute__((cold)) _cobalt_mutex_autoinit_type(const pthread_mutex_t *mutex)
+ {
+-	struct cobalt_mutex_shadow *_mutex =
+-		&((union cobalt_mutex_union *)mutex)->shadow_mutex;
+-	int err;
+-
+-	if (_mutex->magic != COBALT_MUTEX_MAGIC)
+-		return EINVAL;
+-
+-	err = XENOMAI_SYSCALL1(sc_cobalt_mutex_destroy, _mutex);
+-
+-	return -err;
+-}
+-
+-static int __attribute__((cold)) cobalt_mutex_autoinit(pthread_mutex_t *mutex)
+-{
+-	static pthread_mutex_t uninit_normal_mutex =
+-		PTHREAD_MUTEX_INITIALIZER;
++	static const pthread_mutex_t mutex_initializers[] = {
++#if HAVE_DECL_PTHREAD_ERRORCHECK_MUTEX_INITIALIZER_NP
++		PTHREAD_ERRORCHECK_MUTEX_INITIALIZER_NP,
++#endif
+ #if HAVE_DECL_PTHREAD_RECURSIVE_MUTEX_INITIALIZER_NP
+-	static pthread_mutex_t uninit_recursive_mutex =
+-		PTHREAD_RECURSIVE_MUTEX_INITIALIZER_NP;
++		PTHREAD_RECURSIVE_MUTEX_INITIALIZER_NP,
+ #endif
++		PTHREAD_MUTEX_INITIALIZER
++	};
++	static const int mutex_types[] =
++	{
+ #if HAVE_DECL_PTHREAD_ERRORCHECK_MUTEX_INITIALIZER_NP
+-	static pthread_mutex_t uninit_errorcheck_mutex =
+-		PTHREAD_ERRORCHECK_MUTEX_INITIALIZER_NP;
++		PTHREAD_MUTEX_ERRORCHECK_NP,
+ #endif
+-	struct cobalt_mutex_shadow *_mutex =
+-		&((union cobalt_mutex_union *)mutex)->shadow_mutex;
++#if HAVE_DECL_PTHREAD_RECURSIVE_MUTEX_INITIALIZER_NP
++		PTHREAD_MUTEX_RECURSIVE_NP,
++#endif
++		PTHREAD_MUTEX_DEFAULT
++	};
++
++	unsigned i = sizeof(mutex_types) / sizeof(mutex_types[0]);
++	while (i-- > 0)
++	{
++		if (memcmp(mutex, &mutex_initializers[i], sizeof(mutex_initializers[0])) == 0)
++			return mutex_types[i];
++	}
++	return -1;
++}
++
++static int __attribute__((cold)) _cobalt_mutex_doautoinit(union cobalt_mutex_union *umutex)
++{
++	struct cobalt_mutex_shadow *_mutex = &umutex->shadow_mutex;
+ 	int err __attribute__((unused));
+ 	pthread_mutexattr_t mattr;
+ 	int ret = 0, type;
+ 
+-	if (memcmp(mutex, &uninit_normal_mutex, sizeof(*mutex)) == 0)
+-		type = PTHREAD_MUTEX_DEFAULT;
+-#if HAVE_DECL_PTHREAD_RECURSIVE_MUTEX_INITIALIZER_NP
+-	else if (memcmp(mutex, &uninit_recursive_mutex, sizeof(*mutex)) == 0)
+-		type = PTHREAD_MUTEX_RECURSIVE_NP;
+-#endif
+-#if HAVE_DECL_PTHREAD_ERRORCHECK_MUTEX_INITIALIZER_NP
+-	else if (memcmp(mutex, &uninit_errorcheck_mutex, sizeof(*mutex)) == 0)
+-		type = PTHREAD_MUTEX_ERRORCHECK_NP;
+-#endif
+-	else
++	type = _cobalt_mutex_autoinit_type(&umutex->native_mutex);
++	if (type < 0)
+ 		return EINVAL;
+ 
+ 	pthread_mutexattr_init(&mattr);
+@@ -238,7 +219,7 @@ static int __attribute__((cold)) cobalt_mutex_autoinit(pthread_mutex_t *mutex)
+ 		goto out;
+ 	}
+ 	if (_mutex->magic != COBALT_MUTEX_MAGIC)
+-		ret = __COBALT(pthread_mutex_init(mutex, &mattr));
++		ret = __COBALT(pthread_mutex_init(&umutex->native_mutex, &mattr));
+ 	err = __COBALT(pthread_mutex_unlock(cobalt_autoinit_mutex));
+ 	if (err) {
+ 		if (ret == 0)
+@@ -251,6 +232,49 @@ static int __attribute__((cold)) cobalt_mutex_autoinit(pthread_mutex_t *mutex)
+ 	return ret;
+ }
+ 
++static inline int _cobalt_mutex_autoinit(union cobalt_mutex_union *umutex)
++{
++	if (unlikely(umutex->shadow_mutex.magic != COBALT_MUTEX_MAGIC))
++		return _cobalt_mutex_doautoinit(umutex);
++	return 0;
++}
++
++/**
++ * Destroy a mutex.
++ *
++ * This service destroys the mutex @a mx, if it is unlocked and not referenced
++ * by any condition variable. The mutex becomes invalid for all mutex services
++ * (they all return the EINVAL error) except pthread_mutex_init().
++ *
++ * @param mutex the mutex to be destroyed.
++ *
++ * @return 0 on success,
++ * @return an error number if:
++ * - EINVAL, the mutex @a mx is invalid;
++ * - EPERM, the mutex is not process-shared and does not belong to the current
++ *   process;
++ * - EBUSY, the mutex is locked, or used by a condition variable.
++ *
++ * @see
++ * <a href="http://www.opengroup.org/onlinepubs/000095399/functions/pthread_mutex_destroy.html">
++ * Specification.</a>
++ *
++ * @apitags{thread-unrestricted}
++ */
++COBALT_IMPL(int, pthread_mutex_destroy, (pthread_mutex_t *mutex))
++{
++	struct cobalt_mutex_shadow *_mutex =
++		&((union cobalt_mutex_union *)mutex)->shadow_mutex;
++	int err;
++
++	if (unlikely(_mutex->magic != COBALT_MUTEX_MAGIC))
++		return (_cobalt_mutex_autoinit_type(mutex) < 0) ? EINVAL : 0;
++
++	err = XENOMAI_SYSCALL1(sc_cobalt_mutex_destroy, _mutex);
++
++	return -err;
++}
++
+ /**
+  * Lock a mutex.
+  *
+@@ -296,15 +320,15 @@ COBALT_IMPL(int, pthread_mutex_lock, (pthread_mutex_t *mutex))
+ 	if (cur == XN_NO_HANDLE)
+ 		return EPERM;
+ 
+-	if (_mutex->magic != COBALT_MUTEX_MAGIC)
+-		goto autoinit;
++	ret = _cobalt_mutex_autoinit((union cobalt_mutex_union *)mutex);
++	if (ret)
++		return ret;
+ 
+ 	/*
+ 	 * We track resource ownership for auto-relax of non real-time
+ 	 * shadows and some debug features, so we must always obtain
+ 	 * them via a syscall.
+ 	 */
+-start:
+ 	status = cobalt_get_current_mode();
+ 	if ((status & (XNRELAX|XNWEAK|XNDEBUG)) == 0) {
+ 		if (_mutex->attr.protocol == PTHREAD_PRIO_PROTECT)
+@@ -360,11 +384,6 @@ protect:
+ 	u_window->pp_pending = _mutex->handle;
+ 	lazy_protect = 1;
+ 	goto fast_path;
+-autoinit:
+-	ret = cobalt_mutex_autoinit(mutex);
+-	if (ret)
+-		return ret;
+-	goto start;
+ }
+ 
+ /**
+@@ -411,11 +430,11 @@ COBALT_IMPL(int, pthread_mutex_timedlock, (pthread_mutex_t *mutex,
+ 	if (cur == XN_NO_HANDLE)
+ 		return EPERM;
+ 
+-	if (_mutex->magic != COBALT_MUTEX_MAGIC)
+-		goto autoinit;
++	ret = _cobalt_mutex_autoinit((union cobalt_mutex_union *)mutex);
++	if (ret)
++		return ret;
+ 
+ 	/* See __cobalt_pthread_mutex_lock() */
+-start:
+ 	status = cobalt_get_current_mode();
+ 	if ((status & (XNRELAX|XNWEAK|XNDEBUG)) == 0) {
+ 		if (_mutex->attr.protocol == PTHREAD_PRIO_PROTECT)
+@@ -471,11 +490,6 @@ protect:
+ 	u_window->pp_pending = _mutex->handle;
+ 	lazy_protect = 1;
+ 	goto fast_path;
+-autoinit:
+-	ret = cobalt_mutex_autoinit(mutex);
+-	if (ret)
+-		return ret;
+-	goto start;
+ }
+ 
+ /**
+@@ -515,9 +529,10 @@ COBALT_IMPL(int, pthread_mutex_trylock, (pthread_mutex_t *mutex))
+ 	if (cur == XN_NO_HANDLE)
+ 		return EPERM;
+ 
+-	if (_mutex->magic != COBALT_MUTEX_MAGIC)
+-		goto autoinit;
+-start:
++	ret = _cobalt_mutex_autoinit((union cobalt_mutex_union *)mutex);
++	if (ret)
++		return ret;
++
+ 	status = cobalt_get_current_mode();
+ 	if ((status & (XNRELAX|XNWEAK|XNDEBUG)) == 0) {
+ 		if (_mutex->attr.protocol == PTHREAD_PRIO_PROTECT)
+@@ -558,11 +573,6 @@ slow_path:
+ 		_mutex->lockcnt = 1;
+ 
+ 	return -ret;
+-autoinit:
+-	ret = cobalt_mutex_autoinit(mutex);
+-	if (ret)
+-		return ret;
+-	goto start;
+ protect:
+ 	u_window = cobalt_get_current_window();
+ 	/*
+@@ -611,9 +621,10 @@ COBALT_IMPL(int, pthread_mutex_unlock, (pthread_mutex_t *mutex))
+ 	xnhandle_t cur;
+ 	int err;
+ 
+-	if (_mutex->magic != COBALT_MUTEX_MAGIC)
+-		goto autoinit;
+-start:
++	err = _cobalt_mutex_autoinit((union cobalt_mutex_union *)mutex);
++	if (err)
++		return err;
++
+ 	cur = cobalt_get_current();
+ 	if (cur == XN_NO_HANDLE)
+ 		return EPERM;
+@@ -645,11 +656,6 @@ do_syscall:
+ 
+ 	return -err;
+ 
+-autoinit:
+-	err = cobalt_mutex_autoinit(mutex);
+-	if (err)
+-		return err;
+-	goto start;
+ unprotect:
+ 	u_window = cobalt_get_current_window();
+ 	u_window->pp_pending = XN_NO_HANDLE;
 -- 
-Siemens AG, Corporate Technology, CT RDA IOT SES-DE
-Corporate Competence Center Embedded Linux
+2.20.1
+
 
