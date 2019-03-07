@@ -1,16 +1,10 @@
-Subject: Re: x86_64 kernel does not start under qemu
-From: Jan Kiszka <jan.kiszka@siemens.com>
-References: <CAFLxGvyyMEJ3t4K3dShxXMZccXCkuLN=bkTaTKLDugMieFD8ZA@mail.gmail.com>
- <73309048-fefd-20a4-31ae-1ce41b0fb8a6@siemens.com>
- <ddd256e9-0e93-30bc-ddf0-e4f333d24d7f@siemens.com>
- <3154485.mhzyMJEECq@blindfold>
- <fc014cdd-e4a8-5363-e68e-adf9b311f8f0@siemens.com>
-Message-ID: <2137b0d1-bb5c-9e8a-883e-9ff13c43bdc1@siemens.com>
-Date: Fri, 22 Mar 2019 21:50:57 +0100
+From: Norbert Lange <nolange79@gmail.com>
+Subject: [PATCH v2 3/5] libcobalt: improve condvar autoinit support
+Date: Thu,  7 Mar 2019 14:31:54 +0100
+Message-Id: <20190307133156.31749-4-norbert.lange@andritz.com>
+In-Reply-To: <20190307133156.31749-1-norbert.lange@andritz.com>
+References: <20190307133156.31749-1-norbert.lange@andritz.com>
 MIME-Version: 1.0
-In-Reply-To: <fc014cdd-e4a8-5363-e68e-adf9b311f8f0@siemens.com>
-Content-Type: text/plain; charset="utf-8"
-Content-Language: en-US
 Content-Transfer-Encoding: 8bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
@@ -20,107 +14,200 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Richard Weinberger <richard@nod.at>, Philippe Gerum <rpm@xenomai.org>
-Cc: "henning.schild@siemens.com" <henning.schild@siemens.com>, Lange Norbert <norbert.lange@andritz.com>, "Xenomai (xenomai@xenomai.org)" <xenomai@xenomai.org>
+To: xenomai@xenomai.org
 
-On 21.03.19 17:07, Jan Kiszka wrote:
-> On 21.03.19 12:57, Richard Weinberger wrote:
->> Am Donnerstag, 21. März 2019, 12:02:45 CET schrieb Jan Kiszka:
->>> FWIW, I've just seen this issue as well, with QEMU in KVM mode: I ran into that
->>> lockup when my host was under full load while Xenomai booted in the VM. And it
->>> seems reproducible. Debugging...
->>
->> Oh, good to hear that!
->> I played a little with your config but got badly interrupted with other stuff.
->> Your config seems to work but mostly because things are slower due to debugging stuff
->> you've enabled. Maybe this info helps.
->>
-> 
-> It's a race, so everything that changes timing also changes
-> probabilities. I'm starting to nail it down:
-> 
-> (gdb) info threads
->    Id   Target Id         Frame
-> * 4    Thread 4 (CPU#3 [halted ]) __ipipe_halt_root (use_mwait=-2147483634) at ../arch/x86/kernel/ipipe.c:317
->    3    Thread 3 (CPU#2 [running]) rep_nop () at ../arch/x86/include/asm/processor.h:655
->    2    Thread 2 (CPU#1 [halted ]) __ipipe_halt_root (use_mwait=-2147483634) at ../arch/x86/kernel/ipipe.c:317
->    1    Thread 1 (CPU#0 [halted ]) __ipipe_halt_root (use_mwait=-2147483634) at ../arch/x86/kernel/ipipe.c:317
-> (gdb) monitor info lapic
-> dumping local APIC state for CPU 3
-> 
-> LVT0     0x00010700 active-hi edge  masked                      ExtINT (vec 0)
-> LVT1     0x00010400 active-hi edge  masked                      NMI
-> LVTPC    0x00010400 active-hi edge  masked                      NMI
-> LVTERR   0x000000fe active-hi edge                              Fixed  (vec 254)
-> LVTTHMR  0x00010000 active-hi edge  masked                      Fixed  (vec 0)
-> LVTT     0x000400ef active-hi edge                 tsc-deadline Fixed  (vec 239)
-> Timer    DCR=0x0 (divide by 2) initial_count = 0
-> SPIV     0x000001ff APIC enabled, focus=off, spurious vec 255
-> ICR      0x000008fd logical edge de-assert no-shorthand
-> ICR2     0x02000000 mask 00000010 (APIC ID)
-> ESR      0x00000000
-> ISR      239
-> IRR      236 237 238 239
-> 
-> APR 0x00 TPR 0x00 DFR 0x0f LDR 0x08 PPR 0xe0
-> 
-> 
-> So we are halting while we didn't finish vector 239 (timer) yet. And
-> that means we re-enabled interrupts while the timer was being processed
-> - a bug in I-pipe.
-> 
-> This is while another CPU tries to run ipipe_critical_enter, never
-> reaching CPU 3 this way (via IPI_CRITICAL_VECTOR = 236).
-> 
-> Jan
-> 
+contrary to some comments, condvars are automatically
+initialised on signal/wait.
+Correct the destroy method to not report an
+error on such condvars.
 
-This might be the fix, but I need to sleep over it. Will send a PR next 
-week.
+Check whether the condition variable has the
+static initializer is now more strict.
 
----8<---
-
-ipipe: Call present timer ack handlers unconditionally
-
-This plugs a race for timers that are per-CPU but share the same
-interrupt number. When setting them up, there is a window where the
-first CPU already called ipipe_request_irq, but some other CPU did not
-yet ran through grab_timer, thus have ipipe_stolen = 0.
-
-Moreover, it is questionable that non-stolen timers should not call
-their ack functions.
-
-Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
+Signed-off-by: Norbert Lange <norbert.lange@andritz.com>
 ---
- kernel/ipipe/timer.c | 11 ++++-------
- 1 file changed, 4 insertions(+), 7 deletions(-)
+ lib/cobalt/cond.c | 93 ++++++++++++++++++++++++++---------------------
+ 1 file changed, 51 insertions(+), 42 deletions(-)
 
-diff --git a/kernel/ipipe/timer.c b/kernel/ipipe/timer.c
-index 98d1192a2727..2d5f468ce7fb 100644
---- a/kernel/ipipe/timer.c
-+++ b/kernel/ipipe/timer.c
-@@ -369,13 +369,10 @@ static void __ipipe_ack_hrtimer_irq(struct irq_desc *desc)
- 
- 	if (desc)
- 		desc->ipipe_ack(desc);
--
--	if (timer->host_timer->ipipe_stolen) {
--		if (timer->ack)
--			timer->ack();
--		if (desc)
--			desc->ipipe_end(desc);
--	}
-+	if (timer->ack)
-+		timer->ack();
-+	if (desc && timer->host_timer->ipipe_stolen)
-+		desc->ipipe_end(desc);
+diff --git a/lib/cobalt/cond.c b/lib/cobalt/cond.c
+index 00a201855..92eb230ff 100644
+--- a/lib/cobalt/cond.c
++++ b/lib/cobalt/cond.c
+@@ -142,6 +142,42 @@ COBALT_IMPL(int, pthread_cond_init, (pthread_cond_t *cond,
+ 	return 0;
  }
  
- static int do_set_oneshot(struct clock_event_device *cdev)
++static int __attribute__((cold)) _cobalt_cond_autoinit_type(const pthread_cond_t *cond)
++{
++	static const pthread_cond_t cond_initializers[] = {
++		PTHREAD_COND_INITIALIZER
++	};
++	static const int cond_types[] =
++	{
++		0
++	};
++
++	unsigned i = sizeof(cond_types) / sizeof(cond_types[0]);
++	while (i-- > 0)
++	{
++		if (memcmp(cond, &cond_initializers[i], sizeof(cond_initializers[0])) == 0)
++			return cond_types[i];
++	}
++	return -1;
++}
++
++static int __attribute__((cold)) _cobalt_cond_doautoinit(union cobalt_cond_union *ucond)
++{
++	int type;
++	type = _cobalt_cond_autoinit_type(&ucond->native_cond);
++	if (type < 0)
++		return EINVAL;
++
++	return __COBALT(pthread_cond_init(&ucond->native_cond, NULL));
++}
++
++static inline int _cobalt_cond_autoinit(union cobalt_cond_union *ucond)
++{
++	if (unlikely(ucond->shadow_cond.magic != COBALT_COND_MAGIC))
++		return _cobalt_cond_doautoinit(ucond);
++	return 0;
++}
++
+ /**
+  * @fn int pthread_cond_destroy(pthread_cond_t *cond)
+  * @brief Destroy a condition variable
+@@ -170,6 +206,9 @@ COBALT_IMPL(int, pthread_cond_destroy, (pthread_cond_t *cond))
+ {
+ 	struct cobalt_cond_shadow *_cond = &((union cobalt_cond_union *)cond)->shadow_cond;
+ 
++	if (unlikely(_cond->magic != COBALT_COND_MAGIC))
++		return (_cobalt_cond_autoinit_type(cond) < 0) ? EINVAL : 0;
++
+ 	return -XENOMAI_SYSCALL1( sc_cobalt_cond_destroy, _cond);
+ }
+ 
+@@ -193,12 +232,6 @@ static void __pthread_cond_cleanup(void *data)
+ 	c->mutex->lockcnt = c->count;
+ }
+ 
+-static int __attribute__((cold)) cobalt_cond_autoinit(pthread_cond_t *cond)
+-{
+-	return __COBALT(pthread_cond_init(cond, NULL));
+-}
+-
+-
+ /**
+  * Wait on a condition variable.
+  *
+@@ -262,10 +295,10 @@ COBALT_IMPL(int, pthread_cond_wait, (pthread_cond_t *cond, pthread_mutex_t *mute
+ 	if (_mx->magic != COBALT_MUTEX_MAGIC)
+ 		return EINVAL;
+ 
+-	if (_cnd->magic != COBALT_COND_MAGIC)
+-		goto autoinit;
++	err = _cobalt_cond_autoinit((union cobalt_cond_union *)cond);
++	if (err)
++		return err;
+ 
+-  cont:
+ 	if (_mx->attr.type == PTHREAD_MUTEX_ERRORCHECK) {
+ 		xnhandle_t cur = cobalt_get_current();
+ 
+@@ -297,12 +330,6 @@ COBALT_IMPL(int, pthread_cond_wait, (pthread_cond_t *cond, pthread_mutex_t *mute
+ 	pthread_testcancel();
+ 
+ 	return -err ?: -c.err;
+-
+-  autoinit:
+-	err = cobalt_cond_autoinit(cond);
+-	if (err)
+-		return err;
+-	goto cont;
+ }
+ 
+ /**
+@@ -357,10 +384,10 @@ COBALT_IMPL(int, pthread_cond_timedwait, (pthread_cond_t *cond,
+ 	if (_mx->magic != COBALT_MUTEX_MAGIC)
+ 		return EINVAL;
+ 
+-	if (_cnd->magic != COBALT_COND_MAGIC)
+-		goto autoinit;
++	err = _cobalt_cond_autoinit((union cobalt_cond_union *)cond);
++	if (err)
++		return err;
+ 
+-  cont:
+ 	if (_mx->attr.type == PTHREAD_MUTEX_ERRORCHECK) {
+ 		xnhandle_t cur = cobalt_get_current();
+ 
+@@ -391,12 +418,6 @@ COBALT_IMPL(int, pthread_cond_timedwait, (pthread_cond_t *cond,
+ 	pthread_testcancel();
+ 
+ 	return -err ?: -c.err;
+-
+-  autoinit:
+-	err = cobalt_cond_autoinit(cond);
+-	if (err)
+-		return err;
+-	goto cont;
+ }
+ 
+ /**
+@@ -431,10 +452,10 @@ COBALT_IMPL(int, pthread_cond_signal, (pthread_cond_t *cond))
+ 	__u32 flags;
+ 	int err;
+ 
+-	if (_cnd->magic != COBALT_COND_MAGIC)
+-		goto autoinit;
++	err = _cobalt_cond_autoinit((union cobalt_cond_union *)cond);
++	if (err)
++		return err;
+ 
+-  cont:
+ 	mutex_state = get_mutex_state(_cnd);
+ 	if (mutex_state == NULL)
+ 		return 0;	/* Fast path, no waiter. */
+@@ -455,12 +476,6 @@ COBALT_IMPL(int, pthread_cond_signal, (pthread_cond_t *cond))
+ 		cond_state->pending_signals = pending_signals + 1;
+ 
+ 	return 0;
+-
+-  autoinit:
+-	err = cobalt_cond_autoinit(cond);
+-	if (err)
+-		return err;
+-	goto cont;
+ }
+ 
+ /**
+@@ -491,10 +506,10 @@ COBALT_IMPL(int, pthread_cond_broadcast, (pthread_cond_t *cond))
+ 	__u32 flags;
+ 	int err;
+ 
+-	if (_cnd->magic != COBALT_COND_MAGIC)
+-		goto autoinit;
++	err = _cobalt_cond_autoinit((union cobalt_cond_union *)cond);
++	if (err)
++		return err;
+ 
+-  cont:
+ 	mutex_state = get_mutex_state(_cnd);
+ 	if (mutex_state == NULL)
+ 		return 0;
+@@ -513,12 +528,6 @@ COBALT_IMPL(int, pthread_cond_broadcast, (pthread_cond_t *cond))
+ 	cond_state->pending_signals = ~0U;
+ 
+ 	return 0;
+-
+-  autoinit:
+-	err = cobalt_cond_autoinit(cond);
+-	if (err)
+-		return err;
+-	goto cont;
+ }
+ 
+ /**
 -- 
-2.16.4
+2.20.1
 
--- 
-Siemens AG, Corporate Technology, CT RDA IOT SES-DE
-Corporate Competence Center Embedded Linux
 
