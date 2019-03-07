@@ -1,8 +1,7 @@
 From: Norbert Lange <nolange79@gmail.com>
-Subject: [PATCH 2/5] libcobalt: improve documentation regarding mutex
- initializers
-Date: Thu,  7 Mar 2019 14:21:56 +0100
-Message-Id: <20190307132159.31206-2-norbert.lange@andritz.com>
+Subject: [PATCH 3/5] libcobalt: improve condvar autoinit support
+Date: Thu,  7 Mar 2019 14:21:57 +0100
+Message-Id: <20190307132159.31206-3-norbert.lange@andritz.com>
 In-Reply-To: <20190307132159.31206-1-norbert.lange@andritz.com>
 References: <20190307132159.31206-1-norbert.lange@andritz.com>
 MIME-Version: 1.0
@@ -17,30 +16,197 @@ List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: xenomai@xenomai.org
 
+contrary to some comments, condvars are automatically
+initialised on signal/wait.
+Correct the destroy method to not report an
+error on such condvars.
+
+Check whether the condition variable has the
+static initializer is now more strict.
+
 Signed-off-by: Norbert Lange <norbert.lange@andritz.com>
 ---
- lib/cobalt/mutex.c | 8 ++++++--
- 1 file changed, 6 insertions(+), 2 deletions(-)
+ lib/cobalt/cond.c | 93 ++++++++++++++++++++++++++---------------------
+ 1 file changed, 51 insertions(+), 42 deletions(-)
 
-diff --git a/lib/cobalt/mutex.c b/lib/cobalt/mutex.c
-index be9f6ed80..125981d40 100644
---- a/lib/cobalt/mutex.c
-+++ b/lib/cobalt/mutex.c
-@@ -49,8 +49,12 @@
-  * By default, Cobalt mutexes are of the normal type, use no
-  * priority protocol and may not be shared between several processes.
+diff --git a/lib/cobalt/cond.c b/lib/cobalt/cond.c
+index 00a201855..92eb230ff 100644
+--- a/lib/cobalt/cond.c
++++ b/lib/cobalt/cond.c
+@@ -142,6 +142,42 @@ COBALT_IMPL(int, pthread_cond_init, (pthread_cond_t *cond,
+ 	return 0;
+ }
+ 
++static int __attribute__((cold)) _cobalt_cond_autoinit_type(const pthread_cond_t *cond)
++{
++	static const pthread_cond_t cond_initializers[] = {
++		PTHREAD_COND_INITIALIZER
++	};
++	static const int cond_types[] =
++	{
++		0
++	};
++
++	unsigned i = sizeof(cond_types) / sizeof(cond_types[0]);
++	while (i-- > 0)
++	{
++		if (memcmp(cond, &cond_initializers[i], sizeof(cond_initializers[0])) == 0)
++			return cond_types[i];
++	}
++	return -1;
++}
++
++static int __attribute__((cold)) _cobalt_cond_doautoinit(union cobalt_cond_union *ucond)
++{
++	int type;
++	type = _cobalt_cond_autoinit_type(&ucond->native_cond);
++	if (type < 0)
++		return EINVAL;
++
++	return __COBALT(pthread_cond_init(&ucond->native_cond, NULL));
++}
++
++static inline int _cobalt_cond_autoinit(union cobalt_cond_union *ucond)
++{
++	if (unlikely(ucond->shadow_cond.magic != COBALT_COND_MAGIC))
++		return _cobalt_cond_doautoinit(ucond);
++	return 0;
++}
++
+ /**
+  * @fn int pthread_cond_destroy(pthread_cond_t *cond)
+  * @brief Destroy a condition variable
+@@ -170,6 +206,9 @@ COBALT_IMPL(int, pthread_cond_destroy, (pthread_cond_t *cond))
+ {
+ 	struct cobalt_cond_shadow *_cond = &((union cobalt_cond_union *)cond)->shadow_cond;
+ 
++	if (unlikely(_cond->magic != COBALT_COND_MAGIC))
++		return (_cobalt_cond_autoinit_type(cond) < 0) ? EINVAL : 0;
++
+ 	return -XENOMAI_SYSCALL1( sc_cobalt_cond_destroy, _cond);
+ }
+ 
+@@ -193,12 +232,6 @@ static void __pthread_cond_cleanup(void *data)
+ 	c->mutex->lockcnt = c->count;
+ }
+ 
+-static int __attribute__((cold)) cobalt_cond_autoinit(pthread_cond_t *cond)
+-{
+-	return __COBALT(pthread_cond_init(cond, NULL));
+-}
+-
+-
+ /**
+  * Wait on a condition variable.
   *
-- * Note that only pthread_mutex_init() may be used to initialize a mutex, using
-- * the static initializer @a PTHREAD_MUTEX_INITIALIZER is not supported.
-+ * Note that pthread_mutex_init() should be used to initialize a mutex, using
-+ * the static initializer @a PTHREAD_MUTEX_INITIALIZER will delay the
-+ * initialization to the first method called on the mutex and will
-+ * most likely introduce switches to secondary mode.
-+ * The documentation (and specififcally api-tags) of the mutex services assumes
-+ * a mutex was explicitely initialised with pthread_mutex_init().
-  *
-  *@{
-  */
+@@ -262,10 +295,10 @@ COBALT_IMPL(int, pthread_cond_wait, (pthread_cond_t *cond, pthread_mutex_t *mute
+ 	if (_mx->magic != COBALT_MUTEX_MAGIC)
+ 		return EINVAL;
+ 
+-	if (_cnd->magic != COBALT_COND_MAGIC)
+-		goto autoinit;
++	err = _cobalt_cond_autoinit((union cobalt_cond_union *)cond);
++	if (err)
++		return err;
+ 
+-  cont:
+ 	if (_mx->attr.type == PTHREAD_MUTEX_ERRORCHECK) {
+ 		xnhandle_t cur = cobalt_get_current();
+ 
+@@ -297,12 +330,6 @@ COBALT_IMPL(int, pthread_cond_wait, (pthread_cond_t *cond, pthread_mutex_t *mute
+ 	pthread_testcancel();
+ 
+ 	return -err ?: -c.err;
+-
+-  autoinit:
+-	err = cobalt_cond_autoinit(cond);
+-	if (err)
+-		return err;
+-	goto cont;
+ }
+ 
+ /**
+@@ -357,10 +384,10 @@ COBALT_IMPL(int, pthread_cond_timedwait, (pthread_cond_t *cond,
+ 	if (_mx->magic != COBALT_MUTEX_MAGIC)
+ 		return EINVAL;
+ 
+-	if (_cnd->magic != COBALT_COND_MAGIC)
+-		goto autoinit;
++	err = _cobalt_cond_autoinit((union cobalt_cond_union *)cond);
++	if (err)
++		return err;
+ 
+-  cont:
+ 	if (_mx->attr.type == PTHREAD_MUTEX_ERRORCHECK) {
+ 		xnhandle_t cur = cobalt_get_current();
+ 
+@@ -391,12 +418,6 @@ COBALT_IMPL(int, pthread_cond_timedwait, (pthread_cond_t *cond,
+ 	pthread_testcancel();
+ 
+ 	return -err ?: -c.err;
+-
+-  autoinit:
+-	err = cobalt_cond_autoinit(cond);
+-	if (err)
+-		return err;
+-	goto cont;
+ }
+ 
+ /**
+@@ -431,10 +452,10 @@ COBALT_IMPL(int, pthread_cond_signal, (pthread_cond_t *cond))
+ 	__u32 flags;
+ 	int err;
+ 
+-	if (_cnd->magic != COBALT_COND_MAGIC)
+-		goto autoinit;
++	err = _cobalt_cond_autoinit((union cobalt_cond_union *)cond);
++	if (err)
++		return err;
+ 
+-  cont:
+ 	mutex_state = get_mutex_state(_cnd);
+ 	if (mutex_state == NULL)
+ 		return 0;	/* Fast path, no waiter. */
+@@ -455,12 +476,6 @@ COBALT_IMPL(int, pthread_cond_signal, (pthread_cond_t *cond))
+ 		cond_state->pending_signals = pending_signals + 1;
+ 
+ 	return 0;
+-
+-  autoinit:
+-	err = cobalt_cond_autoinit(cond);
+-	if (err)
+-		return err;
+-	goto cont;
+ }
+ 
+ /**
+@@ -491,10 +506,10 @@ COBALT_IMPL(int, pthread_cond_broadcast, (pthread_cond_t *cond))
+ 	__u32 flags;
+ 	int err;
+ 
+-	if (_cnd->magic != COBALT_COND_MAGIC)
+-		goto autoinit;
++	err = _cobalt_cond_autoinit((union cobalt_cond_union *)cond);
++	if (err)
++		return err;
+ 
+-  cont:
+ 	mutex_state = get_mutex_state(_cnd);
+ 	if (mutex_state == NULL)
+ 		return 0;
+@@ -513,12 +528,6 @@ COBALT_IMPL(int, pthread_cond_broadcast, (pthread_cond_t *cond))
+ 	cond_state->pending_signals = ~0U;
+ 
+ 	return 0;
+-
+-  autoinit:
+-	err = cobalt_cond_autoinit(cond);
+-	if (err)
+-		return err;
+-	goto cont;
+ }
+ 
+ /**
 -- 
 2.20.1
 
