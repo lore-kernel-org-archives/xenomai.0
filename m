@@ -1,13 +1,14 @@
-Subject: Re: [PATCH] travis: add more build options
-References: <20190402093026.15074-1-roman.stratiienko@globallogic.com>
-From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <53b2e765-a729-1911-747a-d4ee3f2f80f0@siemens.com>
-Date: Tue, 2 Apr 2019 12:39:21 +0200
+Date: Fri, 08 Mar 2019 14:07:26 +0000
+From: Jeff Webb <w1@codecraftsmen.org>
+Reply-To: Jeff Webb <w1@codecraftsmen.org>
+Subject: Re: INTR-REMAP error with UDD driver
+Message-ID: <Mtsj7WK6Smi457BA0VbXiS2OruDJeJ4CvnxF51uGtYcZGGtpR5cCZayoFwt_bxbfxqAvU56y7nmrNxAoT6RthUqGsS1lTYnUDU4vC_3P4Fw=@codecraftsmen.org>
+In-Reply-To: <46f899f8-8e3a-8ad5-77d3-5ed0bbc2c546@siemens.com>
+References: <SVZrPK0MQbayn-KPZ4wIvVLcbdluegH0Vxlth0h7DnkST5oo2K5_0Nu6vd-FBcRz3cYtRj5Jl9Wp2nTHSCp-udTCw2_fAcY--f7JNMVUHrg=@protonmail.com>
+ <46f899f8-8e3a-8ad5-77d3-5ed0bbc2c546@siemens.com>
 MIME-Version: 1.0
-In-Reply-To: <20190402093026.15074-1-roman.stratiienko@globallogic.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,146 +17,74 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: roman.stratiienko@globallogic.com, xenomai@xenomai.org
+To: Jan Kiszka <jan.kiszka@siemens.com>
+Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On 02.04.19 11:30, roman.stratiienko--- via Xenomai wrote:
-> From: Roman Stratiienko <roman.stratiienko@globallogic.com>
-> 
-> Changes are made by enabling all xenomai-related configs using
-> menuconfig for arm kernel, then exported with savedefconfig command.
-> 
-> Other missing and removed options are turned on implicitly.
-> 
+On Friday, March 8, 2019 1:14 AM, Jan Kiszka <jan.kiszka@siemens.com> wrote=
+:
 
-Very good. That was on my to-do list as well.
+> On 08.03.19 02:35, Jeff Webb via Xenomai wrote:
+>
+> > I have implemented a simple UDD mini-driver (interrupt handler) and an =
+associated Xenomai userspace test program. This pair of programs works as i=
+ntended on one machine. When I tried running the same programs on another m=
+achine, I got this error when the first interrupt occurred:
+> > kernel: [ 75.122305] DMAR: DRHD: handling fault status reg 2
+> > kernel: [ 75.123175] DMAR: [INTR-REMAP] Request device [f0:1f.0] fault =
+index ee00 [fault reason 37] Blocked a compatibility format interrupt reque=
+st
+>
+> This means the device is under IOMMU interrupt remapping regime, but it w=
+as
+> programmed to use a standard MSI/MSI-X request, rather than requesting th=
+at
+> parameters (address/data tuple) from the Linux interrupt management layer=
+ that
+> will assign a remapping slot and hand out the right values. Now you inter=
+rupt is
+> stuck in the filter.
+>
+> Before suggesting the workaround/hack to disable interrupt remapping: How=
+ did
+> you program MSI/-X? Via proper Linux pci_* helpers?
 
-> Signed-off-by: Roman Stratiienko <roman.stratiienko@globallogic.com>
-> ---
-> After this commit 3/4 tasks fails.
+The PCI card I am working with does not implement MSI interrupts, but just =
+uses the legacy interrupt pin A.  It's confusing to me that this error is a=
+ssociated with MSI.  Since this behavior is slot-dependent, I figured at fi=
+rst that the error is from another device on the same interrupt line, but I=
+ get the same error on several different slots.  There is only one slot whe=
+re things work as expected.
 
-Which exactly fails?
+Thanks for the response,
 
-Jan
+-Jeff
 
-> 
->   .travis.yml | 92 +++++++++++++++++++++++++++++++++++++++++------------
->   1 file changed, 71 insertions(+), 21 deletions(-)
-> 
-> diff --git a/.travis.yml b/.travis.yml
-> index 889721763..bddf2ace1 100644
-> --- a/.travis.yml
-> +++ b/.travis.yml
-> @@ -51,36 +51,86 @@ before_script:
->     - make -j $(nproc) ${KERNEL_DEFCONFIG}
->     - ./scripts/config -e IPIPE
->     - ./scripts/config -e XENOMAI
-> +  - ./scripts/config -e XENO_OPT_SCHED_CLASSES
-> +  - ./scripts/config -e XENO_OPT_SCHED_WEAK
-> +  - ./scripts/config -e XENO_OPT_SCHED_TP
-> +  - ./scripts/config -e XENO_OPT_SCHED_SPORADIC
-> +  - ./scripts/config -e XENO_OPT_SCHED_QUOTA
-> +  - ./scripts/config -e XENO_OPT_SHIRQ
-> +  - ./scripts/config -e XENO_OPT_SCALABLE_SCHED
-> +  - ./scripts/config -e XENO_OPT_DEBUG
-> +  - ./scripts/config -e XENO_OPT_DEBUG_COBALT
-> +  - ./scripts/config -e XENO_OPT_DEBUG_MEMORY
-> +  - ./scripts/config -e XENO_OPT_DEBUG_CONTEXT
-> +  - ./scripts/config -e XENO_OPT_DEBUG_USER
-> +  - ./scripts/config -e XENO_OPT_DEBUG_POSIX_SYNCHRO
-> +  - ./scripts/config -e XENO_OPT_DEBUG_LEGACY
-> +  - ./scripts/config -e XENO_OPT_DEBUG_TRACE_RELAX
-> +  - ./scripts/config -e XENO_DRIVERS_16550A
-> +  - ./scripts/config -e XENO_DRIVERS_16550A_ANY
-> +  - ./scripts/config -e XENO_DRIVERS_16550A_PCI
-> +  - ./scripts/config -e XENO_DRIVERS_16550A_PCI_MOXA
-> +  - ./scripts/config -e XENO_DRIVERS_IMX_UART
-> +  - ./scripts/config -e XENO_DRIVERS_RTDMTEST
-> +  - ./scripts/config -e XENO_DRIVERS_CAN
-> +  - ./scripts/config -e XENO_DRIVERS_CAN_LOOPBACK
-> +  - ./scripts/config -e XENO_DRIVERS_CAN_VIRT
-> +  - ./scripts/config -e XENO_DRIVERS_CAN_FLEXCAN
-> +  - ./scripts/config -e XENO_DRIVERS_CAN_SJA1000
-> +  - ./scripts/config -e XENO_DRIVERS_CAN_SJA1000_ISA
-> +  - ./scripts/config -e XENO_DRIVERS_CAN_SJA1000_MEM
-> +  - ./scripts/config -e XENO_DRIVERS_CAN_SJA1000_PEAK_PCI
-> +  - ./scripts/config -e XENO_DRIVERS_CAN_SJA1000_IXXAT_PCI
-> +  - ./scripts/config -e XENO_DRIVERS_CAN_SJA1000_ADV_PCI
-> +  - ./scripts/config -e XENO_DRIVERS_CAN_SJA1000_PLX_PCI
-> +  - ./scripts/config -e XENO_DRIVERS_CAN_SJA1000_EMS_PCI
-> +  - ./scripts/config -e XENO_DRIVERS_CAN_SJA1000_ESD_PCI
-> +  - ./scripts/config -e XENO_DRIVERS_CAN_SJA1000_PEAK_DNG
-> +  - ./scripts/config -m XENO_DRIVERS_NET
-> +  - ./scripts/config -e XENO_DRIVERS_RTNET_CHECKED
-> +  - ./scripts/config -e XENO_DRIVERS_NET_ETH_P_ALL
-> +  - ./scripts/config -e XENO_DRIVERS_NET_RTIPV4_NETROUTING
-> +  - ./scripts/config -e XENO_DRIVERS_NET_RTIPV4_ROUTER
-> +  - ./scripts/config -e XENO_DRIVERS_NET_RTIPV4_DEBUG
-> +  - ./scripts/config -m XENO_DRIVERS_NET_RTIPV4_TCP
-> +  - ./scripts/config -e XENO_DRIVERS_NET_RTIPV4_TCP_ERROR_INJECTION
-> +  - ./scripts/config -m XENO_DRIVERS_NET_NOMAC
-> +  - ./scripts/config -e XENO_DRIVERS_NET_RTCFG_DEBUG
-> +  - ./scripts/config -m XENO_DRIVERS_NET_DRV_PCNET32
-> +  - ./scripts/config -m XENO_DRIVERS_NET_DRV_TULIP
-> +  - ./scripts/config -e XENO_DRIVERS_NET_DRV_EEPRO100_DBG
-> +  - ./scripts/config -m XENO_DRIVERS_NET_DRV_E1000E
-> +  - ./scripts/config -m XENO_DRIVERS_NET_DRV_NATSEMI
-> +  - ./scripts/config -m XENO_DRIVERS_NET_DRV_VIA_RHINE
-> +  - ./scripts/config -m XENO_DRIVERS_NET_DRV_IGB
-> +  - ./scripts/config -m XENO_DRIVERS_NET_DRV_R8169
-> +  - ./scripts/config -m XENO_DRIVERS_NET_DRV_SMC91111
-> +  - ./scripts/config -e XENO_DRIVERS_NET_EXP_DRIVERS
-> +  - ./scripts/config -m XENO_DRIVERS_NET_DRV_3C59X
-> +  - ./scripts/config -m XENO_DRIVERS_NET_DRV_E1000_NEW
-> +  - ./scripts/config -m XENO_DRIVERS_NET_DRV_RT2500
-> +  - ./scripts/config -m XENO_DRIVERS_NET_ADDON_RTCAP
-> +  - ./scripts/config -m XENO_DRIVERS_NET_ADDON_PROXY
-> +  - ./scripts/config -e XENO_DRIVERS_NET_ADDON_PROXY_ARP
->     - ./scripts/config -e XENO_DRIVERS_ANALOGY
->     - ./scripts/config -e XENO_DRIVERS_ANALOGY_DEBUG
->     - ./scripts/config -e XENO_DRIVERS_ANALOGY_DEBUG_FTRACE
-> -  - ./scripts/config -e XENO_DRIVERS_ANALOGY_8255
-> -  - ./scripts/config -e XENO_DRIVERS_ANALOGY_PARPORT
-> -  - ./scripts/config -e XENO_DRIVERS_ANALOGY_NI_MITE
-> -  - ./scripts/config -e XENO_DRIVERS_ANALOGY_NI_TIO
-> -  - ./scripts/config -e XENO_DRIVERS_ANALOGY_NI_MIO
-> +  - ./scripts/config -e XENO_DRIVERS_ANALOGY_FAKE
->     - ./scripts/config -e XENO_DRIVERS_ANALOGY_NI_PCIMIO
-> -  - ./scripts/config -e XENO_DRIVERS_ANALOGY_NI_670x
-> -  - ./scripts/config -e XENO_DRIVERS_ANALOGY_NI_660x
->     - ./scripts/config -e XENO_DRIVERS_ANALOGY_S526
-> -  - ./scripts/config -e XENO_DRIVERS_ANALOGY_FAKE
-> -  - ./scripts/config -e XENO_DRIVERS_AUTOTUNE
-> -  - ./scripts/config -e XENO_DRIVERS_CAN
-> -  - ./scripts/config -e XENO_DRIVERS_CAN_DEBUG
-> -  - ./scripts/config -e XENO_DRIVERS_CAN_LOOPBACK
-> -  - ./scripts/config -e XENO_DRIVERS_CAN_BUS_ERR
-> -  - ./scripts/config -e XENO_DRIVERS_CAN_VIRT
-> -  - ./scripts/config -e XENO_DRIVERS_CAN_FLEXCAN
-> +  - ./scripts/config -e XENO_DRIVERS_RTIPC
-> +  - ./scripts/config -e XENO_DRIVERS_UDD
->     - ./scripts/config -e XENO_DRIVERS_GPIO
-> +  - ./scripts/config -e XENO_DRIVERS_GPIO_BCM2835
-> +  - ./scripts/config -e XENO_DRIVERS_GPIO_MXC
->     - ./scripts/config -e XENO_DRIVERS_GPIO_SUN8I_H3
-> +  - ./scripts/config -e XENO_DRIVERS_GPIO_ZYNQ7000
-> +  - ./scripts/config -e XENO_DRIVERS_GPIO_XILINX
->     - ./scripts/config -e XENO_DRIVERS_GPIO_DEBUG
->     - ./scripts/config -e XENO_DRIVERS_GPIOPWM
-> -  - ./scripts/config -e XENO_DRIVERS_RTIPC
-> -  - ./scripts/config -e XENO_DRIVERS_NET
-> -  - ./scripts/config -e XENO_DRIVERS_16550A
-> -  - ./scripts/config -e XENO_DRIVERS_SPI
-> -  - ./scripts/config -e XENO_DRIVERS_TIMERBENCH
-> -  - ./scripts/config -e XENO_DRIVERS_UDD
-> +  - ./scripts/config -e XENO_DRIVERS_SPI_BCM2835
-> +  - ./scripts/config -e XENO_DRIVERS_SPI_SUN6I
-> +  - ./scripts/config -e XENO_DRIVERS_SPI_DEBUG
->   
->     - popd
->   
-> 
+>
+> Jan
+>
+> > I would guess that the [f0:1f.0] in the message is a PCI bus address, b=
+ut I don't see this via lspci. The closest match is:
+> > 00:1f.0 ISA bridge [0601]: Intel Corporation Q67 Express Chipset LPC Co=
+ntroller [8086:1c4e] (rev 05)
+> > After the first attempt, I see no more of these messages until I reboot=
+, but the UDD driver never receives an interrupt in any case.
+> > I tried moving my PCI card to five different slots, and finally found o=
+ne where everything work properly on the second machine. I can at continue =
+to make progress using the working slot, but I would really like to resolve=
+ the issue with the other slots. Does anyone have any idea what to try next=
+?
+> > I am using these sources:
+> > linux-4.14.89.tar
+> > ipipe-core-4.14.89-x86-2.patch
+> > xenomai-3.0.8.tar
+> > I have attached the boot log, config, and cpu information.
+> > Thanks,
+> > -Jeff Webb
+>
+> --
+>
+> Siemens AG, Corporate Technology, CT RDA IOT SES-DE
+> Corporate Competence Center Embedded Linux
 
--- 
-Siemens AG, Corporate Technology, CT RDA IOT SES-DE
-Corporate Competence Center Embedded Linux
+
 
