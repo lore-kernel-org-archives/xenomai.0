@@ -1,17 +1,13 @@
-Subject: Re: [PATCH v3] travis: add basic CI support
-References: <20190311143722.21320-1-roman.stratiienko@globallogic.com>
- <20190311143722.21320-2-roman.stratiienko@globallogic.com>
- <ef22da7e-46f1-710c-53a6-4467f88b0db3@siemens.com>
- <326c8b6c-9978-13d7-f637-2841f8adcb31@siemens.com>
- <CAODwZ7uOkXMj0HN+P=_BxFireDqsdsr1dbSo8c5p5FKrPL-fLQ@mail.gmail.com>
+Subject: Re: INTR-REMAP error with UDD driver
+References: <SVZrPK0MQbayn-KPZ4wIvVLcbdluegH0Vxlth0h7DnkST5oo2K5_0Nu6vd-FBcRz3cYtRj5Jl9Wp2nTHSCp-udTCw2_fAcY--f7JNMVUHrg=@protonmail.com>
 From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <07be847f-3ac0-b54f-fd3a-40ee7a827bc0@siemens.com>
-Date: Mon, 18 Mar 2019 15:24:08 +0100
+Message-ID: <46f899f8-8e3a-8ad5-77d3-5ed0bbc2c546@siemens.com>
+Date: Fri, 8 Mar 2019 08:14:33 +0100
 MIME-Version: 1.0
-In-Reply-To: <CAODwZ7uOkXMj0HN+P=_BxFireDqsdsr1dbSo8c5p5FKrPL-fLQ@mail.gmail.com>
-Content-Type: text/plain; charset="utf-8"; format="flowed"
+In-Reply-To: <SVZrPK0MQbayn-KPZ4wIvVLcbdluegH0Vxlth0h7DnkST5oo2K5_0Nu6vd-FBcRz3cYtRj5Jl9Wp2nTHSCp-udTCw2_fAcY--f7JNMVUHrg=@protonmail.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -20,216 +16,45 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Roman Stratiienko <roman.stratiienko@globallogic.com>
-Cc: xenomai@xenomai.org
+To: Jeff Webb <jeff.webb@protonmail.com>, "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On 18.03.19 15:21, Roman Stratiienko wrote:
-> Hello Jan,
+On 08.03.19 02:35, Jeff Webb via Xenomai wrote:
+> I have implemented a simple UDD mini-driver (interrupt handler) and an associated Xenomai userspace test program.  This pair of programs works as intended on one machine.  When I tried running the same programs on another machine, I got this error when the first interrupt occurred:
 > 
-> Build failure is caused by "cobalt: Add sched-quota tracepoints".
-> I had to revert it to continue with testing
+> kernel: [   75.122305] DMAR: DRHD: handling fault status reg 2
+> kernel: [   75.123175] DMAR: [INTR-REMAP] Request device [f0:1f.0] fault index ee00 [fault reason 37] Blocked a compatibility format interrupt request
 > 
 
-Ah, that's a good trace.  We might be missing some include... One minute...
+This means the device is under IOMMU interrupt remapping regime, but it was 
+programmed to use a standard MSI/MSI-X request, rather than requesting that 
+parameters (address/data tuple) from the Linux interrupt management layer that 
+will assign a remapping slot and hand out the right values. Now you interrupt is 
+stuck in the filter.
+
+Before suggesting the workaround/hack to disable interrupt remapping: How did 
+you program MSI/-X? Via proper Linux pci_* helpers?
 
 Jan
 
-> You can check my fork:
-> https://travis-ci.org/devel-opi/xenomai-fork
-> https://github.com/devel-opi/xenomai-fork/commits/v4.20-fixes
+> I would guess that the [f0:1f.0] in the message is a PCI bus address, but I don't see this via lspci.  The closest match is:
 > 
-> I didn't test the commits separately, but they should not cause build fails when 
-> applied one-by-one
+> 00:1f.0 ISA bridge [0601]: Intel Corporation Q67 Express Chipset LPC Controller [8086:1c4e] (rev 05)
 > 
-> If no more comments from your side, then other patches are final
+> After the first attempt, I see no more of these messages until I reboot, but the UDD driver never receives an interrupt in any case.
 > 
-> Regards,
-> Roman
+> I tried moving my PCI card to five different slots, and finally found one where everything work properly on the second machine.  I can at continue to make progress using the working slot, but I would really like to resolve the issue with the other slots.  Does anyone have any idea what to try next?
 > 
-> On Mon, Mar 18, 2019 at 3:25 PM Jan Kiszka <jan.kiszka@siemens.com 
-> <mailto:jan.kiszka@siemens.com>> wrote:
+> I am using these sources:
 > 
->     On 18.03.19 13:59, Jan Kiszka wrote:
->      > On 11.03.19 15:37, roman.stratiienko--- via Xenomai wrote:
->      >> From: Roman Stratiienko <roman.stratiienko@globallogic.com
->     <mailto:roman.stratiienko@globallogic.com>>
->      >>
->      >> Signed-off-by: Roman Stratiienko <roman.stratiienko@globallogic.com
->     <mailto:roman.stratiienko@globallogic.com>>
->      >> ---
->      >>
->      >> Changes since v2
->      >>
->      >> Removed redundand "CONFIG_" prefix
->      >> Added building of the drivers
->      >>
->      >> Currently CAN bus driver build fails on v4.20 and v5.0,
->      >> (https://travis-ci.org/devel-opi/xenomai-fork/builds/504429157)
->      >>
->      >> Please suggest which configs should be also enabled in
->      >> CI to cover as much as possible code lines
->      >>
->      >>   .travis.yml | 99 +++++++++++++++++++++++++++++++++++++++++++++++++++++
->      >>   1 file changed, 99 insertions(+)
->      >>   create mode 100644 .travis.yml
->      >>
->      >> diff --git a/.travis.yml b/.travis.yml
->      >> new file mode 100644
->      >> index 000000000..8d3eba2c3
->      >> --- /dev/null
->      >> +++ b/.travis.yml
->      >> @@ -0,0 +1,99 @@
->      >> +language: c
->      >> +dist: xenial
->      >> +
->      >> +addons:
->      >> +  apt:
->      >> +    packages:
->      >> +      - gcc-aarch64-linux-gnu
->      >> +      - gcc-arm-linux-gnueabihf
->      >> +      - patch
->      >> +      - quilt
->      >> +      - wget
->      >> +
->      >> +env:
->      >> +  global:
->      >> +    - KDIR=/tmp/kernel
->      >> +
->      >> +install:
->      >> +  - if [[ "${KERNEL_VERSION}" == *-rc* ]]; then
->      >> +
->      >>
->     KERNEL_URL=https://git.kernel.org/torvalds/t/linux-${KERNEL_VERSION}.tar.gz
->     <https://git.kernel.org/torvalds/t/linux-$%7BKERNEL_VERSION%7D.tar.gz>;
->      >> +    else
->      >> +
->      >>
->     KERNEL_URL=https://www.kernel.org/pub/linux/kernel/v${KERNEL_VERSION::1}.x/linux-${KERNEL_VERSION}.tar.xz
->     <https://www.kernel.org/pub/linux/kernel/v$%7BKERNEL_VERSION::1%7D.x/linux-$%7BKERNEL_VERSION%7D.tar.xz>;
+> linux-4.14.89.tar
+> ipipe-core-4.14.89-x86-2.patch
+> xenomai-3.0.8.tar
 > 
->      >>
->      >> +    fi
->      >> +  - wget -O kernel.tar.xz ${KERNEL_URL} && mkdir ${KDIR} && tar -C ${KDIR}
->      >> --strip=1 -xf kernel.tar.xz
->      >> +  - wget -O /tmp/ipipe.patch ${IPIPE_URL}
->      >> +
->      >> +before_script:
->      >> +  - case "${ARCH}" in
->      >> +      "arm64") export CROSS_COMPILE=aarch64-linux-gnu-
->      >> +          ;;
->      >> +      "arm"  ) export CROSS_COMPILE=arm-linux-gnueabihf-
->      >> +          ;;
->      >> +      "x86"  ) export CROSS_COMPILE=
->      >> +          ;;
->      >> +    esac
->      >> +  - pushd ${KDIR}
->      >> +  - make -j $(nproc) ${KERNEL_DEFCONFIG}
->      >> +  - ./scripts/config -e IPIPE
->      >> +  - ./scripts/config -e XENOMAI
->      >> +  - ./scripts/config -e XENO_DRIVERS_ANALOGY
->      >> +  - ./scripts/config -e XENO_DRIVERS_ANALOGY_DEBUG
->      >> +  - ./scripts/config -e XENO_DRIVERS_ANALOGY_DEBUG_FTRACE
->      >> +  - ./scripts/config -e XENO_DRIVERS_ANALOGY_8255
->      >> +  - ./scripts/config -e XENO_DRIVERS_ANALOGY_PARPORT
->      >> +  - ./scripts/config -e XENO_DRIVERS_ANALOGY_NI_MITE
->      >> +  - ./scripts/config -e XENO_DRIVERS_ANALOGY_NI_TIO
->      >> +  - ./scripts/config -e XENO_DRIVERS_ANALOGY_NI_MIO
->      >> +  - ./scripts/config -e XENO_DRIVERS_ANALOGY_NI_PCIMIO
->      >> +  - ./scripts/config -e XENO_DRIVERS_ANALOGY_NI_670x
->      >> +  - ./scripts/config -e XENO_DRIVERS_ANALOGY_NI_660x
->      >> +  - ./scripts/config -e XENO_DRIVERS_ANALOGY_S526
->      >> +  - ./scripts/config -e XENO_DRIVERS_ANALOGY_FAKE
->      >> +  - ./scripts/config -e XENO_DRIVERS_AUTOTUNE
->      >> +  - ./scripts/config -e XENO_DRIVERS_CAN
->      >> +  - ./scripts/config -e XENO_DRIVERS_CAN_DEBUG
->      >> +  - ./scripts/config -e XENO_DRIVERS_CAN_LOOPBACK
->      >> +  - ./scripts/config -e XENO_DRIVERS_CAN_BUS_ERR
->      >> +  - ./scripts/config -e XENO_DRIVERS_CAN_VIRT
->      >> +  - ./scripts/config -e XENO_DRIVERS_CAN_FLEXCAN
->      >> +  - ./scripts/config -e XENO_DRIVERS_GPIO
->      >> +  - ./scripts/config -e XENO_DRIVERS_GPIO_SUN8I_H3
->      >> +  - ./scripts/config -e XENO_DRIVERS_GPIO_DEBUG
->      >> +  - ./scripts/config -e XENO_DRIVERS_GPIOPWM
->      >> +  - ./scripts/config -e XENO_DRIVERS_RTIPC
->      >> +  - ./scripts/config -e XENO_DRIVERS_NET
->      >> +  - ./scripts/config -e XENO_DRIVERS_16550A
->      >> +  - ./scripts/config -e XENO_DRIVERS_SPI
->      >> +  - ./scripts/config -e XENO_DRIVERS_TIMERBENCH
->      >> +  - ./scripts/config -e XENO_DRIVERS_UDD
->      >> +
->      >> +  - popd
->      >> +
->      >> +script:
->      >> +  - ./scripts/prepare-kernel.sh --ipipe=/tmp/ipipe.patch --arch=${ARCH}
->      >> --linux=${KDIR}
->      >> +  - cd ${KDIR}
->      >> +  - make -j $(nproc) olddefconfig
->      >> +  - make -j $(nproc) all
->      >> +
->      >> +matrix:
->      >> +  include:
->      >> +    - env:
->      >> +      - ARCH: arm
->      >> +        KERNEL_VERSION: 4.14.85
->      >> +        KERNEL_DEFCONFIG: multi_v7_defconfig
->      >> +        IPIPE_URL:
->      >> https://xenomai.org/downloads/ipipe/v4.x/arm/ipipe-core-4.14.85-arm-6.patch
->      >> +    - env:
->      >> +      - ARCH: arm
->      >> +        KERNEL_VERSION: 4.1.18
->      >> +        KERNEL_DEFCONFIG: multi_v7_defconfig
->      >> +        IPIPE_URL:
->      >>
->     https://xenomai.org/downloads/ipipe/v4.x/arm/older/ipipe-core-4.1.18-arm-9.patch
->      >> +    - env:
->      >> +      - ARCH: x86
->      >> +        KERNEL_VERSION: 4.14.89
->      >> +        KERNEL_DEFCONFIG: x86_64_defconfig
->      >> +        IPIPE_URL:
->      >> https://xenomai.org/downloads/ipipe/v4.x/x86/ipipe-core-4.14.89-x86-2.patch
->      >> +    - env:
->      >> +      - ARCH: x86
->      >> +        KERNEL_VERSION: 4.4.166
->      >> +        KERNEL_DEFCONFIG: i386_defconfig
->      >> +        IPIPE_URL:
->      >> https://xenomai.org/downloads/ipipe/v4.x/x86/ipipe-core-4.4.166-x86-12.patch
->      >>
->      >
->      > Starting to process my backlog with adding this commit to next. I had to
->     create
->      > a mirror in github for that, but now we have
->      >
->      > https://travis-ci.com/xenomai-ci/xenomai
+> I have attached the boot log, config, and cpu information.
 > 
->     Seems we have some tracing-related build issues. I suppose the default configs
->     are without tracing on, and that may trigger some issues.
+> Thanks,
 > 
->     Did you test your commit separately as well?
-> 
->     Regarding the other patches from your queue: Are there any updates pending?
-> 
->     Jan
-> 
->      >
->      > fed by
->      >
->      > https://github.com/xenomai-ci/xenomai
->      >
->      > which is automatically updated when I push to the official repo. When
->     everything
->      > runs smoothly, we likely want to set some links, maybe including a build
->     badge,
->      > in our docs.
->      >
->      > Thanks for starting this!
->      > Jan
->      >
-> 
->     -- 
->     Siemens AG, Corporate Technology, CT RDA IOT SES-DE
->     Corporate Competence Center Embedded Linux
-> 
-> 
+> -Jeff Webb
 
 -- 
 Siemens AG, Corporate Technology, CT RDA IOT SES-DE
