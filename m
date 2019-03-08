@@ -1,7 +1,16 @@
-From: roman.stratiienko@globallogic.com
-Subject: [PATCH] travis: use ccache
-Date: Wed, 20 Mar 2019 18:01:46 +0200
-Message-Id: <20190320160146.4224-1-roman.stratiienko@globallogic.com>
+Subject: Re: x86_64 kernel does not start under qemu
+References: <CAFLxGvyyMEJ3t4K3dShxXMZccXCkuLN=bkTaTKLDugMieFD8ZA@mail.gmail.com>
+ <3942851.pmMsEQ3ikD@blindfold>
+ <77bd8c5c-9961-35f0-e2fd-4c6df8a78a14@siemens.com>
+ <2063425.dnF2CDgauY@blindfold>
+From: Jan Kiszka <jan.kiszka@siemens.com>
+Message-ID: <73309048-fefd-20a4-31ae-1ce41b0fb8a6@siemens.com>
+Date: Fri, 8 Mar 2019 12:28:17 +0100
+MIME-Version: 1.0
+In-Reply-To: <2063425.dnF2CDgauY@blindfold>
+Content-Language: en-US
+Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset="utf-8"; Format="flowed"
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -10,63 +19,50 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
-Cc: Roman Stratiienko <roman.stratiienko@globallogic.com>
+To: Richard Weinberger <richard@nod.at>
+Cc: "henning.schild@siemens.com" <henning.schild@siemens.com>, Lange Norbert <norbert.lange@andritz.com>, "Xenomai (xenomai@xenomai.org)" <xenomai@xenomai.org>
 
-From: Roman Stratiienko <roman.stratiienko@globallogic.com>
-
-This speeds-up travis build
-
-Measurement results (build with ipipe-core-4.14.85-arm-6)
- - Without ccache: 26 min 7 sec
- - With ccache (1st run): 31 min 21 sec
- - With ccache (every next run): 4 min 23 sec
-
-Signed-off-by: Roman Stratiienko <roman.stratiienko@globallogic.com>
----
- .travis.yml | 8 ++++++++
- 1 file changed, 8 insertions(+)
-
-diff --git a/.travis.yml b/.travis.yml
-index c5a9026aa..e40cec51d 100644
---- a/.travis.yml
-+++ b/.travis.yml
-@@ -1,5 +1,6 @@
- language: c
- dist: xenial
-+cache: ccache
- 
- addons:
-   apt:
-@@ -15,6 +16,8 @@ addons:
- env:
-   global:
-     - KDIR=/tmp/kernel
-+    - USE_CCACHE=1
-+    - CCACHE_MAXSIZE=400M
- 
- install:
-   - if [[ "${KERNEL_VERSION}" == *-rc* ]]; then
-@@ -40,6 +43,10 @@ before_script:
-           export CONFIGURE_OPTS="--enable-dlopen-libs --enable-lazy-setsched"
-           ;;
-     esac
-+  - mkdir ~/ccache
-+  - ln -s /usr/bin/ccache ~/ccache/aarch64-linux-gnu-gcc
-+  - ln -s /usr/bin/ccache ~/ccache/arm-linux-gnueabihf-gcc
-+  - export PATH=~/ccache:$PATH
-   - pushd ${KDIR}
-   - make -j $(nproc) ${KERNEL_DEFCONFIG}
-   - ./scripts/config -e IPIPE
-@@ -88,6 +95,7 @@ script:
-   - scripts/bootstrap
-   - ./configure --enable-smp ${CONFIGURE_OPTS}
-   - make -j $(nproc)
-+  - ccache -s
- 
- matrix:
-   include:
--- 
-2.17.1
-
-
+T24gMDguMDMuMTkgMTI6MTksIFJpY2hhcmQgV2VpbmJlcmdlciB3cm90ZToKPiBBbSBNaXR0d29j
+aCwgNi4gTcOkcnogMjAxOSwgMTc6Mzk6MzggQ0VUIHNjaHJpZWIgSmFuIEtpc3prYToKPj4gT24g
+MDYuMDMuMTkgMTY6MzMsIFJpY2hhcmQgV2VpbmJlcmdlciB3cm90ZToKPj4+IEFtIE1pdHR3b2No
+LCA2LiBNw6RyeiAyMDE5LCAxNDo0Mzo1NSBDRVQgc2NocmllYiBKYW4gS2lzemthOgo+Pj4+IE9u
+IDA2LjAzLjE5IDE0OjEwLCBKYW4gS2lzemthIHdyb3RlOgo+Pj4+PiBPbiAwNi4wMy4xOSAxMjoy
+OCwgTGFuZ2UgTm9yYmVydCB2aWEgWGVub21haSB3cm90ZToKPj4+Pj4+IEhlbGxvLAo+Pj4+Pj4K
+Pj4+Pj4+IEkgaGF2ZSBhIHNpbWlsYXIgaXNzdWUgb24gcmVhbCBoYXJkd2FyZSAoY2MgUGhpbGlw
+cGUpLiBDYW4geW91IHRyeSBib290aW5nCj4+Pj4+PiB3aXRoIG5vdHNjZGVhZGxpbmU/Cj4+Pj4+
+Pgo+Pj4+Pgo+Pj4+PiBJIHdvdWxkIGJlIHN1cnByaXNlZCBpZiBpdCdzIHRoYXQ6IFFFTVUgZG9l
+cyBub3QgZW11bGF0ZSB0aGlzIEFQSUMgZmVhdHVyZSwgb25seQo+Pj4+PiBLVk0gZG9lcy4KPj4+
+Pj4KPj4+Pj4gSSBuZWVkIHRvIHJlcHJvZHVjZS4gV2hpY2ggUUVNVSB2ZXJzaW9uPwo+Pj4+Pgo+
+Pj4+Cj4+Pj4gSnVzdCBib290ZWQgY3VycmVudCBpcGlwZS14ODYtNC4xNC55ICg0LjE0LjEwMykg
+aW4gUUVNVSAzLjErIChzb21lIGRldmVsb3BtZW50Cj4+Pj4gc25hcHNob3QpIHdpdGggLXNtcCA0
+IC0gd29ya3MgZmluZS4gQnV0IHRoZXNlIGFyZSBsaWtlbHkgcXVpdGUgYSBmZXcgdmFyaWF0aW9u
+cwo+Pj4+IGZyb20geW91ciBzZXR1cC4KPj4+Cj4+PiBJJ20gb24gcWVtdSAyLjExLjIuCj4+Cj4+
+IFRoYXQgb25lIG1pZ2h0IHN0aWxsIGJlIHNlcmlhbGl6aW5nIFNNUCwgdGh1cyBvbmx5IHVzZSBv
+bmUgY29yZSBvbiB0aGUgaG9zdC4KPiAKPiBXZWxsLCB3aHkgaXMgdGhpcyBhIHByb2JsZW0gZm9y
+IFhlbm9tYWk/Cj4gRG9lcyBpdCBkZWFkbG9jayBpZiB5b3UgaGF2ZSBtb3JlIHRoYW4gb25lIGNw
+dSBhbmQgdGhlc2UgYXJlIG5vdCB0cnVseSBwYXJhbGxlbD8KPiBUaGlzIHNlZW1zIGEgbGl0dGxl
+IG9kZCB0byBtZS4KCkkgdGhlIHBhc3QsIHRoaXMgZGUtcGFyYWxsZWxpemF0aW9uIHRyaWdnZXJl
+ZCByYWNlIGNvbmRpdGlvbnMgbW9yZSBlYXNpbHkgYXMgaXQgd2lkZW5lZCB0aGUgcmFjZSB3aW5k
+b3dzIG1hc3NpdmVseS4gV2hhdGV2ZXIgY2FtZSBvdXQgb2YgaXQgcmVtYWluZWQgYSBYZW5vbWFp
+IG9yIEktcGlwZSBidWcgdGhhdCBjb3VsZCB0aGVvcmV0aWNhbGx5IG9jY3VyIG9uIHJlYWwgaGFy
+ZHdhcmUgYXMgd2VsbC4KCj4gCj4+IEN1cnJlbnRseSB0cnlpbmcgdG8gZW11bGF0ZSB0aGF0IGFz
+IGl0IGNoYW5nZXMgdGltaW5nLgo+IAo+IEp1c3QgcmV0cmllZCB3aXRoIGxhdGVzdCBxZW11ICh2
+My4xLjAtMjQyMS1nOWI3NDhjNWUwNjFiKSwgc2FtZSBwcm9ibGVtLgoKWWVhaCwgSSBzdXNwZWN0
+IHRoZSBrZXJuZWwgY29uZmlnLiBEaWRuJ3QgaGF2ZSB0aW1lIHRvIHRyeSBkZWZjb25maWcgc28g
+ZmFyLgoKPiAgIAo+Pj4gSXMgdGhpcyBwbGFpbiBpcGlwZT8gSnVzdCBmaWd1cmVkIHRoYXQgeW91
+IG5lZWQgdG8gcHJlcGFyZSB0aGUga2VybmVsCj4+PiB3aXRoIFhlbm9tYWkgdG8gdHJpZ2dlciB0
+aGUgcHJvYmxlbS4KPj4+IFhlbm9tYWkgaXMgMy4wLjguCj4+Cj4+IEkgaGF2ZSBYZW5vbWFpIHN0
+YWJsZS92My4wLnggcnVubmluZyBhcyB3ZWxsLgo+IAo+IFdoYXQga2VybmVsIGNvbmZpZyBhcmUg
+eW91IHVzaW5nIGFuZCB3aGF0IGlzIHlvdXIgcWVtdSBjb21tYW5kIGxpbmU/CgpDdXJyZW50bHkg
+dXNlZCBjb25maWcgYXR0YWNoZWQsIGNvbW1hbmQgbGluZToKCnFlbXUtc3lzdGVtLXg4Nl82NCAt
+ZHJpdmUgZmlsZT0vcGF0aC9kaXNrLmltZyxkaXNjYXJkPXVubWFwLGlmPW5vbmUsaWQ9ZGlzayAt
+ZGV2aWNlIGlkZS1oZCxkcml2ZT1kaXNrIC1zbmFwc2hvdCAtbSAxRyAtc2VyaWFsIG1vbjpzdGRp
+byAtcyAtc21wIDQgLW1hY2hpbmUgcTM1LHBpdD1vZmYgLWZzZGV2IGxvY2FsLHBhdGg9L3BhdGgv
+c2hhcmVkLHNlY3VyaXR5X21vZGVsPW5vbmUsaWQ9dmZzIC1kZXZpY2UgdmlydGlvLTlwLXBjaSxh
+ZGRyPTFmLjcsbW91bnRfdGFnPWhvc3QsZnNkZXY9dmZzCgpKYW4KCi0tIApTaWVtZW5zIEFHLCBD
+b3Jwb3JhdGUgVGVjaG5vbG9neSwgQ1QgUkRBIElPVCBTRVMtREUKQ29ycG9yYXRlIENvbXBldGVu
+Y2UgQ2VudGVyIEVtYmVkZGVkIExpbnV4Ci0tLS0tLS0tLS0tLS0tIG5leHQgcGFydCAtLS0tLS0t
+LS0tLS0tLQpBIG5vbi10ZXh0IGF0dGFjaG1lbnQgd2FzIHNjcnViYmVkLi4uCk5hbWU6IC5jb25m
+aWcueHoKVHlwZTogYXBwbGljYXRpb24veC14egpTaXplOiAyMjkzNiBieXRlcwpEZXNjOiBub3Qg
+YXZhaWxhYmxlClVSTDogPGh0dHA6Ly94ZW5vbWFpLm9yZy9waXBlcm1haWwveGVub21haS9hdHRh
+Y2htZW50cy8yMDE5MDMwOC9lMjkzY2U4Zi9hdHRhY2htZW50LmJpbj4K
