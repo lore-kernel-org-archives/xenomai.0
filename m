@@ -1,11 +1,13 @@
+Subject: Re: Question about real-time networking
+References: <5c8232a33fed_@_imoxion.com>
 From: Jan Kiszka <jan.kiszka@siemens.com>
-Subject: [PATCH 6/8] ipipe: Fix output layout of tracer
-Date: Wed, 27 Mar 2019 14:18:05 +0100
-Message-Id: <81d998f526596e75bd5cc903f6d24c45d1579093.1553692686.git.jan.kiszka@siemens.com>
-In-Reply-To: <cover.1553692686.git.jan.kiszka@siemens.com>
-References: <cover.1553692686.git.jan.kiszka@siemens.com>
-In-Reply-To: <cover.1553692686.git.jan.kiszka@siemens.com>
-References: <cover.1553692686.git.jan.kiszka@siemens.com>
+Message-ID: <24a84944-5ade-bdfe-2ed0-3d93be260155@siemens.com>
+Date: Fri, 8 Mar 2019 14:08:36 +0100
+MIME-Version: 1.0
+In-Reply-To: <5c8232a33fed_@_imoxion.com>
+Content-Type: text/plain; charset="utf-8"; format="flowed"
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -14,62 +16,22 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org, Philippe Gerum <rpm@xenomai.org>
+To: =?UTF-8?B?6rmA67OR7KeE?= <geniuskpj@kaist.ac.kr>, Xenomai <xenomai@xenomai.org>
 
-From: Jan Kiszka <jan.kiszka@siemens.com>
+On 08.03.19 10:05, 김병진 via Xenomai wrote:
+> Hello<br>I wanna use tcp or udp for real-time network.<br>i found an example from /home/kraptor/xenomai-v3.0.8/demo/posix/cobalt/eth_p_all<br>But it seems like not using rtnet.<br>https://gitlab.denx.de/Xenomai/xenomai/wikis/RTnet<br>Wiki says that i need to install Rtnet separately.<br>Is it right? I am trying to build rtnet tcp example without install.<br>Cause all function I need is in /xenomai/kernel/drivers/net/stack/<br>But what should I include or link?(cflags or ldflags)<br><br>Is there anyone who can help me?<br><br>Thank you.
+> 
 
-A long time ago (probably in 2.6-times), someone converted spaces to
-tabs, shuffling the layout around this way, and by forgetting to account
-for the multi-domain removal.
+Something is mangling your emails...
 
-Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
----
- kernel/ipipe/tracer.c | 14 +++++++-------
- 1 file changed, 7 insertions(+), 7 deletions(-)
+RTnet is part of Xenomai, no need for a separate installation anymore. Where 
+exactly is our wiki suggesting something different?
 
-diff --git a/kernel/ipipe/tracer.c b/kernel/ipipe/tracer.c
-index 8d58ab143469..2d75199b086b 100644
---- a/kernel/ipipe/tracer.c
-+++ b/kernel/ipipe/tracer.c
-@@ -842,7 +842,7 @@ __ipipe_print_delay(struct seq_file *m, struct ipipe_trace_point *point)
- {
- 	unsigned long delay = 0;
- 	int next;
--	char *mark = "	";
-+	char *mark = "  ";
- 
- 	next = WRAP_POINT_NO(point+1 - print_path->point);
- 
-@@ -916,12 +916,12 @@ static void __ipipe_print_headline(struct seq_file *m)
- 			   " +----- Hard IRQs ('|': locked)\n"
- 			   " |+-- %s\n"
- 			   " ||+- %s%s\n"
--			   " |||			  +---------- "
-+		           " |||                        +---------- "
- 			       "Delay flag ('+': > %d us, '!': > %d us)\n"
--			   " |||			  |	   +- "
-+			   " |||                        |        +- "
- 			       "NMI noise ('N')\n"
--			   " |||			  |	   |\n"
--			   "	  Type	  User Val.   Time    Delay  Function "
-+			   " |||                        |        |\n"
-+			   "    Type    User Val.   Time    Delay  Function "
- 			       "(Parent)\n",
- 			   name[1], name[0],
- 			   " ('*': domain stalled, '+': current, "
-@@ -930,9 +930,9 @@ static void __ipipe_print_headline(struct seq_file *m)
- 	} else
- 		seq_printf(m,
- 			   " +--------------- Hard IRQs ('|': locked)\n"
--			   " |		   +- Delay flag "
-+			   " |             +- Delay flag "
- 			       "('+': > %d us, '!': > %d us)\n"
--			   " |		   |\n"
-+			   " |             |\n"
- 			   "  Type     Time   Function (Parent)\n",
- 			   IPIPE_DELAY_NOTE/1000, IPIPE_DELAY_WARN/1000);
- }
+For rttcp, you need to use the development branch (master).
+
+Jan
+
 -- 
-2.16.4
-
+Siemens AG, Corporate Technology, CT RDA IOT SES-DE
+Corporate Competence Center Embedded Linux
 
