@@ -1,17 +1,14 @@
-Subject: Re: [PATCH v2 10/10] travis: append i-pipe arm-v4.20.7 and arm-v5.0
- to the matrix
-References: <20190306175331.25444-1-roman.stratiienko@globallogic.com>
- <20190306175331.25444-10-roman.stratiienko@globallogic.com>
- <327870d1-b146-e392-7993-6ebb8876c975@siemens.com>
- <CAODwZ7u6JBGjVcJFqM3oF51h4yGA6q7XGYZ4LO=c-buPARbdZA@mail.gmail.com>
-From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <8a5dbb6d-5a74-860a-f81e-8ddd41d5e270@siemens.com>
-Date: Tue, 19 Mar 2019 19:18:27 +0100
+From: Richard Weinberger <richard@nod.at>
+Subject: Re: x86_64 kernel does not start under qemu
+Date: Fri, 08 Mar 2019 12:19:46 +0100
+Message-ID: <2063425.dnF2CDgauY@blindfold>
+In-Reply-To: <77bd8c5c-9961-35f0-e2fd-4c6df8a78a14@siemens.com>
+References: <CAFLxGvyyMEJ3t4K3dShxXMZccXCkuLN=bkTaTKLDugMieFD8ZA@mail.gmail.com>
+ <3942851.pmMsEQ3ikD@blindfold>
+ <77bd8c5c-9961-35f0-e2fd-4c6df8a78a14@siemens.com>
 MIME-Version: 1.0
-In-Reply-To: <CAODwZ7u6JBGjVcJFqM3oF51h4yGA6q7XGYZ4LO=c-buPARbdZA@mail.gmail.com>
-Content-Type: text/plain; charset="utf-8"; format="flowed"
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset="iso-8859-1"
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -20,79 +17,58 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Roman Stratiienko <roman.stratiienko@globallogic.com>
-Cc: xenomai@xenomai.org, Philippe Gerum <rpm@xenomai.org>
+To: Jan Kiszka <jan.kiszka@siemens.com>
+Cc: "henning.schild@siemens.com" <henning.schild@siemens.com>, Lange Norbert <norbert.lange@andritz.com>, "Xenomai (xenomai@xenomai.org)" <xenomai@xenomai.org>
 
-On 19.03.19 18:43, Roman Stratiienko wrote:
-> Some point about repository-based checking VS patch based.
-> CI is very useful for checking regressions caused by particuar commits. But when 
-> mixing repositories we risk to get interferentions between them.
-> So it might be better to have separate CI for each ipipe repository.
+Am Mittwoch, 6. M=E4rz 2019, 17:39:38 CET schrieb Jan Kiszka:
+> On 06.03.19 16:33, Richard Weinberger wrote:
+> > Am Mittwoch, 6. M=E4rz 2019, 14:43:55 CET schrieb Jan Kiszka:
+> >> On 06.03.19 14:10, Jan Kiszka wrote:
+> >>> On 06.03.19 12:28, Lange Norbert via Xenomai wrote:
+> >>>> Hello,
+> >>>>
+> >>>> I have a similar issue on real hardware (cc Philippe). Can you try b=
+ooting
+> >>>> with notscdeadline?
+> >>>>
+> >>>
+> >>> I would be surprised if it's that: QEMU does not emulate this APIC fe=
+ature, only
+> >>> KVM does.
+> >>>
+> >>> I need to reproduce. Which QEMU version?
+> >>>
+> >>
+> >> Just booted current ipipe-x86-4.14.y (4.14.103) in QEMU 3.1+ (some dev=
+elopment
+> >> snapshot) with -smp 4 - works fine. But these are likely quite a few v=
+ariations
+> >> from your setup.
+> >=20
+> > I'm on qemu 2.11.2.
+>=20
+> That one might still be serializing SMP, thus only use one core on the ho=
+st.=20
 
-We need both in the end. But for stable I-pipe baselines, we could simply add 
-"latest tag" mode to the CI system, besides "latest branch head". Both could 
-pull from the same git repos.
+Well, why is this a problem for Xenomai?
+Does it deadlock if you have more than one cpu and these are not truly para=
+llel?
+This seems a little odd to me.
 
-Note that I also do not want to continuously tune the CI script because we 
-released a new stable kernel patch somewhere.
+> Currently trying to emulate that as it changes timing.
 
-Jan
+Just retried with latest qemu (v3.1.0-2421-g9b748c5e061b), same problem.
+=20
+> > Is this plain ipipe? Just figured that you need to prepare the kernel
+> > with Xenomai to trigger the problem.
+> > Xenomai is 3.0.8.
+>=20
+> I have Xenomai stable/v3.0.x running as well.
 
-> 
-> вт, 19 мар. 2019 г., 16:56 Jan Kiszka <jan.kiszka@siemens.com 
-> <mailto:jan.kiszka@siemens.com>>:
-> 
->     On 06.03.19 18:53, roman.stratiienko--- via Xenomai wrote:
->      > From: Roman Stratiienko <roman.stratiienko@globallogic.com
->     <mailto:roman.stratiienko@globallogic.com>>
->      >
->      > Signed-off-by: Roman Stratiienko <roman.stratiienko@globallogic.com
->     <mailto:roman.stratiienko@globallogic.com>>
->      > ---
->      >   .travis.yml | 10 ++++++++++
->      >   1 file changed, 10 insertions(+)
->      >
->      > diff --git a/.travis.yml b/.travis.yml
->      > index 24889ca5f..ab23b745d 100644
->      > --- a/.travis.yml
->      > +++ b/.travis.yml
->      > @@ -46,6 +46,16 @@ script:
->      >
->      >   matrix:
->      >     include:
->      > +    - env:
->      > +      - ARCH: arm
->      > +        KERNEL_VERSION: 5.0
->      > +        KERNEL_DEFCONFIG: multi_v7_defconfig
->      > +        IPIPE_URL:
->     https://github.com/devel-opi/linux-ipipe-arm-porting/releases/download/v5.0-draft1/ipipe-arm-v5.0-draft.patch
->      > +    - env:
->      > +      - ARCH: arm
->      > +        KERNEL_VERSION: 4.20.7
->      > +        KERNEL_DEFCONFIG: multi_v7_defconfig
->      > +        IPIPE_URL:
->     https://github.com/devel-opi/linux-ipipe-arm-porting/releases/download/draft-v4.20.7/0001-Draft-version-of-ipipe-arm-ported-on-v4.20.7.patch
->      >       - env:
->      >         - ARCH: arm
->      >           KERNEL_VERSION: 4.14.85
->      >
-> 
->     This one should come it via upstream ipipe. In fact, we should drop the
->     patch-based kernel setup, replacing it with git branches. That will also allow
->     including arm64 into the matrix, where we lack a patch release for the only
->     supported kernel version: 4.14.
-> 
->     Applied all other 9 patches in this series to next now.
-> 
->     Thanks,
->     Jan
-> 
->     -- 
->     Siemens AG, Corporate Technology, CT RDA IOT SES-DE
->     Corporate Competence Center Embedded Linux
-> 
+What kernel config are you using and what is your qemu command line?
 
--- 
-Siemens AG, Corporate Technology, CT RDA IOT SES-DE
-Corporate Competence Center Embedded Linux
+Thanks,
+//richard
+
+
 
