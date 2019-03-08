@@ -1,13 +1,14 @@
-Date: Thu, 28 Mar 2019 06:29:36 +0000 (UTC)
-From: Alec Ari <neotheuser@ymail.com>
-Reply-To: Alec Ari <neotheuser@ymail.com>
-Message-ID: <774387327.12429321.1553754576488@mail.yahoo.com>
-In-Reply-To: <201903280941144857760@aliyun.com>
-References: <201903280941144857760@aliyun.com>
-Subject: Re: latency test
+From: Lange Norbert <norbert.lange@andritz.com>
+Subject: RE: smokey's fork tests hangs?
+Date: Fri, 8 Mar 2019 13:47:15 +0000
+Message-ID: <f89e0d85d9ad4c0c9fcd6b65967b2efe@andritz.com>
+References: <930188d381964d3794e4204d7ef2a477@andritz.com>
+ <11bb63cf-9719-0e72-2c97-dafdb3b54da8@siemens.com>
+In-Reply-To: <11bb63cf-9719-0e72-2c97-dafdb3b54da8@siemens.com>
+Content-Language: en-US
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,10 +17,41 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "demon.han@aliyun.com" <demon.han@aliyun.com>, "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Jan Kiszka <jan.kiszka@siemens.com>, "Xenomai (xenomai@xenomai.org)" <xenomai@xenomai.org>
 
-Firefox bumps latency up too, I wonder if the Xenomai pros have any advice on this. Good question! It'd be nice to do video editing and 4K encoding while doing real-time processes too.
-
-
-Alec
-
+DQo+DQo+IE5vdCByZXByb2R1Y2libGUgaGVyZSB3aXRoIHN0YWJsZS8zLjAueCBvciBuZXh0LCBh
+bmQgd2l0aCBpcGlwZS14ODYtNC4xNC55Lg0KPiBXaGF0IGFyZSB5b3VyIHBhcmFtZXRlcnM/DQoN
+Ck5vdCBlbnRpcmVseSB1cHN0cmVhbSwgYnV0IGJhc2VkIG9uIGlwaXBlLWNvcmUtNC4xNC44OS14
+ODYtMiBhbmQgeGVub21haSBtYXN0ZXIsDQp0aGUgZGlmZmVyZW5jZSBpcyBjb250YWluZWQgaW4g
+dGhlIHJ0X2lnYiBkcml2ZXIsIHdoaWNoIGlzIG5vdCBldmVuIGxvYWRlZC4NCkRlZmNvbmZpZyBp
+cyBhdHRhY2hlZC4NCg0KSSBtb3N0bHkgc3VzcGVjdCBnbGliYyBhcyB0aGUgcmVsZXZhbnQgZGlm
+ZmVyZW5jZSwgSSBhbSB1c2luZw0KZ2xpYmMtMi4yOC02OS1nMWU1YzUzMDNhNTIyNzY0ZDdlOWQy
+MzAyYTYwZTRhMzJjZGI5MDJmMS4NCg0KTG9va2luZyBhdCB0aGUgc3RyYWNlIHRoZSBjaGlsZCBw
+cm9jZXNzIDEwMzkgaXMgc3R1Y2sgYXQgRlVURVhfV0FJVF9QUklWQVRFLA0KRG9u4oCZdCByZWFs
+bHkga25vdyBob3cgdG8gdGFja2xlIHRoaXMuDQoNCk5vcmJlcnQNCl9fX19fX19fX19fX19fX19f
+X19fX19fX19fX19fX19fDQoNClRoaXMgbWVzc2FnZSBhbmQgYW55IGF0dGFjaG1lbnRzIGFyZSBz
+b2xlbHkgZm9yIHRoZSB1c2Ugb2YgdGhlIGludGVuZGVkIHJlY2lwaWVudHMuIFRoZXkgbWF5IGNv
+bnRhaW4gcHJpdmlsZWdlZCBhbmQvb3IgY29uZmlkZW50aWFsIGluZm9ybWF0aW9uIG9yIG90aGVy
+IGluZm9ybWF0aW9uIHByb3RlY3RlZCBmcm9tIGRpc2Nsb3N1cmUuIElmIHlvdSBhcmUgbm90IGFu
+IGludGVuZGVkIHJlY2lwaWVudCwgeW91IGFyZSBoZXJlYnkgbm90aWZpZWQgdGhhdCB5b3UgcmVj
+ZWl2ZWQgdGhpcyBlbWFpbCBpbiBlcnJvciBhbmQgdGhhdCBhbnkgcmV2aWV3LCBkaXNzZW1pbmF0
+aW9uLCBkaXN0cmlidXRpb24gb3IgY29weWluZyBvZiB0aGlzIGVtYWlsIGFuZCBhbnkgYXR0YWNo
+bWVudCBpcyBzdHJpY3RseSBwcm9oaWJpdGVkLiBJZiB5b3UgaGF2ZSByZWNlaXZlZCB0aGlzIGVt
+YWlsIGluIGVycm9yLCBwbGVhc2UgY29udGFjdCB0aGUgc2VuZGVyIGFuZCBkZWxldGUgdGhlIG1l
+c3NhZ2UgYW5kIGFueSBhdHRhY2htZW50IGZyb20geW91ciBzeXN0ZW0uDQoNCkFORFJJVFogSFlE
+Uk8gR21iSA0KDQoNClJlY2h0c2Zvcm0vIExlZ2FsIGZvcm06IEdlc2VsbHNjaGFmdCBtaXQgYmVz
+Y2hyw6Rua3RlciBIYWZ0dW5nIC8gQ29ycG9yYXRpb24NCg0KRmlybWVuc2l0ei8gUmVnaXN0ZXJl
+ZCBzZWF0OiBXaWVuDQoNCkZpcm1lbmJ1Y2hnZXJpY2h0LyBDb3VydCBvZiByZWdpc3RyeTogSGFu
+ZGVsc2dlcmljaHQgV2llbg0KDQpGaXJtZW5idWNobnVtbWVyLyBDb21wYW55IHJlZ2lzdHJhdGlv
+bjogRk4gNjE4MzMgZw0KDQpEVlI6IDA2MDUwNzcNCg0KVUlELU5yLjogQVRVMTQ3NTY4MDYNCg0K
+DQpUaGFuayBZb3UNCl9fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fDQotLS0tLS0tLS0t
+LS0tLSBuZXh0IHBhcnQgLS0tLS0tLS0tLS0tLS0KQSBub24tdGV4dCBhdHRhY2htZW50IHdhcyBz
+Y3J1YmJlZC4uLgpOYW1lOiBkZWZjb25maWdfcnRuZXRfc3RhdGljClR5cGU6IGFwcGxpY2F0aW9u
+L29jdGV0LXN0cmVhbQpTaXplOiAxMzM3MyBieXRlcwpEZXNjOiBkZWZjb25maWdfcnRuZXRfc3Rh
+dGljClVSTDogPGh0dHA6Ly94ZW5vbWFpLm9yZy9waXBlcm1haWwveGVub21haS9hdHRhY2htZW50
+cy8yMDE5MDMwOC81YjYyY2FjNS9hdHRhY2htZW50Lm9iaj4KLS0tLS0tLS0tLS0tLS0gbmV4dCBw
+YXJ0IC0tLS0tLS0tLS0tLS0tCkEgbm9uLXRleHQgYXR0YWNobWVudCB3YXMgc2NydWJiZWQuLi4K
+TmFtZTogc3RyYWNlLnRhci54egpUeXBlOiBhcHBsaWNhdGlvbi9vY3RldC1zdHJlYW0KU2l6ZTog
+Mjc0MCBieXRlcwpEZXNjOiBzdHJhY2UudGFyLnh6ClVSTDogPGh0dHA6Ly94ZW5vbWFpLm9yZy9w
+aXBlcm1haWwveGVub21haS9hdHRhY2htZW50cy8yMDE5MDMwOC81YjYyY2FjNS9hdHRhY2htZW50
+LTAwMDEub2JqPgo=
