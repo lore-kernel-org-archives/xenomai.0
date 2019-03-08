@@ -1,10 +1,16 @@
-From: Norbert Lange <nolange79@gmail.com>
-Subject: [PATCH v2 1/5] libcobalt: improve mutex autoinit support
-Date: Thu,  7 Mar 2019 14:31:52 +0100
-Message-Id: <20190307133156.31749-2-norbert.lange@andritz.com>
-In-Reply-To: <20190307133156.31749-1-norbert.lange@andritz.com>
-References: <20190307133156.31749-1-norbert.lange@andritz.com>
+Subject: Re: smokey's fork tests hangs?
+References: <930188d381964d3794e4204d7ef2a477@andritz.com>
+ <11bb63cf-9719-0e72-2c97-dafdb3b54da8@siemens.com>
+ <f89e0d85d9ad4c0c9fcd6b65967b2efe@andritz.com>
+ <1bd89442-cfe3-c324-470d-41dac02d0546@siemens.com>
+ <fc5da5a38d9946eb9bc893b7424fdb6b@andritz.com>
+From: Jan Kiszka <jan.kiszka@siemens.com>
+Message-ID: <18f33f14-0813-a276-5424-08e1fc883aee@siemens.com>
+Date: Fri, 8 Mar 2019 16:22:31 +0100
 MIME-Version: 1.0
+In-Reply-To: <fc5da5a38d9946eb9bc893b7424fdb6b@andritz.com>
+Content-Type: text/plain; charset="utf-8"; format="flowed"
+Content-Language: en-US
 Content-Transfer-Encoding: 8bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
@@ -14,300 +20,65 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
+To: Lange Norbert <norbert.lange@andritz.com>, "Xenomai (xenomai@xenomai.org)" <xenomai@xenomai.org>
 
-contrary to some comments, mutexes are automatically
-initialised on lock/unlock.
-Correct the destroy method to not report an
-error on such mutexes.
+On 08.03.19 15:05, Lange Norbert wrote:
+> 
+> 
+>> -----Original Message-----
+>> From: Jan Kiszka <jan.kiszka@siemens.com>
+>> Sent: Freitag, 8. März 2019 14:59
+>> To: Lange Norbert <norbert.lange@andritz.com>; Xenomai
+>> (xenomai@xenomai.org) <xenomai@xenomai.org>
+>> Subject: Re: smokey's fork tests hangs?
+>>
+>> E-MAIL FROM A NON-ANDRITZ SOURCE: AS A SECURITY MEASURE, PLEASE
+>> EXERCISE CAUTION WITH E-MAIL CONTENT AND ANY LINKS OR
+>> ATTACHMENTS.
+>>
+>>
+>> On 08.03.19 14:47, Lange Norbert wrote:
+>>>
+>>>>
+>>>> Not reproducible here with stable/3.0.x or next, and with ipipe-x86-
+>> 4.14.y.
+>>>> What are your parameters?
+>>>
+>>> Not entirely upstream, but based on ipipe-core-4.14.89-x86-2 and
+>>> xenomai master, the difference is contained in the rt_igb driver, which is
+>> not even loaded.
+>>> Defconfig is attached.
+>>>
+>>> I mostly suspect glibc as the relevant difference, I am using
+>>> glibc-2.28-69-g1e5c5303a522764d7e9d2302a60e4a32cdb902f1.
+>>>
+>>> Looking at the strace the child process 1039 is stuck at
+>>> FUTEX_WAIT_PRIVATE, Don’t really know how to tackle this.
+>>
+>> Is this a regression? Then try bisecting the causing commit.
+> 
+> Not really, I haven't ran the smokey suite often (and only for specific tests).
+> I use buildroot for my rootfs, so I have no easy way of swapping around glibc versions.
+> I have not encountered other issues outside of those tests.
+> 
+> Which version of glibc is running on your end?
+> 
 
-{get,set}prioceiling requires mutexes that were explicitely
-initialised, so no change needed there
+Mine is in fact old: 2.19. Colleagues are on Debian 9 with 2.24 where this used 
+to work but was not tested recently against master.
 
-Signed-off-by: Norbert Lange <norbert.lange@andritz.com>
----
- lib/cobalt/mutex.c | 178 +++++++++++++++++++++++----------------------
- 1 file changed, 92 insertions(+), 86 deletions(-)
+I haven't tried buildroot with Xenomai yet - is there a working 3.x recipe, and 
+everything is out-of-the-box?
 
-diff --git a/lib/cobalt/mutex.c b/lib/cobalt/mutex.c
-index ed32bba32..be9f6ed80 100644
---- a/lib/cobalt/mutex.c
-+++ b/lib/cobalt/mutex.c
-@@ -164,70 +164,51 @@ COBALT_IMPL(int, pthread_mutex_init, (pthread_mutex_t *mutex,
- }
- 
- /**
-- * Destroy a mutex.
-- *
-- * This service destroys the mutex @a mx, if it is unlocked and not referenced
-- * by any condition variable. The mutex becomes invalid for all mutex services
-- * (they all return the EINVAL error) except pthread_mutex_init().
-- *
-- * @param mutex the mutex to be destroyed.
-- *
-- * @return 0 on success,
-- * @return an error number if:
-- * - EINVAL, the mutex @a mx is invalid;
-- * - EPERM, the mutex is not process-shared and does not belong to the current
-- *   process;
-- * - EBUSY, the mutex is locked, or used by a condition variable.
-+ * Test if a mutex structure contains an valid autoinitializer.
-  *
-- * @see
-- * <a href="http://www.opengroup.org/onlinepubs/000095399/functions/pthread_mutex_destroy.html">
-- * Specification.</a>
-- *
-- * @apitags{thread-unrestricted}
-+ * @return the mutex type on success,
-+ * @return -1 if not in supported autoinitializer state
-  */
--COBALT_IMPL(int, pthread_mutex_destroy, (pthread_mutex_t *mutex))
-+static int __attribute__((cold)) _cobalt_mutex_autoinit_type(const pthread_mutex_t *mutex)
- {
--	struct cobalt_mutex_shadow *_mutex =
--		&((union cobalt_mutex_union *)mutex)->shadow_mutex;
--	int err;
--
--	if (_mutex->magic != COBALT_MUTEX_MAGIC)
--		return EINVAL;
--
--	err = XENOMAI_SYSCALL1(sc_cobalt_mutex_destroy, _mutex);
--
--	return -err;
--}
--
--static int __attribute__((cold)) cobalt_mutex_autoinit(pthread_mutex_t *mutex)
--{
--	static pthread_mutex_t uninit_normal_mutex =
--		PTHREAD_MUTEX_INITIALIZER;
-+	static const pthread_mutex_t mutex_initializers[] = {
-+#if HAVE_DECL_PTHREAD_ERRORCHECK_MUTEX_INITIALIZER_NP
-+		PTHREAD_ERRORCHECK_MUTEX_INITIALIZER_NP,
-+#endif
- #if HAVE_DECL_PTHREAD_RECURSIVE_MUTEX_INITIALIZER_NP
--	static pthread_mutex_t uninit_recursive_mutex =
--		PTHREAD_RECURSIVE_MUTEX_INITIALIZER_NP;
-+		PTHREAD_RECURSIVE_MUTEX_INITIALIZER_NP,
- #endif
-+		PTHREAD_MUTEX_INITIALIZER
-+	};
-+	static const int mutex_types[] =
-+	{
- #if HAVE_DECL_PTHREAD_ERRORCHECK_MUTEX_INITIALIZER_NP
--	static pthread_mutex_t uninit_errorcheck_mutex =
--		PTHREAD_ERRORCHECK_MUTEX_INITIALIZER_NP;
-+		PTHREAD_MUTEX_ERRORCHECK_NP,
- #endif
--	struct cobalt_mutex_shadow *_mutex =
--		&((union cobalt_mutex_union *)mutex)->shadow_mutex;
-+#if HAVE_DECL_PTHREAD_RECURSIVE_MUTEX_INITIALIZER_NP
-+		PTHREAD_MUTEX_RECURSIVE_NP,
-+#endif
-+		PTHREAD_MUTEX_DEFAULT
-+	};
-+
-+	unsigned i = sizeof(mutex_types) / sizeof(mutex_types[0]);
-+	while (i-- > 0)
-+	{
-+		if (memcmp(mutex, &mutex_initializers[i], sizeof(mutex_initializers[0])) == 0)
-+			return mutex_types[i];
-+	}
-+	return -1;
-+}
-+
-+static int __attribute__((cold)) _cobalt_mutex_doautoinit(union cobalt_mutex_union *umutex)
-+{
-+	struct cobalt_mutex_shadow *_mutex = &umutex->shadow_mutex;
- 	int err __attribute__((unused));
- 	pthread_mutexattr_t mattr;
- 	int ret = 0, type;
- 
--	if (memcmp(mutex, &uninit_normal_mutex, sizeof(*mutex)) == 0)
--		type = PTHREAD_MUTEX_DEFAULT;
--#if HAVE_DECL_PTHREAD_RECURSIVE_MUTEX_INITIALIZER_NP
--	else if (memcmp(mutex, &uninit_recursive_mutex, sizeof(*mutex)) == 0)
--		type = PTHREAD_MUTEX_RECURSIVE_NP;
--#endif
--#if HAVE_DECL_PTHREAD_ERRORCHECK_MUTEX_INITIALIZER_NP
--	else if (memcmp(mutex, &uninit_errorcheck_mutex, sizeof(*mutex)) == 0)
--		type = PTHREAD_MUTEX_ERRORCHECK_NP;
--#endif
--	else
-+	type = _cobalt_mutex_autoinit_type(&umutex->native_mutex);
-+	if (type < 0)
- 		return EINVAL;
- 
- 	pthread_mutexattr_init(&mattr);
-@@ -238,7 +219,7 @@ static int __attribute__((cold)) cobalt_mutex_autoinit(pthread_mutex_t *mutex)
- 		goto out;
- 	}
- 	if (_mutex->magic != COBALT_MUTEX_MAGIC)
--		ret = __COBALT(pthread_mutex_init(mutex, &mattr));
-+		ret = __COBALT(pthread_mutex_init(&umutex->native_mutex, &mattr));
- 	err = __COBALT(pthread_mutex_unlock(cobalt_autoinit_mutex));
- 	if (err) {
- 		if (ret == 0)
-@@ -251,6 +232,49 @@ static int __attribute__((cold)) cobalt_mutex_autoinit(pthread_mutex_t *mutex)
- 	return ret;
- }
- 
-+static inline int _cobalt_mutex_autoinit(union cobalt_mutex_union *umutex)
-+{
-+	if (unlikely(umutex->shadow_mutex.magic != COBALT_MUTEX_MAGIC))
-+		return _cobalt_mutex_doautoinit(umutex);
-+	return 0;
-+}
-+
-+/**
-+ * Destroy a mutex.
-+ *
-+ * This service destroys the mutex @a mx, if it is unlocked and not referenced
-+ * by any condition variable. The mutex becomes invalid for all mutex services
-+ * (they all return the EINVAL error) except pthread_mutex_init().
-+ *
-+ * @param mutex the mutex to be destroyed.
-+ *
-+ * @return 0 on success,
-+ * @return an error number if:
-+ * - EINVAL, the mutex @a mx is invalid;
-+ * - EPERM, the mutex is not process-shared and does not belong to the current
-+ *   process;
-+ * - EBUSY, the mutex is locked, or used by a condition variable.
-+ *
-+ * @see
-+ * <a href="http://www.opengroup.org/onlinepubs/000095399/functions/pthread_mutex_destroy.html">
-+ * Specification.</a>
-+ *
-+ * @apitags{thread-unrestricted}
-+ */
-+COBALT_IMPL(int, pthread_mutex_destroy, (pthread_mutex_t *mutex))
-+{
-+	struct cobalt_mutex_shadow *_mutex =
-+		&((union cobalt_mutex_union *)mutex)->shadow_mutex;
-+	int err;
-+
-+	if (unlikely(_mutex->magic != COBALT_MUTEX_MAGIC))
-+		return (_cobalt_mutex_autoinit_type(mutex) < 0) ? EINVAL : 0;
-+
-+	err = XENOMAI_SYSCALL1(sc_cobalt_mutex_destroy, _mutex);
-+
-+	return -err;
-+}
-+
- /**
-  * Lock a mutex.
-  *
-@@ -296,15 +320,15 @@ COBALT_IMPL(int, pthread_mutex_lock, (pthread_mutex_t *mutex))
- 	if (cur == XN_NO_HANDLE)
- 		return EPERM;
- 
--	if (_mutex->magic != COBALT_MUTEX_MAGIC)
--		goto autoinit;
-+	ret = _cobalt_mutex_autoinit((union cobalt_mutex_union *)mutex);
-+	if (ret)
-+		return ret;
- 
- 	/*
- 	 * We track resource ownership for auto-relax of non real-time
- 	 * shadows and some debug features, so we must always obtain
- 	 * them via a syscall.
- 	 */
--start:
- 	status = cobalt_get_current_mode();
- 	if ((status & (XNRELAX|XNWEAK|XNDEBUG)) == 0) {
- 		if (_mutex->attr.protocol == PTHREAD_PRIO_PROTECT)
-@@ -360,11 +384,6 @@ protect:
- 	u_window->pp_pending = _mutex->handle;
- 	lazy_protect = 1;
- 	goto fast_path;
--autoinit:
--	ret = cobalt_mutex_autoinit(mutex);
--	if (ret)
--		return ret;
--	goto start;
- }
- 
- /**
-@@ -411,11 +430,11 @@ COBALT_IMPL(int, pthread_mutex_timedlock, (pthread_mutex_t *mutex,
- 	if (cur == XN_NO_HANDLE)
- 		return EPERM;
- 
--	if (_mutex->magic != COBALT_MUTEX_MAGIC)
--		goto autoinit;
-+	ret = _cobalt_mutex_autoinit((union cobalt_mutex_union *)mutex);
-+	if (ret)
-+		return ret;
- 
- 	/* See __cobalt_pthread_mutex_lock() */
--start:
- 	status = cobalt_get_current_mode();
- 	if ((status & (XNRELAX|XNWEAK|XNDEBUG)) == 0) {
- 		if (_mutex->attr.protocol == PTHREAD_PRIO_PROTECT)
-@@ -471,11 +490,6 @@ protect:
- 	u_window->pp_pending = _mutex->handle;
- 	lazy_protect = 1;
- 	goto fast_path;
--autoinit:
--	ret = cobalt_mutex_autoinit(mutex);
--	if (ret)
--		return ret;
--	goto start;
- }
- 
- /**
-@@ -515,9 +529,10 @@ COBALT_IMPL(int, pthread_mutex_trylock, (pthread_mutex_t *mutex))
- 	if (cur == XN_NO_HANDLE)
- 		return EPERM;
- 
--	if (_mutex->magic != COBALT_MUTEX_MAGIC)
--		goto autoinit;
--start:
-+	ret = _cobalt_mutex_autoinit((union cobalt_mutex_union *)mutex);
-+	if (ret)
-+		return ret;
-+
- 	status = cobalt_get_current_mode();
- 	if ((status & (XNRELAX|XNWEAK|XNDEBUG)) == 0) {
- 		if (_mutex->attr.protocol == PTHREAD_PRIO_PROTECT)
-@@ -558,11 +573,6 @@ slow_path:
- 		_mutex->lockcnt = 1;
- 
- 	return -ret;
--autoinit:
--	ret = cobalt_mutex_autoinit(mutex);
--	if (ret)
--		return ret;
--	goto start;
- protect:
- 	u_window = cobalt_get_current_window();
- 	/*
-@@ -611,9 +621,10 @@ COBALT_IMPL(int, pthread_mutex_unlock, (pthread_mutex_t *mutex))
- 	xnhandle_t cur;
- 	int err;
- 
--	if (_mutex->magic != COBALT_MUTEX_MAGIC)
--		goto autoinit;
--start:
-+	err = _cobalt_mutex_autoinit((union cobalt_mutex_union *)mutex);
-+	if (err)
-+		return err;
-+
- 	cur = cobalt_get_current();
- 	if (cur == XN_NO_HANDLE)
- 		return EPERM;
-@@ -645,11 +656,6 @@ do_syscall:
- 
- 	return -err;
- 
--autoinit:
--	err = cobalt_mutex_autoinit(mutex);
--	if (err)
--		return err;
--	goto start;
- unprotect:
- 	u_window = cobalt_get_current_window();
- 	u_window->pp_pending = XN_NO_HANDLE;
+Regarding how to possibly debug this: If one thread is stuck, you could check if 
+there are other threads in that application that may hold the lock. Or if the 
+lock content is actually invalid and therefore blocking the caller (memory 
+corruption). You should be able to read out the thread ID of the owner from a 
+valid lock structure.
+
+Jan
+
 -- 
-2.20.1
-
+Siemens AG, Corporate Technology, CT RDA IOT SES-DE
+Corporate Competence Center Embedded Linux
 
