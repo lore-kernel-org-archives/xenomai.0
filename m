@@ -1,14 +1,15 @@
-From: Lange Norbert <norbert.lange@andritz.com>
-Subject: RE: smokey's fork tests hangs with glibc 2.28+ ?
-Date: Mon, 11 Mar 2019 14:08:22 +0000
-Message-ID: <f6c647a090744868b23a138ad213e96c@andritz.com>
+Subject: Re: smokey's fork tests hangs with glibc 2.28+ ?
 References: <c57ea289db8a425da4d09d89d0de5d96@andritz.com>
  <76f0e9a2-f783-df4f-d736-4f0e246d44c2@siemens.com>
-In-Reply-To: <76f0e9a2-f783-df4f-d736-4f0e246d44c2@siemens.com>
-Content-Language: en-US
+ <f6c647a090744868b23a138ad213e96c@andritz.com>
+From: Philippe Gerum <rpm@xenomai.org>
+Message-ID: <b9e0b39a-e3e9-f99e-eb44-a1e8ddf34aae@xenomai.org>
+Date: Mon, 11 Mar 2019 15:19:00 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+In-Reply-To: <f6c647a090744868b23a138ad213e96c@andritz.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,53 +18,23 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jan Kiszka <jan.kiszka@siemens.com>, "Xenomai (xenomai@xenomai.org)" <xenomai@xenomai.org>
+To: Lange Norbert <norbert.lange@andritz.com>, Jan Kiszka <jan.kiszka@siemens.com>, "Xenomai (xenomai@xenomai.org)" <xenomai@xenomai.org>
 
-VGhhdHMgYSByb290ZnMgd2hpY2ggcmVwcm9kdWNlcyB0aGUgaXNzdWUuIElkZW50aWNhbCBzZXR1
-cCwgYnV0IGdsaWJjIDIuMjcgd2lsbCBub3QgcmVwcm9kdWNlLg0KDQo+IC0tLS0tT3JpZ2luYWwg
-TWVzc2FnZS0tLS0tDQo+IEZyb206IEphbiBLaXN6a2EgPGphbi5raXN6a2FAc2llbWVucy5jb20+
-DQo+IFNlbnQ6IE1vbnRhZywgMTEuIE3DpHJ6IDIwMTkgMTQ6NTANCj4gVG86IExhbmdlIE5vcmJl
-cnQgPG5vcmJlcnQubGFuZ2VAYW5kcml0ei5jb20+OyBYZW5vbWFpDQo+ICh4ZW5vbWFpQHhlbm9t
-YWkub3JnKSA8eGVub21haUB4ZW5vbWFpLm9yZz4NCj4gU3ViamVjdDogUmU6IHNtb2tleSdzIGZv
-cmsgdGVzdHMgaGFuZ3Mgd2l0aCBnbGliYyAyLjI4KyA/DQo+DQo+IEUtTUFJTCBGUk9NIEEgTk9O
-LUFORFJJVFogU09VUkNFOiBBUyBBIFNFQ1VSSVRZIE1FQVNVUkUsIFBMRUFTRQ0KPiBFWEVSQ0lT
-RSBDQVVUSU9OIFdJVEggRS1NQUlMIENPTlRFTlQgQU5EIEFOWSBMSU5LUyBPUg0KPiBBVFRBQ0hN
-RU5UUy4NCj4NCj4NCj4gT24gMTEuMDMuMTkgMTQ6NDAsIExhbmdlIE5vcmJlcnQgd3JvdGU6DQo+
-ID4gV2VsbCwgc3dhcHBpbmcgb3V0IGdsaWJjIHdpdGggMi4yNyByZW1vdmVzIHRoZSBpc3N1ZSwg
-c28gaXQgaGFzIGJlZW4NCj4gPiBpbnRyb2R1Y2VkIGFmdGVyd2FyZHMsIHRoZSBjdXJyZW50IGJ1
-aWxkcm9vdCB3aWxsIHVzZSAyLjI4IHNvIHlvdSBzaG91bGQgYmUNCj4gYWJsZSB0byBidWlsZCB5
-b3Vyc2VsZiBhIHJlcHJvZHVjZXIgdGhhdCB3YXkuDQo+ID4gSSB3aWxsIGFsc28gYXR0YWNoIGEg
-cHJlYnVpbHQgcm9vdGZzIG9uY2UgdGhlIGNsZWFuIHJlYnVpbGQgaXMgZG9uZS4NCj4NCj4gT2ss
-IHRoYW5rcyBmb3IgbmFycm93aW5nIHRoYXQgZnVydGhlciBkb3duLg0KPg0KPiBJIGp1c3QgcmVh
-bGl6ZWQgdGhhdCBidXN0ZXIgKERlYmlhbiAxMCkgd2lsbCB1c2UgMi4yOCBhcyB3ZWxsLiBXaWxs
-IHRyeSB0aGF0DQo+IGJhc2VsaW5lIGFzIHdlbGwuDQo+DQo+ID4NCj4gPiBVbmZvcnR1bmF0ZWx5
-IHRoZSBzbW9rZXkgc3VpdGUgaXMgbm90IGF2YWlsYWJsZSB3aXRoIHRoZSBNZXJjdXJ5IGNvcmUs
-DQo+IG1pZ2h0IGJlIGVhc2llciB0byBpc29sYXRlIHRoYXQgd2F5Lg0KPiA+DQo+ID4gSW4gdGhl
-IGZ1dHVyZSwgbWF5YmUgc29tZSBiYXR0bGV0ZXN0ZWQgZ2xpYmMgdmVyc2lvbnMgY291bGQgYmUN
-Cj4gcmVjb21tZW5kZWQgZm9yIHhlbm9tYWk/DQo+DQo+IE1haW50YWluZWQgZGlzdHJpYnV0aW9u
-cyBhcmUgZ2VuZXJhbGx5IGEgZ29vZCBjaG9pY2UuIE15IHBsYW4gaXMgdG8gZGVmaW5lIGFuZA0K
-PiB0ZXN0IHJlZmVyZW5jZSBpbWFnZXMgdmlhIGh0dHBzOi8vZ2l0bGFiLmRlbnguZGUvWGVub21h
-aS94ZW5vbWFpLWltYWdlcywNCj4gYnV0IHdlIGFyZSBub3QgdGhlcmUgeWV0Lg0KPg0KPiBKYW4N
-Cj4NCj4gLS0NCj4gU2llbWVucyBBRywgQ29ycG9yYXRlIFRlY2hub2xvZ3ksIENUIFJEQSBJT1Qg
-U0VTLURFIENvcnBvcmF0ZQ0KPiBDb21wZXRlbmNlIENlbnRlciBFbWJlZGRlZCBMaW51eA0KX19f
-X19fX19fX19fX19fX19fX19fX19fX19fX19fX18NCg0KVGhpcyBtZXNzYWdlIGFuZCBhbnkgYXR0
-YWNobWVudHMgYXJlIHNvbGVseSBmb3IgdGhlIHVzZSBvZiB0aGUgaW50ZW5kZWQgcmVjaXBpZW50
-cy4gVGhleSBtYXkgY29udGFpbiBwcml2aWxlZ2VkIGFuZC9vciBjb25maWRlbnRpYWwgaW5mb3Jt
-YXRpb24gb3Igb3RoZXIgaW5mb3JtYXRpb24gcHJvdGVjdGVkIGZyb20gZGlzY2xvc3VyZS4gSWYg
-eW91IGFyZSBub3QgYW4gaW50ZW5kZWQgcmVjaXBpZW50LCB5b3UgYXJlIGhlcmVieSBub3RpZmll
-ZCB0aGF0IHlvdSByZWNlaXZlZCB0aGlzIGVtYWlsIGluIGVycm9yIGFuZCB0aGF0IGFueSByZXZp
-ZXcsIGRpc3NlbWluYXRpb24sIGRpc3RyaWJ1dGlvbiBvciBjb3B5aW5nIG9mIHRoaXMgZW1haWwg
-YW5kIGFueSBhdHRhY2htZW50IGlzIHN0cmljdGx5IHByb2hpYml0ZWQuIElmIHlvdSBoYXZlIHJl
-Y2VpdmVkIHRoaXMgZW1haWwgaW4gZXJyb3IsIHBsZWFzZSBjb250YWN0IHRoZSBzZW5kZXIgYW5k
-IGRlbGV0ZSB0aGUgbWVzc2FnZSBhbmQgYW55IGF0dGFjaG1lbnQgZnJvbSB5b3VyIHN5c3RlbS4N
-Cg0KQU5EUklUWiBIWURSTyBHbWJIDQoNCg0KUmVjaHRzZm9ybS8gTGVnYWwgZm9ybTogR2VzZWxs
-c2NoYWZ0IG1pdCBiZXNjaHLDpG5rdGVyIEhhZnR1bmcgLyBDb3Jwb3JhdGlvbg0KDQpGaXJtZW5z
-aXR6LyBSZWdpc3RlcmVkIHNlYXQ6IFdpZW4NCg0KRmlybWVuYnVjaGdlcmljaHQvIENvdXJ0IG9m
-IHJlZ2lzdHJ5OiBIYW5kZWxzZ2VyaWNodCBXaWVuDQoNCkZpcm1lbmJ1Y2hudW1tZXIvIENvbXBh
-bnkgcmVnaXN0cmF0aW9uOiBGTiA2MTgzMyBnDQoNCkRWUjogMDYwNTA3Nw0KDQpVSUQtTnIuOiBB
-VFUxNDc1NjgwNg0KDQoNClRoYW5rIFlvdQ0KX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
-X18NCi0tLS0tLS0tLS0tLS0tIG5leHQgcGFydCAtLS0tLS0tLS0tLS0tLQpBIG5vbi10ZXh0IGF0
-dGFjaG1lbnQgd2FzIHNjcnViYmVkLi4uCk5hbWU6IHJvb3Rmcy50YXIueHoKVHlwZTogYXBwbGlj
-YXRpb24vb2N0ZXQtc3RyZWFtClNpemU6IDE4OTMzNDQgYnl0ZXMKRGVzYzogcm9vdGZzLnRhci54
-egpVUkw6IDxodHRwOi8veGVub21haS5vcmcvcGlwZXJtYWlsL3hlbm9tYWkvYXR0YWNobWVudHMv
-MjAxOTAzMTEvYWVjNTM0ZWQvYXR0YWNobWVudC5vYmo+Cg==
+On 3/11/19 3:08 PM, Lange Norbert via Xenomai wrote:
+> Thats a rootfs which reproduces the issue. Identical setup, but glibc 2.27 will not reproduce.
+
+The issue was introduced by [1], which already triggered a bug in the
+glibc test suite [2]. In short, calling pthread_atfork() like
+__cobalt_init() does over the context of a fork handler is now invalid,
+because the glibc now holds the internal atfork_lock while running the
+fork handlers. The cobalt fork handler needs to be registered earlier,
+outside of such context.
+
+This change was introduced between glibc-2.27.9000 and glibc-2.28.
+
+[1] git://sourceware.org/git/glibc.git, 27761a104
+[2] git://sourceware.org/git/glibc.git, 669ff911e
+
+-- 
+Philippe.
+
