@@ -1,11 +1,15 @@
-Subject: Re: Question about real-time networking
-References: <5c85fb333fe3_@_imoxion.com>
-From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <bf1566f3-8dc2-9cf5-751f-ce5e9c7ba3c3@siemens.com>
-Date: Mon, 11 Mar 2019 20:42:36 +0100
+Subject: Re: smokey's fork tests hangs with glibc 2.28+ ?
+References: <c57ea289db8a425da4d09d89d0de5d96@andritz.com>
+ <76f0e9a2-f783-df4f-d736-4f0e246d44c2@siemens.com>
+ <f6c647a090744868b23a138ad213e96c@andritz.com>
+ <b9e0b39a-e3e9-f99e-eb44-a1e8ddf34aae@xenomai.org>
+ <3ecf3b2ce17f4bc8acf34e668eb26171@andritz.com>
+From: Philippe Gerum <rpm@xenomai.org>
+Message-ID: <ced8776f-4d59-726b-171e-608d35453508@xenomai.org>
+Date: Tue, 12 Mar 2019 09:15:25 +0100
 MIME-Version: 1.0
-In-Reply-To: <5c85fb333fe3_@_imoxion.com>
-Content-Type: text/plain; charset="utf-8"; format="flowed"
+In-Reply-To: <3ecf3b2ce17f4bc8acf34e668eb26171@andritz.com>
+Content-Type: text/plain; charset="utf-8"
 Content-Language: en-US
 Content-Transfer-Encoding: 8bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
@@ -16,45 +20,21 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: =?UTF-8?B?6rmA67OR7KeE?= <geniuskpj@kaist.ac.kr>, xenomai@xenomai.org
+To: Lange Norbert <norbert.lange@andritz.com>, Jan Kiszka <jan.kiszka@siemens.com>, "Xenomai (xenomai@xenomai.org)" <xenomai@xenomai.org>
 
-On 11.03.19 06:59, 김병진 wrote:
->  >On 08.03.19 10:05, 김병진 via Xenomai wrote:
+On 3/11/19 3:41 PM, Lange Norbert wrote:
+> Thanks Phillipe,
 > 
->  >> Hello<br>I wanna use tcp or udp for real-time network.<br>i found an example from /home/kraptor/xenomai-v3.0.8/demo/posix/cobalt/eth_p_all<br>But it seems like not using rtnet.<br>https://gitlab.denx.de/Xenomai/xenomai/wikis/RTnet<br>Wiki says that i need to install Rtnet separately.<br>Is it right? I am trying to build rtnet tcp example without install.<br>Cause all function I need is in /xenomai/kernel/drivers/net/stack/<br>But what should I include or link?(cflags or ldflags)<br><br>Is there anyone who can help me?<br><br>Thank you.
-> 
->  >Something is mangling your emails...
-> 
-> Sorry for messy html. I think My mail editor has a problem:(
-> 
->  >RTnet is part of Xenomai, no need for a separate installation anymore. Where exactly is our wiki suggesting something different?
-> 
-> Several paths in 'Rtnet programming' are based on installing Rtnet.
-> 
-> https://gitlab.denx.de/Xenomai/xenomai/wikis/RTnet
-> 
-> "The second folder of interest is the folder where RTnet was installed into. The default location for this would be /usr/local/rtnet."
-> 
-> https://gitlab.denx.de/Xenomai/xenomai/wikis/RTnet_Setup
-> 
-> "Change to directory /usr/local/rtnet/sbin"
+> assume just for a moment that I know little of the issues,
+> is there any harm using glibc 2.28 for now, given that I don’t
+> run into those deadlocks or could there be some more
+> subtile breakage involved?
 
-Well, that is talking about installing it from the Xenomai sources onto the 
-target. That still applies.
-
-> 
->  >For rttcp, you need to use the development branch (master).
-> 
-> So if i use master branch xenomai, can i add tcp in "RT_PROTOCOLS" from 'rtnet.conf'?
-> 
-> I can't add tcp flags on 3.0.8 branch because there is no tcp/rtnet option in kernel config.
-> 
-
-As I said: use git, master branch.
-
-Jan
+I don't know. This said, this question includes its own answer: 2.28 is
+a recent release which few people have already used in a Xenomai
+context, so any obvious bug we did not find yet might look subtle at
+first glance.
 
 -- 
-Siemens AG, Corporate Technology, CT RDA IOT SES-DE
-Corporate Competence Center Embedded Linux
+Philippe.
 
