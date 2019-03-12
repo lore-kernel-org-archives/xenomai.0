@@ -1,17 +1,10 @@
-Subject: Re: smokey's fork tests hangs with glibc 2.28+ ?
-References: <c57ea289db8a425da4d09d89d0de5d96@andritz.com>
- <76f0e9a2-f783-df4f-d736-4f0e246d44c2@siemens.com>
- <f6c647a090744868b23a138ad213e96c@andritz.com>
- <b9e0b39a-e3e9-f99e-eb44-a1e8ddf34aae@xenomai.org>
- <3ecf3b2ce17f4bc8acf34e668eb26171@andritz.com>
-From: Philippe Gerum <rpm@xenomai.org>
-Message-ID: <ced8776f-4d59-726b-171e-608d35453508@xenomai.org>
-Date: Tue, 12 Mar 2019 09:15:25 +0100
+Date: Tue, 12 Mar 2019 03:18:39 -0500 (CDT)
+From: Per Oberg <pero@wolfram.com>
+Message-ID: <1581388606.618666.1552378719905.JavaMail.zimbra@wolfram.com>
+Subject: Re: Using RTnet to communicate with regular UDP socket
 MIME-Version: 1.0
-In-Reply-To: <3ecf3b2ce17f4bc8acf34e668eb26171@andritz.com>
-Content-Type: text/plain; charset="utf-8"
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -20,21 +13,36 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Lange Norbert <norbert.lange@andritz.com>, Jan Kiszka <jan.kiszka@siemens.com>, "Xenomai (xenomai@xenomai.org)" <xenomai@xenomai.org>
+Cc: xenomai <xenomai@xenomai.org>
 
-On 3/11/19 3:41 PM, Lange Norbert wrote:
-> Thanks Phillipe,
-> 
-> assume just for a moment that I know little of the issues,
-> is there any harm using glibc 2.28 for now, given that I don’t
-> run into those deadlocks or could there be some more
-> subtile breakage involved?
+Hi=20
 
-I don't know. This said, this question includes its own answer: 2.28 is
-a recent release which few people have already used in a Xenomai
-context, so any obvious bug we did not find yet might look subtle at
-first glance.
 
--- 
-Philippe.
+019, p=C3=A5 kl 17:20, xenomai xenomai@xenomai.org skrev:=20
+> Hi everyone=EF=BC=9A=20
+> I am using xenomai + RTnet in Ubuntu=EF=BC=8CXenomai version 3.0.5 Linux =
+kernal version=20
+> 4.9.38. And the ethernet card is Intel e1000.=20
 
+> I'm going to use RTnet to communicate with regular UDP socket like a sock=
+et in=20
+> raw Linux . I need to implement two way communication between Xenomai and=
+=20
+> another device witch is using regular UDP socket. In other words, RTnet s=
+ocket=20
+> in Xenomai should sent datagram to the regular UDP socket . If the regula=
+r UDP=20
+> protocol can decode the rt-udp datagram and get right data? Besides, RTne=
+t=20
+> socket in Xenomai should also receive datagram from regular UDP protocol,=
+ so if=20
+> the rt-udp in Xenomai can decode the regular UDP datagram?=20
+> Thanks for everyone who spend time to give me some help!=20
+
+Afaik, when you use the posix skin you may use the same UDP code in Xenomai=
+ as in regular Posix/Linux as long as you compile your program with the rig=
+ht flags. If your network destination/source is a RTNet address it will cal=
+l the rt functions and if its an address belonging to the regular network i=
+t will call the regular linux code.=20
+
+Per =C3=96berg=20
