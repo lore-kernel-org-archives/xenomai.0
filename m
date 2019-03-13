@@ -1,7 +1,7 @@
 From: Norbert Lange <nolange79@gmail.com>
-Subject: [PATCH 1/2] Rename __ctz to xenomai_count_trailing_zeros
-Date: Wed, 13 Mar 2019 18:16:31 +0100
-Message-Id: <20190313171632.5276-2-norbert.lange@andritz.com>
+Subject: [PATCH 2/2] Simplify xenomai_count_leading_zeros
+Date: Wed, 13 Mar 2019 18:16:32 +0100
+Message-Id: <20190313171632.5276-3-norbert.lange@andritz.com>
 In-Reply-To: <20190313171632.5276-1-norbert.lange@andritz.com>
 References: <20190313171632.5276-1-norbert.lange@andritz.com>
 MIME-Version: 1.0
@@ -16,25 +16,31 @@ List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: xenomai@xenomai.org
 
-Because of conflicts with libc++ (v1/bit include file).
-Simplify the macro as there shouldnt be any bad cornercases
+Covers now all standard integer types,
+no need for corner cases.
 
 Signed-off-by: Norbert Lange <norbert.lange@andritz.com>
 ---
- include/boilerplate/compiler.h    | 23 +++++------------------
- lib/boilerplate/heapmem.c         |  2 +-
- lib/copperplate/heapobj-pshared.c |  2 +-
- 3 files changed, 7 insertions(+), 20 deletions(-)
+ include/boilerplate/compiler.h | 27 +++++++--------------------
+ 1 file changed, 7 insertions(+), 20 deletions(-)
 
 diff --git a/include/boilerplate/compiler.h b/include/boilerplate/compiler.h
-index 0fcc17be1..e25ab5d2c 100644
+index e25ab5d2c..828755cc1 100644
 --- a/include/boilerplate/compiler.h
 +++ b/include/boilerplate/compiler.h
-@@ -74,24 +74,11 @@ extern "C" {
- 	
- void __invalid_operand_size(void);
+@@ -72,32 +72,19 @@
+ extern "C" {
+ #endif
  
--#define __ctz(__v)							\
+-void __invalid_operand_size(void);
+-
+ #define xenomai_count_trailing_zeros(x)					\
+ 	( (x) == 0 ? (int)(sizeof(x) * __CHAR_BIT__)			\
+ 	: sizeof(x) <= sizeof(unsigned) ? __builtin_ctz(x)		\
+ 	: sizeof(x) <= sizeof(unsigned long) ? __builtin_ctzl(x)	\
+ 	: __builtin_ctzll(x))
+ 
+-#define xenomai_count_leading_zeros(__v)				\
 -	({								\
 -		int __ret;						\
 -		if (!__v)						\
@@ -42,50 +48,26 @@ index 0fcc17be1..e25ab5d2c 100644
 -		else							\
 -			switch (sizeof(__v)) {				\
 -			case sizeof(int):				\
--				__ret = __builtin_ctz((unsigned int)__v); \
+-				__ret = __builtin_clz((unsigned int)__v); \
 -				break;					\
 -			case sizeof(long long):				\
--				__ret = __builtin_ctzll(__v);		\
+-				__ret = __builtin_clzll(__v);		\
 -				break;					\
 -			default:					\
 -				__invalid_operand_size();		\
 -			}						\
 -		__ret;							\
 -	})
-+#define xenomai_count_trailing_zeros(x)					\
-+	( (x) == 0 ? (int)(sizeof(x) * __CHAR_BIT__)			\
-+	: sizeof(x) <= sizeof(unsigned) ? __builtin_ctz(x)		\
-+	: sizeof(x) <= sizeof(unsigned long) ? __builtin_ctzl(x)	\
-+	: __builtin_ctzll(x))
++#define xenomai_count_leading_zeros(x)					\
++	(int)( (x) == 0 ? sizeof(x) * __CHAR_BIT__			\
++	: ( sizeof(x) <= sizeof(unsigned) ?				\
++			__builtin_clz(x) + sizeof(unsigned) - sizeof(x)	\
++		: sizeof(x) <= sizeof(unsigned long) ?			\
++			__builtin_clzl(x) + sizeof(unsigned long) - sizeof(x) \
++		: __builtin_clzll(x) + sizeof(unsigned long long) - sizeof(x)))
  
- #define xenomai_count_leading_zeros(__v)				\
- 	({								\
-diff --git a/lib/boilerplate/heapmem.c b/lib/boilerplate/heapmem.c
-index 8728e0d15..e6369c715 100644
---- a/lib/boilerplate/heapmem.c
-+++ b/lib/boilerplate/heapmem.c
-@@ -476,7 +476,7 @@ void *heapmem_alloc(struct heap_memory *heap, size_t size)
- 			bmask = ext->pagemap[pg].map;
- 			if (bmask == -1U)
- 				break;
--			b = __ctz(~bmask);
-+			b = xenomai_count_trailing_zeros(~bmask);
- 
- 			/*
- 			 * Got one block from the heading per-bucket
-diff --git a/lib/copperplate/heapobj-pshared.c b/lib/copperplate/heapobj-pshared.c
-index 5310d9092..d6cc51ae9 100644
---- a/lib/copperplate/heapobj-pshared.c
-+++ b/lib/copperplate/heapobj-pshared.c
-@@ -529,7 +529,7 @@ static void *sheapmem_alloc(struct shared_heap_memory *heap, size_t size)
- 			bmask = ext->pagemap[pg].map;
- 			if (bmask == -1U)
- 				break;
--			b = __ctz(~bmask);
-+			b = xenomai_count_trailing_zeros(~bmask);
- 
- 			/*
- 			 * Got one block from the heading per-bucket
+ #ifdef __cplusplus
+ }
 -- 
 2.20.1
 
