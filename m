@@ -1,18 +1,13 @@
-Date: Sat, 16 Mar 2019 07:44:54 +0000 (UTC)
-From: Alec Ari <neotheuser@ymail.com>
-Reply-To: Alec Ari <neotheuser@ymail.com>
-Message-ID: <990066230.5891305.1552722294814@mail.yahoo.com>
-In-Reply-To: <cece8f69-d8c5-7165-e918-444398bea154@gmail.com>
-References: <1798013633.4056474.1550493375498.JavaMail.zimbra@wolfram.com>
- <f51b37b7-4293-4b29-6d78-3eb460de3015@siemens.com>
- <731343616.4059321.1550495335135.JavaMail.zimbra@wolfram.com>
- <544217707.857557.1552467189711.JavaMail.zimbra@wolfram.com>
- <1283d7c0-b719-8c63-6c7f-abbefe269a7a@gmail.com>
- <192645678.5721329.1552685329163@mail.yahoo.com>
- <cece8f69-d8c5-7165-e918-444398bea154@gmail.com>
-Subject: Re: Cobalt compatible distribution
+Subject: Re: Mapping unchached memory with UDD
+References: <c0aefe52-0ba1-72fb-88d8-edc1fc73880e@grandegger.com>
+ <09544b49-088d-e0e0-1dca-7f7df9ec12e0@xenomai.org>
+From: Wolfgang Grandegger <wg@grandegger.com>
+Message-ID: <eba476d3-59a0-85ff-599e-4270af06d8f1@grandegger.com>
+Date: Sat, 16 Mar 2019 12:48:31 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+In-Reply-To: <09544b49-088d-e0e0-1dca-7f7df9ec12e0@xenomai.org>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-GB
 Content-Transfer-Encoding: 7bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
@@ -22,19 +17,44 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Don Newbold <d.o.newbold@gmail.com>, Xenomai--- via Xenomai <xenomai@xenomai.org>
+To: Philippe Gerum <rpm@xenomai.org>, "Xenomai@xenomai.org" <Xenomai@xenomai.org>
 
-Hi,
+Hello Philippe,
 
-Cobalt enabled vs cobalt supported, what is the difference here? Cobalt is part of Xenomai, you patch the kernel using prepare-kernel.sh and you enable the Cobalt kernel config option via Kconfig menu. If you want to write an RTDM driver, the kernel must be patched and configured appropriately.
+Am 14.03.19 um 15:32 schrieb Philippe Gerum:
+> 
+> Hi Wolfgang,
+> 
+> On 3/14/19 11:38 AM, Wolfgang Grandegger via Xenomai wrote:
+>> Hello,
+>>
+>> I'm writing a little UDD driver to handling interrupts and shared memory
+>> to communicate with a co-processor. Is it possible to setup and map a
+>> "mem_region" for *uncahced* memory. Will it be automatically uncached if
+>> it's of type UDD_MEM_PHY?
+>>
+> 
+> Yep. Such requests is routed to RTDM's iomem mapping helper, which does:
+> 
+> static int mmap_iomem_helper(struct vm_area_struct *vma, phys_addr_t pa)
+> {
+> 	pgprot_t prot = PAGE_SHARED;
+> 	unsigned long len;
+> 
+> 	len = vma->vm_end - vma->vm_start;
+> 	...
+> 	vma->vm_page_prot = pgprot_noncached(prot);
+> 
+> 	return remap_pfn_range(vma, vma->vm_start, pa >> PAGE_SHIFT,
+> 			       len, vma->vm_page_prot);
+> }
 
-The Xenomai/Cobalt stuff is all distro-independent, ipipe and all is kernel space. You won't find anything about Cobalt on distrowatch.
+I was aware of that code! I suspected some other magic when mapping
+system memory with UDD_MEM_PHY. Maybe it's a barrier issue in the A9 or
+M4 code.
 
-I didn't insult you, I said that if you're looking for a distribution with a Xenomai kernel shipped with it because building from scratch is too big a task, you're better off avoiding writing a driver.
+Thanks,
 
-If you're serious about doing this, just build the kernel yourself and work on your driver with whatever distro you want. Some distros/desktop environments offer lower latency than others by the time you're all done, but that's really about it. LXDE/LXQt might give you better scores than let's say GNOME/KDE.
+Wolfgang.
 
-Does this answer your question? If not, let me know what I'm missing as I'm doing my best to help.
-
-Alec
 
