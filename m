@@ -1,11 +1,15 @@
-Date: Fri, 08 Mar 2019 01:35:52 +0000
-From: Jeff Webb <jeff.webb@protonmail.com>
-Reply-To: Jeff Webb <jeff.webb@protonmail.com>
-Subject: INTR-REMAP error with UDD driver
-Message-ID: <SVZrPK0MQbayn-KPZ4wIvVLcbdluegH0Vxlth0h7DnkST5oo2K5_0Nu6vd-FBcRz3cYtRj5Jl9Wp2nTHSCp-udTCw2_fAcY--f7JNMVUHrg=@protonmail.com>
+Subject: Re: Mapping unchached memory with UDD
+References: <c0aefe52-0ba1-72fb-88d8-edc1fc73880e@grandegger.com>
+ <09544b49-088d-e0e0-1dca-7f7df9ec12e0@xenomai.org>
+ <eba476d3-59a0-85ff-599e-4270af06d8f1@grandegger.com>
+From: Philippe Gerum <rpm@xenomai.org>
+Message-ID: <b49ccf54-23d4-3b8d-fff9-3cf149bad830@xenomai.org>
+Date: Sat, 16 Mar 2019 14:39:21 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+In-Reply-To: <eba476d3-59a0-85ff-599e-4270af06d8f1@grandegger.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -14,41 +18,47 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Wolfgang Grandegger <wg@grandegger.com>, "Xenomai@xenomai.org" <Xenomai@xenomai.org>
 
-SSBoYXZlIGltcGxlbWVudGVkIGEgc2ltcGxlIFVERCBtaW5pLWRyaXZlciAoaW50ZXJydXB0IGhh
-bmRsZXIpIGFuZCBhbiBhc3NvY2lhdGVkIFhlbm9tYWkgdXNlcnNwYWNlIHRlc3QgcHJvZ3JhbS4g
-IFRoaXMgcGFpciBvZiBwcm9ncmFtcyB3b3JrcyBhcyBpbnRlbmRlZCBvbiBvbmUgbWFjaGluZS4g
-IFdoZW4gSSB0cmllZCBydW5uaW5nIHRoZSBzYW1lIHByb2dyYW1zIG9uIGFub3RoZXIgbWFjaGlu
-ZSwgSSBnb3QgdGhpcyBlcnJvciB3aGVuIHRoZSBmaXJzdCBpbnRlcnJ1cHQgb2NjdXJyZWQ6Cgpr
-ZXJuZWw6IFsgICA3NS4xMjIzMDVdIERNQVI6IERSSEQ6IGhhbmRsaW5nIGZhdWx0IHN0YXR1cyBy
-ZWcgMgprZXJuZWw6IFsgICA3NS4xMjMxNzVdIERNQVI6IFtJTlRSLVJFTUFQXSBSZXF1ZXN0IGRl
-dmljZSBbZjA6MWYuMF0gZmF1bHQgaW5kZXggZWUwMCBbZmF1bHQgcmVhc29uIDM3XSBCbG9ja2Vk
-IGEgY29tcGF0aWJpbGl0eSBmb3JtYXQgaW50ZXJydXB0IHJlcXVlc3QKCkkgd291bGQgZ3Vlc3Mg
-dGhhdCB0aGUgW2YwOjFmLjBdIGluIHRoZSBtZXNzYWdlIGlzIGEgUENJIGJ1cyBhZGRyZXNzLCBi
-dXQgSSBkb24ndCBzZWUgdGhpcyB2aWEgbHNwY2kuICBUaGUgY2xvc2VzdCBtYXRjaCBpczoKCjAw
-OjFmLjAgSVNBIGJyaWRnZSBbMDYwMV06IEludGVsIENvcnBvcmF0aW9uIFE2NyBFeHByZXNzIENo
-aXBzZXQgTFBDIENvbnRyb2xsZXIgWzgwODY6MWM0ZV0gKHJldiAwNSkKCkFmdGVyIHRoZSBmaXJz
-dCBhdHRlbXB0LCBJIHNlZSBubyBtb3JlIG9mIHRoZXNlIG1lc3NhZ2VzIHVudGlsIEkgcmVib290
-LCBidXQgdGhlIFVERCBkcml2ZXIgbmV2ZXIgcmVjZWl2ZXMgYW4gaW50ZXJydXB0IGluIGFueSBj
-YXNlLgoKSSB0cmllZCBtb3ZpbmcgbXkgUENJIGNhcmQgdG8gZml2ZSBkaWZmZXJlbnQgc2xvdHMs
-IGFuZCBmaW5hbGx5IGZvdW5kIG9uZSB3aGVyZSBldmVyeXRoaW5nIHdvcmsgcHJvcGVybHkgb24g
-dGhlIHNlY29uZCBtYWNoaW5lLiAgSSBjYW4gYXQgY29udGludWUgdG8gbWFrZSBwcm9ncmVzcyB1
-c2luZyB0aGUgd29ya2luZyBzbG90LCBidXQgSSB3b3VsZCByZWFsbHkgbGlrZSB0byByZXNvbHZl
-IHRoZSBpc3N1ZSB3aXRoIHRoZSBvdGhlciBzbG90cy4gIERvZXMgYW55b25lIGhhdmUgYW55IGlk
-ZWEgd2hhdCB0byB0cnkgbmV4dD8KCkkgYW0gdXNpbmcgdGhlc2Ugc291cmNlczoKCmxpbnV4LTQu
-MTQuODkudGFyCmlwaXBlLWNvcmUtNC4xNC44OS14ODYtMi5wYXRjaAp4ZW5vbWFpLTMuMC44LnRh
-cgoKSSBoYXZlIGF0dGFjaGVkIHRoZSBib290IGxvZywgY29uZmlnLCBhbmQgY3B1IGluZm9ybWF0
-aW9uLgoKVGhhbmtzLAoKLUplZmYgV2ViYgotLS0tLS0tLS0tLS0tLSBuZXh0IHBhcnQgLS0tLS0t
-LS0tLS0tLS0KQW4gZW1iZWRkZWQgYW5kIGNoYXJzZXQtdW5zcGVjaWZpZWQgdGV4dCB3YXMgc2Ny
-dWJiZWQuLi4KTmFtZTogY3B1aW5mby50eHQKVVJMOiA8aHR0cDovL3hlbm9tYWkub3JnL3BpcGVy
-bWFpbC94ZW5vbWFpL2F0dGFjaG1lbnRzLzIwMTkwMzA4L2IwYWI2ODFhL2F0dGFjaG1lbnQudHh0
-PgotLS0tLS0tLS0tLS0tLSBuZXh0IHBhcnQgLS0tLS0tLS0tLS0tLS0KQSBub24tdGV4dCBhdHRh
-Y2htZW50IHdhcyBzY3J1YmJlZC4uLgpOYW1lOiBib290LmxvZwpUeXBlOiB0ZXh0L3gtbG9nClNp
-emU6IDYyNzk3IGJ5dGVzCkRlc2M6IG5vdCBhdmFpbGFibGUKVVJMOiA8aHR0cDovL3hlbm9tYWku
-b3JnL3BpcGVybWFpbC94ZW5vbWFpL2F0dGFjaG1lbnRzLzIwMTkwMzA4L2IwYWI2ODFhL2F0dGFj
-aG1lbnQuYmluPgotLS0tLS0tLS0tLS0tLSBuZXh0IHBhcnQgLS0tLS0tLS0tLS0tLS0KQSBub24t
-dGV4dCBhdHRhY2htZW50IHdhcyBzY3J1YmJlZC4uLgpOYW1lOiBjb25maWctNC4xNC44OS14ZW5v
-bWFpLTMuMC44ClR5cGU6IGFwcGxpY2F0aW9uL3gtdHJvZmYtbWFuClNpemU6IDIxMzI1NiBieXRl
-cwpEZXNjOiBub3QgYXZhaWxhYmxlClVSTDogPGh0dHA6Ly94ZW5vbWFpLm9yZy9waXBlcm1haWwv
-eGVub21haS9hdHRhY2htZW50cy8yMDE5MDMwOC9iMGFiNjgxYS9hdHRhY2htZW50Lm1hbj4K
+On 3/16/19 12:48 PM, Wolfgang Grandegger wrote:
+> Hello Philippe,
+> 
+> Am 14.03.19 um 15:32 schrieb Philippe Gerum:
+>>
+>> Hi Wolfgang,
+>>
+>> On 3/14/19 11:38 AM, Wolfgang Grandegger via Xenomai wrote:
+>>> Hello,
+>>>
+>>> I'm writing a little UDD driver to handling interrupts and shared memory
+>>> to communicate with a co-processor. Is it possible to setup and map a
+>>> "mem_region" for *uncahced* memory. Will it be automatically uncached if
+>>> it's of type UDD_MEM_PHY?
+>>>
+>>
+>> Yep. Such requests is routed to RTDM's iomem mapping helper, which does:
+>>
+>> static int mmap_iomem_helper(struct vm_area_struct *vma, phys_addr_t pa)
+>> {
+>> 	pgprot_t prot = PAGE_SHARED;
+>> 	unsigned long len;
+>>
+>> 	len = vma->vm_end - vma->vm_start;
+>> 	...
+>> 	vma->vm_page_prot = pgprot_noncached(prot);
+>>
+>> 	return remap_pfn_range(vma, vma->vm_start, pa >> PAGE_SHIFT,
+>> 			       len, vma->vm_page_prot);
+>> }
+> 
+> I was aware of that code! I suspected some other magic when mapping
+> system memory with UDD_MEM_PHY. Maybe it's a barrier issue in the A9 or
+> M4 code.
+> 
+
+Any DMA in between?
+
+
+-- 
+Philippe.
+
