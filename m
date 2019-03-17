@@ -1,16 +1,12 @@
-Subject: Re: Mapping unchached memory with UDD
-References: <c0aefe52-0ba1-72fb-88d8-edc1fc73880e@grandegger.com>
- <09544b49-088d-e0e0-1dca-7f7df9ec12e0@xenomai.org>
- <eba476d3-59a0-85ff-599e-4270af06d8f1@grandegger.com>
- <b49ccf54-23d4-3b8d-fff9-3cf149bad830@xenomai.org>
-From: Wolfgang Grandegger <wg@grandegger.com>
-Message-ID: <a8b01526-e99b-5e0c-4ad9-bbd7cbff0ece@grandegger.com>
-Date: Sat, 16 Mar 2019 18:19:34 +0100
+From: =?gb2312?B?wO6x+Q==?= <bingli@mail.sdu.edu.cn>
+Subject: Application compile problem when use RTnet
+Date: Sun, 17 Mar 2019 15:35:39 +0800
+Message-ID: <000e01d4dc94$05438a90$0fca9fb0$@mail.sdu.edu.cn>
 MIME-Version: 1.0
-In-Reply-To: <b49ccf54-23d4-3b8d-fff9-3cf149bad830@xenomai.org>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-GB
-Content-Transfer-Encoding: 7bit
+Content-Language: zh-cn
+Content-Type: text/plain;
+	charset="gb2312"
+Content-Transfer-Encoding: quoted-printable
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -19,49 +15,98 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Philippe Gerum <rpm@xenomai.org>, "Xenomai@xenomai.org" <Xenomai@xenomai.org>
+To: xenomai@xenomai.org
+
+Hi everyone:
+
+   I am new to RTnet. I am using xenomai + RTnet in Ubuntu=A3=ACXenomai =
+version
+3.0.5,  Linux kernal version 4.9.38. And the ethernet card is Intel =
+e1000.
+
+  I am going to program use RTnet to communicate with another device =
+called
+RTDS. And I can=A1=AFt find any example in except demo in Xenomai 2. So =
+I try to
+compile the demo code in Xenomai 2.But I got an error when I compile the
+demo code. The code in demo is as below:
+
+=20
+
+#include <alchemy/task.h>
+
+#include <rtdm/rtdm.h> =20
+
+#include <trank/rtdm/rtdm.h>
+
+// #include <rtdm/uapi/rtdm.h>   The original code in the example, but =
+there
+is no rtdm.h file in uapi folder.
+
+#include <linux/net.h>   /* required for rt_task_wait_period() changes =
+*/
+
+=20
+
+When I compile the code, It throw an error :
+
+```
+
+In file included from frag-ip.c:37:0:
+
+/usr/xenomai/include/trank/rtdm/rtdm.h:21:28: fatal error: rtdm/rtdm.h: =
+No
+such file or directory
+
+compilation terminated.
+
+```
+
+The error is from =A1=B0/usr/xenomai/include/trank/rtdm/rtdm.h=A1=B1 , =
+and I put the
+code below in rtdm.h
+
+=20
+
+#ifndef _XENOMAI_TRANK_RTDM_RTDM_H  =20
+
+#define _XENOMAI_TRANK_RTDM_RTDM_H
+#include_next <rtdm/rtdm.h>              //Error is form this statement
+#ifdef __cplusplus
 
 
-Am 16.03.19 um 14:39 schrieb Philippe Gerum:
-> On 3/16/19 12:48 PM, Wolfgang Grandegger wrote:
->> Hello Philippe,
->>
->> Am 14.03.19 um 15:32 schrieb Philippe Gerum:
->>>
->>> Hi Wolfgang,
->>>
->>> On 3/14/19 11:38 AM, Wolfgang Grandegger via Xenomai wrote:
->>>> Hello,
->>>>
->>>> I'm writing a little UDD driver to handling interrupts and shared memory
->>>> to communicate with a co-processor. Is it possible to setup and map a
->>>> "mem_region" for *uncahced* memory. Will it be automatically uncached if
->>>> it's of type UDD_MEM_PHY?
->>>>
->>>
->>> Yep. Such requests is routed to RTDM's iomem mapping helper, which does:
->>>
->>> static int mmap_iomem_helper(struct vm_area_struct *vma, phys_addr_t pa)
->>> {
->>> 	pgprot_t prot = PAGE_SHARED;
->>> 	unsigned long len;
->>>
->>> 	len = vma->vm_end - vma->vm_start;
->>> 	...
->>> 	vma->vm_page_prot = pgprot_noncached(prot);
->>>
->>> 	return remap_pfn_range(vma, vma->vm_start, pa >> PAGE_SHIFT,
->>> 			       len, vma->vm_page_prot);
->>> }
->>
->> I was aware of that code! I suspected some other magic when mapping
->> system memory with UDD_MEM_PHY. Maybe it's a barrier issue in the A9 or
->> M4 code.
->>
-> 
-> Any DMA in between?
+extern "C" {
 
-No, just programmed I/O.
 
-Wolfgang.
+#endif  =20
+
+=20
+
+I use the makefile as below:
+
+=20
+
+XENO_CONFIG :=3D /usr/xenomai/bin/xeno-config
+
+CFLAGS :=3D $(shell $(XENO_CONFIG) --posix --alchemy --cflags)
+
+LDFLAGS :=3D $(shell $(XENO_CONFIG) --posix --alchemy --ldflags)
+
+CC :=3D gcc
+
+EXECUTABLE :=3D frag-ip
+
+all: $(EXECUTABLE)
+
+%: %.c
+
+        $(CC) -o $@ $< $(CFLAGS) $(LDFLAGS)
+
+=20
+
+I am so confused, and I can=A1=AFt sovle the problem , so if there some =
+one
+understand where this problem is?
+
+Thanks for everyone who spend time to give me some help!
 
