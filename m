@@ -1,13 +1,18 @@
-Subject: [PATCH v2] cobalt: Add sched-quota tracepoints
-References: <8f073b61-94c1-1500-a315-12068a36730b@siemens.com>
+Subject: Re: [PATCH v3] travis: add basic CI support
 From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <92b21c3e-dc56-dc6f-0e82-5c12f3664591@siemens.com>
-Date: Mon, 18 Mar 2019 15:56:41 +0100
+References: <20190311143722.21320-1-roman.stratiienko@globallogic.com>
+ <20190311143722.21320-2-roman.stratiienko@globallogic.com>
+ <ef22da7e-46f1-710c-53a6-4467f88b0db3@siemens.com>
+ <326c8b6c-9978-13d7-f637-2841f8adcb31@siemens.com>
+ <CAODwZ7uOkXMj0HN+P=_BxFireDqsdsr1dbSo8c5p5FKrPL-fLQ@mail.gmail.com>
+ <07be847f-3ac0-b54f-fd3a-40ee7a827bc0@siemens.com>
+Message-ID: <2e814509-3d89-efd4-476c-fdcefc989b16@siemens.com>
+Date: Mon, 18 Mar 2019 16:39:22 +0100
 MIME-Version: 1.0
-In-Reply-To: <8f073b61-94c1-1500-a315-12068a36730b@siemens.com>
-Content-Type: text/plain; charset=utf-8
+In-Reply-To: <07be847f-3ac0-b54f-fd3a-40ee7a827bc0@siemens.com>
+Content-Type: text/plain; charset="utf-8"; format="flowed"
 Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,208 +21,27 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Xenomai <xenomai@xenomai.org>
-Cc: Roman Stratiienko <roman.stratiienko@globallogic.com>
+To: Roman Stratiienko <roman.stratiienko@globallogic.com>
+Cc: xenomai@xenomai.org
 
-From: Jan Kiszka <jan.kiszka@siemens.com>
+On 18.03.19 15:24, Jan Kiszka wrote:
+> On 18.03.19 15:21, Roman Stratiienko wrote:
+>> Hello Jan,
+>>
+>> Build failure is caused by "cobalt: Add sched-quota tracepoints".
+>> I had to revert it to continue with testing
+>>
+> 
+> Ah, that's a good trace.  We might be missing some include... One minute...
+> 
 
-This instruments the sched-quota scheduling policy to track which groups
-exit, with which settings, and which threads belong to them.
+All green now with v2 of my tracepoint patch.
 
-As trace_cobalt_schedquota_add_thread may be invoked before a thread is
-fully initialized, we need to trace also the thread address.
+So we can move forward: Any updates on the fixes for newer kernels?
 
-Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
----
+Jan
 
-Changes in v2:
- - make tracepoints conditional - type availability is as well
- - avoid zero-elements array for dummy tracepoint (required for newer
-   kernels)
-
- kernel/cobalt/sched-quota.c       |  15 ++++++
- kernel/cobalt/trace/cobalt-core.h | 100 ++++++++++++++++++++++++++++++++++++++
- 2 files changed, 115 insertions(+)
-
-diff --git a/kernel/cobalt/sched-quota.c b/kernel/cobalt/sched-quota.c
-index b2f24cbb9a..79b9e5c907 100644
---- a/kernel/cobalt/sched-quota.c
-+++ b/kernel/cobalt/sched-quota.c
-@@ -20,6 +20,7 @@
- #include <cobalt/kernel/sched.h>
- #include <cobalt/kernel/arith.h>
- #include <cobalt/uapi/sched.h>
-+#include <trace/events/cobalt-core.h>
- 
- /*
-  * With this policy, each per-CPU scheduler slot maintains a list of
-@@ -155,6 +156,8 @@ static void quota_refill_handler(struct xntimer *timer)
- 	XENO_BUG_ON(COBALT, list_empty(&qs->groups));
- 	sched = container_of(qs, struct xnsched, quota);
- 
-+	trace_cobalt_schedquota_refill(0);
-+
- 	list_for_each_entry(tg, &qs->groups, next) {
- 		/* Allot a new runtime budget for the group. */
- 		replenish_budget(qs, tg);
-@@ -254,6 +257,9 @@ static bool xnsched_quota_setparam(struct xnthread *thread,
- 			list_del(&thread->quota_next);
- 			thread->quota->nr_threads--;
- 		}
-+
-+		trace_cobalt_schedquota_add_thread(tg, thread);
-+
- 		thread->quota = tg;
- 		list_add(&thread->quota_next, &tg->members);
- 		tg->nr_threads++;
-@@ -330,6 +336,8 @@ static int xnsched_quota_chkparam(struct xnthread *thread,
- 
- static void xnsched_quota_forget(struct xnthread *thread)
- {
-+	trace_cobalt_schedquota_remove_thread(thread->quota, thread);
-+
- 	thread->quota->nr_threads--;
- 	XENO_BUG_ON(COBALT, thread->quota->nr_threads < 0);
- 	list_del(&thread->quota_next);
-@@ -525,6 +533,8 @@ int xnsched_quota_create_group(struct xnsched_quota_group *tg,
- 	INIT_LIST_HEAD(&tg->members);
- 	INIT_LIST_HEAD(&tg->expired);
- 
-+	trace_cobalt_schedquota_create_group(tg);
-+
- 	if (list_empty(&qs->groups))
- 		xntimer_start(&qs->refill_timer,
- 			      qs->period_ns, qs->period_ns, XN_RELATIVE);
-@@ -555,6 +565,8 @@ int xnsched_quota_destroy_group(struct xnsched_quota_group *tg,
- 		}
- 	}
- 
-+	trace_cobalt_schedquota_destroy_group(tg);
-+
- 	list_del(&tg->next);
- 	__clear_bit(tg->tgid, group_map);
- 
-@@ -577,6 +589,9 @@ void xnsched_quota_set_limit(struct xnsched_quota_group *tg,
- 
- 	atomic_only();
- 
-+	trace_cobalt_schedquota_set_limit(tg, quota_percent,
-+					  quota_peak_percent);
-+
- 	if (quota_percent < 0 || quota_percent > 100) { /* Quota off. */
- 		quota_percent = 100;
- 		tg->quota_ns = qs->period_ns;
-diff --git a/kernel/cobalt/trace/cobalt-core.h b/kernel/cobalt/trace/cobalt-core.h
-index 3448da9109..a9e14815bc 100644
---- a/kernel/cobalt/trace/cobalt-core.h
-+++ b/kernel/cobalt/trace/cobalt-core.h
-@@ -203,6 +203,106 @@ TRACE_EVENT(cobalt_switch_context,
- 		  __get_str(next_name), __entry->next_pid, __entry->next_prio)
- );
- 
-+#ifdef CONFIG_XENO_OPT_SCHED_QUOTA
-+
-+TRACE_EVENT(cobalt_schedquota_refill,
-+	TP_PROTO(int dummy),
-+	TP_ARGS(dummy),
-+
-+	TP_STRUCT__entry(
-+		__field(int, dummy)
-+	),
-+
-+	TP_fast_assign(
-+		(void)dummy;
-+	),
-+
-+	TP_printk("%s", "")
-+);
-+
-+DECLARE_EVENT_CLASS(schedquota_group_event,
-+	TP_PROTO(struct xnsched_quota_group *tg),
-+	TP_ARGS(tg),
-+
-+	TP_STRUCT__entry(
-+		__field(int, tgid)
-+	),
-+
-+	TP_fast_assign(
-+		__entry->tgid = tg->tgid;
-+	),
-+
-+	TP_printk("tgid=%d",
-+		  __entry->tgid)
-+);
-+
-+DEFINE_EVENT(schedquota_group_event, cobalt_schedquota_create_group,
-+	TP_PROTO(struct xnsched_quota_group *tg),
-+	TP_ARGS(tg)
-+);
-+
-+DEFINE_EVENT(schedquota_group_event, cobalt_schedquota_destroy_group,
-+	TP_PROTO(struct xnsched_quota_group *tg),
-+	TP_ARGS(tg)
-+);
-+
-+TRACE_EVENT(cobalt_schedquota_set_limit,
-+	TP_PROTO(struct xnsched_quota_group *tg,
-+		 int percent,
-+		 int peak_percent),
-+	TP_ARGS(tg, percent, peak_percent),
-+
-+	TP_STRUCT__entry(
-+		__field(int, tgid)
-+		__field(int, percent)
-+		__field(int, peak_percent)
-+	),
-+
-+	TP_fast_assign(
-+		__entry->tgid = tg->tgid;
-+		__entry->percent = percent;
-+		__entry->peak_percent = peak_percent;
-+	),
-+
-+	TP_printk("tgid=%d percent=%d peak_percent=%d",
-+		  __entry->tgid, __entry->percent, __entry->peak_percent)
-+);
-+
-+DECLARE_EVENT_CLASS(schedquota_thread_event,
-+	TP_PROTO(struct xnsched_quota_group *tg,
-+		 struct xnthread *thread),
-+	TP_ARGS(tg, thread),
-+
-+	TP_STRUCT__entry(
-+		__field(int, tgid)
-+		__field(struct xnthread *, thread)
-+		__field(pid_t, pid)
-+	),
-+
-+	TP_fast_assign(
-+		__entry->tgid = tg->tgid;
-+		__entry->thread = thread;
-+		__entry->pid = xnthread_host_pid(thread);
-+	),
-+
-+	TP_printk("tgid=%d thread=%p pid=%d",
-+		  __entry->tgid, __entry->thread, __entry->pid)
-+);
-+
-+DEFINE_EVENT(schedquota_thread_event, cobalt_schedquota_add_thread,
-+	TP_PROTO(struct xnsched_quota_group *tg,
-+		 struct xnthread *thread),
-+	TP_ARGS(tg, thread)
-+);
-+
-+DEFINE_EVENT(schedquota_thread_event, cobalt_schedquota_remove_thread,
-+	TP_PROTO(struct xnsched_quota_group *tg,
-+		 struct xnthread *thread),
-+	TP_ARGS(tg, thread)
-+);
-+
-+#endif /* CONFIG_XENO_OPT_SCHED_QUOTA */
-+
- TRACE_EVENT(cobalt_thread_init,
- 	TP_PROTO(struct xnthread *thread,
- 		 const struct xnthread_init_attr *attr,
 -- 
-2.16.4
+Siemens AG, Corporate Technology, CT RDA IOT SES-DE
+Corporate Competence Center Embedded Linux
 
