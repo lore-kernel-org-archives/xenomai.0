@@ -1,11 +1,11 @@
-Subject: Re: INTR-REMAP error with UDD driver
-References: <SVZrPK0MQbayn-KPZ4wIvVLcbdluegH0Vxlth0h7DnkST5oo2K5_0Nu6vd-FBcRz3cYtRj5Jl9Wp2nTHSCp-udTCw2_fAcY--f7JNMVUHrg=@protonmail.com>
+Subject: [PATCH v2] cobalt: Add sched-quota tracepoints
+References: <8f073b61-94c1-1500-a315-12068a36730b@siemens.com>
 From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <46f899f8-8e3a-8ad5-77d3-5ed0bbc2c546@siemens.com>
-Date: Fri, 8 Mar 2019 08:14:33 +0100
+Message-ID: <92b21c3e-dc56-dc6f-0e82-5c12f3664591@siemens.com>
+Date: Mon, 18 Mar 2019 15:56:41 +0100
 MIME-Version: 1.0
-In-Reply-To: <SVZrPK0MQbayn-KPZ4wIvVLcbdluegH0Vxlth0h7DnkST5oo2K5_0Nu6vd-FBcRz3cYtRj5Jl9Wp2nTHSCp-udTCw2_fAcY--f7JNMVUHrg=@protonmail.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
+In-Reply-To: <8f073b61-94c1-1500-a315-12068a36730b@siemens.com>
+Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
@@ -16,47 +16,208 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jeff Webb <jeff.webb@protonmail.com>, "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Xenomai <xenomai@xenomai.org>
+Cc: Roman Stratiienko <roman.stratiienko@globallogic.com>
 
-On 08.03.19 02:35, Jeff Webb via Xenomai wrote:
-> I have implemented a simple UDD mini-driver (interrupt handler) and an associated Xenomai userspace test program.  This pair of programs works as intended on one machine.  When I tried running the same programs on another machine, I got this error when the first interrupt occurred:
-> 
-> kernel: [   75.122305] DMAR: DRHD: handling fault status reg 2
-> kernel: [   75.123175] DMAR: [INTR-REMAP] Request device [f0:1f.0] fault index ee00 [fault reason 37] Blocked a compatibility format interrupt request
-> 
+From: Jan Kiszka <jan.kiszka@siemens.com>
 
-This means the device is under IOMMU interrupt remapping regime, but it was 
-programmed to use a standard MSI/MSI-X request, rather than requesting that 
-parameters (address/data tuple) from the Linux interrupt management layer that 
-will assign a remapping slot and hand out the right values. Now you interrupt is 
-stuck in the filter.
+This instruments the sched-quota scheduling policy to track which groups
+exit, with which settings, and which threads belong to them.
 
-Before suggesting the workaround/hack to disable interrupt remapping: How did 
-you program MSI/-X? Via proper Linux pci_* helpers?
+As trace_cobalt_schedquota_add_thread may be invoked before a thread is
+fully initialized, we need to trace also the thread address.
 
-Jan
+Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
+---
 
-> I would guess that the [f0:1f.0] in the message is a PCI bus address, but I don't see this via lspci.  The closest match is:
-> 
-> 00:1f.0 ISA bridge [0601]: Intel Corporation Q67 Express Chipset LPC Controller [8086:1c4e] (rev 05)
-> 
-> After the first attempt, I see no more of these messages until I reboot, but the UDD driver never receives an interrupt in any case.
-> 
-> I tried moving my PCI card to five different slots, and finally found one where everything work properly on the second machine.  I can at continue to make progress using the working slot, but I would really like to resolve the issue with the other slots.  Does anyone have any idea what to try next?
-> 
-> I am using these sources:
-> 
-> linux-4.14.89.tar
-> ipipe-core-4.14.89-x86-2.patch
-> xenomai-3.0.8.tar
-> 
-> I have attached the boot log, config, and cpu information.
-> 
-> Thanks,
-> 
-> -Jeff Webb
+Changes in v2:
+ - make tracepoints conditional - type availability is as well
+ - avoid zero-elements array for dummy tracepoint (required for newer
+   kernels)
 
+ kernel/cobalt/sched-quota.c       |  15 ++++++
+ kernel/cobalt/trace/cobalt-core.h | 100 ++++++++++++++++++++++++++++++++++++++
+ 2 files changed, 115 insertions(+)
+
+diff --git a/kernel/cobalt/sched-quota.c b/kernel/cobalt/sched-quota.c
+index b2f24cbb9a..79b9e5c907 100644
+--- a/kernel/cobalt/sched-quota.c
++++ b/kernel/cobalt/sched-quota.c
+@@ -20,6 +20,7 @@
+ #include <cobalt/kernel/sched.h>
+ #include <cobalt/kernel/arith.h>
+ #include <cobalt/uapi/sched.h>
++#include <trace/events/cobalt-core.h>
+ 
+ /*
+  * With this policy, each per-CPU scheduler slot maintains a list of
+@@ -155,6 +156,8 @@ static void quota_refill_handler(struct xntimer *timer)
+ 	XENO_BUG_ON(COBALT, list_empty(&qs->groups));
+ 	sched = container_of(qs, struct xnsched, quota);
+ 
++	trace_cobalt_schedquota_refill(0);
++
+ 	list_for_each_entry(tg, &qs->groups, next) {
+ 		/* Allot a new runtime budget for the group. */
+ 		replenish_budget(qs, tg);
+@@ -254,6 +257,9 @@ static bool xnsched_quota_setparam(struct xnthread *thread,
+ 			list_del(&thread->quota_next);
+ 			thread->quota->nr_threads--;
+ 		}
++
++		trace_cobalt_schedquota_add_thread(tg, thread);
++
+ 		thread->quota = tg;
+ 		list_add(&thread->quota_next, &tg->members);
+ 		tg->nr_threads++;
+@@ -330,6 +336,8 @@ static int xnsched_quota_chkparam(struct xnthread *thread,
+ 
+ static void xnsched_quota_forget(struct xnthread *thread)
+ {
++	trace_cobalt_schedquota_remove_thread(thread->quota, thread);
++
+ 	thread->quota->nr_threads--;
+ 	XENO_BUG_ON(COBALT, thread->quota->nr_threads < 0);
+ 	list_del(&thread->quota_next);
+@@ -525,6 +533,8 @@ int xnsched_quota_create_group(struct xnsched_quota_group *tg,
+ 	INIT_LIST_HEAD(&tg->members);
+ 	INIT_LIST_HEAD(&tg->expired);
+ 
++	trace_cobalt_schedquota_create_group(tg);
++
+ 	if (list_empty(&qs->groups))
+ 		xntimer_start(&qs->refill_timer,
+ 			      qs->period_ns, qs->period_ns, XN_RELATIVE);
+@@ -555,6 +565,8 @@ int xnsched_quota_destroy_group(struct xnsched_quota_group *tg,
+ 		}
+ 	}
+ 
++	trace_cobalt_schedquota_destroy_group(tg);
++
+ 	list_del(&tg->next);
+ 	__clear_bit(tg->tgid, group_map);
+ 
+@@ -577,6 +589,9 @@ void xnsched_quota_set_limit(struct xnsched_quota_group *tg,
+ 
+ 	atomic_only();
+ 
++	trace_cobalt_schedquota_set_limit(tg, quota_percent,
++					  quota_peak_percent);
++
+ 	if (quota_percent < 0 || quota_percent > 100) { /* Quota off. */
+ 		quota_percent = 100;
+ 		tg->quota_ns = qs->period_ns;
+diff --git a/kernel/cobalt/trace/cobalt-core.h b/kernel/cobalt/trace/cobalt-core.h
+index 3448da9109..a9e14815bc 100644
+--- a/kernel/cobalt/trace/cobalt-core.h
++++ b/kernel/cobalt/trace/cobalt-core.h
+@@ -203,6 +203,106 @@ TRACE_EVENT(cobalt_switch_context,
+ 		  __get_str(next_name), __entry->next_pid, __entry->next_prio)
+ );
+ 
++#ifdef CONFIG_XENO_OPT_SCHED_QUOTA
++
++TRACE_EVENT(cobalt_schedquota_refill,
++	TP_PROTO(int dummy),
++	TP_ARGS(dummy),
++
++	TP_STRUCT__entry(
++		__field(int, dummy)
++	),
++
++	TP_fast_assign(
++		(void)dummy;
++	),
++
++	TP_printk("%s", "")
++);
++
++DECLARE_EVENT_CLASS(schedquota_group_event,
++	TP_PROTO(struct xnsched_quota_group *tg),
++	TP_ARGS(tg),
++
++	TP_STRUCT__entry(
++		__field(int, tgid)
++	),
++
++	TP_fast_assign(
++		__entry->tgid = tg->tgid;
++	),
++
++	TP_printk("tgid=%d",
++		  __entry->tgid)
++);
++
++DEFINE_EVENT(schedquota_group_event, cobalt_schedquota_create_group,
++	TP_PROTO(struct xnsched_quota_group *tg),
++	TP_ARGS(tg)
++);
++
++DEFINE_EVENT(schedquota_group_event, cobalt_schedquota_destroy_group,
++	TP_PROTO(struct xnsched_quota_group *tg),
++	TP_ARGS(tg)
++);
++
++TRACE_EVENT(cobalt_schedquota_set_limit,
++	TP_PROTO(struct xnsched_quota_group *tg,
++		 int percent,
++		 int peak_percent),
++	TP_ARGS(tg, percent, peak_percent),
++
++	TP_STRUCT__entry(
++		__field(int, tgid)
++		__field(int, percent)
++		__field(int, peak_percent)
++	),
++
++	TP_fast_assign(
++		__entry->tgid = tg->tgid;
++		__entry->percent = percent;
++		__entry->peak_percent = peak_percent;
++	),
++
++	TP_printk("tgid=%d percent=%d peak_percent=%d",
++		  __entry->tgid, __entry->percent, __entry->peak_percent)
++);
++
++DECLARE_EVENT_CLASS(schedquota_thread_event,
++	TP_PROTO(struct xnsched_quota_group *tg,
++		 struct xnthread *thread),
++	TP_ARGS(tg, thread),
++
++	TP_STRUCT__entry(
++		__field(int, tgid)
++		__field(struct xnthread *, thread)
++		__field(pid_t, pid)
++	),
++
++	TP_fast_assign(
++		__entry->tgid = tg->tgid;
++		__entry->thread = thread;
++		__entry->pid = xnthread_host_pid(thread);
++	),
++
++	TP_printk("tgid=%d thread=%p pid=%d",
++		  __entry->tgid, __entry->thread, __entry->pid)
++);
++
++DEFINE_EVENT(schedquota_thread_event, cobalt_schedquota_add_thread,
++	TP_PROTO(struct xnsched_quota_group *tg,
++		 struct xnthread *thread),
++	TP_ARGS(tg, thread)
++);
++
++DEFINE_EVENT(schedquota_thread_event, cobalt_schedquota_remove_thread,
++	TP_PROTO(struct xnsched_quota_group *tg,
++		 struct xnthread *thread),
++	TP_ARGS(tg, thread)
++);
++
++#endif /* CONFIG_XENO_OPT_SCHED_QUOTA */
++
+ TRACE_EVENT(cobalt_thread_init,
+ 	TP_PROTO(struct xnthread *thread,
+ 		 const struct xnthread_init_attr *attr,
 -- 
-Siemens AG, Corporate Technology, CT RDA IOT SES-DE
-Corporate Competence Center Embedded Linux
+2.16.4
 
