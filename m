@@ -1,7 +1,7 @@
 From: =?gb2312?B?wO6x+Q==?= <bingli@mail.sdu.edu.cn>
 Subject: Application compile problem when use RTnet
-Date: Sun, 17 Mar 2019 15:35:39 +0800
-Message-ID: <000e01d4dc94$05438a90$0fca9fb0$@mail.sdu.edu.cn>
+Date: Mon, 18 Mar 2019 09:13:09 +0800
+Message-ID: <004201d4dd27$c0ae2bd0$420a8370$@mail.sdu.edu.cn>
 MIME-Version: 1.0
 Content-Language: zh-cn
 Content-Type: text/plain;
@@ -19,7 +19,7 @@ To: xenomai@xenomai.org
 
 Hi everyone:
 
-   I am new to RTnet. I am using xenomai + RTnet in Ubuntu=A3=ACXenomai =
+  I am new to RTnet. I am using xenomai + RTnet in Ubuntu=A3=ACXenomai =
 version
 3.0.5,  Linux kernal version 4.9.38. And the ethernet card is Intel =
 e1000.
@@ -70,13 +70,13 @@ code below in rtdm.h
 
 #ifndef _XENOMAI_TRANK_RTDM_RTDM_H  =20
 
-#define _XENOMAI_TRANK_RTDM_RTDM_H
-#include_next <rtdm/rtdm.h>              //Error is form this statement
-#ifdef __cplusplus
+#define _XENOMAI_TRANK_RTDM_RTDM_H   =20
 
+#include_next <rtdm/rtdm.h>              //Error is form this statement
+
+ #ifdef __cplusplus=20
 
 extern "C" {
-
 
 #endif  =20
 
@@ -109,4 +109,6 @@ one
 understand where this problem is?
 
 Thanks for everyone who spend time to give me some help!
+
+=20
 
