@@ -1,12 +1,25 @@
+Subject: Re: Cobalt compatible distribution
+References: <1798013633.4056474.1550493375498.JavaMail.zimbra@wolfram.com>
+ <f51b37b7-4293-4b29-6d78-3eb460de3015@siemens.com>
+ <731343616.4059321.1550495335135.JavaMail.zimbra@wolfram.com>
+ <544217707.857557.1552467189711.JavaMail.zimbra@wolfram.com>
+ <1283d7c0-b719-8c63-6c7f-abbefe269a7a@gmail.com>
+ <192645678.5721329.1552685329163@mail.yahoo.com>
+ <cece8f69-d8c5-7165-e918-444398bea154@gmail.com>
+ <990066230.5891305.1552722294814@mail.yahoo.com>
+ <79b82a59-788d-e7b5-8465-8fb1d37bc20c@gmail.com>
+ <1723459381.6926353.1552936352861@mail.yahoo.com>
+ <697763087.6947921.1552936385419@mail.yahoo.com>
+ <7125eb31-9429-bcd1-2821-ca78ed2e0755@gmail.com>
+ <346474268.7105385.1552952529231@mail.yahoo.com>
+From: Don Newbold <d.o.newbold@gmail.com>
+Message-ID: <6c898217-fe53-b9cd-1eee-3b3cc8841956@gmail.com>
+Date: Tue, 19 Mar 2019 11:08:27 -0500
 MIME-Version: 1.0
-References: <20190319142822.31027-1-roman.stratiienko@globallogic.com>
- <bec61ef6-33ff-7caf-2af5-114c4b7c4c18@siemens.com>
-In-Reply-To: <bec61ef6-33ff-7caf-2af5-114c4b7c4c18@siemens.com>
-From: Roman Stratiienko <roman.stratiienko@globallogic.com>
-Date: Tue, 19 Mar 2019 16:59:01 +0200
-Message-ID: <CAODwZ7u-SvQrBySZyRiBAuCo985j-cbD=xJG=MJyitCsdcpWgA@mail.gmail.com>
-Subject: Re: [PATCH] travis: add checkpatch analysis
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <346474268.7105385.1552952529231@mail.yahoo.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,55 +28,55 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jan Kiszka <jan.kiszka@siemens.com>
-Cc: xenomai@xenomai.org
+To: Alec Ari <neotheuser@ymail.com>, Xenomai--- via Xenomai <xenomai@xenomai.org>
 
-Currently I see a lot of checkpatch warnings, that can not be fixed in
-xenomai project.
-But checkpatch errors usually could be fixed, so we should try I think.
+Alec,
 
+That'l get me going. Thank you,
 
-On Tue, Mar 19, 2019 at 4:45 PM Jan Kiszka <jan.kiszka@siemens.com> wrote:
+Don
 
-> On 19.03.19 15:28, roman.stratiienko--- via Xenomai wrote:
-> > From: Roman Stratiienko <roman.stratiienko@globallogic.com>
-> >
-> > Check last 10 commits with checkpatch.pl before build
-> >
-> > Signed-off-by: Roman Stratiienko <roman.stratiienko@globallogic.com>
-> > ---
-> >   .travis.yml | 1 +
-> >   1 file changed, 1 insertion(+)
-> >
-> > diff --git a/.travis.yml b/.travis.yml
-> > index 0cd9e571f..6fb604bf2 100644
-> > --- a/.travis.yml
-> > +++ b/.travis.yml
-> > @@ -78,6 +78,7 @@ before_script:
-> >     - popd
-> >
-> >   script:
-> > +  - ${KDIR}/scripts/checkpatch.pl --git HEAD~10..HEAD
-> >     - scripts/prepare-kernel.sh --ipipe=/tmp/ipipe.patch --arch=${ARCH}
-> --linux=${KDIR}
-> >     - pushd ${KDIR}
-> >     - make -j $(nproc) olddefconfig
-> >
->
-> Hmm, not convinced about enforced checking. That will fail the build, even
-> if
-> there might be a legitimate reason for some exception, no?
->
+On 3/18/2019 6:42 PM, Alec Ari wrote:
+> Oh boy, just when I thought I understood your question.
+> 
+> Xenomai git sources currently supports the 4.4 series, 4.9 series, and 4.14.
+> 
+> 
+> If you want 4.14 support, use this one:
+> https://gitlab.denx.de/Xenomai/ipipe-x86
+> 
+> Then follow this guide, starting at "Installing the Cobalt core:"
+> 
+> https://gitlab.denx.de/Xenomai/xenomai/wikis/Installing_Xenomai_3
+> 
+> Basically the steps are, for 4.14:
+> 
+> $ git clone https://gitlab.denx.de/Xenomai/ipipe-x86
+> $ git clone https://gitlab.denx.de/Xenomai/xenomai
+> 
+> 
+> $ cd ipipe-x86 && bash ../xenomai/scripts/prepare-kernel.sh --arch=x86
+> $ make menuconfig
+> 
+> Enable IPIPE, Cobalt core, etc. configure to your needs. I'm going off memory here but I'm pretty sure that's it, kernel side anyway.
+> 
+> When you're done:
+> 
+> $ cd xenomai && ./scripts/bootstrap && ./configure && make && sudo make install
+> 
+> For configure parameters:
+> 
+> $ ./configure --help
+> 
+> 
+> Alright, am I missing anything?
+> 
+> 
+> Alec
+> 
+> ---
+> This email has been checked for viruses by AVG.
+> https://www.avg.com
+> 
+> 
 
-
-
-
-
-
->
-> Jan
->
-> --
-> Siemens AG, Corporate Technology, CT RDA IOT SES-DE
-> Corporate Competence Center Embedded Linux
->
