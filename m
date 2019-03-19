@@ -1,14 +1,14 @@
-From: Richard Weinberger <richard@nod.at>
-Subject: Re: x86_64 kernel does not start under qemu
-Date: Fri, 08 Mar 2019 12:19:46 +0100
-Message-ID: <2063425.dnF2CDgauY@blindfold>
-In-Reply-To: <77bd8c5c-9961-35f0-e2fd-4c6df8a78a14@siemens.com>
-References: <CAFLxGvyyMEJ3t4K3dShxXMZccXCkuLN=bkTaTKLDugMieFD8ZA@mail.gmail.com>
- <3942851.pmMsEQ3ikD@blindfold>
- <77bd8c5c-9961-35f0-e2fd-4c6df8a78a14@siemens.com>
+Subject: Re: [PATCH] kernel: cobalt: replace access_ok with corresponding
+ wrappers
+References: <20190311143722.21320-1-roman.stratiienko@globallogic.com>
+From: Jan Kiszka <jan.kiszka@siemens.com>
+Message-ID: <7e3568e9-a3b2-acce-79d8-ace79b4929ad@siemens.com>
+Date: Tue, 19 Mar 2019 21:03:10 +0100
 MIME-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-Content-Type: text/plain; charset="iso-8859-1"
+In-Reply-To: <20190311143722.21320-1-roman.stratiienko@globallogic.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,58 +17,59 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jan Kiszka <jan.kiszka@siemens.com>
-Cc: "henning.schild@siemens.com" <henning.schild@siemens.com>, Lange Norbert <norbert.lange@andritz.com>, "Xenomai (xenomai@xenomai.org)" <xenomai@xenomai.org>
+To: roman.stratiienko@globallogic.com, xenomai@xenomai.org
 
-Am Mittwoch, 6. M=E4rz 2019, 17:39:38 CET schrieb Jan Kiszka:
-> On 06.03.19 16:33, Richard Weinberger wrote:
-> > Am Mittwoch, 6. M=E4rz 2019, 14:43:55 CET schrieb Jan Kiszka:
-> >> On 06.03.19 14:10, Jan Kiszka wrote:
-> >>> On 06.03.19 12:28, Lange Norbert via Xenomai wrote:
-> >>>> Hello,
-> >>>>
-> >>>> I have a similar issue on real hardware (cc Philippe). Can you try b=
-ooting
-> >>>> with notscdeadline?
-> >>>>
-> >>>
-> >>> I would be surprised if it's that: QEMU does not emulate this APIC fe=
-ature, only
-> >>> KVM does.
-> >>>
-> >>> I need to reproduce. Which QEMU version?
-> >>>
-> >>
-> >> Just booted current ipipe-x86-4.14.y (4.14.103) in QEMU 3.1+ (some dev=
-elopment
-> >> snapshot) with -smp 4 - works fine. But these are likely quite a few v=
-ariations
-> >> from your setup.
-> >=20
-> > I'm on qemu 2.11.2.
->=20
-> That one might still be serializing SMP, thus only use one core on the ho=
-st.=20
+On 11.03.19 15:37, roman.stratiienko--- via Xenomai wrote:
+> From: Roman Stratiienko <roman.stratiienko@globallogic.com>
+> 
+> Use access_wok / access_rok wrappers to enable support for kernel v5.0
+> 
+> Signed-off-by: Roman Stratiienko <roman.stratiienko@globallogic.com>
+> ---
+> 
+> This patch is also required to support v5.0
+> 
+>   kernel/cobalt/pipe.c | 5 +++--
+>   1 file changed, 3 insertions(+), 2 deletions(-)
+> 
+> diff --git a/kernel/cobalt/pipe.c b/kernel/cobalt/pipe.c
+> index 0b8f8cbf8..16e85125c 100644
+> --- a/kernel/cobalt/pipe.c
+> +++ b/kernel/cobalt/pipe.c
+> @@ -28,6 +28,7 @@
+>   #include <linux/device.h>
+>   #include <linux/uaccess.h>
+>   #include <asm/io.h>
+> +#include <asm/xenomai/syscall.h>
+>   #include <cobalt/kernel/sched.h>
+>   #include <cobalt/kernel/heap.h>
+>   #include <cobalt/kernel/pipe.h>
+> @@ -795,7 +796,7 @@ static ssize_t xnpipe_read(struct file *file,
+>   	ssize_t ret;
+>   	spl_t s;
+>   
+> -	if (!access_ok(VERIFY_WRITE, buf, count))
+> +	if (!access_wok(buf, count))
+>   		return -EFAULT;
+>   
+>   	xnlock_get_irqsave(&nklock, s);
+> @@ -903,7 +904,7 @@ static ssize_t xnpipe_write(struct file *file,
+>   	if (count == 0)
+>   		return 0;
+>   
+> -	if (!access_ok(VERIFY_READ, buf, count))
+> +	if (!access_rok(buf, count))
+>   		return -EFAULT;
+>   
+>   	xnlock_get_irqsave(&nklock, s);
+> 
 
-Well, why is this a problem for Xenomai?
-Does it deadlock if you have more than one cpu and these are not truly para=
-llel?
-This seems a little odd to me.
-
-> Currently trying to emulate that as it changes timing.
-
-Just retried with latest qemu (v3.1.0-2421-g9b748c5e061b), same problem.
-=20
-> > Is this plain ipipe? Just figured that you need to prepare the kernel
-> > with Xenomai to trigger the problem.
-> > Xenomai is 3.0.8.
->=20
-> I have Xenomai stable/v3.0.x running as well.
-
-What kernel config are you using and what is your qemu command line?
+And this one is in now as well.
 
 Thanks,
-//richard
+Jan
 
-
+-- 
+Siemens AG, Corporate Technology, CT RDA IOT SES-DE
+Corporate Competence Center Embedded Linux
 
