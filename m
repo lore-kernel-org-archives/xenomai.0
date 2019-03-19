@@ -1,25 +1,15 @@
-Subject: Re: Cobalt compatible distribution
-References: <1798013633.4056474.1550493375498.JavaMail.zimbra@wolfram.com>
- <f51b37b7-4293-4b29-6d78-3eb460de3015@siemens.com>
- <731343616.4059321.1550495335135.JavaMail.zimbra@wolfram.com>
- <544217707.857557.1552467189711.JavaMail.zimbra@wolfram.com>
- <1283d7c0-b719-8c63-6c7f-abbefe269a7a@gmail.com>
- <192645678.5721329.1552685329163@mail.yahoo.com>
- <cece8f69-d8c5-7165-e918-444398bea154@gmail.com>
- <990066230.5891305.1552722294814@mail.yahoo.com>
- <79b82a59-788d-e7b5-8465-8fb1d37bc20c@gmail.com>
- <1723459381.6926353.1552936352861@mail.yahoo.com>
- <697763087.6947921.1552936385419@mail.yahoo.com>
- <7125eb31-9429-bcd1-2821-ca78ed2e0755@gmail.com>
- <346474268.7105385.1552952529231@mail.yahoo.com>
-From: Don Newbold <d.o.newbold@gmail.com>
-Message-ID: <6c898217-fe53-b9cd-1eee-3b3cc8841956@gmail.com>
-Date: Tue, 19 Mar 2019 11:08:27 -0500
 MIME-Version: 1.0
-In-Reply-To: <346474268.7105385.1552952529231@mail.yahoo.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+References: <20190306175331.25444-1-roman.stratiienko@globallogic.com>
+ <20190306175331.25444-10-roman.stratiienko@globallogic.com>
+ <327870d1-b146-e392-7993-6ebb8876c975@siemens.com>
+In-Reply-To: <327870d1-b146-e392-7993-6ebb8876c975@siemens.com>
+From: Roman Stratiienko <roman.stratiienko@globallogic.com>
+Date: Tue, 19 Mar 2019 19:43:30 +0200
+Message-ID: <CAODwZ7u6JBGjVcJFqM3oF51h4yGA6q7XGYZ4LO=c-buPARbdZA@mail.gmail.com>
+Subject: Re: [PATCH v2 10/10] travis: append i-pipe arm-v4.20.7 and arm-v5.0
+ to the matrix
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -28,55 +18,65 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Alec Ari <neotheuser@ymail.com>, Xenomai--- via Xenomai <xenomai@xenomai.org>
+To: Jan Kiszka <jan.kiszka@siemens.com>
+Cc: xenomai@xenomai.org, Philippe Gerum <rpm@xenomai.org>
 
-Alec,
+Some point about repository-based checking VS patch based.
+CI is very useful for checking regressions caused by particuar commits. But
+when mixing repositories we risk to get interferentions between them.
+So it might be better to have separate CI for each ipipe repository.
 
-That'l get me going. Thank you,
+=D0=B2=D1=82, 19 =D0=BC=D0=B0=D1=80. 2019 =D0=B3., 16:56 Jan Kiszka <jan.ki=
+szka@siemens.com>:
 
-Don
-
-On 3/18/2019 6:42 PM, Alec Ari wrote:
-> Oh boy, just when I thought I understood your question.
-> 
-> Xenomai git sources currently supports the 4.4 series, 4.9 series, and 4.14.
-> 
-> 
-> If you want 4.14 support, use this one:
-> https://gitlab.denx.de/Xenomai/ipipe-x86
-> 
-> Then follow this guide, starting at "Installing the Cobalt core:"
-> 
-> https://gitlab.denx.de/Xenomai/xenomai/wikis/Installing_Xenomai_3
-> 
-> Basically the steps are, for 4.14:
-> 
-> $ git clone https://gitlab.denx.de/Xenomai/ipipe-x86
-> $ git clone https://gitlab.denx.de/Xenomai/xenomai
-> 
-> 
-> $ cd ipipe-x86 && bash ../xenomai/scripts/prepare-kernel.sh --arch=x86
-> $ make menuconfig
-> 
-> Enable IPIPE, Cobalt core, etc. configure to your needs. I'm going off memory here but I'm pretty sure that's it, kernel side anyway.
-> 
-> When you're done:
-> 
-> $ cd xenomai && ./scripts/bootstrap && ./configure && make && sudo make install
-> 
-> For configure parameters:
-> 
-> $ ./configure --help
-> 
-> 
-> Alright, am I missing anything?
-> 
-> 
-> Alec
-> 
-> ---
-> This email has been checked for viruses by AVG.
-> https://www.avg.com
-> 
-> 
-
+> On 06.03.19 18:53, roman.stratiienko--- via Xenomai wrote:
+> > From: Roman Stratiienko <roman.stratiienko@globallogic.com>
+> >
+> > Signed-off-by: Roman Stratiienko <roman.stratiienko@globallogic.com>
+> > ---
+> >   .travis.yml | 10 ++++++++++
+> >   1 file changed, 10 insertions(+)
+> >
+> > diff --git a/.travis.yml b/.travis.yml
+> > index 24889ca5f..ab23b745d 100644
+> > --- a/.travis.yml
+> > +++ b/.travis.yml
+> > @@ -46,6 +46,16 @@ script:
+> >
+> >   matrix:
+> >     include:
+> > +    - env:
+> > +      - ARCH: arm
+> > +        KERNEL_VERSION: 5.0
+> > +        KERNEL_DEFCONFIG: multi_v7_defconfig
+> > +        IPIPE_URL:
+> https://github.com/devel-opi/linux-ipipe-arm-porting/releases/download/v5=
+.0-draft1/ipipe-arm-v5.0-draft.patch
+> > +    - env:
+> > +      - ARCH: arm
+> > +        KERNEL_VERSION: 4.20.7
+> > +        KERNEL_DEFCONFIG: multi_v7_defconfig
+> > +        IPIPE_URL:
+> https://github.com/devel-opi/linux-ipipe-arm-porting/releases/download/dr=
+aft-v4.20.7/0001-Draft-version-of-ipipe-arm-ported-on-v4.20.7.patch
+> >       - env:
+> >         - ARCH: arm
+> >           KERNEL_VERSION: 4.14.85
+> >
+>
+> This one should come it via upstream ipipe. In fact, we should drop the
+> patch-based kernel setup, replacing it with git branches. That will also
+> allow
+> including arm64 into the matrix, where we lack a patch release for the
+> only
+> supported kernel version: 4.14.
+>
+> Applied all other 9 patches in this series to next now.
+>
+> Thanks,
+> Jan
+>
+> --
+> Siemens AG, Corporate Technology, CT RDA IOT SES-DE
+> Corporate Competence Center Embedded Linux
+>
