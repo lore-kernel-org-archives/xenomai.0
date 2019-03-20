@@ -1,11 +1,9 @@
-From: Lange Norbert <norbert.lange@andritz.com>
-Subject: libcopperplate.so depends on modecheck?
-Date: Wed, 20 Mar 2019 10:50:15 +0000
-Message-ID: <f467b76008e5458c8741a0e56c02e2e1@andritz.com>
-Content-Language: en-US
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: quoted-printable
+From: Philippe Gerum <rpm@xenomai.org>
+Subject: [PATCH 0/5] serial, net, testsuite fixes
+Date: Wed, 20 Mar 2019 16:44:20 +0100
+Message-Id: <20190320154425.30639-1-rpm@xenomai.org>
 MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -14,61 +12,27 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "Xenomai (xenomai@xenomai.org)" <xenomai@xenomai.org>
+To: xenomai@xenomai.org
 
-Hello,
+No critical changes here; although patch #0002 fixes a locking
+imbalance in some error path, the latter is in theory impossible to
+trigger.
 
-Seems like libcopperplate.so always depends on libmodechk.so, as the follow=
-ing symbols would imply:
+Philippe Gerum (5):
+  testsuite/gpiotest: define missing 'timestamp' argument
+  drivers/serial: imx: fix locking imbalance upon -EBADF
+  drivers/serial: imx: drop useless EWOULDBLOCK->EAGAIN remapping
+  net/drivers: macb: do not check for initial checksum value
+  net/drivers: stack: remove unused assertion
 
-nm -D /home/lano/buildroot/host/x86_64-buildroot-linux-gnu/sysroot/usr/xeno=
-mai/lib/libcopperplate.so | grep __real
-                 U __real_free
-                 U __real_malloc
+ doc/asciidoc/MIGRATION.adoc              |  4 +---
+ kernel/drivers/net/drivers/macb.c        |  2 --
+ kernel/drivers/net/stack/include/rtskb.h |  2 --
+ kernel/drivers/serial/rt_imx_uart.c      |  6 +-----
+ testsuite/gpiotest/gpiotest.c            | 11 ++++++-----
+ 5 files changed, 8 insertions(+), 17 deletions(-)
 
-xeno-config deals with this by always linking modeck, even if you add --no-=
-mode-check-
+-- 
+2.20.1
 
-I am not completely confident with the wrapper-magic,
-but shouldn't libcopperplate use either cobalt_malloc or the libc malloc?
-__real_malloc is just a stub for libc malloc, so I really don't get the poi=
-nt (assuming this is intentional).
-
-Modeswitches could also be detected by interposing libraries, so removing l=
-ibmodechk
-Is a viable thing to do.
-(shameless plug: https://github.com/nolange/preload_checkers )
-
-
-Regards, Norbert
-________________________________
-
-This message and any attachments are solely for the use of the intended rec=
-ipients. They may contain privileged and/or confidential information or oth=
-er information protected from disclosure. If you are not an intended recipi=
-ent, you are hereby notified that you received this email in error and that=
- any review, dissemination, distribution or copying of this email and any a=
-ttachment is strictly prohibited. If you have received this email in error,=
- please contact the sender and delete the message and any attachment from y=
-our system.
-
-ANDRITZ HYDRO GmbH
-
-
-Rechtsform/ Legal form: Gesellschaft mit beschr=C3=A4nkter Haftung / Corpor=
-ation
-
-Firmensitz/ Registered seat: Wien
-
-Firmenbuchgericht/ Court of registry: Handelsgericht Wien
-
-Firmenbuchnummer/ Company registration: FN 61833 g
-
-DVR: 0605077
-
-UID-Nr.: ATU14756806
-
-
-Thank You
-________________________________
 
