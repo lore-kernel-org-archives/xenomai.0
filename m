@@ -1,7 +1,7 @@
 From: Philippe Gerum <rpm@xenomai.org>
-Subject: [PATCH 1/5] testsuite/gpiotest: define missing 'timestamp' argument
-Date: Wed, 20 Mar 2019 16:44:21 +0100
-Message-Id: <20190320154425.30639-2-rpm@xenomai.org>
+Subject: [PATCH 2/5] drivers/serial: imx: fix locking imbalance upon -EBADF
+Date: Wed, 20 Mar 2019 16:44:22 +0100
+Message-Id: <20190320154425.30639-3-rpm@xenomai.org>
 In-Reply-To: <20190320154425.30639-1-rpm@xenomai.org>
 References: <20190320154425.30639-1-rpm@xenomai.org>
 MIME-Version: 1.0
@@ -18,21 +18,22 @@ To: xenomai@xenomai.org
 
 Signed-off-by: Philippe Gerum <rpm@xenomai.org>
 ---
- testsuite/gpiotest/gpiotest.c | 1 +
- 1 file changed, 1 insertion(+)
+ kernel/drivers/serial/rt_imx_uart.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/testsuite/gpiotest/gpiotest.c b/testsuite/gpiotest/gpiotest.c
-index 7347ac506..2e4b1bf4d 100644
---- a/testsuite/gpiotest/gpiotest.c
-+++ b/testsuite/gpiotest/gpiotest.c
-@@ -35,6 +35,7 @@ smokey_test_plugin(interrupt,
- 			   SMOKEY_STRING(device),
- 			   SMOKEY_STRING(trigger),
- 			   SMOKEY_BOOL(select),
-+			   SMOKEY_BOOL(timestamp),
- 		   ),
-    "Wait for interrupts from a GPIO pin.\n"
-    "\tdevice=<device-path>\n"
+diff --git a/kernel/drivers/serial/rt_imx_uart.c b/kernel/drivers/serial/rt_imx_uart.c
+index 443a34261..574fd1aa7 100644
+--- a/kernel/drivers/serial/rt_imx_uart.c
++++ b/kernel/drivers/serial/rt_imx_uart.c
+@@ -1433,7 +1433,7 @@ static ssize_t rt_imx_uart_write(struct rtdm_fd *fd, const void *buf,
+ 				/* Device has been closed -
+ 				 * return immediately.
+ 				 */
+-				return -EBADF;
++				ret = -EBADF;
+ 			}
+ 			if (ret == -EWOULDBLOCK) {
+ 				/* Fix error code for non-blocking mode. */
 -- 
 2.20.1
 
