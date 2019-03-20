@@ -1,7 +1,7 @@
 From: Philippe Gerum <rpm@xenomai.org>
-Subject: [PATCH 4/5] net/drivers: macb: do not check for initial checksum value
-Date: Wed, 20 Mar 2019 16:44:24 +0100
-Message-Id: <20190320154425.30639-5-rpm@xenomai.org>
+Subject: [PATCH 5/5] net/drivers: stack: remove unused assertion
+Date: Wed, 20 Mar 2019 16:44:25 +0100
+Message-Id: <20190320154425.30639-6-rpm@xenomai.org>
 In-Reply-To: <20190320154425.30639-1-rpm@xenomai.org>
 References: <20190320154425.30639-1-rpm@xenomai.org>
 MIME-Version: 1.0
@@ -16,33 +16,49 @@ List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: xenomai@xenomai.org
 
-See https://www.xenomai.org/pipermail/xenomai/2019-February/040321.html.
+We have no more in-tree users for it.
 
 Signed-off-by: Philippe Gerum <rpm@xenomai.org>
 ---
- kernel/drivers/net/drivers/macb.c | 2 --
- 1 file changed, 2 deletions(-)
+ doc/asciidoc/MIGRATION.adoc              | 4 +---
+ kernel/drivers/net/stack/include/rtskb.h | 2 --
+ 2 files changed, 1 insertion(+), 5 deletions(-)
 
-diff --git a/kernel/drivers/net/drivers/macb.c b/kernel/drivers/net/drivers/macb.c
-index 8a6a10f9c..fc5b6679a 100644
---- a/kernel/drivers/net/drivers/macb.c
-+++ b/kernel/drivers/net/drivers/macb.c
-@@ -725,7 +725,6 @@ static int gem_rx(struct macb *bp, int budget, nanosecs_abs_t *time_stamp)
- 				 bp->rx_buffer_size, DMA_FROM_DEVICE);
+diff --git a/doc/asciidoc/MIGRATION.adoc b/doc/asciidoc/MIGRATION.adoc
+index b4f95dc45..cf1346415 100644
+--- a/doc/asciidoc/MIGRATION.adoc
++++ b/doc/asciidoc/MIGRATION.adoc
+@@ -1129,8 +1129,7 @@ unsigned int rtskb_module_pool_init(struct rtskb_pool *pool,
+     rtnetdev_priv(), rtdev_emerg(), rtdev_alert(), rtdev_crit(),
+     rtdev_err(), rtdev_warn(), rtdev_notice(), rtdev_info(),
+     rtdev_dbg(), rtdev_vdbg(), RTDEV_TX_OK, RTDEV_TX_BUSY,
+-    rtskb_checksum_none_assert(), rtskb_tx_timestamp(). Their
+-    declarations are equivalent to:
++    rtskb_tx_timestamp(). Their declarations are equivalent to:
  
- 		skb->protocol = rt_eth_type_trans(skb, bp->dev);
--		rtskb_checksum_none_assert(skb);
+ -----------------------------------------------------------------------
+ #define RTDEV_TX_OK	0
+@@ -1148,7 +1147,6 @@ void rtdev_info(struct rntet_device *dev, const char *format, ...);
+ void rtdev_dbg(struct rntet_device *dev, const char *format, ...);
+ void rtdev_vdbg(struct rntet_device *dev, const char *format, ...);
  
- 		bp->stats.rx_packets++;
- 		bp->stats.rx_bytes += skb->len;
-@@ -792,7 +791,6 @@ static int macb_rx_frame(struct macb *bp, unsigned int first_frag,
- 	offset = 0;
- 	len += NET_IP_ALIGN;
- 	skb->time_stamp = *time_stamp;
--	rtskb_checksum_none_assert(skb);
- 	rtskb_put(skb, len);
+-void rtskb_checksum_non_assert(struct rtskb *skb);
+ void rtskb_tx_timestamp(struct rtskb *skb);
+ -----------------------------------------------------------------------
  
- 	for (frag = first_frag; ; frag++) {
+diff --git a/kernel/drivers/net/stack/include/rtskb.h b/kernel/drivers/net/stack/include/rtskb.h
+index a1793e9a8..0f7e0bff2 100644
+--- a/kernel/drivers/net/stack/include/rtskb.h
++++ b/kernel/drivers/net/stack/include/rtskb.h
+@@ -294,8 +294,6 @@ extern void kfree_rtskb(struct rtskb *skb);
+ #define dev_kfree_rtskb(a)  kfree_rtskb(a)
+ 
+ 
+-#define rtskb_checksum_none_assert(skb) (skb->ip_summed = CHECKSUM_NONE)
+-
+ static inline void rtskb_tx_timestamp(struct rtskb *skb)
+ {
+ 	nanosecs_abs_t *ts = skb->xmit_stamp;
 -- 
 2.20.1
 
