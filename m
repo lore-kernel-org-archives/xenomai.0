@@ -1,7 +1,9 @@
 From: Philippe Gerum <rpm@xenomai.org>
-Subject: [PATCH 0/5] serial, net, testsuite fixes
-Date: Wed, 20 Mar 2019 16:44:20 +0100
-Message-Id: <20190320154425.30639-1-rpm@xenomai.org>
+Subject: [PATCH 1/5] testsuite/gpiotest: define missing 'timestamp' argument
+Date: Wed, 20 Mar 2019 16:44:21 +0100
+Message-Id: <20190320154425.30639-2-rpm@xenomai.org>
+In-Reply-To: <20190320154425.30639-1-rpm@xenomai.org>
+References: <20190320154425.30639-1-rpm@xenomai.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
@@ -14,24 +16,23 @@ List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: xenomai@xenomai.org
 
-No critical changes here; although patch #0002 fixes a locking
-imbalance in some error path, the latter is in theory impossible to
-trigger.
+Signed-off-by: Philippe Gerum <rpm@xenomai.org>
+---
+ testsuite/gpiotest/gpiotest.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-Philippe Gerum (5):
-  testsuite/gpiotest: define missing 'timestamp' argument
-  drivers/serial: imx: fix locking imbalance upon -EBADF
-  drivers/serial: imx: drop useless EWOULDBLOCK->EAGAIN remapping
-  net/drivers: macb: do not check for initial checksum value
-  net/drivers: stack: remove unused assertion
-
- doc/asciidoc/MIGRATION.adoc              |  4 +---
- kernel/drivers/net/drivers/macb.c        |  2 --
- kernel/drivers/net/stack/include/rtskb.h |  2 --
- kernel/drivers/serial/rt_imx_uart.c      |  6 +-----
- testsuite/gpiotest/gpiotest.c            | 11 ++++++-----
- 5 files changed, 8 insertions(+), 17 deletions(-)
-
+diff --git a/testsuite/gpiotest/gpiotest.c b/testsuite/gpiotest/gpiotest.c
+index 7347ac506..2e4b1bf4d 100644
+--- a/testsuite/gpiotest/gpiotest.c
++++ b/testsuite/gpiotest/gpiotest.c
+@@ -35,6 +35,7 @@ smokey_test_plugin(interrupt,
+ 			   SMOKEY_STRING(device),
+ 			   SMOKEY_STRING(trigger),
+ 			   SMOKEY_BOOL(select),
++			   SMOKEY_BOOL(timestamp),
+ 		   ),
+    "Wait for interrupts from a GPIO pin.\n"
+    "\tdevice=<device-path>\n"
 -- 
 2.20.1
 
