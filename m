@@ -1,7 +1,8 @@
 From: Philippe Gerum <rpm@xenomai.org>
-Subject: [PATCH 2/5] drivers/serial: imx: fix locking imbalance upon -EBADF
-Date: Wed, 20 Mar 2019 16:44:22 +0100
-Message-Id: <20190320154425.30639-3-rpm@xenomai.org>
+Subject: [PATCH 3/5] drivers/serial: imx: drop useless EWOULDBLOCK->EAGAIN
+ remapping
+Date: Wed, 20 Mar 2019 16:44:23 +0100
+Message-Id: <20190320154425.30639-4-rpm@xenomai.org>
 In-Reply-To: <20190320154425.30639-1-rpm@xenomai.org>
 References: <20190320154425.30639-1-rpm@xenomai.org>
 MIME-Version: 1.0
@@ -18,22 +19,24 @@ To: xenomai@xenomai.org
 
 Signed-off-by: Philippe Gerum <rpm@xenomai.org>
 ---
- kernel/drivers/serial/rt_imx_uart.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ kernel/drivers/serial/rt_imx_uart.c | 4 ----
+ 1 file changed, 4 deletions(-)
 
 diff --git a/kernel/drivers/serial/rt_imx_uart.c b/kernel/drivers/serial/rt_imx_uart.c
-index 443a34261..574fd1aa7 100644
+index 574fd1aa7..6118e29b7 100644
 --- a/kernel/drivers/serial/rt_imx_uart.c
 +++ b/kernel/drivers/serial/rt_imx_uart.c
-@@ -1433,7 +1433,7 @@ static ssize_t rt_imx_uart_write(struct rtdm_fd *fd, const void *buf,
- 				/* Device has been closed -
- 				 * return immediately.
+@@ -1435,10 +1435,6 @@ static ssize_t rt_imx_uart_write(struct rtdm_fd *fd, const void *buf,
  				 */
--				return -EBADF;
-+				ret = -EBADF;
+ 				ret = -EBADF;
  			}
- 			if (ret == -EWOULDBLOCK) {
- 				/* Fix error code for non-blocking mode. */
+-			if (ret == -EWOULDBLOCK) {
+-				/* Fix error code for non-blocking mode. */
+-				ret = -EAGAIN;
+-			}
+ 			break;
+ 		}
+ 	}
 -- 
 2.20.1
 
