@@ -1,12 +1,14 @@
-From: Jouko Haapaluoma <jouko.haapaluoma@wapice.com>
-Subject: net/rtdev: Commit e972e78e reintroduces memory corruption fixed by
- 74464ee3
-Date: Fri, 8 Mar 2019 12:47:19 +0000
-Message-ID: <HE1PR0301MB2140C55227286ADD137B6D56E54D0@HE1PR0301MB2140.eurprd03.prod.outlook.com>
-Content-Language: en-US
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+From: Richard Weinberger <richard@nod.at>
+Subject: Re: x86_64 kernel does not start under qemu
+Date: Thu, 21 Mar 2019 12:57:54 +0100
+Message-ID: <3154485.mhzyMJEECq@blindfold>
+In-Reply-To: <ddd256e9-0e93-30bc-ddf0-e4f333d24d7f@siemens.com>
+References: <CAFLxGvyyMEJ3t4K3dShxXMZccXCkuLN=bkTaTKLDugMieFD8ZA@mail.gmail.com>
+ <73309048-fefd-20a4-31ae-1ce41b0fb8a6@siemens.com>
+ <ddd256e9-0e93-30bc-ddf0-e4f333d24d7f@siemens.com>
 MIME-Version: 1.0
+Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset="iso-8859-1"
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,29 +17,26 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "Philippe Gerum <rpm@xenomai.org> (rpm@xenomai.org)" <rpm@xenomai.org>, "'xenomai@xenomai.org'" <xenomai@xenomai.org>, "jan.kiszka@siemens.com" <jan.kiszka@siemens.com>
+To: Jan Kiszka <jan.kiszka@siemens.com>
+Cc: "henning.schild@siemens.com" <henning.schild@siemens.com>, Lange Norbert <norbert.lange@andritz.com>, "Xenomai (xenomai@xenomai.org)" <xenomai@xenomai.org>
 
-Hello
+Am Donnerstag, 21. M=E4rz 2019, 12:02:45 CET schrieb Jan Kiszka:
+> FWIW, I've just seen this issue as well, with QEMU in KVM mode: I ran int=
+o that=20
+> lockup when my host was under full load while Xenomai booted in the VM. A=
+nd it=20
+> seems reproducible. Debugging...
 
-I have been investigating kernel memory corruption issues in our system (Xe=
-nomai 2.6.4 and RTnet 0.9.13.2).
-I traced the root cause into the rtdev_map_rtskb() function where a linked =
-list is always grown but not shrinked.
-You have recently created a patch that fixes this: 74464ee3.
+Oh, good to hear that!
+I played a little with your config but got badly interrupted with other stu=
+ff.
+Your config seems to work but mostly because things are slower due to debug=
+ging stuff
+you've enabled. Maybe this info helps.
 
-Additionally, there seemed to be a regression and that was fixed in e972e78=
-e. However, this regression fix
-reintroduces the memory corruption in cases where the rtdev does not have t=
-he rtdev->map_rtskb function defined.
-Therefore we end up in the situation that was before the 74464ee3: The rtsk=
-b_mapwait_list will grow but not shrink.
-If sockets are destroyed and recreated, the rtskb_mapwait_list->next will p=
-oint to a destroyed skb object which causes a
-use-after-free memory corruption when calling list_add().
+Thanks,
+//richard
 
-Best Regards,
-Jouko Haapaluoma
-Senior Software Designer
-Embedded Linux Technology Specialist
-Wapice Ltd, Finland
+
+
 
