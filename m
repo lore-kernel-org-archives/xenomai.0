@@ -1,14 +1,11 @@
-Subject: Re: net/rtdev: Commit e972e78e reintroduces memory corruption fixed
- by 74464ee3
-References: <HE1PR0301MB2140C55227286ADD137B6D56E54D0@HE1PR0301MB2140.eurprd03.prod.outlook.com>
-From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <f1489cdd-cba5-e564-cc7d-e002920149ee@siemens.com>
-Date: Fri, 8 Mar 2019 13:55:05 +0100
+From: Philippe Gerum <rpm@xenomai.org>
+Subject: [PATCH 08/16] net/stack: rtskb: increase buffer size
+Date: Thu, 21 Mar 2019 18:13:22 +0100
+Message-Id: <20190321171330.2073-9-rpm@xenomai.org>
+In-Reply-To: <20190321171330.2073-1-rpm@xenomai.org>
+References: <20190321171330.2073-1-rpm@xenomai.org>
 MIME-Version: 1.0
-In-Reply-To: <HE1PR0301MB2140C55227286ADD137B6D56E54D0@HE1PR0301MB2140.eurprd03.prod.outlook.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,29 +14,33 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jouko Haapaluoma <jouko.haapaluoma@wapice.com>, "Philippe Gerum <rpm@xenomai.org> (rpm@xenomai.org)" <rpm@xenomai.org>, "'xenomai@xenomai.org'" <xenomai@xenomai.org>
+To: xenomai@xenomai.org
+Cc: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>, Philippe Gerum <rpm@xenomai.org>
 
-On 08.03.19 13:47, Jouko Haapaluoma wrote:
-> Hello
-> 
-> I have been investigating kernel memory corruption issues in our system (Xenomai 2.6.4 and RTnet 0.9.13.2).
-> I traced the root cause into the rtdev_map_rtskb() function where a linked list is always grown but not shrinked.
-> You have recently created a patch that fixes this: 74464ee3.
-> 
-> Additionally, there seemed to be a regression and that was fixed in e972e78e. However, this regression fix
-> reintroduces the memory corruption in cases where the rtdev does not have the rtdev->map_rtskb function defined.
-> Therefore we end up in the situation that was before the 74464ee3: The rtskb_mapwait_list will grow but not shrink.
-> If sockets are destroyed and recreated, the rtskb_mapwait_list->next will point to a destroyed skb object which causes a
-> use-after-free memory corruption when calling list_add().
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 
-Hmpf, right, too bad.
+The largest packet size an IGB device can handle is 2k. Since we have
+a fixed buffer size, we need to accomodate for this.
 
-I suppose we should be fine by dropping the rtskb from the waitlist in 
-rtdev_unmap_rtskb if it had no dma address set.
+Signed-off-by: Philippe Gerum <rpm@xenomai.org>
+---
+ kernel/drivers/net/stack/include/rtskb.h | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-Jan
-
+diff --git a/kernel/drivers/net/stack/include/rtskb.h b/kernel/drivers/net/stack/include/rtskb.h
+index 36445ad08..55e3ded99 100644
+--- a/kernel/drivers/net/stack/include/rtskb.h
++++ b/kernel/drivers/net/stack/include/rtskb.h
+@@ -263,7 +263,7 @@ struct rtskb_prio_queue {
+ #define DEFAULT_SOCKET_RTSKBS       16	/* default number of rtskb's in socket pools */
+ 
+ #define ALIGN_RTSKB_STRUCT_LEN      SKB_DATA_ALIGN(sizeof(struct rtskb))
+-#define RTSKB_SIZE                  1544	/* maximum needed by pcnet32-rt */
++#define RTSKB_SIZE                  (2048 + NET_IP_ALIGN)    /* maximum needed by igb */
+ 
+ extern unsigned int rtskb_pools;	/* current number of rtskb pools      */
+ extern unsigned int rtskb_pools_max;	/* maximum number of rtskb pools      */
 -- 
-Siemens AG, Corporate Technology, CT RDA IOT SES-DE
-Corporate Competence Center Embedded Linux
+2.20.1
+
 
