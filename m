@@ -1,7 +1,7 @@
 From: Philippe Gerum <rpm@xenomai.org>
-Subject: [PATCH 14/16] net/drivers: igb: enable multicast
-Date: Thu, 21 Mar 2019 18:13:28 +0100
-Message-Id: <20190321171330.2073-15-rpm@xenomai.org>
+Subject: [PATCH 15/16] net/drivers: igb: enable VLAN filtering
+Date: Thu, 21 Mar 2019 18:13:29 +0100
+Message-Id: <20190321171330.2073-16-rpm@xenomai.org>
 In-Reply-To: <20190321171330.2073-1-rpm@xenomai.org>
 References: <20190321171330.2073-1-rpm@xenomai.org>
 MIME-Version: 1.0
@@ -21,108 +21,81 @@ From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 
 Signed-off-by: Philippe Gerum <rpm@xenomai.org>
 ---
- kernel/drivers/net/drivers/igb/e1000_mac.c |  6 ++---
- kernel/drivers/net/drivers/igb/e1000_mac.h |  2 +-
- kernel/drivers/net/drivers/igb/igb_main.c  | 30 +++++-----------------
- 3 files changed, 11 insertions(+), 27 deletions(-)
+ kernel/drivers/net/drivers/igb/igb_main.c | 23 ++++++++++++++++-------
+ 1 file changed, 16 insertions(+), 7 deletions(-)
 
-diff --git a/kernel/drivers/net/drivers/igb/e1000_mac.c b/kernel/drivers/net/drivers/igb/e1000_mac.c
-index 5b7a82d25..77db892ac 100644
---- a/kernel/drivers/net/drivers/igb/e1000_mac.c
-+++ b/kernel/drivers/net/drivers/igb/e1000_mac.c
-@@ -438,7 +438,7 @@ static u32 igb_hash_mc_addr(struct e1000_hw *hw, u8 * mc_addr)
-  *  The caller must have a packed mc_addr_list of multicast addresses.
-  **/
- void igb_update_mc_addr_list(struct e1000_hw *hw,
--			     u8 * mc_addr_list, u32 mc_addr_count)
-+			     struct rtdev_mc_list *mc_addr, u32 mc_addr_count)
- {
- 	u32 hash_value, hash_bit, hash_reg;
- 	int i;
-@@ -448,13 +448,13 @@ void igb_update_mc_addr_list(struct e1000_hw *hw,
- 
- 	/* update mta_shadow from mc_addr_list */
- 	for (i = 0; (u32) i < mc_addr_count; i++) {
--		hash_value = igb_hash_mc_addr(hw, mc_addr_list);
-+		hash_value = igb_hash_mc_addr(hw, mc_addr->dmi_addr);
- 
- 		hash_reg = (hash_value >> 5) & (hw->mac.mta_reg_count - 1);
- 		hash_bit = hash_value & 0x1F;
- 
- 		hw->mac.mta_shadow[hash_reg] |= (1 << hash_bit);
--		mc_addr_list += (ETH_ALEN);
-+		mc_addr = mc_addr->next;
- 	}
- 
- 	/* replace the entire MTA table */
-diff --git a/kernel/drivers/net/drivers/igb/e1000_mac.h b/kernel/drivers/net/drivers/igb/e1000_mac.h
-index 7f3744cf5..af1b6457f 100644
---- a/kernel/drivers/net/drivers/igb/e1000_mac.h
-+++ b/kernel/drivers/net/drivers/igb/e1000_mac.h
-@@ -49,7 +49,7 @@ s32 igb_get_speed_and_duplex_copper(struct e1000_hw *hw, u16 * speed,
- s32 igb_id_led_init(struct e1000_hw *hw);
- s32 igb_led_off(struct e1000_hw *hw);
- void igb_update_mc_addr_list(struct e1000_hw *hw,
--			     u8 * mc_addr_list, u32 mc_addr_count);
-+			struct rtdev_mc_list *mc_addr, u32 mc_addr_count);
- s32 igb_setup_link(struct e1000_hw *hw);
- s32 igb_validate_mdi_setting(struct e1000_hw *hw);
- s32 igb_write_8bit_ctrl_reg(struct e1000_hw *hw, u32 reg, u32 offset, u8 data);
 diff --git a/kernel/drivers/net/drivers/igb/igb_main.c b/kernel/drivers/net/drivers/igb/igb_main.c
-index 06c9d7818..2b3957eae 100644
+index 2b3957eae..399056043 100644
 --- a/kernel/drivers/net/drivers/igb/igb_main.c
 +++ b/kernel/drivers/net/drivers/igb/igb_main.c
-@@ -2047,8 +2047,8 @@ static int igb_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
- 	netdev->map_rtskb = igb_map_rtskb;
+@@ -221,7 +221,8 @@ static int igb_ioctl(struct rtnet_device *, struct ifreq *ifr, int cmd);
+ static void igb_reset_task(struct work_struct *);
+ static void igb_vlan_mode(struct rtnet_device *netdev,
+ 			  netdev_features_t features);
+-static int igb_vlan_rx_add_vid(struct rtnet_device *, __be16, u16);
++static void igb_vlan_rx_add_vid(struct rtnet_device *, u16);
++static void igb_vlan_rx_kill_vid(struct rtnet_device *, u16);
+ static void igb_restore_vlan(struct igb_adapter *);
+ static void igb_rar_set_qsel(struct igb_adapter *, u8 *, u32, u8);
+ 
+@@ -2048,6 +2049,8 @@ static int igb_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
  	netdev->unmap_rtskb = igb_unmap_rtskb;
  	netdev->do_ioctl = igb_ioctl;
-+	netdev->set_multicast_list = igb_set_rx_mode;
+ 	netdev->set_multicast_list = igb_set_rx_mode;
++	netdev->vlan_rx_add_vid = igb_vlan_rx_add_vid;
++	netdev->vlan_rx_kill_vid = igb_vlan_rx_kill_vid;
  #if 0
--	netdev->set_multicast_list = igb_set_multi;
  	netdev->set_mac_address = igb_set_mac;
  	netdev->change_mtu = igb_change_mtu;
+@@ -2110,10 +2113,8 @@ static int igb_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
+ 	    NETIF_F_RXHASH |
+ 	    NETIF_F_RXCSUM | NETIF_F_HW_VLAN_CTAG_RX | NETIF_F_HW_VLAN_CTAG_TX;
  
-@@ -3333,34 +3333,18 @@ static int igb_write_mc_addr_list(struct rtnet_device *netdev)
+-#if 0
+ 	/* set this bit last since it cannot be part of hw_features */
+ 	netdev->features |= NETIF_F_HW_VLAN_CTAG_FILTER;
+-#endif
+ 
+ 	netdev->priv_flags |= IFF_SUPP_NOFCS;
+ 
+@@ -5076,8 +5077,7 @@ static void igb_vlan_mode(struct rtnet_device *netdev,
+ 	igb_rlpml_set(adapter);
+ }
+ 
+-static int igb_vlan_rx_add_vid(struct rtnet_device *netdev,
+-			       __be16 proto, u16 vid)
++static void igb_vlan_rx_add_vid(struct rtnet_device *netdev, u16 vid)
  {
  	struct igb_adapter *adapter = rtnetdev_priv(netdev);
  	struct e1000_hw *hw = &adapter->hw;
--#if 0
--	struct netdev_hw_addr *ha;
--	u8 *mta_list;
--	int i;
--	if (netdev_mc_empty(netdev)) {
-+	struct rtdev_mc_list *mc_addr = netdev->mc_list;
-+	unsigned mc_addr_count = netdev->mc_count;
-+
-+	if (!mc_addr_count) {
- 		/* nothing to program, so clear mc list */
- 		igb_update_mc_addr_list(hw, NULL, 0);
--		igb_restore_vf_multicasts(adapter);
- 		return 0;
- 	}
+@@ -5086,8 +5086,17 @@ static int igb_vlan_rx_add_vid(struct rtnet_device *netdev,
+ 	igb_vfta_set(hw, vid, true);
  
--	mta_list = kzalloc(netdev_mc_count(netdev) * 6, GFP_ATOMIC);
--	if (!mta_list)
--		return -ENOMEM;
--
--	/* The shared function expects a packed array of only addresses. */
--	i = 0;
--	netdev_for_each_mc_addr(ha, netdev)
--	    memcpy(mta_list + (i++ * ETH_ALEN), ha->addr, ETH_ALEN);
--
--	igb_update_mc_addr_list(hw, mta_list, i);
--	kfree(mta_list);
-+	igb_update_mc_addr_list(hw, mc_addr, mc_addr_count);
+ 	set_bit(vid, adapter->active_vlans);
++}
  
--	return netdev_mc_count(netdev);
--#else
--	igb_update_mc_addr_list(hw, NULL, 0);
 -	return 0;
--#endif
-+	return mc_addr_count;
++static void igb_vlan_rx_kill_vid(struct rtnet_device *netdev, u16 vid)
++{
++	struct igb_adapter *adapter = rtnetdev_priv(netdev);
++	struct e1000_hw *hw = &adapter->hw;
++
++	/* if vid was not present in VLVF just remove it from table */
++	igb_vfta_set(hw, vid, false);
++
++	clear_bit(vid, adapter->active_vlans);
  }
  
- /**
+ static void igb_restore_vlan(struct igb_adapter *adapter)
+@@ -5097,7 +5106,7 @@ static void igb_restore_vlan(struct igb_adapter *adapter)
+ 	igb_vlan_mode(adapter->netdev, adapter->netdev->features);
+ 
+ 	for_each_set_bit(vid, adapter->active_vlans, VLAN_N_VID)
+-	    igb_vlan_rx_add_vid(adapter->netdev, htons(ETH_P_8021Q), vid);
++	    igb_vlan_rx_add_vid(adapter->netdev, vid);
+ }
+ 
+ static int __igb_shutdown(struct pci_dev *pdev, bool * enable_wake,
 -- 
 2.20.1
 
