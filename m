@@ -1,7 +1,7 @@
 From: Philippe Gerum <rpm@xenomai.org>
-Subject: [PATCH 11/16] net/drivers: e1000e: enable multicast
-Date: Thu, 21 Mar 2019 18:13:25 +0100
-Message-Id: <20190321171330.2073-12-rpm@xenomai.org>
+Subject: [PATCH 12/16] net/drivers: e1000e: enable VLAN filtering
+Date: Thu, 21 Mar 2019 18:13:26 +0100
+Message-Id: <20190321171330.2073-13-rpm@xenomai.org>
 In-Reply-To: <20190321171330.2073-1-rpm@xenomai.org>
 References: <20190321171330.2073-1-rpm@xenomai.org>
 MIME-Version: 1.0
@@ -21,149 +21,79 @@ From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 
 Signed-off-by: Philippe Gerum <rpm@xenomai.org>
 ---
- kernel/drivers/net/drivers/e1000e/e1000.h    | 2 +-
- kernel/drivers/net/drivers/e1000e/hw.h       | 2 +-
- kernel/drivers/net/drivers/e1000e/lib.c      | 7 ++++---
- kernel/drivers/net/drivers/e1000e/netdev.c   | 8 +++++---
- kernel/drivers/net/stack/include/ipv4/igmp.h | 4 ++--
- kernel/drivers/net/stack/ipv4/igmp.c         | 6 +++---
- 6 files changed, 16 insertions(+), 13 deletions(-)
+ kernel/drivers/net/drivers/e1000e/netdev.c | 30 +++++-----------------
+ 1 file changed, 6 insertions(+), 24 deletions(-)
 
-diff --git a/kernel/drivers/net/drivers/e1000e/e1000.h b/kernel/drivers/net/drivers/e1000e/e1000.h
-index ee4e6fbe9..9abb446d8 100644
---- a/kernel/drivers/net/drivers/e1000e/e1000.h
-+++ b/kernel/drivers/net/drivers/e1000e/e1000.h
-@@ -575,7 +575,7 @@ extern s32 e1000e_setup_link(struct e1000_hw *hw);
- extern void e1000_clear_vfta_generic(struct e1000_hw *hw);
- extern void e1000e_init_rx_addrs(struct e1000_hw *hw, u16 rar_count);
- extern void e1000e_update_mc_addr_list_generic(struct e1000_hw *hw,
--					       u8 * mc_addr_list,
-+					       struct rtdev_mc_list *mc_addr_list,
- 					       u32 mc_addr_count);
- extern void e1000e_rar_set(struct e1000_hw *hw, u8 * addr, u32 index);
- extern s32 e1000e_set_fc_watermarks(struct e1000_hw *hw);
-diff --git a/kernel/drivers/net/drivers/e1000e/hw.h b/kernel/drivers/net/drivers/e1000e/hw.h
-index 8e2082423..875533fa0 100644
---- a/kernel/drivers/net/drivers/e1000e/hw.h
-+++ b/kernel/drivers/net/drivers/e1000e/hw.h
-@@ -779,7 +779,7 @@ struct e1000_mac_operations {
- 	 s32(*get_link_up_info) (struct e1000_hw *, u16 *, u16 *);
- 	 s32(*led_on) (struct e1000_hw *);
- 	 s32(*led_off) (struct e1000_hw *);
--	void (*update_mc_addr_list) (struct e1000_hw *, u8 *, u32);
-+	void (*update_mc_addr_list)(struct e1000_hw *, struct rtdev_mc_list *, u32);
- 	 s32(*reset_hw) (struct e1000_hw *);
- 	 s32(*init_hw) (struct e1000_hw *);
- 	 s32(*setup_link) (struct e1000_hw *);
-diff --git a/kernel/drivers/net/drivers/e1000e/lib.c b/kernel/drivers/net/drivers/e1000e/lib.c
-index 327f838df..8165e602b 100644
---- a/kernel/drivers/net/drivers/e1000e/lib.c
-+++ b/kernel/drivers/net/drivers/e1000e/lib.c
-@@ -356,7 +356,8 @@ static u32 e1000_hash_mc_addr(struct e1000_hw *hw, u8 * mc_addr)
-  *  The caller must have a packed mc_addr_list of multicast addresses.
-  **/
- void e1000e_update_mc_addr_list_generic(struct e1000_hw *hw,
--					u8 * mc_addr_list, u32 mc_addr_count)
-+					struct rtdev_mc_list *mc_addr_list,
-+					u32 mc_addr_count)
- {
- 	u32 hash_value, hash_bit, hash_reg;
- 	int i;
-@@ -366,13 +367,13 @@ void e1000e_update_mc_addr_list_generic(struct e1000_hw *hw,
- 
- 	/* update mta_shadow from mc_addr_list */
- 	for (i = 0; (u32) i < mc_addr_count; i++) {
--		hash_value = e1000_hash_mc_addr(hw, mc_addr_list);
-+		hash_value = e1000_hash_mc_addr(hw, mc_addr_list->dmi_addr);
- 
- 		hash_reg = (hash_value >> 5) & (hw->mac.mta_reg_count - 1);
- 		hash_bit = hash_value & 0x1F;
- 
- 		hw->mac.mta_shadow[hash_reg] |= (1 << hash_bit);
--		mc_addr_list += (ETH_ALEN);
-+		mc_addr_list = mc_addr_list->next;
- 	}
- 
- 	/* replace the entire MTA table */
 diff --git a/kernel/drivers/net/drivers/e1000e/netdev.c b/kernel/drivers/net/drivers/e1000e/netdev.c
-index 4bd788700..7b49a795d 100644
+index 7b49a795d..0754a244f 100644
 --- a/kernel/drivers/net/drivers/e1000e/netdev.c
 +++ b/kernel/drivers/net/drivers/e1000e/netdev.c
-@@ -2152,8 +2152,9 @@ static void e1000_configure_rx(struct e1000_adapter *adapter)
-  *  Updates the Multicast Table Array.
-  *  The caller must have a packed mc_addr_list of multicast addresses.
-  **/
--static void e1000_update_mc_addr_list(struct e1000_hw *hw, u8 * mc_addr_list,
--				      u32 mc_addr_count)
-+static void e1000_update_mc_addr_list(struct e1000_hw *hw,
-+				struct rtdev_mc_list *mc_addr_list,
-+				u32 mc_addr_count)
- {
- 	hw->mac.ops.update_mc_addr_list(hw, mc_addr_list, mc_addr_count);
+@@ -1753,21 +1753,6 @@ static void e1000e_vlan_strip_disable(struct e1000_adapter *adapter)
+ 	ew32(CTRL, ctrl);
  }
-@@ -2194,7 +2195,7 @@ static void e1000_set_multi(struct rtnet_device *netdev)
+ 
+-/**
+- * e1000e_vlan_strip_enable - helper to enable HW VLAN stripping
+- * @adapter: board private structure to initialize
+- **/
+-static void e1000e_vlan_strip_enable(struct e1000_adapter *adapter)
+-{
+-	struct e1000_hw *hw = &adapter->hw;
+-	u32 ctrl;
+-
+-	/* enable VLAN tag insert/strip */
+-	ctrl = er32(CTRL);
+-	ctrl |= E1000_CTRL_VME;
+-	ew32(CTRL, ctrl);
+-}
+-
+ static void e1000_update_mng_vlan(struct e1000_adapter *adapter)
+ {
+ 	struct rtnet_device *netdev = adapter->netdev;
+@@ -2177,30 +2162,25 @@ static void e1000_set_multi(struct rtnet_device *netdev)
+ 	/* Check for Promiscuous and All Multicast modes */
+ 
+ 	rctl = er32(RCTL);
++	rctl &= ~(E1000_RCTL_UPE | E1000_RCTL_MPE);
+ 
+ 	if (netdev->flags & IFF_PROMISC) {
+ 		rctl |= (E1000_RCTL_UPE | E1000_RCTL_MPE);
+-		rctl &= ~E1000_RCTL_VFE;
+ 		/* Do not hardware filter VLANs in promisc mode */
+ 		e1000e_vlan_filter_disable(adapter);
+ 	} else {
+ 		if (netdev->flags & IFF_ALLMULTI) {
+ 			rctl |= E1000_RCTL_MPE;
+-			rctl &= ~E1000_RCTL_UPE;
+ 		} else {
+-			rctl &= ~(E1000_RCTL_UPE | E1000_RCTL_MPE);
++			e1000_update_mc_addr_list(hw, netdev->mc_list, netdev->mc_count);
+ 		}
+ 		e1000e_vlan_filter_enable(adapter);
++		rctl |= E1000_RCTL_UPE;
+ 	}
  
  	ew32(RCTL, rctl);
  
--	e1000_update_mc_addr_list(hw, NULL, 0);
-+	e1000_update_mc_addr_list(hw, netdev->mc_list, netdev->mc_count);
- 
- 	if (netdev->features & NETIF_F_HW_VLAN_CTAG_RX)
- 		e1000e_vlan_strip_enable(adapter);
-@@ -3986,6 +3987,7 @@ static int e1000_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
- 	netdev->open = e1000_open;
- 	netdev->stop = e1000_close;
- 	netdev->hard_start_xmit = e1000_xmit_frame;
-+	netdev->set_multicast_list = e1000_set_multi;
- 	//netdev->get_stats = e1000_get_stats;
- 	netdev->map_rtskb = e1000_map_rtskb;
- 	netdev->unmap_rtskb = e1000_unmap_rtskb;
-diff --git a/kernel/drivers/net/stack/include/ipv4/igmp.h b/kernel/drivers/net/stack/include/ipv4/igmp.h
-index a44e09041..3daa343e4 100644
---- a/kernel/drivers/net/stack/include/ipv4/igmp.h
-+++ b/kernel/drivers/net/stack/include/ipv4/igmp.h
-@@ -87,8 +87,8 @@ static inline bool rtnet_in_multicast(u32 addr)
+-	e1000_update_mc_addr_list(hw, netdev->mc_list, netdev->mc_count);
+-
+-	if (netdev->features & NETIF_F_HW_VLAN_CTAG_RX)
+-		e1000e_vlan_strip_enable(adapter);
+-	else
+-		e1000e_vlan_strip_disable(adapter);
++	e1000e_vlan_strip_disable(adapter);
  }
  
- #ifdef CONFIG_XENO_DRIVERS_NET_RTIPV4_IGMP
--int rt_ip_mc_join_group(struct rtsocket *sk, struct ip_mreq *imr);
--int rt_ip_mc_leave_group(struct rtsocket *sk, struct ip_mreq *imr);
-+int rt_ip_mc_join_group(struct rtsocket *sk, const struct ip_mreq *imr);
-+int rt_ip_mc_leave_group(struct rtsocket *sk, const struct ip_mreq *imr);
- void rt_ip_mc_drop_socket(struct rtsocket *sk);
- void rt_ip_mc_dec_group(struct rtnet_device *rtdev, u32 addr);
- void rt_ip_mc_inc_group(struct rtnet_device *rtdev, u32 addr);
-diff --git a/kernel/drivers/net/stack/ipv4/igmp.c b/kernel/drivers/net/stack/ipv4/igmp.c
-index 3da21df5b..9568cedc7 100644
---- a/kernel/drivers/net/stack/ipv4/igmp.c
-+++ b/kernel/drivers/net/stack/ipv4/igmp.c
-@@ -339,7 +339,7 @@ void rt_ip_mc_dec_group(struct rtnet_device *rtdev, u32 addr)
-     rtdm_lock_put_irqrestore(&mc_list_lock, flags);
- }
+ /**
+@@ -3995,6 +3975,8 @@ static int e1000_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
  
--static struct rtnet_device *rt_ip_mc_find_dev(struct ip_mreq *imr)
-+static struct rtnet_device *rt_ip_mc_find_dev(const struct ip_mreq *imr)
- {
-     struct rtnet_device *rtdev = NULL;
+ 	netdev->mem_start = mmio_start;
+ 	netdev->mem_end = mmio_start + mmio_len;
++	netdev->vlan_rx_add_vid = e1000_vlan_rx_add_vid;
++	netdev->vlan_rx_kill_vid = e1000_vlan_rx_kill_vid;
  
-@@ -353,7 +353,7 @@ static struct rtnet_device *rt_ip_mc_find_dev(struct ip_mreq *imr)
-  *	Join a socket to a group
-  */
+ 	adapter->bd_number = cards_found++;
  
--int rt_ip_mc_join_group(struct rtsocket *sk, struct ip_mreq *imr)
-+int rt_ip_mc_join_group(struct rtsocket *sk, const struct ip_mreq *imr)
- {
-     int err = 0;
-     u32 addr = imr->imr_multiaddr.s_addr;
-@@ -399,7 +399,7 @@ int rt_ip_mc_join_group(struct rtsocket *sk, struct ip_mreq *imr)
- /*
-  *	Ask a socket to leave a group.
-  */
--int rt_ip_mc_leave_group(struct rtsocket *sk, struct ip_mreq *imr)
-+int rt_ip_mc_leave_group(struct rtsocket *sk, const struct ip_mreq *imr)
- {
-     u32 addr = imr->imr_multiaddr.s_addr;
-     struct  rtnet_device *rtdev = rt_ip_mc_find_dev(imr);
 -- 
 2.20.1
 
