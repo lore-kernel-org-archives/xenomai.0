@@ -1,15 +1,17 @@
+Subject: Re: x86_64 kernel does not start under qemu
+From: Jan Kiszka <jan.kiszka@siemens.com>
+References: <CAFLxGvyyMEJ3t4K3dShxXMZccXCkuLN=bkTaTKLDugMieFD8ZA@mail.gmail.com>
+ <73309048-fefd-20a4-31ae-1ce41b0fb8a6@siemens.com>
+ <ddd256e9-0e93-30bc-ddf0-e4f333d24d7f@siemens.com>
+ <3154485.mhzyMJEECq@blindfold>
+ <fc014cdd-e4a8-5363-e68e-adf9b311f8f0@siemens.com>
+Message-ID: <2137b0d1-bb5c-9e8a-883e-9ff13c43bdc1@siemens.com>
+Date: Fri, 22 Mar 2019 21:50:57 +0100
 MIME-Version: 1.0
-References: <20190319142822.31027-1-roman.stratiienko@globallogic.com>
- <bec61ef6-33ff-7caf-2af5-114c4b7c4c18@siemens.com>
- <CAODwZ7u-SvQrBySZyRiBAuCo985j-cbD=xJG=MJyitCsdcpWgA@mail.gmail.com>
- <86594aed-6ffd-9c46-ac16-74a84a0cbdc0@siemens.com>
-In-Reply-To: <86594aed-6ffd-9c46-ac16-74a84a0cbdc0@siemens.com>
-From: Roman Stratiienko <roman.stratiienko@globallogic.com>
-Date: Fri, 22 Mar 2019 21:45:44 +0200
-Message-ID: <CAODwZ7uY3eQ1n3pMdbXzAjVjiB8Esr=HF_j2WD1pb--snPzmtg@mail.gmail.com>
-Subject: Re: [PATCH] travis: add checkpatch analysis
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+In-Reply-To: <fc014cdd-e4a8-5363-e68e-adf9b311f8f0@siemens.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -18,104 +20,107 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jan Kiszka <jan.kiszka@siemens.com>
-Cc: xenomai@xenomai.org
+To: Richard Weinberger <richard@nod.at>, Philippe Gerum <rpm@xenomai.org>
+Cc: "henning.schild@siemens.com" <henning.schild@siemens.com>, Lange Norbert <norbert.lange@andritz.com>, "Xenomai (xenomai@xenomai.org)" <xenomai@xenomai.org>
 
-Thank you for feedback. After testing of this patch I faced some challenges=
-:
-
-1. checkpatch.pl from kernel tree always different. Old kernel checkpatch
-doesn't support git option. So we need to find a way to use ommon utility
-for all kernel or just enable checkpatch only on most recent kernel
-2. Even if there is no checkpatch errors, but warnings still present, exit
-code will be false. And I can't find command line option to override it.
-3. Getting delta commits in master..next range isn't a trivial task. Travis
-clone only single branch with - - depth=3D50 option. Unshallowing entire
-repository will take some amount of time, that will slow down build process
-and it is not what me want from CI system.
-
-
-
-=D0=B2=D1=82, 19 =D0=BC=D0=B0=D1=80. 2019 =D0=B3., 20:15 Jan Kiszka <jan.ki=
-szka@siemens.com>:
-
-> On 19.03.19 15:59, Roman Stratiienko wrote:
-> > Currently I see a lot of checkpatch warnings, that can not be fixed in
-> xenomai
-> > project.
-> > But checkpatch errors usually could be fixed, so we should try I think.
-> >
->
-> I don't disagree on the general goal of clean coding style. I just don't
-> want to
-> open too many fronts at the same time. If the checker nags us with report=
-s
-> that
-> no one reads in the end, that will not help. And we know that there
-> corners like
-> rtnet which needs more than some smaller tweaks (and will currently only
-> generate errors unless you break the pre-existing style).
->
-> If we should agree on using automated style checking, I would then
-> redefine the
-> range to master..next, because that is what we are currently adding.
->
+On 21.03.19 17:07, Jan Kiszka wrote:
+> On 21.03.19 12:57, Richard Weinberger wrote:
+>> Am Donnerstag, 21. März 2019, 12:02:45 CET schrieb Jan Kiszka:
+>>> FWIW, I've just seen this issue as well, with QEMU in KVM mode: I ran into that
+>>> lockup when my host was under full load while Xenomai booted in the VM. And it
+>>> seems reproducible. Debugging...
+>>
+>> Oh, good to hear that!
+>> I played a little with your config but got badly interrupted with other stuff.
+>> Your config seems to work but mostly because things are slower due to debugging stuff
+>> you've enabled. Maybe this info helps.
+>>
+> 
+> It's a race, so everything that changes timing also changes
+> probabilities. I'm starting to nail it down:
+> 
+> (gdb) info threads
+>    Id   Target Id         Frame
+> * 4    Thread 4 (CPU#3 [halted ]) __ipipe_halt_root (use_mwait=-2147483634) at ../arch/x86/kernel/ipipe.c:317
+>    3    Thread 3 (CPU#2 [running]) rep_nop () at ../arch/x86/include/asm/processor.h:655
+>    2    Thread 2 (CPU#1 [halted ]) __ipipe_halt_root (use_mwait=-2147483634) at ../arch/x86/kernel/ipipe.c:317
+>    1    Thread 1 (CPU#0 [halted ]) __ipipe_halt_root (use_mwait=-2147483634) at ../arch/x86/kernel/ipipe.c:317
+> (gdb) monitor info lapic
+> dumping local APIC state for CPU 3
+> 
+> LVT0     0x00010700 active-hi edge  masked                      ExtINT (vec 0)
+> LVT1     0x00010400 active-hi edge  masked                      NMI
+> LVTPC    0x00010400 active-hi edge  masked                      NMI
+> LVTERR   0x000000fe active-hi edge                              Fixed  (vec 254)
+> LVTTHMR  0x00010000 active-hi edge  masked                      Fixed  (vec 0)
+> LVTT     0x000400ef active-hi edge                 tsc-deadline Fixed  (vec 239)
+> Timer    DCR=0x0 (divide by 2) initial_count = 0
+> SPIV     0x000001ff APIC enabled, focus=off, spurious vec 255
+> ICR      0x000008fd logical edge de-assert no-shorthand
+> ICR2     0x02000000 mask 00000010 (APIC ID)
+> ESR      0x00000000
+> ISR      239
+> IRR      236 237 238 239
+> 
+> APR 0x00 TPR 0x00 DFR 0x0f LDR 0x08 PPR 0xe0
+> 
+> 
+> So we are halting while we didn't finish vector 239 (timer) yet. And
+> that means we re-enabled interrupts while the timer was being processed
+> - a bug in I-pipe.
+> 
+> This is while another CPU tries to run ipipe_critical_enter, never
+> reaching CPU 3 this way (via IPI_CRITICAL_VECTOR = 236).
+> 
 > Jan
->
-> >
-> > On Tue, Mar 19, 2019 at 4:45 PM Jan Kiszka <jan.kiszka@siemens.com
-> > <mailto:jan.kiszka@siemens.com>> wrote:
-> >
-> >     On 19.03.19 15:28, roman.stratiienko--- via Xenomai wrote:
-> >      > From: Roman Stratiienko <roman.stratiienko@globallogic.com
-> >     <mailto:roman.stratiienko@globallogic.com>>
-> >      >
-> >      > Check last 10 commits with checkpatch.pl <http://checkpatch.pl>
-> before build
-> >      >
-> >      > Signed-off-by: Roman Stratiienko <
-> roman.stratiienko@globallogic.com
-> >     <mailto:roman.stratiienko@globallogic.com>>
-> >      > ---
-> >      >   .travis.yml | 1 +
-> >      >   1 file changed, 1 insertion(+)
-> >      >
-> >      > diff --git a/.travis.yml b/.travis.yml
-> >      > index 0cd9e571f..6fb604bf2 100644
-> >      > --- a/.travis.yml
-> >      > +++ b/.travis.yml
-> >      > @@ -78,6 +78,7 @@ before_script:
-> >      >     - popd
-> >      >
-> >      >   script:
-> >      > +  - ${KDIR}/scripts/checkpatch.pl <http://checkpatch.pl> --git
-> HEAD~10..HEAD
-> >      >     - scripts/prepare-kernel.sh --ipipe=3D/tmp/ipipe.patch
-> --arch=3D${ARCH}
-> >     --linux=3D${KDIR}
-> >      >     - pushd ${KDIR}
-> >      >     - make -j $(nproc) olddefconfig
-> >      >
-> >
-> >     Hmm, not convinced about enforced checking. That will fail the
-> build, even if
-> >     there might be a legitimate reason for some exception, no?
-> >
-> >
-> >
-> >
-> >
-> >
-> >     Jan
-> >
-> >     --
-> >     Siemens AG, Corporate Technology, CT RDA IOT SES-DE
-> >     Corporate Competence Center Embedded Linux
-> >
-> >
-> >
->
-> --
-> Siemens AG, Corporate Technology, CT RDA IOT SES-DE
-> Corporate Competence Center Embedded Linux
->
+> 
+
+This might be the fix, but I need to sleep over it. Will send a PR next 
+week.
+
+---8<---
+
+ipipe: Call present timer ack handlers unconditionally
+
+This plugs a race for timers that are per-CPU but share the same
+interrupt number. When setting them up, there is a window where the
+first CPU already called ipipe_request_irq, but some other CPU did not
+yet ran through grab_timer, thus have ipipe_stolen = 0.
+
+Moreover, it is questionable that non-stolen timers should not call
+their ack functions.
+
+Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
+---
+ kernel/ipipe/timer.c | 11 ++++-------
+ 1 file changed, 4 insertions(+), 7 deletions(-)
+
+diff --git a/kernel/ipipe/timer.c b/kernel/ipipe/timer.c
+index 98d1192a2727..2d5f468ce7fb 100644
+--- a/kernel/ipipe/timer.c
++++ b/kernel/ipipe/timer.c
+@@ -369,13 +369,10 @@ static void __ipipe_ack_hrtimer_irq(struct irq_desc *desc)
+ 
+ 	if (desc)
+ 		desc->ipipe_ack(desc);
+-
+-	if (timer->host_timer->ipipe_stolen) {
+-		if (timer->ack)
+-			timer->ack();
+-		if (desc)
+-			desc->ipipe_end(desc);
+-	}
++	if (timer->ack)
++		timer->ack();
++	if (desc && timer->host_timer->ipipe_stolen)
++		desc->ipipe_end(desc);
+ }
+ 
+ static int do_set_oneshot(struct clock_event_device *cdev)
+-- 
+2.16.4
+
+-- 
+Siemens AG, Corporate Technology, CT RDA IOT SES-DE
+Corporate Competence Center Embedded Linux
+
