@@ -1,7 +1,8 @@
 From: Philippe Gerum <rpm@xenomai.org>
-Subject: [PATCH 1/5] net/stack: increase maximum number of ethernet devices
-Date: Fri, 22 Mar 2019 10:59:31 +0100
-Message-Id: <20190322095935.8066-2-rpm@xenomai.org>
+Subject: [PATCH 2/5] net/drivers: e1000e: stop using deprecated
+ pci_enable_msix()
+Date: Fri, 22 Mar 2019 10:59:32 +0100
+Message-Id: <20190322095935.8066-3-rpm@xenomai.org>
 In-Reply-To: <20190322095935.8066-1-rpm@xenomai.org>
 References: <20190322095935.8066-1-rpm@xenomai.org>
 MIME-Version: 1.0
@@ -15,30 +16,29 @@ List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: xenomai@xenomai.org
-Cc: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>, Philippe Gerum <rpm@xenomai.org>
 
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-
-Each VLAN registers a (virtual) device.
-
-Signed-off-by: Philippe Gerum <rpm@xenomai.org>
 ---
- kernel/drivers/net/stack/include/rtdev.h | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ kernel/drivers/net/drivers/e1000e/netdev.c | 7 ++++---
+ 1 file changed, 4 insertions(+), 3 deletions(-)
 
-diff --git a/kernel/drivers/net/stack/include/rtdev.h b/kernel/drivers/net/stack/include/rtdev.h
-index 65c7ed3dc..1814b307c 100644
---- a/kernel/drivers/net/stack/include/rtdev.h
-+++ b/kernel/drivers/net/stack/include/rtdev.h
-@@ -26,7 +26,7 @@
- #ifndef __RTDEV_H_
- #define __RTDEV_H_
+diff --git a/kernel/drivers/net/drivers/e1000e/netdev.c b/kernel/drivers/net/drivers/e1000e/netdev.c
+index 8516dbc89..cb4f0fdcf 100644
+--- a/kernel/drivers/net/drivers/e1000e/netdev.c
++++ b/kernel/drivers/net/drivers/e1000e/netdev.c
+@@ -1224,9 +1224,10 @@ void e1000e_set_interrupt_capability(struct e1000_adapter *adapter)
+ 				for (i = 0; i < adapter->num_vectors; i++)
+ 					adapter->msix_entries[i].entry = i;
  
--#define MAX_RT_DEVICES                  8
-+#define MAX_RT_DEVICES                  32
- 
- #ifdef __KERNEL__
- 
+-				err = pci_enable_msix(adapter->pdev,
+-						      adapter->msix_entries,
+-						      adapter->num_vectors);
++				err = pci_enable_msix_range(adapter->pdev,
++							    adapter->msix_entries,
++							    adapter->num_vectors,
++							    adapter->num_vectors);
+ 				if (err == 0)
+ 					return;
+ 			}
 -- 
 2.20.1
 
