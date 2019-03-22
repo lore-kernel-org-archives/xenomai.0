@@ -1,7 +1,7 @@
 From: Philippe Gerum <rpm@xenomai.org>
-Subject: [PATCH 4/5] net/drivers: fec: enable multicast
-Date: Fri, 22 Mar 2019 10:59:34 +0100
-Message-Id: <20190322095935.8066-5-rpm@xenomai.org>
+Subject: [PATCH 5/5] utils/net: ping: display min and average round-trip time
+Date: Fri, 22 Mar 2019 10:59:35 +0100
+Message-Id: <20190322095935.8066-6-rpm@xenomai.org>
 In-Reply-To: <20190322095935.8066-1-rpm@xenomai.org>
 References: <20190322095935.8066-1-rpm@xenomai.org>
 MIME-Version: 1.0
@@ -16,89 +16,62 @@ List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: xenomai@xenomai.org
 
+From: Christophe Carton <christophe.carton@ixblue.com>
+
 Signed-off-by: Philippe Gerum <rpm@xenomai.org>
 ---
- .../drivers/net/drivers/freescale/fec_main.c  | 60 +++++++++++++++++++
- 1 file changed, 60 insertions(+)
+ utils/net/rtping.c | 16 +++++++++++-----
+ 1 file changed, 11 insertions(+), 5 deletions(-)
 
-diff --git a/kernel/drivers/net/drivers/freescale/fec_main.c b/kernel/drivers/net/drivers/freescale/fec_main.c
-index 08956dfab..41c2fb1da 100644
---- a/kernel/drivers/net/drivers/freescale/fec_main.c
-+++ b/kernel/drivers/net/drivers/freescale/fec_main.c
-@@ -3608,6 +3608,65 @@ static void set_multicast_list(struct net_device *ndev)
- 	writel(hash_low, fep->hwp + FEC_GRP_HASH_TABLE_LOW);
+diff --git a/utils/net/rtping.c b/utils/net/rtping.c
+index bdaf6cb15..878fa6dce 100644
+--- a/utils/net/rtping.c
++++ b/utils/net/rtping.c
+@@ -29,6 +29,7 @@
+ #include <signal.h>
+ #include <string.h>
+ #include <unistd.h>
++#include <float.h>
+ #include <sys/types.h>
+ #include <sys/stat.h>
+ #include <sys/ioctl.h>
+@@ -46,7 +47,9 @@ unsigned int    count    = 0;
+ int             delay    = 1000;
+ unsigned int    sent     = 0;
+ unsigned int    received = 0;
+-float           wc_rtt   = 0;
++float           max_rtt   = FLT_MIN;
++float           min_rtt   = FLT_MAX;
++float           avr_rtt   = 0.0f;
+ 
+ 
+ void help(void)
+@@ -81,9 +84,9 @@ void print_statistics()
+ {
+     printf("\n--- %s rtping statistics ---\n"
+            "%d packets transmitted, %d received, %d%% packet loss\n"
+-           "worst case rtt = %.1f us\n",
++           "rtt min/avg/max = %.1f/%.1f/%.1f us\n",
+            inet_ntoa(addr), sent, received, 100 - ((received * 100) / sent),
+-           wc_rtt);
++           min_rtt, avr_rtt/received, max_rtt);
+     exit(0);
  }
  
-+static void fec_rt_set_multicast_list(struct rtnet_device *rtdev)
-+{
-+	struct fec_enet_private *fep;
-+	unsigned int i, bit, data, crc, tmp;
-+	unsigned char hash;
-+	unsigned int hash_high = 0, hash_low = 0;
-+	struct rtdev_mc_list *mca;
-+
-+	fep = container_of(rtdev, struct fec_enet_private, rtnet.dev);
-+
-+	if (rtdev->flags & IFF_PROMISC) {
-+		tmp = readl(fep->hwp + FEC_R_CNTRL);
-+		tmp |= 0x8;
-+		writel(tmp, fep->hwp + FEC_R_CNTRL);
-+		return;
-+	}
-+
-+	tmp = readl(fep->hwp + FEC_R_CNTRL);
-+	tmp &= ~0x8;
-+	writel(tmp, fep->hwp + FEC_R_CNTRL);
-+
-+	if (rtdev->flags & IFF_ALLMULTI) {
-+		/* Catch all multicast addresses, so set the
-+		 * filter to all 1's
-+		 */
-+		writel(0xffffffff, fep->hwp + FEC_GRP_HASH_TABLE_HIGH);
-+		writel(0xffffffff, fep->hwp + FEC_GRP_HASH_TABLE_LOW);
-+
-+		return;
-+	}
-+
-+	/* Add the addresses in hash register */
-+	for (mca = rtdev->mc_list; mca; mca = mca->next) {
-+		/* calculate crc32 value of mac address */
-+		crc = 0xffffffff;
-+
-+		for (i = 0; i < mca->dmi_addrlen; i++) {
-+			data = mca->dmi_addr[i];
-+			for (bit = 0; bit < 8; bit++, data >>= 1) {
-+				crc = (crc >> 1) ^
-+				(((crc ^ data) & 1) ? CRC32_POLY : 0);
-+			}
-+		}
-+
-+		/* only upper 6 bits (FEC_HASH_BITS) are used
-+		 * which point to specific bit in the hash registers
-+		 */
-+		hash = (crc >> (32 - FEC_HASH_BITS)) & 0x3f;
-+
-+		if (hash > 31)
-+			hash_high |= 1 << (hash - 32);
-+		else
-+			hash_low |= 1 << hash;
-+	}
-+
-+	writel(hash_high, fep->hwp + FEC_GRP_HASH_TABLE_HIGH);
-+	writel(hash_low, fep->hwp + FEC_GRP_HASH_TABLE_LOW);
-+}
-+
- /* Set a MAC change in hardware. */
- static int
- fec_set_mac_address(struct net_device *ndev, void *p)
-@@ -3945,6 +4004,7 @@ static int fec_rt_init(struct net_device *ndev)
- 	rtdev->do_ioctl = fec_rt_ioctl;
- 	rtdev->hard_start_xmit = fec_rt_start_xmit;
- 	rtdev->get_stats = fec_rt_stats;
-+	rtdev->set_multicast_list = fec_rt_set_multicast_list;
- 	rtdev->sysbind = &fep->pdev->dev;
+@@ -117,8 +120,11 @@ void ping(int signal)
+     received++;
+     from.s_addr = cmd.args.ping.ip_addr;
+     rtt = (float)cmd.args.ping.rtt / (float)1000;
+-    if (rtt > wc_rtt)
+-        wc_rtt = rtt;
++    if (rtt > max_rtt)
++        max_rtt = rtt;
++    if (rtt < min_rtt)
++        min_rtt = rtt;
++    avr_rtt += rtt;
+     printf("%d bytes from %s: icmp_seq=%d time=%.1f us\n",
+            ret, inet_ntoa(from), cmd.args.ping.sequence, rtt);
  
- 	ret = rt_init_etherdev(rtdev, (RX_RING_SIZE + TX_RING_SIZE) * 2);
 -- 
 2.20.1
 
