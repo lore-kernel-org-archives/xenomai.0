@@ -1,11 +1,17 @@
-From: Norbert Lange <nolange79@gmail.com>
-Subject: [PATCH v2 3/5] libcobalt: improve condvar autoinit support
-Date: Thu,  7 Mar 2019 14:31:54 +0100
-Message-Id: <20190307133156.31749-4-norbert.lange@andritz.com>
-In-Reply-To: <20190307133156.31749-1-norbert.lange@andritz.com>
-References: <20190307133156.31749-1-norbert.lange@andritz.com>
+Subject: Re: [PATCH] travis: add checkpatch analysis
+References: <20190319142822.31027-1-roman.stratiienko@globallogic.com>
+ <bec61ef6-33ff-7caf-2af5-114c4b7c4c18@siemens.com>
+ <CAODwZ7u-SvQrBySZyRiBAuCo985j-cbD=xJG=MJyitCsdcpWgA@mail.gmail.com>
+ <86594aed-6ffd-9c46-ac16-74a84a0cbdc0@siemens.com>
+ <CAODwZ7uY3eQ1n3pMdbXzAjVjiB8Esr=HF_j2WD1pb--snPzmtg@mail.gmail.com>
+From: Jan Kiszka <jan.kiszka@siemens.com>
+Message-ID: <78cf964a-d558-b63f-784c-e6bd5ee80b0e@siemens.com>
+Date: Fri, 22 Mar 2019 21:54:19 +0100
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+In-Reply-To: <CAODwZ7uY3eQ1n3pMdbXzAjVjiB8Esr=HF_j2WD1pb--snPzmtg@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -14,200 +20,28 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
+To: Roman Stratiienko <roman.stratiienko@globallogic.com>
+Cc: xenomai@xenomai.org
 
-contrary to some comments, condvars are automatically
-initialised on signal/wait.
-Correct the destroy method to not report an
-error on such condvars.
+On 22.03.19 20:45, Roman Stratiienko wrote:
+> Thank you for feedback. After testing of this patch I faced some challenges:
+> 
+> 1. checkpatch.pl <http://checkpatch.pl> from kernel tree always different. Old 
+> kernel checkpatch doesn't support git option. So we need to find a way to use 
+> ommon utility for all kernel or just enable checkpatch only on most recent kernel
+> 2. Even if there is no checkpatch errors, but warnings still present, exit code 
+> will be false. And I can't find command line option to override it.
+> 3. Getting delta commits in master..next range isn't a trivial task. Travis 
+> clone only single branch with - - depth=50 option. Unshallowing entire 
+> repository will take some amount of time, that will slow down build process and 
+> it is not what me want from CI system.
+> 
 
-Check whether the condition variable has the
-static initializer is now more strict.
+Yeah... But I guess I start to could run it locally.
 
-Signed-off-by: Norbert Lange <norbert.lange@andritz.com>
----
- lib/cobalt/cond.c | 93 ++++++++++++++++++++++++++---------------------
- 1 file changed, 51 insertions(+), 42 deletions(-)
+Jan
 
-diff --git a/lib/cobalt/cond.c b/lib/cobalt/cond.c
-index 00a201855..92eb230ff 100644
---- a/lib/cobalt/cond.c
-+++ b/lib/cobalt/cond.c
-@@ -142,6 +142,42 @@ COBALT_IMPL(int, pthread_cond_init, (pthread_cond_t *cond,
- 	return 0;
- }
- 
-+static int __attribute__((cold)) _cobalt_cond_autoinit_type(const pthread_cond_t *cond)
-+{
-+	static const pthread_cond_t cond_initializers[] = {
-+		PTHREAD_COND_INITIALIZER
-+	};
-+	static const int cond_types[] =
-+	{
-+		0
-+	};
-+
-+	unsigned i = sizeof(cond_types) / sizeof(cond_types[0]);
-+	while (i-- > 0)
-+	{
-+		if (memcmp(cond, &cond_initializers[i], sizeof(cond_initializers[0])) == 0)
-+			return cond_types[i];
-+	}
-+	return -1;
-+}
-+
-+static int __attribute__((cold)) _cobalt_cond_doautoinit(union cobalt_cond_union *ucond)
-+{
-+	int type;
-+	type = _cobalt_cond_autoinit_type(&ucond->native_cond);
-+	if (type < 0)
-+		return EINVAL;
-+
-+	return __COBALT(pthread_cond_init(&ucond->native_cond, NULL));
-+}
-+
-+static inline int _cobalt_cond_autoinit(union cobalt_cond_union *ucond)
-+{
-+	if (unlikely(ucond->shadow_cond.magic != COBALT_COND_MAGIC))
-+		return _cobalt_cond_doautoinit(ucond);
-+	return 0;
-+}
-+
- /**
-  * @fn int pthread_cond_destroy(pthread_cond_t *cond)
-  * @brief Destroy a condition variable
-@@ -170,6 +206,9 @@ COBALT_IMPL(int, pthread_cond_destroy, (pthread_cond_t *cond))
- {
- 	struct cobalt_cond_shadow *_cond = &((union cobalt_cond_union *)cond)->shadow_cond;
- 
-+	if (unlikely(_cond->magic != COBALT_COND_MAGIC))
-+		return (_cobalt_cond_autoinit_type(cond) < 0) ? EINVAL : 0;
-+
- 	return -XENOMAI_SYSCALL1( sc_cobalt_cond_destroy, _cond);
- }
- 
-@@ -193,12 +232,6 @@ static void __pthread_cond_cleanup(void *data)
- 	c->mutex->lockcnt = c->count;
- }
- 
--static int __attribute__((cold)) cobalt_cond_autoinit(pthread_cond_t *cond)
--{
--	return __COBALT(pthread_cond_init(cond, NULL));
--}
--
--
- /**
-  * Wait on a condition variable.
-  *
-@@ -262,10 +295,10 @@ COBALT_IMPL(int, pthread_cond_wait, (pthread_cond_t *cond, pthread_mutex_t *mute
- 	if (_mx->magic != COBALT_MUTEX_MAGIC)
- 		return EINVAL;
- 
--	if (_cnd->magic != COBALT_COND_MAGIC)
--		goto autoinit;
-+	err = _cobalt_cond_autoinit((union cobalt_cond_union *)cond);
-+	if (err)
-+		return err;
- 
--  cont:
- 	if (_mx->attr.type == PTHREAD_MUTEX_ERRORCHECK) {
- 		xnhandle_t cur = cobalt_get_current();
- 
-@@ -297,12 +330,6 @@ COBALT_IMPL(int, pthread_cond_wait, (pthread_cond_t *cond, pthread_mutex_t *mute
- 	pthread_testcancel();
- 
- 	return -err ?: -c.err;
--
--  autoinit:
--	err = cobalt_cond_autoinit(cond);
--	if (err)
--		return err;
--	goto cont;
- }
- 
- /**
-@@ -357,10 +384,10 @@ COBALT_IMPL(int, pthread_cond_timedwait, (pthread_cond_t *cond,
- 	if (_mx->magic != COBALT_MUTEX_MAGIC)
- 		return EINVAL;
- 
--	if (_cnd->magic != COBALT_COND_MAGIC)
--		goto autoinit;
-+	err = _cobalt_cond_autoinit((union cobalt_cond_union *)cond);
-+	if (err)
-+		return err;
- 
--  cont:
- 	if (_mx->attr.type == PTHREAD_MUTEX_ERRORCHECK) {
- 		xnhandle_t cur = cobalt_get_current();
- 
-@@ -391,12 +418,6 @@ COBALT_IMPL(int, pthread_cond_timedwait, (pthread_cond_t *cond,
- 	pthread_testcancel();
- 
- 	return -err ?: -c.err;
--
--  autoinit:
--	err = cobalt_cond_autoinit(cond);
--	if (err)
--		return err;
--	goto cont;
- }
- 
- /**
-@@ -431,10 +452,10 @@ COBALT_IMPL(int, pthread_cond_signal, (pthread_cond_t *cond))
- 	__u32 flags;
- 	int err;
- 
--	if (_cnd->magic != COBALT_COND_MAGIC)
--		goto autoinit;
-+	err = _cobalt_cond_autoinit((union cobalt_cond_union *)cond);
-+	if (err)
-+		return err;
- 
--  cont:
- 	mutex_state = get_mutex_state(_cnd);
- 	if (mutex_state == NULL)
- 		return 0;	/* Fast path, no waiter. */
-@@ -455,12 +476,6 @@ COBALT_IMPL(int, pthread_cond_signal, (pthread_cond_t *cond))
- 		cond_state->pending_signals = pending_signals + 1;
- 
- 	return 0;
--
--  autoinit:
--	err = cobalt_cond_autoinit(cond);
--	if (err)
--		return err;
--	goto cont;
- }
- 
- /**
-@@ -491,10 +506,10 @@ COBALT_IMPL(int, pthread_cond_broadcast, (pthread_cond_t *cond))
- 	__u32 flags;
- 	int err;
- 
--	if (_cnd->magic != COBALT_COND_MAGIC)
--		goto autoinit;
-+	err = _cobalt_cond_autoinit((union cobalt_cond_union *)cond);
-+	if (err)
-+		return err;
- 
--  cont:
- 	mutex_state = get_mutex_state(_cnd);
- 	if (mutex_state == NULL)
- 		return 0;
-@@ -513,12 +528,6 @@ COBALT_IMPL(int, pthread_cond_broadcast, (pthread_cond_t *cond))
- 	cond_state->pending_signals = ~0U;
- 
- 	return 0;
--
--  autoinit:
--	err = cobalt_cond_autoinit(cond);
--	if (err)
--		return err;
--	goto cont;
- }
- 
- /**
 -- 
-2.20.1
-
+Siemens AG, Corporate Technology, CT RDA IOT SES-DE
+Corporate Competence Center Embedded Linux
 
