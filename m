@@ -1,10 +1,9 @@
+From: Philippe Gerum <rpm@xenomai.org>
+Subject: [PATCH] drivers/serial: imx: fix transmit interrupt handling
+Date: Tue, 26 Mar 2019 14:16:19 +0100
+Message-Id: <20190326131619.24709-1-rpm@xenomai.org>
 MIME-Version: 1.0
-From: Virendra Kate <virendrakate@gmail.com>
-Date: Mon, 25 Mar 2019 13:09:52 -0700
-Message-ID: <CAA3JOdZuwus7K4kNBWkQiEWGRMQ6YGwYVEsDwX+W0xoV0SWinA@mail.gmail.com>
-Subject: [Xenomai] ipipe-4.14: planned release date
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -13,41 +12,56 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "Xenomai@xenomai.org" <xenomai@xenomai.org>, jan.kiszka@siemens.com, MSchrenkhammer@data-modul.com, henning.schild@siemens.com
+To: xenomai@xenomai.org
 
-Hi Martin, Jan and Henning,
+We may receive TRDY when the TX-FIFO is not entirely empty, which
+breaks the logic in rt_imx_uart_tx_chars(), as we may break early from
+the transmit loop when the TXFULL condition is detected, skipping
+decrement of ctx->out_npend although a byte was sent.
 
-Did you all get an update on this issue ? Was it resolved after all? I have
-the exact same hardware with the exact same issue. The board keeps
-resetting after "Loading initial ramdisk..."
+Because of this, we may end up with ghost bytes in the output buffer
+which were actually sent to the UART, but still erroneously counted in
+ctx->out_npend. As a result, incorrect output can be observed later on
+as bytes from the software FIFO are unduly sent, or such FIFO may
+overflow indefinitely due to accumulated errors.
 
-My Setup is as follows:
-ipipe version: ipipe-core-4.14.89-x86-2
-Linux-kernel version: linux-4.14.89
-xenomai version: xenomai-3.0.8
-Hardware: AMD=C2=AE Ryzen embedded v1756b
+Fix this by testing TXFULL before sending the next byte to the UART.
+At this chance, drop the count limit on the FIFO depth: testing TXFULL
+is sufficient and robust.
 
-The board works fine with Linux kernel 3.9.146 patched with the appropriate
-xenomai-ipipe files. I would like to move to linux-kernel_4.14 as the GPU
-driver is officially supported by AMD for linux-kernel_4.14.
+Signed-off-by: Philippe Gerum <rpm@xenomai.org>
+---
+ kernel/drivers/serial/rt_imx_uart.c | 11 ++++-------
+ 1 file changed, 4 insertions(+), 7 deletions(-)
 
-Thanks,
-Virendra
+diff --git a/kernel/drivers/serial/rt_imx_uart.c b/kernel/drivers/serial/rt_imx_uart.c
+index 6118e29b7..f91d8fb8b 100644
+--- a/kernel/drivers/serial/rt_imx_uart.c
++++ b/kernel/drivers/serial/rt_imx_uart.c
+@@ -422,18 +422,15 @@ static int rt_imx_uart_rx_chars(struct rt_imx_uart_ctx *ctx,
+ 
+ static void rt_imx_uart_tx_chars(struct rt_imx_uart_ctx *ctx)
+ {
+-	int ch, count;
++	int ch;
+ 	unsigned int uts_reg = ctx->port->devdata->uts_reg;
+ 
+-	for (count = ctx->port->tx_fifo;
+-	     (count > 0) && (ctx->out_npend > 0);
+-	     count--, ctx->out_npend--) {
++	while (ctx->out_npend > 0 &&
++	       !(readl(ctx->port->membase + uts_reg) & UTS_TXFULL)) {
+ 		ch = ctx->out_buf[ctx->out_head++];
+ 		writel(ch, ctx->port->membase + URTX0);
+ 		ctx->out_head &= (OUT_BUFFER_SIZE - 1);
+-
+-		if (readl(ctx->port->membase + uts_reg) & UTS_TXFULL)
+-			break;
++		ctx->out_npend--;
+ 	}
+ }
+ 
+-- 
+2.20.1
 
 
->> Hi Jan,
->>
->> now I run into another problem. My Board does a reset right after
->> "Loading initial ramdisk..." It is an AMD Ryzon Embedded V1000. There
->> are no logs to kern.log I already tried disabling CONFIG_MAXSMP.
->> Original 4.14.71 boots without problems.
->>
->> Any ideas?
->
->Any updates on that? We are about to release 4.14 amd64 so any known
->open issues should be fixed before.
->
->Please check 361b1bac5d903d2199903a5cb3d6e0fbc3c604ae together with
->xenomai/master.
->
->Henning
