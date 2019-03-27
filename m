@@ -1,8 +1,8 @@
 From: Jan Kiszka <jan.kiszka@siemens.com>
-Subject: [PATCH 2/8] Revert "clocksource: imx/imx53: ipipe: add support for
+Subject: [PATCH 3/8] Revert "clocksource: imx/imx51: ipipe: add support for
  user-visible TSC"
-Date: Wed, 27 Mar 2019 14:18:01 +0100
-Message-Id: <d1742ce96f1500c3a203334d7c0873838eabaee1.1553692686.git.jan.kiszka@siemens.com>
+Date: Wed, 27 Mar 2019 14:18:02 +0100
+Message-Id: <fce21f714e385dab70171ad1cfc6feea32524ebc.1553692686.git.jan.kiszka@siemens.com>
 In-Reply-To: <cover.1553692686.git.jan.kiszka@siemens.com>
 References: <cover.1553692686.git.jan.kiszka@siemens.com>
 In-Reply-To: <cover.1553692686.git.jan.kiszka@siemens.com>
@@ -19,29 +19,29 @@ To: xenomai@xenomai.org, Philippe Gerum <rpm@xenomai.org>
 
 From: Jan Kiszka <jan.kiszka@siemens.com>
 
-This reverts commit de53c9b26caa1c28785bb642350c07cfac6ebc3a.
+This reverts commit 2f8ff661dfbfa84b14571d1629f73455b2bd707b.
 
 Belongs into the ARM tree.
 
 Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
 ---
- arch/arm/mach-imx/mach-imx53.c | 5 -----
+ arch/arm/mach-imx/mach-imx51.c | 5 -----
  1 file changed, 5 deletions(-)
 
-diff --git a/arch/arm/mach-imx/mach-imx53.c b/arch/arm/mach-imx/mach-imx53.c
-index a02550b5ef7b..07c2e8dca494 100644
---- a/arch/arm/mach-imx/mach-imx53.c
-+++ b/arch/arm/mach-imx/mach-imx53.c
-@@ -37,11 +37,6 @@ static void __init imx53_dt_init(void)
- 
- static void __init imx53_init_late(void)
+diff --git a/arch/arm/mach-imx/mach-imx51.c b/arch/arm/mach-imx/mach-imx51.c
+index 60975275ff88..3835b6a3423c 100644
+--- a/arch/arm/mach-imx/mach-imx51.c
++++ b/arch/arm/mach-imx/mach-imx51.c
+@@ -59,11 +59,6 @@ static void __init imx51_dt_init(void)
+ static void __init imx51_init_late(void)
  {
+ 	mx51_neon_fixup();
 -#ifdef CONFIG_IPIPE
 -	/* Allow user-space access to emulated tsc */
--	imx_set_aips(IMX_IO_ADDRESS(0x53f00000));
--	imx_set_aips(IMX_IO_ADDRESS(0x63f00000));
+-	imx_set_aips(IMX_IO_ADDRESS(0x73f00000));
+-	imx_set_aips(IMX_IO_ADDRESS(0x83f00000));
 -#endif
- 	imx53_pm_init();
+ 	imx51_pm_init();
  }
  
 -- 
