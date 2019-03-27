@@ -1,12 +1,13 @@
-From: Jan Kiszka <jan.kiszka@siemens.com>
-Subject: [PATCH 7/8] ipipe: Call present ack and end handlers for timer irq
- unconditionally
-Date: Wed, 27 Mar 2019 14:18:06 +0100
-Message-Id: <052cfd1fd8ec6d74182aeccc7f7eb645e8ae4af8.1553692686.git.jan.kiszka@siemens.com>
-In-Reply-To: <cover.1553692686.git.jan.kiszka@siemens.com>
+Subject: Re: [PATCH 0/8] ipipe-noarch: Pending fixes and cleanups
 References: <cover.1553692686.git.jan.kiszka@siemens.com>
+From: Philippe Gerum <rpm@xenomai.org>
+Message-ID: <1878c54a-8055-9647-6275-407928c63c43@xenomai.org>
+Date: Wed, 27 Mar 2019 16:46:59 +0100
+MIME-Version: 1.0
 In-Reply-To: <cover.1553692686.git.jan.kiszka@siemens.com>
-References: <cover.1553692686.git.jan.kiszka@siemens.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,60 +16,42 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org, Philippe Gerum <rpm@xenomai.org>
+To: Jan Kiszka <jan.kiszka@siemens.com>, xenomai@xenomai.org
 
-From: Jan Kiszka <jan.kiszka@siemens.com>
+On 3/27/19 2:17 PM, Jan Kiszka wrote:
+> The ARM-only reverts I sent before. New are some fixes the the ipipe
+> tracer, the fix for the ipipe timer ack handler, and a small cleanup of
+> grab_timer.
+> 
+> Jan
+> 
+> Jan Kiszka (8):
+>   ipipe: Revert changes to ARM arch_timer_set_cntkctl
+>   Revert "clocksource: imx/imx53: ipipe: add support for user-visible
+>     TSC"
+>   Revert "clocksource: imx/imx51: ipipe: add support for user-visible
+>     TSC"
+>   Revert "clocksource: omap/dmtimer: ipipe: add support for user-visible
+>     TSC"
+>   ipipe: Fix panic output of tracer
+>   ipipe: Fix output layout of tracer
+>   ipipe: Call present ack and end handlers for timer irq unconditionally
+>   ipipe: Drop unneeded NULL check from grab_timer
+> 
+>  arch/arm/include/asm/arch_timer.h         |  4 ---
+>  arch/arm/mach-imx/mach-imx51.c            |  5 ----
+>  arch/arm/mach-imx/mach-imx53.c            |  5 ----
+>  arch/arm/plat-omap/dmtimer.c              | 17 ++----------
+>  arch/arm/plat-omap/include/plat/dmtimer.h |  6 -----
+>  kernel/ipipe/timer.c                      | 17 +++++++-----
+>  kernel/ipipe/tracer.c                     | 44 +++++++++++++++----------------
+>  7 files changed, 34 insertions(+), 64 deletions(-)
+> 
 
-These steps must be done unconditionally, because if
-__ipipe_ack_hrtimer_irq() is called, the tick event will be delivered to
-the head domain next, which will neither call ipipe_end() for a tick
-event, nor propagate such event to the root stage (at least not using
-the same IRQ line).
+Merged. In addition, 4.19/arm is running fine on imx6, imx7 ATM. Preview
+at wip/4.19-noarch and wip/4.19-arm from the ipipe-noarch and ipipe-arm
+trees respectively. I'll update the master branches in the coming days.
 
-This plugs a race for timers that are per-CPU but share the same
-interrupt number. When setting them up, there is a window where the
-first CPU already called ipipe_request_irq, but some other CPU did not
-yet ran through grab_timer, thus have ipipe_stolen = 0.
-
-It also solves boot issues with the TSC deadline timer in use.
-
-Based on reasoning provided by Philippe Gerum.
-
-Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
----
- kernel/ipipe/timer.c | 15 +++++++++------
- 1 file changed, 9 insertions(+), 6 deletions(-)
-
-diff --git a/kernel/ipipe/timer.c b/kernel/ipipe/timer.c
-index 5532be93e951..1471a4ed85ea 100644
---- a/kernel/ipipe/timer.c
-+++ b/kernel/ipipe/timer.c
-@@ -367,15 +367,18 @@ static void __ipipe_ack_hrtimer_irq(struct irq_desc *desc)
- {
- 	struct ipipe_timer *timer = __ipipe_raw_cpu_read(percpu_timer);
- 
-+	/*
-+	 * Pseudo-IRQs like pipelined IPIs have no descriptor, we have
-+	 * to check for this.
-+	 */
- 	if (desc)
- 		desc->ipipe_ack(desc);
- 
--	if (timer->host_timer->ipipe_stolen) {
--		if (timer->ack)
--			timer->ack();
--		if (desc)
--			desc->ipipe_end(desc);
--	}
-+	if (timer->ack)
-+		timer->ack();
-+
-+	if (desc)
-+		desc->ipipe_end(desc);
- }
- 
- static int do_set_oneshot(struct clock_event_device *cdev)
 -- 
-2.16.4
-
+Philippe.
 
