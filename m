@@ -1,7 +1,8 @@
 From: Jan Kiszka <jan.kiszka@siemens.com>
-Subject: [PATCH 1/8] ipipe: Revert changes to ARM arch_timer_set_cntkctl
-Date: Wed, 27 Mar 2019 14:18:00 +0100
-Message-Id: <f2da022eceaa995be3dab347235954ad637144e4.1553692686.git.jan.kiszka@siemens.com>
+Subject: [PATCH 2/8] Revert "clocksource: imx/imx53: ipipe: add support for
+ user-visible TSC"
+Date: Wed, 27 Mar 2019 14:18:01 +0100
+Message-Id: <d1742ce96f1500c3a203334d7c0873838eabaee1.1553692686.git.jan.kiszka@siemens.com>
 In-Reply-To: <cover.1553692686.git.jan.kiszka@siemens.com>
 References: <cover.1553692686.git.jan.kiszka@siemens.com>
 In-Reply-To: <cover.1553692686.git.jan.kiszka@siemens.com>
@@ -18,26 +19,29 @@ To: xenomai@xenomai.org, Philippe Gerum <rpm@xenomai.org>
 
 From: Jan Kiszka <jan.kiszka@siemens.com>
 
-This belongs into the ARM tree.
+This reverts commit de53c9b26caa1c28785bb642350c07cfac6ebc3a.
+
+Belongs into the ARM tree.
 
 Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
 ---
- arch/arm/include/asm/arch_timer.h | 4 ----
- 1 file changed, 4 deletions(-)
+ arch/arm/mach-imx/mach-imx53.c | 5 -----
+ 1 file changed, 5 deletions(-)
 
-diff --git a/arch/arm/include/asm/arch_timer.h b/arch/arm/include/asm/arch_timer.h
-index e9e7656bc137..9327e3a101dc 100644
---- a/arch/arm/include/asm/arch_timer.h
-+++ b/arch/arm/include/asm/arch_timer.h
-@@ -106,10 +106,6 @@ static inline u32 arch_timer_get_cntkctl(void)
+diff --git a/arch/arm/mach-imx/mach-imx53.c b/arch/arm/mach-imx/mach-imx53.c
+index a02550b5ef7b..07c2e8dca494 100644
+--- a/arch/arm/mach-imx/mach-imx53.c
++++ b/arch/arm/mach-imx/mach-imx53.c
+@@ -37,11 +37,6 @@ static void __init imx53_dt_init(void)
  
- static inline void arch_timer_set_cntkctl(u32 cntkctl)
+ static void __init imx53_init_late(void)
  {
 -#ifdef CONFIG_IPIPE
--	/* Enable access to user-space (may not be needed) */
--	cntkctl |= ARCH_TIMER_USR_PCT_ACCESS_EN;
+-	/* Allow user-space access to emulated tsc */
+-	imx_set_aips(IMX_IO_ADDRESS(0x53f00000));
+-	imx_set_aips(IMX_IO_ADDRESS(0x63f00000));
 -#endif
- 	asm volatile("mcr p15, 0, %0, c14, c1, 0" : : "r" (cntkctl));
+ 	imx53_pm_init();
  }
  
 -- 
