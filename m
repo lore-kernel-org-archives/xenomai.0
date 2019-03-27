@@ -1,8 +1,7 @@
 From: Jan Kiszka <jan.kiszka@siemens.com>
-Subject: [PATCH 4/8] Revert "clocksource: omap/dmtimer: ipipe: add support for
- user-visible TSC"
-Date: Wed, 27 Mar 2019 14:18:03 +0100
-Message-Id: <ef7456b0a037629c40f4f43a84d0e0e1bb795d5e.1553692686.git.jan.kiszka@siemens.com>
+Subject: [PATCH 6/8] ipipe: Fix output layout of tracer
+Date: Wed, 27 Mar 2019 14:18:05 +0100
+Message-Id: <81d998f526596e75bd5cc903f6d24c45d1579093.1553692686.git.jan.kiszka@siemens.com>
 In-Reply-To: <cover.1553692686.git.jan.kiszka@siemens.com>
 References: <cover.1553692686.git.jan.kiszka@siemens.com>
 In-Reply-To: <cover.1553692686.git.jan.kiszka@siemens.com>
@@ -19,87 +18,57 @@ To: xenomai@xenomai.org, Philippe Gerum <rpm@xenomai.org>
 
 From: Jan Kiszka <jan.kiszka@siemens.com>
 
-This reverts commit d35c49508ea205e86de96b005021f46d4199a861.
-
-Belongs into the ARM tree.
+A long time ago (probably in 2.6-times), someone converted spaces to
+tabs, shuffling the layout around this way, and by forgetting to account
+for the multi-domain removal.
 
 Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
 ---
- arch/arm/plat-omap/dmtimer.c              | 17 ++---------------
- arch/arm/plat-omap/include/plat/dmtimer.h |  6 ------
- 2 files changed, 2 insertions(+), 21 deletions(-)
+ kernel/ipipe/tracer.c | 14 +++++++-------
+ 1 file changed, 7 insertions(+), 7 deletions(-)
 
-diff --git a/arch/arm/plat-omap/dmtimer.c b/arch/arm/plat-omap/dmtimer.c
-index 4e8cfc405974..ebef8aacea83 100644
---- a/arch/arm/plat-omap/dmtimer.c
-+++ b/arch/arm/plat-omap/dmtimer.c
-@@ -395,18 +395,6 @@ int omap_dm_timer_get_irq(struct omap_dm_timer *timer)
- }
- EXPORT_SYMBOL_GPL(omap_dm_timer_get_irq);
- 
--#ifdef CONFIG_IPIPE
--unsigned long omap_dm_timer_get_phys_counter_addr(struct omap_dm_timer *timer)
--{
--	return timer->phys_base + (OMAP_TIMER_COUNTER_REG & 0xff);
--}
--
--unsigned long omap_dm_timer_get_virt_counter_addr(struct omap_dm_timer *timer)
--{
--	return (unsigned long)timer->io_base + (OMAP_TIMER_COUNTER_REG & 0xff);
--}
--#endif /* CONFIG_IPIPE */
--
- #if defined(CONFIG_ARCH_OMAP1)
- #include <mach/hardware.h>
- /**
-@@ -584,7 +572,7 @@ int omap_dm_timer_set_source(struct omap_dm_timer *timer, int source)
- EXPORT_SYMBOL_GPL(omap_dm_timer_set_source);
- 
- int omap_dm_timer_set_load(struct omap_dm_timer *timer, int autoreload,
--                            unsigned int load)
-+			    unsigned int load)
+diff --git a/kernel/ipipe/tracer.c b/kernel/ipipe/tracer.c
+index 8d58ab143469..2d75199b086b 100644
+--- a/kernel/ipipe/tracer.c
++++ b/kernel/ipipe/tracer.c
+@@ -842,7 +842,7 @@ __ipipe_print_delay(struct seq_file *m, struct ipipe_trace_point *point)
  {
- 	u32 l;
+ 	unsigned long delay = 0;
+ 	int next;
+-	char *mark = "	";
++	char *mark = "  ";
  
-@@ -611,7 +599,7 @@ EXPORT_SYMBOL_GPL(omap_dm_timer_set_load);
+ 	next = WRAP_POINT_NO(point+1 - print_path->point);
  
- /* Optimized set_load which removes costly spin wait in timer_start */
- int omap_dm_timer_set_load_start(struct omap_dm_timer *timer, int autoreload,
--			    unsigned int load)
-+                            unsigned int load)
- {
- 	u32 l;
- 
-@@ -876,7 +864,6 @@ static int omap_dm_timer_probe(struct platform_device *pdev)
- 	}
- 
- 	timer->fclk = ERR_PTR(-ENODEV);
--	timer->phys_base = mem->start;
- 	timer->io_base = devm_ioremap_resource(dev, mem);
- 	if (IS_ERR(timer->io_base))
- 		return PTR_ERR(timer->io_base);
-diff --git a/arch/arm/plat-omap/include/plat/dmtimer.h b/arch/arm/plat-omap/include/plat/dmtimer.h
-index ee368c414bb9..dd79f3005cdf 100644
---- a/arch/arm/plat-omap/include/plat/dmtimer.h
-+++ b/arch/arm/plat-omap/include/plat/dmtimer.h
-@@ -104,7 +104,6 @@ struct omap_dm_timer {
- 	int irq;
- 	struct clk *fclk;
- 
--	unsigned long	phys_base;
- 	void __iomem	*io_base;
- 	void __iomem	*irq_stat;	/* TISR/IRQSTATUS interrupt status */
- 	void __iomem	*irq_ena;	/* irq enable */
-@@ -416,9 +415,4 @@ static inline void __omap_dm_timer_write_status(struct omap_dm_timer *timer,
- 	writel_relaxed(value, timer->irq_stat);
+@@ -916,12 +916,12 @@ static void __ipipe_print_headline(struct seq_file *m)
+ 			   " +----- Hard IRQs ('|': locked)\n"
+ 			   " |+-- %s\n"
+ 			   " ||+- %s%s\n"
+-			   " |||			  +---------- "
++		           " |||                        +---------- "
+ 			       "Delay flag ('+': > %d us, '!': > %d us)\n"
+-			   " |||			  |	   +- "
++			   " |||                        |        +- "
+ 			       "NMI noise ('N')\n"
+-			   " |||			  |	   |\n"
+-			   "	  Type	  User Val.   Time    Delay  Function "
++			   " |||                        |        |\n"
++			   "    Type    User Val.   Time    Delay  Function "
+ 			       "(Parent)\n",
+ 			   name[1], name[0],
+ 			   " ('*': domain stalled, '+': current, "
+@@ -930,9 +930,9 @@ static void __ipipe_print_headline(struct seq_file *m)
+ 	} else
+ 		seq_printf(m,
+ 			   " +--------------- Hard IRQs ('|': locked)\n"
+-			   " |		   +- Delay flag "
++			   " |             +- Delay flag "
+ 			       "('+': > %d us, '!': > %d us)\n"
+-			   " |		   |\n"
++			   " |             |\n"
+ 			   "  Type     Time   Function (Parent)\n",
+ 			   IPIPE_DELAY_NOTE/1000, IPIPE_DELAY_WARN/1000);
  }
- 
--static inline unsigned long __omap_dm_timer_read_status(struct omap_dm_timer *timer)
--{
--	return __raw_readl(timer->irq_stat);
--}
--
- #endif /* __ASM_ARCH_DMTIMER_H */
 -- 
 2.16.4
 
