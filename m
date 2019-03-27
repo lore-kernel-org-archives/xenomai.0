@@ -1,11 +1,13 @@
-From: Jimmy Da Silva <jimmy.dasilva@isir.upmc.fr>
-Subject: RTnet laptop compatible
-Message-ID: <a6c70276-2940-bc85-086e-57c4af5e67b7@isir.upmc.fr>
-Date: Wed, 20 Mar 2019 11:51:38 +0100
+Subject: Re: [Xenomai] ipipe-4.14: planned release date
+References: <CAA3JOdZuwus7K4kNBWkQiEWGRMQ6YGwYVEsDwX+W0xoV0SWinA@mail.gmail.com>
+From: Jan Kiszka <jan.kiszka@siemens.com>
+Message-ID: <c09c2b4d-e3ab-177f-c61e-589dc1931f3b@siemens.com>
+Date: Wed, 27 Mar 2019 11:10:33 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 7bit
+In-Reply-To: <CAA3JOdZuwus7K4kNBWkQiEWGRMQ6YGwYVEsDwX+W0xoV0SWinA@mail.gmail.com>
+Content-Type: text/plain; charset="utf-8"; format="flowed"
 Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -14,21 +16,36 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
+To: Virendra Kate <virendrakate@gmail.com>, "Xenomai@xenomai.org" <xenomai@xenomai.org>, MSchrenkhammer@data-modul.com, henning.schild@siemens.com
 
-Hi everyone,
+On 25.03.19 21:09, Virendra Kate wrote:
+> Hi Martin, Jan and Henning,
+> 
+> Did you all get an update on this issue ? Was it resolved after all? I have the 
+> exact same hardware with the exact same issue. The board keeps resetting after 
+> "Loading initial ramdisk..."
+> 
+> My Setup is as follows:
+> ipipe version: ipipe-core-4.14.89-x86-2
+> Linux-kernel version: linux-4.14.89
+> xenomai version: xenomai-3.0.8
+> Hardware: AMD® Ryzen embedded v1756b
+> 
+> The board works fine with Linux kernel 3.9.146 patched with the appropriate 
+> xenomai-ipipe files. I would like to move to linux-kernel_4.14 as the GPU driver 
+> is officially supported by AMD for linux-kernel_4.14.
+> 
 
-I have been using RTnet with Xenomai 2.6 on various Ubuntu versions 
-(14.04, 16.04, 18.04) on a desktop computer with an Intel 82574L Gigabit 
-Ethernet card.
-Now I would like to push the setup to a laptop configuration, and I 
-think it's possible since several laptops now come with a gigabit 
-ethernet card.
+No direct progress regarding Ryzen, but I will try to glue together a new 4.14 
+version if pending patches soon so that you can try if that happens to help. 
+Will let you know.
 
-Is there any ethernet laptop card that is known to be supported by RTnet ?
-Does any of you guys already succeeded in making rtnet work on a laptop ?
+Unfortunately, I don't have direct access to a Ryzen target ATM in order to 
+debug the issue myself.
 
-Thank you for your help,
-Jimmy Da Silva
+Jan
 
+-- 
+Siemens AG, Corporate Technology, CT RDA IOT SES-DE
+Corporate Competence Center Embedded Linux
 
