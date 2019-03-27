@@ -1,7 +1,11 @@
 From: Jan Kiszka <jan.kiszka@siemens.com>
-Subject: [PATCH 0/8] ipipe-noarch: Pending fixes and cleanups
-Date: Wed, 27 Mar 2019 14:17:59 +0100
-Message-Id: <cover.1553692686.git.jan.kiszka@siemens.com>
+Subject: [PATCH 1/8] ipipe: Revert changes to ARM arch_timer_set_cntkctl
+Date: Wed, 27 Mar 2019 14:18:00 +0100
+Message-Id: <f2da022eceaa995be3dab347235954ad637144e4.1553692686.git.jan.kiszka@siemens.com>
+In-Reply-To: <cover.1553692686.git.jan.kiszka@siemens.com>
+References: <cover.1553692686.git.jan.kiszka@siemens.com>
+In-Reply-To: <cover.1553692686.git.jan.kiszka@siemens.com>
+References: <cover.1553692686.git.jan.kiszka@siemens.com>
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -12,34 +16,30 @@ List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: xenomai@xenomai.org, Philippe Gerum <rpm@xenomai.org>
 
-The ARM-only reverts I sent before. New are some fixes the the ipipe
-tracer, the fix for the ipipe timer ack handler, and a small cleanup of
-grab_timer.
+From: Jan Kiszka <jan.kiszka@siemens.com>
 
-Jan
+This belongs into the ARM tree.
 
-Jan Kiszka (8):
-  ipipe: Revert changes to ARM arch_timer_set_cntkctl
-  Revert "clocksource: imx/imx53: ipipe: add support for user-visible
-    TSC"
-  Revert "clocksource: imx/imx51: ipipe: add support for user-visible
-    TSC"
-  Revert "clocksource: omap/dmtimer: ipipe: add support for user-visible
-    TSC"
-  ipipe: Fix panic output of tracer
-  ipipe: Fix output layout of tracer
-  ipipe: Call present ack and end handlers for timer irq unconditionally
-  ipipe: Drop unneeded NULL check from grab_timer
+Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
+---
+ arch/arm/include/asm/arch_timer.h | 4 ----
+ 1 file changed, 4 deletions(-)
 
- arch/arm/include/asm/arch_timer.h         |  4 ---
- arch/arm/mach-imx/mach-imx51.c            |  5 ----
- arch/arm/mach-imx/mach-imx53.c            |  5 ----
- arch/arm/plat-omap/dmtimer.c              | 17 ++----------
- arch/arm/plat-omap/include/plat/dmtimer.h |  6 -----
- kernel/ipipe/timer.c                      | 17 +++++++-----
- kernel/ipipe/tracer.c                     | 44 +++++++++++++++----------------
- 7 files changed, 34 insertions(+), 64 deletions(-)
-
+diff --git a/arch/arm/include/asm/arch_timer.h b/arch/arm/include/asm/arch_timer.h
+index e9e7656bc137..9327e3a101dc 100644
+--- a/arch/arm/include/asm/arch_timer.h
++++ b/arch/arm/include/asm/arch_timer.h
+@@ -106,10 +106,6 @@ static inline u32 arch_timer_get_cntkctl(void)
+ 
+ static inline void arch_timer_set_cntkctl(u32 cntkctl)
+ {
+-#ifdef CONFIG_IPIPE
+-	/* Enable access to user-space (may not be needed) */
+-	cntkctl |= ARCH_TIMER_USR_PCT_ACCESS_EN;
+-#endif
+ 	asm volatile("mcr p15, 0, %0, c14, c1, 0" : : "r" (cntkctl));
+ }
+ 
 -- 
 2.16.4
 
