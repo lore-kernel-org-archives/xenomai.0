@@ -1,13 +1,10 @@
-MIME-Version: 1.0
-References: <CAA3JOdZuwus7K4kNBWkQiEWGRMQ6YGwYVEsDwX+W0xoV0SWinA@mail.gmail.com>
- <c09c2b4d-e3ab-177f-c61e-589dc1931f3b@siemens.com>
- <322489d1-78c0-25f9-7831-eb372b25abe6@siemens.com>
-In-Reply-To: <322489d1-78c0-25f9-7831-eb372b25abe6@siemens.com>
-From: Virendra Kate <virendrakate@gmail.com>
-Date: Wed, 27 Mar 2019 17:32:43 -0700
-Message-ID: <CAA3JOdaOn60xgw3J3JKxh9p43Gmri7dwyy_aSOXWwbTEL0Fb8A@mail.gmail.com>
-Subject: Re: [Xenomai] ipipe-4.14: planned release date
-Content-Type: text/plain; charset="utf-8"
+Date: Thu, 28 Mar 2019 09:41:14 +0800
+From: "demon.han@aliyun.com" <demon.han@aliyun.com>
+Subject: latency test
+Mime-Version: 1.0
+Message-ID: <201903280941144857760@aliyun.com>
+Content-Type: text/plain;
+	charset="GB2312"
 Content-Transfer-Encoding: base64
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
@@ -17,31 +14,12 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jan Kiszka <jan.kiszka@siemens.com>
-Cc: "Xenomai@xenomai.org" <xenomai@xenomai.org>, henning.schild@siemens.com
+To: xenomai <xenomai@xenomai.org>
 
-Pj4+IERpZCB5b3UgYWxsIGdldCBhbiB1cGRhdGUgb24gdGhpcyBpc3N1ZSA/IFdhcyBpdCByZXNv
-bHZlZCBhZnRlciBhbGw/IEkKaGF2ZQo+Pj4gdGhlIGV4YWN0IHNhbWUgaGFyZHdhcmUgd2l0aCB0
-aGUgZXhhY3Qgc2FtZSBpc3N1ZS4gVGhlIGJvYXJkIGtlZXBzCnJlc2V0dGluZwo+Pj4gYWZ0ZXIg
-IkxvYWRpbmcgaW5pdGlhbCByYW1kaXNrLi4uIgo+Pj4KPj4+IE15IFNldHVwIGlzIGFzIGZvbGxv
-d3M6Cj4+PiBpcGlwZSB2ZXJzaW9uOiBpcGlwZS1jb3JlLTQuMTQuODkteDg2LTIKPj4+IExpbnV4
-LWtlcm5lbCB2ZXJzaW9uOiBsaW51eC00LjE0Ljg5Cj4+PiB4ZW5vbWFpIHZlcnNpb246IHhlbm9t
-YWktMy4wLjgKPj4+IEhhcmR3YXJlOiBBTUTCriBSeXplbiBlbWJlZGRlZCB2MTc1NmIKPj4+Cj4+
-PiBUaGUgYm9hcmQgd29ya3MgZmluZSB3aXRoIExpbnV4IGtlcm5lbCAzLjkuMTQ2IHBhdGNoZWQg
-d2l0aCB0aGUKYXBwcm9wcmlhdGUKPj4+IHhlbm9tYWktaXBpcGUgZmlsZXMuIEkgd291bGQgbGlr
-ZSB0byBtb3ZlIHRvIGxpbnV4LWtlcm5lbF80LjE0IGFzIHRoZQpHUFUKPj4+IGRyaXZlciBpcyBv
-ZmZpY2lhbGx5IHN1cHBvcnRlZCBieSBBTUQgZm9yIGxpbnV4LWtlcm5lbF80LjE0Lgo+Pj4KPj4K
-Pj4gTm8gZGlyZWN0IHByb2dyZXNzIHJlZ2FyZGluZyBSeXplbiwgYnV0IEkgd2lsbCB0cnkgdG8g
-Z2x1ZSB0b2dldGhlciBhCm5ldyA0LjE0Cj4+IHZlcnNpb24gaWYgcGVuZGluZyBwYXRjaGVzIHNv
-b24gc28gdGhhdCB5b3UgY2FuIHRyeSBpZiB0aGF0IGhhcHBlbnMgdG8KaGVscC4KPj4gV2lsbCBs
-ZXQgeW91IGtub3cuCj4+Cj4KPkp1c3QgZG9uZSwgc2VlIGh0dHBzOi8vZ2l0bGFiLmRlbnguZGUv
-WGVub21haS9pcGlwZS14ODYvCgpUaGUgc2FtZSBpc3N1ZSBwZXJzaXN0cy4KCjEuIEkgZG93bmxv
-YWRlZCB0aGUga2VybmVsLXBhdGNoZWQgd2l0aCBpcGlwZSBmcm9tIHRoZSBhYm92ZSBsaW5rLgoy
-LiBBZGRlZCB0aGUgY28ta2VybmVsIHVzaW5nOiAuLi94ZW5vbWFpLTMuMC44L3NjcmlwdHMvcHJl
-cGFyZS1rZXJuZWwuc2gKLS1hcmNoPXg4Nl82NAozLiBNYWRlIHRoZSBhcHByb3ByaWF0ZSBrZXJu
-ZWwgY29uZmlnIGNoYW5nZXMuCgpJIGhhdmUgYXR0YWNoZWQgbXkgLmNvbmZpZyBmaWxlLgoKVGhh
-bmtzLApWaXJlbmRyYQotLS0tLS0tLS0tLS0tLSBuZXh0IHBhcnQgLS0tLS0tLS0tLS0tLS0KQSBu
-b24tdGV4dCBhdHRhY2htZW50IHdhcyBzY3J1YmJlZC4uLgpOYW1lOiAuY29uZmlnClR5cGU6IGFw
-cGxpY2F0aW9uL29jdGV0LXN0cmVhbQpTaXplOiAyMTE3MzUgYnl0ZXMKRGVzYzogbm90IGF2YWls
-YWJsZQpVUkw6IDxodHRwOi8veGVub21haS5vcmcvcGlwZXJtYWlsL3hlbm9tYWkvYXR0YWNobWVu
-dHMvMjAxOTAzMjcvOGUxMWYwZjMvYXR0YWNobWVudC5vYmo+Cg==
+SGksYWxsDQpJIGNvbXBpbGUgdGhlIGtlcm5lbC00LjkuMzggd2l0aCB4ZW5vbWFpLTMuMC41LHRo
+ZW4gSSBydW4gbGF0ZW5jdCB0ZXN0Lg0KSSB1c2UgdWJ1bnR1MTYuMDQgZGVza3RvcCB0byBkbyB0
+aGVzZSxob3dldmVyLHRoZSBsYXRlbmN5IGlzIHNvbWV0aW1lcyB1cCB0byA4MCsgdXMuDQpBbHNv
+LCBJIGNsb3NlIGxpZ2h0ZG0gYW5kIGVudGVyIG5vbmUtZGVzayB0byBydW4gbGF0ZW5jeSBhZ2Fp
+bixpdCdzIHBlcmZlY3QgdGhhdCB0aGUgbGF0ZW5jeSBpcyB1bmRlciAxNXVzLg0KQnV0IEkgd2Fu
+dCB0aGUgZGVza3RvcCB3aXRoIHNtYWxsIGxhdGVuY3ksYW55b25lIGhhcyBpZGVhcyBmb3IgbWU/
+DQpCZXN0V2lzaGVzLA0KZGVtb24uDQoNCg0KDQpkZW1vbi5oYW5AYWxpeXVuLmNvbQ0K
