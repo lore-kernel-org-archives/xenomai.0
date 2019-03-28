@@ -1,11 +1,16 @@
-From: Lange Norbert <norbert.lange@andritz.com>
-Subject: Kernel module symbol conflicts
-Date: Thu, 28 Mar 2019 15:12:57 +0000
-Message-ID: <0fe3471eadf34083b9de1b766c327c72@andritz.com>
-Content-Language: en-US
-Content-Type: text/plain; charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
+Date: Thu, 28 Mar 2019 16:55:36 +0100
+From: Henning Schild <henning.schild@siemens.com>
+Subject: Re: [Xenomai] ipipe-4.14: planned release date
+Message-ID: <20190328165536.6544af47@md1za8fc.ad001.siemens.net>
+In-Reply-To: <80c3df6c-7edf-38f6-5fbb-6333e41c3859@siemens.com>
+References: <CAA3JOdZuwus7K4kNBWkQiEWGRMQ6YGwYVEsDwX+W0xoV0SWinA@mail.gmail.com>
+ <c09c2b4d-e3ab-177f-c61e-589dc1931f3b@siemens.com>
+ <322489d1-78c0-25f9-7831-eb372b25abe6@siemens.com>
+ <CAA3JOdaOn60xgw3J3JKxh9p43Gmri7dwyy_aSOXWwbTEL0Fb8A@mail.gmail.com>
+ <80c3df6c-7edf-38f6-5fbb-6333e41c3859@siemens.com>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -14,82 +19,56 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "Xenomai (xenomai@xenomai.org)" <xenomai@xenomai.org>
+To: Jan Kiszka <jan.kiszka@siemens.com>
+Cc: Virendra Kate <virendrakate@gmail.com>, "Xenomai@xenomai.org" <xenomai@xenomai.org>
 
-Hello,
+Am Thu, 28 Mar 2019 11:19:06 +0100
+schrieb Jan Kiszka <jan.kiszka@siemens.com>:
 
-We use a setup with multiple network controllers, and so far only one of th=
-em is realtime capable.
-The issue is, that there are nonRt and Rt drivers active at the same time (=
-igb statically builtin and rt_igb as module).
+> On 28.03.19 01:32, Virendra Kate wrote:
+> >  =20
+> >  >>> Did you all get an update on this issue ? Was it resolved
+> >  >>> after all? I have the exact same hardware with the exact same
+> >  >>> issue. The board keeps resetting after "Loading initial
+> >  >>> ramdisk..."
+> >  >>>
+> >  >>> My Setup is as follows:
+> >  >>> ipipe version: ipipe-core-4.14.89-x86-2
+> >  >>> Linux-kernel version: linux-4.14.89
+> >  >>> xenomai version: xenomai-3.0.8
+> >  >>> Hardware: AMD=C2=AE Ryzen embedded v1756b
+> >  >>>
+> >  >>> The board works fine with Linux kernel 3.9.146 patched with
+> >  >>> the appropriate xenomai-ipipe files. I would like to move to
+> >  >>> linux-kernel_4.14 as the GPU driver is officially supported by
+> >  >>> AMD for linux-kernel_4.14.=20
+> >  >>
+> >  >> No direct progress regarding Ryzen, but I will try to glue
+> >  >> together a new 4.14 version if pending patches soon so that you
+> >  >> can try if that happens to help. Will let you know.
+> >  >> =20
+> >  >
+> >  >Just done, see https://gitlab.denx.de/Xenomai/ipipe-x86/ =20
+> >=20
+> > The same issue persists.
+> >=20
+> > 1. I downloaded the kernel-patched with ipipe from the above link.
+> > 2. Added the co-kernel
+> > using: ../xenomai-3.0.8/scripts/prepare-kernel.sh --arch=3Dx86_64
+> > 3. Made the appropriate kernel config changes.
+> >=20
+> > I have attached my .config file. =20
+>=20
+> To exclude or narow-down config-related issues, you could try
+> starting of with the x86_64_defconfig, only adding essential Xenomai
+> and board-related switches.
 
-And while it works, I got some irregular weird crashes. Is there an issue w=
-ith the loaded rt_igb module having a lot symbols
-that are identically named with the igb driver?
+And an unpatched mainline kernel of the ~ same version, with the ~same
+config would be interesting as well.
 
-Does that mean the rt_igp module will use the exported functions/variables =
-from the igb driver,
-as a normal dynamic linker would?
+Henning
 
-Whats the policy of xenomai, should this even work (igp and rt_igp at the s=
-ame time)?
+> Jan
+>=20
 
-Example of conflicting symbols:
-
-# cat /proc/kallsyms | grep ' T igb_config'
-ffffffff94f3b2e0 T igb_configure_tx_ring
-ffffffff94f3b6f0 T igb_configure_rx_ring
-ffffffff94f49c30 T igb_config_collision_dist
-ffffffff94f49d50 T igb_config_fc_after_link_up
-
-# nm /lib/modules/4.14.94-xeno2-static/kernel/drivers/xenomai/net/drivers/i=
-gb/rt_igb.ko | grep ' T igb_config'
-0000000000004db0 T igb_config_collision_dist
-0000000000004eb0 T igb_config_fc_after_link_up
-000000000000dd60 T igb_configure_rx_ring
-000000000000d9f0 T igb_configure_tx_ring
-
-
-
-Mit besten Gr=FC=DFen / Kind regards
-
-NORBERT LANGE
-AT-DES
-
-ANDRITZ HYDRO GmbH
-Eibesbrunnergasse 20
-1120 Vienna / AUSTRIA
-p: +43 50805 56684
-norbert.lange@andritz.com
-andritz.com
-________________________________
-
-This message and any attachments are solely for the use of the intended rec=
-ipients. They may contain privileged and/or confidential information or oth=
-er information protected from disclosure. If you are not an intended recipi=
-ent, you are hereby notified that you received this email in error and that=
- any review, dissemination, distribution or copying of this email and any a=
-ttachment is strictly prohibited. If you have received this email in error,=
- please contact the sender and delete the message and any attachment from y=
-our system.
-
-ANDRITZ HYDRO GmbH
-
-
-Rechtsform/ Legal form: Gesellschaft mit beschr=E4nkter Haftung / Corporati=
-on
-
-Firmensitz/ Registered seat: Wien
-
-Firmenbuchgericht/ Court of registry: Handelsgericht Wien
-
-Firmenbuchnummer/ Company registration: FN 61833 g
-
-DVR: 0605077
-
-UID-Nr.: ATU14756806
-
-
-Thank You
-________________________________
 
