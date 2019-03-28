@@ -1,14 +1,14 @@
-Subject: Re: [Xenomai] ipipe-4.14: planned release date
-From: Jan Kiszka <jan.kiszka@siemens.com>
+MIME-Version: 1.0
 References: <CAA3JOdZuwus7K4kNBWkQiEWGRMQ6YGwYVEsDwX+W0xoV0SWinA@mail.gmail.com>
  <c09c2b4d-e3ab-177f-c61e-589dc1931f3b@siemens.com>
-Message-ID: <322489d1-78c0-25f9-7831-eb372b25abe6@siemens.com>
-Date: Wed, 27 Mar 2019 18:35:41 +0100
-MIME-Version: 1.0
-In-Reply-To: <c09c2b4d-e3ab-177f-c61e-589dc1931f3b@siemens.com>
-Content-Type: text/plain; charset="utf-8"; format="flowed"
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+ <322489d1-78c0-25f9-7831-eb372b25abe6@siemens.com>
+In-Reply-To: <322489d1-78c0-25f9-7831-eb372b25abe6@siemens.com>
+From: Virendra Kate <virendrakate@gmail.com>
+Date: Wed, 27 Mar 2019 17:32:43 -0700
+Message-ID: <CAA3JOdaOn60xgw3J3JKxh9p43Gmri7dwyy_aSOXWwbTEL0Fb8A@mail.gmail.com>
+Subject: Re: [Xenomai] ipipe-4.14: planned release date
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,37 +17,31 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Virendra Kate <virendrakate@gmail.com>, "Xenomai@xenomai.org" <xenomai@xenomai.org>, MSchrenkhammer@data-modul.com, henning.schild@siemens.com
+To: Jan Kiszka <jan.kiszka@siemens.com>
+Cc: "Xenomai@xenomai.org" <xenomai@xenomai.org>, henning.schild@siemens.com
 
-On 27.03.19 11:10, Jan Kiszka wrote:
-> On 25.03.19 21:09, Virendra Kate wrote:
->> Hi Martin, Jan and Henning,
->>
->> Did you all get an update on this issue ? Was it resolved after all? I have 
->> the exact same hardware with the exact same issue. The board keeps resetting 
->> after "Loading initial ramdisk..."
->>
->> My Setup is as follows:
->> ipipe version: ipipe-core-4.14.89-x86-2
->> Linux-kernel version: linux-4.14.89
->> xenomai version: xenomai-3.0.8
->> Hardware: AMD® Ryzen embedded v1756b
->>
->> The board works fine with Linux kernel 3.9.146 patched with the appropriate 
->> xenomai-ipipe files. I would like to move to linux-kernel_4.14 as the GPU 
->> driver is officially supported by AMD for linux-kernel_4.14.
->>
-> 
-> No direct progress regarding Ryzen, but I will try to glue together a new 4.14 
-> version if pending patches soon so that you can try if that happens to help. 
-> Will let you know.
-> 
-
-Just done, see https://gitlab.denx.de/Xenomai/ipipe-x86/
-
-Jan
-
--- 
-Siemens AG, Corporate Technology, CT RDA IOT SES-DE
-Corporate Competence Center Embedded Linux
-
+Pj4+IERpZCB5b3UgYWxsIGdldCBhbiB1cGRhdGUgb24gdGhpcyBpc3N1ZSA/IFdhcyBpdCByZXNv
+bHZlZCBhZnRlciBhbGw/IEkKaGF2ZQo+Pj4gdGhlIGV4YWN0IHNhbWUgaGFyZHdhcmUgd2l0aCB0
+aGUgZXhhY3Qgc2FtZSBpc3N1ZS4gVGhlIGJvYXJkIGtlZXBzCnJlc2V0dGluZwo+Pj4gYWZ0ZXIg
+IkxvYWRpbmcgaW5pdGlhbCByYW1kaXNrLi4uIgo+Pj4KPj4+IE15IFNldHVwIGlzIGFzIGZvbGxv
+d3M6Cj4+PiBpcGlwZSB2ZXJzaW9uOiBpcGlwZS1jb3JlLTQuMTQuODkteDg2LTIKPj4+IExpbnV4
+LWtlcm5lbCB2ZXJzaW9uOiBsaW51eC00LjE0Ljg5Cj4+PiB4ZW5vbWFpIHZlcnNpb246IHhlbm9t
+YWktMy4wLjgKPj4+IEhhcmR3YXJlOiBBTUTCriBSeXplbiBlbWJlZGRlZCB2MTc1NmIKPj4+Cj4+
+PiBUaGUgYm9hcmQgd29ya3MgZmluZSB3aXRoIExpbnV4IGtlcm5lbCAzLjkuMTQ2IHBhdGNoZWQg
+d2l0aCB0aGUKYXBwcm9wcmlhdGUKPj4+IHhlbm9tYWktaXBpcGUgZmlsZXMuIEkgd291bGQgbGlr
+ZSB0byBtb3ZlIHRvIGxpbnV4LWtlcm5lbF80LjE0IGFzIHRoZQpHUFUKPj4+IGRyaXZlciBpcyBv
+ZmZpY2lhbGx5IHN1cHBvcnRlZCBieSBBTUQgZm9yIGxpbnV4LWtlcm5lbF80LjE0Lgo+Pj4KPj4K
+Pj4gTm8gZGlyZWN0IHByb2dyZXNzIHJlZ2FyZGluZyBSeXplbiwgYnV0IEkgd2lsbCB0cnkgdG8g
+Z2x1ZSB0b2dldGhlciBhCm5ldyA0LjE0Cj4+IHZlcnNpb24gaWYgcGVuZGluZyBwYXRjaGVzIHNv
+b24gc28gdGhhdCB5b3UgY2FuIHRyeSBpZiB0aGF0IGhhcHBlbnMgdG8KaGVscC4KPj4gV2lsbCBs
+ZXQgeW91IGtub3cuCj4+Cj4KPkp1c3QgZG9uZSwgc2VlIGh0dHBzOi8vZ2l0bGFiLmRlbnguZGUv
+WGVub21haS9pcGlwZS14ODYvCgpUaGUgc2FtZSBpc3N1ZSBwZXJzaXN0cy4KCjEuIEkgZG93bmxv
+YWRlZCB0aGUga2VybmVsLXBhdGNoZWQgd2l0aCBpcGlwZSBmcm9tIHRoZSBhYm92ZSBsaW5rLgoy
+LiBBZGRlZCB0aGUgY28ta2VybmVsIHVzaW5nOiAuLi94ZW5vbWFpLTMuMC44L3NjcmlwdHMvcHJl
+cGFyZS1rZXJuZWwuc2gKLS1hcmNoPXg4Nl82NAozLiBNYWRlIHRoZSBhcHByb3ByaWF0ZSBrZXJu
+ZWwgY29uZmlnIGNoYW5nZXMuCgpJIGhhdmUgYXR0YWNoZWQgbXkgLmNvbmZpZyBmaWxlLgoKVGhh
+bmtzLApWaXJlbmRyYQotLS0tLS0tLS0tLS0tLSBuZXh0IHBhcnQgLS0tLS0tLS0tLS0tLS0KQSBu
+b24tdGV4dCBhdHRhY2htZW50IHdhcyBzY3J1YmJlZC4uLgpOYW1lOiAuY29uZmlnClR5cGU6IGFw
+cGxpY2F0aW9uL29jdGV0LXN0cmVhbQpTaXplOiAyMTE3MzUgYnl0ZXMKRGVzYzogbm90IGF2YWls
+YWJsZQpVUkw6IDxodHRwOi8veGVub21haS5vcmcvcGlwZXJtYWlsL3hlbm9tYWkvYXR0YWNobWVu
+dHMvMjAxOTAzMjcvOGUxMWYwZjMvYXR0YWNobWVudC5vYmo+Cg==
