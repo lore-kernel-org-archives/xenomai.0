@@ -1,7 +1,7 @@
 From: Philippe Gerum <rpm@xenomai.org>
-Subject: [PATCH 2/4] drivers/serial: always propagate -EINTR downstream
-Date: Fri, 29 Mar 2019 18:41:01 +0100
-Message-Id: <20190329174103.8158-3-rpm@xenomai.org>
+Subject: [PATCH 3/4] drivers/serial: imx: simplify RX loop
+Date: Fri, 29 Mar 2019 18:41:02 +0100
+Message-Id: <20190329174103.8158-4-rpm@xenomai.org>
 In-Reply-To: <20190329174103.8158-1-rpm@xenomai.org>
 References: <20190329174103.8158-1-rpm@xenomai.org>
 MIME-Version: 1.0
@@ -16,41 +16,44 @@ List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: xenomai@xenomai.org
 
-No ifs, not buts: drivers must pass -EINTR to the core whenever
-received from a blocking call.
-
-NOTE: this change also prevents userland from receiving a partial byte
-count from an interrupted read/write operation, although such amount
-of bytes may have been transferred from/to the corresponding software
-FIFO.
-
 Signed-off-by: Philippe Gerum <rpm@xenomai.org>
 ---
- kernel/drivers/serial/rt_imx_uart.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ kernel/drivers/serial/rt_imx_uart.c | 11 +++++------
+ 1 file changed, 5 insertions(+), 6 deletions(-)
 
 diff --git a/kernel/drivers/serial/rt_imx_uart.c b/kernel/drivers/serial/rt_imx_uart.c
-index 32b472c78..9e2ade4cb 100644
+index 9e2ade4cb..fa9dc64e8 100644
 --- a/kernel/drivers/serial/rt_imx_uart.c
 +++ b/kernel/drivers/serial/rt_imx_uart.c
-@@ -1352,7 +1352,7 @@ break_unlocked:
- 	clear_bit(0, &ctx->in_lock);
+@@ -380,12 +380,11 @@ static void rt_imx_uart_enable_ms(struct rt_imx_uart_ctx *ctx)
+ static int rt_imx_uart_rx_chars(struct rt_imx_uart_ctx *ctx,
+ 				uint64_t *timestamp)
+ {
+-	unsigned int rx, temp, max_count = 256;
++	unsigned int rx, temp;
+ 	int rbytes = 0;
+ 	int lsr = 0;
  
- 	if ((read > 0) && ((ret == 0) || (ret == -EAGAIN) ||
--			   (ret == -ETIMEDOUT) || (ret == -EINTR)))
-+			   (ret == -ETIMEDOUT)))
- 		ret = read;
+-	while ((readl(ctx->port->membase + USR2) & USR2_RDR) &&
+-	       (max_count-- > 0)) {
++	while (readl(ctx->port->membase + USR2) & USR2_RDR) {
+ 		rx = readl(ctx->port->membase + URXD0);
+ 		temp = readl(ctx->port->membase + USR2);
+ 		if (temp & USR2_BRCD) {
+@@ -408,10 +407,10 @@ static int rt_imx_uart_rx_chars(struct rt_imx_uart_ctx *ctx,
+ 			ctx->in_history[ctx->in_tail] = *timestamp;
+ 		ctx->in_tail = (ctx->in_tail + 1) & (IN_BUFFER_SIZE - 1);
  
- 	return ret;
-@@ -1471,7 +1471,7 @@ static ssize_t rt_imx_uart_write(struct rtdm_fd *fd, const void *buf,
- 	rtdm_mutex_unlock(&ctx->out_lock);
+-		if (++ctx->in_npend > IN_BUFFER_SIZE) {
++		if (unlikely(ctx->in_npend >= IN_BUFFER_SIZE))
+ 			lsr |= RTSER_SOFT_OVERRUN_ERR;
+-			ctx->in_npend--;
+-		}
++		else
++			ctx->in_npend++;
  
- 	if ((written > 0) && ((ret == 0) || (ret == -EAGAIN) ||
--			      (ret == -ETIMEDOUT) || (ret == -EINTR)))
-+			      (ret == -ETIMEDOUT)))
- 		ret = written;
- 
- 	return ret;
+ 		rbytes++;
+ 	}
 -- 
 2.20.1
 
