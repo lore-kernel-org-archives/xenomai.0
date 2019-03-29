@@ -1,7 +1,7 @@
 From: Philippe Gerum <rpm@xenomai.org>
-Subject: [PATCH 3/4] drivers/serial: imx: simplify RX loop
-Date: Fri, 29 Mar 2019 18:41:02 +0100
-Message-Id: <20190329174103.8158-4-rpm@xenomai.org>
+Subject: [PATCH 4/4] drivers/serial: imx: dismiss noisy IRQ events
+Date: Fri, 29 Mar 2019 18:41:03 +0100
+Message-Id: <20190329174103.8158-5-rpm@xenomai.org>
 In-Reply-To: <20190329174103.8158-1-rpm@xenomai.org>
 References: <20190329174103.8158-1-rpm@xenomai.org>
 MIME-Version: 1.0
@@ -16,44 +16,53 @@ List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: xenomai@xenomai.org
 
+Converging to the upstream implementation further, disregard any event
+which source is disabled, to help dealing with transitory states of
+the hardware (e.g. as triggered by device closure).
+
 Signed-off-by: Philippe Gerum <rpm@xenomai.org>
 ---
- kernel/drivers/serial/rt_imx_uart.c | 11 +++++------
- 1 file changed, 5 insertions(+), 6 deletions(-)
+ kernel/drivers/serial/rt_imx_uart.c | 14 ++++++++------
+ 1 file changed, 8 insertions(+), 6 deletions(-)
 
 diff --git a/kernel/drivers/serial/rt_imx_uart.c b/kernel/drivers/serial/rt_imx_uart.c
-index 9e2ade4cb..fa9dc64e8 100644
+index fa9dc64e8..6d95cbcab 100644
 --- a/kernel/drivers/serial/rt_imx_uart.c
 +++ b/kernel/drivers/serial/rt_imx_uart.c
-@@ -380,12 +380,11 @@ static void rt_imx_uart_enable_ms(struct rt_imx_uart_ctx *ctx)
- static int rt_imx_uart_rx_chars(struct rt_imx_uart_ctx *ctx,
- 				uint64_t *timestamp)
- {
--	unsigned int rx, temp, max_count = 256;
-+	unsigned int rx, temp;
- 	int rbytes = 0;
- 	int lsr = 0;
+@@ -463,8 +463,7 @@ static int rt_imx_uart_int(rtdm_irq_t *irq_context)
+ 	uint64_t timestamp = rtdm_clock_read();
+ 	struct rt_imx_uart_ctx *ctx;
+ 	unsigned int usr1, usr2, ucr1;
+-	int rbytes = 0;
+-	int events = 0;
++	int rbytes = 0, events = 0;
+ 	int ret = RTDM_IRQ_NONE;
  
--	while ((readl(ctx->port->membase + USR2) & USR2_RDR) &&
--	       (max_count-- > 0)) {
-+	while (readl(ctx->port->membase + USR2) & USR2_RDR) {
- 		rx = readl(ctx->port->membase + URXD0);
- 		temp = readl(ctx->port->membase + USR2);
- 		if (temp & USR2_BRCD) {
-@@ -408,10 +407,10 @@ static int rt_imx_uart_rx_chars(struct rt_imx_uart_ctx *ctx,
- 			ctx->in_history[ctx->in_tail] = *timestamp;
- 		ctx->in_tail = (ctx->in_tail + 1) & (IN_BUFFER_SIZE - 1);
- 
--		if (++ctx->in_npend > IN_BUFFER_SIZE) {
-+		if (unlikely(ctx->in_npend >= IN_BUFFER_SIZE))
- 			lsr |= RTSER_SOFT_OVERRUN_ERR;
--			ctx->in_npend--;
--		}
-+		else
-+			ctx->in_npend++;
- 
- 		rbytes++;
+ 	ctx = rtdm_irq_get_arg(irq_context, struct rt_imx_uart_ctx);
+@@ -479,16 +478,19 @@ static int rt_imx_uart_int(rtdm_irq_t *irq_context)
+ 	 * Read if there is data available
+ 	 */
+ 	if (usr1 & USR1_RRDY) {
+-		rbytes += rt_imx_uart_rx_chars(ctx, &timestamp);
+-		events |= RTSER_EVENT_RXPEND;
++		if (likely(ucr1 & UCR1_RRDYEN)) {
++			rbytes = rt_imx_uart_rx_chars(ctx, &timestamp);
++			events |= RTSER_EVENT_RXPEND;
++		}
+ 		ret = RTDM_IRQ_HANDLED;
  	}
+ 
+ 	/*
+ 	 * Send data if there is data to be sent
+ 	 */
+-	if ((usr1 & USR1_TRDY) && (ucr1 & UCR1_TXMPTYEN)) {
+-		rt_imx_uart_tx_chars(ctx);
++	if (usr1 & USR1_TRDY) {
++		if (likely(ucr1 & UCR1_TXMPTYEN))
++			rt_imx_uart_tx_chars(ctx);
+ 		ret = RTDM_IRQ_HANDLED;
+ 	}
+ 
 -- 
 2.20.1
 
