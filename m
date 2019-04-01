@@ -1,10 +1,10 @@
-Subject: Re: [PATCH] drivers/net: reformat using kernel coding style
-References: <916874df-8fe5-30b5-0958-fa84d6261f65@xenomai.org>
+Subject: Re: [PATCH] drivers/serial: imx: fix transmit interrupt handling
+References: <20190326131619.24709-1-rpm@xenomai.org>
 From: Jan Kiszka <jan.kiszka@web.de>
-Message-ID: <f079c34c-cd99-4a0d-eef5-3c01c7843d23@web.de>
-Date: Mon, 1 Apr 2019 20:13:19 +0200
+Message-ID: <4700e83d-4202-84c8-f073-c47f6beb7003@web.de>
+Date: Mon, 1 Apr 2019 20:14:32 +0200
 MIME-Version: 1.0
-In-Reply-To: <916874df-8fe5-30b5-0958-fa84d6261f65@xenomai.org>
+In-Reply-To: <20190326131619.24709-1-rpm@xenomai.org>
 Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Language: en-US
 Content-Transfer-Encoding: quoted-printable
@@ -16,30 +16,61 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Philippe Gerum <rpm@xenomai.org>, "Xenomai@xenomai.org" <Xenomai@xenomai.org>
+To: Philippe Gerum <rpm@xenomai.org>, xenomai@xenomai.org
 
-On 20.03.19 17:25, Philippe Gerum via Xenomai wrote:
+On 26.03.19 14:16, Philippe Gerum via Xenomai wrote:
+> We may receive TRDY when the TX-FIFO is not entirely empty, which
+> breaks the logic in rt_imx_uart_tx_chars(), as we may break early from
+> the transmit loop when the TXFULL condition is detected, skipping
+> decrement of ctx->out_npend although a byte was sent.
 >
-> As discussed earlier on this list [1], this patch reformats the RTnet
-> stack according to the kernel coding style. Due to its size, I'm not
-> going to paste it inline; please find it at [2].
+> Because of this, we may end up with ghost bytes in the output buffer
+> which were actually sent to the UART, but still erroneously counted in
+> ctx->out_npend. As a result, incorrect output can be observed later on
+> as bytes from the software FIFO are unduly sent, or such FIFO may
+> overflow indefinitely due to accumulated errors.
 >
-> Note: the following series introducing VLAN and multicast support is
-> based on this patch.
+> Fix this by testing TXFULL before sending the next byte to the UART.
+> At this chance, drop the count limit on the FIFO depth: testing TXFULL
+> is sufficient and robust.
 >
-> [1] https://www.xenomai.org/pipermail/xenomai/2019-February/040327.html
-> [2]
-> https://lab.xenomai.org/xenomai-rpm.git/commit/?h=3Dfor-upstream/next&id=
-=3Df58f8e176a366182a182362b9af0ffe41ca81d86
+> Signed-off-by: Philippe Gerum <rpm@xenomai.org>
+> ---
+>   kernel/drivers/serial/rt_imx_uart.c | 11 ++++-------
+>   1 file changed, 4 insertions(+), 7 deletions(-)
+>
+> diff --git a/kernel/drivers/serial/rt_imx_uart.c b/kernel/drivers/serial=
+/rt_imx_uart.c
+> index 6118e29b7..f91d8fb8b 100644
+> --- a/kernel/drivers/serial/rt_imx_uart.c
+> +++ b/kernel/drivers/serial/rt_imx_uart.c
+> @@ -422,18 +422,15 @@ static int rt_imx_uart_rx_chars(struct rt_imx_uart=
+_ctx *ctx,
+>
+>   static void rt_imx_uart_tx_chars(struct rt_imx_uart_ctx *ctx)
+>   {
+> -	int ch, count;
+> +	int ch;
+>   	unsigned int uts_reg =3D ctx->port->devdata->uts_reg;
+>
+> -	for (count =3D ctx->port->tx_fifo;
+> -	     (count > 0) && (ctx->out_npend > 0);
+> -	     count--, ctx->out_npend--) {
+> +	while (ctx->out_npend > 0 &&
+> +	       !(readl(ctx->port->membase + uts_reg) & UTS_TXFULL)) {
+>   		ch =3D ctx->out_buf[ctx->out_head++];
+>   		writel(ch, ctx->port->membase + URTX0);
+>   		ctx->out_head &=3D (OUT_BUFFER_SIZE - 1);
+> -
+> -		if (readl(ctx->port->membase + uts_reg) & UTS_TXFULL)
+> -			break;
+> +		ctx->out_npend--;
+>   	}
+>   }
+>
 >
 
-Surely an improvement, but unfortunately with "some" regressions as well. =
-Is the
-conversion method used here the only option? Look:
-
-total: 1329 errors, 3659 warnings, 118399 lines checked
-
-That's checkpatch for the conversion patch.
+Thanks, applied.
 
 Jan
 
