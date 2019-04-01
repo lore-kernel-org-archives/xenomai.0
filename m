@@ -1,11 +1,11 @@
-Subject: Re: [PATCH 5/5] smokey: add tests for mutex/condvar autoinit
-References: <20190307132159.31206-1-norbert.lange@andritz.com>
- <20190307132159.31206-5-norbert.lange@andritz.com>
+Subject: Re: [PATCH v2 1/5] libcobalt: improve mutex autoinit support
+References: <20190307133156.31749-1-norbert.lange@andritz.com>
+ <20190307133156.31749-2-norbert.lange@andritz.com>
 From: Jan Kiszka <jan.kiszka@web.de>
-Message-ID: <2d658a4f-758a-6d62-dc9e-25893c8afc6d@web.de>
-Date: Mon, 1 Apr 2019 19:32:47 +0200
+Message-ID: <1a274c4c-da33-62a9-c316-f1018af5b655@web.de>
+Date: Mon, 1 Apr 2019 19:38:32 +0200
 MIME-Version: 1.0
-In-Reply-To: <20190307132159.31206-5-norbert.lange@andritz.com>
+In-Reply-To: <20190307133156.31749-2-norbert.lange@andritz.com>
 Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Language: en-US
 Content-Transfer-Encoding: quoted-printable
@@ -19,354 +19,325 @@ List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: Norbert Lange <nolange79@gmail.com>, xenomai@xenomai.org
 
-On 07.03.19 14:21, Norbert Lange via Xenomai wrote:
-> add a few testcases whete dstroy is called as first function,
-
-...where destroy...
-
-> and test failure if the state is a non-standard initializater.
+On 07.03.19 14:31, Norbert Lange via Xenomai wrote:
+> contrary to some comments, mutexes are automatically
+> initialised on lock/unlock.
+> Correct the destroy method to not report an
+> error on such mutexes.
 >
-
-checkpatch run on this one as well, please.
-
+> {get,set}prioceiling requires mutexes that were explicitely
+> initialised, so no change needed there
+>
 > Signed-off-by: Norbert Lange <norbert.lange@andritz.com>
 > ---
->   testsuite/smokey/posix-cond/posix-cond.c   | 14 ++++
->   testsuite/smokey/posix-mutex/posix-mutex.c | 93 ++++++++++++++++------
->   2 files changed, 84 insertions(+), 23 deletions(-)
+>   lib/cobalt/mutex.c | 178 +++++++++++++++++++++++----------------------
+>   1 file changed, 92 insertions(+), 86 deletions(-)
 >
-> diff --git a/testsuite/smokey/posix-cond/posix-cond.c b/testsuite/smokey=
-/posix-cond/posix-cond.c
-> index 153c64599..ad915c724 100644
-> --- a/testsuite/smokey/posix-cond/posix-cond.c
-> +++ b/testsuite/smokey/posix-cond/posix-cond.c
-> @@ -198,6 +198,19 @@ static void *cond_signaler(void *cookie)
->   	return NULL;
+> diff --git a/lib/cobalt/mutex.c b/lib/cobalt/mutex.c
+> index ed32bba32..be9f6ed80 100644
+> --- a/lib/cobalt/mutex.c
+> +++ b/lib/cobalt/mutex.c
+> @@ -164,70 +164,51 @@ COBALT_IMPL(int, pthread_mutex_init, (pthread_mute=
+x_t *mutex,
 >   }
 >
-> +static void autoinit_simple_conddestroy(void)
-> +{
-> +	pthread_cond_t cond =3D PTHREAD_COND_INITIALIZER;
-> +	pthread_cond_t cond2 =3D PTHREAD_COND_INITIALIZER;
-> +	unsigned invalmagic =3D ~0x86860505; // ~COBALT_COND_MAGIC
+>   /**
+> - * Destroy a mutex.
+> - *
+> - * This service destroys the mutex @a mx, if it is unlocked and not ref=
+erenced
+> - * by any condition variable. The mutex becomes invalid for all mutex s=
+ervices
+> - * (they all return the EINVAL error) except pthread_mutex_init().
+> - *
+> - * @param mutex the mutex to be destroyed.
+> - *
+> - * @return 0 on success,
+> - * @return an error number if:
+> - * - EINVAL, the mutex @a mx is invalid;
+> - * - EPERM, the mutex is not process-shared and does not belong to the =
+current
+> - *   process;
+> - * - EBUSY, the mutex is locked, or used by a condition variable.
+> + * Test if a mutex structure contains an valid autoinitializer.
+>    *
+> - * @see
+> - * <a href=3D"http://www.opengroup.org/onlinepubs/000095399/functions/p=
+thread_mutex_destroy.html">
+> - * Specification.</a>
+> - *
+> - * @apitags{thread-unrestricted}
+> + * @return the mutex type on success,
+> + * @return -1 if not in supported autoinitializer state
+>    */
+> -COBALT_IMPL(int, pthread_mutex_destroy, (pthread_mutex_t *mutex))
+> +static int __attribute__((cold)) _cobalt_mutex_autoinit_type(const pthr=
+ead_mutex_t *mutex)
+>   {
+> -	struct cobalt_mutex_shadow *_mutex =3D
+> -		&((union cobalt_mutex_union *)mutex)->shadow_mutex;
+> -	int err;
+> -
+> -	if (_mutex->magic !=3D COBALT_MUTEX_MAGIC)
+> -		return EINVAL;
+> -
+> -	err =3D XENOMAI_SYSCALL1(sc_cobalt_mutex_destroy, _mutex);
+> -
+> -	return -err;
+> -}
+> -
+> -static int __attribute__((cold)) cobalt_mutex_autoinit(pthread_mutex_t =
+*mutex)
+> -{
+> -	static pthread_mutex_t uninit_normal_mutex =3D
+> -		PTHREAD_MUTEX_INITIALIZER;
+> +	static const pthread_mutex_t mutex_initializers[] =3D {
+> +#if HAVE_DECL_PTHREAD_ERRORCHECK_MUTEX_INITIALIZER_NP
+> +		PTHREAD_ERRORCHECK_MUTEX_INITIALIZER_NP,
+> +#endif
+>   #if HAVE_DECL_PTHREAD_RECURSIVE_MUTEX_INITIALIZER_NP
+> -	static pthread_mutex_t uninit_recursive_mutex =3D
+> -		PTHREAD_RECURSIVE_MUTEX_INITIALIZER_NP;
+> +		PTHREAD_RECURSIVE_MUTEX_INITIALIZER_NP,
+>   #endif
+> +		PTHREAD_MUTEX_INITIALIZER
+> +	};
+> +	static const int mutex_types[] =3D
+> +	{
+>   #if HAVE_DECL_PTHREAD_ERRORCHECK_MUTEX_INITIALIZER_NP
+> -	static pthread_mutex_t uninit_errorcheck_mutex =3D
+> -		PTHREAD_ERRORCHECK_MUTEX_INITIALIZER_NP;
+> +		PTHREAD_MUTEX_ERRORCHECK_NP,
+>   #endif
+> -	struct cobalt_mutex_shadow *_mutex =3D
+> -		&((union cobalt_mutex_union *)mutex)->shadow_mutex;
+> +#if HAVE_DECL_PTHREAD_RECURSIVE_MUTEX_INITIALIZER_NP
+> +		PTHREAD_MUTEX_RECURSIVE_NP,
+> +#endif
+> +		PTHREAD_MUTEX_DEFAULT
+> +	};
 > +
-> +	memcpy((char *)&cond2 + sizeof(cond2) - sizeof(invalmagic), &invalmagi=
-c, sizeof(invalmagic));
-> +
-> +	smokey_trace("%s", __func__);
-> +	check("cond_destroy", cond_destroy(&cond), 0);
-> +	check("cond_destroy invalid", cond_destroy(&cond2), -EINVAL);
+> +	unsigned i =3D sizeof(mutex_types) / sizeof(mutex_types[0]);
+> +	while (i-- > 0)
+> +	{
+> +		if (memcmp(mutex, &mutex_initializers[i], sizeof(mutex_initializers[0=
+])) =3D=3D 0)
+> +			return mutex_types[i];
+> +	}
+> +	return -1;
 > +}
 > +
->   static void autoinit_simple_condwait(void)
->   {
->   	pthread_cond_t cond =3D PTHREAD_COND_INITIALIZER;
-> @@ -731,6 +744,7 @@ int run_posix_cond(struct smokey_test *t, int argc, =
-char *const argv[])
->   	sparam.sched_priority =3D 2;
->   	pthread_setschedparam(pthread_self(), SCHED_FIFO, &sparam);
->
-> +	autoinit_simple_conddestroy();
->   	autoinit_simple_condwait();
->   	simple_condwait();
->   	relative_condwait();
-> diff --git a/testsuite/smokey/posix-mutex/posix-mutex.c b/testsuite/smok=
-ey/posix-mutex/posix-mutex.c
-> index 182f8c0e5..a42c52033 100644
-> --- a/testsuite/smokey/posix-mutex/posix-mutex.c
-> +++ b/testsuite/smokey/posix-mutex/posix-mutex.c
-> @@ -68,13 +68,13 @@ struct locker_context {
->   static void sleep_ms(unsigned int ms)	/* < 1000 */
->   {
->   	struct timespec ts;
-> -
-> +
->   	ts.tv_sec =3D 0;
->   	ts.tv_nsec =3D ms * 1000000;
->   	clock_nanosleep(CLOCK_MONOTONIC, 0, &ts, NULL);
->   }
->
-> -static int get_effective_prio(void)
-> +static int get_effective_prio(void)
->   {
->   	struct cobalt_threadstat stat;
->   	int ret;
-> @@ -111,13 +111,13 @@ static int do_init_mutexattr(pthread_mutexattr_t *=
-mattr, int type, int protocol)
->
->   	if (!__T(ret, pthread_mutexattr_init(mattr)))
->   		return ret;
-> -
-> +
->   	if (!__T(ret, pthread_mutexattr_settype(mattr, type)))
->   		return ret;
-> -
-> +
->   	if (!__T(ret, pthread_mutexattr_setprotocol(mattr, protocol)))
->   		return ret;
-> -
-> +
->   	if (!__T(ret, pthread_mutexattr_setpshared(mattr, PTHREAD_PROCESS_PRI=
-VATE)))
->   		return ret;
->
-> @@ -132,13 +132,13 @@ static int do_init_mutex(pthread_mutex_t *mutex, i=
-nt type, int protocol)
->   	ret =3D do_init_mutexattr(&mattr, type, protocol);
->   	if (ret)
->   		return ret;
-> -
-> +
->   	if (!__T(ret, pthread_mutex_init(mutex, &mattr)))
->   		return ret;
->
->   	if (!__T(ret, pthread_mutexattr_destroy(&mattr)))
->   		return ret;
-> -
-> +
->   	return 0;
->   }
->
-> @@ -150,7 +150,7 @@ static int do_init_mutex_ceiling(pthread_mutex_t *mu=
-tex, int type, int prio)
->   	ret =3D do_init_mutexattr(&mattr, type, PTHREAD_PRIO_PROTECT);
->   	if (ret)
->   		return ret;
-> -
-> +
->   	if (!__T(ret, pthread_mutexattr_setprioceiling(&mattr, prio)))
->   		return ret;
->
-> @@ -159,7 +159,7 @@ static int do_init_mutex_ceiling(pthread_mutex_t *mu=
-tex, int type, int prio)
->
->   	if (!__T(ret, pthread_mutexattr_destroy(&mattr)))
->   		return ret;
-> -
-> +
->   	return 0;
->   }
->
-> @@ -174,7 +174,7 @@ static void *mutex_timed_locker(void *arg)
->
->   	if (p->barrier)
->   		smokey_barrier_release(p->barrier);
-> -
-> +
->   	if (__F(ret, pthread_mutex_timedlock(p->mutex, &ts)) &&
->   	    __Tassert(ret =3D=3D -ETIMEDOUT))
->   		return (void *)1;
-> @@ -197,7 +197,7 @@ static int do_timed_contend(pthread_mutex_t *mutex, =
-int prio)
->   			    mutex_timed_locker, &args);
->   	if (ret)
->   		return ret;
-> -
-> +
->   	if (!__T(ret, pthread_join(tid, &status)))
->   		return ret;
->
-> @@ -296,6 +296,28 @@ static int do_contend(pthread_mutex_t *mutex, int t=
-ype)
->   	return 0;
->   }
->
-> +static int do_destroy(pthread_mutex_t *mutex, pthread_mutex_t *invalmut=
-ex, int type)
+> +static int __attribute__((cold)) _cobalt_mutex_doautoinit(union cobalt_=
+mutex_union *umutex)
 > +{
-> +	int ret;
-> +	if (!__T(ret, pthread_mutex_destroy(mutex)))
-> +		return ret;
-> +	if (!__F(ret, pthread_mutex_destroy(invalmutex)) &&
-> +		__Tassert(ret =3D=3D -EINVAL))
-> +		return -1;
+> +	struct cobalt_mutex_shadow *_mutex =3D &umutex->shadow_mutex;
+>   	int err __attribute__((unused));
+>   	pthread_mutexattr_t mattr;
+>   	int ret =3D 0, type;
+>
+> -	if (memcmp(mutex, &uninit_normal_mutex, sizeof(*mutex)) =3D=3D 0)
+> -		type =3D PTHREAD_MUTEX_DEFAULT;
+> -#if HAVE_DECL_PTHREAD_RECURSIVE_MUTEX_INITIALIZER_NP
+> -	else if (memcmp(mutex, &uninit_recursive_mutex, sizeof(*mutex)) =3D=3D=
+ 0)
+> -		type =3D PTHREAD_MUTEX_RECURSIVE_NP;
+> -#endif
+> -#if HAVE_DECL_PTHREAD_ERRORCHECK_MUTEX_INITIALIZER_NP
+> -	else if (memcmp(mutex, &uninit_errorcheck_mutex, sizeof(*mutex)) =3D=
+=3D 0)
+> -		type =3D PTHREAD_MUTEX_ERRORCHECK_NP;
+> -#endif
+> -	else
+> +	type =3D _cobalt_mutex_autoinit_type(&umutex->native_mutex);
+> +	if (type < 0)
+>   		return EINVAL;
+>
+>   	pthread_mutexattr_init(&mattr);
+> @@ -238,7 +219,7 @@ static int __attribute__((cold)) cobalt_mutex_autoin=
+it(pthread_mutex_t *mutex)
+>   		goto out;
+>   	}
+>   	if (_mutex->magic !=3D COBALT_MUTEX_MAGIC)
+> -		ret =3D __COBALT(pthread_mutex_init(mutex, &mattr));
+> +		ret =3D __COBALT(pthread_mutex_init(&umutex->native_mutex, &mattr));
+>   	err =3D __COBALT(pthread_mutex_unlock(cobalt_autoinit_mutex));
+>   	if (err) {
+>   		if (ret =3D=3D 0)
+> @@ -251,6 +232,49 @@ static int __attribute__((cold)) cobalt_mutex_autoi=
+nit(pthread_mutex_t *mutex)
+>   	return ret;
+>   }
+>
+> +static inline int _cobalt_mutex_autoinit(union cobalt_mutex_union *umut=
+ex)
+> +{
+> +	if (unlikely(umutex->shadow_mutex.magic !=3D COBALT_MUTEX_MAGIC))
+> +		return _cobalt_mutex_doautoinit(umutex);
 > +	return 0;
 > +}
 > +
-> +static int static_init_normal_destroy(void)
+> +/**
+> + * Destroy a mutex.
+> + *
+> + * This service destroys the mutex @a mx, if it is unlocked and not ref=
+erenced
+> + * by any condition variable. The mutex becomes invalid for all mutex s=
+ervices
+> + * (they all return the EINVAL error) except pthread_mutex_init().
+> + *
+> + * @param mutex the mutex to be destroyed.
+> + *
+> + * @return 0 on success,
+> + * @return an error number if:
+> + * - EINVAL, the mutex @a mx is invalid;
+> + * - EPERM, the mutex is not process-shared and does not belong to the =
+current
+> + *   process;
+> + * - EBUSY, the mutex is locked, or used by a condition variable.
+> + *
+> + * @see
+> + * <a href=3D"http://www.opengroup.org/onlinepubs/000095399/functions/p=
+thread_mutex_destroy.html">
+> + * Specification.</a>
+> + *
+> + * @apitags{thread-unrestricted}
+> + */
+> +COBALT_IMPL(int, pthread_mutex_destroy, (pthread_mutex_t *mutex))
 > +{
-> +	pthread_mutex_t mutex =3D PTHREAD_MUTEX_INITIALIZER;
-> +	pthread_mutex_t invalmutex =3D PTHREAD_MUTEX_INITIALIZER;
+> +	struct cobalt_mutex_shadow *_mutex =3D
+> +		&((union cobalt_mutex_union *)mutex)->shadow_mutex;
+> +	int err;
 > +
-> +	unsigned invalmagic =3D ~0x86860303; // ~COBALT_MUTEX_MAGIC
+> +	if (unlikely(_mutex->magic !=3D COBALT_MUTEX_MAGIC))
+> +		return (_cobalt_mutex_autoinit_type(mutex) < 0) ? EINVAL : 0;
 > +
-> +	memcpy((char *)&invalmutex + sizeof(invalmutex) - sizeof(invalmagic), =
-&invalmagic, sizeof(invalmagic));
-> +	return do_destroy(&mutex, &invalmutex, PTHREAD_MUTEX_NORMAL);
+> +	err =3D XENOMAI_SYSCALL1(sc_cobalt_mutex_destroy, _mutex);
+> +
+> +	return -err;
 > +}
 > +
->   static int static_init_normal_contend(void)
->   {
->   	pthread_mutex_t mutex =3D PTHREAD_MUTEX_INITIALIZER;
-> @@ -311,7 +333,7 @@ static int __dynamic_init_contend(int type)
->   	ret =3D do_init_mutex(&mutex, type, PTHREAD_PRIO_NONE);
->   	if (ret)
->   		return ret;
-> -
-> +
->   	return do_contend(&mutex, type);
->   }
+>   /**
+>    * Lock a mutex.
+>    *
+> @@ -296,15 +320,15 @@ COBALT_IMPL(int, pthread_mutex_lock, (pthread_mute=
+x_t *mutex))
+>   	if (cur =3D=3D XN_NO_HANDLE)
+>   		return EPERM;
 >
-> @@ -320,6 +342,17 @@ static int dynamic_init_normal_contend(void)
->   	return __dynamic_init_contend(PTHREAD_MUTEX_NORMAL);
->   }
+> -	if (_mutex->magic !=3D COBALT_MUTEX_MAGIC)
+> -		goto autoinit;
+> +	ret =3D _cobalt_mutex_autoinit((union cobalt_mutex_union *)mutex);
+> +	if (ret)
+> +		return ret;
 >
-> +static int static_init_recursive_destroy(void)
-> +{
-> +	pthread_mutex_t mutex =3D PTHREAD_RECURSIVE_MUTEX_INITIALIZER_NP;
-> +	pthread_mutex_t invalmutex =3D PTHREAD_RECURSIVE_MUTEX_INITIALIZER_NP;
-> +
-> +	unsigned invalmagic =3D ~0x86860303; // ~COBALT_MUTEX_MAGIC
-> +
-> +	memcpy((char *)&invalmutex + sizeof(invalmutex) - sizeof(invalmagic), =
-&invalmagic, sizeof(invalmagic));
-> +	return do_destroy(&mutex, &invalmutex, PTHREAD_MUTEX_RECURSIVE);
-> +}
-> +
->   static int static_init_recursive_contend(void)
->   {
->   	pthread_mutex_t mutex =3D PTHREAD_RECURSIVE_MUTEX_INITIALIZER_NP;
-> @@ -332,6 +365,17 @@ static int dynamic_init_recursive_contend(void)
->   	return __dynamic_init_contend(PTHREAD_MUTEX_RECURSIVE);
->   }
->
-> +static int static_init_errorcheck_destroy(void)
-> +{
-> +	pthread_mutex_t mutex =3D PTHREAD_ERRORCHECK_MUTEX_INITIALIZER_NP;
-> +	pthread_mutex_t invalmutex =3D PTHREAD_ERRORCHECK_MUTEX_INITIALIZER_NP=
-;
-> +
-> +	unsigned invalmagic =3D ~0x86860303; // ~COBALT_MUTEX_MAGIC
-> +
-> +	memcpy((char *)&invalmutex + sizeof(invalmutex) - sizeof(invalmagic), =
-&invalmagic, sizeof(invalmagic));
-> +	return do_destroy(&mutex, &invalmutex, PTHREAD_MUTEX_ERRORCHECK);
-> +}
-> +
->   static int static_init_errorcheck_contend(void)
->   {
->   	pthread_mutex_t mutex =3D PTHREAD_ERRORCHECK_MUTEX_INITIALIZER_NP;
-> @@ -381,7 +425,7 @@ static int weak_mode_switch(void)
->   		return -EINVAL;
->
->   	/* Enter SCHED_WEAK scheduling. */
-> -
-> +
->   	if (!__T(ret, pthread_setschedparam(pthread_self(),
->   					    SCHED_OTHER, &param)))
->   		return ret;
-> @@ -405,7 +449,7 @@ static int weak_mode_switch(void)
->   		return ret;
->
->   	/* Dropped it, we should have relaxed in the same move. */
-> -
-> +
->   	mode =3D cobalt_thread_mode();
->   	if (!__Tassert((mode & (XNWEAK|XNRELAX)) =3D=3D (XNWEAK|XNRELAX)))
->   		return -EINVAL;
-> @@ -460,7 +504,7 @@ static int do_pi_contend(int prio)
+>   	/*
+>   	 * We track resource ownership for auto-relax of non real-time
+>   	 * shadows and some debug features, so we must always obtain
+>   	 * them via a syscall.
 >   	 */
->   	if (!__Tassert(get_effective_prio() =3D=3D prio))
->   		return -EINVAL;
-> -
+> -start:
+>   	status =3D cobalt_get_current_mode();
+>   	if ((status & (XNRELAX|XNWEAK|XNDEBUG)) =3D=3D 0) {
+>   		if (_mutex->attr.protocol =3D=3D PTHREAD_PRIO_PROTECT)
+> @@ -360,11 +384,6 @@ protect:
+>   	u_window->pp_pending =3D _mutex->handle;
+>   	lazy_protect =3D 1;
+>   	goto fast_path;
+> -autoinit:
+> -	ret =3D cobalt_mutex_autoinit(mutex);
+> -	if (ret)
+> -		return ret;
+> -	goto start;
+>   }
+>
+>   /**
+> @@ -411,11 +430,11 @@ COBALT_IMPL(int, pthread_mutex_timedlock, (pthread=
+_mutex_t *mutex,
+>   	if (cur =3D=3D XN_NO_HANDLE)
+>   		return EPERM;
+>
+> -	if (_mutex->magic !=3D COBALT_MUTEX_MAGIC)
+> -		goto autoinit;
+> +	ret =3D _cobalt_mutex_autoinit((union cobalt_mutex_union *)mutex);
+> +	if (ret)
+> +		return ret;
+>
+>   	/* See __cobalt_pthread_mutex_lock() */
+> -start:
+>   	status =3D cobalt_get_current_mode();
+>   	if ((status & (XNRELAX|XNWEAK|XNDEBUG)) =3D=3D 0) {
+>   		if (_mutex->attr.protocol =3D=3D PTHREAD_PRIO_PROTECT)
+> @@ -471,11 +490,6 @@ protect:
+>   	u_window->pp_pending =3D _mutex->handle;
+>   	lazy_protect =3D 1;
+>   	goto fast_path;
+> -autoinit:
+> -	ret =3D cobalt_mutex_autoinit(mutex);
+> -	if (ret)
+> -		return ret;
+> -	goto start;
+>   }
+>
+>   /**
+> @@ -515,9 +529,10 @@ COBALT_IMPL(int, pthread_mutex_trylock, (pthread_mu=
+tex_t *mutex))
+>   	if (cur =3D=3D XN_NO_HANDLE)
+>   		return EPERM;
+>
+> -	if (_mutex->magic !=3D COBALT_MUTEX_MAGIC)
+> -		goto autoinit;
+> -start:
+> +	ret =3D _cobalt_mutex_autoinit((union cobalt_mutex_union *)mutex);
+> +	if (ret)
+> +		return ret;
 > +
->   	if (!__T(ret, pthread_join(tid, &status)))
->   		return ret;
+>   	status =3D cobalt_get_current_mode();
+>   	if ((status & (XNRELAX|XNWEAK|XNDEBUG)) =3D=3D 0) {
+>   		if (_mutex->attr.protocol =3D=3D PTHREAD_PRIO_PROTECT)
+> @@ -558,11 +573,6 @@ slow_path:
+>   		_mutex->lockcnt =3D 1;
 >
-> @@ -489,7 +533,7 @@ static void *mutex_locker_steal(void *arg)
->   	int ret;
+>   	return -ret;
+> -autoinit:
+> -	ret =3D cobalt_mutex_autoinit(mutex);
+> -	if (ret)
+> -		return ret;
+> -	goto start;
+>   protect:
+>   	u_window =3D cobalt_get_current_window();
+>   	/*
+> @@ -611,9 +621,10 @@ COBALT_IMPL(int, pthread_mutex_unlock, (pthread_mut=
+ex_t *mutex))
+>   	xnhandle_t cur;
+>   	int err;
 >
->   	smokey_barrier_release(p->barrier);
-> -
+> -	if (_mutex->magic !=3D COBALT_MUTEX_MAGIC)
+> -		goto autoinit;
+> -start:
+> +	err =3D _cobalt_mutex_autoinit((union cobalt_mutex_union *)mutex);
+> +	if (err)
+> +		return err;
 > +
->   	if (!__T(ret, pthread_mutex_lock(p->mutex)))
->   		return (void *)(long)ret;
+>   	cur =3D cobalt_get_current();
+>   	if (cur =3D=3D XN_NO_HANDLE)
+>   		return EPERM;
+> @@ -645,11 +656,6 @@ do_syscall:
 >
-> @@ -623,7 +667,7 @@ static int protect_raise(void)
->   	/* We should have been given a MEDIUM -> HIGH boost. */
->   	if (!__Tassert(get_effective_prio() =3D=3D THREAD_PRIO_HIGH))
->   		return -EINVAL;
-> -
-> +
->   	if (!__T(ret, pthread_mutex_unlock(&mutex)))
->   		return ret;
+>   	return -err;
 >
-> @@ -654,7 +698,7 @@ static int protect_lower(void)
->   	/* No boost should be applied. */
->   	if (!__Tassert(get_effective_prio() =3D=3D THREAD_PRIO_MEDIUM))
->   		return -EINVAL;
-> -
-> +
->   	if (!__T(ret, pthread_mutex_unlock(&mutex)))
->   		return ret;
->
-> @@ -700,7 +744,7 @@ static int protect_weak(void)
->   	/* We should have been sent to SCHED_FIFO, THREAD_PRIO_HIGH. */
->   	if (!__Tassert(get_effective_prio() =3D=3D THREAD_PRIO_HIGH))
->   		return -EINVAL;
-> -
-> +
->   	if (!__T(ret, pthread_mutex_unlock(&mutex)))
->   		return ret;
->
-> @@ -754,7 +798,7 @@ static int protect_nesting_protect(void)
->
->   	if (!__Tassert(get_effective_prio() =3D=3D THREAD_PRIO_HIGH))
->   		return -EINVAL;
-> -
-> +
->   	if (!__T(ret, pthread_mutex_unlock(&mutex_high)))
->   		return ret;
->
-> @@ -786,7 +830,7 @@ static int protect_nesting_pi(void)
->   	/* PP ceiling: MEDIUM -> HIGH */
->   	if (!__Tassert(get_effective_prio() =3D=3D THREAD_PRIO_HIGH))
->   		return -EINVAL;
-> -
-> +
->   	/* PI boost expected: HIGH -> VERY_HIGH, then back to HIGH */
->   	ret =3D do_pi_contend(THREAD_PRIO_VERY_HIGH);
->   	if (ret)
-> @@ -794,7 +838,7 @@ static int protect_nesting_pi(void)
->
->   	if (!__Tassert(get_effective_prio() =3D=3D THREAD_PRIO_HIGH))
->   		return -EINVAL;
-> -
-> +
->   	if (!__T(ret, pthread_mutex_unlock(&mutex_pp)))
->   		return ret;
->
-> @@ -833,7 +877,7 @@ static int protect_dynamic(void)
->   	/* We should have been given a HIGH -> VERY_HIGH boost. */
->   	if (!__Tassert(get_effective_prio() =3D=3D THREAD_PRIO_VERY_HIGH))
->   		return -EINVAL;
-> -
-> +
->   	if (!__T(ret, pthread_mutex_unlock(&mutex)))
->   		return ret;
->
-> @@ -991,10 +1035,13 @@ static int run_posix_mutex(struct smokey_test *t,=
- int argc, char *const argv[])
->   					    SCHED_FIFO, &param)))
->   		return ret;
->
-> +	do_test(static_init_normal_destroy, MAX_100_MS);
->   	do_test(static_init_normal_contend, MAX_100_MS);
->   	do_test(dynamic_init_normal_contend, MAX_100_MS);
-> +	do_test(static_init_recursive_destroy, MAX_100_MS);
->   	do_test(static_init_recursive_contend, MAX_100_MS);
->   	do_test(dynamic_init_recursive_contend, MAX_100_MS);
-> +	do_test(static_init_errorcheck_destroy, MAX_100_MS);
->   	do_test(static_init_errorcheck_contend, MAX_100_MS);
->   	do_test(dynamic_init_errorcheck_contend, MAX_100_MS);
->   	do_test(timed_contend, MAX_100_MS);
+> -autoinit:
+> -	err =3D cobalt_mutex_autoinit(mutex);
+> -	if (err)
+> -		return err;
+> -	goto start;
+>   unprotect:
+>   	u_window =3D cobalt_get_current_window();
+>   	u_window->pp_pending =3D XN_NO_HANDLE;
 >
 
-I'm generally fine with sneaking some style fixes into a function change. =
-This
-one is on the edge, actually more beyond it, as there are quite a few, com=
-pared
-to functional changes. When respinning this series, please split that up.
+Hmpf, I commented on v1, sorry. If you have happened to address some of my
+remarks here, just ignore them. But I see a couple of them are still relev=
+ant.
 
 Jan
 
