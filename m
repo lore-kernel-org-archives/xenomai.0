@@ -1,16 +1,14 @@
-From: Lange Norbert <norbert.lange@andritz.com>
-Subject: RE: smokey's fork tests hangs?
-Date: Fri, 8 Mar 2019 14:05:59 +0000
-Message-ID: <fc5da5a38d9946eb9bc893b7424fdb6b@andritz.com>
-References: <930188d381964d3794e4204d7ef2a477@andritz.com>
- <11bb63cf-9719-0e72-2c97-dafdb3b54da8@siemens.com>
- <f89e0d85d9ad4c0c9fcd6b65967b2efe@andritz.com>
- <1bd89442-cfe3-c324-470d-41dac02d0546@siemens.com>
-In-Reply-To: <1bd89442-cfe3-c324-470d-41dac02d0546@siemens.com>
-Content-Language: en-US
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+Subject: Re: [PATCH 3/5] libcobalt: improve condvar autoinit support
+References: <20190307132159.31206-1-norbert.lange@andritz.com>
+ <20190307132159.31206-3-norbert.lange@andritz.com>
+From: Jan Kiszka <jan.kiszka@web.de>
+Message-ID: <02ea75ce-9d1c-bb7f-a350-8d60e17af8b0@web.de>
+Date: Mon, 1 Apr 2019 19:27:08 +0200
 MIME-Version: 1.0
+In-Reply-To: <20190307132159.31206-3-norbert.lange@andritz.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: quoted-printable
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -19,47 +17,225 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jan Kiszka <jan.kiszka@siemens.com>, "Xenomai (xenomai@xenomai.org)" <xenomai@xenomai.org>
+To: Norbert Lange <nolange79@gmail.com>, xenomai@xenomai.org
 
-DQoNCj4gLS0tLS1PcmlnaW5hbCBNZXNzYWdlLS0tLS0NCj4gRnJvbTogSmFuIEtpc3prYSA8amFu
-Lmtpc3prYUBzaWVtZW5zLmNvbT4NCj4gU2VudDogRnJlaXRhZywgOC4gTcOkcnogMjAxOSAxNDo1
-OQ0KPiBUbzogTGFuZ2UgTm9yYmVydCA8bm9yYmVydC5sYW5nZUBhbmRyaXR6LmNvbT47IFhlbm9t
-YWkNCj4gKHhlbm9tYWlAeGVub21haS5vcmcpIDx4ZW5vbWFpQHhlbm9tYWkub3JnPg0KPiBTdWJq
-ZWN0OiBSZTogc21va2V5J3MgZm9yayB0ZXN0cyBoYW5ncz8NCj4NCj4gRS1NQUlMIEZST00gQSBO
-T04tQU5EUklUWiBTT1VSQ0U6IEFTIEEgU0VDVVJJVFkgTUVBU1VSRSwgUExFQVNFDQo+IEVYRVJD
-SVNFIENBVVRJT04gV0lUSCBFLU1BSUwgQ09OVEVOVCBBTkQgQU5ZIExJTktTIE9SDQo+IEFUVEFD
-SE1FTlRTLg0KPg0KPg0KPiBPbiAwOC4wMy4xOSAxNDo0NywgTGFuZ2UgTm9yYmVydCB3cm90ZToN
-Cj4gPg0KPiA+Pg0KPiA+PiBOb3QgcmVwcm9kdWNpYmxlIGhlcmUgd2l0aCBzdGFibGUvMy4wLngg
-b3IgbmV4dCwgYW5kIHdpdGggaXBpcGUteDg2LQ0KPiA0LjE0LnkuDQo+ID4+IFdoYXQgYXJlIHlv
-dXIgcGFyYW1ldGVycz8NCj4gPg0KPiA+IE5vdCBlbnRpcmVseSB1cHN0cmVhbSwgYnV0IGJhc2Vk
-IG9uIGlwaXBlLWNvcmUtNC4xNC44OS14ODYtMiBhbmQNCj4gPiB4ZW5vbWFpIG1hc3RlciwgdGhl
-IGRpZmZlcmVuY2UgaXMgY29udGFpbmVkIGluIHRoZSBydF9pZ2IgZHJpdmVyLCB3aGljaCBpcw0K
-PiBub3QgZXZlbiBsb2FkZWQuDQo+ID4gRGVmY29uZmlnIGlzIGF0dGFjaGVkLg0KPiA+DQo+ID4g
-SSBtb3N0bHkgc3VzcGVjdCBnbGliYyBhcyB0aGUgcmVsZXZhbnQgZGlmZmVyZW5jZSwgSSBhbSB1
-c2luZw0KPiA+IGdsaWJjLTIuMjgtNjktZzFlNWM1MzAzYTUyMjc2NGQ3ZTlkMjMwMmE2MGU0YTMy
-Y2RiOTAyZjEuDQo+ID4NCj4gPiBMb29raW5nIGF0IHRoZSBzdHJhY2UgdGhlIGNoaWxkIHByb2Nl
-c3MgMTAzOSBpcyBzdHVjayBhdA0KPiA+IEZVVEVYX1dBSVRfUFJJVkFURSwgRG9u4oCZdCByZWFs
-bHkga25vdyBob3cgdG8gdGFja2xlIHRoaXMuDQo+DQo+IElzIHRoaXMgYSByZWdyZXNzaW9uPyBU
-aGVuIHRyeSBiaXNlY3RpbmcgdGhlIGNhdXNpbmcgY29tbWl0Lg0KDQpOb3QgcmVhbGx5LCBJIGhh
-dmVuJ3QgcmFuIHRoZSBzbW9rZXkgc3VpdGUgb2Z0ZW4gKGFuZCBvbmx5IGZvciBzcGVjaWZpYyB0
-ZXN0cykuDQpJIHVzZSBidWlsZHJvb3QgZm9yIG15IHJvb3Rmcywgc28gSSBoYXZlIG5vIGVhc3kg
-d2F5IG9mIHN3YXBwaW5nIGFyb3VuZCBnbGliYyB2ZXJzaW9ucy4NCkkgaGF2ZSBub3QgZW5jb3Vu
-dGVyZWQgb3RoZXIgaXNzdWVzIG91dHNpZGUgb2YgdGhvc2UgdGVzdHMuDQoNCldoaWNoIHZlcnNp
-b24gb2YgZ2xpYmMgaXMgcnVubmluZyBvbiB5b3VyIGVuZD8NCg0KX19fX19fX19fX19fX19fX19f
-X19fX19fX19fX19fX18NCg0KVGhpcyBtZXNzYWdlIGFuZCBhbnkgYXR0YWNobWVudHMgYXJlIHNv
-bGVseSBmb3IgdGhlIHVzZSBvZiB0aGUgaW50ZW5kZWQgcmVjaXBpZW50cy4gVGhleSBtYXkgY29u
-dGFpbiBwcml2aWxlZ2VkIGFuZC9vciBjb25maWRlbnRpYWwgaW5mb3JtYXRpb24gb3Igb3RoZXIg
-aW5mb3JtYXRpb24gcHJvdGVjdGVkIGZyb20gZGlzY2xvc3VyZS4gSWYgeW91IGFyZSBub3QgYW4g
-aW50ZW5kZWQgcmVjaXBpZW50LCB5b3UgYXJlIGhlcmVieSBub3RpZmllZCB0aGF0IHlvdSByZWNl
-aXZlZCB0aGlzIGVtYWlsIGluIGVycm9yIGFuZCB0aGF0IGFueSByZXZpZXcsIGRpc3NlbWluYXRp
-b24sIGRpc3RyaWJ1dGlvbiBvciBjb3B5aW5nIG9mIHRoaXMgZW1haWwgYW5kIGFueSBhdHRhY2ht
-ZW50IGlzIHN0cmljdGx5IHByb2hpYml0ZWQuIElmIHlvdSBoYXZlIHJlY2VpdmVkIHRoaXMgZW1h
-aWwgaW4gZXJyb3IsIHBsZWFzZSBjb250YWN0IHRoZSBzZW5kZXIgYW5kIGRlbGV0ZSB0aGUgbWVz
-c2FnZSBhbmQgYW55IGF0dGFjaG1lbnQgZnJvbSB5b3VyIHN5c3RlbS4NCg0KQU5EUklUWiBIWURS
-TyBHbWJIDQoNCg0KUmVjaHRzZm9ybS8gTGVnYWwgZm9ybTogR2VzZWxsc2NoYWZ0IG1pdCBiZXNj
-aHLDpG5rdGVyIEhhZnR1bmcgLyBDb3Jwb3JhdGlvbg0KDQpGaXJtZW5zaXR6LyBSZWdpc3RlcmVk
-IHNlYXQ6IFdpZW4NCg0KRmlybWVuYnVjaGdlcmljaHQvIENvdXJ0IG9mIHJlZ2lzdHJ5OiBIYW5k
-ZWxzZ2VyaWNodCBXaWVuDQoNCkZpcm1lbmJ1Y2hudW1tZXIvIENvbXBhbnkgcmVnaXN0cmF0aW9u
-OiBGTiA2MTgzMyBnDQoNCkRWUjogMDYwNTA3Nw0KDQpVSUQtTnIuOiBBVFUxNDc1NjgwNg0KDQoN
-ClRoYW5rIFlvdQ0KX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX18NCg==
+On 07.03.19 14:21, Norbert Lange via Xenomai wrote:
+> contrary to some comments, condvars are automatically
+> initialised on signal/wait.
+> Correct the destroy method to not report an
+> error on such condvars.
+>
+> Check whether the condition variable has the
+> static initializer is now more strict.
+>
+
+Some checkpatch warning are reported here as well. Not explicitly listing =
+them.
+
+> Signed-off-by: Norbert Lange <norbert.lange@andritz.com>
+> ---
+>   lib/cobalt/cond.c | 93 ++++++++++++++++++++++++++---------------------
+>   1 file changed, 51 insertions(+), 42 deletions(-)
+>
+> diff --git a/lib/cobalt/cond.c b/lib/cobalt/cond.c
+> index 00a201855..92eb230ff 100644
+> --- a/lib/cobalt/cond.c
+> +++ b/lib/cobalt/cond.c
+> @@ -142,6 +142,42 @@ COBALT_IMPL(int, pthread_cond_init, (pthread_cond_t=
+ *cond,
+>   	return 0;
+>   }
+>
+> +static int __attribute__((cold)) _cobalt_cond_autoinit_type(const pthre=
+ad_cond_t *cond)
+> +{
+> +	static const pthread_cond_t cond_initializers[] =3D {
+> +		PTHREAD_COND_INITIALIZER
+> +	};
+> +	static const int cond_types[] =3D
+> +	{
+> +		0
+> +	};
+> +
+> +	unsigned i =3D sizeof(cond_types) / sizeof(cond_types[0]);
+> +	while (i-- > 0)
+> +	{
+> +		if (memcmp(cond, &cond_initializers[i], sizeof(cond_initializers[0]))=
+ =3D=3D 0)
+> +			return cond_types[i];
+> +	}
+
+While follows the same style as for mutexes, it's a bit overkill here, giv=
+en
+that we only have one type.
+
+> +	return -1;
+> +}
+> +
+> +static int __attribute__((cold)) _cobalt_cond_doautoinit(union cobalt_c=
+ond_union *ucond)
+> +{
+> +	int type;
+> +	type =3D _cobalt_cond_autoinit_type(&ucond->native_cond);
+> +	if (type < 0)
+> +		return EINVAL;
+> +
+> +	return __COBALT(pthread_cond_init(&ucond->native_cond, NULL));
+> +}
+> +
+> +static inline int _cobalt_cond_autoinit(union cobalt_cond_union *ucond)
+> +{
+> +	if (unlikely(ucond->shadow_cond.magic !=3D COBALT_COND_MAGIC))
+> +		return _cobalt_cond_doautoinit(ucond);
+> +	return 0;
+> +}
+> +
+>   /**
+>    * @fn int pthread_cond_destroy(pthread_cond_t *cond)
+>    * @brief Destroy a condition variable
+> @@ -170,6 +206,9 @@ COBALT_IMPL(int, pthread_cond_destroy, (pthread_cond=
+_t *cond))
+>   {
+>   	struct cobalt_cond_shadow *_cond =3D &((union cobalt_cond_union *)con=
+d)->shadow_cond;
+>
+> +	if (unlikely(_cond->magic !=3D COBALT_COND_MAGIC))
+> +		return (_cobalt_cond_autoinit_type(cond) < 0) ? EINVAL : 0;
+> +
+>   	return -XENOMAI_SYSCALL1( sc_cobalt_cond_destroy, _cond);
+>   }
+>
+> @@ -193,12 +232,6 @@ static void __pthread_cond_cleanup(void *data)
+>   	c->mutex->lockcnt =3D c->count;
+>   }
+>
+> -static int __attribute__((cold)) cobalt_cond_autoinit(pthread_cond_t *c=
+ond)
+> -{
+> -	return __COBALT(pthread_cond_init(cond, NULL));
+> -}
+> -
+> -
+>   /**
+>    * Wait on a condition variable.
+>    *
+> @@ -262,10 +295,10 @@ COBALT_IMPL(int, pthread_cond_wait, (pthread_cond_=
+t *cond, pthread_mutex_t *mute
+>   	if (_mx->magic !=3D COBALT_MUTEX_MAGIC)
+>   		return EINVAL;
+>
+> -	if (_cnd->magic !=3D COBALT_COND_MAGIC)
+> -		goto autoinit;
+> +	err =3D _cobalt_cond_autoinit((union cobalt_cond_union *)cond);
+> +	if (err)
+> +		return err;
+>
+> -  cont:
+>   	if (_mx->attr.type =3D=3D PTHREAD_MUTEX_ERRORCHECK) {
+>   		xnhandle_t cur =3D cobalt_get_current();
+>
+> @@ -297,12 +330,6 @@ COBALT_IMPL(int, pthread_cond_wait, (pthread_cond_t=
+ *cond, pthread_mutex_t *mute
+>   	pthread_testcancel();
+>
+>   	return -err ?: -c.err;
+> -
+> -  autoinit:
+> -	err =3D cobalt_cond_autoinit(cond);
+> -	if (err)
+> -		return err;
+> -	goto cont;
+>   }
+>
+>   /**
+> @@ -357,10 +384,10 @@ COBALT_IMPL(int, pthread_cond_timedwait, (pthread_=
+cond_t *cond,
+>   	if (_mx->magic !=3D COBALT_MUTEX_MAGIC)
+>   		return EINVAL;
+>
+> -	if (_cnd->magic !=3D COBALT_COND_MAGIC)
+> -		goto autoinit;
+> +	err =3D _cobalt_cond_autoinit((union cobalt_cond_union *)cond);
+> +	if (err)
+> +		return err;
+>
+> -  cont:
+>   	if (_mx->attr.type =3D=3D PTHREAD_MUTEX_ERRORCHECK) {
+>   		xnhandle_t cur =3D cobalt_get_current();
+>
+> @@ -391,12 +418,6 @@ COBALT_IMPL(int, pthread_cond_timedwait, (pthread_c=
+ond_t *cond,
+>   	pthread_testcancel();
+>
+>   	return -err ?: -c.err;
+> -
+> -  autoinit:
+> -	err =3D cobalt_cond_autoinit(cond);
+> -	if (err)
+> -		return err;
+> -	goto cont;
+>   }
+>
+>   /**
+> @@ -431,10 +452,10 @@ COBALT_IMPL(int, pthread_cond_signal, (pthread_con=
+d_t *cond))
+>   	__u32 flags;
+>   	int err;
+>
+> -	if (_cnd->magic !=3D COBALT_COND_MAGIC)
+> -		goto autoinit;
+> +	err =3D _cobalt_cond_autoinit((union cobalt_cond_union *)cond);
+> +	if (err)
+> +		return err;
+>
+> -  cont:
+>   	mutex_state =3D get_mutex_state(_cnd);
+>   	if (mutex_state =3D=3D NULL)
+>   		return 0;	/* Fast path, no waiter. */
+> @@ -455,12 +476,6 @@ COBALT_IMPL(int, pthread_cond_signal, (pthread_cond=
+_t *cond))
+>   		cond_state->pending_signals =3D pending_signals + 1;
+>
+>   	return 0;
+> -
+> -  autoinit:
+> -	err =3D cobalt_cond_autoinit(cond);
+> -	if (err)
+> -		return err;
+> -	goto cont;
+>   }
+>
+>   /**
+> @@ -491,10 +506,10 @@ COBALT_IMPL(int, pthread_cond_broadcast, (pthread_=
+cond_t *cond))
+>   	__u32 flags;
+>   	int err;
+>
+> -	if (_cnd->magic !=3D COBALT_COND_MAGIC)
+> -		goto autoinit;
+> +	err =3D _cobalt_cond_autoinit((union cobalt_cond_union *)cond);
+> +	if (err)
+> +		return err;
+>
+> -  cont:
+>   	mutex_state =3D get_mutex_state(_cnd);
+>   	if (mutex_state =3D=3D NULL)
+>   		return 0;
+> @@ -513,12 +528,6 @@ COBALT_IMPL(int, pthread_cond_broadcast, (pthread_c=
+ond_t *cond))
+>   	cond_state->pending_signals =3D ~0U;
+>
+>   	return 0;
+> -
+> -  autoinit:
+> -	err =3D cobalt_cond_autoinit(cond);
+> -	if (err)
+> -		return err;
+> -	goto cont;
+>   }
+>
+>   /**
+>
+
+Jan
 
