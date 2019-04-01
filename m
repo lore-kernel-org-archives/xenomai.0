@@ -1,10 +1,10 @@
-Subject: Re: [PATCH] drivers/serial: imx: fix transmit interrupt handling
-References: <20190326131619.24709-1-rpm@xenomai.org>
+Subject: Re: [PATCH 0/4] i.MX serial driver fixes
+References: <20190329174103.8158-1-rpm@xenomai.org>
 From: Jan Kiszka <jan.kiszka@web.de>
-Message-ID: <4700e83d-4202-84c8-f073-c47f6beb7003@web.de>
-Date: Mon, 1 Apr 2019 20:14:32 +0200
+Message-ID: <f688a594-bd99-3da5-0ab6-2fba6a5b66ba@web.de>
+Date: Mon, 1 Apr 2019 20:17:17 +0200
 MIME-Version: 1.0
-In-Reply-To: <20190326131619.24709-1-rpm@xenomai.org>
+In-Reply-To: <20190329174103.8158-1-rpm@xenomai.org>
 Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Language: en-US
 Content-Transfer-Encoding: quoted-printable
@@ -18,59 +18,31 @@ List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: Philippe Gerum <rpm@xenomai.org>, xenomai@xenomai.org
 
-On 26.03.19 14:16, Philippe Gerum via Xenomai wrote:
-> We may receive TRDY when the TX-FIFO is not entirely empty, which
-> breaks the logic in rt_imx_uart_tx_chars(), as we may break early from
-> the transmit loop when the TXFULL condition is detected, skipping
-> decrement of ctx->out_npend although a byte was sent.
+On 29.03.19 18:40, Philippe Gerum via Xenomai wrote:
+> Another set of changes for the i.MX serial driver, addressing some
+> issues observed here.
 >
-> Because of this, we may end up with ghost bytes in the output buffer
-> which were actually sent to the UART, but still erroneously counted in
-> ctx->out_npend. As a result, incorrect output can be observed later on
-> as bytes from the software FIFO are unduly sent, or such FIFO may
-> overflow indefinitely due to accumulated errors.
+> Patch #1 updates the init and configuration code to align with
+> mainline; it also fixes random lockups caused by the reset probe loop
+> spinning indefinitely. This was specifically observed when re-opening
+> the device for multiple runs (first run was generally ok).
 >
-> Fix this by testing TXFULL before sending the next byte to the UART.
-> At this chance, drop the count limit on the FIFO depth: testing TXFULL
-> is sufficient and robust.
+> Patch #2 is a must-have, the Cobalt interface requires it.
 >
-> Signed-off-by: Philippe Gerum <rpm@xenomai.org>
-> ---
->   kernel/drivers/serial/rt_imx_uart.c | 11 ++++-------
->   1 file changed, 4 insertions(+), 7 deletions(-)
+> Tested on i.MX6Q. Patch #1 needs further testing by other parties to
+> make sure it does not introduce regression(s).
 >
-> diff --git a/kernel/drivers/serial/rt_imx_uart.c b/kernel/drivers/serial=
-/rt_imx_uart.c
-> index 6118e29b7..f91d8fb8b 100644
-> --- a/kernel/drivers/serial/rt_imx_uart.c
-> +++ b/kernel/drivers/serial/rt_imx_uart.c
-> @@ -422,18 +422,15 @@ static int rt_imx_uart_rx_chars(struct rt_imx_uart=
-_ctx *ctx,
+> Philippe Gerum (4):
+>    drivers/serial: imx: robustify device setup/cleanup
+>    drivers/serial: always propagate -EINTR downstream
+>    drivers/serial: imx: simplify RX loop
+>    drivers/serial: imx: dismiss noisy IRQ events
 >
->   static void rt_imx_uart_tx_chars(struct rt_imx_uart_ctx *ctx)
->   {
-> -	int ch, count;
-> +	int ch;
->   	unsigned int uts_reg =3D ctx->port->devdata->uts_reg;
->
-> -	for (count =3D ctx->port->tx_fifo;
-> -	     (count > 0) && (ctx->out_npend > 0);
-> -	     count--, ctx->out_npend--) {
-> +	while (ctx->out_npend > 0 &&
-> +	       !(readl(ctx->port->membase + uts_reg) & UTS_TXFULL)) {
->   		ch =3D ctx->out_buf[ctx->out_head++];
->   		writel(ch, ctx->port->membase + URTX0);
->   		ctx->out_head &=3D (OUT_BUFFER_SIZE - 1);
-> -
-> -		if (readl(ctx->port->membase + uts_reg) & UTS_TXFULL)
-> -			break;
-> +		ctx->out_npend--;
->   	}
->   }
->
+>   kernel/drivers/serial/rt_imx_uart.c | 130 ++++++++++++++++++----------
+>   1 file changed, 82 insertions(+), 48 deletions(-)
 >
 
-Thanks, applied.
+Applied to next, thanks.
 
 Jan
 
