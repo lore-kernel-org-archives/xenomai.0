@@ -1,13 +1,11 @@
-Subject: Re: Using RTnet in Xenomai 3
-References: <004001d4e49e$59595760$0c0c0620$@mail.sdu.edu.cn>
 From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <35025814-bde5-8723-2ab3-a7bba6fa5baf@siemens.com>
-Date: Tue, 2 Apr 2019 13:07:53 +0200
+Subject: [PATCH] ipipe: Fix get_user_pages usage in __ipipe_pin_vma
+Message-ID: <ecf9f46b-fe92-95d3-2234-ee6264bfc41e@siemens.com>
+Date: Tue, 2 Apr 2019 14:47:37 +0200
 MIME-Version: 1.0
-In-Reply-To: <004001d4e49e$59595760$0c0c0620$@mail.sdu.edu.cn>
-Content-Type: text/plain; charset="gbk"; format="flowed"
+Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
-Content-Transfer-Encoding: base64
+Content-Transfer-Encoding: 7bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,19 +14,54 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: =?UTF-8?B?5p2O5Yaw?= <bingli@mail.sdu.edu.cn>, xenomai@xenomai.org
+To: Philippe Gerum <rpm@xenomai.org>
+Cc: Xenomai <xenomai@xenomai.org>
 
-T24gMjcuMDMuMTkgMTQ6MDksIMDusfkgdmlhIFhlbm9tYWkgd3JvdGU6Cj4gSGk6Cj4gCj4gICAK
-PiAKPiBJIGFtIHVzaW5nIFJUbmV0IGluIFhlbm9tYWkgMyBub3csIGFuZCBJIGhhdmUgd3JvdGUg
-YSBwcm9ncmFtIGJhc2VkIG9uCj4gUlRuZXRfUHJvZ3JhbW1pbmcgaW4gWGVub21haSdzIHdpa2ku
-Cj4gCj4gICAKPiAKPiBCdXQgSSBnb3QgYW4gZXJyb3Igd2hlbiBJIHRyeSB0byBjb21waWxlIG15
-IHByb2dyYW0sIHRoZSBlcnJvciBpcwo+IKGwdW5kZWZpbmVkIHJlZmVyZW5jZSB0byBgcnRfZGV2
-X3NvY2tldCehsS4KPiAKPiBJIHRoaW5rIHRoaXMgZXJyb3Igb2NjdXJzIGJlY2F1c2UgbXkgTWFr
-ZWZpbGUgaXMgd3JvbmcuIFNvLCBpcyB0aGVyZSBhIGRlbW8KPiBwcm9ncmFtIGluY2x1ZGluZyBj
-b2RlIGFuZCBNYWtlZmlsZSB0aGF0IHVzZXMgUlRuZXQgaW4gWGVub21haSAzPwo+IAoKcnRfZGV2
-X3NvY2tldCBpcyBubyBsb25nZXIgYXZhaWxhYmxlIGluIFhlbm9tYWkgMyAodW5sZXNzIHVzaW5n
-IHRoZSB0cmFuc2l0aW9uIApraXQgaGVhZGVyKS4gVXNlIHNvY2tldCgpIGRpcmVjdGx5LCBhbmQg
-bWFrZSBzdXJlIHRoYXQgdGhpcyBzeW1ib2wgaXMgd3JhcHBlZCB0byAKdGhlIFhlbm9tYWkgbGli
-cmFyeSAoeGVuby1jb25maWcgLS1za2luIHJ0ZG0gLS1sZGZsYWdzIC4uLikuCgpKYW4KCi0tIApT
-aWVtZW5zIEFHLCBDb3Jwb3JhdGUgVGVjaG5vbG9neSwgQ1QgUkRBIElPVCBTRVMtREUKQ29ycG9y
-YXRlIENvbXBldGVuY2UgQ2VudGVyIEVtYmVkZGVkIExpbnV4Cgo=
+From: Jan Kiszka <jan.kiszka@siemens.com>
+
+Since 9beae1ea8930, we are supposed to pass down flags, not just 0 or 1.
+Luckily, 1 happened to be FOLL_WRITE, so we did the right thing by
+chance.
+
+Moreover, get_user_pages is deprecated in favor of its locked/unlocked/
+fast variants.
+
+Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
+---
+
+Only noticed now that we are accounting for that in 4.4 already, but not
+yet in 4.14+.
+
+ mm/mlock.c | 8 +++++---
+ 1 file changed, 5 insertions(+), 3 deletions(-)
+
+diff --git a/mm/mlock.c b/mm/mlock.c
+index 392a7567b577..7244eab0bcc3 100644
+--- a/mm/mlock.c
++++ b/mm/mlock.c
+@@ -868,7 +868,8 @@ void user_shm_unlock(size_t size, struct user_struct *user)
+ #ifdef CONFIG_IPIPE
+ int __ipipe_pin_vma(struct mm_struct *mm, struct vm_area_struct *vma)
+ {
+-	int ret, write, len;
++	unsigned int gup_flags = 0;
++	int ret, len;
+ 
+ 	if (vma->vm_flags & (VM_IO | VM_PFNMAP))
+ 		return 0;
+@@ -880,9 +881,10 @@ int __ipipe_pin_vma(struct mm_struct *mm, struct vm_area_struct *vma)
+ 		return ret < 0 ? ret : 0;
+ 	}
+ 
+-	write = (vma->vm_flags & (VM_WRITE | VM_SHARED)) == VM_WRITE;
++	if ((vma->vm_flags & (VM_WRITE | VM_SHARED)) == VM_WRITE)
++		gup_flags |= FOLL_WRITE;
+ 	len = DIV_ROUND_UP(vma->vm_end, PAGE_SIZE) - vma->vm_start/PAGE_SIZE;
+-	ret = get_user_pages(vma->vm_start, len, write, 0, NULL);
++	ret = get_user_pages_locked(vma->vm_start, len, gup_flags, NULL, NULL);
+ 	if (ret < 0)
+ 		return ret;
+ 	return ret == len ? 0 : -EFAULT;
+-- 
+2.16.4
+
