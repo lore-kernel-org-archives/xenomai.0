@@ -1,10 +1,11 @@
-Subject: Re: RTnet packet loss issue
-References: <4e051b43-3677-e3e4-55f7-12aff5468c32@compador.de>
+Subject: Re: clocksource 'tsc' marked unstable, CLOCK_HOST_REALTIME went
+ bananas
+References: <76739224.1358458.1553762865210.JavaMail.zimbra@wolfram.com>
 From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <42f53356-c988-8810-422a-c9ab7b415c4e@siemens.com>
-Date: Tue, 2 Apr 2019 13:01:56 +0200
+Message-ID: <ed17fd73-1e56-b786-8ddd-5e3b9fda4219@siemens.com>
+Date: Tue, 2 Apr 2019 13:05:34 +0200
 MIME-Version: 1.0
-In-Reply-To: <4e051b43-3677-e3e4-55f7-12aff5468c32@compador.de>
+In-Reply-To: <76739224.1358458.1553762865210.JavaMail.zimbra@wolfram.com>
 Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -16,81 +17,30 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Johannes Holtz <johannes.holtz@compador.de>, xenomai@xenomai.org
+To: Per Oberg <pero@wolfram.com>, xenomai <xenomai@xenomai.org>
 
-On 28.03.19 09:53, Johannes Holtz via Xenomai wrote:
-> Preface:
+On 28.03.19 09:47, Per Oberg via Xenomai wrote:
+> Hello list!
 > 
-> Xenomai 2.6
+> I am running Xenomai 3.0.7. released version with Kernel 4.9.90 patchlevel 6.
 > 
-> Vanilla kernel 3.8.13 i686
+> We have a new x86-64 hardware, and during a test-run the clocksource went unstable, see (1) below for dmesg.
 > 
-> RTnet 0.9.13
+> After this, calls to "clock_gettime(CLOCK_HOST_REALTIME,&timeStamp)"  went bananas. Like if time stopped completely, (or possibly jumped back in time at least a few hours). Stuff running on timers (using CLOCK_MONOTONIC)kept running fine. I tried switching time to hpet using "clocksource=hpet" but this didn't work at all. Either time (CLOCK_HOST_REALTIME) jumped back and forth or it completely stopped.  Now I'm using "tsc=reliable" and haven't seen any issues since.
 > 
-> 
-> I have two PCs (M and S) connected via Ethernet exclusively for RTnet use.
-> 
-> M--[switch]---S
-> 
-> M's NIC is driven by the rt_r8169 driver
-> 
-> S's NIC by the rt_e1000 driver
-> 
-> 
-> The problem is that the connection is unstable and about 80% of the packets get 
-> lost.
-> 
-> root@machinectrl:~# rtping 192.168.0.1
-> Real-time PING 192.168.0.1 56(84) bytes of data.
-> 64 bytes from 192.168.0.1: icmp_seq=1 time=111.2 us
-> 64 bytes from 192.168.0.1: icmp_seq=7 time=99.2 us
-> 64 bytes from 192.168.0.1: icmp_seq=13 time=99.1 us
-> 64 bytes from 192.168.0.1: icmp_seq=23 time=100.5 us
-> 64 bytes from 192.168.0.1: icmp_seq=24 time=97.5 us
-> 64 bytes from 192.168.0.1: icmp_seq=30 time=104.8 us
-> 64 bytes from 192.168.0.1: icmp_seq=32 time=101.8 us
-> 64 bytes from 192.168.0.1: icmp_seq=34 time=102.1 us
-> 64 bytes from 192.168.0.1: icmp_seq=35 time=101.4 us
-> 64 bytes from 192.168.0.1: icmp_seq=37 time=101.5 us
-> 64 bytes from 192.168.0.1: icmp_seq=38 time=99.7 us
-> 64 bytes from 192.168.0.1: icmp_seq=43 time=99.2 us
-> 64 bytes from 192.168.0.1: icmp_seq=54 time=101.3 us
-> 64 bytes from 192.168.0.1: icmp_seq=60 time=102.2 us
-> 64 bytes from 192.168.0.1: icmp_seq=63 time=97.3 us
-> 64 bytes from 192.168.0.1: icmp_seq=69 time=100.3 us
-> 64 bytes from 192.168.0.1: icmp_seq=80 time=101.2 us
-> 64 bytes from 192.168.0.1: icmp_seq=84 time=100.7 us
-> 64 bytes from 192.168.0.1: icmp_seq=86 time=103.4 us
-> 64 bytes from 192.168.0.1: icmp_seq=88 time=105.1 us
-> 64 bytes from 192.168.0.1: icmp_seq=89 time=101.2 us
-> 64 bytes from 192.168.0.1: icmp_seq=96 time=100.7 us
-> 64 bytes from 192.168.0.1: icmp_seq=98 time=99.2 us
-> 64 bytes from 192.168.0.1: icmp_seq=99 time=103.2 us
-> 64 bytes from 192.168.0.1: icmp_seq=113 time=98.8 us
-> 64 bytes from 192.168.0.1: icmp_seq=116 time=105.7 us
-> 64 bytes from 192.168.0.1: icmp_seq=119 time=111.2 us
-> 64 bytes from 192.168.0.1: icmp_seq=126 time=101.7 us
-> 64 bytes from 192.168.0.1: icmp_seq=130 time=102.6 us
-> ^C
-> --- 192.168.0.1 rtping statistics ---
-> 135 packets transmitted, 29 received, 79% packet loss
-> worst case rtt = 111.2 us
-> 
-> This happens sometimes from the start after both machines are booted without 
-> prior communication.
-> If it is not broken from the start the RTnet works as expected.
-> But it also happens after the system is running for several hours without any 
-> noticeable user action that would cause it.
-> 
-> The cables and connectors have all been double checked.
-> 
-> Is this a know error or is there anything you can tell me about this pattern?
-> 
-> I'm grateful for every piece of advice as always.
+> I think I know why tsc may be deemed unreliable, but why can't I run using hpet?
 > 
 
-Check if you are also missing interrupts on one of the sides. Are they shared 
-with other devices?
+The TSC may be detected as unreliable by Linux if a the RT application disturbs 
+the detection algorithm too much (e.g. via long-running RT workload). You can 
+let it switch to HPET, but CLOCK_HOST_REALTIME will no longer work, as you 
+noticed, because it assumes that Linux is using TSC as clocksource.
+
+> What are the drawbacks for xenomai with using tsc=reliable ?
+> 
+
+Practically, none, provided your tsc is actually reliable. If not, also Xenomai 
+and its RT applications would have serious problems.
 
 Jan
 
