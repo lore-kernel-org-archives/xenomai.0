@@ -1,10 +1,10 @@
-Subject: Re: Kernel module symbol conflicts
-References: <0fe3471eadf34083b9de1b766c327c72@andritz.com>
+Subject: Re: Issues With rt_task_inquire and Associates
+References: <CAO460_96EVE664TG_VM5jEV0MNBmoJjzThxZp7T9nnu4XkDmRw@mail.gmail.com>
 From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <9ec08cea-b00a-29d6-1c77-772717483de0@siemens.com>
-Date: Tue, 2 Apr 2019 12:59:25 +0200
+Message-ID: <c06a6b8f-a758-483c-cd11-f8a9f453cbe1@siemens.com>
+Date: Tue, 2 Apr 2019 12:59:23 +0200
 MIME-Version: 1.0
-In-Reply-To: <0fe3471eadf34083b9de1b766c327c72@andritz.com>
+In-Reply-To: <CAO460_96EVE664TG_VM5jEV0MNBmoJjzThxZp7T9nnu4XkDmRw@mail.gmail.com>
 Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -16,41 +16,35 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Lange Norbert <norbert.lange@andritz.com>, "Xenomai (xenomai@xenomai.org)" <xenomai@xenomai.org>
+To: "Stephen D. Cohen" <steve@uscohens.com>, xenomai@xenomai.org
 
-On 28.03.19 16:12, Lange Norbert via Xenomai wrote:
-> Hello,
+On 28.03.19 17:13, Stephen D. Cohen via Xenomai wrote:
+> Folks,
 > 
-> We use a setup with multiple network controllers, and so far only one of them is realtime capable.
-> The issue is, that there are nonRt and Rt drivers active at the same time (igb statically builtin and rt_igb as module).
+>       I noted a couple of issues with rt_task_inquire and wanted to
+> share them. I will put together a patch later <makes hand rolling
+> motion>, but wanted to let folks know sooner rather than later.
 > 
-> And while it works, I got some irregular weird crashes. Is there an issue with the loaded rt_igb module having a lot symbols
-> that are identically named with the igb driver?
+>       The documentation suggests that the info structure can be NULL.
+> This is simply not true, as the actual code dereferences the pointer
+> without checking. Thus a null info pointer will cause an exception and
+> the thread will die an untimely (though outwardly quiet) death.
 > 
-> Does that mean the rt_igp module will use the exported functions/variables from the igb driver,
-> as a normal dynamic linker would?
+>       I also note that the rt_task_inquire routine has an exit path
+> that keeps the thread object in  task control block locked. This is
+> also a problem. There should really be a put_alchemy_task before the
+> "goto out;" after the threadobj_stat call.
 > 
-> Whats the policy of xenomai, should this even work (igp and rt_igp at the same time)?
-> 
-> Example of conflicting symbols:
-> 
-> # cat /proc/kallsyms | grep ' T igb_config'
-> ffffffff94f3b2e0 T igb_configure_tx_ring
-> ffffffff94f3b6f0 T igb_configure_rx_ring
-> ffffffff94f49c30 T igb_config_collision_dist
-> ffffffff94f49d50 T igb_config_fc_after_link_up
-> 
-> # nm /lib/modules/4.14.94-xeno2-static/kernel/drivers/xenomai/net/drivers/igb/rt_igb.ko | grep ' T igb_config'
-> 0000000000004db0 T igb_config_collision_dist
-> 0000000000004eb0 T igb_config_fc_after_link_up
-> 000000000000dd60 T igb_configure_rx_ring
-> 000000000000d9f0 T igb_configure_tx_ring
+>       I noted that this "keeps the tcb->thobj locked" issue occurs in a
+> few of the other rt_task routines as well. A careful review is in
+> order and I will do it when I submit the patches for rt_task_inquire.
 > 
 
-Yeah, it's probably not a good idea having both drivers with identical symbols 
-being active at the same time. These symbols aren't exported, but they are at 
-least global. The proper solution would be renaming those of the rt_igb driver 
-(and probably others from our stack).
+Thanks for the report! Sounds reasonable - looking forward to patches.
 
 Jan
+
+-- 
+Siemens AG, Corporate Technology, CT RDA IOT SES-DE
+Corporate Competence Center Embedded Linux
 
