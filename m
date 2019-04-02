@@ -1,14 +1,13 @@
-Subject: Re: clocksource 'tsc' marked unstable, CLOCK_HOST_REALTIME went
- bananas
-References: <76739224.1358458.1553762865210.JavaMail.zimbra@wolfram.com>
+Subject: Re: Using RTnet in Xenomai 3
+References: <004001d4e49e$59595760$0c0c0620$@mail.sdu.edu.cn>
 From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <ed17fd73-1e56-b786-8ddd-5e3b9fda4219@siemens.com>
-Date: Tue, 2 Apr 2019 13:05:34 +0200
+Message-ID: <35025814-bde5-8723-2ab3-a7bba6fa5baf@siemens.com>
+Date: Tue, 2 Apr 2019 13:07:53 +0200
 MIME-Version: 1.0
-In-Reply-To: <76739224.1358458.1553762865210.JavaMail.zimbra@wolfram.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
+In-Reply-To: <004001d4e49e$59595760$0c0c0620$@mail.sdu.edu.cn>
+Content-Type: text/plain; charset="gbk"; format="flowed"
 Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: base64
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,34 +16,19 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Per Oberg <pero@wolfram.com>, xenomai <xenomai@xenomai.org>
+To: =?UTF-8?B?5p2O5Yaw?= <bingli@mail.sdu.edu.cn>, xenomai@xenomai.org
 
-On 28.03.19 09:47, Per Oberg via Xenomai wrote:
-> Hello list!
-> 
-> I am running Xenomai 3.0.7. released version with Kernel 4.9.90 patchlevel 6.
-> 
-> We have a new x86-64 hardware, and during a test-run the clocksource went unstable, see (1) below for dmesg.
-> 
-> After this, calls to "clock_gettime(CLOCK_HOST_REALTIME,&timeStamp)"  went bananas. Like if time stopped completely, (or possibly jumped back in time at least a few hours). Stuff running on timers (using CLOCK_MONOTONIC)kept running fine. I tried switching time to hpet using "clocksource=hpet" but this didn't work at all. Either time (CLOCK_HOST_REALTIME) jumped back and forth or it completely stopped.  Now I'm using "tsc=reliable" and haven't seen any issues since.
-> 
-> I think I know why tsc may be deemed unreliable, but why can't I run using hpet?
-> 
-
-The TSC may be detected as unreliable by Linux if a the RT application disturbs 
-the detection algorithm too much (e.g. via long-running RT workload). You can 
-let it switch to HPET, but CLOCK_HOST_REALTIME will no longer work, as you 
-noticed, because it assumes that Linux is using TSC as clocksource.
-
-> What are the drawbacks for xenomai with using tsc=reliable ?
-> 
-
-Practically, none, provided your tsc is actually reliable. If not, also Xenomai 
-and its RT applications would have serious problems.
-
-Jan
-
--- 
-Siemens AG, Corporate Technology, CT RDA IOT SES-DE
-Corporate Competence Center Embedded Linux
-
+T24gMjcuMDMuMTkgMTQ6MDksIMDusfkgdmlhIFhlbm9tYWkgd3JvdGU6Cj4gSGk6Cj4gCj4gICAK
+PiAKPiBJIGFtIHVzaW5nIFJUbmV0IGluIFhlbm9tYWkgMyBub3csIGFuZCBJIGhhdmUgd3JvdGUg
+YSBwcm9ncmFtIGJhc2VkIG9uCj4gUlRuZXRfUHJvZ3JhbW1pbmcgaW4gWGVub21haSdzIHdpa2ku
+Cj4gCj4gICAKPiAKPiBCdXQgSSBnb3QgYW4gZXJyb3Igd2hlbiBJIHRyeSB0byBjb21waWxlIG15
+IHByb2dyYW0sIHRoZSBlcnJvciBpcwo+IKGwdW5kZWZpbmVkIHJlZmVyZW5jZSB0byBgcnRfZGV2
+X3NvY2tldCehsS4KPiAKPiBJIHRoaW5rIHRoaXMgZXJyb3Igb2NjdXJzIGJlY2F1c2UgbXkgTWFr
+ZWZpbGUgaXMgd3JvbmcuIFNvLCBpcyB0aGVyZSBhIGRlbW8KPiBwcm9ncmFtIGluY2x1ZGluZyBj
+b2RlIGFuZCBNYWtlZmlsZSB0aGF0IHVzZXMgUlRuZXQgaW4gWGVub21haSAzPwo+IAoKcnRfZGV2
+X3NvY2tldCBpcyBubyBsb25nZXIgYXZhaWxhYmxlIGluIFhlbm9tYWkgMyAodW5sZXNzIHVzaW5n
+IHRoZSB0cmFuc2l0aW9uIApraXQgaGVhZGVyKS4gVXNlIHNvY2tldCgpIGRpcmVjdGx5LCBhbmQg
+bWFrZSBzdXJlIHRoYXQgdGhpcyBzeW1ib2wgaXMgd3JhcHBlZCB0byAKdGhlIFhlbm9tYWkgbGli
+cmFyeSAoeGVuby1jb25maWcgLS1za2luIHJ0ZG0gLS1sZGZsYWdzIC4uLikuCgpKYW4KCi0tIApT
+aWVtZW5zIEFHLCBDb3Jwb3JhdGUgVGVjaG5vbG9neSwgQ1QgUkRBIElPVCBTRVMtREUKQ29ycG9y
+YXRlIENvbXBldGVuY2UgQ2VudGVyIEVtYmVkZGVkIExpbnV4Cgo=
