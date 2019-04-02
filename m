@@ -1,14 +1,13 @@
-Date: Fri, 08 Mar 2019 14:07:26 +0000
-From: Jeff Webb <w1@codecraftsmen.org>
-Reply-To: Jeff Webb <w1@codecraftsmen.org>
-Subject: Re: INTR-REMAP error with UDD driver
-Message-ID: <Mtsj7WK6Smi457BA0VbXiS2OruDJeJ4CvnxF51uGtYcZGGtpR5cCZayoFwt_bxbfxqAvU56y7nmrNxAoT6RthUqGsS1lTYnUDU4vC_3P4Fw=@codecraftsmen.org>
-In-Reply-To: <46f899f8-8e3a-8ad5-77d3-5ed0bbc2c546@siemens.com>
-References: <SVZrPK0MQbayn-KPZ4wIvVLcbdluegH0Vxlth0h7DnkST5oo2K5_0Nu6vd-FBcRz3cYtRj5Jl9Wp2nTHSCp-udTCw2_fAcY--f7JNMVUHrg=@protonmail.com>
- <46f899f8-8e3a-8ad5-77d3-5ed0bbc2c546@siemens.com>
+Subject: Re: Kernel module symbol conflicts
+References: <0fe3471eadf34083b9de1b766c327c72@andritz.com>
+From: Jan Kiszka <jan.kiszka@siemens.com>
+Message-ID: <9ec08cea-b00a-29d6-1c77-772717483de0@siemens.com>
+Date: Tue, 2 Apr 2019 12:59:25 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+In-Reply-To: <0fe3471eadf34083b9de1b766c327c72@andritz.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,74 +16,41 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jan Kiszka <jan.kiszka@siemens.com>
-Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Lange Norbert <norbert.lange@andritz.com>, "Xenomai (xenomai@xenomai.org)" <xenomai@xenomai.org>
 
-On Friday, March 8, 2019 1:14 AM, Jan Kiszka <jan.kiszka@siemens.com> wrote=
-:
+On 28.03.19 16:12, Lange Norbert via Xenomai wrote:
+> Hello,
+> 
+> We use a setup with multiple network controllers, and so far only one of them is realtime capable.
+> The issue is, that there are nonRt and Rt drivers active at the same time (igb statically builtin and rt_igb as module).
+> 
+> And while it works, I got some irregular weird crashes. Is there an issue with the loaded rt_igb module having a lot symbols
+> that are identically named with the igb driver?
+> 
+> Does that mean the rt_igp module will use the exported functions/variables from the igb driver,
+> as a normal dynamic linker would?
+> 
+> Whats the policy of xenomai, should this even work (igp and rt_igp at the same time)?
+> 
+> Example of conflicting symbols:
+> 
+> # cat /proc/kallsyms | grep ' T igb_config'
+> ffffffff94f3b2e0 T igb_configure_tx_ring
+> ffffffff94f3b6f0 T igb_configure_rx_ring
+> ffffffff94f49c30 T igb_config_collision_dist
+> ffffffff94f49d50 T igb_config_fc_after_link_up
+> 
+> # nm /lib/modules/4.14.94-xeno2-static/kernel/drivers/xenomai/net/drivers/igb/rt_igb.ko | grep ' T igb_config'
+> 0000000000004db0 T igb_config_collision_dist
+> 0000000000004eb0 T igb_config_fc_after_link_up
+> 000000000000dd60 T igb_configure_rx_ring
+> 000000000000d9f0 T igb_configure_tx_ring
+> 
 
-> On 08.03.19 02:35, Jeff Webb via Xenomai wrote:
->
-> > I have implemented a simple UDD mini-driver (interrupt handler) and an =
-associated Xenomai userspace test program. This pair of programs works as i=
-ntended on one machine. When I tried running the same programs on another m=
-achine, I got this error when the first interrupt occurred:
-> > kernel: [ 75.122305] DMAR: DRHD: handling fault status reg 2
-> > kernel: [ 75.123175] DMAR: [INTR-REMAP] Request device [f0:1f.0] fault =
-index ee00 [fault reason 37] Blocked a compatibility format interrupt reque=
-st
->
-> This means the device is under IOMMU interrupt remapping regime, but it w=
-as
-> programmed to use a standard MSI/MSI-X request, rather than requesting th=
-at
-> parameters (address/data tuple) from the Linux interrupt management layer=
- that
-> will assign a remapping slot and hand out the right values. Now you inter=
-rupt is
-> stuck in the filter.
->
-> Before suggesting the workaround/hack to disable interrupt remapping: How=
- did
-> you program MSI/-X? Via proper Linux pci_* helpers?
+Yeah, it's probably not a good idea having both drivers with identical symbols 
+being active at the same time. These symbols aren't exported, but they are at 
+least global. The proper solution would be renaming those of the rt_igb driver 
+(and probably others from our stack).
 
-The PCI card I am working with does not implement MSI interrupts, but just =
-uses the legacy interrupt pin A.  It's confusing to me that this error is a=
-ssociated with MSI.  Since this behavior is slot-dependent, I figured at fi=
-rst that the error is from another device on the same interrupt line, but I=
- get the same error on several different slots.  There is only one slot whe=
-re things work as expected.
-
-Thanks for the response,
-
--Jeff
-
->
-> Jan
->
-> > I would guess that the [f0:1f.0] in the message is a PCI bus address, b=
-ut I don't see this via lspci. The closest match is:
-> > 00:1f.0 ISA bridge [0601]: Intel Corporation Q67 Express Chipset LPC Co=
-ntroller [8086:1c4e] (rev 05)
-> > After the first attempt, I see no more of these messages until I reboot=
-, but the UDD driver never receives an interrupt in any case.
-> > I tried moving my PCI card to five different slots, and finally found o=
-ne where everything work properly on the second machine. I can at continue =
-to make progress using the working slot, but I would really like to resolve=
- the issue with the other slots. Does anyone have any idea what to try next=
-?
-> > I am using these sources:
-> > linux-4.14.89.tar
-> > ipipe-core-4.14.89-x86-2.patch
-> > xenomai-3.0.8.tar
-> > I have attached the boot log, config, and cpu information.
-> > Thanks,
-> > -Jeff Webb
->
-> --
->
-> Siemens AG, Corporate Technology, CT RDA IOT SES-DE
-> Corporate Competence Center Embedded Linux
-
-
+Jan
 
