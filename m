@@ -1,13 +1,11 @@
-Subject: Re: [PATCH] ipipe: Fix get_user_pages usage in __ipipe_pin_vma
-References: <ecf9f46b-fe92-95d3-2234-ee6264bfc41e@siemens.com>
-From: Philippe Gerum <rpm@xenomai.org>
-Message-ID: <0ead089d-c204-26dd-7e1e-d6c16c91a27a@xenomai.org>
-Date: Tue, 2 Apr 2019 19:20:50 +0200
+Date: Wed, 03 Apr 2019 11:30:51 +0800
+From: "demon.han" <demon.han@aliyun.com>
+Reply-To: "demon.han" <demon.han@aliyun.com>
+Message-ID: <518806e7-27e3-4a9e-b8f6-ddcf74be41a5.demon.han@aliyun.com>
+Subject: =?UTF-8?B?eGVub21haS0yLjYuNSBwYXVzZSBpbiBydF90YXNrX2NyZWF0ZSgp?=
 MIME-Version: 1.0
-In-Reply-To: <ecf9f46b-fe92-95d3-2234-ee6264bfc41e@siemens.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: base64
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,22 +14,37 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jan Kiszka <jan.kiszka@siemens.com>
-Cc: Xenomai <xenomai@xenomai.org>
+To: xenomai <xenomai@xenomai.org>
 
-On 4/2/19 2:47 PM, Jan Kiszka wrote:
-> From: Jan Kiszka <jan.kiszka@siemens.com>
-> 
-> Since 9beae1ea8930, we are supposed to pass down flags, not just 0 or 1.
-> Luckily, 1 happened to be FOLL_WRITE, so we did the right thing by
-> chance.
-> 
-> Moreover, get_user_pages is deprecated in favor of its locked/unlocked/
-> fast variants.
-> 
-
-merged, thanks.
-
--- 
-Philippe.
-
+SGksYWxsCkkgYW0gd29ya2luZyBvbiB4ZW5vbWFpIDpVYnVudHUxMiArIGxpbnV4LTMuMTguMjAg
+KyB4ZW5vbWFpLTIuNi41IG9uIGludGVsIDYyMDAgcGxhdGZvcm0uCkFmdGVyIEkgY29tcGlsZWQg
+dGhlIGtlcm5lbCBhbmQgaW5zdGFsbCB4ZW5vbWFpIGxpYiBhcyB4ZW5vbWFpLm9yZyBzYXlzLCBJ
+IHdhbnQgdG8gcnVuIHNvbWUgZXhhbXBsZXMgdG8gY2hlY2sgbXkgaW5zdGFsbGF0aW9uLgpIZXJl
+IGFyZSBteSBxdWVzdGlvbnMgYXNraW5nIGZvciBoZWxwOgpJdCdzIHN0cmFuZ2UgdGhhdCB0aGUg
+c3lzdGVtIHdpbGwgc3RvcCBpbiBmdW5jdGlvbiBydF90YXNrX2NyZWF0ZSgpIHdpdGggbm90aGlu
+ZyByZXR1cm4sCkkgZm91bmQgdGhpcyBpbiBydW4gJ2xhdGVuY3knIG9yICd0cml2aWFsLXBlcmlv
+ZGljJyBpbiBleGFtcGxlLgoKVGhlIGRtZXNnIGlzIHRoaXM6ClsgIDYxOC4yMzc2MDhdIENhbGwg
+VHJhY2U6ClsgIDYxOC4yMzc2MTRdICBbPGMxMTU1YzQ0Pl0gX19ydF90YXNrX2NyZWF0ZSsweDEx
+NC8weDFlMApbICA2MTguMjM3NjE4XSAgWzxjMTA4YjJmOD5dID8gdXBfcmVhZCsweDgvMHgyMApb
+ICA2MTguMjM3NjIyXSAgWzxjMTA0MGQ1Nz5dID8gX19kb19wYWdlX2ZhdWx0KzB4Mjk3LzB4NTQw
+ClsgIDYxOC4yMzc2MjVdICBbPGMxMDU4NGM3Pl0gPyByZWNhbGNfc2lncGVuZGluZysweDE3LzB4
+NTAKWyAgNjE4LjIzNzYyOV0gIFs8YzExM2ZmMTQ+XSA/IGhpc3lzY2FsbF9ldmVudCsweDE0LzB4
+MzcwClsgIDYxOC4yMzc2MzJdICBbPGMxMTQwMzFmPl0gbG9zeXNjYWxsX2V2ZW50KzB4YWYvMHgy
+NDAKWyAgNjE4LjIzNzYzNl0gIFs8YzEwZWRlYmE+XSBpcGlwZV9zeXNjYWxsX2hvb2srMHgzYS8w
+eDUwClsgIDYxOC4yMzc2MzldICBbPGMxMGVjZGU5Pl0gX19pcGlwZV9ub3RpZnlfc3lzY2FsbCsw
+eGE5LzB4MTYwClsgIDYxOC4yMzc2NDVdICBbPGMxNmQ5OGM0Pl0gcGlwZWxpbmVfc3lzZW50ZXIr
+MHg3LzB4MWUKWyAgNjE4LjIzNzY0Nl0gQ29kZTogODMgYzQgMDggNWIgNWQgYzMgOTAgOTAgOTAg
+OTAgOTAgOTAgOTAgNTUgODkgZTUgODMgZWMgMGMgODkgNWQgZjQgODkgNzUgZjggODkgN2QgZmMg
+ZTggZGMgMWYgMTAgMDAgODkgZDYgODkgYzcgODkgY2EgODUgYzkgNzQgMGIgPGFjPiBhYSA4NCBj
+MCA3NCAwMyA0OSA3NSBmNyAyOSBjYSA4YiA1ZCBmNCA4OSBkMCA4YiA3NSBmOCA4YiA3ZApbICA2
+MTguMjM3Njg5XSBFSVA6IFs8YzE1ZDc1M2U+XSBydGhhbF9zdHJuY3B5X2Zyb21fdXNlcisweDFl
+LzB4NDAgU1M6RVNQIDAwNjg6ZTY0ZmJlZDgKWyAgNjE4LjIzNzY5M10gQ1IyOiAwMDAwMDAwMGJm
+Zjg1ZjNjClsgIDYxOC4yMzc2OTZdIC0tLVsgZW5kIHRyYWNlIDk2YWM4ODkyMGU3NDhiOGMgXS0t
+LQoKYW5kIHRoZSB0ZW1pbmFsIGlzIHRoaXM6CmFvczp+JCBjZCAvdXNyL3hlbm9tYWkvYmluLwph
+b3M6L3Vzci94ZW5vbWFpL2JpbiQgLi9sYXRlbmN5IAo9PSBTYW1wbGluZyBwZXJpb2Q6IDEwMCB1
+cwo9PSBUZXN0IG1vZGU6IHBlcmlvZGljIHVzZXItbW9kZSB0YXNrCj09IEFsbCByZXN1bHRzIGlu
+IG1pY3Jvc2Vjb25kcwoobm90aGluZyBsaXN0IGluIHRoZSBmb2xsb3dpbmcgKQoKbXkgc3lzdGVt
+IGlzIHRoaXM6CmFvc0Bhb3M6L3Vzci94ZW5vbWFpL2JpbiQgdW5hbWUgLWEKTGludXggYW9zIDMu
+MTguMjAteGVub21haS0yLjYuNSAjMSBTTVAgVHVlIEFwciAyIDIwOjA0OjAxIENTVCAyMDE5IGk2
+ODYgaTY4NiBpMzg2IEdOVS9MaW51eAoKSSBmb3VuZCBpdCBvbiBnb29nbGUgYW5kIGZvdW5kIGZl
+dyBpZGVhcy4KUGxlYXNlIGdpdmUgbWUgc29tZSBoZWxwLHRoYW5rcyBhbnl3YXkuCgpkZW1vbi4K
