@@ -1,13 +1,11 @@
-From: Giulio Moro <g.moro@qmul.ac.uk>
-Subject: Re: Xenomai kernel for BBB
-Date: Wed, 3 Apr 2019 09:33:48 +0000
-Message-ID: <AM0PR07MB5572224F2932E2B851C25557B5570@AM0PR07MB5572.eurprd07.prod.outlook.com>
-References: <CAFc1U0uSt1WVzeDWfzPp+07SqCD=t=ET8X+2NXieYE0WE66Xfw@mail.gmail.com>
-In-Reply-To: <CAFc1U0uSt1WVzeDWfzPp+07SqCD=t=ET8X+2NXieYE0WE66Xfw@mail.gmail.com>
-Content-Language: en-GB
-Content-Type: text/plain; charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
-MIME-Version: 1.0
+Date: Wed, 3 Apr 2019 20:10:33 +0800
+From: "demon.han@aliyun.com" <demon.han@aliyun.com>
+Subject: Re: Qt application on Xenomai
+Mime-Version: 1.0
+Message-ID: <2019040320103347639410@aliyun.com>
+Content-Type: text/plain;
+	charset="GB2312"
+Content-Transfer-Encoding: base64
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,51 +14,89 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Pierre FICHEUX <pierre.ficheux@smile.fr>
-Cc: "Xenomai@xenomai.org" <Xenomai@xenomai.org>
+To: xenomai <xenomai@xenomai.org>
 
-we use this one for 4.14 https://github.com/RobertCNelson/ti-linux-kernel-d=
-ev/tree/ti-linux-xenomai-4.14.y (and the 4.4 branch there for 4.4). These a=
-re scripts to "rebuild a kernel": it checks out the appropriate vendor (TI)=
- branch, and merges the corresponding ipipe patches in.
-
-Known issues I encountered so far with 4.14 are here https://forum.bela.io/=
-d/841-4-14-kernel-work-in-progress.
-
-Latency is good, comparable to previous versions we used. I get something l=
-ike this when running for a few minutes with dohell on the side:
-
-RTS|      2.905|     37.935|     62.660|       0|     0|    00:02:52/00:02:=
-52
-
-
-________________________________________
-From: Xenomai <xenomai-bounces@xenomai.org> on behalf of Pierre FICHEUX via=
- Xenomai <xenomai@xenomai.org>
-Sent: 03 April 2019 08:55
-To: xenomai@xenomai.org
-Subject: Xenomai kernel for BBB
-
-Hi,
-
-Xenomai kernel (-xenomai branches) is available for BBB (AM335x) from
-https://github.com/beagleboard/linux for some kernel releases (4.4, 4.9,
-4.14). I've tried 4.9 and 4.14 but jitter is very bad with latency tool (>
-200 =B5s).
-
-According to Xenomai wiki, AM335x SoC is supported for "vendor branch",
-hope this is the same thing (?)
-
-Dos anybody use AM335x with success? I did it a long time ago with Xenomai
-2 and 3.8.13 kernel.
-
-thx
-
-
---
-
-Pierre FICHEUX -/- CTO Smile ECS, France -\- pierre.ficheux@smile.fr
-                             http://www.smile.fr
-                             https://smile.eu/fr/offres/embarque-iot
-I would love to change the world, but they won't give me the source code
-
+SGksIFN0qKZwaGFuZSANCkkgd2FudCB0byBjb21waWxlIFJULXRhc2sgd2l0aCBRVC01LjgtbGlu
+dXguDQpUaGUgYXBwbGljYXRpb24gYnVpbGQgd2VsbCxidXQgdGhlIGFwcCBicmVhayB3aGVuIEkg
+cnVuIGl0Lg0KSGVyZSBhcmUgc29tZSBtZXNnOg0KWyAxODU2LjY4NjA3Nl0geGVub21haXByb1sy
+MjQzOF06IHNlZ2ZhdWx0IGF0IDdmZmVhMDExN2ZmOCBpcCAwMDAwN2ZlZjI2YTNhZTE3IHNwIDAw
+MDA3ZmZlYTAxMTgwMDAgZXJyb3IgNiBpbiBsaWJjb2JhbHQuc28uMi4wLjBbN2ZlZjI2YTJmMDAw
+KzFmMDAwXQ0KDQpJIGNhbiBmaW5kIHRoZSBwcm9ncmFtIGJyZWFrIHdoZW4gaXQgcnVucyA6IHJ0
+X3Rhc2tfY3JlYXRlKCkuDQpIb3cgY2FuIEkgZml4IHRoaXM/IEkgdGhpbmsgdGhlIC5wcm8gaXMg
+c29tZXRoaW5nIG1pc3NpbmcsIGJ1dCBjYW4geW91IGZpeCBpdCBwbGVhc2U/IE1hbnkgdGhhbmtz
+IQ0KDQpNeSBwbGF0Zm9ybSBpcyB1YnVudHUxNiChomxpbnV4NC40IGFuZCB4ZW5vYW0gMy4wLjUs
+dXNpbmcgUVQgNS44Lg0KDQpNeSBxdCBwcm9qZWN0Og0KbWFpbi5jOg0KI2luY2x1ZGUgPFFDb3Jl
+QXBwbGljYXRpb24+ICNpbmNsdWRlIDxzdGRsaWIuaD4gI2luY2x1ZGUgPG1hdGguaD4gI2luY2x1
+ZGUgPHN0ZGlvLmg+ICNpbmNsdWRlIDxzdHJpbmcuaD4gI2luY2x1ZGUgPGVycm5vLmg+ICNpbmNs
+dWRlIDxzY2hlZC5oPiAjaW5jbHVkZSA8dGltZS5oPiAjaW5jbHVkZSA8dW5pc3RkLmg+ICNpbmNs
+dWRlIDxzaWduYWwuaD4gI2luY2x1ZGUgPGFsY2hlbXkvdGFzay5oPiAjaW5jbHVkZSA8YWxjaGVt
+eS90aW1lci5oPiBSVF9UQVNLIHRhc2s7IHN0YXRpYyB2b2lkIGxhdGVuY3kodm9pZCAqY29va2ll
+KSB7IFJUSU1FIHN0YXJ0X25zOyBpbnQgcmV0OyBzdGFydF9ucyA9IHJ0X3RpbWVyX3JlYWQoKSAr
+IDEwMDAwMDA7IHJldCA9IHJ0X3Rhc2tfc2V0X3BlcmlvZGljKE5VTEwsIHN0YXJ0X25zLCAxMDAw
+MDAwMCk7IGlmIChyZXQpIHsgcHJpbnRmKCJydF90YXNrX3NldF9wZXJpb2RpYyBlcnJvclxuIik7
+IHJldHVybjsgfSB3aGlsZSgxKXsgcnRfdGFza193YWl0X3BlcmlvZChOVUxMKTsgcHJpbnRmKCIw
+XG4iKTsgfSB9IGludCBtYWluKGludCBhcmdjLCBjaGFyICphcmd2W10pIHsgaW50IHJldDsgUUNv
+cmVBcHBsaWNhdGlvbiBhKGFyZ2MsIGFyZ3YpOyByZXQgPSBydF90YXNrX2NyZWF0ZSgmdGFzaywg
+InRhc2tfbmFtZSIsIDAsIDk5LCAwKTsgLy9icmVhayBoZXJlISEhIGlmIChyZXQpIHsgcHJpbnRm
+KCJydF90YXNrX2NyZWF0ZSBlcnJvclxuIik7IHJldHVybiAwOyB9DQpyZXQgPSBydF90YXNrX3N0
+YXJ0KCZ0YXNrLCAmbGF0ZW5jeSwgTlVMTCk7IGlmIChyZXQpIHsgcHJpbnRmKCJydF90YXNrX3N0
+YXJ0IGVycm9yXG4iKTsgcmV0dXJuIDA7IH0gcmV0dXJuIGEuZXhlYygpOyB9DQoNCg0KYW5kIC5w
+cm8gaXM6DQpRVCArPSBjb3JlDQpRVCAtPSBndWkNCg0KQ09ORklHICs9IGMrKzExDQoNClRBUkdF
+VCA9IHhlbm9tYWlwcm8NCkNPTkZJRyArPSBjb25zb2xlDQpDT05GSUcgLT0gYXBwX2J1bmRsZQ0K
+DQpURU1QTEFURSA9IGFwcA0KDQpTT1VSQ0VTICs9IG1haW4uY3BwDQoNCiMgVGhlIGZvbGxvd2lu
+ZyBkZWZpbmUgbWFrZXMgeW91ciBjb21waWxlciBlbWl0IHdhcm5pbmdzIGlmIHlvdSB1c2UNCiMg
+YW55IGZlYXR1cmUgb2YgUXQgd2hpY2ggYXMgYmVlbiBtYXJrZWQgZGVwcmVjYXRlZCAodGhlIGV4
+YWN0IHdhcm5pbmdzDQojIGRlcGVuZCBvbiB5b3VyIGNvbXBpbGVyKS4gUGxlYXNlIGNvbnN1bHQg
+dGhlIGRvY3VtZW50YXRpb24gb2YgdGhlDQojIGRlcHJlY2F0ZWQgQVBJIGluIG9yZGVyIHRvIGtu
+b3cgaG93IHRvIHBvcnQgeW91ciBjb2RlIGF3YXkgZnJvbSBpdC4NCkRFRklORVMgKz0gUVRfREVQ
+UkVDQVRFRF9XQVJOSU5HUw0KDQojIFlvdSBjYW4gYWxzbyBtYWtlIHlvdXIgY29kZSBmYWlsIHRv
+IGNvbXBpbGUgaWYgeW91IHVzZSBkZXByZWNhdGVkIEFQSXMuDQojIEluIG9yZGVyIHRvIGRvIHNv
+LCB1bmNvbW1lbnQgdGhlIGZvbGxvd2luZyBsaW5lLg0KIyBZb3UgY2FuIGFsc28gc2VsZWN0IHRv
+IGRpc2FibGUgZGVwcmVjYXRlZCBBUElzIG9ubHkgdXAgdG8gYSBjZXJ0YWluIHZlcnNpb24gb2Yg
+UXQuDQojREVGSU5FUyArPSBRVF9ESVNBQkxFX0RFUFJFQ0FURURfQkVGT1JFPTB4MDYwMDAwICAg
+ICMgZGlzYWJsZXMgYWxsIHRoZSBBUElzIGRlcHJlY2F0ZWQgYmVmb3JlIFF0IDYuMC4wDQojTElC
+UyArPSAtTC91c3IveGVub21haS9saWIgLWxhbGNoZW15IC1sYW5hbG9neSAtbGNvYmFsdCAtbGNv
+cHBlcnBsYXRlIC1sbW9kZWNoayAtbHBzb3MgLWxzbW9rZXkgLWx0cmFuayAtbHZ4d29ya3MgLWxw
+dGhyZWFkIC1scnQNCklOQ0xVREVQQVRIICs9IC91c3IveGVub21haS9pbmNsdWRlDQpJTkNMVURF
+UEFUSCArPSAvdXNyL3hlbm9tYWkvaW5jbHVkZS9jb2JhbHQNCg0KdW5peDohbWFjeDogTElCUyAr
+PSAtTCQkUFdELy4uLy4uLy4uLy4uL3Vzci94ZW5vbWFpL2xpYi8gLWxhbGNoZW15DQoNCklOQ0xV
+REVQQVRIICs9ICQkUFdELy4uLy4uLy4uLy4uL3Vzci94ZW5vbWFpL2luY2x1ZGUNCkRFUEVORFBB
+VEggKz0gJCRQV0QvLi4vLi4vLi4vLi4vdXNyL3hlbm9tYWkvaW5jbHVkZQ0KDQp1bml4OiFtYWN4
+OiBQUkVfVEFSR0VUREVQUyArPSAkJFBXRC8uLi8uLi8uLi8uLi91c3IveGVub21haS9saWIvbGli
+YWxjaGVteS5hDQoNCnVuaXg6IW1hY3g6IExJQlMgKz0gLUwkJFBXRC8uLi8uLi8uLi8uLi91c3Iv
+eGVub21haS9saWIvIC1sY29iYWx0DQoNCklOQ0xVREVQQVRIICs9ICQkUFdELy4uLy4uLy4uLy4u
+L3Vzci94ZW5vbWFpL2luY2x1ZGUNCkRFUEVORFBBVEggKz0gJCRQV0QvLi4vLi4vLi4vLi4vdXNy
+L3hlbm9tYWkvaW5jbHVkZQ0KDQp1bml4OiFtYWN4OiBQUkVfVEFSR0VUREVQUyArPSAkJFBXRC8u
+Li8uLi8uLi8uLi91c3IveGVub21haS9saWIvbGliY29iYWx0LmENCg0KDQp1bml4OiFtYWN4OiBM
+SUJTICs9IC1MJCRQV0QvLi4vLi4vLi4vLi4vdXNyL3hlbm9tYWkvbGliLyAtbGFuYWxvZ3kNCg0K
+SU5DTFVERVBBVEggKz0gJCRQV0QvLi4vLi4vLi4vLi4vdXNyL3hlbm9tYWkvaW5jbHVkZQ0KREVQ
+RU5EUEFUSCArPSAkJFBXRC8uLi8uLi8uLi8uLi91c3IveGVub21haS9pbmNsdWRlDQoNCnVuaXg6
+IW1hY3g6IFBSRV9UQVJHRVRERVBTICs9ICQkUFdELy4uLy4uLy4uLy4uL3Vzci94ZW5vbWFpL2xp
+Yi9saWJhbmFsb2d5LmENCg0KdW5peDohbWFjeDogTElCUyArPSAtTCQkUFdELy4uLy4uLy4uLy4u
+L3Vzci94ZW5vbWFpL2xpYi8gLWxjb3BwZXJwbGF0ZQ0KDQpJTkNMVURFUEFUSCArPSAkJFBXRC8u
+Li8uLi8uLi8uLi91c3IveGVub21haS9pbmNsdWRlDQpERVBFTkRQQVRIICs9ICQkUFdELy4uLy4u
+Ly4uLy4uL3Vzci94ZW5vbWFpL2luY2x1ZGUNCg0KdW5peDohbWFjeDogUFJFX1RBUkdFVERFUFMg
+Kz0gJCRQV0QvLi4vLi4vLi4vLi4vdXNyL3hlbm9tYWkvbGliL2xpYmNvcHBlcnBsYXRlLmENCg0K
+dW5peDohbWFjeDogTElCUyArPSAtTCQkUFdELy4uLy4uLy4uLy4uL3Vzci94ZW5vbWFpL2xpYi8g
+LWxtb2RlY2hrDQoNCklOQ0xVREVQQVRIICs9ICQkUFdELy4uLy4uLy4uLy4uL3Vzci94ZW5vbWFp
+L2luY2x1ZGUNCkRFUEVORFBBVEggKz0gJCRQV0QvLi4vLi4vLi4vLi4vdXNyL3hlbm9tYWkvaW5j
+bHVkZQ0KDQp1bml4OiFtYWN4OiBQUkVfVEFSR0VUREVQUyArPSAkJFBXRC8uLi8uLi8uLi8uLi91
+c3IveGVub21haS9saWIvbGlibW9kZWNoay5hDQoNCnVuaXg6IW1hY3g6IExJQlMgKz0gLUwkJFBX
+RC8uLi8uLi8uLi8uLi91c3IveGVub21haS9saWIvIC1scHNvcw0KDQpJTkNMVURFUEFUSCArPSAk
+JFBXRC8uLi8uLi8uLi8uLi91c3IveGVub21haS9pbmNsdWRlDQpERVBFTkRQQVRIICs9ICQkUFdE
+Ly4uLy4uLy4uLy4uL3Vzci94ZW5vbWFpL2luY2x1ZGUNCg0KdW5peDohbWFjeDogUFJFX1RBUkdF
+VERFUFMgKz0gJCRQV0QvLi4vLi4vLi4vLi4vdXNyL3hlbm9tYWkvbGliL2xpYnBzb3MuYQ0KDQp1
+bml4OiFtYWN4OiBMSUJTICs9IC1MJCRQV0QvLi4vLi4vLi4vLi4vdXNyL3hlbm9tYWkvbGliLyAt
+bHNtb2tleQ0KDQpJTkNMVURFUEFUSCArPSAkJFBXRC8uLi8uLi8uLi8uLi91c3IveGVub21haS9p
+bmNsdWRlDQpERVBFTkRQQVRIICs9ICQkUFdELy4uLy4uLy4uLy4uL3Vzci94ZW5vbWFpL2luY2x1
+ZGUNCg0KdW5peDohbWFjeDogUFJFX1RBUkdFVERFUFMgKz0gJCRQV0QvLi4vLi4vLi4vLi4vdXNy
+L3hlbm9tYWkvbGliL2xpYnNtb2tleS5hDQoNCnVuaXg6IW1hY3g6IExJQlMgKz0gLUwkJFBXRC8u
+Li8uLi8uLi8uLi91c3IveGVub21haS9saWIvIC1sdHJhbmsNCg0KSU5DTFVERVBBVEggKz0gJCRQ
+V0QvLi4vLi4vLi4vLi4vdXNyL3hlbm9tYWkvaW5jbHVkZQ0KREVQRU5EUEFUSCArPSAkJFBXRC8u
+Li8uLi8uLi8uLi91c3IveGVub21haS9pbmNsdWRlDQoNCnVuaXg6IW1hY3g6IFBSRV9UQVJHRVRE
+RVBTICs9ICQkUFdELy4uLy4uLy4uLy4uL3Vzci94ZW5vbWFpL2xpYi9saWJ0cmFuay5hDQoNCnVu
+aXg6IW1hY3g6IExJQlMgKz0gLUwkJFBXRC8uLi8uLi8uLi8uLi91c3IveGVub21haS9saWIvIC1s
+dnh3b3Jrcw0KDQpJTkNMVURFUEFUSCArPSAkJFBXRC8uLi8uLi8uLi8uLi91c3IveGVub21haS9p
+bmNsdWRlDQpERVBFTkRQQVRIICs9ICQkUFdELy4uLy4uLy4uLy4uL3Vzci94ZW5vbWFpL2luY2x1
+ZGUNCg0KdW5peDohbWFjeDogUFJFX1RBUkdFVERFUFMgKz0gJCRQV0QvLi4vLi4vLi4vLi4vdXNy
+L3hlbm9tYWkvbGliL2xpYnZ4d29ya3MuYQ0KDQoNCmRlbW9uLmhhbkBhbGl5dW4uY29tDQo=
