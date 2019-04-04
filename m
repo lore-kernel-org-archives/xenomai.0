@@ -1,10 +1,10 @@
-Subject: Re: [PATCH] rtnet: experimental: 3c59x: fix config name in makefile
-References: <20190404165218.7063-1-roman.stratiienko@globallogic.com>
+Subject: Re: [PATCH] kernel: drivers: igb: use READ_ONCE instead of ACCESS_ONCE
+References: <20190404165717.7124-1-roman.stratiienko@globallogic.com>
 From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <73cb5e38-5823-a199-6d4f-1b5cb88af221@siemens.com>
-Date: Thu, 4 Apr 2019 19:28:52 +0200
+Message-ID: <a7c675c2-71e4-ac8d-55d5-b6f0a92b6324@siemens.com>
+Date: Thu, 4 Apr 2019 19:30:46 +0200
 MIME-Version: 1.0
-In-Reply-To: <20190404165218.7063-1-roman.stratiienko@globallogic.com>
+In-Reply-To: <20190404165717.7124-1-roman.stratiienko@globallogic.com>
 Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -18,33 +18,46 @@ List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: roman.stratiienko@globallogic.com, xenomai@xenomai.org
 
-On 04.04.19 18:52, roman.stratiienko--- via Xenomai wrote:
+On 04.04.19 18:57, roman.stratiienko--- via Xenomai wrote:
 > From: Roman Stratiienko <roman.stratiienko@globallogic.com>
+> 
+> ACCESS_ONCE isn't available starting from kernel v4.15.
 > 
 > Signed-off-by: Roman Stratiienko <roman.stratiienko@globallogic.com>
 > ---
-> This also breaks the build, see:
-> https://travis-ci.org/devel-opi/xenomai-fork/jobs/515800815#L8087
+>   kernel/drivers/net/drivers/igb/e1000_regs.h | 2 +-
+>   kernel/drivers/net/drivers/igb/igb_main.c   | 2 +-
+>   2 files changed, 2 insertions(+), 2 deletions(-)
 > 
->   kernel/drivers/net/drivers/experimental/Makefile | 2 +-
->   1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/kernel/drivers/net/drivers/experimental/Makefile b/kernel/drivers/net/drivers/experimental/Makefile
-> index ad2317790..5748c2843 100644
-> --- a/kernel/drivers/net/drivers/experimental/Makefile
-> +++ b/kernel/drivers/net/drivers/experimental/Makefile
-> @@ -4,6 +4,6 @@ obj-$(CONFIG_XENO_DRIVERS_NET_DRV_RT2500) += rt2500/
+> diff --git a/kernel/drivers/net/drivers/igb/e1000_regs.h b/kernel/drivers/net/drivers/igb/e1000_regs.h
+> index 30df9bad4..0d1d1406d 100644
+> --- a/kernel/drivers/net/drivers/igb/e1000_regs.h
+> +++ b/kernel/drivers/net/drivers/igb/e1000_regs.h
+> @@ -372,7 +372,7 @@ u32 igb_rd32(struct e1000_hw *hw, u32 reg);
+>   /* write operations, indexed using DWORDS */
+>   #define wr32(reg, val) \
+>   do { \
+> -	u8 __iomem *hw_addr = ACCESS_ONCE((hw)->hw_addr); \
+> +	u8 __iomem *hw_addr = READ_ONCE((hw)->hw_addr); \
+>   	if (!E1000_REMOVED(hw_addr)) \
+>   		writel((val), &hw_addr[(reg)]); \
+>   } while (0)
+> diff --git a/kernel/drivers/net/drivers/igb/igb_main.c b/kernel/drivers/net/drivers/igb/igb_main.c
+> index c1d1000ea..093ff3480 100644
+> --- a/kernel/drivers/net/drivers/igb/igb_main.c
+> +++ b/kernel/drivers/net/drivers/igb/igb_main.c
+> @@ -654,7 +654,7 @@ static void igb_cache_ring_register(struct igb_adapter *adapter)
+>   u32 igb_rd32(struct e1000_hw *hw, u32 reg)
+>   {
+>   	struct igb_adapter *igb = container_of(hw, struct igb_adapter, hw);
+> -	u8 __iomem *hw_addr = ACCESS_ONCE(hw->hw_addr);
+> +	u8 __iomem *hw_addr = READ_ONCE(hw->hw_addr);
+>   	u32 value = 0;
 >   
->   obj-$(CONFIG_XENO_DRIVERS_NET_DRV_E1000_NEW) += e1000/
->   
-> -obj-$(CONFIG_RTNET_DRV_3C59X) += rt_3c59x.o
-> +obj-$(CONFIG_XENO_DRIVERS_NET_DRV_3C59X) += rt_3c59x.o
->   
->   rt_3c59x-y := 3c59x.o
+>   	if (E1000_REMOVED(hw_addr))
 > 
 
-I suppose this hardware is no longer worth re-enabling. It was apparently 
-unusable since the merge of RTnet into Xenomai, and it is broken - let's remove it.
+Applied to next, thanks.
 
 Jan
 
