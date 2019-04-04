@@ -1,10 +1,11 @@
-Date: Thu, 4 Apr 2019 09:50:53 +0800
-From: "demon.han@aliyun.com" <demon.han@aliyun.com>
-Subject: Re: Qt application on Xenomai
-Mime-Version: 1.0
-Message-ID: <2019040409505349399814@aliyun.com>
-Content-Type: text/plain; charset="gb2312"
-Content-Transfer-Encoding: base64
+From: Jan Kiszka <jan.kiszka@siemens.com>
+Subject: [PATCH] rtnet: e1000e: Fix build on 4.12+
+Message-ID: <92a0d34a-e180-bf97-10bc-3fd308a3dbb5@siemens.com>
+Date: Thu, 4 Apr 2019 07:04:10 +0200
+MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -13,17 +14,37 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai <xenomai@xenomai.org>
+To: Xenomai <xenomai@xenomai.org>
 
-SGksIEFsZWMNCg0KU29ycnkgZm9yIG15IGNvbmZ1c2VkIGVtYWlsLg0KVGhlIHNyYyBmaWxlcyBh
-cmUgaW4gbWFpbC1hdHRhY2htZW50IG5vdy4NCk1hbnkgdGhhbmtzIGZvciB5b3VyIHF1aWNrIHJl
-c3BvbnNlISENCg0KZGVtb24uDQoNCg0KDQpkZW1vbi5oYW5AYWxpeXVuLmNvbQ0KLS0tLS0tLS0t
-LS0tLS0gbmV4dCBwYXJ0IC0tLS0tLS0tLS0tLS0tCkEgbm9uLXRleHQgYXR0YWNobWVudCB3YXMg
-c2NydWJiZWQuLi4KTmFtZTogeGVub21haS5wcm8KVHlwZTogYXBwbGljYXRpb24vb2N0ZXQtc3Ry
-ZWFtClNpemU6IDMzMjMgYnl0ZXMKRGVzYzogbm90IGF2YWlsYWJsZQpVUkw6IDxodHRwOi8veGVu
-b21haS5vcmcvcGlwZXJtYWlsL3hlbm9tYWkvYXR0YWNobWVudHMvMjAxOTA0MDQvMzA5YTE0ZWYv
-YXR0YWNobWVudC5vYmo+Ci0tLS0tLS0tLS0tLS0tIG5leHQgcGFydCAtLS0tLS0tLS0tLS0tLQpB
-IG5vbi10ZXh0IGF0dGFjaG1lbnQgd2FzIHNjcnViYmVkLi4uCk5hbWU6IG1haW4uY3BwClR5cGU6
-IGFwcGxpY2F0aW9uL29jdGV0LXN0cmVhbQpTaXplOiAxMDY1IGJ5dGVzCkRlc2M6IG5vdCBhdmFp
-bGFibGUKVVJMOiA8aHR0cDovL3hlbm9tYWkub3JnL3BpcGVybWFpbC94ZW5vbWFpL2F0dGFjaG1l
-bnRzLzIwMTkwNDA0LzMwOWExNGVmL2F0dGFjaG1lbnQtMDAwMS5vYmo+Cg==
+From: Jan Kiszka <jan.kiszka@siemens.com>
+
+This is not yet the final solution, we need pci_alloc_irq_vectors on the
+long run, but that will require more wrapping or deprecation of older
+kernels.
+
+Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
+---
+ kernel/drivers/net/drivers/e1000e/netdev.c | 7 ++++---
+ 1 file changed, 4 insertions(+), 3 deletions(-)
+
+diff --git a/kernel/drivers/net/drivers/e1000e/netdev.c b/kernel/drivers/net/drivers/e1000e/netdev.c
+index f556ffe572..9feaf071a1 100644
+--- a/kernel/drivers/net/drivers/e1000e/netdev.c
++++ b/kernel/drivers/net/drivers/e1000e/netdev.c
+@@ -1222,9 +1222,10 @@ void e1000e_set_interrupt_capability(struct e1000_adapter *adapter)
+ 				for (i = 0; i < adapter->num_vectors; i++)
+ 					adapter->msix_entries[i].entry = i;
+ 
+-				err = pci_enable_msix(adapter->pdev,
+-						      adapter->msix_entries,
+-						      adapter->num_vectors);
++				err = pci_enable_msix_range(adapter->pdev,
++							adapter->msix_entries,
++							adapter->num_vectors,
++							adapter->num_vectors);
+ 				if (err == 0)
+ 					return;
+ 			}
+-- 
+2.16.4
+
