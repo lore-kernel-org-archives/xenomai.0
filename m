@@ -1,10 +1,11 @@
-Subject: Re: [PATCH] kernel: drivers: igb: use READ_ONCE instead of ACCESS_ONCE
-References: <20190404165717.7124-1-roman.stratiienko@globallogic.com>
+Subject: Re: [PATCH] drivers: net: use atomic_fetch_add_unless() for v4.19 and
+ higher
+References: <20190404165821.7174-1-roman.stratiienko@globallogic.com>
 From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <a7c675c2-71e4-ac8d-55d5-b6f0a92b6324@siemens.com>
-Date: Thu, 4 Apr 2019 19:30:46 +0200
+Message-ID: <5867d6ac-8a2e-6983-0926-597a11239533@siemens.com>
+Date: Thu, 4 Apr 2019 19:31:10 +0200
 MIME-Version: 1.0
-In-Reply-To: <20190404165717.7124-1-roman.stratiienko@globallogic.com>
+In-Reply-To: <20190404165821.7174-1-roman.stratiienko@globallogic.com>
 Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -18,48 +19,46 @@ List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: roman.stratiienko@globallogic.com, xenomai@xenomai.org
 
-On 04.04.19 18:57, roman.stratiienko--- via Xenomai wrote:
+On 04.04.19 18:58, roman.stratiienko--- via Xenomai wrote:
 > From: Roman Stratiienko <roman.stratiienko@globallogic.com>
 > 
-> ACCESS_ONCE isn't available starting from kernel v4.15.
+> After changes introduced in kernel v4.19, commit bfc18e389c7a
+> ("atomics/treewide: Rename __atomic_add_unless() => atomic_fetch_add_unless()")
+> use atomic_fetch_add_unless() function instead of __atomic_add_unless().
+> 
+> Add wrapper for backward campatibility.
 > 
 > Signed-off-by: Roman Stratiienko <roman.stratiienko@globallogic.com>
 > ---
->   kernel/drivers/net/drivers/igb/e1000_regs.h | 2 +-
->   kernel/drivers/net/drivers/igb/igb_main.c   | 2 +-
->   2 files changed, 2 insertions(+), 2 deletions(-)
+>   kernel/drivers/net/stack/rtdev.c | 6 +++++-
+>   1 file changed, 5 insertions(+), 1 deletion(-)
 > 
-> diff --git a/kernel/drivers/net/drivers/igb/e1000_regs.h b/kernel/drivers/net/drivers/igb/e1000_regs.h
-> index 30df9bad4..0d1d1406d 100644
-> --- a/kernel/drivers/net/drivers/igb/e1000_regs.h
-> +++ b/kernel/drivers/net/drivers/igb/e1000_regs.h
-> @@ -372,7 +372,7 @@ u32 igb_rd32(struct e1000_hw *hw, u32 reg);
->   /* write operations, indexed using DWORDS */
->   #define wr32(reg, val) \
->   do { \
-> -	u8 __iomem *hw_addr = ACCESS_ONCE((hw)->hw_addr); \
-> +	u8 __iomem *hw_addr = READ_ONCE((hw)->hw_addr); \
->   	if (!E1000_REMOVED(hw_addr)) \
->   		writel((val), &hw_addr[(reg)]); \
->   } while (0)
-> diff --git a/kernel/drivers/net/drivers/igb/igb_main.c b/kernel/drivers/net/drivers/igb/igb_main.c
-> index c1d1000ea..093ff3480 100644
-> --- a/kernel/drivers/net/drivers/igb/igb_main.c
-> +++ b/kernel/drivers/net/drivers/igb/igb_main.c
-> @@ -654,7 +654,7 @@ static void igb_cache_ring_register(struct igb_adapter *adapter)
->   u32 igb_rd32(struct e1000_hw *hw, u32 reg)
->   {
->   	struct igb_adapter *igb = container_of(hw, struct igb_adapter, hw);
-> -	u8 __iomem *hw_addr = ACCESS_ONCE(hw->hw_addr);
-> +	u8 __iomem *hw_addr = READ_ONCE(hw->hw_addr);
->   	u32 value = 0;
+> diff --git a/kernel/drivers/net/stack/rtdev.c b/kernel/drivers/net/stack/rtdev.c
+> index 7ece792e7..b2d0687da 100644
+> --- a/kernel/drivers/net/stack/rtdev.c
+> +++ b/kernel/drivers/net/stack/rtdev.c
+> @@ -52,10 +52,14 @@ DEFINE_MUTEX(rtnet_devices_nrt_lock);
 >   
->   	if (E1000_REMOVED(hw_addr))
+>   static int rtdev_locked_xmit(struct rtskb *skb, struct rtnet_device *rtdev);
+>   
+> +#if LINUX_VERSION_CODE < KERNEL_VERSION(4, 19, 0)
+> +#define atomic_fetch_add_unless __atomic_add_unless
+> +#endif
+> +
+>   int rtdev_reference(struct rtnet_device *rtdev)
+>   {
+>       smp_mb__before_atomic();
+> -    if (rtdev->rt_owner && __atomic_add_unless(&rtdev->refcount, 1, 0) == 0) {
+> +    if (rtdev->rt_owner && atomic_fetch_add_unless(&rtdev->refcount, 1, 0) == 0) {
+>   	if (!try_module_get(rtdev->rt_owner))
+>   	    return 0;
+>   	if (atomic_inc_return(&rtdev->refcount) != 1)
 > 
 
 Applied to next, thanks.
 
 Jan
+
 
 -- 
 Siemens AG, Corporate Technology, CT RDA IOT SES-DE
