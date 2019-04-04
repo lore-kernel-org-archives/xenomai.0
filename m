@@ -1,8 +1,13 @@
-From: roman.stratiienko@globallogic.com
-Subject: [PATCH] drivers: net: use atomic_fetch_add_unless() for v4.19 and
- higher
-Date: Thu,  4 Apr 2019 19:58:21 +0300
-Message-Id: <20190404165821.7174-1-roman.stratiienko@globallogic.com>
+Subject: Re: [PATCH] rtnet: experimental: 3c59x: fix config name in makefile
+References: <20190404165218.7063-1-roman.stratiienko@globallogic.com>
+From: Jan Kiszka <jan.kiszka@siemens.com>
+Message-ID: <73cb5e38-5823-a199-6d4f-1b5cb88af221@siemens.com>
+Date: Thu, 4 Apr 2019 19:28:52 +0200
+MIME-Version: 1.0
+In-Reply-To: <20190404165218.7063-1-roman.stratiienko@globallogic.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -11,43 +16,39 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
-Cc: Roman Stratiienko <roman.stratiienko@globallogic.com>
+To: roman.stratiienko@globallogic.com, xenomai@xenomai.org
 
-From: Roman Stratiienko <roman.stratiienko@globallogic.com>
+On 04.04.19 18:52, roman.stratiienko--- via Xenomai wrote:
+> From: Roman Stratiienko <roman.stratiienko@globallogic.com>
+> 
+> Signed-off-by: Roman Stratiienko <roman.stratiienko@globallogic.com>
+> ---
+> This also breaks the build, see:
+> https://travis-ci.org/devel-opi/xenomai-fork/jobs/515800815#L8087
+> 
+>   kernel/drivers/net/drivers/experimental/Makefile | 2 +-
+>   1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/kernel/drivers/net/drivers/experimental/Makefile b/kernel/drivers/net/drivers/experimental/Makefile
+> index ad2317790..5748c2843 100644
+> --- a/kernel/drivers/net/drivers/experimental/Makefile
+> +++ b/kernel/drivers/net/drivers/experimental/Makefile
+> @@ -4,6 +4,6 @@ obj-$(CONFIG_XENO_DRIVERS_NET_DRV_RT2500) += rt2500/
+>   
+>   obj-$(CONFIG_XENO_DRIVERS_NET_DRV_E1000_NEW) += e1000/
+>   
+> -obj-$(CONFIG_RTNET_DRV_3C59X) += rt_3c59x.o
+> +obj-$(CONFIG_XENO_DRIVERS_NET_DRV_3C59X) += rt_3c59x.o
+>   
+>   rt_3c59x-y := 3c59x.o
+> 
 
-After changes introduced in kernel v4.19, commit bfc18e389c7a
-("atomics/treewide: Rename __atomic_add_unless() => atomic_fetch_add_unless()")
-use atomic_fetch_add_unless() function instead of __atomic_add_unless().
+I suppose this hardware is no longer worth re-enabling. It was apparently 
+unusable since the merge of RTnet into Xenomai, and it is broken - let's remove it.
 
-Add wrapper for backward campatibility.
+Jan
 
-Signed-off-by: Roman Stratiienko <roman.stratiienko@globallogic.com>
----
- kernel/drivers/net/stack/rtdev.c | 6 +++++-
- 1 file changed, 5 insertions(+), 1 deletion(-)
-
-diff --git a/kernel/drivers/net/stack/rtdev.c b/kernel/drivers/net/stack/rtdev.c
-index 7ece792e7..b2d0687da 100644
---- a/kernel/drivers/net/stack/rtdev.c
-+++ b/kernel/drivers/net/stack/rtdev.c
-@@ -52,10 +52,14 @@ DEFINE_MUTEX(rtnet_devices_nrt_lock);
- 
- static int rtdev_locked_xmit(struct rtskb *skb, struct rtnet_device *rtdev);
- 
-+#if LINUX_VERSION_CODE < KERNEL_VERSION(4, 19, 0)
-+#define atomic_fetch_add_unless __atomic_add_unless
-+#endif
-+
- int rtdev_reference(struct rtnet_device *rtdev)
- {
-     smp_mb__before_atomic();
--    if (rtdev->rt_owner && __atomic_add_unless(&rtdev->refcount, 1, 0) == 0) {
-+    if (rtdev->rt_owner && atomic_fetch_add_unless(&rtdev->refcount, 1, 0) == 0) {
- 	if (!try_module_get(rtdev->rt_owner))
- 	    return 0;
- 	if (atomic_inc_return(&rtdev->refcount) != 1)
 -- 
-2.17.1
-
+Siemens AG, Corporate Technology, CT RDA IOT SES-DE
+Corporate Competence Center Embedded Linux
 
