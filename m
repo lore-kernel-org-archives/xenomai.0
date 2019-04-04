@@ -1,7 +1,7 @@
 From: roman.stratiienko@globallogic.com
-Subject: [PATCH] rtnet: experimental: 3c59x: fix config name in makefile
-Date: Thu,  4 Apr 2019 19:52:18 +0300
-Message-Id: <20190404165218.7063-1-roman.stratiienko@globallogic.com>
+Subject: [PATCH] kernel: drivers: igb: use READ_ONCE instead of ACCESS_ONCE
+Date: Thu,  4 Apr 2019 19:57:17 +0300
+Message-Id: <20190404165717.7124-1-roman.stratiienko@globallogic.com>
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,26 +15,40 @@ Cc: Roman Stratiienko <roman.stratiienko@globallogic.com>
 
 From: Roman Stratiienko <roman.stratiienko@globallogic.com>
 
+ACCESS_ONCE isn't available starting from kernel v4.15.
+
 Signed-off-by: Roman Stratiienko <roman.stratiienko@globallogic.com>
 ---
-This also breaks the build, see:
-https://travis-ci.org/devel-opi/xenomai-fork/jobs/515800815#L8087
+ kernel/drivers/net/drivers/igb/e1000_regs.h | 2 +-
+ kernel/drivers/net/drivers/igb/igb_main.c   | 2 +-
+ 2 files changed, 2 insertions(+), 2 deletions(-)
 
- kernel/drivers/net/drivers/experimental/Makefile | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/kernel/drivers/net/drivers/experimental/Makefile b/kernel/drivers/net/drivers/experimental/Makefile
-index ad2317790..5748c2843 100644
---- a/kernel/drivers/net/drivers/experimental/Makefile
-+++ b/kernel/drivers/net/drivers/experimental/Makefile
-@@ -4,6 +4,6 @@ obj-$(CONFIG_XENO_DRIVERS_NET_DRV_RT2500) += rt2500/
+diff --git a/kernel/drivers/net/drivers/igb/e1000_regs.h b/kernel/drivers/net/drivers/igb/e1000_regs.h
+index 30df9bad4..0d1d1406d 100644
+--- a/kernel/drivers/net/drivers/igb/e1000_regs.h
++++ b/kernel/drivers/net/drivers/igb/e1000_regs.h
+@@ -372,7 +372,7 @@ u32 igb_rd32(struct e1000_hw *hw, u32 reg);
+ /* write operations, indexed using DWORDS */
+ #define wr32(reg, val) \
+ do { \
+-	u8 __iomem *hw_addr = ACCESS_ONCE((hw)->hw_addr); \
++	u8 __iomem *hw_addr = READ_ONCE((hw)->hw_addr); \
+ 	if (!E1000_REMOVED(hw_addr)) \
+ 		writel((val), &hw_addr[(reg)]); \
+ } while (0)
+diff --git a/kernel/drivers/net/drivers/igb/igb_main.c b/kernel/drivers/net/drivers/igb/igb_main.c
+index c1d1000ea..093ff3480 100644
+--- a/kernel/drivers/net/drivers/igb/igb_main.c
++++ b/kernel/drivers/net/drivers/igb/igb_main.c
+@@ -654,7 +654,7 @@ static void igb_cache_ring_register(struct igb_adapter *adapter)
+ u32 igb_rd32(struct e1000_hw *hw, u32 reg)
+ {
+ 	struct igb_adapter *igb = container_of(hw, struct igb_adapter, hw);
+-	u8 __iomem *hw_addr = ACCESS_ONCE(hw->hw_addr);
++	u8 __iomem *hw_addr = READ_ONCE(hw->hw_addr);
+ 	u32 value = 0;
  
- obj-$(CONFIG_XENO_DRIVERS_NET_DRV_E1000_NEW) += e1000/
- 
--obj-$(CONFIG_RTNET_DRV_3C59X) += rt_3c59x.o
-+obj-$(CONFIG_XENO_DRIVERS_NET_DRV_3C59X) += rt_3c59x.o
- 
- rt_3c59x-y := 3c59x.o
+ 	if (E1000_REMOVED(hw_addr))
 -- 
 2.17.1
 
