@@ -1,13 +1,7 @@
-Subject: Re: ipipe-4.19 build error
-References: <CAODwZ7vhzh7FG+6NHkSEqcvcY6k_65Ht7QaVRpa6LK5yPhUiSQ@mail.gmail.com>
-From: Philippe Gerum <rpm@xenomai.org>
-Message-ID: <e0ecc31d-a0de-71c5-d62c-19986f999c34@xenomai.org>
-Date: Thu, 4 Apr 2019 17:08:55 +0200
-MIME-Version: 1.0
-In-Reply-To: <CAODwZ7vhzh7FG+6NHkSEqcvcY6k_65Ht7QaVRpa6LK5yPhUiSQ@mail.gmail.com>
-Content-Type: text/plain; charset="utf-8"
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+From: roman.stratiienko@globallogic.com
+Subject: [PATCH] rtnet: experimental: 3c59x: fix config name in makefile
+Date: Thu,  4 Apr 2019 19:52:18 +0300
+Message-Id: <20190404165218.7063-1-roman.stratiienko@globallogic.com>
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,19 +10,32 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Roman Stratiienko <roman.stratiienko@globallogic.com>, xenomai@xenomai.org
+To: xenomai@xenomai.org
+Cc: Roman Stratiienko <roman.stratiienko@globallogic.com>
 
-On 4/4/19 11:53 AM, Roman Stratiienko wrote:
-> Hello Phillipe,
-> 
-> I glad to see that ipipe-4.19-arm is now ready.
-> 
-> After test build I saw build error.
-> Could you check please:
-> https://travis-ci.org/devel-opi/xenomai-fork/jobs/515615185#L6157  
+From: Roman Stratiienko <roman.stratiienko@globallogic.com>
 
-Done, the tip now builds with multi_v7_defconfig.
+Signed-off-by: Roman Stratiienko <roman.stratiienko@globallogic.com>
+---
+This also breaks the build, see:
+https://travis-ci.org/devel-opi/xenomai-fork/jobs/515800815#L8087
 
+ kernel/drivers/net/drivers/experimental/Makefile | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/kernel/drivers/net/drivers/experimental/Makefile b/kernel/drivers/net/drivers/experimental/Makefile
+index ad2317790..5748c2843 100644
+--- a/kernel/drivers/net/drivers/experimental/Makefile
++++ b/kernel/drivers/net/drivers/experimental/Makefile
+@@ -4,6 +4,6 @@ obj-$(CONFIG_XENO_DRIVERS_NET_DRV_RT2500) += rt2500/
+ 
+ obj-$(CONFIG_XENO_DRIVERS_NET_DRV_E1000_NEW) += e1000/
+ 
+-obj-$(CONFIG_RTNET_DRV_3C59X) += rt_3c59x.o
++obj-$(CONFIG_XENO_DRIVERS_NET_DRV_3C59X) += rt_3c59x.o
+ 
+ rt_3c59x-y := 3c59x.o
 -- 
-Philippe.
+2.17.1
+
 
