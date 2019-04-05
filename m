@@ -1,16 +1,11 @@
-Date: Wed, 22 May 2019 13:06:50 +0000
-From: Jeff Webb <w1@codecraftsmen.org>
-Reply-To: Jeff Webb <w1@codecraftsmen.org>
-Subject: Re: select() unblocks when no data to read()
-Message-ID: <xIC8TGzlKzGfZWIOYx8ds3uHlTBVT0QrrBv-TpAN-T5tu5Jeu3qsGFUVkWzaoEahY7GDiXfhZRd_Jy2K6NIooGf9HuwfHYBsFwsIkMqxXEM=@codecraftsmen.org>
-In-Reply-To: <5dbf6ceb-950a-ac49-2331-b6fe54fa0808@xenomai.org>
-References: <VpFdLbJqKpBKdxuwpEr9vxR2VBu2j4uXIps1EM68ktxueh7Q9bRQeHRA56sFDKeY1xbPcvb6TuGG01MVtxNt03OdF6N1b3YIEPjJnzbRjqk=@codecraftsmen.org>
- <CALLqZ8TJt66aooCz+wCFhg_k3+xwoQ6BFqc+7TvFtA+Au71zzw@mail.gmail.com>
- <Wc_l4MYuhmN-h0Z9zuurZ_MxUaMovQA6xNvZE6EMmf7-zD8ZywQlT_X6AovXAczK01iesjy5RdARBztqwtsVxOhOBSgF3CNpXy2z8lpjU-g=@codecraftsmen.org>
- <5dbf6ceb-950a-ac49-2331-b6fe54fa0808@xenomai.org>
+From: Jan Kiszka <jan.kiszka@siemens.com>
+Subject: [PATCH] rtnet: e1000e: Account for timer API changes
+Message-ID: <d65a2c6a-307d-ee91-eede-2b9d6d387f5e@siemens.com>
+Date: Fri, 5 Apr 2019 11:26:12 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -19,62 +14,72 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Philippe Gerum <rpm@xenomai.org>
-Cc: Greg Gallagher <greg@embeddedgreg.com>, "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Xenomai <xenomai@xenomai.org>
 
-=E2=80=90=E2=80=90=E2=80=90=E2=80=90=E2=80=90=E2=80=90=E2=80=90 Original Me=
-ssage =E2=80=90=E2=80=90=E2=80=90=E2=80=90=E2=80=90=E2=80=90=E2=80=90
-On Friday, May 10, 2019 3:24 AM, Philippe Gerum <rpm@xenomai.org> wrote:
+From: Jan Kiszka <jan.kiszka@siemens.com>
 
-> On 5/10/19 3:26 AM, Jeff Webb via Xenomai wrote:
->
-> > =E2=80=90=E2=80=90=E2=80=90=E2=80=90=E2=80=90=E2=80=90=E2=80=90 Origina=
-l Message =E2=80=90=E2=80=90=E2=80=90=E2=80=90=E2=80=90=E2=80=90=E2=80=
-=90
-> > On Thursday, May 9, 2019 9:19 AM, Greg Gallagher greg@embeddedgreg.com =
-wrote:
-> >
-> > > On Tue, May 7, 2019 at 9:54 PM Jeff Webb via Xenomai
-> > > xenomai@xenomai.org wrote:
-> > >
-> > > > I am having trouble using select() to perform a timed wait on a UDD=
- file descriptor to detect interrupts from a custom PCI card. After some se=
-arching, I came across this thread from 2017 that describes my exact issue:
-> > > > https://xenomai.org/pipermail/xenomai/2017-July/037494.html
-> > > > I am using x86-64 instead of ARM, but I am having the same trouble.=
- The original poster did a great job of describing the problem, so I won't =
-repeat it. If I use only read() without select(), things work as expected, =
-but I need to implement a timeout.
-> > > > It sounds like Philippe was going to look into the issue further. H=
-as any progress on this issue been made since the last post in this thread?
-> > > > Thanks,
-> > > > -Jeff Webb
-> > >
-> > > There was a fix posted to the list a while ago but it wasn't a patch
-> > > it was the whole c file. I don't think a patch was ever made, I'll
-> > > see if I can dig it up.
-> >
-> > Thanks for looking into it, Greg. I must have missed that post. The ori=
-ginal poster's solution of adding this line:
-> > rtdm_event_clear(&ur->pulse);
-> > just before the return statement in udd_read_rt() is working for me. Ph=
-ilippe mentioned that this might be racy, but maybe it's okay (or maybe not=
-?) if there are no shared interrupts and interrupts are unmasked by the use=
-rspace application after the read completes.
->
-> There is a logic flaw on entry to read_rt, when an interrupt already occu=
-rred before we consider waiting for the next one; in that case, the selecto=
-r block is not reset as it should, which would explain why you get those sp=
-urious select() events. Could you try the following change?
+init_timer was removed in 4.15.
 
-Thank you for putting together this patch, Philippe.  Sorry for the delay i=
-n testing it, but it seems to work.  I tested it on Xenomai 3.0.5, but it a=
-ppears there are no other significant changes to UDD since then.  I will ke=
-ep using your patch and see if any more subtle issues arise.  I will also t=
-est with the latest Xenomai when I get a chance.  Thank you again for takin=
-g the time to look into this.
+Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
+---
+ kernel/drivers/net/drivers/e1000e/netdev.c | 17 +++++++++++++++++
+ 1 file changed, 17 insertions(+)
 
--Jeff
-
-
+diff --git a/kernel/drivers/net/drivers/e1000e/netdev.c b/kernel/drivers/net/drivers/e1000e/netdev.c
+index 9feaf071a1..baeb6aa09d 100644
+--- a/kernel/drivers/net/drivers/e1000e/netdev.c
++++ b/kernel/drivers/net/drivers/e1000e/netdev.c
+@@ -2879,9 +2879,15 @@ static void e1000e_update_phy_task(struct work_struct *work)
+  * Need to wait a few seconds after link up to get diagnostic information from
+  * the phy
+  */
++#if LINUX_VERSION_CODE >= KERNEL_VERSION(4,14,0)
++static void e1000_update_phy_info(struct timer_list *t)
++{
++	struct e1000_adapter *adapter = from_timer(adapter, t, phy_info_timer);
++#else /* < 4.14 */
+ static void e1000_update_phy_info(unsigned long data)
+ {
+ 	struct e1000_adapter *adapter = (struct e1000_adapter *) data;
++#endif /* < 4.14 */
+ 
+ 	if (test_bit(__E1000_DOWN, &adapter->state))
+ 		return;
+@@ -3027,9 +3033,15 @@ static void e1000e_check_82574_phy_workaround(struct e1000_adapter *adapter)
+  * e1000_watchdog - Timer Call-back
+  * @data: pointer to adapter cast into an unsigned long
+  **/
++#if LINUX_VERSION_CODE >= KERNEL_VERSION(4,14,0)
++static void e1000_watchdog(struct timer_list *t)
++{
++	struct e1000_adapter *adapter = from_timer(adapter, t, watchdog_timer);
++#else /* < 4.14 */
+ static void e1000_watchdog(unsigned long data)
+ {
+ 	struct e1000_adapter *adapter = (struct e1000_adapter *) data;
++#endif /* < 4.14 */
+ 
+ 	/* Do the rest outside of interrupt context */
+ 	rtdm_schedule_nrt_work(&adapter->watchdog_task);
+@@ -4079,6 +4091,10 @@ static int e1000_probe(struct pci_dev *pdev,
+ 
+ 	memcpy(netdev->dev_addr, adapter->hw.mac.addr, netdev->addr_len);
+ 
++#if LINUX_VERSION_CODE >= KERNEL_VERSION(4,14,0)
++	timer_setup(&adapter->watchdog_timer, e1000_watchdog, 0);
++	timer_setup(&adapter->phy_info_timer, e1000_update_phy_info, 0);
++#else /* < 4.14 */
+ 	init_timer(&adapter->watchdog_timer);
+ 	adapter->watchdog_timer.function = e1000_watchdog;
+ 	adapter->watchdog_timer.data = (unsigned long) adapter;
+@@ -4086,6 +4102,7 @@ static int e1000_probe(struct pci_dev *pdev,
+ 	init_timer(&adapter->phy_info_timer);
+ 	adapter->phy_info_timer.function = e1000_update_phy_info;
+ 	adapter->phy_info_timer.data = (unsigned long) adapter;
++#endif /* < 4.14 */
+ 
+ 	INIT_WORK(&adapter->reset_task, e1000_reset_task);
+ 	INIT_WORK(&adapter->watchdog_task, e1000_watchdog_task);
+-- 
+2.16.4
 
