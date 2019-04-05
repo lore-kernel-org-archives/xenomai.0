@@ -1,16 +1,24 @@
-From: Lange Norbert <norbert.lange@andritz.com>
-Subject: RE: (unknown)
-Date: Wed, 10 Apr 2019 15:02:28 +0000
-Message-ID: <VI1PR05MB5917634EB694ACF01DAD6A22F62E0@VI1PR05MB5917.eurprd05.prod.outlook.com>
-References: <20190410111408.18824-1-norbert.lange@andritz.com>
- <d49a86dd-c391-c403-27ef-a6420cd094a7@siemens.com>
- <VI1PR05MB5917B5956F2E9365F10D6539F62E0@VI1PR05MB5917.eurprd05.prod.outlook.com>
- <b4014ca5-c237-6b52-2a26-6ae69f07417b@siemens.com>
-In-Reply-To: <b4014ca5-c237-6b52-2a26-6ae69f07417b@siemens.com>
-Content-Language: en-US
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+Subject: Re: kvm fpu warning on 4.14.89
+References: <d53140e58f60459694e2e66a94d0a518@systemceramics.com>
+ <CAPR3TAhurhcwOGe9wfnOTUd=VBRvXuMLxZtNZ-3+QNyd=TOJnA@mail.gmail.com>
+ <ebec2dcf-9549-fed2-6a48-299597bc7079@siemens.com>
+ <CAPR3TAjFNV-0LgZ=+ydtseAQw-jdmYRHO4FQwybTjAHwDV59Xg@mail.gmail.com>
+ <CAPR3TAhP1VwSE5OjKiznfuzsRXyigeN+ohQP1jQE-roLDMh5LA@mail.gmail.com>
+ <32be3d2e-020f-468c-2940-26a09e96daeb@siemens.com>
+ <CAPR3TAitTeY0rNVZ6v0moFzh0d_hA6zyS-R3fm+DK+HX4yj3PQ@mail.gmail.com>
+ <04ffd701-4df7-5a2b-8000-cf5bec9d06d7@siemens.com>
+ <CAPR3TAg=5on1=gJHSChHHwAb3AafZNx3jizMerdZvYKnN5YObA@mail.gmail.com>
+ <9d5a6b6e-d7ba-00cd-3851-b26961ebbee7@siemens.com>
+ <a7f863b1-9389-4a04-152d-8bc1ec0d723c@siemens.com>
+ <CAPR3TAitwUBW8AzOX6cWyBgnp+bKhiNHWE3PBfs-OdAcQSCANw@mail.gmail.com>
+From: Jan Kiszka <jan.kiszka@siemens.com>
+Message-ID: <48849a99-34f6-a84f-22cc-664028431ae7@siemens.com>
+Date: Fri, 5 Apr 2019 10:14:14 +0200
 MIME-Version: 1.0
+In-Reply-To: <CAPR3TAitwUBW8AzOX6cWyBgnp+bKhiNHWE3PBfs-OdAcQSCANw@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -19,60 +27,59 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jan Kiszka <jan.kiszka@siemens.com>, Xenomai <xenomai@xenomai.org>
+To: cagnulein <cagnulein@gmail.com>
+Cc: xenomai@xenomai.org
 
-DQoNCj4gLS0tLS1PcmlnaW5hbCBNZXNzYWdlLS0tLS0NCj4gRnJvbTogSmFuIEtpc3prYSA8amFu
-Lmtpc3prYUBzaWVtZW5zLmNvbT4NCj4gU2VudDogTWl0dHdvY2gsIDEwLiBBcHJpbCAyMDE5IDE2
-OjQ4DQo+IFRvOiBMYW5nZSBOb3JiZXJ0IDxub3JiZXJ0LmxhbmdlQGFuZHJpdHouY29tPjsgWGVu
-b21haQ0KPiA8eGVub21haUB4ZW5vbWFpLm9yZz4NCj4gU3ViamVjdDogUmU6ICh1bmtub3duKQ0K
-Pg0KPiBFLU1BSUwgRlJPTSBBIE5PTi1BTkRSSVRaIFNPVVJDRTogQVMgQSBTRUNVUklUWSBNRUFT
-VVJFLCBQTEVBU0UNCj4gRVhFUkNJU0UgQ0FVVElPTiBXSVRIIEUtTUFJTCBDT05URU5UIEFORCBB
-TlkgTElOS1MgT1IgQVRUQUNITUVOVFMuDQo+DQo+DQo+IFtyZS1hZGRpbmcgdGhlIGxpc3RdDQo+
-DQo+IE9uIDEwLjA0LjE5IDE2OjQ0LCBMYW5nZSBOb3JiZXJ0IHdyb3RlOg0KPiA+DQo+ID4NCj4g
-Pj4gLS0tLS1PcmlnaW5hbCBNZXNzYWdlLS0tLS0NCj4gPj4gRnJvbTogWGVub21haSA8eGVub21h
-aS1ib3VuY2VzQHhlbm9tYWkub3JnPiBPbiBCZWhhbGYgT2YgSmFuIEtpc3prYQ0KPiB2aWENCj4g
-Pj4gWGVub21haQ0KPiA+PiBTZW50OiBNaXR0d29jaCwgMTAuIEFwcmlsIDIwMTkgMTY6MzYNCj4g
-Pj4gVG86IE5vcmJlcnQgTGFuZ2UgPG5vbGFuZ2U3OUBnbWFpbC5jb20+OyB4ZW5vbWFpQHhlbm9t
-YWkub3JnDQo+ID4+IFN1YmplY3Q6IFJlOiAodW5rbm93bikNCj4gPj4NCj4gPj4gRS1NQUlMIEZS
-T00gQSBOT04tQU5EUklUWiBTT1VSQ0U6IEFTIEEgU0VDVVJJVFkgTUVBU1VSRSwgUExFQVNFDQo+
-ID4+IEVYRVJDSVNFIENBVVRJT04gV0lUSCBFLU1BSUwgQ09OVEVOVCBBTkQgQU5ZIExJTktTIE9S
-DQo+IEFUVEFDSE1FTlRTLg0KPiA+Pg0KPiA+Pg0KPiA+PiBPbiAxMC4wNC4xOSAxMzoxNCwgTm9y
-YmVydCBMYW5nZSB2aWEgWGVub21haSB3cm90ZToNCj4gPj4+IFYzIG9mIHRoZSBwYXRjaHNldCwg
-Y29ycmVjdGVkIG1hbnkgY2hlY2tzdHlsZSBpc3N1ZXMsIHNpbXBsaWZpZWQNCj4gPj4+IGNvbmR2
-YXIgYXV0b2luaXQuDQo+ID4+Pg0KPiA+Pj4gSSBkaWQgbm90IHVzZSBBUlJBWV9TSVpFLCBhcyB0
-aGF0IHdvdWxkIG5lZWQgYW5vdGhlciBpbmNsdWRlLg0KPiA+Pj4NCj4gPj4NCj4gPj4gQWxsIGFw
-cGxpZWQgbm93LiBQYXRjaCAxIHdhcyBub3QgY2xlYW5seSBiYXNlZCBvbiBuZXh0LCB0aG91Z2gu
-IEkgdGhpbmsgc29tZQ0KPiA+PiBsb2NhbCBzdHlsZSBjbGVhbnVwIHdhcyBtaXNzaW5nLg0KPiA+
-DQo+ID4gSSBiYXNlZCBhbGwgcGF0Y2hlcyBvbiBtYXN0ZXIsIHRob3VnaHQgdGhpcyBpcyB0aGUg
-cHJpbWFyeSBkZXZlbG9wbWVudCBicmFuY2g/DQo+ID4NCj4NCj4gTGluZSA1NjYgaW4gbGliL2Nv
-YmFsdC9tdXRleC5jIGhhZCBhIHRyYWlsaW5nIHRhYiwgeW91ciBwYXRjaCBjb250ZXh0IGRpZCBu
-b3QsDQo+IGFuZCB0aGF0IG1hZGUgdGhlIGFwcGxpY2F0aW9uIGZhaWwuIE1heWJlIHRoYXQgd2Fz
-IHJlbW92ZWQgd2hpbGUgdHJhbnNwb3J0aW5nDQo+IHRoZSBwYXRjaCBpbnRvIHlvdXIgbWFpbCBj
-bGllbnQgLSBiZXR0ZXIgdXNlIGdpdCBzZW5kLWVtYWlsIGluIHRoYXQgY2FzZS4NCg0KSSB1c2Ug
-Z2l0IHNlbmQtZW1haWwsIHlvdSB3b3VsZCBub3QgYmUgaGFwcHkgaWYgSSBzZW50IHBhdGNoZXMg
-b3ZlciBvdXIgSVQgU2VydmVyDQoob25lIG9yIHR3byBleGFtcGxlcyBzaG91bGQgcmVzaWRlIHNv
-bWV3aGVyZSBpbiB0aGUgTUwpID0pLg0KDQpJIGRpZCB1c2UgZ2l0LWZvcm1hdC1wYXRjaCB3aXRo
-IC0taWdub3JlLXNwYWNlLWF0LWVvbCwgbWF5YmUgdGhhdOKAmXMgdGhlIHJlYXNvbi4NCg0KSSBr
-bm93IHRoZXJlIGFyZSBhIGZldyBob2xkb3V0cywgYnV0IHNpbmNlIHlvdSBnb3QgYSBnaXRsYWIg
-c2VydmVyIGFuZCBjaSBydW5uaW5nIGFscmVhZHksDQptZXJnZS1yZXF1ZXN0cyBjb3VsZCBkbyBh
-bGwgdGhvc2Ugc3R5bGUgY2hlY2tzIGFuZCB0ZXN0IGZvciBidWlsZC1mYWlsdXJlcyB3aXRob3V0
-IHRha2luZw0KYW55IHRpbWUgb2YgdGhlIG1haW50YWluZXJzIGFuZCBzaG9ydGVyIGZlZWRiYWNr
-IGN5Y2xlcyBmb3IgdGhlIGNvbnRyaWJ1dG9ycy4NCk15IElUIGlzIHJhdGhlciBob3N0aWxlIHRv
-IGFueXRoaW5nIGVtYWlsIGJhc2VkLg0KDQpOb3JiZXJ0DQoNCl9fX19fX19fX19fX19fX19fX19f
-X19fX19fX19fX19fDQoNClRoaXMgbWVzc2FnZSBhbmQgYW55IGF0dGFjaG1lbnRzIGFyZSBzb2xl
-bHkgZm9yIHRoZSB1c2Ugb2YgdGhlIGludGVuZGVkIHJlY2lwaWVudHMuIFRoZXkgbWF5IGNvbnRh
-aW4gcHJpdmlsZWdlZCBhbmQvb3IgY29uZmlkZW50aWFsIGluZm9ybWF0aW9uIG9yIG90aGVyIGlu
-Zm9ybWF0aW9uIHByb3RlY3RlZCBmcm9tIGRpc2Nsb3N1cmUuIElmIHlvdSBhcmUgbm90IGFuIGlu
-dGVuZGVkIHJlY2lwaWVudCwgeW91IGFyZSBoZXJlYnkgbm90aWZpZWQgdGhhdCB5b3UgcmVjZWl2
-ZWQgdGhpcyBlbWFpbCBpbiBlcnJvciBhbmQgdGhhdCBhbnkgcmV2aWV3LCBkaXNzZW1pbmF0aW9u
-LCBkaXN0cmlidXRpb24gb3IgY29weWluZyBvZiB0aGlzIGVtYWlsIGFuZCBhbnkgYXR0YWNobWVu
-dCBpcyBzdHJpY3RseSBwcm9oaWJpdGVkLiBJZiB5b3UgaGF2ZSByZWNlaXZlZCB0aGlzIGVtYWls
-IGluIGVycm9yLCBwbGVhc2UgY29udGFjdCB0aGUgc2VuZGVyIGFuZCBkZWxldGUgdGhlIG1lc3Nh
-Z2UgYW5kIGFueSBhdHRhY2htZW50IGZyb20geW91ciBzeXN0ZW0uDQoNCkFORFJJVFogSFlEUk8g
-R21iSA0KDQoNClJlY2h0c2Zvcm0vIExlZ2FsIGZvcm06IEdlc2VsbHNjaGFmdCBtaXQgYmVzY2hy
-w6Rua3RlciBIYWZ0dW5nIC8gQ29ycG9yYXRpb24NCg0KRmlybWVuc2l0ei8gUmVnaXN0ZXJlZCBz
-ZWF0OiBXaWVuDQoNCkZpcm1lbmJ1Y2hnZXJpY2h0LyBDb3VydCBvZiByZWdpc3RyeTogSGFuZGVs
-c2dlcmljaHQgV2llbg0KDQpGaXJtZW5idWNobnVtbWVyLyBDb21wYW55IHJlZ2lzdHJhdGlvbjog
-Rk4gNjE4MzMgZw0KDQpEVlI6IDA2MDUwNzcNCg0KVUlELU5yLjogQVRVMTQ3NTY4MDYNCg0KDQpU
-aGFuayBZb3UNCl9fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fDQo=
+On 05.04.19 08:20, cagnulein wrote:
+> Hi Jan, thanks for your patch.
+> I've just tried but I have the same issue: I start a kvm guest (windows 10 iot 
+> 2019) and it works, but when I start a latency test the whole system hangs 
+> completely.
+> 
+> Could i give you more info in some way?
+
+OK... First question: Are you sure the patch was applied to the kernel
+you tested? Just to double-check a common mistake.
+
+Then, there are no debug messages on the uart at all when the system
+locks up? What is your kernel config?
+
+Next, please try with ipipe-4.4.y and this change:
+
+diff --git a/arch/x86/kvm/vmx.c b/arch/x86/kvm/vmx.c
+index 2d480a64e172..0a1929dca183 100644
+--- a/arch/x86/kvm/vmx.c
++++ b/arch/x86/kvm/vmx.c
+@@ -8453,6 +8453,10 @@ static void vmx_handle_external_intr(struct kvm_vcpu *vcpu)
+ 		unsigned long tmp;
+ #endif
+ 
++#ifdef CONFIG_IPIPE
++		__clear_bit(IPIPE_STALL_FLAG,
++			    &ipipe_this_cpu_root_context()->status);
++#endif
+ 		vector =  exit_intr_info & INTR_INFO_VECTOR_MASK;
+ 		desc = (gate_desc *)vmx->host_idt_base + vector;
+ 		entry = gate_offset(*desc);
+diff --git a/arch/x86/kvm/x86.c b/arch/x86/kvm/x86.c
+index f895d4e0eb3e..e6863bd226e6 100644
+--- a/arch/x86/kvm/x86.c
++++ b/arch/x86/kvm/x86.c
+@@ -6639,6 +6639,7 @@ static int vcpu_enter_guest(struct kvm_vcpu *vcpu)
+ 	    || need_resched() || signal_pending(current)) {
+ 		vcpu->mode = OUTSIDE_GUEST_MODE;
+ 		smp_wmb();
++		__ipipe_exit_vm();
+ 		hard_cond_local_irq_enable();
+ 		local_irq_enable();
+ 		preempt_enable();
+
+Just make sure to have CONFIG_DEBUG_STACKOVERFLOW disabled (I just
+discovered a compilation issue on that kernel version).
+
+Jan
+
+-- 
+Siemens AG, Corporate Technology, CT RDA IOT SES-DE
+Corporate Competence Center Embedded Linux
 
