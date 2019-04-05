@@ -1,11 +1,27 @@
-From: Philippe Gerum <rpm@xenomai.org>
-Subject: I-pipe / Dovetail news
-Message-ID: <24c08bcc-b152-ab0f-a92d-c990a780e90b@xenomai.org>
-Date: Thu, 2 May 2019 18:46:37 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+References: <d53140e58f60459694e2e66a94d0a518@systemceramics.com>
+ <CAPR3TAhurhcwOGe9wfnOTUd=VBRvXuMLxZtNZ-3+QNyd=TOJnA@mail.gmail.com>
+ <ebec2dcf-9549-fed2-6a48-299597bc7079@siemens.com>
+ <CAPR3TAjFNV-0LgZ=+ydtseAQw-jdmYRHO4FQwybTjAHwDV59Xg@mail.gmail.com>
+ <CAPR3TAhP1VwSE5OjKiznfuzsRXyigeN+ohQP1jQE-roLDMh5LA@mail.gmail.com>
+ <32be3d2e-020f-468c-2940-26a09e96daeb@siemens.com>
+ <CAPR3TAitTeY0rNVZ6v0moFzh0d_hA6zyS-R3fm+DK+HX4yj3PQ@mail.gmail.com>
+ <04ffd701-4df7-5a2b-8000-cf5bec9d06d7@siemens.com>
+ <CAPR3TAg=5on1=gJHSChHHwAb3AafZNx3jizMerdZvYKnN5YObA@mail.gmail.com>
+ <9d5a6b6e-d7ba-00cd-3851-b26961ebbee7@siemens.com>
+ <a7f863b1-9389-4a04-152d-8bc1ec0d723c@siemens.com>
+ <CAPR3TAitwUBW8AzOX6cWyBgnp+bKhiNHWE3PBfs-OdAcQSCANw@mail.gmail.com>
+ <48849a99-34f6-a84f-22cc-664028431ae7@siemens.com>
+ <CAPR3TAg8-QsV+yENSF=Vy7GTfbes2Smtbjo-u2b=MNQ3EnSqLg@mail.gmail.com>
+ <6ffa5a27-de0f-5372-8954-6791b52dcd84@siemens.com>
+ <ac901e68-599f-3832-8272-aac089ff943f@siemens.com>
+ <e682fe6b-b0ce-9f5c-b236-556064024b61@siemens.com>
+In-Reply-To: <e682fe6b-b0ce-9f5c-b236-556064024b61@siemens.com>
+From: cagnulein <cagnulein@gmail.com>
+Date: Fri, 5 Apr 2019 20:31:50 +0200
+Message-ID: <CAPR3TAi4AMMaNx8e-NBQ=Ukfn-h3FKEAyQL4B=1AybD6_E=bMg@mail.gmail.com>
+Subject: Re: kvm fpu warning on 4.14.89
+Content-Type: text/plain; charset="UTF-8"
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -14,54 +30,66 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "Xenomai@xenomai.org" <Xenomai@xenomai.org>
-Cc: Dmitriy Cherkasov <dmitriy@oss-tech.org>, Steven Seeger <steven.seeger@flightsystems.net>, "Kiszka, Jan" <jan.kiszka@siemens.com>
+To: Jan Kiszka <jan.kiszka@siemens.com>
+Cc: xenomai@xenomai.org
 
+Thank you, on Monday morning I will fire it up! :)
+R.
 
-This is a note to let you know that work is ongoing to enable Dovetail
-for Xenomai 3. For those who don't know what Dovetail is, you may want
-to have a look at [1].
+Il ven 5 apr 2019, 20:29 Jan Kiszka <jan.kiszka@siemens.com> ha scritto:
 
-In a nutshell, the I-pipe is a venerable piece of code which needs extra
-care when porting to new kernel releases. Which you could also translate
-as: this is a freaking mess to maintain. Dovetail is a new
-implementation of the interrupt pipeline mechanism, which addresses the
-painful issues the I-pipe had over the years, greatly simplifying the
-task for the real-time core as well. This implementation was started
-circa kernel 4.7, and has evolved a lot since then.
-
-Currently, Dovetail is routinely validated over a few ARM and ARM64 SoCs
-running the EVL co-kernel [2]. The other news is that I'm currently
-porting Dovetail to x86_64, in parallel to rebasing the Xenomai
-infrastructure code over its generic interface. I'm not interested in
-the x86_32 architecture, and I believe there is a general consensus that
-this architecture will be discontinued in Xenomai at some point.
-
-At the end of this process, a Dovetail-based Cobalt core should be
-available for the ARM, ARM64 and x86_64 architectures. The port is made
-in a way that enables the Cobalt core to interface with either the
-I-pipe or Dovetail at build time. ppc32 is likely to follow at some
-point if Steven is ok with this. I could probably help with that, I
-still have my lite52xx workhorse around, and a few 40x and 44x SoCs
-generously offered by Denx Engineering (thanks Wolfgang).
-
-Both ports (Xenomai over Dovetail, and Dovetail for x86_64) won't be
-available overnight. There is still quite some work to be carried out
-before you can run a Dovetail-enabled Xenomai on a x86 machine. This
-said, things have been going fairly nicely so far, especially for
-Dovetail x86 which now boots a basic but promising IRQ pipeline in a KVM
-guest [3].
-
-Final note: Dmitriy is short on time for side projects at the moment, we
-agreed that I should take over the ipipe-arm64 [4] maintenance since I'm
-familiar with this architecture. So I'm doing just that: the first task
-will be to upgrade the currently supported release to 4.19.
-
-[1] https://evenless.org/dovetail/
-[2] https://www.evenless.org/ports/
-[3] https://git.evenless.org/linux-evl.git/log/?h=wip/dovetail/x86
-[4] https://gitlab.denx.de/Xenomai/ipipe-arm64
-
--- 
-Philippe.
-
+> On 05.04.19 15:27, Jan Kiszka wrote:
+> > On 05.04.19 11:42, Jan Kiszka wrote:
+> >> On 05.04.19 10:44, cagnulein wrote:
+> >>> Hi, yes I double checked the patch and it's applied correctly.
+> >>> Here you can find my config.
+> >>>
+> >>> CONFIG_DEBUG_STACKOVERFLOW is disabled.
+> >>>
+> >>> I can't get the uart on this system, is there any other way to catch
+> log in
+> >>> this scenario?
+> >>
+> >> UART is mandatory for debugging such crashes. Use a PCI extension card
+> if your
+> >> board has no UART connector anymore.
+> >>
+> >> Well, you may try to lift Xenomai with KVM inside a KVM VM and catch
+> the UART
+> >> output of the first level VM. This is how I'm debugging.
+> >>
+> >>>
+> >>> Why should I test the 4.4.y? 4.9.146 works fine on the same system
+> (with the
+> >>> same guest). Did I miss something?
+> >>
+> >> Well, 4.9 would be as broken as 4.4 currently is. But 4.4 is supported,
+> 4.9 is
+> >> discontinued by now. In any case, this indicates we have another
+> difference
+> >> caused by changed in 4.14 (and before).
+> >>
+> >> I'll see if I can reproduce by booting Win10 in my nested setup.
+> >>
+> >
+> > Already running the UEFI BIOS triggers something, at least on 4.4. Let's
+> see...
+> >
+>
+> As you will be able to see from the commits, there were a number of
+> further issues:
+>
+> https://gitlab.denx.de/Xenomai/ipipe-x86/commits/wip/kvm-4.14
+>
+> With that, I'm able to start Win10 on the same core as the latency test.
+> But
+> only in my virtual setup (nested kvm) which may mean that real hw could
+> expose
+> further issue or latency problems. Please test.
+>
+> Jan
+>
+> --
+> Siemens AG, Corporate Technology, CT RDA IOT SES-DE
+> Corporate Competence Center Embedded Linux
+>
