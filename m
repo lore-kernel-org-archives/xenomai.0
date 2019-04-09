@@ -1,11 +1,14 @@
+Subject: Re: [PATCH] travis: use ccache
+References: <20190320160146.4224-1-roman.stratiienko@globallogic.com>
+ <4d885178-b10e-b70e-01d7-dd0f8ed823d1@web.de>
 From: Jan Kiszka <jan.kiszka@siemens.com>
-Subject: [PATCH] ci: Add a powerpc target
-Message-ID: <274e2975-b278-59bd-e31d-4fd45962878b@siemens.com>
-Date: Mon, 27 May 2019 09:22:26 +0200
+Message-ID: <c17d1c17-98ad-47ab-7e69-4e6986090124@siemens.com>
+Date: Tue, 9 Apr 2019 15:50:31 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+In-Reply-To: <4d885178-b10e-b70e-01d7-dd0f8ed823d1@web.de>
+Content-Type: text/plain; charset="utf-8"; format="flowed"
 Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -14,70 +17,77 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Xenomai <xenomai@xenomai.org>
-Cc: Steven Seeger <steven.seeger@flightsystems.net>
+To: roman.stratiienko@globallogic.com, xenomai@xenomai.org
 
-This adds a sufficiently representative target for the powerpc
-architecture to CI.
+On 01.04.19 20:02, Jan Kiszka via Xenomai wrote:
+> On 20.03.19 17:01, roman.stratiienko--- via Xenomai wrote:
+>> From: Roman Stratiienko <roman.stratiienko@globallogic.com>
+>>
+>> This speeds-up travis build
+>>
+>> Measurement results (build with ipipe-core-4.14.85-arm-6)
+>>   - Without ccache: 26 min 7 sec
+>>   - With ccache (1st run): 31 min 21 sec
+>>   - With ccache (every next run): 4 min 23 sec
+>>
+>> Signed-off-by: Roman Stratiienko <roman.stratiienko@globallogic.com>
+>> ---
+>>   .travis.yml | 8 ++++++++
+>>   1 file changed, 8 insertions(+)
+>>
+>> diff --git a/.travis.yml b/.travis.yml
+>> index c5a9026aa..e40cec51d 100644
+>> --- a/.travis.yml
+>> +++ b/.travis.yml
+>> @@ -1,5 +1,6 @@
+>>   language: c
+>>   dist: xenial
+>> +cache: ccache
+>>
+>>   addons:
+>>     apt:
+>> @@ -15,6 +16,8 @@ addons:
+>>   env:
+>>     global:
+>>       - KDIR=/tmp/kernel
+>> +    - USE_CCACHE=1
+>> +    - CCACHE_MAXSIZE=400M
+>>
+>>   install:
+>>     - if [[ "${KERNEL_VERSION}" == *-rc* ]]; then
+>> @@ -40,6 +43,10 @@ before_script:
+>>             export CONFIGURE_OPTS="--enable-dlopen-libs --enable-lazy-setsched"
+>>             ;;
+>>       esac
+>> +  - mkdir ~/ccache
+>> +  - ln -s /usr/bin/ccache ~/ccache/aarch64-linux-gnu-gcc
+>> +  - ln -s /usr/bin/ccache ~/ccache/arm-linux-gnueabihf-gcc
+>> +  - export PATH=~/ccache:$PATH
+>>     - pushd ${KDIR}
+>>     - make -j $(nproc) ${KERNEL_DEFCONFIG}
+>>     - ./scripts/config -e IPIPE
+>> @@ -88,6 +95,7 @@ script:
+>>     - scripts/bootstrap
+>>     - ./configure --enable-smp ${CONFIGURE_OPTS}
+>>     - make -j $(nproc)
+>> +  - ccache -s
+>>
+>>   matrix:
+>>     include:
+>>
+> 
+> Nice! Applied to next.
+> 
 
-Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
----
+Looks like it's not working as desired on arm64:
 
-To finally make this official. Can still be tuned later when the need
-arises.
+https://travis-ci.com/xenomai-ci/xenomai/builds/107612473
 
- .travis.yml | 17 +++++++++++++++--
- 1 file changed, 15 insertions(+), 2 deletions(-)
+Any idea?
 
-diff --git a/.travis.yml b/.travis.yml
-index c259a0b2b6..3dd38b3b6e 100644
---- a/.travis.yml
-+++ b/.travis.yml
-@@ -9,6 +9,9 @@ addons:
-       - libc6-dev-arm64-cross
-       - gcc-arm-linux-gnueabihf
-       - libc6-dev-armhf-cross
-+      - gcc-powerpc-linux-gnu
-+      - libc6-dev-powerpc-cross
-+      - u-boot-tools
- 
- env:
-   global:
-@@ -25,11 +28,15 @@ before_script:
-           export CROSS_COMPILE=aarch64-linux-gnu-
-           export CONFIGURE_OPTS="--host=aarch64-linux-gnu --with-cc=aarch64-linux-gnu-gcc"
-           ;;
--      "arm"  )
-+      "arm")
-           export CROSS_COMPILE=arm-linux-gnueabihf-
-           export CONFIGURE_OPTS="--host=arm-linux-gnueabihf --with-cc=arm-linux-gnueabihf-gcc"
-           ;;
--      "x86"  )
-+      "powerpc")
-+          export CROSS_COMPILE=powerpc-linux-gnu-
-+          export CONFIGURE_OPTS="--host=powerpc-linux-gnu --with-cc=powerpc-linux-gnu-gcc"
-+          ;;
-+      "x86")
-           export CROSS_COMPILE=
-           export CONFIGURE_OPTS="--enable-dlopen-libs --enable-lazy-setsched"
-           ;;
-@@ -37,6 +44,7 @@ before_script:
-   - mkdir ~/ccache
-   - ln -s /usr/bin/ccache ~/ccache/aarch64-linux-gnu-gcc
-   - ln -s /usr/bin/ccache ~/ccache/arm-linux-gnueabihf-gcc
-+  - ln -s /usr/bin/ccache ~/ccache/powerpc-linux-gnu-gcc
-   - export PATH=~/ccache:$PATH
-   - pushd ${KDIR}
-   - make -j $(nproc) ${KERNEL_DEFCONFIG}
-@@ -185,3 +193,8 @@ matrix:
-         IPIPE_REV: ipipe-core-4.4.176-x86-14
-         IPIPE_KERNEL: https://gitlab.denx.de/Xenomai/ipipe.git
-         KERNEL_DEFCONFIG: x86_64_defconfig
-+    - env:
-+      - ARCH: powerpc
-+        IPIPE_REV: ipipe-core-4.14.36-ppc32-1.1
-+        IPIPE_KERNEL: https://gitlab.denx.de/Xenomai/ipipe-ppc32.git
-+        KERNEL_DEFCONFIG: mpc5200_defconfig
+Jan
+
 -- 
-2.16.4
+Siemens AG, Corporate Technology, CT RDA IOT SES-DE
+Corporate Competence Center Embedded Linux
 
