@@ -1,4 +1,4 @@
-Subject: Re: kvm fpu warning on 4.14.89
+MIME-Version: 1.0
 References: <d53140e58f60459694e2e66a94d0a518@systemceramics.com>
  <CAPR3TAitTeY0rNVZ6v0moFzh0d_hA6zyS-R3fm+DK+HX4yj3PQ@mail.gmail.com>
  <04ffd701-4df7-5a2b-8000-cf5bec9d06d7@siemens.com>
@@ -15,14 +15,13 @@ References: <d53140e58f60459694e2e66a94d0a518@systemceramics.com>
  <CAPR3TAjGWOsuuXr=e1RdZ_db6q_EKzQkLnK4Wipv6cyYe_YtUA@mail.gmail.com>
  <4f8724ee-d2ae-9a56-6597-9c4131574354@siemens.com>
  <CAPR3TAj3NiCVxezSJEW0LTxvVcOuNr9GMmrebABmCWcVrMXSEw@mail.gmail.com>
-From: Jan Kiszka <jan.kiszka@web.de>
-Message-ID: <1318594e-d38b-8fa0-9b58-12affc833826@web.de>
-Date: Wed, 10 Apr 2019 21:36:51 +0200
-MIME-Version: 1.0
-In-Reply-To: <CAPR3TAj3NiCVxezSJEW0LTxvVcOuNr9GMmrebABmCWcVrMXSEw@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: quoted-printable
+ <1318594e-d38b-8fa0-9b58-12affc833826@web.de>
+In-Reply-To: <1318594e-d38b-8fa0-9b58-12affc833826@web.de>
+From: cagnulein <cagnulein@gmail.com>
+Date: Wed, 10 Apr 2019 21:45:28 +0200
+Message-ID: <CAPR3TAh4uEFCsGFjQWv29E+HTuxj8L=LuAbq8X=r+QSvrYEOMg@mail.gmail.com>
+Subject: Re: kvm fpu warning on 4.14.89
+Content-Type: text/plain; charset="UTF-8"
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -31,29 +30,37 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: cagnulein <cagnulein@gmail.com>
+To: Jan Kiszka <jan.kiszka@web.de>
 Cc: xenomai@xenomai.org
 
-On 10.04.19 21:26, cagnulein via Xenomai wrote:
-> After 3 days of test (latency + windows 10 with cpu-z and stress test) I
-> reached rare peaks of 130 us.
-> For me it's OK but I think there is a small "regression" against the 4.9
-> Do you need any other test?
+It's a dual core 8th Gen Intel atom.
+In the future I will use a quad core atom and probably I will isolate a
+core.
+I will investigate on ipipe traces. I will let you know, but for me it's OK
+anyway.
 
-What is the CPU / SoC here? Are we talking about some Atom or rather some =
-Xeon?
+Il mer 10 apr 2019, 21:36 Jan Kiszka <jan.kiszka@web.de> ha scritto:
 
-If you want us to understand that peak, and if it was just less likely on =
-4.9,
-we would need an ipipe trace from that event. The latency test can trigger=
- a
-freeze. We likely needs around 1000 back_trace_points for that.
-
-BTW, as mixing virtualization workload with RT won't make both faster and =
-may
-have bad side effects, also on both, isolating them on separate cores shou=
-ld be
-preferred whenever possible.
-
-Jan
-
+> On 10.04.19 21:26, cagnulein via Xenomai wrote:
+> > After 3 days of test (latency + windows 10 with cpu-z and stress test) I
+> > reached rare peaks of 130 us.
+> > For me it's OK but I think there is a small "regression" against the 4.9
+> > Do you need any other test?
+>
+> What is the CPU / SoC here? Are we talking about some Atom or rather some
+> Xeon?
+>
+> If you want us to understand that peak, and if it was just less likely on
+> 4.9,
+> we would need an ipipe trace from that event. The latency test can trigger
+> a
+> freeze. We likely needs around 1000 back_trace_points for that.
+>
+> BTW, as mixing virtualization workload with RT won't make both faster and
+> may
+> have bad side effects, also on both, isolating them on separate cores
+> should be
+> preferred whenever possible.
+>
+> Jan
+>
