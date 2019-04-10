@@ -1,14 +1,9 @@
-Subject: Re: [PATCH 1/1] cobalt: mode argument from open forwarded for
- O_TMPFILE
-References: <20190410111813.19185-1-norbert.lange@andritz.com>
-From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <ccd0b71d-c6e6-0340-7150-5e58381660c1@siemens.com>
-Date: Wed, 10 Apr 2019 16:24:43 +0200
+From: Norbert Lange <nolange79@gmail.com>
+Subject: 
+Date: Wed, 10 Apr 2019 16:25:17 +0200
+Message-Id: <20190410142518.12791-1-norbert.lange@andritz.com>
 MIME-Version: 1.0
-In-Reply-To: <20190410111813.19185-1-norbert.lange@andritz.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,64 +12,19 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Norbert Lange <nolange79@gmail.com>, xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-On 10.04.19 13:18, Norbert Lange via Xenomai wrote:
-> The optional mode argument (open is a vararg function),
-> was only be read and forwarded if the O_CREAT flag is set.
-> 
-> That is not complete, as O_TMPFILE will require this
-> argument aswell. Fixed in this commit, and a fallback definition
-> of O_TMPFILE is added, incase libcobalt is built against an
-> library lacking this macro.
-> 
-> Signed-off-by: Norbert Lange <norbert.lange@andritz.com>
-> ---
->   lib/cobalt/rtdm.c | 10 ++++++++--
->   1 file changed, 8 insertions(+), 2 deletions(-)
-> 
-> diff --git a/lib/cobalt/rtdm.c b/lib/cobalt/rtdm.c
-> index 6b8898e70..176210ddc 100644
-> --- a/lib/cobalt/rtdm.c
-> +++ b/lib/cobalt/rtdm.c
-> @@ -30,6 +30,12 @@
->   #include <asm/xenomai/syscall.h>
->   #include "internal.h"
->   
-> +/* support for very old c libraries not supporting O_TMPFILE */
-> +#ifndef O_TMPFILE
-> +#define O_TMPFILE (020000000 | 0200000)
-> +#endif
-> +
-> +
->   static inline int set_errno(int ret)
->   {
->   	if (ret >= 0)
-> @@ -65,7 +71,7 @@ COBALT_IMPL(int, open, (const char *path, int oflag, ...))
->   	mode_t mode = 0;
->   	va_list ap;
->   
-> -	if (oflag & O_CREAT) {
-> +	if ((oflag & O_CREAT)  || (oflag & O_TMPFILE) == O_TMPFILE) {
->   		va_start(ap, oflag);
->   		mode = va_arg(ap, int);
->   		va_end(ap);
-> @@ -79,7 +85,7 @@ COBALT_IMPL(int, open64, (const char *path, int oflag, ...))
->   	mode_t mode = 0;
->   	va_list ap;
->   
-> -	if (oflag & O_CREAT) {
-> +	if ((oflag & O_CREAT)  || (oflag & O_TMPFILE) == O_TMPFILE) {
->   		va_start(ap, oflag);
->   		mode = va_arg(ap, int);
->   		va_end(ap);
-> 
+V2 now also fixes the wrappers.
 
-Thanks, applied.
+Btw. wouldnt it be possible to just do away with the ugly vaargs?
+I tested a few architectures (x86, arm mips, both 32 and 64 bit)
+and the function call singature stays the same whether a
+function has varagrs or a fixed amount of arguments.
 
-Jan
+The wrappers could then be oblivous to such wacky special cases.
 
--- 
-Siemens AG, Corporate Technology, CT RDA IOT SES-DE
-Corporate Competence Center Embedded Linux
+Torvalds seems to have that opinion aswell:
+https://lkml.org/lkml/2014/10/30/812
+
+
 
