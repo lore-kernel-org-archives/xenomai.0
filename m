@@ -1,10 +1,11 @@
-Subject: Re: (unknown)
-References: <20190410111737.19098-1-norbert.lange@andritz.com>
+Subject: Re: [PATCH 1/1] cobalt: mode argument from open forwarded for
+ O_TMPFILE
+References: <20190410111813.19185-1-norbert.lange@andritz.com>
 From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <743c9905-e6a9-b10e-0844-70764734f04b@siemens.com>
-Date: Wed, 10 Apr 2019 16:15:24 +0200
+Message-ID: <ccd0b71d-c6e6-0340-7150-5e58381660c1@siemens.com>
+Date: Wed, 10 Apr 2019 16:24:43 +0200
 MIME-Version: 1.0
-In-Reply-To: <20190410111737.19098-1-norbert.lange@andritz.com>
+In-Reply-To: <20190410111813.19185-1-norbert.lange@andritz.com>
 Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -18,15 +19,58 @@ List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: Norbert Lange <nolange79@gmail.com>, xenomai@xenomai.org
 
-On 10.04.19 13:17, Norbert Lange via Xenomai wrote:
-> V2 of the patchset. Fixed checkstyle issues, better identation,
-> and aded casts to silence (false) pedantic warnings.
+On 10.04.19 13:18, Norbert Lange via Xenomai wrote:
+> The optional mode argument (open is a vararg function),
+> was only be read and forwarded if the O_CREAT flag is set.
+> 
+> That is not complete, as O_TMPFILE will require this
+> argument aswell. Fixed in this commit, and a fallback definition
+> of O_TMPFILE is added, incase libcobalt is built against an
+> library lacking this macro.
+> 
+> Signed-off-by: Norbert Lange <norbert.lange@andritz.com>
+> ---
+>   lib/cobalt/rtdm.c | 10 ++++++++--
+>   1 file changed, 8 insertions(+), 2 deletions(-)
+> 
+> diff --git a/lib/cobalt/rtdm.c b/lib/cobalt/rtdm.c
+> index 6b8898e70..176210ddc 100644
+> --- a/lib/cobalt/rtdm.c
+> +++ b/lib/cobalt/rtdm.c
+> @@ -30,6 +30,12 @@
+>   #include <asm/xenomai/syscall.h>
+>   #include "internal.h"
+>   
+> +/* support for very old c libraries not supporting O_TMPFILE */
+> +#ifndef O_TMPFILE
+> +#define O_TMPFILE (020000000 | 0200000)
+> +#endif
+> +
+> +
+>   static inline int set_errno(int ret)
+>   {
+>   	if (ret >= 0)
+> @@ -65,7 +71,7 @@ COBALT_IMPL(int, open, (const char *path, int oflag, ...))
+>   	mode_t mode = 0;
+>   	va_list ap;
+>   
+> -	if (oflag & O_CREAT) {
+> +	if ((oflag & O_CREAT)  || (oflag & O_TMPFILE) == O_TMPFILE) {
+>   		va_start(ap, oflag);
+>   		mode = va_arg(ap, int);
+>   		va_end(ap);
+> @@ -79,7 +85,7 @@ COBALT_IMPL(int, open64, (const char *path, int oflag, ...))
+>   	mode_t mode = 0;
+>   	va_list ap;
+>   
+> -	if (oflag & O_CREAT) {
+> +	if ((oflag & O_CREAT)  || (oflag & O_TMPFILE) == O_TMPFILE) {
+>   		va_start(ap, oflag);
+>   		mode = va_arg(ap, int);
+>   		va_end(ap);
 > 
 
-Both applied to next, thanks.
-
-You probably want to edit your cover letter subject as well - or use git 
-format-patch.
+Thanks, applied.
 
 Jan
 
