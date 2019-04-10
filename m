@@ -1,7 +1,5 @@
-MIME-Version: 1.0
+Subject: Re: kvm fpu warning on 4.14.89
 References: <d53140e58f60459694e2e66a94d0a518@systemceramics.com>
- <CAPR3TAhP1VwSE5OjKiznfuzsRXyigeN+ohQP1jQE-roLDMh5LA@mail.gmail.com>
- <32be3d2e-020f-468c-2940-26a09e96daeb@siemens.com>
  <CAPR3TAitTeY0rNVZ6v0moFzh0d_hA6zyS-R3fm+DK+HX4yj3PQ@mail.gmail.com>
  <04ffd701-4df7-5a2b-8000-cf5bec9d06d7@siemens.com>
  <CAPR3TAg=5on1=gJHSChHHwAb3AafZNx3jizMerdZvYKnN5YObA@mail.gmail.com>
@@ -16,12 +14,15 @@ References: <d53140e58f60459694e2e66a94d0a518@systemceramics.com>
  <CAPR3TAi4AMMaNx8e-NBQ=Ukfn-h3FKEAyQL4B=1AybD6_E=bMg@mail.gmail.com>
  <CAPR3TAjGWOsuuXr=e1RdZ_db6q_EKzQkLnK4Wipv6cyYe_YtUA@mail.gmail.com>
  <4f8724ee-d2ae-9a56-6597-9c4131574354@siemens.com>
-In-Reply-To: <4f8724ee-d2ae-9a56-6597-9c4131574354@siemens.com>
-From: cagnulein <cagnulein@gmail.com>
-Date: Wed, 10 Apr 2019 21:26:18 +0200
-Message-ID: <CAPR3TAj3NiCVxezSJEW0LTxvVcOuNr9GMmrebABmCWcVrMXSEw@mail.gmail.com>
-Subject: Re: kvm fpu warning on 4.14.89
-Content-Type: text/plain; charset="UTF-8"
+ <CAPR3TAj3NiCVxezSJEW0LTxvVcOuNr9GMmrebABmCWcVrMXSEw@mail.gmail.com>
+From: Jan Kiszka <jan.kiszka@web.de>
+Message-ID: <1318594e-d38b-8fa0-9b58-12affc833826@web.de>
+Date: Wed, 10 Apr 2019 21:36:51 +0200
+MIME-Version: 1.0
+In-Reply-To: <CAPR3TAj3NiCVxezSJEW0LTxvVcOuNr9GMmrebABmCWcVrMXSEw@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: quoted-printable
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -30,110 +31,29 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jan Kiszka <jan.kiszka@siemens.com>
+To: cagnulein <cagnulein@gmail.com>
 Cc: xenomai@xenomai.org
 
-After 3 days of test (latency + windows 10 with cpu-z and stress test) I
-reached rare peaks of 130 us.
-For me it's OK but I think there is a small "regression" against the 4.9
-Do you need any other test?
-R.
+On 10.04.19 21:26, cagnulein via Xenomai wrote:
+> After 3 days of test (latency + windows 10 with cpu-z and stress test) I
+> reached rare peaks of 130 us.
+> For me it's OK but I think there is a small "regression" against the 4.9
+> Do you need any other test?
 
-Il lun 8 apr 2019, 12:13 Jan Kiszka <jan.kiszka@siemens.com> ha scritto:
+What is the CPU / SoC here? Are we talking about some Atom or rather some =
+Xeon?
 
-> On 08.04.19 11:56, cagnulein wrote:
-> > Wow! It works flawless! Latency is just a little higher than 4.9.146 (72
-> VS 67)
-> > but it's acceptable for me.
-> > Now I started a 3 days test. I will let you know.
->
-> That's good news!
->
-> Let's see if the latency difference is still relevant after measuring
-> longer...
->
-> Jan
->
-> > Thanks!
-> > Roberto
-> >
-> > Il ven 5 apr 2019, 20:31 cagnulein <cagnulein@gmail.com
-> > <mailto:cagnulein@gmail.com>> ha scritto:
-> >
-> >     Thank you, on Monday morning I will fire it up! :)
-> >     R.
-> >
-> >     Il ven 5 apr 2019, 20:29 Jan Kiszka <jan.kiszka@siemens.com
-> >     <mailto:jan.kiszka@siemens.com>> ha scritto:
-> >
-> >         On 05.04.19 15:27, Jan Kiszka wrote:
-> >          > On 05.04.19 11:42, Jan Kiszka wrote:
-> >          >> On 05.04.19 10:44, cagnulein wrote:
-> >          >>> Hi, yes I double checked the patch and it's applied
-> correctly.
-> >          >>> Here you can find my config.
-> >          >>>
-> >          >>> CONFIG_DEBUG_STACKOVERFLOW is disabled.
-> >          >>>
-> >          >>> I can't get the uart on this system, is there any other way
-> to
-> >         catch log in
-> >          >>> this scenario?
-> >          >>
-> >          >> UART is mandatory for debugging such crashes. Use a PCI
-> extension
-> >         card if your
-> >          >> board has no UART connector anymore.
-> >          >>
-> >          >> Well, you may try to lift Xenomai with KVM inside a KVM VM
-> and catch
-> >         the UART
-> >          >> output of the first level VM. This is how I'm debugging.
-> >          >>
-> >          >>>
-> >          >>> Why should I test the 4.4.y? 4.9.146 works fine on the same
-> system
-> >         (with the
-> >          >>> same guest). Did I miss something?
-> >          >>
-> >          >> Well, 4.9 would be as broken as 4.4 currently is. But 4.4 is
-> >         supported, 4.9 is
-> >          >> discontinued by now. In any case, this indicates we have
-> another
-> >         difference
-> >          >> caused by changed in 4.14 (and before).
-> >          >>
-> >          >> I'll see if I can reproduce by booting Win10 in my nested
-> setup.
-> >          >>
-> >          >
-> >          > Already running the UEFI BIOS triggers something, at least on
-> 4.4.
-> >         Let's see...
-> >          >
-> >
-> >         As you will be able to see from the commits, there were a number
-> of
-> >         further issues:
-> >
-> >         https://gitlab.denx.de/Xenomai/ipipe-x86/commits/wip/kvm-4.14
-> >
-> >         With that, I'm able to start Win10 on the same core as the
-> latency test.
-> >         But
-> >         only in my virtual setup (nested kvm) which may mean that real
-> hw could
-> >         expose
-> >         further issue or latency problems. Please test.
-> >
-> >         Jan
-> >
-> >         --
-> >         Siemens AG, Corporate Technology, CT RDA IOT SES-DE
-> >         Corporate Competence Center Embedded Linux
-> >
->
-> --
-> Siemens AG, Corporate Technology, CT RDA IOT SES-DE
-> Corporate Competence Center Embedded Linux
->
+If you want us to understand that peak, and if it was just less likely on =
+4.9,
+we would need an ipipe trace from that event. The latency test can trigger=
+ a
+freeze. We likely needs around 1000 back_trace_points for that.
+
+BTW, as mixing virtualization workload with RT won't make both faster and =
+may
+have bad side effects, also on both, isolating them on separate cores shou=
+ld be
+preferred whenever possible.
+
+Jan
+
