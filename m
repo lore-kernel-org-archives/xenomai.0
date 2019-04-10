@@ -1,17 +1,27 @@
-Subject: Re: (unknown)
-References: <20190410111408.18824-1-norbert.lange@andritz.com>
- <d49a86dd-c391-c403-27ef-a6420cd094a7@siemens.com>
- <VI1PR05MB5917B5956F2E9365F10D6539F62E0@VI1PR05MB5917.eurprd05.prod.outlook.com>
- <b4014ca5-c237-6b52-2a26-6ae69f07417b@siemens.com>
- <VI1PR05MB5917634EB694ACF01DAD6A22F62E0@VI1PR05MB5917.eurprd05.prod.outlook.com>
-From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <d1abf8d3-e375-3efd-50d8-67164f3ec9ad@siemens.com>
-Date: Wed, 10 Apr 2019 18:46:51 +0200
 MIME-Version: 1.0
-In-Reply-To: <VI1PR05MB5917634EB694ACF01DAD6A22F62E0@VI1PR05MB5917.eurprd05.prod.outlook.com>
-Content-Type: text/plain; charset="utf-8"; format="flowed"
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+References: <d53140e58f60459694e2e66a94d0a518@systemceramics.com>
+ <CAPR3TAhP1VwSE5OjKiznfuzsRXyigeN+ohQP1jQE-roLDMh5LA@mail.gmail.com>
+ <32be3d2e-020f-468c-2940-26a09e96daeb@siemens.com>
+ <CAPR3TAitTeY0rNVZ6v0moFzh0d_hA6zyS-R3fm+DK+HX4yj3PQ@mail.gmail.com>
+ <04ffd701-4df7-5a2b-8000-cf5bec9d06d7@siemens.com>
+ <CAPR3TAg=5on1=gJHSChHHwAb3AafZNx3jizMerdZvYKnN5YObA@mail.gmail.com>
+ <9d5a6b6e-d7ba-00cd-3851-b26961ebbee7@siemens.com>
+ <a7f863b1-9389-4a04-152d-8bc1ec0d723c@siemens.com>
+ <CAPR3TAitwUBW8AzOX6cWyBgnp+bKhiNHWE3PBfs-OdAcQSCANw@mail.gmail.com>
+ <48849a99-34f6-a84f-22cc-664028431ae7@siemens.com>
+ <CAPR3TAg8-QsV+yENSF=Vy7GTfbes2Smtbjo-u2b=MNQ3EnSqLg@mail.gmail.com>
+ <6ffa5a27-de0f-5372-8954-6791b52dcd84@siemens.com>
+ <ac901e68-599f-3832-8272-aac089ff943f@siemens.com>
+ <e682fe6b-b0ce-9f5c-b236-556064024b61@siemens.com>
+ <CAPR3TAi4AMMaNx8e-NBQ=Ukfn-h3FKEAyQL4B=1AybD6_E=bMg@mail.gmail.com>
+ <CAPR3TAjGWOsuuXr=e1RdZ_db6q_EKzQkLnK4Wipv6cyYe_YtUA@mail.gmail.com>
+ <4f8724ee-d2ae-9a56-6597-9c4131574354@siemens.com>
+In-Reply-To: <4f8724ee-d2ae-9a56-6597-9c4131574354@siemens.com>
+From: cagnulein <cagnulein@gmail.com>
+Date: Wed, 10 Apr 2019 21:26:18 +0200
+Message-ID: <CAPR3TAj3NiCVxezSJEW0LTxvVcOuNr9GMmrebABmCWcVrMXSEw@mail.gmail.com>
+Subject: Re: kvm fpu warning on 4.14.89
+Content-Type: text/plain; charset="UTF-8"
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -20,89 +30,110 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Lange Norbert <norbert.lange@andritz.com>, Xenomai <xenomai@xenomai.org>
+To: Jan Kiszka <jan.kiszka@siemens.com>
+Cc: xenomai@xenomai.org
 
-On 10.04.19 17:02, Lange Norbert wrote:
-> 
-> 
->> -----Original Message-----
->> From: Jan Kiszka <jan.kiszka@siemens.com>
->> Sent: Mittwoch, 10. April 2019 16:48
->> To: Lange Norbert <norbert.lange@andritz.com>; Xenomai
->> <xenomai@xenomai.org>
->> Subject: Re: (unknown)
->>
->> E-MAIL FROM A NON-ANDRITZ SOURCE: AS A SECURITY MEASURE, PLEASE
->> EXERCISE CAUTION WITH E-MAIL CONTENT AND ANY LINKS OR ATTACHMENTS.
->>
->>
->> [re-adding the list]
->>
->> On 10.04.19 16:44, Lange Norbert wrote:
->>>
->>>
->>>> -----Original Message-----
->>>> From: Xenomai <xenomai-bounces@xenomai.org> On Behalf Of Jan Kiszka
->> via
->>>> Xenomai
->>>> Sent: Mittwoch, 10. April 2019 16:36
->>>> To: Norbert Lange <nolange79@gmail.com>; xenomai@xenomai.org
->>>> Subject: Re: (unknown)
->>>>
->>>> E-MAIL FROM A NON-ANDRITZ SOURCE: AS A SECURITY MEASURE, PLEASE
->>>> EXERCISE CAUTION WITH E-MAIL CONTENT AND ANY LINKS OR
->> ATTACHMENTS.
->>>>
->>>>
->>>> On 10.04.19 13:14, Norbert Lange via Xenomai wrote:
->>>>> V3 of the patchset, corrected many checkstyle issues, simplified
->>>>> condvar autoinit.
->>>>>
->>>>> I did not use ARRAY_SIZE, as that would need another include.
->>>>>
->>>>
->>>> All applied now. Patch 1 was not cleanly based on next, though. I think some
->>>> local style cleanup was missing.
->>>
->>> I based all patches on master, thought this is the primary development branch?
->>>
->>
->> Line 566 in lib/cobalt/mutex.c had a trailing tab, your patch context did not,
->> and that made the application fail. Maybe that was removed while transporting
->> the patch into your mail client - better use git send-email in that case.
-> 
-> I use git send-email, you would not be happy if I sent patches over our IT Server
-> (one or two examples should reside somewhere in the ML) =).
+After 3 days of test (latency + windows 10 with cpu-z and stress test) I
+reached rare peaks of 130 us.
+For me it's OK but I think there is a small "regression" against the 4.9
+Do you need any other test?
+R.
 
-Yeah, I fully understand.
+Il lun 8 apr 2019, 12:13 Jan Kiszka <jan.kiszka@siemens.com> ha scritto:
 
-> 
-> I did use git-format-patch with --ignore-space-at-eol, maybe that’s the reason.
-
-I'm pretty sure that was it. OK - one off.
-
-> 
-> I know there are a few holdouts, but since you got a gitlab server and ci running already,
-> merge-requests could do all those style checks and test for build-failures without taking
-> any time of the maintainers and shorter feedback cycles for the contributors.
-> My IT is rather hostile to anything email based.
-
-Unfortunately, also with gitlab, the working mode decision remains a binary one: 
-If we start allowing MRs and do review on that platform, we need to migrate 
-everything over. There is no integration that allows to mirror one feed into the 
-other to avoid community split.
-
-I do quite a few gitlab-based reviews as well, for internal stuff. It's making 
-some things easier and others more complicated for me. Tracking the history of 
-patch series can be easier. However, reviewing larger series requires large 
-amounts of mouse clicks, and you easily lose overview. At least, gitlab is not 
-as broken as github (github still reorders patches according to dates - ouch). 
-And even in times of CI, and eventually also continuous testing, review remains 
-a manual (visual) task.
-
-Jan
-
--- 
-Siemens AG, Corporate Technology, CT RDA IOT SES-DE
-Corporate Competence Center Embedded Linux
-
+> On 08.04.19 11:56, cagnulein wrote:
+> > Wow! It works flawless! Latency is just a little higher than 4.9.146 (72
+> VS 67)
+> > but it's acceptable for me.
+> > Now I started a 3 days test. I will let you know.
+>
+> That's good news!
+>
+> Let's see if the latency difference is still relevant after measuring
+> longer...
+>
+> Jan
+>
+> > Thanks!
+> > Roberto
+> >
+> > Il ven 5 apr 2019, 20:31 cagnulein <cagnulein@gmail.com
+> > <mailto:cagnulein@gmail.com>> ha scritto:
+> >
+> >     Thank you, on Monday morning I will fire it up! :)
+> >     R.
+> >
+> >     Il ven 5 apr 2019, 20:29 Jan Kiszka <jan.kiszka@siemens.com
+> >     <mailto:jan.kiszka@siemens.com>> ha scritto:
+> >
+> >         On 05.04.19 15:27, Jan Kiszka wrote:
+> >          > On 05.04.19 11:42, Jan Kiszka wrote:
+> >          >> On 05.04.19 10:44, cagnulein wrote:
+> >          >>> Hi, yes I double checked the patch and it's applied
+> correctly.
+> >          >>> Here you can find my config.
+> >          >>>
+> >          >>> CONFIG_DEBUG_STACKOVERFLOW is disabled.
+> >          >>>
+> >          >>> I can't get the uart on this system, is there any other way
+> to
+> >         catch log in
+> >          >>> this scenario?
+> >          >>
+> >          >> UART is mandatory for debugging such crashes. Use a PCI
+> extension
+> >         card if your
+> >          >> board has no UART connector anymore.
+> >          >>
+> >          >> Well, you may try to lift Xenomai with KVM inside a KVM VM
+> and catch
+> >         the UART
+> >          >> output of the first level VM. This is how I'm debugging.
+> >          >>
+> >          >>>
+> >          >>> Why should I test the 4.4.y? 4.9.146 works fine on the same
+> system
+> >         (with the
+> >          >>> same guest). Did I miss something?
+> >          >>
+> >          >> Well, 4.9 would be as broken as 4.4 currently is. But 4.4 is
+> >         supported, 4.9 is
+> >          >> discontinued by now. In any case, this indicates we have
+> another
+> >         difference
+> >          >> caused by changed in 4.14 (and before).
+> >          >>
+> >          >> I'll see if I can reproduce by booting Win10 in my nested
+> setup.
+> >          >>
+> >          >
+> >          > Already running the UEFI BIOS triggers something, at least on
+> 4.4.
+> >         Let's see...
+> >          >
+> >
+> >         As you will be able to see from the commits, there were a number
+> of
+> >         further issues:
+> >
+> >         https://gitlab.denx.de/Xenomai/ipipe-x86/commits/wip/kvm-4.14
+> >
+> >         With that, I'm able to start Win10 on the same core as the
+> latency test.
+> >         But
+> >         only in my virtual setup (nested kvm) which may mean that real
+> hw could
+> >         expose
+> >         further issue or latency problems. Please test.
+> >
+> >         Jan
+> >
+> >         --
+> >         Siemens AG, Corporate Technology, CT RDA IOT SES-DE
+> >         Corporate Competence Center Embedded Linux
+> >
+>
+> --
+> Siemens AG, Corporate Technology, CT RDA IOT SES-DE
+> Corporate Competence Center Embedded Linux
+>
