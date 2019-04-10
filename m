@@ -1,9 +1,7 @@
 From: Norbert Lange <nolange79@gmail.com>
-Subject: [PATCH v2 2/2] Simplify xenomai_count_leading_zeros
-Date: Wed, 10 Apr 2019 13:17:37 +0200
-Message-Id: <20190410111737.19098-3-norbert.lange@andritz.com>
-In-Reply-To: <20190410111737.19098-1-norbert.lange@andritz.com>
-References: <20190410111737.19098-1-norbert.lange@andritz.com>
+Subject: [PATCH 1/1] cobalt: mode argument from open forwarded for O_TMPFILE
+Date: Wed, 10 Apr 2019 13:18:13 +0200
+Message-Id: <20190410111813.19185-1-norbert.lange@andritz.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
@@ -16,60 +14,54 @@ List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: xenomai@xenomai.org
 
-Covers now all standard integer types,
-no need for corner cases.
+The optional mode argument (open is a vararg function),
+was only be read and forwarded if the O_CREAT flag is set.
+
+That is not complete, as O_TMPFILE will require this
+argument aswell. Fixed in this commit, and a fallback definition
+of O_TMPFILE is added, incase libcobalt is built against an
+library lacking this macro.
 
 Signed-off-by: Norbert Lange <norbert.lange@andritz.com>
 ---
- include/boilerplate/compiler.h | 28 ++++++++--------------------
- 1 file changed, 8 insertions(+), 20 deletions(-)
+ lib/cobalt/rtdm.c | 10 ++++++++--
+ 1 file changed, 8 insertions(+), 2 deletions(-)
 
-diff --git a/include/boilerplate/compiler.h b/include/boilerplate/compiler.h
-index 0cd71b80a..94b9f8cad 100644
---- a/include/boilerplate/compiler.h
-+++ b/include/boilerplate/compiler.h
-@@ -72,8 +72,6 @@
- extern "C" {
- #endif
+diff --git a/lib/cobalt/rtdm.c b/lib/cobalt/rtdm.c
+index 6b8898e70..176210ddc 100644
+--- a/lib/cobalt/rtdm.c
++++ b/lib/cobalt/rtdm.c
+@@ -30,6 +30,12 @@
+ #include <asm/xenomai/syscall.h>
+ #include "internal.h"
  
--void __invalid_operand_size(void);
--
- #define xenomai_count_trailing_zeros(x)					\
- 	((x) == 0 ? (int)(sizeof(x) * __CHAR_BIT__)			\
- 	: sizeof(x) <= sizeof(unsigned int) ?				\
-@@ -82,24 +80,14 @@ void __invalid_operand_size(void);
- 		__builtin_ctzl((unsigned long)x)			\
- 	: __builtin_ctzll(x))
++/* support for very old c libraries not supporting O_TMPFILE */
++#ifndef O_TMPFILE
++#define O_TMPFILE (020000000 | 0200000)
++#endif
++
++
+ static inline int set_errno(int ret)
+ {
+ 	if (ret >= 0)
+@@ -65,7 +71,7 @@ COBALT_IMPL(int, open, (const char *path, int oflag, ...))
+ 	mode_t mode = 0;
+ 	va_list ap;
  
--#define xenomai_count_leading_zeros(__v)				\
--	({								\
--		int __ret;						\
--		if (!__v)						\
--			__ret = sizeof(__v) * 8;			\
--		else							\
--			switch (sizeof(__v)) {				\
--			case sizeof(int):				\
--				__ret = __builtin_clz((unsigned int)__v); \
--				break;					\
--			case sizeof(long long):				\
--				__ret = __builtin_clzll(__v);		\
--				break;					\
--			default:					\
--				__invalid_operand_size();		\
--			}						\
--		__ret;							\
--	})
-+#define xenomai_count_leading_zeros(x)					\
-+	((x) == 0 ? (int)(sizeof(x) * __CHAR_BIT__)			\
-+	: sizeof(x) <= sizeof(unsigned int) ?				\
-+		__builtin_clz((unsigned int)x) +			\
-+			(int)(sizeof(unsigned int) - sizeof(x))		\
-+	: sizeof(x) <= sizeof(unsigned long) ?				\
-+		__builtin_clzl((unsigned long)x)			\
-+	: __builtin_clzll(x))
+-	if (oflag & O_CREAT) {
++	if ((oflag & O_CREAT)  || (oflag & O_TMPFILE) == O_TMPFILE) {
+ 		va_start(ap, oflag);
+ 		mode = va_arg(ap, int);
+ 		va_end(ap);
+@@ -79,7 +85,7 @@ COBALT_IMPL(int, open64, (const char *path, int oflag, ...))
+ 	mode_t mode = 0;
+ 	va_list ap;
  
- #ifdef __cplusplus
- }
+-	if (oflag & O_CREAT) {
++	if ((oflag & O_CREAT)  || (oflag & O_TMPFILE) == O_TMPFILE) {
+ 		va_start(ap, oflag);
+ 		mode = va_arg(ap, int);
+ 		va_end(ap);
 -- 
 2.20.1
 
