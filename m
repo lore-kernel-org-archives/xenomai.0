@@ -1,11 +1,13 @@
-From: Norbert Lange <nolange79@gmail.com>
-Subject: [PATCH v2 1/2] Rename __ctz to xenomai_count_trailing_zeros
-Date: Wed, 10 Apr 2019 13:17:36 +0200
-Message-Id: <20190410111737.19098-2-norbert.lange@andritz.com>
-In-Reply-To: <20190410111737.19098-1-norbert.lange@andritz.com>
-References: <20190410111737.19098-1-norbert.lange@andritz.com>
+Subject: Re: (unknown)
+References: <20190410111408.18824-1-norbert.lange@andritz.com>
+From: Jan Kiszka <jan.kiszka@siemens.com>
+Message-ID: <29afc873-e249-6060-462c-e0b32afb3416@siemens.com>
+Date: Wed, 10 Apr 2019 15:37:17 +0200
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+In-Reply-To: <20190410111408.18824-1-norbert.lange@andritz.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -14,97 +16,26 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
+To: Norbert Lange <nolange79@gmail.com>, xenomai@xenomai.org
 
-Because of conflicts with libc++ (v1/bit include file).
-Simplify the macro as there shouldn't be any bad cornercases
+On 10.04.19 13:14, Norbert Lange via Xenomai wrote:
+> V3 of the patchset, corrected many checkstyle issues,
+> simplified condvar autoinit.
+> 
 
-Signed-off-by: Norbert Lange <norbert.lange@andritz.com>
----
- include/boilerplate/compiler.h    | 31 ++++++++++---------------------
- lib/boilerplate/heapmem.c         |  2 +-
- lib/copperplate/heapobj-pshared.c |  2 +-
- 3 files changed, 12 insertions(+), 23 deletions(-)
+Thanks for the update!
 
-diff --git a/include/boilerplate/compiler.h b/include/boilerplate/compiler.h
-index 0fcc17be1..0cd71b80a 100644
---- a/include/boilerplate/compiler.h
-+++ b/include/boilerplate/compiler.h
-@@ -71,27 +71,16 @@
- #ifdef __cplusplus
- extern "C" {
- #endif
--	
-+
- void __invalid_operand_size(void);
- 
--#define __ctz(__v)							\
--	({								\
--		int __ret;						\
--		if (!__v)						\
--			__ret = sizeof(__v) * 8;			\
--		else							\
--			switch (sizeof(__v)) {				\
--			case sizeof(int):				\
--				__ret = __builtin_ctz((unsigned int)__v); \
--				break;					\
--			case sizeof(long long):				\
--				__ret = __builtin_ctzll(__v);		\
--				break;					\
--			default:					\
--				__invalid_operand_size();		\
--			}						\
--		__ret;							\
--	})
-+#define xenomai_count_trailing_zeros(x)					\
-+	((x) == 0 ? (int)(sizeof(x) * __CHAR_BIT__)			\
-+	: sizeof(x) <= sizeof(unsigned int) ?				\
-+		__builtin_ctz((unsigned int)x)				\
-+	: sizeof(x) <= sizeof(unsigned long) ?				\
-+		__builtin_ctzl((unsigned long)x)			\
-+	: __builtin_ctzll(x))
- 
- #define xenomai_count_leading_zeros(__v)				\
- 	({								\
-@@ -111,9 +100,9 @@ void __invalid_operand_size(void);
- 			}						\
- 		__ret;							\
- 	})
--	
-+
- #ifdef __cplusplus
- }
- #endif
--	
-+
- #endif /* _BOILERPLATE_COMPILER_H */
-diff --git a/lib/boilerplate/heapmem.c b/lib/boilerplate/heapmem.c
-index 8728e0d15..e6369c715 100644
---- a/lib/boilerplate/heapmem.c
-+++ b/lib/boilerplate/heapmem.c
-@@ -476,7 +476,7 @@ void *heapmem_alloc(struct heap_memory *heap, size_t size)
- 			bmask = ext->pagemap[pg].map;
- 			if (bmask == -1U)
- 				break;
--			b = __ctz(~bmask);
-+			b = xenomai_count_trailing_zeros(~bmask);
- 
- 			/*
- 			 * Got one block from the heading per-bucket
-diff --git a/lib/copperplate/heapobj-pshared.c b/lib/copperplate/heapobj-pshared.c
-index 5310d9092..d6cc51ae9 100644
---- a/lib/copperplate/heapobj-pshared.c
-+++ b/lib/copperplate/heapobj-pshared.c
-@@ -529,7 +529,7 @@ static void *sheapmem_alloc(struct shared_heap_memory *heap, size_t size)
- 			bmask = ext->pagemap[pg].map;
- 			if (bmask == -1U)
- 				break;
--			b = __ctz(~bmask);
-+			b = xenomai_count_trailing_zeros(~bmask);
- 
- 			/*
- 			 * Got one block from the heading per-bucket
+> I did not use ARRAY_SIZE, as that would need another include.
+> 
+
+Ah, we do not have this construct in lib/ so far.
+
+There are private ARRAY_LEN macros in lib/analogy/calibration.c and 
+utils/analogy/analogy_calibrate.h. Well, something that can be consolidates later.
+
+Jan
+
 -- 
-2.20.1
-
+Siemens AG, Corporate Technology, CT RDA IOT SES-DE
+Corporate Competence Center Embedded Linux
 
