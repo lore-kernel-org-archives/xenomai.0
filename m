@@ -1,9 +1,9 @@
 From: Norbert Lange <nolange79@gmail.com>
-Subject: [PATCH v3 5/5] smokey: add tests for mutex/condvar autoinit
-Date: Wed, 10 Apr 2019 13:14:08 +0200
-Message-Id: <20190410111408.18824-6-norbert.lange@andritz.com>
-In-Reply-To: <20190410111408.18824-1-norbert.lange@andritz.com>
-References: <20190410111408.18824-1-norbert.lange@andritz.com>
+Subject: [PATCH v2 2/2] Simplify xenomai_count_leading_zeros
+Date: Wed, 10 Apr 2019 13:17:37 +0200
+Message-Id: <20190410111737.19098-3-norbert.lange@andritz.com>
+In-Reply-To: <20190410111737.19098-1-norbert.lange@andritz.com>
+References: <20190410111737.19098-1-norbert.lange@andritz.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
@@ -16,136 +16,60 @@ List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: xenomai@xenomai.org
 
-add a few testcases where destroy is called as first function,
-and test failure if the state is a non-standard initializer.
+Covers now all standard integer types,
+no need for corner cases.
 
 Signed-off-by: Norbert Lange <norbert.lange@andritz.com>
 ---
- testsuite/smokey/posix-cond/posix-cond.c   | 15 +++++++
- testsuite/smokey/posix-mutex/posix-mutex.c | 52 ++++++++++++++++++++++
- 2 files changed, 67 insertions(+)
+ include/boilerplate/compiler.h | 28 ++++++++--------------------
+ 1 file changed, 8 insertions(+), 20 deletions(-)
 
-diff --git a/testsuite/smokey/posix-cond/posix-cond.c b/testsuite/smokey/posix-cond/posix-cond.c
-index 153c64599..53d707d04 100644
---- a/testsuite/smokey/posix-cond/posix-cond.c
-+++ b/testsuite/smokey/posix-cond/posix-cond.c
-@@ -198,6 +198,20 @@ static void *cond_signaler(void *cookie)
- 	return NULL;
+diff --git a/include/boilerplate/compiler.h b/include/boilerplate/compiler.h
+index 0cd71b80a..94b9f8cad 100644
+--- a/include/boilerplate/compiler.h
++++ b/include/boilerplate/compiler.h
+@@ -72,8 +72,6 @@
+ extern "C" {
+ #endif
+ 
+-void __invalid_operand_size(void);
+-
+ #define xenomai_count_trailing_zeros(x)					\
+ 	((x) == 0 ? (int)(sizeof(x) * __CHAR_BIT__)			\
+ 	: sizeof(x) <= sizeof(unsigned int) ?				\
+@@ -82,24 +80,14 @@ void __invalid_operand_size(void);
+ 		__builtin_ctzl((unsigned long)x)			\
+ 	: __builtin_ctzll(x))
+ 
+-#define xenomai_count_leading_zeros(__v)				\
+-	({								\
+-		int __ret;						\
+-		if (!__v)						\
+-			__ret = sizeof(__v) * 8;			\
+-		else							\
+-			switch (sizeof(__v)) {				\
+-			case sizeof(int):				\
+-				__ret = __builtin_clz((unsigned int)__v); \
+-				break;					\
+-			case sizeof(long long):				\
+-				__ret = __builtin_clzll(__v);		\
+-				break;					\
+-			default:					\
+-				__invalid_operand_size();		\
+-			}						\
+-		__ret;							\
+-	})
++#define xenomai_count_leading_zeros(x)					\
++	((x) == 0 ? (int)(sizeof(x) * __CHAR_BIT__)			\
++	: sizeof(x) <= sizeof(unsigned int) ?				\
++		__builtin_clz((unsigned int)x) +			\
++			(int)(sizeof(unsigned int) - sizeof(x))		\
++	: sizeof(x) <= sizeof(unsigned long) ?				\
++		__builtin_clzl((unsigned long)x)			\
++	: __builtin_clzll(x))
+ 
+ #ifdef __cplusplus
  }
- 
-+static void autoinit_simple_conddestroy(void)
-+{
-+	pthread_cond_t cond = PTHREAD_COND_INITIALIZER;
-+	pthread_cond_t cond2 = PTHREAD_COND_INITIALIZER;
-+	unsigned int invalmagic = ~0x86860505; // ~COBALT_COND_MAGIC
-+
-+	memcpy((char *)&cond2 + sizeof(cond2) - sizeof(invalmagic),
-+		&invalmagic, sizeof(invalmagic));
-+
-+	smokey_trace("%s", __func__);
-+	check("cond_destroy", cond_destroy(&cond), 0);
-+	check("cond_destroy invalid", cond_destroy(&cond2), -EINVAL);
-+}
-+
- static void autoinit_simple_condwait(void)
- {
- 	pthread_cond_t cond = PTHREAD_COND_INITIALIZER;
-@@ -731,6 +745,7 @@ int run_posix_cond(struct smokey_test *t, int argc, char *const argv[])
- 	sparam.sched_priority = 2;
- 	pthread_setschedparam(pthread_self(), SCHED_FIFO, &sparam);
- 
-+	autoinit_simple_conddestroy();
- 	autoinit_simple_condwait();
- 	simple_condwait();
- 	relative_condwait();
-diff --git a/testsuite/smokey/posix-mutex/posix-mutex.c b/testsuite/smokey/posix-mutex/posix-mutex.c
-index 182f8c0e5..6454a8d14 100644
---- a/testsuite/smokey/posix-mutex/posix-mutex.c
-+++ b/testsuite/smokey/posix-mutex/posix-mutex.c
-@@ -296,6 +296,31 @@ static int do_contend(pthread_mutex_t *mutex, int type)
- 	return 0;
- }
- 
-+static int do_destroy(pthread_mutex_t *mutex, pthread_mutex_t *invalmutex,
-+	int type)
-+{
-+	int ret;
-+
-+	if (!__T(ret, pthread_mutex_destroy(mutex)))
-+		return ret;
-+	if (!__F(ret, pthread_mutex_destroy(invalmutex)) &&
-+		__Tassert(ret == -EINVAL))
-+		return -1;
-+	return 0;
-+}
-+
-+static int static_init_normal_destroy(void)
-+{
-+	pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
-+	pthread_mutex_t invalmutex = PTHREAD_MUTEX_INITIALIZER;
-+
-+	unsigned int invalmagic = ~0x86860303; // ~COBALT_MUTEX_MAGIC
-+
-+	memcpy((char *)&invalmutex + sizeof(invalmutex) - sizeof(invalmagic),
-+		&invalmagic, sizeof(invalmagic));
-+	return do_destroy(&mutex, &invalmutex, PTHREAD_MUTEX_NORMAL);
-+}
-+
- static int static_init_normal_contend(void)
- {
- 	pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
-@@ -320,6 +345,18 @@ static int dynamic_init_normal_contend(void)
- 	return __dynamic_init_contend(PTHREAD_MUTEX_NORMAL);
- }
- 
-+static int static_init_recursive_destroy(void)
-+{
-+	pthread_mutex_t mutex = PTHREAD_RECURSIVE_MUTEX_INITIALIZER_NP;
-+	pthread_mutex_t invalmutex = PTHREAD_RECURSIVE_MUTEX_INITIALIZER_NP;
-+
-+	unsigned int invalmagic = ~0x86860303; // ~COBALT_MUTEX_MAGIC
-+
-+	memcpy((char *)&invalmutex + sizeof(invalmutex) - sizeof(invalmagic),
-+		&invalmagic, sizeof(invalmagic));
-+	return do_destroy(&mutex, &invalmutex, PTHREAD_MUTEX_RECURSIVE);
-+}
-+
- static int static_init_recursive_contend(void)
- {
- 	pthread_mutex_t mutex = PTHREAD_RECURSIVE_MUTEX_INITIALIZER_NP;
-@@ -332,6 +369,18 @@ static int dynamic_init_recursive_contend(void)
- 	return __dynamic_init_contend(PTHREAD_MUTEX_RECURSIVE);
- }
- 
-+static int static_init_errorcheck_destroy(void)
-+{
-+	pthread_mutex_t mutex = PTHREAD_ERRORCHECK_MUTEX_INITIALIZER_NP;
-+	pthread_mutex_t invalmutex = PTHREAD_ERRORCHECK_MUTEX_INITIALIZER_NP;
-+
-+	unsigned int invalmagic = ~0x86860303; // ~COBALT_MUTEX_MAGIC
-+
-+	memcpy((char *)&invalmutex + sizeof(invalmutex) - sizeof(invalmagic),
-+		&invalmagic, sizeof(invalmagic));
-+	return do_destroy(&mutex, &invalmutex, PTHREAD_MUTEX_ERRORCHECK);
-+}
-+
- static int static_init_errorcheck_contend(void)
- {
- 	pthread_mutex_t mutex = PTHREAD_ERRORCHECK_MUTEX_INITIALIZER_NP;
-@@ -991,10 +1040,13 @@ static int run_posix_mutex(struct smokey_test *t, int argc, char *const argv[])
- 					    SCHED_FIFO, &param)))
- 		return ret;
- 
-+	do_test(static_init_normal_destroy, MAX_100_MS);
- 	do_test(static_init_normal_contend, MAX_100_MS);
- 	do_test(dynamic_init_normal_contend, MAX_100_MS);
-+	do_test(static_init_recursive_destroy, MAX_100_MS);
- 	do_test(static_init_recursive_contend, MAX_100_MS);
- 	do_test(dynamic_init_recursive_contend, MAX_100_MS);
-+	do_test(static_init_errorcheck_destroy, MAX_100_MS);
- 	do_test(static_init_errorcheck_contend, MAX_100_MS);
- 	do_test(dynamic_init_errorcheck_contend, MAX_100_MS);
- 	do_test(timed_contend, MAX_100_MS);
 -- 
 2.20.1
 
