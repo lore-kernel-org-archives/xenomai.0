@@ -1,21 +1,15 @@
-Subject: Re: rt_dev_send() stalls periodic task
-References: <CA+K1mPFgaiP3fGFnd169MXhdRWo+a1TGz5fnEoj7MOCr11UbLQ@mail.gmail.com>
- <c6a9ba79-c7c5-195d-be1e-030fb44f5abc@siemens.com>
- <CA+K1mPEvKLN+gyDPwLE0OovtSn-iQ_BBZ86zQf12Fv65Ht5KbQ@mail.gmail.com>
- <2ade719a-84c7-c53d-9895-a5e6eea354a3@siemens.com>
- <CA+K1mPHhMrw-2t0k1_AgKE4iZ+2+Vvx7TV_ScHnOFis_sBxt=Q@mail.gmail.com>
- <5CBCCE3F.5090000@freyder.net>
- <CA+K1mPGZiuAvumxhdvKk2R=UvO9WwE_ppfkXeMaWLt7dP5hB3w@mail.gmail.com>
- <ebb4d71b-3d5b-9d66-270f-ca35e7785bce@web.de> <5CBE1B46.3050804@freyder.net>
- <5CBE2AFC.2050105@freyder.net>
- <CA+K1mPHu1d3dbDdTLdgutBmbFV72PGLXS-H0c9MUc6XfypsXyw@mail.gmail.com>
-From: Steve Freyder <steve@freyder.net>
-Message-ID: <5CBE51D1.80801@freyder.net>
-Date: Mon, 22 Apr 2019 18:44:17 -0500
 MIME-Version: 1.0
-In-Reply-To: <CA+K1mPHu1d3dbDdTLdgutBmbFV72PGLXS-H0c9MUc6XfypsXyw@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 7bit
+References: <AM0PR07MB5572FDFC8BB9278EC530F1DCB5590@AM0PR07MB5572.eurprd07.prod.outlook.com>
+ <91222f7d-c3c3-848d-f304-e97c4ff4f9d6@xenomai.org>
+ <CALLqZ8RXX=zLZ5Dn2paJ4ZGgxaf+H7EYtErX3CrOZofJWQJiXg@mail.gmail.com>
+ <2665f814-0cff-5162-b945-a2ef4b2cf633@xenomai.org>
+In-Reply-To: <2665f814-0cff-5162-b945-a2ef4b2cf633@xenomai.org>
+From: Greg Gallagher <greg@embeddedgreg.com>
+Date: Tue, 23 Apr 2019 01:03:41 -0400
+Message-ID: <CALLqZ8QfpzZ2KHir6rHfuyNe81ZwgfaxHr4nRQt4U23h-dsgcA@mail.gmail.com>
+Subject: Re: irqchip tps65217 is not pipeline-safe!
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -24,35 +18,59 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: C Smith <csmithquestions@gmail.com>
-Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Philippe Gerum <rpm@xenomai.org>
+Cc: Giulio Moro <g.moro@qmul.ac.uk>, "Xenomai@xenomai.org" <Xenomai@xenomai.org>
 
-On 4/22/2019 5:56 PM, C Smith wrote:
-> Please don't think the cross-link.c app config has the magic answer. 
-> Changing RX timeouts to prevent TX stalls would be an open loop hack 
-> that might fail the serial traffic jitters differently.   The most 
-> suspicious difference between the two apps is that : cross-link.c 
-> behaves very regularly in terms of timing, because it receives its own 
-> transmissions.   My app receives packets from another computer 
-> asynchronously (full duplex). So there is likely a random timing 
-> anomaly causing the problem.  Any properly working UART and driver 
-> should be able to handle this, National Semiconductor would say. But I 
-> have a strange serial port, and it is tricking the xeno_16550A driver.
+On Mon, Apr 22, 2019 at 10:52 AM Philippe Gerum <rpm@xenomai.org> wrote:
 >
-> Jan alluded to a buffer-filling race condition in his comment.
-> I also fear that Receive interrupt handlers are somehow clearing 
-> Transmit interrupts?
+> On 4/22/19 4:49 PM, Greg Gallagher wrote:
+> > On Fri, Mar 29, 2019 at 6:37 AM Philippe Gerum via Xenomai
+> > <xenomai@xenomai.org> wrote:
+> >>
+> >> On 3/28/19 8:51 PM, Giulio Moro via Xenomai wrote:
+> >>> Hi there,
+> >>> booting a 4.14.94-ti kernel with Cobalt 3.0.8 from the "stable/v3.0.x=
+" branch, on an am3358 (PocketBeagle) I get a warning during boot "irqchip =
+tps65217 is not pipeline-safe!". The tps65217 is the power-management IC fo=
+r the board. What does this message mean exactly? Is it something to be con=
+cerned about? The board has behaved fine when running Xenomai tasks, in spi=
+te of this issue.
+> >>
+> >> Nevertheless, this is unreliable. This warning is issued because the
+> >> irqchip code handling the tps65217 mfd which is enabled on your platfo=
+rm
+> >> was not tagged as supporting IRQ pipelining (IRQCHIP_PIPELINE_SAFE not
+> >> present in the flags). At the very least, this means that nobody cared
+> >> checking for this.
+> >>
+> >> This matter is documented in Documentation/ipipe.rst.
+> >>
+> >> --
+> >> Philippe.
+> >>
+> >
+> > Hi,
+> >   I have a fix for this in my private ipipe tree, finishing testing
+> > tonight. Phillipe are those trees open to the public or should I send
+> > a patch to the list?
+> >
 >
-> I didn't look at the stack trace when my app hung at startup due to 
-> that infinite RX config. BTW there was no serial traffic whatsover 
-> during this hang. I could try it again and look at the stack...
-> Also, it would be too hard to rewrite my apps to send single bytes. 
-> Its two computers, rigid packet protocols & CRCs etc. Lots and lots of 
-> code. Thats why I did that test app.
+> Your tree on lab.xenomai.org is public, I'm fine with pulling patches
+> directly from there upon request.
 >
-> -C Smith
-Anything that can prove that there's no hardware problem causing
-lost TX interrupts is good.  I remember you said that you had three
-serial ports, and one never failed like this, the other two *do*
-fail like this.  Isn't that true?  That seems important.
+> --
+> Philippe.
+
+Here's the tree:
+https://lab.xenomai.org/ipipe-greg.git/
+Branch is bb_tps65217_irq
+
+This may not be needed since really what Philippe added removes the
+WARN, but I added the release and hold functions.
+
+Currently looking at the the gpio issue, I think I have an idea of
+what's happening.  Hopefully have something to test out by the
+weekend.
+
+-Greg
 
