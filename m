@@ -1,11 +1,15 @@
+Subject: Re: Xenomai: native skin or CONFIG_XENO_OPT_PERVASIVE disabled.
+References: <BB5C4F5E3633C64999D0577F81995AE70286E71C@XMAIL.tecom.nnov.ru>
+ <55438112-789f-da93-99ed-0320b6486fa3@siemens.com>
+ <DM6PR09MB3402364C4B51AF4E5095788D853C0@DM6PR09MB3402.namprd09.prod.outlook.com>
 From: Jan Kiszka <jan.kiszka@siemens.com>
-Subject: [PATCH] rtnet: igb: Account for timer API changes
-Message-ID: <d8004017-d1e6-a7d5-2681-eaaf083faa9c@siemens.com>
-Date: Fri, 5 Apr 2019 14:29:43 +0200
+Message-ID: <8333b206-e819-c3e7-1394-3698baf2a075@siemens.com>
+Date: Wed, 24 Apr 2019 08:28:05 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+In-Reply-To: <DM6PR09MB3402364C4B51AF4E5095788D853C0@DM6PR09MB3402.namprd09.prod.outlook.com>
+Content-Type: text/plain; charset="windows-1252"; format="flowed"
 Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: quoted-printable
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -14,83 +18,113 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Xenomai <xenomai@xenomai.org>
+To: "Seeger, Steven D. (GSFC-582.0)[Embedded Flight Systems, Inc]" <steven.seeger@nasa.gov>, Alexander Sharabanov <sharabanov.a@tecomgroup.ru>, "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-From: Jan Kiszka <jan.kiszka@siemens.com>
+On 24.04.19 08:10, Seeger, Steven D. (GSFC-582.0)[Embedded Flight Systems, =
+Inc]=20
+wrote:
+> Hi guys.
+>=20
+> I released a 4.14.36 ipipe patch last June. I used the tags mechanism tha=
+t=20
+> Philippe did. The latest tag is ipipe-core-4.14.36-ppc32-1.1.
+>=20
+> You can find this stuff at: https://gitlab.denx.de/Xenomai/ipipe-ppc32=A0=
+or=20
+> https://xenomai.org/downloads/ipipe/v4.x/ppc32/=A0for a quick download li=
+nk.
+>=20
+> We made ipipe-ppc32. The ppc64 arch is now removed as there was an RFC an=
+d=20
+> nobody spoke up. I have no hardware to test on it.
 
-init_timer was removed in 4.15.
+Ah, I was indeed looking at powerpc, not ppc32. Should this be updated to a=
+=20
+current 4.14? And for LTS, you will likely want to look at 4.19 and/or=20
+reactivate 4.4.
 
-Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
----
- kernel/drivers/net/drivers/igb/igb_main.c | 22 ++++++++++++++++++++++
- 1 file changed, 22 insertions(+)
+>=20
+> We are moving forward with xenomai/ppc32 at NASA and our arinc653=20
+> implementation. The current thinking is while it may not fly, it can at l=
+east be=20
+> a viable (and free) development platform for arinc-653 applications that =
+can=20
+> then be moved to commercial proprietary platforms with certification if n=
+eed-be.
 
-diff --git a/kernel/drivers/net/drivers/igb/igb_main.c b/kernel/drivers/net/drivers/igb/igb_main.c
-index 093ff34808..2c9d51e7f2 100644
---- a/kernel/drivers/net/drivers/igb/igb_main.c
-+++ b/kernel/drivers/net/drivers/igb/igb_main.c
-@@ -203,8 +203,13 @@ static void igb_clean_all_rx_rings(struct igb_adapter *);
- static void igb_clean_tx_ring(struct igb_ring *);
- static void igb_clean_rx_ring(struct igb_ring *);
- static void igb_set_rx_mode(struct rtnet_device *);
-+#if LINUX_VERSION_CODE >= KERNEL_VERSION(4,14,0)
-+static void igb_update_phy_info(struct timer_list *);
-+static void igb_watchdog(struct timer_list *);
-+#else
- static void igb_update_phy_info(unsigned long);
- static void igb_watchdog(unsigned long);
-+#endif
- static void igb_watchdog_task(struct work_struct *);
- static netdev_tx_t igb_xmit_frame(struct rtskb *skb, struct rtnet_device *);
- static struct net_device_stats *igb_get_stats(struct rtnet_device *);
-@@ -2195,10 +2200,15 @@ static int igb_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
- 		wr32(E1000_TXPBS, I210_TXPBSIZE_DEFAULT);
- 	}
- 
-+#if LINUX_VERSION_CODE >= KERNEL_VERSION(4,14,0)
-+	timer_setup(&adapter->watchdog_timer, igb_watchdog, 0);
-+	timer_setup(&adapter->phy_info_timer, igb_update_phy_info, 0);
-+#else /* < 4.14 */
- 	setup_timer(&adapter->watchdog_timer, igb_watchdog,
- 		    (unsigned long) adapter);
- 	setup_timer(&adapter->phy_info_timer, igb_update_phy_info,
- 		    (unsigned long) adapter);
-+#endif /* < 4.14 */
- 
- 	INIT_WORK(&adapter->reset_task, igb_reset_task);
- 	INIT_WORK(&adapter->watchdog_task, igb_watchdog_task);
-@@ -3511,9 +3521,15 @@ static void igb_check_wvbr(struct igb_adapter *adapter)
- /* Need to wait a few seconds after link up to get diagnostic information from
-  * the phy
-  */
-+#if LINUX_VERSION_CODE >= KERNEL_VERSION(4,14,0)
-+static void igb_update_phy_info(struct timer_list *t)
-+{
-+	struct igb_adapter *adapter = from_timer(adapter, t, phy_info_timer);
-+#else /* < 4.14 */
- static void igb_update_phy_info(unsigned long data)
- {
- 	struct igb_adapter *adapter = (struct igb_adapter *) data;
-+#endif /* < 4.14 */
- 	igb_get_phy_info(&adapter->hw);
- }
- 
-@@ -3600,9 +3616,15 @@ static void igb_check_lvmmc(struct igb_adapter *adapter)
-  *  igb_watchdog - Timer Call-back
-  *  @data: pointer to adapter cast into an unsigned long
-  **/
-+#if LINUX_VERSION_CODE >= KERNEL_VERSION(4,14,0)
-+static void igb_watchdog(struct timer_list *t)
-+{
-+	struct igb_adapter *adapter = from_timer(adapter, t, watchdog_timer);
-+#else /* < 4.14 */
- static void igb_watchdog(unsigned long data)
- {
- 	struct igb_adapter *adapter = (struct igb_adapter *)data;
-+#endif /* < 4.14 */
- 	/* Do the rest outside of interrupt context */
- 	schedule_work(&adapter->watchdog_task);
- }
--- 
-2.16.4
+That will surely be a valuable result, likely not even bound to ppc32.
+
+As I only learned recently (from a vendor that is still selling a lot of pp=
+c32=20
+silicon but no longer developing it) the toolchain situation is also gettin=
+g=20
+worse: gcc discontinued ppc with release 8 and will drop it from 9. So, it =
+will=20
+be "fun" to build for that arch in the not so far future, I'm afraid.
+
+Jan
+
+>=20
+> Steven
+>=20
+> -------------------------------------------------------------------------=
+-------
+> *From:* Jan Kiszka <jan.kiszka@siemens.com>
+> *Sent:* Wednesday, April 24, 2019 1:46 AM
+> *To:* Alexander Sharabanov; xenomai@xenomai.org; Seeger, Steven D.=20
+> (GSFC-582.0)[Embedded Flight Systems, Inc]
+> *Subject:* Re: Xenomai: native skin or CONFIG_XENO_OPT_PERVASIVE disabled.
+> On 22.04.19 15:36, Alexander Sharabanov via Xenomai wrote:
+>> Hi All,
+>>=20
+>> I am upgrading the linux kernel from linix kernel v2.6.30 to linux 3.16.=
+61 (long tern support). Also I have upgraded the Xenomai and ipipe. I upgra=
+ded the xenomai to stable /v3.0.x (instead the Xenomai-2.4.10 that I used i=
+n old kernel), and ipipe-core-3.16-powerpc-1.patch.  I have got the next er=
+ror:=A0 Xenomai: native skin or CONFIG_XENO_OPT_PERVASIVE=20
+> disabled. (modprobe xeno_native?). I do not see this options in new Xenom=
+ai.=20
+> Could you please help me to resolve that.
+>=20
+> The primary error seems that your userspace is still on 2.5 while the ker=
+nel
+> part is now on 3.0.
+>=20
+> Regarding the kernel and ppc: 3.16 will be dead soon as well (early next =
+year),
+> and we do not test against such old kernels anymore. We do not have an of=
+ficial
+> ppc ipipe release newer than 4.4.71 or 4.9.51. The 4.9 kernel is no longer
+> regularly updated, but 4.4 is - specifically via the STLS CIP kernel - an=
+d will
+> continue to be.
+>=20
+> However, ppc is not tested by me, not even build-tested anymore. If you v=
+alidate
+> ipipe-4.4.y[-cip] from=20
+> https://urldefense.proofpoint.com/v2/url?u=3Dhttps-3A__gitlab.denx.de_Xen=
+omai_ipipe_branches&d=3DDwICaQ&c=3DApwzowJNAKKw3xye91w7BE1XMRKi2LN9kiMk5Csz=
+9Zk&r=3Dr63S9M7Jhsu-Ginn_ewiQeYiA39ideOTJunKLVvbEVs&m=3D2HxaHR_Z81H2hWU2fVH=
+4D7v_N6tFRXgEfKqqJID9-HA&s=3DqZatnoFMBt8oA7MdrLnOFzrcfiJp9Q6-hpCfYusFmq8&e=
+=3D,=20
+> I can do
+> the tagging also for ppc (like I'm doing for arm if users report it works=
+).
+>=20
+> Steven, are you planning to refresh the kernel patches beyond that? How a=
+bout
+> adding CI build for ppc? We would need support on that topic. Otherwise, =
+it's
+> likely time to bury that arch, like it's happening all around.
+>=20
+> Jan
+>=20
+> --=20
+> Siemens AG, Corporate Technology, CT RDA IOT SES-DE
+> Corporate Competence Center Embedded Linux
+
+
+--=20
+Siemens AG, Corporate Technology, CT RDA IOT SES-DE
+Corporate Competence Center Embedded Linux
 
