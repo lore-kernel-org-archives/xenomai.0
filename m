@@ -1,8 +1,8 @@
 From: "Seeger, Steven D. (GSFC-582.0)[Embedded Flight Systems, Inc]"
  <steven.seeger@nasa.gov>
 Subject: Re: Xenomai: native skin or CONFIG_XENO_OPT_PERVASIVE disabled.
-Date: Wed, 24 Apr 2019 06:10:14 +0000
-Message-ID: <DM6PR09MB3402364C4B51AF4E5095788D853C0@DM6PR09MB3402.namprd09.prod.outlook.com>
+Date: Wed, 24 Apr 2019 06:11:56 +0000
+Message-ID: <DM6PR09MB340211DA1BFC00EF331BE9F3853C0@DM6PR09MB3402.namprd09.prod.outlook.com>
 References: <BB5C4F5E3633C64999D0577F81995AE70286E71C@XMAIL.tecom.nnov.ru>,
  <55438112-789f-da93-99ed-0320b6486fa3@siemens.com>
 In-Reply-To: <55438112-789f-da93-99ed-0320b6486fa3@siemens.com>
@@ -20,25 +20,9 @@ List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: Jan Kiszka <jan.kiszka@siemens.com>, Alexander Sharabanov <sharabanov.a@tecomgroup.ru>, "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-Hi guys.
-
-I released a 4.14.36 ipipe patch last June. I used the tags mechanism that =
-Philippe did. The latest tag is ipipe-core-4.14.36-ppc32-1.1.
-
-You can find this stuff at: https://gitlab.denx.de/Xenomai/ipipe-ppc32 or h=
-ttps://xenomai.org/downloads/ipipe/v4.x/ppc32/ for a quick download link.
-
-We made ipipe-ppc32. The ppc64 arch is now removed as there was an RFC and =
-nobody spoke up. I have no hardware to test on it.
-
-We are moving forward with xenomai/ppc32 at NASA and our arinc653 implement=
-ation. The current thinking is while it may not fly, it can at least be a v=
-iable (and free) development platform for arinc-653 applications that can t=
-hen be moved to commercial proprietary platforms with certification if need=
--be.
+Sorry, but what is CI build?
 
 Steven
-
 ________________________________
 From: Jan Kiszka <jan.kiszka@siemens.com>
 Sent: Wednesday, April 24, 2019 1:46 AM
