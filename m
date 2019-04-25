@@ -1,12 +1,13 @@
 Subject: Re: [PATCH] cobalt/intr: fix interrupt stat iterator
 References: <20190424102940.12754-1-rpm@xenomai.org>
  <e2d59fb7-93fd-579e-44a9-410c03562f5f@siemens.com>
- <a0589ad5-6ea6-c81a-c47c-09f1eaa3b22b@siemens.com>
+ <90b07ec0-5c87-bf1f-8ffe-540c96092024@xenomai.org>
+ <9e05d163-b0a4-bd2b-59b8-64b1a00dccfe@siemens.com>
 From: Philippe Gerum <rpm@xenomai.org>
-Message-ID: <0a4f9dd8-5fb7-145a-07c8-c358f0190965@xenomai.org>
-Date: Thu, 25 Apr 2019 17:16:43 +0200
+Message-ID: <233f4280-907c-2bd6-e478-41bf74fe8970@xenomai.org>
+Date: Thu, 25 Apr 2019 17:17:06 +0200
 MIME-Version: 1.0
-In-Reply-To: <a0589ad5-6ea6-c81a-c47c-09f1eaa3b22b@siemens.com>
+In-Reply-To: <9e05d163-b0a4-bd2b-59b8-64b1a00dccfe@siemens.com>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -20,32 +21,32 @@ List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: Jan Kiszka <jan.kiszka@siemens.com>, xenomai@xenomai.org
 
-On 4/25/19 5:10 PM, Jan Kiszka wrote:
-> On 25.04.19 16:53, Jan Kiszka wrote:
->> On 24.04.19 12:29, Philippe Gerum via Xenomai wrote:
->>> The implementation does not iterate fully over all CPU slots for every
->>> handler, leaving some of them uncollected. In addition, if maxcpus= is
->>> used to restrict the number of available CPUs to a subset of the
->>> present ones, with the highest numbered CPU marked offline, the
->>> iterator rescans the first valid IRQ slot indefinitely, eventually
->>> leading to memory corruption due to out-of-bound writes.
+On 4/25/19 5:12 PM, Jan Kiszka wrote:
+> On 25.04.19 17:11, Philippe Gerum wrote:
+>> On 4/25/19 4:53 PM, Jan Kiszka wrote:
+>>> On 24.04.19 12:29, Philippe Gerum via Xenomai wrote:
+>>>> The implementation does not iterate fully over all CPU slots for every
+>>>> handler, leaving some of them uncollected. In addition, if maxcpus= is
+>>>> used to restrict the number of available CPUs to a subset of the
+>>>> present ones, with the highest numbered CPU marked offline, the
+>>>> iterator rescans the first valid IRQ slot indefinitely, eventually
+>>>> leading to memory corruption due to out-of-bound writes.
+>>>
+>>> The patch looks good and works fine for the common case, so I've applied
+>>> it to next.
+>>>
+>>> But I cannot reproduce your maxcpus setup as - for to-be-debugged
+>>> reasons - we are already crashing on 4.14 and 4.4 on x86 during boot.
+>>> Did you test on ARM?
 >>
->> The patch looks good and works fine for the common case, so I've
->> applied it to next.
+>> Yes, i.MX6. Quad-core restricted with maxcpus=2.
 >>
->> But I cannot reproduce your maxcpus setup as - for to-be-debugged
->> reasons - we are already crashing on 4.14 and 4.4 on x86 during boot.
->> Did you test on ARM?
 > 
-> OK, understood the trigger: systemd-udevd decides to boot the remaining
-> CPUs later on, and that will crash us on the first timer tick. Maybe
-> x86-only issue, maybe you tested without CPU hotplug support.
+> CONFIG_HOTPLUG_CPU? Does it survive manual onlining later on?
 > 
 
-The crash is triggered by xnintr_query_next() returning the first
-collected bulk of stat data indefinitely, causing vfile_snapshot_open()
-to exceed the max. count of items returned by ->rewind(), which ends up
-trashing the kernel memory beyond all recognition.
+HOTPLUG is off in my setup.
+
 
 -- 
 Philippe.
