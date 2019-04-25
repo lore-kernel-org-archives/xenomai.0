@@ -1,11 +1,12 @@
 Subject: Re: [PATCH] cobalt/intr: fix interrupt stat iterator
 References: <20190424102940.12754-1-rpm@xenomai.org>
  <e2d59fb7-93fd-579e-44a9-410c03562f5f@siemens.com>
+ <a0589ad5-6ea6-c81a-c47c-09f1eaa3b22b@siemens.com>
 From: Philippe Gerum <rpm@xenomai.org>
-Message-ID: <90b07ec0-5c87-bf1f-8ffe-540c96092024@xenomai.org>
-Date: Thu, 25 Apr 2019 17:11:36 +0200
+Message-ID: <319dd9ab-e184-71bf-5928-17530dc20ab6@xenomai.org>
+Date: Thu, 25 Apr 2019 17:12:10 +0200
 MIME-Version: 1.0
-In-Reply-To: <e2d59fb7-93fd-579e-44a9-410c03562f5f@siemens.com>
+In-Reply-To: <a0589ad5-6ea6-c81a-c47c-09f1eaa3b22b@siemens.com>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -19,23 +20,29 @@ List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: Jan Kiszka <jan.kiszka@siemens.com>, xenomai@xenomai.org
 
-On 4/25/19 4:53 PM, Jan Kiszka wrote:
-> On 24.04.19 12:29, Philippe Gerum via Xenomai wrote:
->> The implementation does not iterate fully over all CPU slots for every
->> handler, leaving some of them uncollected. In addition, if maxcpus= is
->> used to restrict the number of available CPUs to a subset of the
->> present ones, with the highest numbered CPU marked offline, the
->> iterator rescans the first valid IRQ slot indefinitely, eventually
->> leading to memory corruption due to out-of-bound writes.
+On 4/25/19 5:10 PM, Jan Kiszka wrote:
+> On 25.04.19 16:53, Jan Kiszka wrote:
+>> On 24.04.19 12:29, Philippe Gerum via Xenomai wrote:
+>>> The implementation does not iterate fully over all CPU slots for every
+>>> handler, leaving some of them uncollected. In addition, if maxcpus= is
+>>> used to restrict the number of available CPUs to a subset of the
+>>> present ones, with the highest numbered CPU marked offline, the
+>>> iterator rescans the first valid IRQ slot indefinitely, eventually
+>>> leading to memory corruption due to out-of-bound writes.
+>>
+>> The patch looks good and works fine for the common case, so I've
+>> applied it to next.
+>>
+>> But I cannot reproduce your maxcpus setup as - for to-be-debugged
+>> reasons - we are already crashing on 4.14 and 4.4 on x86 during boot.
+>> Did you test on ARM?
 > 
-> The patch looks good and works fine for the common case, so I've applied
-> it to next.
+> OK, understood the trigger: systemd-udevd decides to boot the remaining
+> CPUs later on, and that will crash us on the first timer tick. Maybe
+> x86-only issue, maybe you tested without CPU hotplug support.
 > 
-> But I cannot reproduce your maxcpus setup as - for to-be-debugged
-> reasons - we are already crashing on 4.14 and 4.4 on x86 during boot.
-> Did you test on ARM?
 
-Yes, i.MX6. Quad-core restricted with maxcpus=2.
+I did, but ARM kernel.
 
 -- 
 Philippe.
