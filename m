@@ -1,22 +1,17 @@
-Subject: Re: rt_dev_send() stalls periodic task
-References: <CA+K1mPFgaiP3fGFnd169MXhdRWo+a1TGz5fnEoj7MOCr11UbLQ@mail.gmail.com>
- <c6a9ba79-c7c5-195d-be1e-030fb44f5abc@siemens.com>
- <CA+K1mPEvKLN+gyDPwLE0OovtSn-iQ_BBZ86zQf12Fv65Ht5KbQ@mail.gmail.com>
- <2ade719a-84c7-c53d-9895-a5e6eea354a3@siemens.com>
- <CA+K1mPHhMrw-2t0k1_AgKE4iZ+2+Vvx7TV_ScHnOFis_sBxt=Q@mail.gmail.com>
- <5CBCCE3F.5090000@freyder.net>
- <CA+K1mPGZiuAvumxhdvKk2R=UvO9WwE_ppfkXeMaWLt7dP5hB3w@mail.gmail.com>
- <ebb4d71b-3d5b-9d66-270f-ca35e7785bce@web.de>
- <dccf6d29-e996-5c78-93fe-a74879270a44@siemens.com>
- <CA+K1mPHKN42HPMEjQ1aL+P_TjtDt6sUXy95xFRt=y_9qe9y7VQ@mail.gmail.com>
-From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <e1a9aa13-c5a4-2ba0-4012-5c668db15e33@siemens.com>
-Date: Thu, 25 Apr 2019 10:23:35 +0200
+Date: Thu, 25 Apr 2019 10:43:42 -0400
+Subject: Re: Xenomai: native skin or CONFIG_XENO_OPT_PERVASIVE disabled.
+Message-ID: <20190425144342.5o6nz34bhi3gsrev@csclub.uwaterloo.ca>
+References: <BB5C4F5E3633C64999D0577F81995AE70286E71C@XMAIL.tecom.nnov.ru>
+ <55438112-789f-da93-99ed-0320b6486fa3@siemens.com>
+ <DM6PR09MB3402364C4B51AF4E5095788D853C0@DM6PR09MB3402.namprd09.prod.outlook.com>
+ <8333b206-e819-c3e7-1394-3698baf2a075@siemens.com>
+ <20190424195112.ceet7ddwlgg6hky2@csclub.uwaterloo.ca>
+ <25ce82c1-ccef-96b8-6563-b593394c55d0@siemens.com>
 MIME-Version: 1.0
-In-Reply-To: <CA+K1mPHKN42HPMEjQ1aL+P_TjtDt6sUXy95xFRt=y_9qe9y7VQ@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <25ce82c1-ccef-96b8-6563-b593394c55d0@siemens.com>
+From: lsorense@csclub.uwaterloo.ca (Lennart Sorensen)
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -25,44 +20,32 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: C Smith <csmithquestions@gmail.com>, Xenomai List <xenomai@xenomai.org>
-Cc: Steve Freyder <steve@freyder.net>, w1@codecraftsmen.org
+To: Jan Kiszka <jan.kiszka@siemens.com>
+Cc: "Seeger, Steven D. (GSFC-582.0)[Embedded Flight Systems,
+ Inc]" <steven.seeger@nasa.gov>, Alexander Sharabanov <sharabanov.a@tecomgroup.ru>, "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On 25.04.19 09:15, C Smith wrote:
-> Hi Jan,
+On Wed, Apr 24, 2019 at 10:21:45PM +0200, Jan Kiszka wrote:
+> Yes, I meanwhile understood that this information I got first-hand from a
+> company that still dominants the ppc32 silicon market was inaccurate.
 > 
-> Your patch worked somewhat but not completely. It prevents my app from stalling 
-> forever, but I caugh the serial transmission itself stalling on the oscilloscope 
-> for quite a long time. My 72 byte TX packet from the xenomai periodic task gets 
-> cut in half and there is no transmission for 7msec, then the transmission 
-> resumes. (I'll send you a screenshot)
-
-What is driver and application state during that phase? Who is waiting on what? 
-This will be the key to resolve that issue as I'm not yet seeing another mistake 
-in the driver.
-
-> (Note that I am on xeno 2.6.5 so I merged your 3.x patch above into 16550A.c 
-> manually.)
+> Still, this won't change the fact that ppc32 is a dying arch. There is no
+> new silicon design coming up anymore, major distros are moving away from it
+> (not to speak of those who never jumped on it), and the arch is - in
+> contrast to MIPS or specifically RISC-V - still a proprietary one, thus
+> without hope of a second life in the free world. Internally, I haven't
+> received support request for it for almost a decade.
 > 
-> I'm currently doing a 12 hour test of your patch plus mine. In my patch I check 
-> during every RX interrupt to see if I need to call rt_16550_tx_fill() too. I 
-> know that doesn't work for others but my traffic is full duplex so this test 
-> will tell us something if it works and maybe we can ultimately get the same 
-> behavior without my hack.
-> 
-> Also, I made the /.rx_timeout/.tx_timeout /change Jeff found, and it had the 
-> obvious effect. I can make a patch for xeno 2.6.5 if you want. But I'll point 
-> out that this fix may break peoples code functionally, so it may be a bad idea 
-> to fix it on 2.x. Older code was written with a dependence on a truly different 
-> timeout. It broke my app to fix this because there was suddenly a new unexpected 
-> timeout. What's your policy on this issue?
+> It's history, let's face reality.
 
-The 2.6 repo won't be touched anymore, it's officially dead. If course, you can 
-share your patch on the list in case there are other remaining users.
+That is certainly true.
 
-Jan
+I wonder how long the products I used to work at using Xenomai on powerpc
+will stick around.  They will likely stay in production for years still
+but will they decide to move to xenomai 3 from 2.6 at some point I don't
+know (given I don't work there anymore and since it is working maybe
+there is no point messing with it).  But it means at least a few Siemens
+products are running xenomai on powerpc still.
 
 -- 
-Siemens AG, Corporate Technology, CT RDA IOT SES-DE
-Corporate Competence Center Embedded Linux
+Len Sorensen
 
