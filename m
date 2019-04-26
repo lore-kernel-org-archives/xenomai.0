@@ -1,7 +1,7 @@
 From: xenomai@xenomai.org
-Subject: [I-PIPE] ipipe-core-3.14-arm-1 released
-Message-Id: <E1hK57X-0003SN-Ap@xenomai.org>
-Date: Fri, 26 Apr 2019 19:58:47 +0200
+Subject: [I-PIPE] ipipe-core-3.14-x86-1 released
+Message-Id: <E1hK57f-0003j3-8R@xenomai.org>
+Date: Fri, 26 Apr 2019 19:58:55 +0200
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -12,8 +12,8 @@ List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: xenomai@xenomai.org
 
-Download URL: https://xenomai.org/downloads/ipipe/v3.x/arm/ipipe-core-3.14-arm-1.patch
+Download URL: https://xenomai.org/downloads/ipipe/v3.x/x86/ipipe-core-3.14-x86-1.patch
 
-Repository: https://git.xenomai.org/ipipe-arm
-Release tag: ipipe-core-3.14-arm-1
+Repository: https://git.xenomai.org/ipipe-x86
+Release tag: ipipe-core-3.14-x86-1
 
