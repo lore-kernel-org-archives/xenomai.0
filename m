@@ -1,24 +1,7 @@
-MIME-Version: 1.0
-References: <d53140e58f60459694e2e66a94d0a518@systemceramics.com>
- <CAPR3TAhurhcwOGe9wfnOTUd=VBRvXuMLxZtNZ-3+QNyd=TOJnA@mail.gmail.com>
- <ebec2dcf-9549-fed2-6a48-299597bc7079@siemens.com>
- <CAPR3TAjFNV-0LgZ=+ydtseAQw-jdmYRHO4FQwybTjAHwDV59Xg@mail.gmail.com>
- <CAPR3TAhP1VwSE5OjKiznfuzsRXyigeN+ohQP1jQE-roLDMh5LA@mail.gmail.com>
- <32be3d2e-020f-468c-2940-26a09e96daeb@siemens.com>
- <CAPR3TAitTeY0rNVZ6v0moFzh0d_hA6zyS-R3fm+DK+HX4yj3PQ@mail.gmail.com>
- <04ffd701-4df7-5a2b-8000-cf5bec9d06d7@siemens.com>
- <CAPR3TAg=5on1=gJHSChHHwAb3AafZNx3jizMerdZvYKnN5YObA@mail.gmail.com>
- <9d5a6b6e-d7ba-00cd-3851-b26961ebbee7@siemens.com>
- <a7f863b1-9389-4a04-152d-8bc1ec0d723c@siemens.com>
- <CAPR3TAitwUBW8AzOX6cWyBgnp+bKhiNHWE3PBfs-OdAcQSCANw@mail.gmail.com>
- <48849a99-34f6-a84f-22cc-664028431ae7@siemens.com>
-In-Reply-To: <48849a99-34f6-a84f-22cc-664028431ae7@siemens.com>
-From: cagnulein <cagnulein@gmail.com>
-Date: Fri, 5 Apr 2019 10:44:11 +0200
-Message-ID: <CAPR3TAg8-QsV+yENSF=Vy7GTfbes2Smtbjo-u2b=MNQ3EnSqLg@mail.gmail.com>
-Subject: Re: kvm fpu warning on 4.14.89
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+From: xenomai@xenomai.org
+Subject: [I-PIPE] ipipe-core-3.10.32-x86-7 released
+Message-Id: <E1hK57E-0002qf-U2@xenomai.org>
+Date: Fri, 26 Apr 2019 19:58:28 +0200
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -27,53 +10,10 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jan Kiszka <jan.kiszka@siemens.com>
-Cc: xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-SGksIHllcyBJIGRvdWJsZSBjaGVja2VkIHRoZSBwYXRjaCBhbmQgaXQncyBhcHBsaWVkIGNvcnJl
-Y3RseS4KSGVyZSB5b3UgY2FuIGZpbmQgbXkgY29uZmlnLgoKQ09ORklHX0RFQlVHX1NUQUNLT1ZF
-UkZMT1cgaXMgZGlzYWJsZWQuCgpJIGNhbid0IGdldCB0aGUgdWFydCBvbiB0aGlzIHN5c3RlbSwg
-aXMgdGhlcmUgYW55IG90aGVyIHdheSB0byBjYXRjaCBsb2cgaW4KdGhpcyBzY2VuYXJpbz8KCldo
-eSBzaG91bGQgSSB0ZXN0IHRoZSA0LjQueT8gNC45LjE0NiB3b3JrcyBmaW5lIG9uIHRoZSBzYW1l
-IHN5c3RlbSAod2l0aAp0aGUgc2FtZSBndWVzdCkuIERpZCBJIG1pc3Mgc29tZXRoaW5nPwoKUi4K
-CgpJbCB2ZW4gNSBhcHIgMjAxOSwgMTA6MTQgSmFuIEtpc3prYSA8amFuLmtpc3prYUBzaWVtZW5z
-LmNvbT4gaGEgc2NyaXR0bzoKCj4gT24gMDUuMDQuMTkgMDg6MjAsIGNhZ251bGVpbiB3cm90ZToK
-PiA+IEhpIEphbiwgdGhhbmtzIGZvciB5b3VyIHBhdGNoLgo+ID4gSSd2ZSBqdXN0IHRyaWVkIGJ1
-dCBJIGhhdmUgdGhlIHNhbWUgaXNzdWU6IEkgc3RhcnQgYSBrdm0gZ3Vlc3QgKHdpbmRvd3MKPiAx
-MCBpb3QKPiA+IDIwMTkpIGFuZCBpdCB3b3JrcywgYnV0IHdoZW4gSSBzdGFydCBhIGxhdGVuY3kg
-dGVzdCB0aGUgd2hvbGUgc3lzdGVtCj4gaGFuZ3MKPiA+IGNvbXBsZXRlbHkuCj4gPgo+ID4gQ291
-bGQgaSBnaXZlIHlvdSBtb3JlIGluZm8gaW4gc29tZSB3YXk/Cj4KPiBPSy4uLiBGaXJzdCBxdWVz
-dGlvbjogQXJlIHlvdSBzdXJlIHRoZSBwYXRjaCB3YXMgYXBwbGllZCB0byB0aGUga2VybmVsCj4g
-eW91IHRlc3RlZD8gSnVzdCB0byBkb3VibGUtY2hlY2sgYSBjb21tb24gbWlzdGFrZS4KPgo+IFRo
-ZW4sIHRoZXJlIGFyZSBubyBkZWJ1ZyBtZXNzYWdlcyBvbiB0aGUgdWFydCBhdCBhbGwgd2hlbiB0
-aGUgc3lzdGVtCj4gbG9ja3MgdXA/IFdoYXQgaXMgeW91ciBrZXJuZWwgY29uZmlnPwo+Cj4gTmV4
-dCwgcGxlYXNlIHRyeSB3aXRoIGlwaXBlLTQuNC55IGFuZCB0aGlzIGNoYW5nZToKPgo+IGRpZmYg
-LS1naXQgYS9hcmNoL3g4Ni9rdm0vdm14LmMgYi9hcmNoL3g4Ni9rdm0vdm14LmMKPiBpbmRleCAy
-ZDQ4MGE2NGUxNzIuLjBhMTkyOWRjYTE4MyAxMDA2NDQKPiAtLS0gYS9hcmNoL3g4Ni9rdm0vdm14
-LmMKPiArKysgYi9hcmNoL3g4Ni9rdm0vdm14LmMKPiBAQCAtODQ1Myw2ICs4NDUzLDEwIEBAIHN0
-YXRpYyB2b2lkIHZteF9oYW5kbGVfZXh0ZXJuYWxfaW50cihzdHJ1Y3QKPiBrdm1fdmNwdSAqdmNw
-dSkKPiAgICAgICAgICAgICAgICAgdW5zaWduZWQgbG9uZyB0bXA7Cj4gICNlbmRpZgo+Cj4gKyNp
-ZmRlZiBDT05GSUdfSVBJUEUKPiArICAgICAgICAgICAgICAgX19jbGVhcl9iaXQoSVBJUEVfU1RB
-TExfRkxBRywKPiArICAgICAgICAgICAgICAgICAgICAgICAgICAgJmlwaXBlX3RoaXNfY3B1X3Jv
-b3RfY29udGV4dCgpLT5zdGF0dXMpOwo+ICsjZW5kaWYKPiAgICAgICAgICAgICAgICAgdmVjdG9y
-ID0gIGV4aXRfaW50cl9pbmZvICYgSU5UUl9JTkZPX1ZFQ1RPUl9NQVNLOwo+ICAgICAgICAgICAg
-ICAgICBkZXNjID0gKGdhdGVfZGVzYyAqKXZteC0+aG9zdF9pZHRfYmFzZSArIHZlY3RvcjsKPiAg
-ICAgICAgICAgICAgICAgZW50cnkgPSBnYXRlX29mZnNldCgqZGVzYyk7Cj4gZGlmZiAtLWdpdCBh
-L2FyY2gveDg2L2t2bS94ODYuYyBiL2FyY2gveDg2L2t2bS94ODYuYwo+IGluZGV4IGY4OTVkNGUw
-ZWIzZS4uZTY4NjNiZDIyNmU2IDEwMDY0NAo+IC0tLSBhL2FyY2gveDg2L2t2bS94ODYuYwo+ICsr
-KyBiL2FyY2gveDg2L2t2bS94ODYuYwo+IEBAIC02NjM5LDYgKzY2MzksNyBAQCBzdGF0aWMgaW50
-IHZjcHVfZW50ZXJfZ3Vlc3Qoc3RydWN0IGt2bV92Y3B1ICp2Y3B1KQo+ICAgICAgICAgICAgIHx8
-IG5lZWRfcmVzY2hlZCgpIHx8IHNpZ25hbF9wZW5kaW5nKGN1cnJlbnQpKSB7Cj4gICAgICAgICAg
-ICAgICAgIHZjcHUtPm1vZGUgPSBPVVRTSURFX0dVRVNUX01PREU7Cj4gICAgICAgICAgICAgICAg
-IHNtcF93bWIoKTsKPiArICAgICAgICAgICAgICAgX19pcGlwZV9leGl0X3ZtKCk7Cj4gICAgICAg
-ICAgICAgICAgIGhhcmRfY29uZF9sb2NhbF9pcnFfZW5hYmxlKCk7Cj4gICAgICAgICAgICAgICAg
-IGxvY2FsX2lycV9lbmFibGUoKTsKPiAgICAgICAgICAgICAgICAgcHJlZW1wdF9lbmFibGUoKTsK
-Pgo+IEp1c3QgbWFrZSBzdXJlIHRvIGhhdmUgQ09ORklHX0RFQlVHX1NUQUNLT1ZFUkZMT1cgZGlz
-YWJsZWQgKEkganVzdAo+IGRpc2NvdmVyZWQgYSBjb21waWxhdGlvbiBpc3N1ZSBvbiB0aGF0IGtl
-cm5lbCB2ZXJzaW9uKS4KPgo+IEphbgo+Cj4gLS0KPiBTaWVtZW5zIEFHLCBDb3Jwb3JhdGUgVGVj
-aG5vbG9neSwgQ1QgUkRBIElPVCBTRVMtREUKPiBDb3Jwb3JhdGUgQ29tcGV0ZW5jZSBDZW50ZXIg
-RW1iZWRkZWQgTGludXgKPgotLS0tLS0tLS0tLS0tLSBuZXh0IHBhcnQgLS0tLS0tLS0tLS0tLS0K
-QSBub24tdGV4dCBhdHRhY2htZW50IHdhcyBzY3J1YmJlZC4uLgpOYW1lOiBjb25maWcuNC4xNC44
-OQpUeXBlOiBhcHBsaWNhdGlvbi9vY3RldC1zdHJlYW0KU2l6ZTogMTczMzgwIGJ5dGVzCkRlc2M6
-IG5vdCBhdmFpbGFibGUKVVJMOiA8aHR0cDovL3hlbm9tYWkub3JnL3BpcGVybWFpbC94ZW5vbWFp
-L2F0dGFjaG1lbnRzLzIwMTkwNDA1LzIyODY5MGM0L2F0dGFjaG1lbnQub2JqPgo=
+Download URL: https://xenomai.org/downloads/ipipe/v3.x/x86/ipipe-core-3.10.32-x86-7.patch
+
+Repository: https://git.xenomai.org/ipipe-x86
+Release tag: ipipe-core-3.10.32-x86-7
+
