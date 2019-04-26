@@ -1,7 +1,7 @@
 From: xenomai@xenomai.org
-Subject: [I-PIPE] ipipe-core-3.10.32-arm-2 released
-Message-Id: <E1hK56C-00016R-Gk@xenomai.org>
-Date: Fri, 26 Apr 2019 19:57:24 +0200
+Subject: [I-PIPE] ipipe-core-3.10.32-arm-3 released
+Message-Id: <E1hK56H-0001Iz-82@xenomai.org>
+Date: Fri, 26 Apr 2019 19:57:29 +0200
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -12,8 +12,8 @@ List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: xenomai@xenomai.org
 
-Download URL: https://xenomai.org/downloads/ipipe/v3.x/arm/ipipe-core-3.10.32-arm-2.patch
+Download URL: https://xenomai.org/downloads/ipipe/v3.x/arm/ipipe-core-3.10.32-arm-3.patch
 
 Repository: https://git.xenomai.org/ipipe-arm
-Release tag: ipipe-core-3.10.32-arm-2
+Release tag: ipipe-core-3.10.32-arm-3
 
