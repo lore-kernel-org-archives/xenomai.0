@@ -1,7 +1,7 @@
 From: xenomai@xenomai.org
-Subject: [I-PIPE] ipipe-core-3.10.32-x86-7 released
-Message-Id: <E1hK57E-0002qf-U2@xenomai.org>
-Date: Fri, 26 Apr 2019 19:58:28 +0200
+Subject: [I-PIPE] ipipe-core-3.10.32-x86-8 released
+Message-Id: <E1hK57H-0002y6-O9@xenomai.org>
+Date: Fri, 26 Apr 2019 19:58:31 +0200
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -12,8 +12,8 @@ List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: xenomai@xenomai.org
 
-Download URL: https://xenomai.org/downloads/ipipe/v3.x/x86/ipipe-core-3.10.32-x86-7.patch
+Download URL: https://xenomai.org/downloads/ipipe/v3.x/x86/ipipe-core-3.10.32-x86-8.patch
 
 Repository: https://git.xenomai.org/ipipe-x86
-Release tag: ipipe-core-3.10.32-x86-7
+Release tag: ipipe-core-3.10.32-x86-8
 
