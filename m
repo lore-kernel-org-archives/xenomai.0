@@ -1,13 +1,13 @@
-From: Steven Seeger <steven.seeger@flightsystems.net>
-Subject: Re: __ipipe_root_sync
-Date: Fri, 26 Apr 2019 14:15:29 -0400
-Message-ID: <1853262.hL6BM7Cr2a@omoikane>
-In-Reply-To: <e4e117ae-9db6-4570-8159-d6cbe4765fe8@xenomai.org>
-References: <2053542.YF2tJfiQcj@omoikane>
- <e4e117ae-9db6-4570-8159-d6cbe4765fe8@xenomai.org>
+Subject: Re: release spam
+References: <2247759.EUyoF532Pl@omoikane>
+From: Philippe Gerum <rpm@xenomai.org>
+Message-ID: <b2949e1b-be5c-d3e4-f776-d264fa929d89@xenomai.org>
+Date: Fri, 26 Apr 2019 20:26:41 +0200
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7Bit
-Content-Type: text/plain; charset="us-ascii"
+In-Reply-To: <2247759.EUyoF532Pl@omoikane>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,25 +16,21 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Philippe Gerum <rpm@xenomai.org>
-Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Steven Seeger <steven.seeger@flightsystems.net>, xenomai@xenomai.org
 
-On Friday, April 26, 2019 2:11:30 PM EDT Philippe Gerum wrote:
+On 4/26/19 8:12 PM, Steven Seeger via Xenomai wrote:
+> Everyone,
 > 
-> However, __ipipe_root_sync() is 100% redundant with sync_root_irqs(),
-> which we need in the generic pipelined syscall handling callable from C.
-> So the situation is a bit silly ATM. Let's rename sync_root_irqs() to
-> __ipipe_root_sync() in -noarch, and drop any arch-local equivalent.
+> Sorry for the release spam. I accidentally pushed all tags to the tag server 
+> instead of just the one I was working on.
+> 
+> Guess I will buy donuts if I ever make it out to one of the meetings. :)
+> 
 
-I fully agree with this. I can issue a second patch for 110 once it's done in 
-noarch, but there's no real reason to hurry on this.
+:) Too bad git wasn't there 17 years ago, seeing an announcement for the
+initial pipeline patch based on kernel 2.4.17 floating on this list
+would have gotten us really close to the twilight zone.
 
-I can confirm that the 4.14.110 patch I just pushed for powerpc (for all the 
-thousands of you working with PPC) that the use of __ipipe_root_sync and 
-sync_root_irqs is equivalent with ARM.
-
-Steven
-
-
-
+-- 
+Philippe.
 
