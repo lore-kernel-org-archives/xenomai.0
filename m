@@ -1,7 +1,7 @@
 From: xenomai@xenomai.org
-Subject: [I-PIPE] ipipe-core-3.14.17-arm-4 released
-Message-Id: <E1hK57j-0003wl-SY@xenomai.org>
-Date: Fri, 26 Apr 2019 19:58:59 +0200
+Subject: [I-PIPE] ipipe-core-3.14.17-arm-5 released
+Message-Id: <E1hK57m-000443-D8@xenomai.org>
+Date: Fri, 26 Apr 2019 19:59:02 +0200
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -12,8 +12,8 @@ List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: xenomai@xenomai.org
 
-Download URL: https://xenomai.org/downloads/ipipe/v3.x/arm/ipipe-core-3.14.17-arm-4.patch
+Download URL: https://xenomai.org/downloads/ipipe/v3.x/arm/ipipe-core-3.14.17-arm-5.patch
 
 Repository: https://git.xenomai.org/ipipe-arm
-Release tag: ipipe-core-3.14.17-arm-4
+Release tag: ipipe-core-3.14.17-arm-5
 
