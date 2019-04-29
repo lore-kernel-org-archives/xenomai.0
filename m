@@ -1,13 +1,13 @@
-From: Lowell Gilbert <kludge@be-well.ilk.org>
-Subject: Re: having problems with daemonizing
-References: <44ftq4zcr9.fsf@be-well.ilk.org> <5CC38412.8030107@freyder.net>
- <e0ff187c-8247-e7ed-0ee4-b9a195a393b6@xenomai.org>
-Date: Mon, 29 Apr 2019 11:05:29 -0400
-In-Reply-To: <e0ff187c-8247-e7ed-0ee4-b9a195a393b6@xenomai.org> (Philippe
- Gerum via Xenomai's message of "Sun, 28 Apr 2019 17:26:39 +0200")
-Message-ID: <445zqwg8cm.fsf@be-well.ilk.org>
+Subject: Re: Dual kernel made easy
+References: <20b3f016-e519-35fc-9a9e-750ecfc509a3@xenomai.org>
+From: Jorge Ramirez <jro@xenomai.org>
+Message-ID: <c5fe2712-107e-eabe-9a4d-da182696a414@xenomai.org>
+Date: Mon, 29 Apr 2019 22:24:55 +0200
 MIME-Version: 1.0
-Content-Type: text/plain
+In-Reply-To: <20b3f016-e519-35fc-9a9e-750ecfc509a3@xenomai.org>
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 7bit
+Content-Language: en-US
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,22 +16,48 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Philippe Gerum via Xenomai <xenomai@xenomai.org>
+To: Philippe Gerum <rpm@xenomai.org>, "Xenomai@xenomai.org" <Xenomai@xenomai.org>
+Cc: "Kiszka, Jan" <jan.kiszka@siemens.com>
 
-Philippe Gerum via Xenomai <xenomai@xenomai.org> writes:
+On 4/1/19 22:11, Philippe Gerum wrote:
+> Motivated by the pain we continue to inflict upon ourselves everytime
+> we need to rebase the I-pipe over a recent kernel release, I started
+> working to define its future replacement. Now that we have an
+> implementation of its successor running reliably, my next step is to
+> rebase the Cobalt ARM port on this new interface called Dovetail [1].
+>
+> This work is part of a larger effort to rethink the way independent
+> software cores like Xenomai's integrate into the main kernel [2].
+>
+> This led to not only implement Dovetail, but also to showcase it with
+> a new real-time co-kernel originally derived from Cobalt [3], which is
+> simple and compact enough to be used as a learning tool for everyone
+> interested in the dual kernel technology based on Linux.
+>
+> The purpose of this work is about making dual kernel easy, at least as
+> simple as possible for people to develop and maintain their own
+> software core of choice over the current mainline kernel.
+>
+> [1] https://evenless.org/dovetail/
+> [2] https://evenless.org/
+> [3] https://evenless.org/core/
+>
+Hi Philippe,
 
-> On 4/27/19 12:20 AM, Steve Freyder wrote:
->> I think deamonizing in its canonical form of: fork(), let the forked
->> process take over, and then exit() in the parent, is problematic when
->> you have a wrapped main() where the wrappers already initialized the
->> sysreg mechanism but the process that was done for is now gone, and
->> the fork()'ed process has no idea it has a sysreg socket in hand.
->> 
->> Perhaps the better answer when daemonizing is to use --no-init and then
->> have the forked() process do manual xenomai_init() call?
+For a number of reasons - some personal and some professional - I am
+interested in porting an IP stack to EVL.
 
-I think that's reasonable. With the caveat that it turns xenomai_init()
-into an API function.
+I have asked around and it seems one of the most popular IP stacks
+these days is LwIP [1]. In fact this stack seems to align well with
+one of the goals you set for EVL, targeting simplicity.
 
-> I don't know yet, I'll follow up on this.
+Is this activity something you (or others) would be interested in
+supporting?
+
+I am also extending the question to anyone on the ML willing to take
+part on this of course.
+
+[0] https://savannah.nongnu.org/projects/lwip/
+[1] http://www.nongnu.org/lwip/2_1_x/index.html
+
 
