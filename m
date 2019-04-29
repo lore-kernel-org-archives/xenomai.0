@@ -1,12 +1,13 @@
-Message-ID: <acf4207114cc324d0b7001985eade534d6e3c4be.camel@sprinte.eu>
-Subject: Re: having problems with daemonizing
-From: Julien Blanc <julien.blanc@sprinte.eu>
-Date: Mon, 29 Apr 2019 09:12:37 +0200
-In-Reply-To: <5CC38412.8030107@freyder.net>
-References: <44ftq4zcr9.fsf@be-well.ilk.org> <5CC38412.8030107@freyder.net>
+From: Lange Norbert <norbert.lange@andritz.com>
+Subject: RE: having problems with daemonizing
+Date: Mon, 29 Apr 2019 12:35:22 +0000
+Message-ID: <VI1PR05MB5917B812A98A651D70E22DFDF6390@VI1PR05MB5917.eurprd05.prod.outlook.com>
+References: <44ftq4zcr9.fsf@be-well.ilk.org>
+In-Reply-To: <44ftq4zcr9.fsf@be-well.ilk.org>
+Content-Language: en-US
 Content-Type: text/plain; charset="utf-8"
-Mime-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: base64
+MIME-Version: 1.0
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,49 +16,52 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Steve Freyder <steve@freyder.net>, xenomai@xenomai.org, Philippe Gerum <rpm@xenomai.org>
+To: Lowell Gilbert <kludge@be-well.ilk.org>, "Xenomai (xenomai@xenomai.org)" <xenomai@xenomai.org>
 
-Le vendredi 26 avril 2019 à 17:20 -0500, Steve Freyder via Xenomai a
-écrit :
-> 
-> I can tell you that I have a hang issue due to fork() in a Xenomai
-> program if, after the fork(), I don't do an exec().  I believe
-> the hang is related to registry access, and the fact that the
-> Unix domain socket connecting to sysregd that is inherited by
-> the forked process (which has FD_CLOEXEC set) hasn't yet gotten
-> closed (no exec() yet so no action on FD_CLOEXEC flags yet).
-
-We ran into a similar issue (still using 3.0.5, which seems not to have
-the FD_CLOEXEC flag set).
-
-If you don’t share any file descriptors with the child process, the
-following (after the fork and before the exec) did help in our case :
-
-DIR* dirs = opendir("/proc/self/fd");
-int fd = dirfd(dirs);
-dirent* d = readdir(dirs);
-while (d != nullptr)
-{
-	int a = 0;
-	a = std::strtol(d->d_name, nullptr, 10);
-	if (errno == 0 && a > 2 && a != fd)
-	{
-		close(a);
-	}
-	d = readdir(dirs);
-}
-closedir(dirs);
-
-Basically it closes any open file descriptor by the child process,
-except stdout/stderr.
-
-Note that we are forking from a linux domain thread hosted in a xenomai
-application, creating a pure linux application. In that case the
-registry stuff is complete nonsense in the child process. But this
-should also be ok for other use cases.
-
-Regards,
-
-Julien
-
+DQo+IC0tLS0tT3JpZ2luYWwgTWVzc2FnZS0tLS0tDQo+IEZyb206IFhlbm9tYWkgPHhlbm9tYWkt
+Ym91bmNlc0B4ZW5vbWFpLm9yZz4gT24gQmVoYWxmIE9mIExvd2VsbA0KPiBHaWxiZXJ0IHZpYSBY
+ZW5vbWFpDQo+IFNlbnQ6IEZyZWl0YWcsIDI2LiBBcHJpbCAyMDE5IDIzOjE5DQo+IFRvOiB4ZW5v
+bWFpQHhlbm9tYWkub3JnDQo+IFN1YmplY3Q6IGhhdmluZyBwcm9ibGVtcyB3aXRoIGRhZW1vbml6
+aW5nDQo+DQo+IEUtTUFJTCBGUk9NIEEgTk9OLUFORFJJVFogU09VUkNFOiBBUyBBIFNFQ1VSSVRZ
+IE1FQVNVUkUsIFBMRUFTRQ0KPiBFWEVSQ0lTRSBDQVVUSU9OIFdJVEggRS1NQUlMIENPTlRFTlQg
+QU5EIEFOWSBMSU5LUyBPUg0KPiBBVFRBQ0hNRU5UUy4NCj4NCj4NCj4gSGkuDQo+DQo+IEkgaGF2
+ZSBhbiBhcHBsaWNhdGlvbiB3b3JraW5nIHN1Y2Nlc3NmdWxseSB3aXRoIFhlbm9tYWkgMy4wLjgg
+b24gYSA0LjE0DQo+IGtlcm5lbC4gSSB1c2UgWW9jdG8gdG8gYnVpbGQgdGhlIHN5c3RlbTsgd2hl
+biBJIHRyaWVkIHRvIG1vdmUgdG8gYSBuZXdlcg0KPiB2ZXJzaW9uIG9mIFlvY3RvLCBteSBhcHBs
+aWNhdGlvbiBodW5nIG9uIHRyeWluZyB0byBiZWNvbWUgYSBkYWVtb24uIFRoaXMgaXMNCj4gaGFw
+cGVuaW5nIHdpdGggdGhlIGRhZW1vbigpIGNhbGwgKHdoaWNoIGlzIHdoYXQgSSd2ZSB1c2VkIHVw
+IHRvIG5vdykgYW5kDQo+IHdpdGggZm9yaygpLg0KPg0KPiBJIGJ1aWx0IGEgdGVzdCBhcHBsaWNh
+dGlvbiBzbyB0aGF0IEkgY291bGQgY29uZmlybSB0aGF0IHRoaXMgcHJvYmxlbSBvbmx5IG9jY3Vy
+cw0KPiB3aGVuIEkgbGluayAoYW5kIHdyYXApIHdpdGggWGVub21haS4gSG93ZXZlciwgWGVub21h
+aSBkb2Vzbid0IHNlZW0gdG8gZG8NCj4gYW55dGhpbmcgc2lnbmlmaWNhbnQgd2l0aCBmb3JrLCBz
+byBJJ20gcHV6emxlZCBhYm91dCB3aHkgdGhpcyBtaWdodCBiZQ0KPiBoYXBwZW5pbmcuIEkgYW0g
+bm90IHVzaW5nIGxpYmRhZW1vbi4NCj4NCj4gSGVyZSBhcmUgdGhlIGNoYW5nZXMgdGhhdCBJIHRo
+b3VnaHQgbWlnaHQgYmUgc2lnbmlmaWNhbnQ6DQo+IHwgbmV3ZXIgKG5vbndvcmtpbmcgc2V0dXAp
+ICB8IG9sZGVyICh3b3JraW5nKSB8DQo+IHwgZ2NjLWNyb3NzLWFybS04LjIuMCAgICAgICB8ICAg
+ICAgICAgICA3LjMuMCB8DQo+IHwgZ2xpYmMtMi4yOCAgICAgICAgICAgICAgICB8ICAgICAgICAg
+ICAgMi4yNiB8DQo+IHwgZ2xpYi0yLjAtMV8yLjU4LjAgICAgICAgICB8ICAgICAxXzIuNTIuMy1y
+MCB8DQo+IHwgYmludXRpbHMtY3Jvc3MtYXJtLTIuMzEuMSB8ICAgICAgICAgIDIuMjkuMSB8DQo+
+IHwgY29yZXV0aWxzLTguMzAgICAgICAgICAgICB8ICAgICAgICAgICAgOC4yNyB8DQo+DQo+IERv
+ZXMgYW55dGhpbmcganVtcCBvdXQgYXMgYSBjYW5kaWRhdGUgZm9yIGNhdXNpbmcgcHJvYmxlbXMg
+d2l0aCBhIGZvcmsoKQ0KPiBjYWxsPyBJcyB0aGVyZSBhbnl0aGluZyBlbHNlIEkgc2hvdWxkIGJl
+IGNvbnNpZGVyaW5nPw0KDQpUaGVyZSBpcyBhIGdlbmVyYWwgaXNzdWUgd2l0aCBnbGliYyAyLjI4
+IChhbmQgbmV3ZXIpLCBleGVjJ2luZyBhIFhlbm9tYWkgZXhlY3V0YWJsZSBhZnRlciBhIGZvcms6
+DQpodHRwczovL3d3dy54ZW5vbWFpLm9yZy9waXBlcm1haWwveGVub21haS8yMDE5LU1hcmNoLzA0
+MDUxOS5odG1sDQoNCk5vcmJlcnQNCl9fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fDQoN
+ClRoaXMgbWVzc2FnZSBhbmQgYW55IGF0dGFjaG1lbnRzIGFyZSBzb2xlbHkgZm9yIHRoZSB1c2Ug
+b2YgdGhlIGludGVuZGVkIHJlY2lwaWVudHMuIFRoZXkgbWF5IGNvbnRhaW4gcHJpdmlsZWdlZCBh
+bmQvb3IgY29uZmlkZW50aWFsIGluZm9ybWF0aW9uIG9yIG90aGVyIGluZm9ybWF0aW9uIHByb3Rl
+Y3RlZCBmcm9tIGRpc2Nsb3N1cmUuIElmIHlvdSBhcmUgbm90IGFuIGludGVuZGVkIHJlY2lwaWVu
+dCwgeW91IGFyZSBoZXJlYnkgbm90aWZpZWQgdGhhdCB5b3UgcmVjZWl2ZWQgdGhpcyBlbWFpbCBp
+biBlcnJvciBhbmQgdGhhdCBhbnkgcmV2aWV3LCBkaXNzZW1pbmF0aW9uLCBkaXN0cmlidXRpb24g
+b3IgY29weWluZyBvZiB0aGlzIGVtYWlsIGFuZCBhbnkgYXR0YWNobWVudCBpcyBzdHJpY3RseSBw
+cm9oaWJpdGVkLiBJZiB5b3UgaGF2ZSByZWNlaXZlZCB0aGlzIGVtYWlsIGluIGVycm9yLCBwbGVh
+c2UgY29udGFjdCB0aGUgc2VuZGVyIGFuZCBkZWxldGUgdGhlIG1lc3NhZ2UgYW5kIGFueSBhdHRh
+Y2htZW50IGZyb20geW91ciBzeXN0ZW0uDQoNCkFORFJJVFogSFlEUk8gR21iSA0KDQoNClJlY2h0
+c2Zvcm0vIExlZ2FsIGZvcm06IEdlc2VsbHNjaGFmdCBtaXQgYmVzY2hyw6Rua3RlciBIYWZ0dW5n
+IC8gQ29ycG9yYXRpb24NCg0KRmlybWVuc2l0ei8gUmVnaXN0ZXJlZCBzZWF0OiBXaWVuDQoNCkZp
+cm1lbmJ1Y2hnZXJpY2h0LyBDb3VydCBvZiByZWdpc3RyeTogSGFuZGVsc2dlcmljaHQgV2llbg0K
+DQpGaXJtZW5idWNobnVtbWVyLyBDb21wYW55IHJlZ2lzdHJhdGlvbjogRk4gNjE4MzMgZw0KDQpE
+VlI6IDA2MDUwNzcNCg0KVUlELU5yLjogQVRVMTQ3NTY4MDYNCg0KDQpUaGFuayBZb3UNCl9fX19f
+X19fX19fX19fX19fX19fX19fX19fX19fX19fDQo=
 
