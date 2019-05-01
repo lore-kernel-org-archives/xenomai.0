@@ -1,10 +1,13 @@
-From: Leopold Palomo-Avellaneda <leo@alaxarxa.net>
-Subject: Error compiling 3.0.8
-Message-ID: <014b0e4c-9aee-3f05-b6a5-2ecaefcfbc25@alaxarxa.net>
-Date: Wed, 1 May 2019 18:46:37 +0200
+Subject: Re: Error compiling 3.0.8
+References: <014b0e4c-9aee-3f05-b6a5-2ecaefcfbc25@alaxarxa.net>
+From: Jan Kiszka <jan.kiszka@web.de>
+Message-ID: <65c0d39a-6d70-602d-fdfb-64742e152823@web.de>
+Date: Wed, 1 May 2019 20:55:32 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+In-Reply-To: <014b0e4c-9aee-3f05-b6a5-2ecaefcfbc25@alaxarxa.net>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: quoted-printable
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -13,43 +16,58 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Xenomai list <xenomai@xenomai.org>
+To: Leopold Palomo-Avellaneda <leo@alaxarxa.net>, Xenomai list <xenomai@xenomai.org>
 
-SGksCgoKdHJ5aW5nIHRvIGJ1aWxkIGEgbmV3IGtlcm5lbCBmb3IgeGVub21haSAzLjAuOCB1c2lu
-ZyBkZWJpYW4gcGFja2FnZXMKKHg4NiBhcmNoKSBJIGhhdmUgZm91bmQgdGhhdCBmYWlsczoKCnNj
-cmlwdHMvTWFrZWZpbGUuYnVpbGQ6NTg1OiByZWNpcGUgZm9yIHRhcmdldAonZHJpdmVycy94ZW5v
-bWFpL25ldC9hZGRvbnMnIGZhaWxlZAptYWtlWzRdOiAqKiogW2RyaXZlcnMveGVub21haS9uZXQv
-YWRkb25zXSBFcnJvciAyCm1ha2VbNF06ICoqKiBXYWl0aW5nIGZvciB1bmZpbmlzaGVkIGpvYnMu
-Li4uCiAgQ0MgW01dICBkcml2ZXJzL3N0YWdpbmcvcnRsODcxMi9ydGw4NzEyX2NtZC5vCkluIGZp
-bGUgaW5jbHVkZWQgZnJvbSBkcml2ZXJzL3hlbm9tYWkvbmV0L3N0YWNrL2luY2x1ZGUvcnRkZXYu
-aDozNzowLAogICAgICAgICAgICAgICAgIGZyb20gZHJpdmVycy94ZW5vbWFpL25ldC9zdGFjay9p
-bmNsdWRlL3J0bmV0X3BvcnQuaDozMiwKICAgICAgICAgICAgICAgICBmcm9tIGRyaXZlcnMveGVu
-b21haS9uZXQvZHJpdmVycy90b28uYzo1NDoKZHJpdmVycy94ZW5vbWFpL25ldC9zdGFjay9pbmNs
-dWRlL3J0c2tiLmg6MzI6MjI6IGZhdGFsIGVycm9yOgpydGRtL25ldC5oOiBFbCBmaXR4ZXIgbyBk
-aXJlY3Rvcmkgbm8gZXhpc3RlaXgKICNpbmNsdWRlIDxydGRtL25ldC5oPgogICAgICAgICAgICAg
-ICAgICAgICAgXgpjb21waWxhdGlvbiB0ZXJtaW5hdGVkLgpzY3JpcHRzL01ha2VmaWxlLmJ1aWxk
-OjMyNjogcmVjaXBlIGZvciB0YXJnZXQKJ2RyaXZlcnMveGVub21haS9uZXQvZHJpdmVycy84MTM5
-dG9vLm8nIGZhaWxlZAoKY2hlY2tpbmcgYSBiaXQsIEkgaGF2ZSBmb3VuZCB0aGF0IHRoYXQgaW5j
-bHVkZSBpcyB1c2VkOgoKZHJpdmVycy94ZW5vbWFpL25ldC9zdGFjay9ydGRldl9tZ3IuYzojaW5j
-bHVkZSA8cnRkbS9uZXQuaD4KZHJpdmVycy94ZW5vbWFpL25ldC9zdGFjay9pbmNsdWRlL3J0c2ti
-Lmg6I2luY2x1ZGUgPHJ0ZG0vbmV0Lmg+CmRyaXZlcnMveGVub21haS9uZXQvc3RhY2svaW5jbHVk
-ZS9ydG5ldF9zb2NrZXQuaDojaW5jbHVkZSA8cnRkbS9uZXQuaD4KZHJpdmVycy94ZW5vbWFpL25l
-dC9zdGFjay9zb2NrZXQuYzojaW5jbHVkZSA8cnRkbS9uZXQuaD4KZHJpdmVycy94ZW5vbWFpL25l
-dC9zdGFjay9pcHY0L3RjcC90aW1lcndoZWVsLmg6I2luY2x1ZGUgPHJ0ZG0vbmV0Lmg+CmRyaXZl
-cnMveGVub21haS9uZXQvZHJpdmVycy9tYWNiLmM6I2luY2x1ZGUgPHJ0ZG0vbmV0Lmg+CmRyaXZl
-cnMveGVub21haS9uZXQvZHJpdmVycy9hdDkxX2V0aGVyLmM6I2luY2x1ZGUgPHJ0ZG0vbmV0Lmg+
-Cgp0aGF0IGZpbGUgaXMgaGVyZToKCnhlbm9tYWktZGV2OiAvdXNyL2luY2x1ZGUveGVub21haS9y
-dGRtL25ldC5oCnhlbm9tYWkta2VybmVsLXNvdXJjZTogL3Vzci9zcmMveGVub21haS1rZXJuZWwt
-c291cmNlL2luY2x1ZGUvcnRkbS9uZXQuaAoKc28sIG9yIHRoZSBwcmVwYXJlLWtlcm5lbC5zaCBp
-cyB3cm9uZyBmb3JnZXQgdG8gbWFrZSBhIGxpbmssIG9yIEkgbWFkZSBhCnNvbWUgbWlzdGFrZSBp
-biB0aGUgZGViaWFuIHBhY2thZ2Ugb3Igc29tZXRoaW5nIGlzIGhhcHBlbmluZy4KCkFueSBpZGVh
-PwoKCkJlc3QgcmVnYXJkcywKCkxlb3BvbGQKCgoKLS0gCi0tCkxpbnV4IFVzZXIgMTUyNjkyICAg
-ICBHUEc6IDA1RjRBN0E5NDlBMkQ5QUEKQ2F0YWxvbmlhCi0tLS0tLS0tLS0tLS0tLS0tLS0tLS0t
-LS0tLS0tLS0tLS0tLS0KQTogQmVjYXVzZSBpdCBtZXNzZXMgdXAgdGhlIG9yZGVyIGluIHdoaWNo
-IHBlb3BsZSBub3JtYWxseSByZWFkIHRleHQuClE6IFdoeSBpcyB0b3AtcG9zdGluZyBzdWNoIGEg
-YmFkIHRoaW5nPwpBOiBUb3AtcG9zdGluZy4KUTogV2hhdCBpcyB0aGUgbW9zdCBhbm5veWluZyB0
-aGluZyBpbiBlLW1haWw/CgotLS0tLS0tLS0tLS0tLSBuZXh0IHBhcnQgLS0tLS0tLS0tLS0tLS0K
-QSBub24tdGV4dCBhdHRhY2htZW50IHdhcyBzY3J1YmJlZC4uLgpOYW1lOiBzaWduYXR1cmUuYXNj
-ClR5cGU6IGFwcGxpY2F0aW9uL3BncC1zaWduYXR1cmUKU2l6ZTogODMzIGJ5dGVzCkRlc2M6IE9w
-ZW5QR1AgZGlnaXRhbCBzaWduYXR1cmUKVVJMOiA8aHR0cDovL3hlbm9tYWkub3JnL3BpcGVybWFp
-bC94ZW5vbWFpL2F0dGFjaG1lbnRzLzIwMTkwNTAxLzNjYTI1YmEyL2F0dGFjaG1lbnQuc2lnPgo=
+On 01.05.19 18:46, Leopold Palomo-Avellaneda via Xenomai wrote:
+> Hi,
+>
+>
+> trying to build a new kernel for xenomai 3.0.8 using debian packages
+> (x86 arch) I have found that fails:
+>
+> scripts/Makefile.build:585: recipe for target
+> 'drivers/xenomai/net/addons' failed
+> make[4]: *** [drivers/xenomai/net/addons] Error 2
+> make[4]: *** Waiting for unfinished jobs....
+>    CC [M]  drivers/staging/rtl8712/rtl8712_cmd.o
+> In file included from drivers/xenomai/net/stack/include/rtdev.h:37:0,
+>                   from drivers/xenomai/net/stack/include/rtnet_port.h:32=
+,
+>                   from drivers/xenomai/net/drivers/too.c:54:
+> drivers/xenomai/net/stack/include/rtskb.h:32:22: fatal error:
+> rtdm/net.h: El fitxer o directori no existeix
+>   #include <rtdm/net.h>
+>                        ^
+> compilation terminated.
+> scripts/Makefile.build:326: recipe for target
+> 'drivers/xenomai/net/drivers/8139too.o' failed
+>
+> checking a bit, I have found that that include is used:
+>
+> drivers/xenomai/net/stack/rtdev_mgr.c:#include <rtdm/net.h>
+> drivers/xenomai/net/stack/include/rtskb.h:#include <rtdm/net.h>
+> drivers/xenomai/net/stack/include/rtnet_socket.h:#include <rtdm/net.h>
+> drivers/xenomai/net/stack/socket.c:#include <rtdm/net.h>
+> drivers/xenomai/net/stack/ipv4/tcp/timerwheel.h:#include <rtdm/net.h>
+> drivers/xenomai/net/drivers/macb.c:#include <rtdm/net.h>
+> drivers/xenomai/net/drivers/at91_ether.c:#include <rtdm/net.h>
+>
+> that file is here:
+>
+> xenomai-dev: /usr/include/xenomai/rtdm/net.h
+> xenomai-kernel-source: /usr/src/xenomai-kernel-source/include/rtdm/net.h
+>
+> so, or the prepare-kernel.sh is wrong forget to make a link, or I made a
+> some mistake in the debian package or something is happening.
+>
+> Any idea?
+>
+
+There are no obviously related patches in next or master that might be mis=
+sing
+in stable.
+
+Does it work when you build that thing outside of the package generation?
+
+Jan
+
