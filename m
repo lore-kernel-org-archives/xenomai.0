@@ -1,13 +1,10 @@
-Subject: Re: Checkpatch errors
-References: <CAODwZ7vER3+Jp1+-U8dfO2_LeZj=nS+PZPq0vDou5M2zDi6AVw@mail.gmail.com>
-From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <3d69016b-1167-acef-6232-21f66de133a8@siemens.com>
-Date: Fri, 5 Apr 2019 16:24:30 +0200
+From: Leopold Palomo-Avellaneda <leo@alaxarxa.net>
+Subject: Error compiling 3.0.8
+Message-ID: <014b0e4c-9aee-3f05-b6a5-2ecaefcfbc25@alaxarxa.net>
+Date: Wed, 1 May 2019 18:46:37 +0200
 MIME-Version: 1.0
-In-Reply-To: <CAODwZ7vER3+Jp1+-U8dfO2_LeZj=nS+PZPq0vDou5M2zDi6AVw@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,30 +13,43 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Roman Stratiienko <roman.stratiienko@globallogic.com>, xenomai@xenomai.org
+To: Xenomai list <xenomai@xenomai.org>
 
-On 05.04.19 16:05, Roman Stratiienko wrote:
-> Hello Jan,
-> 
-> Let me share some of checkpatch findings after recent update:
-> 
-> --------------------------------------------------------------------
-> Commit 67549038b677 ("rtnet: e1000e: Account for timer API changes")
-> --------------------------------------------------------------------
-> WARNING: LINUX_VERSION_CODE should be avoided, code should be for the version to
-> which it is merged
-> #21: FILE: kernel/drivers/net/drivers/e1000e/netdev.c:2882:
-> +#if LINUX_VERSION_CODE >= KERNEL_VERSION(4,14,0)
-> ERROR: space required after that ',' (ctx:VxV)
-> #21: FILE: kernel/drivers/net/drivers/e1000e/netdev.c:2882:
-> +#if LINUX_VERSION_CODE >= KERNEL_VERSION(4,14,0)
-
-Thanks, but these are false positives. Upstream (in the few cases it has) does
-the same.
-
-Jan
-
--- 
-Siemens AG, Corporate Technology, CT RDA IOT SES-DE
-Corporate Competence Center Embedded Linux
-
+SGksCgoKdHJ5aW5nIHRvIGJ1aWxkIGEgbmV3IGtlcm5lbCBmb3IgeGVub21haSAzLjAuOCB1c2lu
+ZyBkZWJpYW4gcGFja2FnZXMKKHg4NiBhcmNoKSBJIGhhdmUgZm91bmQgdGhhdCBmYWlsczoKCnNj
+cmlwdHMvTWFrZWZpbGUuYnVpbGQ6NTg1OiByZWNpcGUgZm9yIHRhcmdldAonZHJpdmVycy94ZW5v
+bWFpL25ldC9hZGRvbnMnIGZhaWxlZAptYWtlWzRdOiAqKiogW2RyaXZlcnMveGVub21haS9uZXQv
+YWRkb25zXSBFcnJvciAyCm1ha2VbNF06ICoqKiBXYWl0aW5nIGZvciB1bmZpbmlzaGVkIGpvYnMu
+Li4uCiAgQ0MgW01dICBkcml2ZXJzL3N0YWdpbmcvcnRsODcxMi9ydGw4NzEyX2NtZC5vCkluIGZp
+bGUgaW5jbHVkZWQgZnJvbSBkcml2ZXJzL3hlbm9tYWkvbmV0L3N0YWNrL2luY2x1ZGUvcnRkZXYu
+aDozNzowLAogICAgICAgICAgICAgICAgIGZyb20gZHJpdmVycy94ZW5vbWFpL25ldC9zdGFjay9p
+bmNsdWRlL3J0bmV0X3BvcnQuaDozMiwKICAgICAgICAgICAgICAgICBmcm9tIGRyaXZlcnMveGVu
+b21haS9uZXQvZHJpdmVycy90b28uYzo1NDoKZHJpdmVycy94ZW5vbWFpL25ldC9zdGFjay9pbmNs
+dWRlL3J0c2tiLmg6MzI6MjI6IGZhdGFsIGVycm9yOgpydGRtL25ldC5oOiBFbCBmaXR4ZXIgbyBk
+aXJlY3Rvcmkgbm8gZXhpc3RlaXgKICNpbmNsdWRlIDxydGRtL25ldC5oPgogICAgICAgICAgICAg
+ICAgICAgICAgXgpjb21waWxhdGlvbiB0ZXJtaW5hdGVkLgpzY3JpcHRzL01ha2VmaWxlLmJ1aWxk
+OjMyNjogcmVjaXBlIGZvciB0YXJnZXQKJ2RyaXZlcnMveGVub21haS9uZXQvZHJpdmVycy84MTM5
+dG9vLm8nIGZhaWxlZAoKY2hlY2tpbmcgYSBiaXQsIEkgaGF2ZSBmb3VuZCB0aGF0IHRoYXQgaW5j
+bHVkZSBpcyB1c2VkOgoKZHJpdmVycy94ZW5vbWFpL25ldC9zdGFjay9ydGRldl9tZ3IuYzojaW5j
+bHVkZSA8cnRkbS9uZXQuaD4KZHJpdmVycy94ZW5vbWFpL25ldC9zdGFjay9pbmNsdWRlL3J0c2ti
+Lmg6I2luY2x1ZGUgPHJ0ZG0vbmV0Lmg+CmRyaXZlcnMveGVub21haS9uZXQvc3RhY2svaW5jbHVk
+ZS9ydG5ldF9zb2NrZXQuaDojaW5jbHVkZSA8cnRkbS9uZXQuaD4KZHJpdmVycy94ZW5vbWFpL25l
+dC9zdGFjay9zb2NrZXQuYzojaW5jbHVkZSA8cnRkbS9uZXQuaD4KZHJpdmVycy94ZW5vbWFpL25l
+dC9zdGFjay9pcHY0L3RjcC90aW1lcndoZWVsLmg6I2luY2x1ZGUgPHJ0ZG0vbmV0Lmg+CmRyaXZl
+cnMveGVub21haS9uZXQvZHJpdmVycy9tYWNiLmM6I2luY2x1ZGUgPHJ0ZG0vbmV0Lmg+CmRyaXZl
+cnMveGVub21haS9uZXQvZHJpdmVycy9hdDkxX2V0aGVyLmM6I2luY2x1ZGUgPHJ0ZG0vbmV0Lmg+
+Cgp0aGF0IGZpbGUgaXMgaGVyZToKCnhlbm9tYWktZGV2OiAvdXNyL2luY2x1ZGUveGVub21haS9y
+dGRtL25ldC5oCnhlbm9tYWkta2VybmVsLXNvdXJjZTogL3Vzci9zcmMveGVub21haS1rZXJuZWwt
+c291cmNlL2luY2x1ZGUvcnRkbS9uZXQuaAoKc28sIG9yIHRoZSBwcmVwYXJlLWtlcm5lbC5zaCBp
+cyB3cm9uZyBmb3JnZXQgdG8gbWFrZSBhIGxpbmssIG9yIEkgbWFkZSBhCnNvbWUgbWlzdGFrZSBp
+biB0aGUgZGViaWFuIHBhY2thZ2Ugb3Igc29tZXRoaW5nIGlzIGhhcHBlbmluZy4KCkFueSBpZGVh
+PwoKCkJlc3QgcmVnYXJkcywKCkxlb3BvbGQKCgoKLS0gCi0tCkxpbnV4IFVzZXIgMTUyNjkyICAg
+ICBHUEc6IDA1RjRBN0E5NDlBMkQ5QUEKQ2F0YWxvbmlhCi0tLS0tLS0tLS0tLS0tLS0tLS0tLS0t
+LS0tLS0tLS0tLS0tLS0KQTogQmVjYXVzZSBpdCBtZXNzZXMgdXAgdGhlIG9yZGVyIGluIHdoaWNo
+IHBlb3BsZSBub3JtYWxseSByZWFkIHRleHQuClE6IFdoeSBpcyB0b3AtcG9zdGluZyBzdWNoIGEg
+YmFkIHRoaW5nPwpBOiBUb3AtcG9zdGluZy4KUTogV2hhdCBpcyB0aGUgbW9zdCBhbm5veWluZyB0
+aGluZyBpbiBlLW1haWw/CgotLS0tLS0tLS0tLS0tLSBuZXh0IHBhcnQgLS0tLS0tLS0tLS0tLS0K
+QSBub24tdGV4dCBhdHRhY2htZW50IHdhcyBzY3J1YmJlZC4uLgpOYW1lOiBzaWduYXR1cmUuYXNj
+ClR5cGU6IGFwcGxpY2F0aW9uL3BncC1zaWduYXR1cmUKU2l6ZTogODMzIGJ5dGVzCkRlc2M6IE9w
+ZW5QR1AgZGlnaXRhbCBzaWduYXR1cmUKVVJMOiA8aHR0cDovL3hlbm9tYWkub3JnL3BpcGVybWFp
+bC94ZW5vbWFpL2F0dGFjaG1lbnRzLzIwMTkwNTAxLzNjYTI1YmEyL2F0dGFjaG1lbnQuc2lnPgo=
