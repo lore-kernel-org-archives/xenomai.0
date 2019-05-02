@@ -1,10 +1,11 @@
-From: Leopold Palomo-Avellaneda <leo@alaxarxa.net>
-Subject: [Xenomai] called regular poll() rtdm-socket
-Message-ID: <f4d38a1b-0676-fc70-e42e-c07bc2c98cb0@alaxarxa.net>
-Date: Thu, 2 May 2019 16:07:04 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+References: <f4d38a1b-0676-fc70-e42e-c07bc2c98cb0@alaxarxa.net>
+In-Reply-To: <f4d38a1b-0676-fc70-e42e-c07bc2c98cb0@alaxarxa.net>
+From: Greg Gallagher <greg@embeddedgreg.com>
+Date: Thu, 2 May 2019 10:28:01 -0400
+Message-ID: <CALLqZ8QGLU56XY4YDj-QkOKjLp6bGucURc1DASPQ_7GQ-rSd4g@mail.gmail.com>
+Subject: Re: [Xenomai] called regular poll() rtdm-socket
+Content-Type: text/plain; charset="UTF-8"
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -13,23 +14,53 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "Xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Leopold Palomo-Avellaneda <leo@alaxarxa.net>
+Cc: "Xenomai@xenomai.org" <xenomai@xenomai.org>
 
-SGksCgoKd2UgZGV2ZWxvcGVkIGEgQysrIGxpYnJhcnkgdGhhdCB1c2VkIHJ0bmV0IHdpdGggZXRo
-ZXJjYXQuIEl0IGltcGxlbWVudHMgYSBjbGFzcwp0aGF0IGludGVyY2hhbmdlIGluZm9ybWF0aW9u
-IGJldHdlZW4gdGhlIFJUIGFuZCBOT05fUlQgdXNpbmcgeGRkbS4gSXQgd2FzCndvcmtpbmcgYnV0
-IG5vdyAodXNpbmcgUE9TSVggc2tpbikgZmFpbHMgYW5kIEkgc2V2ZXJhbCAobGVzcyB0aGFuIDEw
-KSBhbmQgZ290CnRoaXMgbWVzc2FnZS4KCltYZW5vbWFpXSBwbGF0Zm9ybW5vZGVbODMyNF0gY2Fs
-bGVkIHJlZ3VsYXIgcG9sbCgpIG9uIC9kZXYvcnRkbS9bcnRkbS1zb2NrZXRdCgpDb3VsZCB5b3Ug
-ZXhwbGFpbiBtZSB3aGF0IGlzIGl0PyBiZWNhdXNlIEkgaGF2ZSBzZWFyY2hlZCBvbiB3ZWIgYW5k
-IHdoYXQgSSBmb3VuZApJIGRpZG4ndCB1bmRlcnN0YW5kIHdlbGwuCgpCZXN0IHJlZ2FyZHMsCgoK
-TGVvcG9sZAoKCi0tIAotLQpMaW51eCBVc2VyIDE1MjY5MiAgICAgR1BHOiAwNUY0QTdBOTQ5QTJE
-OUFBCkNhdGFsb25pYQotLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tCkE6IEJl
-Y2F1c2UgaXQgbWVzc2VzIHVwIHRoZSBvcmRlciBpbiB3aGljaCBwZW9wbGUgbm9ybWFsbHkgcmVh
-ZCB0ZXh0LgpROiBXaHkgaXMgdG9wLXBvc3Rpbmcgc3VjaCBhIGJhZCB0aGluZz8KQTogVG9wLXBv
-c3RpbmcuClE6IFdoYXQgaXMgdGhlIG1vc3QgYW5ub3lpbmcgdGhpbmcgaW4gZS1tYWlsPwoKLS0t
-LS0tLS0tLS0tLS0gbmV4dCBwYXJ0IC0tLS0tLS0tLS0tLS0tCkEgbm9uLXRleHQgYXR0YWNobWVu
-dCB3YXMgc2NydWJiZWQuLi4KTmFtZTogc2lnbmF0dXJlLmFzYwpUeXBlOiBhcHBsaWNhdGlvbi9w
-Z3Atc2lnbmF0dXJlClNpemU6IDgzMyBieXRlcwpEZXNjOiBPcGVuUEdQIGRpZ2l0YWwgc2lnbmF0
-dXJlClVSTDogPGh0dHA6Ly94ZW5vbWFpLm9yZy9waXBlcm1haWwveGVub21haS9hdHRhY2htZW50
-cy8yMDE5MDUwMi80MTdhNzM3MS9hdHRhY2htZW50LnNpZz4K
+On Thu, May 2, 2019 at 10:07 AM Leopold Palomo-Avellaneda via Xenomai
+<xenomai@xenomai.org> wrote:
+>
+> Hi,
+>
+>
+> we developed a C++ library that used rtnet with ethercat. It implements a class
+> that interchange information between the RT and NON_RT using xddm. It was
+> working but now (using POSIX skin) fails and I several (less than 10) and got
+> this message.
+>
+> [Xenomai] platformnode[8324] called regular poll() on /dev/rtdm/[rtdm-socket]
+>
+> Could you explain me what is it? because I have searched on web and what I found
+> I didn't understand well.
+>
+> Best regards,
+>
+>
+> Leopold
+>
+>
+> --
+> --
+> Linux User 152692     GPG: 05F4A7A949A2D9AA
+> Catalonia
+> -------------------------------------
+> A: Because it messes up the order in which people normally read text.
+> Q: Why is top-posting such a bad thing?
+> A: Top-posting.
+> Q: What is the most annoying thing in e-mail?
+>
+> -------------- next part --------------
+> A non-text attachment was scrubbed...
+> Name: signature.asc
+> Type: application/pgp-signature
+> Size: 833 bytes
+> Desc: OpenPGP digital signature
+> URL: <http://xenomai.org/pipermail/xenomai/attachments/20190502/417a7371/attachment.sig>
+
+>From my understanding, this means you are talking to the RTDM driver
+with a non RT thread.  I don't think Xenomai has a poll system call.
+Can you check if the thread that is causing this is in the primary
+domain?
+
+-Greg
+
