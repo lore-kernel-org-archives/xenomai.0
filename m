@@ -3,13 +3,15 @@ References: <014b0e4c-9aee-3f05-b6a5-2ecaefcfbc25@alaxarxa.net>
  <65c0d39a-6d70-602d-fdfb-64742e152823@web.de>
  <b12be0ba-2d5d-f875-2ace-d7eb32a3cf54@alaxarxa.net>
  <8d22cc15-3c7b-f4c2-0ebb-3941fb6efb00@web.de>
-From: Leopold Palomo-Avellaneda <leo@alaxarxa.net>
-Message-ID: <18e552c4-a15b-d49e-b532-1ee0c3b36210@alaxarxa.net>
-Date: Thu, 2 May 2019 08:55:48 +0200
+ <18e552c4-a15b-d49e-b532-1ee0c3b36210@alaxarxa.net>
+From: Jan Kiszka <jan.kiszka@web.de>
+Message-ID: <0296299f-9e2d-1afb-a85c-e1d52592f3d5@web.de>
+Date: Thu, 2 May 2019 11:49:13 +0200
 MIME-Version: 1.0
-In-Reply-To: <8d22cc15-3c7b-f4c2-0ebb-3941fb6efb00@web.de>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+In-Reply-To: <18e552c4-a15b-d49e-b532-1ee0c3b36210@alaxarxa.net>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: quoted-printable
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -18,77 +20,133 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jan Kiszka <jan.kiszka@web.de>, Xenomai list <xenomai@xenomai.org>
+To: Leopold Palomo-Avellaneda <leo@alaxarxa.net>, Xenomai list <xenomai@xenomai.org>
 
-RWwgMS81LzE5IGEgbGVzIDIyOjI3LCBKYW4gS2lzemthIGhhIGVzY3JpdDoKPiBPbiAwMS4wNS4x
-OSAyMjoyMCwgTGVvcG9sZCBQYWxvbW8tQXZlbGxhbmVkYSB3cm90ZToKPj4gRWwgMS81LzE5IGEg
-bGVzIDIwOjU1LCBKYW4gS2lzemthIGhhIGVzY3JpdDoKPj4+IE9uIDAxLjA1LjE5IDE4OjQ2LCBM
-ZW9wb2xkIFBhbG9tby1BdmVsbGFuZWRhIHZpYSBYZW5vbWFpIHdyb3RlOgo+Pj4+IEhpLAo+Pj4+
-Cj4+Pj4KPj4+PiB0cnlpbmcgdG8gYnVpbGQgYSBuZXcga2VybmVsIGZvciB4ZW5vbWFpIDMuMC44
-IHVzaW5nIGRlYmlhbiBwYWNrYWdlcwo+Pj4+ICh4ODYgYXJjaCkgSSBoYXZlIGZvdW5kIHRoYXQg
-ZmFpbHM6Cj4+Pj4KPj4+PiBzY3JpcHRzL01ha2VmaWxlLmJ1aWxkOjU4NTogcmVjaXBlIGZvciB0
-YXJnZXQKPj4+PiAnZHJpdmVycy94ZW5vbWFpL25ldC9hZGRvbnMnIGZhaWxlZAo+Pj4+IG1ha2Vb
-NF06ICoqKiBbZHJpdmVycy94ZW5vbWFpL25ldC9hZGRvbnNdIEVycm9yIDIKPj4+PiBtYWtlWzRd
-OiAqKiogV2FpdGluZyBmb3IgdW5maW5pc2hlZCBqb2JzLi4uLgo+Pj4+IMKgwqDCoCBDQyBbTV3C
-oCBkcml2ZXJzL3N0YWdpbmcvcnRsODcxMi9ydGw4NzEyX2NtZC5vCj4+Pj4gSW4gZmlsZSBpbmNs
-dWRlZCBmcm9tIGRyaXZlcnMveGVub21haS9uZXQvc3RhY2svaW5jbHVkZS9ydGRldi5oOjM3OjAs
-Cj4+Pj4gwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgIGZyb20gZHJpdmVycy94
-ZW5vbWFpL25ldC9zdGFjay9pbmNsdWRlL3J0bmV0X3BvcnQuaDozMiwKPj4+PiDCoMKgwqDCoMKg
-wqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqAgZnJvbSBkcml2ZXJzL3hlbm9tYWkvbmV0L2RyaXZl
-cnMvdG9vLmM6NTQ6Cj4+Pj4gZHJpdmVycy94ZW5vbWFpL25ldC9zdGFjay9pbmNsdWRlL3J0c2ti
-Lmg6MzI6MjI6IGZhdGFsIGVycm9yOgo+Pj4+IHJ0ZG0vbmV0Lmg6IEVsIGZpdHhlciBvIGRpcmVj
-dG9yaSBubyBleGlzdGVpeAo+Pj4+IMKgwqAgI2luY2x1ZGUgPHJ0ZG0vbmV0Lmg+Cj4+Pj4gwqDC
-oMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoCBeCj4+Pj4gY29tcGls
-YXRpb24gdGVybWluYXRlZC4KPj4+PiBzY3JpcHRzL01ha2VmaWxlLmJ1aWxkOjMyNjogcmVjaXBl
-IGZvciB0YXJnZXQKPj4+PiAnZHJpdmVycy94ZW5vbWFpL25ldC9kcml2ZXJzLzgxMzl0b28ubycg
-ZmFpbGVkCj4+Pj4KPj4+PiBjaGVja2luZyBhIGJpdCwgSSBoYXZlIGZvdW5kIHRoYXQgdGhhdCBp
-bmNsdWRlIGlzIHVzZWQ6Cj4+Pj4KPj4+PiBkcml2ZXJzL3hlbm9tYWkvbmV0L3N0YWNrL3J0ZGV2
-X21nci5jOiNpbmNsdWRlIDxydGRtL25ldC5oPgo+Pj4+IGRyaXZlcnMveGVub21haS9uZXQvc3Rh
-Y2svaW5jbHVkZS9ydHNrYi5oOiNpbmNsdWRlIDxydGRtL25ldC5oPgo+Pj4+IGRyaXZlcnMveGVu
-b21haS9uZXQvc3RhY2svaW5jbHVkZS9ydG5ldF9zb2NrZXQuaDojaW5jbHVkZSA8cnRkbS9uZXQu
-aD4KPj4+PiBkcml2ZXJzL3hlbm9tYWkvbmV0L3N0YWNrL3NvY2tldC5jOiNpbmNsdWRlIDxydGRt
-L25ldC5oPgo+Pj4+IGRyaXZlcnMveGVub21haS9uZXQvc3RhY2svaXB2NC90Y3AvdGltZXJ3aGVl
-bC5oOiNpbmNsdWRlIDxydGRtL25ldC5oPgo+Pj4+IGRyaXZlcnMveGVub21haS9uZXQvZHJpdmVy
-cy9tYWNiLmM6I2luY2x1ZGUgPHJ0ZG0vbmV0Lmg+Cj4+Pj4gZHJpdmVycy94ZW5vbWFpL25ldC9k
-cml2ZXJzL2F0OTFfZXRoZXIuYzojaW5jbHVkZSA8cnRkbS9uZXQuaD4KPj4+Pgo+Pj4+IHRoYXQg
-ZmlsZSBpcyBoZXJlOgo+Pj4+Cj4+Pj4geGVub21haS1kZXY6IC91c3IvaW5jbHVkZS94ZW5vbWFp
-L3J0ZG0vbmV0LmgKPj4+PiB4ZW5vbWFpLWtlcm5lbC1zb3VyY2U6IC91c3Ivc3JjL3hlbm9tYWkt
-a2VybmVsLXNvdXJjZS9pbmNsdWRlL3J0ZG0vbmV0LmgKPj4+Pgo+Pj4+IHNvLCBvciB0aGUgcHJl
-cGFyZS1rZXJuZWwuc2ggaXMgd3JvbmcgZm9yZ2V0IHRvIG1ha2UgYSBsaW5rLCBvciBJIG1hZGUg
-YQo+Pj4+IHNvbWUgbWlzdGFrZSBpbiB0aGUgZGViaWFuIHBhY2thZ2Ugb3Igc29tZXRoaW5nIGlz
-IGhhcHBlbmluZy4KPj4+Pgo+Pj4+IEFueSBpZGVhPwo+Pj4+Cj4+Pgo+Pj4gVGhlcmUgYXJlIG5v
-IG9idmlvdXNseSByZWxhdGVkIHBhdGNoZXMgaW4gbmV4dCBvciBtYXN0ZXIgdGhhdCBtaWdodCBi
-ZQo+Pj4gbWlzc2luZwo+Pj4gaW4gc3RhYmxlLgoKCmZvdW5kIHRoZSBidWcgKG1pc3NpbmcgbmV0
-LmgpIGluIDMuMC44IGJ1dCBub3QgaW4gc3RhYmxlIDMuMC54IGJyYW5jaCBpbiB0aGlzIGZpbGU6
-CgpodHRwczovL2dpdGxhYi5kZW54LmRlL1hlbm9tYWkveGVub21haS9ibG9iL3N0YWJsZS92My4w
-LngvaW5jbHVkZS9jb2JhbHQva2VybmVsL3J0ZG0vTWFrZWZpbGUuYW0KCgp0aGF0IHdhcyBjaGFu
-Z2VkIDIgbW9udGhzIGFnbyBhbmQgMy4wLjggd2FzIHJlbGVhc2VkIDMgbW9udGhzIGFnby4gSWYg
-eW91CmNvbXBpbGUgZnJvbSB0aGUgc291cmNlcyBpdCB3b3JrcywgYmVjYXVzZSB0aGUgZmlsZSBp
-dCBpcy4gSG93ZXZlciwgYXMgdGhlCmRlYmlhbiBwYWNrYWdlIGJ1aWxkcyBhbmQgaW5zdGFsbCwg
-dGhhdCBmaWxlIGlzIG5vdCBpbnN0YWxsZWQsIHRoZW4gaXQgZmFpbHMuCgo+Pj4gRG9lcyBpdCB3
-b3JrIHdoZW4geW91IGJ1aWxkIHRoYXQgdGhpbmcgb3V0c2lkZSBvZiB0aGUgcGFja2FnZSBnZW5l
-cmF0aW9uPwo+Pgo+PiB5ZXMsIGl0IHdvcmtzLCBidXQgbm90IDEwMCUuIEJ1dCBpdCdzIGFub3Ro
-ZXIgaXNzdWUuCj4+Cj4+IGRyaXZlcnMveGVub21haS9uZXQvZHJpdmVycy9lMTAwMGUvbmV0ZGV2
-LmM6IEluIGZ1bmN0aW9uCj4+IOKAmGUxMDAwZV9zZXRfaW50ZXJydXB0X2NhcGFiaWxpdHnigJk6
-Cj4+IGRyaXZlcnMveGVub21haS9uZXQvZHJpdmVycy9lMTAwMGUvbmV0ZGV2LmM6MTIyNToxMTog
-ZXJyb3I6IGltcGxpY2l0Cj4+IGRlY2xhcmF0aW9uIG9mIGZ1bmN0aW9uIOKAmHBjaV9lbmFibGVf
-bXNpeOKAmQo+PiBbLVdlcnJvcj1pbXBsaWNpdC1mdW5jdGlvbi1kZWNsYXJhdGlvbl0KPj4gwqDC
-oMKgwqDCoCBlcnIgPSBwY2lfZW5hYmxlX21zaXgoYWRhcHRlci0+cGRldiwKPj4gwqDCoMKgwqDC
-oMKgwqDCoMKgwqDCoCBefn5+fn5+fn5+fn5+fn4KPj4KPiAKPiBZZWFoLCB0aGF0J3MgYWxyZWFk
-eSBmaXhlZCBpbiBzdGFibGUvdjMuMC54Lgo+IAo+PiBJIHdpbGwgY2hlY2sgd2hhdCBoYXBwZW5z
-IHdpdGggdGhlIGRlYmlhbiBwYWNrYWdlLgo+IAo+IE9rLiBJJ20gcGxhbm5pbmcgZm9yIHNvbWUg
-My4wLjkgc29vbiwgc28gd2Ugc2hvdWxkIHNvcnQgb3V0IHJlbWFpbmluZyBpc3N1ZXMuCj4gCgpP
-aywgdGhlbiBJJ2xsIGNoZWNrIHN0YWJsZS92My4wLnggYnJhbmNoLgoKTGVvcG9sZAoKClBTCgo+
-PiBQcy4gZGlkbid0IHJlY2VpdmUgYW55IGVtYWlsIGZyb20gdGhlIGxpc3QgLi4uCj4+Cj4gCj4g
-U2VlbXMgb25seSBzbGlnaHRseSBkZWxheWVkOiB0aGUgYXJjaGl2ZSBzaG93cyBpdCBub3csIGFs
-c28gbmV3cy5nbWFuZS5vcmcuCgpteSBsaXN0IG9wdGlvbnMgaW4gbWFpbG1hbiB3ZXJlIGNoYW5n
-ZWQuIFN0cmFuZ2UuLi4KCi0tIAotLQpMaW51eCBVc2VyIDE1MjY5MiAgICAgR1BHOiAwNUY0QTdB
-OTQ5QTJEOUFBCkNhdGFsb25pYQotLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0t
-CkE6IEJlY2F1c2UgaXQgbWVzc2VzIHVwIHRoZSBvcmRlciBpbiB3aGljaCBwZW9wbGUgbm9ybWFs
-bHkgcmVhZCB0ZXh0LgpROiBXaHkgaXMgdG9wLXBvc3Rpbmcgc3VjaCBhIGJhZCB0aGluZz8KQTog
-VG9wLXBvc3RpbmcuClE6IFdoYXQgaXMgdGhlIG1vc3QgYW5ub3lpbmcgdGhpbmcgaW4gZS1tYWls
-PwoKLS0tLS0tLS0tLS0tLS0gbmV4dCBwYXJ0IC0tLS0tLS0tLS0tLS0tCkEgbm9uLXRleHQgYXR0
-YWNobWVudCB3YXMgc2NydWJiZWQuLi4KTmFtZTogc2lnbmF0dXJlLmFzYwpUeXBlOiBhcHBsaWNh
-dGlvbi9wZ3Atc2lnbmF0dXJlClNpemU6IDgzMyBieXRlcwpEZXNjOiBPcGVuUEdQIGRpZ2l0YWwg
-c2lnbmF0dXJlClVSTDogPGh0dHA6Ly94ZW5vbWFpLm9yZy9waXBlcm1haWwveGVub21haS9hdHRh
-Y2htZW50cy8yMDE5MDUwMi9mOTExNzU0MS9hdHRhY2htZW50LnNpZz4K
+On 02.05.19 08:55, Leopold Palomo-Avellaneda wrote:
+> El 1/5/19 a les 22:27, Jan Kiszka ha escrit:
+>> On 01.05.19 22:20, Leopold Palomo-Avellaneda wrote:
+>>> El 1/5/19 a les 20:55, Jan Kiszka ha escrit:
+>>>> On 01.05.19 18:46, Leopold Palomo-Avellaneda via Xenomai wrote:
+>>>>> Hi,
+>>>>>
+>>>>>
+>>>>> trying to build a new kernel for xenomai 3.0.8 using debian packages
+>>>>> (x86 arch) I have found that fails:
+>>>>>
+>>>>> scripts/Makefile.build:585: recipe for target
+>>>>> 'drivers/xenomai/net/addons' failed
+>>>>> make[4]: *** [drivers/xenomai/net/addons] Error 2
+>>>>> make[4]: *** Waiting for unfinished jobs....
+>>>>>  =C2=A0=C2=A0=C2=A0 CC [M]=C2=A0 drivers/staging/rtl8712/rtl8712_cmd=
+.o
+>>>>> In file included from drivers/xenomai/net/stack/include/rtdev.h:37:0=
+,
+>>>>>  =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
+=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 from drivers/xenomai/net/stack/=
+include/rtnet_port.h:32,
+>>>>>  =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
+=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 from drivers/xenomai/net/driver=
+s/too.c:54:
+>>>>> drivers/xenomai/net/stack/include/rtskb.h:32:22: fatal error:
+>>>>> rtdm/net.h: El fitxer o directori no existeix
+>>>>>  =C2=A0=C2=A0 #include <rtdm/net.h>
+>>>>>  =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
+=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 ^
+>>>>> compilation terminated.
+>>>>> scripts/Makefile.build:326: recipe for target
+>>>>> 'drivers/xenomai/net/drivers/8139too.o' failed
+>>>>>
+>>>>> checking a bit, I have found that that include is used:
+>>>>>
+>>>>> drivers/xenomai/net/stack/rtdev_mgr.c:#include <rtdm/net.h>
+>>>>> drivers/xenomai/net/stack/include/rtskb.h:#include <rtdm/net.h>
+>>>>> drivers/xenomai/net/stack/include/rtnet_socket.h:#include <rtdm/net.=
+h>
+>>>>> drivers/xenomai/net/stack/socket.c:#include <rtdm/net.h>
+>>>>> drivers/xenomai/net/stack/ipv4/tcp/timerwheel.h:#include <rtdm/net.h=
+>
+>>>>> drivers/xenomai/net/drivers/macb.c:#include <rtdm/net.h>
+>>>>> drivers/xenomai/net/drivers/at91_ether.c:#include <rtdm/net.h>
+>>>>>
+>>>>> that file is here:
+>>>>>
+>>>>> xenomai-dev: /usr/include/xenomai/rtdm/net.h
+>>>>> xenomai-kernel-source: /usr/src/xenomai-kernel-source/include/rtdm/n=
+et.h
+>>>>>
+>>>>> so, or the prepare-kernel.sh is wrong forget to make a link, or I ma=
+de a
+>>>>> some mistake in the debian package or something is happening.
+>>>>>
+>>>>> Any idea?
+>>>>>
+>>>>
+>>>> There are no obviously related patches in next or master that might b=
+e
+>>>> missing
+>>>> in stable.
+>
+>
+> found the bug (missing net.h) in 3.0.8 but not in stable 3.0.x branch in=
+ this file:
+>
+> https://gitlab.denx.de/Xenomai/xenomai/blob/stable/v3.0.x/include/cobalt=
+/kernel/rtdm/Makefile.am
+>
+>
+> that was changed 2 months ago and 3.0.8 was released 3 months ago. If yo=
+u
+> compile from the sources it works, because the file it is. However, as t=
+he
+> debian package builds and install, that file is not installed, then it f=
+ails.
+>
+
+Ah, yes, of course. Forgot about that...
+
+>>>> Does it work when you build that thing outside of the package generat=
+ion?
+>>>
+>>> yes, it works, but not 100%. But it's another issue.
+>>>
+>>> drivers/xenomai/net/drivers/e1000e/netdev.c: In function
+>>> =E2=80=98e1000e_set_interrupt_capability=E2=80=99:
+>>> drivers/xenomai/net/drivers/e1000e/netdev.c:1225:11: error: implicit
+>>> declaration of function =E2=80=98pci_enable_msix=E2=80=99
+>>> [-Werror=3Dimplicit-function-declaration]
+>>>  =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 err =3D pci_enable_msix(adapter->pdev,
+>>>  =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 ^~=
+~~~~~~~~~~~~~
+>>>
+>>
+>> Yeah, that's already fixed in stable/v3.0.x.
+>>
+>>> I will check what happens with the debian package.
+>>
+>> Ok. I'm planning for some 3.0.9 soon, so we should sort out remaining i=
+ssues.
+>>
+>
+> Ok, then I'll check stable/v3.0.x branch.
+
+Perfect, that will help.
+
+>
+> Leopold
+>
+>
+> PS
+>
+>>> Ps. didn't receive any email from the list ...
+>>>
+>>
+>> Seems only slightly delayed: the archive shows it now, also news.gmane.=
+org.
+>
+> my list options in mailman were changed. Strange...
+>
+
+Bouncing issues?
+
+Jan
+
