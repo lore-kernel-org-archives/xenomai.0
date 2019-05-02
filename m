@@ -1,13 +1,13 @@
-Subject: Re: Request for latest I-pipe arm64 patch
-References: <CAPgPmP0GhAroDvwFVR0c6rJP2J1gffHw0=L0p_t9=D9DUoPVVA@mail.gmail.com>
-From: Philippe Gerum <rpm@xenomai.org>
-Message-ID: <e036f069-1aa3-7edc-274d-0362702a0d3f@xenomai.org>
-Date: Thu, 2 May 2019 18:49:43 +0200
+Subject: Re: [Xenomai] called regular poll() rtdm-socket
+References: <f4d38a1b-0676-fc70-e42e-c07bc2c98cb0@alaxarxa.net>
+ <b141fa74-7b0d-33fb-6064-8571dd45ec6f@xenomai.org>
+From: Leopold Palomo-Avellaneda <leo@alaxarxa.net>
+Message-ID: <af07e228-faf9-9fe1-7287-1644ea0a4679@alaxarxa.net>
+Date: Thu, 2 May 2019 19:04:07 +0200
 MIME-Version: 1.0
-In-Reply-To: <CAPgPmP0GhAroDvwFVR0c6rJP2J1gffHw0=L0p_t9=D9DUoPVVA@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+In-Reply-To: <b141fa74-7b0d-33fb-6064-8571dd45ec6f@xenomai.org>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,24 +16,29 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Nitin Kulkarni <nitin.kulkarni@mindmusiclabs.com>, "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Philippe Gerum <rpm@xenomai.org>, "Xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On 5/2/19 12:38 PM, Nitin Kulkarni via Xenomai wrote:
-> Hello,
-> I am trying to patch a 4.14.78 kernel for arm64 (IMX8m mini), but the
-> latest Ipipe patch for arm64
-> is at 4.9.51 on the downloads page. Is it possible for someone to generate
-> latest patch for 4.14.y for arm64 ? (Preferably 4.14.78).
-> I see that the arm64 ipipe kernel is at 4.14.71 but I can't find the script
-> to generate patch which was there long time ago.
-> 
-
-git diff v4.14.71 is enough with this single-arch tree.
-
-As mentioned in my earlier message to the list, I'm taking over the
-I-pipe ARM64 maintenance, in addition to maintaining ARM. I'll push 4.14
-patches in the coming days.
-
--- 
-Philippe.
-
+RWwgMi81LzE5IGEgbGVzIDE3OjAxLCBQaGlsaXBwZSBHZXJ1bSBoYSBlc2NyaXQ6Cj4gT24gNS8y
+LzE5IDQ6MDcgUE0sIExlb3BvbGQgUGFsb21vLUF2ZWxsYW5lZGEgdmlhIFhlbm9tYWkgd3JvdGU6
+Cj4+IEhpLAo+Pgo+Pgo+PiB3ZSBkZXZlbG9wZWQgYSBDKysgbGlicmFyeSB0aGF0IHVzZWQgcnRu
+ZXQgd2l0aCBldGhlcmNhdC4gSXQgaW1wbGVtZW50cyBhIGNsYXNzCj4+IHRoYXQgaW50ZXJjaGFu
+Z2UgaW5mb3JtYXRpb24gYmV0d2VlbiB0aGUgUlQgYW5kIE5PTl9SVCB1c2luZyB4ZGRtLiBJdCB3
+YXMKPj4gd29ya2luZyBidXQgbm93ICh1c2luZyBQT1NJWCBza2luKSBmYWlscyBhbmQgSSBzZXZl
+cmFsIChsZXNzIHRoYW4gMTApIGFuZCBnb3QKPj4gdGhpcyBtZXNzYWdlLgo+Pgo+PiBbWGVub21h
+aV0gcGxhdGZvcm1ub2RlWzgzMjRdIGNhbGxlZCByZWd1bGFyIHBvbGwoKSBvbiAvZGV2L3J0ZG0v
+W3J0ZG0tc29ja2V0XQo+Pgo+PiBDb3VsZCB5b3UgZXhwbGFpbiBtZSB3aGF0IGlzIGl0PyBiZWNh
+dXNlIEkgaGF2ZSBzZWFyY2hlZCBvbiB3ZWIgYW5kIHdoYXQgSSBmb3VuZAo+PiBJIGRpZG4ndCB1
+bmRlcnN0YW5kIHdlbGwuCj4gCj4gU29tZSBjb2RlIGludm9rZWQgc29tZSBQT1NJWCBJL08gcm91
+dGluZXMgZnJvbSB0aGUgZ2xpYmMgd2l0aCBhIGZpbGUKPiBkZXNjcmlwdG9yIG9idGFpbmVkIGZy
+b20gUlRETS4gZS5nLgo+IAo+IGZkID0gX19SVChzb2NrZXQoLi4uKSk7Cj4gX19TVEQod3JpdGUo
+ZmQsIC4uLikpOwo+IAoKdW1tbW0sIHN0cmFuZ2UuIEknbGwgY2hlY2sgaXQuIFRoYW5rcy4KCkxl
+b3BvbGQKCgotLSAKLS0KTGludXggVXNlciAxNTI2OTIgICAgIEdQRzogMDVGNEE3QTk0OUEyRDlB
+QQpDYXRhbG9uaWEKLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLQpBOiBCZWNh
+dXNlIGl0IG1lc3NlcyB1cCB0aGUgb3JkZXIgaW4gd2hpY2ggcGVvcGxlIG5vcm1hbGx5IHJlYWQg
+dGV4dC4KUTogV2h5IGlzIHRvcC1wb3N0aW5nIHN1Y2ggYSBiYWQgdGhpbmc/CkE6IFRvcC1wb3N0
+aW5nLgpROiBXaGF0IGlzIHRoZSBtb3N0IGFubm95aW5nIHRoaW5nIGluIGUtbWFpbD8KCi0tLS0t
+LS0tLS0tLS0tIG5leHQgcGFydCAtLS0tLS0tLS0tLS0tLQpBIG5vbi10ZXh0IGF0dGFjaG1lbnQg
+d2FzIHNjcnViYmVkLi4uCk5hbWU6IHNpZ25hdHVyZS5hc2MKVHlwZTogYXBwbGljYXRpb24vcGdw
+LXNpZ25hdHVyZQpTaXplOiA4MzMgYnl0ZXMKRGVzYzogT3BlblBHUCBkaWdpdGFsIHNpZ25hdHVy
+ZQpVUkw6IDxodHRwOi8veGVub21haS5vcmcvcGlwZXJtYWlsL3hlbm9tYWkvYXR0YWNobWVudHMv
+MjAxOTA1MDIvNjQ3MmI2OTIvYXR0YWNobWVudC5zaWc+Cg==
