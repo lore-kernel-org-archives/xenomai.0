@@ -1,12 +1,9 @@
-Subject: Re: [Xenomai] called regular poll() rtdm-socket
-References: <f4d38a1b-0676-fc70-e42e-c07bc2c98cb0@alaxarxa.net>
-From: Philippe Gerum <rpm@xenomai.org>
-Message-ID: <b141fa74-7b0d-33fb-6064-8571dd45ec6f@xenomai.org>
-Date: Thu, 2 May 2019 17:01:41 +0200
+From: Steve Freyder <steve@freyder.net>
+Subject: --print-buffer-syncdelay, lib/cobalt/init.c:cobalt_help()
+Message-ID: <5CCB1CE0.6020102@freyder.net>
+Date: Thu, 2 May 2019 11:37:52 -0500
 MIME-Version: 1.0
-In-Reply-To: <f4d38a1b-0676-fc70-e42e-c07bc2c98cb0@alaxarxa.net>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
+Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Transfer-Encoding: 7bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
@@ -16,28 +13,43 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Leopold Palomo-Avellaneda <leo@alaxarxa.net>, "Xenomai@xenomai.org" <xenomai@xenomai.org>
+To: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On 5/2/19 4:07 PM, Leopold Palomo-Avellaneda via Xenomai wrote:
-> Hi,
-> 
-> 
-> we developed a C++ library that used rtnet with ethercat. It implements a class
-> that interchange information between the RT and NON_RT using xddm. It was
-> working but now (using POSIX skin) fails and I several (less than 10) and got
-> this message.
-> 
-> [Xenomai] platformnode[8324] called regular poll() on /dev/rtdm/[rtdm-socket]
-> 
-> Could you explain me what is it? because I have searched on web and what I found
-> I didn't understand well.
+Greetings,
 
-Some code invoked some POSIX I/O routines from the glibc with a file
-descriptor obtained from RTDM. e.g.
+I had a dev complain about losing stdio output in a Xenomai app, and
+had never looked at rt_printf() and friends before.  I had
+problems attempting to use --print-buffer-syncdelay=1 to reduce the
+delay to 1(ms), I found that my programs started complaining about an
+invalid switch.  Found that cobalt_help() was out of sync with the
+actual switch name definition --print-sync-delay.
 
-fd = __RT(socket(...));
-__STD(write(fd, ...));
+Here's a lame attempt at a patch.
 
--- 
-Philippe.
+Regards,
+Steve
+------------------------------------------------------------------------
+
+
+lib/cobalt:
+------------------------------------------------------------------------
+diff -Naur a/init.c b/init.c
+--- a/init.c    2018-06-15 10:26:19.692062099 -0500
++++ b/init.c    2019-05-02 11:16:07.894454047 -0500
+@@ -349,7 +349,7 @@
+          fprintf(stderr, "--main-prio=<prio>            main thread 
+priority\n");
+          fprintf(stderr, "--print-buffer-size=<bytes>   size of a print 
+relay buffer (16k)\n");
+          fprintf(stderr, "--print-buffer-count=<num> number of print 
+relay buffers (4)\n");
+-        fprintf(stderr, "--print-buffer-syncdelay=<ms> max delay of 
+output synchronization (100 ms)\n");
++        fprintf(stderr, "--print-sync-delay=<ms>       max delay of 
+output synchronization (100 ms)\n");
+  }
+
+  static struct setup_descriptor cobalt_interface = {
+------------------------------------------------------------------------
+
 
