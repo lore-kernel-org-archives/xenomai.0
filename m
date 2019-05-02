@@ -1,28 +1,17 @@
-Subject: Re: kvm fpu warning on 4.14.89
-From: Jan Kiszka <jan.kiszka@siemens.com>
-References: <d53140e58f60459694e2e66a94d0a518@systemceramics.com>
- <CAPR3TAhurhcwOGe9wfnOTUd=VBRvXuMLxZtNZ-3+QNyd=TOJnA@mail.gmail.com>
- <ebec2dcf-9549-fed2-6a48-299597bc7079@siemens.com>
- <CAPR3TAjFNV-0LgZ=+ydtseAQw-jdmYRHO4FQwybTjAHwDV59Xg@mail.gmail.com>
- <CAPR3TAhP1VwSE5OjKiznfuzsRXyigeN+ohQP1jQE-roLDMh5LA@mail.gmail.com>
- <32be3d2e-020f-468c-2940-26a09e96daeb@siemens.com>
- <CAPR3TAitTeY0rNVZ6v0moFzh0d_hA6zyS-R3fm+DK+HX4yj3PQ@mail.gmail.com>
- <04ffd701-4df7-5a2b-8000-cf5bec9d06d7@siemens.com>
- <CAPR3TAg=5on1=gJHSChHHwAb3AafZNx3jizMerdZvYKnN5YObA@mail.gmail.com>
- <9d5a6b6e-d7ba-00cd-3851-b26961ebbee7@siemens.com>
- <a7f863b1-9389-4a04-152d-8bc1ec0d723c@siemens.com>
- <CAPR3TAitwUBW8AzOX6cWyBgnp+bKhiNHWE3PBfs-OdAcQSCANw@mail.gmail.com>
- <48849a99-34f6-a84f-22cc-664028431ae7@siemens.com>
- <CAPR3TAg8-QsV+yENSF=Vy7GTfbes2Smtbjo-u2b=MNQ3EnSqLg@mail.gmail.com>
- <6ffa5a27-de0f-5372-8954-6791b52dcd84@siemens.com>
- <ac901e68-599f-3832-8272-aac089ff943f@siemens.com>
-Message-ID: <e682fe6b-b0ce-9f5c-b236-556064024b61@siemens.com>
-Date: Fri, 5 Apr 2019 20:29:44 +0200
+Subject: Re: Error compiling 3.0.8
+References: <014b0e4c-9aee-3f05-b6a5-2ecaefcfbc25@alaxarxa.net>
+ <65c0d39a-6d70-602d-fdfb-64742e152823@web.de>
+ <b12be0ba-2d5d-f875-2ace-d7eb32a3cf54@alaxarxa.net>
+ <8d22cc15-3c7b-f4c2-0ebb-3941fb6efb00@web.de>
+ <18e552c4-a15b-d49e-b532-1ee0c3b36210@alaxarxa.net>
+From: Philippe Gerum <rpm@xenomai.org>
+Message-ID: <1eb187d9-ce43-d92f-a42f-eff00ce3b5c8@xenomai.org>
+Date: Thu, 2 May 2019 14:28:33 +0200
 MIME-Version: 1.0
-In-Reply-To: <ac901e68-599f-3832-8272-aac089ff943f@siemens.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
+In-Reply-To: <18e552c4-a15b-d49e-b532-1ee0c3b36210@alaxarxa.net>
+Content-Type: text/plain; charset="utf-8"
 Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -31,51 +20,108 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: cagnulein <cagnulein@gmail.com>
-Cc: xenomai@xenomai.org
+To: Leopold Palomo-Avellaneda <leo@alaxarxa.net>, Jan Kiszka <jan.kiszka@web.de>, Xenomai list <xenomai@xenomai.org>
 
-On 05.04.19 15:27, Jan Kiszka wrote:
-> On 05.04.19 11:42, Jan Kiszka wrote:
->> On 05.04.19 10:44, cagnulein wrote:
->>> Hi, yes I double checked the patch and it's applied correctly.
->>> Here you can find my config.
+On 5/2/19 8:55 AM, Leopold Palomo-Avellaneda via Xenomai wrote:
+> El 1/5/19 a les 22:27, Jan Kiszka ha escrit:
+>> On 01.05.19 22:20, Leopold Palomo-Avellaneda wrote:
+>>> El 1/5/19 a les 20:55, Jan Kiszka ha escrit:
+>>>> On 01.05.19 18:46, Leopold Palomo-Avellaneda via Xenomai wrote:
+>>>>> Hi,
+>>>>>
+>>>>>
+>>>>> trying to build a new kernel for xenomai 3.0.8 using debian packages
+>>>>> (x86 arch) I have found that fails:
+>>>>>
+>>>>> scripts/Makefile.build:585: recipe for target
+>>>>> 'drivers/xenomai/net/addons' failed
+>>>>> make[4]: *** [drivers/xenomai/net/addons] Error 2
+>>>>> make[4]: *** Waiting for unfinished jobs....
+>>>>>     CC [M]  drivers/staging/rtl8712/rtl8712_cmd.o
+>>>>> In file included from drivers/xenomai/net/stack/include/rtdev.h:37:0,
+>>>>>                    from drivers/xenomai/net/stack/include/rtnet_port.h:32,
+>>>>>                    from drivers/xenomai/net/drivers/too.c:54:
+>>>>> drivers/xenomai/net/stack/include/rtskb.h:32:22: fatal error:
+>>>>> rtdm/net.h: El fitxer o directori no existeix
+>>>>>    #include <rtdm/net.h>
+>>>>>                         ^
+>>>>> compilation terminated.
+>>>>> scripts/Makefile.build:326: recipe for target
+>>>>> 'drivers/xenomai/net/drivers/8139too.o' failed
+>>>>>
+>>>>> checking a bit, I have found that that include is used:
+>>>>>
+>>>>> drivers/xenomai/net/stack/rtdev_mgr.c:#include <rtdm/net.h>
+>>>>> drivers/xenomai/net/stack/include/rtskb.h:#include <rtdm/net.h>
+>>>>> drivers/xenomai/net/stack/include/rtnet_socket.h:#include <rtdm/net.h>
+>>>>> drivers/xenomai/net/stack/socket.c:#include <rtdm/net.h>
+>>>>> drivers/xenomai/net/stack/ipv4/tcp/timerwheel.h:#include <rtdm/net.h>
+>>>>> drivers/xenomai/net/drivers/macb.c:#include <rtdm/net.h>
+>>>>> drivers/xenomai/net/drivers/at91_ether.c:#include <rtdm/net.h>
+>>>>>
+>>>>> that file is here:
+>>>>>
+>>>>> xenomai-dev: /usr/include/xenomai/rtdm/net.h
+>>>>> xenomai-kernel-source: /usr/src/xenomai-kernel-source/include/rtdm/net.h
+>>>>>
+>>>>> so, or the prepare-kernel.sh is wrong forget to make a link, or I made a
+>>>>> some mistake in the debian package or something is happening.
+>>>>>
+>>>>> Any idea?
+>>>>>
+>>>>
+>>>> There are no obviously related patches in next or master that might be
+>>>> missing
+>>>> in stable.
+> 
+> 
+> found the bug (missing net.h) in 3.0.8 but not in stable 3.0.x branch in this file:
+> 
+> https://gitlab.denx.de/Xenomai/xenomai/blob/stable/v3.0.x/include/cobalt/kernel/rtdm/Makefile.am
+> 
+> 
+> that was changed 2 months ago and 3.0.8 was released 3 months ago. If you
+> compile from the sources it works, because the file it is. However, as the
+> debian package builds and install, that file is not installed, then it fails.
+> 
+>>>> Does it work when you build that thing outside of the package generation?
 >>>
->>> CONFIG_DEBUG_STACKOVERFLOW is disabled.
+>>> yes, it works, but not 100%. But it's another issue.
 >>>
->>> I can't get the uart on this system, is there any other way to catch log in
->>> this scenario?
->>
->> UART is mandatory for debugging such crashes. Use a PCI extension card if your
->> board has no UART connector anymore.
->>
->> Well, you may try to lift Xenomai with KVM inside a KVM VM and catch the UART
->> output of the first level VM. This is how I'm debugging.
->>
+>>> drivers/xenomai/net/drivers/e1000e/netdev.c: In function
+>>> ‘e1000e_set_interrupt_capability’:
+>>> drivers/xenomai/net/drivers/e1000e/netdev.c:1225:11: error: implicit
+>>> declaration of function ‘pci_enable_msix’
+>>> [-Werror=implicit-function-declaration]
+>>>       err = pci_enable_msix(adapter->pdev,
+>>>             ^~~~~~~~~~~~~~~
 >>>
->>> Why should I test the 4.4.y? 4.9.146 works fine on the same system (with the
->>> same guest). Did I miss something?
 >>
->> Well, 4.9 would be as broken as 4.4 currently is. But 4.4 is supported, 4.9 is
->> discontinued by now. In any case, this indicates we have another difference
->> caused by changed in 4.14 (and before).
+>> Yeah, that's already fixed in stable/v3.0.x.
 >>
->> I'll see if I can reproduce by booting Win10 in my nested setup.
+>>> I will check what happens with the debian package.
+>>
+>> Ok. I'm planning for some 3.0.9 soon, so we should sort out remaining issues.
 >>
 > 
-> Already running the UEFI BIOS triggers something, at least on 4.4. Let's see...
+> Ok, then I'll check stable/v3.0.x branch.
 > 
+> Leopold
+> 
+> 
+> PS
+> 
+>>> Ps. didn't receive any email from the list ...
+>>>
+>>
+>> Seems only slightly delayed: the archive shows it now, also news.gmane.org.
+> 
+> my list options in mailman were changed. Strange...
 
-As you will be able to see from the commits, there were a number of further issues:
-
-https://gitlab.denx.de/Xenomai/ipipe-x86/commits/wip/kvm-4.14
-
-With that, I'm able to start Win10 on the same core as the latency test. But 
-only in my virtual setup (nested kvm) which may mean that real hw could expose 
-further issue or latency problems. Please test.
-
-Jan
+Nothing strange, your mail server has bounced messages from this mailing
+list too many times. At some point mailman automatically disables
+forwarding to this account.
 
 -- 
-Siemens AG, Corporate Technology, CT RDA IOT SES-DE
-Corporate Competence Center Embedded Linux
+Philippe.
 
