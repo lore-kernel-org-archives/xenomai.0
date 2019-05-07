@@ -1,13 +1,13 @@
-Date: Tue, 7 May 2019 01:53:35 -0500 (CDT)
-From: Per Oberg <pero@wolfram.com>
-Message-ID: <1907767262.9872848.1557212015078.JavaMail.zimbra@wolfram.com>
-In-Reply-To: <4c39d8ca-3c98-4b35-6b06-2013dc80134b@xenomai.org>
-References: <1823257552.1557117297954.94.KebiMail.daeyoungsong@cnu.ac.kr>
- <4c39d8ca-3c98-4b35-6b06-2013dc80134b@xenomai.org>
-Subject: Re: Xenomai Mercury and PREEMPT_RT
+Subject: Re: xenomai in space
+References: <7869460.lBGZm4hT4u@omoikane>
+From: Jan Kiszka <jan.kiszka@siemens.com>
+Message-ID: <8db64aeb-333e-6639-0942-54bd408c669f@siemens.com>
+Date: Tue, 7 May 2019 13:46:31 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
+In-Reply-To: <7869460.lBGZm4hT4u@omoikane>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,52 +16,37 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Philippe Gerum <rpm@xenomai.org>
-Cc: =?utf-8?B?7Iah64yA7JiB?= <daeyoungsong@cnu.ac.kr>, xenomai <xenomai@xenomai.org>
+To: Steven Seeger <steven.seeger@flightsystems.net>, "xenomai@xenomai.org" <xenomai@xenomai.org>
 
+On 07.05.19 02:57, Steven Seeger via Xenomai wrote:
+> List,
+> 
+> Early Saturday morning a Space/X dragon rocket launched with STP-H6 on board.
+> I wrote some drivers and was on the software architecture board for the
+> software on the CIB, communications interface bus on that system. There are
+> several (9 if I recall) science experiments that all communicate to ISS
+> (International Space Station) networks through our common communications
+> interface. This is the first time that I've sent Xenomai to space.
+> 
+> The cargo was successfully delivered to the ISS about 12 hours ago.
+> 
+> Because of our use of Xenomai, we were able to reduce the size of buffers in
+> the FPGA which freed up block ram for other things (CPU cache among them) and
+> made the system perform better overall. Seeing this arrive at the ISS after
+> over a year of testing is a great achievement for us at Goddard Space Flight
+> Center and for the Xenomai project.
+> 
+> Thanks to all. Especially to Philippe who answers many of my emails privately.
+> ;) I hope I can continue to contribute to the Xenomai project in my own small
+> way.
+> 
 
------ Den 6 maj 2019, p=C3=A5 kl 10:07, xenomai xenomai@xenomai.org skrev:
-> On 5/6/19 6:34 AM, =EC=86=A1=EB=8C=80=EC=98=81 via Xenomai wrote:
-> > [webmailreconf.public.do?24538165]
+Thanks for sharing these interesting details, and congrats for this successful 
+mission!
 
-> > Hello, expert.
+Jan
 
-> > I have a question about Xenomai Mercury and PREEMPT_RT.
-> > Following "Xenomai 3 =E2=80=93 An Overview of the Real-Time Framework f=
-or
-> > Linux", Mercury is based on PREEMPT_RT and only offers API emulation.
-> > Is Mercury's latency performance better than PREEMPT_RT?
-
-> No, it merely uses what native preemption provides for.
-
-So, just to be clear. Are you saying that it should be "Just as good" as PR=
-EEMPT.RT when the kernel is fully patched? (Whatever that means...)
-
-Now, I don't want to start a flame-war here, that would be stupid. But I re=
-ally want to know your opinion on this (see for eaxmple claims made in [1])=
-. May we assume that the Mercury performance would be quite close to Cobolt=
- performance ?
-
-And how about communication with hardware communication in a PREEMT_RT setu=
-p? Without special RT-drivers what can we expect?  For me it's not about wh=
-en something can be computed but rather when it can be commuicated.
-
-
-[1] http://linuxgizmos.com/real-time-linux-explained/
-
-Qute: "While Xenomai performed better on most tests, and offered far less j=
-itter, the differences were not as great as the 300 to 400 percent latency =
-superiority claimed by some Xenomai boosters, said Altenberg. When tests we=
-re performed on userspace tasks =E2=80=94 which Altenberg says is the most =
-real-world, and therefore the most important, test =E2=80=94 the worst-case=
- reaction was about 90 to 95 microseconds for both Xenomai and RTL/PREEMPT.=
-RT, he claimed."
-
-
-> --
-> Philippe.
-
-
-
-Per =C3=96berg=20
+-- 
+Siemens AG, Corporate Technology, CT RDA IOT SES-DE
+Corporate Competence Center Embedded Linux
 
