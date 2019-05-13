@@ -1,13 +1,12 @@
-Subject: Re: Process "Killed" by Linux because "OOM-Killer"
-References: <CAMDdWuyP7GW_H9xODCDJTGz5c3O8MTRNba=7cYvrQactuo4gVg@mail.gmail.com>
-From: =?UTF-8?Q?St=c3=a9phane_Ancelot?= <sancelot@numalliance.com>
-Message-ID: <bd606428-8d1a-4c4f-520a-a73d853a1eb5@numalliance.com>
-Date: Mon, 13 May 2019 08:51:59 +0200
 MIME-Version: 1.0
-In-Reply-To: <CAMDdWuyP7GW_H9xODCDJTGz5c3O8MTRNba=7cYvrQactuo4gVg@mail.gmail.com>
-Content-Language: fr
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: quoted-printable
+References: <CAAjAsiy=cp_nZsSpfcsE=0YDWppHuT1ZTpFgW4F-b1f6ovbQ+w@mail.gmail.com>
+ <d759381b-04de-574e-b3fc-a18873dbb1dc@xenomai.org>
+In-Reply-To: <d759381b-04de-574e-b3fc-a18873dbb1dc@xenomai.org>
+From: Matteo Facchinetti <matteo.facchinetti@sirius-es.it>
+Date: Mon, 13 May 2019 10:49:21 +0200
+Message-ID: <CAAjAsixehairsj4U0k2AhS7rvRRPs=gmfpT4VNbuyFC613mXfA@mail.gmail.com>
+Subject: Re: [Xenomai] kernel crash when debugging userspace realtime task
+Content-Type: text/plain; charset="UTF-8"
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,58 +15,55 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
+Cc: xenomai@xenomai.org
 
+Il giorno gio 13 set 2018 alle ore 15:57 Philippe Gerum <rpm@xenomai.org>
+ha scritto:
 
-Le 11/05/2019 =C3=A0 16:47, Matheus Pinto via Xenomai a =C3=A9crit=C2=A0:
-> I installed Xenomai version 3.0.5 in a machine with Ubuntu 16.04 LTS.
-> The machine is a Acer Netbook with the following configurations
-> - CPU: Pentium Dual Core U5600;
-> - Memory: 3 GB, DDR3.
+> On 09/04/2018 05:59 PM, Matteo Facchinetti wrote:
+> > Hi,
+> >
+> > I'm using the xenomai cobalt kernel with ipipe-core-4.9.51-arm-4.patch
+> over
+> > a Sitara AM335x custom board.
+> > Occur a strange problem  when debugging an userspace task with
+> > gdb/gdbserver.
+> > In detail, sometimes into a debugging session, kernel crash at the moment
+> > that I add a breakpoint in a realtime task.
+> >
+> >   Unhandled fault: page domain fault (0x01b) at 0x001412dc
+> >   (see below for the complete kernel panic)
+> >
+> > This problem is not easily reproducible because occurs only with the
+> > Windows toolchain (gdb in windows environment).
+> > With the linux toolcahin never occur but I don't exclude that problem
+> exist
+> > and it's shadow for any timing reason...
+> > With boot toolchain program works correctly if running unless debugging.
+> >
+> > So, using FTRACE, I take a snapshot of the kernel internals at the moment
+> > when problem occurs:
+> >
+> >   killer-0-510   [000]   152.421095: function:
+> >  preempt_count_sub <-- finish_task_switch
+> >   killer-0-510   [000]   152.421100: function:             do_DataAbort
+> <--
+> > __dabt_svc
+> >   (see below for the complete FTRACE snapshot)
+> >
 >
-> I am executing a process that create 5 tasks executing concurrently. Th=
-is
-> tasks execute normally as expected.
+> Please make sure to have the following fix in:
 >
-> However, when I trying execute the same executable in another terminal,=
- the
-> first one is "Killed" by Linux (because of OOM-killer), and the second =
-one
-> is finalized with the message "Bus error (core dumped)".
 >
-> I tried disable the "memory overcommit" e "OOM-killer", but when I do t=
-hat,
-> the process doesnt started (is launched a "BUG" error).
+> https://gitlab.denx.de/Xenomai/ipipe/commit/54ae43b8a64c0bc86b7a34dbb481221f12e75751
+>
+> Yes, this commit is missing in ipipe-core-4.9.51-arm-4.patch and fix the
+problem.
 
-Your program is being killed, because this program (or another in the=20
-process pool) allocates anormally memory.
+This is an old thread but I'm seeing that this reply never going out to
+mailing list...
+Thank you very much and apologise for delay in feedback.
 
-Your system becomes on memory low, and the kernel kills some processes .
+Regards,
 
-Find the process that consume memory abnormally.
-
-> I also tried maintan the memory overcommit and set the
-> "/proc/<pid>/omm_score_adj" of the process to "-17", to that the OOM-ki=
-ller
-> dont kill it. But, when I trying launch the executable in another termi=
-nal,
-> the first one is maintened, but this second one is "Killed".
->
-> I made the same procedure in a Raspberry Board with Xenomai 3.0.5 and
-> Ubuntu Mate Xenial and works fine in there.
->
-> Someone know what I can do?
->
->
-> Atenciosamente*,*
->
-> *Matheus Leitzke Pinto*
-> Professor de Sistemas Embarcados
->
->
-> *Campus Chapec=C3=B3*
-> +55 (49) 33 13 12 44 <callto:+5549333131244>
->
-> *Instituto Federal de Santa Catarina - Campus Chapec=C3=B3*
-> Rua Nereu Ramos, 3450 D - Semin=C3=A1rio, Chapec=C3=B3 - SC, 89813-000
-> <http://www.chapeco.ifsc.edu.br>www.chapeco.ifsc.edu.br
+Matteo
