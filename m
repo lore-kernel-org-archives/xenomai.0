@@ -1,12 +1,10 @@
 MIME-Version: 1.0
-References: <CAAjAsiy=cp_nZsSpfcsE=0YDWppHuT1ZTpFgW4F-b1f6ovbQ+w@mail.gmail.com>
- <d759381b-04de-574e-b3fc-a18873dbb1dc@xenomai.org>
-In-Reply-To: <d759381b-04de-574e-b3fc-a18873dbb1dc@xenomai.org>
-From: Matteo Facchinetti <matteo.facchinetti@sirius-es.it>
-Date: Mon, 13 May 2019 10:49:21 +0200
-Message-ID: <CAAjAsixehairsj4U0k2AhS7rvRRPs=gmfpT4VNbuyFC613mXfA@mail.gmail.com>
-Subject: Re: [Xenomai] kernel crash when debugging userspace realtime task
-Content-Type: text/plain; charset="UTF-8"
+From: Bart Vissers <bvissers@e2mtechnologies.eu>
+Date: Mon, 13 May 2019 18:41:40 +0200
+Message-ID: <CAB+DZ3nGQgqAg_8Cufkp5q6xB56tL+MnQJoWz_T19-1dpsbMuw@mail.gmail.com>
+Subject: Large ToD drift with clocktest
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,55 +13,72 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-Cc: xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-Il giorno gio 13 set 2018 alle ore 15:57 Philippe Gerum <rpm@xenomai.org>
-ha scritto:
-
-> On 09/04/2018 05:59 PM, Matteo Facchinetti wrote:
-> > Hi,
-> >
-> > I'm using the xenomai cobalt kernel with ipipe-core-4.9.51-arm-4.patch
-> over
-> > a Sitara AM335x custom board.
-> > Occur a strange problem  when debugging an userspace task with
-> > gdb/gdbserver.
-> > In detail, sometimes into a debugging session, kernel crash at the moment
-> > that I add a breakpoint in a realtime task.
-> >
-> >   Unhandled fault: page domain fault (0x01b) at 0x001412dc
-> >   (see below for the complete kernel panic)
-> >
-> > This problem is not easily reproducible because occurs only with the
-> > Windows toolchain (gdb in windows environment).
-> > With the linux toolcahin never occur but I don't exclude that problem
-> exist
-> > and it's shadow for any timing reason...
-> > With boot toolchain program works correctly if running unless debugging.
-> >
-> > So, using FTRACE, I take a snapshot of the kernel internals at the moment
-> > when problem occurs:
-> >
-> >   killer-0-510   [000]   152.421095: function:
-> >  preempt_count_sub <-- finish_task_switch
-> >   killer-0-510   [000]   152.421100: function:             do_DataAbort
-> <--
-> > __dabt_svc
-> >   (see below for the complete FTRACE snapshot)
-> >
->
-> Please make sure to have the following fix in:
->
->
-> https://gitlab.denx.de/Xenomai/ipipe/commit/54ae43b8a64c0bc86b7a34dbb481221f12e75751
->
-> Yes, this commit is missing in ipipe-core-4.9.51-arm-4.patch and fix the
-problem.
-
-This is an old thread but I'm seeing that this reply never going out to
-mailing list...
-Thank you very much and apologise for delay in feedback.
-
-Regards,
-
-Matteo
+SGkgYWxsLAoKV2hlbiBydW5uaW5nIGNsb2NrdGVzdCBJIGdldCB0aGUgZm9sbG93aW5nIG91dHB1
+dDoKCiQgL3Vzci94ZW5vbWFpL2Jpbi9jbG9ja3Rlc3QKPT0gVGVzdGluZyBidWlsdC1pbiBDTE9D
+S19SRUFMVElNRSAoMCkKQ1BVICAgICAgVG9EIG9mZnNldCBbdXNdIFRvRCBkcmlmdCBbdXMvc10g
+ICAgICB3YXJwcyBtYXggZGVsdGEgW3VzXQotLS0gLS0tLS0tLS0tLS0tLS0tLS0tLS0gLS0tLS0t
+LS0tLS0tLS0tLSAtLS0tLS0tLS0tIC0tLS0tLS0tLS0tLS0tCiAgMCAgICAgICAgICAgIDE1NTM5
+NzUuNSAgICAgICAgIDQ0MjMuMTk2ICAgICAgICAgIDAgICAgICAgICAgICAwLjAKICAxICAgICAg
+ICAgICAgMTU1Mzk3NC4yICAgICAgICAgNDQyMy4xNzggICAgICAgICAgMCAgICAgICAgICAgIDAu
+MAoKVGhpcyBkcmlmdCBzaXRzIGNvbnN0YW50bHkgYXQgfjQ0MzAgdXMvcy4KCi0gVGhpcyBoYXBw
+ZW5zIHdpdGggWGVub21haSAzLjAuOCB4NjQgKGhlYWQgb2YgdGhlIG5leHQgYnJhbmNoKS4KLSBJ
+J3ZlIHRyaWVkIDIgTGludXgga2VybmVscywgNC45LjE0NiBhbmQgNC4xNC4xMTEsIGJvdGggd2l0
+aCB0aGUgc2FtZQpyZXN1bHQuCi0gVGhlIFhlbm9tYWkgbGF0ZW5jeSBpcyBmaW5lLCA8IDIwIHVz
+IHdvcnN0IGNhc2UuCi0gYXV0b3R1bmUgZG9lc24ndCBoYXZlIGFuIGVmZmVjdAotIFRoZSBDUFUg
+aXMgYW4gSW50ZWwgRzM5MzBURSAoY3B1IGZhbWlseSA2IG1vZGVsIDE1OCwgaGFzIGZsYWdzCmNv
+bnN0YW50X3RzYyBhbmQgbm9uc3RvcF90c2MpCi0gSSBmb2xsb3dlZCB0aGUgcmVjb21tZW5kZWQg
+a2VybmVsIHNldHRpbmdzIFsxXSwgYWx0aG91Z2ggbWF5YmUgSSBtaXNzZWQKc29tZXRoaW5nLiBD
+b25maWcgaXMgYXR0YWNoZWQuCi0gdHJpZWQgb3RoZXIgY2xvY2tzb3VyY2VzIGFzIHdlbGwsIGhw
+ZXQgZ2F2ZSB0aGUgc2FtZSByZXN1bHQgYW5kICBhY3BpX3BtCndhcyB3b3JzZSAoYWxzbyA+NDAw
+MCB1cy9zIGJ1dCBpbmNyZWFzaW5nKQotIGNoZWNrZWQgQklPUyBzZXR0aW5ncywgZGlzYWJsZWQg
+SW50ZWwgU3BlZWRzdGVwLCBMZWdhY3kgVVNCIHN1cHBvcnQuCi0gQW4gb2xkIFJUIGNvbmZpZ3Vy
+YXRpb24gKExpbnV4IDMuMi4yMSwgWGVub21haSAyLjYuMykgZG9lcyBub3QgaGF2ZSB0aGlzCmlz
+c3VlIG9uIHRoZSBzYW1lIGhhcmR3YXJlLgoKIEkgZGlkIG5vdGljZSB0aGF0IHRoZSB0c2MgY2xv
+Y2tzb3VyY2UgcmVmaW5lZCBjYWxpYnJhdGlvbiBzZWVtcyBvZmYKKDI3MTEuOTk1IE1IeiBmb3Ig
+YSAyNzAwIE1IeiBDUFUpLCBzZWUgdGhlIGRtZXNnIG91dHB1dCBiZWxvdy4KIFRoZSByYXRpbyAx
+MS45OTUgLzI3MDAgPSAwLjAwNDQ0LCB3aGljaCBjb3JyZXNwb25kcyB0byB0aGUgZHJpZnQgbWVh
+c3VyZWQKYnkgdGhlIGNsb2NrdGVzdCBidXQgdGhpcyBtaWdodCBiZSBhIGNvaW5jaWRlbmNlLgpJ
+IGNvdWxkbid0IGZpbmQgYSB3YXkgdG8gZGlzYWJsZSBvciBjb3JyZWN0IHRoaXMuCiAkIGRtZXNn
+ClsgICAgMC4wMDAwMDBdIHRzYzogRGV0ZWN0ZWQgMjcwMC4wMDAgTUh6IHByb2Nlc3NvcgpbICAg
+IDAuMDAwMDAwXSBjbG9ja3NvdXJjZTogcmVmaW5lZC1qaWZmaWVzOiBtYXNrOiAweGZmZmZmZmZm
+IG1heF9jeWNsZXM6CjB4ZmZmZmZmZmYsIG1heF9pZGxlX25zOiA3NjQ1NTE5NjAwMjExNTY4IG5z
+ClsgICAgMC4wMDAwMDBdIGNsb2Nrc291cmNlOiBocGV0OiBtYXNrOiAweGZmZmZmZmZmIG1heF9j
+eWNsZXM6IDB4ZmZmZmZmZmYsCm1heF9pZGxlX25zOiA3OTYzNTg1NTI0NSBucwpbICAgIDAuMDAw
+MDAwXSBocGV0IGNsb2NrZXZlbnQgcmVnaXN0ZXJlZApbICAgIDAuMDk0MzM3XSBjbG9ja3NvdXJj
+ZTogamlmZmllczogbWFzazogMHhmZmZmZmZmZiBtYXhfY3ljbGVzOgoweGZmZmZmZmZmLCBtYXhf
+aWRsZV9uczogNzY0NTA0MTc4NTEwMDAwMCBucwpbICAgIDAuMjE3OTA4XSBjbG9ja3NvdXJjZTog
+U3dpdGNoZWQgdG8gY2xvY2tzb3VyY2UgaHBldApbICAgIDAuMjM4MTEwXSBjbG9ja3NvdXJjZTog
+YWNwaV9wbTogbWFzazogMHhmZmZmZmYgbWF4X2N5Y2xlczogMHhmZmZmZmYsCm1heF9pZGxlX25z
+OiAyMDg1NzAxMDI0IG5zClsgICAgMS41Mzc5NjNdIHRzYzogUmVmaW5lZCBUU0MgY2xvY2tzb3Vy
+Y2UgY2FsaWJyYXRpb246IDI3MTEuOTk1IE1IegpbICAgIDEuNTM4Mjc5XSBjbG9ja3NvdXJjZTog
+dHNjOiBtYXNrOiAweGZmZmZmZmZmZmZmZmZmZmYgbWF4X2N5Y2xlczoKMHgyNzE3ODFiNTAwMywg
+bWF4X2lkbGVfbnM6IDQ0MDc5NTIwMjEyNiBucwpbICAgIDIuNTcxNTMyXSBjbG9ja3NvdXJjZTog
+U3dpdGNoZWQgdG8gY2xvY2tzb3VyY2UgdHNjCgpUaGVyZSB3ZXJlIHNvbWUga2VybmVsIGJ1Z3Mg
+aW4gdGhpcyBhcmVhLCBidXQgdGhleSBzZWVtIGZpeGVkIGFscmVhZHkgWzIsCjNdLgoKSSBkaWQg
+ZmlndXJlIG91dCB0aGF0IEkgY2FuIG1hbmlwdWxhdGUgdGhlIGRyaWZ0IHdpdGggYWRqdGltZXgg
+WzRdCiQgYWRqdGltZXggLS10aWNrIDEwMDQ0CiQgL3Vzci94ZW5vbWFpL2Jpbi9jbG9ja3Rlc3QK
+PT0gVGVzdGluZyBidWlsdC1pbiBDTE9DS19SRUFMVElNRSAoMCkKQ1BVICAgICAgVG9EIG9mZnNl
+dCBbdXNdIFRvRCBkcmlmdCBbdXMvc10gICAgICB3YXJwcyBtYXggZGVsdGEgW3VzXQotLS0gLS0t
+LS0tLS0tLS0tLS0tLS0tLS0gLS0tLS0tLS0tLS0tLS0tLSAtLS0tLS0tLS0tIC0tLS0tLS0tLS0t
+LS0tCiAgMCAgICAgICAgICAgMTI0MjczMDkuMSAgICAgICAgICAgNDQuMjAzICAgICAgICAgIDAg
+ICAgICAgICAgICAwLjAKICAxICAgICAgICAgICAxMjQyNzMwOS4zICAgICAgICAgICA0NC4zMzUg
+ICAgICAgICAgMCAgICAgICAgICAgIDAuMAoKSG93ZXZlciwgdGhpcyBtYWtlcyB1cCB0aGUgc3lz
+dGVtIGNsb2NrIGRyaWZ0LiBXaGVuIG50cCBpcyBlbmFibGVkLCBJJ20Kc2VlaW5nIGFuIGluY3Jl
+YXNpbmcgb2Zmc2V0IHdydCB0aW1lIHNlcnZlcnMgYW5kIHdoZW4gaXQgc3luY3MgdGhlIGNsb2Nr
+CmRyaWZ0IGluY3JlYXNlcyBhZ2Fpbi4KSSBhbHNvIGdldCB0aGUgZm9sbG93aW5nIGVycm9yIGlu
+IHN5c2xvZzoKbnRwZFsxMDcyMV06IGtlcm5lbCByZXBvcnRzIFRJTUVfRVJST1I6IDB4NDE6IENs
+b2NrIFVuc3luY2hyb25pemVkCm50cGRbMTA3MjFdOiBmcmVxdWVuY3kgZXJyb3IgLTM4ODYgUFBN
+IGV4Y2VlZHMgdG9sZXJhbmNlIDUwMCBQUE0KClNvIHRoYXQgZG9lc24ndCBzZWVtIHRvIGJlIGEg
+cHJvcGVyIHNvbHV0aW9uLgoKV2hhdCBjYW4gSSB0cnkgbmV4dD8gQW55IHN1Z2dlc3Rpb25zIGZv
+ciBmaXhpbmcgdGhpcyBhcmUgZ3JlYXRseQphcHByZWNpYXRlZCEKClRoYW5rcywKQmFydAoKWzFd
+Cmh0dHBzOi8vZ2l0bGFiLmRlbnguZGUvWGVub21haS94ZW5vbWFpL3dpa2lzL0NvbmZpZ3VyaW5n
+X0Zvcl9YODZfQmFzZWRfRHVhbF9LZXJuZWxzClsyXSBodHRwczovL2J1Z3ppbGxhLmtlcm5lbC5v
+cmcvc2hvd19idWcuY2dpP2lkPTE5Nzg0MwpbM10gaHR0cHM6Ly9idWd6aWxsYS5rZXJuZWwub3Jn
+L3Nob3dfYnVnLmNnaT9pZD0xOTcyOTkKWzRdIGh0dHBzOi8vbGludXguZGllLm5ldC9tYW4vOC9h
+ZGp0aW1leAotLS0tLS0tLS0tLS0tLSBuZXh0IHBhcnQgLS0tLS0tLS0tLS0tLS0KQSBub24tdGV4
+dCBhdHRhY2htZW50IHdhcyBzY3J1YmJlZC4uLgpOYW1lOiAuY29uZmlnClR5cGU6IGFwcGxpY2F0
+aW9uL3htbApTaXplOiAxNjQ1MTUgYnl0ZXMKRGVzYzogbm90IGF2YWlsYWJsZQpVUkw6IDxodHRw
+Oi8veGVub21haS5vcmcvcGlwZXJtYWlsL3hlbm9tYWkvYXR0YWNobWVudHMvMjAxOTA1MTMvMDcy
+M2ZkYjcvYXR0YWNobWVudC53c2RsPgo=
