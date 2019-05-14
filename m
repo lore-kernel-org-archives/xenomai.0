@@ -1,8 +1,6 @@
-From: Lange Norbert <norbert.lange@andritz.com>
-Subject: FW: [PATCH] lib/cobalt: init: do not call pthread_atfork() from
+From: Philippe Gerum <rpm@xenomai.org>
+Subject: Re: [PATCH] lib/cobalt: init: do not call pthread_atfork() from
  atfork() handlers
-Date: Tue, 14 May 2019 10:40:15 +0000
-Message-ID: <DB8PR05MB59150F0E1F3A6E0C28AC4CFEF6080@DB8PR05MB5915.eurprd05.prod.outlook.com>
 References: <20190503150939.3594-1-rpm@xenomai.org>
  <VI1PR05MB591765785A35FB3685463256F6300@VI1PR05MB5917.eurprd05.prod.outlook.com>
  <6ef3a9cf-cb30-59c4-1983-4475fdc7cd6e@xenomai.org>
@@ -10,11 +8,13 @@ References: <20190503150939.3594-1-rpm@xenomai.org>
  <DB8PR05MB5915F745C3CA952C04179E2EF6080@DB8PR05MB5915.eurprd05.prod.outlook.com>
  <69740012-4273-4647-00a2-55fd7ad9468d@xenomai.org>
  <DB8PR05MB5915BB62DD6315DB14C4CF04F6080@DB8PR05MB5915.eurprd05.prod.outlook.com>
-In-Reply-To: <DB8PR05MB5915BB62DD6315DB14C4CF04F6080@DB8PR05MB5915.eurprd05.prod.outlook.com>
-Content-Language: en-US
+Message-ID: <bda67d42-c84b-9951-6202-7385381191be@xenomai.org>
+Date: Tue, 14 May 2019 15:58:03 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+In-Reply-To: <DB8PR05MB5915BB62DD6315DB14C4CF04F6080@DB8PR05MB5915.eurprd05.prod.outlook.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -23,96 +23,144 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "Xenomai (xenomai@xenomai.org)" <xenomai@xenomai.org>, "Philippe Gerum
- (rpm@xenomai.org)" <rpm@xenomai.org>
+To: Lange Norbert <norbert.lange@andritz.com>, "Xenomai (xenomai@xenomai.org)" <xenomai@xenomai.org>
 
-V2hhdCBkbyB5b3UgdGhpbmsgYWJvdXQgdGhpcyBoYWNrYXJvdW5kPw0KU3RpbGwgbm90ICJjbGVh
-biIgdG8gY2FsbCBpbiBhIHNpZ25hbCBoYW5kbGVyIGJ1dCBpdCBkb2VzIHdvcmsuDQoNCk5vcmJl
-cnQNCg0KPiAtLS0tLU9yaWdpbmFsIE1lc3NhZ2UtLS0tLQ0KPiBGcm9tOiBMYW5nZSBOb3JiZXJ0
-DQo+IFNlbnQ6IERpZW5zdGFnLCAxNC4gTWFpIDIwMTkgMTI6MjQNCj4gVG86IFBoaWxpcHBlIEdl
-cnVtIDxycG1AeGVub21haS5vcmc+OyBYZW5vbWFpICh4ZW5vbWFpQHhlbm9tYWkub3JnKQ0KPiA8
-eGVub21haUB4ZW5vbWFpLm9yZz4NCj4gU3ViamVjdDogUkU6IFtQQVRDSF0gbGliL2NvYmFsdDog
-aW5pdDogZG8gbm90IGNhbGwgcHRocmVhZF9hdGZvcmsoKSBmcm9tDQo+IGF0Zm9yaygpIGhhbmRs
-ZXJzDQo+DQo+DQo+DQo+ID4gLS0tLS1PcmlnaW5hbCBNZXNzYWdlLS0tLS0NCj4gPiBGcm9tOiBQ
-aGlsaXBwZSBHZXJ1bSA8cnBtQHhlbm9tYWkub3JnPg0KPiA+IFNlbnQ6IERpZW5zdGFnLCAxNC4g
-TWFpIDIwMTkgMTI6MDUNCj4gPiBUbzogTGFuZ2UgTm9yYmVydCA8bm9yYmVydC5sYW5nZUBhbmRy
-aXR6LmNvbT47IFhlbm9tYWkNCj4gPiAoeGVub21haUB4ZW5vbWFpLm9yZykgPHhlbm9tYWlAeGVu
-b21haS5vcmc+DQo+ID4gU3ViamVjdDogUmU6IFtQQVRDSF0gbGliL2NvYmFsdDogaW5pdDogZG8g
-bm90IGNhbGwgcHRocmVhZF9hdGZvcmsoKQ0KPiA+IGZyb20NCj4gPiBhdGZvcmsoKSBoYW5kbGVy
-cw0KPiA+DQo+ID4gRS1NQUlMIEZST00gQSBOT04tQU5EUklUWiBTT1VSQ0U6IEFTIEEgU0VDVVJJ
-VFkgTUVBU1VSRSwgUExFQVNFDQo+ID4gRVhFUkNJU0UgQ0FVVElPTiBXSVRIIEUtTUFJTCBDT05U
-RU5UIEFORCBBTlkgTElOS1MgT1INCj4gQVRUQUNITUVOVFMuDQo+ID4NCj4gPg0KPiA+IE9uIDUv
-MTQvMTkgMTE6NTMgQU0sIExhbmdlIE5vcmJlcnQgd3JvdGU6DQo+ID4gPiAocmVhZGRpbmcgTUwp
-DQo+ID4gPg0KPiA+ID4+IC0tLS0tT3JpZ2luYWwgTWVzc2FnZS0tLS0tDQo+ID4gPj4gRnJvbTog
-UGhpbGlwcGUgR2VydW0gPHJwbUB4ZW5vbWFpLm9yZz4NCj4gPiA+PiBTZW50OiBEaWVuc3RhZywg
-MTQuIE1haSAyMDE5IDEwOjM4DQo+ID4gPj4gVG86IExhbmdlIE5vcmJlcnQgPG5vcmJlcnQubGFu
-Z2VAYW5kcml0ei5jb20+DQo+ID4gPj4gU3ViamVjdDogUmU6IFtQQVRDSF0gbGliL2NvYmFsdDog
-aW5pdDogZG8gbm90IGNhbGwgcHRocmVhZF9hdGZvcmsoKQ0KPiA+ID4+IGZyb20NCj4gPiA+PiBh
-dGZvcmsoKSBoYW5kbGVycw0KPiA+ID4+DQo+ID4gPj4gRS1NQUlMIEZST00gQSBOT04tQU5EUklU
-WiBTT1VSQ0U6IEFTIEEgU0VDVVJJVFkgTUVBU1VSRSwNCj4gPiBQTEVBU0UNCj4gPiA+PiBFWEVS
-Q0lTRSBDQVVUSU9OIFdJVEggRS1NQUlMIENPTlRFTlQgQU5EIEFOWSBMSU5LUyBPUg0KPiA+IEFU
-VEFDSE1FTlRTLg0KPiA+ID4+DQo+ID4gPj4NCj4gPiA+PiBPbiA1LzE0LzE5IDEwOjM1IEFNLCBQ
-aGlsaXBwZSBHZXJ1bSB3cm90ZToNCj4gPiA+Pj4gT24gNS82LzE5IDk6NTYgQU0sIExhbmdlIE5v
-cmJlcnQgd3JvdGU6DQo+ID4gPj4+PiBIZWxsbyBQaGlsaXBwZSwNCj4gPiA+Pj4+DQo+ID4gPj4+
-PiB1c2luZyB0aGlzIHBhdGNoLCBzbW9rZXkncyAiZm9yayB0ZXN0IiBhbG9uZSBmaW5pc2hlcywg
-YnV0Li4NCj4gPiA+Pj4+IHRoZSBzbW9rZXkgc3VpdGUgd2lsbCBoYW5nIHdoZW4gcnVubmluZyB0
-aGF0IHRlc3QgYWZ0ZXIgdGhlIG11dGV4DQo+ID4gPj4+PiBvciBjdmFycyB0ZXN0LiBFZy4NCj4g
-PiA+Pj4+DQo+ID4gPj4+PiBzbW9rZXkgLS1ydW49MTAsMTENCj4gPiA+Pj4+IHNtb2tleSAtLXJ1
-bj0xMiwxMQ0KPiA+ID4+Pg0KPiA+ID4+PiBJIGNhbm5vdCByZXByb2R1Y2UgdGhpcyB3aXRoIGds
-aWJjIDIuMjgsIGFuZCB0aGUgdGlwIG9mIG15DQo+ID4gPj4+IGZvci11cHN0cmVhbSB0cmVlIHdo
-aWNoIGluY2x1ZGVzIHRoYXQgZml4LiBXaGljaCBnbGliYyBhcmUgeW91IHJ1bm5pbmc/DQo+ID4g
-Pg0KPiA+ID4gR2xpYmMgMi4yOCwgWGVub21haSB1c2Vyc3BhY2UgaXMgYmFzZWQgb24gY3VycmVu
-dCBtYXN0ZXIgYnJhbmNoIHdpdGgNCj4gPiA+IGZpeCBhZGRlZCAodGVzdGVkIGJvdGggd2l0aCBh
-bmQgd2l0aG91dCBvdXIgY29tcGFueSBzdHVmZiBvbiB0b3ApDQo+ID4gPg0KPiA+ID4+DQo+ID4g
-Pj4gSXMgdGhpcyB0aGUgc2VxdWVuY2Ugd2hpY2ggaGFuZ3Mgb24geW91ciBlbmQ/DQo+ID4gPj4N
-Cj4gPiA+PiB+ICMgc21va2V5IC0tcnVuPTEzLTE0DQo+ID4gPj4gcG9zaXhfY29uZCBPSw0KPiA+
-ID4+IHBvc2l4X2ZvcmsgT0sNCj4gPiA+PiB+ICMgc21va2V5IC0tcnVuPTE1LTE0DQo+ID4gPj4g
-cG9zaXhfbXV0ZXggT0sNCj4gPiA+PiBwb3NpeF9mb3JrIE9LDQo+ID4gPj4NCj4gPiA+DQo+ID4g
-PiBZZXM6DQo+ID4gPg0KPiA+ID4gcm9vdEBidWlsZHJvb3Q6fiMgL3Vzci94ZW5vbWFpL2Jpbi9z
-bW9rZXkgLS1ydW49MTAgcG9zaXhfbXV0ZXggT0sNCj4gPiA+IHJvb3RAYnVpbGRyb290On4jIC91
-c3IveGVub21haS9iaW4vc21va2V5IC0tcnVuPTExIHBvc2l4X2ZvcmsgT0sNCj4gPiA+IHJvb3RA
-YnVpbGRyb290On4jIC91c3IveGVub21haS9iaW4vc21va2V5IC0tcnVuPTEwLDExIHBvc2l4X211
-dGV4DQo+IE9LDQo+ID4gPg0KPiA+ID4gV2hlbiBpdCBoYW5ncywgdGhpcyBpcyB0aGUgc3RhY2t0
-cmFjZToNCj4gPiA+IChzd2l0Y2hlZCB0byBjcm9zc3Rvb2wtTkcgZm9yIHRoZSB0b29sY2hhaW4s
-IGRpZCBub3QgY2hlY2sgdG8gZW5hYmxlDQo+ID4gZGVidWdpbmZvIGZvciBnbGliYykuDQo+ID4g
-Pg0KPiA+ID4gKGdkYikgYnQNCj4gPiA+ICMwICAweDAwMDA3ZjQ1YjRkODZmZWIgaW4gPz8gKCkg
-ZnJvbSAvbGliNjQvbGliYy5zby42DQo+ID4gPiAjMSAgMHgwMDAwN2Y0NWI0ZGU4Yjk1IGluIG1h
-bGxvYyAoKSBmcm9tIC9saWI2NC9saWJjLnNvLjYNCj4gPiA+ICMyICAweDAwMDA3ZjQ1YjRmODFh
-NTMgaW4gPz8gKCkgZnJvbSAvbGliNjQvbGQtbGludXgteDg2LTY0LnNvLjINCj4gPiA+ICMzICAw
-eDAwMDA3ZjQ1YjRmODMxNDkgaW4gPz8gKCkgZnJvbSAvbGliNjQvbGQtbGludXgteDg2LTY0LnNv
-LjINCj4gPiA+ICM0ICAweDAwMDA3ZjQ1YjRmOGQ0Y2MgaW4gPz8gKCkgZnJvbSAvbGliNjQvbGQt
-bGludXgteDg2LTY0LnNvLjINCj4gPiA+ICM1ICAweDAwMDA3ZjQ1YjRlYTdiY2YgaW4gX2RsX2Nh
-dGNoX2V4Y2VwdGlvbiAoKSBmcm9tDQo+ID4gPiAvbGliNjQvbGliYy5zby42DQo+ID4NCj4gPiBU
-aGF0IGlzIGEgZGlmZmVyZW50IGlzc3VlLCBwb3NzaWJseSBub3QgZGlyZWN0bHkgcmVsYXRlZC4g
-YmFja3RyYWNlKCkNCj4gPiBpcyB1c2VkIG92ZXIgYSBzaWduYWwgY29udGV4dCBpbiB0aGUgZGVm
-YXVsdCBTSUdTSEFET1cgaGFuZGxlcg0KPiA+IGxpYmNvYmFsdCBpbnN0YWxscywgd2hpY2ggaXMg
-dW5zYWZlIHNpbmNlIGJhY2t0cmFjZSgpIGNhbGxzIG1hbGxvYygpLg0KPiA+IFRoaXMgcnVuIGVu
-ZHMgdXAgd2l0aCBhIHJlY3Vyc2l2ZSBjYWxsIHRvIG1hbGxvYygpIHdoaWNoIGRlYWRsb2NrcyBv
-bg0KPiA+IHRoZSBpbnRlcm5hbCBhcmVuYSBsb2NrLiBEaXNhYmxpbmcNCj4gQ09ORklHX1hFTk9f
-T1BUX0RFQlVHX1RSQUNFX1JFTEFYIG1heSBwYXBlciBvdmVyIHRoZSBpc3N1ZS4NCj4NCj4gU28g
-c21va2V5cyBmb3JrIHdpbGwgY2F1c2Ugc29tZSByZWxheGF0aW9uIGxvZyBlbnRyaWVzIGlmIEkg
-dW5kZXJzdG9vZCB0aGlzDQo+IGNvcnJlY3RseSwgYW5kIGEgImNsZWFuIiBhcHBsaWNhdGlvbiBz
-aG91bGQgbGVhdmUgcmVhbHRpbWUgYmVmb3JlIGNhbGxpbmcgZm9yay4NCj4gKFVucmVsYXRlZCB0
-byB0aGUgaXNzdWUgdGhhdCBhIGRlYWRsb2NrIHNob3VsZCBub3QgaGFwcGVuKQ0KPg0KPiBOb3Ji
-ZXJ0DQpfX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fXw0KDQpUaGlzIG1lc3NhZ2UgYW5k
-IGFueSBhdHRhY2htZW50cyBhcmUgc29sZWx5IGZvciB0aGUgdXNlIG9mIHRoZSBpbnRlbmRlZCBy
-ZWNpcGllbnRzLiBUaGV5IG1heSBjb250YWluIHByaXZpbGVnZWQgYW5kL29yIGNvbmZpZGVudGlh
-bCBpbmZvcm1hdGlvbiBvciBvdGhlciBpbmZvcm1hdGlvbiBwcm90ZWN0ZWQgZnJvbSBkaXNjbG9z
-dXJlLiBJZiB5b3UgYXJlIG5vdCBhbiBpbnRlbmRlZCByZWNpcGllbnQsIHlvdSBhcmUgaGVyZWJ5
-IG5vdGlmaWVkIHRoYXQgeW91IHJlY2VpdmVkIHRoaXMgZW1haWwgaW4gZXJyb3IgYW5kIHRoYXQg
-YW55IHJldmlldywgZGlzc2VtaW5hdGlvbiwgZGlzdHJpYnV0aW9uIG9yIGNvcHlpbmcgb2YgdGhp
-cyBlbWFpbCBhbmQgYW55IGF0dGFjaG1lbnQgaXMgc3RyaWN0bHkgcHJvaGliaXRlZC4gSWYgeW91
-IGhhdmUgcmVjZWl2ZWQgdGhpcyBlbWFpbCBpbiBlcnJvciwgcGxlYXNlIGNvbnRhY3QgdGhlIHNl
-bmRlciBhbmQgZGVsZXRlIHRoZSBtZXNzYWdlIGFuZCBhbnkgYXR0YWNobWVudCBmcm9tIHlvdXIg
-c3lzdGVtLg0KDQpBTkRSSVRaIEhZRFJPIEdtYkgNCg0KDQpSZWNodHNmb3JtLyBMZWdhbCBmb3Jt
-OiBHZXNlbGxzY2hhZnQgbWl0IGJlc2NocsOkbmt0ZXIgSGFmdHVuZyAvIENvcnBvcmF0aW9uDQoN
-CkZpcm1lbnNpdHovIFJlZ2lzdGVyZWQgc2VhdDogV2llbg0KDQpGaXJtZW5idWNoZ2VyaWNodC8g
-Q291cnQgb2YgcmVnaXN0cnk6IEhhbmRlbHNnZXJpY2h0IFdpZW4NCg0KRmlybWVuYnVjaG51bW1l
-ci8gQ29tcGFueSByZWdpc3RyYXRpb246IEZOIDYxODMzIGcNCg0KRFZSOiAwNjA1MDc3DQoNClVJ
-RC1Oci46IEFUVTE0NzU2ODA2DQoNCg0KVGhhbmsgWW91DQpfX19fX19fX19fX19fX19fX19fX19f
-X19fX19fX19fXw0KLS0tLS0tLS0tLS0tLS0gbmV4dCBwYXJ0IC0tLS0tLS0tLS0tLS0tCkEgbm9u
-LXRleHQgYXR0YWNobWVudCB3YXMgc2NydWJiZWQuLi4KTmFtZTogMDAwMS1saWJjb2JhbHQtcmVz
-b2x2ZS1iYWNrdHJhY2UtZWFybHkucGF0Y2gKVHlwZTogYXBwbGljYXRpb24vb2N0ZXQtc3RyZWFt
-ClNpemU6IDEwMTggYnl0ZXMKRGVzYzogMDAwMS1saWJjb2JhbHQtcmVzb2x2ZS1iYWNrdHJhY2Ut
-ZWFybHkucGF0Y2gKVVJMOiA8aHR0cDovL3hlbm9tYWkub3JnL3BpcGVybWFpbC94ZW5vbWFpL2F0
-dGFjaG1lbnRzLzIwMTkwNTE0LzZiNmFhMjBhL2F0dGFjaG1lbnQub2JqPgo=
+On 5/14/19 12:24 PM, Lange Norbert wrote:
+> 
+> 
+>> -----Original Message-----
+>> From: Philippe Gerum <rpm@xenomai.org>
+>> Sent: Dienstag, 14. Mai 2019 12:05
+>> To: Lange Norbert <norbert.lange@andritz.com>; Xenomai
+>> (xenomai@xenomai.org) <xenomai@xenomai.org>
+>> Subject: Re: [PATCH] lib/cobalt: init: do not call pthread_atfork() from
+>> atfork() handlers
+>>
+>> E-MAIL FROM A NON-ANDRITZ SOURCE: AS A SECURITY MEASURE, PLEASE
+>> EXERCISE CAUTION WITH E-MAIL CONTENT AND ANY LINKS OR
+>> ATTACHMENTS.
+>>
+>>
+>> On 5/14/19 11:53 AM, Lange Norbert wrote:
+>>> (readding ML)
+>>>
+>>>> -----Original Message-----
+>>>> From: Philippe Gerum <rpm@xenomai.org>
+>>>> Sent: Dienstag, 14. Mai 2019 10:38
+>>>> To: Lange Norbert <norbert.lange@andritz.com>
+>>>> Subject: Re: [PATCH] lib/cobalt: init: do not call pthread_atfork()
+>>>> from
+>>>> atfork() handlers
+>>>>
+>>>> E-MAIL FROM A NON-ANDRITZ SOURCE: AS A SECURITY MEASURE,
+>> PLEASE
+>>>> EXERCISE CAUTION WITH E-MAIL CONTENT AND ANY LINKS OR
+>> ATTACHMENTS.
+>>>>
+>>>>
+>>>> On 5/14/19 10:35 AM, Philippe Gerum wrote:
+>>>>> On 5/6/19 9:56 AM, Lange Norbert wrote:
+>>>>>> Hello Philippe,
+>>>>>>
+>>>>>> using this patch, smokey's "fork test" alone finishes, but..
+>>>>>> the smokey suite will hang when running that test after the mutex
+>>>>>> or cvars test. Eg.
+>>>>>>
+>>>>>> smokey --run=10,11
+>>>>>> smokey --run=12,11
+>>>>>
+>>>>> I cannot reproduce this with glibc 2.28, and the tip of my
+>>>>> for-upstream tree which includes that fix. Which glibc are you running?
+>>>
+>>> Glibc 2.28, Xenomai userspace is based on current master branch with
+>>> fix added (tested both with and without our company stuff on top)
+>>>
+>>>>
+>>>> Is this the sequence which hangs on your end?
+>>>>
+>>>> ~ # smokey --run=13-14
+>>>> posix_cond OK
+>>>> posix_fork OK
+>>>> ~ # smokey --run=15-14
+>>>> posix_mutex OK
+>>>> posix_fork OK
+>>>>
+>>>
+>>> Yes:
+>>>
+>>> root@buildroot:~# /usr/xenomai/bin/smokey --run=10 posix_mutex OK
+>>> root@buildroot:~# /usr/xenomai/bin/smokey --run=11 posix_fork OK
+>>> root@buildroot:~# /usr/xenomai/bin/smokey --run=10,11 posix_mutex OK
+>>>
+>>> When it hangs, this is the stacktrace:
+>>> (switched to crosstool-NG for the toolchain, did not check to enable
+>> debuginfo for glibc).
+>>>
+>>> (gdb) bt
+>>> #0  0x00007f45b4d86feb in ?? () from /lib64/libc.so.6
+>>> #1  0x00007f45b4de8b95 in malloc () from /lib64/libc.so.6
+>>> #2  0x00007f45b4f81a53 in ?? () from /lib64/ld-linux-x86-64.so.2
+>>> #3  0x00007f45b4f83149 in ?? () from /lib64/ld-linux-x86-64.so.2
+>>> #4  0x00007f45b4f8d4cc in ?? () from /lib64/ld-linux-x86-64.so.2
+>>> #5  0x00007f45b4ea7bcf in _dl_catch_exception () from /lib64/libc.so.6
+>>
+>> That is a different issue, possibly not directly related. backtrace() is used over
+>> a signal context in the default SIGSHADOW handler libcobalt installs, which is
+>> unsafe since backtrace() calls malloc(). This run ends up with a recursive call
+>> to malloc() which deadlocks on the internal arena lock. Disabling
+>> CONFIG_XENO_OPT_DEBUG_TRACE_RELAX may paper over the issue.
+> 
+> So smokeys fork will cause some relaxation log entries if I understood this correctly,
+> and a "clean" application should leave realtime before calling fork.
+> (Unrelated to the issue that a deadlock should not happen)
+> 
+
+Aside of calling uninit backtrace() from a sighandler which is wrong, it looks like this issue pops up because two other conditions are met:
+
+- some test which precedes smokey-fork switched the scheduling class of the main() smokey thread to a real-time policy (e.g. posix-mutex.c does so when entering run_posix_mutex()). When smokey-fork re-execs, the child inherits the scheduler settings for the main thread, so eventually runs copperplate inits as a SCHED_FIFO thread, which is eligible for relax detection (SCHED_OTHER/WEAK would not be).
+- xnthread_relax() from the core always asks for a backtrace via a SIGSHADOW signal upon detection, including when the current thread does not want to be warned about mode switches, which seems wrong. If the warn-on-switch bit was considered as it should be, the request for backtrace via SIGSHADOW would not be sent in the first place.
+
+Clearing either of these conditions like the couple of patches below does should tame down the issue. I would recommend to merge both actually.
+
+diff --git a/kernel/cobalt/thread.c b/kernel/cobalt/thread.c
+index fa7a65569..6caf9ef37 100644
+--- a/kernel/cobalt/thread.c
++++ b/kernel/cobalt/thread.c
+@@ -2131,11 +2131,11 @@ void xnthread_relax(int notify, int reason)
+ 	 * information.
+ 	 */
+ 	xnthread_propagate_schedparam(thread);
+-	
++
+ 	if (xnthread_test_state(thread, XNUSER) && notify) {
+-		xndebug_notify_relax(thread, reason);
+ 		if (xnthread_test_state(thread, XNWARN)) {
+ 			/* Help debugging spurious relaxes. */
++			xndebug_notify_relax(thread, reason);
+ 			memset(&si, 0, sizeof(si));
+ 			si.si_signo = SIGDEBUG;
+ 			si.si_code = SI_QUEUE;
+diff --git a/testsuite/smokey/main.c b/testsuite/smokey/main.c
+index 12321dfc5..5702e825a 100644
+--- a/testsuite/smokey/main.c
++++ b/testsuite/smokey/main.c
+@@ -22,6 +22,7 @@
+ 
+ int main(int argc, char *const argv[])
+ {
++	struct sched_param param = { .sched_priority = 0 };
+ 	struct smokey_test *t;
+ 	int ret, fails = 0;
+ 
+@@ -29,6 +30,7 @@ int main(int argc, char *const argv[])
+ 		return 0;
+ 
+ 	for_each_smokey_test(t) {
++		pthread_setschedparam(pthread_self(), SCHED_OTHER, &param);
+ 		ret = t->run(t, argc, argv);
+ 		if (ret) {
+ 			if (ret == -ENOSYS) {
+
+-- 
+Philippe.
+
