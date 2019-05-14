@@ -1,15 +1,17 @@
-Subject: Re: Large ToD drift with clocktest
-References: <CAB+DZ3nGQgqAg_8Cufkp5q6xB56tL+MnQJoWz_T19-1dpsbMuw@mail.gmail.com>
- <0a1e8d87-16ba-88dc-74b1-406aa9a9a5c0@web.de>
- <CAB+DZ3m2Jv8CyBSoDXdzg8h2jVdfokUc2C46v48NZUcb73p6Vg@mail.gmail.com>
-From: Jan Kiszka <jan.kiszka@web.de>
-Message-ID: <1879bc47-218f-8bc0-76f0-657d913a7192@web.de>
-Date: Tue, 14 May 2019 11:24:48 +0200
-MIME-Version: 1.0
-In-Reply-To: <CAB+DZ3m2Jv8CyBSoDXdzg8h2jVdfokUc2C46v48NZUcb73p6Vg@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
+From: Lange Norbert <norbert.lange@andritz.com>
+Subject: RE: [PATCH] lib/cobalt: init: do not call pthread_atfork() from
+ atfork() handlers
+Date: Tue, 14 May 2019 09:53:34 +0000
+Message-ID: <DB8PR05MB5915F745C3CA952C04179E2EF6080@DB8PR05MB5915.eurprd05.prod.outlook.com>
+References: <20190503150939.3594-1-rpm@xenomai.org>
+ <VI1PR05MB591765785A35FB3685463256F6300@VI1PR05MB5917.eurprd05.prod.outlook.com>
+ <6ef3a9cf-cb30-59c4-1983-4475fdc7cd6e@xenomai.org>
+ <c0230398-8da5-a0b4-d30c-17e91e2f0cb7@xenomai.org>
+In-Reply-To: <c0230398-8da5-a0b4-d30c-17e91e2f0cb7@xenomai.org>
 Content-Language: en-US
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+MIME-Version: 1.0
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -18,152 +20,94 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Bart Vissers <bvissers@e2mtechnologies.eu>
-Cc: xenomai@xenomai.org
+To: Philippe Gerum <rpm@xenomai.org>, "Xenomai (xenomai@xenomai.org)" <xenomai@xenomai.org>
 
-On 14.05.19 11:15, Bart Vissers wrote:
-> Thanks for looking into it!
-> Actually, we are transitioning from Xenomai 2 to 3 and we're facing Ethe=
-rcat
-> Distributed Clocks (DC) synchronization issues. The old OS with Xenomai =
-2 can
-> run DC in both Master Shift and Bus Shift mode. With the 4.14 kernel and=
- Xenomai
-> 3, Bus Shift doesn't work due to too much drift wrt to slave clocks.
->
-> We don't really care about the system time, but I added ntp logs because=
- I
-> thought it might help finding the cause.
-
-Ok, if the hardware and the kernel configuration are basically the same fo=
-r both
-v2 and v3 setups, we may have a regression regarding the TSC-to-nanosecond=
-s
-calculations. Maybe check the parameters Xenomai is using internally, if t=
-hey
-are differing.
-
-Jan
-
->
-> Thanks again,
-> Bart
->
-> On Tue, 14 May 2019 at 09:14, Jan Kiszka <jan.kiszka@web.de
-> <mailto:jan.kiszka@web.de>> wrote:
->
->     On 13.05.19 18:41, Bart Vissers via Xenomai wrote:
->      > Hi all,
->      >
->      > When running clocktest I get the following output:
->      >
->      > $ /usr/xenomai/bin/clocktest
->      > =3D=3D Testing built-in CLOCK_REALTIME (0)
->      > CPU=C2=A0 =C2=A0 =C2=A0 ToD offset [us] ToD drift [us/s]=C2=A0 =
-=C2=A0 =C2=A0 warps max delta [us]
->      > --- -------------------- ---------------- ---------- ------------=
---
->      >=C2=A0 =C2=A0 0=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 1553975.5=
-=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A04423.196=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=
-=A0 0=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 0.0
->      >=C2=A0 =C2=A0 1=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 1553974.2=
-=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A04423.178=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=
-=A0 0=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 0.0
->      >
->      > This drift sits constantly at ~4430 us/s.
->      >
->      > - This happens with Xenomai 3.0.8 x64 (head of the next branch).
->      > - I've tried 2 Linux kernels, 4.9.146 and 4.14.111, both with the=
- same
->      > result.
->      > - The Xenomai latency is fine, < 20 us worst case.
->      > - autotune doesn't have an effect
->      > - The CPU is an Intel G3930TE (cpu family 6 model 158, has flags
->      > constant_tsc and nonstop_tsc)
->      > - I followed the recommended kernel settings [1], although maybe =
-I missed
->      > something. Config is attached.
->      > - tried other clocksources as well, hpet gave the same result and=
-=C2=A0 acpi_pm
->      > was worse (also >4000 us/s but increasing)
->      > - checked BIOS settings, disabled Intel Speedstep, Legacy USB sup=
-port.
->      > - An old RT configuration (Linux 3.2.21, Xenomai 2.6.3) does not =
-have this
->      > issue on the same hardware.
->      >
->      >=C2=A0 =C2=A0I did notice that the tsc clocksource refined calibra=
-tion seems off
->      > (2711.995 MHz for a 2700 MHz CPU), see the dmesg output below.
->      >=C2=A0 =C2=A0The ratio 11.995 /2700 =3D 0.00444, which corresponds=
- to the drift measured
->      > by the clocktest but this might be a coincidence.
->      > I couldn't find a way to disable or correct this.
->      >=C2=A0 =C2=A0$ dmesg
->      > [=C2=A0 =C2=A0 0.000000] tsc: Detected 2700.000 MHz processor
->      > [=C2=A0 =C2=A0 0.000000] clocksource: refined-jiffies: mask: 0xff=
-ffffff max_cycles:
->      > 0xffffffff, max_idle_ns: 7645519600211568 ns
->      > [=C2=A0 =C2=A0 0.000000] clocksource: hpet: mask: 0xffffffff max_=
-cycles: 0xffffffff,
->      > max_idle_ns: 79635855245 ns
->      > [=C2=A0 =C2=A0 0.000000] hpet clockevent registered
->      > [=C2=A0 =C2=A0 0.094337] clocksource: jiffies: mask: 0xffffffff m=
-ax_cycles:
->      > 0xffffffff, max_idle_ns: 7645041785100000 ns
->      > [=C2=A0 =C2=A0 0.217908] clocksource: Switched to clocksource hpe=
-t
->      > [=C2=A0 =C2=A0 0.238110] clocksource: acpi_pm: mask: 0xffffff max=
-_cycles: 0xffffff,
->      > max_idle_ns: 2085701024 ns
->      > [=C2=A0 =C2=A0 1.537963] tsc: Refined TSC clocksource calibration=
-: 2711.995 MHz
->      > [=C2=A0 =C2=A0 1.538279] clocksource: tsc: mask: 0xffffffffffffff=
-ff max_cycles:
->      > 0x271781b5003, max_idle_ns: 440795202126 ns
->      > [=C2=A0 =C2=A0 2.571532] clocksource: Switched to clocksource tsc
->      >
->      > There were some kernel bugs in this area, but they seem fixed alr=
-eady [2,
->      > 3].
->      >
->      > I did figure out that I can manipulate the drift with adjtimex [4=
-]
->      > $ adjtimex --tick 10044
->      > $ /usr/xenomai/bin/clocktest
->      > =3D=3D Testing built-in CLOCK_REALTIME (0)
->      > CPU=C2=A0 =C2=A0 =C2=A0 ToD offset [us] ToD drift [us/s]=C2=A0 =
-=C2=A0 =C2=A0 warps max delta [us]
->      > --- -------------------- ---------------- ---------- ------------=
---
->      >=C2=A0 =C2=A0 0=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A012427309.1=
-=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A044.203=C2=A0 =C2=A0 =C2=A0 =C2=A0=
- =C2=A0 0=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 0.0
->      >=C2=A0 =C2=A0 1=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A012427309.3=
-=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A044.335=C2=A0 =C2=A0 =C2=A0 =C2=A0=
- =C2=A0 0=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 0.0
->      >
->      > However, this makes up the system clock drift. When ntp is enable=
-d, I'm
->      > seeing an increasing offset wrt time servers and when it syncs th=
-e clock
->      > drift increases again.
->      > I also get the following error in syslog:
->      > ntpd[10721]: kernel reports TIME_ERROR: 0x41: Clock Unsynchronize=
-d
->      > ntpd[10721]: frequency error -3886 PPM exceeds tolerance 500 PPM
->      >
->      > So that doesn't seem to be a proper solution.
->      >
->      > What can I try next? Any suggestions for fixing this are greatly
->      > appreciated!
->
->     If you want timestamps to be in sync with the Linux clock, use
->     CLOCK_HOST_REALTIME. The Xenomai CLOCK_REALTIME and CLOCK_MONOTONIC =
-are not
->     designed to achieve that.
->
->     Jan
->
-
+KHJlYWRkaW5nIE1MKQ0KDQo+IC0tLS0tT3JpZ2luYWwgTWVzc2FnZS0tLS0tDQo+IEZyb206IFBo
+aWxpcHBlIEdlcnVtIDxycG1AeGVub21haS5vcmc+DQo+IFNlbnQ6IERpZW5zdGFnLCAxNC4gTWFp
+IDIwMTkgMTA6MzgNCj4gVG86IExhbmdlIE5vcmJlcnQgPG5vcmJlcnQubGFuZ2VAYW5kcml0ei5j
+b20+DQo+IFN1YmplY3Q6IFJlOiBbUEFUQ0hdIGxpYi9jb2JhbHQ6IGluaXQ6IGRvIG5vdCBjYWxs
+IHB0aHJlYWRfYXRmb3JrKCkgZnJvbQ0KPiBhdGZvcmsoKSBoYW5kbGVycw0KPg0KPiBFLU1BSUwg
+RlJPTSBBIE5PTi1BTkRSSVRaIFNPVVJDRTogQVMgQSBTRUNVUklUWSBNRUFTVVJFLCBQTEVBU0UN
+Cj4gRVhFUkNJU0UgQ0FVVElPTiBXSVRIIEUtTUFJTCBDT05URU5UIEFORCBBTlkgTElOS1MgT1IN
+Cj4gQVRUQUNITUVOVFMuDQo+DQo+DQo+IE9uIDUvMTQvMTkgMTA6MzUgQU0sIFBoaWxpcHBlIEdl
+cnVtIHdyb3RlOg0KPiA+IE9uIDUvNi8xOSA5OjU2IEFNLCBMYW5nZSBOb3JiZXJ0IHdyb3RlOg0K
+PiA+PiBIZWxsbyBQaGlsaXBwZSwNCj4gPj4NCj4gPj4gdXNpbmcgdGhpcyBwYXRjaCwgc21va2V5
+J3MgImZvcmsgdGVzdCIgYWxvbmUgZmluaXNoZXMsIGJ1dC4uDQo+ID4+IHRoZSBzbW9rZXkgc3Vp
+dGUgd2lsbCBoYW5nIHdoZW4gcnVubmluZyB0aGF0IHRlc3QgYWZ0ZXIgdGhlIG11dGV4IG9yDQo+
+ID4+IGN2YXJzIHRlc3QuIEVnLg0KPiA+Pg0KPiA+PiBzbW9rZXkgLS1ydW49MTAsMTENCj4gPj4g
+c21va2V5IC0tcnVuPTEyLDExDQo+ID4NCj4gPiBJIGNhbm5vdCByZXByb2R1Y2UgdGhpcyB3aXRo
+IGdsaWJjIDIuMjgsIGFuZCB0aGUgdGlwIG9mIG15DQo+ID4gZm9yLXVwc3RyZWFtIHRyZWUgd2hp
+Y2ggaW5jbHVkZXMgdGhhdCBmaXguIFdoaWNoIGdsaWJjIGFyZSB5b3UgcnVubmluZz8NCg0KR2xp
+YmMgMi4yOCwgWGVub21haSB1c2Vyc3BhY2UgaXMgYmFzZWQgb24gY3VycmVudCBtYXN0ZXIgYnJh
+bmNoDQp3aXRoIGZpeCBhZGRlZCAodGVzdGVkIGJvdGggd2l0aCBhbmQgd2l0aG91dCBvdXIgY29t
+cGFueSBzdHVmZiBvbiB0b3ApDQoNCj4NCj4gSXMgdGhpcyB0aGUgc2VxdWVuY2Ugd2hpY2ggaGFu
+Z3Mgb24geW91ciBlbmQ/DQo+DQo+IH4gIyBzbW9rZXkgLS1ydW49MTMtMTQNCj4gcG9zaXhfY29u
+ZCBPSw0KPiBwb3NpeF9mb3JrIE9LDQo+IH4gIyBzbW9rZXkgLS1ydW49MTUtMTQNCj4gcG9zaXhf
+bXV0ZXggT0sNCj4gcG9zaXhfZm9yayBPSw0KPg0KDQpZZXM6DQoNCnJvb3RAYnVpbGRyb290On4j
+IC91c3IveGVub21haS9iaW4vc21va2V5IC0tcnVuPTEwDQpwb3NpeF9tdXRleCBPSw0Kcm9vdEBi
+dWlsZHJvb3Q6fiMgL3Vzci94ZW5vbWFpL2Jpbi9zbW9rZXkgLS1ydW49MTENCnBvc2l4X2Zvcmsg
+T0sNCnJvb3RAYnVpbGRyb290On4jIC91c3IveGVub21haS9iaW4vc21va2V5IC0tcnVuPTEwLDEx
+DQpwb3NpeF9tdXRleCBPSw0KDQpXaGVuIGl0IGhhbmdzLCB0aGlzIGlzIHRoZSBzdGFja3RyYWNl
+Og0KKHN3aXRjaGVkIHRvIGNyb3NzdG9vbC1ORyBmb3IgdGhlIHRvb2xjaGFpbiwgZGlkIG5vdCBj
+aGVjayB0byBlbmFibGUgZGVidWdpbmZvIGZvciBnbGliYykuDQoNCihnZGIpIGJ0DQojMCAgMHgw
+MDAwN2Y0NWI0ZDg2ZmViIGluID8/ICgpIGZyb20gL2xpYjY0L2xpYmMuc28uNg0KIzEgIDB4MDAw
+MDdmNDViNGRlOGI5NSBpbiBtYWxsb2MgKCkgZnJvbSAvbGliNjQvbGliYy5zby42DQojMiAgMHgw
+MDAwN2Y0NWI0ZjgxYTUzIGluID8/ICgpIGZyb20gL2xpYjY0L2xkLWxpbnV4LXg4Ni02NC5zby4y
+DQojMyAgMHgwMDAwN2Y0NWI0ZjgzMTQ5IGluID8/ICgpIGZyb20gL2xpYjY0L2xkLWxpbnV4LXg4
+Ni02NC5zby4yDQojNCAgMHgwMDAwN2Y0NWI0ZjhkNGNjIGluID8/ICgpIGZyb20gL2xpYjY0L2xk
+LWxpbnV4LXg4Ni02NC5zby4yDQojNSAgMHgwMDAwN2Y0NWI0ZWE3YmNmIGluIF9kbF9jYXRjaF9l
+eGNlcHRpb24gKCkgZnJvbSAvbGliNjQvbGliYy5zby42DQojNiAgMHgwMDAwN2Y0NWI0ZjhkMGJi
+IGluID8/ICgpIGZyb20gL2xpYjY0L2xkLWxpbnV4LXg4Ni02NC5zby4yDQojNyAgMHgwMDAwN2Y0
+NWI0ZWE3MWEzIGluID8/ICgpIGZyb20gL2xpYjY0L2xpYmMuc28uNg0KIzggIDB4MDAwMDdmNDVi
+NGVhN2JjZiBpbiBfZGxfY2F0Y2hfZXhjZXB0aW9uICgpIGZyb20gL2xpYjY0L2xpYmMuc28uNg0K
+IzkgIDB4MDAwMDdmNDViNGVhN2M0MCBpbiBfZGxfY2F0Y2hfZXJyb3IgKCkgZnJvbSAvbGliNjQv
+bGliYy5zby42DQojMTAgMHgwMDAwN2Y0NWI0ZWE3MmE4IGluID8/ICgpIGZyb20gL2xpYjY0L2xp
+YmMuc28uNg0KIzExIDB4MDAwMDdmNDViNGVhNzMxNyBpbiBfX2xpYmNfZGxvcGVuX21vZGUgKCkg
+ZnJvbSAvbGliNjQvbGliYy5zby42DQojMTIgMHgwMDAwN2Y0NWI0ZGFjZmE1IGluID8/ICgpIGZy
+b20gL2xpYjY0L2xpYmMuc28uNg0KIzEzIDB4MDAwMDdmNDViNGYyMDUxZiBpbiA/PyAoKSBmcm9t
+IC9saWI2NC9saWJwdGhyZWFkLnNvLjANCiMxNCAweDAwMDA3ZjQ1YjRlN2NhODQgaW4gYmFja3Ry
+YWNlICgpIGZyb20gL2xpYjY0L2xpYmMuc28uNg0KIzE1IDB4MDAwMDdmNDViNGY0OTYwYyBpbiBj
+b2JhbHRfc2lnc2hhZG93X2hhbmRsZXIgKHNpZz08b3B0aW1pemVkIG91dD4sIHNpPTxvcHRpbWl6
+ZWQgb3V0PiwgY3R4dD08b3B0aW1pemVkIG91dD4pIGF0IC90bXAvdG1wLmNUQ1VKU01MTmMveGVu
+by9saWIvY29iYWx0L3NpZ3NoYWRvdy5jOjU1DQojMTYgMHgwMDAwN2Y0NWI0ZjQ5NjVkIGluIHNp
+Z3NoYWRvd19oYW5kbGVyIChzaWc9MjgsIHNpPTB4N2ZmY2QxZmI0NWYwLCBjdHh0PTB4N2ZmY2Qx
+ZmI0NGMwKSBhdCAvdG1wL3RtcC5jVENVSlNNTE5jL3hlbm8vbGliL2NvYmFsdC9zaWdzaGFkb3cu
+Yzo4MA0KIzE3IDxzaWduYWwgaGFuZGxlciBjYWxsZWQ+DQojMTggMHgwMDAwN2Y0NWI0ZTZiMjQy
+IGluIG1tYXA2NCAoKSBmcm9tIC9saWI2NC9saWJjLnNvLjYNCiMxOSAweDAwMDA3ZjQ1YjRkZTZh
+M2MgaW4gPz8gKCkgZnJvbSAvbGliNjQvbGliYy5zby42DQojMjAgMHgwMDAwN2Y0NWI0ZGU3NzVj
+IGluID8/ICgpIGZyb20gL2xpYjY0L2xpYmMuc28uNg0KIzIxIDB4MDAwMDdmNDViNGRlOGJhNyBp
+biBtYWxsb2MgKCkgZnJvbSAvbGliNjQvbGliYy5zby42DQojMjIgMHgwMDAwN2Y0NWI0ZjY2NzU0
+IGluIGhlYXBvYmpfcGtnX2luaXRfcHJpdmF0ZSAoKSBhdCAvdG1wL3RtcC5jVENVSlNNTE5jL3hl
+bm8vbGliL2NvcHBlcnBsYXRlL2hlYXBvYmotaGVhcG1lbS5jOjEwMg0KIzIzIDB4MDAwMDdmNDVi
+NGY2MmYxNyBpbiBjb3BwZXJwbGF0ZV9pbml0ICgpIGF0IC90bXAvdG1wLmNUQ1VKU01MTmMveGVu
+by9saWIvY29wcGVycGxhdGUvaW5pdC5jOjE5OQ0KIzI0IDB4MDAwMDdmNDViNGY0ZDZiMCBpbiBf
+X3hlbm9tYWlfaW5pdCAoYXJnY3A9YXJnY3BAZW50cnk9MHg3ZmZjZDFmYjRlNDQsIGFyZ3ZwPWFy
+Z3ZwQGVudHJ5PTB4N2ZmY2QxZmI0ZTQ4LCBtZT1tZUBlbnRyeT0weDdmNDViNGY1M2YyOSAicHJv
+Z3JhbSIpIGF0IC90bXAvdG1wLmNUQ1VKU01MTmMveGVuby9saWIvYm9pbGVycGxhdGUvc2V0dXAu
+Yzo2MzANCiMyNSAweDAwMDA3ZjQ1YjRmNGRjYWMgaW4geGVub21haV9pbml0IChhcmdjcD0weDdm
+ZmNkMWZiNGU0NCwgYXJndnA9MHg3ZmZjZDFmYjRlNDgpIGF0IC90bXAvdG1wLmNUQ1VKU01MTmMv
+eGVuby9saWIvYm9pbGVycGxhdGUvc2V0dXAuYzo2ODUNCiMyNiAweDAwMDAwMDAwMDA0MDUxNzcg
+aW4gPz8gKCkNCiMyNyAweDAwMDAwMDAwMDA0MWFlN2QgaW4gPz8gKCkNCiMyOCAweDAwMDA3ZjQ1
+YjRkODc0MGIgaW4gX19saWJjX3N0YXJ0X21haW4gKCkgZnJvbSAvbGliNjQvbGliYy5zby42DQoj
+MjkgMHgwMDAwMDAwMDAwNDA1NDRhIGluID8/ICgpDQoNClJlZ2FyZHMsIE5vcmJlcnQNCg0KUFMu
+IENvdWxkIHlvdSBwbGVhc2UgaGF2ZSBhIGxvb2sgYXQgdGhpcyBhc3dlbGw6IGh0dHBzOi8vd3d3
+Lnhlbm9tYWkub3JnL3BpcGVybWFpbC94ZW5vbWFpLzIwMTktTWFyY2gvMDQwNTcyLmh0bWwNCihJ
+dHMgdW5yZWxhdGVkLCBidXQgY29tZSBiYWNrIHRvIG15IG1pbmQgYXMgSSBsb29rZWQgYXQgc29t
+ZSBvZiBteSBwcml2YXRlIGNvbW1pdHMgbm90IHVwc3RyZWFtZWQpDQpfX19fX19fX19fX19fX19f
+X19fX19fX19fX19fX19fXw0KDQpUaGlzIG1lc3NhZ2UgYW5kIGFueSBhdHRhY2htZW50cyBhcmUg
+c29sZWx5IGZvciB0aGUgdXNlIG9mIHRoZSBpbnRlbmRlZCByZWNpcGllbnRzLiBUaGV5IG1heSBj
+b250YWluIHByaXZpbGVnZWQgYW5kL29yIGNvbmZpZGVudGlhbCBpbmZvcm1hdGlvbiBvciBvdGhl
+ciBpbmZvcm1hdGlvbiBwcm90ZWN0ZWQgZnJvbSBkaXNjbG9zdXJlLiBJZiB5b3UgYXJlIG5vdCBh
+biBpbnRlbmRlZCByZWNpcGllbnQsIHlvdSBhcmUgaGVyZWJ5IG5vdGlmaWVkIHRoYXQgeW91IHJl
+Y2VpdmVkIHRoaXMgZW1haWwgaW4gZXJyb3IgYW5kIHRoYXQgYW55IHJldmlldywgZGlzc2VtaW5h
+dGlvbiwgZGlzdHJpYnV0aW9uIG9yIGNvcHlpbmcgb2YgdGhpcyBlbWFpbCBhbmQgYW55IGF0dGFj
+aG1lbnQgaXMgc3RyaWN0bHkgcHJvaGliaXRlZC4gSWYgeW91IGhhdmUgcmVjZWl2ZWQgdGhpcyBl
+bWFpbCBpbiBlcnJvciwgcGxlYXNlIGNvbnRhY3QgdGhlIHNlbmRlciBhbmQgZGVsZXRlIHRoZSBt
+ZXNzYWdlIGFuZCBhbnkgYXR0YWNobWVudCBmcm9tIHlvdXIgc3lzdGVtLg0KDQpBTkRSSVRaIEhZ
+RFJPIEdtYkgNCg0KDQpSZWNodHNmb3JtLyBMZWdhbCBmb3JtOiBHZXNlbGxzY2hhZnQgbWl0IGJl
+c2NocsOkbmt0ZXIgSGFmdHVuZyAvIENvcnBvcmF0aW9uDQoNCkZpcm1lbnNpdHovIFJlZ2lzdGVy
+ZWQgc2VhdDogV2llbg0KDQpGaXJtZW5idWNoZ2VyaWNodC8gQ291cnQgb2YgcmVnaXN0cnk6IEhh
+bmRlbHNnZXJpY2h0IFdpZW4NCg0KRmlybWVuYnVjaG51bW1lci8gQ29tcGFueSByZWdpc3RyYXRp
+b246IEZOIDYxODMzIGcNCg0KRFZSOiAwNjA1MDc3DQoNClVJRC1Oci46IEFUVTE0NzU2ODA2DQoN
+Cg0KVGhhbmsgWW91DQpfX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fXw0K
 
