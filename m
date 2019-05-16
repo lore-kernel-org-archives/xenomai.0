@@ -1,7 +1,11 @@
-From: xenomai@xenomai.org
-Subject: [I-PIPE] ipipe-core-4.14.111-x86-3 released
-Message-Id: <E1hDqqx-000445-EH@xenomai.org>
-Date: Tue, 09 Apr 2019 15:31:55 +0200
+From: Alexander Sharabanov <sharabanov.a@tecomgroup.ru>
+Subject: cobalt lib does not have pthread_mutexattr_settype
+Date: Thu, 16 May 2019 12:16:15 +0000
+Message-ID: <BB5C4F5E3633C64999D0577F81995AE70287F476@XMAIL.tecom.nnov.ru>
+Content-Language: ru-RU
+MIME-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -10,10 +14,133 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
+To: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-Download URL: https://xenomai.org/downloads/ipipe/v4.x/x86/ipipe-core-4.14.111-x86-3.patch
+Hi All,
 
-Repository: https://git.xenomai.org/ipipe-x86
-Release tag: ipipe-core-4.14.111-x86-3
+I have upgraded the Xenomai in userspace from 2.x.x to 3.x.x. I use libcoba=
+lt, but it does not have 3 references:
+wrap_pthread_mutexattr_settype
+wrap_pthread_mutexattr_init
+wrap_shm_open.
 
+These functions need for my implementation. And I did not have some problem=
+ using old libs(xenomai 2.xx). Could you please help me to get this functio=
+ns to libcobalt.
+
+There is my cobalt.wrappers list:
+--wrap pthread_attr_init
+--wrap pthread_create
+--wrap pthread_setschedparam
+--wrap pthread_getschedparam
+--wrap pthread_yield
+--wrap sched_yield
+--wrap sched_get_priority_min
+--wrap sched_get_priority_max
+--wrap sched_setscheduler
+--wrap sched_getscheduler
+--wrap pthread_kill
+--wrap pthread_join
+--wrap pthread_setname_np
+--wrap sem_init
+--wrap sem_destroy
+--wrap sem_post
+--wrap sem_timedwait
+--wrap sem_wait
+--wrap sem_trywait
+--wrap sem_getvalue
+--wrap sem_open
+--wrap sem_close
+--wrap sem_unlink
+--wrap clock_getres
+--wrap clock_gettime
+--wrap clock_settime
+--wrap clock_nanosleep
+--wrap nanosleep
+--wrap pthread_mutex_init
+--wrap pthread_mutex_destroy
+--wrap pthread_mutex_lock
+--wrap pthread_mutex_trylock
+--wrap pthread_mutex_timedlock
+--wrap pthread_mutex_unlock
+--wrap pthread_cond_init
+--wrap pthread_cond_destroy
+--wrap pthread_cond_wait
+--wrap pthread_cond_timedwait
+--wrap pthread_cond_signal
+--wrap pthread_cond_broadcast
+--wrap mq_open
+--wrap mq_close
+--wrap mq_unlink
+--wrap mq_getattr
+--wrap mq_setattr
+--wrap mq_send
+--wrap mq_timedsend
+--wrap mq_receive
+--wrap mq_timedreceive
+--wrap mq_notify
+--wrap open
+--wrap open64
+--wrap socket
+--wrap close
+--wrap ioctl
+--wrap read
+--wrap write
+--wrap recvmsg
+--wrap sendmsg
+--wrap recvfrom
+--wrap sendto
+--wrap recv
+--wrap send
+--wrap getsockopt
+--wrap setsockopt
+--wrap bind
+--wrap connect
+--wrap listen
+--wrap accept
+--wrap getsockname
+--wrap getpeername
+--wrap shutdown
+--wrap timer_create
+--wrap timer_delete
+--wrap timer_settime
+--wrap timer_getoverrun
+--wrap timer_gettime
+--wrap timerfd_create
+--wrap timerfd_gettime
+--wrap timerfd_settime
+--wrap select
+--wrap vfprintf
+--wrap vprintf
+--wrap fprintf
+--wrap printf
+--wrap puts
+--wrap fputs
+--wrap fputc
+--wrap putchar
+--wrap fwrite
+--wrap fclose
+--wrap syslog
+--wrap vsyslog
+--wrap gettimeofday
+--wrap __vfprintf_chk
+--wrap __vprintf_chk
+--wrap __fprintf_chk
+--wrap __printf_chk
+--wrap __vsyslog_chk
+--wrap __syslog_chk
+--wrap sigwait
+--wrap sigwaitinfo
+--wrap sigtimedwait
+--wrap sigpending
+--wrap sigqueue
+--wrap kill
+--wrap sleep
+--wrap mmap
+--wrap mmap64
+--wrap time
+--wrap fcntl
+
+
+Thanks,
+Alexander
