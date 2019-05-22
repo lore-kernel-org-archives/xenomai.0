@@ -1,13 +1,13 @@
-Date: Wed, 22 May 2019 13:02:36 +0000
+Date: Wed, 22 May 2019 13:06:50 +0000
 From: Jeff Webb <w1@codecraftsmen.org>
 Reply-To: Jeff Webb <w1@codecraftsmen.org>
 Subject: Re: select() unblocks when no data to read()
-Message-ID: <kF7T4B8TEDukapdhDSLmn_O2uqwMgJ3MVMLoFlCZ-Zq5IWN2Ttxjh6R7SDBbgtZnba4scBH8Yup4MTv9ROZAry6t3YU9s7PhQY_HbpRhJOs=@codecraftsmen.org>
-In-Reply-To: <CALLqZ8RdpTNzdTSnn7yGosKAEYyLGh6-eoi6PzPrzRPs3jAdNA@mail.gmail.com>
+Message-ID: <xIC8TGzlKzGfZWIOYx8ds3uHlTBVT0QrrBv-TpAN-T5tu5Jeu3qsGFUVkWzaoEahY7GDiXfhZRd_Jy2K6NIooGf9HuwfHYBsFwsIkMqxXEM=@codecraftsmen.org>
+In-Reply-To: <5dbf6ceb-950a-ac49-2331-b6fe54fa0808@xenomai.org>
 References: <VpFdLbJqKpBKdxuwpEr9vxR2VBu2j4uXIps1EM68ktxueh7Q9bRQeHRA56sFDKeY1xbPcvb6TuGG01MVtxNt03OdF6N1b3YIEPjJnzbRjqk=@codecraftsmen.org>
  <CALLqZ8TJt66aooCz+wCFhg_k3+xwoQ6BFqc+7TvFtA+Au71zzw@mail.gmail.com>
  <Wc_l4MYuhmN-h0Z9zuurZ_MxUaMovQA6xNvZE6EMmf7-zD8ZywQlT_X6AovXAczK01iesjy5RdARBztqwtsVxOhOBSgF3CNpXy2z8lpjU-g=@codecraftsmen.org>
- <CALLqZ8RdpTNzdTSnn7yGosKAEYyLGh6-eoi6PzPrzRPs3jAdNA@mail.gmail.com>
+ <5dbf6ceb-950a-ac49-2331-b6fe54fa0808@xenomai.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: quoted-printable
@@ -19,15 +19,14 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Greg Gallagher <greg@embeddedgreg.com>
-Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Philippe Gerum <rpm@xenomai.org>
+Cc: Greg Gallagher <greg@embeddedgreg.com>, "xenomai@xenomai.org" <xenomai@xenomai.org>
 
 =E2=80=90=E2=80=90=E2=80=90=E2=80=90=E2=80=90=E2=80=90=E2=80=90 Original Me=
 ssage =E2=80=90=E2=80=90=E2=80=90=E2=80=90=E2=80=90=E2=80=90=E2=80=90
-On Thursday, May 9, 2019 8:37 PM, Greg Gallagher <greg@embeddedgreg.com> wr=
-ote:
+On Friday, May 10, 2019 3:24 AM, Philippe Gerum <rpm@xenomai.org> wrote:
 
-> On Thu, May 9, 2019 at 9:26 PM Jeff Webb w1@codecraftsmen.org wrote:
+> On 5/10/19 3:26 AM, Jeff Webb via Xenomai wrote:
 >
 > > =E2=80=90=E2=80=90=E2=80=90=E2=80=90=E2=80=90=E2=80=90=E2=80=90 Origina=
 l Message =E2=80=90=E2=80=90=E2=80=90=E2=80=90=E2=80=90=E2=80=90=E2=80=
@@ -62,24 +61,20 @@ ginal poster's solution of adding this line:
 ilippe mentioned that this might be racy, but maybe it's okay (or maybe not=
 ?) if there are no shared interrupts and interrupts are unmasked by the use=
 rspace application after the read completes.
-> > -Jeff
 >
-> Here's the thread:
-> https://www.xenomai.org/pipermail/xenomai/2018-May/038934.html
->
-> I'm not sure if that will solve your issue, I can make a patch
-> tomorrow if that's easier and you can test it out. I haven't dug to
-> far into this but I don't mind taking a look if that will help.
->
-> -Greg
+> There is a logic flaw on entry to read_rt, when an interrupt already occu=
+rred before we consider waiting for the next one; in that case, the selecto=
+r block is not reset as it should, which would explain why you get those sp=
+urious select() events. Could you try the following change?
 
-Thanks for digging this up, Greg.  It looks like I already have the one-lin=
-e udd_read_rt() part of this solution, and it works.  I am not using the wr=
-ite functionality, so I didn't test that.  It also looks like Philippe's pa=
-tch works as well.
-
-Thanks again,
+Thank you for putting together this patch, Philippe.  Sorry for the delay i=
+n testing it, but it seems to work.  I tested it on Xenomai 3.0.5, but it a=
+ppears there are no other significant changes to UDD since then.  I will ke=
+ep using your patch and see if any more subtle issues arise.  I will also t=
+est with the latest Xenomai when I get a chance.  Thank you again for takin=
+g the time to look into this.
 
 -Jeff
+
 
 
