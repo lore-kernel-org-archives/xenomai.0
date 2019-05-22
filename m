@@ -1,8 +1,10 @@
-From: Jan Kiszka <jan.kiszka@siemens.com>
-Subject: [PATCH] rtnet: e1000e: Account for timer API changes
-Message-ID: <d65a2c6a-307d-ee91-eede-2b9d6d387f5e@siemens.com>
-Date: Fri, 5 Apr 2019 11:26:12 +0200
+Subject: Re: SAMA5D2 Xplained kernel panic
+References: <cca1a283-5dae-8c91-568d-3abf641fbfdc@rsi-elektrotechnik.de>
+From: Philippe Gerum <rpm@xenomai.org>
+Message-ID: <d8f665fd-d9f5-19ee-ea81-eafd59a8f5cd@xenomai.org>
+Date: Wed, 22 May 2019 18:44:13 +0200
 MIME-Version: 1.0
+In-Reply-To: <cca1a283-5dae-8c91-568d-3abf641fbfdc@rsi-elektrotechnik.de>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -14,72 +16,67 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Xenomai <xenomai@xenomai.org>
+To: Jan Leupold <leupold@rsi-elektrotechnik.de>, xenomai@xenomai.org
 
-From: Jan Kiszka <jan.kiszka@siemens.com>
+On 5/20/19 12:27 PM, Jan Leupold via Xenomai wrote:
+> Hi all,
+> 
+> I am trying to boot Linux on a SAMA5D2 Xplained board with
+> * Kernel ipipe-arm branch stable/4.14.96-arm
+>   (HEAD plus my modifications)
+> * Xenomai-3 on tag v3.0.8
+> * following instructions on
+> https://gitlab.denx.de/Xenomai/xenomai/wikis/Porting_Xenomai_To_A_New_Arm_Soc
+> 
+> On most kernel boots I get a kernel panic. Can anyone point me in the right
+> direction where to look for my bugs? I added code for
+> * the hardware timer (tcb_clksrc.c)
+> * the high resolution counter (tcb_clksrc.c)
+> * GPIOs as interrupt sources (pinctrl-at91-pio4.c)
+> * checked interrupt controller (irq-atmel-aic5.c)
+> * added "select IPIPE_ARM_KUSER_TSC" for SOC_SAMA5D2
+> 
+> I have no idea if there is only one problem (causing all the other
+> warnings), or if these are separate problems, that can be handeled
+> independently.
+> 
 
-init_timer was removed in 4.15.
+The first warning means that IRQs are enabled in the CPU when reaching a
+portion of code where it should definitely not be so. This code path
+starts from the actual receipt of an interrupt by the kernel from
+__ipipe_grab_irq(), which indirectly calls atmel_gpio_irq_handler() for
+decoding the cascaded interrupt number. Once decoded, this IRQ is set
+pending in the pipeline log.
 
-Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
----
- kernel/drivers/net/drivers/e1000e/netdev.c | 17 +++++++++++++++++
- 1 file changed, 17 insertions(+)
+There is no reason for this particular code path to re-enable interrupts
+in the CPU, and doing so is actually harmful. Inferring anything beyond
+this point is pretty much useless until this is fixed. Preventing this
+from happening would likely be a significant step forward.
 
-diff --git a/kernel/drivers/net/drivers/e1000e/netdev.c b/kernel/drivers/net/drivers/e1000e/netdev.c
-index 9feaf071a1..baeb6aa09d 100644
---- a/kernel/drivers/net/drivers/e1000e/netdev.c
-+++ b/kernel/drivers/net/drivers/e1000e/netdev.c
-@@ -2879,9 +2879,15 @@ static void e1000e_update_phy_task(struct work_struct *work)
-  * Need to wait a few seconds after link up to get diagnostic information from
-  * the phy
-  */
-+#if LINUX_VERSION_CODE >= KERNEL_VERSION(4,14,0)
-+static void e1000_update_phy_info(struct timer_list *t)
-+{
-+	struct e1000_adapter *adapter = from_timer(adapter, t, phy_info_timer);
-+#else /* < 4.14 */
- static void e1000_update_phy_info(unsigned long data)
- {
- 	struct e1000_adapter *adapter = (struct e1000_adapter *) data;
-+#endif /* < 4.14 */
- 
- 	if (test_bit(__E1000_DOWN, &adapter->state))
- 		return;
-@@ -3027,9 +3033,15 @@ static void e1000e_check_82574_phy_workaround(struct e1000_adapter *adapter)
-  * e1000_watchdog - Timer Call-back
-  * @data: pointer to adapter cast into an unsigned long
-  **/
-+#if LINUX_VERSION_CODE >= KERNEL_VERSION(4,14,0)
-+static void e1000_watchdog(struct timer_list *t)
-+{
-+	struct e1000_adapter *adapter = from_timer(adapter, t, watchdog_timer);
-+#else /* < 4.14 */
- static void e1000_watchdog(unsigned long data)
- {
- 	struct e1000_adapter *adapter = (struct e1000_adapter *) data;
-+#endif /* < 4.14 */
- 
- 	/* Do the rest outside of interrupt context */
- 	rtdm_schedule_nrt_work(&adapter->watchdog_task);
-@@ -4079,6 +4091,10 @@ static int e1000_probe(struct pci_dev *pdev,
- 
- 	memcpy(netdev->dev_addr, adapter->hw.mac.addr, netdev->addr_len);
- 
-+#if LINUX_VERSION_CODE >= KERNEL_VERSION(4,14,0)
-+	timer_setup(&adapter->watchdog_timer, e1000_watchdog, 0);
-+	timer_setup(&adapter->phy_info_timer, e1000_update_phy_info, 0);
-+#else /* < 4.14 */
- 	init_timer(&adapter->watchdog_timer);
- 	adapter->watchdog_timer.function = e1000_watchdog;
- 	adapter->watchdog_timer.data = (unsigned long) adapter;
-@@ -4086,6 +4102,7 @@ static int e1000_probe(struct pci_dev *pdev,
- 	init_timer(&adapter->phy_info_timer);
- 	adapter->phy_info_timer.function = e1000_update_phy_info;
- 	adapter->phy_info_timer.data = (unsigned long) adapter;
-+#endif /* < 4.14 */
- 
- 	INIT_WORK(&adapter->reset_task, e1000_reset_task);
- 	INIT_WORK(&adapter->watchdog_task, e1000_watchdog_task);
+> ------------[ cut here ]------------
+> WARNING: CPU: 0 PID: 0 at kernel/ipipe/core.c:624
+> __ipipe_set_irq_pending+0xf8/0x110
+> Modules linked in:
+> CPU: 0 PID: 0 Comm: swapper Not tainted 4.14.96+ #46
+> Hardware name: Atmel SAMA5
+> I-pipe domain: Linux
+> [<c010f900>] (unwind_backtrace) from [<c010c7d0>] (show_stack+0x20/0x24)
+> [<c010c7d0>] (show_stack) from [<c07cea90>] (dump_stack+0x24/0x28)
+> [<c07cea90>] (dump_stack) from [<c011ba30>] (__warn+0xec/0x110)
+> [<c011ba30>] (__warn) from [<c011bb24>] (warn_slowpath_null+0x30/0x38)
+> [<c011bb24>] (warn_slowpath_null) from [<c018452c>]
+> (__ipipe_set_irq_pending+0xf8/0x110)
+> [<c018452c>] (__ipipe_set_irq_pending) from [<c0185e7c>]
+> (__ipipe_dispatch_irq+0xac/0x218)
+> [<c0185e7c>] (__ipipe_dispatch_irq) from [<c03d894c>]
+> (atmel_gpio_irq_handler+0x100/0x18c)
+> [<c03d894c>] (atmel_gpio_irq_handler) from [<c0185f30>]
+> (__ipipe_dispatch_irq+0x160/0x218)
+> [<c0185f30>] (__ipipe_dispatch_irq) from [<c010128c>]
+> (__ipipe_grab_irq+0x44/0xac)
+> [<c010128c>] (__ipipe_grab_irq) from [<c01017e8>] (aic5_handle+0xa0/0xe4)
+
+
 -- 
-2.16.4
+Philippe.
 
