@@ -1,10 +1,11 @@
-Date: Mon, 27 May 2019 02:27:57 -0500 (CDT)
-From: Per Oberg <pero@wolfram.com>
-Message-ID: <1472936151.691343.1558942077593.JavaMail.zimbra@wolfram.com>
-Subject: RTUdp incoming msg are ok but unable to send UDP
+From: Jan Kiszka <jan.kiszka@siemens.com>
+Subject: [PATCH] ci: Switch arm64 to stable tag
+Message-ID: <05fb28c1-7699-f120-9bb4-11462d167a0b@siemens.com>
+Date: Mon, 27 May 2019 10:10:24 +0200
 MIME-Version: 1.0
 Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -13,29 +14,26 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai <xenomai@xenomai.org>
+To: Xenomai <xenomai@xenomai.org>
 
-Hi folks=20
+Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
+---
+ .travis.yml | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-I am having some troubles with UDP and rtnet. I think it used to work, but =
-I'm not sure in what configuration. I had to update to meet some driver dem=
-ands and now i am using the following versions:
-
-Xenomai 3.0.7
-ipipe-core-4.9.90-x86-6
-Kernel 4.9.90
-
-
-When trying to send a UDP message I got a kernel paging request error so I =
-tried adding nosmap to the boot parameters. This solved the kernel paging b=
-ug but no messages are coming out.=20
-
-
-Does anyone know if there went in some patches to rtudp lately that would f=
-ix this?
-
-Any other tips out there ?
-
-Best regards
-Per =C3=96berg=20
+diff --git a/.travis.yml b/.travis.yml
+index 3dd38b3b6e..3983be0c9e 100644
+--- a/.travis.yml
++++ b/.travis.yml
+@@ -170,7 +170,7 @@ matrix:
+         KERNEL_DEFCONFIG: multi_v7_defconfig
+     - env:
+       - ARCH: arm64
+-        IPIPE_REV: v4.14.78-split
++        IPIPE_REV: ipipe-core-4.14.78-arm64-2
+         IPIPE_KERNEL: https://gitlab.denx.de/Xenomai/ipipe-arm64.git
+         KERNEL_DEFCONFIG: defconfig
+     - env:
+-- 
+2.16.4
 
