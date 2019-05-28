@@ -1,14 +1,8 @@
-Date: Tue, 28 May 2019 06:01:53 -0500 (CDT)
-From: Per Oberg <pero@wolfram.com>
-Message-ID: <1368542045.799892.1559041313687.JavaMail.zimbra@wolfram.com>
-In-Reply-To: <81b1d78e-2835-7e53-3bd9-67e3e3f1daa8@siemens.com>
-References: <1472936151.691343.1558942077593.JavaMail.zimbra@wolfram.com>
- <c3d7d4a5-6446-1109-1100-39dd83cf862e@siemens.com>
- <661761898.734873.1558973625401.JavaMail.zimbra@wolfram.com>
- <81b1d78e-2835-7e53-3bd9-67e3e3f1daa8@siemens.com>
-Subject: Re: RTUdp incoming msg are ok but unable to send UDP
+From: Sebastian Smolorz <sebastian.smolorz@gmx.de>
+Subject: [PATCH] net/tcp: fix unsafe accesses from/to userspace
+Date: Tue, 28 May 2019 16:05:44 +0200
+Message-Id: <20190528140544.4578-1-sebastian.smolorz@gmx.de>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: quoted-printable
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
@@ -18,130 +12,266 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jan Kiszka <jan.kiszka@siemens.com>
-Cc: xenomai <xenomai@xenomai.org>
+To: jan.kiszka@siemens.com
+Cc: xenomai@xenomai.org
 
+Signed-off-by: Sebastian Smolorz <sebastian.smolorz@gmx.de>
+=2D--
+ kernel/drivers/net/stack/ipv4/tcp/tcp.c | 91 ++++++++++++++++---------
+ 1 file changed, 60 insertions(+), 31 deletions(-)
 
------ Den 28 maj 2019, p=C3=A5 kl 8:45, Jan Kiszka jan.kiszka@siemens.com s=
-krev:
+diff --git a/kernel/drivers/net/stack/ipv4/tcp/tcp.c b/kernel/drivers/net/=
+stack/ipv4/tcp/tcp.c
+index 828f7d115..4803165f4 100644
+=2D-- a/kernel/drivers/net/stack/ipv4/tcp/tcp.c
++++ b/kernel/drivers/net/stack/ipv4/tcp/tcp.c
+@@ -1418,15 +1418,18 @@ static void rt_tcp_close(struct rtdm_fd *fd)
+  *  @s:     socket
+  *  @addr:  local address
+  */
+-static int rt_tcp_bind(struct tcp_socket *ts, const struct sockaddr *addr=
+,
+-		       socklen_t addrlen)
++static int rt_tcp_bind(struct rtdm_fd *fd, struct tcp_socket *ts,
++		       const struct sockaddr __user *addr, socklen_t addrlen)
+ {
+-    struct sockaddr_in  *usin =3D (struct sockaddr_in *)addr;
++    struct sockaddr_in  *usin, _usin;
+     rtdm_lockctx_t      context;
+     int                 index;
+     int                 bound =3D 0;
+     int                 ret =3D 0;
 
-> On 27.05.19 18:13, Per Oberg wrote:
++    usin =3D rtnet_get_arg(fd, &_usin, addr, sizeof(_usin));
++    if (IS_ERR(usin))
++	return PTR_ERR(usin);
 
-> > ----- Den 27 maj 2019, p=C3=A5 kl 10:22, Jan Kiszka jan.kiszka@siemens.=
-com skrev:
+     if ((addrlen < (int)sizeof(struct sockaddr_in)) ||
+ 	((usin->sin_port & tcp_auto_port_mask) =3D=3D tcp_auto_port_start))
+@@ -1475,10 +1478,11 @@ static int rt_tcp_bind(struct tcp_socket *ts, cons=
+t struct sockaddr *addr,
+ /***
+  *  rt_tcp_connect
+  */
+-static int rt_tcp_connect(struct tcp_socket *ts, const struct sockaddr *s=
+erv_addr,
++static int rt_tcp_connect(struct rtdm_fd *fd, struct tcp_socket *ts,
++			  const struct sockaddr __user *serv_addr,
+ 			  socklen_t addrlen)
+ {
+-    struct sockaddr_in  *usin =3D (struct sockaddr_in *) serv_addr;
++    struct sockaddr_in  *usin, _usin;
+     struct dest_route   rt;
+     rtdm_lockctx_t      context;
+     int ret;
+@@ -1486,6 +1490,10 @@ static int rt_tcp_connect(struct tcp_socket *ts, co=
+nst struct sockaddr *serv_add
+     if (addrlen < (int)sizeof(struct sockaddr_in))
+ 	return -EINVAL;
 
-> >> On 27.05.19 09:27, Per Oberg via Xenomai wrote:
-> >>> Hi folks
++    usin =3D rtnet_get_arg(fd, &_usin, serv_addr, sizeof(_usin));
++    if (IS_ERR(usin))
++	return PTR_ERR(usin);
++
+     if (usin->sin_family !=3D AF_INET)
+ 	return -EAFNOSUPPORT;
 
-> >>> I am having some troubles with UDP and rtnet. I think it used to work=
-, but I'm
-> >>> not sure in what configuration. I had to update to meet some driver d=
-emands and
-> >>> now i am using the following versions:
+@@ -1594,18 +1602,23 @@ static int rt_tcp_listen(struct tcp_socket *ts, un=
+signed long backlog)
+ /***
+  *  rt_tcp_accept
+  */
+-static int rt_tcp_accept(struct tcp_socket *ts, struct sockaddr *addr,
+-			 socklen_t *addrlen)
++static int rt_tcp_accept(struct rtdm_fd *fd, struct tcp_socket *ts,
++			 struct sockaddr *addr, socklen_t __user *addrlen)
+ {
+     /* Return sockaddr, but bind it with rt_socket_init, so it would be
+        possible to read/write from it in future, return valid file descri=
+ptor */
 
-> >>> Xenomai 3.0.7
-> >>> ipipe-core-4.9.90-x86-6
-> >>> Kernel 4.9.90
+     int ret;
+-    struct sockaddr_in  *sin =3D (struct sockaddr_in*)addr;
++    socklen_t           *uaddrlen, _uaddrlen;
++    struct sockaddr_in  sin;
+     nanosecs_rel_t      timeout =3D ts->sock.timeout;
+     rtdm_lockctx_t      context;
+     struct dest_route   rt;
 
++    uaddrlen =3D rtnet_get_arg(fd, &_uaddrlen, addrlen, sizeof(_uaddrlen)=
+);
++    if (IS_ERR(uaddrlen))
++	return PTR_ERR(uaddrlen);
++
+     rtdm_lock_get_irqsave(&ts->socket_lock, context);
+     if (ts->is_accepting || ts->is_accepted) {
+ 	/* socket is already accepted or is accepting a connection right now */
+@@ -1613,7 +1626,7 @@ static int rt_tcp_accept(struct tcp_socket *ts, stru=
+ct sockaddr *addr,
+ 	return -EALREADY;
+     }
 
-> >>> When trying to send a UDP message I got a kernel paging request error=
- so I tried
-> >>> adding nosmap to the boot parameters. This solved the kernel paging b=
-ug but no
-> >>> messages are coming out.
+-    if (ts->tcp_state !=3D TCP_LISTEN || *addrlen < sizeof(struct sockadd=
+r_in)) {
++    if (ts->tcp_state !=3D TCP_LISTEN || *uaddrlen < sizeof(struct sockad=
+dr_in)) {
+ 	rtdm_lock_put_irqrestore(&ts->socket_lock, context);
+ 	return -EINVAL;
+     }
+@@ -1652,15 +1665,24 @@ static int rt_tcp_accept(struct tcp_socket *ts, st=
+ruct sockaddr *addr,
+ 	goto err;
+     }
 
++    if (addr) {
++	sin.sin_family      =3D AF_INET;
++	sin.sin_port        =3D ts->dport;
++	sin.sin_addr.s_addr =3D ts->daddr;
++	ret =3D rtnet_put_arg(fd, addr, &sin, sizeof(sin));
++	if (ret) {
++	    rtdm_lock_put_irqrestore(&ts->socket_lock, context);
++	    rtdev_dereference(rt.rtdev);
++	    ret =3D -EFAULT;
++	    goto err;
++	}
++    }
++
+     if (ts->rt.rtdev =3D=3D NULL)
+ 	memcpy(&ts->rt, &rt, sizeof(rt));
+     else
+ 	rtdev_dereference(rt.rtdev);
 
-> >>> Does anyone know if there went in some patches to rtudp lately that w=
-ould fix
-> >>> this?
+-    sin->sin_family      =3D AF_INET;
+-    sin->sin_port        =3D ts->dport;
+-    sin->sin_addr.s_addr =3D ts->daddr;
+-
+     ts->is_accepted =3D 1;
+     rtdm_lock_put_irqrestore(&ts->socket_lock, context);
 
-> >>> Any other tips out there ?
+@@ -1799,14 +1821,14 @@ static int rt_tcp_ioctl(struct rtdm_fd *fd,
+ 		setaddr =3D rtnet_get_arg(fd, &_setaddr, arg, sizeof(_setaddr));
+ 		if (IS_ERR(setaddr))
+ 			return PTR_ERR(setaddr);
+-		return rt_tcp_bind(ts, setaddr->addr, setaddr->addrlen);
++		return rt_tcp_bind(fd, ts, setaddr->addr, setaddr->addrlen);
+ 	case _RTIOC_CONNECT:
+ 		if (!in_rt)
+ 			return -ENOSYS;
+ 		setaddr =3D rtnet_get_arg(fd, &_setaddr, arg, sizeof(_setaddr));
+ 		if (IS_ERR(setaddr))
+ 			return PTR_ERR(setaddr);
+-		return rt_tcp_connect(ts, setaddr->addr, setaddr->addrlen);
++		return rt_tcp_connect(fd, ts, setaddr->addr, setaddr->addrlen);
 
+ 	case _RTIOC_LISTEN:
+ 		return rt_tcp_listen(ts, (unsigned long)arg);
+@@ -1817,7 +1839,7 @@ static int rt_tcp_ioctl(struct rtdm_fd *fd,
+ 		getaddr =3D rtnet_get_arg(fd, &_getaddr, arg, sizeof(_getaddr));
+ 		if (IS_ERR(getaddr))
+ 			return PTR_ERR(getaddr);
+-		return rt_tcp_accept(ts, getaddr->addr, getaddr->addrlen);
++		return rt_tcp_accept(fd, ts, getaddr->addr, getaddr->addrlen);
 
-> >> Can you try if the issue is also present in stable/v3.0.x or master?
+ 	case _RTIOC_SHUTDOWN:
+ 		return rt_tcp_shutdown(ts, (unsigned long)arg);
+@@ -1994,13 +2016,15 @@ static ssize_t rt_tcp_read(struct rtdm_fd *fd, voi=
+d *buf, size_t nbyte)
+ /***
+  *  rt_tcp_write
+  */
+-static ssize_t rt_tcp_write(struct rtdm_fd *fd, const void *buf, size_t n=
+byte)
++static ssize_t rt_tcp_write(struct rtdm_fd *fd, const void __user *user_b=
+uf,
++			    size_t nbyte)
+ {
+     struct tcp_socket *ts =3D rtdm_fd_to_private(fd);
+     uint32_t sent_len =3D 0;
+     rtdm_lockctx_t      context;
+     int ret =3D 0;
+     nanosecs_rel_t sk_sndtimeo;
++    void *buf;
 
->> At a first glance it looks like the bug is fixed. However, I couldn't ma=
-ke it
->> work in 3.0.8 because of compilation issues with the kernel. In current =
-master
-> > it works however.
+     if (!rtdm_fd_is_user(fd)) {
+ 	return -EFAULT;
+@@ -2022,6 +2046,16 @@ static ssize_t rt_tcp_write(struct rtdm_fd *fd, con=
+st void *buf, size_t nbyte)
 
+     rtdm_lock_put_irqrestore(&ts->socket_lock, context);
 
-> Can you share the compilation issues? Either they have been fixed in git,=
- or
-> they better should be before the next release.
++    buf =3D xnmalloc(nbyte);
++    if (buf =3D=3D NULL)
++	return -ENOMEM;
++
++    ret =3D rtdm_copy_from_user(fd, buf, user_buf, nbyte);
++    if (ret) {
++	xnfree(buf);
++	return ret;
++    }
++
+     while (sent_len < nbyte) {
 
+ 	ret =3D rtdm_event_timedwait(&ts->send_evt, sk_sndtimeo, NULL);
+@@ -2031,13 +2065,17 @@ static ssize_t rt_tcp_write(struct rtdm_fd *fd, co=
+nst void *buf, size_t nbyte)
+ 		case -EWOULDBLOCK:
+ 		case -ETIMEDOUT:
+ 		case -EINTR:
++		    xnfree(buf);
+ 		    return sent_len ? : ret;
 
-I'm compiling using my own Yocto setup based on meta-xenomai from [1] below=
-. For some reason I couldn't compile the kernel modules because of a missin=
-g  rtdm/net.h. I noticed that there was a split in the git tree while back =
-so I guess that's the original culprit.=20
+ 		case -EIDRM: /* event is destroyed */
+ 		default:
+-		    if (ts->is_closed)
++		    if (ts->is_closed) {
++			xnfree(buf);
+ 			return -EBADF;
++		    }
 
-However, I was never able to figure out if I had some old Xenomai-stuff lay=
-ing around in the wrong places or if I forgot to update my sdk. Further, I =
-was not able to get the actual compilation environment or see the real "cc =
-commands". Instead of digging around further I decided to check master.
++		    xnfree(buf);
+ 		    return sent_len ? : ret;
+ 	    }
 
-So, either Yocto kept the old kernel source or there is something else brok=
-en in 3.0.8 compilation. I haven't been able to tell which is more likely. =
-When I created my own 3.0.8a release files based on master it started worki=
-ng again without cleaning anything else out.=20
+@@ -2054,6 +2092,7 @@ static ssize_t rt_tcp_write(struct rtdm_fd *fd, cons=
+t void *buf, size_t nbyte)
+ 	    rtdm_event_signal(&ts->send_evt);
+     }
 
-This is one example of the error:
----------------------------------------------------------------------------=
----------------------------------------------
-In file included from .../kernel-source/drivers/xenomai/net/stack/include/r=
-tdev.h:37:0,
-                 from .../kernel-source/drivers/xenomai/net/stack/include/r=
-tnet_port.h:32,
-                 from .../kernel-source/drivers/xenomai/net/drivers/8139too=
-.c:54:
-.../kernel-source/drivers/xenomai/net/stack/include/rtskb.h:32:10: fatal er=
-ror: rtdm/net.h: No such file or directory
----------------------------------------------------------------------------=
----------------------------------------------
++    xnfree(buf);
+     return (ret < 0 ? ret : sent_len);
+ }
 
-I just realized that I probably hit this bug: [2/3]. I knew I saw it somewh=
-ere, but still couldn't fint it when I was looking yesterday.=20
+@@ -2104,7 +2143,6 @@ static ssize_t rt_tcp_sendmsg(struct rtdm_fd *fd,
+ 	struct user_msghdr _msg;
+ 	ssize_t ret;
+ 	size_t len;
+-	void *buf;
 
-Does anyone have a good idea on how to effectively search the mailing list =
-?=20
+ 	if (msg_flags)
+ 		return -EOPNOTSUPP;
+@@ -2122,18 +2160,9 @@ static ssize_t rt_tcp_sendmsg(struct rtdm_fd *fd,
+ 		return ret;
 
+ 	len =3D iov[0].iov_len;
+-	if (len > 0) {
+-		buf =3D xnmalloc(len);
+-		if (buf =3D=3D NULL) {
+-			ret =3D -ENOMEM;
+-			goto out;
+-		}
+-		ret =3D rtdm_copy_from_user(fd, buf, iov[0].iov_base, len);
+-		if (!ret)
+-			ret =3D rt_tcp_write(fd, buf, len);
+-		xnfree(buf);
+-	}
+-out:
++	if (len > 0)
++	    ret =3D rt_tcp_write(fd, iov[0].iov_base, len);
++
+ 	rtdm_drop_iovec(iov, iov_fast);
 
-> >> Jan
+ 	return ret;
+=2D-
+2.19.1
 
-> >> PS: 4.9 is EOL by now.
-
->> Yes, I've been meaning to upgrade to 4.14, but I got the feeling there w=
-as
-> > something iffy going on for quite a while?
-
-
-> What exactly do you mean?
-
-Sorry for being unclear. With iffy I meant that I've been seeing some repor=
-ts of issues people have had, and I was probably more wrong than right. It'=
-s kind of hard to figure out afterwards if issues you only glanced on when =
-they passed the mailing list was ever fixed, only a glitch, or something se=
-rious. The bug-reporting system seems a bit under-used =3D)
-
-Anyway, I was referring to these:
-- [4] In my mind it was only yesterday it was released, but time flies.=20
-- [5] with a follow up that it was also for real hardware
-- [6] perhaps only amd issue ?
-- [7] kvm only issue ?
-
-
-
-> Jan
-
-[1] https://bitbucket.org/pficheux/meta-xenomai/src
-[2] https://www.xenomai.org/pipermail/xenomai/2019-February/040364.html
-[3] https://www.xenomai.org/pipermail/xenomai/2019-May/040866.html
-[4] https://www.xenomai.org/pipermail/xenomai/2018-October/039653.html
-[5] https://www.xenomai.org/pipermail/xenomai/2019-March/040460.html
-[6] https://www.xenomai.org/pipermail/xenomai/2019-March/040619.html
-[7] https://www.xenomai.org/pipermail/xenomai/2019-April/040722.html
-
-Per =C3=96berg=20
 
