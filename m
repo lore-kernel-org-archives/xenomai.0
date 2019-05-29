@@ -1,9 +1,22 @@
-From: Sebastian Smolorz <sebastian.smolorz@gmx.de>
-Subject: [PATCH] net/tcp: fix unsafe accesses from/to userspace
-Date: Tue, 28 May 2019 16:05:44 +0200
-Message-Id: <20190528140544.4578-1-sebastian.smolorz@gmx.de>
+Subject: Re: [PATCH] lib/cobalt: init: do not call pthread_atfork() from
+ atfork() handlers
+References: <20190503150939.3594-1-rpm@xenomai.org>
+ <VI1PR05MB591765785A35FB3685463256F6300@VI1PR05MB5917.eurprd05.prod.outlook.com>
+ <6ef3a9cf-cb30-59c4-1983-4475fdc7cd6e@xenomai.org>
+ <c0230398-8da5-a0b4-d30c-17e91e2f0cb7@xenomai.org>
+ <DB8PR05MB5915F745C3CA952C04179E2EF6080@DB8PR05MB5915.eurprd05.prod.outlook.com>
+ <69740012-4273-4647-00a2-55fd7ad9468d@xenomai.org>
+ <DB8PR05MB5915BB62DD6315DB14C4CF04F6080@DB8PR05MB5915.eurprd05.prod.outlook.com>
+ <bda67d42-c84b-9951-6202-7385381191be@xenomai.org>
+ <e0969597-c9f2-77d6-90ad-50dffde6aede@siemens.com>
+From: Philippe Gerum <rpm@xenomai.org>
+Message-ID: <ae41fa53-9126-0d2c-7089-2870c6276cb4@xenomai.org>
+Date: Wed, 29 May 2019 10:22:55 +0200
 MIME-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
+In-Reply-To: <e0969597-c9f2-77d6-90ad-50dffde6aede@siemens.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -12,266 +25,173 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: jan.kiszka@siemens.com
-Cc: xenomai@xenomai.org
+To: Jan Kiszka <jan.kiszka@siemens.com>, Lange Norbert <norbert.lange@andritz.com>, "Xenomai (xenomai@xenomai.org)" <xenomai@xenomai.org>
 
-Signed-off-by: Sebastian Smolorz <sebastian.smolorz@gmx.de>
-=2D--
- kernel/drivers/net/stack/ipv4/tcp/tcp.c | 91 ++++++++++++++++---------
- 1 file changed, 60 insertions(+), 31 deletions(-)
+On 5/27/19 9:19 AM, Jan Kiszka wrote:
+> On 14.05.19 15:58, Philippe Gerum via Xenomai wrote:
+>> On 5/14/19 12:24 PM, Lange Norbert wrote:
+>>>
+>>>
+>>>> -----Original Message-----
+>>>> From: Philippe Gerum <rpm@xenomai.org>
+>>>> Sent: Dienstag, 14. Mai 2019 12:05
+>>>> To: Lange Norbert <norbert.lange@andritz.com>; Xenomai
+>>>> (xenomai@xenomai.org) <xenomai@xenomai.org>
+>>>> Subject: Re: [PATCH] lib/cobalt: init: do not call pthread_atfork()
+>>>> from
+>>>> atfork() handlers
+>>>>
+>>>> E-MAIL FROM A NON-ANDRITZ SOURCE: AS A SECURITY MEASURE, PLEASE
+>>>> EXERCISE CAUTION WITH E-MAIL CONTENT AND ANY LINKS OR
+>>>> ATTACHMENTS.
+>>>>
+>>>>
+>>>> On 5/14/19 11:53 AM, Lange Norbert wrote:
+>>>>> (readding ML)
+>>>>>
+>>>>>> -----Original Message-----
+>>>>>> From: Philippe Gerum <rpm@xenomai.org>
+>>>>>> Sent: Dienstag, 14. Mai 2019 10:38
+>>>>>> To: Lange Norbert <norbert.lange@andritz.com>
+>>>>>> Subject: Re: [PATCH] lib/cobalt: init: do not call pthread_atfork()
+>>>>>> from
+>>>>>> atfork() handlers
+>>>>>>
+>>>>>> E-MAIL FROM A NON-ANDRITZ SOURCE: AS A SECURITY MEASURE,
+>>>> PLEASE
+>>>>>> EXERCISE CAUTION WITH E-MAIL CONTENT AND ANY LINKS OR
+>>>> ATTACHMENTS.
+>>>>>>
+>>>>>>
+>>>>>> On 5/14/19 10:35 AM, Philippe Gerum wrote:
+>>>>>>> On 5/6/19 9:56 AM, Lange Norbert wrote:
+>>>>>>>> Hello Philippe,
+>>>>>>>>
+>>>>>>>> using this patch, smokey's "fork test" alone finishes, but..
+>>>>>>>> the smokey suite will hang when running that test after the mutex
+>>>>>>>> or cvars test. Eg.
+>>>>>>>>
+>>>>>>>> smokey --run=10,11
+>>>>>>>> smokey --run=12,11
+>>>>>>>
+>>>>>>> I cannot reproduce this with glibc 2.28, and the tip of my
+>>>>>>> for-upstream tree which includes that fix. Which glibc are you
+>>>>>>> running?
+>>>>>
+>>>>> Glibc 2.28, Xenomai userspace is based on current master branch with
+>>>>> fix added (tested both with and without our company stuff on top)
+>>>>>
+>>>>>>
+>>>>>> Is this the sequence which hangs on your end?
+>>>>>>
+>>>>>> ~ # smokey --run=13-14
+>>>>>> posix_cond OK
+>>>>>> posix_fork OK
+>>>>>> ~ # smokey --run=15-14
+>>>>>> posix_mutex OK
+>>>>>> posix_fork OK
+>>>>>>
+>>>>>
+>>>>> Yes:
+>>>>>
+>>>>> root@buildroot:~# /usr/xenomai/bin/smokey --run=10 posix_mutex OK
+>>>>> root@buildroot:~# /usr/xenomai/bin/smokey --run=11 posix_fork OK
+>>>>> root@buildroot:~# /usr/xenomai/bin/smokey --run=10,11 posix_mutex OK
+>>>>>
+>>>>> When it hangs, this is the stacktrace:
+>>>>> (switched to crosstool-NG for the toolchain, did not check to enable
+>>>> debuginfo for glibc).
+>>>>>
+>>>>> (gdb) bt
+>>>>> #0  0x00007f45b4d86feb in ?? () from /lib64/libc.so.6
+>>>>> #1  0x00007f45b4de8b95 in malloc () from /lib64/libc.so.6
+>>>>> #2  0x00007f45b4f81a53 in ?? () from /lib64/ld-linux-x86-64.so.2
+>>>>> #3  0x00007f45b4f83149 in ?? () from /lib64/ld-linux-x86-64.so.2
+>>>>> #4  0x00007f45b4f8d4cc in ?? () from /lib64/ld-linux-x86-64.so.2
+>>>>> #5  0x00007f45b4ea7bcf in _dl_catch_exception () from /lib64/libc.so.6
+>>>>
+>>>> That is a different issue, possibly not directly related.
+>>>> backtrace() is used over
+>>>> a signal context in the default SIGSHADOW handler libcobalt
+>>>> installs, which is
+>>>> unsafe since backtrace() calls malloc(). This run ends up with a
+>>>> recursive call
+>>>> to malloc() which deadlocks on the internal arena lock. Disabling
+>>>> CONFIG_XENO_OPT_DEBUG_TRACE_RELAX may paper over the issue.
+>>>
+>>> So smokeys fork will cause some relaxation log entries if I
+>>> understood this correctly,
+>>> and a "clean" application should leave realtime before calling fork.
+>>> (Unrelated to the issue that a deadlock should not happen)
+>>>
+>>
+>> Aside of calling uninit backtrace() from a sighandler which is wrong,
+>> it looks like this issue pops up because two other conditions are met:
+>>
+>> - some test which precedes smokey-fork switched the scheduling class
+>> of the main() smokey thread to a real-time policy (e.g. posix-mutex.c
+>> does so when entering run_posix_mutex()). When smokey-fork re-execs,
+>> the child inherits the scheduler settings for the main thread, so
+>> eventually runs copperplate inits as a SCHED_FIFO thread, which is
+>> eligible for relax detection (SCHED_OTHER/WEAK would not be).
+>> - xnthread_relax() from the core always asks for a backtrace via a
+>> SIGSHADOW signal upon detection, including when the current thread
+>> does not want to be warned about mode switches, which seems wrong. If
+>> the warn-on-switch bit was considered as it should be, the request for
+>> backtrace via SIGSHADOW would not be sent in the first place.
+>>
+>> Clearing either of these conditions like the couple of patches below
+>> does should tame down the issue. I would recommend to merge both
+>> actually.
+>>
+>> diff --git a/kernel/cobalt/thread.c b/kernel/cobalt/thread.c
+>> index fa7a65569..6caf9ef37 100644
+>> --- a/kernel/cobalt/thread.c
+>> +++ b/kernel/cobalt/thread.c
+>> @@ -2131,11 +2131,11 @@ void xnthread_relax(int notify, int reason)
+>>        * information.
+>>        */
+>>       xnthread_propagate_schedparam(thread);
+>> -   
+>> +
+>>       if (xnthread_test_state(thread, XNUSER) && notify) {
+>> -        xndebug_notify_relax(thread, reason);
+>>           if (xnthread_test_state(thread, XNWARN)) {
+>>               /* Help debugging spurious relaxes. */
+>> +            xndebug_notify_relax(thread, reason);
+>>               memset(&si, 0, sizeof(si));
+>>               si.si_signo = SIGDEBUG;
+>>               si.si_code = SI_QUEUE;
+>> diff --git a/testsuite/smokey/main.c b/testsuite/smokey/main.c
+>> index 12321dfc5..5702e825a 100644
+>> --- a/testsuite/smokey/main.c
+>> +++ b/testsuite/smokey/main.c
+>> @@ -22,6 +22,7 @@
+>>     int main(int argc, char *const argv[])
+>>   {
+>> +    struct sched_param param = { .sched_priority = 0 };
+>>       struct smokey_test *t;
+>>       int ret, fails = 0;
+>>   @@ -29,6 +30,7 @@ int main(int argc, char *const argv[])
+>>           return 0;
+>>         for_each_smokey_test(t) {
+>> +        pthread_setschedparam(pthread_self(), SCHED_OTHER, &param);
+>>           ret = t->run(t, argc, argv);
+>>           if (ret) {
+>>               if (ret == -ENOSYS) {
+>>
+> 
+> Can you provide those hunks as patches?
+>
 
-diff --git a/kernel/drivers/net/stack/ipv4/tcp/tcp.c b/kernel/drivers/net/=
-stack/ipv4/tcp/tcp.c
-index 828f7d115..4803165f4 100644
-=2D-- a/kernel/drivers/net/stack/ipv4/tcp/tcp.c
-+++ b/kernel/drivers/net/stack/ipv4/tcp/tcp.c
-@@ -1418,15 +1418,18 @@ static void rt_tcp_close(struct rtdm_fd *fd)
-  *  @s:     socket
-  *  @addr:  local address
-  */
--static int rt_tcp_bind(struct tcp_socket *ts, const struct sockaddr *addr=
-,
--		       socklen_t addrlen)
-+static int rt_tcp_bind(struct rtdm_fd *fd, struct tcp_socket *ts,
-+		       const struct sockaddr __user *addr, socklen_t addrlen)
- {
--    struct sockaddr_in  *usin =3D (struct sockaddr_in *)addr;
-+    struct sockaddr_in  *usin, _usin;
-     rtdm_lockctx_t      context;
-     int                 index;
-     int                 bound =3D 0;
-     int                 ret =3D 0;
+Those are pending in my queue with other patches. I'll submit them later
+today.
 
-+    usin =3D rtnet_get_arg(fd, &_usin, addr, sizeof(_usin));
-+    if (IS_ERR(usin))
-+	return PTR_ERR(usin);
+> And how about the backtrace() issue?
+> 
+The most practical way is to warmup backtrace() by a dummy call during
+inits as Norbert suggested. I'll add a patch doing so to the queue.
 
-     if ((addrlen < (int)sizeof(struct sockaddr_in)) ||
- 	((usin->sin_port & tcp_auto_port_mask) =3D=3D tcp_auto_port_start))
-@@ -1475,10 +1478,11 @@ static int rt_tcp_bind(struct tcp_socket *ts, cons=
-t struct sockaddr *addr,
- /***
-  *  rt_tcp_connect
-  */
--static int rt_tcp_connect(struct tcp_socket *ts, const struct sockaddr *s=
-erv_addr,
-+static int rt_tcp_connect(struct rtdm_fd *fd, struct tcp_socket *ts,
-+			  const struct sockaddr __user *serv_addr,
- 			  socklen_t addrlen)
- {
--    struct sockaddr_in  *usin =3D (struct sockaddr_in *) serv_addr;
-+    struct sockaddr_in  *usin, _usin;
-     struct dest_route   rt;
-     rtdm_lockctx_t      context;
-     int ret;
-@@ -1486,6 +1490,10 @@ static int rt_tcp_connect(struct tcp_socket *ts, co=
-nst struct sockaddr *serv_add
-     if (addrlen < (int)sizeof(struct sockaddr_in))
- 	return -EINVAL;
-
-+    usin =3D rtnet_get_arg(fd, &_usin, serv_addr, sizeof(_usin));
-+    if (IS_ERR(usin))
-+	return PTR_ERR(usin);
-+
-     if (usin->sin_family !=3D AF_INET)
- 	return -EAFNOSUPPORT;
-
-@@ -1594,18 +1602,23 @@ static int rt_tcp_listen(struct tcp_socket *ts, un=
-signed long backlog)
- /***
-  *  rt_tcp_accept
-  */
--static int rt_tcp_accept(struct tcp_socket *ts, struct sockaddr *addr,
--			 socklen_t *addrlen)
-+static int rt_tcp_accept(struct rtdm_fd *fd, struct tcp_socket *ts,
-+			 struct sockaddr *addr, socklen_t __user *addrlen)
- {
-     /* Return sockaddr, but bind it with rt_socket_init, so it would be
-        possible to read/write from it in future, return valid file descri=
-ptor */
-
-     int ret;
--    struct sockaddr_in  *sin =3D (struct sockaddr_in*)addr;
-+    socklen_t           *uaddrlen, _uaddrlen;
-+    struct sockaddr_in  sin;
-     nanosecs_rel_t      timeout =3D ts->sock.timeout;
-     rtdm_lockctx_t      context;
-     struct dest_route   rt;
-
-+    uaddrlen =3D rtnet_get_arg(fd, &_uaddrlen, addrlen, sizeof(_uaddrlen)=
-);
-+    if (IS_ERR(uaddrlen))
-+	return PTR_ERR(uaddrlen);
-+
-     rtdm_lock_get_irqsave(&ts->socket_lock, context);
-     if (ts->is_accepting || ts->is_accepted) {
- 	/* socket is already accepted or is accepting a connection right now */
-@@ -1613,7 +1626,7 @@ static int rt_tcp_accept(struct tcp_socket *ts, stru=
-ct sockaddr *addr,
- 	return -EALREADY;
-     }
-
--    if (ts->tcp_state !=3D TCP_LISTEN || *addrlen < sizeof(struct sockadd=
-r_in)) {
-+    if (ts->tcp_state !=3D TCP_LISTEN || *uaddrlen < sizeof(struct sockad=
-dr_in)) {
- 	rtdm_lock_put_irqrestore(&ts->socket_lock, context);
- 	return -EINVAL;
-     }
-@@ -1652,15 +1665,24 @@ static int rt_tcp_accept(struct tcp_socket *ts, st=
-ruct sockaddr *addr,
- 	goto err;
-     }
-
-+    if (addr) {
-+	sin.sin_family      =3D AF_INET;
-+	sin.sin_port        =3D ts->dport;
-+	sin.sin_addr.s_addr =3D ts->daddr;
-+	ret =3D rtnet_put_arg(fd, addr, &sin, sizeof(sin));
-+	if (ret) {
-+	    rtdm_lock_put_irqrestore(&ts->socket_lock, context);
-+	    rtdev_dereference(rt.rtdev);
-+	    ret =3D -EFAULT;
-+	    goto err;
-+	}
-+    }
-+
-     if (ts->rt.rtdev =3D=3D NULL)
- 	memcpy(&ts->rt, &rt, sizeof(rt));
-     else
- 	rtdev_dereference(rt.rtdev);
-
--    sin->sin_family      =3D AF_INET;
--    sin->sin_port        =3D ts->dport;
--    sin->sin_addr.s_addr =3D ts->daddr;
--
-     ts->is_accepted =3D 1;
-     rtdm_lock_put_irqrestore(&ts->socket_lock, context);
-
-@@ -1799,14 +1821,14 @@ static int rt_tcp_ioctl(struct rtdm_fd *fd,
- 		setaddr =3D rtnet_get_arg(fd, &_setaddr, arg, sizeof(_setaddr));
- 		if (IS_ERR(setaddr))
- 			return PTR_ERR(setaddr);
--		return rt_tcp_bind(ts, setaddr->addr, setaddr->addrlen);
-+		return rt_tcp_bind(fd, ts, setaddr->addr, setaddr->addrlen);
- 	case _RTIOC_CONNECT:
- 		if (!in_rt)
- 			return -ENOSYS;
- 		setaddr =3D rtnet_get_arg(fd, &_setaddr, arg, sizeof(_setaddr));
- 		if (IS_ERR(setaddr))
- 			return PTR_ERR(setaddr);
--		return rt_tcp_connect(ts, setaddr->addr, setaddr->addrlen);
-+		return rt_tcp_connect(fd, ts, setaddr->addr, setaddr->addrlen);
-
- 	case _RTIOC_LISTEN:
- 		return rt_tcp_listen(ts, (unsigned long)arg);
-@@ -1817,7 +1839,7 @@ static int rt_tcp_ioctl(struct rtdm_fd *fd,
- 		getaddr =3D rtnet_get_arg(fd, &_getaddr, arg, sizeof(_getaddr));
- 		if (IS_ERR(getaddr))
- 			return PTR_ERR(getaddr);
--		return rt_tcp_accept(ts, getaddr->addr, getaddr->addrlen);
-+		return rt_tcp_accept(fd, ts, getaddr->addr, getaddr->addrlen);
-
- 	case _RTIOC_SHUTDOWN:
- 		return rt_tcp_shutdown(ts, (unsigned long)arg);
-@@ -1994,13 +2016,15 @@ static ssize_t rt_tcp_read(struct rtdm_fd *fd, voi=
-d *buf, size_t nbyte)
- /***
-  *  rt_tcp_write
-  */
--static ssize_t rt_tcp_write(struct rtdm_fd *fd, const void *buf, size_t n=
-byte)
-+static ssize_t rt_tcp_write(struct rtdm_fd *fd, const void __user *user_b=
-uf,
-+			    size_t nbyte)
- {
-     struct tcp_socket *ts =3D rtdm_fd_to_private(fd);
-     uint32_t sent_len =3D 0;
-     rtdm_lockctx_t      context;
-     int ret =3D 0;
-     nanosecs_rel_t sk_sndtimeo;
-+    void *buf;
-
-     if (!rtdm_fd_is_user(fd)) {
- 	return -EFAULT;
-@@ -2022,6 +2046,16 @@ static ssize_t rt_tcp_write(struct rtdm_fd *fd, con=
-st void *buf, size_t nbyte)
-
-     rtdm_lock_put_irqrestore(&ts->socket_lock, context);
-
-+    buf =3D xnmalloc(nbyte);
-+    if (buf =3D=3D NULL)
-+	return -ENOMEM;
-+
-+    ret =3D rtdm_copy_from_user(fd, buf, user_buf, nbyte);
-+    if (ret) {
-+	xnfree(buf);
-+	return ret;
-+    }
-+
-     while (sent_len < nbyte) {
-
- 	ret =3D rtdm_event_timedwait(&ts->send_evt, sk_sndtimeo, NULL);
-@@ -2031,13 +2065,17 @@ static ssize_t rt_tcp_write(struct rtdm_fd *fd, co=
-nst void *buf, size_t nbyte)
- 		case -EWOULDBLOCK:
- 		case -ETIMEDOUT:
- 		case -EINTR:
-+		    xnfree(buf);
- 		    return sent_len ? : ret;
-
- 		case -EIDRM: /* event is destroyed */
- 		default:
--		    if (ts->is_closed)
-+		    if (ts->is_closed) {
-+			xnfree(buf);
- 			return -EBADF;
-+		    }
-
-+		    xnfree(buf);
- 		    return sent_len ? : ret;
- 	    }
-
-@@ -2054,6 +2092,7 @@ static ssize_t rt_tcp_write(struct rtdm_fd *fd, cons=
-t void *buf, size_t nbyte)
- 	    rtdm_event_signal(&ts->send_evt);
-     }
-
-+    xnfree(buf);
-     return (ret < 0 ? ret : sent_len);
- }
-
-@@ -2104,7 +2143,6 @@ static ssize_t rt_tcp_sendmsg(struct rtdm_fd *fd,
- 	struct user_msghdr _msg;
- 	ssize_t ret;
- 	size_t len;
--	void *buf;
-
- 	if (msg_flags)
- 		return -EOPNOTSUPP;
-@@ -2122,18 +2160,9 @@ static ssize_t rt_tcp_sendmsg(struct rtdm_fd *fd,
- 		return ret;
-
- 	len =3D iov[0].iov_len;
--	if (len > 0) {
--		buf =3D xnmalloc(len);
--		if (buf =3D=3D NULL) {
--			ret =3D -ENOMEM;
--			goto out;
--		}
--		ret =3D rtdm_copy_from_user(fd, buf, iov[0].iov_base, len);
--		if (!ret)
--			ret =3D rt_tcp_write(fd, buf, len);
--		xnfree(buf);
--	}
--out:
-+	if (len > 0)
-+	    ret =3D rt_tcp_write(fd, iov[0].iov_base, len);
-+
- 	rtdm_drop_iovec(iov, iov_fast);
-
- 	return ret;
-=2D-
-2.19.1
-
+-- 
+Philippe.
 
