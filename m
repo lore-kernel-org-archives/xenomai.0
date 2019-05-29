@@ -1,16 +1,13 @@
-Subject: Re: SAMA5D2 Xplained kernel panic
-References: <cca1a283-5dae-8c91-568d-3abf641fbfdc@rsi-elektrotechnik.de>
- <d8f665fd-d9f5-19ee-ea81-eafd59a8f5cd@xenomai.org>
- <e840b709-8801-846b-2e5d-fbc082dfa6b1@rsi-elektrotechnik.de>
- <2963de7d-72c0-c524-e29d-bba1e2b69d94@xenomai.org>
-From: Jan Leupold <leupold@rsi-elektrotechnik.de>
-Message-ID: <9db33088-e0e7-c627-3be8-6ae26d292c6e@rsi-elektrotechnik.de>
-Date: Wed, 29 May 2019 14:58:13 +0200
+Subject: Re: [PATCH] net/tcp: fix unsafe accesses from/to userspace
+References: <20190528140544.4578-1-sebastian.smolorz@gmx.de>
+From: Jan Kiszka <jan.kiszka@siemens.com>
+Message-ID: <59043d19-808d-0498-3768-1719ed060e62@siemens.com>
+Date: Wed, 29 May 2019 19:17:05 +0200
 MIME-Version: 1.0
-In-Reply-To: <2963de7d-72c0-c524-e29d-bba1e2b69d94@xenomai.org>
-Content-Type: text/plain; charset="utf-8"
-Content-Language: de-DE
-Content-Transfer-Encoding: 8bit
+In-Reply-To: <20190528140544.4578-1-sebastian.smolorz@gmx.de>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -19,130 +16,264 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
+To: Sebastian Smolorz <sebastian.smolorz@gmx.de>
+Cc: xenomai@xenomai.org
 
-Hi all,
+On 28.05.19 16:05, Sebastian Smolorz wrote:
+> Signed-off-by: Sebastian Smolorz <sebastian.smolorz@gmx.de>
+> ---
+>   kernel/drivers/net/stack/ipv4/tcp/tcp.c | 91 ++++++++++++++++---------
+>   1 file changed, 60 insertions(+), 31 deletions(-)
+> 
+> diff --git a/kernel/drivers/net/stack/ipv4/tcp/tcp.c b/kernel/drivers/net/stack/ipv4/tcp/tcp.c
+> index 828f7d115..4803165f4 100644
+> --- a/kernel/drivers/net/stack/ipv4/tcp/tcp.c
+> +++ b/kernel/drivers/net/stack/ipv4/tcp/tcp.c
+> @@ -1418,15 +1418,18 @@ static void rt_tcp_close(struct rtdm_fd *fd)
+>    *  @s:     socket
+>    *  @addr:  local address
+>    */
+> -static int rt_tcp_bind(struct tcp_socket *ts, const struct sockaddr *addr,
+> -		       socklen_t addrlen)
+> +static int rt_tcp_bind(struct rtdm_fd *fd, struct tcp_socket *ts,
+> +		       const struct sockaddr __user *addr, socklen_t addrlen)
+>   {
+> -    struct sockaddr_in  *usin = (struct sockaddr_in *)addr;
+> +    struct sockaddr_in  *usin, _usin;
+>       rtdm_lockctx_t      context;
+>       int                 index;
+>       int                 bound = 0;
+>       int                 ret = 0;
+> 
+> +    usin = rtnet_get_arg(fd, &_usin, addr, sizeof(_usin));
+> +    if (IS_ERR(usin))
+> +	return PTR_ERR(usin);
+> 
+>       if ((addrlen < (int)sizeof(struct sockaddr_in)) ||
+>   	((usin->sin_port & tcp_auto_port_mask) == tcp_auto_port_start))
+> @@ -1475,10 +1478,11 @@ static int rt_tcp_bind(struct tcp_socket *ts, const struct sockaddr *addr,
+>   /***
+>    *  rt_tcp_connect
+>    */
+> -static int rt_tcp_connect(struct tcp_socket *ts, const struct sockaddr *serv_addr,
+> +static int rt_tcp_connect(struct rtdm_fd *fd, struct tcp_socket *ts,
+> +			  const struct sockaddr __user *serv_addr,
+>   			  socklen_t addrlen)
+>   {
+> -    struct sockaddr_in  *usin = (struct sockaddr_in *) serv_addr;
+> +    struct sockaddr_in  *usin, _usin;
+>       struct dest_route   rt;
+>       rtdm_lockctx_t      context;
+>       int ret;
+> @@ -1486,6 +1490,10 @@ static int rt_tcp_connect(struct tcp_socket *ts, const struct sockaddr *serv_add
+>       if (addrlen < (int)sizeof(struct sockaddr_in))
+>   	return -EINVAL;
+> 
+> +    usin = rtnet_get_arg(fd, &_usin, serv_addr, sizeof(_usin));
+> +    if (IS_ERR(usin))
+> +	return PTR_ERR(usin);
+> +
+>       if (usin->sin_family != AF_INET)
+>   	return -EAFNOSUPPORT;
+> 
+> @@ -1594,18 +1602,23 @@ static int rt_tcp_listen(struct tcp_socket *ts, unsigned long backlog)
+>   /***
+>    *  rt_tcp_accept
+>    */
+> -static int rt_tcp_accept(struct tcp_socket *ts, struct sockaddr *addr,
+> -			 socklen_t *addrlen)
+> +static int rt_tcp_accept(struct rtdm_fd *fd, struct tcp_socket *ts,
+> +			 struct sockaddr *addr, socklen_t __user *addrlen)
+>   {
+>       /* Return sockaddr, but bind it with rt_socket_init, so it would be
+>          possible to read/write from it in future, return valid file descriptor */
+> 
+>       int ret;
+> -    struct sockaddr_in  *sin = (struct sockaddr_in*)addr;
+> +    socklen_t           *uaddrlen, _uaddrlen;
+> +    struct sockaddr_in  sin;
+>       nanosecs_rel_t      timeout = ts->sock.timeout;
+>       rtdm_lockctx_t      context;
+>       struct dest_route   rt;
+> 
+> +    uaddrlen = rtnet_get_arg(fd, &_uaddrlen, addrlen, sizeof(_uaddrlen));
+> +    if (IS_ERR(uaddrlen))
+> +	return PTR_ERR(uaddrlen);
+> +
+>       rtdm_lock_get_irqsave(&ts->socket_lock, context);
+>       if (ts->is_accepting || ts->is_accepted) {
+>   	/* socket is already accepted or is accepting a connection right now */
+> @@ -1613,7 +1626,7 @@ static int rt_tcp_accept(struct tcp_socket *ts, struct sockaddr *addr,
+>   	return -EALREADY;
+>       }
+> 
+> -    if (ts->tcp_state != TCP_LISTEN || *addrlen < sizeof(struct sockaddr_in)) {
+> +    if (ts->tcp_state != TCP_LISTEN || *uaddrlen < sizeof(struct sockaddr_in)) {
+>   	rtdm_lock_put_irqrestore(&ts->socket_lock, context);
+>   	return -EINVAL;
+>       }
+> @@ -1652,15 +1665,24 @@ static int rt_tcp_accept(struct tcp_socket *ts, struct sockaddr *addr,
+>   	goto err;
+>       }
+> 
+> +    if (addr) {
+> +	sin.sin_family      = AF_INET;
+> +	sin.sin_port        = ts->dport;
+> +	sin.sin_addr.s_addr = ts->daddr;
+> +	ret = rtnet_put_arg(fd, addr, &sin, sizeof(sin));
+> +	if (ret) {
+> +	    rtdm_lock_put_irqrestore(&ts->socket_lock, context);
 
-Thanks again for your help: the board is booting now with CONFIG_IPIPE and
-CONFIG_XENOMAI !
+Hmm, this makes it clearer now that we are accessing userspace memory while 
+holding an irqsafe lock - is that needed? It's definitely not "nice".
 
-But ... I still have two issues.
-BTW: the kernel is now based on ipipe-core-4.19.33-arm-2
+> +	    rtdev_dereference(rt.rtdev);
+> +	    ret = -EFAULT;
+> +	    goto err;
+> +	}
+> +    }
+> +
+>       if (ts->rt.rtdev == NULL)
+>   	memcpy(&ts->rt, &rt, sizeof(rt));
+>       else
+>   	rtdev_dereference(rt.rtdev);
+> 
+> -    sin->sin_family      = AF_INET;
+> -    sin->sin_port        = ts->dport;
+> -    sin->sin_addr.s_addr = ts->daddr;
+> -
+>       ts->is_accepted = 1;
+>       rtdm_lock_put_irqrestore(&ts->socket_lock, context);
+> 
+> @@ -1799,14 +1821,14 @@ static int rt_tcp_ioctl(struct rtdm_fd *fd,
+>   		setaddr = rtnet_get_arg(fd, &_setaddr, arg, sizeof(_setaddr));
+>   		if (IS_ERR(setaddr))
+>   			return PTR_ERR(setaddr);
+> -		return rt_tcp_bind(ts, setaddr->addr, setaddr->addrlen);
+> +		return rt_tcp_bind(fd, ts, setaddr->addr, setaddr->addrlen);
+>   	case _RTIOC_CONNECT:
+>   		if (!in_rt)
+>   			return -ENOSYS;
+>   		setaddr = rtnet_get_arg(fd, &_setaddr, arg, sizeof(_setaddr));
+>   		if (IS_ERR(setaddr))
+>   			return PTR_ERR(setaddr);
+> -		return rt_tcp_connect(ts, setaddr->addr, setaddr->addrlen);
+> +		return rt_tcp_connect(fd, ts, setaddr->addr, setaddr->addrlen);
+> 
+>   	case _RTIOC_LISTEN:
+>   		return rt_tcp_listen(ts, (unsigned long)arg);
+> @@ -1817,7 +1839,7 @@ static int rt_tcp_ioctl(struct rtdm_fd *fd,
+>   		getaddr = rtnet_get_arg(fd, &_getaddr, arg, sizeof(_getaddr));
+>   		if (IS_ERR(getaddr))
+>   			return PTR_ERR(getaddr);
+> -		return rt_tcp_accept(ts, getaddr->addr, getaddr->addrlen);
+> +		return rt_tcp_accept(fd, ts, getaddr->addr, getaddr->addrlen);
+> 
+>   	case _RTIOC_SHUTDOWN:
+>   		return rt_tcp_shutdown(ts, (unsigned long)arg);
+> @@ -1994,13 +2016,15 @@ static ssize_t rt_tcp_read(struct rtdm_fd *fd, void *buf, size_t nbyte)
+>   /***
+>    *  rt_tcp_write
+>    */
+> -static ssize_t rt_tcp_write(struct rtdm_fd *fd, const void *buf, size_t nbyte)
+> +static ssize_t rt_tcp_write(struct rtdm_fd *fd, const void __user *user_buf,
+> +			    size_t nbyte)
+>   {
+>       struct tcp_socket *ts = rtdm_fd_to_private(fd);
+>       uint32_t sent_len = 0;
+>       rtdm_lockctx_t      context;
+>       int ret = 0;
+>       nanosecs_rel_t sk_sndtimeo;
+> +    void *buf;
+> 
+>       if (!rtdm_fd_is_user(fd)) {
+>   	return -EFAULT;
+> @@ -2022,6 +2046,16 @@ static ssize_t rt_tcp_write(struct rtdm_fd *fd, const void *buf, size_t nbyte)
+> 
+>       rtdm_lock_put_irqrestore(&ts->socket_lock, context);
+> 
+> +    buf = xnmalloc(nbyte);
 
-1.
+Unrelated to this change, but seeing these multiple copies and the malloc hurts...
 
-When starting latency (or switchtest) with CONFIG_STACKPROTECTOR_STRONG
-set, then I get the following output:
+> +    if (buf == NULL)
+> +	return -ENOMEM;
+> +
+> +    ret = rtdm_copy_from_user(fd, buf, user_buf, nbyte);
+> +    if (ret) {
+> +	xnfree(buf);
+> +	return ret;
+> +    }
+> +
+>       while (sent_len < nbyte) {
+> 
+>   	ret = rtdm_event_timedwait(&ts->send_evt, sk_sndtimeo, NULL);
+> @@ -2031,13 +2065,17 @@ static ssize_t rt_tcp_write(struct rtdm_fd *fd, const void *buf, size_t nbyte)
+>   		case -EWOULDBLOCK:
+>   		case -ETIMEDOUT:
+>   		case -EINTR:
+> +		    xnfree(buf);
+>   		    return sent_len ? : ret;
+> 
+>   		case -EIDRM: /* event is destroyed */
+>   		default:
+> -		    if (ts->is_closed)
+> +		    if (ts->is_closed) {
+> +			xnfree(buf);
+>   			return -EBADF;
+> +		    }
+> 
+> +		    xnfree(buf);
+>   		    return sent_len ? : ret;
+>   	    }
+> 
+> @@ -2054,6 +2092,7 @@ static ssize_t rt_tcp_write(struct rtdm_fd *fd, const void *buf, size_t nbyte)
+>   	    rtdm_event_signal(&ts->send_evt);
+>       }
+> 
+> +    xnfree(buf);
+>       return (ret < 0 ? ret : sent_len);
+>   }
+> 
+> @@ -2104,7 +2143,6 @@ static ssize_t rt_tcp_sendmsg(struct rtdm_fd *fd,
+>   	struct user_msghdr _msg;
+>   	ssize_t ret;
+>   	size_t len;
+> -	void *buf;
+> 
+>   	if (msg_flags)
+>   		return -EOPNOTSUPP;
+> @@ -2122,18 +2160,9 @@ static ssize_t rt_tcp_sendmsg(struct rtdm_fd *fd,
+>   		return ret;
+> 
+>   	len = iov[0].iov_len;
+> -	if (len > 0) {
+> -		buf = xnmalloc(len);
+> -		if (buf == NULL) {
+> -			ret = -ENOMEM;
+> -			goto out;
+> -		}
+> -		ret = rtdm_copy_from_user(fd, buf, iov[0].iov_base, len);
+> -		if (!ret)
+> -			ret = rt_tcp_write(fd, buf, len);
+> -		xnfree(buf);
+> -	}
+> -out:
+> +	if (len > 0)
+> +	    ret = rt_tcp_write(fd, iov[0].iov_base, len);
+> +
+>   	rtdm_drop_iovec(iov, iov_fast);
+> 
+>   	return ret;
+> --
+> 2.19.1
+> 
 
-[   35.146000] Kernel panic - not syncing: stack-protector: Kernel stack is
-corrupted in: __schedule+0x658/0x660
-[   35.146000]
-[   35.146000] CPU: 0 PID: 1108 Comm: latency Not tainted 4.19.33 #254
-[   35.146000] Hardware name: Atmel SAMA5
-[   35.146000] I-pipe domain: Xenomai
-[   35.146000] [<c011024c>] (unwind_backtrace) from [<c010d150>]
-(show_stack+0x20/0x24)
-[   35.146000] [<c010d150>] (show_stack) from [<c06779e4>]
-(dump_stack+0x24/0x28)
-[   35.146000] [<c06779e4>] (dump_stack) from [<c011cb44>] (panic+0xec/0x26c)
-[   35.146000] [<c011cb44>] (panic) from [<c011c824>] (print_tainted+0x0/0xa8)
-[   35.146000] ---[ end Kernel panic - not syncing: stack-protector: Kernel
-stack is corrupted in: __schedule+0x658/0x660
-[   35.146000]  ]---
+Looks good, except for my question regarding the locking.
 
-Without the strong stack protector latency/switchtest just work fine.
-Is this something I should be worried/take care about?
-
-2.
-
-The pinctrl driver seems to work, but not with level-triggered interrupts
-(in this case also chained).
-The interrupt source in my case is an active_low line from the PHY, and the
-PHY will raise the line level only after reading one of its registers. When
-ipipe_handle_demuxed_irq() is called, only the interrupt log is updated,
-but the interrupt is never masked nor the PHY register is read. This leads
-to an endless storm of interrupt handler calls (and the system appears to
-be dead).
-My simple workaround was to change from level to edge triggered. Another
-quick fix was to mask the interrupt next to where
-ipipe_handle_demuxed_irq() was called, but now the interrupts are never
-unmasked ... (so this is not a solution).
-Is there any good advice/example driver how to deal with level-triggered
-interrupts in a chained interrupt handler?
-
-Regards,
 Jan
 
-Am 24.05.19 um 16:13 schrieb Philippe Gerum:
-> On 5/24/19 1:42 PM, Jan Leupold via Xenomai wrote:
->> Am 22.05.19 um 18:44 schrieb Philippe Gerum:
->>> On 5/20/19 12:27 PM, Jan Leupold via Xenomai wrote:
->>>> Hi all,
->>>>
->>>> I am trying to boot Linux on a SAMA5D2 Xplained board with
->>>> * Kernel ipipe-arm branch stable/4.14.96-arm
->>>>   (HEAD plus my modifications)
->>>> * Xenomai-3 on tag v3.0.8
->>>> * following instructions on
->>>> https://gitlab.denx.de/Xenomai/xenomai/wikis/Porting_Xenomai_To_A_New_Arm_Soc
->>>>
->>>> On most kernel boots I get a kernel panic. Can anyone point me in the right
->>>> direction where to look for my bugs? I added code for
->>>> * the hardware timer (tcb_clksrc.c)
->>>> * the high resolution counter (tcb_clksrc.c)
->>>> * GPIOs as interrupt sources (pinctrl-at91-pio4.c)
->>>> * checked interrupt controller (irq-atmel-aic5.c)
->>>> * added "select IPIPE_ARM_KUSER_TSC" for SOC_SAMA5D2
->>>>
->>>> I have no idea if there is only one problem (causing all the other
->>>> warnings), or if these are separate problems, that can be handeled
->>>> independently.
->>>>
->>>
->>> The first warning means that IRQs are enabled in the CPU when reaching a
->>> portion of code where it should definitely not be so. This code path
->>> starts from the actual receipt of an interrupt by the kernel from
->>> __ipipe_grab_irq(), which indirectly calls atmel_gpio_irq_handler() for
->>> decoding the cascaded interrupt number. Once decoded, this IRQ is set
->>> pending in the pipeline log.
->>>
->>> There is no reason for this particular code path to re-enable interrupts
->>> in the CPU, and doing so is actually harmful. Inferring anything beyond
->>> this point is pretty much useless until this is fixed. Preventing this
->>> from happening would likely be a significant step forward.
->>
->> Fine, got this fixed, at least the warnings do not appear any more. Thanks!
->>
->> Now it seems I still have some issues, as the kernel comes to a complete
->> stop when trying to access the root filesystem. Both, NFS or SD-card
->> access.
->> As the kernel messages always stop after a certain time stamp value, which
->> is about 4.3 seconds, my best theory is that my tsc and/or timer code is
->> still not OK. When I change the frequency or mask values, these 4.3 seconds
->> change. Maybe my system does not detect a wrap of the tsc counter value and
->> simply stops scheduling kernel tasks?
->> Any ideas? (CONFIG_IPIPE=y, CONFIG_XENOMAI is not set)
->>
-> 
-> TSC emulation won't come into play until CONFIG_XENOMAI is enabled,
-> timer is most likely at fault. You may want to check whether you still
-> receive timer IRQs (__ipipe_grab_irq()). If you don't, then you need to
-> check the timer IRQ handler feeding the clockevent framework.
-> 
-
-
 -- 
-_____________________________________________________________
-R-S-I Elektrotechnik GmbH & Co. KG
-Woelkestrasse 11
-D-85301 Schweitenkirchen
-Fon: +49 8444 9204-0
-Fax: +49 8444 9204-50
-www.rsi-elektrotechnik.de
-
-_____________________________________________________________
-Amtsgericht Ingolstadt - GmbH: HRB 191328 - KG: HRA 170363
-Geschäftsführer: Dr.-Ing. Michael Sorg, Dipl.-Ing. Franz Sorg
-USt-IdNr.: DE 128592548
-
+Siemens AG, Corporate Technology, CT RDA IOT SES-DE
+Corporate Competence Center Embedded Linux
 
