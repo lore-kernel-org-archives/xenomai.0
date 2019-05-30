@@ -1,13 +1,13 @@
-From: Philippe Gerum <rpm@xenomai.org>
-Subject: Re: Migration from Xenomai v2 to v3 w/ Mercury kernel possible ?
-References: <jPR.3teSK.63VQ6z6W8Et.1Sxnsq@seznam.cz>
-Message-ID: <945d1319-17a3-a0a8-23e5-3f4c19eb9398@xenomai.org>
-Date: Thu, 30 May 2019 13:35:26 +0200
+Date: Thu, 30 May 2019 14:29:52 +0200 (CEST)
+From: Richard Weinberger <richard@nod.at>
+Message-ID: <1041770102.74313.1559219392398.JavaMail.zimbra@nod.at>
+In-Reply-To: <64455108-2e8b-146c-15f9-e3a98030f0dc@web.de>
+References: <20190529210559.20860-1-richard@nod.at>
+ <64455108-2e8b-146c-15f9-e3a98030f0dc@web.de>
+Subject: Re: [RFC PATCH] cobalt: Allow tasks with non-locked memory
 MIME-Version: 1.0
-In-Reply-To: <jPR.3teSK.63VQ6z6W8Et.1Sxnsq@seznam.cz>
-Content-Type: text/plain; charset="utf-8"
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,74 +16,23 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: ajohn@post.cz, xenomai@xenomai.org
+To: Jan Kiszka <jan.kiszka@web.de>
+Cc: xenomai@xenomai.org
 
-On 5/30/19 2:03 AM, Robie via Xenomai wrote:
-> 
-> Hi,
-> 
-> 
-> 
-> 
-> I am going to migrate older Xenomai v2 application to Xenomai v3.
-> 
-> 
-> 
-> 
-> While still learning all the impressive improvements of Xenomai v3, I 
-> struggle to figure out if it would be possible to migrate Xenomai v2 
-> application (x86-64, native skin, + few RTDM drivers) to be executable on 
-> both the Mercury and Cobalt kernels keeping the same app's source code. 
-> 
-> 
-> 
-> 
-> I am thinking about having the Mercury variant for non real-time dev&
-> debbuging on common distribution kernel while the Cobalt version would run 
-> on dedicated hardware with patched/tuned kernel.
-> 
-> 
-> 
-> 
-> I wonder if old style Xenomai v2 RTDM drivers and "native" application may 
-> compile and run with Mercury after some adaptations.
-> 
-> 
-> 
-> I learned the Cobalt base environment with v2 "native" compatibility 
-> requires something like
-> 
-> configure --core=cobalt
-> 
-> and compilation w/ xeno-config –native
-> 
-> That seems to be viable migration path.
-> 
-> 
-> 
-> 
-> 
-> But for Mercury - which xeno-config settings to use for user space app and 
-> for RTDM driver/module when neither --native nor --rtdm nor –compat switches
-> are applicable ?
-> 
-> 
-> 
-> 
-> Loking at web resources like https://xenomai.org/documentation/xenomai-3/
-> html/MIGRATION/(https://xenomai.org/documentation/xenomai-3/html/MIGRATION/)
->  but no luck so far.
-> 
+----- Urspr=C3=BCngliche Mail -----
+> Why not simply installing a signal handler in the application that swallo=
+ws this
+> reason for SIGDEBUG when it's under libsanitizer controller? Or setting t=
+he
+> whole signal on ignore?
 
-All Xenomai 3 APIs in userland can build and run on top of the mercury
-layer, including the legacy "native" API which is known as "alchemy" in
-Xenomai 3. However, the issue is going to be with drivers, there is no
-RTDM in-kernel API available for the single kernel configuration. There
-has been a proof-of-concept in the early days [1], but this code has not
-been maintained.
+Simply because I was not sure whether I'm allowed to steal SIGDEBUG from Xe=
+nomai
+since it installs its own signal handler.
+If installing my own handler is the preferred way, I'm happy. One patch les=
+s to
+carry around. :-)
 
-[1] git://archive.xenomai.org/rtdm-native.git
-
--- 
-Philippe.
+Thanks,
+//richard
 
