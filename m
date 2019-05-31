@@ -1,14 +1,15 @@
-From: Lange Norbert <norbert.lange@andritz.com>
-Subject: RE: libcopperplate.so depends on modecheck?
-Date: Fri, 31 May 2019 15:13:31 +0000
-Message-ID: <VI1PR05MB5917F2C22AECF59AEC2543B5F6190@VI1PR05MB5917.eurprd05.prod.outlook.com>
+Subject: Re: libcopperplate.so depends on modecheck?
 References: <VI1PR05MB59179589CFDB55840B07A386F6190@VI1PR05MB5917.eurprd05.prod.outlook.com>
  <0023f233-2b01-83c4-74a1-deaed32d7544@siemens.com>
-In-Reply-To: <0023f233-2b01-83c4-74a1-deaed32d7544@siemens.com>
-Content-Language: en-US
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+ <VI1PR05MB5917F2C22AECF59AEC2543B5F6190@VI1PR05MB5917.eurprd05.prod.outlook.com>
+From: Jan Kiszka <jan.kiszka@siemens.com>
+Message-ID: <17efb9fb-afd9-a999-5f82-e60a358c015a@siemens.com>
+Date: Fri, 31 May 2019 17:31:32 +0200
 MIME-Version: 1.0
+In-Reply-To: <VI1PR05MB5917F2C22AECF59AEC2543B5F6190@VI1PR05MB5917.eurprd05.prod.outlook.com>
+Content-Type: text/plain; charset="utf-8"; format="flowed"
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,108 +18,183 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jan Kiszka <jan.kiszka@siemens.com>, "Xenomai (xenomai@xenomai.org)" <xenomai@xenomai.org>, Philippe Gerum <rpm@xenomai.org>, Henning Schild <henning.schild@siemens.com>
+To: Lange Norbert <norbert.lange@andritz.com>, "Xenomai (xenomai@xenomai.org)" <xenomai@xenomai.org>, Philippe Gerum <rpm@xenomai.org>, Henning Schild <henning.schild@siemens.com>
 
-DQoNCj4gLS0tLS1PcmlnaW5hbCBNZXNzYWdlLS0tLS0NCj4gRnJvbTogSmFuIEtpc3prYSA8amFu
-Lmtpc3prYUBzaWVtZW5zLmNvbT4NCj4gU2VudDogRnJlaXRhZywgMzEuIE1haSAyMDE5IDE2OjI2
-DQo+IFRvOiBMYW5nZSBOb3JiZXJ0IDxub3JiZXJ0LmxhbmdlQGFuZHJpdHouY29tPjsgWGVub21h
-aQ0KPiAoeGVub21haUB4ZW5vbWFpLm9yZykgPHhlbm9tYWlAeGVub21haS5vcmc+OyBQaGlsaXBw
-ZSBHZXJ1bQ0KPiA8cnBtQHhlbm9tYWkub3JnPjsgSGVubmluZyBTY2hpbGQgPGhlbm5pbmcuc2No
-aWxkQHNpZW1lbnMuY29tPg0KPiBTdWJqZWN0OiBSZTogbGliY29wcGVycGxhdGUuc28gZGVwZW5k
-cyBvbiBtb2RlY2hlY2s/DQo+DQo+IEUtTUFJTCBGUk9NIEEgTk9OLUFORFJJVFogU09VUkNFOiBB
-UyBBIFNFQ1VSSVRZIE1FQVNVUkUsIFBMRUFTRQ0KPiBFWEVSQ0lTRSBDQVVUSU9OIFdJVEggRS1N
-QUlMIENPTlRFTlQgQU5EIEFOWSBMSU5LUyBPUg0KPiBBVFRBQ0hNRU5UUy4NCj4NCj4NCj4gT24g
-MzEuMDUuMTkgMTQ6MTIsIExhbmdlIE5vcmJlcnQgdmlhIFhlbm9tYWkgd3JvdGU6DQo+ID4gSSBz
-dGlsbCBiZWxpZXZlIHRoaXMgdG8gYmUgYSBidWcsIGFkZGluZyBhIHBhdGNoIHRvIGNvcnJlY3Qg
-dGhpcy4NCj4gPg0KPg0KPiBUaGUgcGF0Y2ggbGFja3MgYSBjb21taXQgbWVzc2FnZSB0aGF0IGV4
-cGxhaW5zICJ3aHkiLiBBbHNvLCBpbmxpbmUgd291bGQgYmUNCj4gcHJlZmVycmVkICh1bmxlc3Mg
-eW91ciBtYWlsIGNsaWVudCBpcyBjb25zaXN0ZW50bHkgcHJldmVudGluZyB0aGF0KS4NCg0KSSBo
-YXZlIHRoZSBjaG9pY2UgYmV0d2VlbiBnaXQtc2VuZC1lbWFpbCB3aXRob3V0IGNvbnRleHQgb2Yg
-dGhlIHByZXZpb3VzIG1haWwsDQpvciBPdXRsb29rIHdoaWNoIGJyZWFrcyBhbnkgZm9ybWF0dGlu
-Zy4NCihJIHdhcyBraW5kYSBleHBlY3RpbmcgYSBkaXNjdXNzaW9uIGFuZCB0aHVzIGEgVjIpDQoN
-Cj4gVGhlIGlkZWEgb2YgdGhlIHdyYXBwaW5nIGlzIHRvIGVzdGFibGlzaCBhbiBpbnN0cnVtZW50
-YXRpb24gcG9pbnQgdGhhdCB3aWxsDQo+IGdpdmUgdXMgYW4gZWFybHkgd2FybmluZyB3aGVuIGFu
-IGFwcGxpY2F0aW9uIGNhbGxzIGludG8gbm9uLXJ0IG1hbGxvYy9mcmVlDQo+IGZyb20gcnQgY29u
-dGV4dC4gQXMgdGhvc2UgZ2xpYmMgY2FsbHMgb25seSBvY2Nhc2lvbmFsbHkgY2F1c2UgYSBzeXNj
-YWxsLCB0aGUgaG9vaw0KPiBpcyBuZWVkZWQgdG8gaGF2ZSB0aGF0IGRldGVybWluaXN0aWMgd2Fy
-bmluZy4NCg0KU3VyZSwgYnV0IHRoaXMgaXMgTk9UIF9fd3JhcF9tYWxsb2MgYnV0IF9fcmVhbF9t
-YWxsb2MsIHdoaWNoIHNlZW1zIHBvaW50bGVzcyB0byBtZQ0KKHRoaXMgaXMganVzdCByb3V0ZWQg
-dGhyb3VnaCBhcy1pcyB0byBtYWxsb2MpLg0KDQpUaGUgYmlnZ2VyIGlkZWEgYmVoaW5kIHRoaXMg
-aXMgdG8gdXNlIHByZWxvYWQgbGlicmFyaWVzICgjMSksIGF0IHdoaWNoIHBvaW50IHRoaXMgc3lt
-Ym9sIHdyYXBwaW5nIGlzDQpjb3VudGVyLXByb2R1Y3RpdmUuDQoNCj4NCj4gVGhhdCBpbnN0cnVt
-ZW50YXRpb24gc2hvdWxkIGFsc28gd29yayBmb3IgaW5kaXJlY3QgbWFsbG9jL2ZyZWUgdmlhIG91
-cg0KPiBsaWJyYXJpZXMuIEZyb20gdGhhdCBwZXJzcGVjdGl2ZSwgSSB3b3VsZCByYXRoZXIgZXhw
-ZWN0IHVud3JhcHBlZCBjYWxscyBzbw0KPiB0aGF0IHRoZXkgKmRvKiBwb2ludCB0byBsaWJtb2Rl
-Y2hrIGhlbHBlcnMuIFNlZW1zIGluY29uc2lzdGVudCBmcm9tIHRoYXQNCj4gYW5nbGUuIE9USCwg
-aW50ZXJuYWwgY2FsbHMgY291bGQgYWxzbyBiZSBpbnN0cnVtZW50ZWQgYXQgYnVpbGQtdGltZSwg
-dGh1cyBjb3VsZA0KPiBhdm9pZCB0aGUgd3JhcHBpbmcgdHJpY2suDQoNCkFnYWluLCB0aGUgc3lt
-Ym9scyBhcmUgbm90IHRoZSBjaGVja2VkIG9uZXMgYnkgbGlibW9kZWNoaywgYW5kIHlvdSBjYW4g
-YXZvaWQgdGhlDQpidWlsZC10aW1lIHdyYXBwaW5nIHdpdGggcHJlbG9hZGVkIGxpYnJhcmllcy4N
-Cg0KPiBCdXQgYWxsIHRoaXMgaXMgZmFpcmx5IGNvbXBsZXguIFBoaWxpcHBlIGFuZCBIZW5uaW5n
-IHNob3VsZCBoYXZlIHRob3VnaHQgdGhpcw0KPiB0aHJvdWdoIGEgYml0IG1vcmUuDQo+DQo+IEph
-bg0KDQojMTogaHR0cHM6Ly9naXRodWIuY29tL25vbGFuZ2UvcHJlbG9hZF9jaGVja2Vycw0KDQpS
-ZWdhcmRzLA0KTm9yYmVydA0KPg0KPiA+IFJlZ2FyZHMsIE5vcmJlcnQNCj4gPg0KPiA+PiAtLS0t
-LU9yaWdpbmFsIE1lc3NhZ2UtLS0tLQ0KPiA+PiBGcm9tOiBMYW5nZSBOb3JiZXJ0DQo+ID4+IFNl
-bnQ6IE1pdHR3b2NoLCAyMC4gTcOkcnogMjAxOSAxMTo0OQ0KPiA+PiBUbzogWGVub21haSAoeGVu
-b21haUB4ZW5vbWFpLm9yZykgPHhlbm9tYWlAeGVub21haS5vcmc+DQo+ID4+IFN1YmplY3Q6IGxp
-YmNvcHBlcnBsYXRlLnNvIGRlcGVuZHMgb24gbW9kZWNoZWNrPw0KPiA+Pg0KPiA+PiBIZWxsbywN
-Cj4gPj4NCj4gPj4gU2VlbXMgbGlrZSBsaWJjb3BwZXJwbGF0ZS5zbyBhbHdheXMgZGVwZW5kcyBv
-biBsaWJtb2RlY2hrLnNvLCBhcyB0aGUNCj4gPj4gZm9sbG93aW5nIHN5bWJvbHMgd291bGQgaW1w
-bHk6DQo+ID4+DQo+ID4+IG5tIC1EIC9ob21lL2xhbm8vYnVpbGRyb290L2hvc3QveDg2XzY0LWJ1
-aWxkcm9vdC1saW51eC0NCj4gPj4gZ251L3N5c3Jvb3QvdXNyL3hlbm9tYWkvbGliL2xpYmNvcHBl
-cnBsYXRlLnNvIHwgZ3JlcCBfX3JlYWwNCj4gPj4gICAgICAgICAgICAgICAgICAgVSBfX3JlYWxf
-ZnJlZQ0KPiA+PiAgICAgICAgICAgICAgICAgICBVIF9fcmVhbF9tYWxsb2MNCj4gPj4NCj4gPj4g
-eGVuby1jb25maWcgZGVhbHMgd2l0aCB0aGlzIGJ5IGFsd2F5cyBsaW5raW5nIG1vZGVjaywgZXZl
-biBpZiB5b3UgYWRkDQo+ID4+IC0tbm8tDQo+ID4+IG1vZGUtY2hlY2stDQo+ID4+DQo+ID4+IEkg
-YW0gbm90IGNvbXBsZXRlbHkgY29uZmlkZW50IHdpdGggdGhlIHdyYXBwZXItbWFnaWMsIGJ1dCBz
-aG91bGRuJ3QNCj4gPj4gbGliY29wcGVycGxhdGUgdXNlIGVpdGhlciBjb2JhbHRfbWFsbG9jIG9y
-IHRoZSBsaWJjIG1hbGxvYz8NCj4gPj4gX19yZWFsX21hbGxvYyBpcyBqdXN0IGEgc3R1YiBmb3Ig
-bGliYyBtYWxsb2MsIHNvIEkgcmVhbGx5IGRvbid0IGdldA0KPiA+PiB0aGUgcG9pbnQgKGFzc3Vt
-aW5nIHRoaXMgaXMgaW50ZW50aW9uYWwpLg0KPiA+Pg0KPiA+PiBNb2Rlc3dpdGNoZXMgY291bGQg
-YWxzbyBiZSBkZXRlY3RlZCBieSBpbnRlcnBvc2luZyBsaWJyYXJpZXMsIHNvDQo+ID4+IHJlbW92
-aW5nIGxpYm1vZGVjaGsgSXMgYSB2aWFibGUgdGhpbmcgdG8gZG8uDQo+ID4+IChzaGFtZWxlc3Mg
-cGx1ZzogaHR0cHM6Ly9naXRodWIuY29tL25vbGFuZ2UvcHJlbG9hZF9jaGVja2VycyApDQo+ID4+
-DQo+ID4+DQo+ID4+IFJlZ2FyZHMsIE5vcmJlcnQNCj4gPiBfX19fX19fX19fX19fX19fX19fX19f
-X19fX19fX19fXw0KPiA+DQo+ID4gVGhpcyBtZXNzYWdlIGFuZCBhbnkgYXR0YWNobWVudHMgYXJl
-IHNvbGVseSBmb3IgdGhlIHVzZSBvZiB0aGUgaW50ZW5kZWQNCj4gcmVjaXBpZW50cy4gVGhleSBt
-YXkgY29udGFpbiBwcml2aWxlZ2VkIGFuZC9vciBjb25maWRlbnRpYWwgaW5mb3JtYXRpb24gb3IN
-Cj4gb3RoZXIgaW5mb3JtYXRpb24gcHJvdGVjdGVkIGZyb20gZGlzY2xvc3VyZS4gSWYgeW91IGFy
-ZSBub3QgYW4gaW50ZW5kZWQNCj4gcmVjaXBpZW50LCB5b3UgYXJlIGhlcmVieSBub3RpZmllZCB0
-aGF0IHlvdSByZWNlaXZlZCB0aGlzIGVtYWlsIGluIGVycm9yIGFuZA0KPiB0aGF0IGFueSByZXZp
-ZXcsIGRpc3NlbWluYXRpb24sIGRpc3RyaWJ1dGlvbiBvciBjb3B5aW5nIG9mIHRoaXMgZW1haWwg
-YW5kIGFueQ0KPiBhdHRhY2htZW50IGlzIHN0cmljdGx5IHByb2hpYml0ZWQuIElmIHlvdSBoYXZl
-IHJlY2VpdmVkIHRoaXMgZW1haWwgaW4gZXJyb3IsDQo+IHBsZWFzZSBjb250YWN0IHRoZSBzZW5k
-ZXIgYW5kIGRlbGV0ZSB0aGUgbWVzc2FnZSBhbmQgYW55IGF0dGFjaG1lbnQgZnJvbQ0KPiB5b3Vy
-IHN5c3RlbS4NCj4gPg0KPiA+IEFORFJJVFogSFlEUk8gR21iSA0KPiA+DQo+ID4NCj4gPiBSZWNo
-dHNmb3JtLyBMZWdhbCBmb3JtOiBHZXNlbGxzY2hhZnQgbWl0IGJlc2NocsOkbmt0ZXIgSGFmdHVu
-ZyAvDQo+ID4gQ29ycG9yYXRpb24NCj4gPg0KPiA+IEZpcm1lbnNpdHovIFJlZ2lzdGVyZWQgc2Vh
-dDogV2llbg0KPiA+DQo+ID4gRmlybWVuYnVjaGdlcmljaHQvIENvdXJ0IG9mIHJlZ2lzdHJ5OiBI
-YW5kZWxzZ2VyaWNodCBXaWVuDQo+ID4NCj4gPiBGaXJtZW5idWNobnVtbWVyLyBDb21wYW55IHJl
-Z2lzdHJhdGlvbjogRk4gNjE4MzMgZw0KPiA+DQo+ID4gRFZSOiAwNjA1MDc3DQo+ID4NCj4gPiBV
-SUQtTnIuOiBBVFUxNDc1NjgwNg0KPiA+DQo+ID4NCj4gPiBUaGFuayBZb3UNCj4gPiBfX19fX19f
-X19fX19fX19fX19fX19fX19fX19fX19fXw0KPiA+IC0tLS0tLS0tLS0tLS0tIG5leHQgcGFydCAt
-LS0tLS0tLS0tLS0tLSBBIG5vbi10ZXh0IGF0dGFjaG1lbnQgd2FzDQo+ID4gc2NydWJiZWQuLi4N
-Cj4gPiBOYW1lOiAwMDAxLXJlbW92ZS1fX1NURC1mb3ItaGVhcC1mdW5jdGlvbi5wYXRjaA0KPiA+
-IFR5cGU6IGFwcGxpY2F0aW9uL29jdGV0LXN0cmVhbQ0KPiA+IFNpemU6IDUyNjUgYnl0ZXMNCj4g
-PiBEZXNjOiAwMDAxLXJlbW92ZS1fX1NURC1mb3ItaGVhcC1mdW5jdGlvbi5wYXRjaA0KPiA+IFVS
-TDoNCj4gPg0KPiA8aHR0cDovL3hlbm9tYWkub3JnL3BpcGVybWFpbC94ZW5vbWFpL2F0dGFjaG1l
-bnRzLzIwMTkwNTMxLzZjODA4MTY5L2ENCj4gdA0KPiA+IHRhY2htZW50Lm9iaj4NCj4NCj4gLS0N
-Cj4gU2llbWVucyBBRywgQ29ycG9yYXRlIFRlY2hub2xvZ3ksIENUIFJEQSBJT1QgU0VTLURFIENv
-cnBvcmF0ZQ0KPiBDb21wZXRlbmNlIENlbnRlciBFbWJlZGRlZCBMaW51eA0KX19fX19fX19fX19f
-X19fX19fX19fX19fX19fX19fX18NCg0KVGhpcyBtZXNzYWdlIGFuZCBhbnkgYXR0YWNobWVudHMg
-YXJlIHNvbGVseSBmb3IgdGhlIHVzZSBvZiB0aGUgaW50ZW5kZWQgcmVjaXBpZW50cy4gVGhleSBt
-YXkgY29udGFpbiBwcml2aWxlZ2VkIGFuZC9vciBjb25maWRlbnRpYWwgaW5mb3JtYXRpb24gb3Ig
-b3RoZXIgaW5mb3JtYXRpb24gcHJvdGVjdGVkIGZyb20gZGlzY2xvc3VyZS4gSWYgeW91IGFyZSBu
-b3QgYW4gaW50ZW5kZWQgcmVjaXBpZW50LCB5b3UgYXJlIGhlcmVieSBub3RpZmllZCB0aGF0IHlv
-dSByZWNlaXZlZCB0aGlzIGVtYWlsIGluIGVycm9yIGFuZCB0aGF0IGFueSByZXZpZXcsIGRpc3Nl
-bWluYXRpb24sIGRpc3RyaWJ1dGlvbiBvciBjb3B5aW5nIG9mIHRoaXMgZW1haWwgYW5kIGFueSBh
-dHRhY2htZW50IGlzIHN0cmljdGx5IHByb2hpYml0ZWQuIElmIHlvdSBoYXZlIHJlY2VpdmVkIHRo
-aXMgZW1haWwgaW4gZXJyb3IsIHBsZWFzZSBjb250YWN0IHRoZSBzZW5kZXIgYW5kIGRlbGV0ZSB0
-aGUgbWVzc2FnZSBhbmQgYW55IGF0dGFjaG1lbnQgZnJvbSB5b3VyIHN5c3RlbS4NCg0KQU5EUklU
-WiBIWURSTyBHbWJIDQoNCg0KUmVjaHRzZm9ybS8gTGVnYWwgZm9ybTogR2VzZWxsc2NoYWZ0IG1p
-dCBiZXNjaHLDpG5rdGVyIEhhZnR1bmcgLyBDb3Jwb3JhdGlvbg0KDQpGaXJtZW5zaXR6LyBSZWdp
-c3RlcmVkIHNlYXQ6IFdpZW4NCg0KRmlybWVuYnVjaGdlcmljaHQvIENvdXJ0IG9mIHJlZ2lzdHJ5
-OiBIYW5kZWxzZ2VyaWNodCBXaWVuDQoNCkZpcm1lbmJ1Y2hudW1tZXIvIENvbXBhbnkgcmVnaXN0
-cmF0aW9uOiBGTiA2MTgzMyBnDQoNCkRWUjogMDYwNTA3Nw0KDQpVSUQtTnIuOiBBVFUxNDc1Njgw
-Ng0KDQoNClRoYW5rIFlvdQ0KX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX18NCg==
+On 31.05.19 17:13, Lange Norbert wrote:
+>> -----Original Message-----
+>> From: Jan Kiszka <jan.kiszka@siemens.com>
+>> Sent: Freitag, 31. Mai 2019 16:26
+>> To: Lange Norbert <norbert.lange@andritz.com>; Xenomai
+>> (xenomai@xenomai.org) <xenomai@xenomai.org>; Philippe Gerum
+>> <rpm@xenomai.org>; Henning Schild <henning.schild@siemens.com>
+>> Subject: Re: libcopperplate.so depends on modecheck?
+>>
+>> E-MAIL FROM A NON-ANDRITZ SOURCE: AS A SECURITY MEASURE, PLEASE
+>> EXERCISE CAUTION WITH E-MAIL CONTENT AND ANY LINKS OR
+>> ATTACHMENTS.
+>>
+>>
+>> On 31.05.19 14:12, Lange Norbert via Xenomai wrote:
+>>> I still believe this to be a bug, adding a patch to correct this.
+>>>
+>>
+>> The patch lacks a commit message that explains "why". Also, inline would be
+>> preferred (unless your mail client is consistently preventing that).
+> 
+> I have the choice between git-send-email without context of the previous mail,
+> or Outlook which breaks any formatting.
+> (I was kinda expecting a discussion and thus a V2)
+
+Something which starts with "[PATCH]" and continues with code has a higher 
+chance of attention, but your questions would have deserved feedback nevertheless.
+
+> 
+>> The idea of the wrapping is to establish an instrumentation point that will
+>> give us an early warning when an application calls into non-rt malloc/free
+>> from rt context. As those glibc calls only occasionally cause a syscall, the hook
+>> is needed to have that deterministic warning.
+> 
+> Sure, but this is NOT __wrap_malloc but __real_malloc, which seems pointless to me
+> (this is just routed through as-is to malloc).
+> 
+
+As I wrote, something is fishy for me as well. But we should first try to 
+understand why the author added those tags (original intention) and then match 
+it against the current implementation.
+
+> The bigger idea behind this is to use preload libraries (#1), at which point this symbol wrapping is
+> counter-productive.
+> 
+
+Then please propose tool and method for upstream integration if it can replace 
+existing static instrumentations without drawbacks.
+
+Jan
+
+>>
+>> That instrumentation should also work for indirect malloc/free via our
+>> libraries. From that perspective, I would rather expect unwrapped calls so
+>> that they *do* point to libmodechk helpers. Seems inconsistent from that
+>> angle. OTH, internal calls could also be instrumented at build-time, thus could
+>> avoid the wrapping trick.
+> 
+> Again, the symbols are not the checked ones by libmodechk, and you can avoid the
+> build-time wrapping with preloaded libraries.
+> 
+>> But all this is fairly complex. Philippe and Henning should have thought this
+>> through a bit more.
+>>
+>> Jan
+> 
+> #1: https://github.com/nolange/preload_checkers
+> 
+> Regards,
+> Norbert
+>>
+>>> Regards, Norbert
+>>>
+>>>> -----Original Message-----
+>>>> From: Lange Norbert
+>>>> Sent: Mittwoch, 20. März 2019 11:49
+>>>> To: Xenomai (xenomai@xenomai.org) <xenomai@xenomai.org>
+>>>> Subject: libcopperplate.so depends on modecheck?
+>>>>
+>>>> Hello,
+>>>>
+>>>> Seems like libcopperplate.so always depends on libmodechk.so, as the
+>>>> following symbols would imply:
+>>>>
+>>>> nm -D /home/lano/buildroot/host/x86_64-buildroot-linux-
+>>>> gnu/sysroot/usr/xenomai/lib/libcopperplate.so | grep __real
+>>>>                    U __real_free
+>>>>                    U __real_malloc
+>>>>
+>>>> xeno-config deals with this by always linking modeck, even if you add
+>>>> --no-
+>>>> mode-check-
+>>>>
+>>>> I am not completely confident with the wrapper-magic, but shouldn't
+>>>> libcopperplate use either cobalt_malloc or the libc malloc?
+>>>> __real_malloc is just a stub for libc malloc, so I really don't get
+>>>> the point (assuming this is intentional).
+>>>>
+>>>> Modeswitches could also be detected by interposing libraries, so
+>>>> removing libmodechk Is a viable thing to do.
+>>>> (shameless plug: https://github.com/nolange/preload_checkers )
+>>>>
+>>>>
+>>>> Regards, Norbert
+>>> ________________________________
+>>>
+>>> This message and any attachments are solely for the use of the intended
+>> recipients. They may contain privileged and/or confidential information or
+>> other information protected from disclosure. If you are not an intended
+>> recipient, you are hereby notified that you received this email in error and
+>> that any review, dissemination, distribution or copying of this email and any
+>> attachment is strictly prohibited. If you have received this email in error,
+>> please contact the sender and delete the message and any attachment from
+>> your system.
+>>>
+>>> ANDRITZ HYDRO GmbH
+>>>
+>>>
+>>> Rechtsform/ Legal form: Gesellschaft mit beschränkter Haftung /
+>>> Corporation
+>>>
+>>> Firmensitz/ Registered seat: Wien
+>>>
+>>> Firmenbuchgericht/ Court of registry: Handelsgericht Wien
+>>>
+>>> Firmenbuchnummer/ Company registration: FN 61833 g
+>>>
+>>> DVR: 0605077
+>>>
+>>> UID-Nr.: ATU14756806
+>>>
+>>>
+>>> Thank You
+>>> ________________________________
+>>> -------------- next part -------------- A non-text attachment was
+>>> scrubbed...
+>>> Name: 0001-remove-__STD-for-heap-function.patch
+>>> Type: application/octet-stream
+>>> Size: 5265 bytes
+>>> Desc: 0001-remove-__STD-for-heap-function.patch
+>>> URL:
+>>>
+>> <http://xenomai.org/pipermail/xenomai/attachments/20190531/6c808169/a
+>> t
+>>> tachment.obj>
+>>
+>> --
+>> Siemens AG, Corporate Technology, CT RDA IOT SES-DE Corporate
+>> Competence Center Embedded Linux
+> ________________________________
+> 
+> This message and any attachments are solely for the use of the intended recipients. They may contain privileged and/or confidential information or other information protected from disclosure. If you are not an intended recipient, you are hereby notified that you received this email in error and that any review, dissemination, distribution or copying of this email and any attachment is strictly prohibited. If you have received this email in error, please contact the sender and delete the message and any attachment from your system.
+> 
+> ANDRITZ HYDRO GmbH
+> 
+> 
+> Rechtsform/ Legal form: Gesellschaft mit beschränkter Haftung / Corporation
+> 
+> Firmensitz/ Registered seat: Wien
+> 
+> Firmenbuchgericht/ Court of registry: Handelsgericht Wien
+> 
+> Firmenbuchnummer/ Company registration: FN 61833 g
+> 
+> DVR: 0605077
+> 
+> UID-Nr.: ATU14756806
+> 
+> 
+> Thank You
+> ________________________________
+> 
+
+
+-- 
+Siemens AG, Corporate Technology, CT RDA IOT SES-DE
+Corporate Competence Center Embedded Linux
 
