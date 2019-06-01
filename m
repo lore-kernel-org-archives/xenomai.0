@@ -1,11 +1,12 @@
+From: Philippe Gerum <rpm@xenomai.org>
+Subject: [PATCH 4/8] testsuite/smokey: sched-quota: allow up to 1.5% deviation
+ from plan
+Date: Sat,  1 Jun 2019 17:14:58 +0200
+Message-Id: <20190601151502.27216-5-rpm@xenomai.org>
+In-Reply-To: <20190601151502.27216-1-rpm@xenomai.org>
+References: <20190601151502.27216-1-rpm@xenomai.org>
 MIME-Version: 1.0
-References: <39bd9ede-855c-6a06-73e5-8a79077e6a65@siemens.com>
-In-Reply-To: <39bd9ede-855c-6a06-73e5-8a79077e6a65@siemens.com>
-From: "Stephen D. Cohen" <steve@uscohens.com>
-Date: Thu, 6 Jun 2019 13:43:30 +0300
-Message-ID: <CAO460_8njN+u9e92Eq-4sM_tOUdxv9xF23pO8P1zhziodmJ1Ew@mail.gmail.com>
-Subject: Re: Finalizing 3.0.9 release
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -14,34 +15,33 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jan Kiszka <jan.kiszka@siemens.com>
-Cc: Xenomai <xenomai@xenomai.org>
+To: xenomai@xenomai.org
+Cc: Jan Kiszka <jan.kiszka@siemens.com>, Philippe Gerum <rpm@xenomai.org>
 
-Jan,
+[+/-]0.5% is too strict on some architectures (e.g. x86) where the
+test run may crunch numbers faster than the calibration did. 1.5% is a
+probabilistic attempt to cope with this variation while remaining
+within acceptable bounds.
 
-     Some months back I provided patches to make slackspot work properly
-for PIE and to repair an issue with multiple spot sites in one object. I do
-not see it applied in the archive at all.
+Signed-off-by: Philippe Gerum <rpm@xenomai.org>
+---
+ testsuite/smokey/sched-quota/sched-quota.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-Best,
+diff --git a/testsuite/smokey/sched-quota/sched-quota.c b/testsuite/smokey/sched-quota/sched-quota.c
+index 10ecfad44..5c35b551d 100644
+--- a/testsuite/smokey/sched-quota/sched-quota.c
++++ b/testsuite/smokey/sched-quota/sched-quota.c
+@@ -327,7 +327,7 @@ static int run_sched_quota(struct smokey_test *t, int argc, char *const argv[])
+ 	smokey_trace("%d thread%s: cap=%d%%, effective=%.1f%%",
+ 		     nrthreads, nrthreads > 1 ? "s": "", quota, effective);
+ 
+-	if (!smokey_on_vm && fabs(effective - (double)quota) > 0.5) {
++	if (!smokey_on_vm && fabs(effective - (double)quota) > 1.5) {
+ 		smokey_warning("out of quota: %.1f%%",
+ 			       effective - (double)quota);
+ 		return -EPROTO;
+-- 
+2.20.1
 
-Steve
 
-
-On Fri, May 31, 2019 at 2:13 PM Jan Kiszka via Xenomai <xenomai@xenomai.org>
-wrote:
-
-> Hi all,
->
-> I'm planning to tag stable 3.0.9 early next week. If you have any
-> stable-relevant patches in your queue or would like to see some commits
-> from
-> master in stable as well, now would be a good time to speak up.
->
-> Jan
->
-> --
-> Siemens AG, Corporate Technology, CT RDA IOT SES-DE
-> Corporate Competence Center Embedded Linux
->
->
