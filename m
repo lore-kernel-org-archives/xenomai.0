@@ -1,7 +1,7 @@
 From: Philippe Gerum <rpm@xenomai.org>
-Subject: [PATCH 2/8] cobalt/arm: fix context switching code for 4.19+
-Date: Sat,  1 Jun 2019 17:14:56 +0200
-Message-Id: <20190601151502.27216-3-rpm@xenomai.org>
+Subject: [PATCH 3/8] drivers/udd: fix spurious select() read events
+Date: Sat,  1 Jun 2019 17:14:57 +0200
+Message-Id: <20190601151502.27216-4-rpm@xenomai.org>
 In-Reply-To: <20190601151502.27216-1-rpm@xenomai.org>
 References: <20190601151502.27216-1-rpm@xenomai.org>
 MIME-Version: 1.0
@@ -17,89 +17,96 @@ List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
 To: xenomai@xenomai.org
 Cc: Jan Kiszka <jan.kiszka@siemens.com>, Philippe Gerum <rpm@xenomai.org>
 
+See https://xenomai.org/pipermail/xenomai/2017-July/037494.html
+
 Signed-off-by: Philippe Gerum <rpm@xenomai.org>
 ---
- kernel/cobalt/arch/arm/switch.S | 54 ++++++++++++++++++++++++++++++++-
- 1 file changed, 53 insertions(+), 1 deletion(-)
+ include/cobalt/kernel/rtdm/udd.h |  2 +-
+ kernel/drivers/udd/udd.c         | 31 ++++++++++++++++++++-----------
+ 2 files changed, 21 insertions(+), 12 deletions(-)
 
-diff --git a/kernel/cobalt/arch/arm/switch.S b/kernel/cobalt/arch/arm/switch.S
-index 505fd5af2..9fc847ab0 100644
---- a/kernel/cobalt/arch/arm/switch.S
-+++ b/kernel/cobalt/arch/arm/switch.S
-@@ -110,7 +110,6 @@ ENDPROC(__asm_vfp_load)
- 	.endm
- #endif
+diff --git a/include/cobalt/kernel/rtdm/udd.h b/include/cobalt/kernel/rtdm/udd.h
+index 550ba9d24..bc2a68db6 100644
+--- a/include/cobalt/kernel/rtdm/udd.h
++++ b/include/cobalt/kernel/rtdm/udd.h
+@@ -306,7 +306,7 @@ struct udd_device {
+ 	/** Reserved to the UDD core. */
+ 	struct udd_reserved {
+ 		rtdm_irq_t irqh;
+-		atomic_t event;
++		u32 event_count;
+ 		struct udd_signotify signfy;
+ 		struct rtdm_event pulse;
+ 		struct rtdm_driver driver;
+diff --git a/kernel/drivers/udd/udd.c b/kernel/drivers/udd/udd.c
+index 972db1225..b086096cc 100644
+--- a/kernel/drivers/udd/udd.c
++++ b/kernel/drivers/udd/udd.c
+@@ -117,7 +117,8 @@ static ssize_t udd_read_rt(struct rtdm_fd *fd,
+ 	struct udd_context *context;
+ 	struct udd_reserved *ur;
+ 	struct udd_device *udd;
+-	ssize_t ret;
++	rtdm_lockctx_t ctx;
++	ssize_t ret = 0;
+ 	u32 count;
  
--/*
- /*
-  * Switch context routine.
-  *
-@@ -134,8 +133,15 @@ ENDPROC(__asm_vfp_load)
-  *
-  *  Calling args:
-  * r0 = previous thread_info, r1 = next thread_info
-+ *
-+ * FIXME: this is ugly, at some point we should stop duplicating
-+ * what __switch_to() does, dropping specific fpu management from
-+ * Cobalt in the same move; this will have to wait until Dovetail
-+ * is substituted to the I-pipe though, since the former already
-+ * provides the support we need for this. --rpm
-  */
- ENTRY(__asm_thread_switch)
-+#if LINUX_VERSION_CODE < KERNEL_VERSION(4, 19, 0)
- 	add     ip, r0, #TI_CPU_SAVE
-  ARM(	stmia	ip!, {r4 - sl, fp, sp, lr} )	@ Store most regs on stack
-  THUMB(	stmia	ip!, {r4 - sl, fp}	   )	@ Store most regs on stack
-@@ -165,3 +171,49 @@ ENTRY(__asm_thread_switch)
-  THUMB(	ldr	sp, [ip], #4		   )
-  THUMB(	ldr	pc, [ip]		   )
- ENDPROC(__asm_thread_switch)
+ 	if (len != sizeof(count))
+@@ -130,15 +131,20 @@ static ssize_t udd_read_rt(struct rtdm_fd *fd,
+ 	ur = &udd->__reserved;
+ 	context = rtdm_fd_to_private(fd);
+ 
+-	for (;;) {
+-		if (atomic_read(&ur->event) != context->event_count)
+-			break;
++	cobalt_atomic_enter(ctx);
 +
-+#else /* LINUX_VERSION_CODE >= KERNEL_VERSION(4, 19, 0) */
++	if (ur->event_count != context->event_count)
++		rtdm_event_clear(&ur->pulse);
++	else
+ 		ret = rtdm_event_wait(&ur->pulse);
+-		if (ret)
+-			return ret;
+-	}
+ 
+-	count = atomic_read(&ur->event);
++	count = ur->event_count;
 +
-+#include <asm/unwind.h>
++	cobalt_atomic_leave(ctx);
 +
-+ UNWIND(.fnstart	)
-+ UNWIND(.cantunwind	)
-+	add	ip, r0, #TI_CPU_SAVE
-+ ARM(	stmia	ip!, {r4 - sl, fp, sp, lr} )	@ Store most regs on stack
-+ THUMB(	stmia	ip!, {r4 - sl, fp}	   )	@ Store most regs on stack
-+ THUMB(	str	sp, [ip], #4		   )
-+ THUMB(	str	lr, [ip], #4		   )
-+	ldr	r4, [r1, #TI_TP_VALUE]
-+	ldr	r5, [r1, #TI_TP_VALUE + 4]
-+#ifdef CONFIG_CPU_USE_DOMAINS
-+	mrc	p15, 0, r6, c3, c0, 0		@ Get domain register
-+	str	r6, [r0, #TI_CPU_DOMAIN]	@ Save old domain register
-+	ldr	r6, [r1, #TI_CPU_DOMAIN]
-+#endif
-+	switch_tls r0, r4, r5, r3, r7
-+#if defined(CONFIG_STACKPROTECTOR) && !defined(CONFIG_SMP)
-+	ldr	r7, [r1, #TI_TASK]
-+	ldr	r8, =__stack_chk_guard
-+	.if (TSK_STACK_CANARY > IMM12_MASK)
-+	add	r7, r7, #TSK_STACK_CANARY & ~IMM12_MASK
-+	.endif
-+	ldr	r7, [r7, #TSK_STACK_CANARY & IMM12_MASK]
-+#endif
-+#ifdef CONFIG_CPU_USE_DOMAINS
-+	mcr	p15, 0, r6, c3, c0, 0		@ Set domain register
-+#endif
-+	mov	r5, r0
-+	fpu_switch r4
-+	add	r4, r1, #TI_CPU_SAVE
-+#if defined(CONFIG_STACKPROTECTOR) && !defined(CONFIG_SMP)
-+	str	r7, [r8]
-+#endif
-+ THUMB(	mov	ip, r4			   )
-+	mov	r0, r5
-+ ARM(	ldmia	r4, {r4 - sl, fp, sp, pc}  )	@ Load all regs saved previously
-+ THUMB(	ldmia	ip!, {r4 - sl, fp}	   )	@ Load all regs saved previously
-+ THUMB(	ldr	sp, [ip], #4		   )
-+ THUMB(	ldr	pc, [ip]		   )
-+ UNWIND(.fnend		)
++	if (ret)
++		return ret;
 +
-+#endif /* LINUX_VERSION_CODE >= KERNEL_VERSION(4, 19, 0) */
+ 	context->event_count = count;
+ 	ret = rtdm_copy_to_user(fd, buf, &count, sizeof(count));
+ 
+@@ -404,7 +410,7 @@ int udd_register_device(struct udd_device *udd)
+ 	} else
+ 		ur->mapper_name = NULL;
+ 
+-	atomic_set(&ur->event, 0);
++	ur->event_count = 0;
+ 	rtdm_event_init(&ur->pulse, 0);
+ 	ur->signfy.pid = -1;
+ 
+@@ -501,12 +507,15 @@ void udd_notify_event(struct udd_device *udd)
+ {
+ 	struct udd_reserved *ur = &udd->__reserved;
+ 	union sigval sival;
++	rtdm_lockctx_t ctx;
+ 
+-	atomic_inc(&ur->event);
++	cobalt_atomic_enter(ctx);
++	ur->event_count++;
+ 	rtdm_event_signal(&ur->pulse);
++	cobalt_atomic_leave(ctx);
+ 
+ 	if (ur->signfy.pid > 0) {
+-		sival.sival_int = atomic_read(&ur->event);
++		sival.sival_int = (int)ur->event_count;
+ 		__cobalt_sigqueue(ur->signfy.pid, ur->signfy.sig, &sival);
+ 	}
+ }
 -- 
 2.20.1
 
