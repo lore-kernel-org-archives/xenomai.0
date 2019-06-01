@@ -1,9 +1,7 @@
 From: Philippe Gerum <rpm@xenomai.org>
-Subject: [PATCH 1/8] lib/cobalt: init: fix misleading message
-Date: Sat,  1 Jun 2019 17:14:55 +0200
-Message-Id: <20190601151502.27216-2-rpm@xenomai.org>
-In-Reply-To: <20190601151502.27216-1-rpm@xenomai.org>
-References: <20190601151502.27216-1-rpm@xenomai.org>
+Subject: [PATCH 0/8] assorted fixes, ARM port to kernel 4.19
+Date: Sat,  1 Jun 2019 17:14:54 +0200
+Message-Id: <20190601151502.27216-1-rpm@xenomai.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
@@ -17,24 +15,28 @@ List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
 To: xenomai@xenomai.org
 Cc: Jan Kiszka <jan.kiszka@siemens.com>, Philippe Gerum <rpm@xenomai.org>
 
-Signed-off-by: Philippe Gerum <rpm@xenomai.org>
----
- lib/cobalt/init.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+This is material for both 3.0.9 and -next.
 
-diff --git a/lib/cobalt/init.c b/lib/cobalt/init.c
-index 7d19c6c31..02a99c569 100644
---- a/lib/cobalt/init.c
-+++ b/lib/cobalt/init.c
-@@ -163,7 +163,7 @@ static void low_init(void)
- 		early_panic("ABI mismatch: required r%lu, provided r%lu",
- 			    XENOMAI_ABI_REV, f->feat_abirev);
- 	case -EAGAIN:
--		early_panic("Cobalt core present but disabled "
-+		early_panic("Cobalt core present but stopped "
- 			    "(use corectl --start)");
- 	case -ENOSYS:
- 		early_panic("Cobalt core not enabled in kernel");
+Philippe Gerum (8):
+  lib/cobalt: init: fix misleading message
+  cobalt/arm: fix context switching code for 4.19+
+  drivers/udd: fix spurious select() read events
+  testsuite/smokey: sched-quota: allow up to 1.5% deviation from plan
+  testsuite/smokey: reset main()'s SCHED_OTHER policy before each test
+  cobalt/thread: send backtracing request only when XNWARN is set
+  cobalt/thread: fix error status (-EINTR) of xnthread_killall()
+  lib/cobalt: kickstart backtrace() from safe context
+
+ include/cobalt/kernel/rtdm/udd.h           |  2 +-
+ kernel/cobalt/arch/arm/switch.S            | 54 +++++++++++++++++++++-
+ kernel/cobalt/thread.c                     | 10 ++--
+ kernel/drivers/udd/udd.c                   | 31 ++++++++-----
+ lib/cobalt/init.c                          |  2 +-
+ lib/cobalt/sigshadow.c                     |  8 ++++
+ testsuite/smokey/main.c                    |  2 +
+ testsuite/smokey/sched-quota/sched-quota.c |  2 +-
+ 8 files changed, 91 insertions(+), 20 deletions(-)
+
 -- 
 2.20.1
 
