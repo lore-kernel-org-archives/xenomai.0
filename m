@@ -1,16 +1,13 @@
-Subject: Re: IPIPE patch causes hang during initrd boot; Ubuntu 18 desktop
- system
-References: <SN6PR09MB3069382F832609A66E69622A80100@SN6PR09MB3069.namprd09.prod.outlook.com>
- <4b6996dc-e425-cdfd-b95e-48c2aaa100d6@web.de>
- <SN6PR09MB3069402961C0EE909D4D891480EC0@SN6PR09MB3069.namprd09.prod.outlook.com>
- <3157ee8b-bf42-1e60-c5be-1e0dcc79ac7d@xenomai.org>
- <SN6PR09MB3069F2FFD8F0CD778404F4FF80EC0@SN6PR09MB3069.namprd09.prod.outlook.com>
-From: Philippe Gerum <rpm@xenomai.org>
-Message-ID: <ce770a80-7bc8-fe10-2457-329a054ebdad@xenomai.org>
-Date: Wed, 12 Jun 2019 16:01:23 +0200
+Subject: Re: [PATCH 5/8] testsuite/smokey: reset main()'s SCHED_OTHER policy
+ before each test
+References: <20190601151502.27216-1-rpm@xenomai.org>
+ <20190601151502.27216-6-rpm@xenomai.org>
+From: Jan Kiszka <jan.kiszka@siemens.com>
+Message-ID: <3bec3f3f-509a-69ff-bac1-aee18494bf90@siemens.com>
+Date: Mon, 3 Jun 2019 13:09:10 +0200
 MIME-Version: 1.0
-In-Reply-To: <SN6PR09MB3069F2FFD8F0CD778404F4FF80EC0@SN6PR09MB3069.namprd09.prod.outlook.com>
-Content-Type: text/plain; charset=utf-8
+In-Reply-To: <20190601151502.27216-6-rpm@xenomai.org>
+Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
@@ -21,31 +18,44 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "Proctor, Frederick M. (Fed)" <frederick.proctor@nist.gov>, "xenomai@xenomai.org" <xenomai@xenomai.org>
-Cc: "jan.kiszka@web.de" <jan.kiszka@web.de>
+To: Philippe Gerum <rpm@xenomai.org>, xenomai@xenomai.org
 
-On 6/12/19 3:55 PM, Proctor, Frederick M. (Fed) wrote:
->> From: Philippe Gerum <rpm@xenomai.org>
->> Sent: Wednesday, June 12, 2019 9:19 AM
->> To: Proctor, Frederick M. (Fed) <frederick.proctor@nist.gov>; Jan Kiszka
->> <jan.kiszka@web.de>; xenomai@xenomai.org
->> Subject: Re: IPIPE patch causes hang during initrd boot; Ubuntu 18 desktop
->> system
->>
->>
->> This may be a timer issue. You could try booting with xenomai.state=stopped
->> on the kernel command line. If that boots as I suspect, then you can try
->> issuing the following command:
->>
->> $ corectl --start
->>
+On 01.06.19 17:14, Philippe Gerum wrote:
+> Signed-off-by: Philippe Gerum <rpm@xenomai.org>
+> ---
+>   testsuite/smokey/main.c | 2 ++
+>   1 file changed, 2 insertions(+)
 > 
-> I gave the kernel command line option "xenomai.state=stopped" but had the same symptom, a hang immediately on the loading of the initrd. 
+> diff --git a/testsuite/smokey/main.c b/testsuite/smokey/main.c
+> index 12321dfc5..5702e825a 100644
+> --- a/testsuite/smokey/main.c
+> +++ b/testsuite/smokey/main.c
+> @@ -22,6 +22,7 @@
+>   
+>   int main(int argc, char *const argv[])
+>   {
+> +	struct sched_param param = { .sched_priority = 0 };
+>   	struct smokey_test *t;
+>   	int ret, fails = 0;
+>   
+> @@ -29,6 +30,7 @@ int main(int argc, char *const argv[])
+>   		return 0;
+>   
+>   	for_each_smokey_test(t) {
+> +		pthread_setschedparam(pthread_self(), SCHED_OTHER, &param);
+>   		ret = t->run(t, argc, argv);
+>   		if (ret) {
+>   			if (ret == -ENOSYS) {
 > 
 
-Ok. The output of /proc/timer_list and /proc/interrupts in the bootable
-case (CONFIG_IPIPE alone) may help in debugging this.
+Is that a cosmetic cleanup, or did we see tests failing or doing the wrong 
+thing? Just to clarify the importance of this fix, also for stable (a few word 
+in the commit log would have done that trick for me ;) ).
+
+Thanks,
+Jan
 
 -- 
-Philippe.
+Siemens AG, Corporate Technology, CT RDA IOT SES-DE
+Corporate Competence Center Embedded Linux
 
