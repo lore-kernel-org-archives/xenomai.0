@@ -1,8 +1,15 @@
-From: Norbert Lange <nolange79@gmail.com>
-Subject: [PATCH 1/2] lib/cobalt: start helper thread with signals blocked
-Date: Fri, 14 Jun 2019 12:23:48 +0200
-Message-Id: <20190614102349.22912-1-norbert.lange@andritz.com>
+Subject: Re: [PATCH 5/8] testsuite/smokey: reset main()'s SCHED_OTHER policy
+ before each test
+References: <20190601151502.27216-1-rpm@xenomai.org>
+ <20190601151502.27216-6-rpm@xenomai.org>
+ <3bec3f3f-509a-69ff-bac1-aee18494bf90@siemens.com>
+From: Philippe Gerum <rpm@xenomai.org>
+Message-ID: <f016feb5-303f-9fa9-77b1-180f7f3b45a3@xenomai.org>
+Date: Mon, 3 Jun 2019 13:51:57 +0200
 MIME-Version: 1.0
+In-Reply-To: <3bec3f3f-509a-69ff-bac1-aee18494bf90@siemens.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Language: en-US
 Content-Transfer-Encoding: 8bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
@@ -12,45 +19,42 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
+To: Jan Kiszka <jan.kiszka@siemens.com>, xenomai@xenomai.org
 
-Delivery mechanisms like sigwait and signalfd require *all* threads
-to block the relevant signals.
-The cobalt init should not spawn a thread affecting the
-signal-handling.
+On 6/3/19 1:09 PM, Jan Kiszka wrote:
+> On 01.06.19 17:14, Philippe Gerum wrote:
+>> Signed-off-by: Philippe Gerum <rpm@xenomai.org>
+>> ---
+>>   testsuite/smokey/main.c | 2 ++
+>>   1 file changed, 2 insertions(+)
+>>
+>> diff --git a/testsuite/smokey/main.c b/testsuite/smokey/main.c
+>> index 12321dfc5..5702e825a 100644
+>> --- a/testsuite/smokey/main.c
+>> +++ b/testsuite/smokey/main.c
+>> @@ -22,6 +22,7 @@
+>>     int main(int argc, char *const argv[])
+>>   {
+>> +    struct sched_param param = { .sched_priority = 0 };
+>>       struct smokey_test *t;
+>>       int ret, fails = 0;
+>>   @@ -29,6 +30,7 @@ int main(int argc, char *const argv[])
+>>           return 0;
+>>         for_each_smokey_test(t) {
+>> +        pthread_setschedparam(pthread_self(), SCHED_OTHER, &param);
+>>           ret = t->run(t, argc, argv);
+>>           if (ret) {
+>>               if (ret == -ENOSYS) {
+>>
+> 
+> Is that a cosmetic cleanup, or did we see tests failing or doing the
+> wrong thing? Just to clarify the importance of this fix, also for stable
+> (a few word in the commit log would have done that trick for me ;) ).
+> 
 
-Signed-off-by: Norbert Lange <norbert.lange@andritz.com>
----
- lib/cobalt/printf.c | 5 +++++
- 1 file changed, 5 insertions(+)
+https://www.xenomai.org/pipermail/xenomai/2019-May/040925.html
 
-diff --git a/lib/cobalt/printf.c b/lib/cobalt/printf.c
-index e109deaec..33ff7f9ac 100644
---- a/lib/cobalt/printf.c
-+++ b/lib/cobalt/printf.c
-@@ -20,6 +20,7 @@
- #include <inttypes.h>
- #include <limits.h>
- #include <pthread.h>
-+#include <signal.h>
- #include <stdarg.h>
- #include <stdio.h>
- #include <stdlib.h>
-@@ -640,9 +641,13 @@ static void *printer_loop(void *arg)
- static void spawn_printer_thread(void)
- {
- 	pthread_attr_t thattr;
-+	sigset_t sset, oset;
- 
- 	pthread_attr_init(&thattr);
-+	sigfillset(&sset);
-+	pthread_sigmask(SIG_BLOCK, &sset, &oset);
- 	pthread_create(&printer_thread, &thattr, printer_loop, NULL);
-+	sigprocmask(SIG_SETMASK, &oset, NULL);
- }
- 
- void cobalt_print_init_atfork(void)
+
 -- 
-2.20.1
-
+Philippe.
 
