@@ -1,15 +1,16 @@
-Subject: =?UTF-8?Q?Re=3a_Compile_time_error_=22error=3a_call_to_=e2=80=98=5f?=
- =?UTF-8?B?X2NvbXBpbGV0aW1lX2Fzc2VydF8xOTbigJki?=
-References: <112066790.3610290.1562394005713.ref@mail.yahoo.com>
- <112066790.3610290.1562394005713@mail.yahoo.com>
-From: Jan Kiszka <jan.kiszka@web.de>
-Message-ID: <540c9c03-ade6-923f-bce7-942050080082@web.de>
-Date: Sat, 6 Jul 2019 10:48:04 +0200
+Subject: Re: Xenomai arm64 plans?
+References: <fb2b5a6b-007e-9f2c-bcac-8df84fbaac84@theobroma-systems.com>
+ <96f3c66c-816c-b2d8-071e-198488ad05be@siemens.com>
+ <f735da35-123d-7352-46ec-420998540d61@theobroma-systems.com>
+ <c888624bb653433ca2ab49bfef71f85f@NANS01204.it.intra.sercel.com>
+From: Jan Kiszka <jan.kiszka@siemens.com>
+Message-ID: <cd06c26e-6923-804b-fb38-6e7afa444b93@siemens.com>
+Date: Mon, 3 Jun 2019 19:16:45 +0200
 MIME-Version: 1.0
-In-Reply-To: <112066790.3610290.1562394005713@mail.yahoo.com>
-Content-Type: text/plain; charset=utf-8
+In-Reply-To: <c888624bb653433ca2ab49bfef71f85f@NANS01204.it.intra.sercel.com>
+Content-Type: text/plain; charset="utf-8"; format="flowed"
 Content-Language: en-US
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -18,110 +19,67 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Alex Martin <alex.martin92@ymail.com>, xenomai@xenomai.org
+To: MINIER Bertrand <Bertrand.MINIER@sercel.com>, "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On 06.07.19 08:20, Alex Martin via Xenomai wrote:
-> Hi,I get following error during compilation.Compiling on Ubuntu 16.04ker=
-nel version 4.19.57 xenomai 3.0.9
+On 03.06.19 18:24, MINIER Bertrand via Xenomai wrote:
+> Hi all,
+> 
+> Is there updated plans for a Xenomai release which includes arm64 ?
+> Are there still blocking issues to not officially support it ?
+> We are about to start the development of an industrial product based on an arm64 SoC and we would like to secure our choice of using Xenomai for that product.
 
-You need git master for 4.19 support.
+ARM64 shall be officially supported by the next major Xenomai release, 3.1. That 
+one is not delayed because auf ARM64, but rather because I'd like to integrate 
+one major core feature beforehand (reminds me of reminding to provide feedback 
+on that) and make sure that 4.19 support for the main archs brings no frictions 
+(that is looking good I would say).
 
 Jan
 
-> Alex
-> -------------=3D=3D=3D=3D=3D=3D making target debian/stamp/build/kernel =
-[new prereqs: vars]=3D=3D=3D=3D=3D=3D
-> This is kernel package version 13.018.
-> restore_upstream_debianization
-> test ! -f scripts/package/builddeb.kpkg-dist ||=C2=A0=C2=A0 =C2=A0mv -f =
-scripts/package/builddeb.kpkg-dist scripts/package/builddeb
-> test ! -f scripts/package/Makefile.kpkg-dist ||=C2=A0=C2=A0 =C2=A0mv -f =
-scripts/package/Makefile.kpkg-dist scripts/package/Makefile
-> /usr/bin/make -j5 EXTRAVERSION=3D-xenomai-3.0.9=C2=A0 ARCH=3Dx86_64 \
-> =C2=A0=C2=A0 =C2=A0=C2=A0=C2=A0 =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 bzImage
-> make[1]: Entering directory '/home/user1/src/linux-4.19.57'
-> scripts/kconfig/conf=C2=A0 --syncconfig Kconfig
-> =C2=A0 DESCEND=C2=A0 objtool
-> =C2=A0 CALL=C2=A0=C2=A0=C2=A0 scripts/checksyscalls.sh
-> =C2=A0 CHK=C2=A0=C2=A0=C2=A0=C2=A0 include/generated/compile.h
-> =C2=A0 CC=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 kernel/xenomai/rtdm/core.o
-> =C2=A0 CC=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 kernel/xenomai/posix/thread.o
-> =C2=A0 CC=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 kernel/xenomai/rtdm/device.o
-> =C2=A0 CC=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 kernel/xenomai/posix/timerfd.o
-> =C2=A0 CC=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 kernel/xenomai/rtdm/drvlib.o
-> In file included from ./include/trace/define_trace.h:96:0,
-> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
-=C2=A0=C2=A0=C2=A0=C2=A0 from ./include/trace/events/cobalt-posix.h:1068,
-> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
-=C2=A0=C2=A0=C2=A0=C2=A0 from kernel/xenomai/posix/thread.c:33:
-> ./include/trace/events/cobalt-posix.h: In function =E2=80=98trace_event_=
-define_fields_cobalt_void=E2=80=99:
-> ./include/linux/compiler.h:348:38: error: call to =E2=80=98__compiletime=
-_assert_196=E2=80=99 declared with attribute error: BUILD_BUG_ON failed: 0=
- <=3D 0
-> =C2=A0 _compiletime_assert(condition, msg, __compiletime_assert_, __LINE=
-__)
-> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
-=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
-=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
-=C2=A0 ^
-> ./include/trace/trace_events.h:455:2: note: in definition of macro =E2=
-=80=98DECLARE_EVENT_CLASS=E2=80=99
-> =C2=A0 tstruct;=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 \
-> =C2=A0 ^
-> ./include/trace/events/cobalt-posix.h:189:2: note: in expansion of macro=
- =E2=80=98TP_STRUCT__entry=E2=80=99
-> =C2=A0 TP_STRUCT__entry(
-> =C2=A0 ^
-> ./include/linux/compiler.h:336:2: note: in expansion of macro =E2=80=98_=
-_compiletime_assert=E2=80=99
-> =C2=A0 __compiletime_assert(condition, msg, prefix, suffix)
-> =C2=A0 ^
-> ./include/linux/compiler.h:348:2: note: in expansion of macro =E2=80=98_=
-compiletime_assert=E2=80=99
-> =C2=A0 _compiletime_assert(condition, msg, __compiletime_assert_, __LINE=
-__)
-> =C2=A0 ^
-> ./include/linux/build_bug.h:45:37: note: in expansion of macro =E2=80=98=
-compiletime_assert=E2=80=99
-> =C2=A0#define BUILD_BUG_ON_MSG(cond, msg) compiletime_assert(!(cond), ms=
-g)
-> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
-=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
-=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 ^
-> ./include/linux/build_bug.h:69:2: note: in expansion of macro =E2=80=98B=
-UILD_BUG_ON_MSG=E2=80=99
-> =C2=A0 BUILD_BUG_ON_MSG(condition, "BUILD_BUG_ON failed: " #condition)
-> =C2=A0 ^
-> ./include/trace/trace_events.h:425:3: note: in expansion of macro =E2=80=
-=98BUILD_BUG_ON=E2=80=99
-> =C2=A0=C2=A0 BUILD_BUG_ON(len <=3D 0);=C2=A0=C2=A0=C2=A0=C2=A0 \
-> =C2=A0=C2=A0 ^
-> ./include/trace/events/cobalt-posix.h:190:3: note: in expansion of macro=
- =E2=80=98__array=E2=80=99
-> =C2=A0=C2=A0 __array(char, dummy, 0)
-> =C2=A0=C2=A0 ^
-> =C2=A0 CC=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 kernel/cpu.o
-> scripts/Makefile.build:303: recipe for target 'kernel/xenomai/posix/thre=
-ad.o' failed
-> make[4]: *** [kernel/xenomai/posix/thread.o] Error 1
-> make[4]: *** Waiting for unfinished jobs....
-> =C2=A0 CC=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 kernel/xenomai/rtdm/fd.o
-> scripts/Makefile.build:544: recipe for target 'kernel/xenomai/posix' fai=
-led
-> make[3]: *** [kernel/xenomai/posix] Error 2
-> make[3]: *** Waiting for unfinished jobs....
-> =C2=A0 CC=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 kernel/xenomai/rtdm/wrappers.o
-> =C2=A0 CC=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 kernel/exit.o
-> =C2=A0 CC=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 kernel/softirq.o
-> =C2=A0 AR=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 kernel/xenomai/rtdm/built-in.a
-> scripts/Makefile.build:544: recipe for target 'kernel/xenomai' failed
-> make[2]: *** [kernel/xenomai] Error 2
-> make[2]: *** Waiting for unfinished jobs....
-> Makefile:1044: recipe for target 'kernel' failed
-> make[1]: *** [kernel] Error 2
-> make[1]: *** Waiting for unfinished jobs....
-> ----------------------------
->
+> 
+> Thanks,
+> 
+> Bertrand Minier
+> 
+> -----Message d'origine-----
+> De : Xenomai <xenomai-bounces@xenomai.org> De la part de via Xenomai
+> Envoyé : vendredi 2 novembre 2018 17:30
+> À : Jan Kiszka <jan.kiszka@siemens.com>
+> Cc : xenomai@xenomai.org
+> Objet : Re: Xenomai arm64 plans?
+> 
+> 
+> 
+> On 11/2/18 5:25 PM, Jan Kiszka wrote:
+>> On 02.11.18 17:19, Christoph Müllner wrote:
+>>> Hi Jan,
+>>>
+>>> I was wondering if there are any plans for a Xenomai release, which
+>>> includes arm64.
+>>
+>> Yes, there are. The exact timeline is not settled yet, but somewhere
+>> within the next month, I would say.
+> 
+> That's excellent news!
+> 
+>>> I'm familiar with the next branch, but I'd love to work with code
+>>> from a branch, which is not subject to force-pushing.
+>>
+>> Actually there was a change: next is still potentially rebasing as I'm
+>> integrating over it and may - when things go wrong - pull back or
+>> reorder in that queue. But master is back, and that is forward-only.
+>> It's not comparable to a release but it could help to bridge the time
+>> to v3.1.
+> 
+> Ok, thank's for clarifying that.
+> 
+> Thanks,
+> Christoph
+> 
+> This e-mail and any accompanying attachments are confidential. If you are not the intended recipient, you must not review, disclose, copy, distribute or use this e-mail; please delete it from your system and notify the sender immediately.
+> 
 
+-- 
+Siemens AG, Corporate Technology, CT RDA IOT SES-DE
+Corporate Competence Center Embedded Linux
 
