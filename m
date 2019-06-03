@@ -1,23 +1,12 @@
+Date: Mon, 3 Jun 2019 04:10:44 -0500 (CDT)
+From: Per Oberg <pero@wolfram.com>
+Message-ID: <1523560934.2012965.1559553044281.JavaMail.zimbra@wolfram.com>
+In-Reply-To: <ea8b5153-3530-4b7b-3a73-586cda346cbe@compador.de>
+References: <ea8b5153-3530-4b7b-3a73-586cda346cbe@compador.de>
+Subject: Re: RTnet bind failed socket again
 MIME-Version: 1.0
-References: <CAEmXcAzOL4M-JRUWgm3mjmz+bQ=nHc-QW5dr-iBc24RXXu5CTg@mail.gmail.com>
- <320b1c56-047f-764f-036a-d3302ddbd0f4@siemens.com>
- <CAEmXcAxuFzE2uQHGMUjBnbgadTTcNU_DwV64uvLPahxxDMKTyQ@mail.gmail.com>
- <be5b28d1-e689-5c60-4d20-2be511ec489a@siemens.com>
- <CAEmXcAxs3O_Hmph-48JArHgCmWSj+wAiffkNCZKiL9uVew6irg@mail.gmail.com>
- <22b6931e-8f7b-0cae-2316-5b278d1186d6@siemens.com>
- <CAEmXcAzzSfT5jVQpM2CidLh-CCJRPt45jJMRq_mmXz0wHFnyXQ@mail.gmail.com>
- <34f86f81-70f4-9b07-26e7-3525bfaf6fcf@siemens.com>
- <CAEmXcAz6p9yg65uigQx6zJyey1nnkmdq8+i1Ou2bT888n-thrg@mail.gmail.com>
- <309d004d-23de-a4a5-7536-4c08e463c556@siemens.com>
- <CAEmXcAzn2jagk3CkTk=5zhuWu4tPWC9hUSSpsCOzmG=Gu4rn4Q@mail.gmail.com>
- <0cd6d298-cee7-2799-4b61-2b868d742128@siemens.com>
-In-Reply-To: <0cd6d298-cee7-2799-4b61-2b868d742128@siemens.com>
-From: danwe <daniel.wenninger92@gmail.com>
-Date: Fri, 7 Jun 2019 12:22:53 +0200
-Message-ID: <CAEmXcAyuDquTNG3ZWtXGf+9oYArgT8PnRDgS_RzD_ZoWNxZ79w@mail.gmail.com>
-Subject: Re: Fwd: Round-Trip Time Requester with Xenomai / RTnet on Beaglebone
- Black
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -26,57 +15,34 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jan Kiszka <jan.kiszka@siemens.com>, xenomai@xenomai.org
+To: Johannes Holtz <johannes.holtz@compador.de>
+Cc: xenomai <xenomai@xenomai.org>
 
-Raw-ethernet rteth0 does work. See the output:
 
-# /usr/examples/xenomai/posix/raw-ethernet eth0
-cannot get interface index: No such device
-# /usr/examples/xenomai/posix/raw-ethernet rteth0
-Sent frame of 1514 bytes
-Sent frame of 1514 bytes
-Sent frame of 1514 bytes
-Sent frame of 1514 bytes
-shutting down
 
-So should I compare the invoked gcc command line with the output of
-"xeno-config
---skin=posix --ldflags"? Can that be possible if "raw-ethernet" is working?
 
-Daniel
+----- Den 3 jun 2019, p=C3=A5 kl 11:06, xenomai xenomai@xenomai.org skrev:
 
-Am Fr., 7. Juni 2019 um 12:15 Uhr schrieb Jan Kiszka <jan.kiszka@siemens.com
->:
+> Hi,
 
-> On 07.06.19 11:40, danwe wrote:
-> > I have checked what the generated binary is using.
-> > E.g. it is using lines like:
-> >
-> > 19: 00008bc8   0 FUNC   GLOBAL DEFAULT UND ioct1@GLIBC_2.4 (3)
-> > 45: 00008cc4   0 FUNC   GLOBAL DEFAULT UND socket@GLIBC_2.4 (3)
-> >
-> > Does that mean that it is using the non-rt glibc services? If so then I
-> do not
-> > understand one thing: the file "raw-ethernet" is a example where it uses
-> the
-> > same ioct1@GLIBC and socket@GLIBC but it does not throw the "network is
-> > unreachable error".
-> > But how can I change that it is using the __wrap_socket?
->
-> Compare the invoked gcc command line with the output of "xeno-config
-> --skin=posix --ldflags". Something is preventing the the required flags
-> make it
-> into your build. Also try building manually, to exclude flaws in your
-> buildroot
-> environment.
->
-> Does "raw-ethernet rteth0" actually work? Or are you calling "raw-ethernet
-> eth0"
-> by accident?
->
-> Jan
->
-> --
-> Siemens AG, Corporate Technology, CT RDA IOT SES-DE
-> Corporate Competence Center Embedded Linux
->
+> My program opens a RTnet socket successfully but the program gets killed
+> by a different issue that has nothing to do with this. However, the
+> RTnet socket is still bound. If I try to start the program again i get
+> the error "Address already in use". If it would be a normal unix socket
+> I would simply call it with SO_REUSEADDR but this is not possible with
+> RTnet from what I understand.
+
+I tried this and failed miserably. That said, I'm also interested in the an=
+swer to this question.=20
+
+> My question is why the socket is not unbound after the binding process
+> is killed and if there is a way to reclaim this socket. By the way, it
+> has to be this socket since the communication partner expects the server
+> to listen on this exact port.
+
+> Cheers,
+
+> Johannes
+
+Per =C3=96berg=20
+
