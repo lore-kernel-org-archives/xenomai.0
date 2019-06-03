@@ -1,18 +1,15 @@
-Subject: Re: fail clocktest -C CLOCK_HOST_REALTIME
-From: Jan Kiszka <jan.kiszka@siemens.com>
-References: <fa7df77f-23f9-4cc2-cc2e-aa1f9d4010bc@iit.it>
- <b2696236-4ba3-c9b0-a22f-9210f83cd163@siemens.com>
- <bdab9339-22bb-1da3-8453-e79bfeb204b2@iit.it>
- <611371d4-437c-b269-e8e6-4081174b247b@siemens.com>
- <160cc29c-d596-33bd-a7c1-b7a785f5800a@iit.it>
- <31a71713-c200-3258-11f3-73986f041ede@siemens.com>
-Message-ID: <66d02c99-0a13-5cd3-63ce-27ab5c5c5c0d@siemens.com>
-Date: Wed, 3 Jul 2019 20:54:22 +0200
+From: MINIER Bertrand <Bertrand.MINIER@sercel.com>
+Subject: RE: Xenomai arm64 plans?
+Date: Mon, 3 Jun 2019 16:24:04 +0000
+Message-ID: <c888624bb653433ca2ab49bfef71f85f@NANS01204.it.intra.sercel.com>
+References: <fb2b5a6b-007e-9f2c-bcac-8df84fbaac84@theobroma-systems.com>
+ <96f3c66c-816c-b2d8-071e-198488ad05be@siemens.com>
+ <f735da35-123d-7352-46ec-420998540d61@theobroma-systems.com>
+In-Reply-To: <f735da35-123d-7352-46ec-420998540d61@theobroma-systems.com>
+Content-Language: fr-FR
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-In-Reply-To: <31a71713-c200-3258-11f3-73986f041ede@siemens.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -21,23 +18,35 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: alessio margan <alessio.margan@iit.it>, "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On 03.07.19 20:51, Jan Kiszka wrote:
-> On 03.07.19 20:42, alessio margan via Xenomai wrote:
->> Hi,
->>
->> ok, it is also fine for me.
->>
-> 
-> Perfect. The next 4.14 ipipe is released, so you can move to that latest kernel 
-> version. Or to 4.19 which will receive update for much longer.
-
-Ah, sorry: 4.19 is not supported by Xenomai 3.0, only via upcoming 3.1.
-
-Jan
-
--- 
-Siemens AG, Corporate Technology, CT RDA IOT SES-DE
-Corporate Competence Center Embedded Linux
+SGkgYWxsLA0KDQpJcyB0aGVyZSB1cGRhdGVkIHBsYW5zIGZvciBhIFhlbm9tYWkgcmVsZWFzZSB3
+aGljaCBpbmNsdWRlcyBhcm02NCA/DQpBcmUgdGhlcmUgc3RpbGwgYmxvY2tpbmcgaXNzdWVzIHRv
+IG5vdCBvZmZpY2lhbGx5IHN1cHBvcnQgaXQgPw0KV2UgYXJlIGFib3V0IHRvIHN0YXJ0IHRoZSBk
+ZXZlbG9wbWVudCBvZiBhbiBpbmR1c3RyaWFsIHByb2R1Y3QgYmFzZWQgb24gYW4gYXJtNjQgU29D
+IGFuZCB3ZSB3b3VsZCBsaWtlIHRvIHNlY3VyZSBvdXIgY2hvaWNlIG9mIHVzaW5nIFhlbm9tYWkg
+Zm9yIHRoYXQgcHJvZHVjdC4NCg0KVGhhbmtzLA0KDQpCZXJ0cmFuZCBNaW5pZXINCg0KLS0tLS1N
+ZXNzYWdlIGQnb3JpZ2luZS0tLS0tDQpEZSA6IFhlbm9tYWkgPHhlbm9tYWktYm91bmNlc0B4ZW5v
+bWFpLm9yZz4gRGUgbGEgcGFydCBkZSB2aWEgWGVub21haQ0KRW52b3nDqSA6IHZlbmRyZWRpIDIg
+bm92ZW1icmUgMjAxOCAxNzozMA0Kw4AgOiBKYW4gS2lzemthIDxqYW4ua2lzemthQHNpZW1lbnMu
+Y29tPg0KQ2MgOiB4ZW5vbWFpQHhlbm9tYWkub3JnDQpPYmpldCA6IFJlOiBYZW5vbWFpIGFybTY0
+IHBsYW5zPw0KDQoNCg0KT24gMTEvMi8xOCA1OjI1IFBNLCBKYW4gS2lzemthIHdyb3RlOg0KPiBP
+biAwMi4xMS4xOCAxNzoxOSwgQ2hyaXN0b3BoIE3DvGxsbmVyIHdyb3RlOg0KPj4gSGkgSmFuLA0K
+Pj4NCj4+IEkgd2FzIHdvbmRlcmluZyBpZiB0aGVyZSBhcmUgYW55IHBsYW5zIGZvciBhIFhlbm9t
+YWkgcmVsZWFzZSwgd2hpY2gNCj4+IGluY2x1ZGVzIGFybTY0Lg0KPg0KPiBZZXMsIHRoZXJlIGFy
+ZS4gVGhlIGV4YWN0IHRpbWVsaW5lIGlzIG5vdCBzZXR0bGVkIHlldCwgYnV0IHNvbWV3aGVyZQ0K
+PiB3aXRoaW4gdGhlIG5leHQgbW9udGgsIEkgd291bGQgc2F5Lg0KDQpUaGF0J3MgZXhjZWxsZW50
+IG5ld3MhDQoNCj4+IEknbSBmYW1pbGlhciB3aXRoIHRoZSBuZXh0IGJyYW5jaCwgYnV0IEknZCBs
+b3ZlIHRvIHdvcmsgd2l0aCBjb2RlDQo+PiBmcm9tIGEgYnJhbmNoLCB3aGljaCBpcyBub3Qgc3Vi
+amVjdCB0byBmb3JjZS1wdXNoaW5nLg0KPg0KPiBBY3R1YWxseSB0aGVyZSB3YXMgYSBjaGFuZ2U6
+IG5leHQgaXMgc3RpbGwgcG90ZW50aWFsbHkgcmViYXNpbmcgYXMgSSdtDQo+IGludGVncmF0aW5n
+IG92ZXIgaXQgYW5kIG1heSAtIHdoZW4gdGhpbmdzIGdvIHdyb25nIC0gcHVsbCBiYWNrIG9yDQo+
+IHJlb3JkZXIgaW4gdGhhdCBxdWV1ZS4gQnV0IG1hc3RlciBpcyBiYWNrLCBhbmQgdGhhdCBpcyBm
+b3J3YXJkLW9ubHkuDQo+IEl0J3Mgbm90IGNvbXBhcmFibGUgdG8gYSByZWxlYXNlIGJ1dCBpdCBj
+b3VsZCBoZWxwIHRvIGJyaWRnZSB0aGUgdGltZQ0KPiB0byB2My4xLg0KDQpPaywgdGhhbmsncyBm
+b3IgY2xhcmlmeWluZyB0aGF0Lg0KDQpUaGFua3MsDQpDaHJpc3RvcGgNCg0KVGhpcyBlLW1haWwg
+YW5kIGFueSBhY2NvbXBhbnlpbmcgYXR0YWNobWVudHMgYXJlIGNvbmZpZGVudGlhbC4gSWYgeW91
+IGFyZSBub3QgdGhlIGludGVuZGVkIHJlY2lwaWVudCwgeW91IG11c3Qgbm90IHJldmlldywgZGlz
+Y2xvc2UsIGNvcHksIGRpc3RyaWJ1dGUgb3IgdXNlIHRoaXMgZS1tYWlsOyBwbGVhc2UgZGVsZXRl
+IGl0IGZyb20geW91ciBzeXN0ZW0gYW5kIG5vdGlmeSB0aGUgc2VuZGVyIGltbWVkaWF0ZWx5Lg0K
 
