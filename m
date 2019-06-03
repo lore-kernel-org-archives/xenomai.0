@@ -1,14 +1,13 @@
-From: Lange Norbert <norbert.lange@andritz.com>
-Subject: RE: Waking up threads from the other xenomai/linux domain
-Date: Thu, 27 Jun 2019 15:08:12 +0000
-Message-ID: <VI1PR05MB59179C436804EC085676C86DF6FD0@VI1PR05MB5917.eurprd05.prod.outlook.com>
-References: <VI1PR05MB59174B1FCCC4A8B782A2EEEDF6E20@VI1PR05MB5917.eurprd05.prod.outlook.com>
- <d1807b53-981e-734c-264d-719ca4d7844b@xenomai.org>
-In-Reply-To: <d1807b53-981e-734c-264d-719ca4d7844b@xenomai.org>
-Content-Language: en-US
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+Subject: Re: [PATCH v2] net/tcp: fix unsafe accesses from/to userspace
+References: <20190603121012.13032-1-sebastian.smolorz@gmx.de>
+From: Jan Kiszka <jan.kiszka@siemens.com>
+Message-ID: <4777625f-fa79-8a3c-6697-93a93708581f@siemens.com>
+Date: Mon, 3 Jun 2019 16:59:07 +0200
 MIME-Version: 1.0
+In-Reply-To: <20190603121012.13032-1-sebastian.smolorz@gmx.de>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,86 +16,258 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Philippe Gerum <rpm@xenomai.org>, "Xenomai (xenomai@xenomai.org)" <xenomai@xenomai.org>
+To: Sebastian Smolorz <sebastian.smolorz@gmx.de>
+Cc: xenomai@xenomai.org
 
-DQoNCj4gLS0tLS1PcmlnaW5hbCBNZXNzYWdlLS0tLS0NCj4gRnJvbTogUGhpbGlwcGUgR2VydW0g
-PHJwbUB4ZW5vbWFpLm9yZz4NCj4gU2VudDogRG9ubmVyc3RhZywgMjcuIEp1bmkgMjAxOSAxNDo0
-Mw0KPiBUbzogTGFuZ2UgTm9yYmVydCA8bm9yYmVydC5sYW5nZUBhbmRyaXR6LmNvbT47IFhlbm9t
-YWkNCj4gKHhlbm9tYWlAeGVub21haS5vcmcpIDx4ZW5vbWFpQHhlbm9tYWkub3JnPg0KPiBTdWJq
-ZWN0OiBSZTogV2FraW5nIHVwIHRocmVhZHMgZnJvbSB0aGUgb3RoZXIgeGVub21haS9saW51eCBk
-b21haW4NCj4NCj4gRS1NQUlMIEZST00gQSBOT04tQU5EUklUWiBTT1VSQ0U6IEFTIEEgU0VDVVJJ
-VFkgTUVBU1VSRSwgUExFQVNFDQo+IEVYRVJDSVNFIENBVVRJT04gV0lUSCBFLU1BSUwgQ09OVEVO
-VCBBTkQgQU5ZIExJTktTIE9SDQo+IEFUVEFDSE1FTlRTLg0KPg0KPg0KPiBPbiA2LzI2LzE5IDE6
-MDUgUE0sIExhbmdlIE5vcmJlcnQgdmlhIFhlbm9tYWkgd3JvdGU6DQo+ID4gSGVsbG8sDQo+ID4N
-Cj4gPiBJIGhhdmUgbXVsdGlwbGUgdGhyZWFkcywgb25lIG9mIHRoZW0gaXMgcmVhbHRpbWUsIG9u
-ZSBvdGhlciBpcyByZXNwb25zaWJsZQ0KPiBmb3IgY29udHJvbGxpbmcgdGhlIHNlcnZpY2UuDQo+
-ID4NCj4gPiBUaGUgY29udHJvbGxpbmcgdGhyZWFkIGJsb2NrcyBvbiBzb21lIGxpbnV4IHNvY2tl
-dHMsIHRoZSByZWFsdGltZSBvbmUgaGFzIGENCj4gc2VsZWN0IG9uIGEgUlQgc29ja2V0IGFuZCBh
-IHRpbWVvdXQuDQo+ID4NCj4gPiBJIG5vdyBoYXZlIHRoZSBwcm9ibGVtIHRoYXQgSSBuZWVkIHRv
-IHdha2UgdXAgdGhlIG90aGVyIHRocmVhZCB1bmRlcg0KPiA+IHNvbWUgY2lyY3Vtc3RhbmNlcywg
-bm90IGFsd2F5cyAodGhlbiBJIHdvdWxkIGp1c3QgcG9sbCksIGJ1dCBwb3RlbnRpYWxseSBpbg0K
-PiByZWd1bGFyIGJ1cnN0IChmb3J3YXJkaW5nIHBhY2tldHMpLg0KPiA+PkZyb20gdGhlIGRvY3Ms
-IFhERFAgc2VlbXMgdGhlIG9ubHkgc29sdXRpb24sIEkgd29uZGVyIGlmIHRoZXJlIGFyZSBtb3Jl
-Lg0KPiA+DQo+ID4gMSkgQ29ubmVjdCB0aGUgdGhyZWFkcyB3aXRoIGEgWEREUCBzb2NrZXQsIGFk
-ZCB0aGUgZmQgaW4gdGhlIHNlbGVjdCBjYWxscy4NCj4gPiAyKSBBdGxlYXN0IHdoZW4gTGludXgg
-aXMgd2FraW5nIHVwIFhlbm9tYWksIEkgY291bGQgdXNlIGFuIElERFAvQlVGUA0KPiBzb2NrZXQg
-d2l0aCB0aGUgbGludXggdGhyZWFkIHRoZW4gYmVpbmcgcHJvbW90ZWQgZm9yIHRoZSBkdXJhdGlv
-biBvZiB0aGUgY2FsbC4NCj4NCj4gSSB3b3VsZCBub3QgcmVjb21tZW5kIHRoaXMgdW5sZXNzIHRo
-b3NlIHBhY2tldHMgYXJyaXZlIGF0IGEgZmFpcmx5IGxvdw0KPiByYXRlOiBhIGRvdWJsZSBtb2Rl
-IG1pZ3JhdGlvbiBpcyBjb3N0bHksIHdheSwgd2F5IG1vcmUgdGhhbiB1c2luZyBYRERQLg0KPg0K
-PiA+IDMpIFNpZ25hbHM/IENvdWxkIHRoZXkgYmUgdXNlZCB0byBpbnRlcnJ1cHQgdGhlIHNlbGVj
-dCAoYm90aCBsaW51eCBhbmQNCj4gPiBjb2JhbHQgdmFyaWFudCk/LiBUaGUgUE9TSVggc2tpbiBo
-YXMgbm8gcHNlbGVjdCBzbyBJIHdvbmRlciBob3cgSQ0KPiA+IHdvdWxkIG1ha2Ugc3VyZSB0aGUg
-c2lnbmFsIGlzIG9ubHkgZGVsaXZlcmVkIGR1cmluZyBzZWxlY3QNCj4NCj4gSSBkb24ndCB0aGlu
-ayB0aGUgUE9TSVggc2lnbmFsIG1hY2hpbmVyeSBjYW4gYmUgZGVzY3JpYmVkIGFzIGxpZ2h0d2Vp
-Z2h0Lg0KPiBCZXNpZGVzLCBzaW5jZSBjb2JhbHQgb25seSBpbXBsZW1lbnRzIHRoZSBzeW5jaHJv
-bm91cyBpbnRlcmZhY2UgdmlhDQo+IHNpZ3dhaXQqKCksIHNlbGVjdCgpIHdvdWxkIG5vdCB1bmJs
-b2NrIG9uIHNpZ25hbCByZWNlaXB0Lg0KPg0KPiA+DQo+ID4gQWxsIHRoZSBSVElQQyBzb2NrZXRz
-IHNlZW0gdG8gdXNlIGEgZ2xvYmFsIHBvb2wgb2YgcG9ydHMsIGFuZCBJDQo+ID4gYmVsaWV2ZSBY
-RERQIHRvIGJlIHJhdGhlciBoZWF2eXdlaWdodC5JIGFtIGxvb2tpbmcgZm9yIGFuIGVmZmljaWVu
-dCB3YXkgKGluDQo+IHRvdGFsIENQVSB0aW1lKSB0byB1bmJsb2NrIGEgdGhyZWFkLCBJdCBkb2Vz
-IG5vdCBuZWVkIHRvIGhhdmUgbG93ZXN0IGxhdGVuY3kuDQo+DQo+IFlvdSBtYXkgYmUgb3ZlcmVz
-dGltYXRpbmcgdGhlIFhERFAgb3ZlcmhlYWQgZXNwZWNpYWxseSBpZiB0aGUgbWVzc2FnZQ0KPiBy
-YXRlIGlzIGxvdy4gSGF2aW5nIGEgc2l6ZS1jb25maWd1cmFibGUgKENPTkZJR19YRU5PX09QVF9Q
-SVBFX05SREVWKQ0KPiBnbG9iYWwgcG9vbCBvZiBwb3J0cyBzaG91bGQgbm90IGJlIGFuIGlzc3Vl
-IGluIGEgc3lzdGVtIHdoZXJlIHlvdSBjYW4gLSBhbmQNCj4gc2hvdWxkIC0ga25vdyBpbiBhZHZh
-bmNlIGhvdyBtYW55IG9mIHRoZW0gYXJlIGdvaW5nIHRvIGJlIHVzZWQgYXQgbW9zdC4gSWYNCj4g
-dGhlIGlzc3VlIGlzIHdpdGggcG9ydCBuYW1pbmcgY29uZmxpY3RzLCB0aGVuIHlvdSBjYW4gYXNr
-IFhERFAgdG8gYWxsb2NhdGUgdGhlDQo+IG5leHQgZnJlZSBwb3J0IHRoZW4gYXR0YWNoIGEgbGFi
-ZWwgdG8gaXQuIFRoZSBhcHBsaWNhdGlvbiBnb2VzIHRocm91Z2ggdGhlDQo+IHJlZ2lzdHJ5IHRv
-IHJlZmVyIHRvIHN1Y2ggcG9ydCBieSBsYWJlbCwgaW5zdGVhZCBvZiB1c2luZyBpdHMgcmF3IHBv
-cnQgbnVtYmVyLg0KPg0KPiBJZiB5b3UgZG9uJ3Qgd2FudCBtZXNzYWdpbmcgYXQgYWxsIGJ1dCBv
-bmx5IHNpZ25hbGluZywgdGhlbiB5b3UgY291bGQgYWRkDQo+IHNvbWUga2luZCBvZiBjcm9zcy1k
-b21haW4gZXZlbnRmZCgpIHByb3RvY29sIHRvIHRoZSBSVElQQyBkcml2ZXIuDQoNCkkgZG9u4oCZ
-dCB3YW50IG11Y2ggbW9yZSB0aGFuIHNvbWUgc29ydCBvZiBjb25kaXRpb24gdmFyaWFibGUsIGJ1
-dCB3b3JraW5nIHdpdGggc2VsZWN0IChhbmQgYWNyb3NzIGRvbWFpbnMpLg0KVGhlIG5vbi1leGlz
-dGluZyBjb2JhbHQtZXZlbnRmZCBzZWVtcyBmaXR0aW5nLCBidXQgSSB3aWxsIGhhcHBpbHkgdXNl
-IFhERFAgZm9yIG5vdy4NCkkgd291bGQgcHJlZmVyICJhbm9ueW1vdXMiIG9iamVjdHMgc2ltcGx5
-IGZvciBoYXZpbmcgbGVzcyBzaWRlZWZmZWN0cywNCmFuZCBub3QgbmVlZGluZyB0byBrbm93IGEg
-bmFtZS9pbnN0YW5jZSBudW1iZXIgSSBhbSBub3QgaW50ZXJlc3RlZCBpbi4NCg0KPiA+DQo+ID4g
-KE5vdGUgdGhhdCB0aGlzIGlzIGluIHRoZSBzYW1lIHByb2Nlc3MsIHNvIEkgd291bGQgcHJlZmVy
-IHNvbWV0aGluZyBsaWtlDQo+IHNvY2tldHBhaXIgdG8gb3BlbiB1cCBhbiBhbm9ueW1vdXMgInBp
-cGUiIG5vdCBmZWVkaW5nIGZyb20gZ2xvYmFsIHBvcnRzKS4NCj4gPg0KPg0KPiBDb2JhbHQgZG9l
-cyBub3QgcHJvdmlkZSB0aGlzLg0KDQpJTUhPLCBzb21lIG9mZi10aGUtc2hlbGYgc29sdXRpb24g
-dG8gc2V0dXAgc29tZSBpbi1wcm9jZXNzIHN5bmNocm9uaXphdGlvbg0KV291bGQgYmUgdXNlZnVs
-LCBkb2NzIGFyZSBsYWNraW5nIHNvbWUgcmVjaXBlcyBmb3IgdHlwaWNhbCBwcm9ibGVtcyB3aGVu
-IHRyeWluZw0KdG8gc2lnbmFsIGJldHdlZW4geGVub21haSBhbmQgbGludXggdGhyZWFkcy4NCg0K
-KGxpYmNvYmFsdCBpcyBsaWtlbHkgdGhlIHdyb25nIHBsYWNlKQ0KDQpUaGFua3MsDQpOb3JiZXJ0
-Lg0KX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX18NCg0KVGhpcyBtZXNzYWdlIGFuZCBh
-bnkgYXR0YWNobWVudHMgYXJlIHNvbGVseSBmb3IgdGhlIHVzZSBvZiB0aGUgaW50ZW5kZWQgcmVj
-aXBpZW50cy4gVGhleSBtYXkgY29udGFpbiBwcml2aWxlZ2VkIGFuZC9vciBjb25maWRlbnRpYWwg
-aW5mb3JtYXRpb24gb3Igb3RoZXIgaW5mb3JtYXRpb24gcHJvdGVjdGVkIGZyb20gZGlzY2xvc3Vy
-ZS4gSWYgeW91IGFyZSBub3QgYW4gaW50ZW5kZWQgcmVjaXBpZW50LCB5b3UgYXJlIGhlcmVieSBu
-b3RpZmllZCB0aGF0IHlvdSByZWNlaXZlZCB0aGlzIGVtYWlsIGluIGVycm9yIGFuZCB0aGF0IGFu
-eSByZXZpZXcsIGRpc3NlbWluYXRpb24sIGRpc3RyaWJ1dGlvbiBvciBjb3B5aW5nIG9mIHRoaXMg
-ZW1haWwgYW5kIGFueSBhdHRhY2htZW50IGlzIHN0cmljdGx5IHByb2hpYml0ZWQuIElmIHlvdSBo
-YXZlIHJlY2VpdmVkIHRoaXMgZW1haWwgaW4gZXJyb3IsIHBsZWFzZSBjb250YWN0IHRoZSBzZW5k
-ZXIgYW5kIGRlbGV0ZSB0aGUgbWVzc2FnZSBhbmQgYW55IGF0dGFjaG1lbnQgZnJvbSB5b3VyIHN5
-c3RlbS4NCg0KQU5EUklUWiBIWURSTyBHbWJIDQoNCg0KUmVjaHRzZm9ybS8gTGVnYWwgZm9ybTog
-R2VzZWxsc2NoYWZ0IG1pdCBiZXNjaHLDpG5rdGVyIEhhZnR1bmcgLyBDb3Jwb3JhdGlvbg0KDQpG
-aXJtZW5zaXR6LyBSZWdpc3RlcmVkIHNlYXQ6IFdpZW4NCg0KRmlybWVuYnVjaGdlcmljaHQvIENv
-dXJ0IG9mIHJlZ2lzdHJ5OiBIYW5kZWxzZ2VyaWNodCBXaWVuDQoNCkZpcm1lbmJ1Y2hudW1tZXIv
-IENvbXBhbnkgcmVnaXN0cmF0aW9uOiBGTiA2MTgzMyBnDQoNCkRWUjogMDYwNTA3Nw0KDQpVSUQt
-TnIuOiBBVFUxNDc1NjgwNg0KDQoNClRoYW5rIFlvdQ0KX19fX19fX19fX19fX19fX19fX19fX19f
-X19fX19fX18NCg==
+On 03.06.19 14:10, Sebastian Smolorz wrote:
+> Signed-off-by: Sebastian Smolorz <sebastian.smolorz@gmx.de>
+> ---
+>   kernel/drivers/net/stack/ipv4/tcp/tcp.c | 90 ++++++++++++++++---------
+>   1 file changed, 59 insertions(+), 31 deletions(-)
+> 
+> diff --git a/kernel/drivers/net/stack/ipv4/tcp/tcp.c b/kernel/drivers/net/stack/ipv4/tcp/tcp.c
+> index 828f7d115..f4ea6ffcc 100644
+> --- a/kernel/drivers/net/stack/ipv4/tcp/tcp.c
+> +++ b/kernel/drivers/net/stack/ipv4/tcp/tcp.c
+> @@ -1418,15 +1418,18 @@ static void rt_tcp_close(struct rtdm_fd *fd)
+>    *  @s:     socket
+>    *  @addr:  local address
+>    */
+> -static int rt_tcp_bind(struct tcp_socket *ts, const struct sockaddr *addr,
+> -		       socklen_t addrlen)
+> +static int rt_tcp_bind(struct rtdm_fd *fd, struct tcp_socket *ts,
+> +		       const struct sockaddr __user *addr, socklen_t addrlen)
+>   {
+> -    struct sockaddr_in  *usin = (struct sockaddr_in *)addr;
+> +    struct sockaddr_in  *usin, _usin;
+>       rtdm_lockctx_t      context;
+>       int                 index;
+>       int                 bound = 0;
+>       int                 ret = 0;
+> 
+> +    usin = rtnet_get_arg(fd, &_usin, addr, sizeof(_usin));
+> +    if (IS_ERR(usin))
+> +	return PTR_ERR(usin);
+> 
+>       if ((addrlen < (int)sizeof(struct sockaddr_in)) ||
+>   	((usin->sin_port & tcp_auto_port_mask) == tcp_auto_port_start))
+> @@ -1475,10 +1478,11 @@ static int rt_tcp_bind(struct tcp_socket *ts, const struct sockaddr *addr,
+>   /***
+>    *  rt_tcp_connect
+>    */
+> -static int rt_tcp_connect(struct tcp_socket *ts, const struct sockaddr *serv_addr,
+> +static int rt_tcp_connect(struct rtdm_fd *fd, struct tcp_socket *ts,
+> +			  const struct sockaddr __user *serv_addr,
+>   			  socklen_t addrlen)
+>   {
+> -    struct sockaddr_in  *usin = (struct sockaddr_in *) serv_addr;
+> +    struct sockaddr_in  *usin, _usin;
+>       struct dest_route   rt;
+>       rtdm_lockctx_t      context;
+>       int ret;
+> @@ -1486,6 +1490,10 @@ static int rt_tcp_connect(struct tcp_socket *ts, const struct sockaddr *serv_add
+>       if (addrlen < (int)sizeof(struct sockaddr_in))
+>   	return -EINVAL;
+> 
+> +    usin = rtnet_get_arg(fd, &_usin, serv_addr, sizeof(_usin));
+> +    if (IS_ERR(usin))
+> +	return PTR_ERR(usin);
+> +
+>       if (usin->sin_family != AF_INET)
+>   	return -EAFNOSUPPORT;
+> 
+> @@ -1594,18 +1602,23 @@ static int rt_tcp_listen(struct tcp_socket *ts, unsigned long backlog)
+>   /***
+>    *  rt_tcp_accept
+>    */
+> -static int rt_tcp_accept(struct tcp_socket *ts, struct sockaddr *addr,
+> -			 socklen_t *addrlen)
+> +static int rt_tcp_accept(struct rtdm_fd *fd, struct tcp_socket *ts,
+> +			 struct sockaddr *addr, socklen_t __user *addrlen)
+>   {
+>       /* Return sockaddr, but bind it with rt_socket_init, so it would be
+>          possible to read/write from it in future, return valid file descriptor */
+> 
+>       int ret;
+> -    struct sockaddr_in  *sin = (struct sockaddr_in*)addr;
+> +    socklen_t           *uaddrlen, _uaddrlen;
+> +    struct sockaddr_in  sin;
+>       nanosecs_rel_t      timeout = ts->sock.timeout;
+>       rtdm_lockctx_t      context;
+>       struct dest_route   rt;
+> 
+> +    uaddrlen = rtnet_get_arg(fd, &_uaddrlen, addrlen, sizeof(_uaddrlen));
+> +    if (IS_ERR(uaddrlen))
+> +	return PTR_ERR(uaddrlen);
+> +
+>       rtdm_lock_get_irqsave(&ts->socket_lock, context);
+>       if (ts->is_accepting || ts->is_accepted) {
+>   	/* socket is already accepted or is accepting a connection right now */
+> @@ -1613,7 +1626,7 @@ static int rt_tcp_accept(struct tcp_socket *ts, struct sockaddr *addr,
+>   	return -EALREADY;
+>       }
+> 
+> -    if (ts->tcp_state != TCP_LISTEN || *addrlen < sizeof(struct sockaddr_in)) {
+> +    if (ts->tcp_state != TCP_LISTEN || *uaddrlen < sizeof(struct sockaddr_in)) {
+>   	rtdm_lock_put_irqrestore(&ts->socket_lock, context);
+>   	return -EINVAL;
+>       }
+> @@ -1642,6 +1655,18 @@ static int rt_tcp_accept(struct tcp_socket *ts, struct sockaddr *addr,
+>   	goto err;
+>       }
+> 
+> +    if (addr) {
+> +	sin.sin_family      = AF_INET;
+> +	sin.sin_port        = ts->dport;
+> +	sin.sin_addr.s_addr = ts->daddr;
+> +	ret = rtnet_put_arg(fd, addr, &sin, sizeof(sin));
+> +	if (ret) {
+> +	    rtdev_dereference(rt.rtdev);
+> +	    ret = -EFAULT;
+> +	    goto err;
+> +	}
+> +    }
+> +
+>       rtdm_lock_get_irqsave(&ts->socket_lock, context);
+> 
+>       if (ts->tcp_state != TCP_ESTABLISHED) {
+> @@ -1657,10 +1682,6 @@ static int rt_tcp_accept(struct tcp_socket *ts, struct sockaddr *addr,
+>       else
+>   	rtdev_dereference(rt.rtdev);
+> 
+> -    sin->sin_family      = AF_INET;
+> -    sin->sin_port        = ts->dport;
+> -    sin->sin_addr.s_addr = ts->daddr;
+> -
+>       ts->is_accepted = 1;
+>       rtdm_lock_put_irqrestore(&ts->socket_lock, context);
+> 
+> @@ -1799,14 +1820,14 @@ static int rt_tcp_ioctl(struct rtdm_fd *fd,
+>   		setaddr = rtnet_get_arg(fd, &_setaddr, arg, sizeof(_setaddr));
+>   		if (IS_ERR(setaddr))
+>   			return PTR_ERR(setaddr);
+> -		return rt_tcp_bind(ts, setaddr->addr, setaddr->addrlen);
+> +		return rt_tcp_bind(fd, ts, setaddr->addr, setaddr->addrlen);
+>   	case _RTIOC_CONNECT:
+>   		if (!in_rt)
+>   			return -ENOSYS;
+>   		setaddr = rtnet_get_arg(fd, &_setaddr, arg, sizeof(_setaddr));
+>   		if (IS_ERR(setaddr))
+>   			return PTR_ERR(setaddr);
+> -		return rt_tcp_connect(ts, setaddr->addr, setaddr->addrlen);
+> +		return rt_tcp_connect(fd, ts, setaddr->addr, setaddr->addrlen);
+> 
+>   	case _RTIOC_LISTEN:
+>   		return rt_tcp_listen(ts, (unsigned long)arg);
+> @@ -1817,7 +1838,7 @@ static int rt_tcp_ioctl(struct rtdm_fd *fd,
+>   		getaddr = rtnet_get_arg(fd, &_getaddr, arg, sizeof(_getaddr));
+>   		if (IS_ERR(getaddr))
+>   			return PTR_ERR(getaddr);
+> -		return rt_tcp_accept(ts, getaddr->addr, getaddr->addrlen);
+> +		return rt_tcp_accept(fd, ts, getaddr->addr, getaddr->addrlen);
+> 
+>   	case _RTIOC_SHUTDOWN:
+>   		return rt_tcp_shutdown(ts, (unsigned long)arg);
+> @@ -1994,13 +2015,15 @@ static ssize_t rt_tcp_read(struct rtdm_fd *fd, void *buf, size_t nbyte)
+>   /***
+>    *  rt_tcp_write
+>    */
+> -static ssize_t rt_tcp_write(struct rtdm_fd *fd, const void *buf, size_t nbyte)
+> +static ssize_t rt_tcp_write(struct rtdm_fd *fd, const void __user *user_buf,
+> +			    size_t nbyte)
+>   {
+>       struct tcp_socket *ts = rtdm_fd_to_private(fd);
+>       uint32_t sent_len = 0;
+>       rtdm_lockctx_t      context;
+>       int ret = 0;
+>       nanosecs_rel_t sk_sndtimeo;
+> +    void *buf;
+> 
+>       if (!rtdm_fd_is_user(fd)) {
+>   	return -EFAULT;
+> @@ -2022,6 +2045,16 @@ static ssize_t rt_tcp_write(struct rtdm_fd *fd, const void *buf, size_t nbyte)
+> 
+>       rtdm_lock_put_irqrestore(&ts->socket_lock, context);
+> 
+> +    buf = xnmalloc(nbyte);
+> +    if (buf == NULL)
+> +	return -ENOMEM;
+> +
+> +    ret = rtdm_copy_from_user(fd, buf, user_buf, nbyte);
+> +    if (ret) {
+> +	xnfree(buf);
+> +	return ret;
+> +    }
+> +
+>       while (sent_len < nbyte) {
+> 
+>   	ret = rtdm_event_timedwait(&ts->send_evt, sk_sndtimeo, NULL);
+> @@ -2031,13 +2064,17 @@ static ssize_t rt_tcp_write(struct rtdm_fd *fd, const void *buf, size_t nbyte)
+>   		case -EWOULDBLOCK:
+>   		case -ETIMEDOUT:
+>   		case -EINTR:
+> +		    xnfree(buf);
+>   		    return sent_len ? : ret;
+> 
+>   		case -EIDRM: /* event is destroyed */
+>   		default:
+> -		    if (ts->is_closed)
+> +		    if (ts->is_closed) {
+> +			xnfree(buf);
+>   			return -EBADF;
+> +		    }
+> 
+> +		    xnfree(buf);
+>   		    return sent_len ? : ret;
+>   	    }
+> 
+> @@ -2054,6 +2091,7 @@ static ssize_t rt_tcp_write(struct rtdm_fd *fd, const void *buf, size_t nbyte)
+>   	    rtdm_event_signal(&ts->send_evt);
+>       }
+> 
+> +    xnfree(buf);
+>       return (ret < 0 ? ret : sent_len);
+>   }
+> 
+> @@ -2104,7 +2142,6 @@ static ssize_t rt_tcp_sendmsg(struct rtdm_fd *fd,
+>   	struct user_msghdr _msg;
+>   	ssize_t ret;
+>   	size_t len;
+> -	void *buf;
+> 
+>   	if (msg_flags)
+>   		return -EOPNOTSUPP;
+> @@ -2122,18 +2159,9 @@ static ssize_t rt_tcp_sendmsg(struct rtdm_fd *fd,
+>   		return ret;
+> 
+>   	len = iov[0].iov_len;
+> -	if (len > 0) {
+> -		buf = xnmalloc(len);
+> -		if (buf == NULL) {
+> -			ret = -ENOMEM;
+> -			goto out;
+> -		}
+> -		ret = rtdm_copy_from_user(fd, buf, iov[0].iov_base, len);
+> -		if (!ret)
+> -			ret = rt_tcp_write(fd, buf, len);
+> -		xnfree(buf);
+> -	}
+> -out:
+> +	if (len > 0)
+> +	    ret = rt_tcp_write(fd, iov[0].iov_base, len);
+> +
+>   	rtdm_drop_iovec(iov, iov_fast);
+> 
+>   	return ret;
+> --
+> 2.19.1
+> 
+
+Thanks, applied.
+
+Jan
+
+-- 
+Siemens AG, Corporate Technology, CT RDA IOT SES-DE
+Corporate Competence Center Embedded Linux
 
