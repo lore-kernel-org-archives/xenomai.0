@@ -1,13 +1,11 @@
-Subject: Re: Finalizing 3.0.9 release
-References: <39bd9ede-855c-6a06-73e5-8a79077e6a65@siemens.com>
-From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <a5491558-d405-47af-0b82-cc8a4d61c98c@siemens.com>
-Date: Fri, 7 Jun 2019 07:11:17 +0200
+From: Johannes Holtz <johannes.holtz@compador.de>
+Subject: RTnet bind failed socket again
+Message-ID: <ea8b5153-3530-4b7b-3a73-586cda346cbe@compador.de>
+Date: Mon, 3 Jun 2019 11:06:43 +0200
 MIME-Version: 1.0
-In-Reply-To: <39bd9ede-855c-6a06-73e5-8a79077e6a65@siemens.com>
 Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
 Content-Transfer-Encoding: 7bit
+Content-Language: en-US
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,24 +14,24 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Xenomai <xenomai@xenomai.org>
+To: xenomai@xenomai.org
 
-On 31.05.19 13:13, Jan Kiszka via Xenomai wrote:
-> Hi all,
-> 
-> I'm planning to tag stable 3.0.9 early next week. If you have any 
-> stable-relevant patches in your queue or would like to see some commits from 
-> master in stable as well, now would be a good time to speak up.
-> 
+Hi,
 
-Unfortunately, I hit two show-stopper during tests yesterday: There is an issue 
-with syscall restarting in clock_nanosleep and select which also affects stable. 
-And there are is a bug when running smokey tests against RTnet which I need to 
-understand again to assess its relevance for stable.
+My program opens a RTnet socket successfully but the program gets killed 
+by a different issue that has nothing to do with this. However, the 
+RTnet socket is still bound. If I try to start the program again i get 
+the error "Address already in use". If it would be a normal unix socket 
+I would simply call it with SO_REUSEADDR but this is not possible with 
+RTnet from what I understand.
+My question is why the socket is not unbound after the binding process 
+is killed and if there is a way to reclaim this socket. By the way, it 
+has to be this socket since the communication partner expects the server 
+to listen on this exact port.
 
-Jan
+Cheers,
 
--- 
-Siemens AG, Corporate Technology, CT RDA IOT SES-DE
-Corporate Competence Center Embedded Linux
+Johannes
+
+
 
