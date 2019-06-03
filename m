@@ -1,22 +1,13 @@
-From: Lange Norbert <norbert.lange@andritz.com>
-Subject: RE: ipipe 4.19: spurious APIC interrupt when setting rt_igp to up
-Date: Wed, 10 Jul 2019 08:44:17 +0000
-Message-ID: <VI1PR05MB5917BE75832C705B6765CCFDF6F00@VI1PR05MB5917.eurprd05.prod.outlook.com>
-References: <VI1PR05MB5917761A9138FE1E9EC30710F6FA0@VI1PR05MB5917.eurprd05.prod.outlook.com>
- <9ebf71d7-6a49-3eeb-d5a6-89d122136999@siemens.com>
- <788b682a-4845-31af-df17-f1008d143068@siemens.com>
- <ab6862a6-de5c-2c37-50a1-86e509768ecf@siemens.com>
- <VI1PR05MB5917125E023F3F1588F1B817F6F50@VI1PR05MB5917.eurprd05.prod.outlook.com>
- <6a2a0a5e-7390-a303-5fdf-0d6cd662d413@siemens.com>
- <39f2b9f2-845b-5746-e1c7-530ac48561b3@siemens.com>
- <VI1PR05MB5917503588E7C86637059656F6F10@VI1PR05MB5917.eurprd05.prod.outlook.com>
- <83b4cde3-dd94-e25b-5b8e-f4e04c8dd168@siemens.com>
- <e302cd61-3204-b543-97e9-ec23179210ed@siemens.com>
-In-Reply-To: <e302cd61-3204-b543-97e9-ec23179210ed@siemens.com>
-Content-Language: en-US
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+Subject: Re: [RFC][PATCH 0/7] Make debugging more deterministic
+References: <cover.1543608201.git.jan.kiszka@siemens.com>
+From: Philippe Gerum <rpm@xenomai.org>
+Message-ID: <62c913ba-9ff7-4719-ecb5-aa8e83c24625@xenomai.org>
+Date: Mon, 3 Jun 2019 19:26:58 +0200
 MIME-Version: 1.0
+In-Reply-To: <cover.1543608201.git.jan.kiszka@siemens.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -25,64 +16,74 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jan Kiszka <jan.kiszka@siemens.com>, "Xenomai (xenomai@xenomai.org)" <xenomai@xenomai.org>, Philippe Gerum <rpm@xenomai.org>
+To: Jan Kiszka <jan.kiszka@siemens.com>, xenomai@xenomai.org
 
-DQoNCj4gLS0tLS1PcmlnaW5hbCBNZXNzYWdlLS0tLS0NCj4gRnJvbTogSmFuIEtpc3prYSA8amFu
-Lmtpc3prYUBzaWVtZW5zLmNvbT4NCj4gU2VudDogRGllbnN0YWcsIDkuIEp1bGkgMjAxOSAxOTo1
-NA0KPiBUbzogTGFuZ2UgTm9yYmVydCA8bm9yYmVydC5sYW5nZUBhbmRyaXR6LmNvbT47IFhlbm9t
-YWkNCj4gKHhlbm9tYWlAeGVub21haS5vcmcpIDx4ZW5vbWFpQHhlbm9tYWkub3JnPjsgUGhpbGlw
-cGUgR2VydW0NCj4gPHJwbUB4ZW5vbWFpLm9yZz4NCj4gU3ViamVjdDogUmU6IGlwaXBlIDQuMTk6
-IHNwdXJpb3VzIEFQSUMgaW50ZXJydXB0IHdoZW4gc2V0dGluZyBydF9pZ3AgdG8gdXANCj4NCj4g
-RS1NQUlMIEZST00gQSBOT04tQU5EUklUWiBTT1VSQ0U6IEFTIEEgU0VDVVJJVFkgTUVBU1VSRSwg
-UExFQVNFDQo+IEVYRVJDSVNFIENBVVRJT04gV0lUSCBFLU1BSUwgQ09OVEVOVCBBTkQgQU5ZIExJ
-TktTIE9SDQo+IEFUVEFDSE1FTlRTLg0KPg0KPg0KPiBPbiAwOS4wNy4xOSAxODozMywgSmFuIEtp
-c3prYSB3cm90ZToNCj4gPiBPbiAwOS4wNy4xOSAxODoyMSwgTGFuZ2UgTm9yYmVydCB3cm90ZToN
-Cj4gPj4gSGVsbG8sDQo+ID4+DQo+ID4+IG1heGNwdXM9MSBzdGlsbCBjYXVzZXMgdGhlIHNwdXJp
-b3VzIGludCwgdGhpcyB0aW1lIGZ1bGx5IGxvY2tpbmcgdXAuDQo+ID4+DQo+ID4+IEkgYXR0YWNo
-ZWQgdGhlIGRlYnVnL2lycSBkaXJlY3RvcnkgYWZ0ZXIgdGhlIGNhdXNlLg0KPiA+Pj4gU29tZSB0
-aGluZ3MgdGhhdCBtaWdodCBiZSByZWxldmFudDoNCj4gPj4gLSAgIHRoZSBTT0Mgd291bGQgdXNl
-IFBJTkNUUkxfQlJPWFRPTiB1bmRlciBsaW51eCwgYnV0IHRoaXMgaXMgZGlzYWJsZWQNCj4gKG5v
-dCBmaXhlZCB1cCBmb3IgWGVub21haSkNCj4gPj4gLSAgIEkgaGF2ZSB0aGUgcmVndWxhciBpZ2Ig
-ZHJpdmVyIGluIHVzZSwgYW5kIGFtIHVuYmluZGluZyB0aGUgbmV0d29yayBjYXJkDQo+IHByaW9y
-IHRvIGJpbmRpbmcgdGhlIHJ0X2lncCBkcml2ZXINCj4gPj4NCj4gPg0KPiA+IFRoYW5rcy4gV2hh
-dCdzIHRoZSBpbnRlcnJ1cHQgbnVtYmVyIHRoYXQgWGVub21haSBpcyB1c2luZz8gU2hvdWxkIGJl
-DQo+ID4gdGhlIHNhbWUgdGhhdCB0aGUgTGludXggZHJpdmVyIGlzIHVzaW5nIGFzIHdlbGwuDQo+
-DQo+IEZvdW5kIGFscmVhZHk6IFNob3VsZCBiZSBJUlEgMTMwLTEzMiBmb3IgZGV2aWNlIDAwOjAz
-LjAuIElmIHRoZSBkaXJlY3RvcnkNCj4gc3RhdGUgd2FzIGxpa2UgdGhhdCB3aGlsZSBYZW5vbWFp
-IHdhcyBzdGlsbCBob2xkaW5nIHRob3NlIGludGVycnVwdHMsIHRoZQ0KPiBwcm9ibGVtIGl0IHRo
-YXQgdGhlcmUgYXJlIG5vIHZlY3RvcnMgYXNzaWduZWQgdG8gdGhlbS4gQ2FuIHlvdSBjb25maXJt
-IHRoYXQNCj4gcnRfaWdiIHdhcyBzdGlsbCBsb2FkZWQgYW5kIHRoZSBpbnRlcmZhY2Ugd2FzIHVw
-Pw0KDQpXZWxsLCB0aGUgYnVnIGhhcHBlbnMgd2hlbiBicmluZ2luZyB1cCB0aGUgaW50ZXJmYWNl
-Lg0KDQojIG1vZHByb2JlIHJ0X2lnYg0KWyAgMTE3LjI3NDYzOV0gcnRfaWdiIDAwMDA6MDM6MDAu
-MDogSW50ZWwoUikgR2lnYWJpdCBFdGhlcm5ldCBOZXR3b3JrIENvbm5lY3Rpb24NClsgIDExNy4y
-ODE4MDBdIHJ0X2lnYiAwMDAwOjAzOjAwLjA6IGVucDNzMDogKFBDSWU6Mi41R2IvczpXaWR0aCB4
-MSkgMjI6MjA6NDc6OGQ6MGY6YzkNClsgIDExNy4yODkzOTddIHJ0X2lnYiAwMDAwOjAzOjAwLjA6
-IGVucDNzMDogUEJBIE5vOiBGRkZGRkYtMEZGDQpbICAxMTcuMjk0OTk3XSBydF9pZ2IgMDAwMDow
-MzowMC4wOiBVc2luZyBNU0ktWCBpbnRlcnJ1cHRzLiAxIHJ4IHF1ZXVlKHMpLCAxIHR4IHF1ZXVl
-KHMpDQpbICAxMTcuMzAzNTAwXSBbWGVub21haV0gSElQQVNFIFBQUyBvbiBTRFAwDQpbICAxMTcu
-MzA3NTI5XSBzZGhjaS1wY2kgMDAwMDowMDoxYi4wOiBTREhDSSBjb250cm9sbGVyIGZvdW5kIFs4
-MDg2OjVhY2FdIChyZXYgYikNCg0KIyBydGlmY29uZmlnIGVucDNzMCB1cA0KWyAgMTY2LjUwMzg1
-NV0gc3B1cmlvdXMgQVBJQyBpbnRlcnJ1cHQgdGhyb3VnaCB2ZWN0b3IgZmYgb24gQ1BVIzAsIHNo
-b3VsZCBuZXZlciBoYXBwZW4uDQoNCj4gQXJlIHRob3NlIGludGVycnVwdHMgTVNJIG9yIE1TSS1Y
-PyBDYW4ndCByZWFkIHRoYXQgZnJvbSB0aGUgbG9ncy4NCg0KTVNJLVggZnJvbSB0aGUga2VybmVs
-IGxvZy4NCg0KPg0KPiBJIHByb2JhYmx5IG5lZWQgdG8gZ2V0IHNvbWUgcnRfaWdiIHJ1bm5pbmcg
-c29tZXdoZXJlLi4uDQo+DQo+IEphbg0KPg0KPiAtLQ0KPiBTaWVtZW5zIEFHLCBDb3Jwb3JhdGUg
-VGVjaG5vbG9neSwgQ1QgUkRBIElPVCBTRVMtREUgQ29ycG9yYXRlDQo+IENvbXBldGVuY2UgQ2Vu
-dGVyIEVtYmVkZGVkIExpbnV4DQpfX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fXw0KDQpU
-aGlzIG1lc3NhZ2UgYW5kIGFueSBhdHRhY2htZW50cyBhcmUgc29sZWx5IGZvciB0aGUgdXNlIG9m
-IHRoZSBpbnRlbmRlZCByZWNpcGllbnRzLiBUaGV5IG1heSBjb250YWluIHByaXZpbGVnZWQgYW5k
-L29yIGNvbmZpZGVudGlhbCBpbmZvcm1hdGlvbiBvciBvdGhlciBpbmZvcm1hdGlvbiBwcm90ZWN0
-ZWQgZnJvbSBkaXNjbG9zdXJlLiBJZiB5b3UgYXJlIG5vdCBhbiBpbnRlbmRlZCByZWNpcGllbnQs
-IHlvdSBhcmUgaGVyZWJ5IG5vdGlmaWVkIHRoYXQgeW91IHJlY2VpdmVkIHRoaXMgZW1haWwgaW4g
-ZXJyb3IgYW5kIHRoYXQgYW55IHJldmlldywgZGlzc2VtaW5hdGlvbiwgZGlzdHJpYnV0aW9uIG9y
-IGNvcHlpbmcgb2YgdGhpcyBlbWFpbCBhbmQgYW55IGF0dGFjaG1lbnQgaXMgc3RyaWN0bHkgcHJv
-aGliaXRlZC4gSWYgeW91IGhhdmUgcmVjZWl2ZWQgdGhpcyBlbWFpbCBpbiBlcnJvciwgcGxlYXNl
-IGNvbnRhY3QgdGhlIHNlbmRlciBhbmQgZGVsZXRlIHRoZSBtZXNzYWdlIGFuZCBhbnkgYXR0YWNo
-bWVudCBmcm9tIHlvdXIgc3lzdGVtLg0KDQpBTkRSSVRaIEhZRFJPIEdtYkgNCg0KDQpSZWNodHNm
-b3JtLyBMZWdhbCBmb3JtOiBHZXNlbGxzY2hhZnQgbWl0IGJlc2NocsOkbmt0ZXIgSGFmdHVuZyAv
-IENvcnBvcmF0aW9uDQoNCkZpcm1lbnNpdHovIFJlZ2lzdGVyZWQgc2VhdDogV2llbg0KDQpGaXJt
-ZW5idWNoZ2VyaWNodC8gQ291cnQgb2YgcmVnaXN0cnk6IEhhbmRlbHNnZXJpY2h0IFdpZW4NCg0K
-RmlybWVuYnVjaG51bW1lci8gQ29tcGFueSByZWdpc3RyYXRpb246IEZOIDYxODMzIGcNCg0KRFZS
-OiAwNjA1MDc3DQoNClVJRC1Oci46IEFUVTE0NzU2ODA2DQoNCg0KVGhhbmsgWW91DQpfX19fX19f
-X19fX19fX19fX19fX19fX19fX19fX19fXw0K
+On 11/30/18 9:03 PM, Jan Kiszka wrote:
+> These patches are sticking in my queue for more than 3 years now which
+> is bad. The good thing is that they were able to mature, at least on
+> x86, over that time because we are actually using them.
+> 
+> Two issues are addressed with these changes:
+> 
+> 1. Ensure that threads that were stopped for debugging in primary mode
+>    will also be resumed in that mode. This prevents deviating behavior
+>    compared to non-debugged execution.
+> 
+> 2. If one thread in a process hits a debugging condition and is about to
+>    bring the whole process into stopped state, ensure that all other RT
+>    threads are stopped immediately. This prevents that, because the
+>    interrupted thread first needs to go to Linux in order to start the
+>    process stop, other threads can continue running too far, changing
+>    the process state so that debugging becomes harder if not impossible.
+> 
+> To provide these properties, the core needs two small new hooks from
+> I-pipe. Separate patches will be sent against 4.14 that provide these,
+> so far for x86 and ARM only.
+> 
+> Furthermore, this series likely depends on the mayday cleanup I sent
+> earlier, at least it was never used without that (you don't want to
+> debug without it). That also raises the question how to manage the
+> I-pipe feature dependencies best in order work around or simply exclude
+> old I-pipe releases.
+> 
+> Please review carefully if the design and implementation make sense. As
+> I said, we are using it, so it is not completely broken. But I may have
+> overseen some ugly corner cases nevertheless.
+> 
+> Unless too many issues surface, I would like to get this feature into
+> master before 3.1, along with the needed hooks in I-pipe (including
+> active stable trees).
+> 
+> Jan
+> 
+> Jan Kiszka (7):
+>   cobalt/kernel: Rework register/unregister_debugged_thread
+>   cobalt/kernel: Switch back ptraced primary mode threads on resume
+>   cobalt/kernel: Reintroduce process-local thread list
+>   cobalt/kernel: Introduce XNDBGSTOP
+>   cobalt/kernel: Implement synchronous stop and resume for process
+>     debugging
+>   cobalt/kernel: Clear mayday request of relaxed task
+>   testsuite/smokey: gdb-based debugging test
+> 
+>  configure.ac                        |   1 +
+>  include/cobalt/kernel/thread.h      |   2 +-
+>  include/cobalt/uapi/kernel/thread.h |   5 +-
+>  kernel/cobalt/posix/process.c       | 218 ++++++++++++++++++++++++-
+>  kernel/cobalt/posix/process.h       |   4 +-
+>  kernel/cobalt/posix/thread.c        |   4 +-
+>  kernel/cobalt/posix/thread.h        |   2 +-
+>  kernel/cobalt/thread.c              |  18 ++-
+>  testsuite/smokey/Makefile.am        |   1 +
+>  testsuite/smokey/gdb/Makefile.am    |  13 ++
+>  testsuite/smokey/gdb/gdb.c          | 310 ++++++++++++++++++++++++++++++++++++
+>  11 files changed, 564 insertions(+), 14 deletions(-)
+>  create mode 100644 testsuite/smokey/gdb/Makefile.am
+>  create mode 100644 testsuite/smokey/gdb/gdb.c
+> 
+
+Ack. The pipeline related bits are in -noarch already.
+
+-- 
+Philippe.
 
