@@ -1,14 +1,14 @@
-Subject: =?UTF-8?Q?Re=3a_the_=e3=80=90ROOT=e3=80=91task_in_xenomai_domain?=
-References: <mailman.79.1559582824.27006.xenomai@xenomai.org>
- <ef5ddb.7d73.16b20467fa0.Coremail.liang_1911@163.com>
+Subject: Re: [RFC][PATCH 0/7] Make debugging more deterministic
+References: <cover.1543608201.git.jan.kiszka@siemens.com>
+ <62c913ba-9ff7-4719-ecb5-aa8e83c24625@xenomai.org>
 From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <caabb68c-48e6-a33d-77d8-cc1a51b620d3@siemens.com>
-Date: Tue, 4 Jun 2019 18:49:23 +0200
+Message-ID: <ac36f2e8-9632-f0f0-ce82-1888150e7c03@siemens.com>
+Date: Tue, 4 Jun 2019 19:35:13 +0200
 MIME-Version: 1.0
-In-Reply-To: <ef5ddb.7d73.16b20467fa0.Coremail.liang_1911@163.com>
-Content-Type: text/plain; charset="gbk"; format="flowed"
+In-Reply-To: <62c913ba-9ff7-4719-ecb5-aa8e83c24625@xenomai.org>
+Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Language: en-US
-Content-Transfer-Encoding: base64
+Content-Transfer-Encoding: 7bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,51 +17,81 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: liang_1911 <liang_1911@163.com>, xenomai@xenomai.org
+To: Philippe Gerum <rpm@xenomai.org>, xenomai@xenomai.org
 
-T24gMDQuMDYuMTkgMDQ6MTYsIGxpYW5nXzE5MTEgdmlhIFhlbm9tYWkgd3JvdGU6Cj4gSGksIGZv
-bGtzLgo+IEkgaGFzIGFuIHF1ZXN0aW9uOiB3aGVuIGkgdXNlIHRoZSAiY2F0IC9wcm9jL3hlbm9t
-YWkvc2NoZWQvc3RhdCIgY29tbWFuZCB0byBzZWUgdGhlIGNwdSdzIHVzYWdlIHJhdGUgaW4geGVu
-b21haSBkb21haW6jrGhlcmUgaXMgdGhlIHJlc3VsdCA6Cj4gcm9vdEBhbTMzNXgtZXZtOn4jIGNh
-dCAvcHJvYy94ZW5vbWFpL3NjaGVkL3N0YXQKPiBDUFUgIFBJRCAgICBNU1cgICAgICAgIENTVyAg
-ICAgICAgWFNDICAgICAgICBQRiAgICBTVEFUICAgICAgICVDUFUgIE5BTUUKPiAgICAwICAwICAg
-ICAgMCAgICAgICAgICAxMDk3NDQ1OSAgIDAgICAgICAgICAgMCAgICAgMDAwMTgwMDAgICAgICAg
-ICAgODkuNCAgW1JPT1RdCj4gICAgMCAgNjUyICAgIDQwICAgICAgICAgNTggICAgICAgICAyMDcg
-ICAgICAgIDAgICAgIDAwMDY4MGMwICAgICAgICAgICAwLjAgIE1UCj4gICAgMCAgNjg5ICAgIDIg
-ICAgICAgICAgNSAgICAgICAgICAxMiAgICAgICAgIDAgICAgIDAwMDQ4MDQyICAgICAgICAgICAg
-ICAwLjAgIHRhc2tJbnRQb3dlckRvd24KPiAgICAwICA2OTAgICAgMyAgICAgICAgICAyODY4Njg0
-ICAgIDI4Njg2OTEgICAgMSAgICAgMDAwNDgwNDIgICAgMi43ICB0YXNrSW50MW1zSGFuZGxlCj4g
-ICAgMCAgNjkxICAgIDMgICAgICAgICAgNzY4Nzg1ICAgICA3MTY4ODkgICAgIDEgICAgIDAwMDQ4
-MDQyICAgIDEuNiAgdGFza19maXJzdExhZGRlcgo+ICAgIDAgIDY5NCAgICAyICAgICAgICAgIDI5
-MTM1NjUgICAgMjg2NzUxMSAgICAwICAgICAwMDA0ODA0MiAgICAxLjAgIHRhc2tfd2hlZWxaZXJv
-Cj4gICAgMCAgNjk1ICAgIDIgICAgICAgICAgMTQ2NDg5NyAgICAxNDMzNzU5ICAgIDAgICAgIDAw
-MDQ4MDQyICAgIDAuNiAgdGFza19NU1QKPiAgICAwICA2OTYgICAgNyAgICAgICAgICA3MzkwMTMg
-ICAgIDcxNjg5NyAgICAgMCAgICAgMDAwNDgwNDIgICAgMC41ICB0YXNrX21hc3RlckN0cmwKPiAg
-ICAwICA2OTcgICAgMiAgICAgICAgICAyOTQ0ODU1ICAgIDI4Njc0OTQgICAgMCAgICAgMDAwNDgw
-NDIgICAgMS4wICB0YXNrX2ludGVycG9sYXRlCj4gICAgMCAgNjk4ICAgIDQgICAgICAgICAgMjU4
-MzkzICAgICAyMzg5NzQgICAgIDAgICAgIDAwMDQ4MDQyICAgICAgMC42ICB0YXNrX2xvd1JlYWxU
-aW1lCj4gICAgMCAgNjk5ICAgIDEgICAgICAgICAgMSAgICAgICAgICAgICAgICAgICAgMjQgICAg
-ICAgICAwICAgICAwMDA2MDBjMCAgICAwLjAgIE1UCj4gICAgMCAgMCAgICAgIDAgICAgICAgICAg
-MTEzNTM3NDIgICAwICAgICAgICAgIDAgICAgIDAwMDAwMDAwICAgICAgICAgIDEuMyAgW0lSUTE2
-OiBbdGltZXJdXQo+ICAgIDAgIDAgICAgICAwICAgICAgICAgIDI4Njg2NzkgICAgMCAgICAgICAg
-ICAwICAgICAwMDAwMDAwMCAgICAgICAgICAgMC45ICBbSVJRMTgxOiAxbXNJbnRdCj4gICAgMCAg
-MCAgICAgIDAgICAgICAgICAgMCAgICAgICAgICAwICAgICAgICAgIDAgICAgIDAwMDAwMDAwICAg
-ICAgICAgICAgICAgIDAuMCAgW0lSUTE4MjogcG93ZXJfZG93bl0KPiAgIAo+IHRoZSBST09UIHRh
-c2sgb2NjdXB5IDg5LjQlJ3MgY3B1IHVzYWdlIHJhdGU7IERvZXMgdGhhdCBtZWFuIHRoZSBpZGxl
-IGNwdSB1c2FnZSByYXRlIGlzIDg5LjQlPwoKT25seSBpZiB5b3UgYXJlIGlkbGluZyBvbiBMaW51
-eC4gVGhlIHJvb3QgdGFzayByZXByZXNlbnRzIHRoZSB3aG9sZSBub24tUlQgTGludXggCndvcmxk
-LCBjb25zaXN0aW5nIG9mIG5vcm1hbCBMaW51eCB0YXNrcyBhcyB3ZWxsIGFzIGlkbGUgdGltZS4g
-VGhpcyBpcyBub3QgCnZpc2libGUgaGVyZSwgeW91IG5lZWQgdG8gbG9vayBhdCBub3JtYWwgTGlu
-dXggc3RhdGlzdGljcy4KCj4gQWN0dWFsbHksIHRoZSBvdGhlciByZW1haW5pbmcgdGFzayBpcyBt
-eSB3b3JrIHRhc2sgLHdoaWNoIGp1c3Qgb2NjdXB5IGEgZmV3IGNwdSB1c2FnZSByYXRlICB0b3Rh
-bGx5Lgo+IElmIHRoYXQgaXMgdHJ1ZSwgaGVyZSBpcyBhbm90aGVyIHF1ZXN0aW9uOgo+IENhbiB3
-ZSBsaW1pdCB0aGUgY3B1IHVzYWdlIHJhdGUgdG8gdGhlIHJlYWwtdGltZSBwYXJ0aWFsIHByb2dy
-YW0/Cj4gbGlrZSBzYXksIGkgd2FudCB0byBhc3NpZ25lZCA3MCUgb2YgY3B1J3MgIHBlcmZvcm1h
-bmNlIHRvIFJUIHByb2dyYW0sIGFuZCBnaXZlIHRoZSByZXN0IHRvIG5vbi1SVCBwcm9ncmFtLgo+
-IElzIHRoZXJlIGFueSB3YXkgdG8gZnVsbGZpbGwgdGhpcyBwdXJwb3NlID8KClRha2UgYSBsb29r
-IGF0IENPTkZJR19YRU5PX09QVF9TQ0hFRF9UUCBvciBDT05GSUdfWEVOT19PUFRfU0NIRURfUVVP
-VEEgZm9yIHRoYXQuIApCb3RoIGFsbG93IHRvIGRlZmluZSB0aW1lIHNsaWNlcyBmb3IgcmVhbC10
-aW1lIHRhc2tzIG9yIHRhc2sgZ3JvdXBzLiBTQ0hFRF9UUCAKYW5kIFNDSEVEX1FVT1RBIHNjaGVk
-dWxpbmcgcG9saWNpZXMgYXJlIGRlc2NyaWJlZCBpbiB0aGUgQVBJIGRvY3MuCgpKYW4KCi0tIApT
-aWVtZW5zIEFHLCBDb3Jwb3JhdGUgVGVjaG5vbG9neSwgQ1QgUkRBIElPVCBTRVMtREUKQ29ycG9y
-YXRlIENvbXBldGVuY2UgQ2VudGVyIEVtYmVkZGVkIExpbnV4Cgo=
+On 03.06.19 19:26, Philippe Gerum via Xenomai wrote:
+> On 11/30/18 9:03 PM, Jan Kiszka wrote:
+>> These patches are sticking in my queue for more than 3 years now which
+>> is bad. The good thing is that they were able to mature, at least on
+>> x86, over that time because we are actually using them.
+>>
+>> Two issues are addressed with these changes:
+>>
+>> 1. Ensure that threads that were stopped for debugging in primary mode
+>>     will also be resumed in that mode. This prevents deviating behavior
+>>     compared to non-debugged execution.
+>>
+>> 2. If one thread in a process hits a debugging condition and is about to
+>>     bring the whole process into stopped state, ensure that all other RT
+>>     threads are stopped immediately. This prevents that, because the
+>>     interrupted thread first needs to go to Linux in order to start the
+>>     process stop, other threads can continue running too far, changing
+>>     the process state so that debugging becomes harder if not impossible.
+>>
+>> To provide these properties, the core needs two small new hooks from
+>> I-pipe. Separate patches will be sent against 4.14 that provide these,
+>> so far for x86 and ARM only.
+>>
+>> Furthermore, this series likely depends on the mayday cleanup I sent
+>> earlier, at least it was never used without that (you don't want to
+>> debug without it). That also raises the question how to manage the
+>> I-pipe feature dependencies best in order work around or simply exclude
+>> old I-pipe releases.
+>>
+>> Please review carefully if the design and implementation make sense. As
+>> I said, we are using it, so it is not completely broken. But I may have
+>> overseen some ugly corner cases nevertheless.
+>>
+>> Unless too many issues surface, I would like to get this feature into
+>> master before 3.1, along with the needed hooks in I-pipe (including
+>> active stable trees).
+>>
+>> Jan
+>>
+>> Jan Kiszka (7):
+>>    cobalt/kernel: Rework register/unregister_debugged_thread
+>>    cobalt/kernel: Switch back ptraced primary mode threads on resume
+>>    cobalt/kernel: Reintroduce process-local thread list
+>>    cobalt/kernel: Introduce XNDBGSTOP
+>>    cobalt/kernel: Implement synchronous stop and resume for process
+>>      debugging
+>>    cobalt/kernel: Clear mayday request of relaxed task
+>>    testsuite/smokey: gdb-based debugging test
+>>
+>>   configure.ac                        |   1 +
+>>   include/cobalt/kernel/thread.h      |   2 +-
+>>   include/cobalt/uapi/kernel/thread.h |   5 +-
+>>   kernel/cobalt/posix/process.c       | 218 ++++++++++++++++++++++++-
+>>   kernel/cobalt/posix/process.h       |   4 +-
+>>   kernel/cobalt/posix/thread.c        |   4 +-
+>>   kernel/cobalt/posix/thread.h        |   2 +-
+>>   kernel/cobalt/thread.c              |  18 ++-
+>>   testsuite/smokey/Makefile.am        |   1 +
+>>   testsuite/smokey/gdb/Makefile.am    |  13 ++
+>>   testsuite/smokey/gdb/gdb.c          | 310 ++++++++++++++++++++++++++++++++++++
+>>   11 files changed, 564 insertions(+), 14 deletions(-)
+>>   create mode 100644 testsuite/smokey/gdb/Makefile.am
+>>   create mode 100644 testsuite/smokey/gdb/gdb.c
+>>
+> 
+> Ack. The pipeline related bits are in -noarch already.
+> 
+
+Thanks for the review. Rebased (was clean) and applied to next now.
+
+Jan
+
+-- 
+Siemens AG, Corporate Technology, CT RDA IOT SES-DE
+Corporate Competence Center Embedded Linux
+
