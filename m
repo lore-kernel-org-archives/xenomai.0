@@ -1,26 +1,11 @@
-Subject: Re: Fwd: Round-Trip Time Requester with Xenomai / RTnet on Beaglebone
- Black
-References: <CAEmXcAzOL4M-JRUWgm3mjmz+bQ=nHc-QW5dr-iBc24RXXu5CTg@mail.gmail.com>
- <320b1c56-047f-764f-036a-d3302ddbd0f4@siemens.com>
- <CAEmXcAxuFzE2uQHGMUjBnbgadTTcNU_DwV64uvLPahxxDMKTyQ@mail.gmail.com>
- <be5b28d1-e689-5c60-4d20-2be511ec489a@siemens.com>
- <CAEmXcAxs3O_Hmph-48JArHgCmWSj+wAiffkNCZKiL9uVew6irg@mail.gmail.com>
- <22b6931e-8f7b-0cae-2316-5b278d1186d6@siemens.com>
- <CAEmXcAzzSfT5jVQpM2CidLh-CCJRPt45jJMRq_mmXz0wHFnyXQ@mail.gmail.com>
- <34f86f81-70f4-9b07-26e7-3525bfaf6fcf@siemens.com>
- <CAEmXcAz6p9yg65uigQx6zJyey1nnkmdq8+i1Ou2bT888n-thrg@mail.gmail.com>
- <309d004d-23de-a4a5-7536-4c08e463c556@siemens.com>
- <CAEmXcAzn2jagk3CkTk=5zhuWu4tPWC9hUSSpsCOzmG=Gu4rn4Q@mail.gmail.com>
- <0cd6d298-cee7-2799-4b61-2b868d742128@siemens.com>
- <CAEmXcAyuDquTNG3ZWtXGf+9oYArgT8PnRDgS_RzD_ZoWNxZ79w@mail.gmail.com>
-From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <671d8c8c-ea95-3189-c82c-cb70da0168be@siemens.com>
-Date: Fri, 7 Jun 2019 13:48:17 +0200
+From: "Wenninger, Daniel" <st158666@stud.uni-stuttgart.de>
+Subject: Question about Xenomai 2 with RTnet
+Date: Tue, 4 Jun 2019 08:10:41 +0000
+Message-ID: <f17786a8bdd340be9d49677b960d80ec@stud.uni-stuttgart.de>
+Content-Language: de-DE
 MIME-Version: 1.0
-In-Reply-To: <CAEmXcAyuDquTNG3ZWtXGf+9oYArgT8PnRDgS_RzD_ZoWNxZ79w@mail.gmail.com>
-Content-Type: text/plain; charset="utf-8"; format="flowed"
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -29,65 +14,26 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: danwe <daniel.wenninger92@gmail.com>, xenomai@xenomai.org
+To: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On 07.06.19 12:22, danwe wrote:
-> Raw-ethernet rteth0 does work. See the output:
-> 
-> # /usr/examples/xenomai/posix/raw-ethernet eth0
-> cannot get interface index: No such device
-> # /usr/examples/xenomai/posix/raw-ethernet rteth0
-> Sent frame of 1514 bytes
-> Sent frame of 1514 bytes
-> Sent frame of 1514 bytes
-> Sent frame of 1514 bytes
-> shutting down
-> 
-> So should I compare the invoked gcc command line with the output of "xeno-config
-> --skin=posix --ldflags"? Can that be possible if "raw-ethernet" is working?
+Hello,
 
-It doesn't make sense yet, I agree - unless there is RTmac with its vnic also 
-loaded so that you have rteth0 on the Linux side as well (check ifconfig -a).
 
-Jan
+I would like to ask you if there is still support for Xeno 2? I have a prob=
+lem with the enclosed source-file for Ethernet frames via UDP socket. It is=
+ a RTnet program to send Ethernet frames to a microcomputer and waiting for=
+ an answer. It always throws an error "Socket could not be created". Do you=
+ have any support for that problem
 
-> 
-> Daniel
-> 
-> Am Fr., 7. Juni 2019 um 12:15 Uhr schrieb Jan Kiszka <jan.kiszka@siemens.com 
-> <mailto:jan.kiszka@siemens.com>>:
-> 
->     On 07.06.19 11:40, danwe wrote:
->      > I have checked what the generated binary is using.
->      > E.g. it is using lines like:
->      >
->      > 19: 00008bc8   0 FUNC   GLOBAL DEFAULT UND ioct1@GLIBC_2.4 (3)
->      > 45: 00008cc4   0 FUNC   GLOBAL DEFAULT UND socket@GLIBC_2.4 (3)
->      >
->      > Does that mean that it is using the non-rt glibc services? If so then I
->     do not
->      > understand one thing: the file "raw-ethernet" is a example where it uses the
->      > same ioct1@GLIBC and socket@GLIBC but it does not throw the "network is
->      > unreachable error".
->      > But how can I change that it is using the __wrap_socket?
-> 
->     Compare the invoked gcc command line with the output of "xeno-config
->     --skin=posix --ldflags". Something is preventing the the required flags make it
->     into your build. Also try building manually, to exclude flaws in your buildroot
->     environment.
-> 
->     Does "raw-ethernet rteth0" actually work? Or are you calling "raw-ethernet
->     eth0"
->     by accident?
-> 
->     Jan
-> 
->     -- 
->     Siemens AG, Corporate Technology, CT RDA IOT SES-DE
->     Corporate Competence Center Embedded Linux
-> 
+I have to use Xenomai 2 otherwise RTnet will not work on a Beaglebone Black.
 
--- 
-Siemens AG, Corporate Technology, CT RDA IOT SES-DE
-Corporate Competence Center Embedded Linux
 
+Kind Regards
+
+
+Daniel Wenninger
+-------------- next part --------------
+An embedded and charset-unspecified text was scrubbed...
+Name: rtt_rt.c
+URL: <http://xenomai.org/pipermail/xenomai/attachments/20190604/f41b9d36/at=
+tachment.c>
