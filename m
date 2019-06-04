@@ -1,15 +1,12 @@
-Subject: Re: [PATCH] boilerplate: Fix bogus "typeof(type)" in macros
-References: <CALTC7XLtQUJ9xqwAbURTDeCHzJouAUjz1Lj0nhMovsEeL0q0EQ@mail.gmail.com>
- <f2b6ba72-043d-135a-b86f-c9ee25419343@web.de>
- <2db36c82-bc3a-7968-77fd-4d338999851e@xenomai.org>
-From: Jan Kiszka <jan.kiszka@web.de>
-Message-ID: <2a01ec5b-11ae-ced0-bc34-e53435926e7e@web.de>
-Date: Wed, 10 Jul 2019 23:43:07 +0200
+Date: Tue, 4 Jun 2019 10:16:59 +0800 (CST)
+From: liang_1911  <liang_1911@163.com>
+Subject: =?GBK?Q?the_=A1=BEROOT=A1=BFtask_in_xenomai_domain?=
+In-Reply-To: <mailman.79.1559582824.27006.xenomai@xenomai.org>
+References: <mailman.79.1559582824.27006.xenomai@xenomai.org>
 MIME-Version: 1.0
-In-Reply-To: <2db36c82-bc3a-7968-77fd-4d338999851e@xenomai.org>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: quoted-printable
+Message-ID: <ef5ddb.7d73.16b20467fa0.Coremail.liang_1911@163.com>
+Content-Type: text/plain; charset=GBK
+Content-Transfer-Encoding: base64
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -18,74 +15,41 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Philippe Gerum <rpm@xenomai.org>, Cris Almaraz <cristina.almaraz@gmail.com>, xenomai <xenomai@xenomai.org>
+To: xenomai@xenomai.org
 
-On 10.07.19 22:50, Philippe Gerum wrote:
-> On 7/10/19 9:39 PM, Jan Kiszka via Xenomai wrote:
->> From: Jan Kiszka <jan.kiszka@siemens.com>
->>
->> This was ignored by most compilers so far, but it breaks at least under
->> c++11.
->
-> This was hardly ignored since this evaluates to a required type
-> information, the issue is rather with typeof() belonging to the GNU
-> extension set. Building with -std=3Dgnu++11 solves that issue with the
-> current implementation which generally assumes those extensions are enab=
-led.
-
-If these two cases are the only ones that prevent standard-conforming buil=
-ds ouf
-our external headers, I would be in favor of overcoming that limitation. B=
-ut if
-it should be just the tip of the iceberg, it's likely not worth it.
-
->
->>
->> Reported-by: St=C3=A9phane Ancelot <sancelot@numalliance.com>
->> Reported-by: Cris Almaraz <cristina.almaraz@gmail.com>
->> Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
->> ---
->>
->> Thanks for reporting (and sorry for the long patch delay). This should
->> fix it.
->>
->>  include/boilerplate/tunables.h | 4 ++--
->>  1 file changed, 2 insertions(+), 2 deletions(-)
->>
->> diff --git a/include/boilerplate/tunables.h b/include/boilerplate/tunab=
-les.h
->> index db8523be67..38f414e455 100644
->> --- a/include/boilerplate/tunables.h
->> +++ b/include/boilerplate/tunables.h
->> @@ -37,10 +37,10 @@ static inline int __may_change_config_tunable(void)
->>  	__read_ ## __name ## _ ## __scope
->>
->>  #define __define_tunable(__name, __type, __val, __scope)	\
->> -	void __tunable_set_call(__name, __scope)(typeof(__type) __val)
->> +	void __tunable_set_call(__name, __scope)(__type __val)
->>
->>  #define __read_tunable(__name, __type, __scope)	\
->> -	typeof(__type) __tunable_get_call(__name, __scope)(void)
->> +	__type __tunable_get_call(__name, __scope)(void)
->>
->>  #define define_config_tunable(__name, __type, __val)	\
->>  	__define_tunable(__name, __type, __val, config)
->> --
->
->
-> That won't work with non-trivial type expr like this one:
->
-> int (*foo_handler)(void);
->
-> define_config_tunable(foobar, int (*)(void), handler)
-> {
-> 	foo_handler =3D handler;
-> }
->
-> And we have those in the field already.
->
-
-Out of tree? I didn't find any in-tree build issues.
-
-Jan
-
+SGksIGZvbGtzLgpJIGhhcyBhbiBxdWVzdGlvbjogd2hlbiBpIHVzZSB0aGUgImNhdCAvcHJvYy94
+ZW5vbWFpL3NjaGVkL3N0YXQiIGNvbW1hbmQgdG8gc2VlIHRoZSBjcHUncyB1c2FnZSByYXRlIGlu
+IHhlbm9tYWkgZG9tYWluo6xoZXJlIGlzIHRoZSByZXN1bHQgOgpyb290QGFtMzM1eC1ldm06fiMg
+Y2F0IC9wcm9jL3hlbm9tYWkvc2NoZWQvc3RhdCAKQ1BVICBQSUQgICAgTVNXICAgICAgICBDU1cg
+ICAgICAgIFhTQyAgICAgICAgUEYgICAgU1RBVCAgICAgICAlQ1BVICBOQU1FCiAgMCAgMCAgICAg
+IDAgICAgICAgICAgMTA5NzQ0NTkgICAwICAgICAgICAgIDAgICAgIDAwMDE4MDAwICAgICAgICAg
+IDg5LjQgIFtST09UXQogIDAgIDY1MiAgICA0MCAgICAgICAgIDU4ICAgICAgICAgMjA3ICAgICAg
+ICAwICAgICAwMDA2ODBjMCAgICAgICAgICAgMC4wICBNVAogIDAgIDY4OSAgICAyICAgICAgICAg
+IDUgICAgICAgICAgMTIgICAgICAgICAwICAgICAwMDA0ODA0MiAgICAgICAgICAgICAgMC4wICB0
+YXNrSW50UG93ZXJEb3duCiAgMCAgNjkwICAgIDMgICAgICAgICAgMjg2ODY4NCAgICAyODY4Njkx
+ICAgIDEgICAgIDAwMDQ4MDQyICAgIDIuNyAgdGFza0ludDFtc0hhbmRsZQogIDAgIDY5MSAgICAz
+ICAgICAgICAgIDc2ODc4NSAgICAgNzE2ODg5ICAgICAxICAgICAwMDA0ODA0MiAgICAxLjYgIHRh
+c2tfZmlyc3RMYWRkZXIKICAwICA2OTQgICAgMiAgICAgICAgICAyOTEzNTY1ICAgIDI4Njc1MTEg
+ICAgMCAgICAgMDAwNDgwNDIgICAgMS4wICB0YXNrX3doZWVsWmVybwogIDAgIDY5NSAgICAyICAg
+ICAgICAgIDE0NjQ4OTcgICAgMTQzMzc1OSAgICAwICAgICAwMDA0ODA0MiAgICAwLjYgIHRhc2tf
+TVNUCiAgMCAgNjk2ICAgIDcgICAgICAgICAgNzM5MDEzICAgICA3MTY4OTcgICAgIDAgICAgIDAw
+MDQ4MDQyICAgIDAuNSAgdGFza19tYXN0ZXJDdHJsCiAgMCAgNjk3ICAgIDIgICAgICAgICAgMjk0
+NDg1NSAgICAyODY3NDk0ICAgIDAgICAgIDAwMDQ4MDQyICAgIDEuMCAgdGFza19pbnRlcnBvbGF0
+ZQogIDAgIDY5OCAgICA0ICAgICAgICAgIDI1ODM5MyAgICAgMjM4OTc0ICAgICAwICAgICAwMDA0
+ODA0MiAgICAgIDAuNiAgdGFza19sb3dSZWFsVGltZQogIDAgIDY5OSAgICAxICAgICAgICAgIDEg
+ICAgICAgICAgICAgICAgICAgIDI0ICAgICAgICAgMCAgICAgMDAwNjAwYzAgICAgMC4wICBNVAog
+IDAgIDAgICAgICAwICAgICAgICAgIDExMzUzNzQyICAgMCAgICAgICAgICAwICAgICAwMDAwMDAw
+MCAgICAgICAgICAxLjMgIFtJUlExNjogW3RpbWVyXV0KICAwICAwICAgICAgMCAgICAgICAgICAy
+ODY4Njc5ICAgIDAgICAgICAgICAgMCAgICAgMDAwMDAwMDAgICAgICAgICAgIDAuOSAgW0lSUTE4
+MTogMW1zSW50XQogIDAgIDAgICAgICAwICAgICAgICAgIDAgICAgICAgICAgMCAgICAgICAgICAw
+ICAgICAwMDAwMDAwMCAgICAgICAgICAgICAgICAwLjAgIFtJUlExODI6IHBvd2VyX2Rvd25dCiAK
+dGhlIFJPT1QgdGFzayBvY2N1cHkgODkuNCUncyBjcHUgdXNhZ2UgcmF0ZTsgRG9lcyB0aGF0IG1l
+YW4gdGhlIGlkbGUgY3B1IHVzYWdlIHJhdGUgaXMgODkuNCU/CkFjdHVhbGx5LCB0aGUgb3RoZXIg
+cmVtYWluaW5nIHRhc2sgaXMgbXkgd29yayB0YXNrICx3aGljaCBqdXN0IG9jY3VweSBhIGZldyBj
+cHUgdXNhZ2UgcmF0ZSAgdG90YWxseS4KSWYgdGhhdCBpcyB0cnVlLCBoZXJlIGlzIGFub3RoZXIg
+cXVlc3Rpb246CkNhbiB3ZSBsaW1pdCB0aGUgY3B1IHVzYWdlIHJhdGUgdG8gdGhlIHJlYWwtdGlt
+ZSBwYXJ0aWFsIHByb2dyYW0/Cmxpa2Ugc2F5LCBpIHdhbnQgdG8gYXNzaWduZWQgNzAlIG9mIGNw
+dSdzICBwZXJmb3JtYW5jZSB0byBSVCBwcm9ncmFtLCBhbmQgZ2l2ZSB0aGUgcmVzdCB0byBub24t
+UlQgcHJvZ3JhbS4KSXMgdGhlcmUgYW55IHdheSB0byBmdWxsZmlsbCB0aGlzIHB1cnBvc2UgPwot
+LQoKLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLQogICAgICAg
+ICBRdWFuClRIQU5LUyAmIEJSIQoK
