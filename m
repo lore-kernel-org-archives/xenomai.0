@@ -1,13 +1,10 @@
-Subject: [PATCH 7/7] testsuite/smokey: gdb: Catch dup and write errors
-References: <cover.1543608201.git.jan.kiszka@siemens.com>
-From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <0a96c6bb-0c8b-928c-2277-5c31a01c0134@siemens.com>
-Date: Tue, 4 Jun 2019 20:32:24 +0200
 MIME-Version: 1.0
-In-Reply-To: <cover.1543608201.git.jan.kiszka@siemens.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+From: danwe <daniel.wenninger92@gmail.com>
+Date: Wed, 5 Jun 2019 12:30:16 +0200
+Message-ID: <CAEmXcAzOL4M-JRUWgm3mjmz+bQ=nHc-QW5dr-iBc24RXXu5CTg@mail.gmail.com>
+Subject: Round-Trip Time Requester with Xenomai / RTnet on Beaglebone Black
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -18,68 +15,42 @@ List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: xenomai@xenomai.org
 
-Reported by compiler settings in travis.
-
-Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
----
-
-There is still one breakage remaining, arm on legacy 4.4, not critical
-for 3.1 likely, but I will fix that soon as well.
-
- testsuite/smokey/gdb/gdb.c | 22 ++++++++++++++++------
- 1 file changed, 16 insertions(+), 6 deletions(-)
-
-diff --git a/testsuite/smokey/gdb/gdb.c b/testsuite/smokey/gdb/gdb.c
-index a0308d9b2e..fc843cbbbd 100644
---- a/testsuite/smokey/gdb/gdb.c
-+++ b/testsuite/smokey/gdb/gdb.c
-@@ -104,7 +104,10 @@ static void wait_for_pattern(const char *string)
- 
- static void send_command(const char *string, int wait_for_prompt)
- {
--	write(pipe_in[1], string, strlen(string));
-+	int err;
-+
-+	err = write(pipe_in[1], string, strlen(string));
-+	check_no_error("write(pipe_in)", err);
- 	if (wait_for_prompt)
- 		wait_for_pattern("(gdb) ");
- }
-@@ -142,8 +145,12 @@ static void eval_expression_inner(const char *fn, int line,
- 				  const char *expression,
- 				  const char *expected_value)
- {
--	write(pipe_in[1], "p ", 2);
--	write(pipe_in[1], expression, strlen(expression));
-+	int err;
-+
-+	err = write(pipe_in[1], "p ", 2);
-+	check_no_error("write(pipe_in)", err);
-+	err = write(pipe_in[1], expression, strlen(expression));
-+	check_no_error("write(pipe_in)", err);
- 	send_command("\n", 0);
- 
- 	check_output(fn, line, expression, "$");
-@@ -261,13 +268,16 @@ static int run_gdb(struct smokey_test *t, int argc, char *const argv[])
- 		case 0:
- 			/* redirect input */
- 			close(0);
--			dup(pipe_in[0]);
-+			err = dup(pipe_in[0]);
-+			check_no_error("dup(pipe_in)", err);
- 
- 			/* redirect output and stderr */
- 			close(1);
--			dup(pipe_out[1]);
-+			err = dup(pipe_out[1]);
-+			check_no_error("dup(pipe_out)", err);
- 			close(2);
--			dup(1);
-+			err = dup(1);
-+			check_no_error("dup(1)", err);
- 
- 			snprintf(run_param, sizeof(run_param), "--run=%d",
- 				 t->__reserved.id);
--- 
-2.16.4
-
+SGVsbG8sCgpJIGFtIHVzaW5nIHR3byBCZWFnbGVib25lIEJsYWNrIHdpdGggTGludXgga2VybmVs
+IHZlcnNpb24gMy44LjEzIGFuZApYZW5vbWFpIHZlcnNpb24gMi42LjMuIEkgaGF2ZSBidWlsdCB0
+aGUgS2VybmVsIHdpdGggWGVub21haSBhbmQgUlRuZXQgd2l0aApidWlsZHJvb3QuIEF0IHRoZSBt
+b21lbnQgSSBhbSB0cnlpbmcgdG8gdXNlIHRoZSBwcm92aWRlZCBzb3VyY2UtZmlsZXMKInJ0dC1z
+ZW5kZXIiIGFuZCAicnR0LXJlc3BvbmRlciIgZm9yIHNlbmRpbmcgc29tZSAiUm91bmQtVHJpcCBU
+aW1lIFJlcXVlc3QiLgpJIGhhdmUgY2hhbmdlZCBteSBkZXN0aW5hdGlvbiBJUCBpbiAicnR0LXJl
+c3BvbmRlciIgdG8gbXkgZGVzdGluYXRpb24gQkJCLgpJIGRpZCBub3QgZG8gYW55IG90aGVyIGNo
+YW5nZXMuIFRoZW4gSSBkaWQgcnVuICJydHQtcmVzcG9uZGVyIiBvbiBCQkIyIGFuZAoicnR0LXNl
+bmRlciIgb24gQkJCMSBidXQgSSBhbHdheXMgZ2V0IHRoZSBmb2xsb3dpbmcgZXJyb3I6CltpbWFn
+ZTogaW1hZ2UucG5nXQpDYW4gYW55b25lIHRlbGwgbWUgd2h5IEkgZG8gZ2V0IHRoYXQgZXJyb3I/
+CkluIG9yZGVyIHRvIHRoaXMgSSBuZWVkIHRvIHNheSB0aGF0IGJvdGggQkJCJ3MgZ2V0IGEgcmFu
+ZG9tIE1BQy1BZHJlc3MKYWZ0ZXIgZWFjaCBib290LiBUaGF0IG1lYW5zIEkgbmVlZCB0byB0ZWxs
+IGVhY2ggQkJCIHdoaWNoIE1BQyBhZHJlc3MKYmVsb25ncyB0byB3aGljaCBJUC1BZHJlc3MuIEZv
+ciBleGFtcGxlIEJCQjEgaGFzIElQIDE5Mi4xNjguMTI3LjEwIHdpdGggTUFDCkFBOkFBOkFBOkFB
+OkFBIGFuZCBCQkIyIGhhcyBJUCAxOTIuMTY4LjEyNy4xMSB3aXRoIE1BQyBCQjpCQjpCQjpCQjpC
+QiBJCm5lZWQgdG8gZXhlY3V0ZSB0aGUgZm9sbG93aW5nIGNvbW1hbmRzOgoKRm9yIEJCQjE6IHJ0
+cm91dGUgYWRkIDE5Mi4xNjguMTI3LjExIEJCOkJCOkJCOkJCOkJCIGRldiBydGV0aDAKRm9yIEJC
+QjI6IHJ0cm91dGUgYWRkIDE5Mi4xNjguMTI3LjEwIEFBOkFBOkFBOkFBOkFBIGRldiBydGV0aDAK
+Ck5vdyBpdCBpcyBwb3NzaWJsZSB0byBzZW5kIHJ0cGluZ3Mgd2l0aCB0aGUgY29tbWFuZDogcnRw
+aW5nIDE5Mi4xNjguMTI3LjEwCm9yIHJ0cGluZyAxOTIuMTY4LjEyNy4xMS4gRGVwZW5zIG9uIHdo
+aWNoIEJCQiB5b3Ugd2FudCB0byBzZW5kIHRoZSBwaW5nLgoKU28gbXkgaWRlYSB3YXMgaXQgaXMg
+b25seSBwb3NzaWJsZSB0byBydW4gdGhlICJydHQtc2VuZGVyIiBhbmQKInJ0dC1yZXNwb25kZXIi
+IGZpbGUgd2hlbiBteSBCQkIncyBrbm93IHdoaWNoIE1BQyBiZWxvbmdzIHRvIHdoaWNoIElQLgoK
+QnV0IHRoZXJlIGlzIHN0aWxsIHRoZSBlcnJvciwgdGhhdCB0aGUgTmV0d29yayBpcyB1bnJlYWNo
+YWJsZS4gV2h5PwoKWW91IGNhbiBmaW5kIHRoZSBzb3VyY2UtZmlsZXMgZW5jbG9zZWQuCgpLaW5k
+IFJlZ2FyZHMKLS0tLS0tLS0tLS0tLS0gbmV4dCBwYXJ0IC0tLS0tLS0tLS0tLS0tCkEgbm9uLXRl
+eHQgYXR0YWNobWVudCB3YXMgc2NydWJiZWQuLi4KTmFtZTogaW1hZ2UucG5nClR5cGU6IGltYWdl
+L3BuZwpTaXplOiAxMzI3MSBieXRlcwpEZXNjOiBub3QgYXZhaWxhYmxlClVSTDogPGh0dHA6Ly94
+ZW5vbWFpLm9yZy9waXBlcm1haWwveGVub21haS9hdHRhY2htZW50cy8yMDE5MDYwNS84NjEzYzZj
+YS9hdHRhY2htZW50LnBuZz4KLS0tLS0tLS0tLS0tLS0gbmV4dCBwYXJ0IC0tLS0tLS0tLS0tLS0t
+CkEgbm9uLXRleHQgYXR0YWNobWVudCB3YXMgc2NydWJiZWQuLi4KTmFtZTogcnR0LXNlbmRlci5j
+ClR5cGU6IGFwcGxpY2F0aW9uL29jdGV0LXN0cmVhbQpTaXplOiA5ODc5IGJ5dGVzCkRlc2M6IG5v
+dCBhdmFpbGFibGUKVVJMOiA8aHR0cDovL3hlbm9tYWkub3JnL3BpcGVybWFpbC94ZW5vbWFpL2F0
+dGFjaG1lbnRzLzIwMTkwNjA1Lzg2MTNjNmNhL2F0dGFjaG1lbnQub2JqPgotLS0tLS0tLS0tLS0t
+LSBuZXh0IHBhcnQgLS0tLS0tLS0tLS0tLS0KQSBub24tdGV4dCBhdHRhY2htZW50IHdhcyBzY3J1
+YmJlZC4uLgpOYW1lOiBydHQtcmVzcG9uZGVyLmMKVHlwZTogYXBwbGljYXRpb24vb2N0ZXQtc3Ry
+ZWFtClNpemU6IDU3MDUgYnl0ZXMKRGVzYzogbm90IGF2YWlsYWJsZQpVUkw6IDxodHRwOi8veGVu
+b21haS5vcmcvcGlwZXJtYWlsL3hlbm9tYWkvYXR0YWNobWVudHMvMjAxOTA2MDUvODYxM2M2Y2Ev
+YXR0YWNobWVudC0wMDAxLm9iaj4K
