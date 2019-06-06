@@ -1,11 +1,13 @@
-From: Philippe Gerum <rpm@xenomai.org>
-Subject: [PATCH 4/8] testsuite/smokey: sched-quota: allow up to 1.5% deviation
- from plan
-Date: Sat,  1 Jun 2019 17:14:58 +0200
-Message-Id: <20190601151502.27216-5-rpm@xenomai.org>
-In-Reply-To: <20190601151502.27216-1-rpm@xenomai.org>
-References: <20190601151502.27216-1-rpm@xenomai.org>
+Subject: Re: Finalizing 3.0.9 release
+References: <39bd9ede-855c-6a06-73e5-8a79077e6a65@siemens.com>
+ <CAO460_8njN+u9e92Eq-4sM_tOUdxv9xF23pO8P1zhziodmJ1Ew@mail.gmail.com>
+From: Jan Kiszka <jan.kiszka@siemens.com>
+Message-ID: <7456b7b1-fb42-cf09-2464-7671a9169d76@siemens.com>
+Date: Thu, 6 Jun 2019 12:59:53 +0200
 MIME-Version: 1.0
+In-Reply-To: <CAO460_8njN+u9e92Eq-4sM_tOUdxv9xF23pO8P1zhziodmJ1Ew@mail.gmail.com>
+Content-Type: text/plain; charset="utf-8"; format="flowed"
+Content-Language: en-US
 Content-Transfer-Encoding: 8bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
@@ -15,33 +17,37 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
-Cc: Jan Kiszka <jan.kiszka@siemens.com>, Philippe Gerum <rpm@xenomai.org>
+To: "Stephen D. Cohen" <steve@uscohens.com>
+Cc: Xenomai <xenomai@xenomai.org>
 
-[+/-]0.5% is too strict on some architectures (e.g. x86) where the
-test run may crunch numbers faster than the calibration did. 1.5% is a
-probabilistic attempt to cope with this variation while remaining
-within acceptable bounds.
+Hi Stephen,
 
-Signed-off-by: Philippe Gerum <rpm@xenomai.org>
----
- testsuite/smokey/sched-quota/sched-quota.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+On 06.06.19 12:43, Stephen D. Cohen wrote:
+> Jan,
+> 
+>       Some months back I provided patches to make slackspot work properly for 
+> PIE and to repair an issue with multiple spot sites in one object. I do not see 
+> it applied in the archive at all.
+> 
 
-diff --git a/testsuite/smokey/sched-quota/sched-quota.c b/testsuite/smokey/sched-quota/sched-quota.c
-index 10ecfad44..5c35b551d 100644
---- a/testsuite/smokey/sched-quota/sched-quota.c
-+++ b/testsuite/smokey/sched-quota/sched-quota.c
-@@ -327,7 +327,7 @@ static int run_sched_quota(struct smokey_test *t, int argc, char *const argv[])
- 	smokey_trace("%d thread%s: cap=%d%%, effective=%.1f%%",
- 		     nrthreads, nrthreads > 1 ? "s": "", quota, effective);
- 
--	if (!smokey_on_vm && fabs(effective - (double)quota) > 0.5) {
-+	if (!smokey_on_vm && fabs(effective - (double)quota) > 1.5) {
- 		smokey_warning("out of quota: %.1f%%",
- 			       effective - (double)quota);
- 		return -EPROTO;
+Thanks for the reminder. I guess I missed that due to some suboptimal format 
+issues. Could you please ensure that
+
+  - the patch subject carries a [patch] tag
+  - has a subject line that summarized the change
+  - has a commit log that briefly describes the "why", to
+    document the commit (should be easy to derive from your explanation)
+  - has a signed-off-by to document license conformance
+
+See also CONTRIBUTING.md.
+
+If your mail client prevents to format the mail properly and you cannot use git 
+send-email directly, attaching is ok.
+
+Thanks,
+Jan
+
 -- 
-2.20.1
-
+Siemens AG, Corporate Technology, CT RDA IOT SES-DE
+Corporate Competence Center Embedded Linux
 
