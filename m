@@ -1,7 +1,8 @@
 From: Jan Kiszka <jan.kiszka@siemens.com>
-Subject: [PATCH 1/5] testsuite/smokey/gdb: Catch dup and write errors
-Date: Wed, 12 Jun 2019 17:31:14 +0200
-Message-Id: <11a1d6e0d78c2190137ae0a05ff1ab916f4d21cd.1560353478.git.jan.kiszka@siemens.com>
+Subject: [PATCH 5/5] testsuite/smokey/sigdebug: Fix check_no_error and some
+ callers
+Date: Wed, 12 Jun 2019 17:31:18 +0200
+Message-Id: <7431454cc26eb2554c2f0ab706602585cad71e23.1560353478.git.jan.kiszka@siemens.com>
 In-Reply-To: <cover.1560353478.git.jan.kiszka@siemens.com>
 References: <cover.1560353478.git.jan.kiszka@siemens.com>
 In-Reply-To: <cover.1560353478.git.jan.kiszka@siemens.com>
@@ -18,73 +19,79 @@ To: xenomai@xenomai.org
 
 From: Jan Kiszka <jan.kiszka@siemens.com>
 
-Reported by compiler settings in travis.
+Aligning check_no_error with the gdb test case revealed a number of
+smaller issues in the sigdebug test - and the bigger one with syscall
+restarted fixed in "cobalt/thread: Clear XNSYSRST when migrating to
+Linux".
 
 Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
 ---
- testsuite/smokey/gdb/gdb.c | 24 +++++++++++++++++-------
- 1 file changed, 17 insertions(+), 7 deletions(-)
+ testsuite/smokey/sigdebug/sigdebug.c | 15 +++++++++------
+ 1 file changed, 9 insertions(+), 6 deletions(-)
 
-diff --git a/testsuite/smokey/gdb/gdb.c b/testsuite/smokey/gdb/gdb.c
-index a0308d9b2e..7a20314e0b 100644
---- a/testsuite/smokey/gdb/gdb.c
-+++ b/testsuite/smokey/gdb/gdb.c
-@@ -1,7 +1,7 @@
+diff --git a/testsuite/smokey/sigdebug/sigdebug.c b/testsuite/smokey/sigdebug/sigdebug.c
+index 87f0be6310..15f9e4dae3 100644
+--- a/testsuite/smokey/sigdebug/sigdebug.c
++++ b/testsuite/smokey/sigdebug/sigdebug.c
+@@ -1,10 +1,10 @@
  /*
-  * gdb test.
+  * Functional testing of unwanted domain switch debugging mechanism.
   *
-- * Copyright (C) Siemens AG, 2015
-+ * Copyright (C) Siemens AG, 2015-2019
+- * Copyright (C) Siemens AG, 2012-2014
++ * Copyright (C) Siemens AG, 2012-2019
   *
-  * Authors.
-  *  Jan Kiszka <jan.kiszka@siemens.com>
-@@ -104,7 +104,10 @@ static void wait_for_pattern(const char *string)
- 
- static void send_command(const char *string, int wait_for_prompt)
- {
--	write(pipe_in[1], string, strlen(string));
-+	int ret;
-+
-+	ret = write(pipe_in[1], string, strlen(string));
-+	check("write(pipe_in)", ret, strlen(string));
- 	if (wait_for_prompt)
- 		wait_for_pattern("(gdb) ");
+  * Authors:
+- *  Jan Kiszka  <jan.kiszka@siemens.com>
++ *  Jan Kiszka <jan.kiszka@siemens.com>
+  *
+  * Released under the terms of GPLv2.
+  */
+@@ -53,7 +53,7 @@ static void check_inner(const char *fn, int line, const char *msg,
+ 	pthread_setmode_np(PTHREAD_WARNSW, 0, NULL);
+ 	rt_print_flush_buffers();
+ 	fprintf(stderr, "FAILURE %s:%d: %s returned %d instead of %d - %s\n",
+-		fn, line, msg, status, expected, strerror(-status));
++		fn, line, msg, status, expected, strerror(status));
+ 	exit(EXIT_FAILURE);
  }
-@@ -142,8 +145,12 @@ static void eval_expression_inner(const char *fn, int line,
- 				  const char *expression,
- 				  const char *expected_value)
- {
--	write(pipe_in[1], "p ", 2);
--	write(pipe_in[1], expression, strlen(expression));
-+	int ret;
-+
-+	ret = write(pipe_in[1], "p ", 2);
-+	check("write(pipe_in)", ret, 2);
-+	ret = write(pipe_in[1], expression, strlen(expression));
-+	check("write(pipe_in)", ret, strlen(expression));
- 	send_command("\n", 0);
  
- 	check_output(fn, line, expression, "$");
-@@ -261,13 +268,16 @@ static int run_gdb(struct smokey_test *t, int argc, char *const argv[])
- 		case 0:
- 			/* redirect input */
- 			close(0);
--			dup(pipe_in[0]);
-+			err = dup(pipe_in[0]);
-+			check_no_error("dup(pipe_in)", err < 0 ? err : 0);
+@@ -77,7 +77,7 @@ static void check_sigdebug_inner(const char *fn, int line, const char *reason)
+ #define check_no_error(msg, status) ({					\
+ 	int __status = status;						\
+ 	check_inner(__func__, __LINE__, msg,				\
+-		    __status < 0 ? __status : 0, 0);			\
++		    __status < 0 ? errno : __status, 0);		\
+ 	__status;							\
+ })
  
- 			/* redirect output and stderr */
- 			close(1);
--			dup(pipe_out[1]);
-+			err = dup(pipe_out[1]);
-+			check_no_error("dup(pipe_out)", err < 0 ? err : 0);
- 			close(2);
--			dup(1);
-+			err = dup(1);
-+			check_no_error("dup(1)", err < 0 ? err : 0);
+@@ -107,7 +107,7 @@ static void *rt_thread_body(void *cookie)
+ 	err = sem_post(&send_signal);
+ 	check_no_error("sem_post", err);
+ 	err = clock_nanosleep(CLOCK_MONOTONIC, 0, &delay, NULL);
+-	check_no_error("clock_nanosleep", err);
++	check("clock_nanosleep", err, EINTR);
+ 	check_sigdebug_received("SIGDEBUG_MIGRATE_SIGNAL");
  
- 			snprintf(run_param, sizeof(run_param), "--run=%d",
- 				 t->__reserved.id);
+ 	smokey_trace("relaxed mutex owner");
+@@ -116,6 +116,8 @@ static void *rt_thread_body(void *cookie)
+ 		err = pthread_mutex_lock(&prio_invert);
+ 		check_no_error("pthread_mutex_lock", err);
+ 		check_sigdebug_received("SIGDEBUG_MIGRATE_PRIOINV");
++		err = pthread_mutex_unlock(&prio_invert);
++		check_no_error("pthread_mutex_unlock", err);
+ 	} else {
+ 		smokey_note("sigdebug \"SIGDEBUG_MIGRATE_PRIOINV\" skipped "
+ 			    "(no kernel support)");
+@@ -263,7 +265,8 @@ static int run_sigdebug(struct smokey_test *t, int argc, char *const argv[])
+ 	munlockall();
+ 	setup_checkdebug(SIGDEBUG_NOMLOCK);
+ 	err = pthread_create(&rt_thread, &attr, rt_thread_body, NULL);
+-	check("pthread_setschedparam", err, EINTR);
++	/* Note: EINTR is against the spec, but that's OK in this scenario. */
++	check("pthread_create", err, EINTR);
+ 	check_sigdebug_received("SIGDEBUG_NOMLOCK");
+ 	mlockall(MCL_CURRENT | MCL_FUTURE);
+ 
 -- 
 2.16.4
 
