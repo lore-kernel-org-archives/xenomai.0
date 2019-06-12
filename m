@@ -3,12 +3,12 @@ Subject: Re: IPIPE patch causes hang during initrd boot; Ubuntu 18 desktop
 References: <SN6PR09MB3069382F832609A66E69622A80100@SN6PR09MB3069.namprd09.prod.outlook.com>
  <4b6996dc-e425-cdfd-b95e-48c2aaa100d6@web.de>
  <SN6PR09MB3069402961C0EE909D4D891480EC0@SN6PR09MB3069.namprd09.prod.outlook.com>
-From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <1c7d17c8-f018-cbc9-3740-1a2ad0ad49d3@siemens.com>
-Date: Wed, 12 Jun 2019 15:05:15 +0200
+From: Philippe Gerum <rpm@xenomai.org>
+Message-ID: <3157ee8b-bf42-1e60-c5be-1e0dcc79ac7d@xenomai.org>
+Date: Wed, 12 Jun 2019 15:19:22 +0200
 MIME-Version: 1.0
 In-Reply-To: <SN6PR09MB3069402961C0EE909D4D891480EC0@SN6PR09MB3069.namprd09.prod.outlook.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
@@ -19,9 +19,9 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "Proctor, Frederick M. (Fed)" <frederick.proctor@nist.gov>, "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: "Proctor, Frederick M. (Fed)" <frederick.proctor@nist.gov>, Jan Kiszka <jan.kiszka@web.de>, "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On 12.06.19 14:37, Proctor, Frederick M. (Fed) via Xenomai wrote:
+On 6/12/19 2:37 PM, Proctor, Frederick M. (Fed) via Xenomai wrote:
 >> On 07.06.19 15:02, Proctor, Frederick M. (Fed) via Xenomai wrote:
 >>> I am installing Xenomai + Cobalt with the IPIPE patch on a Ubuntu
 >>> 18-based x86/64 desktop system. I have these versions:
@@ -31,11 +31,8 @@ On 12.06.19 14:37, Proctor, Frederick M. (Fed) via Xenomai wrote:
 >> Latest stable I-pipe version is ipipe-core-4.14.111-x86-3.
 >>
 > 
-> I was using 4.14.71 since it has patches for both IPIPE and PREEMPT_RT. I had used 4.14.111 also, but had the same kernel hang problem at boot time.
+> I was using 4.14.71 since it has patches for both IPIPE and PREEMPT_RT. I had used 4.14.111 also, but had the same kernel hang problem at boot time. 
 > 
-
-OK.
-
 >>>
 >>> I have compiled the kernel three different ways: the stock
 >>> configuration, with the PREEMPT_RT patch, and with the IPIPE patch (no
@@ -59,16 +56,19 @@ OK.
 >>
 >> Jan
 > 
-> Yes it does - with the kernel patched with IPIPE and Xenomai, but with IPIPE and Xenomai *not selected* in the kernel config, the kernel boots fine. With IPIPE and Xenomai *selected* in a subsequent kernel config, that kernel hangs. Here's the diff on the config files:
-> 
+> Yes it does - with the kernel patched with IPIPE and Xenomai, but with IPIPE and Xenomai *not selected* in the kernel config, the kernel boots fine. With IPIPE and Xenomai *selected* in a subsequent kernel config, that kernel hangs. Here's the diff on the config files: 
 
-Can you share the full config? Maybe something subtly incompatible with I-pipe 
-is enabled, maybe I can reproduce in KVM (ie. with a chance to debug).
+This may be a timer issue. You could try booting with
+xenomai.state=stopped on the kernel command line. If that boots as I
+suspect, then you can try issuing the following command:
 
-Jan
+$ corectl --start
+
+If that starts the core properly and no lockup, then this may have to do
+with the timer grabbing sequence proper. If that hangs, then this may be
+a general issue with the timing device when handling ticks for real-time
+delivery.
 
 -- 
--- 
-Siemens AG, Corporate Technology, CT RDA IOT SES-DE
-Corporate Competence Center Embedded Linux
+Philippe.
 
