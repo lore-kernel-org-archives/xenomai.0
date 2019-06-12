@@ -1,11 +1,11 @@
-From: Jan Kiszka <jan.kiszka@siemens.com>
-Subject: [PATCH 3/5] cobalt/thread: Clear XNSYSRST when migrating to Linux
-Date: Wed, 12 Jun 2019 17:31:16 +0200
-Message-Id: <a20d958d5f11e56dc3592a341e171d7f3d13e313.1560353478.git.jan.kiszka@siemens.com>
-In-Reply-To: <cover.1560353478.git.jan.kiszka@siemens.com>
-References: <cover.1560353478.git.jan.kiszka@siemens.com>
-In-Reply-To: <cover.1560353478.git.jan.kiszka@siemens.com>
-References: <cover.1560353478.git.jan.kiszka@siemens.com>
+From: Jan Kiszka <jan.kiszka@web.de>
+Subject: [PATCH] rtnet: Remove rtskbs also from mapwait list on destruction
+Message-ID: <2dbbd04d-3332-5f77-9736-c21d226a64b9@web.de>
+Date: Wed, 12 Jun 2019 22:48:38 +0200
+MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: quoted-printable
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -14,39 +14,52 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
+To: Xenomai <xenomai@xenomai.org>
 
 From: Jan Kiszka <jan.kiszka@siemens.com>
 
-This fixes the issue of spurious syscall-restart detection in
-clock_nanosleep and select when a signal was delivered. In that case,
-Linux replaces the ESYSRESTART with EINTR and does not perform any
-restart attempt. As a signal delivery implies migration, clearing
-XNSYSRST in the migration path resolves the issue.
+An rtsbk that successfully went through rtdev_map_rtskb is either on
+rtskb_mapped_list or rtskb_mapwait_list. On rtdev_unmap_rtskb, we
+therefore have to remove the rtskb unconditionally from a list,
+otherwise we corrupt its state.
 
-Fixes: 36132cdb21cd ("cobalt/kernel: Allow to restart clock_nanosleep and select after signal processing")
+This bug was easily triggerable via running smokey tests against the
+loopback device.
+
 Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
----
- kernel/cobalt/thread.c | 5 +++++
- 1 file changed, 5 insertions(+)
+=2D--
+ kernel/drivers/net/stack/rtdev.c | 13 ++++++-------
+ 1 file changed, 6 insertions(+), 7 deletions(-)
 
-diff --git a/kernel/cobalt/thread.c b/kernel/cobalt/thread.c
-index eacdd9a089..666b4d4ca0 100644
---- a/kernel/cobalt/thread.c
-+++ b/kernel/cobalt/thread.c
-@@ -2171,6 +2171,11 @@ void xnthread_relax(int notify, int reason)
- 		set_cpus_allowed_ptr(p, cpumask_of(cpu));
+diff --git a/kernel/drivers/net/stack/rtdev.c b/kernel/drivers/net/stack/r=
+tdev.c
+index b2d0687daf..93a8e212bf 100644
+=2D-- a/kernel/drivers/net/stack/rtdev.c
++++ b/kernel/drivers/net/stack/rtdev.c
+@@ -510,17 +510,16 @@ void rtdev_unmap_rtskb(struct rtskb *skb)
+     struct rtnet_device *rtdev;
+     int i;
+
+-    if (skb->buf_dma_addr =3D=3D RTSKB_UNMAPPED)
+-	return;
+-
+     mutex_lock(&rtnet_devices_nrt_lock);
+
+     list_del(&skb->entry);
+
+-    for (i =3D 0; i < MAX_RT_DEVICES; i++) {
+-	rtdev =3D rtnet_devices[i];
+-	if (rtdev && rtdev->unmap_rtskb) {
+-	    rtdev->unmap_rtskb(rtdev, skb);
++    if (skb->buf_dma_addr !=3D RTSKB_UNMAPPED) {
++	for (i =3D 0; i < MAX_RT_DEVICES; i++) {
++	    rtdev =3D rtnet_devices[i];
++	    if (rtdev && rtdev->unmap_rtskb) {
++		rtdev->unmap_rtskb(rtdev, skb);
++	    }
  	}
- #endif
-+	/*
-+	 * After migration there will be no syscall restart (rather a signal
-+	 * delivery).
-+	 */
-+	xnthread_clear_localinfo(thread, XNSYSRST);
- 
- 	ipipe_clear_thread_flag(TIP_MAYDAY);
- 
--- 
-2.16.4
+     }
 
+=2D-
+2.16.4
 
