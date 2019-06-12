@@ -1,13 +1,11 @@
-Subject: Re: [PATCH] net/ip_sock: ioctl: fix unsafe accesses from/to userspace
-References: <20190606124237.5206-1-sebastian.smolorz@gmx.de>
 From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <5d794fd5-20b4-7c89-afd4-e24c053b740a@siemens.com>
-Date: Wed, 12 Jun 2019 17:27:43 +0200
-MIME-Version: 1.0
-In-Reply-To: <20190606124237.5206-1-sebastian.smolorz@gmx.de>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Subject: [PATCH 1/5] testsuite/smokey/gdb: Catch dup and write errors
+Date: Wed, 12 Jun 2019 17:31:14 +0200
+Message-Id: <11a1d6e0d78c2190137ae0a05ff1ab916f4d21cd.1560353478.git.jan.kiszka@siemens.com>
+In-Reply-To: <cover.1560353478.git.jan.kiszka@siemens.com>
+References: <cover.1560353478.git.jan.kiszka@siemens.com>
+In-Reply-To: <cover.1560353478.git.jan.kiszka@siemens.com>
+References: <cover.1560353478.git.jan.kiszka@siemens.com>
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,236 +14,78 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Sebastian Smolorz <sebastian.smolorz@gmx.de>
-Cc: xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-On 06.06.19 14:42, Sebastian Smolorz wrote:
-> Signed-off-by: Sebastian Smolorz <sebastian.smolorz@gmx.de>
-> ---
->   kernel/drivers/net/stack/ipv4/ip_sock.c | 127 ++++++++++++++++--------
->   1 file changed, 88 insertions(+), 39 deletions(-)
-> 
-> diff --git a/kernel/drivers/net/stack/ipv4/ip_sock.c b/kernel/drivers/net/stack/ipv4/ip_sock.c
-> index 20f27feff..1ae3a9eeb 100644
-> --- a/kernel/drivers/net/stack/ipv4/ip_sock.c
-> +++ b/kernel/drivers/net/stack/ipv4/ip_sock.c
-> @@ -4,6 +4,7 @@
->    *
->    *  Copyright (C) 2003       Hans-Peter Bock <hpbock@avaapgh.de>
->    *                2004, 2005 Jan Kiszka <jan.kiszka@web.de>
-> + *                2019       Sebastian Smolorz <sebastian.smolorz@gmx.de>
->    *
->    *  This program is free software; you can redistribute it and/or modify
->    *  it under the terms of the GNU General Public License as published by
-> @@ -28,11 +29,11 @@
->   #include <rtnet_socket.h>
-> 
-> 
-> -int rt_ip_setsockopt(struct rtsocket *s, int level, int optname,
-> -		     const void *optval, socklen_t optlen)
-> +int rt_ip_setsockopt(struct rtdm_fd *fd, struct rtsocket *s, int level,
-> +		     int optname, const void __user *optval, socklen_t optlen)
->   {
->       int err = 0;
-> -
-> +    unsigned int _tos, *tos;
-> 
->       if (level != SOL_IP)
->   	return -ENOPROTOOPT;
-> @@ -42,7 +43,11 @@ int rt_ip_setsockopt(struct rtsocket *s, int level, int optname,
-> 
->       switch (optname) {
->   	case IP_TOS:
-> -	    s->prot.inet.tos = *(unsigned int *)optval;
-> +	    tos = rtnet_get_arg(fd, &_tos, optval, sizeof(_tos));
-> +	    if (IS_ERR(tos))
-> +		return PTR_ERR(tos);
-> +	    else
-> +		s->prot.inet.tos = *tos;
->   	    break;
-> 
->   	default:
-> @@ -55,19 +60,29 @@ int rt_ip_setsockopt(struct rtsocket *s, int level, int optname,
-> 
-> 
-> 
-> -int rt_ip_getsockopt(struct rtsocket *s, int level, int optname,
-> -		     void *optval, socklen_t *optlen)
-> +int rt_ip_getsockopt(struct rtdm_fd *fd, struct rtsocket *s, int level,
-> +		     int optname, void __user *optval,
-> +		     socklen_t __user *optlen)
->   {
->       int err = 0;
-> +    unsigned int tos;
-> +    socklen_t _len, *len;
-> 
-> +    len = rtnet_get_arg(fd, &_len, optlen, sizeof(_len));
-> +    if (IS_ERR(len))
-> +	return PTR_ERR(len);
-> 
-> -    if (*optlen < sizeof(unsigned int))
-> +    if (*len < sizeof(unsigned int))
->   	return -EINVAL;
-> 
->       switch (optname) {
->   	case IP_TOS:
-> -	    *(unsigned int *)optval = s->prot.inet.tos;
-> -	    *optlen = sizeof(unsigned int);
-> +	    tos = s->prot.inet.tos;
-> +	    err = rtnet_put_arg(fd, optval, &tos, sizeof(tos));
-> +	    if (!err) {
-> +		*len = sizeof(unsigned int);
-> +		err = rtnet_put_arg(fd, optlen, len, sizeof(socklen_t));
-> +	    }
->   	    break;
-> 
->   	default:
-> @@ -80,72 +95,106 @@ int rt_ip_getsockopt(struct rtsocket *s, int level, int optname,
-> 
-> 
-> 
-> -int rt_ip_getsockname(struct rtsocket *s, struct sockaddr *addr,
-> -		      socklen_t *addrlen)
-> +int rt_ip_getsockname(struct rtdm_fd *fd, struct rtsocket *s,
-> +		      struct sockaddr __user *addr,
-> +		      socklen_t __user *addrlen)
->   {
-> -    struct sockaddr_in *usin = (struct sockaddr_in *)addr;
-> +    struct sockaddr_in _sin;
-> +    socklen_t *len, _len;
-> +    int ret;
-> 
-> +    len = rtnet_get_arg(fd, &_len, addrlen, sizeof(_len));
-> +    if (IS_ERR(len))
-> +	return PTR_ERR(len);
-> 
-> -    if (*addrlen < sizeof(struct sockaddr_in))
-> +    if (*len < sizeof(struct sockaddr_in))
->   	return -EINVAL;
-> 
-> -    usin->sin_family      = AF_INET;
-> -    usin->sin_addr.s_addr = s->prot.inet.saddr;
-> -    usin->sin_port        = s->prot.inet.sport;
-> -
-> -    memset(usin->sin_zero, 0, sizeof(usin->sin_zero));
-> +    _sin.sin_family      = AF_INET;
-> +    _sin.sin_addr.s_addr = s->prot.inet.saddr;
-> +    _sin.sin_port        = s->prot.inet.sport;
-> +    memset(&_sin.sin_zero, 0, sizeof(_sin.sin_zero));
-> +    ret = rtnet_put_arg(fd, addr, &_sin, sizeof(_sin));
-> +    if (ret)
-> +	return ret;
-> 
-> -    *addrlen = sizeof(struct sockaddr_in);
-> +    *len = sizeof(struct sockaddr_in);
-> +    ret = rtnet_put_arg(fd, addrlen, len, sizeof(socklen_t));
-> 
-> -    return 0;
-> +    return ret;
->   }
-> 
-> 
-> 
-> -int rt_ip_getpeername(struct rtsocket *s, struct sockaddr *addr,
-> -		      socklen_t *addrlen)
-> +int rt_ip_getpeername(struct rtdm_fd *fd, struct rtsocket *s,
-> +		      struct sockaddr __user *addr,
-> +		      socklen_t __user *addrlen)
->   {
-> -    struct sockaddr_in *usin = (struct sockaddr_in *)addr;
-> +    struct sockaddr_in _sin;
-> +    socklen_t *len, _len;
-> +    int ret;
-> 
-> +    len = rtnet_get_arg(fd, &_len, addrlen, sizeof(_len));
-> +    if (IS_ERR(len))
-> +	return PTR_ERR(len);
-> 
-> -    if (*addrlen < sizeof(struct sockaddr_in))
-> +    if (*len < sizeof(struct sockaddr_in))
->   	return -EINVAL;
-> 
-> -    usin->sin_family      = AF_INET;
-> -    usin->sin_addr.s_addr = s->prot.inet.daddr;
-> -    usin->sin_port        = s->prot.inet.dport;
-> +    _sin.sin_family      = AF_INET;
-> +    _sin.sin_addr.s_addr = s->prot.inet.daddr;
-> +    _sin.sin_port        = s->prot.inet.dport;
-> +    memset(&_sin.sin_zero, 0, sizeof(_sin.sin_zero));
-> +    ret = rtnet_put_arg(fd, addr, &_sin, sizeof(_sin));
-> +    if (ret)
-> +	return ret;
-> 
-> -    memset(usin->sin_zero, 0, sizeof(usin->sin_zero));
-> +    *len = sizeof(struct sockaddr_in);
-> +    ret = rtnet_put_arg(fd, addrlen, len, sizeof(socklen_t));
-> 
-> -    *addrlen = sizeof(struct sockaddr_in);
-> -
-> -    return 0;
-> +    return ret;
->   }
-> 
-> 
-> 
-> -int rt_ip_ioctl(struct rtdm_fd *fd, int request, void *arg)
-> +int rt_ip_ioctl(struct rtdm_fd *fd, int request, void __user *arg)
->   {
->       struct rtsocket *sock = rtdm_fd_to_private(fd);
-> -    struct _rtdm_getsockaddr_args   *getaddr = arg;
-> -    struct _rtdm_getsockopt_args    *getopt  = arg;
-> -    struct _rtdm_setsockopt_args    *setopt  = arg;
-> +    struct _rtdm_getsockaddr_args   _getaddr, *getaddr;
-> +    struct _rtdm_getsockopt_args    _getopt, *getopt;
-> +    struct _rtdm_setsockopt_args    _setopt, *setopt;
-> 
-> 
->       switch (request) {
->   	case _RTIOC_SETSOCKOPT:
-> -	    return rt_ip_setsockopt(sock, setopt->level, setopt->optname,
-> +	    setopt = rtnet_get_arg(fd, &_setopt, arg, sizeof(_setopt));
-> +	    if (IS_ERR(setopt))
-> +		return PTR_ERR(setopt);
-> +
-> +	    return rt_ip_setsockopt(fd, sock, setopt->level, setopt->optname,
->   				    setopt->optval, setopt->optlen);
-> 
->   	case _RTIOC_GETSOCKOPT:
-> -	    return rt_ip_getsockopt(sock, getopt->level, getopt->optname,
-> +	    getopt = rtnet_get_arg(fd, &_getopt, arg, sizeof(_getopt));
-> +	    if (IS_ERR(getopt))
-> +		return PTR_ERR(getopt);
-> +
-> +	    return rt_ip_getsockopt(fd, sock, getopt->level, getopt->optname,
->   				    getopt->optval, getopt->optlen);
-> 
->   	case _RTIOC_GETSOCKNAME:
-> -	    return rt_ip_getsockname(sock, getaddr->addr, getaddr->addrlen);
-> +	    getaddr = rtnet_get_arg(fd, &_getaddr, arg, sizeof(_getaddr));
-> +	    if (IS_ERR(getaddr))
-> +		return PTR_ERR(getaddr);
-> +
-> +	    return rt_ip_getsockname(fd, sock, getaddr->addr, getaddr->addrlen);
-> 
->   	case _RTIOC_GETPEERNAME:
-> -	    return rt_ip_getpeername(sock, getaddr->addr, getaddr->addrlen);
-> +	    getaddr = rtnet_get_arg(fd, &_getaddr, arg, sizeof(_getaddr));
-> +	    if (IS_ERR(getaddr))
-> +		return PTR_ERR(getaddr);
-> +
-> +	    return rt_ip_getpeername(fd, sock, getaddr->addr, getaddr->addrlen);
-> 
->   	default:
->   	    return rt_socket_if_ioctl(fd, request, arg);
-> --
-> 2.19.1
-> 
+From: Jan Kiszka <jan.kiszka@siemens.com>
 
-Thanks, applied to next.
+Reported by compiler settings in travis.
 
-Jan
+Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
+---
+ testsuite/smokey/gdb/gdb.c | 24 +++++++++++++++++-------
+ 1 file changed, 17 insertions(+), 7 deletions(-)
 
+diff --git a/testsuite/smokey/gdb/gdb.c b/testsuite/smokey/gdb/gdb.c
+index a0308d9b2e..7a20314e0b 100644
+--- a/testsuite/smokey/gdb/gdb.c
++++ b/testsuite/smokey/gdb/gdb.c
+@@ -1,7 +1,7 @@
+ /*
+  * gdb test.
+  *
+- * Copyright (C) Siemens AG, 2015
++ * Copyright (C) Siemens AG, 2015-2019
+  *
+  * Authors.
+  *  Jan Kiszka <jan.kiszka@siemens.com>
+@@ -104,7 +104,10 @@ static void wait_for_pattern(const char *string)
+ 
+ static void send_command(const char *string, int wait_for_prompt)
+ {
+-	write(pipe_in[1], string, strlen(string));
++	int ret;
++
++	ret = write(pipe_in[1], string, strlen(string));
++	check("write(pipe_in)", ret, strlen(string));
+ 	if (wait_for_prompt)
+ 		wait_for_pattern("(gdb) ");
+ }
+@@ -142,8 +145,12 @@ static void eval_expression_inner(const char *fn, int line,
+ 				  const char *expression,
+ 				  const char *expected_value)
+ {
+-	write(pipe_in[1], "p ", 2);
+-	write(pipe_in[1], expression, strlen(expression));
++	int ret;
++
++	ret = write(pipe_in[1], "p ", 2);
++	check("write(pipe_in)", ret, 2);
++	ret = write(pipe_in[1], expression, strlen(expression));
++	check("write(pipe_in)", ret, strlen(expression));
+ 	send_command("\n", 0);
+ 
+ 	check_output(fn, line, expression, "$");
+@@ -261,13 +268,16 @@ static int run_gdb(struct smokey_test *t, int argc, char *const argv[])
+ 		case 0:
+ 			/* redirect input */
+ 			close(0);
+-			dup(pipe_in[0]);
++			err = dup(pipe_in[0]);
++			check_no_error("dup(pipe_in)", err < 0 ? err : 0);
+ 
+ 			/* redirect output and stderr */
+ 			close(1);
+-			dup(pipe_out[1]);
++			err = dup(pipe_out[1]);
++			check_no_error("dup(pipe_out)", err < 0 ? err : 0);
+ 			close(2);
+-			dup(1);
++			err = dup(1);
++			check_no_error("dup(1)", err < 0 ? err : 0);
+ 
+ 			snprintf(run_param, sizeof(run_param), "--run=%d",
+ 				 t->__reserved.id);
 -- 
-Siemens AG, Corporate Technology, CT RDA IOT SES-DE
-Corporate Competence Center Embedded Linux
+2.16.4
+
 
