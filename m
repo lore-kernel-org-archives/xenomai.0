@@ -1,15 +1,16 @@
-From: "Proctor, Frederick M. (Fed)" <frederick.proctor@nist.gov>
-Subject: RE: IPIPE patch causes hang during initrd boot; Ubuntu 18 desktop
+Subject: Re: IPIPE patch causes hang during initrd boot; Ubuntu 18 desktop
  system
-Date: Wed, 12 Jun 2019 12:37:10 +0000
-Message-ID: <SN6PR09MB3069402961C0EE909D4D891480EC0@SN6PR09MB3069.namprd09.prod.outlook.com>
 References: <SN6PR09MB3069382F832609A66E69622A80100@SN6PR09MB3069.namprd09.prod.outlook.com>
  <4b6996dc-e425-cdfd-b95e-48c2aaa100d6@web.de>
-In-Reply-To: <4b6996dc-e425-cdfd-b95e-48c2aaa100d6@web.de>
-Content-Language: en-US
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+ <SN6PR09MB3069402961C0EE909D4D891480EC0@SN6PR09MB3069.namprd09.prod.outlook.com>
+From: Jan Kiszka <jan.kiszka@siemens.com>
+Message-ID: <1c7d17c8-f018-cbc9-3740-1a2ad0ad49d3@siemens.com>
+Date: Wed, 12 Jun 2019 15:05:15 +0200
 MIME-Version: 1.0
+In-Reply-To: <SN6PR09MB3069402961C0EE909D4D891480EC0@SN6PR09MB3069.namprd09.prod.outlook.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -18,84 +19,56 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jan Kiszka <jan.kiszka@web.de>, "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: "Proctor, Frederick M. (Fed)" <frederick.proctor@nist.gov>, "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-PiBPbiAwNy4wNi4xOSAxNTowMiwgUHJvY3RvciwgRnJlZGVyaWNrIE0uIChGZWQpIHZpYSBYZW5v
-bWFpIHdyb3RlOg0KPiA+IEkgYW0gaW5zdGFsbGluZyBYZW5vbWFpICsgQ29iYWx0IHdpdGggdGhl
-IElQSVBFIHBhdGNoIG9uIGEgVWJ1bnR1DQo+ID4gMTgtYmFzZWQgeDg2LzY0IGRlc2t0b3Agc3lz
-dGVtLiBJIGhhdmUgdGhlc2UgdmVyc2lvbnM6DQo+ID4NCj4gPiBMaW51eCBrZXJuZWwgNC4xNC43
-MSBQUkVFTVBUX1JUIHBhdGNoIDQuMTQuNzEtcnQ0NCBJUElQRSA0LjE0LjcxDQo+IA0KPiBMYXRl
-c3Qgc3RhYmxlIEktcGlwZSB2ZXJzaW9uIGlzIGlwaXBlLWNvcmUtNC4xNC4xMTEteDg2LTMuDQo+
-IA0KDQpJIHdhcyB1c2luZyA0LjE0LjcxIHNpbmNlIGl0IGhhcyBwYXRjaGVzIGZvciBib3RoIElQ
-SVBFIGFuZCBQUkVFTVBUX1JULiBJIGhhZCB1c2VkIDQuMTQuMTExIGFsc28sIGJ1dCBoYWQgdGhl
-IHNhbWUga2VybmVsIGhhbmcgcHJvYmxlbSBhdCBib290IHRpbWUuIA0KDQo+ID4NCj4gPiBJIGhh
-dmUgY29tcGlsZWQgdGhlIGtlcm5lbCB0aHJlZSBkaWZmZXJlbnQgd2F5czogdGhlIHN0b2NrDQo+
-ID4gY29uZmlndXJhdGlvbiwgd2l0aCB0aGUgUFJFRU1QVF9SVCBwYXRjaCwgYW5kIHdpdGggdGhl
-IElQSVBFIHBhdGNoIChubw0KPiA+IFBSRUVNUFRfUlQpLiBJIGhhdmUgY29uZmlndXJlZCBvdXQg
-dGhlIEFDUEkgcHJvY2Vzc29yLCBDUFVfRlJFUSwgYW5kDQo+ID4gQ1BVX0lETEUgb3B0aW9ucyBp
-biBhbGwgY2FzZXMuIFRoZSBmaXJzdCB0d28gYm9vdCBmaW5lIChzdG9jayBrZXJuZWwsDQo+ID4g
-UFJFRU1QVF9SVCkuIFRoZSBJUElQRS1wYXRjaGVkIGtlcm5lbCBoYW5ncyBkdXJpbmcgdGhlIGlu
-aXRyZCBsb2FkaW5nDQo+ID4gcGhhc2UuDQo+ID4NCj4gPiBJJ3ZlIHRhaWxvcmVkIHRoZSBrZXJu
-ZWwgY29uZmlndXJhdGlvbiBzb21ld2hhdCBiYXNlZCBvbiB0aGUgaGFyZHdhcmUNCj4gPiBJIGhh
-dmUsIGJ1dCBub3RoaW5nIGhhcyB3b3JrZWQgdG8gZ2V0IGEgYm9vdGluZyBJUElQRSBrZXJuZWwu
-DQo+ID4NCj4gPiBEb2VzIGFueW9uZSBoYXZlIGd1aWRhbmNlIG9uIHNldHRpbmcgdXAgdGhlIElQ
-SVBFIHBhdGNoIG9uIGFuIHg4Ni82NA0KPiA+IGtlcm5lbCBvbiBhIGRlc2t0b3AgVWJ1bnR1IDE4
-IG1hY2hpbmU/IEkgYW0gcGxhbm5pbmcgb24gY29udGludWluZyB0bw0KPiA+IHRyaW0gZG93biB0
-aGUga2VybmVsIGNvbmZpZyBvcHRpb25zLCBidXQgYmVmb3JlIEkgZG8gdGhpcywgSSB3YW50IHRv
-DQo+ID4gYXNrIHRoaXMgZ3JvdXAgaWYgYW55b25lIGhhcyBoYWQgYSBzaW1pbGFyIHByb2JsZW0u
-DQo+ID4NCj4gDQo+IERvZXMgeW91cyBzeXN0ZW0gc3RhcnQgdG8gYm9vdCBhZ2FpbiB3aGVuIHRo
-ZSBJLXBpcGUga2VybmVsIGlzIGJ1aWx0IHdpdGhvdXQNCj4gQ09ORklHX0lQSVBFIGFuZCBDT05G
-SUdfWEVOT01BST8gSWYgbm8sIGNvbXBhcmUgdGhlIGNvbmZpZyB0byBhDQo+IHdvcmtpbmcgb25l
-LCBzdGVwLXdpc2UgYWxpZ25pbmcgdG8gaXQuDQo+IA0KPiBKYW4NCg0KWWVzIGl0IGRvZXMgLSB3
-aXRoIHRoZSBrZXJuZWwgcGF0Y2hlZCB3aXRoIElQSVBFIGFuZCBYZW5vbWFpLCBidXQgd2l0aCBJ
-UElQRSBhbmQgWGVub21haSAqbm90IHNlbGVjdGVkKiBpbiB0aGUga2VybmVsIGNvbmZpZywgdGhl
-IGtlcm5lbCBib290cyBmaW5lLiBXaXRoIElQSVBFIGFuZCBYZW5vbWFpICpzZWxlY3RlZCogaW4g
-YSBzdWJzZXF1ZW50IGtlcm5lbCBjb25maWcsIHRoYXQga2VybmVsIGhhbmdzLiBIZXJlJ3MgdGhl
-IGRpZmYgb24gdGhlIGNvbmZpZyBmaWxlczogDQoNCjU2YzU2DQo8IENPTkZJR19MT0NBTFZFUlNJ
-T049Ii1ub2lwaXBlIg0KLS0tDQo+IENPTkZJR19MT0NBTFZFUlNJT049Ii14ZW5vIg0KMTE4ZDEx
-Nw0KPCAjIENPTkZJR19OT19IWl9GVUxMIGlzIG5vdCBzZXQNCjEyNmQxMjQNCjwgIyBDT05GSUdf
-VklSVF9DUFVfQUNDT1VOVElOR19HRU4gaXMgbm90IHNldA0KMjcyZDI2OQ0KPCBDT05GSUdfS1BS
-T0JFU19PTl9GVFJBQ0U9eQ0KMzIxZDMxNw0KPCBDT05GSUdfSEFWRV9DT05URVhUX1RSQUNLSU5H
-PXkNCjQ1N2E0NTQsNTUwDQo+IENPTkZJR19YRU5PTUFJPXkNCj4gQ09ORklHX1hFTk9fQVJDSF9G
-UFU9eQ0KPiBDT05GSUdfWEVOT19BUkNIX1NZUzMyNjQ9eQ0KPiANCj4gIw0KPiAjIENvcmUgZmVh
-dHVyZXMNCj4gIw0KPiAjIENPTkZJR19YRU5PX09QVF9TQ0hFRF9DTEFTU0VTIGlzIG5vdCBzZXQN
-Cj4gQ09ORklHX1hFTk9fT1BUX1NUQVRTPXkNCj4gIyBDT05GSUdfWEVOT19PUFRfU0hJUlEgaXMg
-bm90IHNldA0KPiBDT05GSUdfWEVOT19PUFRfUlJfUVVBTlRVTT0xMDAwDQo+IENPTkZJR19YRU5P
-X09QVF9BVVRPVFVORT15DQo+ICMgQ09ORklHX1hFTk9fT1BUX1NDQUxBQkxFX1NDSEVEIGlzIG5v
-dCBzZXQNCj4gIyBDT05GSUdfWEVOT19PUFRfVElNRVJfTElTVCBpcyBub3Qgc2V0DQo+IENPTkZJ
-R19YRU5PX09QVF9USU1FUl9SQlRSRUU9eQ0KPiBDT05GSUdfWEVOT19PUFRfVkZJTEU9eQ0KPiAN
-Cj4gIw0KPiAjIFNpemVzIGFuZCBzdGF0aWMgbGltaXRzDQo+ICMNCj4gQ09ORklHX1hFTk9fT1BU
-X1JFR0lTVFJZX05SU0xPVFM9NTEyDQo+IENPTkZJR19YRU5PX09QVF9TWVNfSEVBUFNaPTQwOTYN
-Cj4gQ09ORklHX1hFTk9fT1BUX1BSSVZBVEVfSEVBUFNaPTI1Ng0KPiBDT05GSUdfWEVOT19PUFRf
-U0hBUkVEX0hFQVBTWj0yNTYNCj4gQ09ORklHX1hFTk9fT1BUX05SVElNRVJTPTI1Ng0KPiANCj4g
-Iw0KPiAjIExhdGVuY3kgc2V0dGluZ3MNCj4gIw0KPiBDT05GSUdfWEVOT19PUFRfVElNSU5HX1ND
-SEVETEFUPTANCj4gQ09ORklHX1hFTk9fT1BUX1RJTUlOR19LU0NIRURMQVQ9MA0KPiBDT05GSUdf
-WEVOT19PUFRfVElNSU5HX0lSUUxBVD0wDQo+ICMgQ09ORklHX1hFTk9fT1BUX0RFQlVHIGlzIG5v
-dCBzZXQNCj4gDQo+ICMNCj4gIyBEcml2ZXJzDQo+ICMNCj4gQ09ORklHX1hFTk9fT1BUX1JURE1f
-Q09NUEFUX0RFVk5PREU9eQ0KPiBDT05GSUdfWEVOT19EUklWRVJTX0FVVE9UVU5FPXkNCj4gDQo+
-ICMNCj4gIyBTZXJpYWwgZHJpdmVycw0KPiAjDQo+ICMgQ09ORklHX1hFTk9fRFJJVkVSU18xNjU1
-MEEgaXMgbm90IHNldA0KPiANCj4gIw0KPiAjIFRlc3RpbmcgZHJpdmVycw0KPiAjDQo+IENPTkZJ
-R19YRU5PX0RSSVZFUlNfVElNRVJCRU5DSD15DQo+IENPTkZJR19YRU5PX0RSSVZFUlNfU1dJVENI
-VEVTVD15DQo+ICMgQ09ORklHX1hFTk9fRFJJVkVSU19SVERNVEVTVCBpcyBub3Qgc2V0DQo+IA0K
-PiAjDQo+ICMgQ0FOIGRyaXZlcnMNCj4gIw0KPiAjIENPTkZJR19YRU5PX0RSSVZFUlNfQ0FOIGlz
-IG5vdCBzZXQNCj4gDQo+ICMNCj4gIyBSVG5ldA0KPiAjDQo+ICMgQ09ORklHX1hFTk9fRFJJVkVS
-U19ORVQgaXMgbm90IHNldA0KPiANCj4gIw0KPiAjIEFOQUxPR1kgZHJpdmVycw0KPiAjDQo+ICMg
-Q09ORklHX1hFTk9fRFJJVkVSU19BTkFMT0dZIGlzIG5vdCBzZXQNCj4gDQo+ICMNCj4gIyBSZWFs
-LXRpbWUgSVBDIGRyaXZlcnMNCj4gIw0KPiAjIENPTkZJR19YRU5PX0RSSVZFUlNfUlRJUEMgaXMg
-bm90IHNldA0KPiANCj4gIw0KPiAjIFVERCBzdXBwb3J0DQo+ICMNCj4gIyBDT05GSUdfWEVOT19E
-UklWRVJTX1VERCBpcyBub3Qgc2V0DQo+IA0KPiAjDQo+ICMgUmVhbC10aW1lIEdQSU8gZHJpdmVy
-cw0KPiAjDQo+ICMgQ09ORklHX1hFTk9fRFJJVkVSU19HUElPIGlzIG5vdCBzZXQNCj4gDQo+ICMN
-Cj4gIyBSZWFsLXRpbWUgU1BJIG1hc3RlciBkcml2ZXJzDQo+ICMNCj4gDQo+ICMNCj4gIyBXQVJO
-SU5HISBQYWdlIG1pZ3JhdGlvbiAoQ09ORklHX01JR1JBVElPTikgbWF5IGluY3JlYXNlDQo+ICMN
-Cj4gDQo+ICMNCj4gIyBsYXRlbmN5Lg0KPiAjDQo+IENPTkZJR19YRU5PX1ZFUlNJT05fTUFKT1I9
-Mw0KPiBDT05GSUdfWEVOT19WRVJTSU9OX01JTk9SPTANCj4gQ09ORklHX1hFTk9fUkVWSVNJT05f
-TEVWRUw9OA0KPiBDT05GSUdfWEVOT19WRVJTSU9OX1NUUklORz0iMy4wLjgiDQo1MTljNjEyLDYx
-Nw0KPCAjIENPTkZJR19JUElQRSBpcyBub3Qgc2V0DQotLS0NCj4gQ09ORklHX0lQSVBFPXkNCj4g
-Q09ORklHX0lQSVBFX0NPUkU9eQ0KPiBDT05GSUdfSVBJUEVfV0FOVF9QVEVfUElOTklORz15DQo+
-IENPTkZJR19JUElQRV9DT1JFX0FQSVJFVj0yDQo+IENPTkZJR19JUElQRV9XQU5UX0FQSVJFVl8y
-PXkNCj4gQ09ORklHX0lQSVBFX1RBUkdFVF9BUElSRVY9Mg0KNjg5ZDc4Ng0KPCAjIENPTkZJR19M
-SVZFUEFUQ0ggaXMgbm90IHNldA0KODY5N2E4Nzk1DQo+ICMgQ09ORklHX0lQSVBFX0RFQlVHIGlz
-IG5vdCBzZXQNCjg4MzMsODgzNGQ4OTMwDQo8IENPTkZJR19EWU5BTUlDX0ZUUkFDRT15DQo8IENP
-TkZJR19EWU5BTUlDX0ZUUkFDRV9XSVRIX1JFR1M9eQ0KODgzNmQ4OTMxDQo8IENPTkZJR19GVFJB
-Q0VfTUNPVU5UX1JFQ09SRD15DQo=
+On 12.06.19 14:37, Proctor, Frederick M. (Fed) via Xenomai wrote:
+>> On 07.06.19 15:02, Proctor, Frederick M. (Fed) via Xenomai wrote:
+>>> I am installing Xenomai + Cobalt with the IPIPE patch on a Ubuntu
+>>> 18-based x86/64 desktop system. I have these versions:
+>>>
+>>> Linux kernel 4.14.71 PREEMPT_RT patch 4.14.71-rt44 IPIPE 4.14.71
+>>
+>> Latest stable I-pipe version is ipipe-core-4.14.111-x86-3.
+>>
+> 
+> I was using 4.14.71 since it has patches for both IPIPE and PREEMPT_RT. I had used 4.14.111 also, but had the same kernel hang problem at boot time.
+> 
+
+OK.
+
+>>>
+>>> I have compiled the kernel three different ways: the stock
+>>> configuration, with the PREEMPT_RT patch, and with the IPIPE patch (no
+>>> PREEMPT_RT). I have configured out the ACPI processor, CPU_FREQ, and
+>>> CPU_IDLE options in all cases. The first two boot fine (stock kernel,
+>>> PREEMPT_RT). The IPIPE-patched kernel hangs during the initrd loading
+>>> phase.
+>>>
+>>> I've tailored the kernel configuration somewhat based on the hardware
+>>> I have, but nothing has worked to get a booting IPIPE kernel.
+>>>
+>>> Does anyone have guidance on setting up the IPIPE patch on an x86/64
+>>> kernel on a desktop Ubuntu 18 machine? I am planning on continuing to
+>>> trim down the kernel config options, but before I do this, I want to
+>>> ask this group if anyone has had a similar problem.
+>>>
+>>
+>> Does yous system start to boot again when the I-pipe kernel is built without
+>> CONFIG_IPIPE and CONFIG_XENOMAI? If no, compare the config to a
+>> working one, step-wise aligning to it.
+>>
+>> Jan
+> 
+> Yes it does - with the kernel patched with IPIPE and Xenomai, but with IPIPE and Xenomai *not selected* in the kernel config, the kernel boots fine. With IPIPE and Xenomai *selected* in a subsequent kernel config, that kernel hangs. Here's the diff on the config files:
+> 
+
+Can you share the full config? Maybe something subtly incompatible with I-pipe 
+is enabled, maybe I can reproduce in KVM (ie. with a chance to debug).
+
+Jan
+
+-- 
+-- 
+Siemens AG, Corporate Technology, CT RDA IOT SES-DE
+Corporate Competence Center Embedded Linux
 
