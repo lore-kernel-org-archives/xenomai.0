@@ -1,7 +1,7 @@
 From: Jan Kiszka <jan.kiszka@siemens.com>
-Subject: [PATCH 2/5] testsuite/smokey/gdb: Cleanup check helpers
-Date: Wed, 12 Jun 2019 17:31:15 +0200
-Message-Id: <930e7852f249badbd1e4bc96be9222cfe8e075db.1560353478.git.jan.kiszka@siemens.com>
+Subject: [PATCH 4/5] cobalt/posix/clock: Remove unneeded local variable
+Date: Wed, 12 Jun 2019 17:31:17 +0200
+Message-Id: <3a47c8403f0dd5f52e0f1370236abf91ded9449f.1560353478.git.jan.kiszka@siemens.com>
 In-Reply-To: <cover.1560353478.git.jan.kiszka@siemens.com>
 References: <cover.1560353478.git.jan.kiszka@siemens.com>
 In-Reply-To: <cover.1560353478.git.jan.kiszka@siemens.com>
@@ -18,67 +18,32 @@ To: xenomai@xenomai.org
 
 From: Jan Kiszka <jan.kiszka@siemens.com>
 
-check_inner() is only called with exp_flag = 1.
-
 Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
 ---
- testsuite/smokey/gdb/gdb.c | 32 ++++++++++++--------------------
- 1 file changed, 12 insertions(+), 20 deletions(-)
+ kernel/cobalt/posix/clock.c | 3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
 
-diff --git a/testsuite/smokey/gdb/gdb.c b/testsuite/smokey/gdb/gdb.c
-index 7a20314e0b..2fad3da19a 100644
---- a/testsuite/smokey/gdb/gdb.c
-+++ b/testsuite/smokey/gdb/gdb.c
-@@ -25,37 +25,29 @@
- static void send_command(const char *string, int wait_for_prompt);
+diff --git a/kernel/cobalt/posix/clock.c b/kernel/cobalt/posix/clock.c
+index 6ba389efd0..561358e749 100644
+--- a/kernel/cobalt/posix/clock.c
++++ b/kernel/cobalt/posix/clock.c
+@@ -276,7 +276,6 @@ int __cobalt_clock_nanosleep(clockid_t clock_id, int flags,
+ 	struct restart_block *restart;
+ 	struct xnthread *cur;
+ 	xnsticks_t timeout, rem;
+-	int ret = 0;
+ 	spl_t s;
  
- static void check_inner(const char *fn, int line, const char *msg,
--			int status, int expected, int exp_flag)
-+			int status, int expected)
- {
--	if (exp_flag) {
--		if (status == expected)
--			return;
--	}
--	else if (status != -1)
--			return;
-+	if (status == expected)
-+		return;
+ 	trace_cobalt_clock_nanosleep(clock_id, flags, rqt);
+@@ -347,7 +346,7 @@ int __cobalt_clock_nanosleep(clockid_t clock_id, int flags,
  
- 	rt_print_flush_buffers();
--	if (exp_flag)
--		fprintf(stderr, "FAILURE %s:%d: %s returned %d instead of %d - %s\n",
--				fn, line, msg, status, expected, strerror(status));
--	else
--		fprintf(stderr, "FAILURE %s:%d: %s returned %d [errno=%d] - %s\n",
--				fn, line, msg, status, expected, strerror(expected));
-+	fprintf(stderr, "FAILURE %s:%d: %s returned %d instead of %d - %s\n",
-+		fn, line, msg, status, expected, strerror(status));
- 	send_command("q\n", 0);
- 	exit(EXIT_FAILURE);
+ 	xnlock_put_irqrestore(&nklock, s);
+ 
+-	return ret;
++	return 0;
  }
  
- #define check(msg, status, expected) ({					\
--int __status = status;						\
--check_inner(__FUNCTION__, __LINE__, msg, __status, expected, 1);	\
--__status;							\
-+	int __status = status;						\
-+	check_inner(__FUNCTION__, __LINE__, msg, __status, expected);	\
-+	__status;							\
- })
- 
- #define check_no_error(msg, status) ({					\
--int __status = status;						\
--check_inner(__FUNCTION__, __LINE__, msg,			\
--__status < 0 ? errno : __status, 0, 1);			\
--__status;							\
-+	int __status = status;						\
-+	check_inner(__func__, __LINE__, msg,				\
-+		    __status < 0 ? errno : __status, 0);		\
-+	__status;							\
- })
- 
- smokey_test_plugin(gdb,
+ COBALT_SYSCALL(clock_nanosleep, primary,
 -- 
 2.16.4
 
