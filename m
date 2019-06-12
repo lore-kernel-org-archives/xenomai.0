@@ -1,7 +1,7 @@
 From: Jan Kiszka <jan.kiszka@siemens.com>
-Subject: [PATCH 4/5] cobalt/posix/clock: Remove unneeded local variable
-Date: Wed, 12 Jun 2019 17:31:17 +0200
-Message-Id: <3a47c8403f0dd5f52e0f1370236abf91ded9449f.1560353478.git.jan.kiszka@siemens.com>
+Subject: [PATCH 3/5] cobalt/thread: Clear XNSYSRST when migrating to Linux
+Date: Wed, 12 Jun 2019 17:31:16 +0200
+Message-Id: <a20d958d5f11e56dc3592a341e171d7f3d13e313.1560353478.git.jan.kiszka@siemens.com>
 In-Reply-To: <cover.1560353478.git.jan.kiszka@siemens.com>
 References: <cover.1560353478.git.jan.kiszka@siemens.com>
 In-Reply-To: <cover.1560353478.git.jan.kiszka@siemens.com>
@@ -18,32 +18,34 @@ To: xenomai@xenomai.org
 
 From: Jan Kiszka <jan.kiszka@siemens.com>
 
+This fixes the issue of spurious syscall-restart detection in
+clock_nanosleep and select when a signal was delivered. In that case,
+Linux replaces the ESYSRESTART with EINTR and does not perform any
+restart attempt. As a signal delivery implies migration, clearing
+XNSYSRST in the migration path resolves the issue.
+
+Fixes: 36132cdb21cd ("cobalt/kernel: Allow to restart clock_nanosleep and select after signal processing")
 Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
 ---
- kernel/cobalt/posix/clock.c | 3 +--
- 1 file changed, 1 insertion(+), 2 deletions(-)
+ kernel/cobalt/thread.c | 5 +++++
+ 1 file changed, 5 insertions(+)
 
-diff --git a/kernel/cobalt/posix/clock.c b/kernel/cobalt/posix/clock.c
-index 6ba389efd0..561358e749 100644
---- a/kernel/cobalt/posix/clock.c
-+++ b/kernel/cobalt/posix/clock.c
-@@ -276,7 +276,6 @@ int __cobalt_clock_nanosleep(clockid_t clock_id, int flags,
- 	struct restart_block *restart;
- 	struct xnthread *cur;
- 	xnsticks_t timeout, rem;
--	int ret = 0;
- 	spl_t s;
+diff --git a/kernel/cobalt/thread.c b/kernel/cobalt/thread.c
+index eacdd9a089..666b4d4ca0 100644
+--- a/kernel/cobalt/thread.c
++++ b/kernel/cobalt/thread.c
+@@ -2171,6 +2171,11 @@ void xnthread_relax(int notify, int reason)
+ 		set_cpus_allowed_ptr(p, cpumask_of(cpu));
+ 	}
+ #endif
++	/*
++	 * After migration there will be no syscall restart (rather a signal
++	 * delivery).
++	 */
++	xnthread_clear_localinfo(thread, XNSYSRST);
  
- 	trace_cobalt_clock_nanosleep(clock_id, flags, rqt);
-@@ -347,7 +346,7 @@ int __cobalt_clock_nanosleep(clockid_t clock_id, int flags,
+ 	ipipe_clear_thread_flag(TIP_MAYDAY);
  
- 	xnlock_put_irqrestore(&nklock, s);
- 
--	return ret;
-+	return 0;
- }
- 
- COBALT_SYSCALL(clock_nanosleep, primary,
 -- 
 2.16.4
 
