@@ -1,7 +1,8 @@
 From: Jan Kiszka <jan.kiszka@web.de>
-Subject: [PATCH] rtnet: Remove rtskbs also from mapwait list on destruction
-Message-ID: <2dbbd04d-3332-5f77-9736-c21d226a64b9@web.de>
-Date: Wed, 12 Jun 2019 22:48:38 +0200
+Subject: [PATCH] rtnet: Fix leak on failing rtdev_map_rtskb in
+ rtskb_pool_extend
+Message-ID: <fb545582-df5a-f1d6-1ddb-51ad840fc32a@web.de>
+Date: Wed, 12 Jun 2019 22:49:18 +0200
 MIME-Version: 1.0
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
@@ -18,47 +19,31 @@ To: Xenomai <xenomai@xenomai.org>
 
 From: Jan Kiszka <jan.kiszka@siemens.com>
 
-An rtsbk that successfully went through rtdev_map_rtskb is either on
-rtskb_mapped_list or rtskb_mapwait_list. On rtdev_unmap_rtskb, we
-therefore have to remove the rtskb unconditionally from a list,
-otherwise we corrupt its state.
-
-This bug was easily triggerable via running smokey tests against the
-loopback device.
+We need to free the previously allocated rtskb to the kmem-cache if
+mapping fails. Otherwise, that resource leaks.
 
 Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
 =2D--
- kernel/drivers/net/stack/rtdev.c | 13 ++++++-------
- 1 file changed, 6 insertions(+), 7 deletions(-)
+ kernel/drivers/net/stack/rtskb.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
-diff --git a/kernel/drivers/net/stack/rtdev.c b/kernel/drivers/net/stack/r=
-tdev.c
-index b2d0687daf..93a8e212bf 100644
-=2D-- a/kernel/drivers/net/stack/rtdev.c
-+++ b/kernel/drivers/net/stack/rtdev.c
-@@ -510,17 +510,16 @@ void rtdev_unmap_rtskb(struct rtskb *skb)
-     struct rtnet_device *rtdev;
-     int i;
+diff --git a/kernel/drivers/net/stack/rtskb.c b/kernel/drivers/net/stack/r=
+tskb.c
+index a19ef9f2dc..50611fba04 100644
+=2D-- a/kernel/drivers/net/stack/rtskb.c
++++ b/kernel/drivers/net/stack/rtskb.c
+@@ -397,8 +397,10 @@ unsigned int rtskb_pool_extend(struct rtskb_pool *poo=
+l,
+ 	skb->buf_end =3D skb->buf_start + SKB_DATA_ALIGN(RTSKB_SIZE) - 1;
+ #endif
 
--    if (skb->buf_dma_addr =3D=3D RTSKB_UNMAPPED)
--	return;
--
-     mutex_lock(&rtnet_devices_nrt_lock);
+-	if (rtdev_map_rtskb(skb) < 0)
++	if (rtdev_map_rtskb(skb) < 0) {
++	    kmem_cache_free(rtskb_slab_pool, skb);
+ 	    break;
++	}
 
-     list_del(&skb->entry);
-
--    for (i =3D 0; i < MAX_RT_DEVICES; i++) {
--	rtdev =3D rtnet_devices[i];
--	if (rtdev && rtdev->unmap_rtskb) {
--	    rtdev->unmap_rtskb(rtdev, skb);
-+    if (skb->buf_dma_addr !=3D RTSKB_UNMAPPED) {
-+	for (i =3D 0; i < MAX_RT_DEVICES; i++) {
-+	    rtdev =3D rtnet_devices[i];
-+	    if (rtdev && rtdev->unmap_rtskb) {
-+		rtdev->unmap_rtskb(rtdev, skb);
-+	    }
- 	}
-     }
+ 	rtskb_queue_tail(&pool->queue, skb);
 
 =2D-
 2.16.4
