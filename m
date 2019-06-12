@@ -1,16 +1,17 @@
-Subject: Re: IPIPE patch causes hang during initrd boot; Ubuntu 18 desktop
+From: "Proctor, Frederick M. (Fed)" <frederick.proctor@nist.gov>
+Subject: RE: IPIPE patch causes hang during initrd boot; Ubuntu 18 desktop
  system
+Date: Wed, 12 Jun 2019 13:55:42 +0000
+Message-ID: <SN6PR09MB3069F2FFD8F0CD778404F4FF80EC0@SN6PR09MB3069.namprd09.prod.outlook.com>
 References: <SN6PR09MB3069382F832609A66E69622A80100@SN6PR09MB3069.namprd09.prod.outlook.com>
  <4b6996dc-e425-cdfd-b95e-48c2aaa100d6@web.de>
  <SN6PR09MB3069402961C0EE909D4D891480EC0@SN6PR09MB3069.namprd09.prod.outlook.com>
-From: Philippe Gerum <rpm@xenomai.org>
-Message-ID: <3157ee8b-bf42-1e60-c5be-1e0dcc79ac7d@xenomai.org>
-Date: Wed, 12 Jun 2019 15:19:22 +0200
-MIME-Version: 1.0
-In-Reply-To: <SN6PR09MB3069402961C0EE909D4D891480EC0@SN6PR09MB3069.namprd09.prod.outlook.com>
-Content-Type: text/plain; charset=utf-8
+ <3157ee8b-bf42-1e60-c5be-1e0dcc79ac7d@xenomai.org>
+In-Reply-To: <3157ee8b-bf42-1e60-c5be-1e0dcc79ac7d@xenomai.org>
 Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+MIME-Version: 1.0
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -19,56 +20,24 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "Proctor, Frederick M. (Fed)" <frederick.proctor@nist.gov>, Jan Kiszka <jan.kiszka@web.de>, "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Philippe Gerum <rpm@xenomai.org>, "xenomai@xenomai.org" <xenomai@xenomai.org>
+Cc: "jan.kiszka@web.de" <jan.kiszka@web.de>
 
-On 6/12/19 2:37 PM, Proctor, Frederick M. (Fed) via Xenomai wrote:
->> On 07.06.19 15:02, Proctor, Frederick M. (Fed) via Xenomai wrote:
->>> I am installing Xenomai + Cobalt with the IPIPE patch on a Ubuntu
->>> 18-based x86/64 desktop system. I have these versions:
->>>
->>> Linux kernel 4.14.71 PREEMPT_RT patch 4.14.71-rt44 IPIPE 4.14.71
->>
->> Latest stable I-pipe version is ipipe-core-4.14.111-x86-3.
->>
-> 
-> I was using 4.14.71 since it has patches for both IPIPE and PREEMPT_RT. I had used 4.14.111 also, but had the same kernel hang problem at boot time. 
-> 
->>>
->>> I have compiled the kernel three different ways: the stock
->>> configuration, with the PREEMPT_RT patch, and with the IPIPE patch (no
->>> PREEMPT_RT). I have configured out the ACPI processor, CPU_FREQ, and
->>> CPU_IDLE options in all cases. The first two boot fine (stock kernel,
->>> PREEMPT_RT). The IPIPE-patched kernel hangs during the initrd loading
->>> phase.
->>>
->>> I've tailored the kernel configuration somewhat based on the hardware
->>> I have, but nothing has worked to get a booting IPIPE kernel.
->>>
->>> Does anyone have guidance on setting up the IPIPE patch on an x86/64
->>> kernel on a desktop Ubuntu 18 machine? I am planning on continuing to
->>> trim down the kernel config options, but before I do this, I want to
->>> ask this group if anyone has had a similar problem.
->>>
->>
->> Does yous system start to boot again when the I-pipe kernel is built without
->> CONFIG_IPIPE and CONFIG_XENOMAI? If no, compare the config to a
->> working one, step-wise aligning to it.
->>
->> Jan
-> 
-> Yes it does - with the kernel patched with IPIPE and Xenomai, but with IPIPE and Xenomai *not selected* in the kernel config, the kernel boots fine. With IPIPE and Xenomai *selected* in a subsequent kernel config, that kernel hangs. Here's the diff on the config files: 
-
-This may be a timer issue. You could try booting with
-xenomai.state=stopped on the kernel command line. If that boots as I
-suspect, then you can try issuing the following command:
-
-$ corectl --start
-
-If that starts the core properly and no lockup, then this may have to do
-with the timer grabbing sequence proper. If that hangs, then this may be
-a general issue with the timing device when handling ticks for real-time
-delivery.
-
--- 
-Philippe.
+PiBGcm9tOiBQaGlsaXBwZSBHZXJ1bSA8cnBtQHhlbm9tYWkub3JnPg0KPiBTZW50OiBXZWRuZXNk
+YXksIEp1bmUgMTIsIDIwMTkgOToxOSBBTQ0KPiBUbzogUHJvY3RvciwgRnJlZGVyaWNrIE0uIChG
+ZWQpIDxmcmVkZXJpY2sucHJvY3RvckBuaXN0Lmdvdj47IEphbiBLaXN6a2ENCj4gPGphbi5raXN6
+a2FAd2ViLmRlPjsgeGVub21haUB4ZW5vbWFpLm9yZw0KPiBTdWJqZWN0OiBSZTogSVBJUEUgcGF0
+Y2ggY2F1c2VzIGhhbmcgZHVyaW5nIGluaXRyZCBib290OyBVYnVudHUgMTggZGVza3RvcA0KPiBz
+eXN0ZW0NCj4gDQo+IA0KPiBUaGlzIG1heSBiZSBhIHRpbWVyIGlzc3VlLiBZb3UgY291bGQgdHJ5
+IGJvb3Rpbmcgd2l0aCB4ZW5vbWFpLnN0YXRlPXN0b3BwZWQNCj4gb24gdGhlIGtlcm5lbCBjb21t
+YW5kIGxpbmUuIElmIHRoYXQgYm9vdHMgYXMgSSBzdXNwZWN0LCB0aGVuIHlvdSBjYW4gdHJ5DQo+
+IGlzc3VpbmcgdGhlIGZvbGxvd2luZyBjb21tYW5kOg0KPiANCj4gJCBjb3JlY3RsIC0tc3RhcnQN
+Cj4gDQoNCkkgZ2F2ZSB0aGUga2VybmVsIGNvbW1hbmQgbGluZSBvcHRpb24gInhlbm9tYWkuc3Rh
+dGU9c3RvcHBlZCIgYnV0IGhhZCB0aGUgc2FtZSBzeW1wdG9tLCBhIGhhbmcgaW1tZWRpYXRlbHkg
+b24gdGhlIGxvYWRpbmcgb2YgdGhlIGluaXRyZC4gDQoNCj4gSWYgdGhhdCBzdGFydHMgdGhlIGNv
+cmUgcHJvcGVybHkgYW5kIG5vIGxvY2t1cCwgdGhlbiB0aGlzIG1heSBoYXZlIHRvIGRvIHdpdGgN
+Cj4gdGhlIHRpbWVyIGdyYWJiaW5nIHNlcXVlbmNlIHByb3Blci4gSWYgdGhhdCBoYW5ncywgdGhl
+biB0aGlzIG1heSBiZSBhDQo+IGdlbmVyYWwgaXNzdWUgd2l0aCB0aGUgdGltaW5nIGRldmljZSB3
+aGVuIGhhbmRsaW5nIHRpY2tzIGZvciByZWFsLXRpbWUNCj4gZGVsaXZlcnkuDQo+IA0KPiAtLQ0K
+PiBQaGlsaXBwZS4NCg==
 
