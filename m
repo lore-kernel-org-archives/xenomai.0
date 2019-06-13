@@ -1,13 +1,19 @@
-Subject: Re: cobalts printf thread affects signalfd operation
-References: <VI1PR05MB59173D4829F3F8EBA9143AE7F6EF0@VI1PR05MB5917.eurprd05.prod.outlook.com>
-From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <4a11ca71-5b9c-0aba-8746-ec5097cedae4@siemens.com>
-Date: Thu, 13 Jun 2019 21:23:58 +0200
-MIME-Version: 1.0
-In-Reply-To: <VI1PR05MB59173D4829F3F8EBA9143AE7F6EF0@VI1PR05MB5917.eurprd05.prod.outlook.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
+From: "Proctor, Frederick M. (Fed)" <frederick.proctor@nist.gov>
+Subject: RE: IPIPE patch causes hang during initrd boot; Ubuntu 18 desktop
+ system
+Date: Thu, 13 Jun 2019 19:46:34 +0000
+Message-ID: <SN6PR09MB30695E354C750DBD944A0C3780EF0@SN6PR09MB3069.namprd09.prod.outlook.com>
+References: <SN6PR09MB3069382F832609A66E69622A80100@SN6PR09MB3069.namprd09.prod.outlook.com>
+ <4b6996dc-e425-cdfd-b95e-48c2aaa100d6@web.de>
+ <SN6PR09MB3069402961C0EE909D4D891480EC0@SN6PR09MB3069.namprd09.prod.outlook.com>
+ <1c7d17c8-f018-cbc9-3740-1a2ad0ad49d3@siemens.com>
+ <f679035f-0217-bc7e-ecdd-ab15edb2e4b3@siemens.com>
+ <13aa4e89-adf9-1bd1-5546-c185c9a1456e@siemens.com>
+In-Reply-To: <13aa4e89-adf9-1bd1-5546-c185c9a1456e@siemens.com>
 Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+MIME-Version: 1.0
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,51 +22,69 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Lange Norbert <norbert.lange@andritz.com>, "Xenomai (xenomai@xenomai.org)" <xenomai@xenomai.org>
+To: Jan Kiszka <jan.kiszka@siemens.com>, "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On 13.06.19 19:08, Lange Norbert via Xenomai wrote:
-> Hello,
-> 
-> I ran into a problem with the automatically spawned printf thread.
-> 
-> Short summary:
-> The kernel delivers signals by picking a thread that can accept a signal and does not mask the specific signal,
-> only if none is available then the signal will be queued for asynchronous delivery.
-> signalfd is asynchronous delivery, thus if one thread accepts signals then signalfd won't work as expected,
-> enter cobals printf thread.
-
-Good point...
-
-> 
-> Solutions would be:
-> 
-> - Mask all signals for this thread (is there any downside?)
-
-I don't see any, we do not use signals for the operation of the printer.
-
-> - Mask all signals on the main thread before calling xenomai_init. This is ugly, as that removes most methods of interacting with a hung startup.
-> - Somehow mask the thread for signals later (only ugly solutions?).
-> 
-> The first option would be a rather small patch:
-> 
-> @@ -642,7 +642,11 @@ static void spawn_printer_thread(void)
->   pthread_attr_t thattr;
-> 
->   pthread_attr_init(&thattr);
-> +sigset_t sset, oset;
-> +sigfillset(&sset)
-> +sigprocmask(SIG_BLOCK, &sset, &oset);
->   pthread_create(&printer_thread, &thattr, printer_loop, NULL);
-> +sigprocmask(SIG_SETMASK, &oset, NULL);
->   }
-> 
-
-Looks reasonable, please send a patch (then it can still make into next stable).
-
-Jan
-
--- 
--- 
-Siemens AG, Corporate Technology, CT RDA IOT SES-DE
-Corporate Competence Center Embedded Linux
+PiBGcm9tOiBKYW4gS2lzemthIDxqYW4ua2lzemthQHNpZW1lbnMuY29tPg0KPiBTZW50OiBUaHVy
+c2RheSwgSnVuZSAxMywgMjAxOSAzOjEyIFBNDQo+IFRvOiBQcm9jdG9yLCBGcmVkZXJpY2sgTS4g
+KEZlZCkgPGZyZWRlcmljay5wcm9jdG9yQG5pc3QuZ292PjsNCj4geGVub21haUB4ZW5vbWFpLm9y
+Zw0KPiBTdWJqZWN0OiBSZTogSVBJUEUgcGF0Y2ggY2F1c2VzIGhhbmcgZHVyaW5nIGluaXRyZCBi
+b290OyBVYnVudHUgMTggZGVza3RvcA0KPiBzeXN0ZW0NCj4gDQo+IE9uIDEzLjA2LjE5IDE4OjM2
+LCBKYW4gS2lzemthIHZpYSBYZW5vbWFpIHdyb3RlOg0KPiA+IE9uIDEyLjA2LjE5IDE1OjA1LCBK
+YW4gS2lzemthIHZpYSBYZW5vbWFpIHdyb3RlOg0KPiA+PiBPbiAxMi4wNi4xOSAxNDozNywgUHJv
+Y3RvciwgRnJlZGVyaWNrIE0uIChGZWQpIHZpYSBYZW5vbWFpIHdyb3RlOg0KPiA+Pj4+IE9uIDA3
+LjA2LjE5IDE1OjAyLCBQcm9jdG9yLCBGcmVkZXJpY2sgTS4gKEZlZCkgdmlhIFhlbm9tYWkgd3Jv
+dGU6DQo+ID4+Pj4+IEkgYW0gaW5zdGFsbGluZyBYZW5vbWFpICsgQ29iYWx0IHdpdGggdGhlIElQ
+SVBFIHBhdGNoIG9uIGEgVWJ1bnR1DQo+ID4+Pj4+IDE4LWJhc2VkIHg4Ni82NCBkZXNrdG9wIHN5
+c3RlbS4gSSBoYXZlIHRoZXNlIHZlcnNpb25zOg0KPiA+Pj4+Pg0KPiA+Pj4+PiBMaW51eCBrZXJu
+ZWwgNC4xNC43MSBQUkVFTVBUX1JUIHBhdGNoIDQuMTQuNzEtcnQ0NCBJUElQRSA0LjE0LjcxDQo+
+ID4+Pj4NCj4gPj4+PiBMYXRlc3Qgc3RhYmxlIEktcGlwZSB2ZXJzaW9uIGlzIGlwaXBlLWNvcmUt
+NC4xNC4xMTEteDg2LTMuDQo+ID4+Pj4NCj4gPj4+DQo+ID4+PiBJIHdhcyB1c2luZyA0LjE0Ljcx
+IHNpbmNlIGl0IGhhcyBwYXRjaGVzIGZvciBib3RoIElQSVBFIGFuZA0KPiA+Pj4gUFJFRU1QVF9S
+VC4gSSBoYWQgdXNlZCA0LjE0LjExMSBhbHNvLCBidXQgaGFkIHRoZSBzYW1lIGtlcm5lbCBoYW5n
+DQo+IHByb2JsZW0gYXQgYm9vdCB0aW1lLg0KPiA+Pj4NCj4gPj4NCj4gPj4gT0suDQo+ID4+DQo+
+ID4+Pj4+DQo+ID4+Pj4+IEkgaGF2ZSBjb21waWxlZCB0aGUga2VybmVsIHRocmVlIGRpZmZlcmVu
+dCB3YXlzOiB0aGUgc3RvY2sNCj4gPj4+Pj4gY29uZmlndXJhdGlvbiwgd2l0aCB0aGUgUFJFRU1Q
+VF9SVCBwYXRjaCwgYW5kIHdpdGggdGhlIElQSVBFIHBhdGNoDQo+ID4+Pj4+IChubyBQUkVFTVBU
+X1JUKS4gSSBoYXZlIGNvbmZpZ3VyZWQgb3V0IHRoZSBBQ1BJIHByb2Nlc3NvciwNCj4gPj4+Pj4g
+Q1BVX0ZSRVEsIGFuZCBDUFVfSURMRSBvcHRpb25zIGluIGFsbCBjYXNlcy4gVGhlIGZpcnN0IHR3
+byBib290DQo+ID4+Pj4+IGZpbmUgKHN0b2NrIGtlcm5lbCwgUFJFRU1QVF9SVCkuIFRoZSBJUElQ
+RS1wYXRjaGVkIGtlcm5lbCBoYW5ncw0KPiA+Pj4+PiBkdXJpbmcgdGhlIGluaXRyZCBsb2FkaW5n
+IHBoYXNlLg0KPiA+Pj4+Pg0KPiA+Pj4+PiBJJ3ZlIHRhaWxvcmVkIHRoZSBrZXJuZWwgY29uZmln
+dXJhdGlvbiBzb21ld2hhdCBiYXNlZCBvbiB0aGUNCj4gPj4+Pj4gaGFyZHdhcmUgSSBoYXZlLCBi
+dXQgbm90aGluZyBoYXMgd29ya2VkIHRvIGdldCBhIGJvb3RpbmcgSVBJUEUNCj4ga2VybmVsLg0K
+PiA+Pj4+Pg0KPiA+Pj4+PiBEb2VzIGFueW9uZSBoYXZlIGd1aWRhbmNlIG9uIHNldHRpbmcgdXAg
+dGhlIElQSVBFIHBhdGNoIG9uIGFuDQo+ID4+Pj4+IHg4Ni82NCBrZXJuZWwgb24gYSBkZXNrdG9w
+IFVidW50dSAxOCBtYWNoaW5lPyBJIGFtIHBsYW5uaW5nIG9uDQo+ID4+Pj4+IGNvbnRpbnVpbmcg
+dG8gdHJpbSBkb3duIHRoZSBrZXJuZWwgY29uZmlnIG9wdGlvbnMsIGJ1dCBiZWZvcmUgSSBkbw0K
+PiA+Pj4+PiB0aGlzLCBJIHdhbnQgdG8gYXNrIHRoaXMgZ3JvdXAgaWYgYW55b25lIGhhcyBoYWQg
+YSBzaW1pbGFyIHByb2JsZW0uDQo+ID4+Pj4+DQo+ID4+Pj4NCj4gPj4+PiBEb2VzIHlvdXMgc3lz
+dGVtIHN0YXJ0IHRvIGJvb3QgYWdhaW4gd2hlbiB0aGUgSS1waXBlIGtlcm5lbCBpcw0KPiA+Pj4+
+IGJ1aWx0IHdpdGhvdXQgQ09ORklHX0lQSVBFIGFuZCBDT05GSUdfWEVOT01BST8gSWYgbm8sIGNv
+bXBhcmUNCj4gdGhlDQo+ID4+Pj4gY29uZmlnIHRvIGEgd29ya2luZyBvbmUsIHN0ZXAtd2lzZSBh
+bGlnbmluZyB0byBpdC4NCj4gPj4+Pg0KPiA+Pj4+IEphbg0KPiA+Pj4NCj4gPj4+IFllcyBpdCBk
+b2VzIC0gd2l0aCB0aGUga2VybmVsIHBhdGNoZWQgd2l0aCBJUElQRSBhbmQgWGVub21haSwgYnV0
+DQo+ID4+PiB3aXRoIElQSVBFIGFuZCBYZW5vbWFpICpub3Qgc2VsZWN0ZWQqIGluIHRoZSBrZXJu
+ZWwgY29uZmlnLCB0aGUNCj4gPj4+IGtlcm5lbCBib290cyBmaW5lLiBXaXRoIElQSVBFIGFuZCBY
+ZW5vbWFpICpzZWxlY3RlZCogaW4gYSBzdWJzZXF1ZW50DQo+ID4+PiBrZXJuZWwgY29uZmlnLCB0
+aGF0IGtlcm5lbCBoYW5ncy4gSGVyZSdzIHRoZSBkaWZmIG9uIHRoZSBjb25maWcgZmlsZXM6DQo+
+ID4+Pg0KPiA+Pg0KPiA+PiBDYW4geW91IHNoYXJlIHRoZSBmdWxsIGNvbmZpZz8gTWF5YmUgc29t
+ZXRoaW5nIHN1YnRseSBpbmNvbXBhdGlibGUNCj4gPj4gd2l0aCBJLXBpcGUgaXMgZW5hYmxlZCwg
+bWF5YmUgSSBjYW4gcmVwcm9kdWNlIGluIEtWTSAoaWUuIHdpdGggYSBjaGFuY2UgdG8NCj4gZGVi
+dWcpLg0KPiA+Pg0KPiA+DQo+ID4gV2l0aCB0aGUgY29uZmlndXJhdGlvbiB5b3Ugc2VudCBvZmZs
+aXN0LCBJIGNhbiBjb25maXJtIG5vdyB0aGF0IHRoZQ0KPiA+IHN5c3RlbSAoaW4gbXkgY2FzZSBh
+IEtWTSB0YXJnZXQpIGRvZXMgbm90IGNvbWUgdXAsIHJhdGhlciBnZXRzIHN0dWNrDQo+ID4gZHVy
+aW5nIHNlY29uZGFyeSBDUFUgYm9vdC4gSSdtIG5vdCB5ZXQgc2VlaW5nIHRoZSBrZXkgZGlmZmVy
+ZW5jZSwgYnV0IHdlDQo+IHdpbGwgZmluZCBvdXQuDQo+ID4NCj4gPiBJJ20gYXR0YWNoaW5nIHRo
+ZSBjb25maWcgSSdtIGN1cnJlbnRseSB1c2luZyBmb3IgNC4xNCwgbWF5YmUgd2UgY2FuDQo+ID4g
+c2VhcmNoIGluIHBhcmFsbGVsIGZvciB0aGUgcmVsZXZhbnQgZGVsdGEuDQo+ID4NCj4gDQo+IEZv
+dW5kOiBDT05GSUdfTUFYU01QLiBOZWVkcyB0byBiZSBvZmYsIE5SX0NQVVMgYXQgNjQgZWcuDQo+
+IA0KPiBJIG5lZWQgdG8gY2hlY2sgd2hlcmUgb3VyIGV4YWN0IGxpbWl0IGlzLCBidXQgdGhpcyBz
+aG91bGQgbGlrZWx5IGJlIGNhdWdodCBhdA0KPiBrY29uZmlnIGxldmVsLg0KPiANCj4gQXQgdGhl
+IHNhbWUgdGltZSwgeW91IHdpbGwgbGlrZWx5IHdhbnQgdG8gdHVuZSBkb3duIHlvdXIgY29uZmln
+IGZvciB5b3VyDQo+IG5lZWRzLg0KPiBDT05GSUdfTUlHUkFUSU9OICh3aXRoIENNQSwgdHJhbnNw
+YXJlbnQgaHVnaCBwYWdlcyBldGMuKSBpcyBvbmUgdGhpbmcNCj4gdGhhdCB5b3UgZG8gbm90IHdh
+bnQgaW4gYW4gUlQga2VybmVsLCBidXQgdGhlcmUgaXMgbGlrZWx5IG1vcmUgYmFsbGFzdC4NCj4g
+DQo+IEphbg0KDQpUaGFua3MgLSB0aGlzIHdvcmtlZCwgSSBkaXNhYmxlZCBDT05GSUdfTUFYU01Q
+LCByZWJ1aWx0IGFuZCBpdCBib290ZWQgZmluZS4gSSdsbCBnbyBpbiBhbmQgdHVuZSBkb3duIHRo
+aW5ncyBvbmNlIEkgcnVuIHRoZSBYZW5vbWFpIHRlc3RzLiANCg0KLS1GcmVkDQoNCg0K
 
