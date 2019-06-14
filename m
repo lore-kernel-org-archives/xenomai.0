@@ -1,13 +1,15 @@
-Message-ID: <c22f08c9283534d80450c26ec41a8500d279f75d.camel@sprinte.eu>
-Subject: Re: serial driver for imx28
-From: Julien Blanc <julien.blanc@sprinte.eu>
-Date: Fri, 14 Jun 2019 14:45:54 +0200
-In-Reply-To: <VI1PR05MB59179825BCF273386EB32AADF6EE0@VI1PR05MB5917.eurprd05.prod.outlook.com>
+From: Lange Norbert <norbert.lange@andritz.com>
+Subject: RE: serial driver for imx28
+Date: Fri, 14 Jun 2019 13:19:35 +0000
+Message-ID: <VI1PR05MB591784C28B09BCDB55042863F6EE0@VI1PR05MB5917.eurprd05.prod.outlook.com>
 References: <a4aa24290a89f22416023b74362d88d25c7a005b.camel@sprinte.eu>
  <VI1PR05MB59179825BCF273386EB32AADF6EE0@VI1PR05MB5917.eurprd05.prod.outlook.com>
+ <c22f08c9283534d80450c26ec41a8500d279f75d.camel@sprinte.eu>
+In-Reply-To: <c22f08c9283534d80450c26ec41a8500d279f75d.camel@sprinte.eu>
+Content-Language: en-US
 Content-Type: text/plain; charset="utf-8"
-Mime-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: base64
+MIME-Version: 1.0
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,52 +18,68 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Lange Norbert <norbert.lange@andritz.com>, "Xenomai (xenomai@xenomai.org)" <xenomai@xenomai.org>
+To: Julien Blanc <julien.blanc@sprinte.eu>, "Xenomai	(xenomai@xenomai.org)" <xenomai@xenomai.org>
 
-Le vendredi 14 juin 2019 à 12:26 +0000, Lange Norbert via Xenomai a
-écrit :
-> > -----Original Message-----
-> > From: Xenomai <xenomai-bounces@xenomai.org> On Behalf Of Julien
-> > Blanc
-> > via Xenomai
-> > Sent: Freitag, 14. Juni 2019 13:54
-> > To: Xenomai@xenomai.org
-> > Subject: serial driver for imx28
-> > 
-> > 
-> > We’re currently trying to make the serial port working on a custom
-> > board
-> > based on an imx28 som.
-> 
-> Are you using the Debug uart or the Application UART?
-> The debug uart has incredibly slow register accesses, and can't do
-> DMA, you would not be happy about that in an RT application.
-
-I’m talking about the application uart. Also, note that the UART does
-not need to be realtime (the reason we are using it from plain linux in
-the first place), but the issues we encounter make us reconsider this
-decision.
-
-> Further what interfaces are you planning to use? Ethernet is rather
-> horrible to use aswell, as you need to byteswap *all* data (hardware
-> bug, I am not talking about the Ethernet heads using BigEndian).
-
-We’re not planning to do any rtnet, and the linux driver seems fine
-(frow a user pov). RT is required for CAN and gpios (both handled by
-xenomai drivers) which work fine. Our only issues are with uart, called
-from linux domain (issues which were unfortunately not seen during the
-qualification phase).
-
-> Sorry, don’t know the state of Xenomai in regards to this SOC, (but I
-> know the Chip and its warts pretty well).
-
-Switching to another chip is not an option (we need to solve this issue
-for existing boards).
-
-Thanks for your reply,
-
-Regards,
-
-Julien
-
+DQoNCj4gLS0tLS1PcmlnaW5hbCBNZXNzYWdlLS0tLS0NCj4gRnJvbTogSnVsaWVuIEJsYW5jIDxq
+dWxpZW4uYmxhbmNAc3ByaW50ZS5ldT4NCj4gU2VudDogRnJlaXRhZywgMTQuIEp1bmkgMjAxOSAx
+NDo0Ng0KPiBUbzogTGFuZ2UgTm9yYmVydCA8bm9yYmVydC5sYW5nZUBhbmRyaXR6LmNvbT47IFhl
+bm9tYWkNCj4gKHhlbm9tYWlAeGVub21haS5vcmcpIDx4ZW5vbWFpQHhlbm9tYWkub3JnPg0KPiBT
+dWJqZWN0OiBSZTogc2VyaWFsIGRyaXZlciBmb3IgaW14MjgNCj4NCj4gRS1NQUlMIEZST00gQSBO
+T04tQU5EUklUWiBTT1VSQ0U6IEFTIEEgU0VDVVJJVFkgTUVBU1VSRSwgUExFQVNFDQo+IEVYRVJD
+SVNFIENBVVRJT04gV0lUSCBFLU1BSUwgQ09OVEVOVCBBTkQgQU5ZIExJTktTIE9SDQo+IEFUVEFD
+SE1FTlRTLg0KPg0KPg0KPiBMZSB2ZW5kcmVkaSAxNCBqdWluIDIwMTkgw6AgMTI6MjYgKzAwMDAs
+IExhbmdlIE5vcmJlcnQgdmlhIFhlbm9tYWkgYSDDqWNyaXQgOg0KPiA+ID4gLS0tLS1PcmlnaW5h
+bCBNZXNzYWdlLS0tLS0NCj4gPiA+IEZyb206IFhlbm9tYWkgPHhlbm9tYWktYm91bmNlc0B4ZW5v
+bWFpLm9yZz4gT24gQmVoYWxmIE9mIEp1bGllbg0KPiA+ID4gQmxhbmMgdmlhIFhlbm9tYWkNCj4g
+PiA+IFNlbnQ6IEZyZWl0YWcsIDE0LiBKdW5pIDIwMTkgMTM6NTQNCj4gPiA+IFRvOiBYZW5vbWFp
+QHhlbm9tYWkub3JnDQo+ID4gPiBTdWJqZWN0OiBzZXJpYWwgZHJpdmVyIGZvciBpbXgyOA0KPiA+
+ID4NCj4gPiA+DQo+ID4gPiBXZeKAmXJlIGN1cnJlbnRseSB0cnlpbmcgdG8gbWFrZSB0aGUgc2Vy
+aWFsIHBvcnQgd29ya2luZyBvbiBhIGN1c3RvbQ0KPiA+ID4gYm9hcmQgYmFzZWQgb24gYW4gaW14
+Mjggc29tLg0KPiA+DQo+ID4gQXJlIHlvdSB1c2luZyB0aGUgRGVidWcgdWFydCBvciB0aGUgQXBw
+bGljYXRpb24gVUFSVD8NCj4gPiBUaGUgZGVidWcgdWFydCBoYXMgaW5jcmVkaWJseSBzbG93IHJl
+Z2lzdGVyIGFjY2Vzc2VzLCBhbmQgY2FuJ3QgZG8NCj4gPiBETUEsIHlvdSB3b3VsZCBub3QgYmUg
+aGFwcHkgYWJvdXQgdGhhdCBpbiBhbiBSVCBhcHBsaWNhdGlvbi4NCj4NCj4gSeKAmW0gdGFsa2lu
+ZyBhYm91dCB0aGUgYXBwbGljYXRpb24gdWFydC4gQWxzbywgbm90ZSB0aGF0IHRoZSBVQVJUIGRv
+ZXMgbm90DQo+IG5lZWQgdG8gYmUgcmVhbHRpbWUgKHRoZSByZWFzb24gd2UgYXJlIHVzaW5nIGl0
+IGZyb20gcGxhaW4gbGludXggaW4gdGhlIGZpcnN0DQo+IHBsYWNlKSwgYnV0IHRoZSBpc3N1ZXMg
+d2UgZW5jb3VudGVyIG1ha2UgdXMgcmVjb25zaWRlciB0aGlzIGRlY2lzaW9uLg0KPg0KPiA+IEZ1
+cnRoZXIgd2hhdCBpbnRlcmZhY2VzIGFyZSB5b3UgcGxhbm5pbmcgdG8gdXNlPyBFdGhlcm5ldCBp
+cyByYXRoZXINCj4gPiBob3JyaWJsZSB0byB1c2UgYXN3ZWxsLCBhcyB5b3UgbmVlZCB0byBieXRl
+c3dhcCAqYWxsKiBkYXRhIChoYXJkd2FyZQ0KPiA+IGJ1ZywgSSBhbSBub3QgdGFsa2luZyBhYm91
+dCB0aGUgRXRoZXJuZXQgaGVhZHMgdXNpbmcgQmlnRW5kaWFuKS4NCj4NCj4gV2XigJlyZSBub3Qg
+cGxhbm5pbmcgdG8gZG8gYW55IHJ0bmV0LCBhbmQgdGhlIGxpbnV4IGRyaXZlciBzZWVtcyBmaW5l
+IChmcm93IGENCj4gdXNlciBwb3YpLiBSVCBpcyByZXF1aXJlZCBmb3IgQ0FOIGFuZCBncGlvcyAo
+Ym90aCBoYW5kbGVkIGJ5IHhlbm9tYWkNCj4gZHJpdmVycykgd2hpY2ggd29yayBmaW5lLiBPdXIg
+b25seSBpc3N1ZXMgYXJlIHdpdGggdWFydCwgY2FsbGVkIGZyb20gbGludXgNCj4gZG9tYWluIChp
+c3N1ZXMgd2hpY2ggd2VyZSB1bmZvcnR1bmF0ZWx5IG5vdCBzZWVuIGR1cmluZyB0aGUgcXVhbGlm
+aWNhdGlvbg0KPiBwaGFzZSkuDQoNCk9rLCBzZWVtcyBsaWtlIHlvdSB3b3VsZCBuZWVkIHRvIGlu
+Y3JlYXNlIGJ1ZmZlcnMgaW4gdGhlIGRyaXZlcnMsIG9yIHRyeSBlbmFibGUNCkRNQSAobmVlZCB0
+byBzZXQgQ1JUU0NUUyBpbiB0ZXJtaW9zLCBvdGhlcndpc2Ugbm8gRE1BIGlzIHVzZWQgaW4gdGhl
+IGRyaXZlcikuDQpJZiBhbnl0aGluZyBmYWlscywgdXNlIGEgdGhyZWFkIHRvIHJlY2VpdmUgZGF0
+YSBmcm9tIGEgcGlwZS91bml4IHNvY2tldCBhbmQNCmZvcndhcmQgdGhhdCB0byB0aGUgdWFydCBh
+cyBmYXN0IGFzIGl0IHdpbGwgYWNjZXB0IGl0Lg0KSWYgdGhlIGlzc3VlIGlzIG9uIHRoZSByZWNl
+aXZlIHNpZGUgeW91IHByb2JhYmx5IG5lZWQgSFcgZmxvdy1jb250cm9sIHZpYSBSVFMvQ1RTDQpw
+aW5zIHRvIG1ha2Ugc3VyZSB5b3UgZG9u4oCZdCBsb3NlIGFueXRoaW5nLg0KDQo+ID4gU29ycnks
+IGRvbuKAmXQga25vdyB0aGUgc3RhdGUgb2YgWGVub21haSBpbiByZWdhcmRzIHRvIHRoaXMgU09D
+LCAoYnV0IEkNCj4gPiBrbm93IHRoZSBDaGlwIGFuZCBpdHMgd2FydHMgcHJldHR5IHdlbGwpLg0K
+Pg0KPiBTd2l0Y2hpbmcgdG8gYW5vdGhlciBjaGlwIGlzIG5vdCBhbiBvcHRpb24gKHdlIG5lZWQg
+dG8gc29sdmUgdGhpcyBpc3N1ZSBmb3INCj4gZXhpc3RpbmcgYm9hcmRzKS4NCg0KTWFueSBjaGlw
+cyBoYXZlIGJ1Z3MsIGhlbHBzIGEgbG90IGtub3dpbmcgdGhlbS4NCg0KUmVnYXJkcywgTm9yYmVy
+dC4NCl9fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fDQoNClRoaXMgbWVzc2FnZSBhbmQg
+YW55IGF0dGFjaG1lbnRzIGFyZSBzb2xlbHkgZm9yIHRoZSB1c2Ugb2YgdGhlIGludGVuZGVkIHJl
+Y2lwaWVudHMuIFRoZXkgbWF5IGNvbnRhaW4gcHJpdmlsZWdlZCBhbmQvb3IgY29uZmlkZW50aWFs
+IGluZm9ybWF0aW9uIG9yIG90aGVyIGluZm9ybWF0aW9uIHByb3RlY3RlZCBmcm9tIGRpc2Nsb3N1
+cmUuIElmIHlvdSBhcmUgbm90IGFuIGludGVuZGVkIHJlY2lwaWVudCwgeW91IGFyZSBoZXJlYnkg
+bm90aWZpZWQgdGhhdCB5b3UgcmVjZWl2ZWQgdGhpcyBlbWFpbCBpbiBlcnJvciBhbmQgdGhhdCBh
+bnkgcmV2aWV3LCBkaXNzZW1pbmF0aW9uLCBkaXN0cmlidXRpb24gb3IgY29weWluZyBvZiB0aGlz
+IGVtYWlsIGFuZCBhbnkgYXR0YWNobWVudCBpcyBzdHJpY3RseSBwcm9oaWJpdGVkLiBJZiB5b3Ug
+aGF2ZSByZWNlaXZlZCB0aGlzIGVtYWlsIGluIGVycm9yLCBwbGVhc2UgY29udGFjdCB0aGUgc2Vu
+ZGVyIGFuZCBkZWxldGUgdGhlIG1lc3NhZ2UgYW5kIGFueSBhdHRhY2htZW50IGZyb20geW91ciBz
+eXN0ZW0uDQoNCkFORFJJVFogSFlEUk8gR21iSA0KDQoNClJlY2h0c2Zvcm0vIExlZ2FsIGZvcm06
+IEdlc2VsbHNjaGFmdCBtaXQgYmVzY2hyw6Rua3RlciBIYWZ0dW5nIC8gQ29ycG9yYXRpb24NCg0K
+RmlybWVuc2l0ei8gUmVnaXN0ZXJlZCBzZWF0OiBXaWVuDQoNCkZpcm1lbmJ1Y2hnZXJpY2h0LyBD
+b3VydCBvZiByZWdpc3RyeTogSGFuZGVsc2dlcmljaHQgV2llbg0KDQpGaXJtZW5idWNobnVtbWVy
+LyBDb21wYW55IHJlZ2lzdHJhdGlvbjogRk4gNjE4MzMgZw0KDQpEVlI6IDA2MDUwNzcNCg0KVUlE
+LU5yLjogQVRVMTQ3NTY4MDYNCg0KDQpUaGFuayBZb3UNCl9fX19fX19fX19fX19fX19fX19fX19f
+X19fX19fX19fDQo=
 
