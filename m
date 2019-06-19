@@ -1,12 +1,12 @@
-From: Philippe Gerum <rpm@xenomai.org>
-Subject: [PATCH 5/8] testsuite/smokey: reset main()'s SCHED_OTHER policy
- before each test
-Date: Sat,  1 Jun 2019 17:14:59 +0200
-Message-Id: <20190601151502.27216-6-rpm@xenomai.org>
-In-Reply-To: <20190601151502.27216-1-rpm@xenomai.org>
-References: <20190601151502.27216-1-rpm@xenomai.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <CAEmXcAxUwr5vkt-t=XxDG-hn9BNb0uRVjY=WevQZGMjrO-_DyA@mail.gmail.com>
+In-Reply-To: <CAEmXcAxUwr5vkt-t=XxDG-hn9BNb0uRVjY=WevQZGMjrO-_DyA@mail.gmail.com>
+From: Greg Gallagher <greg@embeddedgreg.com>
+Date: Wed, 19 Jun 2019 11:03:49 -0400
+Message-ID: <CALLqZ8SNt2Z66iZG-wm=yOLFsgo68tf+FwLxxxuY-vce+quHww@mail.gmail.com>
+Subject: Re: Commands for reading,
+ loading and unloading drivers on BeagleBone Black?
+Content-Type: text/plain; charset="UTF-8"
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,35 +15,35 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
-Cc: Jan Kiszka <jan.kiszka@siemens.com>, Philippe Gerum <rpm@xenomai.org>
+To: danwe <daniel.wenninger92@gmail.com>
+Cc: "Xenomai@xenomai.org" <xenomai@xenomai.org>
 
-Signed-off-by: Philippe Gerum <rpm@xenomai.org>
----
- testsuite/smokey/main.c | 2 ++
- 1 file changed, 2 insertions(+)
+Hi,
 
-diff --git a/testsuite/smokey/main.c b/testsuite/smokey/main.c
-index 12321dfc5..5702e825a 100644
---- a/testsuite/smokey/main.c
-+++ b/testsuite/smokey/main.c
-@@ -22,6 +22,7 @@
- 
- int main(int argc, char *const argv[])
- {
-+	struct sched_param param = { .sched_priority = 0 };
- 	struct smokey_test *t;
- 	int ret, fails = 0;
- 
-@@ -29,6 +30,7 @@ int main(int argc, char *const argv[])
- 		return 0;
- 
- 	for_each_smokey_test(t) {
-+		pthread_setschedparam(pthread_self(), SCHED_OTHER, &param);
- 		ret = t->run(t, argc, argv);
- 		if (ret) {
- 			if (ret == -ENOSYS) {
--- 
-2.20.1
+On Wed, Jun 19, 2019 at 4:18 AM danwe via Xenomai <xenomai@xenomai.org> wrote:
+>
+> Hello,
+>
+> I am using a BeagleBone Black with Xenomai and RTnet on top. As some
+> real-time programs are not working it could be that the installed drivers
+> on my BeagleBone Black are still the standard drivers and not the real-time
+> drivers.
+>
+Can you explain what's not working?  What are you trying to achieve?
+Quick details of what you are expecting and the actual results will
+help.
 
+> As I did not find anything on internet (only how to install drivers for
+> Windows when using BeagleBone Black) I would like to ask you if anyobdy
+> knows commands for BeagleBone Black to read, load and unload installed
+> drivers on BBB?
+>
+Are you talking about RTDM drivers?  What RTDM drivers are you trying
+to load?  Have you configured them when you built the kernel.
+
+> Regards
+>
+> Daniel
+
+-Greg
 
