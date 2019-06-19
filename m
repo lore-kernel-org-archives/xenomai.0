@@ -1,12 +1,11 @@
+From: Jan Kiszka <jan.kiszka@siemens.com>
+Subject: [PATCH] cobalt/posix/signal: Fix iteration over sigwaiters
+Message-ID: <7eea68db-9ea0-052c-89c3-aa1a435a5b3d@siemens.com>
+Date: Wed, 19 Jun 2019 17:23:40 +0200
 MIME-Version: 1.0
-References: <CAEmXcAxUwr5vkt-t=XxDG-hn9BNb0uRVjY=WevQZGMjrO-_DyA@mail.gmail.com>
-In-Reply-To: <CAEmXcAxUwr5vkt-t=XxDG-hn9BNb0uRVjY=WevQZGMjrO-_DyA@mail.gmail.com>
-From: Greg Gallagher <greg@embeddedgreg.com>
-Date: Wed, 19 Jun 2019 11:03:49 -0400
-Message-ID: <CALLqZ8SNt2Z66iZG-wm=yOLFsgo68tf+FwLxxxuY-vce+quHww@mail.gmail.com>
-Subject: Re: Commands for reading,
- loading and unloading drivers on BeagleBone Black?
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,35 +14,51 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: danwe <daniel.wenninger92@gmail.com>
-Cc: "Xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Xenomai <xenomai@xenomai.org>
 
-Hi,
+From: Jan Kiszka <jan.kiszka@siemens.com>
 
-On Wed, Jun 19, 2019 at 4:18 AM danwe via Xenomai <xenomai@xenomai.org> wrote:
->
-> Hello,
->
-> I am using a BeagleBone Black with Xenomai and RTnet on top. As some
-> real-time programs are not working it could be that the installed drivers
-> on my BeagleBone Black are still the standard drivers and not the real-time
-> drivers.
->
-Can you explain what's not working?  What are you trying to achieve?
-Quick details of what you are expecting and the actual results will
-help.
+Using thread both as the iteration variable and the source of the list
+causes list_for_each_entry to derail after the first thread that has no
+hit. This could be triggered by sending a process a signal that was in
+sigwait, but not for that signal.
 
-> As I did not find anything on internet (only how to install drivers for
-> Windows when using BeagleBone Black) I would like to ask you if anyobdy
-> knows commands for BeagleBone Black to read, load and unload installed
-> drivers on BBB?
->
-Are you talking about RTDM drivers?  What RTDM drivers are you trying
-to load?  Have you configured them when you built the kernel.
+Fix this by using a stable list pointer.
 
-> Regards
->
-> Daniel
+Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
+---
 
--Greg
+I had already tagged 3.0.9, just not pushed yet - tag deleted again.
+
+ kernel/cobalt/posix/signal.c | 6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
+
+diff --git a/kernel/cobalt/posix/signal.c b/kernel/cobalt/posix/signal.c
+index 7e0eb52e99..e75ce2b693 100644
+--- a/kernel/cobalt/posix/signal.c
++++ b/kernel/cobalt/posix/signal.c
+@@ -46,6 +46,7 @@ static int cobalt_signal_deliver(struct cobalt_thread *thread,
+ {				/* nklocked, IRQs off */
+ 	struct cobalt_sigwait_context *swc;
+ 	struct xnthread_wait_context *wc;
++	struct list_head *sigwaiters;
+ 	int sig, ret;
+ 
+ 	sig = sigp->si.si_signo;
+@@ -67,10 +68,11 @@ static int cobalt_signal_deliver(struct cobalt_thread *thread,
+ 	 * group, try to deliver to any thread from the same process
+ 	 * waiting for that signal.
+ 	 */
+-	if (!group || list_empty(&thread->process->sigwaiters))
++	sigwaiters = &thread->process->sigwaiters;
++	if (!group || list_empty(sigwaiters))
+ 		return 0;
+ 
+-	list_for_each_entry(thread, &thread->process->sigwaiters, signext) {
++	list_for_each_entry(thread, sigwaiters, signext) {
+ 		wc = xnthread_get_wait_context(&thread->threadbase);
+ 		swc = container_of(wc, struct cobalt_sigwait_context, wc);
+ 		if (sigismember(swc->set, sig))
+-- 
+2.16.4
 
