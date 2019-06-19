@@ -1,11 +1,14 @@
-From: Jan Kiszka <jan.kiszka@siemens.com>
-Subject: [PATCH] cobalt/posix/signal: Fix iteration over sigwaiters
-Message-ID: <7eea68db-9ea0-052c-89c3-aa1a435a5b3d@siemens.com>
-Date: Wed, 19 Jun 2019 17:23:40 +0200
-MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+From: Lange Norbert <norbert.lange@andritz.com>
+Subject: RE: Commands for reading, loading and unloading drivers on BeagleBone
+ Black?
+Date: Wed, 19 Jun 2019 15:41:42 +0000
+Message-ID: <VI1PR05MB5917268369E7ABCECA5ABD4EF6E50@VI1PR05MB5917.eurprd05.prod.outlook.com>
+References: <CAEmXcAxUwr5vkt-t=XxDG-hn9BNb0uRVjY=WevQZGMjrO-_DyA@mail.gmail.com>
+In-Reply-To: <CAEmXcAxUwr5vkt-t=XxDG-hn9BNb0uRVjY=WevQZGMjrO-_DyA@mail.gmail.com>
 Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+MIME-Version: 1.0
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -14,51 +17,47 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Xenomai <xenomai@xenomai.org>
+To: danwe <daniel.wenninger92@gmail.com>, "Xenomai (xenomai@xenomai.org)" <xenomai@xenomai.org>
 
-From: Jan Kiszka <jan.kiszka@siemens.com>
-
-Using thread both as the iteration variable and the source of the list
-causes list_for_each_entry to derail after the first thread that has no
-hit. This could be triggered by sending a process a signal that was in
-sigwait, but not for that signal.
-
-Fix this by using a stable list pointer.
-
-Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
----
-
-I had already tagged 3.0.9, just not pushed yet - tag deleted again.
-
- kernel/cobalt/posix/signal.c | 6 ++++--
- 1 file changed, 4 insertions(+), 2 deletions(-)
-
-diff --git a/kernel/cobalt/posix/signal.c b/kernel/cobalt/posix/signal.c
-index 7e0eb52e99..e75ce2b693 100644
---- a/kernel/cobalt/posix/signal.c
-+++ b/kernel/cobalt/posix/signal.c
-@@ -46,6 +46,7 @@ static int cobalt_signal_deliver(struct cobalt_thread *thread,
- {				/* nklocked, IRQs off */
- 	struct cobalt_sigwait_context *swc;
- 	struct xnthread_wait_context *wc;
-+	struct list_head *sigwaiters;
- 	int sig, ret;
- 
- 	sig = sigp->si.si_signo;
-@@ -67,10 +68,11 @@ static int cobalt_signal_deliver(struct cobalt_thread *thread,
- 	 * group, try to deliver to any thread from the same process
- 	 * waiting for that signal.
- 	 */
--	if (!group || list_empty(&thread->process->sigwaiters))
-+	sigwaiters = &thread->process->sigwaiters;
-+	if (!group || list_empty(sigwaiters))
- 		return 0;
- 
--	list_for_each_entry(thread, &thread->process->sigwaiters, signext) {
-+	list_for_each_entry(thread, sigwaiters, signext) {
- 		wc = xnthread_get_wait_context(&thread->threadbase);
- 		swc = container_of(wc, struct cobalt_sigwait_context, wc);
- 		if (sigismember(swc->set, sig))
--- 
-2.16.4
+VXNlIHN5c2ZzLQ0KDQojIHVuYmluZCB0aGUgY3VycmVudCBkcml2ZXIgZm9yIHRob3NlIGRldmlj
+ZXMNCmZvciBzaW8gaW4gMS0yOjEuMCAgMS0yOjEuMSAgMS0yOjEuMiAgMS0yOjEuMzsgZG8NCiAg
+ICBlY2hvICIkc2lvIiA+IC9zeXMvYnVzL3VzYi9kZXZpY2VzLyIkc2lvIi9kcml2ZXIvdW5iaW5k
+DQpkb25lDQoNCiMgdXNlIGEgc3BlY2lmaWMgZHJpdmVyICdmdGRpX3NpbycgZm9yIGEgZGV2aWNl
+DQplY2hvICIxLTI6MS4wIiA+IC9zeXMvYnVzL3VzYi9kcml2ZXJzL2Z0ZGlfc2lvL2JpbmQNCiMg
+bGV0IGxpbnV4IHBpY2sgYSBkcml2ZXIgZm9yIGEgZGV2aWNlDQplY2hvICcxLTI6MS4wJyA+ICAv
+c3lzL2J1cy91c2IvZHJpdmVyc19wcm9iZQ0KDQp3b3JrcyBzaW1pbGFyIHdpdGggb3RoZXIgYnVz
+c2VzLg0KDQpyZWdhcmRzLCBOb3JiZXJ0IExhbmdlDQoNCj4gLS0tLS1PcmlnaW5hbCBNZXNzYWdl
+LS0tLS0NCj4gRnJvbTogWGVub21haSA8eGVub21haS1ib3VuY2VzQHhlbm9tYWkub3JnPiBPbiBC
+ZWhhbGYgT2YgZGFud2UgdmlhDQo+IFhlbm9tYWkNCj4gU2VudDogTWl0dHdvY2gsIDE5LiBKdW5p
+IDIwMTkgMTA6MTkNCj4gVG86IHhlbm9tYWlAeGVub21haS5vcmcNCj4gU3ViamVjdDogQ29tbWFu
+ZHMgZm9yIHJlYWRpbmcsIGxvYWRpbmcgYW5kIHVubG9hZGluZyBkcml2ZXJzIG9uDQo+IEJlYWds
+ZUJvbmUgQmxhY2s/DQo+DQo+IEUtTUFJTCBGUk9NIEEgTk9OLUFORFJJVFogU09VUkNFOiBBUyBB
+IFNFQ1VSSVRZIE1FQVNVUkUsIFBMRUFTRQ0KPiBFWEVSQ0lTRSBDQVVUSU9OIFdJVEggRS1NQUlM
+IENPTlRFTlQgQU5EIEFOWSBMSU5LUyBPUg0KPiBBVFRBQ0hNRU5UUy4NCj4NCj4NCj4gSGVsbG8s
+DQo+DQo+IEkgYW0gdXNpbmcgYSBCZWFnbGVCb25lIEJsYWNrIHdpdGggWGVub21haSBhbmQgUlRu
+ZXQgb24gdG9wLiBBcyBzb21lIHJlYWwtDQo+IHRpbWUgcHJvZ3JhbXMgYXJlIG5vdCB3b3JraW5n
+IGl0IGNvdWxkIGJlIHRoYXQgdGhlIGluc3RhbGxlZCBkcml2ZXJzIG9uIG15DQo+IEJlYWdsZUJv
+bmUgQmxhY2sgYXJlIHN0aWxsIHRoZSBzdGFuZGFyZCBkcml2ZXJzIGFuZCBub3QgdGhlIHJlYWwt
+dGltZSBkcml2ZXJzLg0KPg0KPiBBcyBJIGRpZCBub3QgZmluZCBhbnl0aGluZyBvbiBpbnRlcm5l
+dCAob25seSBob3cgdG8gaW5zdGFsbCBkcml2ZXJzIGZvciBXaW5kb3dzDQo+IHdoZW4gdXNpbmcg
+QmVhZ2xlQm9uZSBCbGFjaykgSSB3b3VsZCBsaWtlIHRvIGFzayB5b3UgaWYgYW55b2JkeSBrbm93
+cw0KPiBjb21tYW5kcyBmb3IgQmVhZ2xlQm9uZSBCbGFjayB0byByZWFkLCBsb2FkIGFuZCB1bmxv
+YWQgaW5zdGFsbGVkIGRyaXZlcnMgb24NCj4gQkJCPw0KPg0KPiBSZWdhcmRzDQo+DQo+IERhbmll
+bA0KX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX18NCg0KVGhpcyBtZXNzYWdlIGFuZCBh
+bnkgYXR0YWNobWVudHMgYXJlIHNvbGVseSBmb3IgdGhlIHVzZSBvZiB0aGUgaW50ZW5kZWQgcmVj
+aXBpZW50cy4gVGhleSBtYXkgY29udGFpbiBwcml2aWxlZ2VkIGFuZC9vciBjb25maWRlbnRpYWwg
+aW5mb3JtYXRpb24gb3Igb3RoZXIgaW5mb3JtYXRpb24gcHJvdGVjdGVkIGZyb20gZGlzY2xvc3Vy
+ZS4gSWYgeW91IGFyZSBub3QgYW4gaW50ZW5kZWQgcmVjaXBpZW50LCB5b3UgYXJlIGhlcmVieSBu
+b3RpZmllZCB0aGF0IHlvdSByZWNlaXZlZCB0aGlzIGVtYWlsIGluIGVycm9yIGFuZCB0aGF0IGFu
+eSByZXZpZXcsIGRpc3NlbWluYXRpb24sIGRpc3RyaWJ1dGlvbiBvciBjb3B5aW5nIG9mIHRoaXMg
+ZW1haWwgYW5kIGFueSBhdHRhY2htZW50IGlzIHN0cmljdGx5IHByb2hpYml0ZWQuIElmIHlvdSBo
+YXZlIHJlY2VpdmVkIHRoaXMgZW1haWwgaW4gZXJyb3IsIHBsZWFzZSBjb250YWN0IHRoZSBzZW5k
+ZXIgYW5kIGRlbGV0ZSB0aGUgbWVzc2FnZSBhbmQgYW55IGF0dGFjaG1lbnQgZnJvbSB5b3VyIHN5
+c3RlbS4NCg0KQU5EUklUWiBIWURSTyBHbWJIDQoNCg0KUmVjaHRzZm9ybS8gTGVnYWwgZm9ybTog
+R2VzZWxsc2NoYWZ0IG1pdCBiZXNjaHLDpG5rdGVyIEhhZnR1bmcgLyBDb3Jwb3JhdGlvbg0KDQpG
+aXJtZW5zaXR6LyBSZWdpc3RlcmVkIHNlYXQ6IFdpZW4NCg0KRmlybWVuYnVjaGdlcmljaHQvIENv
+dXJ0IG9mIHJlZ2lzdHJ5OiBIYW5kZWxzZ2VyaWNodCBXaWVuDQoNCkZpcm1lbmJ1Y2hudW1tZXIv
+IENvbXBhbnkgcmVnaXN0cmF0aW9uOiBGTiA2MTgzMyBnDQoNCkRWUjogMDYwNTA3Nw0KDQpVSUQt
+TnIuOiBBVFUxNDc1NjgwNg0KDQoNClRoYW5rIFlvdQ0KX19fX19fX19fX19fX19fX19fX19fX19f
+X19fX19fX18NCg==
 
