@@ -1,15 +1,20 @@
-Subject: Re: [PATCH] cobalt/rtdm: allow for device teardown
-References: <20190617155323.21337-1-rpm@xenomai.org>
- <3853279e-922b-6c5a-d05f-9508124dbe3f@xenomai.org>
- <78517593-82c1-493e-08e6-3ebf9bcebe78@web.de>
-From: Philippe Gerum <rpm@xenomai.org>
-Message-ID: <8fc67853-ef6d-5983-291c-1482c6bab327@xenomai.org>
-Date: Thu, 20 Jun 2019 10:29:58 +0200
+Subject: Re: linux not getting gpio interrupts on xenomai 3.0.8 on raspberrypi
+ raspbian/stretch kernel 4.9
+References: <4707bb12-658a-f74c-84b6-332424be2bb9@cs.ru.nl>
+ <844c96f4-191f-dd82-8a02-d3a99ac74fef@cs.ru.nl>
+ <CALLqZ8RM0_yLbM+K=Wo4SVa46a7Dp8SYBLdAMxGWfAbrtR5hQg@mail.gmail.com>
+ <9dd68ccb-054a-5ccb-91d9-55267145a34f@cs.ru.nl>
+ <CALLqZ8R9o356vp0pcbkfbqFJt09ENDLwnd62ziUTW86SSbKw8g@mail.gmail.com>
+ <41dedf13-0136-b905-d70d-fef1ade4dbe7@cs.ru.nl>
+ <bac8728d-459b-ad23-3bd4-362494ccc615@web.de>
+From: Harco Kuppens <h.kuppens@cs.ru.nl>
+Message-ID: <c677c9b5-67ed-ee87-1e95-3ee3185c73c4@cs.ru.nl>
+Date: Thu, 20 Jun 2019 16:35:59 +0200
 MIME-Version: 1.0
-In-Reply-To: <78517593-82c1-493e-08e6-3ebf9bcebe78@web.de>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+In-Reply-To: <bac8728d-459b-ad23-3bd4-362494ccc615@web.de>
+Content-Type: text/plain; charset="utf-8"; format="flowed"
+Content-Transfer-Encoding: 8bit
+Content-Language: nl
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -18,30 +23,87 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jan Kiszka <jan.kiszka@web.de>
-Cc: "Xenomai@xenomai.org" <Xenomai@xenomai.org>
+To: Jan Kiszka <jan.kiszka@web.de>, Greg Gallagher <greg@embeddedgreg.com>
+Cc: "Xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On 6/20/19 10:20 AM, Jan Kiszka wrote:
-> On 20.06.19 09:46, Philippe Gerum via Xenomai wrote:
->> On 6/17/19 5:53 PM, Philippe Gerum wrote:
->>> rtdm_dev_unregister() will hang soft until all references on the
->>> dismantled device have been dropped, which in turn cannot happen until
->>> all rtdm_fds on the device have been closed, which cannot happen until
->>> all references on those fds have been dropped eventually. We need a
->>> way to force a teardown on devices, so that rtdm_dev_unregister() will
->>> not hang.
+
+
+Op 20/06/2019 om 09:37 schreef Jan Kiszka:
+> On 19.06.19 23:52, Harco Kuppens via Xenomai wrote:
 >>
->> This needs v2, let's drop this one.
 >>
-> 
-> I started to review but got distracted again. One thing, though: Don't
-> we want
-> to convert at least some existing drivers to the new interface?
-> 
+>> Op 19/06/2019 om 17:00 schreef Greg Gallagher:
+>>> On Wed, Jun 19, 2019 at 8:44 AM Harco Kuppens <h.kuppens@cs.ru.nl> 
+>>> wrote:
+>>>> The ipipe patched not entirely cleanly on the rpi kernel source; I 
+>>>> had to
+>>>> make little changes in the patch, but not anything really 
+>>>> seriously. So I
+>>>> expect it to be fine.
+>>>>
+>>>> I used the rasbpian kernel source because it has better support for 
+>>>> the
+>>>> raspberry pi's and mainly because it has better support for the 
+>>>> gpio pins in
+>>>> its kernel.
+>>>>
+>>>> However to help you debug I did a similar install using the 
+>>>> mainline kernel
+>>>> source. The ipipe patch just worked smoothly, however to get the 
+>>>> gpio pins
+>>>> running in xenomai I had to still port some code of the file
+>>>>
+>>>>      ./drivers/pinctrl/bcm/pinctrl-bcm2835.c
+>>>>
+>>> What did you have to change here to get the pins to work with Xenomai?
+>>> You shouldn't need to change anything here.  If you did then it may be
+>>> a bug in the ipipe.  Can you try with 4.14 ipipe ?
+>> I did try with ipipe 4.19 and when compiling the kernel I got lot of 
+>> errors.
+>> Some I could solve, but at the end I gave up.
+>>
+>> See my notes on
+>> https://github.com/harcokuppens/xenomai3_rpi_gpio/blob/master/install/__INSTALL_FAILURES__/install__compile_vanilla_kernel_4.19_with_xenomai_3.0.8__assert_error.txt 
+>>
+>> Maybe this is also interesting for you.
+>>
+>
+> 4.19 requires Xenomai master. See our CI (e.g.
+> https://travis-ci.com/xenomai-ci/xenomai/jobs/209347407) for a working 
+> setup.
+>
+> Jan
 
-Yes we do, those brewing for RTnet are on hold since the core patch is
-not right yet.
+ok, I used the master branch of xenomai,  and yes it compiles the kernel 
+ok!!
 
--- 
-Philippe.
+You find my installation description and findings at:
+
+https://github.com/harcokuppens/xenomai3_rpi_gpio/blob/master/install/installation_of_xenomai_master_on_mainline_kernel_branch_v4.19.33_from_kernel.org__problem_linux_gpio.md
+
+However I still get the same problem that the xenomai gpio ports are 
+wrongly numbered!
+And within linux the gpio pins are also not working.
+In my other builds I fixed this with the pinctrl_bcm2835.c file I 
+patched for rpi(raspbian) 4.9  kernel.
+You can find this file at : 
+https://github.com/harcokuppens/xenomai3_rpi_gpio/blob/master/install/how_pinctrl-bcm2835_patch_for_rpi-4.9_is_derived/rpi-4.9.y.ipipe-patched/pinctrl-bcm2835.c
+
+However using that file didn't work here, because I got errors about 
+irq_set_lockdep_class function. However this function wasn't even used 
+in the mainline version of pinctrl_bcm2835.c .
+I probably have to patch it somehow to match the much newer kernel.
+
+But I will wait first if Greg Gallagher finds something for the 4.9.51 
+build.
+Hopefully he finds what is wrong with  that build.
+
+Anyway all builds I did for the raspberry pi 2/3  with  mainline kernels 
+4.9/4.14/4.19 with the official pipeline/xenomai patched have xenomai 
+running ok. However they don't have the gpio pins working for the 
+raspberry pi. Neither in linux nor for the realtime cobalt kernel.
+
+Best regards,
+Harco Kuppens
+
 
