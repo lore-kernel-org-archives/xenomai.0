@@ -9,14 +9,15 @@ References: <4707bb12-658a-f74c-84b6-332424be2bb9@cs.ru.nl>
  <bac8728d-459b-ad23-3bd4-362494ccc615@web.de>
  <c677c9b5-67ed-ee87-1e95-3ee3185c73c4@cs.ru.nl>
  <CALLqZ8T9B2Wxeu=w-Or_iYqY-spCZCN5xv+81cUbjaPS+c-vLw@mail.gmail.com>
+ <c7402819-9b82-cb02-4edb-d2c5e75dd30f@cs.ru.nl>
 From: Harco Kuppens <h.kuppens@cs.ru.nl>
-Message-ID: <c7402819-9b82-cb02-4edb-d2c5e75dd30f@cs.ru.nl>
-Date: Thu, 20 Jun 2019 16:57:44 +0200
+Message-ID: <b730963a-1976-69a3-33cc-b1bcc73fcc63@cs.ru.nl>
+Date: Thu, 20 Jun 2019 17:00:08 +0200
 MIME-Version: 1.0
-In-Reply-To: <CALLqZ8T9B2Wxeu=w-Or_iYqY-spCZCN5xv+81cUbjaPS+c-vLw@mail.gmail.com>
-Content-Language: nl
+In-Reply-To: <c7402819-9b82-cb02-4edb-d2c5e75dd30f@cs.ru.nl>
 Content-Type: text/plain; charset="utf-8"; format="flowed"
 Content-Transfer-Encoding: 8bit
+Content-Language: nl
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -25,30 +26,44 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Greg Gallagher <greg@embeddedgreg.com>
-Cc: Jan Kiszka <jan.kiszka@web.de>, "Xenomai@xenomai.org" <xenomai@xenomai.org>
+To: xenomai@xenomai.org
 
 
+I used 'make multi_v7_defconfig '
 
-Op 20/06/2019 om 16:45 schreef Greg Gallagher:
+See my build instructions at:
+
+https://github.com/harcokuppens/xenomai3_rpi_gpio/blob/master/install/installation_of_xenomai_3.0.8_on_mainline_kernel_branch_v4.9.51_from_kernel.org__problem_linux_gpio.md
+
+
+Best regards,
+Harco Kuppens
+
+
+Op 20/06/2019 om 16:57 schreef Harco Kuppens via Xenomai:
 >
-> Do you have sysfs interface turned on when building the mainline
-> kernels?  Dumb question but it was turned off by default when I was
-> doing my builds.
-> Should be under Device Drivers => GPIO Support -> /sys/class/gpio
-> (sysfs interface) when you do a menuconfig.
 >
+> Op 20/06/2019 om 16:45 schreef Greg Gallagher:
+>>
+>> Do you have sysfs interface turned on when building the mainline
+>> kernels?  Dumb question but it was turned off by default when I was
+>> doing my builds.
+>> Should be under Device Drivers => GPIO Support -> /sys/class/gpio
+>> (sysfs interface) when you do a menuconfig.
+>>
+>>
+> yes, I just checked.
 >
-yes, I just checked.
+> It is the config option CONFIG_GPIO_SYSFS
+> and this option is set if you use
+>
+>     make multi_v7_defconfig
+>
+> to start with an initial config.
+>
+> cheers
+> Harco
+>
+> ||
 
-It is the config option CONFIG_GPIO_SYSFS
-and this option is set if you use
 
-     make multi_v7_defconfig
-
-to start with an initial config.
-
-cheers
-Harco
-
-||
