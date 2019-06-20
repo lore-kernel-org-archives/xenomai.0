@@ -1,16 +1,21 @@
-Subject: Re: [PATCH 5/8] testsuite/smokey: reset main()'s SCHED_OTHER policy
- before each test
-References: <20190601151502.27216-1-rpm@xenomai.org>
- <20190601151502.27216-6-rpm@xenomai.org>
- <3bec3f3f-509a-69ff-bac1-aee18494bf90@siemens.com>
- <f016feb5-303f-9fa9-77b1-180f7f3b45a3@xenomai.org>
-From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <0e04d03c-f96a-fcbc-d729-5d9cee35fd9e@siemens.com>
-Date: Mon, 3 Jun 2019 14:29:53 +0200
+Subject: Re: linux not getting gpio interrupts on xenomai 3.0.8 on raspberrypi
+ raspbian/stretch kernel 4.9
+References: <4707bb12-658a-f74c-84b6-332424be2bb9@cs.ru.nl>
+ <844c96f4-191f-dd82-8a02-d3a99ac74fef@cs.ru.nl>
+ <CALLqZ8RM0_yLbM+K=Wo4SVa46a7Dp8SYBLdAMxGWfAbrtR5hQg@mail.gmail.com>
+ <9dd68ccb-054a-5ccb-91d9-55267145a34f@cs.ru.nl>
+ <CALLqZ8R9o356vp0pcbkfbqFJt09ENDLwnd62ziUTW86SSbKw8g@mail.gmail.com>
+ <41dedf13-0136-b905-d70d-fef1ade4dbe7@cs.ru.nl>
+ <bac8728d-459b-ad23-3bd4-362494ccc615@web.de>
+ <c677c9b5-67ed-ee87-1e95-3ee3185c73c4@cs.ru.nl>
+ <CALLqZ8T9B2Wxeu=w-Or_iYqY-spCZCN5xv+81cUbjaPS+c-vLw@mail.gmail.com>
+From: Harco Kuppens <h.kuppens@cs.ru.nl>
+Message-ID: <c7402819-9b82-cb02-4edb-d2c5e75dd30f@cs.ru.nl>
+Date: Thu, 20 Jun 2019 16:57:44 +0200
 MIME-Version: 1.0
-In-Reply-To: <f016feb5-303f-9fa9-77b1-180f7f3b45a3@xenomai.org>
+In-Reply-To: <CALLqZ8T9B2Wxeu=w-Or_iYqY-spCZCN5xv+81cUbjaPS+c-vLw@mail.gmail.com>
+Content-Language: nl
 Content-Type: text/plain; charset="utf-8"; format="flowed"
-Content-Language: en-US
 Content-Transfer-Encoding: 8bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
@@ -20,49 +25,30 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Philippe Gerum <rpm@xenomai.org>, xenomai@xenomai.org
+To: Greg Gallagher <greg@embeddedgreg.com>
+Cc: Jan Kiszka <jan.kiszka@web.de>, "Xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On 03.06.19 13:51, Philippe Gerum wrote:
-> On 6/3/19 1:09 PM, Jan Kiszka wrote:
->> On 01.06.19 17:14, Philippe Gerum wrote:
->>> Signed-off-by: Philippe Gerum <rpm@xenomai.org>
->>> ---
->>>    testsuite/smokey/main.c | 2 ++
->>>    1 file changed, 2 insertions(+)
->>>
->>> diff --git a/testsuite/smokey/main.c b/testsuite/smokey/main.c
->>> index 12321dfc5..5702e825a 100644
->>> --- a/testsuite/smokey/main.c
->>> +++ b/testsuite/smokey/main.c
->>> @@ -22,6 +22,7 @@
->>>      int main(int argc, char *const argv[])
->>>    {
->>> +    struct sched_param param = { .sched_priority = 0 };
->>>        struct smokey_test *t;
->>>        int ret, fails = 0;
->>>    @@ -29,6 +30,7 @@ int main(int argc, char *const argv[])
->>>            return 0;
->>>          for_each_smokey_test(t) {
->>> +        pthread_setschedparam(pthread_self(), SCHED_OTHER, &param);
->>>            ret = t->run(t, argc, argv);
->>>            if (ret) {
->>>                if (ret == -ENOSYS) {
->>>
->>
->> Is that a cosmetic cleanup, or did we see tests failing or doing the
->> wrong thing? Just to clarify the importance of this fix, also for stable
->> (a few word in the commit log would have done that trick for me ;) ).
->>
-> 
-> https://www.xenomai.org/pipermail/xenomai/2019-May/040925.html
-> 
-> 
 
-Thanks, adding that now and also picking it for stable.
 
-Jan
+Op 20/06/2019 om 16:45 schreef Greg Gallagher:
+>
+> Do you have sysfs interface turned on when building the mainline
+> kernels?  Dumb question but it was turned off by default when I was
+> doing my builds.
+> Should be under Device Drivers => GPIO Support -> /sys/class/gpio
+> (sysfs interface) when you do a menuconfig.
+>
+>
+yes, I just checked.
 
--- 
-Siemens AG, Corporate Technology, CT RDA IOT SES-DE
-Corporate Competence Center Embedded Linux
+It is the config option CONFIG_GPIO_SYSFS
+and this option is set if you use
 
+     make multi_v7_defconfig
+
+to start with an initial config.
+
+cheers
+Harco
+
+||
