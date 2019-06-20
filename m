@@ -1,19 +1,13 @@
-Subject: Re: linux not getting gpio interrupts on xenomai 3.0.8 on raspberrypi
- raspbian/stretch kernel 4.9
-References: <4707bb12-658a-f74c-84b6-332424be2bb9@cs.ru.nl>
- <844c96f4-191f-dd82-8a02-d3a99ac74fef@cs.ru.nl>
- <CALLqZ8RM0_yLbM+K=Wo4SVa46a7Dp8SYBLdAMxGWfAbrtR5hQg@mail.gmail.com>
- <9dd68ccb-054a-5ccb-91d9-55267145a34f@cs.ru.nl>
- <CALLqZ8R9o356vp0pcbkfbqFJt09ENDLwnd62ziUTW86SSbKw8g@mail.gmail.com>
- <41dedf13-0136-b905-d70d-fef1ade4dbe7@cs.ru.nl>
-From: Jan Kiszka <jan.kiszka@web.de>
-Message-ID: <bac8728d-459b-ad23-3bd4-362494ccc615@web.de>
-Date: Thu, 20 Jun 2019 09:37:03 +0200
+Subject: Re: [PATCH] cobalt/rtdm: allow for device teardown
+References: <20190617155323.21337-1-rpm@xenomai.org>
+From: Philippe Gerum <rpm@xenomai.org>
+Message-ID: <3853279e-922b-6c5a-d05f-9508124dbe3f@xenomai.org>
+Date: Thu, 20 Jun 2019 09:46:49 +0200
 MIME-Version: 1.0
-In-Reply-To: <41dedf13-0136-b905-d70d-fef1ade4dbe7@cs.ru.nl>
-Content-Type: text/plain; charset=utf-8; format=flowed
+In-Reply-To: <20190617155323.21337-1-rpm@xenomai.org>
+Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 7bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -22,53 +16,19 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Harco Kuppens <h.kuppens@cs.ru.nl>, Greg Gallagher <greg@embeddedgreg.com>
-Cc: "Xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Philippe Gerum <rpm@xenomai.org>
+Cc: "Xenomai@xenomai.org" <Xenomai@xenomai.org>
 
-On 19.06.19 23:52, Harco Kuppens via Xenomai wrote:
->
->
-> Op 19/06/2019 om 17:00 schreef Greg Gallagher:
->> On Wed, Jun 19, 2019 at 8:44 AM Harco Kuppens <h.kuppens@cs.ru.nl> wrot=
-e:
->>> The ipipe patched not entirely cleanly on the rpi kernel source; I had=
- to
->>> make little changes in the patch, but not anything really seriously. S=
-o I
->>> expect it to be fine.
->>>
->>> I used the rasbpian kernel source because it has better support for th=
-e
->>> raspberry pi's and mainly because it has better support for the gpio p=
-ins in
->>> its kernel.
->>>
->>> However to help you debug I did a similar install using the mainline k=
-ernel
->>> source. The ipipe patch just worked smoothly, however to get the gpio =
-pins
->>> running in xenomai I had to still port some code of the file
->>>
->>> =C2=A0=C2=A0=C2=A0=C2=A0 ./drivers/pinctrl/bcm/pinctrl-bcm2835.c
->>>
->> What did you have to change here to get the pins to work with Xenomai?
->> You shouldn't need to change anything here.=C2=A0 If you did then it ma=
-y be
->> a bug in the ipipe.=C2=A0 Can you try with 4.14 ipipe ?
-> I did try with ipipe 4.19 and when compiling the kernel I got lot of err=
-ors.
-> Some I could solve, but at the end I gave up.
->
-> See my notes on
-> https://github.com/harcokuppens/xenomai3_rpi_gpio/blob/master/install/__=
-INSTALL_FAILURES__/install__compile_vanilla_kernel_4.19_with_xenomai_3.0.8=
-__assert_error.txt
-> Maybe this is also interesting for you.
->
+On 6/17/19 5:53 PM, Philippe Gerum wrote:
+> rtdm_dev_unregister() will hang soft until all references on the
+> dismantled device have been dropped, which in turn cannot happen until
+> all rtdm_fds on the device have been closed, which cannot happen until
+> all references on those fds have been dropped eventually. We need a
+> way to force a teardown on devices, so that rtdm_dev_unregister() will
+> not hang.
 
-4.19 requires Xenomai master. See our CI (e.g.
-https://travis-ci.com/xenomai-ci/xenomai/jobs/209347407) for a working set=
-up.
+This needs v2, let's drop this one.
 
-Jan
+-- 
+Philippe.
 
