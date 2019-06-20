@@ -5,14 +5,15 @@ References: <4707bb12-658a-f74c-84b6-332424be2bb9@cs.ru.nl>
  <CALLqZ8RM0_yLbM+K=Wo4SVa46a7Dp8SYBLdAMxGWfAbrtR5hQg@mail.gmail.com>
  <9dd68ccb-054a-5ccb-91d9-55267145a34f@cs.ru.nl>
  <CALLqZ8R9o356vp0pcbkfbqFJt09ENDLwnd62ziUTW86SSbKw8g@mail.gmail.com>
-From: Harco Kuppens <h.kuppens@cs.ru.nl>
-Message-ID: <41dedf13-0136-b905-d70d-fef1ade4dbe7@cs.ru.nl>
-Date: Wed, 19 Jun 2019 23:52:44 +0200
+ <41dedf13-0136-b905-d70d-fef1ade4dbe7@cs.ru.nl>
+From: Jan Kiszka <jan.kiszka@web.de>
+Message-ID: <bac8728d-459b-ad23-3bd4-362494ccc615@web.de>
+Date: Thu, 20 Jun 2019 09:37:03 +0200
 MIME-Version: 1.0
-In-Reply-To: <CALLqZ8R9o356vp0pcbkfbqFJt09ENDLwnd62ziUTW86SSbKw8g@mail.gmail.com>
-Content-Language: nl
-Content-Type: text/plain; charset="utf-8"; format="flowed"
-Content-Transfer-Encoding: 8bit
+In-Reply-To: <41dedf13-0136-b905-d70d-fef1ade4dbe7@cs.ru.nl>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: quoted-printable
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -21,315 +22,53 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Greg Gallagher <greg@embeddedgreg.com>
+To: Harco Kuppens <h.kuppens@cs.ru.nl>, Greg Gallagher <greg@embeddedgreg.com>
 Cc: "Xenomai@xenomai.org" <xenomai@xenomai.org>
 
-
-
-Op 19/06/2019 om 17:00 schreef Greg Gallagher:
-> On Wed, Jun 19, 2019 at 8:44 AM Harco Kuppens <h.kuppens@cs.ru.nl> wrote:
->> The ipipe patched not entirely cleanly on the rpi kernel source; I had to make little changes in the patch, but not anything really seriously. So I expect it to be fine.
->>
->> I used the rasbpian kernel source because it has better support for the raspberry pi's and mainly because it has better support for the gpio pins in its kernel.
->>
->> However to help you debug I did a similar install using the mainline kernel  source. The ipipe patch just worked smoothly, however to get the gpio pins running in xenomai I had to still port some code of the file
->>
->>      ./drivers/pinctrl/bcm/pinctrl-bcm2835.c
->>
-> What did you have to change here to get the pins to work with Xenomai?
-> You shouldn't need to change anything here.  If you did then it may be
-> a bug in the ipipe.  Can you try with 4.14 ipipe ?
-I did try with ipipe 4.19 and when compiling the kernel I got lot of 
-errors. Some I could solve, but at the end I gave up.
-
-See my notes on 
-https://github.com/harcokuppens/xenomai3_rpi_gpio/blob/master/install/__INSTALL_FAILURES__/install__compile_vanilla_kernel_4.19_with_xenomai_3.0.8__assert_error.txt 
-Maybe this is also interesting for you.
-
-I shall try 4.14, maybe that works...
-So I did, the description you can find at:
-https://github.com/harcokuppens/xenomai3_rpi_gpio/blob/master/install/installation_of_xenomai_3.0.8_on_mainline_kernel_branch_v4.14.110_from_kernel.org__problem_linux_gpio.md
-
-However the results are exactly the same.  I need the extra patch for 
-pinctrl-bcm2835.c from the raspbian kernel source to have the rtdm gpio 
-pins working in xenomai. Then  xenomai gpio examples work fine, however 
-in linux gpio doesn't work.
-So because we get the same result for two different kernels, I suspect 
-that the problem is somewhere in pinctrl-bcm2835.c which is the same for 
-both.
+On 19.06.19 23:52, Harco Kuppens via Xenomai wrote:
 >
->> to the mainline kernel source.
->>
->> With this kernel I get the same problem : gpio pins work find with rtdm in xenomai, but they don't work with linux anymore.
->> Unclear to me why?
->>
->> The description of this mainline installation and how to get my example  scripts which show you that the linux gpio pins are not working
->> are described in:
->>
->> https://github.com/harcokuppens/xenomai3_rpi_gpio/blob/master/install/installation_of_xenomai_3.0.8_on_mainline_kernel_branch_v4.9.51_from_kernel.org__problem_linux_gpio.md
->>
->> Hope you can help me solving this problem?
->> Xenomai gpio seems to work ok, and the image seems to be fine to be used in our course at the Radboud university.
->>
->> However because the fact that in linux the gpio pins don't work anymore does me little bit worry if it is really ok???
->> Is suspect something is wrong in ./drivers/pinctrl/bcm/pinctrl-bcm2835.c .
-> Can you post a diff of the changes you made (as mentioned above)?
-I made a diff/patch for  ./drivers/pinctrl/bcm/pinctrl-bcm2835.c
-from the version v4.9.51 after the ipipe patch is applied
-to the raspbian kernel version 4.9.y after the ipipe patch is applied.
-
-
-You can download that patch at :
-
-https://raw.githubusercontent.com/harcokuppens/xenomai3_rpi_gpio/master/install/how_pinctrl-bcm2835_patch_for_rpi-4.9_is_derived/pinctrl-bcm2835.c.after-ipipe-patch-extra-rpi-4.9.patch
-
-So after applying the ipipe patch on the v4.9.51 mainline kernel, you 
-must apply this patch to get the latest raspbian patches to this file.
-I needed it to get the rtdm gpio pin numbers correct.  (see the problems 
-in my installation description).
-
-You get then the version of pinctrl-bcm2835.c which I used in my 
-installation description.
-
 >
->> In my previous email I already described points where this file differs from the version in my previous raspian/rpi/xenomai image for which everything worked fine. So take a look at that.
->>
->> I think to test you don't need an raspberry pi 3b+, byt an older raspberry pi 2  or a raspberry 3 would also suffice.
->>
->> Hopefully somebody can help me?
->>
-> I can try this on a rpi 2b this week, when I did this last i was able
-> to use the gpio from sysfs and rtdm.  How are you confirming that
-> Linux doesn't see the interrupt?
-
-I use python test scripts using the piwire library in linux to test the 
-gpio ports. On a normal raspbian image they just work fine. But with the 
-patched kernel they just don't work anymore. So my conclusion is that 
-linux doesn't get the interrupts anymore.
-
-
-How to fetch these scripts is explained at: 
-https://github.com/harcokuppens/xenomai3_rpi_gpio/blob/master/install/installation_of_xenomai_3.0.8_on_mainline_kernel_branch_v4.9.51_from_kernel.org__problem_linux_gpio.md#user-content-test-code
-
-I also described a whole procedure to test whether everything is working at:
-
-|https://github.com/harcokuppens/xenomai3_rpi_gpio/blob/master/install/test_xenomai_installation_and_test_gpio_pins_are_working_correct.txt|
-|
-|If you want to try these scripts then you also need some hardware 
-setup. Otherwise the gpio ports cannot be tested.
-The hardware setup is shown in 
-http://www.cs.ru.nl/J.Hooman/DES/XenomaiExercises/combined__button_toggles_led__output_driven_irq.png
-and described in 
-http://www.cs.ru.nl/J.Hooman/DES/XenomaiExercises/Exercise-7.html
-
-||
-
-||||
-cheers
-Harco
-|
-|
-> We'll need to track down where in
-> the pipeline the interrupt is lost.
-
+> Op 19/06/2019 om 17:00 schreef Greg Gallagher:
+>> On Wed, Jun 19, 2019 at 8:44 AM Harco Kuppens <h.kuppens@cs.ru.nl> wrot=
+e:
+>>> The ipipe patched not entirely cleanly on the rpi kernel source; I had=
+ to
+>>> make little changes in the patch, but not anything really seriously. S=
+o I
+>>> expect it to be fine.
+>>>
+>>> I used the rasbpian kernel source because it has better support for th=
+e
+>>> raspberry pi's and mainly because it has better support for the gpio p=
+ins in
+>>> its kernel.
+>>>
+>>> However to help you debug I did a similar install using the mainline k=
+ernel
+>>> source. The ipipe patch just worked smoothly, however to get the gpio =
+pins
+>>> running in xenomai I had to still port some code of the file
+>>>
+>>> =C2=A0=C2=A0=C2=A0=C2=A0 ./drivers/pinctrl/bcm/pinctrl-bcm2835.c
+>>>
+>> What did you have to change here to get the pins to work with Xenomai?
+>> You shouldn't need to change anything here.=C2=A0 If you did then it ma=
+y be
+>> a bug in the ipipe.=C2=A0 Can you try with 4.14 ipipe ?
+> I did try with ipipe 4.19 and when compiling the kernel I got lot of err=
+ors.
+> Some I could solve, but at the end I gave up.
 >
->> Best regards,
->>
->> Harco Kuppens
->>
->>
->>
-> -Greg
+> See my notes on
+> https://github.com/harcokuppens/xenomai3_rpi_gpio/blob/master/install/__=
+INSTALL_FAILURES__/install__compile_vanilla_kernel_4.19_with_xenomai_3.0.8=
+__assert_error.txt
+> Maybe this is also interesting for you.
 >
->> Op 13/06/2019 om 16:13 schreef Greg Gallagher:
->>
->> On Wed, Jun 12, 2019 at 5:40 PM Harco Kuppens via Xenomai
->> <xenomai@xenomai.org> wrote:
->>
->> I put the raspberry pi image with xenomai2 I build for the raspberry pi
->> 2 and 3, also supporting the latest raspberry pi3b+ online at:
->>
->>     http://www.cs.ru.nl/lab/xenomai/raspberrypi.html
->>
->> I'm still wondering what the reason is that I don't receive the gpio
->> interrupts in linux. Unfortunately nobody could answer my questions so
->> far. If somebody knows the problem, then I will fix the image.
->>
->> Except for this linux gpio interrupt problem the above image seems to
->> work of for realtime xenomai gpio interrupts.
->>
->> Best regards,
->> Harco Kuppens
->>
->> Op 07/06/2019 om 12:34 schreef Harco Kuppens via Xenomai:
->>
->> Hi,
->>
->> In juli 2017 I managed to port xenomai 3.0.5 to rasbpian jessie on the
->> rpi3b. See https://xenomai.org/pipermail/xenomai/2017-July/037515.html
->>
->> But this image doesn't boot on the new raspberrypi 3b+ board. So I had
->> to build a new image. I succeeded to build this image. The
->> instructions are at:
->>
->> https://github.com/harcokuppens/xenomai3_rpi_gpio/blob/master/install/install_xenomai-3.0.8_on_rpi2_3_3B%2B.txt
->>
->>
->> Xenomai and handling gpio interrupts in realtime work fine on this
->> image, however somehow handling gpio interrupts in linux don't work
->> anymore. I have several test scripts using the wiringpi library within
->> linux. Writing and reading gpio pins works fine, but somehow we don't
->> get any interrupts.
->>
->> Even if do not load the xeno_gpio_bcm2835 module, then xenomai doesn't
->> use the gpio pins, but still then in linux with wiringpi examples we
->> don't get any gpio interrupts.
->>
->> However if I boot the standard raspbian image with the standard
->> raspbian kernel which does not support xenomai/cobalt then the
->> wiringpi examples work fine, and we get the gpio interrupts.
->>
->> In my older image from juli 2017 both in a realtime xenomai program or
->> in a wiringpi linux program I received interrupts. (when run
->> separately at different times, so they cannot influence each other; so
->> they are not sharing interrupts!)
->>
->> So I wonder why do the interrupts only work in xenomai realtime, and
->> not in linux anymore?
->>
->> Or is there something maybe changed because we now use
->>
->>   * newer kernel version 4.9 instead of 4.1
->>   * xenomai 3.08 instead of xenomai 3.05
->>
->> I would expect that it just should work, they are different points at
->> the pipeline, and either of them is only watching for interrupt it
->> should just get it. So instead maybe I did  do something wrong when
->> patching the rpi 4.9 kernel during the installation?
->>
->> Patching was not so easy because the raspbian os on the raspberry pi
->> comes with a customized kernel specificly tuned for the raspberry pi
->> hardware. I call this the rpi kernel. This kernel is little bit
->> different then the standard kernel from kernel.org. I call this the
->> kernel.org kernel.
->>
->> The ipipe patches for the kernel are made for the kernel.org kernels.
->> However I managed pretty easily to patch the rpi 4.9 kernel with the
->> the ipipe patch for the kernel.org 4.9 kernel.
->> Except for the file pinctrl-bcm2835.c which is the driver for gpio
->> interrupts. In my installation patching this file for the rpi 4.9
->> kernel was difficult, but I thought I finally succeeded.
->>
->> However because the problem with linux not getting any interrupts I
->> wonder if something still went wrong there.
->>
->> So if I look at the ipipe-patched version of the pinctrl-bcm2835.c for
->> my older image using the rpi 4.1 kernel and my ipiped-patch for this
->> file for rpi-4.9 kernel I am building the image now I find some
->> differences between the files.
->> The files you can find at:
->>
->>   *
->> https://raw.githubusercontent.com/harcokuppens/xenomai3_rpi_gpio/master/install/how_pinctrl-bcm2835_patch_for_rpi-4.9_is_derived/rpi-4.1.y.ipipe-patched/pinctrl-bcm2835.c
->>   *
->> https://raw.githubusercontent.com/harcokuppens/xenomai3_rpi_gpio/master/install/how_pinctrl-bcm2835_patch_for_rpi-4.9_is_derived/rpi-4.9.y.ipipe-patched/pinctrl-bcm2835.c
->>
->> I found the following changes from the 4.1 to the 4.9 version:
->> a) spin_lock_init/spin_lock_irqsave/spin_unlock_irqrestore are
->> replaced with
->> raw_spin_lock_init/raw_spin_lock_irqsave/raw_spin_unlock_irqrestore calls
->> b) in bcm2835_gpio_irq_enable function we have an extra call
->>      ipipe_unlock_irq(data->irq) before calling raw_spin_unlock_irqrestore
->> c) in bcm2835_gpio_irq_disable we have an extra call ipipe_lock_irq
->> before
->>      calling raw_spin_unlock_irqrestore
->> d) in static struct irq_chip bcm2835_gpio_irq_chip we defined extra
->>     functions for hold and release
->> e) in bcm2835_pinctrl_probe the call
->>
->>          err = devm_request_irq(dev,
->> pc->irq[i],bcm2835_gpio_irq_handler, IRQF_SHARED,name, &pc->irq_data[i]);
->>
->>     is replaced with
->>
->>          if (IS_ENABLED(CONFIG_IPIPE)) {
->>                      irq_set_chained_handler(pc->irq[i],
->> gpio_irq_cascade);
->>                      irq_set_handler_data(pc->irq[i], &pc->irq_data[i]);
->>          } else {
->>              err = devm_request_irq(dev,
->> pc->irq[i],bcm2835_gpio_irq_handler, IRQF_SHARED,name, &pc->irq_data[i]);
->>              ..
->>          }
->>
->>    where we have added an extra function
->>
->>           static void gpio_irq_cascade(unsigned int irq, struct
->> irq_desc *desc)
->>           {
->>           #ifdef CONFIG_IPIPE
->>               bcm2835_gpio_irq_handler(irq, irq_get_handler_data(irq));
->>           #endif
->>           }
->>
->> If I look at e) then because I build the kernel with CONFIG_IPIPE then
->> basicly
->>
->>            err = devm_request_irq(dev,
->> pc->irq[i],bcm2835_gpio_irq_handler, IRQF_SHARED,name, &pc->irq_data[i]);
->>
->> is replaced with the two calls:
->>
->>            irq_set_chained_handler(pc->irq[i], gpio_irq_cascade);
->>            irq_set_handler_data(pc->irq[i], &pc->irq_data[i]);
->>
->> with extra function
->>
->>              static void gpio_irq_cascade(unsigned int irq, struct
->> irq_desc *desc)
->>              {
->>                  bcm2835_gpio_irq_handler(irq, irq_get_handler_data(irq));
->>              }
->>
->> Looking at this immediately I notice the  IRQF_SHARED flag.
->> I found at https://notes.shichao.io/lkd/ch7/
->>
->>      IRQF_SHARED. This flag specifies that the interrupt line can be
->> shared
->>      among multiple interrupt handlers. Each handler registered on a
->>      given line must specify this flag; otherwise, only one handler can
->>      exist per line.
->>
->>
->> So as I can see IRQF_SHARED is only used on the 4.1 version in
->> devm_request_irq, but it is unclear if it is used for the 4.9 version.
->>
->> But if I look at a newer kernel  at
->> https://github.com/raspberrypi/linux/blob/rpi-4.14.y/drivers/pinctrl/bcm/pinctrl-bcm2835.c
->> then irq_set_chained_handler+irq_set_handler_data is replaced with
->>
->> gpiochip_set_chained_irqchip(&pc->gpio_chip,&bcm2835_gpio_irq_chip,pc->irq[i],bcm2835_gpio_irq_handler);
->>
->>
->> and the ipipe-core-4.14.110-arm-7.patch  seems to leave it like this.
->>
->> Is any that maybe somehow the cause of the problem?
->>
->> Or has it do with the changes in a) b) c) or d) ?
->>
->> So at the end this has become a very long email.
->> Hopefully somebody can help me answering these questions.
->>
->> Best regards,
->> Harco Kuppens
->>
->> Does the ipipe patch apply cleanly? If you are getting interrupts to
->> the primary domain but not the secondary domain this is probably an
->> ipipe issue.  Is there any reason why you can't use mainline?
->> Mainline issues are easier to debug since we can reproduce them fairly
->> quickly.
->>
->> -Greg
->>
->>
+
+4.19 requires Xenomai master. See our CI (e.g.
+https://travis-ci.com/xenomai-ci/xenomai/jobs/209347407) for a working set=
+up.
+
+Jan
 
