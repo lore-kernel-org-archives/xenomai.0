@@ -1,9 +1,14 @@
-From: Norbert Lange <nolange79@gmail.com>
-Subject: [PATCH 1/2] lib/copperplate: remove wrapped heap function
-Date: Mon,  3 Jun 2019 16:32:27 +0200
-Message-Id: <20190603143228.11528-1-norbert.lange@andritz.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <CAEmXcAxUwr5vkt-t=XxDG-hn9BNb0uRVjY=WevQZGMjrO-_DyA@mail.gmail.com>
+ <VI1PR05MB5917268369E7ABCECA5ABD4EF6E50@VI1PR05MB5917.eurprd05.prod.outlook.com>
+In-Reply-To: <VI1PR05MB5917268369E7ABCECA5ABD4EF6E50@VI1PR05MB5917.eurprd05.prod.outlook.com>
+From: danwe <daniel.wenninger92@gmail.com>
+Date: Fri, 21 Jun 2019 13:22:53 +0200
+Message-ID: <CAEmXcAyHW-dCLSbA4LGFUzObZ-UAVFYBK4+sU9O7TOnZ2XDXXQ@mail.gmail.com>
+Subject: Re: Commands for reading,
+ loading and unloading drivers on BeagleBone Black?
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -12,192 +17,140 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
+To: Lange Norbert <norbert.lange@andritz.com>, xenomai@xenomai.org
 
-this will remove the dependency to libmodechk,
-the original intent was to allow RT threads call
-non-RT functions.
-As the threads require to have weak scheduling policy,
-there is no need to avoid checks (which arent active
-in that policy).
+Hi,
+what exactly are you doing with those "echos" you wrote? I mean why should
+I let linux pick a driver for a device? I have Xenomai with RTnet. I would
+like to use Xenomai- / RTnet-drivers for that.
+I have found the following commands: lsmod, insmod, rmmode. See the
+following output.
+# lsmod
+Module                  Size  Used by    Tainted: G
+rtipv4                 18699  0
+rtpacket                4179  0
+rt_ticpsw              26115  0
+rt_davinci_mdio         4570  0
+rt_smsc                 2165  0
+rtnet                  28479  3 rtipv4,rtpacket,rt_ticpsw
+omap_rng                4174  0
+# iinsmod
+-sh: iinsmod: not found
+# lsmod
+Module                  Size  Used by    Tainted: G
+rtipv4                 18699  0
+rtpacket                4179  0
+rt_ticpsw              26115  0
+rt_davinci_mdio         4570  0
+rt_smsc                 2165  0
+rtnet                  28479  3 rtipv4,rtpacket,rt_ticpsw
+omap_rng                4174  0
+# insmod
+BusyBox v1.22.1 (2019-03-16 12:39:06 CET) multi-call binary.
 
-Signed-off-by: Norbert Lange <norbert.lange@andritz.com>
----
- lib/copperplate/heapobj-heapmem.c | 14 +++++++-------
- lib/copperplate/heapobj-malloc.c  |  6 +++---
- lib/copperplate/registry.c        | 14 +++++++-------
- lib/copperplate/traceobj.c        |  4 ++--
- 4 files changed, 19 insertions(+), 19 deletions(-)
+Usage: insmod FILE [SYMBOL=3DVALUE]...
 
-diff --git a/lib/copperplate/heapobj-heapmem.c b/lib/copperplate/heapobj-heapmem.c
-index 2737fa7ac..bc6e5f236 100644
---- a/lib/copperplate/heapobj-heapmem.c
-+++ b/lib/copperplate/heapobj-heapmem.c
-@@ -33,15 +33,15 @@ int __heapobj_init_private(struct heapobj *hobj, const char *name,
- 	void *_mem = mem;
- 	int ret;
- 
--	heap = __STD(malloc(sizeof(*heap)));
-+	heap = malloc(sizeof(*heap));
- 	if (heap == NULL)
- 		return -ENOMEM;
- 
- 	if (mem == NULL) {
- 		size = HEAPMEM_ARENA_SIZE(size); /* Count meta-data in. */
--		mem = __STD(malloc(size));
-+		mem = malloc(size);
- 		if (mem == NULL) {
--			__STD(free(heap));
-+			free(heap);
- 			return -ENOMEM;
- 		}
- 	}
-@@ -57,8 +57,8 @@ int __heapobj_init_private(struct heapobj *hobj, const char *name,
- 	ret = heapmem_init(hobj->pool, mem, size);
- 	if (ret) {
- 		if (_mem == NULL)
--			__STD(free(mem));
--		__STD(free(heap));
-+			free(mem);
-+		free(heap);
- 		return ret;
- 	}
- 
-@@ -99,13 +99,13 @@ int heapobj_pkg_init_private(void)
- 		size = MIN_HEAPMEM_HEAPSZ;
- #endif
- 	size = HEAPMEM_ARENA_SIZE(size);
--	mem = __STD(malloc(size));
-+	mem = malloc(size);
- 	if (mem == NULL)
- 		return -ENOMEM;
- 
- 	ret = heapmem_init(&heapmem_main, mem, size);
- 	if (ret) {
--		__STD(free(mem));
-+		free(mem);
- 		return ret;
- 	}
- 
-diff --git a/lib/copperplate/heapobj-malloc.c b/lib/copperplate/heapobj-malloc.c
-index ec82d7821..a3918cc23 100644
---- a/lib/copperplate/heapobj-malloc.c
-+++ b/lib/copperplate/heapobj-malloc.c
-@@ -92,7 +92,7 @@ void pvheapobj_destroy(struct heapobj *hobj)
- 	struct pool_header *ph = hobj->pool;
- 
- 	__RT(pthread_mutex_destroy(&ph->lock));
--	__STD(free(ph));
-+	free(ph);
- }
- 
- int pvheapobj_extend(struct heapobj *hobj, size_t size, void *mem)
-@@ -122,7 +122,7 @@ void *pvheapobj_alloc(struct heapobj *hobj, size_t size)
- 	write_unlock(&ph->lock);
- 
- 	/* malloc(3) is not a cancellation point. */
--	ptr = __STD(malloc(size + sizeof(*bh)));
-+	ptr = malloc(size + sizeof(*bh));
- 	if (ptr == NULL) {
- 		write_lock(&ph->lock);
- 		goto fail;
-@@ -149,7 +149,7 @@ void pvheapobj_free(struct heapobj *hobj, void *ptr)
- 	write_lock(&ph->lock);
- 	ph->used -= bh->size;
- 	write_unlock(&ph->lock);
--	__STD(free(bh));
-+	free(bh);
- }
- 
- size_t pvheapobj_inquire(struct heapobj *hobj)
-diff --git a/lib/copperplate/registry.c b/lib/copperplate/registry.c
-index 1d1544805..a60bf9877 100644
---- a/lib/copperplate/registry.c
-+++ b/lib/copperplate/registry.c
-@@ -400,7 +400,7 @@ static int regfs_open(const char *path, struct fuse_file_info *fi)
- 	}
- 
- 	if (fsobj->privsz) {
--		priv = __STD(malloc(fsobj->privsz));
-+		priv = malloc(fsobj->privsz);
- 		if (priv == NULL) {
- 			ret = -ENOMEM;
- 			goto done;
-@@ -448,7 +448,7 @@ static int regfs_release(const char *path, struct fuse_file_info *fi)
- 		CANCEL_RESTORE(svc);
- 	}
- 	if (priv)
--		__STD(free(priv));
-+		free(priv);
- done:
- 	read_unlock(&p->lock);
- 	pop_cleanup_lock(&p->lock);
-@@ -705,7 +705,7 @@ static int connect_regd(const char *sessdir, char **mountpt, int flags)
- 	unsigned int hash;
- 	socklen_t addrlen;
- 
--	*mountpt = __STD(malloc(PATH_MAX));
-+	*mountpt = malloc(PATH_MAX);
- 	if (*mountpt == NULL)
- 		return -ENOMEM;
- 
-@@ -720,7 +720,7 @@ static int connect_regd(const char *sessdir, char **mountpt, int flags)
- 		s = __STD(socket(AF_UNIX, SOCK_SEQPACKET|SOCK_CLOEXEC, 0));
- 		if (s < 0) {
- 			ret = -errno;
--			__STD(free(*mountpt));
-+			free(*mountpt);
- 			return ret;
- 		}
- 		ret = __STD(connect(s, (struct sockaddr *)&sun, addrlen));
-@@ -736,7 +736,7 @@ static int connect_regd(const char *sessdir, char **mountpt, int flags)
- 		ret = -EAGAIN;
- 	}
- 
--	__STD(free(*mountpt));
-+	free(*mountpt);
- 
- 	early_warning("cannot connect to registry daemon");
- 
-@@ -868,13 +868,13 @@ int fsobstack_grow_format(struct fsobstack *o, const char *fmt, ...)
- 		       obstack_grow(&o->obstack, p, n);
- 
- 	       if (p != buf)
--		       __STD(free(p));
-+		       free(p);
- 
- 	       if (n < len)
- 		       return n < 0 ? -EINVAL : n;
- 
- 	       len = n + 1;
--	       p = __STD(malloc(len));
-+	       p = malloc(len);
- 	       if (p == NULL)
- 		       break;
- 	   }
-diff --git a/lib/copperplate/traceobj.c b/lib/copperplate/traceobj.c
-index 8a3f4f5e6..3c4d69bf8 100644
---- a/lib/copperplate/traceobj.c
-+++ b/lib/copperplate/traceobj.c
-@@ -78,7 +78,7 @@ int traceobj_init(struct traceobj *trobj, const char *label, int nr_marks)
- 	trobj->cur_mark = 0;
- 
- 	if (nr_marks > 0) {
--		trobj->marks = __STD(malloc(sizeof(struct tracemark) * nr_marks));
-+		trobj->marks = malloc(sizeof(struct tracemark) * nr_marks);
- 		if (trobj->marks == NULL)
- 			panic("cannot allocate mark table for tracing");
- 	}
-@@ -177,7 +177,7 @@ fail:
- 
- void traceobj_destroy(struct traceobj *trobj)
- {
--	__STD(free(trobj->marks));
-+	free(trobj->marks);
- 	__RT(pthread_mutex_destroy(&trobj->lock));
- }
- 
--- 
-2.20.1
+Load the specified kernel modules into the kernel
 
+# rmmod
+BusyBox v1.22.1 (2019-03-16 12:39:06 CET) multi-call binary.
 
+Usage: rmmod [-wfa] [MODULE]...
+
+Unload kernel modules
+
+        -w      Wait until the module is no longer used
+        -f      Force unload
+        -a      Remove all unused modules (recursively)
+
+Are these modules correct?
+
+Regards,
+
+Daniel
+
+Am Mi., 19. Juni 2019 um 17:41 Uhr schrieb Lange Norbert <
+norbert.lange@andritz.com>:
+
+> Use sysfs-
+>
+> # unbind the current driver for those devices
+> for sio in 1-2:1.0  1-2:1.1  1-2:1.2  1-2:1.3; do
+>     echo "$sio" > /sys/bus/usb/devices/"$sio"/driver/unbind
+> done
+>
+> # use a specific driver 'ftdi_sio' for a device
+> echo "1-2:1.0" > /sys/bus/usb/drivers/ftdi_sio/bind
+> # let linux pick a driver for a device
+> echo '1-2:1.0' >  /sys/bus/usb/drivers_probe
+>
+> works similar with other busses.
+>
+> regards, Norbert Lange
+>
+> > -----Original Message-----
+> > From: Xenomai <xenomai-bounces@xenomai.org> On Behalf Of danwe via
+> > Xenomai
+> > Sent: Mittwoch, 19. Juni 2019 10:19
+> > To: xenomai@xenomai.org
+> > Subject: Commands for reading, loading and unloading drivers on
+> > BeagleBone Black?
+> >
+> > E-MAIL FROM A NON-ANDRITZ SOURCE: AS A SECURITY MEASURE, PLEASE
+> > EXERCISE CAUTION WITH E-MAIL CONTENT AND ANY LINKS OR
+> > ATTACHMENTS.
+> >
+> >
+> > Hello,
+> >
+> > I am using a BeagleBone Black with Xenomai and RTnet on top. As some
+> real-
+> > time programs are not working it could be that the installed drivers on
+> my
+> > BeagleBone Black are still the standard drivers and not the real-time
+> drivers.
+> >
+> > As I did not find anything on internet (only how to install drivers for
+> Windows
+> > when using BeagleBone Black) I would like to ask you if anyobdy knows
+> > commands for BeagleBone Black to read, load and unload installed driver=
+s
+> on
+> > BBB?
+> >
+> > Regards
+> >
+> > Daniel
+> ________________________________
+>
+> This message and any attachments are solely for the use of the intended
+> recipients. They may contain privileged and/or confidential information o=
+r
+> other information protected from disclosure. If you are not an intended
+> recipient, you are hereby notified that you received this email in error
+> and that any review, dissemination, distribution or copying of this email
+> and any attachment is strictly prohibited. If you have received this emai=
+l
+> in error, please contact the sender and delete the message and any
+> attachment from your system.
+>
+> ANDRITZ HYDRO GmbH
+>
+>
+> Rechtsform/ Legal form: Gesellschaft mit beschr=C3=A4nkter Haftung / Corp=
+oration
+>
+> Firmensitz/ Registered seat: Wien
+>
+> Firmenbuchgericht/ Court of registry: Handelsgericht Wien
+>
+> Firmenbuchnummer/ Company registration: FN 61833 g
+>
+> DVR: 0605077
+>
+> UID-Nr.: ATU14756806
+>
+>
+> Thank You
+> ________________________________
+>
