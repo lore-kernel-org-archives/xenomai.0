@@ -1,16 +1,12 @@
-From: Wolfgang Denk <wd@denx.de>
-Subject: Re: serial driver for imx28
+Date: Fri, 21 Jun 2019 18:04:32 +0200
+From: Henning Schild <henning.schild@siemens.com>
+Subject: Re: Preview: 4.19-x86 support
+Message-ID: <20190621180432.483ea4a0@md1za8fc.ad001.siemens.net>
+In-Reply-To: <4a035faa-d1f8-d2ed-9351-192cea2d79eb@siemens.com>
+References: <4a035faa-d1f8-d2ed-9351-192cea2d79eb@siemens.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-In-reply-to: <0881c8f094cabf8753b31f4899ce879658d204ae.camel@sprinte.eu>
-References: <a4aa24290a89f22416023b74362d88d25c7a005b.camel@sprinte.eu>
- <VI1PR05MB59179825BCF273386EB32AADF6EE0@VI1PR05MB5917.eurprd05.prod.outlook.com>
- <c22f08c9283534d80450c26ec41a8500d279f75d.camel@sprinte.eu>
- <VI1PR05MB591784C28B09BCDB55042863F6EE0@VI1PR05MB5917.eurprd05.prod.outlook.com>
- <0881c8f094cabf8753b31f4899ce879658d204ae.camel@sprinte.eu>
-Date: Fri, 21 Jun 2019 14:14:40 +0200
-Message-Id: <20190621121440.AFE8C240049@gemini.denx.de>
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -19,37 +15,46 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Julien Blanc <julien.blanc@sprinte.eu>, Julien Blanc via Xenomai <xenomai@xenomai.org>
+To: Jan Kiszka via Xenomai <xenomai@xenomai.org>
+Cc: Jan Kiszka <jan.kiszka@siemens.com>
 
-Dear Julien,
+Hi Jan,
 
-In message <0881c8f094cabf8753b31f4899ce879658d204ae.camel@sprinte.eu> you wrote:
->
->
-> > If the issue is on the receive side you probably need HW flow-control 
-> > via RTS/CTS pins to make sure you don’t lose anything.
->
-> This proved to be a very good advice, as it seems to solve our issues.
-> Why we did not think about enabling it in the first place remains a
-> mystery to me.
+works fine. The only thing that did not was the gdb smokey test.
 
-The i.MX28 is a special beast.
+> FAILURE run_gdb:288: checking expression "primary_mode", expected
+> "$", found "N"
 
-Your issue is most likely caused by a somewhat stup^H^H^H^Hsimple
-implementation of the UART driver. When it receives the interrupt
-after receiving a block of data, it stops DMA until the data has
-been read from the RX buffer and pushed to the TTY layer.  Given the
-tiny size of the UART RX FIFO, this will cause frequent overruns if
-you don't enable or cannot use flow control.
+did not look into where this came from.
 
-Best regards,
+Tested todays master but think the 4.19 changes should be backported to
+stable as well.
 
-Wolfgang Denk
+I also ran into an smb issue from upstream, which is fixed there. So i
+think this should be rebased on latest 4.19 eventually. Or leave it on
+33 and merge for the first release.
 
--- 
-DENX Software Engineering GmbH,      Managing Director: Wolfgang Denk
-HRB 165235 Munich, Office: Kirchenstr.5, D-82194 Groebenzell, Germany
-Phone: (+49)-8142-66989-10 Fax: (+49)-8142-66989-80 Email: wd@denx.de
-I can type faster than I can move a  mouse,  so  I  find  menu-driven
-drawing packages time consuming and frustrating.      - W. R. Stevens
+Henning
+
+Am Tue, 18 Jun 2019 18:37:14 +0200
+schrieb Jan Kiszka via Xenomai <xenomai@xenomai.org>:
+
+> Hi all,
+> 
+> @all early adopters: There is a first version of upcoming x86 support
+> based on the 4.19 kernel available at [1]. You need Xenomai master
+> for it. The kernel should boot and run Xenomai workload fine - at
+> least it does here so far. I only see one lockdep splat during early
+> boot that needs to be sorted out. Possibly just an instrumentation
+> issue, not a real problem. For the first release, cleaning up the
+> series and adding latest 4.19 support are on my to-do list.
+> 
+> Early test reports appreciated!
+> 
+> Jan
+> 
+> [1]
+> https://gitlab.denx.de/Xenomai/ipipe-x86/commits/wip/ipipe-x86-4.19.y
+> 
+
 
