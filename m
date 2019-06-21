@@ -1,13 +1,9 @@
-Subject: Re: [PATCH] cobalt/posix/signal: Fix iteration over sigwaiters
-References: <7eea68db-9ea0-052c-89c3-aa1a435a5b3d@siemens.com>
-From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <324d1594-05ae-d896-4b59-7b34b171afdd@siemens.com>
-Date: Fri, 21 Jun 2019 10:29:51 +0200
+From: Philippe Gerum <rpm@xenomai.org>
+Subject: [PATCH v2 0/1] cobalt/rtdm: allow for device teardown
+Date: Fri, 21 Jun 2019 11:49:21 +0200
+Message-Id: <20190621094922.17558-1-rpm@xenomai.org>
 MIME-Version: 1.0
-In-Reply-To: <7eea68db-9ea0-052c-89c3-aa1a435a5b3d@siemens.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,59 +12,33 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Xenomai <xenomai@xenomai.org>
+To: xenomai@xenomai.org
 
-On 19.06.19 17:23, Jan Kiszka via Xenomai wrote:
-> From: Jan Kiszka <jan.kiszka@siemens.com>
-> 
-> Using thread both as the iteration variable and the source of the list
-> causes list_for_each_entry to derail after the first thread that has no
-> hit. This could be triggered by sending a process a signal that was in
-> sigwait, but not for that signal.
-> 
-> Fix this by using a stable list pointer.
-> 
-> Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
-> ---
-> 
-> I had already tagged 3.0.9, just not pushed yet - tag deleted again.
-> 
->   kernel/cobalt/posix/signal.c | 6 ++++--
->   1 file changed, 4 insertions(+), 2 deletions(-)
-> 
-> diff --git a/kernel/cobalt/posix/signal.c b/kernel/cobalt/posix/signal.c
-> index 7e0eb52e99..e75ce2b693 100644
-> --- a/kernel/cobalt/posix/signal.c
-> +++ b/kernel/cobalt/posix/signal.c
-> @@ -46,6 +46,7 @@ static int cobalt_signal_deliver(struct cobalt_thread *thread,
->   {				/* nklocked, IRQs off */
->   	struct cobalt_sigwait_context *swc;
->   	struct xnthread_wait_context *wc;
-> +	struct list_head *sigwaiters;
->   	int sig, ret;
->   
->   	sig = sigp->si.si_signo;
-> @@ -67,10 +68,11 @@ static int cobalt_signal_deliver(struct cobalt_thread *thread,
->   	 * group, try to deliver to any thread from the same process
->   	 * waiting for that signal.
->   	 */
-> -	if (!group || list_empty(&thread->process->sigwaiters))
-> +	sigwaiters = &thread->process->sigwaiters;
-> +	if (!group || list_empty(sigwaiters))
->   		return 0;
->   
-> -	list_for_each_entry(thread, &thread->process->sigwaiters, signext) {
-> +	list_for_each_entry(thread, sigwaiters, signext) {
->   		wc = xnthread_get_wait_context(&thread->threadbase);
->   		swc = container_of(wc, struct cobalt_sigwait_context, wc);
->   		if (sigismember(swc->set, sig))
-> 
+This is the second iteration of the device teardown feature, the one
+that... well, works.
 
-Merged into master and stable.
+Furthermore, it does not require any addition to the existing drivers
+to enable them for teardown support, unless they are currently broken
+in the first place. Drivers with broken close() handlers would still
+hang upon teardown, nothing worse with this change in.
 
-Jan
+The patch sent earlier changing the hand over status code in libcobalt
+is a prerequisite for applications to detect the teardown condition
+unambiguously. The patch fixing the module refcounting for RTnet is
+required to have the teardown process work for the network stack.
+
+Philippe Gerum (1):
+  cobalt/rtdm: allow for device teardown
+
+ include/cobalt/kernel/rtdm/driver.h |  1 +
+ include/cobalt/kernel/rtdm/fd.h     |  2 ++
+ kernel/cobalt/rtdm/core.c           | 25 ++++++++++++++++++++-----
+ kernel/cobalt/rtdm/device.c         | 21 +++++++++++++++++++--
+ kernel/cobalt/rtdm/fd.c             | 22 ++++++++++++++++++----
+ kernel/cobalt/rtdm/internal.h       |  6 ++++++
+ 6 files changed, 66 insertions(+), 11 deletions(-)
 
 -- 
-Siemens AG, Corporate Technology, CT RDA IOT SES-DE
-Corporate Competence Center Embedded Linux
+2.21.0
+
 
