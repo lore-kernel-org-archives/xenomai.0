@@ -1,12 +1,9 @@
-Subject: Re: Preview: 4.19-x86 support
-References: <4a035faa-d1f8-d2ed-9351-192cea2d79eb@siemens.com>
- <20190621180432.483ea4a0@md1za8fc.ad001.siemens.net>
 From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <7b7ff8c9-0faa-2a9b-5347-ee5361a978d0@siemens.com>
-Date: Mon, 24 Jun 2019 08:32:24 +0200
+Subject: [ANNOUNCE] Xenomai 3.0.9 released
+Message-ID: <83773016-ff9c-ea77-4bd0-40fb70320c00@siemens.com>
+Date: Mon, 24 Jun 2019 09:48:59 +0200
 MIME-Version: 1.0
-In-Reply-To: <20190621180432.483ea4a0@md1za8fc.ad001.siemens.net>
-Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
@@ -17,64 +14,89 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Henning Schild <henning.schild@siemens.com>, Xenomai <xenomai@xenomai.org>
+To: Xenomai <xenomai@xenomai.org>
 
-On 21.06.19 18:04, Henning Schild via Xenomai wrote:
-> Hi Jan,
-> 
-> works fine. The only thing that did not was the gdb smokey test.
-> 
->> FAILURE run_gdb:288: checking expression "primary_mode", expected
->> "$", found "N"
-> 
-> did not look into where this came from.
+Changes since 3.0.8:
 
-OK, didn't see that so far. Did you only see this on 4.19 so far, ie. did you 
-test 4.14 or older with master recently?
+Jan Kiszka (16):
+      cobalt: x86: Use ipipe_root_nr_syscalls
+      rtnet: Add kernel/rtdm/net.h to packaged header list
+      cobalt: Improve cobalt_copy_from/to_user
+      cobalt/wrappers: Fix version level for cobalt_gpiochip_dev
+      ci: Add userspace build
+      rtnet: e1000e: Fix build on 4.12+
+      ci: Pull kernels from git and enhance coverage
+      ci: Tune config
+      ci: Update to latest 4.14-110-arm-7
+      ci: Add a powerpc target
+      cobalt/thread: Clear XNSYSRST when migrating to Linux
+      testsuite/smokey/sigdebug: Fix check_no_error and some callers
+      rtnet: Remove rtskbs also from mapwait list on destruction
+      rtnet: Fix leak on failing rtdev_map_rtskb in rtskb_pool_extend
+      cobalt/posix/signal: Fix iteration over sigwaiters
+      config: Bump version number
 
-> 
-> Tested todays master but think the 4.19 changes should be backported to
-> stable as well.
+Jeff Webb (1):
+      drivers/serial: 16550A: fix tx timeout bug in rt_16550_write
 
-I'm not planning for that due to the number of changes involved. 3.1 will come 
-out "soon", and that is for newer kernels.
+Norbert Lange via Xenomai (3):
+      cobalt: mode argument from open forwarded for O_TMPFILE
+      lib/cobalt: start helper thread with signals blocked
+      lib/cobalt: set name for printf thread to help debugging
 
-> 
-> I also ran into an smb issue from upstream, which is fixed there. So i
-> think this should be rebased on latest 4.19 eventually. Or leave it on
-> 33 and merge for the first release.
+Philippe Gerum (32):
+      utils/can: prevent unterminated destination buffer with strncpy()
+      demos/posix: prevent unterminated destination buffer with strncpy()
+      boilerplate/ancillaries: prevent false positive with -Wstringop-truncation
+      cobalt/ancillaries: prevent false positive with -Wstringop-truncation
+      cobalt/sched: add per-policy handler for early parameter checking
+      cobalt/sched: quota: add early parameter checking handler
+      cobalt/sched: sporadic: add early parameter checking handler
+      cobalt/sched: tp: add early parameter checking handler
+      cobalt/sched: weak: add early parameter checking handler
+      cobalt/intr: vfile: do not assume all irqs are cobalt-managed
+      drivers/autotune: do not read user data we should not expect
+      cobalt/thread: skip boundary check for infinite round-robin time slice
+      testsuite/smokey: posix_clock: prevent false positive in time-dependent test
+      net/stack: fresh rtskb should have ip_summed set to CHECKSUM_NONE
+      net/rtdev: ensure per-device skbs get mapped at registration
+      net/udp: getfrag: fix frag preparation status
+      net/udp: getfrag: remove direct reference to user memory
+      testsuite/smokey: net: do not unload pre-loaded modules
+      testsuite/smokey: net: do not down a previously running test interface
+      drivers/ipc: bufp: fix read-write, write-write preemption cases
+      drivers/serial: imx: fix locking imbalance upon -EBADF
+      drivers/serial: imx: fix transmit interrupt handling
+      drivers/serial: imx: robustify device setup/cleanup
+      drivers/serial: always propagate -EINTR downstream
+      drivers/serial: imx: simplify RX loop
+      drivers/serial: imx: dismiss noisy IRQ events
+      drivers/udd: fix spurious select() read events
+      testsuite/smokey: sched-quota: allow up to 1.5% deviation from plan
+      testsuite/smokey: reset main()'s SCHED_OTHER policy before each test
+      cobalt/thread: send backtracing request only when XNWARN is set
+      cobalt/thread: fix error status (-EINTR) of xnthread_killall()
+      lib/cobalt: kickstart backtrace() from safe context
 
-Which one exactly?
+Philippe Gerum via Xenomai (1):
+      cobalt/intr: fix interrupt stat iterator
 
-Thanks,
+Roman Stratiienko (3):
+      travis: add basic CI support
+      travis: use ccache
+      travis: add more build options
+
+Sebastian Smolorz via Xenomai (1):
+      net/ip_sock: ioctl: fix unsafe accesses from/to userspace
+
+
+Thanks to all the contributors!
+
+Note again that the 3.0.x series works up to kernel 4.14. For 4.19
+support, please switch to master, the source of upcoming 3.1. And now
+let's work on finishing that!
+
 Jan
-
-> 
-> Henning
-> 
-> Am Tue, 18 Jun 2019 18:37:14 +0200
-> schrieb Jan Kiszka via Xenomai <xenomai@xenomai.org>:
-> 
->> Hi all,
->>
->> @all early adopters: There is a first version of upcoming x86 support
->> based on the 4.19 kernel available at [1]. You need Xenomai master
->> for it. The kernel should boot and run Xenomai workload fine - at
->> least it does here so far. I only see one lockdep splat during early
->> boot that needs to be sorted out. Possibly just an instrumentation
->> issue, not a real problem. For the first release, cleaning up the
->> series and adding latest 4.19 support are on my to-do list.
->>
->> Early test reports appreciated!
->>
->> Jan
->>
->> [1]
->> https://gitlab.denx.de/Xenomai/ipipe-x86/commits/wip/ipipe-x86-4.19.y
->>
-> 
-> 
-> 
 
 -- 
 Siemens AG, Corporate Technology, CT RDA IOT SES-DE
