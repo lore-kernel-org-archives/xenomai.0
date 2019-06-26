@@ -1,17 +1,11 @@
-Message-ID: <aa21fde46dfe7df806b978a417d0a915c5ff9cb8.camel@sprinte.eu>
-Subject: Re: serial driver for imx28
-From: Julien Blanc <julien.blanc@sprinte.eu>
-Date: Tue, 25 Jun 2019 14:12:36 +0200
-In-Reply-To: <20190621121440.AFE8C240049@gemini.denx.de>
-References: <a4aa24290a89f22416023b74362d88d25c7a005b.camel@sprinte.eu>
- <VI1PR05MB59179825BCF273386EB32AADF6EE0@VI1PR05MB5917.eurprd05.prod.outlook.com>
- <c22f08c9283534d80450c26ec41a8500d279f75d.camel@sprinte.eu>
- <VI1PR05MB591784C28B09BCDB55042863F6EE0@VI1PR05MB5917.eurprd05.prod.outlook.com>
- <0881c8f094cabf8753b31f4899ce879658d204ae.camel@sprinte.eu>
- <20190621121440.AFE8C240049@gemini.denx.de>
-Content-Type: text/plain; charset="utf-8"
-Mime-Version: 1.0
-Content-Transfer-Encoding: 8bit
+From: Lange Norbert <norbert.lange@andritz.com>
+Subject: Waking up threads from the other xenomai/linux domain
+Date: Wed, 26 Jun 2019 11:05:02 +0000
+Message-ID: <VI1PR05MB59174B1FCCC4A8B782A2EEEDF6E20@VI1PR05MB5917.eurprd05.prod.outlook.com>
+Content-Language: en-US
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
+MIME-Version: 1.0
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -20,30 +14,77 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Wolfgang Denk <wd@denx.de>, Julien Blanc via Xenomai <xenomai@xenomai.org>
+To: "Xenomai (xenomai@xenomai.org)" <xenomai@xenomai.org>
 
-Le vendredi 21 juin 2019 à 14:14 +0200, Wolfgang Denk a écrit :
-> Dear Julien,
-> 
-> The i.MX28 is a special beast.
-> 
-> Your issue is most likely caused by a somewhat stup^H^H^H^Hsimple
-> implementation of the UART driver. When it receives the interrupt
-> after receiving a block of data, it stops DMA until the data has
-> been read from the RX buffer and pushed to the TTY layer.  Given the
-> tiny size of the UART RX FIFO, this will cause frequent overruns if
-> you don't enable or cannot use flow control.
+Hello,
 
-Indeed.
+I have multiple threads, one of them is realtime, one other is responsible =
+for controlling the service.
 
-The driver seems to be really buggy outside the simple use cases
-(anything involving reconfiguring the transmission settings on the fly
-is not recommended), but RTS/CTS definitely solved our data loss
-issues. As a bonus we were even able to increase the baudrate up to
-460800 bauds.
+The controlling thread blocks on some linux sockets, the realtime one has a=
+ select on a RT socket and a timeout.
 
-Best regards and thanks all for your answers,
+I now have the problem that I need to wake up the other thread under some c=
+ircumstances, not always (then I would just poll),
+but potentially in regular burst (forwarding packets).
+>From the docs, XDDP seems the only solution, I wonder if there are more.
 
-Julien
+1) Connect the threads with a XDDP socket, add the fd in the select calls.
+2) Atleast when Linux is waking up Xenomai, I could use an IDDP/BUFP socket=
+ with the linux thread then being promoted for the duration of the call.
+3) Signals? Could they be used to interrupt the select (both linux and coba=
+lt variant)?. The POSIX skin has no pselect so I wonder how I would make su=
+re the signal
+is only delivered during select
 
+All the RTIPC sockets seem to use a global pool of ports, and I believe XDD=
+P to be rather heavyweight.I am looking for an efficient way (in total CPU =
+time) to unblock a thread,
+It does not need to have lowest latency.
+
+(Note that this is in the same process, so I would prefer something like so=
+cketpair to open up an anonymous "pipe" not feeding from global ports).
+
+
+Mit besten Gr=FC=DFen / Kind regards
+
+NORBERT LANGE
+AT-DES
+
+ANDRITZ HYDRO GmbH
+Eibesbrunnergasse 20
+1120 Vienna / AUSTRIA
+p: +43 50805 56684
+norbert.lange@andritz.com
+andritz.com
+________________________________
+
+This message and any attachments are solely for the use of the intended rec=
+ipients. They may contain privileged and/or confidential information or oth=
+er information protected from disclosure. If you are not an intended recipi=
+ent, you are hereby notified that you received this email in error and that=
+ any review, dissemination, distribution or copying of this email and any a=
+ttachment is strictly prohibited. If you have received this email in error,=
+ please contact the sender and delete the message and any attachment from y=
+our system.
+
+ANDRITZ HYDRO GmbH
+
+
+Rechtsform/ Legal form: Gesellschaft mit beschr=E4nkter Haftung / Corporati=
+on
+
+Firmensitz/ Registered seat: Wien
+
+Firmenbuchgericht/ Court of registry: Handelsgericht Wien
+
+Firmenbuchnummer/ Company registration: FN 61833 g
+
+DVR: 0605077
+
+UID-Nr.: ATU14756806
+
+
+Thank You
+________________________________
 
