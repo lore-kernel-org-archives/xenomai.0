@@ -1,10 +1,15 @@
-Subject: Re: [PATCH v2] net/tcp: fix unsafe accesses from/to userspace
-References: <20190603121012.13032-1-sebastian.smolorz@gmx.de>
+Subject: Re: Preview: 4.19-x86 support
+References: <4a035faa-d1f8-d2ed-9351-192cea2d79eb@siemens.com>
+ <20190621180432.483ea4a0@md1za8fc.ad001.siemens.net>
+ <7b7ff8c9-0faa-2a9b-5347-ee5361a978d0@siemens.com>
+ <20190624131858.41860152@md1za8fc.ad001.siemens.net>
+ <ced098bf-d5fc-6dc0-cc82-05a5eec1c45b@siemens.com>
+ <20190627155612.32bfc242@md1za8fc.ad001.siemens.net>
 From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <4777625f-fa79-8a3c-6697-93a93708581f@siemens.com>
-Date: Mon, 3 Jun 2019 16:59:07 +0200
+Message-ID: <018eeba9-c186-89d6-b152-ba12959c3a9f@siemens.com>
+Date: Thu, 27 Jun 2019 18:50:30 +0200
 MIME-Version: 1.0
-In-Reply-To: <20190603121012.13032-1-sebastian.smolorz@gmx.de>
+In-Reply-To: <20190627155612.32bfc242@md1za8fc.ad001.siemens.net>
 Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -16,254 +21,62 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Sebastian Smolorz <sebastian.smolorz@gmx.de>
-Cc: xenomai@xenomai.org
+To: Henning Schild <henning.schild@siemens.com>
+Cc: Xenomai <xenomai@xenomai.org>
 
-On 03.06.19 14:10, Sebastian Smolorz wrote:
-> Signed-off-by: Sebastian Smolorz <sebastian.smolorz@gmx.de>
-> ---
->   kernel/drivers/net/stack/ipv4/tcp/tcp.c | 90 ++++++++++++++++---------
->   1 file changed, 59 insertions(+), 31 deletions(-)
+On 27.06.19 15:56, Henning Schild via Xenomai wrote:
+> Am Mon, 24 Jun 2019 13:29:16 +0200
+> schrieb Jan Kiszka <jan.kiszka@siemens.com>:
 > 
-> diff --git a/kernel/drivers/net/stack/ipv4/tcp/tcp.c b/kernel/drivers/net/stack/ipv4/tcp/tcp.c
-> index 828f7d115..f4ea6ffcc 100644
-> --- a/kernel/drivers/net/stack/ipv4/tcp/tcp.c
-> +++ b/kernel/drivers/net/stack/ipv4/tcp/tcp.c
-> @@ -1418,15 +1418,18 @@ static void rt_tcp_close(struct rtdm_fd *fd)
->    *  @s:     socket
->    *  @addr:  local address
->    */
-> -static int rt_tcp_bind(struct tcp_socket *ts, const struct sockaddr *addr,
-> -		       socklen_t addrlen)
-> +static int rt_tcp_bind(struct rtdm_fd *fd, struct tcp_socket *ts,
-> +		       const struct sockaddr __user *addr, socklen_t addrlen)
->   {
-> -    struct sockaddr_in  *usin = (struct sockaddr_in *)addr;
-> +    struct sockaddr_in  *usin, _usin;
->       rtdm_lockctx_t      context;
->       int                 index;
->       int                 bound = 0;
->       int                 ret = 0;
+>> On 24.06.19 13:18, Henning Schild wrote:
+>>> Am Mon, 24 Jun 2019 08:32:24 +0200
+>>> schrieb Jan Kiszka <jan.kiszka@siemens.com>:
+>>>    
+>>>> On 21.06.19 18:04, Henning Schild via Xenomai wrote:
+>>>>> Hi Jan,
+>>>>>
+>>>>> works fine. The only thing that did not was the gdb smokey test.
+>>>>>       
+>>>>>> FAILURE run_gdb:288: checking expression "primary_mode", expected
+>>>>>> "$", found "N"
+>>>>>
+>>>>> did not look into where this came from.
+>>>>
+>>>> OK, didn't see that so far. Did you only see this on 4.19 so far,
+>>>> ie. did you test 4.14 or older with master recently?
+>>>
+>>> Switches from stable to master for just this one, so can not tell.
+>>>    
+>>>>>
+>>>>> Tested todays master but think the 4.19 changes should be
+>>>>> backported to stable as well.
+>>>>
+>>>> I'm not planning for that due to the number of changes involved.
+>>>> 3.1 will come out "soon", and that is for newer kernels.
+>>>
+>>> Ok.
+>>>    
+>>>>>
+>>>>> I also ran into an smb issue from upstream, which is fixed there.
+>>>>> So i think this should be rebased on latest 4.19 eventually. Or
+>>>>> leave it on 33 and merge for the first release.
+>>>>
+>>>> Which one exactly?
+>>>
+>>> 37, but is there anything from preventing 55?
+>>
+>> I was referring to the concrete issue, or commit. I will rebase, I
+>> just wanted to reduce the number of variables during the initial
+>> stabilization.
 > 
-> +    usin = rtnet_get_arg(fd, &_usin, addr, sizeof(_usin));
-> +    if (IS_ERR(usin))
-> +	return PTR_ERR(usin);
-> 
->       if ((addrlen < (int)sizeof(struct sockaddr_in)) ||
->   	((usin->sin_port & tcp_auto_port_mask) == tcp_auto_port_start))
-> @@ -1475,10 +1478,11 @@ static int rt_tcp_bind(struct tcp_socket *ts, const struct sockaddr *addr,
->   /***
->    *  rt_tcp_connect
->    */
-> -static int rt_tcp_connect(struct tcp_socket *ts, const struct sockaddr *serv_addr,
-> +static int rt_tcp_connect(struct rtdm_fd *fd, struct tcp_socket *ts,
-> +			  const struct sockaddr __user *serv_addr,
->   			  socklen_t addrlen)
->   {
-> -    struct sockaddr_in  *usin = (struct sockaddr_in *) serv_addr;
-> +    struct sockaddr_in  *usin, _usin;
->       struct dest_route   rt;
->       rtdm_lockctx_t      context;
->       int ret;
-> @@ -1486,6 +1490,10 @@ static int rt_tcp_connect(struct tcp_socket *ts, const struct sockaddr *serv_add
->       if (addrlen < (int)sizeof(struct sockaddr_in))
->   	return -EINVAL;
-> 
-> +    usin = rtnet_get_arg(fd, &_usin, serv_addr, sizeof(_usin));
-> +    if (IS_ERR(usin))
-> +	return PTR_ERR(usin);
-> +
->       if (usin->sin_family != AF_INET)
->   	return -EAFNOSUPPORT;
-> 
-> @@ -1594,18 +1602,23 @@ static int rt_tcp_listen(struct tcp_socket *ts, unsigned long backlog)
->   /***
->    *  rt_tcp_accept
->    */
-> -static int rt_tcp_accept(struct tcp_socket *ts, struct sockaddr *addr,
-> -			 socklen_t *addrlen)
-> +static int rt_tcp_accept(struct rtdm_fd *fd, struct tcp_socket *ts,
-> +			 struct sockaddr *addr, socklen_t __user *addrlen)
->   {
->       /* Return sockaddr, but bind it with rt_socket_init, so it would be
->          possible to read/write from it in future, return valid file descriptor */
-> 
->       int ret;
-> -    struct sockaddr_in  *sin = (struct sockaddr_in*)addr;
-> +    socklen_t           *uaddrlen, _uaddrlen;
-> +    struct sockaddr_in  sin;
->       nanosecs_rel_t      timeout = ts->sock.timeout;
->       rtdm_lockctx_t      context;
->       struct dest_route   rt;
-> 
-> +    uaddrlen = rtnet_get_arg(fd, &_uaddrlen, addrlen, sizeof(_uaddrlen));
-> +    if (IS_ERR(uaddrlen))
-> +	return PTR_ERR(uaddrlen);
-> +
->       rtdm_lock_get_irqsave(&ts->socket_lock, context);
->       if (ts->is_accepting || ts->is_accepted) {
->   	/* socket is already accepted or is accepting a connection right now */
-> @@ -1613,7 +1626,7 @@ static int rt_tcp_accept(struct tcp_socket *ts, struct sockaddr *addr,
->   	return -EALREADY;
->       }
-> 
-> -    if (ts->tcp_state != TCP_LISTEN || *addrlen < sizeof(struct sockaddr_in)) {
-> +    if (ts->tcp_state != TCP_LISTEN || *uaddrlen < sizeof(struct sockaddr_in)) {
->   	rtdm_lock_put_irqrestore(&ts->socket_lock, context);
->   	return -EINVAL;
->       }
-> @@ -1642,6 +1655,18 @@ static int rt_tcp_accept(struct tcp_socket *ts, struct sockaddr *addr,
->   	goto err;
->       }
-> 
-> +    if (addr) {
-> +	sin.sin_family      = AF_INET;
-> +	sin.sin_port        = ts->dport;
-> +	sin.sin_addr.s_addr = ts->daddr;
-> +	ret = rtnet_put_arg(fd, addr, &sin, sizeof(sin));
-> +	if (ret) {
-> +	    rtdev_dereference(rt.rtdev);
-> +	    ret = -EFAULT;
-> +	    goto err;
-> +	}
-> +    }
-> +
->       rtdm_lock_get_irqsave(&ts->socket_lock, context);
-> 
->       if (ts->tcp_state != TCP_ESTABLISHED) {
-> @@ -1657,10 +1682,6 @@ static int rt_tcp_accept(struct tcp_socket *ts, struct sockaddr *addr,
->       else
->   	rtdev_dereference(rt.rtdev);
-> 
-> -    sin->sin_family      = AF_INET;
-> -    sin->sin_port        = ts->dport;
-> -    sin->sin_addr.s_addr = ts->daddr;
-> -
->       ts->is_accepted = 1;
->       rtdm_lock_put_irqrestore(&ts->socket_lock, context);
-> 
-> @@ -1799,14 +1820,14 @@ static int rt_tcp_ioctl(struct rtdm_fd *fd,
->   		setaddr = rtnet_get_arg(fd, &_setaddr, arg, sizeof(_setaddr));
->   		if (IS_ERR(setaddr))
->   			return PTR_ERR(setaddr);
-> -		return rt_tcp_bind(ts, setaddr->addr, setaddr->addrlen);
-> +		return rt_tcp_bind(fd, ts, setaddr->addr, setaddr->addrlen);
->   	case _RTIOC_CONNECT:
->   		if (!in_rt)
->   			return -ENOSYS;
->   		setaddr = rtnet_get_arg(fd, &_setaddr, arg, sizeof(_setaddr));
->   		if (IS_ERR(setaddr))
->   			return PTR_ERR(setaddr);
-> -		return rt_tcp_connect(ts, setaddr->addr, setaddr->addrlen);
-> +		return rt_tcp_connect(fd, ts, setaddr->addr, setaddr->addrlen);
-> 
->   	case _RTIOC_LISTEN:
->   		return rt_tcp_listen(ts, (unsigned long)arg);
-> @@ -1817,7 +1838,7 @@ static int rt_tcp_ioctl(struct rtdm_fd *fd,
->   		getaddr = rtnet_get_arg(fd, &_getaddr, arg, sizeof(_getaddr));
->   		if (IS_ERR(getaddr))
->   			return PTR_ERR(getaddr);
-> -		return rt_tcp_accept(ts, getaddr->addr, getaddr->addrlen);
-> +		return rt_tcp_accept(fd, ts, getaddr->addr, getaddr->addrlen);
-> 
->   	case _RTIOC_SHUTDOWN:
->   		return rt_tcp_shutdown(ts, (unsigned long)arg);
-> @@ -1994,13 +2015,15 @@ static ssize_t rt_tcp_read(struct rtdm_fd *fd, void *buf, size_t nbyte)
->   /***
->    *  rt_tcp_write
->    */
-> -static ssize_t rt_tcp_write(struct rtdm_fd *fd, const void *buf, size_t nbyte)
-> +static ssize_t rt_tcp_write(struct rtdm_fd *fd, const void __user *user_buf,
-> +			    size_t nbyte)
->   {
->       struct tcp_socket *ts = rtdm_fd_to_private(fd);
->       uint32_t sent_len = 0;
->       rtdm_lockctx_t      context;
->       int ret = 0;
->       nanosecs_rel_t sk_sndtimeo;
-> +    void *buf;
-> 
->       if (!rtdm_fd_is_user(fd)) {
->   	return -EFAULT;
-> @@ -2022,6 +2045,16 @@ static ssize_t rt_tcp_write(struct rtdm_fd *fd, const void *buf, size_t nbyte)
-> 
->       rtdm_lock_put_irqrestore(&ts->socket_lock, context);
-> 
-> +    buf = xnmalloc(nbyte);
-> +    if (buf == NULL)
-> +	return -ENOMEM;
-> +
-> +    ret = rtdm_copy_from_user(fd, buf, user_buf, nbyte);
-> +    if (ret) {
-> +	xnfree(buf);
-> +	return ret;
-> +    }
-> +
->       while (sent_len < nbyte) {
-> 
->   	ret = rtdm_event_timedwait(&ts->send_evt, sk_sndtimeo, NULL);
-> @@ -2031,13 +2064,17 @@ static ssize_t rt_tcp_write(struct rtdm_fd *fd, const void *buf, size_t nbyte)
->   		case -EWOULDBLOCK:
->   		case -ETIMEDOUT:
->   		case -EINTR:
-> +		    xnfree(buf);
->   		    return sent_len ? : ret;
-> 
->   		case -EIDRM: /* event is destroyed */
->   		default:
-> -		    if (ts->is_closed)
-> +		    if (ts->is_closed) {
-> +			xnfree(buf);
->   			return -EBADF;
-> +		    }
-> 
-> +		    xnfree(buf);
->   		    return sent_len ? : ret;
->   	    }
-> 
-> @@ -2054,6 +2091,7 @@ static ssize_t rt_tcp_write(struct rtdm_fd *fd, const void *buf, size_t nbyte)
->   	    rtdm_event_signal(&ts->send_evt);
->       }
-> 
-> +    xnfree(buf);
->       return (ret < 0 ? ret : sent_len);
->   }
-> 
-> @@ -2104,7 +2142,6 @@ static ssize_t rt_tcp_sendmsg(struct rtdm_fd *fd,
->   	struct user_msghdr _msg;
->   	ssize_t ret;
->   	size_t len;
-> -	void *buf;
-> 
->   	if (msg_flags)
->   		return -EOPNOTSUPP;
-> @@ -2122,18 +2159,9 @@ static ssize_t rt_tcp_sendmsg(struct rtdm_fd *fd,
->   		return ret;
-> 
->   	len = iov[0].iov_len;
-> -	if (len > 0) {
-> -		buf = xnmalloc(len);
-> -		if (buf == NULL) {
-> -			ret = -ENOMEM;
-> -			goto out;
-> -		}
-> -		ret = rtdm_copy_from_user(fd, buf, iov[0].iov_base, len);
-> -		if (!ret)
-> -			ret = rt_tcp_write(fd, buf, len);
-> -		xnfree(buf);
-> -	}
-> -out:
-> +	if (len > 0)
-> +	    ret = rt_tcp_write(fd, iov[0].iov_base, len);
-> +
->   	rtdm_drop_iovec(iov, iov_fast);
-> 
->   	return ret;
-> --
-> 2.19.1
+> upstream 088aaf17aa79300cab14dbee2569c58cfafd7d6e
+> stable c69330a855ab4342d304f67f8c1e7d1fa2686bec
 > 
 
-Thanks, applied.
+Ah, SMB - I've read SMP and was expecting some thrilling patch.
+
+BTW, regarding the failing smokey gdb test: Check if gdb is available on the 
+target. That is now a precondition.
 
 Jan
 
