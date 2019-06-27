@@ -1,16 +1,14 @@
-Date: Thu, 27 Jun 2019 15:56:12 +0200
-From: Henning Schild <henning.schild@siemens.com>
-Subject: Re: Preview: 4.19-x86 support
-Message-ID: <20190627155612.32bfc242@md1za8fc.ad001.siemens.net>
-In-Reply-To: <ced098bf-d5fc-6dc0-cc82-05a5eec1c45b@siemens.com>
-References: <4a035faa-d1f8-d2ed-9351-192cea2d79eb@siemens.com>
- <20190621180432.483ea4a0@md1za8fc.ad001.siemens.net>
- <7b7ff8c9-0faa-2a9b-5347-ee5361a978d0@siemens.com>
- <20190624131858.41860152@md1za8fc.ad001.siemens.net>
- <ced098bf-d5fc-6dc0-cc82-05a5eec1c45b@siemens.com>
+From: Lange Norbert <norbert.lange@andritz.com>
+Subject: RE: Waking up threads from the other xenomai/linux domain
+Date: Thu, 27 Jun 2019 15:08:12 +0000
+Message-ID: <VI1PR05MB59179C436804EC085676C86DF6FD0@VI1PR05MB5917.eurprd05.prod.outlook.com>
+References: <VI1PR05MB59174B1FCCC4A8B782A2EEEDF6E20@VI1PR05MB5917.eurprd05.prod.outlook.com>
+ <d1807b53-981e-734c-264d-719ca4d7844b@xenomai.org>
+In-Reply-To: <d1807b53-981e-734c-264d-719ca4d7844b@xenomai.org>
+Content-Language: en-US
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -19,58 +17,86 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jan Kiszka <jan.kiszka@siemens.com>
-Cc: Xenomai <xenomai@xenomai.org>
+To: Philippe Gerum <rpm@xenomai.org>, "Xenomai (xenomai@xenomai.org)" <xenomai@xenomai.org>
 
-Am Mon, 24 Jun 2019 13:29:16 +0200
-schrieb Jan Kiszka <jan.kiszka@siemens.com>:
-
-> On 24.06.19 13:18, Henning Schild wrote:
-> > Am Mon, 24 Jun 2019 08:32:24 +0200
-> > schrieb Jan Kiszka <jan.kiszka@siemens.com>:
-> >   
-> >> On 21.06.19 18:04, Henning Schild via Xenomai wrote:  
-> >>> Hi Jan,
-> >>>
-> >>> works fine. The only thing that did not was the gdb smokey test.
-> >>>      
-> >>>> FAILURE run_gdb:288: checking expression "primary_mode", expected
-> >>>> "$", found "N"  
-> >>>
-> >>> did not look into where this came from.  
-> >>
-> >> OK, didn't see that so far. Did you only see this on 4.19 so far,
-> >> ie. did you test 4.14 or older with master recently?  
-> > 
-> > Switches from stable to master for just this one, so can not tell.
-> >   
-> >>>
-> >>> Tested todays master but think the 4.19 changes should be
-> >>> backported to stable as well.  
-> >>
-> >> I'm not planning for that due to the number of changes involved.
-> >> 3.1 will come out "soon", and that is for newer kernels.  
-> > 
-> > Ok.
-> >   
-> >>>
-> >>> I also ran into an smb issue from upstream, which is fixed there.
-> >>> So i think this should be rebased on latest 4.19 eventually. Or
-> >>> leave it on 33 and merge for the first release.  
-> >>
-> >> Which one exactly?  
-> > 
-> > 37, but is there anything from preventing 55?  
-> 
-> I was referring to the concrete issue, or commit. I will rebase, I
-> just wanted to reduce the number of variables during the initial
-> stabilization.
-
-upstream 088aaf17aa79300cab14dbee2569c58cfafd7d6e
-stable c69330a855ab4342d304f67f8c1e7d1fa2686bec
-
-Henning
-
-> Jan
-
+DQoNCj4gLS0tLS1PcmlnaW5hbCBNZXNzYWdlLS0tLS0NCj4gRnJvbTogUGhpbGlwcGUgR2VydW0g
+PHJwbUB4ZW5vbWFpLm9yZz4NCj4gU2VudDogRG9ubmVyc3RhZywgMjcuIEp1bmkgMjAxOSAxNDo0
+Mw0KPiBUbzogTGFuZ2UgTm9yYmVydCA8bm9yYmVydC5sYW5nZUBhbmRyaXR6LmNvbT47IFhlbm9t
+YWkNCj4gKHhlbm9tYWlAeGVub21haS5vcmcpIDx4ZW5vbWFpQHhlbm9tYWkub3JnPg0KPiBTdWJq
+ZWN0OiBSZTogV2FraW5nIHVwIHRocmVhZHMgZnJvbSB0aGUgb3RoZXIgeGVub21haS9saW51eCBk
+b21haW4NCj4NCj4gRS1NQUlMIEZST00gQSBOT04tQU5EUklUWiBTT1VSQ0U6IEFTIEEgU0VDVVJJ
+VFkgTUVBU1VSRSwgUExFQVNFDQo+IEVYRVJDSVNFIENBVVRJT04gV0lUSCBFLU1BSUwgQ09OVEVO
+VCBBTkQgQU5ZIExJTktTIE9SDQo+IEFUVEFDSE1FTlRTLg0KPg0KPg0KPiBPbiA2LzI2LzE5IDE6
+MDUgUE0sIExhbmdlIE5vcmJlcnQgdmlhIFhlbm9tYWkgd3JvdGU6DQo+ID4gSGVsbG8sDQo+ID4N
+Cj4gPiBJIGhhdmUgbXVsdGlwbGUgdGhyZWFkcywgb25lIG9mIHRoZW0gaXMgcmVhbHRpbWUsIG9u
+ZSBvdGhlciBpcyByZXNwb25zaWJsZQ0KPiBmb3IgY29udHJvbGxpbmcgdGhlIHNlcnZpY2UuDQo+
+ID4NCj4gPiBUaGUgY29udHJvbGxpbmcgdGhyZWFkIGJsb2NrcyBvbiBzb21lIGxpbnV4IHNvY2tl
+dHMsIHRoZSByZWFsdGltZSBvbmUgaGFzIGENCj4gc2VsZWN0IG9uIGEgUlQgc29ja2V0IGFuZCBh
+IHRpbWVvdXQuDQo+ID4NCj4gPiBJIG5vdyBoYXZlIHRoZSBwcm9ibGVtIHRoYXQgSSBuZWVkIHRv
+IHdha2UgdXAgdGhlIG90aGVyIHRocmVhZCB1bmRlcg0KPiA+IHNvbWUgY2lyY3Vtc3RhbmNlcywg
+bm90IGFsd2F5cyAodGhlbiBJIHdvdWxkIGp1c3QgcG9sbCksIGJ1dCBwb3RlbnRpYWxseSBpbg0K
+PiByZWd1bGFyIGJ1cnN0IChmb3J3YXJkaW5nIHBhY2tldHMpLg0KPiA+PkZyb20gdGhlIGRvY3Ms
+IFhERFAgc2VlbXMgdGhlIG9ubHkgc29sdXRpb24sIEkgd29uZGVyIGlmIHRoZXJlIGFyZSBtb3Jl
+Lg0KPiA+DQo+ID4gMSkgQ29ubmVjdCB0aGUgdGhyZWFkcyB3aXRoIGEgWEREUCBzb2NrZXQsIGFk
+ZCB0aGUgZmQgaW4gdGhlIHNlbGVjdCBjYWxscy4NCj4gPiAyKSBBdGxlYXN0IHdoZW4gTGludXgg
+aXMgd2FraW5nIHVwIFhlbm9tYWksIEkgY291bGQgdXNlIGFuIElERFAvQlVGUA0KPiBzb2NrZXQg
+d2l0aCB0aGUgbGludXggdGhyZWFkIHRoZW4gYmVpbmcgcHJvbW90ZWQgZm9yIHRoZSBkdXJhdGlv
+biBvZiB0aGUgY2FsbC4NCj4NCj4gSSB3b3VsZCBub3QgcmVjb21tZW5kIHRoaXMgdW5sZXNzIHRo
+b3NlIHBhY2tldHMgYXJyaXZlIGF0IGEgZmFpcmx5IGxvdw0KPiByYXRlOiBhIGRvdWJsZSBtb2Rl
+IG1pZ3JhdGlvbiBpcyBjb3N0bHksIHdheSwgd2F5IG1vcmUgdGhhbiB1c2luZyBYRERQLg0KPg0K
+PiA+IDMpIFNpZ25hbHM/IENvdWxkIHRoZXkgYmUgdXNlZCB0byBpbnRlcnJ1cHQgdGhlIHNlbGVj
+dCAoYm90aCBsaW51eCBhbmQNCj4gPiBjb2JhbHQgdmFyaWFudCk/LiBUaGUgUE9TSVggc2tpbiBo
+YXMgbm8gcHNlbGVjdCBzbyBJIHdvbmRlciBob3cgSQ0KPiA+IHdvdWxkIG1ha2Ugc3VyZSB0aGUg
+c2lnbmFsIGlzIG9ubHkgZGVsaXZlcmVkIGR1cmluZyBzZWxlY3QNCj4NCj4gSSBkb24ndCB0aGlu
+ayB0aGUgUE9TSVggc2lnbmFsIG1hY2hpbmVyeSBjYW4gYmUgZGVzY3JpYmVkIGFzIGxpZ2h0d2Vp
+Z2h0Lg0KPiBCZXNpZGVzLCBzaW5jZSBjb2JhbHQgb25seSBpbXBsZW1lbnRzIHRoZSBzeW5jaHJv
+bm91cyBpbnRlcmZhY2UgdmlhDQo+IHNpZ3dhaXQqKCksIHNlbGVjdCgpIHdvdWxkIG5vdCB1bmJs
+b2NrIG9uIHNpZ25hbCByZWNlaXB0Lg0KPg0KPiA+DQo+ID4gQWxsIHRoZSBSVElQQyBzb2NrZXRz
+IHNlZW0gdG8gdXNlIGEgZ2xvYmFsIHBvb2wgb2YgcG9ydHMsIGFuZCBJDQo+ID4gYmVsaWV2ZSBY
+RERQIHRvIGJlIHJhdGhlciBoZWF2eXdlaWdodC5JIGFtIGxvb2tpbmcgZm9yIGFuIGVmZmljaWVu
+dCB3YXkgKGluDQo+IHRvdGFsIENQVSB0aW1lKSB0byB1bmJsb2NrIGEgdGhyZWFkLCBJdCBkb2Vz
+IG5vdCBuZWVkIHRvIGhhdmUgbG93ZXN0IGxhdGVuY3kuDQo+DQo+IFlvdSBtYXkgYmUgb3ZlcmVz
+dGltYXRpbmcgdGhlIFhERFAgb3ZlcmhlYWQgZXNwZWNpYWxseSBpZiB0aGUgbWVzc2FnZQ0KPiBy
+YXRlIGlzIGxvdy4gSGF2aW5nIGEgc2l6ZS1jb25maWd1cmFibGUgKENPTkZJR19YRU5PX09QVF9Q
+SVBFX05SREVWKQ0KPiBnbG9iYWwgcG9vbCBvZiBwb3J0cyBzaG91bGQgbm90IGJlIGFuIGlzc3Vl
+IGluIGEgc3lzdGVtIHdoZXJlIHlvdSBjYW4gLSBhbmQNCj4gc2hvdWxkIC0ga25vdyBpbiBhZHZh
+bmNlIGhvdyBtYW55IG9mIHRoZW0gYXJlIGdvaW5nIHRvIGJlIHVzZWQgYXQgbW9zdC4gSWYNCj4g
+dGhlIGlzc3VlIGlzIHdpdGggcG9ydCBuYW1pbmcgY29uZmxpY3RzLCB0aGVuIHlvdSBjYW4gYXNr
+IFhERFAgdG8gYWxsb2NhdGUgdGhlDQo+IG5leHQgZnJlZSBwb3J0IHRoZW4gYXR0YWNoIGEgbGFi
+ZWwgdG8gaXQuIFRoZSBhcHBsaWNhdGlvbiBnb2VzIHRocm91Z2ggdGhlDQo+IHJlZ2lzdHJ5IHRv
+IHJlZmVyIHRvIHN1Y2ggcG9ydCBieSBsYWJlbCwgaW5zdGVhZCBvZiB1c2luZyBpdHMgcmF3IHBv
+cnQgbnVtYmVyLg0KPg0KPiBJZiB5b3UgZG9uJ3Qgd2FudCBtZXNzYWdpbmcgYXQgYWxsIGJ1dCBv
+bmx5IHNpZ25hbGluZywgdGhlbiB5b3UgY291bGQgYWRkDQo+IHNvbWUga2luZCBvZiBjcm9zcy1k
+b21haW4gZXZlbnRmZCgpIHByb3RvY29sIHRvIHRoZSBSVElQQyBkcml2ZXIuDQoNCkkgZG9u4oCZ
+dCB3YW50IG11Y2ggbW9yZSB0aGFuIHNvbWUgc29ydCBvZiBjb25kaXRpb24gdmFyaWFibGUsIGJ1
+dCB3b3JraW5nIHdpdGggc2VsZWN0IChhbmQgYWNyb3NzIGRvbWFpbnMpLg0KVGhlIG5vbi1leGlz
+dGluZyBjb2JhbHQtZXZlbnRmZCBzZWVtcyBmaXR0aW5nLCBidXQgSSB3aWxsIGhhcHBpbHkgdXNl
+IFhERFAgZm9yIG5vdy4NCkkgd291bGQgcHJlZmVyICJhbm9ueW1vdXMiIG9iamVjdHMgc2ltcGx5
+IGZvciBoYXZpbmcgbGVzcyBzaWRlZWZmZWN0cywNCmFuZCBub3QgbmVlZGluZyB0byBrbm93IGEg
+bmFtZS9pbnN0YW5jZSBudW1iZXIgSSBhbSBub3QgaW50ZXJlc3RlZCBpbi4NCg0KPiA+DQo+ID4g
+KE5vdGUgdGhhdCB0aGlzIGlzIGluIHRoZSBzYW1lIHByb2Nlc3MsIHNvIEkgd291bGQgcHJlZmVy
+IHNvbWV0aGluZyBsaWtlDQo+IHNvY2tldHBhaXIgdG8gb3BlbiB1cCBhbiBhbm9ueW1vdXMgInBp
+cGUiIG5vdCBmZWVkaW5nIGZyb20gZ2xvYmFsIHBvcnRzKS4NCj4gPg0KPg0KPiBDb2JhbHQgZG9l
+cyBub3QgcHJvdmlkZSB0aGlzLg0KDQpJTUhPLCBzb21lIG9mZi10aGUtc2hlbGYgc29sdXRpb24g
+dG8gc2V0dXAgc29tZSBpbi1wcm9jZXNzIHN5bmNocm9uaXphdGlvbg0KV291bGQgYmUgdXNlZnVs
+LCBkb2NzIGFyZSBsYWNraW5nIHNvbWUgcmVjaXBlcyBmb3IgdHlwaWNhbCBwcm9ibGVtcyB3aGVu
+IHRyeWluZw0KdG8gc2lnbmFsIGJldHdlZW4geGVub21haSBhbmQgbGludXggdGhyZWFkcy4NCg0K
+KGxpYmNvYmFsdCBpcyBsaWtlbHkgdGhlIHdyb25nIHBsYWNlKQ0KDQpUaGFua3MsDQpOb3JiZXJ0
+Lg0KX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX18NCg0KVGhpcyBtZXNzYWdlIGFuZCBh
+bnkgYXR0YWNobWVudHMgYXJlIHNvbGVseSBmb3IgdGhlIHVzZSBvZiB0aGUgaW50ZW5kZWQgcmVj
+aXBpZW50cy4gVGhleSBtYXkgY29udGFpbiBwcml2aWxlZ2VkIGFuZC9vciBjb25maWRlbnRpYWwg
+aW5mb3JtYXRpb24gb3Igb3RoZXIgaW5mb3JtYXRpb24gcHJvdGVjdGVkIGZyb20gZGlzY2xvc3Vy
+ZS4gSWYgeW91IGFyZSBub3QgYW4gaW50ZW5kZWQgcmVjaXBpZW50LCB5b3UgYXJlIGhlcmVieSBu
+b3RpZmllZCB0aGF0IHlvdSByZWNlaXZlZCB0aGlzIGVtYWlsIGluIGVycm9yIGFuZCB0aGF0IGFu
+eSByZXZpZXcsIGRpc3NlbWluYXRpb24sIGRpc3RyaWJ1dGlvbiBvciBjb3B5aW5nIG9mIHRoaXMg
+ZW1haWwgYW5kIGFueSBhdHRhY2htZW50IGlzIHN0cmljdGx5IHByb2hpYml0ZWQuIElmIHlvdSBo
+YXZlIHJlY2VpdmVkIHRoaXMgZW1haWwgaW4gZXJyb3IsIHBsZWFzZSBjb250YWN0IHRoZSBzZW5k
+ZXIgYW5kIGRlbGV0ZSB0aGUgbWVzc2FnZSBhbmQgYW55IGF0dGFjaG1lbnQgZnJvbSB5b3VyIHN5
+c3RlbS4NCg0KQU5EUklUWiBIWURSTyBHbWJIDQoNCg0KUmVjaHRzZm9ybS8gTGVnYWwgZm9ybTog
+R2VzZWxsc2NoYWZ0IG1pdCBiZXNjaHLDpG5rdGVyIEhhZnR1bmcgLyBDb3Jwb3JhdGlvbg0KDQpG
+aXJtZW5zaXR6LyBSZWdpc3RlcmVkIHNlYXQ6IFdpZW4NCg0KRmlybWVuYnVjaGdlcmljaHQvIENv
+dXJ0IG9mIHJlZ2lzdHJ5OiBIYW5kZWxzZ2VyaWNodCBXaWVuDQoNCkZpcm1lbmJ1Y2hudW1tZXIv
+IENvbXBhbnkgcmVnaXN0cmF0aW9uOiBGTiA2MTgzMyBnDQoNCkRWUjogMDYwNTA3Nw0KDQpVSUQt
+TnIuOiBBVFUxNDc1NjgwNg0KDQoNClRoYW5rIFlvdQ0KX19fX19fX19fX19fX19fX19fX19fX19f
+X19fX19fX18NCg==
 
