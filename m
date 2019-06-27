@@ -1,11 +1,13 @@
-From: Lange Norbert <norbert.lange@andritz.com>
-Subject: Waking up threads from the other xenomai/linux domain
-Date: Wed, 26 Jun 2019 11:05:02 +0000
-Message-ID: <VI1PR05MB59174B1FCCC4A8B782A2EEEDF6E20@VI1PR05MB5917.eurprd05.prod.outlook.com>
-Content-Language: en-US
-Content-Type: text/plain; charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
+From: Philippe Gerum <rpm@xenomai.org>
+Subject: Re: Waking up threads from the other xenomai/linux domain
+References: <VI1PR05MB59174B1FCCC4A8B782A2EEEDF6E20@VI1PR05MB5917.eurprd05.prod.outlook.com>
+Message-ID: <d1807b53-981e-734c-264d-719ca4d7844b@xenomai.org>
+Date: Thu, 27 Jun 2019 14:42:40 +0200
 MIME-Version: 1.0
+In-Reply-To: <VI1PR05MB59174B1FCCC4A8B782A2EEEDF6E20@VI1PR05MB5917.eurprd05.prod.outlook.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -14,77 +16,54 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "Xenomai (xenomai@xenomai.org)" <xenomai@xenomai.org>
+To: Lange Norbert <norbert.lange@andritz.com>, "Xenomai (xenomai@xenomai.org)" <xenomai@xenomai.org>
 
-Hello,
+On 6/26/19 1:05 PM, Lange Norbert via Xenomai wrote:
+> Hello,
+> 
+> I have multiple threads, one of them is realtime, one other is responsible for controlling the service.
+> 
+> The controlling thread blocks on some linux sockets, the realtime one has a select on a RT socket and a timeout.
+> 
+> I now have the problem that I need to wake up the other thread under some circumstances, not always (then I would just poll),
+> but potentially in regular burst (forwarding packets).
+>>From the docs, XDDP seems the only solution, I wonder if there are more.
+> 
+> 1) Connect the threads with a XDDP socket, add the fd in the select calls.
+> 2) Atleast when Linux is waking up Xenomai, I could use an IDDP/BUFP socket with the linux thread then being promoted for the duration of the call.
 
-I have multiple threads, one of them is realtime, one other is responsible =
-for controlling the service.
+I would not recommend this unless those packets arrive at a fairly low
+rate: a double mode migration is costly, way, way more than using XDDP.
 
-The controlling thread blocks on some linux sockets, the realtime one has a=
- select on a RT socket and a timeout.
+> 3) Signals? Could they be used to interrupt the select (both linux and cobalt variant)?. The POSIX skin has no pselect so I wonder how I would make sure the signal
+> is only delivered during select
 
-I now have the problem that I need to wake up the other thread under some c=
-ircumstances, not always (then I would just poll),
-but potentially in regular burst (forwarding packets).
->From the docs, XDDP seems the only solution, I wonder if there are more.
+I don't think the POSIX signal machinery can be described as
+lightweight. Besides, since cobalt only implements the synchronous
+interface via sigwait*(), select() would not unblock on signal receipt.
 
-1) Connect the threads with a XDDP socket, add the fd in the select calls.
-2) Atleast when Linux is waking up Xenomai, I could use an IDDP/BUFP socket=
- with the linux thread then being promoted for the duration of the call.
-3) Signals? Could they be used to interrupt the select (both linux and coba=
-lt variant)?. The POSIX skin has no pselect so I wonder how I would make su=
-re the signal
-is only delivered during select
+> 
+> All the RTIPC sockets seem to use a global pool of ports, and I believe XDDP to be rather heavyweight.I am looking for an efficient way (in total CPU time) to unblock a thread,
+> It does not need to have lowest latency.
 
-All the RTIPC sockets seem to use a global pool of ports, and I believe XDD=
-P to be rather heavyweight.I am looking for an efficient way (in total CPU =
-time) to unblock a thread,
-It does not need to have lowest latency.
+You may be overestimating the XDDP overhead especially if the message
+rate is low. Having a size-configurable (CONFIG_XENO_OPT_PIPE_NRDEV)
+global pool of ports should not be an issue in a system where you can -
+and should - know in advance how many of them are going to be used at
+most. If the issue is with port naming conflicts, then you can ask XDDP
+to allocate the next free port then attach a label to it. The
+application goes through the registry to refer to such port by label,
+instead of using its raw port number.
 
-(Note that this is in the same process, so I would prefer something like so=
-cketpair to open up an anonymous "pipe" not feeding from global ports).
+If you don't want messaging at all but only signaling, then you could
+add some kind of cross-domain eventfd() protocol to the RTIPC driver.
 
+> 
+> (Note that this is in the same process, so I would prefer something like socketpair to open up an anonymous "pipe" not feeding from global ports).
+> 
 
-Mit besten Gr=FC=DFen / Kind regards
+Cobalt does not provide this.
 
-NORBERT LANGE
-AT-DES
-
-ANDRITZ HYDRO GmbH
-Eibesbrunnergasse 20
-1120 Vienna / AUSTRIA
-p: +43 50805 56684
-norbert.lange@andritz.com
-andritz.com
-________________________________
-
-This message and any attachments are solely for the use of the intended rec=
-ipients. They may contain privileged and/or confidential information or oth=
-er information protected from disclosure. If you are not an intended recipi=
-ent, you are hereby notified that you received this email in error and that=
- any review, dissemination, distribution or copying of this email and any a=
-ttachment is strictly prohibited. If you have received this email in error,=
- please contact the sender and delete the message and any attachment from y=
-our system.
-
-ANDRITZ HYDRO GmbH
-
-
-Rechtsform/ Legal form: Gesellschaft mit beschr=E4nkter Haftung / Corporati=
-on
-
-Firmensitz/ Registered seat: Wien
-
-Firmenbuchgericht/ Court of registry: Handelsgericht Wien
-
-Firmenbuchnummer/ Company registration: FN 61833 g
-
-DVR: 0605077
-
-UID-Nr.: ATU14756806
-
-
-Thank You
-________________________________
+-- 
+Philippe.
 
