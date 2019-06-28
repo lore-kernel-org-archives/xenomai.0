@@ -1,17 +1,8 @@
-Subject: Re: Preview: 4.19-x86 support
-References: <4a035faa-d1f8-d2ed-9351-192cea2d79eb@siemens.com>
- <20190621180432.483ea4a0@md1za8fc.ad001.siemens.net>
- <7b7ff8c9-0faa-2a9b-5347-ee5361a978d0@siemens.com>
- <20190624131858.41860152@md1za8fc.ad001.siemens.net>
- <ced098bf-d5fc-6dc0-cc82-05a5eec1c45b@siemens.com>
- <20190627155612.32bfc242@md1za8fc.ad001.siemens.net>
- <018eeba9-c186-89d6-b152-ba12959c3a9f@siemens.com>
- <20190628144849.1a811ffb@md1za8fc.ad001.siemens.net>
 From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <e6a51d68-e544-c5bf-ae8a-b0f98b083ee9@siemens.com>
-Date: Fri, 28 Jun 2019 15:06:39 +0200
+Subject: ipipe-x86: TRACE_IRQS_IRETQ on fast return
+Message-ID: <1b988b50-db86-4073-9bac-cf6da94488bc@siemens.com>
+Date: Fri, 28 Jun 2019 15:23:14 +0200
 MIME-Version: 1.0
-In-Reply-To: <20190628144849.1a811ffb@md1za8fc.ad001.siemens.net>
 Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -23,31 +14,22 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Henning Schild <henning.schild@siemens.com>
+To: Philippe Gerum <rpm@xenomai.org>
 Cc: Xenomai <xenomai@xenomai.org>
 
-On 28.06.19 14:48, Henning Schild wrote:
->> BTW, regarding the failing smokey gdb test: Check if gdb is available
->> on the target. That is now a precondition.
-> 
-> Yes it is. The $ N does not make any sense. It came from running a
-> local copy without "make install". That is currently not supported by
-> the gdb test, which should be fixed. People might want to test before
-> installing, if just working on one machine.
+Philippe,
 
-This works fine here:
+when returning from an interrupt (not sure about exceptions yet) with root 
+domain stalled, we take the fast paths, to kernel or to userspace:
 
-$ xenomai/build/testsuite/smokey/smokey --run=gdb
-gdb OK
+https://gitlab.denx.de/Xenomai/ipipe-x86/commit/62957b1a3c5d36f32c6fdb33df00424fc5106c60#cfbf24a4bb0ddb98db8da0adf4b5c32cc18c6b34_570_573
 
-> 
-> After that i run into
->>> FAILURE run_gdb:290: checking expression "primary_mode", expected
->>> "1", found "0
-> 
-
-Can't reproduce. And given that line 290 in master does not contain any code, I 
-strongly suspect your build is inconsistent.
+Since the initial port to 4.14, both contain TRACE_IRQS_IRETQ on x86. This seem 
+to have had no consequences on 4.14 so far (which still confuses me), but it is 
+now exploding on 4.19 during boot (lockdep records locks to be held with 
+interrupts off that should never by held like that, rq->lock e.g.). This made me 
+wonder why interrupt state tracing was included in 4.14 like that. Can you 
+recall which case you were addressing with this change?
 
 Jan
 
