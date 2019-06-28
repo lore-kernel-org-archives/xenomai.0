@@ -1,21 +1,13 @@
-Date: Fri, 28 Jun 2019 16:50:25 +0200
-From: Henning Schild <henning.schild@siemens.com>
-Subject: Re: Preview: 4.19-x86 support
-Message-ID: <20190628165025.0f54d315@md1za8fc.ad001.siemens.net>
-In-Reply-To: <dfc5b82e-3665-fce2-d677-dfc4ae377256@siemens.com>
-References: <4a035faa-d1f8-d2ed-9351-192cea2d79eb@siemens.com>
- <20190621180432.483ea4a0@md1za8fc.ad001.siemens.net>
- <7b7ff8c9-0faa-2a9b-5347-ee5361a978d0@siemens.com>
- <20190624131858.41860152@md1za8fc.ad001.siemens.net>
- <ced098bf-d5fc-6dc0-cc82-05a5eec1c45b@siemens.com>
- <20190627155612.32bfc242@md1za8fc.ad001.siemens.net>
- <018eeba9-c186-89d6-b152-ba12959c3a9f@siemens.com>
- <20190628144849.1a811ffb@md1za8fc.ad001.siemens.net>
- <e6a51d68-e544-c5bf-ae8a-b0f98b083ee9@siemens.com>
- <20190628154817.3824469d@md1za8fc.ad001.siemens.net>
- <dfc5b82e-3665-fce2-d677-dfc4ae377256@siemens.com>
+Subject: Re: ipipe-x86: TRACE_IRQS_IRETQ on fast return
+References: <1b988b50-db86-4073-9bac-cf6da94488bc@siemens.com>
+ <e56c04d7-7c7b-092e-87de-a7efae53369a@siemens.com>
+From: Philippe Gerum <rpm@xenomai.org>
+Message-ID: <223cae86-f84d-8b2e-12cc-35442f186913@xenomai.org>
+Date: Fri, 28 Jun 2019 17:48:10 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+In-Reply-To: <e56c04d7-7c7b-092e-87de-a7efae53369a@siemens.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
 Content-Transfer-Encoding: 7bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
@@ -28,82 +20,45 @@ List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
 To: Jan Kiszka <jan.kiszka@siemens.com>
 Cc: Xenomai <xenomai@xenomai.org>
 
-Am Fri, 28 Jun 2019 16:00:17 +0200
-schrieb Jan Kiszka <jan.kiszka@siemens.com>:
-
-> On 28.06.19 15:48, Henning Schild wrote:
-> > Am Fri, 28 Jun 2019 15:06:39 +0200
-> > schrieb Jan Kiszka <jan.kiszka@siemens.com>:
-> >   
-> >> On 28.06.19 14:48, Henning Schild wrote:  
-> >>>> BTW, regarding the failing smokey gdb test: Check if gdb is
-> >>>> available on the target. That is now a precondition.  
-> >>>
-> >>> Yes it is. The $ N does not make any sense. It came from running a
-> >>> local copy without "make install". That is currently not supported
-> >>> by the gdb test, which should be fixed. People might want to test
-> >>> before installing, if just working on one machine.  
-> >>
-> >> This works fine here:
-> >>
-> >> $ xenomai/build/testsuite/smokey/smokey --run=gdb
-> >> gdb OK  
-> > 
-> > Running local, in a rootfs not containing an old version? The
-> > problem is launching smokey again from gdb. In my case the old
-> > smokey did not even know about "gdb".
-> >   
+On 6/28/19 3:47 PM, Jan Kiszka wrote:
+> On 28.06.19 15:23, Jan Kiszka wrote:
+>> Philippe,
+>>
+>> when returning from an interrupt (not sure about exceptions yet) with
+>> root domain stalled, we take the fast paths, to kernel or to userspace:
+>>
+>> https://gitlab.denx.de/Xenomai/ipipe-x86/commit/62957b1a3c5d36f32c6fdb33df00424fc5106c60#cfbf24a4bb0ddb98db8da0adf4b5c32cc18c6b34_570_573
+>>
+>>
+>> Since the initial port to 4.14, both contain TRACE_IRQS_IRETQ on x86.
+>> This seem to have had no consequences on 4.14 so far (which still
+>> confuses me), but it is now exploding on 4.19 during boot (lockdep
+>> records locks to be held with interrupts off that should never by held
+>> like that, rq->lock e.g.). This made me wonder why interrupt state
+>> tracing was included in 4.14 like that. Can you recall which case you
+>> were addressing with this change?
+>>
 > 
-> OK, I think I got it now. This should fix both issues:
+> This issue seems to be present in other archs as well: Just checked
+> arm64, and it also calls TRACE_IRQSON in the fast path, even when
+> irqs_disabled(). The reason might be to balance the unconditional
+> TRACE_IRQSOFF on entry. Hmm, maybe we can address that generically, in
+> lockdep...
 > 
-> diff --git a/testsuite/smokey/gdb/gdb.c b/testsuite/smokey/gdb/gdb.c
-> index 2fad3da19a..a6909d595b 100644
-> --- a/testsuite/smokey/gdb/gdb.c
-> +++ b/testsuite/smokey/gdb/gdb.c
-> @@ -274,8 +274,7 @@ static int run_gdb(struct smokey_test *t, int
-> argc, char *const argv[]) snprintf(run_param, sizeof(run_param),
-> "--run=%d", t->__reserved.id);
->  			execl("/usr/bin/gdb", "gdb", "--args",
-> -			      CONFIG_XENO_PREFIX "/bin/smokey",
-> run_param,
-> -			      "run_target", NULL);
-> +			      argv[0], run_param, "run_target",
-> NULL); _exit(ESRCH);
->  
->  		default:
-> 
-> Jan
 
+The reason was to stop playing whack-a-mole with IRQS_ON/OFF tracepoints
+which is wrong, and indeed address this at the lockdep/irqtracer level
+instead. trace_hardirqs_on/off_caller check for the current domain
+already, assuming that if it's root, then it has to be in the correct
+stall state already (which could be wrong with 4.19 and maybe
+elsewhere). You may want to check if having CONFIG_PREEMPT makes any
+difference in the 4.19 case.
 
-That solves the one problem, but the test still fails. I further
-investigated and it has to be one of the following kernel options that
-allowed me to finally run it successfully.
+trace_hardirqs_on/off_virt_caller was introduced for dealing with
+tracing the re-entry path to userland, with a bit more logic there
+specifically to keep lockdep happy. Maybe some logic is missing from the
+regular TRACE_IRQS_ON/OFF when pipelining is enabled.
 
---- /boot/config-4.14.128-henning+.old	2019-06-27 14:36:43.299983371 +0000
-+++ /boot/config-4.14.128-henning+	2019-06-28 13:23:43.569874713 +0000
-
- #
- # Latency settings
-@@ -455,11 +456,16 @@
- CONFIG_XENO_OPT_TIMING_KSCHEDLAT=0
- CONFIG_XENO_OPT_TIMING_IRQLAT=0
- CONFIG_XENO_OPT_DEBUG=y
--# CONFIG_XENO_OPT_DEBUG_COBALT is not set
--# CONFIG_XENO_OPT_DEBUG_CONTEXT is not set
-+CONFIG_XENO_OPT_DEBUG_COBALT=y
-+# CONFIG_XENO_OPT_DEBUG_MEMORY is not set
-+CONFIG_XENO_OPT_DEBUG_CONTEXT=y
- CONFIG_XENO_OPT_DEBUG_LOCKING=y
--# CONFIG_XENO_OPT_DEBUG_USER is not set
--# CONFIG_XENO_OPT_DEBUG_TRACE_RELAX is not set
-+CONFIG_XENO_OPT_DEBUG_USER=y
-+CONFIG_XENO_OPT_DEBUG_MUTEX_RELAXED=y
-+CONFIG_XENO_OPT_DEBUG_MUTEX_SLEEP=y
-+CONFIG_XENO_OPT_DEBUG_POSIX_SYNCHRO=y
-+CONFIG_XENO_OPT_DEBUG_LEGACY=y
-+CONFIG_XENO_OPT_DEBUG_TRACE_RELAX=y
- CONFIG_XENO_OPT_WATCHDOG=y
- CONFIG_XENO_OPT_WATCHDOG_TIMEOUT=4
-
-
+-- 
+Philippe.
 
