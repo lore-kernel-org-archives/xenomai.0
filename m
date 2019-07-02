@@ -1,11 +1,15 @@
-From: Jan Kiszka <jan.kiszka@siemens.com>
-Subject: [PATCH 1/2] ipipe: Restore trace_hardirqs_on_virt_caller
-Date: Tue,  2 Jul 2019 18:32:26 +0200
-Message-Id: <b8eea59c3403f307022712574ed49aee80aa8a08.1562085146.git.jan.kiszka@siemens.com>
-In-Reply-To: <cover.1562085146.git.jan.kiszka@siemens.com>
-References: <cover.1562085146.git.jan.kiszka@siemens.com>
-In-Reply-To: <cover.1562085146.git.jan.kiszka@siemens.com>
-References: <cover.1562085146.git.jan.kiszka@siemens.com>
+Subject: Re: [PATCH 20/32] x86: fix include for drivers
+References: <20180925103809.4932-1-rpm@xenomai.org>
+ <20180925103809.4932-21-rpm@xenomai.org>
+ <42a8d3eb-b06e-5514-949a-7fe7dd16b3e9@siemens.com>
+From: Philippe Gerum <rpm@xenomai.org>
+Message-ID: <9f7a78c5-ca53-a8fd-34a2-a12421dc9635@xenomai.org>
+Date: Tue, 2 Jul 2019 19:02:50 +0200
+MIME-Version: 1.0
+In-Reply-To: <42a8d3eb-b06e-5514-949a-7fe7dd16b3e9@siemens.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -14,42 +18,40 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Philippe Gerum <rpm@xenomai.org>
-Cc: xenomai@xenomai.org
+To: Jan Kiszka <jan.kiszka@siemens.com>, xenomai@xenomai.org, Henning Schild <henning.schild@siemens.com>
 
-From: Jan Kiszka <jan.kiszka@siemens.com>
+On 7/2/19 5:57 PM, Jan Kiszka wrote:
+> On 25.09.18 12:37, Philippe Gerum wrote:
+>> From: Henning Schild <henning.schild@siemens.com>
+>>
+>> ---
+>>   include/linux/gpio.h | 1 +
+>>   1 file changed, 1 insertion(+)
+>>
+>> diff --git a/include/linux/gpio.h b/include/linux/gpio.h
+>> index 8ef7fc0ce0f0..41554f9e098d 100644
+>> --- a/include/linux/gpio.h
+>> +++ b/include/linux/gpio.h
+>> @@ -3,6 +3,7 @@
+>>   #define __LINUX_GPIO_H
+>>     #include <linux/errno.h>
+>> +#include <linux/ipipe.h>
+>>     /* see Documentation/gpio/gpio-legacy.txt */
+>>  
+> 
+> Where did this come from? It's also incorrectly tagged as "x86", though
+> it's touching generic code.
+> 
 
-Lost in d7fc2c06edc9 ("lockdep: ipipe: exclude the head stage from IRQ
-state tracing") but still needed by x86 at least.
+Cherry-picked from the x86 tree a year ago as far as I can remember
+since this stuff happened a year ago, as I was working on the split work:
 
-Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
----
- kernel/trace/trace_preemptirq.c | 11 +++++++++++
- 1 file changed, 11 insertions(+)
+https://gitlab.denx.de/Xenomai/ipipe-x86/commit/ac02dfb4d71462b8ac5cd0ae5cf14d89b125124e
 
-diff --git a/kernel/trace/trace_preemptirq.c b/kernel/trace/trace_preemptirq.c
-index 3c482c02c1d9..19605695a6a2 100644
---- a/kernel/trace/trace_preemptirq.c
-+++ b/kernel/trace/trace_preemptirq.c
-@@ -66,6 +66,17 @@ __visible void trace_hardirqs_on_caller(unsigned long caller_addr)
- }
- EXPORT_SYMBOL(trace_hardirqs_on_caller);
- 
-+__visible void trace_hardirqs_on_virt_caller(unsigned long ip)
-+{
-+	/*
-+	 * The IRQ tracing logic only applies to the root domain, and
-+	 * must consider the virtual disable flag exclusively when
-+	 * leaving an interrupt/fault context.
-+	 */
-+	if (ipipe_root_p && !irqs_disabled())
-+		trace_hardirqs_on_caller(ip);
-+}
-+
- __visible void trace_hardirqs_on_virt(void)
- {
- 	/*
+This change can be dropped unless you have a specific issue to solve for
+x86 that you could not address in a better way, I did not pick it for
+-noarch AFAICT.
+
 -- 
-2.16.4
-
+Philippe.
 
