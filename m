@@ -1,17 +1,13 @@
-Subject: Re: [PATCH 20/32] x86: fix include for drivers
+Subject: [PATCH 3/2] ipipe: Add missing include for ipipe_root_only
+References: <cover.1562085146.git.jan.kiszka@siemens.com>
 From: Jan Kiszka <jan.kiszka@siemens.com>
-References: <20180925103809.4932-1-rpm@xenomai.org>
- <20180925103809.4932-21-rpm@xenomai.org>
- <42a8d3eb-b06e-5514-949a-7fe7dd16b3e9@siemens.com>
- <9f7a78c5-ca53-a8fd-34a2-a12421dc9635@xenomai.org>
- <4e123c7b-33c5-8d41-14a6-f141be3e76cc@siemens.com>
-Message-ID: <362b5e22-e9eb-89e1-e469-db97a560ce0e@siemens.com>
-Date: Tue, 2 Jul 2019 23:15:23 +0200
+Message-ID: <e8c177d0-a3d3-eb80-7622-fdc77c95208e@siemens.com>
+Date: Tue, 2 Jul 2019 23:15:49 +0200
 MIME-Version: 1.0
-In-Reply-To: <4e123c7b-33c5-8d41-14a6-f141be3e76cc@siemens.com>
-Content-Type: text/plain; charset="utf-8"; format="flowed"
+In-Reply-To: <cover.1562085146.git.jan.kiszka@siemens.com>
+Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -20,56 +16,31 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Philippe Gerum <rpm@xenomai.org>, xenomai@xenomai.org, Henning Schild <henning.schild@siemens.com>
+To: Philippe Gerum <rpm@xenomai.org>
+Cc: xenomai@xenomai.org
 
-On 02.07.19 19:33, Jan Kiszka wrote:
-> On 02.07.19 19:02, Philippe Gerum wrote:
->> On 7/2/19 5:57 PM, Jan Kiszka wrote:
->>> On 25.09.18 12:37, Philippe Gerum wrote:
->>>> From: Henning Schild <henning.schild@siemens.com>
->>>>
->>>> ---
->>>>    include/linux/gpio.h | 1 +
->>>>    1 file changed, 1 insertion(+)
->>>>
->>>> diff --git a/include/linux/gpio.h b/include/linux/gpio.h
->>>> index 8ef7fc0ce0f0..41554f9e098d 100644
->>>> --- a/include/linux/gpio.h
->>>> +++ b/include/linux/gpio.h
->>>> @@ -3,6 +3,7 @@
->>>>    #define __LINUX_GPIO_H
->>>>      #include <linux/errno.h>
->>>> +#include <linux/ipipe.h>
->>>>      /* see Documentation/gpio/gpio-legacy.txt */
->>>
->>> Where did this come from? It's also incorrectly tagged as "x86", though
->>> it's touching generic code.
->>>
->>
->> Cherry-picked from the x86 tree a year ago as far as I can remember
->> since this stuff happened a year ago, as I was working on the split work:
->>
->> https://gitlab.denx.de/Xenomai/ipipe-x86/commit/ac02dfb4d71462b8ac5cd0ae5cf14d89b125124e 
->>
->>
->> This change can be dropped unless you have a specific issue to solve for
->> x86 that you could not address in a better way, I did not pick it for
->> -noarch AFAICT.
->>
-> 
-> Yeah, we are fine without it - dropped.
-> 
+From: Jan Kiszka <jan.kiszka@siemens.com>
 
-Nah, too fast [1]: We are missing an include, but - obviously - not at that 
-spot. Patch for noarch follows.
+Breaks in non-debug builds otherwise, e.g.
+https://travis-ci.com/xenomai-ci/xenomai/jobs/212725223
 
-Jan
+Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
+---
+ include/linux/kernel.h | 1 +
+ 1 file changed, 1 insertion(+)
 
-PS: Good that we have CI now...
-
-[1] https://travis-ci.com/xenomai-ci/xenomai/jobs/212725223
-
+diff --git a/include/linux/kernel.h b/include/linux/kernel.h
+index 50b1e0c878e0..edd37052e585 100644
+--- a/include/linux/kernel.h
++++ b/include/linux/kernel.h
+@@ -14,6 +14,7 @@
+ #include <linux/printk.h>
+ #include <linux/build_bug.h>
+ #include <asm/byteorder.h>
++#include <asm-generic/ipipe.h>
+ #include <uapi/linux/kernel.h>
+ 
+ #define USHRT_MAX	((u16)(~0U))
 -- 
-Siemens AG, Corporate Technology, CT RDA IOT SES-DE
-Corporate Competence Center Embedded Linux
+2.16.4
 
