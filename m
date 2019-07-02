@@ -1,15 +1,11 @@
-Subject: Re: [PATCH 2/2] xeno-config: dont unconditionally link libmodechk
- with cobalt
-References: <20190603143228.11528-1-norbert.lange@andritz.com>
- <20190603143228.11528-2-norbert.lange@andritz.com>
 From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <3b550125-8b14-b8e9-2b11-8bbd45cb586a@siemens.com>
-Date: Mon, 3 Jun 2019 17:24:45 +0200
-MIME-Version: 1.0
-In-Reply-To: <20190603143228.11528-2-norbert.lange@andritz.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Subject: [PATCH 1/2] ipipe: Restore trace_hardirqs_on_virt_caller
+Date: Tue,  2 Jul 2019 18:32:26 +0200
+Message-Id: <b8eea59c3403f307022712574ed49aee80aa8a08.1562085146.git.jan.kiszka@siemens.com>
+In-Reply-To: <cover.1562085146.git.jan.kiszka@siemens.com>
+References: <cover.1562085146.git.jan.kiszka@siemens.com>
+In-Reply-To: <cover.1562085146.git.jan.kiszka@siemens.com>
+References: <cover.1562085146.git.jan.kiszka@siemens.com>
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -18,59 +14,42 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Norbert Lange <nolange79@gmail.com>, xenomai@xenomai.org
+To: Philippe Gerum <rpm@xenomai.org>
+Cc: xenomai@xenomai.org
 
-On 03.06.19 16:32, Norbert Lange via Xenomai wrote:
-> Allow to build without linking to libmodechk.so.
-> 
-> Signed-off-by: Norbert Lange <norbert.lange@andritz.com>
-> ---
->   scripts/xeno-config-cobalt.in | 8 ++++++--
->   1 file changed, 6 insertions(+), 2 deletions(-)
-> 
-> diff --git a/scripts/xeno-config-cobalt.in b/scripts/xeno-config-cobalt.in
-> index ae313d389..87d54fbf8 100644
-> --- a/scripts/xeno-config-cobalt.in
-> +++ b/scripts/xeno-config-cobalt.in
-> @@ -15,7 +15,8 @@ XENO_CC="@CC@"
->   XENO_TARGET_ARCH="@XENO_TARGET_ARCH@"
->   XENO_INCLUDE_DIR="${staging}${includedir}"
->   XENO_BASE_CFLAGS="-I$XENO_INCLUDE_DIR/cobalt -I$XENO_INCLUDE_DIR @XENO_USER_APP_CFLAGS@ -D__COBALT__"
-> -XENO_POSIX_LDFLAGS="-L${staging}${libdir} -lcobalt -lmodechk -lpthread -lrt @XENO_USER_APP_LDFLAGS@"
-> +XENO_COBALT_LDFLAGS="-L${staging}${libdir} -lcobalt"
-> +XENO_POSIX_LDFLAGS="-lpthread -lrt @XENO_USER_APP_LDFLAGS@"
->   XENO_LIBRARY_DIR="${staging}${libdir}"
->   LD_FILE_OPTION="@LD_FILE_OPTION@"
->   
-> @@ -243,9 +244,11 @@ if test x$do_ldflags = xy; then
->   	echo "no API specified, missing --skin before --ldflags" 1>&2
->   	exit 1
->       fi
-> +    lmodeck=
->       ldflags=
->       if test x$do_mode_check = xy; then
->   	ldflags="`dump_wrappers modechk.wrappers`"
-> +	lmodeck=-lmodechk
->       fi
->       test x$compat = xy && ldflags="-ltrank $ldflags"
->       copperplate=
-> @@ -283,7 +286,8 @@ if test x$do_ldflags = xy; then
->   	bootstrap="${XENO_LIBRARY_DIR}/xenomai/bootstrap${codegen}.o"
->       fi
->       ldflags="-Wl,--no-as-needed $ldflags"
-> -    echo "$ldflags $copperplate $bootstrap $wrap_main $XENO_POSIX_LDFLAGS"
-> +    echo "$ldflags $copperplate $bootstrap $wrap_main $XENO_COBALT_LDFLAGS" \
-> +		"$lmodeck $XENO_POSIX_LDFLAGS"
->   fi
->   
->   exit 0
-> 
+From: Jan Kiszka <jan.kiszka@siemens.com>
 
-Thanks, both applied.
+Lost in d7fc2c06edc9 ("lockdep: ipipe: exclude the head stage from IRQ
+state tracing") but still needed by x86 at least.
 
-Jan
+Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
+---
+ kernel/trace/trace_preemptirq.c | 11 +++++++++++
+ 1 file changed, 11 insertions(+)
 
+diff --git a/kernel/trace/trace_preemptirq.c b/kernel/trace/trace_preemptirq.c
+index 3c482c02c1d9..19605695a6a2 100644
+--- a/kernel/trace/trace_preemptirq.c
++++ b/kernel/trace/trace_preemptirq.c
+@@ -66,6 +66,17 @@ __visible void trace_hardirqs_on_caller(unsigned long caller_addr)
+ }
+ EXPORT_SYMBOL(trace_hardirqs_on_caller);
+ 
++__visible void trace_hardirqs_on_virt_caller(unsigned long ip)
++{
++	/*
++	 * The IRQ tracing logic only applies to the root domain, and
++	 * must consider the virtual disable flag exclusively when
++	 * leaving an interrupt/fault context.
++	 */
++	if (ipipe_root_p && !irqs_disabled())
++		trace_hardirqs_on_caller(ip);
++}
++
+ __visible void trace_hardirqs_on_virt(void)
+ {
+ 	/*
 -- 
-Siemens AG, Corporate Technology, CT RDA IOT SES-DE
-Corporate Competence Center Embedded Linux
+2.16.4
+
 
