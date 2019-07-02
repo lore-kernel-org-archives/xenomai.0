@@ -1,12 +1,9 @@
-Subject: Re: [PATCH 20/32] x86: fix include for drivers
-References: <20180925103809.4932-1-rpm@xenomai.org>
- <20180925103809.4932-21-rpm@xenomai.org>
 From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <42a8d3eb-b06e-5514-949a-7fe7dd16b3e9@siemens.com>
-Date: Tue, 2 Jul 2019 17:57:38 +0200
+Subject: [PATCH] testsuite: Smokey: Use argv[0] in favor of hard-coded paths
+Message-ID: <38b922cd-4192-d558-fe1b-77ce3cacd93b@siemens.com>
+Date: Tue, 2 Jul 2019 18:30:17 +0200
 MIME-Version: 1.0
-In-Reply-To: <20180925103809.4932-21-rpm@xenomai.org>
-Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
@@ -17,35 +14,46 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Philippe Gerum <rpm@xenomai.org>, xenomai@xenomai.org, Henning Schild <henning.schild@siemens.com>
+To: Xenomai <xenomai@xenomai.org>
 
-On 25.09.18 12:37, Philippe Gerum wrote:
-> From: Henning Schild <henning.schild@siemens.com>
-> 
-> ---
->   include/linux/gpio.h | 1 +
->   1 file changed, 1 insertion(+)
-> 
-> diff --git a/include/linux/gpio.h b/include/linux/gpio.h
-> index 8ef7fc0ce0f0..41554f9e098d 100644
-> --- a/include/linux/gpio.h
-> +++ b/include/linux/gpio.h
-> @@ -3,6 +3,7 @@
->   #define __LINUX_GPIO_H
->   
->   #include <linux/errno.h>
-> +#include <linux/ipipe.h>
->   
->   /* see Documentation/gpio/gpio-legacy.txt */
->   
-> 
+From: Jan Kiszka <jan.kiszka@siemens.com>
 
-Where did this come from? It's also incorrectly tagged as "x86", though it's 
-touching generic code.
+Whenever possible (dlopen test excluded so far), use argv[0] when
+calling the smokey binary again or running it under gdb. This reduces
+the dependency on hard-coded paths and also supports invocation from the
+build folder.
 
-Jan
+Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
+---
+ testsuite/smokey/gdb/gdb.c               | 3 +--
+ testsuite/smokey/posix-fork/posix-fork.c | 2 +-
+ 2 files changed, 2 insertions(+), 3 deletions(-)
 
+diff --git a/testsuite/smokey/gdb/gdb.c b/testsuite/smokey/gdb/gdb.c
+index 2fad3da19a..a6909d595b 100644
+--- a/testsuite/smokey/gdb/gdb.c
++++ b/testsuite/smokey/gdb/gdb.c
+@@ -274,8 +274,7 @@ static int run_gdb(struct smokey_test *t, int argc, char *const argv[])
+ 			snprintf(run_param, sizeof(run_param), "--run=%d",
+ 				 t->__reserved.id);
+ 			execl("/usr/bin/gdb", "gdb", "--args",
+-			      CONFIG_XENO_PREFIX "/bin/smokey", run_param,
+-			      "run_target", NULL);
++			      argv[0], run_param, "run_target", NULL);
+ 			_exit(ESRCH);
+ 
+ 		default:
+diff --git a/testsuite/smokey/posix-fork/posix-fork.c b/testsuite/smokey/posix-fork/posix-fork.c
+index 57909a67ce..3541a8a9ff 100644
+--- a/testsuite/smokey/posix-fork/posix-fork.c
++++ b/testsuite/smokey/posix-fork/posix-fork.c
+@@ -32,5 +32,5 @@ static int run_posix_fork(struct smokey_test *t, int argc, char *const argv[])
+ 	 * Re-exec ourselves without running any test, this is
+ 	 * enough for creating a shadow context.
+ 	 */
+-	return smokey_fork_exec(XENO_TEST_DIR "/smokey", "smokey");
++	return smokey_fork_exec(argv[0], "smokey");
+ }
 -- 
-Siemens AG, Corporate Technology, CT RDA IOT SES-DE
-Corporate Competence Center Embedded Linux
+2.16.4
 
