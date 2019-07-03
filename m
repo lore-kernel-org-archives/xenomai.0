@@ -1,11 +1,11 @@
-From: Jan Kiszka <jan.kiszka@siemens.com>
-Subject: [PATCH] ci: Update x86 kernel versions
-Message-ID: <b967151b-4c65-dc48-aecf-e6242fba1aed@siemens.com>
-Date: Wed, 3 Jul 2019 00:25:58 +0200
+From: alessio margan <alessio.margan@iit.it>
+Subject: fail clocktest -C CLOCK_HOST_REALTIME
+Message-ID: <fa7df77f-23f9-4cc2-cc2e-aa1f9d4010bc@iit.it>
+Date: Wed, 3 Jul 2019 18:47:54 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset="utf-8"; format="flowed"
+Content-Transfer-Encoding: 8bit
 Content-Language: en-US
-Content-Transfer-Encoding: 7bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -14,52 +14,56 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Xenomai <xenomai@xenomai.org>
+To: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-From: Jan Kiszka <jan.kiszka@siemens.com>
+Hi all,
 
-4.4 and 4.14 received new releases meanwhile, and we now have a 4.19-x86
-branch and release. Drop the 4.14-x86 branch as this version is now in
-phase-out, and we should now grow our matrix infinitely.
+I ve updated xenomai and switching from 3.0.6 to 3.0.9 with kernel 4.14.89
 
-Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
----
- .travis.yml | 11 ++++++++---
- 1 file changed, 8 insertions(+), 3 deletions(-)
+clocktest -C CLOCK_HOST_REALTIME
 
-diff --git a/.travis.yml b/.travis.yml
-index 3983be0c9e..0e7aa6d10c 100644
---- a/.travis.yml
-+++ b/.travis.yml
-@@ -175,12 +175,17 @@ matrix:
-         KERNEL_DEFCONFIG: defconfig
-     - env:
-       - ARCH: x86
--        IPIPE_REV: ipipe-x86-4.14.y
-+        IPIPE_REV: ipipe-x86-4.19.y
-         IPIPE_KERNEL: https://gitlab.denx.de/Xenomai/ipipe-x86.git
-         KERNEL_DEFCONFIG: x86_64_defconfig
-     - env:
-       - ARCH: x86
--        IPIPE_REV: ipipe-core-4.14.111-x86-3
-+        IPIPE_REV: ipipe-core-4.19.56-x86-2
-+        IPIPE_KERNEL: https://gitlab.denx.de/Xenomai/ipipe-x86.git
-+        KERNEL_DEFCONFIG: x86_64_defconfig
-+    - env:
-+      - ARCH: x86
-+        IPIPE_REV: ipipe-core-4.14.128-x86-5
-         IPIPE_KERNEL: https://gitlab.denx.de/Xenomai/ipipe-x86.git
-         KERNEL_DEFCONFIG: x86_64_defconfig
-     - env:
-@@ -190,7 +195,7 @@ matrix:
-         KERNEL_DEFCONFIG: x86_64_defconfig
-     - env:
-       - ARCH: x86
--        IPIPE_REV: ipipe-core-4.4.176-x86-14
-+        IPIPE_REV: ipipe-core-4.4.182-x86-15
-         IPIPE_KERNEL: https://gitlab.denx.de/Xenomai/ipipe.git
-         KERNEL_DEFCONFIG: x86_64_defconfig
-     - env:
+fails with this message
+
+NVDSO_FEAT_HOST_REALTIME not available
+clock_gettime failed for clock id 32
+XNVDSO_FEAT_HOST_REALTIME not available
+
+
+I can not set CONFIG_XENO_OPT_HOSTRT=y in kernel config and seems that 
+the difference with the config I ve used with 3.0.6 was this.
+
+
+TIA
+
+Alessio
+
 -- 
-2.16.4
+
+ISTITUTO ITALIANO DI TECNOLOGIA
+
+Alessio Margan
+Chief Technician
+Advanced Robotics Department
+
+alessio.margan@iit.it
+Via Morego 30, 16163 Genova
+Tel. +39 010 71781-754
+
+www.iit.it
+
+Legal Disclaimer
+This electronic message contains information that is confidential. The information is intended for the use of the addressee only.
+If you are not the addressee we would appreciate your notification in this respect.
+Please note that any disclosure, copy, distribution or use of the contents of this message is prohibited and may be unlawful.
+We have taken every reasonable precaution to ensure that any kind of attachment to this e-mail has been swept for viruses.
+However, we cannot accept liability for any damage sustained as a result of software viruses
+and would advise you to carry out your own virus checks before opening any attachment.
+Avvertenza legale
+Questo messaggio Email contiene informazioni confidenziali riservate ai soli destinatari.
+Qualora  veniate in possesso di tali informazioni senza essere definito come destinatario vi reghiamo di leggere le seguenti note.
+Ogni apertura, copia, distribuzione del contenuto del messaggio e dei suoi allegati è proibito e potrebbe violare le presenti leggi.
+Abbiamo attivato ogni possibile e ragionevole precauzione per assicurare che gli allegati non contengano virus.
+Comunque non assumeremo alcuna responsabilità per ogni eventuale danno causato da virus software e simili
+in quanto è onere del destinatario verificarne l’assenza in ogni allegato attuando propri indipendenti controlli.
+
 
