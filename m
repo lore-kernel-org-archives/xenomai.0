@@ -1,15 +1,7 @@
-From: MINIER Bertrand <Bertrand.MINIER@sercel.com>
-Subject: RE: Xenomai arm64 plans?
-Date: Mon, 3 Jun 2019 16:24:04 +0000
-Message-ID: <c888624bb653433ca2ab49bfef71f85f@NANS01204.it.intra.sercel.com>
-References: <fb2b5a6b-007e-9f2c-bcac-8df84fbaac84@theobroma-systems.com>
- <96f3c66c-816c-b2d8-071e-198488ad05be@siemens.com>
- <f735da35-123d-7352-46ec-420998540d61@theobroma-systems.com>
-In-Reply-To: <f735da35-123d-7352-46ec-420998540d61@theobroma-systems.com>
-Content-Language: fr-FR
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-MIME-Version: 1.0
+From: xenomai@xenomai.org
+Subject: [I-PIPE] ipipe-core-4.19.57-x86-3 released
+Message-Id: <E1hikf4-000364-Ej@xenomai.org>
+Date: Wed, 03 Jul 2019 21:11:22 +0200
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -18,35 +10,10 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: xenomai@xenomai.org
 
-SGkgYWxsLA0KDQpJcyB0aGVyZSB1cGRhdGVkIHBsYW5zIGZvciBhIFhlbm9tYWkgcmVsZWFzZSB3
-aGljaCBpbmNsdWRlcyBhcm02NCA/DQpBcmUgdGhlcmUgc3RpbGwgYmxvY2tpbmcgaXNzdWVzIHRv
-IG5vdCBvZmZpY2lhbGx5IHN1cHBvcnQgaXQgPw0KV2UgYXJlIGFib3V0IHRvIHN0YXJ0IHRoZSBk
-ZXZlbG9wbWVudCBvZiBhbiBpbmR1c3RyaWFsIHByb2R1Y3QgYmFzZWQgb24gYW4gYXJtNjQgU29D
-IGFuZCB3ZSB3b3VsZCBsaWtlIHRvIHNlY3VyZSBvdXIgY2hvaWNlIG9mIHVzaW5nIFhlbm9tYWkg
-Zm9yIHRoYXQgcHJvZHVjdC4NCg0KVGhhbmtzLA0KDQpCZXJ0cmFuZCBNaW5pZXINCg0KLS0tLS1N
-ZXNzYWdlIGQnb3JpZ2luZS0tLS0tDQpEZSA6IFhlbm9tYWkgPHhlbm9tYWktYm91bmNlc0B4ZW5v
-bWFpLm9yZz4gRGUgbGEgcGFydCBkZSB2aWEgWGVub21haQ0KRW52b3nDqSA6IHZlbmRyZWRpIDIg
-bm92ZW1icmUgMjAxOCAxNzozMA0Kw4AgOiBKYW4gS2lzemthIDxqYW4ua2lzemthQHNpZW1lbnMu
-Y29tPg0KQ2MgOiB4ZW5vbWFpQHhlbm9tYWkub3JnDQpPYmpldCA6IFJlOiBYZW5vbWFpIGFybTY0
-IHBsYW5zPw0KDQoNCg0KT24gMTEvMi8xOCA1OjI1IFBNLCBKYW4gS2lzemthIHdyb3RlOg0KPiBP
-biAwMi4xMS4xOCAxNzoxOSwgQ2hyaXN0b3BoIE3DvGxsbmVyIHdyb3RlOg0KPj4gSGkgSmFuLA0K
-Pj4NCj4+IEkgd2FzIHdvbmRlcmluZyBpZiB0aGVyZSBhcmUgYW55IHBsYW5zIGZvciBhIFhlbm9t
-YWkgcmVsZWFzZSwgd2hpY2gNCj4+IGluY2x1ZGVzIGFybTY0Lg0KPg0KPiBZZXMsIHRoZXJlIGFy
-ZS4gVGhlIGV4YWN0IHRpbWVsaW5lIGlzIG5vdCBzZXR0bGVkIHlldCwgYnV0IHNvbWV3aGVyZQ0K
-PiB3aXRoaW4gdGhlIG5leHQgbW9udGgsIEkgd291bGQgc2F5Lg0KDQpUaGF0J3MgZXhjZWxsZW50
-IG5ld3MhDQoNCj4+IEknbSBmYW1pbGlhciB3aXRoIHRoZSBuZXh0IGJyYW5jaCwgYnV0IEknZCBs
-b3ZlIHRvIHdvcmsgd2l0aCBjb2RlDQo+PiBmcm9tIGEgYnJhbmNoLCB3aGljaCBpcyBub3Qgc3Vi
-amVjdCB0byBmb3JjZS1wdXNoaW5nLg0KPg0KPiBBY3R1YWxseSB0aGVyZSB3YXMgYSBjaGFuZ2U6
-IG5leHQgaXMgc3RpbGwgcG90ZW50aWFsbHkgcmViYXNpbmcgYXMgSSdtDQo+IGludGVncmF0aW5n
-IG92ZXIgaXQgYW5kIG1heSAtIHdoZW4gdGhpbmdzIGdvIHdyb25nIC0gcHVsbCBiYWNrIG9yDQo+
-IHJlb3JkZXIgaW4gdGhhdCBxdWV1ZS4gQnV0IG1hc3RlciBpcyBiYWNrLCBhbmQgdGhhdCBpcyBm
-b3J3YXJkLW9ubHkuDQo+IEl0J3Mgbm90IGNvbXBhcmFibGUgdG8gYSByZWxlYXNlIGJ1dCBpdCBj
-b3VsZCBoZWxwIHRvIGJyaWRnZSB0aGUgdGltZQ0KPiB0byB2My4xLg0KDQpPaywgdGhhbmsncyBm
-b3IgY2xhcmlmeWluZyB0aGF0Lg0KDQpUaGFua3MsDQpDaHJpc3RvcGgNCg0KVGhpcyBlLW1haWwg
-YW5kIGFueSBhY2NvbXBhbnlpbmcgYXR0YWNobWVudHMgYXJlIGNvbmZpZGVudGlhbC4gSWYgeW91
-IGFyZSBub3QgdGhlIGludGVuZGVkIHJlY2lwaWVudCwgeW91IG11c3Qgbm90IHJldmlldywgZGlz
-Y2xvc2UsIGNvcHksIGRpc3RyaWJ1dGUgb3IgdXNlIHRoaXMgZS1tYWlsOyBwbGVhc2UgZGVsZXRl
-IGl0IGZyb20geW91ciBzeXN0ZW0gYW5kIG5vdGlmeSB0aGUgc2VuZGVyIGltbWVkaWF0ZWx5Lg0K
+Download URL: https://xenomai.org/downloads/ipipe/v4.x/x86/ipipe-core-4.19.57-x86-3.patch
+
+Repository: https://git.xenomai.org/ipipe-x86
+Release tag: ipipe-core-4.19.57-x86-3
 
