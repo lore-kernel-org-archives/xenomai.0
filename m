@@ -1,12 +1,11 @@
-Subject: Re: [PATCH 2/2] cobalt: switch hand over status to -ENODEV for
- non-RTDM fd
-References: <20190620172934.31393-1-rpm@xenomai.org>
- <20190620172934.31393-3-rpm@xenomai.org>
+Subject: Re: [PATCH v2 1/1] cobalt/rtdm: allow for device teardown
+References: <20190621094922.17558-1-rpm@xenomai.org>
+ <20190621094922.17558-2-rpm@xenomai.org>
 From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <79f76c99-54e1-af26-250f-45623057c598@siemens.com>
-Date: Thu, 4 Jul 2019 11:04:30 +0200
+Message-ID: <5b247b68-11b9-2ad3-a0a5-ac69f09b9e22@siemens.com>
+Date: Thu, 4 Jul 2019 12:11:54 +0200
 MIME-Version: 1.0
-In-Reply-To: <20190620172934.31393-3-rpm@xenomai.org>
+In-Reply-To: <20190621094922.17558-2-rpm@xenomai.org>
 Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -20,264 +19,267 @@ List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: Philippe Gerum <rpm@xenomai.org>, xenomai@xenomai.org
 
-On 20.06.19 19:29, Philippe Gerum via Xenomai wrote:
-> Having the RTDM core return -EBADF to indicate that it does not manage
-> a file descriptor is a problem, as several drivers also raise this
-> error to notify userland about an aborted wait due to a connection
-> being dismantled (e.g. RTnet). In this case, libcobalt ends up
-> forwarding the aborted request to the glibc, which is wrong.
+On 21.06.19 11:49, Philippe Gerum via Xenomai wrote:
+> Currently, rtdm_dev_unregister() will hang soft until all references
+> on the dismantled device have been dropped, which in turn cannot
+> happen until all rtdm_fds on the device have been closed, which cannot
+> happen until all references on those fds have been dropped eventually.
+> Unfortunately, applications have no indication that such teardown has
+> been requested, and keep sleeping on I/O channels managed by the
+> dismantled device, which prevents rtdm_dev_unregister() from
+> completing.
 > 
-> Switch from -EBADF to -ENODEV to notify userland that RTDM does not
-> manage a file descriptor, which cannot conflict with any sensible
-> return from active I/O operations. This is also consistent with the
-> status RTDM currently returns to notify that it cannot handle a device
-> open request.
+> Allow for orderly device teardown by tracking all file descriptors
+> representing connections active on a device, forcing each of them down
+> by calling the driver's close() handler from rtdm_dev_unregister().
+> Since a close() handler should abort any ongoing I/O operation on the
+> channel being dismantled, any blocking I/O call on such channel should
+> return on error with no additional change to the existing drivers. The
+> common error code indicating an aborted I/O operation in this case is
+> EBADF.
+> 
+> Upon receiving the error, the application is expected to close the
+> stale file descriptor and/or exit, which would drop the corresponding
+> file reference.
+> 
+> Stale file descriptors lingering in applications will still prevent
+> driver modules serving them from unloading until they are eventually
+> closed. Subsequent operations on a file descriptor connected to a
+> device which is being torn now down lead to the EBADF error.
 > ---
->   kernel/cobalt/rtdm/fd.c |  7 ++++---
->   lib/cobalt/rtdm.c       | 46 ++++++++++++++++++++---------------------
->   2 files changed, 27 insertions(+), 26 deletions(-)
+>   include/cobalt/kernel/rtdm/driver.h |  1 +
+>   include/cobalt/kernel/rtdm/fd.h     |  2 ++
+>   kernel/cobalt/rtdm/core.c           | 25 ++++++++++++++++++++-----
+>   kernel/cobalt/rtdm/device.c         | 21 +++++++++++++++++++--
+>   kernel/cobalt/rtdm/fd.c             | 22 ++++++++++++++++++----
+>   kernel/cobalt/rtdm/internal.h       |  6 ++++++
+>   6 files changed, 66 insertions(+), 11 deletions(-)
 > 
+> diff --git a/include/cobalt/kernel/rtdm/driver.h b/include/cobalt/kernel/rtdm/driver.h
+> index 72f75388d..3559a6f99 100644
+> --- a/include/cobalt/kernel/rtdm/driver.h
+> +++ b/include/cobalt/kernel/rtdm/driver.h
+> @@ -385,6 +385,7 @@ struct rtdm_device {
+>   		atomic_t refcount;
+>   		struct rtdm_fd_ops ops;
+>   		wait_queue_head_t putwq;
+> +		struct list_head openfd_list;
+>   	};
+>   };
+>   
+> diff --git a/include/cobalt/kernel/rtdm/fd.h b/include/cobalt/kernel/rtdm/fd.h
+> index 572b17e29..30849fc79 100644
+> --- a/include/cobalt/kernel/rtdm/fd.h
+> +++ b/include/cobalt/kernel/rtdm/fd.h
+> @@ -304,7 +304,9 @@ struct rtdm_fd {
+>   #ifdef CONFIG_XENO_ARCH_SYS3264
+>   	int compat;
+>   #endif
+> +	bool stale;
+>   	struct list_head cleanup;
+> +	struct list_head next;	/* in dev->openfd_list */
+>   };
+>   
+>   #define RTDM_FD_MAGIC 0x52544446
+> diff --git a/kernel/cobalt/rtdm/core.c b/kernel/cobalt/rtdm/core.c
+> index c1aedb3d0..3c95869eb 100644
+> --- a/kernel/cobalt/rtdm/core.c
+> +++ b/kernel/cobalt/rtdm/core.c
+> @@ -54,7 +54,7 @@ void __rtdm_dev_close(struct rtdm_fd *fd)
+>   	struct rtdm_device *dev = context->device;
+>   	struct rtdm_driver *drv = dev->driver;
+>   
+> -	if (drv->ops.close)
+> +	if (!fd->stale && drv->ops.close)
+>   		drv->ops.close(fd);
+>   
+>   	cleanup_instance(dev, context);
+> @@ -131,6 +131,23 @@ open_devnode(struct rtdm_device *dev, const char *path, int oflag)
+>   
+>   #endif /* !CONFIG_XENO_OPT_RTDM_COMPAT_DEVNODE */
+>   
+> +static int register_new_fd(struct rtdm_dev_context *context, int ufd)
+> +{
+> +	int ret;
+> +	spl_t s;
+> +
+> +	trace_cobalt_fd_created(&context->fd, ufd);
+> +	ret = rtdm_fd_register(&context->fd, ufd);
+> +	if (ret < 0)
+> +		return ret;
+> +
+> +	xnlock_get_irqsave(&nklock, s);
+> +	list_add(&context->fd.next, &context->device->openfd_list);
+> +	xnlock_put_irqrestore(&nklock, s);
+> +
+> +	return ret;
+> +}
+> +
+>   int __rtdm_dev_open(const char *path, int oflag)
+>   {
+>   	struct rtdm_dev_context *context;
+> @@ -185,8 +202,7 @@ int __rtdm_dev_open(const char *path, int oflag)
+>   			goto fail_open;
+>   	}
+>   
+> -	trace_cobalt_fd_created(&context->fd, ufd);
+> -	ret = rtdm_fd_register(&context->fd, ufd);
+> +	ret = register_new_fd(context, ufd);
+>   	if (ret < 0)
+>   		goto fail_open;
+>   
+> @@ -240,8 +256,7 @@ int __rtdm_dev_socket(int protocol_family, int socket_type,
+>   			goto fail_socket;
+>   	}
+>   
+> -	trace_cobalt_fd_created(&context->fd, ufd);
+> -	ret = rtdm_fd_register(&context->fd, ufd);
+> +	ret = register_new_fd(context, ufd);
+>   	if (ret < 0)
+>   		goto fail_socket;
+>   
+> diff --git a/kernel/cobalt/rtdm/device.c b/kernel/cobalt/rtdm/device.c
+> index 4cfdb1c5b..484e18812 100644
+> --- a/kernel/cobalt/rtdm/device.c
+> +++ b/kernel/cobalt/rtdm/device.c
+> @@ -417,6 +417,7 @@ int rtdm_dev_register(struct rtdm_device *dev)
+>   	else
+>   		dev->ops.open = (typeof(dev->ops.open))enosys;
+>   
+> +	INIT_LIST_HEAD(&dev->openfd_list);
+>   	init_waitqueue_head(&dev->putwq);
+>   	dev->ops.close = __rtdm_dev_close; /* Interpose on driver's handler. */
+>   	atomic_set(&dev->refcount, 0);
+> @@ -524,8 +525,9 @@ EXPORT_SYMBOL_GPL(rtdm_dev_register);
+>   /**
+>    * @brief Unregister a RTDM device
+>    *
+> - * Removes the device from the RTDM namespace. This routine waits until
+> - * all connections to @a device have been closed prior to unregistering.
+> + * Removes the device from the RTDM namespace. This routine first
+> + * attempts to teardown all active connections to the @a device prior
+> + * to unregistering.
+>    *
+>    * @param[in] dev Device descriptor.
+>    *
+> @@ -534,6 +536,8 @@ EXPORT_SYMBOL_GPL(rtdm_dev_register);
+>   void rtdm_dev_unregister(struct rtdm_device *dev)
+>   {
+>   	struct rtdm_driver *drv = dev->driver;
+> +	struct rtdm_fd *fd, *n;
+> +	spl_t s;
+>   
+>   	secondary_mode_only();
+>   
+> @@ -542,6 +546,19 @@ void rtdm_dev_unregister(struct rtdm_device *dev)
+>   	/* Lock out any further connection. */
+>   	dev->magic = ~RTDM_DEVICE_MAGIC;
+>   
+> +	xnlock_get_irqsave(&nklock, s);
+> +	list_for_each_entry_safe(fd, n, &dev->openfd_list, next) {
+
+Is this really safe? What if two teardowns run in parallel or, for some other 
+reason, the next saved in n here become invalid while dropping the lock for 
+close? It's probably better to always delete the first element and repeat that 
+until the list is empty.
+
+> +		fd->stale = true;
+> +		if (drv->ops.close) {
+> +			rtdm_fd_get_light(fd);
+> +			xnlock_put_irqrestore(&nklock, s);
+> +			drv->ops.close(fd);
+> +			rtdm_fd_put(fd);
+> +			xnlock_get_irqsave(&nklock, s);
+> +		}
+> +	}
+> +	xnlock_put_irqrestore(&nklock, s);
+> +
+>   	/* Then wait for the ongoing connections to finish. */
+>   	wait_event(dev->putwq,
+>   		   atomic_read(&dev->refcount) == 0);
 > diff --git a/kernel/cobalt/rtdm/fd.c b/kernel/cobalt/rtdm/fd.c
-> index f3b6444c3..75c4acf28 100644
+> index 75c4acf28..81943c2f3 100644
 > --- a/kernel/cobalt/rtdm/fd.c
 > +++ b/kernel/cobalt/rtdm/fd.c
-> @@ -204,8 +204,9 @@ int rtdm_fd_register(struct rtdm_fd *fd, int ufd)
->    * @param[in] ufd User-side file descriptor
+> @@ -168,7 +168,9 @@ int rtdm_fd_enter(struct rtdm_fd *fd, int ufd, unsigned int magic,
+>   	fd->owner = ppd;
+>   	fd->ufd = ufd;
+>   	fd->refs = 1;
+> +	fd->stale = false;
+>   	set_compat_bit(fd);
+> +	INIT_LIST_HEAD(&fd->next);
+>   
+>   	return 0;
+>   }
+> @@ -205,8 +207,13 @@ int rtdm_fd_register(struct rtdm_fd *fd, int ufd)
 >    * @param[in] magic Magic word for lookup validation
 >    *
-> - * @return Pointer to the RTDM file descriptor matching @a ufd, or
-> - * ERR_PTR(-EBADF).
-> + * @return Pointer to the RTDM file descriptor matching @a
-> + * ufd. Otherwise ERR_PTR(-ENODEV) is returned if the use-space handle
-> + * is either invalid or not managed by RTDM.
+>    * @return Pointer to the RTDM file descriptor matching @a
+> - * ufd. Otherwise ERR_PTR(-ENODEV) is returned if the use-space handle
+> - * is either invalid or not managed by RTDM.
+> + * ufd. Otherwise:
+> + *
+> + * - ERR_PTR(-ENODEV) if the use-space handle is either invalid, or
+> + * not managed by RTDM.
+> + *
+> + * - ERR_PTR(-EBADF) if the underlying device is being torned down at
+> + * the time of the call.
 >    *
 >    * @note The file descriptor returned must be later released by a call
 >    * to rtdm_fd_put().
-> @@ -221,7 +222,7 @@ struct rtdm_fd *rtdm_fd_get(int ufd, unsigned int magic)
->   	xnlock_get_irqsave(&fdtree_lock, s);
->   	fd = fetch_fd(p, ufd);
->   	if (fd == NULL || (magic != 0 && fd->magic != magic)) {
-> -		fd = ERR_PTR(-EBADF);
-> +		fd = ERR_PTR(-ENODEV);
+> @@ -226,6 +233,11 @@ struct rtdm_fd *rtdm_fd_get(int ufd, unsigned int magic)
 >   		goto out;
 >   	}
 >   
-> diff --git a/lib/cobalt/rtdm.c b/lib/cobalt/rtdm.c
-> index 176210ddc..506302d26 100644
-> --- a/lib/cobalt/rtdm.c
-> +++ b/lib/cobalt/rtdm.c
-> @@ -123,7 +123,7 @@ COBALT_IMPL(int, close, (int fd))
+> +	if (fd->stale) {
+> +		fd = ERR_PTR(-EBADF);
+> +		goto out;
+> +	}
+> +
+>   	++fd->refs;
+>   out:
+>   	xnlock_put_irqrestore(&fdtree_lock, s);
+> @@ -274,7 +286,11 @@ static void __put_fd(struct rtdm_fd *fd, spl_t s)
+>   {
+>   	int destroy;
 >   
->   	pthread_setcanceltype(oldtype, NULL);
+> +	XENO_WARN_ON(COBALT, fd->refs <= 0);
+>   	destroy = --fd->refs == 0;
+> +	if (destroy && !list_empty(&fd->next))
+> +		list_del(&fd->next);
+> +
+>   	xnlock_put_irqrestore(&fdtree_lock, s);
 >   
-> -	if (ret != -EBADF && ret != -ENOSYS)
-> +	if (ret != -ENODEV && ret != -ENOSYS)
->   		return set_errno(ret);
+>   	if (!destroy)
+> @@ -362,8 +378,6 @@ void rtdm_fd_unlock(struct rtdm_fd *fd)
+>   	spl_t s;
 >   
->   	return __STD(close(fd));
-> @@ -154,7 +154,7 @@ COBALT_IMPL(int, fcntl, (int fd, int cmd, ...))
+>   	xnlock_get_irqsave(&fdtree_lock, s);
+> -	/* Warn if fd was unreferenced. */
+> -	XENO_WARN_ON(COBALT, fd->refs <= 0);
+>   	__put_fd(fd, s);
+>   }
+>   EXPORT_SYMBOL_GPL(rtdm_fd_unlock);
+> diff --git a/kernel/cobalt/rtdm/internal.h b/kernel/cobalt/rtdm/internal.h
+> index b634bd997..99488e058 100644
+> --- a/kernel/cobalt/rtdm/internal.h
+> +++ b/kernel/cobalt/rtdm/internal.h
+> @@ -49,6 +49,12 @@ int __rtdm_dev_ioctl_core(struct rtdm_fd *fd,
+>   int __rtdm_mmap_from_fdop(struct rtdm_fd *fd, size_t len, off_t offset,
+>   			  int prot, int flags, void **pptr);
 >   
->   	ret = XENOMAI_SYSCALL3(sc_cobalt_fcntl, fd, cmd, arg);
+> +/* nklock held, irqs off. */
+> +static inline void rtdm_fd_get_light(struct rtdm_fd *fd)
+> +{
+> +	++fd->refs;
+> +}
+> +
+>   int rtdm_init(void);
 >   
-> -	if (ret != -EBADF && ret != -ENOSYS)
-> +	if (ret != -ENODEV && ret != -ENOSYS)
->   		return set_errno(ret);
->   
->   	return __STD(fcntl(fd, cmd, arg));
-> @@ -171,7 +171,7 @@ COBALT_IMPL(int, ioctl, (int fd, unsigned int request, ...))
->   	va_end(ap);
->   
->   	ret = do_ioctl(fd, request, arg);
-> -	if (ret != -EBADF && ret != -ENOSYS)
-> +	if (ret != -ENODEV && ret != -ENOSYS)
->   		return set_errno(ret);
->   
->   	return __STD(ioctl(fd, request, arg));
-> @@ -187,7 +187,7 @@ COBALT_IMPL(ssize_t, read, (int fd, void *buf, size_t nbyte))
->   
->   	pthread_setcanceltype(oldtype, NULL);
->   
-> -	if (ret != -EBADF && ret != -ENOSYS)
-> +	if (ret != -ENODEV && ret != -ENOSYS)
->   		return set_errno(ret);
->   
->   	return __STD(read(fd, buf, nbyte));
-> @@ -203,7 +203,7 @@ COBALT_IMPL(ssize_t, write, (int fd, const void *buf, size_t nbyte))
->   
->   	pthread_setcanceltype(oldtype, NULL);
->   
-> -	if (ret != -EBADF && ret != -ENOSYS)
-> +	if (ret != -ENODEV && ret != -ENOSYS)
->   		return set_errno(ret);
->   
->   	return __STD(write(fd, buf, nbyte));
-> @@ -227,7 +227,7 @@ COBALT_IMPL(ssize_t, recvmsg, (int fd, struct msghdr *msg, int flags))
->   	int ret;
->   
->   	ret = do_recvmsg(fd, msg, flags);
-> -	if (ret != -EBADF && ret != -ENOSYS)
-> +	if (ret != -ENODEV && ret != -ENOSYS)
->   		return set_errno(ret);
->   
->   	return __STD(recvmsg(fd, msg, flags));
-> @@ -244,7 +244,7 @@ COBALT_IMPL(int, recvmmsg, (int fd, struct mmsghdr *msgvec, unsigned int vlen,
->   
->   	pthread_setcanceltype(oldtype, NULL);
->   
-> -	if (ret != -EBADF && ret != -ENOSYS)
-> +	if (ret != -ENODEV && ret != -ENOSYS)
->   		return set_errno(ret);
->   
->   	return __STD(recvmmsg(fd, msgvec, vlen, flags, timeout));
-> @@ -268,7 +268,7 @@ COBALT_IMPL(ssize_t, sendmsg, (int fd, const struct msghdr *msg, int flags))
->   	int ret;
->   
->   	ret = do_sendmsg(fd, msg, flags);
-> -	if (ret != -EBADF && ret != -ENOSYS)
-> +	if (ret != -ENODEV && ret != -ENOSYS)
->   		return set_errno(ret);
->   
->   	return __STD(sendmsg(fd, msg, flags));
-> @@ -285,7 +285,7 @@ COBALT_IMPL(int, sendmmsg, (int fd, struct mmsghdr *msgvec,
->   
->   	pthread_setcanceltype(oldtype, NULL);
->   
-> -	if (ret != -EBADF && ret != -ENOSYS)
-> +	if (ret != -ENODEV && ret != -ENOSYS)
->   		return set_errno(ret);
->   
->   	return __STD(sendmmsg(fd, msgvec, vlen, flags));
-> @@ -309,7 +309,7 @@ COBALT_IMPL(ssize_t, recvfrom, (int fd, void *buf, size_t len, int flags,
->   	int ret;
->   
->   	ret = do_recvmsg(fd, &msg, flags);
-> -	if (ret != -EBADF && ret != -ENOSYS) {
-> +	if (ret != -ENODEV && ret != -ENOSYS) {
->   		if (ret < 0)
->   			return set_errno(ret);
->   
-> @@ -340,7 +340,7 @@ COBALT_IMPL(ssize_t, sendto, (int fd, const void *buf, size_t len, int flags,
->   	int ret;
->   
->   	ret = do_sendmsg(fd, &msg, flags);
-> -	if (ret != -EBADF && ret != -ENOSYS)
-> +	if (ret != -ENODEV && ret != -ENOSYS)
->   		return set_errno(ret);
->   
->   	return __STD(sendto(fd, buf, len, flags, to, tolen));
-> @@ -363,7 +363,7 @@ COBALT_IMPL(ssize_t, recv, (int fd, void *buf, size_t len, int flags))
->   	int ret;
->   
->   	ret = do_recvmsg(fd, &msg, flags);
-> -	if (ret != -EBADF && ret != -ENOSYS)
-> +	if (ret != -ENODEV && ret != -ENOSYS)
->   		return set_errno(ret);
->   
->   	return __STD(recv(fd, buf, len, flags));
-> @@ -386,7 +386,7 @@ COBALT_IMPL(ssize_t, send, (int fd, const void *buf, size_t len, int flags))
->   	int ret;
->   
->   	ret = do_sendmsg(fd, &msg, flags);
-> -	if (ret != -EBADF && ret != -ENOSYS)
-> +	if (ret != -ENODEV && ret != -ENOSYS)
->   		return set_errno(ret);
->   
->   	return __STD(send(fd, buf, len, flags));
-> @@ -399,7 +399,7 @@ COBALT_IMPL(int, getsockopt, (int fd, int level, int optname, void *optval,
->   	int ret;
->   
->   	ret = do_ioctl(fd, _RTIOC_GETSOCKOPT, &args);
-> -	if (ret != -EBADF && ret != -ENOSYS)
-> +	if (ret != -ENODEV && ret != -ENOSYS)
->   		return set_errno(ret);
->   
->   	return __STD(getsockopt(fd, level, optname, optval, optlen));
-> @@ -414,7 +414,7 @@ COBALT_IMPL(int, setsockopt, (int fd, int level, int optname, const void *optval
->   	int ret;
->   
->   	ret = do_ioctl(fd, _RTIOC_SETSOCKOPT, &args);
-> -	if (ret != -EBADF && ret != -ENOSYS)
-> +	if (ret != -ENODEV && ret != -ENOSYS)
->   		return set_errno(ret);
->   
->   	return __STD(setsockopt(fd, level, optname, optval, optlen));
-> @@ -426,7 +426,7 @@ COBALT_IMPL(int, bind, (int fd, const struct sockaddr *my_addr, socklen_t addrle
->   	int ret;
->   
->   	ret = do_ioctl(fd, _RTIOC_BIND, &args);
-> -	if (ret != -EBADF && ret != -ENOSYS)
-> +	if (ret != -ENODEV && ret != -ENOSYS)
->   		return set_errno(ret);
->   
->   	return __STD(bind(fd, my_addr, addrlen));
-> @@ -438,7 +438,7 @@ COBALT_IMPL(int, connect, (int fd, const struct sockaddr *serv_addr, socklen_t a
->   	int ret;
->   
->   	ret = do_ioctl(fd, _RTIOC_CONNECT, &args);
-> -	if (ret != -EBADF && ret != -ENOSYS)
-> +	if (ret != -ENODEV && ret != -ENOSYS)
->   		return set_errno(ret);
->   
->   	return __STD(connect(fd, serv_addr, addrlen));
-> @@ -449,7 +449,7 @@ COBALT_IMPL(int, listen, (int fd, int backlog))
->   	int ret;
->   
->   	ret = do_ioctl(fd, _RTIOC_LISTEN, (void *)(long)backlog);
-> -	if (ret != -EBADF && ret != -ENOSYS)
-> +	if (ret != -ENODEV && ret != -ENOSYS)
->   		return set_errno(ret);
->   
->   	return __STD(listen(fd, backlog));
-> @@ -461,7 +461,7 @@ COBALT_IMPL(int, accept, (int fd, struct sockaddr *addr, socklen_t *addrlen))
->   	int ret;
->   
->   	ret = do_ioctl(fd, _RTIOC_ACCEPT, &args);
-> -	if (ret != -EBADF && ret != -ENOSYS)
-> +	if (ret != -ENODEV && ret != -ENOSYS)
->   		return set_errno(ret);
->   
->   	return __STD(accept(fd, addr, addrlen));
-> @@ -473,7 +473,7 @@ COBALT_IMPL(int, getsockname, (int fd, struct sockaddr *name, socklen_t *namelen
->   	int ret;
->   
->   	ret = do_ioctl(fd, _RTIOC_GETSOCKNAME, &args);
-> -	if (ret != -EBADF && ret != -ENOSYS)
-> +	if (ret != -ENODEV && ret != -ENOSYS)
->   		return set_errno(ret);
->   
->   	return __STD(getsockname(fd, name, namelen));
-> @@ -485,7 +485,7 @@ COBALT_IMPL(int, getpeername, (int fd, struct sockaddr *name, socklen_t *namelen
->   	int ret;
->   
->   	ret = do_ioctl(fd, _RTIOC_GETPEERNAME, &args);
-> -	if (ret != -EBADF && ret != -ENOSYS)
-> +	if (ret != -ENODEV && ret != -ENOSYS)
->   		return set_errno(ret);
->   
->   	return __STD(getpeername(fd, name, namelen));
-> @@ -496,7 +496,7 @@ COBALT_IMPL(int, shutdown, (int fd, int how))
->   	int ret;
->   
->   	ret = do_ioctl(fd, _RTIOC_SHUTDOWN, (void *)(long)how);
-> -	if (ret != -EBADF && ret != -ENOSYS)
-> +	if (ret != -ENODEV && ret != -ENOSYS)
->   		return set_errno(ret);
->   
->   	return __STD(shutdown(fd, how));
-> @@ -518,7 +518,7 @@ COBALT_IMPL(void *, mmap64, (void *addr, size_t length, int prot, int flags,
->   	rma.flags = flags;
->   
->   	ret = XENOMAI_SYSCALL3(sc_cobalt_mmap, fd, &rma, &addr);
-> -	if (ret != -EBADF && ret != -ENOSYS) {
-> +	if (ret != -ENODEV && ret != -ENOSYS) {
->   		ret = set_errno(ret);
->   		if (ret)
->   			return MAP_FAILED;
+>   void rtdm_cleanup(void);
 > 
 
-Looks reasonable, just wondering if we didn't run into other cases where ENODEV 
-is returned by the driver already. I would suggest using some uncommon error 
-code instead.
+Except for the list iteration, this looks good.
 
 Jan
 
