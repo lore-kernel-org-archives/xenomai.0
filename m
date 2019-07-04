@@ -1,11 +1,12 @@
-Subject: Re: [PATCH 1/2] drivers/net: drop socket-specific module refcounting
+Subject: Re: [PATCH 2/2] cobalt: switch hand over status to -ENODEV for
+ non-RTDM fd
 References: <20190620172934.31393-1-rpm@xenomai.org>
- <20190620172934.31393-2-rpm@xenomai.org>
+ <20190620172934.31393-3-rpm@xenomai.org>
 From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <436668c5-9f87-4da8-601a-64cef5f96ee6@siemens.com>
-Date: Thu, 4 Jul 2019 11:04:13 +0200
+Message-ID: <79f76c99-54e1-af26-250f-45623057c598@siemens.com>
+Date: Thu, 4 Jul 2019 11:04:30 +0200
 MIME-Version: 1.0
-In-Reply-To: <20190620172934.31393-2-rpm@xenomai.org>
+In-Reply-To: <20190620172934.31393-3-rpm@xenomai.org>
 Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -20,156 +21,263 @@ List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
 To: Philippe Gerum <rpm@xenomai.org>, xenomai@xenomai.org
 
 On 20.06.19 19:29, Philippe Gerum via Xenomai wrote:
-> RTDM already refcounts rtdm_fd descriptors to prevent unsafe module
-> unloading while connections are still active. We can remove the legacy
-> module refcounting done by the generic socket code, since every socket
-> is covered by an RTDM file descriptor.
-> ---
->   .../drivers/net/stack/include/rtnet_socket.h  | 15 +++--------
->   kernel/drivers/net/stack/ipv4/icmp.c          |  4 +--
->   kernel/drivers/net/stack/socket.c             | 27 ++++++-------------
->   3 files changed, 13 insertions(+), 33 deletions(-)
+> Having the RTDM core return -EBADF to indicate that it does not manage
+> a file descriptor is a problem, as several drivers also raise this
+> error to notify userland about an aborted wait due to a connection
+> being dismantled (e.g. RTnet). In this case, libcobalt ends up
+> forwarding the aborted request to the glibc, which is wrong.
 > 
-> diff --git a/kernel/drivers/net/stack/include/rtnet_socket.h b/kernel/drivers/net/stack/include/rtnet_socket.h
-> index 351e62c77..0d8850c7f 100644
-> --- a/kernel/drivers/net/stack/include/rtnet_socket.h
-> +++ b/kernel/drivers/net/stack/include/rtnet_socket.h
-> @@ -76,8 +76,6 @@ struct rtsocket {
->   	    int                  ifindex;
->   	} packet;
->       } prot;
-> -
-> -    struct module *owner;
->   };
+> Switch from -EBADF to -ENODEV to notify userland that RTDM does not
+> manage a file descriptor, which cannot conflict with any sensible
+> return from active I/O operations. This is also consistent with the
+> status RTDM currently returns to notify that it cannot handle a device
+> open request.
+> ---
+>   kernel/cobalt/rtdm/fd.c |  7 ++++---
+>   lib/cobalt/rtdm.c       | 46 ++++++++++++++++++++---------------------
+>   2 files changed, 27 insertions(+), 26 deletions(-)
+> 
+> diff --git a/kernel/cobalt/rtdm/fd.c b/kernel/cobalt/rtdm/fd.c
+> index f3b6444c3..75c4acf28 100644
+> --- a/kernel/cobalt/rtdm/fd.c
+> +++ b/kernel/cobalt/rtdm/fd.c
+> @@ -204,8 +204,9 @@ int rtdm_fd_register(struct rtdm_fd *fd, int ufd)
+>    * @param[in] ufd User-side file descriptor
+>    * @param[in] magic Magic word for lookup validation
+>    *
+> - * @return Pointer to the RTDM file descriptor matching @a ufd, or
+> - * ERR_PTR(-EBADF).
+> + * @return Pointer to the RTDM file descriptor matching @a
+> + * ufd. Otherwise ERR_PTR(-ENODEV) is returned if the use-space handle
+> + * is either invalid or not managed by RTDM.
+>    *
+>    * @note The file descriptor returned must be later released by a call
+>    * to rtdm_fd_put().
+> @@ -221,7 +222,7 @@ struct rtdm_fd *rtdm_fd_get(int ufd, unsigned int magic)
+>   	xnlock_get_irqsave(&fdtree_lock, s);
+>   	fd = fetch_fd(p, ufd);
+>   	if (fd == NULL || (magic != 0 && fd->magic != magic)) {
+> -		fd = ERR_PTR(-EBADF);
+> +		fd = ERR_PTR(-ENODEV);
+>   		goto out;
+>   	}
 >   
+> diff --git a/lib/cobalt/rtdm.c b/lib/cobalt/rtdm.c
+> index 176210ddc..506302d26 100644
+> --- a/lib/cobalt/rtdm.c
+> +++ b/lib/cobalt/rtdm.c
+> @@ -123,7 +123,7 @@ COBALT_IMPL(int, close, (int fd))
 >   
-> @@ -97,10 +95,7 @@ int rtnet_put_arg(struct rtdm_fd *fd, void *dst,
->   #define rt_socket_dereference(sock) \
->       rtdm_fd_unlock(rt_socket_fd(sock))
+>   	pthread_setcanceltype(oldtype, NULL);
 >   
-> -int __rt_socket_init(struct rtdm_fd *fd, unsigned short protocol,
-> -		struct module *module);
-> -#define rt_socket_init(fd, proto) \
-> -    __rt_socket_init(fd, proto, THIS_MODULE)
-> +int rt_socket_init(struct rtdm_fd *fd, unsigned short protocol);
+> -	if (ret != -EBADF && ret != -ENOSYS)
+> +	if (ret != -ENODEV && ret != -ENOSYS)
+>   		return set_errno(ret);
 >   
->   void rt_socket_cleanup(struct rtdm_fd *fd);
->   int rt_socket_common_ioctl(struct rtdm_fd *fd, int request, void __user *arg);
-> @@ -110,16 +105,12 @@ int rt_socket_select_bind(struct rtdm_fd *fd,
->   			  enum rtdm_selecttype type,
->   			  unsigned fd_index);
+>   	return __STD(close(fd));
+> @@ -154,7 +154,7 @@ COBALT_IMPL(int, fcntl, (int fd, int cmd, ...))
 >   
-> -int __rt_bare_socket_init(struct rtdm_fd *fd, unsigned short protocol,
-> -			unsigned int priority, unsigned int pool_size,
-> -			struct module *module);
-> -#define rt_bare_socket_init(fd, proto, prio, pool_sz) \
-> -    __rt_bare_socket_init(fd, proto, prio, pool_sz, THIS_MODULE)
-> +int rt_bare_socket_init(struct rtdm_fd *fd, unsigned short protocol,
-> +			unsigned int priority, unsigned int pool_size);
+>   	ret = XENOMAI_SYSCALL3(sc_cobalt_fcntl, fd, cmd, arg);
 >   
->   static inline void rt_bare_socket_cleanup(struct rtsocket *sock)
->   {
->       rtskb_pool_release(&sock->skb_pool);
-> -    module_put(sock->owner);
->   }
+> -	if (ret != -EBADF && ret != -ENOSYS)
+> +	if (ret != -ENODEV && ret != -ENOSYS)
+>   		return set_errno(ret);
 >   
->   #endif  /* __RTNET_SOCKET_H_ */
-> diff --git a/kernel/drivers/net/stack/ipv4/icmp.c b/kernel/drivers/net/stack/ipv4/icmp.c
-> index 58d97cd7f..a944ef6b7 100644
-> --- a/kernel/drivers/net/stack/ipv4/icmp.c
-> +++ b/kernel/drivers/net/stack/ipv4/icmp.c
-> @@ -526,8 +526,8 @@ void __init rt_icmp_init(void)
->   {
->       int skbs;
+>   	return __STD(fcntl(fd, cmd, arg));
+> @@ -171,7 +171,7 @@ COBALT_IMPL(int, ioctl, (int fd, unsigned int request, ...))
+>   	va_end(ap);
 >   
-> -    skbs = __rt_bare_socket_init(icmp_fd, IPPROTO_ICMP, RT_ICMP_PRIO,
-> -			    ICMP_REPLY_POOL_SIZE, NULL);
-> +    skbs = rt_bare_socket_init(icmp_fd, IPPROTO_ICMP, RT_ICMP_PRIO,
-> +			    ICMP_REPLY_POOL_SIZE);
->       BUG_ON(skbs < 0);
->       if (skbs < ICMP_REPLY_POOL_SIZE)
->   	printk("RTnet: allocated only %d icmp rtskbs\n", skbs);
-> diff --git a/kernel/drivers/net/stack/socket.c b/kernel/drivers/net/stack/socket.c
-> index ce4e4cb46..747db052f 100644
-> --- a/kernel/drivers/net/stack/socket.c
-> +++ b/kernel/drivers/net/stack/socket.c
-> @@ -50,36 +50,27 @@ MODULE_PARM_DESC(socket_rtskbs, "Default number of realtime socket buffers in so
->    *  internal socket functions                                           *
->    ************************************************************************/
+>   	ret = do_ioctl(fd, request, arg);
+> -	if (ret != -EBADF && ret != -ENOSYS)
+> +	if (ret != -ENODEV && ret != -ENOSYS)
+>   		return set_errno(ret);
 >   
-> -int __rt_bare_socket_init(struct rtdm_fd *fd, unsigned short protocol,
-> -			unsigned int priority, unsigned int pool_size,
-> -			struct module *module)
-> +int rt_bare_socket_init(struct rtdm_fd *fd, unsigned short protocol,
-> +			unsigned int priority, unsigned int pool_size)
->   {
->       struct rtsocket *sock = rtdm_fd_to_private(fd);
->       int err;
+>   	return __STD(ioctl(fd, request, arg));
+> @@ -187,7 +187,7 @@ COBALT_IMPL(ssize_t, read, (int fd, void *buf, size_t nbyte))
 >   
-> -    err = try_module_get(module);
-> -    if (!err)
-> -	return -EAFNOSUPPORT;
-> -
->       err = rtskb_pool_init(&sock->skb_pool, pool_size, NULL, fd);
-> -    if (err < 0) {
-> -	module_put(module);
-> +    if (err < 0)
->   	return err;
-> -    }
+>   	pthread_setcanceltype(oldtype, NULL);
 >   
->       sock->protocol = protocol;
->       sock->priority = priority;
-> -    sock->owner = module;
+> -	if (ret != -EBADF && ret != -ENOSYS)
+> +	if (ret != -ENODEV && ret != -ENOSYS)
+>   		return set_errno(ret);
 >   
->       return err;
->   }
-> -EXPORT_SYMBOL_GPL(__rt_bare_socket_init);
-> +EXPORT_SYMBOL_GPL(rt_bare_socket_init);
+>   	return __STD(read(fd, buf, nbyte));
+> @@ -203,7 +203,7 @@ COBALT_IMPL(ssize_t, write, (int fd, const void *buf, size_t nbyte))
 >   
->   /***
->    *  rt_socket_init - initialises a new socket structure
->    */
-> -int __rt_socket_init(struct rtdm_fd *fd, unsigned short protocol,
-> -		struct module *module)
-> +int rt_socket_init(struct rtdm_fd *fd, unsigned short protocol)
->   {
->       struct rtsocket *sock = rtdm_fd_to_private(fd);
->       unsigned int    pool_size;
-> @@ -94,10 +85,10 @@ int __rt_socket_init(struct rtdm_fd *fd, unsigned short protocol,
->       rtdm_lock_init(&sock->param_lock);
->       rtdm_sem_init(&sock->pending_sem, 0);
+>   	pthread_setcanceltype(oldtype, NULL);
 >   
-> -    pool_size = __rt_bare_socket_init(fd, protocol,
-> +    pool_size = rt_bare_socket_init(fd, protocol,
->   				    RTSKB_PRIO_VALUE(SOCK_DEF_PRIO,
->   						    RTSKB_DEF_RT_CHANNEL),
-> -				    socket_rtskbs, module);
-> +				    socket_rtskbs);
->       sock->pool_size = pool_size;
->       mutex_init(&sock->pool_nrt_lock);
+> -	if (ret != -EBADF && ret != -ENOSYS)
+> +	if (ret != -ENODEV && ret != -ENOSYS)
+>   		return set_errno(ret);
 >   
-> @@ -112,7 +103,7 @@ int __rt_socket_init(struct rtdm_fd *fd, unsigned short protocol,
+>   	return __STD(write(fd, buf, nbyte));
+> @@ -227,7 +227,7 @@ COBALT_IMPL(ssize_t, recvmsg, (int fd, struct msghdr *msg, int flags))
+>   	int ret;
 >   
->       return 0;
->   }
-> -EXPORT_SYMBOL_GPL(__rt_socket_init);
-> +EXPORT_SYMBOL_GPL(rt_socket_init);
+>   	ret = do_recvmsg(fd, msg, flags);
+> -	if (ret != -EBADF && ret != -ENOSYS)
+> +	if (ret != -ENODEV && ret != -ENOSYS)
+>   		return set_errno(ret);
 >   
+>   	return __STD(recvmsg(fd, msg, flags));
+> @@ -244,7 +244,7 @@ COBALT_IMPL(int, recvmmsg, (int fd, struct mmsghdr *msgvec, unsigned int vlen,
 >   
->   /***
-> @@ -133,8 +124,6 @@ void rt_socket_cleanup(struct rtdm_fd *fd)
->   	rtskb_pool_release(&sock->skb_pool);
+>   	pthread_setcanceltype(oldtype, NULL);
 >   
->       mutex_unlock(&sock->pool_nrt_lock);
-> -
-> -    module_put(sock->owner);
->   }
->   EXPORT_SYMBOL_GPL(rt_socket_cleanup);
+> -	if (ret != -EBADF && ret != -ENOSYS)
+> +	if (ret != -ENODEV && ret != -ENOSYS)
+>   		return set_errno(ret);
 >   
+>   	return __STD(recvmmsg(fd, msgvec, vlen, flags, timeout));
+> @@ -268,7 +268,7 @@ COBALT_IMPL(ssize_t, sendmsg, (int fd, const struct msghdr *msg, int flags))
+>   	int ret;
+>   
+>   	ret = do_sendmsg(fd, msg, flags);
+> -	if (ret != -EBADF && ret != -ENOSYS)
+> +	if (ret != -ENODEV && ret != -ENOSYS)
+>   		return set_errno(ret);
+>   
+>   	return __STD(sendmsg(fd, msg, flags));
+> @@ -285,7 +285,7 @@ COBALT_IMPL(int, sendmmsg, (int fd, struct mmsghdr *msgvec,
+>   
+>   	pthread_setcanceltype(oldtype, NULL);
+>   
+> -	if (ret != -EBADF && ret != -ENOSYS)
+> +	if (ret != -ENODEV && ret != -ENOSYS)
+>   		return set_errno(ret);
+>   
+>   	return __STD(sendmmsg(fd, msgvec, vlen, flags));
+> @@ -309,7 +309,7 @@ COBALT_IMPL(ssize_t, recvfrom, (int fd, void *buf, size_t len, int flags,
+>   	int ret;
+>   
+>   	ret = do_recvmsg(fd, &msg, flags);
+> -	if (ret != -EBADF && ret != -ENOSYS) {
+> +	if (ret != -ENODEV && ret != -ENOSYS) {
+>   		if (ret < 0)
+>   			return set_errno(ret);
+>   
+> @@ -340,7 +340,7 @@ COBALT_IMPL(ssize_t, sendto, (int fd, const void *buf, size_t len, int flags,
+>   	int ret;
+>   
+>   	ret = do_sendmsg(fd, &msg, flags);
+> -	if (ret != -EBADF && ret != -ENOSYS)
+> +	if (ret != -ENODEV && ret != -ENOSYS)
+>   		return set_errno(ret);
+>   
+>   	return __STD(sendto(fd, buf, len, flags, to, tolen));
+> @@ -363,7 +363,7 @@ COBALT_IMPL(ssize_t, recv, (int fd, void *buf, size_t len, int flags))
+>   	int ret;
+>   
+>   	ret = do_recvmsg(fd, &msg, flags);
+> -	if (ret != -EBADF && ret != -ENOSYS)
+> +	if (ret != -ENODEV && ret != -ENOSYS)
+>   		return set_errno(ret);
+>   
+>   	return __STD(recv(fd, buf, len, flags));
+> @@ -386,7 +386,7 @@ COBALT_IMPL(ssize_t, send, (int fd, const void *buf, size_t len, int flags))
+>   	int ret;
+>   
+>   	ret = do_sendmsg(fd, &msg, flags);
+> -	if (ret != -EBADF && ret != -ENOSYS)
+> +	if (ret != -ENODEV && ret != -ENOSYS)
+>   		return set_errno(ret);
+>   
+>   	return __STD(send(fd, buf, len, flags));
+> @@ -399,7 +399,7 @@ COBALT_IMPL(int, getsockopt, (int fd, int level, int optname, void *optval,
+>   	int ret;
+>   
+>   	ret = do_ioctl(fd, _RTIOC_GETSOCKOPT, &args);
+> -	if (ret != -EBADF && ret != -ENOSYS)
+> +	if (ret != -ENODEV && ret != -ENOSYS)
+>   		return set_errno(ret);
+>   
+>   	return __STD(getsockopt(fd, level, optname, optval, optlen));
+> @@ -414,7 +414,7 @@ COBALT_IMPL(int, setsockopt, (int fd, int level, int optname, const void *optval
+>   	int ret;
+>   
+>   	ret = do_ioctl(fd, _RTIOC_SETSOCKOPT, &args);
+> -	if (ret != -EBADF && ret != -ENOSYS)
+> +	if (ret != -ENODEV && ret != -ENOSYS)
+>   		return set_errno(ret);
+>   
+>   	return __STD(setsockopt(fd, level, optname, optval, optlen));
+> @@ -426,7 +426,7 @@ COBALT_IMPL(int, bind, (int fd, const struct sockaddr *my_addr, socklen_t addrle
+>   	int ret;
+>   
+>   	ret = do_ioctl(fd, _RTIOC_BIND, &args);
+> -	if (ret != -EBADF && ret != -ENOSYS)
+> +	if (ret != -ENODEV && ret != -ENOSYS)
+>   		return set_errno(ret);
+>   
+>   	return __STD(bind(fd, my_addr, addrlen));
+> @@ -438,7 +438,7 @@ COBALT_IMPL(int, connect, (int fd, const struct sockaddr *serv_addr, socklen_t a
+>   	int ret;
+>   
+>   	ret = do_ioctl(fd, _RTIOC_CONNECT, &args);
+> -	if (ret != -EBADF && ret != -ENOSYS)
+> +	if (ret != -ENODEV && ret != -ENOSYS)
+>   		return set_errno(ret);
+>   
+>   	return __STD(connect(fd, serv_addr, addrlen));
+> @@ -449,7 +449,7 @@ COBALT_IMPL(int, listen, (int fd, int backlog))
+>   	int ret;
+>   
+>   	ret = do_ioctl(fd, _RTIOC_LISTEN, (void *)(long)backlog);
+> -	if (ret != -EBADF && ret != -ENOSYS)
+> +	if (ret != -ENODEV && ret != -ENOSYS)
+>   		return set_errno(ret);
+>   
+>   	return __STD(listen(fd, backlog));
+> @@ -461,7 +461,7 @@ COBALT_IMPL(int, accept, (int fd, struct sockaddr *addr, socklen_t *addrlen))
+>   	int ret;
+>   
+>   	ret = do_ioctl(fd, _RTIOC_ACCEPT, &args);
+> -	if (ret != -EBADF && ret != -ENOSYS)
+> +	if (ret != -ENODEV && ret != -ENOSYS)
+>   		return set_errno(ret);
+>   
+>   	return __STD(accept(fd, addr, addrlen));
+> @@ -473,7 +473,7 @@ COBALT_IMPL(int, getsockname, (int fd, struct sockaddr *name, socklen_t *namelen
+>   	int ret;
+>   
+>   	ret = do_ioctl(fd, _RTIOC_GETSOCKNAME, &args);
+> -	if (ret != -EBADF && ret != -ENOSYS)
+> +	if (ret != -ENODEV && ret != -ENOSYS)
+>   		return set_errno(ret);
+>   
+>   	return __STD(getsockname(fd, name, namelen));
+> @@ -485,7 +485,7 @@ COBALT_IMPL(int, getpeername, (int fd, struct sockaddr *name, socklen_t *namelen
+>   	int ret;
+>   
+>   	ret = do_ioctl(fd, _RTIOC_GETPEERNAME, &args);
+> -	if (ret != -EBADF && ret != -ENOSYS)
+> +	if (ret != -ENODEV && ret != -ENOSYS)
+>   		return set_errno(ret);
+>   
+>   	return __STD(getpeername(fd, name, namelen));
+> @@ -496,7 +496,7 @@ COBALT_IMPL(int, shutdown, (int fd, int how))
+>   	int ret;
+>   
+>   	ret = do_ioctl(fd, _RTIOC_SHUTDOWN, (void *)(long)how);
+> -	if (ret != -EBADF && ret != -ENOSYS)
+> +	if (ret != -ENODEV && ret != -ENOSYS)
+>   		return set_errno(ret);
+>   
+>   	return __STD(shutdown(fd, how));
+> @@ -518,7 +518,7 @@ COBALT_IMPL(void *, mmap64, (void *addr, size_t length, int prot, int flags,
+>   	rma.flags = flags;
+>   
+>   	ret = XENOMAI_SYSCALL3(sc_cobalt_mmap, fd, &rma, &addr);
+> -	if (ret != -EBADF && ret != -ENOSYS) {
+> +	if (ret != -ENODEV && ret != -ENOSYS) {
+>   		ret = set_errno(ret);
+>   		if (ret)
+>   			return MAP_FAILED;
 > 
 
-Looks reasonable. Maybe you can additionally clarify in the commit log that 
-rtdm_dev_unregister will now prevent unloading under open sockets.
+Looks reasonable, just wondering if we didn't run into other cases where ENODEV 
+is returned by the driver already. I would suggest using some uncommon error 
+code instead.
 
 Jan
 
