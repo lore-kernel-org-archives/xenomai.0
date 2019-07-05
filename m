@@ -1,15 +1,16 @@
-Subject: Re: ipipe 4.19: spurious APIC interrupt when setting rt_igp to up
-From: Jan Kiszka <jan.kiszka@siemens.com>
+From: Lange Norbert <norbert.lange@andritz.com>
+Subject: RE: ipipe 4.19: spurious APIC interrupt when setting rt_igp to up
+Date: Fri, 5 Jul 2019 10:43:30 +0000
+Message-ID: <VI1PR05MB5917125E023F3F1588F1B817F6F50@VI1PR05MB5917.eurprd05.prod.outlook.com>
 References: <VI1PR05MB5917761A9138FE1E9EC30710F6FA0@VI1PR05MB5917.eurprd05.prod.outlook.com>
  <9ebf71d7-6a49-3eeb-d5a6-89d122136999@siemens.com>
  <788b682a-4845-31af-df17-f1008d143068@siemens.com>
-Message-ID: <ab6862a6-de5c-2c37-50a1-86e509768ecf@siemens.com>
-Date: Fri, 5 Jul 2019 09:38:56 +0200
-MIME-Version: 1.0
-In-Reply-To: <788b682a-4845-31af-df17-f1008d143068@siemens.com>
-Content-Type: text/plain; charset="utf-8"
+ <ab6862a6-de5c-2c37-50a1-86e509768ecf@siemens.com>
+In-Reply-To: <ab6862a6-de5c-2c37-50a1-86e509768ecf@siemens.com>
 Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+MIME-Version: 1.0
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -18,83 +19,79 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Lange Norbert <norbert.lange@andritz.com>, "Xenomai (xenomai@xenomai.org)" <xenomai@xenomai.org>, Philippe Gerum <rpm@xenomai.org>
+To: Jan Kiszka <jan.kiszka@siemens.com>, "Xenomai (xenomai@xenomai.org)" <xenomai@xenomai.org>, Philippe Gerum <rpm@xenomai.org>
 
-On 04.07.19 12:21, Jan Kiszka wrote:
-> On 04.07.19 12:15, Jan Kiszka wrote:
->> On 04.07.19 10:57, Lange Norbert via Xenomai wrote:
->>> Hello,
->>>
->>> using the rt_igb driver with the recent ipipe/kernel will result in a broken 
->>> state
->>> (I assume one cpu core is “stuck”).
->>>
->>> This is a quote from Phillipe (note that I tested the plain upstream 
->>> revivision below)
->>>> This happens specifically when the igb driver enables the device at 
->>>> rtifconfig up only with 4.19+.
->>>> The HIPASE clock device is fine and can be enabled manually with no issue. 
->>>> The spurious IRQ
->>>> message is only a symptom, something seems wrong with this fairly old 
->>>> (rt_)igb code on recent kernels.
->>>
->>> + modprobe rtnet
->>> + modprobe rtpacket
->>> + modprobe rt_igp
->>> [  325.791715] RTnet: registered rteth0
->>> [  325.795328] rt_igb 0000:03:00.0: Intel(R) Gigabit Ethernet Network Connection
->>> [  325.802505] rt_igb 0000:03:00.0: rteth0: (PCIe:2.5Gb/s:Width x1) 
->>> 22:20:47:8d:0f:c9
->>> [  325.810103] rt_igb 0000:03:00.0: rteth0: PBA No: FFFFFF-0FF
->>> [  325.815696] rt_igb 0000:03:00.0: Using MSI-X interrupts. 1 rx queue(s), 1 
->>> tx queue(s)
->>> [  325.823638] sdhci-pci 0000:00:1b.0: SDHCI controller found [8086:5aca] 
->>> (rev b)
->>>
->>> + rtifconfig rteth0 up
->>> [  326.066500] spurious APIC interrupt through vector ff on CPU#0, should 
->>> never happen.
->>>
->>
->> Can you retry with https://lkml.org/lkml/2019/7/3/143 applied? It should tell 
->> us the real vector number.
->>
->> I'll see in parallel if I can reproduce with rt_igb here.
-> 
-> Already succeeded, with rt_e1000e in KVM. Debugging...
-> 
-
-This addresses it on x86 for me:
-
-diff --git a/kernel/irq/chip.c b/kernel/irq/chip.c
-index 6c279e065879..d503b875f086 100644
---- a/kernel/irq/chip.c
-+++ b/kernel/irq/chip.c
-@@ -1099,7 +1099,8 @@ void ipipe_enable_irq(unsigned int irq)
- 		ipipe_root_only();
- 
- 		raw_spin_lock_irqsave(&desc->lock, flags);
--		if (desc->istate & IPIPE_IRQS_NEEDS_STARTUP) {
-+		if (desc->istate & IPIPE_IRQS_NEEDS_STARTUP &&
-+		    !WARN_ON(irq_activate(desc))) {
- 			desc->istate &= ~IPIPE_IRQS_NEEDS_STARTUP;
- 			chip->irq_startup(&desc->irq_data);
- 		}
-
-Probably upstream commit c942cee46bba (genirq: Separate activation and
-startup) makes this necessary.
-
-Philippe, I suppose this is either not essential on arm, or external
-interrupts weren't tested yet, like I missed on x86. Fine to make this a
-noarch patch?
-
-Actually, we should make ipipe_enable_irq return an error, rather than
-do that WARN_ON here, but that would change APIs, down to
-xnintr_enable().
-
-Jan
-
--- 
-Siemens AG, Corporate Technology, CT RDA IOT SES-DE
-Corporate Competence Center Embedded Linux
+DQoNCj4gLS0tLS1PcmlnaW5hbCBNZXNzYWdlLS0tLS0NCj4gRnJvbTogSmFuIEtpc3prYSA8amFu
+Lmtpc3prYUBzaWVtZW5zLmNvbT4NCj4gU2VudDogRnJlaXRhZywgNS4gSnVsaSAyMDE5IDA5OjM5
+DQo+IFRvOiBMYW5nZSBOb3JiZXJ0IDxub3JiZXJ0LmxhbmdlQGFuZHJpdHouY29tPjsgWGVub21h
+aQ0KPiAoeGVub21haUB4ZW5vbWFpLm9yZykgPHhlbm9tYWlAeGVub21haS5vcmc+OyBQaGlsaXBw
+ZSBHZXJ1bQ0KPiA8cnBtQHhlbm9tYWkub3JnPg0KPiBTdWJqZWN0OiBSZTogaXBpcGUgNC4xOTog
+c3B1cmlvdXMgQVBJQyBpbnRlcnJ1cHQgd2hlbiBzZXR0aW5nIHJ0X2lncCB0byB1cA0KPg0KPiBF
+LU1BSUwgRlJPTSBBIE5PTi1BTkRSSVRaIFNPVVJDRTogQVMgQSBTRUNVUklUWSBNRUFTVVJFLCBQ
+TEVBU0UNCj4gRVhFUkNJU0UgQ0FVVElPTiBXSVRIIEUtTUFJTCBDT05URU5UIEFORCBBTlkgTElO
+S1MgT1INCj4gQVRUQUNITUVOVFMuDQo+DQo+DQo+IE9uIDA0LjA3LjE5IDEyOjIxLCBKYW4gS2lz
+emthIHdyb3RlOg0KPiA+IE9uIDA0LjA3LjE5IDEyOjE1LCBKYW4gS2lzemthIHdyb3RlOg0KPiA+
+PiBPbiAwNC4wNy4xOSAxMDo1NywgTGFuZ2UgTm9yYmVydCB2aWEgWGVub21haSB3cm90ZToNCj4g
+Pj4+IEhlbGxvLA0KPiA+Pj4NCj4gPj4+IHVzaW5nIHRoZSBydF9pZ2IgZHJpdmVyIHdpdGggdGhl
+IHJlY2VudCBpcGlwZS9rZXJuZWwgd2lsbCByZXN1bHQgaW4NCj4gPj4+IGEgYnJva2VuIHN0YXRl
+IChJIGFzc3VtZSBvbmUgY3B1IGNvcmUgaXMg4oCcc3R1Y2vigJ0pLg0KPiA+Pj4NCj4gPj4+IFRo
+aXMgaXMgYSBxdW90ZSBmcm9tIFBoaWxsaXBlIChub3RlIHRoYXQgSSB0ZXN0ZWQgdGhlIHBsYWlu
+IHVwc3RyZWFtDQo+ID4+PiByZXZpdmlzaW9uIGJlbG93KQ0KPiA+Pj4+IFRoaXMgaGFwcGVucyBz
+cGVjaWZpY2FsbHkgd2hlbiB0aGUgaWdiIGRyaXZlciBlbmFibGVzIHRoZSBkZXZpY2UgYXQNCj4g
+Pj4+PiBydGlmY29uZmlnIHVwIG9ubHkgd2l0aCA0LjE5Ky4NCj4gPj4+PiBUaGUgSElQQVNFIGNs
+b2NrIGRldmljZSBpcyBmaW5lIGFuZCBjYW4gYmUgZW5hYmxlZCBtYW51YWxseSB3aXRoIG5vDQo+
+IGlzc3VlLg0KPiA+Pj4+IFRoZSBzcHVyaW91cyBJUlENCj4gPj4+PiBtZXNzYWdlIGlzIG9ubHkg
+YSBzeW1wdG9tLCBzb21ldGhpbmcgc2VlbXMgd3Jvbmcgd2l0aCB0aGlzIGZhaXJseQ0KPiA+Pj4+
+IG9sZCAocnRfKWlnYiBjb2RlIG9uIHJlY2VudCBrZXJuZWxzLg0KPiA+Pj4NCj4gPj4+ICsgbW9k
+cHJvYmUgcnRuZXQNCj4gPj4+ICsgbW9kcHJvYmUgcnRwYWNrZXQNCj4gPj4+ICsgbW9kcHJvYmUg
+cnRfaWdwDQo+ID4+PiBbICAzMjUuNzkxNzE1XSBSVG5ldDogcmVnaXN0ZXJlZCBydGV0aDAgWyAg
+MzI1Ljc5NTMyOF0gcnRfaWdiDQo+ID4+PiAwMDAwOjAzOjAwLjA6IEludGVsKFIpIEdpZ2FiaXQg
+RXRoZXJuZXQgTmV0d29yayBDb25uZWN0aW9uIFsNCj4gPj4+IDMyNS44MDI1MDVdIHJ0X2lnYiAw
+MDAwOjAzOjAwLjA6IHJ0ZXRoMDogKFBDSWU6Mi41R2IvczpXaWR0aCB4MSkNCj4gPj4+IDIyOjIw
+OjQ3OjhkOjBmOmM5DQo+ID4+PiBbICAzMjUuODEwMTAzXSBydF9pZ2IgMDAwMDowMzowMC4wOiBy
+dGV0aDA6IFBCQSBObzogRkZGRkZGLTBGRiBbDQo+ID4+PiAzMjUuODE1Njk2XSBydF9pZ2IgMDAw
+MDowMzowMC4wOiBVc2luZyBNU0ktWCBpbnRlcnJ1cHRzLiAxIHJ4DQo+ID4+PiBxdWV1ZShzKSwg
+MSB0eCBxdWV1ZShzKSBbICAzMjUuODIzNjM4XSBzZGhjaS1wY2kgMDAwMDowMDoxYi4wOiBTREhD
+SQ0KPiA+Pj4gY29udHJvbGxlciBmb3VuZCBbODA4Njo1YWNhXSAocmV2IGIpDQo+ID4+Pg0KPiA+
+Pj4gKyBydGlmY29uZmlnIHJ0ZXRoMCB1cA0KPiA+Pj4gWyAgMzI2LjA2NjUwMF0gc3B1cmlvdXMg
+QVBJQyBpbnRlcnJ1cHQgdGhyb3VnaCB2ZWN0b3IgZmYgb24gQ1BVIzAsDQo+ID4+PiBzaG91bGQg
+bmV2ZXIgaGFwcGVuLg0KPiA+Pj4NCj4gPj4NCj4gPj4gQ2FuIHlvdSByZXRyeSB3aXRoIGh0dHBz
+Oi8vbGttbC5vcmcvbGttbC8yMDE5LzcvMy8xNDMgYXBwbGllZD8gSXQNCj4gPj4gc2hvdWxkIHRl
+bGwgdXMgdGhlIHJlYWwgdmVjdG9yIG51bWJlci4NCj4gPj4NCj4gPj4gSSdsbCBzZWUgaW4gcGFy
+YWxsZWwgaWYgSSBjYW4gcmVwcm9kdWNlIHdpdGggcnRfaWdiIGhlcmUuDQoNCkFwcGx5aW5nIHRo
+YXQgcGF0Y2ggdGhlbiBjYXVzZXMgdGhlIGlwaXBlLXBhdGNoIHRvIGZhaWwuDQpXb3VsZCB0YWtl
+IG1lIHNvbWUgdGltZSB0byBjbGVhbnVwLg0KDQo+ID4NCj4gPiBBbHJlYWR5IHN1Y2NlZWRlZCwg
+d2l0aCBydF9lMTAwMGUgaW4gS1ZNLiBEZWJ1Z2dpbmcuLi4NCj4gPg0KPg0KPiBUaGlzIGFkZHJl
+c3NlcyBpdCBvbiB4ODYgZm9yIG1lOg0KPg0KPiBkaWZmIC0tZ2l0IGEva2VybmVsL2lycS9jaGlw
+LmMgYi9rZXJuZWwvaXJxL2NoaXAuYyBpbmRleA0KPiA2YzI3OWUwNjU4NzkuLmQ1MDNiODc1ZjA4
+NiAxMDA2NDQNCj4gLS0tIGEva2VybmVsL2lycS9jaGlwLmMNCj4gKysrIGIva2VybmVsL2lycS9j
+aGlwLmMNCj4gQEAgLTEwOTksNyArMTA5OSw4IEBAIHZvaWQgaXBpcGVfZW5hYmxlX2lycSh1bnNp
+Z25lZCBpbnQgaXJxKQ0KPiAgICAgICAgICAgICAgICAgaXBpcGVfcm9vdF9vbmx5KCk7DQo+DQo+
+ICAgICAgICAgICAgICAgICByYXdfc3Bpbl9sb2NrX2lycXNhdmUoJmRlc2MtPmxvY2ssIGZsYWdz
+KTsNCj4gLSAgICAgICAgICAgICAgIGlmIChkZXNjLT5pc3RhdGUgJiBJUElQRV9JUlFTX05FRURT
+X1NUQVJUVVApIHsNCj4gKyAgICAgICAgICAgICAgIGlmIChkZXNjLT5pc3RhdGUgJiBJUElQRV9J
+UlFTX05FRURTX1NUQVJUVVAgJiYNCj4gKyAgICAgICAgICAgICAgICAgICAhV0FSTl9PTihpcnFf
+YWN0aXZhdGUoZGVzYykpKSB7DQo+ICAgICAgICAgICAgICAgICAgICAgICAgIGRlc2MtPmlzdGF0
+ZSAmPSB+SVBJUEVfSVJRU19ORUVEU19TVEFSVFVQOw0KPiAgICAgICAgICAgICAgICAgICAgICAg
+ICBjaGlwLT5pcnFfc3RhcnR1cCgmZGVzYy0+aXJxX2RhdGEpOw0KPiAgICAgICAgICAgICAgICAg
+fQ0KDQpQcm9ibGVtIHN0aWxsIHBlcnNpc3RzIGZvciBtZSB3aXRoIHRoYXQgcGF0Y2guIEkgdXNl
+IGEgbmZzcm9vdCAod2l0aCBhIFVTQi0+RVRIIGFkYXB0ZXIgc28gSSBjYW4ga2ljayBvdXQgdGhl
+IGxpbnV4IGlnYiBkcml2ZXIpLA0KTWF5YmUgdGhhdOKAmXMgcmVsYXRlZC4NCg0KTm9yYmVydA0K
+X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX18NCg0KVGhpcyBtZXNzYWdlIGFuZCBhbnkg
+YXR0YWNobWVudHMgYXJlIHNvbGVseSBmb3IgdGhlIHVzZSBvZiB0aGUgaW50ZW5kZWQgcmVjaXBp
+ZW50cy4gVGhleSBtYXkgY29udGFpbiBwcml2aWxlZ2VkIGFuZC9vciBjb25maWRlbnRpYWwgaW5m
+b3JtYXRpb24gb3Igb3RoZXIgaW5mb3JtYXRpb24gcHJvdGVjdGVkIGZyb20gZGlzY2xvc3VyZS4g
+SWYgeW91IGFyZSBub3QgYW4gaW50ZW5kZWQgcmVjaXBpZW50LCB5b3UgYXJlIGhlcmVieSBub3Rp
+ZmllZCB0aGF0IHlvdSByZWNlaXZlZCB0aGlzIGVtYWlsIGluIGVycm9yIGFuZCB0aGF0IGFueSBy
+ZXZpZXcsIGRpc3NlbWluYXRpb24sIGRpc3RyaWJ1dGlvbiBvciBjb3B5aW5nIG9mIHRoaXMgZW1h
+aWwgYW5kIGFueSBhdHRhY2htZW50IGlzIHN0cmljdGx5IHByb2hpYml0ZWQuIElmIHlvdSBoYXZl
+IHJlY2VpdmVkIHRoaXMgZW1haWwgaW4gZXJyb3IsIHBsZWFzZSBjb250YWN0IHRoZSBzZW5kZXIg
+YW5kIGRlbGV0ZSB0aGUgbWVzc2FnZSBhbmQgYW55IGF0dGFjaG1lbnQgZnJvbSB5b3VyIHN5c3Rl
+bS4NCg0KQU5EUklUWiBIWURSTyBHbWJIDQoNCg0KUmVjaHRzZm9ybS8gTGVnYWwgZm9ybTogR2Vz
+ZWxsc2NoYWZ0IG1pdCBiZXNjaHLDpG5rdGVyIEhhZnR1bmcgLyBDb3Jwb3JhdGlvbg0KDQpGaXJt
+ZW5zaXR6LyBSZWdpc3RlcmVkIHNlYXQ6IFdpZW4NCg0KRmlybWVuYnVjaGdlcmljaHQvIENvdXJ0
+IG9mIHJlZ2lzdHJ5OiBIYW5kZWxzZ2VyaWNodCBXaWVuDQoNCkZpcm1lbmJ1Y2hudW1tZXIvIENv
+bXBhbnkgcmVnaXN0cmF0aW9uOiBGTiA2MTgzMyBnDQoNCkRWUjogMDYwNTA3Nw0KDQpVSUQtTnIu
+OiBBVFUxNDc1NjgwNg0KDQoNClRoYW5rIFlvdQ0KX19fX19fX19fX19fX19fX19fX19fX19fX19f
+X19fX18NCg==
 
