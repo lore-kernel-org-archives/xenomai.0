@@ -1,18 +1,12 @@
-Subject: Re: ipipe 4.19: spurious APIC interrupt when setting rt_igp to up
-From: Jan Kiszka <jan.kiszka@siemens.com>
-References: <VI1PR05MB5917761A9138FE1E9EC30710F6FA0@VI1PR05MB5917.eurprd05.prod.outlook.com>
- <9ebf71d7-6a49-3eeb-d5a6-89d122136999@siemens.com>
- <788b682a-4845-31af-df17-f1008d143068@siemens.com>
- <ab6862a6-de5c-2c37-50a1-86e509768ecf@siemens.com>
- <VI1PR05MB5917125E023F3F1588F1B817F6F50@VI1PR05MB5917.eurprd05.prod.outlook.com>
- <6a2a0a5e-7390-a303-5fdf-0d6cd662d413@siemens.com>
-Message-ID: <39f2b9f2-845b-5746-e1c7-530ac48561b3@siemens.com>
-Date: Fri, 5 Jul 2019 15:56:56 +0200
+Date: Sat, 6 Jul 2019 06:20:05 +0000 (UTC)
+From: Alex Martin <alex.martin92@ymail.com>
+Message-ID: <112066790.3610290.1562394005713@mail.yahoo.com>
+Subject: =?UTF-8?Q?Compile_time_error_"error:_call?=
+ =?UTF-8?Q?_to_=E2=80=98=5F=5Fcompiletime=5Fassert=5F196=E2=80=99"?=
 MIME-Version: 1.0
-In-Reply-To: <6a2a0a5e-7390-a303-5fdf-0d6cd662d413@siemens.com>
-Content-Type: text/plain; charset="utf-8"; format="flowed"
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+References: <112066790.3610290.1562394005713.ref@mail.yahoo.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -21,112 +15,96 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Lange Norbert <norbert.lange@andritz.com>, "Xenomai (xenomai@xenomai.org)" <xenomai@xenomai.org>, Philippe Gerum <rpm@xenomai.org>
+To: xenomai@xenomai.org
 
-On 05.07.19 13:29, Jan Kiszka wrote:
-> On 05.07.19 12:43, Lange Norbert wrote:
->>
->>
->>> -----Original Message-----
->>> From: Jan Kiszka <jan.kiszka@siemens.com>
->>> Sent: Freitag, 5. Juli 2019 09:39
->>> To: Lange Norbert <norbert.lange@andritz.com>; Xenomai
->>> (xenomai@xenomai.org) <xenomai@xenomai.org>; Philippe Gerum
->>> <rpm@xenomai.org>
->>> Subject: Re: ipipe 4.19: spurious APIC interrupt when setting rt_igp to up
->>>
->>> E-MAIL FROM A NON-ANDRITZ SOURCE: AS A SECURITY MEASURE, PLEASE
->>> EXERCISE CAUTION WITH E-MAIL CONTENT AND ANY LINKS OR
->>> ATTACHMENTS.
->>>
->>>
->>> On 04.07.19 12:21, Jan Kiszka wrote:
->>>> On 04.07.19 12:15, Jan Kiszka wrote:
->>>>> On 04.07.19 10:57, Lange Norbert via Xenomai wrote:
->>>>>> Hello,
->>>>>>
->>>>>> using the rt_igb driver with the recent ipipe/kernel will result in
->>>>>> a broken state (I assume one cpu core is “stuck”).
->>>>>>
->>>>>> This is a quote from Phillipe (note that I tested the plain upstream
->>>>>> revivision below)
->>>>>>> This happens specifically when the igb driver enables the device at
->>>>>>> rtifconfig up only with 4.19+.
->>>>>>> The HIPASE clock device is fine and can be enabled manually with no
->>> issue.
->>>>>>> The spurious IRQ
->>>>>>> message is only a symptom, something seems wrong with this fairly
->>>>>>> old (rt_)igb code on recent kernels.
->>>>>>
->>>>>> + modprobe rtnet
->>>>>> + modprobe rtpacket
->>>>>> + modprobe rt_igp
->>>>>> [  325.791715] RTnet: registered rteth0 [  325.795328] rt_igb
->>>>>> 0000:03:00.0: Intel(R) Gigabit Ethernet Network Connection [
->>>>>> 325.802505] rt_igb 0000:03:00.0: rteth0: (PCIe:2.5Gb/s:Width x1)
->>>>>> 22:20:47:8d:0f:c9
->>>>>> [  325.810103] rt_igb 0000:03:00.0: rteth0: PBA No: FFFFFF-0FF [
->>>>>> 325.815696] rt_igb 0000:03:00.0: Using MSI-X interrupts. 1 rx
->>>>>> queue(s), 1 tx queue(s) [  325.823638] sdhci-pci 0000:00:1b.0: SDHCI
->>>>>> controller found [8086:5aca] (rev b)
->>>>>>
->>>>>> + rtifconfig rteth0 up
->>>>>> [  326.066500] spurious APIC interrupt through vector ff on CPU#0,
->>>>>> should never happen.
->>>>>>
->>>>>
->>>>> Can you retry with https://lkml.org/lkml/2019/7/3/143 applied? It
->>>>> should tell us the real vector number.
->>>>>
->>>>> I'll see in parallel if I can reproduce with rt_igb here.
->>
->> Applying that patch then causes the ipipe-patch to fail.
->> Would take me some time to cleanup.
->>
-> 
-> Yes, did this yesterday, and it requires more work. But the information from it 
-> is no longer essential.
-> 
->>>>
->>>> Already succeeded, with rt_e1000e in KVM. Debugging...
->>>>
->>>
->>> This addresses it on x86 for me:
->>>
->>> diff --git a/kernel/irq/chip.c b/kernel/irq/chip.c index
->>> 6c279e065879..d503b875f086 100644
->>> --- a/kernel/irq/chip.c
->>> +++ b/kernel/irq/chip.c
->>> @@ -1099,7 +1099,8 @@ void ipipe_enable_irq(unsigned int irq)
->>>                  ipipe_root_only();
->>>
->>>                  raw_spin_lock_irqsave(&desc->lock, flags);
->>> -               if (desc->istate & IPIPE_IRQS_NEEDS_STARTUP) {
->>> +               if (desc->istate & IPIPE_IRQS_NEEDS_STARTUP &&
->>> +                   !WARN_ON(irq_activate(desc))) {
->>>                          desc->istate &= ~IPIPE_IRQS_NEEDS_STARTUP;
->>>                          chip->irq_startup(&desc->irq_data);
->>>                  }
->>
->> Problem still persists for me with that patch. I use a nfsroot (with a 
->> USB->ETH adapter so I can kick out the linux igb driver),
->> Maybe that’s related.
-> 
-> Does reducing your machine to maxcpus=1 resolve the issue? I could imagine we an 
-> affinity problem on top.
-> 
-
-We do have an affinity problem, will try to fix it soon, but that didn't allow 
-me to reproduce your issue with my patch applied.
-
-Could you turn on CONFIG_GENERIC_IRQ_DEBUGFS and grab the content of 
-/sys/kernel/debug/irq? Maybe Linux considers the interrupt in question here as 
-"affinity managed by kernel", and then my patch is nop. Still need to understand 
-all implications of this managed mode for I-pipe.
-
-Jan
-
--- 
-Siemens AG, Corporate Technology, CT RDA IOT SES-DE
-Corporate Competence Center Embedded Linux
-
+Hi,I get following error during compilation.Compiling on Ubuntu 16.04kernel=
+ version 4.19.57 xenomai 3.0.9
+Alex
+-------------=3D=3D=3D=3D=3D=3D making target debian/stamp/build/kernel [ne=
+w prereqs: vars]=3D=3D=3D=3D=3D=3D
+This is kernel package version 13.018.
+restore_upstream_debianization
+test ! -f scripts/package/builddeb.kpkg-dist ||=C2=A0=C2=A0 =C2=A0mv -f scr=
+ipts/package/builddeb.kpkg-dist scripts/package/builddeb
+test ! -f scripts/package/Makefile.kpkg-dist ||=C2=A0=C2=A0 =C2=A0mv -f scr=
+ipts/package/Makefile.kpkg-dist scripts/package/Makefile
+/usr/bin/make -j5 EXTRAVERSION=3D-xenomai-3.0.9=C2=A0 ARCH=3Dx86_64 \
+=C2=A0=C2=A0 =C2=A0=C2=A0=C2=A0 =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 bzImage
+make[1]: Entering directory '/home/user1/src/linux-4.19.57'
+scripts/kconfig/conf=C2=A0 --syncconfig Kconfig
+=C2=A0 DESCEND=C2=A0 objtool
+=C2=A0 CALL=C2=A0=C2=A0=C2=A0 scripts/checksyscalls.sh
+=C2=A0 CHK=C2=A0=C2=A0=C2=A0=C2=A0 include/generated/compile.h
+=C2=A0 CC=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 kernel/xenomai/rtdm/core.o
+=C2=A0 CC=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 kernel/xenomai/posix/thread.o
+=C2=A0 CC=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 kernel/xenomai/rtdm/device.o
+=C2=A0 CC=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 kernel/xenomai/posix/timerfd.o
+=C2=A0 CC=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 kernel/xenomai/rtdm/drvlib.o
+In file included from ./include/trace/define_trace.h:96:0,
+=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
+=A0=C2=A0=C2=A0=C2=A0 from ./include/trace/events/cobalt-posix.h:1068,
+=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
+=A0=C2=A0=C2=A0=C2=A0 from kernel/xenomai/posix/thread.c:33:
+./include/trace/events/cobalt-posix.h: In function =E2=80=98trace_event_def=
+ine_fields_cobalt_void=E2=80=99:
+./include/linux/compiler.h:348:38: error: call to =E2=80=98__compiletime_as=
+sert_196=E2=80=99 declared with attribute error: BUILD_BUG_ON failed: 0 <=
+=3D 0
+=C2=A0 _compiletime_assert(condition, msg, __compiletime_assert_, __LINE__)
+=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
+=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
+=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 ^
+./include/trace/trace_events.h:455:2: note: in definition of macro =E2=80=
+=98DECLARE_EVENT_CLASS=E2=80=99
+=C2=A0 tstruct;=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 \
+=C2=A0 ^
+./include/trace/events/cobalt-posix.h:189:2: note: in expansion of macro =
+=E2=80=98TP_STRUCT__entry=E2=80=99
+=C2=A0 TP_STRUCT__entry(
+=C2=A0 ^
+./include/linux/compiler.h:336:2: note: in expansion of macro =E2=80=98__co=
+mpiletime_assert=E2=80=99
+=C2=A0 __compiletime_assert(condition, msg, prefix, suffix)
+=C2=A0 ^
+./include/linux/compiler.h:348:2: note: in expansion of macro =E2=80=98_com=
+piletime_assert=E2=80=99
+=C2=A0 _compiletime_assert(condition, msg, __compiletime_assert_, __LINE__)
+=C2=A0 ^
+./include/linux/build_bug.h:45:37: note: in expansion of macro =E2=80=98com=
+piletime_assert=E2=80=99
+=C2=A0#define BUILD_BUG_ON_MSG(cond, msg) compiletime_assert(!(cond), msg)
+=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
+=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
+=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 ^
+./include/linux/build_bug.h:69:2: note: in expansion of macro =E2=80=98BUIL=
+D_BUG_ON_MSG=E2=80=99
+=C2=A0 BUILD_BUG_ON_MSG(condition, "BUILD_BUG_ON failed: " #condition)
+=C2=A0 ^
+./include/trace/trace_events.h:425:3: note: in expansion of macro =E2=80=98=
+BUILD_BUG_ON=E2=80=99
+=C2=A0=C2=A0 BUILD_BUG_ON(len <=3D 0);=C2=A0=C2=A0=C2=A0=C2=A0 \
+=C2=A0=C2=A0 ^
+./include/trace/events/cobalt-posix.h:190:3: note: in expansion of macro =
+=E2=80=98__array=E2=80=99
+=C2=A0=C2=A0 __array(char, dummy, 0)
+=C2=A0=C2=A0 ^
+=C2=A0 CC=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 kernel/cpu.o
+scripts/Makefile.build:303: recipe for target 'kernel/xenomai/posix/thread.=
+o' failed
+make[4]: *** [kernel/xenomai/posix/thread.o] Error 1
+make[4]: *** Waiting for unfinished jobs....
+=C2=A0 CC=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 kernel/xenomai/rtdm/fd.o
+scripts/Makefile.build:544: recipe for target 'kernel/xenomai/posix' failed
+make[3]: *** [kernel/xenomai/posix] Error 2
+make[3]: *** Waiting for unfinished jobs....
+=C2=A0 CC=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 kernel/xenomai/rtdm/wrappers.o
+=C2=A0 CC=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 kernel/exit.o
+=C2=A0 CC=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 kernel/softirq.o
+=C2=A0 AR=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 kernel/xenomai/rtdm/built-in.a
+scripts/Makefile.build:544: recipe for target 'kernel/xenomai' failed
+make[2]: *** [kernel/xenomai] Error 2
+make[2]: *** Waiting for unfinished jobs....
+Makefile:1044: recipe for target 'kernel' failed
+make[1]: *** [kernel] Error 2
+make[1]: *** Waiting for unfinished jobs....
+----------------------------
