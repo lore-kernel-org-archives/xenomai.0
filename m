@@ -1,16 +1,13 @@
-Subject: Re: Xenomai arm64 plans?
-References: <fb2b5a6b-007e-9f2c-bcac-8df84fbaac84@theobroma-systems.com>
- <96f3c66c-816c-b2d8-071e-198488ad05be@siemens.com>
- <f735da35-123d-7352-46ec-420998540d61@theobroma-systems.com>
- <c888624bb653433ca2ab49bfef71f85f@NANS01204.it.intra.sercel.com>
-From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <cd06c26e-6923-804b-fb38-6e7afa444b93@siemens.com>
-Date: Mon, 3 Jun 2019 19:16:45 +0200
+Date: Sat, 6 Jul 2019 11:12:24 +0200 (CEST)
+From: g.strobbe@telenet.be
+Message-ID: <1481907847.150013779.1562404344423.JavaMail.zimbra@telenet.be>
+In-Reply-To: <1cda53e1-323a-add9-0a21-d6b843fb21c5@siemens.com>
+References: <1852590607.83031740.1561824852049.JavaMail.zimbra@telenet.be>
+ <1cda53e1-323a-add9-0a21-d6b843fb21c5@siemens.com>
+Subject: Re: [PATCH] rtnet: Porting e1000e from mainline 4.14.128
 MIME-Version: 1.0
-In-Reply-To: <c888624bb653433ca2ab49bfef71f85f@NANS01204.it.intra.sercel.com>
-Content-Type: text/plain; charset="utf-8"; format="flowed"
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 7bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -19,67 +16,95 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: MINIER Bertrand <Bertrand.MINIER@sercel.com>, "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Jan Kiszka <jan.kiszka@siemens.com>
+Cc: xenomai <xenomai@xenomai.org>
 
-On 03.06.19 18:24, MINIER Bertrand via Xenomai wrote:
-> Hi all,
-> 
-> Is there updated plans for a Xenomai release which includes arm64 ?
-> Are there still blocking issues to not officially support it ?
-> We are about to start the development of an industrial product based on an arm64 SoC and we would like to secure our choice of using Xenomai for that product.
 
-ARM64 shall be officially supported by the next major Xenomai release, 3.1. That 
-one is not delayed because auf ARM64, but rather because I'd like to integrate 
-one major core feature beforehand (reminds me of reminding to provide feedback 
-on that) and make sure that 4.19 support for the main archs brings no frictions 
-(that is looking good I would say).
 
-Jan
+----- On Jul 2, 2019, at 4:08 PM, Jan Kiszka jan.kiszka@siemens.com wrote:
+
+> On 29.06.19 18:14, G.Strobbe via Xenomai wrote:
+>> Hi,
+>> 
+>> I ported the e1000e driver from linux-4.14.128 to the Xenomai next branch.
+>> It runs nice on my setup, an Intel NUC i3 with an Intel I219-V Ethernet
+>> Controller wired to a Beckhoff IO island.
+> 
+> Thanks for updating!
+
+My pleasure.  I learned lots of things new to me along the way.
 
 > 
-> Thanks,
+>> 
+>> If someone else wants to give the driver a try, please find attached the
+>> patches.
+>> 
+>> They applied both clean to the master as well as the next branch.
+>> 
+>> Best Regards,
+>> 
+>> Gino
+>> -------------- next part --------------
+>> A non-text attachment was scrubbed...
+>> Name: 0001-Providing-rtnetdev_alloc_rtskb_ip_align.patch
+>> Type: text/x-patch
+>> Size: 3139 bytes
+>> Desc: not available
+>> URL:
+>> <http://xenomai.org/pipermail/xenomai/attachments/20190629/0a820ef7/attachment.bin>
 > 
-> Bertrand Minier
+> Lifting inline:
 > 
-> -----Message d'origine-----
-> De : Xenomai <xenomai-bounces@xenomai.org> De la part de via Xenomai
-> Envoyé : vendredi 2 novembre 2018 17:30
-> À : Jan Kiszka <jan.kiszka@siemens.com>
-> Cc : xenomai@xenomai.org
-> Objet : Re: Xenomai arm64 plans?
+>> +static inline struct rtskb *rtnetdev_alloc_rtskb_ip_align(struct rtnet_device
+>> *rtdev,
+>> +		unsigned int length, gfp_t gfp)
+>> +{
+>> +	struct rtskb *rtskb = rtnetdev_alloc_rtskb(rtdev, length + NET_IP_ALIGN);
+>> +
+>> +	if (NET_IP_ALIGN && rtskb)
+>> +		rtskb_reserve(rtskb, NET_IP_ALIGN);
+>> +	return rtskb;
+>> +}
 > 
-> 
-> 
-> On 11/2/18 5:25 PM, Jan Kiszka wrote:
->> On 02.11.18 17:19, Christoph Müllner wrote:
->>> Hi Jan,
->>>
->>> I was wondering if there are any plans for a Xenomai release, which
->>> includes arm64.
->>
->> Yes, there are. The exact timeline is not settled yet, but somewhere
->> within the next month, I would say.
-> 
-> That's excellent news!
-> 
->>> I'm familiar with the next branch, but I'd love to work with code
->>> from a branch, which is not subject to force-pushing.
->>
->> Actually there was a change: next is still potentially rebasing as I'm
->> integrating over it and may - when things go wrong - pull back or
->> reorder in that queue. But master is back, and that is forward-only.
->> It's not comparable to a release but it could help to bridge the time
->> to v3.1.
-> 
-> Ok, thank's for clarifying that.
-> 
-> Thanks,
-> Christoph
-> 
-> This e-mail and any accompanying attachments are confidential. If you are not the intended recipient, you must not review, disclose, copy, distribute or use this e-mail; please delete it from your system and notify the sender immediately.
-> 
+> This should probably become a non-inline service in rtdev.c.
 
--- 
-Siemens AG, Corporate Technology, CT RDA IOT SES-DE
-Corporate Competence Center Embedded Linux
+I will give that a try.
+
+> 
+> Eventually, it would be good to clean up existing users of this pattern as well.
+
+You mean other drivers?
+
+> 
+>> -------------- next part --------------
+>> A non-text attachment was scrubbed...
+>> Name: 0001-rtnet-Porting-e1000e-from-mainline-4.14.128.patch
+>> Type: text/x-patch
+>> Size: 823903 bytes
+>> Desc: not available
+>> URL:
+>> <http://xenomai.org/pipermail/xenomai/attachments/20190629/0a820ef7/attachment-0001.bin>
+>> 
+> 
+> What was the reason for picking 4.14 as baseline? 
+
+No particular reason.
+As long as I did not have build problems I always used the latest non wip marked ipipe patch when working on the driver.
+When I thought it was in a state to offer it to others to try it, I happened to be on 4.14
+
+> Did you check if older (minimum would be 4.4.) or newer kernels (4.19 ATM) build as well?
+
+I just checked 4.4.y-cip, 4.9.y and 4.19.y
+None of them build but nothing looks complicated to solve.
+
+So you actually would prefer too see the big patch appliable to 4.4.y-cip and then smaller patches as needed moving towards 4.19.y?
+
+> 
+> Jan
+> 
+> --
+> Siemens AG, Corporate Technology, CT RDA IOT SES-DE
+> Corporate Competence Center Embedded Linux
+
+Gino
 
