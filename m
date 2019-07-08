@@ -1,13 +1,10 @@
-Date: Sat, 6 Jul 2019 11:12:24 +0200 (CEST)
-From: g.strobbe@telenet.be
-Message-ID: <1481907847.150013779.1562404344423.JavaMail.zimbra@telenet.be>
-In-Reply-To: <1cda53e1-323a-add9-0a21-d6b843fb21c5@siemens.com>
-References: <1852590607.83031740.1561824852049.JavaMail.zimbra@telenet.be>
- <1cda53e1-323a-add9-0a21-d6b843fb21c5@siemens.com>
-Subject: Re: [PATCH] rtnet: Porting e1000e from mainline 4.14.128
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 7bit
+Message-ID: <trinity-a65a3ea0-cae5-4f13-9fdf-bda26c1616ab-1562590950171@3c-app-webde-bs07>
+From: "Mario Molitor" <Mario_Molitor@web.de>
+Subject: use of posix function clock_gettime
+Content-Type: text/plain; charset=UTF-8
+Date: Mon, 8 Jul 2019 15:02:30 +0200
+Content-Transfer-Encoding: quoted-printable
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,95 +13,26 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jan Kiszka <jan.kiszka@siemens.com>
-Cc: xenomai <xenomai@xenomai.org>
+To: xenomai@xenomai.org
 
+Hello  Xenomai-Community,
 
+we are seeming to have a migration problem by our internal synchronization=
+ kernel-module.
 
------ On Jul 2, 2019, at 4:08 PM, Jan Kiszka jan.kiszka@siemens.com wrote:
+The module try to get timestamp of Host-Real-Time-Clock in Real-Time IRQ c=
+ontext.
+In the old version of XENOMAI (2.6.5) it was possible to use XENOMAI POSIX=
+ function directly (clock_gettime(CLOCK_HOST_REALTIME,tp)) in the kernel m=
+odule.
 
-> On 29.06.19 18:14, G.Strobbe via Xenomai wrote:
->> Hi,
->> 
->> I ported the e1000e driver from linux-4.14.128 to the Xenomai next branch.
->> It runs nice on my setup, an Intel NUC i3 with an Intel I219-V Ethernet
->> Controller wired to a Beckhoff IO island.
-> 
-> Thanks for updating!
+But with XENOMAI version 3.0.7 is this not possible and I haven't found an=
+y good workaround in the moment.
 
-My pleasure.  I learned lots of things new to me along the way.
+We use Xenomai in combination with kernel 4.14.71.
 
-> 
->> 
->> If someone else wants to give the driver a try, please find attached the
->> patches.
->> 
->> They applied both clean to the master as well as the next branch.
->> 
->> Best Regards,
->> 
->> Gino
->> -------------- next part --------------
->> A non-text attachment was scrubbed...
->> Name: 0001-Providing-rtnetdev_alloc_rtskb_ip_align.patch
->> Type: text/x-patch
->> Size: 3139 bytes
->> Desc: not available
->> URL:
->> <http://xenomai.org/pipermail/xenomai/attachments/20190629/0a820ef7/attachment.bin>
-> 
-> Lifting inline:
-> 
->> +static inline struct rtskb *rtnetdev_alloc_rtskb_ip_align(struct rtnet_device
->> *rtdev,
->> +		unsigned int length, gfp_t gfp)
->> +{
->> +	struct rtskb *rtskb = rtnetdev_alloc_rtskb(rtdev, length + NET_IP_ALIGN);
->> +
->> +	if (NET_IP_ALIGN && rtskb)
->> +		rtskb_reserve(rtskb, NET_IP_ALIGN);
->> +	return rtskb;
->> +}
-> 
-> This should probably become a non-inline service in rtdev.c.
+Every hint or suggestion are welcome.
 
-I will give that a try.
-
-> 
-> Eventually, it would be good to clean up existing users of this pattern as well.
-
-You mean other drivers?
-
-> 
->> -------------- next part --------------
->> A non-text attachment was scrubbed...
->> Name: 0001-rtnet-Porting-e1000e-from-mainline-4.14.128.patch
->> Type: text/x-patch
->> Size: 823903 bytes
->> Desc: not available
->> URL:
->> <http://xenomai.org/pipermail/xenomai/attachments/20190629/0a820ef7/attachment-0001.bin>
->> 
-> 
-> What was the reason for picking 4.14 as baseline? 
-
-No particular reason.
-As long as I did not have build problems I always used the latest non wip marked ipipe patch when working on the driver.
-When I thought it was in a state to offer it to others to try it, I happened to be on 4.14
-
-> Did you check if older (minimum would be 4.4.) or newer kernels (4.19 ATM) build as well?
-
-I just checked 4.4.y-cip, 4.9.y and 4.19.y
-None of them build but nothing looks complicated to solve.
-
-So you actually would prefer too see the big patch appliable to 4.4.y-cip and then smaller patches as needed moving towards 4.19.y?
-
-> 
-> Jan
-> 
-> --
-> Siemens AG, Corporate Technology, CT RDA IOT SES-DE
-> Corporate Competence Center Embedded Linux
-
-Gino
+Thanks,
+Mario
 
