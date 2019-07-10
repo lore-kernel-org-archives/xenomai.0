@@ -1,13 +1,15 @@
-Subject: Re: [RFC][PATCH 0/7] Make debugging more deterministic
-References: <cover.1543608201.git.jan.kiszka@siemens.com>
-From: Philippe Gerum <rpm@xenomai.org>
-Message-ID: <62c913ba-9ff7-4719-ecb5-aa8e83c24625@xenomai.org>
-Date: Mon, 3 Jun 2019 19:26:58 +0200
-MIME-Version: 1.0
-In-Reply-To: <cover.1543608201.git.jan.kiszka@siemens.com>
-Content-Type: text/plain; charset=utf-8
+From: Lange Norbert <norbert.lange@andritz.com>
+Subject: RE: Best way to detect if a filedescriptor is a cobalt filedescriptor
+ (/socket)
+Date: Wed, 10 Jul 2019 09:20:49 +0000
+Message-ID: <VI1PR05MB5917627DEAC8D3E321CDFA90F6F00@VI1PR05MB5917.eurprd05.prod.outlook.com>
+References: <VI1PR05MB59172CE94DA6AFD8ADE653CEF6F10@VI1PR05MB5917.eurprd05.prod.outlook.com>
+ <c71b73d3-fbe8-ada9-a2d0-f960778ca8b5@siemens.com>
+In-Reply-To: <c71b73d3-fbe8-ada9-a2d0-f960778ca8b5@siemens.com>
 Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+MIME-Version: 1.0
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,74 +18,58 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jan Kiszka <jan.kiszka@siemens.com>, xenomai@xenomai.org
+To: Jan Kiszka <jan.kiszka@siemens.com>, "Xenomai (xenomai@xenomai.org)" <xenomai@xenomai.org>, Philippe Gerum <rpm@xenomai.org>
 
-On 11/30/18 9:03 PM, Jan Kiszka wrote:
-> These patches are sticking in my queue for more than 3 years now which
-> is bad. The good thing is that they were able to mature, at least on
-> x86, over that time because we are actually using them.
-> 
-> Two issues are addressed with these changes:
-> 
-> 1. Ensure that threads that were stopped for debugging in primary mode
->    will also be resumed in that mode. This prevents deviating behavior
->    compared to non-debugged execution.
-> 
-> 2. If one thread in a process hits a debugging condition and is about to
->    bring the whole process into stopped state, ensure that all other RT
->    threads are stopped immediately. This prevents that, because the
->    interrupted thread first needs to go to Linux in order to start the
->    process stop, other threads can continue running too far, changing
->    the process state so that debugging becomes harder if not impossible.
-> 
-> To provide these properties, the core needs two small new hooks from
-> I-pipe. Separate patches will be sent against 4.14 that provide these,
-> so far for x86 and ARM only.
-> 
-> Furthermore, this series likely depends on the mayday cleanup I sent
-> earlier, at least it was never used without that (you don't want to
-> debug without it). That also raises the question how to manage the
-> I-pipe feature dependencies best in order work around or simply exclude
-> old I-pipe releases.
-> 
-> Please review carefully if the design and implementation make sense. As
-> I said, we are using it, so it is not completely broken. But I may have
-> overseen some ugly corner cases nevertheless.
-> 
-> Unless too many issues surface, I would like to get this feature into
-> master before 3.1, along with the needed hooks in I-pipe (including
-> active stable trees).
-> 
-> Jan
-> 
-> Jan Kiszka (7):
->   cobalt/kernel: Rework register/unregister_debugged_thread
->   cobalt/kernel: Switch back ptraced primary mode threads on resume
->   cobalt/kernel: Reintroduce process-local thread list
->   cobalt/kernel: Introduce XNDBGSTOP
->   cobalt/kernel: Implement synchronous stop and resume for process
->     debugging
->   cobalt/kernel: Clear mayday request of relaxed task
->   testsuite/smokey: gdb-based debugging test
-> 
->  configure.ac                        |   1 +
->  include/cobalt/kernel/thread.h      |   2 +-
->  include/cobalt/uapi/kernel/thread.h |   5 +-
->  kernel/cobalt/posix/process.c       | 218 ++++++++++++++++++++++++-
->  kernel/cobalt/posix/process.h       |   4 +-
->  kernel/cobalt/posix/thread.c        |   4 +-
->  kernel/cobalt/posix/thread.h        |   2 +-
->  kernel/cobalt/thread.c              |  18 ++-
->  testsuite/smokey/Makefile.am        |   1 +
->  testsuite/smokey/gdb/Makefile.am    |  13 ++
->  testsuite/smokey/gdb/gdb.c          | 310 ++++++++++++++++++++++++++++++++++++
->  11 files changed, 564 insertions(+), 14 deletions(-)
->  create mode 100644 testsuite/smokey/gdb/Makefile.am
->  create mode 100644 testsuite/smokey/gdb/gdb.c
-> 
-
-Ack. The pipeline related bits are in -noarch already.
-
--- 
-Philippe.
+DQoNCj4gLS0tLS1PcmlnaW5hbCBNZXNzYWdlLS0tLS0NCj4gRnJvbTogSmFuIEtpc3prYSA8amFu
+Lmtpc3prYUBzaWVtZW5zLmNvbT4NCj4gU2VudDogTWl0dHdvY2gsIDEwLiBKdWxpIDIwMTkgMDg6
+MTMNCj4gVG86IExhbmdlIE5vcmJlcnQgPG5vcmJlcnQubGFuZ2VAYW5kcml0ei5jb20+OyBYZW5v
+bWFpDQo+ICh4ZW5vbWFpQHhlbm9tYWkub3JnKSA8eGVub21haUB4ZW5vbWFpLm9yZz47IFBoaWxp
+cHBlIEdlcnVtDQo+IDxycG1AeGVub21haS5vcmc+DQo+IFN1YmplY3Q6IFJlOiBCZXN0IHdheSB0
+byBkZXRlY3QgaWYgYSBmaWxlZGVzY3JpcHRvciBpcyBhIGNvYmFsdCBmaWxlZGVzY3JpcHRvcg0K
+PiAoL3NvY2tldCkNCj4NCj4gRS1NQUlMIEZST00gQSBOT04tQU5EUklUWiBTT1VSQ0U6IEFTIEEg
+U0VDVVJJVFkgTUVBU1VSRSwgUExFQVNFDQo+IEVYRVJDSVNFIENBVVRJT04gV0lUSCBFLU1BSUwg
+Q09OVEVOVCBBTkQgQU5ZIExJTktTIE9SDQo+IEFUVEFDSE1FTlRTLg0KPg0KPg0KPiBPbiAwOS4w
+Ny4xOSAxNjo0OSwgTGFuZ2UgTm9yYmVydCB2aWEgWGVub21haSB3cm90ZToNCj4gPiBIaSwNCj4g
+Pg0KPiA+IEkgYW0gb3BlbmluZyBhIHBhY2tldHNvY2tldCwgd2hpY2ggaXMgc3VwcG9zZWQgdG8g
+YmUgcmVhbHRpbWUuDQo+ID4gVW5mb3J0dW5hdGx5IGlmIHRoZSBydHBhY2tldCAocnRuZXQ/KSBt
+b2R1bGUgaXMgbm90IGxvYWRlZCwgdGhlbiB0aGlzIHdpbGwNCj4ganVzdCBzaWxlbnRseSBmYWxs
+IGJhY2sgdG8gYSBsaW51eCBwYWNrZXQgc29ja2V0LiBUaGVuIGxhdGVyIGRlbW90ZSB0aHJlYWQN
+Cj4gZHVyaW5nIGFjY2Vzc2VzLg0KPiA+DQo+ID4gSG93IHdvdWxkIEkgYmUgYWJsZSB0byBkZXRl
+Y3QgdGhpcyBlYXJseSBkdXJpbmcgc3RhcnR1cD8gSSBjb3VsZA0KPiBfX1NURChjbG9zZSkgdGhl
+IGRlc2NyaXB0b3IgYW5kIGNoZWNrIHRoZSByZXR1cm5jb2RlIGZvciBFQkFERiBJIHN1cHBvc2Uu
+Li4NCj4gPg0KPg0KPiBZZWFoLCBsb29rcyB0aGlzIGlzIHNvbWUgZmVhdHVyZSB3ZSBsb3N0IHdo
+aWxlIGVtYmVkZGluZyB0aGUgUlRETSBmaWxlDQo+IGRlc2NyaXB0b3IgcmFuZ2UgaW50byB0aGUg
+cmVndWxhciBMaW51eCBzcGFjZS4NCg0KTXkgc2NoZW1lIGRvZXMgbm90IHdvcmsgZWl0aGVyLCBf
+X1NURChjbG9zZSkgc2VlbXMgdG8gcmV0dXJuIDAgZm9yIHRoZSBjb2JhbHQgZmQsDQpCdXQgZG9l
+c27igJl0IHNlZW0gdG8gZG8gYW55dGhpbmcgYmV5b25kIHRoYXQuDQoNCk5vdGU6IEkgYW0gdXNp
+bmcgUGhpbGlwcGUncyAiY29iYWx0OiBzd2l0Y2ggaGFuZCBvdmVyIHN0YXR1cyB0byAtRU5PREVW
+IGZvciBub24tUlRETSBmZCIgcGF0Y2gsDQpzbyBwb3RlbnRpYWwgaXTigJlzIGEgcmVncmVzc2lv
+biBvZiB0aGlzIHBhdGNoLg0KDQo+IFdlIGNvdWxkIGVpdGhlciBhZGQgYSBjb21waWxlLXRpbWUg
+b3IgcnVudGltZSBmZWF0dXJlIHRvIGxpYmNvYmFsdCB0aGF0DQo+IHBlcm1pdHMgdG8gZGlzYWJs
+ZSB0aGlzIHNpbGVudCBmYWxsYmFjayBhZ2FpbiBvciBpbnRyb2R1Y2UgYWx0ZXJuYXRpdmUgb3Bl
+biBhbmQNCj4gc29ja2V0IGltcGxlbWVudGF0aW9ucyB0aGF0IGRvIG5vdCBleHBvc2UgdGhpcyBi
+ZWhhdmlvci4gU3BvbnRhbmVvdXNseSwgSQ0KPiB3b3VsZCBiZSBpbiBmYXZvciBvciBhIHJ1bnRp
+bWUgc3dpdGNoIGZvciB0aGUgZXhpc3RpbmcgaW1wbGVtZW50YXRpb25zLg0KDQpJIGFzc3VtZWQg
+dGhhdCBfX1JUKG9wZW4pIHdvdWxkIGNhbGwgdGhlIF9fY29iYWx0X29wZW4gZnVuY3Rpb24gKHdp
+dGhvdXQgZmFsbGJhY2spLA0KX19TVEQob3Blbikgd291bGQgY2FsbCBsaWJjJyBvcGVuLCBhbmQg
+IF9fd3JhcF9vcGVuIHdvdWxkIGJlIHRoZSBvbmx5IGZ1bmN0aW9uIHRyeWluZyBib3RoLg0KVHVy
+bnMgb3V0IHRoYXQgX193cmFwIGFuZCBfX2NvYmFsdCBhcmUgaWRlbnRpY2FsLCBidXQgSSBkb27i
+gJl0IHVuZGVyc3RhbmQgdGhlIHJlYXNvbmluZyBiZWhpbmQgaXQuDQoNCk5vcmJlcnQNCl9fX19f
+X19fX19fX19fX19fX19fX19fX19fX19fX19fDQoNClRoaXMgbWVzc2FnZSBhbmQgYW55IGF0dGFj
+aG1lbnRzIGFyZSBzb2xlbHkgZm9yIHRoZSB1c2Ugb2YgdGhlIGludGVuZGVkIHJlY2lwaWVudHMu
+IFRoZXkgbWF5IGNvbnRhaW4gcHJpdmlsZWdlZCBhbmQvb3IgY29uZmlkZW50aWFsIGluZm9ybWF0
+aW9uIG9yIG90aGVyIGluZm9ybWF0aW9uIHByb3RlY3RlZCBmcm9tIGRpc2Nsb3N1cmUuIElmIHlv
+dSBhcmUgbm90IGFuIGludGVuZGVkIHJlY2lwaWVudCwgeW91IGFyZSBoZXJlYnkgbm90aWZpZWQg
+dGhhdCB5b3UgcmVjZWl2ZWQgdGhpcyBlbWFpbCBpbiBlcnJvciBhbmQgdGhhdCBhbnkgcmV2aWV3
+LCBkaXNzZW1pbmF0aW9uLCBkaXN0cmlidXRpb24gb3IgY29weWluZyBvZiB0aGlzIGVtYWlsIGFu
+ZCBhbnkgYXR0YWNobWVudCBpcyBzdHJpY3RseSBwcm9oaWJpdGVkLiBJZiB5b3UgaGF2ZSByZWNl
+aXZlZCB0aGlzIGVtYWlsIGluIGVycm9yLCBwbGVhc2UgY29udGFjdCB0aGUgc2VuZGVyIGFuZCBk
+ZWxldGUgdGhlIG1lc3NhZ2UgYW5kIGFueSBhdHRhY2htZW50IGZyb20geW91ciBzeXN0ZW0uDQoN
+CkFORFJJVFogSFlEUk8gR21iSA0KDQoNClJlY2h0c2Zvcm0vIExlZ2FsIGZvcm06IEdlc2VsbHNj
+aGFmdCBtaXQgYmVzY2hyw6Rua3RlciBIYWZ0dW5nIC8gQ29ycG9yYXRpb24NCg0KRmlybWVuc2l0
+ei8gUmVnaXN0ZXJlZCBzZWF0OiBXaWVuDQoNCkZpcm1lbmJ1Y2hnZXJpY2h0LyBDb3VydCBvZiBy
+ZWdpc3RyeTogSGFuZGVsc2dlcmljaHQgV2llbg0KDQpGaXJtZW5idWNobnVtbWVyLyBDb21wYW55
+IHJlZ2lzdHJhdGlvbjogRk4gNjE4MzMgZw0KDQpEVlI6IDA2MDUwNzcNCg0KVUlELU5yLjogQVRV
+MTQ3NTY4MDYNCg0KDQpUaGFuayBZb3UNCl9fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
+DQo=
 
