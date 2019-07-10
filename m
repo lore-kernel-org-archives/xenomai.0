@@ -1,18 +1,11 @@
-Subject: Re: ipipe 4.19: spurious APIC interrupt when setting rt_igp to up
+Subject: Re: Best way to detect if a filedescriptor is a cobalt filedescriptor
+ (/socket)
+References: <VI1PR05MB59172CE94DA6AFD8ADE653CEF6F10@VI1PR05MB5917.eurprd05.prod.outlook.com>
 From: Jan Kiszka <jan.kiszka@siemens.com>
-References: <VI1PR05MB5917761A9138FE1E9EC30710F6FA0@VI1PR05MB5917.eurprd05.prod.outlook.com>
- <9ebf71d7-6a49-3eeb-d5a6-89d122136999@siemens.com>
- <788b682a-4845-31af-df17-f1008d143068@siemens.com>
- <ab6862a6-de5c-2c37-50a1-86e509768ecf@siemens.com>
- <VI1PR05MB5917125E023F3F1588F1B817F6F50@VI1PR05MB5917.eurprd05.prod.outlook.com>
- <6a2a0a5e-7390-a303-5fdf-0d6cd662d413@siemens.com>
- <39f2b9f2-845b-5746-e1c7-530ac48561b3@siemens.com>
- <VI1PR05MB5917503588E7C86637059656F6F10@VI1PR05MB5917.eurprd05.prod.outlook.com>
- <83b4cde3-dd94-e25b-5b8e-f4e04c8dd168@siemens.com>
-Message-ID: <e302cd61-3204-b543-97e9-ec23179210ed@siemens.com>
-Date: Tue, 9 Jul 2019 19:54:18 +0200
+Message-ID: <c71b73d3-fbe8-ada9-a2d0-f960778ca8b5@siemens.com>
+Date: Wed, 10 Jul 2019 08:12:48 +0200
 MIME-Version: 1.0
-In-Reply-To: <83b4cde3-dd94-e25b-5b8e-f4e04c8dd168@siemens.com>
+In-Reply-To: <VI1PR05MB59172CE94DA6AFD8ADE653CEF6F10@VI1PR05MB5917.eurprd05.prod.outlook.com>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -26,29 +19,22 @@ List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: Lange Norbert <norbert.lange@andritz.com>, "Xenomai (xenomai@xenomai.org)" <xenomai@xenomai.org>, Philippe Gerum <rpm@xenomai.org>
 
-On 09.07.19 18:33, Jan Kiszka wrote:
-> On 09.07.19 18:21, Lange Norbert wrote:
->> Hello,
->>
->> maxcpus=1 still causes the spurious int, this time fully locking up.
->>
->> I attached the debug/irq directory after the cause.
->>> Some things that might be relevant:
->> -   the SOC would use PINCTRL_BROXTON under linux, but this is disabled (not fixed up for Xenomai)
->> -   I have the regular igb driver in use, and am unbinding the network card prior to binding the rt_igp driver
->>
+On 09.07.19 16:49, Lange Norbert via Xenomai wrote:
+> Hi,
 > 
-> Thanks. What's the interrupt number that Xenomai is using? Should be the same
-> that the Linux driver is using as well.
+> I am opening a packetsocket, which is supposed to be realtime. Unfortunatly if the rtpacket (rtnet?) module is not loaded,
+> then this will just silently fall back to a linux packet socket. Then later demote thread during accesses.
+> 
+> How would I be able to detect this early during startup? I could __STD(close) the descriptor and check the returncode for EBADF I suppose...
+> 
 
-Found already: Should be IRQ 130-132 for device 00:03.0. If the directory state
-was like that while Xenomai was still holding those interrupts, the problem it
-that there are no vectors assigned to them. Can you confirm that rt_igb was
-still loaded and the interface was up?
+Yeah, looks this is some feature we lost while embedding the RTDM file
+descriptor range into the regular Linux space.
 
-Are those interrupts MSI or MSI-X? Can't read that from the logs.
-
-I probably need to get some rt_igb running somewhere...
+We could either add a compile-time or runtime feature to libcobalt that permits
+to disable this silent fallback again or introduce alternative open and socket
+implementations that do not expose this behavior. Spontaneously, I would be in
+favor or a runtime switch for the existing implementations.
 
 Jan
 
