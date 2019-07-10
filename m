@@ -1,13 +1,15 @@
-Subject: [PATCH] boilerplate: Fix bogus "typeof(type)" in macros
-References: <CALTC7XLtQUJ9xqwAbURTDeCHzJouAUjz1Lj0nhMovsEeL0q0EQ@mail.gmail.com>
-From: Jan Kiszka <jan.kiszka@web.de>
-Message-ID: <f2b6ba72-043d-135a-b86f-c9ee25419343@web.de>
-Date: Wed, 10 Jul 2019 21:39:03 +0200
+From: <mario_molitor@web.de>
+References: <trinity-a65a3ea0-cae5-4f13-9fdf-bda26c1616ab-1562590950171@3c-app-webde-bs07>
+ <3f76a1b5-24eb-6efb-d8d2-3de10554c7ed@siemens.com>
+In-Reply-To: <3f76a1b5-24eb-6efb-d8d2-3de10554c7ed@siemens.com>
+Subject: AW: use of posix function clock_gettime
+Date: Wed, 10 Jul 2019 22:42:09 +0200
+Message-ID: <000101d5375f$f221cd60$d6656820$@web.de>
 MIME-Version: 1.0
-In-Reply-To: <CALTC7XLtQUJ9xqwAbURTDeCHzJouAUjz1Lj0nhMovsEeL0q0EQ@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
+Content-Type: text/plain;
+	charset="utf-8"
 Content-Transfer-Encoding: quoted-printable
+Content-Language: de
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,42 +18,33 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Cris Almaraz <cristina.almaraz@gmail.com>, xenomai <xenomai@xenomai.org>
+To: 'Jan Kiszka' <jan.kiszka@siemens.com>, xenomai@xenomai.org
 
-From: Jan Kiszka <jan.kiszka@siemens.com>
+> First of all, all in-kernel APIs have been deprecated and removed in =
+favor of RTDM driver APIs. However, RTDM does not expose this clock =
+directly. You can only do rtdm_clock_read (realtime) or =
+rtdm_clock_read_monotonic().
 
-This was ignored by most compilers so far, but it breaks at least under
-c++11.
+This was also my recognising after reading the code and the information =
+was not really new. Anyway in meantime I have found a workaround/ =
+solution for our problem.
 
-Reported-by: St=C3=A9phane Ancelot <sancelot@numalliance.com>
-Reported-by: Cris Almaraz <cristina.almaraz@gmail.com>
-Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
-=2D--
+>We could add a host_realtime API to RTDM if there is a good use case. =
+And that would include a reason why the timestamp adjustment (monotonic =
+-> host-realtime) cannot be done in the userspace application that =
+consumes the driver data.
 
-Thanks for reporting (and sorry for the long patch delay). This should
-fix it.
+>From my point of view make this always sense if a measurement value =
+needs an accurate Timestamp by the creating. The other applications =
+which could need this are fieldbus application.=20
+Our measurement system gets her measurement value in the Kernel-Space in =
+a Xenomia-IRQ and in this case was the old Functionality very smart.=20
+A new Functionality RTDM_ host_realtime would be close this gap and =
+would by also make the RTDM Clock-service completely.
 
- include/boilerplate/tunables.h | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+Mario
 
-diff --git a/include/boilerplate/tunables.h b/include/boilerplate/tunables=
-.h
-index db8523be67..38f414e455 100644
-=2D-- a/include/boilerplate/tunables.h
-+++ b/include/boilerplate/tunables.h
-@@ -37,10 +37,10 @@ static inline int __may_change_config_tunable(void)
- 	__read_ ## __name ## _ ## __scope
+HBK
 
- #define __define_tunable(__name, __type, __val, __scope)	\
--	void __tunable_set_call(__name, __scope)(typeof(__type) __val)
-+	void __tunable_set_call(__name, __scope)(__type __val)
 
- #define __read_tunable(__name, __type, __scope)	\
--	typeof(__type) __tunable_get_call(__name, __scope)(void)
-+	__type __tunable_get_call(__name, __scope)(void)
-
- #define define_config_tunable(__name, __type, __val)	\
- 	__define_tunable(__name, __type, __val, config)
-=2D-
-2.16.4
 
