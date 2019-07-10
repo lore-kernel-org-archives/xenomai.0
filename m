@@ -1,9 +1,12 @@
+Subject: [PATCH] boilerplate: Fix bogus "typeof(type)" in macros
+References: <CALTC7XLtQUJ9xqwAbURTDeCHzJouAUjz1Lj0nhMovsEeL0q0EQ@mail.gmail.com>
+From: Jan Kiszka <jan.kiszka@web.de>
+Message-ID: <f2b6ba72-043d-135a-b86f-c9ee25419343@web.de>
+Date: Wed, 10 Jul 2019 21:39:03 +0200
 MIME-Version: 1.0
-From: Cris Almaraz <cristina.almaraz@gmail.com>
-Date: Wed, 10 Jul 2019 15:25:32 +0200
-Message-ID: <CALTC7XLtQUJ9xqwAbURTDeCHzJouAUjz1Lj0nhMovsEeL0q0EQ@mail.gmail.com>
-Subject: [Xenomai] c++11 issue
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <CALTC7XLtQUJ9xqwAbURTDeCHzJouAUjz1Lj0nhMovsEeL0q0EQ@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
 Content-Transfer-Encoding: quoted-printable
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
@@ -13,36 +16,42 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai <xenomai@xenomai.org>
+To: Cris Almaraz <cristina.almaraz@gmail.com>, xenomai <xenomai@xenomai.org>
 
-Hi all,
+From: Jan Kiszka <jan.kiszka@siemens.com>
 
-I have a problem similar to the one described in
-https://xenomai.org/pipermail/xenomai/2018-February/038373.html.
+This was ignored by most compilers so far, but it breaks at least under
+c++11.
 
-Compiling with -std=3Dc++11 and adding the headers:
-    #include <xenomai/init.h>
-    #include <xenomai/tunables.h>
+Reported-by: St=C3=A9phane Ancelot <sancelot@numalliance.com>
+Reported-by: Cris Almaraz <cristina.almaraz@gmail.com>
+Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
+=2D--
 
-Error extract:
-In file included from /usr/xenomai/include/xenomai/tunables.h:21:0,
-                 from myApplication.cpp:
-/usr/xenomai/include/boilerplate/tunables.h:72:15: error: variable or
-field =E2=80=98__assign_cpu_affinity_config=E2=80=99 declared void  static =
-inline
-define_config_tunable(cpu_affinity, cpu_set_t, cpus)
-               ^
-/usr/xenomai/include/boilerplate/tunables.h:72:15: error: expected
-primary-expression before =E2=80=98)=E2=80=99 token  static inline
-define_config_tunable(cpu_affinity, cpu_set_t, cpus) ...
+Thanks for reporting (and sorry for the long patch delay). This should
+fix it.
 
-Do you have any ideas how to solve the issue? I noticed that there is
-no answer for the previous mail.
+ include/boilerplate/tunables.h | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-Thank you in advance and best regards,
-Cristina.
+diff --git a/include/boilerplate/tunables.h b/include/boilerplate/tunables=
+.h
+index db8523be67..38f414e455 100644
+=2D-- a/include/boilerplate/tunables.h
++++ b/include/boilerplate/tunables.h
+@@ -37,10 +37,10 @@ static inline int __may_change_config_tunable(void)
+ 	__read_ ## __name ## _ ## __scope
 
-System configuration:
-Xenomai 3.0.9 Core Mercury
-CentOS 7.4
+ #define __define_tunable(__name, __type, __val, __scope)	\
+-	void __tunable_set_call(__name, __scope)(typeof(__type) __val)
++	void __tunable_set_call(__name, __scope)(__type __val)
+
+ #define __read_tunable(__name, __type, __scope)	\
+-	typeof(__type) __tunable_get_call(__name, __scope)(void)
++	__type __tunable_get_call(__name, __scope)(void)
+
+ #define define_config_tunable(__name, __type, __val)	\
+ 	__define_tunable(__name, __type, __val, config)
+=2D-
+2.16.4
 
