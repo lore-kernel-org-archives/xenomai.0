@@ -1,14 +1,22 @@
-Subject: Re: [PATCH] boilerplate: Fix bogus "typeof(type)" in macros
-References: <CALTC7XLtQUJ9xqwAbURTDeCHzJouAUjz1Lj0nhMovsEeL0q0EQ@mail.gmail.com>
- <f2b6ba72-043d-135a-b86f-c9ee25419343@web.de>
-From: Philippe Gerum <rpm@xenomai.org>
-Message-ID: <2db36c82-bc3a-7968-77fd-4d338999851e@xenomai.org>
-Date: Wed, 10 Jul 2019 22:50:21 +0200
+Subject: Re: ipipe 4.19: spurious APIC interrupt when setting rt_igp to up
+From: Jan Kiszka <jan.kiszka@siemens.com>
+References: <VI1PR05MB5917761A9138FE1E9EC30710F6FA0@VI1PR05MB5917.eurprd05.prod.outlook.com>
+ <9ebf71d7-6a49-3eeb-d5a6-89d122136999@siemens.com>
+ <788b682a-4845-31af-df17-f1008d143068@siemens.com>
+ <ab6862a6-de5c-2c37-50a1-86e509768ecf@siemens.com>
+ <VI1PR05MB5917125E023F3F1588F1B817F6F50@VI1PR05MB5917.eurprd05.prod.outlook.com>
+ <6a2a0a5e-7390-a303-5fdf-0d6cd662d413@siemens.com>
+ <39f2b9f2-845b-5746-e1c7-530ac48561b3@siemens.com>
+ <VI1PR05MB5917503588E7C86637059656F6F10@VI1PR05MB5917.eurprd05.prod.outlook.com>
+ <83b4cde3-dd94-e25b-5b8e-f4e04c8dd168@siemens.com>
+ <e302cd61-3204-b543-97e9-ec23179210ed@siemens.com>
+Message-ID: <3849aeb8-fcd2-541c-43bc-9b32f34e52e6@siemens.com>
+Date: Wed, 10 Jul 2019 23:30:43 +0200
 MIME-Version: 1.0
-In-Reply-To: <f2b6ba72-043d-135a-b86f-c9ee25419343@web.de>
-Content-Type: text/plain; charset="utf-8"
+In-Reply-To: <e302cd61-3204-b543-97e9-ec23179210ed@siemens.com>
 Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,62 +25,48 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jan Kiszka <jan.kiszka@web.de>, Cris Almaraz <cristina.almaraz@gmail.com>, xenomai <xenomai@xenomai.org>
+To: Lange Norbert <norbert.lange@andritz.com>, "Xenomai (xenomai@xenomai.org)" <xenomai@xenomai.org>, Philippe Gerum <rpm@xenomai.org>
 
-On 7/10/19 9:39 PM, Jan Kiszka via Xenomai wrote:
-> From: Jan Kiszka <jan.kiszka@siemens.com>
-> 
-> This was ignored by most compilers so far, but it breaks at least under
-> c++11.
-
-This was hardly ignored since this evaluates to a required type
-information, the issue is rather with typeof() belonging to the GNU
-extension set. Building with -std=gnu++11 solves that issue with the
-current implementation which generally assumes those extensions are enabled.
-
-> 
-> Reported-by: Stéphane Ancelot <sancelot@numalliance.com>
-> Reported-by: Cris Almaraz <cristina.almaraz@gmail.com>
-> Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
-> ---
-> 
-> Thanks for reporting (and sorry for the long patch delay). This should
-> fix it.
-> 
->  include/boilerplate/tunables.h | 4 ++--
->  1 file changed, 2 insertions(+), 2 deletions(-)
-> 
-> diff --git a/include/boilerplate/tunables.h b/include/boilerplate/tunables.h
-> index db8523be67..38f414e455 100644
-> --- a/include/boilerplate/tunables.h
-> +++ b/include/boilerplate/tunables.h
-> @@ -37,10 +37,10 @@ static inline int __may_change_config_tunable(void)
->  	__read_ ## __name ## _ ## __scope
-> 
->  #define __define_tunable(__name, __type, __val, __scope)	\
-> -	void __tunable_set_call(__name, __scope)(typeof(__type) __val)
-> +	void __tunable_set_call(__name, __scope)(__type __val)
-> 
->  #define __read_tunable(__name, __type, __scope)	\
-> -	typeof(__type) __tunable_get_call(__name, __scope)(void)
-> +	__type __tunable_get_call(__name, __scope)(void)
-> 
->  #define define_config_tunable(__name, __type, __val)	\
->  	__define_tunable(__name, __type, __val, config)
-> --
-
-
-That won't work with non-trivial type expr like this one:
-
-int (*foo_handler)(void);
-
-define_config_tunable(foobar, int (*)(void), handler)
-{
-	foo_handler = handler;
-}
-
-And we have those in the field already.
-
--- 
-Philippe.
-
+T24gMDkuMDcuMTkgMTk6NTQsIEphbiBLaXN6a2Egd3JvdGU6Cj4gT24gMDkuMDcuMTkgMTg6MzMs
+IEphbiBLaXN6a2Egd3JvdGU6Cj4+IE9uIDA5LjA3LjE5IDE4OjIxLCBMYW5nZSBOb3JiZXJ0IHdy
+b3RlOgo+Pj4gSGVsbG8sCj4+Pgo+Pj4gbWF4Y3B1cz0xIHN0aWxsIGNhdXNlcyB0aGUgc3B1cmlv
+dXMgaW50LCB0aGlzIHRpbWUgZnVsbHkgbG9ja2luZyB1cC4KPj4+Cj4+PiBJIGF0dGFjaGVkIHRo
+ZSBkZWJ1Zy9pcnEgZGlyZWN0b3J5IGFmdGVyIHRoZSBjYXVzZS4KPj4+PiBTb21lIHRoaW5ncyB0
+aGF0IG1pZ2h0IGJlIHJlbGV2YW50Ogo+Pj4gLSAgIHRoZSBTT0Mgd291bGQgdXNlIFBJTkNUUkxf
+QlJPWFRPTiB1bmRlciBsaW51eCwgYnV0IHRoaXMgaXMgZGlzYWJsZWQgKG5vdCBmaXhlZCB1cCBm
+b3IgWGVub21haSkKPj4+IC0gICBJIGhhdmUgdGhlIHJlZ3VsYXIgaWdiIGRyaXZlciBpbiB1c2Us
+IGFuZCBhbSB1bmJpbmRpbmcgdGhlIG5ldHdvcmsgY2FyZCBwcmlvciB0byBiaW5kaW5nIHRoZSBy
+dF9pZ3AgZHJpdmVyCj4+Pgo+Pgo+PiBUaGFua3MuIFdoYXQncyB0aGUgaW50ZXJydXB0IG51bWJl
+ciB0aGF0IFhlbm9tYWkgaXMgdXNpbmc/IFNob3VsZCBiZSB0aGUgc2FtZQo+PiB0aGF0IHRoZSBM
+aW51eCBkcml2ZXIgaXMgdXNpbmcgYXMgd2VsbC4KPiAKPiBGb3VuZCBhbHJlYWR5OiBTaG91bGQg
+YmUgSVJRIDEzMC0xMzIgZm9yIGRldmljZSAwMDowMy4wLiBJZiB0aGUgZGlyZWN0b3J5IHN0YXRl
+Cj4gd2FzIGxpa2UgdGhhdCB3aGlsZSBYZW5vbWFpIHdhcyBzdGlsbCBob2xkaW5nIHRob3NlIGlu
+dGVycnVwdHMsIHRoZSBwcm9ibGVtIGl0Cj4gdGhhdCB0aGVyZSBhcmUgbm8gdmVjdG9ycyBhc3Np
+Z25lZCB0byB0aGVtLiBDYW4geW91IGNvbmZpcm0gdGhhdCBydF9pZ2Igd2FzCj4gc3RpbGwgbG9h
+ZGVkIGFuZCB0aGUgaW50ZXJmYWNlIHdhcyB1cD8KPiAKPiBBcmUgdGhvc2UgaW50ZXJydXB0cyBN
+U0kgb3IgTVNJLVg/IENhbid0IHJlYWQgdGhhdCBmcm9tIHRoZSBsb2dzLgo+IAo+IEkgcHJvYmFi
+bHkgbmVlZCB0byBnZXQgc29tZSBydF9pZ2IgcnVubmluZyBzb21ld2hlcmUuLi4KPiAKClN0aWxs
+IG5vIGx1Y2ssIGV2ZW4gb24gYSBib3ggd2l0aCBhIGlnYi1kcml2ZW4gTklDIChJMzUwKToKClsg
+IDY2Ny45MjgwMzZdIHJ0X2lnYiAwMDAwOjA2OjAwLjE6IEludGVsKFIpIEdpZ2FiaXQgRXRoZXJu
+ZXQgTmV0d29yayBDb25uZWN0aW9uClsgIDY2Ny45MjgwNjRdIHJ0X2lnYiAwMDAwOjA2OjAwLjE6
+IHJ0ZXRoMDogKFBDSWU6NS4wR2IvczpXaWR0aCB4NCkgMDA6MjU6OTA6NWQ6MTA6MTkKWyAgNjY3
+LjkyODE0OV0gcnRfaWdiIDAwMDA6MDY6MDAuMTogcnRldGgwOiBQQkEgTm86IDAxMEEwMC0wMDAK
+WyAgNjY3LjkyODE1M10gcnRfaWdiIDAwMDA6MDY6MDAuMTogVXNpbmcgTVNJLVggaW50ZXJydXB0
+cy4gMSByeCBxdWV1ZShzKSwgMSB0eCBxdWV1ZShzKQp4ZW9uLWQ6fiAjIGNhdCAvcHJvYy94ZW5v
+bWFpL2lycSAKICBJUlEgICAgICAgICBDUFUwICAgICAgICAuLi4gICAgICAgIENQVTE1CiAgIDQ3
+OiAgICAgICAgICAgMCAgICAgICAgLi4uICAgICAgICAgICA3OSAgICAgICAgIHJ0ZXRoMC1UeFJ4
+LTAKCkknbSBjdXJyZW50bHkgdXNpbmcgdGhlIHR3byBhdHRhY2hlZCBwYXRjaGVzIG9uIHRvcCBv
+ZiBpcGlwZS1jb3JlLTQuMTkuNTcteDg2LTMuCgpEaWQgeW91IGNyb3NzLWNoZWNrIGlmIHRoZSBy
+dW5uaW5nIGtlcm5lbCBjb250YWlucyB0aGUgZml4KGVzKT8KCkphbgoKLS0gClNpZW1lbnMgQUcs
+IENvcnBvcmF0ZSBUZWNobm9sb2d5LCBDVCBSREEgSU9UIFNFUy1ERQpDb3Jwb3JhdGUgQ29tcGV0
+ZW5jZSBDZW50ZXIgRW1iZWRkZWQgTGludXgKLS0tLS0tLS0tLS0tLS0gbmV4dCBwYXJ0IC0tLS0t
+LS0tLS0tLS0tCkEgbm9uLXRleHQgYXR0YWNobWVudCB3YXMgc2NydWJiZWQuLi4KTmFtZTogMDAw
+MS1pcGlwZS1BY3RpdmF0ZS1JUlEtaW4taXBpcGVfZW5hYmxlX2lycS5wYXRjaApUeXBlOiB0ZXh0
+L3gtcGF0Y2gKU2l6ZTogMTAxMSBieXRlcwpEZXNjOiBub3QgYXZhaWxhYmxlClVSTDogPGh0dHA6
+Ly94ZW5vbWFpLm9yZy9waXBlcm1haWwveGVub21haS9hdHRhY2htZW50cy8yMDE5MDcxMC81NWUx
+NmY4Zi9hdHRhY2htZW50LmJpbj4KLS0tLS0tLS0tLS0tLS0gbmV4dCBwYXJ0IC0tLS0tLS0tLS0t
+LS0tCkEgbm9uLXRleHQgYXR0YWNobWVudCB3YXMgc2NydWJiZWQuLi4KTmFtZTogMDAwMi14ODYt
+aXBpcGUtTWFrZS1zdXJlLUlSUXMtYXJlLWFjdGl2ZS13aGVuLXNldHRpbmctYWZmLnBhdGNoClR5
+cGU6IHRleHQveC1wYXRjaApTaXplOiAxMzkxIGJ5dGVzCkRlc2M6IG5vdCBhdmFpbGFibGUKVVJM
+OiA8aHR0cDovL3hlbm9tYWkub3JnL3BpcGVybWFpbC94ZW5vbWFpL2F0dGFjaG1lbnRzLzIwMTkw
+NzEwLzU1ZTE2ZjhmL2F0dGFjaG1lbnQtMDAwMS5iaW4+Cg==
