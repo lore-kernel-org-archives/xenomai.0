@@ -1,9 +1,17 @@
-From: Richard Weinberger <richard@nod.at>
-Subject: [PATCH 2/2] alchemy/mutex: Fix typo in comment
-Date: Wed, 10 Jul 2019 23:46:12 +0200
-Message-Id: <20190710214612.27506-2-richard@nod.at>
-In-Reply-To: <20190710214612.27506-1-richard@nod.at>
-References: <20190710214612.27506-1-richard@nod.at>
+Subject: [PATCH v2] boilerplate: Fix non-conforming usage of typeof in
+ interface, headers
+From: Jan Kiszka <jan.kiszka@web.de>
+References: <CALTC7XLtQUJ9xqwAbURTDeCHzJouAUjz1Lj0nhMovsEeL0q0EQ@mail.gmail.com>
+ <f2b6ba72-043d-135a-b86f-c9ee25419343@web.de>
+ <2db36c82-bc3a-7968-77fd-4d338999851e@xenomai.org>
+ <2a01ec5b-11ae-ced0-bc34-e53435926e7e@web.de>
+Message-ID: <9f514986-11c3-3bb7-c8ec-473a56d7ea00@web.de>
+Date: Wed, 10 Jul 2019 23:54:02 +0200
+MIME-Version: 1.0
+In-Reply-To: <2a01ec5b-11ae-ced0-bc34-e53435926e7e@web.de>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: quoted-printable
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -12,30 +20,41 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
-Cc: Richard Weinberger <richard@nod.at>
+To: Philippe Gerum <rpm@xenomai.org>, Cris Almaraz <cristina.almaraz@gmail.com>, xenomai <xenomai@xenomai.org>
 
-s/rt_mutex_acquite/rt_mutex_acquire
+From: Jan Kiszka <jan.kiszka@siemens.com>
 
-Signed-off-by: Richard Weinberger <richard@nod.at>
----
- lib/alchemy/mutex.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+This fixes build breakages when using standard-conforming build, e.g.
+-std=3Dc++11.
 
-diff --git a/lib/alchemy/mutex.c b/lib/alchemy/mutex.c
-index ffdc2dbea323..42cd1375b34b 100644
---- a/lib/alchemy/mutex.c
-+++ b/lib/alchemy/mutex.c
-@@ -182,7 +182,7 @@ out:
-  *
-  * - -EBUSY is returned upon an attempt to destroy the object
-  * referenced by @a mutex while it is referenced (for example, while
-- * being used in a rt_mutex_acquite(), rt_mutex_acquire_timed() or
-+ * being used in a rt_mutex_acquire(), rt_mutex_acquire_timed() or
-  * rt_mutex_acquire_until() by another task).
-  *
-  * @apitags{mode-unrestricted, switch-secondary}
--- 
+Reported-by: St=C3=A9phane Ancelot <sancelot@numalliance.com>
+Reported-by: Cris Almaraz <cristina.almaraz@gmail.com>
+Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
+=2D--
+
+This should make everyone happy.
+
+ include/boilerplate/tunables.h | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/include/boilerplate/tunables.h b/include/boilerplate/tunables=
+.h
+index db8523be67..397ffc8939 100644
+=2D-- a/include/boilerplate/tunables.h
++++ b/include/boilerplate/tunables.h
+@@ -37,10 +37,10 @@ static inline int __may_change_config_tunable(void)
+ 	__read_ ## __name ## _ ## __scope
+
+ #define __define_tunable(__name, __type, __val, __scope)	\
+-	void __tunable_set_call(__name, __scope)(typeof(__type) __val)
++	void __tunable_set_call(__name, __scope)(__typeof__(__type) __val)
+
+ #define __read_tunable(__name, __type, __scope)	\
+-	typeof(__type) __tunable_get_call(__name, __scope)(void)
++	__typeof__(__type) __tunable_get_call(__name, __scope)(void)
+
+ #define define_config_tunable(__name, __type, __val)	\
+ 	__define_tunable(__name, __type, __val, config)
+=2D-
 2.16.4
-
 
