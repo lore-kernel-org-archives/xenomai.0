@@ -1,12 +1,7 @@
-Date: Tue, 4 Jun 2019 10:16:59 +0800 (CST)
-From: liang_1911  <liang_1911@163.com>
-Subject: =?GBK?Q?the_=A1=BEROOT=A1=BFtask_in_xenomai_domain?=
-In-Reply-To: <mailman.79.1559582824.27006.xenomai@xenomai.org>
-References: <mailman.79.1559582824.27006.xenomai@xenomai.org>
-MIME-Version: 1.0
-Message-ID: <ef5ddb.7d73.16b20467fa0.Coremail.liang_1911@163.com>
-Content-Type: text/plain; charset=GBK
-Content-Transfer-Encoding: base64
+From: Richard Weinberger <richard@nod.at>
+Subject: [PATCH 1/2] demo/alchemy/altency: Use sigdebug_reason()
+Date: Wed, 10 Jul 2019 23:46:11 +0200
+Message-Id: <20190710214612.27506-1-richard@nod.at>
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,40 +11,30 @@ List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: xenomai@xenomai.org
+Cc: Richard Weinberger <richard@nod.at>
 
-SGksIGZvbGtzLgpJIGhhcyBhbiBxdWVzdGlvbjogd2hlbiBpIHVzZSB0aGUgImNhdCAvcHJvYy94
-ZW5vbWFpL3NjaGVkL3N0YXQiIGNvbW1hbmQgdG8gc2VlIHRoZSBjcHUncyB1c2FnZSByYXRlIGlu
-IHhlbm9tYWkgZG9tYWluo6xoZXJlIGlzIHRoZSByZXN1bHQgOgpyb290QGFtMzM1eC1ldm06fiMg
-Y2F0IC9wcm9jL3hlbm9tYWkvc2NoZWQvc3RhdCAKQ1BVICBQSUQgICAgTVNXICAgICAgICBDU1cg
-ICAgICAgIFhTQyAgICAgICAgUEYgICAgU1RBVCAgICAgICAlQ1BVICBOQU1FCiAgMCAgMCAgICAg
-IDAgICAgICAgICAgMTA5NzQ0NTkgICAwICAgICAgICAgIDAgICAgIDAwMDE4MDAwICAgICAgICAg
-IDg5LjQgIFtST09UXQogIDAgIDY1MiAgICA0MCAgICAgICAgIDU4ICAgICAgICAgMjA3ICAgICAg
-ICAwICAgICAwMDA2ODBjMCAgICAgICAgICAgMC4wICBNVAogIDAgIDY4OSAgICAyICAgICAgICAg
-IDUgICAgICAgICAgMTIgICAgICAgICAwICAgICAwMDA0ODA0MiAgICAgICAgICAgICAgMC4wICB0
-YXNrSW50UG93ZXJEb3duCiAgMCAgNjkwICAgIDMgICAgICAgICAgMjg2ODY4NCAgICAyODY4Njkx
-ICAgIDEgICAgIDAwMDQ4MDQyICAgIDIuNyAgdGFza0ludDFtc0hhbmRsZQogIDAgIDY5MSAgICAz
-ICAgICAgICAgIDc2ODc4NSAgICAgNzE2ODg5ICAgICAxICAgICAwMDA0ODA0MiAgICAxLjYgIHRh
-c2tfZmlyc3RMYWRkZXIKICAwICA2OTQgICAgMiAgICAgICAgICAyOTEzNTY1ICAgIDI4Njc1MTEg
-ICAgMCAgICAgMDAwNDgwNDIgICAgMS4wICB0YXNrX3doZWVsWmVybwogIDAgIDY5NSAgICAyICAg
-ICAgICAgIDE0NjQ4OTcgICAgMTQzMzc1OSAgICAwICAgICAwMDA0ODA0MiAgICAwLjYgIHRhc2tf
-TVNUCiAgMCAgNjk2ICAgIDcgICAgICAgICAgNzM5MDEzICAgICA3MTY4OTcgICAgIDAgICAgIDAw
-MDQ4MDQyICAgIDAuNSAgdGFza19tYXN0ZXJDdHJsCiAgMCAgNjk3ICAgIDIgICAgICAgICAgMjk0
-NDg1NSAgICAyODY3NDk0ICAgIDAgICAgIDAwMDQ4MDQyICAgIDEuMCAgdGFza19pbnRlcnBvbGF0
-ZQogIDAgIDY5OCAgICA0ICAgICAgICAgIDI1ODM5MyAgICAgMjM4OTc0ICAgICAwICAgICAwMDA0
-ODA0MiAgICAgIDAuNiAgdGFza19sb3dSZWFsVGltZQogIDAgIDY5OSAgICAxICAgICAgICAgIDEg
-ICAgICAgICAgICAgICAgICAgIDI0ICAgICAgICAgMCAgICAgMDAwNjAwYzAgICAgMC4wICBNVAog
-IDAgIDAgICAgICAwICAgICAgICAgIDExMzUzNzQyICAgMCAgICAgICAgICAwICAgICAwMDAwMDAw
-MCAgICAgICAgICAxLjMgIFtJUlExNjogW3RpbWVyXV0KICAwICAwICAgICAgMCAgICAgICAgICAy
-ODY4Njc5ICAgIDAgICAgICAgICAgMCAgICAgMDAwMDAwMDAgICAgICAgICAgIDAuOSAgW0lSUTE4
-MTogMW1zSW50XQogIDAgIDAgICAgICAwICAgICAgICAgIDAgICAgICAgICAgMCAgICAgICAgICAw
-ICAgICAwMDAwMDAwMCAgICAgICAgICAgICAgICAwLjAgIFtJUlExODI6IHBvd2VyX2Rvd25dCiAK
-dGhlIFJPT1QgdGFzayBvY2N1cHkgODkuNCUncyBjcHUgdXNhZ2UgcmF0ZTsgRG9lcyB0aGF0IG1l
-YW4gdGhlIGlkbGUgY3B1IHVzYWdlIHJhdGUgaXMgODkuNCU/CkFjdHVhbGx5LCB0aGUgb3RoZXIg
-cmVtYWluaW5nIHRhc2sgaXMgbXkgd29yayB0YXNrICx3aGljaCBqdXN0IG9jY3VweSBhIGZldyBj
-cHUgdXNhZ2UgcmF0ZSAgdG90YWxseS4KSWYgdGhhdCBpcyB0cnVlLCBoZXJlIGlzIGFub3RoZXIg
-cXVlc3Rpb246CkNhbiB3ZSBsaW1pdCB0aGUgY3B1IHVzYWdlIHJhdGUgdG8gdGhlIHJlYWwtdGlt
-ZSBwYXJ0aWFsIHByb2dyYW0/Cmxpa2Ugc2F5LCBpIHdhbnQgdG8gYXNzaWduZWQgNzAlIG9mIGNw
-dSdzICBwZXJmb3JtYW5jZSB0byBSVCBwcm9ncmFtLCBhbmQgZ2l2ZSB0aGUgcmVzdCB0byBub24t
-UlQgcHJvZ3JhbS4KSXMgdGhlcmUgYW55IHdheSB0byBmdWxsZmlsbCB0aGlzIHB1cnBvc2UgPwot
-LQoKLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLQogICAgICAg
-ICBRdWFuClRIQU5LUyAmIEJSIQoK
+Since cobalt adds 0xfccf0000 to si_value we can no longer
+use the raw value.
+
+Signed-off-by: Richard Weinberger <richard@nod.at>
+---
+ demo/alchemy/altency.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/demo/alchemy/altency.c b/demo/alchemy/altency.c
+index 83cc806b5d7f..4b49755edaba 100644
+--- a/demo/alchemy/altency.c
++++ b/demo/alchemy/altency.c
+@@ -461,7 +461,7 @@ static void sigdebug(int sig, siginfo_t *si, void *context)
+ {
+ 	const char fmt[] = "%s, aborting.\n"
+ 		"(enabling CONFIG_XENO_OPT_DEBUG_TRACE_RELAX may help)\n";
+-	unsigned int reason = si->si_value.sival_int;
++	unsigned int reason = sigdebug_reason(si);
+ 	int n __attribute__ ((unused));
+ 	static char buffer[256];
+ 
+-- 
+2.16.4
+
+
