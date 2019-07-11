@@ -1,21 +1,8 @@
-Subject: Re: ipipe 4.19: spurious APIC interrupt when setting rt_igp to up
-References: <VI1PR05MB5917761A9138FE1E9EC30710F6FA0@VI1PR05MB5917.eurprd05.prod.outlook.com>
- <9ebf71d7-6a49-3eeb-d5a6-89d122136999@siemens.com>
- <788b682a-4845-31af-df17-f1008d143068@siemens.com>
- <ab6862a6-de5c-2c37-50a1-86e509768ecf@siemens.com>
- <00b30eb9-a3fa-4467-d60e-88759fbc05ad@xenomai.org>
- <ac67565d-9287-5949-9efa-eb019372c619@siemens.com>
- <6698d16a-8fe9-d555-5551-14a352f78373@xenomai.org>
- <46ba95c1-f188-2074-98b6-0a40d54395a5@siemens.com>
- <2a94c6e6-3b9a-a0e8-7888-63a0362080c8@xenomai.org>
 From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <4b51f61a-1075-f993-0feb-1d20cc56dd20@siemens.com>
-Date: Thu, 11 Jul 2019 21:42:36 +0200
-MIME-Version: 1.0
-In-Reply-To: <2a94c6e6-3b9a-a0e8-7888-63a0362080c8@xenomai.org>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Subject: [PATCH v2 0/6] ipipe-noarch: IRQ tracing, enabling,
+ and lockdep fixes/cleanups
+Date: Thu, 11 Jul 2019 21:56:11 +0200
+Message-Id: <cover.1562874977.git.jan.kiszka@siemens.com>
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -24,75 +11,30 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Philippe Gerum <rpm@xenomai.org>, Lange Norbert <norbert.lange@andritz.com>, "Xenomai (xenomai@xenomai.org)" <xenomai@xenomai.org>
+To: Philippe Gerum <rpm@xenomai.org>
+Cc: xenomai@xenomai.org
 
-On 11.07.19 18:48, Philippe Gerum wrote:
-> On 7/11/19 6:34 PM, Jan Kiszka wrote:
->> On 11.07.19 18:00, Philippe Gerum wrote:
->>> On 7/11/19 5:09 PM, Jan Kiszka wrote:
->>>> On 11.07.19 16:40, Philippe Gerum wrote:
->>>>> On 7/5/19 9:38 AM, Jan Kiszka wrote:
->>>>>
->>>>>> This addresses it on x86 for me:
->>>>>>
->>>>>> diff --git a/kernel/irq/chip.c b/kernel/irq/chip.c
->>>>>> index 6c279e065879..d503b875f086 100644
->>>>>> --- a/kernel/irq/chip.c
->>>>>> +++ b/kernel/irq/chip.c
->>>>>> @@ -1099,7 +1099,8 @@ void ipipe_enable_irq(unsigned int irq)
->>>>>>  		ipipe_root_only();
->>>>>>  
->>>>>>  		raw_spin_lock_irqsave(&desc->lock, flags);
->>>>>> -		if (desc->istate & IPIPE_IRQS_NEEDS_STARTUP) {
->>>>>> +		if (desc->istate & IPIPE_IRQS_NEEDS_STARTUP &&
->>>>>> +		    !WARN_ON(irq_activate(desc))) {
->>>>>>  			desc->istate &= ~IPIPE_IRQS_NEEDS_STARTUP;
->>>>>>  			chip->irq_startup(&desc->irq_data);
->>>>>>  		}
->>>>>>
->>>>>> Probably upstream commit c942cee46bba (genirq: Separate activation and
->>>>>> startup) makes this necessary.
->>>>>>
->>>>>> Philippe, I suppose this is either not essential on arm, or external
->>>>>> interrupts weren't tested yet, like I missed on x86. Fine to make this a
->>>>>> noarch patch?
->>>>>
->>>>> No issue. I've not been working on/with the I-pipe but Dovetail instead
->>>>> in the past weeks, so testing of 4.19 is still very limited on my end. I
->>>>> have several full-fledged real world ARM*-based application systems to
->>>>> improve this, just need to find a way to squeeze this work in.
->>>>>
->>>>
->>>> One question remains, though: Should we just do the WARN_ON() thing within the
->>>> existing API or change that API to return a potential error? Variant one I have
->>>> ready, but I have no feeling for the risk that there is actually an error.
->>>>
->>>> The same goes for ipipe_set_irq_affinity that will require the activation as
->>>> well but cannot return an error so far.
->>>>
->>>
->>> Moving from void to non-void would be backward-compatible provided we
->>> don't tag these services as __must_check, so propagating the status
->>> would make sense.
->>
->> ...but it would also be risky as we then had no reporting of an error. If we
->> change the API, I would do that in way users (namely drivers) have a chance to
->> become aware of this change.
->>
-> 
-> Coupling error propagation and WARN_ON (e.g. in pipeline debug mode)
-> should not be a problem.
-> 
-
-Evaluating the error code of ipipe_enable_irq and ipipe_set_irq_affinity in
-Xenomai will mean requiring a minimal ipipe core version for 4.19. So I will
-push the burden of dealing with unprepared drivers to Xenomai (WARN_ON there)
-and rather enforce that ipipe update. Luckily, we have no release out yet that
-support 4.19.
+This included the patches from v1, the addition (patch 3), and the new
+patches needed to add return codes and irq enabling to some services.
 
 Jan
 
+Jan Kiszka (6):
+  ipipe: Restore trace_hardirqs_on_virt_caller
+  ipipe: lockdep: Remove duplicate context checks
+  ipipe: Add missing include for ipipe_root_only
+  ipipe: Let ipipe_enable_irq return an error code
+  ipipe: Activate IRQ in ipipe_enable_irq
+  ipipe: Let ipipe_set_irq_affinity return an error
+
+ include/linux/ipipe.h           |  6 +++---
+ include/linux/kernel.h          |  1 +
+ kernel/irq/chip.c               | 17 ++++++++++++-----
+ kernel/locking/lockdep.c        |  6 ------
+ kernel/trace/trace_preemptirq.c | 11 +++++++++++
+ 5 files changed, 27 insertions(+), 14 deletions(-)
+
 -- 
-Siemens AG, Corporate Technology, CT RDA IOT SES-DE
-Corporate Competence Center Embedded Linux
+2.16.4
+
 
