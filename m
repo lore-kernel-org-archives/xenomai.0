@@ -1,8 +1,11 @@
 From: Jan Kiszka <jan.kiszka@siemens.com>
-Subject: [PATCH v2 0/6] ipipe-noarch: IRQ tracing, enabling,
- and lockdep fixes/cleanups
-Date: Thu, 11 Jul 2019 21:56:11 +0200
-Message-Id: <cover.1562874977.git.jan.kiszka@siemens.com>
+Subject: [PATCH v2 2/6] ipipe: lockdep: Remove duplicate context checks
+Date: Thu, 11 Jul 2019 21:56:13 +0200
+Message-Id: <59da6e784c1365ef663e7cdb6df8c6b339a78c9d.1562874977.git.jan.kiszka@siemens.com>
+In-Reply-To: <cover.1562874977.git.jan.kiszka@siemens.com>
+References: <cover.1562874977.git.jan.kiszka@siemens.com>
+In-Reply-To: <cover.1562874977.git.jan.kiszka@siemens.com>
+References: <cover.1562874977.git.jan.kiszka@siemens.com>
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -14,26 +17,39 @@ List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
 To: Philippe Gerum <rpm@xenomai.org>
 Cc: xenomai@xenomai.org
 
-This included the patches from v1, the addition (patch 3), and the new
-patches needed to add return codes and irq enabling to some services.
+From: Jan Kiszka <jan.kiszka@siemens.com>
 
-Jan
+All callers of lockdep_hardirqs_on/off already filter out !ipipe_root_p.
 
-Jan Kiszka (6):
-  ipipe: Restore trace_hardirqs_on_virt_caller
-  ipipe: lockdep: Remove duplicate context checks
-  ipipe: Add missing include for ipipe_root_only
-  ipipe: Let ipipe_enable_irq return an error code
-  ipipe: Activate IRQ in ipipe_enable_irq
-  ipipe: Let ipipe_set_irq_affinity return an error
+Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
+---
+ kernel/locking/lockdep.c | 6 ------
+ 1 file changed, 6 deletions(-)
 
- include/linux/ipipe.h           |  6 +++---
- include/linux/kernel.h          |  1 +
- kernel/irq/chip.c               | 17 ++++++++++++-----
- kernel/locking/lockdep.c        |  6 ------
- kernel/trace/trace_preemptirq.c | 11 +++++++++++
- 5 files changed, 27 insertions(+), 14 deletions(-)
-
+diff --git a/kernel/locking/lockdep.c b/kernel/locking/lockdep.c
+index 715fe8a49c2e..a2a8267788c6 100644
+--- a/kernel/locking/lockdep.c
++++ b/kernel/locking/lockdep.c
+@@ -2841,9 +2841,6 @@ static void __trace_hardirqs_on_caller(unsigned long ip)
+ 
+ void lockdep_hardirqs_on(unsigned long ip)
+ {
+-	if (!ipipe_root_p)
+-		return;
+-
+ 	if (unlikely(!debug_locks || current->lockdep_recursion))
+ 		return;
+ 
+@@ -2890,9 +2887,6 @@ void lockdep_hardirqs_off(unsigned long ip)
+ {
+ 	struct task_struct *curr;
+ 
+-	if (!ipipe_root_p)
+-		return;
+-
+ 	curr = current;
+ 
+ 	if (unlikely(!debug_locks || current->lockdep_recursion))
 -- 
 2.16.4
 
