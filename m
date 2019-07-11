@@ -1,23 +1,16 @@
-From: Lange Norbert <norbert.lange@andritz.com>
-Subject: RE: ipipe 4.19: spurious APIC interrupt when setting rt_igp to up
-Date: Thu, 11 Jul 2019 12:23:57 +0000
-Message-ID: <VI1PR05MB59174EE6DC3C84A485999703F6F30@VI1PR05MB5917.eurprd05.prod.outlook.com>
-References: <VI1PR05MB5917761A9138FE1E9EC30710F6FA0@VI1PR05MB5917.eurprd05.prod.outlook.com>
- <9ebf71d7-6a49-3eeb-d5a6-89d122136999@siemens.com>
- <788b682a-4845-31af-df17-f1008d143068@siemens.com>
- <ab6862a6-de5c-2c37-50a1-86e509768ecf@siemens.com>
- <VI1PR05MB5917125E023F3F1588F1B817F6F50@VI1PR05MB5917.eurprd05.prod.outlook.com>
- <6a2a0a5e-7390-a303-5fdf-0d6cd662d413@siemens.com>
- <39f2b9f2-845b-5746-e1c7-530ac48561b3@siemens.com>
- <VI1PR05MB5917503588E7C86637059656F6F10@VI1PR05MB5917.eurprd05.prod.outlook.com>
- <83b4cde3-dd94-e25b-5b8e-f4e04c8dd168@siemens.com>
- <e302cd61-3204-b543-97e9-ec23179210ed@siemens.com>
- <3849aeb8-fcd2-541c-43bc-9b32f34e52e6@siemens.com>
-In-Reply-To: <3849aeb8-fcd2-541c-43bc-9b32f34e52e6@siemens.com>
-Content-Language: en-US
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+Subject: Re: Best way to detect if a filedescriptor is a cobalt filedescriptor
+ (/socket)
+References: <VI1PR05MB59172CE94DA6AFD8ADE653CEF6F10@VI1PR05MB5917.eurprd05.prod.outlook.com>
+ <c71b73d3-fbe8-ada9-a2d0-f960778ca8b5@siemens.com>
+ <VI1PR05MB5917627DEAC8D3E321CDFA90F6F00@VI1PR05MB5917.eurprd05.prod.outlook.com>
+From: Philippe Gerum <rpm@xenomai.org>
+Message-ID: <1782aabc-68ba-9e5e-0df4-ef111e2d50a6@xenomai.org>
+Date: Thu, 11 Jul 2019 16:22:37 +0200
 MIME-Version: 1.0
+In-Reply-To: <VI1PR05MB5917627DEAC8D3E321CDFA90F6F00@VI1PR05MB5917.eurprd05.prod.outlook.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -26,75 +19,92 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jan Kiszka <jan.kiszka@siemens.com>, "Xenomai (xenomai@xenomai.org)" <xenomai@xenomai.org>, Philippe Gerum <rpm@xenomai.org>
+To: Lange Norbert <norbert.lange@andritz.com>, Jan Kiszka <jan.kiszka@siemens.com>, "Xenomai (xenomai@xenomai.org)" <xenomai@xenomai.org>
 
-PiAtLS0tLU9yaWdpbmFsIE1lc3NhZ2UtLS0tLQ0KPiBGcm9tOiBKYW4gS2lzemthIDxqYW4ua2lz
-emthQHNpZW1lbnMuY29tPg0KPiBTZW50OiBNaXR0d29jaCwgMTAuIEp1bGkgMjAxOSAyMzozMQ0K
-PiBUbzogTGFuZ2UgTm9yYmVydCA8bm9yYmVydC5sYW5nZUBhbmRyaXR6LmNvbT47IFhlbm9tYWkN
-Cj4gKHhlbm9tYWlAeGVub21haS5vcmcpIDx4ZW5vbWFpQHhlbm9tYWkub3JnPjsgUGhpbGlwcGUg
-R2VydW0NCj4gPHJwbUB4ZW5vbWFpLm9yZz4NCj4gU3ViamVjdDogUmU6IGlwaXBlIDQuMTk6IHNw
-dXJpb3VzIEFQSUMgaW50ZXJydXB0IHdoZW4gc2V0dGluZyBydF9pZ3AgdG8gdXANCj4NCj4gRS1N
-QUlMIEZST00gQSBOT04tQU5EUklUWiBTT1VSQ0U6IEFTIEEgU0VDVVJJVFkgTUVBU1VSRSwgUExF
-QVNFDQo+IEVYRVJDSVNFIENBVVRJT04gV0lUSCBFLU1BSUwgQ09OVEVOVCBBTkQgQU5ZIExJTktT
-IE9SDQo+IEFUVEFDSE1FTlRTLg0KPg0KPg0KPiBPbiAwOS4wNy4xOSAxOTo1NCwgSmFuIEtpc3pr
-YSB3cm90ZToNCj4gPiBPbiAwOS4wNy4xOSAxODozMywgSmFuIEtpc3prYSB3cm90ZToNCj4gPj4g
-T24gMDkuMDcuMTkgMTg6MjEsIExhbmdlIE5vcmJlcnQgd3JvdGU6DQo+ID4+PiBIZWxsbywNCj4g
-Pj4+DQo+ID4+PiBtYXhjcHVzPTEgc3RpbGwgY2F1c2VzIHRoZSBzcHVyaW91cyBpbnQsIHRoaXMg
-dGltZSBmdWxseSBsb2NraW5nIHVwLg0KPiA+Pj4NCj4gPj4+IEkgYXR0YWNoZWQgdGhlIGRlYnVn
-L2lycSBkaXJlY3RvcnkgYWZ0ZXIgdGhlIGNhdXNlLg0KPiA+Pj4+IFNvbWUgdGhpbmdzIHRoYXQg
-bWlnaHQgYmUgcmVsZXZhbnQ6DQo+ID4+PiAtICAgdGhlIFNPQyB3b3VsZCB1c2UgUElOQ1RSTF9C
-Uk9YVE9OIHVuZGVyIGxpbnV4LCBidXQgdGhpcyBpcyBkaXNhYmxlZA0KPiAobm90IGZpeGVkIHVw
-IGZvciBYZW5vbWFpKQ0KPiA+Pj4gLSAgIEkgaGF2ZSB0aGUgcmVndWxhciBpZ2IgZHJpdmVyIGlu
-IHVzZSwgYW5kIGFtIHVuYmluZGluZyB0aGUgbmV0d29yaw0KPiBjYXJkIHByaW9yIHRvIGJpbmRp
-bmcgdGhlIHJ0X2lncCBkcml2ZXINCj4gPj4+DQo+ID4+DQo+ID4+IFRoYW5rcy4gV2hhdCdzIHRo
-ZSBpbnRlcnJ1cHQgbnVtYmVyIHRoYXQgWGVub21haSBpcyB1c2luZz8gU2hvdWxkIGJlDQo+ID4+
-IHRoZSBzYW1lIHRoYXQgdGhlIExpbnV4IGRyaXZlciBpcyB1c2luZyBhcyB3ZWxsLg0KPiA+DQo+
-ID4gRm91bmQgYWxyZWFkeTogU2hvdWxkIGJlIElSUSAxMzAtMTMyIGZvciBkZXZpY2UgMDA6MDMu
-MC4gSWYgdGhlDQo+ID4gZGlyZWN0b3J5IHN0YXRlIHdhcyBsaWtlIHRoYXQgd2hpbGUgWGVub21h
-aSB3YXMgc3RpbGwgaG9sZGluZyB0aG9zZQ0KPiA+IGludGVycnVwdHMsIHRoZSBwcm9ibGVtIGl0
-IHRoYXQgdGhlcmUgYXJlIG5vIHZlY3RvcnMgYXNzaWduZWQgdG8gdGhlbS4NCj4gPiBDYW4geW91
-IGNvbmZpcm0gdGhhdCBydF9pZ2Igd2FzIHN0aWxsIGxvYWRlZCBhbmQgdGhlIGludGVyZmFjZSB3
-YXMgdXA/DQo+ID4NCj4gPiBBcmUgdGhvc2UgaW50ZXJydXB0cyBNU0kgb3IgTVNJLVg/IENhbid0
-IHJlYWQgdGhhdCBmcm9tIHRoZSBsb2dzLg0KPiA+DQo+ID4gSSBwcm9iYWJseSBuZWVkIHRvIGdl
-dCBzb21lIHJ0X2lnYiBydW5uaW5nIHNvbWV3aGVyZS4uLg0KPiA+DQo+DQo+IFN0aWxsIG5vIGx1
-Y2ssIGV2ZW4gb24gYSBib3ggd2l0aCBhIGlnYi1kcml2ZW4gTklDIChJMzUwKToNCj4NCj4gWyAg
-NjY3LjkyODAzNl0gcnRfaWdiIDAwMDA6MDY6MDAuMTogSW50ZWwoUikgR2lnYWJpdCBFdGhlcm5l
-dCBOZXR3b3JrDQo+IENvbm5lY3Rpb24gWyAgNjY3LjkyODA2NF0gcnRfaWdiIDAwMDA6MDY6MDAu
-MTogcnRldGgwOiAoUENJZTo1LjBHYi9zOldpZHRoDQo+IHg0KSAwMDoyNTo5MDo1ZDoxMDoxOSBb
-ICA2NjcuOTI4MTQ5XSBydF9pZ2IgMDAwMDowNjowMC4xOiBydGV0aDA6IFBCQSBObzoNCj4gMDEw
-QTAwLTAwMCBbICA2NjcuOTI4MTUzXSBydF9pZ2IgMDAwMDowNjowMC4xOiBVc2luZyBNU0ktWCBp
-bnRlcnJ1cHRzLiAxIHJ4DQo+IHF1ZXVlKHMpLCAxIHR4IHF1ZXVlKHMpIHhlb24tZDp+ICMgY2F0
-IC9wcm9jL3hlbm9tYWkvaXJxDQo+ICAgSVJRICAgICAgICAgQ1BVMCAgICAgICAgLi4uICAgICAg
-ICBDUFUxNQ0KPiAgICA0NzogICAgICAgICAgIDAgICAgICAgIC4uLiAgICAgICAgICAgNzkgICAg
-ICAgICBydGV0aDAtVHhSeC0wDQo+DQo+IEknbSBjdXJyZW50bHkgdXNpbmcgdGhlIHR3byBhdHRh
-Y2hlZCBwYXRjaGVzIG9uIHRvcCBvZiBpcGlwZS1jb3JlLTQuMTkuNTctDQo+IHg4Ni0zLg0KDQpX
-aXRoIHRob3NlIDIgcGF0Y2hlcyBpc3Qgbm93IGZpeGVkIG9uIG15IGVuZCwNClNvIGZhciBJIHVz
-ZWQgdGhpczoNCg0KZGlmZiAtLWdpdCBhL2tlcm5lbC9pcnEvY2hpcC5jIGIva2VybmVsL2lycS9j
-aGlwLmMNCmluZGV4IDZjMjc5ZTA2NTg3OS4uZDUwM2I4NzVmMDg2IDEwMDY0NA0KLS0tIGEva2Vy
-bmVsL2lycS9jaGlwLmMNCisrKyBiL2tlcm5lbC9pcnEvY2hpcC5jDQpAQCAtMTA5OSw3ICsxMDk5
-LDggQEAgdm9pZCBpcGlwZV9lbmFibGVfaXJxKHVuc2lnbmVkIGludCBpcnEpDQogaXBpcGVfcm9v
-dF9vbmx5KCk7DQoNCiByYXdfc3Bpbl9sb2NrX2lycXNhdmUoJmRlc2MtPmxvY2ssIGZsYWdzKTsN
-Ci1pZiAoZGVzYy0+aXN0YXRlICYgSVBJUEVfSVJRU19ORUVEU19TVEFSVFVQKSB7DQoraWYgKGRl
-c2MtPmlzdGF0ZSAmIElQSVBFX0lSUVNfTkVFRFNfU1RBUlRVUCAmJg0KKyAgICAhV0FSTl9PTihp
-cnFfYWN0aXZhdGUoZGVzYykpKSB7DQogZGVzYy0+aXN0YXRlICY9IH5JUElQRV9JUlFTX05FRURT
-X1NUQVJUVVA7DQogY2hpcC0+aXJxX3N0YXJ0dXAoJmRlc2MtPmlycV9kYXRhKTsNCiB9DQoNCj4N
-Cj4gRGlkIHlvdSBjcm9zcy1jaGVjayBpZiB0aGUgcnVubmluZyBrZXJuZWwgY29udGFpbnMgdGhl
-IGZpeChlcyk/DQoNClllcywgdGhlIG9sZCBvbmUuDQpUaGFua3MgZm9yIHRoZSBmaXguDQoNCk5v
-cmJlcnQNCl9fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fDQoNClRoaXMgbWVzc2FnZSBh
-bmQgYW55IGF0dGFjaG1lbnRzIGFyZSBzb2xlbHkgZm9yIHRoZSB1c2Ugb2YgdGhlIGludGVuZGVk
-IHJlY2lwaWVudHMuIFRoZXkgbWF5IGNvbnRhaW4gcHJpdmlsZWdlZCBhbmQvb3IgY29uZmlkZW50
-aWFsIGluZm9ybWF0aW9uIG9yIG90aGVyIGluZm9ybWF0aW9uIHByb3RlY3RlZCBmcm9tIGRpc2Ns
-b3N1cmUuIElmIHlvdSBhcmUgbm90IGFuIGludGVuZGVkIHJlY2lwaWVudCwgeW91IGFyZSBoZXJl
-Ynkgbm90aWZpZWQgdGhhdCB5b3UgcmVjZWl2ZWQgdGhpcyBlbWFpbCBpbiBlcnJvciBhbmQgdGhh
-dCBhbnkgcmV2aWV3LCBkaXNzZW1pbmF0aW9uLCBkaXN0cmlidXRpb24gb3IgY29weWluZyBvZiB0
-aGlzIGVtYWlsIGFuZCBhbnkgYXR0YWNobWVudCBpcyBzdHJpY3RseSBwcm9oaWJpdGVkLiBJZiB5
-b3UgaGF2ZSByZWNlaXZlZCB0aGlzIGVtYWlsIGluIGVycm9yLCBwbGVhc2UgY29udGFjdCB0aGUg
-c2VuZGVyIGFuZCBkZWxldGUgdGhlIG1lc3NhZ2UgYW5kIGFueSBhdHRhY2htZW50IGZyb20geW91
-ciBzeXN0ZW0uDQoNCkFORFJJVFogSFlEUk8gR21iSA0KDQoNClJlY2h0c2Zvcm0vIExlZ2FsIGZv
-cm06IEdlc2VsbHNjaGFmdCBtaXQgYmVzY2hyw6Rua3RlciBIYWZ0dW5nIC8gQ29ycG9yYXRpb24N
-Cg0KRmlybWVuc2l0ei8gUmVnaXN0ZXJlZCBzZWF0OiBXaWVuDQoNCkZpcm1lbmJ1Y2hnZXJpY2h0
-LyBDb3VydCBvZiByZWdpc3RyeTogSGFuZGVsc2dlcmljaHQgV2llbg0KDQpGaXJtZW5idWNobnVt
-bWVyLyBDb21wYW55IHJlZ2lzdHJhdGlvbjogRk4gNjE4MzMgZw0KDQpEVlI6IDA2MDUwNzcNCg0K
-VUlELU5yLjogQVRVMTQ3NTY4MDYNCg0KDQpUaGFuayBZb3UNCl9fX19fX19fX19fX19fX19fX19f
-X19fX19fX19fX19fDQo=
+On 7/10/19 11:20 AM, Lange Norbert wrote:
+> 
+> 
+>> -----Original Message-----
+>> From: Jan Kiszka <jan.kiszka@siemens.com>
+>> Sent: Mittwoch, 10. Juli 2019 08:13
+>> To: Lange Norbert <norbert.lange@andritz.com>; Xenomai
+>> (xenomai@xenomai.org) <xenomai@xenomai.org>; Philippe Gerum
+>> <rpm@xenomai.org>
+>> Subject: Re: Best way to detect if a filedescriptor is a cobalt filedescriptor
+>> (/socket)
+>>
+>> E-MAIL FROM A NON-ANDRITZ SOURCE: AS A SECURITY MEASURE, PLEASE
+>> EXERCISE CAUTION WITH E-MAIL CONTENT AND ANY LINKS OR
+>> ATTACHMENTS.
+>>
+>>
+>> On 09.07.19 16:49, Lange Norbert via Xenomai wrote:
+>>> Hi,
+>>>
+>>> I am opening a packetsocket, which is supposed to be realtime.
+>>> Unfortunatly if the rtpacket (rtnet?) module is not loaded, then this will
+>> just silently fall back to a linux packet socket. Then later demote thread
+>> during accesses.
+>>>
+>>> How would I be able to detect this early during startup? I could
+>> __STD(close) the descriptor and check the returncode for EBADF I suppose...
+>>>
+>>
+>> Yeah, looks this is some feature we lost while embedding the RTDM file
+>> descriptor range into the regular Linux space.
+> 
+> My scheme does not work either, __STD(close) seems to return 0 for the cobalt fd,
+> But doesn’t seem to do anything beyond that.
+> 
+
+The logic is the other way around: ask the Cobalt co-kernel to perform
+some action on a (supposedly) Xenomai-registered fd, otherwise have
+libcobalt fallback to glibc if the fd is not managed by the co-kernel.
+That would be calling __RT(close), not __STD(close) first.
+
+v2 of the patch switching from -EBADF to -ENODEV is needed to have this
+working:
+https://lab.xenomai.org/xenomai-rpm.git/commit/?h=for-upstream/next&id=0d7384acca2a71323be0d7412fd99aca6f0450d8
+
+Which includes these bits:
+
+diff --git a/kernel/cobalt/rtdm/fd.c b/kernel/cobalt/rtdm/fd.c
+index 81943c2f3..06f462d1d 100644
+--- a/kernel/cobalt/rtdm/fd.c
++++ b/kernel/cobalt/rtdm/fd.c
+@@ -835,7 +835,7 @@ int rtdm_fd_close(int ufd, unsigned int magic)
+ 	if (magic != 0 && fd->magic != magic) {
+ ebadf:
+ 		xnlock_put_irqrestore(&fdtree_lock, s);
+-		return -EBADF;
++		return -ENODEV;
+ 	}
+
+ 	set_compat_bit(fd);
+
+
+Another other option is to use __RT(fcntl(fd, F_GETFD)): EINVAL would be
+returned for this query on a Cobalt-managed fd, otherwise a success code
+would denote a regular fd.
+
+> Note: I am using Philippe's "cobalt: switch hand over status to -ENODEV for non-RTDM fd" patch,
+> so potential it’s a regression of this patch.
+> 
+>> We could either add a compile-time or runtime feature to libcobalt that
+>> permits to disable this silent fallback again or introduce alternative open and
+>> socket implementations that do not expose this behavior. Spontaneously, I
+>> would be in favor or a runtime switch for the existing implementations.
+> 
+> I assumed that __RT(open) would call the __cobalt_open function (without fallback),
+> __STD(open) would call libc' open, and  __wrap_open would be the only function trying both.
+> Turns out that __wrap and __cobalt are identical, but I don’t understand the reasoning behind it.
+
+To have an opportunity for late binding on the __wrap symbols too, so
+that one can override the libcobalt wrappers for interposing its own
+version of the cobalt calls. OTOH, __cobalt bindings are guaranteed to
+tap into the original libcobalt implementation. Some users need this to
+provide their own flavor of Xenomai POSIX system calls on top of libcobalt.
+
+-- 
+Philippe.
 
