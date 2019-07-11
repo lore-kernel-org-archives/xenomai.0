@@ -1,13 +1,11 @@
-Subject: Re: rt_mutex_release() within a signal handler
-References: <CAFLxGvyy3Ume6K_K4-TgiAK_ycOJ4PUQfGiDzbtO2Y_USWvfpQ@mail.gmail.com>
 From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <a9bb8611-0d71-39d6-b825-6434f887efc9@siemens.com>
-Date: Tue, 16 Jul 2019 09:36:21 +0900
-MIME-Version: 1.0
-In-Reply-To: <CAFLxGvyy3Ume6K_K4-TgiAK_ycOJ4PUQfGiDzbtO2Y_USWvfpQ@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Subject: [PATCH v2 3/6] ipipe: Add missing include for ipipe_root_only
+Date: Thu, 11 Jul 2019 21:56:14 +0200
+Message-Id: <bb8f4fd8da4befa9cfb96178891ddae4f40e31c7.1562874977.git.jan.kiszka@siemens.com>
+In-Reply-To: <cover.1562874977.git.jan.kiszka@siemens.com>
+References: <cover.1562874977.git.jan.kiszka@siemens.com>
+In-Reply-To: <cover.1562874977.git.jan.kiszka@siemens.com>
+References: <cover.1562874977.git.jan.kiszka@siemens.com>
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,29 +14,32 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Richard Weinberger <richard.weinberger@gmail.com>, xenomai@xenomai.org
+To: Philippe Gerum <rpm@xenomai.org>
+Cc: xenomai@xenomai.org
 
-On 15.07.19 21:59, Richard Weinberger via Xenomai wrote:
-> Docs on rt_mutex_release() state:
-> -EPERM is returned if mutex is not owned by the current task, or more
-> generally if this service was called from a context which cannot own
-> any mutex (e.g. interrupt context).
-> 
-> Do you mean signal handlers by "interrupt context"?
+From: Jan Kiszka <jan.kiszka@siemens.com>
 
-I think that term dates back to times where the API was available to in-kernel
-users. Example should probably be removed.
+Breaks in non-debug builds otherwise, e.g.
+https://travis-ci.com/xenomai-ci/xenomai/jobs/212725223
 
-> Long story short, is it allowed to unlock a RT_MUTEX from a signal handler?
-> 
+Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
+---
+ include/linux/kernel.h | 1 +
+ 1 file changed, 1 insertion(+)
 
-A signal handler is run in a thread in the end, and a thread can own mutexes.
-That is not an issue. But I hope you are aware of the fact that signal handlers
-are non-RT on entry.
-
-Jan
-
+diff --git a/include/linux/kernel.h b/include/linux/kernel.h
+index 50b1e0c878e0..edd37052e585 100644
+--- a/include/linux/kernel.h
++++ b/include/linux/kernel.h
+@@ -14,6 +14,7 @@
+ #include <linux/printk.h>
+ #include <linux/build_bug.h>
+ #include <asm/byteorder.h>
++#include <asm-generic/ipipe.h>
+ #include <uapi/linux/kernel.h>
+ 
+ #define USHRT_MAX	((u16)(~0U))
 -- 
-Siemens AG, Corporate Technology, CT RDA IOT SES-DE
-Corporate Competence Center Embedded Linux
+2.16.4
+
 
