@@ -1,12 +1,13 @@
 Subject: Re: Enable/Disable of ftrace events crashes kernel
+From: Jan Kiszka <jan.kiszka@siemens.com>
 References: <CAFLxGvzoCXUq_QFMT=b54nnLd8Oeu3XfFeiCKoCj3a0Q3Xg8yA@mail.gmail.com>
  <3b8bf95c-5170-d229-b27f-1577a2e0942b@siemens.com>
  <CAFLxGvzgCuoaG+O9EyiJZG_YD-2KQxVWd1LG-FepiEAjebqJnQ@mail.gmail.com>
-From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <fb2a4587-5180-663b-1dee-e2b7b114fc63@siemens.com>
-Date: Thu, 11 Jul 2019 20:30:55 +0200
+ <fb2a4587-5180-663b-1dee-e2b7b114fc63@siemens.com>
+Message-ID: <ae98bfef-c3a1-e3a1-fc8b-c3d302e34aa0@siemens.com>
+Date: Thu, 11 Jul 2019 20:49:10 +0200
 MIME-Version: 1.0
-In-Reply-To: <CAFLxGvzgCuoaG+O9EyiJZG_YD-2KQxVWd1LG-FepiEAjebqJnQ@mail.gmail.com>
+In-Reply-To: <fb2a4587-5180-663b-1dee-e2b7b114fc63@siemens.com>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -21,35 +22,40 @@ List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
 To: Richard Weinberger <richard.weinberger@gmail.com>
 Cc: xenomai@xenomai.org
 
-On 11.07.19 12:25, Richard Weinberger wrote:
-> On Thu, Jul 11, 2019 at 12:21 PM Jan Kiszka <jan.kiszka@siemens.com> wrote:
->> Can't reproduce so far, even with a while-true loop. Can you share your .config?
+On 11.07.19 20:30, Jan Kiszka wrote:
+> On 11.07.19 12:25, Richard Weinberger wrote:
+>> On Thu, Jul 11, 2019 at 12:21 PM Jan Kiszka <jan.kiszka@siemens.com> wrote:
+>>> Can't reproduce so far, even with a while-true loop. Can you share your .config?
+>>
+>> Sure, see attachment.
+>>
 > 
-> Sure, see attachment.
+> This seems to fix the issue here:
 > 
+> diff --git a/arch/x86/entry/entry_64.S b/arch/x86/entry/entry_64.S
+> index 119fd66d111e..8f647c208cf2 100644
+> --- a/arch/x86/entry/entry_64.S
+> +++ b/arch/x86/entry/entry_64.S
+> @@ -997,8 +997,8 @@ apicinterrupt IRQ_WORK_VECTOR			irq_work_interrupt		smp_irq_work_interrupt
+>  \skip_label:
+>  	UNWIND_HINT_REGS
+>  	DISABLE_INTERRUPTS(CLBR_ANY)
+> -	testl	%ebx, %ebx	/* %ebx: return to kernel mode */
+> -	jnz	retint_kernel_early
+> +	testb	$3, CS(%rsp)
+> +	jz	retint_kernel_early
+>  	jmp	retint_user_early
+>  	.endif
+>  1001:
+> 
+> Tests welcome!
+> 
+> Interestingly, 4.14 should have the same problem, but I failed to
+> reproduce there so far.
 
-This seems to fix the issue here:
-
-diff --git a/arch/x86/entry/entry_64.S b/arch/x86/entry/entry_64.S
-index 119fd66d111e..8f647c208cf2 100644
---- a/arch/x86/entry/entry_64.S
-+++ b/arch/x86/entry/entry_64.S
-@@ -997,8 +997,8 @@ apicinterrupt IRQ_WORK_VECTOR			irq_work_interrupt		smp_irq_work_interrupt
- \skip_label:
- 	UNWIND_HINT_REGS
- 	DISABLE_INTERRUPTS(CLBR_ANY)
--	testl	%ebx, %ebx	/* %ebx: return to kernel mode */
--	jnz	retint_kernel_early
-+	testb	$3, CS(%rsp)
-+	jz	retint_kernel_early
- 	jmp	retint_user_early
- 	.endif
- 1001:
-
-Tests welcome!
-
-Interestingly, 4.14 should have the same problem, but I failed to
-reproduce there so far.
+Uhh, it's a regression in all our x86 stable trees, due to a backport of an
+upstream commit. The above is definitely correct and hopefully also the fix for
+this issue.
 
 Jan
 
