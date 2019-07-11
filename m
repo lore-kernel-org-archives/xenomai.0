@@ -1,13 +1,14 @@
-Subject: Re: TDMA with RTnet on Xenomai
-References: <CAEmXcAwXBxZp9KcRyMs9J08nLKnwkYn13BuWPKTZ-pb6m95chg@mail.gmail.com>
-From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <b88d839c-eb9f-8712-eb47-5a5fc12cbf17@siemens.com>
-Date: Tue, 23 Jul 2019 12:14:03 +0200
 MIME-Version: 1.0
-In-Reply-To: <CAEmXcAwXBxZp9KcRyMs9J08nLKnwkYn13BuWPKTZ-pb6m95chg@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+References: <CAFLxGvzoCXUq_QFMT=b54nnLd8Oeu3XfFeiCKoCj3a0Q3Xg8yA@mail.gmail.com>
+ <3b8bf95c-5170-d229-b27f-1577a2e0942b@siemens.com>
+ <CAFLxGvzgCuoaG+O9EyiJZG_YD-2KQxVWd1LG-FepiEAjebqJnQ@mail.gmail.com>
+ <fb2a4587-5180-663b-1dee-e2b7b114fc63@siemens.com>
+In-Reply-To: <fb2a4587-5180-663b-1dee-e2b7b114fc63@siemens.com>
+From: Richard Weinberger <richard.weinberger@gmail.com>
+Date: Thu, 11 Jul 2019 22:48:19 +0200
+Message-ID: <CAFLxGvwJx=JkQc-s6TkvmP=_JM+VYxTt9Qiyko9u8CguoeS0sw@mail.gmail.com>
+Subject: Re: Enable/Disable of ftrace events crashes kernel
+Content-Type: text/plain; charset="UTF-8"
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,62 +17,42 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: danwe <daniel.wenninger92@gmail.com>, xenomai@xenomai.org
+To: Jan Kiszka <jan.kiszka@siemens.com>
+Cc: xenomai@xenomai.org
 
-On 22.07.19 17:58, danwe via Xenomai wrote:
-> Hi,
-> 
-> I have Xenomai 2 with RTnet on a BeagleBone Black. I ask myself how  I
+On Thu, Jul 11, 2019 at 8:30 PM Jan Kiszka <jan.kiszka@siemens.com> wrote:
+>
+> On 11.07.19 12:25, Richard Weinberger wrote:
+> > On Thu, Jul 11, 2019 at 12:21 PM Jan Kiszka <jan.kiszka@siemens.com> wrote:
+> >> Can't reproduce so far, even with a while-true loop. Can you share your .config?
+> >
+> > Sure, see attachment.
+> >
+>
+> This seems to fix the issue here:
+>
+> diff --git a/arch/x86/entry/entry_64.S b/arch/x86/entry/entry_64.S
+> index 119fd66d111e..8f647c208cf2 100644
+> --- a/arch/x86/entry/entry_64.S
+> +++ b/arch/x86/entry/entry_64.S
+> @@ -997,8 +997,8 @@ apicinterrupt IRQ_WORK_VECTOR                       irq_work_interrupt              smp_irq_work_interrupt
+>  \skip_label:
+>         UNWIND_HINT_REGS
+>         DISABLE_INTERRUPTS(CLBR_ANY)
+> -       testl   %ebx, %ebx      /* %ebx: return to kernel mode */
+> -       jnz     retint_kernel_early
+> +       testb   $3, CS(%rsp)
+> +       jz      retint_kernel_early
+>         jmp     retint_user_early
+>         .endif
+>  1001:
+>
+> Tests welcome!
 
-I cannot tell you in advance if my answers applied to version 2 as well,
-probably, but no one is working on that anymore.
-
-> can run TDMA on BeagleBone Black? Programs like RTping and Roundtrip
-> program are working.
-> 
-> I have changed the rtnet.conf file so that it will use TDMA.conf file.
-> In TDMA.conf all parameters like IP-address, clock cycle and slottime
-> are determined.
-> In rtnet file I saw some drivers like rtmac. Do I have to load that
-> driver for using TDMA as it is not loaded yet? Are there any other
-> drivers beside rtudp, rtipv4, rtpacket, rt_ticpsw, rt_davinci_mdio,
-> rt_smsc, rtnet and omap_rng which need to be loaded?
-
-The RTnet startup scripts should load all necessary stack components for you.
-rtmac.ko belongs to them, tdma.ko will not load without it. In addition, the
-scripts will load rtcfg in order to distribute the IP and TDMA configuration
-from the master to the slaves.
-
-> 
-> And now I ask myself how can I run TDMA? Is it just using the IPs
-> (which are written in your TDMA.conf file) for your microcomputer, and
-> that's it?
-
-Try the rtnet start scripts. They set up a TDMA network according to the conf
-file. One node should be configured to be master, another as slave.
-
-> If TDMA will work, do I see any output of my communication cycle or
-> anything that shows that TDMA is running? At the moment I don't see anything.
-
-A basic test is rtping: If you can ping the other RTnet station, connections
-works. If you see a suspicious jitter of the ping delay that is between one and
-two times the TMDA cycle time, also that works.
-
-> What else do I have to change in rtnet.conf? I have just changed the
-> very last line for using TDMA.conf file and I have changed TDMA_MODE
-> to master for my master BBB and to slave for my slave BBB.
-> 
-> So just the short question: What to do to use TDMA?
-> 
-
-rtnet.conf is documented. If anything concrete remains unclear from reading
-that, please let us know. Also study the help of the rtnet start script.
-
-Did you check that raw (RTmac-free) RTnet works fine (rtping)?
-
-Jan
+With that change I can no longer trigger the crash.
+Can you please give more context? I'd like to understand the problem.
 
 -- 
-Siemens AG, Corporate Technology, CT RDA IOT SES-DE
-Corporate Competence Center Embedded Linux
+Thanks,
+//richard
 
