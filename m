@@ -1,17 +1,11 @@
-From: MINIER Bertrand <Bertrand.MINIER@sercel.com>
-Subject: RE: Xenomai arm64 plans?
-Date: Tue, 4 Jun 2019 07:47:26 +0000
-Message-ID: <3b3adc157b4e46e0ad6a2cfb737a68a3@NANS01204.it.intra.sercel.com>
-References: <fb2b5a6b-007e-9f2c-bcac-8df84fbaac84@theobroma-systems.com>
- <96f3c66c-816c-b2d8-071e-198488ad05be@siemens.com>
- <f735da35-123d-7352-46ec-420998540d61@theobroma-systems.com>
- <c888624bb653433ca2ab49bfef71f85f@NANS01204.it.intra.sercel.com>
- <cd06c26e-6923-804b-fb38-6e7afa444b93@siemens.com>
-In-Reply-To: <cd06c26e-6923-804b-fb38-6e7afa444b93@siemens.com>
-Content-Language: fr-FR
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-MIME-Version: 1.0
+From: Jan Kiszka <jan.kiszka@siemens.com>
+Subject: [PATCH v2 6/6] ipipe: Let ipipe_set_irq_affinity return an error
+Date: Thu, 11 Jul 2019 21:56:17 +0200
+Message-Id: <205e6005ddf4f345d76041ca5c8b061db46dda50.1562874977.git.jan.kiszka@siemens.com>
+In-Reply-To: <cover.1562874977.git.jan.kiszka@siemens.com>
+References: <cover.1562874977.git.jan.kiszka@siemens.com>
+In-Reply-To: <cover.1562874977.git.jan.kiszka@siemens.com>
+References: <cover.1562874977.git.jan.kiszka@siemens.com>
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -20,56 +14,38 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jan Kiszka <jan.kiszka@siemens.com>
-Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Philippe Gerum <rpm@xenomai.org>
+Cc: xenomai@xenomai.org
 
-SGkgSmFuLA0KDQpHb29kIG5ld3MuDQoNClRoYW5rcyBmb3IgeW91ciBhbnN3ZXIuDQoNCkJlcnRy
-YW5kDQoNCi0tLS0tTWVzc2FnZSBkJ29yaWdpbmUtLS0tLQ0KRGUgOiBKYW4gS2lzemthIDxqYW4u
-a2lzemthQHNpZW1lbnMuY29tPg0KRW52b3nDqSA6IGx1bmRpIDMganVpbiAyMDE5IDE5OjE3DQrD
-gCA6IE1JTklFUiBCZXJ0cmFuZCA8QmVydHJhbmQuTUlOSUVSQHNlcmNlbC5jb20+OyB4ZW5vbWFp
-QHhlbm9tYWkub3JnDQpPYmpldCA6IFJlOiBYZW5vbWFpIGFybTY0IHBsYW5zPw0KDQpPbiAwMy4w
-Ni4xOSAxODoyNCwgTUlOSUVSIEJlcnRyYW5kIHZpYSBYZW5vbWFpIHdyb3RlOg0KPiBIaSBhbGws
-DQo+DQo+IElzIHRoZXJlIHVwZGF0ZWQgcGxhbnMgZm9yIGEgWGVub21haSByZWxlYXNlIHdoaWNo
-IGluY2x1ZGVzIGFybTY0ID8NCj4gQXJlIHRoZXJlIHN0aWxsIGJsb2NraW5nIGlzc3VlcyB0byBu
-b3Qgb2ZmaWNpYWxseSBzdXBwb3J0IGl0ID8NCj4gV2UgYXJlIGFib3V0IHRvIHN0YXJ0IHRoZSBk
-ZXZlbG9wbWVudCBvZiBhbiBpbmR1c3RyaWFsIHByb2R1Y3QgYmFzZWQgb24gYW4gYXJtNjQgU29D
-IGFuZCB3ZSB3b3VsZCBsaWtlIHRvIHNlY3VyZSBvdXIgY2hvaWNlIG9mIHVzaW5nIFhlbm9tYWkg
-Zm9yIHRoYXQgcHJvZHVjdC4NCg0KQVJNNjQgc2hhbGwgYmUgb2ZmaWNpYWxseSBzdXBwb3J0ZWQg
-YnkgdGhlIG5leHQgbWFqb3IgWGVub21haSByZWxlYXNlLCAzLjEuIFRoYXQgb25lIGlzIG5vdCBk
-ZWxheWVkIGJlY2F1c2UgYXVmIEFSTTY0LCBidXQgcmF0aGVyIGJlY2F1c2UgSSdkIGxpa2UgdG8g
-aW50ZWdyYXRlIG9uZSBtYWpvciBjb3JlIGZlYXR1cmUgYmVmb3JlaGFuZCAocmVtaW5kcyBtZSBv
-ZiByZW1pbmRpbmcgdG8gcHJvdmlkZSBmZWVkYmFjayBvbiB0aGF0KSBhbmQgbWFrZSBzdXJlIHRo
-YXQgNC4xOSBzdXBwb3J0IGZvciB0aGUgbWFpbiBhcmNocyBicmluZ3Mgbm8gZnJpY3Rpb25zICh0
-aGF0IGlzIGxvb2tpbmcgZ29vZCBJIHdvdWxkIHNheSkuDQoNCkphbg0KDQo+DQo+IFRoYW5rcywN
-Cj4NCj4gQmVydHJhbmQgTWluaWVyDQo+DQo+IC0tLS0tTWVzc2FnZSBkJ29yaWdpbmUtLS0tLQ0K
-PiBEZSA6IFhlbm9tYWkgPHhlbm9tYWktYm91bmNlc0B4ZW5vbWFpLm9yZz4gRGUgbGEgcGFydCBk
-ZSB2aWEgWGVub21haQ0KPiBFbnZvecOpIDogdmVuZHJlZGkgMiBub3ZlbWJyZSAyMDE4IDE3OjMw
-DQo+IMOAIDogSmFuIEtpc3prYSA8amFuLmtpc3prYUBzaWVtZW5zLmNvbT4NCj4gQ2MgOiB4ZW5v
-bWFpQHhlbm9tYWkub3JnDQo+IE9iamV0IDogUmU6IFhlbm9tYWkgYXJtNjQgcGxhbnM/DQo+DQo+
-DQo+DQo+IE9uIDExLzIvMTggNToyNSBQTSwgSmFuIEtpc3prYSB3cm90ZToNCj4+IE9uIDAyLjEx
-LjE4IDE3OjE5LCBDaHJpc3RvcGggTcO8bGxuZXIgd3JvdGU6DQo+Pj4gSGkgSmFuLA0KPj4+DQo+
-Pj4gSSB3YXMgd29uZGVyaW5nIGlmIHRoZXJlIGFyZSBhbnkgcGxhbnMgZm9yIGEgWGVub21haSBy
-ZWxlYXNlLCB3aGljaA0KPj4+IGluY2x1ZGVzIGFybTY0Lg0KPj4NCj4+IFllcywgdGhlcmUgYXJl
-LiBUaGUgZXhhY3QgdGltZWxpbmUgaXMgbm90IHNldHRsZWQgeWV0LCBidXQgc29tZXdoZXJlDQo+
-PiB3aXRoaW4gdGhlIG5leHQgbW9udGgsIEkgd291bGQgc2F5Lg0KPg0KPiBUaGF0J3MgZXhjZWxs
-ZW50IG5ld3MhDQo+DQo+Pj4gSSdtIGZhbWlsaWFyIHdpdGggdGhlIG5leHQgYnJhbmNoLCBidXQg
-SSdkIGxvdmUgdG8gd29yayB3aXRoIGNvZGUNCj4+PiBmcm9tIGEgYnJhbmNoLCB3aGljaCBpcyBu
-b3Qgc3ViamVjdCB0byBmb3JjZS1wdXNoaW5nLg0KPj4NCj4+IEFjdHVhbGx5IHRoZXJlIHdhcyBh
-IGNoYW5nZTogbmV4dCBpcyBzdGlsbCBwb3RlbnRpYWxseSByZWJhc2luZyBhcyBJJ20NCj4+IGlu
-dGVncmF0aW5nIG92ZXIgaXQgYW5kIG1heSAtIHdoZW4gdGhpbmdzIGdvIHdyb25nIC0gcHVsbCBi
-YWNrIG9yDQo+PiByZW9yZGVyIGluIHRoYXQgcXVldWUuIEJ1dCBtYXN0ZXIgaXMgYmFjaywgYW5k
-IHRoYXQgaXMgZm9yd2FyZC1vbmx5Lg0KPj4gSXQncyBub3QgY29tcGFyYWJsZSB0byBhIHJlbGVh
-c2UgYnV0IGl0IGNvdWxkIGhlbHAgdG8gYnJpZGdlIHRoZSB0aW1lDQo+PiB0byB2My4xLg0KPg0K
-PiBPaywgdGhhbmsncyBmb3IgY2xhcmlmeWluZyB0aGF0Lg0KPg0KPiBUaGFua3MsDQo+IENocmlz
-dG9waA0KPg0KPiBUaGlzIGUtbWFpbCBhbmQgYW55IGFjY29tcGFueWluZyBhdHRhY2htZW50cyBh
-cmUgY29uZmlkZW50aWFsLiBJZiB5b3UgYXJlIG5vdCB0aGUgaW50ZW5kZWQgcmVjaXBpZW50LCB5
-b3UgbXVzdCBub3QgcmV2aWV3LCBkaXNjbG9zZSwgY29weSwgZGlzdHJpYnV0ZSBvciB1c2UgdGhp
-cyBlLW1haWw7IHBsZWFzZSBkZWxldGUgaXQgZnJvbSB5b3VyIHN5c3RlbSBhbmQgbm90aWZ5IHRo
-ZSBzZW5kZXIgaW1tZWRpYXRlbHkuDQo+DQoNCi0tDQpTaWVtZW5zIEFHLCBDb3Jwb3JhdGUgVGVj
-aG5vbG9neSwgQ1QgUkRBIElPVCBTRVMtREUNCkNvcnBvcmF0ZSBDb21wZXRlbmNlIENlbnRlciBF
-bWJlZGRlZCBMaW51eA0KVGhpcyBlLW1haWwgYW5kIGFueSBhY2NvbXBhbnlpbmcgYXR0YWNobWVu
-dHMgYXJlIGNvbmZpZGVudGlhbC4gSWYgeW91IGFyZSBub3QgdGhlIGludGVuZGVkIHJlY2lwaWVu
-dCwgeW91IG11c3Qgbm90IHJldmlldywgZGlzY2xvc2UsIGNvcHksIGRpc3RyaWJ1dGUgb3IgdXNl
-IHRoaXMgZS1tYWlsOyBwbGVhc2UgZGVsZXRlIGl0IGZyb20geW91ciBzeXN0ZW0gYW5kIG5vdGlm
-eSB0aGUgc2VuZGVyIGltbWVkaWF0ZWx5Lg0K
+From: Jan Kiszka <jan.kiszka@siemens.com>
+
+x86 may generate one, so change the signature.
+
+Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
+---
+ include/linux/ipipe.h | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/include/linux/ipipe.h b/include/linux/ipipe.h
+index f7c07a207093..45e8c87bff93 100644
+--- a/include/linux/ipipe.h
++++ b/include/linux/ipipe.h
+@@ -433,12 +433,12 @@ void ipipe_prepare_panic(void);
+ #ifndef ipipe_smp_p
+ #define ipipe_smp_p (1)
+ #endif
+-void ipipe_set_irq_affinity(unsigned int irq, cpumask_t cpumask);
++int ipipe_set_irq_affinity(unsigned int irq, cpumask_t cpumask);
+ void ipipe_send_ipi(unsigned int ipi, cpumask_t cpumask);
+ #else  /* !CONFIG_SMP */
+ #define ipipe_smp_p (0)
+ static inline
+-void ipipe_set_irq_affinity(unsigned int irq, cpumask_t cpumask) { }
++int ipipe_set_irq_affinity(unsigned int irq, cpumask_t cpumask) { return 0; }
+ static inline void ipipe_send_ipi(unsigned int ipi, cpumask_t cpumask) { }
+ static inline void ipipe_disable_smp(void) { }
+ #endif	/* CONFIG_SMP */
+-- 
+2.16.4
+
 
