@@ -1,11 +1,15 @@
-From: Lange Norbert <norbert.lange@andritz.com>
-Subject: affinity of main thread is bound to current core
-Date: Wed, 21 Aug 2019 12:12:07 +0000
-Message-ID: <VI1PR05MB591718EB50E68F91B3DFD398F6AA0@VI1PR05MB5917.eurprd05.prod.outlook.com>
-Content-Language: en-US
+Subject: Re: [PATCH] cobalt: remove call to sigprocmask
+References: <20190712111849.25670-1-norbert.lange@andritz.com>
+ <debb723e-9470-8911-02ec-fce4aefa1546@siemens.com>
+ <VI1PR05MB59175FED00839E697F933EDCF6F20@VI1PR05MB5917.eurprd05.prod.outlook.com>
+From: Jan Kiszka <jan.kiszka@siemens.com>
+Message-ID: <f6abf89c-f1a4-6232-4b5f-eb675f07f32e@siemens.com>
+Date: Fri, 12 Jul 2019 16:40:27 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+In-Reply-To: <VI1PR05MB59175FED00839E697F933EDCF6F20@VI1PR05MB5917.eurprd05.prod.outlook.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -14,46 +18,46 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "Xenomai (xenomai@xenomai.org)" <xenomai@xenomai.org>
+To: Lange Norbert <norbert.lange@andritz.com>, "Xenomai (xenomai@xenomai.org)" <xenomai@xenomai.org>
 
-Hello,
+On 12.07.19 15:26, Lange Norbert via Xenomai wrote:
+> 
+> 
+>> -----Original Message-----
+>> From: Xenomai <xenomai-bounces@xenomai.org> On Behalf Of Jan Kiszka
+>> via Xenomai
+>> Sent: Freitag, 12. Juli 2019 15:07
+>> To: Norbert Lange <nolange79@gmail.com>; xenomai@xenomai.org
+>> Subject: Re: [PATCH] cobalt: remove call to sigprocmask
+>>
+>> E-MAIL FROM A NON-ANDRITZ SOURCE: AS A SECURITY MEASURE, PLEASE
+>> EXERCISE CAUTION WITH E-MAIL CONTENT AND ANY LINKS OR
+>> ATTACHMENTS.
+>>
+>>
+>> On 12.07.19 13:18, Norbert Lange via Xenomai wrote:
+>>> sigprocmask should not be used in multithreaded applications, doing so
+>>> is "unspecified".
+>>
+>> Is this more than cosmetic on Linux? Then it should be documented here
+>> because we shipped the change in 3.0.9, and if that may have caused
+>> regressions, users should know.
+> 
+> There is no practical issue to be expected, AFAIK with NPTL at least.
+> The only issue could be, that libpthread is not pulled in (might need to run some setup), but that’s ensured with libcobalt.
 
-I use Xenomai master on ipipe-core-4.19.60-x86-5.
-I start out with an affinity mask of 0xF, in the function cobalt_init_2,  p=
-thread_setschedparam will get called, after the syscall sc_cobalt_thread_se=
-tschedparam_ex the affinity mask will contain a single CPU (supposedly the =
-current one).
+OK, applied to next. Will add to stable as well, just to avoid confusion.
 
-All methods to control affinity are executed before this point (cmdline arg=
-s, /proc/xenomai/affinity), so there is no working way to control it.
+> 
+> Sorry for the mess, must have send a stale patch in the first place (always get problems with whitespace issues).
+> 
 
-Kind regards, Norbert
-________________________________
+No problem.
 
-This message and any attachments are solely for the use of the intended rec=
-ipients. They may contain privileged and/or confidential information or oth=
-er information protected from disclosure. If you are not an intended recipi=
-ent, you are hereby notified that you received this email in error and that=
- any review, dissemination, distribution or copying of this email and any a=
-ttachment is strictly prohibited. If you have received this email in error,=
- please contact the sender and delete the message and any attachment from y=
-our system.
+Thanks,
+Jan
 
-ANDRITZ HYDRO GmbH
+-- 
+Siemens AG, Corporate Technology, CT RDA IOT SES-DE
+Corporate Competence Center Embedded Linux
 
-
-Rechtsform/ Legal form: Gesellschaft mit beschr?nkter Haftung / Corporation
-
-Firmensitz/ Registered seat: Wien
-
-Firmenbuchgericht/ Court of registry: Handelsgericht Wien
-
-Firmenbuchnummer/ Company registration: FN 61833 g
-
-DVR: 0605077
-
-UID-Nr.: ATU14756806
-
-
-Thank You
-________________________________
