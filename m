@@ -1,11 +1,11 @@
-From: Shabaz Yousaf <shabaz_yousaf@hotmail.com>
-Subject: Xenomai install question (get error running test apps)
-Date: Mon, 12 Aug 2019 01:39:39 +0000
-Message-ID: <DB6P18901MB021417660CD32E74B1F2201184D30@DB6P18901MB0214.EURP189.PROD.OUTLOOK.COM>
-Content-Language: en-GB
+From: Jan Kiszka <jan.kiszka@siemens.com>
+Subject: [PATCH] libcobalt: Drop ignored version info from arch libs
+Message-ID: <58a10f03-7501-5023-10fa-0d55601ce17f@siemens.com>
+Date: Fri, 12 Jul 2019 14:10:37 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -14,56 +14,70 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Xenomai <xenomai@xenomai.org>
 
-Hello,
+From: Jan Kiszka <jan.kiszka@siemens.com>
 
-Apologies in advance, this is probably really basic since I'm a beginner, b=
-ut I'm stumped and have searched for an answer.
+Fixes libtool warning
 
-In a nutshell, I installed a pre-built Xenomai kernel, and then tried to in=
-stall the remainder of it and run a sample app, but I get an error:
-BUG in __xenomai_init(): [main] running non-SMP libraries on SMP kernel?
+libtool: warning: '-version-info/-version-number' is ignored for convenience libraries
 
+Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
+---
+ lib/cobalt/arch/arm/Makefile.am     | 2 +-
+ lib/cobalt/arch/arm64/Makefile.am   | 2 +-
+ lib/cobalt/arch/powerpc/Makefile.am | 2 +-
+ lib/cobalt/arch/x86/Makefile.am     | 2 +-
+ 4 files changed, 4 insertions(+), 4 deletions(-)
 
-Here's the detail:
-I've installed the pre-built Xenomi kernel on a BeagleBone Black using some=
- script it already has, and uname -a looks good:
-Linux beaglebone 4.14.108-ti-xenomai-r114 #1 SMP PREEMPT Sun Aug 4 08:52:45=
- UTC 2019 armv7l GNU/Linux
-
-Next, to get the remainder Xenomi stuff, I did the following (I presumed it=
- was Xenomi 3.0.9, but I wasn't sure, I did search in the github beagleboar=
-d/linux commits here:
-https://github.com/beagleboard/linux/tree/4.14-xenomai  but unfortunately c=
-ouldn't see where it was specified. There was a version.h file here:
-https://github.com/beagleboard/linux/blob/4.14-xenomai/include/xenomai/vers=
-ion.h   but it only had text like XENO_VERSION_STRING with no number)
-
-
-wget https://xenomai.org/downloads/xenomai/stable/latest/xenomai-3.0.9.tar.=
-bz2
-
-bunzip2 xenomai-3.0.9.tar.bz2
-
-tar xvf xenomai-3.0.9.tar
-
-cd xenomai-3.0.9
-
-./configure CFLAGS=3D"-march=3Darmv7-a -mfpu=3Dvfp3" LDFLAGS=3D"-march=3Dar=
-mv7-a -mfpu=3Dvfp3"
-
-make
-
-make install
-
-When I try to run any of the sample/test applications (such as /usr/xenomai=
-/bin/xeno-test), I get an error:
-BUG in __xenomai_init(): [main] running non-SMP libraries on SMP kernel?
-
-I think I'm probably doing something silly, and have googled around, but ne=
-ed a pointer to where I may have messed up.
-Many thanks,
-
-Shabaz.
+diff --git a/lib/cobalt/arch/arm/Makefile.am b/lib/cobalt/arch/arm/Makefile.am
+index 0aa02d6c73..a5095be3d0 100644
+--- a/lib/cobalt/arch/arm/Makefile.am
++++ b/lib/cobalt/arch/arm/Makefile.am
+@@ -1,6 +1,6 @@
+ noinst_LTLIBRARIES = libarch.la
+ 
+-libarch_la_LDFLAGS = @XENO_LIB_LDFLAGS@ -version-info 0:0:0
++libarch_la_LDFLAGS = @XENO_LIB_LDFLAGS@
+ 
+ libarch_la_SOURCES = features.c
+ 
+diff --git a/lib/cobalt/arch/arm64/Makefile.am b/lib/cobalt/arch/arm64/Makefile.am
+index 0aa02d6c73..a5095be3d0 100644
+--- a/lib/cobalt/arch/arm64/Makefile.am
++++ b/lib/cobalt/arch/arm64/Makefile.am
+@@ -1,6 +1,6 @@
+ noinst_LTLIBRARIES = libarch.la
+ 
+-libarch_la_LDFLAGS = @XENO_LIB_LDFLAGS@ -version-info 0:0:0
++libarch_la_LDFLAGS = @XENO_LIB_LDFLAGS@
+ 
+ libarch_la_SOURCES = features.c
+ 
+diff --git a/lib/cobalt/arch/powerpc/Makefile.am b/lib/cobalt/arch/powerpc/Makefile.am
+index 0aa02d6c73..a5095be3d0 100644
+--- a/lib/cobalt/arch/powerpc/Makefile.am
++++ b/lib/cobalt/arch/powerpc/Makefile.am
+@@ -1,6 +1,6 @@
+ noinst_LTLIBRARIES = libarch.la
+ 
+-libarch_la_LDFLAGS = @XENO_LIB_LDFLAGS@ -version-info 0:0:0
++libarch_la_LDFLAGS = @XENO_LIB_LDFLAGS@
+ 
+ libarch_la_SOURCES = features.c
+ 
+diff --git a/lib/cobalt/arch/x86/Makefile.am b/lib/cobalt/arch/x86/Makefile.am
+index 0aa02d6c73..a5095be3d0 100644
+--- a/lib/cobalt/arch/x86/Makefile.am
++++ b/lib/cobalt/arch/x86/Makefile.am
+@@ -1,6 +1,6 @@
+ noinst_LTLIBRARIES = libarch.la
+ 
+-libarch_la_LDFLAGS = @XENO_LIB_LDFLAGS@ -version-info 0:0:0
++libarch_la_LDFLAGS = @XENO_LIB_LDFLAGS@
+ 
+ libarch_la_SOURCES = features.c
+ 
+-- 
+2.16.4
 
