@@ -1,14 +1,16 @@
-Subject: Re: Hard lock up on Raspberry pi 3 when RTDM interrupt from SPI
- peripheral or from DMA is invoked
-References: <CAPgPmP0HyjmFZ0tVGi=JACZfZe8NM1SyveOO71fC0mKRiig1_g@mail.gmail.com>
-From: Philippe Gerum <rpm@xenomai.org>
-Message-ID: <f8c84c6f-0ff4-c0b8-3382-c72fb34b71c0@xenomai.org>
-Date: Mon, 5 Aug 2019 21:11:50 +0200
+Subject: Re: [PATCH] prepare-kernal.sh: Add --copylinks option
+References: <20190611105947.15478-1-johannes.kirchmair@sigmatek.at>
+ <AM0PR08MB333013CCB8EB426A8595A85692F20@AM0PR08MB3330.eurprd08.prod.outlook.com>
+ <e38df8f5-505e-9939-77f3-7da6d750d66e@siemens.com>
+ <AM0PR08MB3330AE9F4B589B8D2097E96D92F20@AM0PR08MB3330.eurprd08.prod.outlook.com>
+From: Jan Kiszka <jan.kiszka@siemens.com>
+Message-ID: <50e7888c-b5c8-5aa2-e9a6-6350e63ef870@siemens.com>
+Date: Fri, 12 Jul 2019 13:46:46 +0200
 MIME-Version: 1.0
-In-Reply-To: <CAPgPmP0HyjmFZ0tVGi=JACZfZe8NM1SyveOO71fC0mKRiig1_g@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8
+In-Reply-To: <AM0PR08MB3330AE9F4B589B8D2097E96D92F20@AM0PR08MB3330.eurprd08.prod.outlook.com>
+Content-Type: text/plain; charset="utf-8"
 Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,52 +19,62 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Nitin Kulkarni <nitin.kulkarni@mindmusiclabs.com>, xenomai@xenomai.org
+To: Johannes Kirchmair <johannes.kirchmair@sigmatek.at>, "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On 8/5/19 5:51 PM, Nitin Kulkarni via Xenomai wrote:
-> Hello,
-> I am trying to request DMA interrupts in real-time domain. When I request
-> the irq with rtdm_irq_request(), the irq is successfully registered but at
-> the first interrupt the system goes into a hard locked state.
-> I tried the RTDM SPI driver for RPI (spi-bcm2835.c) provided in the Xenomai
-> upstream,
-> even that makes the system lock up. I have enabled IPIPE_DEBUG and tried to
-> see if I get any useful trace but no luck.
+On 12.07.19 13:43, Johannes Kirchmair wrote:
+>> -----Ursprüngliche Nachricht-----
+>> Von: Jan Kiszka <jan.kiszka@siemens.com>
+>> Gesendet: Freitag, 12. Juli 2019 12:23
+>> An: Johannes Kirchmair <johannes.kirchmair@sigmatek.at>;
+>> xenomai@xenomai.org
+>> Betreff: Re: [PATCH] prepare-kernal.sh: Add --copylinks option
+>>
+>> On 12.07.19 09:41, Johannes Kirchmair via Xenomai wrote:
+>>> Hello everyone,
+>>>
+>>> just a ping to see if anyone has any remarks about this patch.
+>>
+>> Sorry, slipped through.
+>>
+>>>
+>>> Best regards
+>>> Johannes Kirchmair
+>>>
+>>> -----Ursprüngliche Nachricht-----
+>>> Von: Johannes Kirchmair <johannes.kirchmair@sigmatek.at>
+>>> Gesendet: Dienstag, 11. Juni 2019 13:01
+>>> An: xenomai@xenomai.org
+>>> Cc: Johannes Kirchmair <johannes.kirchmair@sigmatek.at>
+>>> Betreff: [PATCH] prepare-kernal.sh: Add --copylinks option
+>>>
+>>> The prepare-kernal.sh script by default adds the xenomai kernel
+>> components to the kernel source using soft links.
+>>> If you move/remove the xenomai source or move the patched kernel
+>> source to another workstation, you must change all this links or even replace
+>> them by the actual files.
+>>> To simplify the deployment of the patched kernel source to our coworkers,
+>> we added the –copylinks option to the prepare-kernal.sh.
+>>> The option causes the prepare-kernal.sh to copy the xenomai kernel
+>> components instead of linking them.
+>>> This makes it easy to move the patched kernel source to different
+>> locations.
+>>> Further, having the actual files in the kernel source makes the use of tools
+>> like git grep that do not follow symbolic links by default more convenient.
+>>> E.g. it gets harder to miss symbols searched with git grep by accident.
+>>
+>> What's the differentiation to using --outpatch
 > 
-> GPIO interupts working:
-> I thought to check if the GPIO interrupts also have same issue but
-> fortunately the GPIO interrupts work fine.
-> I suspect (Correct me if I am wrong) it has got to do with the nested irq
-> controllers in bcm2836 and bcm2837 which makes it different from bcm2835.
-> The GPIO irqs are not routed through these interrupt controllers I think
-> and thus the i-pipe patch works fine for bcm2836 as well.
-> 
-> It would be great if someone can throw some light onto this problem. Has
-> anyone tried to use real-time SPI or DMA on a RPI 3 ? Or if someone can
-> show some direction in how to fix the irq chips driver it would be very
-> helpful.
-> 
+> Actually missed that one or did not get it the right way. 
+> Appling the --outpatch file actually does what we were trying to achieve.
+> So we can drop this thread.
+> Sorry for the disturbance. ;-)
 
-There are several reasons this cannot work, this is not an irqchip
-issue. Basically, the DMA chip is controlled by the bcm2835-dma.c
-driver, which abides by the generic dmaengine kernel framework. For this
-to work, you would have at least to reserve the DMA channels involved in
-SPI xfers, configure them, and manage the transactions the way the
-bcm2835-dma driver and the framework do for regular operations,
-including proper acknowledge of the DMA events for real-time requests
-directly from primary mode, or propagation of DMA completion/error
-events to regular issuers running in secondary mode. It should also
-include a way to start transfers from primary mode (aka issue_pending
-request in the dmaengine API).
+No problem! If you feel like that feature is not optimally documented: We are
+also taking doc patches. ;)
 
-The other - better way - would be to teach dmaengine about the existence
-of a co-kernel context, so that it can handle requests from Cobalt
-threads running in primary mode, along with requests issued from regular
-kernel context.
-
-Because this cannot be done in a generic way with the I-pipe, Xenomai's
-SPI framework does not provide DMA support for any controller (PIO only).
+Jan
 
 -- 
-Philippe.
+Siemens AG, Corporate Technology, CT RDA IOT SES-DE
+Corporate Competence Center Embedded Linux
 
