@@ -1,11 +1,13 @@
+Subject: Re: [PATCH] cobalt: remove call to sigprocmask
+References: <20190712111849.25670-1-norbert.lange@andritz.com>
+From: Jan Kiszka <jan.kiszka@siemens.com>
+Message-ID: <debb723e-9470-8911-02ec-fce4aefa1546@siemens.com>
+Date: Fri, 12 Jul 2019 15:07:20 +0200
 MIME-Version: 1.0
-In-Reply-To: <CAPm8-H4k5AXr=qXyCuxf3Hc-gbmG9zkg+amSihj1zuizd9Bkrg@mail.gmail.com>
-References: <CAPm8-H4k5AXr=qXyCuxf3Hc-gbmG9zkg+amSihj1zuizd9Bkrg@mail.gmail.com>
-From: Laurentiu-Cristian Duca <laurentiu.duca@gmail.com>
-Date: Wed, 14 Aug 2019 14:06:40 +0300
-Message-ID: <CAPm8-H4WtRKi4EdrLYzbYoQDckRNMKVj813YU5YY2u-HFsQr9g@mail.gmail.com>
-Subject: Xenomai - RTNet - patch error
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <20190712111849.25670-1-norbert.lange@andritz.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -14,60 +16,40 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
+To: Norbert Lange <nolange79@gmail.com>, xenomai@xenomai.org
 
-Hello xenomai community,
+On 12.07.19 13:18, Norbert Lange via Xenomai wrote:
+> sigprocmask should not be used in multithreaded applications,
+> doing so is "unspecified".
 
-  I am an open source enthusiast interested in Xenomai and RTNet.
-I have the RTNet modules successfully installed on BeagleBone black
-and now I want to install RTNet on qemu-system-x86_64
-in order to do more tests with bbb and x86_64.
+Is this more than cosmetic on Linux? Then it should be documented here because
+we shipped the change in 3.0.9, and if that may have caused regressions, users
+should know.
 
-  I have tried to compile the project
-https://github.com/jan-kiszka/xenomai-images
-with the command
-kas-docker --isar build kas.yml:board-qemu-amd64.yml
-and it returns the below copied error.
-Do you have any ideas how to get over it? Maybe to transform it into an warning,
-or by automatically/manually answer <yes> to patch anyway.
+> 
+> Signed-off-by: Norbert Lange <norbert.lange@andritz.com>
+> ---
+>  lib/cobalt/printf.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/lib/cobalt/printf.c b/lib/cobalt/printf.c
+> index 7426f2bda..80db9516a 100644
+> --- a/lib/cobalt/printf.c
+> +++ b/lib/cobalt/printf.c
+> @@ -647,7 +647,7 @@ static void spawn_printer_thread(void)
+>  	sigfillset(&sset);
+>  	pthread_sigmask(SIG_BLOCK, &sset, &oset);
+>  	pthread_create(&printer_thread, &thattr, printer_loop, NULL);
+> -	sigprocmask(SIG_SETMASK, &oset, NULL);
+> +	pthread_sigmask(SIG_SETMASK, &oset, NULL);
+>  	pthread_setname_np(printer_thread, "cobalt_printf");
+>  }
+>  
+> 
 
-ERROR: xenomai-9999-next-r0 do_patch: patching failed
-ERROR: xenomai-9999-next-r0 do_patch: Function failed: do_patch
-ERROR: Logfile of failure stored in:
-/work/build/tmp/work/xenomai-demo-amd64/xenomai-9999-next-r0/temp/log.do_patch.123
-ERROR: Task (/repo/recipes-xenomai/xenomai/xenomai_next.bb:do_patch)
-failed with exit code '1'
-NOTE: Tasks Summary: Attempted 46 tasks of which 45 didn't need to be
-rerun and 1 failed.
+Jan
 
-Summary: 1 task failed:
-  /repo/recipes-xenomai/xenomai/xenomai_next.bb:do_patch
-Summary: There were 2 ERROR messages shown, returning a non-zero exit code.
-
-$ cat build/tmp/work/xenomai-demo-amd64/xenomai-9999-next-r0/temp/log.do_patch
-DEBUG: Executing python function do_patch
-DEBUG: Fetcher accessed the network with the command git -c
-core.fsyncobjectfiles=0 ls-remote
-https://gitlab.denx.de/Xenomai/xenomai.git
-DEBUG: Running export PSEUDO_DISABLED=1; export
-GIT_PROXY_COMMAND="oe-git-proxy"; export NO_PROXY="*"; export
-PATH="/work/isar/bitbake/bin:/work/isar/scripts:/usr/sbin:/usr/bin:/sbin:/bin";
-export HOME="/tmp/tmp89g2x4r8"; git -c core.fsyncobjectfiles=0
-ls-remote https://gitlab.denx.de/Xenomai/xenomai.git
-NOTE: patch --no-backup-if-mismatch -p 1 --directory
-/work/build/tmp/work/xenomai-demo-amd64/xenomai-9999-next-r0/git
---input /work/build/tmp/work/xenomai-demo-amd64/xenomai-9999-next-r0/0001-debian-Add-config-folder-to-xenomai-kernel-source.patch
-patching file debian/rules
-
-Reversed (or previously applied) patch detected!  Assume -R? [n]
-Apply anyway? [n]
-Skipping patch.
-1 out of 1 hunk ignored -- saving rejects to file debian/rules.rej
-ERROR: patching failed
-DEBUG: Python function do_patch finished
-ERROR: Function failed: do_patch
-
-
-Thank you and kind regards,
-L-C. Duca
+-- 
+Siemens AG, Corporate Technology, CT RDA IOT SES-DE
+Corporate Competence Center Embedded Linux
 
