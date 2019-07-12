@@ -1,14 +1,16 @@
-Subject: Re: prepare-kernel.sh
-References: <0817b60a-3a5c-3cae-475d-ce78dd89ef10@iit.it>
- <37669207-8db8-9ec0-6f84-52e15a4cab3e@siemens.com>
-From: hauptmech <hauptmech@gmail.com>
-Message-ID: <2862bfb5-21c3-c51e-fc82-760bc8137352@gmail.com>
-Date: Wed, 24 Jul 2019 14:38:57 +1200
 MIME-Version: 1.0
-In-Reply-To: <37669207-8db8-9ec0-6f84-52e15a4cab3e@siemens.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 7bit
-Content-Language: en-US
+References: <CAFLxGvzoCXUq_QFMT=b54nnLd8Oeu3XfFeiCKoCj3a0Q3Xg8yA@mail.gmail.com>
+ <3b8bf95c-5170-d229-b27f-1577a2e0942b@siemens.com>
+ <CAFLxGvzgCuoaG+O9EyiJZG_YD-2KQxVWd1LG-FepiEAjebqJnQ@mail.gmail.com>
+ <fb2a4587-5180-663b-1dee-e2b7b114fc63@siemens.com>
+ <CAFLxGvwJx=JkQc-s6TkvmP=_JM+VYxTt9Qiyko9u8CguoeS0sw@mail.gmail.com>
+ <015e6243-88eb-f12b-64d1-37e62fb5f713@siemens.com>
+In-Reply-To: <015e6243-88eb-f12b-64d1-37e62fb5f713@siemens.com>
+From: Richard Weinberger <richard.weinberger@gmail.com>
+Date: Fri, 12 Jul 2019 09:17:37 +0200
+Message-ID: <CAFLxGvwBKr1t+pLoxftV0CZD1tJqKpnWt_d1EBUdCGTnbrkhVA@mail.gmail.com>
+Subject: Re: Enable/Disable of ftrace events crashes kernel
+Content-Type: text/plain; charset="UTF-8"
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,36 +19,61 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
+To: Jan Kiszka <jan.kiszka@siemens.com>
+Cc: xenomai@xenomai.org
 
-I just ran into this problem as well. It wasn't until a kernel build 
-failed part way through and I did a bit of googling that I figured out 
-to guess which kernel version would work with which branch by reading 
-the git comments.
-
-It would be useful to add a known good ipipe/kernel version combo for 
-the stable branch to 
-https://gitlab.denx.de/Xenomai/xenomai/wikis/Start_Here#user-content-gathering-the-linux-kernel-bits
-
-Or if this is considered too much of a moving target, a note in the same 
-place to read the git commit comments and what to look for to identify 
-which kernel is likely good.
-
--Hauptmech
-
-On 24/07/2019 1:44 AM, Jan Kiszka via Xenomai wrote:
-> On 23.07.19 14:37, alessio margan via Xenomai wrote:
->> Hi all,
->>
->> I got this error when trying to configure the kernel 4.19.57 with the procedure
->> that I used so far.
->>
->> Is there something new that I miss
->>
->> (base) embedded@com-exp:/usr/local/src/xenomai.git(stable/v3.0.x)$
-> 4.19 requires Xenomai master.
+On Thu, Jul 11, 2019 at 11:20 PM Jan Kiszka <jan.kiszka@siemens.com> wrote:
 >
-> Jan
+> On 11.07.19 22:48, Richard Weinberger wrote:
+> > On Thu, Jul 11, 2019 at 8:30 PM Jan Kiszka <jan.kiszka@siemens.com> wrote:
+> >>
+> >> On 11.07.19 12:25, Richard Weinberger wrote:
+> >>> On Thu, Jul 11, 2019 at 12:21 PM Jan Kiszka <jan.kiszka@siemens.com> wrote:
+> >>>> Can't reproduce so far, even with a while-true loop. Can you share your .config?
+> >>>
+> >>> Sure, see attachment.
+> >>>
+> >>
+> >> This seems to fix the issue here:
+> >>
+> >> diff --git a/arch/x86/entry/entry_64.S b/arch/x86/entry/entry_64.S
+> >> index 119fd66d111e..8f647c208cf2 100644
+> >> --- a/arch/x86/entry/entry_64.S
+> >> +++ b/arch/x86/entry/entry_64.S
+> >> @@ -997,8 +997,8 @@ apicinterrupt IRQ_WORK_VECTOR                       irq_work_interrupt              smp_irq_work_interrupt
+> >>  \skip_label:
+> >>         UNWIND_HINT_REGS
+> >>         DISABLE_INTERRUPTS(CLBR_ANY)
+> >> -       testl   %ebx, %ebx      /* %ebx: return to kernel mode */
+> >> -       jnz     retint_kernel_early
+> >> +       testb   $3, CS(%rsp)
+> >> +       jz      retint_kernel_early
+> >>         jmp     retint_user_early
+> >>         .endif
+> >>  1001:
+> >>
+> >> Tests welcome!
+> >
+> > With that change I can no longer trigger the crash.
 >
+> Perfect.
+>
+> > Can you please give more context? I'd like to understand the problem.
+> >
+>
+> We were basing the decision whether to switch GS on return or not on a stale
+> register (ebx). That register used to contain the information, but that changed
+> with "x86/entry/64: Remove %ebx handling from error_entry/exit". This caused CPU
+> state corruptions under certain conditions, apparently only when dealing with
+> #DB exceptions, not with the way more frequent #PF.
 
+Ah! Upstream b3681dd548d0 ("x86/entry/64: Remove %ebx handling from
+error_entry/exit")
+changed ebx to CS. Now things make sense again. :-)
+
+Thanks for the quick fix and the explanation!
+
+-- 
+Thanks,
+//richard
 
