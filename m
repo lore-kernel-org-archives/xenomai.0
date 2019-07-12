@@ -1,9 +1,7 @@
-From: "Q. Gylstorff" <Quirin.Gylstorff@siemens.com>
-Subject: [xenomai-images][PATCH] ci: Add ci build
-Date: Thu, 22 Aug 2019 14:34:49 +0200
-Message-Id: <20190822123450.11589-1-Quirin.Gylstorff@siemens.com>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+From: xenomai@xenomai.org
+Subject: [I-PIPE] ipipe-core-4.14.133-x86-7 released
+Message-Id: <E1hm0v7-0005Gt-Cl@xenomai.org>
+Date: Fri, 12 Jul 2019 21:09:25 +0200
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -14,76 +12,8 @@ List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: xenomai@xenomai.org
 
-From: Quirin Gylstorff <quirin.gylstorff@siemens.com>
+Download URL: https://xenomai.org/downloads/ipipe/v4.x/x86/ipipe-core-4.14.133-x86-7.patch
 
-Add jobs for all existing targets to execute the builds in
-gitlab ci. For manual testing or testing without gitlab add
-README entry for local runner.
-
-Signed-off-by: Quirin Gylstorff <quirin.gylstorff@siemens.com>
----
- .gitlab-ci.yml | 27 +++++++++++++++++++++++++++
- README.md      | 12 ++++++++++++
- 2 files changed, 39 insertions(+)
- create mode 100644 .gitlab-ci.yml
-
-diff --git a/.gitlab-ci.yml b/.gitlab-ci.yml
-new file mode 100644
-index 0000000..89d2b29
---- /dev/null
-+++ b/.gitlab-ci.yml
-@@ -0,0 +1,27 @@
-+variables:
-+  GIT_STRATEGY: clone
-+variables:
-+  http_proxy: "$HTTP_PROXY"
-+  https_proxy: "$HTTPS_PROXY"
-+  ftp_proxy: "$FTP_PROXY"
-+  no_proxy: "$NO_PROXY"
-+build:amd64:
-+  stage: build
-+  image: kasproject/kas-isar:latest
-+  script:
-+    - kas build kas.yml:board-qemu-amd64.yml
-+build:armhf:
-+  stage: build
-+  image: kasproject/kas-isar:latest
-+  script:
-+    - kas build kas.yml:board-qemu-armhf.yml
-+build:arm64:
-+  stage: build
-+  image: kasproject/kas-isar:latest
-+  script:
-+    - kas build kas.yml:board-qemu-arm64.yml
-+build:hikey:
-+  stage: build
-+  image: kasproject/kas-isar:latest
-+  script:
-+    - kas build kas.yml:board-hikey.yml
-diff --git a/README.md b/README.md
-index b2a99db..576f357 100644
---- a/README.md
-+++ b/README.md
-@@ -36,6 +36,18 @@ Physical targets will generate ready-to-boot images under
-     dd if=build/tmp/deploy/images/hikey/demo-image-hikey-xenomai-demo-hikey.wic.img \
-        of=/dev/<medium-device> bs=1M status=progress
- 
-+## CI Build
-+
-+The CI build can be executed locally by 
-+[installing the gitlab-runner](https://docs.gitlab.com/runner/install/).
-+
-+To execute the CI build use:
-+```
-+gitlab-runner exec docker --docker-privileged \
-+  --env "HTTP_PROXY=$HTTP_PROXY" --env "HTTPS_PROXY=$HTTPS_PROXY" \
-+  --env "NO_PROXY=$NO_PROXY" build:armhf
-+```
-+
- ## Community Resources
- 
- See [Xenomai project](https://www.xenomai.org/).
--- 
-2.20.1
-
+Repository: https://git.xenomai.org/ipipe-x86
+Release tag: ipipe-core-4.14.133-x86-7
 
