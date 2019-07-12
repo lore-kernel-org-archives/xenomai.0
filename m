@@ -1,19 +1,15 @@
+From: Johannes Kirchmair <johannes.kirchmair@sigmatek.at>
+Subject: AW: [PATCH] prepare-kernal.sh: Add --copylinks option
+Date: Fri, 12 Jul 2019 11:43:08 +0000
+Message-ID: <AM0PR08MB3330AE9F4B589B8D2097E96D92F20@AM0PR08MB3330.eurprd08.prod.outlook.com>
+References: <20190611105947.15478-1-johannes.kirchmair@sigmatek.at>
+ <AM0PR08MB333013CCB8EB426A8595A85692F20@AM0PR08MB3330.eurprd08.prod.outlook.com>
+ <e38df8f5-505e-9939-77f3-7da6d750d66e@siemens.com>
+In-Reply-To: <e38df8f5-505e-9939-77f3-7da6d750d66e@siemens.com>
+Content-Language: de-DE
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-References: <CAEmXcAxMLPYufU7aYD5kBxvtQ-jr8eq6Y+uRW+Td-NWzL=sw5w@mail.gmail.com>
- <9a2d7001-a0d7-b87c-be89-c4cad2051273@siemens.com>
- <CAEmXcAwpe3dVcriUjFYdvsQB0Kra13nY+yLtCDCyzoeCww+xCA@mail.gmail.com>
- <CAEmXcAzc2Z1J0LTEtFXZ3TrXC767Z=6DSOCpicVHPO3yFh98_Q@mail.gmail.com>
- <20190731070153.tp5c5naflbv3nmdw@jholzmayr.localdomain>
- <CAEmXcAx1ehvtUSR9fMPfV21ts3kcGPHnHYOfAZf82hJwb=wCQA@mail.gmail.com>
- <20190731082237.ccmhpfgda4fdd3nr@jholzmayr.localdomain>
- <CAEmXcAwdDAY+a+c1B8X1UZK+FRhyGt+0GcN6erp_XFfh4caNKQ@mail.gmail.com>
-In-Reply-To: <CAEmXcAwdDAY+a+c1B8X1UZK+FRhyGt+0GcN6erp_XFfh4caNKQ@mail.gmail.com>
-From: danwe <daniel.wenninger92@gmail.com>
-Date: Thu, 1 Aug 2019 09:24:22 +0200
-Message-ID: <CAEmXcAw3LO1Dma5M9TheJu4z-bTiisaPUWCPmD-HUegUkB3QZA@mail.gmail.com>
-Subject: Re: Fwd: Building Xenomai 3 , Kernel 4 ... for BeagleBone Black
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -22,362 +18,124 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Josef Holzmayr <holzmayr@rsi-elektrotechnik.de>, xenomai@xenomai.org
+To: Jan Kiszka <jan.kiszka@siemens.com>, "xenomai@xenomai.org" <xenomai@xenomai.org>
+
+PiAtLS0tLVVyc3Byw7xuZ2xpY2hlIE5hY2hyaWNodC0tLS0tDQo+IFZvbjogSmFuIEtpc3prYSA8
+amFuLmtpc3prYUBzaWVtZW5zLmNvbT4NCj4gR2VzZW5kZXQ6IEZyZWl0YWcsIDEyLiBKdWxpIDIw
+MTkgMTI6MjMNCj4gQW46IEpvaGFubmVzIEtpcmNobWFpciA8am9oYW5uZXMua2lyY2htYWlyQHNp
+Z21hdGVrLmF0PjsNCj4geGVub21haUB4ZW5vbWFpLm9yZw0KPiBCZXRyZWZmOiBSZTogW1BBVENI
+XSBwcmVwYXJlLWtlcm5hbC5zaDogQWRkIC0tY29weWxpbmtzIG9wdGlvbg0KPiANCj4gT24gMTIu
+MDcuMTkgMDk6NDEsIEpvaGFubmVzIEtpcmNobWFpciB2aWEgWGVub21haSB3cm90ZToNCj4gPiBI
+ZWxsbyBldmVyeW9uZSwNCj4gPg0KPiA+IGp1c3QgYSBwaW5nIHRvIHNlZSBpZiBhbnlvbmUgaGFz
+IGFueSByZW1hcmtzIGFib3V0IHRoaXMgcGF0Y2guDQo+IA0KPiBTb3JyeSwgc2xpcHBlZCB0aHJv
+dWdoLg0KPiANCj4gPg0KPiA+IEJlc3QgcmVnYXJkcw0KPiA+IEpvaGFubmVzIEtpcmNobWFpcg0K
+PiA+DQo+ID4gLS0tLS1VcnNwcsO8bmdsaWNoZSBOYWNocmljaHQtLS0tLQ0KPiA+IFZvbjogSm9o
+YW5uZXMgS2lyY2htYWlyIDxqb2hhbm5lcy5raXJjaG1haXJAc2lnbWF0ZWsuYXQ+DQo+ID4gR2Vz
+ZW5kZXQ6IERpZW5zdGFnLCAxMS4gSnVuaSAyMDE5IDEzOjAxDQo+ID4gQW46IHhlbm9tYWlAeGVu
+b21haS5vcmcNCj4gPiBDYzogSm9oYW5uZXMgS2lyY2htYWlyIDxqb2hhbm5lcy5raXJjaG1haXJA
+c2lnbWF0ZWsuYXQ+DQo+ID4gQmV0cmVmZjogW1BBVENIXSBwcmVwYXJlLWtlcm5hbC5zaDogQWRk
+IC0tY29weWxpbmtzIG9wdGlvbg0KPiA+DQo+ID4gVGhlIHByZXBhcmUta2VybmFsLnNoIHNjcmlw
+dCBieSBkZWZhdWx0IGFkZHMgdGhlIHhlbm9tYWkga2VybmVsDQo+IGNvbXBvbmVudHMgdG8gdGhl
+IGtlcm5lbCBzb3VyY2UgdXNpbmcgc29mdCBsaW5rcy4NCj4gPiBJZiB5b3UgbW92ZS9yZW1vdmUg
+dGhlIHhlbm9tYWkgc291cmNlIG9yIG1vdmUgdGhlIHBhdGNoZWQga2VybmVsDQo+IHNvdXJjZSB0
+byBhbm90aGVyIHdvcmtzdGF0aW9uLCB5b3UgbXVzdCBjaGFuZ2UgYWxsIHRoaXMgbGlua3Mgb3Ig
+ZXZlbiByZXBsYWNlDQo+IHRoZW0gYnkgdGhlIGFjdHVhbCBmaWxlcy4NCj4gPiBUbyBzaW1wbGlm
+eSB0aGUgZGVwbG95bWVudCBvZiB0aGUgcGF0Y2hlZCBrZXJuZWwgc291cmNlIHRvIG91ciBjb3dv
+cmtlcnMsDQo+IHdlIGFkZGVkIHRoZSDigJNjb3B5bGlua3Mgb3B0aW9uIHRvIHRoZSBwcmVwYXJl
+LWtlcm5hbC5zaC4NCj4gPiBUaGUgb3B0aW9uIGNhdXNlcyB0aGUgcHJlcGFyZS1rZXJuYWwuc2gg
+dG8gY29weSB0aGUgeGVub21haSBrZXJuZWwNCj4gY29tcG9uZW50cyBpbnN0ZWFkIG9mIGxpbmtp
+bmcgdGhlbS4NCj4gPiBUaGlzIG1ha2VzIGl0IGVhc3kgdG8gbW92ZSB0aGUgcGF0Y2hlZCBrZXJu
+ZWwgc291cmNlIHRvIGRpZmZlcmVudA0KPiBsb2NhdGlvbnMuDQo+ID4gRnVydGhlciwgaGF2aW5n
+IHRoZSBhY3R1YWwgZmlsZXMgaW4gdGhlIGtlcm5lbCBzb3VyY2UgbWFrZXMgdGhlIHVzZSBvZiB0
+b29scw0KPiBsaWtlIGdpdCBncmVwIHRoYXQgZG8gbm90IGZvbGxvdyBzeW1ib2xpYyBsaW5rcyBi
+eSBkZWZhdWx0IG1vcmUgY29udmVuaWVudC4NCj4gPiBFLmcuIGl0IGdldHMgaGFyZGVyIHRvIG1p
+c3Mgc3ltYm9scyBzZWFyY2hlZCB3aXRoIGdpdCBncmVwIGJ5IGFjY2lkZW50Lg0KPiANCj4gV2hh
+dCdzIHRoZSBkaWZmZXJlbnRpYXRpb24gdG8gdXNpbmcgLS1vdXRwYXRjaA0KDQpBY3R1YWxseSBt
+aXNzZWQgdGhhdCBvbmUgb3IgZGlkIG5vdCBnZXQgaXQgdGhlIHJpZ2h0IHdheS4gDQpBcHBsaW5n
+IHRoZSAtLW91dHBhdGNoIGZpbGUgYWN0dWFsbHkgZG9lcyB3aGF0IHdlIHdlcmUgdHJ5aW5nIHRv
+IGFjaGlldmUuDQpTbyB3ZSBjYW4gZHJvcCB0aGlzIHRocmVhZC4NClNvcnJ5IGZvciB0aGUgZGlz
+dHVyYmFuY2UuIDstKQ0KQmVzdCByZWdhcmRzIA0KSm9oYW5uZXMNCg0KPiANCj4gPg0KPiA+IFNp
+Z25lZC1vZmYtYnk6IEpvaGFubmVzIEtpcmNobWFpciA8am9oYW5uZXMua2lyY2htYWlyQHNpZ21h
+dGVrLmF0Pg0KPiA+IC0tLQ0KPiA+ICBzY3JpcHRzL3ByZXBhcmUta2VybmVsLnNoIHwgNDcNCj4g
+PiArKysrKysrKysrKysrKysrKysrKysrKysrLS0tLS0tLS0tLS0tLS0NCj4gPiAgMSBmaWxlIGNo
+YW5nZWQsIDMwIGluc2VydGlvbnMoKyksIDE3IGRlbGV0aW9ucygtKQ0KPiA+DQo+ID4gZGlmZiAt
+LWdpdCBhL3NjcmlwdHMvcHJlcGFyZS1rZXJuZWwuc2ggYi9zY3JpcHRzL3ByZXBhcmUta2VybmVs
+LnNoDQo+ID4gaW5kZXggZTg4YTlhNzU3Li5iOGNjNWY2YzEgMTAwNzU1DQo+ID4gLS0tIGEvc2Ny
+aXB0cy9wcmVwYXJlLWtlcm5lbC5zaA0KPiA+ICsrKyBiL3NjcmlwdHMvcHJlcGFyZS1rZXJuZWwu
+c2gNCj4gPiBAQCAtODQsNiArODQsMTQgQEAgcGF0Y2hfbGluaygpIHsNCj4gPiAgICAgIHRhcmdl
+dF9kaXI9IiQzIg0KPiA+ICAgICAgbGlua19kaXI9IiQ0Ig0KPiA+DQo+ID4gKw0KPiA+ICsJaWYg
+dGVzdCAieCQ1IiA9ICJ4Ig0KPiA+ICsJdGhlbg0KPiA+ICsJCWxuX2NtZD0ibG4gLXNmIg0KPiA+
+ICsJZWxzZQ0KPiA+ICsJCWxuX2NtZD0iY3AgLWYiDQo+ID4gKwlmaQ0KPiA+ICsNCj4gPiAgICAg
+ICgNCj4gPiAgICAgICAgICBpZiB0ZXN0IFwhIFwoIHgkbGlua19maWxlID0geG0gLW8geCRsaW5r
+X2ZpbGUgPSB4biBcKTsgdGhlbg0KPiA+ICAJICAgZmluZF9jbGVhbl9vcHQ9Ii1uYW1lICRsaW5r
+X2ZpbGUiDQo+ID4gQEAgLTEyMiw3ICsxMzAsNyBAQCBwYXRjaF9saW5rKCkgew0KPiA+ICAgICAg
+ICAgICAgICAgICAgaWYgdGVzdCB4JGZvcmNlbGluayA9IHgxIC1vIFwNCj4gPiAgCQkgICAhICR4
+ZW5vbWFpX3Jvb3QvJHRhcmdldF9kaXIvJGYgLWVmDQo+ICRsaW51eF90cmVlLyRsaW5rX2Rpci8k
+ZjsNCj4gPiAgCQl0aGVuDQo+ID4gLSAgICAgICAgICAgICAgICAgICAgbG4gLXNmICR4ZW5vbWFp
+X3Jvb3QvJHRhcmdldF9kaXIvJGYgJGxpbnV4X3RyZWUvJGxpbmtfZGlyLyRmDQo+ID4gKyAgICAg
+ICAgICAgICAgICAgICAgJGxuX2NtZCAkeGVub21haV9yb290LyR0YXJnZXRfZGlyLyRmDQo+ID4g
+KyAkbGludXhfdHJlZS8kbGlua19kaXIvJGYNCj4gPiAgICAgICAgICAgICAgICAgIGZpDQo+ID4g
+ICAgICAgICAgICAgIGVsc2UNCj4gPiAgICAgICAgICAgICAgICAgIGlmIHRlc3QgYGNoZWNrX2Zp
+bHRlciAkbGlua19kaXIvJGZgID0gIm9rIjsgdGhlbiBAQA0KPiA+IC0xNTAsNiArMTU4LDggQEAg
+Z2VuZXJhdGVfcGF0Y2goKSB7DQo+ID4gIHVzYWdlPSd1c2FnZTogcHJlcGFyZS1rZXJuZWwgLS1s
+aW51eD08bGludXgtdHJlZT4gLS1pcGlwZT08aXBpcGUtcGF0Y2g+DQo+IFstLWFyY2g9PGFyY2g+
+XSBbLS1vdXRwYXRjaD08ZmlsZT4gWy0tZmlsdGVya3ZlcnM9eXxuXSBbLS1maWx0ZXJhcmNoPXl8
+bl1dIFstLQ0KPiBmb3JjZWxpbmtdIFstLWRlZmF1bHRdIFstLXZlcmJvc2VdJw0KPiA+ICBtZT1g
+YmFzZW5hbWUgJDBgDQo+ID4NCj4gPiArY29weWxpbmtzPSIiDQo+ID4gKw0KPiA+ICB3aGlsZSB0
+ZXN0ICQjIC1ndCAwOyBkbw0KPiA+ICAgICAgY2FzZSAiJDEiIGluDQo+ID4gICAgICAtLWxpbnV4
+PSopDQo+ID4gQEAgLTE4Miw2ICsxOTIsOSBAQCB3aGlsZSB0ZXN0ICQjIC1ndCAwOyBkbw0KPiA+
+ICAgICAgLS1kZWZhdWx0KQ0KPiA+ICAgICAgICAgIHVzZWRlZmF1bHQ9MQ0KPiA+ICAgICAgICAg
+IDs7DQo+ID4gKwktLWNvcHlsaW5rcykNCj4gPiArCQljb3B5bGlua3M9IjEiDQo+ID4gKwkJOzsN
+Cj4gPiAgICAgIC0tdmVyYm9zZSkNCj4gPiAgCXZlcmJvc2U9MQ0KPiA+ICAJOzsNCj4gPiBAQCAt
+NDE2LDIzICs0MjksMjMgQEAgZXNhYw0KPiA+DQo+ID4gIHBhdGNoX2tlcm5lbHZlcnNpb25fc3Bl
+Y2lmaWM9Im4iDQo+ID4gIHBhdGNoX2FyY2hpdGVjdHVyZV9zcGVjaWZpYz0ieSINCj4gPiAtcGF0
+Y2hfbGluayByIG0ga2VybmVsL2NvYmFsdC9hcmNoLyRsaW51eF9hcmNoDQo+ID4gYXJjaC8kbGlu
+dXhfYXJjaC94ZW5vbWFpIC1wYXRjaF9saW5rIG4gbiBrZXJuZWwvY29iYWx0L2luY2x1ZGUvaXBp
+cGUNCj4gPiBhcmNoLyRsaW51eF9hcmNoL2luY2x1ZGUvaXBpcGUNCj4gPiArcGF0Y2hfbGluayBy
+IG0ga2VybmVsL2NvYmFsdC9hcmNoLyRsaW51eF9hcmNoDQo+ID4gK2FyY2gvJGxpbnV4X2FyY2gv
+eGVub21haSAkY29weWxpbmtzIHBhdGNoX2xpbmsgbiBuDQo+ID4gK2tlcm5lbC9jb2JhbHQvaW5j
+bHVkZS9pcGlwZSBhcmNoLyRsaW51eF9hcmNoL2luY2x1ZGUvaXBpcGUgJGNvcHlsaW5rcw0KPiA+
+ICBwYXRjaF9hcmNoaXRlY3R1cmVfc3BlY2lmaWM9Im4iDQo+ID4gLXBhdGNoX2xpbmsgbiBtIGtl
+cm5lbC9jb2JhbHQga2VybmVsL3hlbm9tYWkgLXBhdGNoX2xpbmsgbg0KPiA+IGNvYmFsdC1jb3Jl
+Lmgga2VybmVsL2NvYmFsdC90cmFjZSBpbmNsdWRlL3RyYWNlL2V2ZW50cyAtcGF0Y2hfbGluayBu
+DQo+ID4gY29iYWx0LXJ0ZG0uaCBrZXJuZWwvY29iYWx0L3RyYWNlIGluY2x1ZGUvdHJhY2UvZXZl
+bnRzIC1wYXRjaF9saW5rIG4NCj4gPiBjb2JhbHQtcG9zaXguaCBrZXJuZWwvY29iYWx0L3RyYWNl
+IGluY2x1ZGUvdHJhY2UvZXZlbnRzIC1wYXRjaF9saW5rIHINCj4gPiBuIGtlcm5lbC9jb2JhbHQv
+aW5jbHVkZS9hc20tZ2VuZXJpYy94ZW5vbWFpDQo+ID4gaW5jbHVkZS9hc20tZ2VuZXJpYy94ZW5v
+bWFpIC1wYXRjaF9saW5rIHIgbg0KPiA+IGtlcm5lbC9jb2JhbHQvaW5jbHVkZS9saW51eC94ZW5v
+bWFpIGluY2x1ZGUvbGludXgveGVub21haSAtcGF0Y2hfbGluaw0KPiA+IG4gbSBrZXJuZWwvY29i
+YWx0L3Bvc2l4IGtlcm5lbC94ZW5vbWFpL3Bvc2l4IC1wYXRjaF9saW5rIG4gbQ0KPiA+IGtlcm5l
+bC9jb2JhbHQvcnRkbSBrZXJuZWwveGVub21haS9ydGRtIC1wYXRjaF9saW5rIHIgbSBrZXJuZWwv
+ZHJpdmVycw0KPiA+IGRyaXZlcnMveGVub21haSAtcGF0Y2hfbGluayBuIG4gaW5jbHVkZS9jb2Jh
+bHQva2VybmVsDQo+ID4gaW5jbHVkZS94ZW5vbWFpL2NvYmFsdC9rZXJuZWwgLXBhdGNoX2xpbmsg
+ciBuDQo+ID4gaW5jbHVkZS9jb2JhbHQva2VybmVsL3J0ZG0gaW5jbHVkZS94ZW5vbWFpL3J0ZG0g
+LXBhdGNoX2xpbmsgciBuDQo+ID4gaW5jbHVkZS9jb2JhbHQvdWFwaSBpbmNsdWRlL3hlbm9tYWkv
+Y29iYWx0L3VhcGkgLXBhdGNoX2xpbmsgciBuDQo+ID4gaW5jbHVkZS9ydGRtL3VhcGkgaW5jbHVk
+ZS94ZW5vbWFpL3J0ZG0vdWFwaSAtcGF0Y2hfbGluayBuIHZlcnNpb24uaA0KPiA+IGluY2x1ZGUv
+eGVub21haSBpbmNsdWRlL3hlbm9tYWkNCj4gPiArcGF0Y2hfbGluayBuIG0ga2VybmVsL2NvYmFs
+dCBrZXJuZWwveGVub21haSAkY29weWxpbmtzIHBhdGNoX2xpbmsgbg0KPiA+ICtjb2JhbHQtY29y
+ZS5oIGtlcm5lbC9jb2JhbHQvdHJhY2UgaW5jbHVkZS90cmFjZS9ldmVudHMgJGNvcHlsaW5rcw0K
+PiA+ICtwYXRjaF9saW5rIG4gY29iYWx0LXJ0ZG0uaCBrZXJuZWwvY29iYWx0L3RyYWNlIGluY2x1
+ZGUvdHJhY2UvZXZlbnRzDQo+ID4gKyRjb3B5bGlua3MgcGF0Y2hfbGluayBuIGNvYmFsdC1wb3Np
+eC5oIGtlcm5lbC9jb2JhbHQvdHJhY2UNCj4gPiAraW5jbHVkZS90cmFjZS9ldmVudHMgJGNvcHls
+aW5rcyBwYXRjaF9saW5rIHIgbg0KPiA+ICtrZXJuZWwvY29iYWx0L2luY2x1ZGUvYXNtLWdlbmVy
+aWMveGVub21haSBpbmNsdWRlL2FzbS0NCj4gZ2VuZXJpYy94ZW5vbWFpDQo+ID4gKyRjb3B5bGlu
+a3MgcGF0Y2hfbGluayByIG4ga2VybmVsL2NvYmFsdC9pbmNsdWRlL2xpbnV4L3hlbm9tYWkNCj4g
+PiAraW5jbHVkZS9saW51eC94ZW5vbWFpICRjb3B5bGlua3MgcGF0Y2hfbGluayBuIG0ga2VybmVs
+L2NvYmFsdC9wb3NpeA0KPiA+ICtrZXJuZWwveGVub21haS9wb3NpeCAkY29weWxpbmtzIHBhdGNo
+X2xpbmsgbiBtIGtlcm5lbC9jb2JhbHQvcnRkbQ0KPiA+ICtrZXJuZWwveGVub21haS9ydGRtICRj
+b3B5bGlua3MgcGF0Y2hfbGluayByIG0ga2VybmVsL2RyaXZlcnMNCj4gPiArZHJpdmVycy94ZW5v
+bWFpICRjb3B5bGlua3MgcGF0Y2hfbGluayBuIG4gaW5jbHVkZS9jb2JhbHQva2VybmVsDQo+ID4g
+K2luY2x1ZGUveGVub21haS9jb2JhbHQva2VybmVsICRjb3B5bGlua3MgcGF0Y2hfbGluayByIG4N
+Cj4gPiAraW5jbHVkZS9jb2JhbHQva2VybmVsL3J0ZG0gaW5jbHVkZS94ZW5vbWFpL3J0ZG0gJGNv
+cHlsaW5rcyBwYXRjaF9saW5rDQo+ID4gK3IgbiBpbmNsdWRlL2NvYmFsdC91YXBpIGluY2x1ZGUv
+eGVub21haS9jb2JhbHQvdWFwaSAkY29weWxpbmtzDQo+ID4gK3BhdGNoX2xpbmsgciBuIGluY2x1
+ZGUvcnRkbS91YXBpIGluY2x1ZGUveGVub21haS9ydGRtL3VhcGkgJGNvcHlsaW5rcw0KPiA+ICtw
+YXRjaF9saW5rIG4gdmVyc2lvbi5oIGluY2x1ZGUveGVub21haSBpbmNsdWRlL3hlbm9tYWkgJGNv
+cHlsaW5rcw0KPiA+DQo+IA0KPiBJZiB3ZSBhZGQgdGhhdCBmZWF0dXJlLCB0aGVuIGl0J3MgcHJv
+YmFibHkgYmV0dGVyIGNvbnRyb2xsZWQgdmlhIGEgZ2xvYmFsDQo+IHZhcmlhYmxlLg0KPiANCj4g
+SmFuDQo+IA0KPiA+ICBpZiB0ZXN0ICJ4JG91dHB1dF9wYXRjaCIgIT0gIngiOyB0aGVuDQo+ID4g
+ICAgICBpZiB0ZXN0IHgkdmVyYm9zZSA9IHgxOyB0aGVuDQo+ID4gLS0NCj4gPiAyLjE3LjENCj4g
+Pg0KPiANCj4gLS0NCj4gU2llbWVucyBBRywgQ29ycG9yYXRlIFRlY2hub2xvZ3ksIENUIFJEQSBJ
+T1QgU0VTLURFDQo+IENvcnBvcmF0ZSBDb21wZXRlbmNlIENlbnRlciBFbWJlZGRlZCBMaW51eA0K
 
-Here are the warning and error outputs of my built: Do you have any ideas I
-can change this? I appreciate any suggestions.
-
-Initialising tasks: 100% |#######################################| Time:
-0:00:17
-
-NOTE: Executing SetScene Tasks
-
-NOTE: Executing RunQueue Tasks
-
-WARNING: bzip2-1.0.6-r5 do_fetch: Checksum mismatch for local file
-/work/build/downloads/bzip2-1.0.6.tar.gz
-
-Cleaning and trying again.
-
-WARNING: bzip2-1.0.6-r5 do_fetch: Renaming
-/work/build/downloads/bzip2-1.0.6.tar.gz to
-/work/build/downloads/bzip2-1.0.6.tar.gz_bad-checksum_527819af097ee3014e4d4=
-42315b6f283
-
-WARNING: bzip2-1.0.6-r5 do_fetch: Checksum failure encountered with
-download of http://www.bzip.org/1.0.6/bzip2-1.0.6.tar.gz - will attempt
-other sources if available
-
-WARNING: libpcre-native-8.39-r0 do_fetch: Checksum mismatch for local file
-/work/build/downloads/pcre-8.39.tar.bz2
-
-Cleaning and trying again.
-
-WARNING: libpcre-native-8.39-r0 do_fetch: Renaming
-/work/build/downloads/pcre-8.39.tar.bz2 to
-/work/build/downloads/pcre-8.39.tar.bz2_bad-checksum_dd1af1bf51a2626b957707=
-4690512335
-
-WARNING: libpcre-native-8.39-r0 do_fetch: Checksum failure encountered with
-download of
-http://downloads.sourceforge.net/projects/pcre/files/prce/8.39/pcre-8.39.ta=
-r.bz2
-- will attempt other sources if available
-
-WARNING: popt-native-1.16-r3 do_fetch: Failed to fetch URL
-http://rpm5.org/files/popt/popt-1.16.tar.gz, attempting MIRRORS if availabl=
-e
-
-WARNING: rpm-native-5.4.16-r0 do_fetch: Failed to fetch URL
-http://www.rpm5.org/files/rpm/rpm-5.4/rpm-5.4.15-0.20140824.src.rpm;name=3D=
-srpm;extract=3Drpm-5.4.15.tar.gz,
-attempting MIRRORS if available
-
-WARNING: shadow-native-4.2.1-r0 do_fetch: Failed to fetch URL
-http://pkg-shadow.alioth.debian.org/releases/shadow-4.2.1.tar.xz,
-attempting MIRRORS if available
-
-WARNING: xcb-proto-1.12-r0 do_fetch: Failed to fetch URL
-http://xcb.freedesktop.org/dist/xcb-proto-1.12.tar.bz2, attempting MIRRORS
-if available
-
-WARNING: libpthread-stubs-0.3-r0 do_fetch: Failed to fetch URL
-http://xcb.freedesktop.org/dist/libpthread-stubs-0.3.tar.bz2, attempting
-MIRRORS if available
-
-WARNING: tcl-native-8.6.6-r0 do_fetch: Failed to fetch URL
-http://downloads.sourceforge.net/tcl/tcl8.6.6-src.tar.gz, attempting
-MIRRORS if available
-
-WARNING: coreutils-8.25-r0 do_fetch: Failed to fetch URL
-http://distfiles.gentoo.org/distfiles/coreutils-8.25-man.tar.xz;name=3Dmanp=
-ages,
-attempting MIRRORS if available
-
-Currently  1 running tasks (1362 of 2032)  66%
-|####################           |
-
-Currently  1 running tasks (1362 of 2032)  66%
-|####################           |
-
-ERROR: xenomai-test-image-1.0-r0 do_image_wic: Function failed:
-do_image_wic (log file is located at
-/work/build/tmp/work/beaglebone_xenomai-poky-linux-gnueabi/xenomai-test-ima=
-ge/1.0-r0/temp/log.do_image_wic.30602)
-
-ERROR: Logfile of failure stored in:
-/work/build/tmp/work/beaglebone_xenomai-poky-linux-gnueabi/xenomai-test-ima=
-ge/1.0-r0/temp/log.do_image_wic.30602
-
-Log data follows:
-
-| DEBUG: Executing python function set_image_size
-
-| DEBUG: Python function set_image_size finished
-
-| DEBUG: Executing shell function do_image_wic
-
-| Checking basic build environment...
-
-| Done.
-
-|
-
-| Build artifacts not found, exiting.
-
-|   (Please check that the build artifacts for the machine
-
-|    selected in local.conf actually exist and that they
-
-|    are the correct artifacts for the image (.wks file)).
-
-|
-
-| The artifact that couldn't be found was kernel-dir:
-
-|   /work/build/tmp/deploy/images/beaglebone-xenomai
-
-| WARNING: exit code 1 from a shell command.
-
-| ERROR: Function failed: do_image_wic (log file is located at
-/work/build/tmp/work/beaglebone_xenomai-poky-linux-gnueabi/xenomai-test-ima=
-ge/1.0-r0/temp/log.do_image_wic.30602)
-
-ERROR: Task (/repo/meta-core/recipes-xenomai/images/xenomai-test-image.bb:d=
-o_image_wic)
-failed with exit code '1'
-
-NOTE: Tasks Summary: Attempted 2029 tasks of which 7 didn't need to be
-rerun and 1 failed.
-
-
-
-Summary: 1 task failed:
-
-  /repo/meta-core/recipes-xenomai/images/xenomai-test-image.bb:do_image_wic
-
-Summary: There were 14 WARNING messages shown.
-
-Summary: There was 1 ERROR message shown, returning a non-zero exit code.
-
-Exception ignored when trying to write to the signal wakeup fd:
-
-BlockingIOError: [Errno 11] Resource temporarily unavailable
-
-Exception ignored when trying to write to the signal wakeup fd:
-
-BlockingIOError: [Errno 11] Resource temporarily unavailable
-
-Exception ignored when trying to write to the signal wakeup fd:
-
-BlockingIOError: [Errno 11] Resource temporarily unavailable
-
-Exception ignored when trying to write to the signal wakeup fd:
-
-BlockingIOError: [Errno 11] Resource temporarily unavailable
-
-Exception ignored when trying to write to the signal wakeup fd:
-
-BlockingIOError: [Errno 11] Resource temporarily unavailable
-
-Exception ignored when trying to write to the signal wakeup fd:
-
-BlockingIOError: [Errno 11] Resource temporarily unavailable
-
-Exception ignored when trying to write to the signal wakeup fd:
-
-BlockingIOError: [Errno 11] Resource temporarily unavailable
-
-Exception ignored when trying to write to the signal wakeup fd:
-
-BlockingIOError: [Errno 11] Resource temporarily unavailable
-
-Exception ignored when trying to write to the signal wakeup fd:
-
-BlockingIOError: [Errno 11] Resource temporarily unavailable
-
-Exception ignored when trying to write to the signal wakeup fd:
-
-BlockingIOError: [Errno 11] Resource temporarily unavailable
-
-Exception ignored when trying to write to the signal wakeup fd:
-
-BlockingIOError: [Errno 11] Resource temporarily unavailable
-
-Exception ignored when trying to write to the signal wakeup fd:
-
-BlockingIOError: [Errno 11] Resource temporarily unavailable
-
-Exception ignored when trying to write to the signal wakeup fd:
-
-BlockingIOError: [Errno 11] Resource temporarily unavailable
-
-Exception ignored when trying to write to the signal wakeup fd:
-
-BlockingIOError: [Errno 11] Resource temporarily unavailable
-
-Exception ignored when trying to write to the signal wakeup fd:
-
-BlockingIOError: [Errno 11] Resource temporarily unavailable
-
-Exception ignored when trying to write to the signal wakeup fd:
-
-BlockingIOError: [Errno 11] Resource temporarily unavailable
-
-Exception ignored when trying to write to the signal wakeup fd:
-
-BlockingIOError: [Errno 11] Resource temporarily unavailable
-
-Exception ignored when trying to write to the signal wakeup fd:
-
-BlockingIOError: [Errno 11] Resource temporarily unavailable
-
-Exception ignored when trying to write to the signal wakeup fd:
-
-BlockingIOError: [Errno 11] Resource temporarily unavailable
-
-Exception ignored when trying to write to the signal wakeup fd:
-
-BlockingIOError: [Errno 11] Resource temporarily unavailable
-
-Exception ignored when trying to write to the signal wakeup fd:
-
-BlockingIOError: [Errno 11] Resource temporarily unavailable
-
-Exception ignored when trying to write to the signal wakeup fd:
-
-BlockingIOError: [Errno 11] Resource temporarily unavailable
-
-Exception ignored when trying to write to the signal wakeup fd:
-
-BlockingIOError: [Errno 11] Resource temporarily unavailable
-
-Exception ignored when trying to write to the signal wakeup fd:
-
-BlockingIOError: [Errno 11] Resource temporarily unavailable
-
-Exception ignored when trying to write to the signal wakeup fd:
-
-BlockingIOError: [Errno 11] Resource temporarily unavailable
-
-Exception ignored when trying to write to the signal wakeup fd:
-
-BlockingIOError: [Errno 11] Resource temporarily unavailable
-
-Exception ignored when trying to write to the signal wakeup fd:
-
-BlockingIOError: [Errno 11] Resource temporarily unavailable
-
-Exception ignored when trying to write to the signal wakeup fd:
-
-BlockingIOError: [Errno 11] Resource temporarily unavailable
-
-Exception ignored when trying to write to the signal wakeup fd:
-
-BlockingIOError: [Errno 11] Resource temporarily unavailable
-
-Exception ignored when trying to write to the signal wakeup fd:
-
-BlockingIOError: [Errno 11] Resource temporarily unavailable
-
-Am Mi., 31. Juli 2019 um 15:04 Uhr schrieb danwe <
-daniel.wenninger92@gmail.com>:
-
-> Thanks for your answer. I can built it so far but I get many warnings tha=
-t
-> it cannot fetch tar-files from rpm5.org as this site is no longer
-> available.
-> Do you have any suggestions?
-> Thanks.
->
-> Daniel
->
-> Am Mi., 31. Juli 2019 um 10:22 Uhr schrieb Josef Holzmayr <
-> holzmayr@rsi-elektrotechnik.de>:
->
->> On Wed, Jul 31, 2019 at 09:59:41AM +0200, danwe wrote:
->> > Thanks for the setup. Sorry for asking but as I am new to that topic I
->> > don't understand how to use that site u sent me. Do I have to download
->> > Xenomai 3 first and then copy/paste the files on your site? I don't
->> really
->> > understand the readme file.
->> > For example: In the readme file I see the following:
->> >
->> >
->> >
->> > After adding meta-core and a BSP layer (right now there's only
->> meta-beaglebone
->> > available, so probably that one!), build the xenomai-test-image.
->> >
->> >
->> > So now I ask myself. Where should I add meta-core and meta-beaglebone =
-to
->> > and how can I build the xenomai-test-image then?
->> > I don't understand the dependencies.
->>
->> Its a completely generic OpenEmbedded build setup. If you're not used to
->> doing so, just go to readme item IV: Using kas. Then it essentially
->> boils down to the three commands given there verbatim, just needing
->> docker to be available as well as quite some HD space and CPU cycles.
->>
->> >
->> > Thanks.
->> >
->> > Daniel
->> >
->> > Am Mi., 31. Juli 2019 um 09:01 Uhr schrieb Josef Holzmayr <
->> > holzmayr@rsi-elektrotechnik.de>:
->> >
->> > > On Wed, Jul 31, 2019 at 08:50:18AM +0200, danwe via Xenomai wrote:
->> > > > Thanks for your response. Maybe it was a bit unclear from my side:
->> > > > I need to build the Kernel and Xenomai 3. So I do neither want to
->> build
->> > > the
->> > > > kernel and userland tools on top of an existing image nor building
->> > > anything
->> > > > on top. Or what do you mean by building on top? Is there anything
->> > > "deeper"
->> > > > than a Kernel?
->> > > > And again: Does building a Kernel with Xenomai 3 depends on the
->> paltform
->> > > I
->> > > > want to use it on? I need to use it on a BeagleBone Black. Do I
->> have to
->> > > > change anything for use it on BBB?
->> > > > Thanks.
->> > >
->> > > You could use the setup I employ for doing the CIP kernel tests. All
->> > > nicely prepared for Xenomai 3 and BBB, only thing you'd have to swap
->> out
->> > > is the kernel itself which is not too complicated.
->> > >
->> > > https://github.com/LetoThe2nd/meta-xenomai
->>
->> Greetz
->>
->> --
->> =E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=
-=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94
->> Josef Holzmayr
->> Software Developer Embedded Systems
->>
->> Tel: +49 8444 9204-48
->> Fax: +49 8444 9204-50
->>
->> R-S-I Elektrotechnik GmbH & Co. KG
->> Woelkestrasse 11
->> D-85301 Schweitenkirchen
->> www.rsi-elektrotechnik.de
->> =E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=
-=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94
->> Amtsgericht Ingolstadt =E2=80=93 GmbH: HRB 191328 =E2=80=93 KG: HRA 1703=
-93
->> Gesch=C3=A4ftsf=C3=BChrer: Dr.-Ing. Michael Sorg, Dipl.-Ing. Franz Sorg
->> Ust-IdNr: DE 128592548
->>
->> _____________________________________________________________
->> Amtsgericht Ingolstadt - GmbH: HRB 191328 - KG: HRA 170363
->> Gesch=C3=A4ftsf=C3=BChrer: Dr.-Ing. Michael Sorg, Dipl.-Ing. Franz Sorg
->> USt-IdNr.: DE 128592548
->>
->>
