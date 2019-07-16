@@ -1,11 +1,13 @@
+Subject: Re: rt_mutex_acquire() does not return EINTR upon rt_task_unblock()
+References: <CAFLxGvw7QBucCM47XXq2RJe1YtQ_wuGVrNg8ZPkUSmXYB04HHg@mail.gmail.com>
 From: Jan Kiszka <jan.kiszka@siemens.com>
-Subject: [PATCH v2 3/6] ipipe: Add missing include for ipipe_root_only
-Date: Thu, 11 Jul 2019 21:56:14 +0200
-Message-Id: <bb8f4fd8da4befa9cfb96178891ddae4f40e31c7.1562874977.git.jan.kiszka@siemens.com>
-In-Reply-To: <cover.1562874977.git.jan.kiszka@siemens.com>
-References: <cover.1562874977.git.jan.kiszka@siemens.com>
-In-Reply-To: <cover.1562874977.git.jan.kiszka@siemens.com>
-References: <cover.1562874977.git.jan.kiszka@siemens.com>
+Message-ID: <5059c077-395b-6d84-18e5-618de941c64f@siemens.com>
+Date: Tue, 16 Jul 2019 09:46:41 +0900
+MIME-Version: 1.0
+In-Reply-To: <CAFLxGvw7QBucCM47XXq2RJe1YtQ_wuGVrNg8ZPkUSmXYB04HHg@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -14,32 +16,40 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Philippe Gerum <rpm@xenomai.org>
-Cc: xenomai@xenomai.org
+To: Richard Weinberger <richard.weinberger@gmail.com>, xenomai@xenomai.org, Philippe Gerum <rpm@xenomai.org>
 
-From: Jan Kiszka <jan.kiszka@siemens.com>
+On 15.07.19 23:30, Richard Weinberger via Xenomai wrote:
+> Hi!
+> 
+> Sorry for asking so many questions on RT_MUTEX.
+> 
+> Docs on rt_mutex_acquire variants state:
+> -EINTR is returned if rt_task_unblock() was called for the current task.
+> 
+> This does not seems to be the case, pthread_mutex_lock() in lib/cobalt/mutex.c
+> does:
+>         do
+>                 ret = XENOMAI_SYSCALL1(sc_cobalt_mutex_lock, _mutex);
+>         while (ret == -EINTR);
+> 
+> So, upon rt_task_unblock() the while loop does one more iteration but
+> blocks again
+> and the function will never return with -EINTR.
 
-Breaks in non-debug builds otherwise, e.g.
-https://travis-ci.com/xenomai-ci/xenomai/jobs/212725223
+Apparently, we lost that property when porting alchemy over the cobalt core. I'd
+first like to understand if that was accidental or intentional - Philippe?
 
-Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
----
- include/linux/kernel.h | 1 +
- 1 file changed, 1 insertion(+)
+> 
+> I guess the recommenced approach is posting a signal to a task before calling
+> rt_task_unblock()? Then the task can exit in a more or less controlled way.
+> 
 
-diff --git a/include/linux/kernel.h b/include/linux/kernel.h
-index 50b1e0c878e0..edd37052e585 100644
---- a/include/linux/kernel.h
-+++ b/include/linux/kernel.h
-@@ -14,6 +14,7 @@
- #include <linux/printk.h>
- #include <linux/build_bug.h>
- #include <asm/byteorder.h>
-+#include <asm-generic/ipipe.h>
- #include <uapi/linux/kernel.h>
- 
- #define USHRT_MAX	((u16)(~0U))
+Signals are hairy and non-RT. If such a workaround fits depends on your use
+case. Maybe you can describe that in more details.
+
+Jan
+
 -- 
-2.16.4
-
+Siemens AG, Corporate Technology, CT RDA IOT SES-DE
+Corporate Competence Center Embedded Linux
 
