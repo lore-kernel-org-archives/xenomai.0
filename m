@@ -1,10 +1,11 @@
-Subject: Re: Asynchronous notify?
-References: <CAFLxGvwmtY6MD1LLJ9PbjXOp9a_7nNnVRCOKRkJQ1VA-d_QM2Q@mail.gmail.com>
+Subject: Re: rt_mutex_acquire() does not return EINTR upon rt_task_unblock()
+References: <CAFLxGvw7QBucCM47XXq2RJe1YtQ_wuGVrNg8ZPkUSmXYB04HHg@mail.gmail.com>
+ <5059c077-395b-6d84-18e5-618de941c64f@siemens.com>
 From: Philippe Gerum <rpm@xenomai.org>
-Message-ID: <baae67c1-504e-410a-54c7-09b20edac153@xenomai.org>
-Date: Sat, 20 Jul 2019 21:45:00 +0200
+Message-ID: <81ec6d6d-fb0c-b6d4-fce0-a79263289b6c@xenomai.org>
+Date: Sun, 21 Jul 2019 17:42:41 +0200
 MIME-Version: 1.0
-In-Reply-To: <CAFLxGvwmtY6MD1LLJ9PbjXOp9a_7nNnVRCOKRkJQ1VA-d_QM2Q@mail.gmail.com>
+In-Reply-To: <5059c077-395b-6d84-18e5-618de941c64f@siemens.com>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -16,59 +17,42 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Richard Weinberger <richard.weinberger@gmail.com>, xenomai@xenomai.org
+To: Jan Kiszka <jan.kiszka@siemens.com>, Richard Weinberger <richard.weinberger@gmail.com>, xenomai@xenomai.org
 
-On 7/19/19 12:26 PM, Richard Weinberger via Xenomai wrote:
-> Hi!
+On 7/16/19 2:46 AM, Jan Kiszka wrote:
+> On 15.07.19 23:30, Richard Weinberger via Xenomai wrote:
+>> Hi!
+>>
+>> Sorry for asking so many questions on RT_MUTEX.
+>>
+>> Docs on rt_mutex_acquire variants state:
+>> -EINTR is returned if rt_task_unblock() was called for the current task.
+>>
+>> This does not seems to be the case, pthread_mutex_lock() in lib/cobalt/mutex.c
+>> does:
+>>         do
+>>                 ret = XENOMAI_SYSCALL1(sc_cobalt_mutex_lock, _mutex);
+>>         while (ret == -EINTR);
+>>
+>> So, upon rt_task_unblock() the while loop does one more iteration but
+>> blocks again
+>> and the function will never return with -EINTR.
 > 
-> Is there a way in Xenomai 3 to have a signal alike notification?
-
-Yes, but not async. Only the sigwait*() interface is available (async
-notification does not mix well with requirement for deterministic
-behavior of rt code, it's even worse when it comes to POSIX signal
-semantics).
-
-> 
-> The Xenomai 2 code base I work on needs a way to get exceptions such
-> as #DB and #BP
-> delivered to a RT_TASK in real time context.
-
-#DB and #BP should cause a switch to secondary mode for the receiving
-task. Is this mechanism a way to handle this directly from primary mode?
-
-> For Xenomai 2 they implemented a subset of regular RT-signals which
-> work in real time context.
-> So the RT_TASK could register a signal handler for #DB on x86.
-> 
-> Before I start porting this feature to Xenomai 3 (I'll happily publish
-> these patches) I want
-> to sort out whether this can be achieved with stock features or
-> minimal adoptions.
+> Apparently, we lost that property when porting alchemy over the cobalt core. I'd
+> first like to understand if that was accidental or intentional - Philippe?
 > 
 
-Duplicating the signal trampoline stuff for the purpose of delivering
-signals from primary mode directly from the receiving context is likely
-to be ugly. Another option would be to do that on return from the
-syscall trampoline, but this would require arch-dependent code in the
-fast path, which would not be pretty either.
+That was kind of required, since the whole API was rebased on a
+POSIX-compliant layer, which imposes this behavior per the standard.
 
-FWIW, here is the way I would convert any trap to a POSIX signal the
-cobalt API could deliver via the existing sigwait interface, in order to
-enable some kind of health monitoring thread:
+A non-portable escape way could be implemented by adding a dedicated
+XNUNBLOCK information flag that could be tested directly from the
+user_window. That bit would be set by xnthread_unblock(). If present,
+the loop above would be stopped.
 
-- I would divert one of the legit POSIX signals (1 ... _NSIG) for
-conveying such information (SIGUSRx?).
-
-- in handle_exception() (posix/process.c), I would emit that signal via
-the __cobalt_sigqueue() interface, using sigval to carry the trap code
-(e.g. #DB). Siginfo's si_pid would be automatically set there to the
-faulting process pid.
-
-This would implement a group-targeted signal, which means that any
-thread waiting for that event would receive it, along with the fault
-code. Otherwise, the event would be queued until some thread eventually
-issues sigwait() for it (e.g. the HM thread returning from a previous
-signal handling).
+>From a user POV, kicking a thread out of pthread_mutex_lock() would
+amount to sending it the SIGRELS pseudo-signal via pthread_kill(), which
+rt_task_unblock() already does under the hood.
 
 -- 
 Philippe.
