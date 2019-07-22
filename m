@@ -1,15 +1,9 @@
-Subject: Re: [PATCH v2 1/1] cobalt/rtdm: allow for device teardown
-References: <20190621094922.17558-1-rpm@xenomai.org>
- <20190621094922.17558-2-rpm@xenomai.org>
- <5b247b68-11b9-2ad3-a0a5-ac69f09b9e22@siemens.com>
-From: Philippe Gerum <rpm@xenomai.org>
-Message-ID: <097e66df-a550-d39b-080e-d30660a17281@xenomai.org>
-Date: Sun, 21 Jul 2019 17:57:00 +0200
 MIME-Version: 1.0
-In-Reply-To: <5b247b68-11b9-2ad3-a0a5-ac69f09b9e22@siemens.com>
-Content-Type: text/plain; charset="utf-8"
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+From: danwe <daniel.wenninger92@gmail.com>
+Date: Mon, 22 Jul 2019 17:58:40 +0200
+Message-ID: <CAEmXcAwXBxZp9KcRyMs9J08nLKnwkYn13BuWPKTZ-pb6m95chg@mail.gmail.com>
+Subject: TDMA with RTnet on Xenomai
+Content-Type: text/plain; charset="UTF-8"
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -18,42 +12,33 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jan Kiszka <jan.kiszka@siemens.com>, xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-On 7/4/19 12:11 PM, Jan Kiszka wrote:
-> On 21.06.19 11:49, Philippe Gerum via Xenomai wrote:
->> @@ -534,6 +536,8 @@ EXPORT_SYMBOL_GPL(rtdm_dev_register);
->>   void rtdm_dev_unregister(struct rtdm_device *dev)
->>   {
->>       struct rtdm_driver *drv = dev->driver;
->> +    struct rtdm_fd *fd, *n;
->> +    spl_t s;
->>         secondary_mode_only();
->>   @@ -542,6 +546,19 @@ void rtdm_dev_unregister(struct rtdm_device *dev)
->>       /* Lock out any further connection. */
->>       dev->magic = ~RTDM_DEVICE_MAGIC;
->>   +    xnlock_get_irqsave(&nklock, s);
->> +    list_for_each_entry_safe(fd, n, &dev->openfd_list, next) {
-> 
-> Is this really safe?
+Hi,
 
-No, that's not.
+I have Xenomai 2 with RTnet on a BeagleBone Black. I ask myself how  I
+can run TDMA on BeagleBone Black? Programs like RTping and Roundtrip
+program are working.
 
-> What if two teardowns run in parallel or, for some
-> other reason, the next saved in n here become invalid while dropping the
-> lock for close? It's probably better to always delete the first element
-> and repeat that until the list is empty.
->
+I have changed the rtnet.conf file so that it will use TDMA.conf file.
+In TDMA.conf all parameters like IP-address, clock cycle and slottime
+are determined.
+In rtnet file I saw some drivers like rtmac. Do I have to load that
+driver for using TDMA as it is not loaded yet? Are there any other
+drivers beside rtudp, rtipv4, rtpacket, rt_ticpsw, rt_davinci_mdio,
+rt_smsc, rtnet and omap_rng which need to be loaded?
 
-Yes, we should be protected against live-locking since no other fd can
-be attached to the device at this point.
+And now I ask myself how can I run TDMA? Is it just using the IPs
+(which are written in your TDMA.conf file) for your microcomputer, and
+that's it?
+If TDMA will work, do I see any output of my communication cycle or
+anything that shows that TDMA is running? At the moment I don't see anything.
+What else do I have to change in rtnet.conf? I have just changed the
+very last line for using TDMA.conf file and I have changed TDMA_MODE
+to master for my master BBB and to slave for my slave BBB.
 
-> 
-> Except for the list iteration, this looks good.
-> 
+So just the short question: What to do to use TDMA?
 
-Patch v3 will follow.
+Kind Regards
 
--- 
-Philippe.
-
+Daniel
