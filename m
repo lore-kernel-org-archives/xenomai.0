@@ -1,15 +1,13 @@
-Date: Mon, 22 Jul 2019 20:37:17 +0200 (CEST)
-From: g.strobbe@telenet.be
-Message-ID: <1064113142.297445052.1563820637178.JavaMail.zimbra@telenet.be>
-In-Reply-To: <8f478c37-620a-8f3a-5a2b-8b064127bd72@siemens.com>
-References: <1852590607.83031740.1561824852049.JavaMail.zimbra@telenet.be>
- <1cda53e1-323a-add9-0a21-d6b843fb21c5@siemens.com>
- <1481907847.150013779.1562404344423.JavaMail.zimbra@telenet.be>
- <8f478c37-620a-8f3a-5a2b-8b064127bd72@siemens.com>
-Subject: Re: [PATCH] rtnet: Porting e1000e from mainline 4.14.128
+Subject: Re: TDMA with RTnet on Xenomai
+References: <CAEmXcAwXBxZp9KcRyMs9J08nLKnwkYn13BuWPKTZ-pb6m95chg@mail.gmail.com>
+From: Jan Kiszka <jan.kiszka@siemens.com>
+Message-ID: <b88d839c-eb9f-8712-eb47-5a5fc12cbf17@siemens.com>
+Date: Tue, 23 Jul 2019 12:14:03 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+In-Reply-To: <CAEmXcAwXBxZp9KcRyMs9J08nLKnwkYn13BuWPKTZ-pb6m95chg@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -18,75 +16,62 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jan Kiszka <jan.kiszka@siemens.com>
-Cc: xenomai <xenomai@xenomai.org>
+To: danwe <daniel.wenninger92@gmail.com>, xenomai@xenomai.org
 
-CgotLS0tLSBPbiBKdWwgOCwgMjAxOSwgYXQgNTo0MyBQTSwgSmFuIEtpc3prYSBqYW4ua2lzemth
-QHNpZW1lbnMuY29tIHdyb3RlOgoKPiBPbiAwNi4wNy4xOSAxMToxMiwgZy5zdHJvYmJlQHRlbGVu
-ZXQuYmUgd3JvdGU6Cj4+IAo+PiAKPj4gLS0tLS0gT24gSnVsIDIsIDIwMTksIGF0IDQ6MDggUE0s
-IEphbiBLaXN6a2EgamFuLmtpc3prYUBzaWVtZW5zLmNvbSB3cm90ZToKPj4gCj4+PiBPbiAyOS4w
-Ni4xOSAxODoxNCwgRy5TdHJvYmJlIHZpYSBYZW5vbWFpIHdyb3RlOgo+Pj4+IEhpLAo+Pj4+Cj4+
-Pj4gSSBwb3J0ZWQgdGhlIGUxMDAwZSBkcml2ZXIgZnJvbSBsaW51eC00LjE0LjEyOCB0byB0aGUg
-WGVub21haSBuZXh0IGJyYW5jaC4KPj4+PiBJdCBydW5zIG5pY2Ugb24gbXkgc2V0dXAsIGFuIElu
-dGVsIE5VQyBpMyB3aXRoIGFuIEludGVsIEkyMTktViBFdGhlcm5ldAo+Pj4+IENvbnRyb2xsZXIg
-d2lyZWQgdG8gYSBCZWNraG9mZiBJTyBpc2xhbmQuCj4+Pgo+Pj4gVGhhbmtzIGZvciB1cGRhdGlu
-ZyEKPj4gCj4+IE15IHBsZWFzdXJlLiAgSSBsZWFybmVkIGxvdHMgb2YgdGhpbmdzIG5ldyB0byBt
-ZSBhbG9uZyB0aGUgd2F5Lgo+PiAKPj4+Cj4+Pj4KPj4+PiBJZiBzb21lb25lIGVsc2Ugd2FudHMg
-dG8gZ2l2ZSB0aGUgZHJpdmVyIGEgdHJ5LCBwbGVhc2UgZmluZCBhdHRhY2hlZCB0aGUKPj4+PiBw
-YXRjaGVzLgo+Pj4+Cj4+Pj4gVGhleSBhcHBsaWVkIGJvdGggY2xlYW4gdG8gdGhlIG1hc3RlciBh
-cyB3ZWxsIGFzIHRoZSBuZXh0IGJyYW5jaC4KPj4+Pgo+Pj4+IEJlc3QgUmVnYXJkcywKPj4+Pgo+
-Pj4+IEdpbm8KPj4+PiAtLS0tLS0tLS0tLS0tLSBuZXh0IHBhcnQgLS0tLS0tLS0tLS0tLS0KPj4+
-PiBBIG5vbi10ZXh0IGF0dGFjaG1lbnQgd2FzIHNjcnViYmVkLi4uCj4+Pj4gTmFtZTogMDAwMS1Q
-cm92aWRpbmctcnRuZXRkZXZfYWxsb2NfcnRza2JfaXBfYWxpZ24ucGF0Y2gKPj4+PiBUeXBlOiB0
-ZXh0L3gtcGF0Y2gKPj4+PiBTaXplOiAzMTM5IGJ5dGVzCj4+Pj4gRGVzYzogbm90IGF2YWlsYWJs
-ZQo+Pj4+IFVSTDoKPj4+PiA8aHR0cDovL3hlbm9tYWkub3JnL3BpcGVybWFpbC94ZW5vbWFpL2F0
-dGFjaG1lbnRzLzIwMTkwNjI5LzBhODIwZWY3L2F0dGFjaG1lbnQuYmluPgo+Pj4KPj4+IExpZnRp
-bmcgaW5saW5lOgo+Pj4KPj4+PiArc3RhdGljIGlubGluZSBzdHJ1Y3QgcnRza2IgKnJ0bmV0ZGV2
-X2FsbG9jX3J0c2tiX2lwX2FsaWduKHN0cnVjdCBydG5ldF9kZXZpY2UKPj4+PiAqcnRkZXYsCj4+
-Pj4gKwkJdW5zaWduZWQgaW50IGxlbmd0aCwgZ2ZwX3QgZ2ZwKQo+Pj4+ICt7Cj4+Pj4gKwlzdHJ1
-Y3QgcnRza2IgKnJ0c2tiID0gcnRuZXRkZXZfYWxsb2NfcnRza2IocnRkZXYsIGxlbmd0aCArIE5F
-VF9JUF9BTElHTik7Cj4+Pj4gKwo+Pj4+ICsJaWYgKE5FVF9JUF9BTElHTiAmJiBydHNrYikKPj4+
-PiArCQlydHNrYl9yZXNlcnZlKHJ0c2tiLCBORVRfSVBfQUxJR04pOwo+Pj4+ICsJcmV0dXJuIHJ0
-c2tiOwo+Pj4+ICt9Cj4+Pgo+Pj4gVGhpcyBzaG91bGQgcHJvYmFibHkgYmVjb21lIGEgbm9uLWlu
-bGluZSBzZXJ2aWNlIGluIHJ0ZGV2LmMuCj4+IAo+PiBJIHdpbGwgZ2l2ZSB0aGF0IGEgdHJ5LgoK
-RG9uZSwgcGxlYXNlIGZpbmQgaXQgYXR0YWNoZWQuCgo+PiAKPj4+Cj4+PiBFdmVudHVhbGx5LCBp
-dCB3b3VsZCBiZSBnb29kIHRvIGNsZWFuIHVwIGV4aXN0aW5nIHVzZXJzIG9mIHRoaXMgcGF0dGVy
-biBhcyB3ZWxsLgo+PiAKPj4gWW91IG1lYW4gb3RoZXIgZHJpdmVycz8KPiAKPiBZZXMuIE1vcmUg
-bmljZS10by1oYXZlLCB0aG91Z2guCj4gCj4+IAo+Pj4KPj4+PiAtLS0tLS0tLS0tLS0tLSBuZXh0
-IHBhcnQgLS0tLS0tLS0tLS0tLS0KPj4+PiBBIG5vbi10ZXh0IGF0dGFjaG1lbnQgd2FzIHNjcnVi
-YmVkLi4uCj4+Pj4gTmFtZTogMDAwMS1ydG5ldC1Qb3J0aW5nLWUxMDAwZS1mcm9tLW1haW5saW5l
-LTQuMTQuMTI4LnBhdGNoCj4+Pj4gVHlwZTogdGV4dC94LXBhdGNoCj4+Pj4gU2l6ZTogODIzOTAz
-IGJ5dGVzCj4+Pj4gRGVzYzogbm90IGF2YWlsYWJsZQo+Pj4+IFVSTDoKPj4+PiA8aHR0cDovL3hl
-bm9tYWkub3JnL3BpcGVybWFpbC94ZW5vbWFpL2F0dGFjaG1lbnRzLzIwMTkwNjI5LzBhODIwZWY3
-L2F0dGFjaG1lbnQtMDAwMS5iaW4+Cj4+Pj4KPj4+Cj4+PiBXaGF0IHdhcyB0aGUgcmVhc29uIGZv
-ciBwaWNraW5nIDQuMTQgYXMgYmFzZWxpbmU/Cj4+IAo+PiBObyBwYXJ0aWN1bGFyIHJlYXNvbi4K
-Pj4gQXMgbG9uZyBhcyBJIGRpZCBub3QgaGF2ZSBidWlsZCBwcm9ibGVtcyBJIGFsd2F5cyB1c2Vk
-IHRoZSBsYXRlc3Qgbm9uIHdpcCBtYXJrZWQKPj4gaXBpcGUgcGF0Y2ggd2hlbiB3b3JraW5nIG9u
-IHRoZSBkcml2ZXIuCj4+IFdoZW4gSSB0aG91Z2h0IGl0IHdhcyBpbiBhIHN0YXRlIHRvIG9mZmVy
-IGl0IHRvIG90aGVycyB0byB0cnkgaXQsIEkgaGFwcGVuZWQgdG8KPj4gYmUgb24gNC4xNAo+PiAK
-Pj4+IERpZCB5b3UgY2hlY2sgaWYgb2xkZXIgKG1pbmltdW0gd291bGQgYmUgNC40Likgb3IgbmV3
-ZXIga2VybmVscyAoNC4xOSBBVE0pIGJ1aWxkCj4+PiBhcyB3ZWxsPwo+PiAKPj4gSSBqdXN0IGNo
-ZWNrZWQgNC40LnktY2lwLCA0LjkueSBhbmQgNC4xOS55Cj4+IE5vbmUgb2YgdGhlbSBidWlsZCBi
-dXQgbm90aGluZyBsb29rcyBjb21wbGljYXRlZCB0byBzb2x2ZS4KPj4gCj4+IFNvIHlvdSBhY3R1
-YWxseSB3b3VsZCBwcmVmZXIgdG9vIHNlZSB0aGUgYmlnIHBhdGNoIGFwcGxpYWJsZSB0byA0LjQu
-eS1jaXAgYW5kCj4+IHRoZW4gc21hbGxlciBwYXRjaGVzIGFzIG5lZWRlZCBtb3ZpbmcgdG93YXJk
-cyA0LjE5Lnk/Cj4+IAo+IAo+IEkgbWVhbiwgaWYgeW91IHdhbnQgeW91ciB1cGRhdGVkIGRyaXZl
-ciB0byBiZWNvbWUgWGVub21haSBtYWlubGluZSwgd2Ugd291bGQKPiBuZWVkIGl0IHRvIGJ1aWxk
-IGFnYWluc3QgdGhvc2Uga2VybmVscyBhcyB3ZWxsLiBJdCBuZWVkcyB0byBiZSBiYWNrLSBhbmQK
-PiBmb3J3YXJkLWNvbXBhdGlibGUgd2hlbiBsaXZpbmcgaW4gdGhlIFhlbm9tYWkgdHJlZS4KPiAK
-PiBKYW4KPiAKPiAtLQo+IFNpZW1lbnMgQUcsIENvcnBvcmF0ZSBUZWNobm9sb2d5LCBDVCBSREEg
-SU9UIFNFUy1ERQo+IENvcnBvcmF0ZSBDb21wZXRlbmNlIENlbnRlciBFbWJlZGRlZCBMaW51eAoK
-VGhlIGF0dGFjaGVkIHJldmlzZWQgcGF0Y2hlcyBidWlsZCBhZ2FpbnN0IDQuNCwgNC45LCA0LjE0
-IGFuZCA0LjE5CkkgdGVzdGVkIHRoZSBkcml2ZXIgd2l0aCB0aGUgWGVub21haSBuZXh0IGJyYW5j
-aCBvbiBhbGwgNCBrZXJuZWxzIGFuZCBhbGwgcnVucyB3aXRoIG15IHNldHVwLgoKR2lubwotLS0t
-LS0tLS0tLS0tLSBuZXh0IHBhcnQgLS0tLS0tLS0tLS0tLS0KQSBub24tdGV4dCBhdHRhY2htZW50
-IHdhcyBzY3J1YmJlZC4uLgpOYW1lOiAwMDAxLXJ0bmV0LVBvcnRpbmctZTEwMDBlLWZyb20tbWFp
-bmxpbmUtNC4xOS41Ny5wYXRjaApUeXBlOiB0ZXh0L3gtcGF0Y2gKU2l6ZTogODA4NjA0IGJ5dGVz
-CkRlc2M6IG5vdCBhdmFpbGFibGUKVVJMOiA8aHR0cDovL3hlbm9tYWkub3JnL3BpcGVybWFpbC94
-ZW5vbWFpL2F0dGFjaG1lbnRzLzIwMTkwNzIyLzc2MTY0MWI0L2F0dGFjaG1lbnQuYmluPgotLS0t
-LS0tLS0tLS0tLSBuZXh0IHBhcnQgLS0tLS0tLS0tLS0tLS0KQSBub24tdGV4dCBhdHRhY2htZW50
-IHdhcyBzY3J1YmJlZC4uLgpOYW1lOiAwMDAxLXJ0bmV0LVByb3ZpZGluZy1ydG5ldGRldl9hbGxv
-Y19ydHNrYl9pcF9hbGlnbi5wYXRjaApUeXBlOiB0ZXh0L3gtcGF0Y2gKU2l6ZTogMzc3MiBieXRl
-cwpEZXNjOiBub3QgYXZhaWxhYmxlClVSTDogPGh0dHA6Ly94ZW5vbWFpLm9yZy9waXBlcm1haWwv
-eGVub21haS9hdHRhY2htZW50cy8yMDE5MDcyMi83NjE2NDFiNC9hdHRhY2htZW50LTAwMDEuYmlu
-Pgo=
+On 22.07.19 17:58, danwe via Xenomai wrote:
+> Hi,
+> 
+> I have Xenomai 2 with RTnet on a BeagleBone Black. I ask myself how  I
+
+I cannot tell you in advance if my answers applied to version 2 as well,
+probably, but no one is working on that anymore.
+
+> can run TDMA on BeagleBone Black? Programs like RTping and Roundtrip
+> program are working.
+> 
+> I have changed the rtnet.conf file so that it will use TDMA.conf file.
+> In TDMA.conf all parameters like IP-address, clock cycle and slottime
+> are determined.
+> In rtnet file I saw some drivers like rtmac. Do I have to load that
+> driver for using TDMA as it is not loaded yet? Are there any other
+> drivers beside rtudp, rtipv4, rtpacket, rt_ticpsw, rt_davinci_mdio,
+> rt_smsc, rtnet and omap_rng which need to be loaded?
+
+The RTnet startup scripts should load all necessary stack components for you.
+rtmac.ko belongs to them, tdma.ko will not load without it. In addition, the
+scripts will load rtcfg in order to distribute the IP and TDMA configuration
+from the master to the slaves.
+
+> 
+> And now I ask myself how can I run TDMA? Is it just using the IPs
+> (which are written in your TDMA.conf file) for your microcomputer, and
+> that's it?
+
+Try the rtnet start scripts. They set up a TDMA network according to the conf
+file. One node should be configured to be master, another as slave.
+
+> If TDMA will work, do I see any output of my communication cycle or
+> anything that shows that TDMA is running? At the moment I don't see anything.
+
+A basic test is rtping: If you can ping the other RTnet station, connections
+works. If you see a suspicious jitter of the ping delay that is between one and
+two times the TMDA cycle time, also that works.
+
+> What else do I have to change in rtnet.conf? I have just changed the
+> very last line for using TDMA.conf file and I have changed TDMA_MODE
+> to master for my master BBB and to slave for my slave BBB.
+> 
+> So just the short question: What to do to use TDMA?
+> 
+
+rtnet.conf is documented. If anything concrete remains unclear from reading
+that, please let us know. Also study the help of the rtnet start script.
+
+Did you check that raw (RTmac-free) RTnet works fine (rtping)?
+
+Jan
+
+-- 
+Siemens AG, Corporate Technology, CT RDA IOT SES-DE
+Corporate Competence Center Embedded Linux
+
