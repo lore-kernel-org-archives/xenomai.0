@@ -1,14 +1,14 @@
-Subject: Re: [PATCH 2/2] alchemy/mutex: Fix typo in comment
-References: <20190710214612.27506-1-richard@nod.at>
- <20190710214612.27506-2-richard@nod.at>
-From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <57fc51ff-d29d-2acb-d7a9-e5cfde319a22@siemens.com>
-Date: Fri, 12 Jul 2019 12:16:55 +0200
+From: Johann Obermayr <johann.obermayr@sigmatek.at>
+Subject: AW: Xenomai 2.6.4 + ipipe to xenomai 3.x
+Date: Thu, 25 Jul 2019 11:47:23 +0000
+Message-ID: <VI1PR08MB33757421FEE5C14DA49108C1F5C10@VI1PR08MB3375.eurprd08.prod.outlook.com>
+References: <VI1PR08MB3375EF5789AC530E75E08E07F5C10@VI1PR08MB3375.eurprd08.prod.outlook.com>
+ <2157756a-02a1-6266-4ce6-1c73103d3ad0@xenomai.org>
+In-Reply-To: <2157756a-02a1-6266-4ce6-1c73103d3ad0@xenomai.org>
+Content-Language: de-DE
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-In-Reply-To: <20190710214612.27506-2-richard@nod.at>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,36 +17,56 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Richard Weinberger <richard@nod.at>, xenomai@xenomai.org
+To: Philippe Gerum <rpm@xenomai.org>, "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On 10.07.19 23:46, Richard Weinberger via Xenomai wrote:
-> s/rt_mutex_acquite/rt_mutex_acquire
-> 
-> Signed-off-by: Richard Weinberger <richard@nod.at>
-> ---
->  lib/alchemy/mutex.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/lib/alchemy/mutex.c b/lib/alchemy/mutex.c
-> index ffdc2dbea323..42cd1375b34b 100644
-> --- a/lib/alchemy/mutex.c
-> +++ b/lib/alchemy/mutex.c
-> @@ -182,7 +182,7 @@ out:
->   *
->   * - -EBUSY is returned upon an attempt to destroy the object
->   * referenced by @a mutex while it is referenced (for example, while
-> - * being used in a rt_mutex_acquite(), rt_mutex_acquire_timed() or
-> + * being used in a rt_mutex_acquire(), rt_mutex_acquire_timed() or
->   * rt_mutex_acquire_until() by another task).
->   *
->   * @apitags{mode-unrestricted, switch-secondary}
-> 
-
-Thanks, both applied to next. Will go to stable as well.
-
-Jan
-
--- 
-Siemens AG, Corporate Technology, CT RDA IOT SES-DE
-Corporate Competence Center Embedded Linux
+PiAtLS0tLVVyc3Byw7xuZ2xpY2hlIE5hY2hyaWNodC0tLS0tDQo+IFZvbjogUGhpbGlwcGUgR2Vy
+dW0gPHJwbUB4ZW5vbWFpLm9yZz4NCj4gR2VzZW5kZXQ6IERvbm5lcnN0YWcsIDI1LiBKdWxpIDIw
+MTkgMTM6NDQNCj4gQW46IEpvaGFubiBPYmVybWF5ciA8am9oYW5uLm9iZXJtYXlyQHNpZ21hdGVr
+LmF0PjsNCj4geGVub21haUB4ZW5vbWFpLm9yZw0KPiBCZXRyZWZmOiBSZTogWGVub21haSAyLjYu
+NCArIGlwaXBlIHRvIHhlbm9tYWkgMy54DQo+IA0KPiBPbiA3LzI1LzE5IDEyOjQxIFBNLCBKb2hh
+bm4gT2Jlcm1heXIgdmlhIFhlbm9tYWkgd3JvdGU6DQo+ID4gSGVsbG8sDQo+ID4NCj4gPiBXZSBh
+cmUgbm93IG1pZ3JhdGUgZnJvbSBYZW5vbWFpIDIuNi40ICsgS2VybmVsIDMuMTAuNTMgdG8gWGVu
+b21haSAzLnggKw0KPiBLZXJuZWwgNC4xNC44OSAoODgpLg0KPiA+DQo+ID4gTm93IEkgaGF2ZSBm
+b3VuZCBmb2xsb3cgY29tbWl0IGluIHRoZSBvbGQga2VybmVsICsgaXBpcGUNCj4gPg0KPiA+ICog
+aXBpcGUvYXJtOiBmaXggc3lzdGVtIGxvY2t1cCBvbiByZWJvb3QNCj4gPg0KPiA+IFRoaXMgZml4
+ZXMgdGhlIHByb2JsZW0gb2YgdGhlIHN5c3RlbSBiZWluZyBzdHVjayBpbiBhbiBpbmZpbml0ZSBs
+b29wDQo+ID4gYXQgTERSRVgvU1RSRVggYXQgdGhlIGxhdGUgc3RhZ2Ugb2YgdGhlIHJlYm9vdCBz
+ZXF1ZW5jZS4NCj4gPg0KPiA+IEF0IHRoaXMgc3RhZ2UgdGhlIG1tdSBpcyBzZXQgaW50byBhIHN0
+YXRlIHNvIHRoYXQgc29mdCBib290IHdvcmtzLCBidXQNCj4gPiBjYXVzaW5nIGEgTERSRVgvU1RS
+RVggbG9vcCB0byBmYWlsLiBTbyB3ZSBoYXZlIHRvIGFsc28gZGlzYWJsZSBYZW5vbWFpDQo+IGlu
+dGVycnVwdHMuDQo+ID4NCj4gPiBUaGUgbG9jYWxfaXJxX2Rpc2FibGUoKSBpcyBjaGFuZ2VkIGZv
+ciBoYXJkX2xvY2FsX2lycV9kaXNhYmxlKCkgdG8NCj4gPiBzd2l0Y2ggb2ZmIGFsbCBpcnEncy4N
+Cj4gPg0KPiA+IGFyY2gvYXJtL2tlcm5lbC9wcm9jZXNzLmMgfCAxMyArKysrKysrKysrKysrDQo+
+ID4gMSBmaWxlIGNoYW5nZWQsIDEzIGluc2VydGlvbnMoKykNCj4gPg0KPiA+IGRpZmYgLS1naXQg
+YS9hcmNoL2FybS9rZXJuZWwvcHJvY2Vzcy5jIGIvYXJjaC9hcm0va2VybmVsL3Byb2Nlc3MuYw0K
+PiA+IGluZGV4IDA3MDdkMDA0YWM3OS4uMGU3MjVjNzZhNzc3IDEwMDY0NA0KPiA+IC0tLSBhL2Fy
+Y2gvYXJtL2tlcm5lbC9wcm9jZXNzLmMNCj4gPiArKysgYi9hcmNoL2FybS9rZXJuZWwvcHJvY2Vz
+cy5jDQo+ID4gQEAgLTk4LDggKzk4LDEzIEBAIHZvaWQgc29mdF9yZXN0YXJ0KHVuc2lnbmVkIGxv
+bmcgYWRkcikNCj4gPiAgICAgICB1NjQgKnN0YWNrID0gc29mdF9yZXN0YXJ0X3N0YWNrICsgQVJS
+QVlfU0laRShzb2Z0X3Jlc3RhcnRfc3RhY2spOw0KPiA+ICAgICAgICAvKiBEaXNhYmxlIGludGVy
+cnVwdHMgZmlyc3QgKi8NCj4gPiArI2lmZGVmIENPTkZJR19JUElQRQ0KPiA+ICsgICAgICBoYXJk
+X2xvY2FsX2lycV9kaXNhYmxlKCk7DQo+ID4gKyAgICAgIGhhcmRfbG9jYWxfZmlxX2Rpc2FibGVf
+bm90cmFjZSgpOyAjZWxzZQ0KPiA+ICAgICAgIGxvY2FsX2lycV9kaXNhYmxlKCk7DQo+ID4gICAg
+ICAgbG9jYWxfZmlxX2Rpc2FibGUoKTsNCj4gPiArI2VuZGlmDQo+ID4gICAgICAgIC8qIERpc2Fi
+bGUgdGhlIEwyIGlmIHdlJ3JlIHRoZSBsYXN0IG1hbiBzdGFuZGluZy4gKi8NCj4gPiAgICAgICBp
+ZiAobnVtX29ubGluZV9jcHVzKCkgPT0gMSkNCj4gPiBAQCAtMjQxLDcgKzI0NiwxMSBAQCB2b2lk
+IG1hY2hpbmVfaGFsdCh2b2lkKSB7DQo+ID4gICAgICAgc21wX3NlbmRfc3RvcCgpOw0KPiA+ICsj
+aWZkZWYgQ09ORklHX0lQSVBFDQo+ID4gKyAgICAgIGhhcmRfbG9jYWxfaXJxX2Rpc2FibGUoKTsN
+Cj4gPiArI2Vsc2UNCj4gPiAgICAgICBsb2NhbF9pcnFfZGlzYWJsZSgpOw0KPiA+ICsjZW5kaWYN
+Cj4gPiAgICAgICB3aGlsZSAoMSk7DQo+ID4gfQ0KPiA+IEBAIC0yODEsNyArMjkwLDExIEBAIHZv
+aWQgbWFjaGluZV9yZXN0YXJ0KGNoYXIgKmNtZCkNCj4gPiAgICAgICAgLyogV2hvb3BzIC0gdGhl
+IHBsYXRmb3JtIHdhcyB1bmFibGUgdG8gcmVib290LiBUZWxsIHRoZSB1c2VyISAqLw0KPiA+ICAg
+ICAgIHByaW50aygiUmVib290IGZhaWxlZCAtLSBTeXN0ZW0gaGFsdGVkXG4iKTsNCj4gPiArI2lm
+ZGVmIENPTkZJR19JUElQRQ0KPiA+ICsgICAgICBoYXJkX2xvY2FsX2lycV9kaXNhYmxlKCk7DQo+
+ID4gKyNlbHNlDQo+ID4gICAgICAgbG9jYWxfaXJxX2Rpc2FibGUoKTsNCj4gPiArI2VuZGlmDQo+
+ID4gICAgICAgd2hpbGUgKDEpOw0KPiA+IH0NCj4gPg0KPiA+DQo+ID4gQW5kIGkgZG9uJ3Qga25v
+d24sIGlmIHRoaXMgcGF0Y2ggaXMgYWxzbyBuZWVkZWQgZm9yIHRoZSBuZXcgdmVyc2lvbi4NCj4g
+Pg0KPiANCj4gSXQgZG9lcywgYnV0IG5vdyB0aGlzIGNvZGUgbGl2ZXMgaW4gYXJjaC9hcm0va2Vy
+bmVsL3JlYm9vdC5jLg0KPiBsb2NhbF9pcnFfZGlzYWJsZSgpIGNhbiBiZSByZXBsYWNlZCBieSBo
+YXJkX2xvY2FsX2lycV9kaXNhYmxlKCkgd2l0aG91dCBhbnkNCj4gY29uZGl0aW9uYWwgaWZkZWZm
+ZXJ5LiByYXdfbG9jYWxfaXJxX2Rpc2FibGUoKSBpcyBhIGRpZmZlcmVudCBiZWFzdCB0aGF0IGRv
+ZXMNCj4gbm90IG1hcCBleGFjdGVseSB0byB0aGUgaGFyZF8qIEFQSSwgc28geW91IHN0aWxsIG5l
+ZWQgY29uZGl0aW9uYWwgYmxvY2tzIHRvIHNldA0KPiBoYXJkX2xvY2FsX2lycV9kaXNhYmxlKCkg
+d2hlbiBwaXBlbGluaW5nLg0KPiANCj4gDQo+IC0tDQo+IFBoaWxpcHBlLg0KDQpUaGFuayB5b3Ug
+dmVyeSBtdWNoIGZvciB5b3VyIGFuc3dlcg0KDQpKb2hhbm4NCg==
 
