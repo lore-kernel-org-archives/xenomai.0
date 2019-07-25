@@ -1,14 +1,27 @@
-From: Johann Obermayr <johann.obermayr@sigmatek.at>
-Subject: AW: Xenomai 2.6.4 + ipipe to xenomai 3.x
-Date: Thu, 25 Jul 2019 11:47:23 +0000
-Message-ID: <VI1PR08MB33757421FEE5C14DA49108C1F5C10@VI1PR08MB3375.eurprd08.prod.outlook.com>
-References: <VI1PR08MB3375EF5789AC530E75E08E07F5C10@VI1PR08MB3375.eurprd08.prod.outlook.com>
- <2157756a-02a1-6266-4ce6-1c73103d3ad0@xenomai.org>
-In-Reply-To: <2157756a-02a1-6266-4ce6-1c73103d3ad0@xenomai.org>
-Content-Language: de-DE
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
 MIME-Version: 1.0
+References: <CAEmXcAwXBxZp9KcRyMs9J08nLKnwkYn13BuWPKTZ-pb6m95chg@mail.gmail.com>
+ <b88d839c-eb9f-8712-eb47-5a5fc12cbf17@siemens.com>
+ <CAEmXcAxMWcK1wsTQFJ2uQpJ1yjQiyfhoB5C-O=-bh-FTinNMjg@mail.gmail.com>
+ <0fd69e88-c0db-f9ef-c8a1-b5d25afe917f@siemens.com>
+ <CAEmXcAw+c-nBfMWRpU4yT_GbczRwwGCk=MFKh-g1F_tzwRytLQ@mail.gmail.com>
+ <80b77618-4a1f-5554-1dfd-aa2369b3252f@siemens.com>
+ <CAEmXcAzd3P9DkRHVbtvzgB_J52gUtaVd19h8=r-VL4frp0Gm3Q@mail.gmail.com>
+ <CAEmXcAyPAnDa2OhQn-JoZo3cY6HN9BtBdtNAr5i0hpQ0UPvpZg@mail.gmail.com>
+ <64f13545-b3a8-3c5d-1b0e-b953515f0f12@siemens.com>
+ <CAEmXcAw_Qek1jEguriG51MKoosN2QOVuAOHSjkW0j43rinryHA@mail.gmail.com>
+ <d74187a6-761f-4fd8-bf5a-bf72f58b6fd9@siemens.com>
+ <CAEmXcAypMd=+XLd7iiy0vgFZmB2hYzPp4VpvTV24w+SSY_OSxQ@mail.gmail.com>
+ <a63f3370-fa4d-32e8-33c3-8fb6da24841d@siemens.com>
+ <CAEmXcAzO0+OfMM2UuvXWr5K=KHwrTz1UQa7-YEF85g48VGmbdQ@mail.gmail.com>
+ <6846d8f8-3d03-58e2-40c8-73ac3d1da964@siemens.com>
+ <CAEmXcAw-9rpc7C+4VeJxQM5dxhYgPAhw=j+_xvmuSqAdtKaTgg@mail.gmail.com>
+ <15c11a1e-6536-7639-eb55-6a5a264b9438@siemens.com>
+In-Reply-To: <15c11a1e-6536-7639-eb55-6a5a264b9438@siemens.com>
+From: danwe <daniel.wenninger92@gmail.com>
+Date: Thu, 25 Jul 2019 14:18:02 +0200
+Message-ID: <CAEmXcAxwttnRUnOO8G5Oy_AWkP5fYy3uU7Am2UEZccNs=OJoww@mail.gmail.com>
+Subject: Re: TDMA with RTnet on Xenomai
+Content-Type: text/plain; charset="UTF-8"
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,56 +30,25 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Philippe Gerum <rpm@xenomai.org>, "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Jan Kiszka <jan.kiszka@siemens.com>, xenomai@xenomai.org
 
-PiAtLS0tLVVyc3Byw7xuZ2xpY2hlIE5hY2hyaWNodC0tLS0tDQo+IFZvbjogUGhpbGlwcGUgR2Vy
-dW0gPHJwbUB4ZW5vbWFpLm9yZz4NCj4gR2VzZW5kZXQ6IERvbm5lcnN0YWcsIDI1LiBKdWxpIDIw
-MTkgMTM6NDQNCj4gQW46IEpvaGFubiBPYmVybWF5ciA8am9oYW5uLm9iZXJtYXlyQHNpZ21hdGVr
-LmF0PjsNCj4geGVub21haUB4ZW5vbWFpLm9yZw0KPiBCZXRyZWZmOiBSZTogWGVub21haSAyLjYu
-NCArIGlwaXBlIHRvIHhlbm9tYWkgMy54DQo+IA0KPiBPbiA3LzI1LzE5IDEyOjQxIFBNLCBKb2hh
-bm4gT2Jlcm1heXIgdmlhIFhlbm9tYWkgd3JvdGU6DQo+ID4gSGVsbG8sDQo+ID4NCj4gPiBXZSBh
-cmUgbm93IG1pZ3JhdGUgZnJvbSBYZW5vbWFpIDIuNi40ICsgS2VybmVsIDMuMTAuNTMgdG8gWGVu
-b21haSAzLnggKw0KPiBLZXJuZWwgNC4xNC44OSAoODgpLg0KPiA+DQo+ID4gTm93IEkgaGF2ZSBm
-b3VuZCBmb2xsb3cgY29tbWl0IGluIHRoZSBvbGQga2VybmVsICsgaXBpcGUNCj4gPg0KPiA+ICog
-aXBpcGUvYXJtOiBmaXggc3lzdGVtIGxvY2t1cCBvbiByZWJvb3QNCj4gPg0KPiA+IFRoaXMgZml4
-ZXMgdGhlIHByb2JsZW0gb2YgdGhlIHN5c3RlbSBiZWluZyBzdHVjayBpbiBhbiBpbmZpbml0ZSBs
-b29wDQo+ID4gYXQgTERSRVgvU1RSRVggYXQgdGhlIGxhdGUgc3RhZ2Ugb2YgdGhlIHJlYm9vdCBz
-ZXF1ZW5jZS4NCj4gPg0KPiA+IEF0IHRoaXMgc3RhZ2UgdGhlIG1tdSBpcyBzZXQgaW50byBhIHN0
-YXRlIHNvIHRoYXQgc29mdCBib290IHdvcmtzLCBidXQNCj4gPiBjYXVzaW5nIGEgTERSRVgvU1RS
-RVggbG9vcCB0byBmYWlsLiBTbyB3ZSBoYXZlIHRvIGFsc28gZGlzYWJsZSBYZW5vbWFpDQo+IGlu
-dGVycnVwdHMuDQo+ID4NCj4gPiBUaGUgbG9jYWxfaXJxX2Rpc2FibGUoKSBpcyBjaGFuZ2VkIGZv
-ciBoYXJkX2xvY2FsX2lycV9kaXNhYmxlKCkgdG8NCj4gPiBzd2l0Y2ggb2ZmIGFsbCBpcnEncy4N
-Cj4gPg0KPiA+IGFyY2gvYXJtL2tlcm5lbC9wcm9jZXNzLmMgfCAxMyArKysrKysrKysrKysrDQo+
-ID4gMSBmaWxlIGNoYW5nZWQsIDEzIGluc2VydGlvbnMoKykNCj4gPg0KPiA+IGRpZmYgLS1naXQg
-YS9hcmNoL2FybS9rZXJuZWwvcHJvY2Vzcy5jIGIvYXJjaC9hcm0va2VybmVsL3Byb2Nlc3MuYw0K
-PiA+IGluZGV4IDA3MDdkMDA0YWM3OS4uMGU3MjVjNzZhNzc3IDEwMDY0NA0KPiA+IC0tLSBhL2Fy
-Y2gvYXJtL2tlcm5lbC9wcm9jZXNzLmMNCj4gPiArKysgYi9hcmNoL2FybS9rZXJuZWwvcHJvY2Vz
-cy5jDQo+ID4gQEAgLTk4LDggKzk4LDEzIEBAIHZvaWQgc29mdF9yZXN0YXJ0KHVuc2lnbmVkIGxv
-bmcgYWRkcikNCj4gPiAgICAgICB1NjQgKnN0YWNrID0gc29mdF9yZXN0YXJ0X3N0YWNrICsgQVJS
-QVlfU0laRShzb2Z0X3Jlc3RhcnRfc3RhY2spOw0KPiA+ICAgICAgICAvKiBEaXNhYmxlIGludGVy
-cnVwdHMgZmlyc3QgKi8NCj4gPiArI2lmZGVmIENPTkZJR19JUElQRQ0KPiA+ICsgICAgICBoYXJk
-X2xvY2FsX2lycV9kaXNhYmxlKCk7DQo+ID4gKyAgICAgIGhhcmRfbG9jYWxfZmlxX2Rpc2FibGVf
-bm90cmFjZSgpOyAjZWxzZQ0KPiA+ICAgICAgIGxvY2FsX2lycV9kaXNhYmxlKCk7DQo+ID4gICAg
-ICAgbG9jYWxfZmlxX2Rpc2FibGUoKTsNCj4gPiArI2VuZGlmDQo+ID4gICAgICAgIC8qIERpc2Fi
-bGUgdGhlIEwyIGlmIHdlJ3JlIHRoZSBsYXN0IG1hbiBzdGFuZGluZy4gKi8NCj4gPiAgICAgICBp
-ZiAobnVtX29ubGluZV9jcHVzKCkgPT0gMSkNCj4gPiBAQCAtMjQxLDcgKzI0NiwxMSBAQCB2b2lk
-IG1hY2hpbmVfaGFsdCh2b2lkKSB7DQo+ID4gICAgICAgc21wX3NlbmRfc3RvcCgpOw0KPiA+ICsj
-aWZkZWYgQ09ORklHX0lQSVBFDQo+ID4gKyAgICAgIGhhcmRfbG9jYWxfaXJxX2Rpc2FibGUoKTsN
-Cj4gPiArI2Vsc2UNCj4gPiAgICAgICBsb2NhbF9pcnFfZGlzYWJsZSgpOw0KPiA+ICsjZW5kaWYN
-Cj4gPiAgICAgICB3aGlsZSAoMSk7DQo+ID4gfQ0KPiA+IEBAIC0yODEsNyArMjkwLDExIEBAIHZv
-aWQgbWFjaGluZV9yZXN0YXJ0KGNoYXIgKmNtZCkNCj4gPiAgICAgICAgLyogV2hvb3BzIC0gdGhl
-IHBsYXRmb3JtIHdhcyB1bmFibGUgdG8gcmVib290LiBUZWxsIHRoZSB1c2VyISAqLw0KPiA+ICAg
-ICAgIHByaW50aygiUmVib290IGZhaWxlZCAtLSBTeXN0ZW0gaGFsdGVkXG4iKTsNCj4gPiArI2lm
-ZGVmIENPTkZJR19JUElQRQ0KPiA+ICsgICAgICBoYXJkX2xvY2FsX2lycV9kaXNhYmxlKCk7DQo+
-ID4gKyNlbHNlDQo+ID4gICAgICAgbG9jYWxfaXJxX2Rpc2FibGUoKTsNCj4gPiArI2VuZGlmDQo+
-ID4gICAgICAgd2hpbGUgKDEpOw0KPiA+IH0NCj4gPg0KPiA+DQo+ID4gQW5kIGkgZG9uJ3Qga25v
-d24sIGlmIHRoaXMgcGF0Y2ggaXMgYWxzbyBuZWVkZWQgZm9yIHRoZSBuZXcgdmVyc2lvbi4NCj4g
-Pg0KPiANCj4gSXQgZG9lcywgYnV0IG5vdyB0aGlzIGNvZGUgbGl2ZXMgaW4gYXJjaC9hcm0va2Vy
-bmVsL3JlYm9vdC5jLg0KPiBsb2NhbF9pcnFfZGlzYWJsZSgpIGNhbiBiZSByZXBsYWNlZCBieSBo
-YXJkX2xvY2FsX2lycV9kaXNhYmxlKCkgd2l0aG91dCBhbnkNCj4gY29uZGl0aW9uYWwgaWZkZWZm
-ZXJ5LiByYXdfbG9jYWxfaXJxX2Rpc2FibGUoKSBpcyBhIGRpZmZlcmVudCBiZWFzdCB0aGF0IGRv
-ZXMNCj4gbm90IG1hcCBleGFjdGVseSB0byB0aGUgaGFyZF8qIEFQSSwgc28geW91IHN0aWxsIG5l
-ZWQgY29uZGl0aW9uYWwgYmxvY2tzIHRvIHNldA0KPiBoYXJkX2xvY2FsX2lycV9kaXNhYmxlKCkg
-d2hlbiBwaXBlbGluaW5nLg0KPiANCj4gDQo+IC0tDQo+IFBoaWxpcHBlLg0KDQpUaGFuayB5b3Ug
-dmVyeSBtdWNoIGZvciB5b3VyIGFuc3dlcg0KDQpKb2hhbm4NCg==
+>
+> The driver needs to be for the Ethernet controller on that SoC, yes.
+> Structures
+> of such drivers are similar, details aren't. You can easily check that by
+> comparing some in-tree drivers.
+>
 
+Do you know the name of the driver for the Ethernet controller in a normale
+Xenomai / RTnet project? As those config-files I wrote are just files for
+buildroot. I'm sure that these are not files for any driver. So I thought
+it would be much better to compare the driver for Ethernet controller in a
+normal Xenomai / RTnet project to that driver which I have for the old
+Kernel and the old RTnet. But I don't find it, I don't get the drivers name.
+
+Thanks.
+
+Daniel
+
+>
+>
