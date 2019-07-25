@@ -1,4 +1,4 @@
-Subject: Re: TDMA with RTnet on Xenomai
+MIME-Version: 1.0
 References: <CAEmXcAwXBxZp9KcRyMs9J08nLKnwkYn13BuWPKTZ-pb6m95chg@mail.gmail.com>
  <0fd69e88-c0db-f9ef-c8a1-b5d25afe917f@siemens.com>
  <CAEmXcAw+c-nBfMWRpU4yT_GbczRwwGCk=MFKh-g1F_tzwRytLQ@mail.gmail.com>
@@ -15,14 +15,13 @@ References: <CAEmXcAwXBxZp9KcRyMs9J08nLKnwkYn13BuWPKTZ-pb6m95chg@mail.gmail.com>
  <CAEmXcAw-9rpc7C+4VeJxQM5dxhYgPAhw=j+_xvmuSqAdtKaTgg@mail.gmail.com>
  <15c11a1e-6536-7639-eb55-6a5a264b9438@siemens.com>
  <CAEmXcAxwttnRUnOO8G5Oy_AWkP5fYy3uU7Am2UEZccNs=OJoww@mail.gmail.com>
-From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <b6b74174-7e14-afb0-fe98-7afab7d55f2d@siemens.com>
-Date: Thu, 25 Jul 2019 14:49:07 +0200
-MIME-Version: 1.0
-In-Reply-To: <CAEmXcAxwttnRUnOO8G5Oy_AWkP5fYy3uU7Am2UEZccNs=OJoww@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+ <b6b74174-7e14-afb0-fe98-7afab7d55f2d@siemens.com>
+In-Reply-To: <b6b74174-7e14-afb0-fe98-7afab7d55f2d@siemens.com>
+From: danwe <daniel.wenninger92@gmail.com>
+Date: Thu, 25 Jul 2019 15:04:47 +0200
+Message-ID: <CAEmXcAwhV3B2mh1ZtUWor03GMU4=W=O2SsJsnOgpKi2bGBkvTA@mail.gmail.com>
+Subject: Re: TDMA with RTnet on Xenomai
+Content-Type: text/plain; charset="UTF-8"
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -31,29 +30,40 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: danwe <daniel.wenninger92@gmail.com>, xenomai@xenomai.org
+To: Jan Kiszka <jan.kiszka@siemens.com>, xenomai@xenomai.org
 
-On 25.07.19 14:18, danwe wrote:
->     The driver needs to be for the Ethernet controller on that SoC, yes. Structures
->     of such drivers are similar, details aren't. You can easily check that by
->     comparing some in-tree drivers.
-> 
-> 
-> Do you know the name of the driver for the Ethernet controller in a normale
-> Xenomai / RTnet project? As those config-files I wrote are just files for
-> buildroot. I'm sure that these are not files for any driver. So I thought it
-> would be much better to compare the driver for Ethernet controller in a normal
-> Xenomai / RTnet project to that driver which I have for the old Kernel and the
-> old RTnet. But I don't find it, I don't get the drivers name.
-> 
+>
+>
+> >     The driver needs to be for the Ethernet controller on that SoC, yes.
+> Structures
+> >     of such drivers are similar, details aren't. You can easily check
+> that by
+> >     comparing some in-tree drivers.
+> >
+> >
+> > Do you know the name of the driver for the Ethernet controller in a
+> normale
+> > Xenomai / RTnet project? As those config-files I wrote are just files for
+> > buildroot. I'm sure that these are not files for any driver. So I
+> thought it
+> > would be much better to compare the driver for Ethernet controller in a
+> normal
+> > Xenomai / RTnet project to that driver which I have for the old Kernel
+> and the
+> > old RTnet. But I don't find it, I don't get the drivers name.
+> >
+>
+> There is none for the BBB's cpsw ("ti,am335x-cpsw"), neither in Xenomai
+> nor the
+> old RTnet. If you have something running locally, someone must have given
+> you
+> downstream changes.
+>
+>
+> I don't mean driver for BBB. I mean you said Xenomai3 / RTnet is working
+on a e. g. linux computer. Just a normal computer. So there has to be a
+driver for the Ethernet controller for the computer, hasn't it? Where can I
+find that driver if I download Xenomai3 / RTnet? What is the name of that
+driver?
 
-There is none for the BBB's cpsw ("ti,am335x-cpsw"), neither in Xenomai nor the
-old RTnet. If you have something running locally, someone must have given you
-downstream changes.
-
-Jan
-
--- 
-Siemens AG, Corporate Technology, CT RDA IOT SES-DE
-Corporate Competence Center Embedded Linux
-
+Daniel
