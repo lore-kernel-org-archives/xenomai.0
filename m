@@ -1,13 +1,14 @@
-Subject: Re: Xenomai 2.6.4 + ipipe to xenomai 3.x
+From: Johann Obermayr <johann.obermayr@sigmatek.at>
+Subject: AW: Xenomai 2.6.4 + ipipe to xenomai 3.x
+Date: Thu, 25 Jul 2019 11:32:00 +0000
+Message-ID: <VI1PR08MB33753CC81FC92787DAD18AEAF5C10@VI1PR08MB3375.eurprd08.prod.outlook.com>
 References: <VI1PR08MB3375EF5789AC530E75E08E07F5C10@VI1PR08MB3375.eurprd08.prod.outlook.com>
-From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <06696ee7-d0fe-9cb9-06eb-766fe38c26bb@siemens.com>
-Date: Thu, 25 Jul 2019 13:01:11 +0200
+ <06696ee7-d0fe-9cb9-06eb-766fe38c26bb@siemens.com>
+In-Reply-To: <06696ee7-d0fe-9cb9-06eb-766fe38c26bb@siemens.com>
+Content-Language: de-DE
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-In-Reply-To: <VI1PR08MB3375EF5789AC530E75E08E07F5C10@VI1PR08MB3375.eurprd08.prod.outlook.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,76 +17,57 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Johann Obermayr <johann.obermayr@sigmatek.at>, "xenomai@xenomai.org" <xenomai@xenomai.org>, Philippe Gerum <rpm@xenomai.org>
+To: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On 25.07.19 12:41, Johann Obermayr via Xenomai wrote:
-> Hello,
-> 
-> We are now migrate from Xenomai 2.6.4 + Kernel 3.10.53 to Xenomai 3.x + Kernel 4.14.89 (88).
-> 
-> Now I have found follow commit in the old kernel + ipipe
-> 
-> * ipipe/arm: fix system lockup on reboot
-> 
-> This fixes the problem of the system being stuck in an infinite loop at
-> LDREX/STREX at the late stage of the reboot sequence.
-> 
-> At this stage the mmu is set into a state so that soft boot works, but causing
-> a LDREX/STREX loop to fail. So we have to also disable Xenomai interrupts.
-> 
-> The local_irq_disable() is changed for hard_local_irq_disable() to switch off all
-> irq's.
-> 
-> arch/arm/kernel/process.c | 13 +++++++++++++
-> 1 file changed, 13 insertions(+)
-> 
-> diff --git a/arch/arm/kernel/process.c b/arch/arm/kernel/process.c
-> index 0707d004ac79..0e725c76a777 100644
-> --- a/arch/arm/kernel/process.c
-> +++ b/arch/arm/kernel/process.c
-> @@ -98,8 +98,13 @@ void soft_restart(unsigned long addr)
->       u64 *stack = soft_restart_stack + ARRAY_SIZE(soft_restart_stack);
->        /* Disable interrupts first */
-> +#ifdef CONFIG_IPIPE
-> +      hard_local_irq_disable();
-> +      hard_local_fiq_disable_notrace();
-> +#else
->       local_irq_disable();
->       local_fiq_disable();
-> +#endif
->        /* Disable the L2 if we're the last man standing. */
->       if (num_online_cpus() == 1)
-> @@ -241,7 +246,11 @@ void machine_halt(void)
-> {
->       smp_send_stop();
-> +#ifdef CONFIG_IPIPE
-> +      hard_local_irq_disable();
-> +#else
->       local_irq_disable();
-> +#endif
->       while (1);
-> }
-> @@ -281,7 +290,11 @@ void machine_restart(char *cmd)
->        /* Whoops - the platform was unable to reboot. Tell the user! */
->       printk("Reboot failed -- System halted\n");
-> +#ifdef CONFIG_IPIPE
-> +      hard_local_irq_disable();
-> +#else
->       local_irq_disable();
-> +#endif
->       while (1);
-> }
-> 
-> 
-> And i don't known, if this patch is also needed for the new version.
-
-Philippe can probably answer this, but you can already tell us if this is a
-question based on code analysis only or if you are seeing problems with 4.14 on
-arm that go away or change with such a change.
-
-Jan
-
--- 
-Siemens AG, Corporate Technology, CT RDA IOT SES-DE
-Corporate Competence Center Embedded Linux
+SGVsbG8NCg0KPiAtLS0tLVVyc3Byw7xuZ2xpY2hlIE5hY2hyaWNodC0tLS0tDQo+IFZvbjogSmFu
+IEtpc3prYSA8amFuLmtpc3prYUBzaWVtZW5zLmNvbT4NCj4gR2VzZW5kZXQ6IERvbm5lcnN0YWcs
+IDI1LiBKdWxpIDIwMTkgMTM6MDENCj4gQW46IEpvaGFubiBPYmVybWF5ciA8am9oYW5uLm9iZXJt
+YXlyQHNpZ21hdGVrLmF0PjsNCj4geGVub21haUB4ZW5vbWFpLm9yZzsgUGhpbGlwcGUgR2VydW0g
+PHJwbUB4ZW5vbWFpLm9yZz4NCj4gQmV0cmVmZjogUmU6IFhlbm9tYWkgMi42LjQgKyBpcGlwZSB0
+byB4ZW5vbWFpIDMueA0KPiANCj4gT24gMjUuMDcuMTkgMTI6NDEsIEpvaGFubiBPYmVybWF5ciB2
+aWEgWGVub21haSB3cm90ZToNCj4gPiBIZWxsbywNCj4gPg0KPiA+IFdlIGFyZSBub3cgbWlncmF0
+ZSBmcm9tIFhlbm9tYWkgMi42LjQgKyBLZXJuZWwgMy4xMC41MyB0byBYZW5vbWFpIDMueCArDQo+
+IEtlcm5lbCA0LjE0Ljg5ICg4OCkuDQo+ID4NCj4gPiBOb3cgSSBoYXZlIGZvdW5kIGZvbGxvdyBj
+b21taXQgaW4gdGhlIG9sZCBrZXJuZWwgKyBpcGlwZQ0KPiA+DQo+ID4gKiBpcGlwZS9hcm06IGZp
+eCBzeXN0ZW0gbG9ja3VwIG9uIHJlYm9vdA0KPiA+DQo+ID4gVGhpcyBmaXhlcyB0aGUgcHJvYmxl
+bSBvZiB0aGUgc3lzdGVtIGJlaW5nIHN0dWNrIGluIGFuIGluZmluaXRlIGxvb3ANCj4gPiBhdCBM
+RFJFWC9TVFJFWCBhdCB0aGUgbGF0ZSBzdGFnZSBvZiB0aGUgcmVib290IHNlcXVlbmNlLg0KPiA+
+DQo+ID4gQXQgdGhpcyBzdGFnZSB0aGUgbW11IGlzIHNldCBpbnRvIGEgc3RhdGUgc28gdGhhdCBz
+b2Z0IGJvb3Qgd29ya3MsIGJ1dA0KPiA+IGNhdXNpbmcgYSBMRFJFWC9TVFJFWCBsb29wIHRvIGZh
+aWwuIFNvIHdlIGhhdmUgdG8gYWxzbyBkaXNhYmxlIFhlbm9tYWkNCj4gaW50ZXJydXB0cy4NCj4g
+Pg0KPiA+IFRoZSBsb2NhbF9pcnFfZGlzYWJsZSgpIGlzIGNoYW5nZWQgZm9yIGhhcmRfbG9jYWxf
+aXJxX2Rpc2FibGUoKSB0bw0KPiA+IHN3aXRjaCBvZmYgYWxsIGlycSdzLg0KPiA+DQo+ID4gYXJj
+aC9hcm0va2VybmVsL3Byb2Nlc3MuYyB8IDEzICsrKysrKysrKysrKysNCj4gPiAxIGZpbGUgY2hh
+bmdlZCwgMTMgaW5zZXJ0aW9ucygrKQ0KPiA+DQo+ID4gZGlmZiAtLWdpdCBhL2FyY2gvYXJtL2tl
+cm5lbC9wcm9jZXNzLmMgYi9hcmNoL2FybS9rZXJuZWwvcHJvY2Vzcy5jDQo+ID4gaW5kZXggMDcw
+N2QwMDRhYzc5Li4wZTcyNWM3NmE3NzcgMTAwNjQ0DQo+ID4gLS0tIGEvYXJjaC9hcm0va2VybmVs
+L3Byb2Nlc3MuYw0KPiA+ICsrKyBiL2FyY2gvYXJtL2tlcm5lbC9wcm9jZXNzLmMNCj4gPiBAQCAt
+OTgsOCArOTgsMTMgQEAgdm9pZCBzb2Z0X3Jlc3RhcnQodW5zaWduZWQgbG9uZyBhZGRyKQ0KPiA+
+ICAgICAgIHU2NCAqc3RhY2sgPSBzb2Z0X3Jlc3RhcnRfc3RhY2sgKyBBUlJBWV9TSVpFKHNvZnRf
+cmVzdGFydF9zdGFjayk7DQo+ID4gICAgICAgIC8qIERpc2FibGUgaW50ZXJydXB0cyBmaXJzdCAq
+Lw0KPiA+ICsjaWZkZWYgQ09ORklHX0lQSVBFDQo+ID4gKyAgICAgIGhhcmRfbG9jYWxfaXJxX2Rp
+c2FibGUoKTsNCj4gPiArICAgICAgaGFyZF9sb2NhbF9maXFfZGlzYWJsZV9ub3RyYWNlKCk7ICNl
+bHNlDQo+ID4gICAgICAgbG9jYWxfaXJxX2Rpc2FibGUoKTsNCj4gPiAgICAgICBsb2NhbF9maXFf
+ZGlzYWJsZSgpOw0KPiA+ICsjZW5kaWYNCj4gPiAgICAgICAgLyogRGlzYWJsZSB0aGUgTDIgaWYg
+d2UncmUgdGhlIGxhc3QgbWFuIHN0YW5kaW5nLiAqLw0KPiA+ICAgICAgIGlmIChudW1fb25saW5l
+X2NwdXMoKSA9PSAxKQ0KPiA+IEBAIC0yNDEsNyArMjQ2LDExIEBAIHZvaWQgbWFjaGluZV9oYWx0
+KHZvaWQpIHsNCj4gPiAgICAgICBzbXBfc2VuZF9zdG9wKCk7DQo+ID4gKyNpZmRlZiBDT05GSUdf
+SVBJUEUNCj4gPiArICAgICAgaGFyZF9sb2NhbF9pcnFfZGlzYWJsZSgpOw0KPiA+ICsjZWxzZQ0K
+PiA+ICAgICAgIGxvY2FsX2lycV9kaXNhYmxlKCk7DQo+ID4gKyNlbmRpZg0KPiA+ICAgICAgIHdo
+aWxlICgxKTsNCj4gPiB9DQo+ID4gQEAgLTI4MSw3ICsyOTAsMTEgQEAgdm9pZCBtYWNoaW5lX3Jl
+c3RhcnQoY2hhciAqY21kKQ0KPiA+ICAgICAgICAvKiBXaG9vcHMgLSB0aGUgcGxhdGZvcm0gd2Fz
+IHVuYWJsZSB0byByZWJvb3QuIFRlbGwgdGhlIHVzZXIhICovDQo+ID4gICAgICAgcHJpbnRrKCJS
+ZWJvb3QgZmFpbGVkIC0tIFN5c3RlbSBoYWx0ZWRcbiIpOw0KPiA+ICsjaWZkZWYgQ09ORklHX0lQ
+SVBFDQo+ID4gKyAgICAgIGhhcmRfbG9jYWxfaXJxX2Rpc2FibGUoKTsNCj4gPiArI2Vsc2UNCj4g
+PiAgICAgICBsb2NhbF9pcnFfZGlzYWJsZSgpOw0KPiA+ICsjZW5kaWYNCj4gPiAgICAgICB3aGls
+ZSAoMSk7DQo+ID4gfQ0KPiA+DQo+ID4NCj4gPiBBbmQgaSBkb24ndCBrbm93biwgaWYgdGhpcyBw
+YXRjaCBpcyBhbHNvIG5lZWRlZCBmb3IgdGhlIG5ldyB2ZXJzaW9uLg0KPiANCj4gUGhpbGlwcGUg
+Y2FuIHByb2JhYmx5IGFuc3dlciB0aGlzLCBidXQgeW91IGNhbiBhbHJlYWR5IHRlbGwgdXMgaWYg
+dGhpcyBpcyBhDQo+IHF1ZXN0aW9uIGJhc2VkIG9uIGNvZGUgYW5hbHlzaXMgb25seSBvciBpZiB5
+b3UgYXJlIHNlZWluZyBwcm9ibGVtcyB3aXRoIDQuMTQNCj4gb24gYXJtIHRoYXQgZ28gYXdheSBv
+ciBjaGFuZ2Ugd2l0aCBzdWNoIGEgY2hhbmdlLg0KDQpDdXJyZW50bHkgSSdtIHdhdGNoaW5nIGFs
+bCBvdXIga2VybmVsL2lwaXBlIGNvbW1pdHMgc28gd2UgY2FuIGRvIGFuIGVmZm9ydCBlc3RpbWF0
+aW9uLg0KDQo+IA0KPiBKYW4NCj4gDQo+IC0tDQo+IFNpZW1lbnMgQUcsIENvcnBvcmF0ZSBUZWNo
+bm9sb2d5LCBDVCBSREEgSU9UIFNFUy1ERSBDb3Jwb3JhdGUNCj4gQ29tcGV0ZW5jZSBDZW50ZXIg
+RW1iZWRkZWQgTGludXgNCg0KSm9oYW5uDQo=
 
