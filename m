@@ -1,8 +1,8 @@
 Subject: Re: [PATCH v2] derivers/autotune: Fix UBSAN warnings
 References: <b7202c1c-436f-3ae6-b648-b703da5dcf14@siemens.com>
-From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <72ca7432-74ef-7406-3566-cad0e7287ff6@siemens.com>
-Date: Fri, 26 Jul 2019 17:27:25 +0200
+From: Philippe Gerum <rpm@xenomai.org>
+Message-ID: <179f5463-27eb-b6e0-f59f-d24a130b70d8@xenomai.org>
+Date: Fri, 26 Jul 2019 17:28:09 +0200
 MIME-Version: 1.0
 In-Reply-To: <b7202c1c-436f-3ae6-b648-b703da5dcf14@siemens.com>
 Content-Type: text/plain; charset=utf-8
@@ -16,9 +16,9 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Xenomai <xenomai@xenomai.org>
+To: Jan Kiszka <jan.kiszka@siemens.com>, Xenomai <xenomai@xenomai.org>
 
-On 26.07.19 17:23, Jan Kiszka via Xenomai wrote:
+On 7/26/19 5:23 PM, Jan Kiszka via Xenomai wrote:
 > The calculations in add_sample can overflow into undefined behavior - or
 > even generate wrong results. Address that by giving related fields in
 > tuner_state more space.
@@ -51,12 +51,8 @@ On 26.07.19 17:23, Jan Kiszka via Xenomai wrote:
 >  	unsigned int max_samples;
 > 
 
-...and the typo in the subject is fixed in next already. I blame the temperature
-here for all those things.
-
-Jan
+Ack.
 
 -- 
-Siemens AG, Corporate Technology, CT RDA IOT SES-DE
-Corporate Competence Center Embedded Linux
+Philippe.
 
