@@ -1,10 +1,10 @@
-Subject: Re: Building Xenomai 3 , Kernel 4 ... for BeagleBone Black
-References: <CAEmXcAxMLPYufU7aYD5kBxvtQ-jr8eq6Y+uRW+Td-NWzL=sw5w@mail.gmail.com>
+Subject: Re: Linux UDP and RTNet
+References: <CANWkrRNq5k0sRnu2QZm5O_VQdkOHXO+Nc9T7WyDmUUMNuwH1zQ@mail.gmail.com>
 From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <9a2d7001-a0d7-b87c-be89-c4cad2051273@siemens.com>
-Date: Tue, 30 Jul 2019 16:22:03 +0200
+Message-ID: <b43d0dd5-c4bf-4145-f155-b05dfbbf903e@siemens.com>
+Date: Tue, 30 Jul 2019 16:24:24 +0200
 MIME-Version: 1.0
-In-Reply-To: <CAEmXcAxMLPYufU7aYD5kBxvtQ-jr8eq6Y+uRW+Td-NWzL=sw5w@mail.gmail.com>
+In-Reply-To: <CANWkrRNq5k0sRnu2QZm5O_VQdkOHXO+Nc9T7WyDmUUMNuwH1zQ@mail.gmail.com>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -16,30 +16,32 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: danwe <daniel.wenninger92@gmail.com>, xenomai@xenomai.org
+To: Michael Smith <2michael.smith@gmail.com>, "Xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On 29.07.19 19:23, danwe via Xenomai wrote:
-> Hi,
-> 
-> Is there any different of Building Xenomai 3 with the proper Kernel for a
-> BBB to any other microcomputers/computers?
-> On https://xenomai.org/documentation/xenomai-3/html/README.INSTALL/ are so
-> many different examples and I do not understand what I need to do to build
-> this.
-> Is there any example to build Xenomai 3 and Kernel with Buildroot?
+On 30.07.19 15:07, Michael Smith via Xenomai wrote:
+> Hi I've got a RTNet setup running with a TDMA-based network.
+> At the same time I try to send normal UDP packets on another non
+> real-time Linux NIC.
 
-IIRC, buildroot has a Xenomai 3 package. That might be outdated a bit, but it
-should be simple to build on top.
-
-> Does flashing on SD-Card depend on building Xenomai with Kernel?
-> I just need to run Xenomai 3 with the proper Kernel on a BeagleBone Black
-
-If you only need the kernel and the userland tools on top of an existing image:
-You can study how to cross-build for other archs also in our CI setup
-(.travis.yml file in the source tree). That should be in line with what the doc
-says about cross-building, but it's also for sure what we run on every push to git.
+How do you try this? With a Xenomai application that opens a UDP socket? Then
+you have to ensure that it does that using the non-RT APIs, e.g. by wrapping the
+socket call: __STD(socket(...));
 
 Jan
+
+> I get the error message "No route to host" when I try to do this.
+> As soon as I stop RTNet the non real-time NIC is able to send the UDP
+> packet normally.
+> 
+> I assume because RTNet is UDP based it sees all UDP packets as RTNet bound.
+> Is there a way arround this? Is it possible to send a non real-time
+> UDP packet on a 2nd non real-time NIC while RTNet is running?
+> I assume maybe by using rtroute something like this can work, but I'm
+> not sure how this will be done.
+> 
+> Thanks
+> Michael Smith
+> 
 
 -- 
 Siemens AG, Corporate Technology, CT RDA IOT SES-DE
