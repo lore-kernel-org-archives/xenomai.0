@@ -1,10 +1,9 @@
-Subject: Re: Linux UDP and RTNet
-References: <CANWkrRNq5k0sRnu2QZm5O_VQdkOHXO+Nc9T7WyDmUUMNuwH1zQ@mail.gmail.com>
 From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <b43d0dd5-c4bf-4145-f155-b05dfbbf903e@siemens.com>
-Date: Tue, 30 Jul 2019 16:24:24 +0200
+Subject: [RFC][PATCH] lib/cobalt: Warn if forking without
+ CONFIG_XENO_OPT_DEBUG_POSIX_SYNCHRO
+Message-ID: <9cf97198-1d8c-9499-0fc6-228bebdd7ab2@siemens.com>
+Date: Tue, 30 Jul 2019 19:36:20 +0200
 MIME-Version: 1.0
-In-Reply-To: <CANWkrRNq5k0sRnu2QZm5O_VQdkOHXO+Nc9T7WyDmUUMNuwH1zQ@mail.gmail.com>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -16,34 +15,61 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Michael Smith <2michael.smith@gmail.com>, "Xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Xenomai <xenomai@xenomai.org>, Philippe Gerum <rpm@xenomai.org>
 
-On 30.07.19 15:07, Michael Smith via Xenomai wrote:
-> Hi I've got a RTNet setup running with a TDMA-based network.
-> At the same time I try to send normal UDP packets on another non
-> real-time Linux NIC.
+This can crash too easily when a resource allocated by the parent is
+erroneously reused in the child process.
 
-How do you try this? With a Xenomai application that opens a UDP socket? Then
-you have to ensure that it does that using the non-RT APIs, e.g. by wrapping the
-socket call: __STD(socket(...));
+Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
+---
 
-Jan
+I debugged basically this mistake today:
 
-> I get the error message "No route to host" when I try to do this.
-> As soon as I stop RTNet the non real-time NIC is able to send the UDP
-> packet normally.
-> 
-> I assume because RTNet is UDP based it sees all UDP packets as RTNet bound.
-> Is there a way arround this? Is it possible to send a non real-time
-> UDP packet on a 2nd non real-time NIC while RTNet is running?
-> I assume maybe by using rtroute something like this can work, but I'm
-> not sure how this will be done.
-> 
-> Thanks
-> Michael Smith
-> 
+    sem_init(&sem, 0, 0);
 
+    res = fork();
+    if (res == 0)
+        sem_destroy(&sem);
+    else
+        waitpid(res, NULL, 0);
+
+With that debug switch on, sem_destroy just returns an error. Without
+it, the kernel crashes. Now I'm wondering if
+
+a) we should make that check mandatory
+b) make the check at least default y
+c) apply a warning patch like this
+
+Thoughts welcome!
+
+ lib/cobalt/init.c | 9 +++++++++
+ 1 file changed, 9 insertions(+)
+
+diff --git a/lib/cobalt/init.c b/lib/cobalt/init.c
+index 02a99c569c..193d24009e 100644
+--- a/lib/cobalt/init.c
++++ b/lib/cobalt/init.c
+@@ -188,11 +188,20 @@ static int cobalt_init_2(void);
+ 
+ static void cobalt_fork_handler(void)
+ {
++	int corectl_debug, err;
++
+ 	cobalt_unmap_umm();
+ 	cobalt_clear_tsd();
+ 	cobalt_print_init_atfork();
+ 	if (cobalt_init_2())
+ 		exit(EXIT_FAILURE);
++
++	err = cobalt_corectl(_CC_COBALT_GET_DEBUG, &corectl_debug,
++			     sizeof(corectl_debug));
++	if (err == 0 && !(corectl_debug & _CC_COBALT_DEBUG_POSIX_SYNCHRO))
++		warning("Forking with CONFIG_XENO_OPT_DEBUG_POSIX_SYNCHRO\n"
++			"                       "
++			"disabled - improper resource usage can cause crashes!\n");
+ }
+ 
+ static inline void commit_stack_memory(void)
 -- 
-Siemens AG, Corporate Technology, CT RDA IOT SES-DE
-Corporate Competence Center Embedded Linux
+2.16.4
 
