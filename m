@@ -1,10 +1,13 @@
 MIME-Version: 1.0
-From: Antoine Hoarau <antoine@flr.io>
-Date: Tue, 30 Jul 2019 22:53:36 +0200
-Message-ID: <CAPnNZ0Wp-VTyiEt9Bh7vkKbbUAUDLTkK92TVLar8CVsdaendVQ@mail.gmail.com>
-Subject: Updating the r8169 driver
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+References: <CAEmXcAxMLPYufU7aYD5kBxvtQ-jr8eq6Y+uRW+Td-NWzL=sw5w@mail.gmail.com>
+ <9a2d7001-a0d7-b87c-be89-c4cad2051273@siemens.com>
+ <CAEmXcAwpe3dVcriUjFYdvsQB0Kra13nY+yLtCDCyzoeCww+xCA@mail.gmail.com>
+In-Reply-To: <CAEmXcAwpe3dVcriUjFYdvsQB0Kra13nY+yLtCDCyzoeCww+xCA@mail.gmail.com>
+From: danwe <daniel.wenninger92@gmail.com>
+Date: Wed, 31 Jul 2019 08:50:18 +0200
+Message-ID: <CAEmXcAzc2Z1J0LTEtFXZ3TrXC767Z=6DSOCpicVHPO3yFh98_Q@mail.gmail.com>
+Subject: Fwd: Building Xenomai 3 , Kernel 4 ... for BeagleBone Black
+Content-Type: text/plain; charset="UTF-8"
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,18 +18,14 @@ List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: xenomai@xenomai.org
 
-SGkgYWxsLApJIGhhdmUgYSBzZXR1cCB3aGVyZSBJIG5lZWQgYW4gdXBkYXRlZCByODE2OS4KSSBz
-dGFydGVkIHVwZGF0aW5nIHRoZSAodmVyeSkgb2xkIG9uZSBwcm92aWRlZCB3aXRoIHJ0bmV0IHdp
-dGggdGhlIGNhcmRzCmZyb20gbGludXggMi42ICh0aGUgY29kZSBpcyBxdWl0ZSBzaW1pbGFyKS4g
-QXR0YWNoZWQgdGhlIGZpcnN0IGRyYWZ0LAooaGlnaGx5KSBleHBlcmltZW50YWwuCkluIHRoZSBl
-bmQgSSBuZWVkIGFuIGV2ZW4gbW9yZSB1cCB0byBkYXRlIHZlcnNpb24sIHNvIEknbGwgc3RhcnQg
-ZnJvbSB0aGUKNC4xOSB3aGVuIEkgY2FuLCBidXQgdGhlIGNvZGUgaXMgY29tcGxldGVseSBkaWZm
-ZXJlbnQuIEknbSByZWFsbHkgd29uZGVyaW5nCndoeSB0aGlzIGRyaXZlciB3b3VsZCBuZWVkIHRv
-IGJlIGNvbXBsZXRlbHkgcmUtd3JpdHRlbiBhdCBldmVyeSBrZXJuZWwKdmVyc2lvbiwgYnV0IGFu
-eXdheXMuCkkgc2VlIHRoZSBlMTAwMGUganVzdCBnb3QgdXBkYXRlZCwgYW55b25lIHdvcmtpbmcg
-b24gdXBkYXRpbmcgdGhpcwpwYXJ0aWN1bGFyIGRyaXZlciA/ClRoYW5rcyBhIGJ1bmNoLApBbnRv
-aW5lCi0tLS0tLS0tLS0tLS0tIG5leHQgcGFydCAtLS0tLS0tLS0tLS0tLQpBIG5vbi10ZXh0IGF0
-dGFjaG1lbnQgd2FzIHNjcnViYmVkLi4uCk5hbWU6IHI4MTY5XzIuNi5jClR5cGU6IHRleHQveC1j
-c3JjClNpemU6IDc5MjA5IGJ5dGVzCkRlc2M6IG5vdCBhdmFpbGFibGUKVVJMOiA8aHR0cDovL3hl
-bm9tYWkub3JnL3BpcGVybWFpbC94ZW5vbWFpL2F0dGFjaG1lbnRzLzIwMTkwNzMwL2Y0MmZiOTE3
-L2F0dGFjaG1lbnQuYz4K
+Thanks for your response. Maybe it was a bit unclear from my side:
+I need to build the Kernel and Xenomai 3. So I do neither want to build the
+kernel and userland tools on top of an existing image nor building anything
+on top. Or what do you mean by building on top? Is there anything "deeper"
+than a Kernel?
+And again: Does building a Kernel with Xenomai 3 depends on the paltform I
+want to use it on? I need to use it on a BeagleBone Black. Do I have to
+change anything for use it on BBB?
+Thanks.
+
+Daniel
