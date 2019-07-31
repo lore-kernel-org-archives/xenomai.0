@@ -1,24 +1,10 @@
-Subject: Re: Fwd: TDMA with RTnet on Xenomai
-References: <CAEmXcAwXBxZp9KcRyMs9J08nLKnwkYn13BuWPKTZ-pb6m95chg@mail.gmail.com>
- <b88d839c-eb9f-8712-eb47-5a5fc12cbf17@siemens.com>
- <CAEmXcAxMWcK1wsTQFJ2uQpJ1yjQiyfhoB5C-O=-bh-FTinNMjg@mail.gmail.com>
- <0fd69e88-c0db-f9ef-c8a1-b5d25afe917f@siemens.com>
- <CAEmXcAw+c-nBfMWRpU4yT_GbczRwwGCk=MFKh-g1F_tzwRytLQ@mail.gmail.com>
- <80b77618-4a1f-5554-1dfd-aa2369b3252f@siemens.com>
- <CAEmXcAzd3P9DkRHVbtvzgB_J52gUtaVd19h8=r-VL4frp0Gm3Q@mail.gmail.com>
- <CAEmXcAyPAnDa2OhQn-JoZo3cY6HN9BtBdtNAr5i0hpQ0UPvpZg@mail.gmail.com>
- <64f13545-b3a8-3c5d-1b0e-b953515f0f12@siemens.com>
- <CAEmXcAw_Qek1jEguriG51MKoosN2QOVuAOHSjkW0j43rinryHA@mail.gmail.com>
- <d74187a6-761f-4fd8-bf5a-bf72f58b6fd9@siemens.com>
- <CAEmXcAypMd=+XLd7iiy0vgFZmB2hYzPp4VpvTV24w+SSY_OSxQ@mail.gmail.com>
- <a63f3370-fa4d-32e8-33c3-8fb6da24841d@siemens.com>
- <CAEmXcAxkjsXpkbw9UB-A59Qp6ZPN_pa3yq6_pXRvyicvEVKLmA@mail.gmail.com>
- <CAEmXcAznrMTT6hiNjyQHtzCRoKJR2Bnfs49KqTVw6r1G+HssfQ@mail.gmail.com>
+Subject: Re: Updating the r8169 driver
+References: <CAPnNZ0Wp-VTyiEt9Bh7vkKbbUAUDLTkK92TVLar8CVsdaendVQ@mail.gmail.com>
 From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <b3b24c21-d18a-9a36-5b0d-7cce1256591b@siemens.com>
-Date: Wed, 31 Jul 2019 11:29:46 +0200
+Message-ID: <c80d1e45-d28a-d3cd-fe86-3d0275f77201@siemens.com>
+Date: Wed, 31 Jul 2019 11:35:17 +0200
 MIME-Version: 1.0
-In-Reply-To: <CAEmXcAznrMTT6hiNjyQHtzCRoKJR2Bnfs49KqTVw6r1G+HssfQ@mail.gmail.com>
+In-Reply-To: <CAPnNZ0Wp-VTyiEt9Bh7vkKbbUAUDLTkK92TVLar8CVsdaendVQ@mail.gmail.com>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -30,39 +16,31 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: danwe <daniel.wenninger92@gmail.com>, xenomai@xenomai.org
+To: Antoine Hoarau <antoine@flr.io>, xenomai@xenomai.org
 
-On 31.07.19 10:55, danwe via Xenomai wrote:
-> I have found that my modules are loading via "modprobe".
-> You wrote:
-> "Ah, you are on legacy, out-of-tree RTnet! I forgot that RTnet only moved
-> into
-> Xenomai for version 3.0. For 2.x, you are with the old repo that wasn't
-> touched
-> since 2013. In this particular case, the script fails early because of
-> "insmod
-> <existing-module>", rather than using "modprobe" like in Xenomai upstream".
-> 
-> So in my S51rtnet it loads modules like this:
-> for i in rtnet rt_smsc rt_davinci_mdio rt_ticpsw rtpacket rtipv4 rtmac
-> rtcfg tdma
-> do
->      echo -n"$i "
->     modprobe ${i}
->     sleep 1
-> done
-> 
-> As you write "rather than using "modprobe" like in Xenomai upstream"...
-> should tdma work on Xenomai 2 / RTnet here or is it just a problem because
-> of ouf-of-tree RTnet?
+On 30.07.19 22:53, Antoine Hoarau via Xenomai wrote:
+> Hi all,
+> I have a setup where I need an updated r8169.
+> I started updating the (very) old one provided with rtnet with the cards
+> from linux 2.6 (the code is quite similar). Attached the first draft,
+> (highly) experimental.
+> In the end I need an even more up to date version, so I'll start from the
+> 4.19 when I can, but the code is completely different. I'm really wondering
+> why this driver would need to be completely re-written at every kernel
+> version, but anyways.
+> I see the e1000e just got updated, anyone working on updating this
+> particular driver ?
 
-The problem is you have two scripts now working against each other. The legacy
-start script from legacy RTnet would do the heavy-lifting for RTmac/TDMA & Co.
-but stumbles over insmod for an already loaded module. And your own start script
-uses the right insmod but only does that, nothing for the full configuration.
-Remove the latter, and you may get further - unless legacy RTnet has more surprises.
+Not to my knowledge. Updates are wellcome, just please ensure they are formatted
+as patch in the end and build against 4.4 up to latest supported kernel
+(currently 4.19). See also contributing.md. BTW, if you want to avoid building
+your own compilation environment, fork our mirror on github [1] and activate
+travis-ci for it.
 
+Thanks!
 Jan
+
+[1] https://github.com/xenomai-ci/xenomai
 
 -- 
 Siemens AG, Corporate Technology, CT RDA IOT SES-DE
