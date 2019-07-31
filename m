@@ -1,13 +1,16 @@
 MIME-Version: 1.0
-References: <CANWkrRNq5k0sRnu2QZm5O_VQdkOHXO+Nc9T7WyDmUUMNuwH1zQ@mail.gmail.com>
- <b43d0dd5-c4bf-4145-f155-b05dfbbf903e@siemens.com>
- <CANWkrROsZumbjvf0OOwita192OcL=-0JJmvbEivaF81Cx_Nd=Q@mail.gmail.com>
-In-Reply-To: <CANWkrROsZumbjvf0OOwita192OcL=-0JJmvbEivaF81Cx_Nd=Q@mail.gmail.com>
-From: Michael Smith <2michael.smith@gmail.com>
-Date: Wed, 31 Jul 2019 09:08:13 +0200
-Message-ID: <CANWkrROFdaAumt+R4KPnGxG7unKGC8xsXz2xYsmKdJmFJqMC9w@mail.gmail.com>
-Subject: Fwd: Linux UDP and RTNet
+References: <CAEmXcAxMLPYufU7aYD5kBxvtQ-jr8eq6Y+uRW+Td-NWzL=sw5w@mail.gmail.com>
+ <9a2d7001-a0d7-b87c-be89-c4cad2051273@siemens.com>
+ <CAEmXcAwpe3dVcriUjFYdvsQB0Kra13nY+yLtCDCyzoeCww+xCA@mail.gmail.com>
+ <CAEmXcAzc2Z1J0LTEtFXZ3TrXC767Z=6DSOCpicVHPO3yFh98_Q@mail.gmail.com>
+ <20190731070153.tp5c5naflbv3nmdw@jholzmayr.localdomain>
+In-Reply-To: <20190731070153.tp5c5naflbv3nmdw@jholzmayr.localdomain>
+From: danwe <daniel.wenninger92@gmail.com>
+Date: Wed, 31 Jul 2019 09:59:41 +0200
+Message-ID: <CAEmXcAx1ehvtUSR9fMPfV21ts3kcGPHnHYOfAZf82hJwb=wCQA@mail.gmail.com>
+Subject: Re: Fwd: Building Xenomai 3 , Kernel 4 ... for BeagleBone Black
 Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,40 +19,78 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "Xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Josef Holzmayr <holzmayr@rsi-elektrotechnik.de>, xenomai@xenomai.org
 
-On Tue, Jul 30, 2019 at 4:24 PM Jan Kiszka <jan.kiszka@siemens.com> wrote:
->
-> On 30.07.19 15:07, Michael Smith via Xenomai wrote:
-> > Hi I've got a RTNet setup running with a TDMA-based network.
-> > At the same time I try to send normal UDP packets on another non
-> > real-time Linux NIC.
->
-> How do you try this? With a Xenomai application that opens a UDP socket? Then
-> you have to ensure that it does that using the non-RT APIs, e.g. by wrapping the
-> socket call: __STD(socket(...));
+Thanks for the setup. Sorry for asking but as I am new to that topic I
+don't understand how to use that site u sent me. Do I have to download
+Xenomai 3 first and then copy/paste the files on your site? I don't really
+understand the readme file.
+For example: In the readme file I see the following:
 
-It works perfectly.
-Thanks Jan.
 
+
+After adding meta-core and a BSP layer (right now there's only meta-beagleb=
+one
+available, so probably that one!), build the xenomai-test-image.
+
+
+So now I ask myself. Where should I add meta-core and meta-beaglebone to
+and how can I build the xenomai-test-image then?
+I don't understand the dependencies.
+
+Thanks.
+
+Daniel
+
+Am Mi., 31. Juli 2019 um 09:01 Uhr schrieb Josef Holzmayr <
+holzmayr@rsi-elektrotechnik.de>:
+
+> On Wed, Jul 31, 2019 at 08:50:18AM +0200, danwe via Xenomai wrote:
+> > Thanks for your response. Maybe it was a bit unclear from my side:
+> > I need to build the Kernel and Xenomai 3. So I do neither want to build
+> the
+> > kernel and userland tools on top of an existing image nor building
+> anything
+> > on top. Or what do you mean by building on top? Is there anything
+> "deeper"
+> > than a Kernel?
+> > And again: Does building a Kernel with Xenomai 3 depends on the paltfor=
+m
+> I
+> > want to use it on? I need to use it on a BeagleBone Black. Do I have to
+> > change anything for use it on BBB?
+> > Thanks.
 >
-> Jan
+> You could use the setup I employ for doing the CIP kernel tests. All
+> nicely prepared for Xenomai 3 and BBB, only thing you'd have to swap out
+> is the kernel itself which is not too complicated.
 >
-> > I get the error message "No route to host" when I try to do this.
-> > As soon as I stop RTNet the non real-time NIC is able to send the UDP
-> > packet normally.
-> >
-> > I assume because RTNet is UDP based it sees all UDP packets as RTNet bound.
-> > Is there a way arround this? Is it possible to send a non real-time
-> > UDP packet on a 2nd non real-time NIC while RTNet is running?
-> > I assume maybe by using rtroute something like this can work, but I'm
-> > not sure how this will be done.
-> >
-> > Thanks
-> > Michael Smith
-> >
+> https://github.com/LetoThe2nd/meta-xenomai
 >
+> Greetz
 > --
-> Siemens AG, Corporate Technology, CT RDA IOT SES-DE
-> Corporate Competence Center Embedded Linux
-
+> =E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=
+=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94
+> Josef Holzmayr
+> Software Developer Embedded Systems
+>
+> Tel: +49 8444 9204-48
+> Fax: +49 8444 9204-50
+>
+> R-S-I Elektrotechnik GmbH & Co. KG
+> Woelkestrasse 11
+> D-85301 Schweitenkirchen
+> www.rsi-elektrotechnik.de
+> =E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=
+=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94
+> Amtsgericht Ingolstadt =E2=80=93 GmbH: HRB 191328 =E2=80=93 KG: HRA 17039=
+3
+> Gesch=C3=A4ftsf=C3=BChrer: Dr.-Ing. Michael Sorg, Dipl.-Ing. Franz Sorg
+> Ust-IdNr: DE 128592548
+>
+> _____________________________________________________________
+> Amtsgericht Ingolstadt - GmbH: HRB 191328 - KG: HRA 170363
+> Gesch=C3=A4ftsf=C3=BChrer: Dr.-Ing. Michael Sorg, Dipl.-Ing. Franz Sorg
+> USt-IdNr.: DE 128592548
+>
+>
