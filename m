@@ -1,19 +1,10 @@
-MIME-Version: 1.0
-References: <CAEmXcAxMLPYufU7aYD5kBxvtQ-jr8eq6Y+uRW+Td-NWzL=sw5w@mail.gmail.com>
- <9a2d7001-a0d7-b87c-be89-c4cad2051273@siemens.com>
- <CAEmXcAwpe3dVcriUjFYdvsQB0Kra13nY+yLtCDCyzoeCww+xCA@mail.gmail.com>
- <CAEmXcAzc2Z1J0LTEtFXZ3TrXC767Z=6DSOCpicVHPO3yFh98_Q@mail.gmail.com>
- <20190731070153.tp5c5naflbv3nmdw@jholzmayr.localdomain>
- <CAEmXcAx1ehvtUSR9fMPfV21ts3kcGPHnHYOfAZf82hJwb=wCQA@mail.gmail.com>
- <20190731082237.ccmhpfgda4fdd3nr@jholzmayr.localdomain>
- <CAEmXcAwdDAY+a+c1B8X1UZK+FRhyGt+0GcN6erp_XFfh4caNKQ@mail.gmail.com>
- <CAEmXcAw3LO1Dma5M9TheJu4z-bTiisaPUWCPmD-HUegUkB3QZA@mail.gmail.com>
-In-Reply-To: <CAEmXcAw3LO1Dma5M9TheJu4z-bTiisaPUWCPmD-HUegUkB3QZA@mail.gmail.com>
-From: danwe <daniel.wenninger92@gmail.com>
-Date: Thu, 1 Aug 2019 09:46:23 +0200
-Message-ID: <CAEmXcAydr=Kr9AZiLpChrXn7ufi1m32uUET2Rik1a_HNPsbr5Q@mail.gmail.com>
-Subject: Re: Fwd: Building Xenomai 3 , Kernel 4 ... for BeagleBone Black
-Content-Type: text/plain; charset="UTF-8"
+Message-ID: <4a206d9deb77bc032eef9c689aa1266cf9ed12c3.camel@sprinte.eu>
+Subject: SCHED_WEAK vs linux regular threads
+From: Julien Blanc <julien.blanc@sprinte.eu>
+Date: Thu, 01 Aug 2019 11:53:27 +0200
+Content-Type: text/plain; charset="utf-8"
+Mime-Version: 1.0
+Content-Transfer-Encoding: 8bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -22,251 +13,48 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
+To: "Xenomai@xenomai.org" <Xenomai@xenomai.org>
 
-Here are the warning and error outputs of my built: Do you have any ideas I
-can change this? I appreciate any suggestions.
+Hi,
 
-Initialising tasks: 100% |#######################################| Time:
-0:00:17
+I'm a bit puzzled about how SCHED_WEAK behaves vs linux regular
+threads.
 
-NOTE: Executing SetScene Tasks
+Suppose a kernel built without CONFIG_XENO_OPT_SCHED_WEAK (so, only 0
+is a valid value for sched_priority, which should be the same as
+SCHED_OTHER).
 
-NOTE: Executing RunQueue Tasks
+Let’s say i have four threads :
+* thread 1, RT, with SCHED_FIFO policy and a sched_param value of 90
+* thread 2, RT, with SCHED_WEAK policy and a sched_param value of 0
+* thread 3, RT, with SCHED_WEAK policy and a sched_param value of 0
+* thread 4, non-RT, with SCHED_RR policy and a sched_param value of 30
 
-WARNING: bzip2-1.0.6-r5 do_fetch: Checksum mismatch for local file
-/work/build/downloads/bzip2-1.0.6.tar.gz
+Now, what happens regarding the scheduling ?
+* thread 1 always run first as long as it does not leave the primary
+domain
+* thread 2 and 3 enters the primary domain only during xenomai xthread-
+only calls ? And leaves it just after.
+* if thread 2 and 4 competes for the CPU (while thread 2 is in the
+secondary domain), who is given CPU ?
+* how does thread 2 and 3 competes (while in secondary mode) against
+linux kernel (while in secondary mode) ? And other programs ? (ie, can
+a SCHED_WEAK process eating all cpu hang the whole linux system, like
+with standard RT threads).
+* is there a way to prioritize thread 2 and thread 3 (while in the
+secondary domain) ? (for example by adjusting a posix only priority).
+Or is it the whole reason behind CONFIG_XENO_OPT_SCHED_WEAK ?
 
-Cleaning and trying again.
+Regards,
 
-WARNING: bzip2-1.0.6-r5 do_fetch: Renaming
-/work/build/downloads/bzip2-1.0.6.tar.gz to
-/work/build/downloads/bzip2-1.0.6.tar.gz_bad-checksum_527819af097ee3014e4d442315b6f283
+Julien
 
-WARNING: bzip2-1.0.6-r5 do_fetch: Checksum failure encountered with
-download of http://www.bzip.org/1.0.6/bzip2-1.0.6.tar.gz - will attempt
-other sources if available
 
-WARNING: libpcre-native-8.39-r0 do_fetch: Checksum mismatch for local file
-/work/build/downloads/pcre-8.39.tar.bz2
 
-Cleaning and trying again.
 
-WARNING: libpcre-native-8.39-r0 do_fetch: Renaming
-/work/build/downloads/pcre-8.39.tar.bz2 to
-/work/build/downloads/pcre-8.39.tar.bz2_bad-checksum_dd1af1bf51a2626b9577074690512335
 
-WARNING: libpcre-native-8.39-r0 do_fetch: Checksum failure encountered with
-download of
-http://downloads.sourceforge.net/projects/pcre/files/prce/8.39/pcre-8.39.tar.bz2
--
-will attempt other sources if available
 
-WARNING: popt-native-1.16-r3 do_fetch: Failed to fetch URL
-http://rpm5.org/files/popt/popt-1.16.tar.gz, attempting MIRRORS if available
 
-WARNING: rpm-native-5.4.16-r0 do_fetch: Failed to fetch URL
-http://www.rpm5.org/files/rpm/rpm-5.4/rpm-5.4.15-0.20140824.src.rpm;name=srpm;extract=rpm-5.4.15.tar.gz,
-attempting MIRRORS if available
 
-WARNING: shadow-native-4.2.1-r0 do_fetch: Failed to fetch URL
-http://pkg-shadow.alioth.debian.org/releases/shadow-4.2.1.tar.xz,
-attempting MIRRORS if available
 
-WARNING: xcb-proto-1.12-r0 do_fetch: Failed to fetch URL
-http://xcb.freedesktop.org/dist/xcb-proto-1.12.tar.bz2, attempting MIRRORS
-if available
 
-WARNING: libpthread-stubs-0.3-r0 do_fetch: Failed to fetch URL
-http://xcb.freedesktop.org/dist/libpthread-stubs-0.3.tar.bz2, attempting
-MIRRORS if available
-
-WARNING: tcl-native-8.6.6-r0 do_fetch: Failed to fetch URL
-http://downloads.sourceforge.net/tcl/tcl8.6.6-src.tar.gz, attempting
-MIRRORS if available
-
-WARNING: coreutils-8.25-r0 do_fetch: Failed to fetch URL
-http://distfiles.gentoo.org/distfiles/coreutils-8.25-man.tar.xz;name=manpages,
-attempting MIRRORS if available
-
-Currently  1 running tasks (1362 of 2032)  66%
-|####################           |
-
-Currently  1 running tasks (1362 of 2032)  66%
-|####################           |
-
-ERROR: xenomai-test-image-1.0-r0 do_image_wic: Function failed:
-do_image_wic (log file is located at
-/work/build/tmp/work/beaglebone_xenomai-poky-linux-gnueabi/xenomai-test-image/1.0-r0/temp/log.do_image_wic.30602)
-
-ERROR: Logfile of failure stored in:
-/work/build/tmp/work/beaglebone_xenomai-poky-linux-gnueabi/xenomai-test-image/1.0-r0/temp/log.do_image_wic.30602
-
-Log data follows:
-
-| DEBUG: Executing python function set_image_size
-
-| DEBUG: Python function set_image_size finished
-
-| DEBUG: Executing shell function do_image_wic
-
-| Checking basic build environment...
-
-| Done.
-
-|
-
-| Build artifacts not found, exiting.
-
-|   (Please check that the build artifacts for the machine
-
-|    selected in local.conf actually exist and that they
-
-|    are the correct artifacts for the image (.wks file)).
-
-|
-
-| The artifact that couldn't be found was kernel-dir:
-
-|   /work/build/tmp/deploy/images/beaglebone-xenomai
-
-| WARNING: exit code 1 from a shell command.
-
-| ERROR: Function failed: do_image_wic (log file is located at
-/work/build/tmp/work/beaglebone_xenomai-poky-linux-gnueabi/xenomai-test-image/1.0-r0/temp/log.do_image_wic.30602)
-
-ERROR: Task (/repo/meta-core/recipes-xenomai/images/xenomai-test-image.bb:do_image_wic)
-failed with exit code '1'
-
-NOTE: Tasks Summary: Attempted 2029 tasks of which 7 didn't need to be
-rerun and 1 failed.
-
-
-
-Summary: 1 task failed:
-
-  /repo/meta-core/recipes-xenomai/images/xenomai-test-image.bb:do_image_wic
-
-Summary: There were 14 WARNING messages shown.
-
-Summary: There was 1 ERROR message shown, returning a non-zero exit code.
-
-Exception ignored when trying to write to the signal wakeup fd:
-
-BlockingIOError: [Errno 11] Resource temporarily unavailable
-
-Exception ignored when trying to write to the signal wakeup fd:
-
-BlockingIOError: [Errno 11] Resource temporarily unavailable
-
-Exception ignored when trying to write to the signal wakeup fd:
-
-BlockingIOError: [Errno 11] Resource temporarily unavailable
-
-Exception ignored when trying to write to the signal wakeup fd:
-
-BlockingIOError: [Errno 11] Resource temporarily unavailable
-
-Exception ignored when trying to write to the signal wakeup fd:
-
-BlockingIOError: [Errno 11] Resource temporarily unavailable
-
-Exception ignored when trying to write to the signal wakeup fd:
-
-BlockingIOError: [Errno 11] Resource temporarily unavailable
-
-Exception ignored when trying to write to the signal wakeup fd:
-
-BlockingIOError: [Errno 11] Resource temporarily unavailable
-
-Exception ignored when trying to write to the signal wakeup fd:
-
-BlockingIOError: [Errno 11] Resource temporarily unavailable
-
-Exception ignored when trying to write to the signal wakeup fd:
-
-BlockingIOError: [Errno 11] Resource temporarily unavailable
-
-Exception ignored when trying to write to the signal wakeup fd:
-
-BlockingIOError: [Errno 11] Resource temporarily unavailable
-
-Exception ignored when trying to write to the signal wakeup fd:
-
-BlockingIOError: [Errno 11] Resource temporarily unavailable
-
-Exception ignored when trying to write to the signal wakeup fd:
-
-BlockingIOError: [Errno 11] Resource temporarily unavailable
-
-Exception ignored when trying to write to the signal wakeup fd:
-
-BlockingIOError: [Errno 11] Resource temporarily unavailable
-
-Exception ignored when trying to write to the signal wakeup fd:
-
-BlockingIOError: [Errno 11] Resource temporarily unavailable
-
-Exception ignored when trying to write to the signal wakeup fd:
-
-BlockingIOError: [Errno 11] Resource temporarily unavailable
-
-Exception ignored when trying to write to the signal wakeup fd:
-
-BlockingIOError: [Errno 11] Resource temporarily unavailable
-
-Exception ignored when trying to write to the signal wakeup fd:
-
-BlockingIOError: [Errno 11] Resource temporarily unavailable
-
-Exception ignored when trying to write to the signal wakeup fd:
-
-BlockingIOError: [Errno 11] Resource temporarily unavailable
-
-Exception ignored when trying to write to the signal wakeup fd:
-
-BlockingIOError: [Errno 11] Resource temporarily unavailable
-
-Exception ignored when trying to write to the signal wakeup fd:
-
-BlockingIOError: [Errno 11] Resource temporarily unavailable
-
-Exception ignored when trying to write to the signal wakeup fd:
-
-BlockingIOError: [Errno 11] Resource temporarily unavailable
-
-Exception ignored when trying to write to the signal wakeup fd:
-
-BlockingIOError: [Errno 11] Resource temporarily unavailable
-
-Exception ignored when trying to write to the signal wakeup fd:
-
-BlockingIOError: [Errno 11] Resource temporarily unavailable
-
-Exception ignored when trying to write to the signal wakeup fd:
-
-BlockingIOError: [Errno 11] Resource temporarily unavailable
-
-Exception ignored when trying to write to the signal wakeup fd:
-
-BlockingIOError: [Errno 11] Resource temporarily unavailable
-
-Exception ignored when trying to write to the signal wakeup fd:
-
-BlockingIOError: [Errno 11] Resource temporarily unavailable
-
-Exception ignored when trying to write to the signal wakeup fd:
-
-BlockingIOError: [Errno 11] Resource temporarily unavailable
-
-Exception ignored when trying to write to the signal wakeup fd:
-
-BlockingIOError: [Errno 11] Resource temporarily unavailable
-
-Exception ignored when trying to write to the signal wakeup fd:
-
-BlockingIOError: [Errno 11] Resource temporarily unavailable
-
-Exception ignored when trying to write to the signal wakeup fd:
-
-BlockingIOError: [Errno 11] Resource temporarily unavailable
