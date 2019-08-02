@@ -1,13 +1,12 @@
-Message-ID: <7077517db50c06adaefa6ca637855ab9639c1701.camel@sprinte.eu>
-Subject: Re: SCHED_WEAK vs linux regular threads
-From: Julien Blanc <julien.blanc@sprinte.eu>
-Date: Thu, 01 Aug 2019 15:11:14 +0200
-In-Reply-To: <17cd5997-6de8-3676-cf38-58a2d989849e@siemens.com>
-References: <4a206d9deb77bc032eef9c689aa1266cf9ed12c3.camel@sprinte.eu>
- <17cd5997-6de8-3676-cf38-58a2d989849e@siemens.com>
-Content-Type: text/plain; charset="utf-8"
-Mime-Version: 1.0
-Content-Transfer-Encoding: 8bit
+MIME-Version: 1.0
+References: <CAEmXcAxMLPYufU7aYD5kBxvtQ-jr8eq6Y+uRW+Td-NWzL=sw5w@mail.gmail.com>
+In-Reply-To: <CAEmXcAxMLPYufU7aYD5kBxvtQ-jr8eq6Y+uRW+Td-NWzL=sw5w@mail.gmail.com>
+From: Pierre FICHEUX <pierre.ficheux@smile.fr>
+Date: Fri, 2 Aug 2019 09:29:34 +0200
+Message-ID: <CAFc1U0vT=HkGEsbh_us_Py1PJyMRkMm-j+3ffToCJGjJmUz4Sw@mail.gmail.com>
+Subject: Re: Building Xenomai 3 , Kernel 4 ... for BeagleBone Black
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,36 +15,48 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jan Kiszka <jan.kiszka@siemens.com>, "Xenomai@xenomai.org" <Xenomai@xenomai.org>
+To: danwe <daniel.wenninger92@gmail.com>
+Cc: xenomai@xenomai.org
 
-Le jeudi 01 août 2019 à 13:25 +0200, Jan Kiszka a écrit :
-> On 01.08.19 11:53, Julien Blanc via Xenomai wrote:
-> > Hi,
-> > 
-> > Let’s say i have four threads :
-> > * thread 1, RT, with SCHED_FIFO policy and a sched_param value of
-> > 90
-> > * thread 2, RT, with SCHED_WEAK policy and a sched_param value of 0
-> > * thread 3, RT, with SCHED_WEAK policy and a sched_param value of 0
-> 
-> Should 2 and 3 have the same parameters in your scenario?
+Hi,
 
-That is not necessary. But our kernel currently lacks OPT_SCHED_WEAK,
-so i need to consider whether we need to rebuild and deploy a new one
-or not (i’d like to avoid it for now).
+I did a test with Xenomai 3 + BR for BBB.
 
-> You can assign non-zero prios to thread 2 and 3, ordering it this
-> way, but then also while both are in primary mode. For "weak"
-> ordering, you could also leave their prio at 0 and play with their
-> nice level. That would be a Linux-only "prio".
+I can send you the 'external' tree you can use for BR configuration.
 
-I’ll give that a try.
+$ make BR2_EXTERNAL=3D<path>/external  bbb_xeno3_defconfig
+$ make
 
-Thanks and thanks to Philippe for your detailed answers, this is much
-clearer now.
-
-Regards,
-
-Julien
+regards
 
 
+
+Le lun. 29 juil. 2019 =C3=A0 19:24, danwe via Xenomai <xenomai@xenomai.org>=
+ a
+=C3=A9crit :
+
+> Hi,
+>
+> Is there any different of Building Xenomai 3 with the proper Kernel for a
+> BBB to any other microcomputers/computers?
+> On https://xenomai.org/documentation/xenomai-3/html/README.INSTALL/ are s=
+o
+> many different examples and I do not understand what I need to do to buil=
+d
+> this.
+> Is there any example to build Xenomai 3 and Kernel with Buildroot?
+> Does flashing on SD-Card depend on building Xenomai with Kernel?
+> I just need to run Xenomai 3 with the proper Kernel on a BeagleBone Black
+>
+> Thanks.
+>
+> Daniel
+>
+
+
+--=20
+
+Pierre FICHEUX -/- CTO Smile ECS, France -\- pierre.ficheux@smile.fr
+                             http://www.smile.fr
+                             https://smile.eu/fr/offres/embarque-iot
+I would love to change the world, but they won't give me the source code
