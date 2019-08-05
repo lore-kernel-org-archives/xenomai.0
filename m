@@ -1,13 +1,10 @@
 MIME-Version: 1.0
-References: <CAFc1U0sBrAbhuNe6Zy-C861Nxc_xB5uyV=93WK3c4JbUpNXiSQ@mail.gmail.com>
- <7001086b-fe6c-5ecb-c3e1-744e691d3f08@siemens.com>
-In-Reply-To: <7001086b-fe6c-5ecb-c3e1-744e691d3f08@siemens.com>
-From: Pierre FICHEUX <pierre.ficheux@smile.fr>
-Date: Mon, 5 Aug 2019 10:24:17 +0200
-Message-ID: <CAFc1U0sQ4HR4fQ6_CSfKuHgEDi5A_iWkzwKbGeTEVCH0vNq6OA@mail.gmail.com>
-Subject: Re: Ftrace for Xenomai 3
+From: Nitin Kulkarni <nitin.kulkarni@mindmusiclabs.com>
+Date: Mon, 5 Aug 2019 17:51:01 +0200
+Message-ID: <CAPgPmP0HyjmFZ0tVGi=JACZfZe8NM1SyveOO71fC0mKRiig1_g@mail.gmail.com>
+Subject: Hard lock up on Raspberry pi 3 when RTDM interrupt from SPI
+ peripheral or from DMA is invoked
 Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,53 +13,29 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jan Kiszka <jan.kiszka@siemens.com>
-Cc: xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-Thx a lot Jan.
+Hello,
+I am trying to request DMA interrupts in real-time domain. When I request
+the irq with rtdm_irq_request(), the irq is successfully registered but at
+the first interrupt the system goes into a hard locked state.
+I tried the RTDM SPI driver for RPI (spi-bcm2835.c) provided in the Xenomai
+upstream,
+even that makes the system lock up. I have enabled IPIPE_DEBUG and tried to
+see if I get any useful trace but no luck.
 
-Le ven. 2 ao=C3=BBt 2019 =C3=A0 10:40, Jan Kiszka <jan.kiszka@siemens.com> =
-a =C3=A9crit :
+GPIO interupts working:
+I thought to check if the GPIO interrupts also have same issue but
+fortunately the GPIO interrupts work fine.
+I suspect (Correct me if I am wrong) it has got to do with the nested irq
+controllers in bcm2836 and bcm2837 which makes it different from bcm2835.
+The GPIO irqs are not routed through these interrupt controllers I think
+and thus the i-pipe patch works fine for bcm2836 as well.
 
-> On 02.08.19 09:37, Pierre FICHEUX via Xenomai wrote:
-> > Hi all,
-> >
-> > I read in an article (in french) by Philippe that Ftrace was available
-> for
-> > Xenomai 3.
-> >
-> >
-> https://connect.ed-diamond.com/Open-Silicium/OS-016/Xenomai-3-hybride-et-=
-cameleon
-> >
-> > "Si Ftrace l'a =C3=A9t=C3=A9 (port=C3=A9) pour Xenomai, d'autres manque=
-nt encore
-> > cruellement, comme Perf  et Valgrind "
-> >
-> > -> approximative translation to  english:
-> >
-> > "Ftrace was ported to Xenomai but some tools such as Perf and Valdgrind
-> are
-> > still missing"
-> >
-> > So what about Ftrace ?
->
-> Just try trace-cmd record -e "cobalt_*". We also have some plugin for
-> Kernelshark here, but that needs a refresher with the release 1.0
-> (baseline was
-> once kindly provided by Steven and his folks).
->
-> Jan
->
-> --
-> Siemens AG, Corporate Technology, CT RDA IOT SES-DE
-> Corporate Competence Center Embedded Linux
->
+It would be great if someone can throw some light onto this problem. Has
+anyone tried to use real-time SPI or DMA on a RPI 3 ? Or if someone can
+show some direction in how to fix the irq chips driver it would be very
+helpful.
 
-
---=20
-
-Pierre FICHEUX -/- CTO Smile ECS, France -\- pierre.ficheux@smile.fr
-                             http://www.smile.fr
-                             https://smile.eu/fr/offres/embarque-iot
-I would love to change the world, but they won't give me the source code
+Thanks,
+Nitin
