@@ -1,7 +1,9 @@
 From: Tormod Volden <lists.tormod@gmail.com>
-Subject: [PATCH] e1000: Print mac address on one line
-Date: Sun, 11 Aug 2019 21:07:05 +0200
-Message-Id: <1565550426-4788-1-git-send-email-lists.tormod@gmail.com>
+Subject: [PATCH] loopback: Prepend module name to log messages
+Date: Sun, 11 Aug 2019 21:07:06 +0200
+Message-Id: <1565550426-4788-2-git-send-email-lists.tormod@gmail.com>
+In-Reply-To: <1565550426-4788-1-git-send-email-lists.tormod@gmail.com>
+References: <1565550426-4788-1-git-send-email-lists.tormod@gmail.com>
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,28 +18,41 @@ From: Tormod Volden <debian.tormod@gmail.com>
 
 Signed-off-by: Tormod Volden <debian.tormod@gmail.com>
 ---
+ kernel/drivers/net/drivers/loopback.c | 7 +++++--
+ 1 file changed, 5 insertions(+), 2 deletions(-)
 
-KERN_CONT is not multithread-safe but in most cases this will
-show up nicer than it did.
-
- kernel/drivers/net/drivers/e1000/e1000_main.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
-
-diff --git a/kernel/drivers/net/drivers/e1000/e1000_main.c b/kernel/drivers/net/drivers/e1000/e1000_main.c
-index 491b828..329c69c 100644
---- a/kernel/drivers/net/drivers/e1000/e1000_main.c
-+++ b/kernel/drivers/net/drivers/e1000/e1000_main.c
-@@ -918,8 +918,9 @@ static int e1000_probe(struct pci_dev *pdev,
- 		 "32-bit"));
- 	}
+diff --git a/kernel/drivers/net/drivers/loopback.c b/kernel/drivers/net/drivers/loopback.c
+index ef5323a..ebfcf5c 100644
+--- a/kernel/drivers/net/drivers/loopback.c
++++ b/kernel/drivers/net/drivers/loopback.c
+@@ -18,6 +18,9 @@
+  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+  */
  
-+	printk(KERN_INFO "e1000: hw ");
- 	for (i = 0; i < 6; i++)
--		printk("%2.2x%c", netdev->dev_addr[i], i == 5 ? '\n' : ':');
-+		printk(KERN_CONT "%2.2x%c", netdev->dev_addr[i], i == 5 ? '\n' : ':');
++#define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
++
++#include <linux/printk.h>
+ #include <linux/module.h>
+ #include <linux/kernel.h>
+ #include <linux/init.h>
+@@ -93,7 +96,7 @@ static int __init loopback_init(void)
+     int err;
+     struct rtnet_device *rtdev;
  
- 	/* reset the hardware with the new settings */
- 	e1000_reset(adapter);
+-    printk("initializing loopback...\n");
++    pr_info("initializing loopback interface...\n");
+ 
+     if ((rtdev = rt_alloc_etherdev(0, 1)) == NULL)
+ 	return -ENODEV;
+@@ -129,7 +132,7 @@ static void __exit loopback_cleanup(void)
+ {
+     struct rtnet_device *rtdev = rt_loopback_dev;
+ 
+-    printk("removing loopback...\n");
++    pr_info("removing loopback interface...\n");
+ 
+     rt_unregister_rtnetdev(rtdev);
+     rt_rtdev_disconnect(rtdev);
 -- 
 2.7.4
 
