@@ -1,14 +1,12 @@
-From: Shabaz Yousaf <shabaz_yousaf@hotmail.com>
-Subject: Re: Xenomai install question (get error running test apps)
-Date: Mon, 12 Aug 2019 20:22:44 +0000
-Message-ID: <DB6P18901MB02143E547F1E93E87015F2CF84D30@DB6P18901MB0214.EURP189.PROD.OUTLOOK.COM>
-References: <DB6P18901MB021417660CD32E74B1F2201184D30@DB6P18901MB0214.EURP189.PROD.OUTLOOK.COM>,
- <CAArsGaaF-oZOnCi01=Gmjv3upgES8dOQAd3vmJNuaHrFP8+HQg@mail.gmail.com>
-In-Reply-To: <CAArsGaaF-oZOnCi01=Gmjv3upgES8dOQAd3vmJNuaHrFP8+HQg@mail.gmail.com>
-Content-Language: en-GB
+From: "Q. Gylstorff" <Quirin.Gylstorff@siemens.com>
+Subject: [xenomai-images][PATCH v2] recipes-xenomai: Add recipes for all major
+ branches
+Date: Tue, 13 Aug 2019 13:43:36 +0200
+Message-Id: <20190813114336.22561-1-Quirin.Gylstorff@siemens.com>
+In-Reply-To: <20190812124647.26500-1-Quirin.Gylstorff@siemens.com>
+References: <20190812124647.26500-1-Quirin.Gylstorff@siemens.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,54 +15,192 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: xenomai@xenomai.org
+Cc: Quirin Gylstorff <quirin.gylstorff@siemens.com>, Jan Kiszka <jan.kiszka@siemens.com>
 
-Hi Tormod,
+From: Quirin Gylstorff <quirin.gylstorff@siemens.com>
 
-Thanks! I'll try that now and report back.
-It did look suspicious to me too, but two BeagleBone websites had the ./con=
-figure flags set the way I tried, but I believe it's very likely the websit=
-es are outdated
-(this is a common problem with BeagleBone Black info, there is a lot of out=
-dated or incorrect information on websites : (
-I'll write it up once I get it running.
+For testing it should be possible to switch between different
+xenomai versions. Select the version by adding the
+following line to kas.yml with:
+  xenomai-version: |
+    PREFERRED_VERSION_xenomai = "<version>"
+ e.g. the latest master branch with:
+  xenomai-version: |
+    PREFERRED_VERSION_xenomai = "master"
 
-Thanks again for your help.
+Signed-off-by: Quirin Gylstorff <quirin.gylstorff@siemens.com>
+---
+Changes:
+v2:
+ - fix identation
+ - move functions to xenomai.inc
+ - use bitbake to get commitid
+ - add enable-smp to stable
+ - remove AUTOINC from version - feature is not yet available in ISAR 
 
-Shabaz.
+ kas.yml                                   |  2 ++
+ recipes-xenomai/xenomai/xenomai.inc       | 25 +++++++++++++++++++++++
+ recipes-xenomai/xenomai/xenomai_3.0.9.bb  | 20 ++++++++++++++++++
+ recipes-xenomai/xenomai/xenomai_master.bb | 19 +++++++++++++++++
+ recipes-xenomai/xenomai/xenomai_next.bb   | 10 ++-------
+ recipes-xenomai/xenomai/xenomai_stable.bb | 20 ++++++++++++++++++
+ 6 files changed, 88 insertions(+), 8 deletions(-)
+ create mode 100644 recipes-xenomai/xenomai/xenomai_3.0.9.bb
+ create mode 100644 recipes-xenomai/xenomai/xenomai_master.bb
+ create mode 100644 recipes-xenomai/xenomai/xenomai_stable.bb
 
-________________________________
-From: Tormod Volden <lists.tormod@gmail.com>
-Sent: 12 August 2019 08:52
-To: xenomai@xenomai.org <xenomai@xenomai.org>
-Cc: Shabaz Yousaf <shabaz_yousaf@hotmail.com>
-Subject: Re: Xenomai install question (get error running test apps)
+diff --git a/kas.yml b/kas.yml
+index 3694bcc..2bf62d4 100644
+--- a/kas.yml
++++ b/kas.yml
+@@ -35,3 +35,5 @@ local_conf_header:
+     CONF_VERSION = "1"
+   cross: |
+     ISAR_CROSS_COMPILE = "1"
++  xenomai-version: |
++    PREFERRED_VERSION_xenomai = "stable"
+diff --git a/recipes-xenomai/xenomai/xenomai.inc b/recipes-xenomai/xenomai/xenomai.inc
+index 5559829..e7a2901 100644
+--- a/recipes-xenomai/xenomai/xenomai.inc
++++ b/recipes-xenomai/xenomai/xenomai.inc
+@@ -13,6 +13,8 @@ inherit dpkg
+ 
+ PROVIDES += "xenomai-kernel-source xenomai-runtime"
+ 
++# use bitbake get_srcrev to get the current commit id
++COMMIT="${@bb.fetch2.get_srcrev(d).strip('AUTOINC+')}"
+ do_prepare_build() {
+ 	# The xenomai-kernel-source package is supposed to be generic, but we
+ 	# build it per architecture in Isar, and those packages happen to be
+@@ -20,3 +22,26 @@ do_prepare_build() {
+ 	# target architecture to avoid conflicts.
+ 	sudo sed -i 's/Architecture: all/Architecture: any/' ${S}/debian/control
+ }
++
++# this function is only necessary for stable as long as 
++# "debian: Add config folder to xenomai-kernel-source" and
++# "debian: Enable SMP in userspace package"
++# are not part of the stable branch
++do_prepare_stable_for_build() {
++    # Enable smp for userspace packages
++    sudo sed -i \
++    's/--with-testdir=\/usr\/lib\/xenomai\/testsuite/--with-testdir=\/usr\/lib\/xenomai\/testsuite \\\n\t    --enable-smp/' \
++    ${S}/debian/rules
++    # The xenomai-kernel-source package is supposed to contain the config
++    # directory. But the rules files does not copy the folder to /usr/src
++    sudo sed -i 's/cp -a kernel include scripts/cp -a config kernel include scripts/' ${S}/debian/rules
++}
++
++
++dpkg_runbuild_prepend() {
++    bbplain $(printf "xenomai-%s: Building revision %.20s\n" \
++                     ${PV} ${COMMIT})
++
++    sudo chroot --userspec=$( id -u ):$( id -g ) ${BUILDCHROOT_DIR} \
++        sh -c "cd ${PP}/${PPS}; scripts/bootstrap"
++}
+\ No newline at end of file
+diff --git a/recipes-xenomai/xenomai/xenomai_3.0.9.bb b/recipes-xenomai/xenomai/xenomai_3.0.9.bb
+new file mode 100644
+index 0000000..6fb3ff8
+--- /dev/null
++++ b/recipes-xenomai/xenomai/xenomai_3.0.9.bb
+@@ -0,0 +1,20 @@
++#
++# Xenomai Real-Time System
++#
++# Copyright (c) Siemens AG, 2019
++#
++# Authors:
++#  Quirin Gylstorff <quirin.gylstorff@siemens.com>
++#
++# SPDX-License-Identifier: MIT
++#
++
++require xenomai.inc
++SRC_URI = " \
++    git://gitlab.denx.de/Xenomai/xenomai.git;protocol=https;branch=stable/v3.0.x;tag=v${PV} \
++    "
++S = "${WORKDIR}/git"
++
++addtask prepare_stable_for_build before do_prepare_build after do_patch
++
++
+diff --git a/recipes-xenomai/xenomai/xenomai_master.bb b/recipes-xenomai/xenomai/xenomai_master.bb
+new file mode 100644
+index 0000000..d95ede6
+--- /dev/null
++++ b/recipes-xenomai/xenomai/xenomai_master.bb
+@@ -0,0 +1,19 @@
++#
++# Xenomai Real-Time System
++#
++# Copyright (c) Siemens AG, 2019
++#
++# Authors:
++#  Quirin Gylstorff <quirin.gylstorff@siemens.com>
++#
++# SPDX-License-Identifier: MIT
++#
++
++require xenomai.inc
++
++SRC_URI = " \
++    git://gitlab.denx.de/Xenomai/xenomai.git;protocol=https;branch=master"
++SRCREV = "${AUTOREV}"
++PV = "master"
++S = "${WORKDIR}/git"
++
+diff --git a/recipes-xenomai/xenomai/xenomai_next.bb b/recipes-xenomai/xenomai/xenomai_next.bb
+index 72e5758..e216124 100644
+--- a/recipes-xenomai/xenomai/xenomai_next.bb
++++ b/recipes-xenomai/xenomai/xenomai_next.bb
+@@ -13,15 +13,9 @@ require xenomai.inc
+ 
+ SRC_URI = " \
+     git://gitlab.denx.de/Xenomai/xenomai.git;protocol=https;branch=next"
+-SRCREV = "next"
+-PV = "9999-next"
++SRCREV = "${AUTOREV}" 
++PV = "next"
+ 
+ S = "${WORKDIR}/git"
+ 
+-dpkg_runbuild_prepend() {
+-    bbplain $(printf "xenomai-next: Building revision %.12s\n" \
+-                     $(cat ${S}/.git/refs/heads/next))
+ 
+-    sudo chroot --userspec=$( id -u ):$( id -g ) ${BUILDCHROOT_DIR} \
+-        sh -c "cd ${PP}/${PPS}; scripts/bootstrap"
+-}
+diff --git a/recipes-xenomai/xenomai/xenomai_stable.bb b/recipes-xenomai/xenomai/xenomai_stable.bb
+new file mode 100644
+index 0000000..bb77ec9
+--- /dev/null
++++ b/recipes-xenomai/xenomai/xenomai_stable.bb
+@@ -0,0 +1,20 @@
++#
++# Xenomai Real-Time System
++#
++# Copyright (c) Siemens AG, 2019
++#
++# Authors:
++#  Quirin Gylstorff <quirin.gylstorff@siemens.com>
++#
++# SPDX-License-Identifier: MIT
++#
++
++require xenomai.inc
++
++SRC_URI = " \
++    git://gitlab.denx.de/Xenomai/xenomai.git;protocol=https;branch=stable/v3.0.x"
++SRCREV = "${AUTOREV}"
++PV = "stable"
++S = "${WORKDIR}/git"
++
++addtask prepare_stable_for_build before do_prepare_build after do_patch
+-- 
+2.20.1
 
-On Mon, Aug 12, 2019 at 3:40 AM Shabaz Yousaf wrote:
 
-> In a nutshell, I installed a pre-built Xenomai kernel, and then tried to =
-install the remainder of it and run a sample app, but I get an error:
-> BUG in __xenomai_init(): [main] running non-SMP libraries on SMP kernel?
-
-I believe you'll need to configure your xenomai libraries for SMP. It
-defaults to --enable-smp=3Dyes only on x86/cobalt, otherwise to
---enable-smp=3Dno
-
-> I've installed the pre-built Xenomi kernel on a BeagleBone Black using so=
-me script it already has, and uname -a looks good:
-> Linux beaglebone 4.14.108-ti-xenomai-r114 #1 SMP PREEMPT Sun Aug 4 08:52:=
-45 UTC 2019 armv7l GNU/Linux
-
-Note the "SMP" in the kernel signature above.
-
-> cd xenomai-3.0.9
->
-> ./configure CFLAGS=3D"-march=3Darmv7-a -mfpu=3Dvfp3" LDFLAGS=3D"-march=3D=
-armv7-a -mfpu=3Dvfp3"
->
-
-https://gitlab.denx.de/Xenomai/xenomai/wikis/Troubleshooting#user-content-f=
-eature-mismatch-missingsmpnosmp
-
-Regards,
-Tormod
