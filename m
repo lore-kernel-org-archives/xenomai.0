@@ -1,16 +1,11 @@
-Subject: Re: [xenomai-images] smokey with qemu-arm and qemu-arm64 stalls gdb
- test
-References: <10555689-1a2e-ad9b-d502-1d6696ea358e@siemens.com>
- <9aa0462d-b75b-a909-335f-406453140abd@siemens.com>
- <1274d6ea-f43d-e7e7-5ad8-07e6af07a4a5@siemens.com>
-From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <7d0e9a44-20a9-2d79-3a7d-faad0638d52f@siemens.com>
-Date: Wed, 14 Aug 2019 12:32:00 +0200
 MIME-Version: 1.0
-In-Reply-To: <1274d6ea-f43d-e7e7-5ad8-07e6af07a4a5@siemens.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+In-Reply-To: <CAPm8-H4k5AXr=qXyCuxf3Hc-gbmG9zkg+amSihj1zuizd9Bkrg@mail.gmail.com>
+References: <CAPm8-H4k5AXr=qXyCuxf3Hc-gbmG9zkg+amSihj1zuizd9Bkrg@mail.gmail.com>
+From: Laurentiu-Cristian Duca <laurentiu.duca@gmail.com>
+Date: Wed, 14 Aug 2019 14:06:40 +0300
+Message-ID: <CAPm8-H4WtRKi4EdrLYzbYoQDckRNMKVj813YU5YY2u-HFsQr9g@mail.gmail.com>
+Subject: Xenomai - RTNet - patch error
+Content-Type: text/plain; charset="UTF-8"
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -19,41 +14,60 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Quirin Gylstorff <quirin.gylstorff@siemens.com>, xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-On 14.08.19 12:21, Quirin Gylstorff wrote:
-> 
-> 
-> On 8/14/19 11:46 AM, Jan Kiszka wrote:
->> On 14.08.19 10:02, Quirin Gylstorff wrote:
->>> Hi,
->>>
->>> I tested smokey with qemu-amd64, qemu-arm and qemu-arm64 from xenomai-images 
->>> with the dh_strip patch active against master and had following results:
->>> qemu-amd64 - smokey run
->>> qemu-arm and qemu-arm64 stall with the attached output.
->>>
->>> Kind regards,
->>> Quirin
->>
->> Which kernel version(s) are showing this issue on arm[64]?
->>
-> 
-> On arm:
-> Linux demo 4.14.85+ #1 SMP Tue Aug 13 16:57:48 UTC 2019 armv7l GNU/Linux
+Hello xenomai community,
 
-We need ipipe-core-4.14.96-arm-6 at least.
+  I am an open source enthusiast interested in Xenomai and RTNet.
+I have the RTNet modules successfully installed on BeagleBone black
+and now I want to install RTNet on qemu-system-x86_64
+in order to do more tests with bbb and x86_64.
 
-> On arm64:
-> Linux demo 4.14.78+ #1 SMP PREEMPT Wed Aug 14 07:11:31 UTC 2019 aarch64 GNU/Linux
-> 
+  I have tried to compile the project
+https://github.com/jan-kiszka/xenomai-images
+with the command
+kas-docker --isar build kas.yml:board-qemu-amd64.yml
+and it returns the below copied error.
+Do you have any ideas how to get over it? Maybe to transform it into an warning,
+or by automatically/manually answer <yes> to patch anyway.
 
-Yeah, and we still need patches for arm64 in fact, analogously to 
-https://gitlab.denx.de/Xenomai/ipipe-arm/commit/d36ce64b54b9f763fc337e70ebb313fba63f944a.
+ERROR: xenomai-9999-next-r0 do_patch: patching failed
+ERROR: xenomai-9999-next-r0 do_patch: Function failed: do_patch
+ERROR: Logfile of failure stored in:
+/work/build/tmp/work/xenomai-demo-amd64/xenomai-9999-next-r0/temp/log.do_patch.123
+ERROR: Task (/repo/recipes-xenomai/xenomai/xenomai_next.bb:do_patch)
+failed with exit code '1'
+NOTE: Tasks Summary: Attempted 46 tasks of which 45 didn't need to be
+rerun and 1 failed.
 
-Jan
+Summary: 1 task failed:
+  /repo/recipes-xenomai/xenomai/xenomai_next.bb:do_patch
+Summary: There were 2 ERROR messages shown, returning a non-zero exit code.
 
--- 
-Siemens AG, Corporate Technology, CT RDA IOT SES-DE
-Corporate Competence Center Embedded Linux
+$ cat build/tmp/work/xenomai-demo-amd64/xenomai-9999-next-r0/temp/log.do_patch
+DEBUG: Executing python function do_patch
+DEBUG: Fetcher accessed the network with the command git -c
+core.fsyncobjectfiles=0 ls-remote
+https://gitlab.denx.de/Xenomai/xenomai.git
+DEBUG: Running export PSEUDO_DISABLED=1; export
+GIT_PROXY_COMMAND="oe-git-proxy"; export NO_PROXY="*"; export
+PATH="/work/isar/bitbake/bin:/work/isar/scripts:/usr/sbin:/usr/bin:/sbin:/bin";
+export HOME="/tmp/tmp89g2x4r8"; git -c core.fsyncobjectfiles=0
+ls-remote https://gitlab.denx.de/Xenomai/xenomai.git
+NOTE: patch --no-backup-if-mismatch -p 1 --directory
+/work/build/tmp/work/xenomai-demo-amd64/xenomai-9999-next-r0/git
+--input /work/build/tmp/work/xenomai-demo-amd64/xenomai-9999-next-r0/0001-debian-Add-config-folder-to-xenomai-kernel-source.patch
+patching file debian/rules
+
+Reversed (or previously applied) patch detected!  Assume -R? [n]
+Apply anyway? [n]
+Skipping patch.
+1 out of 1 hunk ignored -- saving rejects to file debian/rules.rej
+ERROR: patching failed
+DEBUG: Python function do_patch finished
+ERROR: Function failed: do_patch
+
+
+Thank you and kind regards,
+L-C. Duca
 
