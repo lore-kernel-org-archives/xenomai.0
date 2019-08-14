@@ -1,9 +1,12 @@
-From: "Q. Gylstorff" <Quirin.Gylstorff@siemens.com>
-Subject: [xenomai-images][PATCH] kernel/linux-xenomai: Update versions
-Date: Wed, 14 Aug 2019 16:24:35 +0200
-Message-Id: <20190814142435.28231-1-Quirin.Gylstorff@siemens.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+In-Reply-To: <CAPm8-H4WtRKi4EdrLYzbYoQDckRNMKVj813YU5YY2u-HFsQr9g@mail.gmail.com>
+References: <CAPm8-H4k5AXr=qXyCuxf3Hc-gbmG9zkg+amSihj1zuizd9Bkrg@mail.gmail.com>
+ <CAPm8-H4WtRKi4EdrLYzbYoQDckRNMKVj813YU5YY2u-HFsQr9g@mail.gmail.com>
+From: Laurentiu-Cristian Duca <laurentiu.duca@gmail.com>
+Date: Wed, 14 Aug 2019 18:00:43 +0300
+Message-ID: <CAPm8-H5HOuAk8L1JeWwkJQMzwBcM2d47gt=fUtro5ksFQvZGqQ@mail.gmail.com>
+Subject: Re: Xenomai - RTNet - patch error
+Content-Type: text/plain; charset="UTF-8"
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -14,82 +17,66 @@ List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: xenomai@xenomai.org
 
-From: Quirin Gylstorff <quirin.gylstorff@siemens.com>
+I have fixed it quick and dirty:
+remove the patch file from package/xenomai/
 
-Kernel 4.14 will soon be deprecated. Add kernel 4.19 for armhf and
-x86 builds. Currently there is no 4.19 for arm64 available, therefore
-pin to 4.14.%.
-
-Signed-off-by: Quirin Gylstorff <quirin.gylstorff@siemens.com>
----
- conf/machine/qemu-arm64.conf               |  1 +
- recipes-kernel/linux/linux-xenomai_4.14.bb | 10 +++++-----
- recipes-kernel/linux/linux-xenomai_4.19.bb | 21 +++++++++++++++++++++
- 3 files changed, 27 insertions(+), 5 deletions(-)
- create mode 100644 recipes-kernel/linux/linux-xenomai_4.19.bb
-
-diff --git a/conf/machine/qemu-arm64.conf b/conf/machine/qemu-arm64.conf
-index a633095..283b3aa 100644
---- a/conf/machine/qemu-arm64.conf
-+++ b/conf/machine/qemu-arm64.conf
-@@ -12,3 +12,4 @@
- require qemu-machine.inc
- 
- DISTRO_ARCH = "arm64"
-+PREFERRED_VERSION_linux-xenomai = "4.14.%"
-diff --git a/recipes-kernel/linux/linux-xenomai_4.14.bb b/recipes-kernel/linux/linux-xenomai_4.14.bb
-index 49ede27..14030d6 100644
---- a/recipes-kernel/linux/linux-xenomai_4.14.bb
-+++ b/recipes-kernel/linux/linux-xenomai_4.14.bb
-@@ -12,15 +12,15 @@
- require recipes-kernel/linux/linux-xenomai.inc
- 
- SRC_URI_append_amd64 = " git://gitlab.denx.de/Xenomai/ipipe-x86.git;protocol=https;branch=ipipe-x86-4.14.y"
--SRCREV_amd64 = "eb0ab801116e0268358f1ca250251f02e82eed4a"
--PV_amd64 = "4.14.111+"
-+SRCREV_amd64 = "fdfa1aff4578edf6a03e2e77ea20bf7f97863954"
-+PV_amd64 = "4.14.134+"
- 
- SRC_URI_append_arm64 = " git://gitlab.denx.de/Xenomai/ipipe-arm64.git;protocol=https;branch=stable/4.14.78-arm64"
- SRCREV_arm64 = "dec5e42fd43de238df816b31cadfb83b268b7136"
- PV_arm64 = "4.14.78+"
- 
--SRC_URI_append_armhf = " git://gitlab.denx.de/Xenomai/ipipe-arm.git;protocol=https;branch=stable/4.14.85-arm"
--SRCREV_armhf = "35a84af5b7e3193e90ee129a91054657c02e8248"
--PV_armhf = "4.14.85+"
-+SRC_URI_append_armhf = " git://gitlab.denx.de/Xenomai/ipipe-arm.git;protocol=https;branch=stable/4.14.96-arm"
-+SRCREV_armhf = "723539db0d5a1c995c9bb5524abe311a97b33e43"
-+PV_armhf = "4.14.96+"
- 
- S = "${WORKDIR}/git"
-diff --git a/recipes-kernel/linux/linux-xenomai_4.19.bb b/recipes-kernel/linux/linux-xenomai_4.19.bb
-new file mode 100644
-index 0000000..9af5659
---- /dev/null
-+++ b/recipes-kernel/linux/linux-xenomai_4.19.bb
-@@ -0,0 +1,21 @@
-+#
-+# Xenomai Real-Time System
-+#
-+# Copyright (c) Siemens AG, 2019
-+#
-+# Authors:
-+#  Quirin Gylstorff <quirin.gylstorff@siemens.com>
-+#
-+# SPDX-License-Identifier: MIT
-+#
-+
-+require recipes-kernel/linux/linux-xenomai.inc
-+
-+SRC_URI_append_amd64 = " git://gitlab.denx.de/Xenomai/ipipe-x86.git;protocol=https;branch=ipipe-x86-4.19.y"
-+SRCREV_amd64 = "d8ca6738bdff660d033ce755db55e7fe5210379a"
-+PV_amd64 = "4.19.60+"
-+
-+SRC_URI_append_armhf = " git://gitlab.denx.de/Xenomai/ipipe-arm.git;protocol=https;nobranch=1;tag=ipipe-core-4.19.33-arm-2"
-+PV_armhf = "4.19.33+"
-+
-+S = "${WORKDIR}/git"
--- 
-2.20.1
-
+On 8/14/19, Laurentiu-Cristian Duca <laurentiu.duca@gmail.com> wrote:
+> Hello xenomai community,
+>
+>   I am an open source enthusiast interested in Xenomai and RTNet.
+> I have the RTNet modules successfully installed on BeagleBone black
+> and now I want to install RTNet on qemu-system-x86_64
+> in order to do more tests with bbb and x86_64.
+>
+>   I have tried to compile the project
+> https://github.com/jan-kiszka/xenomai-images
+> with the command
+> kas-docker --isar build kas.yml:board-qemu-amd64.yml
+> and it returns the below copied error.
+> Do you have any ideas how to get over it? Maybe to transform it into an
+> warning,
+> or by automatically/manually answer <yes> to patch anyway.
+>
+> ERROR: xenomai-9999-next-r0 do_patch: patching failed
+> ERROR: xenomai-9999-next-r0 do_patch: Function failed: do_patch
+> ERROR: Logfile of failure stored in:
+> /work/build/tmp/work/xenomai-demo-amd64/xenomai-9999-next-r0/temp/log.do_patch.123
+> ERROR: Task (/repo/recipes-xenomai/xenomai/xenomai_next.bb:do_patch)
+> failed with exit code '1'
+> NOTE: Tasks Summary: Attempted 46 tasks of which 45 didn't need to be
+> rerun and 1 failed.
+>
+> Summary: 1 task failed:
+>   /repo/recipes-xenomai/xenomai/xenomai_next.bb:do_patch
+> Summary: There were 2 ERROR messages shown, returning a non-zero exit code.
+>
+> $ cat
+> build/tmp/work/xenomai-demo-amd64/xenomai-9999-next-r0/temp/log.do_patch
+> DEBUG: Executing python function do_patch
+> DEBUG: Fetcher accessed the network with the command git -c
+> core.fsyncobjectfiles=0 ls-remote
+> https://gitlab.denx.de/Xenomai/xenomai.git
+> DEBUG: Running export PSEUDO_DISABLED=1; export
+> GIT_PROXY_COMMAND="oe-git-proxy"; export NO_PROXY="*"; export
+> PATH="/work/isar/bitbake/bin:/work/isar/scripts:/usr/sbin:/usr/bin:/sbin:/bin";
+> export HOME="/tmp/tmp89g2x4r8"; git -c core.fsyncobjectfiles=0
+> ls-remote https://gitlab.denx.de/Xenomai/xenomai.git
+> NOTE: patch --no-backup-if-mismatch -p 1 --directory
+> /work/build/tmp/work/xenomai-demo-amd64/xenomai-9999-next-r0/git
+> --input
+> /work/build/tmp/work/xenomai-demo-amd64/xenomai-9999-next-r0/0001-debian-Add-config-folder-to-xenomai-kernel-source.patch
+> patching file debian/rules
+>
+> Reversed (or previously applied) patch detected!  Assume -R? [n]
+> Apply anyway? [n]
+> Skipping patch.
+> 1 out of 1 hunk ignored -- saving rejects to file debian/rules.rej
+> ERROR: patching failed
+> DEBUG: Python function do_patch finished
+> ERROR: Function failed: do_patch
+>
+>
+> Thank you and kind regards,
+> L-C. Duca
+>
 
