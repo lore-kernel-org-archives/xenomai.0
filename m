@@ -1,14 +1,9 @@
-From: Lange Norbert <norbert.lange@andritz.com>
-Subject: RE: [PATCH] cobalt: remove call to sigprocmask
-Date: Fri, 12 Jul 2019 13:26:37 +0000
-Message-ID: <VI1PR05MB59175FED00839E697F933EDCF6F20@VI1PR05MB5917.eurprd05.prod.outlook.com>
-References: <20190712111849.25670-1-norbert.lange@andritz.com>
- <debb723e-9470-8911-02ec-fce4aefa1546@siemens.com>
-In-Reply-To: <debb723e-9470-8911-02ec-fce4aefa1546@siemens.com>
-Content-Language: en-US
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
 MIME-Version: 1.0
+From: danwe <daniel.wenninger92@gmail.com>
+Date: Sat, 17 Aug 2019 14:09:58 +0200
+Message-ID: <CAEmXcAwpre7qQrw9ipS5_f5hUXyB6a+LzD945oZdr4tGd4WifQ@mail.gmail.com>
+Subject: Access to Mini-USB-port on BeagleBone Black
+Content-Type: text/plain; charset="UTF-8"
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,42 +12,14 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "Xenomai (xenomai@xenomai.org)" <xenomai@xenomai.org>
+To: xenomai@xenomai.org
 
-DQoNCj4gLS0tLS1PcmlnaW5hbCBNZXNzYWdlLS0tLS0NCj4gRnJvbTogWGVub21haSA8eGVub21h
-aS1ib3VuY2VzQHhlbm9tYWkub3JnPiBPbiBCZWhhbGYgT2YgSmFuIEtpc3prYQ0KPiB2aWEgWGVu
-b21haQ0KPiBTZW50OiBGcmVpdGFnLCAxMi4gSnVsaSAyMDE5IDE1OjA3DQo+IFRvOiBOb3JiZXJ0
-IExhbmdlIDxub2xhbmdlNzlAZ21haWwuY29tPjsgeGVub21haUB4ZW5vbWFpLm9yZw0KPiBTdWJq
-ZWN0OiBSZTogW1BBVENIXSBjb2JhbHQ6IHJlbW92ZSBjYWxsIHRvIHNpZ3Byb2NtYXNrDQo+DQo+
-IEUtTUFJTCBGUk9NIEEgTk9OLUFORFJJVFogU09VUkNFOiBBUyBBIFNFQ1VSSVRZIE1FQVNVUkUs
-IFBMRUFTRQ0KPiBFWEVSQ0lTRSBDQVVUSU9OIFdJVEggRS1NQUlMIENPTlRFTlQgQU5EIEFOWSBM
-SU5LUyBPUg0KPiBBVFRBQ0hNRU5UUy4NCj4NCj4NCj4gT24gMTIuMDcuMTkgMTM6MTgsIE5vcmJl
-cnQgTGFuZ2UgdmlhIFhlbm9tYWkgd3JvdGU6DQo+ID4gc2lncHJvY21hc2sgc2hvdWxkIG5vdCBi
-ZSB1c2VkIGluIG11bHRpdGhyZWFkZWQgYXBwbGljYXRpb25zLCBkb2luZyBzbw0KPiA+IGlzICJ1
-bnNwZWNpZmllZCIuDQo+DQo+IElzIHRoaXMgbW9yZSB0aGFuIGNvc21ldGljIG9uIExpbnV4PyBU
-aGVuIGl0IHNob3VsZCBiZSBkb2N1bWVudGVkIGhlcmUNCj4gYmVjYXVzZSB3ZSBzaGlwcGVkIHRo
-ZSBjaGFuZ2UgaW4gMy4wLjksIGFuZCBpZiB0aGF0IG1heSBoYXZlIGNhdXNlZA0KPiByZWdyZXNz
-aW9ucywgdXNlcnMgc2hvdWxkIGtub3cuDQoNClRoZXJlIGlzIG5vIHByYWN0aWNhbCBpc3N1ZSB0
-byBiZSBleHBlY3RlZCwgQUZBSUsgd2l0aCBOUFRMIGF0IGxlYXN0Lg0KVGhlIG9ubHkgaXNzdWUg
-Y291bGQgYmUsIHRoYXQgbGlicHRocmVhZCBpcyBub3QgcHVsbGVkIGluIChtaWdodCBuZWVkIHRv
-IHJ1biBzb21lIHNldHVwKSwgYnV0IHRoYXTigJlzIGVuc3VyZWQgd2l0aCBsaWJjb2JhbHQuDQoN
-ClNvcnJ5IGZvciB0aGUgbWVzcywgbXVzdCBoYXZlIHNlbmQgYSBzdGFsZSBwYXRjaCBpbiB0aGUg
-Zmlyc3QgcGxhY2UgKGFsd2F5cyBnZXQgcHJvYmxlbXMgd2l0aCB3aGl0ZXNwYWNlIGlzc3Vlcyku
-DQoNCk5vcmJlcnQNCg0KDQpfX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fXw0KDQpUaGlz
-IG1lc3NhZ2UgYW5kIGFueSBhdHRhY2htZW50cyBhcmUgc29sZWx5IGZvciB0aGUgdXNlIG9mIHRo
-ZSBpbnRlbmRlZCByZWNpcGllbnRzLiBUaGV5IG1heSBjb250YWluIHByaXZpbGVnZWQgYW5kL29y
-IGNvbmZpZGVudGlhbCBpbmZvcm1hdGlvbiBvciBvdGhlciBpbmZvcm1hdGlvbiBwcm90ZWN0ZWQg
-ZnJvbSBkaXNjbG9zdXJlLiBJZiB5b3UgYXJlIG5vdCBhbiBpbnRlbmRlZCByZWNpcGllbnQsIHlv
-dSBhcmUgaGVyZWJ5IG5vdGlmaWVkIHRoYXQgeW91IHJlY2VpdmVkIHRoaXMgZW1haWwgaW4gZXJy
-b3IgYW5kIHRoYXQgYW55IHJldmlldywgZGlzc2VtaW5hdGlvbiwgZGlzdHJpYnV0aW9uIG9yIGNv
-cHlpbmcgb2YgdGhpcyBlbWFpbCBhbmQgYW55IGF0dGFjaG1lbnQgaXMgc3RyaWN0bHkgcHJvaGli
-aXRlZC4gSWYgeW91IGhhdmUgcmVjZWl2ZWQgdGhpcyBlbWFpbCBpbiBlcnJvciwgcGxlYXNlIGNv
-bnRhY3QgdGhlIHNlbmRlciBhbmQgZGVsZXRlIHRoZSBtZXNzYWdlIGFuZCBhbnkgYXR0YWNobWVu
-dCBmcm9tIHlvdXIgc3lzdGVtLg0KDQpBTkRSSVRaIEhZRFJPIEdtYkgNCg0KDQpSZWNodHNmb3Jt
-LyBMZWdhbCBmb3JtOiBHZXNlbGxzY2hhZnQgbWl0IGJlc2NocsOkbmt0ZXIgSGFmdHVuZyAvIENv
-cnBvcmF0aW9uDQoNCkZpcm1lbnNpdHovIFJlZ2lzdGVyZWQgc2VhdDogV2llbg0KDQpGaXJtZW5i
-dWNoZ2VyaWNodC8gQ291cnQgb2YgcmVnaXN0cnk6IEhhbmRlbHNnZXJpY2h0IFdpZW4NCg0KRmly
-bWVuYnVjaG51bW1lci8gQ29tcGFueSByZWdpc3RyYXRpb246IEZOIDYxODMzIGcNCg0KRFZSOiAw
-NjA1MDc3DQoNClVJRC1Oci46IEFUVTE0NzU2ODA2DQoNCg0KVGhhbmsgWW91DQpfX19fX19fX19f
-X19fX19fX19fX19fX19fX19fX19fXw0K
+Hello,
 
+can someone tell me why it's not possible to access the BBB via
+mini-usb-port while running Xenomai? I need to use serial interface. How
+can I change it?
+
+Kind regards
+
+Daniel
