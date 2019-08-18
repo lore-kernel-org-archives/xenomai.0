@@ -1,14 +1,7 @@
-From: Giulio Moro <g.moro@qmul.ac.uk>
-Subject: Re: Access to Mini-USB-port on BeagleBone Black
-Date: Sat, 17 Aug 2019 12:15:55 +0000
-Message-ID: <b6355451-15c4-4156-70de-d19ee842cb0e@qmul.ac.uk>
-References: <CAEmXcAwpre7qQrw9ipS5_f5hUXyB6a+LzD945oZdr4tGd4WifQ@mail.gmail.com>
-In-Reply-To: <CAEmXcAwpre7qQrw9ipS5_f5hUXyB6a+LzD945oZdr4tGd4WifQ@mail.gmail.com>
-Content-Language: en-US
-Content-Type: text/plain; charset="utf-8"
-Content-ID: <9472E68790763942943AC34CB2A2E82F@eurprd07.prod.outlook.com>
-Content-Transfer-Encoding: base64
-MIME-Version: 1.0
+From: Tormod Volden <lists.tormod@gmail.com>
+Subject: [PATCH] trank/rtdm: Add rt_dev_recvfrom() compat wrapper
+Date: Sun, 18 Aug 2019 16:26:13 +0200
+Message-Id: <1566138373-14980-1-git-send-email-lists.tormod@gmail.com>
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,24 +10,37 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: danwe <daniel.wenninger92@gmail.com>, "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: xenomai@xenomai.org
 
-SXQgZGVmaW5pdGVseSBpcyBwb3NzaWJsZS4gT3VyIGltYWdlIGFsbG93cyB0aGF0IGh0dHBzOi8v
-Z2l0aHViLmNvbS9CZWxhUGxhdGZvcm0vYmVsYS1pbWFnZS1idWlsZGVyL3JlbGVhc2VzIC4NCg0K
-V2hlbiB5b3UgbG9nIGluIHZpYSBzZXJpYWwsIHdoYXQgaXMgdGhlIHJlc3VsdCBvZiBgbHN1c2Jg
-ID8gQ2FuIHlvdSBzZWUgdGhlIHR3byBVU0IgaW50ZXJmYWNlcz8NCklmIG5vdCwgYXJlIHRoZXkg
-ZW5hYmxlZCBpbiB0aGUgZGV2aWNlIHRyZWU/IEFyZSB0aGUgVVNCIGRyaXZlcnMgY29tcGlsZWQg
-aW4geW91ciBrZXJuZWw/DQpJcyB0aGUgVVNCIGdhZGdldCBkcml2ZXIgbG9hZGVkPyBBbiBleGFt
-cGxlIGlzIGhlcmU6IGh0dHBzOi8vZ2l0aHViLmNvbS9CZWxhUGxhdGZvcm0vYmVsYS1pbWFnZS1i
-dWlsZGVyL2Jsb2IvbWFzdGVyL21pc2Mvcm9vdGZzL29wdC9CZWxhL2JlbGFfZ2FkZ2V0LnNoDQpB
-cmUgdGhlIG5ldHdvcmsgaW50ZXJmYWNlcycgSVBzIHNldCB1cCBhcHByb3ByaWF0ZWx5PyBBbmQg
-ZXhhbXBsZSBpcyBoZXJlIGh0dHBzOi8vZ2l0aHViLmNvbS9CZWxhUGxhdGZvcm0vYmVsYS1pbWFn
-ZS1idWlsZGVyL2Jsb2IvbWFzdGVyL21pc2Mvcm9vdGZzL2V0Yy9uZXR3b3JrL2ludGVyZmFjZXMN
-CklzIHRoZSBESENQIHNlcnZlciBzZXQgYXBwcm9wcmlhdGVseT8gQW4gZXhhbXBsZXMgaXMgaGVy
-ZSBodHRwczovL2dpdGh1Yi5jb20vQmVsYVBsYXRmb3JtL2JlbGEtaW1hZ2UtYnVpbGRlci9ibG9i
-L21hc3Rlci9taXNjL3Jvb3Rmcy9ldGMvZGhjcC9kaGNwZC5jb25mDQoNCmRhbndlIHZpYSBYZW5v
-bWFpIHdyb3RlOg0KPiBIZWxsbywNCj4gDQo+IGNhbiBzb21lb25lIHRlbGwgbWUgd2h5IGl0J3Mg
-bm90IHBvc3NpYmxlIHRvIGFjY2VzcyB0aGUgQkJCIHZpYQ0KPiBtaW5pLXVzYi1wb3J0IHdoaWxl
-IHJ1bm5pbmcgWGVub21haT8gSSBuZWVkIHRvIHVzZSBzZXJpYWwgaW50ZXJmYWNlLiBIb3cNCj4g
-Y2FuIEkgY2hhbmdlIGl0Pw0KPiANCj4gS2luZCByZWdhcmRzDQo+IA0KPiBEYW5pZWwNCj4gDQo=
+From: Tormod Volden <debian.tormod@gmail.com>
+
+Signed-off-by: Tormod Volden <debian.tormod@gmail.com>
+---
+
+I assume this one just fell through the cracks during a reorganization.
+
+Should be safe for 3.0.x too.
+
+Regards,
+Tormod
+
+
+ include/trank/rtdm/rtdm.h | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/include/trank/rtdm/rtdm.h b/include/trank/rtdm/rtdm.h
+index 9a0c965..80d874a 100644
+--- a/include/trank/rtdm/rtdm.h
++++ b/include/trank/rtdm/rtdm.h
+@@ -35,6 +35,7 @@ extern "C" {
+ 
+ #define rt_dev_open(__args...)		rt_dev_call(open, __args)
+ #define rt_dev_ioctl(__args...)		rt_dev_call(ioctl, __args)
++#define rt_dev_recvfrom(__args...)	rt_dev_call(recvfrom, __args)
+ 
+ static inline int rt_dev_socket(int domain, int type, int protocol)
+ {
+-- 
+2.7.4
+
 
