@@ -1,16 +1,14 @@
-From: Giulio Moro <g.moro@qmul.ac.uk>
-Subject: Re: Access to Mini-USB-port on BeagleBone Black
-Date: Sun, 18 Aug 2019 14:44:09 +0000
-Message-ID: <520d0b03-4fd6-3b07-8629-36fa57fee95d@qmul.ac.uk>
+MIME-Version: 1.0
 References: <CAEmXcAwpre7qQrw9ipS5_f5hUXyB6a+LzD945oZdr4tGd4WifQ@mail.gmail.com>
  <b6355451-15c4-4156-70de-d19ee842cb0e@qmul.ac.uk>
  <CAEmXcAyXPb1r4B4_DxiAhOfuXerGkpRkbgFWgK44cWA9KsR92g@mail.gmail.com>
-In-Reply-To: <CAEmXcAyXPb1r4B4_DxiAhOfuXerGkpRkbgFWgK44cWA9KsR92g@mail.gmail.com>
-Content-Language: en-US
-Content-Type: text/plain; charset="utf-8"
-Content-ID: <A9E5F5DB9EFBC94DBD6DF1B027D455D9@eurprd07.prod.outlook.com>
-Content-Transfer-Encoding: base64
-MIME-Version: 1.0
+ <520d0b03-4fd6-3b07-8629-36fa57fee95d@qmul.ac.uk>
+In-Reply-To: <520d0b03-4fd6-3b07-8629-36fa57fee95d@qmul.ac.uk>
+From: danwe <daniel.wenninger92@gmail.com>
+Date: Sun, 18 Aug 2019 21:19:35 +0200
+Message-ID: <CAEmXcAzk=pOcf2MEcLMA7hry_TY13=MAsRKWDS=-3JO6E-shWQ@mail.gmail.com>
+Subject: Re: Access to Mini-USB-port on BeagleBone Black
+Content-Type: text/plain; charset="UTF-8"
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -19,27 +17,36 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: danwe <daniel.wenninger92@gmail.com>, Xenomai <xenomai@xenomai.org>
+To: Giulio Moro <g.moro@qmul.ac.uk>, xenomai@xenomai.org
 
-ZGFud2Ugd3JvdGU6DQo+IEknbSBzb3JyeSBJIGZvcmdvdCB0byBzYXkgdGhhdCBJIHdhcyB1c2lu
-ZyBYZW5vbWFpIDIgd2l0aCBSVG5ldCBvbiB0b3AuIEkgdGhpbmsgUlRuZXQgaXMgdGhlIHByb2Js
-ZW0gaXNuJ3QgaXQ/IFdoYXQgZXhhY3RseSBkb2VzIFJUbmV0IHRvIHN0b3AgdXNpbmcgbWluaSB1
-c2IgcG9ydD8NCj4gDQo+IEtpbmQgcmVnYXJkcw0KPiANCj4gRGFuaWVsDQoNCllvdSBzdXJlbHkg
-Y2Fubm90IHVzZSBSVG5ldCBvbiB0aGF0IHBvcnQsIGlmIHRoYXQgaXMgd2hhdCB5b3UgYXJlIGFz
-a2luZywgYmVjYXVzZSB0aGF0IHVzZXMgdGhlIExpbnV4IHVzYiBnYWRnZXQgZHJpdmVyLiBJZiB0
-aGUgcXVlc3Rpb24gaXMgd2h5IHlvdSBjYW5ub3QgdXNlIHRoZSBtaW5pIFVTQiBwb3J0IHdoaWxl
-IHVzaW5nIFJUbmV0IG9uIHRoZSBldGhlcm5ldCBwb3J0LCBJIGFtIG5vdCBzdXJlIHdoYXQgdGhl
-IGFuc3dlciBpcywgYXMgSSBoYXZlIG5ldmVyIHVzZWQgUlRuZXQuIEFnYWluLCBJJ2QgbG9vayBh
-dCB3aGF0IGZlYXR1cmVzIGFyZSBlbmFibGVkIGluIHlvdXIga2VybmVsIGFuZCB3aGV0aGVyIHRo
-ZSBkcml2ZXJzIHRoYXQgYXJlIHN1cHBvc2VkIHRvIGhhbmRsZSB0aGF0IGFyZSBsb2FkZWQsIGFu
-ZCBjaGVjayB0aGUgc3lzdGVtIGxvZy4gQmFzaWNhbGx5LCB0aGUgaW5zdHJ1Y3Rpb25zIEkgZ2F2
-ZSBlYXJsaWVyICB3aWxsIHN0aWxsIGFwcGx5IGlmIHlvdSBoYXZlIGEgaGFsZiByZWNlbnQga2Vy
-bmVsICh0aGV5IGFyZSBmcm9tIDQuNCkuIE1heWJlIHNvbWVvbmUgZWxzZSBvbiB0aGUgbGlzdCB3
-aWxsIGhhdmUgbW9yZSBpbnNpZ2h0cyBvbiB0aGUgc3BlY2lmaWNzIG9mIFJUTmV0LCBidXQgeW91
-J2QgaGF2ZSB0byBtYWtlIGEgY2xlYXJlciBxdWVzdGlvbiwgcHJvdmlkaW5nIHlvdXIga2VybmVs
-IGFuZCBYZW5vbWFpIHZlcnNpb24sIGFuZCBhbHNvIGdvIHRocm91Z2ggdGhlIGNoZWNrbGlzdCBJ
-IG1lbnRpb25lZCBlYXJsaWVyLiBZb3UgbmVlZCB0byB1bmRlcnN0YW5kIHRoYXQgWGVub21haSAy
-IGlzIG5vIGxvbmdlciBzdXBwb3J0ZWQsIHNvIHlvdSdkIHJlYWxseSBoYXZlIHRvIG1ha2UgaXQg
-ZWFzeSBmb3IgcGVvcGxlIHRvIGhlbHAgeW91LiBBbHNvLCB3aHkgYXJlIHlvdSBub3QgdXNpbmcg
-WGVub21haSAzPw0KDQpHaXVsaW8NCg==
+Okay thanks.
+I am not using Xenomai 3 because for BeagleBone Black there is no Driver
+for using Xenomai 3 *and *RTnet.
 
+Am So., 18. Aug. 2019 um 16:44 Uhr schrieb Giulio Moro <g.moro@qmul.ac.uk>:
+
+> danwe wrote:
+> > I'm sorry I forgot to say that I was using Xenomai 2 with RTnet on top.
+> I think RTnet is the problem isn't it? What exactly does RTnet to stop
+> using mini usb port?
+> >
+> > Kind regards
+> >
+> > Daniel
+>
+> You surely cannot use RTnet on that port, if that is what you are asking,
+> because that uses the Linux usb gadget driver. If the question is why you
+> cannot use the mini USB port while using RTnet on the ethernet port, I am
+> not sure what the answer is, as I have never used RTnet. Again, I'd look at
+> what features are enabled in your kernel and whether the drivers that are
+> supposed to handle that are loaded, and check the system log. Basically,
+> the instructions I gave earlier  will still apply if you have a half recent
+> kernel (they are from 4.4). Maybe someone else on the list will have more
+> insights on the specifics of RTNet, but you'd have to make a clearer
+> question, providing your kernel and Xenomai version, and also go through
+> the checklist I mentioned earlier. You need to understand that Xenomai 2 is
+> no longer supported, so you'd really have to make it easy for people to
+> help you. Also, why are you not using Xenomai 3?
+>
+> Giulio
+>
