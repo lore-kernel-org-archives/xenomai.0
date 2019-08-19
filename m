@@ -1,11 +1,11 @@
-From: Jan Kiszka <jan.kiszka@siemens.com>
-Subject: [PATCH v2 1/6] ipipe: Restore trace_hardirqs_on_virt_caller
-Date: Thu, 11 Jul 2019 21:56:12 +0200
-Message-Id: <b8eea59c3403f307022712574ed49aee80aa8a08.1562874977.git.jan.kiszka@siemens.com>
-In-Reply-To: <cover.1562874977.git.jan.kiszka@siemens.com>
-References: <cover.1562874977.git.jan.kiszka@siemens.com>
-In-Reply-To: <cover.1562874977.git.jan.kiszka@siemens.com>
-References: <cover.1562874977.git.jan.kiszka@siemens.com>
+From: "Q. Gylstorff" <Quirin.Gylstorff@siemens.com>
+Subject: [PATCH v2] kernel/linux-xenomai: Update versions
+Date: Mon, 19 Aug 2019 12:17:46 +0200
+Message-Id: <20190819101746.6769-1-Quirin.Gylstorff@siemens.com>
+In-Reply-To: <20190814142435.28231-1-Quirin.Gylstorff@siemens.com>
+References: <20190814142435.28231-1-Quirin.Gylstorff@siemens.com>
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -14,42 +14,99 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Philippe Gerum <rpm@xenomai.org>
-Cc: xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-From: Jan Kiszka <jan.kiszka@siemens.com>
+From: Quirin Gylstorff <quirin.gylstorff@siemens.com>
 
-Lost in d7fc2c06edc9 ("lockdep: ipipe: exclude the head stage from IRQ
-state tracing") but still needed by x86 at least.
+Kernel 4.14 will soon be deprecated. Add kernel 4.19 for armhf and
+x86 builds. Currently there is no 4.19 for arm64 available, therefore
+pin to 4.14.%.
 
-Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
+Signed-off-by: Quirin Gylstorff <quirin.gylstorff@siemens.com>
 ---
- kernel/trace/trace_preemptirq.c | 11 +++++++++++
- 1 file changed, 11 insertions(+)
+V2:
+ - set arm64 kernel to 4.14 for hikey board configuration.
 
-diff --git a/kernel/trace/trace_preemptirq.c b/kernel/trace/trace_preemptirq.c
-index 3c482c02c1d9..19605695a6a2 100644
---- a/kernel/trace/trace_preemptirq.c
-+++ b/kernel/trace/trace_preemptirq.c
-@@ -66,6 +66,17 @@ __visible void trace_hardirqs_on_caller(unsigned long caller_addr)
- }
- EXPORT_SYMBOL(trace_hardirqs_on_caller);
+conf/machine/hikey.conf                    |  2 ++
+ conf/machine/qemu-arm64.conf               |  1 +
+ recipes-kernel/linux/linux-xenomai_4.14.bb | 10 +++++-----
+ recipes-kernel/linux/linux-xenomai_4.19.bb | 21 +++++++++++++++++++++
+ 4 files changed, 29 insertions(+), 5 deletions(-)
+ create mode 100644 recipes-kernel/linux/linux-xenomai_4.19.bb
+
+diff --git a/conf/machine/hikey.conf b/conf/machine/hikey.conf
+index fc199ab..7a70ccd 100644
+--- a/conf/machine/hikey.conf
++++ b/conf/machine/hikey.conf
+@@ -14,4 +14,6 @@ DISTRO_ARCH = "arm64"
+ IMAGE_TYPE = "wic-img"
+ IMAGER_INSTALL += "${GRUB_BOOTLOADER_INSTALL}"
  
-+__visible void trace_hardirqs_on_virt_caller(unsigned long ip)
-+{
-+	/*
-+	 * The IRQ tracing logic only applies to the root domain, and
-+	 * must consider the virtual disable flag exclusively when
-+	 * leaving an interrupt/fault context.
-+	 */
-+	if (ipipe_root_p && !irqs_disabled())
-+		trace_hardirqs_on_caller(ip);
-+}
++PREFERRED_VERSION_linux-xenomai = "4.14.%"
 +
- __visible void trace_hardirqs_on_virt(void)
- {
- 	/*
+ IMAGE_PREINSTALL_append = " firmware-ti-connectivity"
+diff --git a/conf/machine/qemu-arm64.conf b/conf/machine/qemu-arm64.conf
+index a633095..283b3aa 100644
+--- a/conf/machine/qemu-arm64.conf
++++ b/conf/machine/qemu-arm64.conf
+@@ -12,3 +12,4 @@
+ require qemu-machine.inc
+ 
+ DISTRO_ARCH = "arm64"
++PREFERRED_VERSION_linux-xenomai = "4.14.%"
+diff --git a/recipes-kernel/linux/linux-xenomai_4.14.bb b/recipes-kernel/linux/linux-xenomai_4.14.bb
+index 49ede27..14030d6 100644
+--- a/recipes-kernel/linux/linux-xenomai_4.14.bb
++++ b/recipes-kernel/linux/linux-xenomai_4.14.bb
+@@ -12,15 +12,15 @@
+ require recipes-kernel/linux/linux-xenomai.inc
+ 
+ SRC_URI_append_amd64 = " git://gitlab.denx.de/Xenomai/ipipe-x86.git;protocol=https;branch=ipipe-x86-4.14.y"
+-SRCREV_amd64 = "eb0ab801116e0268358f1ca250251f02e82eed4a"
+-PV_amd64 = "4.14.111+"
++SRCREV_amd64 = "fdfa1aff4578edf6a03e2e77ea20bf7f97863954"
++PV_amd64 = "4.14.134+"
+ 
+ SRC_URI_append_arm64 = " git://gitlab.denx.de/Xenomai/ipipe-arm64.git;protocol=https;branch=stable/4.14.78-arm64"
+ SRCREV_arm64 = "dec5e42fd43de238df816b31cadfb83b268b7136"
+ PV_arm64 = "4.14.78+"
+ 
+-SRC_URI_append_armhf = " git://gitlab.denx.de/Xenomai/ipipe-arm.git;protocol=https;branch=stable/4.14.85-arm"
+-SRCREV_armhf = "35a84af5b7e3193e90ee129a91054657c02e8248"
+-PV_armhf = "4.14.85+"
++SRC_URI_append_armhf = " git://gitlab.denx.de/Xenomai/ipipe-arm.git;protocol=https;branch=stable/4.14.96-arm"
++SRCREV_armhf = "723539db0d5a1c995c9bb5524abe311a97b33e43"
++PV_armhf = "4.14.96+"
+ 
+ S = "${WORKDIR}/git"
+diff --git a/recipes-kernel/linux/linux-xenomai_4.19.bb b/recipes-kernel/linux/linux-xenomai_4.19.bb
+new file mode 100644
+index 0000000..9af5659
+--- /dev/null
++++ b/recipes-kernel/linux/linux-xenomai_4.19.bb
+@@ -0,0 +1,21 @@
++#
++# Xenomai Real-Time System
++#
++# Copyright (c) Siemens AG, 2019
++#
++# Authors:
++#  Quirin Gylstorff <quirin.gylstorff@siemens.com>
++#
++# SPDX-License-Identifier: MIT
++#
++
++require recipes-kernel/linux/linux-xenomai.inc
++
++SRC_URI_append_amd64 = " git://gitlab.denx.de/Xenomai/ipipe-x86.git;protocol=https;branch=ipipe-x86-4.19.y"
++SRCREV_amd64 = "d8ca6738bdff660d033ce755db55e7fe5210379a"
++PV_amd64 = "4.19.60+"
++
++SRC_URI_append_armhf = " git://gitlab.denx.de/Xenomai/ipipe-arm.git;protocol=https;nobranch=1;tag=ipipe-core-4.19.33-arm-2"
++PV_armhf = "4.19.33+"
++
++S = "${WORKDIR}/git"
 -- 
-2.16.4
+2.20.1
 
 
