@@ -1,13 +1,11 @@
-Subject: Re: [PATCH] trank/rtdm: Add rt_dev_recvfrom() compat wrapper
-References: <1566138373-14980-1-git-send-email-lists.tormod@gmail.com>
-From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <11ab1ac1-f1bd-51be-1801-2d8237c86bd8@siemens.com>
-Date: Mon, 19 Aug 2019 13:48:31 +0200
+From: "Q. Gylstorff" <Quirin.Gylstorff@siemens.com>
+Subject: [xenomai-images][PATCH v3] kernel/linux-xenomai: Update versions
+Date: Tue, 20 Aug 2019 17:17:07 +0200
+Message-Id: <20190820151707.13840-1-Quirin.Gylstorff@siemens.com>
+In-Reply-To: <20190819101746.6769-1-Quirin.Gylstorff@siemens.com>
+References: <20190819101746.6769-1-Quirin.Gylstorff@siemens.com>
 MIME-Version: 1.0
-In-Reply-To: <1566138373-14980-1-git-send-email-lists.tormod@gmail.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,44 +14,148 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Tormod Volden <lists.tormod@gmail.com>, xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-On 18.08.19 16:26, Tormod Volden via Xenomai wrote:
-> From: Tormod Volden <debian.tormod@gmail.com>
-> 
-> Signed-off-by: Tormod Volden <debian.tormod@gmail.com>
-> ---
-> 
-> I assume this one just fell through the cracks during a reorganization.
-> 
-> Should be safe for 3.0.x too.
-> 
-> Regards,
-> Tormod
-> 
-> 
->   include/trank/rtdm/rtdm.h | 1 +
->   1 file changed, 1 insertion(+)
-> 
-> diff --git a/include/trank/rtdm/rtdm.h b/include/trank/rtdm/rtdm.h
-> index 9a0c965..80d874a 100644
-> --- a/include/trank/rtdm/rtdm.h
-> +++ b/include/trank/rtdm/rtdm.h
-> @@ -35,6 +35,7 @@ extern "C" {
->   
->   #define rt_dev_open(__args...)		rt_dev_call(open, __args)
->   #define rt_dev_ioctl(__args...)		rt_dev_call(ioctl, __args)
-> +#define rt_dev_recvfrom(__args...)	rt_dev_call(recvfrom, __args)
->   
->   static inline int rt_dev_socket(int domain, int type, int protocol)
->   {
-> 
+From: Quirin Gylstorff <quirin.gylstorff@siemens.com>
 
-Thanks, applied to next and stable.
+Kernel 4.14 will soon be deprecated. Add kernel 4.19 for armhf and
+x86 builds. Currently there is no 4.19 for arm64 available, therefore
+pin to 4.14.%.
+The Kernel version and Xenomai version depend on each other. Add a
+distro include with selects the kernel version according to the current
+xenomai version.
 
-Jan
+| xenomai version | kernel version |
+| stable          |           4.14 |
+| 3.0.x           |           4.14 |
+| master          |           4.19 |
+| next            |           4.19 |
 
+Signed-off-by: Quirin Gylstorff <quirin.gylstorff@siemens.com>
+---
+V2:
+ - set arm64 kernel to 4.14 for hikey board configuration.
+V3:
+ - add xenomai-version.inc to select kernel version according to
+   xenomai version.
+
+ conf/distro/include/xenomai-version.inc    | 16 ++++++++++++++++
+ conf/distro/xenomai-demo.conf              |  1 +
+ conf/machine/hikey.conf                    |  2 ++
+ conf/machine/qemu-arm64.conf               |  1 +
+ recipes-kernel/linux/linux-xenomai_4.14.bb | 10 +++++-----
+ recipes-kernel/linux/linux-xenomai_4.19.bb | 21 +++++++++++++++++++++
+ 6 files changed, 46 insertions(+), 5 deletions(-)
+ create mode 100644 conf/distro/include/xenomai-version.inc
+ create mode 100644 recipes-kernel/linux/linux-xenomai_4.19.bb
+
+diff --git a/conf/distro/include/xenomai-version.inc b/conf/distro/include/xenomai-version.inc
+new file mode 100644
+index 0000000..92909d9
+--- /dev/null
++++ b/conf/distro/include/xenomai-version.inc
+@@ -0,0 +1,16 @@
++#
++# Xenomai Real-Time System
++#
++# Copyright (c) Siemens AG, 2019
++#
++# Authors:
++#  Quirin Gylstorff <quirin.gylstorff@siemens.com>
++#
++# SPDX-License-Identifier: MIT
++#
++
++XENOMAI_NEXT_KERNEL_VERSION = "4.19%"
++XENOMAI_STABLE_VERSION_LIST = "stable 3.0 3.0% 3.0.% 3.0.9"
++XENOMAI_STABLE_KERNEL_VERSION = "4.14%"
++
++PREFERRED_VERSION_linux-xenomai = "${@bb.utils.contains_any('PREFERRED_VERSION_xenomai','${XENOMAI_STABLE_VERSION_LIST}','${XENOMAI_STABLE_KERNEL_VERSION}','${XENOMAI_NEXT_KERNEL_VERSION}',d) }"
+diff --git a/conf/distro/xenomai-demo.conf b/conf/distro/xenomai-demo.conf
+index 1fb7838..44df79f 100644
+--- a/conf/distro/xenomai-demo.conf
++++ b/conf/distro/xenomai-demo.conf
+@@ -10,6 +10,7 @@
+ #
+ 
+ require conf/distro/debian-stretch.conf
++include conf/distro/include/xenomai-version.inc
+ 
+ HOST_DISTRO ?= "debian-stretch"
+ 
+diff --git a/conf/machine/hikey.conf b/conf/machine/hikey.conf
+index fc199ab..7a70ccd 100644
+--- a/conf/machine/hikey.conf
++++ b/conf/machine/hikey.conf
+@@ -14,4 +14,6 @@ DISTRO_ARCH = "arm64"
+ IMAGE_TYPE = "wic-img"
+ IMAGER_INSTALL += "${GRUB_BOOTLOADER_INSTALL}"
+ 
++PREFERRED_VERSION_linux-xenomai = "4.14.%"
++
+ IMAGE_PREINSTALL_append = " firmware-ti-connectivity"
+diff --git a/conf/machine/qemu-arm64.conf b/conf/machine/qemu-arm64.conf
+index a633095..283b3aa 100644
+--- a/conf/machine/qemu-arm64.conf
++++ b/conf/machine/qemu-arm64.conf
+@@ -12,3 +12,4 @@
+ require qemu-machine.inc
+ 
+ DISTRO_ARCH = "arm64"
++PREFERRED_VERSION_linux-xenomai = "4.14.%"
+diff --git a/recipes-kernel/linux/linux-xenomai_4.14.bb b/recipes-kernel/linux/linux-xenomai_4.14.bb
+index 49ede27..14030d6 100644
+--- a/recipes-kernel/linux/linux-xenomai_4.14.bb
++++ b/recipes-kernel/linux/linux-xenomai_4.14.bb
+@@ -12,15 +12,15 @@
+ require recipes-kernel/linux/linux-xenomai.inc
+ 
+ SRC_URI_append_amd64 = " git://gitlab.denx.de/Xenomai/ipipe-x86.git;protocol=https;branch=ipipe-x86-4.14.y"
+-SRCREV_amd64 = "eb0ab801116e0268358f1ca250251f02e82eed4a"
+-PV_amd64 = "4.14.111+"
++SRCREV_amd64 = "fdfa1aff4578edf6a03e2e77ea20bf7f97863954"
++PV_amd64 = "4.14.134+"
+ 
+ SRC_URI_append_arm64 = " git://gitlab.denx.de/Xenomai/ipipe-arm64.git;protocol=https;branch=stable/4.14.78-arm64"
+ SRCREV_arm64 = "dec5e42fd43de238df816b31cadfb83b268b7136"
+ PV_arm64 = "4.14.78+"
+ 
+-SRC_URI_append_armhf = " git://gitlab.denx.de/Xenomai/ipipe-arm.git;protocol=https;branch=stable/4.14.85-arm"
+-SRCREV_armhf = "35a84af5b7e3193e90ee129a91054657c02e8248"
+-PV_armhf = "4.14.85+"
++SRC_URI_append_armhf = " git://gitlab.denx.de/Xenomai/ipipe-arm.git;protocol=https;branch=stable/4.14.96-arm"
++SRCREV_armhf = "723539db0d5a1c995c9bb5524abe311a97b33e43"
++PV_armhf = "4.14.96+"
+ 
+ S = "${WORKDIR}/git"
+diff --git a/recipes-kernel/linux/linux-xenomai_4.19.bb b/recipes-kernel/linux/linux-xenomai_4.19.bb
+new file mode 100644
+index 0000000..9af5659
+--- /dev/null
++++ b/recipes-kernel/linux/linux-xenomai_4.19.bb
+@@ -0,0 +1,21 @@
++#
++# Xenomai Real-Time System
++#
++# Copyright (c) Siemens AG, 2019
++#
++# Authors:
++#  Quirin Gylstorff <quirin.gylstorff@siemens.com>
++#
++# SPDX-License-Identifier: MIT
++#
++
++require recipes-kernel/linux/linux-xenomai.inc
++
++SRC_URI_append_amd64 = " git://gitlab.denx.de/Xenomai/ipipe-x86.git;protocol=https;branch=ipipe-x86-4.19.y"
++SRCREV_amd64 = "d8ca6738bdff660d033ce755db55e7fe5210379a"
++PV_amd64 = "4.19.60+"
++
++SRC_URI_append_armhf = " git://gitlab.denx.de/Xenomai/ipipe-arm.git;protocol=https;nobranch=1;tag=ipipe-core-4.19.33-arm-2"
++PV_armhf = "4.19.33+"
++
++S = "${WORKDIR}/git"
 -- 
-Siemens AG, Corporate Technology, CT RDA IOT SES-DE
-Corporate Competence Center Embedded Linux
+2.20.1
+
 
