@@ -1,15 +1,9 @@
-Subject: Re: [xenomai-images][PATCH v3] kernel/linux-xenomai: Update versions
-References: <20190819101746.6769-1-Quirin.Gylstorff@siemens.com>
- <20190820151707.13840-1-Quirin.Gylstorff@siemens.com>
- <22065707.2yBTX3zYjI@omoikane>
-From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <736860b6-561c-58ce-c89d-1071e67b1f77@siemens.com>
-Date: Wed, 21 Aug 2019 12:42:47 +0200
+From: "Q. Gylstorff" <Quirin.Gylstorff@siemens.com>
+Subject: [xenomai-images][PATCH] machine: Add simatic-ipc227e as x86 example
+Date: Wed, 21 Aug 2019 14:01:02 +0200
+Message-Id: <20190821120102.9329-1-Quirin.Gylstorff@siemens.com>
 MIME-Version: 1.0
-In-Reply-To: <22065707.2yBTX3zYjI@omoikane>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -18,26 +12,88 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "steven.seeger flightsystems.net" <steven.seeger@flightsystems.net>, "xenomai@xenomai.org" <xenomai@xenomai.org>, Quirin Gylstorff <quirin.gylstorff@siemens.com>
+To: xenomai@xenomai.org
 
-On 21.08.19 12:07, steven.seeger flightsystems.net via Xenomai wrote:
-> Hi Quirin. It looks like I need to move powerpc over to 4.19 as well. I have
-> been discussing this with some industry partners.
-> 
+From: Quirin Gylstorff <quirin.gylstorff@siemens.com>
 
-In fact, there is even no ppc support for xenomai-images yet. At least a qemu 
-virtual test target would be of high value, though.
+Use the simatic-ipc227e as example how to build a xenomai
+x86 image.
 
-I was briefly discussing this with Quirin, but there are some risks, 
-effort-wise. First, we have no idea if Debian/Isar will "just work" for a ppc32 
-target - likely no one did that before, though adding MIPS to Isar was trivial. 
-And then we have no idea about the required qemu-system setup to test the 
-result. I mean, we could have a look but we may quickly need support by a ppc 
-expert or need to stop again when things become too nasty.
+Signed-off-by: Quirin Gylstorff <quirin.gylstorff@siemens.com>
+---
+ board-simatic-ipc227e.yml         | 15 +++++++++++++++
+ conf/machine/simatic-ipc227e.conf | 15 +++++++++++++++
+ wic/simatic-ipc227e.wks           | 16 ++++++++++++++++
+ 3 files changed, 46 insertions(+)
+ create mode 100644 board-simatic-ipc227e.yml
+ create mode 100644 conf/machine/simatic-ipc227e.conf
+ create mode 100644 wic/simatic-ipc227e.wks
 
-Jan
-
+diff --git a/board-simatic-ipc227e.yml b/board-simatic-ipc227e.yml
+new file mode 100644
+index 0000000..22f963d
+--- /dev/null
++++ b/board-simatic-ipc227e.yml
+@@ -0,0 +1,15 @@
++#
++# Xenomai Real-Time System
++#
++# Copyright (c) Siemens AG, 2019
++#
++# Authors:
++#  Quirin Gylstorff <quirin.gylstorff@siemens.com>
++#
++# SPDX-License-Identifier: MIT
++#
++
++header:
++  version: 8
++
++machine: simatic-ipc227e
+diff --git a/conf/machine/simatic-ipc227e.conf b/conf/machine/simatic-ipc227e.conf
+new file mode 100644
+index 0000000..0fd2ef1
+--- /dev/null
++++ b/conf/machine/simatic-ipc227e.conf
+@@ -0,0 +1,15 @@
++#
++# Xenomai Real-Time System
++#
++# Copyright (c) Siemens AG, 2019
++#
++# Authors:
++#  Quirin Gylstorff <quirin.gylstorff@siemens.com>
++#
++# SPDX-License-Identifier: MIT
++#
++
++DISTRO_ARCH = "amd64"
++
++IMAGE_TYPE = "wic-img"
++IMAGER_INSTALL += "${GRUB_BOOTLOADER_INSTALL}"
+diff --git a/wic/simatic-ipc227e.wks b/wic/simatic-ipc227e.wks
+new file mode 100644
+index 0000000..107e119
+--- /dev/null
++++ b/wic/simatic-ipc227e.wks
+@@ -0,0 +1,16 @@
++#
++# Xenomai Real-Time System
++#
++# Copyright (c) Siemens AG, 2019
++#
++# Authors:
++#  Quirin Gylstorff <quirin.gylstorff@siemens.com>
++#
++# SPDX-License-Identifier: MIT
++#
++
++part /boot --source bootimg-efi-isar --sourceparams "loader=grub-efi" --ondisk sda --label efi --part-type EF00 --align 1024
++
++part / --source rootfs --ondisk sda --fstype ext4 --label platform --align 1024 --use-uuid
++
++bootloader --ptable gpt --timeout=2 --append "rw rootwait console=ttyS0,115200"
 -- 
-Siemens AG, Corporate Technology, CT RDA IOT SES-DE
-Corporate Competence Center Embedded Linux
+2.20.1
+
 
