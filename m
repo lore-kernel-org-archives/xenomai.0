@@ -1,10 +1,11 @@
-From: "Q. Gylstorff" <Quirin.Gylstorff@siemens.com>
-Subject: [xenomai-images][PATCH] machine: Add beagle bone black as armhf
- example
-Date: Wed, 21 Aug 2019 14:03:29 +0200
-Message-Id: <20190821120329.9722-1-Quirin.Gylstorff@siemens.com>
+From: Lange Norbert <norbert.lange@andritz.com>
+Subject: affinity of main thread is bound to current core
+Date: Wed, 21 Aug 2019 12:12:07 +0000
+Message-ID: <VI1PR05MB591718EB50E68F91B3DFD398F6AA0@VI1PR05MB5917.eurprd05.prod.outlook.com>
+Content-Language: en-US
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -13,93 +14,46 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
+To: "Xenomai (xenomai@xenomai.org)" <xenomai@xenomai.org>
 
-From: Quirin Gylstorff <quirin.gylstorff@siemens.com>
+Hello,
 
-Build xenomai image for beagle bone black as an armhf example.
-This image uses the U-Boot Image am335x_boneblack from Debian 10(Buster)
-as boot loader.
+I use Xenomai master on ipipe-core-4.19.60-x86-5.
+I start out with an affinity mask of 0xF, in the function cobalt_init_2,  p=
+thread_setschedparam will get called, after the syscall sc_cobalt_thread_se=
+tschedparam_ex the affinity mask will contain a single CPU (supposedly the =
+current one).
 
-Signed-off-by: Quirin Gylstorff <quirin.gylstorff@siemens.com>
----
- board-beagle-bone-black.yml         | 15 +++++++++++++++
- conf/machine/beagle-bone-black.conf | 18 ++++++++++++++++++
- wic/beagle-bone-black.wks           | 17 +++++++++++++++++
- 3 files changed, 50 insertions(+)
- create mode 100644 board-beagle-bone-black.yml
- create mode 100644 conf/machine/beagle-bone-black.conf
- create mode 100644 wic/beagle-bone-black.wks
+All methods to control affinity are executed before this point (cmdline arg=
+s, /proc/xenomai/affinity), so there is no working way to control it.
 
-diff --git a/board-beagle-bone-black.yml b/board-beagle-bone-black.yml
-new file mode 100644
-index 0000000..e82d786
---- /dev/null
-+++ b/board-beagle-bone-black.yml
-@@ -0,0 +1,15 @@
-+#
-+# Xenomai Real-Time System
-+#
-+# Copyright (c) Siemens AG, 2019
-+#
-+# Authors:
-+#  Quirin Gylstorff <quirin.gylstorff@siemens.com>
-+#
-+# SPDX-License-Identifier: MIT
-+#
-+
-+header:
-+  version: 8
-+
-+machine: beagle-bone-black
-diff --git a/conf/machine/beagle-bone-black.conf b/conf/machine/beagle-bone-black.conf
-new file mode 100644
-index 0000000..73abe12
---- /dev/null
-+++ b/conf/machine/beagle-bone-black.conf
-@@ -0,0 +1,18 @@
-+#
-+# Xenomai Real-Time System
-+#
-+# Copyright (c) Siemens AG, 2019
-+#
-+# Authors:
-+#  Quirin Gylstorff <quirin.gylstorff@siemens.com>
-+#
-+# SPDX-License-Identifier: MIT
-+#
-+
-+DISTRO_ARCH = "armhf"
-+
-+IMAGE_INSTALL += "u-boot-script"
-+
-+IMAGE_TYPE ?= "wic-img"
-+
-+IMAGER_INSTALL += "u-boot-omap"
-diff --git a/wic/beagle-bone-black.wks b/wic/beagle-bone-black.wks
-new file mode 100644
-index 0000000..902b67b
---- /dev/null
-+++ b/wic/beagle-bone-black.wks
-@@ -0,0 +1,17 @@
-+#
-+# Xenomai Real-Time System
-+#
-+# Copyright (c) Siemens AG, 2019
-+#
-+# Authors:
-+#  Quirin Gylstorff <quirin.gylstorff@siemens.com>
-+#
-+# SPDX-License-Identifier: MIT
-+#
-+
-+part --source rawcopy --sourceparams "file=/usr/lib/u-boot/am335x_boneblack/MLO" --no-table --align 128
-+part u-boot --source rawcopy --sourceparams "file=/usr/lib/u-boot/am335x_boneblack/u-boot.img" --no-table --align 384
-+
-+part / --source rootfs-u-boot --ondisk mmcblk0 --fstype ext4 --label platform --align 1024 --active
-+
-+bootloader --append "rw rootwait console=ttyO,115200"
--- 
-2.20.1
+Kind regards, Norbert
+________________________________
+
+This message and any attachments are solely for the use of the intended rec=
+ipients. They may contain privileged and/or confidential information or oth=
+er information protected from disclosure. If you are not an intended recipi=
+ent, you are hereby notified that you received this email in error and that=
+ any review, dissemination, distribution or copying of this email and any a=
+ttachment is strictly prohibited. If you have received this email in error,=
+ please contact the sender and delete the message and any attachment from y=
+our system.
+
+ANDRITZ HYDRO GmbH
 
 
+Rechtsform/ Legal form: Gesellschaft mit beschr?nkter Haftung / Corporation
+
+Firmensitz/ Registered seat: Wien
+
+Firmenbuchgericht/ Court of registry: Handelsgericht Wien
+
+Firmenbuchnummer/ Company registration: FN 61833 g
+
+DVR: 0605077
+
+UID-Nr.: ATU14756806
+
+
+Thank You
+________________________________
