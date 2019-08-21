@@ -1,16 +1,9 @@
-Subject: Re: [xenomai-images][PATCH v3] kernel/linux-xenomai: Update versions
-References: <20190819101746.6769-1-Quirin.Gylstorff@siemens.com>
- <20190820151707.13840-1-Quirin.Gylstorff@siemens.com>
- <22065707.2yBTX3zYjI@omoikane>
- <736860b6-561c-58ce-c89d-1071e67b1f77@siemens.com>
-From: Quirin Gylstorff <quirin.gylstorff@siemens.com>
-Message-ID: <99986df2-7d0a-8a63-f729-68098da58b74@siemens.com>
-Date: Wed, 21 Aug 2019 15:51:54 +0200
 MIME-Version: 1.0
-In-Reply-To: <736860b6-561c-58ce-c89d-1071e67b1f77@siemens.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+From: Laurentiu-Cristian Duca <laurentiu.duca@gmail.com>
+Date: Wed, 21 Aug 2019 17:20:39 +0300
+Message-ID: <CAPm8-H6txhsFDDepfGEG48S1anF03F1=tBsEiLfkRiPHi7KKxA@mail.gmail.com>
+Subject: RTNet - vnic0 question
+Content-Type: text/plain; charset="UTF-8"
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -19,33 +12,25 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jan Kiszka <jan.kiszka@siemens.com>, "steven.seeger flightsystems.net" <steven.seeger@flightsystems.net>, "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: xenomai <xenomai@xenomai.org>
 
+Hello rtnet community,
 
+  I successfully tested the examples rtt-sender and rtt-responder
+within a rtnet made from one beaglebone black and one qemu-x86_64-8139too,
+with tdma and also with nomac.
 
-On 8/21/19 12:42 PM, Jan Kiszka wrote:
-> On 21.08.19 12:07, steven.seeger flightsystems.net via Xenomai wrote:
->> Hi Quirin. It looks like I need to move powerpc over to 4.19 as well. 
->> I have
->> been discussing this with some industry partners.
->>
-> 
-> In fact, there is even no ppc support for xenomai-images yet. At least a 
-> qemu virtual test target would be of high value, though.
-> 
-> I was briefly discussing this with Quirin, but there are some risks, 
-> effort-wise. First, we have no idea if Debian/Isar will "just work" for 
-> a ppc32 target - likely no one did that before, though adding MIPS to 
-> Isar was trivial. And then we have no idea about the required 
-> qemu-system setup to test the result. I mean, we could have a look but 
-> we may quickly need support by a ppc expert or need to stop again when 
-> things become too nasty.
-> 
+  I have noted that the presence of vnic0 as an up and fully
+configured interface is mandatory,
+even if rteth0 is up and fully configured.
+Otherwise the rtt-sender announces "sendto failed: Network is unreachable".
+Could anybody tell me why is this happening?
 
-After a short look into it: Adding ppc32 to Debian/Isar could take some 
-major effort as Debian no longer supports the ppc32 architecture[1].
+  I have also noted that if I disable vnic0 (ifconfig vnic0 down),
+rtping works if rteth0 is up and fully configured.
+Why does not work rtt-sender in this case?
+Could it be a problem with rtnet drivers?
 
-[1] https://www.debian.org/ports/powerpc/
-
-Quirin
+Thank you and best regards,
+L-C. Duca
 
