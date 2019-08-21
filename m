@@ -1,9 +1,11 @@
+From: "Q. Gylstorff" <Quirin.Gylstorff@siemens.com>
+Subject: [PATCH v2] machine: Add x86-64-efi as x86 example
+Date: Wed, 21 Aug 2019 17:09:52 +0200
+Message-Id: <20190821150952.15511-1-Quirin.Gylstorff@siemens.com>
+In-Reply-To: <4b707d76-061e-8371-38a8-d3a1e7be45c1@siemens.com>
+References: <4b707d76-061e-8371-38a8-d3a1e7be45c1@siemens.com>
 MIME-Version: 1.0
-From: Laurentiu-Cristian Duca <laurentiu.duca@gmail.com>
-Date: Wed, 21 Aug 2019 17:20:39 +0300
-Message-ID: <CAPm8-H6txhsFDDepfGEG48S1anF03F1=tBsEiLfkRiPHi7KKxA@mail.gmail.com>
-Subject: RTNet - vnic0 question
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -12,25 +14,92 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai <xenomai@xenomai.org>
+To: xenomai@xenomai.org
 
-Hello rtnet community,
+From: Quirin Gylstorff <quirin.gylstorff@siemens.com>
 
-  I successfully tested the examples rtt-sender and rtt-responder
-within a rtnet made from one beaglebone black and one qemu-x86_64-8139too,
-with tdma and also with nomac.
+Use the x86-64-efi as example how to build a xenomai
+x86 image.
 
-  I have noted that the presence of vnic0 as an up and fully
-configured interface is mandatory,
-even if rteth0 is up and fully configured.
-Otherwise the rtt-sender announces "sendto failed: Network is unreachable".
-Could anybody tell me why is this happening?
+Signed-off-by: Quirin Gylstorff <quirin.gylstorff@siemens.com>
+---
+Changes:
+ V2:
+  - rename from simatic-ipc227e to x86-64-efi.
 
-  I have also noted that if I disable vnic0 (ifconfig vnic0 down),
-rtping works if rteth0 is up and fully configured.
-Why does not work rtt-sender in this case?
-Could it be a problem with rtnet drivers?
+board-x86-64-efi.yml         | 15 +++++++++++++++
+ conf/machine/x86-64-efi.conf | 15 +++++++++++++++
+ wic/x86-64-efi.wks           | 16 ++++++++++++++++
+ 3 files changed, 46 insertions(+)
+ create mode 100644 board-x86-64-efi.yml
+ create mode 100644 conf/machine/x86-64-efi.conf
+ create mode 100644 wic/x86-64-efi.wks
 
-Thank you and best regards,
-L-C. Duca
+diff --git a/board-x86-64-efi.yml b/board-x86-64-efi.yml
+new file mode 100644
+index 0000000..e926d95
+--- /dev/null
++++ b/board-x86-64-efi.yml
+@@ -0,0 +1,15 @@
++#
++# Xenomai Real-Time System
++#
++# Copyright (c) Siemens AG, 2019
++#
++# Authors:
++#  Quirin Gylstorff <quirin.gylstorff@siemens.com>
++#
++# SPDX-License-Identifier: MIT
++#
++
++header:
++  version: 8
++
++machine: x86-64-efi
+diff --git a/conf/machine/x86-64-efi.conf b/conf/machine/x86-64-efi.conf
+new file mode 100644
+index 0000000..0fd2ef1
+--- /dev/null
++++ b/conf/machine/x86-64-efi.conf
+@@ -0,0 +1,15 @@
++#
++# Xenomai Real-Time System
++#
++# Copyright (c) Siemens AG, 2019
++#
++# Authors:
++#  Quirin Gylstorff <quirin.gylstorff@siemens.com>
++#
++# SPDX-License-Identifier: MIT
++#
++
++DISTRO_ARCH = "amd64"
++
++IMAGE_TYPE = "wic-img"
++IMAGER_INSTALL += "${GRUB_BOOTLOADER_INSTALL}"
+diff --git a/wic/x86-64-efi.wks b/wic/x86-64-efi.wks
+new file mode 100644
+index 0000000..107e119
+--- /dev/null
++++ b/wic/x86-64-efi.wks
+@@ -0,0 +1,16 @@
++#
++# Xenomai Real-Time System
++#
++# Copyright (c) Siemens AG, 2019
++#
++# Authors:
++#  Quirin Gylstorff <quirin.gylstorff@siemens.com>
++#
++# SPDX-License-Identifier: MIT
++#
++
++part /boot --source bootimg-efi-isar --sourceparams "loader=grub-efi" --ondisk sda --label efi --part-type EF00 --align 1024
++
++part / --source rootfs --ondisk sda --fstype ext4 --label platform --align 1024 --use-uuid
++
++bootloader --ptable gpt --timeout=2 --append "rw rootwait console=ttyS0,115200"
+-- 
+2.20.1
+
 
