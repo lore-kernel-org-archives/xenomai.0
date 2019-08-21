@@ -1,11 +1,9 @@
-From: "Q. Gylstorff" <Quirin.Gylstorff@siemens.com>
-Subject: [PATCH v2] machine: Add x86-64-efi as x86 example
-Date: Wed, 21 Aug 2019 17:09:52 +0200
-Message-Id: <20190821150952.15511-1-Quirin.Gylstorff@siemens.com>
-In-Reply-To: <4b707d76-061e-8371-38a8-d3a1e7be45c1@siemens.com>
-References: <4b707d76-061e-8371-38a8-d3a1e7be45c1@siemens.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+From: Radu Rendec <radu.rendec@gmail.com>
+Date: Wed, 21 Aug 2019 11:43:38 -0400
+Message-ID: <CAD5jUk-fwG0SDyn+bDxxgR0=+wTEW7BWi0UDSS5SUy6fcK-Q8Q@mail.gmail.com>
+Subject: Freeze using Linux function tracer on Xenomai 2.6
+Content-Type: text/plain; charset="UTF-8"
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,90 +14,28 @@ List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: xenomai@xenomai.org
 
-From: Quirin Gylstorff <quirin.gylstorff@siemens.com>
+Hi Everyone,
 
-Use the x86-64-efi as example how to build a xenomai
-x86 image.
+I know Xenomai 2.6 has been obsolete for a long time now, but I'm stuck
+with a legacy environment that I have to support.
 
-Signed-off-by: Quirin Gylstorff <quirin.gylstorff@siemens.com>
----
-Changes:
- V2:
-  - rename from simatic-ipc227e to x86-64-efi.
+Having said that, I enabled the Linux function tracer in the kernel
+configuration and I experience a complete system freeze when I try to
+activate it. Basically I'm doing this:
 
-board-x86-64-efi.yml         | 15 +++++++++++++++
- conf/machine/x86-64-efi.conf | 15 +++++++++++++++
- wic/x86-64-efi.wks           | 16 ++++++++++++++++
- 3 files changed, 46 insertions(+)
- create mode 100644 board-x86-64-efi.yml
- create mode 100644 conf/machine/x86-64-efi.conf
- create mode 100644 wic/x86-64-efi.wks
+  mount debugfs /sys/kernel/debug/ -t debugfs
+  echo function > /sys/kernel/debug/tracing/current_tracer
 
-diff --git a/board-x86-64-efi.yml b/board-x86-64-efi.yml
-new file mode 100644
-index 0000000..e926d95
---- /dev/null
-+++ b/board-x86-64-efi.yml
-@@ -0,0 +1,15 @@
-+#
-+# Xenomai Real-Time System
-+#
-+# Copyright (c) Siemens AG, 2019
-+#
-+# Authors:
-+#  Quirin Gylstorff <quirin.gylstorff@siemens.com>
-+#
-+# SPDX-License-Identifier: MIT
-+#
-+
-+header:
-+  version: 8
-+
-+machine: x86-64-efi
-diff --git a/conf/machine/x86-64-efi.conf b/conf/machine/x86-64-efi.conf
-new file mode 100644
-index 0000000..0fd2ef1
---- /dev/null
-+++ b/conf/machine/x86-64-efi.conf
-@@ -0,0 +1,15 @@
-+#
-+# Xenomai Real-Time System
-+#
-+# Copyright (c) Siemens AG, 2019
-+#
-+# Authors:
-+#  Quirin Gylstorff <quirin.gylstorff@siemens.com>
-+#
-+# SPDX-License-Identifier: MIT
-+#
-+
-+DISTRO_ARCH = "amd64"
-+
-+IMAGE_TYPE = "wic-img"
-+IMAGER_INSTALL += "${GRUB_BOOTLOADER_INSTALL}"
-diff --git a/wic/x86-64-efi.wks b/wic/x86-64-efi.wks
-new file mode 100644
-index 0000000..107e119
---- /dev/null
-+++ b/wic/x86-64-efi.wks
-@@ -0,0 +1,16 @@
-+#
-+# Xenomai Real-Time System
-+#
-+# Copyright (c) Siemens AG, 2019
-+#
-+# Authors:
-+#  Quirin Gylstorff <quirin.gylstorff@siemens.com>
-+#
-+# SPDX-License-Identifier: MIT
-+#
-+
-+part /boot --source bootimg-efi-isar --sourceparams "loader=grub-efi" --ondisk sda --label efi --part-type EF00 --align 1024
-+
-+part / --source rootfs --ondisk sda --fstype ext4 --label platform --align 1024 --use-uuid
-+
-+bootloader --ptable gpt --timeout=2 --append "rw rootwait console=ttyS0,115200"
--- 
-2.20.1
+At that point I get a freeze. The system eventually reboots, but after
+10 minutes or so - even though no hardware watchdog is enabled.
 
+I'm running Xenomai 2.6.5 on Linux 3.2.102, on a PowerPC e300 (Freescale
+MPC8378). Only Busybox init, sshd and a Busybox shell are running at the
+time this happens.
+
+Can anyone think of any reason why this might happen or how I can figure
+out what goes wrong?
+
+Thanks in advance,
+Radu Rendec
 
