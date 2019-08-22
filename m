@@ -1,11 +1,11 @@
-Subject: Re: [xenomai-images][PATCH v4] kernel/linux-xenomai: Update versions
-References: <20190820151707.13840-1-Quirin.Gylstorff@siemens.com>
- <20190822145017.1550-1-Quirin.Gylstorff@siemens.com>
+Subject: Re: [xenomai-images][PATCH] machine: Add beagle bone black as armhf
+ example
+References: <20190821120329.9722-1-Quirin.Gylstorff@siemens.com>
 From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <f0b2dbea-f89f-be99-6913-fc9ac45259d0@siemens.com>
-Date: Thu, 22 Aug 2019 17:02:05 +0200
+Message-ID: <38ca35fe-3f87-4d0e-5692-867bb4d852f4@siemens.com>
+Date: Thu, 22 Aug 2019 17:03:38 +0200
 MIME-Version: 1.0
-In-Reply-To: <20190822145017.1550-1-Quirin.Gylstorff@siemens.com>
+In-Reply-To: <20190821120329.9722-1-Quirin.Gylstorff@siemens.com>
 Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -19,40 +19,73 @@ List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: "Q. Gylstorff" <Quirin.Gylstorff@siemens.com>, xenomai@xenomai.org
 
-On 22.08.19 16:50, Q. Gylstorff wrote:
+On 21.08.19 14:03, Q. Gylstorff wrote:
 > From: Quirin Gylstorff <quirin.gylstorff@siemens.com>
 > 
-> Kernel 4.14 will soon be deprecated. Add kernel 4.19 for armhf and
-> x86 builds. Currently there is no 4.19 for arm64 available, therefore
-> pin to 4.14.%.
+> Build xenomai image for beagle bone black as an armhf example.
+> This image uses the U-Boot Image am335x_boneblack from Debian 10(Buster)
+> as boot loader.
 > 
 > Signed-off-by: Quirin Gylstorff <quirin.gylstorff@siemens.com>
 > ---
-> V2:
->   - set arm64 kernel to 4.14 for hikey board configuration.
-> V3:
->   - add xenomai-version.inc to select kernel version according to
->     xenomai version.
-> V4:
->   - Add comment for version selector
->   - Update integration into nexV4:
->    - Add comment for version selector
->    - Update for merge after t
->   conf/distro/include/xenomai-version.inc    | 17 +++++++++++++++++
->   conf/distro/xenomai-demo.conf              |  1 +
->   conf/machine/hikey.conf                    |  2 ++
->   conf/machine/qemu-arm64.conf               |  1 +
->   recipes-kernel/linux/linux-xenomai_4.14.bb | 10 +++++-----
->   recipes-kernel/linux/linux-xenomai_4.19.bb | 21 +++++++++++++++++++++
->   6 files changed, 47 insertions(+), 5 deletions(-)
->   create mode 100644 conf/distro/include/xenomai-version.inc
->   create mode 100644 recipes-kernel/linux/linux-xenomai_4.19.bb
+>   board-beagle-bone-black.yml         | 15 +++++++++++++++
+>   conf/machine/beagle-bone-black.conf | 18 ++++++++++++++++++
+>   wic/beagle-bone-black.wks           | 17 +++++++++++++++++
+>   3 files changed, 50 insertions(+)
+>   create mode 100644 board-beagle-bone-black.yml
+>   create mode 100644 conf/machine/beagle-bone-black.conf
+>   create mode 100644 wic/beagle-bone-black.wks
 > 
-> diff --git a/conf/distro/include/xenomai-version.inc b/conf/distro/include/xenomai-version.inc
+> diff --git a/board-beagle-bone-black.yml b/board-beagle-bone-black.yml
 > new file mode 100644
-> index 0000000..f14f458
+> index 0000000..e82d786
 > --- /dev/null
-> +++ b/conf/distro/include/xenomai-version.inc
+> +++ b/board-beagle-bone-black.yml
+> @@ -0,0 +1,15 @@
+> +#
+> +# Xenomai Real-Time System
+> +#
+> +# Copyright (c) Siemens AG, 2019
+> +#
+> +# Authors:
+> +#  Quirin Gylstorff <quirin.gylstorff@siemens.com>
+> +#
+> +# SPDX-License-Identifier: MIT
+> +#
+> +
+> +header:
+> +  version: 8
+> +
+> +machine: beagle-bone-black
+> diff --git a/conf/machine/beagle-bone-black.conf b/conf/machine/beagle-bone-black.conf
+> new file mode 100644
+> index 0000000..73abe12
+> --- /dev/null
+> +++ b/conf/machine/beagle-bone-black.conf
+> @@ -0,0 +1,18 @@
+> +#
+> +# Xenomai Real-Time System
+> +#
+> +# Copyright (c) Siemens AG, 2019
+> +#
+> +# Authors:
+> +#  Quirin Gylstorff <quirin.gylstorff@siemens.com>
+> +#
+> +# SPDX-License-Identifier: MIT
+> +#
+> +
+> +DISTRO_ARCH = "armhf"
+> +
+> +IMAGE_INSTALL += "u-boot-script"
+> +
+> +IMAGE_TYPE ?= "wic-img"
+> +
+> +IMAGER_INSTALL += "u-boot-omap"
+> diff --git a/wic/beagle-bone-black.wks b/wic/beagle-bone-black.wks
+> new file mode 100644
+> index 0000000..902b67b
+> --- /dev/null
+> +++ b/wic/beagle-bone-black.wks
 > @@ -0,0 +1,17 @@
 > +#
 > +# Xenomai Real-Time System
@@ -65,102 +98,17 @@ On 22.08.19 16:50, Q. Gylstorff wrote:
 > +# SPDX-License-Identifier: MIT
 > +#
 > +
-> +XENOMAI_NEXT_KERNEL_VERSION = "4.19%"
-> +XENOMAI_STABLE_VERSION_LIST = "stable 3.0 3.0% 3.0.% 3.0.9"
-> +XENOMAI_STABLE_KERNEL_VERSION = "4.14%"
-> +# if PREFERRED_VERSION_xenomai contains any item from XENOMAI_STABLE_VERSION_LIST use
-> +# XENOMAI_STABLE_KERNEL_VERSION
-> +PREFERRED_VERSION_linux-xenomai = "${@bb.utils.contains_any('PREFERRED_VERSION_xenomai','${XENOMAI_STABLE_VERSION_LIST}','${XENOMAI_STABLE_KERNEL_VERSION}','${XENOMAI_NEXT_KERNEL_VERSION}',d) }"
-> diff --git a/conf/distro/xenomai-demo.conf b/conf/distro/xenomai-demo.conf
-> index 2610548..333d532 100644
-> --- a/conf/distro/xenomai-demo.conf
-> +++ b/conf/distro/xenomai-demo.conf
-> @@ -10,6 +10,7 @@
->   #
->   
->   require conf/distro/debian-buster.conf
-> +include conf/distro/include/xenomai-version.inc
->   
->   HOST_DISTRO ?= "debian-buster"
->   
-> diff --git a/conf/machine/hikey.conf b/conf/machine/hikey.conf
-> index 4972e4d..465e06e 100644
-> --- a/conf/machine/hikey.conf
-> +++ b/conf/machine/hikey.conf
-> @@ -14,6 +14,8 @@ DISTRO_ARCH = "arm64"
->   IMAGE_TYPE = "wic-img"
->   IMAGER_INSTALL += "${GRUB_BOOTLOADER_INSTALL}"
->   
-> +PREFERRED_VERSION_linux-xenomai = "4.14.%"
+> +part --source rawcopy --sourceparams "file=/usr/lib/u-boot/am335x_boneblack/MLO" --no-table --align 128
+> +part u-boot --source rawcopy --sourceparams "file=/usr/lib/u-boot/am335x_boneblack/u-boot.img" --no-table --align 384
 > +
->   IMAGE_PREINSTALL_append = " firmware-ti-connectivity"
->   
->   PREFERRED_VERSION_xenomai = "next"
-> \ No newline at end of file
-> diff --git a/conf/machine/qemu-arm64.conf b/conf/machine/qemu-arm64.conf
-> index 472f619..9e1d984 100644
-> --- a/conf/machine/qemu-arm64.conf
-> +++ b/conf/machine/qemu-arm64.conf
-> @@ -13,3 +13,4 @@ require qemu-machine.inc
->   
->   DISTRO_ARCH = "arm64"
->   PREFERRED_VERSION_xenomai = "next"
-> +PREFERRED_VERSION_linux-xenomai = "4.14.%"
-> diff --git a/recipes-kernel/linux/linux-xenomai_4.14.bb b/recipes-kernel/linux/linux-xenomai_4.14.bb
-> index 49ede27..14030d6 100644
-> --- a/recipes-kernel/linux/linux-xenomai_4.14.bb
-> +++ b/recipes-kernel/linux/linux-xenomai_4.14.bb
-> @@ -12,15 +12,15 @@
->   require recipes-kernel/linux/linux-xenomai.inc
->   
->   SRC_URI_append_amd64 = " git://gitlab.denx.de/Xenomai/ipipe-x86.git;protocol=https;branch=ipipe-x86-4.14.y"
-> -SRCREV_amd64 = "eb0ab801116e0268358f1ca250251f02e82eed4a"
-> -PV_amd64 = "4.14.111+"
-> +SRCREV_amd64 = "fdfa1aff4578edf6a03e2e77ea20bf7f97863954"
-> +PV_amd64 = "4.14.134+"
->   
->   SRC_URI_append_arm64 = " git://gitlab.denx.de/Xenomai/ipipe-arm64.git;protocol=https;branch=stable/4.14.78-arm64"
->   SRCREV_arm64 = "dec5e42fd43de238df816b31cadfb83b268b7136"
->   PV_arm64 = "4.14.78+"
->   
-> -SRC_URI_append_armhf = " git://gitlab.denx.de/Xenomai/ipipe-arm.git;protocol=https;branch=stable/4.14.85-arm"
-> -SRCREV_armhf = "35a84af5b7e3193e90ee129a91054657c02e8248"
-> -PV_armhf = "4.14.85+"
-> +SRC_URI_append_armhf = " git://gitlab.denx.de/Xenomai/ipipe-arm.git;protocol=https;branch=stable/4.14.96-arm"
-> +SRCREV_armhf = "723539db0d5a1c995c9bb5524abe311a97b33e43"
-> +PV_armhf = "4.14.96+"
->   
->   S = "${WORKDIR}/git"
-> diff --git a/recipes-kernel/linux/linux-xenomai_4.19.bb b/recipes-kernel/linux/linux-xenomai_4.19.bb
-> new file mode 100644
-> index 0000000..9af5659
-> --- /dev/null
-> +++ b/recipes-kernel/linux/linux-xenomai_4.19.bb
-> @@ -0,0 +1,21 @@
-> +#
-> +# Xenomai Real-Time System
-> +#
-> +# Copyright (c) Siemens AG, 2019
-> +#
-> +# Authors:
-> +#  Quirin Gylstorff <quirin.gylstorff@siemens.com>
-> +#
-> +# SPDX-License-Identifier: MIT
-> +#
+> +part / --source rootfs-u-boot --ondisk mmcblk0 --fstype ext4 --label platform --align 1024 --active
 > +
-> +require recipes-kernel/linux/linux-xenomai.inc
-> +
-> +SRC_URI_append_amd64 = " git://gitlab.denx.de/Xenomai/ipipe-x86.git;protocol=https;branch=ipipe-x86-4.19.y"
-> +SRCREV_amd64 = "d8ca6738bdff660d033ce755db55e7fe5210379a"
-> +PV_amd64 = "4.19.60+"
-> +
-> +SRC_URI_append_armhf = " git://gitlab.denx.de/Xenomai/ipipe-arm.git;protocol=https;nobranch=1;tag=ipipe-core-4.19.33-arm-2"
-> +PV_armhf = "4.19.33+"
-> +
-> +S = "${WORKDIR}/git"
+> +bootloader --append "rw rootwait console=ttyO,115200"
 > 
 
 Thanks, applied.
+
+Maybe interesting for you, Daniel.
 
 Jan
 
