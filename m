@@ -1,14 +1,15 @@
-From: Lange Norbert <norbert.lange@andritz.com>
-Subject: RE: affinity of main thread is bound to current core
-Date: Thu, 22 Aug 2019 15:16:25 +0000
-Message-ID: <VI1PR05MB59174076484DB2BB0A1DF552F6A50@VI1PR05MB5917.eurprd05.prod.outlook.com>
+Subject: Re: affinity of main thread is bound to current core
 References: <VI1PR05MB591718EB50E68F91B3DFD398F6AA0@VI1PR05MB5917.eurprd05.prod.outlook.com>
  <4211a9c2-957d-886d-da52-260a24a64632@siemens.com>
-In-Reply-To: <4211a9c2-957d-886d-da52-260a24a64632@siemens.com>
-Content-Language: en-US
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+ <VI1PR05MB59174076484DB2BB0A1DF552F6A50@VI1PR05MB5917.eurprd05.prod.outlook.com>
+From: Philippe Gerum <rpm@xenomai.org>
+Message-ID: <6bfc5604-8ab9-a950-b651-c8a25c76c94c@xenomai.org>
+Date: Thu, 22 Aug 2019 17:29:13 +0200
 MIME-Version: 1.0
+In-Reply-To: <VI1PR05MB59174076484DB2BB0A1DF552F6A50@VI1PR05MB5917.eurprd05.prod.outlook.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,58 +18,87 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jan Kiszka <jan.kiszka@siemens.com>, "Xenomai (xenomai@xenomai.org)" <xenomai@xenomai.org>
+To: Lange Norbert <norbert.lange@andritz.com>, Jan Kiszka <jan.kiszka@siemens.com>, "Xenomai (xenomai@xenomai.org)" <xenomai@xenomai.org>
 
-PiAtLS0tLU9yaWdpbmFsIE1lc3NhZ2UtLS0tLQ0KPiBGcm9tOiBKYW4gS2lzemthIDxqYW4ua2lz
-emthQHNpZW1lbnMuY29tPg0KPiBTZW50OiBEb25uZXJzdGFnLCAyMi4gQXVndXN0IDIwMTkgMTY6
-NTINCj4gVG86IExhbmdlIE5vcmJlcnQgPG5vcmJlcnQubGFuZ2VAYW5kcml0ei5jb20+OyBYZW5v
-bWFpDQo+ICh4ZW5vbWFpQHhlbm9tYWkub3JnKSA8eGVub21haUB4ZW5vbWFpLm9yZz4NCj4gU3Vi
-amVjdDogUmU6IGFmZmluaXR5IG9mIG1haW4gdGhyZWFkIGlzIGJvdW5kIHRvIGN1cnJlbnQgY29y
-ZQ0KPg0KPiBFLU1BSUwgRlJPTSBBIE5PTi1BTkRSSVRaIFNPVVJDRTogQVMgQSBTRUNVUklUWSBN
-RUFTVVJFLCBQTEVBU0UNCj4gRVhFUkNJU0UgQ0FVVElPTiBXSVRIIEUtTUFJTCBDT05URU5UIEFO
-RCBBTlkgTElOS1MgT1INCj4gQVRUQUNITUVOVFMuDQo+DQo+DQo+IE9uIDIxLjA4LjE5IDE0OjEy
-LCBMYW5nZSBOb3JiZXJ0IHZpYSBYZW5vbWFpIHdyb3RlOg0KPiA+IEhlbGxvLA0KPiA+DQo+ID4g
-SSB1c2UgWGVub21haSBtYXN0ZXIgb24gaXBpcGUtY29yZS00LjE5LjYwLXg4Ni01Lg0KPiA+IEkg
-c3RhcnQgb3V0IHdpdGggYW4gYWZmaW5pdHkgbWFzayBvZiAweEYsIGluIHRoZSBmdW5jdGlvbiBj
-b2JhbHRfaW5pdF8yLA0KPiBwdGhyZWFkX3NldHNjaGVkcGFyYW0gd2lsbCBnZXQgY2FsbGVkLCBh
-ZnRlciB0aGUgc3lzY2FsbA0KPiBzY19jb2JhbHRfdGhyZWFkX3NldHNjaGVkcGFyYW1fZXggdGhl
-IGFmZmluaXR5IG1hc2sgd2lsbCBjb250YWluIGEgc2luZ2xlDQo+IENQVSAoc3VwcG9zZWRseSB0
-aGUgY3VycmVudCBvbmUpLg0KPiA+DQo+ID4gQWxsIG1ldGhvZHMgdG8gY29udHJvbCBhZmZpbml0
-eSBhcmUgZXhlY3V0ZWQgYmVmb3JlIHRoaXMgcG9pbnQgKGNtZGxpbmUgYXJncywNCj4gL3Byb2Mv
-eGVub21haS9hZmZpbml0eSksIHNvIHRoZXJlIGlzIG5vIHdvcmtpbmcgd2F5IHRvIGNvbnRyb2wg
-aXQuDQo+ID4NCj4NCj4gTm90IHN1cmUgSSBnZXQgdGhlIHByb2JsZW0geWV0OiAic29tZS14ZW5v
-bWFpLWFwcCAtLWNwdS1hZmZpbml0eSBYIiBzZWVtcw0KPiB0byB3b3JrIGZpbmUsIHNvIGRvZXMg
-c2V0dGluZyAvcHJvYy94ZW5vbWFpL2FmZmluaXR5LiBDYW4geW91IGRlc2NyaWJlIG1vcmUNCj4g
-Y29uY3JldGVseSB3aGF0IGJlaGF2ZXMgdW5leHBlY3RlZGx5LCBtYXliZSB3aXRoIGEgdGVzdCBj
-YXNlPw0KDQpXZWxsLCBpdCBkb2VzIG5vdCB3b3JrIGZvciBtZS4NCg0KLS0tLS0tLS0tLS0tLS0t
-LS0tIGZpbGUgdGVzdC5jDQojZGVmaW5lIF9HTlVfU09VUkNFDQojaW5jbHVkZSA8c3RkaW8uaD4N
-Cg0KI2luY2x1ZGUgPHNjaGVkLmg+DQojaW5jbHVkZSA8cHRocmVhZC5oPg0KDQpzdGF0aWMgdm9p
-ZCBwcmludGFmZigpDQp7DQogICAgY3B1X3NldF90IGNwdXNldDsNCiAgICBwdGhyZWFkX2dldGFm
-ZmluaXR5X25wKHB0aHJlYWRfc2VsZigpLCBzaXplb2YoY3B1c2V0KSwgJmNwdXNldCk7DQogICAg
-cHJpbnRmKCJBZmZpbml0eTogIik7DQogICAgZm9yKHVuc2lnbmVkIGkgPSAwOyBpIDwgMjU2OyAr
-K2kpDQogICAgew0KICAgICAgICBpZihDUFVfSVNTRVQoaSwgJmNwdXNldCkpDQogICAgICAgICAg
-ICBwcmludGYoIiV1LCIsIGkpOw0KICAgIH0NCiAgICBwcmludGYoIlxuIik7DQp9DQoNCmludCBt
-YWluKGludCBhcmdjLCBjaGFyIGNvbnN0ICphcmd2W10pDQp7DQpwcmludGFmZigpOw0KcmV0dXJu
-IDA7DQp9DQotLS0tLS0tLS0tLS0tLS0tLS0NCg0Kcm9vdEBidWlsZHJvb3Q6fiMgY2F0IC9wcm9j
-L3hlbm9tYWkvYWZmaW5pdHkNCjAwMDAwMDBmDQoNCnJvb3RAYnVpbGRyb290On4jIC90bXAvYS5v
-dXQNCkFmZmluaXR5OiAyLA0KDQpyb290QGJ1aWxkcm9vdDp+IyAvdG1wL2Eub3V0IGFwcCAtLWNw
-dS1hZmZpbml0eSAwLDEsMiwzDQpBZmZpbml0eTogMywNCg0KSSB0cmFjZWQgdGhlIHBvaW50IHdo
-ZXJlIGFmZmluaXR5IGNvbGxhcHNlZCB0byB0aGUNCnNjX2NvYmFsdF90aHJlYWRfc2V0c2NoZWRw
-YXJhbV9leCBjYWxsLg0KDQpOb3JiZXJ0DQpfX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
-Xw0KDQpUaGlzIG1lc3NhZ2UgYW5kIGFueSBhdHRhY2htZW50cyBhcmUgc29sZWx5IGZvciB0aGUg
-dXNlIG9mIHRoZSBpbnRlbmRlZCByZWNpcGllbnRzLiBUaGV5IG1heSBjb250YWluIHByaXZpbGVn
-ZWQgYW5kL29yIGNvbmZpZGVudGlhbCBpbmZvcm1hdGlvbiBvciBvdGhlciBpbmZvcm1hdGlvbiBw
-cm90ZWN0ZWQgZnJvbSBkaXNjbG9zdXJlLiBJZiB5b3UgYXJlIG5vdCBhbiBpbnRlbmRlZCByZWNp
-cGllbnQsIHlvdSBhcmUgaGVyZWJ5IG5vdGlmaWVkIHRoYXQgeW91IHJlY2VpdmVkIHRoaXMgZW1h
-aWwgaW4gZXJyb3IgYW5kIHRoYXQgYW55IHJldmlldywgZGlzc2VtaW5hdGlvbiwgZGlzdHJpYnV0
-aW9uIG9yIGNvcHlpbmcgb2YgdGhpcyBlbWFpbCBhbmQgYW55IGF0dGFjaG1lbnQgaXMgc3RyaWN0
-bHkgcHJvaGliaXRlZC4gSWYgeW91IGhhdmUgcmVjZWl2ZWQgdGhpcyBlbWFpbCBpbiBlcnJvciwg
-cGxlYXNlIGNvbnRhY3QgdGhlIHNlbmRlciBhbmQgZGVsZXRlIHRoZSBtZXNzYWdlIGFuZCBhbnkg
-YXR0YWNobWVudCBmcm9tIHlvdXIgc3lzdGVtLg0KDQpBTkRSSVRaIEhZRFJPIEdtYkgNCg0KDQpS
-ZWNodHNmb3JtLyBMZWdhbCBmb3JtOiBHZXNlbGxzY2hhZnQgbWl0IGJlc2NocsOkbmt0ZXIgSGFm
-dHVuZyAvIENvcnBvcmF0aW9uDQoNCkZpcm1lbnNpdHovIFJlZ2lzdGVyZWQgc2VhdDogV2llbg0K
-DQpGaXJtZW5idWNoZ2VyaWNodC8gQ291cnQgb2YgcmVnaXN0cnk6IEhhbmRlbHNnZXJpY2h0IFdp
-ZW4NCg0KRmlybWVuYnVjaG51bW1lci8gQ29tcGFueSByZWdpc3RyYXRpb246IEZOIDYxODMzIGcN
-Cg0KRFZSOiAwNjA1MDc3DQoNClVJRC1Oci46IEFUVTE0NzU2ODA2DQoNCg0KVGhhbmsgWW91DQpf
-X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fXw0K
+On 8/22/19 5:16 PM, Lange Norbert via Xenomai wrote:
+>> -----Original Message-----
+>> From: Jan Kiszka <jan.kiszka@siemens.com>
+>> Sent: Donnerstag, 22. August 2019 16:52
+>> To: Lange Norbert <norbert.lange@andritz.com>; Xenomai
+>> (xenomai@xenomai.org) <xenomai@xenomai.org>
+>> Subject: Re: affinity of main thread is bound to current core
+>>
+>> E-MAIL FROM A NON-ANDRITZ SOURCE: AS A SECURITY MEASURE, PLEASE
+>> EXERCISE CAUTION WITH E-MAIL CONTENT AND ANY LINKS OR
+>> ATTACHMENTS.
+>>
+>>
+>> On 21.08.19 14:12, Lange Norbert via Xenomai wrote:
+>>> Hello,
+>>>
+>>> I use Xenomai master on ipipe-core-4.19.60-x86-5.
+>>> I start out with an affinity mask of 0xF, in the function cobalt_init_2,
+>> pthread_setschedparam will get called, after the syscall
+>> sc_cobalt_thread_setschedparam_ex the affinity mask will contain a single
+>> CPU (supposedly the current one).
+>>>
+>>> All methods to control affinity are executed before this point (cmdline args,
+>> /proc/xenomai/affinity), so there is no working way to control it.
+>>>
+>>
+>> Not sure I get the problem yet: "some-xenomai-app --cpu-affinity X" seems
+>> to work fine, so does setting /proc/xenomai/affinity. Can you describe more
+>> concretely what behaves unexpectedly, maybe with a test case?
+> 
+> Well, it does not work for me.
+> 
+> ------------------ file test.c
+> #define _GNU_SOURCE
+> #include <stdio.h>
+> 
+> #include <sched.h>
+> #include <pthread.h>
+> 
+> static void printaff()
+> {
+>     cpu_set_t cpuset;
+>     pthread_getaffinity_np(pthread_self(), sizeof(cpuset), &cpuset);
+>     printf("Affinity: ");
+>     for(unsigned i = 0; i < 256; ++i)
+>     {
+>         if(CPU_ISSET(i, &cpuset))
+>             printf("%u,", i);
+>     }
+>     printf("\n");
+> }
+> 
+> int main(int argc, char const *argv[])
+> {
+> printaff();
+> return 0;
+> }
+> ------------------
+> 
+> root@buildroot:~# cat /proc/xenomai/affinity
+> 0000000f
+> 
+> root@buildroot:~# /tmp/a.out
+> Affinity: 2,
+> 
+> root@buildroot:~# /tmp/a.out app --cpu-affinity 0,1,2,3
+> Affinity: 3,
+> 
+> I traced the point where affinity collapsed to the
+> sc_cobalt_thread_setschedparam_ex call.
+> 
+
+Feature, note bug. CPU migration is at odds with (very) low-latency
+requirement, so cobalt pins the thread to one of the cores defined by
+--cpu-affinity, preferably the current one. There is no point in having
+more than a single core in the affinity mask for a real-time thread: we
+simply don't want that one to be involved in any load balancing strategy.
+
+
+-- 
+Philippe.
 
