@@ -1,10 +1,12 @@
-Subject: Re: affinity of main thread is bound to current core
-References: <VI1PR05MB591718EB50E68F91B3DFD398F6AA0@VI1PR05MB5917.eurprd05.prod.outlook.com>
+Subject: Re: [xenomai-images][PATCH v2] distro/xenomai-demo: Update to Debian
+ 10
+References: <20190814142414.25331-1-Quirin.Gylstorff@siemens.com>
+ <20190822145008.1445-1-Quirin.Gylstorff@siemens.com>
 From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <4211a9c2-957d-886d-da52-260a24a64632@siemens.com>
-Date: Thu, 22 Aug 2019 16:51:57 +0200
+Message-ID: <e2d162ab-f05a-b812-b553-fea9cd22f272@siemens.com>
+Date: Thu, 22 Aug 2019 17:01:54 +0200
 MIME-Version: 1.0
-In-Reply-To: <VI1PR05MB591718EB50E68F91B3DFD398F6AA0@VI1PR05MB5917.eurprd05.prod.outlook.com>
+In-Reply-To: <20190822145008.1445-1-Quirin.Gylstorff@siemens.com>
 Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -16,20 +18,42 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Lange Norbert <norbert.lange@andritz.com>, "Xenomai (xenomai@xenomai.org)" <xenomai@xenomai.org>
+To: "Q. Gylstorff" <Quirin.Gylstorff@siemens.com>, xenomai@xenomai.org
 
-On 21.08.19 14:12, Lange Norbert via Xenomai wrote:
-> Hello,
+On 22.08.19 16:50, Q. Gylstorff wrote:
+> From: Quirin Gylstorff <quirin.gylstorff@siemens.com>
 > 
-> I use Xenomai master on ipipe-core-4.19.60-x86-5.
-> I start out with an affinity mask of 0xF, in the function cobalt_init_2,  pthread_setschedparam will get called, after the syscall sc_cobalt_thread_setschedparam_ex the affinity mask will contain a single CPU (supposedly the current one).
+> Debian 10 (Buster) was released and Stretch is now old stable, update
+> the distribution to the latest stable version.
 > 
-> All methods to control affinity are executed before this point (cmdline args, /proc/xenomai/affinity), so there is no working way to control it.
+> Signed-off-by: Quirin Gylstorff <quirin.gylstorff@siemens.com>
+> ---
+> Changes:
+>    V2:
+>    Updated for merge with next
+> 
+>   conf/distro/xenomai-demo.conf | 4 ++--
+>   1 file changed, 2 insertions(+), 2 deletions(-)
+> 
+> diff --git a/conf/distro/xenomai-demo.conf b/conf/distro/xenomai-demo.conf
+> index 1fb7838..2610548 100644
+> --- a/conf/distro/xenomai-demo.conf
+> +++ b/conf/distro/xenomai-demo.conf
+> @@ -9,9 +9,9 @@
+>   # SPDX-License-Identifier: MIT
+>   #
+>   
+> -require conf/distro/debian-stretch.conf
+> +require conf/distro/debian-buster.conf
+>   
+> -HOST_DISTRO ?= "debian-stretch"
+> +HOST_DISTRO ?= "debian-buster"
+>   
+>   KERNEL_NAME = "xenomai"
+>   
 > 
 
-Not sure I get the problem yet: "some-xenomai-app --cpu-affinity X" seems to 
-work fine, so does setting /proc/xenomai/affinity. Can you describe more 
-concretely what behaves unexpectedly, maybe with a test case?
+Thanks, applied.
 
 Jan
 
