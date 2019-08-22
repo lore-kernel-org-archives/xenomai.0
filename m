@@ -1,16 +1,11 @@
-From: Lange Norbert <norbert.lange@andritz.com>
-Subject: RE: affinity of main thread is bound to current core
-Date: Thu, 22 Aug 2019 16:04:43 +0000
-Message-ID: <VI1PR05MB5917471F18BEF77077B812A9F6A50@VI1PR05MB5917.eurprd05.prod.outlook.com>
-References: <VI1PR05MB591718EB50E68F91B3DFD398F6AA0@VI1PR05MB5917.eurprd05.prod.outlook.com>
- <4211a9c2-957d-886d-da52-260a24a64632@siemens.com>
- <VI1PR05MB59174076484DB2BB0A1DF552F6A50@VI1PR05MB5917.eurprd05.prod.outlook.com>
- <6bfc5604-8ab9-a950-b651-c8a25c76c94c@xenomai.org>
-In-Reply-To: <6bfc5604-8ab9-a950-b651-c8a25c76c94c@xenomai.org>
+From: "DIAO, Hanson" <hanson.diao@siemens.com>
+Subject: A potential  Xenomai Mutex issue
+Date: Thu, 22 Aug 2019 18:42:33 +0000
+Message-ID: <DM6PR07MB596162CF3DD4EB4071336D26E7A50@DM6PR07MB5961.namprd07.prod.outlook.com>
 Content-Language: en-US
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
 MIME-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -19,92 +14,264 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Philippe Gerum <rpm@xenomai.org>, Jan Kiszka <jan.kiszka@siemens.com>, "Xenomai (xenomai@xenomai.org)" <xenomai@xenomai.org>
+To: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-PiAtLS0tLU9yaWdpbmFsIE1lc3NhZ2UtLS0tLQ0KPiBGcm9tOiBQaGlsaXBwZSBHZXJ1bSA8cnBt
-QHhlbm9tYWkub3JnPg0KPiBTZW50OiBEb25uZXJzdGFnLCAyMi4gQXVndXN0IDIwMTkgMTc6MjkN
-Cj4gVG86IExhbmdlIE5vcmJlcnQgPG5vcmJlcnQubGFuZ2VAYW5kcml0ei5jb20+OyBKYW4gS2lz
-emthDQo+IDxqYW4ua2lzemthQHNpZW1lbnMuY29tPjsgWGVub21haSAoeGVub21haUB4ZW5vbWFp
-Lm9yZykNCj4gPHhlbm9tYWlAeGVub21haS5vcmc+DQo+IFN1YmplY3Q6IFJlOiBhZmZpbml0eSBv
-ZiBtYWluIHRocmVhZCBpcyBib3VuZCB0byBjdXJyZW50IGNvcmUNCj4NCj4gRS1NQUlMIEZST00g
-QSBOT04tQU5EUklUWiBTT1VSQ0U6IEFTIEEgU0VDVVJJVFkgTUVBU1VSRSwgUExFQVNFDQo+IEVY
-RVJDSVNFIENBVVRJT04gV0lUSCBFLU1BSUwgQ09OVEVOVCBBTkQgQU5ZIExJTktTIE9SDQo+IEFU
-VEFDSE1FTlRTLg0KPg0KPg0KPiBPbiA4LzIyLzE5IDU6MTYgUE0sIExhbmdlIE5vcmJlcnQgdmlh
-IFhlbm9tYWkgd3JvdGU6DQo+ID4+IC0tLS0tT3JpZ2luYWwgTWVzc2FnZS0tLS0tDQo+ID4+IEZy
-b206IEphbiBLaXN6a2EgPGphbi5raXN6a2FAc2llbWVucy5jb20+DQo+ID4+IFNlbnQ6IERvbm5l
-cnN0YWcsIDIyLiBBdWd1c3QgMjAxOSAxNjo1Mg0KPiA+PiBUbzogTGFuZ2UgTm9yYmVydCA8bm9y
-YmVydC5sYW5nZUBhbmRyaXR6LmNvbT47IFhlbm9tYWkNCj4gPj4gKHhlbm9tYWlAeGVub21haS5v
-cmcpIDx4ZW5vbWFpQHhlbm9tYWkub3JnPg0KPiA+PiBTdWJqZWN0OiBSZTogYWZmaW5pdHkgb2Yg
-bWFpbiB0aHJlYWQgaXMgYm91bmQgdG8gY3VycmVudCBjb3JlDQo+ID4+DQo+ID4+IEUtTUFJTCBG
-Uk9NIEEgTk9OLUFORFJJVFogU09VUkNFOiBBUyBBIFNFQ1VSSVRZIE1FQVNVUkUsDQo+IFBMRUFT
-RQ0KPiA+PiBFWEVSQ0lTRSBDQVVUSU9OIFdJVEggRS1NQUlMIENPTlRFTlQgQU5EIEFOWSBMSU5L
-UyBPUg0KPiBBVFRBQ0hNRU5UUy4NCj4gPj4NCj4gPj4NCj4gPj4gT24gMjEuMDguMTkgMTQ6MTIs
-IExhbmdlIE5vcmJlcnQgdmlhIFhlbm9tYWkgd3JvdGU6DQo+ID4+PiBIZWxsbywNCj4gPj4+DQo+
-ID4+PiBJIHVzZSBYZW5vbWFpIG1hc3RlciBvbiBpcGlwZS1jb3JlLTQuMTkuNjAteDg2LTUuDQo+
-ID4+PiBJIHN0YXJ0IG91dCB3aXRoIGFuIGFmZmluaXR5IG1hc2sgb2YgMHhGLCBpbiB0aGUgZnVu
-Y3Rpb24NCj4gPj4+IGNvYmFsdF9pbml0XzIsDQo+ID4+IHB0aHJlYWRfc2V0c2NoZWRwYXJhbSB3
-aWxsIGdldCBjYWxsZWQsIGFmdGVyIHRoZSBzeXNjYWxsDQo+ID4+IHNjX2NvYmFsdF90aHJlYWRf
-c2V0c2NoZWRwYXJhbV9leCB0aGUgYWZmaW5pdHkgbWFzayB3aWxsIGNvbnRhaW4gYQ0KPiA+PiBz
-aW5nbGUgQ1BVIChzdXBwb3NlZGx5IHRoZSBjdXJyZW50IG9uZSkuDQo+ID4+Pg0KPiA+Pj4gQWxs
-IG1ldGhvZHMgdG8gY29udHJvbCBhZmZpbml0eSBhcmUgZXhlY3V0ZWQgYmVmb3JlIHRoaXMgcG9p
-bnQNCj4gPj4+IChjbWRsaW5lIGFyZ3MsDQo+ID4+IC9wcm9jL3hlbm9tYWkvYWZmaW5pdHkpLCBz
-byB0aGVyZSBpcyBubyB3b3JraW5nIHdheSB0byBjb250cm9sIGl0Lg0KPiA+Pj4NCj4gPj4NCj4g
-Pj4gTm90IHN1cmUgSSBnZXQgdGhlIHByb2JsZW0geWV0OiAic29tZS14ZW5vbWFpLWFwcCAtLWNw
-dS1hZmZpbml0eSBYIg0KPiA+PiBzZWVtcyB0byB3b3JrIGZpbmUsIHNvIGRvZXMgc2V0dGluZyAv
-cHJvYy94ZW5vbWFpL2FmZmluaXR5LiBDYW4geW91DQo+ID4+IGRlc2NyaWJlIG1vcmUgY29uY3Jl
-dGVseSB3aGF0IGJlaGF2ZXMgdW5leHBlY3RlZGx5LCBtYXliZSB3aXRoIGEgdGVzdA0KPiBjYXNl
-Pw0KPiA+DQo+ID4gV2VsbCwgaXQgZG9lcyBub3Qgd29yayBmb3IgbWUuDQo+ID4NCj4gPiAtLS0t
-LS0tLS0tLS0tLS0tLS0gZmlsZSB0ZXN0LmMNCj4gPiAjZGVmaW5lIF9HTlVfU09VUkNFDQo+ID4g
-I2luY2x1ZGUgPHN0ZGlvLmg+DQo+ID4NCj4gPiAjaW5jbHVkZSA8c2NoZWQuaD4NCj4gPiAjaW5j
-bHVkZSA8cHRocmVhZC5oPg0KPiA+DQo+ID4gc3RhdGljIHZvaWQgcHJpbnRhZmYoKQ0KPiA+IHsN
-Cj4gPiAgICAgY3B1X3NldF90IGNwdXNldDsNCj4gPiAgICAgcHRocmVhZF9nZXRhZmZpbml0eV9u
-cChwdGhyZWFkX3NlbGYoKSwgc2l6ZW9mKGNwdXNldCksICZjcHVzZXQpOw0KPiA+ICAgICBwcmlu
-dGYoIkFmZmluaXR5OiAiKTsNCj4gPiAgICAgZm9yKHVuc2lnbmVkIGkgPSAwOyBpIDwgMjU2OyAr
-K2kpDQo+ID4gICAgIHsNCj4gPiAgICAgICAgIGlmKENQVV9JU1NFVChpLCAmY3B1c2V0KSkNCj4g
-PiAgICAgICAgICAgICBwcmludGYoIiV1LCIsIGkpOw0KPiA+ICAgICB9DQo+ID4gICAgIHByaW50
-ZigiXG4iKTsNCj4gPiB9DQo+ID4NCj4gPiBpbnQgbWFpbihpbnQgYXJnYywgY2hhciBjb25zdCAq
-YXJndltdKSB7IHByaW50YWZmKCk7IHJldHVybiAwOyB9DQo+ID4gLS0tLS0tLS0tLS0tLS0tLS0t
-DQo+ID4NCj4gPiByb290QGJ1aWxkcm9vdDp+IyBjYXQgL3Byb2MveGVub21haS9hZmZpbml0eSAw
-MDAwMDAwZg0KPiA+DQo+ID4gcm9vdEBidWlsZHJvb3Q6fiMgL3RtcC9hLm91dA0KPiA+IEFmZmlu
-aXR5OiAyLA0KPiA+DQo+ID4gcm9vdEBidWlsZHJvb3Q6fiMgL3RtcC9hLm91dCBhcHAgLS1jcHUt
-YWZmaW5pdHkgMCwxLDIsMw0KPiA+IEFmZmluaXR5OiAzLA0KPiA+DQo+ID4gSSB0cmFjZWQgdGhl
-IHBvaW50IHdoZXJlIGFmZmluaXR5IGNvbGxhcHNlZCB0byB0aGUNCj4gPiBzY19jb2JhbHRfdGhy
-ZWFkX3NldHNjaGVkcGFyYW1fZXggY2FsbC4NCj4gPg0KPg0KPiBGZWF0dXJlLCBub3RlIGJ1Zy4g
-Q1BVIG1pZ3JhdGlvbiBpcyBhdCBvZGRzIHdpdGggKHZlcnkpIGxvdy1sYXRlbmN5DQo+IHJlcXVp
-cmVtZW50LCBzbyBjb2JhbHQgcGlucyB0aGUgdGhyZWFkIHRvIG9uZSBvZiB0aGUgY29yZXMgZGVm
-aW5lZCBieSAtLWNwdS0NCj4gYWZmaW5pdHksIHByZWZlcmFibHkgdGhlIGN1cnJlbnQgb25lLiBU
-aGVyZSBpcyBubyBwb2ludCBpbiBoYXZpbmcgbW9yZSB0aGFuIGENCj4gc2luZ2xlIGNvcmUgaW4g
-dGhlIGFmZmluaXR5IG1hc2sgZm9yIGEgcmVhbC10aW1lIHRocmVhZDogd2Ugc2ltcGx5IGRvbid0
-IHdhbnQNCj4gdGhhdCBvbmUgdG8gYmUgaW52b2x2ZWQgaW4gYW55IGxvYWQgYmFsYW5jaW5nIHN0
-cmF0ZWd5Lg0KDQpXaHkgaXMgYWxsIHRoYXQgdHJpY2tlcnkgaW4gc2V0dXAgcmVhZGluZyAvcHJv
-Yy94ZW5vbWFpL2FmZmluaXR5LA0KcGFyc2luZyAtLWNwdS1hZmZpbml0eSwgYW5kIHNldHRpbmcg
-dGhlIHJlc3VsdGluZyBhZmZpbml0eSB3aGVuDQpzb29uIHRoZXJlYWZ0ZXIgKnRoZSBzYW1lIHNl
-dHVwKiB3aWxsIGNhbGwgcHRocmVhZF9zZXRzY2hlZHBhcmFtLA0KZGVzdHJveWluZyBpdHMgcHJl
-dmlvdXMgd29yaz8NCg0KSXMgdGhhdCBhIGZlYXR1cmUgdG8gd2FybSB1cCB0aGUgQ1BVLCBhc2lk
-ZSBvZiBzZW5kaW5nIG1lIG9uIGENCmdvb3NlIGNoYXNlLi4uDQoNClRoaXMgaXMgdGhlIEMgbWFp
-biB0aHJlYWQsIGV2ZW4gdGhlIG1vc3QgdW5uZWNlc3NhcnkgdGhyZWFkIEkgc3RhcnQgd2l0aA0K
-X19TVEQocHRocmVhZF9jcmVhdGUpIHdpbGwgaW5oZXJpdCB0aGF0IG1hc2suDQpTb3JyeSwgYnV0
-IEkgaGF2ZSBhIGhhcmQgdGltZSBmaWd1cmluZyBvdXQgYSBzaW5nbGUgYXJndW1lbnQgZm9yIHRo
-YXQgImZlYXR1cmUiLg0KDQpJIHdvdWxkIHVuZGVyc3RhbmQgaWYgeW91IGJpbmQgdGhlIHRocmVh
-ZCB0byBhIGNvcmUsIHBvdGVudGlhbGx5IGFmZmVjdGluZyB0aGUgYWZmaW5pdHkgbWFzaywNCmFz
-IHNvb24gdGhlIHVzZXIgZXhwbGljaXRseSBraWNrZWQgdGhhdCB0aHJlYWQgaW50byBhIHJlYWx0
-aW1lIHByaW9yaXR5Lg0KSXMgdGhlIGFmZmluaXR5IG1hc2sgZXZlbiBhZmZlY3RpbmcgY29iYWx0
-IHRocmVhZHMgdGhhdCBkb27igJl0IGdldCBkZW1vdGVkICh3b3VsZCBiZSBhIHByZWNvbmRpdGlv
-biBmb3IgbG93LWxhdGVuY3kpPw0KDQpOb3JiZXJ0DQpfX19fX19fX19fX19fX19fX19fX19fX19f
-X19fX19fXw0KDQpUaGlzIG1lc3NhZ2UgYW5kIGFueSBhdHRhY2htZW50cyBhcmUgc29sZWx5IGZv
-ciB0aGUgdXNlIG9mIHRoZSBpbnRlbmRlZCByZWNpcGllbnRzLiBUaGV5IG1heSBjb250YWluIHBy
-aXZpbGVnZWQgYW5kL29yIGNvbmZpZGVudGlhbCBpbmZvcm1hdGlvbiBvciBvdGhlciBpbmZvcm1h
-dGlvbiBwcm90ZWN0ZWQgZnJvbSBkaXNjbG9zdXJlLiBJZiB5b3UgYXJlIG5vdCBhbiBpbnRlbmRl
-ZCByZWNpcGllbnQsIHlvdSBhcmUgaGVyZWJ5IG5vdGlmaWVkIHRoYXQgeW91IHJlY2VpdmVkIHRo
-aXMgZW1haWwgaW4gZXJyb3IgYW5kIHRoYXQgYW55IHJldmlldywgZGlzc2VtaW5hdGlvbiwgZGlz
-dHJpYnV0aW9uIG9yIGNvcHlpbmcgb2YgdGhpcyBlbWFpbCBhbmQgYW55IGF0dGFjaG1lbnQgaXMg
-c3RyaWN0bHkgcHJvaGliaXRlZC4gSWYgeW91IGhhdmUgcmVjZWl2ZWQgdGhpcyBlbWFpbCBpbiBl
-cnJvciwgcGxlYXNlIGNvbnRhY3QgdGhlIHNlbmRlciBhbmQgZGVsZXRlIHRoZSBtZXNzYWdlIGFu
-ZCBhbnkgYXR0YWNobWVudCBmcm9tIHlvdXIgc3lzdGVtLg0KDQpBTkRSSVRaIEhZRFJPIEdtYkgN
-Cg0KDQpSZWNodHNmb3JtLyBMZWdhbCBmb3JtOiBHZXNlbGxzY2hhZnQgbWl0IGJlc2NocsOkbmt0
-ZXIgSGFmdHVuZyAvIENvcnBvcmF0aW9uDQoNCkZpcm1lbnNpdHovIFJlZ2lzdGVyZWQgc2VhdDog
-V2llbg0KDQpGaXJtZW5idWNoZ2VyaWNodC8gQ291cnQgb2YgcmVnaXN0cnk6IEhhbmRlbHNnZXJp
-Y2h0IFdpZW4NCg0KRmlybWVuYnVjaG51bW1lci8gQ29tcGFueSByZWdpc3RyYXRpb246IEZOIDYx
-ODMzIGcNCg0KRFZSOiAwNjA1MDc3DQoNClVJRC1Oci46IEFUVTE0NzU2ODA2DQoNCg0KVGhhbmsg
-WW91DQpfX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fXw0K
+Hi all,
+
+
+
+I hope you are doing well. Currently I was working on a critical deadlock i=
+ssue with Xenomail Library(version 2.6.4). I found that for the Xenomai loc=
+k count is not reliable after we called rt_mutex_release. I print the follo=
+wing message to you. I hope some developer can help me fix this issue. I kn=
+ow that this version is EOL, but we still use this old version. Thank you s=
+o much.
+
+
+
+Issue 1:
+
+Before Mutex Lock Mutext addr =3D 0xb7c059e8,count =3D 0, owner =3D 0     T=
+his message show the status before rt_mutex_acquire.
+
+After Mutex Lock Mutext addr =3D 0xb7c059e8,count =3D 1, owner =3D 2bd   Th=
+is message show the status after calling rt_mutex_acquire.     Everything i=
+s right for the rt_mutex_acquire in this scenario.
+
+
+
+Before Mutex unLock Mutext addr =3D 0xb7c059e8,count =3D 1, owner =3D 2bd  =
+ This message show the status before rt_mutex_release.
+
+After Mutex unLock Mutext addr =3D 0xb7c059e8,count =3D 1, owner =3D 0     =
+     This message show the status after rt_mutex_release. It seems that the=
+ lock count is not correct after call rt_mutex_release.
+
+
+
+Issue 2:
+
+When our task is call recursive lock. The mutex lock count should more than=
+ 1, but the lock count is still 1.
+
+
+
+For the issue 1, I guess that there are something wrong in the release func=
+tion. I highlighted the code. I am not sure if it is the root cause.
+
+
+
+int rt_mutex_release(RT_MUTEX *mutex)
+
+{
+
+#ifdef CONFIG_XENO_FASTSYNCH
+
+        unsigned long status;
+
+        xnhandle_t cur;
+
+
+
+        cur =3D xeno_get_current();
+
+        if (cur =3D=3D XN_NO_HANDLE)
+
+                return -EPERM;
+
+
+
+        status =3D xeno_get_current_mode();
+
+        if (unlikely(status & XNOTHER))
+
+                /* See rt_mutex_acquire_inner() */
+
+                goto do_syscall;
+
+
+
+        if (unlikely(xnsynch_fast_owner_check(mutex->fastlock, cur) !=3D 0)=
+)
+
+                return -EPERM;
+
+
+
+        if (mutex->lockcnt > 1) {
+
+                mutex->lockcnt--;
+
+                return 0;
+
+        }
+
+
+
+        if (likely(xnsynch_fast_release(mutex->fastlock, cur)))
+
+        {
+
+                return 0;
+
+        }
+
+do_syscall:
+
+#endif /* CONFIG_XENO_FASTSYNCH */
+
+
+
+        return XENOMAI_SKINCALL1(__native_muxid, __native_mutex_release, mu=
+tex);
+
+}
+
+
+
+
+
+
+
+For the Mutex lock function, I am so confused with the following comments w=
+hich I highlighted as below. I am not sure if it supports the recursive loc=
+k.
+
+static int rt_mutex_acquire_inner(RT_MUTEX *mutex, RTIME timeout, xntmode_t=
+ mode)
+
+{
+
+        int err;
+
+#ifdef CONFIG_XENO_FASTSYNCH
+
+        unsigned long status;
+
+        xnhandle_t cur;
+
+
+
+        cur =3D xeno_get_current();
+
+        if (cur =3D=3D XN_NO_HANDLE)
+
+                return -EPERM;
+
+
+
+        /*
+
+         * We track resource ownership for non real-time shadows in
+
+         * order to handle the auto-relax feature, so we must always
+
+         * obtain them via a syscall.
+
+         */
+
+        status =3D xeno_get_current_mode();
+
+        if (unlikely(status & XNOTHER))
+
+                goto do_syscall;
+
+
+
+        if (likely(!(status & XNRELAX))) {
+
+                err =3D xnsynch_fast_acquire(mutex->fastlock, cur);
+
+                if (likely(!err)) {
+
+                        mutex->lockcnt =3D 1;
+
+                        return 0;
+
+                }
+
+
+
+                if (err =3D=3D -EBUSY) {
+
+                        if (mutex->lockcnt =3D=3D UINT_MAX)
+
+                                return -EAGAIN;
+
+
+
+                        mutex->lockcnt++;
+
+                        return 0;
+
+                }
+
+
+
+                if (timeout =3D=3D TM_NONBLOCK && mode =3D=3D XN_RELATIVE)
+
+                        return -EWOULDBLOCK;
+
+        } else if (xnsynch_fast_owner_check(mutex->fastlock, cur) =3D=3D 0)=
+ {
+
+                /*
+
+                 * The application is buggy as it jumped to secondary mode
+
+                 * while holding the mutex. Nevertheless, we have to keep t=
+he
+
+                 * mutex state consistent.
+
+                 *
+
+                 * We make no efforts to migrate or warn here. There is
+
+                 * XENO_DEBUG(SYNCH_RELAX) to catch such bugs.
+
+                 */
+
+                if (mutex->lockcnt =3D=3D UINT_MAX)
+
+                        return -EAGAIN;
+
+
+
+                mutex->lockcnt++;
+
+                return 0;
+
+        }
+
+do_syscall:
+
+#endif /* CONFIG_XENO_FASTSYNCH */
+
+
+
+        err =3D XENOMAI_SKINCALL3(__native_muxid,
+
+                                __native_mutex_acquire, mutex, mode, &timeo=
+ut);
+
+
+
+#ifdef CONFIG_XENO_FASTSYNCH
+
+        if (!err)
+
+                mutex->lockcnt =3D 1;
+
+#endif /* CONFIG_XENO_FASTSYNCH */
+
+
+
+        return err;
+
+}
+
+
+
+
 
