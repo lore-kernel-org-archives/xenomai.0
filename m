@@ -1,11 +1,11 @@
-Subject: Re: [xenomai-images][PATCH] machine: Add beagle bone black as armhf
- example
-References: <20190821120329.9722-1-Quirin.Gylstorff@siemens.com>
+Subject: Re: [PATCH v2] machine: Add x86-64-efi as x86 example
+References: <4b707d76-061e-8371-38a8-d3a1e7be45c1@siemens.com>
+ <20190821150952.15511-1-Quirin.Gylstorff@siemens.com>
 From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <38ca35fe-3f87-4d0e-5692-867bb4d852f4@siemens.com>
-Date: Thu, 22 Aug 2019 17:03:38 +0200
+Message-ID: <fe199a16-3062-46fa-1647-338794785cbf@siemens.com>
+Date: Thu, 22 Aug 2019 17:04:00 +0200
 MIME-Version: 1.0
-In-Reply-To: <20190821120329.9722-1-Quirin.Gylstorff@siemens.com>
+In-Reply-To: <20190821150952.15511-1-Quirin.Gylstorff@siemens.com>
 Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -19,28 +19,31 @@ List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: "Q. Gylstorff" <Quirin.Gylstorff@siemens.com>, xenomai@xenomai.org
 
-On 21.08.19 14:03, Q. Gylstorff wrote:
+On 21.08.19 17:09, Q. Gylstorff via Xenomai wrote:
 > From: Quirin Gylstorff <quirin.gylstorff@siemens.com>
 > 
-> Build xenomai image for beagle bone black as an armhf example.
-> This image uses the U-Boot Image am335x_boneblack from Debian 10(Buster)
-> as boot loader.
+> Use the x86-64-efi as example how to build a xenomai
+> x86 image.
 > 
 > Signed-off-by: Quirin Gylstorff <quirin.gylstorff@siemens.com>
 > ---
->   board-beagle-bone-black.yml         | 15 +++++++++++++++
->   conf/machine/beagle-bone-black.conf | 18 ++++++++++++++++++
->   wic/beagle-bone-black.wks           | 17 +++++++++++++++++
->   3 files changed, 50 insertions(+)
->   create mode 100644 board-beagle-bone-black.yml
->   create mode 100644 conf/machine/beagle-bone-black.conf
->   create mode 100644 wic/beagle-bone-black.wks
+> Changes:
+>   V2:
+>    - rename from simatic-ipc227e to x86-64-efi.
 > 
-> diff --git a/board-beagle-bone-black.yml b/board-beagle-bone-black.yml
+> board-x86-64-efi.yml         | 15 +++++++++++++++
+>   conf/machine/x86-64-efi.conf | 15 +++++++++++++++
+>   wic/x86-64-efi.wks           | 16 ++++++++++++++++
+>   3 files changed, 46 insertions(+)
+>   create mode 100644 board-x86-64-efi.yml
+>   create mode 100644 conf/machine/x86-64-efi.conf
+>   create mode 100644 wic/x86-64-efi.wks
+> 
+> diff --git a/board-x86-64-efi.yml b/board-x86-64-efi.yml
 > new file mode 100644
-> index 0000000..e82d786
+> index 0000000..e926d95
 > --- /dev/null
-> +++ b/board-beagle-bone-black.yml
+> +++ b/board-x86-64-efi.yml
 > @@ -0,0 +1,15 @@
 > +#
 > +# Xenomai Real-Time System
@@ -56,13 +59,13 @@ On 21.08.19 14:03, Q. Gylstorff wrote:
 > +header:
 > +  version: 8
 > +
-> +machine: beagle-bone-black
-> diff --git a/conf/machine/beagle-bone-black.conf b/conf/machine/beagle-bone-black.conf
+> +machine: x86-64-efi
+> diff --git a/conf/machine/x86-64-efi.conf b/conf/machine/x86-64-efi.conf
 > new file mode 100644
-> index 0000000..73abe12
+> index 0000000..0fd2ef1
 > --- /dev/null
-> +++ b/conf/machine/beagle-bone-black.conf
-> @@ -0,0 +1,18 @@
+> +++ b/conf/machine/x86-64-efi.conf
+> @@ -0,0 +1,15 @@
 > +#
 > +# Xenomai Real-Time System
 > +#
@@ -74,19 +77,16 @@ On 21.08.19 14:03, Q. Gylstorff wrote:
 > +# SPDX-License-Identifier: MIT
 > +#
 > +
-> +DISTRO_ARCH = "armhf"
+> +DISTRO_ARCH = "amd64"
 > +
-> +IMAGE_INSTALL += "u-boot-script"
-> +
-> +IMAGE_TYPE ?= "wic-img"
-> +
-> +IMAGER_INSTALL += "u-boot-omap"
-> diff --git a/wic/beagle-bone-black.wks b/wic/beagle-bone-black.wks
+> +IMAGE_TYPE = "wic-img"
+> +IMAGER_INSTALL += "${GRUB_BOOTLOADER_INSTALL}"
+> diff --git a/wic/x86-64-efi.wks b/wic/x86-64-efi.wks
 > new file mode 100644
-> index 0000000..902b67b
+> index 0000000..107e119
 > --- /dev/null
-> +++ b/wic/beagle-bone-black.wks
-> @@ -0,0 +1,17 @@
+> +++ b/wic/x86-64-efi.wks
+> @@ -0,0 +1,16 @@
 > +#
 > +# Xenomai Real-Time System
 > +#
@@ -98,17 +98,14 @@ On 21.08.19 14:03, Q. Gylstorff wrote:
 > +# SPDX-License-Identifier: MIT
 > +#
 > +
-> +part --source rawcopy --sourceparams "file=/usr/lib/u-boot/am335x_boneblack/MLO" --no-table --align 128
-> +part u-boot --source rawcopy --sourceparams "file=/usr/lib/u-boot/am335x_boneblack/u-boot.img" --no-table --align 384
+> +part /boot --source bootimg-efi-isar --sourceparams "loader=grub-efi" --ondisk sda --label efi --part-type EF00 --align 1024
 > +
-> +part / --source rootfs-u-boot --ondisk mmcblk0 --fstype ext4 --label platform --align 1024 --active
+> +part / --source rootfs --ondisk sda --fstype ext4 --label platform --align 1024 --use-uuid
 > +
-> +bootloader --append "rw rootwait console=ttyO,115200"
+> +bootloader --ptable gpt --timeout=2 --append "rw rootwait console=ttyS0,115200"
 > 
 
 Thanks, applied.
-
-Maybe interesting for you, Daniel.
 
 Jan
 
