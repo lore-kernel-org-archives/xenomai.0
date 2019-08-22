@@ -1,14 +1,14 @@
-Subject: Re: [PATCH v2] machine: Add x86-64-efi as x86 example
-References: <4b707d76-061e-8371-38a8-d3a1e7be45c1@siemens.com>
- <20190821150952.15511-1-Quirin.Gylstorff@siemens.com>
-From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <fe199a16-3062-46fa-1647-338794785cbf@siemens.com>
-Date: Thu, 22 Aug 2019 17:04:00 +0200
-MIME-Version: 1.0
-In-Reply-To: <20190821150952.15511-1-Quirin.Gylstorff@siemens.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
+From: Lange Norbert <norbert.lange@andritz.com>
+Subject: RE: affinity of main thread is bound to current core
+Date: Thu, 22 Aug 2019 15:16:25 +0000
+Message-ID: <VI1PR05MB59174076484DB2BB0A1DF552F6A50@VI1PR05MB5917.eurprd05.prod.outlook.com>
+References: <VI1PR05MB591718EB50E68F91B3DFD398F6AA0@VI1PR05MB5917.eurprd05.prod.outlook.com>
+ <4211a9c2-957d-886d-da52-260a24a64632@siemens.com>
+In-Reply-To: <4211a9c2-957d-886d-da52-260a24a64632@siemens.com>
 Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+MIME-Version: 1.0
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,99 +17,58 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "Q. Gylstorff" <Quirin.Gylstorff@siemens.com>, xenomai@xenomai.org
+To: Jan Kiszka <jan.kiszka@siemens.com>, "Xenomai (xenomai@xenomai.org)" <xenomai@xenomai.org>
 
-On 21.08.19 17:09, Q. Gylstorff via Xenomai wrote:
-> From: Quirin Gylstorff <quirin.gylstorff@siemens.com>
-> 
-> Use the x86-64-efi as example how to build a xenomai
-> x86 image.
-> 
-> Signed-off-by: Quirin Gylstorff <quirin.gylstorff@siemens.com>
-> ---
-> Changes:
->   V2:
->    - rename from simatic-ipc227e to x86-64-efi.
-> 
-> board-x86-64-efi.yml         | 15 +++++++++++++++
->   conf/machine/x86-64-efi.conf | 15 +++++++++++++++
->   wic/x86-64-efi.wks           | 16 ++++++++++++++++
->   3 files changed, 46 insertions(+)
->   create mode 100644 board-x86-64-efi.yml
->   create mode 100644 conf/machine/x86-64-efi.conf
->   create mode 100644 wic/x86-64-efi.wks
-> 
-> diff --git a/board-x86-64-efi.yml b/board-x86-64-efi.yml
-> new file mode 100644
-> index 0000000..e926d95
-> --- /dev/null
-> +++ b/board-x86-64-efi.yml
-> @@ -0,0 +1,15 @@
-> +#
-> +# Xenomai Real-Time System
-> +#
-> +# Copyright (c) Siemens AG, 2019
-> +#
-> +# Authors:
-> +#  Quirin Gylstorff <quirin.gylstorff@siemens.com>
-> +#
-> +# SPDX-License-Identifier: MIT
-> +#
-> +
-> +header:
-> +  version: 8
-> +
-> +machine: x86-64-efi
-> diff --git a/conf/machine/x86-64-efi.conf b/conf/machine/x86-64-efi.conf
-> new file mode 100644
-> index 0000000..0fd2ef1
-> --- /dev/null
-> +++ b/conf/machine/x86-64-efi.conf
-> @@ -0,0 +1,15 @@
-> +#
-> +# Xenomai Real-Time System
-> +#
-> +# Copyright (c) Siemens AG, 2019
-> +#
-> +# Authors:
-> +#  Quirin Gylstorff <quirin.gylstorff@siemens.com>
-> +#
-> +# SPDX-License-Identifier: MIT
-> +#
-> +
-> +DISTRO_ARCH = "amd64"
-> +
-> +IMAGE_TYPE = "wic-img"
-> +IMAGER_INSTALL += "${GRUB_BOOTLOADER_INSTALL}"
-> diff --git a/wic/x86-64-efi.wks b/wic/x86-64-efi.wks
-> new file mode 100644
-> index 0000000..107e119
-> --- /dev/null
-> +++ b/wic/x86-64-efi.wks
-> @@ -0,0 +1,16 @@
-> +#
-> +# Xenomai Real-Time System
-> +#
-> +# Copyright (c) Siemens AG, 2019
-> +#
-> +# Authors:
-> +#  Quirin Gylstorff <quirin.gylstorff@siemens.com>
-> +#
-> +# SPDX-License-Identifier: MIT
-> +#
-> +
-> +part /boot --source bootimg-efi-isar --sourceparams "loader=grub-efi" --ondisk sda --label efi --part-type EF00 --align 1024
-> +
-> +part / --source rootfs --ondisk sda --fstype ext4 --label platform --align 1024 --use-uuid
-> +
-> +bootloader --ptable gpt --timeout=2 --append "rw rootwait console=ttyS0,115200"
-> 
-
-Thanks, applied.
-
-Jan
-
--- 
-Siemens AG, Corporate Technology, CT RDA IOT SES-DE
-Corporate Competence Center Embedded Linux
+PiAtLS0tLU9yaWdpbmFsIE1lc3NhZ2UtLS0tLQ0KPiBGcm9tOiBKYW4gS2lzemthIDxqYW4ua2lz
+emthQHNpZW1lbnMuY29tPg0KPiBTZW50OiBEb25uZXJzdGFnLCAyMi4gQXVndXN0IDIwMTkgMTY6
+NTINCj4gVG86IExhbmdlIE5vcmJlcnQgPG5vcmJlcnQubGFuZ2VAYW5kcml0ei5jb20+OyBYZW5v
+bWFpDQo+ICh4ZW5vbWFpQHhlbm9tYWkub3JnKSA8eGVub21haUB4ZW5vbWFpLm9yZz4NCj4gU3Vi
+amVjdDogUmU6IGFmZmluaXR5IG9mIG1haW4gdGhyZWFkIGlzIGJvdW5kIHRvIGN1cnJlbnQgY29y
+ZQ0KPg0KPiBFLU1BSUwgRlJPTSBBIE5PTi1BTkRSSVRaIFNPVVJDRTogQVMgQSBTRUNVUklUWSBN
+RUFTVVJFLCBQTEVBU0UNCj4gRVhFUkNJU0UgQ0FVVElPTiBXSVRIIEUtTUFJTCBDT05URU5UIEFO
+RCBBTlkgTElOS1MgT1INCj4gQVRUQUNITUVOVFMuDQo+DQo+DQo+IE9uIDIxLjA4LjE5IDE0OjEy
+LCBMYW5nZSBOb3JiZXJ0IHZpYSBYZW5vbWFpIHdyb3RlOg0KPiA+IEhlbGxvLA0KPiA+DQo+ID4g
+SSB1c2UgWGVub21haSBtYXN0ZXIgb24gaXBpcGUtY29yZS00LjE5LjYwLXg4Ni01Lg0KPiA+IEkg
+c3RhcnQgb3V0IHdpdGggYW4gYWZmaW5pdHkgbWFzayBvZiAweEYsIGluIHRoZSBmdW5jdGlvbiBj
+b2JhbHRfaW5pdF8yLA0KPiBwdGhyZWFkX3NldHNjaGVkcGFyYW0gd2lsbCBnZXQgY2FsbGVkLCBh
+ZnRlciB0aGUgc3lzY2FsbA0KPiBzY19jb2JhbHRfdGhyZWFkX3NldHNjaGVkcGFyYW1fZXggdGhl
+IGFmZmluaXR5IG1hc2sgd2lsbCBjb250YWluIGEgc2luZ2xlDQo+IENQVSAoc3VwcG9zZWRseSB0
+aGUgY3VycmVudCBvbmUpLg0KPiA+DQo+ID4gQWxsIG1ldGhvZHMgdG8gY29udHJvbCBhZmZpbml0
+eSBhcmUgZXhlY3V0ZWQgYmVmb3JlIHRoaXMgcG9pbnQgKGNtZGxpbmUgYXJncywNCj4gL3Byb2Mv
+eGVub21haS9hZmZpbml0eSksIHNvIHRoZXJlIGlzIG5vIHdvcmtpbmcgd2F5IHRvIGNvbnRyb2wg
+aXQuDQo+ID4NCj4NCj4gTm90IHN1cmUgSSBnZXQgdGhlIHByb2JsZW0geWV0OiAic29tZS14ZW5v
+bWFpLWFwcCAtLWNwdS1hZmZpbml0eSBYIiBzZWVtcw0KPiB0byB3b3JrIGZpbmUsIHNvIGRvZXMg
+c2V0dGluZyAvcHJvYy94ZW5vbWFpL2FmZmluaXR5LiBDYW4geW91IGRlc2NyaWJlIG1vcmUNCj4g
+Y29uY3JldGVseSB3aGF0IGJlaGF2ZXMgdW5leHBlY3RlZGx5LCBtYXliZSB3aXRoIGEgdGVzdCBj
+YXNlPw0KDQpXZWxsLCBpdCBkb2VzIG5vdCB3b3JrIGZvciBtZS4NCg0KLS0tLS0tLS0tLS0tLS0t
+LS0tIGZpbGUgdGVzdC5jDQojZGVmaW5lIF9HTlVfU09VUkNFDQojaW5jbHVkZSA8c3RkaW8uaD4N
+Cg0KI2luY2x1ZGUgPHNjaGVkLmg+DQojaW5jbHVkZSA8cHRocmVhZC5oPg0KDQpzdGF0aWMgdm9p
+ZCBwcmludGFmZigpDQp7DQogICAgY3B1X3NldF90IGNwdXNldDsNCiAgICBwdGhyZWFkX2dldGFm
+ZmluaXR5X25wKHB0aHJlYWRfc2VsZigpLCBzaXplb2YoY3B1c2V0KSwgJmNwdXNldCk7DQogICAg
+cHJpbnRmKCJBZmZpbml0eTogIik7DQogICAgZm9yKHVuc2lnbmVkIGkgPSAwOyBpIDwgMjU2OyAr
+K2kpDQogICAgew0KICAgICAgICBpZihDUFVfSVNTRVQoaSwgJmNwdXNldCkpDQogICAgICAgICAg
+ICBwcmludGYoIiV1LCIsIGkpOw0KICAgIH0NCiAgICBwcmludGYoIlxuIik7DQp9DQoNCmludCBt
+YWluKGludCBhcmdjLCBjaGFyIGNvbnN0ICphcmd2W10pDQp7DQpwcmludGFmZigpOw0KcmV0dXJu
+IDA7DQp9DQotLS0tLS0tLS0tLS0tLS0tLS0NCg0Kcm9vdEBidWlsZHJvb3Q6fiMgY2F0IC9wcm9j
+L3hlbm9tYWkvYWZmaW5pdHkNCjAwMDAwMDBmDQoNCnJvb3RAYnVpbGRyb290On4jIC90bXAvYS5v
+dXQNCkFmZmluaXR5OiAyLA0KDQpyb290QGJ1aWxkcm9vdDp+IyAvdG1wL2Eub3V0IGFwcCAtLWNw
+dS1hZmZpbml0eSAwLDEsMiwzDQpBZmZpbml0eTogMywNCg0KSSB0cmFjZWQgdGhlIHBvaW50IHdo
+ZXJlIGFmZmluaXR5IGNvbGxhcHNlZCB0byB0aGUNCnNjX2NvYmFsdF90aHJlYWRfc2V0c2NoZWRw
+YXJhbV9leCBjYWxsLg0KDQpOb3JiZXJ0DQpfX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
+Xw0KDQpUaGlzIG1lc3NhZ2UgYW5kIGFueSBhdHRhY2htZW50cyBhcmUgc29sZWx5IGZvciB0aGUg
+dXNlIG9mIHRoZSBpbnRlbmRlZCByZWNpcGllbnRzLiBUaGV5IG1heSBjb250YWluIHByaXZpbGVn
+ZWQgYW5kL29yIGNvbmZpZGVudGlhbCBpbmZvcm1hdGlvbiBvciBvdGhlciBpbmZvcm1hdGlvbiBw
+cm90ZWN0ZWQgZnJvbSBkaXNjbG9zdXJlLiBJZiB5b3UgYXJlIG5vdCBhbiBpbnRlbmRlZCByZWNp
+cGllbnQsIHlvdSBhcmUgaGVyZWJ5IG5vdGlmaWVkIHRoYXQgeW91IHJlY2VpdmVkIHRoaXMgZW1h
+aWwgaW4gZXJyb3IgYW5kIHRoYXQgYW55IHJldmlldywgZGlzc2VtaW5hdGlvbiwgZGlzdHJpYnV0
+aW9uIG9yIGNvcHlpbmcgb2YgdGhpcyBlbWFpbCBhbmQgYW55IGF0dGFjaG1lbnQgaXMgc3RyaWN0
+bHkgcHJvaGliaXRlZC4gSWYgeW91IGhhdmUgcmVjZWl2ZWQgdGhpcyBlbWFpbCBpbiBlcnJvciwg
+cGxlYXNlIGNvbnRhY3QgdGhlIHNlbmRlciBhbmQgZGVsZXRlIHRoZSBtZXNzYWdlIGFuZCBhbnkg
+YXR0YWNobWVudCBmcm9tIHlvdXIgc3lzdGVtLg0KDQpBTkRSSVRaIEhZRFJPIEdtYkgNCg0KDQpS
+ZWNodHNmb3JtLyBMZWdhbCBmb3JtOiBHZXNlbGxzY2hhZnQgbWl0IGJlc2NocsOkbmt0ZXIgSGFm
+dHVuZyAvIENvcnBvcmF0aW9uDQoNCkZpcm1lbnNpdHovIFJlZ2lzdGVyZWQgc2VhdDogV2llbg0K
+DQpGaXJtZW5idWNoZ2VyaWNodC8gQ291cnQgb2YgcmVnaXN0cnk6IEhhbmRlbHNnZXJpY2h0IFdp
+ZW4NCg0KRmlybWVuYnVjaG51bW1lci8gQ29tcGFueSByZWdpc3RyYXRpb246IEZOIDYxODMzIGcN
+Cg0KRFZSOiAwNjA1MDc3DQoNClVJRC1Oci46IEFUVTE0NzU2ODA2DQoNCg0KVGhhbmsgWW91DQpf
+X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fXw0K
 
