@@ -1,12 +1,18 @@
-From: Jan Kiszka <jan.kiszka@siemens.com>
-Subject: [PATCH v2 10/12] drivers/gpio: Convert to rtdm_available() and clean
- up
-Date: Fri, 13 Sep 2019 18:46:53 +0200
-Message-Id: <644a045275b713e7b83832a07060d1cdb1852052.1568393215.git.jan.kiszka@siemens.com>
-In-Reply-To: <cover.1568393215.git.jan.kiszka@siemens.com>
-References: <cover.1568393215.git.jan.kiszka@siemens.com>
-In-Reply-To: <cover.1568393215.git.jan.kiszka@siemens.com>
-References: <cover.1568393215.git.jan.kiszka@siemens.com>
+From: "DIAO, Hanson" <hanson.diao@siemens.com>
+Subject: RE: A potential Xenomai Mutex issue
+Date: Fri, 23 Aug 2019 15:49:07 +0000
+Message-ID: <DM6PR07MB596161BCD969C8C69F2E8D31E7A40@DM6PR07MB5961.namprd07.prod.outlook.com>
+References: <DM6PR07MB596162CF3DD4EB4071336D26E7A50@DM6PR07MB5961.namprd07.prod.outlook.com>
+ <43f9470f-ed47-0a2a-71f5-ca9bca08879a@siemens.com>
+ <DM6PR07MB59614BFAE90AE8DA6B49769EE7A40@DM6PR07MB5961.namprd07.prod.outlook.com>
+ <2f51ad42-4be3-606d-dbdf-ee036bd562de@siemens.com>
+ <DM6PR07MB59610EC30F9B7433FBD53E35E7A40@DM6PR07MB5961.namprd07.prod.outlook.com>
+ <d3ed1327-3026-6489-a66b-56f9680f08d2@siemens.com>
+In-Reply-To: <d3ed1327-3026-6489-a66b-56f9680f08d2@siemens.com>
+Content-Language: en-US
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+MIME-Version: 1.0
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,44 +21,52 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
+To: "jan.kiszka@siemens.com" <jan.kiszka@siemens.com>
+Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-From: Jan Kiszka <jan.kiszka@siemens.com>
-
-Properly fail if the core is not available. This also obsoletes the
-check on exit.
-
-Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
----
- kernel/drivers/gpio/gpio-core.c | 7 ++-----
- 1 file changed, 2 insertions(+), 5 deletions(-)
-
-diff --git a/kernel/drivers/gpio/gpio-core.c b/kernel/drivers/gpio/gpio-core.c
-index 81f9653f12..600ef9789a 100644
---- a/kernel/drivers/gpio/gpio-core.c
-+++ b/kernel/drivers/gpio/gpio-core.c
-@@ -564,8 +564,8 @@ int rtdm_gpiochip_scan_of(struct device_node *from, const char *compat,
- 	struct rtdm_gpio_chip *rgc;
- 	int ret = -ENODEV, _ret;
- 
--	if (!realtime_core_enabled())
--		return 0;
-+	if (!rtdm_available())
-+		return -ENOSYS;
- 
- 	for (;;) {
- 		np = of_find_compatible_node(np, NULL, compat);
-@@ -622,9 +622,6 @@ void rtdm_gpiochip_remove_of(int type)
- {
- 	struct rtdm_gpio_chip *rgc, *n;
- 
--	if (!realtime_core_enabled())
--		return;
--
- 	mutex_lock(&chip_lock);
- 
- 	list_for_each_entry_safe(rgc, n, &rtdm_gpio_chips, next) {
--- 
-2.16.4
-
+SGkgSmFuLA0KDQpUaGFuayB5b3UgZm9yIHlvdXIgcmVwbHkuIFBsZWFzZSBzZWUgbXkgZm9sbG93
+aW5nIGNvbW1lbnRzLiBUaGFuayB5b3Ugc28gbXVjaC4NCg0KDQpGb3IgdGhlIGlzc3VlIDIgdGhl
+IHRlc3QgY2FzZSBpcyB2ZXJ5IHNpbXBsZS4gVGhlIGxvY2sgc2VxdWVuY2UgaXMgYXMgYmVsb3cu
+IEFmdGVyIFJlYWRSZWcgZnVuY3Rpb24gSSBjaGVja2VkIHRoZSBsb2NrY250LiBUaGUgbG9ja2Nu
+dCBpcyAxLg0KSW50IHdyaXRlUmVnKCkNCnsNCiAgICAgU01JTG9jaygpOw0KICAgICBSZWFkUmVn
+KCk7DQogICAgIC4uLi4uLg0KICAgICBTTUlVbmxvY2soKTsNCn0NCg0KSW50IFJlYWRSZWcoKQ0K
+ew0KICAgICBTTUlMb2NrKCk7DQogICAgIC8qICBDaGVjayB0aGUgbG9ja2NudCBoZXJlLiBJdCBp
+cyBzdGlsbCAxLCBzaG91bGQgYmUgMiAqLw0KICAgICAuLi4uLi4uLg0KICAgICAuLi4uLi4NCiAg
+ICAgU01JVW5sb2NrKCk7DQp9DQoNCi0tLS0tT3JpZ2luYWwgTWVzc2FnZS0tLS0tDQpGcm9tOiBK
+YW4gS2lzemthIDxqYW4ua2lzemthQHNpZW1lbnMuY29tPg0KU2VudDogRnJpZGF5LCBBdWd1c3Qg
+MjMsIDIwMTkgMTE6MjMgQU0NClRvOiBESUFPLCBIYW5zb24gKERJIFBBIENJIFJDIFImRCBTVzIp
+IDxoYW5zb24uZGlhb0BzaWVtZW5zLmNvbT4NCkNjOiB4ZW5vbWFpQHhlbm9tYWkub3JnDQpTdWJq
+ZWN0OiBSZTogQSBwb3RlbnRpYWwgWGVub21haSBNdXRleCBpc3N1ZQ0KDQpPbiAyMy4wOC4xOSAx
+NjoyOSwgRElBTywgSGFuc29uIChESSBQQSBDSSBSQyBSJkQgU1cyKSB3cm90ZToNCj4gSGkgSmFu
+LA0KPg0KPiBJIGF0dGFjaGVkIG15IGNvZGUgaGVyZS4gVGhpcyBpcyBvbmx5IExvY2sgZnVuY3Rp
+b24uIFVubG9jayBmdW5jdGlvbiBpcyBzaW1pbGFyLg0KPg0KPg0KPiAgICAgICAgICBwcmludGYo
+IkJlZm9yZSBNdXRleCBMb2NrIE11dGV4dCBhZGRyID0gJXAsY291bnQgPSAlZCwgb3duZXIgPSAl
+eFxuIiwNCj4gICAgICAgICAgICAgICAgICBtcE11dGV4LA0KPiAgICAgICAgICAgICAgICAgIG1w
+TXV0ZXgtPmxvY2tjbnQsDQo+ICAgICAgICAgICAgICAgICAgeG5hcmNoX2F0b21pY19nZXQobXBN
+dXRleC0+ZmFzdGxvY2spKTsNCj4gICAgICAgICAgaW50IGVyciA9IHJ0X211dGV4X2FjcXVpcmUo
+IG1wTXV0ZXgsIChSVElNRSlUTV9JTkZJTklURSApOw0KPiAgICAgICAgICBpZiAoIGVyciAmJg0K
+PiAgICAgICAgICAgICAgICAgICAvLyBEdXJpbmcgYm9vdC11cCBhbmQgc2h1dGRvd24gd2UgcnVu
+IHNpbmdsZS10aHJlYWRlZA0KPiAgICAgICAgICAgICAgICAgICAvLyBzbyB0aGVyZSBpcyBubyBu
+ZWVkIHRvIGxvY2sgYW4gc2VtYXBob3JlLg0KPiAgICAgICAgICAgICAgICAgICAhKHJjX3N5c3Rl
+bV9zdGF0ZSgpICE9IFNZU1RFTV9SVU5OSU5HICYmIGVyciA9PSAtRVBFUk0pICkNCj4gICAgICAg
+ICAgew0KPiAgICAgICAgICAgICAgICAgIHJjX3hlbm9fbG9nKCBMT0dfRVJST1IgLCAicnRfbXV0
+ZXhfYWNxdWlyZSIgLCBlcnIpOw0KPiAgICAgICAgICB9DQo+ICAgICAgICAgIHByaW50ZigiQWZ0
+ZXIgTXV0ZXggTG9jayBNdXRleHQgYWRkciA9ICVwLGNvdW50ID0gJWQsIG93bmVyID0gJXhcbiIs
+DQo+ICAgICAgICAgICAgICAgICAgbXBNdXRleCwNCj4gICAgICAgICAgICAgICAgICBtcE11dGV4
+LT5sb2NrY250LA0KPiAgICAgICAgICAgICAgICAgIHhuYXJjaF9hdG9taWNfZ2V0KG1wTXV0ZXgt
+PmZhc3Rsb2NrKSk7DQoNCk9LLCBub3cgSSB1bmRlcnN0YW5kIHRoZSByZWxhdGlvbiBiZXR3ZWVu
+ICJjb3VudCIgYW5kICJsb2NrY250Ii4gVGhhbmtzLg0KDQpBZ2FpbiwgZm9yIHRoZSBkZWFkbG9j
+ayBjYXNlLCBjYW4geW91IHJlcHJvZHVjZSBpdCB3aXRoIHN5bnRoZXRpYyBwYXR0ZXJucyBhbmQg
+c2hhcmUgdGhlbT8NCg0KPg0KPg0KPiBGb3IgdGhlIGlzc3VlIDIgdGhlIHRlc3QgY2FzZSBpcyB2
+ZXJ5IHNpbXBsZS4gVGhlIGxvY2sgc2VxdWVuY2UgaXMgYXMgYmVsb3cuIEFmdGVyIFJlYWRSZWcg
+ZnVuY3Rpb24gSSBjaGVja2VkIHRoZSBsb2NrY250LiBUaGUgbG9ja2NudCBpcyAxLg0KPiBJbnQg
+d3JpdGVSZWcoKQ0KPiB7DQo+ICAgICAgIFNNSUxvY2soKTsNCj4gICAgICAgUmVhZFJlZygpOw0K
+DQpTbyB5b3UgYXJlIHJlYWRpbmcgbG9ja2NudCBoZXJlPyBUaGVuIDEgaXMgb2J2aW91c2x5IHRo
+ZSBleHBlY3RlZCB2YWx1ZS4gSXMgb3duZXIgKGZhc3Rsb2NrKSAwIGhlcmU/DQoNCj4gICAgICAg
+Li4uLi4uDQo+ICAgICAgIFNNSVVubG9jaygpOw0KPiB9DQo+DQo+IEludCBSZWFkUmVnKCkNCj4g
+ew0KPiAgICAgICBTTUlMb2NrKCk7DQoNCklmIHlvdSByZWFkIGl0IGhlcmUsIGl0IHNob3VsZCBi
+ZSAyIGluIGEgcmVjdXJzaXZlIGNhc2UuDQoNCkphbg0KDQo+ICAgICAgIC4uLi4uLi4uDQo+ICAg
+ICAgIC4uLi4uLg0KPiAgICAgICBTTUlVbmxvY2soKTsNCj4gfQ0KPg0KDQotLQ0KU2llbWVucyBB
+RywgQ29ycG9yYXRlIFRlY2hub2xvZ3ksIENUIFJEQSBJT1QgU0VTLURFIENvcnBvcmF0ZSBDb21w
+ZXRlbmNlIENlbnRlciBFbWJlZGRlZCBMaW51eA0K
 
