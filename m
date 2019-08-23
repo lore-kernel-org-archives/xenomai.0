@@ -1,14 +1,15 @@
-From: "DIAO, Hanson" <hanson.diao@siemens.com>
-Subject: RE: A potential Xenomai Mutex issue
-Date: Fri, 23 Aug 2019 14:02:53 +0000
-Message-ID: <DM6PR07MB59614BFAE90AE8DA6B49769EE7A40@DM6PR07MB5961.namprd07.prod.outlook.com>
+Subject: Re: A potential Xenomai Mutex issue
 References: <DM6PR07MB596162CF3DD4EB4071336D26E7A50@DM6PR07MB5961.namprd07.prod.outlook.com>
  <43f9470f-ed47-0a2a-71f5-ca9bca08879a@siemens.com>
-In-Reply-To: <43f9470f-ed47-0a2a-71f5-ca9bca08879a@siemens.com>
-Content-Language: en-US
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+ <DM6PR07MB59614BFAE90AE8DA6B49769EE7A40@DM6PR07MB5961.namprd07.prod.outlook.com>
+From: Jan Kiszka <jan.kiszka@siemens.com>
+Message-ID: <2f51ad42-4be3-606d-dbdf-ee036bd562de@siemens.com>
+Date: Fri, 23 Aug 2019 16:16:53 +0200
 MIME-Version: 1.0
+In-Reply-To: <DM6PR07MB59614BFAE90AE8DA6B49769EE7A40@DM6PR07MB5961.namprd07.prod.outlook.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,142 +18,334 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "jan.kiszka@siemens.com" <jan.kiszka@siemens.com>
+To: "DIAO, Hanson (DI PA CI RC R&D SW2)" <hanson.diao@siemens.com>
 Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-SGkgSmFuLA0KDQpUaGFuayB5b3UgZm9yIHlvdXIgcmVwbHkuIEkgd2lsbCBhbnN3ZXIgdGhlIHF1
-ZXN0aW9ucyBvbmUgYnkgb25lLg0KDQpROiBUaGlzIGlzIG9uIGEgQVJNdjcgbXVsdGljb3JlIHRh
-cmdldCwgcmlnaHRJcz8NCkhEOiBUaGlzIGlzIFBvd2VyUEMgdGFyZ2V0Lg0KDQpROiBBcmUgeW91
-IGFscmVhZHkgYWJsZSB0byByZXByb2R1Y2UgdGhlIGlzc3VlIHJlbGlhYmx5LCBwb3NzaWJseSBp
-biBhIHN5bnRoZXRpYyBlbnZpcm9ubWVudD8NCkhEOiBJdCByZXByb2R1Y2VzIGV2ZXJ5IHRpbWUg
-Zm9yIHRoZSBmaXJzdCBpc3N1ZSBhbmQgc2Vjb25kIGlzc3VlKHJlY3Vyc2l2ZSBsb2NrIGxvY2sg
-Y291bnQgc2hvdWxkIGJlIG1vcmUgdGhhbiAxKS4NCg0KUTogIE9yIGRvZXMgeW91ciB3aG9sZSBz
-dGFjayBoYXZlIHRvIHJ1biBvbiB0aGUgdGFyZ2V0IGZvciBhIGxvbmcgdGltZSB0byB0cmlnZ2Vy
-IHRoaXM/DQpIRDogSSBnb3QgdGhpcyBpc3N1ZSB3aGVuIHRoZSBzeXN0ZW0gd2FzIGluIGluaXRp
-YWxpemVkIHN0YWdlLiBJdCBpcyBlYXN5IHRvIHRyaWdnZXIgdGhpcyBhbmQgZXZlcnkgdGltZSBp
-dCBoYXBwZW5zLg0KDQpROiB0aGUgbXV0ZXggc2hhcmVkIGJldHdlZW4gbXVsdGlwbGUgcHJvY2Vz
-cyBvciBqdXN0IGJldHdlZW4gdGhyZWFkcyBvZiB0aGUgc2FtZSBwcm9jZXNzPw0KSEQ6IFRoZSBt
-dXRleCBzaGFyZWQgb25seSBpbiBvbmUgcHJvY2VzcyB3aXRoIG11bHRpLXRhc2tzLg0KDQpROk1h
-eWJlIHNvbWV0aGluZyBhbmFsb2dvdXNseSB3YXMgbmVlZGVkIGZvciBuYXRpdmUgYXMgd2VsbC4g
-QW5kIHRoZW4geW91IGNvdWxkIGxvb2sgYXQgd2hhdCBoYXBwZW5lZCBpbiAzLnggbXV0ZXgtd2lz
-ZSB0byBjaGVjayBpZiB5b3UgYXJlIG5vdCBtaXNzaW5nIGEgY29uY2VwdHVhbCBmaXggaW4gMi42
-Lg0KSEQ6IEkgd2lsbCBjaGVjayB0aGUgY29tbWl0IG1lc3NhZ2UuIEkgY29tcGFyZWQgMi42LjQg
-dmVyc2lvbiB3aXRoIDIuNi41IHZlcnNpb24uIEl0IHNlZW1zIHRoYXQgdGhlIGNvZGUgYXJlIHNh
-bWUgaW4gbXV0ZXgoVXNlciBzcGFjZSBtdXRleCkuDQoNClE6WW91IHNlZW0gdG8gbG9vayBhdCB0
-aGUgd3JvbmcgZGF0YSBzdHJ1Y3R1cmUuIFlvdSBuZWVkIHRvIGV4YW1pbmUgUlRfTVVURVhfUExB
-Q0VIT0xERVIgZmllbGRzLg0KSEQ6IFRoZSBkYXRhIHN0cnVjdHVyZSB3aGljaCBJIGdvdCBpcyBS
-VF9NVVRFWF9QTEFDRUhPTERFUiBmaWVsZHMuIEkgYXR0YWNoZWQgdGhlIGNvZGUgYXMgYmVsb3cu
-DQoNCnR5cGVkZWYgc3RydWN0IHJ0X211dGV4X3BsYWNlaG9sZGVyIHsNCg0KICAgICAgICB4bmhh
-bmRsZV90IG9wYXF1ZTsNCg0KI2lmZGVmIENPTkZJR19YRU5PX0ZBU1RTWU5DSA0KICAgICAgICB4
-bmFyY2hfYXRvbWljX3QgKmZhc3Rsb2NrOw0KDQogICAgICAgIGludCBsb2NrY250Ow0KI2VuZGlm
-IC8qIENPTkZJR19YRU5PX0ZBU1RTWU5DSCAqLw0KDQp9IFJUX01VVEVYX1BMQUNFSE9MREVSOw0K
-DQotLS0tLU9yaWdpbmFsIE1lc3NhZ2UtLS0tLQ0KRnJvbTogSmFuIEtpc3prYSA8amFuLmtpc3pr
-YUBzaWVtZW5zLmNvbT4NClNlbnQ6IEZyaWRheSwgQXVndXN0IDIzLCAyMDE5IDI6NDggQU0NClRv
-OiBESUFPLCBIYW5zb24gKERJIFBBIENJIFJDIFImRCBTVzIpIDxoYW5zb24uZGlhb0BzaWVtZW5z
-LmNvbT47IHhlbm9tYWlAeGVub21haS5vcmcNClN1YmplY3Q6IFJlOiBBIHBvdGVudGlhbCBYZW5v
-bWFpIE11dGV4IGlzc3VlDQoNCk9uIDIyLjA4LjE5IDIwOjQyLCBESUFPLCBIYW5zb24gdmlhIFhl
-bm9tYWkgd3JvdGU6DQo+IEhpIGFsbCwNCj4NCj4NCj4NCj4gSSBob3BlIHlvdSBhcmUgZG9pbmcg
-d2VsbC4gQ3VycmVudGx5IEkgd2FzIHdvcmtpbmcgb24gYSBjcml0aWNhbCBkZWFkbG9jayBpc3N1
-ZSB3aXRoIFhlbm9tYWlsIExpYnJhcnkodmVyc2lvbiAyLjYuNCkuIEkgZm91bmQgdGhhdCBmb3Ig
-dGhlIFhlbm9tYWkgbG9jayBjb3VudCBpcyBub3QgcmVsaWFibGUgYWZ0ZXIgd2UgY2FsbGVkIHJ0
-X211dGV4X3JlbGVhc2UuIEkgcHJpbnQgdGhlIGZvbGxvd2luZyBtZXNzYWdlIHRvIHlvdS4gSSBo
-b3BlIHNvbWUgZGV2ZWxvcGVyIGNhbiBoZWxwIG1lIGZpeCB0aGlzIGlzc3VlLiBJIGtub3cgdGhh
-dCB0aGlzIHZlcnNpb24gaXMgRU9MLCBidXQgd2Ugc3RpbGwgdXNlIHRoaXMgb2xkIHZlcnNpb24u
-IFRoYW5rIHlvdSBzbyBtdWNoLg0KPg0KDQpUaGlzIGlzIG9uIGEgQVJNdjcgbXVsdGljb3JlIHRh
-cmdldCwgcmlnaHQ/IEFyZSB5b3UgYWxyZWFkeSBhYmxlIHRvIHJlcHJvZHVjZSB0aGUgaXNzdWUg
-cmVsaWFibHksIHBvc3NpYmx5IGluIGEgc3ludGhldGljIGVudmlyb25tZW50PyBPciBkb2VzIHlv
-dXIgd2hvbGUgc3RhY2sgaGF2ZSB0byBydW4gb24gdGhlIHRhcmdldCBmb3IgYSBsb25nIHRpbWUg
-dG8gdHJpZ2dlciB0aGlzPyBJcyB0aGUgbXV0ZXggc2hhcmVkIGJldHdlZW4gbXVsdGlwbGUgcHJv
-Y2VzcyBvciBqdXN0IGJldHdlZW4gdGhyZWFkcyBvZiB0aGUgc2FtZSBwcm9jZXNzPw0KDQpOZXh0
-IHBvaW50OiBZb3UgYXJlIG9uIDIuNi40IHdoaWxlIHRoZSBsYXN0IHJlbGVhc2Ugd2FzIDIuNi41
-LiBJdCBjb250YWluZWQgZS5nLg0KODA0NzE0N2FmZjlkIChwb3NpeC9tdXRleDogaGFuZGxlIHJl
-Y3Vyc2lvbiBjb3VudCBjb21wbGV0ZWx5IGluIHVzZXItc3BhY2UpLg0KDQo+DQo+DQo+IElzc3Vl
-IDE6DQo+DQo+IEJlZm9yZSBNdXRleCBMb2NrIE11dGV4dCBhZGRyID0gMHhiN2MwNTllOCxjb3Vu
-dCA9IDAsIG93bmVyID0gMCAgICAgVGhpcyBtZXNzYWdlIHNob3cgdGhlIHN0YXR1cyBiZWZvcmUg
-cnRfbXV0ZXhfYWNxdWlyZS4NCj4NCj4gQWZ0ZXIgTXV0ZXggTG9jayBNdXRleHQgYWRkciA9IDB4
-YjdjMDU5ZTgsY291bnQgPSAxLCBvd25lciA9IDJiZCAgIFRoaXMgbWVzc2FnZSBzaG93IHRoZSBz
-dGF0dXMgYWZ0ZXIgY2FsbGluZyBydF9tdXRleF9hY3F1aXJlLiAgICAgRXZlcnl0aGluZyBpcyBy
-aWdodCBmb3IgdGhlIHJ0X211dGV4X2FjcXVpcmUgaW4gdGhpcyBzY2VuYXJpby4NCj4NCj4NCj4N
-Cj4gQmVmb3JlIE11dGV4IHVuTG9jayBNdXRleHQgYWRkciA9IDB4YjdjMDU5ZTgsY291bnQgPSAx
-LCBvd25lciA9IDJiZCAgIFRoaXMgbWVzc2FnZSBzaG93IHRoZSBzdGF0dXMgYmVmb3JlIHJ0X211
-dGV4X3JlbGVhc2UuDQo+DQo+IEFmdGVyIE11dGV4IHVuTG9jayBNdXRleHQgYWRkciA9IDB4Yjdj
-MDU5ZTgsY291bnQgPSAxLCBvd25lciA9IDAgICAgICAgICAgVGhpcyBtZXNzYWdlIHNob3cgdGhl
-IHN0YXR1cyBhZnRlciBydF9tdXRleF9yZWxlYXNlLiBJdCBzZWVtcyB0aGF0IHRoZSBsb2NrIGNv
-dW50IGlzIG5vdCBjb3JyZWN0IGFmdGVyIGNhbGwgcnRfbXV0ZXhfcmVsZWFzZS4NCj4NCg0KDQo+
-DQo+DQo+IElzc3VlIDI6DQo+DQo+IFdoZW4gb3VyIHRhc2sgaXMgY2FsbCByZWN1cnNpdmUgbG9j
-ay4gVGhlIG11dGV4IGxvY2sgY291bnQgc2hvdWxkIG1vcmUgdGhhbiAxLCBidXQgdGhlIGxvY2sg
-Y291bnQgaXMgc3RpbGwgMS4NCj4NCj4NCj4NCj4gRm9yIHRoZSBpc3N1ZSAxLCBJIGd1ZXNzIHRo
-YXQgdGhlcmUgYXJlIHNvbWV0aGluZyB3cm9uZyBpbiB0aGUgcmVsZWFzZSBmdW5jdGlvbi4gSSBo
-aWdobGlnaHRlZCB0aGUgY29kZS4gSSBhbSBub3Qgc3VyZSBpZiBpdCBpcyB0aGUgcm9vdCBjYXVz
-ZS4NCj4NCg0KRG9uJ3QgdXNlIEhUTUwgZW1haWxzIG9uIHB1YmxpYyBsaXN0cy4gVGhleSBvZnRl
-biBnZXQgZmlsdGVyZWQsIGF0IGxhdGVzdCBvbiByZWNlaXZlciBzaWRlLg0KDQpKYW4NCg0KPg0K
-Pg0KPiBpbnQgcnRfbXV0ZXhfcmVsZWFzZShSVF9NVVRFWCAqbXV0ZXgpDQo+DQo+IHsNCj4NCj4g
-I2lmZGVmIENPTkZJR19YRU5PX0ZBU1RTWU5DSA0KPg0KPiAgICAgICAgICB1bnNpZ25lZCBsb25n
-IHN0YXR1czsNCj4NCj4gICAgICAgICAgeG5oYW5kbGVfdCBjdXI7DQo+DQo+DQo+DQo+ICAgICAg
-ICAgIGN1ciA9IHhlbm9fZ2V0X2N1cnJlbnQoKTsNCj4NCj4gICAgICAgICAgaWYgKGN1ciA9PSBY
-Tl9OT19IQU5ETEUpDQo+DQo+ICAgICAgICAgICAgICAgICAgcmV0dXJuIC1FUEVSTTsNCj4NCj4N
-Cj4NCj4gICAgICAgICAgc3RhdHVzID0geGVub19nZXRfY3VycmVudF9tb2RlKCk7DQo+DQo+ICAg
-ICAgICAgIGlmICh1bmxpa2VseShzdGF0dXMgJiBYTk9USEVSKSkNCj4NCj4gICAgICAgICAgICAg
-ICAgICAvKiBTZWUgcnRfbXV0ZXhfYWNxdWlyZV9pbm5lcigpICovDQo+DQo+ICAgICAgICAgICAg
-ICAgICAgZ290byBkb19zeXNjYWxsOw0KPg0KPg0KPg0KPiAgICAgICAgICBpZiAodW5saWtlbHko
-eG5zeW5jaF9mYXN0X293bmVyX2NoZWNrKG11dGV4LT5mYXN0bG9jaywgY3VyKQ0KPiAhPSAwKSkN
-Cj4NCj4gICAgICAgICAgICAgICAgICByZXR1cm4gLUVQRVJNOw0KPg0KPg0KPg0KPiAgICAgICAg
-ICBpZiAobXV0ZXgtPmxvY2tjbnQgPiAxKSB7DQo+DQo+ICAgICAgICAgICAgICAgICAgbXV0ZXgt
-PmxvY2tjbnQtLTsNCj4NCj4gICAgICAgICAgICAgICAgICByZXR1cm4gMDsNCj4NCj4gICAgICAg
-ICAgfQ0KPg0KPg0KPg0KPiAgICAgICAgICBpZiAobGlrZWx5KHhuc3luY2hfZmFzdF9yZWxlYXNl
-KG11dGV4LT5mYXN0bG9jaywgY3VyKSkpDQo+DQo+ICAgICAgICAgIHsNCj4NCj4gICAgICAgICAg
-ICAgICAgICByZXR1cm4gMDsNCj4NCj4gICAgICAgICAgfQ0KPg0KPiBkb19zeXNjYWxsOg0KPg0K
-PiAjZW5kaWYgLyogQ09ORklHX1hFTk9fRkFTVFNZTkNIICovDQo+DQo+DQo+DQo+ICAgICAgICAg
-IHJldHVybiBYRU5PTUFJX1NLSU5DQUxMMShfX25hdGl2ZV9tdXhpZCwNCj4gX19uYXRpdmVfbXV0
-ZXhfcmVsZWFzZSwgbXV0ZXgpOw0KPg0KPiB9DQo+DQo+DQo+DQo+DQo+DQo+DQo+DQo+IEZvciB0
-aGUgTXV0ZXggbG9jayBmdW5jdGlvbiwgSSBhbSBzbyBjb25mdXNlZCB3aXRoIHRoZSBmb2xsb3dp
-bmcgY29tbWVudHMgd2hpY2ggSSBoaWdobGlnaHRlZCBhcyBiZWxvdy4gSSBhbSBub3Qgc3VyZSBp
-ZiBpdCBzdXBwb3J0cyB0aGUgcmVjdXJzaXZlIGxvY2suDQo+DQo+IHN0YXRpYyBpbnQgcnRfbXV0
-ZXhfYWNxdWlyZV9pbm5lcihSVF9NVVRFWCAqbXV0ZXgsIFJUSU1FIHRpbWVvdXQsDQo+IHhudG1v
-ZGVfdCBtb2RlKQ0KPg0KPiB7DQo+DQo+ICAgICAgICAgIGludCBlcnI7DQo+DQo+ICNpZmRlZiBD
-T05GSUdfWEVOT19GQVNUU1lOQ0gNCj4NCj4gICAgICAgICAgdW5zaWduZWQgbG9uZyBzdGF0dXM7
-DQo+DQo+ICAgICAgICAgIHhuaGFuZGxlX3QgY3VyOw0KPg0KPg0KPg0KPiAgICAgICAgICBjdXIg
-PSB4ZW5vX2dldF9jdXJyZW50KCk7DQo+DQo+ICAgICAgICAgIGlmIChjdXIgPT0gWE5fTk9fSEFO
-RExFKQ0KPg0KPiAgICAgICAgICAgICAgICAgIHJldHVybiAtRVBFUk07DQo+DQo+DQo+DQo+ICAg
-ICAgICAgIC8qDQo+DQo+ICAgICAgICAgICAqIFdlIHRyYWNrIHJlc291cmNlIG93bmVyc2hpcCBm
-b3Igbm9uIHJlYWwtdGltZSBzaGFkb3dzIGluDQo+DQo+ICAgICAgICAgICAqIG9yZGVyIHRvIGhh
-bmRsZSB0aGUgYXV0by1yZWxheCBmZWF0dXJlLCBzbyB3ZSBtdXN0IGFsd2F5cw0KPg0KPiAgICAg
-ICAgICAgKiBvYnRhaW4gdGhlbSB2aWEgYSBzeXNjYWxsLg0KPg0KPiAgICAgICAgICAgKi8NCj4N
-Cj4gICAgICAgICAgc3RhdHVzID0geGVub19nZXRfY3VycmVudF9tb2RlKCk7DQo+DQo+ICAgICAg
-ICAgIGlmICh1bmxpa2VseShzdGF0dXMgJiBYTk9USEVSKSkNCj4NCj4gICAgICAgICAgICAgICAg
-ICBnb3RvIGRvX3N5c2NhbGw7DQo+DQo+DQo+DQo+ICAgICAgICAgIGlmIChsaWtlbHkoIShzdGF0
-dXMgJiBYTlJFTEFYKSkpIHsNCj4NCj4gICAgICAgICAgICAgICAgICBlcnIgPSB4bnN5bmNoX2Zh
-c3RfYWNxdWlyZShtdXRleC0+ZmFzdGxvY2ssIGN1cik7DQo+DQo+ICAgICAgICAgICAgICAgICAg
-aWYgKGxpa2VseSghZXJyKSkgew0KPg0KPiAgICAgICAgICAgICAgICAgICAgICAgICAgbXV0ZXgt
-PmxvY2tjbnQgPSAxOw0KPg0KPiAgICAgICAgICAgICAgICAgICAgICAgICAgcmV0dXJuIDA7DQo+
-DQo+ICAgICAgICAgICAgICAgICAgfQ0KPg0KPg0KPg0KPiAgICAgICAgICAgICAgICAgIGlmIChl
-cnIgPT0gLUVCVVNZKSB7DQo+DQo+ICAgICAgICAgICAgICAgICAgICAgICAgICBpZiAobXV0ZXgt
-PmxvY2tjbnQgPT0gVUlOVF9NQVgpDQo+DQo+ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
-ICAgIHJldHVybiAtRUFHQUlOOw0KPg0KPg0KPg0KPiAgICAgICAgICAgICAgICAgICAgICAgICAg
-bXV0ZXgtPmxvY2tjbnQrKzsNCj4NCj4gICAgICAgICAgICAgICAgICAgICAgICAgIHJldHVybiAw
-Ow0KPg0KPiAgICAgICAgICAgICAgICAgIH0NCj4NCj4NCj4NCj4gICAgICAgICAgICAgICAgICBp
-ZiAodGltZW91dCA9PSBUTV9OT05CTE9DSyAmJiBtb2RlID09IFhOX1JFTEFUSVZFKQ0KPg0KPiAg
-ICAgICAgICAgICAgICAgICAgICAgICAgcmV0dXJuIC1FV09VTERCTE9DSzsNCj4NCj4gICAgICAg
-ICAgfSBlbHNlIGlmICh4bnN5bmNoX2Zhc3Rfb3duZXJfY2hlY2sobXV0ZXgtPmZhc3Rsb2NrLCBj
-dXIpID09DQo+IDApIHsNCj4NCj4gICAgICAgICAgICAgICAgICAvKg0KPg0KPiAgICAgICAgICAg
-ICAgICAgICAqIFRoZSBhcHBsaWNhdGlvbiBpcyBidWdneSBhcyBpdCBqdW1wZWQgdG8gc2Vjb25k
-YXJ5DQo+IG1vZGUNCj4NCj4gICAgICAgICAgICAgICAgICAgKiB3aGlsZSBob2xkaW5nIHRoZSBt
-dXRleC4gTmV2ZXJ0aGVsZXNzLCB3ZSBoYXZlIHRvDQo+IGtlZXAgdGhlDQo+DQo+ICAgICAgICAg
-ICAgICAgICAgICogbXV0ZXggc3RhdGUgY29uc2lzdGVudC4NCj4NCj4gICAgICAgICAgICAgICAg
-ICAgKg0KPg0KPiAgICAgICAgICAgICAgICAgICAqIFdlIG1ha2Ugbm8gZWZmb3J0cyB0byBtaWdy
-YXRlIG9yIHdhcm4gaGVyZS4gVGhlcmUNCj4gaXMNCj4NCj4gICAgICAgICAgICAgICAgICAgKiBY
-RU5PX0RFQlVHKFNZTkNIX1JFTEFYKSB0byBjYXRjaCBzdWNoIGJ1Z3MuDQo+DQo+ICAgICAgICAg
-ICAgICAgICAgICovDQo+DQo+ICAgICAgICAgICAgICAgICAgaWYgKG11dGV4LT5sb2NrY250ID09
-IFVJTlRfTUFYKQ0KPg0KPiAgICAgICAgICAgICAgICAgICAgICAgICAgcmV0dXJuIC1FQUdBSU47
-DQo+DQo+DQo+DQo+ICAgICAgICAgICAgICAgICAgbXV0ZXgtPmxvY2tjbnQrKzsNCj4NCj4gICAg
-ICAgICAgICAgICAgICByZXR1cm4gMDsNCj4NCj4gICAgICAgICAgfQ0KPg0KPiBkb19zeXNjYWxs
-Og0KPg0KPiAjZW5kaWYgLyogQ09ORklHX1hFTk9fRkFTVFNZTkNIICovDQo+DQo+DQo+DQo+ICAg
-ICAgICAgIGVyciA9IFhFTk9NQUlfU0tJTkNBTEwzKF9fbmF0aXZlX211eGlkLA0KPg0KPiAgICAg
-ICAgICAgICAgICAgICAgICAgICAgICAgICAgICBfX25hdGl2ZV9tdXRleF9hY3F1aXJlLCBtdXRl
-eCwgbW9kZSwNCj4gJnRpbWVvdXQpOw0KPg0KPg0KPg0KPiAjaWZkZWYgQ09ORklHX1hFTk9fRkFT
-VFNZTkNIDQo+DQo+ICAgICAgICAgIGlmICghZXJyKQ0KPg0KPiAgICAgICAgICAgICAgICAgIG11
-dGV4LT5sb2NrY250ID0gMTsNCj4NCj4gI2VuZGlmIC8qIENPTkZJR19YRU5PX0ZBU1RTWU5DSCAq
-Lw0KPg0KPg0KPg0KPiAgICAgICAgICByZXR1cm4gZXJyOw0KPg0KPiB9DQo+DQo+DQo+DQo+DQo+
-DQoNCi0tDQpTaWVtZW5zIEFHLCBDb3Jwb3JhdGUgVGVjaG5vbG9neSwgQ1QgUkRBIElPVCBTRVMt
-REUgQ29ycG9yYXRlIENvbXBldGVuY2UgQ2VudGVyIEVtYmVkZGVkIExpbnV4DQo=
+On 23.08.19 16:02, DIAO, Hanson (DI PA CI RC R&D SW2) wrote:
+> Hi Jan,
+> 
+> Thank you for your reply. I will answer the questions one by one.
+> 
+> Q: This is on a ARMv7 multicore target, rightIs?
+> HD: This is PowerPC target.
+> 
+> Q: Are you already able to reproduce the issue reliably, possibly in a synthetic environment?
+> HD: It reproduces every time for the first issue and second issue(recursive lock lock count should be more than 1).
+> 
+
+Your dump was talking about "count = 1", but the counter variable is called 
+"lockcnt".
+
+> Q:  Or does your whole stack have to run on the target for a long time to trigger this?
+> HD: I got this issue when the system was in initialized stage. It is easy to trigger this and every time it happens.
+
+Can you extract a simple (and, thus, shareable) test case from that?
+
+> 
+> Q: the mutex shared between multiple process or just between threads of the same process?
+> HD: The mutex shared only in one process with multi-tasks.
+> 
+> Q:Maybe something analogously was needed for native as well. And then you could look at what happened in 3.x mutex-wise to check if you are not missing a conceptual fix in 2.6.
+> HD: I will check the commit message. I compared 2.6.4 version with 2.6.5 version. It seems that the code are same in mutex(User space mutex).
+
+Yes, the mutex patch in 2.6.5 was targeting only the posix skin. I didn't look 
+into detail, but maybe that fix should have been applied to the native 
+implementation as well. The problem is that at this point development moved on 
+to 3.x, and there is only one implementation (which received such a fix as well).
+
+> 
+> Q:You seem to look at the wrong data structure. You need to examine RT_MUTEX_PLACEHOLDER fields.
+> HD: The data structure which I got is RT_MUTEX_PLACEHOLDER fields. I attached the code as below.
+> 
+> typedef struct rt_mutex_placeholder {
+> 
+>          xnhandle_t opaque;
+> 
+> #ifdef CONFIG_XENO_FASTSYNCH
+>          xnarch_atomic_t *fastlock;
+> 
+>          int lockcnt;
+> #endif /* CONFIG_XENO_FASTSYNCH */
+> 
+> } RT_MUTEX_PLACEHOLDER;
+
+See my remark above in lockcnt.
+
+Jan
+
+> 
+> -----Original Message-----
+> From: Jan Kiszka <jan.kiszka@siemens.com>
+> Sent: Friday, August 23, 2019 2:48 AM
+> To: DIAO, Hanson (DI PA CI RC R&D SW2) <hanson.diao@siemens.com>; xenomai@xenomai.org
+> Subject: Re: A potential Xenomai Mutex issue
+> 
+> On 22.08.19 20:42, DIAO, Hanson via Xenomai wrote:
+>> Hi all,
+>>
+>>
+>>
+>> I hope you are doing well. Currently I was working on a critical deadlock issue with Xenomail Library(version 2.6.4). I found that for the Xenomai lock count is not reliable after we called rt_mutex_release. I print the following message to you. I hope some developer can help me fix this issue. I know that this version is EOL, but we still use this old version. Thank you so much.
+>>
+> 
+> This is on a ARMv7 multicore target, right? Are you already able to reproduce the issue reliably, possibly in a synthetic environment? Or does your whole stack have to run on the target for a long time to trigger this? Is the mutex shared between multiple process or just between threads of the same process?
+> 
+> Next point: You are on 2.6.4 while the last release was 2.6.5. It contained e.g.
+> 8047147aff9d (posix/mutex: handle recursion count completely in user-space).
+> 
+>>
+>>
+>> Issue 1:
+>>
+>> Before Mutex Lock Mutext addr = 0xb7c059e8,count = 0, owner = 0     This message show the status before rt_mutex_acquire.
+>>
+>> After Mutex Lock Mutext addr = 0xb7c059e8,count = 1, owner = 2bd   This message show the status after calling rt_mutex_acquire.     Everything is right for the rt_mutex_acquire in this scenario.
+>>
+>>
+>>
+>> Before Mutex unLock Mutext addr = 0xb7c059e8,count = 1, owner = 2bd   This message show the status before rt_mutex_release.
+>>
+>> After Mutex unLock Mutext addr = 0xb7c059e8,count = 1, owner = 0          This message show the status after rt_mutex_release. It seems that the lock count is not correct after call rt_mutex_release.
+>>
+> 
+> 
+>>
+>>
+>> Issue 2:
+>>
+>> When our task is call recursive lock. The mutex lock count should more than 1, but the lock count is still 1.
+>>
+>>
+>>
+>> For the issue 1, I guess that there are something wrong in the release function. I highlighted the code. I am not sure if it is the root cause.
+>>
+> 
+> Don't use HTML emails on public lists. They often get filtered, at latest on receiver side.
+> 
+> Jan
+> 
+>>
+>>
+>> int rt_mutex_release(RT_MUTEX *mutex)
+>>
+>> {
+>>
+>> #ifdef CONFIG_XENO_FASTSYNCH
+>>
+>>           unsigned long status;
+>>
+>>           xnhandle_t cur;
+>>
+>>
+>>
+>>           cur = xeno_get_current();
+>>
+>>           if (cur == XN_NO_HANDLE)
+>>
+>>                   return -EPERM;
+>>
+>>
+>>
+>>           status = xeno_get_current_mode();
+>>
+>>           if (unlikely(status & XNOTHER))
+>>
+>>                   /* See rt_mutex_acquire_inner() */
+>>
+>>                   goto do_syscall;
+>>
+>>
+>>
+>>           if (unlikely(xnsynch_fast_owner_check(mutex->fastlock, cur)
+>> != 0))
+>>
+>>                   return -EPERM;
+>>
+>>
+>>
+>>           if (mutex->lockcnt > 1) {
+>>
+>>                   mutex->lockcnt--;
+>>
+>>                   return 0;
+>>
+>>           }
+>>
+>>
+>>
+>>           if (likely(xnsynch_fast_release(mutex->fastlock, cur)))
+>>
+>>           {
+>>
+>>                   return 0;
+>>
+>>           }
+>>
+>> do_syscall:
+>>
+>> #endif /* CONFIG_XENO_FASTSYNCH */
+>>
+>>
+>>
+>>           return XENOMAI_SKINCALL1(__native_muxid,
+>> __native_mutex_release, mutex);
+>>
+>> }
+>>
+>>
+>>
+>>
+>>
+>>
+>>
+>> For the Mutex lock function, I am so confused with the following comments which I highlighted as below. I am not sure if it supports the recursive lock.
+>>
+>> static int rt_mutex_acquire_inner(RT_MUTEX *mutex, RTIME timeout,
+>> xntmode_t mode)
+>>
+>> {
+>>
+>>           int err;
+>>
+>> #ifdef CONFIG_XENO_FASTSYNCH
+>>
+>>           unsigned long status;
+>>
+>>           xnhandle_t cur;
+>>
+>>
+>>
+>>           cur = xeno_get_current();
+>>
+>>           if (cur == XN_NO_HANDLE)
+>>
+>>                   return -EPERM;
+>>
+>>
+>>
+>>           /*
+>>
+>>            * We track resource ownership for non real-time shadows in
+>>
+>>            * order to handle the auto-relax feature, so we must always
+>>
+>>            * obtain them via a syscall.
+>>
+>>            */
+>>
+>>           status = xeno_get_current_mode();
+>>
+>>           if (unlikely(status & XNOTHER))
+>>
+>>                   goto do_syscall;
+>>
+>>
+>>
+>>           if (likely(!(status & XNRELAX))) {
+>>
+>>                   err = xnsynch_fast_acquire(mutex->fastlock, cur);
+>>
+>>                   if (likely(!err)) {
+>>
+>>                           mutex->lockcnt = 1;
+>>
+>>                           return 0;
+>>
+>>                   }
+>>
+>>
+>>
+>>                   if (err == -EBUSY) {
+>>
+>>                           if (mutex->lockcnt == UINT_MAX)
+>>
+>>                                   return -EAGAIN;
+>>
+>>
+>>
+>>                           mutex->lockcnt++;
+>>
+>>                           return 0;
+>>
+>>                   }
+>>
+>>
+>>
+>>                   if (timeout == TM_NONBLOCK && mode == XN_RELATIVE)
+>>
+>>                           return -EWOULDBLOCK;
+>>
+>>           } else if (xnsynch_fast_owner_check(mutex->fastlock, cur) ==
+>> 0) {
+>>
+>>                   /*
+>>
+>>                    * The application is buggy as it jumped to secondary
+>> mode
+>>
+>>                    * while holding the mutex. Nevertheless, we have to
+>> keep the
+>>
+>>                    * mutex state consistent.
+>>
+>>                    *
+>>
+>>                    * We make no efforts to migrate or warn here. There
+>> is
+>>
+>>                    * XENO_DEBUG(SYNCH_RELAX) to catch such bugs.
+>>
+>>                    */
+>>
+>>                   if (mutex->lockcnt == UINT_MAX)
+>>
+>>                           return -EAGAIN;
+>>
+>>
+>>
+>>                   mutex->lockcnt++;
+>>
+>>                   return 0;
+>>
+>>           }
+>>
+>> do_syscall:
+>>
+>> #endif /* CONFIG_XENO_FASTSYNCH */
+>>
+>>
+>>
+>>           err = XENOMAI_SKINCALL3(__native_muxid,
+>>
+>>                                   __native_mutex_acquire, mutex, mode,
+>> &timeout);
+>>
+>>
+>>
+>> #ifdef CONFIG_XENO_FASTSYNCH
+>>
+>>           if (!err)
+>>
+>>                   mutex->lockcnt = 1;
+>>
+>> #endif /* CONFIG_XENO_FASTSYNCH */
+>>
+>>
+>>
+>>           return err;
+>>
+>> }
+>>
+>>
+>>
+>>
+>>
+> 
+> --
+> Siemens AG, Corporate Technology, CT RDA IOT SES-DE Corporate Competence Center Embedded Linux
+> 
+
+-- 
+Siemens AG, Corporate Technology, CT RDA IOT SES-DE
+Corporate Competence Center Embedded Linux
 
