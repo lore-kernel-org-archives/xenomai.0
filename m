@@ -1,12 +1,11 @@
-From: Henning Schild <henning.schild@siemens.com>
-Subject: [xenomai-images][PATCH 1/1] kas.yml: switch isar url to a working
- clone url
-Date: Wed,  4 Sep 2019 10:26:56 +0200
-Message-Id: <20190904082656.12601-2-henning.schild@siemens.com>
-In-Reply-To: <20190904082656.12601-1-henning.schild@siemens.com>
-References: <20190904082656.12601-1-henning.schild@siemens.com>
+From: LOCHE Daniel <dloche@laas.fr>
+Subject: Fork + Exec and unwanted rescheduling
+Message-ID: <e273805c-bfed-c1e2-d7b0-fc49c19f21a6@laas.fr>
+Date: Mon, 26 Aug 2019 14:58:18 +0200
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Language: en-US
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 7bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,30 +16,50 @@ List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: xenomai@xenomai.org
 
-From: Henning Schild <henning.schild@siemens.com>
+Hello all,
 
-The url was actually missing the .git extension which seems to break
-cloning it. Maybe a github change or who knows, but that new one works.
+I am doing some experiments with Xenomai 3.0.5 (Linux 4.9.38) on a NUC 
+(i5-8250U).
 
-Signed-off-by: Henning Schild <henning.schild@siemens.com>
----
- kas.yml | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+What I am trying to do :
+- run a Xenomai Manager process that launches tasks with FIFO scheduling 
+and same fixed priority (Alchemy API used here).
+Every task is executed on the same core, changing core affinity to only 
+CPU 1.
+- every task is designed to do periodically : *
+1)* read timer (start of task)
+*2)* fork+exec to run a binary (from an external benchmark, tasks not 
+designed with Xenomai API)
+*3)* read timer again (end of task execution)
+I do this to monitor the execution of every task as you may have guessed.
 
-diff --git a/kas.yml b/kas.yml
-index 260eb36..a4d12c2 100644
---- a/kas.yml
-+++ b/kas.yml
-@@ -19,7 +19,7 @@ repos:
-   xenomai:
- 
-   isar:
--    url: https://github.com/ilbers/isar
-+    url: https://github.com/ilbers/isar.git
-     refspec: 59c7dd2b8b3172d53de1c7a39fbd49751193559a
-     layers:
-       meta:
--- 
-2.21.0
+The issue is that it looks like every time a task reaches step 2) 
+("fork" step), my child task goes back to the end of scheduling queue. 
+Consequently, I basically see this in my logs :
+- Every task starts and goes till the Fork step.
+- Then every task executes their binary... don't know how this is 
+scheduled exactly... feels like CFS basic linux scheduling.
+- Every task ends more or less at the same timestamp
+... and again and again at every period... What I expected to see it 
+every task running right one after the other with no forced (i.e. 
+systematic) discontinuity between steps 1), 2) and 3) (as I am doing 
+FIFO) due to other tasks preemption !
 
+=> When I fork a Xenomai task, does it (child process) completely looses 
+its Xenomai properties and falls back into Linux domain..?
+If so... Am I condemned with such architecture to break my scheduling 
+policy due to the forks ?
+
+I tried raising up the priority level of a task right before the fork 
+(step 1)) so that child process inherits highest priority level and 
+start running directly, but the results are not convincing : tasks are 
+still running 2 by 2 (i.e. 1 task is still preempting the forked child 
+process). (I put the priority level back to normal at step 3).
+Not sure to understand what's happening there...
+
+I can give you some .csv extracts of my timestamp logs, with and without 
+priority up-scaling.
+
+Thanks for your help,
+Daniel
 
