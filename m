@@ -1,13 +1,12 @@
-Date: Fri, 06 Sep 2019 17:42:12 +0800
-Reply-To: hikwlu@sina.com
-From: "=?GBK?B?wrO/y87E?=" <hikwlu@sina.com>
-Subject: Kernel Compile error
+From: "Q. Gylstorff" <Quirin.Gylstorff@siemens.com>
+Subject: [xenomai-images][PATCH 3/3] distro/include: Allow overwrite
+ PREFERRED_VERSION
+Date: Tue, 27 Aug 2019 11:07:52 +0200
+Message-Id: <20190827090752.13072-4-Quirin.Gylstorff@siemens.com>
+In-Reply-To: <20190827090752.13072-1-Quirin.Gylstorff@siemens.com>
+References: <20190827090752.13072-1-Quirin.Gylstorff@siemens.com>
 MIME-Version: 1.0
-Message-Id: <20190906094212.93E7C4EC@webmail.sinamail.sina.com.cn>
-Content-Type: text/plain;
-	charset=UTF-8
-Content-Transfer-Encoding: base64
-Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,44 +15,30 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai <xenomai@xenomai.org>
+To: xenomai@xenomai.org
 
-SGk6CkkgaGF2ZSBhIEludGVsIEF0b20gQ1BVLCB1c2UgVWJ1bnR1IDE2LjA0LCBLZXJuZWwgdmVy
-c2lvbjo0LjE0LjcxLCBwYXRjaCB3aXRoIHhlbm9tYWkgMy4wLjksIHVzaW5nIGlwaXBlLWNvcmUt
-NC4xNC43MS14ODYtMS5wYXRjaDoKSGVyZSBpcyB0aGUgcGF0Y2ggY29tbWFuZDouL3ByZXBhcmUt
-a2VybmVsLnNoIC0tbGludXg9L2hvbWUvZ29vZ29sL3dvcmsvbGludXgtNC4xNC43MSAtLWlwaXBl
-PS9ob21lL2dvb2dvbC93b3JrL2lwaXBlLWNvcmUtNC4xNC43MS14ODYtMS5wYXRjaCAtLWFyY2g9
-aTM4NgpUaGVuIHdoZW4gSSBnb3RvIHRoZSBsaW51eCBzcmMgcGF0aCBjb21waWxlIHRoZSBrZXJu
-ZWwsIGFuZCBJIGdldCBlcnJvciBtZXNzYWdlIGFzIGZvbGxvdzptYWtlIEFSQ0g9aTM4NiAtajQK
-LyoqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioq
-KioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioq
-KioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqL3NjcmlwdHMva2NvbmZpZy9jb25m
-ICAtLXNpbGVudG9sZGNvbmZpZyBLY29uZmlnd2FybmluZzogKFhFTk9NQUkpIHNlbGVjdHMgSVBJ
-UEUgd2hpY2ggaGFzIHVubWV0IGRpcmVjdCBkZXBlbmRlbmNpZXMgKEhBVkVfSVBJUEVfU1VQUE9S
-VCl3YXJuaW5nOiAoWDg2X1ZTTVAgJiYgSFlQRVJWKSBzZWxlY3RzIFBBUkFWSVJUIHdoaWNoIGhh
-cyB1bm1ldCBkaXJlY3QgZGVwZW5kZW5jaWVzIChIWVBFUlZJU09SX0dVRVNUICYmICFJUElQRSl3
-YXJuaW5nOiAoWEVOT01BSSkgc2VsZWN0cyBJUElQRSB3aGljaCBoYXMgdW5tZXQgZGlyZWN0IGRl
-cGVuZGVuY2llcyAoSEFWRV9JUElQRV9TVVBQT1JUKXdhcm5pbmc6IChYODZfVlNNUCAmJiBIWVBF
-UlYpIHNlbGVjdHMgUEFSQVZJUlQgd2hpY2ggaGFzIHVubWV0IGRpcmVjdCBkZXBlbmRlbmNpZXMg
-KEhZUEVSVklTT1JfR1VFU1QgJiYgIUlQSVBFKSAgQ0hLICAgICBpbmNsdWRlL2NvbmZpZy9rZXJu
-ZWwucmVsZWFzZSAgQ0hLICAgICBpbmNsdWRlL2dlbmVyYXRlZC91YXBpL2xpbnV4L3ZlcnNpb24u
-aCAgQ0hLICAgICBpbmNsdWRlL2dlbmVyYXRlZC91dHNyZWxlYXNlLmggIENISyAgICAgc2NyaXB0
-cy9tb2QvZGV2aWNldGFibGUtb2Zmc2V0cy5oICBDSEsgICAgIGluY2x1ZGUvZ2VuZXJhdGVkL3Rp
-bWVjb25zdC5oICBDSEsgICAgIGluY2x1ZGUvZ2VuZXJhdGVkL2JvdW5kcy5oICBDQyAgICAgIGFy
-Y2gveDg2L2tlcm5lbC9hc20tb2Zmc2V0cy5zSW4gZmlsZSBpbmNsdWRlZCBmcm9tIC4vYXJjaC94
-ODYvaW5jbHVkZS9hc20vdWFjY2Vzcy5oOjEwOjAsICAgICAgICAgICAgICAgICBmcm9tIC4vaW5j
-bHVkZS9saW51eC91YWNjZXNzLmg6MTQsICAgICAgICAgICAgICAgICBmcm9tIC4vaW5jbHVkZS9s
-aW51eC9jcnlwdG8uaDoyNiwgICAgICAgICAgICAgICAgIGZyb20gYXJjaC94ODYva2VybmVsL2Fz
-bS1vZmZzZXRzLmM6OTouL2luY2x1ZGUvbGludXgvaXBpcGUuaDo1NToyODogZXJyb3I6IGZpZWxk
-IOKAmGFyY2jigJkgaGFzIGluY29tcGxldGUgdHlwZSAgc3RydWN0IGlwaXBlX2FyY2hfc3lzaW5m
-byBhcmNoOyAgICAgICAgICAgICAgICAgICAgICAgICAgICBeS2J1aWxkOjU3OiByZWNpcGUgZm9y
-IHRhcmdldCAnYXJjaC94ODYva2VybmVsL2FzbS1vZmZzZXRzLnMnIGZhaWxlZG1ha2VbMV06ICoq
-KiBbYXJjaC94ODYva2VybmVsL2FzbS1vZmZzZXRzLnNdIEVycm9yIDFNYWtlZmlsZToxMDg0OiBy
-ZWNpcGUgZm9yIHRhcmdldCAncHJlcGFyZTAnIGZhaWxlZG1ha2U6ICoqKiBbcHJlcGFyZTBdIEVy
-cm9yIDJtYWtlOiAqKiogV2FpdGluZyBmb3IgdW5maW5pc2hlZCBqb2JzLi4uLi8qKioqKioqKioq
-KioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioq
-KioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioq
-KioqKioqKioqKioqKioqLwpQbGVhc2UgaGVscCBtZSB3aGV0aGVyIGlmIEkgd2VyZSB1c2luZyB0
-aGUgd3Jvbmcga2VybmVsIHZlcnNpb24/LS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0K
-IApCZXN0IHJlZ2FyZHMKS2V2aW4K
+From: Quirin Gylstorff <quirin.gylstorff@siemens.com>
+
+To build arm64 PREFERRED_VERSION_linux-xenomai must be
+set to 4.14% instead of 4.19 for next. To allow overwrites
+by machine configurations change the operator from = to ?=.
+
+Signed-off-by: Quirin Gylstorff <quirin.gylstorff@siemens.com>
+---
+ conf/distro/include/xenomai-version.inc | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/conf/distro/include/xenomai-version.inc b/conf/distro/include/xenomai-version.inc
+index f14f458..524ca39 100644
+--- a/conf/distro/include/xenomai-version.inc
++++ b/conf/distro/include/xenomai-version.inc
+@@ -14,4 +14,4 @@ XENOMAI_STABLE_VERSION_LIST = "stable 3.0 3.0% 3.0.% 3.0.9"
+ XENOMAI_STABLE_KERNEL_VERSION = "4.14%"
+ # if PREFERRED_VERSION_xenomai contains any item from XENOMAI_STABLE_VERSION_LIST use
+ # XENOMAI_STABLE_KERNEL_VERSION
+-PREFERRED_VERSION_linux-xenomai = "${@bb.utils.contains_any('PREFERRED_VERSION_xenomai','${XENOMAI_STABLE_VERSION_LIST}','${XENOMAI_STABLE_KERNEL_VERSION}','${XENOMAI_NEXT_KERNEL_VERSION}',d) }"
++PREFERRED_VERSION_linux-xenomai ?= "${@bb.utils.contains_any('PREFERRED_VERSION_xenomai','${XENOMAI_STABLE_VERSION_LIST}','${XENOMAI_STABLE_KERNEL_VERSION}','${XENOMAI_NEXT_KERNEL_VERSION}',d) }"
+-- 
+2.20.1
+
 
