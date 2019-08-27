@@ -1,9 +1,7 @@
 From: "Q. Gylstorff" <Quirin.Gylstorff@siemens.com>
-Subject: [xenomai-images][PATCH 10/9] tests/README: Add Architecture
-Date: Fri,  6 Sep 2019 15:49:39 +0200
-Message-Id: <20190906134939.12301-1-Quirin.Gylstorff@siemens.com>
-In-Reply-To: <1d91b2ba-6ca6-c760-bef0-7f484f9e4fd9@siemens.com>
-References: <1d91b2ba-6ca6-c760-bef0-7f484f9e4fd9@siemens.com>
+Subject: [xenomai-images][PATCH 0/3] Update for ci 
+Date: Tue, 27 Aug 2019 11:07:49 +0200
+Message-Id: <20190827090752.13072-1-Quirin.Gylstorff@siemens.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
@@ -18,71 +16,19 @@ To: xenomai@xenomai.org
 
 From: Quirin Gylstorff <quirin.gylstorff@siemens.com>
 
-Add the schematic architecture of the current tests setup.
+Add all supported targets to ci and mention the targets in README.
+Fix arm64 builds in ci.
 
-Signed-off-by: Quirin Gylstorff <quirin.gylstorff@siemens.com>
----
- tests/README.md | 45 +++++++++++++++++++++++++++++++++++++++++++++
- 1 file changed, 45 insertions(+)
+Quirin Gylstorff (3):
+  README: Add subsection physical targets
+  ci: Add new boards to ci
+  distro/include: Allow overwrite PREFERRED_VERSION
 
-diff --git a/tests/README.md b/tests/README.md
-index ffe7ba2..6ee8ada 100644
---- a/tests/README.md
-+++ b/tests/README.md
-@@ -35,8 +35,53 @@ and check machine data from the target.
- 
- The xenomai test suite executes the xeno-test tool from xenomai/testsuite.
- 
-+# Test Architecture
-+
-+To test xenomai-images on the target hardware the following architecture
-+is used:
-+```
-+                                                               +----------+
-+                                                               | Target 1 |
-+                                                            /--|  beagle  |
-++-----------+        +---------+       +---------+    /-----   |  bone    |
-+|           |        | LAVA    |       | LAVA    | ---         +----------+
-+| gitlab-   | ------ | master  |------ | Dis-    | --
-+| runner    |        |         |       | patcher | \ \---      +----------+
-++-----------+        +---------+       +---------+  \-   \---  | Target 2 |
-+                                                      \      \-| x86-64   |
-+                                                       \       |          |
-+                                                        \-     +----------+
-+                                                          \
-+                                                           \   +----------+
-+                                                            \- | Target n |
-+                                                              \| qemu     |
-+                                                               |          |
-+                                                               +----------+
-+```
-+A test is deployed in the following steps:
-+1. gitlab-runner: builds the artifacts
-+2. After the build is successful the build artifacts are deployed to the
-+   Lava master per scp.
-+3. The runner sends a lava job description to the LAVA master, who triggers the
-+job execution on LAVA Dispatcher.
-+
-+The LAVA master selects the LAVA Dispatcher to execute the given job on a
-+target. Qemu targets are executed directly on the LAVA Dispatcher. For non-virtual
-+targets the payload (kernel,rootfs,...) is deployed via tftp to the selected
-+hardware.
-+
-+The dispatcher executes the following steps:
-+1. Instrumentation of the rootfs. This will collect the necessary lavatools
-+and adds them to the rootfs
-+2. Power up the target
-+3. deploy the payload(kernel,rootfs,...) with help of the bootloader
-+4. trigger the payload boot
-+5. execute the tests
-+6. power off the target
-+
- # LAVA Setup
- 
- Setup a lava environment by following the
- [installation guide](https://docs.lavasoftware.org/lava/first-installation.html)
- or use [lava-docker](https://github.com/kernelci/lava-docker).
-+
+ .gitlab-ci.yml                          | 18 ++++++++++++++----
+ README.md                               |  7 ++++++-
+ conf/distro/include/xenomai-version.inc |  2 +-
+ 3 files changed, 21 insertions(+), 6 deletions(-)
+
 -- 
 2.20.1
 
