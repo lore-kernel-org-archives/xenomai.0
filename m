@@ -1,11 +1,13 @@
-From: Quirin Gylstorff <quirin.gylstorff@siemens.com>
-Subject: Smokey freeze on stable
-Message-ID: <a865b0a4-5cd4-ebfd-3510-5988b05bae1a@siemens.com>
-Date: Wed, 11 Sep 2019 12:14:42 +0200
+Subject: =?UTF-8?Q?Re=3a_How_to_submit_code_to_you=ef=bc=9f?=
+References: <tencent_F93C308E07350CBFC81FA4AEAC779B24E407@qq.com>
+From: Jan Kiszka <jan.kiszka@siemens.com>
+Message-ID: <bbd91dab-6868-03ec-3bc2-af4eb774e3df@siemens.com>
+Date: Wed, 28 Aug 2019 13:31:17 +0200
 MIME-Version: 1.0
+In-Reply-To: <tencent_F93C308E07350CBFC81FA4AEAC779B24E407@qq.com>
+Content-Type: text/plain; charset=gb18030; format=flowed
 Content-Language: en-US
-Content-Transfer-Encoding: base64
-Content-Type: text/plain; charset="utf-8"; Format="flowed"
+Content-Transfer-Encoding: 7bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -14,15 +16,23 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "xenomai@xenomai.org" <xenomai@xenomai.org>, "Kiszka, Jan (CT RDA IOT SES-DE)" <jan.kiszka@siemens.com>
+To: paper_tiger <865740953@qq.com>, xenomai <xenomai@xenomai.org>
 
-SGksCgpJZiBJIGV4ZWN1dGUgeGVuby10ZXN0IHdpdGggeGVub21haSBzdGFibGUvMy4wLnggdGhl
-IGV4ZWN1dGlvbiBvZiBzbW9rZXkgCmZyZWV6ZXMgYWZ0ZXIgaXBwZCBpcyBmaW5pc2hlZC4gVGhl
-IG5leHQgdGVzdCB3b3VsZCBiZSBsZWFrcy4gbmV4dCAKZXhlY3V0ZXMgc21va2V5IHN1Y2Nlc3Nm
-dWxseS4gQXR0YWNoZWQgaXMgdGhlIGxvZyBmcm9tIGEgTEFWQSBKb2Igb24KeDg2LgoKQXJlIHRo
-ZXJlIHNvbWUgY29tbWl0cy9wYXRjaGVzIGZvciB0ZXN0aW5nIG1pc3Npbmcgb24gc3RhYmxlPwoK
-UXVpcmluCi0tLS0tLS0tLS0tLS0tIG5leHQgcGFydCAtLS0tLS0tLS0tLS0tLQpBIG5vbi10ZXh0
-IGF0dGFjaG1lbnQgd2FzIHNjcnViYmVkLi4uCk5hbWU6IGpvYl8xODEubG9nClR5cGU6IHRleHQv
-eC1sb2cKU2l6ZTogMjA4NTQ4IGJ5dGVzCkRlc2M6IG5vdCBhdmFpbGFibGUKVVJMOiA8aHR0cDov
-L3hlbm9tYWkub3JnL3BpcGVybWFpbC94ZW5vbWFpL2F0dGFjaG1lbnRzLzIwMTkwOTExL2JmZGQx
-NzA4L2F0dGFjaG1lbnQuYmluPgo=
+On 28.08.19 10:56, paper_tiger via Xenomai wrote:
+> I have done a little porting and improvement work on the new Linux kernel version, as well as the new development platform. How do I submit the code to you?
+> 
+> Looking forward to your reply! bless you
+> 
+
+We (I-pipe maintainers and myself also for Xenomai) are picking up patches sent 
+inline to this list. See also CONTRIBUTING.md. If you are targeting an ipipe 
+tree, just clarify, which one.
+
+Looking forward to your changes!
+
+Jan
+
+-- 
+Siemens AG, Corporate Technology, CT RDA IOT SES-DE
+Corporate Competence Center Embedded Linux
+
