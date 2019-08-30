@@ -1,11 +1,10 @@
-Subject: Re: [PATCH v4 2/2] cobalt/rtdm: allow for device teardown
-References: <20190830160314.29441-1-rpm@xenomai.org>
- <20190830160314.29441-2-rpm@xenomai.org>
+Subject: Re: [PATCH 1/2] drivers/net: drop socket-specific module refcounting
+References: <20190830160418.29507-1-rpm@xenomai.org>
 From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <17fb261f-a958-b7ad-55c0-93906e2e7116@siemens.com>
-Date: Fri, 30 Aug 2019 18:58:56 +0200
+Message-ID: <33c098a1-d546-01ac-12a2-4e6e0c7a2e57@siemens.com>
+Date: Fri, 30 Aug 2019 18:59:17 +0200
 MIME-Version: 1.0
-In-Reply-To: <20190830160314.29441-2-rpm@xenomai.org>
+In-Reply-To: <20190830160418.29507-1-rpm@xenomai.org>
 Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -19,57 +18,158 @@ List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: Philippe Gerum <rpm@xenomai.org>, xenomai@xenomai.org
 
-On 30.08.19 18:03, Philippe Gerum wrote:
-> Currently, rtdm_dev_unregister() will hang soft until all references
-> on the dismantled device have been dropped, which in turn cannot
-> happen until all rtdm_fds on the device have been closed, which cannot
-> happen until all references on those fds have been dropped eventually.
-> Unfortunately, applications have no indication that such teardown has
-> been requested, and keep sleeping on I/O channels managed by the
-> dismantled device, which prevents rtdm_dev_unregister() from
-> completing.
-> 
-> Allow for orderly device teardown by tracking all file descriptors
-> representing connections active on a device, forcing each of them down
-> by calling the driver's close() handler from rtdm_dev_unregister().
-> Since a close() handler should abort any ongoing I/O operation on the
-> channel being dismantled, any blocking I/O call on such channel should
-> return on error with no additional change to the existing drivers. The
-> common error code indicating an aborted I/O operation in this case is
-> EBADF.
-> 
-> Upon receiving the error, the application is expected to close the
-> stale file descriptor and/or exit, which would drop the corresponding
-> file reference.
-> 
-> Stale file descriptors lingering in applications will still prevent
-> driver modules serving them from unloading until they are eventually
-> closed. Subsequent operations on a file descriptor connected to a
-> device which is being torn now down lead to the EBADF error.
+On 30.08.19 18:04, Philippe Gerum wrote:
+> RTDM already refcounts rtdm_fd descriptors to prevent unsafe module
+> unloading while connections are still active. We can remove the legacy
+> module refcounting done by the generic socket code, since every socket
+> is covered by an RTDM file descriptor.
 > 
 > Signed-off-by: Philippe Gerum <rpm@xenomai.org>
 > ---
->   include/cobalt/kernel/list.h        |  2 +-
->   include/cobalt/kernel/rtdm/driver.h |  1 +
->   include/cobalt/kernel/rtdm/fd.h     |  2 ++
->   kernel/cobalt/rtdm/core.c           | 25 ++++++++++++++++++++-----
->   kernel/cobalt/rtdm/device.c         | 24 ++++++++++++++++++++++--
->   kernel/cobalt/rtdm/fd.c             | 13 +++++++++++--
->   kernel/cobalt/rtdm/internal.h       |  6 ++++++
->   7 files changed, 63 insertions(+), 10 deletions(-)
+>   .../drivers/net/stack/include/rtnet_socket.h  | 15 +++--------
+>   kernel/drivers/net/stack/ipv4/icmp.c          |  4 +--
+>   kernel/drivers/net/stack/socket.c             | 27 ++++++-------------
+>   3 files changed, 13 insertions(+), 33 deletions(-)
 > 
-> diff --git a/include/cobalt/kernel/list.h b/include/cobalt/kernel/list.h
-> index 989d934b8..37b91b0d5 100644
-> --- a/include/cobalt/kernel/list.h
-> +++ b/include/cobalt/kernel/list.h
-> @@ -45,7 +45,7 @@ do {										\
->     ({								\
->   	  __type *__item;					\
->   	  __item = list_first_entry(__head, __type, __member);	\
-> -	  list_del(&__item->__member);				\
-> +	  list_del(&(__item)->__member);			\
+> diff --git a/kernel/drivers/net/stack/include/rtnet_socket.h b/kernel/drivers/net/stack/include/rtnet_socket.h
+> index 351e62c77..0d8850c7f 100644
+> --- a/kernel/drivers/net/stack/include/rtnet_socket.h
+> +++ b/kernel/drivers/net/stack/include/rtnet_socket.h
+> @@ -76,8 +76,6 @@ struct rtsocket {
+>   	    int                  ifindex;
+>   	} packet;
+>       } prot;
+> -
+> -    struct module *owner;
+>   };
+>   
+>   
+> @@ -97,10 +95,7 @@ int rtnet_put_arg(struct rtdm_fd *fd, void *dst,
+>   #define rt_socket_dereference(sock) \
+>       rtdm_fd_unlock(rt_socket_fd(sock))
+>   
+> -int __rt_socket_init(struct rtdm_fd *fd, unsigned short protocol,
+> -		struct module *module);
+> -#define rt_socket_init(fd, proto) \
+> -    __rt_socket_init(fd, proto, THIS_MODULE)
+> +int rt_socket_init(struct rtdm_fd *fd, unsigned short protocol);
+>   
+>   void rt_socket_cleanup(struct rtdm_fd *fd);
+>   int rt_socket_common_ioctl(struct rtdm_fd *fd, int request, void __user *arg);
+> @@ -110,16 +105,12 @@ int rt_socket_select_bind(struct rtdm_fd *fd,
+>   			  enum rtdm_selecttype type,
+>   			  unsigned fd_index);
+>   
+> -int __rt_bare_socket_init(struct rtdm_fd *fd, unsigned short protocol,
+> -			unsigned int priority, unsigned int pool_size,
+> -			struct module *module);
+> -#define rt_bare_socket_init(fd, proto, prio, pool_sz) \
+> -    __rt_bare_socket_init(fd, proto, prio, pool_sz, THIS_MODULE)
+> +int rt_bare_socket_init(struct rtdm_fd *fd, unsigned short protocol,
+> +			unsigned int priority, unsigned int pool_size);
+>   
+>   static inline void rt_bare_socket_cleanup(struct rtsocket *sock)
+>   {
+>       rtskb_pool_release(&sock->skb_pool);
+> -    module_put(sock->owner);
+>   }
+>   
+>   #endif  /* __RTNET_SOCKET_H_ */
+> diff --git a/kernel/drivers/net/stack/ipv4/icmp.c b/kernel/drivers/net/stack/ipv4/icmp.c
+> index 58d97cd7f..a944ef6b7 100644
+> --- a/kernel/drivers/net/stack/ipv4/icmp.c
+> +++ b/kernel/drivers/net/stack/ipv4/icmp.c
+> @@ -526,8 +526,8 @@ void __init rt_icmp_init(void)
+>   {
+>       int skbs;
+>   
+> -    skbs = __rt_bare_socket_init(icmp_fd, IPPROTO_ICMP, RT_ICMP_PRIO,
+> -			    ICMP_REPLY_POOL_SIZE, NULL);
+> +    skbs = rt_bare_socket_init(icmp_fd, IPPROTO_ICMP, RT_ICMP_PRIO,
+> +			    ICMP_REPLY_POOL_SIZE);
+>       BUG_ON(skbs < 0);
+>       if (skbs < ICMP_REPLY_POOL_SIZE)
+>   	printk("RTnet: allocated only %d icmp rtskbs\n", skbs);
+> diff --git a/kernel/drivers/net/stack/socket.c b/kernel/drivers/net/stack/socket.c
+> index ce4e4cb46..747db052f 100644
+> --- a/kernel/drivers/net/stack/socket.c
+> +++ b/kernel/drivers/net/stack/socket.c
+> @@ -50,36 +50,27 @@ MODULE_PARM_DESC(socket_rtskbs, "Default number of realtime socket buffers in so
+>    *  internal socket functions                                           *
+>    ************************************************************************/
+>   
+> -int __rt_bare_socket_init(struct rtdm_fd *fd, unsigned short protocol,
+> -			unsigned int priority, unsigned int pool_size,
+> -			struct module *module)
+> +int rt_bare_socket_init(struct rtdm_fd *fd, unsigned short protocol,
+> +			unsigned int priority, unsigned int pool_size)
+>   {
+>       struct rtsocket *sock = rtdm_fd_to_private(fd);
+>       int err;
+>   
+> -    err = try_module_get(module);
+> -    if (!err)
+> -	return -EAFNOSUPPORT;
+> -
+>       err = rtskb_pool_init(&sock->skb_pool, pool_size, NULL, fd);
+> -    if (err < 0) {
+> -	module_put(module);
+> +    if (err < 0)
+>   	return err;
+> -    }
+>   
+>       sock->protocol = protocol;
+>       sock->priority = priority;
+> -    sock->owner = module;
+>   
+>       return err;
+>   }
+> -EXPORT_SYMBOL_GPL(__rt_bare_socket_init);
+> +EXPORT_SYMBOL_GPL(rt_bare_socket_init);
+>   
+>   /***
+>    *  rt_socket_init - initialises a new socket structure
+>    */
+> -int __rt_socket_init(struct rtdm_fd *fd, unsigned short protocol,
+> -		struct module *module)
+> +int rt_socket_init(struct rtdm_fd *fd, unsigned short protocol)
+>   {
+>       struct rtsocket *sock = rtdm_fd_to_private(fd);
+>       unsigned int    pool_size;
+> @@ -94,10 +85,10 @@ int __rt_socket_init(struct rtdm_fd *fd, unsigned short protocol,
+>       rtdm_lock_init(&sock->param_lock);
+>       rtdm_sem_init(&sock->pending_sem, 0);
+>   
+> -    pool_size = __rt_bare_socket_init(fd, protocol,
+> +    pool_size = rt_bare_socket_init(fd, protocol,
+>   				    RTSKB_PRIO_VALUE(SOCK_DEF_PRIO,
+>   						    RTSKB_DEF_RT_CHANNEL),
+> -				    socket_rtskbs, module);
+> +				    socket_rtskbs);
+>       sock->pool_size = pool_size;
+>       mutex_init(&sock->pool_nrt_lock);
+>   
+> @@ -112,7 +103,7 @@ int __rt_socket_init(struct rtdm_fd *fd, unsigned short protocol,
+>   
+>       return 0;
+>   }
+> -EXPORT_SYMBOL_GPL(__rt_socket_init);
+> +EXPORT_SYMBOL_GPL(rt_socket_init);
+>   
+>   
+>   /***
+> @@ -133,8 +124,6 @@ void rt_socket_cleanup(struct rtdm_fd *fd)
+>   	rtskb_pool_release(&sock->skb_pool);
+>   
+>       mutex_unlock(&sock->pool_nrt_lock);
+> -
+> -    module_put(sock->owner);
+>   }
+>   EXPORT_SYMBOL_GPL(rt_socket_cleanup);
+>   
+> 
 
-Not really needed, is it? Just trying to understand.
+Thanks, applied to next.
 
 Jan
 
