@@ -1,9 +1,7 @@
 From: Philippe Gerum <rpm@xenomai.org>
-Subject: [PATCH 2/2] cobalt/pipe: unblock read()/write() on disconnect
-Date: Fri, 30 Aug 2019 18:04:18 +0200
-Message-Id: <20190830160418.29507-2-rpm@xenomai.org>
-In-Reply-To: <20190830160418.29507-1-rpm@xenomai.org>
-References: <20190830160418.29507-1-rpm@xenomai.org>
+Subject: [PATCH 1/2] drivers/net: Kconfig: fix tests for architecture
+Date: Fri, 30 Aug 2019 18:05:13 +0200
+Message-Id: <20190830160514.29592-1-rpm@xenomai.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
@@ -16,28 +14,33 @@ List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: xenomai@xenomai.org
 
-Threads waiting on read()/write() must be unblocked when the kernel
-endpoint is disconnected. read() should return 0, write() receives
--EPIPE.
-
 Signed-off-by: Philippe Gerum <rpm@xenomai.org>
 ---
- kernel/cobalt/pipe.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ kernel/drivers/net/drivers/Kconfig | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/kernel/cobalt/pipe.c b/kernel/cobalt/pipe.c
-index 16e85125c..0c83095ba 100644
---- a/kernel/cobalt/pipe.c
-+++ b/kernel/cobalt/pipe.c
-@@ -132,7 +132,7 @@ static inline void xnpipe_dequeue_all(struct xnpipe_state *state, int mask)
- 		if (__sigpending)					\
- 			break;						\
- 		prepare_to_wait_exclusive(__waitq, &__wait, TASK_INTERRUPTIBLE); \
--		if (__cond)						\
-+		if (__cond || (__state)->status & XNPIPE_KERN_LCLOSE)	\
- 			break;						\
- 		schedule();						\
- 	}								\
+diff --git a/kernel/drivers/net/drivers/Kconfig b/kernel/drivers/net/drivers/Kconfig
+index 9ebc59a89..65f0855c1 100644
+--- a/kernel/drivers/net/drivers/Kconfig
++++ b/kernel/drivers/net/drivers/Kconfig
+@@ -77,7 +77,7 @@ config XENO_DRIVERS_NET_DRV_R8169
+     tristate "Realtek 8169 (Gigabit)"
+ 
+ 
+-if ARCH = ppc
++if PPC
+ 
+ comment "Embedded MPC Drivers"
+     depends on XENO_DRIVERS_NET
+@@ -116,7 +116,7 @@ config XENO_DRIVERS_NET_DRV_SMC91111
+     depends on XENO_DRIVERS_NET
+     tristate "SMSC LAN91C111"
+ 
+-if ARCH = arm
++if ARM
+ 
+ config XENO_DRIVERS_NET_DRV_AT91_ETHER
+     depends on XENO_DRIVERS_NET && SOC_AT91RM9200
 -- 
 2.21.0
 
