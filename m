@@ -1,10 +1,12 @@
-Subject: Re: [PATCH 1/2] drivers/net: Kconfig: fix tests for architecture
+Subject: Re: [PATCH 2/2] cobalt/sched: tp: check partition id obtained from
+ user
 References: <20190830160514.29592-1-rpm@xenomai.org>
+ <20190830160514.29592-2-rpm@xenomai.org>
 From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <8dd41903-b86b-89c0-4cb8-180e17ec655c@siemens.com>
-Date: Fri, 30 Aug 2019 19:01:07 +0200
+Message-ID: <711d3140-c2a8-61a1-6bb0-d9139a82a181@siemens.com>
+Date: Fri, 30 Aug 2019 19:01:13 +0200
 MIME-Version: 1.0
-In-Reply-To: <20190830160514.29592-1-rpm@xenomai.org>
+In-Reply-To: <20190830160514.29592-2-rpm@xenomai.org>
 Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -21,31 +23,24 @@ To: Philippe Gerum <rpm@xenomai.org>, xenomai@xenomai.org
 On 30.08.19 18:05, Philippe Gerum wrote:
 > Signed-off-by: Philippe Gerum <rpm@xenomai.org>
 > ---
->   kernel/drivers/net/drivers/Kconfig | 4 ++--
->   1 file changed, 2 insertions(+), 2 deletions(-)
+>   kernel/cobalt/sched-tp.c | 4 ++++
+>   1 file changed, 4 insertions(+)
 > 
-> diff --git a/kernel/drivers/net/drivers/Kconfig b/kernel/drivers/net/drivers/Kconfig
-> index 9ebc59a89..65f0855c1 100644
-> --- a/kernel/drivers/net/drivers/Kconfig
-> +++ b/kernel/drivers/net/drivers/Kconfig
-> @@ -77,7 +77,7 @@ config XENO_DRIVERS_NET_DRV_R8169
->       tristate "Realtek 8169 (Gigabit)"
+> diff --git a/kernel/cobalt/sched-tp.c b/kernel/cobalt/sched-tp.c
+> index d3e2586b0..ccff37428 100644
+> --- a/kernel/cobalt/sched-tp.c
+> +++ b/kernel/cobalt/sched-tp.c
+> @@ -168,6 +168,10 @@ static int xnsched_tp_chkparam(struct xnthread *thread,
+>   {
+>   	struct xnsched_tp *tp = &thread->sched->tp;
 >   
->   
-> -if ARCH = ppc
-> +if PPC
->   
->   comment "Embedded MPC Drivers"
->       depends on XENO_DRIVERS_NET
-> @@ -116,7 +116,7 @@ config XENO_DRIVERS_NET_DRV_SMC91111
->       depends on XENO_DRIVERS_NET
->       tristate "SMSC LAN91C111"
->   
-> -if ARCH = arm
-> +if ARM
->   
->   config XENO_DRIVERS_NET_DRV_AT91_ETHER
->       depends on XENO_DRIVERS_NET && SOC_AT91RM9200
+> +	if (p->tp.ptid < 0 ||
+> +		p->tp.ptid >= CONFIG_XENO_OPT_SCHED_TP_NRPART)
+> +		return -EINVAL;
+> +
+>   	if (tp->gps == NULL ||
+>   	    p->tp.prio < XNSCHED_TP_MIN_PRIO ||
+>   	    p->tp.prio > XNSCHED_TP_MAX_PRIO)
 > 
 
 Thanks, applied to next, queued for stable.
