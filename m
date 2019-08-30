@@ -1,16 +1,11 @@
-Subject: Re: [PATCH v4 2/2] cobalt/rtdm: allow for device teardown
-References: <20190830160314.29441-1-rpm@xenomai.org>
- <20190830160314.29441-2-rpm@xenomai.org>
- <17fb261f-a958-b7ad-55c0-93906e2e7116@siemens.com>
- <3653302f-b12a-b1e8-4a61-9c5abe8b3e69@xenomai.org>
 From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <61f1004d-7147-8b6a-82a9-7d66fa646dcf@siemens.com>
-Date: Fri, 30 Aug 2019 19:52:23 +0200
+Subject: [PATCH] ci: Update x86 ipipe releases
+Message-ID: <e53dc200-c8eb-172d-866f-abb774185051@siemens.com>
+Date: Fri, 30 Aug 2019 20:31:22 +0200
 MIME-Version: 1.0
-In-Reply-To: <3653302f-b12a-b1e8-4a61-9c5abe8b3e69@xenomai.org>
-Content-Type: text/plain; charset="utf-8"; format="flowed"
+Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -19,69 +14,56 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Philippe Gerum <rpm@xenomai.org>, xenomai@xenomai.org
+To: Xenomai <xenomai@xenomai.org>
 
-On 30.08.19 19:16, Philippe Gerum wrote:
-> On 8/30/19 6:58 PM, Jan Kiszka wrote:
->> On 30.08.19 18:03, Philippe Gerum wrote:
->>> Currently, rtdm_dev_unregister() will hang soft until all references
->>> on the dismantled device have been dropped, which in turn cannot
->>> happen until all rtdm_fds on the device have been closed, which cannot
->>> happen until all references on those fds have been dropped eventually.
->>> Unfortunately, applications have no indication that such teardown has
->>> been requested, and keep sleeping on I/O channels managed by the
->>> dismantled device, which prevents rtdm_dev_unregister() from
->>> completing.
->>>
->>> Allow for orderly device teardown by tracking all file descriptors
->>> representing connections active on a device, forcing each of them down
->>> by calling the driver's close() handler from rtdm_dev_unregister().
->>> Since a close() handler should abort any ongoing I/O operation on the
->>> channel being dismantled, any blocking I/O call on such channel should
->>> return on error with no additional change to the existing drivers. The
->>> common error code indicating an aborted I/O operation in this case is
->>> EBADF.
->>>
->>> Upon receiving the error, the application is expected to close the
->>> stale file descriptor and/or exit, which would drop the corresponding
->>> file reference.
->>>
->>> Stale file descriptors lingering in applications will still prevent
->>> driver modules serving them from unloading until they are eventually
->>> closed. Subsequent operations on a file descriptor connected to a
->>> device which is being torn now down lead to the EBADF error.
->>>
->>> Signed-off-by: Philippe Gerum <rpm@xenomai.org>
->>> ---
->>>    include/cobalt/kernel/list.h        |  2 +-
->>>    include/cobalt/kernel/rtdm/driver.h |  1 +
->>>    include/cobalt/kernel/rtdm/fd.h     |  2 ++
->>>    kernel/cobalt/rtdm/core.c           | 25 ++++++++++++++++++++-----
->>>    kernel/cobalt/rtdm/device.c         | 24 ++++++++++++++++++++++--
->>>    kernel/cobalt/rtdm/fd.c             | 13 +++++++++++--
->>>    kernel/cobalt/rtdm/internal.h       |  6 ++++++
->>>    7 files changed, 63 insertions(+), 10 deletions(-)
->>>
->>> diff --git a/include/cobalt/kernel/list.h b/include/cobalt/kernel/list.h
->>> index 989d934b8..37b91b0d5 100644
->>> --- a/include/cobalt/kernel/list.h
->>> +++ b/include/cobalt/kernel/list.h
->>> @@ -45,7 +45,7 @@ do {                                        \
->>>      ({                                \
->>>          __type *__item;                    \
->>>          __item = list_first_entry(__head, __type, __member);    \
->>> -      list_del(&__item->__member);                \
->>> +      list_del(&(__item)->__member);            \
->>
->> Not really needed, is it? Just trying to understand.
->>
-> 
-> No, just overlooked the declaration scope of the variable.
-> 
+From: Jan Kiszka <jan.kiszka@siemens.com>
 
-Ok, dropped why merging.
+Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
+---
+ .travis.yml | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
 
-Jan
+diff --git a/.travis.yml b/.travis.yml
+index a3453b0ff9..da7380cd10 100644
+--- a/.travis.yml
++++ b/.travis.yml
+@@ -164,7 +164,7 @@ matrix:
+         KERNEL_DEFCONFIG: multi_v7_defconfig
+     - env:
+       - ARCH: arm
+-        IPIPE_REV: ipipe-4.4.y
++        IPIPE_REV: ipipe-4.4.y-cip
+         IPIPE_KERNEL: https://gitlab.denx.de/Xenomai/ipipe.git
+         KERNEL_DEFCONFIG: multi_v7_defconfig
+     - env:
+@@ -179,7 +179,7 @@ matrix:
+         KERNEL_DEFCONFIG: x86_64_defconfig
+     - env:
+       - ARCH: x86
+-        IPIPE_REV: ipipe-core-4.19.56-x86-2
++        IPIPE_REV: ipipe-core-4.19.66-x86-6
+         IPIPE_KERNEL: https://gitlab.denx.de/Xenomai/ipipe-x86.git
+         KERNEL_DEFCONFIG: x86_64_defconfig
+     - env:
+@@ -189,12 +189,12 @@ matrix:
+         KERNEL_DEFCONFIG: x86_64_defconfig
+     - env:
+       - ARCH: x86
+-        IPIPE_REV: ipipe-4.4.y
++        IPIPE_REV: ipipe-4.4.y-cip
+         IPIPE_KERNEL: https://gitlab.denx.de/Xenomai/ipipe.git
+         KERNEL_DEFCONFIG: x86_64_defconfig
+     - env:
+       - ARCH: x86
+-        IPIPE_REV: ipipe-core-4.4.182-x86-15
++        IPIPE_REV: ipipe-core-4.4.188-cip36-x86-17
+         IPIPE_KERNEL: https://gitlab.denx.de/Xenomai/ipipe.git
+         KERNEL_DEFCONFIG: x86_64_defconfig
+     - env:
+-- 
+
+2.16.4
+
 
 -- 
 Siemens AG, Corporate Technology, CT RDA IOT SES-DE
