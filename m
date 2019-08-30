@@ -1,9 +1,7 @@
 From: Philippe Gerum <rpm@xenomai.org>
-Subject: [PATCH v4 2/2] cobalt/rtdm: allow for device teardown
-Date: Fri, 30 Aug 2019 18:03:14 +0200
-Message-Id: <20190830160314.29441-2-rpm@xenomai.org>
-In-Reply-To: <20190830160314.29441-1-rpm@xenomai.org>
-References: <20190830160314.29441-1-rpm@xenomai.org>
+Subject: [PATCH 1/2] drivers/net: drop socket-specific module refcounting
+Date: Fri, 30 Aug 2019 18:04:17 +0200
+Message-Id: <20190830160418.29507-1-rpm@xenomai.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
@@ -16,260 +14,154 @@ List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: xenomai@xenomai.org
 
-Currently, rtdm_dev_unregister() will hang soft until all references
-on the dismantled device have been dropped, which in turn cannot
-happen until all rtdm_fds on the device have been closed, which cannot
-happen until all references on those fds have been dropped eventually.
-Unfortunately, applications have no indication that such teardown has
-been requested, and keep sleeping on I/O channels managed by the
-dismantled device, which prevents rtdm_dev_unregister() from
-completing.
-
-Allow for orderly device teardown by tracking all file descriptors
-representing connections active on a device, forcing each of them down
-by calling the driver's close() handler from rtdm_dev_unregister().
-Since a close() handler should abort any ongoing I/O operation on the
-channel being dismantled, any blocking I/O call on such channel should
-return on error with no additional change to the existing drivers. The
-common error code indicating an aborted I/O operation in this case is
-EBADF.
-
-Upon receiving the error, the application is expected to close the
-stale file descriptor and/or exit, which would drop the corresponding
-file reference.
-
-Stale file descriptors lingering in applications will still prevent
-driver modules serving them from unloading until they are eventually
-closed. Subsequent operations on a file descriptor connected to a
-device which is being torn now down lead to the EBADF error.
+RTDM already refcounts rtdm_fd descriptors to prevent unsafe module
+unloading while connections are still active. We can remove the legacy
+module refcounting done by the generic socket code, since every socket
+is covered by an RTDM file descriptor.
 
 Signed-off-by: Philippe Gerum <rpm@xenomai.org>
 ---
- include/cobalt/kernel/list.h        |  2 +-
- include/cobalt/kernel/rtdm/driver.h |  1 +
- include/cobalt/kernel/rtdm/fd.h     |  2 ++
- kernel/cobalt/rtdm/core.c           | 25 ++++++++++++++++++++-----
- kernel/cobalt/rtdm/device.c         | 24 ++++++++++++++++++++++--
- kernel/cobalt/rtdm/fd.c             | 13 +++++++++++--
- kernel/cobalt/rtdm/internal.h       |  6 ++++++
- 7 files changed, 63 insertions(+), 10 deletions(-)
+ .../drivers/net/stack/include/rtnet_socket.h  | 15 +++--------
+ kernel/drivers/net/stack/ipv4/icmp.c          |  4 +--
+ kernel/drivers/net/stack/socket.c             | 27 ++++++-------------
+ 3 files changed, 13 insertions(+), 33 deletions(-)
 
-diff --git a/include/cobalt/kernel/list.h b/include/cobalt/kernel/list.h
-index 989d934b8..37b91b0d5 100644
---- a/include/cobalt/kernel/list.h
-+++ b/include/cobalt/kernel/list.h
-@@ -45,7 +45,7 @@ do {										\
-   ({								\
- 	  __type *__item;					\
- 	  __item = list_first_entry(__head, __type, __member);	\
--	  list_del(&__item->__member);				\
-+	  list_del(&(__item)->__member);			\
- 	  __item;						\
-   })
- 
-diff --git a/include/cobalt/kernel/rtdm/driver.h b/include/cobalt/kernel/rtdm/driver.h
-index 72f75388d..3559a6f99 100644
---- a/include/cobalt/kernel/rtdm/driver.h
-+++ b/include/cobalt/kernel/rtdm/driver.h
-@@ -385,6 +385,7 @@ struct rtdm_device {
- 		atomic_t refcount;
- 		struct rtdm_fd_ops ops;
- 		wait_queue_head_t putwq;
-+		struct list_head openfd_list;
- 	};
+diff --git a/kernel/drivers/net/stack/include/rtnet_socket.h b/kernel/drivers/net/stack/include/rtnet_socket.h
+index 351e62c77..0d8850c7f 100644
+--- a/kernel/drivers/net/stack/include/rtnet_socket.h
++++ b/kernel/drivers/net/stack/include/rtnet_socket.h
+@@ -76,8 +76,6 @@ struct rtsocket {
+ 	    int                  ifindex;
+ 	} packet;
+     } prot;
+-
+-    struct module *owner;
  };
  
-diff --git a/include/cobalt/kernel/rtdm/fd.h b/include/cobalt/kernel/rtdm/fd.h
-index 572b17e29..30849fc79 100644
---- a/include/cobalt/kernel/rtdm/fd.h
-+++ b/include/cobalt/kernel/rtdm/fd.h
-@@ -304,7 +304,9 @@ struct rtdm_fd {
- #ifdef CONFIG_XENO_ARCH_SYS3264
- 	int compat;
- #endif
-+	bool stale;
- 	struct list_head cleanup;
-+	struct list_head next;	/* in dev->openfd_list */
- };
  
- #define RTDM_FD_MAGIC 0x52544446
-diff --git a/kernel/cobalt/rtdm/core.c b/kernel/cobalt/rtdm/core.c
-index 28db7adb7..b9b7319fe 100644
---- a/kernel/cobalt/rtdm/core.c
-+++ b/kernel/cobalt/rtdm/core.c
-@@ -54,7 +54,7 @@ void __rtdm_dev_close(struct rtdm_fd *fd)
- 	struct rtdm_device *dev = context->device;
- 	struct rtdm_driver *drv = dev->driver;
+@@ -97,10 +95,7 @@ int rtnet_put_arg(struct rtdm_fd *fd, void *dst,
+ #define rt_socket_dereference(sock) \
+     rtdm_fd_unlock(rt_socket_fd(sock))
  
--	if (drv->ops.close)
-+	if (!fd->stale && drv->ops.close)
- 		drv->ops.close(fd);
+-int __rt_socket_init(struct rtdm_fd *fd, unsigned short protocol,
+-		struct module *module);
+-#define rt_socket_init(fd, proto) \
+-    __rt_socket_init(fd, proto, THIS_MODULE)
++int rt_socket_init(struct rtdm_fd *fd, unsigned short protocol);
  
- 	cleanup_instance(dev, context);
-@@ -131,6 +131,23 @@ open_devnode(struct rtdm_device *dev, const char *path, int oflag)
+ void rt_socket_cleanup(struct rtdm_fd *fd);
+ int rt_socket_common_ioctl(struct rtdm_fd *fd, int request, void __user *arg);
+@@ -110,16 +105,12 @@ int rt_socket_select_bind(struct rtdm_fd *fd,
+ 			  enum rtdm_selecttype type,
+ 			  unsigned fd_index);
  
- #endif /* !CONFIG_XENO_OPT_RTDM_COMPAT_DEVNODE */
+-int __rt_bare_socket_init(struct rtdm_fd *fd, unsigned short protocol,
+-			unsigned int priority, unsigned int pool_size,
+-			struct module *module);
+-#define rt_bare_socket_init(fd, proto, prio, pool_sz) \
+-    __rt_bare_socket_init(fd, proto, prio, pool_sz, THIS_MODULE)
++int rt_bare_socket_init(struct rtdm_fd *fd, unsigned short protocol,
++			unsigned int priority, unsigned int pool_size);
  
-+static int register_new_fd(struct rtdm_dev_context *context, int ufd)
-+{
-+	int ret;
-+	spl_t s;
-+
-+	trace_cobalt_fd_created(&context->fd, ufd);
-+	ret = rtdm_fd_register(&context->fd, ufd);
-+	if (ret < 0)
-+		return ret;
-+
-+	xnlock_get_irqsave(&nklock, s);
-+	list_add(&context->fd.next, &context->device->openfd_list);
-+	xnlock_put_irqrestore(&nklock, s);
-+
-+	return ret;
-+}
-+
- int __rtdm_dev_open(const char *path, int oflag)
+ static inline void rt_bare_socket_cleanup(struct rtsocket *sock)
  {
- 	struct rtdm_dev_context *context;
-@@ -185,8 +202,7 @@ int __rtdm_dev_open(const char *path, int oflag)
- 			goto fail_open;
- 	}
- 
--	trace_cobalt_fd_created(&context->fd, ufd);
--	ret = rtdm_fd_register(&context->fd, ufd);
-+	ret = register_new_fd(context, ufd);
- 	if (ret < 0)
- 		goto fail_open;
- 
-@@ -240,8 +256,7 @@ int __rtdm_dev_socket(int protocol_family, int socket_type,
- 			goto fail_socket;
- 	}
- 
--	trace_cobalt_fd_created(&context->fd, ufd);
--	ret = rtdm_fd_register(&context->fd, ufd);
-+	ret = register_new_fd(context, ufd);
- 	if (ret < 0)
- 		goto fail_socket;
- 
-diff --git a/kernel/cobalt/rtdm/device.c b/kernel/cobalt/rtdm/device.c
-index 4cfdb1c5b..ea72be15c 100644
---- a/kernel/cobalt/rtdm/device.c
-+++ b/kernel/cobalt/rtdm/device.c
-@@ -417,6 +417,7 @@ int rtdm_dev_register(struct rtdm_device *dev)
- 	else
- 		dev->ops.open = (typeof(dev->ops.open))enosys;
- 
-+	INIT_LIST_HEAD(&dev->openfd_list);
- 	init_waitqueue_head(&dev->putwq);
- 	dev->ops.close = __rtdm_dev_close; /* Interpose on driver's handler. */
- 	atomic_set(&dev->refcount, 0);
-@@ -524,8 +525,9 @@ EXPORT_SYMBOL_GPL(rtdm_dev_register);
- /**
-  * @brief Unregister a RTDM device
-  *
-- * Removes the device from the RTDM namespace. This routine waits until
-- * all connections to @a device have been closed prior to unregistering.
-+ * Removes the device from the RTDM namespace. This routine first
-+ * attempts to teardown all active connections to the @a device prior
-+ * to unregistering.
-  *
-  * @param[in] dev Device descriptor.
-  *
-@@ -534,6 +536,8 @@ EXPORT_SYMBOL_GPL(rtdm_dev_register);
- void rtdm_dev_unregister(struct rtdm_device *dev)
- {
- 	struct rtdm_driver *drv = dev->driver;
-+	struct rtdm_fd *fd;
-+	spl_t s;
- 
- 	secondary_mode_only();
- 
-@@ -542,6 +546,22 @@ void rtdm_dev_unregister(struct rtdm_device *dev)
- 	/* Lock out any further connection. */
- 	dev->magic = ~RTDM_DEVICE_MAGIC;
- 
-+	xnlock_get_irqsave(&nklock, s);
-+	for (;;) {
-+		fd = list_get_entry(&dev->openfd_list, struct rtdm_fd, next);
-+		if (fd == NULL)
-+			break;
-+		fd->stale = true;
-+		if (drv->ops.close) {
-+			rtdm_fd_get_light(fd);
-+			xnlock_put_irqrestore(&nklock, s);
-+			drv->ops.close(fd);
-+			rtdm_fd_put(fd);
-+			xnlock_get_irqsave(&nklock, s);
-+		}
-+	}
-+	xnlock_put_irqrestore(&nklock, s);
-+
- 	/* Then wait for the ongoing connections to finish. */
- 	wait_event(dev->putwq,
- 		   atomic_read(&dev->refcount) == 0);
-diff --git a/kernel/cobalt/rtdm/fd.c b/kernel/cobalt/rtdm/fd.c
-index d965aafef..dce1f05a1 100644
---- a/kernel/cobalt/rtdm/fd.c
-+++ b/kernel/cobalt/rtdm/fd.c
-@@ -168,7 +168,9 @@ int rtdm_fd_enter(struct rtdm_fd *fd, int ufd, unsigned int magic,
- 	fd->owner = ppd;
- 	fd->ufd = ufd;
- 	fd->refs = 1;
-+	fd->stale = false;
- 	set_compat_bit(fd);
-+	INIT_LIST_HEAD(&fd->next);
- 
- 	return 0;
+     rtskb_pool_release(&sock->skb_pool);
+-    module_put(sock->owner);
  }
-@@ -231,6 +233,11 @@ struct rtdm_fd *rtdm_fd_get(int ufd, unsigned int magic)
- 		goto out;
- 	}
  
-+	if (fd->stale) {
-+		fd = ERR_PTR(-EBADF);
-+		goto out;
-+	}
-+
- 	++fd->refs;
- out:
- 	xnlock_put_irqrestore(&fdtree_lock, s);
-@@ -279,7 +286,11 @@ static void __put_fd(struct rtdm_fd *fd, spl_t s)
+ #endif  /* __RTNET_SOCKET_H_ */
+diff --git a/kernel/drivers/net/stack/ipv4/icmp.c b/kernel/drivers/net/stack/ipv4/icmp.c
+index 58d97cd7f..a944ef6b7 100644
+--- a/kernel/drivers/net/stack/ipv4/icmp.c
++++ b/kernel/drivers/net/stack/ipv4/icmp.c
+@@ -526,8 +526,8 @@ void __init rt_icmp_init(void)
  {
- 	int destroy;
+     int skbs;
  
-+	XENO_WARN_ON(COBALT, fd->refs <= 0);
- 	destroy = --fd->refs == 0;
-+	if (destroy && !list_empty(&fd->next))
-+		list_del(&fd->next);
-+
- 	xnlock_put_irqrestore(&fdtree_lock, s);
+-    skbs = __rt_bare_socket_init(icmp_fd, IPPROTO_ICMP, RT_ICMP_PRIO,
+-			    ICMP_REPLY_POOL_SIZE, NULL);
++    skbs = rt_bare_socket_init(icmp_fd, IPPROTO_ICMP, RT_ICMP_PRIO,
++			    ICMP_REPLY_POOL_SIZE);
+     BUG_ON(skbs < 0);
+     if (skbs < ICMP_REPLY_POOL_SIZE)
+ 	printk("RTnet: allocated only %d icmp rtskbs\n", skbs);
+diff --git a/kernel/drivers/net/stack/socket.c b/kernel/drivers/net/stack/socket.c
+index ce4e4cb46..747db052f 100644
+--- a/kernel/drivers/net/stack/socket.c
++++ b/kernel/drivers/net/stack/socket.c
+@@ -50,36 +50,27 @@ MODULE_PARM_DESC(socket_rtskbs, "Default number of realtime socket buffers in so
+  *  internal socket functions                                           *
+  ************************************************************************/
  
- 	if (!destroy)
-@@ -367,8 +378,6 @@ void rtdm_fd_unlock(struct rtdm_fd *fd)
- 	spl_t s;
+-int __rt_bare_socket_init(struct rtdm_fd *fd, unsigned short protocol,
+-			unsigned int priority, unsigned int pool_size,
+-			struct module *module)
++int rt_bare_socket_init(struct rtdm_fd *fd, unsigned short protocol,
++			unsigned int priority, unsigned int pool_size)
+ {
+     struct rtsocket *sock = rtdm_fd_to_private(fd);
+     int err;
  
- 	xnlock_get_irqsave(&fdtree_lock, s);
--	/* Warn if fd was unreferenced. */
--	XENO_WARN_ON(COBALT, fd->refs <= 0);
- 	__put_fd(fd, s);
+-    err = try_module_get(module);
+-    if (!err)
+-	return -EAFNOSUPPORT;
+-
+     err = rtskb_pool_init(&sock->skb_pool, pool_size, NULL, fd);
+-    if (err < 0) {
+-	module_put(module);
++    if (err < 0)
+ 	return err;
+-    }
+ 
+     sock->protocol = protocol;
+     sock->priority = priority;
+-    sock->owner = module;
+ 
+     return err;
  }
- EXPORT_SYMBOL_GPL(rtdm_fd_unlock);
-diff --git a/kernel/cobalt/rtdm/internal.h b/kernel/cobalt/rtdm/internal.h
-index b634bd997..99488e058 100644
---- a/kernel/cobalt/rtdm/internal.h
-+++ b/kernel/cobalt/rtdm/internal.h
-@@ -49,6 +49,12 @@ int __rtdm_dev_ioctl_core(struct rtdm_fd *fd,
- int __rtdm_mmap_from_fdop(struct rtdm_fd *fd, size_t len, off_t offset,
- 			  int prot, int flags, void **pptr);
+-EXPORT_SYMBOL_GPL(__rt_bare_socket_init);
++EXPORT_SYMBOL_GPL(rt_bare_socket_init);
  
-+/* nklock held, irqs off. */
-+static inline void rtdm_fd_get_light(struct rtdm_fd *fd)
-+{
-+	++fd->refs;
-+}
-+
- int rtdm_init(void);
+ /***
+  *  rt_socket_init - initialises a new socket structure
+  */
+-int __rt_socket_init(struct rtdm_fd *fd, unsigned short protocol,
+-		struct module *module)
++int rt_socket_init(struct rtdm_fd *fd, unsigned short protocol)
+ {
+     struct rtsocket *sock = rtdm_fd_to_private(fd);
+     unsigned int    pool_size;
+@@ -94,10 +85,10 @@ int __rt_socket_init(struct rtdm_fd *fd, unsigned short protocol,
+     rtdm_lock_init(&sock->param_lock);
+     rtdm_sem_init(&sock->pending_sem, 0);
  
- void rtdm_cleanup(void);
+-    pool_size = __rt_bare_socket_init(fd, protocol,
++    pool_size = rt_bare_socket_init(fd, protocol,
+ 				    RTSKB_PRIO_VALUE(SOCK_DEF_PRIO,
+ 						    RTSKB_DEF_RT_CHANNEL),
+-				    socket_rtskbs, module);
++				    socket_rtskbs);
+     sock->pool_size = pool_size;
+     mutex_init(&sock->pool_nrt_lock);
+ 
+@@ -112,7 +103,7 @@ int __rt_socket_init(struct rtdm_fd *fd, unsigned short protocol,
+ 
+     return 0;
+ }
+-EXPORT_SYMBOL_GPL(__rt_socket_init);
++EXPORT_SYMBOL_GPL(rt_socket_init);
+ 
+ 
+ /***
+@@ -133,8 +124,6 @@ void rt_socket_cleanup(struct rtdm_fd *fd)
+ 	rtskb_pool_release(&sock->skb_pool);
+ 
+     mutex_unlock(&sock->pool_nrt_lock);
+-
+-    module_put(sock->owner);
+ }
+ EXPORT_SYMBOL_GPL(rt_socket_cleanup);
+ 
 -- 
 2.21.0
 
