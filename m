@@ -1,17 +1,18 @@
-From: Lange Norbert <norbert.lange@andritz.com>
-Subject: RE: [PATCH 2/2] cobalt: switch hand over status to -ENODEV for
+Subject: Re: [PATCH 2/2] cobalt: switch hand over status to -ENODEV for
  non-RTDM fd
-Date: Fri, 30 Aug 2019 09:58:46 +0000
-Message-ID: <VI1PR05MB59176873D3341D22559E0F23F6BD0@VI1PR05MB5917.eurprd05.prod.outlook.com>
 References: <20190620172934.31393-1-rpm@xenomai.org>
  <20190620172934.31393-3-rpm@xenomai.org>
  <VI1PR05MB5917F833764544DF7F3E666FF6A20@VI1PR05MB5917.eurprd05.prod.outlook.com>
  <5f37d7d4-d4bb-6473-dd1a-494bd0472c83@siemens.com>
-In-Reply-To: <5f37d7d4-d4bb-6473-dd1a-494bd0472c83@siemens.com>
-Content-Language: en-US
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+ <VI1PR05MB59176873D3341D22559E0F23F6BD0@VI1PR05MB5917.eurprd05.prod.outlook.com>
+From: Jan Kiszka <jan.kiszka@siemens.com>
+Message-ID: <ee9cfb51-817f-6813-ecf3-1e9c3f506c94@siemens.com>
+Date: Fri, 30 Aug 2019 13:23:48 +0200
 MIME-Version: 1.0
+In-Reply-To: <VI1PR05MB59176873D3341D22559E0F23F6BD0@VI1PR05MB5917.eurprd05.prod.outlook.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -20,51 +21,57 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jan Kiszka <jan.kiszka@siemens.com>, Philippe Gerum <rpm@xenomai.org>, "Xenomai (xenomai@xenomai.org)" <xenomai@xenomai.org>
+To: Lange Norbert <norbert.lange@andritz.com>, Philippe Gerum <rpm@xenomai.org>, "Xenomai (xenomai@xenomai.org)" <xenomai@xenomai.org>
 
-DQoNCj4gLS0tLS1PcmlnaW5hbCBNZXNzYWdlLS0tLS0NCj4gRnJvbTogSmFuIEtpc3prYSA8amFu
-Lmtpc3prYUBzaWVtZW5zLmNvbT4NCj4gU2VudDogRG9ubmVyc3RhZywgMjkuIEF1Z3VzdCAyMDE5
-IDE2OjUyDQo+IFRvOiBMYW5nZSBOb3JiZXJ0IDxub3JiZXJ0LmxhbmdlQGFuZHJpdHouY29tPjsg
-UGhpbGlwcGUgR2VydW0NCj4gPHJwbUB4ZW5vbWFpLm9yZz47IFhlbm9tYWkgKHhlbm9tYWlAeGVu
-b21haS5vcmcpDQo+IDx4ZW5vbWFpQHhlbm9tYWkub3JnPg0KPiBTdWJqZWN0OiBSZTogW1BBVENI
-IDIvMl0gY29iYWx0OiBzd2l0Y2ggaGFuZCBvdmVyIHN0YXR1cyB0byAtRU5PREVWIGZvciBub24t
-DQo+IFJURE0gZmQNCj4NCj4gRS1NQUlMIEZST00gQSBOT04tQU5EUklUWiBTT1VSQ0U6IEFTIEEg
-U0VDVVJJVFkgTUVBU1VSRSwgUExFQVNFDQo+IEVYRVJDSVNFIENBVVRJT04gV0lUSCBFLU1BSUwg
-Q09OVEVOVCBBTkQgQU5ZIExJTktTIE9SDQo+IEFUVEFDSE1FTlRTLg0KPg0KPg0KPiBPbiAyOS4w
-OC4xOSAxNjoxMiwgTGFuZ2UgTm9yYmVydCB2aWEgWGVub21haSB3cm90ZToNCj4gPg0KPiA+IEkg
-cmFuIGludG8gYSByYXRoZXIgYmlnIGlzc3VlIHdpdGggbGludXggZmlsZWhhbmRsZXMgSSB1c2Ug
-WGVub21haQ0KPiA+IG1hc3RlciBvbiBpcGlwZS1jb3JlLTQuMTkuNjAteDg2LTUgd2l0aCB0aG9z
-ZSBwYXRjaGVzLCAoY2FuJ3QgYmUgMTAwJQ0KPiA+IHN1cmUgaXRzIG5vdCBzb21lIGtlcm5lbC91
-c2Vyc3BhY2UgY29uZmxpY3QsIGJ1dCBJIGRvdWJ0IGl0KQ0KPiA+DQo+ID4gV2hhdCBoYXBwZW5z
-IGlzIHRoYXQgdXBvbiBhIF9fY29iYWx0X2Nsb3NlIHdpdGggYSBsaW51eCBmaWxlaGFuZGUsIHRo
-ZQ0KPiA+IHN5c2NhbGwgc2NfY29iYWx0X2Nsb3NlIHJldHVybnMgRUJBREYsIGJ1dCB0aGF0IG1l
-YW5zIHRoZSBsaWJjIGNsb3NlDQo+ID4gd2lsbCBuZXZlciBiZSB0cmllZCBhbmQgZmlsZWhhbmRs
-ZXMgYXJlIGxlYWtpbmcgbGlrZSBtYWQuDQo+ID4NCj4NCj4gQWgsIGdvb2QgY2F0Y2guIExvb2tz
-IGxpa2UgUGhpbGlwcGUncyBwYXRjaCB3YXMgbWlzc2luZyBhIGNoYW5nZSB0bw0KPiBydGRtX2Zk
-X2Nsb3NlKCkuDQoNClllcywgYnV0IGhpcyB2MyB3b3Jrcy4NCg0KPiBUaGFua3MgYSBsb3QgZm9y
-IHRlc3RpbmcgcHJvLWFjdGl2ZWx5IQ0KDQpZb3UgYXJlIHdlbGNvbWUsIGl0cyBsZXNzIGJlbmln
-biB0aGFuIHlvdSBtaWdodCB0aGluayB0aG91Z2gsDQpQaGlsaXBwZSdzIHBhdGNoZXMgKGFsbG93
-IGZvciBkZXZpY2UgdGVhcmRvd24pIHdlcmUgcmVxdWVzdGVkIGZyb20gbXlzZWxmLg0KDQpIb3cg
-ZG9lcyBYZW5vbWFpL2NvYmFsdCBoYW5kbGUga2VybmVsL3VzZXJzcGFjZSBjb25mbGljdHMgbGlr
-ZSB0aGVzZSBCVFcsDQpJcyB0aGVyZSBzb21lIEFCSSB2YXJpYWJsZSB0aGF0IG5lZWRzIHRvIGJl
-IGluY3JlbWVudGVkIGFuZCBjYW4gZGV0ZWN0IG1pc21hdGNoZXM/DQooaWYgeW91IHVzZSBhbiBv
-bGQgbGliY29iYWx0IG9uIGEgbmV3IGtlcm5lbCBtb2R1bGUgd2l0aCBwYXRjaHNldCBvciB2aWNl
-IHZlcnNlLCBpdCB3b3VsZCByZXN1bHQgaW4gbGVha3Mgb3Igb3RoZXIgaXNzdWVzKQ0KDQpLaW5k
-IHJlZ2FyZHMsDQpOb3JiZXJ0DQpfX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fXw0KDQpU
-aGlzIG1lc3NhZ2UgYW5kIGFueSBhdHRhY2htZW50cyBhcmUgc29sZWx5IGZvciB0aGUgdXNlIG9m
-IHRoZSBpbnRlbmRlZCByZWNpcGllbnRzLiBUaGV5IG1heSBjb250YWluIHByaXZpbGVnZWQgYW5k
-L29yIGNvbmZpZGVudGlhbCBpbmZvcm1hdGlvbiBvciBvdGhlciBpbmZvcm1hdGlvbiBwcm90ZWN0
-ZWQgZnJvbSBkaXNjbG9zdXJlLiBJZiB5b3UgYXJlIG5vdCBhbiBpbnRlbmRlZCByZWNpcGllbnQs
-IHlvdSBhcmUgaGVyZWJ5IG5vdGlmaWVkIHRoYXQgeW91IHJlY2VpdmVkIHRoaXMgZW1haWwgaW4g
-ZXJyb3IgYW5kIHRoYXQgYW55IHJldmlldywgZGlzc2VtaW5hdGlvbiwgZGlzdHJpYnV0aW9uIG9y
-IGNvcHlpbmcgb2YgdGhpcyBlbWFpbCBhbmQgYW55IGF0dGFjaG1lbnQgaXMgc3RyaWN0bHkgcHJv
-aGliaXRlZC4gSWYgeW91IGhhdmUgcmVjZWl2ZWQgdGhpcyBlbWFpbCBpbiBlcnJvciwgcGxlYXNl
-IGNvbnRhY3QgdGhlIHNlbmRlciBhbmQgZGVsZXRlIHRoZSBtZXNzYWdlIGFuZCBhbnkgYXR0YWNo
-bWVudCBmcm9tIHlvdXIgc3lzdGVtLg0KDQpBTkRSSVRaIEhZRFJPIEdtYkgNCg0KDQpSZWNodHNm
-b3JtLyBMZWdhbCBmb3JtOiBHZXNlbGxzY2hhZnQgbWl0IGJlc2NocsOkbmt0ZXIgSGFmdHVuZyAv
-IENvcnBvcmF0aW9uDQoNCkZpcm1lbnNpdHovIFJlZ2lzdGVyZWQgc2VhdDogV2llbg0KDQpGaXJt
-ZW5idWNoZ2VyaWNodC8gQ291cnQgb2YgcmVnaXN0cnk6IEhhbmRlbHNnZXJpY2h0IFdpZW4NCg0K
-RmlybWVuYnVjaG51bW1lci8gQ29tcGFueSByZWdpc3RyYXRpb246IEZOIDYxODMzIGcNCg0KRFZS
-OiAwNjA1MDc3DQoNClVJRC1Oci46IEFUVTE0NzU2ODA2DQoNCg0KVGhhbmsgWW91DQpfX19fX19f
-X19fX19fX19fX19fX19fX19fX19fX19fXw0K
+On 30.08.19 11:58, Lange Norbert wrote:
+> 
+> 
+>> -----Original Message-----
+>> From: Jan Kiszka <jan.kiszka@siemens.com>
+>> Sent: Donnerstag, 29. August 2019 16:52
+>> To: Lange Norbert <norbert.lange@andritz.com>; Philippe Gerum
+>> <rpm@xenomai.org>; Xenomai (xenomai@xenomai.org)
+>> <xenomai@xenomai.org>
+>> Subject: Re: [PATCH 2/2] cobalt: switch hand over status to -ENODEV for non-
+>> RTDM fd
+>>
+>> E-MAIL FROM A NON-ANDRITZ SOURCE: AS A SECURITY MEASURE, PLEASE
+>> EXERCISE CAUTION WITH E-MAIL CONTENT AND ANY LINKS OR
+>> ATTACHMENTS.
+>>
+>>
+>> On 29.08.19 16:12, Lange Norbert via Xenomai wrote:
+>>>
+>>> I ran into a rather big issue with linux filehandles I use Xenomai
+>>> master on ipipe-core-4.19.60-x86-5 with those patches, (can't be 100%
+>>> sure its not some kernel/userspace conflict, but I doubt it)
+>>>
+>>> What happens is that upon a __cobalt_close with a linux filehande, the
+>>> syscall sc_cobalt_close returns EBADF, but that means the libc close
+>>> will never be tried and filehandles are leaking like mad.
+>>>
+>>
+>> Ah, good catch. Looks like Philippe's patch was missing a change to
+>> rtdm_fd_close().
+> 
+> Yes, but his v3 works.
+> 
+>> Thanks a lot for testing pro-actively!
+> 
+> You are welcome, its less benign than you might think though,
+> Philippe's patches (allow for device teardown) were requested from myself.
+> 
+> How does Xenomai/cobalt handle kernel/userspace conflicts like these BTW,
+> Is there some ABI variable that needs to be incremented and can detect mismatches?
+> (if you use an old libcobalt on a new kernel module with patchset or vice verse, it would result in leaks or other issues)
+
+There is an ABI revision check between kernel and userland, and there are 
+feature checks. We will likely need an ABI bump here, which did not take place 
+in master so far (compared to 3.0). Follow XENOMAI_ABI_REV on that.
+
+Jan
+
+-- 
+Siemens AG, Corporate Technology, CT RDA IOT SES-DE
+Corporate Competence Center Embedded Linux
 
