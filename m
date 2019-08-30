@@ -1,16 +1,10 @@
-Subject: Re: A potential Xenomai Mutex issue
-References: <DM6PR07MB596162CF3DD4EB4071336D26E7A50@DM6PR07MB5961.namprd07.prod.outlook.com>
- <43f9470f-ed47-0a2a-71f5-ca9bca08879a@siemens.com>
- <DM6PR07MB59614BFAE90AE8DA6B49769EE7A40@DM6PR07MB5961.namprd07.prod.outlook.com>
- <2f51ad42-4be3-606d-dbdf-ee036bd562de@siemens.com>
- <DM6PR07MB59610EC30F9B7433FBD53E35E7A40@DM6PR07MB5961.namprd07.prod.outlook.com>
- <d3ed1327-3026-6489-a66b-56f9680f08d2@siemens.com>
- <DM6PR07MB596161BCD969C8C69F2E8D31E7A40@DM6PR07MB5961.namprd07.prod.outlook.com>
+Subject: Re: [PATCH 1/2] drivers/net: Kconfig: fix tests for architecture
+References: <20190830160514.29592-1-rpm@xenomai.org>
 From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <eb28e913-89d2-6141-c37d-e2c5e0a540ec@siemens.com>
-Date: Fri, 23 Aug 2019 18:18:40 +0200
+Message-ID: <8dd41903-b86b-89c0-4cb8-180e17ec655c@siemens.com>
+Date: Fri, 30 Aug 2019 19:01:07 +0200
 MIME-Version: 1.0
-In-Reply-To: <DM6PR07MB596161BCD969C8C69F2E8D31E7A40@DM6PR07MB5961.namprd07.prod.outlook.com>
+In-Reply-To: <20190830160514.29592-1-rpm@xenomai.org>
 Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -22,35 +16,39 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "DIAO, Hanson (DI PA CI RC R&D SW2)" <hanson.diao@siemens.com>
-Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Philippe Gerum <rpm@xenomai.org>, xenomai@xenomai.org
 
-On 23.08.19 17:49, DIAO, Hanson (DI PA CI RC R&D SW2) wrote:
-> Hi Jan,
+On 30.08.19 18:05, Philippe Gerum wrote:
+> Signed-off-by: Philippe Gerum <rpm@xenomai.org>
+> ---
+>   kernel/drivers/net/drivers/Kconfig | 4 ++--
+>   1 file changed, 2 insertions(+), 2 deletions(-)
 > 
-> Thank you for your reply. Please see my following comments. Thank you so much.
+> diff --git a/kernel/drivers/net/drivers/Kconfig b/kernel/drivers/net/drivers/Kconfig
+> index 9ebc59a89..65f0855c1 100644
+> --- a/kernel/drivers/net/drivers/Kconfig
+> +++ b/kernel/drivers/net/drivers/Kconfig
+> @@ -77,7 +77,7 @@ config XENO_DRIVERS_NET_DRV_R8169
+>       tristate "Realtek 8169 (Gigabit)"
+>   
+>   
+> -if ARCH = ppc
+> +if PPC
+>   
+>   comment "Embedded MPC Drivers"
+>       depends on XENO_DRIVERS_NET
+> @@ -116,7 +116,7 @@ config XENO_DRIVERS_NET_DRV_SMC91111
+>       depends on XENO_DRIVERS_NET
+>       tristate "SMSC LAN91C111"
+>   
+> -if ARCH = arm
+> +if ARM
+>   
+>   config XENO_DRIVERS_NET_DRV_AT91_ETHER
+>       depends on XENO_DRIVERS_NET && SOC_AT91RM9200
 > 
-> 
-> For the issue 2 the test case is very simple. The lock sequence is as below. After ReadReg function I checked the lockcnt. The lockcnt is 1.
-> Int writeReg()
-> {
->       SMILock();
->       ReadReg();
->       ......
->       SMIUnlock();
-> }
-> 
-> Int ReadReg()
-> {
->       SMILock();
->       /*  Check the lockcnt here. It is still 1, should be 2 */
->       ........
->       ......
->       SMIUnlock();
-> }
 
-Is the thread doing any migrations to secondary mode between the entry of 
-writeReg and the checking of lockcnt?
+Thanks, applied to next, queued for stable.
 
 Jan
 
