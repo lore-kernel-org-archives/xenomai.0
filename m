@@ -1,7 +1,11 @@
-From: xenomai@xenomai.org
-Subject: [I-PIPE] ipipe-core-4.19.55-arm64-1 released
-Message-Id: <E1i4ML6-0006jt-Fc@xenomai.org>
-Date: Sun, 01 Sep 2019 11:40:04 +0200
+From: Jan Kiszka <jan.kiszka@siemens.com>
+Subject: [PATCH] ci: Update arm 4.19 target
+Message-ID: <a976f4fb-158a-8a1e-dba1-e2e154bec8ce@siemens.com>
+Date: Sun, 1 Sep 2019 18:22:14 +0200
+MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -10,10 +14,41 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
+To: Xenomai <xenomai@xenomai.org>
 
-Download URL: https://xenomai.org/downloads/ipipe/v4.x/arm64/ipipe-core-4.19.55-arm64-1.patch
+From: Jan Kiszka <jan.kiszka@siemens.com>
 
-Repository: https://git.xenomai.org/ipipe-arm64
-Release tag: ipipe-core-4.19.55-arm64-1
+Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
+---
+ .travis.yml | 7 ++++++-
+ 1 file changed, 6 insertions(+), 1 deletion(-)
+
+diff --git a/.travis.yml b/.travis.yml
+index da7380cd10..657a1f2d68 100644
+--- a/.travis.yml
++++ b/.travis.yml
+@@ -154,7 +154,7 @@ matrix:
+   include:
+     - env:
+       - ARCH: arm
+-        IPIPE_REV: ipipe-core-4.19.33-arm-2
++        IPIPE_REV: ipipe-core-4.19.33-arm-3
+         IPIPE_KERNEL: https://gitlab.denx.de/Xenomai/ipipe-arm.git
+         KERNEL_DEFCONFIG: multi_v7_defconfig
+     - env:
+@@ -167,6 +167,11 @@ matrix:
+         IPIPE_REV: ipipe-4.4.y-cip
+         IPIPE_KERNEL: https://gitlab.denx.de/Xenomai/ipipe.git
+         KERNEL_DEFCONFIG: multi_v7_defconfig
++    - env:
++      - ARCH: arm64
++        IPIPE_REV: ipipe-core-4.19.55-arm64-1
++        IPIPE_KERNEL: https://gitlab.denx.de/Xenomai/ipipe-arm64.git
++        KERNEL_DEFCONFIG: defconfig
+     - env:
+       - ARCH: arm64
+         IPIPE_REV: ipipe-core-4.14.78-arm64-2
+-- 
+
+2.16.4
 
