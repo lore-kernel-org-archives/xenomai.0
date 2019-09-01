@@ -1,18 +1,10 @@
-Subject: Re: A potential Xenomai Mutex issue
-References: <DM6PR07MB596162CF3DD4EB4071336D26E7A50@DM6PR07MB5961.namprd07.prod.outlook.com>
- <43f9470f-ed47-0a2a-71f5-ca9bca08879a@siemens.com>
- <DM6PR07MB59614BFAE90AE8DA6B49769EE7A40@DM6PR07MB5961.namprd07.prod.outlook.com>
- <2f51ad42-4be3-606d-dbdf-ee036bd562de@siemens.com>
- <DM6PR07MB59610EC30F9B7433FBD53E35E7A40@DM6PR07MB5961.namprd07.prod.outlook.com>
- <d3ed1327-3026-6489-a66b-56f9680f08d2@siemens.com>
- <DM6PR07MB596161BCD969C8C69F2E8D31E7A40@DM6PR07MB5961.namprd07.prod.outlook.com>
- <eb28e913-89d2-6141-c37d-e2c5e0a540ec@siemens.com>
- <DM6PR07MB59618611F0A6CBCAF565B856E7A40@DM6PR07MB5961.namprd07.prod.outlook.com>
+Subject: Re: [PATCH] ci: Update arm 4.19 target
+References: <a976f4fb-158a-8a1e-dba1-e2e154bec8ce@siemens.com>
 From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <ad012a80-66b5-3e72-f585-6eb3f3045855@siemens.com>
-Date: Fri, 23 Aug 2019 20:17:41 +0200
+Message-ID: <fb003ba3-e084-7365-ccca-d7565f24654c@siemens.com>
+Date: Sun, 1 Sep 2019 18:27:48 +0200
 MIME-Version: 1.0
-In-Reply-To: <DM6PR07MB59618611F0A6CBCAF565B856E7A40@DM6PR07MB5961.namprd07.prod.outlook.com>
+In-Reply-To: <a976f4fb-158a-8a1e-dba1-e2e154bec8ce@siemens.com>
 Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -24,58 +16,47 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "DIAO, Hanson (DI PA CI RC R&D SW2)" <hanson.diao@siemens.com>
-Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: xenomai@xenomai.org
 
-On 23.08.19 19:27, DIAO, Hanson (DI PA CI RC R&D SW2) wrote:
-> No, the thread was not doing any migrations to secondary mode.
+On 01.09.19 18:22, Jan Kiszka via Xenomai wrote:
+> From: Jan Kiszka <jan.kiszka@siemens.com>
 > 
+> Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
+> ---
+>   .travis.yml | 7 ++++++-
+>   1 file changed, 6 insertions(+), 1 deletion(-)
+> 
+> diff --git a/.travis.yml b/.travis.yml
+> index da7380cd10..657a1f2d68 100644
+> --- a/.travis.yml
+> +++ b/.travis.yml
+> @@ -154,7 +154,7 @@ matrix:
+>     include:
+>       - env:
+>         - ARCH: arm
+> -        IPIPE_REV: ipipe-core-4.19.33-arm-2
+> +        IPIPE_REV: ipipe-core-4.19.33-arm-3
 
-Then I would suggest to use a debugger in order to step through this fairly 
-simple, nicely single-threaded case. That should reveal if you are really taking 
-the same lock or why rt_mutex_lock decides to not increment lockcnt.
+Should be 55, of course. Updated in next.
 
 Jan
 
-> -----Original Message-----
-> From: Jan Kiszka <jan.kiszka@siemens.com>
-> Sent: Friday, August 23, 2019 12:19 PM
-> To: DIAO, Hanson (DI PA CI RC R&D SW2) <hanson.diao@siemens.com>
-> Cc: xenomai@xenomai.org
-> Subject: Re: A potential Xenomai Mutex issue
+>           IPIPE_KERNEL: https://gitlab.denx.de/Xenomai/ipipe-arm.git
+>           KERNEL_DEFCONFIG: multi_v7_defconfig
+>       - env:
+> @@ -167,6 +167,11 @@ matrix:
+>           IPIPE_REV: ipipe-4.4.y-cip
+>           IPIPE_KERNEL: https://gitlab.denx.de/Xenomai/ipipe.git
+>           KERNEL_DEFCONFIG: multi_v7_defconfig
+> +    - env:
+> +      - ARCH: arm64
+> +        IPIPE_REV: ipipe-core-4.19.55-arm64-1
+> +        IPIPE_KERNEL: https://gitlab.denx.de/Xenomai/ipipe-arm64.git
+> +        KERNEL_DEFCONFIG: defconfig
+>       - env:
+>         - ARCH: arm64
+>           IPIPE_REV: ipipe-core-4.14.78-arm64-2
 > 
-> On 23.08.19 17:49, DIAO, Hanson (DI PA CI RC R&D SW2) wrote:
->> Hi Jan,
->>
->> Thank you for your reply. Please see my following comments. Thank you so much.
->>
->>
->> For the issue 2 the test case is very simple. The lock sequence is as below. After ReadReg function I checked the lockcnt. The lockcnt is 1.
->> Int writeReg()
->> {
->>        SMILock();
->>        ReadReg();
->>        ......
->>        SMIUnlock();
->> }
->>
->> Int ReadReg()
->> {
->>        SMILock();
->>        /*  Check the lockcnt here. It is still 1, should be 2 */
->>        ........
->>        ......
->>        SMIUnlock();
->> }
-> 
-> Is the thread doing any migrations to secondary mode between the entry of writeReg and the checking of lockcnt?
-> 
-> Jan
-> 
-> --
-> Siemens AG, Corporate Technology, CT RDA IOT SES-DE Corporate Competence Center Embedded Linux
-> 
-
 -- 
 Siemens AG, Corporate Technology, CT RDA IOT SES-DE
 Corporate Competence Center Embedded Linux
