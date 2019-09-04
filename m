@@ -1,10 +1,15 @@
+Subject: Re: [xenomai-images][PATCH 1/1] kas.yml: switch isar url to a working
+ clone url
+References: <20190904082656.12601-1-henning.schild@siemens.com>
+ <20190904082656.12601-2-henning.schild@siemens.com>
+From: Jan Kiszka <jan.kiszka@siemens.com>
+Message-ID: <55ff7165-1d61-6fe0-fc60-73b95bca9125@siemens.com>
+Date: Wed, 4 Sep 2019 13:12:32 +0200
 MIME-Version: 1.0
-From: Amin Habibi <seyedaminhabibi@gmail.com>
-Date: Wed, 4 Sep 2019 14:01:12 +0430
-Message-ID: <CALOJ9n=-AdauHwrSRiDC9Y54E64xnESKevoQ32VkNLnDaPWd4A@mail.gmail.com>
-Subject: uart high latency on beaglebone
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+In-Reply-To: <20190904082656.12601-2-henning.schild@siemens.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -13,34 +18,50 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
+To: Henning Schild <henning.schild@siemens.com>, xenomai@xenomai.org
 
-SGksIGFmdGVyIHNvbWUgbWlub3IgY2hhbmdlcyB0byAxNjU1MEEgZHJpdmVyKGFkZGluZyBzdXBw
-b3J0IGZvciB3b3JkIGxldmVsCnJlZ2lzdGVyIGFjY2Vzc2luZykgaSBjb3VsZCB1c2UgaXQgb24g
-YmVhZ2xlYm9uZSBhbmQgc3VjY2Vzc2Z1bGx5IHRlc3RpbmcKaXQgaW4gdXNlciBzcGFjZS4gYmFz
-ZWQgb24gYSBleGFtcGxlIGFwcGxpY2F0aW9uIG9uIHRoaXMgbWFpbGluZyBsaXN0IGkKd3JvdGUg
-YSBzaW1wbGUgbG9vcCBiYWNrIGFwcGxpY2F0aW9uKHdpdGggcG9zaXggc2tpbikgd2hpY2ggbG9v
-cCBiYWNrIGFueQpyZWNlaXZlZCBkYXRhLiB1c2luZyBhIGxvZ2ljIGFuYWx5emVyIGkgc2VlIGEg
-aGlnaCBsYXRlbmN5LnRoZXJlIGlzIGFyb3VuZAo1bXMgZGVsYXkgYmV0d2VlbiByZWNlaXZpbmcg
-ZGF0YSBhbmQgcmVzZW5kaW5nIGl0LiB3aGVuIGkgdXNlIG9yaWdpbmFsCmJlYWdsZWJvbmUgVUFS
-VCBkcml2ZXIgdGhlcmUgaXMgYXBwcm94aW1hdGVseSBzYW1lIGxhdGVuY3koYXJvdW5kIDVtcyku
-Cml0J3MgbGlrZSB0aGUgdGFzayBpcyBzdHVjayBhdCBzZWNvbmRhcnkgbW9kZSEgYWx0aG91Z2gg
-aSB1c2VkClBUSFJFQURfRVhQTElDSVRfU0NIRUQsIFNDSEVEX0ZJRk8gYXQgdGFzayBjcmVhdGlv
-bi5pIGhhdmUgYXR0YWNoZWQgdGhlCnVzZXJzcGFjZSBjb2RlLgphbHdheXMgdGhlcmUgaXMgb25s
-eSB0d28gbW9kZSBzd2l0Y2hlcyBhdCB0aGUgYmVnaW5uaW5nIG9mIHRhc2sgY3JlYXRpb24KYW5k
-IHRoZXJlIGlzIG5vIG1vZGUgc3dpdGNoZXMgd2hpbGUgc2VuZGluZy9yZWNlaXZpbmcgZGF0YS4K
-YW55IGlkZWEgb2Ygd2hhdCBjYXVzZWQgdGhpcyBsYXRlbmN5IG9yIGhvdyBpIGNhbiBkZWJ1ZyBh
-bmQgdHJhY2UgdGhlIHRhc2sKb3IgZHJpdmVyPwp0aGFua3MuCmNvbnRlbnRzIG9mICIvcHJvYy94
-ZW5vbWFpL3NjaGVkL3N0YXQiIHdoaWxlIHRhc2sgaXMgcnVubmluZzoKICBNU1cgIENTVyAgICAg
-WFNDICAgICAgUEYgICAgU1RBVCAgICAgICAlQ1BVICBOQU1FCiAgIDAgICAgICAgMTM0NzEgICAg
-ICAwICAgICAgICAgIDAgICAgMDAwMTgwMDAgIDEwMC4wICAgW1JPT1QvMF0KICAgMSAgICAgICAg
-ICAyICAgICAgICAgIDUgICAgICAgICAgMCAgICAwMDA2MDA0NCAgICAwLjAgICAgIHVhcnRfYXBw
-CiAgIDIgICAgICAgICAgNCAgICAgICAgICA2ICAgICAgICAgIDAgICAgMDAwNDAwNDIgICAgMC4w
-ICAgIERlbW9Qb3NpeAogICAwICAgICAgIDUwNjA3MSAgICAwICAgICAgICAgIDAgICAgMDAwMDAw
-MDAgICAgMC4wICAgIFtJUlExNjogW3RpbWVyXV0KICAgMCAgICAgICAgICAyICAgICAgICAgIDAg
-ICAgICAgICAgMCAgICAwMDAwMDAwMCAgICAwLjAgICAgW0lSUTE5OiBydHNlcjBdCi0tLS0tLS0t
-LS0tLS0tIG5leHQgcGFydCAtLS0tLS0tLS0tLS0tLQpBIG5vbi10ZXh0IGF0dGFjaG1lbnQgd2Fz
-IHNjcnViYmVkLi4uCk5hbWU6IHVhcnRfYXBwLmMKVHlwZTogdGV4dC94LWNzcmMKU2l6ZTogNDQ3
-MiBieXRlcwpEZXNjOiBub3QgYXZhaWxhYmxlClVSTDogPGh0dHA6Ly94ZW5vbWFpLm9yZy9waXBl
-cm1haWwveGVub21haS9hdHRhY2htZW50cy8yMDE5MDkwNC81MmZhNjI0YS9hdHRhY2htZW50LmM+
-Cg==
+On 04.09.19 10:26, Henning Schild via Xenomai wrote:
+> From: Henning Schild <henning.schild@siemens.com>
+> 
+> The url was actually missing the .git extension which seems to break
+> cloning it. Maybe a github change or who knows, but that new one works.
+> 
+> Signed-off-by: Henning Schild <henning.schild@siemens.com>
+> ---
+>   kas.yml | 2 +-
+>   1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/kas.yml b/kas.yml
+> index 260eb36..a4d12c2 100644
+> --- a/kas.yml
+> +++ b/kas.yml
+> @@ -19,7 +19,7 @@ repos:
+>     xenomai:
+>   
+>     isar:
+> -    url: https://github.com/ilbers/isar
+> +    url: https://github.com/ilbers/isar.git
+>       refspec: 59c7dd2b8b3172d53de1c7a39fbd49751193559a
+>       layers:
+>         meta:
+> 
+
+Huh? Never saw this issue before:
+
+$ git clone https://github.com/ilbers/isar
+Cloning into 'isar'...
+remote: Enumerating objects: 41, done.
+remote: Counting objects: 100% (41/41), done.
+remote: Compressing objects: 100% (36/36), done.
+remote: Total 6625 (delta 13), reused 23 (delta 5), pack-reused 6584
+Receiving objects: 100% (6625/6625), 3.56 MiB | 6.03 MiB/s, done.
+Resolving deltas: 100% (3786/3786), done.
+$ git --version
+git version 2.16.4
+
+Jan
+
+-- 
+Siemens AG, Corporate Technology, CT RDA IOT SES-DE
+Corporate Competence Center Embedded Linux
+
