@@ -1,9 +1,10 @@
-From: Henning Schild <henning.schild@siemens.com>
-Subject: [xenomai-images][PATCH 0/1] small fix to kas.yml
-Date: Wed,  4 Sep 2019 10:26:55 +0200
-Message-Id: <20190904082656.12601-1-henning.schild@siemens.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+From: Amin Habibi <seyedaminhabibi@gmail.com>
+Date: Wed, 4 Sep 2019 14:01:12 +0430
+Message-ID: <CALOJ9n=-AdauHwrSRiDC9Y54E64xnESKevoQ32VkNLnDaPWd4A@mail.gmail.com>
+Subject: uart high latency on beaglebone
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -14,19 +15,32 @@ List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: xenomai@xenomai.org
 
-From: Henning Schild <henning.schild@siemens.com>
-
-I had problems cloning isar with kas-docker yesterday. Can not reproduce
-it anymore. But the url is the one you get from github "Clone or
-download", while the other might just work as well.
-
-Henning Schild (1):
-  kas.yml: switch isar url to a working clone url
-
- kas.yml | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
--- 
-2.21.0
-
-
+SGksIGFmdGVyIHNvbWUgbWlub3IgY2hhbmdlcyB0byAxNjU1MEEgZHJpdmVyKGFkZGluZyBzdXBw
+b3J0IGZvciB3b3JkIGxldmVsCnJlZ2lzdGVyIGFjY2Vzc2luZykgaSBjb3VsZCB1c2UgaXQgb24g
+YmVhZ2xlYm9uZSBhbmQgc3VjY2Vzc2Z1bGx5IHRlc3RpbmcKaXQgaW4gdXNlciBzcGFjZS4gYmFz
+ZWQgb24gYSBleGFtcGxlIGFwcGxpY2F0aW9uIG9uIHRoaXMgbWFpbGluZyBsaXN0IGkKd3JvdGUg
+YSBzaW1wbGUgbG9vcCBiYWNrIGFwcGxpY2F0aW9uKHdpdGggcG9zaXggc2tpbikgd2hpY2ggbG9v
+cCBiYWNrIGFueQpyZWNlaXZlZCBkYXRhLiB1c2luZyBhIGxvZ2ljIGFuYWx5emVyIGkgc2VlIGEg
+aGlnaCBsYXRlbmN5LnRoZXJlIGlzIGFyb3VuZAo1bXMgZGVsYXkgYmV0d2VlbiByZWNlaXZpbmcg
+ZGF0YSBhbmQgcmVzZW5kaW5nIGl0LiB3aGVuIGkgdXNlIG9yaWdpbmFsCmJlYWdsZWJvbmUgVUFS
+VCBkcml2ZXIgdGhlcmUgaXMgYXBwcm94aW1hdGVseSBzYW1lIGxhdGVuY3koYXJvdW5kIDVtcyku
+Cml0J3MgbGlrZSB0aGUgdGFzayBpcyBzdHVjayBhdCBzZWNvbmRhcnkgbW9kZSEgYWx0aG91Z2gg
+aSB1c2VkClBUSFJFQURfRVhQTElDSVRfU0NIRUQsIFNDSEVEX0ZJRk8gYXQgdGFzayBjcmVhdGlv
+bi5pIGhhdmUgYXR0YWNoZWQgdGhlCnVzZXJzcGFjZSBjb2RlLgphbHdheXMgdGhlcmUgaXMgb25s
+eSB0d28gbW9kZSBzd2l0Y2hlcyBhdCB0aGUgYmVnaW5uaW5nIG9mIHRhc2sgY3JlYXRpb24KYW5k
+IHRoZXJlIGlzIG5vIG1vZGUgc3dpdGNoZXMgd2hpbGUgc2VuZGluZy9yZWNlaXZpbmcgZGF0YS4K
+YW55IGlkZWEgb2Ygd2hhdCBjYXVzZWQgdGhpcyBsYXRlbmN5IG9yIGhvdyBpIGNhbiBkZWJ1ZyBh
+bmQgdHJhY2UgdGhlIHRhc2sKb3IgZHJpdmVyPwp0aGFua3MuCmNvbnRlbnRzIG9mICIvcHJvYy94
+ZW5vbWFpL3NjaGVkL3N0YXQiIHdoaWxlIHRhc2sgaXMgcnVubmluZzoKICBNU1cgIENTVyAgICAg
+WFNDICAgICAgUEYgICAgU1RBVCAgICAgICAlQ1BVICBOQU1FCiAgIDAgICAgICAgMTM0NzEgICAg
+ICAwICAgICAgICAgIDAgICAgMDAwMTgwMDAgIDEwMC4wICAgW1JPT1QvMF0KICAgMSAgICAgICAg
+ICAyICAgICAgICAgIDUgICAgICAgICAgMCAgICAwMDA2MDA0NCAgICAwLjAgICAgIHVhcnRfYXBw
+CiAgIDIgICAgICAgICAgNCAgICAgICAgICA2ICAgICAgICAgIDAgICAgMDAwNDAwNDIgICAgMC4w
+ICAgIERlbW9Qb3NpeAogICAwICAgICAgIDUwNjA3MSAgICAwICAgICAgICAgIDAgICAgMDAwMDAw
+MDAgICAgMC4wICAgIFtJUlExNjogW3RpbWVyXV0KICAgMCAgICAgICAgICAyICAgICAgICAgIDAg
+ICAgICAgICAgMCAgICAwMDAwMDAwMCAgICAwLjAgICAgW0lSUTE5OiBydHNlcjBdCi0tLS0tLS0t
+LS0tLS0tIG5leHQgcGFydCAtLS0tLS0tLS0tLS0tLQpBIG5vbi10ZXh0IGF0dGFjaG1lbnQgd2Fz
+IHNjcnViYmVkLi4uCk5hbWU6IHVhcnRfYXBwLmMKVHlwZTogdGV4dC94LWNzcmMKU2l6ZTogNDQ3
+MiBieXRlcwpEZXNjOiBub3QgYXZhaWxhYmxlClVSTDogPGh0dHA6Ly94ZW5vbWFpLm9yZy9waXBl
+cm1haWwveGVub21haS9hdHRhY2htZW50cy8yMDE5MDkwNC81MmZhNjI0YS9hdHRhY2htZW50LmM+
+Cg==
