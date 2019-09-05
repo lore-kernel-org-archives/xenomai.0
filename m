@@ -1,10 +1,10 @@
-Subject: Re: Kernel compilation error
-References: <09a04461befe7ec4cf65b9f1a46e70fe.squirrel@mail.ige-grenoble.fr>
+Subject: Re: Task Priority & Domain switch
+References: <VI1PR08MB337564202AA59428E7A0C1A5F5BB0@VI1PR08MB3375.eurprd08.prod.outlook.com>
 From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <9344a542-3ca7-ea83-4b4a-a744d1d48b39@siemens.com>
-Date: Thu, 5 Sep 2019 18:23:18 +0200
+Message-ID: <821933fe-e138-4435-ae99-d20b496e1459@siemens.com>
+Date: Thu, 5 Sep 2019 19:02:31 +0200
 MIME-Version: 1.0
-In-Reply-To: <09a04461befe7ec4cf65b9f1a46e70fe.squirrel@mail.ige-grenoble.fr>
+In-Reply-To: <VI1PR08MB337564202AA59428E7A0C1A5F5BB0@VI1PR08MB3375.eurprd08.prod.outlook.com>
 Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -16,36 +16,62 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: davy.regneau@univ-grenoble-alpes.fr, xenomai@xenomai.org
-Cc: frederic.cazenave@ird.fr
+To: Johann Obermayr <johann.obermayr@sigmatek.at>, "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On 05.09.19 18:07, Davy via Xenomai wrote:
-> Hi,
+On 05.09.19 15:26, Johann Obermayr via Xenomai wrote:
+> Hello,
 > 
-> we have 4.9.90 linux kernel patched with xenomai 3.0.9 and patched with
-> ipipe  V4.x.
+> i need some explain about task priority & domain switch.
+> 
+> 
+>    1.  Xenomai 2.6.x ( CONFIG_XENO_OPT_PERVASIVE=y    CONFIG_XENO_OPT_PRIOCPL=y )
 
-There is no "ipipe V4.x" - what exactly do you mean?
+Don't enable XENO_OPT_PRIOCPL. It was never working as expected (best case) or 
+was even causing more major issues (source of many crashes).
 
 > 
-> When we try to compile a simple module we have lot of errors. the first
-> one is :
-> error: 'struct ipipe_threadinfo' has no member named 'ptd'
+> rt_task_shadow( &handle, 0 );
 > 
-> As mentioned by Paolo in response to a similary issue, we tryed to set
-> CONFIG_IPIPE_LEGACY=y in kernel config but now we are not able to compile
-> the kernel. we have the following message :
+> task running default in releaxed ( secondary domain). After take a xenomai mutex lock, it switch to the primary domain.
 > 
-> IPIPE_ROOT_NPTDKEYS not define in sched.h
+> After mutex unlock the task switch back to secondary domain or after next xenomai-function call ?
 > 
-> Could you give us some clues to fix our problem?
 
-Is the build error with the kernel or with an out-of-tree kernel module?
+Immediately for SCHED_OTHER threads (prio 0). RT threads are switched back to RT 
+lazily, i.e. when the next RT syscall is issued.
 
-Note that 4.9 no longer receives official I-pipe updates. Current LTS kernels 
-are 4.4 and 4.19. But even then your are on a suboptimal version with .90 
-because the last release was ipipe-core-4.9.146-x86-8 (assuming we are talking 
-about x86, not some other arch).
+> 
+> 
+> rt_task_shadow( &handle, 10 );
+> 
+> task run default in primary domain. After do  a linux-syscall  , the task switch to secondary domain.
+> 
+> With XENO_OPT_PRIOCPL it take the xenomai priority 10 to Linux rt_priority 10.
+> 
+> After call a xenomai function, it switch back to primary domain.
+> 
+> 
+> 
+> 
+> 
+>    1.  Xenomai 3.0.x
+> 
+> Is there a different work to xenomai 2.6.x ?
+> 
+> 
+> 
+> 
+> Or where can I found more information about this theme ?
+
+See the section on SCHED_WEAK in 
+https://gitlab.denx.de/Xenomai/xenomai/wikis/Migrating_From_Xenomai_2_To_3.
+
+> 
+> Thanks & regards
+>                  Johann
+> 
+> PS: I known that xenomai 2.6.x is out of date. But we must support some old versions.
+> 
 
 Jan
 
