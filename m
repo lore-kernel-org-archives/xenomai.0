@@ -1,7 +1,8 @@
 From: "Q. Gylstorff" <Quirin.Gylstorff@siemens.com>
-Subject: [xenomai-images][PATCH 6/9] ci: Add inline xenomai testsuite
-Date: Thu,  5 Sep 2019 17:44:22 +0200
-Message-Id: <20190905154425.10007-7-Quirin.Gylstorff@siemens.com>
+Subject: [xenomai-images][PATCH 3/9] linux-xenomai: NFS support in KERNEL
+ configuration
+Date: Thu,  5 Sep 2019 17:44:19 +0200
+Message-Id: <20190905154425.10007-4-Quirin.Gylstorff@siemens.com>
 In-Reply-To: <20190905154425.10007-1-Quirin.Gylstorff@siemens.com>
 References: <20190905154425.10007-1-Quirin.Gylstorff@siemens.com>
 MIME-Version: 1.0
@@ -18,153 +19,100 @@ To: xenomai@xenomai.org
 
 From: Quirin Gylstorff <quirin.gylstorff@siemens.com>
 
-Add the inline test definition to execute xeno-test for the images.
+LAVA deploys the Rootfs with NFS on the target.
 
 Signed-off-by: Quirin Gylstorff <quirin.gylstorff@siemens.com>
 ---
- tests/README.md                   |  5 +++++
- tests/jobs/xenomai-beaglebone.yml | 11 +++++++++++
- tests/jobs/xenomai-minnow.yml     | 11 +++++++++++
- tests/jobs/xenomai-qemu-amd64.yml | 11 +++++++++++
- tests/jobs/xenomai-qemu-arm64.yml | 13 +++++++++++++
- tests/jobs/xenomai-qemu-armhf.yml | 11 +++++++++++
- tests/jobs/xenomai-x86-64.yml     | 11 +++++++++++
- 7 files changed, 73 insertions(+)
+ recipes-kernel/linux/files/amd64_defconfig | 27 ++++++++++++++++------
+ 1 file changed, 20 insertions(+), 7 deletions(-)
 
-diff --git a/tests/README.md b/tests/README.md
-index c7e2030..f107607 100644
---- a/tests/README.md
-+++ b/tests/README.md
-@@ -17,8 +17,13 @@ following images are test:
+diff --git a/recipes-kernel/linux/files/amd64_defconfig b/recipes-kernel/linux/files/amd64_defconfig
+index f8aea8a..cba31a5 100644
+--- a/recipes-kernel/linux/files/amd64_defconfig
++++ b/recipes-kernel/linux/files/amd64_defconfig
+@@ -656,7 +656,7 @@ CONFIG_ZONE_DMA=y
+ CONFIG_SMP=y
+ CONFIG_X86_FEATURE_NAMES=y
+ CONFIG_X86_FAST_FEATURE_TESTS=y
+-# CONFIG_X86_X2APIC is not set
++CONFIG_X86_X2APIC=y
+ CONFIG_X86_MPPARSE=y
+ # CONFIG_GOLDFISH is not set
+ CONFIG_RETPOLINE=y
+@@ -943,6 +943,7 @@ CONFIG_PCI_MMCONFIG=y
+ CONFIG_PCI_DOMAINS=y
+ CONFIG_PCIEPORTBUS=y
+ CONFIG_HOTPLUG_PCI_PCIE=y
++CONFIG_HOTPLUG_PCI_PCI=y
+ CONFIG_PCIEAER=y
+ # CONFIG_PCIE_ECRC is not set
+ # CONFIG_PCIEAER_INJECT is not set
+@@ -969,7 +970,7 @@ CONFIG_PCI_IOV=y
+ # CONFIG_PCI_PASID is not set
+ CONFIG_PCI_LABEL=y
+ CONFIG_HOTPLUG_PCI=y
+-# CONFIG_HOTPLUG_PCI_ACPI is not set
++CONFIG_HOTPLUG_PCI_ACPI=y
+ CONFIG_HOTPLUG_PCI_CPCI=y
+ # CONFIG_HOTPLUG_PCI_CPCI_ZT5550 is not set
+ # CONFIG_HOTPLUG_PCI_CPCI_GENERIC is not set
+@@ -1039,7 +1040,10 @@ CONFIG_IP_ADVANCED_ROUTER=y
+ CONFIG_IP_MULTIPLE_TABLES=y
+ CONFIG_IP_ROUTE_MULTIPATH=y
+ CONFIG_IP_ROUTE_VERBOSE=y
+-# CONFIG_IP_PNP is not set
++CONFIG_IP_PNP=y
++CONFIG_IP_PNP_DHCP=y
++CONFIG_IP_PNP_BOOTP=y
++CONFIG_IP_PNP_RARP=y
+ # CONFIG_NET_IPIP is not set
+ # CONFIG_NET_IPGRE_DEMUX is not set
+ # CONFIG_NET_IP_TUNNEL is not set
+@@ -1071,7 +1075,7 @@ CONFIG_TCP_CONG_CUBIC=y
+ # CONFIG_TCP_CONG_HSTCP is not set
+ # CONFIG_TCP_CONG_HYBLA is not set
+ # CONFIG_TCP_CONG_VEGAS is not set
+-# CONFIG_TCP_CONG_NV is not set
++# CONFIG_TCP_CONG_NV=y
+ # CONFIG_TCP_CONG_SCALABLE is not set
+ # CONFIG_TCP_CONG_LP is not set
+ # CONFIG_TCP_CONG_VENO is not set
+@@ -1940,7 +1944,7 @@ CONFIG_NET_VENDOR_QUALCOMM=y
+ CONFIG_NET_VENDOR_REALTEK=y
+ # CONFIG_8139CP is not set
+ # CONFIG_8139TOO is not set
+-# CONFIG_R8169 is not set
++CONFIG_R8169=m
+ CONFIG_NET_VENDOR_RENESAS=y
+ CONFIG_NET_VENDOR_RDC=y
+ # CONFIG_R6040 is not set
+@@ -3655,7 +3659,16 @@ CONFIG_PSTORE_ZLIB_COMPRESS=y
+ # CONFIG_SYSV_FS is not set
+ # CONFIG_UFS_FS is not set
+ CONFIG_NETWORK_FILESYSTEMS=y
+-# CONFIG_NFS_FS is not set
++CONFIG_NFS_FS=y
++CONFIG_NFS_V2=y
++CONFIG_NFS_V3=y
++CONFIG_NFS_V3_ACL=y
++CONFIG_NFS_V4=y
++CONFIG_NFS_V4_1=y
++CONFIG_NFS_V4_2=y
++CONFIG_ROOT_NFS=y
++CONFIG_NFS_ACL_SUPPORT=y
++CONFIG_NFS_COMMON=y
+ # CONFIG_NFSD is not set
+ # CONFIG_CEPH_FS is not set
+ # CONFIG_CIFS is not set
+@@ -3728,7 +3741,7 @@ CONFIG_TRACE_IRQFLAGS_SUPPORT=y
+ #
+ CONFIG_PRINTK_TIME=y
+ CONFIG_CONSOLE_LOGLEVEL_DEFAULT=7
+-CONFIG_MESSAGE_LOGLEVEL_DEFAULT=4
++CONFIG_MESSAGE_LOGLEVEL_DEFAULT=7
+ # CONFIG_BOOT_PRINTK_DELAY is not set
+ # CONFIG_DYNAMIC_DEBUG is not set
  
- Currently the following tests are executed on each target:
- - lava-smoketest
-+- xenomai-test-suite
- 
- ### lava-smoketest
- 
- The lava smoke tests are part of http://git.linaro.org/lava-team/lava-functional-tests.git
- and check machine data from the target.
-+
-+### xenomai-test-suite
-+
-+The xenomai test suite executes the xeno-test tool from xenomai/testsuite.
-diff --git a/tests/jobs/xenomai-beaglebone.yml b/tests/jobs/xenomai-beaglebone.yml
-index 231c5d0..85f2b88 100644
---- a/tests/jobs/xenomai-beaglebone.yml
-+++ b/tests/jobs/xenomai-beaglebone.yml
-@@ -63,3 +63,14 @@ actions:
-       from: git
-       path: lava-test-shell/smoke-tests-basic.yaml
-       name: smoke-tests
-+    - repository:
-+        metadata:
-+          format: Lava-Test Test Definition 1.0
-+          name: xenomai-test-suite
-+          description: "runs the xenomai test suite"
-+        run:
-+          steps:
-+            - lava-test-case xenomai-test --shell xeno-test -k -l \"dohell -m /tmp 300\" -p 1000
-+      from: inline
-+      path: inline/xenomai-test-suite.yaml
-+      name: xenomai-test-suite
-diff --git a/tests/jobs/xenomai-minnow.yml b/tests/jobs/xenomai-minnow.yml
-index d60628d..dcdcc28 100644
---- a/tests/jobs/xenomai-minnow.yml
-+++ b/tests/jobs/xenomai-minnow.yml
-@@ -60,3 +60,14 @@ actions:
-       from: git
-       path: lava-test-shell/smoke-tests-basic.yaml
-       name: smoke-tests
-+    - repository:
-+        metadata:
-+          format: Lava-Test Test Definition 1.0
-+          name: xenomai-test-suite
-+          description: "runs the xenomai test suite"
-+        run:
-+          steps:
-+            - lava-test-case xenomai-test --shell xeno-test -k -l \"dohell -m /tmp 300\" -p 1000
-+      from: inline
-+      path: inline/xenomai-test-suite.yaml
-+      name: xenomai-test-suite
-diff --git a/tests/jobs/xenomai-qemu-amd64.yml b/tests/jobs/xenomai-qemu-amd64.yml
-index 12f4c7f..2976f89 100644
---- a/tests/jobs/xenomai-qemu-amd64.yml
-+++ b/tests/jobs/xenomai-qemu-amd64.yml
-@@ -74,3 +74,14 @@ actions:
-       from: git
-       path: lava-test-shell/smoke-tests-basic.yaml
-       name: smoke-tests
-+    - repository:
-+        metadata:
-+          format: Lava-Test Test Definition 1.0
-+          name: xenomai-test-suite
-+          description: "runs the xenomai test suite"
-+        run:
-+          steps:
-+            - lava-test-case xenomai-test --shell xeno-test -k
-+      from: inline
-+      path: inline/xenomai-test-suite.yaml
-+      name: xenomai-test-suite
-diff --git a/tests/jobs/xenomai-qemu-arm64.yml b/tests/jobs/xenomai-qemu-arm64.yml
-index fceee0c..8ba4575 100644
---- a/tests/jobs/xenomai-qemu-arm64.yml
-+++ b/tests/jobs/xenomai-qemu-arm64.yml
-@@ -81,3 +81,16 @@ actions:
-       from: git
-       path: lava-test-shell/smoke-tests-basic.yaml
-       name: smoke-tests
-+    - repository:
-+        metadata:
-+          format: Lava-Test Test Definition 1.0
-+          name: xenomai-test-suite
-+          description: "runs the xenomai smokey test suite"
-+          maintainer:
-+            - quirin.gylstorff@siemens.org
-+        run:
-+          steps:
-+            - lava-test-case xenomai-smokey --shell xeno-test -k
-+      from: inline
-+      path: inline/xenomai-test-suite.yaml
-+      name: xenomai-test-suite
-diff --git a/tests/jobs/xenomai-qemu-armhf.yml b/tests/jobs/xenomai-qemu-armhf.yml
-index d6603af..238265b 100644
---- a/tests/jobs/xenomai-qemu-armhf.yml
-+++ b/tests/jobs/xenomai-qemu-armhf.yml
-@@ -74,3 +74,14 @@ actions:
-       from: git
-       path: lava-test-shell/smoke-tests-basic.yaml
-       name: smoke-tests
-+    - repository:
-+        metadata:
-+          format: Lava-Test Test Definition 1.0
-+          name: xenomai-test-suite
-+          description: "runs the xenomai test suite"
-+        run:
-+          steps:
-+            - lava-test-case xenomai-test --shell xeno-test -k
-+      from: inline
-+      path: inline/xenomai-test-suite.yaml
-+      name: xenomai-test-suite
-diff --git a/tests/jobs/xenomai-x86-64.yml b/tests/jobs/xenomai-x86-64.yml
-index 0fb3ea8..9d58c45 100644
---- a/tests/jobs/xenomai-x86-64.yml
-+++ b/tests/jobs/xenomai-x86-64.yml
-@@ -61,3 +61,14 @@ actions:
-       from: git
-       path: lava-test-shell/smoke-tests-basic.yaml
-       name: smoke-tests
-+    - repository:
-+        metadata:
-+          format: Lava-Test Test Definition 1.0
-+          name: xenomai-test-suite
-+          description: "runs the xenomai test suite"
-+        run:
-+          steps:
-+            - lava-test-case xenomai-test --shell xeno-test -k -l \"dohell -m /tmp 300\" -p 1000
-+      from: inline
-+      path: inline/xenomai-test-suite.yaml
-+      name: xenomai-test-suite
 -- 
 2.20.1
 
