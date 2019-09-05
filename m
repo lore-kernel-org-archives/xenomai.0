@@ -1,11 +1,11 @@
-From: "Q. Gylstorff" <Quirin.Gylstorff@siemens.com>
-Subject: [xenomai-images][PATCH 2/9] machine: Allow override of the image type
-Date: Thu,  5 Sep 2019 17:44:18 +0200
-Message-Id: <20190905154425.10007-3-Quirin.Gylstorff@siemens.com>
-In-Reply-To: <20190905154425.10007-1-Quirin.Gylstorff@siemens.com>
-References: <20190905154425.10007-1-Quirin.Gylstorff@siemens.com>
+Message-ID: <09a04461befe7ec4cf65b9f1a46e70fe.squirrel@mail.ige-grenoble.fr>
+Date: Thu, 5 Sep 2019 18:07:42 +0200
+Subject: Kernel compilation error
+From: davy.regneau@univ-grenoble-alpes.fr
+Reply-To: davy.regneau@univ-grenoble-alpes.fr
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,93 +15,29 @@ List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: xenomai@xenomai.org
+Cc: frederic.cazenave@ird.fr
 
-From: Quirin Gylstorff <quirin.gylstorff@siemens.com>
+Hi,
 
-For the NFS rootfs a tarball is used. This changes allows
-local.conf to set the IMAGE_TYPE from wic-img to targz-img.
+we have 4.9.90 linux kernel patched with xenomai 3.0.9 and patched with
+ipipe  V4.x.
 
-Signed-off-by: Quirin Gylstorff <quirin.gylstorff@siemens.com>
----
- .gitlab-ci.yml               |  4 ++--
- conf/machine/hikey.conf      |  2 +-
- conf/machine/x86-64-efi.conf |  2 +-
- xenomai-lava-test.yml        | 20 ++++++++++++++++++++
- 4 files changed, 24 insertions(+), 4 deletions(-)
- create mode 100644 xenomai-lava-test.yml
+When we try to compile a simple module we have lot of errors. the first
+one is :
+error: =91struct ipipe_threadinfo=92 has no member named =91ptd=92
 
-diff --git a/.gitlab-ci.yml b/.gitlab-ci.yml
-index b78a0ac..ebc5cd5 100644
---- a/.gitlab-ci.yml
-+++ b/.gitlab-ci.yml
-@@ -64,7 +64,7 @@ build:board-beaglebone:
-   <<: *lava-ssh-key
-   stage: build
-   script:
--    - kas build kas.yml:board-beagle-bone-black.yml
-+    - kas build kas.yml:board-beagle-bone-black.yml:xenomai-lava-test.yml
-     - scripts/deploy_for_testing.sh beagle-bone-black
-     - scripts/run-lava-tests.sh beaglebone
- 
-@@ -72,6 +72,6 @@ build:board-x86-64-efi:
-   <<: *lava-ssh-key
-   stage: build
-   script:
--    - kas build kas.yml:board-x86-64-efi.yml
-+    - kas build kas.yml:board-x86-64-efi.yml:xenomai-lava-test.yml
-     - scripts/deploy_for_testing.sh x86-64-efi
-     - scripts/run-lava-tests.sh x86-64
-diff --git a/conf/machine/hikey.conf b/conf/machine/hikey.conf
-index 465e06e..3c93507 100644
---- a/conf/machine/hikey.conf
-+++ b/conf/machine/hikey.conf
-@@ -11,7 +11,7 @@
- 
- DISTRO_ARCH = "arm64"
- 
--IMAGE_TYPE = "wic-img"
-+IMAGE_TYPE ?= "wic-img"
- IMAGER_INSTALL += "${GRUB_BOOTLOADER_INSTALL}"
- 
- PREFERRED_VERSION_linux-xenomai = "4.14.%"
-diff --git a/conf/machine/x86-64-efi.conf b/conf/machine/x86-64-efi.conf
-index 0fd2ef1..02846ff 100644
---- a/conf/machine/x86-64-efi.conf
-+++ b/conf/machine/x86-64-efi.conf
-@@ -11,5 +11,5 @@
- 
- DISTRO_ARCH = "amd64"
- 
--IMAGE_TYPE = "wic-img"
-+IMAGE_TYPE ?= "wic-img"
- IMAGER_INSTALL += "${GRUB_BOOTLOADER_INSTALL}"
-diff --git a/xenomai-lava-test.yml b/xenomai-lava-test.yml
-new file mode 100644
-index 0000000..206aea0
---- /dev/null
-+++ b/xenomai-lava-test.yml
-@@ -0,0 +1,20 @@
-+#
-+# Xenomai Real-Time System
-+#
-+# Copyright (c) Siemens AG, 2019
-+#
-+# Authors:
-+#  Quirin Gylstorff <quirin.gylstorff@siemens.com>
-+#
-+# SPDX-License-Identifier: MIT
-+#
-+
-+header:
-+  version: 8
-+
-+# lava uses nfs to deploy the image. For this we need a tarball instead of
-+# full image
-+
-+local_conf_header:
-+  image-type: |
-+    IMAGE_TYPE = "targz-img"
--- 
-2.20.1
+As mentioned by Paolo in response to a similary issue, we tryed to set
+CONFIG_IPIPE_LEGACY=3Dy in kernel config but now we are not able to compile
+the kernel. we have the following message :
+
+IPIPE_ROOT_NPTDKEYS not define in sched.h
+
+Could you give us some clues to fix our problem?
+
+regards
+
+Davy
+
+
 
 
