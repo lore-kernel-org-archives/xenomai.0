@@ -1,11 +1,9 @@
-From: Johann Obermayr <johann.obermayr@sigmatek.at>
-Subject: Task Priority & Domain switch
-Date: Thu, 5 Sep 2019 13:26:57 +0000
-Message-ID: <VI1PR08MB337564202AA59428E7A0C1A5F5BB0@VI1PR08MB3375.eurprd08.prod.outlook.com>
-Content-Language: de-DE
+From: "Q. Gylstorff" <Quirin.Gylstorff@siemens.com>
+Subject: [xenomai-images][PATCH 0/9] LAVA Setup
+Date: Thu,  5 Sep 2019 17:44:16 +0200
+Message-Id: <20190905154425.10007-1-Quirin.Gylstorff@siemens.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -14,51 +12,57 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: xenomai@xenomai.org
 
-Hello,
+From: Quirin Gylstorff <quirin.gylstorff@siemens.com>
 
-i need some explain about task priority & domain switch.
+This patchset adapts xenomai-images for the execution of tests
+on  Linaro Automated Validation Architecture. 
+
+Quirin Gylstorff (9):
+  ci: Add LAVA jobs for targets
+  machine: Allow override of the image type
+  linux-xenomai: NFS support in KERNEL configuration
+  beagle-bone-black: Add Devicetree and fake-hwclock
+  kas: Use next as target
+  ci: Add inline xenomai testsuite
+  README: correct build line
+  kernel: Update
+  tests/README: Add deployment and Setup
+
+ .gitlab-ci.yml                             | 58 +++++++++++--
+ README.md                                  |  2 +-
+ conf/machine/beagle-bone-black.conf        |  3 +-
+ conf/machine/hikey.conf                    |  4 +-
+ conf/machine/qemu-arm64.conf               |  1 -
+ conf/machine/x86-64-efi.conf               |  2 +-
+ kas.yml                                    |  2 +-
+ recipes-core/images/demo-image.bb          |  2 +-
+ recipes-kernel/linux/files/amd64_defconfig | 29 +++++--
+ recipes-kernel/linux/linux-xenomai_4.19.bb | 12 ++-
+ scripts/deploy_for_testing.sh              | 34 ++++++++
+ scripts/run-lava-tests.sh                  | 30 +++++++
+ tests/README.md                            | 42 ++++++++++
+ tests/jobs/xenomai-beaglebone.yml          | 76 +++++++++++++++++
+ tests/jobs/xenomai-minnow.yml              | 73 ++++++++++++++++
+ tests/jobs/xenomai-qemu-amd64.yml          | 87 ++++++++++++++++++++
+ tests/jobs/xenomai-qemu-arm64.yml          | 96 ++++++++++++++++++++++
+ tests/jobs/xenomai-qemu-armhf.yml          | 87 ++++++++++++++++++++
+ tests/jobs/xenomai-x86-64.yml              | 74 +++++++++++++++++
+ xenomai-lava-test.yml                      | 20 +++++
+ 20 files changed, 704 insertions(+), 30 deletions(-)
+ create mode 100755 scripts/deploy_for_testing.sh
+ create mode 100755 scripts/run-lava-tests.sh
+ create mode 100644 tests/README.md
+ create mode 100644 tests/jobs/xenomai-beaglebone.yml
+ create mode 100644 tests/jobs/xenomai-minnow.yml
+ create mode 100644 tests/jobs/xenomai-qemu-amd64.yml
+ create mode 100644 tests/jobs/xenomai-qemu-arm64.yml
+ create mode 100644 tests/jobs/xenomai-qemu-armhf.yml
+ create mode 100644 tests/jobs/xenomai-x86-64.yml
+ create mode 100644 xenomai-lava-test.yml
+
+-- 
+2.20.1
 
 
-  1.  Xenomai 2.6.x ( CONFIG_XENO_OPT_PERVASIVE=3Dy    CONFIG_XENO_OPT_PRIO=
-CPL=3Dy )
-
-rt_task_shadow( &handle, 0 );
-
-task running default in releaxed ( secondary domain). After take a xenomai =
-mutex lock, it switch to the primary domain.
-
-After mutex unlock the task switch back to secondary domain or after next x=
-enomai-function call ?
-
-
-
-rt_task_shadow( &handle, 10 );
-
-task run default in primary domain. After do  a linux-syscall  , the task s=
-witch to secondary domain.
-
-With XENO_OPT_PRIOCPL it take the xenomai priority 10 to Linux rt_priority =
-10.
-
-After call a xenomai function, it switch back to primary domain.
-
-
-
-
-
-  1.  Xenomai 3.0.x
-
-Is there a different work to xenomai 2.6.x ?
-
-
-
-
-Or where can I found more information about this theme ?
-
-Thanks & regards
-                Johann
-
-PS: I known that xenomai 2.6.x is out of date. But we must support some old=
- versions.
