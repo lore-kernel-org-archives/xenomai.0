@@ -1,7 +1,8 @@
 From: "Q. Gylstorff" <Quirin.Gylstorff@siemens.com>
-Subject: [xenomai-images][PATCH 9/9] tests/README: Add deployment and Setup
-Date: Thu,  5 Sep 2019 17:44:25 +0200
-Message-Id: <20190905154425.10007-10-Quirin.Gylstorff@siemens.com>
+Subject: [xenomai-images][PATCH 4/9] beagle-bone-black: Add Devicetree and
+ fake-hwclock
+Date: Thu,  5 Sep 2019 17:44:20 +0200
+Message-Id: <20190905154425.10007-5-Quirin.Gylstorff@siemens.com>
 In-Reply-To: <20190905154425.10007-1-Quirin.Gylstorff@siemens.com>
 References: <20190905154425.10007-1-Quirin.Gylstorff@siemens.com>
 MIME-Version: 1.0
@@ -18,43 +19,27 @@ To: xenomai@xenomai.org
 
 From: Quirin Gylstorff <quirin.gylstorff@siemens.com>
 
-Add links to setup lava and instructions howto deploy a test.
+To deploy the target with LAVA it is necessary to use a devicetree.
+Isar extracts the tree from the kernel build and stores the tree
+in the deploy-DIR
 
 Signed-off-by: Quirin Gylstorff <quirin.gylstorff@siemens.com>
 ---
- tests/README.md | 15 ++++++++++++++-
- 1 file changed, 14 insertions(+), 1 deletion(-)
+ conf/machine/beagle-bone-black.conf | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/tests/README.md b/tests/README.md
-index f107607..ffe7ba2 100644
---- a/tests/README.md
-+++ b/tests/README.md
-@@ -13,7 +13,14 @@ following images are test:
- - x86-64-efi
- - beagle-bone-black
+diff --git a/conf/machine/beagle-bone-black.conf b/conf/machine/beagle-bone-black.conf
+index 73abe12..90b9f13 100644
+--- a/conf/machine/beagle-bone-black.conf
++++ b/conf/machine/beagle-bone-black.conf
+@@ -14,5 +14,6 @@ DISTRO_ARCH = "armhf"
+ IMAGE_INSTALL += "u-boot-script"
  
--## Tests
-+## Deploy test
-+
-+After the [LAVA setup](#lava-setup) a test can be deploy with the lavacli tool, e.g.:
-+```
-+lavacli jobs run tests/jobs/xenomai-qemu-amd64.yml
-+```
-+
-+# Tests
- 
- Currently the following tests are executed on each target:
- - lava-smoketest
-@@ -27,3 +34,9 @@ and check machine data from the target.
- ### xenomai-test-suite
- 
- The xenomai test suite executes the xeno-test tool from xenomai/testsuite.
-+
-+# LAVA Setup
-+
-+Setup a lava environment by following the
-+[installation guide](https://docs.lavasoftware.org/lava/first-installation.html)
-+or use [lava-docker](https://github.com/kernelci/lava-docker).
+ IMAGE_TYPE ?= "wic-img"
+-
++DTB_FILE = "am335x-boneblack.dtb"
+ IMAGER_INSTALL += "u-boot-omap"
++IMAGE_PREINSTALL += "fake-hwclock"
 -- 
 2.20.1
 
