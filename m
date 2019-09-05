@@ -1,13 +1,11 @@
-Subject: Re: Fork + Exec and unwanted rescheduling
-References: <e273805c-bfed-c1e2-d7b0-fc49c19f21a6@laas.fr>
-From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <5fff6ca5-ee49-a01e-274f-a913bcc1cd97@siemens.com>
-Date: Mon, 26 Aug 2019 15:20:32 +0200
+From: "Q. Gylstorff" <Quirin.Gylstorff@siemens.com>
+Subject: [xenomai-images][PATCH 6/9] ci: Add inline xenomai testsuite
+Date: Thu,  5 Sep 2019 17:44:22 +0200
+Message-Id: <20190905154425.10007-7-Quirin.Gylstorff@siemens.com>
+In-Reply-To: <20190905154425.10007-1-Quirin.Gylstorff@siemens.com>
+References: <20190905154425.10007-1-Quirin.Gylstorff@siemens.com>
 MIME-Version: 1.0
-In-Reply-To: <e273805c-bfed-c1e2-d7b0-fc49c19f21a6@laas.fr>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,65 +14,158 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: LOCHE Daniel <dloche@laas.fr>, xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-On 26.08.19 14:58, LOCHE Daniel via Xenomai wrote:
-> Hello all,
-> 
-> I am doing some experiments with Xenomai 3.0.5 (Linux 4.9.38) on a NUC (i5-8250U).
-> 
-> What I am trying to do :
-> - run a Xenomai Manager process that launches tasks with FIFO scheduling and 
-> same fixed priority (Alchemy API used here).
-> Every task is executed on the same core, changing core affinity to only CPU 1.
-> - every task is designed to do periodically : *
-> 1)* read timer (start of task)
-> *2)* fork+exec to run a binary (from an external benchmark, tasks not designed 
-> with Xenomai API)
-> *3)* read timer again (end of task execution)
-> I do this to monitor the execution of every task as you may have guessed.
-> 
-> The issue is that it looks like every time a task reaches step 2) ("fork" step), 
-> my child task goes back to the end of scheduling queue. Consequently, I 
-> basically see this in my logs :
-> - Every task starts and goes till the Fork step.
-> - Then every task executes their binary... don't know how this is scheduled 
-> exactly... feels like CFS basic linux scheduling.
-> - Every task ends more or less at the same timestamp
-> ... and again and again at every period... What I expected to see it every task 
-> running right one after the other with no forced (i.e. systematic) discontinuity 
-> between steps 1), 2) and 3) (as I am doing FIFO) due to other tasks preemption !
-> 
-> => When I fork a Xenomai task, does it (child process) completely looses its 
-> Xenomai properties and falls back into Linux domain..?
+From: Quirin Gylstorff <quirin.gylstorff@siemens.com>
 
-Yes.
+Add the inline test definition to execute xeno-test for the images.
 
-> If so... Am I condemned with such architecture to break my scheduling policy due 
-> to the forks ?
+Signed-off-by: Quirin Gylstorff <quirin.gylstorff@siemens.com>
+---
+ tests/README.md                   |  5 +++++
+ tests/jobs/xenomai-beaglebone.yml | 11 +++++++++++
+ tests/jobs/xenomai-minnow.yml     | 11 +++++++++++
+ tests/jobs/xenomai-qemu-amd64.yml | 11 +++++++++++
+ tests/jobs/xenomai-qemu-arm64.yml | 13 +++++++++++++
+ tests/jobs/xenomai-qemu-armhf.yml | 11 +++++++++++
+ tests/jobs/xenomai-x86-64.yml     | 11 +++++++++++
+ 7 files changed, 73 insertions(+)
 
-Forking is inherently non-deterministic (Linux code paths, memory allocations 
-etc.). You can't built any RT logic on top, just like you can't expect 
-determinism from a filesystem or from an Internet connection.
-
-Jan
-
-> 
-> I tried raising up the priority level of a task right before the fork (step 1)) 
-> so that child process inherits highest priority level and start running 
-> directly, but the results are not convincing : tasks are still running 2 by 2 
-> (i.e. 1 task is still preempting the forked child process). (I put the priority 
-> level back to normal at step 3).
-> Not sure to understand what's happening there...
-> 
-> I can give you some .csv extracts of my timestamp logs, with and without 
-> priority up-scaling.
-> 
-> Thanks for your help,
-> Daniel
-> 
-
+diff --git a/tests/README.md b/tests/README.md
+index c7e2030..f107607 100644
+--- a/tests/README.md
++++ b/tests/README.md
+@@ -17,8 +17,13 @@ following images are test:
+ 
+ Currently the following tests are executed on each target:
+ - lava-smoketest
++- xenomai-test-suite
+ 
+ ### lava-smoketest
+ 
+ The lava smoke tests are part of http://git.linaro.org/lava-team/lava-functional-tests.git
+ and check machine data from the target.
++
++### xenomai-test-suite
++
++The xenomai test suite executes the xeno-test tool from xenomai/testsuite.
+diff --git a/tests/jobs/xenomai-beaglebone.yml b/tests/jobs/xenomai-beaglebone.yml
+index 231c5d0..85f2b88 100644
+--- a/tests/jobs/xenomai-beaglebone.yml
++++ b/tests/jobs/xenomai-beaglebone.yml
+@@ -63,3 +63,14 @@ actions:
+       from: git
+       path: lava-test-shell/smoke-tests-basic.yaml
+       name: smoke-tests
++    - repository:
++        metadata:
++          format: Lava-Test Test Definition 1.0
++          name: xenomai-test-suite
++          description: "runs the xenomai test suite"
++        run:
++          steps:
++            - lava-test-case xenomai-test --shell xeno-test -k -l \"dohell -m /tmp 300\" -p 1000
++      from: inline
++      path: inline/xenomai-test-suite.yaml
++      name: xenomai-test-suite
+diff --git a/tests/jobs/xenomai-minnow.yml b/tests/jobs/xenomai-minnow.yml
+index d60628d..dcdcc28 100644
+--- a/tests/jobs/xenomai-minnow.yml
++++ b/tests/jobs/xenomai-minnow.yml
+@@ -60,3 +60,14 @@ actions:
+       from: git
+       path: lava-test-shell/smoke-tests-basic.yaml
+       name: smoke-tests
++    - repository:
++        metadata:
++          format: Lava-Test Test Definition 1.0
++          name: xenomai-test-suite
++          description: "runs the xenomai test suite"
++        run:
++          steps:
++            - lava-test-case xenomai-test --shell xeno-test -k -l \"dohell -m /tmp 300\" -p 1000
++      from: inline
++      path: inline/xenomai-test-suite.yaml
++      name: xenomai-test-suite
+diff --git a/tests/jobs/xenomai-qemu-amd64.yml b/tests/jobs/xenomai-qemu-amd64.yml
+index 12f4c7f..2976f89 100644
+--- a/tests/jobs/xenomai-qemu-amd64.yml
++++ b/tests/jobs/xenomai-qemu-amd64.yml
+@@ -74,3 +74,14 @@ actions:
+       from: git
+       path: lava-test-shell/smoke-tests-basic.yaml
+       name: smoke-tests
++    - repository:
++        metadata:
++          format: Lava-Test Test Definition 1.0
++          name: xenomai-test-suite
++          description: "runs the xenomai test suite"
++        run:
++          steps:
++            - lava-test-case xenomai-test --shell xeno-test -k
++      from: inline
++      path: inline/xenomai-test-suite.yaml
++      name: xenomai-test-suite
+diff --git a/tests/jobs/xenomai-qemu-arm64.yml b/tests/jobs/xenomai-qemu-arm64.yml
+index fceee0c..8ba4575 100644
+--- a/tests/jobs/xenomai-qemu-arm64.yml
++++ b/tests/jobs/xenomai-qemu-arm64.yml
+@@ -81,3 +81,16 @@ actions:
+       from: git
+       path: lava-test-shell/smoke-tests-basic.yaml
+       name: smoke-tests
++    - repository:
++        metadata:
++          format: Lava-Test Test Definition 1.0
++          name: xenomai-test-suite
++          description: "runs the xenomai smokey test suite"
++          maintainer:
++            - quirin.gylstorff@siemens.org
++        run:
++          steps:
++            - lava-test-case xenomai-smokey --shell xeno-test -k
++      from: inline
++      path: inline/xenomai-test-suite.yaml
++      name: xenomai-test-suite
+diff --git a/tests/jobs/xenomai-qemu-armhf.yml b/tests/jobs/xenomai-qemu-armhf.yml
+index d6603af..238265b 100644
+--- a/tests/jobs/xenomai-qemu-armhf.yml
++++ b/tests/jobs/xenomai-qemu-armhf.yml
+@@ -74,3 +74,14 @@ actions:
+       from: git
+       path: lava-test-shell/smoke-tests-basic.yaml
+       name: smoke-tests
++    - repository:
++        metadata:
++          format: Lava-Test Test Definition 1.0
++          name: xenomai-test-suite
++          description: "runs the xenomai test suite"
++        run:
++          steps:
++            - lava-test-case xenomai-test --shell xeno-test -k
++      from: inline
++      path: inline/xenomai-test-suite.yaml
++      name: xenomai-test-suite
+diff --git a/tests/jobs/xenomai-x86-64.yml b/tests/jobs/xenomai-x86-64.yml
+index 0fb3ea8..9d58c45 100644
+--- a/tests/jobs/xenomai-x86-64.yml
++++ b/tests/jobs/xenomai-x86-64.yml
+@@ -61,3 +61,14 @@ actions:
+       from: git
+       path: lava-test-shell/smoke-tests-basic.yaml
+       name: smoke-tests
++    - repository:
++        metadata:
++          format: Lava-Test Test Definition 1.0
++          name: xenomai-test-suite
++          description: "runs the xenomai test suite"
++        run:
++          steps:
++            - lava-test-case xenomai-test --shell xeno-test -k -l \"dohell -m /tmp 300\" -p 1000
++      from: inline
++      path: inline/xenomai-test-suite.yaml
++      name: xenomai-test-suite
 -- 
-Siemens AG, Corporate Technology, CT RDA IOT SES-DE
-Corporate Competence Center Embedded Linux
+2.20.1
+
 
