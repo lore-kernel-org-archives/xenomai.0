@@ -1,7 +1,7 @@
 From: Jan Kiszka <jan.kiszka@siemens.com>
-Subject: [PATCH] cobalt/rtdm: Avoid macro code duplication
-Message-ID: <35a8291a-ba57-0b70-128a-c25c8b3cecbb@siemens.com>
-Date: Fri, 6 Sep 2019 19:45:21 +0200
+Subject: [PATCH] cobalt/rtdm: Drop unused nop_close
+Message-ID: <168d1a2f-9f8a-ccb2-5643-0d3bc1bfcfbd@siemens.com>
+Date: Fri, 6 Sep 2019 19:49:21 +0200
 MIME-Version: 1.0
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
@@ -18,39 +18,39 @@ To: Xenomai <xenomai@xenomai.org>
 
 From: Jan Kiszka <jan.kiszka@siemens.com>
 
+Since 1909729e00dd, the device's close operation is always interposed
+with __rtdm_dev_close, thus will never be NULL even if the driver
+provides none. Other callers of rtdm_fd_enter, timerfd and mqueue, also
+provide close handlers. So drop the default initialization.
+
 Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
 ---
- kernel/cobalt/rtdm/fd.c | 11 ++++-------
- 1 file changed, 4 insertions(+), 7 deletions(-)
+ kernel/cobalt/rtdm/fd.c | 5 -----
+ 1 file changed, 5 deletions(-)
 
 diff --git a/kernel/cobalt/rtdm/fd.c b/kernel/cobalt/rtdm/fd.c
-index d965aafef2..8a87e22643 100644
+index 8a87e22643..d8a62376e6 100644
 --- a/kernel/cobalt/rtdm/fd.c
 +++ b/kernel/cobalt/rtdm/fd.c
-@@ -84,19 +84,16 @@ static struct rtdm_fd *fetch_fd(struct cobalt_ppd *p, int ufd)
- 		(__handler) = (typeof(__handler))eadv;			\
- 	while (0)
+@@ -56,10 +56,6 @@ static int eadv(void)
+ 	return -EADV;
+ }
  
--/* Calling this handler should beget EADV if not implemented. */
--#define assign_invalid_default_handler(__handler)			\
--	do								\
--		if ((__handler) == NULL)				\
--			(__handler) = (typeof(__handler))eadv;		\
--	while (0)
+-static void nop_close(struct rtdm_fd *fd)
+-{
+-}
 -
- #define __assign_default_handler(__handler, __placeholder)		\
- 	do								\
- 		if ((__handler) == NULL)				\
- 			(__handler) = (typeof(__handler))__placeholder;	\
- 	while (0)
+ static inline struct rtdm_fd_index *
+ fetch_fd_index(struct cobalt_ppd *p, int ufd)
+ {
+@@ -157,7 +153,6 @@ int rtdm_fd_enter(struct rtdm_fd *fd, int ufd, unsigned int magic,
+ 	assign_default_dual_handlers(ops->sendmsg);
+ 	assign_invalid_default_handler(ops->select);
+ 	assign_invalid_default_handler(ops->mmap);
+-	__assign_default_handler(ops->close, nop_close);
  
-+/* Calling this handler should beget EADV if not implemented. */
-+#define assign_invalid_default_handler(__handler)			\
-+	__assign_default_handler(__handler, eadv)
-+
- /* Calling this handler should beget ENOSYS if not implemented. */
- #define assign_default_handler(__handler)				\
- 	__assign_default_handler(__handler, enosys)
+ 	ppd = cobalt_ppd_get(0);
+ 	fd->magic = magic;
 -- 
 
 2.16.4
