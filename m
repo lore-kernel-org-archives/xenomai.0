@@ -1,16 +1,11 @@
-Message-ID: <bf32fd5ce254f7ccd4647a159cc0ce6a.squirrel@mail.ige-grenoble.fr>
-In-Reply-To: <978cbf79-06bd-3fb0-2396-b83270f8d92e@siemens.com>
-References: <09a04461befe7ec4cf65b9f1a46e70fe.squirrel@mail.ige-grenoble.fr>
- <9344a542-3ca7-ea83-4b4a-a744d1d48b39@siemens.com>
- <db08b3df5aeb7dfbde41bee64b7ff142.squirrel@mail.ige-grenoble.fr>
- <978cbf79-06bd-3fb0-2396-b83270f8d92e@siemens.com>
-Date: Fri, 6 Sep 2019 15:38:05 +0200
-Subject: Re: Kernel compilation error
-From: davy.regneau@univ-grenoble-alpes.fr
-Reply-To: davy.regneau@univ-grenoble-alpes.fr
+From: "Q. Gylstorff" <Quirin.Gylstorff@siemens.com>
+Subject: [xenomai-images][PATCH 10/9] tests/README: Add Architecture
+Date: Fri,  6 Sep 2019 15:49:39 +0200
+Message-Id: <20190906134939.12301-1-Quirin.Gylstorff@siemens.com>
+In-Reply-To: <1d91b2ba-6ca6-c760-bef0-7f484f9e4fd9@siemens.com>
+References: <1d91b2ba-6ca6-c760-bef0-7f484f9e4fd9@siemens.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -19,72 +14,76 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jan Kiszka <jan.kiszka@siemens.com>
-Cc: davy.regneau@univ-grenoble-alpes.fr, xenomai@xenomai.org, frederic.cazenave@ird.fr
+To: xenomai@xenomai.org
 
-> On 06.09.19 15:16, Davy via Xenomai wrote:
->> Hi,
->>
->> So, I started over with the linux kernel 4.19.66 and xenomai 3.0.9
->>
->> I patched the kernel with the following command :
->>    ./scripts/prepare-kernel.sh --linux=3D../linux-4.19.66
->> --ipipe=3D../ipipe-core-4.19.66-x86-6.patch --arch=3Dx86_64
->>
->> First time I do make menuconfig, I get this error:
->>
->> scripts/kconfig/mconf  Kconfig
->> init/Kconfig:2056: can't open file "arch/$SRCARCH/xenomai/Kconfig"
->> scripts/kconfig/Makefile:29=C2=A0: la recette pour la cible
->> =C2=AB=C2=A0menuconfig=C2=A0=C2=BB a
->> =C3=A9chou=C3=A9e
->>
->> I solved this by replace "$SRCARCH" by "x86" in init/Kconfig
->>
->> I then tried to compile the kernel :
->>    make bzImage modules
->>
->> And I got an error which I solved by disable CONFIG_HYPERV and
->> CONFIG_SCHED_MC (as indicated in this thread :
->> https://www.xenomai.org/pipermail/xenomai/2018-October/039679.html)
->>
->> Now I have this error :
->> In file included from include/xenomai/cobalt/uapi/kernel/vdso.h:21:0,
->>                   from include/xenomai/cobalt/kernel/vdso.h:26,
->>                   from kernel/xenomai/posix/clock.c:21:
->> include/xenomai/cobalt/uapi/kernel/urw.h: In function
->> '__try_read_start':
->> include/xenomai/cobalt/uapi/kernel/urw.h:60:2: error: implicit
->> declaration
->> of function 'ACCESS_ONCE' [-Werror=3Dimplicit-function-declaration]
->>    token =3D ACCESS_ONCE(urw->sequence);
->>    ^
->> cc1: some warnings being treated as errors
->>
->> Can you help me ?
->> I attach my .config
->>
->
-> Yeah, one "detail": When you move to 4.19, you also need to switch to
-> xenomai
-> master branch.
->
-> Jan
->
-> --
-> Siemens AG, Corporate Technology, CT RDA IOT SES-DE
-> Corporate Competence Center Embedded Linux
->
+From: Quirin Gylstorff <quirin.gylstorff@siemens.com>
 
+Add the schematic architecture of the current tests setup.
 
-Hi Jan,
+Signed-off-by: Quirin Gylstorff <quirin.gylstorff@siemens.com>
+---
+ tests/README.md | 45 +++++++++++++++++++++++++++++++++++++++++++++
+ 1 file changed, 45 insertions(+)
 
-Thank you for your quick reply. If I want to use the last stable release
-xenomai which kernel release I need to use ?
-
-
-
-Regards,
-Davy
+diff --git a/tests/README.md b/tests/README.md
+index ffe7ba2..6ee8ada 100644
+--- a/tests/README.md
++++ b/tests/README.md
+@@ -35,8 +35,53 @@ and check machine data from the target.
+ 
+ The xenomai test suite executes the xeno-test tool from xenomai/testsuite.
+ 
++# Test Architecture
++
++To test xenomai-images on the target hardware the following architecture
++is used:
++```
++                                                               +----------+
++                                                               | Target 1 |
++                                                            /--|  beagle  |
+++-----------+        +---------+       +---------+    /-----   |  bone    |
++|           |        | LAVA    |       | LAVA    | ---         +----------+
++| gitlab-   | ------ | master  |------ | Dis-    | --
++| runner    |        |         |       | patcher | \ \---      +----------+
+++-----------+        +---------+       +---------+  \-   \---  | Target 2 |
++                                                      \      \-| x86-64   |
++                                                       \       |          |
++                                                        \-     +----------+
++                                                          \
++                                                           \   +----------+
++                                                            \- | Target n |
++                                                              \| qemu     |
++                                                               |          |
++                                                               +----------+
++```
++A test is deployed in the following steps:
++1. gitlab-runner: builds the artifacts
++2. After the build is successful the build artifacts are deployed to the
++   Lava master per scp.
++3. The runner sends a lava job description to the LAVA master, who triggers the
++job execution on LAVA Dispatcher.
++
++The LAVA master selects the LAVA Dispatcher to execute the given job on a
++target. Qemu targets are executed directly on the LAVA Dispatcher. For non-virtual
++targets the payload (kernel,rootfs,...) is deployed via tftp to the selected
++hardware.
++
++The dispatcher executes the following steps:
++1. Instrumentation of the rootfs. This will collect the necessary lavatools
++and adds them to the rootfs
++2. Power up the target
++3. deploy the payload(kernel,rootfs,...) with help of the bootloader
++4. trigger the payload boot
++5. execute the tests
++6. power off the target
++
+ # LAVA Setup
+ 
+ Setup a lava environment by following the
+ [installation guide](https://docs.lavasoftware.org/lava/first-installation.html)
+ or use [lava-docker](https://github.com/kernelci/lava-docker).
++
+-- 
+2.20.1
 
 
