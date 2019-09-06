@@ -1,13 +1,13 @@
-Subject: Re: Task Priority & Domain switch
-References: <VI1PR08MB337564202AA59428E7A0C1A5F5BB0@VI1PR08MB3375.eurprd08.prod.outlook.com>
-From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <821933fe-e138-4435-ae99-d20b496e1459@siemens.com>
-Date: Thu, 5 Sep 2019 19:02:31 +0200
+Date: Fri, 06 Sep 2019 17:42:12 +0800
+Reply-To: hikwlu@sina.com
+From: "=?GBK?B?wrO/y87E?=" <hikwlu@sina.com>
+Subject: Kernel Compile error
 MIME-Version: 1.0
-In-Reply-To: <VI1PR08MB337564202AA59428E7A0C1A5F5BB0@VI1PR08MB3375.eurprd08.prod.outlook.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Message-Id: <20190906094212.93E7C4EC@webmail.sinamail.sina.com.cn>
+Content-Type: text/plain;
+	charset=UTF-8
+Content-Transfer-Encoding: base64
+Content-Disposition: inline
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,66 +16,44 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Johann Obermayr <johann.obermayr@sigmatek.at>, "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: xenomai <xenomai@xenomai.org>
 
-On 05.09.19 15:26, Johann Obermayr via Xenomai wrote:
-> Hello,
-> 
-> i need some explain about task priority & domain switch.
-> 
-> 
->    1.  Xenomai 2.6.x ( CONFIG_XENO_OPT_PERVASIVE=y    CONFIG_XENO_OPT_PRIOCPL=y )
-
-Don't enable XENO_OPT_PRIOCPL. It was never working as expected (best case) or 
-was even causing more major issues (source of many crashes).
-
-> 
-> rt_task_shadow( &handle, 0 );
-> 
-> task running default in releaxed ( secondary domain). After take a xenomai mutex lock, it switch to the primary domain.
-> 
-> After mutex unlock the task switch back to secondary domain or after next xenomai-function call ?
-> 
-
-Immediately for SCHED_OTHER threads (prio 0). RT threads are switched back to RT 
-lazily, i.e. when the next RT syscall is issued.
-
-> 
-> 
-> rt_task_shadow( &handle, 10 );
-> 
-> task run default in primary domain. After do  a linux-syscall  , the task switch to secondary domain.
-> 
-> With XENO_OPT_PRIOCPL it take the xenomai priority 10 to Linux rt_priority 10.
-> 
-> After call a xenomai function, it switch back to primary domain.
-> 
-> 
-> 
-> 
-> 
->    1.  Xenomai 3.0.x
-> 
-> Is there a different work to xenomai 2.6.x ?
-> 
-> 
-> 
-> 
-> Or where can I found more information about this theme ?
-
-See the section on SCHED_WEAK in 
-https://gitlab.denx.de/Xenomai/xenomai/wikis/Migrating_From_Xenomai_2_To_3.
-
-> 
-> Thanks & regards
->                  Johann
-> 
-> PS: I known that xenomai 2.6.x is out of date. But we must support some old versions.
-> 
-
-Jan
-
--- 
-Siemens AG, Corporate Technology, CT RDA IOT SES-DE
-Corporate Competence Center Embedded Linux
+SGk6CkkgaGF2ZSBhIEludGVsIEF0b20gQ1BVLCB1c2UgVWJ1bnR1IDE2LjA0LCBLZXJuZWwgdmVy
+c2lvbjo0LjE0LjcxLCBwYXRjaCB3aXRoIHhlbm9tYWkgMy4wLjksIHVzaW5nIGlwaXBlLWNvcmUt
+NC4xNC43MS14ODYtMS5wYXRjaDoKSGVyZSBpcyB0aGUgcGF0Y2ggY29tbWFuZDouL3ByZXBhcmUt
+a2VybmVsLnNoIC0tbGludXg9L2hvbWUvZ29vZ29sL3dvcmsvbGludXgtNC4xNC43MSAtLWlwaXBl
+PS9ob21lL2dvb2dvbC93b3JrL2lwaXBlLWNvcmUtNC4xNC43MS14ODYtMS5wYXRjaCAtLWFyY2g9
+aTM4NgpUaGVuIHdoZW4gSSBnb3RvIHRoZSBsaW51eCBzcmMgcGF0aCBjb21waWxlIHRoZSBrZXJu
+ZWwsIGFuZCBJIGdldCBlcnJvciBtZXNzYWdlIGFzIGZvbGxvdzptYWtlIEFSQ0g9aTM4NiAtajQK
+LyoqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioq
+KioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioq
+KioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqL3NjcmlwdHMva2NvbmZpZy9jb25m
+ICAtLXNpbGVudG9sZGNvbmZpZyBLY29uZmlnd2FybmluZzogKFhFTk9NQUkpIHNlbGVjdHMgSVBJ
+UEUgd2hpY2ggaGFzIHVubWV0IGRpcmVjdCBkZXBlbmRlbmNpZXMgKEhBVkVfSVBJUEVfU1VQUE9S
+VCl3YXJuaW5nOiAoWDg2X1ZTTVAgJiYgSFlQRVJWKSBzZWxlY3RzIFBBUkFWSVJUIHdoaWNoIGhh
+cyB1bm1ldCBkaXJlY3QgZGVwZW5kZW5jaWVzIChIWVBFUlZJU09SX0dVRVNUICYmICFJUElQRSl3
+YXJuaW5nOiAoWEVOT01BSSkgc2VsZWN0cyBJUElQRSB3aGljaCBoYXMgdW5tZXQgZGlyZWN0IGRl
+cGVuZGVuY2llcyAoSEFWRV9JUElQRV9TVVBQT1JUKXdhcm5pbmc6IChYODZfVlNNUCAmJiBIWVBF
+UlYpIHNlbGVjdHMgUEFSQVZJUlQgd2hpY2ggaGFzIHVubWV0IGRpcmVjdCBkZXBlbmRlbmNpZXMg
+KEhZUEVSVklTT1JfR1VFU1QgJiYgIUlQSVBFKSAgQ0hLICAgICBpbmNsdWRlL2NvbmZpZy9rZXJu
+ZWwucmVsZWFzZSAgQ0hLICAgICBpbmNsdWRlL2dlbmVyYXRlZC91YXBpL2xpbnV4L3ZlcnNpb24u
+aCAgQ0hLICAgICBpbmNsdWRlL2dlbmVyYXRlZC91dHNyZWxlYXNlLmggIENISyAgICAgc2NyaXB0
+cy9tb2QvZGV2aWNldGFibGUtb2Zmc2V0cy5oICBDSEsgICAgIGluY2x1ZGUvZ2VuZXJhdGVkL3Rp
+bWVjb25zdC5oICBDSEsgICAgIGluY2x1ZGUvZ2VuZXJhdGVkL2JvdW5kcy5oICBDQyAgICAgIGFy
+Y2gveDg2L2tlcm5lbC9hc20tb2Zmc2V0cy5zSW4gZmlsZSBpbmNsdWRlZCBmcm9tIC4vYXJjaC94
+ODYvaW5jbHVkZS9hc20vdWFjY2Vzcy5oOjEwOjAsICAgICAgICAgICAgICAgICBmcm9tIC4vaW5j
+bHVkZS9saW51eC91YWNjZXNzLmg6MTQsICAgICAgICAgICAgICAgICBmcm9tIC4vaW5jbHVkZS9s
+aW51eC9jcnlwdG8uaDoyNiwgICAgICAgICAgICAgICAgIGZyb20gYXJjaC94ODYva2VybmVsL2Fz
+bS1vZmZzZXRzLmM6OTouL2luY2x1ZGUvbGludXgvaXBpcGUuaDo1NToyODogZXJyb3I6IGZpZWxk
+IOKAmGFyY2jigJkgaGFzIGluY29tcGxldGUgdHlwZSAgc3RydWN0IGlwaXBlX2FyY2hfc3lzaW5m
+byBhcmNoOyAgICAgICAgICAgICAgICAgICAgICAgICAgICBeS2J1aWxkOjU3OiByZWNpcGUgZm9y
+IHRhcmdldCAnYXJjaC94ODYva2VybmVsL2FzbS1vZmZzZXRzLnMnIGZhaWxlZG1ha2VbMV06ICoq
+KiBbYXJjaC94ODYva2VybmVsL2FzbS1vZmZzZXRzLnNdIEVycm9yIDFNYWtlZmlsZToxMDg0OiBy
+ZWNpcGUgZm9yIHRhcmdldCAncHJlcGFyZTAnIGZhaWxlZG1ha2U6ICoqKiBbcHJlcGFyZTBdIEVy
+cm9yIDJtYWtlOiAqKiogV2FpdGluZyBmb3IgdW5maW5pc2hlZCBqb2JzLi4uLi8qKioqKioqKioq
+KioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioq
+KioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioq
+KioqKioqKioqKioqKioqLwpQbGVhc2UgaGVscCBtZSB3aGV0aGVyIGlmIEkgd2VyZSB1c2luZyB0
+aGUgd3Jvbmcga2VybmVsIHZlcnNpb24/LS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0K
+IApCZXN0IHJlZ2FyZHMKS2V2aW4K
 
