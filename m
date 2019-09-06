@@ -1,12 +1,13 @@
-From: "Q. Gylstorff" <Quirin.Gylstorff@siemens.com>
-Subject: [xenomai-images][PATCH 3/3] distro/include: Allow overwrite
- PREFERRED_VERSION
-Date: Tue, 27 Aug 2019 11:07:52 +0200
-Message-Id: <20190827090752.13072-4-Quirin.Gylstorff@siemens.com>
-In-Reply-To: <20190827090752.13072-1-Quirin.Gylstorff@siemens.com>
-References: <20190827090752.13072-1-Quirin.Gylstorff@siemens.com>
+Subject: Re: Kernel Compile error
+References: <20190906094212.93E7C4EC@webmail.sinamail.sina.com.cn>
+From: Jan Kiszka <jan.kiszka@siemens.com>
+Message-ID: <984daab2-6089-b2c2-b2dd-92d93657ed67@siemens.com>
+Date: Fri, 6 Sep 2019 12:22:57 +0200
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+In-Reply-To: <20190906094212.93E7C4EC@webmail.sinamail.sina.com.cn>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: base64
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,30 +16,59 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
+To: hikwlu@sina.com, xenomai <xenomai@xenomai.org>
 
-From: Quirin Gylstorff <quirin.gylstorff@siemens.com>
-
-To build arm64 PREFERRED_VERSION_linux-xenomai must be
-set to 4.14% instead of 4.19 for next. To allow overwrites
-by machine configurations change the operator from = to ?=.
-
-Signed-off-by: Quirin Gylstorff <quirin.gylstorff@siemens.com>
----
- conf/distro/include/xenomai-version.inc | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/conf/distro/include/xenomai-version.inc b/conf/distro/include/xenomai-version.inc
-index f14f458..524ca39 100644
---- a/conf/distro/include/xenomai-version.inc
-+++ b/conf/distro/include/xenomai-version.inc
-@@ -14,4 +14,4 @@ XENOMAI_STABLE_VERSION_LIST = "stable 3.0 3.0% 3.0.% 3.0.9"
- XENOMAI_STABLE_KERNEL_VERSION = "4.14%"
- # if PREFERRED_VERSION_xenomai contains any item from XENOMAI_STABLE_VERSION_LIST use
- # XENOMAI_STABLE_KERNEL_VERSION
--PREFERRED_VERSION_linux-xenomai = "${@bb.utils.contains_any('PREFERRED_VERSION_xenomai','${XENOMAI_STABLE_VERSION_LIST}','${XENOMAI_STABLE_KERNEL_VERSION}','${XENOMAI_NEXT_KERNEL_VERSION}',d) }"
-+PREFERRED_VERSION_linux-xenomai ?= "${@bb.utils.contains_any('PREFERRED_VERSION_xenomai','${XENOMAI_STABLE_VERSION_LIST}','${XENOMAI_STABLE_KERNEL_VERSION}','${XENOMAI_NEXT_KERNEL_VERSION}',d) }"
--- 
-2.20.1
-
+SGkgS2V2aW4sDQoNCk9uIDA2LjA5LjE5IDExOjQyLCDpsoHlhYvmlocgdmlhIFhlbm9tYWkg
+d3JvdGU6DQo+IEhpOg0KPiBJIGhhdmUgYSBJbnRlbCBBdG9tIENQVSwgdXNlIFVidW50dSAx
+Ni4wNCwgS2VybmVsIHZlcnNpb246NC4xNC43MSwgcGF0Y2ggd2l0aCB4ZW5vbWFpIDMuMC45
+LCB1c2luZyBpcGlwZS1jb3JlLTQuMTQuNzEteDg2LTEucGF0Y2g6DQo+IEhlcmUgaXMgdGhl
+IHBhdGNoIGNvbW1hbmQ6Li9wcmVwYXJlLWtlcm5lbC5zaCAtLWxpbnV4PS9ob21lL2dvb2dv
+bC93b3JrL2xpbnV4LTQuMTQuNzEgLS1pcGlwZT0vaG9tZS9nb29nb2wvd29yay9pcGlwZS1j
+b3JlLTQuMTQuNzEteDg2LTEucGF0Y2ggLS1hcmNoPWkzODYNCj4gVGhlbiB3aGVuIEkgZ290
+byB0aGUgbGludXggc3JjIHBhdGggY29tcGlsZSB0aGUga2VybmVsLCBhbmQgSSBnZXQgZXJy
+b3IgbWVzc2FnZSBhcyBmb2xsb3c6bWFrZSBBUkNIPWkzODYgLWo0DQo+IC8qKioqKioqKioq
+KioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioq
+KioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioq
+KioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKi9zY3JpcHRzL2tjb25maWcvY29uZiAg
+LS1zaWxlbnRvbGRjb25maWcgS2NvbmZpZ3dhcm5pbmc6IChYRU5PTUFJKSBzZWxlY3RzIElQ
+SVBFIHdoaWNoIGhhcyB1bm1ldCBkaXJlY3QgZGVwZW5kZW5jaWVzIChIQVZFX0lQSVBFX1NV
+UFBPUlQpd2FybmluZzogKFg4Nl9WU01QICYmIEhZUEVSVikgc2VsZWN0cyBQQVJBVklSVCB3
+aGljaCBoYXMgdW5tZXQgZGlyZWN0IGRlcGVuZGVuY2llcyAoSFlQRVJWSVNPUl9HVUVTVCAm
+JiAhSVBJUEUpd2FybmluZzogKFhFTk9NQUkpIHNlbGVjdHMgSVBJUEUgd2hpY2ggaGFzIHVu
+bWV0IGRpcmVjdCBkZXBlbmRlbmNpZXMgKEhBVkVfSVBJUEVfU1VQUE9SVCl3YXJuaW5nOiAo
+WDg2X1ZTTVAgJiYgSFlQRVJWKSBzZWxlY3RzIFBBUkFWSVJUIHdoaWNoIGhhcyB1bm1ldCBk
+aXJlY3QgZGVwZW5kZW5jaWVzIChIWVBFUlZJU09SX0dVRVNUICYmICFJUElQRSkgIENISyAg
+ICAgaW5jbHVkZS9jb25maWcva2VybmVsLnJlbGVhc2UgIENISyAgICAgaW5jbHVkZS9nZW5l
+cmF0ZWQvdWFwaS9saW51eC92ZXJzaW9uLmggIENISyAgICAgaW5jbHVkZS9nZW5lcmF0ZWQv
+dXRzcmVsZWFzZS5oICBDSEsgICAgIHNjcmlwdHMvbW9kL2RldmljZXRhYmxlLW9mZnNldHMu
+aCAgQ0hLICAgICBpbmNsdWRlL2dlbmVyYXRlZC90aW1lY29uc3QuaCAgQ0hLICAgICBpbmNs
+dWRlL2dlbmVyYXRlZC9ib3VuZHMuaCAgQ0MgICAgICBhcmNoL3g4Ni9rZXJuZWwvYXNtLW9m
+ZnNldHMuc0luIGZpbGUgaW5jbHVkZWQgZnJvbSAuL2FyY2gveDg2L2luY2x1ZGUvYXNtL3Vh
+Y2Nlc3MuaDoxMDowLCAgICAgICAgICAgICAgICAgZnJvbSAuL2luY2x1ZGUvbGludXgvdWFj
+Y2Vzcy5oOjE0LCAgICAgICAgICAgICAgICAgZnJvbSAuL2luY2x1ZGUvbGludXgvY3J5cHRv
+Lmg6MjYsICAgICAgICAgICAgICAgICBmcm9tIGFyY2gveDg2L2tlcm5lbC9hc20tb2Zmc2V0
+cy5jOjk6Li9pbmNsdWRlL2xpbnV4L2lwaXBlLmg6NTU6Mjg6IGVycm9yOiBmaWVsZCDigJhh
+cmNo4oCZIGhhcyBpbmNvbXBsZXRlIHR5cGUgIHN0cnVjdCBpcGlwZV9hcmNoX3N5c2luZm8g
+YXJjaDsgICAgICAgICAgICAgICAgICAgICAgICAgICAgXktidWlsZDo1NzogcmVjaXBlIGZv
+ciB0YXJnZXQgJ2FyY2gveDg2L2tlcm5lbC9hc20tb2Zmc2V0cy5zJyBmYWlsZWRtYWtlWzFd
+OiAqKiogW2FyY2gveDg2L2tlcm5lbC9hc20tb2Zmc2V0cy5zXSBFcnJvciAxTWFrZWZpbGU6
+MTA4NDogcmVjaXBlIGZvciB0YXJnZXQgJ3ByZXBhcmUwJyBmYWlsZWRtYWtlOiAqKiogW3By
+ZXBhcmUwXSBFcnJvciAybWFrZTogKioqIFdhaXRpbmcgZm9yIHVuZmluaXNoZWQgam9icy4u
+Li4vKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioq
+KioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioq
+KioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKi8NCj4gUGxlYXNlIGhlbHAgbWUg
+d2hldGhlciBpZiBJIHdlcmUgdXNpbmcgdGhlIHdyb25nIGtlcm5lbCB2ZXJzaW9uPy0tLS0t
+LS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tDQoNCllvdXIgbWFpbCBnb3QgaGVhdmlseSBt
+YW5nbGVkIHdoaWNoIG1ha2VzIGl0IGhhcmQgdG8gcGFyc2UuIFBsZWFzZSBvbmx5IHVzZSAN
+CnBsYWluLXRleHQgZW1haWxzIG9uIHB1YmxpYyBsaXN0cy4NCg0KSSBzdXNwZWN0IHlvdSBo
+YXZlIHNvbWUga2VybmVsIGZlYXR1cmUgZW5hYmxlZCB0aGF0IHRyaWdnZXIgYSBjaXJjdWxh
+ciANCmRlcGVuZGVuY3kgaXNzdWUuIElzIENPTkZJR19IWVBFUlYgb24/IFRyeSB0dXJuaW5n
+IGl0IG9mZi4gSW4gZ2VuZXJhbCwgaXQncyBnb29kIA0KdG8gdHVuZS1kb3duIGEgY29uZmln
+IGZvciB0aGUgcGFydGljdWxhciB1c2UgY2FzZSB3aGVuIGRvaW5nIHJlYWwtdGltZSwgaS5l
+LiANCnN0YXJ0IHdpdGggdGhlIGRlZmNvbmZpZyBhbmQgdGhlbiBhZGQgd2hhdCB5b3UgcmVh
+bGx5IG5lZWRzIChpbiBjb250cmFzdCB0byANCnVzaW5nIHRoZSBkaXN0cm8gY29uZmlnIGUu
+Zy4pLg0KDQpBbHNvIGNvbnNpZGVyIG1vdmluZyB0byA0LjE5IGFzIDQuMTQgaXMgbm8gbG9u
+Z2VyIHNlZWluZyBJLXBpcGUgdXBkYXRlcy4NCg0KSmFuDQoNCi0tIA0KU2llbWVucyBBRywg
+Q29ycG9yYXRlIFRlY2hub2xvZ3ksIENUIFJEQSBJT1QgU0VTLURFDQpDb3Jwb3JhdGUgQ29t
+cGV0ZW5jZSBDZW50ZXIgRW1iZWRkZWQgTGludXgNCg==
 
