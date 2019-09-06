@@ -3,13 +3,13 @@ References: <65ac2255-6651-1ef0-49aa-b40092b7512e@siemens.com>
  <fe4daa26-0818-d866-a707-d5e04a36fb0c@siemens.com>
  <67380ec5-cdf4-659e-6a7f-989f1e1f5c2a@xenomai.org>
  <c33eb899-357a-8b2e-25f5-c10551d79613@siemens.com>
- <4f2d7a55-68fe-c071-3bec-c81b52973fbc@xenomai.org>
-From: Philippe Gerum <rpm@xenomai.org>
-Message-ID: <0b22dfd6-5b8c-71b2-dfca-bf62c5b7177c@xenomai.org>
-Date: Fri, 6 Sep 2019 18:12:03 +0200
+ <b68d5dd3-4f48-479d-fb2d-a878c26c6f38@xenomai.org>
+From: Jan Kiszka <jan.kiszka@siemens.com>
+Message-ID: <01f5519b-aa73-7dc6-08df-8e50a5605cd5@siemens.com>
+Date: Fri, 6 Sep 2019 18:14:13 +0200
 MIME-Version: 1.0
-In-Reply-To: <4f2d7a55-68fe-c071-3bec-c81b52973fbc@xenomai.org>
-Content-Type: text/plain; charset=utf-8
+In-Reply-To: <b68d5dd3-4f48-479d-fb2d-a878c26c6f38@xenomai.org>
+Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
@@ -20,9 +20,9 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jan Kiszka <jan.kiszka@siemens.com>, Quirin Gylstorff <quirin.gylstorff@siemens.com>, "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Philippe Gerum <rpm@xenomai.org>, Quirin Gylstorff <quirin.gylstorff@siemens.com>, "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On 9/6/19 6:09 PM, Philippe Gerum via Xenomai wrote:
+On 06.09.19 17:56, Philippe Gerum wrote:
 > On 9/6/19 5:43 PM, Jan Kiszka wrote:
 >> On 06.09.19 16:52, Philippe Gerum via Xenomai wrote:
 >>> On 9/4/19 4:44 PM, Quirin Gylstorff via Xenomai wrote:
@@ -37,31 +37,17 @@ On 9/6/19 6:09 PM, Philippe Gerum via Xenomai wrote:
 >> I've started to dig into this a bit already but got distracted multiple
 >> times. One thing I already found out: It's not a good idea to close the
 >> fd on unregister without also ensuring that it's no longer pending in
->> rtdm_fd_cleanup_queue. But fixing that does not resolve the issue we see
->> with the test case.
->>
->> Jan
->>
+>> rtdm_fd_cleanup_queue.
 > 
-> There is that stupid bug at least:
-> 
-> diff --git a/kernel/cobalt/rtdm/device.c b/kernel/cobalt/rtdm/device.c
-> index ea72be15c..64767a3ef 100644
-> --- a/kernel/cobalt/rtdm/device.c
-> +++ b/kernel/cobalt/rtdm/device.c
-> @@ -548,6 +548,8 @@ void rtdm_dev_unregister(struct rtdm_device *dev)
->  
->  	xnlock_get_irqsave(&nklock, s);
->  	for (;;) {
-> +		if (list_empty(&dev->openfd_list))
-> +			break;
->  		fd = list_get_entry(&dev->openfd_list, struct rtdm_fd, next);
->  		if (fd == NULL)
->  			break;
-> 
+> Can you elaborate on the execution scenario that would allow this?
 
-a second one involves a double release of an rtdm_fd from the openfd_list.
+Both the fd_cleanup_thread as well as rmmod are Linux tasks that can run 
+concurrently on separate cores. It might be unlikely, but it is possible, 
+nothing prevents this from happening.
+
+Jan
 
 -- 
-Philippe.
+Siemens AG, Corporate Technology, CT RDA IOT SES-DE
+Corporate Competence Center Embedded Linux
 
