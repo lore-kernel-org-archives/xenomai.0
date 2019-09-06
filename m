@@ -1,15 +1,17 @@
-Subject: Re: [PATCH v4 2/2] cobalt/rtdm: allow for device teardown
-References: <65ac2255-6651-1ef0-49aa-b40092b7512e@siemens.com>
- <fe4daa26-0818-d866-a707-d5e04a36fb0c@siemens.com>
- <67380ec5-cdf4-659e-6a7f-989f1e1f5c2a@xenomai.org>
+Subject: Re: Kernel compilation error
+References: <09a04461befe7ec4cf65b9f1a46e70fe.squirrel@mail.ige-grenoble.fr>
+ <9344a542-3ca7-ea83-4b4a-a744d1d48b39@siemens.com>
+ <db08b3df5aeb7dfbde41bee64b7ff142.squirrel@mail.ige-grenoble.fr>
+ <978cbf79-06bd-3fb0-2396-b83270f8d92e@siemens.com>
+ <bf32fd5ce254f7ccd4647a159cc0ce6a.squirrel@mail.ige-grenoble.fr>
 From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <c33eb899-357a-8b2e-25f5-c10551d79613@siemens.com>
-Date: Fri, 6 Sep 2019 17:43:40 +0200
+Message-ID: <30171666-5b1f-e302-6110-8d6e3ad3bed5@siemens.com>
+Date: Fri, 6 Sep 2019 17:47:24 +0200
 MIME-Version: 1.0
-In-Reply-To: <67380ec5-cdf4-659e-6a7f-989f1e1f5c2a@xenomai.org>
-Content-Type: text/plain; charset=utf-8; format=flowed
+In-Reply-To: <bf32fd5ce254f7ccd4647a159cc0ce6a.squirrel@mail.ige-grenoble.fr>
+Content-Type: text/plain; charset="utf-8"; format="flowed"
 Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -18,23 +20,74 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Philippe Gerum <rpm@xenomai.org>, Quirin Gylstorff <quirin.gylstorff@siemens.com>, "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: davy.regneau@univ-grenoble-alpes.fr
+Cc: xenomai@xenomai.org, frederic.cazenave@ird.fr
 
-On 06.09.19 16:52, Philippe Gerum via Xenomai wrote:
-> On 9/4/19 4:44 PM, Quirin Gylstorff via Xenomai wrote:
+On 06.09.19 15:38, davy.regneau@univ-grenoble-alpes.fr wrote:
+>> On 06.09.19 15:16, Davy via Xenomai wrote:
+>>> Hi,
+>>>
+>>> So, I started over with the linux kernel 4.19.66 and xenomai 3.0.9
+>>>
+>>> I patched the kernel with the following command :
+>>>     ./scripts/prepare-kernel.sh --linux=../linux-4.19.66
+>>> --ipipe=../ipipe-core-4.19.66-x86-6.patch --arch=x86_64
+>>>
+>>> First time I do make menuconfig, I get this error:
+>>>
+>>> scripts/kconfig/mconf  Kconfig
+>>> init/Kconfig:2056: can't open file "arch/$SRCARCH/xenomai/Kconfig"
+>>> scripts/kconfig/Makefile:29Â : la recette pour la cible
+>>> Â«Â menuconfigÂ Â» a
+>>> Ã©chouÃ©e
+>>>
+>>> I solved this by replace "$SRCARCH" by "x86" in init/Kconfig
+>>>
+>>> I then tried to compile the kernel :
+>>>     make bzImage modules
+>>>
+>>> And I got an error which I solved by disable CONFIG_HYPERV and
+>>> CONFIG_SCHED_MC (as indicated in this thread :
+>>> https://www.xenomai.org/pipermail/xenomai/2018-October/039679.html)
+>>>
+>>> Now I have this error :
+>>> In file included from include/xenomai/cobalt/uapi/kernel/vdso.h:21:0,
+>>>                    from include/xenomai/cobalt/kernel/vdso.h:26,
+>>>                    from kernel/xenomai/posix/clock.c:21:
+>>> include/xenomai/cobalt/uapi/kernel/urw.h: In function
+>>> '__try_read_start':
+>>> include/xenomai/cobalt/uapi/kernel/urw.h:60:2: error: implicit
+>>> declaration
+>>> of function 'ACCESS_ONCE' [-Werror=implicit-function-declaration]
+>>>     token = ACCESS_ONCE(urw->sequence);
+>>>     ^
+>>> cc1: some warnings being treated as errors
+>>>
+>>> Can you help me ?
+>>> I attach my .config
+>>>
 >>
->> I tested xenomai-next with xeno-test on 4.19.66+ amd64.
->> This patch triggers a general protection fault during the execution of
->> xeno-test. The log is attached.
+>> Yeah, one "detail": When you move to 4.19, you also need to switch to
+>> xenomai
+>> master branch.
 >>
-> Ok, I'll have a look. Thanks.
+>> Jan
+>>
+>> --
+>> Siemens AG, Corporate Technology, CT RDA IOT SES-DE
+>> Corporate Competence Center Embedded Linux
+>>
+> 
+> 
+> Hi Jan,
+> 
+> Thank you for your quick reply. If I want to use the last stable release
+> xenomai which kernel release I need to use ?
 > 
 
-I've started to dig into this a bit already but got distracted multiple times. 
-One thing I already found out: It's not a good idea to close the fd on 
-unregister without also ensuring that it's no longer pending in 
-rtdm_fd_cleanup_queue. But fixing that does not resolve the issue we see with 
-the test case.
+We will soon release 3.1, then you can use 4.19 with an officially stable 
+baseline. If you start now, that combination will have been released when you 
+are done - unless you really need to release "tomorrow".
 
 Jan
 
