@@ -7,12 +7,12 @@ References: <65ac2255-6651-1ef0-49aa-b40092b7512e@siemens.com>
  <01f5519b-aa73-7dc6-08df-8e50a5605cd5@siemens.com>
  <8fd588f5-a06b-76f3-6971-1a36eda7a2a2@xenomai.org>
  <038435e7-14b3-b598-c70a-a0f1377e3a2f@xenomai.org>
-From: Philippe Gerum <rpm@xenomai.org>
-Message-ID: <f1fcd14f-fefb-95c8-545a-f5ac8a7a6cda@xenomai.org>
-Date: Fri, 6 Sep 2019 18:29:24 +0200
+From: Jan Kiszka <jan.kiszka@siemens.com>
+Message-ID: <232ce4a9-aba8-95b2-ae22-b2a06212b3db@siemens.com>
+Date: Fri, 6 Sep 2019 18:32:36 +0200
 MIME-Version: 1.0
 In-Reply-To: <038435e7-14b3-b598-c70a-a0f1377e3a2f@xenomai.org>
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
@@ -23,9 +23,9 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jan Kiszka <jan.kiszka@siemens.com>, Quirin Gylstorff <quirin.gylstorff@siemens.com>, "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Philippe Gerum <rpm@xenomai.org>, Quirin Gylstorff <quirin.gylstorff@siemens.com>, "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On 9/6/19 6:26 PM, Philippe Gerum via Xenomai wrote:
+On 06.09.19 18:26, Philippe Gerum wrote:
 > On 9/6/19 6:19 PM, Philippe Gerum via Xenomai wrote:
 >> On 9/6/19 6:14 PM, Jan Kiszka wrote:
 >>> On 06.09.19 17:56, Philippe Gerum wrote:
@@ -61,8 +61,12 @@ On 9/6/19 6:26 PM, Philippe Gerum via Xenomai wrote:
 > rtdm_dev_unregister() serializes on the ugly big nklock.
 > 
 
-The whole thing needs cleanup, I follow up on this.
+Indeed, unregister will not pick up anything that is in the cleanup queue. But 
+what ensures that unregisters waits for fd_cleanup_thread to finish first?
+
+Jan
 
 -- 
-Philippe.
+Siemens AG, Corporate Technology, CT RDA IOT SES-DE
+Corporate Competence Center Embedded Linux
 
