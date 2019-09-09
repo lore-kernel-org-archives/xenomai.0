@@ -1,10 +1,13 @@
-From: "Q. Gylstorff" <Quirin.Gylstorff@siemens.com>
-Subject: [xenomai-images][PATCH 1/3] README: Add subsection physical targets
-Date: Tue, 27 Aug 2019 11:07:50 +0200
-Message-Id: <20190827090752.13072-2-Quirin.Gylstorff@siemens.com>
-In-Reply-To: <20190827090752.13072-1-Quirin.Gylstorff@siemens.com>
-References: <20190827090752.13072-1-Quirin.Gylstorff@siemens.com>
+Subject: =?UTF-8?B?UmU6IOWbnuWkje+8mlJlOiBYZW5vbWFpIGxhdGVuY3kgdGVzdCBub3Qg?=
+ =?UTF-8?Q?good?=
+References: <20190909101439.9449F16600E9@webmail.sinamail.sina.com.cn>
+From: Jan Kiszka <jan.kiszka@siemens.com>
+Message-ID: <4fe2fcea-a86f-1d0e-996b-62d44aa2d2ac@siemens.com>
+Date: Mon, 9 Sep 2019 13:19:43 +0200
 MIME-Version: 1.0
+In-Reply-To: <20190909101439.9449F16600E9@webmail.sinamail.sina.com.cn>
+Content-Type: text/plain; charset="utf-8"; format="flowed"
+Content-Language: en-US
 Content-Transfer-Encoding: 8bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
@@ -14,36 +17,50 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
+To: hikwlu@sina.com, xenomai <xenomai@xenomai.org>
 
-From: Quirin Gylstorff <quirin.gylstorff@siemens.com>
+On 09.09.19 12:14, 鲁克文 wrote:
+> Dear Jan Kiszka:
+> 
+> I re-enable ACPI_PROCESSOR in the kernel, but also the latency test seems no 
+> good,attached file is the new kernel config file.
+> 
+> /*********************************************************************************************/
+> RTT|  00:01:04  (periodic user-mode task, 100 us period, priority 99)
+> RTH|----lat min|----lat avg|----lat max|-overrun|---msw|---lat best|--lat worst
+> RTD|      0.072|      0.785|     19.712|       2|     0|     -0.177|    131.284
+> RTD|      0.096|      2.280|     15.701|       2|     0|     -0.177|    131.284
+> RTD|      0.059|      1.573|     12.868|       2|     0|     -0.177|    131.284
+> RTD|      0.058|      2.512|     25.545|       2|     0|     -0.177|    131.284
+> RTD|      0.286|      1.928|    153.611|       3|     0|     -0.177|    153.611
+> RTD|      0.285|      2.834|     17.032|       3|     0|     -0.177|    153.611
+> RTD|      0.128|      2.104|     26.467|       3|     0|     -0.177|    153.611
+> RTD|      0.140|      1.105|     14.978|       3|     0|     -0.177|    153.611
+> RTD|      0.163|      0.950|     12.708|       3|     0|     -0.177|    153.611
+> RTD|      0.199|      1.012|     15.109|       3|     0|     -0.177|    153.611
+> RTD|      0.042|      1.007|     10.511|       3|     0|     -0.177|    153.611
+> RTD|      0.102|      0.763|    125.684|       4|     0|     -0.177|    153.611
+> RTD|      0.138|      0.810|     12.226|       4|     0|     -0.177|    153.611
+> RTD|      0.125|      1.312|     13.858|       4|     0|     -0.177|    153.611
+> RTD|      0.256|      0.854|     67.039|       4|     0|     -0.177|    153.611
+> RTD|      0.280|      0.841|     14.205|       4|     0|     -0.177|    153.611
+> RTD|      0.099|      0.631|     76.185|       4|     0|     -0.177|    153.611
+> RTD|      0.230|      0.953|     16.041|       4|     0|     -0.177|    153.611
+> RTD|      0.086|      0.985|     65.416|       4|     0|     -0.177|    153.611
+> RTD|      0.110|      0.856|     18.357|       4|     0|     -0.177|    153.611
+> /************************************************************************************/
+> 
 
-List all physical targets with their kas-yml files.
+Yeah, these numbers are still off. Likely, we see some power management effects. 
+They might be triggered by Linux, and then some kernel switch can do the magic 
+(check e.g. CONFIG_ACPI_PROCESSOR_CSTATE). You may also try "idle=poll" as 
+kernel parameter. Or the issue is caused by the firmware (bios). Check power 
+settings there. In the worst case, the behaviour is SMI induced and can't be 
+disabled. Then only a different firmware can help - or a different hardware.
 
-Signed-off-by: Quirin Gylstorff <quirin.gylstorff@siemens.com>
----
- README.md | 7 ++++++-
- 1 file changed, 6 insertions(+), 1 deletion(-)
+Jan
 
-diff --git a/README.md b/README.md
-index e6b2349..f65eac7 100644
---- a/README.md
-+++ b/README.md
-@@ -30,7 +30,12 @@ The QEMU ARM64 target is selected by `... kas.yml:board-qemu-arm64.yml` and
- started via `start-qemu.sh arm64`. Make sure to have `qemu-aarch64-system`
- installed.
- 
--Physical targets will generate ready-to-boot images under
-+### Physical Targets
-+
-+This repository contains recipes for x86 (`board-simatic-ipc227e`),
-+armhf(`board-beagle-bone-black`) and arm64(`board-hikey`) targets.
-+
-+Each physical target will generate ready-to-boot images under
- `build/tmp/deploy/images/`. To flash, e.g., the HiKey image to an SD card, run
- 
-     dd if=build/tmp/deploy/images/hikey/demo-image-hikey-xenomai-demo-hikey.wic.img \
 -- 
-2.20.1
-
+Siemens AG, Corporate Technology, CT RDA IOT SES-DE
+Corporate Competence Center Embedded Linux
 
