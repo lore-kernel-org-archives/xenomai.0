@@ -1,13 +1,10 @@
-Subject: =?UTF-8?B?UmU6IOWbnuWkje+8mlJlOiDlm57lpI3vvJpSZTog5Zue5aSN77yaUmU6?=
- =?UTF-8?Q?_Xenomai_latency=5ftest=5fnot=5fgood?=
-References: <20190909125657.AFA5016600E9@webmail.sinamail.sina.com.cn>
-From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <41bd3db7-0052-851d-bd05-574af5499dfb@siemens.com>
-Date: Mon, 9 Sep 2019 15:56:37 +0200
+From: "Q. Gylstorff" <Quirin.Gylstorff@siemens.com>
+Subject: [PATCH 2/2] debian/rules: Add missing bootstrap step
+Date: Mon,  9 Sep 2019 17:28:42 +0200
+Message-Id: <20190909152842.1326-3-Quirin.Gylstorff@siemens.com>
+In-Reply-To: <20190909152842.1326-1-Quirin.Gylstorff@siemens.com>
+References: <20190909152842.1326-1-Quirin.Gylstorff@siemens.com>
 MIME-Version: 1.0
-In-Reply-To: <20190909125657.AFA5016600E9@webmail.sinamail.sina.com.cn>
-Content-Type: text/plain; charset="utf-8"; format="flowed"
-Content-Language: en-US
 Content-Transfer-Encoding: 8bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
@@ -17,30 +14,38 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: hikwlu@sina.com, xenomai <xenomai@xenomai.org>
+To: xenomai@xenomai.org
 
-On 09.09.19 14:56, 鲁克文 wrote:
-> Dear Jan:
-> 
-> For the graphic thing, our system really needs graphic, it could not be removed. 
-> Otherwise, I saw articles that someone got very low latency also in some X86 
-> ubuntu-desktop version, so I wonder whether the graphic is the key factor to the 
-> realtime system.
+From: Quirin Gylstorff <quirin.gylstorff@siemens.com>
 
-Every system is different. And graphic != graphic (only framebuffer, GPU 
-acceleration etc.).
+To build a debian package it is necessary to execute
+scripts/bootstrap to generate the configure. Add the missing
+ step to the debian rules file.
 
-> 
-> For your second point: "Try that with a vanilla kernel on your hardware."  You 
-> mean I can use the hardware latency detector to test my kernel?
-> 
+Signed-off-by: Quirin Gylstorff <quirin.gylstorff@siemens.com>
+---
+ debian/rules | 7 ++++++-
+ 1 file changed, 6 insertions(+), 1 deletion(-)
 
-The hardware latency detector tests the hardware. But this feature is not 
-supported by the I-pipe kernel, therefore use a vanilla one.
-
-Jan
-
+diff --git a/debian/rules b/debian/rules
+index 3d5729c22..08562c7ab 100755
+--- a/debian/rules
++++ b/debian/rules
+@@ -38,7 +38,12 @@ build-indep-stamp: config.status
+ 	dh_testdir
+ 	touch build-indep-stamp
+ 
+-config.status: configure-stamp
++config.status: bootstrap configure-stamp
++
++bootstrap:
++	dh_testdir
++	./scripts/bootstrap
++
+ configure-stamp:
+ 	dh_testdir
+ 	./configure $(CONFIG_OPTS)
 -- 
-Siemens AG, Corporate Technology, CT RDA IOT SES-DE
-Corporate Competence Center Embedded Linux
+2.20.1
+
 
