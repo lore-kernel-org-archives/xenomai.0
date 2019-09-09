@@ -1,13 +1,14 @@
-Subject: Re: [xenomai-images][PATCH 0/3] Update for ci
-References: <20190827090752.13072-1-Quirin.Gylstorff@siemens.com>
+Subject: =?UTF-8?B?UmU6IOWbnuWkje+8mlJlOiDlm57lpI3vvJpSZTog5Zue5aSN77yaUmU6?=
+ =?UTF-8?Q?_Xenomai_latency=5ftest=5fnot=5fgood?=
+References: <20190909125657.AFA5016600E9@webmail.sinamail.sina.com.cn>
 From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <fdb90082-4102-e7c5-1dda-b35f0b252b8a@siemens.com>
-Date: Tue, 27 Aug 2019 11:15:44 +0200
+Message-ID: <41bd3db7-0052-851d-bd05-574af5499dfb@siemens.com>
+Date: Mon, 9 Sep 2019 15:56:37 +0200
 MIME-Version: 1.0
-In-Reply-To: <20190827090752.13072-1-Quirin.Gylstorff@siemens.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
+In-Reply-To: <20190909125657.AFA5016600E9@webmail.sinamail.sina.com.cn>
+Content-Type: text/plain; charset="utf-8"; format="flowed"
 Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,26 +17,26 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "Q. Gylstorff" <Quirin.Gylstorff@siemens.com>, xenomai@xenomai.org
+To: hikwlu@sina.com, xenomai <xenomai@xenomai.org>
 
-On 27.08.19 11:07, Q. Gylstorff wrote:
-> From: Quirin Gylstorff <quirin.gylstorff@siemens.com>
+On 09.09.19 14:56, 鲁克文 wrote:
+> Dear Jan:
 > 
-> Add all supported targets to ci and mention the targets in README.
-> Fix arm64 builds in ci.
+> For the graphic thing, our system really needs graphic, it could not be removed. 
+> Otherwise, I saw articles that someone got very low latency also in some X86 
+> ubuntu-desktop version, so I wonder whether the graphic is the key factor to the 
+> realtime system.
+
+Every system is different. And graphic != graphic (only framebuffer, GPU 
+acceleration etc.).
+
 > 
-> Quirin Gylstorff (3):
->    README: Add subsection physical targets
->    ci: Add new boards to ci
->    distro/include: Allow overwrite PREFERRED_VERSION
-> 
->   .gitlab-ci.yml                          | 18 ++++++++++++++----
->   README.md                               |  7 ++++++-
->   conf/distro/include/xenomai-version.inc |  2 +-
->   3 files changed, 21 insertions(+), 6 deletions(-)
+> For your second point: "Try that with a vanilla kernel on your hardware."  You 
+> mean I can use the hardware latency detector to test my kernel?
 > 
 
-Thanks, applied.
+The hardware latency detector tests the hardware. But this feature is not 
+supported by the I-pipe kernel, therefore use a vanilla one.
 
 Jan
 
