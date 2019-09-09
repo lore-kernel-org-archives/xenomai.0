@@ -1,13 +1,14 @@
-Date: Mon, 09 Sep 2019 20:31:03 +0800
-Reply-To: hikwlu@sina.com
-From: "=?GBK?B?wrO/y87E?=" <hikwlu@sina.com>
-Subject: =?GBK?B?u9i4tKO6u9i4tKO6UmU6ILvYuLSjulJlOiBYZW5vbWFpIGxhdGVuY3kgdGVzdCBub3QgZ29vZA==?=
+Subject: =?UTF-8?B?UmU6IOWbnuWkje+8mlJlOiDlm57lpI3vvJpSZTogWGVub21haSBsYXRl?=
+ =?UTF-8?Q?ncy_test_not_good?=
+References: <20190909114819.B2EC416600E9@webmail.sinamail.sina.com.cn>
+From: Jan Kiszka <jan.kiszka@siemens.com>
+Message-ID: <4a03bd09-4f50-2f23-5ffc-520d2a7e3771@siemens.com>
+Date: Mon, 9 Sep 2019 14:34:11 +0200
 MIME-Version: 1.0
-Message-Id: <20190909123103.052BE16600E9@webmail.sinamail.sina.com.cn>
-Content-Type: text/plain;
-	charset=GBK
-Content-Transfer-Encoding: base64
-Content-Disposition: inline
+In-Reply-To: <20190909114819.B2EC416600E9@webmail.sinamail.sina.com.cn>
+Content-Type: text/plain; charset="utf-8"; format="flowed"
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,82 +17,94 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jan Kiszka <jan.kiszka@siemens.com>, xenomai <xenomai@xenomai.org>
+To: hikwlu@sina.com, xenomai <xenomai@xenomai.org>
 
-RGVhciBKYW4gS2lzemthOgpGb3IgeW91ciBvcGluaW9uIHRoYXQgdGhlIGxhcmdlIGxhdGVuY3kg
-Y291bGQgYmUgY2F1c2VkIGJ5IHRoZSBTTUksYW5kIEkgYWRkIG1zci10b29scyB0byB0aGUgc3lz
-dGVtLkFjY29yZGluZyB0byB0aGUgYXJ0aWNsZToiRGVhbGluZ19XaXRoX1g4Nl9TbWlfVHJvdWJs
-ZXMiCkkgcmVjb3JkIHRoZSB2YWx1ZSAocmRtc3IgMHgzNCApIGJlZm9yZSB0aGUgbGF0ZW5jeSB0
-ZXN0LGFuZCBhZnRlciB0aGUgbGF0ZW5jeSB0ZXN0LCBJIHJlY29yZCBpdCBhZ2FpbiwgYW5kIHRo
-ZSB2YWx1ZSBzZWVtcyBubyBjaGFuZ2UsIGFsd2F5cyA6MHhlNzIuCkhvdyBjYW4gd2UgZXhwbGFp
-biBhYm91dCB0aGlzPyAKCgoKLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0KIApCZXN0
-IHJlZ2FyZHMKS2V2aW4KCi0tLS0tINStyrzTyrz+IC0tLS0tCreivP7Iy6O6wrO/y87EIHZpYSBY
-ZW5vbWFpIDx4ZW5vbWFpQHhlbm9tYWkub3JnPgrK1bz+yMujuiJKYW4gS2lzemthIiA8amFuLmtp
-c3prYUBzaWVtZW5zLmNvbT4sICJ4ZW5vbWFpIiA8eGVub21haUB4ZW5vbWFpLm9yZz4K1vfM4qO6
-u9i4tKO6UmU6ILvYuLSjulJlOiBYZW5vbWFpIGxhdGVuY3kgdGVzdCBub3QgZ29vZArI1cbao7oy
-MDE5xOowOdTCMDnI1SAxObXjNDi31goKRGVhciBKYW4gS2lzemthClRoYW5rcyBmb3IgeW91ciBy
-ZXBseS5BbmQgSSBhZGQgImlkbGU9cG9sbCIgdG8gdGhlIGtlcm5lbCBwYXJhbWV0ZXIsIGJ1dCBp
-dCByZXN1bHRzIG5vIGhlbHA7YW5kIEkgZW50ZXIgdGhlIEJJT1Mgc2V0dXAgd2luZG93IGFuZCBk
-aXNhYmxlIHNvbWUgQUNQSSBzZXR0aW5nLGFsc28gbm8gaGVscC4KRm9yIHRoZSBsYXRlbmN5IHRl
-c3Q6KDEpd2hlbiBzeXN0ZW0gaXMgc3RhcnR1cCwgYW5kIGp1c3QgcnVuIGxhdGVuY3kgdGVzdCwg
-dGhlIGxhdGVuY3kgaXMgbm90IHZlcnkgbGFyZ2UsIGp1c3QgYWJvdXQgMTMgbWljcm8tc2Vjb25k
-OygyKSB3aGVuIEkgcnVuIGxhdGVuY3kgdGVzdCwgYW5kIHRoZW4gc3RhcnQgRmlyZWZveCB0byBk
-byBzb21lIHdlYi1icm93c2luZywgYXMgYWNjZXNzIHdlYnNpdGUgbGlrZTogd3d3LnNpbmEuY29t
-LmNuLCB0aGUgbGF0ZW5jeSBzdWRkZW5seSBnb2VzIGhpZ2hlciBhcyBodW5kcmVkcyBvZiBtaXJj
-by1zZWNvbmQuIEkgd29uZGVyIHdoZXRoZXIgdGhpcyBwaGVub21lbm9uIGNvdWxkIGhlbHAgdXMu
-CkFsc28sIGZvciB0aGUgU01JIHRoaW5nLCBjb3VsZCBJIGp1c3QgdXNlIG1zci10b29scyB0byB2
-ZXJpZnkgdGhhdCB0aGUgcmVhbHRpbWUgc3lzdGVtIGlzIHJlYWxseSBpbmZsdWVuY2VkIGJ5IHRo
-ZSBTTUkgdGhpbmc/IAotLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLQogCkJlc3QgcmVn
-YXJkcwpLZXZpbgotLS0tLSDUrcq808q8/iAtLS0tLQq3orz+yMujukphbiBLaXN6a2EgPGphbi5r
-aXN6a2FAc2llbWVucy5jb20+CsrVvP7Iy6O6aGlrd2x1QHNpbmEuY29tLCB4ZW5vbWFpIDx4ZW5v
-bWFpQHhlbm9tYWkub3JnPgrW98zio7pSZTogu9i4tKO6UmU6IFhlbm9tYWkgbGF0ZW5jeSB0ZXN0
-IG5vdCBnb29kCsjVxtqjujIwMTnE6jA51MIwOcjVIDE5teMxObfWCk9uIDA5LjA5LjE5IDEyOjE0
-LCDCs7/LzsQgd3JvdGU6Cj4gRGVhciBKYW4gS2lzemthOgo+IAo+IEkgcmUtZW5hYmxlIEFDUElf
-UFJPQ0VTU09SIGluIHRoZSBrZXJuZWwsIGJ1dCBhbHNvIHRoZSBsYXRlbmN5IHRlc3Qgc2VlbXMg
-bm8gCj4gZ29vZCxhdHRhY2hlZCBmaWxlIGlzIHRoZSBuZXcga2VybmVsIGNvbmZpZyBmaWxlLgo+
-IAo+IC8qKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioq
-KioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKiovCj4gUlRUfCAgMDA6MDE6
-MDQgIChwZXJpb2RpYyB1c2VyLW1vZGUgdGFzaywgMTAwIHVzIHBlcmlvZCwgcHJpb3JpdHkgOTkp
-Cj4gUlRIfC0tLS1sYXQgbWlufC0tLS1sYXQgYXZnfC0tLS1sYXQgbWF4fC1vdmVycnVufC0tLW1z
-d3wtLS1sYXQgYmVzdHwtLWxhdCB3b3JzdAo+IFJURHwgICAgICAwLjA3MnwgICAgICAwLjc4NXwg
-ICAgIDE5LjcxMnwgICAgICAgMnwgICAgIDB8ICAgICAtMC4xNzd8ICAgIDEzMS4yODQKPiBSVER8
-ICAgICAgMC4wOTZ8ICAgICAgMi4yODB8ICAgICAxNS43MDF8ICAgICAgIDJ8ICAgICAwfCAgICAg
-LTAuMTc3fCAgICAxMzEuMjg0Cj4gUlREfCAgICAgIDAuMDU5fCAgICAgIDEuNTczfCAgICAgMTIu
-ODY4fCAgICAgICAyfCAgICAgMHwgICAgIC0wLjE3N3wgICAgMTMxLjI4NAo+IFJURHwgICAgICAw
-LjA1OHwgICAgICAyLjUxMnwgICAgIDI1LjU0NXwgICAgICAgMnwgICAgIDB8ICAgICAtMC4xNzd8
-ICAgIDEzMS4yODQKPiBSVER8ICAgICAgMC4yODZ8ICAgICAgMS45Mjh8ICAgIDE1My42MTF8ICAg
-ICAgIDN8ICAgICAwfCAgICAgLTAuMTc3fCAgICAxNTMuNjExCj4gUlREfCAgICAgIDAuMjg1fCAg
-ICAgIDIuODM0fCAgICAgMTcuMDMyfCAgICAgICAzfCAgICAgMHwgICAgIC0wLjE3N3wgICAgMTUz
-LjYxMQo+IFJURHwgICAgICAwLjEyOHwgICAgICAyLjEwNHwgICAgIDI2LjQ2N3wgICAgICAgM3wg
-ICAgIDB8ICAgICAtMC4xNzd8ICAgIDE1My42MTEKPiBSVER8ICAgICAgMC4xNDB8ICAgICAgMS4x
-MDV8ICAgICAxNC45Nzh8ICAgICAgIDN8ICAgICAwfCAgICAgLTAuMTc3fCAgICAxNTMuNjExCj4g
-UlREfCAgICAgIDAuMTYzfCAgICAgIDAuOTUwfCAgICAgMTIuNzA4fCAgICAgICAzfCAgICAgMHwg
-ICAgIC0wLjE3N3wgICAgMTUzLjYxMQo+IFJURHwgICAgICAwLjE5OXwgICAgICAxLjAxMnwgICAg
-IDE1LjEwOXwgICAgICAgM3wgICAgIDB8ICAgICAtMC4xNzd8ICAgIDE1My42MTEKPiBSVER8ICAg
-ICAgMC4wNDJ8ICAgICAgMS4wMDd8ICAgICAxMC41MTF8ICAgICAgIDN8ICAgICAwfCAgICAgLTAu
-MTc3fCAgICAxNTMuNjExCj4gUlREfCAgICAgIDAuMTAyfCAgICAgIDAuNzYzfCAgICAxMjUuNjg0
-fCAgICAgICA0fCAgICAgMHwgICAgIC0wLjE3N3wgICAgMTUzLjYxMQo+IFJURHwgICAgICAwLjEz
-OHwgICAgICAwLjgxMHwgICAgIDEyLjIyNnwgICAgICAgNHwgICAgIDB8ICAgICAtMC4xNzd8ICAg
-IDE1My42MTEKPiBSVER8ICAgICAgMC4xMjV8ICAgICAgMS4zMTJ8ICAgICAxMy44NTh8ICAgICAg
-IDR8ICAgICAwfCAgICAgLTAuMTc3fCAgICAxNTMuNjExCj4gUlREfCAgICAgIDAuMjU2fCAgICAg
-IDAuODU0fCAgICAgNjcuMDM5fCAgICAgICA0fCAgICAgMHwgICAgIC0wLjE3N3wgICAgMTUzLjYx
-MQo+IFJURHwgICAgICAwLjI4MHwgICAgICAwLjg0MXwgICAgIDE0LjIwNXwgICAgICAgNHwgICAg
-IDB8ICAgICAtMC4xNzd8ICAgIDE1My42MTEKPiBSVER8ICAgICAgMC4wOTl8ICAgICAgMC42MzF8
-ICAgICA3Ni4xODV8ICAgICAgIDR8ICAgICAwfCAgICAgLTAuMTc3fCAgICAxNTMuNjExCj4gUlRE
-fCAgICAgIDAuMjMwfCAgICAgIDAuOTUzfCAgICAgMTYuMDQxfCAgICAgICA0fCAgICAgMHwgICAg
-IC0wLjE3N3wgICAgMTUzLjYxMQo+IFJURHwgICAgICAwLjA4NnwgICAgICAwLjk4NXwgICAgIDY1
-LjQxNnwgICAgICAgNHwgICAgIDB8ICAgICAtMC4xNzd8ICAgIDE1My42MTEKPiBSVER8ICAgICAg
-MC4xMTB8ICAgICAgMC44NTZ8ICAgICAxOC4zNTd8ICAgICAgIDR8ICAgICAwfCAgICAgLTAuMTc3
-fCAgICAxNTMuNjExCj4gLyoqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioq
-KioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKi8KPiAKWWVhaCwgdGhl
-c2UgbnVtYmVycyBhcmUgc3RpbGwgb2ZmLiBMaWtlbHksIHdlIHNlZSBzb21lIHBvd2VyIG1hbmFn
-ZW1lbnQgZWZmZWN0cy4gClRoZXkgbWlnaHQgYmUgdHJpZ2dlcmVkIGJ5IExpbnV4LCBhbmQgdGhl
-biBzb21lIGtlcm5lbCBzd2l0Y2ggY2FuIGRvIHRoZSBtYWdpYyAKKGNoZWNrIGUuZy4gQ09ORklH
-X0FDUElfUFJPQ0VTU09SX0NTVEFURSkuIFlvdSBtYXkgYWxzbyB0cnkgImlkbGU9cG9sbCIgYXMg
-Cmtlcm5lbCBwYXJhbWV0ZXIuIE9yIHRoZSBpc3N1ZSBpcyBjYXVzZWQgYnkgdGhlIGZpcm13YXJl
-IChiaW9zKS4gQ2hlY2sgcG93ZXIgCnNldHRpbmdzIHRoZXJlLiBJbiB0aGUgd29yc3QgY2FzZSwg
-dGhlIGJlaGF2aW91ciBpcyBTTUkgaW5kdWNlZCBhbmQgY2FuJ3QgYmUgCmRpc2FibGVkLiBUaGVu
-IG9ubHkgYSBkaWZmZXJlbnQgZmlybXdhcmUgY2FuIGhlbHAgLSBvciBhIGRpZmZlcmVudCBoYXJk
-d2FyZS4KSmFuCi0tIApTaWVtZW5zIEFHLCBDb3Jwb3JhdGUgVGVjaG5vbG9neSwgQ1QgUkRBIElP
-VCBTRVMtREUKQ29ycG9yYXRlIENvbXBldGVuY2UgQ2VudGVyIEVtYmVkZGVkIExpbnV4Cg==
+On 09.09.19 13:48, 鲁克文 wrote:
+> Dear Jan Kiszka
+> 
+> Thanks for your reply.
+> And I add "idle=poll" to the kernel parameter, but it results no help;and I 
+> enter the BIOS setup window and disable some ACPI setting,also no help.
+> 
+> For the latency test:(1)when system is startup, and just run latency test, the 
+> latency is not very large, just about 13 micro-second;(2) when I run latency 
+> test, and then start Firefox to do some web-browsing, as access website like: 
+> www.sina.com.cn, the latency suddenly goes higher as hundreds of mirco-second. I 
+> wonder whether this phenomenon could help us.
+> 
+
+You mean that  you have a graphic desktop running? Try without that. GPUs may 
+cause hardware-related latencies as well.
+
+> Also, for the SMI thing, could I just use msr-tools to verify that the realtime 
+> system is really influenced by the SMI thing?
+> 
+
+The mainline kernel has the Hardware Latency Detector (see 
+linux/Documentation/trace/hwlat_detector.rst). Try that with a vanilla kernel on 
+your hardware.
+
+Jan
+
+> 
+> --------------------------------
+> 
+> Best regards
+> Kevin
+> 
+> ----- 原始邮件 -----
+> 发件人：Jan Kiszka <jan.kiszka@siemens.com>
+> 收件人：hikwlu@sina.com, xenomai <xenomai@xenomai.org>
+> 主题：Re: 回复：Re: Xenomai latency test not good
+> 日期：2019年09月09日 19点19分
+> 
+> 
+> On 09.09.19 12:14, 鲁克文 wrote:
+>  > Dear Jan Kiszka:
+>  >
+>  > I re-enable ACPI_PROCESSOR in the kernel, but also the latency test seems no
+>  > good,attached file is the new kernel config file.
+>  >
+>  > 
+> /*********************************************************************************************/
+>  > RTT|  00:01:04  (periodic user-mode task, 100 us period, priority 99)
+>  > RTH|----lat min|----lat avg|----lat max|-overrun|---msw|---lat best|--lat worst
+>  > RTD|      0.072|      0.785|     19.712|       2|     0|     -0.177|    131.284
+>  > RTD|      0.096|      2.280|     15.701|       2|     0|     -0.177|    131.284
+>  > RTD|      0.059|      1.573|     12.868|       2|     0|     -0.177|    131.284
+>  > RTD|      0.058|      2.512|     25.545|       2|     0|     -0.177|    131.284
+>  > RTD|      0.286|      1.928|    153.611|       3|     0|     -0.177|    153.611
+>  > RTD|      0.285|      2.834|     17.032|       3|     0|     -0.177|    153.611
+>  > RTD|      0.128|      2.104|     26.467|       3|     0|     -0.177|    153.611
+>  > RTD|      0.140|      1.105|     14.978|       3|     0|     -0.177|    153.611
+>  > RTD|      0.163|      0.950|     12.708|       3|     0|     -0.177|    153.611
+>  > RTD|      0.199|      1.012|     15.109|       3|     0|     -0.177|    153.611
+>  > RTD|      0.042|      1.007|     10.511|       3|     0|     -0.177|    153.611
+>  > RTD|      0.102|      0.763|    125.684|       4|     0|     -0.177|    153.611
+>  > RTD|      0.138|      0.810|     12.226|       4|     0|     -0.177|    153.611
+>  > RTD|      0.125|      1.312|     13.858|       4|     0|     -0.177|    153.611
+>  > RTD|      0.256|      0.854|     67.039|       4|     0|     -0.177|    153.611
+>  > RTD|      0.280|      0.841|     14.205|       4|     0|     -0.177|    153.611
+>  > RTD|      0.099|      0.631|     76.185|       4|     0|     -0.177|    153.611
+>  > RTD|      0.230|      0.953|     16.041|       4|     0|     -0.177|    153.611
+>  > RTD|      0.086|      0.985|     65.416|       4|     0|     -0.177|    153.611
+>  > RTD|      0.110|      0.856|     18.357|       4|     0|     -0.177|    153.611
+>  > 
+> /************************************************************************************/
+>  >
+> Yeah, these numbers are still off. Likely, we see some power management effects.
+> They might be triggered by Linux, and then some kernel switch can do the magic
+> (check e.g. CONFIG_ACPI_PROCESSOR_CSTATE). You may also try "idle=poll" as
+> kernel parameter. Or the issue is caused by the firmware (bios). Check power
+> settings there. In the worst case, the behaviour is SMI induced and can't be
+> disabled. Then only a different firmware can help - or a different hardware.
+> Jan
+> -- 
+> Siemens AG, Corporate Technology, CT RDA IOT SES-DE
+> Corporate Competence Center Embedded Linux
+
+
+-- 
+Siemens AG, Corporate Technology, CT RDA IOT SES-DE
+Corporate Competence Center Embedded Linux
 
