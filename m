@@ -1,9 +1,7 @@
 From: "Q. Gylstorff" <Quirin.Gylstorff@siemens.com>
-Subject: [PATCH 2/2] debian/rules: Add missing bootstrap step
-Date: Mon,  9 Sep 2019 17:28:42 +0200
-Message-Id: <20190909152842.1326-3-Quirin.Gylstorff@siemens.com>
-In-Reply-To: <20190909152842.1326-1-Quirin.Gylstorff@siemens.com>
-References: <20190909152842.1326-1-Quirin.Gylstorff@siemens.com>
+Subject: [PATCH 0/2] Debian build
+Date: Mon,  9 Sep 2019 17:28:40 +0200
+Message-Id: <20190909152842.1326-1-Quirin.Gylstorff@siemens.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
@@ -18,33 +16,17 @@ To: xenomai@xenomai.org
 
 From: Quirin Gylstorff <quirin.gylstorff@siemens.com>
 
-To build a debian package it is necessary to execute
-scripts/bootstrap to generate the configure. Add the missing
- step to the debian rules file.
+Add missing dependencies for xeno-test and add missing
+ bootstrap step to build a debian package.
 
-Signed-off-by: Quirin Gylstorff <quirin.gylstorff@siemens.com>
----
- debian/rules | 7 ++++++-
- 1 file changed, 6 insertions(+), 1 deletion(-)
+Quirin Gylstorff (2):
+  debian/control: Add dependencies for xenomai-testsuite
+  debian/rules: Add missing bootstrap step
 
-diff --git a/debian/rules b/debian/rules
-index 3d5729c22..08562c7ab 100755
---- a/debian/rules
-+++ b/debian/rules
-@@ -38,7 +38,12 @@ build-indep-stamp: config.status
- 	dh_testdir
- 	touch build-indep-stamp
- 
--config.status: configure-stamp
-+config.status: bootstrap configure-stamp
-+
-+bootstrap:
-+	dh_testdir
-+	./scripts/bootstrap
-+
- configure-stamp:
- 	dh_testdir
- 	./configure $(CONFIG_OPTS)
+ debian/control | 2 +-
+ debian/rules   | 7 ++++++-
+ 2 files changed, 7 insertions(+), 2 deletions(-)
+
 -- 
 2.20.1
 
