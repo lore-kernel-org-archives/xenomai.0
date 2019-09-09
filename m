@@ -1,11 +1,12 @@
-From: "Q. Gylstorff" <Quirin.Gylstorff@siemens.com>
-Subject: [PATCH 1/2] debian/control: Add dependencies for xenomai-testsuite
-Date: Mon,  9 Sep 2019 17:28:41 +0200
-Message-Id: <20190909152842.1326-2-Quirin.Gylstorff@siemens.com>
-In-Reply-To: <20190909152842.1326-1-Quirin.Gylstorff@siemens.com>
-References: <20190909152842.1326-1-Quirin.Gylstorff@siemens.com>
+From: Jan Kiszka <jan.kiszka@siemens.com>
+Subject: [PATCH] drivers/can: Fix gcc-8 warning about improper string
+ concatenation
+Message-ID: <70b00d9f-8c70-e8e7-2ee4-7934e4e526bf@siemens.com>
+Date: Mon, 9 Sep 2019 20:41:33 +0200
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -14,37 +15,39 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
+To: Xenomai <xenomai@xenomai.org>
 
-From: Quirin Gylstorff <quirin.gylstorff@siemens.com>
+From: Jan Kiszka <jan.kiszka@siemens.com>
 
-xeno-test is using killall(from package psmisc) and nc(from package netcat).
-Add the packages as dependencies to the control file.
+The compiler correctly remarks that strncat was used with the target
+buffer size as input, ignoring the required space for the terminating
+\0 - not to speak of the fact the we did this two times in a row.
 
-hackbench is also used, but as it is part of rt-tests it cannot be included.
-rt-tests conflicts with xenomai-runtime due to [1].
-
-[1] https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=529783
-
-Signed-off-by: Quirin Gylstorff <quirin.gylstorff@siemens.com>
+Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
 ---
- debian/control | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ kernel/drivers/can/rtcan_module.c | 8 +++-----
+ 1 file changed, 3 insertions(+), 5 deletions(-)
 
-diff --git a/debian/control b/debian/control
-index 477b16d9f..2fda4e961 100644
---- a/debian/control
-+++ b/debian/control
-@@ -9,7 +9,7 @@ Homepage: http://www.xenomai.org/
- Package: xenomai-runtime
- Section: devel
- Architecture: amd64 arm armeb armel armhf arm64 i386 powerpc powerpcspe
--Depends: ${shlibs:Depends}, ${misc:Depends}
-+Depends: ${shlibs:Depends}, ${misc:Depends}, psmisc, netcat
- Suggests: xenomai-kernel-source
- Replaces: xenomai
- Conflicts: xenomai
+diff --git a/kernel/drivers/can/rtcan_module.c b/kernel/drivers/can/rtcan_module.c
+index 97beb457d0..eca8acb8cf 100644
+--- a/kernel/drivers/can/rtcan_module.c
++++ b/kernel/drivers/can/rtcan_module.c
+@@ -47,11 +47,9 @@ struct proc_dir_entry *rtcan_proc_root;
+ static void rtcan_dev_get_ctrlmode_name(can_ctrlmode_t ctrlmode,
+ 					char* name, int max_len)
+ {
+-    *name = '\0';
+-    if (ctrlmode & CAN_CTRLMODE_LISTENONLY)
+-	strncat(name, "listen-only ", max_len);
+-    if (ctrlmode & CAN_CTRLMODE_LOOPBACK)
+-	strncat(name, "loopback ", max_len);
++    snprintf(name, max_len, "%s%s",
++	     ctrlmode & CAN_CTRLMODE_LISTENONLY ? "listen-only " : "",
++	     ctrlmode & CAN_CTRLMODE_LOOPBACK ? "loopback " : "");
+ }
+ 
+ static char *rtcan_state_names[] = {
 -- 
-2.20.1
 
+2.16.4
 
