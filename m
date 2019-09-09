@@ -1,14 +1,13 @@
-Subject: =?UTF-8?B?UmU6IOWbnuWkje+8mlJlOiBYZW5vbWFpIGxhdGVuY3kgdGVzdCBub3Qg?=
- =?UTF-8?Q?good?=
-References: <20190909101439.9449F16600E9@webmail.sinamail.sina.com.cn>
-From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <4fe2fcea-a86f-1d0e-996b-62d44aa2d2ac@siemens.com>
-Date: Mon, 9 Sep 2019 13:19:43 +0200
+Date: Mon, 09 Sep 2019 19:48:19 +0800
+Reply-To: hikwlu@sina.com
+From: "=?GBK?B?wrO/y87E?=" <hikwlu@sina.com>
+Subject: =?GBK?B?u9i4tKO6UmU6ILvYuLSjulJlOiBYZW5vbWFpIGxhdGVuY3kgdGVzdCBub3QgZ29vZA==?=
 MIME-Version: 1.0
-In-Reply-To: <20190909101439.9449F16600E9@webmail.sinamail.sina.com.cn>
-Content-Type: text/plain; charset="utf-8"; format="flowed"
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+Message-Id: <20190909114819.B2EC416600E9@webmail.sinamail.sina.com.cn>
+Content-Type: text/plain;
+	charset=GBK
+Content-Transfer-Encoding: base64
+Content-Disposition: inline
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,50 +16,71 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: hikwlu@sina.com, xenomai <xenomai@xenomai.org>
+To: Jan Kiszka <jan.kiszka@siemens.com>, xenomai <xenomai@xenomai.org>
 
-On 09.09.19 12:14, 鲁克文 wrote:
-> Dear Jan Kiszka:
-> 
-> I re-enable ACPI_PROCESSOR in the kernel, but also the latency test seems no 
-> good,attached file is the new kernel config file.
-> 
-> /*********************************************************************************************/
-> RTT|  00:01:04  (periodic user-mode task, 100 us period, priority 99)
-> RTH|----lat min|----lat avg|----lat max|-overrun|---msw|---lat best|--lat worst
-> RTD|      0.072|      0.785|     19.712|       2|     0|     -0.177|    131.284
-> RTD|      0.096|      2.280|     15.701|       2|     0|     -0.177|    131.284
-> RTD|      0.059|      1.573|     12.868|       2|     0|     -0.177|    131.284
-> RTD|      0.058|      2.512|     25.545|       2|     0|     -0.177|    131.284
-> RTD|      0.286|      1.928|    153.611|       3|     0|     -0.177|    153.611
-> RTD|      0.285|      2.834|     17.032|       3|     0|     -0.177|    153.611
-> RTD|      0.128|      2.104|     26.467|       3|     0|     -0.177|    153.611
-> RTD|      0.140|      1.105|     14.978|       3|     0|     -0.177|    153.611
-> RTD|      0.163|      0.950|     12.708|       3|     0|     -0.177|    153.611
-> RTD|      0.199|      1.012|     15.109|       3|     0|     -0.177|    153.611
-> RTD|      0.042|      1.007|     10.511|       3|     0|     -0.177|    153.611
-> RTD|      0.102|      0.763|    125.684|       4|     0|     -0.177|    153.611
-> RTD|      0.138|      0.810|     12.226|       4|     0|     -0.177|    153.611
-> RTD|      0.125|      1.312|     13.858|       4|     0|     -0.177|    153.611
-> RTD|      0.256|      0.854|     67.039|       4|     0|     -0.177|    153.611
-> RTD|      0.280|      0.841|     14.205|       4|     0|     -0.177|    153.611
-> RTD|      0.099|      0.631|     76.185|       4|     0|     -0.177|    153.611
-> RTD|      0.230|      0.953|     16.041|       4|     0|     -0.177|    153.611
-> RTD|      0.086|      0.985|     65.416|       4|     0|     -0.177|    153.611
-> RTD|      0.110|      0.856|     18.357|       4|     0|     -0.177|    153.611
-> /************************************************************************************/
-> 
-
-Yeah, these numbers are still off. Likely, we see some power management effects. 
-They might be triggered by Linux, and then some kernel switch can do the magic 
-(check e.g. CONFIG_ACPI_PROCESSOR_CSTATE). You may also try "idle=poll" as 
-kernel parameter. Or the issue is caused by the firmware (bios). Check power 
-settings there. In the worst case, the behaviour is SMI induced and can't be 
-disabled. Then only a different firmware can help - or a different hardware.
-
-Jan
-
--- 
-Siemens AG, Corporate Technology, CT RDA IOT SES-DE
-Corporate Competence Center Embedded Linux
+RGVhciBKYW4gS2lzemthCgpUaGFua3MgZm9yIHlvdXIgcmVwbHkuQW5kIEkgYWRkICJpZGxlPXBv
+bGwiIHRvIHRoZSBrZXJuZWwgcGFyYW1ldGVyLCBidXQgaXQgcmVzdWx0cyBubyBoZWxwO2FuZCBJ
+IGVudGVyIHRoZSBCSU9TIHNldHVwIHdpbmRvdyBhbmQgZGlzYWJsZSBzb21lIEFDUEkgc2V0dGlu
+ZyxhbHNvIG5vIGhlbHAuCkZvciB0aGUgbGF0ZW5jeSB0ZXN0OigxKXdoZW4gc3lzdGVtIGlzIHN0
+YXJ0dXAsIGFuZCBqdXN0IHJ1biBsYXRlbmN5IHRlc3QsIHRoZSBsYXRlbmN5IGlzIG5vdCB2ZXJ5
+IGxhcmdlLCBqdXN0IGFib3V0IDEzIG1pY3JvLXNlY29uZDsoMikgd2hlbiBJIHJ1biBsYXRlbmN5
+IHRlc3QsIGFuZCB0aGVuIHN0YXJ0IEZpcmVmb3ggdG8gZG8gc29tZSB3ZWItYnJvd3NpbmcsIGFz
+IGFjY2VzcyB3ZWJzaXRlIGxpa2U6IHd3dy5zaW5hLmNvbS5jbiwgdGhlIGxhdGVuY3kgc3VkZGVu
+bHkgZ29lcyBoaWdoZXIgYXMgaHVuZHJlZHMgb2YgbWlyY28tc2Vjb25kLiBJIHdvbmRlciB3aGV0
+aGVyIHRoaXMgcGhlbm9tZW5vbiBjb3VsZCBoZWxwIHVzLgpBbHNvLCBmb3IgdGhlIFNNSSB0aGlu
+ZywgY291bGQgSSBqdXN0IHVzZSBtc3ItdG9vbHMgdG8gdmVyaWZ5IHRoYXQgdGhlIHJlYWx0aW1l
+IHN5c3RlbSBpcyByZWFsbHkgaW5mbHVlbmNlZCBieSB0aGUgU01JIHRoaW5nPyAKCi0tLS0tLS0t
+LS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tCiAKQmVzdCByZWdhcmRzCktldmluCgotLS0tLSDUrcq8
+08q8/iAtLS0tLQq3orz+yMujukphbiBLaXN6a2EgPGphbi5raXN6a2FAc2llbWVucy5jb20+CsrV
+vP7Iy6O6aGlrd2x1QHNpbmEuY29tLCB4ZW5vbWFpIDx4ZW5vbWFpQHhlbm9tYWkub3JnPgrW98zi
+o7pSZTogu9i4tKO6UmU6IFhlbm9tYWkgbGF0ZW5jeSB0ZXN0IG5vdCBnb29kCsjVxtqjujIwMTnE
+6jA51MIwOcjVIDE5teMxObfWCgoKT24gMDkuMDkuMTkgMTI6MTQsIMKzv8vOxCB3cm90ZToKPiBE
+ZWFyIEphbiBLaXN6a2E6Cj4gCj4gSSByZS1lbmFibGUgQUNQSV9QUk9DRVNTT1IgaW4gdGhlIGtl
+cm5lbCwgYnV0IGFsc28gdGhlIGxhdGVuY3kgdGVzdCBzZWVtcyBubyAKPiBnb29kLGF0dGFjaGVk
+IGZpbGUgaXMgdGhlIG5ldyBrZXJuZWwgY29uZmlnIGZpbGUuCj4gCj4gLyoqKioqKioqKioqKioq
+KioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioq
+KioqKioqKioqKioqKioqKioqKioqKi8KPiBSVFR8ICAwMDowMTowNCAgKHBlcmlvZGljIHVzZXIt
+bW9kZSB0YXNrLCAxMDAgdXMgcGVyaW9kLCBwcmlvcml0eSA5OSkKPiBSVEh8LS0tLWxhdCBtaW58
+LS0tLWxhdCBhdmd8LS0tLWxhdCBtYXh8LW92ZXJydW58LS0tbXN3fC0tLWxhdCBiZXN0fC0tbGF0
+IHdvcnN0Cj4gUlREfCAgICAgIDAuMDcyfCAgICAgIDAuNzg1fCAgICAgMTkuNzEyfCAgICAgICAy
+fCAgICAgMHwgICAgIC0wLjE3N3wgICAgMTMxLjI4NAo+IFJURHwgICAgICAwLjA5NnwgICAgICAy
+LjI4MHwgICAgIDE1LjcwMXwgICAgICAgMnwgICAgIDB8ICAgICAtMC4xNzd8ICAgIDEzMS4yODQK
+PiBSVER8ICAgICAgMC4wNTl8ICAgICAgMS41NzN8ICAgICAxMi44Njh8ICAgICAgIDJ8ICAgICAw
+fCAgICAgLTAuMTc3fCAgICAxMzEuMjg0Cj4gUlREfCAgICAgIDAuMDU4fCAgICAgIDIuNTEyfCAg
+ICAgMjUuNTQ1fCAgICAgICAyfCAgICAgMHwgICAgIC0wLjE3N3wgICAgMTMxLjI4NAo+IFJURHwg
+ICAgICAwLjI4NnwgICAgICAxLjkyOHwgICAgMTUzLjYxMXwgICAgICAgM3wgICAgIDB8ICAgICAt
+MC4xNzd8ICAgIDE1My42MTEKPiBSVER8ICAgICAgMC4yODV8ICAgICAgMi44MzR8ICAgICAxNy4w
+MzJ8ICAgICAgIDN8ICAgICAwfCAgICAgLTAuMTc3fCAgICAxNTMuNjExCj4gUlREfCAgICAgIDAu
+MTI4fCAgICAgIDIuMTA0fCAgICAgMjYuNDY3fCAgICAgICAzfCAgICAgMHwgICAgIC0wLjE3N3wg
+ICAgMTUzLjYxMQo+IFJURHwgICAgICAwLjE0MHwgICAgICAxLjEwNXwgICAgIDE0Ljk3OHwgICAg
+ICAgM3wgICAgIDB8ICAgICAtMC4xNzd8ICAgIDE1My42MTEKPiBSVER8ICAgICAgMC4xNjN8ICAg
+ICAgMC45NTB8ICAgICAxMi43MDh8ICAgICAgIDN8ICAgICAwfCAgICAgLTAuMTc3fCAgICAxNTMu
+NjExCj4gUlREfCAgICAgIDAuMTk5fCAgICAgIDEuMDEyfCAgICAgMTUuMTA5fCAgICAgICAzfCAg
+ICAgMHwgICAgIC0wLjE3N3wgICAgMTUzLjYxMQo+IFJURHwgICAgICAwLjA0MnwgICAgICAxLjAw
+N3wgICAgIDEwLjUxMXwgICAgICAgM3wgICAgIDB8ICAgICAtMC4xNzd8ICAgIDE1My42MTEKPiBS
+VER8ICAgICAgMC4xMDJ8ICAgICAgMC43NjN8ICAgIDEyNS42ODR8ICAgICAgIDR8ICAgICAwfCAg
+ICAgLTAuMTc3fCAgICAxNTMuNjExCj4gUlREfCAgICAgIDAuMTM4fCAgICAgIDAuODEwfCAgICAg
+MTIuMjI2fCAgICAgICA0fCAgICAgMHwgICAgIC0wLjE3N3wgICAgMTUzLjYxMQo+IFJURHwgICAg
+ICAwLjEyNXwgICAgICAxLjMxMnwgICAgIDEzLjg1OHwgICAgICAgNHwgICAgIDB8ICAgICAtMC4x
+Nzd8ICAgIDE1My42MTEKPiBSVER8ICAgICAgMC4yNTZ8ICAgICAgMC44NTR8ICAgICA2Ny4wMzl8
+ICAgICAgIDR8ICAgICAwfCAgICAgLTAuMTc3fCAgICAxNTMuNjExCj4gUlREfCAgICAgIDAuMjgw
+fCAgICAgIDAuODQxfCAgICAgMTQuMjA1fCAgICAgICA0fCAgICAgMHwgICAgIC0wLjE3N3wgICAg
+MTUzLjYxMQo+IFJURHwgICAgICAwLjA5OXwgICAgICAwLjYzMXwgICAgIDc2LjE4NXwgICAgICAg
+NHwgICAgIDB8ICAgICAtMC4xNzd8ICAgIDE1My42MTEKPiBSVER8ICAgICAgMC4yMzB8ICAgICAg
+MC45NTN8ICAgICAxNi4wNDF8ICAgICAgIDR8ICAgICAwfCAgICAgLTAuMTc3fCAgICAxNTMuNjEx
+Cj4gUlREfCAgICAgIDAuMDg2fCAgICAgIDAuOTg1fCAgICAgNjUuNDE2fCAgICAgICA0fCAgICAg
+MHwgICAgIC0wLjE3N3wgICAgMTUzLjYxMQo+IFJURHwgICAgICAwLjExMHwgICAgICAwLjg1Nnwg
+ICAgIDE4LjM1N3wgICAgICAgNHwgICAgIDB8ICAgICAtMC4xNzd8ICAgIDE1My42MTEKPiAvKioq
+KioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioq
+KioqKioqKioqKioqKioqKioqKioqKioqLwo+IApZZWFoLCB0aGVzZSBudW1iZXJzIGFyZSBzdGls
+bCBvZmYuIExpa2VseSwgd2Ugc2VlIHNvbWUgcG93ZXIgbWFuYWdlbWVudCBlZmZlY3RzLiAKVGhl
+eSBtaWdodCBiZSB0cmlnZ2VyZWQgYnkgTGludXgsIGFuZCB0aGVuIHNvbWUga2VybmVsIHN3aXRj
+aCBjYW4gZG8gdGhlIG1hZ2ljIAooY2hlY2sgZS5nLiBDT05GSUdfQUNQSV9QUk9DRVNTT1JfQ1NU
+QVRFKS4gWW91IG1heSBhbHNvIHRyeSAiaWRsZT1wb2xsIiBhcyAKa2VybmVsIHBhcmFtZXRlci4g
+T3IgdGhlIGlzc3VlIGlzIGNhdXNlZCBieSB0aGUgZmlybXdhcmUgKGJpb3MpLiBDaGVjayBwb3dl
+ciAKc2V0dGluZ3MgdGhlcmUuIEluIHRoZSB3b3JzdCBjYXNlLCB0aGUgYmVoYXZpb3VyIGlzIFNN
+SSBpbmR1Y2VkIGFuZCBjYW4ndCBiZSAKZGlzYWJsZWQuIFRoZW4gb25seSBhIGRpZmZlcmVudCBm
+aXJtd2FyZSBjYW4gaGVscCAtIG9yIGEgZGlmZmVyZW50IGhhcmR3YXJlLgpKYW4KLS0gClNpZW1l
+bnMgQUcsIENvcnBvcmF0ZSBUZWNobm9sb2d5LCBDVCBSREEgSU9UIFNFUy1ERQpDb3Jwb3JhdGUg
+Q29tcGV0ZW5jZSBDZW50ZXIgRW1iZWRkZWQgTGludXgK
 
