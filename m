@@ -1,19 +1,15 @@
+Subject: Re: [xenomai-images][PATCH 2/9] machine: Allow override of the image
+ type
+References: <20190905154425.10007-1-Quirin.Gylstorff@siemens.com>
+ <20190905154425.10007-3-Quirin.Gylstorff@siemens.com>
+From: Jan Kiszka <jan.kiszka@siemens.com>
+Message-ID: <6d9d18f6-3336-423d-f411-534a250cba41@siemens.com>
+Date: Tue, 10 Sep 2019 12:25:39 +0200
 MIME-Version: 1.0
-In-Reply-To: <9f2e310c-9591-0725-024f-a33a1cde7f01@siemens.com>
-References: <CAPm8-H6txhsFDDepfGEG48S1anF03F1=tBsEiLfkRiPHi7KKxA@mail.gmail.com>
- <7f20a51d-e1c2-b95e-ab17-d18338bbcec2@siemens.com>
- <CAPm8-H47+st-pOpFT_MZ+KMoyzuYB6XtLgdf7DyeOC5wV8yfrQ@mail.gmail.com>
- <CAPm8-H7kP3AO0xLP5tJ_EcOzCX-0qtPaJK2soS0yW9pdk+DHHg@mail.gmail.com>
- <CAPm8-H5iGMJZd++E3Ln07O9=kUy=at1bvnegrFr6RUaDkbo_Xg@mail.gmail.com>
- <676297850.725433.1566475845016.JavaMail.zimbra@wolfram.com>
- <CAPm8-H53Xb8HSU6xT33su+K_2Q5gzhCFXibKxuY+43j_E6WdoQ@mail.gmail.com>
- <9f2e310c-9591-0725-024f-a33a1cde7f01@siemens.com>
-From: Laurentiu-Cristian Duca <laurentiu.duca@gmail.com>
-Date: Tue, 27 Aug 2019 16:53:22 +0300
-Message-ID: <CAPm8-H6_ZPVGBmk54Kx+Tg6p5_Y_Xv+FZh6V25o0_dKGzk1ZgA@mail.gmail.com>
-Subject: Re: RTNet - vnic0 question
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+In-Reply-To: <20190905154425.10007-3-Quirin.Gylstorff@siemens.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -22,209 +18,106 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jan Kiszka <jan.kiszka@siemens.com>
-Cc: Per Oberg <pero@wolfram.com>, xenomai <xenomai@xenomai.org>
+To: "Q. Gylstorff" <Quirin.Gylstorff@siemens.com>, xenomai@xenomai.org
 
-Success
-I had to run on target xeno-config and paste the output to my makefile,
-because I was doing cross-compile for bbb on a x86_64 host.
-So, the tests are:
-frag-ip between bbb and qemu-x86-64-rt_8139too which use alchemy: success
-rtt-sender/rtt-responder which use posix skin: success.
+On 05.09.19 17:44, Q. Gylstorff wrote:
+> From: Quirin Gylstorff <quirin.gylstorff@siemens.com>
+> 
+> For the NFS rootfs a tarball is used. This changes allows
+> local.conf to set the IMAGE_TYPE from wic-img to targz-img.
+> 
+> Signed-off-by: Quirin Gylstorff <quirin.gylstorff@siemens.com>
+> ---
+>   .gitlab-ci.yml               |  4 ++--
+>   conf/machine/hikey.conf      |  2 +-
+>   conf/machine/x86-64-efi.conf |  2 +-
+>   xenomai-lava-test.yml        | 20 ++++++++++++++++++++
+>   4 files changed, 24 insertions(+), 4 deletions(-)
+>   create mode 100644 xenomai-lava-test.yml
+> 
+> diff --git a/.gitlab-ci.yml b/.gitlab-ci.yml
+> index b78a0ac..ebc5cd5 100644
+> --- a/.gitlab-ci.yml
+> +++ b/.gitlab-ci.yml
+> @@ -64,7 +64,7 @@ build:board-beaglebone:
+>     <<: *lava-ssh-key
+>     stage: build
+>     script:
+> -    - kas build kas.yml:board-beagle-bone-black.yml
+> +    - kas build kas.yml:board-beagle-bone-black.yml:xenomai-lava-test.yml
+>       - scripts/deploy_for_testing.sh beagle-bone-black
+>       - scripts/run-lava-tests.sh beaglebone
+>   
+> @@ -72,6 +72,6 @@ build:board-x86-64-efi:
+>     <<: *lava-ssh-key
+>     stage: build
+>     script:
+> -    - kas build kas.yml:board-x86-64-efi.yml
+> +    - kas build kas.yml:board-x86-64-efi.yml:xenomai-lava-test.yml
+>       - scripts/deploy_for_testing.sh x86-64-efi
+>       - scripts/run-lava-tests.sh x86-64
+> diff --git a/conf/machine/hikey.conf b/conf/machine/hikey.conf
+> index 465e06e..3c93507 100644
+> --- a/conf/machine/hikey.conf
+> +++ b/conf/machine/hikey.conf
+> @@ -11,7 +11,7 @@
+>   
+>   DISTRO_ARCH = "arm64"
+>   
+> -IMAGE_TYPE = "wic-img"
+> +IMAGE_TYPE ?= "wic-img"
+>   IMAGER_INSTALL += "${GRUB_BOOTLOADER_INSTALL}"
+>   
+>   PREFERRED_VERSION_linux-xenomai = "4.14.%"
+> diff --git a/conf/machine/x86-64-efi.conf b/conf/machine/x86-64-efi.conf
+> index 0fd2ef1..02846ff 100644
+> --- a/conf/machine/x86-64-efi.conf
+> +++ b/conf/machine/x86-64-efi.conf
+> @@ -11,5 +11,5 @@
+>   
+>   DISTRO_ARCH = "amd64"
+>   
+> -IMAGE_TYPE = "wic-img"
+> +IMAGE_TYPE ?= "wic-img"
+>   IMAGER_INSTALL += "${GRUB_BOOTLOADER_INSTALL}"
+> diff --git a/xenomai-lava-test.yml b/xenomai-lava-test.yml
+> new file mode 100644
+> index 0000000..206aea0
+> --- /dev/null
+> +++ b/xenomai-lava-test.yml
+> @@ -0,0 +1,20 @@
+> +#
+> +# Xenomai Real-Time System
+> +#
+> +# Copyright (c) Siemens AG, 2019
+> +#
+> +# Authors:
+> +#  Quirin Gylstorff <quirin.gylstorff@siemens.com>
+> +#
+> +# SPDX-License-Identifier: MIT
+> +#
+> +
+> +header:
+> +  version: 8
+> +
+> +# lava uses nfs to deploy the image. For this we need a tarball instead of
+> +# full image
+> +
+> +local_conf_header:
+> +  image-type: |
+> +    IMAGE_TYPE = "targz-img"
+> 
 
-However the ping fails
-even if vnic0 is fully configured just as rteth0 for which rtping succeds.
+When reading $subject and the commit log, that new file and the CI changes look 
+misplaced in this patch. Moreover, as this file is encoding an option, let's 
+call it "opt-lava-test.yml".
 
-Thank you all
+Unrelated: we likely also want some "opt-latest.yml", to switch from the default 
+"stable" by appending this to the kas command.
 
-On 8/22/19, Jan Kiszka <jan.kiszka@siemens.com> wrote:
-> On 22.08.19 16:27, Laurentiu-Cristian Duca via Xenomai wrote:
->> Hi,
->>
->> I have used rtifconfig, rtroute and rtping and I mentioned that worked,
->> I have written that rtt-sender and rtt-responder which use posix skin
->> worked only on vnic0 and not on rteth0.
->>
->> I have ported frag-ip.c (from rtnet 0.9.13 to xenomai 3)
->> which uses alchemy instead of posix and it works on rteth0 link
->> between two qemu-x86_64-rt_8139too virtual machines,
->> but do not work on bbb (I think the drivers I use have problems on bbb).
->
-> I still suspect your ported rtt-sender/responder have some binding issue =
-to
->
-> RTnet so that UDP sockets fall back to plan Linux. You can check that by
-> running
-> "netstat -lun" while the two are active. If someone listens on a suspicio=
-us
->
-> port, you have the prove.
->
-> Looking at your makefile...
->
->>
->> Thx
->>
->> On 8/22/19, Per Oberg <pero@wolfram.com> wrote:
->>>
->>>
->>> ----- Den 22 aug 2019, p=C3=A5 kl 13:21, xenomai xenomai@xenomai.org sk=
-rev:
->>>
->>>> Hi,
->>>
->>>> I have made a test between two qemu-x86_64-rt_8139too with different
->>>> mac and IP addresses,
->>>> one is master one is slave. In each of them I do:
->>>> /usr/xenomai/sbin/rtnet start
->>>> Then the applications rtt-sender and rtt-responder (taken from rtnet
->>>> 0.9.13 release) work,
->>>> but if I turn off vnic0, then rtt-sender reports error: "sendto
->>>> failed: Network is unreachable",
->>>> even if rteth0 is up and fully configured.
->>>> Do you have any simple apps that work on rtnet?
->>>
->>> You have :
->>> rtping
->>> rtifconfig
->>> rtroute
->>>
->>> Perhaps these can be of assistance?
->>>
->>>> Thank you,
->>>> Kind regards
->>>
->>>> On 8/22/19, Laurentiu-Cristian Duca <laurentiu.duca@gmail.com> wrote:
->>>>> The rt drivers for bbb are taken from:
->>>>> https://github.com/G-Ray/xenomai-boneblack-rtnet-drivers
->>>>> and I am not 100% sure that they are working correctly.
->>>
->>>>> On 8/22/19, Laurentiu-Cristian Duca <laurentiu.duca@gmail.com> wrote:
->>>>>> Hello Jan and friends
->>>
->>>>>> Thank you for your fast answer. Please find below the details.
->>>
->>>>>> On 8/21/19, Jan Kiszka <jan.kiszka@siemens.com> wrote:
->>>>>>> On 21.08.19 16:20, Laurentiu-Cristian Duca via Xenomai wrote:
->>>>>>>> Hello rtnet community,
->>>
->>>>>>>> I successfully tested the examples rtt-sender and rtt-responder
->>>>>>>> within a rtnet made from one beaglebone black and one
->>>>>>>> qemu-x86_64-8139too,
->>>>>>>> with tdma and also with nomac.
->>>
->>>>>>> Are we talking about some legacy Xenomai or even RTnet version? Or
->>>>>>> where
->>>>>>> did
->>>>>>> you
->>>>>>> get the examples from? They are not part of RTnet in Xenomai 3.
->>>
->>>>>> I got the examples from rtnet-0.9.13. I know they are quite old, but
->>>>>> I needed a start point.
->>>>>> Are these obsolete? Do you have any examples for Xenomai 3?
->>>>>> rtnet-0.9.13/examples/xenomai/posix/rtt-sender.c
->>>>>> rtnet-0.9.13/examples/xenomai/posix/rtt-responder.c
->>>
->>>
->>>>>>>> I have noted that the presence of vnic0 as an up and fully
->>>>>>>> configured interface is mandatory,
->>>>>>>> even if rteth0 is up and fully configured.
->>>>>>>> Otherwise the rtt-sender announces "sendto failed: Network is
->>>>>>>> unreachable".
->>>>>>>> Could anybody tell me why is this happening?
->>>
->>>>>>>> I have also noted that if I disable vnic0 (ifconfig vnic0 down),
->>>>>>>> rtping works if rteth0 is up and fully configured.
->>>>>>>> Why does not work rtt-sender in this case?
->>>>>>>> Could it be a problem with rtnet drivers?
->>>
->>>>>>> I bet your examples are falling back to normal network here, and
->>>>>>> that
->>>>>>> is
->>>>>>> provided between your test nodes via the vnics. This leads to my
->>>>>>> first
->>>>>>> question:
->>>>>>> Where did you pick the examples up, how did you build them etc.?
->>>>>>> Also,
->>>>>>> did
->>>>>>> you
->>>>>>> make sure that rtudp was loaded?
->>>
->>>>>> I am 100% sure that rtudp was loaded. The modules were loaded by a
->>>>>> script:
->>>>>> modprobe rt_smsc && modprobe rt_davinci_mdio && modprobe rt_ticpsw
->>>>>> modprobe rtipv4 && modprobe rtpacket && modprobe rtudp
->>>>>> modprobe rtmac
->>>>>> modprobe nomac
->>>>>> #modprobe tdma
->>>
->>>>>> I used robertcnelson Xenomai 3.0.9 patch for beaglebone black linux
->>>>>> 4.14.108. It's on github.
->>>>>> I have also copied the rtnet header files to xenomai-userspace
->>>>>> include. The files compile without warnings.
->>>>>> The makefile is:
->>>>>> # Tested with linaro toolchain
->>>>>> (gcc-linaro-7.4.1-2019.02-x86_64_arm-linux-gnueabihf)
->>>>>> CC =3D arm-linux-gnueabihf-gcc
->>>>>> XENO_INSTALL =3D
->>>>>> /home/laur/lucru/raspberry-pi/robertcnelson/ti-linux-kernel-dev/igno=
-re/xenomai-userspace
->>>>>> RTNET_INSTALL =3D
->>>>>> /home/laur/lucru/raspberry-pi/robertcnelson/rtnet-hiddeate2m
->>>
->>>>>> #XENO_CONFIG :=3D
->>>>>> /home/laur/lucru/raspberry-pi/robertcnelson/ti-linux-kernel-dev/igno=
-re/xenomai-userspace/usr/xenomai/bin/xeno-config
->>>>>> #/usr/xenomai/bin/xeno-config
->>>>>> #CFLAGS :=3D $(shell $(XENO_CONFIG) --posix --alchemy --cflags)
->>>>>> #LDFLAGS :=3D $(shell $(XENO_CONFIG) --posix --alchemy --ldflags)
->
-> The interesting parts are commented out. For POSIX, you simply want
->
-> xeno-config --skin posix --cflags / --ldflags
->
-> Nothing self-written.
->
-> Jan
->
->>>
->>>>>> LIBCFLAGS =3D -Wall -I$(XENO_INSTALL)/usr/xenomai/include/cobalt
->>>>>> LIBCFLAGS +=3D -I$(XENO_INSTALL)/usr/xenomai/include
->>>
->>>>>> CFLAGS =3D -Wall -I$(XENO_INSTALL)/usr/xenomai/include/cobalt
->>>>>> CFLAGS +=3D -I$(XENO_INSTALL)/usr/xenomai/include/alchemy
->>>>>> -I$(XENO_INSTALL)/usr/xenomai/include
->>>>>> CFLAGS +=3D -march=3Darmv7-a -mfpu=3Dvfpv4 -D_GNU_SOURCE -D_REENTRAN=
-T
->>>>>> -D__COBALT__ -D__COBALT_WRAP_
->>>>>> CFLAGS +=3D -I$(RTNET_INSTALL)/stack/include
->>>
->>>>>> LFLAGS =3D -lalchemy -lcopperplate
->>>>>> $(XENO_INSTALL)/usr/xenomai/lib/xenomai/bootstrap.o
->>>>>> LFLAGS +=3D -Wl,--wrap=3Dmain -Wl,--wrap=3Dmalloc -Wl,--wrap=3Dfree
->>>>>> #-Wl,--dynamic-list=3D$(XENO_INSTALL)/usr/xenomai/lib/dynlist.ld
->>>>>> LFLAGS +=3D -L$(XENO_INSTALL)/usr/xenomai/lib -lcobalt -lpthread -lr=
-t
->>>>>> LFLAGS +=3D -march=3Darmv7-a -mfpu=3Dvfpv4 -Llib
->>>
->>>>>> all: rtt-sender rtt-responder
->>>>>> rtt-sender: rtt-sender.o
->>>>>> $(CC) -o rtt-sender rtt-sender.o $(LFLAGS)
->>>>>> rtt-sender.o: rtt-sender.c
->>>>>> $(CC) -c -o rtt-sender.o rtt-sender.c $(CFLAGS) $(LIBCFLAGS)
->>>>>> (same for rtt-responder)
->>>
->>>
->>>>>> Kind regards,
->>>>>> L-C.
->>>
->>>
->>> Per =C3=96berg
->>>
->>
->
-> --
-> Siemens AG, Corporate Technology, CT RDA IOT SES-DE
-> Corporate Competence Center Embedded Linux
->
+Jan
+
+-- 
+Siemens AG, Corporate Technology, CT RDA IOT SES-DE
+Corporate Competence Center Embedded Linux
 
