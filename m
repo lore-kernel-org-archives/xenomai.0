@@ -1,13 +1,9 @@
-Subject: Re: [PATCH 0/2] Debian build
-References: <20190909152842.1326-1-Quirin.Gylstorff@siemens.com>
-From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <45740e28-7133-a8cc-ec62-a258025403f8@siemens.com>
-Date: Tue, 10 Sep 2019 13:49:59 +0200
+From: "Q. Gylstorff" <Quirin.Gylstorff@siemens.com>
+Subject: [PATCH] linux-xenomai: correct pull of 4.14 arm64 kernel
+Date: Tue, 10 Sep 2019 14:45:26 +0200
+Message-Id: <20190910124526.21953-1-Quirin.Gylstorff@siemens.com>
 MIME-Version: 1.0
-In-Reply-To: <20190909152842.1326-1-Quirin.Gylstorff@siemens.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,28 +12,33 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "Q. Gylstorff" <Quirin.Gylstorff@siemens.com>, xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-On 09.09.19 17:28, Q. Gylstorff wrote:
-> From: Quirin Gylstorff <quirin.gylstorff@siemens.com>
-> 
-> Add missing dependencies for xeno-test and add missing
->   bootstrap step to build a debian package.
-> 
-> Quirin Gylstorff (2):
->    debian/control: Add dependencies for xenomai-testsuite
->    debian/rules: Add missing bootstrap step
-> 
->   debian/control | 2 +-
->   debian/rules   | 7 ++++++-
->   2 files changed, 7 insertions(+), 2 deletions(-)
-> 
+From: Quirin Gylstorff <quirin.gylstorff@siemens.com>
 
-Thanks, applied to next.
+The arm64 4.14 kernel cannot currently not be build. Use tag instead
+of branch + commit.
 
-Jan
+Signed-off-by: Quirin Gylstorff <quirin.gylstorff@siemens.com>
+---
+ recipes-kernel/linux/linux-xenomai_4.14.bb | 3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
 
+diff --git a/recipes-kernel/linux/linux-xenomai_4.14.bb b/recipes-kernel/linux/linux-xenomai_4.14.bb
+index 14030d6..f147eed 100644
+--- a/recipes-kernel/linux/linux-xenomai_4.14.bb
++++ b/recipes-kernel/linux/linux-xenomai_4.14.bb
+@@ -15,8 +15,7 @@ SRC_URI_append_amd64 = " git://gitlab.denx.de/Xenomai/ipipe-x86.git;protocol=htt
+ SRCREV_amd64 = "fdfa1aff4578edf6a03e2e77ea20bf7f97863954"
+ PV_amd64 = "4.14.134+"
+ 
+-SRC_URI_append_arm64 = " git://gitlab.denx.de/Xenomai/ipipe-arm64.git;protocol=https;branch=stable/4.14.78-arm64"
+-SRCREV_arm64 = "dec5e42fd43de238df816b31cadfb83b268b7136"
++SRC_URI_append_arm64 = " git://gitlab.denx.de/Xenomai/ipipe-arm64.git;protocol=https;nobranch=1;tag=ipipe-core-4.14.78-arm64-2"
+ PV_arm64 = "4.14.78+"
+ 
+ SRC_URI_append_armhf = " git://gitlab.denx.de/Xenomai/ipipe-arm.git;protocol=https;branch=stable/4.14.96-arm"
 -- 
-Siemens AG, Corporate Technology, CT RDA IOT SES-DE
-Corporate Competence Center Embedded Linux
+2.20.1
+
 
