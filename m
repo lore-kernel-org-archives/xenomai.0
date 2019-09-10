@@ -1,7 +1,7 @@
 From: "Q. Gylstorff" <Quirin.Gylstorff@siemens.com>
-Subject: [xenomai-images][PATCH v2 9/9] tests/README: Add Architecture
-Date: Tue, 10 Sep 2019 16:44:59 +0200
-Message-Id: <20190910144459.13239-10-Quirin.Gylstorff@siemens.com>
+Subject: [xenomai-images][PATCH v2 4/9] kas: Use next as target
+Date: Tue, 10 Sep 2019 16:44:54 +0200
+Message-Id: <20190910144459.13239-5-Quirin.Gylstorff@siemens.com>
 In-Reply-To: <40515a30-f023-af93-5662-e47c70da438e@siemens.com>
 References: <40515a30-f023-af93-5662-e47c70da438e@siemens.com>
 MIME-Version: 1.0
@@ -18,71 +18,71 @@ To: xenomai@xenomai.org
 
 From: Quirin Gylstorff <quirin.gylstorff@siemens.com>
 
-Add the schematic architecture of the current tests setup.
+For CI testing of the next branch.
 
 Signed-off-by: Quirin Gylstorff <quirin.gylstorff@siemens.com>
 ---
- tests/README.md | 45 +++++++++++++++++++++++++++++++++++++++++++++
- 1 file changed, 45 insertions(+)
+ .gitlab-ci.yml |  6 +++---
+ opt-latest.yml | 20 ++++++++++++++++++++
+ 2 files changed, 23 insertions(+), 3 deletions(-)
+ create mode 100644 opt-latest.yml
 
-diff --git a/tests/README.md b/tests/README.md
-index ffe7ba2..6ee8ada 100644
---- a/tests/README.md
-+++ b/tests/README.md
-@@ -35,8 +35,53 @@ and check machine data from the target.
+diff --git a/.gitlab-ci.yml b/.gitlab-ci.yml
+index ace8862..0e1d21a 100644
+--- a/.gitlab-ci.yml
++++ b/.gitlab-ci.yml
+@@ -85,14 +85,14 @@ lava-test:qemu-arm64:
+ build:board-hikey:
+   stage: build
+   script:
+-    - kas build kas.yml:board-hikey.yml
++    - kas build kas.yml:board-hikey.yml:opt-latest.yml
+ # hikey is currently not part of the testlab
  
- The xenomai test suite executes the xeno-test tool from xenomai/testsuite.
+ build:board-beaglebone:
+   <<: *lava-ssh-key
+   stage: build
+   script:
+-    - kas build kas.yml:board-beagle-bone-black.yml:opt-lava-test.yml
++    - kas build kas.yml:board-beagle-bone-black.yml:opt-latest.yml:opt-lava-test.yml
+     - scripts/deploy_for_testing.sh beagle-bone-black
  
-+# Test Architecture
-+
-+To test xenomai-images on the target hardware the following architecture
-+is used:
-+```
-+                                                               +----------+
-+                                                               | Target 1 |
-+                                                            /--|  beagle  |
-++-----------+        +---------+       +---------+    /-----   |  bone    |
-+|           |        | LAVA    |       | LAVA    | ---         +----------+
-+| gitlab-   | ------ | master  |------ | Dis-    | --
-+| runner    |        |         |       | patcher | \ \---      +----------+
-++-----------+        +---------+       +---------+  \-   \---  | Target 2 |
-+                                                      \      \-| x86-64   |
-+                                                       \       |          |
-+                                                        \-     +----------+
-+                                                          \
-+                                                           \   +----------+
-+                                                            \- | Target n |
-+                                                              \| qemu     |
-+                                                               |          |
-+                                                               +----------+
-+```
-+A test is deployed in the following steps:
-+1. gitlab-runner: builds the artifacts
-+2. After the build is successful the build artifacts are deployed to the
-+   Lava master per scp.
-+3. The runner sends a lava job description to the LAVA master, who triggers the
-+job execution on LAVA Dispatcher.
-+
-+The LAVA master selects the LAVA Dispatcher to execute the given job on a
-+target. Qemu targets are executed directly on the LAVA Dispatcher. For non-virtual
-+targets the payload (kernel,rootfs,...) is deployed via tftp to the selected
-+hardware.
-+
-+The dispatcher executes the following steps:
-+1. Instrumentation of the rootfs. This will collect the necessary lavatools
-+and adds them to the rootfs
-+2. Power up the target
-+3. deploy the payload(kernel,rootfs,...) with help of the bootloader
-+4. trigger the payload boot
-+5. execute the tests
-+6. power off the target
-+
- # LAVA Setup
+ lava-test:board-beaglebone:
+@@ -109,7 +109,7 @@ build:board-x86-64-efi:
+   <<: *lava-ssh-key
+   stage: build
+   script:
+-    - kas build kas.yml:board-x86-64-efi.yml:opt-lava-test.yml
++    - kas build kas.yml:board-x86-64-efi.yml:opt-latest.yml:opt-lava-test.yml
+     - scripts/deploy_for_testing.sh x86-64-efi
  
- Setup a lava environment by following the
- [installation guide](https://docs.lavasoftware.org/lava/first-installation.html)
- or use [lava-docker](https://github.com/kernelci/lava-docker).
+ lava-test:board-x86-64-efi:
+diff --git a/opt-latest.yml b/opt-latest.yml
+new file mode 100644
+index 0000000..94381bd
+--- /dev/null
++++ b/opt-latest.yml
+@@ -0,0 +1,20 @@
++#
++# Xenomai Real-Time System
++#
++# Copyright (c) Siemens AG, 2019
++#
++# Authors:
++#  Quirin Gylstorff <quirin.gylstorff@siemens.com>
++#
++# SPDX-License-Identifier: MIT
++#
 +
++header:
++  version: 8
++
++# lava uses nfs to deploy the image. For this we need a tarball instead of
++# full image
++
++local_conf_header:
++  xenomai-latest: |
++    PREFERRED_VERSION_xenomai = "next"
 -- 
 2.20.1
 
