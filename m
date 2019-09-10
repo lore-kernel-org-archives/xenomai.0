@@ -1,7 +1,7 @@
 From: "Q. Gylstorff" <Quirin.Gylstorff@siemens.com>
-Subject: [xenomai-images][PATCH v2 5/9] ci: Add inline xenomai testsuite
-Date: Tue, 10 Sep 2019 16:44:55 +0200
-Message-Id: <20190910144459.13239-6-Quirin.Gylstorff@siemens.com>
+Subject: [xenomai-images][PATCH v2 7/9] kernel: Update
+Date: Tue, 10 Sep 2019 16:44:57 +0200
+Message-Id: <20190910144459.13239-8-Quirin.Gylstorff@siemens.com>
 In-Reply-To: <40515a30-f023-af93-5662-e47c70da438e@siemens.com>
 References: <40515a30-f023-af93-5662-e47c70da438e@siemens.com>
 MIME-Version: 1.0
@@ -18,153 +18,77 @@ To: xenomai@xenomai.org
 
 From: Quirin Gylstorff <quirin.gylstorff@siemens.com>
 
-Add the inline test definition to execute xeno-test for the images.
+Update amd64 to new released kernel versions.
+Remove arm64 pinning to 4.14.
 
 Signed-off-by: Quirin Gylstorff <quirin.gylstorff@siemens.com>
 ---
- tests/README.md                   |  5 +++++
- tests/jobs/xenomai-beaglebone.yml | 11 +++++++++++
- tests/jobs/xenomai-minnow.yml     | 11 +++++++++++
- tests/jobs/xenomai-qemu-amd64.yml | 11 +++++++++++
- tests/jobs/xenomai-qemu-arm64.yml | 13 +++++++++++++
- tests/jobs/xenomai-qemu-armhf.yml | 11 +++++++++++
- tests/jobs/xenomai-x86-64.yml     | 11 +++++++++++
- 7 files changed, 73 insertions(+)
+ conf/machine/hikey.conf                    |  4 +---
+ conf/machine/qemu-arm64.conf               |  1 -
+ recipes-kernel/linux/files/amd64_defconfig |  2 +-
+ recipes-kernel/linux/linux-xenomai_4.19.bb | 12 ++++++++----
+ 4 files changed, 10 insertions(+), 9 deletions(-)
 
-diff --git a/tests/README.md b/tests/README.md
-index c7e2030..f107607 100644
---- a/tests/README.md
-+++ b/tests/README.md
-@@ -17,8 +17,13 @@ following images are test:
+diff --git a/conf/machine/hikey.conf b/conf/machine/hikey.conf
+index 3c93507..11cf635 100644
+--- a/conf/machine/hikey.conf
++++ b/conf/machine/hikey.conf
+@@ -14,8 +14,6 @@ DISTRO_ARCH = "arm64"
+ IMAGE_TYPE ?= "wic-img"
+ IMAGER_INSTALL += "${GRUB_BOOTLOADER_INSTALL}"
  
- Currently the following tests are executed on each target:
- - lava-smoketest
-+- xenomai-test-suite
+-PREFERRED_VERSION_linux-xenomai = "4.14.%"
+-
+ IMAGE_PREINSTALL_append = " firmware-ti-connectivity"
  
- ### lava-smoketest
+-PREFERRED_VERSION_xenomai = "next"
+\ No newline at end of file
++PREFERRED_VERSION_xenomai = "next"
+diff --git a/conf/machine/qemu-arm64.conf b/conf/machine/qemu-arm64.conf
+index 9e1d984..472f619 100644
+--- a/conf/machine/qemu-arm64.conf
++++ b/conf/machine/qemu-arm64.conf
+@@ -13,4 +13,3 @@ require qemu-machine.inc
  
- The lava smoke tests are part of http://git.linaro.org/lava-team/lava-functional-tests.git
- and check machine data from the target.
+ DISTRO_ARCH = "arm64"
+ PREFERRED_VERSION_xenomai = "next"
+-PREFERRED_VERSION_linux-xenomai = "4.14.%"
+diff --git a/recipes-kernel/linux/files/amd64_defconfig b/recipes-kernel/linux/files/amd64_defconfig
+index cba31a5..9faed52 100644
+--- a/recipes-kernel/linux/files/amd64_defconfig
++++ b/recipes-kernel/linux/files/amd64_defconfig
+@@ -3953,7 +3953,7 @@ CONFIG_TRACING_EVENTS_GPIO=y
+ # CONFIG_TEST_KMOD is not set
+ # CONFIG_TEST_DEBUG_VIRTUAL is not set
+ # CONFIG_MEMTEST is not set
+-# CONFIG_BUG_ON_DATA_CORRUPTION is not set
++CONFIG_BUG_ON_DATA_CORRUPTION=y
+ # CONFIG_SAMPLES is not set
+ CONFIG_HAVE_ARCH_KGDB=y
+ CONFIG_KGDB=y
+diff --git a/recipes-kernel/linux/linux-xenomai_4.19.bb b/recipes-kernel/linux/linux-xenomai_4.19.bb
+index 9af5659..5137319 100644
+--- a/recipes-kernel/linux/linux-xenomai_4.19.bb
++++ b/recipes-kernel/linux/linux-xenomai_4.19.bb
+@@ -12,10 +12,14 @@
+ require recipes-kernel/linux/linux-xenomai.inc
+ 
+ SRC_URI_append_amd64 = " git://gitlab.denx.de/Xenomai/ipipe-x86.git;protocol=https;branch=ipipe-x86-4.19.y"
+-SRCREV_amd64 = "d8ca6738bdff660d033ce755db55e7fe5210379a"
+-PV_amd64 = "4.19.60+"
++SRCREV_amd64 = "f83bda3e0785ae2e0ea8ad530bc903d2b420c2c7"
++PV_amd64 = "4.19.66+"
+ 
+-SRC_URI_append_armhf = " git://gitlab.denx.de/Xenomai/ipipe-arm.git;protocol=https;nobranch=1;tag=ipipe-core-4.19.33-arm-2"
+-PV_armhf = "4.19.33+"
++SRC_URI_append_arm64 = " git://gitlab.denx.de/Xenomai/ipipe-arm64.git;protocol=https;nobranch=1;tag=ipipe-core-4.19.55-arm64-2"
++PV_arm64 = "4.19.55+"
 +
-+### xenomai-test-suite
 +
-+The xenomai test suite executes the xeno-test tool from xenomai/testsuite.
-diff --git a/tests/jobs/xenomai-beaglebone.yml b/tests/jobs/xenomai-beaglebone.yml
-index 231c5d0..85f2b88 100644
---- a/tests/jobs/xenomai-beaglebone.yml
-+++ b/tests/jobs/xenomai-beaglebone.yml
-@@ -63,3 +63,14 @@ actions:
-       from: git
-       path: lava-test-shell/smoke-tests-basic.yaml
-       name: smoke-tests
-+    - repository:
-+        metadata:
-+          format: Lava-Test Test Definition 1.0
-+          name: xenomai-test-suite
-+          description: "runs the xenomai test suite"
-+        run:
-+          steps:
-+            - lava-test-case xenomai-test --shell xeno-test -k -l \"dohell -m /tmp 300\" -p 1000
-+      from: inline
-+      path: inline/xenomai-test-suite.yaml
-+      name: xenomai-test-suite
-diff --git a/tests/jobs/xenomai-minnow.yml b/tests/jobs/xenomai-minnow.yml
-index d60628d..dcdcc28 100644
---- a/tests/jobs/xenomai-minnow.yml
-+++ b/tests/jobs/xenomai-minnow.yml
-@@ -60,3 +60,14 @@ actions:
-       from: git
-       path: lava-test-shell/smoke-tests-basic.yaml
-       name: smoke-tests
-+    - repository:
-+        metadata:
-+          format: Lava-Test Test Definition 1.0
-+          name: xenomai-test-suite
-+          description: "runs the xenomai test suite"
-+        run:
-+          steps:
-+            - lava-test-case xenomai-test --shell xeno-test -k -l \"dohell -m /tmp 300\" -p 1000
-+      from: inline
-+      path: inline/xenomai-test-suite.yaml
-+      name: xenomai-test-suite
-diff --git a/tests/jobs/xenomai-qemu-amd64.yml b/tests/jobs/xenomai-qemu-amd64.yml
-index 12f4c7f..2976f89 100644
---- a/tests/jobs/xenomai-qemu-amd64.yml
-+++ b/tests/jobs/xenomai-qemu-amd64.yml
-@@ -74,3 +74,14 @@ actions:
-       from: git
-       path: lava-test-shell/smoke-tests-basic.yaml
-       name: smoke-tests
-+    - repository:
-+        metadata:
-+          format: Lava-Test Test Definition 1.0
-+          name: xenomai-test-suite
-+          description: "runs the xenomai test suite"
-+        run:
-+          steps:
-+            - lava-test-case xenomai-test --shell xeno-test -k
-+      from: inline
-+      path: inline/xenomai-test-suite.yaml
-+      name: xenomai-test-suite
-diff --git a/tests/jobs/xenomai-qemu-arm64.yml b/tests/jobs/xenomai-qemu-arm64.yml
-index fceee0c..8ba4575 100644
---- a/tests/jobs/xenomai-qemu-arm64.yml
-+++ b/tests/jobs/xenomai-qemu-arm64.yml
-@@ -81,3 +81,16 @@ actions:
-       from: git
-       path: lava-test-shell/smoke-tests-basic.yaml
-       name: smoke-tests
-+    - repository:
-+        metadata:
-+          format: Lava-Test Test Definition 1.0
-+          name: xenomai-test-suite
-+          description: "runs the xenomai smokey test suite"
-+          maintainer:
-+            - quirin.gylstorff@siemens.org
-+        run:
-+          steps:
-+            - lava-test-case xenomai-smokey --shell xeno-test -k
-+      from: inline
-+      path: inline/xenomai-test-suite.yaml
-+      name: xenomai-test-suite
-diff --git a/tests/jobs/xenomai-qemu-armhf.yml b/tests/jobs/xenomai-qemu-armhf.yml
-index d6603af..238265b 100644
---- a/tests/jobs/xenomai-qemu-armhf.yml
-+++ b/tests/jobs/xenomai-qemu-armhf.yml
-@@ -74,3 +74,14 @@ actions:
-       from: git
-       path: lava-test-shell/smoke-tests-basic.yaml
-       name: smoke-tests
-+    - repository:
-+        metadata:
-+          format: Lava-Test Test Definition 1.0
-+          name: xenomai-test-suite
-+          description: "runs the xenomai test suite"
-+        run:
-+          steps:
-+            - lava-test-case xenomai-test --shell xeno-test -k
-+      from: inline
-+      path: inline/xenomai-test-suite.yaml
-+      name: xenomai-test-suite
-diff --git a/tests/jobs/xenomai-x86-64.yml b/tests/jobs/xenomai-x86-64.yml
-index 0fb3ea8..9d58c45 100644
---- a/tests/jobs/xenomai-x86-64.yml
-+++ b/tests/jobs/xenomai-x86-64.yml
-@@ -61,3 +61,14 @@ actions:
-       from: git
-       path: lava-test-shell/smoke-tests-basic.yaml
-       name: smoke-tests
-+    - repository:
-+        metadata:
-+          format: Lava-Test Test Definition 1.0
-+          name: xenomai-test-suite
-+          description: "runs the xenomai test suite"
-+        run:
-+          steps:
-+            - lava-test-case xenomai-test --shell xeno-test -k -l \"dohell -m /tmp 300\" -p 1000
-+      from: inline
-+      path: inline/xenomai-test-suite.yaml
-+      name: xenomai-test-suite
++SRC_URI_append_armhf = " git://gitlab.denx.de/Xenomai/ipipe-arm.git;protocol=https;nobranch=1;tag=ipipe-core-4.19.55-arm-3"
++PV_armhf = "4.19.55+"
+ 
+ S = "${WORKDIR}/git"
 -- 
 2.20.1
 
