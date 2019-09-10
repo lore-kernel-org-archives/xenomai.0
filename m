@@ -1,13 +1,12 @@
-Subject: Re: [PATCH] linux-xenomai: correct pull of 4.14 arm64 kernel
-References: <20190910124526.21953-1-Quirin.Gylstorff@siemens.com>
-From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <769c9d8d-0d25-d2fb-fc99-bbad8aacbcd0@siemens.com>
-Date: Tue, 10 Sep 2019 14:50:07 +0200
+From: "Q. Gylstorff" <Quirin.Gylstorff@siemens.com>
+Subject: [xenomai-images][PATCH v2 3/9] machine: Allow override of the image
+ type
+Date: Tue, 10 Sep 2019 16:44:53 +0200
+Message-Id: <20190910144459.13239-4-Quirin.Gylstorff@siemens.com>
+In-Reply-To: <40515a30-f023-af93-5662-e47c70da438e@siemens.com>
+References: <40515a30-f023-af93-5662-e47c70da438e@siemens.com>
 MIME-Version: 1.0
-In-Reply-To: <20190910124526.21953-1-Quirin.Gylstorff@siemens.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,43 +15,95 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "Q. Gylstorff" <Quirin.Gylstorff@siemens.com>, xenomai@xenomai.org, Philippe Gerum <rpm@xenomai.org>
+To: xenomai@xenomai.org
 
-On 10.09.19 14:45, Q. Gylstorff wrote:
-> From: Quirin Gylstorff <quirin.gylstorff@siemens.com>
-> 
-> The arm64 4.14 kernel cannot currently not be build. Use tag instead
-> of branch + commit.
-> 
-> Signed-off-by: Quirin Gylstorff <quirin.gylstorff@siemens.com>
-> ---
->   recipes-kernel/linux/linux-xenomai_4.14.bb | 3 +--
->   1 file changed, 1 insertion(+), 2 deletions(-)
-> 
-> diff --git a/recipes-kernel/linux/linux-xenomai_4.14.bb b/recipes-kernel/linux/linux-xenomai_4.14.bb
-> index 14030d6..f147eed 100644
-> --- a/recipes-kernel/linux/linux-xenomai_4.14.bb
-> +++ b/recipes-kernel/linux/linux-xenomai_4.14.bb
-> @@ -15,8 +15,7 @@ SRC_URI_append_amd64 = " git://gitlab.denx.de/Xenomai/ipipe-x86.git;protocol=htt
->   SRCREV_amd64 = "fdfa1aff4578edf6a03e2e77ea20bf7f97863954"
->   PV_amd64 = "4.14.134+"
->   
-> -SRC_URI_append_arm64 = " git://gitlab.denx.de/Xenomai/ipipe-arm64.git;protocol=https;branch=stable/4.14.78-arm64"
-> -SRCREV_arm64 = "dec5e42fd43de238df816b31cadfb83b268b7136"
-> +SRC_URI_append_arm64 = " git://gitlab.denx.de/Xenomai/ipipe-arm64.git;protocol=https;nobranch=1;tag=ipipe-core-4.14.78-arm64-2"
->   PV_arm64 = "4.14.78+"
->   
->   SRC_URI_append_armhf = " git://gitlab.denx.de/Xenomai/ipipe-arm.git;protocol=https;branch=stable/4.14.96-arm"
-> 
+From: Quirin Gylstorff <quirin.gylstorff@siemens.com>
 
-OK, regression due to ipipe-arm64 repo refactoring. Merged.
+For the NFS rootfs a tarball is used. This changes allows
+local.conf to set the IMAGE_TYPE from wic-img to targz-img.
 
-Philippe, is it by intention that ipipe-core-4.14.78-arm64-2 is not branch-wise 
-orphaned?
+Signed-off-by: Quirin Gylstorff <quirin.gylstorff@siemens.com>
+---
+ .gitlab-ci.yml               |  4 ++--
+ conf/machine/hikey.conf      |  2 +-
+ conf/machine/x86-64-efi.conf |  2 +-
+ opt-lava-test.yml            | 20 ++++++++++++++++++++
+ 4 files changed, 24 insertions(+), 4 deletions(-)
+ create mode 100644 opt-lava-test.yml
 
-Jan
-
+diff --git a/.gitlab-ci.yml b/.gitlab-ci.yml
+index c75a7e6..ace8862 100644
+--- a/.gitlab-ci.yml
++++ b/.gitlab-ci.yml
+@@ -92,7 +92,7 @@ build:board-beaglebone:
+   <<: *lava-ssh-key
+   stage: build
+   script:
+-    - kas build kas.yml:board-beagle-bone-black.yml
++    - kas build kas.yml:board-beagle-bone-black.yml:opt-lava-test.yml
+     - scripts/deploy_for_testing.sh beagle-bone-black
+ 
+ lava-test:board-beaglebone:
+@@ -109,7 +109,7 @@ build:board-x86-64-efi:
+   <<: *lava-ssh-key
+   stage: build
+   script:
+-    - kas build kas.yml:board-x86-64-efi.yml
++    - kas build kas.yml:board-x86-64-efi.yml:opt-lava-test.yml
+     - scripts/deploy_for_testing.sh x86-64-efi
+ 
+ lava-test:board-x86-64-efi:
+diff --git a/conf/machine/hikey.conf b/conf/machine/hikey.conf
+index 465e06e..3c93507 100644
+--- a/conf/machine/hikey.conf
++++ b/conf/machine/hikey.conf
+@@ -11,7 +11,7 @@
+ 
+ DISTRO_ARCH = "arm64"
+ 
+-IMAGE_TYPE = "wic-img"
++IMAGE_TYPE ?= "wic-img"
+ IMAGER_INSTALL += "${GRUB_BOOTLOADER_INSTALL}"
+ 
+ PREFERRED_VERSION_linux-xenomai = "4.14.%"
+diff --git a/conf/machine/x86-64-efi.conf b/conf/machine/x86-64-efi.conf
+index 0fd2ef1..02846ff 100644
+--- a/conf/machine/x86-64-efi.conf
++++ b/conf/machine/x86-64-efi.conf
+@@ -11,5 +11,5 @@
+ 
+ DISTRO_ARCH = "amd64"
+ 
+-IMAGE_TYPE = "wic-img"
++IMAGE_TYPE ?= "wic-img"
+ IMAGER_INSTALL += "${GRUB_BOOTLOADER_INSTALL}"
+diff --git a/opt-lava-test.yml b/opt-lava-test.yml
+new file mode 100644
+index 0000000..206aea0
+--- /dev/null
++++ b/opt-lava-test.yml
+@@ -0,0 +1,20 @@
++#
++# Xenomai Real-Time System
++#
++# Copyright (c) Siemens AG, 2019
++#
++# Authors:
++#  Quirin Gylstorff <quirin.gylstorff@siemens.com>
++#
++# SPDX-License-Identifier: MIT
++#
++
++header:
++  version: 8
++
++# lava uses nfs to deploy the image. For this we need a tarball instead of
++# full image
++
++local_conf_header:
++  image-type: |
++    IMAGE_TYPE = "targz-img"
 -- 
-Siemens AG, Corporate Technology, CT RDA IOT SES-DE
-Corporate Competence Center Embedded Linux
+2.20.1
+
 
