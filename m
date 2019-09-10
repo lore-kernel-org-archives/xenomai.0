@@ -1,11 +1,16 @@
+Subject: Re: [xenomai-images][PATCH 1/1] kas.yml: switch isar url to a working
+ clone url
+References: <20190904082656.12601-1-henning.schild@siemens.com>
+ <20190904082656.12601-2-henning.schild@siemens.com>
+ <55ff7165-1d61-6fe0-fc60-73b95bca9125@siemens.com>
 From: Jan Kiszka <jan.kiszka@siemens.com>
-Subject: [PATCH] ci: Update to 4.19.55-ppc32-1
-Message-ID: <1083ef00-2764-98cf-70db-d93926ce7d5f@siemens.com>
-Date: Mon, 9 Sep 2019 20:42:11 +0200
+Message-ID: <6026aede-ea88-6302-2b39-75a858fa9758@siemens.com>
+Date: Tue, 10 Sep 2019 11:56:27 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+In-Reply-To: <55ff7165-1d61-6fe0-fc60-73b95bca9125@siemens.com>
+Content-Type: text/plain; charset="utf-8"; format="flowed"
 Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -14,49 +19,55 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Xenomai <xenomai@xenomai.org>
-Cc: Steven Seeger <steven.seeger@flightsystems.net>
+To: Henning Schild <henning.schild@siemens.com>, xenomai@xenomai.org
 
-From: Jan Kiszka <jan.kiszka@siemens.com>
+On 04.09.19 13:12, Jan Kiszka via Xenomai wrote:
+> On 04.09.19 10:26, Henning Schild via Xenomai wrote:
+>> From: Henning Schild <henning.schild@siemens.com>
+>>
+>> The url was actually missing the .git extension which seems to break
+>> cloning it. Maybe a github change or who knows, but that new one works.
+>>
+>> Signed-off-by: Henning Schild <henning.schild@siemens.com>
+>> ---
+>>   kas.yml | 2 +-
+>>   1 file changed, 1 insertion(+), 1 deletion(-)
+>>
+>> diff --git a/kas.yml b/kas.yml
+>> index 260eb36..a4d12c2 100644
+>> --- a/kas.yml
+>> +++ b/kas.yml
+>> @@ -19,7 +19,7 @@ repos:
+>>     xenomai:
+>>     isar:
+>> -    url: https://github.com/ilbers/isar
+>> +    url: https://github.com/ilbers/isar.git
+>>       refspec: 59c7dd2b8b3172d53de1c7a39fbd49751193559a
+>>       layers:
+>>         meta:
+>>
+> 
+> Huh? Never saw this issue before:
+> 
+> $ git clone https://github.com/ilbers/isar
+> Cloning into 'isar'...
+> remote: Enumerating objects: 41, done.
+> remote: Counting objects: 100% (41/41), done.
+> remote: Compressing objects: 100% (36/36), done.
+> remote: Total 6625 (delta 13), reused 23 (delta 5), pack-reused 6584
+> Receiving objects: 100% (6625/6625), 3.56 MiB | 6.03 MiB/s, done.
+> Resolving deltas: 100% (3786/3786), done.
+> $ git --version
+> git version 2.16.4
+> 
+> Jan
+> 
 
-This allows to lift also ppc to gcc 8.
+Applied nevertheless, thanks.
 
-Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
----
- .travis.yml | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+Jan
 
-diff --git a/.travis.yml b/.travis.yml
-index 15efb7ccb1..c07939e9ef 100644
---- a/.travis.yml
-+++ b/.travis.yml
-@@ -10,7 +10,7 @@ addons:
-       - libc6-dev-arm64-cross
-       - gcc-8-arm-linux-gnueabihf
-       - libc6-dev-armhf-cross
--      - gcc-6-powerpc-linux-gnu
-+      - gcc-8-powerpc-linux-gnu
-       - libc6-dev-powerpc-cross
-       - u-boot-tools
- 
-@@ -24,7 +24,7 @@ install:
-   - sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-8 800
-   - sudo update-alternatives --install /usr/bin/aarch64-linux-gnu-gcc aarch64-linux-gnu-gcc /usr/bin/aarch64-linux-gnu-gcc-8 800
-   - sudo update-alternatives --install /usr/bin/arm-linux-gnueabihf-gcc arm-linux-gnueabihf-gcc /usr/bin/arm-linux-gnueabihf-gcc-8 800
--  - sudo update-alternatives --install /usr/bin/powerpc-linux-gnu-gcc powerpc-linux-gnu-gcc /usr/bin/powerpc-linux-gnu-gcc-6 800
-+  - sudo update-alternatives --install /usr/bin/powerpc-linux-gnu-gcc powerpc-linux-gnu-gcc /usr/bin/powerpc-linux-gnu-gcc-8 800
-   - git clone --depth 1 --branch ${IPIPE_REV} ${IPIPE_KERNEL} ${KDIR}
- 
- before_script:
-@@ -211,6 +211,6 @@ matrix:
-         KERNEL_DEFCONFIG: x86_64_defconfig
-     - env:
-       - ARCH: powerpc
--        IPIPE_REV: ipipe-core-4.14.36-ppc32-1.1
-+        IPIPE_REV: ipipe-core-4.19.55-ppc32-1
-         IPIPE_KERNEL: https://gitlab.denx.de/Xenomai/ipipe-ppc32.git
-         KERNEL_DEFCONFIG: mpc5200_defconfig
 -- 
-
-2.16.4
+Siemens AG, Corporate Technology, CT RDA IOT SES-DE
+Corporate Competence Center Embedded Linux
 
