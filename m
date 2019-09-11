@@ -1,7 +1,7 @@
 From: "Q. Gylstorff" <Quirin.Gylstorff@siemens.com>
-Subject: [PATCH] debian/rules: Add debug symbols
-Date: Wed, 11 Sep 2019 18:05:19 +0200
-Message-Id: <20190911160519.25505-1-Quirin.Gylstorff@siemens.com>
+Subject: [xenomai-images][PATCH] xenomai: Install debug symbols
+Date: Wed, 11 Sep 2019 18:11:10 +0200
+Message-Id: <20190911161110.2151-1-Quirin.Gylstorff@siemens.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
@@ -16,27 +16,39 @@ To: xenomai@xenomai.org
 
 From: Quirin Gylstorff <quirin.gylstorff@siemens.com>
 
-Configure debian build with debugging symbols to allow debugging.
+To debug the xenomai runtime add the debug symbols to the demo
+image.
 
 Signed-off-by: Quirin Gylstorff <quirin.gylstorff@siemens.com>
 ---
- debian/rules | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ recipes-core/images/demo-image.bb   | 2 +-
+ recipes-xenomai/xenomai/xenomai.inc | 2 +-
+ 2 files changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/debian/rules b/debian/rules
-index 08562c7ab..ef209712f 100755
---- a/debian/rules
-+++ b/debian/rules
-@@ -17,7 +17,8 @@ CONFIG_OPTS = --prefix=/usr \
-             --includedir=/usr/include/xenomai \
-             --mandir=/usr/share/man \
-             --with-testdir=/usr/lib/xenomai/testsuite \
--            --enable-smp
-+            --enable-smp \
-+            --enable-debug
+diff --git a/recipes-core/images/demo-image.bb b/recipes-core/images/demo-image.bb
+index 2f1f522..d01142b 100644
+--- a/recipes-core/images/demo-image.bb
++++ b/recipes-core/images/demo-image.bb
+@@ -20,5 +20,5 @@ IMAGE_PREINSTALL += " \
+     iw wireless-tools wpasupplicant dbus \
+     gdb lsb-release"
  
- ifneq ($(DEB_HOST_GNU_TYPE),$(DEB_BUILD_GNU_TYPE))
- 	CONFIG_OPTS += --build $(DEB_BUILD_GNU_TYPE) --host $(DEB_HOST_GNU_TYPE)
+-IMAGE_INSTALL += "xenomai-runtime"
++IMAGE_INSTALL += "xenomai-runtime xenomai-runtime-dbgsym libxenomai1-dbgsym"
+ IMAGE_INSTALL += "customizations expand-on-first-boot"
+diff --git a/recipes-xenomai/xenomai/xenomai.inc b/recipes-xenomai/xenomai/xenomai.inc
+index aa53e57..bd07347 100644
+--- a/recipes-xenomai/xenomai/xenomai.inc
++++ b/recipes-xenomai/xenomai/xenomai.inc
+@@ -11,7 +11,7 @@
+ 
+ inherit dpkg
+ 
+-PROVIDES += "xenomai-kernel-source xenomai-runtime"
++PROVIDES += "xenomai-kernel-source xenomai-runtime xenomai-runtime-dbgsym libxenomai1-dbgsym"
+ 
+ # use bitbake get_srcrev to get the current commit id
+ COMMIT="${@bb.fetch2.get_srcrev(d).strip('AUTOINC+')}"
 -- 
 2.20.1
 
