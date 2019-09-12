@@ -1,10 +1,10 @@
-Subject: Re: [PATCH] debian/rules: Add debug symbols
-References: <20190911160519.25505-1-Quirin.Gylstorff@siemens.com>
+Subject: Re: [xenomai-images][PATCH] xenomai: Install debug symbols
+References: <20190911161110.2151-1-Quirin.Gylstorff@siemens.com>
 From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <beb6d8bf-79e2-bc86-8818-2fd0cb5c93c3@siemens.com>
-Date: Thu, 12 Sep 2019 07:51:24 +0200
+Message-ID: <c338f22b-6445-263d-c391-97243e55508a@siemens.com>
+Date: Thu, 12 Sep 2019 09:04:05 +0200
 MIME-Version: 1.0
-In-Reply-To: <20190911160519.25505-1-Quirin.Gylstorff@siemens.com>
+In-Reply-To: <20190911161110.2151-1-Quirin.Gylstorff@siemens.com>
 Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -18,33 +18,45 @@ List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: "Q. Gylstorff" <Quirin.Gylstorff@siemens.com>, xenomai@xenomai.org
 
-On 11.09.19 18:05, Q. Gylstorff wrote:
+On 11.09.19 18:11, Q. Gylstorff wrote:
 > From: Quirin Gylstorff <quirin.gylstorff@siemens.com>
 > 
-> Configure debian build with debugging symbols to allow debugging.
+> To debug the xenomai runtime add the debug symbols to the demo
+> image.
 > 
 > Signed-off-by: Quirin Gylstorff <quirin.gylstorff@siemens.com>
 > ---
->   debian/rules | 3 ++-
->   1 file changed, 2 insertions(+), 1 deletion(-)
+>   recipes-core/images/demo-image.bb   | 2 +-
+>   recipes-xenomai/xenomai/xenomai.inc | 2 +-
+>   2 files changed, 2 insertions(+), 2 deletions(-)
 > 
-> diff --git a/debian/rules b/debian/rules
-> index 08562c7ab..ef209712f 100755
-> --- a/debian/rules
-> +++ b/debian/rules
-> @@ -17,7 +17,8 @@ CONFIG_OPTS = --prefix=/usr \
->               --includedir=/usr/include/xenomai \
->               --mandir=/usr/share/man \
->               --with-testdir=/usr/lib/xenomai/testsuite \
-> -            --enable-smp
-> +            --enable-smp \
-> +            --enable-debug
+> diff --git a/recipes-core/images/demo-image.bb b/recipes-core/images/demo-image.bb
+> index 2f1f522..d01142b 100644
+> --- a/recipes-core/images/demo-image.bb
+> +++ b/recipes-core/images/demo-image.bb
+> @@ -20,5 +20,5 @@ IMAGE_PREINSTALL += " \
+>       iw wireless-tools wpasupplicant dbus \
+>       gdb lsb-release"
 >   
->   ifneq ($(DEB_HOST_GNU_TYPE),$(DEB_BUILD_GNU_TYPE))
->   	CONFIG_OPTS += --build $(DEB_BUILD_GNU_TYPE) --host $(DEB_HOST_GNU_TYPE)
+> -IMAGE_INSTALL += "xenomai-runtime"
+> +IMAGE_INSTALL += "xenomai-runtime xenomai-runtime-dbgsym libxenomai1-dbgsym"
+>   IMAGE_INSTALL += "customizations expand-on-first-boot"
+> diff --git a/recipes-xenomai/xenomai/xenomai.inc b/recipes-xenomai/xenomai/xenomai.inc
+> index aa53e57..bd07347 100644
+> --- a/recipes-xenomai/xenomai/xenomai.inc
+> +++ b/recipes-xenomai/xenomai/xenomai.inc
+> @@ -11,7 +11,7 @@
+>   
+>   inherit dpkg
+>   
+> -PROVIDES += "xenomai-kernel-source xenomai-runtime"
+> +PROVIDES += "xenomai-kernel-source xenomai-runtime xenomai-runtime-dbgsym libxenomai1-dbgsym"
+>   
+>   # use bitbake get_srcrev to get the current commit id
+>   COMMIT="${@bb.fetch2.get_srcrev(d).strip('AUTOINC+')}"
 > 
 
-Thanks, applied. Will also add this to stable.
+Thanks, applied.
 
 Jan
 
