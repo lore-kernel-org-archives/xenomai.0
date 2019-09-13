@@ -1,14 +1,11 @@
-Subject: Re: [PATCH] linux-xenomai: correct pull of 4.14 arm64 kernel
-References: <20190910124526.21953-1-Quirin.Gylstorff@siemens.com>
- <769c9d8d-0d25-d2fb-fc99-bbad8aacbcd0@siemens.com>
-From: Philippe Gerum <rpm@xenomai.org>
-Message-ID: <6287c5bd-2fd7-58c8-246d-d2937ce07d54@xenomai.org>
-Date: Thu, 12 Sep 2019 20:36:40 +0200
-MIME-Version: 1.0
-In-Reply-To: <769c9d8d-0d25-d2fb-fc99-bbad8aacbcd0@siemens.com>
-Content-Type: text/plain; charset="utf-8"
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+From: Jan Kiszka <jan.kiszka@siemens.com>
+Subject: [PATCH 11/11] drivers/can: Convert to module_pci_driver
+Date: Fri, 13 Sep 2019 15:19:00 +0200
+Message-Id: <280643e3dd929d59e734cc0343791037b8b2db67.1568380740.git.jan.kiszka@siemens.com>
+In-Reply-To: <cover.1568380740.git.jan.kiszka@siemens.com>
+References: <cover.1568380740.git.jan.kiszka@siemens.com>
+In-Reply-To: <cover.1568380740.git.jan.kiszka@siemens.com>
+References: <cover.1568380740.git.jan.kiszka@siemens.com>
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,53 +14,149 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jan Kiszka <jan.kiszka@siemens.com>, "Q. Gylstorff" <Quirin.Gylstorff@siemens.com>, xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-On 9/10/19 2:50 PM, Jan Kiszka wrote:
-> On 10.09.19 14:45, Q. Gylstorff wrote:
->> From: Quirin Gylstorff <quirin.gylstorff@siemens.com>
->>
->> The arm64 4.14 kernel cannot currently not be build. Use tag instead
->> of branch + commit.
->>
->> Signed-off-by: Quirin Gylstorff <quirin.gylstorff@siemens.com>
->> ---
->>   recipes-kernel/linux/linux-xenomai_4.14.bb | 3 +--
->>   1 file changed, 1 insertion(+), 2 deletions(-)
->>
->> diff --git a/recipes-kernel/linux/linux-xenomai_4.14.bb
->> b/recipes-kernel/linux/linux-xenomai_4.14.bb
->> index 14030d6..f147eed 100644
->> --- a/recipes-kernel/linux/linux-xenomai_4.14.bb
->> +++ b/recipes-kernel/linux/linux-xenomai_4.14.bb
->> @@ -15,8 +15,7 @@ SRC_URI_append_amd64 = "
->> git://gitlab.denx.de/Xenomai/ipipe-x86.git;protocol=htt
->>   SRCREV_amd64 = "fdfa1aff4578edf6a03e2e77ea20bf7f97863954"
->>   PV_amd64 = "4.14.134+"
->>   -SRC_URI_append_arm64 = "
->> git://gitlab.denx.de/Xenomai/ipipe-arm64.git;protocol=https;branch=stable/4.14.78-arm64"
->>
->> -SRCREV_arm64 = "dec5e42fd43de238df816b31cadfb83b268b7136"
->> +SRC_URI_append_arm64 = "
->> git://gitlab.denx.de/Xenomai/ipipe-arm64.git;protocol=https;nobranch=1;tag=ipipe-core-4.14.78-arm64-2"
->>
->>   PV_arm64 = "4.14.78+"
->>     SRC_URI_append_armhf = "
->> git://gitlab.denx.de/Xenomai/ipipe-arm.git;protocol=https;branch=stable/4.14.96-arm"
->>
->>
-> 
-> OK, regression due to ipipe-arm64 repo refactoring. Merged.
-> 
-> Philippe, is it by intention that ipipe-core-4.14.78-arm64-2 is not
-> branch-wise orphaned?
-> 
+From: Jan Kiszka <jan.kiszka@siemens.com>
 
-Yes, I don't think there is going to be zillions of tags anyway, and
-having to rely on an external patch file picked from the dl area for
-testing some older release is not that handy. So let's rely on git for
-that too.
+Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
+---
+ kernel/drivers/can/sja1000/rtcan_adv_pci.c   | 13 +------------
+ kernel/drivers/can/sja1000/rtcan_ems_pci.c   | 13 +------------
+ kernel/drivers/can/sja1000/rtcan_esd_pci.c   | 13 +------------
+ kernel/drivers/can/sja1000/rtcan_ixxat_pci.c | 14 +-------------
+ kernel/drivers/can/sja1000/rtcan_peak_pci.c  | 14 +-------------
+ kernel/drivers/can/sja1000/rtcan_plx_pci.c   | 13 +------------
+ 6 files changed, 6 insertions(+), 74 deletions(-)
 
+diff --git a/kernel/drivers/can/sja1000/rtcan_adv_pci.c b/kernel/drivers/can/sja1000/rtcan_adv_pci.c
+index 26f81ecda8..bfd7f088c1 100644
+--- a/kernel/drivers/can/sja1000/rtcan_adv_pci.c
++++ b/kernel/drivers/can/sja1000/rtcan_adv_pci.c
+@@ -355,15 +355,4 @@ static struct pci_driver rtcan_adv_pci_driver = {
+ 	.remove = adv_pci_remove_one,
+ };
+ 
+-static int __init rtcan_adv_pci_init(void)
+-{
+-	return pci_register_driver(&rtcan_adv_pci_driver);
+-}
+-
+-static void __exit rtcan_adv_pci_exit(void)
+-{
+-	pci_unregister_driver(&rtcan_adv_pci_driver);
+-}
+-
+-module_init(rtcan_adv_pci_init);
+-module_exit(rtcan_adv_pci_exit);
++module_pci_driver(rtcan_adv_pci_driver);
+diff --git a/kernel/drivers/can/sja1000/rtcan_ems_pci.c b/kernel/drivers/can/sja1000/rtcan_ems_pci.c
+index ca85b1d4e3..e63bb7d597 100644
+--- a/kernel/drivers/can/sja1000/rtcan_ems_pci.c
++++ b/kernel/drivers/can/sja1000/rtcan_ems_pci.c
+@@ -388,15 +388,4 @@ static struct pci_driver ems_pci_driver = {
+ 	.remove = ems_pci_del_card,
+ };
+ 
+-static int __init ems_pci_init(void)
+-{
+-	return pci_register_driver(&ems_pci_driver);
+-}
+-
+-static void __exit ems_pci_exit(void)
+-{
+-	pci_unregister_driver(&ems_pci_driver);
+-}
+-
+-module_init(ems_pci_init);
+-module_exit(ems_pci_exit);
++module_pci_driver(ems_pci_driver);
+diff --git a/kernel/drivers/can/sja1000/rtcan_esd_pci.c b/kernel/drivers/can/sja1000/rtcan_esd_pci.c
+index 97163a2228..b5961fa906 100644
+--- a/kernel/drivers/can/sja1000/rtcan_esd_pci.c
++++ b/kernel/drivers/can/sja1000/rtcan_esd_pci.c
+@@ -340,15 +340,4 @@ static struct pci_driver rtcan_esd_pci_driver = {
+ 	.remove = esd_pci_remove_one,
+ };
+ 
+-static int __init rtcan_esd_pci_init(void)
+-{
+-	return pci_register_driver(&rtcan_esd_pci_driver);
+-}
+-
+-static void __exit rtcan_esd_pci_exit(void)
+-{
+-	pci_unregister_driver(&rtcan_esd_pci_driver);
+-}
+-
+-module_init(rtcan_esd_pci_init);
+-module_exit(rtcan_esd_pci_exit);
++module_pci_driver(rtcan_esd_pci_driver);
+diff --git a/kernel/drivers/can/sja1000/rtcan_ixxat_pci.c b/kernel/drivers/can/sja1000/rtcan_ixxat_pci.c
+index 3172c78436..2837a7d7f9 100644
+--- a/kernel/drivers/can/sja1000/rtcan_ixxat_pci.c
++++ b/kernel/drivers/can/sja1000/rtcan_ixxat_pci.c
+@@ -294,16 +294,4 @@ static struct pci_driver rtcan_ixxat_pci_driver = {
+ 	.remove = ixxat_pci_remove_one,
+ };
+ 
+-static int __init rtcan_ixxat_pci_init(void)
+-{
+-    return pci_register_driver(&rtcan_ixxat_pci_driver);
+-}
+-
+-
+-static void __exit rtcan_ixxat_pci_exit(void)
+-{
+-	pci_unregister_driver(&rtcan_ixxat_pci_driver);
+-}
+-
+-module_init(rtcan_ixxat_pci_init);
+-module_exit(rtcan_ixxat_pci_exit);
++module_pci_driver(rtcan_ixxat_pci_driver);
+diff --git a/kernel/drivers/can/sja1000/rtcan_peak_pci.c b/kernel/drivers/can/sja1000/rtcan_peak_pci.c
+index 3f9e40b53a..85288906f4 100644
+--- a/kernel/drivers/can/sja1000/rtcan_peak_pci.c
++++ b/kernel/drivers/can/sja1000/rtcan_peak_pci.c
+@@ -351,16 +351,4 @@ static struct pci_driver rtcan_peak_pci_driver = {
+ 	.remove		= peak_pci_remove_one,
+ };
+ 
+-static int __init rtcan_peak_pci_init(void)
+-{
+-        return pci_register_driver(&rtcan_peak_pci_driver);
+-}
+-
+-
+-static void __exit rtcan_peak_pci_exit(void)
+-{
+-	pci_unregister_driver(&rtcan_peak_pci_driver);
+-}
+-
+-module_init(rtcan_peak_pci_init);
+-module_exit(rtcan_peak_pci_exit);
++module_pci_driver(rtcan_peak_pci_driver);
+diff --git a/kernel/drivers/can/sja1000/rtcan_plx_pci.c b/kernel/drivers/can/sja1000/rtcan_plx_pci.c
+index 3ede0faa95..5df4d927dd 100644
+--- a/kernel/drivers/can/sja1000/rtcan_plx_pci.c
++++ b/kernel/drivers/can/sja1000/rtcan_plx_pci.c
+@@ -594,15 +594,4 @@ static struct pci_driver plx_pci_driver = {
+ 	.remove = plx_pci_del_card,
+ };
+ 
+-static int __init plx_pci_init(void)
+-{
+-	return pci_register_driver(&plx_pci_driver);
+-}
+-
+-static void __exit plx_pci_exit(void)
+-{
+-	pci_unregister_driver(&plx_pci_driver);
+-}
+-
+-module_init(plx_pci_init);
+-module_exit(plx_pci_exit);
++module_pci_driver(plx_pci_driver);
 -- 
-Philippe.
+2.16.4
+
 
