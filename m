@@ -1,8 +1,7 @@
 From: Jan Kiszka <jan.kiszka@siemens.com>
-Subject: [PATCH v2 07/12] drivers/serial: Convert to rtdm_available() and
- clean up
-Date: Fri, 13 Sep 2019 18:46:50 +0200
-Message-Id: <85a72dbdf01f4be56b531e65556f565110ad6601.1568393215.git.jan.kiszka@siemens.com>
+Subject: [PATCH v2 04/12] drivers/udd: Consolidate over ENOSYS on disabled core
+Date: Fri, 13 Sep 2019 18:46:47 +0200
+Message-Id: <08e16ba30f2f08ef3795805910efeb5db9b5f470.1568393215.git.jan.kiszka@siemens.com>
 In-Reply-To: <cover.1568393215.git.jan.kiszka@siemens.com>
 References: <cover.1568393215.git.jan.kiszka@siemens.com>
 In-Reply-To: <cover.1568393215.git.jan.kiszka@siemens.com>
@@ -19,91 +18,49 @@ To: xenomai@xenomai.org
 
 From: Jan Kiszka <jan.kiszka@siemens.com>
 
-Properly fail if the core is not available. This also obsoletes the
-check on exit.
+Drop the duplicate checks - rtdm_dev_register will already fail. And as
+udd_register_device fails, there is no point in protecting
+udd_unregister_device because there will be no device to unregister.
 
 Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
 ---
- kernel/drivers/serial/16550A.c       | 7 ++-----
- kernel/drivers/serial/mpc52xx_uart.c | 7 +++----
- kernel/drivers/serial/rt_imx_uart.c  | 7 +++----
- 3 files changed, 8 insertions(+), 13 deletions(-)
+ kernel/drivers/udd/udd.c | 9 +--------
+ 1 file changed, 1 insertion(+), 8 deletions(-)
 
-diff --git a/kernel/drivers/serial/16550A.c b/kernel/drivers/serial/16550A.c
-index 81acc6344e..c9274fb191 100644
---- a/kernel/drivers/serial/16550A.c
-+++ b/kernel/drivers/serial/16550A.c
-@@ -1103,8 +1103,8 @@ int __init rt_16550_init(void)
- 	int err;
- 	int i;
+diff --git a/kernel/drivers/udd/udd.c b/kernel/drivers/udd/udd.c
+index b086096ccd..e32d40f665 100644
+--- a/kernel/drivers/udd/udd.c
++++ b/kernel/drivers/udd/udd.c
+@@ -347,8 +347,7 @@ undo:
+  *
+  * - -EINVAL, if udd_device.device_flags contains invalid flags.
+  *
+- * - -ENXIO can be received if this service is called while the Cobalt
+- * kernel is disabled.
++ * - -ENOSYS, if this service is called while the real-time core is disabled.
+  *
+  * @coretags{secondary-only}
+  */
+@@ -360,9 +359,6 @@ int udd_register_device(struct udd_device *udd)
+ 	struct udd_memregion *rn;
+ 	int ret, n;
  
 -	if (!realtime_core_enabled())
--		return 0;
-+	if (!rtdm_available())
-+		return -ENODEV;
- 
- 	rt_16550_pnp_init();
- 	rt_16550_pci_init();
-@@ -1173,9 +1173,6 @@ void rt_16550_exit(void)
- {
- 	int i;
- 
--	if (!realtime_core_enabled())
--		return;
+-		return -ENXIO;
 -
- 	for (i = 0; i < MAX_DEVICES; i++)
- 		if (device[i]) {
- 			rtdm_dev_unregister(device[i]);
-diff --git a/kernel/drivers/serial/mpc52xx_uart.c b/kernel/drivers/serial/mpc52xx_uart.c
-index a7b357959b..fe469d5987 100644
---- a/kernel/drivers/serial/mpc52xx_uart.c
-+++ b/kernel/drivers/serial/mpc52xx_uart.c
-@@ -1411,8 +1411,8 @@ static int __init rt_mpc52xx_uart_init(void)
- {
- 	int ret;
+ 	if (udd->device_flags & RTDM_PROTOCOL_DEVICE)
+ 		return -EINVAL;
+ 
+@@ -459,9 +455,6 @@ int udd_unregister_device(struct udd_device *udd)
+ 	struct udd_memregion *rn;
+ 	int n;
  
 -	if (!realtime_core_enabled())
--		return 0;
-+	if (!rtdm_available())
-+		return -ENODEV;
+-		return -ENXIO;
+-
+ 	rtdm_event_destroy(&ur->pulse);
  
- 	printk(KERN_INFO "RTserial: MPC52xx PSC UART driver\n");
- 
-@@ -1431,8 +1431,7 @@ static int __init rt_mpc52xx_uart_init(void)
- 
- static void __exit rt_mpc52xx_uart_exit(void)
- {
--	if (realtime_core_enabled())
--		platform_driver_unregister(&rt_mpc52xx_uart_of_driver);
-+	platform_driver_unregister(&rt_mpc52xx_uart_of_driver);
- }
- 
- module_init(rt_mpc52xx_uart_init);
-diff --git a/kernel/drivers/serial/rt_imx_uart.c b/kernel/drivers/serial/rt_imx_uart.c
-index 6d95cbcab1..2b27b7debb 100644
---- a/kernel/drivers/serial/rt_imx_uart.c
-+++ b/kernel/drivers/serial/rt_imx_uart.c
-@@ -1656,8 +1656,8 @@ static int __init rt_imx_uart_init(void)
- {
- 	int ret;
- 
--	if (!realtime_core_enabled())
--		return 0;
-+	if (!rtdm_available())
-+		return -ENODEV;
- 
- 	ret = platform_driver_register(&rt_imx_uart_driver);
- 	if (ret) {
-@@ -1670,8 +1670,7 @@ static int __init rt_imx_uart_init(void)
- 
- static void __exit rt_imx_uart_exit(void)
- {
--	if (realtime_core_enabled())
--		platform_driver_unregister(&rt_imx_uart_driver);
-+	platform_driver_unregister(&rt_imx_uart_driver);
- }
- 
- module_init(rt_imx_uart_init);
+ 	if (udd->irq != UDD_IRQ_NONE && udd->irq != UDD_IRQ_CUSTOM)
 -- 
 2.16.4
 
