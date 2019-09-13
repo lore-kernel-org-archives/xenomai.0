@@ -1,8 +1,7 @@
 From: Jan Kiszka <jan.kiszka@siemens.com>
-Subject: [PATCH v2 08/12] drivers/net: Do not load when the core is not
- available
-Date: Fri, 13 Sep 2019 18:46:51 +0200
-Message-Id: <a81574a53774c92a4b750acb0b45a70b37dd21c2.1568393215.git.jan.kiszka@siemens.com>
+Subject: [PATCH v2 03/12] drivers: Remove unneeded realtime_core_enabled checks
+Date: Fri, 13 Sep 2019 18:46:46 +0200
+Message-Id: <f5b286f5481af776b8dadfed0681ecc27895c203.1568393215.git.jan.kiszka@siemens.com>
 In-Reply-To: <cover.1568393215.git.jan.kiszka@siemens.com>
 References: <cover.1568393215.git.jan.kiszka@siemens.com>
 In-Reply-To: <cover.1568393215.git.jan.kiszka@siemens.com>
@@ -19,27 +18,132 @@ To: xenomai@xenomai.org
 
 From: Jan Kiszka <jan.kiszka@siemens.com>
 
-Using the new rtdm_available() interface, this prevents any RTnet module
-from being loaded when the real-time core is not available.
+It's not a good idea to load a driver module without functionality when
+the core is not available. Better fail with an error code so that the
+user gets proper feedback.
+
+In several cases, this makes the existing realtime_core_enabled checks
+obviously superfluous because rtdm_dev_register already performs it.
 
 Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
 ---
- kernel/drivers/net/stack/rtnet_module.c | 3 +++
- 1 file changed, 3 insertions(+)
+ kernel/drivers/autotune/autotune.c  | 6 ------
+ kernel/drivers/gpiopwm/gpiopwm.c    | 3 ---
+ kernel/drivers/testing/heapcheck.c  | 3 ---
+ kernel/drivers/testing/rtdmtest.c   | 3 ---
+ kernel/drivers/testing/switchtest.c | 6 ------
+ kernel/drivers/testing/timerbench.c | 6 ------
+ 6 files changed, 27 deletions(-)
 
-diff --git a/kernel/drivers/net/stack/rtnet_module.c b/kernel/drivers/net/stack/rtnet_module.c
-index f9f18ce221..16dc91fda0 100644
---- a/kernel/drivers/net/stack/rtnet_module.c
-+++ b/kernel/drivers/net/stack/rtnet_module.c
-@@ -318,6 +318,9 @@ int __init rtnet_init(void)
- {
- 	int err = 0;
+diff --git a/kernel/drivers/autotune/autotune.c b/kernel/drivers/autotune/autotune.c
+index 77ec9a1a21..e0420aa0e1 100644
+--- a/kernel/drivers/autotune/autotune.c
++++ b/kernel/drivers/autotune/autotune.c
+@@ -784,17 +784,11 @@ static struct rtdm_device device = {
  
-+	if (!rtdm_available())
-+		return -ENOSYS;
-+
- 	printk("\n*** RTnet for Xenomai v" XENO_VERSION_STRING " ***\n\n");
- 	printk("RTnet: initialising real-time networking\n");
+ static int __init autotune_init(void)
+ {
+-	if (!realtime_core_enabled())
+-		return 0;
+-
+ 	return rtdm_dev_register(&device);
+ }
+ 
+ static void __exit autotune_exit(void)
+ {
+-	if (!realtime_core_enabled())
+-		return;
+-
+ 	rtdm_dev_unregister(&device);
+ }
+ 
+diff --git a/kernel/drivers/gpiopwm/gpiopwm.c b/kernel/drivers/gpiopwm/gpiopwm.c
+index 114afa7583..ed42e08731 100644
+--- a/kernel/drivers/gpiopwm/gpiopwm.c
++++ b/kernel/drivers/gpiopwm/gpiopwm.c
+@@ -272,9 +272,6 @@ static int __init __gpiopwm_init(void)
+ {
+ 	int i, ret;
+ 
+-	if (!realtime_core_enabled())
+-		return -ENODEV;
+-
+ 	for (i = 0; i < ARRAY_SIZE(device); i++) {
+ 		ret = rtdm_dev_register(device + i);
+ 		if (ret)
+diff --git a/kernel/drivers/testing/heapcheck.c b/kernel/drivers/testing/heapcheck.c
+index bed5a05a6f..447cc13fec 100644
+--- a/kernel/drivers/testing/heapcheck.c
++++ b/kernel/drivers/testing/heapcheck.c
+@@ -500,9 +500,6 @@ static struct rtdm_device heapcheck_device = {
+ 
+ static int __init heapcheck_init(void)
+ {
+-	if (!realtime_core_enabled())
+-		return -ENODEV;
+-
+ 	return rtdm_dev_register(&heapcheck_device);
+ }
+ 
+diff --git a/kernel/drivers/testing/rtdmtest.c b/kernel/drivers/testing/rtdmtest.c
+index bd1ae6b4d5..6abf76b567 100644
+--- a/kernel/drivers/testing/rtdmtest.c
++++ b/kernel/drivers/testing/rtdmtest.c
+@@ -265,9 +265,6 @@ static int __init rtdm_test_init(void)
+ {
+ 	int i, ret;
+ 
+-	if (!realtime_core_enabled())
+-		return -ENODEV;
+-
+ 	for (i = 0; i < ARRAY_SIZE(device); i++) {
+ 		ret = rtdm_dev_register(device + i);
+ 		if (ret)
+diff --git a/kernel/drivers/testing/switchtest.c b/kernel/drivers/testing/switchtest.c
+index 3a2e0d5a08..d955c2b65f 100644
+--- a/kernel/drivers/testing/switchtest.c
++++ b/kernel/drivers/testing/switchtest.c
+@@ -738,9 +738,6 @@ static struct rtdm_device device = {
+ 
+ int __init __switchtest_init(void)
+ {
+-	if (!realtime_core_enabled())
+-		return 0;
+-
+ 	fp_features = fp_detect();
+ 
+ 	return rtdm_dev_register(&device);
+@@ -748,9 +745,6 @@ int __init __switchtest_init(void)
+ 
+ void __switchtest_exit(void)
+ {
+-	if (!realtime_core_enabled())
+-		return;
+-
+ 	rtdm_dev_unregister(&device);
+ }
+ 
+diff --git a/kernel/drivers/testing/timerbench.c b/kernel/drivers/testing/timerbench.c
+index 2efa14e759..1b4c413b7e 100644
+--- a/kernel/drivers/testing/timerbench.c
++++ b/kernel/drivers/testing/timerbench.c
+@@ -517,17 +517,11 @@ static struct rtdm_device device = {
+ 
+ static int __init __timerbench_init(void)
+ {
+-	if (!realtime_core_enabled())
+-		return 0;
+-
+ 	return rtdm_dev_register(&device);
+ }
+ 
+ static void __timerbench_exit(void)
+ {
+-	if (!realtime_core_enabled())
+-		return;
+-
+ 	rtdm_dev_unregister(&device);
+ }
  
 -- 
 2.16.4
