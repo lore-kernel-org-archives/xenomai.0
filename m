@@ -1,7 +1,7 @@
 From: Jan Kiszka <jan.kiszka@siemens.com>
-Subject: [PATCH 04/11] drivers/udd: Consolidate over ENOSYS on disabled core
-Date: Fri, 13 Sep 2019 15:18:53 +0200
-Message-Id: <ff8fc83e4cf1f93d4333a585502819b4d246f45c.1568380740.git.jan.kiszka@siemens.com>
+Subject: [PATCH 03/11] drivers: Remove unneeded realtime_core_enabled checks
+Date: Fri, 13 Sep 2019 15:18:52 +0200
+Message-Id: <ee8d1da55cba6c0b741ce190276a55b1effd316f.1568380740.git.jan.kiszka@siemens.com>
 In-Reply-To: <cover.1568380740.git.jan.kiszka@siemens.com>
 References: <cover.1568380740.git.jan.kiszka@siemens.com>
 In-Reply-To: <cover.1568380740.git.jan.kiszka@siemens.com>
@@ -18,49 +18,133 @@ To: xenomai@xenomai.org
 
 From: Jan Kiszka <jan.kiszka@siemens.com>
 
-Drop the duplicate checks - rtdm_dev_register will already fail. And as
-udd_register_device fails, there is no point in protecting
-udd_unregister_device because there will be no device to unregister.
+It's not a good idea to load a driver module without functionality when
+the core is not available. Better fail with an error code so that the
+user gets proper feedback.
+
+In several cases, this makes the existing realtime_core_enabled checks
+obviously superfluous because rtdm_dev_register already performs it.
 
 Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
 ---
- kernel/drivers/udd/udd.c | 9 +--------
- 1 file changed, 1 insertion(+), 8 deletions(-)
+ kernel/drivers/autotune/autotune.c  | 6 ------
+ kernel/drivers/gpiopwm/gpiopwm.c    | 3 ---
+ kernel/drivers/testing/heapcheck.c  | 3 ---
+ kernel/drivers/testing/rtdmtest.c   | 3 ---
+ kernel/drivers/testing/switchtest.c | 6 ------
+ kernel/drivers/testing/timerbench.c | 6 ------
+ 6 files changed, 27 deletions(-)
 
-diff --git a/kernel/drivers/udd/udd.c b/kernel/drivers/udd/udd.c
-index b086096ccd..e32d40f665 100644
---- a/kernel/drivers/udd/udd.c
-+++ b/kernel/drivers/udd/udd.c
-@@ -347,8 +347,7 @@ undo:
-  *
-  * - -EINVAL, if udd_device.device_flags contains invalid flags.
-  *
-- * - -ENXIO can be received if this service is called while the Cobalt
-- * kernel is disabled.
-+ * - -ENOSYS, if this service is called while the real-time core is disabled.
-  *
-  * @coretags{secondary-only}
-  */
-@@ -360,9 +359,6 @@ int udd_register_device(struct udd_device *udd)
- 	struct udd_memregion *rn;
- 	int ret, n;
+diff --git a/kernel/drivers/autotune/autotune.c b/kernel/drivers/autotune/autotune.c
+index 77ec9a1a21..e0420aa0e1 100644
+--- a/kernel/drivers/autotune/autotune.c
++++ b/kernel/drivers/autotune/autotune.c
+@@ -784,17 +784,11 @@ static struct rtdm_device device = {
+ 
+ static int __init autotune_init(void)
+ {
+-	if (!realtime_core_enabled())
+-		return 0;
+-
+ 	return rtdm_dev_register(&device);
+ }
+ 
+ static void __exit autotune_exit(void)
+ {
+-	if (!realtime_core_enabled())
+-		return;
+-
+ 	rtdm_dev_unregister(&device);
+ }
+ 
+diff --git a/kernel/drivers/gpiopwm/gpiopwm.c b/kernel/drivers/gpiopwm/gpiopwm.c
+index 114afa7583..ed42e08731 100644
+--- a/kernel/drivers/gpiopwm/gpiopwm.c
++++ b/kernel/drivers/gpiopwm/gpiopwm.c
+@@ -272,9 +272,6 @@ static int __init __gpiopwm_init(void)
+ {
+ 	int i, ret;
  
 -	if (!realtime_core_enabled())
--		return -ENXIO;
+-		return -ENODEV;
 -
- 	if (udd->device_flags & RTDM_PROTOCOL_DEVICE)
- 		return -EINVAL;
+ 	for (i = 0; i < ARRAY_SIZE(device); i++) {
+ 		ret = rtdm_dev_register(device + i);
+ 		if (ret)
+diff --git a/kernel/drivers/testing/heapcheck.c b/kernel/drivers/testing/heapcheck.c
+index bed5a05a6f..447cc13fec 100644
+--- a/kernel/drivers/testing/heapcheck.c
++++ b/kernel/drivers/testing/heapcheck.c
+@@ -500,9 +500,6 @@ static struct rtdm_device heapcheck_device = {
  
-@@ -459,9 +455,6 @@ int udd_unregister_device(struct udd_device *udd)
- 	struct udd_memregion *rn;
- 	int n;
+ static int __init heapcheck_init(void)
+ {
+-	if (!realtime_core_enabled())
+-		return -ENODEV;
+-
+ 	return rtdm_dev_register(&heapcheck_device);
+ }
+ 
+diff --git a/kernel/drivers/testing/rtdmtest.c b/kernel/drivers/testing/rtdmtest.c
+index bd1ae6b4d5..6abf76b567 100644
+--- a/kernel/drivers/testing/rtdmtest.c
++++ b/kernel/drivers/testing/rtdmtest.c
+@@ -265,9 +265,6 @@ static int __init rtdm_test_init(void)
+ {
+ 	int i, ret;
  
 -	if (!realtime_core_enabled())
--		return -ENXIO;
+-		return -ENODEV;
 -
- 	rtdm_event_destroy(&ur->pulse);
+ 	for (i = 0; i < ARRAY_SIZE(device); i++) {
+ 		ret = rtdm_dev_register(device + i);
+ 		if (ret)
+diff --git a/kernel/drivers/testing/switchtest.c b/kernel/drivers/testing/switchtest.c
+index 3a2e0d5a08..d955c2b65f 100644
+--- a/kernel/drivers/testing/switchtest.c
++++ b/kernel/drivers/testing/switchtest.c
+@@ -738,9 +738,6 @@ static struct rtdm_device device = {
  
- 	if (udd->irq != UDD_IRQ_NONE && udd->irq != UDD_IRQ_CUSTOM)
+ int __init __switchtest_init(void)
+ {
+-	if (!realtime_core_enabled())
+-		return 0;
+-
+ 	fp_features = fp_detect();
+ 
+ 	return rtdm_dev_register(&device);
+@@ -748,9 +745,6 @@ int __init __switchtest_init(void)
+ 
+ void __switchtest_exit(void)
+ {
+-	if (!realtime_core_enabled())
+-		return;
+-
+ 	rtdm_dev_unregister(&device);
+ }
+ 
+diff --git a/kernel/drivers/testing/timerbench.c b/kernel/drivers/testing/timerbench.c
+index 2efa14e759..1b4c413b7e 100644
+--- a/kernel/drivers/testing/timerbench.c
++++ b/kernel/drivers/testing/timerbench.c
+@@ -517,17 +517,11 @@ static struct rtdm_device device = {
+ 
+ static int __init __timerbench_init(void)
+ {
+-	if (!realtime_core_enabled())
+-		return 0;
+-
+ 	return rtdm_dev_register(&device);
+ }
+ 
+ static void __timerbench_exit(void)
+ {
+-	if (!realtime_core_enabled())
+-		return;
+-
+ 	rtdm_dev_unregister(&device);
+ }
+ 
 -- 
 2.16.4
 
