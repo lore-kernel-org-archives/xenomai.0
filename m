@@ -1,7 +1,7 @@
 From: Jan Kiszka <jan.kiszka@siemens.com>
-Subject: [PATCH 11/11] drivers/can: Convert to module_pci_driver
-Date: Fri, 13 Sep 2019 15:19:00 +0200
-Message-Id: <280643e3dd929d59e734cc0343791037b8b2db67.1568380740.git.jan.kiszka@siemens.com>
+Subject: [PATCH 02/11] rtdm: Introduce rtdm_available()
+Date: Fri, 13 Sep 2019 15:18:51 +0200
+Message-Id: <0021d5c1eaf39778760780a6230d65aca45c99e0.1568380740.git.jan.kiszka@siemens.com>
 In-Reply-To: <cover.1568380740.git.jan.kiszka@siemens.com>
 References: <cover.1568380740.git.jan.kiszka@siemens.com>
 In-Reply-To: <cover.1568380740.git.jan.kiszka@siemens.com>
@@ -18,144 +18,57 @@ To: xenomai@xenomai.org
 
 From: Jan Kiszka <jan.kiszka@siemens.com>
 
+This avoids layering violations in RTDM drivers by calling
+realtime_core_enabled() directly.
+
 Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
 ---
- kernel/drivers/can/sja1000/rtcan_adv_pci.c   | 13 +------------
- kernel/drivers/can/sja1000/rtcan_ems_pci.c   | 13 +------------
- kernel/drivers/can/sja1000/rtcan_esd_pci.c   | 13 +------------
- kernel/drivers/can/sja1000/rtcan_ixxat_pci.c | 14 +-------------
- kernel/drivers/can/sja1000/rtcan_peak_pci.c  | 14 +-------------
- kernel/drivers/can/sja1000/rtcan_plx_pci.c   | 13 +------------
- 6 files changed, 6 insertions(+), 74 deletions(-)
+ include/cobalt/kernel/rtdm/driver.h |  5 +++++
+ kernel/cobalt/rtdm/drvlib.c         | 15 +++++++++++++++
+ 2 files changed, 20 insertions(+)
 
-diff --git a/kernel/drivers/can/sja1000/rtcan_adv_pci.c b/kernel/drivers/can/sja1000/rtcan_adv_pci.c
-index 26f81ecda8..bfd7f088c1 100644
---- a/kernel/drivers/can/sja1000/rtcan_adv_pci.c
-+++ b/kernel/drivers/can/sja1000/rtcan_adv_pci.c
-@@ -355,15 +355,4 @@ static struct pci_driver rtcan_adv_pci_driver = {
- 	.remove = adv_pci_remove_one,
- };
+diff --git a/include/cobalt/kernel/rtdm/driver.h b/include/cobalt/kernel/rtdm/driver.h
+index 72f75388da..9e7a888249 100644
+--- a/include/cobalt/kernel/rtdm/driver.h
++++ b/include/cobalt/kernel/rtdm/driver.h
+@@ -1297,6 +1297,11 @@ static inline int rtdm_strncpy_from_user(struct rtdm_fd *fd,
+ 	return cobalt_strncpy_from_user(dst, src, count);
+ }
  
--static int __init rtcan_adv_pci_init(void)
--{
--	return pci_register_driver(&rtcan_adv_pci_driver);
--}
--
--static void __exit rtcan_adv_pci_exit(void)
--{
--	pci_unregister_driver(&rtcan_adv_pci_driver);
--}
--
--module_init(rtcan_adv_pci_init);
--module_exit(rtcan_adv_pci_exit);
-+module_pci_driver(rtcan_adv_pci_driver);
-diff --git a/kernel/drivers/can/sja1000/rtcan_ems_pci.c b/kernel/drivers/can/sja1000/rtcan_ems_pci.c
-index ca85b1d4e3..e63bb7d597 100644
---- a/kernel/drivers/can/sja1000/rtcan_ems_pci.c
-+++ b/kernel/drivers/can/sja1000/rtcan_ems_pci.c
-@@ -388,15 +388,4 @@ static struct pci_driver ems_pci_driver = {
- 	.remove = ems_pci_del_card,
- };
++static inline bool rtdm_available(void)
++{
++	return realtime_core_enabled();
++}
++
+ static inline int rtdm_rt_capable(struct rtdm_fd *fd)
+ {
+ 	if (!XENO_ASSERT(COBALT, !xnsched_interrupt_p()))
+diff --git a/kernel/cobalt/rtdm/drvlib.c b/kernel/cobalt/rtdm/drvlib.c
+index 3bf23e7836..27d8c93c7d 100644
+--- a/kernel/cobalt/rtdm/drvlib.c
++++ b/kernel/cobalt/rtdm/drvlib.c
+@@ -2413,6 +2413,21 @@ int rtdm_in_rt_context(void);
+  */
+ int rtdm_rt_capable(struct rtdm_fd *fd);
  
--static int __init ems_pci_init(void)
--{
--	return pci_register_driver(&ems_pci_driver);
--}
--
--static void __exit ems_pci_exit(void)
--{
--	pci_unregister_driver(&ems_pci_driver);
--}
--
--module_init(ems_pci_init);
--module_exit(ems_pci_exit);
-+module_pci_driver(ems_pci_driver);
-diff --git a/kernel/drivers/can/sja1000/rtcan_esd_pci.c b/kernel/drivers/can/sja1000/rtcan_esd_pci.c
-index 97163a2228..b5961fa906 100644
---- a/kernel/drivers/can/sja1000/rtcan_esd_pci.c
-+++ b/kernel/drivers/can/sja1000/rtcan_esd_pci.c
-@@ -340,15 +340,4 @@ static struct pci_driver rtcan_esd_pci_driver = {
- 	.remove = esd_pci_remove_one,
- };
++/**
++ * Test if the real-time core is available
++ *
++ * @return True if the real-time is available, false if it is disabled or in
++ * error state.
++ *
++ * @note Drivers should query the core state during initialization if they
++ * perform hardware setup operations or interact with RTDM services such as
++ * locks prior to calling an RTDM service that has a built-in state check of
++ * the real-time core (e.g. rtdm_dev_register() or rtdm_task_init()).
++ *
++ * @coretags{unrestricted}
++ */
++bool rtdm_available(void);
++
+ #endif /* DOXYGEN_CPP */
  
--static int __init rtcan_esd_pci_init(void)
--{
--	return pci_register_driver(&rtcan_esd_pci_driver);
--}
--
--static void __exit rtcan_esd_pci_exit(void)
--{
--	pci_unregister_driver(&rtcan_esd_pci_driver);
--}
--
--module_init(rtcan_esd_pci_init);
--module_exit(rtcan_esd_pci_exit);
-+module_pci_driver(rtcan_esd_pci_driver);
-diff --git a/kernel/drivers/can/sja1000/rtcan_ixxat_pci.c b/kernel/drivers/can/sja1000/rtcan_ixxat_pci.c
-index 3172c78436..2837a7d7f9 100644
---- a/kernel/drivers/can/sja1000/rtcan_ixxat_pci.c
-+++ b/kernel/drivers/can/sja1000/rtcan_ixxat_pci.c
-@@ -294,16 +294,4 @@ static struct pci_driver rtcan_ixxat_pci_driver = {
- 	.remove = ixxat_pci_remove_one,
- };
- 
--static int __init rtcan_ixxat_pci_init(void)
--{
--    return pci_register_driver(&rtcan_ixxat_pci_driver);
--}
--
--
--static void __exit rtcan_ixxat_pci_exit(void)
--{
--	pci_unregister_driver(&rtcan_ixxat_pci_driver);
--}
--
--module_init(rtcan_ixxat_pci_init);
--module_exit(rtcan_ixxat_pci_exit);
-+module_pci_driver(rtcan_ixxat_pci_driver);
-diff --git a/kernel/drivers/can/sja1000/rtcan_peak_pci.c b/kernel/drivers/can/sja1000/rtcan_peak_pci.c
-index 3f9e40b53a..85288906f4 100644
---- a/kernel/drivers/can/sja1000/rtcan_peak_pci.c
-+++ b/kernel/drivers/can/sja1000/rtcan_peak_pci.c
-@@ -351,16 +351,4 @@ static struct pci_driver rtcan_peak_pci_driver = {
- 	.remove		= peak_pci_remove_one,
- };
- 
--static int __init rtcan_peak_pci_init(void)
--{
--        return pci_register_driver(&rtcan_peak_pci_driver);
--}
--
--
--static void __exit rtcan_peak_pci_exit(void)
--{
--	pci_unregister_driver(&rtcan_peak_pci_driver);
--}
--
--module_init(rtcan_peak_pci_init);
--module_exit(rtcan_peak_pci_exit);
-+module_pci_driver(rtcan_peak_pci_driver);
-diff --git a/kernel/drivers/can/sja1000/rtcan_plx_pci.c b/kernel/drivers/can/sja1000/rtcan_plx_pci.c
-index 3ede0faa95..5df4d927dd 100644
---- a/kernel/drivers/can/sja1000/rtcan_plx_pci.c
-+++ b/kernel/drivers/can/sja1000/rtcan_plx_pci.c
-@@ -594,15 +594,4 @@ static struct pci_driver plx_pci_driver = {
- 	.remove = plx_pci_del_card,
- };
- 
--static int __init plx_pci_init(void)
--{
--	return pci_register_driver(&plx_pci_driver);
--}
--
--static void __exit plx_pci_exit(void)
--{
--	pci_unregister_driver(&plx_pci_driver);
--}
--
--module_init(plx_pci_init);
--module_exit(plx_pci_exit);
-+module_pci_driver(plx_pci_driver);
+ /** @} Utility Services */
 -- 
 2.16.4
 
