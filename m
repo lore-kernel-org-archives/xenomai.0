@@ -1,7 +1,7 @@
 From: Jan Kiszka <jan.kiszka@siemens.com>
-Subject: [PATCH 06/11] drivers/analogy: Convert to rtdm_available and clean up
-Date: Fri, 13 Sep 2019 15:18:55 +0200
-Message-Id: <014de8384cc4ada388e16d581f696e7c5d3c3061.1568380740.git.jan.kiszka@siemens.com>
+Subject: [PATCH 09/11] drivers/gpio: Convert to rtdm_available() and clean up
+Date: Fri, 13 Sep 2019 15:18:58 +0200
+Message-Id: <91b9497bd94c918f3412bb65a34ee8d7f6dba77e.1568380740.git.jan.kiszka@siemens.com>
 In-Reply-To: <cover.1568380740.git.jan.kiszka@siemens.com>
 References: <cover.1568380740.git.jan.kiszka@siemens.com>
 In-Reply-To: <cover.1568380740.git.jan.kiszka@siemens.com>
@@ -18,65 +18,39 @@ To: xenomai@xenomai.org
 
 From: Jan Kiszka <jan.kiszka@siemens.com>
 
-Properly fail when the core is not available. Remove now obsolete
-further checks because the functions will not longer be executed in that
-case.
+Properly fail if the core is not available. This also obsoletes the
+check on exit.
 
 Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
 ---
- kernel/drivers/analogy/driver.c         | 6 ------
- kernel/drivers/analogy/rtdm_interface.c | 7 ++-----
- 2 files changed, 2 insertions(+), 11 deletions(-)
+ kernel/drivers/gpio/gpio-core.c | 7 ++-----
+ 1 file changed, 2 insertions(+), 5 deletions(-)
 
-diff --git a/kernel/drivers/analogy/driver.c b/kernel/drivers/analogy/driver.c
-index c9ba1cc836..fb7c51722a 100644
---- a/kernel/drivers/analogy/driver.c
-+++ b/kernel/drivers/analogy/driver.c
-@@ -55,9 +55,6 @@ int a4l_lct_drv(char *pin, struct a4l_driver ** pio)
- 
- int a4l_register_drv(struct a4l_driver * drv)
- {
--	if (!realtime_core_enabled())
--		return 0;
--
- 	__a4l_dbg(1, core_dbg, "board name=%s\n", drv->board_name);
- 
- 	if (a4l_lct_drv(drv->board_name, NULL) != 0) {
-@@ -69,9 +66,6 @@ int a4l_register_drv(struct a4l_driver * drv)
- 
- int a4l_unregister_drv(struct a4l_driver * drv)
- {
--	if (!realtime_core_enabled())
--		return 0;
--
- 	__a4l_dbg(1, core_dbg, "board name=%s\n", drv->board_name);
- 
- 	if (a4l_lct_drv(drv->board_name, NULL) == 0) {
-diff --git a/kernel/drivers/analogy/rtdm_interface.c b/kernel/drivers/analogy/rtdm_interface.c
-index 4fb2b5ca50..af2b4eefe4 100644
---- a/kernel/drivers/analogy/rtdm_interface.c
-+++ b/kernel/drivers/analogy/rtdm_interface.c
-@@ -274,8 +274,8 @@ static int __init a4l_init(void)
- {
- 	int ret;
+diff --git a/kernel/drivers/gpio/gpio-core.c b/kernel/drivers/gpio/gpio-core.c
+index 81f9653f12..600ef9789a 100644
+--- a/kernel/drivers/gpio/gpio-core.c
++++ b/kernel/drivers/gpio/gpio-core.c
+@@ -564,8 +564,8 @@ int rtdm_gpiochip_scan_of(struct device_node *from, const char *compat,
+ 	struct rtdm_gpio_chip *rgc;
+ 	int ret = -ENODEV, _ret;
  
 -	if (!realtime_core_enabled())
 -		return 0;
 +	if (!rtdm_available())
 +		return -ENOSYS;
  
- 	/* Initializes the devices */
- 	a4l_init_devs();
-@@ -299,9 +299,6 @@ out_a4l_init:
- 
- static void __exit a4l_cleanup(void)
+ 	for (;;) {
+ 		np = of_find_compatible_node(np, NULL, compat);
+@@ -622,9 +622,6 @@ void rtdm_gpiochip_remove_of(int type)
  {
+ 	struct rtdm_gpio_chip *rgc, *n;
+ 
 -	if (!realtime_core_enabled())
 -		return;
 -
- 	/* Removes Analogy proc files */
- 	a4l_cleanup_proc();
+ 	mutex_lock(&chip_lock);
  
+ 	list_for_each_entry_safe(rgc, n, &rtdm_gpio_chips, next) {
 -- 
 2.16.4
 
