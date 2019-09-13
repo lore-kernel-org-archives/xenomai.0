@@ -1,8 +1,7 @@
 From: Jan Kiszka <jan.kiszka@siemens.com>
-Subject: [PATCH v2 09/12] drivers/net: udp: Roll back if rtdm_dev_register
- fails
-Date: Fri, 13 Sep 2019 18:46:52 +0200
-Message-Id: <b9229a896a5ec27e6ee086219c0f6427a99b588c.1568393215.git.jan.kiszka@siemens.com>
+Subject: [PATCH v2 05/12] drivers/rtipc: Convert to rtdm_available and clean up
+Date: Fri, 13 Sep 2019 18:46:48 +0200
+Message-Id: <1f5129760a45da8109dbc17dfce25c894ae98889.1568393215.git.jan.kiszka@siemens.com>
 In-Reply-To: <cover.1568393215.git.jan.kiszka@siemens.com>
 References: <cover.1568393215.git.jan.kiszka@siemens.com>
 In-Reply-To: <cover.1568393215.git.jan.kiszka@siemens.com>
@@ -19,37 +18,39 @@ To: xenomai@xenomai.org
 
 From: Jan Kiszka <jan.kiszka@siemens.com>
 
+Properly fail if the core is not available. This also obsoletes the
+check on exit.
+
 Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
 ---
- kernel/drivers/net/stack/ipv4/udp/udp.c | 8 ++++++--
- 1 file changed, 6 insertions(+), 2 deletions(-)
+ kernel/drivers/ipc/rtipc.c | 7 ++-----
+ 1 file changed, 2 insertions(+), 5 deletions(-)
 
-diff --git a/kernel/drivers/net/stack/ipv4/udp/udp.c b/kernel/drivers/net/stack/ipv4/udp/udp.c
-index 56fc7126aa..5e36797809 100644
---- a/kernel/drivers/net/stack/ipv4/udp/udp.c
-+++ b/kernel/drivers/net/stack/ipv4/udp/udp.c
-@@ -807,7 +807,8 @@ static struct rtdm_device udp_device = {
-  */
- static int __init rt_udp_init(void)
+diff --git a/kernel/drivers/ipc/rtipc.c b/kernel/drivers/ipc/rtipc.c
+index f236f0cff4..99f73202de 100644
+--- a/kernel/drivers/ipc/rtipc.c
++++ b/kernel/drivers/ipc/rtipc.c
+@@ -493,8 +493,8 @@ int __init __rtipc_init(void)
  {
--	int i;
-+	int i, err;
-+
- 	if ((auto_port_start < 0) ||
- 	    (auto_port_start >= 0x10000 - RT_UDP_SOCKETS))
- 		auto_port_start = 1024;
-@@ -819,7 +820,10 @@ static int __init rt_udp_init(void)
- 	for (i = 0; i < ARRAY_SIZE(port_hash); i++)
- 		INIT_HLIST_HEAD(&port_hash[i]);
+ 	int ret, n;
  
--	return rtdm_dev_register(&udp_device);
-+	err = rtdm_dev_register(&udp_device);
-+	if (err)
-+		rt_inet_del_protocol(&udp_protocol);
-+	return err;
- }
+-	if (!realtime_core_enabled())
+-		return 0;
++	if (!rtdm_available())
++		return -ENOSYS;
  
- /***
+ 	for (n = 0; n < IPCPROTO_MAX; n++) {
+ 		if (protocols[n] && protocols[n]->proto_init) {
+@@ -511,9 +511,6 @@ void __exit __rtipc_exit(void)
+ {
+ 	int n;
+ 
+-	if (!realtime_core_enabled())
+-		return;
+-
+ 	rtdm_dev_unregister(&device);
+ 
+ 	for (n = 0; n < IPCPROTO_MAX; n++) {
 -- 
 2.16.4
 
