@@ -1,7 +1,7 @@
 From: Jan Kiszka <jan.kiszka@siemens.com>
-Subject: [PATCH 05/11] drivers/rtipc: Convert to rtdm_available and clean up
-Date: Fri, 13 Sep 2019 15:18:54 +0200
-Message-Id: <181f9bb34278d6f6618fa261d4528b902bab08af.1568380740.git.jan.kiszka@siemens.com>
+Subject: [PATCH 04/11] drivers/udd: Consolidate over ENOSYS on disabled core
+Date: Fri, 13 Sep 2019 15:18:53 +0200
+Message-Id: <ff8fc83e4cf1f93d4333a585502819b4d246f45c.1568380740.git.jan.kiszka@siemens.com>
 In-Reply-To: <cover.1568380740.git.jan.kiszka@siemens.com>
 References: <cover.1568380740.git.jan.kiszka@siemens.com>
 In-Reply-To: <cover.1568380740.git.jan.kiszka@siemens.com>
@@ -18,39 +18,49 @@ To: xenomai@xenomai.org
 
 From: Jan Kiszka <jan.kiszka@siemens.com>
 
-Properly fail if the core is not available. This also obsoletes the
-check on exit.
+Drop the duplicate checks - rtdm_dev_register will already fail. And as
+udd_register_device fails, there is no point in protecting
+udd_unregister_device because there will be no device to unregister.
 
 Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
 ---
- kernel/drivers/ipc/rtipc.c | 7 ++-----
- 1 file changed, 2 insertions(+), 5 deletions(-)
+ kernel/drivers/udd/udd.c | 9 +--------
+ 1 file changed, 1 insertion(+), 8 deletions(-)
 
-diff --git a/kernel/drivers/ipc/rtipc.c b/kernel/drivers/ipc/rtipc.c
-index f236f0cff4..99f73202de 100644
---- a/kernel/drivers/ipc/rtipc.c
-+++ b/kernel/drivers/ipc/rtipc.c
-@@ -493,8 +493,8 @@ int __init __rtipc_init(void)
- {
+diff --git a/kernel/drivers/udd/udd.c b/kernel/drivers/udd/udd.c
+index b086096ccd..e32d40f665 100644
+--- a/kernel/drivers/udd/udd.c
++++ b/kernel/drivers/udd/udd.c
+@@ -347,8 +347,7 @@ undo:
+  *
+  * - -EINVAL, if udd_device.device_flags contains invalid flags.
+  *
+- * - -ENXIO can be received if this service is called while the Cobalt
+- * kernel is disabled.
++ * - -ENOSYS, if this service is called while the real-time core is disabled.
+  *
+  * @coretags{secondary-only}
+  */
+@@ -360,9 +359,6 @@ int udd_register_device(struct udd_device *udd)
+ 	struct udd_memregion *rn;
  	int ret, n;
  
 -	if (!realtime_core_enabled())
--		return 0;
-+	if (!rtdm_available())
-+		return -ENOSYS;
+-		return -ENXIO;
+-
+ 	if (udd->device_flags & RTDM_PROTOCOL_DEVICE)
+ 		return -EINVAL;
  
- 	for (n = 0; n < IPCPROTO_MAX; n++) {
- 		if (protocols[n] && protocols[n]->proto_init) {
-@@ -511,9 +511,6 @@ void __exit __rtipc_exit(void)
- {
+@@ -459,9 +455,6 @@ int udd_unregister_device(struct udd_device *udd)
+ 	struct udd_memregion *rn;
  	int n;
  
 -	if (!realtime_core_enabled())
--		return;
+-		return -ENXIO;
 -
- 	rtdm_dev_unregister(&device);
+ 	rtdm_event_destroy(&ur->pulse);
  
- 	for (n = 0; n < IPCPROTO_MAX; n++) {
+ 	if (udd->irq != UDD_IRQ_NONE && udd->irq != UDD_IRQ_CUSTOM)
 -- 
 2.16.4
 
