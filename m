@@ -1,8 +1,8 @@
 From: Jan Kiszka <jan.kiszka@siemens.com>
-Subject: [PATCH v2 06/12] drivers/analogy: Convert to rtdm_available and clean
- up
-Date: Fri, 13 Sep 2019 18:46:49 +0200
-Message-Id: <9c3ecf0dec5fb673fd06c7fac7554c3ca1128ac7.1568393215.git.jan.kiszka@siemens.com>
+Subject: [PATCH v2 09/12] drivers/net: udp: Roll back if rtdm_dev_register
+ fails
+Date: Fri, 13 Sep 2019 18:46:52 +0200
+Message-Id: <b9229a896a5ec27e6ee086219c0f6427a99b588c.1568393215.git.jan.kiszka@siemens.com>
 In-Reply-To: <cover.1568393215.git.jan.kiszka@siemens.com>
 References: <cover.1568393215.git.jan.kiszka@siemens.com>
 In-Reply-To: <cover.1568393215.git.jan.kiszka@siemens.com>
@@ -19,65 +19,37 @@ To: xenomai@xenomai.org
 
 From: Jan Kiszka <jan.kiszka@siemens.com>
 
-Properly fail init and registration when the core is not available.
-Remove further checks that are obsolete when an error is returned.
-
 Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
 ---
- kernel/drivers/analogy/driver.c         | 7 ++-----
- kernel/drivers/analogy/rtdm_interface.c | 7 ++-----
- 2 files changed, 4 insertions(+), 10 deletions(-)
+ kernel/drivers/net/stack/ipv4/udp/udp.c | 8 ++++++--
+ 1 file changed, 6 insertions(+), 2 deletions(-)
 
-diff --git a/kernel/drivers/analogy/driver.c b/kernel/drivers/analogy/driver.c
-index c9ba1cc836..a857dea92d 100644
---- a/kernel/drivers/analogy/driver.c
-+++ b/kernel/drivers/analogy/driver.c
-@@ -55,8 +55,8 @@ int a4l_lct_drv(char *pin, struct a4l_driver ** pio)
- 
- int a4l_register_drv(struct a4l_driver * drv)
+diff --git a/kernel/drivers/net/stack/ipv4/udp/udp.c b/kernel/drivers/net/stack/ipv4/udp/udp.c
+index 56fc7126aa..5e36797809 100644
+--- a/kernel/drivers/net/stack/ipv4/udp/udp.c
++++ b/kernel/drivers/net/stack/ipv4/udp/udp.c
+@@ -807,7 +807,8 @@ static struct rtdm_device udp_device = {
+  */
+ static int __init rt_udp_init(void)
  {
--	if (!realtime_core_enabled())
--		return 0;
-+	if (!rtdm_available())
-+		return -ENOSYS;
+-	int i;
++	int i, err;
++
+ 	if ((auto_port_start < 0) ||
+ 	    (auto_port_start >= 0x10000 - RT_UDP_SOCKETS))
+ 		auto_port_start = 1024;
+@@ -819,7 +820,10 @@ static int __init rt_udp_init(void)
+ 	for (i = 0; i < ARRAY_SIZE(port_hash); i++)
+ 		INIT_HLIST_HEAD(&port_hash[i]);
  
- 	__a4l_dbg(1, core_dbg, "board name=%s\n", drv->board_name);
+-	return rtdm_dev_register(&udp_device);
++	err = rtdm_dev_register(&udp_device);
++	if (err)
++		rt_inet_del_protocol(&udp_protocol);
++	return err;
+ }
  
-@@ -69,9 +69,6 @@ int a4l_register_drv(struct a4l_driver * drv)
- 
- int a4l_unregister_drv(struct a4l_driver * drv)
- {
--	if (!realtime_core_enabled())
--		return 0;
--
- 	__a4l_dbg(1, core_dbg, "board name=%s\n", drv->board_name);
- 
- 	if (a4l_lct_drv(drv->board_name, NULL) == 0) {
-diff --git a/kernel/drivers/analogy/rtdm_interface.c b/kernel/drivers/analogy/rtdm_interface.c
-index 4fb2b5ca50..af2b4eefe4 100644
---- a/kernel/drivers/analogy/rtdm_interface.c
-+++ b/kernel/drivers/analogy/rtdm_interface.c
-@@ -274,8 +274,8 @@ static int __init a4l_init(void)
- {
- 	int ret;
- 
--	if (!realtime_core_enabled())
--		return 0;
-+	if (!rtdm_available())
-+		return -ENOSYS;
- 
- 	/* Initializes the devices */
- 	a4l_init_devs();
-@@ -299,9 +299,6 @@ out_a4l_init:
- 
- static void __exit a4l_cleanup(void)
- {
--	if (!realtime_core_enabled())
--		return;
--
- 	/* Removes Analogy proc files */
- 	a4l_cleanup_proc();
- 
+ /***
 -- 
 2.16.4
 
