@@ -1,7 +1,8 @@
 From: Jan Kiszka <jan.kiszka@siemens.com>
-Subject: [PATCH v2 03/12] drivers: Remove unneeded realtime_core_enabled checks
-Date: Fri, 13 Sep 2019 18:46:46 +0200
-Message-Id: <f5b286f5481af776b8dadfed0681ecc27895c203.1568393215.git.jan.kiszka@siemens.com>
+Subject: [PATCH v2 07/12] drivers/serial: Convert to rtdm_available() and
+ clean up
+Date: Fri, 13 Sep 2019 18:46:50 +0200
+Message-Id: <85a72dbdf01f4be56b531e65556f565110ad6601.1568393215.git.jan.kiszka@siemens.com>
 In-Reply-To: <cover.1568393215.git.jan.kiszka@siemens.com>
 References: <cover.1568393215.git.jan.kiszka@siemens.com>
 In-Reply-To: <cover.1568393215.git.jan.kiszka@siemens.com>
@@ -18,133 +19,91 @@ To: xenomai@xenomai.org
 
 From: Jan Kiszka <jan.kiszka@siemens.com>
 
-It's not a good idea to load a driver module without functionality when
-the core is not available. Better fail with an error code so that the
-user gets proper feedback.
-
-In several cases, this makes the existing realtime_core_enabled checks
-obviously superfluous because rtdm_dev_register already performs it.
+Properly fail if the core is not available. This also obsoletes the
+check on exit.
 
 Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
 ---
- kernel/drivers/autotune/autotune.c  | 6 ------
- kernel/drivers/gpiopwm/gpiopwm.c    | 3 ---
- kernel/drivers/testing/heapcheck.c  | 3 ---
- kernel/drivers/testing/rtdmtest.c   | 3 ---
- kernel/drivers/testing/switchtest.c | 6 ------
- kernel/drivers/testing/timerbench.c | 6 ------
- 6 files changed, 27 deletions(-)
+ kernel/drivers/serial/16550A.c       | 7 ++-----
+ kernel/drivers/serial/mpc52xx_uart.c | 7 +++----
+ kernel/drivers/serial/rt_imx_uart.c  | 7 +++----
+ 3 files changed, 8 insertions(+), 13 deletions(-)
 
-diff --git a/kernel/drivers/autotune/autotune.c b/kernel/drivers/autotune/autotune.c
-index 77ec9a1a21..e0420aa0e1 100644
---- a/kernel/drivers/autotune/autotune.c
-+++ b/kernel/drivers/autotune/autotune.c
-@@ -784,17 +784,11 @@ static struct rtdm_device device = {
+diff --git a/kernel/drivers/serial/16550A.c b/kernel/drivers/serial/16550A.c
+index 81acc6344e..c9274fb191 100644
+--- a/kernel/drivers/serial/16550A.c
++++ b/kernel/drivers/serial/16550A.c
+@@ -1103,8 +1103,8 @@ int __init rt_16550_init(void)
+ 	int err;
+ 	int i;
  
- static int __init autotune_init(void)
- {
 -	if (!realtime_core_enabled())
 -		return 0;
--
- 	return rtdm_dev_register(&device);
- }
++	if (!rtdm_available())
++		return -ENODEV;
  
- static void __exit autotune_exit(void)
+ 	rt_16550_pnp_init();
+ 	rt_16550_pci_init();
+@@ -1173,9 +1173,6 @@ void rt_16550_exit(void)
  {
+ 	int i;
+ 
 -	if (!realtime_core_enabled())
 -		return;
 -
- 	rtdm_dev_unregister(&device);
- }
- 
-diff --git a/kernel/drivers/gpiopwm/gpiopwm.c b/kernel/drivers/gpiopwm/gpiopwm.c
-index 114afa7583..ed42e08731 100644
---- a/kernel/drivers/gpiopwm/gpiopwm.c
-+++ b/kernel/drivers/gpiopwm/gpiopwm.c
-@@ -272,9 +272,6 @@ static int __init __gpiopwm_init(void)
+ 	for (i = 0; i < MAX_DEVICES; i++)
+ 		if (device[i]) {
+ 			rtdm_dev_unregister(device[i]);
+diff --git a/kernel/drivers/serial/mpc52xx_uart.c b/kernel/drivers/serial/mpc52xx_uart.c
+index a7b357959b..fe469d5987 100644
+--- a/kernel/drivers/serial/mpc52xx_uart.c
++++ b/kernel/drivers/serial/mpc52xx_uart.c
+@@ -1411,8 +1411,8 @@ static int __init rt_mpc52xx_uart_init(void)
  {
- 	int i, ret;
+ 	int ret;
  
--	if (!realtime_core_enabled())
--		return -ENODEV;
--
- 	for (i = 0; i < ARRAY_SIZE(device); i++) {
- 		ret = rtdm_dev_register(device + i);
- 		if (ret)
-diff --git a/kernel/drivers/testing/heapcheck.c b/kernel/drivers/testing/heapcheck.c
-index bed5a05a6f..447cc13fec 100644
---- a/kernel/drivers/testing/heapcheck.c
-+++ b/kernel/drivers/testing/heapcheck.c
-@@ -500,9 +500,6 @@ static struct rtdm_device heapcheck_device = {
- 
- static int __init heapcheck_init(void)
- {
--	if (!realtime_core_enabled())
--		return -ENODEV;
--
- 	return rtdm_dev_register(&heapcheck_device);
- }
- 
-diff --git a/kernel/drivers/testing/rtdmtest.c b/kernel/drivers/testing/rtdmtest.c
-index bd1ae6b4d5..6abf76b567 100644
---- a/kernel/drivers/testing/rtdmtest.c
-+++ b/kernel/drivers/testing/rtdmtest.c
-@@ -265,9 +265,6 @@ static int __init rtdm_test_init(void)
- {
- 	int i, ret;
- 
--	if (!realtime_core_enabled())
--		return -ENODEV;
--
- 	for (i = 0; i < ARRAY_SIZE(device); i++) {
- 		ret = rtdm_dev_register(device + i);
- 		if (ret)
-diff --git a/kernel/drivers/testing/switchtest.c b/kernel/drivers/testing/switchtest.c
-index 3a2e0d5a08..d955c2b65f 100644
---- a/kernel/drivers/testing/switchtest.c
-+++ b/kernel/drivers/testing/switchtest.c
-@@ -738,9 +738,6 @@ static struct rtdm_device device = {
- 
- int __init __switchtest_init(void)
- {
 -	if (!realtime_core_enabled())
 -		return 0;
--
- 	fp_features = fp_detect();
++	if (!rtdm_available())
++		return -ENODEV;
  
- 	return rtdm_dev_register(&device);
-@@ -748,9 +745,6 @@ int __init __switchtest_init(void)
+ 	printk(KERN_INFO "RTserial: MPC52xx PSC UART driver\n");
  
- void __switchtest_exit(void)
+@@ -1431,8 +1431,7 @@ static int __init rt_mpc52xx_uart_init(void)
+ 
+ static void __exit rt_mpc52xx_uart_exit(void)
  {
--	if (!realtime_core_enabled())
--		return;
--
- 	rtdm_dev_unregister(&device);
+-	if (realtime_core_enabled())
+-		platform_driver_unregister(&rt_mpc52xx_uart_of_driver);
++	platform_driver_unregister(&rt_mpc52xx_uart_of_driver);
  }
  
-diff --git a/kernel/drivers/testing/timerbench.c b/kernel/drivers/testing/timerbench.c
-index 2efa14e759..1b4c413b7e 100644
---- a/kernel/drivers/testing/timerbench.c
-+++ b/kernel/drivers/testing/timerbench.c
-@@ -517,17 +517,11 @@ static struct rtdm_device device = {
- 
- static int __init __timerbench_init(void)
+ module_init(rt_mpc52xx_uart_init);
+diff --git a/kernel/drivers/serial/rt_imx_uart.c b/kernel/drivers/serial/rt_imx_uart.c
+index 6d95cbcab1..2b27b7debb 100644
+--- a/kernel/drivers/serial/rt_imx_uart.c
++++ b/kernel/drivers/serial/rt_imx_uart.c
+@@ -1656,8 +1656,8 @@ static int __init rt_imx_uart_init(void)
  {
+ 	int ret;
+ 
 -	if (!realtime_core_enabled())
 -		return 0;
--
- 	return rtdm_dev_register(&device);
- }
++	if (!rtdm_available())
++		return -ENODEV;
  
- static void __timerbench_exit(void)
+ 	ret = platform_driver_register(&rt_imx_uart_driver);
+ 	if (ret) {
+@@ -1670,8 +1670,7 @@ static int __init rt_imx_uart_init(void)
+ 
+ static void __exit rt_imx_uart_exit(void)
  {
--	if (!realtime_core_enabled())
--		return;
--
- 	rtdm_dev_unregister(&device);
+-	if (realtime_core_enabled())
+-		platform_driver_unregister(&rt_imx_uart_driver);
++	platform_driver_unregister(&rt_imx_uart_driver);
  }
  
+ module_init(rt_imx_uart_init);
 -- 
 2.16.4
 
