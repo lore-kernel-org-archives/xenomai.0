@@ -1,9 +1,9 @@
 From: Jan Kiszka <jan.kiszka@siemens.com>
-Subject: [PATCH] copperplate: Do not clear thread object pid on finalization
-Message-ID: <f3dcde59-fbc0-6756-9f53-4ff5261b37dd@siemens.com>
-Date: Fri, 13 Sep 2019 20:35:20 +0200
+Subject: Finalizing 3.1, finally
+Message-ID: <65e561a8-404a-6f71-106c-b05d6d8dc34d@siemens.com>
+Date: Fri, 13 Sep 2019 20:57:35 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
@@ -14,30 +14,21 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Xenomai <xenomai@xenomai.org>
+To: Xenomai <xenomai@xenomai.org>, Philippe Gerum <rpm@xenomai.org>
 
-From: Jan Kiszka <jan.kiszka@siemens.com>
+Hi all,
 
-This field might be used by the finalizer callback and, thus, should
-remain intact. Moreover, there is no safety benefit in clearing it.
+we are postponing this for too long now, so I'd like to make step towards a 
+feature freeze for 3.1, marked by an -rc1, and then a release. So, everyone 
+sitting on API- or even ABI-breaking changes should speak up now.
 
-Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
----
- lib/copperplate/threadobj.c | 1 -
- 1 file changed, 1 deletion(-)
+Philippe, I'd like to get your update of the device teardown patch in. Then 
+there are the RTnet multicast changes in your queue. Anything else? Can I help 
+with lifting something on top of next? Or would it OK to move that to a 3.2 cycle?
 
-diff --git a/lib/copperplate/threadobj.c b/lib/copperplate/threadobj.c
-index f46d8fb167..8e7c14a641 100644
---- a/lib/copperplate/threadobj.c
-+++ b/lib/copperplate/threadobj.c
-@@ -1515,7 +1515,6 @@ static void finalize_thread(void *p) /* thobj->lock free */
- 	thobj->magic = ~thobj->magic;
- 	pthread_setcanceltype(PTHREAD_CANCEL_DEFERRED, NULL);
- 	threadobj_set_current(p);
--	thobj->pid = 0;
- 
- 	if (thobj->wait_sobj)
- 		__syncobj_cleanup_wait(thobj->wait_sobj, thobj);
+Jan
+
 -- 
-2.16.4
+Siemens AG, Corporate Technology, CT RDA IOT SES-DE
+Corporate Competence Center Embedded Linux
 
