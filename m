@@ -1,8 +1,7 @@
 From: Jan Kiszka <jan.kiszka@siemens.com>
-Subject: [PATCH 01/11] rtdm: Harden key services against invocations with
- disabled core
-Date: Fri, 13 Sep 2019 15:18:50 +0200
-Message-Id: <0f91ce29df178234c6fb0a7cca07e13711e51a4a.1568380740.git.jan.kiszka@siemens.com>
+Subject: [PATCH 08/11] drivers/net: Do not load when the core is not available
+Date: Fri, 13 Sep 2019 15:18:57 +0200
+Message-Id: <a755ddb97bac3b18c1543e749e253171773095bf.1568380740.git.jan.kiszka@siemens.com>
 In-Reply-To: <cover.1568380740.git.jan.kiszka@siemens.com>
 References: <cover.1568380740.git.jan.kiszka@siemens.com>
 In-Reply-To: <cover.1568380740.git.jan.kiszka@siemens.com>
@@ -19,61 +18,27 @@ To: xenomai@xenomai.org
 
 From: Jan Kiszka <jan.kiszka@siemens.com>
 
-We already have check in rtdm_dev_register, but drivers (such as RTnet)
-may call other services without checking the core state. Then we risk
-crashes, rather than simple errors.
+Using the new rtdm_available() interface, this prevents any RTnet module
+from being loaded when the real-time core is not available.
 
 Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
 ---
- kernel/cobalt/rtdm/device.c | 2 +-
- kernel/cobalt/rtdm/drvlib.c | 8 ++++++++
- 2 files changed, 9 insertions(+), 1 deletion(-)
+ kernel/drivers/net/stack/rtnet_module.c | 3 +++
+ 1 file changed, 3 insertions(+)
 
-diff --git a/kernel/cobalt/rtdm/device.c b/kernel/cobalt/rtdm/device.c
-index 4cfdb1c5b1..8fe0ed7355 100644
---- a/kernel/cobalt/rtdm/device.c
-+++ b/kernel/cobalt/rtdm/device.c
-@@ -380,7 +380,7 @@ static void unregister_driver(struct rtdm_driver *drv)
-  * - -EAGAIN is returned if no registry slot is available (check/raise
-  * CONFIG_XENO_OPT_REGISTRY_NRSLOTS).
-  *
-- * - -ENOSYS is returned if cobalt is disabled
-+ * - -ENOSYS is returned if the real-time core is disabled.
-  *
-  * - -ENXIO is returned if no valid minor could be assigned
-  *
-diff --git a/kernel/cobalt/rtdm/drvlib.c b/kernel/cobalt/rtdm/drvlib.c
-index 316d87b29d..3bf23e7836 100644
---- a/kernel/cobalt/rtdm/drvlib.c
-+++ b/kernel/cobalt/rtdm/drvlib.c
-@@ -114,6 +114,9 @@ int rtdm_task_init(rtdm_task_t *task, const char *name,
- 	struct xnthread_init_attr iattr;
- 	int err;
- 
-+	if (!realtime_core_enabled())
-+		return -ENOSYS;
-+
- 	iattr.name = name;
- 	iattr.flags = 0;
- 	iattr.personality = &xenomai_personality;
-@@ -1418,6 +1421,8 @@ EXPORT_SYMBOL_GPL(rtdm_mutex_timedlock);
-  *
-  * - -EBUSY is returned if the specified IRQ line is already in use.
-  *
-+ * - -ENOSYS is returned if the real-time core is disabled.
-+ *
-  * @coretags{secondary-only}
-  */
- int rtdm_irq_request(rtdm_irq_t *irq_handle, unsigned int irq_no,
-@@ -1426,6 +1431,9 @@ int rtdm_irq_request(rtdm_irq_t *irq_handle, unsigned int irq_no,
+diff --git a/kernel/drivers/net/stack/rtnet_module.c b/kernel/drivers/net/stack/rtnet_module.c
+index f9f18ce221..16dc91fda0 100644
+--- a/kernel/drivers/net/stack/rtnet_module.c
++++ b/kernel/drivers/net/stack/rtnet_module.c
+@@ -318,6 +318,9 @@ int __init rtnet_init(void)
  {
- 	int err;
+ 	int err = 0;
  
-+	if (!realtime_core_enabled())
++	if (!rtdm_available())
 +		return -ENOSYS;
 +
- 	if (!XENO_ASSERT(COBALT, xnsched_root_p()))
- 		return -EPERM;
+ 	printk("\n*** RTnet for Xenomai v" XENO_VERSION_STRING " ***\n\n");
+ 	printk("RTnet: initialising real-time networking\n");
  
 -- 
 2.16.4
