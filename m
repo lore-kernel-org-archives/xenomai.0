@@ -1,11 +1,7 @@
 From: Jan Kiszka <jan.kiszka@siemens.com>
-Subject: [PATCH 02/11] rtdm: Introduce rtdm_available()
-Date: Fri, 13 Sep 2019 15:18:51 +0200
-Message-Id: <0021d5c1eaf39778760780a6230d65aca45c99e0.1568380740.git.jan.kiszka@siemens.com>
-In-Reply-To: <cover.1568380740.git.jan.kiszka@siemens.com>
-References: <cover.1568380740.git.jan.kiszka@siemens.com>
-In-Reply-To: <cover.1568380740.git.jan.kiszka@siemens.com>
-References: <cover.1568380740.git.jan.kiszka@siemens.com>
+Subject: [PATCH 00/11] rtdm: realtime_core_enabled cleanups
+Date: Fri, 13 Sep 2019 15:18:49 +0200
+Message-Id: <cover.1568380740.git.jan.kiszka@siemens.com>
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,59 +12,57 @@ List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: xenomai@xenomai.org
 
-From: Jan Kiszka <jan.kiszka@siemens.com>
+This adds a proper RTDM interface for realtime_core_enabled and also
+converts existing users to a less invasive - because correctly failing -
+usage pattern.
 
-This avoids layering violations in RTDM drivers by calling
-realtime_core_enabled() directly.
+Jan
 
-Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
----
- include/cobalt/kernel/rtdm/driver.h |  5 +++++
- kernel/cobalt/rtdm/drvlib.c         | 15 +++++++++++++++
- 2 files changed, 20 insertions(+)
+Jan Kiszka (11):
+  rtdm: Harden key services against invocations with disabled core
+  rtdm: Introduce rtdm_available()
+  drivers: Remove unneeded realtime_core_enabled checks
+  drivers/udd: Consolidate over ENOSYS on disabled core
+  drivers/rtipc: Convert to rtdm_available and clean up
+  drivers/analogy: Convert to rtdm_available and clean up
+  drivers/serial: Convert to rtdm_available() and clean up
+  drivers/net: Do not load when the core is not available
+  drivers/gpio: Convert to rtdm_available() and clean up
+  drivers/can: Convert to rtdm_available() and clean up
+  drivers/can: Convert to module_pci_driver
 
-diff --git a/include/cobalt/kernel/rtdm/driver.h b/include/cobalt/kernel/rtdm/driver.h
-index 72f75388da..9e7a888249 100644
---- a/include/cobalt/kernel/rtdm/driver.h
-+++ b/include/cobalt/kernel/rtdm/driver.h
-@@ -1297,6 +1297,11 @@ static inline int rtdm_strncpy_from_user(struct rtdm_fd *fd,
- 	return cobalt_strncpy_from_user(dst, src, count);
- }
- 
-+static inline bool rtdm_available(void)
-+{
-+	return realtime_core_enabled();
-+}
-+
- static inline int rtdm_rt_capable(struct rtdm_fd *fd)
- {
- 	if (!XENO_ASSERT(COBALT, !xnsched_interrupt_p()))
-diff --git a/kernel/cobalt/rtdm/drvlib.c b/kernel/cobalt/rtdm/drvlib.c
-index 3bf23e7836..27d8c93c7d 100644
---- a/kernel/cobalt/rtdm/drvlib.c
-+++ b/kernel/cobalt/rtdm/drvlib.c
-@@ -2413,6 +2413,21 @@ int rtdm_in_rt_context(void);
-  */
- int rtdm_rt_capable(struct rtdm_fd *fd);
- 
-+/**
-+ * Test if the real-time core is available
-+ *
-+ * @return True if the real-time is available, false if it is disabled or in
-+ * error state.
-+ *
-+ * @note Drivers should query the core state during initialization if they
-+ * perform hardware setup operations or interact with RTDM services such as
-+ * locks prior to calling an RTDM service that has a built-in state check of
-+ * the real-time core (e.g. rtdm_dev_register() or rtdm_task_init()).
-+ *
-+ * @coretags{unrestricted}
-+ */
-+bool rtdm_available(void);
-+
- #endif /* DOXYGEN_CPP */
- 
- /** @} Utility Services */
+ include/cobalt/kernel/rtdm/driver.h          |  5 +++++
+ kernel/cobalt/rtdm/device.c                  |  2 +-
+ kernel/cobalt/rtdm/drvlib.c                  | 23 +++++++++++++++++++++++
+ kernel/drivers/analogy/driver.c              |  6 ------
+ kernel/drivers/analogy/rtdm_interface.c      |  7 ++-----
+ kernel/drivers/autotune/autotune.c           |  6 ------
+ kernel/drivers/can/rtcan_module.c            |  7 ++-----
+ kernel/drivers/can/rtcan_virt.c              |  6 ------
+ kernel/drivers/can/sja1000/rtcan_adv_pci.c   | 17 +----------------
+ kernel/drivers/can/sja1000/rtcan_ems_pci.c   | 17 +----------------
+ kernel/drivers/can/sja1000/rtcan_esd_pci.c   | 17 +----------------
+ kernel/drivers/can/sja1000/rtcan_isa.c       |  6 ------
+ kernel/drivers/can/sja1000/rtcan_ixxat_pci.c | 18 +-----------------
+ kernel/drivers/can/sja1000/rtcan_mem.c       |  6 ------
+ kernel/drivers/can/sja1000/rtcan_peak_dng.c  |  6 ------
+ kernel/drivers/can/sja1000/rtcan_peak_pci.c  | 18 +-----------------
+ kernel/drivers/can/sja1000/rtcan_plx_pci.c   | 17 +----------------
+ kernel/drivers/can/sja1000/rtcan_sja1000.c   |  9 +++------
+ kernel/drivers/gpio/gpio-core.c              |  7 ++-----
+ kernel/drivers/gpiopwm/gpiopwm.c             |  3 ---
+ kernel/drivers/ipc/rtipc.c                   |  7 ++-----
+ kernel/drivers/net/stack/rtnet_module.c      |  3 +++
+ kernel/drivers/serial/16550A.c               |  7 ++-----
+ kernel/drivers/serial/mpc52xx_uart.c         |  7 +++----
+ kernel/drivers/serial/rt_imx_uart.c          |  7 +++----
+ kernel/drivers/testing/heapcheck.c           |  3 ---
+ kernel/drivers/testing/rtdmtest.c            |  3 ---
+ kernel/drivers/testing/switchtest.c          |  6 ------
+ kernel/drivers/testing/timerbench.c          |  6 ------
+ kernel/drivers/udd/udd.c                     |  9 +--------
+ 30 files changed, 58 insertions(+), 203 deletions(-)
+
 -- 
 2.16.4
 
