@@ -1,9 +1,10 @@
-Message-ID: <trinity-a8fa9174-e6b1-4dd6-9b0e-87b36ca132f7-1568726164071@3c-app-webde-bs20>
-From: JK.Behnke@web.de
-Subject: sideeffect of rcu_nocbs on periodic Alchemy task
-Date: Tue, 17 Sep 2019 15:16:04 +0200
+Date: Mon, 16 Sep 2019 02:32:08 -0500 (CDT)
+From: Per Oberg <pero@wolfram.com>
+Message-ID: <2078452807.5749189.1568619128144.JavaMail.zimbra@wolfram.com>
+Subject: RTDM open, open_rt, and open_nrt
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -12,186 +13,58 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-Content-Transfer-Encoding: 8bit
-To: xenomai@xenomai.org
+To: xenomai <xenomai@xenomai.org>
 
-   Hello,
+Hello list
 
-   I am running an Alchemy application (xenomai 3.0.9) over Linux
-   prempt-rt on a dual core
-   atom (E3930) and noticed a side effect of the Linux boot parameter
-   "rcu_nocbs".
+I am trying to understand how rtdm works, and possibly why out of a histori=
+cal context. Perhaps there is a good place to read up on this stuff, then p=
+lease let me know.=20
 
-   Whenever the kernel bootparameter "rcu_nocbs=1" is set, I get the
-   following Linux
-   kernel warning, when the AlchemyTask (TestTask) is terminated.
+It seems like in the rtdm-api there is only open, but no open_rt or open_nr=
+t.=20
+More specifically we have:=20
+- read_rt  / read_nrt
+- recvmsg_rt / recvmsg_nrt
+- ioctl_rt / ioctl_nrt
+- .. etc.
 
+However, when studying an old xenomai2->3 ported driver it seems like there=
+ used to be open_rt and open_nrt. The problem I was having before (see my b=
+ackground comment below) was because the open had been mapped to the old op=
+en_nrt code, which in turned used a rt-lock, thus a mix of the two. When sw=
+itching to a regular mutex it "worked", as in it didn't complain.=20
 
-   Sep 17 13:02:43 localhost kernel: [   97.342398] ------------[ cut here
-   ]------------
-   Sep 17 13:02:43 localhost kernel: [   97.342412] WARNING: CPU: 0 PID:
-   530 at
-   /home/behnkjoc/prc2020/poky/build-tca5-32/tmp/work-shared/congatec-tca5
-   -32/kernel-source/kernel/rcu/tree_plugin.h:310
-   rcu_note_context_switch+0x2a0/0x4d0
-   Sep 17 13:02:43 localhost kernel: [   97.342414] Modules linked in:
-   ec_generic(O) ec_master(O) spidev nls_iso8859_1 cmdlinepart
-   intel_spi_platform intel_spi spi_nor mtd spi_pxa2xx_platform joydev
-    intel_rapl intel_powerclamp coretemp crc32_pclmul snd_hda_codec_hdmi
-   pcbc aesni_intel aes_i586 crypto_simd cryptd intel_cstate
-   intel_rapl_perf i2c_i801 lpc_ich pcspkr idma64 virt_dma intel_lpss_
-   pci intel_lpss input_leds mac_hid i915 video snd_hda_intel
-   drm_kms_helper snd_hda_codec snd_hda_core snd_hwdep snd_pcm
-   hid_multitouch drm mei_me snd_timer fb_sys_fops syscopyarea sysfillrect
-   snd
-   mei sysimgblt soundcore shpchp sch_fq_codel nfsd autofs4
-   Sep 17 13:02:43 localhost kernel: [   97.342470] CPU: 0 PID: 530 Comm:
-   TestTask Tainted: G           O    4.14.71-rt44 #1
-   Sep 17 13:02:43 localhost kernel: [   97.342472] task: f3347300
-   task.stack: f32ea000
-   Sep 17 13:02:43 localhost kernel: [   97.342476] EIP:
-   rcu_note_context_switch+0x2a0/0x4d0
-   Sep 17 13:02:43 localhost kernel: [   97.342478] EFLAGS: 00010002 CPU:
-   0
-   Sep 17 13:02:43 localhost kernel: [   97.342480] EAX: 00000001 EBX:
-   00000000 ECX: 00000001 EDX: 00000000
-   Sep 17 13:02:43 localhost kernel: [   97.342482] ESI: 00000000 EDI:
-   f3347300 EBP: f32ebeec ESP: f32ebed0
-   Sep 17 13:02:43 localhost kernel: [   97.342485]  DS: 007b ES: 007b FS:
-   00d8 GS: 00e0 SS: 0068
-   Sep 17 13:02:43 localhost kernel: [   97.342487] CR0: 80050033 CR2:
-   06338490 CR3: 332d4000 CR4: 003406d0
-   Sep 17 13:02:43 localhost kernel: [   97.342489] Call Trace:
-   Sep 17 13:02:43 localhost kernel: [   97.342501]  ?
-   unpin_current_cpu+0x53/0x80
-   Sep 17 13:02:43 localhost kernel: [   97.342507]  __schedule+0x85/0x700
-   Sep 17 13:02:43 localhost kernel: [   97.342511]  ?
-   _raw_spin_unlock_irqrestore+0x17/0x50
-   Sep 17 13:02:43 localhost kernel: [   97.342514]  ?
-   rt_spin_unlock+0x24/0x50
-   Sep 17 13:02:43 localhost kernel: [   97.342517]  schedule+0x41/0xe0
-   Sep 17 13:02:43 localhost kernel: [   97.342521]
-   hrtimer_wait_for_timer+0x5d/0x90
-   Sep 17 13:02:43 localhost kernel: [   97.342525]  ?
-   wait_woken+0x70/0x70
-   Sep 17 13:02:43 localhost kernel: [   97.342530]
-   timer_wait_for_callback+0x40/0x50
-   Sep 17 13:02:43 localhost kernel: [   97.342533]
-   SyS_timer_delete+0x6b/0x140
-   Sep 17 13:02:43 localhost kernel: [   97.342538]
-   do_int80_syscall_32+0x6b/0xf0
-   Sep 17 13:02:43 localhost kernel: [   97.342542]
-   entry_INT80_32+0x31/0x31
-   Sep 17 13:02:43 localhost kernel: [   97.342545] EIP: 0xb22c68d0
-   Sep 17 13:02:43 localhost kernel: [   97.342546] EFLAGS: 00000282 CPU:
-   0
-   Sep 17 13:02:43 localhost kernel: [   97.342548] EAX: ffffffda EBX:
-   00000002 ECX: 00000000 EDX: b1d00480
-   Sep 17 13:02:43 localhost kernel: [   97.342550] ESI: b1d005e0 EDI:
-   b22cc000 EBP: b1fc7318 ESP: b1fc72b0
-   Sep 17 13:02:43 localhost kernel: [   97.342552]  DS: 007b ES: 007b FS:
-   0000 GS: 0033 SS: 007b
-   Sep 17 13:02:43 localhost kernel: [   97.342556] Code: c3 83 e8 01 39
-   c2 0f 85 27 02 00 00 83 f9 0f 8d 97 f8 02 00 00 0f 87 78 01 00 00 8b 04
-   8d f8 52 51 c3 e9 a4 9b 83 00 8d 74 26 00 <0f> 0b 80
-   bf f4 02 00 00 00 0f 85 a6 fd ff ff e9 1c ff ff ff 8d
-   Sep 17 13:02:43 localhost kernel: [   97.342600] ---[ end trace
-   0000000000000002 ]---
-   The issue can be reproduced with the following simple program
-   ///////////////////////////////////////////////////////////////////////
-   ////////
-   // Test application
-   ///////////////////////////////////////////////////////////////////////
-   ////////
-   #include <stdio.h>
-   #include <unistd.h>             // usleep
-   #include <alchemy/task.h>
-   #define CPU_AFFINITY_DEFAULT 0
-   #define MAIN_TASK_NAME  "MainTask"
-   #define MAIN_TASK_PRIO  0
-   #define MAIN_TASK_MODE  0
-   #define TESTTASK_NAME          "TestTask"
-   #define TESTTASK_PRIO          10
-   #define TESTTASK_MODE          0
-   #define TESTTASK_STACKSIZE     0x100000l    // 1 MB
-   #define TESTTASK_PERIOD_NS     (5* 1000000)
-   typedef struct {
-       RT_TASK TaskDescr;
-       int nEndTask;
-       int Period_ns;
-   } TESTTASK_CONTEXT;
-   RT_TASK    g_MainTask;
-   int g_nRun=1;
-   void TestTask(void *pData) {
-       TESTTASK_CONTEXT *pCtx = (TESTTASK_CONTEXT *)pData;
-       unsigned long overrun;
-       int nErr = 0;
-       printf("TestTask starting...\n");
-       nErr = rt_task_set_periodic(NULL, TM_NOW,
-   rt_timer_ns2ticks(pCtx->Period_ns));
-       while (!pCtx->nEndTask) {
-           rt_task_wait_period(&overrun);
-       }
-       printf("TestTask terminating...\n");
-   }
-   int StartTestTask(TESTTASK_CONTEXT* pCtx)
-   {
-       printf("Starting TestTask...\n");
+In a short discussion Jan Kiszka gave me the impression that open could pos=
+sibly end up being rt or nrt depending on situation.=20
 
-       int err;
-       pCtx->nEndTask=0;
-       pCtx->Period_ns=TESTTASK_PERIOD_NS;
-       err = rt_task_spawn(&pCtx->TaskDescr, TESTTASK_NAME,
-   TESTTASK_STACKSIZE, TESTTASK_PRIO, T_JOINABLE, TestTask, pCtx);
-       if (err) {
-           printf("Error in rt_task_spawn_() \n");
-           return err;
-       }
-       return 0;
-   }
-   void StopTestTask(TESTTASK_CONTEXT* pCtx){
-       printf("Stopping TestTask...\n");
-       pCtx->nEndTask=1;
+P=C3=96: I'm guessing that open is always non-rt and therefore a rtdm_lock =
+should be used? ...
 
-       RT_TASK_INFO ti;
-       if (0 == rt_task_inquire(&pCtx->TaskDescr, &ti) ) {
-           rt_task_join(&pCtx->TaskDescr);
-       }
-   }
-
-   // Signalhandler für SIGTERM und SIGINT (Ctrl-C)
-   void TerminationHandler(int sig) {
-       if(sig==SIGTERM) {
-           printf("##### Termination Signal Handler(%d) #####\n",sig);
-       }
-       if(sig==SIGINT) {
-           printf("##### Signal Handler(%d) #####\n",sig);
-       }
-       g_nRun=0;
-       return;
-   }
-   int main(int argc, char* argv[]){
-       TESTTASK_CONTEXT ctxTestTask;
-       signal(SIGTERM, TerminationHandler);
-       signal(SIGINT, TerminationHandler);
-       StartTestTask(&ctxTestTask);
-       //--- Main Loop ---
-       while(g_nRun != 0 ) {
-           printf("main loop\n");
-           usleep(1000000); // sleep 1 sec
-       }
-       StopTestTask(&ctxTestTask);
-       printf("MainTask terminating\n");
-       return 0;
-   }
-   ///////////////////////////////////////////////////////////////////////
-   ////////
-   // End: Test application
-   ///////////////////////////////////////////////////////////////////////
-   ////////
-
-   Any ideas what could be the problem?
+JK: This depends. If the open code needs to synchronize only with other non=
+-RT
+JK: paths, normal Linux locks are fine. If there is the need to sync with t=
+he
+JK: interrupt handler or some of the _rt callbacks, rtdm_lock & Co. is need=
+ed.
 
 
-   Thanks in advance
-   Jochen
+So, how does this work? And why was (if it was) open_nrt and open_rt replac=
+ed with a common open?
+
+
+Background
+----------------
+I recently wrote about a driver which warned about "drvlib.c:1349 rtdm_mute=
+x_timedlock". I got good answers which led me to some more general question=
+s, but instead of continuing in the old tread I thought it better to start =
+a new one since it's not about the initial problem. The driver in case is t=
+he Peak Linux Driver for their CAN hardware, see [1]
+
+
+[1] https://www.peak-system.com/fileadmin/media/linux/index.htm
+
+
+Best regards
+Per =C3=96berg=20
+
