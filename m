@@ -1,8 +1,12 @@
-From: Jan Kiszka <jan.kiszka@siemens.com>
-Subject: [PATCH 1/2] cobalt: Add _CC_COBALT_DEBUG_SYNC_BP feature
-Message-ID: <8271e30f-9fcf-b366-8154-922f988bf366@siemens.com>
-Date: Fri, 4 Oct 2019 15:47:06 +0200
+Subject: Re: Finalizing 3.1, finally
+References: <65e561a8-404a-6f71-106c-b05d6d8dc34d@siemens.com>
+ <trinity-464d3e0c-84f5-4f3a-bf02-144c6347537e-1568402433614@3c-app-gmx-bap08>
+ <2ca1f7e5-d37c-e00b-deb7-839b2946fc17@siemens.com>
+From: Philippe Gerum <rpm@xenomai.org>
+Message-ID: <7c463226-8179-c02e-1416-0e70c59a4fe6@xenomai.org>
+Date: Mon, 16 Sep 2019 20:37:59 +0200
 MIME-Version: 1.0
+In-Reply-To: <2ca1f7e5-d37c-e00b-deb7-839b2946fc17@siemens.com>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -14,51 +18,38 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Xenomai <xenomai@xenomai.org>
+To: Jan Kiszka <jan.kiszka@siemens.com>, Sebastian Smolorz <Sebastian.Smolorz@gmx.de>
+Cc: Xenomai <xenomai@xenomai.org>
 
-From: Jan Kiszka <jan.kiszka@siemens.com>
+On 9/16/19 11:26 AM, Jan Kiszka wrote:
+> On 13.09.19 21:20, Sebastian Smolorz wrote:
+>> Hi Jan,
+>>
+>> Jan Kiszka wrote:
+>>> we are postponing this for too long now, so I'd like to make step
+>>> towards a
+>>> feature freeze for 3.1, marked by an -rc1, and then a release. So,
+>>> everyone
+>>> sitting on API- or even ABI-breaking changes should speak up now.
+>>
+>> This week I have improved the close behaviour of the rttcp driver but
+>> want
+>> to make some more tests in the next week before I post a patch. When do
+>> you plan to release -rc1?
+> 
+> Depends on the feedback. Given yours, let's target for end of next week.
+> Philippe, is that realistic?
+> 
 
-This signals if the core supports synchronous stop and resume on
-breakpoints. It depends on I-pipe support that is not available for all
-architectures and I-pipe kernel version.
+I'll be mostly offline until October, but I have a short window of
+opportunity for fixing the device teardown stuff next week when I'm back
+to my office. So end of next week seems reasonable for 3.1 with this fix in.
 
-Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
----
- include/cobalt/uapi/corectl.h | 1 +
- kernel/cobalt/posix/corectl.c | 3 +++
- 2 files changed, 4 insertions(+)
-
-diff --git a/include/cobalt/uapi/corectl.h b/include/cobalt/uapi/corectl.h
-index 98d989d635..8927c4fb07 100644
---- a/include/cobalt/uapi/corectl.h
-+++ b/include/cobalt/uapi/corectl.h
-@@ -33,6 +33,7 @@
- #   define _CC_COBALT_DEBUG_LEGACY		128
- #   define _CC_COBALT_DEBUG_TRACE_RELAX		256
- #   define _CC_COBALT_DEBUG_NET			512
-+#   define _CC_COBALT_DEBUG_SYNC_BP		1024
- 
- #define _CC_COBALT_GET_POLICIES		4
- #   define _CC_COBALT_SCHED_FIFO	1
-diff --git a/kernel/cobalt/posix/corectl.c b/kernel/cobalt/posix/corectl.c
-index f7129ca64b..1b0d912008 100644
---- a/kernel/cobalt/posix/corectl.c
-+++ b/kernel/cobalt/posix/corectl.c
-@@ -79,6 +79,9 @@ static int do_conf_option(int option, void __user *u_buf, size_t u_bufsz)
- 			val |= _CC_COBALT_DEBUG_TRACE_RELAX;
- 		if (IS_ENABLED(CONFIG_XENO_DRIVERS_RTNET_CHECKED))
- 			val |= _CC_COBALT_DEBUG_NET;
-+#ifdef IPIPE_KEVT_USERINTRET
-+		val |= _CC_COBALT_DEBUG_SYNC_BP;
-+#endif
- 		break;
- 	case _CC_COBALT_GET_WATCHDOG:
- #ifdef CONFIG_XENO_OPT_WATCHDOG
--- 
-2.16.4
-
+Regarding the vlan and multicast support for RTnet, this needs review
+from your end and some exposure in -next until we can reasonably see
+this merged to master. As much as I would have liked to see this queued
+for 3.1, this will have to wait for 3.2.
 
 -- 
-Siemens AG, Corporate Technology, CT RDA IOT SES-DE
-Corporate Competence Center Embedded Linux
+Philippe.
 
