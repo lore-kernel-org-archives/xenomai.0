@@ -1,15 +1,13 @@
-Subject: Re: Controlling DMA priority between GPU and CPU on x86
-References: <a10e8232f3104d32900617139e7033da@heig-vd.ch>
- <cc3833cd-118f-8fce-6bd4-585bb79330a6@siemens.com>
- <6b84e3f52b1c497daa5f675f69e15a77@heig-vd.ch>
-From: =?UTF-8?Q?St=c3=a9phane_Ancelot?= <sancelot@numalliance.com>
-Message-ID: <344ff7b8-eb50-de6c-5b0e-ff4ca84d8b98@numalliance.com>
-Date: Mon, 7 Oct 2019 09:14:33 +0200
+Subject: Re: Static build of rtnet
+References: <VI1PR05MB59174B9E7E2B5EC8BED7DDA5F68C0@VI1PR05MB5917.eurprd05.prod.outlook.com>
+From: Jan Kiszka <jan.kiszka@siemens.com>
+Message-ID: <d86f04ac-dee5-b940-7569-cfff1e404589@siemens.com>
+Date: Tue, 17 Sep 2019 09:42:27 +0200
 MIME-Version: 1.0
-In-Reply-To: <6b84e3f52b1c497daa5f675f69e15a77@heig-vd.ch>
-Content-Language: fr
+In-Reply-To: <VI1PR05MB59174B9E7E2B5EC8BED7DDA5F68C0@VI1PR05MB5917.eurprd05.prod.outlook.com>
 Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: quoted-printable
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -18,118 +16,31 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Rossier Daniel <Daniel.Rossier@heig-vd.ch>, Jan Kiszka <jan.kiszka@siemens.com>, "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Lange Norbert <norbert.lange@andritz.com>, "Xenomai (xenomai@xenomai.org)" <xenomai@xenomai.org>
 
-Hi,
+On 16.09.19 11:13, Lange Norbert via Xenomai wrote:
+> Hello,
+> 
+> I havent tested this in a while, but building rtnet static will crash the kernel when this module initializes.
+> With the various fixes and cleanups in master/next (like rtdm_available) that might be worth a look?
+> 
+> I would hope to build a static kernel one day, and so far there are 2 roadblocks:
+> 
+> -       rtnet (+ rtpacket) crashing when built statically
+> 
+> -       symbol nameclashes with linux + rt drivers enabled (I could work on fixing that for rt_igb atleast)
+> 
 
-You won't be able to achieve realtime using the actual intel linux video=20
-driver using GPU.
+Do you mean removing the "depends on m"? Possibly, that moves the initialization 
+order in a way that causes troubles. I also just added another case that 
+exploits the module [1], but that would be solvable. More critical is 
+understanding the crashes.
 
-The driver is not preemptible.
+Jan
 
-This mainly happens when GPU receives batch job (eg launching a program=20
-that creates many graphic widgets , moving a window with a 19 inch=20
-display) .
+[1] https://xenomai.org/pipermail/xenomai/2019-September/041583.html
 
-The memory is locked by the GPU. Isolating rt tasks /IT to cpus won't=20
-solve it, since the memory is shared with all CPUs (eg only one=C2=A0 num=
-a node)
+-- 
+Siemens AG, Corporate Technology, CT RDA IOT SES-DE
+Corporate Competence Center Embedded Linux
 
-The problem can better being watched splitting a realtime task in 2 or 3=20
-tasks, (task1 executes, and wakes up task2, task2 executes and wakes up=20
-task3) .
-
-We may manage to solve the problem if being able to provide intel a unit=20
-testing program being able to reproduce the phenomen.
-
-Reducing GPU frequency decreases problem frequency but does not solve it.
-
-For reference:
-
-https://bugs.freedesktop.org/show_bug.cgi?id=3D110950
-
-Regards,
-
-S.Ancelot
-
-
-Le 05/10/2019 =C3=A0 10:03, Rossier Daniel via Xenomai a =C3=A9crit=C2=A0=
-:
->> -----Original Message-----
->> From: Jan Kiszka <jan.kiszka@siemens.com>
->> Sent: vendredi, 4 octobre 2019 10:15
->> To: Rossier Daniel <Daniel.Rossier@heig-vd.ch>; xenomai@xenomai.org
->> Subject: Re: Controlling DMA priority between GPU and CPU on x86
->>
->> On 03.10.19 17:23, Rossier Daniel via Xenomai wrote:
->>> Hi all,
->>>
->>> We are currently working on a project called OpenCN which is a framew=
-ork
->> deeply inspired from LinuxCNC, but with a revisited architecture.
->>> Hence, OpenCN is related to machine control.
->>>
->>> Our framework mainly use a AMP approach and runs the Xenomai/Cobalt
->> kernel on a dedicated CPU with no I-pipe (reworked out).
->>> (We plan to release the framework by first of November).
->> IOW, "bare-metal" Cobalt? Collaborative AMP, or partitioned via
->> virtualization?
-> Actually, we have patched a lot Xenomai/Cobalt to keep the cobalt sched=
-uler and main functions (mutex, task create/delete, timer, etc.) running =
-on CPU #1 and
-> we manage interactions with CPU #0 via specific IPI interrupts.  The Li=
-nux scheduler does not intervene here.
->
->>> Our framework works well on a x86 PC, but we have to face an issue
->>> regarding DMA priority between the GPU and CPU; when the user plays
->> with the GUI, some small latencies (O(10ms)) raise up.
->>> Although the question is not directly related to Xenomai, I would be
->>> very interested if somebody knows if it possible to give CPU priority=
- against
->> the GPU, and how to manage the related DMA controller? Is it possible =
-to
->> configure it ? Or any other hint to avoid this latency ?
->>> Many thanks in advance for any inputs.
->> I didn't dig into anything that manages PCI bandwidth yet. I heard tha=
-t
->> something exists, but at that time it was not publicly documented. And=
- it's
->> likely highly platform specific (SoC/chipset).
->>
->> Did you clearly identify that it's DMA contention which increased your
->> latency?
-> The latency appears when there are some activities on the GPU (the user=
- moves windows for example).
-> Otherwise, the system is very stable, on a long period too.
->
->> Do you cache-miss delays increase (PMU should tell you)? Or is there a
->> contention between a RT device doing DMA and the GPU?
-> How can I get info from PMU in that sense? There is the network card (e=
-1000e) which makes DMA access probably,
-> however we do not use interrupts here, only polling since it is patched=
- Ethercat-based driver.
->
-> I also attached some information about our lab PC.
->
-> Daniel
->
->> Jan
->>
->> --
->> Siemens AG, Corporate Technology, CT RDA IOT SES-DE Corporate
->> Competence Center Embedded Linux
-> -------------- next part --------------
-> An embedded and charset-unspecified text was scrubbed...
-> Name: lscpu.txt
-> URL: <http://xenomai.org/pipermail/xenomai/attachments/20191005/16b7c47=
-4/attachment.txt>
-> -------------- next part --------------
-> An embedded and charset-unspecified text was scrubbed...
-> Name: lscpu_C.txt
-> URL: <http://xenomai.org/pipermail/xenomai/attachments/20191005/16b7c47=
-4/attachment-0001.txt>
-> -------------- next part --------------
-> An embedded and charset-unspecified text was scrubbed...
-> Name: lspci_knnvv.txt
-> URL: <http://xenomai.org/pipermail/xenomai/attachments/20191005/16b7c47=
-4/attachment-0002.txt>
