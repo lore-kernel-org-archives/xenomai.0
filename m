@@ -1,13 +1,14 @@
-Subject: Re: [xenomai-images][PATCH v2 0/4] ci improvements
-References: <20191001125203.10757-1-Quirin.Gylstorff@siemens.com>
-From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <d6a36628-53ef-fa26-4ee6-f2cda3e36d13@siemens.com>
-Date: Tue, 8 Oct 2019 12:12:56 +0200
-MIME-Version: 1.0
-In-Reply-To: <20191001125203.10757-1-Quirin.Gylstorff@siemens.com>
-Content-Type: text/plain; charset=utf-8
+From: Lange Norbert <norbert.lange@andritz.com>
+Subject: RE: Static build of rtnet
+Date: Tue, 17 Sep 2019 08:29:44 +0000
+Message-ID: <VI1PR05MB59172B40F6360FFE5C2090B7F68F0@VI1PR05MB5917.eurprd05.prod.outlook.com>
+References: <VI1PR05MB59174B9E7E2B5EC8BED7DDA5F68C0@VI1PR05MB5917.eurprd05.prod.outlook.com>
+ <d86f04ac-dee5-b940-7569-cfff1e404589@siemens.com>
+In-Reply-To: <d86f04ac-dee5-b940-7569-cfff1e404589@siemens.com>
 Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+MIME-Version: 1.0
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,44 +17,49 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "Q. Gylstorff" <Quirin.Gylstorff@siemens.com>, xenomai@xenomai.org
+To: Jan Kiszka <jan.kiszka@siemens.com>, "Xenomai (xenomai@xenomai.org)" <xenomai@xenomai.org>
 
-On 01.10.19 14:51, Q. Gylstorff wrote:
-> From: Quirin Gylstorff <quirin.gylstorff@siemens.com>
-> 
-> Improve the ci by:
-> 
-> - Adding  option --vm to successfully execute qemu tests.
-> - Fixing beaglebone tests after lava update.
-> - Compress rootfs to speed up the deployment
-> - use pipeline id to differ between test runs.
-> 
-> Changes:
-> V2:
-> - cleanup
-> 
-> Quirin Gylstorff (4):
->   ci: Use unique test ids
->   ci: Use compression for rootfs
->   ci: Run qemu tests with --vm option
->   xenomai-beaglebone: remove context after update
-> 
->  scripts/deploy_for_testing.sh     |  7 ++++++-
->  scripts/run-lava-tests.sh         | 13 ++++++++++++-
->  tests/jobs/xenomai-beaglebone.yml |  9 +++------
->  tests/jobs/xenomai-minnow.yml     |  6 +++---
->  tests/jobs/xenomai-qemu-amd64.yml | 12 +++++++-----
->  tests/jobs/xenomai-qemu-arm64.yml | 12 +++++++-----
->  tests/jobs/xenomai-qemu-armhf.yml | 12 +++++++-----
->  tests/jobs/xenomai-x86-64.yml     |  6 +++---
->  8 files changed, 48 insertions(+), 29 deletions(-)
-> 
-
-Thanks, pushed all to next.
-
-Jan
-
--- 
-Siemens AG, Corporate Technology, CT RDA IOT SES-DE
-Corporate Competence Center Embedded Linux
+DQoNCj4gLS0tLS1PcmlnaW5hbCBNZXNzYWdlLS0tLS0NCj4gRnJvbTogSmFuIEtpc3prYSA8amFu
+Lmtpc3prYUBzaWVtZW5zLmNvbT4NCj4gU2VudDogRGllbnN0YWcsIDE3LiBTZXB0ZW1iZXIgMjAx
+OSAwOTo0Mg0KPiBUbzogTGFuZ2UgTm9yYmVydCA8bm9yYmVydC5sYW5nZUBhbmRyaXR6LmNvbT47
+IFhlbm9tYWkNCj4gKHhlbm9tYWlAeGVub21haS5vcmcpIDx4ZW5vbWFpQHhlbm9tYWkub3JnPg0K
+PiBTdWJqZWN0OiBSZTogU3RhdGljIGJ1aWxkIG9mIHJ0bmV0DQo+DQo+IE5PTi1BTkRSSVRaIFNP
+VVJDRTogQkUgQ0FVVElPVVMgV0lUSCBDT05URU5ULCBMSU5LUyBPUg0KPiBBVFRBQ0hNRU5UUy4N
+Cj4NCj4NCj4gT24gMTYuMDkuMTkgMTE6MTMsIExhbmdlIE5vcmJlcnQgdmlhIFhlbm9tYWkgd3Jv
+dGU6DQo+ID4gSGVsbG8sDQo+ID4NCj4gPiBJIGhhdmVudCB0ZXN0ZWQgdGhpcyBpbiBhIHdoaWxl
+LCBidXQgYnVpbGRpbmcgcnRuZXQgc3RhdGljIHdpbGwgY3Jhc2ggdGhlIGtlcm5lbA0KPiB3aGVu
+IHRoaXMgbW9kdWxlIGluaXRpYWxpemVzLg0KPiA+IFdpdGggdGhlIHZhcmlvdXMgZml4ZXMgYW5k
+IGNsZWFudXBzIGluIG1hc3Rlci9uZXh0IChsaWtlIHJ0ZG1fYXZhaWxhYmxlKSB0aGF0DQo+IG1p
+Z2h0IGJlIHdvcnRoIGEgbG9vaz8NCj4gPg0KPiA+IEkgd291bGQgaG9wZSB0byBidWlsZCBhIHN0
+YXRpYyBrZXJuZWwgb25lIGRheSwgYW5kIHNvIGZhciB0aGVyZSBhcmUgMg0KPiByb2FkYmxvY2tz
+Og0KPiA+DQo+ID4gLSAgICAgICBydG5ldCAoKyBydHBhY2tldCkgY3Jhc2hpbmcgd2hlbiBidWls
+dCBzdGF0aWNhbGx5DQo+ID4NCj4gPiAtICAgICAgIHN5bWJvbCBuYW1lY2xhc2hlcyB3aXRoIGxp
+bnV4ICsgcnQgZHJpdmVycyBlbmFibGVkIChJIGNvdWxkIHdvcmsgb24gZml4aW5nDQo+IHRoYXQg
+Zm9yIHJ0X2lnYiBhdGxlYXN0KQ0KPiA+DQo+DQo+IERvIHlvdSBtZWFuIHJlbW92aW5nIHRoZSAi
+ZGVwZW5kcyBvbiBtIj8NCg0KWWVzLCBpZGVhbGx5IEkgd291bGQgdXNlIGEga2VybmVsIHdpdGhv
+dXQgbG9hZGFibGUgbW9kdWxlcywgc28ga2VybmVsIHVwZ3JhZGVzL2NoYW5nZXMgZG9u4oCZdCBh
+ZmZlY3QgdGhlIHJvb3RmcyAoaWRlYWxseSByZWFkLW9ubHkgYXBhcnQgZnJvbSBmZXcgcGxhY2Vz
+KS4NCg0KPiBQb3NzaWJseSwgdGhhdCBtb3ZlcyB0aGUNCj4gaW5pdGlhbGl6YXRpb24gb3JkZXIg
+aW4gYSB3YXkgdGhhdCBjYXVzZXMgdHJvdWJsZXMuIEkgYWxzbyBqdXN0IGFkZGVkIGFub3RoZXIg
+Y2FzZQ0KPiB0aGF0IGV4cGxvaXRzIHRoZSBtb2R1bGUgWzFdLCBidXQgdGhhdCB3b3VsZCBiZSBz
+b2x2YWJsZS4gTW9yZSBjcml0aWNhbCBpcw0KPiB1bmRlcnN0YW5kaW5nIHRoZSBjcmFzaGVzLg0K
+DQpJIGhhZCBhIHF1aWNrIHRlc3QgcmVtb3ZpbmcgdGhlICJkZXBlbmRzIG9uIG0iIGFib3V0IGEg
+eWVhciBhZ28sIEkgYnJvdWdodCB0aGlzIHVwIG5vdyBiZWNhdXNlIGl0IG1pZ2h0IGJlIGZpdHRp
+bmcgd2l0aCB0aGUgcmVjZW50IGNsZWFudXBzLg0KDQpSZWdhcmRzLCBOb3JiZXJ0DQpfX19fX19f
+X19fX19fX19fX19fX19fX19fX19fX19fXw0KDQpUaGlzIG1lc3NhZ2UgYW5kIGFueSBhdHRhY2ht
+ZW50cyBhcmUgc29sZWx5IGZvciB0aGUgdXNlIG9mIHRoZSBpbnRlbmRlZCByZWNpcGllbnRzLiBU
+aGV5IG1heSBjb250YWluIHByaXZpbGVnZWQgYW5kL29yIGNvbmZpZGVudGlhbCBpbmZvcm1hdGlv
+biBvciBvdGhlciBpbmZvcm1hdGlvbiBwcm90ZWN0ZWQgZnJvbSBkaXNjbG9zdXJlLiBJZiB5b3Ug
+YXJlIG5vdCBhbiBpbnRlbmRlZCByZWNpcGllbnQsIHlvdSBhcmUgaGVyZWJ5IG5vdGlmaWVkIHRo
+YXQgeW91IHJlY2VpdmVkIHRoaXMgZW1haWwgaW4gZXJyb3IgYW5kIHRoYXQgYW55IHJldmlldywg
+ZGlzc2VtaW5hdGlvbiwgZGlzdHJpYnV0aW9uIG9yIGNvcHlpbmcgb2YgdGhpcyBlbWFpbCBhbmQg
+YW55IGF0dGFjaG1lbnQgaXMgc3RyaWN0bHkgcHJvaGliaXRlZC4gSWYgeW91IGhhdmUgcmVjZWl2
+ZWQgdGhpcyBlbWFpbCBpbiBlcnJvciwgcGxlYXNlIGNvbnRhY3QgdGhlIHNlbmRlciBhbmQgZGVs
+ZXRlIHRoZSBtZXNzYWdlIGFuZCBhbnkgYXR0YWNobWVudCBmcm9tIHlvdXIgc3lzdGVtLg0KDQpB
+TkRSSVRaIEhZRFJPIEdtYkgNCg0KDQpSZWNodHNmb3JtLyBMZWdhbCBmb3JtOiBHZXNlbGxzY2hh
+ZnQgbWl0IGJlc2NocsOkbmt0ZXIgSGFmdHVuZyAvIENvcnBvcmF0aW9uDQoNCkZpcm1lbnNpdHov
+IFJlZ2lzdGVyZWQgc2VhdDogV2llbg0KDQpGaXJtZW5idWNoZ2VyaWNodC8gQ291cnQgb2YgcmVn
+aXN0cnk6IEhhbmRlbHNnZXJpY2h0IFdpZW4NCg0KRmlybWVuYnVjaG51bW1lci8gQ29tcGFueSBy
+ZWdpc3RyYXRpb246IEZOIDYxODMzIGcNCg0KRFZSOiAwNjA1MDc3DQoNClVJRC1Oci46IEFUVTE0
+NzU2ODA2DQoNCg0KVGhhbmsgWW91DQpfX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fXw0K
 
