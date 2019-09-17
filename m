@@ -1,15 +1,9 @@
-Subject: Re: Static build of rtnet
-References: <VI1PR05MB59174B9E7E2B5EC8BED7DDA5F68C0@VI1PR05MB5917.eurprd05.prod.outlook.com>
- <d86f04ac-dee5-b940-7569-cfff1e404589@siemens.com>
- <VI1PR05MB59172B40F6360FFE5C2090B7F68F0@VI1PR05MB5917.eurprd05.prod.outlook.com>
-From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <8a9e9fcb-185c-9f41-5a38-851a152300ed@siemens.com>
-Date: Tue, 17 Sep 2019 10:41:38 +0200
+From: Sebastian Smolorz <sebastian.smolorz@gmx.de>
+Subject: [PATCH] net/tcp: Account for connection teardown handshake
+Date: Tue, 17 Sep 2019 14:01:55 +0200
+Message-Id: <20190917120155.22171-1-sebastian.smolorz@gmx.de>
 MIME-Version: 1.0
-In-Reply-To: <VI1PR05MB59172B40F6360FFE5C2090B7F68F0@VI1PR05MB5917.eurprd05.prod.outlook.com>
-Content-Type: text/plain; charset="utf-8"; format="flowed"
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: quoted-printable
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -18,57 +12,140 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Lange Norbert <norbert.lange@andritz.com>, "Xenomai (xenomai@xenomai.org)" <xenomai@xenomai.org>
+To: jan.kiszka@siemens.com
+Cc: xenomai@xenomai.org
 
-On 17.09.19 10:29, Lange Norbert wrote:
-> 
-> 
->> -----Original Message-----
->> From: Jan Kiszka <jan.kiszka@siemens.com>
->> Sent: Dienstag, 17. September 2019 09:42
->> To: Lange Norbert <norbert.lange@andritz.com>; Xenomai
->> (xenomai@xenomai.org) <xenomai@xenomai.org>
->> Subject: Re: Static build of rtnet
->>
->> NON-ANDRITZ SOURCE: BE CAUTIOUS WITH CONTENT, LINKS OR
->> ATTACHMENTS.
->>
->>
->> On 16.09.19 11:13, Lange Norbert via Xenomai wrote:
->>> Hello,
->>>
->>> I havent tested this in a while, but building rtnet static will crash the kernel
->> when this module initializes.
->>> With the various fixes and cleanups in master/next (like rtdm_available) that
->> might be worth a look?
->>>
->>> I would hope to build a static kernel one day, and so far there are 2
->> roadblocks:
->>>
->>> -       rtnet (+ rtpacket) crashing when built statically
->>>
->>> -       symbol nameclashes with linux + rt drivers enabled (I could work on fixing
->> that for rt_igb atleast)
->>>
->>
->> Do you mean removing the "depends on m"?
-> 
-> Yes, ideally I would use a kernel without loadable modules, so kernel upgrades/changes don’t affect the rootfs (ideally read-only apart from few places).
-> 
->> Possibly, that moves the
->> initialization order in a way that causes troubles. I also just added another case
->> that exploits the module [1], but that would be solvable. More critical is
->> understanding the crashes.
-> 
-> I had a quick test removing the "depends on m" about a year ago, I brought this up now because it might be fitting with the recent cleanups.
+When closing a TCP connection a handshake procedure is executed between th=
+e
+peers. The close routine of the rttcp driver did not participate in
+detecting the end of this handshake but rather waited one second inside
+a close call unconditionally. Especially when peers are directly connected
+this is a waste of time which can hurt a lot in some situations.
 
-I don't think recent cleanups have changed the situation. Someone has to sit 
-down, analyze the crashes, resolve them, and propose all changes for upstream. 
-Also, startup scripts need to be adjusted to accept non-module RTnet.
+This patch replaces the msleep(1000) call with a timed wait on a
+semaphore which gets sigalled when the termination handshake is complete.
 
-Jan
+Signed-off-by: Sebastian Smolorz <sebastian.smolorz@gmx.de>
+=2D--
+ kernel/drivers/net/stack/ipv4/tcp/tcp.c | 29 +++++++++++++++++++++++--
+ 1 file changed, 27 insertions(+), 2 deletions(-)
 
--- 
-Siemens AG, Corporate Technology, CT RDA IOT SES-DE
-Corporate Competence Center Embedded Linux
+diff --git a/kernel/drivers/net/stack/ipv4/tcp/tcp.c b/kernel/drivers/net/=
+stack/ipv4/tcp/tcp.c
+index 54bafa80f..81089afd1 100644
+=2D-- a/kernel/drivers/net/stack/ipv4/tcp/tcp.c
++++ b/kernel/drivers/net/stack/ipv4/tcp/tcp.c
+@@ -147,6 +147,9 @@ struct tcp_socket {
+ 	struct rtskb_queue retransmit_queue;
+ 	struct timerwheel_timer timer;
+
++	struct semaphore close_sem;
++	rtdm_nrtsig_t close_sig;
++
+ #ifdef CONFIG_XENO_DRIVERS_NET_RTIPV4_TCP_ERROR_INJECTION
+ 	unsigned int packet_counter;
+ 	unsigned int error_rate;
+@@ -1042,6 +1045,7 @@ static void rt_tcp_rcv(struct rtskb *skb)
+ 			rt_tcp_send(ts, TCP_FLAG_ACK);
+ 			/* data receiving is not possible anymore */
+ 			rtdm_sem_destroy(&ts->sock.pending_sem);
++			rtdm_nrtsig_pend(&ts->close_sig);
+ 			goto feed;
+ 		} else if (ts->tcp_state =3D=3D TCP_FIN_WAIT1) {
+ 			/* Send ACK */
+@@ -1105,6 +1109,7 @@ static void rt_tcp_rcv(struct rtskb *skb)
+ 			ts->tcp_state =3D TCP_CLOSE;
+ 			rtdm_lock_put_irqrestore(&ts->socket_lock, context);
+ 			/* socket destruction will be done on close() */
++			rtdm_nrtsig_pend(&ts->close_sig);
+ 			goto drop;
+ 		} else if (ts->tcp_state =3D=3D TCP_FIN_WAIT1) {
+ 			ts->tcp_state =3D TCP_FIN_WAIT2;
+@@ -1119,6 +1124,7 @@ static void rt_tcp_rcv(struct rtskb *skb)
+ 			ts->tcp_state =3D TCP_TIME_WAIT;
+ 			rtdm_lock_put_irqrestore(&ts->socket_lock, context);
+ 			/* socket destruction will be done on close() */
++			rtdm_nrtsig_pend(&ts->close_sig);
+ 			goto feed;
+ 		}
+ 	}
+@@ -1190,6 +1196,11 @@ static int rt_tcp_window_send(struct tcp_socket *ts=
+, u32 data_len, u8 *data_ptr)
+ 	return ret;
+ }
+
++static void rt_tcp_close_signal_handler(rtdm_nrtsig_t *nrtsig, void *arg)
++{
++	up((struct semaphore *)arg);
++}
++
+ static int rt_tcp_socket_create(struct tcp_socket *ts)
+ {
+ 	rtdm_lockctx_t context;
+@@ -1226,6 +1237,10 @@ static int rt_tcp_socket_create(struct tcp_socket *=
+ts)
+ 	timerwheel_init_timer(&ts->timer, rt_tcp_retransmit_handler, ts);
+ 	rtskb_queue_init(&ts->retransmit_queue);
+
++	sema_init(&ts->close_sem, 0);
++	rtdm_nrtsig_init(&ts->close_sig, rt_tcp_close_signal_handler,
++			 &ts->close_sem);
++
+ #ifdef CONFIG_XENO_DRIVERS_NET_RTIPV4_TCP_ERROR_INJECTION
+ 	ts->packet_counter =3D counter_start;
+ 	ts->error_rate =3D error_rate;
+@@ -1237,6 +1252,7 @@ static int rt_tcp_socket_create(struct tcp_socket *t=
+s)
+ 	/* enforce maximum number of TCP sockets */
+ 	if (free_ports =3D=3D 0) {
+ 		rtdm_lock_put_irqrestore(&tcp_socket_base_lock, context);
++		rtdm_nrtsig_destroy(&ts->close_sig);
+ 		return -EAGAIN;
+ 	}
+ 	free_ports--;
+@@ -1338,6 +1354,8 @@ static void rt_tcp_socket_destruct(struct tcp_socket=
+ *ts)
+
+ 	rtdm_event_destroy(&ts->conn_evt);
+
++	rtdm_nrtsig_destroy(&ts->close_sig);
++
+ 	/* cleanup already collected fragments */
+ 	rt_ip_frag_invalidate_socket(sock);
+
+@@ -1362,6 +1380,7 @@ static void rt_tcp_close(struct rtdm_fd *fd)
+ 	struct rt_tcp_dispatched_packet_send_cmd send_cmd;
+ 	rtdm_lockctx_t context;
+ 	int signal =3D 0;
++	int ret;
+
+ 	rtdm_lock_get_irqsave(&ts->socket_lock, context);
+
+@@ -1380,7 +1399,10 @@ static void rt_tcp_close(struct rtdm_fd *fd)
+ 		/* result is ignored */
+
+ 		/* Give the peer some time to reply to our FIN. */
+-		msleep(1000);
++		ret =3D down_timeout(&ts->close_sem, msecs_to_jiffies(1000));
++		if (ret)
++			rtdm_printk("rttcp: waiting for FIN-ACK handshake returned %d\n",
++				    ret);
+ 	} else if (ts->tcp_state =3D=3D TCP_CLOSE_WAIT) {
+ 		/* Send FIN in CLOSE_WAIT */
+ 		send_cmd.ts =3D ts;
+@@ -1394,7 +1416,10 @@ static void rt_tcp_close(struct rtdm_fd *fd)
+ 		/* result is ignored */
+
+ 		/* Give the peer some time to reply to our FIN. */
+-		msleep(1000);
++		ret =3D down_timeout(&ts->close_sem, msecs_to_jiffies(1000));
++		if (ret)
++			rtdm_printk("rttcp: waiting for FIN-ACK handshake returned %d\n",
++				    ret);
+ 	} else {
+ 		/*
+ 	  rt_tcp_socket_validate() has not been called at all,
+=2D-
+2.20.1
+
 
