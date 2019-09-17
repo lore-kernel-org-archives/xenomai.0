@@ -1,13 +1,9 @@
-Subject: Re: [PATCH] net/tcp: Account for connection teardown handshake
-References: <20190917120155.22171-1-sebastian.smolorz@gmx.de>
-From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <a222a6eb-5b92-fcf1-8643-9299d806024d@siemens.com>
-Date: Tue, 17 Sep 2019 14:46:10 +0200
+Message-ID: <trinity-a8fa9174-e6b1-4dd6-9b0e-87b36ca132f7-1568726164071@3c-app-webde-bs20>
+From: JK.Behnke@web.de
+Subject: sideeffect of rcu_nocbs on periodic Alchemy task
+Date: Tue, 17 Sep 2019 15:16:04 +0200
 MIME-Version: 1.0
-In-Reply-To: <20190917120155.22171-1-sebastian.smolorz@gmx.de>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="utf-8"
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,150 +12,186 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Sebastian Smolorz <sebastian.smolorz@gmx.de>
-Cc: xenomai@xenomai.org
+Content-Transfer-Encoding: 8bit
+To: xenomai@xenomai.org
 
-On 17.09.19 14:01, Sebastian Smolorz wrote:
-> When closing a TCP connection a handshake procedure is executed between the
-> peers. The close routine of the rttcp driver did not participate in
-> detecting the end of this handshake but rather waited one second inside
-> a close call unconditionally. Especially when peers are directly connected
-> this is a waste of time which can hurt a lot in some situations.
-> 
-> This patch replaces the msleep(1000) call with a timed wait on a
-> semaphore which gets sigalled when the termination handshake is complete.
-> 
-> Signed-off-by: Sebastian Smolorz <sebastian.smolorz@gmx.de>
-> ---
->   kernel/drivers/net/stack/ipv4/tcp/tcp.c | 29 +++++++++++++++++++++++--
->   1 file changed, 27 insertions(+), 2 deletions(-)
-> 
-> diff --git a/kernel/drivers/net/stack/ipv4/tcp/tcp.c b/kernel/drivers/net/stack/ipv4/tcp/tcp.c
-> index 54bafa80f..81089afd1 100644
-> --- a/kernel/drivers/net/stack/ipv4/tcp/tcp.c
-> +++ b/kernel/drivers/net/stack/ipv4/tcp/tcp.c
-> @@ -147,6 +147,9 @@ struct tcp_socket {
->   	struct rtskb_queue retransmit_queue;
->   	struct timerwheel_timer timer;
-> 
-> +	struct semaphore close_sem;
+   Hello,
 
-Sounds rather lake a job for struct completion.
+   I am running an Alchemy application (xenomai 3.0.9) over Linux
+   prempt-rt on a dual core
+   atom (E3930) and noticed a side effect of the Linux boot parameter
+   "rcu_nocbs".
 
-> +	rtdm_nrtsig_t close_sig;
-> +
->   #ifdef CONFIG_XENO_DRIVERS_NET_RTIPV4_TCP_ERROR_INJECTION
->   	unsigned int packet_counter;
->   	unsigned int error_rate;
-> @@ -1042,6 +1045,7 @@ static void rt_tcp_rcv(struct rtskb *skb)
->   			rt_tcp_send(ts, TCP_FLAG_ACK);
->   			/* data receiving is not possible anymore */
->   			rtdm_sem_destroy(&ts->sock.pending_sem);
-> +			rtdm_nrtsig_pend(&ts->close_sig);
->   			goto feed;
->   		} else if (ts->tcp_state == TCP_FIN_WAIT1) {
->   			/* Send ACK */
-> @@ -1105,6 +1109,7 @@ static void rt_tcp_rcv(struct rtskb *skb)
->   			ts->tcp_state = TCP_CLOSE;
->   			rtdm_lock_put_irqrestore(&ts->socket_lock, context);
->   			/* socket destruction will be done on close() */
-> +			rtdm_nrtsig_pend(&ts->close_sig);
->   			goto drop;
->   		} else if (ts->tcp_state == TCP_FIN_WAIT1) {
->   			ts->tcp_state = TCP_FIN_WAIT2;
-> @@ -1119,6 +1124,7 @@ static void rt_tcp_rcv(struct rtskb *skb)
->   			ts->tcp_state = TCP_TIME_WAIT;
->   			rtdm_lock_put_irqrestore(&ts->socket_lock, context);
->   			/* socket destruction will be done on close() */
-> +			rtdm_nrtsig_pend(&ts->close_sig);
->   			goto feed;
->   		}
->   	}
-> @@ -1190,6 +1196,11 @@ static int rt_tcp_window_send(struct tcp_socket *ts, u32 data_len, u8 *data_ptr)
->   	return ret;
->   }
-> 
-> +static void rt_tcp_close_signal_handler(rtdm_nrtsig_t *nrtsig, void *arg)
-> +{
-> +	up((struct semaphore *)arg);
-> +}
-> +
->   static int rt_tcp_socket_create(struct tcp_socket *ts)
->   {
->   	rtdm_lockctx_t context;
-> @@ -1226,6 +1237,10 @@ static int rt_tcp_socket_create(struct tcp_socket *ts)
->   	timerwheel_init_timer(&ts->timer, rt_tcp_retransmit_handler, ts);
->   	rtskb_queue_init(&ts->retransmit_queue);
-> 
-> +	sema_init(&ts->close_sem, 0);
-> +	rtdm_nrtsig_init(&ts->close_sig, rt_tcp_close_signal_handler,
-> +			 &ts->close_sem);
-> +
->   #ifdef CONFIG_XENO_DRIVERS_NET_RTIPV4_TCP_ERROR_INJECTION
->   	ts->packet_counter = counter_start;
->   	ts->error_rate = error_rate;
-> @@ -1237,6 +1252,7 @@ static int rt_tcp_socket_create(struct tcp_socket *ts)
->   	/* enforce maximum number of TCP sockets */
->   	if (free_ports == 0) {
->   		rtdm_lock_put_irqrestore(&tcp_socket_base_lock, context);
-> +		rtdm_nrtsig_destroy(&ts->close_sig);
->   		return -EAGAIN;
->   	}
->   	free_ports--;
-> @@ -1338,6 +1354,8 @@ static void rt_tcp_socket_destruct(struct tcp_socket *ts)
-> 
->   	rtdm_event_destroy(&ts->conn_evt);
-> 
-> +	rtdm_nrtsig_destroy(&ts->close_sig);
-> +
->   	/* cleanup already collected fragments */
->   	rt_ip_frag_invalidate_socket(sock);
-> 
-> @@ -1362,6 +1380,7 @@ static void rt_tcp_close(struct rtdm_fd *fd)
->   	struct rt_tcp_dispatched_packet_send_cmd send_cmd;
->   	rtdm_lockctx_t context;
->   	int signal = 0;
-> +	int ret;
-> 
->   	rtdm_lock_get_irqsave(&ts->socket_lock, context);
-> 
-> @@ -1380,7 +1399,10 @@ static void rt_tcp_close(struct rtdm_fd *fd)
->   		/* result is ignored */
-> 
->   		/* Give the peer some time to reply to our FIN. */
-> -		msleep(1000);
-> +		ret = down_timeout(&ts->close_sem, msecs_to_jiffies(1000));
-> +		if (ret)
-> +			rtdm_printk("rttcp: waiting for FIN-ACK handshake returned %d\n",
-> +				    ret);
+   Whenever the kernel bootparameter "rcu_nocbs=1" is set, I get the
+   following Linux
+   kernel warning, when the AlchemyTask (TestTask) is terminated.
 
-Do we consider a timeout to worth a kernel log entry? This could also be caused 
-by a lost connection, right?
 
-And should we make the waiting time configurable?
+   Sep 17 13:02:43 localhost kernel: [   97.342398] ------------[ cut here
+   ]------------
+   Sep 17 13:02:43 localhost kernel: [   97.342412] WARNING: CPU: 0 PID:
+   530 at
+   /home/behnkjoc/prc2020/poky/build-tca5-32/tmp/work-shared/congatec-tca5
+   -32/kernel-source/kernel/rcu/tree_plugin.h:310
+   rcu_note_context_switch+0x2a0/0x4d0
+   Sep 17 13:02:43 localhost kernel: [   97.342414] Modules linked in:
+   ec_generic(O) ec_master(O) spidev nls_iso8859_1 cmdlinepart
+   intel_spi_platform intel_spi spi_nor mtd spi_pxa2xx_platform joydev
+    intel_rapl intel_powerclamp coretemp crc32_pclmul snd_hda_codec_hdmi
+   pcbc aesni_intel aes_i586 crypto_simd cryptd intel_cstate
+   intel_rapl_perf i2c_i801 lpc_ich pcspkr idma64 virt_dma intel_lpss_
+   pci intel_lpss input_leds mac_hid i915 video snd_hda_intel
+   drm_kms_helper snd_hda_codec snd_hda_core snd_hwdep snd_pcm
+   hid_multitouch drm mei_me snd_timer fb_sys_fops syscopyarea sysfillrect
+   snd
+   mei sysimgblt soundcore shpchp sch_fq_codel nfsd autofs4
+   Sep 17 13:02:43 localhost kernel: [   97.342470] CPU: 0 PID: 530 Comm:
+   TestTask Tainted: G           O    4.14.71-rt44 #1
+   Sep 17 13:02:43 localhost kernel: [   97.342472] task: f3347300
+   task.stack: f32ea000
+   Sep 17 13:02:43 localhost kernel: [   97.342476] EIP:
+   rcu_note_context_switch+0x2a0/0x4d0
+   Sep 17 13:02:43 localhost kernel: [   97.342478] EFLAGS: 00010002 CPU:
+   0
+   Sep 17 13:02:43 localhost kernel: [   97.342480] EAX: 00000001 EBX:
+   00000000 ECX: 00000001 EDX: 00000000
+   Sep 17 13:02:43 localhost kernel: [   97.342482] ESI: 00000000 EDI:
+   f3347300 EBP: f32ebeec ESP: f32ebed0
+   Sep 17 13:02:43 localhost kernel: [   97.342485]  DS: 007b ES: 007b FS:
+   00d8 GS: 00e0 SS: 0068
+   Sep 17 13:02:43 localhost kernel: [   97.342487] CR0: 80050033 CR2:
+   06338490 CR3: 332d4000 CR4: 003406d0
+   Sep 17 13:02:43 localhost kernel: [   97.342489] Call Trace:
+   Sep 17 13:02:43 localhost kernel: [   97.342501]  ?
+   unpin_current_cpu+0x53/0x80
+   Sep 17 13:02:43 localhost kernel: [   97.342507]  __schedule+0x85/0x700
+   Sep 17 13:02:43 localhost kernel: [   97.342511]  ?
+   _raw_spin_unlock_irqrestore+0x17/0x50
+   Sep 17 13:02:43 localhost kernel: [   97.342514]  ?
+   rt_spin_unlock+0x24/0x50
+   Sep 17 13:02:43 localhost kernel: [   97.342517]  schedule+0x41/0xe0
+   Sep 17 13:02:43 localhost kernel: [   97.342521]
+   hrtimer_wait_for_timer+0x5d/0x90
+   Sep 17 13:02:43 localhost kernel: [   97.342525]  ?
+   wait_woken+0x70/0x70
+   Sep 17 13:02:43 localhost kernel: [   97.342530]
+   timer_wait_for_callback+0x40/0x50
+   Sep 17 13:02:43 localhost kernel: [   97.342533]
+   SyS_timer_delete+0x6b/0x140
+   Sep 17 13:02:43 localhost kernel: [   97.342538]
+   do_int80_syscall_32+0x6b/0xf0
+   Sep 17 13:02:43 localhost kernel: [   97.342542]
+   entry_INT80_32+0x31/0x31
+   Sep 17 13:02:43 localhost kernel: [   97.342545] EIP: 0xb22c68d0
+   Sep 17 13:02:43 localhost kernel: [   97.342546] EFLAGS: 00000282 CPU:
+   0
+   Sep 17 13:02:43 localhost kernel: [   97.342548] EAX: ffffffda EBX:
+   00000002 ECX: 00000000 EDX: b1d00480
+   Sep 17 13:02:43 localhost kernel: [   97.342550] ESI: b1d005e0 EDI:
+   b22cc000 EBP: b1fc7318 ESP: b1fc72b0
+   Sep 17 13:02:43 localhost kernel: [   97.342552]  DS: 007b ES: 007b FS:
+   0000 GS: 0033 SS: 007b
+   Sep 17 13:02:43 localhost kernel: [   97.342556] Code: c3 83 e8 01 39
+   c2 0f 85 27 02 00 00 83 f9 0f 8d 97 f8 02 00 00 0f 87 78 01 00 00 8b 04
+   8d f8 52 51 c3 e9 a4 9b 83 00 8d 74 26 00 <0f> 0b 80
+   bf f4 02 00 00 00 0f 85 a6 fd ff ff e9 1c ff ff ff 8d
+   Sep 17 13:02:43 localhost kernel: [   97.342600] ---[ end trace
+   0000000000000002 ]---
+   The issue can be reproduced with the following simple program
+   ///////////////////////////////////////////////////////////////////////
+   ////////
+   // Test application
+   ///////////////////////////////////////////////////////////////////////
+   ////////
+   #include <stdio.h>
+   #include <unistd.h>             // usleep
+   #include <alchemy/task.h>
+   #define CPU_AFFINITY_DEFAULT 0
+   #define MAIN_TASK_NAME  "MainTask"
+   #define MAIN_TASK_PRIO  0
+   #define MAIN_TASK_MODE  0
+   #define TESTTASK_NAME          "TestTask"
+   #define TESTTASK_PRIO          10
+   #define TESTTASK_MODE          0
+   #define TESTTASK_STACKSIZE     0x100000l    // 1 MB
+   #define TESTTASK_PERIOD_NS     (5* 1000000)
+   typedef struct {
+       RT_TASK TaskDescr;
+       int nEndTask;
+       int Period_ns;
+   } TESTTASK_CONTEXT;
+   RT_TASK    g_MainTask;
+   int g_nRun=1;
+   void TestTask(void *pData) {
+       TESTTASK_CONTEXT *pCtx = (TESTTASK_CONTEXT *)pData;
+       unsigned long overrun;
+       int nErr = 0;
+       printf("TestTask starting...\n");
+       nErr = rt_task_set_periodic(NULL, TM_NOW,
+   rt_timer_ns2ticks(pCtx->Period_ns));
+       while (!pCtx->nEndTask) {
+           rt_task_wait_period(&overrun);
+       }
+       printf("TestTask terminating...\n");
+   }
+   int StartTestTask(TESTTASK_CONTEXT* pCtx)
+   {
+       printf("Starting TestTask...\n");
 
->   	} else if (ts->tcp_state == TCP_CLOSE_WAIT) {
->   		/* Send FIN in CLOSE_WAIT */
->   		send_cmd.ts = ts;
-> @@ -1394,7 +1416,10 @@ static void rt_tcp_close(struct rtdm_fd *fd)
->   		/* result is ignored */
-> 
->   		/* Give the peer some time to reply to our FIN. */
-> -		msleep(1000);
-> +		ret = down_timeout(&ts->close_sem, msecs_to_jiffies(1000));
-> +		if (ret)
-> +			rtdm_printk("rttcp: waiting for FIN-ACK handshake returned %d\n",
-> +				    ret);
->   	} else {
->   		/*
->   	  rt_tcp_socket_validate() has not been called at all,
-> --
-> 2.20.1
-> 
+       int err;
+       pCtx->nEndTask=0;
+       pCtx->Period_ns=TESTTASK_PERIOD_NS;
+       err = rt_task_spawn(&pCtx->TaskDescr, TESTTASK_NAME,
+   TESTTASK_STACKSIZE, TESTTASK_PRIO, T_JOINABLE, TestTask, pCtx);
+       if (err) {
+           printf("Error in rt_task_spawn_() \n");
+           return err;
+       }
+       return 0;
+   }
+   void StopTestTask(TESTTASK_CONTEXT* pCtx){
+       printf("Stopping TestTask...\n");
+       pCtx->nEndTask=1;
 
-Jan
+       RT_TASK_INFO ti;
+       if (0 == rt_task_inquire(&pCtx->TaskDescr, &ti) ) {
+           rt_task_join(&pCtx->TaskDescr);
+       }
+   }
 
--- 
-Siemens AG, Corporate Technology, CT RDA IOT SES-DE
-Corporate Competence Center Embedded Linux
+   // Signalhandler für SIGTERM und SIGINT (Ctrl-C)
+   void TerminationHandler(int sig) {
+       if(sig==SIGTERM) {
+           printf("##### Termination Signal Handler(%d) #####\n",sig);
+       }
+       if(sig==SIGINT) {
+           printf("##### Signal Handler(%d) #####\n",sig);
+       }
+       g_nRun=0;
+       return;
+   }
+   int main(int argc, char* argv[]){
+       TESTTASK_CONTEXT ctxTestTask;
+       signal(SIGTERM, TerminationHandler);
+       signal(SIGINT, TerminationHandler);
+       StartTestTask(&ctxTestTask);
+       //--- Main Loop ---
+       while(g_nRun != 0 ) {
+           printf("main loop\n");
+           usleep(1000000); // sleep 1 sec
+       }
+       StopTestTask(&ctxTestTask);
+       printf("MainTask terminating\n");
+       return 0;
+   }
+   ///////////////////////////////////////////////////////////////////////
+   ////////
+   // End: Test application
+   ///////////////////////////////////////////////////////////////////////
+   ////////
 
+   Any ideas what could be the problem?
+
+
+   Thanks in advance
+   Jochen
