@@ -1,11 +1,15 @@
+Subject: Re: Static build of rtnet
+References: <VI1PR05MB59174B9E7E2B5EC8BED7DDA5F68C0@VI1PR05MB5917.eurprd05.prod.outlook.com>
+ <d86f04ac-dee5-b940-7569-cfff1e404589@siemens.com>
+ <VI1PR05MB59172B40F6360FFE5C2090B7F68F0@VI1PR05MB5917.eurprd05.prod.outlook.com>
 From: Jan Kiszka <jan.kiszka@siemens.com>
-Subject: Finalizing 3.1, finally
-Message-ID: <65e561a8-404a-6f71-106c-b05d6d8dc34d@siemens.com>
-Date: Fri, 13 Sep 2019 20:57:35 +0200
+Message-ID: <8a9e9fcb-185c-9f41-5a38-851a152300ed@siemens.com>
+Date: Tue, 17 Sep 2019 10:41:38 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8; format=flowed
+In-Reply-To: <VI1PR05MB59172B40F6360FFE5C2090B7F68F0@VI1PR05MB5917.eurprd05.prod.outlook.com>
+Content-Type: text/plain; charset="utf-8"; format="flowed"
 Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -14,17 +18,53 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Xenomai <xenomai@xenomai.org>, Philippe Gerum <rpm@xenomai.org>
+To: Lange Norbert <norbert.lange@andritz.com>, "Xenomai (xenomai@xenomai.org)" <xenomai@xenomai.org>
 
-Hi all,
+On 17.09.19 10:29, Lange Norbert wrote:
+> 
+> 
+>> -----Original Message-----
+>> From: Jan Kiszka <jan.kiszka@siemens.com>
+>> Sent: Dienstag, 17. September 2019 09:42
+>> To: Lange Norbert <norbert.lange@andritz.com>; Xenomai
+>> (xenomai@xenomai.org) <xenomai@xenomai.org>
+>> Subject: Re: Static build of rtnet
+>>
+>> NON-ANDRITZ SOURCE: BE CAUTIOUS WITH CONTENT, LINKS OR
+>> ATTACHMENTS.
+>>
+>>
+>> On 16.09.19 11:13, Lange Norbert via Xenomai wrote:
+>>> Hello,
+>>>
+>>> I havent tested this in a while, but building rtnet static will crash the kernel
+>> when this module initializes.
+>>> With the various fixes and cleanups in master/next (like rtdm_available) that
+>> might be worth a look?
+>>>
+>>> I would hope to build a static kernel one day, and so far there are 2
+>> roadblocks:
+>>>
+>>> -       rtnet (+ rtpacket) crashing when built statically
+>>>
+>>> -       symbol nameclashes with linux + rt drivers enabled (I could work on fixing
+>> that for rt_igb atleast)
+>>>
+>>
+>> Do you mean removing the "depends on m"?
+> 
+> Yes, ideally I would use a kernel without loadable modules, so kernel upgrades/changes don’t affect the rootfs (ideally read-only apart from few places).
+> 
+>> Possibly, that moves the
+>> initialization order in a way that causes troubles. I also just added another case
+>> that exploits the module [1], but that would be solvable. More critical is
+>> understanding the crashes.
+> 
+> I had a quick test removing the "depends on m" about a year ago, I brought this up now because it might be fitting with the recent cleanups.
 
-we are postponing this for too long now, so I'd like to make step towards a 
-feature freeze for 3.1, marked by an -rc1, and then a release. So, everyone 
-sitting on API- or even ABI-breaking changes should speak up now.
-
-Philippe, I'd like to get your update of the device teardown patch in. Then 
-there are the RTnet multicast changes in your queue. Anything else? Can I help 
-with lifting something on top of next? Or would it OK to move that to a 3.2 cycle?
+I don't think recent cleanups have changed the situation. Someone has to sit 
+down, analyze the crashes, resolve them, and propose all changes for upstream. 
+Also, startup scripts need to be adjusted to accept non-module RTnet.
 
 Jan
 
