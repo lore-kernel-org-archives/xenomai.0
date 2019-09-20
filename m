@@ -1,8 +1,7 @@
 From: "Q. Gylstorff" <Quirin.Gylstorff@siemens.com>
-Subject: [xenomai-images][PATCH 1/3] linux-4.19: Use SRCREV instead of
- branches or tags in SRC_URI
-Date: Fri, 20 Sep 2019 16:57:29 +0200
-Message-Id: <20190920145731.25281-2-Quirin.Gylstorff@siemens.com>
+Subject: [xenomai-images][PATCH 2/3] kas: update isar
+Date: Fri, 20 Sep 2019 16:57:30 +0200
+Message-Id: <20190920145731.25281-3-Quirin.Gylstorff@siemens.com>
 In-Reply-To: <20190920145731.25281-1-Quirin.Gylstorff@siemens.com>
 References: <20190920145731.25281-1-Quirin.Gylstorff@siemens.com>
 MIME-Version: 1.0
@@ -19,43 +18,38 @@ To: xenomai@xenomai.org
 
 From: Quirin Gylstorff <quirin.gylstorff@siemens.com>
 
-TO switch to new commits select the ipipe-kernel version by
-with the SRCREV instead SRC_URI.
+Update isar to current next.
+Add mandatory sshd-regen-keys.
 
 Signed-off-by: Quirin Gylstorff <quirin.gylstorff@siemens.com>
 ---
- recipes-kernel/linux/linux-xenomai_4.19.bb | 16 +++++++++-------
- 1 file changed, 9 insertions(+), 7 deletions(-)
+ kas.yml                           | 2 +-
+ recipes-core/images/demo-image.bb | 2 +-
+ 2 files changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/recipes-kernel/linux/linux-xenomai_4.19.bb b/recipes-kernel/linux/linux-xenomai_4.19.bb
-index 5137319..1607c58 100644
---- a/recipes-kernel/linux/linux-xenomai_4.19.bb
-+++ b/recipes-kernel/linux/linux-xenomai_4.19.bb
-@@ -11,15 +11,17 @@
+diff --git a/kas.yml b/kas.yml
+index a4d12c2..06b59ac 100644
+--- a/kas.yml
++++ b/kas.yml
+@@ -20,7 +20,7 @@ repos:
  
- require recipes-kernel/linux/linux-xenomai.inc
+   isar:
+     url: https://github.com/ilbers/isar.git
+-    refspec: 59c7dd2b8b3172d53de1c7a39fbd49751193559a
++    refspec: a5d575a15285b7f66efbf3e2409a7f65d25ff15e
+     layers:
+       meta:
  
--SRC_URI_append_amd64 = " git://gitlab.denx.de/Xenomai/ipipe-x86.git;protocol=https;branch=ipipe-x86-4.19.y"
--SRCREV_amd64 = "f83bda3e0785ae2e0ea8ad530bc903d2b420c2c7"
--PV_amd64 = "4.19.66+"
-+SRC_URI_append_amd64 = " git://gitlab.denx.de/Xenomai/ipipe-x86.git;protocol=https;nobranch=1"
-+SRCREV_amd64 ?= "f83bda3e0785ae2e0ea8ad530bc903d2b420c2c7"
-+PV_amd64 ?= "4.19.66+"
+diff --git a/recipes-core/images/demo-image.bb b/recipes-core/images/demo-image.bb
+index d01142b..df849f2 100644
+--- a/recipes-core/images/demo-image.bb
++++ b/recipes-core/images/demo-image.bb
+@@ -21,4 +21,4 @@ IMAGE_PREINSTALL += " \
+     gdb lsb-release"
  
--SRC_URI_append_arm64 = " git://gitlab.denx.de/Xenomai/ipipe-arm64.git;protocol=https;nobranch=1;tag=ipipe-core-4.19.55-arm64-2"
--PV_arm64 = "4.19.55+"
-+SRC_URI_append_arm64 = " git://gitlab.denx.de/Xenomai/ipipe-arm64.git;protocol=https;nobranch=1"
-+SRCREV_arm64 ?= "ipipe-core-4.19.55-arm64-2"
-+PV_arm64 ?= "4.19.55+"
- 
- 
--SRC_URI_append_armhf = " git://gitlab.denx.de/Xenomai/ipipe-arm.git;protocol=https;nobranch=1;tag=ipipe-core-4.19.55-arm-3"
--PV_armhf = "4.19.55+"
-+SRC_URI_append_armhf = " git://gitlab.denx.de/Xenomai/ipipe-arm.git;protocol=https;nobranch=1"
-+SRCREV_armhf ?= "ipipe-core-4.19.55-arm-3"
-+PV_armhf ?= "4.19.55+"
- 
- S = "${WORKDIR}/git"
+ IMAGE_INSTALL += "xenomai-runtime xenomai-runtime-dbgsym libxenomai1-dbgsym"
+-IMAGE_INSTALL += "customizations expand-on-first-boot"
++IMAGE_INSTALL += "customizations sshd-regen-keys expand-on-first-boot"
 -- 
 2.20.1
 
