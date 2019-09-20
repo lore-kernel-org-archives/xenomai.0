@@ -1,14 +1,13 @@
-Subject: Re: [xenomai-images][PATCH] ci: use script to install lavacli.
-References: <20190920084629.10936-1-Quirin.Gylstorff@siemens.com>
- <e49e2fb1-9c63-36d5-32ef-51a4deab4ac0@siemens.com>
-From: Quirin Gylstorff <quirin.gylstorff@siemens.com>
-Message-ID: <7e30afb1-f980-6421-c7f5-6d1aaf02d869@siemens.com>
-Date: Fri, 20 Sep 2019 16:05:37 +0200
 MIME-Version: 1.0
-In-Reply-To: <e49e2fb1-9c63-36d5-32ef-51a4deab4ac0@siemens.com>
-Content-Type: text/plain; charset="utf-8"; format="flowed"
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+References: <CAFc1U0sBsAvi3Spz6+9ExCr1gpkB81BTjVC31G84WKyfbwPBmg@mail.gmail.com>
+ <15646031-7d6c-2e9b-2ed7-0cee06a2d149@siemens.com>
+In-Reply-To: <15646031-7d6c-2e9b-2ed7-0cee06a2d149@siemens.com>
+From: Pierre FICHEUX <pierre.ficheux@smile.fr>
+Date: Fri, 20 Sep 2019 16:23:43 +0200
+Message-ID: <CAFc1U0t6ggrybDhz1BpHNXq5iJC9nemDL4cxv+eqswyzC3zoJw@mail.gmail.com>
+Subject: Re: Problem with _rt / _nrt functions in Xeno 3
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,146 +16,126 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jan Kiszka <jan.kiszka@siemens.com>, xenomai@xenomai.org
+To: Jan Kiszka <jan.kiszka@siemens.com>
+Cc: xenomai@xenomai.org
 
+Thx for the answer bu I don't understand the first sentence (because of my
+bad english :))
 
+What dou you mean with "Xenomai 3 prefers the RT patch of a RTDM callback
+over the NRT if the caller is
+a real-time task." ? What is a "patch of RTDM callback" ??
 
-On 9/20/19 3:56 PM, Jan Kiszka wrote:
-> On 20.09.19 10:46, Q. Gylstorff wrote:
->> From: Quirin Gylstorff <quirin.gylstorff@siemens.com>
->>
->> lavacli is not part of the used image and need to be installed.
->> Due to changes in the lavacli dependencies it is not possible
->> to connect to the master installed via apt, therefore use
->> the pip3 version in case of Debian stretch. If Image release
->> is Debian 10 or newer use apt else use pip3.
->>
->> This patch fixes a regression after the kasproject
->> downgraded the docker base image from Debian 10 to Debian 9.
->>
->> Signed-off-by: Quirin Gylstorff <quirin.gylstorff@siemens.com>
->> ---
->>   .gitlab-ci.yml             | 14 ++++++++++----
->>   scripts/install-lavacli.sh | 21 +++++++++++++++++++++
->>   2 files changed, 31 insertions(+), 4 deletions(-)
->>   create mode 100755 scripts/install-lavacli.sh
->>
->> diff --git a/.gitlab-ci.yml b/.gitlab-ci.yml
->> index 0e1d21a..9bb8b1a 100644
->> --- a/.gitlab-ci.yml
->> +++ b/.gitlab-ci.yml
->> @@ -25,8 +25,6 @@ default:
->>   # for the test infrastructure
->>   .add-lava-ssh-config: &lava-ssh-key
->>     before_script:
->> -    - sudo apt update
->> -    - sudo apt install lavacli -y
->>       - mkdir -p -m=700 ~/.ssh
->>       - echo "$LAVA_UPLOAD_KEY" | tr -d '\r' > ~/.ssh/id_rsa && chmod 
->> 600 ~/.ssh/id_rsa
->>       - echo "ProxyCommand socat - PROXY:$(echo $https_proxy | sed 
->> 's|.*://\([^:]*\).*|\1|'):%h:%p,proxyport=$(echo $https_proxy | sed 
->> 's|.*:\([0-9]*\)$|\1|')" >> ~/.ssh/config && chmod 600 ~/.ssh/config
->> @@ -43,13 +41,15 @@ lava-test:qemu-amd64:
->>     <<: *lava-ssh-key
->>     stage: lava-test
->>     script:
->> -     - scripts/run-lava-tests.sh qemu-amd64
->> +    - scripts/install-lavacli.sh
->> +    - scripts/run-lava-tests.sh qemu-amd64
->>     needs: [ "build:qemu-amd64" ]
->>     only:
->>       variables:
->>         - $LAVA_USER
->>   build:qemu-armhf:
->> +  <<: *lava-ssh-key
->>     stage: build
->>     script:
->>       - kas build kas.yml:board-qemu-armhf.yml
->> @@ -59,6 +59,7 @@ lava-test:qemu-armhf:
->>     <<: *lava-ssh-key
->>     stage: lava-test
->>     script:
->> +    - scripts/install-lavacli.sh
->>       - scripts/run-lava-tests.sh qemu-armhf
->>     needs: [ "build:qemu-armhf" ]
->>     only:
->> @@ -76,6 +77,7 @@ lava-test:qemu-arm64:
->>     <<: *lava-ssh-key
->>     stage: lava-test
->>     script:
->> +    - scripts/install-lavacli.sh
->>       - scripts/run-lava-tests.sh qemu-arm64
->>     needs: [ "build:qemu-arm64" ]
->>     only:
->> @@ -83,9 +85,11 @@ lava-test:qemu-arm64:
->>         - $LAVA_USER
->>   build:board-hikey:
->> +  <<: *lava-ssh-key
->>     stage: build
->>     script:
->> -    - kas build kas.yml:board-hikey.yml:opt-latest.yml
->> +    - kas build kas.yml:board-hikey.yml:opt-latest.yml:opt-lava-test.yml
->> +    - scripts/deploy_for_testing.sh hikey
->>   # hikey is currently not part of the testlab
->>   build:board-beaglebone:
->> @@ -99,6 +103,7 @@ lava-test:board-beaglebone:
->>     <<: *lava-ssh-key
->>     stage: lava-test
->>     script:
->> +    - scripts/install-lavacli.sh
->>       - scripts/run-lava-tests.sh beaglebone
->>     needs: [ "build:board-beaglebone" ]
->>     only:
->> @@ -116,6 +121,7 @@ lava-test:board-x86-64-efi:
->>     <<: *lava-ssh-key
->>     stage: lava-test
->>     script:
->> +    - scripts/install-lavacli.sh
->>       - scripts/run-lava-tests.sh x86-64
->>     needs: [ "build:board-x86-64-efi" ]
->>     only:
->> diff --git a/scripts/install-lavacli.sh b/scripts/install-lavacli.sh
->> new file mode 100755
->> index 0000000..66600f2
->> --- /dev/null
->> +++ b/scripts/install-lavacli.sh
->> @@ -0,0 +1,21 @@
->> +#!/bin/sh
->> +#
->> +# Xenomai Real-Time System
->> +#
->> +# Copyright (c) Siemens AG, 2019
->> +#
->> +# Authors:
->> +#  Quirin Gylstorff <quirin.gylstorff@siemens.com>
->> +#
->> +# SPDX-License-Identifier: MIT
->> +#
->> +# check if Debian 10 or later. If not use the pip version
->> +# of lavacli. The apt version from stretch-backports cannot communicate
->> +# with the lava master on Debian 10.
->> +os_version_id=$(sed -nr 's/VERSION_ID="([0-9]+)"/\1/p' /etc/os-release)
->> +if [ "${os_version_id}" -ge "10" ]; then
->> +    sudo apt update
->> +    sudo apt install -y lavacli
->> +else
->> +    sudo pip3 install lavacli
->> +fi
->>
-> 
-> Thanks, applied.
-> 
-> But what spoke against always using pip?
+Le ven. 20 sept. 2019 =C3=A0 15:45, Jan Kiszka <jan.kiszka@siemens.com> a =
+=C3=A9crit :
 
-Personal preferences, if there is a working Debian package i don't want
-to have something out of apt control.
-
-Also, I want to avoid having the same problem again in the future if 
-there is a change in the dependencies change of the packages from pip.
-
-> 
+> On 20.09.19 15:34, Pierre FICHEUX via Xenomai wrote:
+> > Hi all,
+> >
+> > I've been using RTDM _rt / _nrt functions for a long time with Xenomai
+> > 2.6.x but it seems not to work (the same way ?) with Xenomai 3 (tested
+> with
+> > several versions up to 3.0.8). Actually the _nrt driver function is nev=
+er
+> > called (_rt is always called...). I wrote a simple example for Xeno 2 a=
+nd
+> > Xeno 3 available here:
+> >
+> > https://github.com/pficheux/xenomai_examples.git
+> >
+> > Here is the test on Raspberry Pi 3 (Xeno 3).
+> >
+> > # insmod rtdm_test.ko
+> >
+> > # ./xenomai_test
+> >
+> > [   47.661245] RTDM open:.
+> >
+> > [   47.667473] ioctl: RT
+> >
+> > [   47.672674] ioctl: RT
+> >
+> > [   48.667479] ioctl: RT
+> >
+> > [   48.678078] ioctl: RT
+> >
+> > [   49.667463] ioctl: RT
+> >
+> > [   49.683076] ioctl: RT
+> >
+> > [   50.667463] ioctl: RT
+> >
+> > [   50.687868] ioctl: RT
+> >
+> >
+> > Of course it works fine with Xenomai 2 (on Pi B+) :
+> >
+> > # insmod rtdm_test.ko
+> >
+> > # ./xenomai_test
+> >
+> > [  753.614275] RTDM open
+> >
+> > [  753.632852] ioctl: RT
+> >
+> > [  753.636779] ioctl: NRT
+> >
+> > [  755.632839] ioctl: RT
+> >
+> > [  755.640252] ioctl: NRT
+> >
+> > [  756.632841] ioctl: RT
+> >
+> > [  757.632838] ioctl: RT
+> >
+> > [  757.643779] ioctl: NRT
+> >
+> > [  758.632836] ioctl: RT
+> >
+> > Thx by advance for your help
+> >
+>
+> Xenomai 3 prefers the RT patch of a RTDM callback over the NRT if the
+> caller is
+> a real-time task. Xenomai 2 had an adaptive behavior where the current
+> state of
+> the caller defined that. This is a problem I also ran into before and
+> proposed
+> to revert to the old behavior (in fact, we do that in one internal
+> deployment).
+> But there is also the point that preferring RT over NRT makes sense for
+> many
+> scenarios.
+>
+> Discussing this with Philippe back then on the list (I do not find the
+> reference
+> ATM), we came to the conclusion that the better answer is to allow the
+> driver to
+> declare which particular behavior a callback should have - in contrast to
+> doing
+> that in one way or the other at the top level, ie. on syscall entry of
+> ioctl
+> etc. But I do not have a design for that yet, and I didn't want to delay
+> the 3.1
+> release further to finish that first.
+>
+> What we could consider for 3.1 is adding a compile-time configurable to
+> re-enable the old behavior at syscall level when a user needs it. Then we
+> could
+> later on (3.2) push that properly to the driver level and remove the
+> control again.
+>
 > Jan
-> 
-Quirin
+>
+> --
+> Siemens AG, Corporate Technology, CT RDA IOT SES-DE
+> Corporate Competence Center Embedded Linux
+>
 
+
+--=20
+
+Pierre FICHEUX -/- CTO Smile ECS, France -\- pierre.ficheux@smile.fr
+                             http://www.smile.fr
+                             https://smile.eu/fr/offres/embarque-iot
+I would love to change the world, but they won't give me the source code
