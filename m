@@ -1,10 +1,10 @@
-Subject: Re: Problem with _rt / _nrt functions in Xeno 3
-References: <CAFc1U0sBsAvi3Spz6+9ExCr1gpkB81BTjVC31G84WKyfbwPBmg@mail.gmail.com>
+Subject: Re: [PATCH v2] net/tcp: Account for connection teardown handshake
+References: <20190920094948.21814-1-sebastian.smolorz@gmx.de>
 From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <15646031-7d6c-2e9b-2ed7-0cee06a2d149@siemens.com>
-Date: Fri, 20 Sep 2019 15:45:14 +0200
+Message-ID: <793820f8-c746-9dc4-447e-b4af9ea394a4@siemens.com>
+Date: Fri, 20 Sep 2019 15:54:12 +0200
 MIME-Version: 1.0
-In-Reply-To: <CAFc1U0sBsAvi3Spz6+9ExCr1gpkB81BTjVC31G84WKyfbwPBmg@mail.gmail.com>
+In-Reply-To: <20190920094948.21814-1-sebastian.smolorz@gmx.de>
 Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -16,88 +16,156 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Pierre FICHEUX <pierre.ficheux@smile.fr>, xenomai@xenomai.org
+To: Sebastian Smolorz <sebastian.smolorz@gmx.de>
+Cc: xenomai@xenomai.org
 
-On 20.09.19 15:34, Pierre FICHEUX via Xenomai wrote:
-> Hi all,
+On 20.09.19 11:49, Sebastian Smolorz wrote:
+> When closing a TCP connection a handshake procedure is executed between the
+> peers. The close routine of the rttcp driver did not participate in
+> detecting the end of this handshake but rather waited one second inside
+> a close call unconditionally. Especially when peers are directly connected
+> this is a waste of time which can hurt a lot in some situations.
 > 
-> I've been using RTDM _rt / _nrt functions for a long time with Xenomai
-> 2.6.x but it seems not to work (the same way ?) with Xenomai 3 (tested with
-> several versions up to 3.0.8). Actually the _nrt driver function is never
-> called (_rt is always called...). I wrote a simple example for Xeno 2 and
-> Xeno 3 available here:
+> This patch replaces the msleep(1000) call with waiting for a completion.
+> The maximum waiting time now can be configured via a module parameter.
+> The completion is done when the termination handshake has finished.
 > 
-> https://github.com/pficheux/xenomai_examples.git
+> Signed-off-by: Sebastian Smolorz <sebastian.smolorz@gmx.de>
+> ---
+>   kernel/drivers/net/stack/ipv4/tcp/tcp.c | 38 ++++++++++++++++++++++---
+>   1 file changed, 34 insertions(+), 4 deletions(-)
 > 
-> Here is the test on Raspberry Pi 3 (Xeno 3).
+> diff --git a/kernel/drivers/net/stack/ipv4/tcp/tcp.c b/kernel/drivers/net/stack/ipv4/tcp/tcp.c
+> index 54bafa80f..b8263e5d2 100644
+> --- a/kernel/drivers/net/stack/ipv4/tcp/tcp.c
+> +++ b/kernel/drivers/net/stack/ipv4/tcp/tcp.c
+> @@ -25,6 +25,7 @@
+>   #include <linux/err.h>
+>   #include <linux/module.h>
+>   #include <linux/delay.h>
+> +#include <linux/completion.h>
+>   #include <net/tcp_states.h>
+>   #include <net/tcp.h>
 > 
-> # insmod rtdm_test.ko
+> @@ -41,6 +42,11 @@
+>   #include <ipv4/af_inet.h>
+>   #include "timerwheel.h"
 > 
-> # ./xenomai_test
+> +static unsigned int close_timeout = 1000;
+> +module_param(close_timeout, uint, 0664);
+> +MODULE_PARM_DESC(close_timeout,
+> +		 "max time (ms) to wait during close for FIN-ACK handshake to complete, default 1000");
+> +
+>   #ifdef CONFIG_XENO_DRIVERS_NET_RTIPV4_TCP_ERROR_INJECTION
 > 
-> [   47.661245] RTDM open:.
+>   static unsigned int error_rate;
+> @@ -147,6 +153,9 @@ struct tcp_socket {
+>   	struct rtskb_queue retransmit_queue;
+>   	struct timerwheel_timer timer;
 > 
-> [   47.667473] ioctl: RT
+> +	struct completion fin_handshake;
+> +	rtdm_nrtsig_t close_sig;
+> +
+>   #ifdef CONFIG_XENO_DRIVERS_NET_RTIPV4_TCP_ERROR_INJECTION
+>   	unsigned int packet_counter;
+>   	unsigned int error_rate;
+> @@ -1042,6 +1051,7 @@ static void rt_tcp_rcv(struct rtskb *skb)
+>   			rt_tcp_send(ts, TCP_FLAG_ACK);
+>   			/* data receiving is not possible anymore */
+>   			rtdm_sem_destroy(&ts->sock.pending_sem);
+> +			rtdm_nrtsig_pend(&ts->close_sig);
+>   			goto feed;
+>   		} else if (ts->tcp_state == TCP_FIN_WAIT1) {
+>   			/* Send ACK */
+> @@ -1105,6 +1115,7 @@ static void rt_tcp_rcv(struct rtskb *skb)
+>   			ts->tcp_state = TCP_CLOSE;
+>   			rtdm_lock_put_irqrestore(&ts->socket_lock, context);
+>   			/* socket destruction will be done on close() */
+> +			rtdm_nrtsig_pend(&ts->close_sig);
+>   			goto drop;
+>   		} else if (ts->tcp_state == TCP_FIN_WAIT1) {
+>   			ts->tcp_state = TCP_FIN_WAIT2;
+> @@ -1119,6 +1130,7 @@ static void rt_tcp_rcv(struct rtskb *skb)
+>   			ts->tcp_state = TCP_TIME_WAIT;
+>   			rtdm_lock_put_irqrestore(&ts->socket_lock, context);
+>   			/* socket destruction will be done on close() */
+> +			rtdm_nrtsig_pend(&ts->close_sig);
+>   			goto feed;
+>   		}
+>   	}
+> @@ -1190,6 +1202,11 @@ static int rt_tcp_window_send(struct tcp_socket *ts, u32 data_len, u8 *data_ptr)
+>   	return ret;
+>   }
 > 
-> [   47.672674] ioctl: RT
+> +static void rt_tcp_close_signal_handler(rtdm_nrtsig_t *nrtsig, void *arg)
+> +{
+> +	complete_all((struct completion *)arg);
+> +}
+> +
+>   static int rt_tcp_socket_create(struct tcp_socket *ts)
+>   {
+>   	rtdm_lockctx_t context;
+> @@ -1226,6 +1243,10 @@ static int rt_tcp_socket_create(struct tcp_socket *ts)
+>   	timerwheel_init_timer(&ts->timer, rt_tcp_retransmit_handler, ts);
+>   	rtskb_queue_init(&ts->retransmit_queue);
 > 
-> [   48.667479] ioctl: RT
+> +	init_completion(&ts->fin_handshake);
+> +	rtdm_nrtsig_init(&ts->close_sig, rt_tcp_close_signal_handler,
+> +			 &ts->fin_handshake);
+> +
+>   #ifdef CONFIG_XENO_DRIVERS_NET_RTIPV4_TCP_ERROR_INJECTION
+>   	ts->packet_counter = counter_start;
+>   	ts->error_rate = error_rate;
+> @@ -1237,6 +1258,7 @@ static int rt_tcp_socket_create(struct tcp_socket *ts)
+>   	/* enforce maximum number of TCP sockets */
+>   	if (free_ports == 0) {
+>   		rtdm_lock_put_irqrestore(&tcp_socket_base_lock, context);
+> +		rtdm_nrtsig_destroy(&ts->close_sig);
+>   		return -EAGAIN;
+>   	}
+>   	free_ports--;
+> @@ -1338,6 +1360,8 @@ static void rt_tcp_socket_destruct(struct tcp_socket *ts)
 > 
-> [   48.678078] ioctl: RT
+>   	rtdm_event_destroy(&ts->conn_evt);
 > 
-> [   49.667463] ioctl: RT
+> +	rtdm_nrtsig_destroy(&ts->close_sig);
+> +
+>   	/* cleanup already collected fragments */
+>   	rt_ip_frag_invalidate_socket(sock);
 > 
-> [   49.683076] ioctl: RT
+> @@ -1379,8 +1403,11 @@ static void rt_tcp_close(struct rtdm_fd *fd)
+>   				   sizeof(send_cmd), NULL, NULL);
+>   		/* result is ignored */
 > 
-> [   50.667463] ioctl: RT
+> -		/* Give the peer some time to reply to our FIN. */
+> -		msleep(1000);
+> +		/* Give the peer some time to reply to our FIN.
+> +		   Since it is not relevant what exactly causes the wait
+> +		   function to return its result is ignored. */
+> +		wait_for_completion_interruptible_timeout(&ts->fin_handshake,
+> +					      msecs_to_jiffies(close_timeout));
+>   	} else if (ts->tcp_state == TCP_CLOSE_WAIT) {
+>   		/* Send FIN in CLOSE_WAIT */
+>   		send_cmd.ts = ts;
+> @@ -1393,8 +1420,11 @@ static void rt_tcp_close(struct rtdm_fd *fd)
+>   				   sizeof(send_cmd), NULL, NULL);
+>   		/* result is ignored */
 > 
-> [   50.687868] ioctl: RT
-> 
-> 
-> Of course it works fine with Xenomai 2 (on Pi B+) :
-> 
-> # insmod rtdm_test.ko
-> 
-> # ./xenomai_test
-> 
-> [  753.614275] RTDM open
-> 
-> [  753.632852] ioctl: RT
-> 
-> [  753.636779] ioctl: NRT
-> 
-> [  755.632839] ioctl: RT
-> 
-> [  755.640252] ioctl: NRT
-> 
-> [  756.632841] ioctl: RT
-> 
-> [  757.632838] ioctl: RT
-> 
-> [  757.643779] ioctl: NRT
-> 
-> [  758.632836] ioctl: RT
-> 
-> Thx by advance for your help
+> -		/* Give the peer some time to reply to our FIN. */
+> -		msleep(1000);
+> +		/* Give the peer some time to reply to our FIN.
+> +		   Since it is not relevant what exactly causes the wait
+> +		   function to return its result is ignored. */
+> +		wait_for_completion_interruptible_timeout(&ts->fin_handshake,
+> +					      msecs_to_jiffies(close_timeout));
+>   	} else {
+>   		/*
+>   	  rt_tcp_socket_validate() has not been called at all,
+> --
+> 2.20.1
 > 
 
-Xenomai 3 prefers the RT patch of a RTDM callback over the NRT if the caller is 
-a real-time task. Xenomai 2 had an adaptive behavior where the current state of 
-the caller defined that. This is a problem I also ran into before and proposed 
-to revert to the old behavior (in fact, we do that in one internal deployment). 
-But there is also the point that preferring RT over NRT makes sense for many 
-scenarios.
-
-Discussing this with Philippe back then on the list (I do not find the reference 
-ATM), we came to the conclusion that the better answer is to allow the driver to 
-declare which particular behavior a callback should have - in contrast to doing 
-that in one way or the other at the top level, ie. on syscall entry of ioctl 
-etc. But I do not have a design for that yet, and I didn't want to delay the 3.1 
-release further to finish that first.
-
-What we could consider for 3.1 is adding a compile-time configurable to 
-re-enable the old behavior at syscall level when a user needs it. Then we could 
-later on (3.2) push that properly to the driver level and remove the control again.
+Thanks, applied.
 
 Jan
 
