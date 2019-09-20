@@ -1,10 +1,10 @@
-Subject: Re: [PATCH v2] net/tcp: Account for connection teardown handshake
-References: <20190920094948.21814-1-sebastian.smolorz@gmx.de>
+Subject: Re: [xenomai-images][PATCH] ci: use script to install lavacli.
+References: <20190920084629.10936-1-Quirin.Gylstorff@siemens.com>
 From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <793820f8-c746-9dc4-447e-b4af9ea394a4@siemens.com>
-Date: Fri, 20 Sep 2019 15:54:12 +0200
+Message-ID: <e49e2fb1-9c63-36d5-32ef-51a4deab4ac0@siemens.com>
+Date: Fri, 20 Sep 2019 15:56:57 +0200
 MIME-Version: 1.0
-In-Reply-To: <20190920094948.21814-1-sebastian.smolorz@gmx.de>
+In-Reply-To: <20190920084629.10936-1-Quirin.Gylstorff@siemens.com>
 Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -16,156 +16,134 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Sebastian Smolorz <sebastian.smolorz@gmx.de>
-Cc: xenomai@xenomai.org
+To: "Q. Gylstorff" <Quirin.Gylstorff@siemens.com>, xenomai@xenomai.org
 
-On 20.09.19 11:49, Sebastian Smolorz wrote:
-> When closing a TCP connection a handshake procedure is executed between the
-> peers. The close routine of the rttcp driver did not participate in
-> detecting the end of this handshake but rather waited one second inside
-> a close call unconditionally. Especially when peers are directly connected
-> this is a waste of time which can hurt a lot in some situations.
+On 20.09.19 10:46, Q. Gylstorff wrote:
+> From: Quirin Gylstorff <quirin.gylstorff@siemens.com>
 > 
-> This patch replaces the msleep(1000) call with waiting for a completion.
-> The maximum waiting time now can be configured via a module parameter.
-> The completion is done when the termination handshake has finished.
+> lavacli is not part of the used image and need to be installed.
+> Due to changes in the lavacli dependencies it is not possible
+> to connect to the master installed via apt, therefore use
+> the pip3 version in case of Debian stretch. If Image release
+> is Debian 10 or newer use apt else use pip3.
 > 
-> Signed-off-by: Sebastian Smolorz <sebastian.smolorz@gmx.de>
+> This patch fixes a regression after the kasproject
+> downgraded the docker base image from Debian 10 to Debian 9.
+> 
+> Signed-off-by: Quirin Gylstorff <quirin.gylstorff@siemens.com>
 > ---
->   kernel/drivers/net/stack/ipv4/tcp/tcp.c | 38 ++++++++++++++++++++++---
->   1 file changed, 34 insertions(+), 4 deletions(-)
+>   .gitlab-ci.yml             | 14 ++++++++++----
+>   scripts/install-lavacli.sh | 21 +++++++++++++++++++++
+>   2 files changed, 31 insertions(+), 4 deletions(-)
+>   create mode 100755 scripts/install-lavacli.sh
 > 
-> diff --git a/kernel/drivers/net/stack/ipv4/tcp/tcp.c b/kernel/drivers/net/stack/ipv4/tcp/tcp.c
-> index 54bafa80f..b8263e5d2 100644
-> --- a/kernel/drivers/net/stack/ipv4/tcp/tcp.c
-> +++ b/kernel/drivers/net/stack/ipv4/tcp/tcp.c
-> @@ -25,6 +25,7 @@
->   #include <linux/err.h>
->   #include <linux/module.h>
->   #include <linux/delay.h>
-> +#include <linux/completion.h>
->   #include <net/tcp_states.h>
->   #include <net/tcp.h>
-> 
-> @@ -41,6 +42,11 @@
->   #include <ipv4/af_inet.h>
->   #include "timerwheel.h"
-> 
-> +static unsigned int close_timeout = 1000;
-> +module_param(close_timeout, uint, 0664);
-> +MODULE_PARM_DESC(close_timeout,
-> +		 "max time (ms) to wait during close for FIN-ACK handshake to complete, default 1000");
-> +
->   #ifdef CONFIG_XENO_DRIVERS_NET_RTIPV4_TCP_ERROR_INJECTION
-> 
->   static unsigned int error_rate;
-> @@ -147,6 +153,9 @@ struct tcp_socket {
->   	struct rtskb_queue retransmit_queue;
->   	struct timerwheel_timer timer;
-> 
-> +	struct completion fin_handshake;
-> +	rtdm_nrtsig_t close_sig;
-> +
->   #ifdef CONFIG_XENO_DRIVERS_NET_RTIPV4_TCP_ERROR_INJECTION
->   	unsigned int packet_counter;
->   	unsigned int error_rate;
-> @@ -1042,6 +1051,7 @@ static void rt_tcp_rcv(struct rtskb *skb)
->   			rt_tcp_send(ts, TCP_FLAG_ACK);
->   			/* data receiving is not possible anymore */
->   			rtdm_sem_destroy(&ts->sock.pending_sem);
-> +			rtdm_nrtsig_pend(&ts->close_sig);
->   			goto feed;
->   		} else if (ts->tcp_state == TCP_FIN_WAIT1) {
->   			/* Send ACK */
-> @@ -1105,6 +1115,7 @@ static void rt_tcp_rcv(struct rtskb *skb)
->   			ts->tcp_state = TCP_CLOSE;
->   			rtdm_lock_put_irqrestore(&ts->socket_lock, context);
->   			/* socket destruction will be done on close() */
-> +			rtdm_nrtsig_pend(&ts->close_sig);
->   			goto drop;
->   		} else if (ts->tcp_state == TCP_FIN_WAIT1) {
->   			ts->tcp_state = TCP_FIN_WAIT2;
-> @@ -1119,6 +1130,7 @@ static void rt_tcp_rcv(struct rtskb *skb)
->   			ts->tcp_state = TCP_TIME_WAIT;
->   			rtdm_lock_put_irqrestore(&ts->socket_lock, context);
->   			/* socket destruction will be done on close() */
-> +			rtdm_nrtsig_pend(&ts->close_sig);
->   			goto feed;
->   		}
->   	}
-> @@ -1190,6 +1202,11 @@ static int rt_tcp_window_send(struct tcp_socket *ts, u32 data_len, u8 *data_ptr)
->   	return ret;
->   }
-> 
-> +static void rt_tcp_close_signal_handler(rtdm_nrtsig_t *nrtsig, void *arg)
-> +{
-> +	complete_all((struct completion *)arg);
-> +}
-> +
->   static int rt_tcp_socket_create(struct tcp_socket *ts)
->   {
->   	rtdm_lockctx_t context;
-> @@ -1226,6 +1243,10 @@ static int rt_tcp_socket_create(struct tcp_socket *ts)
->   	timerwheel_init_timer(&ts->timer, rt_tcp_retransmit_handler, ts);
->   	rtskb_queue_init(&ts->retransmit_queue);
-> 
-> +	init_completion(&ts->fin_handshake);
-> +	rtdm_nrtsig_init(&ts->close_sig, rt_tcp_close_signal_handler,
-> +			 &ts->fin_handshake);
-> +
->   #ifdef CONFIG_XENO_DRIVERS_NET_RTIPV4_TCP_ERROR_INJECTION
->   	ts->packet_counter = counter_start;
->   	ts->error_rate = error_rate;
-> @@ -1237,6 +1258,7 @@ static int rt_tcp_socket_create(struct tcp_socket *ts)
->   	/* enforce maximum number of TCP sockets */
->   	if (free_ports == 0) {
->   		rtdm_lock_put_irqrestore(&tcp_socket_base_lock, context);
-> +		rtdm_nrtsig_destroy(&ts->close_sig);
->   		return -EAGAIN;
->   	}
->   	free_ports--;
-> @@ -1338,6 +1360,8 @@ static void rt_tcp_socket_destruct(struct tcp_socket *ts)
-> 
->   	rtdm_event_destroy(&ts->conn_evt);
-> 
-> +	rtdm_nrtsig_destroy(&ts->close_sig);
-> +
->   	/* cleanup already collected fragments */
->   	rt_ip_frag_invalidate_socket(sock);
-> 
-> @@ -1379,8 +1403,11 @@ static void rt_tcp_close(struct rtdm_fd *fd)
->   				   sizeof(send_cmd), NULL, NULL);
->   		/* result is ignored */
-> 
-> -		/* Give the peer some time to reply to our FIN. */
-> -		msleep(1000);
-> +		/* Give the peer some time to reply to our FIN.
-> +		   Since it is not relevant what exactly causes the wait
-> +		   function to return its result is ignored. */
-> +		wait_for_completion_interruptible_timeout(&ts->fin_handshake,
-> +					      msecs_to_jiffies(close_timeout));
->   	} else if (ts->tcp_state == TCP_CLOSE_WAIT) {
->   		/* Send FIN in CLOSE_WAIT */
->   		send_cmd.ts = ts;
-> @@ -1393,8 +1420,11 @@ static void rt_tcp_close(struct rtdm_fd *fd)
->   				   sizeof(send_cmd), NULL, NULL);
->   		/* result is ignored */
-> 
-> -		/* Give the peer some time to reply to our FIN. */
-> -		msleep(1000);
-> +		/* Give the peer some time to reply to our FIN.
-> +		   Since it is not relevant what exactly causes the wait
-> +		   function to return its result is ignored. */
-> +		wait_for_completion_interruptible_timeout(&ts->fin_handshake,
-> +					      msecs_to_jiffies(close_timeout));
->   	} else {
->   		/*
->   	  rt_tcp_socket_validate() has not been called at all,
-> --
-> 2.20.1
+> diff --git a/.gitlab-ci.yml b/.gitlab-ci.yml
+> index 0e1d21a..9bb8b1a 100644
+> --- a/.gitlab-ci.yml
+> +++ b/.gitlab-ci.yml
+> @@ -25,8 +25,6 @@ default:
+>   # for the test infrastructure
+>   .add-lava-ssh-config: &lava-ssh-key
+>     before_script:
+> -    - sudo apt update
+> -    - sudo apt install lavacli -y
+>       - mkdir -p -m=700 ~/.ssh
+>       - echo "$LAVA_UPLOAD_KEY" | tr -d '\r' > ~/.ssh/id_rsa && chmod 600 ~/.ssh/id_rsa
+>       - echo "ProxyCommand socat - PROXY:$(echo $https_proxy | sed 's|.*://\([^:]*\).*|\1|'):%h:%p,proxyport=$(echo $https_proxy | sed 's|.*:\([0-9]*\)$|\1|')" >> ~/.ssh/config && chmod 600 ~/.ssh/config
+> @@ -43,13 +41,15 @@ lava-test:qemu-amd64:
+>     <<: *lava-ssh-key
+>     stage: lava-test
+>     script:
+> -     - scripts/run-lava-tests.sh qemu-amd64
+> +    - scripts/install-lavacli.sh
+> +    - scripts/run-lava-tests.sh qemu-amd64
+>     needs: [ "build:qemu-amd64" ]
+>     only:
+>       variables:
+>         - $LAVA_USER
+>   
+>   build:qemu-armhf:
+> +  <<: *lava-ssh-key
+>     stage: build
+>     script:
+>       - kas build kas.yml:board-qemu-armhf.yml
+> @@ -59,6 +59,7 @@ lava-test:qemu-armhf:
+>     <<: *lava-ssh-key
+>     stage: lava-test
+>     script:
+> +    - scripts/install-lavacli.sh
+>       - scripts/run-lava-tests.sh qemu-armhf
+>     needs: [ "build:qemu-armhf" ]
+>     only:
+> @@ -76,6 +77,7 @@ lava-test:qemu-arm64:
+>     <<: *lava-ssh-key
+>     stage: lava-test
+>     script:
+> +    - scripts/install-lavacli.sh
+>       - scripts/run-lava-tests.sh qemu-arm64
+>     needs: [ "build:qemu-arm64" ]
+>     only:
+> @@ -83,9 +85,11 @@ lava-test:qemu-arm64:
+>         - $LAVA_USER
+>   
+>   build:board-hikey:
+> +  <<: *lava-ssh-key
+>     stage: build
+>     script:
+> -    - kas build kas.yml:board-hikey.yml:opt-latest.yml
+> +    - kas build kas.yml:board-hikey.yml:opt-latest.yml:opt-lava-test.yml
+> +    - scripts/deploy_for_testing.sh hikey
+>   # hikey is currently not part of the testlab
+>   
+>   build:board-beaglebone:
+> @@ -99,6 +103,7 @@ lava-test:board-beaglebone:
+>     <<: *lava-ssh-key
+>     stage: lava-test
+>     script:
+> +    - scripts/install-lavacli.sh
+>       - scripts/run-lava-tests.sh beaglebone
+>     needs: [ "build:board-beaglebone" ]
+>     only:
+> @@ -116,6 +121,7 @@ lava-test:board-x86-64-efi:
+>     <<: *lava-ssh-key
+>     stage: lava-test
+>     script:
+> +    - scripts/install-lavacli.sh
+>       - scripts/run-lava-tests.sh x86-64
+>     needs: [ "build:board-x86-64-efi" ]
+>     only:
+> diff --git a/scripts/install-lavacli.sh b/scripts/install-lavacli.sh
+> new file mode 100755
+> index 0000000..66600f2
+> --- /dev/null
+> +++ b/scripts/install-lavacli.sh
+> @@ -0,0 +1,21 @@
+> +#!/bin/sh
+> +#
+> +# Xenomai Real-Time System
+> +#
+> +# Copyright (c) Siemens AG, 2019
+> +#
+> +# Authors:
+> +#  Quirin Gylstorff <quirin.gylstorff@siemens.com>
+> +#
+> +# SPDX-License-Identifier: MIT
+> +#
+> +# check if Debian 10 or later. If not use the pip version
+> +# of lavacli. The apt version from stretch-backports cannot communicate
+> +# with the lava master on Debian 10.
+> +os_version_id=$(sed -nr 's/VERSION_ID="([0-9]+)"/\1/p' /etc/os-release)
+> +if [ "${os_version_id}" -ge "10" ]; then
+> +    sudo apt update
+> +    sudo apt install -y lavacli
+> +else
+> +    sudo pip3 install lavacli
+> +fi
 > 
 
 Thanks, applied.
+
+But what spoke against always using pip?
 
 Jan
 
