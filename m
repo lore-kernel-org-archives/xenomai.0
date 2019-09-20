@@ -1,11 +1,13 @@
-From: Lange Norbert <norbert.lange@andritz.com>
-Subject: Static build of rtnet
-Date: Mon, 16 Sep 2019 09:13:39 +0000
-Message-ID: <VI1PR05MB59174B9E7E2B5EC8BED7DDA5F68C0@VI1PR05MB5917.eurprd05.prod.outlook.com>
-Content-Language: en-US
+Subject: Re: Problem with _rt / _nrt functions in Xeno 3
+References: <CAFc1U0sBsAvi3Spz6+9ExCr1gpkB81BTjVC31G84WKyfbwPBmg@mail.gmail.com>
+From: Jan Kiszka <jan.kiszka@siemens.com>
+Message-ID: <15646031-7d6c-2e9b-2ed7-0cee06a2d149@siemens.com>
+Date: Fri, 20 Sep 2019 15:45:14 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
+In-Reply-To: <CAFc1U0sBsAvi3Spz6+9ExCr1gpkB81BTjVC31G84WKyfbwPBmg@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -14,53 +16,92 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "Xenomai (xenomai@xenomai.org)" <xenomai@xenomai.org>
+To: Pierre FICHEUX <pierre.ficheux@smile.fr>, xenomai@xenomai.org
 
-Hello,
+On 20.09.19 15:34, Pierre FICHEUX via Xenomai wrote:
+> Hi all,
+> 
+> I've been using RTDM _rt / _nrt functions for a long time with Xenomai
+> 2.6.x but it seems not to work (the same way ?) with Xenomai 3 (tested with
+> several versions up to 3.0.8). Actually the _nrt driver function is never
+> called (_rt is always called...). I wrote a simple example for Xeno 2 and
+> Xeno 3 available here:
+> 
+> https://github.com/pficheux/xenomai_examples.git
+> 
+> Here is the test on Raspberry Pi 3 (Xeno 3).
+> 
+> # insmod rtdm_test.ko
+> 
+> # ./xenomai_test
+> 
+> [   47.661245] RTDM open:.
+> 
+> [   47.667473] ioctl: RT
+> 
+> [   47.672674] ioctl: RT
+> 
+> [   48.667479] ioctl: RT
+> 
+> [   48.678078] ioctl: RT
+> 
+> [   49.667463] ioctl: RT
+> 
+> [   49.683076] ioctl: RT
+> 
+> [   50.667463] ioctl: RT
+> 
+> [   50.687868] ioctl: RT
+> 
+> 
+> Of course it works fine with Xenomai 2 (on Pi B+) :
+> 
+> # insmod rtdm_test.ko
+> 
+> # ./xenomai_test
+> 
+> [  753.614275] RTDM open
+> 
+> [  753.632852] ioctl: RT
+> 
+> [  753.636779] ioctl: NRT
+> 
+> [  755.632839] ioctl: RT
+> 
+> [  755.640252] ioctl: NRT
+> 
+> [  756.632841] ioctl: RT
+> 
+> [  757.632838] ioctl: RT
+> 
+> [  757.643779] ioctl: NRT
+> 
+> [  758.632836] ioctl: RT
+> 
+> Thx by advance for your help
+> 
 
-I havent tested this in a while, but building rtnet static will crash the k=
-ernel when this module initializes.
-With the various fixes and cleanups in master/next (like rtdm_available) th=
-at might be worth a look?
+Xenomai 3 prefers the RT patch of a RTDM callback over the NRT if the caller is 
+a real-time task. Xenomai 2 had an adaptive behavior where the current state of 
+the caller defined that. This is a problem I also ran into before and proposed 
+to revert to the old behavior (in fact, we do that in one internal deployment). 
+But there is also the point that preferring RT over NRT makes sense for many 
+scenarios.
 
-I would hope to build a static kernel one day, and so far there are 2 roadb=
-locks:
+Discussing this with Philippe back then on the list (I do not find the reference 
+ATM), we came to the conclusion that the better answer is to allow the driver to 
+declare which particular behavior a callback should have - in contrast to doing 
+that in one way or the other at the top level, ie. on syscall entry of ioctl 
+etc. But I do not have a design for that yet, and I didn't want to delay the 3.1 
+release further to finish that first.
 
--       rtnet (+ rtpacket) crashing when built statically
+What we could consider for 3.1 is adding a compile-time configurable to 
+re-enable the old behavior at syscall level when a user needs it. Then we could 
+later on (3.2) push that properly to the driver level and remove the control again.
 
--       symbol nameclashes with linux + rt drivers enabled (I could work on=
- fixing that for rt_igb atleast)
+Jan
 
+-- 
+Siemens AG, Corporate Technology, CT RDA IOT SES-DE
+Corporate Competence Center Embedded Linux
 
-
-Mit besten Gr=FC=DFen / Kind regards
-________________________________
-
-This message and any attachments are solely for the use of the intended rec=
-ipients. They may contain privileged and/or confidential information or oth=
-er information protected from disclosure. If you are not an intended recipi=
-ent, you are hereby notified that you received this email in error and that=
- any review, dissemination, distribution or copying of this email and any a=
-ttachment is strictly prohibited. If you have received this email in error,=
- please contact the sender and delete the message and any attachment from y=
-our system.
-
-ANDRITZ HYDRO GmbH
-
-
-Rechtsform/ Legal form: Gesellschaft mit beschr=E4nkter Haftung / Corporati=
-on
-
-Firmensitz/ Registered seat: Wien
-
-Firmenbuchgericht/ Court of registry: Handelsgericht Wien
-
-Firmenbuchnummer/ Company registration: FN 61833 g
-
-DVR: 0605077
-
-UID-Nr.: ATU14756806
-
-
-Thank You
-________________________________
