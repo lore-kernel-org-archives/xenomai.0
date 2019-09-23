@@ -1,9 +1,11 @@
+Subject: Re: [xenomai-images][PATCH 0/3] Latest Kernel
+References: <20190920145731.25281-1-Quirin.Gylstorff@siemens.com>
 From: Jan Kiszka <jan.kiszka@siemens.com>
-Subject: [PATCH] cobalt/drivers: Ensure bidirectional IOCTL migration
-Message-ID: <ecb53e23-857e-bde2-6ac1-2dcae1a22d7b@siemens.com>
-Date: Mon, 23 Sep 2019 16:01:30 +0200
+Message-ID: <21823c01-5bb0-8452-d22c-0d42e47739cd@siemens.com>
+Date: Mon, 23 Sep 2019 16:16:17 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+In-Reply-To: <20190920145731.25281-1-Quirin.Gylstorff@siemens.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
@@ -14,61 +16,41 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Xenomai <xenomai@xenomai.org>
+To: "Q. Gylstorff" <Quirin.Gylstorff@siemens.com>, xenomai@xenomai.org
 
-From: Jan Kiszka <jan.kiszka@siemens.com>
+On 20.09.19 16:57, Q. Gylstorff wrote:
+> From: Quirin Gylstorff <quirin.gylstorff@siemens.com>
+> 
+> This set updates isar and adds the feature to build the latest
+> available linux kernel with a selected xenomai version.
+> 
+> There some whitespace errors due to patch in patch.
+> 
+> Quirin Gylstorff (3):
+>    linux-4.19: Use SRCREV instead of branches or tags in SRC_URI
+>    kas: update isar
+>    ci: Add the option to build the latest kernel
+> 
+>   .gitlab-ci.yml                                |  13 +-
+>   kas.yml                                       |   6 +-
+>   opt-linux-latest.yml                          |  20 ++
+>   opt-latest.yml => opt-xenomai-next.yml        |   0
+>   ...inux-build-kernel-Allow-kernel-build.patch | 173 ++++++++++++++++++
+>   recipes-core/images/demo-image.bb             |   2 +-
+>   recipes-kernel/linux/linux-xenomai_4.19.bb    |  16 +-
+>   recipes-kernel/linux/linux-xenomai_latest.bb  |  24 +++
+>   8 files changed, 239 insertions(+), 15 deletions(-)
+>   create mode 100644 opt-linux-latest.yml
+>   rename opt-latest.yml => opt-xenomai-next.yml (100%)
+>   create mode 100644 patches/0001-recipes-kernel-linux-build-kernel-Allow-kernel-build.patch
+>   create mode 100644 recipes-kernel/linux/linux-xenomai_latest.bb
+> 
 
-Ensure that IOCTL switch-over is also prepared for the NRT-to-RT path.
-While we didn't need this in practice for the changed drivers, it's
-better to have this enabled in case driver developers derive from this
-pattern.
+Thanks, applied.
 
-Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
----
- kernel/drivers/autotune/autotune.c  | 2 +-
- kernel/drivers/testing/switchtest.c | 2 +-
- kernel/drivers/testing/timerbench.c | 2 +-
- 3 files changed, 3 insertions(+), 3 deletions(-)
+Jan
 
-diff --git a/kernel/drivers/autotune/autotune.c b/kernel/drivers/autotune/autotune.c
-index 469e628691..d9208f2a89 100644
---- a/kernel/drivers/autotune/autotune.c
-+++ b/kernel/drivers/autotune/autotune.c
-@@ -665,7 +665,7 @@ static int autotune_ioctl_nrt(struct rtdm_fd *fd, unsigned int request, void *ar
- 		tuner = &uthread_tuner.tuner;
- 		break;
- 	default:
--		return -EINVAL;
-+		return -ENOSYS;
- 	}
- 
- 	ret = rtdm_copy_from_user(fd, &setup, arg, sizeof(setup));
-diff --git a/kernel/drivers/testing/switchtest.c b/kernel/drivers/testing/switchtest.c
-index d955c2b65f..8224974e5c 100644
---- a/kernel/drivers/testing/switchtest.c
-+++ b/kernel/drivers/testing/switchtest.c
-@@ -667,7 +667,7 @@ static int rtswitch_ioctl_nrt(struct rtdm_fd *fd,
- 		return 0;
- 
- 	default:
--		return -ENOTTY;
-+		return -ENOSYS;
- 	}
- }
- 
-diff --git a/kernel/drivers/testing/timerbench.c b/kernel/drivers/testing/timerbench.c
-index 1b4c413b7e..8b91bae9b2 100644
---- a/kernel/drivers/testing/timerbench.c
-+++ b/kernel/drivers/testing/timerbench.c
-@@ -453,7 +453,7 @@ static int rt_tmbench_ioctl_nrt(struct rtdm_fd *fd,
- 		err = rt_tmbench_stop(ctx, arg);
- 		break;
- 	default:
--		err = -EINVAL;
-+		err = -ENOSYS;
- 	}
- 
- 	return err;
 -- 
-2.16.4
+Siemens AG, Corporate Technology, CT RDA IOT SES-DE
+Corporate Competence Center Embedded Linux
 
