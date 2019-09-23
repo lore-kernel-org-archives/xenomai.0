@@ -1,10 +1,10 @@
-Subject: Re: [xenomai-images][PATCH 0/3] Latest Kernel
-References: <20190920145731.25281-1-Quirin.Gylstorff@siemens.com>
+Subject: Re: [xenomai-images][PATCH] scripts/install_lavacli: install wheel
+References: <20190923133206.15377-1-Quirin.Gylstorff@siemens.com>
 From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <21823c01-5bb0-8452-d22c-0d42e47739cd@siemens.com>
-Date: Mon, 23 Sep 2019 16:16:17 +0200
+Message-ID: <8695de09-f30b-b1c0-2458-7abb5f640b27@siemens.com>
+Date: Mon, 23 Sep 2019 16:16:47 +0200
 MIME-Version: 1.0
-In-Reply-To: <20190920145731.25281-1-Quirin.Gylstorff@siemens.com>
+In-Reply-To: <20190923133206.15377-1-Quirin.Gylstorff@siemens.com>
 Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -18,35 +18,31 @@ List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: "Q. Gylstorff" <Quirin.Gylstorff@siemens.com>, xenomai@xenomai.org
 
-On 20.09.19 16:57, Q. Gylstorff wrote:
+On 23.09.19 15:32, Q. Gylstorff wrote:
 > From: Quirin Gylstorff <quirin.gylstorff@siemens.com>
 > 
-> This set updates isar and adds the feature to build the latest
-> available linux kernel with a selected xenomai version.
+> Avoid unnecessary error messages during the installation of
+> lavacli by installing wheel.
 > 
-> There some whitespace errors due to patch in patch.
+> Signed-off-by: Quirin Gylstorff <quirin.gylstorff@siemens.com>
+> ---
+>   scripts/install-lavacli.sh | 1 +
+>   1 file changed, 1 insertion(+)
 > 
-> Quirin Gylstorff (3):
->    linux-4.19: Use SRCREV instead of branches or tags in SRC_URI
->    kas: update isar
->    ci: Add the option to build the latest kernel
-> 
->   .gitlab-ci.yml                                |  13 +-
->   kas.yml                                       |   6 +-
->   opt-linux-latest.yml                          |  20 ++
->   opt-latest.yml => opt-xenomai-next.yml        |   0
->   ...inux-build-kernel-Allow-kernel-build.patch | 173 ++++++++++++++++++
->   recipes-core/images/demo-image.bb             |   2 +-
->   recipes-kernel/linux/linux-xenomai_4.19.bb    |  16 +-
->   recipes-kernel/linux/linux-xenomai_latest.bb  |  24 +++
->   8 files changed, 239 insertions(+), 15 deletions(-)
->   create mode 100644 opt-linux-latest.yml
->   rename opt-latest.yml => opt-xenomai-next.yml (100%)
->   create mode 100644 patches/0001-recipes-kernel-linux-build-kernel-Allow-kernel-build.patch
->   create mode 100644 recipes-kernel/linux/linux-xenomai_latest.bb
+> diff --git a/scripts/install-lavacli.sh b/scripts/install-lavacli.sh
+> index 66600f2..f31a394 100755
+> --- a/scripts/install-lavacli.sh
+> +++ b/scripts/install-lavacli.sh
+> @@ -17,5 +17,6 @@ if [ "${os_version_id}" -ge "10" ]; then
+>       sudo apt update
+>       sudo apt install -y lavacli
+>   else
+> +    sudo pip3 install wheel
+>       sudo pip3 install lavacli
+>   fi
 > 
 
-Thanks, applied.
+Also applied to next. Now waiting for the test results...
 
 Jan
 
