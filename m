@@ -1,8 +1,10 @@
 From: "Q. Gylstorff" <Quirin.Gylstorff@siemens.com>
-Subject: [xenomai-images][PATCH] scripts/run-lava-tests: Wait until ssh
+Subject: [xenomai-images][PATCH v2] scripts/run-lava-tests: Wait until ssh
  connection is open
-Date: Tue, 24 Sep 2019 13:54:16 +0200
-Message-Id: <20190924115416.26379-1-Quirin.Gylstorff@siemens.com>
+Date: Tue, 24 Sep 2019 15:16:17 +0200
+Message-Id: <20190924131617.3011-1-Quirin.Gylstorff@siemens.com>
+In-Reply-To: <20190924115416.26379-1-Quirin.Gylstorff@siemens.com>
+References: <20190924115416.26379-1-Quirin.Gylstorff@siemens.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
@@ -23,31 +25,41 @@ wait until the port is available.
 
 Signed-off-by: Quirin Gylstorff <quirin.gylstorff@siemens.com>
 ---
- scripts/run-lava-tests.sh | 11 +++++++++--
- 1 file changed, 9 insertions(+), 2 deletions(-)
+Changes:
+V2:
+- Add Timeout
+ scripts/run-lava-tests.sh | 19 +++++++++++++++----
+ 1 file changed, 15 insertions(+), 4 deletions(-)
 
 diff --git a/scripts/run-lava-tests.sh b/scripts/run-lava-tests.sh
-index b288edf..bd185f8 100755
+index b288edf..8f49917 100755
 --- a/scripts/run-lava-tests.sh
 +++ b/scripts/run-lava-tests.sh
-@@ -14,11 +14,18 @@ TARGET=$1
+@@ -13,12 +13,23 @@ set -e
+ TARGET=$1
  
  LAVA_MASTER="${LAVA_USER}@${LAVA_HOST}"
- 
+-
 +LAVA_MASTER_PORT=28080
  # open connection for ssh port forwarding
 -ssh -N  -p ${LAVA_PORT} -o 'LocalForward localhost:28080 localhost:80' ${LAVA_MASTER} &
+-
 +ssh -N  -p ${LAVA_PORT} -o 'LocalForward localhost:'${LAVA_MASTER_PORT}' localhost:80' ${LAVA_MASTER} &
-+
 +# wait for connection
-+while [ -n $(ss -tulw | grep -q "${LAVA_MASTER_PORT}") ]
++INTERVAL=1
++TIMEOUT=60
++until ss -tulw | grep -q "${LAVA_MASTER_PORT}"
 +do
-+    sleep 1
++    if [ ${TIMEOUT} -le 0 ]; then
++        echo "could not open connection to LAVA Master"
++        exit 1
++    fi
++    sleep ${INTERVAL}
++    TIMEOUT=$(expr ${TIMEOUT} - ${INTERVAL})
 +done
- 
  # connect to lava master
 -lavacli identities add --token ${LAVA_TOKEN} --uri http://localhost:28080 --username siemens default
-+lavacli identities add --token ${LAVA_TOKEN} --uri http://localhost:${LAVA_MASTER_PORT} --username siemens default
++lavacli identities add --token ${LAVA_TOKEN} --uri http://localhost:${LAVA_MASTER_PORT} --username ${LAVA_ACCOUNT} default
  
  test_id=$(lavacli jobs submit tests/jobs/xenomai-${TARGET}.yml)
  lavacli jobs logs ${test_id}
