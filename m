@@ -1,13 +1,9 @@
-Subject: Re: [PATCH] Dump ABI revisions
-References: <e6218fb4-0419-0a45-8220-a006ffbc06e2@siemens.com>
-From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <22a4dd8a-df2a-f453-1a90-6540933bf7d4@siemens.com>
-Date: Wed, 25 Sep 2019 11:16:26 +0200
+From: "Q. Gylstorff" <Quirin.Gylstorff@siemens.com>
+Subject: [PATCH] testsuite/xeno-test: add --vm option
+Date: Wed, 25 Sep 2019 13:03:29 +0200
+Message-Id: <20190925110329.28708-1-Quirin.Gylstorff@siemens.com>
 MIME-Version: 1.0
-In-Reply-To: <e6218fb4-0419-0a45-8220-a006ffbc06e2@siemens.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,66 +12,63 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jan Kiszka <jan.kiszka@siemens.com>, Xenomai <xenomai@xenomai.org>
+To: xenomai@xenomai.org
 
-Well, not "Dump", rather "Bump"...
+From: Quirin Gylstorff <quirin.gylstorff@siemens.com>
 
-On 25.09.19 11:13, Jan Kiszka via Xenomai wrote:
-> From: Jan Kiszka <jan.kiszka@siemens.com>
-> 
-> We've changed ABI in several details since 3.0.x, so we need to update
-> the ABI revision as well.
-> 
-> Reported-by: Lange Norbert <norbert.lange@andritz.com>
-> Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
-> ---
->   kernel/cobalt/arch/arm/include/asm/xenomai/uapi/features.h     | 2 +-
->   kernel/cobalt/arch/powerpc/include/asm/xenomai/uapi/features.h | 2 +-
->   kernel/cobalt/arch/x86/include/asm/xenomai/uapi/features.h     | 2 +-
->   3 files changed, 3 insertions(+), 3 deletions(-)
-> 
-> diff --git a/kernel/cobalt/arch/arm/include/asm/xenomai/uapi/features.h b/kernel/cobalt/arch/arm/include/asm/xenomai/uapi/features.h
-> index 44bbbbdb08..c3c777cb93 100644
-> --- a/kernel/cobalt/arch/arm/include/asm/xenomai/uapi/features.h
-> +++ b/kernel/cobalt/arch/arm/include/asm/xenomai/uapi/features.h
-> @@ -22,7 +22,7 @@
->   #define _COBALT_ARM_ASM_UAPI_FEATURES_H
->   
->   /* The ABI revision level we use on this arch. */
-> -#define XENOMAI_ABI_REV   16UL
-> +#define XENOMAI_ABI_REV   17UL
->   
->   #define XENOMAI_FEAT_DEP (__xn_feat_generic_mask)
->   
-> diff --git a/kernel/cobalt/arch/powerpc/include/asm/xenomai/uapi/features.h b/kernel/cobalt/arch/powerpc/include/asm/xenomai/uapi/features.h
-> index cbc64f27a4..f6e67d884b 100644
-> --- a/kernel/cobalt/arch/powerpc/include/asm/xenomai/uapi/features.h
-> +++ b/kernel/cobalt/arch/powerpc/include/asm/xenomai/uapi/features.h
-> @@ -19,7 +19,7 @@
->   #define _COBALT_POWERPC_ASM_UAPI_FEATURES_H
->   
->   /* The ABI revision level we use on this arch. */
-> -#define XENOMAI_ABI_REV   16UL
-> +#define XENOMAI_ABI_REV   17UL
->   
->   #define XENOMAI_FEAT_DEP  __xn_feat_generic_mask
->   
-> diff --git a/kernel/cobalt/arch/x86/include/asm/xenomai/uapi/features.h b/kernel/cobalt/arch/x86/include/asm/xenomai/uapi/features.h
-> index 0a06d128c9..67c7625f86 100644
-> --- a/kernel/cobalt/arch/x86/include/asm/xenomai/uapi/features.h
-> +++ b/kernel/cobalt/arch/x86/include/asm/xenomai/uapi/features.h
-> @@ -19,7 +19,7 @@
->   #define _COBALT_X86_ASM_UAPI_FEATURES_H
->   
->   /* The ABI revision level we use on this arch. */
-> -#define XENOMAI_ABI_REV   16UL
-> +#define XENOMAI_ABI_REV   17UL
->   
->   #define XENOMAI_FEAT_DEP  __xn_feat_generic_mask
->   
->
+If the xeno-test are excuted in a virtual environment the tests fail
+due missed timing thresholds. To allow a successful test in a virtual
+environment pass the --vm option to smokey.
 
+Signed-off-by: Quirin Gylstorff <quirin.gylstorff@siemens.com>
+---
+ testsuite/xeno-test/xeno-test.in | 11 ++++++++++-
+ 1 file changed, 10 insertions(+), 1 deletion(-)
+
+diff --git a/testsuite/xeno-test/xeno-test.in b/testsuite/xeno-test/xeno-test.in
+index bee0bccc7..505adfd75 100644
+--- a/testsuite/xeno-test/xeno-test.in
++++ b/testsuite/xeno-test/xeno-test.in
+@@ -24,6 +24,9 @@ If the script is passed the -r option, real-time stress is added to the test,
+ with the help of the "switchtest" test. But beware: the latency test figures are
+ then no longer meaningful.
+ 
++For running test in a virtual machine use the --vm option. This option relaxes
++some of the timing thresholds.
++
+ Any other option passed on the command line is passed to the latency test.
+ 
+ Example:
+@@ -37,6 +40,7 @@ EOF
+ }
+ 
+ keep_going=
++run_on_vm=
+ rt_load=false
+ 
+ while :; do
+@@ -51,6 +55,11 @@ while :; do
+ 	    shift
+ 	    ;;
+ 
++	--vm)
++	    run_on_vm=--vm
++	    shift
++	    ;;
++
+ 	-r)
+ 	    rt_load=true
+ 	    shift
+@@ -73,7 +82,7 @@ echo 0 > /proc/xenomai/latency || :
+ 
+ testdir=@testdir@
+ 
+-$testdir/smokey --run $keep_going random_alloc_rounds=64 pattern_check_rounds=64
++$testdir/smokey --run $run_on_vm $keep_going random_alloc_rounds=64 pattern_check_rounds=64
+ $testdir/clocktest -D -T 30 -C CLOCK_HOST_REALTIME || $testdir/clocktest -T 30
+ $testdir/switchtest -T 30
+ 
 -- 
-Siemens AG, Corporate Technology, CT RDA IOT SES-DE
-Corporate Competence Center Embedded Linux
+2.20.1
+
 
