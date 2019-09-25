@@ -1,7 +1,7 @@
 From: Jan Kiszka <jan.kiszka@siemens.com>
-Subject: [ANNOUNCE] Xenomai v3.1-rc1 available
-Message-ID: <e8622872-9a91-fdb0-b3e6-bbbd57cd2d3a@siemens.com>
-Date: Wed, 25 Sep 2019 09:59:38 +0200
+Subject: [PATCH] Dump ABI revisions
+Message-ID: <e6218fb4-0419-0a45-8220-a006ffbc06e2@siemens.com>
+Date: Wed, 25 Sep 2019 11:13:34 +0200
 MIME-Version: 1.0
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
@@ -16,19 +16,61 @@ List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: Xenomai <xenomai@xenomai.org>
 
-Hi all,
+From: Jan Kiszka <jan.kiszka@siemens.com>
 
-just closed the feature merge window for Xenomai 3.1 and tagged -rc1:
+We've changed ABI in several details since 3.0.x, so we need to update
+the ABI revision as well.
 
-https://gitlab.denx.de/Xenomai/xenomai/-/archive/v3.1-rc1/xenomai-v3.1-rc1.tar.bz2
-https://gitlab.denx.de/Xenomai/xenomai/commits/v3.1-rc1
+Reported-by: Lange Norbert <norbert.lange@andritz.com>
+Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
+---
+ kernel/cobalt/arch/arm/include/asm/xenomai/uapi/features.h     | 2 +-
+ kernel/cobalt/arch/powerpc/include/asm/xenomai/uapi/features.h | 2 +-
+ kernel/cobalt/arch/x86/include/asm/xenomai/uapi/features.h     | 2 +-
+ 3 files changed, 3 insertions(+), 3 deletions(-)
 
-Please give it hell so that we can identify and resolve remaining bugs 
-prior to the final 3.1 release.
+diff --git a/kernel/cobalt/arch/arm/include/asm/xenomai/uapi/features.h b/kernel/cobalt/arch/arm/include/asm/xenomai/uapi/features.h
+index 44bbbbdb08..c3c777cb93 100644
+--- a/kernel/cobalt/arch/arm/include/asm/xenomai/uapi/features.h
++++ b/kernel/cobalt/arch/arm/include/asm/xenomai/uapi/features.h
+@@ -22,7 +22,7 @@
+ #define _COBALT_ARM_ASM_UAPI_FEATURES_H
+ 
+ /* The ABI revision level we use on this arch. */
+-#define XENOMAI_ABI_REV   16UL
++#define XENOMAI_ABI_REV   17UL
+ 
+ #define XENOMAI_FEAT_DEP (__xn_feat_generic_mask)
+ 
+diff --git a/kernel/cobalt/arch/powerpc/include/asm/xenomai/uapi/features.h b/kernel/cobalt/arch/powerpc/include/asm/xenomai/uapi/features.h
+index cbc64f27a4..f6e67d884b 100644
+--- a/kernel/cobalt/arch/powerpc/include/asm/xenomai/uapi/features.h
++++ b/kernel/cobalt/arch/powerpc/include/asm/xenomai/uapi/features.h
+@@ -19,7 +19,7 @@
+ #define _COBALT_POWERPC_ASM_UAPI_FEATURES_H
+ 
+ /* The ABI revision level we use on this arch. */
+-#define XENOMAI_ABI_REV   16UL
++#define XENOMAI_ABI_REV   17UL
+ 
+ #define XENOMAI_FEAT_DEP  __xn_feat_generic_mask
+ 
+diff --git a/kernel/cobalt/arch/x86/include/asm/xenomai/uapi/features.h b/kernel/cobalt/arch/x86/include/asm/xenomai/uapi/features.h
+index 0a06d128c9..67c7625f86 100644
+--- a/kernel/cobalt/arch/x86/include/asm/xenomai/uapi/features.h
++++ b/kernel/cobalt/arch/x86/include/asm/xenomai/uapi/features.h
+@@ -19,7 +19,7 @@
+ #define _COBALT_X86_ASM_UAPI_FEATURES_H
+ 
+ /* The ABI revision level we use on this arch. */
+-#define XENOMAI_ABI_REV   16UL
++#define XENOMAI_ABI_REV   17UL
+ 
+ #define XENOMAI_FEAT_DEP  __xn_feat_generic_mask
+ 
+-- 
+2.16.4
 
-Thanks a lot already to all the contributors to this release!
-
-Jan
 
 -- 
 Siemens AG, Corporate Technology, CT RDA IOT SES-DE
