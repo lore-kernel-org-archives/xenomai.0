@@ -1,13 +1,12 @@
-Subject: Re: rt_e1000e on i.mx6 platform
-References: <CAKJ14Nf8jYKHALn397GPNewqh+sHUpfME3jinhSe33K3Y2Y-DQ@mail.gmail.com>
-From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <10cec31a-7400-9a96-37a7-432dc33d3269@siemens.com>
-Date: Mon, 30 Sep 2019 14:23:51 +0200
+From: "Q. Gylstorff" <Quirin.Gylstorff@siemens.com>
+Subject: [xenomai-images][PATCH v3 1/2] scripts/run-lava-tests: Wait until ssh
+ connection is open
+Date: Mon, 30 Sep 2019 16:05:33 +0200
+Message-Id: <20190930140534.25731-2-Quirin.Gylstorff@siemens.com>
+In-Reply-To: <901ed017-ab67-f975-b471-8753adbb4e97@siemens.com>
+References: <901ed017-ab67-f975-b471-8753adbb4e97@siemens.com>
 MIME-Version: 1.0
-In-Reply-To: <CAKJ14Nf8jYKHALn397GPNewqh+sHUpfME3jinhSe33K3Y2Y-DQ@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,46 +15,51 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Andreas Glatz <andi.glatz@gmail.com>, xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-On 30.09.19 12:24, Andreas Glatz via Xenomai wrote:
-> Hi
-> 
-> I've been trying to get an Intel PCIE network card working under Xenomai on
-> the phyflex i.mx6 platform (phyflex i.mx6 SOM in the phyflex eval board).
-> 
-> The network card works well with the Linux e1000e driver (legacy
-> interrupts) on this hardware. However, when I switch to the rt_e1000e
-> driver (legacy interrupts) it does not work so well.
-> 
-> I looked at the Ethernet frames that are being sent out from the network
-> card with Wireshark on a different PC and can see that all the frames are
-> have additional bytes (typically 2 bytes) inserted at the front of the
-> Ethernet frame. Obviously, then the Ethernet frames are messed up and never
-> received on the other end.
-> 
-> I tested the rt_e1000e driver on an Intel box (MSI-X interrupts), and again
-> it works quite well.
-> 
-> So I think it might have something to do with the PCIE bus on i.mx6....
-> 
-> My legacy configuration is: Linux 3.0.43, Xenomai 2.6.4, ipipe 1.18-13,
-> rtnet 0.9.1
-> 
-> I also tried it with Linux 4.9 and latest Xenomai 3 & ipipe - with the same
-> results.
-> 
-> Any clues how to get rt_e1000e driver working on my i.mx6 platform?
-> 
+From: Quirin Gylstorff <quirin.gylstorff@siemens.com>
 
-I would recommend to do register dumps of working and non-working setups and 
-compare them.
+To connect with lava master use a ssh connection with port forwarding.
+It can take some time till the port is available. Therefore
+wait until the port is available.
 
-Leading bytes... VLAN tags? Maybe have a specific look at related registers.
+---
+ scripts/run-lava-tests.sh | 19 +++++++++++++++----
+ 1 file changed, 15 insertions(+), 4 deletions(-)
 
-Jan
-
+diff --git a/scripts/run-lava-tests.sh b/scripts/run-lava-tests.sh
+index b288edf..8f49917 100755
+--- a/scripts/run-lava-tests.sh
++++ b/scripts/run-lava-tests.sh
+@@ -13,12 +13,23 @@ set -e
+ TARGET=$1
+ 
+ LAVA_MASTER="${LAVA_USER}@${LAVA_HOST}"
+-
++LAVA_MASTER_PORT=28080
+ # open connection for ssh port forwarding
+-ssh -N  -p ${LAVA_PORT} -o 'LocalForward localhost:28080 localhost:80' ${LAVA_MASTER} &
+-
++ssh -N  -p ${LAVA_PORT} -o 'LocalForward localhost:'${LAVA_MASTER_PORT}' localhost:80' ${LAVA_MASTER} &
++# wait for connection
++INTERVAL=1
++TIMEOUT=60
++until ss -tulw | grep -q "${LAVA_MASTER_PORT}"
++do
++    if [ ${TIMEOUT} -le 0 ]; then
++        echo "could not open connection to LAVA Master"
++        exit 1
++    fi
++    sleep ${INTERVAL}
++    TIMEOUT=$(expr ${TIMEOUT} - ${INTERVAL})
++done
+ # connect to lava master
+-lavacli identities add --token ${LAVA_TOKEN} --uri http://localhost:28080 --username siemens default
++lavacli identities add --token ${LAVA_TOKEN} --uri http://localhost:${LAVA_MASTER_PORT} --username ${LAVA_ACCOUNT} default
+ 
+ test_id=$(lavacli jobs submit tests/jobs/xenomai-${TARGET}.yml)
+ lavacli jobs logs ${test_id}
 -- 
-Siemens AG, Corporate Technology, CT RDA IOT SES-DE
-Corporate Competence Center Embedded Linux
+2.20.1
+
 
