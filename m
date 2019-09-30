@@ -1,13 +1,17 @@
-Date: Mon, 16 Sep 2019 05:10:42 -0500 (CDT)
-From: Per Oberg <pero@wolfram.com>
-Message-ID: <1762355232.5762576.1568628642606.JavaMail.zimbra@wolfram.com>
-In-Reply-To: <cdf92817-b8a6-83a3-0f51-e271aec5fdc3@siemens.com>
-References: <2078452807.5749189.1568619128144.JavaMail.zimbra@wolfram.com>
- <cdf92817-b8a6-83a3-0f51-e271aec5fdc3@siemens.com>
-Subject: Re: RTDM open, open_rt, and open_nrt
+Subject: Re: Problem with _rt / _nrt functions in Xeno 3
+References: <CAFc1U0sBsAvi3Spz6+9ExCr1gpkB81BTjVC31G84WKyfbwPBmg@mail.gmail.com>
+ <15646031-7d6c-2e9b-2ed7-0cee06a2d149@siemens.com>
+ <CAFc1U0t6ggrybDhz1BpHNXq5iJC9nemDL4cxv+eqswyzC3zoJw@mail.gmail.com>
+ <f8cb47b5-bfd1-cc7e-9d42-0243d31caf0a@siemens.com>
+ <CAFc1U0sU1ZjGi5eFR-gjCdSbGGNqNOTpO5HVDNY8iNs+pa627Q@mail.gmail.com>
+From: Jan Kiszka <jan.kiszka@siemens.com>
+Message-ID: <fad7d3e1-5958-54ec-6bf9-c069a23379cb@siemens.com>
+Date: Mon, 30 Sep 2019 16:44:33 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
+In-Reply-To: <CAFc1U0sU1ZjGi5eFR-gjCdSbGGNqNOTpO5HVDNY8iNs+pa627Q@mail.gmail.com>
+Content-Type: text/plain; charset="utf-8"; format="flowed"
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,120 +20,191 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jan Kiszka <jan.kiszka@siemens.com>
-Cc: xenomai <xenomai@xenomai.org>
+To: Pierre FICHEUX <pierre.ficheux@smile.fr>
+Cc: xenomai@xenomai.org
 
------ Den 16 sep 2019, p=C3=A5 kl 11:34, Jan Kiszka jan.kiszka@siemens.com =
-skrev:
+On 30.09.19 16:15, Pierre FICHEUX wrote:
+> Hi Jan,
+> 
+> Actually it was  "clear" for me after reading some examples such 
+> as kernel/drivers/testing/rtdmtest.c.
 
-> On 16.09.19 09:32, Per Oberg via Xenomai wrote:
-> > Hello list
+OK, that's good to hear.
 
->> I am trying to understand how rtdm works, and possibly why out of a hist=
-orical
->> context. Perhaps there is a good place to read up on this stuff, then pl=
-ease
-> > let me know.
+> 
+> Btw examples deal only with ioctl and I don't understand how it could work for 
+> read/write (any example around??).
+> 
 
-> > It seems like in the rtdm-api there is only open, but no open_rt or ope=
-n_nrt.
-> > More specifically we have:
-> > - read_rt / read_nrt
-> > - recvmsg_rt / recvmsg_nrt
-> > - ioctl_rt / ioctl_nrt
-> > - .. etc.
+Other handlers are actually a simple case of IOCTLs: Think of them as an IOCTL 
+handler which only accepts a single code, identical on both entry paths.
 
->> However, when studying an old xenomai2->3 ported driver it seems like th=
-ere used
->> to be open_rt and open_nrt. The problem I was having before (see my back=
-ground
->> comment below) was because the open had been mapped to the old open_nrt =
-code,
->> which in turned used a rt-lock, thus a mix of the two. When switching to=
- a
-> > regular mutex it "worked", as in it didn't complain.
+Jan
 
->> In a short discussion Jan Kiszka gave me the impression that open could =
-possibly
-> > end up being rt or nrt depending on situation.
+> regards
+> 
+> 
+> 
+> Le lun. 23 sept. 2019 à 15:10, Jan Kiszka <jan.kiszka@siemens.com 
+> <mailto:jan.kiszka@siemens.com>> a écrit :
+> 
+>     On 20.09.19 16:23, Pierre FICHEUX wrote:
+>      > Thx for the answer bu I don't understand the first sentence (because of
+>     my  bad
+>      > english :))
+>      >
+>      > What dou you mean with "Xenomai 3 prefers the RT patch of a RTDM callback
+>     over
+>      > the NRT if the caller is
+>      > a real-time task." ? What is a "patch of RTDM callback" ??
+> 
+>     I actually have to correct myself: Since "cobalt/syscalls: allow for handing
+>     over mode selection to syscall handlers" (predates v3.0.3), RTDM entry points
+>     are supposed to have to original behavior again (call driver handler
+>     corresponding to current caller mode first, then switch if handler returns
+>     -ENOSYS).
+> 
+>     Maybe we need to look into your concrete case again if something else changes
+>     the migration pattern.
+> 
+>     Jan
+> 
+>      >
+>      > Le ven. 20 sept. 2019 à 15:45, Jan Kiszka <jan.kiszka@siemens.com
+>     <mailto:jan.kiszka@siemens.com>
+>      > <mailto:jan.kiszka@siemens.com <mailto:jan.kiszka@siemens.com>>> a écrit :
+>      >
+>      >     On 20.09.19 15:34, Pierre FICHEUX via Xenomai wrote:
+>      >      > Hi all,
+>      >      >
+>      >      > I've been using RTDM _rt / _nrt functions for a long time with Xenomai
+>      >      > 2.6.x but it seems not to work (the same way ?) with Xenomai 3
+>     (tested with
+>      >      > several versions up to 3.0.8). Actually the _nrt driver function
+>     is never
+>      >      > called (_rt is always called...). I wrote a simple example for
+>     Xeno 2 and
+>      >      > Xeno 3 available here:
+>      >      >
+>      >      > https://github.com/pficheux/xenomai_examples.git
+>      >      >
+>      >      > Here is the test on Raspberry Pi 3 (Xeno 3).
+>      >      >
+>      >      > # insmod rtdm_test.ko
+>      >      >
+>      >      > # ./xenomai_test
+>      >      >
+>      >      > [   47.661245] RTDM open:.
+>      >      >
+>      >      > [   47.667473] ioctl: RT
+>      >      >
+>      >      > [   47.672674] ioctl: RT
+>      >      >
+>      >      > [   48.667479] ioctl: RT
+>      >      >
+>      >      > [   48.678078] ioctl: RT
+>      >      >
+>      >      > [   49.667463] ioctl: RT
+>      >      >
+>      >      > [   49.683076] ioctl: RT
+>      >      >
+>      >      > [   50.667463] ioctl: RT
+>      >      >
+>      >      > [   50.687868] ioctl: RT
+>      >      >
+>      >      >
+>      >      > Of course it works fine with Xenomai 2 (on Pi B+) :
+>      >      >
+>      >      > # insmod rtdm_test.ko
+>      >      >
+>      >      > # ./xenomai_test
+>      >      >
+>      >      > [  753.614275] RTDM open
+>      >      >
+>      >      > [  753.632852] ioctl: RT
+>      >      >
+>      >      > [  753.636779] ioctl: NRT
+>      >      >
+>      >      > [  755.632839] ioctl: RT
+>      >      >
+>      >      > [  755.640252] ioctl: NRT
+>      >      >
+>      >      > [  756.632841] ioctl: RT
+>      >      >
+>      >      > [  757.632838] ioctl: RT
+>      >      >
+>      >      > [  757.643779] ioctl: NRT
+>      >      >
+>      >      > [  758.632836] ioctl: RT
+>      >      >
+>      >      > Thx by advance for your help
+>      >      >
+>      >
+>      >     Xenomai 3 prefers the RT patch of a RTDM callback over the NRT if the
+>     caller is
+>      >     a real-time task. Xenomai 2 had an adaptive behavior where the
+>     current state of
+>      >     the caller defined that. This is a problem I also ran into before and
+>     proposed
+>      >     to revert to the old behavior (in fact, we do that in one internal
+>     deployment).
+>      >     But there is also the point that preferring RT over NRT makes sense
+>     for many
+>      >     scenarios.
+>      >
+>      >     Discussing this with Philippe back then on the list (I do not find the
+>      >     reference
+>      >     ATM), we came to the conclusion that the better answer is to allow the
+>      >     driver to
+>      >     declare which particular behavior a callback should have - in
+>     contrast to doing
+>      >     that in one way or the other at the top level, ie. on syscall entry
+>     of ioctl
+>      >     etc. But I do not have a design for that yet, and I didn't want to
+>     delay the
+>      >     3.1
+>      >     release further to finish that first.
+>      >
+>      >     What we could consider for 3.1 is adding a compile-time configurable to
+>      >     re-enable the old behavior at syscall level when a user needs it.
+>     Then we could
+>      >     later on (3.2) push that properly to the driver level and remove the
+>     control
+>      >     again.
+>      >
+>      >     Jan
+>      >
+>      >     --
+>      >     Siemens AG, Corporate Technology, CT RDA IOT SES-DE
+>      >     Corporate Competence Center Embedded Linux
+>      >
+>      >
+>      >
+>      > --
+>      >
+>      > Pierre FICHEUX -/- CTO Smile ECS, France -\-pierre.ficheux@smile.fr
+>     <mailto:pierre.ficheux@smile.fr>  <mailto:pierre.ficheux@smile.fr
+>     <mailto:pierre.ficheux@smile.fr>>
+>      > http://www.smile.fr  <http://www.smile.fr/>
+>      > https://smile.eu/fr/offres/embarque-iot
+>      > I would love to change the world, but they won't give me the source code
+>      >
+> 
+>     -- 
+>     Siemens AG, Corporate Technology, CT RDA IOT SES-DE
+>     Corporate Competence Center Embedded Linux
+> 
+> 
+> 
+> -- 
+> 
+> Pierre FICHEUX -/- CTO Smile ECS, France -\-pierre.ficheux@smile.fr  <mailto:pierre.ficheux@smile.fr>
+>                               http://www.smile.fr  <http://www.smile.fr/>
+>                               https://smile.eu/fr/offres/embarque-iot
+> I would love to change the world, but they won't give me the source code
+> 
 
->> P=C3=96: I'm guessing that open is always non-rt and therefore a rtdm_lo=
-ck should be
-> > used? ...
-
-> > JK: This depends. If the open code needs to synchronize only with other=
- non-RT
-> > JK: paths, normal Linux locks are fine. If there is the need to sync wi=
-th the
-> > JK: interrupt handler or some of the _rt callbacks, rtdm_lock & Co. is =
-needed.
-
-
->> So, how does this work? And why was (if it was) open_nrt and open_rt rep=
-laced
-> > with a common open?
-
-
-> The original RTDM design was foreseeing the use case of creating and dest=
-roying
-> resources like file descriptors for devices in RT context. That idea was =
-dropped
-> as also the trend for the core was clearly making this less realistic.
-> Therefore, we removed open/socket_rt from Xenomai 3.
-
-> If you have a driver that exploited open_rt, you need to remove all rt-sl=
-eeping
-> operations from its open function. If rtdm_lock is an appropriate alterna=
-tive
-> depends on the driver locking structure and the code run under the lock.
-> rtdm_lock_get makes the lock holder unpreemptible. So, if rtdm_mutex was =
-chosen
-> because of lengthy code under the lock, that would not be a good alternat=
-ive.
-> Then we would have to discuss what exactly is run there, and why.
-
-Ok, can I read up on this somewhere? I found [1], is that still valid in th=
-is context? ( Oh, and can we expect a third edition perhaps ? =3D) )
-
-[1] Building Embedded Linux Systems: Concepts, Techniques, Tricks, and Trap=
-s 2nd Edition, Kindle Edition
-
-> > Background
-> > ----------------
->> I recently wrote about a driver which warned about "drvlib.c:1349
->> rtdm_mutex_timedlock". I got good answers which led me to some more gene=
-ral
->> questions, but instead of continuing in the old tread I thought it bette=
-r to
->> start a new one since it's not about the initial problem. The driver in =
-case is
-> > the Peak Linux Driver for their CAN hardware, see [1]
-
-
-> > [1] https://www.peak-system.com/fileadmin/media/linux/index.htm
-
-
-> Did you inform them about their problem already? Maybe they are willing t=
-o fix
-> it. We can't, it's not upstream code.
-
-No, I haven't, but I will. The reason I haven't yet is because I was under =
-the impression that this didn't happen to them. I'm trying to compile every=
-thing (driver, lib, and application) in a Yocto based SDK setup and it seem=
-s like compilation flags and environment variables are getting squashed in =
-interesting ways. My reasoning so far was that I got this wrong somehow.
-
-Then there's the fact that making it work is only part of the goal. I do re=
-ally want to understand how this fits together.
-
-> Jan
-
-
-
-> --
-> Siemens AG, Corporate Technology, CT RDA IOT SES-DE
-> Corporate Competence Center Embedded Linux
-
-Thanks
-Per =C3=96berg=20
+-- 
+Siemens AG, Corporate Technology, CT RDA IOT SES-DE
+Corporate Competence Center Embedded Linux
 
