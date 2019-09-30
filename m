@@ -1,19 +1,13 @@
-Date: Fri, 27 Sep 2019 08:49:40 -0500 (CDT)
-From: Per Oberg <pero@wolfram.com>
-Message-ID: <558991465.10779410.1569592180769.JavaMail.zimbra@wolfram.com>
-In-Reply-To: <e1ae79ae-5e01-f758-c89b-d4907d444397@web.de>
-References: <09a04461befe7ec4cf65b9f1a46e70fe.squirrel@mail.ige-grenoble.fr>
- <9344a542-3ca7-ea83-4b4a-a744d1d48b39@siemens.com>
- <db08b3df5aeb7dfbde41bee64b7ff142.squirrel@mail.ige-grenoble.fr>
- <978cbf79-06bd-3fb0-2396-b83270f8d92e@siemens.com>
- <bf32fd5ce254f7ccd4647a159cc0ce6a.squirrel@mail.ige-grenoble.fr>
- <30171666-5b1f-e302-6110-8d6e3ad3bed5@siemens.com>
- <30e33520dda331361d39260f15ea4585.squirrel@mail.ige-grenoble.fr>
- <e1ae79ae-5e01-f758-c89b-d4907d444397@web.de>
-Subject: Re: Kernel compilation error
+Subject: Re: [PATCH] testsuite/xeno-test: add --vm option
+References: <20190925110329.28708-1-Quirin.Gylstorff@siemens.com>
+From: Jan Kiszka <jan.kiszka@siemens.com>
+Message-ID: <7177c8bc-e20f-71de-655c-ff4ca9f3fa81@siemens.com>
+Date: Mon, 30 Sep 2019 11:01:45 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
+In-Reply-To: <20190925110329.28708-1-Quirin.Gylstorff@siemens.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -22,64 +16,70 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai <xenomai@xenomai.org>
+To: "Q. Gylstorff" <Quirin.Gylstorff@siemens.com>, xenomai@xenomai.org
 
+On 25.09.19 13:03, Q. Gylstorff wrote:
+> From: Quirin Gylstorff <quirin.gylstorff@siemens.com>
+> 
+> If the xeno-test are excuted in a virtual environment the tests fail
+> due missed timing thresholds. To allow a successful test in a virtual
+> environment pass the --vm option to smokey.
+> 
+> Signed-off-by: Quirin Gylstorff <quirin.gylstorff@siemens.com>
+> ---
+>   testsuite/xeno-test/xeno-test.in | 11 ++++++++++-
+>   1 file changed, 10 insertions(+), 1 deletion(-)
+> 
+> diff --git a/testsuite/xeno-test/xeno-test.in b/testsuite/xeno-test/xeno-test.in
+> index bee0bccc7..505adfd75 100644
+> --- a/testsuite/xeno-test/xeno-test.in
+> +++ b/testsuite/xeno-test/xeno-test.in
+> @@ -24,6 +24,9 @@ If the script is passed the -r option, real-time stress is added to the test,
+>   with the help of the "switchtest" test. But beware: the latency test figures are
+>   then no longer meaningful.
+>   
+> +For running test in a virtual machine use the --vm option. This option relaxes
+> +some of the timing thresholds.
+> +
+>   Any other option passed on the command line is passed to the latency test.
+>   
+>   Example:
+> @@ -37,6 +40,7 @@ EOF
+>   }
+>   
+>   keep_going=
+> +run_on_vm=
+>   rt_load=false
+>   
+>   while :; do
+> @@ -51,6 +55,11 @@ while :; do
+>   	    shift
+>   	    ;;
+>   
+> +	--vm)
+> +	    run_on_vm=--vm
+> +	    shift
+> +	    ;;
+> +
+>   	-r)
+>   	    rt_load=true
+>   	    shift
+> @@ -73,7 +82,7 @@ echo 0 > /proc/xenomai/latency || :
+>   
+>   testdir=@testdir@
+>   
+> -$testdir/smokey --run $keep_going random_alloc_rounds=64 pattern_check_rounds=64
+> +$testdir/smokey --run $run_on_vm $keep_going random_alloc_rounds=64 pattern_check_rounds=64
+>   $testdir/clocktest -D -T 30 -C CLOCK_HOST_REALTIME || $testdir/clocktest -T 30
+>   $testdir/switchtest -T 30
+>   
+> 
 
+Thanks, applied. Will push to stable as well.
 
+Jan
 
------ Den 27 sep 2019, p=C3=A5 kl 15:07, xenomai xenomai@xenomai.org skrev:
-
-> On 26.09.19 17:47, Davy via Xenomai wrote:
-> >> On 06.09.19 15:38, davy.regneau@univ-grenoble-alpes.fr wrote:
-
-
-> >>> Hi Jan,
-
-> >>> Thank you for your quick reply. If I want to use the last stable rele=
-ase
-> >>> xenomai which kernel release I need to use ?
-
-
-> >> We will soon release 3.1, then you can use 4.19 with an officially sta=
-ble
-> >> baseline. If you start now, that combination will have been released w=
-hen
-> >> you
-> >> are done - unless you really need to release "tomorrow".
-
-> >> Jan
-
-> >> --
-> >> Siemens AG, Corporate Technology, CT RDA IOT SES-DE
-> >> Corporate Competence Center Embedded Linux
-
-
-> > Hi,
-
-> > Thanks for Xenomai 3.1.
-
-> > I compliled the linux kernel 4.19.66 with xenomai 3.1-rc1. No errors
-> > appeared during it.
-
-> > When I try to boot with it I get stuck with the error :
-> > can't find IRQ for PCI INT A; probably buggy MP table
-
-I recognize this, and I think I recall that I only had it on one of our har=
-dware platforms. As I recall i read something about it being MSI-related. Y=
-ou could try turning off MSI at kernel boot using "pci=3Dnomsi"
-
-Per =C3=96berg=20
-
-
-> > I attach a image of the last messages before the freeze.
-
-> > Do you have any idea how do I can fix this ?
-> > I also send my .config
-
-
-> Does the error disappear when you disable Xenomai and I-pipe in the kerne=
-l
-> configuration?
-
-> Jan
+-- 
+Siemens AG, Corporate Technology, CT RDA IOT SES-DE
+Corporate Competence Center Embedded Linux
 
