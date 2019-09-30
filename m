@@ -1,13 +1,9 @@
-Subject: Re: [PATCH] testsuite/xeno-test: add --vm option
-References: <20190925110329.28708-1-Quirin.Gylstorff@siemens.com>
-From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <7177c8bc-e20f-71de-655c-ff4ca9f3fa81@siemens.com>
-Date: Mon, 30 Sep 2019 11:01:45 +0200
 MIME-Version: 1.0
-In-Reply-To: <20190925110329.28708-1-Quirin.Gylstorff@siemens.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+From: Andreas Glatz <andi.glatz@gmail.com>
+Date: Mon, 30 Sep 2019 11:24:43 +0100
+Message-ID: <CAKJ14Nf8jYKHALn397GPNewqh+sHUpfME3jinhSe33K3Y2Y-DQ@mail.gmail.com>
+Subject: rt_e1000e on i.mx6 platform
+Content-Type: text/plain; charset="UTF-8"
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,70 +12,36 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "Q. Gylstorff" <Quirin.Gylstorff@siemens.com>, xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-On 25.09.19 13:03, Q. Gylstorff wrote:
-> From: Quirin Gylstorff <quirin.gylstorff@siemens.com>
-> 
-> If the xeno-test are excuted in a virtual environment the tests fail
-> due missed timing thresholds. To allow a successful test in a virtual
-> environment pass the --vm option to smokey.
-> 
-> Signed-off-by: Quirin Gylstorff <quirin.gylstorff@siemens.com>
-> ---
->   testsuite/xeno-test/xeno-test.in | 11 ++++++++++-
->   1 file changed, 10 insertions(+), 1 deletion(-)
-> 
-> diff --git a/testsuite/xeno-test/xeno-test.in b/testsuite/xeno-test/xeno-test.in
-> index bee0bccc7..505adfd75 100644
-> --- a/testsuite/xeno-test/xeno-test.in
-> +++ b/testsuite/xeno-test/xeno-test.in
-> @@ -24,6 +24,9 @@ If the script is passed the -r option, real-time stress is added to the test,
->   with the help of the "switchtest" test. But beware: the latency test figures are
->   then no longer meaningful.
->   
-> +For running test in a virtual machine use the --vm option. This option relaxes
-> +some of the timing thresholds.
-> +
->   Any other option passed on the command line is passed to the latency test.
->   
->   Example:
-> @@ -37,6 +40,7 @@ EOF
->   }
->   
->   keep_going=
-> +run_on_vm=
->   rt_load=false
->   
->   while :; do
-> @@ -51,6 +55,11 @@ while :; do
->   	    shift
->   	    ;;
->   
-> +	--vm)
-> +	    run_on_vm=--vm
-> +	    shift
-> +	    ;;
-> +
->   	-r)
->   	    rt_load=true
->   	    shift
-> @@ -73,7 +82,7 @@ echo 0 > /proc/xenomai/latency || :
->   
->   testdir=@testdir@
->   
-> -$testdir/smokey --run $keep_going random_alloc_rounds=64 pattern_check_rounds=64
-> +$testdir/smokey --run $run_on_vm $keep_going random_alloc_rounds=64 pattern_check_rounds=64
->   $testdir/clocktest -D -T 30 -C CLOCK_HOST_REALTIME || $testdir/clocktest -T 30
->   $testdir/switchtest -T 30
->   
-> 
+Hi
 
-Thanks, applied. Will push to stable as well.
+I've been trying to get an Intel PCIE network card working under Xenomai on
+the phyflex i.mx6 platform (phyflex i.mx6 SOM in the phyflex eval board).
 
-Jan
+The network card works well with the Linux e1000e driver (legacy
+interrupts) on this hardware. However, when I switch to the rt_e1000e
+driver (legacy interrupts) it does not work so well.
 
--- 
-Siemens AG, Corporate Technology, CT RDA IOT SES-DE
-Corporate Competence Center Embedded Linux
+I looked at the Ethernet frames that are being sent out from the network
+card with Wireshark on a different PC and can see that all the frames are
+have additional bytes (typically 2 bytes) inserted at the front of the
+Ethernet frame. Obviously, then the Ethernet frames are messed up and never
+received on the other end.
 
+I tested the rt_e1000e driver on an Intel box (MSI-X interrupts), and again
+it works quite well.
+
+So I think it might have something to do with the PCIE bus on i.mx6....
+
+My legacy configuration is: Linux 3.0.43, Xenomai 2.6.4, ipipe 1.18-13,
+rtnet 0.9.1
+
+I also tried it with Linux 4.9 and latest Xenomai 3 & ipipe - with the same
+results.
+
+Any clues how to get rt_e1000e driver working on my i.mx6 platform?
+
+Cheers,
+
+Andreas
