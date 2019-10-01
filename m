@@ -1,9 +1,10 @@
-From: "Q. Gylstorff" <Quirin.Gylstorff@siemens.com>
-Subject: [xenomai-images][PATCH v2 0/4] ci improvements
-Date: Tue,  1 Oct 2019 14:51:22 +0200
-Message-Id: <20191001125126.7580-1-Quirin.Gylstorff@siemens.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Date: Tue, 01 Oct 2019 15:04:59 +0200
+Subject: Kernel crash at startup when enabling RTNet + RTIPv4
+Message-ID: <b7f-5d934f00-47-344a2840@235460637>
+From: =?utf-8?q?Fran=C3=A7ois_Legal?= <devel@thom.fr.eu.org>
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -14,36 +15,29 @@ List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: xenomai@xenomai.org
 
-From: Quirin Gylstorff <quirin.gylstorff@siemens.com>
 
-Improve the ci by:
+Hello list,
 
-- Adding  option --vm to successfully execute qemu tests.
-- Fixing beaglebone tests after lava update.
-- Compress rootfs to speed up the deployment
-- use pipeline id to differ between test runs.
+I've been struggling to get the RTNet + RTIPv4 part to work on a Zynq 7=
+000 board. Using source code from stable Xenomai 3.0.9 tarball, and pat=
+ching a vanilla 4.4.189 linux.
+I consistently had the kernel crash (0 pointer dereference error) at st=
+artup when enabling either RTIPv4, RTCFG or RTMAC.
 
-Changes:
-V2:
-- cleanup
+I finally found that there "might" be a problem with the Makefile in=C2=
+=A0kernel/drivers/net/stack.
+It turns out that (on my system at least), the order in which the proto=
+col stacks appear in the Makefile is wrong because (I running a kernel =
+with everything builtin, no modules) the protocols are loaded in that o=
+rder, and thus, (in my case) RTIPv4 gets initialized before stack=5Fmgr=
+ does which cause it to fail while registering (calling=C2=A0=5F=5Frtde=
+v=5Fadd=5Fpack with a not initialized=C2=A0rt=5Fpackets array).
 
-Quirin Gylstorff (4):
-  ci: Use unique test ids
-  ci: Use compression for rootfs
-  ci: Run qemu tests with --vm option
-  xenomai-beaglebone: remove context after update
+When I reorder the protocols in the Makefile, everything works flawless=
+ly.
 
- scripts/deploy_for_testing.sh     |  7 ++++++-
- scripts/run-lava-tests.sh         | 13 ++++++++++++-
- tests/jobs/xenomai-beaglebone.yml |  9 +++------
- tests/jobs/xenomai-minnow.yml     |  6 +++---
- tests/jobs/xenomai-qemu-amd64.yml | 12 +++++++-----
- tests/jobs/xenomai-qemu-arm64.yml | 12 +++++++-----
- tests/jobs/xenomai-qemu-armhf.yml | 12 +++++++-----
- tests/jobs/xenomai-x86-64.yml     |  6 +++---
- 8 files changed, 48 insertions(+), 29 deletions(-)
+I can provide a patch if this needs to be fixed.
 
--- 
-2.20.1
+Thanks
 
-
+Fran=C3=A7ois
