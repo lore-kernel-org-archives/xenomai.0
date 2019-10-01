@@ -1,13 +1,10 @@
-Subject: Re: RTDM open, open_rt, and open_nrt
-References: <1498070335.5810731.1568637405044.JavaMail.zimbra@wolfram.com>
- <606820185.5820958.1568637688860.JavaMail.zimbra@wolfram.com>
-From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <11d341ef-47a4-0dd6-62f7-7fc30cd1796e@siemens.com>
-Date: Mon, 16 Sep 2019 16:59:10 +0200
+From: "Q. Gylstorff" <Quirin.Gylstorff@siemens.com>
+Subject: [xenomai-images][PATCH v2 1/4] ci: Use unique test ids
+Date: Tue,  1 Oct 2019 14:52:00 +0200
+Message-Id: <20191001125203.10757-2-Quirin.Gylstorff@siemens.com>
+In-Reply-To: <20191001125203.10757-1-Quirin.Gylstorff@siemens.com>
+References: <20191001125203.10757-1-Quirin.Gylstorff@siemens.com>
 MIME-Version: 1.0
-In-Reply-To: <606820185.5820958.1568637688860.JavaMail.zimbra@wolfram.com>
-Content-Type: text/plain; charset="utf-8"; format="flowed"
-Content-Language: en-US
 Content-Transfer-Encoding: 8bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
@@ -17,98 +14,224 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Per Oberg <pero@wolfram.com>, xenomai <xenomai@xenomai.org>
+To: xenomai@xenomai.org
 
-On 16.09.19 14:41, Per Oberg via Xenomai wrote:
-> ----- Den 16 sep 2019, på kl 14:36, Per Öberg pero@wolfram.com skrev:
-> 
->> ----- Den 16 sep 2019, på kl 11:34, Jan Kiszka jan.kiszka@siemens.com skrev:
-> 
->>> On 16.09.19 09:32, Per Oberg via Xenomai wrote:
->>>> Hello list
-> 
->>>> I am trying to understand how rtdm works, and possibly why out of a historical
->>>> context. Perhaps there is a good place to read up on this stuff, then please
->>>> let me know.
-> 
->>>> It seems like in the rtdm-api there is only open, but no open_rt or open_nrt.
->>>> More specifically we have:
->>>> - read_rt / read_nrt
->>>> - recvmsg_rt / recvmsg_nrt
->>>> - ioctl_rt / ioctl_nrt
->>>> - .. etc.
-> 
->>>> However, when studying an old xenomai2->3 ported driver it seems like there used
->>>> to be open_rt and open_nrt. The problem I was having before (see my background
->>>> comment below) was because the open had been mapped to the old open_nrt code,
->>>> which in turned used a rt-lock, thus a mix of the two. When switching to a
->>>> regular mutex it "worked", as in it didn't complain.
-> 
->>>> In a short discussion Jan Kiszka gave me the impression that open could possibly
->>>> end up being rt or nrt depending on situation.
-> 
->>>> PÖ: I'm guessing that open is always non-rt and therefore a rtdm_lock should be
->>>> used? ...
-> 
->>>> JK: This depends. If the open code needs to synchronize only with other non-RT
->>>> JK: paths, normal Linux locks are fine. If there is the need to sync with the
->>>> JK: interrupt handler or some of the _rt callbacks, rtdm_lock & Co. is needed.
-> 
->>>> So, how does this work? And why was (if it was) open_nrt and open_rt replaced
->>>> with a common open?
-> 
->>> The original RTDM design was foreseeing the use case of creating and destroying
->>> resources like file descriptors for devices in RT context. That idea was dropped
->>> as also the trend for the core was clearly making this less realistic.
->>> Therefore, we removed open/socket_rt from Xenomai 3.
-> 
->>> If you have a driver that exploited open_rt, you need to remove all rt-sleeping
->>> operations from its open function. If rtdm_lock is an appropriate alternative
->>> depends on the driver locking structure and the code run under the lock.
->>> rtdm_lock_get makes the lock holder unpreemptible. So, if rtdm_mutex was chosen
->>> because of lengthy code under the lock, that would not be a good alternative.
->>> Then we would have to discuss what exactly is run there, and why.
-> 
->> Ok, can I read up on this somewhere? I found [1], is that still valid in this
->> context? ( Oh, and can we expect a third edition perhaps ? =) )
-> 
->> [1] Building Embedded Linux Systems: Concepts, Techniques, Tricks, and Traps 2nd
->> Edition, Kindle Edition
+From: Quirin Gylstorff <quirin.gylstorff@siemens.com>
 
-Basic locking principles should be covered there, not sure if it had a 
-Xenomai/RTDM section. If so, check if it was written/updated after 2015.
+All test images are stored in one folder. If multiple agents
+are used to build against the same machine it is no longer possible
+to differentiate what was tested. Use the unique CI_PIPELINE_ID to
+differ these builds in one gitlab instance.
 
-> 
->>>> Background
->>>> ----------------
->>>> I recently wrote about a driver which warned about "drvlib.c:1349
->>>> rtdm_mutex_timedlock". I got good answers which led me to some more general
->>>> questions, but instead of continuing in the old tread I thought it better to
->>>> start a new one since it's not about the initial problem. The driver in case is
->>>> the Peak Linux Driver for their CAN hardware, see [1]
-> 
->>>> [1] https://www.peak-system.com/fileadmin/media/linux/index.htm
-> 
->>> Did you inform them about their problem already? Maybe they are willing to fix
->>> it. We can't, it's not upstream code.
-> 
->> No, I haven't, but I will. The reason I haven't yet is because I was under the
->> impression that this didn't happen to them. I'm trying to compile everything
->> (driver, lib, and application) in a Yocto based SDK setup and it seems like
->> compilation flags and environment variables are getting squashed in interesting
->> ways. My reasoning so far was that I got this wrong somehow.
-> 
-> Forget that, I did actually ask them and they answered in a manner that suggested that I was doing something wrong (wrong compilation flags or user privileges ). I never got rid of the warning though and it fell into the dark corners of the backlog.
-> 
+Signed-off-by: Quirin Gylstorff <quirin.gylstorff@siemens.com>
+---
+ scripts/deploy_for_testing.sh     |  4 +++-
+ scripts/run-lava-tests.sh         | 13 ++++++++++++-
+ tests/jobs/xenomai-beaglebone.yml |  6 +++---
+ tests/jobs/xenomai-minnow.yml     |  6 +++---
+ tests/jobs/xenomai-qemu-amd64.yml |  9 +++++----
+ tests/jobs/xenomai-qemu-arm64.yml |  9 +++++----
+ tests/jobs/xenomai-qemu-armhf.yml |  9 +++++----
+ tests/jobs/xenomai-x86-64.yml     |  6 +++---
+ 8 files changed, 39 insertions(+), 23 deletions(-)
 
-If they argued about "compilation flags" when a kernel bug was thrown, they may 
-not have gotten the point yet. These flags reveal architectural issues of the 
-implementation. Of course they disappear when you turn debugging off. But then 
-the get replaced by deadlock or real crashed later.
-
-Jan
-
+diff --git a/scripts/deploy_for_testing.sh b/scripts/deploy_for_testing.sh
+index 4015b87..3bfe6bb 100755
+--- a/scripts/deploy_for_testing.sh
++++ b/scripts/deploy_for_testing.sh
+@@ -25,7 +25,9 @@ fi
+ 
+ LAVA_SSH_DESTINATION="${LAVA_SSH_USER}@${LAVA_SSH_HOST}"
+ 
+-DEPLOY_DIR="/var/lib/lava/artifacts"
++LAVA_DEPLOY_DIR=${LAVA_DEPLOY_DIR:-"/var/lib/lava/artifacts"}
++DEPLOY_DIR="${LAVA_DEPLOY_DIR}/${CI_PIPELINE_ID}"
++ssh -p ${LAVA_SSH_PORT} ${LAVA_SSH_DESTINATION} 'install -d -m 755 "'${DEPLOY_DIR}'"'
+ #KERNEL
+ scp -P ${LAVA_SSH_PORT} ${IMAGES_DIR}/${TARGET}/demo-image-xenomai-demo-${TARGET}-vmlinuz \
+     ${LAVA_SSH_DESTINATION}:${DEPLOY_DIR}
+diff --git a/scripts/run-lava-tests.sh b/scripts/run-lava-tests.sh
+index 9195275..870f1f9 100755
+--- a/scripts/run-lava-tests.sh
++++ b/scripts/run-lava-tests.sh
+@@ -33,9 +33,20 @@ do
+ done
+ LAVA_MASTER_URI=http://localhost:${LAVA_MASTER_PORT}
+ 
++if [ -z "${TARGET}" ]; then
++    echo "no target was given"
++    exit -1
++fi
++artifact_url="${LAVA_ARTIFACTS_URL:-'http://localhost/artifacts'}"
++
+ # connect to lava master
+ lavacli identities add --token ${LAVA_MASTER_TOKEN} --uri ${LAVA_MASTER_URI} --username ${LAVA_MASTER_ACCOUNT} default
+-test_id=$(lavacli jobs submit tests/jobs/xenomai-${TARGET}.yml)
++
++#generate lava job description from template
++DEPLOY_URL="${artifact_url}/${CI_PIPELINE_ID}"
++template=$(cat tests/jobs/xenomai-${TARGET}.yml)
++test_id=$(eval "cat <<EOF ${template}
++EOF" | lavacli jobs submit -)
+ lavacli jobs logs ${test_id}
+ lavacli results ${test_id}
+ # change return code to generate a error in gitlab-ci if a test is failed
+diff --git a/tests/jobs/xenomai-beaglebone.yml b/tests/jobs/xenomai-beaglebone.yml
+index 85f2b88..138c8cb 100644
+--- a/tests/jobs/xenomai-beaglebone.yml
++++ b/tests/jobs/xenomai-beaglebone.yml
+@@ -35,12 +35,12 @@ actions:
+       minutes: 5
+     to: tftp
+     kernel:
+-      url: http://localhost/artifacts/demo-image-xenomai-demo-beagle-bone-black-vmlinuz
++      url: ${DEPLOY_URL}/demo-image-xenomai-demo-beagle-bone-black-vmlinuz
+       type: zimage
+     dtb:
+-      url: http://localhost/artifacts/am335x-boneblack.dtb
++      url: ${DEPLOY_URL}/am335x-boneblack.dtb
+     nfsrootfs:
+-      url: http://localhost/artifacts/demo-image-xenomai-demo-beagle-bone-black.tar.gz
++      url: ${DEPLOY_URL}/demo-image-xenomai-demo-beagle-bone-black.tar.gz
+       compression: gz
+ # BOOT_BLOCK
+ - boot:
+diff --git a/tests/jobs/xenomai-minnow.yml b/tests/jobs/xenomai-minnow.yml
+index d3b4a4d..27a0f81 100644
+--- a/tests/jobs/xenomai-minnow.yml
++++ b/tests/jobs/xenomai-minnow.yml
+@@ -31,13 +31,13 @@ actions:
+       minutes: 5
+     to: tftp
+     kernel:
+-      url: http://localhost/artifacts/demo-image-xenomai-demo-x86-64-efi-vmlinuz
++      url: ${DEPLOY_URL}/demo-image-xenomai-demo-x86-64-efi-vmlinuz
+       type: bzimage
+     ramdisk:
+-      url: http://localhost/artifacts/demo-image-xenomai-demo-x86-64-efi-initrd.img
++      url: ${DEPLOY_URL}/demo-image-xenomai-demo-x86-64-efi-initrd.img
+       compression: gz
+     nfsrootfs:
+-      url: http://localhost/artifacts/demo-image-xenomai-demo-x86-64-efi.tar.gz
++      url: ${DEPLOY_URL}/demo-image-xenomai-demo-x86-64-efi.tar.gz
+       compression: gz
+ # BOOT_BLOCK
+ - boot:
+diff --git a/tests/jobs/xenomai-qemu-amd64.yml b/tests/jobs/xenomai-qemu-amd64.yml
+index 2976f89..8f1e071 100644
+--- a/tests/jobs/xenomai-qemu-amd64.yml
++++ b/tests/jobs/xenomai-qemu-amd64.yml
+@@ -47,14 +47,13 @@ actions:
+     images:
+       kernel:
+         image_arg: -kernel {kernel} -append "root=/dev/sdb console=ttyS0,115200 console=tty0"
+-        url: http://localhost/artifacts/demo-image-xenomai-demo-qemu-amd64-vmlinuz
++        url: ${DEPLOY_URL}/demo-image-xenomai-demo-qemu-amd64-vmlinuz
+       initrd:
+         image_arg: -initrd {initrd}
+-        url: http://localhost/artifacts/demo-image-xenomai-demo-qemu-amd64-initrd.img
++        url: ${DEPLOY_URL}/demo-image-xenomai-demo-qemu-amd64-initrd.img
+       rootfs:
+         image_arg: -drive file={rootfs},discard=unmap,if=none,id=disk,format=raw
+-        url: http://localhost/artifacts/demo-image-xenomai-demo-qemu-amd64.ext4.img
+-
++        url: ${DEPLOY_URL}/demo-image-xenomai-demo-qemu-amd64.ext4.img
+ # BOOT_BLOCK
+ - boot:
+     timeout:
+@@ -69,6 +68,8 @@ actions:
+       password: root
+ 
+ - test:
++    timeout:
++      minutes: 30
+     definitions:
+     - repository: http://git.linaro.org/lava-team/lava-functional-tests.git
+       from: git
+diff --git a/tests/jobs/xenomai-qemu-arm64.yml b/tests/jobs/xenomai-qemu-arm64.yml
+index a5a9371..5099d95 100644
+--- a/tests/jobs/xenomai-qemu-arm64.yml
++++ b/tests/jobs/xenomai-qemu-arm64.yml
+@@ -54,14 +54,13 @@ actions:
+     images:
+       kernel:
+         image_arg: -kernel {kernel} -append "root=/dev/vda"
+-        url: http://localhost/artifacts/demo-image-xenomai-demo-qemu-arm64-vmlinuz
++        url: ${DEPLOY_URL}/demo-image-xenomai-demo-qemu-arm64-vmlinuz
+       initrd:
+         image_arg: -initrd {initrd}
+-        url: http://localhost/artifacts/demo-image-xenomai-demo-qemu-arm64-initrd.img
++        url: ${DEPLOY_URL}/demo-image-xenomai-demo-qemu-arm64-initrd.img
+       rootfs:
+         image_arg: -drive file={rootfs},discard=unmap,if=none,id=disk,format=raw
+-        url: http://localhost/artifacts/demo-image-xenomai-demo-qemu-arm64.ext4.img
+-
++        url: ${DEPLOY_URL}/demo-image-xenomai-demo-qemu-arm64.ext4.img
+ # BOOT_BLOCK
+ - boot:
+     timeout:
+@@ -76,6 +75,8 @@ actions:
+       password: root
+ 
+ - test:
++    timeout:
++      minutes: 30
+     definitions:
+     - repository: http://git.linaro.org/lava-team/lava-functional-tests.git
+       from: git
+diff --git a/tests/jobs/xenomai-qemu-armhf.yml b/tests/jobs/xenomai-qemu-armhf.yml
+index 238265b..5f36ca6 100644
+--- a/tests/jobs/xenomai-qemu-armhf.yml
++++ b/tests/jobs/xenomai-qemu-armhf.yml
+@@ -47,14 +47,13 @@ actions:
+     images:
+       kernel:
+         image_arg: -kernel {kernel} -append "root=/dev/vdb"
+-        url: http://localhost/artifacts/demo-image-xenomai-demo-qemu-armhf-vmlinuz
++        url: ${DEPLOY_URL}/demo-image-xenomai-demo-qemu-armhf-vmlinuz
+       initrd:
+         image_arg: -initrd {initrd}
+-        url: http://localhost/artifacts/demo-image-xenomai-demo-qemu-armhf-initrd.img
++        url: ${DEPLOY_URL}/demo-image-xenomai-demo-qemu-armhf-initrd.img
+       rootfs:
+         image_arg: -drive file={rootfs},discard=unmap,if=none,id=disk,format=raw
+-        url: http://localhost/artifacts/demo-image-xenomai-demo-qemu-armhf.ext4.img
+-
++        url: ${DEPLOY_URL}/demo-image-xenomai-demo-qemu-armhf.ext4.img
+ # BOOT_BLOCK
+ - boot:
+     timeout:
+@@ -69,6 +68,8 @@ actions:
+       password: root
+ 
+ - test:
++    timeout:
++      minutes: 30
+     definitions:
+     - repository: http://git.linaro.org/lava-team/lava-functional-tests.git
+       from: git
+diff --git a/tests/jobs/xenomai-x86-64.yml b/tests/jobs/xenomai-x86-64.yml
+index 9d58c45..c7424c0 100644
+--- a/tests/jobs/xenomai-x86-64.yml
++++ b/tests/jobs/xenomai-x86-64.yml
+@@ -32,13 +32,13 @@ actions:
+       minutes: 5
+     to: tftp
+     kernel:
+-      url: http://localhost/artifacts/demo-image-xenomai-demo-x86-64-efi-vmlinuz
++      url: ${DEPLOY_URL}/demo-image-xenomai-demo-x86-64-efi-vmlinuz
+       type: bzimage
+     ramdisk:
+-      url: http://localhost/artifacts/demo-image-xenomai-demo-x86-64-efi-initrd.img
++      url: ${DEPLOY_URL}/demo-image-xenomai-demo-x86-64-efi-initrd.img
+       compression: gz
+     nfsrootfs:
+-      url: http://localhost/artifacts/demo-image-xenomai-demo-x86-64-efi.tar.gz
++      url: ${DEPLOY_URL}/demo-image-xenomai-demo-x86-64-efi.tar.gz
+       compression: gz
+ # BOOT_BLOCK
+ - boot:
 -- 
-Siemens AG, Corporate Technology, CT RDA IOT SES-DE
-Corporate Competence Center Embedded Linux
+2.20.1
+
 
