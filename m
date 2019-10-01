@@ -1,7 +1,10 @@
 From: "Q. Gylstorff" <Quirin.Gylstorff@siemens.com>
-Subject: [xenomai-images][PATCH 0/4] ci improvements 
-Date: Tue,  1 Oct 2019 11:24:39 +0200
-Message-Id: <20191001092443.19602-1-Quirin.Gylstorff@siemens.com>
+Subject: [xenomai-images][PATCH 4/4] xenomai-beaglebone: remove context after
+ update
+Date: Tue,  1 Oct 2019 11:24:43 +0200
+Message-Id: <20191001092443.19602-5-Quirin.Gylstorff@siemens.com>
+In-Reply-To: <20191001092443.19602-1-Quirin.Gylstorff@siemens.com>
+References: <20191001092443.19602-1-Quirin.Gylstorff@siemens.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
@@ -16,29 +19,29 @@ To: xenomai@xenomai.org
 
 From: Quirin Gylstorff <quirin.gylstorff@siemens.com>
 
-Improve the ci by:
+After updating  the lava environment to 2019.9 the option baud_rate
+in the job context can no longer be overwritten. Remove the context
+to ensure the job execution.
 
-- Adding  option --vm to successfully execute qemu tests.
-- Fixing beaglebone tests after lava update.
-- Compress rootfs to speed up the deployment
-- use pipeline id to differ between test runs.
+Signed-off-by: Quirin Gylstorff <quirin.gylstorff@siemens.com>
+---
+ tests/jobs/xenomai-beaglebone.yml | 3 ---
+ 1 file changed, 3 deletions(-)
 
-Quirin Gylstorff (4):
-  ci: Use unique test ids
-  ci: Use compression for rootfs
-  ci: Run qemu tests with --vm option
-  xenomai-beaglebone: remove context after update
-
- scripts/deploy_for_testing.sh     |  7 ++++++-
- scripts/run-lava-tests.sh         | 13 ++++++++++++-
- tests/jobs/xenomai-beaglebone.yml |  9 +++------
- tests/jobs/xenomai-minnow.yml     |  6 +++---
- tests/jobs/xenomai-qemu-amd64.yml | 12 +++++++-----
- tests/jobs/xenomai-qemu-arm64.yml | 12 +++++++-----
- tests/jobs/xenomai-qemu-armhf.yml | 12 +++++++-----
- tests/jobs/xenomai-x86-64.yml     |  6 +++---
- 8 files changed, 48 insertions(+), 29 deletions(-)
-
+diff --git a/tests/jobs/xenomai-beaglebone.yml b/tests/jobs/xenomai-beaglebone.yml
+index 138c8cb..ceb4d0d 100644
+--- a/tests/jobs/xenomai-beaglebone.yml
++++ b/tests/jobs/xenomai-beaglebone.yml
+@@ -25,9 +25,6 @@ metadata:
+   # please change these fields when modifying this job for your own tests.
+   docs-source: xenomai-beagleboneblack
+   docs-filename: pipeline-xenomai-beagleboneblack
+-context:
+-  console_device: ttyO
+-  baud_rate: 115200
+ # ACTION_BLOCK
+ actions:
+ - deploy:
 -- 
 2.20.1
 
