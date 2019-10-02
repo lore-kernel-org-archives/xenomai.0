@@ -1,12 +1,13 @@
-In-Reply-To: <1e32b0f4-a1e9-cd72-7024-974308b09d3f@siemens.com>
-From: =?utf-8?q?Fran=C3=A7ois_Legal?= <devel@thom.fr.eu.org>
-Date: Wed, 02 Oct 2019 09:40:07 +0200
+Subject: Re: [PATCH] Re: Kernel crash at startup when enabling RTNet + RTIPv4
+References: <b80-5d945480-e5-62bca880@213363268>
+From: Jan Kiszka <jan.kiszka@siemens.com>
+Message-ID: <07efe0e4-d2b3-e5c3-afa8-ed6c7f0de843@siemens.com>
+Date: Wed, 2 Oct 2019 10:06:49 +0200
 MIME-Version: 1.0
-Message-ID: <b80-5d945480-e5-62bca880@213363268>
-Subject: =?utf-8?q?=5BPATCH=5D?==?utf-8?q?_Re=3A?= Kernel crash at startup
- when enabling RTNet + RTIPv4
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+In-Reply-To: <b80-5d945480-e5-62bca880@213363268>
+Content-Type: text/plain; charset="utf-8"; format="flowed"
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,64 +16,44 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jan Kiszka <jan.kiszka@siemens.com>
+To: =?UTF-8?Q?Fran=c3=a7ois_Legal?= <devel@thom.fr.eu.org>
 Cc: xenomai@xenomai.org
 
-CkxlIE1hcmRpLCBPY3RvYnJlIDAxLCAyMDE5IDE2OjM3IENFU1QsIEphbiBLaXN6a2EgPGphbi5r
-aXN6a2FAc2llbWVucy5jb20+IGEgw6ljcml0OgrCoE9uIDAxLjEwLjE5IDE1OjI2LCBGcmFuw6dv
-aXMgTGVnYWwgd3JvdGU6Cj4gSGVsbG8sCj4KPiBDb3VsZCB5b3UgcGxlYXNlIGNsYXJpZnkgd2hh
-dCAidXBzdHJlYW0iIGlzID8gUlROZXQgcHJvamVjdCA/IFRoZXJlIGRvZXMgbm90Cj4gc2VlbSB0
-byBiZSBhY3Rpdml0eSB0aGVyZSBzaW5jZSAyMDEyID8KClJUbmV0IHdhcyBtZXJnZWQgaW50byBY
-ZW5vbWFpIDIwMTQuIEkgdGhvdWdodCB5b3Uga25ldyB3aGVuIHlvdSB3ZXJlIHBvc3RpbmcKaGVy
-ZSA7KS5UaGF0J3Mgd2hhdCBJIHRob3VnaCwgYnV0IEkgd2FzIHN1cnByaXNlZCBieSB0aGUgbWVu
-dGlvbiB0byAidXBzdHJlYW0iLgo+IEknbGwgYmUgaGFwcHkgdG8gY29udHJpYnV0ZSBvbiB0aGlz
-LiBZb3UgbWVudGlvbiAiZ2x1ZSBzY3JpcHRpbmciLCBjb3VsZCB5b3UgYmUKPiBtb3JlIHByZWNp
-c2UgdG8gbGV0IG1lIHRyeSB0byBmaXggdGhhdCBwYXJ0IHRvby4KCnhlbm9tYWkvdXRpbHMvbmV0
-L3J0bmV0LmluLiBCdXQgSSBzdXNwZWN0IHRoYXQgd2lsbCBiZSByYXRoZXIgc2ltcGxlLlNvIHRo
-ZSBhdHRhY2hlZCBwYXRjaCAoYWdhaW5zdCBtYXN0ZXIpIGFsbG93cyBvbmUgdG8gZ2V0IHRoZSBS
-VE5ldCBjb2RlIGJ1aWx0aW4sIHBsdXMgdGhlIHJ0bmV0IHNjcmlwdCBtb2RpZmllZCB0byB0YWtl
-IHRoYXQgaW50byBhY2NvdW50LiBJIGNhbiBtYWtlIGEgcGF0Y2ggdG8gMy4wLjkgYXZhaWxhYmxl
-IGlmIHRoYXQncyBuZWVkZWQuCkFib3V0wqB0aGUgc3RhYmxlIGluaXQgdGhhdCBkb2VzIG5vdCBk
-ZXBlbmQgb24gbGluayBvcmRlciwgSSdsbCBiZSBnbGFkIHRvIHdvcmsgb24gdGhhdCwgYnV0IEkg
-bmVlZCBzb21lIGhpbnRzIG9uIHdoZXJlIHRvIHN0YXJ0IGlmIHBvc3NpYmxlLgpNb3JlIHRyaWNr
-eSBpcyBhIHN0YWJsZSBpbml0IG9yZGVyaW5nLCBpZGVhbGx5IHNvbWV0aGluZyB0aGF0IGRvZXMg
-bm90IGRlcGVuZCBvbgpsaW5rIG9yZGVyaW5nLiBBbmQgbWF5YmUgdGhlcmUgaXMgbW9yZS4KCj4K
-PiBTaGFsbCBJIHNlbmQgdGhlIHBhdGNoIHRvIHRoaXMgbGlzdCA/CgpFeGFjdGx5LiBBZ2FpbnN0
-IHRoZSBtYXN0ZXIgYnJhbmNoLiBJZiBpdCdzIGEgZml4LCB3ZSBjYW4gY29uc2lkZXIgYmFja3Bv
-cnRpbmcKdG8gMy4wLnggYW5kIDMuMS54ICgzLjEgaXMgYWxyZWFkeSBpbiBmZWF0dXJlIGZyZWV6
-ZSBzdGF0ZSkuCgpKYW4KCj4KPiBUaGFua3MKPgo+IEZyYW7Dp29pcwo+Cj4gTGUgTWFyZGksIE9j
-dG9icmUgMDEsIDIwMTkgMTU6MTAgQ0VTVCwgSmFuIEtpc3prYSA8amFuLmtpc3prYUBzaWVtZW5z
-LmNvbT4gYSDDqWNyaXQ6Cj4+IE9uIDAxLjEwLjE5IDE1OjA0LCBGcmFuw6dvaXMgTGVnYWwgdmlh
-IFhlbm9tYWkgd3JvdGU6Cj4+ID4KPj4gPiBIZWxsbyBsaXN0LAo+PiA+Cj4+ID4gSSd2ZSBiZWVu
-IHN0cnVnZ2xpbmcgdG8gZ2V0IHRoZSBSVE5ldCArIFJUSVB2NCBwYXJ0IHRvIHdvcmsgb24gYSBa
-eW5xIDcwMDAKPj4gYm9hcmQuIFVzaW5nIHNvdXJjZSBjb2RlIGZyb20gc3RhYmxlIFhlbm9tYWkg
-My4wLjkgdGFyYmFsbCwgYW5kIHBhdGNoaW5nIGEKPj4gdmFuaWxsYSA0LjQuMTg5IGxpbnV4Lgo+
-PiA+IEkgY29uc2lzdGVudGx5IGhhZCB0aGUga2VybmVsIGNyYXNoICgwIHBvaW50ZXIgZGVyZWZl
-cmVuY2UgZXJyb3IpIGF0IHN0YXJ0dXAKPj4gd2hlbiBlbmFibGluZyBlaXRoZXIgUlRJUHY0LCBS
-VENGRyBvciBSVE1BQy4KPj4gPgo+PiA+IEkgZmluYWxseSBmb3VuZCB0aGF0IHRoZXJlICJtaWdo
-dCIgYmUgYSBwcm9ibGVtIHdpdGggdGhlIE1ha2VmaWxlCj4+IGluwqBrZXJuZWwvZHJpdmVycy9u
-ZXQvc3RhY2suCj4+ID4gSXQgdHVybnMgb3V0IHRoYXQgKG9uIG15IHN5c3RlbSBhdCBsZWFzdCks
-IHRoZSBvcmRlciBpbiB3aGljaCB0aGUgcHJvdG9jb2wKPj4gc3RhY2tzIGFwcGVhciBpbiB0aGUg
-TWFrZWZpbGUgaXMgd3JvbmcgYmVjYXVzZSAoSSBydW5uaW5nIGEga2VybmVsIHdpdGgKPj4gZXZl
-cnl0aGluZyBidWlsdGluLCBubyBtb2R1bGVzKSB0aGUgcHJvdG9jb2xzIGFyZSBsb2FkZWQgaW4g
-dGhhdCBvcmRlciwgYW5kCj4+IHRodXMsIChpbiBteSBjYXNlKSBSVElQdjQgZ2V0cyBpbml0aWFs
-aXplZCBiZWZvcmUgc3RhY2tfbWdyIGRvZXMgd2hpY2ggY2F1c2UKPj4gaXQgdG8gZmFpbCB3aGls
-ZSByZWdpc3RlcmluZyAoY2FsbGluZ8KgX19ydGRldl9hZGRfcGFjayB3aXRoIGEgbm90Cj4+IGlu
-aXRpYWxpemVkwqBydF9wYWNrZXRzIGFycmF5KS4KPj4gPgo+PiA+IFdoZW4gSSByZW9yZGVyIHRo
-ZSBwcm90b2NvbHMgaW4gdGhlIE1ha2VmaWxlLCBldmVyeXRoaW5nIHdvcmtzIGZsYXdsZXNzbHku
-Cj4+ID4KPj4gPiBJIGNhbiBwcm92aWRlIGEgcGF0Y2ggaWYgdGhpcyBuZWVkcyB0byBiZSBmaXhl
-ZC4KPj4gPgo+Pgo+PiBVcHN0cmVhbSBkb2VzIG5vdCBzdXBwb3J0IGJ1aWx0LWluIFJUbmV0LiBJ
-IHN1c3BlY3Qgd2UgbmVlZCB0byBzb3J0IHRoaXMgYW5kCj4+IG1vcmUgaXNzdWVzIG91dCBzeXN0
-ZW1hdGljYWxseSBpbiBvcmRlciB0byBwZXJtaXQgdGhhdC4gQWxzbywgdGhlIGdsdWUgc2NyaXB0
-aW5nCj4+IHdpbGwgbmVlZCBhZGp1c3RtZW50cyBiZWNhdXNlIG9mIGFzc3VtcHRpb25zIHRoYXQg
-UlRuZXQgY29tZXMgaW4gbW9kdWxlcy4KPj4KPj4gVGhhdCBzYWlkLCBjb250cmlidXRpb25zIGlu
-IHRoYXQgZGlyZWN0aW9ucyBhcmUgd2VsY29tZSEKPj4KPj4gSmFuCj4+Cj4+IC0tCj4+IFNpZW1l
-bnMgQUcsIENvcnBvcmF0ZSBUZWNobm9sb2d5LCBDVCBSREEgSU9UIFNFUy1ERQo+PiBDb3Jwb3Jh
-dGUgQ29tcGV0ZW5jZSBDZW50ZXIgRW1iZWRkZWQgTGludXgKPgo+Cj4KCgotLQpTaWVtZW5zIEFH
-LCBDb3Jwb3JhdGUgVGVjaG5vbG9neSwgQ1QgUkRBIElPVCBTRVMtREUKQ29ycG9yYXRlIENvbXBl
-dGVuY2UgQ2VudGVyIEVtYmVkZGVkIExpbnV4CgoKwqAKLS0tLS0tLS0tLS0tLS0gbmV4dCBwYXJ0
-IC0tLS0tLS0tLS0tLS0tCkEgbm9uLXRleHQgYXR0YWNobWVudCB3YXMgc2NydWJiZWQuLi4KTmFt
-ZTogcGF0Y2gtYnVpbHRpbgpUeXBlOiBhcHBsaWNhdGlvbi9vY3RldC1zdHJlYW0KU2l6ZTogNjE1
-NiBieXRlcwpEZXNjOiBub3QgYXZhaWxhYmxlClVSTDogPGh0dHA6Ly94ZW5vbWFpLm9yZy9waXBl
-cm1haWwveGVub21haS9hdHRhY2htZW50cy8yMDE5MTAwMi81NTQ5ZGY1Ny9hdHRhY2htZW50Lm9i
-aj4K
+On 02.10.19 09:40, François Legal wrote:
+> 
+> Le Mardi, Octobre 01, 2019 16:37 CEST, Jan Kiszka <jan.kiszka@siemens.com> a écrit:
+>> On 01.10.19 15:26, François Legal wrote:
+>> > Hello,
+>> >
+>> > Could you please clarify what "upstream" is ? RTNet project ? There does not
+>> > seem to be activity there since 2012 ?
+>>
+>> RTnet was merged into Xenomai 2014. I thought you knew when you were posting
+>> here ;).
+> That's what I though, but I was surprised by the mention to "upstream".
+
+Yeah, I didn't mean the upstream kernel - if that was your first thought.
+
+>>
+>> > I'll be happy to contribute on this. You mention "glue scripting", could you be
+>> > more precise to let me try to fix that part too.
+>>
+>> xenomai/utils/net/rtnet.in. But I suspect that will be rather simple.
+> So the attached patch (against master) allows one to get the RTNet code builtin, 
+> plus the rtnet script modified to take that into account. I can make a patch to 
+> 3.0.9 available if that's needed.
+> About the stable init that does not depend on link order, I'll be glad to work 
+> on that, but I need some hints on where to start if possible.
+
+Just cross-checked with the kernel documentation, and it's actually correct to 
+build the initialization order from the link order. So please format your 
+changes into a proper patch against next, see CONTRIBUTING.md and also other 
+patches on the list for the structuring.
+
+Thanks,
+Jan
+
+-- 
+Siemens AG, Corporate Technology, CT RDA IOT SES-DE
+Corporate Competence Center Embedded Linux
+
