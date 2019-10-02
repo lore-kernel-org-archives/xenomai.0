@@ -1,10 +1,10 @@
 Subject: Re: [PATCH] Allow RTNet to be builtin kernel
-References: <b7f-5d94aa00-51-344a2840@235462089>
+References: <30dd-5d94c580-17-21e4bb80@177052564>
 From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <d384f7dd-ea39-8640-7463-e68911f380dd@siemens.com>
-Date: Wed, 2 Oct 2019 17:30:49 +0200
+Message-ID: <8a055cb4-035b-605b-0a4a-90aba32a10a5@siemens.com>
+Date: Wed, 2 Oct 2019 18:06:04 +0200
 MIME-Version: 1.0
-In-Reply-To: <b7f-5d94aa00-51-344a2840@235462089>
+In-Reply-To: <30dd-5d94c580-17-21e4bb80@177052564>
 Content-Type: text/plain; charset="utf-8"; format="flowed"
 Content-Language: en-US
 Content-Transfer-Encoding: 8bit
@@ -16,327 +16,79 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: =?UTF-8?Q?Fran=c3=a7ois_Legal?= <devel@thom.fr.eu.org>, xenomai@xenomai.org
+To: =?UTF-8?Q?Fran=c3=a7ois_Legal?= <devel@thom.fr.eu.org>
+Cc: Xenomai <xenomai@xenomai.org>
 
-On 02.10.19 15:45, François Legal via Xenomai wrote:
-> From: François LEGAL <devel@thom.fr.eu.org>
+[re-adding the list]
+
+On 02.10.19 17:43, François Legal wrote:
+> Le Mercredi, Octobre 02, 2019 17:30 CEST, Jan Kiszka <jan.kiszka@siemens.com> a écrit:
+>   
+>> On 02.10.19 15:45, François Legal via Xenomai wrote:
+>>> From: François LEGAL <devel@thom.fr.eu.org>
+>>>
+>>> Signed-off-by: François LEGAL <devel@thom.fr.eu.org>
+>>>
+>>> Subject: [PATCH] Allow RTNet to be builtin kernel
+>>>
+>>
+>> Proper ordering is
+>>
+>> - one subject (first line of your commit message)
+>> - optionally a "From:", specifically when your provider rewrites the
+>>     sender address
+>> - commit message body
+>> - signed-off
+>> - separator ("---")
+>> - optionally some message that should not be in git afterwards, e.g. a
+>>     changelog of what you edited in this revision of the patch. I don't
+>>     see all of my comments addressed in code. So you should at least tell
+>>     us why you didn't change something.
+>> - the diff
 > 
-> Signed-off-by: François LEGAL <devel@thom.fr.eu.org>
+> Allright. Thanks for the clarification and sorry to bother you with this kind of stuff.
+
+No problem. This can be a lot when writing a first patch, even worse when that 
+is "only" a short one, but it helps a lot to keep the project consistent.
+
+> Regarding the comments in the patch, to be honest, I did not see those in the first place.
+> Let me clarify these points here :
 > 
-> Subject: [PATCH] Allow RTNet to be builtin kernel
+>> Maybe we should add "set -x" to the script so that every unhandled failure becomes visible. Can be done separately, though.
 > 
+> Yes. I did that during testing but removed it afterwards. I thought leaving a set -x in would be a nogo for commit. I'll set it back.
 
-Proper ordering is
+With "can be done separately", I mean that such a change would be desired, not 
+needed for this patch, and when done, it should come as an additional patch.
 
-- one subject (first line of your commit message)
-- optionally a "From:", specifically when your provider rewrites the
-   sender address
-- commit message body
-- signed-off
-- separator ("---")
-- optionally some message that should not be in git afterwards, e.g. a
-   changelog of what you edited in this revision of the patch. I don't
-   see all of my comments addressed in code. So you should at least tell
-   us why you didn't change something.
-- the diff
+> 
+>> rtpacket does not depend on rtipv4.
+> 
+> I thought the RT_PROTOCOLS would be in udp, icmp, (tcp maybe). I'll have to check how to address rtpacket.
+> 
+>> Reformatting is appreciated, but this is better done separately, to ease my review. :)
+> 
+> Got it. I'll restore the tabs.
 
+You can also convert them to something consistent, but then please send two 
+patches: One that only does the style conversion without functional changes, and 
+one that does the other things.
+
+> 
+>> I think you are missing the rmmod in the "stop" path.
+> 
+> No, I made that intentionally, as the rmmod comes with -f plus > /dev/null
+> I thought I could leave it here as any error would be silently discarded. Moreover, I'm not sure how I can handle it as the files/dirs I use to check if RTNet is builtin should probably appear whenever the modular RTNet gets loaded.
+
+Ah, makes sense!
+
+> 
+> So if these replies are ok by you, I'll modify the patch and send it back to the list.
+
+Yes, please.
+
+Thanks,
 Jan
-
-> Makefile is changed because when builtin, the modules
-> get loaded in the link order. In the previous version
-> protocols would get loaded before stackmgr which
-> obviously fails.
-> 
-> This has been tested on Zynq 7000 Hardware (microzed
-> board) with MACB/GEM RTNet driver, with linux 4.4.189
-> vanilla. Kernel boots up correctly, and the following
-> messages get printed on the console during the boot :
-> 
-> [   13.875451] sdhci-pltfm: SDHCI platform and OF driver helper
-> [   13.881627] sdhci-arasan e0100000.sdhci: No vmmc regulator found
-> [   13.887581] sdhci-arasan e0100000.sdhci: No vqmmc regulator found
-> [   13.927585] mmc0: SDHCI controller on e0100000.sdhci [e0100000.sdhci] using ADMA
-> [   13.945085] fpga_manager fpga0: Xilinx Zynq FPGA Manager registered
-> [   13.951896]
-> [   13.951896] *** RTnet for Xenomai v3.0.9 ***
-> [   13.951896]
-> [   13.959156] RTnet: initialising real-time networking
-> [   13.964928] RTmac/TDMA: init time division multiple access control mechanism
-> [   13.972074] RTmac: init realtime media access control
-> [   13.977064] RTcfg: init real-time configuration distribution protocol
-> [   13.983752] initializing loopback...
-> [   13.987295] RTnet: registered rtlo
-> [   13.993238] RTnet: registered rteth0
-> [   13.996832] libphy: MACB_mii_bus: probed
-> [   14.001140] rt_macb: rteth0: Cadence GEM at 0xe000b000 irq 26 (00:0a:35:00:01:22)
-> [   14.008630] rt_macb: rteth0: attached PHY driver [Marvell 88E1510] (mii_bus:phy_addr=e000b000.ethernet-ffffffff:00, irq=-1)
-> [   14.019845] RTcap: real-time capturing interface
-> [   14.026562] RTproxy attached to rteth0
-> [   14.031129] rtnetproxy installed as "rtproxy"
-> [   14.035693] NET: Registered protocol family 26
-> [   14.040309] NET: Registered protocol family 17
-> [   14.044686] can: controller area network core (rev 20120528 abi 9)
-> [   14.050957] NET: Registered protocol family 29
-> [   14.055329] can: raw protocol (rev 20120528)
-> [   14.059683] can: broadcast manager protocol (rev 20120528 t)
-> 
-> ---
->   kernel/drivers/net/Kconfig        |   1 -
->   kernel/drivers/net/addons/Kconfig |   4 +-
->   kernel/drivers/net/stack/Makefile |  16 ++---
->   utils/net/rtnet.in                | 148 +++++++++++++++++++++++---------------
->   4 files changed, 101 insertions(+), 68 deletions(-)
-> 
-> diff --git a/kernel/drivers/net/Kconfig b/kernel/drivers/net/Kconfig
-> index ac3bced..49d2402 100644
-> --- a/kernel/drivers/net/Kconfig
-> +++ b/kernel/drivers/net/Kconfig
-> @@ -1,7 +1,6 @@
->   menu "RTnet"
->   
->   config XENO_DRIVERS_NET
-> -    depends on m
->       select NET
->       tristate "RTnet, TCP/IP socket interface"
->   
-> diff --git a/kernel/drivers/net/addons/Kconfig b/kernel/drivers/net/addons/Kconfig
-> index baa6cbc..616ed40 100644
-> --- a/kernel/drivers/net/addons/Kconfig
-> +++ b/kernel/drivers/net/addons/Kconfig
-> @@ -2,7 +2,7 @@ menu "Add-Ons"
->       depends on XENO_DRIVERS_NET
->   
->   config XENO_DRIVERS_NET_ADDON_RTCAP
-> -    depends on XENO_DRIVERS_NET && m
-> +    depends on XENO_DRIVERS_NET
->       select ETHERNET
->       tristate "Real-Time Capturing Support"
->       default n
-> @@ -18,7 +18,7 @@ config XENO_DRIVERS_NET_ADDON_RTCAP
->       For further information see Documentation/README.rtcap.
->   
->   config XENO_DRIVERS_NET_ADDON_PROXY
-> -    depends on XENO_DRIVERS_NET_RTIPV4 && m
-> +    depends on XENO_DRIVERS_NET_RTIPV4
->       select ETHERNET
->       tristate "IP protocol proxy for Linux"
->       default n
-> diff --git a/kernel/drivers/net/stack/Makefile b/kernel/drivers/net/stack/Makefile
-> index d055dc2..f8db6fa 100644
-> --- a/kernel/drivers/net/stack/Makefile
-> +++ b/kernel/drivers/net/stack/Makefile
-> @@ -1,13 +1,5 @@
->   ccflags-y += -Idrivers/xenomai/net/stack/include -Ikernel/
->   
-> -obj-$(CONFIG_XENO_DRIVERS_NET_RTIPV4) += ipv4/
-> -
-> -obj-$(CONFIG_XENO_DRIVERS_NET_RTPACKET) += packet/
-> -
-> -obj-$(CONFIG_XENO_DRIVERS_NET_RTMAC) += rtmac/
-> -
-> -obj-$(CONFIG_XENO_DRIVERS_NET_RTCFG) += rtcfg/
-> -
->   obj-$(CONFIG_XENO_DRIVERS_NET) += rtnet.o
->   
->   rtnet-y :=  \
-> @@ -23,4 +15,12 @@ rtnet-y :=  \
->   	stack_mgr.o \
->   	eth.o
->   
-> +obj-$(CONFIG_XENO_DRIVERS_NET_RTIPV4) += ipv4/
-> +
-> +obj-$(CONFIG_XENO_DRIVERS_NET_RTPACKET) += packet/
-> +
-> +obj-$(CONFIG_XENO_DRIVERS_NET_RTMAC) += rtmac/
-> +
-> +obj-$(CONFIG_XENO_DRIVERS_NET_RTCFG) += rtcfg/
-> +
->   rtnet-$(CONFIG_XENO_DRIVERS_NET_RTWLAN) += rtwlan.o
-> diff --git a/utils/net/rtnet.in b/utils/net/rtnet.in
-> index f81a7bb..3c3cab9 100644
-> --- a/utils/net/rtnet.in
-> +++ b/utils/net/rtnet.in
-> @@ -31,44 +31,62 @@ EOF
->   }
->   
->   init_rtnet() {
-> -    modprobe rtnet >/dev/null || exit 1
-> -    modprobe rtipv4 >/dev/null || exit 1
-> -    modprobe $RT_DRIVER $RT_DRIVER_OPTIONS >/dev/null || exit 1
-> +    if [ ! -d /proc/rtnet ]; then
-> +        modprobe rtnet >/dev/null || exit 1
-> +    fi
->   
-> -    for dev in $REBIND_RT_NICS; do
-> -	if [ -d /sys/bus/pci/devices/$dev/driver ]; then
-> -	    echo $dev > /sys/bus/pci/devices/$dev/driver/unbind
-> -	fi
-> -	echo $dev > /sys/bus/pci/drivers/$RT_DRIVER/bind
-> -    done
-> +    if [ ! -d /proc/rtnet/ipv4 ]; then
-> +        modprobe rtipv4 >/dev/null || exit 1
-> +        for PROTOCOL in $RT_PROTOCOLS; do
-> +            modprobe rt$PROTOCOL >/dev/null || exit 1
-> +        done
-> +    fi
->   
-> -    for PROTOCOL in $RT_PROTOCOLS; do
-> -	modprobe rt$PROTOCOL >/dev/null || exit 1
-> -    done
-> +    $(cat /proc/rtnet/devices | grep -q rteth0)
-> +    if [ $? -eq 1 ]; then
-> +        modprobe $RT_DRIVER $RT_DRIVER_OPTIONS >/dev/null || exit 1
-> +
-> +        for dev in $REBIND_RT_NICS; do
-> +            if [ -d /sys/bus/pci/devices/$dev/driver ]; then
-> +                echo $dev > /sys/bus/pci/devices/$dev/driver/unbind
-> +            fi
-> +            echo $dev > /sys/bus/pci/drivers/$RT_DRIVER/bind
-> +        done
-> +    fi
->   
->       if [ $RT_LOOPBACK = "yes" ]; then
-> -	modprobe rt_loopback >/dev/null || exit 1
-> +        $(cat /proc/rtnet/devices | grep -q rtlo)
-> +        if [ $? -eq 1 ]; then
-> +
-> +            modprobe rt_loopback >/dev/null || exit 1
-> +        fi
->       fi
->   
-> -    if [ $RTCAP = "yes" ]; then
-> -	modprobe rtcap >/dev/null || exit 1
-> +    if [ $RTCAP = "yes" -a ! -d /sys/modules/rtcap ]; then
-> +        modprobe rtcap >/dev/null || exit 1
->       fi
->   
->       if [ $RT_LOOPBACK = "yes" ]; then
-> -	$RTIFCONFIG rtlo up 127.0.0.1
-> +        $RTIFCONFIG rtlo up 127.0.0.1
->       fi
->   
->       if [ $RTCAP = "yes" ]; then
-> -	ifconfig rteth0 up
-> -	ifconfig rteth0-mac up
-> -	if [ $RT_LOOPBACK = "yes" ]; then
-> -	    ifconfig rtlo up
-> -	fi
-> +        ifconfig rteth0 up
-> +        ifconfig rteth0-mac up
-> +        if [ $RT_LOOPBACK = "yes" ]; then
-> +            ifconfig rtlo up
-> +        fi
->       fi
->   
-> -    modprobe rtcfg >/dev/null
-> -    modprobe rtmac >/dev/null
-> -    modprobe tdma >/dev/null
-> +    if [ ! -d /proc/rtnet/rtcfg ]; then
-> +        modprobe rtcfg >/dev/null
-> +    fi
-> +    if [ ! -d /proc/rtnet/rtmac ]; then
-> +        modprobe rtmac >/dev/null
-> +    fi
-> +    if [ ! -f /proc/tdma ]; then
-> +        modprobe tdma >/dev/null
-> +    fi
->   }
->   
->   submit_cfg() {
-> @@ -329,43 +347,59 @@ case "$1" in
->   	;;
->   
->       master)
-> -	shift
-> -	init_rtnet
-> -	TDMA_SLAVES=$*
-> -	start_master
-> -	;;
-> +        shift
-> +        init_rtnet
-> +        TDMA_SLAVES=$*
-> +        start_master
-> +        ;;
->   
->       capture)
-> -	modprobe rtnet >/dev/null || exit 1
-> -	modprobe $RT_DRIVER $RT_DRIVER_OPTIONS >/dev/null || exit 1
-> -	modprobe rtcap >/dev/null || exit 1
-> -	$RTIFCONFIG rteth0 up promisc
-> -	ifconfig rteth0 up
-> -	ifconfig rteth0-mac up
-> -	;;
-> +        if [ ! -d /proc/rtnet ]; then
-> +            modprobe rtnet >/dev/null || exit 1
-> +        fi
-> +        $(cat /proc/rtnet/devices | grep -q rteth0)
-> +        if [ $? -eq 1 ]; then
-> +            modprobe $RT_DRIVER $RT_DRIVER_OPTIONS >/dev/null || exit 1
-> +        fi
-> +        if [ ! -d /sys/modules/rtcap ]; then
-> +            modprobe rtcap >/dev/null || exit 1
-> +        fi
-> +        $RTIFCONFIG rteth0 up promisc
-> +        ifconfig rteth0 up
-> +        ifconfig rteth0-mac up
-> +        ;;
->   
->       loopback)
-> -	modprobe rtnet >/dev/null || exit 1
-> -	modprobe rtipv4 >/dev/null || exit 1
-> -
-> -	for PROTOCOL in $RT_PROTOCOLS; do
-> -	    modprobe rt$PROTOCOL >/dev/null || exit 1
-> -	done
-> -
-> -	modprobe rt_loopback >/dev/null || exit 1
-> -
-> -	if [ $RTCAP = "yes" ]; then
-> -	    modprobe rtcap >/dev/null || exit 1
-> -	fi
-> -
-> -	$RTIFCONFIG rtlo up 127.0.0.1
-> -
-> -	if [ $RTCAP = "yes" ]; then
-> -	    ifconfig rtlo up
-> -	fi
-> -	;;
-> +        if [ ! -d /proc/rtnet ]; then
-> +            modprobe rtnet >/dev/null || exit 1
-> +        fi
-> +        if [ ! -d /proc/rtnet/ipv4 ]; then
-> +            modprobe rtipv4 >/dev/null || exit 1
-> +            for PROTOCOL in $RT_PROTOCOLS; do
-> +                modprobe rt$PROTOCOL >/dev/null || exit 1
-> +            done
-> +        fi
-> +
-> +        if [ $RT_LOOPBACK = "yes" ]; then
-> +            $(cat /proc/rtnet/devices | grep -q rtlo)
-> +            if [ $? -eq 1 ]; then
-> +
-> +                modprobe rt_loopback >/dev/null || exit 1
-> +            fi
-> +        fi
-> +
-> +        if [ $RTCAP = "yes" -a ! -d /sys/modules/rtcap ]; then
-> +            modprobe rtcap >/dev/null || exit 1
-> +        fi
-> +
-> +        $RTIFCONFIG rtlo up 127.0.0.1
-> +
-> +        if [ $RTCAP = "yes" ]; then
-> +            ifconfig rtlo up
-> +        fi
-> +        ;;
->   
->       *)
-> -	usage
-> -	exit 1
-> +        usage
-> +        exit 1
->   esac
-> 
 
 -- 
 Siemens AG, Corporate Technology, CT RDA IOT SES-DE
