@@ -1,13 +1,13 @@
-Subject: Re: smokey arm64 gdb tests
-References: <4d2b41d6-2b78-5d49-6ddb-94741eab6e3a@siemens.com>
+Subject: Re: open XDDP from nrt thread
+References: <fea9dfd7-d28e-da96-f230-2a585da5cc84@iit.it>
 From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <c64bcbab-bb0f-5949-466a-5754b125be0f@siemens.com>
-Date: Wed, 2 Oct 2019 11:38:09 +0200
+Message-ID: <bffef7ff-f2a3-b8ec-5f8a-958f688b36a5@siemens.com>
+Date: Wed, 2 Oct 2019 11:40:37 +0200
 MIME-Version: 1.0
-In-Reply-To: <4d2b41d6-2b78-5d49-6ddb-94741eab6e3a@siemens.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
+In-Reply-To: <fea9dfd7-d28e-da96-f230-2a585da5cc84@iit.it>
+Content-Type: text/plain; charset="utf-8"; format="flowed"
 Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,29 +16,49 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Gylstorff Quirin <quirin.gylstorff@siemens.com>, "xenomai@xenomai.org" <xenomai@xenomai.org>, Steven Seeger <steven.seeger@flightsystems.net>
+To: alessio margan <alessio.margan@iit.it>, xenomai@xenomai.org
 
-On 02.10.19 10:37, Gylstorff Quirin wrote:
-> Hi,
+On 02.10.19 10:08, alessio margan via Xenomai wrote:
+> Hi all,
 > 
-> I did a run of smokey on arm64 and it aborts in the gdb test with the error:
-> FAILURE run_gdb:287: checking expression \"primary_mode\", expected \"1\", found 
-> \"0\"
+> it seems that at some point ( following branch next up to rc1) something is 
+> changed regarding XDDP .
 > 
+> I've got a process that spawn 2 rt-thread and a nrt-thread, one of the 2rt  
+> produce data that the nrt consume using an XDDP
 > 
-> My question should the gdb test run on arm64?
-> If not we should exclude it for the time being.
+> Since 4.14.89-xeno-ipipe-stableVx everything works, now on rc1 I can not open 
+> the pipes as usual.
 
-Damn, that's the still missing userspace return notifier support on arm64. I 
-will try to look into this.
+These are two things: the kernel/ipipe version and the Xenomai version. Can you 
+narrow this down a bit? Does it work for you with 3.0.9 and/or stable/3.0.x? Was 
+there an older revision in master (3.1.x) that worked?
 
-Still, I suspect we need to deal with missing support, also because ppc 
-shouldn't have that yet, Steven, am I right? It's "just" a debugging feature, 
-nothing otherwise problematic or relevant for applications. So I'm unsure if 
-that deserves an ABI flag, but that would be needed to detect the issue smoothly 
-in the testsuite.
+Alternatively, please provide a test case that we can try. Might be based on 
+testsuite/smokey/xddp/xddp.c, but maybe already looking at that explains the 
+problem.
 
 Jan
+
+> 
+> There is something I have missed ?
+> 
+> These are the pipes
+> 
+> ls -la /proc/xenomai/registry/rtipc/xddp/
+> total 0
+> dr-xr-xr-x 2 root root 0 ott  2 09:06 .
+> dr-xr-xr-x 3 root root 0 ott  2 09:06 ..
+> lrwxrwxrwx 1 root root 9 ott  2 09:06 debugOut -> /dev/rtp3
+> lrwxrwxrwx 1 root root 9 ott  2 09:06 emergency -> /dev/rtp0
+> lrwxrwxrwx 1 root root 9 ott  2 09:06 NoNe@Motor_id_1 -> /dev/rtp4
+> lrwxrwxrwx 1 root root 9 ott  2 09:06 repl_in -> /dev/rtp1
+> lrwxrwxrwx 1 root root 9 ott  2 09:06 repl_out -> /dev/rtp2
+> 
+> TIA
+> 
+> Alessio
+> 
 
 -- 
 Siemens AG, Corporate Technology, CT RDA IOT SES-DE
