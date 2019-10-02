@@ -1,10 +1,10 @@
-Subject: Re: [PATCH] MABC RTNet driver to work with GEM hardware
-References: <b7f-5d94aa00-4f-344a2840@235460769>
+Subject: Re: [PATCH] Allow RTNet to be builtin kernel
+References: <b7f-5d94aa00-51-344a2840@235462089>
 From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <7291e497-1306-d01f-fb14-6c3fc26cca03@siemens.com>
-Date: Wed, 2 Oct 2019 16:59:59 +0200
+Message-ID: <d384f7dd-ea39-8640-7463-e68911f380dd@siemens.com>
+Date: Wed, 2 Oct 2019 17:30:49 +0200
 MIME-Version: 1.0
-In-Reply-To: <b7f-5d94aa00-4f-344a2840@235460769>
+In-Reply-To: <b7f-5d94aa00-51-344a2840@235462089>
 Content-Type: text/plain; charset="utf-8"; format="flowed"
 Content-Language: en-US
 Content-Transfer-Encoding: 8bit
@@ -18,128 +18,325 @@ List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: =?UTF-8?Q?Fran=c3=a7ois_Legal?= <devel@thom.fr.eu.org>, xenomai@xenomai.org
 
-On 02.10.19 15:44, François Legal via Xenomai wrote:
+On 02.10.19 15:45, François Legal via Xenomai wrote:
 > From: François LEGAL <devel@thom.fr.eu.org>
-> 
-> Make MACB driver compliant with GEM hardware (as mainline linux
-> driver does). Main fix is about interrupt flag that is never
-> cleared (write 1 to clear)
 > 
 > Signed-off-by: François LEGAL <devel@thom.fr.eu.org>
 > 
-> Subject: [PATCH] Make MACB driver compliant with GEM hardware
-
-Hmm, two subject lines - which one should I use? Would be better get the first 
-one right already ;).
-
+> Subject: [PATCH] Allow RTNet to be builtin kernel
 > 
-> ---
->   kernel/drivers/net/drivers/Kconfig  |  7 +++++++
->   kernel/drivers/net/drivers/Makefile |  1 +
->   kernel/drivers/net/drivers/macb.c   | 23 ++++++++++++++++++++---
->   3 files changed, 28 insertions(+), 3 deletions(-)
-> 
-> diff --git a/kernel/drivers/net/drivers/Kconfig b/kernel/drivers/net/drivers/Kconfig
-> index 65f0855..39c976f 100644
-> --- a/kernel/drivers/net/drivers/Kconfig
-> +++ b/kernel/drivers/net/drivers/Kconfig
-> @@ -131,6 +131,13 @@ config XENO_DRIVERS_NET_DRV_MACB
->       Driver for internal MAC-controller on AT91SAM926x microcontrollers.
->       Porting by Cristiano Mantovani and Stefano Banzi (Marposs SpA).
->   
-> +config XENO_DRIVERS_NET_DRV_GEM
-> +    depends on XENO_DRIVERS_NET
-> +    tristate "GEM devices"
-> +    ---help---
-> +    Driver for internal MAC-controller on Zynq 7000 SoCs.
-> +    Porting by Cristiano Mantovani and Stefano Banzi (Marposs SpA).
-> +
->   endif
->   
->   source "drivers/xenomai/net/drivers/experimental/Kconfig"
-> diff --git a/kernel/drivers/net/drivers/Makefile b/kernel/drivers/net/drivers/Makefile
-> index d95c5a8..9da1a56 100644
-> --- a/kernel/drivers/net/drivers/Makefile
-> +++ b/kernel/drivers/net/drivers/Makefile
-> @@ -57,6 +57,7 @@ obj-$(CONFIG_XENO_DRIVERS_NET_DRV_SMC91111) += rt_smc91111.o
->   rt_smc91111-y := smc91111.o
->   
->   obj-$(CONFIG_XENO_DRIVERS_NET_DRV_MACB) += rt_macb.o
-> +obj-$(CONFIG_XENO_DRIVERS_NET_DRV_GEM) += rt_macb.o
 
-Only saw this now: What's the idea behind adding XENO_DRIVERS_NET_DRV_GEM when 
-there is XENO_DRIVERS_NET_DRV_MACB already? If a selects both, the build will fail.
+Proper ordering is
 
->   
->   rt_macb-y := macb.o
->   
-> diff --git a/kernel/drivers/net/drivers/macb.c b/kernel/drivers/net/drivers/macb.c
-> index fc5b667..ccda6ae 100644
-> --- a/kernel/drivers/net/drivers/macb.c
-> +++ b/kernel/drivers/net/drivers/macb.c
-> @@ -679,7 +679,13 @@ static int gem_rx(struct macb *bp, int budget, nanosecs_abs_t *time_stamp)
->   	unsigned int		entry;
->   	struct rtskb		*skb;
->   	struct macb_dma_desc	*desc;
-> -	int			count = 0;
-> +	int			count = 0, status;
-> +
-> +	status = macb_readl(bp, RSR);
-> +	macb_writel(bp, RSR, status);
-> +
-> +	if (bp->caps & MACB_CAPS_ISR_CLEAR_ON_WRITE)
-> +		macb_writel(bp, ISR, MACB_BIT(RCOMP));
->   
->   	while (count < budget) {
->   		u32 addr, ctrl;
-> @@ -877,7 +883,7 @@ static int macb_interrupt(rtdm_irq_t *irq_handle)
->   	struct rtnet_device *dev = dev_id;
->   	struct macb *bp = rtnetdev_priv(dev);
->   	unsigned received = 0;
-> -	u32 status;
-> +	u32 status, ctrl;
->   
->   	status = macb_readl(bp, ISR);
->   
-> @@ -895,9 +901,10 @@ static int macb_interrupt(rtdm_irq_t *irq_handle)
->   
->   		rtdev_vdbg(bp->dev, "isr = 0x%08lx\n", (unsigned long)status);
->   
-> -		if (status & MACB_RX_INT_FLAGS)
-> +		if (status & MACB_BIT(RCOMP)) {
->   			received += bp->macbgem_ops.mog_rx(bp, 100 - received,
->   							&time_stamp);
-> +		}
->   
->   		if (unlikely(status & (MACB_TX_ERR_FLAGS))) {
->   			macb_writel(bp, IDR, MACB_TX_INT_FLAGS);
-> @@ -917,6 +924,15 @@ static int macb_interrupt(rtdm_irq_t *irq_handle)
->   		 * add that if/when we get our hands on a full-blown MII PHY.
->   		 */
->   
-> +		if (status & MACB_BIT(RXUBR)) {
-> +			ctrl = macb_readl(bp, NCR);
-> +			macb_writel(bp, NCR, ctrl & ~MACB_BIT(RE));
-> +			macb_writel(bp, NCR, ctrl | MACB_BIT(RE));
-> +
-> +			if (bp->caps & MACB_CAPS_ISR_CLEAR_ON_WRITE)
-> +				macb_writel(bp, ISR, MACB_BIT(RXUBR));
-> +		}
-> +
->   		if (status & MACB_BIT(ISR_ROVR)) {
->   			/* We missed at least one packet */
->   			if (macb_is_gem(bp))
-> @@ -1320,6 +1336,7 @@ static void macb_configure_caps(struct macb *bp)
->   		if (GEM_BFEXT(IRQCOR, gem_readl(bp, DCFG1)) == 0)
->   			bp->caps |= MACB_CAPS_ISR_CLEAR_ON_WRITE;
->   	}
-> +	rtdev_vdbg(bp->dev, "Capabilities : %X\n", bp->caps);
->   }
->   
->   static void macb_init_hw(struct macb *bp)
-> 
+- one subject (first line of your commit message)
+- optionally a "From:", specifically when your provider rewrites the
+   sender address
+- commit message body
+- signed-off
+- separator ("---")
+- optionally some message that should not be in git afterwards, e.g. a
+   changelog of what you edited in this revision of the patch. I don't
+   see all of my comments addressed in code. So you should at least tell
+   us why you didn't change something.
+- the diff
 
 Jan
+
+> Makefile is changed because when builtin, the modules
+> get loaded in the link order. In the previous version
+> protocols would get loaded before stackmgr which
+> obviously fails.
+> 
+> This has been tested on Zynq 7000 Hardware (microzed
+> board) with MACB/GEM RTNet driver, with linux 4.4.189
+> vanilla. Kernel boots up correctly, and the following
+> messages get printed on the console during the boot :
+> 
+> [   13.875451] sdhci-pltfm: SDHCI platform and OF driver helper
+> [   13.881627] sdhci-arasan e0100000.sdhci: No vmmc regulator found
+> [   13.887581] sdhci-arasan e0100000.sdhci: No vqmmc regulator found
+> [   13.927585] mmc0: SDHCI controller on e0100000.sdhci [e0100000.sdhci] using ADMA
+> [   13.945085] fpga_manager fpga0: Xilinx Zynq FPGA Manager registered
+> [   13.951896]
+> [   13.951896] *** RTnet for Xenomai v3.0.9 ***
+> [   13.951896]
+> [   13.959156] RTnet: initialising real-time networking
+> [   13.964928] RTmac/TDMA: init time division multiple access control mechanism
+> [   13.972074] RTmac: init realtime media access control
+> [   13.977064] RTcfg: init real-time configuration distribution protocol
+> [   13.983752] initializing loopback...
+> [   13.987295] RTnet: registered rtlo
+> [   13.993238] RTnet: registered rteth0
+> [   13.996832] libphy: MACB_mii_bus: probed
+> [   14.001140] rt_macb: rteth0: Cadence GEM at 0xe000b000 irq 26 (00:0a:35:00:01:22)
+> [   14.008630] rt_macb: rteth0: attached PHY driver [Marvell 88E1510] (mii_bus:phy_addr=e000b000.ethernet-ffffffff:00, irq=-1)
+> [   14.019845] RTcap: real-time capturing interface
+> [   14.026562] RTproxy attached to rteth0
+> [   14.031129] rtnetproxy installed as "rtproxy"
+> [   14.035693] NET: Registered protocol family 26
+> [   14.040309] NET: Registered protocol family 17
+> [   14.044686] can: controller area network core (rev 20120528 abi 9)
+> [   14.050957] NET: Registered protocol family 29
+> [   14.055329] can: raw protocol (rev 20120528)
+> [   14.059683] can: broadcast manager protocol (rev 20120528 t)
+> 
+> ---
+>   kernel/drivers/net/Kconfig        |   1 -
+>   kernel/drivers/net/addons/Kconfig |   4 +-
+>   kernel/drivers/net/stack/Makefile |  16 ++---
+>   utils/net/rtnet.in                | 148 +++++++++++++++++++++++---------------
+>   4 files changed, 101 insertions(+), 68 deletions(-)
+> 
+> diff --git a/kernel/drivers/net/Kconfig b/kernel/drivers/net/Kconfig
+> index ac3bced..49d2402 100644
+> --- a/kernel/drivers/net/Kconfig
+> +++ b/kernel/drivers/net/Kconfig
+> @@ -1,7 +1,6 @@
+>   menu "RTnet"
+>   
+>   config XENO_DRIVERS_NET
+> -    depends on m
+>       select NET
+>       tristate "RTnet, TCP/IP socket interface"
+>   
+> diff --git a/kernel/drivers/net/addons/Kconfig b/kernel/drivers/net/addons/Kconfig
+> index baa6cbc..616ed40 100644
+> --- a/kernel/drivers/net/addons/Kconfig
+> +++ b/kernel/drivers/net/addons/Kconfig
+> @@ -2,7 +2,7 @@ menu "Add-Ons"
+>       depends on XENO_DRIVERS_NET
+>   
+>   config XENO_DRIVERS_NET_ADDON_RTCAP
+> -    depends on XENO_DRIVERS_NET && m
+> +    depends on XENO_DRIVERS_NET
+>       select ETHERNET
+>       tristate "Real-Time Capturing Support"
+>       default n
+> @@ -18,7 +18,7 @@ config XENO_DRIVERS_NET_ADDON_RTCAP
+>       For further information see Documentation/README.rtcap.
+>   
+>   config XENO_DRIVERS_NET_ADDON_PROXY
+> -    depends on XENO_DRIVERS_NET_RTIPV4 && m
+> +    depends on XENO_DRIVERS_NET_RTIPV4
+>       select ETHERNET
+>       tristate "IP protocol proxy for Linux"
+>       default n
+> diff --git a/kernel/drivers/net/stack/Makefile b/kernel/drivers/net/stack/Makefile
+> index d055dc2..f8db6fa 100644
+> --- a/kernel/drivers/net/stack/Makefile
+> +++ b/kernel/drivers/net/stack/Makefile
+> @@ -1,13 +1,5 @@
+>   ccflags-y += -Idrivers/xenomai/net/stack/include -Ikernel/
+>   
+> -obj-$(CONFIG_XENO_DRIVERS_NET_RTIPV4) += ipv4/
+> -
+> -obj-$(CONFIG_XENO_DRIVERS_NET_RTPACKET) += packet/
+> -
+> -obj-$(CONFIG_XENO_DRIVERS_NET_RTMAC) += rtmac/
+> -
+> -obj-$(CONFIG_XENO_DRIVERS_NET_RTCFG) += rtcfg/
+> -
+>   obj-$(CONFIG_XENO_DRIVERS_NET) += rtnet.o
+>   
+>   rtnet-y :=  \
+> @@ -23,4 +15,12 @@ rtnet-y :=  \
+>   	stack_mgr.o \
+>   	eth.o
+>   
+> +obj-$(CONFIG_XENO_DRIVERS_NET_RTIPV4) += ipv4/
+> +
+> +obj-$(CONFIG_XENO_DRIVERS_NET_RTPACKET) += packet/
+> +
+> +obj-$(CONFIG_XENO_DRIVERS_NET_RTMAC) += rtmac/
+> +
+> +obj-$(CONFIG_XENO_DRIVERS_NET_RTCFG) += rtcfg/
+> +
+>   rtnet-$(CONFIG_XENO_DRIVERS_NET_RTWLAN) += rtwlan.o
+> diff --git a/utils/net/rtnet.in b/utils/net/rtnet.in
+> index f81a7bb..3c3cab9 100644
+> --- a/utils/net/rtnet.in
+> +++ b/utils/net/rtnet.in
+> @@ -31,44 +31,62 @@ EOF
+>   }
+>   
+>   init_rtnet() {
+> -    modprobe rtnet >/dev/null || exit 1
+> -    modprobe rtipv4 >/dev/null || exit 1
+> -    modprobe $RT_DRIVER $RT_DRIVER_OPTIONS >/dev/null || exit 1
+> +    if [ ! -d /proc/rtnet ]; then
+> +        modprobe rtnet >/dev/null || exit 1
+> +    fi
+>   
+> -    for dev in $REBIND_RT_NICS; do
+> -	if [ -d /sys/bus/pci/devices/$dev/driver ]; then
+> -	    echo $dev > /sys/bus/pci/devices/$dev/driver/unbind
+> -	fi
+> -	echo $dev > /sys/bus/pci/drivers/$RT_DRIVER/bind
+> -    done
+> +    if [ ! -d /proc/rtnet/ipv4 ]; then
+> +        modprobe rtipv4 >/dev/null || exit 1
+> +        for PROTOCOL in $RT_PROTOCOLS; do
+> +            modprobe rt$PROTOCOL >/dev/null || exit 1
+> +        done
+> +    fi
+>   
+> -    for PROTOCOL in $RT_PROTOCOLS; do
+> -	modprobe rt$PROTOCOL >/dev/null || exit 1
+> -    done
+> +    $(cat /proc/rtnet/devices | grep -q rteth0)
+> +    if [ $? -eq 1 ]; then
+> +        modprobe $RT_DRIVER $RT_DRIVER_OPTIONS >/dev/null || exit 1
+> +
+> +        for dev in $REBIND_RT_NICS; do
+> +            if [ -d /sys/bus/pci/devices/$dev/driver ]; then
+> +                echo $dev > /sys/bus/pci/devices/$dev/driver/unbind
+> +            fi
+> +            echo $dev > /sys/bus/pci/drivers/$RT_DRIVER/bind
+> +        done
+> +    fi
+>   
+>       if [ $RT_LOOPBACK = "yes" ]; then
+> -	modprobe rt_loopback >/dev/null || exit 1
+> +        $(cat /proc/rtnet/devices | grep -q rtlo)
+> +        if [ $? -eq 1 ]; then
+> +
+> +            modprobe rt_loopback >/dev/null || exit 1
+> +        fi
+>       fi
+>   
+> -    if [ $RTCAP = "yes" ]; then
+> -	modprobe rtcap >/dev/null || exit 1
+> +    if [ $RTCAP = "yes" -a ! -d /sys/modules/rtcap ]; then
+> +        modprobe rtcap >/dev/null || exit 1
+>       fi
+>   
+>       if [ $RT_LOOPBACK = "yes" ]; then
+> -	$RTIFCONFIG rtlo up 127.0.0.1
+> +        $RTIFCONFIG rtlo up 127.0.0.1
+>       fi
+>   
+>       if [ $RTCAP = "yes" ]; then
+> -	ifconfig rteth0 up
+> -	ifconfig rteth0-mac up
+> -	if [ $RT_LOOPBACK = "yes" ]; then
+> -	    ifconfig rtlo up
+> -	fi
+> +        ifconfig rteth0 up
+> +        ifconfig rteth0-mac up
+> +        if [ $RT_LOOPBACK = "yes" ]; then
+> +            ifconfig rtlo up
+> +        fi
+>       fi
+>   
+> -    modprobe rtcfg >/dev/null
+> -    modprobe rtmac >/dev/null
+> -    modprobe tdma >/dev/null
+> +    if [ ! -d /proc/rtnet/rtcfg ]; then
+> +        modprobe rtcfg >/dev/null
+> +    fi
+> +    if [ ! -d /proc/rtnet/rtmac ]; then
+> +        modprobe rtmac >/dev/null
+> +    fi
+> +    if [ ! -f /proc/tdma ]; then
+> +        modprobe tdma >/dev/null
+> +    fi
+>   }
+>   
+>   submit_cfg() {
+> @@ -329,43 +347,59 @@ case "$1" in
+>   	;;
+>   
+>       master)
+> -	shift
+> -	init_rtnet
+> -	TDMA_SLAVES=$*
+> -	start_master
+> -	;;
+> +        shift
+> +        init_rtnet
+> +        TDMA_SLAVES=$*
+> +        start_master
+> +        ;;
+>   
+>       capture)
+> -	modprobe rtnet >/dev/null || exit 1
+> -	modprobe $RT_DRIVER $RT_DRIVER_OPTIONS >/dev/null || exit 1
+> -	modprobe rtcap >/dev/null || exit 1
+> -	$RTIFCONFIG rteth0 up promisc
+> -	ifconfig rteth0 up
+> -	ifconfig rteth0-mac up
+> -	;;
+> +        if [ ! -d /proc/rtnet ]; then
+> +            modprobe rtnet >/dev/null || exit 1
+> +        fi
+> +        $(cat /proc/rtnet/devices | grep -q rteth0)
+> +        if [ $? -eq 1 ]; then
+> +            modprobe $RT_DRIVER $RT_DRIVER_OPTIONS >/dev/null || exit 1
+> +        fi
+> +        if [ ! -d /sys/modules/rtcap ]; then
+> +            modprobe rtcap >/dev/null || exit 1
+> +        fi
+> +        $RTIFCONFIG rteth0 up promisc
+> +        ifconfig rteth0 up
+> +        ifconfig rteth0-mac up
+> +        ;;
+>   
+>       loopback)
+> -	modprobe rtnet >/dev/null || exit 1
+> -	modprobe rtipv4 >/dev/null || exit 1
+> -
+> -	for PROTOCOL in $RT_PROTOCOLS; do
+> -	    modprobe rt$PROTOCOL >/dev/null || exit 1
+> -	done
+> -
+> -	modprobe rt_loopback >/dev/null || exit 1
+> -
+> -	if [ $RTCAP = "yes" ]; then
+> -	    modprobe rtcap >/dev/null || exit 1
+> -	fi
+> -
+> -	$RTIFCONFIG rtlo up 127.0.0.1
+> -
+> -	if [ $RTCAP = "yes" ]; then
+> -	    ifconfig rtlo up
+> -	fi
+> -	;;
+> +        if [ ! -d /proc/rtnet ]; then
+> +            modprobe rtnet >/dev/null || exit 1
+> +        fi
+> +        if [ ! -d /proc/rtnet/ipv4 ]; then
+> +            modprobe rtipv4 >/dev/null || exit 1
+> +            for PROTOCOL in $RT_PROTOCOLS; do
+> +                modprobe rt$PROTOCOL >/dev/null || exit 1
+> +            done
+> +        fi
+> +
+> +        if [ $RT_LOOPBACK = "yes" ]; then
+> +            $(cat /proc/rtnet/devices | grep -q rtlo)
+> +            if [ $? -eq 1 ]; then
+> +
+> +                modprobe rt_loopback >/dev/null || exit 1
+> +            fi
+> +        fi
+> +
+> +        if [ $RTCAP = "yes" -a ! -d /sys/modules/rtcap ]; then
+> +            modprobe rtcap >/dev/null || exit 1
+> +        fi
+> +
+> +        $RTIFCONFIG rtlo up 127.0.0.1
+> +
+> +        if [ $RTCAP = "yes" ]; then
+> +            ifconfig rtlo up
+> +        fi
+> +        ;;
+>   
+>       *)
+> -	usage
+> -	exit 1
+> +        usage
+> +        exit 1
+>   esac
+> 
 
 -- 
 Siemens AG, Corporate Technology, CT RDA IOT SES-DE
