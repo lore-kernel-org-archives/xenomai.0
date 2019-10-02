@@ -1,10 +1,10 @@
-Subject: Re: [PATCH] Allow RTNet to be builtin kernel
-References: <30dd-5d94c580-17-21e4bb80@177052564>
+Subject: Re: [PATCH] MABC RTNet driver to work with GEM hardware
+References: <b7f-5d94bd80-57-344a2840@235462188>
 From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <8a055cb4-035b-605b-0a4a-90aba32a10a5@siemens.com>
-Date: Wed, 2 Oct 2019 18:06:04 +0200
+Message-ID: <3bae5607-a3f4-6cb1-1d20-8a1743aec630@siemens.com>
+Date: Wed, 2 Oct 2019 18:17:32 +0200
 MIME-Version: 1.0
-In-Reply-To: <30dd-5d94c580-17-21e4bb80@177052564>
+In-Reply-To: <b7f-5d94bd80-57-344a2840@235462188>
 Content-Type: text/plain; charset="utf-8"; format="flowed"
 Content-Language: en-US
 Content-Transfer-Encoding: 8bit
@@ -19,75 +19,103 @@ List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
 To: =?UTF-8?Q?Fran=c3=a7ois_Legal?= <devel@thom.fr.eu.org>
 Cc: Xenomai <xenomai@xenomai.org>
 
-[re-adding the list]
+Please keep this on the list - readding.
 
-On 02.10.19 17:43, François Legal wrote:
-> Le Mercredi, Octobre 02, 2019 17:30 CEST, Jan Kiszka <jan.kiszka@siemens.com> a écrit:
+On 02.10.19 17:08, François Legal wrote:
+> Le Mercredi, Octobre 02, 2019 16:59 CEST, Jan Kiszka <jan.kiszka@siemens.com> a écrit:
 >   
->> On 02.10.19 15:45, François Legal via Xenomai wrote:
+>> On 02.10.19 15:44, François Legal via Xenomai wrote:
 >>> From: François LEGAL <devel@thom.fr.eu.org>
+>>>
+>>> Make MACB driver compliant with GEM hardware (as mainline linux
+>>> driver does). Main fix is about interrupt flag that is never
+>>> cleared (write 1 to clear)
+> 
+> Do you mean I shall move these 3 lines right before "kernel/drivers/net/drivers/Kconfig  |  7 +++++++..." ?
+> 
+
+I mean something like this in your git commit:
+
+"Make MACB driver compliant with GEM hardware
+
+Main fix is about interrupt flag that is never
+cleared (write 1 to clear)
+
+Signed-off-by: ..."
+
+That will generate a properly formatted e-mail when send that out.
+
 >>>
 >>> Signed-off-by: François LEGAL <devel@thom.fr.eu.org>
 >>>
->>> Subject: [PATCH] Allow RTNet to be builtin kernel
+>>> Subject: [PATCH] Make MACB driver compliant with GEM hardware
+>>
+>> Hmm, two subject lines - which one should I use? Would be better get the first
+>> one right already ;).
+>>
 >>>
+>>> ---
+>>>    kernel/drivers/net/drivers/Kconfig  |  7 +++++++
+>>>    kernel/drivers/net/drivers/Makefile |  1 +
+>>>    kernel/drivers/net/drivers/macb.c   | 23 ++++++++++++++++++++---
+>>>    3 files changed, 28 insertions(+), 3 deletions(-)
+>>>
+>>> diff --git a/kernel/drivers/net/drivers/Kconfig b/kernel/drivers/net/drivers/Kconfig
+>>> index 65f0855..39c976f 100644
+>>> --- a/kernel/drivers/net/drivers/Kconfig
+>>> +++ b/kernel/drivers/net/drivers/Kconfig
+>>> @@ -131,6 +131,13 @@ config XENO_DRIVERS_NET_DRV_MACB
+>>>        Driver for internal MAC-controller on AT91SAM926x microcontrollers.
+>>>        Porting by Cristiano Mantovani and Stefano Banzi (Marposs SpA).
+>>>    
+>>> +config XENO_DRIVERS_NET_DRV_GEM
+>>> +    depends on XENO_DRIVERS_NET
+>>> +    tristate "GEM devices"
+>>> +    ---help---
+>>> +    Driver for internal MAC-controller on Zynq 7000 SoCs.
+>>> +    Porting by Cristiano Mantovani and Stefano Banzi (Marposs SpA).
+>>> +
+>>>    endif
+>>>    
+>>>    source "drivers/xenomai/net/drivers/experimental/Kconfig"
+>>> diff --git a/kernel/drivers/net/drivers/Makefile b/kernel/drivers/net/drivers/Makefile
+>>> index d95c5a8..9da1a56 100644
+>>> --- a/kernel/drivers/net/drivers/Makefile
+>>> +++ b/kernel/drivers/net/drivers/Makefile
+>>> @@ -57,6 +57,7 @@ obj-$(CONFIG_XENO_DRIVERS_NET_DRV_SMC91111) += rt_smc91111.o
+>>>    rt_smc91111-y := smc91111.o
+>>>    
+>>>    obj-$(CONFIG_XENO_DRIVERS_NET_DRV_MACB) += rt_macb.o
+>>> +obj-$(CONFIG_XENO_DRIVERS_NET_DRV_GEM) += rt_macb.o
 >>
->> Proper ordering is
->>
->> - one subject (first line of your commit message)
->> - optionally a "From:", specifically when your provider rewrites the
->>     sender address
->> - commit message body
->> - signed-off
->> - separator ("---")
->> - optionally some message that should not be in git afterwards, e.g. a
->>     changelog of what you edited in this revision of the patch. I don't
->>     see all of my comments addressed in code. So you should at least tell
->>     us why you didn't change something.
->> - the diff
+>> Only saw this now: What's the idea behind adding XENO_DRIVERS_NET_DRV_GEM when
+>> there is XENO_DRIVERS_NET_DRV_MACB already? If a selects both, the build will fail.
 > 
-> Allright. Thanks for the clarification and sorry to bother you with this kind of stuff.
-
-No problem. This can be a lot when writing a first patch, even worse when that 
-is "only" a short one, but it helps a lot to keep the project consistent.
-
-> Regarding the comments in the patch, to be honest, I did not see those in the first place.
-> Let me clarify these points here :
+> Yes, that's correct. However, the Kconfig selects automatically some AT91 specific stuff when CONFIG_XENO_DRIVERS_NET_DRV_MACB is selected.
+> I'm not sure on the best way to handle those situations without breaking the existing function.
 > 
->> Maybe we should add "set -x" to the script so that every unhandled failure becomes visible. Can be done separately, though.
+> from Kconfig :
+> config XENO_DRIVERS_NET_DRV_AT91_ETHER
+>      depends on XENO_DRIVERS_NET && SOC_AT91RM9200
+>      select XENO_DRIVERS_NET_DRV_MACB
+>      tristate "AT91RM9200 Board Ethernet Driver"
 > 
-> Yes. I did that during testing but removed it afterwards. I thought leaving a set -x in would be a nogo for commit. I'll set it back.
-
-With "can be done separately", I mean that such a change would be desired, not 
-needed for this patch, and when done, it should come as an additional patch.
-
+> config XENO_DRIVERS_NET_DRV_MACB
+>      depends on XENO_DRIVERS_NET && ARCH_AT91
+>      select AT91_PROGRAMMABLE_CLOCKS
+>      tristate "MACB devices"
+>      ---help---
+>      Driver for internal MAC-controller on AT91SAM926x microcontrollers.
+>      Porting by Cristiano Mantovani and Stefano Banzi (Marposs SpA).
 > 
->> rtpacket does not depend on rtipv4.
+> Maybe I should replace the line select AT91_PROGRAMMABLE_CLOCKS with
+> select AT91_PROGRAMMABLE_CLOCKS IF ARCH_AT91
 > 
-> I thought the RT_PROTOCOLS would be in udp, icmp, (tcp maybe). I'll have to check how to address rtpacket.
-> 
->> Reformatting is appreciated, but this is better done separately, to ease my review. :)
-> 
-> Got it. I'll restore the tabs.
+> What do you think ?
 
-You can also convert them to something consistent, but then please send two 
-patches: One that only does the style conversion without functional changes, and 
-one that does the other things.
+What does upstream do? Maybe we copied back than a suboptimal pattern that was 
+improved there meanwhile.
 
-> 
->> I think you are missing the rmmod in the "stop" path.
-> 
-> No, I made that intentionally, as the rmmod comes with -f plus > /dev/null
-> I thought I could leave it here as any error would be silently discarded. Moreover, I'm not sure how I can handle it as the files/dirs I use to check if RTNet is builtin should probably appear whenever the modular RTNet gets loaded.
-
-Ah, makes sense!
-
-> 
-> So if these replies are ok by you, I'll modify the patch and send it back to the list.
-
-Yes, please.
-
-Thanks,
 Jan
 
 -- 
