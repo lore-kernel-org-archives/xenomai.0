@@ -1,10 +1,8 @@
-Subject: Re: Dovetail status clarification
-References: <CABaOOZ0nqvBR+PMCWvZieY+b3j3nAcq_0FVSY42F0FjcXKD_hQ@mail.gmail.com>
-From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <44151481-b9f7-24a4-252a-bb91138f336a@siemens.com>
-Date: Wed, 2 Oct 2019 10:12:03 +0200
+From: Gylstorff Quirin <quirin.gylstorff@siemens.com>
+Subject: smokey arm64 gdb tests
+Message-ID: <4d2b41d6-2b78-5d49-6ddb-94741eab6e3a@siemens.com>
+Date: Wed, 2 Oct 2019 10:37:04 +0200
 MIME-Version: 1.0
-In-Reply-To: <CABaOOZ0nqvBR+PMCWvZieY+b3j3nAcq_0FVSY42F0FjcXKD_hQ@mail.gmail.com>
 Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -16,29 +14,27 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Stratiyenko Roman <picoworm@gmail.com>, xenomai@xenomai.org, Philippe Gerum <rpm@xenomai.org>
+To: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On 02.10.19 09:06, Stratiyenko Roman via Xenomai wrote:
-> Hello xenomai community,
-> 
-> As you may already know kernel v5.4-rc1 released yesterday and according to
-> releases page on kernel.org this version is LTS.
-> 
-> So it make sense to start porting of xenomai to this release.
-> 
-> Some time ago dovetail were announced and It should replace ipipe for
-> xenomai.
-> 
-> Do you have any plans to start this migration in nearest time?
+Hi,
 
-This is indeed a good question at the right time. Philippe can tell more details 
-about the dovetail status. There are prototypes for ARM and x86 for Xenomai, but 
-I didn't find time to test at least the x86 part so far. We should definitely 
-look into this now before moving forward.
+I did a run of smokey on arm64 and it aborts in the gdb test with the 
+error:
+FAILURE run_gdb:287: checking expression \"primary_mode\", expected 
+\"1\", found \"0\"
 
-Jan
+
+My question should the gdb test run on arm64?
+If not we should exclude it for the time being.
+
+Thanks,
+Quirin
 
 -- 
-Siemens AG, Corporate Technology, CT RDA IOT SES-DE
-Corporate Competence Center Embedded Linux
+Quirin Gylstorff
+
+Siemens AG
+Corporate Technology
+CT RDA IOT SES-DE
+
 
