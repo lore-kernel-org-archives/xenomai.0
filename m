@@ -1,11 +1,13 @@
-From: alessio margan <alessio.margan@iit.it>
-Subject: open XDDP from nrt thread
-Message-ID: <fea9dfd7-d28e-da96-f230-2a585da5cc84@iit.it>
-Date: Wed, 2 Oct 2019 10:08:20 +0200
+Subject: Re: Dovetail status clarification
+References: <CABaOOZ0nqvBR+PMCWvZieY+b3j3nAcq_0FVSY42F0FjcXKD_hQ@mail.gmail.com>
+From: Jan Kiszka <jan.kiszka@siemens.com>
+Message-ID: <44151481-b9f7-24a4-252a-bb91138f336a@siemens.com>
+Date: Wed, 2 Oct 2019 10:12:03 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"; format="flowed"
-Content-Transfer-Encoding: 8bit
+In-Reply-To: <CABaOOZ0nqvBR+PMCWvZieY+b3j3nAcq_0FVSY42F0FjcXKD_hQ@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -14,64 +16,29 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
+To: Stratiyenko Roman <picoworm@gmail.com>, xenomai@xenomai.org, Philippe Gerum <rpm@xenomai.org>
 
-Hi all,
+On 02.10.19 09:06, Stratiyenko Roman via Xenomai wrote:
+> Hello xenomai community,
+> 
+> As you may already know kernel v5.4-rc1 released yesterday and according to
+> releases page on kernel.org this version is LTS.
+> 
+> So it make sense to start porting of xenomai to this release.
+> 
+> Some time ago dovetail were announced and It should replace ipipe for
+> xenomai.
+> 
+> Do you have any plans to start this migration in nearest time?
 
-it seems that at some point ( following branch next up to rc1) something 
-is changed regarding XDDP .
+This is indeed a good question at the right time. Philippe can tell more details 
+about the dovetail status. There are prototypes for ARM and x86 for Xenomai, but 
+I didn't find time to test at least the x86 part so far. We should definitely 
+look into this now before moving forward.
 
-I've got a process that spawn 2 rt-thread and a nrt-thread, one of the 
-2rt  produce data that the nrt consume using an XDDP
-
-Since 4.14.89-xeno-ipipe-stableVx everything works, now on rc1 I can not 
-open the pipes as usual.
-
-There is something I have missed ?
-
-These are the pipes
-
-ls -la /proc/xenomai/registry/rtipc/xddp/
-total 0
-dr-xr-xr-x 2 root root 0 ott  2 09:06 .
-dr-xr-xr-x 3 root root 0 ott  2 09:06 ..
-lrwxrwxrwx 1 root root 9 ott  2 09:06 debugOut -> /dev/rtp3
-lrwxrwxrwx 1 root root 9 ott  2 09:06 emergency -> /dev/rtp0
-lrwxrwxrwx 1 root root 9 ott  2 09:06 NoNe@Motor_id_1 -> /dev/rtp4
-lrwxrwxrwx 1 root root 9 ott  2 09:06 repl_in -> /dev/rtp1
-lrwxrwxrwx 1 root root 9 ott  2 09:06 repl_out -> /dev/rtp2
-
-TIA
-
-Alessio
+Jan
 
 -- 
-
-ISTITUTO ITALIANO DI TECNOLOGIA
-
-Alessio Margan
-Chief Technician
-Advanced Robotics Department
-
-alessio.margan@iit.it
-Via Morego 30, 16163 Genova
-Tel. +39 010 71781-754
-
-www.iit.it
-
-Legal Disclaimer
-This electronic message contains information that is confidential. The information is intended for the use of the addressee only.
-If you are not the addressee we would appreciate your notification in this respect.
-Please note that any disclosure, copy, distribution or use of the contents of this message is prohibited and may be unlawful.
-We have taken every reasonable precaution to ensure that any kind of attachment to this e-mail has been swept for viruses.
-However, we cannot accept liability for any damage sustained as a result of software viruses
-and would advise you to carry out your own virus checks before opening any attachment.
-Avvertenza legale
-Questo messaggio Email contiene informazioni confidenziali riservate ai soli destinatari.
-Qualora  veniate in possesso di tali informazioni senza essere definito come destinatario vi reghiamo di leggere le seguenti note.
-Ogni apertura, copia, distribuzione del contenuto del messaggio e dei suoi allegati è proibito e potrebbe violare le presenti leggi.
-Abbiamo attivato ogni possibile e ragionevole precauzione per assicurare che gli allegati non contengano virus.
-Comunque non assumeremo alcuna responsabilità per ogni eventuale danno causato da virus software e simili
-in quanto è onere del destinatario verificarne l’assenza in ogni allegato attuando propri indipendenti controlli.
-
+Siemens AG, Corporate Technology, CT RDA IOT SES-DE
+Corporate Competence Center Embedded Linux
 
