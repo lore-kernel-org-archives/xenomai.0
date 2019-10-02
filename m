@@ -1,13 +1,9 @@
-Date: Mon, 16 Sep 2019 10:33:10 -0500 (CDT)
-From: Per Oberg <pero@wolfram.com>
-Message-ID: <1295125104.5915666.1568647990243.JavaMail.zimbra@wolfram.com>
-In-Reply-To: <11d341ef-47a4-0dd6-62f7-7fc30cd1796e@siemens.com>
-References: <1498070335.5810731.1568637405044.JavaMail.zimbra@wolfram.com>
- <606820185.5820958.1568637688860.JavaMail.zimbra@wolfram.com>
- <11d341ef-47a4-0dd6-62f7-7fc30cd1796e@siemens.com>
-Subject: Re: RTDM open, open_rt, and open_nrt
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Date: Wed, 02 Oct 2019 14:35:37 +0200
+Subject: =?utf-8?q?=5BPATCH=5D?= Allow RTNet to be builtin kernel
+Message-ID: <30dd-5d949980-11-21e4bb80@177051178>
+From: =?utf-8?q?Fran=C3=A7ois_Legal?= <devel@thom.fr.eu.org>
 Content-Transfer-Encoding: quoted-printable
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
@@ -17,186 +13,276 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai <xenomai@xenomai.org>
+To: xenomai@xenomai.org
 
+From: Fran=C3=A7ois LEGAL <devel@thom.fr.eu.org>
 
------ Den 16 sep 2019, p=C3=A5 kl 16:59, Jan Kiszka jan.kiszka@siemens.com =
-skrev:
+Signed-off-by: Fran=C3=A7ois LEGAL <devel@thom.fr.eu.org>
 
-> On 16.09.19 14:41, Per Oberg via Xenomai wrote:
-> > ----- Den 16 sep 2019, p=C3=A5 kl 14:36, Per =C3=96berg pero@wolfram.co=
-m skrev:
+Subject: [PATCH] Allow RTNet to be builtin kernel
 
-> >> ----- Den 16 sep 2019, p=C3=A5 kl 11:34, Jan Kiszka jan.kiszka@siemens=
-.com skrev:
+---
+ kernel/drivers/net/Kconfig        |   1 -
+ kernel/drivers/net/addons/Kconfig |   4 +-
+ kernel/drivers/net/stack/Makefile |  16 ++---
+ utils/net/rtnet.in                | 148 +++++++++++++++++++++++-------=
+--------
+ 4 files changed, 101 insertions(+), 68 deletions(-)
 
-> >>> On 16.09.19 09:32, Per Oberg via Xenomai wrote:
-> >>>> Hello list
+diff --git a/kernel/drivers/net/Kconfig b/kernel/drivers/net/Kconfig
+index ac3bced..49d2402 100644
+--- a/kernel/drivers/net/Kconfig
++++ b/kernel/drivers/net/Kconfig
+@@ -1,7 +1,6 @@
+ menu "RTnet"
+ 
+ config XENO=5FDRIVERS=5FNET
+-    depends on m
+     select NET
+     tristate "RTnet, TCP/IP socket interface"
+ 
+diff --git a/kernel/drivers/net/addons/Kconfig b/kernel/drivers/net/add=
+ons/Kconfig
+index baa6cbc..616ed40 100644
+--- a/kernel/drivers/net/addons/Kconfig
++++ b/kernel/drivers/net/addons/Kconfig
+@@ -2,7 +2,7 @@ menu "Add-Ons"
+     depends on XENO=5FDRIVERS=5FNET
+ 
+ config XENO=5FDRIVERS=5FNET=5FADDON=5FRTCAP
+-    depends on XENO=5FDRIVERS=5FNET && m
++    depends on XENO=5FDRIVERS=5FNET
+     select ETHERNET
+     tristate "Real-Time Capturing Support"
+     default n
+@@ -18,7 +18,7 @@ config XENO=5FDRIVERS=5FNET=5FADDON=5FRTCAP
+     For further information see Documentation/README.rtcap.
+ 
+ config XENO=5FDRIVERS=5FNET=5FADDON=5FPROXY
+-    depends on XENO=5FDRIVERS=5FNET=5FRTIPV4 && m
++    depends on XENO=5FDRIVERS=5FNET=5FRTIPV4
+     select ETHERNET
+     tristate "IP protocol proxy for Linux"
+     default n
+diff --git a/kernel/drivers/net/stack/Makefile b/kernel/drivers/net/sta=
+ck/Makefile
+index d055dc2..f8db6fa 100644
+--- a/kernel/drivers/net/stack/Makefile
++++ b/kernel/drivers/net/stack/Makefile
+@@ -1,13 +1,5 @@
+ ccflags-y +=3D -Idrivers/xenomai/net/stack/include -Ikernel/
+ 
+-obj-$(CONFIG=5FXENO=5FDRIVERS=5FNET=5FRTIPV4) +=3D ipv4/
+-
+-obj-$(CONFIG=5FXENO=5FDRIVERS=5FNET=5FRTPACKET) +=3D packet/
+-
+-obj-$(CONFIG=5FXENO=5FDRIVERS=5FNET=5FRTMAC) +=3D rtmac/
+-
+-obj-$(CONFIG=5FXENO=5FDRIVERS=5FNET=5FRTCFG) +=3D rtcfg/
+-
+ obj-$(CONFIG=5FXENO=5FDRIVERS=5FNET) +=3D rtnet.o
+ 
+ rtnet-y :=3D  \
+@@ -23,4 +15,12 @@ rtnet-y :=3D  \
+ 	stack=5Fmgr.o \
+ 	eth.o
+ 
++obj-$(CONFIG=5FXENO=5FDRIVERS=5FNET=5FRTIPV4) +=3D ipv4/
++
++obj-$(CONFIG=5FXENO=5FDRIVERS=5FNET=5FRTPACKET) +=3D packet/
++
++obj-$(CONFIG=5FXENO=5FDRIVERS=5FNET=5FRTMAC) +=3D rtmac/
++
++obj-$(CONFIG=5FXENO=5FDRIVERS=5FNET=5FRTCFG) +=3D rtcfg/
++
+ rtnet-$(CONFIG=5FXENO=5FDRIVERS=5FNET=5FRTWLAN) +=3D rtwlan.o
+diff --git a/utils/net/rtnet.in b/utils/net/rtnet.in
+index f81a7bb..3c3cab9 100644
+--- a/utils/net/rtnet.in
++++ b/utils/net/rtnet.in
+@@ -31,44 +31,62 @@ EOF
+ }
+ 
+ init=5Frtnet() {
+-    modprobe rtnet >/dev/null || exit 1
+-    modprobe rtipv4 >/dev/null || exit 1
+-    modprobe $RT=5FDRIVER $RT=5FDRIVER=5FOPTIONS >/dev/null || exit 1
++    if [ ! -d /proc/rtnet ]; then
++        modprobe rtnet >/dev/null || exit 1
++    fi
+ 
+-    for dev in $REBIND=5FRT=5FNICS; do
+-	if [ -d /sys/bus/pci/devices/$dev/driver ]; then
+-	    echo $dev > /sys/bus/pci/devices/$dev/driver/unbind
+-	fi
+-	echo $dev > /sys/bus/pci/drivers/$RT=5FDRIVER/bind
+-    done
++    if [ ! -d /proc/rtnet/ipv4 ]; then
++        modprobe rtipv4 >/dev/null || exit 1
++        for PROTOCOL in $RT=5FPROTOCOLS; do
++            modprobe rt$PROTOCOL >/dev/null || exit 1
++        done
++    fi
+ 
+-    for PROTOCOL in $RT=5FPROTOCOLS; do
+-	modprobe rt$PROTOCOL >/dev/null || exit 1
+-    done
++    $(cat /proc/rtnet/devices | grep -q rteth0)
++    if [ $? -eq 1 ]; then
++        modprobe $RT=5FDRIVER $RT=5FDRIVER=5FOPTIONS >/dev/null || exi=
+t 1
++
++        for dev in $REBIND=5FRT=5FNICS; do
++            if [ -d /sys/bus/pci/devices/$dev/driver ]; then
++                echo $dev > /sys/bus/pci/devices/$dev/driver/unbind
++            fi
++            echo $dev > /sys/bus/pci/drivers/$RT=5FDRIVER/bind
++        done
++    fi
+ 
+     if [ $RT=5FLOOPBACK =3D "yes" ]; then
+-	modprobe rt=5Floopback >/dev/null || exit 1
++        $(cat /proc/rtnet/devices | grep -q rtlo)
++        if [ $? -eq 1 ]; then
++
++            modprobe rt=5Floopback >/dev/null || exit 1
++        fi
+     fi
+ 
+-    if [ $RTCAP =3D "yes" ]; then
+-	modprobe rtcap >/dev/null || exit 1
++    if [ $RTCAP =3D "yes" -a ! -d /sys/modules/rtcap ]; then
++        modprobe rtcap >/dev/null || exit 1
+     fi
+ 
+     if [ $RT=5FLOOPBACK =3D "yes" ]; then
+-	$RTIFCONFIG rtlo up 127.0.0.1
++        $RTIFCONFIG rtlo up 127.0.0.1
+     fi
+ 
+     if [ $RTCAP =3D "yes" ]; then
+-	ifconfig rteth0 up
+-	ifconfig rteth0-mac up
+-	if [ $RT=5FLOOPBACK =3D "yes" ]; then
+-	    ifconfig rtlo up
+-	fi
++        ifconfig rteth0 up
++        ifconfig rteth0-mac up
++        if [ $RT=5FLOOPBACK =3D "yes" ]; then
++            ifconfig rtlo up
++        fi
+     fi
+ 
+-    modprobe rtcfg >/dev/null
+-    modprobe rtmac >/dev/null
+-    modprobe tdma >/dev/null
++    if [ ! -d /proc/rtnet/rtcfg ]; then
++        modprobe rtcfg >/dev/null
++    fi
++    if [ ! -d /proc/rtnet/rtmac ]; then
++        modprobe rtmac >/dev/null
++    fi
++    if [ ! -f /proc/tdma ]; then
++        modprobe tdma >/dev/null
++    fi
+ }
+ 
+ submit=5Fcfg() {
+@@ -329,43 +347,59 @@ case "$1" in
+ 	;;
+ 
+     master)
+-	shift
+-	init=5Frtnet
+-	TDMA=5FSLAVES=3D$*
+-	start=5Fmaster
+-	;;
++        shift
++        init=5Frtnet
++        TDMA=5FSLAVES=3D$*
++        start=5Fmaster
++        ;;
+ 
+     capture)
+-	modprobe rtnet >/dev/null || exit 1
+-	modprobe $RT=5FDRIVER $RT=5FDRIVER=5FOPTIONS >/dev/null || exit 1
+-	modprobe rtcap >/dev/null || exit 1
+-	$RTIFCONFIG rteth0 up promisc
+-	ifconfig rteth0 up
+-	ifconfig rteth0-mac up
+-	;;
++        if [ ! -d /proc/rtnet ]; then
++            modprobe rtnet >/dev/null || exit 1
++        fi
++        $(cat /proc/rtnet/devices | grep -q rteth0)
++        if [ $? -eq 1 ]; then
++            modprobe $RT=5FDRIVER $RT=5FDRIVER=5FOPTIONS >/dev/null ||=
+ exit 1
++        fi
++        if [ ! -d /sys/modules/rtcap ]; then
++            modprobe rtcap >/dev/null || exit 1
++        fi
++        $RTIFCONFIG rteth0 up promisc
++        ifconfig rteth0 up
++        ifconfig rteth0-mac up
++        ;;
+ 
+     loopback)
+-	modprobe rtnet >/dev/null || exit 1
+-	modprobe rtipv4 >/dev/null || exit 1
+-
+-	for PROTOCOL in $RT=5FPROTOCOLS; do
+-	    modprobe rt$PROTOCOL >/dev/null || exit 1
+-	done
+-
+-	modprobe rt=5Floopback >/dev/null || exit 1
+-
+-	if [ $RTCAP =3D "yes" ]; then
+-	    modprobe rtcap >/dev/null || exit 1
+-	fi
+-
+-	$RTIFCONFIG rtlo up 127.0.0.1
+-
+-	if [ $RTCAP =3D "yes" ]; then
+-	    ifconfig rtlo up
+-	fi
+-	;;
++        if [ ! -d /proc/rtnet ]; then
++            modprobe rtnet >/dev/null || exit 1
++        fi
++        if [ ! -d /proc/rtnet/ipv4 ]; then
++            modprobe rtipv4 >/dev/null || exit 1
++            for PROTOCOL in $RT=5FPROTOCOLS; do
++                modprobe rt$PROTOCOL >/dev/null || exit 1
++            done
++        fi
++
++        if [ $RT=5FLOOPBACK =3D "yes" ]; then
++            $(cat /proc/rtnet/devices | grep -q rtlo)
++            if [ $? -eq 1 ]; then
++
++                modprobe rt=5Floopback >/dev/null || exit 1
++            fi
++        fi
++
++        if [ $RTCAP =3D "yes" -a ! -d /sys/modules/rtcap ]; then
++            modprobe rtcap >/dev/null || exit 1
++        fi
++
++        $RTIFCONFIG rtlo up 127.0.0.1
++
++        if [ $RTCAP =3D "yes" ]; then
++            ifconfig rtlo up
++        fi
++        ;;
+ 
+     *)
+-	usage
+-	exit 1
++        usage
++        exit 1
+ esac
+-- 
+2.1.4
 
-> >>>> I am trying to understand how rtdm works, and possibly why out of a =
-historical
-> >>>> context. Perhaps there is a good place to read up on this stuff, the=
-n please
-> >>>> let me know.
-
-> >>>> It seems like in the rtdm-api there is only open, but no open_rt or =
-open_nrt.
-> >>>> More specifically we have:
-> >>>> - read_rt / read_nrt
-> >>>> - recvmsg_rt / recvmsg_nrt
-> >>>> - ioctl_rt / ioctl_nrt
-> >>>> - .. etc.
-
-> >>>> However, when studying an old xenomai2->3 ported driver it seems lik=
-e there used
-> >>>> to be open_rt and open_nrt. The problem I was having before (see my =
-background
-> >>>> comment below) was because the open had been mapped to the old open_=
-nrt code,
-> >>>> which in turned used a rt-lock, thus a mix of the two. When switchin=
-g to a
-> >>>> regular mutex it "worked", as in it didn't complain.
-
-> >>>> In a short discussion Jan Kiszka gave me the impression that open co=
-uld possibly
-> >>>> end up being rt or nrt depending on situation.
-
-> >>>> P=C3=96: I'm guessing that open is always non-rt and therefore a rtd=
-m_lock should be
-> >>>> used? ...
-
-> >>>> JK: This depends. If the open code needs to synchronize only with ot=
-her non-RT
-> >>>> JK: paths, normal Linux locks are fine. If there is the need to sync=
- with the
-> >>>> JK: interrupt handler or some of the _rt callbacks, rtdm_lock & Co. =
-is needed.
-
-> >>>> So, how does this work? And why was (if it was) open_nrt and open_rt=
- replaced
-> >>>> with a common open?
-
-> >>> The original RTDM design was foreseeing the use case of creating and =
-destroying
-> >>> resources like file descriptors for devices in RT context. That idea =
-was dropped
-> >>> as also the trend for the core was clearly making this less realistic=
-.
-> >>> Therefore, we removed open/socket_rt from Xenomai 3.
-
-> >>> If you have a driver that exploited open_rt, you need to remove all r=
-t-sleeping
-> >>> operations from its open function. If rtdm_lock is an appropriate alt=
-ernative
-> >>> depends on the driver locking structure and the code run under the lo=
-ck.
-> >>> rtdm_lock_get makes the lock holder unpreemptible. So, if rtdm_mutex =
-was chosen
-> >>> because of lengthy code under the lock, that would not be a good alte=
-rnative.
-> >>> Then we would have to discuss what exactly is run there, and why.
-
-> >> Ok, can I read up on this somewhere? I found [1], is that still valid =
-in this
-> >> context? ( Oh, and can we expect a third edition perhaps ? =3D) )
-
-> >> [1] Building Embedded Linux Systems: Concepts, Techniques, Tricks, and=
- Traps 2nd
-> >> Edition, Kindle Edition
-
-> Basic locking principles should be covered there, not sure if it had a
-> Xenomai/RTDM section. If so, check if it was written/updated after 2015.
-
-It has, but it's written in 2008. With references for a paper you wrote. ( =
-"The Real-Time Driver Model and First Applications" )
-
-> >>>> Background
-> >>>> ----------------
-> >>>> I recently wrote about a driver which warned about "drvlib.c:1349
-> >>>> rtdm_mutex_timedlock". I got good answers which led me to some more =
-general
-> >>>> questions, but instead of continuing in the old tread I thought it b=
-etter to
-> >>>> start a new one since it's not about the initial problem. The driver=
- in case is
-> >>>> the Peak Linux Driver for their CAN hardware, see [1]
-
-> >>>> [1] https://www.peak-system.com/fileadmin/media/linux/index.htm
-
-> >>> Did you inform them about their problem already? Maybe they are willi=
-ng to fix
-> >>> it. We can't, it's not upstream code.
-
-> >> No, I haven't, but I will. The reason I haven't yet is because I was u=
-nder the
-> >> impression that this didn't happen to them. I'm trying to compile ever=
-ything
-> >> (driver, lib, and application) in a Yocto based SDK setup and it seems=
- like
-> >> compilation flags and environment variables are getting squashed in in=
-teresting
-> >> ways. My reasoning so far was that I got this wrong somehow.
-
->> Forget that, I did actually ask them and they answered in a manner that
->> suggested that I was doing something wrong (wrong compilation flags or u=
-ser
->> privileges ). I never got rid of the warning though and it fell into the=
- dark
-> > corners of the backlog.
-
-
-> If they argued about "compilation flags" when a kernel bug was thrown, th=
-ey may
-> not have gotten the point yet. These flags reveal architectural issues of=
- the
-> implementation. Of course they disappear when you turn debugging off. But=
- then
-> the get replaced by deadlock or real crashed later.
-
-I think I mislead you somehow. I'm not saying that this is the argument the=
-y made, and while talking to you I revisited the issue and brought it up wi=
-th them again. They have been friendly so far afaik so perhaps it will be s=
-orted.
-
-I will try to get my point/question more clear. What I was trying to explai=
-n is that they have multiple drivers in the same driver code base covering =
-Xenomai2 +3 , RTAI, and regular Linux (and perhaps more).
-
-I am therefore trying to understand=20
-
-1) whether the driver is fundamentally broken
-
-2) whether I somehow got a mix of the Xenomai3 and regular Linux driver cod=
-e by screwing up the build process. I agree that if this can happen there a=
-re stuff that can be improved in the build process, but cross-compiling stu=
-ff is a real mess...=20
-
-3) whether there may be other ways to get this result without there being a=
-n "actual" issue with the driver. Now, with my limited knowledge, I could t=
-hink of ways where the driver implemented one "correct" way of opening the =
-device, but failed detecting if the user somehow opened it the wrong way. I=
- agree that for this case the driver is flawed in not telling the user what=
- is actually wrong and just go along with what is at hand.=20
-
-Given your reactions it seems like 3) is out of the question, which leaves =
-1) and 2).=20
-
-You also, implicitly, say that Xenomai cannot help with fixing their driver=
- because it's not upstream which I accept. The driver is open sourced, so p=
-arts of it could eventually be adopted into xenomai (perhaps by me sometime=
-, who knows). I am, however, not trying to argue about that.=20
-
-I tried steering the discussion away from the particular issues in this dri=
-ver because I to believe that they are not your / Xenomai communitys proble=
-m. I simply want to understand how things are supposed to fit together so t=
-hat I can eventually write my own drivers for other stuff in the future.
-
-> Jan
-
-
-> --
-> Siemens AG, Corporate Technology, CT RDA IOT SES-DE
-> Corporate Competence Center Embedded Linux
-
-Per =C3=96berg=20
 
