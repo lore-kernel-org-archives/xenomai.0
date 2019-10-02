@@ -1,8 +1,8 @@
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Date: Wed, 02 Oct 2019 15:44:33 +0200
-Subject: =?utf-8?q?=5BPATCH=5D?= MABC RTNet driver to work with GEM hardware
-Message-ID: <b7f-5d94aa00-4f-344a2840@235460769>
+Date: Wed, 02 Oct 2019 15:45:55 +0200
+Subject: =?utf-8?q?=5BPATCH=5D?= Allow RTNet to be builtin kernel
+Message-ID: <b7f-5d94aa00-51-344a2840@235462089>
 From: =?utf-8?q?Fran=C3=A7ois_Legal?= <devel@thom.fr.eu.org>
 Content-Transfer-Encoding: quoted-printable
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
@@ -17,124 +17,315 @@ To: xenomai@xenomai.org
 
 From: Fran=C3=A7ois LEGAL <devel@thom.fr.eu.org>
 
-Make MACB driver compliant with GEM hardware (as mainline linux
-driver does). Main fix is about interrupt flag that is never
-cleared (write 1 to clear)
-
 Signed-off-by: Fran=C3=A7ois LEGAL <devel@thom.fr.eu.org>
 
-Subject: [PATCH] Make MACB driver compliant with GEM hardware
+Subject: [PATCH] Allow RTNet to be builtin kernel
+
+Makefile is changed because when builtin, the modules
+get loaded in the link order. In the previous version
+protocols would get loaded before stackmgr which
+obviously fails.
+
+This has been tested on Zynq 7000 Hardware (microzed
+board) with MACB/GEM RTNet driver, with linux 4.4.189
+vanilla. Kernel boots up correctly, and the following
+messages get printed on the console during the boot :
+
+[   13.875451] sdhci-pltfm: SDHCI platform and OF driver helper
+[   13.881627] sdhci-arasan e0100000.sdhci: No vmmc regulator found
+[   13.887581] sdhci-arasan e0100000.sdhci: No vqmmc regulator found
+[   13.927585] mmc0: SDHCI controller on e0100000.sdhci [e0100000.sdhci=
+] using ADMA
+[   13.945085] fpga=5Fmanager fpga0: Xilinx Zynq FPGA Manager registere=
+d
+[   13.951896]
+[   13.951896] *** RTnet for Xenomai v3.0.9 ***
+[   13.951896]
+[   13.959156] RTnet: initialising real-time networking
+[   13.964928] RTmac/TDMA: init time division multiple access control m=
+echanism
+[   13.972074] RTmac: init realtime media access control
+[   13.977064] RTcfg: init real-time configuration distribution protoco=
+l
+[   13.983752] initializing loopback...
+[   13.987295] RTnet: registered rtlo
+[   13.993238] RTnet: registered rteth0
+[   13.996832] libphy: MACB=5Fmii=5Fbus: probed
+[   14.001140] rt=5Fmacb: rteth0: Cadence GEM at 0xe000b000 irq 26 (00:=
+0a:35:00:01:22)
+[   14.008630] rt=5Fmacb: rteth0: attached PHY driver [Marvell 88E1510]=
+ (mii=5Fbus:phy=5Faddr=3De000b000.ethernet-ffffffff:00, irq=3D-1)
+[   14.019845] RTcap: real-time capturing interface
+[   14.026562] RTproxy attached to rteth0
+[   14.031129] rtnetproxy installed as "rtproxy"
+[   14.035693] NET: Registered protocol family 26
+[   14.040309] NET: Registered protocol family 17
+[   14.044686] can: controller area network core (rev 20120528 abi 9)
+[   14.050957] NET: Registered protocol family 29
+[   14.055329] can: raw protocol (rev 20120528)
+[   14.059683] can: broadcast manager protocol (rev 20120528 t)
 
 ---
- kernel/drivers/net/drivers/Kconfig  |  7 +++++++
- kernel/drivers/net/drivers/Makefile |  1 +
- kernel/drivers/net/drivers/macb.c   | 23 ++++++++++++++++++++---
- 3 files changed, 28 insertions(+), 3 deletions(-)
+ kernel/drivers/net/Kconfig        |   1 -
+ kernel/drivers/net/addons/Kconfig |   4 +-
+ kernel/drivers/net/stack/Makefile |  16 ++---
+ utils/net/rtnet.in                | 148 +++++++++++++++++++++++-------=
+--------
+ 4 files changed, 101 insertions(+), 68 deletions(-)
 
-diff --git a/kernel/drivers/net/drivers/Kconfig b/kernel/drivers/net/dr=
-ivers/Kconfig
-index 65f0855..39c976f 100644
---- a/kernel/drivers/net/drivers/Kconfig
-+++ b/kernel/drivers/net/drivers/Kconfig
-@@ -131,6 +131,13 @@ config XENO=5FDRIVERS=5FNET=5FDRV=5FMACB
-     Driver for internal MAC-controller on AT91SAM926x microcontrollers=
-.
-     Porting by Cristiano Mantovani and Stefano Banzi (Marposs SpA).
+diff --git a/kernel/drivers/net/Kconfig b/kernel/drivers/net/Kconfig
+index ac3bced..49d2402 100644
+--- a/kernel/drivers/net/Kconfig
++++ b/kernel/drivers/net/Kconfig
+@@ -1,7 +1,6 @@
+ menu "RTnet"
  
-+config XENO=5FDRIVERS=5FNET=5FDRV=5FGEM
+ config XENO=5FDRIVERS=5FNET
+-    depends on m
+     select NET
+     tristate "RTnet, TCP/IP socket interface"
+ 
+diff --git a/kernel/drivers/net/addons/Kconfig b/kernel/drivers/net/add=
+ons/Kconfig
+index baa6cbc..616ed40 100644
+--- a/kernel/drivers/net/addons/Kconfig
++++ b/kernel/drivers/net/addons/Kconfig
+@@ -2,7 +2,7 @@ menu "Add-Ons"
+     depends on XENO=5FDRIVERS=5FNET
+ 
+ config XENO=5FDRIVERS=5FNET=5FADDON=5FRTCAP
+-    depends on XENO=5FDRIVERS=5FNET && m
 +    depends on XENO=5FDRIVERS=5FNET
-+    tristate "GEM devices"
-+    ---help---
-+    Driver for internal MAC-controller on Zynq 7000 SoCs.
-+    Porting by Cristiano Mantovani and Stefano Banzi (Marposs SpA).
+     select ETHERNET
+     tristate "Real-Time Capturing Support"
+     default n
+@@ -18,7 +18,7 @@ config XENO=5FDRIVERS=5FNET=5FADDON=5FRTCAP
+     For further information see Documentation/README.rtcap.
+ 
+ config XENO=5FDRIVERS=5FNET=5FADDON=5FPROXY
+-    depends on XENO=5FDRIVERS=5FNET=5FRTIPV4 && m
++    depends on XENO=5FDRIVERS=5FNET=5FRTIPV4
+     select ETHERNET
+     tristate "IP protocol proxy for Linux"
+     default n
+diff --git a/kernel/drivers/net/stack/Makefile b/kernel/drivers/net/sta=
+ck/Makefile
+index d055dc2..f8db6fa 100644
+--- a/kernel/drivers/net/stack/Makefile
++++ b/kernel/drivers/net/stack/Makefile
+@@ -1,13 +1,5 @@
+ ccflags-y +=3D -Idrivers/xenomai/net/stack/include -Ikernel/
+ 
+-obj-$(CONFIG=5FXENO=5FDRIVERS=5FNET=5FRTIPV4) +=3D ipv4/
+-
+-obj-$(CONFIG=5FXENO=5FDRIVERS=5FNET=5FRTPACKET) +=3D packet/
+-
+-obj-$(CONFIG=5FXENO=5FDRIVERS=5FNET=5FRTMAC) +=3D rtmac/
+-
+-obj-$(CONFIG=5FXENO=5FDRIVERS=5FNET=5FRTCFG) +=3D rtcfg/
+-
+ obj-$(CONFIG=5FXENO=5FDRIVERS=5FNET) +=3D rtnet.o
+ 
+ rtnet-y :=3D  \
+@@ -23,4 +15,12 @@ rtnet-y :=3D  \
+ 	stack=5Fmgr.o \
+ 	eth.o
+ 
++obj-$(CONFIG=5FXENO=5FDRIVERS=5FNET=5FRTIPV4) +=3D ipv4/
 +
- endif
- 
- source "drivers/xenomai/net/drivers/experimental/Kconfig"
-diff --git a/kernel/drivers/net/drivers/Makefile b/kernel/drivers/net/d=
-rivers/Makefile
-index d95c5a8..9da1a56 100644
---- a/kernel/drivers/net/drivers/Makefile
-+++ b/kernel/drivers/net/drivers/Makefile
-@@ -57,6 +57,7 @@ obj-$(CONFIG=5FXENO=5FDRIVERS=5FNET=5FDRV=5FSMC91111)=
- +=3D rt=5Fsmc91111.o
- rt=5Fsmc91111-y :=3D smc91111.o
- 
- obj-$(CONFIG=5FXENO=5FDRIVERS=5FNET=5FDRV=5FMACB) +=3D rt=5Fmacb.o
-+obj-$(CONFIG=5FXENO=5FDRIVERS=5FNET=5FDRV=5FGEM) +=3D rt=5Fmacb.o
- 
- rt=5Fmacb-y :=3D macb.o
- 
-diff --git a/kernel/drivers/net/drivers/macb.c b/kernel/drivers/net/dri=
-vers/macb.c
-index fc5b667..ccda6ae 100644
---- a/kernel/drivers/net/drivers/macb.c
-+++ b/kernel/drivers/net/drivers/macb.c
-@@ -679,7 +679,13 @@ static int gem=5Frx(struct macb *bp, int budget, n=
-anosecs=5Fabs=5Ft *time=5Fstamp)
- 	unsigned int		entry;
- 	struct rtskb		*skb;
- 	struct macb=5Fdma=5Fdesc	*desc;
--	int			count =3D 0;
-+	int			count =3D 0, status;
++obj-$(CONFIG=5FXENO=5FDRIVERS=5FNET=5FRTPACKET) +=3D packet/
 +
-+	status =3D macb=5Freadl(bp, RSR);
-+	macb=5Fwritel(bp, RSR, status);
++obj-$(CONFIG=5FXENO=5FDRIVERS=5FNET=5FRTMAC) +=3D rtmac/
 +
-+	if (bp->caps & MACB=5FCAPS=5FISR=5FCLEAR=5FON=5FWRITE)
-+		macb=5Fwritel(bp, ISR, MACB=5FBIT(RCOMP));
- 
- 	while (count < budget) {
- 		u32 addr, ctrl;
-@@ -877,7 +883,7 @@ static int macb=5Finterrupt(rtdm=5Firq=5Ft *irq=5Fh=
-andle)
- 	struct rtnet=5Fdevice *dev =3D dev=5Fid;
- 	struct macb *bp =3D rtnetdev=5Fpriv(dev);
- 	unsigned received =3D 0;
--	u32 status;
-+	u32 status, ctrl;
- 
- 	status =3D macb=5Freadl(bp, ISR);
- 
-@@ -895,9 +901,10 @@ static int macb=5Finterrupt(rtdm=5Firq=5Ft *irq=5F=
-handle)
- 
- 		rtdev=5Fvdbg(bp->dev, "isr =3D 0x%08lx\n", (unsigned long)status);
- 
--		if (status & MACB=5FRX=5FINT=5FFLAGS)
-+		if (status & MACB=5FBIT(RCOMP)) {
- 			received +=3D bp->macbgem=5Fops.mog=5Frx(bp, 100 - received,
- 							&time=5Fstamp);
-+		}
- 
- 		if (unlikely(status & (MACB=5FTX=5FERR=5FFLAGS))) {
- 			macb=5Fwritel(bp, IDR, MACB=5FTX=5FINT=5FFLAGS);
-@@ -917,6 +924,15 @@ static int macb=5Finterrupt(rtdm=5Firq=5Ft *irq=5F=
-handle)
- 		 * add that if/when we get our hands on a full-blown MII PHY.
- 		 */
- 
-+		if (status & MACB=5FBIT(RXUBR)) {
-+			ctrl =3D macb=5Freadl(bp, NCR);
-+			macb=5Fwritel(bp, NCR, ctrl & ~MACB=5FBIT(RE));
-+			macb=5Fwritel(bp, NCR, ctrl | MACB=5FBIT(RE));
++obj-$(CONFIG=5FXENO=5FDRIVERS=5FNET=5FRTCFG) +=3D rtcfg/
 +
-+			if (bp->caps & MACB=5FCAPS=5FISR=5FCLEAR=5FON=5FWRITE)
-+				macb=5Fwritel(bp, ISR, MACB=5FBIT(RXUBR));
-+		}
-+
- 		if (status & MACB=5FBIT(ISR=5FROVR)) {
- 			/* We missed at least one packet */
- 			if (macb=5Fis=5Fgem(bp))
-@@ -1320,6 +1336,7 @@ static void macb=5Fconfigure=5Fcaps(struct macb *=
-bp)
- 		if (GEM=5FBFEXT(IRQCOR, gem=5Freadl(bp, DCFG1)) =3D=3D 0)
- 			bp->caps |=3D MACB=5FCAPS=5FISR=5FCLEAR=5FON=5FWRITE;
- 	}
-+	rtdev=5Fvdbg(bp->dev, "Capabilities : %X\n", bp->caps);
+ rtnet-$(CONFIG=5FXENO=5FDRIVERS=5FNET=5FRTWLAN) +=3D rtwlan.o
+diff --git a/utils/net/rtnet.in b/utils/net/rtnet.in
+index f81a7bb..3c3cab9 100644
+--- a/utils/net/rtnet.in
++++ b/utils/net/rtnet.in
+@@ -31,44 +31,62 @@ EOF
  }
  
- static void macb=5Finit=5Fhw(struct macb *bp)
+ init=5Frtnet() {
+-    modprobe rtnet >/dev/null || exit 1
+-    modprobe rtipv4 >/dev/null || exit 1
+-    modprobe $RT=5FDRIVER $RT=5FDRIVER=5FOPTIONS >/dev/null || exit 1
++    if [ ! -d /proc/rtnet ]; then
++        modprobe rtnet >/dev/null || exit 1
++    fi
+ 
+-    for dev in $REBIND=5FRT=5FNICS; do
+-	if [ -d /sys/bus/pci/devices/$dev/driver ]; then
+-	    echo $dev > /sys/bus/pci/devices/$dev/driver/unbind
+-	fi
+-	echo $dev > /sys/bus/pci/drivers/$RT=5FDRIVER/bind
+-    done
++    if [ ! -d /proc/rtnet/ipv4 ]; then
++        modprobe rtipv4 >/dev/null || exit 1
++        for PROTOCOL in $RT=5FPROTOCOLS; do
++            modprobe rt$PROTOCOL >/dev/null || exit 1
++        done
++    fi
+ 
+-    for PROTOCOL in $RT=5FPROTOCOLS; do
+-	modprobe rt$PROTOCOL >/dev/null || exit 1
+-    done
++    $(cat /proc/rtnet/devices | grep -q rteth0)
++    if [ $? -eq 1 ]; then
++        modprobe $RT=5FDRIVER $RT=5FDRIVER=5FOPTIONS >/dev/null || exi=
+t 1
++
++        for dev in $REBIND=5FRT=5FNICS; do
++            if [ -d /sys/bus/pci/devices/$dev/driver ]; then
++                echo $dev > /sys/bus/pci/devices/$dev/driver/unbind
++            fi
++            echo $dev > /sys/bus/pci/drivers/$RT=5FDRIVER/bind
++        done
++    fi
+ 
+     if [ $RT=5FLOOPBACK =3D "yes" ]; then
+-	modprobe rt=5Floopback >/dev/null || exit 1
++        $(cat /proc/rtnet/devices | grep -q rtlo)
++        if [ $? -eq 1 ]; then
++
++            modprobe rt=5Floopback >/dev/null || exit 1
++        fi
+     fi
+ 
+-    if [ $RTCAP =3D "yes" ]; then
+-	modprobe rtcap >/dev/null || exit 1
++    if [ $RTCAP =3D "yes" -a ! -d /sys/modules/rtcap ]; then
++        modprobe rtcap >/dev/null || exit 1
+     fi
+ 
+     if [ $RT=5FLOOPBACK =3D "yes" ]; then
+-	$RTIFCONFIG rtlo up 127.0.0.1
++        $RTIFCONFIG rtlo up 127.0.0.1
+     fi
+ 
+     if [ $RTCAP =3D "yes" ]; then
+-	ifconfig rteth0 up
+-	ifconfig rteth0-mac up
+-	if [ $RT=5FLOOPBACK =3D "yes" ]; then
+-	    ifconfig rtlo up
+-	fi
++        ifconfig rteth0 up
++        ifconfig rteth0-mac up
++        if [ $RT=5FLOOPBACK =3D "yes" ]; then
++            ifconfig rtlo up
++        fi
+     fi
+ 
+-    modprobe rtcfg >/dev/null
+-    modprobe rtmac >/dev/null
+-    modprobe tdma >/dev/null
++    if [ ! -d /proc/rtnet/rtcfg ]; then
++        modprobe rtcfg >/dev/null
++    fi
++    if [ ! -d /proc/rtnet/rtmac ]; then
++        modprobe rtmac >/dev/null
++    fi
++    if [ ! -f /proc/tdma ]; then
++        modprobe tdma >/dev/null
++    fi
+ }
+ 
+ submit=5Fcfg() {
+@@ -329,43 +347,59 @@ case "$1" in
+ 	;;
+ 
+     master)
+-	shift
+-	init=5Frtnet
+-	TDMA=5FSLAVES=3D$*
+-	start=5Fmaster
+-	;;
++        shift
++        init=5Frtnet
++        TDMA=5FSLAVES=3D$*
++        start=5Fmaster
++        ;;
+ 
+     capture)
+-	modprobe rtnet >/dev/null || exit 1
+-	modprobe $RT=5FDRIVER $RT=5FDRIVER=5FOPTIONS >/dev/null || exit 1
+-	modprobe rtcap >/dev/null || exit 1
+-	$RTIFCONFIG rteth0 up promisc
+-	ifconfig rteth0 up
+-	ifconfig rteth0-mac up
+-	;;
++        if [ ! -d /proc/rtnet ]; then
++            modprobe rtnet >/dev/null || exit 1
++        fi
++        $(cat /proc/rtnet/devices | grep -q rteth0)
++        if [ $? -eq 1 ]; then
++            modprobe $RT=5FDRIVER $RT=5FDRIVER=5FOPTIONS >/dev/null ||=
+ exit 1
++        fi
++        if [ ! -d /sys/modules/rtcap ]; then
++            modprobe rtcap >/dev/null || exit 1
++        fi
++        $RTIFCONFIG rteth0 up promisc
++        ifconfig rteth0 up
++        ifconfig rteth0-mac up
++        ;;
+ 
+     loopback)
+-	modprobe rtnet >/dev/null || exit 1
+-	modprobe rtipv4 >/dev/null || exit 1
+-
+-	for PROTOCOL in $RT=5FPROTOCOLS; do
+-	    modprobe rt$PROTOCOL >/dev/null || exit 1
+-	done
+-
+-	modprobe rt=5Floopback >/dev/null || exit 1
+-
+-	if [ $RTCAP =3D "yes" ]; then
+-	    modprobe rtcap >/dev/null || exit 1
+-	fi
+-
+-	$RTIFCONFIG rtlo up 127.0.0.1
+-
+-	if [ $RTCAP =3D "yes" ]; then
+-	    ifconfig rtlo up
+-	fi
+-	;;
++        if [ ! -d /proc/rtnet ]; then
++            modprobe rtnet >/dev/null || exit 1
++        fi
++        if [ ! -d /proc/rtnet/ipv4 ]; then
++            modprobe rtipv4 >/dev/null || exit 1
++            for PROTOCOL in $RT=5FPROTOCOLS; do
++                modprobe rt$PROTOCOL >/dev/null || exit 1
++            done
++        fi
++
++        if [ $RT=5FLOOPBACK =3D "yes" ]; then
++            $(cat /proc/rtnet/devices | grep -q rtlo)
++            if [ $? -eq 1 ]; then
++
++                modprobe rt=5Floopback >/dev/null || exit 1
++            fi
++        fi
++
++        if [ $RTCAP =3D "yes" -a ! -d /sys/modules/rtcap ]; then
++            modprobe rtcap >/dev/null || exit 1
++        fi
++
++        $RTIFCONFIG rtlo up 127.0.0.1
++
++        if [ $RTCAP =3D "yes" ]; then
++            ifconfig rtlo up
++        fi
++        ;;
+ 
+     *)
+-	usage
+-	exit 1
++        usage
++        exit 1
+ esac
 -- 
 2.1.4
 
