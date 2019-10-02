@@ -1,13 +1,11 @@
-Subject: Re: [PATCH] Re: Kernel crash at startup when enabling RTNet + RTIPv4
-References: <b80-5d945480-e5-62bca880@213363268>
-From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <07efe0e4-d2b3-e5c3-afa8-ed6c7f0de843@siemens.com>
-Date: Wed, 2 Oct 2019 10:06:49 +0200
+From: alessio margan <alessio.margan@iit.it>
+Subject: open XDDP from nrt thread
+Message-ID: <fea9dfd7-d28e-da96-f230-2a585da5cc84@iit.it>
+Date: Wed, 2 Oct 2019 10:08:20 +0200
 MIME-Version: 1.0
-In-Reply-To: <b80-5d945480-e5-62bca880@213363268>
 Content-Type: text/plain; charset="utf-8"; format="flowed"
-Content-Language: en-US
 Content-Transfer-Encoding: 8bit
+Content-Language: en-US
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,44 +14,64 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: =?UTF-8?Q?Fran=c3=a7ois_Legal?= <devel@thom.fr.eu.org>
-Cc: xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-On 02.10.19 09:40, François Legal wrote:
-> 
-> Le Mardi, Octobre 01, 2019 16:37 CEST, Jan Kiszka <jan.kiszka@siemens.com> a écrit:
->> On 01.10.19 15:26, François Legal wrote:
->> > Hello,
->> >
->> > Could you please clarify what "upstream" is ? RTNet project ? There does not
->> > seem to be activity there since 2012 ?
->>
->> RTnet was merged into Xenomai 2014. I thought you knew when you were posting
->> here ;).
-> That's what I though, but I was surprised by the mention to "upstream".
+Hi all,
 
-Yeah, I didn't mean the upstream kernel - if that was your first thought.
+it seems that at some point ( following branch next up to rc1) something 
+is changed regarding XDDP .
 
->>
->> > I'll be happy to contribute on this. You mention "glue scripting", could you be
->> > more precise to let me try to fix that part too.
->>
->> xenomai/utils/net/rtnet.in. But I suspect that will be rather simple.
-> So the attached patch (against master) allows one to get the RTNet code builtin, 
-> plus the rtnet script modified to take that into account. I can make a patch to 
-> 3.0.9 available if that's needed.
-> About the stable init that does not depend on link order, I'll be glad to work 
-> on that, but I need some hints on where to start if possible.
+I've got a process that spawn 2 rt-thread and a nrt-thread, one of the 
+2rt  produce data that the nrt consume using an XDDP
 
-Just cross-checked with the kernel documentation, and it's actually correct to 
-build the initialization order from the link order. So please format your 
-changes into a proper patch against next, see CONTRIBUTING.md and also other 
-patches on the list for the structuring.
+Since 4.14.89-xeno-ipipe-stableVx everything works, now on rc1 I can not 
+open the pipes as usual.
 
-Thanks,
-Jan
+There is something I have missed ?
+
+These are the pipes
+
+ls -la /proc/xenomai/registry/rtipc/xddp/
+total 0
+dr-xr-xr-x 2 root root 0 ott  2 09:06 .
+dr-xr-xr-x 3 root root 0 ott  2 09:06 ..
+lrwxrwxrwx 1 root root 9 ott  2 09:06 debugOut -> /dev/rtp3
+lrwxrwxrwx 1 root root 9 ott  2 09:06 emergency -> /dev/rtp0
+lrwxrwxrwx 1 root root 9 ott  2 09:06 NoNe@Motor_id_1 -> /dev/rtp4
+lrwxrwxrwx 1 root root 9 ott  2 09:06 repl_in -> /dev/rtp1
+lrwxrwxrwx 1 root root 9 ott  2 09:06 repl_out -> /dev/rtp2
+
+TIA
+
+Alessio
 
 -- 
-Siemens AG, Corporate Technology, CT RDA IOT SES-DE
-Corporate Competence Center Embedded Linux
+
+ISTITUTO ITALIANO DI TECNOLOGIA
+
+Alessio Margan
+Chief Technician
+Advanced Robotics Department
+
+alessio.margan@iit.it
+Via Morego 30, 16163 Genova
+Tel. +39 010 71781-754
+
+www.iit.it
+
+Legal Disclaimer
+This electronic message contains information that is confidential. The information is intended for the use of the addressee only.
+If you are not the addressee we would appreciate your notification in this respect.
+Please note that any disclosure, copy, distribution or use of the contents of this message is prohibited and may be unlawful.
+We have taken every reasonable precaution to ensure that any kind of attachment to this e-mail has been swept for viruses.
+However, we cannot accept liability for any damage sustained as a result of software viruses
+and would advise you to carry out your own virus checks before opening any attachment.
+Avvertenza legale
+Questo messaggio Email contiene informazioni confidenziali riservate ai soli destinatari.
+Qualora  veniate in possesso di tali informazioni senza essere definito come destinatario vi reghiamo di leggere le seguenti note.
+Ogni apertura, copia, distribuzione del contenuto del messaggio e dei suoi allegati è proibito e potrebbe violare le presenti leggi.
+Abbiamo attivato ogni possibile e ragionevole precauzione per assicurare che gli allegati non contengano virus.
+Comunque non assumeremo alcuna responsabilità per ogni eventuale danno causato da virus software e simili
+in quanto è onere del destinatario verificarne l’assenza in ogni allegato attuando propri indipendenti controlli.
+
 
