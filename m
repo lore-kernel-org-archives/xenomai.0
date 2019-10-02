@@ -1,10 +1,13 @@
-Content-Type: text/plain; charset="utf-8"
+Subject: Re: [PATCH] MABC RTNet driver to work with GEM hardware
+References: <30dd-5d948d00-9-21e4bb80@177051046>
+From: Jan Kiszka <jan.kiszka@siemens.com>
+Message-ID: <aa908927-991c-9bc1-6bb7-44ce52a23b6a@siemens.com>
+Date: Wed, 2 Oct 2019 14:23:00 +0200
 MIME-Version: 1.0
-Date: Wed, 02 Oct 2019 13:41:48 +0200
-Subject: =?utf-8?q?=5BPATCH=5D?= MABC RTNet driver to work with GEM hardware
-Message-ID: <30dd-5d948d00-9-21e4bb80@177051046>
-From: =?utf-8?q?Fran=C3=A7ois_Legal?= <devel@thom.fr.eu.org>
-Content-Transfer-Encoding: quoted-printable
+In-Reply-To: <30dd-5d948d00-9-21e4bb80@177051046>
+Content-Type: text/plain; charset="utf-8"; format="flowed"
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -13,174 +16,186 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
+To: =?UTF-8?Q?Fran=c3=a7ois_Legal?= <devel@thom.fr.eu.org>, xenomai@xenomai.org
 
->From 9703097ac23dfdea91bc688267e0d46ea20ceacc Mon Sep 17 00:00:00 2001
-From: dev <dev@DevCoreProcessing.assystem>
-Date: Wed, 2 Oct 2019 11:58:01 +0200
-Subject: [PATCH] Make MACB driver compliant with GEM hardware (as mainl=
-ine
- linux driver does). Main fix is about interrupt flag that is never cle=
-ared
- (write 1 to clear)
+On 02.10.19 13:41, François Legal via Xenomai wrote:
+>  From 9703097ac23dfdea91bc688267e0d46ea20ceacc Mon Sep 17 00:00:00 2001
+> From: dev <dev@DevCoreProcessing.assystem>
+> Date: Wed, 2 Oct 2019 11:58:01 +0200
+> Subject: [PATCH] Make MACB driver compliant with GEM hardware (as mainline
+>   linux driver does). Main fix is about interrupt flag that is never cleared
+>   (write 1 to clear)
+> 
 
----
- kernel/drivers/net/drivers/Kconfig  | 11 +++++++++--
- kernel/drivers/net/drivers/Makefile |  1 +
- kernel/drivers/net/drivers/macb.c   | 27 +++++++++++++++++++++++----
- 3 files changed, 33 insertions(+), 6 deletions(-)
+Almost: Subject should be brief, move the extended "why" into the commit message 
+body. And then we need a signed-off, confirming [1].
 
-diff --git a/kernel/drivers/net/drivers/Kconfig b/kernel/drivers/net/dr=
-ivers/Kconfig
-index 65f0855..89ac237 100644
---- a/kernel/drivers/net/drivers/Kconfig
-+++ b/kernel/drivers/net/drivers/Kconfig
-@@ -77,7 +77,7 @@ config XENO=5FDRIVERS=5FNET=5FDRV=5FR8169
-     tristate "Realtek 8169 (Gigabit)"
- 
- 
--if PPC
-+if ARCH =3D ppc
- 
- comment "Embedded MPC Drivers"
-     depends on XENO=5FDRIVERS=5FNET
-@@ -116,7 +116,7 @@ config XENO=5FDRIVERS=5FNET=5FDRV=5FSMC91111
-     depends on XENO=5FDRIVERS=5FNET
-     tristate "SMSC LAN91C111"
- 
--if ARM
-+if ARCH =3D arm
- 
- config XENO=5FDRIVERS=5FNET=5FDRV=5FAT91=5FETHER
-     depends on XENO=5FDRIVERS=5FNET && SOC=5FAT91RM9200
-@@ -131,6 +131,13 @@ config XENO=5FDRIVERS=5FNET=5FDRV=5FMACB
-     Driver for internal MAC-controller on AT91SAM926x microcontrollers=
-.
-     Porting by Cristiano Mantovani and Stefano Banzi (Marposs SpA).
- 
-+config XENO=5FDRIVERS=5FNET=5FDRV=5FGEM
-+    depends on XENO=5FDRIVERS=5FNET
-+    tristate "GEM devices"
-+    ---help---
-+    Driver for internal MAC-controller on Zynq 7000 SoCs.
-+    Porting by Cristiano Mantovani and Stefano Banzi (Marposs SpA).
-+
- endif
- 
- source "drivers/xenomai/net/drivers/experimental/Kconfig"
-diff --git a/kernel/drivers/net/drivers/Makefile b/kernel/drivers/net/d=
-rivers/Makefile
-index d95c5a8..9da1a56 100644
---- a/kernel/drivers/net/drivers/Makefile
-+++ b/kernel/drivers/net/drivers/Makefile
-@@ -57,6 +57,7 @@ obj-$(CONFIG=5FXENO=5FDRIVERS=5FNET=5FDRV=5FSMC91111)=
- +=3D rt=5Fsmc91111.o
- rt=5Fsmc91111-y :=3D smc91111.o
- 
- obj-$(CONFIG=5FXENO=5FDRIVERS=5FNET=5FDRV=5FMACB) +=3D rt=5Fmacb.o
-+obj-$(CONFIG=5FXENO=5FDRIVERS=5FNET=5FDRV=5FGEM) +=3D rt=5Fmacb.o
- 
- rt=5Fmacb-y :=3D macb.o
- 
-diff --git a/kernel/drivers/net/drivers/macb.c b/kernel/drivers/net/dri=
-vers/macb.c
-index fc5b667..e97a7d1 100644
---- a/kernel/drivers/net/drivers/macb.c
-+++ b/kernel/drivers/net/drivers/macb.c
-@@ -679,7 +679,14 @@ static int gem=5Frx(struct macb *bp, int budget, n=
-anosecs=5Fabs=5Ft *time=5Fstamp)
- 	unsigned int		entry;
- 	struct rtskb		*skb;
- 	struct macb=5Fdma=5Fdesc	*desc;
--	int			count =3D 0;
-+	int			count =3D 0, status;
-+
-+
-+	status =3D macb=5Freadl(bp, RSR);
-+	macb=5Fwritel(bp, RSR, status);
-+
-+	if (bp->caps & MACB=5FCAPS=5FISR=5FCLEAR=5FON=5FWRITE)
-+		macb=5Fwritel(bp, ISR, MACB=5FBIT(RCOMP));
- 
- 	while (count < budget) {
- 		u32 addr, ctrl;
-@@ -725,6 +732,7 @@ static int gem=5Frx(struct macb *bp, int budget, na=
-nosecs=5Fabs=5Ft *time=5Fstamp)
- 				 bp->rx=5Fbuffer=5Fsize, DMA=5FFROM=5FDEVICE);
- 
- 		skb->protocol =3D rt=5Feth=5Ftype=5Ftrans(skb, bp->dev);
-+		rtskb=5Fchecksum=5Fnone=5Fassert(skb);
- 
- 		bp->stats.rx=5Fpackets++;
- 		bp->stats.rx=5Fbytes +=3D skb->len;
-@@ -791,6 +799,7 @@ static int macb=5Frx=5Fframe(struct macb *bp, unsig=
-ned int first=5Ffrag,
- 	offset =3D 0;
- 	len +=3D NET=5FIP=5FALIGN;
- 	skb->time=5Fstamp =3D *time=5Fstamp;
-+	rtskb=5Fchecksum=5Fnone=5Fassert(skb);
- 	rtskb=5Fput(skb, len);
- 
- 	for (frag =3D first=5Ffrag; ; frag++) {
-@@ -877,7 +886,7 @@ static int macb=5Finterrupt(rtdm=5Firq=5Ft *irq=5Fh=
-andle)
- 	struct rtnet=5Fdevice *dev =3D dev=5Fid;
- 	struct macb *bp =3D rtnetdev=5Fpriv(dev);
- 	unsigned received =3D 0;
--	u32 status;
-+	u32 status, ctrl;
- 
- 	status =3D macb=5Freadl(bp, ISR);
- 
-@@ -895,9 +904,10 @@ static int macb=5Finterrupt(rtdm=5Firq=5Ft *irq=5F=
-handle)
- 
- 		rtdev=5Fvdbg(bp->dev, "isr =3D 0x%08lx\n", (unsigned long)status);
- 
--		if (status & MACB=5FRX=5FINT=5FFLAGS)
-+		if (status & MACB=5FBIT(RCOMP)) {
- 			received +=3D bp->macbgem=5Fops.mog=5Frx(bp, 100 - received,
- 							&time=5Fstamp);
-+		}
- 
- 		if (unlikely(status & (MACB=5FTX=5FERR=5FFLAGS))) {
- 			macb=5Fwritel(bp, IDR, MACB=5FTX=5FINT=5FFLAGS);
-@@ -917,6 +927,15 @@ static int macb=5Finterrupt(rtdm=5Firq=5Ft *irq=5F=
-handle)
- 		 * add that if/when we get our hands on a full-blown MII PHY.
- 		 */
- 
-+		if (status & MACB=5FBIT(RXUBR)) {
-+			ctrl =3D macb=5Freadl(bp, NCR);
-+			macb=5Fwritel(bp, NCR, ctrl & ~MACB=5FBIT(RE));
-+			macb=5Fwritel(bp, NCR, ctrl | MACB=5FBIT(RE));
-+
-+			if (bp->caps & MACB=5FCAPS=5FISR=5FCLEAR=5FON=5FWRITE)
-+				macb=5Fwritel(bp, ISR, MACB=5FBIT(RXUBR));
-+		}
-+
- 		if (status & MACB=5FBIT(ISR=5FROVR)) {
- 			/* We missed at least one packet */
- 			if (macb=5Fis=5Fgem(bp))
-@@ -1320,6 +1339,7 @@ static void macb=5Fconfigure=5Fcaps(struct macb *=
-bp)
- 		if (GEM=5FBFEXT(IRQCOR, gem=5Freadl(bp, DCFG1)) =3D=3D 0)
- 			bp->caps |=3D MACB=5FCAPS=5FISR=5FCLEAR=5FON=5FWRITE;
- 	}
-+	rtdev=5Fdbg(bp->dev, "Capabilities : %X\n", bp->caps);
- }
- 
- static void macb=5Finit=5Fhw(struct macb *bp)
-@@ -1578,7 +1598,6 @@ static int =5F=5Finit macb=5Fprobe(struct platfor=
-m=5Fdevice *pdev)
- 	rtdev=5Falloc=5Fname(dev, "rteth%d");
- 	rt=5Frtdev=5Fconnect(dev, &RTDEV=5Fmanager);
- 	dev->vers =3D RTDEV=5FVERS=5F2=5F0;
--	dev->sysbind =3D &pdev->dev;
- 
- 	/* TODO: Actually, we have some interesting features... */
- 	dev->features |=3D 0;
+> ---
+>   kernel/drivers/net/drivers/Kconfig  | 11 +++++++++--
+>   kernel/drivers/net/drivers/Makefile |  1 +
+>   kernel/drivers/net/drivers/macb.c   | 27 +++++++++++++++++++++++----
+>   3 files changed, 33 insertions(+), 6 deletions(-)
+> 
+> diff --git a/kernel/drivers/net/drivers/Kconfig b/kernel/drivers/net/drivers/Kconfig
+> index 65f0855..89ac237 100644
+> --- a/kernel/drivers/net/drivers/Kconfig
+> +++ b/kernel/drivers/net/drivers/Kconfig
+> @@ -77,7 +77,7 @@ config XENO_DRIVERS_NET_DRV_R8169
+>       tristate "Realtek 8169 (Gigabit)"
+>   
+>   
+> -if PPC
+> +if ARCH = ppc
+
+Why that?
+
+>   
+>   comment "Embedded MPC Drivers"
+>       depends on XENO_DRIVERS_NET
+> @@ -116,7 +116,7 @@ config XENO_DRIVERS_NET_DRV_SMC91111
+>       depends on XENO_DRIVERS_NET
+>       tristate "SMSC LAN91C111"
+>   
+> -if ARM
+> +if ARCH = arm
+
+Same here.
+
+>   
+>   config XENO_DRIVERS_NET_DRV_AT91_ETHER
+>       depends on XENO_DRIVERS_NET && SOC_AT91RM9200
+> @@ -131,6 +131,13 @@ config XENO_DRIVERS_NET_DRV_MACB
+>       Driver for internal MAC-controller on AT91SAM926x microcontrollers.
+>       Porting by Cristiano Mantovani and Stefano Banzi (Marposs SpA).
+>   
+> +config XENO_DRIVERS_NET_DRV_GEM
+> +    depends on XENO_DRIVERS_NET
+> +    tristate "GEM devices"
+> +    ---help---
+> +    Driver for internal MAC-controller on Zynq 7000 SoCs.
+> +    Porting by Cristiano Mantovani and Stefano Banzi (Marposs SpA).
+> +
+>   endif
+>   
+>   source "drivers/xenomai/net/drivers/experimental/Kconfig"
+> diff --git a/kernel/drivers/net/drivers/Makefile b/kernel/drivers/net/drivers/Makefile
+> index d95c5a8..9da1a56 100644
+> --- a/kernel/drivers/net/drivers/Makefile
+> +++ b/kernel/drivers/net/drivers/Makefile
+> @@ -57,6 +57,7 @@ obj-$(CONFIG_XENO_DRIVERS_NET_DRV_SMC91111) += rt_smc91111.o
+>   rt_smc91111-y := smc91111.o
+>   
+>   obj-$(CONFIG_XENO_DRIVERS_NET_DRV_MACB) += rt_macb.o
+> +obj-$(CONFIG_XENO_DRIVERS_NET_DRV_GEM) += rt_macb.o
+>   
+>   rt_macb-y := macb.o
+>   
+> diff --git a/kernel/drivers/net/drivers/macb.c b/kernel/drivers/net/drivers/macb.c
+> index fc5b667..e97a7d1 100644
+> --- a/kernel/drivers/net/drivers/macb.c
+> +++ b/kernel/drivers/net/drivers/macb.c
+> @@ -679,7 +679,14 @@ static int gem_rx(struct macb *bp, int budget, nanosecs_abs_t *time_stamp)
+>   	unsigned int		entry;
+>   	struct rtskb		*skb;
+>   	struct macb_dma_desc	*desc;
+> -	int			count = 0;
+> +	int			count = 0, status;
+> +
+> +
+
+Likely one newline too much (unless that strictly aligns with upstream).
+
+> +	status = macb_readl(bp, RSR);
+> +	macb_writel(bp, RSR, status);
+> +
+> +	if (bp->caps & MACB_CAPS_ISR_CLEAR_ON_WRITE)
+> +		macb_writel(bp, ISR, MACB_BIT(RCOMP));
+>   
+>   	while (count < budget) {
+>   		u32 addr, ctrl;
+> @@ -725,6 +732,7 @@ static int gem_rx(struct macb *bp, int budget, nanosecs_abs_t *time_stamp)
+>   				 bp->rx_buffer_size, DMA_FROM_DEVICE);
+>   
+>   		skb->protocol = rt_eth_type_trans(skb, bp->dev);
+> +		rtskb_checksum_none_assert(skb);
+
+This was just removed (0ff501aa33f51f118b8339096f10bbea184141a4).
+
+>   
+>   		bp->stats.rx_packets++;
+>   		bp->stats.rx_bytes += skb->len;
+> @@ -791,6 +799,7 @@ static int macb_rx_frame(struct macb *bp, unsigned int first_frag,
+>   	offset = 0;
+>   	len += NET_IP_ALIGN;
+>   	skb->time_stamp = *time_stamp;
+> +	rtskb_checksum_none_assert(skb);
+>   	rtskb_put(skb, len);
+>   
+>   	for (frag = first_frag; ; frag++) {
+> @@ -877,7 +886,7 @@ static int macb_interrupt(rtdm_irq_t *irq_handle)
+>   	struct rtnet_device *dev = dev_id;
+>   	struct macb *bp = rtnetdev_priv(dev);
+>   	unsigned received = 0;
+> -	u32 status;
+> +	u32 status, ctrl;
+>   
+>   	status = macb_readl(bp, ISR);
+>   
+> @@ -895,9 +904,10 @@ static int macb_interrupt(rtdm_irq_t *irq_handle)
+>   
+>   		rtdev_vdbg(bp->dev, "isr = 0x%08lx\n", (unsigned long)status);
+>   
+> -		if (status & MACB_RX_INT_FLAGS)
+> +		if (status & MACB_BIT(RCOMP)) {
+>   			received += bp->macbgem_ops.mog_rx(bp, 100 - received,
+>   							&time_stamp);
+> +		}
+>   
+>   		if (unlikely(status & (MACB_TX_ERR_FLAGS))) {
+>   			macb_writel(bp, IDR, MACB_TX_INT_FLAGS);
+> @@ -917,6 +927,15 @@ static int macb_interrupt(rtdm_irq_t *irq_handle)
+>   		 * add that if/when we get our hands on a full-blown MII PHY.
+>   		 */
+>   
+> +		if (status & MACB_BIT(RXUBR)) {
+> +			ctrl = macb_readl(bp, NCR);
+> +			macb_writel(bp, NCR, ctrl & ~MACB_BIT(RE));
+> +			macb_writel(bp, NCR, ctrl | MACB_BIT(RE));
+> +
+> +			if (bp->caps & MACB_CAPS_ISR_CLEAR_ON_WRITE)
+> +				macb_writel(bp, ISR, MACB_BIT(RXUBR));
+> +		}
+> +
+>   		if (status & MACB_BIT(ISR_ROVR)) {
+>   			/* We missed at least one packet */
+>   			if (macb_is_gem(bp))
+> @@ -1320,6 +1339,7 @@ static void macb_configure_caps(struct macb *bp)
+>   		if (GEM_BFEXT(IRQCOR, gem_readl(bp, DCFG1)) == 0)
+>   			bp->caps |= MACB_CAPS_ISR_CLEAR_ON_WRITE;
+>   	}
+> +	rtdev_dbg(bp->dev, "Capabilities : %X\n", bp->caps);
+
+Is that a left-over debug output?
+
+>   }
+>   
+>   static void macb_init_hw(struct macb *bp)
+> @@ -1578,7 +1598,6 @@ static int __init macb_probe(struct platform_device *pdev)
+>   	rtdev_alloc_name(dev, "rteth%d");
+>   	rt_rtdev_connect(dev, &RTDEV_manager);
+>   	dev->vers = RTDEV_VERS_2_0;
+> -	dev->sysbind = &pdev->dev;
+>   
+>   	/* TODO: Actually, we have some interesting features... */
+>   	dev->features |= 0;
+> 
+
+Thanks,
+Jan
+
+[1] https://developercertificate.org/
+
 -- 
-2.1.4
-
+Siemens AG, Corporate Technology, CT RDA IOT SES-DE
+Corporate Competence Center Embedded Linux
 
