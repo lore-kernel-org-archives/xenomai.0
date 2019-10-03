@@ -1,11 +1,9 @@
 Content-Type: text/plain; charset="utf-8"
-In-Reply-To: <8a055cb4-035b-605b-0a4a-90aba32a10a5@siemens.com>
-From: =?utf-8?q?Fran=C3=A7ois_Legal?= <devel@thom.fr.eu.org>
-Date: Thu, 03 Oct 2019 10:08:56 +0200
 MIME-Version: 1.0
-Message-ID: <30dd-5d95ac80-1d-21e4bb80@177052663>
-Subject: =?utf-8?q?Re=3A?==?utf-8?q?_=5BPATCH=5D?= Allow RTNet to be builtin
- kernel
+Date: Thu, 03 Oct 2019 10:10:58 +0200
+Subject: =?utf-8?q?=5BPATCH=5D?= Allow RTNet to be builtin kernel
+Message-ID: <b7f-5d95ad00-59-344a2840@235462221>
+From: =?utf-8?q?Fran=C3=A7ois_Legal?= <devel@thom.fr.eu.org>
 Content-Transfer-Encoding: quoted-printable
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
@@ -15,8 +13,7 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jan Kiszka <jan.kiszka@siemens.com>
-Cc: Xenomai <xenomai@xenomai.org>
+To: Xenomai <xenomai@xenomai.org>
 
 Subject: [PATCH] Allow RTNet to be builtin kernel
 
