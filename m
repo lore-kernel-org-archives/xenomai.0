@@ -1,11 +1,13 @@
-From: =?utf-8?q?Fran=C3=A7ois_Legal?= <devel@thom.fr.eu.org>
-Date: Fri, 04 Oct 2019 17:16:30 +0200
+Subject: Re: [PATCH] Allow RTNet to be builtin kernel
+References: <b7f-5d976580-6b-344a2840@235496640>
+From: Jan Kiszka <jan.kiszka@siemens.com>
+Message-ID: <552ac217-79e1-062f-1b65-0c8bdbbb8847@siemens.com>
+Date: Fri, 4 Oct 2019 18:24:49 +0200
 MIME-Version: 1.0
-Message-ID: <b7f-5d976280-67-344a2840@235496574>
-Subject: =?utf-8?q?Re=3A?==?utf-8?q?_=5BPATCH=5D?= Allow RTNet to be builtin
- kernel
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+In-Reply-To: <b7f-5d976580-6b-344a2840@235496640>
+Content-Type: text/plain; charset="utf-8"; format="flowed"
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -14,281 +16,413 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jan Kiszka <jan.kiszka@siemens.com>
+To: =?UTF-8?Q?Fran=c3=a7ois_Legal?= <francois.legal@thom.fr.eu.org>, =?UTF-8?Q?Fran=c3=a7ois_Legal?= <devel@thom.fr.eu.org>
 Cc: Xenomai <xenomai@xenomai.org>
 
-TGUgVmVuZHJlZGksIE9jdG9icmUgMDQsIDIwMTkgMTY6MzEgQ0VTVCwgSmFuIEtpc3prYSA8amFu
-Lmtpc3prYUBzaWVtZW5zLmNvbT4gYSDDqWNyaXQ6IAogCj4gT24gMDQuMTAuMTkgMTY6MjIsIEZy
-YW7Dp29pcyBMZWdhbCB3cm90ZToKPiA+IExlIFZlbmRyZWRpLCBPY3RvYnJlIDA0LCAyMDE5IDE1
-OjM2IENFU1QsIEphbiBLaXN6a2EgPGphbi5raXN6a2FAc2llbWVucy5jb20+IGEgw6ljcml0Ogo+
-ID4gICAKPiA+PiBPbiAwNC4xMC4xOSAxMzoxMCwgSmFuIEtpc3prYSB3cm90ZToKPiA+Pj4gT24g
-MDMuMTAuMTkgMTA6MTAsIEZyYW7Dp29pcyBMZWdhbCB2aWEgWGVub21haSB3cm90ZToKPiA+Pj4+
-IFN1YmplY3Q6IFtQQVRDSF0gQWxsb3cgUlROZXQgdG8gYmUgYnVpbHRpbiBrZXJuZWwKPiA+Pj4+
-Cj4gPj4+PiBNYWtlZmlsZSBpcyBjaGFuZ2VkIGJlY2F1c2Ugd2hlbiBidWlsdGluLCB0aGUgbW9k
-dWxlcwo+ID4+Pj4gZ2V0IGxvYWRlZCBpbiB0aGUgbGluayBvcmRlci4gSW4gdGhlIHByZXZpb3Vz
-IHZlcnNpb24KPiA+Pj4+IHByb3RvY29scyB3b3VsZCBnZXQgbG9hZGVkIGJlZm9yZSBzdGFja21n
-ciB3aGljaAo+ID4+Pj4gb2J2aW91c2x5IGZhaWxzLgo+ID4+Pj4KPiA+Pj4+IFNpZ25lZC1vZmYt
-Ynk6IEZyYW7Dp29pcyBMRUdBTCA8ZGV2ZWxAdGhvbS5mci5ldS5vcmc+Cj4gPj4+Pgo+ID4+Pj4g
-LS0tCj4gPj4+Pgo+ID4+Pj4gVGhpcyBoYXMgYmVlbiB0ZXN0ZWQgb24gWnlucSA3MDAwIEhhcmR3
-YXJlIChtaWNyb3plZAo+ID4+Pj4gYm9hcmQpIHdpdGggTUFDQi9HRU0gUlROZXQgZHJpdmVyLCB3
-aXRoIGxpbnV4IDQuNC4xODkKPiA+Pj4+IHZhbmlsbGEuIEtlcm5lbCBib290cyB1cCBjb3JyZWN0
-bHksIGFuZCB0aGUgZm9sbG93aW5nCj4gPj4+PiBtZXNzYWdlcyBnZXQgcHJpbnRlZCBvbiB0aGUg
-Y29uc29sZSBkdXJpbmcgdGhlIGJvb3QgOgo+ID4+Pj4KPiA+Pj4+IFsgICAxMy44NzU0NTFdIHNk
-aGNpLXBsdGZtOiBTREhDSSBwbGF0Zm9ybSBhbmQgT0YgZHJpdmVyIGhlbHBlcgo+ID4+Pj4gWyAg
-IDEzLjg4MTYyN10gc2RoY2ktYXJhc2FuIGUwMTAwMDAwLnNkaGNpOiBObyB2bW1jIHJlZ3VsYXRv
-ciBmb3VuZAo+ID4+Pj4gWyAgIDEzLjg4NzU4MV0gc2RoY2ktYXJhc2FuIGUwMTAwMDAwLnNkaGNp
-OiBObyB2cW1tYyByZWd1bGF0b3IgZm91bmQKPiA+Pj4+IFsgICAxMy45Mjc1ODVdIG1tYzA6IFNE
-SENJIGNvbnRyb2xsZXIgb24gZTAxMDAwMDAuc2RoY2kgW2UwMTAwMDAwLnNkaGNpXSB1c2luZyBB
-RE1BCj4gPj4+PiBbICAgMTMuOTQ1MDg1XSBmcGdhX21hbmFnZXIgZnBnYTA6IFhpbGlueCBaeW5x
-IEZQR0EgTWFuYWdlciByZWdpc3RlcmVkCj4gPj4+PiBbICAgMTMuOTUxODk2XQo+ID4+Pj4gWyAg
-IDEzLjk1MTg5Nl0gKioqIFJUbmV0IGZvciBYZW5vbWFpIHYzLjAuOSAqKioKPiA+Pj4+IFsgICAx
-My45NTE4OTZdCj4gPj4+PiBbICAgMTMuOTU5MTU2XSBSVG5ldDogaW5pdGlhbGlzaW5nIHJlYWwt
-dGltZSBuZXR3b3JraW5nCj4gPj4+PiBbICAgMTMuOTY0OTI4XSBSVG1hYy9URE1BOiBpbml0IHRp
-bWUgZGl2aXNpb24gbXVsdGlwbGUgYWNjZXNzIGNvbnRyb2wgbWVjaGFuaXNtCj4gPj4+PiBbICAg
-MTMuOTcyMDc0XSBSVG1hYzogaW5pdCByZWFsdGltZSBtZWRpYSBhY2Nlc3MgY29udHJvbAo+ID4+
-Pj4gWyAgIDEzLjk3NzA2NF0gUlRjZmc6IGluaXQgcmVhbC10aW1lIGNvbmZpZ3VyYXRpb24gZGlz
-dHJpYnV0aW9uIHByb3RvY29sCj4gPj4+PiBbICAgMTMuOTgzNzUyXSBpbml0aWFsaXppbmcgbG9v
-cGJhY2suLi4KPiA+Pj4+IFsgICAxMy45ODcyOTVdIFJUbmV0OiByZWdpc3RlcmVkIHJ0bG8KPiA+
-Pj4+IFsgICAxMy45OTMyMzhdIFJUbmV0OiByZWdpc3RlcmVkIHJ0ZXRoMAo+ID4+Pj4gWyAgIDEz
-Ljk5NjgzMl0gbGlicGh5OiBNQUNCX21paV9idXM6IHByb2JlZAo+ID4+Pj4gWyAgIDE0LjAwMTE0
-MF0gcnRfbWFjYjogcnRldGgwOiBDYWRlbmNlIEdFTSBhdCAweGUwMDBiMDAwIGlycSAyNiAoMDA6
-MGE6MzU6MDA6MDE6MjIpCj4gPj4+PiBbICAgMTQuMDA4NjMwXSBydF9tYWNiOiBydGV0aDA6IGF0
-dGFjaGVkIFBIWSBkcml2ZXIgW01hcnZlbGwgODhFMTUxMF0gKG1paV9idXM6cGh5X2FkZHI9ZTAw
-MGIwMDAuZXRoZXJuZXQtZmZmZmZmZmY6MDAsIGlycT0tMSkKPiA+Pj4+IFsgICAxNC4wMTk4NDVd
-IFJUY2FwOiByZWFsLXRpbWUgY2FwdHVyaW5nIGludGVyZmFjZQo+ID4+Pj4gWyAgIDE0LjAyNjU2
-Ml0gUlRwcm94eSBhdHRhY2hlZCB0byBydGV0aDAKPiA+Pj4+IFsgICAxNC4wMzExMjldIHJ0bmV0
-cHJveHkgaW5zdGFsbGVkIGFzICJydHByb3h5Igo+ID4+Pj4gWyAgIDE0LjAzNTY5M10gTkVUOiBS
-ZWdpc3RlcmVkIHByb3RvY29sIGZhbWlseSAyNgo+ID4+Pj4gWyAgIDE0LjA0MDMwOV0gTkVUOiBS
-ZWdpc3RlcmVkIHByb3RvY29sIGZhbWlseSAxNwo+ID4+Pj4gWyAgIDE0LjA0NDY4Nl0gY2FuOiBj
-b250cm9sbGVyIGFyZWEgbmV0d29yayBjb3JlIChyZXYgMjAxMjA1MjggYWJpIDkpCj4gPj4+PiBb
-ICAgMTQuMDUwOTU3XSBORVQ6IFJlZ2lzdGVyZWQgcHJvdG9jb2wgZmFtaWx5IDI5Cj4gPj4+PiBb
-ICAgMTQuMDU1MzI5XSBjYW46IHJhdyBwcm90b2NvbCAocmV2IDIwMTIwNTI4KQo+ID4+Pj4gWyAg
-IDE0LjA1OTY4M10gY2FuOiBicm9hZGNhc3QgbWFuYWdlciBwcm90b2NvbCAocmV2IDIwMTIwNTI4
-IHQpCj4gPj4+Pgo+ID4+Pj4gICAgIGtlcm5lbC9kcml2ZXJzL25ldC9LY29uZmlnICAgICAgICB8
-ICAxIC0KPiA+Pj4+ICAgICBrZXJuZWwvZHJpdmVycy9uZXQvYWRkb25zL0tjb25maWcgfCAgNCAr
-Ky0tCj4gPj4+PiAgICAga2VybmVsL2RyaXZlcnMvbmV0L3N0YWNrL01ha2VmaWxlIHwgMTYgKysr
-KysrKystLS0tLS0tLQo+ID4+Pj4gICAgIHV0aWxzL25ldC9ydG5ldC5pbiB8IDE0NCArKysrKysr
-KysrKysrKysrKysrKysrKysrKysrKysrKysrKy0tLS0tLS0tLS0tLS0tLS0tLQo+ID4+Pj4gICAg
-IDQgZmlsZXMgY2hhbmdlZCwgMTA1IGluc2VydGlvbnMoKyksIDYwIGRlbGV0aW9ucygtKQo+ID4+
-Pj4KPiA+Pj4+IGRpZmYgLS1naXQgYS9rZXJuZWwvZHJpdmVycy9uZXQvS2NvbmZpZyBiL2tlcm5l
-bC9kcml2ZXJzL25ldC9LY29uZmlnCj4gPj4+PiBpbmRleCBhYzNiY2VkLi40OWQyNDAyIDEwMDY0
-NAo+ID4+Pj4gLS0tIGEva2VybmVsL2RyaXZlcnMvbmV0L0tjb25maWcKPiA+Pj4+ICsrKyBiL2tl
-cm5lbC9kcml2ZXJzL25ldC9LY29uZmlnCj4gPj4+PiBAQCAtMSw3ICsxLDYgQEAKPiA+Pj4+ICAg
-ICBtZW51ICJSVG5ldCIKPiA+Pj4+ICAgICAKPiA+Pj4+ICAgICBjb25maWcgWEVOT19EUklWRVJT
-X05FVAo+ID4+Pj4gLSAgICBkZXBlbmRzIG9uIG0KPiA+Pj4+ICAgICAgICAgc2VsZWN0IE5FVAo+
-ID4+Pj4gICAgICAgICB0cmlzdGF0ZSAiUlRuZXQsIFRDUC9JUCBzb2NrZXQgaW50ZXJmYWNlIgo+
-ID4+Pj4gICAgIAo+ID4+Pj4gZGlmZiAtLWdpdCBhL2tlcm5lbC9kcml2ZXJzL25ldC9hZGRvbnMv
-S2NvbmZpZyBiL2tlcm5lbC9kcml2ZXJzL25ldC9hZGRvbnMvS2NvbmZpZwo+ID4+Pj4gaW5kZXgg
-YmFhNmNiYy4uNjE2ZWQ0MCAxMDA2NDQKPiA+Pj4+IC0tLSBhL2tlcm5lbC9kcml2ZXJzL25ldC9h
-ZGRvbnMvS2NvbmZpZwo+ID4+Pj4gKysrIGIva2VybmVsL2RyaXZlcnMvbmV0L2FkZG9ucy9LY29u
-ZmlnCj4gPj4+PiBAQCAtMiw3ICsyLDcgQEAgbWVudSAiQWRkLU9ucyIKPiA+Pj4+ICAgICAgICAg
-ZGVwZW5kcyBvbiBYRU5PX0RSSVZFUlNfTkVUCj4gPj4+PiAgICAgCj4gPj4+PiAgICAgY29uZmln
-IFhFTk9fRFJJVkVSU19ORVRfQURET05fUlRDQVAKPiA+Pj4+IC0gICAgZGVwZW5kcyBvbiBYRU5P
-X0RSSVZFUlNfTkVUICYmIG0KPiA+Pj4+ICsgICAgZGVwZW5kcyBvbiBYRU5PX0RSSVZFUlNfTkVU
-Cj4gPj4+PiAgICAgICAgIHNlbGVjdCBFVEhFUk5FVAo+ID4+Pj4gICAgICAgICB0cmlzdGF0ZSAi
-UmVhbC1UaW1lIENhcHR1cmluZyBTdXBwb3J0Igo+ID4+Pj4gICAgICAgICBkZWZhdWx0IG4KPiA+
-Pj4+IEBAIC0xOCw3ICsxOCw3IEBAIGNvbmZpZyBYRU5PX0RSSVZFUlNfTkVUX0FERE9OX1JUQ0FQ
-Cj4gPj4+PiAgICAgICAgIEZvciBmdXJ0aGVyIGluZm9ybWF0aW9uIHNlZSBEb2N1bWVudGF0aW9u
-L1JFQURNRS5ydGNhcC4KPiA+Pj4+ICAgICAKPiA+Pj4+ICAgICBjb25maWcgWEVOT19EUklWRVJT
-X05FVF9BRERPTl9QUk9YWQo+ID4+Pj4gLSAgICBkZXBlbmRzIG9uIFhFTk9fRFJJVkVSU19ORVRf
-UlRJUFY0ICYmIG0KPiA+Pj4+ICsgICAgZGVwZW5kcyBvbiBYRU5PX0RSSVZFUlNfTkVUX1JUSVBW
-NAo+ID4+Pj4gICAgICAgICBzZWxlY3QgRVRIRVJORVQKPiA+Pj4+ICAgICAgICAgdHJpc3RhdGUg
-IklQIHByb3RvY29sIHByb3h5IGZvciBMaW51eCIKPiA+Pj4+ICAgICAgICAgZGVmYXVsdCBuCj4g
-Pj4+PiBkaWZmIC0tZ2l0IGEva2VybmVsL2RyaXZlcnMvbmV0L3N0YWNrL01ha2VmaWxlIGIva2Vy
-bmVsL2RyaXZlcnMvbmV0L3N0YWNrL01ha2VmaWxlCj4gPj4+PiBpbmRleCBkMDU1ZGMyLi5mOGRi
-NmZhIDEwMDY0NAo+ID4+Pj4gLS0tIGEva2VybmVsL2RyaXZlcnMvbmV0L3N0YWNrL01ha2VmaWxl
-Cj4gPj4+PiArKysgYi9rZXJuZWwvZHJpdmVycy9uZXQvc3RhY2svTWFrZWZpbGUKPiA+Pj4+IEBA
-IC0xLDEzICsxLDUgQEAKPiA+Pj4+ICAgICBjY2ZsYWdzLXkgKz0gLUlkcml2ZXJzL3hlbm9tYWkv
-bmV0L3N0YWNrL2luY2x1ZGUgLUlrZXJuZWwvPiA+Pj4+ICAgICAKPiA+Pj4+IC1vYmotJChDT05G
-SUdfWEVOT19EUklWRVJTX05FVF9SVElQVjQpICs9IGlwdjQvCj4gPj4+PiAtCj4gPj4+PiAtb2Jq
-LSQoQ09ORklHX1hFTk9fRFJJVkVSU19ORVRfUlRQQUNLRVQpICs9IHBhY2tldC8KPiA+Pj4+IC0K
-PiA+Pj4+IC1vYmotJChDT05GSUdfWEVOT19EUklWRVJTX05FVF9SVE1BQykgKz0gcnRtYWMvCj4g
-Pj4+PiAtCj4gPj4+PiAtb2JqLSQoQ09ORklHX1hFTk9fRFJJVkVSU19ORVRfUlRDRkcpICs9IHJ0
-Y2ZnLwo+ID4+Pj4gLQo+ID4+Pj4gICAgIG9iai0kKENPTkZJR19YRU5PX0RSSVZFUlNfTkVUKSAr
-PSBydG5ldC5vCj4gPj4+PiAgICAgCj4gPj4+PiAgICAgcnRuZXQteSA6PSAgXAo+ID4+Pj4gQEAg
-LTIzLDQgKzE1LDEyIEBAIHJ0bmV0LXkgOj0gIFwKPiA+Pj4+ICAgICAJc3RhY2tfbWdyLm8gXAo+
-ID4+Pj4gICAgIAlldGgubwo+ID4+Pj4gICAgIAo+ID4+Pj4gK29iai0kKENPTkZJR19YRU5PX0RS
-SVZFUlNfTkVUX1JUSVBWNCkgKz0gaXB2NC8KPiA+Pj4+ICsKPiA+Pj4+ICtvYmotJChDT05GSUdf
-WEVOT19EUklWRVJTX05FVF9SVFBBQ0tFVCkgKz0gcGFja2V0Lwo+ID4+Pj4gKwo+ID4+Pj4gK29i
-ai0kKENPTkZJR19YRU5PX0RSSVZFUlNfTkVUX1JUTUFDKSArPSBydG1hYy8KPiA+Pj4+ICsKPiA+
-Pj4+ICtvYmotJChDT05GSUdfWEVOT19EUklWRVJTX05FVF9SVENGRykgKz0gcnRjZmcvCj4gPj4+
-PiArCj4gPj4+PiAgICAgcnRuZXQtJChDT05GSUdfWEVOT19EUklWRVJTX05FVF9SVFdMQU4pICs9
-IHJ0d2xhbi5vCj4gPj4+PiBkaWZmIC0tZ2l0IGEvdXRpbHMvbmV0L3J0bmV0LmluIGIvdXRpbHMv
-bmV0L3J0bmV0LmluCj4gPj4+PiBpbmRleCBmODFhN2JiLi5mYTEyYTAzIDEwMDY0NAo+ID4+Pj4g
-LS0tIGEvdXRpbHMvbmV0L3J0bmV0LmluCj4gPj4+PiArKysgYi91dGlscy9uZXQvcnRuZXQuaW4K
-PiA+Pj4+IEBAIC0zMSw0NCArMzEsNjggQEAgRU9GCj4gPj4+PiAgICAgfQo+ID4+Pj4gICAgIAo+
-ID4+Pj4gICAgIGluaXRfcnRuZXQoKSB7Cj4gPj4+PiAtICAgIG1vZHByb2JlIHJ0bmV0ID4vZGV2
-L251bGwgfHwgZXhpdCAxCj4gPj4+PiAtICAgIG1vZHByb2JlIHJ0aXB2NCA+L2Rldi9udWxsIHx8
-IGV4aXQgMQo+ID4+Pj4gLSAgICBtb2Rwcm9iZSAkUlRfRFJJVkVSICRSVF9EUklWRVJfT1BUSU9O
-UyA+L2Rldi9udWxsIHx8IGV4aXQgMQo+ID4+Pj4gLQo+ID4+Pj4gLSAgICBmb3IgZGV2IGluICRS
-RUJJTkRfUlRfTklDUzsgZG8KPiA+Pj4+IC0JaWYgWyAtZCAvc3lzL2J1cy9wY2kvZGV2aWNlcy8k
-ZGV2L2RyaXZlciBdOyB0aGVuCj4gPj4+PiAtCSAgICBlY2hvICRkZXYgPiAvc3lzL2J1cy9wY2kv
-ZGV2aWNlcy8kZGV2L2RyaXZlci91bmJpbmQKPiA+Pj4+IC0JZmkKPiA+Pj4+IC0JZWNobyAkZGV2
-ID4gL3N5cy9idXMvcGNpL2RyaXZlcnMvJFJUX0RSSVZFUi9iaW5kCj4gPj4+PiAtICAgIGRvbmUK
-PiA+Pj4+ICsgICAgaWYgWyAhIC1kIC9wcm9jL3J0bmV0IF07IHRoZW4KPiA+Pj4+ICsgICAgICAg
-IG1vZHByb2JlIHJ0bmV0ID4vZGV2L251bGwgfHwgZXhpdCAxCj4gPj4+PiArICAgIGZpCj4gPj4+
-PiAgICAgCj4gPj4+PiArICAgIGlmIFsgISAtZCAvcHJvYy9ydG5ldC9pcHY0IF07IHRoZW4KPiA+
-Pj4+ICsgICAgICAgIG1vZHByb2JlIHJ0aXB2NCA+L2Rldi9udWxsIHx8IGV4aXQgMQo+ID4+Pj4g
-KyAgICBmaQo+ID4+Pj4gICAgICAgICBmb3IgUFJPVE9DT0wgaW4gJFJUX1BST1RPQ09MUzsgZG8K
-PiA+Pj4+IC0JbW9kcHJvYmUgcnQkUFJPVE9DT0wgPi9kZXYvbnVsbCB8fCBleGl0IDEKPiA+Pj4+
-ICsgICAgICAgIGlmIFsgISAtZCAvc3lzL21vZHVsZXMvcnQkUFJPVE9DT0wgXTsgdGhlbgo+ID4+
-Pj4gKyAgICAgICAgICAgIGlmIFsgIiRQUk9UT0NPTCIgPSAicGFja2V0IiBdOyB0aGVuCj4gPj4+
-PiArICAgICAgICAgICAgICAgIG1vZHByb2JlIHJ0JFBST1RPQ09MID4vZGV2L251bGwKPiA+Pj4+
-ICsgICAgICAgICAgICBlbHNlCj4gPj4+PiArICAgICAgICAgICAgICAgIG1vZHByb2JlIHJ0JFBS
-T1RPQ09MID4vZGV2L251bGwgfHwgZXhpdCAxCj4gPj4+PiArICAgICAgICAgICAgZmkKPiA+Pj4+
-ICsgICAgICAgIGZpCj4gPj4+PiAgICAgICAgIGRvbmUKPiA+Pj4+ICAgICAKPiA+Pj4+ICsgICAg
-JChjYXQgL3Byb2MvcnRuZXQvZGV2aWNlcyB8IGdyZXAgLXEgcnRldGgwKQo+ID4+Pj4gKyAgICBp
-ZiBbICQ/IC1lcSAxIF07IHRoZW4KPiA+Pj4+ICsgICAgICAgIG1vZHByb2JlICRSVF9EUklWRVIg
-JFJUX0RSSVZFUl9PUFRJT05TID4vZGV2L251bGwgfHwgZXhpdCAxCj4gPj4+PiArCj4gPj4+PiAr
-ICAgICAgICBmb3IgZGV2IGluICRSRUJJTkRfUlRfTklDUzsgZG8KPiA+Pj4+ICsgICAgICAgICAg
-ICBpZiBbIC1kIC9zeXMvYnVzL3BjaS9kZXZpY2VzLyRkZXYvZHJpdmVyIF07IHRoZW4KPiA+Pj4+
-ICsgICAgICAgICAgICAgICAgZWNobyAkZGV2ID4gL3N5cy9idXMvcGNpL2RldmljZXMvJGRldi9k
-cml2ZXIvdW5iaW5kCj4gPj4+PiArICAgICAgICAgICAgZmkKPiA+Pj4+ICsgICAgICAgICAgICBl
-Y2hvICRkZXYgPiAvc3lzL2J1cy9wY2kvZHJpdmVycy8kUlRfRFJJVkVSL2JpbmQKPiA+Pj4+ICsg
-ICAgICAgIGRvbmUKPiA+Pj4+ICsgICAgZmkKPiA+Pj4+ICsKPiA+Pj4+ICAgICAgICAgaWYgWyAk
-UlRfTE9PUEJBQ0sgPSAieWVzIiBdOyB0aGVuCj4gPj4+PiAtCW1vZHByb2JlIHJ0X2xvb3BiYWNr
-ID4vZGV2L251bGwgfHwgZXhpdCAxCj4gPj4+PiArICAgICAgICAkKGNhdCAvcHJvYy9ydG5ldC9k
-ZXZpY2VzIHwgZ3JlcCAtcSBydGxvKQo+ID4+Pj4gKyAgICAgICAgaWYgWyAkPyAtZXEgMSBdOyB0
-aGVuCj4gPj4+PiArCj4gPj4+PiArICAgICAgICAgICAgbW9kcHJvYmUgcnRfbG9vcGJhY2sgPi9k
-ZXYvbnVsbCB8fCBleGl0IDEKPiA+Pj4+ICsgICAgICAgIGZpCj4gPj4+PiAgICAgICAgIGZpCj4g
-Pj4+PiAgICAgCj4gPj4+PiAtICAgIGlmIFsgJFJUQ0FQID0gInllcyIgXTsgdGhlbgo+ID4+Pj4g
-LQltb2Rwcm9iZSBydGNhcCA+L2Rldi9udWxsIHx8IGV4aXQgMQo+ID4+Pj4gKyAgICBpZiBbICRS
-VENBUCA9ICJ5ZXMiIC1hICEgLWQgL3N5cy9tb2R1bGVzL3J0Y2FwIF07IHRoZW4KPiA+Pj4+ICsg
-ICAgICAgIG1vZHByb2JlIHJ0Y2FwID4vZGV2L251bGwgfHwgZXhpdCAxCj4gPj4+PiAgICAgICAg
-IGZpCj4gPj4+PiAgICAgCj4gPj4+PiAgICAgICAgIGlmIFsgJFJUX0xPT1BCQUNLID0gInllcyIg
-XTsgdGhlbgo+ID4+Pj4gLQkkUlRJRkNPTkZJRyBydGxvIHVwIDEyNy4wLjAuMQo+ID4+Pj4gKyAg
-ICAgICAgJFJUSUZDT05GSUcgcnRsbyB1cCAxMjcuMC4wLjEKPiA+Pj4+ICAgICAgICAgZmkKPiA+
-Pj4+ICAgICAKPiA+Pj4+ICAgICAgICAgaWYgWyAkUlRDQVAgPSAieWVzIiBdOyB0aGVuCj4gPj4+
-PiAtCWlmY29uZmlnIHJ0ZXRoMCB1cAo+ID4+Pj4gLQlpZmNvbmZpZyBydGV0aDAtbWFjIHVwCj4g
-Pj4+PiAtCWlmIFsgJFJUX0xPT1BCQUNLID0gInllcyIgXTsgdGhlbgo+ID4+Pj4gLQkgICAgaWZj
-b25maWcgcnRsbyB1cAo+ID4+Pj4gLQlmaQo+ID4+Pj4gKyAgICAgICAgaWZjb25maWcgcnRldGgw
-IHVwCj4gPj4+PiArICAgICAgICBpZmNvbmZpZyBydGV0aDAtbWFjIHVwCj4gPj4+PiArICAgICAg
-ICBpZiBbICRSVF9MT09QQkFDSyA9ICJ5ZXMiIF07IHRoZW4KPiA+Pj4+ICsgICAgICAgICAgICBp
-ZmNvbmZpZyBydGxvIHVwCj4gPj4+PiArICAgICAgICBmaQo+ID4+Pj4gICAgICAgICBmaQo+ID4+
-Pj4gICAgIAo+ID4+Pj4gLSAgICBtb2Rwcm9iZSBydGNmZyA+L2Rldi9udWxsCj4gPj4+PiAtICAg
-IG1vZHByb2JlIHJ0bWFjID4vZGV2L251bGwKPiA+Pj4+IC0gICAgbW9kcHJvYmUgdGRtYSA+L2Rl
-di9udWxsCj4gPj4+PiArICAgIGlmIFsgISAtZCAvcHJvYy9ydG5ldC9ydGNmZyBdOyB0aGVuCj4g
-Pj4+PiArICAgICAgICBtb2Rwcm9iZSBydGNmZyA+L2Rldi9udWxsCj4gPj4+PiArICAgIGZpCj4g
-Pj4+PiArICAgIGlmIFsgISAtZCAvcHJvYy9ydG5ldC9ydG1hYyBdOyB0aGVuCj4gPj4+PiArICAg
-ICAgICBtb2Rwcm9iZSBydG1hYyA+L2Rldi9udWxsCj4gPj4+PiArICAgIGZpCj4gPj4+PiArICAg
-IGlmIFsgISAtZiAvcHJvYy90ZG1hIF07IHRoZW4KPiA+Pj4+ICsgICAgICAgIG1vZHByb2JlIHRk
-bWEgPi9kZXYvbnVsbAo+ID4+Pj4gKyAgICBmaQo+ID4+Pj4gICAgIH0KPiA+Pj4+ICAgICAKPiA+
-Pj4+ICAgICBzdWJtaXRfY2ZnKCkgewo+ID4+Pj4gQEAgLTMzNiwzNCArMzYwLDU2IEBAIGNhc2Ug
-IiQxIiBpbgo+ID4+Pj4gICAgIAk7Owo+ID4+Pj4gICAgIAo+ID4+Pj4gICAgICAgICBjYXB0dXJl
-KQo+ID4+Pj4gLQltb2Rwcm9iZSBydG5ldCA+L2Rldi9udWxsIHx8IGV4aXQgMQo+ID4+Pj4gLQlt
-b2Rwcm9iZSAkUlRfRFJJVkVSICRSVF9EUklWRVJfT1BUSU9OUyA+L2Rldi9udWxsIHx8IGV4aXQg
-MQo+ID4+Pj4gLQltb2Rwcm9iZSBydGNhcCA+L2Rldi9udWxsIHx8IGV4aXQgMQo+ID4+Pj4gLQkk
-UlRJRkNPTkZJRyBydGV0aDAgdXAgcHJvbWlzYwo+ID4+Pj4gLQlpZmNvbmZpZyBydGV0aDAgdXAK
-PiA+Pj4+IC0JaWZjb25maWcgcnRldGgwLW1hYyB1cAo+ID4+Pj4gLQk7Owo+ID4+Pj4gKyAgICAg
-ICAgaWYgWyAhIC1kIC9wcm9jL3J0bmV0IF07IHRoZW4KPiA+Pj4+ICsgICAgICAgICAgICBtb2Rw
-cm9iZSBydG5ldCA+L2Rldi9udWxsIHx8IGV4aXQgMQo+ID4+Pj4gKyAgICAgICAgZmkKPiA+Pj4+
-ICsgICAgICAgICQoY2F0IC9wcm9jL3J0bmV0L2RldmljZXMgfCBncmVwIC1xIHJ0ZXRoMCkKPiA+
-Pj4+ICsgICAgICAgIGlmIFsgJD8gLWVxIDEgXTsgdGhlbgo+ID4+Pj4gKyAgICAgICAgICAgIG1v
-ZHByb2JlICRSVF9EUklWRVIgJFJUX0RSSVZFUl9PUFRJT05TID4vZGV2L251bGwgfHwgZXhpdCAx
-Cj4gPj4+PiArICAgICAgICBmaQo+ID4+Pj4gKyAgICAgICAgaWYgWyAhIC1kIC9zeXMvbW9kdWxl
-cy9ydGNhcCBdOyB0aGVuCj4gPj4+PiArICAgICAgICAgICAgbW9kcHJvYmUgcnRjYXAgPi9kZXYv
-bnVsbCB8fCBleGl0IDEKPiA+Pj4+ICsgICAgICAgIGZpCj4gPj4+PiArICAgICAgICAkUlRJRkNP
-TkZJRyBydGV0aDAgdXAgcHJvbWlzYwo+ID4+Pj4gKyAgICAgICAgaWZjb25maWcgcnRldGgwIHVw
-Cj4gPj4+PiArICAgICAgICBpZmNvbmZpZyBydGV0aDAtbWFjIHVwCj4gPj4+PiArICAgICAgICA7
-Owo+ID4+Pj4gICAgIAo+ID4+Pj4gICAgICAgICBsb29wYmFjaykKPiA+Pj4+IC0JbW9kcHJvYmUg
-cnRuZXQgPi9kZXYvbnVsbCB8fCBleGl0IDEKPiA+Pj4+IC0JbW9kcHJvYmUgcnRpcHY0ID4vZGV2
-L251bGwgfHwgZXhpdCAxCj4gPj4+PiAtCj4gPj4+PiAtCWZvciBQUk9UT0NPTCBpbiAkUlRfUFJP
-VE9DT0xTOyBkbwo+ID4+Pj4gLQkgICAgbW9kcHJvYmUgcnQkUFJPVE9DT0wgPi9kZXYvbnVsbCB8
-fCBleGl0IDEKPiA+Pj4+IC0JZG9uZQo+ID4+Pj4gLQo+ID4+Pj4gLQltb2Rwcm9iZSBydF9sb29w
-YmFjayA+L2Rldi9udWxsIHx8IGV4aXQgMQo+ID4+Pj4gLQo+ID4+Pj4gLQlpZiBbICRSVENBUCA9
-ICJ5ZXMiIF07IHRoZW4KPiA+Pj4+IC0JICAgIG1vZHByb2JlIHJ0Y2FwID4vZGV2L251bGwgfHwg
-ZXhpdCAxCj4gPj4+PiAtCWZpCj4gPj4+PiAtCj4gPj4+PiAtCSRSVElGQ09ORklHIHJ0bG8gdXAg
-MTI3LjAuMC4xCj4gPj4+PiAtCj4gPj4+PiAtCWlmIFsgJFJUQ0FQID0gInllcyIgXTsgdGhlbgo+
-ID4+Pj4gLQkgICAgaWZjb25maWcgcnRsbyB1cAo+ID4+Pj4gLQlmaQo+ID4+Pj4gLQk7Owo+ID4+
-Pj4gKyAgICAgICAgaWYgWyAhIC1kIC9wcm9jL3J0bmV0IF07IHRoZW4KPiA+Pj4+ICsgICAgICAg
-ICAgICBtb2Rwcm9iZSBydG5ldCA+L2Rldi9udWxsIHx8IGV4aXQgMQo+ID4+Pj4gKyAgICAgICAg
-ZmkKPiA+Pj4+ICsgICAgICAgIGlmIFsgISAtZCAvcHJvYy9ydG5ldC9pcHY0IF07IHRoZW4KPiA+
-Pj4+ICsgICAgICAgICAgICBtb2Rwcm9iZSBydGlwdjQgPi9kZXYvbnVsbCB8fCBleGl0IDEKPiA+
-Pj4+ICsgICAgICAgIGZpCj4gPj4+PiArICAgICAgICBmb3IgUFJPVE9DT0wgaW4gJFJUX1BST1RP
-Q09MUzsgZG8KPiA+Pj4+ICsgICAgICAgICAgICBpZiBbICEgLWQgL3N5cy9tb2R1bGVzL3J0JFBS
-T1RPQ09MIF07IHRoZW4KPiA+Pj4+ICsgICAgICAgICAgICAgICAgaWYgWyAiJFBST1RPQ09MIiA9
-ICJwYWNrZXQiIF07IHRoZW4KPiA+Pj4+ICsgICAgICAgICAgICAgICAgICAgIG1vZHByb2JlIHJ0
-JFBST1RPQ09MID4vZGV2L251bGwKPiA+Pj4+ICsgICAgICAgICAgICAgICAgZWxzZQo+ID4+Pj4g
-KyAgICAgICAgICAgICAgICAgICAgbW9kcHJvYmUgcnQkUFJPVE9DT0wgPi9kZXYvbnVsbCB8fCBl
-eGl0IDEKPiA+Pj4+ICsgICAgICAgICAgICAgICAgZmkKPiA+Pj4+ICsgICAgICAgICAgICBmaQo+
-ID4+Pj4gKyAgICAgICAgZG9uZQo+ID4+Pj4gKwo+ID4+Pj4gKyAgICAgICAgaWYgWyAkUlRfTE9P
-UEJBQ0sgPSAieWVzIiBdOyB0aGVuCj4gPj4+PiArICAgICAgICAgICAgJChjYXQgL3Byb2MvcnRu
-ZXQvZGV2aWNlcyB8IGdyZXAgLXEgcnRsbykKPiA+Pj4+ICsgICAgICAgICAgICBpZiBbICQ/IC1l
-cSAxIF07IHRoZW4KPiA+Pj4+ICsKPiA+Pj4+ICsgICAgICAgICAgICAgICAgbW9kcHJvYmUgcnRf
-bG9vcGJhY2sgPi9kZXYvbnVsbCB8fCBleGl0IDEKPiA+Pj4+ICsgICAgICAgICAgICBmaQo+ID4+
-Pj4gKyAgICAgICAgZmkKPiA+Pj4+ICsKPiA+Pj4+ICsgICAgICAgIGlmIFsgJFJUQ0FQID0gInll
-cyIgLWEgISAtZCAvc3lzL21vZHVsZXMvcnRjYXAgXTsgdGhlbgo+ID4+Pj4gKyAgICAgICAgICAg
-IG1vZHByb2JlIHJ0Y2FwID4vZGV2L251bGwgfHwgZXhpdCAxCj4gPj4+PiArICAgICAgICBmaQo+
-ID4+Pj4gKwo+ID4+Pj4gKyAgICAgICAgJFJUSUZDT05GSUcgcnRsbyB1cCAxMjcuMC4wLjEKPiA+
-Pj4+ICsKPiA+Pj4+ICsgICAgICAgIGlmIFsgJFJUQ0FQID0gInllcyIgXTsgdGhlbgo+ID4+Pj4g
-KyAgICAgICAgICAgIGlmY29uZmlnIHJ0bG8gdXAKPiA+Pj4+ICsgICAgICAgIGZpCj4gPj4+PiAr
-ICAgICAgICA7Owo+ID4+Pj4gICAgIAo+ID4+Pj4gICAgICAgICAqKQo+ID4+Pj4gICAgIAl1c2Fn
-ZQo+ID4+Pj4KPiA+Pj4KPiA+Pj4gQ291bGQgeW91IGNoZWNrIGlmIHRoaXMgZGVsdGEgb24gdG9w
-IHdvcmtzIGFzIHdlbGw/Cj4gPj4+Cj4gPj4+IGRpZmYgLS1naXQgYS91dGlscy9uZXQvcnRuZXQu
-aW4gYi91dGlscy9uZXQvcnRuZXQuaW4KPiA+Pj4gaW5kZXggZmExMmEwMzc4YS4uODRmN2VlZDAw
-ZCAxMDA2NDQKPiA+Pj4gLS0tIGEvdXRpbHMvbmV0L3J0bmV0LmluCj4gPj4+ICsrKyBiL3V0aWxz
-L25ldC9ydG5ldC5pbgo+ID4+PiBAQCAtNDgsOCArNDgsNyBAQCBpbml0X3J0bmV0KCkgewo+ID4+
-PiAgICAgICAgICAgIGZpCj4gPj4+ICAgICAgICBkb25lCj4gPj4+ICAgIAo+ID4+PiAtICAgICQo
-Y2F0IC9wcm9jL3J0bmV0L2RldmljZXMgfCBncmVwIC1xIHJ0ZXRoMCkKPiA+Pj4gLSAgICBpZiBb
-ICQ/IC1lcSAxIF07IHRoZW4KPiA+Pj4gKyAgICBpZiBncmVwIC12cSBydGV0aDAgL3Byb2MvcnRu
-ZXQvZGV2aWNlczsgdGhlbgo+ID4+PiAgICAgICAgICAgIG1vZHByb2JlICRSVF9EUklWRVIgJFJU
-X0RSSVZFUl9PUFRJT05TID4vZGV2L251bGwgfHwgZXhpdCAxCj4gPj4+ICAgIAo+ID4+PiAgICAg
-ICAgICAgIGZvciBkZXYgaW4gJFJFQklORF9SVF9OSUNTOyBkbwo+ID4+PiBAQCAtNjEsOSArNjAs
-NyBAQCBpbml0X3J0bmV0KCkgewo+ID4+PiAgICAgICAgZmkKPiA+Pj4gICAgCj4gPj4+ICAgICAg
-ICBpZiBbICRSVF9MT09QQkFDSyA9ICJ5ZXMiIF07IHRoZW4KPiA+Pj4gLSAgICAgICAgJChjYXQg
-L3Byb2MvcnRuZXQvZGV2aWNlcyB8IGdyZXAgLXEgcnRsbykKPiA+Pj4gLSAgICAgICAgaWYgWyAk
-PyAtZXEgMSBdOyB0aGVuCj4gPj4+IC0KPiA+Pj4gKyAgICAgICAgaWYgZ3JlcCAtdnEgcnRsbyAv
-cHJvYy9ydG5ldC9kZXZpY2VzOyB0aGVuCj4gPj4+ICAgICAgICAgICAgICAgIG1vZHByb2JlIHJ0
-X2xvb3BiYWNrID4vZGV2L251bGwgfHwgZXhpdCAxCj4gPj4+ICAgICAgICAgICAgZmkKPiA+Pj4g
-ICAgICAgIGZpCj4gPj4+IEBAIC0zNjMsOCArMzYwLDcgQEAgY2FzZSAiJDEiIGluCj4gPj4+ICAg
-ICAgICAgICAgaWYgWyAhIC1kIC9wcm9jL3J0bmV0IF07IHRoZW4KPiA+Pj4gICAgICAgICAgICAg
-ICAgbW9kcHJvYmUgcnRuZXQgPi9kZXYvbnVsbCB8fCBleGl0IDEKPiA+Pj4gICAgICAgICAgICBm
-aQo+ID4+PiAtICAgICAgICAkKGNhdCAvcHJvYy9ydG5ldC9kZXZpY2VzIHwgZ3JlcCAtcSBydGV0
-aDApCj4gPj4+IC0gICAgICAgIGlmIFsgJD8gLWVxIDEgXTsgdGhlbgo+ID4+PiArICAgICAgICBp
-ZiBncmVwIC12cSBydGV0aDAgL3Byb2MvcnRuZXQvZGV2aWNlczsgdGhlbgo+ID4+PiAgICAgICAg
-ICAgICAgICBtb2Rwcm9iZSAkUlRfRFJJVkVSICRSVF9EUklWRVJfT1BUSU9OUyA+L2Rldi9udWxs
-IHx8IGV4aXQgMQo+ID4+PiAgICAgICAgICAgIGZpCj4gPj4+ICAgICAgICAgICAgaWYgWyAhIC1k
-IC9zeXMvbW9kdWxlcy9ydGNhcCBdOyB0aGVuCj4gPj4+IEBAIC0zOTMsOSArMzg5LDcgQEAgY2Fz
-ZSAiJDEiIGluCj4gPj4+ICAgICAgICAgICAgZG9uZQo+ID4+PiAgICAKPiA+Pj4gICAgICAgICAg
-ICBpZiBbICRSVF9MT09QQkFDSyA9ICJ5ZXMiIF07IHRoZW4KPiA+Pj4gLSAgICAgICAgICAgICQo
-Y2F0IC9wcm9jL3J0bmV0L2RldmljZXMgfCBncmVwIC1xIHJ0bG8pCj4gPj4+IC0gICAgICAgICAg
-ICBpZiBbICQ/IC1lcSAxIF07IHRoZW4KPiA+Pj4gLQo+ID4+PiArICAgICAgICAgICAgaWYgZ3Jl
-cCAtdnEgcnRsbyAvcHJvYy9ydG5ldC9kZXZpY2VzOyB0aGVuCj4gPj4+ICAgICAgICAgICAgICAg
-ICAgICBtb2Rwcm9iZSBydF9sb29wYmFjayA+L2Rldi9udWxsIHx8IGV4aXQgMQo+ID4+PiAgICAg
-ICAgICAgICAgICBmaQo+ID4+PiAgICAgICAgICAgIGZpCj4gPj4+Cj4gPj4+IFRoZW4gSSB3b3Vs
-ZCBwcmVmZXIgaXQgYW5kIHdvdWxkIG1lcmdlIHRoZSBjb21iaW5hdGlvbiB0byBuZXh0LiBJdCBs
-b29rcwo+ID4+PiBzYWZlIGFuZCBvcnRob2dvbmFsIGVub3VnaCBmb3IgLXJjMi4KPiA+Pgo+ID4+
-IE5haCwgbm90IHlldC4gV2UgbmVlZCB0byBjaGVjayB0aGUgZHJpdmVycyBmaXJzdC4gQXQgbGVh
-c3QgdGhlIGUxMDAwIGhhdmUKPiA+PiBub24tc3RhdGljIHN5bWJvbHMgdGhhdCBjb2xsaWRlIHdp
-dGggdGhlIGluLXRyZWUgdmVyc2lvbi4KPiA+Pgo+ID4+IEphbgo+ID4+Cj4gPiAKPiA+IEFueXdh
-eSwgd2hhdCB5b3UgcHJvcG9zZWQgZG9lcyBub3Qgd29yayBhcyB0aGVyZSBpcyBhbiBoZWFkZXIg
-bGluZSBpbiB0aGUgZmlsZSB3aGljaCB3aWxsIG1hdGNoIGFueXdheSAocGx1cyB0aGVyZSBpcyBs
-aWtlbHkgYW5vdGhlciBuZXR3b3JrIGludGVyZmFjZSB0aGVyZSB0b28sIGNhdXNpbmcgeW91ciBy
-dWxlIHRvIGZhaWwuCj4gPiAKPiA+IFdlIGNvdWxkIHJlcGxhY2UgdGhhdCB3aXRoIDoKPiA+IGdy
-ZXAgLXEgcnRsbyAvcHJvYy9ydG5ldC9kZXZpY2VzIHx8IG1vZHByb2JlIHJ0X2xvb3BiYWNrID4v
-ZGV2L251bGwgfHwgZXhpdCAxCj4gPiAKPiA+IEkgY2FuIHNlbmQgdGhlIHBhdGNoIGJhY2sgdGhh
-dCB3YXkgaWYgdGhhdCBmaXRzIHlvdXIgcnVsZXMuCj4gCj4gQWgsIHllYWgsIG5vdCB0aGUgc2Ft
-ZS4uLiBCdXQgdGhlbiBkbyAiaWYgISBncmVwIC1xIC4uLiIuCj4gCj4gUmVnYXJkaW5nIHRoZSBz
-eW1ib2wgY29uZmxpY3RzOiBNYXliZSB3ZSBzdGFydCB3aXRoIG1hcmtpbmcgYWxsIGRyaXZlcnMg
-ImRlcGVuZHMgCj4gbSIsIGFuZCB0aGVuIGRyb3BwaW5nIHRob3NlIHN0ZXAtd2lzZSB3aGljaCBk
-byBub3QgY29uZmxpY3Qgd2l0aCB0aGVpciB1cHN0cmVhbSAKPiBzaWJsaW5ncy4gQnV0IGl0IGlz
-IGltcG9ydGFudCB0byBjaGVjayB0aGF0IGJ5IGJ1aWxkaW5nIGJvdGggaW50byB0aGUga2VybmVs
-Lgo+IAo+IEphbgoKZ3JlcCAhIC1xLi4uIGRvZXMgdGhlIHRyaWNrICEKQWJvdXQgbWFraW5nIGJv
-dGggZHJpdmVycyBidWlsdGluLCBJIGNvdWxkIHRyeSBmb3IgdGhlIFBDSSBvbmVzLCBhbmQgdGhl
-IHJlc3VsdCBpcyAoQUZBSUNUKSwgdGhlIGZvbGxvd2luZyBvbmVzIGNvbmZsaWN0IHdpdGggbGlu
-dXggOgotIFhFTk9fRFJJVkVSU19ORVRfRFJWX1RVTElQCi0gWEVOT19EUklWRVJTX05FVF9EUlZf
-RTEwMDAKLSBYRU5PX0RSSVZFUlNfTkVUX0RSVl9FMTAwMEUKLSBYRU5PX0RSSVZFUlNfTkVUX0RS
-Vl9JR0IKCkkgY2FuJ3QgY2hlY2sgZm9yIHRoZSBYRU5PX0RSSVZFUlNfTkVUX0RSVl9FMTAwMF9O
-RVcgdGhhdCBkb2VzIG5vdCBldmVuIGJ1aWxkIChhdCBsZWFzdCBvbiAzLjAuOSkuCkknbGwgdHJ5
-IHRvIGhhY2sgaW50byB0aGUgS2NvbmZpZyB0byB0cnkgdG8gYnVpbGQgdGhlIFBQQyBkcml2ZXJz
-LCBhbmQgY29tZSBiYWNrIHRvIHRoZSBsaXN0LgoKUGxlYXNlIG5vdGUgdGhhdCBJIGRpZCBub3Qg
-c2F5IHRoZSBvdGhlciBkcml2ZXJzIHdvcmsgYnVpbHRpbiAod2hpY2ggSSB0ZXN0ZWQgb25seSBm
-b3IgTUFDQi9HRU0pLCBJIGNhbiB0ZWxsIHRoZXkgY29tcGlsZSBhbmQgbGluayB3aXRoIGxpbnV4
-LiBJIGF0dGFjaCB0aGUga2VybmVsIGNvbmZpZyBzbyB0aGF0IHlvdSBtYXkgZG91YmxlIGNoZWNr
-LgoKRnJhbsOnb2lzCgotIAoKCj4gCj4gLS0gCj4gU2llbWVucyBBRywgQ29ycG9yYXRlIFRlY2hu
-b2xvZ3ksIENUIFJEQSBJT1QgU0VTLURFCj4gQ29ycG9yYXRlIENvbXBldGVuY2UgQ2VudGVyIEVt
-YmVkZGVkIExpbnV4CgotLS0tLS0tLS0tLS0tLSBuZXh0IHBhcnQgLS0tLS0tLS0tLS0tLS0KQSBu
-b24tdGV4dCBhdHRhY2htZW50IHdhcyBzY3J1YmJlZC4uLgpOYW1lOiBjb25maWcKVHlwZTogYXBw
-bGljYXRpb24vb2N0ZXQtc3RyZWFtClNpemU6IDc0NzA5IGJ5dGVzCkRlc2M6IG5vdCBhdmFpbGFi
-bGUKVVJMOiA8aHR0cDovL3hlbm9tYWkub3JnL3BpcGVybWFpbC94ZW5vbWFpL2F0dGFjaG1lbnRz
-LzIwMTkxMDA0L2U3OWU2NDlmL2F0dGFjaG1lbnQub2JqPgo=
+On 04.10.19 17:29, François Legal wrote:
+> Le Vendredi, Octobre 04, 2019 17:16 CEST, François Legal via Xenomai <xenomai@xenomai.org> a écrit:
+>   
+>> Le Vendredi, Octobre 04, 2019 16:31 CEST, Jan Kiszka <jan.kiszka@siemens.com> a écrit:
+>>   
+>>> On 04.10.19 16:22, François Legal wrote:
+>>>> Le Vendredi, Octobre 04, 2019 15:36 CEST, Jan Kiszka <jan.kiszka@siemens.com> a écrit:
+>>>>    
+>>>>> On 04.10.19 13:10, Jan Kiszka wrote:
+>>>>>> On 03.10.19 10:10, François Legal via Xenomai wrote:
+>>>>>>> Subject: [PATCH] Allow RTNet to be builtin kernel
+>>>>>>>
+>>>>>>> Makefile is changed because when builtin, the modules
+>>>>>>> get loaded in the link order. In the previous version
+>>>>>>> protocols would get loaded before stackmgr which
+>>>>>>> obviously fails.
+>>>>>>>
+>>>>>>> Signed-off-by: François LEGAL <devel@thom.fr.eu.org>
+>>>>>>>
+>>>>>>> ---
+>>>>>>>
+>>>>>>> This has been tested on Zynq 7000 Hardware (microzed
+>>>>>>> board) with MACB/GEM RTNet driver, with linux 4.4.189
+>>>>>>> vanilla. Kernel boots up correctly, and the following
+>>>>>>> messages get printed on the console during the boot :
+>>>>>>>
+>>>>>>> [   13.875451] sdhci-pltfm: SDHCI platform and OF driver helper
+>>>>>>> [   13.881627] sdhci-arasan e0100000.sdhci: No vmmc regulator found
+>>>>>>> [   13.887581] sdhci-arasan e0100000.sdhci: No vqmmc regulator found
+>>>>>>> [   13.927585] mmc0: SDHCI controller on e0100000.sdhci [e0100000.sdhci] using ADMA
+>>>>>>> [   13.945085] fpga_manager fpga0: Xilinx Zynq FPGA Manager registered
+>>>>>>> [   13.951896]
+>>>>>>> [   13.951896] *** RTnet for Xenomai v3.0.9 ***
+>>>>>>> [   13.951896]
+>>>>>>> [   13.959156] RTnet: initialising real-time networking
+>>>>>>> [   13.964928] RTmac/TDMA: init time division multiple access control mechanism
+>>>>>>> [   13.972074] RTmac: init realtime media access control
+>>>>>>> [   13.977064] RTcfg: init real-time configuration distribution protocol
+>>>>>>> [   13.983752] initializing loopback...
+>>>>>>> [   13.987295] RTnet: registered rtlo
+>>>>>>> [   13.993238] RTnet: registered rteth0
+>>>>>>> [   13.996832] libphy: MACB_mii_bus: probed
+>>>>>>> [   14.001140] rt_macb: rteth0: Cadence GEM at 0xe000b000 irq 26 (00:0a:35:00:01:22)
+>>>>>>> [   14.008630] rt_macb: rteth0: attached PHY driver [Marvell 88E1510] (mii_bus:phy_addr=e000b000.ethernet-ffffffff:00, irq=-1)
+>>>>>>> [   14.019845] RTcap: real-time capturing interface
+>>>>>>> [   14.026562] RTproxy attached to rteth0
+>>>>>>> [   14.031129] rtnetproxy installed as "rtproxy"
+>>>>>>> [   14.035693] NET: Registered protocol family 26
+>>>>>>> [   14.040309] NET: Registered protocol family 17
+>>>>>>> [   14.044686] can: controller area network core (rev 20120528 abi 9)
+>>>>>>> [   14.050957] NET: Registered protocol family 29
+>>>>>>> [   14.055329] can: raw protocol (rev 20120528)
+>>>>>>> [   14.059683] can: broadcast manager protocol (rev 20120528 t)
+>>>>>>>
+>>>>>>>      kernel/drivers/net/Kconfig        |  1 -
+>>>>>>>      kernel/drivers/net/addons/Kconfig |  4 ++--
+>>>>>>>      kernel/drivers/net/stack/Makefile | 16 ++++++++--------
+>>>>>>>      utils/net/rtnet.in | 144 +++++++++++++++++++++++++++++++++++------------------
+>>>>>>>      4 files changed, 105 insertions(+), 60 deletions(-)
+>>>>>>>
+>>>>>>> diff --git a/kernel/drivers/net/Kconfig b/kernel/drivers/net/Kconfig
+>>>>>>> index ac3bced..49d2402 100644
+>>>>>>> --- a/kernel/drivers/net/Kconfig
+>>>>>>> +++ b/kernel/drivers/net/Kconfig
+>>>>>>> @@ -1,7 +1,6 @@
+>>>>>>>      menu "RTnet"
+>>>>>>>      
+>>>>>>>      config XENO_DRIVERS_NET
+>>>>>>> -    depends on m
+>>>>>>>          select NET
+>>>>>>>          tristate "RTnet, TCP/IP socket interface"
+>>>>>>>      
+>>>>>>> diff --git a/kernel/drivers/net/addons/Kconfig b/kernel/drivers/net/addons/Kconfig
+>>>>>>> index baa6cbc..616ed40 100644
+>>>>>>> --- a/kernel/drivers/net/addons/Kconfig
+>>>>>>> +++ b/kernel/drivers/net/addons/Kconfig
+>>>>>>> @@ -2,7 +2,7 @@ menu "Add-Ons"
+>>>>>>>          depends on XENO_DRIVERS_NET
+>>>>>>>      
+>>>>>>>      config XENO_DRIVERS_NET_ADDON_RTCAP
+>>>>>>> -    depends on XENO_DRIVERS_NET && m
+>>>>>>> +    depends on XENO_DRIVERS_NET
+>>>>>>>          select ETHERNET
+>>>>>>>          tristate "Real-Time Capturing Support"
+>>>>>>>          default n
+>>>>>>> @@ -18,7 +18,7 @@ config XENO_DRIVERS_NET_ADDON_RTCAP
+>>>>>>>          For further information see Documentation/README.rtcap.
+>>>>>>>      
+>>>>>>>      config XENO_DRIVERS_NET_ADDON_PROXY
+>>>>>>> -    depends on XENO_DRIVERS_NET_RTIPV4 && m
+>>>>>>> +    depends on XENO_DRIVERS_NET_RTIPV4
+>>>>>>>          select ETHERNET
+>>>>>>>          tristate "IP protocol proxy for Linux"
+>>>>>>>          default n
+>>>>>>> diff --git a/kernel/drivers/net/stack/Makefile b/kernel/drivers/net/stack/Makefile
+>>>>>>> index d055dc2..f8db6fa 100644
+>>>>>>> --- a/kernel/drivers/net/stack/Makefile
+>>>>>>> +++ b/kernel/drivers/net/stack/Makefile
+>>>>>>> @@ -1,13 +1,5 @@
+>>>>>>>      ccflags-y += -Idrivers/xenomai/net/stack/include -Ikernel/> >>>>
+>>>>>>> -obj-$(CONFIG_XENO_DRIVERS_NET_RTIPV4) += ipv4/
+>>>>>>> -
+>>>>>>> -obj-$(CONFIG_XENO_DRIVERS_NET_RTPACKET) += packet/
+>>>>>>> -
+>>>>>>> -obj-$(CONFIG_XENO_DRIVERS_NET_RTMAC) += rtmac/
+>>>>>>> -
+>>>>>>> -obj-$(CONFIG_XENO_DRIVERS_NET_RTCFG) += rtcfg/
+>>>>>>> -
+>>>>>>>      obj-$(CONFIG_XENO_DRIVERS_NET) += rtnet.o
+>>>>>>>      
+>>>>>>>      rtnet-y :=  \
+>>>>>>> @@ -23,4 +15,12 @@ rtnet-y :=  \
+>>>>>>>      	stack_mgr.o \
+>>>>>>>      	eth.o
+>>>>>>>      
+>>>>>>> +obj-$(CONFIG_XENO_DRIVERS_NET_RTIPV4) += ipv4/
+>>>>>>> +
+>>>>>>> +obj-$(CONFIG_XENO_DRIVERS_NET_RTPACKET) += packet/
+>>>>>>> +
+>>>>>>> +obj-$(CONFIG_XENO_DRIVERS_NET_RTMAC) += rtmac/
+>>>>>>> +
+>>>>>>> +obj-$(CONFIG_XENO_DRIVERS_NET_RTCFG) += rtcfg/
+>>>>>>> +
+>>>>>>>      rtnet-$(CONFIG_XENO_DRIVERS_NET_RTWLAN) += rtwlan.o
+>>>>>>> diff --git a/utils/net/rtnet.in b/utils/net/rtnet.in
+>>>>>>> index f81a7bb..fa12a03 100644
+>>>>>>> --- a/utils/net/rtnet.in
+>>>>>>> +++ b/utils/net/rtnet.in
+>>>>>>> @@ -31,44 +31,68 @@ EOF
+>>>>>>>      }
+>>>>>>>      
+>>>>>>>      init_rtnet() {
+>>>>>>> -    modprobe rtnet >/dev/null || exit 1
+>>>>>>> -    modprobe rtipv4 >/dev/null || exit 1
+>>>>>>> -    modprobe $RT_DRIVER $RT_DRIVER_OPTIONS >/dev/null || exit 1
+>>>>>>> -
+>>>>>>> -    for dev in $REBIND_RT_NICS; do
+>>>>>>> -	if [ -d /sys/bus/pci/devices/$dev/driver ]; then
+>>>>>>> -	    echo $dev > /sys/bus/pci/devices/$dev/driver/unbind
+>>>>>>> -	fi
+>>>>>>> -	echo $dev > /sys/bus/pci/drivers/$RT_DRIVER/bind
+>>>>>>> -    done
+>>>>>>> +    if [ ! -d /proc/rtnet ]; then
+>>>>>>> +        modprobe rtnet >/dev/null || exit 1
+>>>>>>> +    fi
+>>>>>>>      
+>>>>>>> +    if [ ! -d /proc/rtnet/ipv4 ]; then
+>>>>>>> +        modprobe rtipv4 >/dev/null || exit 1
+>>>>>>> +    fi
+>>>>>>>          for PROTOCOL in $RT_PROTOCOLS; do
+>>>>>>> -	modprobe rt$PROTOCOL >/dev/null || exit 1
+>>>>>>> +        if [ ! -d /sys/modules/rt$PROTOCOL ]; then
+>>>>>>> +            if [ "$PROTOCOL" = "packet" ]; then
+>>>>>>> +                modprobe rt$PROTOCOL >/dev/null
+>>>>>>> +            else
+>>>>>>> +                modprobe rt$PROTOCOL >/dev/null || exit 1
+>>>>>>> +            fi
+>>>>>>> +        fi
+>>>>>>>          done
+>>>>>>>      
+>>>>>>> +    $(cat /proc/rtnet/devices | grep -q rteth0)
+>>>>>>> +    if [ $? -eq 1 ]; then
+>>>>>>> +        modprobe $RT_DRIVER $RT_DRIVER_OPTIONS >/dev/null || exit 1
+>>>>>>> +
+>>>>>>> +        for dev in $REBIND_RT_NICS; do
+>>>>>>> +            if [ -d /sys/bus/pci/devices/$dev/driver ]; then
+>>>>>>> +                echo $dev > /sys/bus/pci/devices/$dev/driver/unbind
+>>>>>>> +            fi
+>>>>>>> +            echo $dev > /sys/bus/pci/drivers/$RT_DRIVER/bind
+>>>>>>> +        done
+>>>>>>> +    fi
+>>>>>>> +
+>>>>>>>          if [ $RT_LOOPBACK = "yes" ]; then
+>>>>>>> -	modprobe rt_loopback >/dev/null || exit 1
+>>>>>>> +        $(cat /proc/rtnet/devices | grep -q rtlo)
+>>>>>>> +        if [ $? -eq 1 ]; then
+>>>>>>> +
+>>>>>>> +            modprobe rt_loopback >/dev/null || exit 1
+>>>>>>> +        fi
+>>>>>>>          fi
+>>>>>>>      
+>>>>>>> -    if [ $RTCAP = "yes" ]; then
+>>>>>>> -	modprobe rtcap >/dev/null || exit 1
+>>>>>>> +    if [ $RTCAP = "yes" -a ! -d /sys/modules/rtcap ]; then
+>>>>>>> +        modprobe rtcap >/dev/null || exit 1
+>>>>>>>          fi
+>>>>>>>      
+>>>>>>>          if [ $RT_LOOPBACK = "yes" ]; then
+>>>>>>> -	$RTIFCONFIG rtlo up 127.0.0.1
+>>>>>>> +        $RTIFCONFIG rtlo up 127.0.0.1
+>>>>>>>          fi
+>>>>>>>      
+>>>>>>>          if [ $RTCAP = "yes" ]; then
+>>>>>>> -	ifconfig rteth0 up
+>>>>>>> -	ifconfig rteth0-mac up
+>>>>>>> -	if [ $RT_LOOPBACK = "yes" ]; then
+>>>>>>> -	    ifconfig rtlo up
+>>>>>>> -	fi
+>>>>>>> +        ifconfig rteth0 up
+>>>>>>> +        ifconfig rteth0-mac up
+>>>>>>> +        if [ $RT_LOOPBACK = "yes" ]; then
+>>>>>>> +            ifconfig rtlo up
+>>>>>>> +        fi
+>>>>>>>          fi
+>>>>>>>      
+>>>>>>> -    modprobe rtcfg >/dev/null
+>>>>>>> -    modprobe rtmac >/dev/null
+>>>>>>> -    modprobe tdma >/dev/null
+>>>>>>> +    if [ ! -d /proc/rtnet/rtcfg ]; then
+>>>>>>> +        modprobe rtcfg >/dev/null
+>>>>>>> +    fi
+>>>>>>> +    if [ ! -d /proc/rtnet/rtmac ]; then
+>>>>>>> +        modprobe rtmac >/dev/null
+>>>>>>> +    fi
+>>>>>>> +    if [ ! -f /proc/tdma ]; then
+>>>>>>> +        modprobe tdma >/dev/null
+>>>>>>> +    fi
+>>>>>>>      }
+>>>>>>>      
+>>>>>>>      submit_cfg() {
+>>>>>>> @@ -336,34 +360,56 @@ case "$1" in
+>>>>>>>      	;;
+>>>>>>>      
+>>>>>>>          capture)
+>>>>>>> -	modprobe rtnet >/dev/null || exit 1
+>>>>>>> -	modprobe $RT_DRIVER $RT_DRIVER_OPTIONS >/dev/null || exit 1
+>>>>>>> -	modprobe rtcap >/dev/null || exit 1
+>>>>>>> -	$RTIFCONFIG rteth0 up promisc
+>>>>>>> -	ifconfig rteth0 up
+>>>>>>> -	ifconfig rteth0-mac up
+>>>>>>> -	;;
+>>>>>>> +        if [ ! -d /proc/rtnet ]; then
+>>>>>>> +            modprobe rtnet >/dev/null || exit 1
+>>>>>>> +        fi
+>>>>>>> +        $(cat /proc/rtnet/devices | grep -q rteth0)
+>>>>>>> +        if [ $? -eq 1 ]; then
+>>>>>>> +            modprobe $RT_DRIVER $RT_DRIVER_OPTIONS >/dev/null || exit 1
+>>>>>>> +        fi
+>>>>>>> +        if [ ! -d /sys/modules/rtcap ]; then
+>>>>>>> +            modprobe rtcap >/dev/null || exit 1
+>>>>>>> +        fi
+>>>>>>> +        $RTIFCONFIG rteth0 up promisc
+>>>>>>> +        ifconfig rteth0 up
+>>>>>>> +        ifconfig rteth0-mac up
+>>>>>>> +        ;;
+>>>>>>>      
+>>>>>>>          loopback)
+>>>>>>> -	modprobe rtnet >/dev/null || exit 1
+>>>>>>> -	modprobe rtipv4 >/dev/null || exit 1
+>>>>>>> -
+>>>>>>> -	for PROTOCOL in $RT_PROTOCOLS; do
+>>>>>>> -	    modprobe rt$PROTOCOL >/dev/null || exit 1
+>>>>>>> -	done
+>>>>>>> -
+>>>>>>> -	modprobe rt_loopback >/dev/null || exit 1
+>>>>>>> -
+>>>>>>> -	if [ $RTCAP = "yes" ]; then
+>>>>>>> -	    modprobe rtcap >/dev/null || exit 1
+>>>>>>> -	fi
+>>>>>>> -
+>>>>>>> -	$RTIFCONFIG rtlo up 127.0.0.1
+>>>>>>> -
+>>>>>>> -	if [ $RTCAP = "yes" ]; then
+>>>>>>> -	    ifconfig rtlo up
+>>>>>>> -	fi
+>>>>>>> -	;;
+>>>>>>> +        if [ ! -d /proc/rtnet ]; then
+>>>>>>> +            modprobe rtnet >/dev/null || exit 1
+>>>>>>> +        fi
+>>>>>>> +        if [ ! -d /proc/rtnet/ipv4 ]; then
+>>>>>>> +            modprobe rtipv4 >/dev/null || exit 1
+>>>>>>> +        fi
+>>>>>>> +        for PROTOCOL in $RT_PROTOCOLS; do
+>>>>>>> +            if [ ! -d /sys/modules/rt$PROTOCOL ]; then
+>>>>>>> +                if [ "$PROTOCOL" = "packet" ]; then
+>>>>>>> +                    modprobe rt$PROTOCOL >/dev/null
+>>>>>>> +                else
+>>>>>>> +                    modprobe rt$PROTOCOL >/dev/null || exit 1
+>>>>>>> +                fi
+>>>>>>> +            fi
+>>>>>>> +        done
+>>>>>>> +
+>>>>>>> +        if [ $RT_LOOPBACK = "yes" ]; then
+>>>>>>> +            $(cat /proc/rtnet/devices | grep -q rtlo)
+>>>>>>> +            if [ $? -eq 1 ]; then
+>>>>>>> +
+>>>>>>> +                modprobe rt_loopback >/dev/null || exit 1
+>>>>>>> +            fi
+>>>>>>> +        fi
+>>>>>>> +
+>>>>>>> +        if [ $RTCAP = "yes" -a ! -d /sys/modules/rtcap ]; then
+>>>>>>> +            modprobe rtcap >/dev/null || exit 1
+>>>>>>> +        fi
+>>>>>>> +
+>>>>>>> +        $RTIFCONFIG rtlo up 127.0.0.1
+>>>>>>> +
+>>>>>>> +        if [ $RTCAP = "yes" ]; then
+>>>>>>> +            ifconfig rtlo up
+>>>>>>> +        fi
+>>>>>>> +        ;;
+>>>>>>>      
+>>>>>>>          *)
+>>>>>>>      	usage
+>>>>>>>
+>>>>>>
+>>>>>> Could you check if this delta on top works as well?
+>>>>>>
+>>>>>> diff --git a/utils/net/rtnet.in b/utils/net/rtnet.in
+>>>>>> index fa12a0378a..84f7eed00d 100644
+>>>>>> --- a/utils/net/rtnet.in
+>>>>>> +++ b/utils/net/rtnet.in
+>>>>>> @@ -48,8 +48,7 @@ init_rtnet() {
+>>>>>>             fi
+>>>>>>         done
+>>>>>>     
+>>>>>> -    $(cat /proc/rtnet/devices | grep -q rteth0)
+>>>>>> -    if [ $? -eq 1 ]; then
+>>>>>> +    if grep -vq rteth0 /proc/rtnet/devices; then
+>>>>>>             modprobe $RT_DRIVER $RT_DRIVER_OPTIONS >/dev/null || exit 1
+>>>>>>     
+>>>>>>             for dev in $REBIND_RT_NICS; do
+>>>>>> @@ -61,9 +60,7 @@ init_rtnet() {
+>>>>>>         fi
+>>>>>>     
+>>>>>>         if [ $RT_LOOPBACK = "yes" ]; then
+>>>>>> -        $(cat /proc/rtnet/devices | grep -q rtlo)
+>>>>>> -        if [ $? -eq 1 ]; then
+>>>>>> -
+>>>>>> +        if grep -vq rtlo /proc/rtnet/devices; then
+>>>>>>                 modprobe rt_loopback >/dev/null || exit 1
+>>>>>>             fi
+>>>>>>         fi
+>>>>>> @@ -363,8 +360,7 @@ case "$1" in
+>>>>>>             if [ ! -d /proc/rtnet ]; then
+>>>>>>                 modprobe rtnet >/dev/null || exit 1
+>>>>>>             fi
+>>>>>> -        $(cat /proc/rtnet/devices | grep -q rteth0)
+>>>>>> -        if [ $? -eq 1 ]; then
+>>>>>> +        if grep -vq rteth0 /proc/rtnet/devices; then
+>>>>>>                 modprobe $RT_DRIVER $RT_DRIVER_OPTIONS >/dev/null || exit 1
+>>>>>>             fi
+>>>>>>             if [ ! -d /sys/modules/rtcap ]; then
+>>>>>> @@ -393,9 +389,7 @@ case "$1" in
+>>>>>>             done
+>>>>>>     
+>>>>>>             if [ $RT_LOOPBACK = "yes" ]; then
+>>>>>> -            $(cat /proc/rtnet/devices | grep -q rtlo)
+>>>>>> -            if [ $? -eq 1 ]; then
+>>>>>> -
+>>>>>> +            if grep -vq rtlo /proc/rtnet/devices; then
+>>>>>>                     modprobe rt_loopback >/dev/null || exit 1
+>>>>>>                 fi
+>>>>>>             fi
+>>>>>>
+>>>>>> Then I would prefer it and would merge the combination to next. It looks
+>>>>>> safe and orthogonal enough for -rc2.
+>>>>>
+>>>>> Nah, not yet. We need to check the drivers first. At least the e1000 have
+>>>>> non-static symbols that collide with the in-tree version.
+>>>>>
+>>>>> Jan
+>>>>>
+>>>>
+>>>> Anyway, what you proposed does not work as there is an header line in the file which will match anyway (plus there is likely another network interface there too, causing your rule to fail.
+>>>>
+>>>> We could replace that with :
+>>>> grep -q rtlo /proc/rtnet/devices || modprobe rt_loopback >/dev/null || exit 1
+>>>>
+>>>> I can send the patch back that way if that fits your rules.
+>>>
+>>> Ah, yeah, not the same... But then do "if ! grep -q ...".
+>>>
+>>> Regarding the symbol conflicts: Maybe we start with marking all drivers "depends
+>>> m", and then dropping those step-wise which do not conflict with their upstream
+>>> siblings. But it is important to check that by building both into the kernel.
+>>>
+>>> Jan
+>>
+>> grep ! -q... does the trick !
+>> About making both drivers builtin, I could try for the PCI ones, and the result is (AFAICT), the following ones conflict with linux :
+>> - XENO_DRIVERS_NET_DRV_TULIP
+>> - XENO_DRIVERS_NET_DRV_E1000
+>> - XENO_DRIVERS_NET_DRV_E1000E
+>> - XENO_DRIVERS_NET_DRV_IGB
+>>
+>> I can't check for the XENO_DRIVERS_NET_DRV_E1000_NEW that does not even build (at least on 3.0.9).
+>> I'll try to hack into the Kconfig to try to build the PPC drivers, and come back to the list.
+>>
+>> Please note that I did not say the other drivers work builtin (which I tested only for MACB/GEM), I can tell they compile and link with linux. I attach the kernel config so that you may double check.
+>>
+>> François
+> 
+> 
+> Well, it's going to be a mess to try to build the PPC driver with an ARM cross compiler (probably the same with an x86 one).
+> If anybody on the list can try and tell me so that I could adjust the patch.
+
+You could try in CI, maybe just adjusting our .travis.yml. If you have a github 
+account, fork https://github.com/xenomai-ci/xenomai and set up your own travis, 
+like on https://travis-ci.com/xenomai-ci/xenomai. But the safe option remains to 
+keep those on "depends on m" which can't be tested yet.
+
+Jan
+
+-- 
+Siemens AG, Corporate Technology, CT RDA IOT SES-DE
+Corporate Competence Center Embedded Linux
+
