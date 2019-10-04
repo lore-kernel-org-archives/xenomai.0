@@ -1,10 +1,10 @@
-Subject: Re: RTnet vnic0 non-rt traffic bug
-References: <CAPm8-H4PS0EqzKxGfaowfDeiqWD96nHB5MsZxQt6iFQ8X-pX0g@mail.gmail.com>
+Subject: Re: Controlling DMA priority between GPU and CPU on x86
+References: <a10e8232f3104d32900617139e7033da@heig-vd.ch>
 From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <a9b3ccfa-e23e-c228-6db8-1751e011948f@siemens.com>
-Date: Fri, 4 Oct 2019 09:34:13 +0200
+Message-ID: <cc3833cd-118f-8fce-6bd4-585bb79330a6@siemens.com>
+Date: Fri, 4 Oct 2019 10:14:47 +0200
 MIME-Version: 1.0
-In-Reply-To: <CAPm8-H4PS0EqzKxGfaowfDeiqWD96nHB5MsZxQt6iFQ8X-pX0g@mail.gmail.com>
+In-Reply-To: <a10e8232f3104d32900617139e7033da@heig-vd.ch>
 Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -16,42 +16,35 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Laurentiu-Cristian Duca <laurentiu.duca@gmail.com>, xenomai <xenomai@xenomai.org>
+To: Rossier Daniel <Daniel.Rossier@heig-vd.ch>, "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On 03.10.19 15:34, Laurentiu-Cristian Duca via Xenomai wrote:
-> Hello rtnet dev,
+On 03.10.19 17:23, Rossier Daniel via Xenomai wrote:
+> Hi all,
 > 
->    I think I found a bug in RTnet:
-> ping and non-rt applications (e.g. dropbear) send non-rt traffic via vnic0,
-> but the ethernet type is 0x9021 (real-time media access control type):
-> xenomai-3.0.9/kernel/drivers/net/stack/rtmac/rtmac_vnic.c:156:    res
-> = rtmac_add_header(rtdev, ethernet->h_dest, rtskb,
-> xenomai-3.0.9/kernel/drivers/net/stack/include/rtmac/rtmac_proto.h:32:#define
-> ETH_RTMAC               0x9021
-> xenomai-3.0.9/kernel/drivers/net/stack/include/rtmac/rtmac_proto.h:59:
->         (rtdev->hard_header(skb, rtdev, ETH_RTMAC, daddr,
-> I have caught the traffic through wireshark which confirmed this info.
+> We are currently working on a project called OpenCN which is a framework deeply inspired from LinuxCNC, but with a revisited architecture.
+> Hence, OpenCN is related to machine control.
 > 
->    I succesfully can ping and ssh between qemu rtnet virtual machines on vnic0
-> but I can not ping a non-rtnet machine from a rtnet machine via vnic0
-> and I can not connect using ssh from a non-rtnet machine to a rtnet machine.
+> Our framework mainly use a AMP approach and runs the Xenomai/Cobalt kernel on a dedicated CPU with no I-pipe (reworked out).
+> (We plan to release the framework by first of November).
 
-This is by design: RTmac implies all participants in the network play according 
-to its rule. The vnic is a non-rt tunnel between them, so the remote side has to 
-use that protocol as well.
+IOW, "bare-metal" Cobalt? Collaborative AMP, or partitioned via virtualization?
+
+> Our framework works well on a x86 PC, but we have to face an issue regarding DMA priority between the GPU and CPU; when the user plays with the GUI,
+> some small latencies (O(10ms)) raise up.
+> Although the question is not directly related to Xenomai, I would be very interested if somebody knows if it possible to give CPU priority against the GPU,
+> and how to manage the related DMA controller? Is it possible to configure it ? Or any other hint to avoid this latency ?
+> 
+> Many thanks in advance for any inputs.
+
+I didn't dig into anything that manages PCI bandwidth yet. I heard that 
+something exists, but at that time it was not publicly documented. And it's 
+likely highly platform specific (SoC/chipset).
+
+Did you clearly identify that it's DMA contention which increased your latency? 
+Do you cache-miss delays increase (PMU should tell you)? Or is there a 
+contention between a RT device doing DMA and the GPU?
 
 Jan
-
-> 
->    In order to reproduce the bug I have posted a qemu rtnet virtual
-> machine and instructions to this link:
-> https://github.com/laurentiuduca/rtnet-geek
-> 
->    I mention that rtping works ok.
-> 
-> Kind regards,
-> L-C. Duca
-> 
 
 -- 
 Siemens AG, Corporate Technology, CT RDA IOT SES-DE
