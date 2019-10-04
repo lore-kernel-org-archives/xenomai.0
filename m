@@ -1,12 +1,9 @@
-Subject: Re: Finalizing 3.1, finally
-References: <65e561a8-404a-6f71-106c-b05d6d8dc34d@siemens.com>
- <trinity-464d3e0c-84f5-4f3a-bf02-144c6347537e-1568402433614@3c-app-gmx-bap08>
- <2ca1f7e5-d37c-e00b-deb7-839b2946fc17@siemens.com>
-From: Philippe Gerum <rpm@xenomai.org>
-Message-ID: <7c463226-8179-c02e-1416-0e70c59a4fe6@xenomai.org>
-Date: Mon, 16 Sep 2019 20:37:59 +0200
+From: Jan Kiszka <jan.kiszka@siemens.com>
+Subject: [PATCH 2/2] testsuite/smokey/gdb: Only run basic test if
+ _CC_COBALT_DEBUG_SYNC_BP is missing
+Message-ID: <f717642d-ab59-c9cd-29b8-ad59af247dba@siemens.com>
+Date: Fri, 4 Oct 2019 15:47:10 +0200
 MIME-Version: 1.0
-In-Reply-To: <2ca1f7e5-d37c-e00b-deb7-839b2946fc17@siemens.com>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -18,38 +15,88 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jan Kiszka <jan.kiszka@siemens.com>, Sebastian Smolorz <Sebastian.Smolorz@gmx.de>
-Cc: Xenomai <xenomai@xenomai.org>
+To: Xenomai <xenomai@xenomai.org>
 
-On 9/16/19 11:26 AM, Jan Kiszka wrote:
-> On 13.09.19 21:20, Sebastian Smolorz wrote:
->> Hi Jan,
->>
->> Jan Kiszka wrote:
->>> we are postponing this for too long now, so I'd like to make step
->>> towards a
->>> feature freeze for 3.1, marked by an -rc1, and then a release. So,
->>> everyone
->>> sitting on API- or even ABI-breaking changes should speak up now.
->>
->> This week I have improved the close behaviour of the rttcp driver but
->> want
->> to make some more tests in the next week before I post a patch. When do
->> you plan to release -rc1?
-> 
-> Depends on the feedback. Given yours, let's target for end of next week.
-> Philippe, is that realistic?
-> 
+From: Jan Kiszka <jan.kiszka@siemens.com>
 
-I'll be mostly offline until October, but I have a short window of
-opportunity for fixing the device teardown stuff next week when I'm back
-to my office. So end of next week seems reasonable for 3.1 with this fix in.
+Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
+---
+ testsuite/smokey/gdb/gdb.c | 36 +++++++++++++++++++++++++-----------
+ 1 file changed, 25 insertions(+), 11 deletions(-)
 
-Regarding the vlan and multicast support for RTnet, this needs review
-from your end and some exposure in -next until we can reasonably see
-this merged to master. As much as I would have liked to see this queued
-for 3.1, this will have to wait for 3.2.
+diff --git a/testsuite/smokey/gdb/gdb.c b/testsuite/smokey/gdb/gdb.c
+index a6909d595b..33c16fe876 100644
+--- a/testsuite/smokey/gdb/gdb.c
++++ b/testsuite/smokey/gdb/gdb.c
+@@ -16,6 +16,7 @@
+ #include <fcntl.h>
+ #include <pthread.h>
+ #include <semaphore.h>
++#include <sys/cobalt.h>
+ #include <sys/wait.h>
+ #include <xeno_config.h>
+ #include <boilerplate/libc.h>
+@@ -198,6 +199,7 @@ static int run_gdb(struct smokey_test *t, int argc, char *const argv[])
+ 	pthread_attr_t attr;
+ 	char run_param[32];
+ 	cpu_set_t cpu_set;
++	int corectl_debug;
+ 	int err;
+ 
+ 	smokey_parse_args(t, argc, argv);
+@@ -245,6 +247,11 @@ static int run_gdb(struct smokey_test *t, int argc, char *const argv[])
+ 	} else {
+ 		/* we are the gdb controller */
+ 
++		err = cobalt_corectl(_CC_COBALT_GET_DEBUG, &corectl_debug,
++				    sizeof(corectl_debug));
++		if (err)
++			error(1, -err, "cobalt_corectl");
++
+ 		signal(SIGCHLD, handle_sigchld);
+ 
+ 		err = pipe(pipe_in);
+@@ -282,17 +289,24 @@ static int run_gdb(struct smokey_test *t, int argc, char *const argv[])
+ 			send_command("b breakpoint_target\n", 1);
+ 			send_command("r\n", 1);
+ 
+-			smokey_trace("resume in primary");
+-			send_command("c\n", 1);
+-			eval_expression("primary_mode", "1");
+-			send_command("c\n", 1);
+-
+-			smokey_trace("synchronous stop");
+-			eval_expression("thread_loops==expected_loops", "1");
+-			send_command("c\n", 1);
+-
+-			smokey_trace("synchronous continue");
+-			eval_expression("thread_loops==expected_loops", "1");
++			if (corectl_debug & _CC_COBALT_DEBUG_SYNC_BP) {
++				smokey_trace("resume in primary");
++				send_command("c\n", 1);
++				eval_expression("primary_mode", "1");
++				send_command("c\n", 1);
++
++				smokey_trace("synchronous stop");
++				eval_expression("thread_loops==expected_loops",
++						"1");
++				send_command("c\n", 1);
++
++				smokey_trace("synchronous continue");
++				eval_expression("thread_loops==expected_loops",
++						"1");
++			} else {
++				smokey_trace("basic continue");
++				send_command("c\n", 1);
++			}
+ 
+ 			send_command("q\n", 0);
+ 			pause();
+-- 
+2.16.4
+
 
 -- 
-Philippe.
+Siemens AG, Corporate Technology, CT RDA IOT SES-DE
+Corporate Competence Center Embedded Linux
 
