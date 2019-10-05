@@ -1,13 +1,14 @@
-Subject: Re: Xenomai running on IMX8M mini
-References: <CAPgPmP3ixSnwSoWuWtS8CtoVVmL+ExALaWuDt3zaorRKy8d4zA@mail.gmail.com>
-From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <0af7ec79-b51e-c222-80ec-f142431b37e0@siemens.com>
-Date: Fri, 4 Oct 2019 19:06:51 +0200
-MIME-Version: 1.0
-In-Reply-To: <CAPgPmP3ixSnwSoWuWtS8CtoVVmL+ExALaWuDt3zaorRKy8d4zA@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
+From: Rossier Daniel <Daniel.Rossier@heig-vd.ch>
+Subject: RE: Controlling DMA priority between GPU and CPU on x86
+Date: Sat, 5 Oct 2019 08:03:31 +0000
+Message-ID: <6b84e3f52b1c497daa5f675f69e15a77@heig-vd.ch>
+References: <a10e8232f3104d32900617139e7033da@heig-vd.ch>
+ <cc3833cd-118f-8fce-6bd4-585bb79330a6@siemens.com>
+In-Reply-To: <cc3833cd-118f-8fce-6bd4-585bb79330a6@siemens.com>
 Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+MIME-Version: 1.0
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,39 +17,63 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Nitin Kulkarni <nitin.kulkarni@mindmusiclabs.com>, xenomai@xenomai.org
+To: Jan Kiszka <jan.kiszka@siemens.com>, "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On 04.10.19 18:48, Nitin Kulkarni via Xenomai wrote:
-> Hi,
-> 
-> A few months back I wrote to the mailing list about our attempt to run
-> Xenomai on IMX8M mini.
-> We had a bumpy ride but we managed to fix the kernel to run Xenomai.
-> So we thought it would be helpful to others too and share it with the
-> mailing list.
-> We identified the irqchip which was causing the issue and fixed it with the
-> help of I-pipe porting guidelines. The issue was with the gpc-psci driver
-> which was not i-pipe aware. I have created a repository with the patches
-> and kernel which we have got working. I don't know how robust it is but we
-> haven't seen any issues so far.
-> Since this is a vendor specific patch and the concerned driver is not yet
-> in the mainline. I am sending the patch here but there is a repository too.
-> Here is the link to the repo. I hope it will be helpful.
-> https://github.com/kknitin/imx8M-linux-ipipe
-> The main patch that solved the lockup issue.
-> 
-
-Thanks for sharing!
-
-I had a discussion with NXP the other week, trying to pull them in for more 
-upstream work (they are doing Xenomai in their downstream BSPs), for which they 
-signaled interest. A good case to follow up on this again, because it shows how 
-inefficient the current situation is. If you happen to have a direct channel to 
-them as well, please poke them too.
-
-Jan
-
--- 
-Siemens AG, Corporate Technology, CT RDA IOT SES-DE
-Corporate Competence Center Embedded Linux
-
+PiAtLS0tLU9yaWdpbmFsIE1lc3NhZ2UtLS0tLQ0KPiBGcm9tOiBKYW4gS2lzemthIDxqYW4ua2lz
+emthQHNpZW1lbnMuY29tPg0KPiBTZW50OiB2ZW5kcmVkaSwgNCBvY3RvYnJlIDIwMTkgMTA6MTUN
+Cj4gVG86IFJvc3NpZXIgRGFuaWVsIDxEYW5pZWwuUm9zc2llckBoZWlnLXZkLmNoPjsgeGVub21h
+aUB4ZW5vbWFpLm9yZw0KPiBTdWJqZWN0OiBSZTogQ29udHJvbGxpbmcgRE1BIHByaW9yaXR5IGJl
+dHdlZW4gR1BVIGFuZCBDUFUgb24geDg2DQo+IA0KPiBPbiAwMy4xMC4xOSAxNzoyMywgUm9zc2ll
+ciBEYW5pZWwgdmlhIFhlbm9tYWkgd3JvdGU6DQo+ID4gSGkgYWxsLA0KPiA+DQo+ID4gV2UgYXJl
+IGN1cnJlbnRseSB3b3JraW5nIG9uIGEgcHJvamVjdCBjYWxsZWQgT3BlbkNOIHdoaWNoIGlzIGEg
+ZnJhbWV3b3JrDQo+IGRlZXBseSBpbnNwaXJlZCBmcm9tIExpbnV4Q05DLCBidXQgd2l0aCBhIHJl
+dmlzaXRlZCBhcmNoaXRlY3R1cmUuDQo+ID4gSGVuY2UsIE9wZW5DTiBpcyByZWxhdGVkIHRvIG1h
+Y2hpbmUgY29udHJvbC4NCj4gPg0KPiA+IE91ciBmcmFtZXdvcmsgbWFpbmx5IHVzZSBhIEFNUCBh
+cHByb2FjaCBhbmQgcnVucyB0aGUgWGVub21haS9Db2JhbHQNCj4ga2VybmVsIG9uIGEgZGVkaWNh
+dGVkIENQVSB3aXRoIG5vIEktcGlwZSAocmV3b3JrZWQgb3V0KS4NCj4gPiAoV2UgcGxhbiB0byBy
+ZWxlYXNlIHRoZSBmcmFtZXdvcmsgYnkgZmlyc3Qgb2YgTm92ZW1iZXIpLg0KPiANCj4gSU9XLCAi
+YmFyZS1tZXRhbCIgQ29iYWx0PyBDb2xsYWJvcmF0aXZlIEFNUCwgb3IgcGFydGl0aW9uZWQgdmlh
+DQo+IHZpcnR1YWxpemF0aW9uPw0KDQpBY3R1YWxseSwgd2UgaGF2ZSBwYXRjaGVkIGEgbG90IFhl
+bm9tYWkvQ29iYWx0IHRvIGtlZXAgdGhlIGNvYmFsdCBzY2hlZHVsZXIgYW5kIG1haW4gZnVuY3Rp
+b25zIChtdXRleCwgdGFzayBjcmVhdGUvZGVsZXRlLCB0aW1lciwgZXRjLikgcnVubmluZyBvbiBD
+UFUgIzEgYW5kDQp3ZSBtYW5hZ2UgaW50ZXJhY3Rpb25zIHdpdGggQ1BVICMwIHZpYSBzcGVjaWZp
+YyBJUEkgaW50ZXJydXB0cy4gIFRoZSBMaW51eCBzY2hlZHVsZXIgZG9lcyBub3QgaW50ZXJ2ZW5l
+IGhlcmUuDQoNCj4gDQo+ID4gT3VyIGZyYW1ld29yayB3b3JrcyB3ZWxsIG9uIGEgeDg2IFBDLCBi
+dXQgd2UgaGF2ZSB0byBmYWNlIGFuIGlzc3VlDQo+ID4gcmVnYXJkaW5nIERNQSBwcmlvcml0eSBi
+ZXR3ZWVuIHRoZSBHUFUgYW5kIENQVTsgd2hlbiB0aGUgdXNlciBwbGF5cw0KPiB3aXRoIHRoZSBH
+VUksIHNvbWUgc21hbGwgbGF0ZW5jaWVzIChPKDEwbXMpKSByYWlzZSB1cC4NCj4gPiBBbHRob3Vn
+aCB0aGUgcXVlc3Rpb24gaXMgbm90IGRpcmVjdGx5IHJlbGF0ZWQgdG8gWGVub21haSwgSSB3b3Vs
+ZCBiZQ0KPiA+IHZlcnkgaW50ZXJlc3RlZCBpZiBzb21lYm9keSBrbm93cyBpZiBpdCBwb3NzaWJs
+ZSB0byBnaXZlIENQVSBwcmlvcml0eSBhZ2FpbnN0DQo+IHRoZSBHUFUsIGFuZCBob3cgdG8gbWFu
+YWdlIHRoZSByZWxhdGVkIERNQSBjb250cm9sbGVyPyBJcyBpdCBwb3NzaWJsZSB0bw0KPiBjb25m
+aWd1cmUgaXQgPyBPciBhbnkgb3RoZXIgaGludCB0byBhdm9pZCB0aGlzIGxhdGVuY3kgPw0KPiA+
+DQo+ID4gTWFueSB0aGFua3MgaW4gYWR2YW5jZSBmb3IgYW55IGlucHV0cy4NCj4gDQo+IEkgZGlk
+bid0IGRpZyBpbnRvIGFueXRoaW5nIHRoYXQgbWFuYWdlcyBQQ0kgYmFuZHdpZHRoIHlldC4gSSBo
+ZWFyZCB0aGF0DQo+IHNvbWV0aGluZyBleGlzdHMsIGJ1dCBhdCB0aGF0IHRpbWUgaXQgd2FzIG5v
+dCBwdWJsaWNseSBkb2N1bWVudGVkLiBBbmQgaXQncw0KPiBsaWtlbHkgaGlnaGx5IHBsYXRmb3Jt
+IHNwZWNpZmljIChTb0MvY2hpcHNldCkuDQo+IA0KPiBEaWQgeW91IGNsZWFybHkgaWRlbnRpZnkg
+dGhhdCBpdCdzIERNQSBjb250ZW50aW9uIHdoaWNoIGluY3JlYXNlZCB5b3VyDQo+IGxhdGVuY3k/
+DQoNClRoZSBsYXRlbmN5IGFwcGVhcnMgd2hlbiB0aGVyZSBhcmUgc29tZSBhY3Rpdml0aWVzIG9u
+IHRoZSBHUFUgKHRoZSB1c2VyIG1vdmVzIHdpbmRvd3MgZm9yIGV4YW1wbGUpLg0KT3RoZXJ3aXNl
+LCB0aGUgc3lzdGVtIGlzIHZlcnkgc3RhYmxlLCBvbiBhIGxvbmcgcGVyaW9kIHRvby4NCg0KPiBE
+byB5b3UgY2FjaGUtbWlzcyBkZWxheXMgaW5jcmVhc2UgKFBNVSBzaG91bGQgdGVsbCB5b3UpPyBP
+ciBpcyB0aGVyZSBhDQo+IGNvbnRlbnRpb24gYmV0d2VlbiBhIFJUIGRldmljZSBkb2luZyBETUEg
+YW5kIHRoZSBHUFU/DQoNCkhvdyBjYW4gSSBnZXQgaW5mbyBmcm9tIFBNVSBpbiB0aGF0IHNlbnNl
+PyBUaGVyZSBpcyB0aGUgbmV0d29yayBjYXJkIChlMTAwMGUpIHdoaWNoIG1ha2VzIERNQSBhY2Nl
+c3MgcHJvYmFibHksIA0KaG93ZXZlciB3ZSBkbyBub3QgdXNlIGludGVycnVwdHMgaGVyZSwgb25s
+eSBwb2xsaW5nIHNpbmNlIGl0IGlzIHBhdGNoZWQgRXRoZXJjYXQtYmFzZWQgZHJpdmVyLg0KDQpJ
+IGFsc28gYXR0YWNoZWQgc29tZSBpbmZvcm1hdGlvbiBhYm91dCBvdXIgbGFiIFBDLg0KDQpEYW5p
+ZWwNCg0KPiANCj4gSmFuDQo+IA0KPiAtLQ0KPiBTaWVtZW5zIEFHLCBDb3Jwb3JhdGUgVGVjaG5v
+bG9neSwgQ1QgUkRBIElPVCBTRVMtREUgQ29ycG9yYXRlDQo+IENvbXBldGVuY2UgQ2VudGVyIEVt
+YmVkZGVkIExpbnV4DQotLS0tLS0tLS0tLS0tLSBuZXh0IHBhcnQgLS0tLS0tLS0tLS0tLS0KQW4g
+ZW1iZWRkZWQgYW5kIGNoYXJzZXQtdW5zcGVjaWZpZWQgdGV4dCB3YXMgc2NydWJiZWQuLi4KTmFt
+ZTogbHNjcHUudHh0ClVSTDogPGh0dHA6Ly94ZW5vbWFpLm9yZy9waXBlcm1haWwveGVub21haS9h
+dHRhY2htZW50cy8yMDE5MTAwNS8xNmI3YzQ3NC9hdHRhY2htZW50LnR4dD4KLS0tLS0tLS0tLS0t
+LS0gbmV4dCBwYXJ0IC0tLS0tLS0tLS0tLS0tCkFuIGVtYmVkZGVkIGFuZCBjaGFyc2V0LXVuc3Bl
+Y2lmaWVkIHRleHQgd2FzIHNjcnViYmVkLi4uCk5hbWU6IGxzY3B1X0MudHh0ClVSTDogPGh0dHA6
+Ly94ZW5vbWFpLm9yZy9waXBlcm1haWwveGVub21haS9hdHRhY2htZW50cy8yMDE5MTAwNS8xNmI3
+YzQ3NC9hdHRhY2htZW50LTAwMDEudHh0PgotLS0tLS0tLS0tLS0tLSBuZXh0IHBhcnQgLS0tLS0t
+LS0tLS0tLS0KQW4gZW1iZWRkZWQgYW5kIGNoYXJzZXQtdW5zcGVjaWZpZWQgdGV4dCB3YXMgc2Ny
+dWJiZWQuLi4KTmFtZTogbHNwY2lfa25udnYudHh0ClVSTDogPGh0dHA6Ly94ZW5vbWFpLm9yZy9w
+aXBlcm1haWwveGVub21haS9hdHRhY2htZW50cy8yMDE5MTAwNS8xNmI3YzQ3NC9hdHRhY2htZW50
+LTAwMDIudHh0Pgo=
