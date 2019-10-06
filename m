@@ -1,13 +1,14 @@
 Subject: Re: Dovetail status clarification
 References: <CABaOOZ0nqvBR+PMCWvZieY+b3j3nAcq_0FVSY42F0FjcXKD_hQ@mail.gmail.com>
+ <44151481-b9f7-24a4-252a-bb91138f336a@siemens.com>
 From: Philippe Gerum <rpm@xenomai.org>
-Message-ID: <5317e633-f1a4-9826-267a-9bd2c827baec@xenomai.org>
-Date: Sun, 6 Oct 2019 19:35:53 +0200
+Message-ID: <cf27472f-d4b7-b6b7-08c0-4bd67d922d49@xenomai.org>
+Date: Sun, 6 Oct 2019 19:49:37 +0200
 MIME-Version: 1.0
-In-Reply-To: <CABaOOZ0nqvBR+PMCWvZieY+b3j3nAcq_0FVSY42F0FjcXKD_hQ@mail.gmail.com>
-Content-Type: text/plain; charset="utf-8"
+In-Reply-To: <44151481-b9f7-24a4-252a-bb91138f336a@siemens.com>
+Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,40 +17,43 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Stratiyenko Roman <picoworm@gmail.com>, xenomai@xenomai.org
+To: Jan Kiszka <jan.kiszka@siemens.com>, Stratiyenko Roman <picoworm@gmail.com>, xenomai@xenomai.org
 
-On 10/2/19 9:06 AM, Stratiyenko Roman wrote:
-> Hello xenomai community,
+On 10/2/19 10:12 AM, Jan Kiszka wrote:
+> On 02.10.19 09:06, Stratiyenko Roman via Xenomai wrote:
+>> Hello xenomai community,
+>>
+>> As you may already know kernel v5.4-rc1 released yesterday and
+>> according to
+>> releases page on kernel.org this version is LTS.
+>>
+>> So it make sense to start porting of xenomai to this release.
+>>
+>> Some time ago dovetail were announced and It should replace ipipe for
+>> xenomai.
+>>
+>> Do you have any plans to start this migration in nearest time?
 > 
-> As you may already know kernel v5.4-rc1 released yesterday and according
-> to releases page on kernel.org <http://kernel.org> this version is LTS.
-> 
-> So it make sense to start porting of xenomai to this release. 
-> 
-> Some time ago dovetail were announced and It should replace ipipe for
-> xenomai.
-> 
-> Do you have any plans to start this migration in nearest time?
+> This is indeed a good question at the right time. Philippe can tell more
+> details about the dovetail status. There are prototypes for ARM and x86
+> for Xenomai, but I didn't find time to test at least the x86 part so
+> far. We should definitely look into this now before moving forward.
 > 
 
-Dovetail currently runs 5.4-rc1 on x86_64, arm(v7) and armv8. Real-time
-response and stability are routinely tested using EVL [1] which is the
-reference rt core for Dovetail. Results look promising enough at this
-stage for me not to consider porting the I-pipe/arm* to 5.4. I'd rather
-contribute time and energy to improve Dovetail instead.
+In a nutshell, Dovetail status is:
 
-The initial groundwork for interfacing Xenomai 3 with Dovetail has
-started some time ago by abstracting the I-pipe specific code from
-Cobalt, since the current option is to allow enabling either I-pipe (for
-pre-5.x kernels) or Dovetail at build time. I recently rebased that
-stuff over the -next branch [2]. However, significant work remains to be
-done for Dovetail support, including in libcobalt.
+current target kernel: 5.4-rc1
 
-Switching to Dovetail will affect the ABI, so this would definitely be
-post-3.1 material.
+x86_64: boots and runs EVL fine on the few Intel platforms I have at
+hand, plus a couple of others as reported by an EVL user. A known bug
+exists which may be related to (legacy) hardware which requires the
+broadcast timer to come into play.
 
-[1] https://evlproject.org/ports/
-[2] https://lab.xenomai.org/xenomai-rpm.git/log/?h=wip/dovetail
+armv7: boots and runs EVL fine on the ref. hardware I mentioned in an
+earlier mail.
+
+armv8: boots and runs EVL fine. Will be part of a production system in
+Q2 next year.
 
 -- 
 Philippe.
