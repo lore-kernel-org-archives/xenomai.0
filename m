@@ -1,14 +1,14 @@
-From: Rossier Daniel <Daniel.Rossier@heig-vd.ch>
-Subject: RE: Controlling DMA priority between GPU and CPU on x86
-Date: Sat, 5 Oct 2019 08:03:31 +0000
-Message-ID: <6b84e3f52b1c497daa5f675f69e15a77@heig-vd.ch>
-References: <a10e8232f3104d32900617139e7033da@heig-vd.ch>
- <cc3833cd-118f-8fce-6bd4-585bb79330a6@siemens.com>
-In-Reply-To: <cc3833cd-118f-8fce-6bd4-585bb79330a6@siemens.com>
-Content-Language: en-US
+Subject: Re: [PATCH] ipipe: Make ipipe_root_nr_syscalls independent of
+ CONFIG_IPIPE
+References: <c92a7502-d1c7-b07f-663b-950af084eebd@siemens.com>
+From: Philippe Gerum <rpm@xenomai.org>
+Message-ID: <73a936cb-ba6f-a3a8-603f-334998f8ab6c@xenomai.org>
+Date: Sun, 6 Oct 2019 18:21:36 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+In-Reply-To: <c92a7502-d1c7-b07f-663b-950af084eebd@siemens.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,63 +17,47 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jan Kiszka <jan.kiszka@siemens.com>, "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Jan Kiszka <jan.kiszka@siemens.com>
+Cc: Xenomai <xenomai@xenomai.org>
 
-PiAtLS0tLU9yaWdpbmFsIE1lc3NhZ2UtLS0tLQ0KPiBGcm9tOiBKYW4gS2lzemthIDxqYW4ua2lz
-emthQHNpZW1lbnMuY29tPg0KPiBTZW50OiB2ZW5kcmVkaSwgNCBvY3RvYnJlIDIwMTkgMTA6MTUN
-Cj4gVG86IFJvc3NpZXIgRGFuaWVsIDxEYW5pZWwuUm9zc2llckBoZWlnLXZkLmNoPjsgeGVub21h
-aUB4ZW5vbWFpLm9yZw0KPiBTdWJqZWN0OiBSZTogQ29udHJvbGxpbmcgRE1BIHByaW9yaXR5IGJl
-dHdlZW4gR1BVIGFuZCBDUFUgb24geDg2DQo+IA0KPiBPbiAwMy4xMC4xOSAxNzoyMywgUm9zc2ll
-ciBEYW5pZWwgdmlhIFhlbm9tYWkgd3JvdGU6DQo+ID4gSGkgYWxsLA0KPiA+DQo+ID4gV2UgYXJl
-IGN1cnJlbnRseSB3b3JraW5nIG9uIGEgcHJvamVjdCBjYWxsZWQgT3BlbkNOIHdoaWNoIGlzIGEg
-ZnJhbWV3b3JrDQo+IGRlZXBseSBpbnNwaXJlZCBmcm9tIExpbnV4Q05DLCBidXQgd2l0aCBhIHJl
-dmlzaXRlZCBhcmNoaXRlY3R1cmUuDQo+ID4gSGVuY2UsIE9wZW5DTiBpcyByZWxhdGVkIHRvIG1h
-Y2hpbmUgY29udHJvbC4NCj4gPg0KPiA+IE91ciBmcmFtZXdvcmsgbWFpbmx5IHVzZSBhIEFNUCBh
-cHByb2FjaCBhbmQgcnVucyB0aGUgWGVub21haS9Db2JhbHQNCj4ga2VybmVsIG9uIGEgZGVkaWNh
-dGVkIENQVSB3aXRoIG5vIEktcGlwZSAocmV3b3JrZWQgb3V0KS4NCj4gPiAoV2UgcGxhbiB0byBy
-ZWxlYXNlIHRoZSBmcmFtZXdvcmsgYnkgZmlyc3Qgb2YgTm92ZW1iZXIpLg0KPiANCj4gSU9XLCAi
-YmFyZS1tZXRhbCIgQ29iYWx0PyBDb2xsYWJvcmF0aXZlIEFNUCwgb3IgcGFydGl0aW9uZWQgdmlh
-DQo+IHZpcnR1YWxpemF0aW9uPw0KDQpBY3R1YWxseSwgd2UgaGF2ZSBwYXRjaGVkIGEgbG90IFhl
-bm9tYWkvQ29iYWx0IHRvIGtlZXAgdGhlIGNvYmFsdCBzY2hlZHVsZXIgYW5kIG1haW4gZnVuY3Rp
-b25zIChtdXRleCwgdGFzayBjcmVhdGUvZGVsZXRlLCB0aW1lciwgZXRjLikgcnVubmluZyBvbiBD
-UFUgIzEgYW5kDQp3ZSBtYW5hZ2UgaW50ZXJhY3Rpb25zIHdpdGggQ1BVICMwIHZpYSBzcGVjaWZp
-YyBJUEkgaW50ZXJydXB0cy4gIFRoZSBMaW51eCBzY2hlZHVsZXIgZG9lcyBub3QgaW50ZXJ2ZW5l
-IGhlcmUuDQoNCj4gDQo+ID4gT3VyIGZyYW1ld29yayB3b3JrcyB3ZWxsIG9uIGEgeDg2IFBDLCBi
-dXQgd2UgaGF2ZSB0byBmYWNlIGFuIGlzc3VlDQo+ID4gcmVnYXJkaW5nIERNQSBwcmlvcml0eSBi
-ZXR3ZWVuIHRoZSBHUFUgYW5kIENQVTsgd2hlbiB0aGUgdXNlciBwbGF5cw0KPiB3aXRoIHRoZSBH
-VUksIHNvbWUgc21hbGwgbGF0ZW5jaWVzIChPKDEwbXMpKSByYWlzZSB1cC4NCj4gPiBBbHRob3Vn
-aCB0aGUgcXVlc3Rpb24gaXMgbm90IGRpcmVjdGx5IHJlbGF0ZWQgdG8gWGVub21haSwgSSB3b3Vs
-ZCBiZQ0KPiA+IHZlcnkgaW50ZXJlc3RlZCBpZiBzb21lYm9keSBrbm93cyBpZiBpdCBwb3NzaWJs
-ZSB0byBnaXZlIENQVSBwcmlvcml0eSBhZ2FpbnN0DQo+IHRoZSBHUFUsIGFuZCBob3cgdG8gbWFu
-YWdlIHRoZSByZWxhdGVkIERNQSBjb250cm9sbGVyPyBJcyBpdCBwb3NzaWJsZSB0bw0KPiBjb25m
-aWd1cmUgaXQgPyBPciBhbnkgb3RoZXIgaGludCB0byBhdm9pZCB0aGlzIGxhdGVuY3kgPw0KPiA+
-DQo+ID4gTWFueSB0aGFua3MgaW4gYWR2YW5jZSBmb3IgYW55IGlucHV0cy4NCj4gDQo+IEkgZGlk
-bid0IGRpZyBpbnRvIGFueXRoaW5nIHRoYXQgbWFuYWdlcyBQQ0kgYmFuZHdpZHRoIHlldC4gSSBo
-ZWFyZCB0aGF0DQo+IHNvbWV0aGluZyBleGlzdHMsIGJ1dCBhdCB0aGF0IHRpbWUgaXQgd2FzIG5v
-dCBwdWJsaWNseSBkb2N1bWVudGVkLiBBbmQgaXQncw0KPiBsaWtlbHkgaGlnaGx5IHBsYXRmb3Jt
-IHNwZWNpZmljIChTb0MvY2hpcHNldCkuDQo+IA0KPiBEaWQgeW91IGNsZWFybHkgaWRlbnRpZnkg
-dGhhdCBpdCdzIERNQSBjb250ZW50aW9uIHdoaWNoIGluY3JlYXNlZCB5b3VyDQo+IGxhdGVuY3k/
-DQoNClRoZSBsYXRlbmN5IGFwcGVhcnMgd2hlbiB0aGVyZSBhcmUgc29tZSBhY3Rpdml0aWVzIG9u
-IHRoZSBHUFUgKHRoZSB1c2VyIG1vdmVzIHdpbmRvd3MgZm9yIGV4YW1wbGUpLg0KT3RoZXJ3aXNl
-LCB0aGUgc3lzdGVtIGlzIHZlcnkgc3RhYmxlLCBvbiBhIGxvbmcgcGVyaW9kIHRvby4NCg0KPiBE
-byB5b3UgY2FjaGUtbWlzcyBkZWxheXMgaW5jcmVhc2UgKFBNVSBzaG91bGQgdGVsbCB5b3UpPyBP
-ciBpcyB0aGVyZSBhDQo+IGNvbnRlbnRpb24gYmV0d2VlbiBhIFJUIGRldmljZSBkb2luZyBETUEg
-YW5kIHRoZSBHUFU/DQoNCkhvdyBjYW4gSSBnZXQgaW5mbyBmcm9tIFBNVSBpbiB0aGF0IHNlbnNl
-PyBUaGVyZSBpcyB0aGUgbmV0d29yayBjYXJkIChlMTAwMGUpIHdoaWNoIG1ha2VzIERNQSBhY2Nl
-c3MgcHJvYmFibHksIA0KaG93ZXZlciB3ZSBkbyBub3QgdXNlIGludGVycnVwdHMgaGVyZSwgb25s
-eSBwb2xsaW5nIHNpbmNlIGl0IGlzIHBhdGNoZWQgRXRoZXJjYXQtYmFzZWQgZHJpdmVyLg0KDQpJ
-IGFsc28gYXR0YWNoZWQgc29tZSBpbmZvcm1hdGlvbiBhYm91dCBvdXIgbGFiIFBDLg0KDQpEYW5p
-ZWwNCg0KPiANCj4gSmFuDQo+IA0KPiAtLQ0KPiBTaWVtZW5zIEFHLCBDb3Jwb3JhdGUgVGVjaG5v
-bG9neSwgQ1QgUkRBIElPVCBTRVMtREUgQ29ycG9yYXRlDQo+IENvbXBldGVuY2UgQ2VudGVyIEVt
-YmVkZGVkIExpbnV4DQotLS0tLS0tLS0tLS0tLSBuZXh0IHBhcnQgLS0tLS0tLS0tLS0tLS0KQW4g
-ZW1iZWRkZWQgYW5kIGNoYXJzZXQtdW5zcGVjaWZpZWQgdGV4dCB3YXMgc2NydWJiZWQuLi4KTmFt
-ZTogbHNjcHUudHh0ClVSTDogPGh0dHA6Ly94ZW5vbWFpLm9yZy9waXBlcm1haWwveGVub21haS9h
-dHRhY2htZW50cy8yMDE5MTAwNS8xNmI3YzQ3NC9hdHRhY2htZW50LnR4dD4KLS0tLS0tLS0tLS0t
-LS0gbmV4dCBwYXJ0IC0tLS0tLS0tLS0tLS0tCkFuIGVtYmVkZGVkIGFuZCBjaGFyc2V0LXVuc3Bl
-Y2lmaWVkIHRleHQgd2FzIHNjcnViYmVkLi4uCk5hbWU6IGxzY3B1X0MudHh0ClVSTDogPGh0dHA6
-Ly94ZW5vbWFpLm9yZy9waXBlcm1haWwveGVub21haS9hdHRhY2htZW50cy8yMDE5MTAwNS8xNmI3
-YzQ3NC9hdHRhY2htZW50LTAwMDEudHh0PgotLS0tLS0tLS0tLS0tLSBuZXh0IHBhcnQgLS0tLS0t
-LS0tLS0tLS0KQW4gZW1iZWRkZWQgYW5kIGNoYXJzZXQtdW5zcGVjaWZpZWQgdGV4dCB3YXMgc2Ny
-dWJiZWQuLi4KTmFtZTogbHNwY2lfa25udnYudHh0ClVSTDogPGh0dHA6Ly94ZW5vbWFpLm9yZy9w
-aXBlcm1haWwveGVub21haS9hdHRhY2htZW50cy8yMDE5MTAwNS8xNmI3YzQ3NC9hdHRhY2htZW50
-LTAwMDIudHh0Pgo=
+On 9/25/19 4:45 PM, Jan Kiszka wrote:
+> From: Jan Kiszka <jan.kiszka@siemens.com>
+> 
+> Needed on x86 at least when CONFIG_IPIPE is off.
+> 
+> Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
+> ---
+>  include/linux/ipipe.h | 8 ++++----
+>  1 file changed, 4 insertions(+), 4 deletions(-)
+> 
+> diff --git a/include/linux/ipipe.h b/include/linux/ipipe.h
+> index 45e8c87bff93..fe90cb55d462 100644
+> --- a/include/linux/ipipe.h
+> +++ b/include/linux/ipipe.h
+> @@ -204,10 +204,6 @@ int __ipipe_notify_user_intreturn(void);
+>  
+>  #define __ipipe_serial_debug(__fmt, __args...)	raw_printk(__fmt, ##__args)
+>  
+> -#ifndef ipipe_root_nr_syscalls
+> -#define ipipe_root_nr_syscalls(ti)	NR_syscalls
+> -#endif
+> -
+>  struct ipipe_trap_data {
+>  	int exception;
+>  	struct pt_regs *regs;
+> @@ -718,4 +714,8 @@ static inline void __ipipe_pin_mapping_globally(unsigned long start,
+>  { }
+>  #endif
+>  
+> +#ifndef ipipe_root_nr_syscalls
+> +#define ipipe_root_nr_syscalls(ti)	NR_syscalls
+> +#endif
+> +
+>  #endif	/* !__LINUX_IPIPE_H */
+> 
+
+Merged, thanks.
+
+-- 
+Philippe.
+
