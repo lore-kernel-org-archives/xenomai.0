@@ -1,11 +1,14 @@
+Subject: Re: [ANNOUNCE] Xenomai v3.1-rc2 available
+References: <4151508e-0c0e-1460-dca4-9479324ff206@siemens.com>
+ <6107e974-260c-2793-a55b-0f1b887a2880@siemens.com>
 From: Jan Kiszka <jan.kiszka@siemens.com>
-Subject: [PATCH] prepare-kernel: Make robust against -rc release names
-Message-ID: <d3f09452-c4c0-618e-36df-956ef675ec6e@siemens.com>
-Date: Mon, 7 Oct 2019 16:23:42 +0200
+Message-ID: <2b736e19-9e5e-af68-d7eb-30a432e04caa@siemens.com>
+Date: Mon, 7 Oct 2019 16:25:44 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+In-Reply-To: <6107e974-260c-2793-a55b-0f1b887a2880@siemens.com>
+Content-Type: text/plain; charset="utf-8"
 Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,30 +19,51 @@ List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: Xenomai <xenomai@xenomai.org>
 
-From: Jan Kiszka <jan.kiszka@siemens.com>
+On 07.10.19 15:18, Jan Kiszka via Xenomai wrote:
+> On 07.10.19 14:43, Jan Kiszka wrote:
+>> Hi all,
+>>
+>> just pushed another release candidate, this time hopefully more properly
+>> formatted.
+> 
+> Well, no, it's even more broken: The release string, no "properly"
+> stored in config/version-*, is not compatible with prepare-kernel.sh,
+> and that prevents any kernel build. A fix will follow.
+> 
 
-Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
----
- scripts/prepare-kernel.sh | 3 +++
- 1 file changed, 3 insertions(+)
+If you want to try out -rc2 (which would be appreciated), please apply
+[1] on top.
 
-diff --git a/scripts/prepare-kernel.sh b/scripts/prepare-kernel.sh
-index 8707b11983..7fb8ed3307 100755
---- a/scripts/prepare-kernel.sh
-+++ b/scripts/prepare-kernel.sh
-@@ -371,6 +371,9 @@ case $linux_VERSION.$linux_PATCHLEVEL in
- 	version_major=`expr $version_stamp : '\([[0-9]]*\)' || true`
- 	version_minor=`expr $version_stamp : '[[0-9]]*\.\([[0-9]*]*\)' || true`
- 	revision_level=`expr $version_stamp : '[[0-9]]*\.[[0-9]*]*\.\([[0-9]*]*\)' || true`
-+	if [ -z "$revision_level" ]; then
-+	    revision_level=0
-+	fi
- 	version_string=`cat $xenomai_root/config/version-label`
- 	sed -e "s,@VERSION_MAJOR@,$version_major,g" \
- 	    -e "s,@VERSION_MINOR@,$version_minor,g" \
--- 
-2.16.4
+Jan
 
+[1] https://xenomai.org/pipermail/xenomai/2019-October/041751.html
+
+> 
+>>
+>> https://gitlab.denx.de/Xenomai/xenomai/-/archive/v3.1-rc2/xenomai-v3.1-rc2.tar.bz2
+>> https://gitlab.denx.de/Xenomai/xenomai/commits/v3.1-rc2
+>>
+>> Changes since rc1:
+>>
+>> François LEGAL (1):
+>>       Make MACB driver compliant with GEM hardware
+>>
+>> Jan Kiszka (4):
+>>       Bump ABI revisions
+>>       cobalt: Add _CC_COBALT_DEBUG_SYNC_BP feature
+>>       testsuite/smokey/gdb: Only run basic test if _CC_COBALT_DEBUG_SYNC_BP is missing
+>>       config: Bump version number
+>>
+>> Quirin Gylstorff (1):
+>>       testsuite/xeno-test: add --vm option
+>>
+>> There are some open bug reports waiting for further information.
+>> Otherwise, things look good for finalizing the release rather sooner
+>> than later.
+>>
+>> Jan
+>>
+> 
 
 -- 
 Siemens AG, Corporate Technology, CT RDA IOT SES-DE
