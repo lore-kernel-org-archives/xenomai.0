@@ -1,16 +1,17 @@
-From: Rossier Daniel <Daniel.Rossier@heig-vd.ch>
-Subject: RE: Controlling DMA priority between GPU and CPU on x86
-Date: Mon, 7 Oct 2019 07:59:39 +0000
-Message-ID: <92697766dd5c4634bc7ec342a18a5e3a@heig-vd.ch>
+Subject: Re: Controlling DMA priority between GPU and CPU on x86
 References: <a10e8232f3104d32900617139e7033da@heig-vd.ch>
  <cc3833cd-118f-8fce-6bd4-585bb79330a6@siemens.com>
  <6b84e3f52b1c497daa5f675f69e15a77@heig-vd.ch>
  <344ff7b8-eb50-de6c-5b0e-ff4ca84d8b98@numalliance.com>
-In-Reply-To: <344ff7b8-eb50-de6c-5b0e-ff4ca84d8b98@numalliance.com>
-Content-Language: en-US
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+ <92697766dd5c4634bc7ec342a18a5e3a@heig-vd.ch>
+From: =?UTF-8?Q?St=c3=a9phane_Ancelot?= <sancelot@numalliance.com>
+Message-ID: <4959ca2a-e59b-5183-d26c-dd0e5530c253@numalliance.com>
+Date: Mon, 7 Oct 2019 10:06:03 +0200
 MIME-Version: 1.0
+In-Reply-To: <92697766dd5c4634bc7ec342a18a5e3a@heig-vd.ch>
+Content-Language: fr
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: quoted-printable
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -19,94 +20,158 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: =?utf-8?B?U3TDqXBoYW5lIEFuY2Vsb3Q=?= <sancelot@numalliance.com>, Jan Kiszka <jan.kiszka@siemens.com>, "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Rossier Daniel <Daniel.Rossier@heig-vd.ch>, Jan Kiszka <jan.kiszka@siemens.com>, "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-PiAtLS0tLU9yaWdpbmFsIE1lc3NhZ2UtLS0tLQ0KPiBGcm9tOiBTdMOpcGhhbmUgQW5jZWxvdCA8
-c2FuY2Vsb3RAbnVtYWxsaWFuY2UuY29tPg0KPiBTZW50OiBsdW5kaSwgNyBvY3RvYnJlIDIwMTkg
-MDk6MTUNCj4gVG86IFJvc3NpZXIgRGFuaWVsIDxEYW5pZWwuUm9zc2llckBoZWlnLXZkLmNoPjsg
-SmFuIEtpc3prYQ0KPiA8amFuLmtpc3prYUBzaWVtZW5zLmNvbT47IHhlbm9tYWlAeGVub21haS5v
-cmcNCj4gU3ViamVjdDogUmU6IENvbnRyb2xsaW5nIERNQSBwcmlvcml0eSBiZXR3ZWVuIEdQVSBh
-bmQgQ1BVIG9uIHg4Ng0KPiANCj4gSGksDQo+IA0KPiBZb3Ugd29uJ3QgYmUgYWJsZSB0byBhY2hp
-ZXZlIHJlYWx0aW1lIHVzaW5nIHRoZSBhY3R1YWwgaW50ZWwgbGludXggdmlkZW8gZHJpdmVyDQo+
-IHVzaW5nIEdQVS4NCj4gDQo+IFRoZSBkcml2ZXIgaXMgbm90IHByZWVtcHRpYmxlLg0KPiANCj4g
-VGhpcyBtYWlubHkgaGFwcGVucyB3aGVuIEdQVSByZWNlaXZlcyBiYXRjaCBqb2IgKGVnIGxhdW5j
-aGluZyBhIHByb2dyYW0NCj4gdGhhdCBjcmVhdGVzIG1hbnkgZ3JhcGhpYyB3aWRnZXRzICwgbW92
-aW5nIGEgd2luZG93IHdpdGggYSAxOSBpbmNoIGRpc3BsYXkpIC4NCj4gDQo+IFRoZSBtZW1vcnkg
-aXMgbG9ja2VkIGJ5IHRoZSBHUFUuIElzb2xhdGluZyBydCB0YXNrcyAvSVQgdG8gY3B1cyB3b24n
-dCBzb2x2ZSBpdCwNCj4gc2luY2UgdGhlIG1lbW9yeSBpcyBzaGFyZWQgd2l0aCBhbGwgQ1BVcyAo
-ZWcgb25seSBvbmXCoCBudW1hIG5vZGUpDQo+IA0KPiBUaGUgcHJvYmxlbSBjYW4gYmV0dGVyIGJl
-aW5nIHdhdGNoZWQgc3BsaXR0aW5nIGEgcmVhbHRpbWUgdGFzayBpbiAyIG9yIDMgdGFza3MsDQo+
-ICh0YXNrMSBleGVjdXRlcywgYW5kIHdha2VzIHVwIHRhc2syLCB0YXNrMiBleGVjdXRlcyBhbmQg
-d2FrZXMgdXAgdGFzazMpIC4NCj4gDQo+IFdlIG1heSBtYW5hZ2UgdG8gc29sdmUgdGhlIHByb2Js
-ZW0gaWYgYmVpbmcgYWJsZSB0byBwcm92aWRlIGludGVsIGEgdW5pdA0KPiB0ZXN0aW5nIHByb2dy
-YW0gYmVpbmcgYWJsZSB0byByZXByb2R1Y2UgdGhlIHBoZW5vbWVuLg0KPiBSZWR1Y2luZyBHUFUg
-ZnJlcXVlbmN5IGRlY3JlYXNlcyBwcm9ibGVtIGZyZXF1ZW5jeSBidXQgZG9lcyBub3Qgc29sdmUg
-aXQuDQo+IA0KPiBGb3IgcmVmZXJlbmNlOg0KPiBodHRwczovL2J1Z3MuZnJlZWRlc2t0b3Aub3Jn
-L3Nob3dfYnVnLmNnaT9pZD0xMTA5NTANCg0KVGhhbmtzIGEgbG90IGZvciB0aGlzIGZlZWRiYWNr
-LiBXZSB3aWxsIHRyeSB0byBtb3ZlIHRoZSBHVUkgb24gYSByZW1vdGUgUEMuIA0KQWx0aG91Z2gg
-dGhlIG5ldHdvcmsgY2FyZCB3aWxsIGFsc28gcGVyZm9ybSBETUEgYWNjZXNzLCBpdCBjb3VsZCBp
-bnZvbHZlIGxlc3MgbGF0ZW5jaWVzLA0Kb3IgdGhlIG5ldHdvcmsgY2FyZCBjYW4gYmUgY29uZmln
-dXJlZCB0byBiZSB1c2VkIGluIGEgcG9sbGluZyBtb2RlLiBEbyB5b3UgaGF2ZSBzb21lIGhpbnRz
-IGFib3V0DQpzdWNoIGFuIGFwcHJvYWNoPw0KDQpSZWdhcmRzLA0KRGFuaWVsDQoNCg0KPiANCj4g
-UmVnYXJkcywNCj4gUy5BbmNlbG90DQo+IA0KPiBMZSAwNS8xMC8yMDE5IMOgIDEwOjAzLCBSb3Nz
-aWVyIERhbmllbCB2aWEgWGVub21haSBhIMOpY3JpdMKgOg0KPiAtLS0tLU9yaWdpbmFsIE1lc3Nh
-Z2UtLS0tLQ0KPiBGcm9tOiBKYW4gS2lzemthIG1haWx0bzpqYW4ua2lzemthQHNpZW1lbnMuY29t
-DQo+IFNlbnQ6IHZlbmRyZWRpLCA0IG9jdG9icmUgMjAxOSAxMDoxNQ0KPiBUbzogUm9zc2llciBE
-YW5pZWwgbWFpbHRvOkRhbmllbC5Sb3NzaWVyQGhlaWctdmQuY2g7DQo+IG1haWx0bzp4ZW5vbWFp
-QHhlbm9tYWkub3JnDQo+IFN1YmplY3Q6IFJlOiBDb250cm9sbGluZyBETUEgcHJpb3JpdHkgYmV0
-d2VlbiBHUFUgYW5kIENQVSBvbiB4ODYNCj4gDQo+IE9uIDAzLjEwLjE5IDE3OjIzLCBSb3NzaWVy
-IERhbmllbCB2aWEgWGVub21haSB3cm90ZToNCj4gSGkgYWxsLA0KPiANCj4gV2UgYXJlIGN1cnJl
-bnRseSB3b3JraW5nIG9uIGEgcHJvamVjdCBjYWxsZWQgT3BlbkNOIHdoaWNoIGlzIGEgZnJhbWV3
-b3JrDQo+IGRlZXBseSBpbnNwaXJlZCBmcm9tIExpbnV4Q05DLCBidXQgd2l0aCBhIHJldmlzaXRl
-ZCBhcmNoaXRlY3R1cmUuDQo+IEhlbmNlLCBPcGVuQ04gaXMgcmVsYXRlZCB0byBtYWNoaW5lIGNv
-bnRyb2wuDQo+IA0KPiBPdXIgZnJhbWV3b3JrIG1haW5seSB1c2UgYSBBTVAgYXBwcm9hY2ggYW5k
-IHJ1bnMgdGhlIFhlbm9tYWkvQ29iYWx0DQo+IGtlcm5lbCBvbiBhIGRlZGljYXRlZCBDUFUgd2l0
-aCBubyBJLXBpcGUgKHJld29ya2VkIG91dCkuDQo+IChXZSBwbGFuIHRvIHJlbGVhc2UgdGhlIGZy
-YW1ld29yayBieSBmaXJzdCBvZiBOb3ZlbWJlcikuDQo+IA0KPiBJT1csICJiYXJlLW1ldGFsIiBD
-b2JhbHQ/IENvbGxhYm9yYXRpdmUgQU1QLCBvciBwYXJ0aXRpb25lZCB2aWENCj4gdmlydHVhbGl6
-YXRpb24/DQo+IA0KPiBBY3R1YWxseSwgd2UgaGF2ZSBwYXRjaGVkIGEgbG90IFhlbm9tYWkvQ29i
-YWx0IHRvIGtlZXAgdGhlIGNvYmFsdCBzY2hlZHVsZXINCj4gYW5kIG1haW4gZnVuY3Rpb25zICht
-dXRleCwgdGFzayBjcmVhdGUvZGVsZXRlLCB0aW1lciwgZXRjLikgcnVubmluZyBvbiBDUFUNCj4g
-IzEgYW5kDQo+IHdlIG1hbmFnZSBpbnRlcmFjdGlvbnMgd2l0aCBDUFUgIzAgdmlhIHNwZWNpZmlj
-IElQSSBpbnRlcnJ1cHRzLiAgVGhlIExpbnV4DQo+IHNjaGVkdWxlciBkb2VzIG5vdCBpbnRlcnZl
-bmUgaGVyZS4NCj4gDQo+IA0KPiBPdXIgZnJhbWV3b3JrIHdvcmtzIHdlbGwgb24gYSB4ODYgUEMs
-IGJ1dCB3ZSBoYXZlIHRvIGZhY2UgYW4gaXNzdWUNCj4gcmVnYXJkaW5nIERNQSBwcmlvcml0eSBi
-ZXR3ZWVuIHRoZSBHUFUgYW5kIENQVTsgd2hlbiB0aGUgdXNlciBwbGF5cw0KPiB3aXRoIHRoZSBH
-VUksIHNvbWUgc21hbGwgbGF0ZW5jaWVzIChPKDEwbXMpKSByYWlzZSB1cC4NCj4gQWx0aG91Z2gg
-dGhlIHF1ZXN0aW9uIGlzIG5vdCBkaXJlY3RseSByZWxhdGVkIHRvIFhlbm9tYWksIEkgd291bGQg
-YmUNCj4gdmVyeSBpbnRlcmVzdGVkIGlmIHNvbWVib2R5IGtub3dzIGlmIGl0IHBvc3NpYmxlIHRv
-IGdpdmUgQ1BVIHByaW9yaXR5IGFnYWluc3QNCj4gdGhlIEdQVSwgYW5kIGhvdyB0byBtYW5hZ2Ug
-dGhlIHJlbGF0ZWQgRE1BIGNvbnRyb2xsZXI/IElzIGl0IHBvc3NpYmxlIHRvDQo+IGNvbmZpZ3Vy
-ZSBpdCA/IE9yIGFueSBvdGhlciBoaW50IHRvIGF2b2lkIHRoaXMgbGF0ZW5jeSA/DQo+IA0KPiBN
-YW55IHRoYW5rcyBpbiBhZHZhbmNlIGZvciBhbnkgaW5wdXRzLg0KPiANCj4gSSBkaWRuJ3QgZGln
-IGludG8gYW55dGhpbmcgdGhhdCBtYW5hZ2VzIFBDSSBiYW5kd2lkdGggeWV0LiBJIGhlYXJkIHRo
-YXQNCj4gc29tZXRoaW5nIGV4aXN0cywgYnV0IGF0IHRoYXQgdGltZSBpdCB3YXMgbm90IHB1Ymxp
-Y2x5IGRvY3VtZW50ZWQuIEFuZCBpdCdzDQo+IGxpa2VseSBoaWdobHkgcGxhdGZvcm0gc3BlY2lm
-aWMgKFNvQy9jaGlwc2V0KS4NCj4gDQo+IERpZCB5b3UgY2xlYXJseSBpZGVudGlmeSB0aGF0IGl0
-J3MgRE1BIGNvbnRlbnRpb24gd2hpY2ggaW5jcmVhc2VkIHlvdXINCj4gbGF0ZW5jeT8NCj4gDQo+
-IFRoZSBsYXRlbmN5IGFwcGVhcnMgd2hlbiB0aGVyZSBhcmUgc29tZSBhY3Rpdml0aWVzIG9uIHRo
-ZSBHUFUgKHRoZSB1c2VyDQo+IG1vdmVzIHdpbmRvd3MgZm9yIGV4YW1wbGUpLg0KPiBPdGhlcndp
-c2UsIHRoZSBzeXN0ZW0gaXMgdmVyeSBzdGFibGUsIG9uIGEgbG9uZyBwZXJpb2QgdG9vLg0KPiAN
-Cj4gRG8geW91IGNhY2hlLW1pc3MgZGVsYXlzIGluY3JlYXNlIChQTVUgc2hvdWxkIHRlbGwgeW91
-KT8gT3IgaXMgdGhlcmUgYQ0KPiBjb250ZW50aW9uIGJldHdlZW4gYSBSVCBkZXZpY2UgZG9pbmcg
-RE1BIGFuZCB0aGUgR1BVPw0KPiANCj4gSG93IGNhbiBJIGdldCBpbmZvIGZyb20gUE1VIGluIHRo
-YXQgc2Vuc2U/IFRoZXJlIGlzIHRoZSBuZXR3b3JrIGNhcmQNCj4gKGUxMDAwZSkgd2hpY2ggbWFr
-ZXMgRE1BIGFjY2VzcyBwcm9iYWJseSwNCj4gaG93ZXZlciB3ZSBkbyBub3QgdXNlIGludGVycnVw
-dHMgaGVyZSwgb25seSBwb2xsaW5nIHNpbmNlIGl0IGlzIHBhdGNoZWQNCj4gRXRoZXJjYXQtYmFz
-ZWQgZHJpdmVyLg0KPiANCj4gSSBhbHNvIGF0dGFjaGVkIHNvbWUgaW5mb3JtYXRpb24gYWJvdXQg
-b3VyIGxhYiBQQy4NCj4gDQo+IERhbmllbA0KPiANCj4gDQo+IEphbg0KPiANCj4gLS0NCj4gU2ll
-bWVucyBBRywgQ29ycG9yYXRlIFRlY2hub2xvZ3ksIENUIFJEQSBJT1QgU0VTLURFIENvcnBvcmF0
-ZQ0KPiBDb21wZXRlbmNlIENlbnRlciBFbWJlZGRlZCBMaW51eA0KPiAtLS0tLS0tLS0tLS0tLSBu
-ZXh0IHBhcnQgLS0tLS0tLS0tLS0tLS0NCj4gQW4gZW1iZWRkZWQgYW5kIGNoYXJzZXQtdW5zcGVj
-aWZpZWQgdGV4dCB3YXMgc2NydWJiZWQuLi4NCj4gTmFtZTogbHNjcHUudHh0DQo+IFVSTDoNCj4g
-aHR0cDovL3hlbm9tYWkub3JnL3BpcGVybWFpbC94ZW5vbWFpL2F0dGFjaG1lbnRzLzIwMTkxMDA1
-LzE2YjdjNDc0L2F0DQo+IHRhY2htZW50LnR4dA0KPiAtLS0tLS0tLS0tLS0tLSBuZXh0IHBhcnQg
-LS0tLS0tLS0tLS0tLS0NCj4gQW4gZW1iZWRkZWQgYW5kIGNoYXJzZXQtdW5zcGVjaWZpZWQgdGV4
-dCB3YXMgc2NydWJiZWQuLi4NCj4gTmFtZTogbHNjcHVfQy50eHQNCj4gVVJMOg0KPiBodHRwOi8v
-eGVub21haS5vcmcvcGlwZXJtYWlsL3hlbm9tYWkvYXR0YWNobWVudHMvMjAxOTEwMDUvMTZiN2M0
-NzQvYXQNCj4gdGFjaG1lbnQtMDAwMS50eHQNCj4gLS0tLS0tLS0tLS0tLS0gbmV4dCBwYXJ0IC0t
-LS0tLS0tLS0tLS0tDQo+IEFuIGVtYmVkZGVkIGFuZCBjaGFyc2V0LXVuc3BlY2lmaWVkIHRleHQg
-d2FzIHNjcnViYmVkLi4uDQo+IE5hbWU6IGxzcGNpX2tubnZ2LnR4dA0KPiBVUkw6DQo+IGh0dHA6
-Ly94ZW5vbWFpLm9yZy9waXBlcm1haWwveGVub21haS9hdHRhY2htZW50cy8yMDE5MTAwNS8xNmI3
-YzQ3NC9hdA0KPiB0YWNobWVudC0wMDAyLnR4dA0K
 
+Le 07/10/2019 =C3=A0 09:59, Rossier Daniel a =C3=A9crit=C2=A0:
+>> -----Original Message-----
+>> From: St=C3=A9phane Ancelot <sancelot@numalliance.com>
+>> Sent: lundi, 7 octobre 2019 09:15
+>> To: Rossier Daniel <Daniel.Rossier@heig-vd.ch>; Jan Kiszka
+>> <jan.kiszka@siemens.com>; xenomai@xenomai.org
+>> Subject: Re: Controlling DMA priority between GPU and CPU on x86
+>>
+>> Hi,
+>>
+>> You won't be able to achieve realtime using the actual intel linux vid=
+eo driver
+>> using GPU.
+>>
+>> The driver is not preemptible.
+>>
+>> This mainly happens when GPU receives batch job (eg launching a progra=
+m
+>> that creates many graphic widgets , moving a window with a 19 inch dis=
+play) .
+>>
+>> The memory is locked by the GPU. Isolating rt tasks /IT to cpus won't =
+solve it,
+>> since the memory is shared with all CPUs (eg only one=C2=A0 numa node)
+>>
+>> The problem can better being watched splitting a realtime task in 2 or=
+ 3 tasks,
+>> (task1 executes, and wakes up task2, task2 executes and wakes up task3=
+) .
+>>
+>> We may manage to solve the problem if being able to provide intel a un=
+it
+>> testing program being able to reproduce the phenomen.
+>> Reducing GPU frequency decreases problem frequency but does not solve =
+it.
+>>
+>> For reference:
+>> https://bugs.freedesktop.org/show_bug.cgi?id=3D110950
+> Thanks a lot for this feedback. We will try to move the GUI on a remote=
+ PC.
+> Although the network card will also perform DMA access, it could involv=
+e less latencies,
+> or the network card can be configured to be used in a polling mode. Do =
+you have some hints about
+> such an approach?
+ From my experience, the problem has not appeared redirecting whole=20
+graphic through an ssh -X connection.(and inhibiting X11 in RT computer)
+>
+> Regards,
+> Daniel
+>
+>
+>> Regards,
+>> S.Ancelot
+>>
+>> Le 05/10/2019 =C3=A0 10:03, Rossier Daniel via Xenomai a =C3=A9crit=C2=
+=A0:
+>> -----Original Message-----
+>> From: Jan Kiszka mailto:jan.kiszka@siemens.com
+>> Sent: vendredi, 4 octobre 2019 10:15
+>> To: Rossier Daniel mailto:Daniel.Rossier@heig-vd.ch;
+>> mailto:xenomai@xenomai.org
+>> Subject: Re: Controlling DMA priority between GPU and CPU on x86
+>>
+>> On 03.10.19 17:23, Rossier Daniel via Xenomai wrote:
+>> Hi all,
+>>
+>> We are currently working on a project called OpenCN which is a framewo=
+rk
+>> deeply inspired from LinuxCNC, but with a revisited architecture.
+>> Hence, OpenCN is related to machine control.
+>>
+>> Our framework mainly use a AMP approach and runs the Xenomai/Cobalt
+>> kernel on a dedicated CPU with no I-pipe (reworked out).
+>> (We plan to release the framework by first of November).
+>>
+>> IOW, "bare-metal" Cobalt? Collaborative AMP, or partitioned via
+>> virtualization?
+>>
+>> Actually, we have patched a lot Xenomai/Cobalt to keep the cobalt sche=
+duler
+>> and main functions (mutex, task create/delete, timer, etc.) running on=
+ CPU
+>> #1 and
+>> we manage interactions with CPU #0 via specific IPI interrupts.  The L=
+inux
+>> scheduler does not intervene here.
+>>
+>>
+>> Our framework works well on a x86 PC, but we have to face an issue
+>> regarding DMA priority between the GPU and CPU; when the user plays
+>> with the GUI, some small latencies (O(10ms)) raise up.
+>> Although the question is not directly related to Xenomai, I would be
+>> very interested if somebody knows if it possible to give CPU priority =
+against
+>> the GPU, and how to manage the related DMA controller? Is it possible =
+to
+>> configure it ? Or any other hint to avoid this latency ?
+>>
+>> Many thanks in advance for any inputs.
+>>
+>> I didn't dig into anything that manages PCI bandwidth yet. I heard tha=
+t
+>> something exists, but at that time it was not publicly documented. And=
+ it's
+>> likely highly platform specific (SoC/chipset).
+>>
+>> Did you clearly identify that it's DMA contention which increased your
+>> latency?
+>>
+>> The latency appears when there are some activities on the GPU (the use=
+r
+>> moves windows for example).
+>> Otherwise, the system is very stable, on a long period too.
+>>
+>> Do you cache-miss delays increase (PMU should tell you)? Or is there a
+>> contention between a RT device doing DMA and the GPU?
+>>
+>> How can I get info from PMU in that sense? There is the network card
+>> (e1000e) which makes DMA access probably,
+>> however we do not use interrupts here, only polling since it is patche=
+d
+>> Ethercat-based driver.
+>>
+>> I also attached some information about our lab PC.
+>>
+>> Daniel
+>>
+>>
+>> Jan
+>>
+>> --
+>> Siemens AG, Corporate Technology, CT RDA IOT SES-DE Corporate
+>> Competence Center Embedded Linux
+>> -------------- next part --------------
+>> An embedded and charset-unspecified text was scrubbed...
+>> Name: lscpu.txt
+>> URL:
+>> http://xenomai.org/pipermail/xenomai/attachments/20191005/16b7c474/at
+>> tachment.txt
+>> -------------- next part --------------
+>> An embedded and charset-unspecified text was scrubbed...
+>> Name: lscpu_C.txt
+>> URL:
+>> http://xenomai.org/pipermail/xenomai/attachments/20191005/16b7c474/at
+>> tachment-0001.txt
+>> -------------- next part --------------
+>> An embedded and charset-unspecified text was scrubbed...
+>> Name: lspci_knnvv.txt
+>> URL:
+>> http://xenomai.org/pipermail/xenomai/attachments/20191005/16b7c474/at
+>> tachment-0002.txt
