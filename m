@@ -1,13 +1,11 @@
+From: Jan Kiszka <jan.kiszka@siemens.com>
+Subject: [PATCH] prepare-kernel: Make robust against -rc release names
+Message-ID: <d3f09452-c4c0-618e-36df-956ef675ec6e@siemens.com>
+Date: Mon, 7 Oct 2019 16:23:42 +0200
 MIME-Version: 1.0
-References: <CAFc1U0sYmwMNY1yE+B6=x3_C9QKb9PYivkqDztMSckPXqeUTQw@mail.gmail.com>
- <8ba27533-1944-164f-30cc-17c1bc832e51@xenomai.org>
-In-Reply-To: <8ba27533-1944-164f-30cc-17c1bc832e51@xenomai.org>
-From: Pierre FICHEUX <pierre.ficheux@smile.fr>
-Date: Mon, 7 Oct 2019 15:25:00 +0200
-Message-ID: <CAFc1U0sf16+rUQPywJqAXHwCHknJZGu7fQ5J_cbsgX2hUeR1jw@mail.gmail.com>
-Subject: Re: ARM reference platform(s)
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,38 +14,34 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Philippe Gerum <rpm@xenomai.org>
-Cc: xenomai <xenomai@xenomai.org>
+To: Xenomai <xenomai@xenomai.org>
 
-hi Philippe,
+From: Jan Kiszka <jan.kiszka@siemens.com>
 
-thx for your help.
+Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
+---
+ scripts/prepare-kernel.sh | 3 +++
+ 1 file changed, 3 insertions(+)
 
-Le dim. 6 oct. 2019 =C3=A0 18:38, Philippe Gerum <rpm@xenomai.org> a =C3=A9=
-crit :
-
-> On 9/30/19 5:01 PM, Pierre FICHEUX via Xenomai wrote:
-> > Hi all,
-> >
-> > Do you have a list  of ARM reference platforms used for Ipipe test and
-> > validation (by the core developers) ?
-> >
->
-> armv7: several i.MX6 processors (fsl/nxp sabre, phytec, via), i.MX7
-> (nxp), RPI2, Xilinx Cyclone-V and STmicro B2260 mainly. BBB less
-> frequently.
->
-> armv8: hikey (Kirin 620 so far, 970 may come at some point), RPI3,
-> Xilinx ZCU102.
->
-> --
-> Philippe.
->
+diff --git a/scripts/prepare-kernel.sh b/scripts/prepare-kernel.sh
+index 8707b11983..7fb8ed3307 100755
+--- a/scripts/prepare-kernel.sh
++++ b/scripts/prepare-kernel.sh
+@@ -371,6 +371,9 @@ case $linux_VERSION.$linux_PATCHLEVEL in
+ 	version_major=`expr $version_stamp : '\([[0-9]]*\)' || true`
+ 	version_minor=`expr $version_stamp : '[[0-9]]*\.\([[0-9]*]*\)' || true`
+ 	revision_level=`expr $version_stamp : '[[0-9]]*\.[[0-9]*]*\.\([[0-9]*]*\)' || true`
++	if [ -z "$revision_level" ]; then
++	    revision_level=0
++	fi
+ 	version_string=`cat $xenomai_root/config/version-label`
+ 	sed -e "s,@VERSION_MAJOR@,$version_major,g" \
+ 	    -e "s,@VERSION_MINOR@,$version_minor,g" \
+-- 
+2.16.4
 
 
---=20
+-- 
+Siemens AG, Corporate Technology, CT RDA IOT SES-DE
+Corporate Competence Center Embedded Linux
 
-Pierre FICHEUX -/- CTO Smile ECS, France -\- pierre.ficheux@smile.fr
-                             http://www.smile.fr
-                             https://smile.eu/fr/offres/embarque-iot
-I would love to change the world, but they won't give me the source code
