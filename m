@@ -1,13 +1,13 @@
-Subject: Re: [ANNOUNCE] Xenomai v3.1-rc2 available
-From: Jan Kiszka <jan.kiszka@siemens.com>
-References: <4151508e-0c0e-1460-dca4-9479324ff206@siemens.com>
-Message-ID: <6107e974-260c-2793-a55b-0f1b887a2880@siemens.com>
-Date: Mon, 7 Oct 2019 15:18:41 +0200
 MIME-Version: 1.0
-In-Reply-To: <4151508e-0c0e-1460-dca4-9479324ff206@siemens.com>
-Content-Type: text/plain; charset="utf-8"
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+References: <CAFc1U0sYmwMNY1yE+B6=x3_C9QKb9PYivkqDztMSckPXqeUTQw@mail.gmail.com>
+ <8ba27533-1944-164f-30cc-17c1bc832e51@xenomai.org>
+In-Reply-To: <8ba27533-1944-164f-30cc-17c1bc832e51@xenomai.org>
+From: Pierre FICHEUX <pierre.ficheux@smile.fr>
+Date: Mon, 7 Oct 2019 15:25:00 +0200
+Message-ID: <CAFc1U0sf16+rUQPywJqAXHwCHknJZGu7fQ5J_cbsgX2hUeR1jw@mail.gmail.com>
+Subject: Re: ARM reference platform(s)
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,46 +16,38 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Xenomai <xenomai@xenomai.org>
+To: Philippe Gerum <rpm@xenomai.org>
+Cc: xenomai <xenomai@xenomai.org>
 
-On 07.10.19 14:43, Jan Kiszka wrote:
-> Hi all,
-> 
-> just pushed another release candidate, this time hopefully more properly
-> formatted.
+hi Philippe,
 
-Well, no, it's even more broken: The release string, no "properly"
-stored in config/version-*, is not compatible with prepare-kernel.sh,
-and that prevents any kernel build. A fix will follow.
+thx for your help.
 
-Jan
+Le dim. 6 oct. 2019 =C3=A0 18:38, Philippe Gerum <rpm@xenomai.org> a =C3=A9=
+crit :
 
-> 
-> https://gitlab.denx.de/Xenomai/xenomai/-/archive/v3.1-rc2/xenomai-v3.1-rc2.tar.bz2
-> https://gitlab.denx.de/Xenomai/xenomai/commits/v3.1-rc2
-> 
-> Changes since rc1:
-> 
-> François LEGAL (1):
->       Make MACB driver compliant with GEM hardware
-> 
-> Jan Kiszka (4):
->       Bump ABI revisions
->       cobalt: Add _CC_COBALT_DEBUG_SYNC_BP feature
->       testsuite/smokey/gdb: Only run basic test if _CC_COBALT_DEBUG_SYNC_BP is missing
->       config: Bump version number
-> 
-> Quirin Gylstorff (1):
->       testsuite/xeno-test: add --vm option
-> 
-> There are some open bug reports waiting for further information.
-> Otherwise, things look good for finalizing the release rather sooner
-> than later.
-> 
-> Jan
-> 
+> On 9/30/19 5:01 PM, Pierre FICHEUX via Xenomai wrote:
+> > Hi all,
+> >
+> > Do you have a list  of ARM reference platforms used for Ipipe test and
+> > validation (by the core developers) ?
+> >
+>
+> armv7: several i.MX6 processors (fsl/nxp sabre, phytec, via), i.MX7
+> (nxp), RPI2, Xilinx Cyclone-V and STmicro B2260 mainly. BBB less
+> frequently.
+>
+> armv8: hikey (Kirin 620 so far, 970 may come at some point), RPI3,
+> Xilinx ZCU102.
+>
+> --
+> Philippe.
+>
 
--- 
-Siemens AG, Corporate Technology, CT RDA IOT SES-DE
-Corporate Competence Center Embedded Linux
 
+--=20
+
+Pierre FICHEUX -/- CTO Smile ECS, France -\- pierre.ficheux@smile.fr
+                             http://www.smile.fr
+                             https://smile.eu/fr/offres/embarque-iot
+I would love to change the world, but they won't give me the source code
