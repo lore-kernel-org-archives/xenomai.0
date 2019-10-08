@@ -1,7 +1,7 @@
 From: Jan Kiszka <jan.kiszka@siemens.com>
-Subject: [PATCH] drivers/testing/heapcheck: Add missing MODULE_LICENSE
-Message-ID: <eaac73c4-be4d-377c-fb6f-5801f9c43a3d@siemens.com>
-Date: Fri, 11 Oct 2019 11:10:18 +0200
+Subject: [PATCH] arm64/ipipe: Add support for userspace return notifier
+Message-ID: <e8d943ee-1103-07ec-bede-c36b4a06c745@siemens.com>
+Date: Tue, 8 Oct 2019 18:55:36 +0200
 MIME-Version: 1.0
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
@@ -14,28 +14,46 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Xenomai <xenomai@xenomai.org>
+To: Philippe Gerum <rpm@xenomai.org>, Xenomai <xenomai@xenomai.org>
 
 From: Jan Kiszka <jan.kiszka@siemens.com>
 
-Fixes module usage.
+This adds the arm64-specific bits to implement the userspace return
+notifier.
 
-Reported-by: Lange Norbert <norbert.lange@andritz.com>
 Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
 ---
- kernel/drivers/testing/heapcheck.c | 2 ++
- 1 file changed, 2 insertions(+)
+ arch/arm64/kernel/entry.S | 15 +++++++++++++++
+ 1 file changed, 15 insertions(+)
 
-diff --git a/kernel/drivers/testing/heapcheck.c b/kernel/drivers/testing/heapcheck.c
-index 447cc13fec..4eb6a5aae2 100644
---- a/kernel/drivers/testing/heapcheck.c
-+++ b/kernel/drivers/testing/heapcheck.c
-@@ -510,3 +510,5 @@ static void __exit heapcheck_exit(void)
+diff --git a/arch/arm64/kernel/entry.S b/arch/arm64/kernel/entry.S
+index 805d89c0711d..8ebd72125afb 100644
+--- a/arch/arm64/kernel/entry.S
++++ b/arch/arm64/kernel/entry.S
+@@ -954,8 +954,23 @@ finish_ret_to_user:
+ 	enable_step_tsk x1, x2
+ #ifdef CONFIG_GCC_PLUGIN_STACKLEAK
+ 	bl	stackleak_erase
++#endif
++#ifdef CONFIG_IPIPE
++	ldr	x0, [tsk, #TSK_TI_IPIPE]
++	tst	x0, #_TIP_USERINTRET
++	b.ne	call_user_intret_notifier
++exit_head:
+ #endif
+ 	kernel_exit 0
++#ifdef CONFIG_IPIPE
++call_user_intret_notifier:
++	enable_daif
++	bl     	__ipipe_notify_user_intreturn
++	disable_daif
++	cmp    	x0, #0
++	b.ne    exit_head
++	b	ret_to_user_noirq
++#endif
+ ENDPROC(ret_to_user)
  
- module_init(heapcheck_init);
- module_exit(heapcheck_exit);
-+
-+MODULE_LICENSE("GPL");
+ /*
 -- 
 2.16.4
 
