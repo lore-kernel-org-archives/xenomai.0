@@ -1,11 +1,17 @@
-From: "Q. Gylstorff" <Quirin.Gylstorff@siemens.com>
-Subject: [xenomai-images][PATCH 3/3] ci: fix url replacement in jobs.
-Date: Tue,  8 Oct 2019 15:14:42 +0200
-Message-Id: <20191008131442.21295-4-Quirin.Gylstorff@siemens.com>
-In-Reply-To: <20191008131442.21295-1-Quirin.Gylstorff@siemens.com>
-References: <20191008131442.21295-1-Quirin.Gylstorff@siemens.com>
+Subject: Re: [PATCH 1/2] cobalt: Add _CC_COBALT_DEBUG_SYNC_BP feature
+References: <8271e30f-9fcf-b366-8154-922f988bf366@siemens.com>
+ <4e3d6cce-4a42-b9a2-d3b4-ee5398fab0d4@xenomai.org>
+ <6e90c052-778e-35ec-cc94-0147feca9754@siemens.com>
+ <6dadf6cb-cf84-66fb-f56a-70f4637d23e6@xenomai.org>
+ <827b0fb8-37b7-1694-d66e-f2a5f44cb086@siemens.com>
+From: Philippe Gerum <rpm@xenomai.org>
+Message-ID: <6df7ba2c-be05-6257-aaac-7eea41dcabdf@xenomai.org>
+Date: Tue, 8 Oct 2019 15:22:02 +0200
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+In-Reply-To: <827b0fb8-37b7-1694-d66e-f2a5f44cb086@siemens.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -14,32 +20,82 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
+To: Jan Kiszka <jan.kiszka@siemens.com>, Xenomai <xenomai@xenomai.org>, Steven Seeger <steven.seeger@flightsystems.net>
 
-From: Quirin Gylstorff <quirin.gylstorff@siemens.com>
+On 10/8/19 3:02 PM, Jan Kiszka wrote:
+> On 08.10.19 14:38, Philippe Gerum via Xenomai wrote:
+>> On 10/8/19 12:43 PM, Jan Kiszka wrote:
+>>> On 06.10.19 19:53, Philippe Gerum wrote:
+>>>> On 10/4/19 3:47 PM, Jan Kiszka via Xenomai wrote:
+>>>>> From: Jan Kiszka <jan.kiszka@siemens.com>
+>>>>>
+>>>>> This signals if the core supports synchronous stop and resume on
+>>>>> breakpoints. It depends on I-pipe support that is not available for all
+>>>>> architectures and I-pipe kernel version.
+>>>>>
+>>>>> Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
+>>>>> ---
+>>>>>  include/cobalt/uapi/corectl.h | 1 +
+>>>>>  kernel/cobalt/posix/corectl.c | 3 +++
+>>>>>  2 files changed, 4 insertions(+)
+>>>>>
+>>>>> diff --git a/include/cobalt/uapi/corectl.h b/include/cobalt/uapi/corectl.h
+>>>>> index 98d989d635..8927c4fb07 100644
+>>>>> --- a/include/cobalt/uapi/corectl.h
+>>>>> +++ b/include/cobalt/uapi/corectl.h
+>>>>> @@ -33,6 +33,7 @@
+>>>>>  #   define _CC_COBALT_DEBUG_LEGACY		128
+>>>>>  #   define _CC_COBALT_DEBUG_TRACE_RELAX		256
+>>>>>  #   define _CC_COBALT_DEBUG_NET			512
+>>>>> +#   define _CC_COBALT_DEBUG_SYNC_BP		1024
+>>>>>  
+>>>>>  #define _CC_COBALT_GET_POLICIES		4
+>>>>>  #   define _CC_COBALT_SCHED_FIFO	1
+>>>>> diff --git a/kernel/cobalt/posix/corectl.c b/kernel/cobalt/posix/corectl.c
+>>>>> index f7129ca64b..1b0d912008 100644
+>>>>> --- a/kernel/cobalt/posix/corectl.c
+>>>>> +++ b/kernel/cobalt/posix/corectl.c
+>>>>> @@ -79,6 +79,9 @@ static int do_conf_option(int option, void __user *u_buf, size_t u_bufsz)
+>>>>>  			val |= _CC_COBALT_DEBUG_TRACE_RELAX;
+>>>>>  		if (IS_ENABLED(CONFIG_XENO_DRIVERS_RTNET_CHECKED))
+>>>>>  			val |= _CC_COBALT_DEBUG_NET;
+>>>>> +#ifdef IPIPE_KEVT_USERINTRET
+>>>>> +		val |= _CC_COBALT_DEBUG_SYNC_BP;
+>>>>> +#endif
+>>>>>  		break;
+>>>>>  	case _CC_COBALT_GET_WATCHDOG:
+>>>>>  #ifdef CONFIG_XENO_OPT_WATCHDOG
+>>>>>
+>>>>
+>>>> Ack.
+>>>>
+>>>
+>>> Just realized that this is pointless: Both arm64 and ppc32 have the
+>>> generic infrastructure with that define in place but do not implement
+>>> it. So we cannot detect if an I-pipe tree provides the feature during
+>>> build or runtime. We have to implement it. I will look into arm64 ASAP.
+>>>
+>>> I will revert this futile attempt again, saving us this feature bit for
+>>> real features.
+>>>
+>>
+>> The other way you can export this is via Cobalt's per-arch feature bits.
+>> A new feature bit advertising SYNC_BP support could be conveyed to
+>> userland through cobalt_bind_req.feat_ret, as received during the
+>> process binding operation.
+>>
+> 
+> The point is that the kernels are out, both those supporting it and
+> those that don't. So, as we have to touch the kernels anyway, I'm more
+> in favor of fixing the real issue (the broken interface, i.e. importing
+> the upstream feature without implementing it).
+> 
 
-Shell substitution will use the complete default string. Remove
-the quotation marks to fix call of lavacli.
+I would simply ignore the SYNC_BP feature advertised by current kernels
+by changing the way it is probed for by the "fixed" ones (i.e. using a
+different symbol). Having smokey's gdb test returning with N/A status
+only for the former would be acceptable.
 
-Signed-off-by: Quirin Gylstorff <quirin.gylstorff@siemens.com>
----
- scripts/run-lava-tests.sh | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/scripts/run-lava-tests.sh b/scripts/run-lava-tests.sh
-index 870f1f9..f714b78 100755
---- a/scripts/run-lava-tests.sh
-+++ b/scripts/run-lava-tests.sh
-@@ -37,7 +37,7 @@ if [ -z "${TARGET}" ]; then
-     echo "no target was given"
-     exit -1
- fi
--artifact_url="${LAVA_ARTIFACTS_URL:-'http://localhost/artifacts'}"
-+artifact_url="${LAVA_ARTIFACTS_URL:-http://localhost/artifacts}"
- 
- # connect to lava master
- lavacli identities add --token ${LAVA_MASTER_TOKEN} --uri ${LAVA_MASTER_URI} --username ${LAVA_MASTER_ACCOUNT} default
 -- 
-2.20.1
-
+Philippe.
 
