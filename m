@@ -1,12 +1,13 @@
 Subject: Re: [PATCH 1/2] cobalt: Add _CC_COBALT_DEBUG_SYNC_BP feature
+From: Philippe Gerum <rpm@xenomai.org>
 References: <8271e30f-9fcf-b366-8154-922f988bf366@siemens.com>
  <4e3d6cce-4a42-b9a2-d3b4-ee5398fab0d4@xenomai.org>
  <6e90c052-778e-35ec-cc94-0147feca9754@siemens.com>
-From: Philippe Gerum <rpm@xenomai.org>
-Message-ID: <a2366c15-7f1d-3721-5586-fe44d5f86b81@xenomai.org>
-Date: Tue, 8 Oct 2019 14:31:55 +0200
+ <a2366c15-7f1d-3721-5586-fe44d5f86b81@xenomai.org>
+Message-ID: <b4618b22-815d-ee49-1215-175a3430f49a@xenomai.org>
+Date: Tue, 8 Oct 2019 14:33:12 +0200
 MIME-Version: 1.0
-In-Reply-To: <6e90c052-778e-35ec-cc94-0147feca9754@siemens.com>
+In-Reply-To: <a2366c15-7f1d-3721-5586-fe44d5f86b81@xenomai.org>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -20,65 +21,68 @@ List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: Jan Kiszka <jan.kiszka@siemens.com>, Xenomai <xenomai@xenomai.org>, Steven Seeger <steven.seeger@flightsystems.net>
 
-On 10/8/19 12:43 PM, Jan Kiszka wrote:
-> On 06.10.19 19:53, Philippe Gerum wrote:
->> On 10/4/19 3:47 PM, Jan Kiszka via Xenomai wrote:
->>> From: Jan Kiszka <jan.kiszka@siemens.com>
+On 10/8/19 2:31 PM, Philippe Gerum wrote:
+> On 10/8/19 12:43 PM, Jan Kiszka wrote:
+>> On 06.10.19 19:53, Philippe Gerum wrote:
+>>> On 10/4/19 3:47 PM, Jan Kiszka via Xenomai wrote:
+>>>> From: Jan Kiszka <jan.kiszka@siemens.com>
+>>>>
+>>>> This signals if the core supports synchronous stop and resume on
+>>>> breakpoints. It depends on I-pipe support that is not available for all
+>>>> architectures and I-pipe kernel version.
+>>>>
+>>>> Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
+>>>> ---
+>>>>  include/cobalt/uapi/corectl.h | 1 +
+>>>>  kernel/cobalt/posix/corectl.c | 3 +++
+>>>>  2 files changed, 4 insertions(+)
+>>>>
+>>>> diff --git a/include/cobalt/uapi/corectl.h b/include/cobalt/uapi/corectl.h
+>>>> index 98d989d635..8927c4fb07 100644
+>>>> --- a/include/cobalt/uapi/corectl.h
+>>>> +++ b/include/cobalt/uapi/corectl.h
+>>>> @@ -33,6 +33,7 @@
+>>>>  #   define _CC_COBALT_DEBUG_LEGACY		128
+>>>>  #   define _CC_COBALT_DEBUG_TRACE_RELAX		256
+>>>>  #   define _CC_COBALT_DEBUG_NET			512
+>>>> +#   define _CC_COBALT_DEBUG_SYNC_BP		1024
+>>>>  
+>>>>  #define _CC_COBALT_GET_POLICIES		4
+>>>>  #   define _CC_COBALT_SCHED_FIFO	1
+>>>> diff --git a/kernel/cobalt/posix/corectl.c b/kernel/cobalt/posix/corectl.c
+>>>> index f7129ca64b..1b0d912008 100644
+>>>> --- a/kernel/cobalt/posix/corectl.c
+>>>> +++ b/kernel/cobalt/posix/corectl.c
+>>>> @@ -79,6 +79,9 @@ static int do_conf_option(int option, void __user *u_buf, size_t u_bufsz)
+>>>>  			val |= _CC_COBALT_DEBUG_TRACE_RELAX;
+>>>>  		if (IS_ENABLED(CONFIG_XENO_DRIVERS_RTNET_CHECKED))
+>>>>  			val |= _CC_COBALT_DEBUG_NET;
+>>>> +#ifdef IPIPE_KEVT_USERINTRET
+>>>> +		val |= _CC_COBALT_DEBUG_SYNC_BP;
+>>>> +#endif
+>>>>  		break;
+>>>>  	case _CC_COBALT_GET_WATCHDOG:
+>>>>  #ifdef CONFIG_XENO_OPT_WATCHDOG
+>>>>
 >>>
->>> This signals if the core supports synchronous stop and resume on
->>> breakpoints. It depends on I-pipe support that is not available for all
->>> architectures and I-pipe kernel version.
->>>
->>> Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
->>> ---
->>>  include/cobalt/uapi/corectl.h | 1 +
->>>  kernel/cobalt/posix/corectl.c | 3 +++
->>>  2 files changed, 4 insertions(+)
->>>
->>> diff --git a/include/cobalt/uapi/corectl.h b/include/cobalt/uapi/corectl.h
->>> index 98d989d635..8927c4fb07 100644
->>> --- a/include/cobalt/uapi/corectl.h
->>> +++ b/include/cobalt/uapi/corectl.h
->>> @@ -33,6 +33,7 @@
->>>  #   define _CC_COBALT_DEBUG_LEGACY		128
->>>  #   define _CC_COBALT_DEBUG_TRACE_RELAX		256
->>>  #   define _CC_COBALT_DEBUG_NET			512
->>> +#   define _CC_COBALT_DEBUG_SYNC_BP		1024
->>>  
->>>  #define _CC_COBALT_GET_POLICIES		4
->>>  #   define _CC_COBALT_SCHED_FIFO	1
->>> diff --git a/kernel/cobalt/posix/corectl.c b/kernel/cobalt/posix/corectl.c
->>> index f7129ca64b..1b0d912008 100644
->>> --- a/kernel/cobalt/posix/corectl.c
->>> +++ b/kernel/cobalt/posix/corectl.c
->>> @@ -79,6 +79,9 @@ static int do_conf_option(int option, void __user *u_buf, size_t u_bufsz)
->>>  			val |= _CC_COBALT_DEBUG_TRACE_RELAX;
->>>  		if (IS_ENABLED(CONFIG_XENO_DRIVERS_RTNET_CHECKED))
->>>  			val |= _CC_COBALT_DEBUG_NET;
->>> +#ifdef IPIPE_KEVT_USERINTRET
->>> +		val |= _CC_COBALT_DEBUG_SYNC_BP;
->>> +#endif
->>>  		break;
->>>  	case _CC_COBALT_GET_WATCHDOG:
->>>  #ifdef CONFIG_XENO_OPT_WATCHDOG
+>>> Ack.
 >>>
 >>
->> Ack.
+>> Just realized that this is pointless: Both arm64 and ppc32 have the
+>> generic infrastructure with that define in place but do not implement
+>> it. So we cannot detect if an I-pipe tree provides the feature during
+>> build or runtime. We have to implement it. I will look into arm64 ASAP.
+>>
+>> I will revert this futile attempt again, saving us this feature bit for
+>> real features.
 >>
 > 
-> Just realized that this is pointless: Both arm64 and ppc32 have the
-> generic infrastructure with that define in place but do not implement
-> it. So we cannot detect if an I-pipe tree provides the feature during
-> build or runtime. We have to implement it. I will look into arm64 ASAP.
-> 
-> I will revert this futile attempt again, saving us this feature bit for
-> real features.
-> 
+> Adding a per-arch selector (HAVE_WHATEVER) defined at build time in the
+> I-pipe would solve the point, which is orthogonal to the way to export
+> it via the corectl interface. I'm not sure to understand what you mean
+> by runtime detection of such a feature.
 
-Adding a per-arch selector (HAVE_WHATEVER) defined at build time in the
-I-pipe would solve the point, which is orthogonal to the way to export
-it via the corectl interface. I'm not sure to understand what you mean
-by runtime detection of such a feature.
+s,detection,provision,
 
 
 -- 
