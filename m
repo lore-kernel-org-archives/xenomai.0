@@ -1,14 +1,14 @@
-From: Lange Norbert <norbert.lange@andritz.com>
-Subject: RE: Static build of rtnet
-Date: Tue, 17 Sep 2019 08:29:44 +0000
-Message-ID: <VI1PR05MB59172B40F6360FFE5C2090B7F68F0@VI1PR05MB5917.eurprd05.prod.outlook.com>
-References: <VI1PR05MB59174B9E7E2B5EC8BED7DDA5F68C0@VI1PR05MB5917.eurprd05.prod.outlook.com>
- <d86f04ac-dee5-b940-7569-cfff1e404589@siemens.com>
-In-Reply-To: <d86f04ac-dee5-b940-7569-cfff1e404589@siemens.com>
-Content-Language: en-US
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+Subject: Re: [PATCH 1/2] cobalt: Add _CC_COBALT_DEBUG_SYNC_BP feature
+References: <8271e30f-9fcf-b366-8154-922f988bf366@siemens.com>
+ <4e3d6cce-4a42-b9a2-d3b4-ee5398fab0d4@xenomai.org>
+From: Jan Kiszka <jan.kiszka@siemens.com>
+Message-ID: <6e90c052-778e-35ec-cc94-0147feca9754@siemens.com>
+Date: Tue, 8 Oct 2019 12:43:55 +0200
 MIME-Version: 1.0
+In-Reply-To: <4e3d6cce-4a42-b9a2-d3b4-ee5398fab0d4@xenomai.org>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,49 +17,64 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jan Kiszka <jan.kiszka@siemens.com>, "Xenomai (xenomai@xenomai.org)" <xenomai@xenomai.org>
+To: Philippe Gerum <rpm@xenomai.org>, Xenomai <xenomai@xenomai.org>, Steven Seeger <steven.seeger@flightsystems.net>
 
-DQoNCj4gLS0tLS1PcmlnaW5hbCBNZXNzYWdlLS0tLS0NCj4gRnJvbTogSmFuIEtpc3prYSA8amFu
-Lmtpc3prYUBzaWVtZW5zLmNvbT4NCj4gU2VudDogRGllbnN0YWcsIDE3LiBTZXB0ZW1iZXIgMjAx
-OSAwOTo0Mg0KPiBUbzogTGFuZ2UgTm9yYmVydCA8bm9yYmVydC5sYW5nZUBhbmRyaXR6LmNvbT47
-IFhlbm9tYWkNCj4gKHhlbm9tYWlAeGVub21haS5vcmcpIDx4ZW5vbWFpQHhlbm9tYWkub3JnPg0K
-PiBTdWJqZWN0OiBSZTogU3RhdGljIGJ1aWxkIG9mIHJ0bmV0DQo+DQo+IE5PTi1BTkRSSVRaIFNP
-VVJDRTogQkUgQ0FVVElPVVMgV0lUSCBDT05URU5ULCBMSU5LUyBPUg0KPiBBVFRBQ0hNRU5UUy4N
-Cj4NCj4NCj4gT24gMTYuMDkuMTkgMTE6MTMsIExhbmdlIE5vcmJlcnQgdmlhIFhlbm9tYWkgd3Jv
-dGU6DQo+ID4gSGVsbG8sDQo+ID4NCj4gPiBJIGhhdmVudCB0ZXN0ZWQgdGhpcyBpbiBhIHdoaWxl
-LCBidXQgYnVpbGRpbmcgcnRuZXQgc3RhdGljIHdpbGwgY3Jhc2ggdGhlIGtlcm5lbA0KPiB3aGVu
-IHRoaXMgbW9kdWxlIGluaXRpYWxpemVzLg0KPiA+IFdpdGggdGhlIHZhcmlvdXMgZml4ZXMgYW5k
-IGNsZWFudXBzIGluIG1hc3Rlci9uZXh0IChsaWtlIHJ0ZG1fYXZhaWxhYmxlKSB0aGF0DQo+IG1p
-Z2h0IGJlIHdvcnRoIGEgbG9vaz8NCj4gPg0KPiA+IEkgd291bGQgaG9wZSB0byBidWlsZCBhIHN0
-YXRpYyBrZXJuZWwgb25lIGRheSwgYW5kIHNvIGZhciB0aGVyZSBhcmUgMg0KPiByb2FkYmxvY2tz
-Og0KPiA+DQo+ID4gLSAgICAgICBydG5ldCAoKyBydHBhY2tldCkgY3Jhc2hpbmcgd2hlbiBidWls
-dCBzdGF0aWNhbGx5DQo+ID4NCj4gPiAtICAgICAgIHN5bWJvbCBuYW1lY2xhc2hlcyB3aXRoIGxp
-bnV4ICsgcnQgZHJpdmVycyBlbmFibGVkIChJIGNvdWxkIHdvcmsgb24gZml4aW5nDQo+IHRoYXQg
-Zm9yIHJ0X2lnYiBhdGxlYXN0KQ0KPiA+DQo+DQo+IERvIHlvdSBtZWFuIHJlbW92aW5nIHRoZSAi
-ZGVwZW5kcyBvbiBtIj8NCg0KWWVzLCBpZGVhbGx5IEkgd291bGQgdXNlIGEga2VybmVsIHdpdGhv
-dXQgbG9hZGFibGUgbW9kdWxlcywgc28ga2VybmVsIHVwZ3JhZGVzL2NoYW5nZXMgZG9u4oCZdCBh
-ZmZlY3QgdGhlIHJvb3RmcyAoaWRlYWxseSByZWFkLW9ubHkgYXBhcnQgZnJvbSBmZXcgcGxhY2Vz
-KS4NCg0KPiBQb3NzaWJseSwgdGhhdCBtb3ZlcyB0aGUNCj4gaW5pdGlhbGl6YXRpb24gb3JkZXIg
-aW4gYSB3YXkgdGhhdCBjYXVzZXMgdHJvdWJsZXMuIEkgYWxzbyBqdXN0IGFkZGVkIGFub3RoZXIg
-Y2FzZQ0KPiB0aGF0IGV4cGxvaXRzIHRoZSBtb2R1bGUgWzFdLCBidXQgdGhhdCB3b3VsZCBiZSBz
-b2x2YWJsZS4gTW9yZSBjcml0aWNhbCBpcw0KPiB1bmRlcnN0YW5kaW5nIHRoZSBjcmFzaGVzLg0K
-DQpJIGhhZCBhIHF1aWNrIHRlc3QgcmVtb3ZpbmcgdGhlICJkZXBlbmRzIG9uIG0iIGFib3V0IGEg
-eWVhciBhZ28sIEkgYnJvdWdodCB0aGlzIHVwIG5vdyBiZWNhdXNlIGl0IG1pZ2h0IGJlIGZpdHRp
-bmcgd2l0aCB0aGUgcmVjZW50IGNsZWFudXBzLg0KDQpSZWdhcmRzLCBOb3JiZXJ0DQpfX19fX19f
-X19fX19fX19fX19fX19fX19fX19fX19fXw0KDQpUaGlzIG1lc3NhZ2UgYW5kIGFueSBhdHRhY2ht
-ZW50cyBhcmUgc29sZWx5IGZvciB0aGUgdXNlIG9mIHRoZSBpbnRlbmRlZCByZWNpcGllbnRzLiBU
-aGV5IG1heSBjb250YWluIHByaXZpbGVnZWQgYW5kL29yIGNvbmZpZGVudGlhbCBpbmZvcm1hdGlv
-biBvciBvdGhlciBpbmZvcm1hdGlvbiBwcm90ZWN0ZWQgZnJvbSBkaXNjbG9zdXJlLiBJZiB5b3Ug
-YXJlIG5vdCBhbiBpbnRlbmRlZCByZWNpcGllbnQsIHlvdSBhcmUgaGVyZWJ5IG5vdGlmaWVkIHRo
-YXQgeW91IHJlY2VpdmVkIHRoaXMgZW1haWwgaW4gZXJyb3IgYW5kIHRoYXQgYW55IHJldmlldywg
-ZGlzc2VtaW5hdGlvbiwgZGlzdHJpYnV0aW9uIG9yIGNvcHlpbmcgb2YgdGhpcyBlbWFpbCBhbmQg
-YW55IGF0dGFjaG1lbnQgaXMgc3RyaWN0bHkgcHJvaGliaXRlZC4gSWYgeW91IGhhdmUgcmVjZWl2
-ZWQgdGhpcyBlbWFpbCBpbiBlcnJvciwgcGxlYXNlIGNvbnRhY3QgdGhlIHNlbmRlciBhbmQgZGVs
-ZXRlIHRoZSBtZXNzYWdlIGFuZCBhbnkgYXR0YWNobWVudCBmcm9tIHlvdXIgc3lzdGVtLg0KDQpB
-TkRSSVRaIEhZRFJPIEdtYkgNCg0KDQpSZWNodHNmb3JtLyBMZWdhbCBmb3JtOiBHZXNlbGxzY2hh
-ZnQgbWl0IGJlc2NocsOkbmt0ZXIgSGFmdHVuZyAvIENvcnBvcmF0aW9uDQoNCkZpcm1lbnNpdHov
-IFJlZ2lzdGVyZWQgc2VhdDogV2llbg0KDQpGaXJtZW5idWNoZ2VyaWNodC8gQ291cnQgb2YgcmVn
-aXN0cnk6IEhhbmRlbHNnZXJpY2h0IFdpZW4NCg0KRmlybWVuYnVjaG51bW1lci8gQ29tcGFueSBy
-ZWdpc3RyYXRpb246IEZOIDYxODMzIGcNCg0KRFZSOiAwNjA1MDc3DQoNClVJRC1Oci46IEFUVTE0
-NzU2ODA2DQoNCg0KVGhhbmsgWW91DQpfX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fXw0K
+On 06.10.19 19:53, Philippe Gerum wrote:
+> On 10/4/19 3:47 PM, Jan Kiszka via Xenomai wrote:
+>> From: Jan Kiszka <jan.kiszka@siemens.com>
+>>
+>> This signals if the core supports synchronous stop and resume on
+>> breakpoints. It depends on I-pipe support that is not available for all
+>> architectures and I-pipe kernel version.
+>>
+>> Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
+>> ---
+>>  include/cobalt/uapi/corectl.h | 1 +
+>>  kernel/cobalt/posix/corectl.c | 3 +++
+>>  2 files changed, 4 insertions(+)
+>>
+>> diff --git a/include/cobalt/uapi/corectl.h b/include/cobalt/uapi/corectl.h
+>> index 98d989d635..8927c4fb07 100644
+>> --- a/include/cobalt/uapi/corectl.h
+>> +++ b/include/cobalt/uapi/corectl.h
+>> @@ -33,6 +33,7 @@
+>>  #   define _CC_COBALT_DEBUG_LEGACY		128
+>>  #   define _CC_COBALT_DEBUG_TRACE_RELAX		256
+>>  #   define _CC_COBALT_DEBUG_NET			512
+>> +#   define _CC_COBALT_DEBUG_SYNC_BP		1024
+>>  
+>>  #define _CC_COBALT_GET_POLICIES		4
+>>  #   define _CC_COBALT_SCHED_FIFO	1
+>> diff --git a/kernel/cobalt/posix/corectl.c b/kernel/cobalt/posix/corectl.c
+>> index f7129ca64b..1b0d912008 100644
+>> --- a/kernel/cobalt/posix/corectl.c
+>> +++ b/kernel/cobalt/posix/corectl.c
+>> @@ -79,6 +79,9 @@ static int do_conf_option(int option, void __user *u_buf, size_t u_bufsz)
+>>  			val |= _CC_COBALT_DEBUG_TRACE_RELAX;
+>>  		if (IS_ENABLED(CONFIG_XENO_DRIVERS_RTNET_CHECKED))
+>>  			val |= _CC_COBALT_DEBUG_NET;
+>> +#ifdef IPIPE_KEVT_USERINTRET
+>> +		val |= _CC_COBALT_DEBUG_SYNC_BP;
+>> +#endif
+>>  		break;
+>>  	case _CC_COBALT_GET_WATCHDOG:
+>>  #ifdef CONFIG_XENO_OPT_WATCHDOG
+>>
+> 
+> Ack.
+> 
+
+Just realized that this is pointless: Both arm64 and ppc32 have the
+generic infrastructure with that define in place but do not implement
+it. So we cannot detect if an I-pipe tree provides the feature during
+build or runtime. We have to implement it. I will look into arm64 ASAP.
+
+I will revert this futile attempt again, saving us this feature bit for
+real features.
+
+Jan
+
+-- 
+Siemens AG, Corporate Technology, CT RDA IOT SES-DE
+Corporate Competence Center Embedded Linux
 
