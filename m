@@ -1,14 +1,18 @@
+Subject: Re: Warning on arm64 boot with debugging on
+References: <2349a1e9-d2c6-dc05-eca9-d4015b80746c@siemens.com>
+ <c21d5129-73a4-a430-b17b-64d82d933ab8@siemens.com>
+ <487ec1ed-93b4-aafd-8368-b11dff21be2c@xenomai.org>
+ <c90406ea-930e-bc44-f6ea-6f778ffbda17@siemens.com>
+ <33fa068e-2e8c-1784-d9c4-88a15829083d@xenomai.org>
+ <372729dd-50e7-5269-08c6-4fd9cfcf843d@siemens.com>
+From: Philippe Gerum <rpm@xenomai.org>
+Message-ID: <f170f17d-c64e-9e22-1b65-cfb1765048b4@xenomai.org>
+Date: Tue, 8 Oct 2019 22:21:08 +0200
 MIME-Version: 1.0
-References: <CAFc1U0sYmwMNY1yE+B6=x3_C9QKb9PYivkqDztMSckPXqeUTQw@mail.gmail.com>
- <8ba27533-1944-164f-30cc-17c1bc832e51@xenomai.org>
- <CAFc1U0sf16+rUQPywJqAXHwCHknJZGu7fQ5J_cbsgX2hUeR1jw@mail.gmail.com>
-In-Reply-To: <CAFc1U0sf16+rUQPywJqAXHwCHknJZGu7fQ5J_cbsgX2hUeR1jw@mail.gmail.com>
-From: Pierre FICHEUX <pierre.ficheux@smile.fr>
-Date: Mon, 14 Oct 2019 14:24:44 +0200
-Message-ID: <CAFc1U0sjrE3CNgrOEqmbYHZrNLFH5gYe9gDJuBY3jQ1Zs86XjA@mail.gmail.com>
-Subject: Re: ARM reference platform(s)
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+In-Reply-To: <372729dd-50e7-5269-08c6-4fd9cfcf843d@siemens.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,56 +21,71 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Philippe Gerum <rpm@xenomai.org>
-Cc: xenomai <xenomai@xenomai.org>
+To: Jan Kiszka <jan.kiszka@siemens.com>, Xenomai <xenomai@xenomai.org>
 
-Hi again,
-
-Does it mean you test ipipe patch on with all platforms?  I have some
-problems with Pi 3 kernel... (armv7, 4.14.85)
-
-Le lun. 7 oct. 2019 =C3=A0 15:25, Pierre FICHEUX <pierre.ficheux@smile.fr> =
-a
-=C3=A9crit :
-
-> hi Philippe,
->
-> thx for your help.
->
-> Le dim. 6 oct. 2019 =C3=A0 18:38, Philippe Gerum <rpm@xenomai.org> a =C3=
-=A9crit :
->
->> On 9/30/19 5:01 PM, Pierre FICHEUX via Xenomai wrote:
->> > Hi all,
->> >
->> > Do you have a list  of ARM reference platforms used for Ipipe test and
->> > validation (by the core developers) ?
->> >
+On 10/8/19 9:43 PM, Jan Kiszka wrote:
+> On 08.10.19 21:31, Philippe Gerum wrote:
+>> On 10/8/19 7:52 PM, Jan Kiszka wrote:
+>>> On 08.10.19 19:31, Philippe Gerum wrote:
+>>>> On 10/8/19 5:25 PM, Jan Kiszka wrote:
+>>>>> On 08.10.19 17:21, Jan Kiszka wrote:
+>>>>>> Hi Philippe,
+>>>>>>
+>>>>>> just a note, probably harmless (instrumentation issue), but it may
+>>>>>>  prevent debugging real issues. This is ipipe-core-4.19.55-arm64-2
+>>>>>> with lock validation on:
+>>>>>>
+>>>>
+>>>> Indeed it's not. The virtual IRQ state should be reconciled before calling the trap information handler in do_debug_exception(). Something around these lines:
+>>>>
+>>>> diff --git a/arch/arm64/mm/fault.c b/arch/arm64/mm/fault.c
+>>>> index d7ea82c0b8c7..ade0271fd7cc 100644
+>>>> --- a/arch/arm64/mm/fault.c
+>>>> +++ b/arch/arm64/mm/fault.c
+>>>> @@ -986,23 +986,24 @@ asmlinkage int __exception do_debug_exception(unsigned long addr_if_watchpoint,
+>>>>  	if (user_mode(regs) && pc > TASK_SIZE)
+>>>>  		arm64_apply_bp_hardening();
+>>>>  
+>>>> +	irqflags = fault_entry(regs);
+>>>> +
+>>>>  	if (!inf->fn(addr_if_watchpoint, esr, regs)) {
+>>>>  		rv = 1;
+>>>>  	} else {
+>>>>  		struct siginfo info;
+>>>>  
+>>>> -		irqflags = fault_entry(regs);
+>>>> -
+>>>>  		clear_siginfo(&info);
+>>>>  		info.si_signo = inf->sig;
+>>>>  		info.si_errno = 0;
+>>>>  		info.si_code  = inf->code;
+>>>>  		info.si_addr  = (void __user *)pc;
+>>>>  		arm64_notify_die(inf->name, regs, &info, esr);
+>>>> -		fault_exit(irqflags);
+>>>>  		rv = 0;
+>>>>  	}
+>>>>  
+>>>> +	fault_exit(irqflags);
+>>>> +
+>>>>  	if (interrupts_enabled(regs))
+>>>>  		trace_hardirqs_on();
+>>>>
+>>>
+>>> I've just thrown this at my setup but it had no impact. If you can't
+>>> reproduce, let me know.
+>>>
 >>
->> armv7: several i.MX6 processors (fsl/nxp sabre, phytec, via), i.MX7
->> (nxp), RPI2, Xilinx Cyclone-V and STmicro B2260 mainly. BBB less
->> frequently.
+>> You seem to be running kvm/arm64, so I will likely be able to reproduce.
 >>
->> armv8: hikey (Kirin 620 so far, 970 may come at some point), RPI3,
->> Xilinx ZCU102.
->>
->> --
->> Philippe.
->>
->
->
-> --
->
-> Pierre FICHEUX -/- CTO Smile ECS, France -\- pierre.ficheux@smile.fr
->                              http://www.smile.fr
->                              https://smile.eu/fr/offres/embarque-iot
-> I would love to change the world, but they won't give me the source code
->
->
+> 
+> More precisely, it's just QEMU: I was using the image we generate with
+> xenomai-images and that startup script.
+> 
+> Jan
+> 
 
---=20
+No issue to reproduce both splashes. However, applying the patch I just sent silences the warning triggered by send_user_sigtrap() here. Can you confirm it does not on your end? (the other one at tick-sched.c:982 is still there as expected though). If so, please send your .config, just in case I got lucky with the configuration.
 
-Pierre FICHEUX -/- CTO Smile ECS, France -\- pierre.ficheux@smile.fr
-                             http://www.smile.fr
-                             https://smile.eu/fr/offres/embarque-iot
-I would love to change the world, but they won't give me the source code
+-- 
+Philippe.
+
