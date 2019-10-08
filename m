@@ -1,16 +1,11 @@
-From: steven.seeger flightsystems.net <steven.seeger@flightsystems.net>
-Subject: Re: [PATCH 1/2] cobalt: Add _CC_COBALT_DEBUG_SYNC_BP feature
-Date: Tue, 8 Oct 2019 14:36:48 +0000
-Message-ID: <8682248.VGrCJTeWfp@omoikane>
-References: <8271e30f-9fcf-b366-8154-922f988bf366@siemens.com>
- <12773854.dYiKgG3qDd@omoikane>
- <18df8bb2-52ac-105b-81da-4238f8ab8284@siemens.com>
-In-Reply-To: <18df8bb2-52ac-105b-81da-4238f8ab8284@siemens.com>
-Content-Language: en-US
-Content-Type: text/plain; charset="us-ascii"
-Content-ID: <F286A60174322A479D5F10BBBCEB6D1E@namprd05.prod.outlook.com>
-Content-Transfer-Encoding: quoted-printable
+From: Jan Kiszka <jan.kiszka@siemens.com>
+Subject: Warning on arm64 boot with debugging on
+Message-ID: <2349a1e9-d2c6-dc05-eca9-d4015b80746c@siemens.com>
+Date: Tue, 8 Oct 2019 17:21:21 +0200
 MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -19,35 +14,59 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jan Kiszka <jan.kiszka@siemens.com>
-Cc: Philippe Gerum <rpm@xenomai.org>, Xenomai <xenomai@xenomai.org>
+To: Philippe Gerum <rpm@xenomai.org>, Xenomai <xenomai@xenomai.org>
 
-On Tuesday, October 8, 2019 10:33:13 AM EDT Jan Kiszka wrote:
-> We "just" need a hook on return to user space in non-RT. But I'm not
-> familiar with PPC to tell if that is already complex enough.
+Hi Philippe,
 
-It should be pretty straight-forward. The issue is there are several sub-ar=
-chs=20
-of PPC32 that each have their own head file and I was thinking the ret_from=
-*=20
-files are in those, but in reality they're all in one file entry_32.S so it=
- may=20
-not be as complicated as I thought.
+just a note, probably harmless (instrumentation issue), but it may 
+prevent debugging real issues. This is ipipe-core-4.19.55-arm64-2 with 
+lock validation on:
 
-> Can't help much with that decision. But it basically boils down to
-> announcing such considerations, asking for feedback and then decide and
-> communicate. But as some parts of our community are even then silent,
-> you might need telepathy. ;)
->=20
+[    0.542009] CPU1: Booted secondary processor 0x0000000001 [0x411fd070]
+[    0.542338] ------------[ cut here ]------------
+[    0.542900] IRQs not enabled as expected
+[    0.543377] WARNING: CPU: 1 PID: 0 at ../kernel/time/tick-sched.c:982 tick_nohz_idle_enter+0xa0/0xb0
+[    0.543725] Modules linked in:
+[    0.544086] CPU: 1 PID: 0 Comm: swapper/1 Not tainted 4.19.55+ #3
+[    0.544325] Hardware name: linux,dummy-virt (DT)
+[    0.544526] I-pipe domain: Linux
+[    0.544799] pstate: 60000005 (nZCv daif -PAN -UAO)
+[    0.545002] pc : tick_nohz_idle_enter+0xa0/0xb0
+[    0.545190] lr : tick_nohz_idle_enter+0xa0/0xb0
+[    0.545373] sp : ffff00000a303f20
+[    0.545526] x29: ffff00000a303f20 x28: 0000000000000000 
+[    0.545807] x27: 0000000000000000 x26: 0000000000000000 
+[    0.546122] x25: 0000000000000000 x24: 0000000000000000 
+[    0.546497] x23: 0000000000000000 x22: ffff0000092df000 
+[    0.546863] x21: 0000000000000001 x20: 0000000000000001 
+[    0.547225] x19: 0000000000000087 x18: ffffffffffffffff 
+[    0.547587] x17: 0000000000001086 x16: 0000000000001086 
+[    0.547948] x15: ffff0000092df808 x14: 0720072007200720 
+[    0.548441] x13: 00000000425b018d x12: 0720072007200720 
+[    0.548826] x11: 0720072007200720 x10: 0000000000000000 
+[    0.549230] x9 : 0000000000000080 x8 : 0000000000000000 
+[    0.549597] x7 : 0000000000000000 x6 : 0000000000000002 
+[    0.549966] x5 : 0000000000000000 x4 : 0000000000000000 
+[    0.550339] x3 : ffff0000092c25e8 x2 : ffff0000092fffc0 
+[    0.550708] x1 : d421eb0c5053da00 x0 : 0000000000000000 
+[    0.551150] Call trace:
+[    0.551348]  tick_nohz_idle_enter+0xa0/0xb0
+[    0.551602]  do_idle+0x38/0x2c8
+[    0.551810]  cpu_startup_entry+0x20/0x28
+[    0.552043]  secondary_start_kernel+0x1bc/0x200
+[    0.552331] irq event stamp: 2
+[    0.552709] hardirqs last  enabled at (1): [<ffff0000080961ac>] secondary_start_kernel+0x1ac/0x200
+[    0.553164] hardirqs last disabled at (2): [<ffff000008c35574>] _raw_spin_lock_irqsave+0x24/0x70
+[    0.553607] softirqs last  enabled at (0): [<ffff0000080e2cb8>] copy_process.isra.6.part.7+0x4c0/0x1ac8
+[    0.554091] softirqs last disabled at (0): [<0000000000000000>]           (null)
+[    0.554533] ---[ end trace 838ab3280ac2c8d6 ]---
 
-I've seen one person other than me mention PPC on the list in the last few=
-=20
-months, but I'd need telepathy to find him at this point. I can't pay atten=
-tion=20
-to anything anymore because I'm trying to do 20 things at once. ;)
+Found while debugging my intret hook. Maybe I can look into that 
+afterwards, but maybe you already have an idea.
 
-Steven
+Jan
 
-
-
+-- 
+Siemens AG, Corporate Technology, CT RDA IOT SES-DE
+Corporate Competence Center Embedded Linux
 
