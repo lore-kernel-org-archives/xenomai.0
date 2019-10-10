@@ -1,11 +1,12 @@
-From: Lange Norbert <norbert.lange@andritz.com>
-Subject: Script for namespacing a few intel drivers
-Date: Wed, 9 Oct 2019 14:31:01 +0000
-Message-ID: <VI1PR05MB5917C80A2ECB5F4E8219E897F6950@VI1PR05MB5917.eurprd05.prod.outlook.com>
-Content-Language: en-US
+From: Wolfgang Grandegger <wg@grandegger.com>
+Subject: [PATCH] drivers/can: flexcan_chip_start(): enable loopback mode in
+ flexcan
+Message-ID: <775af6f2-6be8-36f4-b54f-973617332b22@grandegger.com>
+Date: Thu, 10 Oct 2019 09:50:58 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-GB
+Content-Transfer-Encoding: 7bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -14,92 +15,50 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "Xenomai (xenomai@xenomai.org)" <xenomai@xenomai.org>
+To: "Xenomai@xenomai.org" <Xenomai@xenomai.org>
+
+Self reception disable bit needs to be cleared for loopback mode to work
+in flexcan.
+
+>From mainline Linux commit id 7ad0f53a394ba829e45682c2e21175791e36b649
+
+Signed-off-by: Wolfgang Grandegger <wg@grandegger.com>
+---
+ kernel/drivers/can/rtcan_flexcan.c | 20 +++++++++++++++++++-
+ 1 file changed, 19 insertions(+), 1 deletion(-)
+
+diff --git a/kernel/drivers/can/rtcan_flexcan.c b/kernel/drivers/can/rtcan_flexcan.c
+index ac88d07..1287dc8 100644
+--- a/kernel/drivers/can/rtcan_flexcan.c
++++ b/kernel/drivers/can/rtcan_flexcan.c
+@@ -725,7 +725,25 @@ static int flexcan_chip_start(struct rtcan_device *dev)
+ 	reg_mcr = flexcan_read(&regs->mcr);
+ 	reg_mcr |= FLEXCAN_MCR_FRZ | FLEXCAN_MCR_FEN | FLEXCAN_MCR_HALT |
+ 		FLEXCAN_MCR_SUPV | FLEXCAN_MCR_WRN_EN |
+-		FLEXCAN_MCR_IDAM_C | FLEXCAN_MCR_SRX_DIS;
++		FLEXCAN_MCR_IDAM_C;
++
++	/* MCR
++	 *
++	 * NOTE: In loopback mode, the CAN_MCR[SRXDIS] cannot be
++	 *       asserted because this will impede the self reception
++	 *       of a transmitted message. This is not documented in
++	 *       earlier versions of flexcan block guide.
++	 *
++	 * Self Reception:
++	 * - enable Self Reception for loopback mode
++	 *   (by clearing "Self Reception Disable" bit)
++	 * - disable for normal operation
++	 */
++	if (dev->ctrl_mode & CAN_CTRLMODE_LOOPBACK)
++		reg_mcr &= ~FLEXCAN_MCR_SRX_DIS;
++	else
++		reg_mcr |= FLEXCAN_MCR_SRX_DIS;
++
+ 	rtcandev_dbg(dev, "%s: writing mcr=0x%08x", __func__, reg_mcr);
+ 	flexcan_write(reg_mcr, &regs->mcr);
+ 
+-- 
+1.9.1
 
 
-I managed to build a kernel with statically linked igb, e1000 and e1000e fo=
-r linux and rtnet, after running the below script to namespace those driver=
-s (I only use [rt_]igb, but this driver needs symbols from e1000).
-Seems to basically work, with some caveats that might only relate to my cha=
-nges.
-
-Even if you don't use both drivers at one, I am not sure if there aren't so=
-me definitions leaking from the linux headers right now, so a cleanup might=
- be useful anyway.
-
-
-Norbert
-
------------------------
-# run me in kernel/drivers/net/drivers
-
-sedreplace() {
-(
-    TMPFILE=3D/tmp/functions.lst
-    {
-            grep -roh '\bigb_[[:alnum:]_]*[[:space:]]*(' | sed 's,[[:space:=
-]]*(,,'
-            grep -roh 'struct[[:space:]]*igb_[[:alnum:]_]*\b' | sed 's,stru=
-ct[[:space:]]*,,'
-            grep -roh '\be1000e*_[[:alnum:]_]*[[:space:]]*(' | sed 's,[[:sp=
-ace:]]*(,,'
-            grep -roh 'struct[[:space:]]*e1000e*_[[:alnum:]_]*\b' | sed 's,=
-struct[[:space:]]*,,'
-
-            for ad; do echo $ad; done
-    } | sort -u >$TMPFILE
-
-            while read -r f; do
-              printf -- '-e s,\\b%s\\b,rt_%s,g ' $f $f
-            done < $TMPFILE
-)
-}
-
-SEDREP=3D$(sedreplace igb_driver_name igb_driver_version e1000_driver_name =
-e1000_driver_version e1000e_driver_name e1000e_driver_version)
-
-sed $SEDREP -e 's,^#include "rt_e1000_,#include "e1000_,' -i $(find -name '=
-*.c' -o -name '*.h')
-
-Mit besten Gr=FC=DFen / Kind regards
-
-NORBERT LANGE
-
-AT-DES
-
-ANDRITZ HYDRO GmbH
-Eibesbrunnergasse 20
-1120 Vienna / AUSTRIA
-p: +43 50805 56684
-norbert.lange@andritz.com<mailto:norbert.lange@andritz.com>
-andritz.com<http://www.andritz.com>
-________________________________
-
-This message and any attachments are solely for the use of the intended rec=
-ipients. They may contain privileged and/or confidential information or oth=
-er information protected from disclosure. If you are not an intended recipi=
-ent, you are hereby notified that you received this email in error and that=
- any review, dissemination, distribution or copying of this email and any a=
-ttachment is strictly prohibited. If you have received this email in error,=
- please contact the sender and delete the message and any attachment from y=
-our system.
-
-ANDRITZ HYDRO GmbH
-
-
-Rechtsform/ Legal form: Gesellschaft mit beschr=E4nkter Haftung / Corporati=
-on
-
-Firmensitz/ Registered seat: Wien
-
-Firmenbuchgericht/ Court of registry: Handelsgericht Wien
-
-Firmenbuchnummer/ Company registration: FN 61833 g
-
-DVR: 0605077
-
-UID-Nr.: ATU14756806
-
-
-Thank You
-________________________________
