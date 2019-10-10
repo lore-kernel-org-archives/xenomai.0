@@ -1,15 +1,9 @@
-Subject: Re: [PATCH] drivers/can: flexcan_chip_start(): enable loopback mode
- in flexcan
-References: <775af6f2-6be8-36f4-b54f-973617332b22@grandegger.com>
- <91db6907-0f36-6f49-9ad0-5b0c8f6cd926@siemens.com>
-From: Wolfgang Grandegger <wg@grandegger.com>
-Message-ID: <6cbe7f42-366f-e190-8aee-b5ce4ded15ba@grandegger.com>
-Date: Thu, 10 Oct 2019 12:45:48 +0200
 MIME-Version: 1.0
-In-Reply-To: <91db6907-0f36-6f49-9ad0-5b0c8f6cd926@siemens.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-GB
-Content-Transfer-Encoding: 7bit
+From: Richard Weinberger <richard.weinberger@gmail.com>
+Date: Thu, 10 Oct 2019 22:37:44 +0200
+Message-ID: <CAFLxGvx8ggvQmKSMVJ+JtMFzkQd0UB=fU7QRPoreEmzU_3fcoQ@mail.gmail.com>
+Subject: ipipe_trap_hook() with IRQs off?
+Content-Type: text/plain; charset="UTF-8"
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -18,60 +12,32 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jan Kiszka <jan.kiszka@siemens.com>, "Xenomai@xenomai.org" <Xenomai@xenomai.org>
+To: xenomai@xenomai.org
 
+I'm pretty sure I miss something obvious,but let's try.. :-)
 
+Documentation/ipipe.rst says:
+The notification is issued by a call to :c:func:`__ipipe_notify_trap`
+which in turn invokes the :c:func:`ipipe_trap_hook` routine the
+real-time core should override for receiving those events (*__weak*
+binding). Interrupts are **disabled** in the CPU when
+:c:func:`ipipe_trap_hook` is called.::
 
-Am 10.10.19 um 12:05 schrieb Jan Kiszka:
-> On 10.10.19 09:50, Wolfgang Grandegger via Xenomai wrote:
->> Self reception disable bit needs to be cleared for loopback mode to work
->> in flexcan.
->>
->> From mainline Linux commit id 7ad0f53a394ba829e45682c2e21175791e36b649
->>
->> Signed-off-by: Wolfgang Grandegger <wg@grandegger.com>
->> ---
->>  kernel/drivers/can/rtcan_flexcan.c | 20 +++++++++++++++++++-
->>  1 file changed, 19 insertions(+), 1 deletion(-)
->>
->> diff --git a/kernel/drivers/can/rtcan_flexcan.c b/kernel/drivers/can/rtcan_flexcan.c
->> index ac88d07..1287dc8 100644
->> --- a/kernel/drivers/can/rtcan_flexcan.c
->> +++ b/kernel/drivers/can/rtcan_flexcan.c
->> @@ -725,7 +725,25 @@ static int flexcan_chip_start(struct rtcan_device *dev)
->>  	reg_mcr = flexcan_read(&regs->mcr);
->>  	reg_mcr |= FLEXCAN_MCR_FRZ | FLEXCAN_MCR_FEN | FLEXCAN_MCR_HALT |
->>  		FLEXCAN_MCR_SUPV | FLEXCAN_MCR_WRN_EN |
->> -		FLEXCAN_MCR_IDAM_C | FLEXCAN_MCR_SRX_DIS;
->> +		FLEXCAN_MCR_IDAM_C;
->> +
->> +	/* MCR
->> +	 *
->> +	 * NOTE: In loopback mode, the CAN_MCR[SRXDIS] cannot be
->> +	 *       asserted because this will impede the self reception
->> +	 *       of a transmitted message. This is not documented in
->> +	 *       earlier versions of flexcan block guide.
->> +	 *
->> +	 * Self Reception:
->> +	 * - enable Self Reception for loopback mode
->> +	 *   (by clearing "Self Reception Disable" bit)
->> +	 * - disable for normal operation
->> +	 */
->> +	if (dev->ctrl_mode & CAN_CTRLMODE_LOOPBACK)
->> +		reg_mcr &= ~FLEXCAN_MCR_SRX_DIS;
->> +	else
->> +		reg_mcr |= FLEXCAN_MCR_SRX_DIS;
->> +
->>  	rtcandev_dbg(dev, "%s: writing mcr=0x%08x", __func__, reg_mcr);
->>  	flexcan_write(reg_mcr, &regs->mcr);
->>  
->>
-> 
-> This applies to stable, not next. Should this go into stable? And could
-> you [also] provide a version for next?
+But in __ipipe_notify_trap() I see:
+        if (likely(p->coflags & __IPIPE_TRAP_E)) {
+                p->coflags |= __IPIPE_TRAP_R;
+                hard_local_irq_restore(flags);
+                data.exception = exception;
+                data.regs = regs;
+                ret = ipipe_trap_hook(&data);
+                flags = hard_local_irq_save();
+                p->coflags &= ~__IPIPE_TRAP_R;
+        }
 
-It's a bug fix and should therefore also go to stable. I wonder why it
-does not apply to next... will have a look now.
+Why do you restore interrupts before calling ipipe_trap_hook?
+So depending in the saved state, IRQs could be enabled again?
 
-Wolfgang.
+-- 
+Thanks,
+//richard
 
