@@ -1,11 +1,9 @@
-From: Lange Norbert <norbert.lange@andritz.com>
-Subject: xeno_heapcheck kernel module not loadable?
-Date: Fri, 11 Oct 2019 08:40:30 +0000
-Message-ID: <VI1PR05MB5917015D6A894AAA230411C1F6970@VI1PR05MB5917.eurprd05.prod.outlook.com>
-Content-Language: en-US
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+From: Norbert Lange <nolange79@gmail.com>
+Subject: [PATCH] smokey/gdb: search gdb in PATH
+Date: Fri, 11 Oct 2019 11:05:25 +0200
+Message-Id: <20191011090525.6392-1-norbert.lange@andritz.com>
 MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -14,52 +12,29 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "Xenomai (xenomai@xenomai.org)" <xenomai@xenomai.org>
+To: xenomai@xenomai.org
 
-SGVsbG8sDQoNCkkgYnVpbHQgdGhlIHhlbm9fKnRlc3QgY29tcG9uZW50cyBhcyBsb2FkYWJsZSBt
-b2R1bGVzLCBidXQgaXQgc2VlbXMgeGVub19oZWFwY2hlY2sgaXMgZWl0aGVyIGJyb2tlbiBvciBj
-YW7igJl0IGJlIGJ1aWx0IGFzIG1vZHVsZT8NClZlcnNpb24gaXMgIFhlbm9tYWkgdjMuMS1yYzIN
-Cg0KfiMgbW9kcHJvYmUgeGVub19ydGRtdGVzdA0KfiMgbW9kcHJvYmUgeGVub19oZWFwY2hlY2sN
-Cls1Nzk4MC41NDk2MjddIHhlbm9faGVhcGNoZWNrOiBVbmtub3duIHN5bWJvbCB4bnRocmVhZF9y
-ZWxheCAoZXJyIC0yKQ0KWzU3OTgwLjU1NTg1NF0geGVub19oZWFwY2hlY2s6IFVua25vd24gc3lt
-Ym9sIF9fcnRkbV90YXNrX3NsZWVwIChlcnIgLTIpDQpbNTc5ODAuNTYyMzMyXSB4ZW5vX2hlYXBj
-aGVjazogVW5rbm93biBzeW1ib2wgeG5oZWFwX2luaXQgKGVyciAtMikNCls1Nzk4MC41NjgyNzRd
-IHhlbm9faGVhcGNoZWNrOiBVbmtub3duIHN5bWJvbCB4bnRocmVhZF9oYXJkZW4gKGVyciAtMikN
-Cls1Nzk4MC41NzQ1NzZdIHhlbm9faGVhcGNoZWNrOiBVbmtub3duIHN5bWJvbCB4bmhlYXBfYWxs
-b2MgKGVyciAtMikNCls1Nzk4MC41ODA2MDldIHhlbm9faGVhcGNoZWNrOiBVbmtub3duIHN5bWJv
-bCB4bmNsb2NrX2NvcmVfcmVhZF9tb25vdG9uaWMgKGVyciAtMikNCls1Nzk4MC41ODc5NDZdIHhl
-bm9faGVhcGNoZWNrOiBVbmtub3duIHN5bWJvbCB4bmhlYXBfZGVzdHJveSAoZXJyIC0yKQ0KWzU3
-OTgwLjU5NDE1OF0geGVub19oZWFwY2hlY2s6IFVua25vd24gc3ltYm9sIHJ0ZG1fZGV2X3VucmVn
-aXN0ZXIgKGVyciAtMikNCls1Nzk4MC42MDA4MDRdIHhlbm9faGVhcGNoZWNrOiBVbmtub3duIHN5
-bWJvbCB4bmhlYXBfZnJlZSAoZXJyIC0yKQ0KWzU3OTgwLjYwNjc0N10geGVub19oZWFwY2hlY2s6
-IFVua25vd24gc3ltYm9sIHJ0ZG1fZGV2X3JlZ2lzdGVyIChlcnIgLTIpDQpbNTc5ODAuNjE4NTI0
-XSB4ZW5vX2hlYXBjaGVjazogVW5rbm93biBzeW1ib2wgeG50aHJlYWRfcmVsYXggKGVyciAtMikN
-Cls1Nzk4MC42MjQ3NDldIHhlbm9faGVhcGNoZWNrOiBVbmtub3duIHN5bWJvbCBfX3J0ZG1fdGFz
-a19zbGVlcCAoZXJyIC0yKQ0KWzU3OTgwLjYzMTIyM10geGVub19oZWFwY2hlY2s6IFVua25vd24g
-c3ltYm9sIHhuaGVhcF9pbml0IChlcnIgLTIpDQpbNTc5ODAuNjM3MTcwXSB4ZW5vX2hlYXBjaGVj
-azogVW5rbm93biBzeW1ib2wgeG50aHJlYWRfaGFyZGVuIChlcnIgLTIpDQpbNTc5ODAuNjQzNDY4
-XSB4ZW5vX2hlYXBjaGVjazogVW5rbm93biBzeW1ib2wgeG5oZWFwX2FsbG9jIChlcnIgLTIpDQpb
-NTc5ODAuNjQ5NTA4XSB4ZW5vX2hlYXBjaGVjazogVW5rbm93biBzeW1ib2wgeG5jbG9ja19jb3Jl
-X3JlYWRfbW9ub3RvbmljIChlcnIgLTIpDQpbNTc5ODAuNjU2ODQxXSB4ZW5vX2hlYXBjaGVjazog
-VW5rbm93biBzeW1ib2wgeG5oZWFwX2Rlc3Ryb3kgKGVyciAtMikNCls1Nzk4MC42NjMwNTZdIHhl
-bm9faGVhcGNoZWNrOiBVbmtub3duIHN5bWJvbCBydGRtX2Rldl91bnJlZ2lzdGVyIChlcnIgLTIp
-DQpbNTc5ODAuNjY5Njk2XSB4ZW5vX2hlYXBjaGVjazogVW5rbm93biBzeW1ib2wgeG5oZWFwX2Zy
-ZWUgKGVyciAtMikNCls1Nzk4MC42NzU2NjldIHhlbm9faGVhcGNoZWNrOiBVbmtub3duIHN5bWJv
-bCBydGRtX2Rldl9yZWdpc3RlciAoZXJyIC0yKQ0KDQpSZWdhcmRzLCBOb3JiZXJ0DQpfX19fX19f
-X19fX19fX19fX19fX19fX19fX19fX19fXw0KDQpUaGlzIG1lc3NhZ2UgYW5kIGFueSBhdHRhY2ht
-ZW50cyBhcmUgc29sZWx5IGZvciB0aGUgdXNlIG9mIHRoZSBpbnRlbmRlZCByZWNpcGllbnRzLiBU
-aGV5IG1heSBjb250YWluIHByaXZpbGVnZWQgYW5kL29yIGNvbmZpZGVudGlhbCBpbmZvcm1hdGlv
-biBvciBvdGhlciBpbmZvcm1hdGlvbiBwcm90ZWN0ZWQgZnJvbSBkaXNjbG9zdXJlLiBJZiB5b3Ug
-YXJlIG5vdCBhbiBpbnRlbmRlZCByZWNpcGllbnQsIHlvdSBhcmUgaGVyZWJ5IG5vdGlmaWVkIHRo
-YXQgeW91IHJlY2VpdmVkIHRoaXMgZW1haWwgaW4gZXJyb3IgYW5kIHRoYXQgYW55IHJldmlldywg
-ZGlzc2VtaW5hdGlvbiwgZGlzdHJpYnV0aW9uIG9yIGNvcHlpbmcgb2YgdGhpcyBlbWFpbCBhbmQg
-YW55IGF0dGFjaG1lbnQgaXMgc3RyaWN0bHkgcHJvaGliaXRlZC4gSWYgeW91IGhhdmUgcmVjZWl2
-ZWQgdGhpcyBlbWFpbCBpbiBlcnJvciwgcGxlYXNlIGNvbnRhY3QgdGhlIHNlbmRlciBhbmQgZGVs
-ZXRlIHRoZSBtZXNzYWdlIGFuZCBhbnkgYXR0YWNobWVudCBmcm9tIHlvdXIgc3lzdGVtLg0KDQpB
-TkRSSVRaIEhZRFJPIEdtYkgNCg0KDQpSZWNodHNmb3JtLyBMZWdhbCBmb3JtOiBHZXNlbGxzY2hh
-ZnQgbWl0IGJlc2NocsOkbmt0ZXIgSGFmdHVuZyAvIENvcnBvcmF0aW9uDQoNCkZpcm1lbnNpdHov
-IFJlZ2lzdGVyZWQgc2VhdDogV2llbg0KDQpGaXJtZW5idWNoZ2VyaWNodC8gQ291cnQgb2YgcmVn
-aXN0cnk6IEhhbmRlbHNnZXJpY2h0IFdpZW4NCg0KRmlybWVuYnVjaG51bW1lci8gQ29tcGFueSBy
-ZWdpc3RyYXRpb246IEZOIDYxODMzIGcNCg0KRFZSOiAwNjA1MDc3DQoNClVJRC1Oci46IEFUVTE0
-NzU2ODA2DQoNCg0KVGhhbmsgWW91DQpfX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fXw0K
+Signed-off-by: Norbert Lange <norbert.lange@andritz.com>
+---
+ testsuite/smokey/gdb/gdb.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/testsuite/smokey/gdb/gdb.c b/testsuite/smokey/gdb/gdb.c
+index 33c16fe87..4f39f3f6c 100644
+--- a/testsuite/smokey/gdb/gdb.c
++++ b/testsuite/smokey/gdb/gdb.c
+@@ -280,8 +280,8 @@ static int run_gdb(struct smokey_test *t, int argc, char *const argv[])
+ 
+ 			snprintf(run_param, sizeof(run_param), "--run=%d",
+ 				 t->__reserved.id);
+-			execl("/usr/bin/gdb", "gdb", "--args",
+-			      argv[0], run_param, "run_target", NULL);
++			execlp("gdb", "gdb", "--args",
++			      argv[0], run_param, "run_target", (char *)NULL);
+ 			_exit(ESRCH);
+ 
+ 		default:
+-- 
+2.23.0
+
 
