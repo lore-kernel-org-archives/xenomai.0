@@ -4,8 +4,8 @@ References: <2349a1e9-d2c6-dc05-eca9-d4015b80746c@siemens.com>
  <487ec1ed-93b4-aafd-8368-b11dff21be2c@xenomai.org>
  <c90406ea-930e-bc44-f6ea-6f778ffbda17@siemens.com>
 From: Philippe Gerum <rpm@xenomai.org>
-Message-ID: <33fa068e-2e8c-1784-d9c4-88a15829083d@xenomai.org>
-Date: Tue, 8 Oct 2019 21:31:29 +0200
+Message-ID: <f4e2a5b1-398d-bbe3-6dfa-2294a34433bf@xenomai.org>
+Date: Fri, 11 Oct 2019 15:33:23 +0200
 MIME-Version: 1.0
 In-Reply-To: <c90406ea-930e-bc44-f6ea-6f778ffbda17@siemens.com>
 Content-Type: text/plain; charset=utf-8
@@ -71,7 +71,7 @@ On 10/8/19 7:52 PM, Jan Kiszka wrote:
 > reproduce, let me know.
 > 
 
-You seem to be running kvm/arm64, so I will likely be able to reproduce.
+pinned and fixed. Patch will follow tomorrow.
 
 -- 
 Philippe.
