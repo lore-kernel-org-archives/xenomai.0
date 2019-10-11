@@ -1,9 +1,11 @@
+Subject: Re: [PATCH] smokey/gdb: search gdb in PATH
+References: <20191011090525.6392-1-norbert.lange@andritz.com>
 From: Jan Kiszka <jan.kiszka@siemens.com>
-Subject: [PATCH] arm64/ipipe: Add support for userspace return notifier
-Message-ID: <e8d943ee-1103-07ec-bede-c36b4a06c745@siemens.com>
-Date: Tue, 8 Oct 2019 18:55:36 +0200
+Message-ID: <0fbcdc19-8807-669f-8678-52d1dc4176ff@siemens.com>
+Date: Fri, 11 Oct 2019 11:11:41 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+In-Reply-To: <20191011090525.6392-1-norbert.lange@andritz.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
@@ -14,49 +16,34 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Philippe Gerum <rpm@xenomai.org>, Xenomai <xenomai@xenomai.org>
+To: Norbert Lange <nolange79@gmail.com>, xenomai@xenomai.org
 
-From: Jan Kiszka <jan.kiszka@siemens.com>
+On 11.10.19 11:05, Norbert Lange via Xenomai wrote:
+> Signed-off-by: Norbert Lange <norbert.lange@andritz.com>
+> ---
+>   testsuite/smokey/gdb/gdb.c | 4 ++--
+>   1 file changed, 2 insertions(+), 2 deletions(-)
+> 
+> diff --git a/testsuite/smokey/gdb/gdb.c b/testsuite/smokey/gdb/gdb.c
+> index 33c16fe87..4f39f3f6c 100644
+> --- a/testsuite/smokey/gdb/gdb.c
+> +++ b/testsuite/smokey/gdb/gdb.c
+> @@ -280,8 +280,8 @@ static int run_gdb(struct smokey_test *t, int argc, char *const argv[])
+>   
+>   			snprintf(run_param, sizeof(run_param), "--run=%d",
+>   				 t->__reserved.id);
+> -			execl("/usr/bin/gdb", "gdb", "--args",
+> -			      argv[0], run_param, "run_target", NULL);
+> +			execlp("gdb", "gdb", "--args",
+> +			      argv[0], run_param, "run_target", (char *)NULL);
+>   			_exit(ESRCH);
+>   
+>   		default:
+> 
 
-This adds the arm64-specific bits to implement the userspace return
-notifier.
+Thanks, applied.
 
-Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
----
- arch/arm64/kernel/entry.S | 15 +++++++++++++++
- 1 file changed, 15 insertions(+)
-
-diff --git a/arch/arm64/kernel/entry.S b/arch/arm64/kernel/entry.S
-index 805d89c0711d..8ebd72125afb 100644
---- a/arch/arm64/kernel/entry.S
-+++ b/arch/arm64/kernel/entry.S
-@@ -954,8 +954,23 @@ finish_ret_to_user:
- 	enable_step_tsk x1, x2
- #ifdef CONFIG_GCC_PLUGIN_STACKLEAK
- 	bl	stackleak_erase
-+#endif
-+#ifdef CONFIG_IPIPE
-+	ldr	x0, [tsk, #TSK_TI_IPIPE]
-+	tst	x0, #_TIP_USERINTRET
-+	b.ne	call_user_intret_notifier
-+exit_head:
- #endif
- 	kernel_exit 0
-+#ifdef CONFIG_IPIPE
-+call_user_intret_notifier:
-+	enable_daif
-+	bl     	__ipipe_notify_user_intreturn
-+	disable_daif
-+	cmp    	x0, #0
-+	b.ne    exit_head
-+	b	ret_to_user_noirq
-+#endif
- ENDPROC(ret_to_user)
- 
- /*
--- 
-2.16.4
-
+Jan
 
 -- 
 Siemens AG, Corporate Technology, CT RDA IOT SES-DE
