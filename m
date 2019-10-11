@@ -1,12 +1,11 @@
+From: Lange Norbert <norbert.lange@andritz.com>
+Subject: xeno_heapcheck kernel module not loadable?
+Date: Fri, 11 Oct 2019 08:40:30 +0000
+Message-ID: <VI1PR05MB5917015D6A894AAA230411C1F6970@VI1PR05MB5917.eurprd05.prod.outlook.com>
+Content-Language: en-US
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-References: <CAFLxGvx8ggvQmKSMVJ+JtMFzkQd0UB=fU7QRPoreEmzU_3fcoQ@mail.gmail.com>
- <36ffcc1d-7559-51e1-7610-2a92549438ef@siemens.com>
-In-Reply-To: <36ffcc1d-7559-51e1-7610-2a92549438ef@siemens.com>
-From: Richard Weinberger <richard.weinberger@gmail.com>
-Date: Fri, 11 Oct 2019 09:06:54 +0200
-Message-ID: <CAFLxGvy8KXTtQkTNneE-rk73RjNxw5JWK1vET7cRD=hpn224rA@mail.gmail.com>
-Subject: Re: ipipe_trap_hook() with IRQs off?
-Content-Type: text/plain; charset="UTF-8"
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,39 +14,52 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jan Kiszka <jan.kiszka@siemens.com>
-Cc: xenomai@xenomai.org
+To: "Xenomai (xenomai@xenomai.org)" <xenomai@xenomai.org>
 
-Jan,
-
-On Fri, Oct 11, 2019 at 8:50 AM Jan Kiszka <jan.kiszka@siemens.com> wrote:
-> >          if (likely(p->coflags & __IPIPE_TRAP_E)) {
-> >                  p->coflags |= __IPIPE_TRAP_R;
-> >                  hard_local_irq_restore(flags);
-> >                  data.exception = exception;
-> >                  data.regs = regs;
-> >                  ret = ipipe_trap_hook(&data);
-> >                  flags = hard_local_irq_save();
-> >                  p->coflags &= ~__IPIPE_TRAP_R;
-> >          }
-> >
-> > Why do you restore interrupts before calling ipipe_trap_hook?
-> > So depending in the saved state, IRQs could be enabled again?
-> >
->
-> This heavily depends on the type of exception. Some of them enter their
-> low-level handler with interrupts off, and those will keep them off for
-> ipipe_trap_hook. Others start with interrupts enabled (there are many
-> "harmless" synchronous faults), and this is what we preserve here for
-> the callback. Seems the description is out of sync though.
-
-Yeah, the description indicates that ipipe guarantees that IRQs are off
-but you leave them as-is and just disable them for a short time to deal with
-p->coflags.
-
-Thanks a lot for the clarification!
-
----
-Thanks,
-//richard
+SGVsbG8sDQoNCkkgYnVpbHQgdGhlIHhlbm9fKnRlc3QgY29tcG9uZW50cyBhcyBsb2FkYWJsZSBt
+b2R1bGVzLCBidXQgaXQgc2VlbXMgeGVub19oZWFwY2hlY2sgaXMgZWl0aGVyIGJyb2tlbiBvciBj
+YW7igJl0IGJlIGJ1aWx0IGFzIG1vZHVsZT8NClZlcnNpb24gaXMgIFhlbm9tYWkgdjMuMS1yYzIN
+Cg0KfiMgbW9kcHJvYmUgeGVub19ydGRtdGVzdA0KfiMgbW9kcHJvYmUgeGVub19oZWFwY2hlY2sN
+Cls1Nzk4MC41NDk2MjddIHhlbm9faGVhcGNoZWNrOiBVbmtub3duIHN5bWJvbCB4bnRocmVhZF9y
+ZWxheCAoZXJyIC0yKQ0KWzU3OTgwLjU1NTg1NF0geGVub19oZWFwY2hlY2s6IFVua25vd24gc3lt
+Ym9sIF9fcnRkbV90YXNrX3NsZWVwIChlcnIgLTIpDQpbNTc5ODAuNTYyMzMyXSB4ZW5vX2hlYXBj
+aGVjazogVW5rbm93biBzeW1ib2wgeG5oZWFwX2luaXQgKGVyciAtMikNCls1Nzk4MC41NjgyNzRd
+IHhlbm9faGVhcGNoZWNrOiBVbmtub3duIHN5bWJvbCB4bnRocmVhZF9oYXJkZW4gKGVyciAtMikN
+Cls1Nzk4MC41NzQ1NzZdIHhlbm9faGVhcGNoZWNrOiBVbmtub3duIHN5bWJvbCB4bmhlYXBfYWxs
+b2MgKGVyciAtMikNCls1Nzk4MC41ODA2MDldIHhlbm9faGVhcGNoZWNrOiBVbmtub3duIHN5bWJv
+bCB4bmNsb2NrX2NvcmVfcmVhZF9tb25vdG9uaWMgKGVyciAtMikNCls1Nzk4MC41ODc5NDZdIHhl
+bm9faGVhcGNoZWNrOiBVbmtub3duIHN5bWJvbCB4bmhlYXBfZGVzdHJveSAoZXJyIC0yKQ0KWzU3
+OTgwLjU5NDE1OF0geGVub19oZWFwY2hlY2s6IFVua25vd24gc3ltYm9sIHJ0ZG1fZGV2X3VucmVn
+aXN0ZXIgKGVyciAtMikNCls1Nzk4MC42MDA4MDRdIHhlbm9faGVhcGNoZWNrOiBVbmtub3duIHN5
+bWJvbCB4bmhlYXBfZnJlZSAoZXJyIC0yKQ0KWzU3OTgwLjYwNjc0N10geGVub19oZWFwY2hlY2s6
+IFVua25vd24gc3ltYm9sIHJ0ZG1fZGV2X3JlZ2lzdGVyIChlcnIgLTIpDQpbNTc5ODAuNjE4NTI0
+XSB4ZW5vX2hlYXBjaGVjazogVW5rbm93biBzeW1ib2wgeG50aHJlYWRfcmVsYXggKGVyciAtMikN
+Cls1Nzk4MC42MjQ3NDldIHhlbm9faGVhcGNoZWNrOiBVbmtub3duIHN5bWJvbCBfX3J0ZG1fdGFz
+a19zbGVlcCAoZXJyIC0yKQ0KWzU3OTgwLjYzMTIyM10geGVub19oZWFwY2hlY2s6IFVua25vd24g
+c3ltYm9sIHhuaGVhcF9pbml0IChlcnIgLTIpDQpbNTc5ODAuNjM3MTcwXSB4ZW5vX2hlYXBjaGVj
+azogVW5rbm93biBzeW1ib2wgeG50aHJlYWRfaGFyZGVuIChlcnIgLTIpDQpbNTc5ODAuNjQzNDY4
+XSB4ZW5vX2hlYXBjaGVjazogVW5rbm93biBzeW1ib2wgeG5oZWFwX2FsbG9jIChlcnIgLTIpDQpb
+NTc5ODAuNjQ5NTA4XSB4ZW5vX2hlYXBjaGVjazogVW5rbm93biBzeW1ib2wgeG5jbG9ja19jb3Jl
+X3JlYWRfbW9ub3RvbmljIChlcnIgLTIpDQpbNTc5ODAuNjU2ODQxXSB4ZW5vX2hlYXBjaGVjazog
+VW5rbm93biBzeW1ib2wgeG5oZWFwX2Rlc3Ryb3kgKGVyciAtMikNCls1Nzk4MC42NjMwNTZdIHhl
+bm9faGVhcGNoZWNrOiBVbmtub3duIHN5bWJvbCBydGRtX2Rldl91bnJlZ2lzdGVyIChlcnIgLTIp
+DQpbNTc5ODAuNjY5Njk2XSB4ZW5vX2hlYXBjaGVjazogVW5rbm93biBzeW1ib2wgeG5oZWFwX2Zy
+ZWUgKGVyciAtMikNCls1Nzk4MC42NzU2NjldIHhlbm9faGVhcGNoZWNrOiBVbmtub3duIHN5bWJv
+bCBydGRtX2Rldl9yZWdpc3RlciAoZXJyIC0yKQ0KDQpSZWdhcmRzLCBOb3JiZXJ0DQpfX19fX19f
+X19fX19fX19fX19fX19fX19fX19fX19fXw0KDQpUaGlzIG1lc3NhZ2UgYW5kIGFueSBhdHRhY2ht
+ZW50cyBhcmUgc29sZWx5IGZvciB0aGUgdXNlIG9mIHRoZSBpbnRlbmRlZCByZWNpcGllbnRzLiBU
+aGV5IG1heSBjb250YWluIHByaXZpbGVnZWQgYW5kL29yIGNvbmZpZGVudGlhbCBpbmZvcm1hdGlv
+biBvciBvdGhlciBpbmZvcm1hdGlvbiBwcm90ZWN0ZWQgZnJvbSBkaXNjbG9zdXJlLiBJZiB5b3Ug
+YXJlIG5vdCBhbiBpbnRlbmRlZCByZWNpcGllbnQsIHlvdSBhcmUgaGVyZWJ5IG5vdGlmaWVkIHRo
+YXQgeW91IHJlY2VpdmVkIHRoaXMgZW1haWwgaW4gZXJyb3IgYW5kIHRoYXQgYW55IHJldmlldywg
+ZGlzc2VtaW5hdGlvbiwgZGlzdHJpYnV0aW9uIG9yIGNvcHlpbmcgb2YgdGhpcyBlbWFpbCBhbmQg
+YW55IGF0dGFjaG1lbnQgaXMgc3RyaWN0bHkgcHJvaGliaXRlZC4gSWYgeW91IGhhdmUgcmVjZWl2
+ZWQgdGhpcyBlbWFpbCBpbiBlcnJvciwgcGxlYXNlIGNvbnRhY3QgdGhlIHNlbmRlciBhbmQgZGVs
+ZXRlIHRoZSBtZXNzYWdlIGFuZCBhbnkgYXR0YWNobWVudCBmcm9tIHlvdXIgc3lzdGVtLg0KDQpB
+TkRSSVRaIEhZRFJPIEdtYkgNCg0KDQpSZWNodHNmb3JtLyBMZWdhbCBmb3JtOiBHZXNlbGxzY2hh
+ZnQgbWl0IGJlc2NocsOkbmt0ZXIgSGFmdHVuZyAvIENvcnBvcmF0aW9uDQoNCkZpcm1lbnNpdHov
+IFJlZ2lzdGVyZWQgc2VhdDogV2llbg0KDQpGaXJtZW5idWNoZ2VyaWNodC8gQ291cnQgb2YgcmVn
+aXN0cnk6IEhhbmRlbHNnZXJpY2h0IFdpZW4NCg0KRmlybWVuYnVjaG51bW1lci8gQ29tcGFueSBy
+ZWdpc3RyYXRpb246IEZOIDYxODMzIGcNCg0KRFZSOiAwNjA1MDc3DQoNClVJRC1Oci46IEFUVTE0
+NzU2ODA2DQoNCg0KVGhhbmsgWW91DQpfX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fXw0K
 
