@@ -1,16 +1,17 @@
-Subject: Re: running xenomai through scan-build or: some 100 issues with
+From: Lange Norbert <norbert.lange@andritz.com>
+Subject: RE: running xenomai through scan-build or: some 100 issues with
  static code analysis
+Date: Mon, 14 Oct 2019 10:47:05 +0000
+Message-ID: <VI1PR05MB5917EA37C0F9B62195097AAAF6900@VI1PR05MB5917.eurprd05.prod.outlook.com>
 References: <CADYdroOdDNumXRbjFu20UpJkHH8S7W0xMHRzRpiWpk+_0PZHJw@mail.gmail.com>
  <fd1615a6-2dbd-2b4a-a057-80cab4f8e245@siemens.com>
  <VI1PR05MB5917DBA01B2CC40352EDCFA2F6900@VI1PR05MB5917.eurprd05.prod.outlook.com>
-From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <c8a653c4-0e8c-a3f9-42c5-f3caa5640a79@siemens.com>
-Date: Mon, 14 Oct 2019 12:08:49 +0200
-MIME-Version: 1.0
-In-Reply-To: <VI1PR05MB5917DBA01B2CC40352EDCFA2F6900@VI1PR05MB5917.eurprd05.prod.outlook.com>
-Content-Type: text/plain; charset="utf-8"
+ <c8a653c4-0e8c-a3f9-42c5-f3caa5640a79@siemens.com>
+In-Reply-To: <c8a653c4-0e8c-a3f9-42c5-f3caa5640a79@siemens.com>
 Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+MIME-Version: 1.0
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -19,105 +20,116 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Lange Norbert <norbert.lange@andritz.com>, Xenomai <xenomai@xenomai.org>
+To: Jan Kiszka <jan.kiszka@siemens.com>, Xenomai <xenomai@xenomai.org>
 
-Readding the list.
-
-On 14.10.19 11:36, Lange Norbert wrote:
->> -----Original Message-----
->> From: Xenomai <xenomai-bounces@xenomai.org> On Behalf Of Jan Kiszka
->> via Xenomai
->> Sent: Montag, 14. Oktober 2019 08:26
->> To: Norbert Lange <nolange79@gmail.com>; Xenomai
->> <xenomai@xenomai.org>
->> Subject: Re: running xenomai through scan-build or: some 100 issues with
->> static code analysis
->>
->> NON-ANDRITZ SOURCE: BE CAUTIOUS WITH CONTENT, LINKS OR
->> ATTACHMENTS.
->>
->>
->> On 13.10.19 21:49, Norbert Lange via Xenomai wrote:
->>> Hello,
->>>
->>> I did run some static analysis tools over xenomai 3.1rc2 userspace
->>> libraries, and there seems to be alot of real issues.
->>>
->>> The tools are clangs builtin statical analysis and clang-tidy,
->>> naturally there is some overlap in the reports.
->>> clang-tidy would need to be configured to fit Xenomai's practices
->>> (there is a ton of configurable checks), so this is more of an example.
->>> The other, clang's statical analysis is more relevant as there are
->>> very few false positives.
->>>
->>> Additionally to the checks, there is a directory failures, files that
->>> cant be built with clang. Even if no one ships Xenomai built by that
->>> compiler, fixing those should help, for being able to run those tools
->>> and several IDE's and Editors already use clangd for code competition etc.
->>>
->>> I'd hope that such reports could be incorporated into the CI builds.
->>> running the analysis on cross-builds is alot more daunting, but on
->>> native builds its rather easy.
->>
->> This is generally a valuable thing. Unfortunately, it starts with some more
->> work: modelling of functions and syscalls that clang has no insight into and,
->> thus, throws false-positives around them. Quickly browsing through the
->> report, I only saw one real finding so far, and that was a harmless "assigned
->> but never used" warning. But I'm sure that there are a few more severe
->> issues in that haystack.
-> 
-> Did you look only at the tidy-report? The other, website based report has tons of valid issues,
-> and clang models POSIX/GNU functions - that’s enough for most of the code.
-
-No, I didn't look at the tidy reports, the other ones instead. And a lot
-of those I checked (might not have been representative) stumbled over
-the unknown behavior of Xenomai systems - naturally. Some may have also
-stumbled over missing noreturn annotations. Others simply because the
-graph didn't get that a path was not taken with the assumed input
-values. All normal for static analysis.
-
-> 
-> eg.:
-> 
-> utils/analogy/calibration_ni_m.c: use after free (your error() macro is broken).
-
-A nice example for improper modeling of clang: error[_at_line] will
-never return when passed a non-zero status.
-
-The error macro is still wrong because it assumes that this will only
-happen for status < 0.
-
-> lib/copperplate/heapobj-heapmem.c: heapobj_init_array_private with size=0 has undefined behavior
-> 
-> Every report I looked at seemed valid, those that are questionable, like heapobj_init_array_private
-> Are questionable because it's not clear if this function is allowed to be called with size=0.
-> Means it's questionable for everyone reading the code, and something an analyzer should throw up.
-> Its either a bug or some annotation would help (__builtin_expect(size != 0, 1) or assert(size != 0)).
-> 
-
-This one indeed requires a closer look and likely proper error handline
-for size == 0.
-
->>
->> I was already considering to enable Coverity via our CI. It generally works, it
->> has proven to find real issues without too much modelling effort (though this
->> case may be different because of all the custom syscalls), but since Synopsis
->> bought it, the availability and quality of their public OSS service massively
->> degraded.
->>
->> So, looking into clang might be a more reliable alternative. I'm open for
->> patches that pave the way. For CI, we may need a more recent source than
->> clang-6 because that is what Travis provides us ATM.
-> 
-> I dont have any experience with travis, but can't you just tell you want a recent Ubuntu/Debian?
-
-We cannot easily change that, there are only pre-defined Ubuntu images
-available. At most we can try a dist-upgrade during the test, but that
-may prolong the setup time too much.
-
-Jan
-
--- 
-Siemens AG, Corporate Technology, CT RDA IOT SES-DE
-Corporate Competence Center Embedded Linux
+DQoNCj4gLS0tLS1PcmlnaW5hbCBNZXNzYWdlLS0tLS0NCj4gRnJvbTogSmFuIEtpc3prYSA8amFu
+Lmtpc3prYUBzaWVtZW5zLmNvbT4NCj4gU2VudDogTW9udGFnLCAxNC4gT2t0b2JlciAyMDE5IDEy
+OjA5DQo+IFRvOiBMYW5nZSBOb3JiZXJ0IDxub3JiZXJ0LmxhbmdlQGFuZHJpdHouY29tPjsgWGVu
+b21haQ0KPiA8eGVub21haUB4ZW5vbWFpLm9yZz4NCj4gU3ViamVjdDogUmU6IHJ1bm5pbmcgeGVu
+b21haSB0aHJvdWdoIHNjYW4tYnVpbGQgb3I6IHNvbWUgMTAwIGlzc3VlcyB3aXRoDQo+IHN0YXRp
+YyBjb2RlIGFuYWx5c2lzDQo+DQo+IE5PTi1BTkRSSVRaIFNPVVJDRTogQkUgQ0FVVElPVVMgV0lU
+SCBDT05URU5ULCBMSU5LUyBPUg0KPiBBVFRBQ0hNRU5UUy4NCj4NCj4NCj4gUmVhZGRpbmcgdGhl
+IGxpc3QuDQo+DQo+IE9uIDE0LjEwLjE5IDExOjM2LCBMYW5nZSBOb3JiZXJ0IHdyb3RlOg0KPiA+
+PiAtLS0tLU9yaWdpbmFsIE1lc3NhZ2UtLS0tLQ0KPiA+PiBGcm9tOiBYZW5vbWFpIDx4ZW5vbWFp
+LWJvdW5jZXNAeGVub21haS5vcmc+IE9uIEJlaGFsZiBPZiBKYW4NCj4gS2lzemthDQo+ID4+IHZp
+YSBYZW5vbWFpDQo+ID4+IFNlbnQ6IE1vbnRhZywgMTQuIE9rdG9iZXIgMjAxOSAwODoyNg0KPiA+
+PiBUbzogTm9yYmVydCBMYW5nZSA8bm9sYW5nZTc5QGdtYWlsLmNvbT47IFhlbm9tYWkNCj4gPj4g
+PHhlbm9tYWlAeGVub21haS5vcmc+DQo+ID4+IFN1YmplY3Q6IFJlOiBydW5uaW5nIHhlbm9tYWkg
+dGhyb3VnaCBzY2FuLWJ1aWxkIG9yOiBzb21lIDEwMCBpc3N1ZXMNCj4gPj4gd2l0aCBzdGF0aWMg
+Y29kZSBhbmFseXNpcw0KPiA+Pg0KPiA+PiBOT04tQU5EUklUWiBTT1VSQ0U6IEJFIENBVVRJT1VT
+IFdJVEggQ09OVEVOVCwgTElOS1MgT1INCj4gQVRUQUNITUVOVFMuDQo+ID4+DQo+ID4+DQo+ID4+
+IE9uIDEzLjEwLjE5IDIxOjQ5LCBOb3JiZXJ0IExhbmdlIHZpYSBYZW5vbWFpIHdyb3RlOg0KPiA+
+Pj4gSGVsbG8sDQo+ID4+Pg0KPiA+Pj4gSSBkaWQgcnVuIHNvbWUgc3RhdGljIGFuYWx5c2lzIHRv
+b2xzIG92ZXIgeGVub21haSAzLjFyYzIgdXNlcnNwYWNlDQo+ID4+PiBsaWJyYXJpZXMsIGFuZCB0
+aGVyZSBzZWVtcyB0byBiZSBhbG90IG9mIHJlYWwgaXNzdWVzLg0KPiA+Pj4NCj4gPj4+IFRoZSB0
+b29scyBhcmUgY2xhbmdzIGJ1aWx0aW4gc3RhdGljYWwgYW5hbHlzaXMgYW5kIGNsYW5nLXRpZHks
+DQo+ID4+PiBuYXR1cmFsbHkgdGhlcmUgaXMgc29tZSBvdmVybGFwIGluIHRoZSByZXBvcnRzLg0K
+PiA+Pj4gY2xhbmctdGlkeSB3b3VsZCBuZWVkIHRvIGJlIGNvbmZpZ3VyZWQgdG8gZml0IFhlbm9t
+YWkncyBwcmFjdGljZXMNCj4gPj4+ICh0aGVyZSBpcyBhIHRvbiBvZiBjb25maWd1cmFibGUgY2hl
+Y2tzKSwgc28gdGhpcyBpcyBtb3JlIG9mIGFuIGV4YW1wbGUuDQo+ID4+PiBUaGUgb3RoZXIsIGNs
+YW5nJ3Mgc3RhdGljYWwgYW5hbHlzaXMgaXMgbW9yZSByZWxldmFudCBhcyB0aGVyZSBhcmUNCj4g
+Pj4+IHZlcnkgZmV3IGZhbHNlIHBvc2l0aXZlcy4NCj4gPj4+DQo+ID4+PiBBZGRpdGlvbmFsbHkg
+dG8gdGhlIGNoZWNrcywgdGhlcmUgaXMgYSBkaXJlY3RvcnkgZmFpbHVyZXMsIGZpbGVzIHRoYXQN
+Cj4gPj4+IGNhbnQgYmUgYnVpbHQgd2l0aCBjbGFuZy4gRXZlbiBpZiBubyBvbmUgc2hpcHMgWGVu
+b21haSBidWlsdCBieSB0aGF0DQo+ID4+PiBjb21waWxlciwgZml4aW5nIHRob3NlIHNob3VsZCBo
+ZWxwLCBmb3IgYmVpbmcgYWJsZSB0byBydW4gdGhvc2UgdG9vbHMNCj4gPj4+IGFuZCBzZXZlcmFs
+IElERSdzIGFuZCBFZGl0b3JzIGFscmVhZHkgdXNlIGNsYW5nZCBmb3IgY29kZSBjb21wZXRpdGlv
+bg0KPiBldGMuDQo+ID4+Pg0KPiA+Pj4gSSdkIGhvcGUgdGhhdCBzdWNoIHJlcG9ydHMgY291bGQg
+YmUgaW5jb3Jwb3JhdGVkIGludG8gdGhlIENJIGJ1aWxkcy4NCj4gPj4+IHJ1bm5pbmcgdGhlIGFu
+YWx5c2lzIG9uIGNyb3NzLWJ1aWxkcyBpcyBhbG90IG1vcmUgZGF1bnRpbmcsIGJ1dCBvbg0KPiA+
+Pj4gbmF0aXZlIGJ1aWxkcyBpdHMgcmF0aGVyIGVhc3kuDQo+ID4+DQo+ID4+IFRoaXMgaXMgZ2Vu
+ZXJhbGx5IGEgdmFsdWFibGUgdGhpbmcuIFVuZm9ydHVuYXRlbHksIGl0IHN0YXJ0cyB3aXRoIHNv
+bWUgbW9yZQ0KPiA+PiB3b3JrOiBtb2RlbGxpbmcgb2YgZnVuY3Rpb25zIGFuZCBzeXNjYWxscyB0
+aGF0IGNsYW5nIGhhcyBubyBpbnNpZ2h0IGludG8NCj4gYW5kLA0KPiA+PiB0aHVzLCB0aHJvd3Mg
+ZmFsc2UtcG9zaXRpdmVzIGFyb3VuZCB0aGVtLiBRdWlja2x5IGJyb3dzaW5nIHRocm91Z2ggdGhl
+DQo+ID4+IHJlcG9ydCwgSSBvbmx5IHNhdyBvbmUgcmVhbCBmaW5kaW5nIHNvIGZhciwgYW5kIHRo
+YXQgd2FzIGEgaGFybWxlc3MNCj4gImFzc2lnbmVkDQo+ID4+IGJ1dCBuZXZlciB1c2VkIiB3YXJu
+aW5nLiBCdXQgSSdtIHN1cmUgdGhhdCB0aGVyZSBhcmUgYSBmZXcgbW9yZSBzZXZlcmUNCj4gPj4g
+aXNzdWVzIGluIHRoYXQgaGF5c3RhY2suDQo+ID4NCj4gPiBEaWQgeW91IGxvb2sgb25seSBhdCB0
+aGUgdGlkeS1yZXBvcnQ/IFRoZSBvdGhlciwgd2Vic2l0ZSBiYXNlZCByZXBvcnQgaGFzDQo+IHRv
+bnMgb2YgdmFsaWQgaXNzdWVzLA0KPiA+IGFuZCBjbGFuZyBtb2RlbHMgUE9TSVgvR05VIGZ1bmN0
+aW9ucyAtIHRoYXTigJlzIGVub3VnaCBmb3IgbW9zdCBvZiB0aGUNCj4gY29kZS4NCj4NCj4gTm8s
+IEkgZGlkbid0IGxvb2sgYXQgdGhlIHRpZHkgcmVwb3J0cywgdGhlIG90aGVyIG9uZXMgaW5zdGVh
+ZC4gQW5kIGEgbG90DQo+IG9mIHRob3NlIEkgY2hlY2tlZCAobWlnaHQgbm90IGhhdmUgYmVlbiBy
+ZXByZXNlbnRhdGl2ZSkgc3R1bWJsZWQgb3Zlcg0KPiB0aGUgdW5rbm93biBiZWhhdmlvciBvZiBY
+ZW5vbWFpIHN5c3RlbXMgLSBuYXR1cmFsbHkuIFNvbWUgbWF5IGhhdmUgYWxzbw0KPiBzdHVtYmxl
+ZCBvdmVyIG1pc3Npbmcgbm9yZXR1cm4gYW5ub3RhdGlvbnMuIE90aGVycyBzaW1wbHkgYmVjYXVz
+ZSB0aGUNCj4gZ3JhcGggZGlkbid0IGdldCB0aGF0IGEgcGF0aCB3YXMgbm90IHRha2VuIHdpdGgg
+dGhlIGFzc3VtZWQgaW5wdXQNCj4gdmFsdWVzLiBBbGwgbm9ybWFsIGZvciBzdGF0aWMgYW5hbHlz
+aXMuDQo+DQo+ID4NCj4gPiBlZy46DQo+ID4NCj4gPiB1dGlscy9hbmFsb2d5L2NhbGlicmF0aW9u
+X25pX20uYzogdXNlIGFmdGVyIGZyZWUgKHlvdXIgZXJyb3IoKSBtYWNybyBpcw0KPiBicm9rZW4p
+Lg0KPg0KPiBBIG5pY2UgZXhhbXBsZSBmb3IgaW1wcm9wZXIgbW9kZWxpbmcgb2YgY2xhbmc6IGVy
+cm9yW19hdF9saW5lXSB3aWxsDQo+IG5ldmVyIHJldHVybiB3aGVuIHBhc3NlZCBhIG5vbi16ZXJv
+IHN0YXR1cy4NCg0KSXQncyBhY3R1YWxseSB3b3JzZSB0aGFuIHRoYXQsIGdsaWJjIHVzZXMgYSBn
+Y2MgZXh0ZW5zaW9uIF9fYnVpbHRpbl92YV9hcmdfcGFjaywNCldoaWNoIGNsYW5nIGRvZXMgbm90
+IHN1cHBvcnQgYnV0IHdvdWxkIGJlIG5lY2Vzc2FyeSB0byB1c2UgdGhlIGlubGluZSBkZWNsYXJh
+dGlvbi4NCg0KPg0KPiBUaGUgZXJyb3IgbWFjcm8gaXMgc3RpbGwgd3JvbmcgYmVjYXVzZSBpdCBh
+c3N1bWVzIHRoYXQgdGhpcyB3aWxsIG9ubHkNCj4gaGFwcGVuIGZvciBzdGF0dXMgPCAwLg0KDQpZ
+ZXMsIHRoYXRzIHdoYXQgSSBtZWFudC4NCg0KPg0KPiA+IGxpYi9jb3BwZXJwbGF0ZS9oZWFwb2Jq
+LWhlYXBtZW0uYzogaGVhcG9ial9pbml0X2FycmF5X3ByaXZhdGUgd2l0aA0KPiBzaXplPTAgaGFz
+IHVuZGVmaW5lZCBiZWhhdmlvcg0KPiA+DQo+ID4gRXZlcnkgcmVwb3J0IEkgbG9va2VkIGF0IHNl
+ZW1lZCB2YWxpZCwgdGhvc2UgdGhhdCBhcmUgcXVlc3Rpb25hYmxlLCBsaWtlDQo+IGhlYXBvYmpf
+aW5pdF9hcnJheV9wcml2YXRlDQo+ID4gQXJlIHF1ZXN0aW9uYWJsZSBiZWNhdXNlIGl0J3Mgbm90
+IGNsZWFyIGlmIHRoaXMgZnVuY3Rpb24gaXMgYWxsb3dlZCB0byBiZQ0KPiBjYWxsZWQgd2l0aCBz
+aXplPTAuDQo+ID4gTWVhbnMgaXQncyBxdWVzdGlvbmFibGUgZm9yIGV2ZXJ5b25lIHJlYWRpbmcg
+dGhlIGNvZGUsIGFuZCBzb21ldGhpbmcgYW4NCj4gYW5hbHl6ZXIgc2hvdWxkIHRocm93IHVwLg0K
+PiA+IEl0cyBlaXRoZXIgYSBidWcgb3Igc29tZSBhbm5vdGF0aW9uIHdvdWxkIGhlbHAgKF9fYnVp
+bHRpbl9leHBlY3Qoc2l6ZSAhPSAwLA0KPiAxKSBvciBhc3NlcnQoc2l6ZSAhPSAwKSkuDQo+ID4N
+Cj4NCj4gVGhpcyBvbmUgaW5kZWVkIHJlcXVpcmVzIGEgY2xvc2VyIGxvb2sgYW5kIGxpa2VseSBw
+cm9wZXIgZXJyb3IgaGFuZGxpbmUNCj4gZm9yIHNpemUgPT0gMC4NCj4NCj4gPj4NCj4gPj4gSSB3
+YXMgYWxyZWFkeSBjb25zaWRlcmluZyB0byBlbmFibGUgQ292ZXJpdHkgdmlhIG91ciBDSS4gSXQg
+Z2VuZXJhbGx5IHdvcmtzLA0KPiBpdA0KPiA+PiBoYXMgcHJvdmVuIHRvIGZpbmQgcmVhbCBpc3N1
+ZXMgd2l0aG91dCB0b28gbXVjaCBtb2RlbGxpbmcgZWZmb3J0ICh0aG91Z2gNCj4gdGhpcw0KPiA+
+PiBjYXNlIG1heSBiZSBkaWZmZXJlbnQgYmVjYXVzZSBvZiBhbGwgdGhlIGN1c3RvbSBzeXNjYWxs
+cyksIGJ1dCBzaW5jZQ0KPiBTeW5vcHNpcw0KPiA+PiBib3VnaHQgaXQsIHRoZSBhdmFpbGFiaWxp
+dHkgYW5kIHF1YWxpdHkgb2YgdGhlaXIgcHVibGljIE9TUyBzZXJ2aWNlIG1hc3NpdmVseQ0KPiA+
+PiBkZWdyYWRlZC4NCj4gPj4NCj4gPj4gU28sIGxvb2tpbmcgaW50byBjbGFuZyBtaWdodCBiZSBh
+IG1vcmUgcmVsaWFibGUgYWx0ZXJuYXRpdmUuIEknbSBvcGVuIGZvcg0KPiA+PiBwYXRjaGVzIHRo
+YXQgcGF2ZSB0aGUgd2F5LiBGb3IgQ0ksIHdlIG1heSBuZWVkIGEgbW9yZSByZWNlbnQgc291cmNl
+DQo+IHRoYW4NCj4gPj4gY2xhbmctNiBiZWNhdXNlIHRoYXQgaXMgd2hhdCBUcmF2aXMgcHJvdmlk
+ZXMgdXMgQVRNLg0KPiA+DQo+ID4gSSBkb250IGhhdmUgYW55IGV4cGVyaWVuY2Ugd2l0aCB0cmF2
+aXMsIGJ1dCBjYW4ndCB5b3UganVzdCB0ZWxsIHlvdSB3YW50IGENCj4gcmVjZW50IFVidW50dS9E
+ZWJpYW4/DQo+DQo+IFdlIGNhbm5vdCBlYXNpbHkgY2hhbmdlIHRoYXQsIHRoZXJlIGFyZSBvbmx5
+IHByZS1kZWZpbmVkIFVidW50dSBpbWFnZXMNCj4gYXZhaWxhYmxlLiBBdCBtb3N0IHdlIGNhbiB0
+cnkgYSBkaXN0LXVwZ3JhZGUgZHVyaW5nIHRoZSB0ZXN0LCBidXQgdGhhdA0KPiBtYXkgcHJvbG9u
+ZyB0aGUgc2V0dXAgdGltZSB0b28gbXVjaC4NCg0KVGhlcmUgd291bGQgYmUgY2xhbmctOCBhdmFp
+bGFibGUgaW4gMTguMDQgInVwZGF0ZXMiIHJlcG9zaXRvcnk6DQpodHRwczovL3BhY2thZ2VzLnVi
+dW50dS5jb20vc2VhcmNoP3N1aXRlPWFsbCZzZWN0aW9uPWFsbCZhcmNoPWFueSZrZXl3b3Jkcz1j
+bGFuZy04JnNlYXJjaG9uPW5hbWVzDQoNCk5vcmJlcnQNCl9fX19fX19fX19fX19fX19fX19fX19f
+X19fX19fX19fDQoNClRoaXMgbWVzc2FnZSBhbmQgYW55IGF0dGFjaG1lbnRzIGFyZSBzb2xlbHkg
+Zm9yIHRoZSB1c2Ugb2YgdGhlIGludGVuZGVkIHJlY2lwaWVudHMuIFRoZXkgbWF5IGNvbnRhaW4g
+cHJpdmlsZWdlZCBhbmQvb3IgY29uZmlkZW50aWFsIGluZm9ybWF0aW9uIG9yIG90aGVyIGluZm9y
+bWF0aW9uIHByb3RlY3RlZCBmcm9tIGRpc2Nsb3N1cmUuIElmIHlvdSBhcmUgbm90IGFuIGludGVu
+ZGVkIHJlY2lwaWVudCwgeW91IGFyZSBoZXJlYnkgbm90aWZpZWQgdGhhdCB5b3UgcmVjZWl2ZWQg
+dGhpcyBlbWFpbCBpbiBlcnJvciBhbmQgdGhhdCBhbnkgcmV2aWV3LCBkaXNzZW1pbmF0aW9uLCBk
+aXN0cmlidXRpb24gb3IgY29weWluZyBvZiB0aGlzIGVtYWlsIGFuZCBhbnkgYXR0YWNobWVudCBp
+cyBzdHJpY3RseSBwcm9oaWJpdGVkLiBJZiB5b3UgaGF2ZSByZWNlaXZlZCB0aGlzIGVtYWlsIGlu
+IGVycm9yLCBwbGVhc2UgY29udGFjdCB0aGUgc2VuZGVyIGFuZCBkZWxldGUgdGhlIG1lc3NhZ2Ug
+YW5kIGFueSBhdHRhY2htZW50IGZyb20geW91ciBzeXN0ZW0uDQoNCkFORFJJVFogSFlEUk8gR21i
+SA0KDQoNClJlY2h0c2Zvcm0vIExlZ2FsIGZvcm06IEdlc2VsbHNjaGFmdCBtaXQgYmVzY2hyw6Ru
+a3RlciBIYWZ0dW5nIC8gQ29ycG9yYXRpb24NCg0KRmlybWVuc2l0ei8gUmVnaXN0ZXJlZCBzZWF0
+OiBXaWVuDQoNCkZpcm1lbmJ1Y2hnZXJpY2h0LyBDb3VydCBvZiByZWdpc3RyeTogSGFuZGVsc2dl
+cmljaHQgV2llbg0KDQpGaXJtZW5idWNobnVtbWVyLyBDb21wYW55IHJlZ2lzdHJhdGlvbjogRk4g
+NjE4MzMgZw0KDQpEVlI6IDA2MDUwNzcNCg0KVUlELU5yLjogQVRVMTQ3NTY4MDYNCg0KDQpUaGFu
+ayBZb3UNCl9fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fDQo=
 
