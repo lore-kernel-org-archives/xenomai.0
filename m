@@ -1,11 +1,14 @@
+Subject: Re: running xenomai through scan-build or: some 100 issues with
+ static code analysis
+References: <CADYdroOdDNumXRbjFu20UpJkHH8S7W0xMHRzRpiWpk+_0PZHJw@mail.gmail.com>
+From: Jan Kiszka <jan.kiszka@siemens.com>
+Message-ID: <fd1615a6-2dbd-2b4a-a057-80cab4f8e245@siemens.com>
+Date: Mon, 14 Oct 2019 08:25:48 +0200
 MIME-Version: 1.0
-From: Norbert Lange <nolange79@gmail.com>
-Date: Sun, 13 Oct 2019 21:49:52 +0200
-Message-ID: <CADYdroOdDNumXRbjFu20UpJkHH8S7W0xMHRzRpiWpk+_0PZHJw@mail.gmail.com>
-Subject: running xenomai through scan-build or: some 100 issues with static
- code analysis
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+In-Reply-To: <CADYdroOdDNumXRbjFu20UpJkHH8S7W0xMHRzRpiWpk+_0PZHJw@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -14,48 +17,50 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Xenomai <xenomai@xenomai.org>
+To: Norbert Lange <nolange79@gmail.com>, Xenomai <xenomai@xenomai.org>
 
-SGVsbG8sCgpJIGRpZCBydW4gc29tZSBzdGF0aWMgYW5hbHlzaXMgdG9vbHMgb3ZlciB4ZW5vbWFp
-IDMuMXJjMiB1c2Vyc3BhY2UgbGlicmFyaWVzLAphbmQgdGhlcmUgc2VlbXMgdG8gYmUgYWxvdCBv
-ZiByZWFsIGlzc3Vlcy4KClRoZSB0b29scyBhcmUgY2xhbmdzIGJ1aWx0aW4gc3RhdGljYWwgYW5h
-bHlzaXMgYW5kIGNsYW5nLXRpZHksIG5hdHVyYWxseSB0aGVyZQppcyBzb21lIG92ZXJsYXAgaW4g
-dGhlIHJlcG9ydHMuCmNsYW5nLXRpZHkgd291bGQgbmVlZCB0byBiZSBjb25maWd1cmVkIHRvIGZp
-dCBYZW5vbWFpJ3MgcHJhY3RpY2VzCih0aGVyZSBpcyBhIHRvbiBvZiBjb25maWd1cmFibGUgY2hl
-Y2tzKSwgc28gdGhpcyBpcyBtb3JlIG9mIGFuIGV4YW1wbGUuClRoZSBvdGhlciwgY2xhbmcncyBz
-dGF0aWNhbCBhbmFseXNpcyBpcyBtb3JlIHJlbGV2YW50IGFzIHRoZXJlIGFyZSB2ZXJ5IGZldwpm
-YWxzZSBwb3NpdGl2ZXMuCgpBZGRpdGlvbmFsbHkgdG8gdGhlIGNoZWNrcywgdGhlcmUgaXMgYSBk
-aXJlY3RvcnkgZmFpbHVyZXMsIGZpbGVzIHRoYXQgY2FudApiZSBidWlsdCB3aXRoIGNsYW5nLiBF
-dmVuIGlmIG5vIG9uZSBzaGlwcyBYZW5vbWFpIGJ1aWx0IGJ5IHRoYXQgY29tcGlsZXIsCmZpeGlu
-ZyB0aG9zZSBzaG91bGQgaGVscCwgZm9yIGJlaW5nIGFibGUgdG8gcnVuIHRob3NlIHRvb2xzIGFu
-ZCBzZXZlcmFsIElERSdzCmFuZCBFZGl0b3JzIGFscmVhZHkgdXNlIGNsYW5nZCBmb3IgY29kZSBj
-b21wZXRpdGlvbiBldGMuCgpJJ2QgaG9wZSB0aGF0IHN1Y2ggcmVwb3J0cyBjb3VsZCBiZSBpbmNv
-cnBvcmF0ZWQgaW50byB0aGUgQ0kgYnVpbGRzLgpydW5uaW5nIHRoZSBhbmFseXNpcyBvbiBjcm9z
-cy1idWlsZHMgaXMgYWxvdCBtb3JlIGRhdW50aW5nLApidXQgb24gbmF0aXZlIGJ1aWxkcyBpdHMg
-cmF0aGVyIGVhc3kuCgpyZWdhcmRzLCBOb3JiZXJ0CgojIG9uIG15IGRlYmlhbiAidGVzdGluZyIg
-c3lzdGVtIGNsYW5nIGlzIGF0IDkuMAphcHQtZ2V0IGluc3RhbGwgY2xhbmctOSBjbGFuZy10aWR5
-LTkgYmVhcgoKLi4veGVub21haS12My4xLXJjMi9jb25maWd1cmUgLS1lbmFibGUtc21wIC0tZW5h
-YmxlLXJlZ2lzdHJ5IC0td2l0aC1jb3JlPWNvYmFsdAoKIyBidWlsZCBldmVyeSBmaWxlIHdpdGgg
-d2l0aCBnY2MgYW5kIGNsYW5nLCByZXBvcnQgaXMgc3RvcmVkIGluIGEgZm9sZGVyIGluIC90bXAK
-c2Nhbi1idWlsZC05IG1ha2UgLWo5CgoKIyBnZW5lcmF0ZSBhIGNvbXBpbGVfY29tbWFuZHMuanNv
-biBkYXRhYmFzZQptYWtlIGNsZWFuCmJlYXIgbWFrZSAtajkKCiMgcnVuIGNsYW5nLXRpZHkgb24g
-ZmlsZXMgaW4gdGhlIGRhdGFiYXNlCnJ1bi1jbGFuZy10aWR5LTkgPiB0aWR5LXJlcG9ydC50eHQK
-LS0tLS0tLS0tLS0tLS0gbmV4dCBwYXJ0IC0tLS0tLS0tLS0tLS0tCkEgbm9uLXRleHQgYXR0YWNo
-bWVudCB3YXMgc2NydWJiZWQuLi4KTmFtZTogdGlkeS1jb2JhbHQudGFyLnh6ClR5cGU6IGFwcGxp
-Y2F0aW9uL3gteHoKU2l6ZTogMzcxNzIgYnl0ZXMKRGVzYzogbm90IGF2YWlsYWJsZQpVUkw6IDxo
-dHRwOi8veGVub21haS5vcmcvcGlwZXJtYWlsL3hlbm9tYWkvYXR0YWNobWVudHMvMjAxOTEwMTMv
-YmQ0NDVkNzIvYXR0YWNobWVudC5iaW4+Ci0tLS0tLS0tLS0tLS0tIG5leHQgcGFydCAtLS0tLS0t
-LS0tLS0tLQpBIG5vbi10ZXh0IGF0dGFjaG1lbnQgd2FzIHNjcnViYmVkLi4uCk5hbWU6IHRpZHkt
-bWVyY3VyeS50YXIueHoKVHlwZTogYXBwbGljYXRpb24veC14egpTaXplOiAxODI0NCBieXRlcwpE
-ZXNjOiBub3QgYXZhaWxhYmxlClVSTDogPGh0dHA6Ly94ZW5vbWFpLm9yZy9waXBlcm1haWwveGVu
-b21haS9hdHRhY2htZW50cy8yMDE5MTAxMy9iZDQ0NWQ3Mi9hdHRhY2htZW50LTAwMDEuYmluPgot
-LS0tLS0tLS0tLS0tLSBuZXh0IHBhcnQgLS0tLS0tLS0tLS0tLS0KQSBub24tdGV4dCBhdHRhY2ht
-ZW50IHdhcyBzY3J1YmJlZC4uLgpOYW1lOiBzY2FuLWJ1aWxkLW1lcmN1cnkudGFyLnh6ClR5cGU6
-IGFwcGxpY2F0aW9uL3gteHoKU2l6ZTogMjM4MzkyIGJ5dGVzCkRlc2M6IG5vdCBhdmFpbGFibGUK
-VVJMOiA8aHR0cDovL3hlbm9tYWkub3JnL3BpcGVybWFpbC94ZW5vbWFpL2F0dGFjaG1lbnRzLzIw
-MTkxMDEzL2JkNDQ1ZDcyL2F0dGFjaG1lbnQtMDAwMi5iaW4+Ci0tLS0tLS0tLS0tLS0tIG5leHQg
-cGFydCAtLS0tLS0tLS0tLS0tLQpBIG5vbi10ZXh0IGF0dGFjaG1lbnQgd2FzIHNjcnViYmVkLi4u
-Ck5hbWU6IHNjYW4tYnVpbGQtY29iYWx0LnRhci54egpUeXBlOiBhcHBsaWNhdGlvbi94LXh6ClNp
-emU6IDM5NjMwOCBieXRlcwpEZXNjOiBub3QgYXZhaWxhYmxlClVSTDogPGh0dHA6Ly94ZW5vbWFp
-Lm9yZy9waXBlcm1haWwveGVub21haS9hdHRhY2htZW50cy8yMDE5MTAxMy9iZDQ0NWQ3Mi9hdHRh
-Y2htZW50LTAwMDMuYmluPgo=
+On 13.10.19 21:49, Norbert Lange via Xenomai wrote:
+> Hello,
+> 
+> I did run some static analysis tools over xenomai 3.1rc2 userspace libraries,
+> and there seems to be alot of real issues.
+> 
+> The tools are clangs builtin statical analysis and clang-tidy, naturally there
+> is some overlap in the reports.
+> clang-tidy would need to be configured to fit Xenomai's practices
+> (there is a ton of configurable checks), so this is more of an example.
+> The other, clang's statical analysis is more relevant as there are very few
+> false positives.
+> 
+> Additionally to the checks, there is a directory failures, files that cant
+> be built with clang. Even if no one ships Xenomai built by that compiler,
+> fixing those should help, for being able to run those tools and several IDE's
+> and Editors already use clangd for code competition etc.
+> 
+> I'd hope that such reports could be incorporated into the CI builds.
+> running the analysis on cross-builds is alot more daunting,
+> but on native builds its rather easy.
+
+This is generally a valuable thing. Unfortunately, it starts with some
+more work: modelling of functions and syscalls that clang has no insight
+into and, thus, throws false-positives around them. Quickly browsing
+through the report, I only saw one real finding so far, and that was a
+harmless "assigned but never used" warning. But I'm sure that there are
+a few more severe issues in that haystack.
+
+I was already considering to enable Coverity via our CI. It generally
+works, it has proven to find real issues without too much modelling
+effort (though this case may be different because of all the custom
+syscalls), but since Synopsis bought it, the availability and quality of
+their public OSS service massively degraded.
+
+So, looking into clang might be a more reliable alternative. I'm open
+for patches that pave the way. For CI, we may need a more recent source
+than clang-6 because that is what Travis provides us ATM.
+
+Jan
+
+-- 
+Siemens AG, Corporate Technology, CT RDA IOT SES-DE
+Corporate Competence Center Embedded Linux
+
