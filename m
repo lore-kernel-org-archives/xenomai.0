@@ -1,15 +1,16 @@
-Subject: Re: [xenomai-images][PATCH 1/1] kernel/linux: Add git commit sha to
- build
-References: <a4c48259-2ffc-0bf9-d545-cacde8672bac@siemens.com>
- <20191014132840.27249-2-Quirin.Gylstorff@siemens.com>
-From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <2170bc62-c812-3820-46bf-84d6390ec873@siemens.com>
-Date: Mon, 14 Oct 2019 16:20:01 +0200
+Subject: Re: ARM reference platform(s)
+References: <CAFc1U0sYmwMNY1yE+B6=x3_C9QKb9PYivkqDztMSckPXqeUTQw@mail.gmail.com>
+ <8ba27533-1944-164f-30cc-17c1bc832e51@xenomai.org>
+ <CAFc1U0sf16+rUQPywJqAXHwCHknJZGu7fQ5J_cbsgX2hUeR1jw@mail.gmail.com>
+ <CAFc1U0sjrE3CNgrOEqmbYHZrNLFH5gYe9gDJuBY3jQ1Zs86XjA@mail.gmail.com>
+From: Philippe Gerum <rpm@xenomai.org>
+Message-ID: <ff0d352f-9ef0-28b1-9120-b7476104fb74@xenomai.org>
+Date: Mon, 14 Oct 2019 16:26:01 +0200
 MIME-Version: 1.0
-In-Reply-To: <20191014132840.27249-2-Quirin.Gylstorff@siemens.com>
-Content-Type: text/plain; charset=utf-8
+In-Reply-To: <CAFc1U0sjrE3CNgrOEqmbYHZrNLFH5gYe9gDJuBY3jQ1Zs86XjA@mail.gmail.com>
+Content-Type: text/plain; charset="utf-8"
 Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -18,49 +19,21 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "Q. Gylstorff" <Quirin.Gylstorff@siemens.com>, xenomai@xenomai.org
+To: Pierre FICHEUX <pierre.ficheux@smile.fr>
+Cc: xenomai <xenomai@xenomai.org>
 
-On 14.10.19 15:28, Q. Gylstorff wrote:
-> From: Quirin Gylstorff <quirin.gylstorff@siemens.com>
+On 10/14/19 2:24 PM, Pierre FICHEUX wrote:
+> Hi again,
 > 
-> For debugging purposes print the commit sha used by the build.
-> 
-> Signed-off-by: Quirin Gylstorff <quirin.gylstorff@siemens.com>
-> ---
->  recipes-kernel/linux/linux-xenomai.inc | 4 ++++
->  1 file changed, 4 insertions(+)
-> 
-> diff --git a/recipes-kernel/linux/linux-xenomai.inc b/recipes-kernel/linux/linux-xenomai.inc
-> index d93e614..bdf51f7 100644
-> --- a/recipes-kernel/linux/linux-xenomai.inc
-> +++ b/recipes-kernel/linux/linux-xenomai.inc
-> @@ -18,6 +18,7 @@ SRC_URI += "file://${KERNEL_DEFCONFIG}"
->  DEPENDS += "xenomai-kernel-source"
->  KBUILD_DEPENDS += "xenomai-kernel-source"
->  
-> +LINUX_COMMIT="${@bb.fetch2.get_srcrev(d).strip('AUTOINC+')}"
->  dpkg_runbuild_prepend() {
->  	case ${DISTRO_ARCH} in
->  	armhf)
-> @@ -33,6 +34,9 @@ dpkg_runbuild_prepend() {
->  		bberror "Unsupported architecture ${DISTRO_ARCH}"
->  		exit 1
->  	esac
-> +    bbplain $(printf "linux-xenomai-%s: Building revision %.20s\n" \
-> +                     ${PV} ${LINUX_COMMIT})
-> +
->  
->  	sudo chroot --userspec=$( id -u ):$( id -g ) ${BUILDCHROOT_DIR} \
->  		/usr/src/xenomai-kernel-source/scripts/prepare-kernel.sh \
+> Does it mean you test ipipe patch on with all platforms?
+
+No, I'm not, only for a subset of them depending on the amount of time I can contribute to such task.
+
+  I have some problems with Pi 3 kernel... (armv7, 4.14.85)
 > 
 
-Applied nevertheless, just with tab-fixes - we already report the
-revision for xenomai packages unconditionally.
-
-Thjnks
-Jan
+If you have a kernel splash, you may want to post it to the list (do you mean armv8-a used in 32bit mode?).
 
 -- 
-Siemens AG, Corporate Technology, CT RDA IOT SES-DE
-Corporate Competence Center Embedded Linux
+Philippe.
 
