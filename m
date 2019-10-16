@@ -1,19 +1,12 @@
-Subject: Re: Warning on arm64 boot with debugging on
-References: <2349a1e9-d2c6-dc05-eca9-d4015b80746c@siemens.com>
- <c21d5129-73a4-a430-b17b-64d82d933ab8@siemens.com>
- <487ec1ed-93b4-aafd-8368-b11dff21be2c@xenomai.org>
- <c90406ea-930e-bc44-f6ea-6f778ffbda17@siemens.com>
- <33fa068e-2e8c-1784-d9c4-88a15829083d@xenomai.org>
- <372729dd-50e7-5269-08c6-4fd9cfcf843d@siemens.com>
- <f170f17d-c64e-9e22-1b65-cfb1765048b4@xenomai.org>
-From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <0732a7b4-008e-4182-c1fe-035e859509ee@siemens.com>
-Date: Tue, 8 Oct 2019 22:26:50 +0200
+Date: Wed, 16 Oct 2019 07:55:25 +0000 (UTC)
+From: Alec Ari <neotheuser@ymail.com>
+Message-ID: <1830389674.1482147.1571212525654@mail.yahoo.com>
+In-Reply-To: <7f7c7a6a-ae0b-a95a-93ec-05940a109fc3@linx-info.com>
+References: <7f7c7a6a-ae0b-a95a-93ec-05940a109fc3@linx-info.com>
+Subject: Re: issue of hibernate for ipipe
 MIME-Version: 1.0
-In-Reply-To: <f170f17d-c64e-9e22-1b65-cfb1765048b4@xenomai.org>
-Content-Language: en-US
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -22,57 +15,7 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Philippe Gerum <rpm@xenomai.org>, Xenomai <xenomai@xenomai.org>
+To: duanwujie <wjduan@linx-info.com>, Xenomai <xenomai@xenomai.org>
 
-T24gMDguMTAuMTkgMjI6MjEsIFBoaWxpcHBlIEdlcnVtIHdyb3RlOgo+IE9uIDEwLzgvMTkgOTo0
-MyBQTSwgSmFuIEtpc3prYSB3cm90ZToKPj4gT24gMDguMTAuMTkgMjE6MzEsIFBoaWxpcHBlIEdl
-cnVtIHdyb3RlOgo+Pj4gT24gMTAvOC8xOSA3OjUyIFBNLCBKYW4gS2lzemthIHdyb3RlOgo+Pj4+
-IE9uIDA4LjEwLjE5IDE5OjMxLCBQaGlsaXBwZSBHZXJ1bSB3cm90ZToKPj4+Pj4gT24gMTAvOC8x
-OSA1OjI1IFBNLCBKYW4gS2lzemthIHdyb3RlOgo+Pj4+Pj4gT24gMDguMTAuMTkgMTc6MjEsIEph
-biBLaXN6a2Egd3JvdGU6Cj4+Pj4+Pj4gSGkgUGhpbGlwcGUsCj4+Pj4+Pj4KPj4+Pj4+PiBqdXN0
-IGEgbm90ZSwgcHJvYmFibHkgaGFybWxlc3MgKGluc3RydW1lbnRhdGlvbiBpc3N1ZSksIGJ1dCBp
-dCBtYXkKPj4+Pj4+PiAgcHJldmVudCBkZWJ1Z2dpbmcgcmVhbCBpc3N1ZXMuIFRoaXMgaXMgaXBp
-cGUtY29yZS00LjE5LjU1LWFybTY0LTIKPj4+Pj4+PiB3aXRoIGxvY2sgdmFsaWRhdGlvbiBvbjoK
-Pj4+Pj4+Pgo+Pj4+Pgo+Pj4+PiBJbmRlZWQgaXQncyBub3QuIFRoZSB2aXJ0dWFsIElSUSBzdGF0
-ZSBzaG91bGQgYmUgcmVjb25jaWxlZCBiZWZvcmUgY2FsbGluZyB0aGUgdHJhcCBpbmZvcm1hdGlv
-biBoYW5kbGVyIGluIGRvX2RlYnVnX2V4Y2VwdGlvbigpLiBTb21ldGhpbmcgYXJvdW5kIHRoZXNl
-IGxpbmVzOgo+Pj4+Pgo+Pj4+PiBkaWZmIC0tZ2l0IGEvYXJjaC9hcm02NC9tbS9mYXVsdC5jIGIv
-YXJjaC9hcm02NC9tbS9mYXVsdC5jCj4+Pj4+IGluZGV4IGQ3ZWE4MmMwYjhjNy4uYWRlMDI3MWZk
-N2NjIDEwMDY0NAo+Pj4+PiAtLS0gYS9hcmNoL2FybTY0L21tL2ZhdWx0LmMKPj4+Pj4gKysrIGIv
-YXJjaC9hcm02NC9tbS9mYXVsdC5jCj4+Pj4+IEBAIC05ODYsMjMgKzk4NiwyNCBAQCBhc21saW5r
-YWdlIGludCBfX2V4Y2VwdGlvbiBkb19kZWJ1Z19leGNlcHRpb24odW5zaWduZWQgbG9uZyBhZGRy
-X2lmX3dhdGNocG9pbnQsCj4+Pj4+ICAJaWYgKHVzZXJfbW9kZShyZWdzKSAmJiBwYyA+IFRBU0tf
-U0laRSkKPj4+Pj4gIAkJYXJtNjRfYXBwbHlfYnBfaGFyZGVuaW5nKCk7Cj4+Pj4+ICAKPj4+Pj4g
-KwlpcnFmbGFncyA9IGZhdWx0X2VudHJ5KHJlZ3MpOwo+Pj4+PiArCj4+Pj4+ICAJaWYgKCFpbmYt
-PmZuKGFkZHJfaWZfd2F0Y2hwb2ludCwgZXNyLCByZWdzKSkgewo+Pj4+PiAgCQlydiA9IDE7Cj4+
-Pj4+ICAJfSBlbHNlIHsKPj4+Pj4gIAkJc3RydWN0IHNpZ2luZm8gaW5mbzsKPj4+Pj4gIAo+Pj4+
-PiAtCQlpcnFmbGFncyA9IGZhdWx0X2VudHJ5KHJlZ3MpOwo+Pj4+PiAtCj4+Pj4+ICAJCWNsZWFy
-X3NpZ2luZm8oJmluZm8pOwo+Pj4+PiAgCQlpbmZvLnNpX3NpZ25vID0gaW5mLT5zaWc7Cj4+Pj4+
-ICAJCWluZm8uc2lfZXJybm8gPSAwOwo+Pj4+PiAgCQlpbmZvLnNpX2NvZGUgID0gaW5mLT5jb2Rl
-Owo+Pj4+PiAgCQlpbmZvLnNpX2FkZHIgID0gKHZvaWQgX191c2VyICopcGM7Cj4+Pj4+ICAJCWFy
-bTY0X25vdGlmeV9kaWUoaW5mLT5uYW1lLCByZWdzLCAmaW5mbywgZXNyKTsKPj4+Pj4gLQkJZmF1
-bHRfZXhpdChpcnFmbGFncyk7Cj4+Pj4+ICAJCXJ2ID0gMDsKPj4+Pj4gIAl9Cj4+Pj4+ICAKPj4+
-Pj4gKwlmYXVsdF9leGl0KGlycWZsYWdzKTsKPj4+Pj4gKwo+Pj4+PiAgCWlmIChpbnRlcnJ1cHRz
-X2VuYWJsZWQocmVncykpCj4+Pj4+ICAJCXRyYWNlX2hhcmRpcnFzX29uKCk7Cj4+Pj4+Cj4+Pj4K
-Pj4+PiBJJ3ZlIGp1c3QgdGhyb3duIHRoaXMgYXQgbXkgc2V0dXAgYnV0IGl0IGhhZCBubyBpbXBh
-Y3QuIElmIHlvdSBjYW4ndAo+Pj4+IHJlcHJvZHVjZSwgbGV0IG1lIGtub3cuCj4+Pj4KPj4+Cj4+
-PiBZb3Ugc2VlbSB0byBiZSBydW5uaW5nIGt2bS9hcm02NCwgc28gSSB3aWxsIGxpa2VseSBiZSBh
-YmxlIHRvIHJlcHJvZHVjZS4KPj4+Cj4+Cj4+IE1vcmUgcHJlY2lzZWx5LCBpdCdzIGp1c3QgUUVN
-VTogSSB3YXMgdXNpbmcgdGhlIGltYWdlIHdlIGdlbmVyYXRlIHdpdGgKPj4geGVub21haS1pbWFn
-ZXMgYW5kIHRoYXQgc3RhcnR1cCBzY3JpcHQuCj4+Cj4+IEphbgo+Pgo+IAo+IE5vIGlzc3VlIHRv
-IHJlcHJvZHVjZSBib3RoIHNwbGFzaGVzLiBIb3dldmVyLCBhcHBseWluZyB0aGUgcGF0Y2ggSSBq
-dXN0IHNlbnQgc2lsZW5jZXMgdGhlIHdhcm5pbmcgdHJpZ2dlcmVkIGJ5IHNlbmRfdXNlcl9zaWd0
-cmFwKCkgaGVyZS4gQ2FuIHlvdSBjb25maXJtIGl0IGRvZXMgbm90IG9uIHlvdXIgZW5kPyAodGhl
-IG90aGVyIG9uZSBhdCB0aWNrLXNjaGVkLmM6OTgyIGlzIHN0aWxsIHRoZXJlIGFzIGV4cGVjdGVk
-IHRob3VnaCkuIElmIHNvLCBwbGVhc2Ugc2VuZCB5b3VyIC5jb25maWcsIGp1c3QgaW4gY2FzZSBJ
-IGdvdCBsdWNreSB3aXRoIHRoZSBjb25maWd1cmF0aW9uLgo+IAoKSG1tLCBJIGNoZWNrZWQgdHdp
-Y2UgdGhhdCBJIGFjdHVhbGx5IHJhbiB0aGUga2VybmVsIHdpdGggeW91ciBwYXRjaCwgYW5kCml0
-IHJlYWxseSBoYWQgbm8gZWZmZWN0IGZvciBtZS4gQXR0YWNoZWQgdGhlIC5jb25maWcgSSB1c2Vk
-LiBXaXRoIHRoYXQsCkkgb25seSBoYWQgdG8gcnVuICJzbW9rZXkgLS1ydW49Z2RiIi4KCkphbgoK
-LS0gClNpZW1lbnMgQUcsIENvcnBvcmF0ZSBUZWNobm9sb2d5LCBDVCBSREEgSU9UIFNFUy1ERQpD
-b3Jwb3JhdGUgQ29tcGV0ZW5jZSBDZW50ZXIgRW1iZWRkZWQgTGludXgKLS0tLS0tLS0tLS0tLS0g
-bmV4dCBwYXJ0IC0tLS0tLS0tLS0tLS0tCkEgbm9uLXRleHQgYXR0YWNobWVudCB3YXMgc2NydWJi
-ZWQuLi4KTmFtZTogLmNvbmZpZy54egpUeXBlOiBhcHBsaWNhdGlvbi94LXh6ClNpemU6IDMzNjI4
-IGJ5dGVzCkRlc2M6IG5vdCBhdmFpbGFibGUKVVJMOiA8aHR0cDovL3hlbm9tYWkub3JnL3BpcGVy
-bWFpbC94ZW5vbWFpL2F0dGFjaG1lbnRzLzIwMTkxMDA4Lzk4NmUxMzI1L2F0dGFjaG1lbnQuYmlu
-Pgo=
+Hibernate/suspend/C-states etc generally cause problems with IPIPE. Best to not have any of that.
+Alec
