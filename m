@@ -1,8 +1,7 @@
 From: Jan Kiszka <jan.kiszka@siemens.com>
-Subject: [PATCH] copperplate: heapmem: Handle size == 0 cleanly for
- heapobj_init_array_private
-Message-ID: <a671814f-93a9-9ca7-2c8a-cf12e55156bd@siemens.com>
-Date: Thu, 17 Oct 2019 20:00:16 +0200
+Subject: [PATCH] copperplate: Handle errors properly in get_session_label
+Message-ID: <9112bf0c-edb0-b162-100d-c425353f02b3@siemens.com>
+Date: Thu, 17 Oct 2019 20:01:51 +0200
 MIME-Version: 1.0
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
@@ -19,51 +18,52 @@ To: Xenomai <xenomai@xenomai.org>
 
 From: Jan Kiszka <jan.kiszka@siemens.com>
 
-Reported by clang-9 scan-build: When size is 0, we will shift 1 beyond
-the size of 'size'. That's undefined behavior.
+strdup may fail. And if we fail otherwise later, session will leak.
+The second issue was reported by clang-9 scan-build.
 
 Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
 ---
- lib/copperplate/heapobj-heapmem.c | 26 +++++++++++++-------------
- 1 file changed, 13 insertions(+), 13 deletions(-)
 
-diff --git a/lib/copperplate/heapobj-heapmem.c b/lib/copperplate/heapobj-heapmem.c
-index bc6e5f236b..3e1a1d926a 100644
---- a/lib/copperplate/heapobj-heapmem.c
-+++ b/lib/copperplate/heapobj-heapmem.c
-@@ -68,19 +68,19 @@ int __heapobj_init_private(struct heapobj *hobj, const char *name,
- int heapobj_init_array_private(struct heapobj *hobj, const char *name,
- 			       size_t size, int elems)
- {
--	size_t log2 = sizeof(size) * CHAR_BIT - 1 -
--		xenomai_count_leading_zeros(size);
--
--	/*
--	 * Heapmem aligns individual object sizes on the next ^2
--	 * boundary, do likewise when determining the overall heap
--	 * size, so that we can allocate as many as @elems items.
--	 */
--	if (size & (size - 1))
--		log2++;
--
--	size = 1 << log2;
--
-+	if (size != 0) {
-+		size_t log2 = sizeof(size) * CHAR_BIT - 1 -
-+			xenomai_count_leading_zeros(size);
-+		/*
-+		 * Heapmem aligns individual object sizes on the next ^2
-+		 * boundary, do likewise when determining the overall heap
-+		 * size, so that we can allocate as many as @elems items.
-+		 */
-+		if (size & (size - 1))
-+			log2++;
-+
-+		size = 1 << log2;
-+	}
- 	return __bt(__heapobj_init_private(hobj, name,
- 					   size * elems, NULL));
- }
+This and the other one were the only issues worth addressing - or even 
+valid at all. Even without issues with the API and sycall ABI, scan-
+build tends to have quite a few false positives.
+
+ lib/copperplate/init.c | 7 ++++++-
+ 1 file changed, 6 insertions(+), 1 deletion(-)
+
+diff --git a/lib/copperplate/init.c b/lib/copperplate/init.c
+index 4ea5e1ade8..5bfccf6062 100644
+--- a/lib/copperplate/init.c
++++ b/lib/copperplate/init.c
+@@ -155,6 +155,8 @@ static int get_session_label(const char *optarg)
+ 	int ret;
+ 
+ 	session = strdup(optarg);
++	if (!session)
++		return -ENOMEM;
+ 	grpname = strrchr(session, '/');
+ 	if (grpname == NULL)
+ 		goto no_group;
+@@ -163,8 +165,10 @@ static int get_session_label(const char *optarg)
+ 
+ 	if (isdigit(*grpname)) {
+ 		gid = (gid_t)strtol(grpname, &p, 10);
+-		if (*p)
++		if (*p) {
++			free(session);
+ 			return -EINVAL;
++		}
+ 		errno = 0;
+ 		grp = getgrgid(gid);
+ 	} else {
+@@ -175,6 +179,7 @@ static int get_session_label(const char *optarg)
+ 	if (grp == NULL) {
+ 		ret = errno ? -errno : -EINVAL;
+ 		warning("invalid group %s", grpname);
++		free(session);
+ 		return ret;
+ 	}
+ 
 -- 
 2.16.4
 
