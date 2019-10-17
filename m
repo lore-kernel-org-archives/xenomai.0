@@ -1,11 +1,10 @@
-Subject: Re: [PATCH] copperplate: heapmem: Handle size == 0 cleanly for
- heapobj_init_array_private
-References: <a671814f-93a9-9ca7-2c8a-cf12e55156bd@siemens.com>
+Subject: Re: [PATCH] copperplate: Handle errors properly in get_session_label
+References: <9112bf0c-edb0-b162-100d-c425353f02b3@siemens.com>
 From: Philippe Gerum <rpm@xenomai.org>
-Message-ID: <dd7e81b2-b2ba-daa0-208d-0133a697c517@xenomai.org>
-Date: Thu, 17 Oct 2019 21:05:00 +0200
+Message-ID: <e365126f-c53a-1d42-752d-2b10d43cdaeb@xenomai.org>
+Date: Thu, 17 Oct 2019 21:13:52 +0200
 MIME-Version: 1.0
-In-Reply-To: <a671814f-93a9-9ca7-2c8a-cf12e55156bd@siemens.com>
+In-Reply-To: <9112bf0c-edb0-b162-100d-c425353f02b3@siemens.com>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -19,13 +18,58 @@ List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: Jan Kiszka <jan.kiszka@siemens.com>, Xenomai <xenomai@xenomai.org>
 
-On 10/17/19 8:00 PM, Jan Kiszka via Xenomai wrote:
+On 10/17/19 8:01 PM, Jan Kiszka via Xenomai wrote:
 > From: Jan Kiszka <jan.kiszka@siemens.com>
 > 
-> Reported by clang-9 scan-build: When size is 0, we will shift 1 beyond
-> the size of 'size'. That's undefined behavior.
+> strdup may fail. And if we fail otherwise later, session will leak.
+> The second issue was reported by clang-9 scan-build.
+> 
+> Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
+> ---
+> 
+> This and the other one were the only issues worth addressing - or even 
+> valid at all. Even without issues with the API and sycall ABI, scan-
+> build tends to have quite a few false positives.
+> 
+>  lib/copperplate/init.c | 7 ++++++-
+>  1 file changed, 6 insertions(+), 1 deletion(-)
+> 
+> diff --git a/lib/copperplate/init.c b/lib/copperplate/init.c
+> index 4ea5e1ade8..5bfccf6062 100644
+> --- a/lib/copperplate/init.c
+> +++ b/lib/copperplate/init.c
+> @@ -155,6 +155,8 @@ static int get_session_label(const char *optarg)
+>  	int ret;
+>  
+>  	session = strdup(optarg);
+> +	if (!session)
+> +		return -ENOMEM;
+>  	grpname = strrchr(session, '/');
+>  	if (grpname == NULL)
+>  		goto no_group;
+> @@ -163,8 +165,10 @@ static int get_session_label(const char *optarg)
+>  
+>  	if (isdigit(*grpname)) {
+>  		gid = (gid_t)strtol(grpname, &p, 10);
+> -		if (*p)
+> +		if (*p) {
+> +			free(session);
+>  			return -EINVAL;
+> +		}
+>  		errno = 0;
+>  		grp = getgrgid(gid);
+>  	} else {
+> @@ -175,6 +179,7 @@ static int get_session_label(const char *optarg)
+>  	if (grp == NULL) {
+>  		ret = errno ? -errno : -EINVAL;
+>  		warning("invalid group %s", grpname);
+> +		free(session);
+>  		return ret;
+>  	}
+>  
+> 
 
-size == 0 is invalid call for this internal interface, any caller passing zero is broken. A simple assert() would suffice.
+Ack.
 
 -- 
 Philippe.
