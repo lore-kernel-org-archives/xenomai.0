@@ -1,9 +1,11 @@
+From: Johannes Holtz <johannes.holtz@compador.de>
+Subject: RTnet default behavior
+Message-ID: <b89e46e4-45b8-1fc1-cb0d-2c4d44b07eb7@compador.de>
+Date: Fri, 18 Oct 2019 16:10:43 +0200
 MIME-Version: 1.0
-From: Rob Miller <rob.miller@broadcom.com>
-Date: Fri, 18 Oct 2019 07:07:12 -0400
-Message-ID: <CAJPjb1+8PwJmTJjc66v4vQTUN2QAuFAYefABE8w+wO-DJ0E8xQ@mail.gmail.com>
-Subject: Dovetail or Steely Project Help
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 7bit
+Content-Language: en-US
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -12,16 +14,34 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai <xenomai@xenomai.org>
+To: xenomai@xenomai.org
 
-I was reading about the latest status of this project but cannot actually
-checkout the code from gitlab.denx.de/steely.git.
+Hi ,
 
-Does this mean that Xenoami3 really contains the dovetail project? If so,
-my understanding is that Dovetail replaces ipipe, but all the doc indicate
-to use ipipe when "preparing the cobalt kernel".
+I inherited a project where the RTnet stack is loaded manually at boot 
+time. To be specific. Instead of using the rtnet command line programs 
+the rtnet.ko kernel object as well as the necessary drivers are loaded 
+with insmod. The devices are then brought up with rtifconfig and rtroute.
+
+The network consist of 7 PCs (all with the same boot time mechanism) 
+with pre-defined IPs. The setup works and initializes in an 
+asynchronized way (like a typical non-RT network).
+
+I'm investigating some performance problems and I don't know whats is 
+really going on since no config is used. How is determined which 
+participant is acting as Master and how the slots are distributed? What 
+are the default values?
+
+Also: The RTmac readme says a slot "transmits a single packet of up to a 
+specific maximum size". I like to know what that size is and what the 
+behavior is when I have many much smaller datagrams queued. Will they be 
+distributed over as many cycles? And also what happens if I send a 
+datagram which is much bigger. Is there an MTU?
+
+Cheers,
+
+Johannes
 
 
-Rob Miller
-rob.miller@broadcom.com
-(919)721-3339
+
+
