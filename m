@@ -1,14 +1,18 @@
-From: steven.seeger flightsystems.net <steven.seeger@flightsystems.net>
-Subject: Re: [PATCH] arm64/ipipe: Add support for userspace return notifier
-Date: Wed, 9 Oct 2019 01:00:24 +0000
-Message-ID: <1692186.oXRrdl6OMX@omoikane>
-References: <e8d943ee-1103-07ec-bede-c36b4a06c745@siemens.com>
-In-Reply-To: <e8d943ee-1103-07ec-bede-c36b4a06c745@siemens.com>
-Content-Language: en-US
-Content-Type: text/plain; charset="us-ascii"
-Content-ID: <13CDD93D9BF86347AB1B3FD496B8275B@namprd05.prod.outlook.com>
-Content-Transfer-Encoding: quoted-printable
+Subject: Re: RTnet default behavior
+References: <b89e46e4-45b8-1fc1-cb0d-2c4d44b07eb7@compador.de>
+ <5b5bb644-2f40-dc2b-0414-a25c35ecffbd@siemens.com>
+ <019c5a8c-edb1-2c8c-247e-e0fb3fb2d4fd@compador.de>
+ <4aaaeafc-62f8-e37f-5235-8ad1479c30b1@siemens.com>
+ <9ff3227f-2420-5ed4-17c8-9285b74e5939@compador.de>
+ <be9ac02c-e54e-b9d1-0f2c-627d60463f17@siemens.com>
+From: Johannes Holtz <johannes.holtz@compador.de>
+Message-ID: <d18242f6-0e94-e212-bc0e-abeeae9b8a5d@compador.de>
+Date: Fri, 18 Oct 2019 18:00:43 +0200
 MIME-Version: 1.0
+In-Reply-To: <be9ac02c-e54e-b9d1-0f2c-627d60463f17@siemens.com>
+Content-Type: text/plain; charset="utf-8"; format="flowed"
+Content-Transfer-Encoding: 8bit
+Content-Language: en-US
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,44 +21,103 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: xenomai@xenomai.org
 
-On Tuesday, October 8, 2019 12:55:36 PM EDT Jan Kiszka wrote:
-> From: Jan Kiszka <jan.kiszka@siemens.com>
->=20
-> This adds the arm64-specific bits to implement the userspace return
-> notifier.
->=20
-> @@ -954,8 +954,23 @@ finish_ret_to_user:
->  	enable_step_tsk x1, x2
->  #ifdef CONFIG_GCC_PLUGIN_STACKLEAK
->  	bl	stackleak_erase
-> +#endif
-> +#ifdef CONFIG_IPIPE
-> +	ldr	x0, [tsk, #TSK_TI_IPIPE]
-> +	tst	x0, #_TIP_USERINTRET
-> +	b.ne	call_user_intret_notifier
-> +exit_head:
+Am 18.10.19 um 17:36 schrieb Jan Kiszka:
+> On 18.10.19 17:13, Johannes Holtz via Xenomai wrote:
+>> Am 18.10.19 um 16:57 schrieb Jan Kiszka:
+>>> On 18.10.19 16:47, Johannes Holtz via Xenomai wrote:
+>>>> Am 18.10.19 um 16:33 schrieb Jan Kiszka:
+>>>>> On 18.10.19 16:10, Johannes Holtz via Xenomai wrote:
+>>>>>> Hi ,
+>>>>>>
+>>>>>> I inherited a project where the RTnet stack is loaded manually at boot
+>>>>>> time. To be specific. Instead of using the rtnet command line programs
+>>>>>> the rtnet.ko kernel object as well as the necessary drivers are loaded
+>>>>>> with insmod. The devices are then brought up with rtifconfig and
+>>>>>> rtroute.
+>>>>>>
+>>>>>> The network consist of 7 PCs (all with the same boot time mechanism)
+>>>>>> with pre-defined IPs. The setup works and initializes in an
+>>>>>> asynchronized way (like a typical non-RT network).
+>>>>>>
+>>>>>> I'm investigating some performance problems and I don't know whats is
+>>>>>> really going on since no config is used. How is determined which
+>>>>>> participant is acting as Master and how the slots are distributed?
+>>>>>> What
+>>>>>> are the default values?
+>>>>> You only mentioned rtifconfig and rtroute above, no rtcfg or tdmacfg.
+>>>>> Are you sure RTmac is involved?
+>>>> This is the list of kernel object that are loaded:
+>>>>
+>>>> rtnet.ko
+>>>>
+>>>> rtipv4.ko
+>>>>
+>>>> rtpacket.ko
+>>>>
+>>>> rtudp.ko
+>>>>
+>>>> rt_e100e.ko
+>>>>
+>>>> rt_8139too.ko
+>>>>
+>>>> rt_r8169.ko
+>>>>
+>>>> subsequently rtifconfig and rtroute
+>>>>
+>>>> Nothing else is done. I don't know id that satisfies for rtmac. How can
+>>>> I check?
+>>> Nope, there would be rtmac.ko, tdma.ko, possibly also rtcfg.ko in
+>>> addition. And you would see the script calling tdmacfg at least.
+>> So this means I basically run standard Ethernet with no RT benefits?
+> The TX and RX path remain deterministic. If your application behave well
+> and do not generate overload on the network that can cause switches or
+> recipients to drop packets, all can still be fine.
 
-Shouldn't exit_head: be a few lines up where work is checked? In other=20
-patches, it seems _TIF_WORK_MASK is checked again after=20
-ipipe_notify_user_intreturn returns 0.
+Since this is not synced (not TDMA) it is very well possible that 
+different nodes interfere and datagrams collide.
 
->  #endif
->  	kernel_exit 0
-> +#ifdef CONFIG_IPIPE
-> +call_user_intret_notifier:
-> +	enable_daif
-> +	bl     	__ipipe_notify_user_intreturn
-> +	disable_daif
-> +	cmp    	x0, #0
-> +	b.ne    exit_head
-> +	b	ret_to_user_noirq
-> +#endif
->  ENDPROC(ret_to_user)
->=20
->  /*
+What would be considered overload? Since the PCs are connected via 
+unmanaged switches  I can't detect if they have any problems.
 
+>
+>>> So, nothing of RTmac should prevent packets from being sent or add size
+>>> restrictions on them.
+>>>
+>>> Maybe you can specify your performance problems in more details?
+>>>
+>>> Jan
+>>>
+>> Well, In this 7 node network one node is receiving datagrams from all
+>> other 6 containing sensor data. Each datagram has a sequence number to
+>> recognize packet loss. Each node is running a RT SW with 1ms loop. In
+>> certain situations the receiver detects that some (between 1 and 20)
+>> datagrams where lost. In these situations the amount of sent datagrams
+>> is higher than usual.
+> What else is on the network? Only those nodes, and they only sent RT
+> datagrams at a well-defined rate?
+
+PC1,PC2 <--->Switch1<--->Switch2<---->PC3-7
+
+That's the whole network. Both are un-managed industry switches.
+
+PC2 is the receiver.
+
+>
+>> At first I though this might be a throughput issue but even after I
+>> reduced the payload size drastically I still miss datagrams. The sender
+>> has no problems sending and my receive code always reads all available
+>> data from the queue.
+>>
+>> /proc/rtnet/stats doesn't show any errors or drops .
+>>
+>> I'm working on an example program to test this issue in detail.
+>>
+> OK.
+>
+> Jan
+>
 
 
 
