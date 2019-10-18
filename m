@@ -1,9 +1,14 @@
-From: Philippe Gerum <rpm@xenomai.org>
-Subject: [PATCH] lib/copperplate: heapobj: catch invalid array-type init
- request
-Date: Fri, 18 Oct 2019 11:43:43 +0200
-Message-Id: <20191018094343.1647-1-rpm@xenomai.org>
+Subject: Re: question about ipipe
+References: <9112bf0c-edb0-b162-100d-c425353f02b3@siemens.com>
+ <e365126f-c53a-1d42-752d-2b10d43cdaeb@xenomai.org>
+ <c9ab7a3e-3aa4-1bcd-2390-a2e219eb5f1d@linx-info.com>
+From: Jan Kiszka <jan.kiszka@siemens.com>
+Message-ID: <f3782031-9a21-4ece-efd4-57de49f58251@siemens.com>
+Date: Fri, 18 Oct 2019 12:21:35 +0200
 MIME-Version: 1.0
+In-Reply-To: <c9ab7a3e-3aa4-1bcd-2390-a2e219eb5f1d@linx-info.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Language: en-US
 Content-Transfer-Encoding: 8bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
@@ -13,65 +18,39 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
+To: duanwujie <wjduan@linx-info.com>, xenomai@xenomai.org
 
-Setting up a zero-size, zero-element array makes no sense with this
-interface. Catch this early on, bailing out with -EINVAL.
+Please do not reply to unrelated threads when starting a new topic.
 
-Signed-off-by: Philippe Gerum <rpm@xenomai.org>
----
- lib/copperplate/heapobj-heapmem.c | 7 ++++++-
- lib/copperplate/heapobj-malloc.c  | 3 +++
- lib/copperplate/heapobj-tlsf.c    | 3 +++
- 3 files changed, 12 insertions(+), 1 deletion(-)
+On 18.10.19 02:54, duanwujie via Xenomai wrote:
+> In the ipipe  some local_irq_enable will be replace by
+> enable_local_irqs, some are not。
 
-diff --git a/lib/copperplate/heapobj-heapmem.c b/lib/copperplate/heapobj-heapmem.c
-index bc6e5f236..cc3eb0aa1 100644
---- a/lib/copperplate/heapobj-heapmem.c
-+++ b/lib/copperplate/heapobj-heapmem.c
-@@ -68,7 +68,12 @@ int __heapobj_init_private(struct heapobj *hobj, const char *name,
- int heapobj_init_array_private(struct heapobj *hobj, const char *name,
- 			       size_t size, int elems)
- {
--	size_t log2 = sizeof(size) * CHAR_BIT - 1 -
-+	size_t log2;
-+
-+	if (size == 0 || elems <= 0)
-+		return __bt(-EINVAL);
-+
-+	log2 = sizeof(size) * CHAR_BIT - 1 -
- 		xenomai_count_leading_zeros(size);
- 
- 	/*
-diff --git a/lib/copperplate/heapobj-malloc.c b/lib/copperplate/heapobj-malloc.c
-index a3918cc23..cde5672f5 100644
---- a/lib/copperplate/heapobj-malloc.c
-+++ b/lib/copperplate/heapobj-malloc.c
-@@ -84,6 +84,9 @@ int __heapobj_init_private(struct heapobj *hobj, const char *name,
- int heapobj_init_array_private(struct heapobj *hobj, const char *name,
- 			       size_t size, int elems)
- {
-+	if (size == 0 || elems <= 0)
-+		return __bt(-EINVAL);
-+
- 	return __bt(__heapobj_init_private(hobj, name, size * elems, NULL));
- }
- 
-diff --git a/lib/copperplate/heapobj-tlsf.c b/lib/copperplate/heapobj-tlsf.c
-index 2f5be4cd2..2d57e3c05 100644
---- a/lib/copperplate/heapobj-tlsf.c
-+++ b/lib/copperplate/heapobj-tlsf.c
-@@ -69,6 +69,9 @@ int heapobj_init_array_private(struct heapobj *hobj, const char *name,
- {
- 	size_t poolsz;
- 
-+	if (size == 0 || elems <= 0)
-+		return __bt(-EINVAL);
-+
- 	poolsz = (size + TLSF_BLOCK_ALIGN - 1) & ~(TLSF_BLOCK_ALIGN - 1);
- 	poolsz *= elems;
- 
+enable_local_irqs is a macro local to arch/x86/entry/common.c.
+Generally, the replacement is hard_local_irq_...
+
+> 
+> how to determine whether it needs to be replaced ?　Is there any document ?
+> 
+
+At this level, we do not have documents. The common reasons to "harden"
+interrupts disabling over I-pipe are:
+
+ - sharing of basic hardware resources with Linux, e.g. interrupt
+   controllers and timers
+ - common code paths in context setting or switching, specifically
+   around MMU and FPU
+ - sensitive exception, interrupt and syscall entry/exit paths
+
+And then there some special cases, like
+
+ - tracing
+ - KVM preemption
+
+HTH,
+Jan
+
 -- 
-2.21.0
-
+Siemens AG, Corporate Technology, CT RDA IOT SES-DE
+Corporate Competence Center Embedded Linux
 
