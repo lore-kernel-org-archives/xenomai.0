@@ -1,18 +1,19 @@
 Subject: Re: RTnet default behavior
+From: Johannes Holtz <johannes.holtz@compador.de>
 References: <b89e46e4-45b8-1fc1-cb0d-2c4d44b07eb7@compador.de>
  <5b5bb644-2f40-dc2b-0414-a25c35ecffbd@siemens.com>
  <019c5a8c-edb1-2c8c-247e-e0fb3fb2d4fd@compador.de>
  <4aaaeafc-62f8-e37f-5235-8ad1479c30b1@siemens.com>
  <9ff3227f-2420-5ed4-17c8-9285b74e5939@compador.de>
  <be9ac02c-e54e-b9d1-0f2c-627d60463f17@siemens.com>
-From: Johannes Holtz <johannes.holtz@compador.de>
-Message-ID: <d18242f6-0e94-e212-bc0e-abeeae9b8a5d@compador.de>
-Date: Fri, 18 Oct 2019 18:00:43 +0200
+ <d18242f6-0e94-e212-bc0e-abeeae9b8a5d@compador.de>
+Message-ID: <8aef8b96-4c8d-2cd5-cacc-d26f70a24193@compador.de>
+Date: Tue, 22 Oct 2019 10:30:48 +0200
 MIME-Version: 1.0
-In-Reply-To: <be9ac02c-e54e-b9d1-0f2c-627d60463f17@siemens.com>
-Content-Type: text/plain; charset="utf-8"; format="flowed"
-Content-Transfer-Encoding: 8bit
+In-Reply-To: <d18242f6-0e94-e212-bc0e-abeeae9b8a5d@compador.de>
 Content-Language: en-US
+Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset="utf-8"; Format="flowed"
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -23,101 +24,92 @@ List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: xenomai@xenomai.org
 
-Am 18.10.19 um 17:36 schrieb Jan Kiszka:
-> On 18.10.19 17:13, Johannes Holtz via Xenomai wrote:
->> Am 18.10.19 um 16:57 schrieb Jan Kiszka:
->>> On 18.10.19 16:47, Johannes Holtz via Xenomai wrote:
->>>> Am 18.10.19 um 16:33 schrieb Jan Kiszka:
->>>>> On 18.10.19 16:10, Johannes Holtz via Xenomai wrote:
->>>>>> Hi ,
->>>>>>
->>>>>> I inherited a project where the RTnet stack is loaded manually at boot
->>>>>> time. To be specific. Instead of using the rtnet command line programs
->>>>>> the rtnet.ko kernel object as well as the necessary drivers are loaded
->>>>>> with insmod. The devices are then brought up with rtifconfig and
->>>>>> rtroute.
->>>>>>
->>>>>> The network consist of 7 PCs (all with the same boot time mechanism)
->>>>>> with pre-defined IPs. The setup works and initializes in an
->>>>>> asynchronized way (like a typical non-RT network).
->>>>>>
->>>>>> I'm investigating some performance problems and I don't know whats is
->>>>>> really going on since no config is used. How is determined which
->>>>>> participant is acting as Master and how the slots are distributed?
->>>>>> What
->>>>>> are the default values?
->>>>> You only mentioned rtifconfig and rtroute above, no rtcfg or tdmacfg.
->>>>> Are you sure RTmac is involved?
->>>> This is the list of kernel object that are loaded:
->>>>
->>>> rtnet.ko
->>>>
->>>> rtipv4.ko
->>>>
->>>> rtpacket.ko
->>>>
->>>> rtudp.ko
->>>>
->>>> rt_e100e.ko
->>>>
->>>> rt_8139too.ko
->>>>
->>>> rt_r8169.ko
->>>>
->>>> subsequently rtifconfig and rtroute
->>>>
->>>> Nothing else is done. I don't know id that satisfies for rtmac. How can
->>>> I check?
->>> Nope, there would be rtmac.ko, tdma.ko, possibly also rtcfg.ko in
->>> addition. And you would see the script calling tdmacfg at least.
->> So this means I basically run standard Ethernet with no RT benefits?
-> The TX and RX path remain deterministic. If your application behave well
-> and do not generate overload on the network that can cause switches or
-> recipients to drop packets, all can still be fine.
-
-Since this is not synced (not TDMA) it is very well possible that 
-different nodes interfere and datagrams collide.
-
-What would be considered overload? Since the PCs are connected via 
-unmanaged switches  I can't detect if they have any problems.
-
->
->>> So, nothing of RTmac should prevent packets from being sent or add size
->>> restrictions on them.
->>>
->>> Maybe you can specify your performance problems in more details?
->>>
->>> Jan
->>>
->> Well, In this 7 node network one node is receiving datagrams from all
->> other 6 containing sensor data. Each datagram has a sequence number to
->> recognize packet loss. Each node is running a RT SW with 1ms loop. In
->> certain situations the receiver detects that some (between 1 and 20)
->> datagrams where lost. In these situations the amount of sent datagrams
->> is higher than usual.
-> What else is on the network? Only those nodes, and they only sent RT
-> datagrams at a well-defined rate?
-
-PC1,PC2 <--->Switch1<--->Switch2<---->PC3-7
-
-That's the whole network. Both are un-managed industry switches.
-
-PC2 is the receiver.
-
->
->> At first I though this might be a throughput issue but even after I
->> reduced the payload size drastically I still miss datagrams. The sender
->> has no problems sending and my receive code always reads all available
->> data from the queue.
->>
->> /proc/rtnet/stats doesn't show any errors or drops .
->>
->> I'm working on an example program to test this issue in detail.
->>
-> OK.
->
-> Jan
->
-
-
-
+QW0gMTguMTAuMTkgdW0gMTg6MDAgc2NocmllYiBKb2hhbm5lcyBIb2x0ejoKPiBBbSAxOC4xMC4x
+OSB1bSAxNzozNiBzY2hyaWViIEphbiBLaXN6a2E6Cj4+IE9uIDE4LjEwLjE5IDE3OjEzLCBKb2hh
+bm5lcyBIb2x0eiB2aWEgWGVub21haSB3cm90ZToKPj4+IEFtIDE4LjEwLjE5IHVtIDE2OjU3IHNj
+aHJpZWIgSmFuIEtpc3prYToKPj4+PiBPbiAxOC4xMC4xOSAxNjo0NywgSm9oYW5uZXMgSG9sdHog
+dmlhIFhlbm9tYWkgd3JvdGU6Cj4+Pj4+IEFtIDE4LjEwLjE5IHVtIDE2OjMzIHNjaHJpZWIgSmFu
+IEtpc3prYToKPj4+Pj4+IE9uIDE4LjEwLjE5IDE2OjEwLCBKb2hhbm5lcyBIb2x0eiB2aWEgWGVu
+b21haSB3cm90ZToKPj4+Pj4+PiBIaSAsCj4+Pj4+Pj4KPj4+Pj4+PiBJIGluaGVyaXRlZCBhIHBy
+b2plY3Qgd2hlcmUgdGhlIFJUbmV0IHN0YWNrIGlzIGxvYWRlZCBtYW51YWxseSAKPj4+Pj4+PiBh
+dCBib290Cj4+Pj4+Pj4gdGltZS4gVG8gYmUgc3BlY2lmaWMuIEluc3RlYWQgb2YgdXNpbmcgdGhl
+IHJ0bmV0IGNvbW1hbmQgbGluZSAKPj4+Pj4+PiBwcm9ncmFtcwo+Pj4+Pj4+IHRoZSBydG5ldC5r
+byBrZXJuZWwgb2JqZWN0IGFzIHdlbGwgYXMgdGhlIG5lY2Vzc2FyeSBkcml2ZXJzIGFyZSAKPj4+
+Pj4+PiBsb2FkZWQKPj4+Pj4+PiB3aXRoIGluc21vZC4gVGhlIGRldmljZXMgYXJlIHRoZW4gYnJv
+dWdodCB1cCB3aXRoIHJ0aWZjb25maWcgYW5kCj4+Pj4+Pj4gcnRyb3V0ZS4KPj4+Pj4+Pgo+Pj4+
+Pj4+IFRoZSBuZXR3b3JrIGNvbnNpc3Qgb2YgNyBQQ3MgKGFsbCB3aXRoIHRoZSBzYW1lIGJvb3Qg
+dGltZSAKPj4+Pj4+PiBtZWNoYW5pc20pCj4+Pj4+Pj4gd2l0aCBwcmUtZGVmaW5lZCBJUHMuIFRo
+ZSBzZXR1cCB3b3JrcyBhbmQgaW5pdGlhbGl6ZXMgaW4gYW4KPj4+Pj4+PiBhc3luY2hyb25pemVk
+IHdheSAobGlrZSBhIHR5cGljYWwgbm9uLVJUIG5ldHdvcmspLgo+Pj4+Pj4+Cj4+Pj4+Pj4gSSdt
+IGludmVzdGlnYXRpbmcgc29tZSBwZXJmb3JtYW5jZSBwcm9ibGVtcyBhbmQgSSBkb24ndCBrbm93
+IAo+Pj4+Pj4+IHdoYXRzIGlzCj4+Pj4+Pj4gcmVhbGx5IGdvaW5nIG9uIHNpbmNlIG5vIGNvbmZp
+ZyBpcyB1c2VkLiBIb3cgaXMgZGV0ZXJtaW5lZCB3aGljaAo+Pj4+Pj4+IHBhcnRpY2lwYW50IGlz
+IGFjdGluZyBhcyBNYXN0ZXIgYW5kIGhvdyB0aGUgc2xvdHMgYXJlIGRpc3RyaWJ1dGVkPwo+Pj4+
+Pj4+IFdoYXQKPj4+Pj4+PiBhcmUgdGhlIGRlZmF1bHQgdmFsdWVzPwo+Pj4+Pj4gWW91IG9ubHkg
+bWVudGlvbmVkIHJ0aWZjb25maWcgYW5kIHJ0cm91dGUgYWJvdmUsIG5vIHJ0Y2ZnIG9yIAo+Pj4+
+Pj4gdGRtYWNmZy4KPj4+Pj4+IEFyZSB5b3Ugc3VyZSBSVG1hYyBpcyBpbnZvbHZlZD8KPj4+Pj4g
+VGhpcyBpcyB0aGUgbGlzdCBvZiBrZXJuZWwgb2JqZWN0IHRoYXQgYXJlIGxvYWRlZDoKPj4+Pj4K
+Pj4+Pj4gcnRuZXQua28KPj4+Pj4KPj4+Pj4gcnRpcHY0LmtvCj4+Pj4+Cj4+Pj4+IHJ0cGFja2V0
+LmtvCj4+Pj4+Cj4+Pj4+IHJ0dWRwLmtvCj4+Pj4+Cj4+Pj4+IHJ0X2UxMDBlLmtvCj4+Pj4+Cj4+
+Pj4+IHJ0XzgxMzl0b28ua28KPj4+Pj4KPj4+Pj4gcnRfcjgxNjkua28KPj4+Pj4KPj4+Pj4gc3Vi
+c2VxdWVudGx5IHJ0aWZjb25maWcgYW5kIHJ0cm91dGUKPj4+Pj4KPj4+Pj4gTm90aGluZyBlbHNl
+IGlzIGRvbmUuIEkgZG9uJ3Qga25vdyBpZCB0aGF0IHNhdGlzZmllcyBmb3IgcnRtYWMuIAo+Pj4+
+PiBIb3cgY2FuCj4+Pj4+IEkgY2hlY2s/Cj4+Pj4gTm9wZSwgdGhlcmUgd291bGQgYmUgcnRtYWMu
+a28sIHRkbWEua28sIHBvc3NpYmx5IGFsc28gcnRjZmcua28gaW4KPj4+PiBhZGRpdGlvbi4gQW5k
+IHlvdSB3b3VsZCBzZWUgdGhlIHNjcmlwdCBjYWxsaW5nIHRkbWFjZmcgYXQgbGVhc3QuCj4+PiBT
+byB0aGlzIG1lYW5zIEkgYmFzaWNhbGx5IHJ1biBzdGFuZGFyZCBFdGhlcm5ldCB3aXRoIG5vIFJU
+IGJlbmVmaXRzPwo+PiBUaGUgVFggYW5kIFJYIHBhdGggcmVtYWluIGRldGVybWluaXN0aWMuIElm
+IHlvdXIgYXBwbGljYXRpb24gYmVoYXZlIHdlbGwKPj4gYW5kIGRvIG5vdCBnZW5lcmF0ZSBvdmVy
+bG9hZCBvbiB0aGUgbmV0d29yayB0aGF0IGNhbiBjYXVzZSBzd2l0Y2hlcyBvcgo+PiByZWNpcGll
+bnRzIHRvIGRyb3AgcGFja2V0cywgYWxsIGNhbiBzdGlsbCBiZSBmaW5lLgo+Cj4gU2luY2UgdGhp
+cyBpcyBub3Qgc3luY2VkIChub3QgVERNQSkgaXQgaXMgdmVyeSB3ZWxsIHBvc3NpYmxlIHRoYXQg
+Cj4gZGlmZmVyZW50IG5vZGVzIGludGVyZmVyZSBhbmQgZGF0YWdyYW1zIGNvbGxpZGUuCj4KPiBX
+aGF0IHdvdWxkIGJlIGNvbnNpZGVyZWQgb3ZlcmxvYWQ/IFNpbmNlIHRoZSBQQ3MgYXJlIGNvbm5l
+Y3RlZCB2aWEgCj4gdW5tYW5hZ2VkIHN3aXRjaGVzwqAgSSBjYW4ndCBkZXRlY3QgaWYgdGhleSBo
+YXZlIGFueSBwcm9ibGVtcy4KPgo+Pgo+Pj4+IFNvLCBub3RoaW5nIG9mIFJUbWFjIHNob3VsZCBw
+cmV2ZW50IHBhY2tldHMgZnJvbSBiZWluZyBzZW50IG9yIGFkZCAKPj4+PiBzaXplCj4+Pj4gcmVz
+dHJpY3Rpb25zIG9uIHRoZW0uCj4+Pj4KPj4+PiBNYXliZSB5b3UgY2FuIHNwZWNpZnkgeW91ciBw
+ZXJmb3JtYW5jZSBwcm9ibGVtcyBpbiBtb3JlIGRldGFpbHM/Cj4+Pj4KPj4+PiBKYW4KPj4+Pgo+
+Pj4gV2VsbCwgSW4gdGhpcyA3IG5vZGUgbmV0d29yayBvbmUgbm9kZSBpcyByZWNlaXZpbmcgZGF0
+YWdyYW1zIGZyb20gYWxsCj4+PiBvdGhlciA2IGNvbnRhaW5pbmcgc2Vuc29yIGRhdGEuIEVhY2gg
+ZGF0YWdyYW0gaGFzIGEgc2VxdWVuY2UgbnVtYmVyIHRvCj4+PiByZWNvZ25pemUgcGFja2V0IGxv
+c3MuIEVhY2ggbm9kZSBpcyBydW5uaW5nIGEgUlQgU1cgd2l0aCAxbXMgbG9vcC4gSW4KPj4+IGNl
+cnRhaW4gc2l0dWF0aW9ucyB0aGUgcmVjZWl2ZXIgZGV0ZWN0cyB0aGF0IHNvbWUgKGJldHdlZW4g
+MSBhbmQgMjApCj4+PiBkYXRhZ3JhbXMgd2hlcmUgbG9zdC4gSW4gdGhlc2Ugc2l0dWF0aW9ucyB0
+aGUgYW1vdW50IG9mIHNlbnQgZGF0YWdyYW1zCj4+PiBpcyBoaWdoZXIgdGhhbiB1c3VhbC4KPj4g
+V2hhdCBlbHNlIGlzIG9uIHRoZSBuZXR3b3JrPyBPbmx5IHRob3NlIG5vZGVzLCBhbmQgdGhleSBv
+bmx5IHNlbnQgUlQKPj4gZGF0YWdyYW1zIGF0IGEgd2VsbC1kZWZpbmVkIHJhdGU/Cj4KPiBQQzEs
+UEMyIDwtLS0+U3dpdGNoMTwtLS0+U3dpdGNoMjwtLS0tPlBDMy03Cj4KPiBUaGF0J3MgdGhlIHdo
+b2xlIG5ldHdvcmsuIEJvdGggYXJlIHVuLW1hbmFnZWQgaW5kdXN0cnkgc3dpdGNoZXMuCj4KPiBQ
+QzIgaXMgdGhlIHJlY2VpdmVyLgo+Cj4+Cj4+PiBBdCBmaXJzdCBJIHRob3VnaCB0aGlzIG1pZ2h0
+IGJlIGEgdGhyb3VnaHB1dCBpc3N1ZSBidXQgZXZlbiBhZnRlciBJCj4+PiByZWR1Y2VkIHRoZSBw
+YXlsb2FkIHNpemUgZHJhc3RpY2FsbHkgSSBzdGlsbCBtaXNzIGRhdGFncmFtcy4gVGhlIHNlbmRl
+cgo+Pj4gaGFzIG5vIHByb2JsZW1zIHNlbmRpbmcgYW5kIG15IHJlY2VpdmUgY29kZSBhbHdheXMg
+cmVhZHMgYWxsIGF2YWlsYWJsZQo+Pj4gZGF0YSBmcm9tIHRoZSBxdWV1ZS4KPj4+Cj4+PiAvcHJv
+Yy9ydG5ldC9zdGF0cyBkb2Vzbid0IHNob3cgYW55IGVycm9ycyBvciBkcm9wcyAuCj4+Pgo+Pj4g
+SSdtIHdvcmtpbmcgb24gYW4gZXhhbXBsZSBwcm9ncmFtIHRvIHRlc3QgdGhpcyBpc3N1ZSBpbiBk
+ZXRhaWwuCj4+Pgo+PiBPSy4KPj4KPj4gSmFuCj4+Cj4KT2ssIGFmdGVyIGEgbG90IG9mIHRlc3Rp
+bmcgSSBhcnJpdmVkIGF0IHNvbWUgc29ydCBvZiBpbnNpZ2h0LiBJIGFsbW9zdCAKYmVjYW1lIGNy
+YXp5IGFmdGVyIGFsbCB0aGUga2VybmVsIHNlZ2ZhdWx0cy4KCkkgd3JvdGUgYSBzaW1wbGUgcHJv
+Z3JhbSB3aXRoIGEgc2VuZGVyIGFuZCByZWNlaXZlciB3aGVyZSB0aGUgc2VuZGVyIApzZW5kcyBh
+IGNvbmZpZ3VyYWJsZSBhbW91bnQgb2YgZGF0YWdyYW1zIHBlciAxbXMgY3ljbGUuIChhdHRhY2hl
+ZCkKCkZpcnN0IEkgbm90aWNlZCB0aGF0IEkgZ2V0IHByb2JsZW1zIHdoZW4gYWxsb2NhdGluZyBh
+IHN0YXRpYyBidWZmZXIgb2YgCnNldmVyYWwga0IuIFNvIEkgc3RhcnRlZCB0byBwbGF5IGFyb3Vu
+ZCB3aXRoIHRoZSBzdGFjayBzaXplLiBJZiBJIAppbmNyZWFzZSB0aGUgb3ZlcmFsbCBzdGFjayBz
+aXplIEkgY2FuIGFsbG9jYXRlIHRoYXQgYnVmZmVyIGJ1dCBzdGlsbCBnZXQgCmJ1ZmZlciBzaXpl
+IHByb2JsZW1zIG9uIHRoZSBzZW5kZXIgc2lkZSBzbyBJIGFsc28gaW5jcmVhc2VkIHRoZSBzb2Nr
+ZXQgCmJ1ZmZlciBzaXplIGFuZCBhcyBsb25nIGFzIHRoZSBpbmNyZWFzZWQgc29ja2V0IGJ1ZmZl
+ciBpcyBzbWFsbGVyIHRoYW4gCnRoZSBzdGFjayBldmVyeXRoaW5nIGlzIE9LIGFuZCBwZXJmb3Jt
+YW5jZSBpbmNyZWFzZXMuIElmIG5vdCB5b3UgZ2V0IApzYWlkIGtlcm5lbCBpc3N1ZXMuIFVuc3Vy
+cHJpc2luZ2x5IGluIGhpbmRzaWdodC4KCk9idmlvdXNseSB0aGUgc2l6ZSBvZiB0aGUgZGF0YWdy
+YW1zIGlzIGFsc28gaW1wb3J0YW50LiBUaGUgc21hbGxlciB0aGV5IAphcmUgdGhlIHNtYWxsZXIg
+dGhlIGJ1ZmZlcnMgY2FuIGJlLgoKQ3VyaW91cyBpcyB0aGF0IEkgd2Fzbid0IGFibGUgdG8gcmVw
+cm9kdWNlIHRoZSBjYXNlIHdoZXJlIGRhdGFncmFtcyAKd2hlcmUgbWlzc2VkLgoKU28gcGx1Z2dp
+bmcgbXkgaW5zaWdodCBvZiB0aGUgc3RhY2sgYW5kIGJ1ZmZlciBpbmNyZWFzZXMgaW50byBteSBh
+Y3R1YWwgCnByb2dyYW0gdGhlIG92ZXJhbGwgc3lzdGVtIHBlcmZvcm1hbmNlIGluY3JlYXNlcy4g
+VGhlIGFtb3VudCBvZiBtaXNzZWQgCmRhdGFncmFtcyBpcyByZWR1Y2VkIGRyYW1hdGljYWxseS4g
+SSdtIG5vdCBzdXJlIHdoeSB0aG91Z2guCgoKQ2hlZXJzLAoKSm9oYW5uZXMKCi0tLS0tLS0tLS0t
+LS0tIG5leHQgcGFydCAtLS0tLS0tLS0tLS0tLQpBIG5vbi10ZXh0IGF0dGFjaG1lbnQgd2FzIHNj
+cnViYmVkLi4uCk5hbWU6IG1haW4uYwpUeXBlOiB0ZXh0L3gtY3NyYwpTaXplOiA4NDY5IGJ5dGVz
+CkRlc2M6IG5vdCBhdmFpbGFibGUKVVJMOiA8aHR0cDovL3hlbm9tYWkub3JnL3BpcGVybWFpbC94
+ZW5vbWFpL2F0dGFjaG1lbnRzLzIwMTkxMDIyLzllZTM0MjU1L2F0dGFjaG1lbnQuYz4K
