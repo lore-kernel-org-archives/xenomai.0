@@ -1,15 +1,11 @@
-Subject: Re: Xenomai fails to start when running in QEMU VM
-References: <CAJPjb1LG3HTfUC0FFDATAkb3-6f=nj5J+6d+gdLL3yAwxt8avQ@mail.gmail.com>
- <9224513f-51e2-1ddb-107f-58a1142b3085@siemens.com>
- <CAJPjb1+d___e1BE3tk=us9WAr0HcW3QC5ROgWaRUMPXngudqpQ@mail.gmail.com>
-From: Gylstorff Quirin <quirin.gylstorff@siemens.com>
-Message-ID: <8148a617-8087-076e-f1f1-bd337e2c7a14@siemens.com>
-Date: Wed, 23 Oct 2019 15:26:08 +0200
+From: Jan Leupold <leupold@rsi-elektrotechnik.de>
+Subject: pthread_cond_wait() never returns?
+Message-ID: <eeaf1989-2795-d140-5311-302f61249c6c@rsi-elektrotechnik.de>
+Date: Wed, 23 Oct 2019 17:52:11 +0200
 MIME-Version: 1.0
-In-Reply-To: <CAJPjb1+d___e1BE3tk=us9WAr0HcW3QC5ROgWaRUMPXngudqpQ@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="utf-8"
+Content-Language: de-DE
+Content-Transfer-Encoding: 8bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -20,75 +16,211 @@ List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: xenomai@xenomai.org
 
+Hi all,
+
+I am trying to use pthread_cond_t in a Xenomai application. When compiling
+and linking with the flags from xeno-config, the condition variable stops
+working as expected. It seems as if pthread_cond_wait() would never return.
+
+Is this a known issue?
+(but most probably I think it's just my fault and I would be glad if
+someone could give me a hint)
+
+BTW, "cyclictest -M" (also uses pthread_cond_t to signal a refresh) does
+not work as expected either.
+
+Regards,
+Jan
+
+Using:
+------------
+ipipe-arm, branched off at tag ipipe-core-4.19.33-arm-2
+xenomai-3, branched off at 44065a107 (master April 2019)
+custom hardware, SAMA5D2 SoC
+
+The program:
+----------------------
+#include <pthread.h>
+#include <stdio.h>
+#include <unistd.h>
+
+pthread_mutex_t mutex;
+pthread_cond_t cond;
+
+void*
+task(void* arg)
+{
+    (void) arg;
+    printf("task\n");
+    for (int i = 0; i < 3; ++i)
+    {
+        pthread_mutex_lock(&mutex);
+        pthread_cond_wait(&cond, &mutex);
+        pthread_mutex_unlock(&mutex);
+        printf("task: condition signaled (i=%d)\n", i);
+    }
+    printf("task: done\n");
+    return NULL;
+}
+
+int
+main()
+{
+    printf("main\n");
+
+    pthread_mutex_init(&mutex, NULL);
+    pthread_cond_init(&cond, NULL);
+
+    pthread_t t;
+    pthread_create(&t, NULL, task, NULL);
+
+    for (int i = 0; i < 3; ++i)
+    {
+        sleep(1);
+        pthread_cond_signal(&cond);
+        printf("main: signal(i=%d)\n", i);
+    }
+
+    pthread_join(t, NULL);
+
+    printf("main: done\n");
+    return 0;
+}
+
+When compiling without Xenomai the output is:
+
+main
+task
+main: signal(i=0)
+task: condition signaled (i=0)
+main: signal(i=1)
+task: condition signaled (i=1)
+main: signal(i=2)
+task: condition signaled (i=2)
+task: done
+main: done
+
+When compiling with Xenomai the output is:
+
+main
+task
+main: signal(i=0)
+main: signal(i=1)
+main: signal(i=2)
+^C
+(pthread_join() never returns)
+
+The difference in Makefile.am:
+------------------------------
+
+bin_PROGRAMS = test-condition-xeno test-condition-linux
+
+test_condition_linux_SOURCES = condition_c.c
+test_condition_linux_LDFLAGS = -pthread
+
+test_condition_xeno_SOURCES = condition_c.c
+test_condition_xeno_CFLAGS = $(shell xeno-config --skin=posix --cflags)
+test_condition_xeno_LDADD = $(shell xeno-config --skin=posix --ldflags)
+
+Output from --dump-config:
+--------------------------
+based on Xenomai/cobalt v3.1-devel -- #94e729d53 (2019-06-03 13:32:22 +0200)
+CONFIG_MMU=1
+CONFIG_XENO_BUILD_ARGS=" '--build=x86_64-linux'
+'--host=arm-poky-linux-gnueabi' '--target=arm-poky-linux-gnueabi'
+'--prefix=/usr' '--exec_prefix=/usr' '--bindir=/usr/bin'
+'--sbindir=/usr/sbin' '--libexecdir=/usr/libexec' '--datadir=/usr/share'
+'--sysconfdir=/etc' '--sharedstatedir=/com' '--localstatedir=/var'
+'--libdir=/usr/lib' '--includedir=/usr/include/xenomai'
+'--oldincludedir=/usr/include/xenomai' '--infodir=/usr/share/info'
+'--mandir=/usr/share/man' '--disable-silent-rules'
+'--with-libtool-sysroot=/home/jan/yocto/aertronic2.0-io/build-betrieb/tmp/work/cortexa5t2hf-vfp-poky-linux-gnueabi/xenomai/3+git999-r0/recipe-sysroot'
+'--disable-static' '--disable-async-cancel' '--disable-clock-monotonic-raw'
+'--with-core=cobalt' '--enable-debug=symbols' '--disable-dlopen-libs'
+'--disable-doc-build' '--disable-fortify' '--disable-lores-clock'
+'--disable-pshared' '--disable-registry' '--disable-smp' '--disable-tls'
+'build_alias=x86_64-linux' 'host_alias=arm-poky-linux-gnueabi'
+'target_alias=arm-poky-linux-gnueabi' 'CC=arm-poky-linux-gnueabi-gcc
+-mthumb -mfpu=vfp -mfloat-abi=hard -mcpu=cortex-a5 -fstack-protector-strong
+ -D_FORTIFY_SOURCE=2 -Wformat -Wformat-security -Werror=format-security
+--sysroot=/home/jan/yocto/aertronic2.0-io/build-betrieb/tmp/work/cortexa5t2hf-vfp-poky-linux-gnueabi/xenomai/3+git999-r0/recipe-sysroot'
+'CFLAGS= -O2 -pipe -g -feliminate-unused-debug-types
+-fmacro-prefix-map=/home/jan/yocto/aertronic2.0-io/build-betrieb/tmp/work/cortexa5t2hf-vfp-poky-linux-gnueabi/xenomai/3+git999-r0=/usr/src/debug/xenomai/3+git999-r0
+
+-fdebug-prefix-map=/home/jan/yocto/aertronic2.0-io/build-betrieb/tmp/work/cortexa5t2hf-vfp-poky-linux-gnueabi/xenomai/3+git999-r0=/usr/src/debug/xenomai/3+git999-r0
+
+-fdebug-prefix-map=/home/jan/yocto/aertronic2.0-io/build-betrieb/tmp/work/cortexa5t2hf-vfp-poky-linux-gnueabi/xenomai/3+git999-r0/recipe-sysroot=
+
+-fdebug-prefix-map=/home/jan/yocto/aertronic2.0-io/build-betrieb/tmp/work/cortexa5t2hf-vfp-poky-linux-gnueabi/xenomai/3+git999-r0/recipe-sysroot-native=
+' 'LDFLAGS=-Wl,-O1 -Wl,--hash-style=gnu -Wl,--as-needed
+-fstack-protector-strong -Wl,-z,relro,-z,now' 'CPPFLAGS='
+'CPP=arm-poky-linux-gnueabi-gcc -E
+--sysroot=/home/jan/yocto/aertronic2.0-io/build-betrieb/tmp/work/cortexa5t2hf-vfp-poky-linux-gnueabi/xenomai/3+git999-r0/recipe-sysroot
+ -mthumb -mfpu=vfp -mfloat-abi=hard -mcpu=cortex-a5
+-fstack-protector-strong  -D_FORTIFY_SOURCE=2 -Wformat -Wformat-security
+-Werror=format-security'
+'PKG_CONFIG_PATH=/home/jan/yocto/aertronic2.0-io/build-betrieb/tmp/work/cortexa5t2hf-vfp-poky-linux-gnueabi/xenomai/3+git999-r0/recipe-sysroot/usr/lib/pkgconfig:/home/jan/yocto/aertronic2.0-io/build-betrieb/tmp/work/cortexa5t2hf-vfp-poky-linux-gnueabi/xenomai/3+git999-r0/recipe-sysroot/usr/share/pkgconfig'
+'PKG_CONFIG_LIBDIR=/home/jan/yocto/aertronic2.0-io/build-betrieb/tmp/work/cortexa5t2hf-vfp-poky-linux-gnueabi/xenomai/3+git999-r0/recipe-sysroot/usr/lib/pkgconfig'"
+CONFIG_XENO_BUILD_STRING="x86_64-pc-linux-gnu"
+CONFIG_XENO_COBALT=1
+CONFIG_XENO_COMPILER="gcc version 9.2.0 (GCC) "
+CONFIG_XENO_DEFAULT_PERIOD=1000000
+CONFIG_XENO_FORTIFY=1
+CONFIG_XENO_HEAPMEM=1
+CONFIG_XENO_HOST_STRING="arm-poky-linux-gnueabi"
+CONFIG_XENO_LORES_CLOCK_DISABLED=1
+CONFIG_XENO_PREFIX="/usr"
+CONFIG_XENO_REVISION_LEVEL=90
+CONFIG_XENO_SANITY=1
+CONFIG_XENO_TLS_MODEL="initial-exec"
+CONFIG_XENO_UAPI_LEVEL=15
+CONFIG_XENO_VERSION_MAJOR=3
+CONFIG_XENO_VERSION_MINOR=0
+CONFIG_XENO_VERSION_STRING="3.1-devel"
+---
+CONFIG_SMP is OFF
+CONFIG_XENO_ASYNC_CANCEL is OFF
+CONFIG_XENO_COPPERPLATE_CLOCK_RESTRICTED is OFF
+CONFIG_XENO_DEBUG is OFF
+CONFIG_XENO_DEBUG_FULL is OFF
+CONFIG_XENO_LAZY_SETSCHED is OFF
+CONFIG_XENO_LIBS_DLOPEN is OFF
+CONFIG_XENO_MERCURY is OFF
+CONFIG_XENO_PSHARED is OFF
+CONFIG_XENO_RAW_CLOCK_ENABLED is OFF
+CONFIG_XENO_REGISTRY is OFF
+CONFIG_XENO_REGISTRY_ROOT is OFF
+CONFIG_XENO_TLSF is OFF
+CONFIG_XENO_VALGRIND_API is OFF
+CONFIG_XENO_WORKAROUND_CONDVAR_PI is OFF
+CONFIG_XENO_X86_VSYSCALL is OFF
+---
+PTHREAD_STACK_DEFAULT=65536
+AUTOMATIC_BOOTSTRAP=0
 
 
-On 10/23/19 2:48 PM, Rob Miller via Xenomai wrote:
-> Interestingly, I also get the exact same failure on the xenomai-images
-> pulled from the git repo.
-> 
-> the errors start right off the bat with:
-> 
-> tsc: Fast calibration failed
-> tsc: Unable to calibrate against PIT
-> tsc: No reference (HPET/PMTIMER) available
-> ..
-> ..
-> clocksource: hpet: mask: 0xffffffff max_cycles: 0xffffffff, max_idle_ns:
-> 19112604467 ns
-> hpet clock event registered
-> tsc: Fast calibration failed
-> tsc: Unable to calibrate against PIT
-> tsc: No reference (HPET/PMTIMER) available
-> tsc: Marking TSC unstable due to could not calculate TSC khz          <---
-> kiss of death I believe as Cobalt sees the flag and errors out
-> ..
-> ..
-> hpet0: at MMIO 0xfed00000, IRQs 2, 8, 0
-> hpet0: 3 comparators , 64-bit 100.000000 MHz counter
-> clocksource: Switched to clocksource hpet
-> ..
-> ..
-> [Xenomai] scheduling class idle registered
-> [Xenomai] scheduling class weak registered
-> [Xenomai] scheduling class tp registered
-> [Xenomai] scheduling class pss registered
-> [Xenomai] scheduling class quota registered
-> [Xenomai] scheduling class rt registered
-> I-pipe: high-resolution clock not working               <--- I believe this
-> looks at the TSC marked as being unstable flag set above and bails out
-> [Xenomai] init failed, code -19
-> 
-> I dug into the unstable issues on my VM (ie: non xenomai-images repo), and
-> found that tsc_read_refs(*ref, hpet) is where the problem lies in either
-> whether using using hpet or not, either the returned ref value is 0 (when
-> hpet == 1), or the amount of time is took to read from PM (hpet == 0) took
-> forever (ie: 100000+ cycles) which is at least 2x the SMI_THRESHOLD vlaue
-> that is allowed in the code. My guess is that even when using the stock
-> xenomai-images directly, I'll have the same situation.
-> 
-> I read about SMI issues, and given the cycle allowance for SMI
-> interruptions in the tsc_read_refs() functio, I focused on SMI. In my VM
-> (ie: non-stock images), I set the linux cmdline option
-> xenomai.smi=disabled, but no love there either.
-> 
-> Given that both my VM and the stock images fail, I'm now thinking QEMU
-> version, or underlying host CPU issues, or TBD, is the issue, and thought
-> I'd first ask the community for guidance as to how to proceed.
-> 
-> Thoughts ideas will be greatly appreciated.
-> 
-What qemu version do you use?
+Mit freundlichen Grüßen
 
-For our tests we use
-QEMU emulator version 3.1.0 (Debian 1:3.1+dfsg-8+deb10u2).
-
-
-Quirin
-
+*Jan Leupold*
+Entwicklung
+Development
 -- 
-Siemens AG
-Corporate Technology
-CT RDA IOT SES-DE
+---------------------------------------------------------------------------
+R-S-I Logo <https://www.rsi-elektrotechnik.de/>
+
+R-S-I Elektrotechnik GmbH & Co. KG
+Woelkestraße 11
+D-85301 Schweitenkirchen
+www.rsi-elektrotechnik.de <https://www.rsi-elektrotechnik.de/>
+
+Tel: +49 8444 9204-32
+Fax: +49 8444 9204-50
+leupold@rsi-elektrotechnik.de <mailto:leupold@rsi-elektrotechnik.de>
+---------------------------------------------------------------------------
+
+Amtsgericht Ingolstadt - GmbH: HRB 191328 - KG: HRA 170363
+Geschäftsführer: Dr.-Ing. Michael Sorg, Dipl.-Ing. Franz Sorg
+USt-IdNr.: DE 128592548
 
 
 
