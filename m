@@ -1,10 +1,12 @@
-Subject: Re: Process load balancing among CPU
-References: <32d2a7d6-c915-2cd1-3c74-c005a53fc708@numalliance.com>
+Subject: Re: pthread_cond_wait() never returns?
+References: <eeaf1989-2795-d140-5311-302f61249c6c@rsi-elektrotechnik.de>
+ <VI1PR05MB591783008A459B1A0E5CB5AAF66A0@VI1PR05MB5917.eurprd05.prod.outlook.com>
+ <63f9cf79-5626-78b9-ed8b-f37313bbc7d9@rsi-elektrotechnik.de>
 From: Jan Kiszka <jan.kiszka@web.de>
-Message-ID: <c1ecb9c1-407b-dfa0-e1f4-12f786ccde54@web.de>
-Date: Thu, 24 Oct 2019 12:13:04 +0200
+Message-ID: <5b549f1a-1f0c-e51b-6b1d-b252969e4fb4@web.de>
+Date: Thu, 24 Oct 2019 12:20:20 +0200
 MIME-Version: 1.0
-In-Reply-To: <32d2a7d6-c915-2cd1-3c74-c005a53fc708@numalliance.com>
+In-Reply-To: <63f9cf79-5626-78b9-ed8b-f37313bbc7d9@rsi-elektrotechnik.de>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: quoted-printable
@@ -16,27 +18,35 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: =?UTF-8?Q?St=c3=a9phane_Ancelot?= <sancelot@numalliance.com>, "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Jan Leupold <leupold@rsi-elektrotechnik.de>, Lange Norbert <norbert.lange@andritz.com>, "Xenomai (xenomai@xenomai.org)" <xenomai@xenomai.org>
 
-On 24.10.19 10:00, St=C3=A9phane Ancelot via Xenomai wrote:
-> Hi,
+On 24.10.19 10:09, Jan Leupold via Xenomai wrote:
+> Great, now it works, thanks a lot!!
 >
-> In our system, I noticed maybe a setup problem, or a xenomai related
-> setup problem regarding user processes.
->
-> I have 2 user tasks that does not use RT (but xenomai shared memory
-> access), I noticed that if these both tasks were consuming 50% of the
-> CPU they were not migrated on other cpus.
->
-> There is no CPU affinity setup in these programs , so I kept the kernel
-> scheduler doing its job.
->
-> Is this a bad kernel setting or xenomai setting=C2=A0 to allow process c=
-pu
-> migration for user processes ?
+> I just realised that not locking the mutex for pthread_cond_signal() is =
+not
+> a good practice
+> (https://stackoverflow.com/questions/4544234/calling-pthread-cond-signal=
+-without-locking-mutex)
+> ... but as it works most of the time with non-Xenomai pthread_cond_t it
+> might be worth a comment in
+> https://xenomai.org/documentation/xenomai-3/html/xeno3prm/group__cobalt_=
+_api__cond.html
+> and/or
+> https://gitlab.denx.de/Xenomai/xenomai/wikis/Porting_To_Xenomai_POSIX#st=
+atic-mutex-and-condition-variables-initializations
 
-There is - by design - no automatic load balancing for Xenomai threads.
-The common case is static schedules /wrt RT task for each CPU.
+The primary issue of you pattern is that is lacks a condition check
+against a shared state. The whole point of the mutex is to protect that
+check against the update of the state.
+
+"When using condition variables there is always a Boolean predicate
+involving shared variables associated with each condition wait that is
+true if the thread should proceed. Spurious wakeups from  the
+pthread_cond_timedwait() or  pthread_cond_wait()  functions  may  occur.
+ Since  the return from pthread_cond_timedwait() or pthread_cond_wait()
+does not imply anything about the value of this predicate, the predicate
+should be re-evaluated upon such return."
 
 Jan
 
