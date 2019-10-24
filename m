@@ -1,14 +1,15 @@
-Subject: Re: Warning on arm64 boot with debugging on
-References: <2349a1e9-d2c6-dc05-eca9-d4015b80746c@siemens.com>
- <c21d5129-73a4-a430-b17b-64d82d933ab8@siemens.com>
-From: Philippe Gerum <rpm@xenomai.org>
-Message-ID: <487ec1ed-93b4-aafd-8368-b11dff21be2c@xenomai.org>
-Date: Tue, 8 Oct 2019 19:31:00 +0200
+Subject: Re: Process load balancing among CPU
+References: <32d2a7d6-c915-2cd1-3c74-c005a53fc708@numalliance.com>
+ <c1ecb9c1-407b-dfa0-e1f4-12f786ccde54@web.de>
+ <e656ac41-3313-1efb-447a-9fcb0e3ba9da@numalliance.com>
+From: Jan Kiszka <jan.kiszka@web.de>
+Message-ID: <e8932933-70d7-096e-eb72-083836b28104@web.de>
+Date: Thu, 24 Oct 2019 12:28:21 +0200
 MIME-Version: 1.0
-In-Reply-To: <c21d5129-73a4-a430-b17b-64d82d933ab8@siemens.com>
+In-Reply-To: <e656ac41-3313-1efb-447a-9fcb0e3ba9da@numalliance.com>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: quoted-printable
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,51 +18,41 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jan Kiszka <jan.kiszka@siemens.com>, Xenomai <xenomai@xenomai.org>
+To: =?UTF-8?Q?St=c3=a9phane_Ancelot?= <sancelot@numalliance.com>, "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On 10/8/19 5:25 PM, Jan Kiszka wrote:
-> On 08.10.19 17:21, Jan Kiszka wrote:
->> Hi Philippe,
->> 
->> just a note, probably harmless (instrumentation issue), but it may
->>  prevent debugging real issues. This is ipipe-core-4.19.55-arm64-2
->> with lock validation on:
->> 
+On 24.10.19 12:21, St=C3=A9phane Ancelot wrote:
+>
+> Le 24/10/2019 =C3=A0 12:13, Jan Kiszka a =C3=A9crit=C2=A0:
+>> On 24.10.19 10:00, St=C3=A9phane Ancelot via Xenomai wrote:
+>>> Hi,
+>>>
+>>> In our system, I noticed maybe a setup problem, or a xenomai related
+>>> setup problem regarding user processes.
+>>>
+>>> I have 2 user tasks that does not use RT (but xenomai shared memory
+>>> access), I noticed that if these both tasks were consuming 50% of the
+>>> CPU they were not migrated on other cpus.
+>>>
+>>> There is no CPU affinity setup in these programs , so I kept the kerne=
+l
+>>> scheduler doing its job.
+>>>
+>>> Is this a bad kernel setting or xenomai setting=C2=A0 to allow process=
+ cpu
+>>> migration for user processes ?
+>> There is - by design - no automatic load balancing for Xenomai threads.
+>> The common case is static schedules /wrt RT task for each CPU.
+>
+> This is not an RT thread, this is a userspace non rt task linking
+> xenomai heap shared memory.
+>
+> having a look at this page, the documentation states=C2=A0 cpu_affinity
+> Defaults to any online CPU.
 
-Indeed it's not. The virtual IRQ state should be reconciled before calling the trap information handler in do_debug_exception(). Something around these lines:
+As long as that non-RT task is in Linux mode and has an affinity mask
+that is not reduced to the single core, Linux will happily load-balance
+it. But if that task went through shadowing by Xenomai, its affinity
+mask was likely reduced.
 
-diff --git a/arch/arm64/mm/fault.c b/arch/arm64/mm/fault.c
-index d7ea82c0b8c7..ade0271fd7cc 100644
---- a/arch/arm64/mm/fault.c
-+++ b/arch/arm64/mm/fault.c
-@@ -986,23 +986,24 @@ asmlinkage int __exception do_debug_exception(unsigned long addr_if_watchpoint,
- 	if (user_mode(regs) && pc > TASK_SIZE)
- 		arm64_apply_bp_hardening();
- 
-+	irqflags = fault_entry(regs);
-+
- 	if (!inf->fn(addr_if_watchpoint, esr, regs)) {
- 		rv = 1;
- 	} else {
- 		struct siginfo info;
- 
--		irqflags = fault_entry(regs);
--
- 		clear_siginfo(&info);
- 		info.si_signo = inf->sig;
- 		info.si_errno = 0;
- 		info.si_code  = inf->code;
- 		info.si_addr  = (void __user *)pc;
- 		arm64_notify_die(inf->name, regs, &info, esr);
--		fault_exit(irqflags);
- 		rv = 0;
- 	}
- 
-+	fault_exit(irqflags);
-+
- 	if (interrupts_enabled(regs))
- 		trace_hardirqs_on();
-
--- 
-Philippe.
+Jan
 
