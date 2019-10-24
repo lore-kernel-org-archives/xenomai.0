@@ -1,10 +1,12 @@
-Message-ID: <86e02eb5015e1b4754b8dbe367e62497.squirrel@mail.ige-grenoble.fr>
-Date: Thu, 24 Oct 2019 10:41:14 +0200
-Subject: problem with sessions in xenomai 3.1
-From: davy.regneau@univ-grenoble-alpes.fr
-Reply-To: davy.regneau@univ-grenoble-alpes.fr
+Subject: Re: Process load balancing among CPU
+References: <32d2a7d6-c915-2cd1-3c74-c005a53fc708@numalliance.com>
+From: =?UTF-8?Q?St=c3=a9phane_Ancelot?= <sancelot@numalliance.com>
+Message-ID: <e3947682-2dbe-fad1-0a73-6e3ebcbedcb2@numalliance.com>
+Date: Thu, 24 Oct 2019 11:59:29 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset="iso-8859-1"
+In-Reply-To: <32d2a7d6-c915-2cd1-3c74-c005a53fc708@numalliance.com>
+Content-Language: fr
+Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Transfer-Encoding: quoted-printable
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
@@ -14,79 +16,40 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
+To: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-Hi,
+I noticed that when I launch processes linked with xenomai, these=20
+programs are automatically linked to a single process
 
-Shared sessions do not seem to work with Xenomai 3.1.
-I made this simple code to test it :
+using cat /proc/<pid>/status
 
+the cpus_allowed value is linked to a single cpu .
 
-RT_TASK task;
+Doing the same on a singular linux process (eg xterm) , the cpus_allowed=20
+value is f , permitted to switch along all my cpus .
 
-void foo(){
-	while(1){
-		printf("Hello !\n");
-		rt_task_sleep(2000000000);
-	}
-}
-
-int main(int argc, char *argv[]){
-	int n;
-  	if (mlockall( MCL_CURRENT | MCL_FUTURE )!=3D0)
-    		return 1;
-	if ((n=3Drt_task_spawn( &task, NULL, 0, 99, T_JOINABLE, &foo, NULL))!=3D0){
-    		rt_printf("rt_task_spawn error %d\n",n);
-    		return 1;
-  	}
-  	rt_task_join(&task);
-}
+So, I suppose if I want a process using only xenomai shm=C2=A0 must have=20
+cpuset affinity defined in order being able to switch to other cpu ????
 
 
-When I try to start 2 instance of this program with the same session
-label, the second give me a segmentaion fault:
-$ sudo ./foo --session=3Ds
-Erreur de segmentation
-
-And this error appears in the kernel logs:
-foo[11885]: segfault at 3387c25020 ip 00007fee025a73f9 sp 00007ffe2611cbd8
-error 4 in libcopperplate.so.0.0.0[7fee0259c000+11000]
-Code: 00 48 89 f8 48 03 47 18 74 51 4c 8b 4e 20 eb 17 90 44 89 c6 49 89 fa
-83 c6 01 4c 03 54 f0 08 4c 89 d6 74 33 48 89 f0 4c 89 ce <48> 2b 70 20 45
-31 c0 48 85 f6 41 0f 9f c0 48 c1 ee 3f 41 29 f0 75
-
-
-I tested it with the kernel 4.19.66 patched with xenomai 3.1-rc1 and the
-kernel 4.19.75 with the next branch and observed the same issue.
-
-I also tried kernel 4.14.134 with xenomai 3.0.9 and it works. So I will
-stay in this version for the moment.
-
-
-My build :
-$ /usr/xenomai/bin/xeno-config --info
-Xenomai version: Xenomai/cobalt v3.1-rc2
-Linux XportNew 4.19.75-xenomai-3.1 #2 SMP PREEMPT Wed Oct 23 14:34:21 CEST
-2019 x86_64 GNU/Linux
-Kernel parameters: BOOT_IMAGE=3D/boot/vmlinuz-4.19.75-xenomai-3.1
-root=3D/dev/mapper/isw_bdaaiafbje_Volume11 ro dmraid=3Dtrue quiet splash no=
-pat
-crashkernel=3D384M-:128M
-I-pipe release #7 detected
-Cobalt core 3.1-rc2 detected
-Compiler: gcc version 4.9.2 (Debian 4.9.2-10+deb8u1)
-Build args: --with-core=3Dcobalt --enable-smp --enable-pshared
-
-
-regards,
-Davy
-
-
--------------- next part --------------
-A non-text attachment was scrubbed...
-Name: config-4.19.75-xenomai-3.1
-Type: application/octet-stream
-Size: 201615 bytes
-Desc: not available
-URL: <http://xenomai.org/pipermail/xenomai/attachments/20191024/269f9137/at=
-tachment.obj>
+Le 24/10/2019 =C3=A0 10:00, St=C3=A9phane Ancelot via Xenomai a =C3=A9cri=
+t=C2=A0:
+> Hi,
+>
+> In our system, I noticed maybe a setup problem, or a xenomai related=20
+> setup problem regarding user processes.
+>
+> I have 2 user tasks that does not use RT (but xenomai shared memory=20
+> access), I noticed that if these both tasks were consuming 50% of the=20
+> CPU they were not migrated on other cpus.
+>
+> There is no CPU affinity setup in these programs , so I kept the=20
+> kernel scheduler doing its job.
+>
+> Is this a bad kernel setting or xenomai setting=C2=A0 to allow process =
+cpu=20
+> migration for user processes ?
+>
+> Regards,
+>
+> S.Ancelot
