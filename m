@@ -1,17 +1,18 @@
-From: Lange Norbert <norbert.lange@andritz.com>
-Subject: RE: Process load balancing among CPU
-Date: Thu, 24 Oct 2019 14:27:15 +0000
-Message-ID: <VI1PR05MB591782B439FBA39C480BB938F66A0@VI1PR05MB5917.eurprd05.prod.outlook.com>
+Subject: Re: Process load balancing among CPU
 References: <32d2a7d6-c915-2cd1-3c74-c005a53fc708@numalliance.com>
  <c1ecb9c1-407b-dfa0-e1f4-12f786ccde54@web.de>
  <e656ac41-3313-1efb-447a-9fcb0e3ba9da@numalliance.com>
  <e8932933-70d7-096e-eb72-083836b28104@web.de>
  <a5302983-26c1-b17a-4ca3-890c995d9bf5@numalliance.com>
-In-Reply-To: <a5302983-26c1-b17a-4ca3-890c995d9bf5@numalliance.com>
-Content-Language: en-US
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+ <VI1PR05MB591782B439FBA39C480BB938F66A0@VI1PR05MB5917.eurprd05.prod.outlook.com>
+From: =?UTF-8?Q?St=c3=a9phane_Ancelot?= <sancelot@numalliance.com>
+Message-ID: <201098e0-5032-b0f2-1f9d-2e62653708c9@numalliance.com>
+Date: Thu, 24 Oct 2019 17:04:42 +0200
 MIME-Version: 1.0
+In-Reply-To: <VI1PR05MB591782B439FBA39C480BB938F66A0@VI1PR05MB5917.eurprd05.prod.outlook.com>
+Content-Language: fr
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: quoted-printable
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -20,67 +21,113 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "Xenomai (xenomai@xenomai.org)" <xenomai@xenomai.org>
+To: xenomai@xenomai.org
 
-Tm90aGluZyBoYXMgYW4gZWZmZWN0LCBhcyB0aGUgY29iYWx0IHNldHVwIHJvdXRpbmUgYmluZHMg
-dGhlIG1haW4gdGhyZWFkIHRvIHRoZSBzaW5nbGUgY29yZS4NClNlZTogaHR0cHM6Ly94ZW5vbWFp
-Lm9yZy9waXBlcm1haWwveGVub21haS8yMDE5LUF1Z3VzdC8wNDEzODEuaHRtbA0KDQpFdmVyeSB0
-aHJlYWQgeW91IHNwYXduIHdpbGwgaW5oZXJpdCB0aGUgc2FtZSBhZmZpbml0eSBtYXNrICh3aXRo
-IGEgc2luZ2xlIGJpdCBzZXQpLCBhbmQgYWxsIG9wdGlvbnMgKHR1bmFibGVzLCBjbWRsaW5lKSBh
-ZmZlY3QgdGhlIG1hc2sgKmJlZm9yZSogdGhlIHNldHVwIHRoZW4gIHBpY2tzIHRoZSBjdXJyZW50
-IGNvcmUgYXMgbWFzay4NCllvdSB3aWxsIG5lZWQgdG8gcmVzZXQgdGhlIGFmZmluaXR5IG1hc2sg
-eW91cnNlbGYuDQoNCktpbmQgcmVnYXJkcywgTm9yYmVydA0KDQo+IC0tLS0tT3JpZ2luYWwgTWVz
-c2FnZS0tLS0tDQo+IEZyb206IFhlbm9tYWkgPHhlbm9tYWktYm91bmNlc0B4ZW5vbWFpLm9yZz4g
-T24gQmVoYWxmIE9mIFN0w6lwaGFuZQ0KPiBBbmNlbG90IHZpYSBYZW5vbWFpDQo+IFNlbnQ6IERv
-bm5lcnN0YWcsIDI0LiBPa3RvYmVyIDIwMTkgMTY6MDENCj4gVG86IEphbiBLaXN6a2EgPGphbi5r
-aXN6a2FAd2ViLmRlPjsgeGVub21haUB4ZW5vbWFpLm9yZw0KPiBTdWJqZWN0OiBSZTogUHJvY2Vz
-cyBsb2FkIGJhbGFuY2luZyBhbW9uZyBDUFUNCj4NCj4gTk9OLUFORFJJVFogU09VUkNFOiBCRSBD
-QVVUSU9VUyBXSVRIIENPTlRFTlQsIExJTktTIE9SDQo+IEFUVEFDSE1FTlRTLg0KPg0KPg0KPiBM
-ZSAyNC8xMC8yMDE5IMOgIDEyOjI4LCBKYW4gS2lzemthIGEgw6ljcml0IDoNCj4gPiBPbiAyNC4x
-MC4xOSAxMjoyMSwgU3TDqXBoYW5lIEFuY2Vsb3Qgd3JvdGU6DQo+ID4+IExlIDI0LzEwLzIwMTkg
-w6AgMTI6MTMsIEphbiBLaXN6a2EgYSDDqWNyaXQgOg0KPiA+Pj4gT24gMjQuMTAuMTkgMTA6MDAs
-IFN0w6lwaGFuZSBBbmNlbG90IHZpYSBYZW5vbWFpIHdyb3RlOg0KPiA+Pj4+IEhpLA0KPiA+Pj4+
-DQo+ID4+Pj4gSW4gb3VyIHN5c3RlbSwgSSBub3RpY2VkIG1heWJlIGEgc2V0dXAgcHJvYmxlbSwg
-b3IgYSB4ZW5vbWFpDQo+ID4+Pj4gcmVsYXRlZCBzZXR1cCBwcm9ibGVtIHJlZ2FyZGluZyB1c2Vy
-IHByb2Nlc3Nlcy4NCj4gPj4+Pg0KPiA+Pj4+IEkgaGF2ZSAyIHVzZXIgdGFza3MgdGhhdCBkb2Vz
-IG5vdCB1c2UgUlQgKGJ1dCB4ZW5vbWFpIHNoYXJlZCBtZW1vcnkNCj4gPj4+PiBhY2Nlc3MpLCBJ
-IG5vdGljZWQgdGhhdCBpZiB0aGVzZSBib3RoIHRhc2tzIHdlcmUgY29uc3VtaW5nIDUwJSBvZg0K
-PiA+Pj4+IHRoZSBDUFUgdGhleSB3ZXJlIG5vdCBtaWdyYXRlZCBvbiBvdGhlciBjcHVzLg0KPiA+
-Pj4+DQo+ID4+Pj4gVGhlcmUgaXMgbm8gQ1BVIGFmZmluaXR5IHNldHVwIGluIHRoZXNlIHByb2dy
-YW1zICwgc28gSSBrZXB0IHRoZQ0KPiA+Pj4+IGtlcm5lbCBzY2hlZHVsZXIgZG9pbmcgaXRzIGpv
-Yi4NCj4gPj4+Pg0KPiA+Pj4+IElzIHRoaXMgYSBiYWQga2VybmVsIHNldHRpbmcgb3IgeGVub21h
-aSBzZXR0aW5nICB0byBhbGxvdyBwcm9jZXNzDQo+ID4+Pj4gY3B1IG1pZ3JhdGlvbiBmb3IgdXNl
-ciBwcm9jZXNzZXMgPw0KPiA+Pj4gVGhlcmUgaXMgLSBieSBkZXNpZ24gLSBubyBhdXRvbWF0aWMg
-bG9hZCBiYWxhbmNpbmcgZm9yIFhlbm9tYWkgdGhyZWFkcy4NCj4gPj4+IFRoZSBjb21tb24gY2Fz
-ZSBpcyBzdGF0aWMgc2NoZWR1bGVzIC93cnQgUlQgdGFzayBmb3IgZWFjaCBDUFUuDQo+ID4+IFRo
-aXMgaXMgbm90IGFuIFJUIHRocmVhZCwgdGhpcyBpcyBhIHVzZXJzcGFjZSBub24gcnQgdGFzayBs
-aW5raW5nDQo+ID4+IHhlbm9tYWkgaGVhcCBzaGFyZWQgbWVtb3J5Lg0KPiA+Pg0KPiA+PiBoYXZp
-bmcgYSBsb29rIGF0IHRoaXMgcGFnZSwgdGhlIGRvY3VtZW50YXRpb24gc3RhdGVzICBjcHVfYWZm
-aW5pdHkNCj4gPj4gRGVmYXVsdHMgdG8gYW55IG9ubGluZSBDUFUuDQo+ID4gQXMgbG9uZyBhcyB0
-aGF0IG5vbi1SVCB0YXNrIGlzIGluIExpbnV4IG1vZGUgYW5kIGhhcyBhbiBhZmZpbml0eSBtYXNr
-DQo+ID4gdGhhdCBpcyBub3QgcmVkdWNlZCB0byB0aGUgc2luZ2xlIGNvcmUsIExpbnV4IHdpbGwg
-aGFwcGlseQ0KPiA+IGxvYWQtYmFsYW5jZSBpdC4gQnV0IGlmIHRoYXQgdGFzayB3ZW50IHRocm91
-Z2ggc2hhZG93aW5nIGJ5IFhlbm9tYWksDQo+ID4gaXRzIGFmZmluaXR5IG1hc2sgd2FzIGxpa2Vs
-eSByZWR1Y2VkLg0KPg0KPiBBIHR1bmFibGUgc2hvdWxkIHBlcm1pdCB0byBjaGFuZ2UgaXQsIGJ1
-dCBpdCBoYXMgbm8gZWZmZWN0DQo+DQo+ICAgICAgY3B1X3NldF90IGNwdXM7DQo+ICAgICAgQ1BV
-X1pFUk8oJmNwdXMpOw0KPiAgICAgIENQVV9TRVQoMCwmY3B1cyk7DQo+ICAgICAgQ1BVX1NFVCgx
-LCZjcHVzKTsNCj4gICAgICBDUFVfU0VUKDIsJmNwdXMpOw0KPiAgICAgIENQVV9TRVQoMywmY3B1
-cyk7DQo+DQo+ICAgICAgc2V0X2NvbmZpZ190dW5hYmxlKGNwdV9hZmZpbml0eSxjcHVzKTsNCj4N
-Cj4gPiBKYW4NCl9fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fDQoNClRoaXMgbWVzc2Fn
-ZSBhbmQgYW55IGF0dGFjaG1lbnRzIGFyZSBzb2xlbHkgZm9yIHRoZSB1c2Ugb2YgdGhlIGludGVu
-ZGVkIHJlY2lwaWVudHMuIFRoZXkgbWF5IGNvbnRhaW4gcHJpdmlsZWdlZCBhbmQvb3IgY29uZmlk
-ZW50aWFsIGluZm9ybWF0aW9uIG9yIG90aGVyIGluZm9ybWF0aW9uIHByb3RlY3RlZCBmcm9tIGRp
-c2Nsb3N1cmUuIElmIHlvdSBhcmUgbm90IGFuIGludGVuZGVkIHJlY2lwaWVudCwgeW91IGFyZSBo
-ZXJlYnkgbm90aWZpZWQgdGhhdCB5b3UgcmVjZWl2ZWQgdGhpcyBlbWFpbCBpbiBlcnJvciBhbmQg
-dGhhdCBhbnkgcmV2aWV3LCBkaXNzZW1pbmF0aW9uLCBkaXN0cmlidXRpb24gb3IgY29weWluZyBv
-ZiB0aGlzIGVtYWlsIGFuZCBhbnkgYXR0YWNobWVudCBpcyBzdHJpY3RseSBwcm9oaWJpdGVkLiBJ
-ZiB5b3UgaGF2ZSByZWNlaXZlZCB0aGlzIGVtYWlsIGluIGVycm9yLCBwbGVhc2UgY29udGFjdCB0
-aGUgc2VuZGVyIGFuZCBkZWxldGUgdGhlIG1lc3NhZ2UgYW5kIGFueSBhdHRhY2htZW50IGZyb20g
-eW91ciBzeXN0ZW0uDQoNCkFORFJJVFogSFlEUk8gR21iSA0KDQoNClJlY2h0c2Zvcm0vIExlZ2Fs
-IGZvcm06IEdlc2VsbHNjaGFmdCBtaXQgYmVzY2hyw6Rua3RlciBIYWZ0dW5nIC8gQ29ycG9yYXRp
-b24NCg0KRmlybWVuc2l0ei8gUmVnaXN0ZXJlZCBzZWF0OiBXaWVuDQoNCkZpcm1lbmJ1Y2hnZXJp
-Y2h0LyBDb3VydCBvZiByZWdpc3RyeTogSGFuZGVsc2dlcmljaHQgV2llbg0KDQpGaXJtZW5idWNo
-bnVtbWVyLyBDb21wYW55IHJlZ2lzdHJhdGlvbjogRk4gNjE4MzMgZw0KDQpEVlI6IDA2MDUwNzcN
-Cg0KVUlELU5yLjogQVRVMTQ3NTY4MDYNCg0KDQpUaGFuayBZb3UNCl9fX19fX19fX19fX19fX19f
-X19fX19fX19fX19fX19fDQo=
 
+Le 24/10/2019 =C3=A0 16:27, Lange Norbert via Xenomai a =C3=A9crit=C2=A0:
+> Nothing has an effect, as the cobalt setup routine binds the main threa=
+d to the single core.
+> See: https://xenomai.org/pipermail/xenomai/2019-August/041381.html
+>
+> Every thread you spawn will inherit the same affinity mask (with a sing=
+le bit set), and all options (tunables, cmdline) affect the mask *before*=
+ the setup then  picks the current core as mask.
+> You will need to reset the affinity mask yourself.
+>
+> Kind regards, Norbert
+>
+>> -----Original Message-----
+>> From: Xenomai <xenomai-bounces@xenomai.org> On Behalf Of St=C3=A9phane
+>> Ancelot via Xenomai
+>> Sent: Donnerstag, 24. Oktober 2019 16:01
+>> To: Jan Kiszka <jan.kiszka@web.de>; xenomai@xenomai.org
+>> Subject: Re: Process load balancing among CPU
+>>
+>> NON-ANDRITZ SOURCE: BE CAUTIOUS WITH CONTENT, LINKS OR
+>> ATTACHMENTS.
+>>
+>>
+>> Le 24/10/2019 =C3=A0 12:28, Jan Kiszka a =C3=A9crit :
+>>> On 24.10.19 12:21, St=C3=A9phane Ancelot wrote:
+>>>> Le 24/10/2019 =C3=A0 12:13, Jan Kiszka a =C3=A9crit :
+>>>>> On 24.10.19 10:00, St=C3=A9phane Ancelot via Xenomai wrote:
+>>>>>> Hi,
+>>>>>>
+>>>>>> In our system, I noticed maybe a setup problem, or a xenomai
+>>>>>> related setup problem regarding user processes.
+>>>>>>
+>>>>>> I have 2 user tasks that does not use RT (but xenomai shared memor=
+y
+>>>>>> access), I noticed that if these both tasks were consuming 50% of
+>>>>>> the CPU they were not migrated on other cpus.
+>>>>>>
+>>>>>> There is no CPU affinity setup in these programs , so I kept the
+>>>>>> kernel scheduler doing its job.
+>>>>>>
+>>>>>> Is this a bad kernel setting or xenomai setting  to allow process
+>>>>>> cpu migration for user processes ?
+>>>>> There is - by design - no automatic load balancing for Xenomai thre=
+ads.
+>>>>> The common case is static schedules /wrt RT task for each CPU.
+>>>> This is not an RT thread, this is a userspace non rt task linking
+>>>> xenomai heap shared memory.
+>>>>
+>>>> having a look at this page, the documentation states  cpu_affinity
+>>>> Defaults to any online CPU.
+>>> As long as that non-RT task is in Linux mode and has an affinity mask
+>>> that is not reduced to the single core, Linux will happily
+>>> load-balance it. But if that task went through shadowing by Xenomai,
+>>> its affinity mask was likely reduced.
+That did it :
+
+cpu_set_t my_set;
+CPU_ZERO(&my_set);
+CPU_SET(0,&my_set);
+CPU_SET(1,&my_set);
+..
+if (sched_setaffinity(0, sizeof(cpu_set_t), &my_set) < 0) {
+     perror("sched_setaffinity");
+}
+
+>> A tunable should permit to change it, but it has no effect
+>>
+>>       cpu_set_t cpus;
+>>       CPU_ZERO(&cpus);
+>>       CPU_SET(0,&cpus);
+>>       CPU_SET(1,&cpus);
+>>       CPU_SET(2,&cpus);
+>>       CPU_SET(3,&cpus);
+>>
+>>       set_config_tunable(cpu_affinity,cpus);
+>>
+>>> Jan
+> ________________________________
+>
+> This message and any attachments are solely for the use of the intended=
+ recipients. They may contain privileged and/or confidential information =
+or other information protected from disclosure. If you are not an intende=
+d recipient, you are hereby notified that you received this email in erro=
+r and that any review, dissemination, distribution or copying of this ema=
+il and any attachment is strictly prohibited. If you have received this e=
+mail in error, please contact the sender and delete the message and any a=
+ttachment from your system.
+>
+> ANDRITZ HYDRO GmbH
+>
+>
+> Rechtsform/ Legal form: Gesellschaft mit beschr=C3=A4nkter Haftung / Co=
+rporation
+>
+> Firmensitz/ Registered seat: Wien
+>
+> Firmenbuchgericht/ Court of registry: Handelsgericht Wien
+>
+> Firmenbuchnummer/ Company registration: FN 61833 g
+>
+> DVR: 0605077
+>
+> UID-Nr.: ATU14756806
+>
+>
+> Thank You
+> ________________________________
