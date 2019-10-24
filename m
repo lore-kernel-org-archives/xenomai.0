@@ -1,17 +1,13 @@
+From: Lange Norbert <norbert.lange@andritz.com>
+Subject: RE: pthread_cond_wait() never returns?
+Date: Thu, 24 Oct 2019 07:30:15 +0000
+Message-ID: <VI1PR05MB591783008A459B1A0E5CB5AAF66A0@VI1PR05MB5917.eurprd05.prod.outlook.com>
+References: <eeaf1989-2795-d140-5311-302f61249c6c@rsi-elektrotechnik.de>
+In-Reply-To: <eeaf1989-2795-d140-5311-302f61249c6c@rsi-elektrotechnik.de>
+Content-Language: en-US
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-References: <CAJPjb1LG3HTfUC0FFDATAkb3-6f=nj5J+6d+gdLL3yAwxt8avQ@mail.gmail.com>
- <9224513f-51e2-1ddb-107f-58a1142b3085@siemens.com>
- <CAJPjb1+d___e1BE3tk=us9WAr0HcW3QC5ROgWaRUMPXngudqpQ@mail.gmail.com>
- <8148a617-8087-076e-f1f1-bd337e2c7a14@siemens.com>
- <CAJPjb1KgLBHRq+myFgWATpOYi3ifUahj5G2f9VQe7YKgr0UhVQ@mail.gmail.com>
- <CAJPjb1KwBgJp+Zx2CKjCK2y8C6Omj43EQCSm2CnSffbZ01AOSg@mail.gmail.com>
- <CAJPjb1JYRu493q_zpBKDLRS9HhcGb-4YvZqr12nuQN0_JwC4gA@mail.gmail.com>
-In-Reply-To: <CAJPjb1JYRu493q_zpBKDLRS9HhcGb-4YvZqr12nuQN0_JwC4gA@mail.gmail.com>
-From: Rob Miller <rob.miller@broadcom.com>
-Date: Wed, 23 Oct 2019 17:23:41 -0400
-Message-ID: <CAJPjb1+qSBrqC5FX5j5E9awpBT6y6Z_wz8+oPR_=hQP_RsnBvA@mail.gmail.com>
-Subject: Re: Xenomai fails to start when running in QEMU VM
-Content-Type: text/plain; charset="UTF-8"
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -20,154 +16,168 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai <xenomai@xenomai.org>
+To: Jan Leupold <leupold@rsi-elektrotechnik.de>, "Xenomai
+ (xenomai@xenomai.org)" <xenomai@xenomai.org>
 
-Correction, stock images work by removing the enable-kvm and *NOT *adding
-the -no-hpet QEMU cmdline options.
+U2lnbmFsaW5nIHRoZSB3YWl0aW5nIHRocmVhZCBoYXBwZW5zIHdoZW4geW91IHVubG9jayB0aGUg
+Y29ycmVzcG9uZGluZyBtdXRleCwNCllvdSBuZWVkIHRvIGxvY2svdW5sb2NrIHRoZSBtdXRleCBh
+cm91bmQgdGhlICBwdGhyZWFkX2NvbmRfc2lnbmFsIGNhbGwuDQoNClJlZ2FyZHMsIE5vcmJlcnQN
+Cg0KPiAtLS0tLU9yaWdpbmFsIE1lc3NhZ2UtLS0tLQ0KPiBGcm9tOiBYZW5vbWFpIDx4ZW5vbWFp
+LWJvdW5jZXNAeGVub21haS5vcmc+IE9uIEJlaGFsZiBPZiBKYW4gTGV1cG9sZA0KPiB2aWEgWGVu
+b21haQ0KPiBTZW50OiBNaXR0d29jaCwgMjMuIE9rdG9iZXIgMjAxOSAxNzo1Mg0KPiBUbzogeGVu
+b21haUB4ZW5vbWFpLm9yZw0KPiBTdWJqZWN0OiBwdGhyZWFkX2NvbmRfd2FpdCgpIG5ldmVyIHJl
+dHVybnM/DQo+DQo+IE5PTi1BTkRSSVRaIFNPVVJDRTogQkUgQ0FVVElPVVMgV0lUSCBDT05URU5U
+LCBMSU5LUyBPUg0KPiBBVFRBQ0hNRU5UUy4NCj4NCj4NCj4gSGkgYWxsLA0KPg0KPiBJIGFtIHRy
+eWluZyB0byB1c2UgcHRocmVhZF9jb25kX3QgaW4gYSBYZW5vbWFpIGFwcGxpY2F0aW9uLiBXaGVu
+IGNvbXBpbGluZw0KPiBhbmQgbGlua2luZyB3aXRoIHRoZSBmbGFncyBmcm9tIHhlbm8tY29uZmln
+LCB0aGUgY29uZGl0aW9uIHZhcmlhYmxlIHN0b3BzDQo+IHdvcmtpbmcgYXMgZXhwZWN0ZWQuIEl0
+IHNlZW1zIGFzIGlmIHB0aHJlYWRfY29uZF93YWl0KCkgd291bGQgbmV2ZXINCj4gcmV0dXJuLg0K
+Pg0KPiBJcyB0aGlzIGEga25vd24gaXNzdWU/DQo+IChidXQgbW9zdCBwcm9iYWJseSBJIHRoaW5r
+IGl0J3MganVzdCBteSBmYXVsdCBhbmQgSSB3b3VsZCBiZSBnbGFkIGlmIHNvbWVvbmUNCj4gY291
+bGQgZ2l2ZSBtZSBhIGhpbnQpDQo+DQo+IEJUVywgImN5Y2xpY3Rlc3QgLU0iIChhbHNvIHVzZXMg
+cHRocmVhZF9jb25kX3QgdG8gc2lnbmFsIGEgcmVmcmVzaCkgZG9lcyBub3QNCj4gd29yayBhcyBl
+eHBlY3RlZCBlaXRoZXIuDQo+DQo+IFJlZ2FyZHMsDQo+IEphbg0KPg0KPiBVc2luZzoNCj4gLS0t
+LS0tLS0tLS0tDQo+IGlwaXBlLWFybSwgYnJhbmNoZWQgb2ZmIGF0IHRhZyBpcGlwZS1jb3JlLTQu
+MTkuMzMtYXJtLTIgeGVub21haS0zLCBicmFuY2hlZA0KPiBvZmYgYXQgNDQwNjVhMTA3IChtYXN0
+ZXIgQXByaWwgMjAxOSkgY3VzdG9tIGhhcmR3YXJlLCBTQU1BNUQyIFNvQw0KPg0KPiBUaGUgcHJv
+Z3JhbToNCj4gLS0tLS0tLS0tLS0tLS0tLS0tLS0tLQ0KPiAjaW5jbHVkZSA8cHRocmVhZC5oPg0K
+PiAjaW5jbHVkZSA8c3RkaW8uaD4NCj4gI2luY2x1ZGUgPHVuaXN0ZC5oPg0KPg0KPiBwdGhyZWFk
+X211dGV4X3QgbXV0ZXg7DQo+IHB0aHJlYWRfY29uZF90IGNvbmQ7DQo+DQo+IHZvaWQqDQo+IHRh
+c2sodm9pZCogYXJnKQ0KPiB7DQo+ICAgICAodm9pZCkgYXJnOw0KPiAgICAgcHJpbnRmKCJ0YXNr
+XG4iKTsNCj4gICAgIGZvciAoaW50IGkgPSAwOyBpIDwgMzsgKytpKQ0KPiAgICAgew0KPiAgICAg
+ICAgIHB0aHJlYWRfbXV0ZXhfbG9jaygmbXV0ZXgpOw0KPiAgICAgICAgIHB0aHJlYWRfY29uZF93
+YWl0KCZjb25kLCAmbXV0ZXgpOw0KPiAgICAgICAgIHB0aHJlYWRfbXV0ZXhfdW5sb2NrKCZtdXRl
+eCk7DQo+ICAgICAgICAgcHJpbnRmKCJ0YXNrOiBjb25kaXRpb24gc2lnbmFsZWQgKGk9JWQpXG4i
+LCBpKTsNCj4gICAgIH0NCj4gICAgIHByaW50ZigidGFzazogZG9uZVxuIik7DQo+ICAgICByZXR1
+cm4gTlVMTDsNCj4gfQ0KPg0KPiBpbnQNCj4gbWFpbigpDQo+IHsNCj4gICAgIHByaW50ZigibWFp
+blxuIik7DQo+DQo+ICAgICBwdGhyZWFkX211dGV4X2luaXQoJm11dGV4LCBOVUxMKTsNCj4gICAg
+IHB0aHJlYWRfY29uZF9pbml0KCZjb25kLCBOVUxMKTsNCj4NCj4gICAgIHB0aHJlYWRfdCB0Ow0K
+PiAgICAgcHRocmVhZF9jcmVhdGUoJnQsIE5VTEwsIHRhc2ssIE5VTEwpOw0KPg0KPiAgICAgZm9y
+IChpbnQgaSA9IDA7IGkgPCAzOyArK2kpDQo+ICAgICB7DQo+ICAgICAgICAgc2xlZXAoMSk7DQo+
+ICAgICAgICAgcHRocmVhZF9jb25kX3NpZ25hbCgmY29uZCk7DQo+ICAgICAgICAgcHJpbnRmKCJt
+YWluOiBzaWduYWwoaT0lZClcbiIsIGkpOw0KPiAgICAgfQ0KPg0KPiAgICAgcHRocmVhZF9qb2lu
+KHQsIE5VTEwpOw0KPg0KPiAgICAgcHJpbnRmKCJtYWluOiBkb25lXG4iKTsNCj4gICAgIHJldHVy
+biAwOw0KPiB9DQo+DQo+IFdoZW4gY29tcGlsaW5nIHdpdGhvdXQgWGVub21haSB0aGUgb3V0cHV0
+IGlzOg0KPg0KPiBtYWluDQo+IHRhc2sNCj4gbWFpbjogc2lnbmFsKGk9MCkNCj4gdGFzazogY29u
+ZGl0aW9uIHNpZ25hbGVkIChpPTApDQo+IG1haW46IHNpZ25hbChpPTEpDQo+IHRhc2s6IGNvbmRp
+dGlvbiBzaWduYWxlZCAoaT0xKQ0KPiBtYWluOiBzaWduYWwoaT0yKQ0KPiB0YXNrOiBjb25kaXRp
+b24gc2lnbmFsZWQgKGk9MikNCj4gdGFzazogZG9uZQ0KPiBtYWluOiBkb25lDQo+DQo+IFdoZW4g
+Y29tcGlsaW5nIHdpdGggWGVub21haSB0aGUgb3V0cHV0IGlzOg0KPg0KPiBtYWluDQo+IHRhc2sN
+Cj4gbWFpbjogc2lnbmFsKGk9MCkNCj4gbWFpbjogc2lnbmFsKGk9MSkNCj4gbWFpbjogc2lnbmFs
+KGk9MikNCj4gXkMNCj4gKHB0aHJlYWRfam9pbigpIG5ldmVyIHJldHVybnMpDQo+DQo+IFRoZSBk
+aWZmZXJlbmNlIGluIE1ha2VmaWxlLmFtOg0KPiAtLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0t
+LS0NCj4NCj4gYmluX1BST0dSQU1TID0gdGVzdC1jb25kaXRpb24teGVubyB0ZXN0LWNvbmRpdGlv
+bi1saW51eA0KPg0KPiB0ZXN0X2NvbmRpdGlvbl9saW51eF9TT1VSQ0VTID0gY29uZGl0aW9uX2Mu
+Yw0KPiB0ZXN0X2NvbmRpdGlvbl9saW51eF9MREZMQUdTID0gLXB0aHJlYWQNCj4NCj4gdGVzdF9j
+b25kaXRpb25feGVub19TT1VSQ0VTID0gY29uZGl0aW9uX2MuYw0KPiB0ZXN0X2NvbmRpdGlvbl94
+ZW5vX0NGTEFHUyA9ICQoc2hlbGwgeGVuby1jb25maWcgLS1za2luPXBvc2l4IC0tY2ZsYWdzKQ0K
+PiB0ZXN0X2NvbmRpdGlvbl94ZW5vX0xEQUREID0gJChzaGVsbCB4ZW5vLWNvbmZpZyAtLXNraW49
+cG9zaXggLS1sZGZsYWdzKQ0KPg0KPiBPdXRwdXQgZnJvbSAtLWR1bXAtY29uZmlnOg0KPiAtLS0t
+LS0tLS0tLS0tLS0tLS0tLS0tLS0tLQ0KPiBiYXNlZCBvbiBYZW5vbWFpL2NvYmFsdCB2My4xLWRl
+dmVsIC0tICM5NGU3MjlkNTMgKDIwMTktMDYtMDMgMTM6MzI6MjINCj4gKzAyMDApDQo+IENPTkZJ
+R19NTVU9MQ0KPiBDT05GSUdfWEVOT19CVUlMRF9BUkdTPSIgJy0tYnVpbGQ9eDg2XzY0LWxpbnV4
+Jw0KPiAnLS1ob3N0PWFybS1wb2t5LWxpbnV4LWdudWVhYmknICctLXRhcmdldD1hcm0tcG9reS1s
+aW51eC1nbnVlYWJpJw0KPiAnLS1wcmVmaXg9L3VzcicgJy0tZXhlY19wcmVmaXg9L3VzcicgJy0t
+YmluZGlyPS91c3IvYmluJw0KPiAnLS1zYmluZGlyPS91c3Ivc2JpbicgJy0tbGliZXhlY2Rpcj0v
+dXNyL2xpYmV4ZWMnICctLWRhdGFkaXI9L3Vzci9zaGFyZScNCj4gJy0tc3lzY29uZmRpcj0vZXRj
+JyAnLS1zaGFyZWRzdGF0ZWRpcj0vY29tJyAnLS1sb2NhbHN0YXRlZGlyPS92YXInDQo+ICctLWxp
+YmRpcj0vdXNyL2xpYicgJy0taW5jbHVkZWRpcj0vdXNyL2luY2x1ZGUveGVub21haScNCj4gJy0t
+b2xkaW5jbHVkZWRpcj0vdXNyL2luY2x1ZGUveGVub21haScgJy0taW5mb2Rpcj0vdXNyL3NoYXJl
+L2luZm8nDQo+ICctLW1hbmRpcj0vdXNyL3NoYXJlL21hbicgJy0tZGlzYWJsZS1zaWxlbnQtcnVs
+ZXMnDQo+ICctLXdpdGgtbGlidG9vbC1zeXNyb290PS9ob21lL2phbi95b2N0by9hZXJ0cm9uaWMy
+LjAtaW8vYnVpbGQtDQo+IGJldHJpZWIvdG1wL3dvcmsvY29ydGV4YTV0MmhmLXZmcC1wb2t5LWxp
+bnV4LWdudWVhYmkveGVub21haS8zK2dpdDk5OS0NCj4gcjAvcmVjaXBlLXN5c3Jvb3QnDQo+ICct
+LWRpc2FibGUtc3RhdGljJyAnLS1kaXNhYmxlLWFzeW5jLWNhbmNlbCcgJy0tZGlzYWJsZS1jbG9j
+ay1tb25vdG9uaWMtcmF3Jw0KPiAnLS13aXRoLWNvcmU9Y29iYWx0JyAnLS1lbmFibGUtZGVidWc9
+c3ltYm9scycgJy0tZGlzYWJsZS1kbG9wZW4tbGlicycNCj4gJy0tZGlzYWJsZS1kb2MtYnVpbGQn
+ICctLWRpc2FibGUtZm9ydGlmeScgJy0tZGlzYWJsZS1sb3Jlcy1jbG9jaycNCj4gJy0tZGlzYWJs
+ZS1wc2hhcmVkJyAnLS1kaXNhYmxlLXJlZ2lzdHJ5JyAnLS1kaXNhYmxlLXNtcCcgJy0tZGlzYWJs
+ZS10bHMnDQo+ICdidWlsZF9hbGlhcz14ODZfNjQtbGludXgnICdob3N0X2FsaWFzPWFybS1wb2t5
+LWxpbnV4LWdudWVhYmknDQo+ICd0YXJnZXRfYWxpYXM9YXJtLXBva3ktbGludXgtZ251ZWFiaScg
+J0NDPWFybS1wb2t5LWxpbnV4LWdudWVhYmktZ2NjIC0NCj4gbXRodW1iIC1tZnB1PXZmcCAtbWZs
+b2F0LWFiaT1oYXJkIC1tY3B1PWNvcnRleC1hNSAtZnN0YWNrLXByb3RlY3Rvci0NCj4gc3Ryb25n
+DQo+ICAtRF9GT1JUSUZZX1NPVVJDRT0yIC1XZm9ybWF0IC1XZm9ybWF0LXNlY3VyaXR5IC1XZXJy
+b3I9Zm9ybWF0LQ0KPiBzZWN1cml0eSAtLXN5c3Jvb3Q9L2hvbWUvamFuL3lvY3RvL2FlcnRyb25p
+YzIuMC1pby9idWlsZC0NCj4gYmV0cmllYi90bXAvd29yay9jb3J0ZXhhNXQyaGYtdmZwLXBva3kt
+bGludXgtZ251ZWFiaS94ZW5vbWFpLzMrZ2l0OTk5LQ0KPiByMC9yZWNpcGUtc3lzcm9vdCcNCj4g
+J0NGTEFHUz0gLU8yIC1waXBlIC1nIC1mZWxpbWluYXRlLXVudXNlZC1kZWJ1Zy10eXBlcw0KPiAt
+Zm1hY3JvLXByZWZpeC1tYXA9L2hvbWUvamFuL3lvY3RvL2FlcnRyb25pYzIuMC1pby9idWlsZC0N
+Cj4gYmV0cmllYi90bXAvd29yay9jb3J0ZXhhNXQyaGYtdmZwLXBva3ktbGludXgtZ251ZWFiaS94
+ZW5vbWFpLzMrZ2l0OTk5LQ0KPiByMD0vdXNyL3NyYy9kZWJ1Zy94ZW5vbWFpLzMrZ2l0OTk5LXIw
+DQo+DQo+IC1mZGVidWctcHJlZml4LW1hcD0vaG9tZS9qYW4veW9jdG8vYWVydHJvbmljMi4wLWlv
+L2J1aWxkLQ0KPiBiZXRyaWViL3RtcC93b3JrL2NvcnRleGE1dDJoZi12ZnAtcG9reS1saW51eC1n
+bnVlYWJpL3hlbm9tYWkvMytnaXQ5OTktDQo+IHIwPS91c3Ivc3JjL2RlYnVnL3hlbm9tYWkvMytn
+aXQ5OTktcjANCj4NCj4gLWZkZWJ1Zy1wcmVmaXgtbWFwPS9ob21lL2phbi95b2N0by9hZXJ0cm9u
+aWMyLjAtaW8vYnVpbGQtDQo+IGJldHJpZWIvdG1wL3dvcmsvY29ydGV4YTV0MmhmLXZmcC1wb2t5
+LWxpbnV4LWdudWVhYmkveGVub21haS8zK2dpdDk5OS0NCj4gcjAvcmVjaXBlLXN5c3Jvb3Q9DQo+
+DQo+IC1mZGVidWctcHJlZml4LW1hcD0vaG9tZS9qYW4veW9jdG8vYWVydHJvbmljMi4wLWlvL2J1
+aWxkLQ0KPiBiZXRyaWViL3RtcC93b3JrL2NvcnRleGE1dDJoZi12ZnAtcG9reS1saW51eC1nbnVl
+YWJpL3hlbm9tYWkvMytnaXQ5OTktDQo+IHIwL3JlY2lwZS1zeXNyb290LW5hdGl2ZT0NCj4gJyAn
+TERGTEFHUz0tV2wsLU8xIC1XbCwtLWhhc2gtc3R5bGU9Z251IC1XbCwtLWFzLW5lZWRlZCAtZnN0
+YWNrLXByb3RlY3Rvci0NCj4gc3Ryb25nIC1XbCwteixyZWxybywteixub3cnICdDUFBGTEFHUz0n
+DQo+ICdDUFA9YXJtLXBva3ktbGludXgtZ251ZWFiaS1nY2MgLUUNCj4gLS1zeXNyb290PS9ob21l
+L2phbi95b2N0by9hZXJ0cm9uaWMyLjAtaW8vYnVpbGQtDQo+IGJldHJpZWIvdG1wL3dvcmsvY29y
+dGV4YTV0MmhmLXZmcC1wb2t5LWxpbnV4LWdudWVhYmkveGVub21haS8zK2dpdDk5OS0NCj4gcjAv
+cmVjaXBlLXN5c3Jvb3QNCj4gIC1tdGh1bWIgLW1mcHU9dmZwIC1tZmxvYXQtYWJpPWhhcmQgLW1j
+cHU9Y29ydGV4LWE1IC1mc3RhY2stcHJvdGVjdG9yLQ0KPiBzdHJvbmcgIC1EX0ZPUlRJRllfU09V
+UkNFPTIgLVdmb3JtYXQgLVdmb3JtYXQtc2VjdXJpdHkgLQ0KPiBXZXJyb3I9Zm9ybWF0LXNlY3Vy
+aXR5Jw0KPiAnUEtHX0NPTkZJR19QQVRIPS9ob21lL2phbi95b2N0by9hZXJ0cm9uaWMyLjAtaW8v
+YnVpbGQtDQo+IGJldHJpZWIvdG1wL3dvcmsvY29ydGV4YTV0MmhmLXZmcC1wb2t5LWxpbnV4LWdu
+dWVhYmkveGVub21haS8zK2dpdDk5OS0NCj4gcjAvcmVjaXBlLXN5c3Jvb3QvdXNyL2xpYi9wa2dj
+b25maWc6L2hvbWUvamFuL3lvY3RvL2FlcnRyb25pYzIuMC1pby9idWlsZC0NCj4gYmV0cmllYi90
+bXAvd29yay9jb3J0ZXhhNXQyaGYtdmZwLXBva3ktbGludXgtZ251ZWFiaS94ZW5vbWFpLzMrZ2l0
+OTk5LQ0KPiByMC9yZWNpcGUtc3lzcm9vdC91c3Ivc2hhcmUvcGtnY29uZmlnJw0KPiAnUEtHX0NP
+TkZJR19MSUJESVI9L2hvbWUvamFuL3lvY3RvL2FlcnRyb25pYzIuMC1pby9idWlsZC0NCj4gYmV0
+cmllYi90bXAvd29yay9jb3J0ZXhhNXQyaGYtdmZwLXBva3ktbGludXgtZ251ZWFiaS94ZW5vbWFp
+LzMrZ2l0OTk5LQ0KPiByMC9yZWNpcGUtc3lzcm9vdC91c3IvbGliL3BrZ2NvbmZpZyciDQo+IENP
+TkZJR19YRU5PX0JVSUxEX1NUUklORz0ieDg2XzY0LXBjLWxpbnV4LWdudSINCj4gQ09ORklHX1hF
+Tk9fQ09CQUxUPTENCj4gQ09ORklHX1hFTk9fQ09NUElMRVI9ImdjYyB2ZXJzaW9uIDkuMi4wIChH
+Q0MpICINCj4gQ09ORklHX1hFTk9fREVGQVVMVF9QRVJJT0Q9MTAwMDAwMA0KPiBDT05GSUdfWEVO
+T19GT1JUSUZZPTENCj4gQ09ORklHX1hFTk9fSEVBUE1FTT0xDQo+IENPTkZJR19YRU5PX0hPU1Rf
+U1RSSU5HPSJhcm0tcG9reS1saW51eC1nbnVlYWJpIg0KPiBDT05GSUdfWEVOT19MT1JFU19DTE9D
+S19ESVNBQkxFRD0xDQo+IENPTkZJR19YRU5PX1BSRUZJWD0iL3VzciINCj4gQ09ORklHX1hFTk9f
+UkVWSVNJT05fTEVWRUw9OTANCj4gQ09ORklHX1hFTk9fU0FOSVRZPTENCj4gQ09ORklHX1hFTk9f
+VExTX01PREVMPSJpbml0aWFsLWV4ZWMiDQo+IENPTkZJR19YRU5PX1VBUElfTEVWRUw9MTUNCj4g
+Q09ORklHX1hFTk9fVkVSU0lPTl9NQUpPUj0zDQo+IENPTkZJR19YRU5PX1ZFUlNJT05fTUlOT1I9
+MA0KPiBDT05GSUdfWEVOT19WRVJTSU9OX1NUUklORz0iMy4xLWRldmVsIg0KPiAtLS0NCj4gQ09O
+RklHX1NNUCBpcyBPRkYNCj4gQ09ORklHX1hFTk9fQVNZTkNfQ0FOQ0VMIGlzIE9GRg0KPiBDT05G
+SUdfWEVOT19DT1BQRVJQTEFURV9DTE9DS19SRVNUUklDVEVEIGlzIE9GRg0KPiBDT05GSUdfWEVO
+T19ERUJVRyBpcyBPRkYgQ09ORklHX1hFTk9fREVCVUdfRlVMTCBpcyBPRkYNCj4gQ09ORklHX1hF
+Tk9fTEFaWV9TRVRTQ0hFRCBpcyBPRkYgQ09ORklHX1hFTk9fTElCU19ETE9QRU4gaXMgT0ZGDQo+
+IENPTkZJR19YRU5PX01FUkNVUlkgaXMgT0ZGIENPTkZJR19YRU5PX1BTSEFSRUQgaXMgT0ZGDQo+
+IENPTkZJR19YRU5PX1JBV19DTE9DS19FTkFCTEVEIGlzIE9GRiBDT05GSUdfWEVOT19SRUdJU1RS
+WSBpcw0KPiBPRkYgQ09ORklHX1hFTk9fUkVHSVNUUllfUk9PVCBpcyBPRkYgQ09ORklHX1hFTk9f
+VExTRiBpcyBPRkYNCj4gQ09ORklHX1hFTk9fVkFMR1JJTkRfQVBJIGlzIE9GRg0KPiBDT05GSUdf
+WEVOT19XT1JLQVJPVU5EX0NPTkRWQVJfUEkgaXMgT0ZGDQo+IENPTkZJR19YRU5PX1g4Nl9WU1lT
+Q0FMTCBpcyBPRkYNCj4gLS0tDQo+IFBUSFJFQURfU1RBQ0tfREVGQVVMVD02NTUzNg0KPiBBVVRP
+TUFUSUNfQk9PVFNUUkFQPTANCj4NCj4NCj4gTWl0IGZyZXVuZGxpY2hlbiBHcsO8w59lbg0KPg0K
+PiAqSmFuIExldXBvbGQqDQo+IEVudHdpY2tsdW5nDQo+IERldmVsb3BtZW50DQo+IC0tDQo+IC0t
+LS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0t
+LS0tLS0tLS0tLS0tLS0tLQ0KPiBSLVMtSSBMb2dvIDxodHRwczovL3d3dy5yc2ktZWxla3Ryb3Rl
+Y2huaWsuZGUvPg0KPg0KPiBSLVMtSSBFbGVrdHJvdGVjaG5payBHbWJIICYgQ28uIEtHDQo+IFdv
+ZWxrZXN0cmHDn2UgMTENCj4gRC04NTMwMSBTY2h3ZWl0ZW5raXJjaGVuDQo+IHd3dy5yc2ktZWxl
+a3Ryb3RlY2huaWsuZGUgPGh0dHBzOi8vd3d3LnJzaS1lbGVrdHJvdGVjaG5pay5kZS8+DQo+DQo+
+IFRlbDogKzQ5IDg0NDQgOTIwNC0zMg0KPiBGYXg6ICs0OSA4NDQ0IDkyMDQtNTANCj4gbGV1cG9s
+ZEByc2ktZWxla3Ryb3RlY2huaWsuZGUgPG1haWx0bzpsZXVwb2xkQHJzaS1lbGVrdHJvdGVjaG5p
+ay5kZT4NCj4gLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0t
+LS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tDQo+DQo+IEFtdHNnZXJpY2h0IEluZ29sc3RhZHQg
+LSBHbWJIOiBIUkIgMTkxMzI4IC0gS0c6IEhSQSAxNzAzNjMNCj4gR2VzY2jDpGZ0c2bDvGhyZXI6
+IERyLi1JbmcuIE1pY2hhZWwgU29yZywgRGlwbC4tSW5nLiBGcmFueiBTb3JnDQo+IFVTdC1JZE5y
+LjogREUgMTI4NTkyNTQ4DQo+DQo+DQoNCl9fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
+DQoNClRoaXMgbWVzc2FnZSBhbmQgYW55IGF0dGFjaG1lbnRzIGFyZSBzb2xlbHkgZm9yIHRoZSB1
+c2Ugb2YgdGhlIGludGVuZGVkIHJlY2lwaWVudHMuIFRoZXkgbWF5IGNvbnRhaW4gcHJpdmlsZWdl
+ZCBhbmQvb3IgY29uZmlkZW50aWFsIGluZm9ybWF0aW9uIG9yIG90aGVyIGluZm9ybWF0aW9uIHBy
+b3RlY3RlZCBmcm9tIGRpc2Nsb3N1cmUuIElmIHlvdSBhcmUgbm90IGFuIGludGVuZGVkIHJlY2lw
+aWVudCwgeW91IGFyZSBoZXJlYnkgbm90aWZpZWQgdGhhdCB5b3UgcmVjZWl2ZWQgdGhpcyBlbWFp
+bCBpbiBlcnJvciBhbmQgdGhhdCBhbnkgcmV2aWV3LCBkaXNzZW1pbmF0aW9uLCBkaXN0cmlidXRp
+b24gb3IgY29weWluZyBvZiB0aGlzIGVtYWlsIGFuZCBhbnkgYXR0YWNobWVudCBpcyBzdHJpY3Rs
+eSBwcm9oaWJpdGVkLiBJZiB5b3UgaGF2ZSByZWNlaXZlZCB0aGlzIGVtYWlsIGluIGVycm9yLCBw
+bGVhc2UgY29udGFjdCB0aGUgc2VuZGVyIGFuZCBkZWxldGUgdGhlIG1lc3NhZ2UgYW5kIGFueSBh
+dHRhY2htZW50IGZyb20geW91ciBzeXN0ZW0uDQoNCkFORFJJVFogSFlEUk8gR21iSA0KDQoNClJl
+Y2h0c2Zvcm0vIExlZ2FsIGZvcm06IEdlc2VsbHNjaGFmdCBtaXQgYmVzY2hyw6Rua3RlciBIYWZ0
+dW5nIC8gQ29ycG9yYXRpb24NCg0KRmlybWVuc2l0ei8gUmVnaXN0ZXJlZCBzZWF0OiBXaWVuDQoN
+CkZpcm1lbmJ1Y2hnZXJpY2h0LyBDb3VydCBvZiByZWdpc3RyeTogSGFuZGVsc2dlcmljaHQgV2ll
+bg0KDQpGaXJtZW5idWNobnVtbWVyLyBDb21wYW55IHJlZ2lzdHJhdGlvbjogRk4gNjE4MzMgZw0K
+DQpEVlI6IDA2MDUwNzcNCg0KVUlELU5yLjogQVRVMTQ3NTY4MDYNCg0KDQpUaGFuayBZb3UNCl9f
+X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fDQo=
 
-also latency numbers are crazy with avg being 1678.126 usec w/ worst case
-being 15463.240usec
-
-at this point, I'm not sure which way to go:
-
-1) do I hunt down issues in HPET failing w/ KVM mode enabled?
-2) just go to dovetail
-3) ???
-
-
-Rob Miller
-rob.miller@broadcom.com
-(919)721-3339
-
-
-On Wed, Oct 23, 2019 at 5:02 PM Rob Miller <rob.miller@broadcom.com> wrote:
-
-> Downgrading to 3.1.0 doesn't help
->
-> so in summary, removing the enable-kvm cmdline option and adding -no-hpet
-> seems to allow Xenomai to startup at least. Will now start the latency
-> tests, ect...
->
-> Rob Miller
-> rob.miller@broadcom.com
-> (919)721-3339
->
->
-> On Wed, Oct 23, 2019 at 3:52 PM Rob Miller <rob.miller@broadcom.com>
-> wrote:
->
->> I found that if I remove the -enable-kvm and add -no-hpet, I'm able to
->> get Xenomi up-n-running on the stock xenomai-images. Adding -no-hpet alone
->> didn't help. Also, when the enable-kvm is disabled, the bootup time is
->> ~10-20 slower, but does boot.
->>
->> Further, just removing the enable-kvm flag, results in the stock image
->> never booting...or at least I gave up after 5 min's waiting.
->>
->> I will try to downgrade QEMU to 3.1.0
->>
->> Rob Miller
->> rob.miller@broadcom.com
->> (919)721-3339
->>
->>
->> On Wed, Oct 23, 2019 at 12:07 PM Rob Miller <rob.miller@broadcom.com>
->> wrote:
->>
->>> Mine a little newer
->>>
->>> QEMU emulator version 4.0.50
->>> Copyright (c) 2003-2019 Fabrice Bellard and the QEMU Project developers
->>>
->>> Rob Miller
->>> rob.miller@broadcom.com
->>> (919)721-3339
->>>
->>>
->>> On Wed, Oct 23, 2019 at 9:26 AM Gylstorff Quirin via Xenomai <
->>> xenomai@xenomai.org> wrote:
->>>
->>>>
->>>>
->>>> On 10/23/19 2:48 PM, Rob Miller via Xenomai wrote:
->>>> > Interestingly, I also get the exact same failure on the xenomai-images
->>>> > pulled from the git repo.
->>>> >
->>>> > the errors start right off the bat with:
->>>> >
->>>> > tsc: Fast calibration failed
->>>> > tsc: Unable to calibrate against PIT
->>>> > tsc: No reference (HPET/PMTIMER) available
->>>> > ..
->>>> > ..
->>>> > clocksource: hpet: mask: 0xffffffff max_cycles: 0xffffffff,
->>>> max_idle_ns:
->>>> > 19112604467 ns
->>>> > hpet clock event registered
->>>> > tsc: Fast calibration failed
->>>> > tsc: Unable to calibrate against PIT
->>>> > tsc: No reference (HPET/PMTIMER) available
->>>> > tsc: Marking TSC unstable due to could not calculate TSC khz
->>>> <---
->>>> > kiss of death I believe as Cobalt sees the flag and errors out
->>>> > ..
->>>> > ..
->>>> > hpet0: at MMIO 0xfed00000, IRQs 2, 8, 0
->>>> > hpet0: 3 comparators , 64-bit 100.000000 MHz counter
->>>> > clocksource: Switched to clocksource hpet
->>>> > ..
->>>> > ..
->>>> > [Xenomai] scheduling class idle registered
->>>> > [Xenomai] scheduling class weak registered
->>>> > [Xenomai] scheduling class tp registered
->>>> > [Xenomai] scheduling class pss registered
->>>> > [Xenomai] scheduling class quota registered
->>>> > [Xenomai] scheduling class rt registered
->>>> > I-pipe: high-resolution clock not working               <--- I
->>>> believe this
->>>> > looks at the TSC marked as being unstable flag set above and bails out
->>>> > [Xenomai] init failed, code -19
->>>> >
->>>> > I dug into the unstable issues on my VM (ie: non xenomai-images
->>>> repo), and
->>>> > found that tsc_read_refs(*ref, hpet) is where the problem lies in
->>>> either
->>>> > whether using using hpet or not, either the returned ref value is 0
->>>> (when
->>>> > hpet == 1), or the amount of time is took to read from PM (hpet == 0)
->>>> took
->>>> > forever (ie: 100000+ cycles) which is at least 2x the SMI_THRESHOLD
->>>> vlaue
->>>> > that is allowed in the code. My guess is that even when using the
->>>> stock
->>>> > xenomai-images directly, I'll have the same situation.
->>>> >
->>>> > I read about SMI issues, and given the cycle allowance for SMI
->>>> > interruptions in the tsc_read_refs() functio, I focused on SMI. In my
->>>> VM
->>>> > (ie: non-stock images), I set the linux cmdline option
->>>> > xenomai.smi=disabled, but no love there either.
->>>> >
->>>> > Given that both my VM and the stock images fail, I'm now thinking QEMU
->>>> > version, or underlying host CPU issues, or TBD, is the issue, and
->>>> thought
->>>> > I'd first ask the community for guidance as to how to proceed.
->>>> >
->>>> > Thoughts ideas will be greatly appreciated.
->>>> >
->>>> What qemu version do you use?
->>>>
->>>> For our tests we use
->>>> QEMU emulator version 3.1.0 (Debian 1:3.1+dfsg-8+deb10u2).
->>>>
->>>>
->>>> Quirin
->>>>
->>>> --
->>>> Siemens AG
->>>> Corporate Technology
->>>> CT RDA IOT SES-DE
->>>>
->>>>
->>>>
->>>>
