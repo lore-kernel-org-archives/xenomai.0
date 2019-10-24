@@ -1,13 +1,19 @@
-Subject: Re: Process load balancing among CPU
-References: <32d2a7d6-c915-2cd1-3c74-c005a53fc708@numalliance.com>
- <c1ecb9c1-407b-dfa0-e1f4-12f786ccde54@web.de>
-From: =?UTF-8?Q?St=c3=a9phane_Ancelot?= <sancelot@numalliance.com>
-Message-ID: <e656ac41-3313-1efb-447a-9fcb0e3ba9da@numalliance.com>
-Date: Thu, 24 Oct 2019 12:21:25 +0200
+Subject: Re: Xenomai fails to start when running in QEMU VM
+References: <CAJPjb1LG3HTfUC0FFDATAkb3-6f=nj5J+6d+gdLL3yAwxt8avQ@mail.gmail.com>
+ <9224513f-51e2-1ddb-107f-58a1142b3085@siemens.com>
+ <CAJPjb1+d___e1BE3tk=us9WAr0HcW3QC5ROgWaRUMPXngudqpQ@mail.gmail.com>
+ <8148a617-8087-076e-f1f1-bd337e2c7a14@siemens.com>
+ <CAJPjb1KgLBHRq+myFgWATpOYi3ifUahj5G2f9VQe7YKgr0UhVQ@mail.gmail.com>
+ <CAJPjb1KwBgJp+Zx2CKjCK2y8C6Omj43EQCSm2CnSffbZ01AOSg@mail.gmail.com>
+ <CAJPjb1JYRu493q_zpBKDLRS9HhcGb-4YvZqr12nuQN0_JwC4gA@mail.gmail.com>
+ <CAJPjb1+qSBrqC5FX5j5E9awpBT6y6Z_wz8+oPR_=hQP_RsnBvA@mail.gmail.com>
+From: Jan Kiszka <jan.kiszka@web.de>
+Message-ID: <61b4cc10-1197-2e74-8fff-9c2878287390@web.de>
+Date: Thu, 24 Oct 2019 12:25:54 +0200
 MIME-Version: 1.0
-In-Reply-To: <c1ecb9c1-407b-dfa0-e1f4-12f786ccde54@web.de>
-Content-Language: fr
-Content-Type: text/plain; charset=utf-8; format=flowed
+In-Reply-To: <CAJPjb1+qSBrqC5FX5j5E9awpBT6y6Z_wz8+oPR_=hQP_RsnBvA@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
 Content-Transfer-Encoding: quoted-printable
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
@@ -17,34 +23,29 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jan Kiszka <jan.kiszka@web.de>, "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Rob Miller <rob.miller@broadcom.com>, xenomai <xenomai@xenomai.org>
 
+On 23.10.19 23:23, Rob Miller via Xenomai wrote:
+> Correction, stock images work by removing the enable-kvm and *NOT *addin=
+g
+> the -no-hpet QEMU cmdline options.
+>
+> also latency numbers are crazy with avg being 1678.126 usec w/ worst cas=
+e
+> being 15463.240usec
+>
+> at this point, I'm not sure which way to go:
+>
+> 1) do I hunt down issues in HPET failing w/ KVM mode enabled?
+> 2) just go to dovetail
+> 3) ???
 
-Le 24/10/2019 =C3=A0 12:13, Jan Kiszka a =C3=A9crit=C2=A0:
-> On 24.10.19 10:00, St=C3=A9phane Ancelot via Xenomai wrote:
->> Hi,
->>
->> In our system, I noticed maybe a setup problem, or a xenomai related
->> setup problem regarding user processes.
->>
->> I have 2 user tasks that does not use RT (but xenomai shared memory
->> access), I noticed that if these both tasks were consuming 50% of the
->> CPU they were not migrated on other cpus.
->>
->> There is no CPU affinity setup in these programs , so I kept the kerne=
-l
->> scheduler doing its job.
->>
->> Is this a bad kernel setting or xenomai setting=C2=A0 to allow process=
- cpu
->> migration for user processes ?
-> There is - by design - no automatic load balancing for Xenomai threads.
-> The common case is static schedules /wrt RT task for each CPU.
+Don't have a the reference image around, but I'm pretty sure it would
+work here with QEMU 4300b7c2cd9f3f273804e8cca325842ccb93b1ad (post 4.1)
+and KVM from 5.3.6. At least a different image is being used like that
+for ages, and kernel config in xenomai-image is basically derived from it.
 
-This is not an RT thread, this is a userspace non rt task linking=20
-xenomai heap shared memory.
+For the xenomai-images check, did you use "start-qemu.sh x86" as-is?
 
-having a look at this page, the documentation states cpu_affinity=20
-Defaults to any online CPU.
+Jan
 
-> Jan
