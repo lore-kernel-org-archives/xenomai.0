@@ -1,16 +1,23 @@
-Subject: Re: Process load balancing among CPU
-References: <32d2a7d6-c915-2cd1-3c74-c005a53fc708@numalliance.com>
- <c1ecb9c1-407b-dfa0-e1f4-12f786ccde54@web.de>
- <e656ac41-3313-1efb-447a-9fcb0e3ba9da@numalliance.com>
- <e8932933-70d7-096e-eb72-083836b28104@web.de>
-From: =?UTF-8?Q?St=c3=a9phane_Ancelot?= <sancelot@numalliance.com>
-Message-ID: <a5302983-26c1-b17a-4ca3-890c995d9bf5@numalliance.com>
-Date: Thu, 24 Oct 2019 16:00:34 +0200
+Date: Thu, 24 Oct 2019 16:21:57 +0200
+From: Henning Schild <henning.schild@siemens.com>
+Subject: Re: Xenomai fails to start when running in QEMU VM
+Message-ID: <20191024162157.3a1e521b@md1za8fc.ad001.siemens.net>
+In-Reply-To: <CAJPjb1LYUuiS7ZRqnKW5rDj8i23gjpthR1Nz+7AU7dkXO-GUyQ@mail.gmail.com>
+References: <CAJPjb1LG3HTfUC0FFDATAkb3-6f=nj5J+6d+gdLL3yAwxt8avQ@mail.gmail.com>
+ <9224513f-51e2-1ddb-107f-58a1142b3085@siemens.com>
+ <CAJPjb1+d___e1BE3tk=us9WAr0HcW3QC5ROgWaRUMPXngudqpQ@mail.gmail.com>
+ <8148a617-8087-076e-f1f1-bd337e2c7a14@siemens.com>
+ <CAJPjb1KgLBHRq+myFgWATpOYi3ifUahj5G2f9VQe7YKgr0UhVQ@mail.gmail.com>
+ <CAJPjb1KwBgJp+Zx2CKjCK2y8C6Omj43EQCSm2CnSffbZ01AOSg@mail.gmail.com>
+ <CAJPjb1JYRu493q_zpBKDLRS9HhcGb-4YvZqr12nuQN0_JwC4gA@mail.gmail.com>
+ <CAJPjb1+qSBrqC5FX5j5E9awpBT6y6Z_wz8+oPR_=hQP_RsnBvA@mail.gmail.com>
+ <61b4cc10-1197-2e74-8fff-9c2878287390@web.de>
+ <CAJPjb1JCojSH_TmL0jwkBpCVhzNEJbPKsNMVkr_p5Wq2LLE+aQ@mail.gmail.com>
+ <96377681-69a9-e2c5-d454-9732bc785938@web.de>
+ <CAJPjb1LYUuiS7ZRqnKW5rDj8i23gjpthR1Nz+7AU7dkXO-GUyQ@mail.gmail.com>
 MIME-Version: 1.0
-In-Reply-To: <e8932933-70d7-096e-eb72-083836b28104@web.de>
-Content-Language: fr
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -19,53 +26,91 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jan Kiszka <jan.kiszka@web.de>, "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Rob Miller via Xenomai <xenomai@xenomai.org>
+Cc: Rob Miller <rob.miller@broadcom.com>, Jan Kiszka <jan.kiszka@web.de>
+
+Can you provide some more detail on the host-machine? What hardware,
+which kernel are you using, where is the kernel config coming from?
+
+There must be something "unusual" in your setup.
+
+Henning
+
+Am Thu, 24 Oct 2019 09:38:23 -0400
+schrieb Rob Miller via Xenomai <xenomai@xenomai.org>:
+
+> responses in-line...
+> 
+> Rob Miller
+> rob.miller@broadcom.com
+> (919)721-3339
+> 
+> 
+> On Thu, Oct 24, 2019 at 8:12 AM Jan Kiszka <jan.kiszka@web.de> wrote:
+> 
+> > On 24.10.19 13:46, Rob Miller wrote:  
+> > > Pls see below
+> > >
+> > > Rob Miller
+> > > rob.miller@broadcom.com <mailto:rob.miller@broadcom.com>
+> > > (919)721-3339
+> > >
+> > >
+> > > On Thu, Oct 24, 2019 at 6:25 AM Jan Kiszka <jan.kiszka@web.de
+> > > <mailto:jan.kiszka@web.de>> wrote:
+> > >
+> > >     On 23.10.19 23:23, Rob Miller via Xenomai wrote:  
+> > >     > Correction, stock images work by removing the enable-kvm
+> > >     > and *NOT  
+> > >     *adding  
+> > >     > the -no-hpet QEMU cmdline options.
+> > >     >
+> > >     > also latency numbers are crazy with avg being 1678.126 usec
+> > >     > w/  
+> > >     worst case  
+> > >     > being 15463.240usec
+> > >     >
+> > >     > at this point, I'm not sure which way to go:
+> > >     >
+> > >     > 1) do I hunt down issues in HPET failing w/ KVM mode
+> > >     > enabled? 2) just go to dovetail
+> > >     > 3) ???  
+> > >
+> > >     Don't have a the reference image around, but I'm pretty sure
+> > > it would work here with QEMU
+> > > 4300b7c2cd9f3f273804e8cca325842ccb93b1ad (post  
+> > 4.1)  
+> > >     and KVM from 5.3.6. At least a different image is being used
+> > > like  
+> > that  
+> > >     for ages, and kernel config in xenomai-image is basically
+> > > derived from it.
+> > >  
+> > > RJM>] Will try  
+> > >
+> > >
+> > >     For the xenomai-images check, did you use "start-qemu.sh x86"
+> > > as-is? 
+> > > RJM>] Yes, my 1st failed attempts used unmodified start-qemu.sh
+> > > RJM>x86,  
+> > > then I mod'd the file to remove the -enable-kvm, and it started
+> > > to work UNTIL also added -no-hpet, then I can't even boot up.
+> > >  
+> >
+> > Number of host cores >= number of guest CPUs? If not, reduce -smp
+> > in the QEMU invocation.
+> >
+> RJM>] yup, host has 16 cores whilst guest has 4 (using the stock
+> RJM>images).  
+> 
+> >
+> > Oh, and don't expect any kind of determinism in these setups. KVM
+> > and QEMU are for functional testing only.
+> >
+> RJM>] Ah, good to know.  
+> 
+> >
+> > Jan
+> >  
 
 
-Le 24/10/2019 =C3=A0 12:28, Jan Kiszka a =C3=A9crit=C2=A0:
-> On 24.10.19 12:21, St=C3=A9phane Ancelot wrote:
->> Le 24/10/2019 =C3=A0 12:13, Jan Kiszka a =C3=A9crit=C2=A0:
->>> On 24.10.19 10:00, St=C3=A9phane Ancelot via Xenomai wrote:
->>>> Hi,
->>>>
->>>> In our system, I noticed maybe a setup problem, or a xenomai related
->>>> setup problem regarding user processes.
->>>>
->>>> I have 2 user tasks that does not use RT (but xenomai shared memory
->>>> access), I noticed that if these both tasks were consuming 50% of th=
-e
->>>> CPU they were not migrated on other cpus.
->>>>
->>>> There is no CPU affinity setup in these programs , so I kept the ker=
-nel
->>>> scheduler doing its job.
->>>>
->>>> Is this a bad kernel setting or xenomai setting=C2=A0 to allow proce=
-ss cpu
->>>> migration for user processes ?
->>> There is - by design - no automatic load balancing for Xenomai thread=
-s.
->>> The common case is static schedules /wrt RT task for each CPU.
->> This is not an RT thread, this is a userspace non rt task linking
->> xenomai heap shared memory.
->>
->> having a look at this page, the documentation states=C2=A0 cpu_affinit=
-y
->> Defaults to any online CPU.
-> As long as that non-RT task is in Linux mode and has an affinity mask
-> that is not reduced to the single core, Linux will happily load-balance
-> it. But if that task went through shadowing by Xenomai, its affinity
-> mask was likely reduced.
-
-A tunable should permit to change it, but it has no effect
-
- =C2=A0=C2=A0=C2=A0 cpu_set_t cpus;
- =C2=A0=C2=A0=C2=A0 CPU_ZERO(&cpus);
- =C2=A0=C2=A0=C2=A0 CPU_SET(0,&cpus);
- =C2=A0=C2=A0=C2=A0 CPU_SET(1,&cpus);
- =C2=A0=C2=A0=C2=A0 CPU_SET(2,&cpus);
- =C2=A0=C2=A0=C2=A0 CPU_SET(3,&cpus);
-
- =C2=A0=C2=A0=C2=A0 set_config_tunable(cpu_affinity,cpus);
-
-> Jan
