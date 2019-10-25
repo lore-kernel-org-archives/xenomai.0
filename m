@@ -1,18 +1,13 @@
-Subject: Re: Process load balancing among CPU
-References: <32d2a7d6-c915-2cd1-3c74-c005a53fc708@numalliance.com>
- <c1ecb9c1-407b-dfa0-e1f4-12f786ccde54@web.de>
- <e656ac41-3313-1efb-447a-9fcb0e3ba9da@numalliance.com>
- <e8932933-70d7-096e-eb72-083836b28104@web.de>
- <a5302983-26c1-b17a-4ca3-890c995d9bf5@numalliance.com>
- <VI1PR05MB591782B439FBA39C480BB938F66A0@VI1PR05MB5917.eurprd05.prod.outlook.com>
-From: =?UTF-8?Q?St=c3=a9phane_Ancelot?= <sancelot@numalliance.com>
-Message-ID: <201098e0-5032-b0f2-1f9d-2e62653708c9@numalliance.com>
-Date: Thu, 24 Oct 2019 17:04:42 +0200
+Subject: Re: problem with sessions in xenomai 3.1
+References: <86e02eb5015e1b4754b8dbe367e62497.squirrel@mail.ige-grenoble.fr>
+From: Jan Kiszka <jan.kiszka@siemens.com>
+Message-ID: <23734e17-9a6a-20d9-5acf-76243dd99f16@siemens.com>
+Date: Fri, 25 Oct 2019 19:05:25 +0200
 MIME-Version: 1.0
-In-Reply-To: <VI1PR05MB591782B439FBA39C480BB938F66A0@VI1PR05MB5917.eurprd05.prod.outlook.com>
-Content-Language: fr
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: quoted-printable
+In-Reply-To: <86e02eb5015e1b4754b8dbe367e62497.squirrel@mail.ige-grenoble.fr>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -21,113 +16,77 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
+To: davy.regneau@univ-grenoble-alpes.fr, xenomai@xenomai.org
 
+On 24.10.19 10:41, Davy via Xenomai wrote:
+> Hi,
+> 
+> Shared sessions do not seem to work with Xenomai 3.1.
+> I made this simple code to test it :
+> 
+> 
+> RT_TASK task;
+> 
+> void foo(){
+> 	while(1){
+> 		printf("Hello !\n");
+> 		rt_task_sleep(2000000000);
+> 	}
+> }
+> 
+> int main(int argc, char *argv[]){
+> 	int n;
+>   	if (mlockall( MCL_CURRENT | MCL_FUTURE )!=0)
+>     		return 1;
+> 	if ((n=rt_task_spawn( &task, NULL, 0, 99, T_JOINABLE, &foo, NULL))!=0){
+>     		rt_printf("rt_task_spawn error %d\n",n);
+>     		return 1;
+>   	}
+>   	rt_task_join(&task);
+> }
+> 
+> 
+> When I try to start 2 instance of this program with the same session
+> label, the second give me a segmentaion fault:
+> $ sudo ./foo --session=s
+> Erreur de segmentation
+> 
+> And this error appears in the kernel logs:
+> foo[11885]: segfault at 3387c25020 ip 00007fee025a73f9 sp 00007ffe2611cbd8
+> error 4 in libcopperplate.so.0.0.0[7fee0259c000+11000]
+> Code: 00 48 89 f8 48 03 47 18 74 51 4c 8b 4e 20 eb 17 90 44 89 c6 49 89 fa
+> 83 c6 01 4c 03 54 f0 08 4c 89 d6 74 33 48 89 f0 4c 89 ce <48> 2b 70 20 45
+> 31 c0 48 85 f6 41 0f 9f c0 48 c1 ee 3f 41 29 f0 75
+> 
+> 
+> I tested it with the kernel 4.19.66 patched with xenomai 3.1-rc1 and the
+> kernel 4.19.75 with the next branch and observed the same issue.
+> 
+> I also tried kernel 4.14.134 with xenomai 3.0.9 and it works. So I will
+> stay in this version for the moment.
+> 
+> 
+> My build :
+> $ /usr/xenomai/bin/xeno-config --info
+> Xenomai version: Xenomai/cobalt v3.1-rc2
+> Linux XportNew 4.19.75-xenomai-3.1 #2 SMP PREEMPT Wed Oct 23 14:34:21 CEST
+> 2019 x86_64 GNU/Linux
+> Kernel parameters: BOOT_IMAGE=/boot/vmlinuz-4.19.75-xenomai-3.1
+> root=/dev/mapper/isw_bdaaiafbje_Volume11 ro dmraid=true quiet splash nopat
+> crashkernel=384M-:128M
+> I-pipe release #7 detected
+> Cobalt core 3.1-rc2 detected
+> Compiler: gcc version 4.9.2 (Debian 4.9.2-10+deb8u1)
+> Build args: --with-core=cobalt --enable-smp --enable-pshared
+> 
 
-Le 24/10/2019 =C3=A0 16:27, Lange Norbert via Xenomai a =C3=A9crit=C2=A0:
-> Nothing has an effect, as the cobalt setup routine binds the main threa=
-d to the single core.
-> See: https://xenomai.org/pipermail/xenomai/2019-August/041381.html
->
-> Every thread you spawn will inherit the same affinity mask (with a sing=
-le bit set), and all options (tunables, cmdline) affect the mask *before*=
- the setup then  picks the current core as mask.
-> You will need to reset the affinity mask yourself.
->
-> Kind regards, Norbert
->
->> -----Original Message-----
->> From: Xenomai <xenomai-bounces@xenomai.org> On Behalf Of St=C3=A9phane
->> Ancelot via Xenomai
->> Sent: Donnerstag, 24. Oktober 2019 16:01
->> To: Jan Kiszka <jan.kiszka@web.de>; xenomai@xenomai.org
->> Subject: Re: Process load balancing among CPU
->>
->> NON-ANDRITZ SOURCE: BE CAUTIOUS WITH CONTENT, LINKS OR
->> ATTACHMENTS.
->>
->>
->> Le 24/10/2019 =C3=A0 12:28, Jan Kiszka a =C3=A9crit :
->>> On 24.10.19 12:21, St=C3=A9phane Ancelot wrote:
->>>> Le 24/10/2019 =C3=A0 12:13, Jan Kiszka a =C3=A9crit :
->>>>> On 24.10.19 10:00, St=C3=A9phane Ancelot via Xenomai wrote:
->>>>>> Hi,
->>>>>>
->>>>>> In our system, I noticed maybe a setup problem, or a xenomai
->>>>>> related setup problem regarding user processes.
->>>>>>
->>>>>> I have 2 user tasks that does not use RT (but xenomai shared memor=
-y
->>>>>> access), I noticed that if these both tasks were consuming 50% of
->>>>>> the CPU they were not migrated on other cpus.
->>>>>>
->>>>>> There is no CPU affinity setup in these programs , so I kept the
->>>>>> kernel scheduler doing its job.
->>>>>>
->>>>>> Is this a bad kernel setting or xenomai setting  to allow process
->>>>>> cpu migration for user processes ?
->>>>> There is - by design - no automatic load balancing for Xenomai thre=
-ads.
->>>>> The common case is static schedules /wrt RT task for each CPU.
->>>> This is not an RT thread, this is a userspace non rt task linking
->>>> xenomai heap shared memory.
->>>>
->>>> having a look at this page, the documentation states  cpu_affinity
->>>> Defaults to any online CPU.
->>> As long as that non-RT task is in Linux mode and has an affinity mask
->>> that is not reduced to the single core, Linux will happily
->>> load-balance it. But if that task went through shadowing by Xenomai,
->>> its affinity mask was likely reduced.
-That did it :
+Thanks for reporting! I didn't find time to reproduce this so far.
+Unless someone else is faster with debugging the reason, this may have
+to wait until after the upcoming conference week in Lyon.
 
-cpu_set_t my_set;
-CPU_ZERO(&my_set);
-CPU_SET(0,&my_set);
-CPU_SET(1,&my_set);
-..
-if (sched_setaffinity(0, sizeof(cpu_set_t), &my_set) < 0) {
-     perror("sched_setaffinity");
-}
+Jan
 
->> A tunable should permit to change it, but it has no effect
->>
->>       cpu_set_t cpus;
->>       CPU_ZERO(&cpus);
->>       CPU_SET(0,&cpus);
->>       CPU_SET(1,&cpus);
->>       CPU_SET(2,&cpus);
->>       CPU_SET(3,&cpus);
->>
->>       set_config_tunable(cpu_affinity,cpus);
->>
->>> Jan
-> ________________________________
->
-> This message and any attachments are solely for the use of the intended=
- recipients. They may contain privileged and/or confidential information =
-or other information protected from disclosure. If you are not an intende=
-d recipient, you are hereby notified that you received this email in erro=
-r and that any review, dissemination, distribution or copying of this ema=
-il and any attachment is strictly prohibited. If you have received this e=
-mail in error, please contact the sender and delete the message and any a=
-ttachment from your system.
->
-> ANDRITZ HYDRO GmbH
->
->
-> Rechtsform/ Legal form: Gesellschaft mit beschr=C3=A4nkter Haftung / Co=
-rporation
->
-> Firmensitz/ Registered seat: Wien
->
-> Firmenbuchgericht/ Court of registry: Handelsgericht Wien
->
-> Firmenbuchnummer/ Company registration: FN 61833 g
->
-> DVR: 0605077
->
-> UID-Nr.: ATU14756806
->
->
-> Thank You
-> ________________________________
+-- 
+Siemens AG, Corporate Technology, CT RDA IOT SES-DE
+Corporate Competence Center Embedded Linux
+
