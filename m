@@ -1,8 +1,8 @@
 Subject: Re: problem with sessions in xenomai 3.1
 References: <86e02eb5015e1b4754b8dbe367e62497.squirrel@mail.ige-grenoble.fr>
-From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <23734e17-9a6a-20d9-5acf-76243dd99f16@siemens.com>
-Date: Fri, 25 Oct 2019 19:05:25 +0200
+From: Philippe Gerum <rpm@xenomai.org>
+Message-ID: <64bfd5ea-6509-f4c9-ec7b-c79fb7619767@xenomai.org>
+Date: Sat, 26 Oct 2019 11:12:47 +0200
 MIME-Version: 1.0
 In-Reply-To: <86e02eb5015e1b4754b8dbe367e62497.squirrel@mail.ige-grenoble.fr>
 Content-Type: text/plain; charset=utf-8
@@ -18,7 +18,7 @@ List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: davy.regneau@univ-grenoble-alpes.fr, xenomai@xenomai.org
 
-On 24.10.19 10:41, Davy via Xenomai wrote:
+On 10/24/19 10:41 AM, Davy via Xenomai wrote:
 > Hi,
 > 
 > Shared sessions do not seem to work with Xenomai 3.1.
@@ -80,13 +80,8 @@ On 24.10.19 10:41, Davy via Xenomai wrote:
 > Build args: --with-core=cobalt --enable-smp --enable-pshared
 > 
 
-Thanks for reporting! I didn't find time to reproduce this so far.
-Unless someone else is faster with debugging the reason, this may have
-to wait until after the upcoming conference week in Lyon.
-
-Jan
+Confirmed. Issue is with the AVL support in pshared mode.
 
 -- 
-Siemens AG, Corporate Technology, CT RDA IOT SES-DE
-Corporate Competence Center Embedded Linux
+Philippe.
 
