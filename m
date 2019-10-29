@@ -1,12 +1,11 @@
-From: Wolfgang Denk <wd@denx.de>
-Subject: Re: =?utf-8?q?Re=3A?==?utf-8?q?_Xenomai=2Eorg?= homepage down
+From: Lange Norbert <norbert.lange@andritz.com>
+Subject: binding to iddp socket often blocks forever
+Date: Tue, 29 Oct 2019 16:31:57 +0000
+Message-ID: <DB8PR05MB5915DE0FD6015A0252EFEBE8F6610@DB8PR05MB5915.eurprd05.prod.outlook.com>
+Content-Language: en-US
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-In-reply-to: <30dd-5db71880-fd-21e4bb80@177122821>
-References: <30dd-5db71880-fd-21e4bb80@177122821>
-Date: Tue, 29 Oct 2019 09:27:06 +0100
-Message-Id: <20191029082706.A115E240034@gemini.denx.de>
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,40 +14,100 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: =?utf-8?q?Fran=C3=A7ois_Legal?= <devel@thom.fr.eu.org>
-Cc: Philippe Gerum <rpm@xenomai.org>, Per Oberg <pero@wolfram.com>, xenomai <xenomai@xenomai.org>
+To: "Xenomai (xenomai@xenomai.org)" <xenomai@xenomai.org>
 
-Dear François,
+Hello,
 
-In message <30dd-5db71880-fd-21e4bb80@177122821> you wrote:
->  
-> > > This morning/lunch the following did work: https://www.xenomai.org,
->  while these did not:  http://www.xenomai.org,  https://xenomai.org
-> > > 
-> > > Now it works as expected 
-> > 
-> > FWIW, there has been no intervention on the xenomai.org server since
-> this issue was reported. I'll have an in-depth look there anyway.
-> Thanks for the heads up.
+I have some problems with Xenomai 3.1rc2, the following function will often=
+ block after printing "b".
+This does not happen always and never happens when I run the program throug=
+h gdb, and I can't attach
+with gdb if its blocked.
+Using another port then -1 makes no difference, and there is a single XDDP =
+connection active at the time
+(on port #0), but this should be the first and only IDDP socket open.
 
-We also did not do anything on our side, either.  When I heard of
-the problems I tried it out from several addressesm, and all
-appeared to be working as expected.
+static int s_bindRtIpcEndpoint(int protocol, czstring pLabel, const int *pA=
+rgs, int *pErrno)
+{
+    int ret;
+    int __attribute__((cleanup(auto_closesocket_rt))) fd =3D  __RT(socket)(=
+AF_RTIPC, SOCK_DGRAM, protocol);
+    TEST_LOG_ERRNO_ERROR_M_SCOPE(fd < 0, *pErrno, "socket", -1);
+    printf("a\n");
+    if (protocol =3D=3D IPCPROTO_BUFP) {
+        size_t bufsz =3D 32768; /* bytes */
+        if (pArgs)
+            bufsz =3D *pArgs;
+        ret =3D setsockopt(fd, SOL_BUFP, BUFP_BUFSZ, &bufsz, sizeof(bufsz))=
+;
+        TEST_LOG_ERRNO_ERROR_M_SCOPE(ret !=3D 0, *pErrno, "setsockopt", -1)=
+;
+    }
 
->
-> Well, problem might have been on my side then.
-> Everything seems back to normal now.
+    if (pLabel)
+        setLabel(fd, protocol, pLabel);
 
-OK, thanks.
+    printf("b\n");
+    // bind first endpoint
+    struct sockaddr_ipc saddr =3D {AF_RTIPC, -1};
 
-Best regards,
+    ret =3D __RT(bind)(fd, (struct sockaddr *)&saddr, sizeof(saddr));
+    printf("c\n");
+    TEST_LOG_ERRNO_ERROR_M_SCOPE(ret !=3D 0, *pErrno, "bind", -1);
+    ret =3D fd;
+    fd =3D -1; // NOLINT(clang-analyzer-deadcode.DeadStores)
+    return ret;
+}
 
-Wolfgang Denk
+The function is called like this:
 
--- 
-DENX Software Engineering GmbH,      Managing Director: Wolfgang Denk
-HRB 165235 Munich, Office: Kirchenstr.5, D-82194 Groebenzell, Germany
-Phone: (+49)-8142-66989-10 Fax: (+49)-8142-66989-80 Email: wd@denx.de
-Generally speaking, there are other ways to accomplish whatever it is
-that you think you need ...                               - Doug Gwyn
+int tmp;
+s_bindRtIpcEndpoint(IPCPROTO_IDDP, NULL, NULL, &tmp);
+
+I really don't know how to tackle this, any hints?
+
+Mit besten Gr=FC=DFen / Kind regards
+
+NORBERT LANGE
+
+AT-RD3
+
+ANDRITZ HYDRO GmbH
+Eibesbrunnergasse 20
+1120 Vienna / AUSTRIA
+p: +43 50805 56684
+norbert.lange@andritz.com
+andritz.com
+
+________________________________
+
+This message and any attachments are solely for the use of the intended rec=
+ipients. They may contain privileged and/or confidential information or oth=
+er information protected from disclosure. If you are not an intended recipi=
+ent, you are hereby notified that you received this email in error and that=
+ any review, dissemination, distribution or copying of this email and any a=
+ttachment is strictly prohibited. If you have received this email in error,=
+ please contact the sender and delete the message and any attachment from y=
+our system.
+
+ANDRITZ HYDRO GmbH
+
+
+Rechtsform/ Legal form: Gesellschaft mit beschr=E4nkter Haftung / Corporati=
+on
+
+Firmensitz/ Registered seat: Wien
+
+Firmenbuchgericht/ Court of registry: Handelsgericht Wien
+
+Firmenbuchnummer/ Company registration: FN 61833 g
+
+DVR: 0605077
+
+UID-Nr.: ATU14756806
+
+
+Thank You
+________________________________
 
