@@ -1,15 +1,15 @@
 Subject: Re: Problem with cyclictest
-From: Joonyoung Shim <jy0922.shim@samsung.com>
-Message-ID: <41e5e0bc-7999-290b-27c3-429b2d187dad@samsung.com>
-Date: Thu, 31 Oct 2019 09:51:40 +0900
-MIME-Version: 1.0
-In-Reply-To: <76ef8a64-ef1f-2f58-3873-2e35b5442e23@xenomai.org>
-Content-Language: en-GB
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain; charset="utf-8"
 References: <CGME20191030012837epcas1p46e9ef2156d4d609aa4b913d13374a4f6@epcas1p4.samsung.com>
  <a7ca11a1-2210-8098-fb7d-07a55f4b0fcf@samsung.com>
  <76ef8a64-ef1f-2f58-3873-2e35b5442e23@xenomai.org>
+From: Jan Kiszka <jan.kiszka@siemens.com>
+Message-ID: <ce21182b-f342-87de-4fa0-5fbd6085e28a@siemens.com>
+Date: Fri, 1 Nov 2019 11:12:40 +0100
+MIME-Version: 1.0
+In-Reply-To: <76ef8a64-ef1f-2f58-3873-2e35b5442e23@xenomai.org>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -18,10 +18,9 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Philippe Gerum <rpm@xenomai.org>
-Cc: xenomai@xenomai.org
+To: Philippe Gerum <rpm@xenomai.org>, Joonyoung Shim <jy0922.shim@samsung.com>, xenomai@xenomai.org
 
-On 19. 10. 30. 오후 6:10, Philippe Gerum wrote:
+On 30.10.19 10:10, Philippe Gerum via Xenomai wrote:
 > On 10/30/19 2:32 AM, Joonyoung Shim via Xenomai wrote:
 >> Hi all,
 >>
@@ -50,7 +49,7 @@ On 19. 10. 30. 오후 6:10, Philippe Gerum wrote:
 > 
 > No valid reason for this, WARNSW should be disabled in a cleanup section.
 > 
->>From 5a640014bce0aecd55079b1e7cf8d2e1fc07ccd7 Mon Sep 17 00:00:00 2001
+> From 5a640014bce0aecd55079b1e7cf8d2e1fc07ccd7 Mon Sep 17 00:00:00 2001
 > From: Philippe Gerum <rpm@xenomai.org>
 > Date: Wed, 30 Oct 2019 10:03:26 +0100
 > Subject: [PATCH] demo/posix: cyclictest: prevent spurious WARNSW events on
@@ -78,5 +77,11 @@ On 19. 10. 30. 오후 6:10, Philippe Gerum wrote:
 >  
 > 
 
-Looks good to me, thanks for patch.
+Thanks, applied to next.
+
+Jan
+
+-- 
+Siemens AG, Corporate Technology, CT RDA IOT SES-DE
+Corporate Competence Center Embedded Linux
 
