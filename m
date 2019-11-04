@@ -1,14 +1,24 @@
-Subject: Re: binding to iddp socket often blocks forever
-References: <DB8PR05MB5915DE0FD6015A0252EFEBE8F6610@DB8PR05MB5915.eurprd05.prod.outlook.com>
- <DB8PR05MB5915CF27238C653EACF323AEF6610@DB8PR05MB5915.eurprd05.prod.outlook.com>
+Subject: Re: Xenomai fails to start when running in QEMU VM
+References: <CAJPjb1LG3HTfUC0FFDATAkb3-6f=nj5J+6d+gdLL3yAwxt8avQ@mail.gmail.com>
+ <9224513f-51e2-1ddb-107f-58a1142b3085@siemens.com>
+ <CAJPjb1+d___e1BE3tk=us9WAr0HcW3QC5ROgWaRUMPXngudqpQ@mail.gmail.com>
+ <8148a617-8087-076e-f1f1-bd337e2c7a14@siemens.com>
+ <CAJPjb1KgLBHRq+myFgWATpOYi3ifUahj5G2f9VQe7YKgr0UhVQ@mail.gmail.com>
+ <CAJPjb1KwBgJp+Zx2CKjCK2y8C6Omj43EQCSm2CnSffbZ01AOSg@mail.gmail.com>
+ <CAJPjb1JYRu493q_zpBKDLRS9HhcGb-4YvZqr12nuQN0_JwC4gA@mail.gmail.com>
+ <CAJPjb1+qSBrqC5FX5j5E9awpBT6y6Z_wz8+oPR_=hQP_RsnBvA@mail.gmail.com>
+ <61b4cc10-1197-2e74-8fff-9c2878287390@web.de>
+ <CAJPjb1JCojSH_TmL0jwkBpCVhzNEJbPKsNMVkr_p5Wq2LLE+aQ@mail.gmail.com>
+ <96377681-69a9-e2c5-d454-9732bc785938@web.de>
+ <CAJPjb1LYUuiS7ZRqnKW5rDj8i23gjpthR1Nz+7AU7dkXO-GUyQ@mail.gmail.com>
 From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <995694a2-6886-b425-9d5b-89834eabc50c@siemens.com>
-Date: Mon, 4 Nov 2019 11:54:59 +0100
+Message-ID: <138a84eb-d45a-7fd3-c175-43aaf31383bd@siemens.com>
+Date: Mon, 4 Nov 2019 12:24:07 +0100
 MIME-Version: 1.0
-In-Reply-To: <DB8PR05MB5915CF27238C653EACF323AEF6610@DB8PR05MB5915.eurprd05.prod.outlook.com>
-Content-Type: text/plain; charset="utf-8"
+In-Reply-To: <CAJPjb1LYUuiS7ZRqnKW5rDj8i23gjpthR1Nz+7AU7dkXO-GUyQ@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,153 +27,88 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Lange Norbert <norbert.lange@andritz.com>, "Xenomai (xenomai@xenomai.org)" <xenomai@xenomai.org>
+To: Rob Miller <rob.miller@broadcom.com>
+Cc: xenomai <xenomai@xenomai.org>
 
-On 29.10.19 17:54, Lange Norbert via Xenomai wrote:
-> Well, seems like my bootargs are related,
-> I tried to bind linux to Core #0 and leve the remaining for Xenomai,
-> Using "isolcpus=1-3 xenomai.supported_cpus=0x6"
+On 24.10.19 15:38, Rob Miller via Xenomai wrote:
+> responses in-line...
 > 
-> I get this Warning when the deadlock happens:
-> [  106.882123] [Xenomai] thread new_project[798] switched to non-rt CPU0, aborted.
+> Rob Miller
+> rob.miller@broadcom.com
+> (919)721-3339
 > 
-> I am not clear what happened, this is likely my non-rt thread suddenly running on the
-> non-Xenomai CPU, I don't know how it happened.
-> This is not the first Xenomai/cobalt function I am calling, I don't understand why its failing always at that point.
 > 
+> On Thu, Oct 24, 2019 at 8:12 AM Jan Kiszka <jan.kiszka@web.de> wrote:
+> 
+>> On 24.10.19 13:46, Rob Miller wrote:
+>>> Pls see below
+>>>
+>>> Rob Miller
+>>> rob.miller@broadcom.com <mailto:rob.miller@broadcom.com>
+>>> (919)721-3339
+>>>
+>>>
+>>> On Thu, Oct 24, 2019 at 6:25 AM Jan Kiszka <jan.kiszka@web.de
+>>> <mailto:jan.kiszka@web.de>> wrote:
+>>>
+>>>     On 23.10.19 23:23, Rob Miller via Xenomai wrote:
+>>>     > Correction, stock images work by removing the enable-kvm and *NOT
+>>>     *adding
+>>>     > the -no-hpet QEMU cmdline options.
+>>>     >
+>>>     > also latency numbers are crazy with avg being 1678.126 usec w/
+>>>     worst case
+>>>     > being 15463.240usec
+>>>     >
+>>>     > at this point, I'm not sure which way to go:
+>>>     >
+>>>     > 1) do I hunt down issues in HPET failing w/ KVM mode enabled?
+>>>     > 2) just go to dovetail
+>>>     > 3) ???
+>>>
+>>>     Don't have a the reference image around, but I'm pretty sure it would
+>>>     work here with QEMU 4300b7c2cd9f3f273804e8cca325842ccb93b1ad (post
+>> 4.1)
+>>>     and KVM from 5.3.6. At least a different image is being used like
+>> that
+>>>     for ages, and kernel config in xenomai-image is basically derived
+>>>     from it.
+>>>
+>>> RJM>] Will try
+>>>
+>>>
+>>>     For the xenomai-images check, did you use "start-qemu.sh x86" as-is?
+>>>
+>>> RJM>] Yes, my 1st failed attempts used unmodified start-qemu.sh x86,
+>>> then I mod'd the file to remove the -enable-kvm, and it started to work
+>>> UNTIL also added -no-hpet, then I can't even boot up.
+>>>
+>>
+>> Number of host cores >= number of guest CPUs? If not, reduce -smp in the
+>> QEMU invocation.
+>>
+> RJM>] yup, host has 16 cores whilst guest has 4 (using the stock images).
+> 
+>>
+>> Oh, and don't expect any kind of determinism in these setups. KVM and
+>> QEMU are for functional testing only.
+>>
+> RJM>] Ah, good to know.
+> 
+>>
+>> Jan
+>>
 
-Could you create an ftrace recording of the Xenomai events as well as
-some Linux core scheduling events? I typically use this:
+Were you able to resolve the mystery? I've just retest a fresh build of
+xenomai-images from master like this:
 
-trace-cmd record -e "cobalt*" -e sched -e signal
+kas-docker --isar build kas.yml:opt-xenomai-next.yml:board-qemu-amd64.yml
+
+And then I ran the result on my OpenSUSE 15.1 (qemu-3.1.1-lp151.7.3.3, 
+kernel-default-5.3.7-6.1.g387f2bb), and it worked. TSC calibration
+happened against PIT.
 
 Jan
-
->> -----Original Message-----
->> From: Xenomai <xenomai-bounces@xenomai.org> On Behalf Of Lange
->> Norbert via Xenomai
->> Sent: Dienstag, 29. Oktober 2019 17:32
->> To: Xenomai (xenomai@xenomai.org) <xenomai@xenomai.org>
->> Subject: binding to iddp socket often blocks forever
->>
->> NON-ANDRITZ SOURCE: BE CAUTIOUS WITH CONTENT, LINKS OR
->> ATTACHMENTS.
->>
->>
->> Hello,
->>
->> I have some problems with Xenomai 3.1rc2, the following function will often
->> block after printing "b".
->> This does not happen always and never happens when I run the program
->> through gdb, and I can't attach with gdb if its blocked.
->> Using another port then -1 makes no difference, and there is a single XDDP
->> connection active at the time (on port #0), but this should be the first and
->> only IDDP socket open.
->>
->> static int s_bindRtIpcEndpoint(int protocol, czstring pLabel, const int *pArgs,
->> int *pErrno) {
->>     int ret;
->>     int __attribute__((cleanup(auto_closesocket_rt))) fd =
->> __RT(socket)(AF_RTIPC, SOCK_DGRAM, protocol);
->>     TEST_LOG_ERRNO_ERROR_M_SCOPE(fd < 0, *pErrno, "socket", -1);
->>     printf("a\n");
->>     if (protocol == IPCPROTO_BUFP) {
->>         size_t bufsz = 32768; /* bytes */
->>         if (pArgs)
->>             bufsz = *pArgs;
->>         ret = setsockopt(fd, SOL_BUFP, BUFP_BUFSZ, &bufsz, sizeof(bufsz));
->>         TEST_LOG_ERRNO_ERROR_M_SCOPE(ret != 0, *pErrno, "setsockopt", -
->> 1);
->>     }
->>
->>     if (pLabel)
->>         setLabel(fd, protocol, pLabel);
->>
->>     printf("b\n");
->>     // bind first endpoint
->>     struct sockaddr_ipc saddr = {AF_RTIPC, -1};
->>
->>     ret = __RT(bind)(fd, (struct sockaddr *)&saddr, sizeof(saddr));
->>     printf("c\n");
->>     TEST_LOG_ERRNO_ERROR_M_SCOPE(ret != 0, *pErrno, "bind", -1);
->>     ret = fd;
->>     fd = -1; // NOLINT(clang-analyzer-deadcode.DeadStores)
->>     return ret;
->> }
->>
->> The function is called like this:
->>
->> int tmp;
->> s_bindRtIpcEndpoint(IPCPROTO_IDDP, NULL, NULL, &tmp);
->>
->> I really don't know how to tackle this, any hints?
->>
->> Mit besten Grüßen / Kind regards
->>
->> NORBERT LANGE
->>
->> AT-RD3
->>
->> ANDRITZ HYDRO GmbH
->> Eibesbrunnergasse 20
->> 1120 Vienna / AUSTRIA
->> p: +43 50805 56684
->> norbert.lange@andritz.com
->> andritz.com
->>
->> ________________________________
->>
->> This message and any attachments are solely for the use of the intended
->> recipients. They may contain privileged and/or confidential information or
->> other information protected from disclosure. If you are not an intended
->> recipient, you are hereby notified that you received this email in error and
->> that any review, dissemination, distribution or copying of this email and any
->> attachment is strictly prohibited. If you have received this email in error,
->> please contact the sender and delete the message and any attachment from
->> your system.
->>
->> ANDRITZ HYDRO GmbH
->>
->>
->> Rechtsform/ Legal form: Gesellschaft mit beschränkter Haftung / Corporation
->>
->> Firmensitz/ Registered seat: Wien
->>
->> Firmenbuchgericht/ Court of registry: Handelsgericht Wien
->>
->> Firmenbuchnummer/ Company registration: FN 61833 g
->>
->> DVR: 0605077
->>
->> UID-Nr.: ATU14756806
->>
->>
->> Thank You
->> ________________________________
-> 
-> ________________________________
-> 
-> This message and any attachments are solely for the use of the intended recipients. They may contain privileged and/or confidential information or other information protected from disclosure. If you are not an intended recipient, you are hereby notified that you received this email in error and that any review, dissemination, distribution or copying of this email and any attachment is strictly prohibited. If you have received this email in error, please contact the sender and delete the message and any attachment from your system.
-> 
-> ANDRITZ HYDRO GmbH
-> 
-> 
-> Rechtsform/ Legal form: Gesellschaft mit beschränkter Haftung / Corporation
-> 
-> Firmensitz/ Registered seat: Wien
-> 
-> Firmenbuchgericht/ Court of registry: Handelsgericht Wien
-> 
-> Firmenbuchnummer/ Company registration: FN 61833 g
-> 
-> DVR: 0605077
-> 
-> UID-Nr.: ATU14756806
-> 
-> 
-> Thank You
-> ________________________________
-> 
 
 -- 
 Siemens AG, Corporate Technology, CT RDA IOT SES-DE
