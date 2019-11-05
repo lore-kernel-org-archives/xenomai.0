@@ -1,9 +1,7 @@
 From: "Q. Gylstorff" <Quirin.Gylstorff@siemens.com>
-Subject: [xenomai-images PATCH 2/2] ci: add hikey test
-Date: Tue,  5 Nov 2019 17:22:39 +0100
-Message-Id: <20191105162239.18949-3-Quirin.Gylstorff@siemens.com>
-In-Reply-To: <20191105162239.18949-1-Quirin.Gylstorff@siemens.com>
-References: <20191105162239.18949-1-Quirin.Gylstorff@siemens.com>
+Subject: [xenomai-images PATCH 0/2] Add hikey test support
+Date: Tue,  5 Nov 2019 17:22:37 +0100
+Message-Id: <20191105162239.18949-1-Quirin.Gylstorff@siemens.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
@@ -18,37 +16,19 @@ To: xenomai@xenomai.org
 
 From: Quirin Gylstorff <quirin.gylstorff@siemens.com>
 
-add the hikey lava-test configuration to gitlab-ci.
+Add hikey as platform for xenomai arm64 tests on LAVA.
 
-Signed-off-by: Quirin Gylstorff <quirin.gylstorff@siemens.com>
----
- .gitlab-ci.yml | 13 ++++++++++++-
- 1 file changed, 12 insertions(+), 1 deletion(-)
+Quirin Gylstorff (2):
+  tests: hikey xenomai-tests
+  ci: add hikey test
 
-diff --git a/.gitlab-ci.yml b/.gitlab-ci.yml
-index 0974548..0abc256 100644
---- a/.gitlab-ci.yml
-+++ b/.gitlab-ci.yml
-@@ -90,7 +90,18 @@ build:board-hikey:
-   script:
-     - kas build kas.yml:board-hikey.yml:opt-lava-test.yml${BUILD_OPTIONS}
-     - scripts/deploy_for_testing.sh hikey
--# hikey is currently not part of the testlab
-+
-+lava-test:board-hikey:
-+  <<: *lava-ssh-key
-+  stage: lava-test
-+  script:
-+    - scripts/install-lavacli.sh
-+    - scripts/run-lava-tests.sh hikey
-+  needs: [ "build:board-hikey" ]
-+  only:
-+    variables:
-+      - $LAVA_SSH_USER
-+
- 
- build:board-beaglebone:
-   <<: *lava-ssh-key
+ .gitlab-ci.yml                             | 13 +++-
+ conf/machine/hikey.conf                    |  3 +
+ recipes-kernel/linux/files/arm64_defconfig |  6 +-
+ tests/jobs/xenomai-hikey.yml               | 72 ++++++++++++++++++++++
+ 4 files changed, 90 insertions(+), 4 deletions(-)
+ create mode 100644 tests/jobs/xenomai-hikey.yml
+
 -- 
 2.20.1
 
