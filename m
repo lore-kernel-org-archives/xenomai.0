@@ -1,13 +1,11 @@
+From: "Q. Gylstorff" <Quirin.Gylstorff@siemens.com>
+Subject: [xenomai-images PATCH 1/2] tests: hikey xenomai-tests
+Date: Tue,  5 Nov 2019 17:22:38 +0100
+Message-Id: <20191105162239.18949-2-Quirin.Gylstorff@siemens.com>
+In-Reply-To: <20191105162239.18949-1-Quirin.Gylstorff@siemens.com>
+References: <20191105162239.18949-1-Quirin.Gylstorff@siemens.com>
 MIME-Version: 1.0
-References: <CAFc1U0vzFoBeKNEU-dVjGVGgHTZZTbO46RN4u_afi5O8H-JBRw@mail.gmail.com>
- <0881ee04-8cd4-b817-0475-b39daf939d90@xenomai.org>
-In-Reply-To: <0881ee04-8cd4-b817-0475-b39daf939d90@xenomai.org>
-From: Pierre FICHEUX <pierre.ficheux@smile.fr>
-Date: Tue, 5 Nov 2019 17:13:43 +0100
-Message-ID: <CAFc1U0t6VHGiKGzL6ytHsXi0wAebWeX1bbq8MBScBJKjVnRBnw@mail.gmail.com>
-Subject: Re: UDD example for Pi 3 (GPIO / IRQ)
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,86 +14,132 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Philippe Gerum <rpm@xenomai.org>
-Cc: xenomai <xenomai@xenomai.org>
+To: xenomai@xenomai.org
 
-Thx a lot, "trust does not exclude control" (if using code from an
-intern...) -:))
+From: Quirin Gylstorff <quirin.gylstorff@siemens.com>
 
-regards
+For arm64 tests a hikey620 board is used. The board uses u-boot
+as bootloader to detect a USB2.0 Ethernet adapter to load the
+kernel, devicetree and rootfs.
 
-Le mar. 5 nov. 2019 =C3=A0 15:54, Philippe Gerum <rpm@xenomai.org> a =C3=A9=
-crit :
+The U-boot bootloader was build and deployed according [1].
 
-> On 2019-11-05 15:18, Pierre FICHEUX via Xenomai wrote:
-> > Hi all,
-> >
-> > I try to write a simple UDD example for Raspberry Pi 3 in order to
-> control
-> > a led (GPIO out) and button (GPIO in, IRQ). Example is based on
-> > https://xenomai.org/pipermail/xenomai/2017-February/037121.html (by
-> > Philippe !).
-> > It works fine for GPIO out (led is blinking)  but I can't get IRQ event
-> > from user space (ioctl from UDD driver seems not to be not called).
-> >
-> > # ./xenomai_udd_rpi_gpio
-> > Using GPIO 4 and period 100000000 ns
-> > IRQ thread starting
-> > thread_irq: fd=3D 0
-> > failed to enable signotify (-1)
-> > failed to enable interrupt (-1)
-> >
-> > It works fine in kernel space, irq_handler() function is registered and
-> > called.
-> >
-> > # cat /proc/xenomai/irq
-> >
-> >   IRQ         CPU0        CPU1        CPU2        CPU3
-> >
-> >    17:        1573        1587        1769         770         [timer/0=
-]
-> >
-> >   183:           0           0           0           0         rpi_gpio
-> >
-> >  1032:           0           0           0           0         [sync]
-> >
-> >  1033:           0           1           1           1
->  [timer-ipi]
-> >
-> >  1034:           0           1           1           1
->  [reschedule]
-> >
-> >  1035:           0           0           0           0         [virtual=
-]
-> >
-> >  1039:           0           0          17           0         [virtual=
-]
-> >
-> > # [  174.350733] Got IRQ !
-> >
-> > [  174.437832] Got IRQ !
-> >
-> > Source code is available from GitHub.
-> >
-> > https://github.com/pficheux/xenomai_examples
-> >
-> > Any Idea?
-> >
->
-> More coffee, louder rock, glasses with stronger correction for all of us,
-> old cranky meatballs:
->
-> -  if ((fd =3D open("/dev/rtdm/rpi_gpio", O_RDWR) < 0)) {
-> +  if ((fd =3D open("/dev/rtdm/rpi_gpio", O_RDWR)) < 0) {
->
-> --
-> Philippe.
->
+[1]: https://gitlab.denx.de/u-boot/u-boot/tree/master/board/hisilicon/hikey
+
+Signed-off-by: Quirin Gylstorff <quirin.gylstorff@siemens.com>
+---
+ conf/machine/hikey.conf                    |  2 +
+ recipes-kernel/linux/files/arm64_defconfig |  6 +-
+ tests/jobs/xenomai-hikey.yml               | 72 ++++++++++++++++++++++
+ 3 files changed, 77 insertions(+), 3 deletions(-)
+ create mode 100644 tests/jobs/xenomai-hikey.yml
+
+diff --git a/conf/machine/hikey.conf b/conf/machine/hikey.conf
+index 11cf635..c28c350 100644
+--- a/conf/machine/hikey.conf
++++ b/conf/machine/hikey.conf
+@@ -17,3 +17,5 @@ IMAGER_INSTALL += "${GRUB_BOOTLOADER_INSTALL}"
+ IMAGE_PREINSTALL_append = " firmware-ti-connectivity"
+ 
+ PREFERRED_VERSION_xenomai = "next"
++# DTB for testing
++DTB_FILE = "hi6220-hikey.dtb"
+diff --git a/recipes-kernel/linux/files/arm64_defconfig b/recipes-kernel/linux/files/arm64_defconfig
+index f1d7c31..d4e717e 100644
+--- a/recipes-kernel/linux/files/arm64_defconfig
++++ b/recipes-kernel/linux/files/arm64_defconfig
+@@ -2071,9 +2071,9 @@ CONFIG_USB_PEGASUS=m
+ CONFIG_USB_RTL8150=m
+ CONFIG_USB_RTL8152=m
+ # CONFIG_USB_LAN78XX is not set
+-CONFIG_USB_USBNET=m
+-CONFIG_USB_NET_AX8817X=m
+-CONFIG_USB_NET_AX88179_178A=m
++CONFIG_USB_USBNET=y
++CONFIG_USB_NET_AX8817X=y
++CONFIG_USB_NET_AX88179_178A=y
+ CONFIG_USB_NET_CDCETHER=m
+ # CONFIG_USB_NET_CDC_EEM is not set
+ CONFIG_USB_NET_CDC_NCM=m
+diff --git a/tests/jobs/xenomai-hikey.yml b/tests/jobs/xenomai-hikey.yml
+new file mode 100644
+index 0000000..3e52212
+--- /dev/null
++++ b/tests/jobs/xenomai-hikey.yml
+@@ -0,0 +1,72 @@
++#
++# Xenomai Real-Time System
++#
++# Copyright (c) Siemens AG, 2019
++#
++# Authors:
++#  Quirin Gylstorff <quirin.gylstorff@siemens.com>
++#
++# SPDX-License-Identifier: MIT
++#
++job_name: xenomai-test-suite
++device_type: hikey
++
++timeouts:
++  job:
++    minutes: 30
++  action:
++    minutes: 20
++  connection:
++    minutes: 2
++priority: medium
++visibility: public
++
++metadata:
++  docs-source: xenomai-hikey
++  docs-filename: pipeline-xenomai-hikey
++# ACTION_BLOCK
++actions:
++- deploy:
++    timeout:
++      minutes: 30
++    to: tftp
++    kernel:
++      url: ${DEPLOY_URL}/demo-image-xenomai-demo-hikey-vmlinuz
++      type: image
++    dtb:
++      url: ${DEPLOY_URL}/hi6220-hikey.dtb
++    nfsrootfs:
++      url: ${DEPLOY_URL}/demo-image-xenomai-demo-hikey.tar.gz
++      compression: gz
++#  BOOT_BLOCK
++- boot:
++    timeout:
++      minutes: 5
++    method: u-boot
++    commands: nfs
++    prompts: ["root@demo:"]
++    auto_login:
++      login_prompt: 'demo login:'
++      username: root
++      password_prompt: 'Password:'
++      password: root
++
++- test:
++    timeout:
++      minutes: 30
++    definitions:
++    - repository: http://git.linaro.org/lava-team/lava-functional-tests.git
++      from: git
++      path: lava-test-shell/smoke-tests-basic.yaml
++      name: smoke-tests
++    - repository:
++        metadata:
++          format: Lava-Test Test Definition 1.0
++          name: xenomai-test-suite
++          description: "runs the xenomai test suite"
++        run:
++          steps:
++            - lava-test-case xenomai-test --shell xeno-test -k -l \"dohell -m /tmp 300\" -p 1000
++      from: inline
++      path: inline/xenomai-test-suite.yaml
++      name: xenomai-test-suite
+-- 
+2.20.1
 
 
---=20
-
-Pierre FICHEUX -/- CTO Smile ECS, France -\- pierre.ficheux@smile.fr
-                             http://www.smile.fr
-                             https://smile.eu/fr/offres/embarque-iot
-I would love to change the world, but they won't give me the source code
