@@ -1,13 +1,14 @@
-Subject: Re: [xenomai-images PATCH 0/2] Add hikey test support
-References: <20191105162239.18949-1-Quirin.Gylstorff@siemens.com>
-From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <8fcb4b59-7fc4-99b1-be74-16db974b4778@siemens.com>
-Date: Tue, 5 Nov 2019 21:03:18 +0100
+Message-ID: <b9873e80d75b24e63dd423288ecca54b.squirrel@mail.ige-grenoble.fr>
+In-Reply-To: <64bfd5ea-6509-f4c9-ec7b-c79fb7619767@xenomai.org>
+References: <86e02eb5015e1b4754b8dbe367e62497.squirrel@mail.ige-grenoble.fr>
+ <64bfd5ea-6509-f4c9-ec7b-c79fb7619767@xenomai.org>
+Date: Wed, 6 Nov 2019 10:18:38 +0100
+Subject: segmentation error when a task ends
+From: davy.regneau@univ-grenoble-alpes.fr
+Reply-To: davy.regneau@univ-grenoble-alpes.fr
 MIME-Version: 1.0
-In-Reply-To: <20191105162239.18949-1-Quirin.Gylstorff@siemens.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain;charset=iso-8859-1
+Content-Transfer-Encoding: 8bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,30 +17,53 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "Q. Gylstorff" <Quirin.Gylstorff@siemens.com>, xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-On 05.11.19 17:22, Q. Gylstorff wrote:
-> From: Quirin Gylstorff <quirin.gylstorff@siemens.com>
-> 
-> Add hikey as platform for xenomai arm64 tests on LAVA.
-> 
-> Quirin Gylstorff (2):
->   tests: hikey xenomai-tests
->   ci: add hikey test
-> 
->  .gitlab-ci.yml                             | 13 +++-
->  conf/machine/hikey.conf                    |  3 +
->  recipes-kernel/linux/files/arm64_defconfig |  6 +-
->  tests/jobs/xenomai-hikey.yml               | 72 ++++++++++++++++++++++
->  4 files changed, 90 insertions(+), 4 deletions(-)
->  create mode 100644 tests/jobs/xenomai-hikey.yml
-> 
 
-Thanks, works nicely, all applied.
+Hi,
 
-Jan
+Thanks for patching the shared sessions. It works.
 
--- 
-Siemens AG, Corporate Technology, CT RDA IOT SES-DE
-Corporate Competence Center Embedded Linux
+Now I have another segmentation error that appears when a task ends or is
+deleted :
+
+
+
+RT_TASK task;
+void foo(){
+	int i = 3;
+	while(i--){
+		printf("Hello !\n");
+		rt_task_sleep(1000000000);
+	}
+	return;
+}
+int main(int argc, char *argv[]){
+	int n;
+  	if (mlockall( MCL_CURRENT | MCL_FUTURE )!=0)
+    		return 1;
+	if ((n=rt_task_spawn( &task, NULL, 0, 99, T_JOINABLE, &foo, NULL))!=0){
+    		rt_printf("rt_task_spawn error %d\n",n);
+    		return 1;
+  	}
+	printf("Join task\n");
+  	rt_task_join(&task);
+	return EXIT_SUCCESS;
+}
+
+
+$ sudo ./foo
+Hello !
+Join task
+Hello !
+Hello !
+Erreur de segmentation
+
+
+
+regards,
+Davy
+
+
+
 
