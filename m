@@ -1,20 +1,10 @@
-Message-ID: <45d2719d6f71d799482e91d0c855acef.squirrel@mail.ige-grenoble.fr>
-In-Reply-To: <f1ea101a-8736-1281-f75c-71f8d3d0cf59@siemens.com>
-References: <86e02eb5015e1b4754b8dbe367e62497.squirrel@mail.ige-grenoble.fr>
- <64bfd5ea-6509-f4c9-ec7b-c79fb7619767@xenomai.org>
- <b9873e80d75b24e63dd423288ecca54b.squirrel@mail.ige-grenoble.fr>
- <996f4ac9-17f7-0dd7-9582-72fa47b96e73@siemens.com>
- <985740edf2fc30f8994c45d19f58ca39.squirrel@mail.ige-grenoble.fr>
- <b4f7c3a0-a3b1-017a-e4b0-0179fdb1e3fc@siemens.com>
- <edbf92b20e6ee304e8a008b5d17a3cc3.squirrel@mail.ige-grenoble.fr>
- <f1ea101a-8736-1281-f75c-71f8d3d0cf59@siemens.com>
-Date: Thu, 7 Nov 2019 11:12:11 +0100
-Subject: Re: segmentation error when a task ends
-From: davy.regneau@univ-grenoble-alpes.fr
-Reply-To: davy.regneau@univ-grenoble-alpes.fr
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain;charset=iso-8859-1
-Content-Transfer-Encoding: 8bit
+Date: Thu, 07 Nov 2019 16:37:17 +0100
+Subject: Weird page fault while debugging an application using gdbserver
+Message-ID: <b7f-5dc43a00-7b-344a2840@235498125>
+From: =?utf-8?q?Fran=C3=A7ois_Legal?= <devel@thom.fr.eu.org>
+Content-Transfer-Encoding: quoted-printable
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -23,261 +13,266 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jan Kiszka <jan.kiszka@siemens.com>
-Cc: Philippe Gerum <rpm@xenomai.org>, xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-> On 06.11.19 15:23, davy.regneau@univ-grenoble-alpes.fr wrote:
->>> On 06.11.19 14:40, davy.regneau@univ-grenoble-alpes.fr wrote:
->>>>> On 06.11.19 10:18, Davy via Xenomai wrote:
->>>>>>
->>>>>> Hi,
->>>>>>
->>>>>> Thanks for patching the shared sessions. It works.
->>>>>>
->>>>>> Now I have another segmentation error that appears when a task ends
->>>>>> or
->>>>>> is
->>>>>> deleted :
->>>>>>
->>>>>>
->>>>>>
->>>>>> RT_TASK task;
->>>>>> void foo(){
->>>>>> 	int i = 3;
->>>>>> 	while(i--){
->>>>>> 		printf("Hello !\n");
->>>>>> 		rt_task_sleep(1000000000);
->>>>>> 	}
->>>>>> 	return;
->>>>>> }
->>>>>> int main(int argc, char *argv[]){
->>>>>> 	int n;
->>>>>>   	if (mlockall( MCL_CURRENT | MCL_FUTURE )!=0)
->>>>>>     		return 1;
->>>>>> 	if ((n=rt_task_spawn( &task, NULL, 0, 99, T_JOINABLE, &foo,
->>>>>> NULL))!=0){
->>>>>>     		rt_printf("rt_task_spawn error %d\n",n);
->>>>>>     		return 1;
->>>>>>   	}
->>>>>> 	printf("Join task\n");
->>>>>>   	rt_task_join(&task);
->>>>>> 	return EXIT_SUCCESS;
->>>>>> }
->>>>>>
->>>>>>
->>>>>> $ sudo ./foo
->>>>>> Hello !
->>>>>> Join task
->>>>>> Hello !
->>>>>> Hello !
->>>>>> Erreur de segmentation
->>>>>>
->>>>>
->>>>> Works find here. Could you use a debugger to find out where the
->>>>> exception is thrown?
->>>>>
->>>>
->>>> I obtain this :
->>>>
->>>> (gdb) run
->>>> Starting program: /home/davy/Documents/Programmes_Test/test/foo
->>>> [Thread debugging using libthread_db enabled]
->>>> Using host libthread_db library
->>>> "/lib/x86_64-linux-gnu/libthread_db.so.1".
->>>> [New Thread 0x7ffff6db1700 (LWP 14620)]
->>>> [New Thread 0x7ffff7ff6700 (LWP 14621)]
->>>> Hello !
->>>> Join task
->>>>    0"025.863| WARNING: [main] Xenomai compiled with full debug
->>>> enabled,
->>>>                               very high latencies expected
->>>> [--enable-debug=full]
->>>> Hello !
->>>> Hello !
->>>>
->>>> Thread 3 "task@1[14616]" received signal SIGSEGV, Segmentation fault.
->>>> [Switching to Thread 0x7ffff7ff6700 (LWP 14621)]
->>>> 0x00007ffff7799cf5 in shavlh_link (avl=0x7ffff7e47148, holder=0x0,
->>>> dir=0)
->>>> at ../../include/boilerplate/avl-inner.h:107
->>>> 107		ptrdiff_t offset = holder->link[avl_type2index(dir)].offset;
->>>>
->>>
->>> Backtrace? Values of the vars in question?
->>
->> (gdb) backtrace
->> #0  0x00007ffff7799cf5 in shavlh_link (avl=0x7ffff7e47148, holder=0x0,
->> dir=0) at ../../include/boilerplate/avl-inner.h:107
->> #1  0x00007ffff7799fa7 in shavl_inorder (avl=0x7ffff7e47148, holder=0x0,
->> dir=1) at avl.c:55
->> #2  0x00007ffff79b89a5 in shavl_next (avl=0x7ffff7e47148,
->> holder=0x7ffff7e4d1c8) at ../../include/boilerplate/avl-inner.h:332
->> #3  0x00007ffff79b8fe5 in find_next_neighbour (ext=0x7ffff7e47128,
->> r=0x7ffff7e4d1c8) at heapobj-pshared.c:276
->> #4  0x00007ffff79b90e0 in release_page_range (ext=0x7ffff7e47128,
->> page=0x7ffff7f425c8, size=1024) at heapobj-pshared.c:303
->> #5  0x00007ffff79b9f84 in sheapmem_free (heap=0x7ffff7e46000,
->> block=0x7ffff7f425c8) at heapobj-pshared.c:594
->> #6  0x00007ffff79bbb40 in xnfree (ptr=0x7ffff7f425c8) at
->> heapobj-pshared.c:1203
->> #7  0x00007ffff79b46a5 in __threadobj_free (p=0x7ffff7f425c8) at
->> ../../include/copperplate/threadobj.h:312
->> #8  0x00007ffff79b46d4 in threadobj_free (thobj=0x7ffff7f426d0) at
->> ../../include/copperplate/threadobj.h:317
->> #9  0x00007ffff79b64d4 in finalize_thread (p=0x7ffff7f426d0) at
->> threadobj.c:1548
->> #10 0x00007ffff735f5f9 in __nptl_deallocate_tsd () at
->> pthread_create.c:291
->> #11 0x00007ffff7360658 in __nptl_deallocate_tsd () at
->> pthread_create.c:449
->> #12 start_thread (arg=0x7ffff7ff6700) at pthread_create.c:469
->> #13 0x00007ffff6e9ad0f in clone () at
->> ../sysdeps/unix/sysv/linux/x86_64/clone.S:97
->>
->>>
->>> How did you configure Xenomai userspace (beyond --enable-debug=full)?
->>
->> $ /usr/xenomai/bin/xeno-config --info
->> Xenomai version: Xenomai/cobalt v3.1-rc3
->> Linux XportNew 4.19.75-xenomai-3.1-rc3 #3 SMP PREEMPT Wed Nov 6 13:48:28
->> CET 2019 x86_64 GNU/Linux
->> Kernel parameters: BOOT_IMAGE=/boot/vmlinuz-4.19.75-xenomai-3.1-rc3
->> root=/dev/mapper/isw_bdaaiafbje_Volume11 ro dmraid=true quiet splash
->> nopat
->> crashkernel=384M-:128M
->> I-pipe release #7 detected
->> Cobalt core 3.1-rc3 detected
->> Compiler: gcc version 4.9.2 (Debian 4.9.2-10+deb8u1)
->> Build args: --with-core=cobalt --enable-smp --enable-pshared
->> --enable-debug=full
->>
->
-> This is resolving the crash:
->
-> diff --git a/lib/boilerplate/avl.c b/lib/boilerplate/avl.c
-> index 3bf9bf1345..c13ec8a940 100644
-> --- a/lib/boilerplate/avl.c
-> +++ b/lib/boilerplate/avl.c
-> @@ -53,7 +53,7 @@ struct __AVL_T (avlh) * __AVL(inorder)(const struct
-> __AVL_T(avl) * const avl,
->  	} else {
->  		for (;;) {
->  			next = __AVLH(up)(avl, holder);
-> -			if (next == __AVL(anchor)(avl))
-> +			if (!next || next == __AVL(anchor)(avl))
->  				return NULL;
->  			if (holder->type != dir)
->  				break;
->
-> But I don't feel like we have a stable setup since 1a79c31c9f8. There
-> could very well be further cases that now break under the new NULL
-> return value.
->
-> Philippe, please double check all affected code paths.
->
-> Jan
->
-> --
-> Siemens AG, Corporate Technology, CT RDA IOT SES-DE
-> Corporate Competence Center Embedded Linux
->
+Hello,
 
+I'm porting an existing application to xenomai, and trying to debug it =
+using GDBserver.
+I try to set a break to stop at some interesting point in execution. Th=
+at break is never reached, and each time I get the page fault error wit=
+h the log copied at the end of the message.
+After that, I get the debug feature of the network driver automatically=
+ activated.
 
-Hi,
+Starngely enought, the backtrace does not point to my application code,=
+ rather in linux kernel/drivers.
 
-I still get an error if I call rt_task_join() after rt_task_delete() (like
-recomended in documentation) or if I try to delete another task.
+The system is an Arm7 Zynq 7000 reference board, being debugged via eth=
+ernet.
+Running linux 4.4.189 vanilla + corresponding ipipe patch and xenomai 3=
+.0.9
 
-I ran this program with debugger :
+Anybody can help ?
 
-void foo(){
-	while(1){
-		printf("task 1 !\n");
-		rt_task_sleep(1000000000);
-	}
-	return;
-}
-void bar(){
-	while(1){
-		printf("task 2 !\n");
-		rt_task_sleep(1000000000);
-	}
-}
-int main(int argc, char *argv[]){
-	int n;
-  	if (mlockall( MCL_CURRENT | MCL_FUTURE )!=0)
-    		return 1;
-	if ((n=rt_task_spawn( &task, NULL, 0, 99, 0, &foo, NULL))!=0){
-    		rt_printf("rt_task_spawn error %d\n",n);
-    		return 1;
-  	}
-	if ((n=rt_task_spawn( &task2, NULL, 0, 99, 0, &bar, NULL))!=0){
-    		rt_printf("rt_task_spawn error %d\n",n);
-    		return 1;
-  	}
-	rt_task_sleep(2000000000);
-	printf("Delete task 1\n");
-	rt_task_delete(&task);
-//	printf("Join task 1\n");
-//  	rt_task_join(&task);
-	printf("Delete task 2\n");
-	rt_task_delete(&task2);
-	return EXIT_SUCCESS;
-}
+Thanks
 
+Fran=C3=A7ois
 
-(gdb) run
-Starting program: /home/davy/Documents/Programmes_Test/test/foo
-[Thread debugging using libthread_db enabled]
-Using host libthread_db library "/lib/x86_64-linux-gnu/libthread_db.so.1".
-[New Thread 0x7ffff6db1700 (LWP 32383)]
-[New Thread 0x7ffff7ff6700 (LWP 32384)]
-task 1 !
-[New Thread 0x7ffff7fe5700 (LWP 32385)]
-task 2 !
-   0"025.641| WARNING: [main] Xenomai compiled with full debug enabled,
-                              very high latencies expected
-[--enable-debug=full]
-task 1 !
-task 2 !
-task 1 !
-task 2 !
-Delete task 1
-Delete task 2
+[ 5481.750121] Unhandled fault: page domain fault (0x01b) at 0x00033238=
 
-Thread 3 "task@1[32379]" received signal SIGSEGV, Segmentation fault.
-[Switching to Thread 0x7ffff7ff6700 (LWP 32384)]
-0x00007ffff779a684 in avlh_balance_add (avl=0x7ffff7e47148, holder=0x0,
-delta=1) at avl.c:267
-267		if (holder->balance == delta)
-(gdb) backtrace
-#0  0x00007ffff779a684 in avlh_balance_add (avl=0x7ffff7e47148,
-holder=0x0, delta=1) at avl.c:267
-#1  0x00007ffff779ab11 in avl_insert_inner (avl=0x7ffff7e47148,
-parent=0x0, node=0x7ffff7f425c8, side=1) at avl.c:388
-#2  0x00007ffff779aeda in shavl_insert (avl=0x7ffff7e47148,
-holder=0x7ffff7f425c8, ops=0x7ffff7bc27c0 <addr_search_ops>) at avl.c:502
-#3  0x00007ffff79b91d1 in release_page_range (ext=0x7ffff7e47128,
-page=0x7ffff7f425c8, size=1024) at heapobj-pshared.c:318
-#4  0x00007ffff79b9f84 in sheapmem_free (heap=0x7ffff7e46000,
-block=0x7ffff7f425c8) at heapobj-pshared.c:594
-#5  0x00007ffff79bbb40 in xnfree (ptr=0x7ffff7f425c8) at
-heapobj-pshared.c:1203
-#6  0x00007ffff79b46a5 in __threadobj_free (p=0x7ffff7f425c8) at
-../../include/copperplate/threadobj.h:312
-#7  0x00007ffff79b46d4 in threadobj_free (thobj=0x7ffff7f426d0) at
-../../include/copperplate/threadobj.h:317
-#8  0x00007ffff79b64d4 in finalize_thread (p=0x7ffff7f426d0) at
-threadobj.c:1548
-#9  0x00007ffff735f5f9 in __nptl_deallocate_tsd () at pthread_create.c:291
-#10 0x00007ffff7360658 in __nptl_deallocate_tsd () at pthread_create.c:449
-#11 start_thread (arg=0x7ffff7ff6700) at pthread_create.c:469
-#12 0x00007ffff6e9ad0f in clone () at
-../sysdeps/unix/sysv/linux/x86_64/clone.S:97
-
-
-regards,
-Davy
-
+[ 5481.756485] pgd =3D 41eac000
+[ 5481.759171] [00033238] *pgd=3D01c9e831, *pte=3D1f9105df, *ppte=3D1f9=
+10e7e
+[ 5481.765435] Internal error: : 1b [#1] PREEMPT SMP ARM
+[ 5481.770456] CPU: 0 PID: 745 Comm: Module de Confi Not tainted 4.4.18=
+9 #10
+[ 5481.777217] Hardware name: Xilinx Zynq Platform
+[ 5481.781729] I-pipe domain: Linux
+[ 5481.784945] task: 5d892180 ti: 41ef6000 task.ti: 41ef6000
+[ 5481.790333] PC is at =5F=5Fund=5Fusr+0x68/0x80
+[ 5481.794236] LR is at ipipe=5Funstall=5Froot+0x30/0xa0
+[ 5481.798921] pc : [<40015888>]    lr : [<4009bdd4>]    psr: 60000013
+[ 5481.798921] sp : 41ef7fb0  ip : 41ef7e28  fp : 00000000
+[ 5481.810377] r10: 000dd48c  r9 : 40015a4c  r8 : 18c5387d
+[ 5481.815585] r7 : 18c5387d  r6 : ffffffff  r5 : 60000010  r4 : 000332=
+38
+[ 5481.822095] r3 : 60000010  r2 : 0003323c  r1 : 00000000  r0 : 000000=
+00
+[ 5481.828606] Flags: nZCv  IRQs on  FIQs on  Mode SVC=5F32  ISA ARM  S=
+egment none
+[ 5481.835723] Control: 18c5387d  Table: 01eac04a  DAC: 00000051
+[ 5481.841451] Process Module de Confi (pid: 745, stack limit =3D 0x41e=
+f6220)
+[ 5481.848138] Stack: (0x41ef7fb0 to 0x41ef8000)
+[ 5481.852480] 7fa0:                                     00000000 00000=
+000 364884e4 00000000
+[ 5481.860643] 7fc0: 00000000 36487e28 3efdebd4 000f0042 36487e2c 00032=
+ea0 000dd48c 36487df4
+[ 5481.868802] 7fe0: 36f206cc 36487d18 36f0711c 0003323c 60000010 fffff=
+fff 00000000 00000000
+[ 5481.876965] Code: f1080080 e3130020 1a000006 e2424004 (e4b40000)
+[ 5481.883043] I-pipe tracer log (100 points):
+[ 5481.887191]    #func                    0 ipipe=5Ftrace=5Fpanic=5Ffr=
+eeze+0x10 (oops=5Fenter+0x1c)
+[ 5481.895348]    #func                   -2 oops=5Fenter+0x10 (die+0x2=
+8)
+[ 5481.901684]    #func                   -2 die+0x14 (arm=5Fnotify=5Fd=
+ie+0x2c)
+[ 5481.908368]    #func                   -4 arm=5Fnotify=5Fdie+0x10 (d=
+o=5FDataAbort+0x11c)
+[ 5481.915919]    #func                   -5 wake=5Fup=5Fklogd+0x10 (co=
+nsole=5Funlock+0x338)
+[ 5481.923558]    #func                   -6 =5Fraw=5Fspin=5Funlock=5Fi=
+rqrestore+0x10 (console=5Funlock+0x310)
+[ 5481.932411]    #func                   -7 =5F=5Fipipe=5Fspin=5Funloc=
+k=5Fdebug+0x10 (console=5Funlock+0x300)
+[ 5481.941091]    #func                   -8 =5Fraw=5Fspin=5Flock+0x10 =
+(console=5Funlock+0x2e4)
+[ 5481.948817]    #func                   -8 =5Fraw=5Fspin=5Funlock=5Fi=
+rqrestore+0x10 (up+0x50)
+[ 5481.956543]    #func                   -9 =5F=5Fipipe=5Fspin=5Funloc=
+k=5Fdebug+0x10 (up+0x44)
+[ 5481.964093]    #func                  -10 ipipe=5Froot=5Fonly+0x10 (=
+ipipe=5Ftest=5Fand=5Fstall=5Froot+0x18)
+[ 5481.972773]    #func                  -11 ipipe=5Ftest=5Fand=5Fstall=
+=5Froot+0x10 (=5Fraw=5Fspin=5Flock=5Firqsave+0x1c)
+[ 5481.982061]    #func                  -12 =5Fraw=5Fspin=5Flock=5Firq=
+save+0x10 (up+0x1c)
+[ 5481.989352]    #func                  -13 up+0x10 (console=5Funlock+=
+0x2d8)
+[ 5481.996036]    #func                  -13 =5Fraw=5Fspin=5Funlock+0x1=
+0 (console=5Funlock+0x2d0)
+[ 5482.003935]    #func                  -15 ipipe=5Froot=5Fonly+0x10 (=
+ipipe=5Ftest=5Fand=5Fstall=5Froot+0x18)
+[ 5482.012615]    #func                  -16 ipipe=5Ftest=5Fand=5Fstall=
+=5Froot+0x10 (=5Fraw=5Fspin=5Flock=5Firqsave+0x1c)
+[ 5482.021902]    #func                  -16 =5Fraw=5Fspin=5Flock=5Firq=
+save+0x10 (console=5Funlock+0xd4)
+[ 5482.030235]    #func                  -17 =5Fraw=5Fspin=5Funlock=5Fi=
+rqrestore+0x10 (cdns=5Fuart=5Fconsole=5Fwrite+0x144)
+[ 5482.039870]    #func                  -18 =5F=5Fipipe=5Fspin=5Funloc=
+k=5Fdebug+0x10 (cdns=5Fuart=5Fconsole=5Fwrite+0x138)
+[ 5482.049331]    #func                  -19 l2c210=5Fsync+0x10 (arm=5F=
+heavy=5Fmb+0x2c)
+[ 5482.056559]    #func                  -20 arm=5Fheavy=5Fmb+0x10 (cdn=
+s=5Fuart=5Fconsole=5Fwrite+0x118)
+[ 5482.064868]    #func                  -20 l2c210=5Fsync+0x10 (arm=5F=
+heavy=5Fmb+0x2c)
+[ 5482.072073]    #func                  -21 arm=5Fheavy=5Fmb+0x10 (cdn=
+s=5Fuart=5Fconsole=5Fwrite+0x104)
+[ 5482.080446]    #func                 -107 l2c210=5Fsync+0x10 (arm=5F=
+heavy=5Fmb+0x2c)
+[ 5482.087610]    #func                 -108 arm=5Fheavy=5Fmb+0x10 (cdn=
+s=5Fuart=5Fconsole=5Fputchar+0x3c)
+[ 5482.096029]    #func                 -144 cdns=5Fuart=5Fconsole=5Fpu=
+tchar+0x10 (uart=5Fconsole=5Fwrite+0x64)
+[ 5482.104970]    #func                 -144 l2c210=5Fsync+0x10 (arm=5F=
+heavy=5Fmb+0x2c)
+[ 5482.112174]    #func                 -145 arm=5Fheavy=5Fmb+0x10 (cdn=
+s=5Fuart=5Fconsole=5Fputchar+0x3c)
+[ 5482.120595]    #func                 -146 cdns=5Fuart=5Fconsole=5Fpu=
+tchar+0x10 (uart=5Fconsole=5Fwrite+0x58)
+[ 5482.129534]    #func                 -147 uart=5Fconsole=5Fwrite+0x1=
+0 (cdns=5Fuart=5Fconsole=5Fwrite+0xcc)
+[ 5482.138301]    #func                 -148 l2c210=5Fsync+0x10 (arm=5F=
+heavy=5Fmb+0x2c)
+[ 5482.145506]    #func                 -148 arm=5Fheavy=5Fmb+0x10 (cdn=
+s=5Fuart=5Fconsole=5Fwrite+0xa4)
+[ 5482.153751]    #func                 -150 l2c210=5Fsync+0x10 (arm=5F=
+heavy=5Fmb+0x2c)
+[ 5482.160956]    #func                 -150 arm=5Fheavy=5Fmb+0x10 (cdn=
+s=5Fuart=5Fconsole=5Fwrite+0x8c)
+[ 5482.169202]    #func                 -152 ipipe=5Froot=5Fonly+0x10 (=
+ipipe=5Ftest=5Fand=5Fstall=5Froot+0x18)
+[ 5482.177882]    #func                 -152 ipipe=5Ftest=5Fand=5Fstall=
+=5Froot+0x10 (=5Fraw=5Fspin=5Flock=5Firqsave+0x1c)
+[ 5482.187169]    #func                 -153 =5Fraw=5Fspin=5Flock=5Firq=
+save+0x10 (cdns=5Fuart=5Fconsole=5Fwrite+0x15c)
+[ 5482.196370]    #func                 -154 cdns=5Fuart=5Fconsole=5Fwr=
+ite+0x14 (call=5Fconsole=5Fdrivers.constprop.13+0x110)
+[ 5482.206526]    #func                 -155 call=5Fconsole=5Fdrivers.c=
+onstprop.13+0x10 (console=5Funlock+0x288)
+[ 5482.215901]    #func                 -156 =5Fraw=5Fspin=5Funlock+0x1=
+0 (console=5Funlock+0x270)
+[ 5482.223799]    #func                 -157 ipipe=5Froot=5Fonly+0x10 (=
+ipipe=5Ftest=5Fand=5Fstall=5Froot+0x18)
+[ 5482.232479]    #func                 -158 ipipe=5Ftest=5Fand=5Fstall=
+=5Froot+0x10 (=5Fraw=5Fspin=5Flock=5Firqsave+0x1c)
+[ 5482.241767]    #func                 -159 =5Fraw=5Fspin=5Flock=5Firq=
+save+0x10 (console=5Funlock+0x54)
+[ 5482.250101]    #func                 -159 console=5Funlock+0x14 (vpr=
+intk=5Femit+0x350)
+[ 5482.257652]    #func                 -160 =5Fraw=5Fspin=5Funlock=5Fi=
+rqrestore+0x10 (down=5Ftrylock+0x3c)
+[ 5482.266244]    #func                 -161 =5F=5Fipipe=5Fspin=5Funloc=
+k=5Fdebug+0x10 (down=5Ftrylock+0x30)
+[ 5482.274664]    #func                 -162 ipipe=5Froot=5Fonly+0x10 (=
+ipipe=5Ftest=5Fand=5Fstall=5Froot+0x18)
+[ 5482.283344]    #func                 -163 ipipe=5Ftest=5Fand=5Fstall=
+=5Froot+0x10 (=5Fraw=5Fspin=5Flock=5Firqsave+0x1c)
+[ 5482.292631]    #func                 -164 =5Fraw=5Fspin=5Flock=5Firq=
+save+0x10 (down=5Ftrylock+0x1c)
+[ 5482.300791]    #func                 -165 down=5Ftrylock+0x10 (conso=
+le=5Ftrylock+0x1c)
+[ 5482.308342]    #func                 -165 console=5Ftrylock+0x10 (vp=
+rintk=5Femit+0x314)
+[ 5482.315982]    #func                 -166 =5Fraw=5Fspin=5Funlock+0x1=
+0 (vprintk=5Femit+0x2b4)
+[ 5482.323706]    #func                 -168 log=5Fmake=5Ffree=5Fspace+=
+0x14 (log=5Fstore+0x50)
+[ 5482.331344]    #func                 -169 log=5Fstore+0x14 (cont=5Ff=
+lush.part.2+0xb4)
+[ 5482.338809]    #func                 -170 cont=5Fflush.part.2+0x14 (=
+vprintk=5Femit+0x3f4)
+[ 5482.346621]    #func                 -171 cont=5Fadd+0x14 (vprintk=5F=
+emit+0x3d0)
+[ 5482.353660]    #func                 -172 =5Fraw=5Fspin=5Flock+0x10 =
+(vprintk=5Femit+0x184)
+[ 5482.361213]    #func                 -174 ipipe=5Froot=5Fonly+0x10 (=
+ipipe=5Ftest=5Fand=5Fstall=5Froot+0x18)
+[ 5482.369892]    #func                 -174 ipipe=5Ftest=5Fand=5Fstall=
+=5Froot+0x10 (vprintk=5Femit+0x150)
+[ 5482.378399]    #func                 -175 vprintk=5Femit+0x14 (vprin=
+tk=5Fdefault+0x34)
+[ 5482.385950]    #func                 -176 vprintk=5Fdefault+0x14 (pr=
+intk+0x1e0)
+[ 5482.393068]    #func                 -177 printk+0x18 (show=5Fpte+0x=
+e8)
+[ 5482.399491]    #func                 -179 =5Fraw=5Fspin=5Funlock=5Fi=
+rqrestore+0x10 (console=5Funlock+0x310)
+[ 5482.408345]    #func                 -179 =5F=5Fipipe=5Fspin=5Funloc=
+k=5Fdebug+0x10 (console=5Funlock+0x300)
+[ 5482.417025]    #func                 -180 =5Fraw=5Fspin=5Flock+0x10 =
+(console=5Funlock+0x2e4)
+[ 5482.424750]    #func                 -181 =5Fraw=5Fspin=5Funlock=5Fi=
+rqrestore+0x10 (up+0x50)
+[ 5482.432475]    #func                 -182 =5F=5Fipipe=5Fspin=5Funloc=
+k=5Fdebug+0x10 (up+0x44)
+[ 5482.440026]    #func                 -183 ipipe=5Froot=5Fonly+0x10 (=
+ipipe=5Ftest=5Fand=5Fstall=5Froot+0x18)
+[ 5482.448707]    #func                 -184 ipipe=5Ftest=5Fand=5Fstall=
+=5Froot+0x10 (=5Fraw=5Fspin=5Flock=5Firqsave+0x1c)
+[ 5482.457995]    #func                 -185 =5Fraw=5Fspin=5Flock=5Firq=
+save+0x10 (up+0x1c)
+[ 5482.465285]    #func                 -185 up+0x10 (console=5Funlock+=
+0x2d8)
+[ 5482.471969]    #func                 -186 =5Fraw=5Fspin=5Funlock+0x1=
+0 (console=5Funlock+0x2d0)
+[ 5482.479867]    #func                 -188 ipipe=5Froot=5Fonly+0x10 (=
+ipipe=5Ftest=5Fand=5Fstall=5Froot+0x18)
+[ 5482.488548]    #func                 -189 ipipe=5Ftest=5Fand=5Fstall=
+=5Froot+0x10 (=5Fraw=5Fspin=5Flock=5Firqsave+0x1c)
+[ 5482.497836]    #func                 -189 =5Fraw=5Fspin=5Flock=5Firq=
+save+0x10 (console=5Funlock+0xd4)
+[ 5482.506168]    #func                 -191 =5Fraw=5Fspin=5Funlock=5Fi=
+rqrestore+0x10 (cdns=5Fuart=5Fconsole=5Fwrite+0x144)
+[ 5482.515803]    #func                 -191 =5F=5Fipipe=5Fspin=5Funloc=
+k=5Fdebug+0x10 (cdns=5Fuart=5Fconsole=5Fwrite+0x138)
+[ 5482.525264]    #func                 -192 l2c210=5Fsync+0x10 (arm=5F=
+heavy=5Fmb+0x2c)
+[ 5482.532469]    #func                 -193 arm=5Fheavy=5Fmb+0x10 (cdn=
+s=5Fuart=5Fconsole=5Fwrite+0x118)
+[ 5482.540801]    #func                 -194 l2c210=5Fsync+0x10 (arm=5F=
+heavy=5Fmb+0x2c)
+[ 5482.548006]    #func                 -194 arm=5Fheavy=5Fmb+0x10 (cdn=
+s=5Fuart=5Fconsole=5Fwrite+0x104)
+[ 5482.556338]    #func                 -280 l2c210=5Fsync+0x10 (arm=5F=
+heavy=5Fmb+0x2c)
+[ 5482.563543]    #func                 -281 arm=5Fheavy=5Fmb+0x10 (cdn=
+s=5Fuart=5Fconsole=5Fputchar+0x3c)
+[ 5482.571963]    #func                 -366 cdns=5Fuart=5Fconsole=5Fpu=
+tchar+0x10 (uart=5Fconsole=5Fwrite+0x38)
+[ 5482.580903]    #func                 -367 l2c210=5Fsync+0x10 (arm=5F=
+heavy=5Fmb+0x2c)
+[ 5482.588108]    #func                 -368 arm=5Fheavy=5Fmb+0x10 (cdn=
+s=5Fuart=5Fconsole=5Fputchar+0x3c)
+[ 5482.596528]    #func                 -453 cdns=5Fuart=5Fconsole=5Fpu=
+tchar+0x10 (uart=5Fconsole=5Fwrite+0x38)
+[ 5482.605467]    #func                 -454 l2c210=5Fsync+0x10 (arm=5F=
+heavy=5Fmb+0x2c)
+[ 5482.612672]    #func                 -454 arm=5Fheavy=5Fmb+0x10 (cdn=
+s=5Fuart=5Fconsole=5Fputchar+0x3c)
+[ 5482.621091]    #func                 -539 cdns=5Fuart=5Fconsole=5Fpu=
+tchar+0x10 (uart=5Fconsole=5Fwrite+0x38)
+[ 5482.630032]    #func                 -540 l2c210=5Fsync+0x10 (arm=5F=
+heavy=5Fmb+0x2c)
+[ 5482.637237]    #func                 -541 arm=5Fheavy=5Fmb+0x10 (cdn=
+s=5Fuart=5Fconsole=5Fputchar+0x3c)
+[ 5482.645655]    #func                 -545 cdns=5Fuart=5Fconsole=5Fpu=
+tchar+0x10 (uart=5Fconsole=5Fwrite+0x38)
+[ 5482.654596]    #func                 -546 l2c210=5Fsync+0x10 (arm=5F=
+heavy=5Fmb+0x2c)
+[ 5482.661802]    #func                 -547 arm=5Fheavy=5Fmb+0x10 (cdn=
+s=5Fuart=5Fconsole=5Fputchar+0x3c)
+[ 5482.670220]  | #func                 -548 =5F=5Fipipe=5Fbugon=5Firqs=
+=5Fenabled+0x10 (=5F=5Fipipe=5Ffast=5Fsvc=5Firq=5Fexit+0x4)
+[ 5482.679768]  | #func                 -549 ipipe=5Ftest=5Froot+0x10 (=
+=5F=5Fipipe=5Fcheck=5Froot=5Finterruptible+0x5c)
+[ 5482.689056]  | #func                 -550 =5F=5Fipipe=5Fcheck=5Froot=
+=5Finterruptible+0x10 (=5F=5Firq=5Fsvc+0x58)
+[ 5482.697824]  | #func                 -551 =5F=5Fipipe=5Fdo=5Fsync=5F=
+pipeline+0x14 (dispatch=5Firq=5Fhead+0x184)
+[ 5482.706694] ---[ end trace b591dcdb6dbe58ba ]---
 
 
