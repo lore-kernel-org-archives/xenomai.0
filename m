@@ -1,14 +1,15 @@
-Subject: Re: Weird page fault while debugging an application using gdbserver
-References: <b80-5dc44e80-14f-62bca880@213436924>
- <e43762f0-b844-d51b-eeef-46ad9c4dbde8@xenomai.org>
- <1eab7ce4-4c73-48ad-69d7-b0b3d2d6cab1@siemens.com>
-From: Philippe Gerum <rpm@xenomai.org>
-Message-ID: <21087f15-00f7-9b9e-0ce6-8181df7cc09d@xenomai.org>
-Date: Tue, 12 Nov 2019 11:52:54 +0100
+Subject: Re: Fosdem?
+References: <CAFc1U0sXeYMrvm-BhRJ+ygAzwekrKVjwNg7n3yXpsk11T=Hj6w@mail.gmail.com>
+ <d456e1aa-2711-d791-d060-1eec4a87b66c@web.de>
+ <CAFc1U0vaeyy8=YYKVBNJ0dBsVxDuyymr7gcdeNWrUVE-wfN6MQ@mail.gmail.com>
+ <de3c6690-8b59-bf3e-e8aa-7885968f169d@siemens.com>
+From: Jan Leupold <leupold@rsi-elektrotechnik.de>
+Message-ID: <0dff13c8-fe47-6fe6-f1f1-dba85a8addc3@rsi-elektrotechnik.de>
+Date: Wed, 13 Nov 2019 09:11:33 +0100
 MIME-Version: 1.0
-In-Reply-To: <1eab7ce4-4c73-48ad-69d7-b0b3d2d6cab1@siemens.com>
+In-Reply-To: <de3c6690-8b59-bf3e-e8aa-7885968f169d@siemens.com>
 Content-Type: text/plain; charset="utf-8"
-Content-Language: en-US
+Content-Language: de-DE
 Content-Transfer-Encoding: 8bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
@@ -18,74 +19,64 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jan Kiszka <jan.kiszka@siemens.com>, =?UTF-8?Q?Fran=c3=a7ois_Legal?= <devel@thom.fr.eu.org>
-Cc: xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-On 11/8/19 10:22 AM, Jan Kiszka wrote:
-> On 08.11.19 10:05, Philippe Gerum via Xenomai wrote:
->> On 2019-11-07 18:03, François Legal wrote:
->>> Le Jeudi, Novembre 07, 2019 16:54 CET, Philippe Gerum <rpm@xenomai.org> a écrit:
->>>  
->>>> On 2019-11-07 16:37, François Legal via Xenomai wrote:
->>>>> Hello,
->>>>>
->>>>> I'm porting an existing application to xenomai, and trying to debug it using GDBserver.
->>>>> I try to set a break to stop at some interesting point in execution. That break is never reached, and each time I get the page fault error with the log copied at the end of the message.
->>>>> After that, I get the debug feature of the network driver automatically activated.
->>>>>
->>>>> Starngely enought, the backtrace does not point to my application code, rather in linux kernel/drivers.
->>>>>
->>>>> The system is an Arm7 Zynq 7000 reference board, being debugged via ethernet.
->>>>> Running linux 4.4.189 vanilla + corresponding ipipe patch and xenomai 3.0.9
+Am 11.11.19 um 10:32 schrieb Jan Kiszka via Xenomai:
+> On 11.11.19 10:20, Pierre FICHEUX via Xenomai wrote:
+>> Should be fine. IMHO Xenomai project is a must but lacks communication and
+>> events (compared to PREMPT_RT) :-)
+>>
+> 
+> I don't disagree. And I welcome when things are not only kicked off by its
+> maintainer.
+> 
+> So: Who else from the community plans to go to Fosdem or would do so if we
+> organize a meetup?
+
+This would be a reason for us to mark Fosdem as a "must go" event!
+
+Jan
+
+> 
+> Topics for discussion or potentially presentation that come to my mind:
+> 
+>  - 3.1 summary
+>  - status and plans for CI and testing
+>  - Dovetail/Steely walk-through
+>  - future of RTnet (modernization needs, TSN, ...)
+>  - <your topic here>
+> 
+> Jan
+> 
+>> Le dim. 10 nov. 2019 à 20:09, Jan Kiszka <jan.kiszka@web.de> a écrit :
+>>
+>>> On 10.11.19 19:31, Pierre FICHEUX via Xenomai wrote:
+>>>> Hi,
 >>>>
->>>> You likely need the following patch. This issue was fixed in the 4.14 time frame:
->>>>
->>>> commit 8575e8ab404717e3eabafc36920459018bb052a3
->>>> Author: Philippe Gerum <rpm@xenomai.org>
->>>> Date:   Tue Apr 10 11:34:29 2018 +0200
->>>>
->>>>      arm/ipipe: re-enable user access in DAC after und_user trap handling
->>>>           Before returning from an und_user fault we have been asked to
->>>>      propagate, the client trap handler might have demoted the caller from
->>>>      the head -> root stage, which boils down to performing a (double)
->>>>      context switch internally. If CONFIG_CPU_SW_DOMAIN_PAN is set, such
->>>>      transition would cause the DAC register to reflect a protected USER
->>>>      domain state, denying to the kernel access to user memory.
->>>>           We need to revert this change, restoring the expected domain
->>>>      protection settings originally set by usr_entry.
->>>>           This fixes page domain errors raised by running into breakpoint traps
->>>>      poked by GDB into the debuggee's executable image when
->>>>      CONFIG_CPU_SW_DOMAIN_PAN is enabled in the kernel configuration.
->>>>
->>>> diff --git a/arch/arm/kernel/entry-armv.S b/arch/arm/kernel/entry-armv.S
->>>> index cd2e0b3d8336..3569b3174372 100644
->>>> --- a/arch/arm/kernel/entry-armv.S
->>>> +++ b/arch/arm/kernel/entry-armv.S
->>>> @@ -524,6 +524,7 @@ __und_usr:
->>>>       bl    __ipipe_notify_trap        @ branch to trap handler
->>>>       cmp    r0, #0
->>>>       bne    ret_from_exception
->>>> +    uaccess_enable ip
->>>>   #endif /* CONFIG_IPIPE */
->>>>         mov    r2, r4
->>>>
->>>> -- 
->>>> Philippe.
->>>     Thanks. I do not get the page fault anymore, however, I seem to be unable to halt on breakpoints now.
+>>>> Two years ago (?) there was a Xenomai meeting during FOSDEM, is there any
+>>>> plan for a new one in 2020 ?
 >>>
->>
->> Just checked with 4.4.176-arm-10 + this patch, no issue setting and taking a breakpoint in a simple demo program using gdb directly. You may want to check if gdbserver is not involved in the remaining issue. At any rate, the change proposed would not prevent the debug exception to be taken (on the contrary, actually).
->>
-> 
-> I guess that patch would nice to have in ipipe-4.4.y-cip as well. Is there more to pick from new kernels?
+>>> Thanks for bringing this up! There is no plan yet, but if folks indicate
+>>> interest, we could try to organize a meeting again. May it be offsite as
+>>> last time or informal during the event.
+>>>
+>>> Jan
+>>>
 > 
 
-For 4.4, I would pick these:
-
-https://gitlab.denx.de/Xenomai/ipipe-arm/commit/8575e8ab404717e3eabafc36920459018bb052a3
-https://gitlab.denx.de/Xenomai/ipipe-arm/commit/b3a7fed2583a06ba5d7165600be111a16c124924
-https://gitlab.denx.de/Xenomai/ipipe-arm/commit/73eac667cd79e1f395deaeff634ddff7060176b5
 
 -- 
-Philippe.
+_____________________________________________________________
+R-S-I Elektrotechnik GmbH & Co. KG
+Woelkestrasse 11
+D-85301 Schweitenkirchen
+Fon: +49 8444 9204-0
+Fax: +49 8444 9204-50
+www.rsi-elektrotechnik.de
+
+_____________________________________________________________
+Amtsgericht Ingolstadt - GmbH: HRB 191328 - KG: HRA 170363
+Geschäftsführer: Dr.-Ing. Michael Sorg, Dipl.-Ing. Franz Sorg
+USt-IdNr.: DE 128592548
+
 
