@@ -1,10 +1,10 @@
-Subject: Re: RTnet sendmmsg and ENOBUFS
-References: <DB8PR05MB591594C16F703FD12F088928F6760@DB8PR05MB5915.eurprd05.prod.outlook.com>
+Subject: Re: Xenomai crashes when braking into the debugger
+References: <DB8PR05MB59152BC02ED36C78202DB8AEF6760@DB8PR05MB5915.eurprd05.prod.outlook.com>
 From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <1510f7f0-e130-0e22-b946-d1f6d84f3608@siemens.com>
-Date: Wed, 13 Nov 2019 18:39:02 +0100
+Message-ID: <523b765a-27b2-480b-375f-0fdfb9af5f8e@siemens.com>
+Date: Wed, 13 Nov 2019 18:41:56 +0100
 MIME-Version: 1.0
-In-Reply-To: <DB8PR05MB591594C16F703FD12F088928F6760@DB8PR05MB5915.eurprd05.prod.outlook.com>
+In-Reply-To: <DB8PR05MB59152BC02ED36C78202DB8AEF6760@DB8PR05MB5915.eurprd05.prod.outlook.com>
 Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -18,45 +18,19 @@ List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: Lange Norbert <norbert.lange@andritz.com>, "Xenomai (xenomai@xenomai.org)" <xenomai@xenomai.org>
 
-On 13.11.19 16:10, Lange Norbert via Xenomai wrote:
+On 13.11.19 16:18, Lange Norbert via Xenomai wrote:
 > Hello,
 > 
-> for one of our applications, we have (unfortunatly) a single ethernet connection for Realtime and Nonrealtime.
-> 
-> We solve this by sending timeslices with RT first, then filling up the remaining space. When stressing the limits (quite possibly beyond if accounting for bugs),
-> the sendmmsg call over a raw socket returns ENOBUFS (even with a single small packet).
-> I was expecting this call to just block until the resouces are available.
+> I am running into some bad issues with debugging,
+> can't really narrow down when they happen, but usually when I run through GDB and want to "break" (pause execution),
+> it seems to be related to *other* Xenomai programs running at the same time (as said its hard to narrow down).
 
-Blocking would mean that the sites which make buffers available again 
-had to signal this. The original design idea was to avoid such overhead 
-and rather rely on the applications to schedule their submissions 
-properly and preallocate resources accordingly.
+We have a gdb test case. Does it trigger for you as well when you run 
+some other program in parallel?
 
-> 
-> Timeslices are 1 ms, so that could be around 12Kbyte total or ~190 60Byte packets (theoretical max).
-> 
-> What variables are involved (whats the xenomai buffer limits, are they shared or per interface) and choices do I have?
-> 
-> - I could send the packages nonblocking and wait or drop the remaining myself
-> - I could deal with ENOBUFS the same way as EAGAIN (is there any difference actually)
-> - I could raise the amount of internal buffer somehow
-
-Check kernel/drivers/net/doc/README.pools
-
-> 
-> Also while stresstesting I get these messages:
-> 
-> [ 5572.044934] hard_start_xmit returned 16
-> [ 5572.054989] hard_start_xmit returned 16
-> [ 5572.064007] hard_start_xmit returned 16
-> [ 5572.067893] hard_start_xmit returned 16
-> [ 5572.071739] hard_start_xmit returned 16
-> [ 5572.075586] hard_start_xmit returned 16
-> [ 5575.096116] hard_start_xmit returned 16
-> [ 5579.377038] hard_start_xmit returned 16
-
-This likely comes from NETDEV_TX_BUSY signaled by the driver. Check the 
-one you use for reasons. May include "I don't have buffers left".
+Also, could you provide the kernel full log? Possibly, enabling the 
+I-pipe tracer with panic dump could be useful as well. But the most 
+important step would be to create reproducibility for a third party like me.
 
 Jan
 
