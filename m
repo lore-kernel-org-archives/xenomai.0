@@ -1,13 +1,14 @@
-Subject: Re: Xenomai crashes when braking into the debugger
-References: <DB8PR05MB59152BC02ED36C78202DB8AEF6760@DB8PR05MB5915.eurprd05.prod.outlook.com>
-From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <523b765a-27b2-480b-375f-0fdfb9af5f8e@siemens.com>
-Date: Wed, 13 Nov 2019 18:41:56 +0100
-MIME-Version: 1.0
-In-Reply-To: <DB8PR05MB59152BC02ED36C78202DB8AEF6760@DB8PR05MB5915.eurprd05.prod.outlook.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
+From: Lange Norbert <norbert.lange@andritz.com>
+Subject: RE: RTnet sendmmsg and ENOBUFS
+Date: Wed, 13 Nov 2019 17:53:09 +0000
+Message-ID: <DB8PR05MB59155D324BA2977A60E63DADF6760@DB8PR05MB5915.eurprd05.prod.outlook.com>
+References: <DB8PR05MB591594C16F703FD12F088928F6760@DB8PR05MB5915.eurprd05.prod.outlook.com>
+ <1510f7f0-e130-0e22-b946-d1f6d84f3608@siemens.com>
+In-Reply-To: <1510f7f0-e130-0e22-b946-d1f6d84f3608@siemens.com>
 Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+MIME-Version: 1.0
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,25 +17,66 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Lange Norbert <norbert.lange@andritz.com>, "Xenomai (xenomai@xenomai.org)" <xenomai@xenomai.org>
+To: Jan Kiszka <jan.kiszka@siemens.com>, "Xenomai (xenomai@xenomai.org)" <xenomai@xenomai.org>
 
-On 13.11.19 16:18, Lange Norbert via Xenomai wrote:
-> Hello,
-> 
-> I am running into some bad issues with debugging,
-> can't really narrow down when they happen, but usually when I run through GDB and want to "break" (pause execution),
-> it seems to be related to *other* Xenomai programs running at the same time (as said its hard to narrow down).
-
-We have a gdb test case. Does it trigger for you as well when you run 
-some other program in parallel?
-
-Also, could you provide the kernel full log? Possibly, enabling the 
-I-pipe tracer with panic dump could be useful as well. But the most 
-important step would be to create reproducibility for a third party like me.
-
-Jan
-
--- 
-Siemens AG, Corporate Technology, CT RDA IOT SES-DE
-Corporate Competence Center Embedded Linux
+DQoNCj4gLS0tLS1PcmlnaW5hbCBNZXNzYWdlLS0tLS0NCj4gRnJvbTogSmFuIEtpc3prYSA8amFu
+Lmtpc3prYUBzaWVtZW5zLmNvbT4NCj4gU2VudDogTWl0dHdvY2gsIDEzLiBOb3ZlbWJlciAyMDE5
+IDE4OjM5DQo+IFRvOiBMYW5nZSBOb3JiZXJ0IDxub3JiZXJ0LmxhbmdlQGFuZHJpdHouY29tPjsg
+WGVub21haQ0KPiAoeGVub21haUB4ZW5vbWFpLm9yZykgPHhlbm9tYWlAeGVub21haS5vcmc+DQo+
+IFN1YmplY3Q6IFJlOiBSVG5ldCBzZW5kbW1zZyBhbmQgRU5PQlVGUw0KPg0KPiBOT04tQU5EUklU
+WiBTT1VSQ0U6IEJFIENBVVRJT1VTIFdJVEggQ09OVEVOVCwgTElOS1MgT1INCj4gQVRUQUNITUVO
+VFMuDQo+DQo+DQo+IE9uIDEzLjExLjE5IDE2OjEwLCBMYW5nZSBOb3JiZXJ0IHZpYSBYZW5vbWFp
+IHdyb3RlOg0KPiA+IEhlbGxvLA0KPiA+DQo+ID4gZm9yIG9uZSBvZiBvdXIgYXBwbGljYXRpb25z
+LCB3ZSBoYXZlICh1bmZvcnR1bmF0bHkpIGEgc2luZ2xlIGV0aGVybmV0DQo+IGNvbm5lY3Rpb24g
+Zm9yIFJlYWx0aW1lIGFuZCBOb25yZWFsdGltZS4NCj4gPg0KPiA+IFdlIHNvbHZlIHRoaXMgYnkg
+c2VuZGluZyB0aW1lc2xpY2VzIHdpdGggUlQgZmlyc3QsIHRoZW4gZmlsbGluZyB1cCB0aGUNCj4g
+PiByZW1haW5pbmcgc3BhY2UuIFdoZW4gc3RyZXNzaW5nIHRoZSBsaW1pdHMgKHF1aXRlIHBvc3Np
+Ymx5IGJleW9uZCBpZg0KPiBhY2NvdW50aW5nIGZvciBidWdzKSwgdGhlIHNlbmRtbXNnIGNhbGwg
+b3ZlciBhIHJhdyBzb2NrZXQgcmV0dXJucyBFTk9CVUZTDQo+IChldmVuIHdpdGggYSBzaW5nbGUg
+c21hbGwgcGFja2V0KS4NCj4gPiBJIHdhcyBleHBlY3RpbmcgdGhpcyBjYWxsIHRvIGp1c3QgYmxv
+Y2sgdW50aWwgdGhlIHJlc291Y2VzIGFyZSBhdmFpbGFibGUuDQo+DQo+IEJsb2NraW5nIHdvdWxk
+IG1lYW4gdGhhdCB0aGUgc2l0ZXMgd2hpY2ggbWFrZSBidWZmZXJzIGF2YWlsYWJsZSBhZ2FpbiBo
+YWQgdG8NCj4gc2lnbmFsIHRoaXMuIFRoZSBvcmlnaW5hbCBkZXNpZ24gaWRlYSB3YXMgdG8gYXZv
+aWQgc3VjaCBvdmVyaGVhZCBhbmQgcmF0aGVyDQo+IHJlbHkgb24gdGhlIGFwcGxpY2F0aW9ucyB0
+byBzY2hlZHVsZSB0aGVpciBzdWJtaXNzaW9ucyBwcm9wZXJseSBhbmQNCj4gcHJlYWxsb2NhdGUg
+cmVzb3VyY2VzIGFjY29yZGluZ2x5Lg0KDQpPay4NCkluIG90aGVyIHdvcmRzLCB0aGlzIGlzIHRo
+ZSBzYW1lIGJlaGF2aW91ciBhcyB1c2luZyBNU0dfRE9OVFdBSVQNCih3aXRoIGEgZGlmZmVyZW50
+IGVycm5vIHZhbHVlKQ0KDQo+DQo+ID4NCj4gPiBUaW1lc2xpY2VzIGFyZSAxIG1zLCBzbyB0aGF0
+IGNvdWxkIGJlIGFyb3VuZCAxMktieXRlIHRvdGFsIG9yIH4xOTAgNjBCeXRlDQo+IHBhY2tldHMg
+KHRoZW9yZXRpY2FsIG1heCkuDQo+ID4NCj4gPiBXaGF0IHZhcmlhYmxlcyBhcmUgaW52b2x2ZWQg
+KHdoYXRzIHRoZSB4ZW5vbWFpIGJ1ZmZlciBsaW1pdHMsIGFyZSB0aGV5DQo+IHNoYXJlZCBvciBw
+ZXIgaW50ZXJmYWNlKSBhbmQgY2hvaWNlcyBkbyBJIGhhdmU/DQo+ID4NCj4gPiAtIEkgY291bGQg
+c2VuZCB0aGUgcGFja2FnZXMgbm9uYmxvY2tpbmcgYW5kIHdhaXQgb3IgZHJvcCB0aGUgcmVtYWlu
+aW5nDQo+ID4gbXlzZWxmDQo+ID4gLSBJIGNvdWxkIGRlYWwgd2l0aCBFTk9CVUZTIHRoZSBzYW1l
+IHdheSBhcyBFQUdBSU4gKGlzIHRoZXJlIGFueQ0KPiA+IGRpZmZlcmVuY2UgYWN0dWFsbHkpDQo+
+ID4gLSBJIGNvdWxkIHJhaXNlIHRoZSBhbW91bnQgb2YgaW50ZXJuYWwgYnVmZmVyIHNvbWVob3cN
+Cj4NCj4gQ2hlY2sga2VybmVsL2RyaXZlcnMvbmV0L2RvYy9SRUFETUUucG9vbHMNCj4NCj4gPg0K
+PiA+IEFsc28gd2hpbGUgc3RyZXNzdGVzdGluZyBJIGdldCB0aGVzZSBtZXNzYWdlczoNCj4gPg0K
+PiA+IFsgNTU3Mi4wNDQ5MzRdIGhhcmRfc3RhcnRfeG1pdCByZXR1cm5lZCAxNiBbIDU1NzIuMDU0
+OTg5XQ0KPiA+IGhhcmRfc3RhcnRfeG1pdCByZXR1cm5lZCAxNiBbIDU1NzIuMDY0MDA3XSBoYXJk
+X3N0YXJ0X3htaXQgcmV0dXJuZWQgMTYNCj4gPiBbIDU1NzIuMDY3ODkzXSBoYXJkX3N0YXJ0X3ht
+aXQgcmV0dXJuZWQgMTYgWyA1NTcyLjA3MTczOV0NCj4gPiBoYXJkX3N0YXJ0X3htaXQgcmV0dXJu
+ZWQgMTYgWyA1NTcyLjA3NTU4Nl0gaGFyZF9zdGFydF94bWl0IHJldHVybmVkIDE2DQo+ID4gWyA1
+NTc1LjA5NjExNl0gaGFyZF9zdGFydF94bWl0IHJldHVybmVkIDE2IFsgNTU3OS4zNzcwMzhdDQo+
+ID4gaGFyZF9zdGFydF94bWl0IHJldHVybmVkIDE2DQo+DQo+IFRoaXMgbGlrZWx5IGNvbWVzIGZy
+b20gTkVUREVWX1RYX0JVU1kgc2lnbmFsZWQgYnkgdGhlIGRyaXZlci4gQ2hlY2sgdGhlDQo+IG9u
+ZSB5b3UgdXNlIGZvciByZWFzb25zLiBNYXkgaW5jbHVkZSAiSSBkb24ndCBoYXZlIGJ1ZmZlcnMg
+bGVmdCIuDQoNClllcyBpdCBkb2VzLCBJIHdhcyBhZnJhaWQgdGhpcyB3b3VsZCBpbmRpY2F0ZSBz
+b21lIGxlYWtlZCBidWZmZXJzLg0KDQpOb3JiZXJ0DQpfX19fX19fX19fX19fX19fX19fX19fX19f
+X19fX19fXw0KDQpUaGlzIG1lc3NhZ2UgYW5kIGFueSBhdHRhY2htZW50cyBhcmUgc29sZWx5IGZv
+ciB0aGUgdXNlIG9mIHRoZSBpbnRlbmRlZCByZWNpcGllbnRzLiBUaGV5IG1heSBjb250YWluIHBy
+aXZpbGVnZWQgYW5kL29yIGNvbmZpZGVudGlhbCBpbmZvcm1hdGlvbiBvciBvdGhlciBpbmZvcm1h
+dGlvbiBwcm90ZWN0ZWQgZnJvbSBkaXNjbG9zdXJlLiBJZiB5b3UgYXJlIG5vdCBhbiBpbnRlbmRl
+ZCByZWNpcGllbnQsIHlvdSBhcmUgaGVyZWJ5IG5vdGlmaWVkIHRoYXQgeW91IHJlY2VpdmVkIHRo
+aXMgZW1haWwgaW4gZXJyb3IgYW5kIHRoYXQgYW55IHJldmlldywgZGlzc2VtaW5hdGlvbiwgZGlz
+dHJpYnV0aW9uIG9yIGNvcHlpbmcgb2YgdGhpcyBlbWFpbCBhbmQgYW55IGF0dGFjaG1lbnQgaXMg
+c3RyaWN0bHkgcHJvaGliaXRlZC4gSWYgeW91IGhhdmUgcmVjZWl2ZWQgdGhpcyBlbWFpbCBpbiBl
+cnJvciwgcGxlYXNlIGNvbnRhY3QgdGhlIHNlbmRlciBhbmQgZGVsZXRlIHRoZSBtZXNzYWdlIGFu
+ZCBhbnkgYXR0YWNobWVudCBmcm9tIHlvdXIgc3lzdGVtLg0KDQpBTkRSSVRaIEhZRFJPIEdtYkgN
+Cg0KDQpSZWNodHNmb3JtLyBMZWdhbCBmb3JtOiBHZXNlbGxzY2hhZnQgbWl0IGJlc2NocsOkbmt0
+ZXIgSGFmdHVuZyAvIENvcnBvcmF0aW9uDQoNCkZpcm1lbnNpdHovIFJlZ2lzdGVyZWQgc2VhdDog
+V2llbg0KDQpGaXJtZW5idWNoZ2VyaWNodC8gQ291cnQgb2YgcmVnaXN0cnk6IEhhbmRlbHNnZXJp
+Y2h0IFdpZW4NCg0KRmlybWVuYnVjaG51bW1lci8gQ29tcGFueSByZWdpc3RyYXRpb246IEZOIDYx
+ODMzIGcNCg0KRFZSOiAwNjA1MDc3DQoNClVJRC1Oci46IEFUVTE0NzU2ODA2DQoNCg0KVGhhbmsg
+WW91DQpfX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fXw0K
 
