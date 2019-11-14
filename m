@@ -1,12 +1,11 @@
-Date: Fri, 22 Nov 2019 12:02:58 -0500 (EST)
-From: Mathieu Desnoyers <mathieu.desnoyers@efficios.com>
-Message-ID: <173739689.937.1574442178071.JavaMail.zimbra@efficios.com>
-In-Reply-To: <20191122170040.23250-1-mathieu.desnoyers@efficios.com>
-References: <20191122170040.23250-1-mathieu.desnoyers@efficios.com>
-Subject: Re: [RFC PATCH liburcu] urcu-bp: introduce
- urcu_bp_disable_sys_membarrier()
+From: Jan Kiszka <jan.kiszka@siemens.com>
+Subject: [PATCH] rtdm: Do not return an error from send/recvmmsg if there are
+ packets
+Message-ID: <02a4475e-f687-8e87-1971-1948cecfbf34@siemens.com>
+Date: Thu, 14 Nov 2019 19:59:13 +0100
 MIME-Version: 1.0
 Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
 Content-Transfer-Encoding: 7bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
@@ -16,135 +15,66 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: paulmck <paulmck@kernel.org>, Norbert Lange <nolange79@gmail.com>, Jan Kiszka <jan.kiszka@siemens.com>, Xenomai <xenomai@xenomai.org>
-Cc: lttng-dev <lttng-dev@lists.lttng.org>
+To: Xenomai <xenomai@xenomai.org>
 
------ On Nov 22, 2019, at 12:00 PM, Mathieu Desnoyers mathieu.desnoyers@efficios.com wrote:
+From: Jan Kiszka <jan.kiszka@siemens.com>
 
-> Real-time applications with Xenomai threads wishing to use urcu-bp
-> read-side within real-time threads require to disable use of the
-> membarrier system call, relying on the fall-back based on regular
-> memory barriers on the read-side instead. Allow disabling use of
-> sys_membarrier before liburcu-bp's first use.
+This is in line with Linux behavior.
 
-This last sentence should actually read:
+We likely still miss an equivalent to sk_err in recvmmsg, though.
 
-Allow disabling use of sys_membarrier when there are no urcu-bp reader
-threads present.
+Reported-by: Lange Norbert <norbert.lange@andritz.com>
+Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
+---
+ kernel/cobalt/rtdm/fd.c | 20 ++++++++------------
+ 1 file changed, 8 insertions(+), 12 deletions(-)
 
-Thanks,
+diff --git a/kernel/cobalt/rtdm/fd.c b/kernel/cobalt/rtdm/fd.c
+index 0a1c6e44ed..5b2c3834da 100644
+--- a/kernel/cobalt/rtdm/fd.c
++++ b/kernel/cobalt/rtdm/fd.c
+@@ -734,14 +734,12 @@ int __rtdm_fd_recvmmsg(int ufd, void __user *u_msgvec, unsigned int vlen,
+ 		xnlock_put_irqrestore(&nklock, s);
+ 	}
+ 
+-	if (datagrams > 0 &&
+-	    (ret == 0 || ret == -ETIMEDOUT || ret == -EWOULDBLOCK)) {
+-		/* NOTE: SO_ERROR should be honored for other errors. */
+-		rtdm_fd_put(fd);
+-		return datagrams;
+-	}
+ fail:
+ 	rtdm_fd_put(fd);
++
++	if (datagrams > 0)
++		ret = datagrams;
++
+ out:
+ 	trace_cobalt_fd_recvmmsg_status(current, fd, ufd, ret);
+ 
+@@ -826,13 +824,11 @@ int __rtdm_fd_sendmmsg(int ufd, void __user *u_msgvec, unsigned int vlen,
+ 		datagrams++;
+ 	}
+ 
+-	if (datagrams > 0 && (ret == 0 || ret == -EWOULDBLOCK)) {
+-		/* NOTE: SO_ERROR should be honored for other errors. */
+-		rtdm_fd_put(fd);
+-		return datagrams;
+-	}
+-
+ 	rtdm_fd_put(fd);
++
++	if (datagrams > 0)
++		ret = datagrams;
++
+ out:
+ 	trace_cobalt_fd_sendmmsg_status(current, fd, ufd, ret);
+ 
+-- 
+2.16.4
 
-Mathieu
-
-> 
-> Signed-off-by: Mathieu Desnoyers <mathieu.desnoyers@efficios.com>
-> ---
-> include/urcu/urcu-bp.h | 12 ++++++++++++
-> src/urcu-bp.c          | 38 +++++++++++++++++++++++++++++++++++---
-> 2 files changed, 47 insertions(+), 3 deletions(-)
-> 
-> diff --git a/include/urcu/urcu-bp.h b/include/urcu/urcu-bp.h
-> index 2ea17e6..bfab965 100644
-> --- a/include/urcu/urcu-bp.h
-> +++ b/include/urcu/urcu-bp.h
-> @@ -157,6 +157,18 @@ extern void urcu_bp_after_fork_child(void);
-> extern void urcu_bp_register_thread(void);
-> 
-> /*
-> + * Require liburcu-bp to use the fallback (based on memory barriers on
-> + * the read-side) rather than pairing the sys_membarrier system call in
-> + * synchronize_rcu() with compiler barriers on the read-side. Should
-> + * be invoked when there are no RCU reader threads present.
-> + * Return 0 on success.
-> + * Return -1, errno = EBUSY if there are RCU reader threads present.
-> + * Return -1, errno = EINVAL if the library has been configured without
-> + * the membarrier fallback support.
-> + */
-> +extern int urcu_bp_disable_sys_membarrier(void);
-> +
-> +/*
->  * In the bulletproof version, the following functions are no-ops.
->  */
-> static inline void urcu_bp_unregister_thread(void)
-> diff --git a/src/urcu-bp.c b/src/urcu-bp.c
-> index 05efd97..4aaa3d6 100644
-> --- a/src/urcu-bp.c
-> +++ b/src/urcu-bp.c
-> @@ -123,6 +123,8 @@ void __attribute__((destructor)) urcu_bp_exit(void);
-> int urcu_bp_has_sys_membarrier;
-> #endif
-> 
-> +static bool urcu_bp_sys_membarrier_is_disabled;
-> +
-> /*
->  * rcu_gp_lock ensures mutual exclusion between threads calling
->  * synchronize_rcu().
-> @@ -607,6 +609,11 @@ void urcu_bp_thread_exit_notifier(void *rcu_key)
-> 
-> #ifdef CONFIG_RCU_FORCE_SYS_MEMBARRIER
-> static
-> +bool urcu_bp_force_sys_membarrier(void)
-> +{
-> +	return true;
-> +}
-> +static
-> void urcu_bp_sys_membarrier_status(bool available)
-> {
-> 	if (!available)
-> @@ -614,20 +621,45 @@ void urcu_bp_sys_membarrier_status(bool available)
-> }
-> #else
-> static
-> +bool urcu_bp_force_sys_membarrier(void)
-> +{
-> +	return false;
-> +}
-> +static
-> void urcu_bp_sys_membarrier_status(bool available)
-> {
-> -	if (!available)
-> -		return;
-> -	urcu_bp_has_sys_membarrier = 1;
-> +	urcu_bp_has_sys_membarrier = available;
-> }
-> #endif
-> 
-> +int urcu_bp_disable_sys_membarrier(void)
-> +{
-> +	mutex_lock(&rcu_registry_lock);
-> +	if (!cds_list_empty(&registry)) {
-> +		mutex_unlock(&rcu_registry_lock);
-> +		errno = EBUSY;
-> +		return -1;
-> +	}
-> +	mutex_unlock(&rcu_registry_lock);
-> +	if (urcu_bp_force_sys_membarrier()) {
-> +		errno = EINVAL;
-> +		return -1;
-> +	}
-> +	mutex_lock(&init_lock);
-> +	urcu_bp_sys_membarrier_is_disabled = true;
-> +	urcu_bp_sys_membarrier_status(false);
-> +	mutex_unlock(&init_lock);
-> +	return 0;
-> +}
-> +
-> static
-> void urcu_bp_sys_membarrier_init(void)
-> {
-> 	bool available = false;
-> 	int mask;
-> 
-> +	if (urcu_bp_sys_membarrier_is_disabled)
-> +		return;
-> 	mask = membarrier(MEMBARRIER_CMD_QUERY, 0);
-> 	if (mask >= 0) {
-> 		if (mask & MEMBARRIER_CMD_PRIVATE_EXPEDITED) {
-> --
-> 2.11.0
 
 -- 
-Mathieu Desnoyers
-EfficiOS Inc.
-http://www.efficios.com
+Siemens AG, Corporate Technology, CT RDA IOT SES-DE
+Corporate Competence Center Embedded Linux
 
