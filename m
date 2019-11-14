@@ -1,20 +1,13 @@
-Date: Tue, 26 Nov 2019 17:25:28 +0000
-From: Jeff Webb <w1@codecraftsmen.org>
-Reply-To: Jeff Webb <w1@codecraftsmen.org>
-Subject: Re: INTR-REMAP error with UDD driver
-Message-ID: <YtqaLI7ZZSbeJUJLf7MaYXwL-fnV-Wjba8Wx5YXTQt-pxgN_5d8Z6DP5kJp3hGit80KxeQZai01NbCv7IXVp6ZX4b5WHJzlQ5lFeEX-g9r4=@codecraftsmen.org>
-In-Reply-To: <bc2a073b-7cf4-01af-c45a-7fd66acfa19d@web.de>
-References: <abVhmVLZoPCMWqAbSv547Q_VzyvVJlNAswLDgIKZpMzhMhOvYJNQYRGT6rz470Lgp_xFfkgLpsUSzHdOpFyyXuww10kuZ0VSUH-Nyf82P0I=@protonmail.com>
- <3c48366f-5fec-be5e-1ea0-8e1504a249ed@siemens.com>
- <CzF7Hair8MCzMzyofjGVG75XADx_cYSu_WZPsPGaZxziMjYEyffMw-JgvN5XMUUNHGrz6BKLyTdaaiQ63kf_9EfMf613OnO9toYUQbDigFc=@codecraftsmen.org>
- <e9af8088-382d-63d5-0088-13dedf556fb8@siemens.com>
- <2wKIW_3RM1ITgcnfgLs5MhRJzN0H8IoNQS0bqS5xCseD17bCWWjHGwqgtzQLp8Cm-ecpiviS_6ZxpJMuL1xRG3x6WDp-Smima8DEieDhuwY=@codecraftsmen.org>
- <9ed83a4f-b55b-1d10-2829-48d9304d8471@siemens.com>
- <GkIONNqgaFPBytKYZQDGUwkmhYvkCNOHaB4pka6TH4T46Y119Zf7nHNBWCyyE-jVwJDBC3URH-prSYQeJHMwLJMunbdna-GFVecUvxazPG0=@codecraftsmen.org>
- <bc2a073b-7cf4-01af-c45a-7fd66acfa19d@web.de>
+Subject: Re: Xenomai crashes when braking into the debugger
+References: <oCTXNhYPNrFqmthwoeR4fQyxnXGl41aoUVYyaRhIckO4b3HyTRyNCYJzkB58WAQI6Ob0Lij2d5lmcy1rJSwTkM-GCo30htAi5C98qIi5W24=@codecraftsmen.org>
+From: Jan Kiszka <jan.kiszka@siemens.com>
+Message-ID: <5abfd650-c763-122e-7884-da5bc93a8a9f@siemens.com>
+Date: Thu, 14 Nov 2019 08:43:24 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+In-Reply-To: <oCTXNhYPNrFqmthwoeR4fQyxnXGl41aoUVYyaRhIckO4b3HyTRyNCYJzkB58WAQI6Ob0Lij2d5lmcy1rJSwTkM-GCo30htAi5C98qIi5W24=@codecraftsmen.org>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -23,121 +16,64 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jan Kiszka <jan.kiszka@web.de>
-Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Jeff Webb <w1@codecraftsmen.org>, "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-T24gMTEvMTYvMTkgMTI6NTEgUE0sIEphbiBLaXN6a2EgdmlhIFhlbm9tYWkgd3JvdGU6Cj4gT24g
-MTYuMTEuMTkgMDA6MDYsIEplZmYgV2ViYiB2aWEgWGVub21haSB3cm90ZToKPj4gT24gRnJpZGF5
-LCBOb3ZlbWJlciAxNSwgMjAxOSA3OjA3IEFNLCBKYW4gS2lzemthIDxqYW4ua2lzemthQHNpZW1l
-bnMuY29tPiB3cm90ZToKPj4+IE9uIDE1LjExLjE5IDAxOjE2LCBKZWZmIFdlYmIgd3JvdGU6Cj4+
-Pgo+Pj4+IE9uIFRodXJzZGF5LCBOb3ZlbWJlciAxNCwgMjAxOSAzOjQxIFBNLCBKYW4gS2lzemth
-IGphbi5raXN6a2FAc2llbWVucy5jb20gd3JvdGU6Cj4+Pj4KPj4+Pj4gT24gMTQuMTEuMTkgMTQ6
-MTYsIEplZmYgV2ViYiB3cm90ZToKPj4+Pj4KPj4+Pj4+IE9uIFRodXJzZGF5LCBOb3ZlbWJlciAx
-NCwgMjAxOSAxOjUwIEFNLCBKYW4gS2lzemthIGphbi5raXN6a2FAc2llbWVucy5jb20gd3JvdGU6
-Cj4+Pj4+Pgo+Pj4+Pj4+IE9uIDE0LjExLjE5IDA2OjA1LCBKZWZmIFdlYmIgdmlhIFhlbm9tYWkg
-d3JvdGU6Cj4+Pj4+Pj4KPj4+Pj4+Pj4gSSB3b3VsZCBsaWtlIHRvIHJldml2ZSB0aGlzIHRocmVh
-ZCBmcm9tIHNldmVyYWwgbW9udGhzIGFnbzoKPj4+Pj4+Pj4KPj4+Pj4+Pj4gaHR0cHM6Ly94ZW5v
-bWFpLm9yZy9waXBlcm1haWwveGVub21haS8yMDE5LU1hcmNoLzA0MDQ5OC5odG1sCj4+Pj4+Pj4+
-Cj4+Pj4+Pj4+IFRoZSBpc3N1ZSBpcyB0aGF0IG9uIHNvbWUgaGFyZHdhcmUgKGEgc3BlY2lmaWMg
-cmFjay1tb3VudCBQQyB3aXRoIGEgUElDTUcgZGF1Z2h0ZXJjYXJkIG9uIGEgYmFja3BsYW5lIGNv
-bnRhaW5pbmcgUENJIGFuZCBQQ0llIHNsb3RzKSBJIGdldCBhbiBJTlRSLVJFTUFQIGVycm9yIHdo
-ZW4gdHJ5aW5nIHRvIHJlY2VpdmUgbGVnYWN5IChub3QgTVNJKSBpbnRlcnJ1cHRzIGZyb20gYSBj
-dXN0b20gRlBHQS1iYXNlZCBQQ0kgY2FyZCB1c2luZyBhIFVERCBkcml2ZXIuIFRoZSBjYXJkIGRp
-ZCB3b3JrIHByb3Blcmx5IGluIG9uZSBvdXQgb2YgdGhlIGZpdmUgUENJIHNsb3RzIG9uIHRoYXQg
-bWFjaGluZSwgYnV0IFVERCBpbnRlcnJ1cHRzIGRpZCBub3Qgd29yayBpbiB0aGUgb3RoZXIgZm91
-ciBzbG90cy4KPj4+Pj4+Pj4gUGxlYXNlIHJldmlldyB0aGUgb3JpZ2luYWwgdGhyZWFkIGZvciBt
-b3JlIGRldGFpbHMgYWJvdXQgdGhlIHNwZWNpZmljIGVycm9yLgo+Pj4+Pj4+PiBIZXJlIGFyZSBh
-IGZldyBtb3JlIHRpZGJpdHMgSSBoYXZlIGdhdGhlcmVkOgo+Pj4+Pj4+Pgo+Pj4+Pj4+PiAtICAg
-VGhlIFVERCBkcml2ZXIgLyB1c2Vyc3BhY2UgY29kZSB3b3JrcyBmaW5lIG9uIHRoZSBvdGhlciBo
-YXJkd2FyZQo+Pj4+Pj4+Pgo+Pj4+Pj4+PiAtICAgVGhlIFVERCBkcml2ZXIgLyB1c2Vyc3BhY2Ug
-Y29kZSB3b3JrcyBmaW5lIGluIG9uZSBQQ0kgc2xvdCBvdXQgb2YgZml2ZSBvbiB0aGlzIGhhcmR3
-YXJlLgo+Pj4+Pj4+Pgo+Pj4+Pj4+PiAtICAgV2l0aCBhbm90aGVyIGJhY2twbGFuZSBtb2RlbCwg
-YnV0IHNhbWUgcHJvY2Vzc29yIGNhcmQsIHRoZSBwcm9ibGVtIG9jY3VycyBpbiBhbGwgZm91ciBv
-ZiB0aGUgUENJIHNsb3RzLgo+Pj4+Pj4+Pgo+Pj4+Pj4+PiAtICAgQW4gYWxtb3N0IGlkZW50aWNh
-bCBwdXJlLWxpbnV4IFVJTyB2ZXJzaW9uIG9mIHRoZSBkcml2ZXIgLyB1c2Vyc3BhY2UgY29kZSB3
-b3JrcyBpbiBhbGwgdGhlIGNhc2VzIEkgdGVzdGVkLCBldmVuIHdoZW4gdGhlIFVERCB2ZXJzaW9u
-IGZhaWxzLCBhbmQgZXZlbiB3aXRoIHRoZSBzYW1lIHhlbm9tYWktcGF0Y2hlZCBrZXJuZWwgdXNl
-ZCBmb3IgVUREIHRlc3RpbmcuCj4+Pj4+Pj4+Cj4+Pj4+Pj4+Cj4+Pj4+Pj4+IEluIG9uZSBvZiB0
-aGUgcHJldmlvdXMgcG9zdHMgaW4gdGhpcyB0aHJlYWQgYSBmZXcgbW9udGhzIGFnbywgUGVyIMOW
-YmVyZyBtZW50aW9uZWQgZXhwZXJpZW5jaW5nIHNvbWV0aGluZyBzaW1pbGFyLiBCYXNlZCBvbiB0
-aGUgaW5mb3JtYXRpb24gdGhhdCB3YXMgc2hhcmVkLCBJIHRyaWVkIG15IGNvZGUgd2l0aCBsaW51
-eCB2ZXJzaW9uIDQuOS4zOCwgYnV0IGl0IHN0aWxsIGZhaWxlZC4gVGhpcyBwcm9tcHRlZCBtZSB0
-byB0cnkgb3RoZXIgbGludXggLyBpcGlwZSAvIHhlbm9tYWkgY29tYmluYXRpb25zLiBUaGVzZSBh
-cmUgbXkgZmluZGluZ3M6Cj4+Pj4+Pj4+IEludGVycnVwdHMgd29yazoKPj4+Pj4+Pj4geGVub21h
-aS0yLjYuNSBpcGlwZS1jb3JlLTMuMTguMjAteDg2LTcucGF0Y2ggKDIwMTYtMDctMDUpCj4+Pj4+
-Pj4+IHhlbm9tYWktMy4wLjkrIGlwaXBlLWNvcmUtMy4xOC4yMC14ODYtNy5wYXRjaCAoMjAxNi0w
-Ny0wNSkKPj4+Pj4+Pj4geGVub21haS0zLjAuOSsgaXBpcGUtY29yZS00LjEuMTgteDg2LTkucGF0
-Y2ggKDIwMTctMDUtMjUpCj4+Pj4+Pj4+IElOVFItUkVNQVAgZXJyb3I6Cj4+Pj4+Pj4+IHhlbm9t
-YWktMy4wLjkrIGlwaXBlLWNvcmUtNC40LjQzLXg4Ni02LnBhdGNoICgyMDE3LTAyLTI1KQo+Pj4+
-Pj4+PiB4ZW5vbWFpLTMuMC45KyBpcGlwZS1jb3JlLTQuNC40My14ODYtNy5wYXRjaCAoMjAxNy0w
-NS0yNSkKPj4+Pj4+Pj4geGVub21haS0zLjAuOSsgaXBpcGUtY29yZS00LjQuNDMteDg2LTgucGF0
-Y2ggKDIwMTctMDYtMTQpCj4+Pj4+Pj4+IHhlbm9tYWktMy4xLXJjMyBpcGlwZS1jb3JlLTQuNC4x
-OTYtY2lwMzgteDg2LTE5LnBhdGNoICgyMDE5LTExLTA0KQo+Pj4+Pj4+PiB4ZW5vbWFpLTMuMC45
-KyBpcGlwZS1jb3JlLTQuOS4zOC14ODYtNC5wYXRjaCAoMjAxNy0xMC0wMykKPj4+Pj4+Pj4geGVu
-b21haS0zLjAuOSBpcGlwZS1jb3JlLTQuMTQuMTMyLXg4Ni02LnBhdGNoICgyMDE5LTA3LTAzKQo+
-Pj4+Pj4+PiBUaGUgWGVub21haSAyLjYuNSB2ZXJzaW9uIG9mIGNvdXJzZSBkb2VzIG5vdCB1c2Ug
-VURELCBidXQgdXNlcyB0aGUgb2xkIHB0aHJlYWRfaW50cl8qIHVzZXJzcGFjZSBmdW5jdGlvbnMu
-Cj4+Pj4+Pj4+IEhvcGVmdWxseSB0aGlzIGFkZGl0aW9uYWwgaW5mb3JtYXRpb24gY2FuIHNoZWQg
-YSBsaXR0bGUgbGlnaHQgb24gdGhlIG1hdHRlci4KPj4+Pj4+Pgo+Pj4+Pj4+IFRoaXMgc291bmRz
-IGxpa2Ugc29tZSBSVCBpbnRlcnJ1cHQgZW5hYmxpbmcgaXNzdWUgcmVsYXRlZCB0byB0aGUgSU9B
-UElDCj4+Pj4+Pj4gaW4gdGhlIHg4NiBJLXBpcGUgcGF0Y2guIFBsZWFzZSBhbHNvIHRlc3QgNC4x
-OS4KPj4+Pj4+Cj4+Pj4+PiBPaywgSSB3aWxsIGRvIHRoaXMuCj4+Pj4KPj4+PiBUb2RheSBJIGhh
-ZCBhIGNoYW5jZSB0byBtYWtlIGEgYnVpbGQgYmFzZWQgb24gdGhlIGlwaXBlLWNvcmUtNC4xOS43
-NS14ODYtNy5wYXRjaCB3aXRoIHhlbm9tYWktMy4xLXJjMy4gSSBoYXZlbid0IGhhZCBhIGNoYW5j
-ZSB0byB0ZXN0IGl0IHRob3JvdWdobHksIGJ1dCBJIHRoaW5rIGl0IHdvcmtzLiBJIGFtIHNvcnJ5
-IEkgZGlkbid0IHRyeSB0aGlzIGVhcmxpZXIsIGFuZCB0aGFua3MgZm9yIHRoZSByZW1pbmRlciB0
-byBkbyBzby4gU2luY2UgYSA0LjE5IHBhdGNoIHdhc24ndCBhdmFpbGFibGUgYmFjayBpbiBlYXJs
-eSBNYXJjaCB3aGVuIEkgZmlyc3QgaGFkIHRoZSB0cm91YmxlLCBJIGdvdCBmaXhhdGVkIG9uIHRo
-ZSBmYWN0IHRoYXQgdGhpbmdzIHdvcmtlZCB3aXRoIHZlcnkgb2xkIGtlcm5lbHMgYW5kIGZvcmdv
-dCB0byB0cnkgNC4xOSB3aGVuIEkgc3RhcnRlZCBsb29raW5nIGludG8gdGhpcyBhZ2Fpbi4gSSB3
-aWxsIGNvbnRpbnVlIHRvIHRlc3QgYW5kIGxldCB5b3Uga25vdyBpZiBJIGZpbmQgYW55IGlzc3Vl
-cy4KPj4+Cj4+PiBJJ20gYWxzbyBub3Qgc2VlaW5nIHRoZSBwcm9ibGVtcyBJIGhhdmUgd2l0aCA0
-LjQgKyBpbnRyZW1hcCBvbiA0LjE5LAo+Pj4gZGVzcGl0ZSBhbGwgZGVidWcgZmVhdHVyZXMgb24u
-IE9LLCBsZXQncyBjaGVjayB3aGF0IHdlIGFyZSBtaXNzaW5nIGRvd24KPj4+IHRoZXJlLi4uCj4+
-Cj4+IEp1c3QgRllJLCBJIGRpZCBnbyBiYWNrIGFuZCB0cnkgaW50cmVtYXA9b2ZmIG9uIDQuNC4x
-OTYteGVub21haS0zLjEtcmMzLWNpcDM4LCBhbmQgaXQgd29ya3MgKGFzIHlvdSBleHBlY3RlZCku
-Cj4+Cj4+IEFsc28sIEkgbG9va2VkIGF0IG15IGtlcm5lbCBsb2dzIGluIG1vcmUgZGV0YWlsLCBh
-bmQgZGlzY292ZXJlZCB0aGF0IHRoZXJlIGFyZSBzZXZlcmFsIGluc3RhbmNlcyBvZiBhIGtlcm5l
-bCBCVUcgbWVzc2FnZSBhZnRlciBib290LCBidXQgdGhlbiBJIGRvbid0IHNlZSBhbnkgbW9yZSBv
-ZiB0aGVtIGxhdGVyIG9uLiAgVGhlIGludHJlbWFwIHNldHRpbmcgZG9lc24ndCBzZWVtIHRvIGFm
-ZmVjdCB0aGUgcHJlc2VuY2Ugb2YgdGhlc2UgbWVzc2FnZXMuICBUaGlzIGlzIHRoZSBtZXNzYWdl
-IGZvciA0LjQuMTk2LXhlbm9tYWktMy4xLXJjMy1jaXAzODoKPj4KPj4gWyAgIDUzLjY5NzcxN10g
-a2VybmVsIEJVRyBhdCBrZXJuZWwvYXVkaXRzYy5jOjE1MDIhCj4+IFsgICA1My42OTgxMzJdIGlu
-dmFsaWQgb3Bjb2RlOiAwMDAwIFsjMV0gU01QCj4KPiBJJ3ZlIG5ldmVyIHNlZW4gdGhpcyBiZWZv
-cmUsIHRob3VnaCBBVURJVFNZU0NBTEwgaXMgZW5hYmxlZCBpbiBteQo+IGtlcm5lbC4gQW55IHNw
-ZWNpYWwgcnVsZXMgYWN0aXZlIGFjY29yZGluZyB0byBhdWRpdGN0bCAtbD8gQ2FuIHlvdQo+IHRy
-aWdnZXIgdGhpcyByZWxpYWJseT8gQ29uZmlnIHN0aWxsIHRoZSBvbmUgZnJvbSBNYXJjaD8KClRo
-aXMgQlVHIGlzIHRyaWdnZXJlZCBvbiBzZXZlcmFsIG1hY2hpbmVzICh3aXRoIHNpbWlsYXIsIGJ1
-dCBub3QgaWRlbnRpY2FsIGhhcmR3YXJlKS4gIEkgaGF2ZSBhdHRhY2hlZCB0aGUgb3V0cHV0IG9m
-ICJhdWRpdGN0bCAtbCIsIGFzIHdlbGwgYXMgdGhlIGNvcnJlc3BvbmRpbmcgZG1lc2cgb3V0cHV0
-IGFuZCBjb25maWcuICBUaGlzIGNvdWxkIGJlIHVucmVsYXRlZCB0byBYZW5vbWFpLCB0aG91Z2gs
-IGFzIEkgaGF2ZW4ndCB0cmllZCBhbiB1bnBhdGNoZWQga2VybmVsLiAgU29ycnkgdG8gYm90aGVy
-IHlvdSBhbmQgcGxlYXNlIGRpc3JlZ2FyZCBpZiB5b3UgdGhpbmsgaXQgaXMgdW5yZWxhdGVkIHRv
-IFhlbm9tYWkuCgo+PiBUaGVyZSBhcmUgc2ltaWxhciBtZXNzYWdlcyB3aXRoIDQuMTkuNzUteGVu
-b21haS0zLjEtcmMzOgo+Pgo+PiBbICAgNjUuNTQ2MzMzXSBrZXJuZWwgQlVHIGF0IGtlcm5lbC9h
-dWRpdHNjLmM6MTUyNyEKPj4gWyAgIDc5LjA1NDM5Nl0gaW52YWxpZCBvcGNvZGU6IDAwMDAgWyMy
-XSBTTVAgUFRJCj4+Cj4+IEkgaGF2ZSBhdHRhY2hlZCBzb21lIGxvZyBmaWxlIGV4Y2VycHRzIHRo
-YXQgY292ZXIgc2V2ZXJhbCByZWJvb3RzIHdpdGggdGhlIHR3byBrZXJuZWxzIGFuZCBhbHNvIHdp
-dGggaW50ZXJtYXA9b2ZmIGZvciA0LjQuICBUaGVzZSBtZXNzYWdlcyBtYXkgYmUgdW5yZWxhdGVk
-IHRvIGFsbCB0aGlzLCBidXQgbGV0IG1lIGtub3cgaWYgSSBzaG91bGQgaW52ZXN0aWdhdGUgZnVy
-dGhlci4KPgo+IEZXSVcsIEkndmUgcmVsZWFzZWQgaXBpcGUtY29yZS00LjQuMTk5LWNpcDM5LXg4
-Ni0yMCB3aGljaCBhdCBsZWFzdAo+IHNvbHZlZCB0aGUgaW50cmVtYXAgaXNzdWUuCgpUaGFua3Ms
-IEphbi4gIEkgY29uZmlybWVkIHRoYXQgaXBpcGUtY29yZS00LjQuMTk5LWNpcDM5LXg4Ni0yMCBm
-aXhlcyB0aGUgaW50cmVtYXAgaXNzdWUgZm9yIG1lIGFzIHdlbGwuICBJIGhhdmVuJ3QgZG9uZSBl
-eHRlbnNpdmUgdGVzdGluZyB3aXRoIHRoaXMga2VybmVsLCBhcyBJIGhhdmUgYmVlbiB1c2luZyBw
-cmltYXJpbHkgaXBpcGUtY29yZS00LjE5Ljg0LXg4Ni04LnBhdGNoLCBidXQgSSBrbm93IHRoZSBi
-YXNpYyBmdW5jdGlvbmFsaXR5IGlzIHdvcmtpbmcuCgotSmVmZgoKLS0tLS0tLS0tLS0tLS0gbmV4
-dCBwYXJ0IC0tLS0tLS0tLS0tLS0tCkEgbm9uLXRleHQgYXR0YWNobWVudCB3YXMgc2NydWJiZWQu
-Li4KTmFtZTogYXVkaXRjdGwuNC4xOS44NC14ZW5vbWFpLTMuMS1yYzMKVHlwZTogYXBwbGljYXRp
-b24vb2N0ZXQtc3RyZWFtClNpemU6IDMxNjMgYnl0ZXMKRGVzYzogbm90IGF2YWlsYWJsZQpVUkw6
-IDxodHRwOi8veGVub21haS5vcmcvcGlwZXJtYWlsL3hlbm9tYWkvYXR0YWNobWVudHMvMjAxOTEx
-MjYvMGFlNDRjYWEvYXR0YWNobWVudC5vYmo+Ci0tLS0tLS0tLS0tLS0tIG5leHQgcGFydCAtLS0t
-LS0tLS0tLS0tLQpBIG5vbi10ZXh0IGF0dGFjaG1lbnQgd2FzIHNjcnViYmVkLi4uCk5hbWU6IGNv
-bmZpZy00LjE5Ljg0LXhlbm9tYWktMy4xLXJjMy1nY2M3ClR5cGU6IGFwcGxpY2F0aW9uL29jdGV0
-LXN0cmVhbQpTaXplOiAyMTExNDkgYnl0ZXMKRGVzYzogbm90IGF2YWlsYWJsZQpVUkw6IDxodHRw
-Oi8veGVub21haS5vcmcvcGlwZXJtYWlsL3hlbm9tYWkvYXR0YWNobWVudHMvMjAxOTExMjYvMGFl
-NDRjYWEvYXR0YWNobWVudC0wMDAxLm9iaj4KLS0tLS0tLS0tLS0tLS0gbmV4dCBwYXJ0IC0tLS0t
-LS0tLS0tLS0tCkEgbm9uLXRleHQgYXR0YWNobWVudCB3YXMgc2NydWJiZWQuLi4KTmFtZTogZG1l
-c2cubG9nClR5cGU6IHRleHQveC1sb2cKU2l6ZTogMTExNTI2IGJ5dGVzCkRlc2M6IG5vdCBhdmFp
-bGFibGUKVVJMOiA8aHR0cDovL3hlbm9tYWkub3JnL3BpcGVybWFpbC94ZW5vbWFpL2F0dGFjaG1l
-bnRzLzIwMTkxMTI2LzBhZTQ0Y2FhL2F0dGFjaG1lbnQuYmluPgo=
+On 14.11.19 02:58, Jeff Webb via Xenomai wrote:
+> Lange Norbert via Xenomai wrote:
+>>> From: Jan Kiszka <jan.kiszka at siemens.com>
+>>> On 13.11.19 16:18, Lange Norbert via Xenomai wrote:
+>>>> I am running into some bad issues with debugging, can't really narrow
+>>>> down when they happen, but usually when I run through GDB and want to
+>>>> "break" (pause execution), it seems to be related to *other* Xenomai
+>>> programs running at the same time (as said its hard to narrow down).
+>>>
+>>> We have a gdb test case. Does it trigger for you as well when you run some
+>>> other program in parallel?
+>>>
+>>> Also, could you provide the kernel full log? Possibly, enabling the I-pipe
+>>> tracer with panic dump could be useful as well. But the most important step
+>>> would be to create reproducibility for a third party like me.
+>>
+>> Currently the issue is gone, and I don't have time for researching the cause.
+>> is panic dump a kernel compilation config?
+> 
+> I think one of my colleagues has experienced something similar.
+> He said that a when one application was stopped in a breakpoint,
+> it caused sem_timedwait calls in another application to not time
+> out until execution of the other program was resumed.  I will ask
+> and see if he can put together a reproducible test case.  I know
+> the problem was repeatable at one point with the two applications
+> he was working with.
+
+This particular behavior is solved in 3.1 by 
+https://gitlab.denx.de/Xenomai/xenomai/commit/9ebc2b6ea49406026e9e69d8fa490b3f8d8f0a24.
+
+> 
+> I have personally experienced what seems (to me) to be a similar
+> issue involving signal handling where a signal handling thread
+> received a SIGINT via sigwait (other threads had SIGINT blocked),
+> and tried to set a global variable that should have caused the
+> other threads to terminate.  The other threads had an issue where
+> they would not wake up from sem_timedwait calls (or even sleep
+> calls) after the SIGINT was received by the other thread, so they
+> would not terminate properly.  The same code worked fine under
+> Xenomai 2.6.  I tried to create a standalone example to reproduce
+> this today, but I could recreate the problem.  I know it was very
+> reproducible when I was constructing a work-around for it.
+> 
+> Could it be that some fault occurs that causes subsequent bad
+> behavior with respect to signal handling (SIGINT/debugging) that
+> is fixed by a reboot?
+> 
+> Just trying to shed some light on the problem.  I think there is
+> a bug here somewhere...
+
+Stand-alone test cases or test sequences are always welcome! Just please 
+also make sure 3.1-rc as debugging code changed there quite a bit.
+
+Jan
+
+-- 
+Siemens AG, Corporate Technology, CT RDA IOT SES-DE
+Corporate Competence Center Embedded Linux
+
