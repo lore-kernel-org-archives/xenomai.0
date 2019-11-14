@@ -1,12 +1,14 @@
-Subject: Re: urcu/lttng (Userspace) and Xenomai
-References: <VI1PR05MB5917D0B45F7CB253F10197B5F64E0@VI1PR05MB5917.eurprd05.prod.outlook.com>
- <5718dcc6-9af6-03f8-3e44-b91805f403e2@siemens.com>
- <VI1PR05MB5917144A022B93E3DBA32FE0F64E0@VI1PR05MB5917.eurprd05.prod.outlook.com>
+Subject: Re: RTnet sendmmsg and ENOBUFS
 From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <4544332f-e10b-8f3a-64f4-4dd47996ab91@siemens.com>
-Date: Thu, 21 Nov 2019 17:19:14 +0100
+References: <DB8PR05MB591594C16F703FD12F088928F6760@DB8PR05MB5915.eurprd05.prod.outlook.com>
+ <1510f7f0-e130-0e22-b946-d1f6d84f3608@siemens.com>
+ <DB8PR05MB59155D324BA2977A60E63DADF6760@DB8PR05MB5915.eurprd05.prod.outlook.com>
+ <AM0PR05MB59064885C14E3DF057F2E9E8F6710@AM0PR05MB5906.eurprd05.prod.outlook.com>
+ <815b192d-7ecf-385c-058e-969da641f7a4@siemens.com>
+Message-ID: <c6e2e49c-bd58-f2f6-8d27-0de74121309d@siemens.com>
+Date: Thu, 14 Nov 2019 19:39:58 +0100
 MIME-Version: 1.0
-In-Reply-To: <VI1PR05MB5917144A022B93E3DBA32FE0F64E0@VI1PR05MB5917.eurprd05.prod.outlook.com>
+In-Reply-To: <815b192d-7ecf-385c-058e-969da641f7a4@siemens.com>
 Content-Type: text/plain; charset="utf-8"; format="flowed"
 Content-Language: en-US
 Content-Transfer-Encoding: 8bit
@@ -18,104 +20,41 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Lange Norbert <norbert.lange@andritz.com>, "Xenomai (xenomai@xenomai.org)" <xenomai@xenomai.org>, Mathieu Desnoyers <mathieu.desnoyers@efficios.com>
+To: Lange Norbert <norbert.lange@andritz.com>, "Xenomai (xenomai@xenomai.org)" <xenomai@xenomai.org>
 
-On 21.11.19 15:15, Lange Norbert wrote:
->> -----Original Message-----
->> From: Jan Kiszka <jan.kiszka@siemens.com>
->> Sent: Donnerstag, 21. November 2019 14:46
->> To: Lange Norbert <norbert.lange@andritz.com>; Xenomai
->> (xenomai@xenomai.org) <xenomai@xenomai.org>
->> Subject: Re: urcu/lttng (Userspace) and Xenomai
+On 14.11.19 19:18, Jan Kiszka wrote:
+> On 14.11.19 18:55, Lange Norbert wrote:
+>> According to the code in __rtdm_fd_sendmmsg, that’s not what happens, 
+>> ENOBUFS would be returned instead,
+>> And the amount of sent packets is lost forever.
 >>
->> NON-ANDRITZ SOURCE: BE CAUTIOUS WITH CONTENT, LINKS OR
->> ATTACHMENTS.
+>> if (datagrams > 0 && (ret == 0 || ret == -EWOULDBLOCK)) {
+>> /* NOTE: SO_ERROR should be honored for other errors. */
+>> rtdm_fd_put(fd);
+>> return datagrams;
+>> }
 >>
+>> IMHO this condition would need to added:
+>> ((flags | MSG_DONTWAIT) && ret == -ENOBUFS)
 >>
->> On 21.11.19 11:26, Lange Norbert via Xenomai wrote:
->>> Hello,
->>>
->>> I am trying to figure out if Xenomai would work correctly with Lttng.
->>> Currently I haven’t figured out how the system manages buffers, but I am
->> checking if this would be generally applicable to Xenomai.
->>>
->>> I’d like to know if anyone has already used Lttng UST with xenomai
->>> threads, and if there is any need to compile lttng/liburcu for xenomai or
->> using some patches.
->>> (I haven’t seen anything that indicates it would not work).
->>>
->>> ## urcu flavours
->>> This has a few variants, lttng uses the bulletproof one. Most others
->>> should be faster on average – but all of them might unlock a futex with a
->> raw syscall.
->>>
->>> Other flavours like qsbr could likely be faster if the futex sycall
->>> would be replaced with a cobalt mutex (it’s very unlikely this path is
->> executed). Would need some work to get this done (and lttng to use it).
->>>
->>> ## sys_membarrier
->>> recent kernels and liburcu versions support this syscall, which
->>> supposedly allows removal of reader memory barriers.
->>> The syscall will somehow interrupt the threads (all *running threads* of
->> the process), which implicitly causes a barrier for readers.
->>>
->>> Q: I guess this will *not* interrupt xenomai threads, as their shadow linux
->> thread is not *running*?
->>> Q: x86_64 accesses are strictly ordered, do you actually need membarriers
->> at all?
->>>
->>
->> I didn't look into details of enabling userspace lttng yet, but I had a chat with
->> Mathieu about this, maybe a year ago. He said back then that there is also a
->> polling mode where a data collection thread is simply trying to obtain the
->> trace output time-driven.
+>> (Recvmmsg possibly similarly, havent checked yet)
 > 
-> I believe that’s the "bulletproof" rcu mode that lttng uses. I don’t see any OS-level
-> synchronization in the readers, only some atomic variables.
-> Mathieu is a lttng dev?
+> sendmmsg was only added to Xenomai 3.1. There might be room for 
+> improvements, if not corrections. So, if we do not return the number of 
+> sent messages or signal an error where we should not (this is how I read 
+> the man page currently), this needs a patch...
 
-Mathieu Desnoyers is the creator of lttng. And of those nice urcu 
-services and syscalls. Let's try to pull him in... :)
+The implementation of sendmmsg is wrong when comparing it to the man 
+page and the reference in the kernel (as this is Linux-only):
 
-You could also try to place your questions on some lttng channel, I guess.
+/* We only return an error if no datagrams were able to be sent */
 
-> 
->> Then the producer (including cobalt threads) would
->> not need any syscall at all.
-> 
-> In the context of lttng those are readers (of the shared rcu structures),
-> writes would only happen if tracepoint providers are added/removed.
+says the kernel e.g. and does
 
-Maybe Mathieu had a static (upfront to application start) tracepoint 
-configuration in mind. That's what I would expect from an RT setup at least.
+         if (datagrams != 0)
+                 return datagrams;
 
-> 
-> But then I don’t know how the buffers are managed, this appears to
-> be system-wide in another process.
-> 
-> The sys_membarrier syscall would be called by writers (not xenomai threads) to additionally allow
-> instructions like dmb (for arm) around atomic accesses to be removed for the readers.
-> I think it's useless for x86_64 and the syscall itself would not do anything for running xenomai threads.
-> (you can only force the syscall but not disable it, without changing sources that is).
-
-While an x86-only view can be ok for a concrete setup, it's better to 
-develop a generic / portable solution that enables lttng for broader use 
-in Xenomai applications.
-
-> 
->> As I said, that was just a conceptual discussion.
->> None of us actually looked into the implementation.
-> 
-> Hmm, would like to test this soon. Still need a way to totally disable it in-case something goes wrong.. ie ugly macro magic.
-> Can you tell me that I am right about membarrier(MEMBARRIER_CMD_PRIVATE_EXPEDITED) not blocking until
-> the running xenomai thread had some sort of syscall synchronization?
-
-I haven't looked into membarrier semantics in Xenomai context yet. The 
-key question is if the Xenomai task switcher happens to provide the same 
-information to that service as a normal Linux task switch would do. 
-Maybe it's working, just slower, maybe it's stalling with CPUs that only 
-switch between Linux idle and the Xenomai scheduler as a black box from 
-Linux perspective.
+It's also missing to trace on certain exits. Will write a patch.
 
 Jan
 
