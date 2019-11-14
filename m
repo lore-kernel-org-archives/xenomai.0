@@ -1,11 +1,11 @@
-From: Wolfgang Grandegger <wg@grandegger.com>
-Subject: [PATCH v2] utils/can: fix error handling, use errno instead of -ret
-Message-ID: <53a3cf58-5ad6-f64c-87ef-4d99defeec07@grandegger.com>
-Date: Wed, 9 Oct 2019 10:52:14 +0200
+Date: Thu, 14 Nov 2019 01:58:21 +0000
+From: Jeff Webb <w1@codecraftsmen.org>
+Reply-To: Jeff Webb <w1@codecraftsmen.org>
+Subject: RE: Xenomai crashes when braking into the debugger
+Message-ID: <oCTXNhYPNrFqmthwoeR4fQyxnXGl41aoUVYyaRhIckO4b3HyTRyNCYJzkB58WAQI6Ob0Lij2d5lmcy1rJSwTkM-GCo30htAi5C98qIi5W24=@codecraftsmen.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-GB
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -14,217 +14,59 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "Xenomai@xenomai.org" <Xenomai@xenomai.org>
+To: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-rtcansend and rtcanrecv test and evaluate the return code of POSIX
-functions instead of errno. This bug sneaked in with:
+Lange Norbert via Xenomai wrote:
+> > From: Jan Kiszka <jan.kiszka at siemens.com>
+> > On 13.11.19 16:18, Lange Norbert via Xenomai wrote:
+> > > I am running into some bad issues with debugging, can't really narrow
+> > > down when they happen, but usually when I run through GDB and want to
+> > > "break" (pause execution), it seems to be related to *other* Xenomai
+> > programs running at the same time (as said its hard to narrow down).
+> >
+> > We have a gdb test case. Does it trigger for you as well when you run s=
+ome
+> > other program in parallel?
+> >
+> > Also, could you provide the kernel full log? Possibly, enabling the I-p=
+ipe
+> > tracer with panic dump could be useful as well. But the most important =
+step
+> > would be to create reproducibility for a third party like me.
+>
+> Currently the issue is gone, and I don't have time for researching the ca=
+use.
+> is panic dump a kernel compilation config?
 
-d245d6e utils/can: drop dependencies on obsolete rt_dev API
+I think one of my colleagues has experienced something similar.
+He said that a when one application was stopped in a breakpoint,
+it caused sem_timedwait calls in another application to not time
+out until execution of the other program was resumed.  I will ask
+and see if he can put together a reproducible test case.  I know
+the problem was repeatable at one point with the two applications
+he was working with.
 
-As we are at it, a few missing "\n" of some error messages have been
-added as well.
+I have personally experienced what seems (to me) to be a similar
+issue involving signal handling where a signal handling thread
+received a SIGINT via sigwait (other threads had SIGINT blocked),
+and tried to set a global variable that should have caused the
+other threads to terminate.  The other threads had an issue where
+they would not wake up from sem_timedwait calls (or even sleep
+calls) after the SIGINT was received by the other thread, so they
+would not terminate properly.  The same code worked fine under
+Xenomai 2.6.  I tried to create a standalone example to reproduce
+this today, but I could recreate the problem.  I know it was very
+reproducible when I was constructing a work-around for it.
 
-Signed-off-by: Wolfgang Grandegger <wg@grandegger.com>
----
+Could it be that some fault occurs that causes subsequent bad
+behavior with respect to signal handling (SIGINT/debugging) that
+is fixed by a reboot?
 
-Changes since v1:
-- rt_task_shadow() still needs to handle "-ret"
-- improved commit message
+Just trying to shed some light on the problem.  I think there is
+a bug here somewhere...
 
- utils/can/rtcanrecv.c | 28 ++++++++++++++--------------
- utils/can/rtcansend.c | 26 +++++++++++++-------------
- 2 files changed, 27 insertions(+), 27 deletions(-)
+Thanks,
 
-diff --git a/utils/can/rtcanrecv.c b/utils/can/rtcanrecv.c
-index 8155ab7..b37b80b 100644
---- a/utils/can/rtcanrecv.c
-+++ b/utils/can/rtcanrecv.c
-@@ -63,7 +63,7 @@ static void cleanup(void)
- 	ret = close(s);
- 	s = -1;
- 	if (ret) {
--	    fprintf(stderr, "close: %s\n", strerror(-ret));
-+	    fprintf(stderr, "close: %s\n", strerror(errno));
- 	}
- 	exit(EXIT_SUCCESS);
-     }
-@@ -105,17 +105,17 @@ static void rt_task(void)
- 	    ret = recvfrom(s, (void *)&frame, sizeof(can_frame_t), 0,
- 				  (struct sockaddr *)&addr, &addrlen);
- 	if (ret < 0) {
--	    switch (ret) {
--	    case -ETIMEDOUT:
-+	    switch (errno) {
-+	    case ETIMEDOUT:
- 		if (verbose)
--		    printf("recv: timed out");
-+		    printf("recv: timed out\n");
- 		continue;
--	    case -EBADF:
-+	    case EBADF:
- 		if (verbose)
--		    printf("recv: aborted because socket was closed");
-+		    printf("recv: aborted because socket was closed\n");
- 		break;
- 	    default:
--		fprintf(stderr, "recv: %s\n", strerror(-ret));
-+		fprintf(stderr, "recv: %s\n", strerror(errno));
- 	    }
- 	    break;
- 	}
-@@ -234,7 +234,7 @@ int main(int argc, char **argv)
- 
-     ret = socket(PF_CAN, SOCK_RAW, CAN_RAW);
-     if (ret < 0) {
--	fprintf(stderr, "socket: %s\n", strerror(-ret));
-+	fprintf(stderr, "socket: %s\n", strerror(errno));
- 	return -1;
-     }
-     s = ret;
-@@ -254,7 +254,7 @@ int main(int argc, char **argv)
- 
- 	ret = ioctl(s, SIOCGIFINDEX, &ifr);
- 	if (ret < 0) {
--	    fprintf(stderr, "ioctl GET_IFINDEX: %s\n", strerror(-ret));
-+	    fprintf(stderr, "ioctl GET_IFINDEX: %s\n", strerror(errno));
- 	    goto failure;
- 	}
-     }
-@@ -263,7 +263,7 @@ int main(int argc, char **argv)
- 	ret = setsockopt(s, SOL_CAN_RAW, CAN_RAW_ERR_FILTER,
- 				&err_mask, sizeof(err_mask));
- 	if (ret < 0) {
--	    fprintf(stderr, "setsockopt: %s\n", strerror(-ret));
-+	    fprintf(stderr, "setsockopt: %s\n", strerror(errno));
- 	    goto failure;
- 	}
- 	if (verbose)
-@@ -275,7 +275,7 @@ int main(int argc, char **argv)
- 				&recv_filter, filter_count *
- 				sizeof(struct can_filter));
- 	if (ret < 0) {
--	    fprintf(stderr, "setsockopt: %s\n", strerror(-ret));
-+	    fprintf(stderr, "setsockopt: %s\n", strerror(errno));
- 	    goto failure;
- 	}
-     }
-@@ -285,7 +285,7 @@ int main(int argc, char **argv)
-     ret = bind(s, (struct sockaddr *)&recv_addr,
- 		      sizeof(struct sockaddr_can));
-     if (ret < 0) {
--	fprintf(stderr, "bind: %s\n", strerror(-ret));
-+	fprintf(stderr, "bind: %s\n", strerror(errno));
- 	goto failure;
-     }
- 
-@@ -294,7 +294,7 @@ int main(int argc, char **argv)
- 	    printf("Timeout: %lld ns\n", (long long)timeout);
- 	ret = ioctl(s, RTCAN_RTIOC_RCV_TIMEOUT, &timeout);
- 	if (ret) {
--	    fprintf(stderr, "ioctl RCV_TIMEOUT: %s\n", strerror(-ret));
-+	    fprintf(stderr, "ioctl RCV_TIMEOUT: %s\n", strerror(errno));
- 	    goto failure;
- 	}
-     }
-@@ -302,7 +302,7 @@ int main(int argc, char **argv)
-     if (with_timestamp) {
- 	ret = ioctl(s, RTCAN_RTIOC_TAKE_TIMESTAMP, RTCAN_TAKE_TIMESTAMPS);
- 	if (ret) {
--	    fprintf(stderr, "ioctl TAKE_TIMESTAMP: %s\n", strerror(-ret));
-+	    fprintf(stderr, "ioctl TAKE_TIMESTAMP: %s\n", strerror(errno));
- 	    goto failure;
- 	}
-     }
-diff --git a/utils/can/rtcansend.c b/utils/can/rtcansend.c
-index 4a692b3..26b7e90 100644
---- a/utils/can/rtcansend.c
-+++ b/utils/can/rtcansend.c
-@@ -58,7 +58,7 @@ static void cleanup(void)
- 	ret = close(s);
- 	s = -1;
- 	if (ret) {
--	    fprintf(stderr, "close: %s\n", strerror(-ret));
-+	    fprintf(stderr, "close: %s\n", strerror(errno));
- 	}
- 	exit(EXIT_SUCCESS);
-     }
-@@ -87,17 +87,17 @@ static void rt_task(void)
- 	    ret = sendto(s, (void *)&frame, sizeof(can_frame_t), 0,
- 				(struct sockaddr *)&to_addr, sizeof(to_addr));
- 	if (ret < 0) {
--	    switch (ret) {
--	    case -ETIMEDOUT:
-+	    switch (errno) {
-+	    case ETIMEDOUT:
- 		if (verbose)
--		    printf("send(to): timed out");
-+		    printf("send(to): timed out\n");
- 		break;
--	    case -EBADF:
-+	    case EBADF:
- 		if (verbose)
--		    printf("send(to): aborted because socket was closed");
-+		    printf("send(to): aborted because socket was closed\n");
- 		break;
- 	    default:
--		fprintf(stderr, "send: %s\n", strerror(-ret));
-+		fprintf(stderr, "send: %s\n", strerror(errno));
- 		break;
- 	    }
- 	    i = loops;		/* abort */
-@@ -215,7 +215,7 @@ int main(int argc, char **argv)
- 
-     ret = socket(PF_CAN, SOCK_RAW, CAN_RAW);
-     if (ret < 0) {
--	fprintf(stderr, "socket: %s\n", strerror(-ret));
-+	fprintf(stderr, "socket: %s\n", strerror(errno));
- 	return -1;
-     }
-     s = ret;
-@@ -224,7 +224,7 @@ int main(int argc, char **argv)
- 	ret = setsockopt(s, SOL_CAN_RAW, CAN_RAW_LOOPBACK,
- 				&loopback, sizeof(loopback));
- 	if (ret < 0) {
--	    fprintf(stderr, "setsockopt: %s\n", strerror(-ret));
-+	    fprintf(stderr, "setsockopt: %s\n", strerror(errno));
- 	    goto failure;
- 	}
- 	if (verbose)
-@@ -237,7 +237,7 @@ int main(int argc, char **argv)
- 
-     ret = ioctl(s, SIOCGIFINDEX, &ifr);
-     if (ret < 0) {
--	fprintf(stderr, "ioctl: %s\n", strerror(-ret));
-+	fprintf(stderr, "ioctl: %s\n", strerror(errno));
- 	goto failure;
-     }
- 
-@@ -248,13 +248,13 @@ int main(int argc, char **argv)
- 	/* Suppress definiton of a default receive filter list */
- 	ret = setsockopt(s, SOL_CAN_RAW, CAN_RAW_FILTER, NULL, 0);
- 	if (ret < 0) {
--	    fprintf(stderr, "setsockopt: %s\n", strerror(-ret));
-+	    fprintf(stderr, "setsockopt: %s\n", strerror(errno));
- 	    goto failure;
- 	}
- 
- 	ret = bind(s, (struct sockaddr *)&to_addr, sizeof(to_addr));
- 	if (ret < 0) {
--	    fprintf(stderr, "bind: %s\n", strerror(-ret));
-+	    fprintf(stderr, "bind: %s\n", strerror(errno));
- 	    goto failure;
- 	}
-     }
-@@ -282,7 +282,7 @@ int main(int argc, char **argv)
- 	    printf("Timeout: %lld ns\n", (long long)timeout);
- 	ret = ioctl(s, RTCAN_RTIOC_SND_TIMEOUT, &timeout);
- 	if (ret) {
--	    fprintf(stderr, "ioctl SND_TIMEOUT: %s\n", strerror(-ret));
-+	    fprintf(stderr, "ioctl SND_TIMEOUT: %s\n", strerror(errno));
- 	    goto failure;
- 	}
-     }
--- 
-1.9.1
+-Jeff Webb
 
 
