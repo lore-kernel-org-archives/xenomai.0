@@ -1,17 +1,13 @@
-From: Lange Norbert <norbert.lange@andritz.com>
-Subject: RE: [PATCH] rtdm: Do not return an error from send/recvmmsg if there
- are packets
-Date: Fri, 15 Nov 2019 12:42:22 +0000
-Message-ID: <VI1PR05MB591796F0F7F5F3E02AFCF879F6700@VI1PR05MB5917.eurprd05.prod.outlook.com>
-References: <02a4475e-f687-8e87-1971-1948cecfbf34@siemens.com>
- <4cdc4d6a-f073-611b-1b0e-306dfeecb176@xenomai.org>
- <34b58531-0004-ea65-0384-e338341435e4@xenomai.org>
- <fe10a1df-6846-f706-6e12-85ba252ecce1@siemens.com>
-In-Reply-To: <fe10a1df-6846-f706-6e12-85ba252ecce1@siemens.com>
-Content-Language: en-US
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+Subject: Re: INTR-REMAP error with UDD driver
+References: <abVhmVLZoPCMWqAbSv547Q_VzyvVJlNAswLDgIKZpMzhMhOvYJNQYRGT6rz470Lgp_xFfkgLpsUSzHdOpFyyXuww10kuZ0VSUH-Nyf82P0I=@protonmail.com>
+From: Jan Kiszka <jan.kiszka@siemens.com>
+Message-ID: <3c48366f-5fec-be5e-1ea0-8e1504a249ed@siemens.com>
+Date: Thu, 14 Nov 2019 08:50:21 +0100
 MIME-Version: 1.0
+In-Reply-To: <abVhmVLZoPCMWqAbSv547Q_VzyvVJlNAswLDgIKZpMzhMhOvYJNQYRGT6rz470Lgp_xFfkgLpsUSzHdOpFyyXuww10kuZ0VSUH-Nyf82P0I=@protonmail.com>
+Content-Type: text/plain; charset="utf-8"; format="flowed"
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -20,49 +16,62 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jan Kiszka <jan.kiszka@siemens.com>, Philippe Gerum <rpm@xenomai.org>, "Xenomai (xenomai@xenomai.org)" <xenomai@xenomai.org>
+To: Jeff Webb <jeff.webb@protonmail.com>, "xenomai@xenomai.org" <xenomai@xenomai.org>, "pero@wolfram.com" <pero@wolfram.com>
 
-SGVsbG8sDQoNCkp1c3QgZm9yIGNvbnNpZGVyYXRpb24sIElmIHlvdSBjYW4gcGFzcyBib3RoIGVy
-cm9yIHZhbHVlIGFuZCAjIG9mIHN1Y2Nlc3NmdWxseSBzZW50IHBhY2tldHMgb3V0IG9mIHRoZSBr
-ZXJuZWwgZnVuY3Rpb24sDQpwZXJoYXBzIHlvdSBjb3VsZCByZXR1cm4gdGhlICMgKGlmID4gMCkg
-YW5kIHN0aWxsIHNldCBlcnJubyBpbiBjYXNlIG9mIGFuIChyZWFsKSBlcnJvcj8NCg0KSXQgd291
-bGQgYmUgc29tZXdoYXQgZGlmZmVyZW50IHRvIExpbnV4LCBidXQgdGhhdCB3b3VsZCBub3QgYmUg
-dGhlIG9ubHkgZGlmZmVyZW5jZSAobGlrZSB0aGVyZXMgbm8gd2F5IHRvIGJsb2NrIHVudGlsIGFs
-bCBtc2dzIGFyZSBzZW50L3JlY2VpdmVkKS4NCg0KTm9yYmVydA0KDQo+IC0tLS0tT3JpZ2luYWwg
-TWVzc2FnZS0tLS0tDQo+IEZyb206IFhlbm9tYWkgPHhlbm9tYWktYm91bmNlc0B4ZW5vbWFpLm9y
-Zz4gT24gQmVoYWxmIE9mIEphbiBLaXN6a2ENCj4gdmlhIFhlbm9tYWkNCj4gU2VudDogRnJlaXRh
-ZywgMTUuIE5vdmVtYmVyIDIwMTkgMTA6NDMNCj4gVG86IFBoaWxpcHBlIEdlcnVtIDxycG1AeGVu
-b21haS5vcmc+OyBYZW5vbWFpDQo+IDx4ZW5vbWFpQHhlbm9tYWkub3JnPg0KPiBTdWJqZWN0OiBS
-ZTogW1BBVENIXSBydGRtOiBEbyBub3QgcmV0dXJuIGFuIGVycm9yIGZyb20gc2VuZC9yZWN2bW1z
-ZyBpZg0KPiB0aGVyZSBhcmUgcGFja2V0cw0KPg0KPiBOT04tQU5EUklUWiBTT1VSQ0U6IEJFIENB
-VVRJT1VTIFdJVEggQ09OVEVOVCwgTElOS1MgT1INCj4gQVRUQUNITUVOVFMuDQo+DQo+DQo+IE9u
-IDE1LjExLjE5IDEwOjM5LCBQaGlsaXBwZSBHZXJ1bSB3cm90ZToNCj4gPiBPbiAxMS8xNS8xOSAx
-MDozNyBBTSwgUGhpbGlwcGUgR2VydW0gdmlhIFhlbm9tYWkgd3JvdGU6DQo+ID4+IE9uIDExLzE0
-LzE5IDc6NTkgUE0sIEphbiBLaXN6a2Egd3JvdGU6DQo+ID4+PiBGcm9tOiBKYW4gS2lzemthIDxq
-YW4ua2lzemthQHNpZW1lbnMuY29tPg0KPiA+Pj4NCj4gPj4+IFRoaXMgaXMgaW4gbGluZSB3aXRo
-IExpbnV4IGJlaGF2aW9yLg0KPiA+Pj4NCj4gPj4+IFdlIGxpa2VseSBzdGlsbCBtaXNzIGFuIGVx
-dWl2YWxlbnQgdG8gc2tfZXJyIGluIHJlY3ZtbXNnLCB0aG91Z2guDQo+ID4+DQo+ID4+IEFjay4g
-VHJhY2luZyBvbiBlYXJseSBleGl0IGR1ZSB0byBudWxsIHZsZW4gaW4gc2VuZG1tc2coKSBpcyBz
-dGlsbCBtaXNzaW5nOw0KPiBoYXZpbmcgdGhpcyBtaWdodCBoZWxwIGluIGRlYnVnZ2luZyBpc3N1
-ZShzKSBhdCBjYWxsIHNpdGUuDQo+ID4+DQo+ID4NCj4gPiBMaWtld2lzZSBpbiByZWN2bW1zZygp
-Lg0KPiA+DQo+DQo+IFllcywgSSdsbCBzaW1wbHkgcmVtb3ZlIHRoZSAidmxhbiA9PSAwIiBvcHRp
-bWl6YXRpb24uDQo+DQo+IEphbg0KPg0KPiAtLQ0KPiBTaWVtZW5zIEFHLCBDb3Jwb3JhdGUgVGVj
-aG5vbG9neSwgQ1QgUkRBIElPVCBTRVMtREUgQ29ycG9yYXRlDQo+IENvbXBldGVuY2UgQ2VudGVy
-IEVtYmVkZGVkIExpbnV4DQoNCl9fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fDQoNClRo
-aXMgbWVzc2FnZSBhbmQgYW55IGF0dGFjaG1lbnRzIGFyZSBzb2xlbHkgZm9yIHRoZSB1c2Ugb2Yg
-dGhlIGludGVuZGVkIHJlY2lwaWVudHMuIFRoZXkgbWF5IGNvbnRhaW4gcHJpdmlsZWdlZCBhbmQv
-b3IgY29uZmlkZW50aWFsIGluZm9ybWF0aW9uIG9yIG90aGVyIGluZm9ybWF0aW9uIHByb3RlY3Rl
-ZCBmcm9tIGRpc2Nsb3N1cmUuIElmIHlvdSBhcmUgbm90IGFuIGludGVuZGVkIHJlY2lwaWVudCwg
-eW91IGFyZSBoZXJlYnkgbm90aWZpZWQgdGhhdCB5b3UgcmVjZWl2ZWQgdGhpcyBlbWFpbCBpbiBl
-cnJvciBhbmQgdGhhdCBhbnkgcmV2aWV3LCBkaXNzZW1pbmF0aW9uLCBkaXN0cmlidXRpb24gb3Ig
-Y29weWluZyBvZiB0aGlzIGVtYWlsIGFuZCBhbnkgYXR0YWNobWVudCBpcyBzdHJpY3RseSBwcm9o
-aWJpdGVkLiBJZiB5b3UgaGF2ZSByZWNlaXZlZCB0aGlzIGVtYWlsIGluIGVycm9yLCBwbGVhc2Ug
-Y29udGFjdCB0aGUgc2VuZGVyIGFuZCBkZWxldGUgdGhlIG1lc3NhZ2UgYW5kIGFueSBhdHRhY2ht
-ZW50IGZyb20geW91ciBzeXN0ZW0uDQoNCkFORFJJVFogSFlEUk8gR21iSA0KDQoNClJlY2h0c2Zv
-cm0vIExlZ2FsIGZvcm06IEdlc2VsbHNjaGFmdCBtaXQgYmVzY2hyw6Rua3RlciBIYWZ0dW5nIC8g
-Q29ycG9yYXRpb24NCg0KRmlybWVuc2l0ei8gUmVnaXN0ZXJlZCBzZWF0OiBXaWVuDQoNCkZpcm1l
-bmJ1Y2hnZXJpY2h0LyBDb3VydCBvZiByZWdpc3RyeTogSGFuZGVsc2dlcmljaHQgV2llbg0KDQpG
-aXJtZW5idWNobnVtbWVyLyBDb21wYW55IHJlZ2lzdHJhdGlvbjogRk4gNjE4MzMgZw0KDQpEVlI6
-IDA2MDUwNzcNCg0KVUlELU5yLjogQVRVMTQ3NTY4MDYNCg0KDQpUaGFuayBZb3UNCl9fX19fX19f
-X19fX19fX19fX19fX19fX19fX19fX19fDQo=
+On 14.11.19 06:05, Jeff Webb via Xenomai wrote:
+> I would like to revive this thread from several months ago:
+> 
+> https://xenomai.org/pipermail/xenomai/2019-March/040498.html
+> 
+> The issue is that on some hardware (a specific rack-mount PC with a PICMG daughtercard on a backplane containing PCI and PCIe slots) I get an INTR-REMAP error when trying to receive legacy (not MSI) interrupts from a custom FPGA-based PCI card using a UDD driver.  The card did work properly in one out of the five PCI slots on that machine, but UDD interrupts did not work in the other four slots.
+> 
+> Please review the original thread for more details about the specific error.
+> 
+> Here are a few more tidbits I have gathered:
+> 
+> - The UDD driver / userspace code works fine on the other hardware
+> 
+> - The UDD driver / userspace code works fine in one PCI slot out of five on this hardware.
+> 
+> - With another backplane model, but same processor card, the problem occurs in all four of the PCI slots.
+> 
+> - An almost identical pure-linux UIO version of the driver / userspace code works in all the cases I tested, even when the UDD version fails, and even with the same xenomai-patched kernel used for UDD testing.
+> 
+> In one of the previous posts in this thread a few months ago, Per Öberg mentioned experiencing something similar.  Based on the information that was shared, I tried my code with linux version 4.9.38, but it still failed.  This prompted me to try other linux / ipipe / xenomai combinations.  These are my findings:
+> 
+> Interrupts work:
+> xenomai-2.6.5   ipipe-core-3.18.20-x86-7.patch  (2016-07-05)
+> xenomai-3.0.9+  ipipe-core-3.18.20-x86-7.patch  (2016-07-05)
+> xenomai-3.0.9+  ipipe-core-4.1.18-x86-9.patch   (2017-05-25)
+> 
+> INTR-REMAP error:
+> xenomai-3.0.9+  ipipe-core-4.4.43-x86-6.patch   (2017-02-25)
+> xenomai-3.0.9+  ipipe-core-4.4.43-x86-7.patch   (2017-05-25)
+> xenomai-3.0.9+  ipipe-core-4.4.43-x86-8.patch   (2017-06-14)
+> xenomai-3.1-rc3 ipipe-core-4.4.196-cip38-x86-19.patch (2019-11-04)
+> xenomai-3.0.9+  ipipe-core-4.9.38-x86-4.patch   (2017-10-03)
+> xenomai-3.0.9   ipipe-core-4.14.132-x86-6.patch (2019-07-03)
+> 
+> The Xenomai 2.6.5 version of course does not use UDD, but uses the old pthread_intr_* userspace functions.
+> 
+> Hopefully this additional information can shed a little light on the matter.
+> 
+
+This sounds like some RT interrupt enabling issue related to the IOAPIC 
+in the x86 I-pipe patch. Please also test 4.19.
+
+Are you using UDD_IRQ_CUSTOM or do you leave the interrupt registration 
+to the UDD core?
+
+And please share your kernel config.
+
+BTW, interrupt remapping issues can be worked around by disabling the 
+interrupt remapping feature (e.g. "intremap=off"). But that does not 
+solve the unterlying issue, of course.
+
+Jan
+
+-- 
+Siemens AG, Corporate Technology, CT RDA IOT SES-DE
+Corporate Competence Center Embedded Linux
 
