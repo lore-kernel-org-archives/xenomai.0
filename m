@@ -1,21 +1,11 @@
 From: Lange Norbert <norbert.lange@andritz.com>
-Subject: RE: RTnet sendmmsg and ENOBUFS
-Date: Fri, 15 Nov 2019 15:00:41 +0000
-Message-ID: <VI1PR05MB5917ABF497ED9CD1BED6F199F6700@VI1PR05MB5917.eurprd05.prod.outlook.com>
-References: <DB8PR05MB591594C16F703FD12F088928F6760@DB8PR05MB5915.eurprd05.prod.outlook.com>
- <1510f7f0-e130-0e22-b946-d1f6d84f3608@siemens.com>
- <DB8PR05MB59155D324BA2977A60E63DADF6760@DB8PR05MB5915.eurprd05.prod.outlook.com>
- <AM0PR05MB59064885C14E3DF057F2E9E8F6710@AM0PR05MB5906.eurprd05.prod.outlook.com>
- <815b192d-7ecf-385c-058e-969da641f7a4@siemens.com>
- <VI1PR05MB59174C5543846C0507F6802DF6700@VI1PR05MB5917.eurprd05.prod.outlook.com>
- <65c16da2-e452-5dc8-85d8-8bf1a18a1105@siemens.com>
- <VI1PR05MB5917B2A3A41FA364C6326488F6700@VI1PR05MB5917.eurprd05.prod.outlook.com>
- <63f7c728-c943-d811-ea69-85856c7c4348@siemens.com>
-In-Reply-To: <63f7c728-c943-d811-ea69-85856c7c4348@siemens.com>
+Subject: unable to handle kernel paging request 
+Date: Fri, 15 Nov 2019 15:26:25 +0000
+Message-ID: <VI1PR05MB5917F397C0E5FB7DAE50CF71F6700@VI1PR05MB5917.eurprd05.prod.outlook.com>
 Content-Language: en-US
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
 MIME-Version: 1.0
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -24,116 +14,100 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jan Kiszka <jan.kiszka@siemens.com>, "Xenomai (xenomai@xenomai.org)" <xenomai@xenomai.org>
+To: "Xenomai (xenomai@xenomai.org)" <xenomai@xenomai.org>
 
-DQoNCj4gLS0tLS1PcmlnaW5hbCBNZXNzYWdlLS0tLS0NCj4gRnJvbTogSmFuIEtpc3prYSA8amFu
-Lmtpc3prYUBzaWVtZW5zLmNvbT4NCj4gU2VudDogRnJlaXRhZywgMTUuIE5vdmVtYmVyIDIwMTkg
-MTQ6MzYNCj4gVG86IExhbmdlIE5vcmJlcnQgPG5vcmJlcnQubGFuZ2VAYW5kcml0ei5jb20+OyBY
-ZW5vbWFpDQo+ICh4ZW5vbWFpQHhlbm9tYWkub3JnKSA8eGVub21haUB4ZW5vbWFpLm9yZz4NCj4g
-U3ViamVjdDogUmU6IFJUbmV0IHNlbmRtbXNnIGFuZCBFTk9CVUZTDQo+DQo+IE5PTi1BTkRSSVRa
-IFNPVVJDRTogQkUgQ0FVVElPVVMgV0lUSCBDT05URU5ULCBMSU5LUyBPUg0KPiBBVFRBQ0hNRU5U
-Uy4NCj4NCj4NCj4gT24gMTUuMTEuMTkgMTM6MzcsIExhbmdlIE5vcmJlcnQgd3JvdGU6DQo+ID4N
-Cj4gPg0KPiA+Pg0KPiA+Pj4NCj4gPj4+Pg0KPiA+Pj4+PiBJIHN1cHBvc2UgdGhlIHJlY2VpdmUg
-cGF0aCB3b3JrcyBzaW1pbGFybHkuDQo+ID4+Pj4+DQo+ID4+Pj4NCj4gPj4+PiBSWCB3b3JrcyBi
-eSBhY2NlcHRpbmcgYSBnbG9iYWwtcG9vbCBidWZmZXIgKHRoaXMgaXMgd2hlcmUgaW5jb21pbmcN
-Cj4gPj4+PiBwYWNrZXRzIGZpcnN0IGVuZCB1cCBpbikgZmlsbGVkIHdpdGggZGF0YSBpbiBleGNo
-YW5nZSB0byBhbiBlbXB0eQ0KPiA+Pj4+IHJ0c2tiIGZyb20gdGhlDQo+ID4+IHNvY2tldA0KPiA+
-Pj4+IHBvb2wuIFRoYXQgZmlsbGVkIHJ0c2tiIGlzIHB1dCBpbnRvIHRoZSBzb2NrZXQgcG9vbCBv
-bmNlIHRoZSBkYXRhDQo+ID4+Pj4gd2FzIHRyYW5zZmVycmVkIHRvIHVzZXJzcGFjZS4NCj4gPj4+
-DQo+ID4+PiBJIHN1cHBvc2UgYWxsIHBvb2xzIGNhbiBleGNoYW5nZSBydHNrYiwgc28gdGhpcyBp
-cyBqdXN0IGEgbWF0dGVyIG9mDQo+ID4+PiB3aGljaCBwb29sDQo+ID4+IHNpemUgaXMgbGltaXRp
-bmcuDQo+ID4+PiBJZiBJIHdhbnQgdG8gcmVjdm1tc2cgMTAwIG1lc3NhZ2VzLCB3aWxsIEkgZ2V0
-IGF0IG1vc3QgMTYgKHNvY2tldA0KPiA+Pj4gcG9vbCBzaXplKSwgb3Igd2lsbCBhIHNpbmdsZSBz
-bG90IGJlIHVzZWQgYW5kIGV4Y2hhbmdlZCB3aXRoIHRoZSBkcml2ZXJzPw0KPiA+Pg0KPiA+PiBP
-bmUgcGFja2V0LCBvbmUgcnRza2IuIFNvIHlvdSBoYXZlIGJvdGggdGhlIGRldmljZSBhbmQgdGhl
-IHNvY2tldA0KPiA+PiBwb29sIGFzIGxpbWl0aW5nIGZhY3RvcnMuDQo+ID4NCj4gPiBJIGd1ZXNz
-IHRoaXMgaXMgZGlmZmVyZW50IHRvIHRoZSBzZW5kcGF0aCBhcyB0aGUgZGV2aWNlICJwdXNoZXMg
-dXAiDQo+ID4gdGhlIHJ0c2tiJ3MsDQo+DQo+IEFjdHVhbGx5LCBjb21taXQgOTFiMzMwMjI4NGZk
-ICJhbGlnbmVkIiBUWCB0byBSWCBwYXRoLiBCdXQgdGhlIGRvY3VtZW50cw0KPiBzdGlsbCBzdGF0
-ZSBzb21ldGhpbmcgZWxzZS4gQW5kIEkgZG91YnQgbm93IHRoYXQgdGhpcyBjb21taXQgd2FzIGdv
-aW5nIGluIHRoZQ0KPiByaWdodCBkaXJlY3Rpb24uDQo+DQo+IEluIGZhY3QsIGl0IGludHJvZHVj
-ZWQgYSB3YXkgZm9yIGNvbXBldGluZyB0cmFuc21pdHRlcnMgdG8gc3RhcnZlIGVhY2ggb3RoZXIN
-Cj4gYnkgZXhoYXVzdGluZyB0aGUgbm93IHNoYXJlZCBkZXZpY2UgcG9vbCBmb3IgVFguDQo+DQo+
-ID4gQW5kIHRoZSByZWN2bW1zZyBjYWxsIHRoZW4gcGlja3MgdXAgdGhlIHBhY2tldHMgdGhhdCBh
-cmUgYXZhaWxhYmxlPw0KPiA+IChoYXZpbmcgc29tZSB0cm91YmxlIGZvbGxvd2luZyB0aGUgcGF0
-aCBpbiB0aGUga2VybmVsIHNvdXJjZXMpDQo+DQo+IFRoZSBwb2ludCBvZiB0aGUgb3duZXJzaGlw
-IHRyYW5zZmVyIG9uIFJYIGlzIHRoYXQsIHdoZW4gcmVjZWl2aW5nIG9ubHkgd2l0aA0KPiBvbmUg
-cXVldWUgKFJUbmV0IGNhbid0IGhhbmRsZSBtb3JlIGluIGZhY3QsIHRob3VnaCBpdCBzaG91bGQg
-Ynkgbm93Li4uKSwgd2UNCj4gZmlyc3QgbmVlZCB0byBwYXJzZSB0aGUgcGFja2V0IGNvbnRlbnQg
-aW4gb3JkZXIgdG8gZGlzcGF0Y2ggaXQuIFRoYXQgbWFrZXMgdGhlDQo+IHBhY2tldCBmaXJzdCBv
-d25lZCBieSB0aGUgZGV2aWNlIChmb3JtZXJseSB0aGUgUlggcG9vbCksIGFuZCBvbmNlIHRoZSBh
-Y3R1YWwNCj4gb3duZXIgaXMga25vd24sIGl0IGlzIHRyYW5zZmVycmVkIC0gb3IgZHJvcHBlZCBp
-ZiB0aGUgcmVjaXBpZW50IGhhcyBubyBmcmVlDQo+IGJ1ZmZlci4NCg0KUmlnaHQsIGJ1dCBpZiBJ
-IG9wZW4gdXAgYSBwYWNrZXRzb2NrZXQgd2l0aCBFVEhfUF84MDJfRVgxLCBydF9zdGFja19kZWxp
-dmVyIHdpbGwNCnRyeSB0byBtYXRjaCB0aGUgaW5jb21pbmcgcGFja2V0cywgc28gc29tZXdoZXJl
-IHRoZSBldGggcGFja2V0IG5lZWRzIHRvIGJlDQpkaXNzZWN0ZWQsIGlzIHRoYXQgcnRfZXRoX3R5
-cGVfdHJhbnM/DQptZWFucyB0aGUgdmFsaWQgdmFsdWVzIGZvciBhIHBhY2tldCBzb2NrZXQgd291
-bGQgYmUgRVRIX1BfODAyXzIsIEVUSF9QXzgwMl8zLA0KYW5kIHRoZSBwcm90b2NvbHMgPj0gMHg2
-MDAgZnJvbSA4MDIuMy4NCg0KPg0KPiA+DQo+ID4gV2UgaGF2ZSBzb21lIGxlZ2FjeSBhcHBsaWNh
-dGlvbiB0aGF0IHJhbiBvbiBhbiBpbXgyOCwgYW5kIHdlIGhhdmUgdG8NCj4gPiBrZWVwIHRoZSBw
-cm90b2NvbHMgZm9yIG5vdywgVGhleSBhcmUgYWxtb3N0IGV4Y2x1c2l2ZWx5IFVEUC9JUDQgYnV0
-DQo+IHRoZXJlJ3Mgb25lIG1lc3NhZ2UgZm9yIGRpc3RyaWJ1dGluZyB0aW1lc3RhbXBzIHdpdGgg
-YSA4MDIuMiBTTkFQIHBhY2tldC4NCj4gPiAoaGFkIHNvbWUgdGVjaG5pY2FsL2ltcGxlbWVudGF0
-aW9uIHJlYXNvbnMsIGNhbnQgcmVtZW1iZXIgbm93KS4NCj4gPiBDdXJyZW50bHkgSSB1c2UgYW4g
-RVRIX1BfQUxMIHBhY2tldCBzb2NrZXQgZm9yIHRoYXQgcmVhc29uLCBidXQgbG9va2luZyBhdA0K
-PiB0aGUgY29kZSBpdCBzZWVtcyBiZW5lZmljaWFsIHRvIGRyb3AgdGhhdC4NCj4gPg0KPiA+IC0g
-ICB0aGVyZSBzZWVtcyB0byBiZSBjb3BpZXMgb2YgcnRza2IgbWFkZQ0KPiA+IC0gICB0aGUgcGFj
-a2V0cyBhcmUgbm90IGNvbnN1bWVkLCBidXQga2lja2VkIHVwIGZ1cnRoZXIgaW4gdGhlIHN0YWNr
-DQo+DQo+IEVUSF9QX0FMTCBpcyBhIGtpbmQgb2Ygc25vb3BpbmcgbW9kZSwgdGhlcmVmb3JlIHRo
-ZSBjb3BpZXMuIFlvdSByYXRoZXINCj4gd2FudCB0byByZWdpc3RlciBvbiB0aGUgZGVzaXJlZCAo
-bm9uLUlQKSB0eXBlKHMpLg0KDQpTZWUgYWJvdmUsIHNlZW1zIHRoZSBvbmx5IHVzYWJsZSB0eXBl
-cyBhcmUgRVRIX1BfODAyXzIgYW5kIEVUSF9QXzgwMl8zPw0KDQo+ID4gV2hhdCBJIHdvdWxkIHdh
-bnQgaXMgYSBzb2NrZXQgdGhhdCBzaW1wbHkgZHJhaW5zIGV2ZXJ5dGhpbmcsIHBhY2tldHMNCj4g
-PiBpbiB1c2UgYXJlIEVUSF9QX0lQLCBFVEhfUF9BUlAgYW5kIHdoYXRldmVyIGlzIG5lY2Vzc2Fy
-eSB0bw0KPiBzZW5kL3JlY2VpdmUgdGhvc2UgODAyLjIgU05BUCBwYWNrZXRzLg0KPg0KPiBJUCBh
-bmQgQVJQIHdpbGwgYmUgaGFuZGxlZCBieSBSVG5ldCwgdGhlIG90aGVyIHR5cGVzIGlzIHdoYXQg
-eW91IG5lZWQNCj4gcGFja2V0IHNvY2tldHMgZm9yLg0KDQpJIHVzZSBuZWl0aGVyIElQIG9yIEFS
-UCBmcm9tIFJ0TmV0LCBhbmQgSSBkb27igJl0IGhhdmUgdGhlIGNob2ljZSByaWdodCBub3csDQpP
-dXIgdGltZXN5bmMgaXMgdmlhIGFuIGV4dGVybmFsIHdpcmUsIGFuZCBJIGdvdHRhIGJ1cnN0IG91
-dCBldmVyeXRoaW5nIGF0IHRoYXQgcG9pbnQuDQpUaGlzIGlzIG5vIGNsZWFucm9vbSBkZXNpZ24u
-DQoNCkZ1cnRoZXIsIGEgdGZ0cCBzZXJ2ZXIgaXMgaG9va2VkIGludG8gdGhlIFJUIGNvbm5lY3Rp
-b24gdmlhIGEgVFVOIGRldmljZSwNClNvIHBhY2tldHMgbm90IGZvciB0aGUgUlQgQXBwbGljYXRp
-b24gKHVkcCBwb3J0IHJhbmdlKSBnbyB0byB0aGF0IGRldmljZS4NCg0KPiA+IEkgc2VlIEVUSF9Q
-XzgwMl9FWDEgdXNlZCBmb3Igc3VjaCBwYWNrZXRzIGluIGV4YW1wbGVzLCBidXQgSSBkb27igJl0
-IHNlZQ0KPiBob3cgeW91ciBzdGFjayBpZGVudGlmaWVzIHN1Y2ggcGFja2V0cz8NCj4NCj4gcnRf
-cGFja2V0X2JpbmQgLT4gcnRkZXZfYWRkX3BhY2suIERpc3BhdGNoaW5nIGlzIGRvbmUgaW4gcnRf
-c3RhY2tfZGVsaXZlciwNCj4gaW4gcnQta2VybmVsIHRocmVhZCBjb250ZXh0Lg0KDQpZZXMsIGFu
-ZCBJIGZhaWwgdG8gc2VlIGFueXRoaW5nIHN1cHBvcnRlZCBvdXRzaWRlIEVUSF9QXzgwMl8yIGFu
-ZCBFVEhfUF84MDJfMw0KYW5kIHRoZSBwcm90b2NvbHMgZnJvbSA4MDMuDQpOb3doZXJlIHdpbGwg
-YSBldGggcGFja2V0IGJlIGRpc3NlY3RlZCBhbmQgY2xhc3NpZmllZCBhcyBFVEhfUF84MDJfRVgx
-IG9yIEVUSF9QX1NOQVAsDQpXaGF0IHBhY2tldHMgd291bGQgZW5kIHVwIGluIHN1Y2ggYSBzb2Nr
-ZXQ/DQoNCj4gPiAtICAgSSBkb27igJl0IGtub3cgd2hpY2ggRVRIX1AgdHlwZSB0byB1c2UsIHRo
-ZXJlcyBFVEhfUF84MDJfMiwNCj4gRVRIX1BfODAyX0VYMSwgRVRIX1BfU05BUCBwb3RlbnRpYWxs
-eSBvdGhlcnMuDQo+ID4gLSAgIFRob3NlIGNvbnN0YW50cyBzZWVtcyB0byBiZSBsYXJnZWx5IG1p
-c3NpbmcgaW4geGVub21haXMgc291cmNlcywgc28gSQ0KPiBkb27igJl0IGtub3cgaG93IHlvdSB3
-b3VsZCB0ZXN0IGZvciBhIG1hdGNoLg0KPg0KPiBZb3UgY2FuIHJlZ2lzdGVyIGFueSB2YWx1ZSB5
-b3UgbGlrZSB3aXRoIEFGX1BBQ0tFVCwganVzdCBsaWtlIGluIExpbnV4Lg0KPiBNYXRjaGluZyBp
-cyBub3QgZG9uZSBieSBhIHN3aXRjaC1jYXNlLCByYXRoZXIgdmlhIGEgaGFzaGVkIGxpc3Qgdmlh
-IHRoZSB2YWx1ZXMuDQoNClRoYXQncyBmb3IgZmFzdGVyIGxvb2t1cCwgdmFsdWVzIGFyZSBzdGls
-bCBjb21wYXJlZCBhZnRlcndhcmRzLg0KDQo+DQo+ID4gLSAgIEVhc2llc3QgZm9yIG1lIHdvdWxk
-IGJlIGEgRVRIX1BfQUxMX0NPTlNVTUUgdHlwZSwgYnVmZmVycyBqdXN0IGVuZA0KPiB0aGVyZSB3
-aGVuIHN1Y2ggYSBzb2NrZXQgaXMgb3BlbiAoZmVhc2libGUsIHdvdWxkIGJlIGFjY2VwdGVkIHVw
-c3RyZWFtPykNCj4NCj4gSSB0aGluayB5b3UgYXJlIGJldHRlciBvZiB3aXRoIHRhcmdldCBzdWJz
-Y3JpcHRpb25zLiBUaGVuIGFsbCB1bmtub3duIHBhY2tldHMNCj4gd2lsbCBzaW1wbHkgYmUgZHJv
-cHBlZCwgYW5kIHRoYXQgbXVjaCBlYXJsaWVyLg0KDQpVbmtub3duIHBhY2tldHMgbmVlZCB0byBi
-ZSBmb3J3YXJkZWQgdG8gdGhlIFRVTiBkZXZpY2UuDQooVG8gcHV0IGl0IGFub3RoZXIgd2F5LCBJ
-IGhhZCBhIGRlZXAgZGlyZWN0IHF1ZXVlIHRvIHRoZSBuZXR3b3JrIGRldmljZSBiZWZvcmUsDQph
-bmQgc29mdHdhcmUvcHJvdG9jb2xzIGdyZXcgYXJvdW5kIHRoYXQpDQoNClJlZ2FyZHMsIE5vcmJl
-cnQuDQpfX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fXw0KDQpUaGlzIG1lc3NhZ2UgYW5k
-IGFueSBhdHRhY2htZW50cyBhcmUgc29sZWx5IGZvciB0aGUgdXNlIG9mIHRoZSBpbnRlbmRlZCBy
-ZWNpcGllbnRzLiBUaGV5IG1heSBjb250YWluIHByaXZpbGVnZWQgYW5kL29yIGNvbmZpZGVudGlh
-bCBpbmZvcm1hdGlvbiBvciBvdGhlciBpbmZvcm1hdGlvbiBwcm90ZWN0ZWQgZnJvbSBkaXNjbG9z
-dXJlLiBJZiB5b3UgYXJlIG5vdCBhbiBpbnRlbmRlZCByZWNpcGllbnQsIHlvdSBhcmUgaGVyZWJ5
-IG5vdGlmaWVkIHRoYXQgeW91IHJlY2VpdmVkIHRoaXMgZW1haWwgaW4gZXJyb3IgYW5kIHRoYXQg
-YW55IHJldmlldywgZGlzc2VtaW5hdGlvbiwgZGlzdHJpYnV0aW9uIG9yIGNvcHlpbmcgb2YgdGhp
-cyBlbWFpbCBhbmQgYW55IGF0dGFjaG1lbnQgaXMgc3RyaWN0bHkgcHJvaGliaXRlZC4gSWYgeW91
-IGhhdmUgcmVjZWl2ZWQgdGhpcyBlbWFpbCBpbiBlcnJvciwgcGxlYXNlIGNvbnRhY3QgdGhlIHNl
-bmRlciBhbmQgZGVsZXRlIHRoZSBtZXNzYWdlIGFuZCBhbnkgYXR0YWNobWVudCBmcm9tIHlvdXIg
-c3lzdGVtLg0KDQpBTkRSSVRaIEhZRFJPIEdtYkgNCg0KDQpSZWNodHNmb3JtLyBMZWdhbCBmb3Jt
-OiBHZXNlbGxzY2hhZnQgbWl0IGJlc2NocsOkbmt0ZXIgSGFmdHVuZyAvIENvcnBvcmF0aW9uDQoN
-CkZpcm1lbnNpdHovIFJlZ2lzdGVyZWQgc2VhdDogV2llbg0KDQpGaXJtZW5idWNoZ2VyaWNodC8g
-Q291cnQgb2YgcmVnaXN0cnk6IEhhbmRlbHNnZXJpY2h0IFdpZW4NCg0KRmlybWVuYnVjaG51bW1l
-ci8gQ29tcGFueSByZWdpc3RyYXRpb246IEZOIDYxODMzIGcNCg0KRFZSOiAwNjA1MDc3DQoNClVJ
-RC1Oci46IEFUVTE0NzU2ODA2DQoNCg0KVGhhbmsgWW91DQpfX19fX19fX19fX19fX19fX19fX19f
-X19fX19fX19fXw0K
+Hello,
 
+How can I get to the bottom of bugs that lockup the system completely?
+I got that error now the 3rd time.
+
+[ 1643.652566] BUG: unable to handle kernel paging request at 0000000000044=
+540
+[ 1643.659546] PGD 1750d1067 P4D 1750d1067 PUD 1775e7067 PMD 0
+[ 1643.665237] Oops: 0010 [#1] SMP NOPTI
+[ 1643.668911] CPU: 2 PID: 862 Comm: fup.medium Tainted: G        W        =
+ 4.19.75-xeno7-static #1
+[ 1643.677703] Hardware name: TQ-Group TQMxE39M/Type2 - Board Product Name,=
+ BIOS 5.12.30.21.16 01/31/2019
+[ 1643.687013] I-pipe domain: Linux
+[ 1643.690250] RIP: 0086:0x1c000
+[ 1643.693231] Code: Bad RIP value.
+[ 1643.696468] RSP: 3bb00000:0000000000000083 EFLAGS: ffff92103bb25090 ORIG=
+_RAX: 0000000000000046
+[ 1643.705092] RAX: ffff92103bb30400 RBX: ffff92103bb30400 RCX: ffff92103bb=
+31bb0
+[ 1643.712235] RDX: ffff92103bb31d58 RSI: ffffffff8ab85272 RDI: ffff921039f=
+24cc0
+[ 1643.719378] RBP: ffff92103bb305c8 R08: 0000000000000002 R09: ffff92103bb=
+31d58
+[ 1643.726517] R10: ffff92103bb31bb0 R11: 0000000000004000 R12: ffffffff8bc=
+3f3c0
+[ 1643.733657] R13: ffffffff8ab8284b R14: 000000000001c000 R15: 00000000000=
+00086
+[ 1643.740799] FS:  00007fffe81da700 GS:  0000000000000000
+[ 1643.746033] Modules linked in: rt_igb plusb usbnet mii
+[ 1643.751210] CR2: 0000000000044540
+[ 1643.754542] ---[ end trace 7dda9c557e28b024 ]---
+[ 1643.759167] RIP: 0086:0x1c000
+[ 1643.762146] Code: Bad RIP value.
+[ 1643.765379] RSP: 3bb00000:0000000000000083 EFLAGS: ffff92103bb25090 ORIG=
+_RAX: 0000000000000046
+[ 1643.774003] RAX: ffff92103bb30400 RBX: ffff92103bb30400 RCX: ffff92103bb=
+31bb0
+[ 1643.781147] RDX: ffff92103bb31d58 RSI: ffffffff8ab85272 RDI: ffff921039f=
+24cc0
+[ 1643.788289] RBP: ffff92103bb305c8 R08: 0000000000000002 R09: ffff92103bb=
+31d58
+[ 1643.795427] R10: ffff92103bb31bb0 R11: 0000000000004000 R12: ffffffff8bc=
+3f3c0
+[ 1643.802569] R13: ffffffff8ab8284b R14: 000000000001c000 R15: 00000000000=
+00086
+[ 1643.809712] FS:  00007fffe81da700(0000) GS:ffff92103bb00000(0000) knlGS:=
+0000000000000000
+[ 1643.817806] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+[ 1643.823558] CR2: 000000000001bfd6 CR3: 00000001750e4000 CR4: 00000000003=
+406e0
+
+Mit besten Gr=FC=DFen / Kind regards
+
+NORBERT LANGE
+
+AT-RD3
+
+ANDRITZ HYDRO GmbH
+Eibesbrunnergasse 20
+1120 Vienna / AUSTRIA
+p: +43 50805 56684
+norbert.lange@andritz.com<mailto:norbert.lange@andritz.com>
+andritz.com<http://www.andritz.com/>
+
+________________________________
+
+This message and any attachments are solely for the use of the intended rec=
+ipients. They may contain privileged and/or confidential information or oth=
+er information protected from disclosure. If you are not an intended recipi=
+ent, you are hereby notified that you received this email in error and that=
+ any review, dissemination, distribution or copying of this email and any a=
+ttachment is strictly prohibited. If you have received this email in error,=
+ please contact the sender and delete the message and any attachment from y=
+our system.
+
+ANDRITZ HYDRO GmbH
+
+
+Rechtsform/ Legal form: Gesellschaft mit beschr=E4nkter Haftung / Corporati=
+on
+
+Firmensitz/ Registered seat: Wien
+
+Firmenbuchgericht/ Court of registry: Handelsgericht Wien
+
+Firmenbuchnummer/ Company registration: FN 61833 g
+
+DVR: 0605077
+
+UID-Nr.: ATU14756806
+
+
+Thank You
+________________________________
