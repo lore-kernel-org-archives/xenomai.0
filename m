@@ -1,18 +1,14 @@
-Date: Fri, 15 Nov 2019 23:06:44 +0000
+Date: Fri, 15 Nov 2019 23:14:59 +0000
 From: Jeff Webb <w1@codecraftsmen.org>
 Reply-To: Jeff Webb <w1@codecraftsmen.org>
-Subject: Re: INTR-REMAP error with UDD driver
-Message-ID: <GkIONNqgaFPBytKYZQDGUwkmhYvkCNOHaB4pka6TH4T46Y119Zf7nHNBWCyyE-jVwJDBC3URH-prSYQeJHMwLJMunbdna-GFVecUvxazPG0=@codecraftsmen.org>
-In-Reply-To: <9ed83a4f-b55b-1d10-2829-48d9304d8471@siemens.com>
-References: <abVhmVLZoPCMWqAbSv547Q_VzyvVJlNAswLDgIKZpMzhMhOvYJNQYRGT6rz470Lgp_xFfkgLpsUSzHdOpFyyXuww10kuZ0VSUH-Nyf82P0I=@protonmail.com>
- <3c48366f-5fec-be5e-1ea0-8e1504a249ed@siemens.com>
- <CzF7Hair8MCzMzyofjGVG75XADx_cYSu_WZPsPGaZxziMjYEyffMw-JgvN5XMUUNHGrz6BKLyTdaaiQ63kf_9EfMf613OnO9toYUQbDigFc=@codecraftsmen.org>
- <e9af8088-382d-63d5-0088-13dedf556fb8@siemens.com>
- <2wKIW_3RM1ITgcnfgLs5MhRJzN0H8IoNQS0bqS5xCseD17bCWWjHGwqgtzQLp8Cm-ecpiviS_6ZxpJMuL1xRG3x6WDp-Smima8DEieDhuwY=@codecraftsmen.org>
- <9ed83a4f-b55b-1d10-2829-48d9304d8471@siemens.com>
+Subject: Re: [ANNOUNCE] Xenomai v3.1-rc3 available
+Message-ID: <6A8KLFuCLPtKt-g8GWZEP4G0rMK4ZA6RRo-1DSBHkySvKYcPcyydk9ON5HCyWrTPvdMz7BQdFAVYWPmkAs1zuogrEDjXI0dWDwVnFJYiIFc=@codecraftsmen.org>
+In-Reply-To: <e2ceb276-09e5-2a11-ac34-3926668615e0@siemens.com>
+References: <y27Ah4Xs-t8bhib0n5wvb0RE8X2b-B4GbVUz2PHHbETtMbl4SjmsFQP7GPGLfWozQrc_BW9MqoZFFIq0RYnMjvl_VQ0ecJz5Tp5fcaXPKcg=@codecraftsmen.org>
+ <e2ceb276-09e5-2a11-ac34-3926668615e0@siemens.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -22,93 +18,56 @@ List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: Jan Kiszka <jan.kiszka@siemens.com>
-Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>, "pero@wolfram.com" <pero@wolfram.com>
+Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-T24gRnJpZGF5LCBOb3ZlbWJlciAxNSwgMjAxOSA3OjA3IEFNLCBKYW4gS2lzemthIDxqYW4ua2lz
-emthQHNpZW1lbnMuY29tPiB3cm90ZToKPiBPbiAxNS4xMS4xOSAwMToxNiwgSmVmZiBXZWJiIHdy
-b3RlOgo+Cj4gPiBPbiBUaHVyc2RheSwgTm92ZW1iZXIgMTQsIDIwMTkgMzo0MSBQTSwgSmFuIEtp
-c3prYSBqYW4ua2lzemthQHNpZW1lbnMuY29tIHdyb3RlOgo+ID4KPiA+ID4gT24gMTQuMTEuMTkg
-MTQ6MTYsIEplZmYgV2ViYiB3cm90ZToKPiA+ID4KPiA+ID4gPiBPbiBUaHVyc2RheSwgTm92ZW1i
-ZXIgMTQsIDIwMTkgMTo1MCBBTSwgSmFuIEtpc3prYSBqYW4ua2lzemthQHNpZW1lbnMuY29tIHdy
-b3RlOgo+ID4gPiA+Cj4gPiA+ID4gPiBPbiAxNC4xMS4xOSAwNjowNSwgSmVmZiBXZWJiIHZpYSBY
-ZW5vbWFpIHdyb3RlOgo+ID4gPiA+ID4KPiA+ID4gPiA+ID4gSSB3b3VsZCBsaWtlIHRvIHJldml2
-ZSB0aGlzIHRocmVhZCBmcm9tIHNldmVyYWwgbW9udGhzIGFnbzoKPiA+ID4gPiA+ID4gaHR0cHM6
-Ly94ZW5vbWFpLm9yZy9waXBlcm1haWwveGVub21haS8yMDE5LU1hcmNoLzA0MDQ5OC5odG1sCj4g
-PiA+ID4gPiA+IFRoZSBpc3N1ZSBpcyB0aGF0IG9uIHNvbWUgaGFyZHdhcmUgKGEgc3BlY2lmaWMg
-cmFjay1tb3VudCBQQyB3aXRoIGEgUElDTUcgZGF1Z2h0ZXJjYXJkIG9uIGEgYmFja3BsYW5lIGNv
-bnRhaW5pbmcgUENJIGFuZCBQQ0llIHNsb3RzKSBJIGdldCBhbiBJTlRSLVJFTUFQIGVycm9yIHdo
-ZW4gdHJ5aW5nIHRvIHJlY2VpdmUgbGVnYWN5IChub3QgTVNJKSBpbnRlcnJ1cHRzIGZyb20gYSBj
-dXN0b20gRlBHQS1iYXNlZCBQQ0kgY2FyZCB1c2luZyBhIFVERCBkcml2ZXIuIFRoZSBjYXJkIGRp
-ZCB3b3JrIHByb3Blcmx5IGluIG9uZSBvdXQgb2YgdGhlIGZpdmUgUENJIHNsb3RzIG9uIHRoYXQg
-bWFjaGluZSwgYnV0IFVERCBpbnRlcnJ1cHRzIGRpZCBub3Qgd29yayBpbiB0aGUgb3RoZXIgZm91
-ciBzbG90cy4KPiA+ID4gPiA+ID4gUGxlYXNlIHJldmlldyB0aGUgb3JpZ2luYWwgdGhyZWFkIGZv
-ciBtb3JlIGRldGFpbHMgYWJvdXQgdGhlIHNwZWNpZmljIGVycm9yLgo+ID4gPiA+ID4gPiBIZXJl
-IGFyZSBhIGZldyBtb3JlIHRpZGJpdHMgSSBoYXZlIGdhdGhlcmVkOgo+ID4gPiA+ID4gPgo+ID4g
-PiA+ID4gPiAtICAgVGhlIFVERCBkcml2ZXIgLyB1c2Vyc3BhY2UgY29kZSB3b3JrcyBmaW5lIG9u
-IHRoZSBvdGhlciBoYXJkd2FyZQo+ID4gPiA+ID4gPgo+ID4gPiA+ID4gPiAtICAgVGhlIFVERCBk
-cml2ZXIgLyB1c2Vyc3BhY2UgY29kZSB3b3JrcyBmaW5lIGluIG9uZSBQQ0kgc2xvdCBvdXQgb2Yg
-Zml2ZSBvbiB0aGlzIGhhcmR3YXJlLgo+ID4gPiA+ID4gPgo+ID4gPiA+ID4gPiAtICAgV2l0aCBh
-bm90aGVyIGJhY2twbGFuZSBtb2RlbCwgYnV0IHNhbWUgcHJvY2Vzc29yIGNhcmQsIHRoZSBwcm9i
-bGVtIG9jY3VycyBpbiBhbGwgZm91ciBvZiB0aGUgUENJIHNsb3RzLgo+ID4gPiA+ID4gPgo+ID4g
-PiA+ID4gPiAtICAgQW4gYWxtb3N0IGlkZW50aWNhbCBwdXJlLWxpbnV4IFVJTyB2ZXJzaW9uIG9m
-IHRoZSBkcml2ZXIgLyB1c2Vyc3BhY2UgY29kZSB3b3JrcyBpbiBhbGwgdGhlIGNhc2VzIEkgdGVz
-dGVkLCBldmVuIHdoZW4gdGhlIFVERCB2ZXJzaW9uIGZhaWxzLCBhbmQgZXZlbiB3aXRoIHRoZSBz
-YW1lIHhlbm9tYWktcGF0Y2hlZCBrZXJuZWwgdXNlZCBmb3IgVUREIHRlc3RpbmcuCj4gPiA+ID4g
-PiA+Cj4gPiA+ID4gPiA+Cj4gPiA+ID4gPiA+IEluIG9uZSBvZiB0aGUgcHJldmlvdXMgcG9zdHMg
-aW4gdGhpcyB0aHJlYWQgYSBmZXcgbW9udGhzIGFnbywgUGVyIMOWYmVyZyBtZW50aW9uZWQgZXhw
-ZXJpZW5jaW5nIHNvbWV0aGluZyBzaW1pbGFyLiBCYXNlZCBvbiB0aGUgaW5mb3JtYXRpb24gdGhh
-dCB3YXMgc2hhcmVkLCBJIHRyaWVkIG15IGNvZGUgd2l0aCBsaW51eCB2ZXJzaW9uIDQuOS4zOCwg
-YnV0IGl0IHN0aWxsIGZhaWxlZC4gVGhpcyBwcm9tcHRlZCBtZSB0byB0cnkgb3RoZXIgbGludXgg
-LyBpcGlwZSAvIHhlbm9tYWkgY29tYmluYXRpb25zLiBUaGVzZSBhcmUgbXkgZmluZGluZ3M6Cj4g
-PiA+ID4gPiA+IEludGVycnVwdHMgd29yazoKPiA+ID4gPiA+ID4geGVub21haS0yLjYuNSBpcGlw
-ZS1jb3JlLTMuMTguMjAteDg2LTcucGF0Y2ggKDIwMTYtMDctMDUpCj4gPiA+ID4gPiA+IHhlbm9t
-YWktMy4wLjkrIGlwaXBlLWNvcmUtMy4xOC4yMC14ODYtNy5wYXRjaCAoMjAxNi0wNy0wNSkKPiA+
-ID4gPiA+ID4geGVub21haS0zLjAuOSsgaXBpcGUtY29yZS00LjEuMTgteDg2LTkucGF0Y2ggKDIw
-MTctMDUtMjUpCj4gPiA+ID4gPiA+IElOVFItUkVNQVAgZXJyb3I6Cj4gPiA+ID4gPiA+IHhlbm9t
-YWktMy4wLjkrIGlwaXBlLWNvcmUtNC40LjQzLXg4Ni02LnBhdGNoICgyMDE3LTAyLTI1KQo+ID4g
-PiA+ID4gPiB4ZW5vbWFpLTMuMC45KyBpcGlwZS1jb3JlLTQuNC40My14ODYtNy5wYXRjaCAoMjAx
-Ny0wNS0yNSkKPiA+ID4gPiA+ID4geGVub21haS0zLjAuOSsgaXBpcGUtY29yZS00LjQuNDMteDg2
-LTgucGF0Y2ggKDIwMTctMDYtMTQpCj4gPiA+ID4gPiA+IHhlbm9tYWktMy4xLXJjMyBpcGlwZS1j
-b3JlLTQuNC4xOTYtY2lwMzgteDg2LTE5LnBhdGNoICgyMDE5LTExLTA0KQo+ID4gPiA+ID4gPiB4
-ZW5vbWFpLTMuMC45KyBpcGlwZS1jb3JlLTQuOS4zOC14ODYtNC5wYXRjaCAoMjAxNy0xMC0wMykK
-PiA+ID4gPiA+ID4geGVub21haS0zLjAuOSBpcGlwZS1jb3JlLTQuMTQuMTMyLXg4Ni02LnBhdGNo
-ICgyMDE5LTA3LTAzKQo+ID4gPiA+ID4gPiBUaGUgWGVub21haSAyLjYuNSB2ZXJzaW9uIG9mIGNv
-dXJzZSBkb2VzIG5vdCB1c2UgVURELCBidXQgdXNlcyB0aGUgb2xkIHB0aHJlYWRfaW50cl8qIHVz
-ZXJzcGFjZSBmdW5jdGlvbnMuCj4gPiA+ID4gPiA+IEhvcGVmdWxseSB0aGlzIGFkZGl0aW9uYWwg
-aW5mb3JtYXRpb24gY2FuIHNoZWQgYSBsaXR0bGUgbGlnaHQgb24gdGhlIG1hdHRlci4KPiA+ID4g
-PiA+Cj4gPiA+ID4gPiBUaGlzIHNvdW5kcyBsaWtlIHNvbWUgUlQgaW50ZXJydXB0IGVuYWJsaW5n
-IGlzc3VlIHJlbGF0ZWQgdG8gdGhlIElPQVBJQwo+ID4gPiA+ID4gaW4gdGhlIHg4NiBJLXBpcGUg
-cGF0Y2guIFBsZWFzZSBhbHNvIHRlc3QgNC4xOS4KPiA+ID4gPgo+ID4gPiA+IE9rLCBJIHdpbGwg
-ZG8gdGhpcy4KPiA+Cj4gPiBUb2RheSBJIGhhZCBhIGNoYW5jZSB0byBtYWtlIGEgYnVpbGQgYmFz
-ZWQgb24gdGhlIGlwaXBlLWNvcmUtNC4xOS43NS14ODYtNy5wYXRjaCB3aXRoIHhlbm9tYWktMy4x
-LXJjMy4gSSBoYXZlbid0IGhhZCBhIGNoYW5jZSB0byB0ZXN0IGl0IHRob3JvdWdobHksIGJ1dCBJ
-IHRoaW5rIGl0IHdvcmtzLiBJIGFtIHNvcnJ5IEkgZGlkbid0IHRyeSB0aGlzIGVhcmxpZXIsIGFu
-ZCB0aGFua3MgZm9yIHRoZSByZW1pbmRlciB0byBkbyBzby4gU2luY2UgYSA0LjE5IHBhdGNoIHdh
-c24ndCBhdmFpbGFibGUgYmFjayBpbiBlYXJseSBNYXJjaCB3aGVuIEkgZmlyc3QgaGFkIHRoZSB0
-cm91YmxlLCBJIGdvdCBmaXhhdGVkIG9uIHRoZSBmYWN0IHRoYXQgdGhpbmdzIHdvcmtlZCB3aXRo
-IHZlcnkgb2xkIGtlcm5lbHMgYW5kIGZvcmdvdCB0byB0cnkgNC4xOSB3aGVuIEkgc3RhcnRlZCBs
-b29raW5nIGludG8gdGhpcyBhZ2Fpbi4gSSB3aWxsIGNvbnRpbnVlIHRvIHRlc3QgYW5kIGxldCB5
-b3Uga25vdyBpZiBJIGZpbmQgYW55IGlzc3Vlcy4KPgo+IEknbSBhbHNvIG5vdCBzZWVpbmcgdGhl
-IHByb2JsZW1zIEkgaGF2ZSB3aXRoIDQuNCArIGludHJlbWFwIG9uIDQuMTksCj4gZGVzcGl0ZSBh
-bGwgZGVidWcgZmVhdHVyZXMgb24uIE9LLCBsZXQncyBjaGVjayB3aGF0IHdlIGFyZSBtaXNzaW5n
-IGRvd24KPiB0aGVyZS4uLgoKSnVzdCBGWUksIEkgZGlkIGdvIGJhY2sgYW5kIHRyeSBpbnRyZW1h
-cD1vZmYgb24gNC40LjE5Ni14ZW5vbWFpLTMuMS1yYzMtY2lwMzgsIGFuZCBpdCB3b3JrcyAoYXMg
-eW91IGV4cGVjdGVkKS4KCkFsc28sIEkgbG9va2VkIGF0IG15IGtlcm5lbCBsb2dzIGluIG1vcmUg
-ZGV0YWlsLCBhbmQgZGlzY292ZXJlZCB0aGF0IHRoZXJlIGFyZSBzZXZlcmFsIGluc3RhbmNlcyBv
-ZiBhIGtlcm5lbCBCVUcgbWVzc2FnZSBhZnRlciBib290LCBidXQgdGhlbiBJIGRvbid0IHNlZSBh
-bnkgbW9yZSBvZiB0aGVtIGxhdGVyIG9uLiAgVGhlIGludHJlbWFwIHNldHRpbmcgZG9lc24ndCBz
-ZWVtIHRvIGFmZmVjdCB0aGUgcHJlc2VuY2Ugb2YgdGhlc2UgbWVzc2FnZXMuICBUaGlzIGlzIHRo
-ZSBtZXNzYWdlIGZvciA0LjQuMTk2LXhlbm9tYWktMy4xLXJjMy1jaXAzODoKClsgICA1My42OTc3
-MTddIGtlcm5lbCBCVUcgYXQga2VybmVsL2F1ZGl0c2MuYzoxNTAyIQpbICAgNTMuNjk4MTMyXSBp
-bnZhbGlkIG9wY29kZTogMDAwMCBbIzFdIFNNUAoKVGhlcmUgYXJlIHNpbWlsYXIgbWVzc2FnZXMg
-d2l0aCA0LjE5Ljc1LXhlbm9tYWktMy4xLXJjMzoKClsgICA2NS41NDYzMzNdIGtlcm5lbCBCVUcg
-YXQga2VybmVsL2F1ZGl0c2MuYzoxNTI3IQpbICAgNzkuMDU0Mzk2XSBpbnZhbGlkIG9wY29kZTog
-MDAwMCBbIzJdIFNNUCBQVEkKCkkgaGF2ZSBhdHRhY2hlZCBzb21lIGxvZyBmaWxlIGV4Y2VycHRz
-IHRoYXQgY292ZXIgc2V2ZXJhbCByZWJvb3RzIHdpdGggdGhlIHR3byBrZXJuZWxzIGFuZCBhbHNv
-IHdpdGggaW50ZXJtYXA9b2ZmIGZvciA0LjQuICBUaGVzZSBtZXNzYWdlcyBtYXkgYmUgdW5yZWxh
-dGVkIHRvIGFsbCB0aGlzLCBidXQgbGV0IG1lIGtub3cgaWYgSSBzaG91bGQgaW52ZXN0aWdhdGUg
-ZnVydGhlci4KClRoYW5rcywKCi1KZWZmCgotLS0tLS0tLS0tLS0tLSBuZXh0IHBhcnQgLS0tLS0t
-LS0tLS0tLS0KQW4gZW1iZWRkZWQgYW5kIGNoYXJzZXQtdW5zcGVjaWZpZWQgdGV4dCB3YXMgc2Ny
-dWJiZWQuLi4KTmFtZTogc3lzbG9nLnR4dApVUkw6IDxodHRwOi8veGVub21haS5vcmcvcGlwZXJt
-YWlsL3hlbm9tYWkvYXR0YWNobWVudHMvMjAxOTExMTUvNDQwZDk4ODMvYXR0YWNobWVudC50eHQ+
-Cg==
+On Friday, November 15, 2019 4:40 AM, Jan Kiszka <jan.kiszka@siemens.com> w=
+rote:
+> On 15.11.19 01:31, Jeff Webb via Xenomai wrote:
+> > I am building a Xenomai cobalt kernel under Ubuntu 18.04 based on:
+> >
+> >     Linux 4.19.75
+> >     Xenomai 3.1-rc3
+> >     ipipe-core-4.19.75-x86-7.patch
+> >
+> >
+> > After running prepare-kernel.sh and "makeolddefconfig" (using the unmod=
+ified default .config), I get this error:
+> >
+> >     WARNING: unmet direct dependencies detected for PARAVIRT
+> >       Depends on [n]: HYPERVISOR_GUEST [=3Dy] && !IPIPE [=3Dy]
+> >       Selected by [m]:
+> >       - HYPERV [=3Dm] && X86 [=3Dy] && ACPI [=3Dy] && X86_LOCAL_APIC [=
+=3Dy] && HYPERVISOR_GUEST [=3Dy]
+> >
+> >
+> > I turned off HYPERVISOR_GUEST manually to fix the warning. I hadn't see=
+n this type of error before, but perhaps something could be done in the pat=
+ch to make the default config consistent... Just FYI.
+>
+> It's HYPERV what causes this, by also pulling PARAVIRT which is not
+> compatible with I-pipe. We need to tag that config as well to avoid this.
+>
+> > Otherwise, everything went fine with the build process and initial test=
+ing. I will be giving this build some more testing over the next week or so=
+ and will let you know if I find any issues.
+>
+> Great to hear, thanks.
+
+I haven't done extensive testing yet, but I tried several of our real-time =
+applications with the new build, and things seem to be working so far.  Eve=
+n on a different (but perhaps similar), older set of hardware from the one =
+that has the intremap issues, I get the same kernel BUG messages (using the=
+ same 4.19 kernel build) mentioned in my other email:
+
+  https://xenomai.org/pipermail/xenomai/2019-November/041988.html
+
+but things appear to be functioning properly as far as I can tell.
+
+This is just some more feedback on the latest kernel / xenomai release cand=
+idate.
+
+Thanks,
+
+-Jeff
+
+
