@@ -1,12 +1,10 @@
-Subject: Re: [PATCH 2/2] cobalt/sched: quota: fix use-after-free in
- quota_remove operation
-References: <20191129150303.11116-1-rpm@xenomai.org>
- <20191129150303.11116-2-rpm@xenomai.org>
+Subject: Re: [ANNOUNCE] Xenomai v3.1-rc3 available
+References: <y27Ah4Xs-t8bhib0n5wvb0RE8X2b-B4GbVUz2PHHbETtMbl4SjmsFQP7GPGLfWozQrc_BW9MqoZFFIq0RYnMjvl_VQ0ecJz5Tp5fcaXPKcg=@codecraftsmen.org>
 From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <61ecd1f1-8bef-d120-0776-4e0feffed4c2@siemens.com>
-Date: Fri, 29 Nov 2019 18:48:20 +0100
+Message-ID: <e2ceb276-09e5-2a11-ac34-3926668615e0@siemens.com>
+Date: Fri, 15 Nov 2019 11:40:02 +0100
 MIME-Version: 1.0
-In-Reply-To: <20191129150303.11116-2-rpm@xenomai.org>
+In-Reply-To: <y27Ah4Xs-t8bhib0n5wvb0RE8X2b-B4GbVUz2PHHbETtMbl4SjmsFQP7GPGLfWozQrc_BW9MqoZFFIq0RYnMjvl_VQ0ecJz5Tp5fcaXPKcg=@codecraftsmen.org>
 Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -18,52 +16,33 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Philippe Gerum <rpm@xenomai.org>, xenomai@xenomai.org
+To: Jeff Webb <w1@codecraftsmen.org>, "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On 29.11.19 16:03, Philippe Gerum via Xenomai wrote:
-> From: Philippe Gerum <rpm@xenomai.org>
+On 15.11.19 01:31, Jeff Webb via Xenomai wrote:
+> I am building a Xenomai cobalt kernel under Ubuntu 18.04 based on:
 > 
-> KASAN detected this issue while removing a quota group, as a result of
-> accessing members from the xnsched_quota_group struct after the
-> container struct was freed.
+>     Linux 4.19.75
+>     Xenomai 3.1-rc3
+>     ipipe-core-4.19.75-x86-7.patch
 > 
-> Signed-off-by: Philippe Gerum <rpm@xenomai.org>
-> ---
->   kernel/cobalt/posix/sched.c | 6 +++++-
->   1 file changed, 5 insertions(+), 1 deletion(-)
+> After running prepare-kernel.sh and "makeolddefconfig" (using the unmodified default .config), I get this error:
 > 
-> diff --git a/kernel/cobalt/posix/sched.c b/kernel/cobalt/posix/sched.c
-> index f018ac3e8..7e457a9a8 100644
-> --- a/kernel/cobalt/posix/sched.c
-> +++ b/kernel/cobalt/posix/sched.c
-> @@ -446,8 +446,12 @@ int set_quota_config(int cpu, union sched_config *config, size_t len)
->   		}
->   		list_del(&group->next);
->   		xnlock_put_irqrestore(&nklock, s);
-> +		iq->tgid = tg->tgid;
-> +		iq->quota = tg->quota_percent;
-> +		iq->quota_peak = tg->quota_peak_percent;
-> +		iq->quota_sum = quota_sum;
+>     WARNING: unmet direct dependencies detected for PARAVIRT
+>       Depends on [n]: HYPERVISOR_GUEST [=y] && !IPIPE [=y]
+>       Selected by [m]:
+>       - HYPERV [=m] && X86 [=y] && ACPI [=y] && X86_LOCAL_APIC [=y] && HYPERVISOR_GUEST [=y]
+> 
+> I turned off HYPERVISOR_GUEST manually to fix the warning.  I hadn't seen this type of error before, but perhaps something could be done in the patch to make the default config consistent...  Just FYI.
 
-Good catch.
+It's HYPERV what causes this, by also pulling PARAVIRT which is not 
+compatible with I-pipe. We need to tag that config as well to avoid this.
 
-But do some of these setting make sense in the first place? Our manual says:
+> 
+> Otherwise, everything went fine with the build process and initial testing.  I will be giving this build some more testing over the next week or so and will let you know if I find any issues.
 
-"All three operations fill in the @a config.info structure with the 
-information reflecting the state of the scheduler on @a cpu with respect 
-to @a policy, after the requested changes have been applied."
-
-The group is gone now, so only quota_sum should have a meaning.
+Great to hear, thanks.
 
 Jan
-
->   		xnfree(group);
-> -		break;
-> +		return 0;
->   	case sched_quota_set:
->   		xnlock_get_irqsave(&nklock, s);
->   		sched = xnsched_struct(cpu);
-> 
 
 -- 
 Siemens AG, Corporate Technology, CT RDA IOT SES-DE
