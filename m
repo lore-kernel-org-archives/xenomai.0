@@ -1,14 +1,17 @@
-Subject: Re: INTR-REMAP error with UDD driver
-References: <abVhmVLZoPCMWqAbSv547Q_VzyvVJlNAswLDgIKZpMzhMhOvYJNQYRGT6rz470Lgp_xFfkgLpsUSzHdOpFyyXuww10kuZ0VSUH-Nyf82P0I=@protonmail.com>
- <3c48366f-5fec-be5e-1ea0-8e1504a249ed@siemens.com>
- <CzF7Hair8MCzMzyofjGVG75XADx_cYSu_WZPsPGaZxziMjYEyffMw-JgvN5XMUUNHGrz6BKLyTdaaiQ63kf_9EfMf613OnO9toYUQbDigFc=@codecraftsmen.org>
- <e9af8088-382d-63d5-0088-13dedf556fb8@siemens.com>
- <2wKIW_3RM1ITgcnfgLs5MhRJzN0H8IoNQS0bqS5xCseD17bCWWjHGwqgtzQLp8Cm-ecpiviS_6ZxpJMuL1xRG3x6WDp-Smima8DEieDhuwY=@codecraftsmen.org>
+Subject: Re: RTnet sendmmsg and ENOBUFS
+References: <DB8PR05MB591594C16F703FD12F088928F6760@DB8PR05MB5915.eurprd05.prod.outlook.com>
+ <1510f7f0-e130-0e22-b946-d1f6d84f3608@siemens.com>
+ <DB8PR05MB59155D324BA2977A60E63DADF6760@DB8PR05MB5915.eurprd05.prod.outlook.com>
+ <AM0PR05MB59064885C14E3DF057F2E9E8F6710@AM0PR05MB5906.eurprd05.prod.outlook.com>
+ <815b192d-7ecf-385c-058e-969da641f7a4@siemens.com>
+ <VI1PR05MB59174C5543846C0507F6802DF6700@VI1PR05MB5917.eurprd05.prod.outlook.com>
+ <65c16da2-e452-5dc8-85d8-8bf1a18a1105@siemens.com>
+ <VI1PR05MB5917B2A3A41FA364C6326488F6700@VI1PR05MB5917.eurprd05.prod.outlook.com>
 From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <9ed83a4f-b55b-1d10-2829-48d9304d8471@siemens.com>
-Date: Fri, 15 Nov 2019 14:07:39 +0100
+Message-ID: <63f7c728-c943-d811-ea69-85856c7c4348@siemens.com>
+Date: Fri, 15 Nov 2019 14:35:54 +0100
 MIME-Version: 1.0
-In-Reply-To: <2wKIW_3RM1ITgcnfgLs5MhRJzN0H8IoNQS0bqS5xCseD17bCWWjHGwqgtzQLp8Cm-ecpiviS_6ZxpJMuL1xRG3x6WDp-Smima8DEieDhuwY=@codecraftsmen.org>
+In-Reply-To: <VI1PR05MB5917B2A3A41FA364C6326488F6700@VI1PR05MB5917.eurprd05.prod.outlook.com>
 Content-Type: text/plain; charset="utf-8"; format="flowed"
 Content-Language: en-US
 Content-Transfer-Encoding: 8bit
@@ -20,59 +23,87 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jeff Webb <w1@codecraftsmen.org>
-Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>, "pero@wolfram.com" <pero@wolfram.com>
+To: Lange Norbert <norbert.lange@andritz.com>, "Xenomai (xenomai@xenomai.org)" <xenomai@xenomai.org>
 
-On 15.11.19 01:16, Jeff Webb wrote:
-> ‐‐‐‐‐‐‐ Original Message ‐‐‐‐‐‐‐
-> On Thursday, November 14, 2019 3:41 PM, Jan Kiszka <jan.kiszka@siemens.com> wrote:
->> On 14.11.19 14:16, Jeff Webb wrote:
->>> ‐‐‐‐‐‐‐ Original Message ‐‐‐‐‐‐‐
->>> On Thursday, November 14, 2019 1:50 AM, Jan Kiszka jan.kiszka@siemens.com wrote:
->>>
->>>> On 14.11.19 06:05, Jeff Webb via Xenomai wrote:
->>>>
->>>>> I would like to revive this thread from several months ago:
->>>>> https://xenomai.org/pipermail/xenomai/2019-March/040498.html
->>>>> The issue is that on some hardware (a specific rack-mount PC with a PICMG daughtercard on a backplane containing PCI and PCIe slots) I get an INTR-REMAP error when trying to receive legacy (not MSI) interrupts from a custom FPGA-based PCI card using a UDD driver. The card did work properly in one out of the five PCI slots on that machine, but UDD interrupts did not work in the other four slots.
->>>>> Please review the original thread for more details about the specific error.
->>>>> Here are a few more tidbits I have gathered:
->>>>>
->>>>> -   The UDD driver / userspace code works fine on the other hardware
->>>>>
->>>>> -   The UDD driver / userspace code works fine in one PCI slot out of five on this hardware.
->>>>>
->>>>> -   With another backplane model, but same processor card, the problem occurs in all four of the PCI slots.
->>>>>
->>>>> -   An almost identical pure-linux UIO version of the driver / userspace code works in all the cases I tested, even when the UDD version fails, and even with the same xenomai-patched kernel used for UDD testing.
->>>>>
->>>>>
->>>>> In one of the previous posts in this thread a few months ago, Per Öberg mentioned experiencing something similar. Based on the information that was shared, I tried my code with linux version 4.9.38, but it still failed. This prompted me to try other linux / ipipe / xenomai combinations. These are my findings:
->>>>> Interrupts work:
->>>>> xenomai-2.6.5 ipipe-core-3.18.20-x86-7.patch (2016-07-05)
->>>>> xenomai-3.0.9+ ipipe-core-3.18.20-x86-7.patch (2016-07-05)
->>>>> xenomai-3.0.9+ ipipe-core-4.1.18-x86-9.patch (2017-05-25)
->>>>> INTR-REMAP error:
->>>>> xenomai-3.0.9+ ipipe-core-4.4.43-x86-6.patch (2017-02-25)
->>>>> xenomai-3.0.9+ ipipe-core-4.4.43-x86-7.patch (2017-05-25)
->>>>> xenomai-3.0.9+ ipipe-core-4.4.43-x86-8.patch (2017-06-14)
->>>>> xenomai-3.1-rc3 ipipe-core-4.4.196-cip38-x86-19.patch (2019-11-04)
->>>>> xenomai-3.0.9+ ipipe-core-4.9.38-x86-4.patch (2017-10-03)
->>>>> xenomai-3.0.9 ipipe-core-4.14.132-x86-6.patch (2019-07-03)
->>>>> The Xenomai 2.6.5 version of course does not use UDD, but uses the old pthread_intr_* userspace functions.
->>>>> Hopefully this additional information can shed a little light on the matter.
->>>>
->>>> This sounds like some RT interrupt enabling issue related to the IOAPIC
->>>> in the x86 I-pipe patch. Please also test 4.19.
->>>
->>> Ok, I will do this.
+On 15.11.19 13:37, Lange Norbert wrote:
 > 
-> Today I had a chance to make a build based on the ipipe-core-4.19.75-x86-7.patch with xenomai-3.1-rc3.  I haven't had a chance to test it thoroughly, but I think it works.  I am sorry I didn't try this earlier, and thanks for the reminder to do so.  Since a 4.19 patch wasn't available back in early March when I first had the trouble, I got fixated on the fact that things worked with very old kernels and forgot to try 4.19 when I started looking into this again.  I will continue to test and let you know if I find any issues.
 > 
+>>
+>>>
+>>>>
+>>>>> I suppose the receive path works similarly.
+>>>>>
+>>>>
+>>>> RX works by accepting a global-pool buffer (this is where incoming packets
+>>>> first end up in) filled with data in exchange to an empty rtskb from the
+>> socket
+>>>> pool. That filled rtskb is put into the socket pool once the data was
+>>>> transferred to userspace.
+>>>
+>>> I suppose all pools can exchange rtskb, so this is just a matter of which pool
+>> size is limiting.
+>>> If I want to recvmmsg 100 messages, will I get at most 16 (socket pool size),
+>>> or will a single slot be used and exchanged with the drivers?
+>>
+>> One packet, one rtskb. So you have both the device and the socket pool
+>> as limiting factors.
+> 
+> I guess this is different to the sendpath as the device "pushes up" the rtskb's,
 
-I'm also not seeing the problems I have with 4.4 + intremap on 4.19, 
-despite all debug features on. OK, let's check what we are missing down 
-there...
+Actually, commit 91b3302284fd "aligned" TX to RX path. But the documents 
+still state something else. And I doubt now that this commit was going 
+in the right direction.
+
+In fact, it introduced a way for competing transmitters to starve each 
+other by exhausting the now shared device pool for TX.
+
+> And the recvmmsg call then picks up the packets that are available?
+> (having some trouble following the path in the kernel sources)
+
+The point of the ownership transfer on RX is that, when receiving only 
+with one queue (RTnet can't handle more in fact, though it should by 
+now...), we first need to parse the packet content in order to dispatch 
+it. That makes the packet first owned by the device (formerly the RX 
+pool), and once the actual owner is known, it is transferred - or 
+dropped if the recipient has no free buffer.
+
+> 
+> We have some legacy application that ran on an imx28, and we have to keep the protocols for now,
+> They are almost exclusively UDP/IP4 but there's one message for distributing timestamps with a 802.2 SNAP packet.
+> (had some technical/implementation reasons, cant remember now).
+> Currently I use an ETH_P_ALL packet socket for that reason, but looking at the code it seems beneficial to drop that.
+> 
+> -   there seems to be copies of rtskb made
+> -   the packets are not consumed, but kicked up further in the stack
+
+ETH_P_ALL is a kind of snooping mode, therefore the copies. You rather 
+want to register on the desired (non-IP) type(s).
+
+> 
+> What I would want is a socket that simply drains everything, packets in use are ETH_P_IP,
+> ETH_P_ARP and whatever is necessary to send/receive those 802.2 SNAP packets.
+
+IP and ARP will be handled by RTnet, the other types is what you need 
+packet sockets for.
+
+> 
+> I see ETH_P_802_EX1 used for such packets in examples, but I don’t see how your stack identifies such packets?
+
+rt_packet_bind -> rtdev_add_pack. Dispatching is done in 
+rt_stack_deliver, in rt-kernel thread context.
+
+> 
+> -   I don’t know which ETH_P type to use, theres ETH_P_802_2, ETH_P_802_EX1, ETH_P_SNAP potentially others.
+> -   Those constants seems to be largely missing in xenomais sources, so I don’t know how you would test for a match.
+
+You can register any value you like with AF_PACKET, just like in Linux. 
+Matching is not done by a switch-case, rather via a hashed list via the 
+values.
+
+> -   Easiest for me would be a ETH_P_ALL_CONSUME type, buffers just end there when such a socket is open (feasible, would be accepted upstream?)
+
+I think you are better of with target subscriptions. Then all unknown 
+packets will simply be dropped, and that much earlier.
 
 Jan
 
