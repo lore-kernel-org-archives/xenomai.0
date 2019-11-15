@@ -1,15 +1,16 @@
-From: Philippe Gerum <rpm@xenomai.org>
-Subject: Re: [PATCH 6/7] cobalt/sched: drop useless rmb in lock check
-References: <20191122171949.18021-1-rpm@xenomai.org>
- <20191122171949.18021-7-rpm@xenomai.org>
- <95329dfe-c04a-ec25-af96-da12559b9ab6@siemens.com>
-Message-ID: <a0ecd70f-4b93-27f9-48ef-a0b304c42898@xenomai.org>
-Date: Sat, 23 Nov 2019 18:27:17 +0100
+Date: Fri, 15 Nov 2019 00:16:32 +0000
+From: Jeff Webb <w1@codecraftsmen.org>
+Reply-To: Jeff Webb <w1@codecraftsmen.org>
+Subject: Re: INTR-REMAP error with UDD driver
+Message-ID: <2wKIW_3RM1ITgcnfgLs5MhRJzN0H8IoNQS0bqS5xCseD17bCWWjHGwqgtzQLp8Cm-ecpiviS_6ZxpJMuL1xRG3x6WDp-Smima8DEieDhuwY=@codecraftsmen.org>
+In-Reply-To: <e9af8088-382d-63d5-0088-13dedf556fb8@siemens.com>
+References: <abVhmVLZoPCMWqAbSv547Q_VzyvVJlNAswLDgIKZpMzhMhOvYJNQYRGT6rz470Lgp_xFfkgLpsUSzHdOpFyyXuww10kuZ0VSUH-Nyf82P0I=@protonmail.com>
+ <3c48366f-5fec-be5e-1ea0-8e1504a249ed@siemens.com>
+ <CzF7Hair8MCzMzyofjGVG75XADx_cYSu_WZPsPGaZxziMjYEyffMw-JgvN5XMUUNHGrz6BKLyTdaaiQ63kf_9EfMf613OnO9toYUQbDigFc=@codecraftsmen.org>
+ <e9af8088-382d-63d5-0088-13dedf556fb8@siemens.com>
 MIME-Version: 1.0
-In-Reply-To: <95329dfe-c04a-ec25-af96-da12559b9ab6@siemens.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -18,70 +19,111 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jan Kiszka <jan.kiszka@siemens.com>, xenomai@xenomai.org
+To: Jan Kiszka <jan.kiszka@siemens.com>
+Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>, "pero@wolfram.com" <pero@wolfram.com>
 
-T24gMTEvMjMvMTkgOTowMiBBTSwgSmFuIEtpc3prYSB3cm90ZToNCj4gT24gMjIuMTEuMTkg
-MTg6MTksIFBoaWxpcHBlIEdlcnVtIHZpYSBYZW5vbWFpIHdyb3RlOg0KPj4gRnJvbTogUGhp
-bGlwcGUgR2VydW0gPHJwbUB4ZW5vbWFpLm9yZz4NCj4+DQo+PiBTaWduZWQtb2ZmLWJ5OiBQ
-aGlsaXBwZSBHZXJ1bSA8cnBtQHhlbm9tYWkub3JnPg0KPj4gLS0tDQo+PiDCoCBpbmNsdWRl
-L2NvYmFsdC9rZXJuZWwvc2NoZWQuaCB8IDE1ICsrKysrKy0tLS0tLS0tLQ0KPj4gwqAgMSBm
-aWxlIGNoYW5nZWQsIDYgaW5zZXJ0aW9ucygrKSwgOSBkZWxldGlvbnMoLSkNCj4+DQo+PiBk
-aWZmIC0tZ2l0IGEvaW5jbHVkZS9jb2JhbHQva2VybmVsL3NjaGVkLmggYi9pbmNsdWRlL2Nv
-YmFsdC9rZXJuZWwvc2NoZWQuaA0KPj4gaW5kZXggM2IwODI1ZDY3Li5jNjZlMjlkNGMgMTAw
-NjQ0DQo+PiAtLS0gYS9pbmNsdWRlL2NvYmFsdC9rZXJuZWwvc2NoZWQuaA0KPj4gKysrIGIv
-aW5jbHVkZS9jb2JhbHQva2VybmVsL3NjaGVkLmgNCj4+IEBAIC0yOTgsNiArMjk4LDkgQEAg
-dm9pZCBfX3huc2NoZWRfcnVuX2hhbmRsZXIodm9pZCk7DQo+PiDCoCBzdGF0aWMgaW5saW5l
-IGludCBfX3huc2NoZWRfcnVuKHN0cnVjdCB4bnNjaGVkICpzY2hlZCkNCj4+IMKgIHsNCj4+
-IMKgwqDCoMKgwqAgLyoNCj4+ICvCoMKgwqDCoCAqIFJlc2NoZWR1bGUgaWYgWE5TQ0hFRCBp
-cyBwZW5kaW5nLCBidXQgbmV2ZXIgb3ZlciBhbiBJUlENCj4+ICvCoMKgwqDCoCAqIGhhbmRs
-ZXIgb3IgaW4gdGhlIG1pZGRsZSBvZiB1bmxvY2tlZCBjb250ZXh0IHN3aXRjaC4NCj4+ICvC
-oMKgwqDCoCAqDQo+PiDCoMKgwqDCoMKgwqAgKiBOT1RFOiBTaW5jZSBfX194bnNjaGVkX3J1
-bigpIHdvbid0IHJ1biBpbW1lZGlhdGVseSBpZiBhbg0KPj4gwqDCoMKgwqDCoMKgICogZXNj
-YWxhdGlvbiB0byBwcmltYXJ5IGRvbWFpbiBpcyBuZWVkZWQsIHdlIHdvbid0IHVzZQ0KPj4g
-wqDCoMKgwqDCoMKgICogY3JpdGljYWwgc2NoZWR1bGVyIGluZm9ybWF0aW9uIGJlZm9yZSB3
-ZSBhY3R1YWxseSBydW4gaW4NCj4+IEBAIC0zMjgsMTUgKzMzMSw5IEBAIHN0YXRpYyBpbmxp
-bmUgaW50IF9feG5zY2hlZF9ydW4oc3RydWN0IHhuc2NoZWQgKnNjaGVkKQ0KPj4gwqAgc3Rh
-dGljIGlubGluZSBpbnQgeG5zY2hlZF9ydW4odm9pZCkNCj4+IMKgIHsNCj4+IMKgwqDCoMKg
-wqAgc3RydWN0IHhuc2NoZWQgKnNjaGVkID0geG5zY2hlZF9jdXJyZW50KCk7DQo+PiAtwqDC
-oMKgIC8qDQo+PiAtwqDCoMKgwqAgKiBObyByZXNjaGVkdWxpbmcgaXMgcG9zc2libGUsIGVp
-dGhlciBpZjoNCj4+IC3CoMKgwqDCoCAqDQo+PiAtwqDCoMKgwqAgKiAtIHRoZSBjdXJyZW50
-IHRocmVhZCBob2xkcyB0aGUgc2NoZWR1bGVyIGxvY2sNCj4+IC3CoMKgwqDCoCAqIC0gYW4g
-SVNSIGNvbnRleHQgaXMgYWN0aXZlDQo+PiAtwqDCoMKgwqAgKiAtIHdlIGFyZSBjYXVnaHQg
-aW4gdGhlIG1pZGRsZSBvZiBhbiB1bmxvY2tlZCBjb250ZXh0IHN3aXRjaC4NCj4+IC3CoMKg
-wqDCoCAqLw0KPj4gLcKgwqDCoCBzbXBfcm1iKCk7DQo+IA0KPiBJIHRoaW5rIHdlIHN0aWxs
-IHdhbnQgYXQgbGVhc3QgUkVBRF9PTkNFIHNlbWFudGljIGhlcmUgZm9yIHRoZSBzY2hlZCBy
-ZWFkb3V0LiBJZiB3ZSBjYW4gYmUgbWlncmF0ZWQgaW4gdGhlIG1pZGRsZSBvZiB0aGlzIGZ1
-bmN0aW9uLCB0aGUgY2hlY2sgZm9yIHNjaGVkLT5jdXJyX2xvY2tfY291bnQgbXVzdCBoYXBw
-ZW4gYWdhaW5zdCB0aGUgc2FtZSBzY2hlZCB3ZSB0cmlnZ2VyIHRoZSB4bnNjaGVkX3J1biBm
-b3IgbGF0ZXIgb24uDQo+IA0KDQpJdCdzIG5vdCBvYnZpb3VzIHRvIG1lIHdoeSBwcmV2ZW50
-aW5nIGludmVudGVkIGxvYWRzIHdpdGggUkVBRF9PTkNFKHNjaGVkKSB3b3VsZCBidXkgdXMg
-YW55dGhpbmcgYmVjYXVzZSBpZiB3ZSBnZXQgbWlncmF0ZWQsIHRoZW4gd2UgbXVzdCBiZSBy
-dW5uaW5nIG92ZXIgdGhlIHJvb3Qgc3RhZ2UsIHRoZXJlZm9yZSBfX194bnNjaGVkX3J1bigp
-IHdpbGwgZXNjYWxhdGUgdGhlIHJlcXVlc3QsIGFuZCB0aGUgY3VycmVudCBzY2hlZCBwb2lu
-dGVyIHdpbGwgYmUgcmVsb2FkZWQgaW50ZXJydXB0LWZyZWUgZnJvbSB0aGVyZSBldmVudHVh
-bGx5LiBJT1csIHNjaGVkIGluIHhuc2NoZWRfcnVuKCkgaXMgaWdub3JlZCBieSB0aGUgYWN0
-dWFsIHNjaGVkdWxpbmcgYmFja2VuZCAoaS5lLiBfX194bnNjaGVkX3J1bigpKSB3aGVuIGl0
-IHdhcyBjYWxsZWQgZnJvbSBhIGNvbnRleHQgd2hpY2ggbWlnaHQgYmUgc3ViamVjdCB0byBD
-UFUgbWlncmF0aW9uLiBUaGlzIGlzIHRoZSByZWFzb24gd2h5IFtfX114bnNjaGVkX3J1bigp
-IG9ubHkgdXNlIHRoZXNlIGRhdGEgYWNjZXNzZXMgYXMgaGludHMsIHdoaWNoIF9feG5zY2hl
-ZF9ydW4oKSBzaG91bGQgY29uZmlybSBsYXRlciBvbiAodHlwaWNhbGx5LCB3ZSB3b3VsZCBy
-ZWNoZWNrIGZvciB0aGUgY3VycmVudCB0aHJlYWQncyBsb2NrX2NvdW50IGluIHBpY2tfbmV4
-dCgpKS4gRG8geW91IGhhdmUgYSBwcmVjaXNlIHNlcXVlbmNlIG9mIG9wZXJhdGlvbnMgaW4g
-bWluZCB0aGF0IHdvdWxkIGp1c3RpZnkgUkVBRF9PTkNFKHNjaGVkKT8gSSBtdXN0IGFkbWl0
-IHRoYXQgd2hhdCBjb21waWxlciB3cml0ZXJzIGNhbiBwZXJ2ZXJzZWx5IGRlY2lkZSB5b3Vy
-IGNvZGUgaXMgZ29pbmcgdG8gZG8gZXZlbnR1YWxseSBvbmNlIHRoZWlyIG9wdGltaXphdGlv
-biB0ZWNobmlxdWVzIGhhdmUgbWV0aG9kaWNhbGx5IHNocmVkZGVkIHlvdXIgbW9zdCBiYXNp
-YyBhc3N1bXB0aW9ucyB0ZW5kcyB0byBsZWF2ZSBtZSBkYXplZCBhbmQgY29uZnVzZWQsIHNv
-IG1heWJlIEknbSBtaXNzaW5nIGEgcG9pbnQgaGVyZS4NCg0KRm9yIGV4dHJhLXNhZmV0eSwg
-SSB3b3VsZCByYXRoZXIgUkVBRF9PTkNFKHNjaGVkLT5jdXJyKSBpbnN0ZWFkIG9mIFJFQURf
-T05DRShzY2hlZCksIGluIG9yZGVyIHRvIHByZXZlbnQgdGhlIGNvbXBpbGVyIGZyb20gZ29p
-bmcgd2lsZCB3aXRoIGxvYWQgdGVhcmluZyBzaW5jZSBzY2hlZC0+Y3VyciBpcyBhY3R1YWxs
-eSBhIHNoYXJlZCBkYXRhLCB1bmxpa2Ugc2NoZWQuDQoNClRoZSBpc3N1ZSBJIGNhbiBzZWUg
-d2l0aCBhbGxvd2luZyBtaWdyYXRpb24gdGhlcmUgaXMgd2hldGhlciB3ZSB3b3VsZCBtaXNz
-IGEgcmVzY2hlZHVsaW5nIG9wcG9ydHVuaXR5IGJ5IHN3aXRjaGluZyB0byBhbm90aGVyIENQ
-VSBhZnRlciBoYXZpbmcgZGV0ZXJtaW5lZCB0aGF0IHdlIGRpZCBuZWVkIHRoZSBvcmlnaW4g
-Q1BVIHRvIGV4ZWN1dGUgdGhlIHJlc2NoZWR1bGluZyBwcm9jZWR1cmUsIGJ1dCBmYWlsIHRv
-IGRvIGJ5IHJ1bm5pbmcgaXQgZm9yIHRoZSBkZXN0aW5hdGlvbiBDUFUgaW5zdGVhZC4gQWRk
-cmVzc2luZyB0aGlzIHdhcyB0aGUgaW50ZW50IGJlaGluZCBwYXRjaCAjNyBhY3R1YWxseS4N
-Cg0KLS0gDQpQaGlsaXBwZS4NCg==
+=E2=80=90=E2=80=90=E2=80=90=E2=80=90=E2=80=90=E2=80=90=E2=80=90 Original Me=
+ssage =E2=80=90=E2=80=90=E2=80=90=E2=80=90=E2=80=90=E2=80=90=E2=80=90
+On Thursday, November 14, 2019 3:41 PM, Jan Kiszka <jan.kiszka@siemens.com>=
+ wrote:
+> On 14.11.19 14:16, Jeff Webb wrote:
+> > =E2=80=90=E2=80=90=E2=80=90=E2=80=90=E2=80=90=E2=80=90=E2=80=90 Origina=
+l Message =E2=80=90=E2=80=90=E2=80=90=E2=80=90=E2=80=90=E2=80=90=E2=80=
+=90
+> > On Thursday, November 14, 2019 1:50 AM, Jan Kiszka jan.kiszka@siemens.c=
+om wrote:
+> >
+> > > On 14.11.19 06:05, Jeff Webb via Xenomai wrote:
+> > >
+> > > > I would like to revive this thread from several months ago:
+> > > > https://xenomai.org/pipermail/xenomai/2019-March/040498.html
+> > > > The issue is that on some hardware (a specific rack-mount PC with a=
+ PICMG daughtercard on a backplane containing PCI and PCIe slots) I get an =
+INTR-REMAP error when trying to receive legacy (not MSI) interrupts from a =
+custom FPGA-based PCI card using a UDD driver. The card did work properly i=
+n one out of the five PCI slots on that machine, but UDD interrupts did not=
+ work in the other four slots.
+> > > > Please review the original thread for more details about the specif=
+ic error.
+> > > > Here are a few more tidbits I have gathered:
+> > > >
+> > > > -   The UDD driver / userspace code works fine on the other hardwar=
+e
+> > > >
+> > > > -   The UDD driver / userspace code works fine in one PCI slot out =
+of five on this hardware.
+> > > >
+> > > > -   With another backplane model, but same processor card, the prob=
+lem occurs in all four of the PCI slots.
+> > > >
+> > > > -   An almost identical pure-linux UIO version of the driver / user=
+space code works in all the cases I tested, even when the UDD version fails=
+, and even with the same xenomai-patched kernel used for UDD testing.
+> > > >
+> > > >
+> > > > In one of the previous posts in this thread a few months ago, Per =
+=C3=96berg mentioned experiencing something similar. Based on the informati=
+on that was shared, I tried my code with linux version 4.9.38, but it still=
+ failed. This prompted me to try other linux / ipipe / xenomai combinations=
+. These are my findings:
+> > > > Interrupts work:
+> > > > xenomai-2.6.5 ipipe-core-3.18.20-x86-7.patch (2016-07-05)
+> > > > xenomai-3.0.9+ ipipe-core-3.18.20-x86-7.patch (2016-07-05)
+> > > > xenomai-3.0.9+ ipipe-core-4.1.18-x86-9.patch (2017-05-25)
+> > > > INTR-REMAP error:
+> > > > xenomai-3.0.9+ ipipe-core-4.4.43-x86-6.patch (2017-02-25)
+> > > > xenomai-3.0.9+ ipipe-core-4.4.43-x86-7.patch (2017-05-25)
+> > > > xenomai-3.0.9+ ipipe-core-4.4.43-x86-8.patch (2017-06-14)
+> > > > xenomai-3.1-rc3 ipipe-core-4.4.196-cip38-x86-19.patch (2019-11-04)
+> > > > xenomai-3.0.9+ ipipe-core-4.9.38-x86-4.patch (2017-10-03)
+> > > > xenomai-3.0.9 ipipe-core-4.14.132-x86-6.patch (2019-07-03)
+> > > > The Xenomai 2.6.5 version of course does not use UDD, but uses the =
+old pthread_intr_* userspace functions.
+> > > > Hopefully this additional information can shed a little light on th=
+e matter.
+> > >
+> > > This sounds like some RT interrupt enabling issue related to the IOAP=
+IC
+> > > in the x86 I-pipe patch. Please also test 4.19.
+> >
+> > Ok, I will do this.
+
+Today I had a chance to make a build based on the ipipe-core-4.19.75-x86-7.=
+patch with xenomai-3.1-rc3.  I haven't had a chance to test it thoroughly, =
+but I think it works.  I am sorry I didn't try this earlier, and thanks for=
+ the reminder to do so.  Since a 4.19 patch wasn't available back in early =
+March when I first had the trouble, I got fixated on the fact that things w=
+orked with very old kernels and forgot to try 4.19 when I started looking i=
+nto this again.  I will continue to test and let you know if I find any iss=
+ues.
+
+> > > Are you using UDD_IRQ_CUSTOM or do you leave the interrupt registrati=
+on
+> > > to the UDD core?
+> >
+> > I just tell UDD the IRQ number and let it register the interrupt.
+> >
+> > > And please share your kernel config.
+> >
+> > I attached one to my original post earlier this year -- you should be a=
+ble to download it from the link in the mailing list archive. Let me know i=
+f you need something different. I started with the standard Ubuntu desktop =
+kernel config and tweaked options from there, so there is a lot of stuff en=
+abled, obviously.
+> >
+> > > BTW, interrupt remapping issues can be worked around by disabling the
+> > > interrupt remapping feature (e.g. "intremap=3Doff"). But that does no=
+t
+> > > solve the unterlying issue, of course.
+> >
+> > I can't remember if I tried this or not. I will give it a go. Obviously=
+, it would be good to get this fixed in the patch, though.
+>
+> I've reproduced some problem with INTx/IOAPIC and intremap=3Don on 4.4 in
+> KVM. When we are lucky, it's the same as yours. Will debug that tomorrow.
+
+Thank you so much for looking into this, Jan.
+
+-Jeff
+
 
