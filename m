@@ -1,15 +1,11 @@
-Subject: Re: [PATCH v2 3/7] cobalt/posix: fix missed rescheduling opportunities
-References: <20191124154608.9353-1-rpm@xenomai.org>
- <20191124154608.9353-3-rpm@xenomai.org>
- <59725ae2-796c-d065-7646-2d6382916519@siemens.com>
-From: Philippe Gerum <rpm@xenomai.org>
-Message-ID: <b70a9a8a-c158-8e6d-29a3-ad43e570c8af@xenomai.org>
-Date: Mon, 25 Nov 2019 11:09:04 +0100
+Date: Fri, 15 Nov 2019 00:31:16 +0000
+From: Jeff Webb <w1@codecraftsmen.org>
+Reply-To: Jeff Webb <w1@codecraftsmen.org>
+Subject: RE: [ANNOUNCE] Xenomai v3.1-rc3 available
+Message-ID: <y27Ah4Xs-t8bhib0n5wvb0RE8X2b-B4GbVUz2PHHbETtMbl4SjmsFQP7GPGLfWozQrc_BW9MqoZFFIq0RYnMjvl_VQ0ecJz5Tp5fcaXPKcg=@codecraftsmen.org>
 MIME-Version: 1.0
-In-Reply-To: <59725ae2-796c-d065-7646-2d6382916519@siemens.com>
-Content-Type: text/plain; charset="utf-8"
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -18,37 +14,34 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jan Kiszka <jan.kiszka@siemens.com>, xenomai@xenomai.org
+To: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On 11/25/19 10:09 AM, Jan Kiszka wrote:
-> On 24.11.19 16:46, Philippe Gerum via Xenomai wrote:
->> From: Philippe Gerum <rpm@xenomai.org>
->>
->> stop_debugged_thread() may suspend threads running on a remote CPU, we
->> have to kick the rescheduling procedure for these changes to take
->> effect asap. Make sure xnsched_run() is kicked from the call sites
->> once they are done updating the scheduler state.
->>
->> Signed-off-by: Philippe Gerum <rpm@xenomai.org>
->> ---
->>   kernel/cobalt/posix/process.c | 9 ++++-----
->>   1 file changed, 4 insertions(+), 5 deletions(-)
->>
->> diff --git a/kernel/cobalt/posix/process.c b/kernel/cobalt/posix/process.c
->> index b90e53507..1e003108e 100644
->> --- a/kernel/cobalt/posix/process.c
->> +++ b/kernel/cobalt/posix/process.c
->> @@ -819,6 +819,7 @@ static inline int handle_exception(struct ipipe_trap_data *d)
->>           }
->>           stop_debugged_process(thread);
->>           xnlock_put_irqrestore(&nklock, s);
->> +        xnsched_run();
-> 
-> To reduce the potential (but unavoidable) delay between the exception and the remote thread stops, shouldn't this move under the lock? For the wakeup, we do this below.
-> 
+I am building a Xenomai cobalt kernel under Ubuntu 18.04 based on:
 
-That is not necessary. We can't be preempted by the regular kernel logic in this routine since we are running over the head stage, so the only possible preemption would come from a Cobalt interrupt, which would imply that the rescheduling procedure was kicked even earlier (in order to switch us out) and the pending IPIs would have already been sent as a result of this.
+   Linux 4.19.75
+   Xenomai 3.1-rc3
+   ipipe-core-4.19.75-x86-7.patch
 
--- 
-Philippe.
+After running prepare-kernel.sh and "makeolddefconfig" (using the unmodifie=
+d default .config), I get this error:
+
+   WARNING: unmet direct dependencies detected for PARAVIRT
+     Depends on [n]: HYPERVISOR_GUEST [=3Dy] && !IPIPE [=3Dy]
+     Selected by [m]:
+     - HYPERV [=3Dm] && X86 [=3Dy] && ACPI [=3Dy] && X86_LOCAL_APIC [=3Dy] =
+&& HYPERVISOR_GUEST [=3Dy]
+
+I turned off HYPERVISOR_GUEST manually to fix the warning.  I hadn't seen t=
+his type of error before, but perhaps something could be done in the patch =
+to make the default config consistent...  Just FYI.
+
+Otherwise, everything went fine with the build process and initial testing.=
+  I will be giving this build some more testing over the next week or so an=
+d will let you know if I find any issues.
+
+Thanks,
+
+-Jeff
+
+
 
