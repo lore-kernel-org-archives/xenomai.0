@@ -1,16 +1,17 @@
+From: Lange Norbert <norbert.lange@andritz.com>
+Subject: RE: [PATCH] rtdm: Do not return an error from send/recvmmsg if there
+ are packets
+Date: Fri, 15 Nov 2019 12:42:22 +0000
+Message-ID: <VI1PR05MB591796F0F7F5F3E02AFCF879F6700@VI1PR05MB5917.eurprd05.prod.outlook.com>
+References: <02a4475e-f687-8e87-1971-1948cecfbf34@siemens.com>
+ <4cdc4d6a-f073-611b-1b0e-306dfeecb176@xenomai.org>
+ <34b58531-0004-ea65-0384-e338341435e4@xenomai.org>
+ <fe10a1df-6846-f706-6e12-85ba252ecce1@siemens.com>
+In-Reply-To: <fe10a1df-6846-f706-6e12-85ba252ecce1@siemens.com>
+Content-Language: en-US
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-References: <CAFc1U0sXeYMrvm-BhRJ+ygAzwekrKVjwNg7n3yXpsk11T=Hj6w@mail.gmail.com>
- <d456e1aa-2711-d791-d060-1eec4a87b66c@web.de>
- <CAFc1U0vaeyy8=YYKVBNJ0dBsVxDuyymr7gcdeNWrUVE-wfN6MQ@mail.gmail.com>
- <de3c6690-8b59-bf3e-e8aa-7885968f169d@siemens.com>
- <0dff13c8-fe47-6fe6-f1f1-dba85a8addc3@rsi-elektrotechnik.de>
-In-Reply-To: <0dff13c8-fe47-6fe6-f1f1-dba85a8addc3@rsi-elektrotechnik.de>
-From: Pierre FICHEUX <pierre.ficheux@smile.fr>
-Date: Thu, 14 Nov 2019 07:34:43 +0100
-Message-ID: <CAFc1U0tw=U_jf6urd2uPy-sPSwyx5Z9hUwOpiCpzciq4c9bxXw@mail.gmail.com>
-Subject: Re: Fosdem?
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -19,95 +20,49 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jan Leupold <leupold@rsi-elektrotechnik.de>
-Cc: xenomai <xenomai@xenomai.org>
+To: Jan Kiszka <jan.kiszka@siemens.com>, Philippe Gerum <rpm@xenomai.org>, "Xenomai (xenomai@xenomai.org)" <xenomai@xenomai.org>
 
-It's a must go.
+SGVsbG8sDQoNCkp1c3QgZm9yIGNvbnNpZGVyYXRpb24sIElmIHlvdSBjYW4gcGFzcyBib3RoIGVy
+cm9yIHZhbHVlIGFuZCAjIG9mIHN1Y2Nlc3NmdWxseSBzZW50IHBhY2tldHMgb3V0IG9mIHRoZSBr
+ZXJuZWwgZnVuY3Rpb24sDQpwZXJoYXBzIHlvdSBjb3VsZCByZXR1cm4gdGhlICMgKGlmID4gMCkg
+YW5kIHN0aWxsIHNldCBlcnJubyBpbiBjYXNlIG9mIGFuIChyZWFsKSBlcnJvcj8NCg0KSXQgd291
+bGQgYmUgc29tZXdoYXQgZGlmZmVyZW50IHRvIExpbnV4LCBidXQgdGhhdCB3b3VsZCBub3QgYmUg
+dGhlIG9ubHkgZGlmZmVyZW5jZSAobGlrZSB0aGVyZXMgbm8gd2F5IHRvIGJsb2NrIHVudGlsIGFs
+bCBtc2dzIGFyZSBzZW50L3JlY2VpdmVkKS4NCg0KTm9yYmVydA0KDQo+IC0tLS0tT3JpZ2luYWwg
+TWVzc2FnZS0tLS0tDQo+IEZyb206IFhlbm9tYWkgPHhlbm9tYWktYm91bmNlc0B4ZW5vbWFpLm9y
+Zz4gT24gQmVoYWxmIE9mIEphbiBLaXN6a2ENCj4gdmlhIFhlbm9tYWkNCj4gU2VudDogRnJlaXRh
+ZywgMTUuIE5vdmVtYmVyIDIwMTkgMTA6NDMNCj4gVG86IFBoaWxpcHBlIEdlcnVtIDxycG1AeGVu
+b21haS5vcmc+OyBYZW5vbWFpDQo+IDx4ZW5vbWFpQHhlbm9tYWkub3JnPg0KPiBTdWJqZWN0OiBS
+ZTogW1BBVENIXSBydGRtOiBEbyBub3QgcmV0dXJuIGFuIGVycm9yIGZyb20gc2VuZC9yZWN2bW1z
+ZyBpZg0KPiB0aGVyZSBhcmUgcGFja2V0cw0KPg0KPiBOT04tQU5EUklUWiBTT1VSQ0U6IEJFIENB
+VVRJT1VTIFdJVEggQ09OVEVOVCwgTElOS1MgT1INCj4gQVRUQUNITUVOVFMuDQo+DQo+DQo+IE9u
+IDE1LjExLjE5IDEwOjM5LCBQaGlsaXBwZSBHZXJ1bSB3cm90ZToNCj4gPiBPbiAxMS8xNS8xOSAx
+MDozNyBBTSwgUGhpbGlwcGUgR2VydW0gdmlhIFhlbm9tYWkgd3JvdGU6DQo+ID4+IE9uIDExLzE0
+LzE5IDc6NTkgUE0sIEphbiBLaXN6a2Egd3JvdGU6DQo+ID4+PiBGcm9tOiBKYW4gS2lzemthIDxq
+YW4ua2lzemthQHNpZW1lbnMuY29tPg0KPiA+Pj4NCj4gPj4+IFRoaXMgaXMgaW4gbGluZSB3aXRo
+IExpbnV4IGJlaGF2aW9yLg0KPiA+Pj4NCj4gPj4+IFdlIGxpa2VseSBzdGlsbCBtaXNzIGFuIGVx
+dWl2YWxlbnQgdG8gc2tfZXJyIGluIHJlY3ZtbXNnLCB0aG91Z2guDQo+ID4+DQo+ID4+IEFjay4g
+VHJhY2luZyBvbiBlYXJseSBleGl0IGR1ZSB0byBudWxsIHZsZW4gaW4gc2VuZG1tc2coKSBpcyBz
+dGlsbCBtaXNzaW5nOw0KPiBoYXZpbmcgdGhpcyBtaWdodCBoZWxwIGluIGRlYnVnZ2luZyBpc3N1
+ZShzKSBhdCBjYWxsIHNpdGUuDQo+ID4+DQo+ID4NCj4gPiBMaWtld2lzZSBpbiByZWN2bW1zZygp
+Lg0KPiA+DQo+DQo+IFllcywgSSdsbCBzaW1wbHkgcmVtb3ZlIHRoZSAidmxhbiA9PSAwIiBvcHRp
+bWl6YXRpb24uDQo+DQo+IEphbg0KPg0KPiAtLQ0KPiBTaWVtZW5zIEFHLCBDb3Jwb3JhdGUgVGVj
+aG5vbG9neSwgQ1QgUkRBIElPVCBTRVMtREUgQ29ycG9yYXRlDQo+IENvbXBldGVuY2UgQ2VudGVy
+IEVtYmVkZGVkIExpbnV4DQoNCl9fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fDQoNClRo
+aXMgbWVzc2FnZSBhbmQgYW55IGF0dGFjaG1lbnRzIGFyZSBzb2xlbHkgZm9yIHRoZSB1c2Ugb2Yg
+dGhlIGludGVuZGVkIHJlY2lwaWVudHMuIFRoZXkgbWF5IGNvbnRhaW4gcHJpdmlsZWdlZCBhbmQv
+b3IgY29uZmlkZW50aWFsIGluZm9ybWF0aW9uIG9yIG90aGVyIGluZm9ybWF0aW9uIHByb3RlY3Rl
+ZCBmcm9tIGRpc2Nsb3N1cmUuIElmIHlvdSBhcmUgbm90IGFuIGludGVuZGVkIHJlY2lwaWVudCwg
+eW91IGFyZSBoZXJlYnkgbm90aWZpZWQgdGhhdCB5b3UgcmVjZWl2ZWQgdGhpcyBlbWFpbCBpbiBl
+cnJvciBhbmQgdGhhdCBhbnkgcmV2aWV3LCBkaXNzZW1pbmF0aW9uLCBkaXN0cmlidXRpb24gb3Ig
+Y29weWluZyBvZiB0aGlzIGVtYWlsIGFuZCBhbnkgYXR0YWNobWVudCBpcyBzdHJpY3RseSBwcm9o
+aWJpdGVkLiBJZiB5b3UgaGF2ZSByZWNlaXZlZCB0aGlzIGVtYWlsIGluIGVycm9yLCBwbGVhc2Ug
+Y29udGFjdCB0aGUgc2VuZGVyIGFuZCBkZWxldGUgdGhlIG1lc3NhZ2UgYW5kIGFueSBhdHRhY2ht
+ZW50IGZyb20geW91ciBzeXN0ZW0uDQoNCkFORFJJVFogSFlEUk8gR21iSA0KDQoNClJlY2h0c2Zv
+cm0vIExlZ2FsIGZvcm06IEdlc2VsbHNjaGFmdCBtaXQgYmVzY2hyw6Rua3RlciBIYWZ0dW5nIC8g
+Q29ycG9yYXRpb24NCg0KRmlybWVuc2l0ei8gUmVnaXN0ZXJlZCBzZWF0OiBXaWVuDQoNCkZpcm1l
+bmJ1Y2hnZXJpY2h0LyBDb3VydCBvZiByZWdpc3RyeTogSGFuZGVsc2dlcmljaHQgV2llbg0KDQpG
+aXJtZW5idWNobnVtbWVyLyBDb21wYW55IHJlZ2lzdHJhdGlvbjogRk4gNjE4MzMgZw0KDQpEVlI6
+IDA2MDUwNzcNCg0KVUlELU5yLjogQVRVMTQ3NTY4MDYNCg0KDQpUaGFuayBZb3UNCl9fX19fX19f
+X19fX19fX19fX19fX19fX19fX19fX19fDQo=
 
-One or 2 guys from Smile are Buildroot developers. The BR dev days meeting
-is hosted by Google just after FOSDEM.
-
-https://www.elinux.org/Buildroot:DeveloperDaysFOSDEM2019
-
-Should be fine to get a similar approach (?)
-
-
-Le mer. 13 nov. 2019 =C3=A0 09:12, Jan Leupold via Xenomai <xenomai@xenomai=
-.org>
-a =C3=A9crit :
-
-> Am 11.11.19 um 10:32 schrieb Jan Kiszka via Xenomai:
-> > On 11.11.19 10:20, Pierre FICHEUX via Xenomai wrote:
-> >> Should be fine. IMHO Xenomai project is a must but lacks communication
-> and
-> >> events (compared to PREMPT_RT) :-)
-> >>
-> >
-> > I don't disagree. And I welcome when things are not only kicked off by
-> its
-> > maintainer.
-> >
-> > So: Who else from the community plans to go to Fosdem or would do so if
-> we
-> > organize a meetup?
->
-> This would be a reason for us to mark Fosdem as a "must go" event!
->
-> Jan
->
-> >
-> > Topics for discussion or potentially presentation that come to my mind:
-> >
-> >  - 3.1 summary
-> >  - status and plans for CI and testing
-> >  - Dovetail/Steely walk-through
-> >  - future of RTnet (modernization needs, TSN, ...)
-> >  - <your topic here>
-> >
-> > Jan
-> >
-> >> Le dim. 10 nov. 2019 =C3=A0 20:09, Jan Kiszka <jan.kiszka@web.de> a =
-=C3=A9crit :
-> >>
-> >>> On 10.11.19 19:31, Pierre FICHEUX via Xenomai wrote:
-> >>>> Hi,
-> >>>>
-> >>>> Two years ago (?) there was a Xenomai meeting during FOSDEM, is ther=
-e
-> any
-> >>>> plan for a new one in 2020 ?
-> >>>
-> >>> Thanks for bringing this up! There is no plan yet, but if folks
-> indicate
-> >>> interest, we could try to organize a meeting again. May it be offsite
-> as
-> >>> last time or informal during the event.
-> >>>
-> >>> Jan
-> >>>
-> >
->
->
-> --
-> _____________________________________________________________
-> R-S-I Elektrotechnik GmbH & Co. KG
-> Woelkestrasse 11
-> D-85301 Schweitenkirchen
-> Fon: +49 8444 9204-0
-> Fax: +49 8444 9204-50
-> www.rsi-elektrotechnik.de
->
-> _____________________________________________________________
-> Amtsgericht Ingolstadt - GmbH: HRB 191328 - KG: HRA 170363
-> Gesch=C3=A4ftsf=C3=BChrer: Dr.-Ing. Michael Sorg, Dipl.-Ing. Franz Sorg
-> USt-IdNr.: DE 128592548
->
->
->
-
---=20
-
-Pierre FICHEUX -/- CTO Smile ECS, France -\- pierre.ficheux@smile.fr
-                             http://www.smile.fr
-                             https://smile.eu/fr/offres/embarque-iot
-I would love to change the world, but they won't give me the source code
