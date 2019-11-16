@@ -1,11 +1,11 @@
-Date: Fri, 15 Nov 2019 23:26:50 +0000
-From: Jeff Webb <w1@codecraftsmen.org>
-Reply-To: Jeff Webb <w1@codecraftsmen.org>
-Subject: RE: --print-buffer-syncdelay, lib/cobalt/init.c:cobalt_help()
-Message-ID: <QIcz_Mzq1NwSy9algHOLkalGdSrxCxR8JSS5SI26yJvRItYmsYtDt9IL7tU309_Ay6lREUUPzcuAuGmuNVbIBQFAw0HRCYKEKEofo9VRHDM=@codecraftsmen.org>
+From: Jan Kiszka <jan.kiszka@siemens.com>
+Subject: [PATCH] lib/cobalt: Fix help for --print-sync-delay
+Message-ID: <f4ccbc37-42d1-e683-aa26-8eadb4428470@siemens.com>
+Date: Sat, 16 Nov 2019 09:53:55 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -14,32 +14,49 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Xenomai <xenomai@xenomai.org>
+Cc: Steve Freyder <steve@freyder.net>, Jeff Webb <w1@codecraftsmen.org>
 
-I was converting an old Xenomai 2.6 application to 3.1, and had to adjust t=
-he RT print buffer settings from environment variables to command-line opti=
-ons.  I had trouble with xenomai_init() not removing one of the command-lin=
-e arguments it should have processed.  After doing a web search, I came acr=
-oss this:
+From: Jan Kiszka <jan.kiszka@siemens.com>
 
-  https://www.xenomai.org/pipermail/xenomai/2019-May/040883.html
+Misnamed by the original commit f42334abc373.
 
-It looks like a fix for this hasn't made it into 3.1 yet.
+While at it, also fix indention style.
 
-To summarize, a xenomai application's --help output says:
+Reported-by: Steve Freyder <steve@freyder.net>
+Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
+---
 
-  --print-buffer-syncdelay=3D<ms>   max delay of output synchronization (10=
-0 ms)
+Seems like I missed this because it wasn't presented as patch.
+Will go to stable as well.
 
-But xenomai_init() doesn't remove this option from argv, so I don't think i=
-t recognizes it.  Based on the above mailing list post, I tried:
+ lib/cobalt/init.c | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
 
-  --print-sync-delay=3D100
+diff --git a/lib/cobalt/init.c b/lib/cobalt/init.c
+index 02a99c569c..9b506d872d 100644
+--- a/lib/cobalt/init.c
++++ b/lib/cobalt/init.c
+@@ -353,10 +353,10 @@ static int cobalt_parse_option(int optnum, const char *optarg)
+ 
+ static void cobalt_help(void)
+ {
+-        fprintf(stderr, "--main-prio=<prio>		main thread priority\n");
+-        fprintf(stderr, "--print-buffer-size=<bytes>	size of a print relay buffer (16k)\n");
+-        fprintf(stderr, "--print-buffer-count=<num>	number of print relay buffers (4)\n");
+-        fprintf(stderr, "--print-buffer-syncdelay=<ms>	max delay of output synchronization (100 ms)\n");
++	fprintf(stderr, "--main-prio=<prio>		main thread priority\n");
++	fprintf(stderr, "--print-buffer-size=<bytes>	size of a print relay buffer (16k)\n");
++	fprintf(stderr, "--print-buffer-count=<num>	number of print relay buffers (4)\n");
++	fprintf(stderr, "--print-sync-delay=<ms>	max delay of output synchronization (100 ms)\n");
+ }
+ 
+ static struct setup_descriptor cobalt_interface = {
+-- 
+2.16.4
 
-and it then removes the option from argv, so I assume this is the option na=
-me it is looking for.  I didn't try the patch posted in the original email =
-to see if it worked.
 
--Jeff
-
+-- 
+Siemens AG, Corporate Technology, CT RDA IOT SES-DE
+Corporate Competence Center Embedded Linux
 
