@@ -1,18 +1,10 @@
-From: Lange Norbert <norbert.lange@andritz.com>
-Subject: RE: Deadlock during debugging
-Date: Tue, 19 Nov 2019 08:52:14 +0000
-Message-ID: <VI1PR05MB59176A2BD287FB9833B793DCF64C0@VI1PR05MB5917.eurprd05.prod.outlook.com>
-References: <VI1PR05MB5917D854245374A7BF4E34BFF64D0@VI1PR05MB5917.eurprd05.prod.outlook.com>
- <VI1PR05MB591737F8DF2F37FBBE64101AF64D0@VI1PR05MB5917.eurprd05.prod.outlook.com>
- <VI1PR05MB5917D9816484CC3559EB0D75F64D0@VI1PR05MB5917.eurprd05.prod.outlook.com>
- <ccfc971c-de91-f1dd-eec0-23a46f45ddad@siemens.com>
- <VI1PR05MB5917036B263793FF2B2EF000F64D0@VI1PR05MB5917.eurprd05.prod.outlook.com>
- <d759b2a6-b572-c021-694e-71ec1beec727@siemens.com>
-In-Reply-To: <d759b2a6-b572-c021-694e-71ec1beec727@siemens.com>
-Content-Language: en-US
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-MIME-Version: 1.0
+Message-ID: <1574177353.6990.5.camel@smigroup.net>
+Subject: rt_task_self() return value
+From: Mauro Salvini <mauro.salvini@smigroup.net>
+Date: Tue, 19 Nov 2019 16:29:13 +0100
+Content-Type: text/plain; charset="UTF-8"
+Mime-Version: 1.0
+Content-Transfer-Encoding: 7bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -21,57 +13,57 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jan Kiszka <jan.kiszka@siemens.com>, "Xenomai (xenomai@xenomai.org)" <xenomai@xenomai.org>
+To: xenomai <xenomai@xenomai.org>
 
-DQoNCj4gLS0tLS1PcmlnaW5hbCBNZXNzYWdlLS0tLS0NCj4gRnJvbTogSmFuIEtpc3prYSA8amFu
-Lmtpc3prYUBzaWVtZW5zLmNvbT4NCj4gU2VudDogRGllbnN0YWcsIDE5LiBOb3ZlbWJlciAyMDE5
-IDA3OjUxDQo+IFRvOiBMYW5nZSBOb3JiZXJ0IDxub3JiZXJ0LmxhbmdlQGFuZHJpdHouY29tPjsg
-WGVub21haQ0KPiAoeGVub21haUB4ZW5vbWFpLm9yZykgPHhlbm9tYWlAeGVub21haS5vcmc+DQo+
-IFN1YmplY3Q6IFJlOiBEZWFkbG9jayBkdXJpbmcgZGVidWdnaW5nDQo+DQo+IE5PTi1BTkRSSVRa
-IFNPVVJDRTogQkUgQ0FVVElPVVMgV0lUSCBDT05URU5ULCBMSU5LUyBPUg0KPiBBVFRBQ0hNRU5U
-Uy4NCj4NCj4NCj4gT24gMTguMTEuMTkgMTg6MzEsIExhbmdlIE5vcmJlcnQgd3JvdGU6DQo+ID4N
-Cj4gPg0KPiA+PiAtLS0tLU9yaWdpbmFsIE1lc3NhZ2UtLS0tLQ0KPiA+PiBGcm9tOiBKYW4gS2lz
-emthIDxqYW4ua2lzemthQHNpZW1lbnMuY29tPg0KPiA+PiBTZW50OiBNb250YWcsIDE4LiBOb3Zl
-bWJlciAyMDE5IDE4OjIyDQo+ID4+IFRvOiBMYW5nZSBOb3JiZXJ0IDxub3JiZXJ0LmxhbmdlQGFu
-ZHJpdHouY29tPjsgWGVub21haQ0KPiA+PiAoeGVub21haUB4ZW5vbWFpLm9yZykgPHhlbm9tYWlA
-eGVub21haS5vcmc+DQo+ID4+IFN1YmplY3Q6IFJlOiBEZWFkbG9jayBkdXJpbmcgZGVidWdnaW5n
-DQo+ID4+DQo+ID4+IE5PTi1BTkRSSVRaIFNPVVJDRTogQkUgQ0FVVElPVVMgV0lUSCBDT05URU5U
-LCBMSU5LUyBPUg0KPiBBVFRBQ0hNRU5UUy4NCj4gPj4NCj4gPj4NCj4gPj4gT24gMTguMTEuMTkg
-MTc6MjQsIExhbmdlIE5vcmJlcnQgdmlhIFhlbm9tYWkgd3JvdGU6DQo+ID4+PiBPbmUgbW9yZSwN
-Cj4gPj4+DQo+ID4+PiBOb3RlIHRoYXQgdGhlcmUgc2VlbSB0byBiZSBxdWl0ZSBkaWZmZXJlbnQg
-cmVwb3J0cywgZnJvbSBhIHJlY3Vyc2l2ZQ0KPiBmYXVsdA0KPiA+PiB0byBzb21lIHRocmVhZHMg
-Z2V0dGluZyBtYXJrZWQgYXMgInJ1bmF3YXkiLg0KPiA+Pj4gSSBjYW4gcmVwcm9kdWNlIHRoZSBp
-c3N1ZSBub3cgZWFzaWx5LCBidXQgaXRzIHByb3ByaWV0YXJ5IHNvZnR3YXJlIEkgY2FudA0KPiA+
-PiByZWFjaCBhcm91bmQuDQo+ID4+DQo+ID4+IFVuZGVyc3Rvb2QuIFdpbGwgdHJ5IHRvIHJlYWQg
-c29tZXRoaW5nIGZyb20gdGhlIHRyYWNlcy4NCj4gPj4NCj4gPj4gVGhpcyBpcyBhIHJlZ3Jlc3Np
-b24gb3ZlciAzLjAgbm93LCBjb3JyZWN0Pw0KPiA+DQo+ID4gTm8sIGNhbid0IHNheSB0aGF0LiBJ
-IGhhZCB2YXJpb3VzIHJlY3VycmluZyBpc3N1ZXMgd2l0aCA0LjksIDQuMTQgYW5kIDQuMTkNCj4g
-a2VybmVscywNCj4gPiBhc3dlbGwgYXMgMy4wIGFuZCBhbmQgMy4xLg0KPiA+IEl0J3MgaGFyZCB0
-byBuYXJyb3cgZG93biBhbmQgb2Z0ZW4ganVzdCB2YW5pc2hlZCBhZnRlciBhIHdoaWxlLCBhbmQg
-bXkgb25seQ0KPiA+IGd1dC1mZWVsaW5nIGlzIHRoYXQgY29uZGl0aW9uIHZhcmlhYmxlcyBhcmUg
-aW52b2x2ZWQuDQo+ID4gSSBhbHNvIGhhdmUgYSBjb3VwbGUgY29iYWx0IHRocmVhZHMgKm5vdCog
-cGlubmVkIHRvIGEgc2luZ2xlIGNwdS4NCj4NCj4gSSdtIG9ubHkgdGFsa2luZyBhYm91dCB0aGUg
-Y3Jhc2ggZHVyaW5nIGRlYnVnIC0gb25lIGlzc3VlIGFmdGVyIHRoZSBvdGhlci4NCg0KU28gZGlk
-IEksIHRoZSBjcmFzaGVzIHByb2R1Y2UgZGlmZmVyZW50IGxvZ3MgKGxpa2VseSBqdXN0IHRoZSBl
-ZmZlY3QsIGFmdGVyIHNvbWUgbWVtIGNvcnJ1cHRpb24pDQphbmQgSSBvY2Nhc2lvbmFsbHkgaGFk
-IHRoZXNlIGNyYXNoZXMgZm9yIGEgd2hpbGUuIFNvIHRoaXMgZG9lcyAqbm90KiBhcHBlYXIgdG8g
-YmUgYSAzLjEgcmVncmVzc2lvbiwNCndoaWNoIGlzIHdoeSBJIGJyb3VnaHQgdGhlc2UgcG9pbnRz
-IHVwLg0KDQpDb21waWxpbmcgdGhlIGtlcm5lbCB3aXRoIGFub3RoZXIgZ2NjIGFuZCBwaW5uaW5n
-IHRoZSB0aHJlYWRzIGRpZCBub3QgaGVscCBCVFcuDQoNCk5vcmJlcnQNCl9fX19fX19fX19fX19f
-X19fX19fX19fX19fX19fX19fDQoNClRoaXMgbWVzc2FnZSBhbmQgYW55IGF0dGFjaG1lbnRzIGFy
-ZSBzb2xlbHkgZm9yIHRoZSB1c2Ugb2YgdGhlIGludGVuZGVkIHJlY2lwaWVudHMuIFRoZXkgbWF5
-IGNvbnRhaW4gcHJpdmlsZWdlZCBhbmQvb3IgY29uZmlkZW50aWFsIGluZm9ybWF0aW9uIG9yIG90
-aGVyIGluZm9ybWF0aW9uIHByb3RlY3RlZCBmcm9tIGRpc2Nsb3N1cmUuIElmIHlvdSBhcmUgbm90
-IGFuIGludGVuZGVkIHJlY2lwaWVudCwgeW91IGFyZSBoZXJlYnkgbm90aWZpZWQgdGhhdCB5b3Ug
-cmVjZWl2ZWQgdGhpcyBlbWFpbCBpbiBlcnJvciBhbmQgdGhhdCBhbnkgcmV2aWV3LCBkaXNzZW1p
-bmF0aW9uLCBkaXN0cmlidXRpb24gb3IgY29weWluZyBvZiB0aGlzIGVtYWlsIGFuZCBhbnkgYXR0
-YWNobWVudCBpcyBzdHJpY3RseSBwcm9oaWJpdGVkLiBJZiB5b3UgaGF2ZSByZWNlaXZlZCB0aGlz
-IGVtYWlsIGluIGVycm9yLCBwbGVhc2UgY29udGFjdCB0aGUgc2VuZGVyIGFuZCBkZWxldGUgdGhl
-IG1lc3NhZ2UgYW5kIGFueSBhdHRhY2htZW50IGZyb20geW91ciBzeXN0ZW0uDQoNCkFORFJJVFog
-SFlEUk8gR21iSA0KDQoNClJlY2h0c2Zvcm0vIExlZ2FsIGZvcm06IEdlc2VsbHNjaGFmdCBtaXQg
-YmVzY2hyw6Rua3RlciBIYWZ0dW5nIC8gQ29ycG9yYXRpb24NCg0KRmlybWVuc2l0ei8gUmVnaXN0
-ZXJlZCBzZWF0OiBXaWVuDQoNCkZpcm1lbmJ1Y2hnZXJpY2h0LyBDb3VydCBvZiByZWdpc3RyeTog
-SGFuZGVsc2dlcmljaHQgV2llbg0KDQpGaXJtZW5idWNobnVtbWVyLyBDb21wYW55IHJlZ2lzdHJh
-dGlvbjogRk4gNjE4MzMgZw0KDQpEVlI6IDA2MDUwNzcNCg0KVUlELU5yLjogQVRVMTQ3NTY4MDYN
-Cg0KDQpUaGFuayBZb3UNCl9fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fDQo=
+Hi all,
+
+I'm using Xenomai 3.0.9 in cobalt mode and I'm facing an issue on
+rt_task_self() returned value.
+
+Please see this simple code:
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h>
+#include <alchemy/task.h>
+
+RT_TASK gNewTask;
+
+static void Task(void *lpArgument)
+{
+	rt_printf("Task created.\n");
+	gNewTask = *(rt_task_self());
+}
+
+int main()
+{
+	RT_TASK tNewTask;
+	int err = rt_task_create(&tNewTask, "TEST", 16384, 10,
+T_JOINABLE);
+	rt_printf(" task create: %d\n", err);
+	err = rt_task_start(&tNewTask, Task, NULL);
+	rt_printf(" task start: %d\n", err);
+	
+	rt_task_sleep(2000000000);
+
+	//err = rt_task_join(&tNewTask);
+	err = rt_task_join(&gNewTask);
+	rt_printf(" task join : %d\n", err);
+
+	return 0;
+}
+
+Code is compiled using xeno-config --alchemy.
+
+Using the rt_task_self() returned value with rt_task_join(), the latter
+returns -ESRCH (no such process). Obviously if I use the local tNewTask
+variable, return value is 0.
+
+I'm pretty sure that this works without errors with Xenomai2.
+
+Is it the expected behavior with Xenomai3?
+
+Thanks in advance, regards
+-- 
+Mauro
 
