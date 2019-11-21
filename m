@@ -1,13 +1,14 @@
-Subject: Re: urcu/lttng (Userspace) and Xenomai
+From: Lange Norbert <norbert.lange@andritz.com>
+Subject: RE: urcu/lttng (Userspace) and Xenomai
+Date: Thu, 21 Nov 2019 14:15:17 +0000
+Message-ID: <VI1PR05MB5917144A022B93E3DBA32FE0F64E0@VI1PR05MB5917.eurprd05.prod.outlook.com>
 References: <VI1PR05MB5917D0B45F7CB253F10197B5F64E0@VI1PR05MB5917.eurprd05.prod.outlook.com>
-From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <5718dcc6-9af6-03f8-3e44-b91805f403e2@siemens.com>
-Date: Thu, 21 Nov 2019 14:45:50 +0100
-MIME-Version: 1.0
-In-Reply-To: <VI1PR05MB5917D0B45F7CB253F10197B5F64E0@VI1PR05MB5917.eurprd05.prod.outlook.com>
-Content-Type: text/plain; charset="utf-8"; format="flowed"
+ <5718dcc6-9af6-03f8-3e44-b91805f403e2@siemens.com>
+In-Reply-To: <5718dcc6-9af6-03f8-3e44-b91805f403e2@siemens.com>
 Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+MIME-Version: 1.0
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,45 +17,83 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Lange Norbert <norbert.lange@andritz.com>, "Xenomai (xenomai@xenomai.org)" <xenomai@xenomai.org>
+To: Jan Kiszka <jan.kiszka@siemens.com>, "Xenomai (xenomai@xenomai.org)" <xenomai@xenomai.org>
 
-On 21.11.19 11:26, Lange Norbert via Xenomai wrote:
-> Hello,
-> 
-> I am trying to figure out if Xenomai would work correctly with Lttng. Currently I haven’t figured out how the system manages buffers,
-> but I am checking if this would be generally applicable to Xenomai.
-> 
-> I’d like to know if anyone has already used Lttng UST with xenomai threads,
-> and if there is any need to compile lttng/liburcu for xenomai or using some patches.
-> (I haven’t seen anything that indicates it would not work).
-> 
-> ## urcu flavours
-> This has a few variants, lttng uses the bulletproof one. Most others should be
-> faster on average – but all of them might unlock a futex with a raw syscall.
-> 
-> Other flavours like qsbr could likely be faster if the futex sycall would be replaced with a cobalt mutex
-> (it’s very unlikely this path is executed). Would need some work to get this done (and lttng to use it).
-> 
-> ## sys_membarrier
-> recent kernels and liburcu versions support this syscall, which supposedly
-> allows removal of reader memory barriers.
-> The syscall will somehow interrupt the threads (all *running threads* of the process), which implicitly causes a barrier for readers.
-> 
-> Q: I guess this will *not* interrupt xenomai threads, as their shadow linux thread is not *running*?
-> Q: x86_64 accesses are strictly ordered, do you actually need membarriers at all?
-> 
-
-I didn't look into details of enabling userspace lttng yet, but I had a 
-chat with Mathieu about this, maybe a year ago. He said back then that 
-there is also a polling mode where a data collection thread is simply 
-trying to obtain the trace output time-driven. Then the producer 
-(including cobalt threads) would not need any syscall at all. As I said, 
-that was just a conceptual discussion. None of us actually looked into 
-the implementation.
-
-Jan
-
--- 
-Siemens AG, Corporate Technology, CT RDA IOT SES-DE
-Corporate Competence Center Embedded Linux
+DQoNCj4gLS0tLS1PcmlnaW5hbCBNZXNzYWdlLS0tLS0NCj4gRnJvbTogSmFuIEtpc3prYSA8amFu
+Lmtpc3prYUBzaWVtZW5zLmNvbT4NCj4gU2VudDogRG9ubmVyc3RhZywgMjEuIE5vdmVtYmVyIDIw
+MTkgMTQ6NDYNCj4gVG86IExhbmdlIE5vcmJlcnQgPG5vcmJlcnQubGFuZ2VAYW5kcml0ei5jb20+
+OyBYZW5vbWFpDQo+ICh4ZW5vbWFpQHhlbm9tYWkub3JnKSA8eGVub21haUB4ZW5vbWFpLm9yZz4N
+Cj4gU3ViamVjdDogUmU6IHVyY3UvbHR0bmcgKFVzZXJzcGFjZSkgYW5kIFhlbm9tYWkNCj4NCj4g
+Tk9OLUFORFJJVFogU09VUkNFOiBCRSBDQVVUSU9VUyBXSVRIIENPTlRFTlQsIExJTktTIE9SDQo+
+IEFUVEFDSE1FTlRTLg0KPg0KPg0KPiBPbiAyMS4xMS4xOSAxMToyNiwgTGFuZ2UgTm9yYmVydCB2
+aWEgWGVub21haSB3cm90ZToNCj4gPiBIZWxsbywNCj4gPg0KPiA+IEkgYW0gdHJ5aW5nIHRvIGZp
+Z3VyZSBvdXQgaWYgWGVub21haSB3b3VsZCB3b3JrIGNvcnJlY3RseSB3aXRoIEx0dG5nLg0KPiA+
+IEN1cnJlbnRseSBJIGhhdmVu4oCZdCBmaWd1cmVkIG91dCBob3cgdGhlIHN5c3RlbSBtYW5hZ2Vz
+IGJ1ZmZlcnMsIGJ1dCBJIGFtDQo+IGNoZWNraW5nIGlmIHRoaXMgd291bGQgYmUgZ2VuZXJhbGx5
+IGFwcGxpY2FibGUgdG8gWGVub21haS4NCj4gPg0KPiA+IEnigJlkIGxpa2UgdG8ga25vdyBpZiBh
+bnlvbmUgaGFzIGFscmVhZHkgdXNlZCBMdHRuZyBVU1Qgd2l0aCB4ZW5vbWFpDQo+ID4gdGhyZWFk
+cywgYW5kIGlmIHRoZXJlIGlzIGFueSBuZWVkIHRvIGNvbXBpbGUgbHR0bmcvbGlidXJjdSBmb3Ig
+eGVub21haSBvcg0KPiB1c2luZyBzb21lIHBhdGNoZXMuDQo+ID4gKEkgaGF2ZW7igJl0IHNlZW4g
+YW55dGhpbmcgdGhhdCBpbmRpY2F0ZXMgaXQgd291bGQgbm90IHdvcmspLg0KPiA+DQo+ID4gIyMg
+dXJjdSBmbGF2b3Vycw0KPiA+IFRoaXMgaGFzIGEgZmV3IHZhcmlhbnRzLCBsdHRuZyB1c2VzIHRo
+ZSBidWxsZXRwcm9vZiBvbmUuIE1vc3Qgb3RoZXJzDQo+ID4gc2hvdWxkIGJlIGZhc3RlciBvbiBh
+dmVyYWdlIOKAkyBidXQgYWxsIG9mIHRoZW0gbWlnaHQgdW5sb2NrIGEgZnV0ZXggd2l0aCBhDQo+
+IHJhdyBzeXNjYWxsLg0KPiA+DQo+ID4gT3RoZXIgZmxhdm91cnMgbGlrZSBxc2JyIGNvdWxkIGxp
+a2VseSBiZSBmYXN0ZXIgaWYgdGhlIGZ1dGV4IHN5Y2FsbA0KPiA+IHdvdWxkIGJlIHJlcGxhY2Vk
+IHdpdGggYSBjb2JhbHQgbXV0ZXggKGl04oCZcyB2ZXJ5IHVubGlrZWx5IHRoaXMgcGF0aCBpcw0K
+PiBleGVjdXRlZCkuIFdvdWxkIG5lZWQgc29tZSB3b3JrIHRvIGdldCB0aGlzIGRvbmUgKGFuZCBs
+dHRuZyB0byB1c2UgaXQpLg0KPiA+DQo+ID4gIyMgc3lzX21lbWJhcnJpZXINCj4gPiByZWNlbnQg
+a2VybmVscyBhbmQgbGlidXJjdSB2ZXJzaW9ucyBzdXBwb3J0IHRoaXMgc3lzY2FsbCwgd2hpY2gN
+Cj4gPiBzdXBwb3NlZGx5IGFsbG93cyByZW1vdmFsIG9mIHJlYWRlciBtZW1vcnkgYmFycmllcnMu
+DQo+ID4gVGhlIHN5c2NhbGwgd2lsbCBzb21laG93IGludGVycnVwdCB0aGUgdGhyZWFkcyAoYWxs
+ICpydW5uaW5nIHRocmVhZHMqIG9mDQo+IHRoZSBwcm9jZXNzKSwgd2hpY2ggaW1wbGljaXRseSBj
+YXVzZXMgYSBiYXJyaWVyIGZvciByZWFkZXJzLg0KPiA+DQo+ID4gUTogSSBndWVzcyB0aGlzIHdp
+bGwgKm5vdCogaW50ZXJydXB0IHhlbm9tYWkgdGhyZWFkcywgYXMgdGhlaXIgc2hhZG93IGxpbnV4
+DQo+IHRocmVhZCBpcyBub3QgKnJ1bm5pbmcqPw0KPiA+IFE6IHg4Nl82NCBhY2Nlc3NlcyBhcmUg
+c3RyaWN0bHkgb3JkZXJlZCwgZG8geW91IGFjdHVhbGx5IG5lZWQgbWVtYmFycmllcnMNCj4gYXQg
+YWxsPw0KPiA+DQo+DQo+IEkgZGlkbid0IGxvb2sgaW50byBkZXRhaWxzIG9mIGVuYWJsaW5nIHVz
+ZXJzcGFjZSBsdHRuZyB5ZXQsIGJ1dCBJIGhhZCBhIGNoYXQgd2l0aA0KPiBNYXRoaWV1IGFib3V0
+IHRoaXMsIG1heWJlIGEgeWVhciBhZ28uIEhlIHNhaWQgYmFjayB0aGVuIHRoYXQgdGhlcmUgaXMg
+YWxzbyBhDQo+IHBvbGxpbmcgbW9kZSB3aGVyZSBhIGRhdGEgY29sbGVjdGlvbiB0aHJlYWQgaXMg
+c2ltcGx5IHRyeWluZyB0byBvYnRhaW4gdGhlDQo+IHRyYWNlIG91dHB1dCB0aW1lLWRyaXZlbi4N
+Cg0KSSBiZWxpZXZlIHRoYXTigJlzIHRoZSAiYnVsbGV0cHJvb2YiIHJjdSBtb2RlIHRoYXQgbHR0
+bmcgdXNlcy4gSSBkb27igJl0IHNlZSBhbnkgT1MtbGV2ZWwNCnN5bmNocm9uaXphdGlvbiBpbiB0
+aGUgcmVhZGVycywgb25seSBzb21lIGF0b21pYyB2YXJpYWJsZXMuDQpNYXRoaWV1IGlzIGEgbHR0
+bmcgZGV2Pw0KDQo+IFRoZW4gdGhlIHByb2R1Y2VyIChpbmNsdWRpbmcgY29iYWx0IHRocmVhZHMp
+IHdvdWxkDQo+IG5vdCBuZWVkIGFueSBzeXNjYWxsIGF0IGFsbC4NCg0KSW4gdGhlIGNvbnRleHQg
+b2YgbHR0bmcgdGhvc2UgYXJlIHJlYWRlcnMgKG9mIHRoZSBzaGFyZWQgcmN1IHN0cnVjdHVyZXMp
+LA0Kd3JpdGVzIHdvdWxkIG9ubHkgaGFwcGVuIGlmIHRyYWNlcG9pbnQgcHJvdmlkZXJzIGFyZSBh
+ZGRlZC9yZW1vdmVkLg0KDQpCdXQgdGhlbiBJIGRvbuKAmXQga25vdyBob3cgdGhlIGJ1ZmZlcnMg
+YXJlIG1hbmFnZWQsIHRoaXMgYXBwZWFycyB0bw0KYmUgc3lzdGVtLXdpZGUgaW4gYW5vdGhlciBw
+cm9jZXNzLg0KDQpUaGUgc3lzX21lbWJhcnJpZXIgc3lzY2FsbCB3b3VsZCBiZSBjYWxsZWQgYnkg
+d3JpdGVycyAobm90IHhlbm9tYWkgdGhyZWFkcykgdG8gYWRkaXRpb25hbGx5IGFsbG93DQppbnN0
+cnVjdGlvbnMgbGlrZSBkbWIgKGZvciBhcm0pIGFyb3VuZCBhdG9taWMgYWNjZXNzZXMgdG8gYmUg
+cmVtb3ZlZCBmb3IgdGhlIHJlYWRlcnMuDQpJIHRoaW5rIGl0J3MgdXNlbGVzcyBmb3IgeDg2XzY0
+IGFuZCB0aGUgc3lzY2FsbCBpdHNlbGYgd291bGQgbm90IGRvIGFueXRoaW5nIGZvciBydW5uaW5n
+IHhlbm9tYWkgdGhyZWFkcy4NCih5b3UgY2FuIG9ubHkgZm9yY2UgdGhlIHN5c2NhbGwgYnV0IG5v
+dCBkaXNhYmxlIGl0LCB3aXRob3V0IGNoYW5naW5nIHNvdXJjZXMgdGhhdCBpcykuDQoNCj4gQXMg
+SSBzYWlkLCB0aGF0IHdhcyBqdXN0IGEgY29uY2VwdHVhbCBkaXNjdXNzaW9uLg0KPiBOb25lIG9m
+IHVzIGFjdHVhbGx5IGxvb2tlZCBpbnRvIHRoZSBpbXBsZW1lbnRhdGlvbi4NCg0KSG1tLCB3b3Vs
+ZCBsaWtlIHRvIHRlc3QgdGhpcyBzb29uLiBTdGlsbCBuZWVkIGEgd2F5IHRvIHRvdGFsbHkgZGlz
+YWJsZSBpdCBpbi1jYXNlIHNvbWV0aGluZyBnb2VzIHdyb25nLi4gaWUgdWdseSBtYWNybyBtYWdp
+Yy4NCkNhbiB5b3UgdGVsbCBtZSB0aGF0IEkgYW0gcmlnaHQgYWJvdXQgbWVtYmFycmllcihNRU1C
+QVJSSUVSX0NNRF9QUklWQVRFX0VYUEVESVRFRCkgbm90IGJsb2NraW5nIHVudGlsDQp0aGUgcnVu
+bmluZyB4ZW5vbWFpIHRocmVhZCBoYWQgc29tZSBzb3J0IG9mIHN5c2NhbGwgc3luY2hyb25pemF0
+aW9uPw0KDQpOb3JiZXJ0DQpfX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fXw0KDQpUaGlz
+IG1lc3NhZ2UgYW5kIGFueSBhdHRhY2htZW50cyBhcmUgc29sZWx5IGZvciB0aGUgdXNlIG9mIHRo
+ZSBpbnRlbmRlZCByZWNpcGllbnRzLiBUaGV5IG1heSBjb250YWluIHByaXZpbGVnZWQgYW5kL29y
+IGNvbmZpZGVudGlhbCBpbmZvcm1hdGlvbiBvciBvdGhlciBpbmZvcm1hdGlvbiBwcm90ZWN0ZWQg
+ZnJvbSBkaXNjbG9zdXJlLiBJZiB5b3UgYXJlIG5vdCBhbiBpbnRlbmRlZCByZWNpcGllbnQsIHlv
+dSBhcmUgaGVyZWJ5IG5vdGlmaWVkIHRoYXQgeW91IHJlY2VpdmVkIHRoaXMgZW1haWwgaW4gZXJy
+b3IgYW5kIHRoYXQgYW55IHJldmlldywgZGlzc2VtaW5hdGlvbiwgZGlzdHJpYnV0aW9uIG9yIGNv
+cHlpbmcgb2YgdGhpcyBlbWFpbCBhbmQgYW55IGF0dGFjaG1lbnQgaXMgc3RyaWN0bHkgcHJvaGli
+aXRlZC4gSWYgeW91IGhhdmUgcmVjZWl2ZWQgdGhpcyBlbWFpbCBpbiBlcnJvciwgcGxlYXNlIGNv
+bnRhY3QgdGhlIHNlbmRlciBhbmQgZGVsZXRlIHRoZSBtZXNzYWdlIGFuZCBhbnkgYXR0YWNobWVu
+dCBmcm9tIHlvdXIgc3lzdGVtLg0KDQpBTkRSSVRaIEhZRFJPIEdtYkgNCg0KDQpSZWNodHNmb3Jt
+LyBMZWdhbCBmb3JtOiBHZXNlbGxzY2hhZnQgbWl0IGJlc2NocsOkbmt0ZXIgSGFmdHVuZyAvIENv
+cnBvcmF0aW9uDQoNCkZpcm1lbnNpdHovIFJlZ2lzdGVyZWQgc2VhdDogV2llbg0KDQpGaXJtZW5i
+dWNoZ2VyaWNodC8gQ291cnQgb2YgcmVnaXN0cnk6IEhhbmRlbHNnZXJpY2h0IFdpZW4NCg0KRmly
+bWVuYnVjaG51bW1lci8gQ29tcGFueSByZWdpc3RyYXRpb246IEZOIDYxODMzIGcNCg0KRFZSOiAw
+NjA1MDc3DQoNClVJRC1Oci46IEFUVTE0NzU2ODA2DQoNCg0KVGhhbmsgWW91DQpfX19fX19fX19f
+X19fX19fX19fX19fX19fX19fX19fXw0K
 
