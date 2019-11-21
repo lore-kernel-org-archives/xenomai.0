@@ -1,14 +1,11 @@
-Subject: Re: Deadlock during debugging
-References: <VI1PR05MB5917D854245374A7BF4E34BFF64D0@VI1PR05MB5917.eurprd05.prod.outlook.com>
- <e16b6953-47d4-4a80-ed21-d138be84cac4@xenomai.org>
-From: Philippe Gerum <rpm@xenomai.org>
-Message-ID: <31819e6d-285d-e139-efc2-8b6ad157a66f@xenomai.org>
-Date: Tue, 19 Nov 2019 18:39:02 +0100
-MIME-Version: 1.0
-In-Reply-To: <e16b6953-47d4-4a80-ed21-d138be84cac4@xenomai.org>
-Content-Type: text/plain; charset=utf-8
+From: Lange Norbert <norbert.lange@andritz.com>
+Subject: urcu/lttng (Userspace) and Xenomai
+Date: Thu, 21 Nov 2019 10:26:37 +0000
+Message-ID: <VI1PR05MB5917D0B45F7CB253F10197B5F64E0@VI1PR05MB5917.eurprd05.prod.outlook.com>
 Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+MIME-Version: 1.0
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,21 +14,46 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Lange Norbert <norbert.lange@andritz.com>, "Xenomai (xenomai@xenomai.org)" <xenomai@xenomai.org>
+To: "Xenomai (xenomai@xenomai.org)" <xenomai@xenomai.org>
 
-On 11/19/19 5:46 PM, Philippe Gerum via Xenomai wrote:
-> On 11/18/19 4:13 PM, Lange Norbert via Xenomai wrote:
->> Hello,
->>
->> Here's one of my deadlocks, the output seems interleaved from 2 concurrent dumps,
->> I ran the crashlog through decode_stacktrace.sh.
->>
-> 
-> Ok, I can reproduce this one, including in a vm. The symptom can be either a lockup, or recursive faults. I'm on it.
-> 
-
-#0b9e81807 seems to have introduced a regression. Something there may be subtly at odds with the core scheduler logic. More later.
-
--- 
-Philippe.
+SGVsbG8sDQoNCkkgYW0gdHJ5aW5nIHRvIGZpZ3VyZSBvdXQgaWYgWGVub21haSB3b3VsZCB3b3Jr
+IGNvcnJlY3RseSB3aXRoIEx0dG5nLiBDdXJyZW50bHkgSSBoYXZlbuKAmXQgZmlndXJlZCBvdXQg
+aG93IHRoZSBzeXN0ZW0gbWFuYWdlcyBidWZmZXJzLA0KYnV0IEkgYW0gY2hlY2tpbmcgaWYgdGhp
+cyB3b3VsZCBiZSBnZW5lcmFsbHkgYXBwbGljYWJsZSB0byBYZW5vbWFpLg0KDQpJ4oCZZCBsaWtl
+IHRvIGtub3cgaWYgYW55b25lIGhhcyBhbHJlYWR5IHVzZWQgTHR0bmcgVVNUIHdpdGggeGVub21h
+aSB0aHJlYWRzLA0KYW5kIGlmIHRoZXJlIGlzIGFueSBuZWVkIHRvIGNvbXBpbGUgbHR0bmcvbGli
+dXJjdSBmb3IgeGVub21haSBvciB1c2luZyBzb21lIHBhdGNoZXMuDQooSSBoYXZlbuKAmXQgc2Vl
+biBhbnl0aGluZyB0aGF0IGluZGljYXRlcyBpdCB3b3VsZCBub3Qgd29yaykuDQoNCiMjIHVyY3Ug
+Zmxhdm91cnMNClRoaXMgaGFzIGEgZmV3IHZhcmlhbnRzLCBsdHRuZyB1c2VzIHRoZSBidWxsZXRw
+cm9vZiBvbmUuIE1vc3Qgb3RoZXJzIHNob3VsZCBiZQ0KZmFzdGVyIG9uIGF2ZXJhZ2Ug4oCTIGJ1
+dCBhbGwgb2YgdGhlbSBtaWdodCB1bmxvY2sgYSBmdXRleCB3aXRoIGEgcmF3IHN5c2NhbGwuDQoN
+Ck90aGVyIGZsYXZvdXJzIGxpa2UgcXNiciBjb3VsZCBsaWtlbHkgYmUgZmFzdGVyIGlmIHRoZSBm
+dXRleCBzeWNhbGwgd291bGQgYmUgcmVwbGFjZWQgd2l0aCBhIGNvYmFsdCBtdXRleA0KKGl04oCZ
+cyB2ZXJ5IHVubGlrZWx5IHRoaXMgcGF0aCBpcyBleGVjdXRlZCkuIFdvdWxkIG5lZWQgc29tZSB3
+b3JrIHRvIGdldCB0aGlzIGRvbmUgKGFuZCBsdHRuZyB0byB1c2UgaXQpLg0KDQojIyBzeXNfbWVt
+YmFycmllcg0KcmVjZW50IGtlcm5lbHMgYW5kIGxpYnVyY3UgdmVyc2lvbnMgc3VwcG9ydCB0aGlz
+IHN5c2NhbGwsIHdoaWNoIHN1cHBvc2VkbHkNCmFsbG93cyByZW1vdmFsIG9mIHJlYWRlciBtZW1v
+cnkgYmFycmllcnMuDQpUaGUgc3lzY2FsbCB3aWxsIHNvbWVob3cgaW50ZXJydXB0IHRoZSB0aHJl
+YWRzIChhbGwgKnJ1bm5pbmcgdGhyZWFkcyogb2YgdGhlIHByb2Nlc3MpLCB3aGljaCBpbXBsaWNp
+dGx5IGNhdXNlcyBhIGJhcnJpZXIgZm9yIHJlYWRlcnMuDQoNClE6IEkgZ3Vlc3MgdGhpcyB3aWxs
+ICpub3QqIGludGVycnVwdCB4ZW5vbWFpIHRocmVhZHMsIGFzIHRoZWlyIHNoYWRvdyBsaW51eCB0
+aHJlYWQgaXMgbm90ICpydW5uaW5nKj8NClE6IHg4Nl82NCBhY2Nlc3NlcyBhcmUgc3RyaWN0bHkg
+b3JkZXJlZCwgZG8geW91IGFjdHVhbGx5IG5lZWQgbWVtYmFycmllcnMgYXQgYWxsPw0KDQpLaW5k
+IHJlZ2FyZHMsIE5vcmJlcnQNCl9fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fDQoNClRo
+aXMgbWVzc2FnZSBhbmQgYW55IGF0dGFjaG1lbnRzIGFyZSBzb2xlbHkgZm9yIHRoZSB1c2Ugb2Yg
+dGhlIGludGVuZGVkIHJlY2lwaWVudHMuIFRoZXkgbWF5IGNvbnRhaW4gcHJpdmlsZWdlZCBhbmQv
+b3IgY29uZmlkZW50aWFsIGluZm9ybWF0aW9uIG9yIG90aGVyIGluZm9ybWF0aW9uIHByb3RlY3Rl
+ZCBmcm9tIGRpc2Nsb3N1cmUuIElmIHlvdSBhcmUgbm90IGFuIGludGVuZGVkIHJlY2lwaWVudCwg
+eW91IGFyZSBoZXJlYnkgbm90aWZpZWQgdGhhdCB5b3UgcmVjZWl2ZWQgdGhpcyBlbWFpbCBpbiBl
+cnJvciBhbmQgdGhhdCBhbnkgcmV2aWV3LCBkaXNzZW1pbmF0aW9uLCBkaXN0cmlidXRpb24gb3Ig
+Y29weWluZyBvZiB0aGlzIGVtYWlsIGFuZCBhbnkgYXR0YWNobWVudCBpcyBzdHJpY3RseSBwcm9o
+aWJpdGVkLiBJZiB5b3UgaGF2ZSByZWNlaXZlZCB0aGlzIGVtYWlsIGluIGVycm9yLCBwbGVhc2Ug
+Y29udGFjdCB0aGUgc2VuZGVyIGFuZCBkZWxldGUgdGhlIG1lc3NhZ2UgYW5kIGFueSBhdHRhY2ht
+ZW50IGZyb20geW91ciBzeXN0ZW0uDQoNCkFORFJJVFogSFlEUk8gR21iSA0KDQoNClJlY2h0c2Zv
+cm0vIExlZ2FsIGZvcm06IEdlc2VsbHNjaGFmdCBtaXQgYmVzY2hyw6Rua3RlciBIYWZ0dW5nIC8g
+Q29ycG9yYXRpb24NCg0KRmlybWVuc2l0ei8gUmVnaXN0ZXJlZCBzZWF0OiBXaWVuDQoNCkZpcm1l
+bmJ1Y2hnZXJpY2h0LyBDb3VydCBvZiByZWdpc3RyeTogSGFuZGVsc2dlcmljaHQgV2llbg0KDQpG
+aXJtZW5idWNobnVtbWVyLyBDb21wYW55IHJlZ2lzdHJhdGlvbjogRk4gNjE4MzMgZw0KDQpEVlI6
+IDA2MDUwNzcNCg0KVUlELU5yLjogQVRVMTQ3NTY4MDYNCg0KDQpUaGFuayBZb3UNCl9fX19fX19f
+X19fX19fX19fX19fX19fX19fX19fX19fDQo=
 
