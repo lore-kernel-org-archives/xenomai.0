@@ -1,11 +1,13 @@
-From: Lange Norbert <norbert.lange@andritz.com>
-Subject: urcu/lttng (Userspace) and Xenomai
-Date: Thu, 21 Nov 2019 10:26:37 +0000
-Message-ID: <VI1PR05MB5917D0B45F7CB253F10197B5F64E0@VI1PR05MB5917.eurprd05.prod.outlook.com>
-Content-Language: en-US
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+Subject: Re: urcu/lttng (Userspace) and Xenomai
+References: <VI1PR05MB5917D0B45F7CB253F10197B5F64E0@VI1PR05MB5917.eurprd05.prod.outlook.com>
+From: Jan Kiszka <jan.kiszka@siemens.com>
+Message-ID: <5718dcc6-9af6-03f8-3e44-b91805f403e2@siemens.com>
+Date: Thu, 21 Nov 2019 14:45:50 +0100
 MIME-Version: 1.0
+In-Reply-To: <VI1PR05MB5917D0B45F7CB253F10197B5F64E0@VI1PR05MB5917.eurprd05.prod.outlook.com>
+Content-Type: text/plain; charset="utf-8"; format="flowed"
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -14,46 +16,45 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "Xenomai (xenomai@xenomai.org)" <xenomai@xenomai.org>
+To: Lange Norbert <norbert.lange@andritz.com>, "Xenomai (xenomai@xenomai.org)" <xenomai@xenomai.org>
 
-SGVsbG8sDQoNCkkgYW0gdHJ5aW5nIHRvIGZpZ3VyZSBvdXQgaWYgWGVub21haSB3b3VsZCB3b3Jr
-IGNvcnJlY3RseSB3aXRoIEx0dG5nLiBDdXJyZW50bHkgSSBoYXZlbuKAmXQgZmlndXJlZCBvdXQg
-aG93IHRoZSBzeXN0ZW0gbWFuYWdlcyBidWZmZXJzLA0KYnV0IEkgYW0gY2hlY2tpbmcgaWYgdGhp
-cyB3b3VsZCBiZSBnZW5lcmFsbHkgYXBwbGljYWJsZSB0byBYZW5vbWFpLg0KDQpJ4oCZZCBsaWtl
-IHRvIGtub3cgaWYgYW55b25lIGhhcyBhbHJlYWR5IHVzZWQgTHR0bmcgVVNUIHdpdGggeGVub21h
-aSB0aHJlYWRzLA0KYW5kIGlmIHRoZXJlIGlzIGFueSBuZWVkIHRvIGNvbXBpbGUgbHR0bmcvbGli
-dXJjdSBmb3IgeGVub21haSBvciB1c2luZyBzb21lIHBhdGNoZXMuDQooSSBoYXZlbuKAmXQgc2Vl
-biBhbnl0aGluZyB0aGF0IGluZGljYXRlcyBpdCB3b3VsZCBub3Qgd29yaykuDQoNCiMjIHVyY3Ug
-Zmxhdm91cnMNClRoaXMgaGFzIGEgZmV3IHZhcmlhbnRzLCBsdHRuZyB1c2VzIHRoZSBidWxsZXRw
-cm9vZiBvbmUuIE1vc3Qgb3RoZXJzIHNob3VsZCBiZQ0KZmFzdGVyIG9uIGF2ZXJhZ2Ug4oCTIGJ1
-dCBhbGwgb2YgdGhlbSBtaWdodCB1bmxvY2sgYSBmdXRleCB3aXRoIGEgcmF3IHN5c2NhbGwuDQoN
-Ck90aGVyIGZsYXZvdXJzIGxpa2UgcXNiciBjb3VsZCBsaWtlbHkgYmUgZmFzdGVyIGlmIHRoZSBm
-dXRleCBzeWNhbGwgd291bGQgYmUgcmVwbGFjZWQgd2l0aCBhIGNvYmFsdCBtdXRleA0KKGl04oCZ
-cyB2ZXJ5IHVubGlrZWx5IHRoaXMgcGF0aCBpcyBleGVjdXRlZCkuIFdvdWxkIG5lZWQgc29tZSB3
-b3JrIHRvIGdldCB0aGlzIGRvbmUgKGFuZCBsdHRuZyB0byB1c2UgaXQpLg0KDQojIyBzeXNfbWVt
-YmFycmllcg0KcmVjZW50IGtlcm5lbHMgYW5kIGxpYnVyY3UgdmVyc2lvbnMgc3VwcG9ydCB0aGlz
-IHN5c2NhbGwsIHdoaWNoIHN1cHBvc2VkbHkNCmFsbG93cyByZW1vdmFsIG9mIHJlYWRlciBtZW1v
-cnkgYmFycmllcnMuDQpUaGUgc3lzY2FsbCB3aWxsIHNvbWVob3cgaW50ZXJydXB0IHRoZSB0aHJl
-YWRzIChhbGwgKnJ1bm5pbmcgdGhyZWFkcyogb2YgdGhlIHByb2Nlc3MpLCB3aGljaCBpbXBsaWNp
-dGx5IGNhdXNlcyBhIGJhcnJpZXIgZm9yIHJlYWRlcnMuDQoNClE6IEkgZ3Vlc3MgdGhpcyB3aWxs
-ICpub3QqIGludGVycnVwdCB4ZW5vbWFpIHRocmVhZHMsIGFzIHRoZWlyIHNoYWRvdyBsaW51eCB0
-aHJlYWQgaXMgbm90ICpydW5uaW5nKj8NClE6IHg4Nl82NCBhY2Nlc3NlcyBhcmUgc3RyaWN0bHkg
-b3JkZXJlZCwgZG8geW91IGFjdHVhbGx5IG5lZWQgbWVtYmFycmllcnMgYXQgYWxsPw0KDQpLaW5k
-IHJlZ2FyZHMsIE5vcmJlcnQNCl9fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fDQoNClRo
-aXMgbWVzc2FnZSBhbmQgYW55IGF0dGFjaG1lbnRzIGFyZSBzb2xlbHkgZm9yIHRoZSB1c2Ugb2Yg
-dGhlIGludGVuZGVkIHJlY2lwaWVudHMuIFRoZXkgbWF5IGNvbnRhaW4gcHJpdmlsZWdlZCBhbmQv
-b3IgY29uZmlkZW50aWFsIGluZm9ybWF0aW9uIG9yIG90aGVyIGluZm9ybWF0aW9uIHByb3RlY3Rl
-ZCBmcm9tIGRpc2Nsb3N1cmUuIElmIHlvdSBhcmUgbm90IGFuIGludGVuZGVkIHJlY2lwaWVudCwg
-eW91IGFyZSBoZXJlYnkgbm90aWZpZWQgdGhhdCB5b3UgcmVjZWl2ZWQgdGhpcyBlbWFpbCBpbiBl
-cnJvciBhbmQgdGhhdCBhbnkgcmV2aWV3LCBkaXNzZW1pbmF0aW9uLCBkaXN0cmlidXRpb24gb3Ig
-Y29weWluZyBvZiB0aGlzIGVtYWlsIGFuZCBhbnkgYXR0YWNobWVudCBpcyBzdHJpY3RseSBwcm9o
-aWJpdGVkLiBJZiB5b3UgaGF2ZSByZWNlaXZlZCB0aGlzIGVtYWlsIGluIGVycm9yLCBwbGVhc2Ug
-Y29udGFjdCB0aGUgc2VuZGVyIGFuZCBkZWxldGUgdGhlIG1lc3NhZ2UgYW5kIGFueSBhdHRhY2ht
-ZW50IGZyb20geW91ciBzeXN0ZW0uDQoNCkFORFJJVFogSFlEUk8gR21iSA0KDQoNClJlY2h0c2Zv
-cm0vIExlZ2FsIGZvcm06IEdlc2VsbHNjaGFmdCBtaXQgYmVzY2hyw6Rua3RlciBIYWZ0dW5nIC8g
-Q29ycG9yYXRpb24NCg0KRmlybWVuc2l0ei8gUmVnaXN0ZXJlZCBzZWF0OiBXaWVuDQoNCkZpcm1l
-bmJ1Y2hnZXJpY2h0LyBDb3VydCBvZiByZWdpc3RyeTogSGFuZGVsc2dlcmljaHQgV2llbg0KDQpG
-aXJtZW5idWNobnVtbWVyLyBDb21wYW55IHJlZ2lzdHJhdGlvbjogRk4gNjE4MzMgZw0KDQpEVlI6
-IDA2MDUwNzcNCg0KVUlELU5yLjogQVRVMTQ3NTY4MDYNCg0KDQpUaGFuayBZb3UNCl9fX19fX19f
-X19fX19fX19fX19fX19fX19fX19fX19fDQo=
+On 21.11.19 11:26, Lange Norbert via Xenomai wrote:
+> Hello,
+> 
+> I am trying to figure out if Xenomai would work correctly with Lttng. Currently I haven’t figured out how the system manages buffers,
+> but I am checking if this would be generally applicable to Xenomai.
+> 
+> I’d like to know if anyone has already used Lttng UST with xenomai threads,
+> and if there is any need to compile lttng/liburcu for xenomai or using some patches.
+> (I haven’t seen anything that indicates it would not work).
+> 
+> ## urcu flavours
+> This has a few variants, lttng uses the bulletproof one. Most others should be
+> faster on average – but all of them might unlock a futex with a raw syscall.
+> 
+> Other flavours like qsbr could likely be faster if the futex sycall would be replaced with a cobalt mutex
+> (it’s very unlikely this path is executed). Would need some work to get this done (and lttng to use it).
+> 
+> ## sys_membarrier
+> recent kernels and liburcu versions support this syscall, which supposedly
+> allows removal of reader memory barriers.
+> The syscall will somehow interrupt the threads (all *running threads* of the process), which implicitly causes a barrier for readers.
+> 
+> Q: I guess this will *not* interrupt xenomai threads, as their shadow linux thread is not *running*?
+> Q: x86_64 accesses are strictly ordered, do you actually need membarriers at all?
+> 
+
+I didn't look into details of enabling userspace lttng yet, but I had a 
+chat with Mathieu about this, maybe a year ago. He said back then that 
+there is also a polling mode where a data collection thread is simply 
+trying to obtain the trace output time-driven. Then the producer 
+(including cobalt threads) would not need any syscall at all. As I said, 
+that was just a conceptual discussion. None of us actually looked into 
+the implementation.
+
+Jan
+
+-- 
+Siemens AG, Corporate Technology, CT RDA IOT SES-DE
+Corporate Competence Center Embedded Linux
 
