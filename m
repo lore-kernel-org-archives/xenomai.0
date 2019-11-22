@@ -1,15 +1,12 @@
-Date: Fri, 22 Nov 2019 10:09:33 -0500 (EST)
+Date: Fri, 22 Nov 2019 10:42:43 -0500 (EST)
 From: Mathieu Desnoyers <mathieu.desnoyers@efficios.com>
-Message-ID: <1116885999.789.1574435373841.JavaMail.zimbra@efficios.com>
-In-Reply-To: <4544332f-e10b-8f3a-64f4-4dd47996ab91@siemens.com>
-References: <VI1PR05MB5917D0B45F7CB253F10197B5F64E0@VI1PR05MB5917.eurprd05.prod.outlook.com>
- <5718dcc6-9af6-03f8-3e44-b91805f403e2@siemens.com>
- <VI1PR05MB5917144A022B93E3DBA32FE0F64E0@VI1PR05MB5917.eurprd05.prod.outlook.com>
- <4544332f-e10b-8f3a-64f4-4dd47996ab91@siemens.com>
-Subject: Re: urcu/lttng (Userspace) and Xenomai
+Message-ID: <2012667816.853.1574437363737.JavaMail.zimbra@efficios.com>
+In-Reply-To: <CADYdroN-i9yrpd-wjPSW36GUptRV+kOCJT=Yv6+Z5sCVBmo_SQ@mail.gmail.com>
+References: <CADYdroN-i9yrpd-wjPSW36GUptRV+kOCJT=Yv6+Z5sCVBmo_SQ@mail.gmail.com>
+Subject: Re: [lttng-dev] Using lttng-ust with xenomai
 MIME-Version: 1.0
 Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 7bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -18,157 +15,113 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jan Kiszka <jan.kiszka@siemens.com>
-Cc: Lange Norbert <norbert.lange@andritz.com>, "Xenomai (xenomai@xenomai.org)" <xenomai@xenomai.org>
+To: Norbert Lange <nolange79@gmail.com>
+Cc: lttng-dev <lttng-dev@lists.lttng.org>, Jan Kiszka <jan.kiszka@siemens.com>, Xenomai <xenomai@xenomai.org>, paulmck <paulmck@kernel.org>
 
+----- On Nov 22, 2019, at 4:14 AM, Norbert Lange nolange79@gmail.com wrote:
 
+> Hello,
+> 
+> I already started a thread over at xenomai.org [1], but I guess its
+> more efficient to ask here aswell.
+> The basic concept is that xenomai thread run *below* Linux (threads
+> and irg handlers), which means that xenomai threads must not use any
 
------ On Nov 21, 2019, at 11:19 AM, Jan Kiszka jan.kiszka@siemens.com wrote=
-:
+I guess you mean "irq handlers" here.
 
-> On 21.11.19 15:15, Lange Norbert wrote:
->>> -----Original Message-----
->>> From: Jan Kiszka <jan.kiszka@siemens.com>
->>> Sent: Donnerstag, 21. November 2019 14:46
->>> To: Lange Norbert <norbert.lange@andritz.com>; Xenomai
->>> (xenomai@xenomai.org) <xenomai@xenomai.org>
->>> Subject: Re: urcu/lttng (Userspace) and Xenomai
->>>
->>> NON-ANDRITZ SOURCE: BE CAUTIOUS WITH CONTENT, LINKS OR
->>> ATTACHMENTS.
->>>
->>>
->>> On 21.11.19 11:26, Lange Norbert via Xenomai wrote:
->>>> Hello,
->>>>
->>>> I am trying to figure out if Xenomai would work correctly with Lttng.
->>>> Currently I haven=E2=80=99t figured out how the system manages buffers=
-, but I am
->>> checking if this would be generally applicable to Xenomai.
->>>>
->>>> I=E2=80=99d like to know if anyone has already used Lttng UST with xen=
-omai
->>>> threads, and if there is any need to compile lttng/liburcu for xenomai=
- or
->>> using some patches.
->>>> (I haven=E2=80=99t seen anything that indicates it would not work).
->>>>
->>>> ## urcu flavours
->>>> This has a few variants, lttng uses the bulletproof one. Most others
->>>> should be faster on average =E2=80=93 but all of them might unlock a f=
-utex with a
->>> raw syscall.
->>>>
->>>> Other flavours like qsbr could likely be faster if the futex sycall
->>>> would be replaced with a cobalt mutex (it=E2=80=99s very unlikely this=
- path is
->>> executed). Would need some work to get this done (and lttng to use it).
->>>>
->>>> ## sys_membarrier
->>>> recent kernels and liburcu versions support this syscall, which
->>>> supposedly allows removal of reader memory barriers.
->>>> The syscall will somehow interrupt the threads (all *running threads* =
-of
->>> the process), which implicitly causes a barrier for readers.
->>>>
->>>> Q: I guess this will *not* interrupt xenomai threads, as their shadow =
-linux
->>> thread is not *running*?
->>>> Q: x86_64 accesses are strictly ordered, do you actually need membarri=
-ers
->>> at all?
->>>>
->>>
->>> I didn't look into details of enabling userspace lttng yet, but I had a=
- chat
->>> with
->>> Mathieu about this, maybe a year ago. He said back then that there is a=
-lso a
->>> polling mode where a data collection thread is simply trying to obtain =
-the
->>> trace output time-driven.
->>=20
->> I believe that=E2=80=99s the "bulletproof" rcu mode that lttng uses. I d=
-on=E2=80=99t see any
->> OS-level
->> synchronization in the readers, only some atomic variables.
->> Mathieu is a lttng dev?
->=20
-> Mathieu Desnoyers is the creator of lttng. And of those nice urcu
-> services and syscalls. Let's try to pull him in... :)
+> linux services like the futex syscall or socket communication.
+> 
+> ## tracepoints
+> 
+> expecting that tracepoints are the only thing that should be used from
+> the xenomai threads, is there anything using linux services.
+> the "bulletproof" urcu apparently does not need anything for the
+> reader lock (aslong as the thread is already registered),
 
-Hi Jan,
+Indeed the first time the urcu-bp read-lock is encountered by a thread,
+the thread registration is performed, which requires locks, memory allocation,
+and so on. After that, the thread can use urcu-bp read-side lock without
+requiring any system call.
 
-Thanks for putting me in contact. I've seen that Lange started a email
-thread on lttng-dev. I will reply there for posterity. :)
+> but I dont know how the write-buffers are prepared.
 
-Thanks!
+LTTng-UST prepares the ring buffers from lttng-ust's "listener" thread,
+which is injected into the process by a lttng-ust constructor.
+
+What you will care about is how the tracepoint call-site (within a Xenomai
+thread) interacts with the ring buffers.
+
+The "default" setup for lttng-ust ring buffers is not suitable for Xenomai
+threads. The lttng-ust ring buffer is split into sub-buffers, each sub-buffer
+corresponding to a CTF trace "packet". When a sub-buffer is filled, lttng-ust
+invokes "write(2)" to a pipe to let the consumer daemon know there is data
+available in that ring buffer. You will want to get rid of that write(2) system
+call from a Xenomai thread.
+
+The proper configuration is to use lttng-enable-channel(1) "--read-timer"
+option (see https://lttng.org/docs/v2.11/#doc-channel-read-timer). This will
+ensure that the consumer daemon uses a polling approach to check periodically
+whether data needs to be consumed within each buffer, thus removing the
+use of the write(2) system call on the application-side.
+
+> 
+> You can call linux sycalls from xenomai threads (it will switch to the
+> linux shadow thread for that and lose realtime characteristics), so a
+> one time setup/shutdown like registering the threads is not an issue.
+
+OK, good, so you can actually do the initial setup when launching the thread.
+You need to remember to invoke use a liburcu-bp read-side lock/unlock pair,
+or call urcu_bp_read_ongoing() at thread startup within that initialization
+phase to ensure urcu-bp registration has been performed.
+
+> 
+> ## membarrier syscall
+> 
+> I haven't got an explanation yet, but I believe this syscall does
+> nothing to xenomai threads (each has a shadow linux thread, that is
+> *idle* when the xenomai thread is active).
+
+That's indeed a good point. I suspect membarrier may not send any IPI
+to Xenomai threads (that would have to be confirmed). I suspect the
+latency introduced by this IPI would be unwanted.
+
+> liburcu has configure options allow forcing the usage of this syscall
+> but not disabling it, which likely is necessary for Xenomai.
+
+I suspect what you'd need there is a way to allow a process to tell
+liburcu-bp (or liburcu) to always use the fall-back mechanism which does
+not rely on sys_membarrier. This could be allowed before the first use of
+the library. I think extending the liburcu APIs to allow this should be
+straightforward enough. This approach would be more flexible than requiring
+liburcu to be specialized at configure time. This new API would return an error
+if invoked with a liburcu library compiled with --disable-sys-membarrier-fallback.
+
+If you have control over your entire system's kernel, you may want to try
+just configuring the kernel within CONFIG_MEMBARRIER=n in the meantime.
+
+Another thing to make sure is to have a glibc and Linux kernel which perform
+clock_gettime() as vDSO for the monotonic clock, because you don't want a
+system call there. If that does not work for you, you can alternatively
+implement your own lttng-ust and lttng-modules clock plugin .so/.ko to override
+the clock used by lttng, and for instance use TSC directly. See for instance
+the lttng-ust(3) LTTNG_UST_CLOCK_PLUGIN environment variable.
+
+Thanks,
 
 Mathieu
 
->=20
-> You could also try to place your questions on some lttng channel, I guess=
-.
->=20
->>=20
->>> Then the producer (including cobalt threads) would
->>> not need any syscall at all.
->>=20
->> In the context of lttng those are readers (of the shared rcu structures)=
-,
->> writes would only happen if tracepoint providers are added/removed.
->=20
-> Maybe Mathieu had a static (upfront to application start) tracepoint
-> configuration in mind. That's what I would expect from an RT setup at lea=
-st.
->=20
->>=20
->> But then I don=E2=80=99t know how the buffers are managed, this appears =
-to
->> be system-wide in another process.
->>=20
->> The sys_membarrier syscall would be called by writers (not xenomai threa=
-ds) to
->> additionally allow
->> instructions like dmb (for arm) around atomic accesses to be removed for=
- the
->> readers.
->> I think it's useless for x86_64 and the syscall itself would not do anyt=
-hing for
->> running xenomai threads.
->> (you can only force the syscall but not disable it, without changing sou=
-rces
->> that is).
->=20
-> While an x86-only view can be ok for a concrete setup, it's better to
-> develop a generic / portable solution that enables lttng for broader use
-> in Xenomai applications.
->=20
->>=20
->>> As I said, that was just a conceptual discussion.
->>> None of us actually looked into the implementation.
->>=20
->> Hmm, would like to test this soon. Still need a way to totally disable i=
-t
->> in-case something goes wrong.. ie ugly macro magic.
->> Can you tell me that I am right about
->> membarrier(MEMBARRIER_CMD_PRIVATE_EXPEDITED) not blocking until
->> the running xenomai thread had some sort of syscall synchronization?
->=20
-> I haven't looked into membarrier semantics in Xenomai context yet. The
-> key question is if the Xenomai task switcher happens to provide the same
-> information to that service as a normal Linux task switch would do.
-> Maybe it's working, just slower, maybe it's stalling with CPUs that only
-> switch between Linux idle and the Xenomai scheduler as a black box from
-> Linux perspective.
->=20
-> Jan
->=20
-> --
-> Siemens AG, Corporate Technology, CT RDA IOT SES-DE
-> Corporate Competence Center Embedded Linux
 
---=20
+> 
+> Any input is welcome.
+> Kind regards, Norbert
+> 
+> [1] - https://xenomai.org/pipermail/xenomai/2019-November/042027.html
+> _______________________________________________
+> lttng-dev mailing list
+> lttng-dev@lists.lttng.org
+> https://lists.lttng.org/cgi-bin/mailman/listinfo/lttng-dev
+
+-- 
 Mathieu Desnoyers
 EfficiOS Inc.
 http://www.efficios.com
