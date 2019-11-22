@@ -1,13 +1,11 @@
-Subject: Re: [lttng-dev] Using lttng-ust with xenomai
-References: <CADYdroN-i9yrpd-wjPSW36GUptRV+kOCJT=Yv6+Z5sCVBmo_SQ@mail.gmail.com>
- <2012667816.853.1574437363737.JavaMail.zimbra@efficios.com>
- <4aab99be-5451-4582-f75d-7637614b1d37@siemens.com>
- <480743920.929.1574442078799.JavaMail.zimbra@efficios.com>
+Subject: Re: [PATCH 3/7] cobalt/posix: fix missed rescheduling opportunities
+References: <20191122171949.18021-1-rpm@xenomai.org>
+ <20191122171949.18021-4-rpm@xenomai.org>
 From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <f25860cc-e5b6-ae89-1a21-b85093291398@siemens.com>
-Date: Fri, 22 Nov 2019 18:36:54 +0100
+Message-ID: <1c860027-1d24-3aa9-4a6b-cdd7ed3142e6@siemens.com>
+Date: Fri, 22 Nov 2019 18:42:52 +0100
 MIME-Version: 1.0
-In-Reply-To: <480743920.929.1574442078799.JavaMail.zimbra@efficios.com>
+In-Reply-To: <20191122171949.18021-4-rpm@xenomai.org>
 Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -19,42 +17,63 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Mathieu Desnoyers <mathieu.desnoyers@efficios.com>
-Cc: Norbert Lange <nolange79@gmail.com>, lttng-dev <lttng-dev@lists.lttng.org>, paulmck <paulmck@kernel.org>, Xenomai <xenomai@xenomai.org>
+To: Philippe Gerum <rpm@xenomai.org>, xenomai@xenomai.org
 
-On 22.11.19 18:01, Mathieu Desnoyers wrote:
->>>>
->>>> ## membarrier syscall
->>>>
->>>> I haven't got an explanation yet, but I believe this syscall does
->>>> nothing to xenomai threads (each has a shadow linux thread, that is
->>>> *idle* when the xenomai thread is active).
->>>
->>> That's indeed a good point. I suspect membarrier may not send any IPI
->>> to Xenomai threads (that would have to be confirmed). I suspect the
->>> latency introduced by this IPI would be unwanted.
->>
->> Is an "IPI" a POSIX signal here? Or are real IPI that delivers an
->> interrupt to Linux on another CPU? The latter would still be possible,
->> but it would be delayed until all Xenomai threads on that core eventual
->> took a break (which should happen a couple of times per second under
->> normal conditions - 100% RT load is an illegal application state).
+On 22.11.19 18:19, Philippe Gerum via Xenomai wrote:
+> From: Philippe Gerum <rpm@xenomai.org>
 > 
-> I'm talking about a real in-kernel IPI (as in inter-processor interrupt).
-> However, the way sys_membarrier detects which CPUs should receive that IPI
-> is by iterating on all cpu runqueues, and figure out which CPU is currently
-> running a thread which uses the same mm as the sys_membarrier caller
-> (for the PRIVATE membarrier commands).
+> stop_debugged_thread() may suspend threads running on a remote CPU, we
+> have to kick the rescheduling procedure for these changes to take
+> effect asap. Make sure xnsched_run() is kicked from the call sites
+> once they are done updating the scheduler state.
 > 
-> So I suspect that the Xenomai thread is really not within the Linux scheduler
-> runqueue when it runs.
+> Signed-off-by: Philippe Gerum <rpm@xenomai.org>
+> ---
+>   kernel/cobalt/posix/process.c | 9 ++++-----
+>   1 file changed, 4 insertions(+), 5 deletions(-)
+> 
+> diff --git a/kernel/cobalt/posix/process.c b/kernel/cobalt/posix/process.c
+> index b90e53507..1e003108e 100644
+> --- a/kernel/cobalt/posix/process.c
+> +++ b/kernel/cobalt/posix/process.c
+> @@ -819,6 +819,7 @@ static inline int handle_exception(struct ipipe_trap_data *d)
+>   		}
+>   		stop_debugged_process(thread);
+>   		xnlock_put_irqrestore(&nklock, s);
+> +		xnsched_run();
 
-True. Xenomai first suspends the RT thread's Linux shadow and then kicks 
-the Xenomai scheduler to interrupt Linux (and schedule in the RT 
-thread). So, from a remote Linux perspective, something else will be 
-running at this point.
+How does this help with threads on remote CPUs? xnsched_run deals with 
+xnsched_current only, no?
 
 Jan
+
+>   	}
+>   #endif
+>   
+> @@ -1295,10 +1296,8 @@ static int handle_sigwake_event(struct task_struct *p)
+>   			cobalt_register_debugged_thread(thread);
+>   	}
+>   
+> -	if (xnthread_test_state(thread, XNRELAX)) {
+> -		xnlock_put_irqrestore(&nklock, s);
+> -		return KEVENT_PROPAGATE;
+> -	}
+> +	if (xnthread_test_state(thread, XNRELAX))
+> +		goto out;
+>   
+>   	/*
+>   	 * If kicking a shadow thread in primary mode, make sure Linux
+> @@ -1320,7 +1319,7 @@ static int handle_sigwake_event(struct task_struct *p)
+>   		xnthread_resume(thread, XNDBGSTOP);
+>   
+>   	__xnthread_kick(thread);
+> -
+> +out:
+>   	xnsched_run();
+>   
+>   	xnlock_put_irqrestore(&nklock, s);
+> 
+
 
 -- 
 Siemens AG, Corporate Technology, CT RDA IOT SES-DE
