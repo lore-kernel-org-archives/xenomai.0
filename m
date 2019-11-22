@@ -1,7 +1,8 @@
 From: Philippe  Gerum <rpm@xenomai.org>
-Subject: [PATCH 3/7] cobalt/posix: fix missed rescheduling opportunities
-Date: Fri, 22 Nov 2019 18:19:45 +0100
-Message-Id: <20191122171949.18021-4-rpm@xenomai.org>
+Subject: [PATCH 4/7] cobalt/process: remove superfluous check for non-relaxed
+ state
+Date: Fri, 22 Nov 2019 18:19:46 +0100
+Message-Id: <20191122171949.18021-5-rpm@xenomai.org>
 In-Reply-To: <20191122171949.18021-1-rpm@xenomai.org>
 References: <20191122171949.18021-1-rpm@xenomai.org>
 MIME-Version: 1.0
@@ -18,50 +19,34 @@ To: xenomai@xenomai.org
 
 From: Philippe Gerum <rpm@xenomai.org>
 
-stop_debugged_thread() may suspend threads running on a remote CPU, we
-have to kick the rescheduling procedure for these changes to take
-effect asap. Make sure xnsched_run() is kicked from the call sites
-once they are done updating the scheduler state.
+If sched->curr is not the root thread, it has to refer to a Cobalt
+thread currently running in primary mode, by design. Convert this
+check to an assertion.
 
 Signed-off-by: Philippe Gerum <rpm@xenomai.org>
 ---
- kernel/cobalt/posix/process.c | 9 ++++-----
- 1 file changed, 4 insertions(+), 5 deletions(-)
+ kernel/cobalt/posix/process.c | 7 +++----
+ 1 file changed, 3 insertions(+), 4 deletions(-)
 
 diff --git a/kernel/cobalt/posix/process.c b/kernel/cobalt/posix/process.c
-index b90e53507..1e003108e 100644
+index 1e003108e..90949e519 100644
 --- a/kernel/cobalt/posix/process.c
 +++ b/kernel/cobalt/posix/process.c
-@@ -819,6 +819,7 @@ static inline int handle_exception(struct ipipe_trap_data *d)
- 		}
+@@ -812,11 +812,10 @@ static inline int handle_exception(struct ipipe_trap_data *d)
+ 	if (xnarch_fault_bp_p(d) && user_mode(d->regs)) {
+ 		spl_t s;
+ 
++		XENO_WARN_ON(CORE, xnthread_test_state(thread, XNRELAX));
+ 		xnlock_get_irqsave(&nklock, s);
+-		if (!xnthread_test_state(thread, XNRELAX)) {
+-			xnthread_set_info(thread, XNCONTHI);
+-			ipipe_enable_user_intret_notifier();
+-		}
++		xnthread_set_info(thread, XNCONTHI);
++		ipipe_enable_user_intret_notifier();
  		stop_debugged_process(thread);
  		xnlock_put_irqrestore(&nklock, s);
-+		xnsched_run();
- 	}
- #endif
- 
-@@ -1295,10 +1296,8 @@ static int handle_sigwake_event(struct task_struct *p)
- 			cobalt_register_debugged_thread(thread);
- 	}
- 
--	if (xnthread_test_state(thread, XNRELAX)) {
--		xnlock_put_irqrestore(&nklock, s);
--		return KEVENT_PROPAGATE;
--	}
-+	if (xnthread_test_state(thread, XNRELAX))
-+		goto out;
- 
- 	/*
- 	 * If kicking a shadow thread in primary mode, make sure Linux
-@@ -1320,7 +1319,7 @@ static int handle_sigwake_event(struct task_struct *p)
- 		xnthread_resume(thread, XNDBGSTOP);
- 
- 	__xnthread_kick(thread);
--
-+out:
- 	xnsched_run();
- 
- 	xnlock_put_irqrestore(&nklock, s);
+ 		xnsched_run();
 -- 
 2.21.0
 
