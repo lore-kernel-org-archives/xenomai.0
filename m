@@ -1,17 +1,14 @@
-Subject: Re: RTnet sendmmsg and ENOBUFS
+Subject: Re: [lttng-dev] Using lttng-ust with xenomai
+References: <CADYdroN-i9yrpd-wjPSW36GUptRV+kOCJT=Yv6+Z5sCVBmo_SQ@mail.gmail.com>
+ <2012667816.853.1574437363737.JavaMail.zimbra@efficios.com>
 From: Jan Kiszka <jan.kiszka@siemens.com>
-References: <DB8PR05MB591594C16F703FD12F088928F6760@DB8PR05MB5915.eurprd05.prod.outlook.com>
- <1510f7f0-e130-0e22-b946-d1f6d84f3608@siemens.com>
- <DB8PR05MB59155D324BA2977A60E63DADF6760@DB8PR05MB5915.eurprd05.prod.outlook.com>
- <AM0PR05MB59064885C14E3DF057F2E9E8F6710@AM0PR05MB5906.eurprd05.prod.outlook.com>
- <815b192d-7ecf-385c-058e-969da641f7a4@siemens.com>
-Message-ID: <c6e2e49c-bd58-f2f6-8d27-0de74121309d@siemens.com>
-Date: Thu, 14 Nov 2019 19:39:58 +0100
+Message-ID: <4aab99be-5451-4582-f75d-7637614b1d37@siemens.com>
+Date: Fri, 22 Nov 2019 16:52:42 +0100
 MIME-Version: 1.0
-In-Reply-To: <815b192d-7ecf-385c-058e-969da641f7a4@siemens.com>
-Content-Type: text/plain; charset="utf-8"; format="flowed"
+In-Reply-To: <2012667816.853.1574437363737.JavaMail.zimbra@efficios.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -20,42 +17,112 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Lange Norbert <norbert.lange@andritz.com>, "Xenomai (xenomai@xenomai.org)" <xenomai@xenomai.org>
+To: Mathieu Desnoyers <mathieu.desnoyers@efficios.com>, Norbert Lange <nolange79@gmail.com>
+Cc: lttng-dev <lttng-dev@lists.lttng.org>, Xenomai <xenomai@xenomai.org>, paulmck <paulmck@kernel.org>
 
-On 14.11.19 19:18, Jan Kiszka wrote:
-> On 14.11.19 18:55, Lange Norbert wrote:
->> According to the code in __rtdm_fd_sendmmsg, that’s not what happens, 
->> ENOBUFS would be returned instead,
->> And the amount of sent packets is lost forever.
->>
->> if (datagrams > 0 && (ret == 0 || ret == -EWOULDBLOCK)) {
->> /* NOTE: SO_ERROR should be honored for other errors. */
->> rtdm_fd_put(fd);
->> return datagrams;
->> }
->>
->> IMHO this condition would need to added:
->> ((flags | MSG_DONTWAIT) && ret == -ENOBUFS)
->>
->> (Recvmmsg possibly similarly, havent checked yet)
+On 22.11.19 16:42, Mathieu Desnoyers wrote:
+> ----- On Nov 22, 2019, at 4:14 AM, Norbert Lange nolange79@gmail.com wrote:
 > 
-> sendmmsg was only added to Xenomai 3.1. There might be room for 
-> improvements, if not corrections. So, if we do not return the number of 
-> sent messages or signal an error where we should not (this is how I read 
-> the man page currently), this needs a patch...
+>> Hello,
+>>
+>> I already started a thread over at xenomai.org [1], but I guess its
+>> more efficient to ask here aswell.
+>> The basic concept is that xenomai thread run *below* Linux (threads
+>> and irg handlers), which means that xenomai threads must not use any
+> 
+> I guess you mean "irq handlers" here.
+> 
+>> linux services like the futex syscall or socket communication.
+>>
+>> ## tracepoints
+>>
+>> expecting that tracepoints are the only thing that should be used from
+>> the xenomai threads, is there anything using linux services.
+>> the "bulletproof" urcu apparently does not need anything for the
+>> reader lock (aslong as the thread is already registered),
+> 
+> Indeed the first time the urcu-bp read-lock is encountered by a thread,
+> the thread registration is performed, which requires locks, memory allocation,
+> and so on. After that, the thread can use urcu-bp read-side lock without
+> requiring any system call.
 
-The implementation of sendmmsg is wrong when comparing it to the man 
-page and the reference in the kernel (as this is Linux-only):
+So, we will probably want to perform such a registration unconditionally 
+(in case lttng usage is enabled) for our RT threads during their setup.
 
-/* We only return an error if no datagrams were able to be sent */
+> 
+>> but I dont know how the write-buffers are prepared.
+> 
+> LTTng-UST prepares the ring buffers from lttng-ust's "listener" thread,
+> which is injected into the process by a lttng-ust constructor.
+> 
+> What you will care about is how the tracepoint call-site (within a Xenomai
+> thread) interacts with the ring buffers.
+> 
+> The "default" setup for lttng-ust ring buffers is not suitable for Xenomai
+> threads. The lttng-ust ring buffer is split into sub-buffers, each sub-buffer
+> corresponding to a CTF trace "packet". When a sub-buffer is filled, lttng-ust
+> invokes "write(2)" to a pipe to let the consumer daemon know there is data
+> available in that ring buffer. You will want to get rid of that write(2) system
+> call from a Xenomai thread.
+> 
+> The proper configuration is to use lttng-enable-channel(1) "--read-timer"
+> option (see https://lttng.org/docs/v2.11/#doc-channel-read-timer). This will
+> ensure that the consumer daemon uses a polling approach to check periodically
+> whether data needs to be consumed within each buffer, thus removing the
+> use of the write(2) system call on the application-side.
+> 
+>>
+>> You can call linux sycalls from xenomai threads (it will switch to the
+>> linux shadow thread for that and lose realtime characteristics), so a
+>> one time setup/shutdown like registering the threads is not an issue.
+> 
+> OK, good, so you can actually do the initial setup when launching the thread.
+> You need to remember to invoke use a liburcu-bp read-side lock/unlock pair,
+> or call urcu_bp_read_ongoing() at thread startup within that initialization
+> phase to ensure urcu-bp registration has been performed.
+> 
+>>
+>> ## membarrier syscall
+>>
+>> I haven't got an explanation yet, but I believe this syscall does
+>> nothing to xenomai threads (each has a shadow linux thread, that is
+>> *idle* when the xenomai thread is active).
+> 
+> That's indeed a good point. I suspect membarrier may not send any IPI
+> to Xenomai threads (that would have to be confirmed). I suspect the
+> latency introduced by this IPI would be unwanted.
 
-says the kernel e.g. and does
+Is an "IPI" a POSIX signal here? Or are real IPI that delivers an 
+interrupt to Linux on another CPU? The latter would still be possible, 
+but it would be delayed until all Xenomai threads on that core eventual 
+took a break (which should happen a couple of times per second under 
+normal conditions - 100% RT load is an illegal application state).
 
-         if (datagrams != 0)
-                 return datagrams;
+> 
+>> liburcu has configure options allow forcing the usage of this syscall
+>> but not disabling it, which likely is necessary for Xenomai.
+> 
+> I suspect what you'd need there is a way to allow a process to tell
+> liburcu-bp (or liburcu) to always use the fall-back mechanism which does
+> not rely on sys_membarrier. This could be allowed before the first use of
+> the library. I think extending the liburcu APIs to allow this should be
+> straightforward enough. This approach would be more flexible than requiring
+> liburcu to be specialized at configure time. This new API would return an error
+> if invoked with a liburcu library compiled with --disable-sys-membarrier-fallback.
+> 
+> If you have control over your entire system's kernel, you may want to try
+> just configuring the kernel within CONFIG_MEMBARRIER=n in the meantime.
+> 
+> Another thing to make sure is to have a glibc and Linux kernel which perform
+> clock_gettime() as vDSO for the monotonic clock, because you don't want a
+> system call there. If that does not work for you, you can alternatively
+> implement your own lttng-ust and lttng-modules clock plugin .so/.ko to override
+> the clock used by lttng, and for instance use TSC directly. See for instance
+> the lttng-ust(3) LTTNG_UST_CLOCK_PLUGIN environment variable.
 
-It's also missing to trace on certain exits. Will write a patch.
+clock_gettime & Co for a Xenomai application is syscall-free as well.
 
+Thanks,
 Jan
 
 -- 
