@@ -1,15 +1,12 @@
-Subject: Re: [PATCH 3/7] cobalt/posix: fix missed rescheduling opportunities
-References: <20191122171949.18021-1-rpm@xenomai.org>
- <20191122171949.18021-4-rpm@xenomai.org>
- <1c860027-1d24-3aa9-4a6b-cdd7ed3142e6@siemens.com>
-From: Philippe Gerum <rpm@xenomai.org>
-Message-ID: <c17ad5d4-e8c4-ad1b-911e-2d2597aea0d0@xenomai.org>
-Date: Fri, 22 Nov 2019 18:53:46 +0100
 MIME-Version: 1.0
-In-Reply-To: <1c860027-1d24-3aa9-4a6b-cdd7ed3142e6@siemens.com>
-Content-Type: text/plain; charset="utf-8"
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+References: <CADYdroN-i9yrpd-wjPSW36GUptRV+kOCJT=Yv6+Z5sCVBmo_SQ@mail.gmail.com>
+ <2012667816.853.1574437363737.JavaMail.zimbra@efficios.com>
+In-Reply-To: <2012667816.853.1574437363737.JavaMail.zimbra@efficios.com>
+From: Norbert Lange <nolange79@gmail.com>
+Date: Fri, 22 Nov 2019 18:55:38 +0100
+Message-ID: <CADYdroNGcY6adA5cGTzwzsKqO7+iuWts9k8Haz8k3HSvzQfc=g@mail.gmail.com>
+Subject: Re: [lttng-dev] Using lttng-ust with xenomai
+Content-Type: text/plain; charset="UTF-8"
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -18,37 +15,52 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jan Kiszka <jan.kiszka@siemens.com>, xenomai@xenomai.org
+To: Mathieu Desnoyers <mathieu.desnoyers@efficios.com>
+Cc: lttng-dev <lttng-dev@lists.lttng.org>, Jan Kiszka <jan.kiszka@siemens.com>, Xenomai <xenomai@xenomai.org>, paulmck <paulmck@kernel.org>
 
-On 11/22/19 6:42 PM, Jan Kiszka wrote:
-> On 22.11.19 18:19, Philippe Gerum via Xenomai wrote:
->> From: Philippe Gerum <rpm@xenomai.org>
->>
->> stop_debugged_thread() may suspend threads running on a remote CPU, we
->> have to kick the rescheduling procedure for these changes to take
->> effect asap. Make sure xnsched_run() is kicked from the call sites
->> once they are done updating the scheduler state.
->>
->> Signed-off-by: Philippe Gerum <rpm@xenomai.org>
->> ---
->>   kernel/cobalt/posix/process.c | 9 ++++-----
->>   1 file changed, 4 insertions(+), 5 deletions(-)
->>
->> diff --git a/kernel/cobalt/posix/process.c b/kernel/cobalt/posix/process.c
->> index b90e53507..1e003108e 100644
->> --- a/kernel/cobalt/posix/process.c
->> +++ b/kernel/cobalt/posix/process.c
->> @@ -819,6 +819,7 @@ static inline int handle_exception(struct ipipe_trap_data *d)
->>           }
->>           stop_debugged_process(thread);
->>           xnlock_put_irqrestore(&nklock, s);
->> +        xnsched_run();
-> 
-> How does this help with threads on remote CPUs? xnsched_run deals with xnsched_current only, no?
 >
+> LTTng-UST prepares the ring buffers from lttng-ust's "listener" thread,
+> which is injected into the process by a lttng-ust constructor.
+>
+> What you will care about is how the tracepoint call-site (within a Xenomai
+> thread) interacts with the ring buffers.
+>
+> The "default" setup for lttng-ust ring buffers is not suitable for Xenomai
+> threads. The lttng-ust ring buffer is split into sub-buffers, each sub-buffer
+> corresponding to a CTF trace "packet". When a sub-buffer is filled, lttng-ust
+> invokes "write(2)" to a pipe to let the consumer daemon know there is data
+> available in that ring buffer. You will want to get rid of that write(2) system
+> call from a Xenomai thread.
+>
+> The proper configuration is to use lttng-enable-channel(1) "--read-timer"
+> option (see https://lttng.org/docs/v2.11/#doc-channel-read-timer). This will
+> ensure that the consumer daemon uses a polling approach to check periodically
+> whether data needs to be consumed within each buffer, thus removing the
+> use of the write(2) system call on the application-side.
 
-This forces the propagation of the remote IPI, which has to happen from the local one.
+Ah thanks.
 
--- 
-Philippe.
+But that's configuration outside of the RT app if I understand this correctly.
+So if one configures a tracer wrong, then the app will suddenly misbehave.
+Would be nice to be able to somehow tell that there is only read-timer allowed.
+
+
+>
+> > liburcu has configure options allow forcing the usage of this syscall
+> > but not disabling it, which likely is necessary for Xenomai.
+>
+> I suspect what you'd need there is a way to allow a process to tell
+> liburcu-bp (or liburcu) to always use the fall-back mechanism which does
+> not rely on sys_membarrier. This could be allowed before the first use of
+> the library. I think extending the liburcu APIs to allow this should be
+> straightforward enough. This approach would be more flexible than requiring
+> liburcu to be specialized at configure time. This new API would return an error
+> if invoked with a liburcu library compiled with --disable-sys-membarrier-fallback.
+
+I was under the impression, that you counted clock-cycles for every operation ;)
+Not sure, maybe a separate lib for realtime is the better way. Having no option
+can be considered foolproof, and sideeffects of the syscall not working would be
+a real pain.
+
+regards, Norbert
 
