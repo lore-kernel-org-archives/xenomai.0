@@ -1,17 +1,15 @@
-Subject: Re: [PATCH 3/7] cobalt/posix: fix missed rescheduling opportunities
+Subject: Re: [PATCH 7/7] cobalt/sched: block CPU migration when rescheduling
+ over root
 References: <20191122171949.18021-1-rpm@xenomai.org>
- <20191122171949.18021-4-rpm@xenomai.org>
- <1c860027-1d24-3aa9-4a6b-cdd7ed3142e6@siemens.com>
- <c17ad5d4-e8c4-ad1b-911e-2d2597aea0d0@xenomai.org>
- <2055bc35-ca0d-0e44-ce46-0bb787e61e96@siemens.com>
-From: Philippe Gerum <rpm@xenomai.org>
-Message-ID: <a93849ef-00e3-e86a-abd1-1b83ecf7f878@xenomai.org>
-Date: Fri, 22 Nov 2019 19:01:22 +0100
+ <20191122171949.18021-8-rpm@xenomai.org>
+From: Jan Kiszka <jan.kiszka@siemens.com>
+Message-ID: <e64bcd29-43c9-6d3f-3f34-451513d319f7@siemens.com>
+Date: Fri, 22 Nov 2019 19:01:18 +0100
 MIME-Version: 1.0
-In-Reply-To: <2055bc35-ca0d-0e44-ce46-0bb787e61e96@siemens.com>
-Content-Type: text/plain; charset="utf-8"
+In-Reply-To: <20191122171949.18021-8-rpm@xenomai.org>
+Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -20,45 +18,92 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jan Kiszka <jan.kiszka@siemens.com>, xenomai@xenomai.org
+To: Philippe Gerum <rpm@xenomai.org>, xenomai@xenomai.org
 
-On 11/22/19 6:56 PM, Jan Kiszka wrote:
-> On 22.11.19 18:53, Philippe Gerum wrote:
->> On 11/22/19 6:42 PM, Jan Kiszka wrote:
->>> On 22.11.19 18:19, Philippe Gerum via Xenomai wrote:
->>>> From: Philippe Gerum <rpm@xenomai.org>
->>>>
->>>> stop_debugged_thread() may suspend threads running on a remote CPU, we
->>>> have to kick the rescheduling procedure for these changes to take
->>>> effect asap. Make sure xnsched_run() is kicked from the call sites
->>>> once they are done updating the scheduler state.
->>>>
->>>> Signed-off-by: Philippe Gerum <rpm@xenomai.org>
->>>> ---
->>>>    kernel/cobalt/posix/process.c | 9 ++++-----
->>>>    1 file changed, 4 insertions(+), 5 deletions(-)
->>>>
->>>> diff --git a/kernel/cobalt/posix/process.c b/kernel/cobalt/posix/process.c
->>>> index b90e53507..1e003108e 100644
->>>> --- a/kernel/cobalt/posix/process.c
->>>> +++ b/kernel/cobalt/posix/process.c
->>>> @@ -819,6 +819,7 @@ static inline int handle_exception(struct ipipe_trap_data *d)
->>>>            }
->>>>            stop_debugged_process(thread);
->>>>            xnlock_put_irqrestore(&nklock, s);
->>>> +        xnsched_run();
->>>
->>> How does this help with threads on remote CPUs? xnsched_run deals with xnsched_current only, no?
->>>
->>
->> This forces the propagation of the remote IPI, which has to happen from the local one.
->>
+On 22.11.19 18:19, Philippe Gerum via Xenomai wrote:
+> From: Philippe Gerum <rpm@xenomai.org>
 > 
-> Ah, via test_resched, now I see it.
+> In seldom cases, we might call xnsched_run() from the root context.
+> This call might be subject to CPU migration as the root stage would
+> likely be unstalled. In such a case, block CPU migration entirely
+> while checking for early exit conditions which involves accessing
+> per-cpu data.
+
+So, should I read this as a fix, a safety measure, or rather an 
+optimization?
+
+Jan
+
+> 
+> Signed-off-by: Philippe Gerum <rpm@xenomai.org>
+> ---
+>   include/cobalt/kernel/sched.h | 39 ++++++++++++++---------------------
+>   1 file changed, 16 insertions(+), 23 deletions(-)
+> 
+> diff --git a/include/cobalt/kernel/sched.h b/include/cobalt/kernel/sched.h
+> index c66e29d4c..4adfccb75 100644
+> --- a/include/cobalt/kernel/sched.h
+> +++ b/include/cobalt/kernel/sched.h
+> @@ -300,26 +300,6 @@ static inline int __xnsched_run(struct xnsched *sched)
+>   	/*
+>   	 * Reschedule if XNSCHED is pending, but never over an IRQ
+>   	 * handler or in the middle of unlocked context switch.
+> -	 *
+> -	 * NOTE: Since ___xnsched_run() won't run immediately if an
+> -	 * escalation to primary domain is needed, we won't use
+> -	 * critical scheduler information before we actually run in
+> -	 * primary mode; therefore we can first test the scheduler
+> -	 * status then escalate.
+> -	 *
+> -	 * Running in the primary domain means that no Linux-triggered
+> -	 * CPU migration may occur from that point either. Finally,
+> -	 * since migration is always a self-directed operation for
+> -	 * Xenomai threads, we can safely read the scheduler state
+> -	 * bits without holding the nklock.
+> -	 *
+> -	 * Said differently, if we race here because of a CPU
+> -	 * migration, it must have been Linux-triggered because we run
+> -	 * in secondary mode; in which case we will escalate to the
+> -	 * primary domain, then unwind the current call frame without
+> -	 * running the rescheduling procedure in
+> -	 * ___xnsched_run(). Therefore, the scheduler slot
+> -	 * (i.e. "sched") will be either valid, or unused.
+>   	 */
+>   	if (((sched->status|sched->lflags) &
+>   	     (XNINIRQ|XNINSW|XNRESCHED)) != XNRESCHED)
+> @@ -332,11 +312,24 @@ static inline int xnsched_run(void)
+>   {
+>   	struct xnsched *sched = xnsched_current();
+>   	struct xnthread *curr = sched->curr;
+> +	int ret = 0;
+> +	spl_t s;
+>   
+> -	if (unlikely(curr->lock_count > 0))
+> -		return 0;
+> +	/*
+> +	 * If running over any root thread, make sure to lock out CPU
+> +	 * migration in order to always refer to the proper
+> +	 * runqueue. Otherwise, we are running in primary mode and as
+> +	 * such cannot change CPU.
+> +	 */
+> +	if (unlikely(xnthread_test_state(curr, XNROOT))) {
+> +		splhigh(s);
+> +		/* xnsched_pick_next() will check for lock count. */
+> +		ret = __xnsched_run(xnsched_current());
+> +		splexit(s);
+> +	} else if (likely(curr->lock_count == 0))
+> +		ret = __xnsched_run(sched);
+>   
+> -	return __xnsched_run(sched);
+> +	return ret;
+>   }
+>   
+>   void xnsched_lock(void);
 > 
 
-Yeah, the stuff that nearly drove Gilles, yourself and /me nuts years ago when a missed resched was haunting the code base.
+
 
 -- 
-Philippe.
+Siemens AG, Corporate Technology, CT RDA IOT SES-DE
+Corporate Competence Center Embedded Linux
 
