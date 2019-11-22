@@ -1,12 +1,9 @@
-From: Jan Kiszka <jan.kiszka@siemens.com>
-Subject: [PATCH] rtdm: Do not return an error from send/recvmmsg if there are
- packets
-Message-ID: <02a4475e-f687-8e87-1971-1948cecfbf34@siemens.com>
-Date: Thu, 14 Nov 2019 19:59:13 +0100
+From: Philippe  Gerum <rpm@xenomai.org>
+Subject: [PATCH 0/7] Scheduler related fixes
+Date: Fri, 22 Nov 2019 18:19:42 +0100
+Message-Id: <20191122171949.18021-1-rpm@xenomai.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,66 +12,34 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Xenomai <xenomai@xenomai.org>
+To: xenomai@xenomai.org
 
-From: Jan Kiszka <jan.kiszka@siemens.com>
+From: Philippe Gerum <rpm@xenomai.org>
 
-This is in line with Linux behavior.
+Patch #5 is the most critical fix to 3.1-rc, which is direly needed by
+the 3.0.x series too. Unlike previously stated, Xenomai 2.x is immune
+to this issue. Although less critical, patches #3 and #7 are important
+as well.
 
-We likely still miss an equivalent to sk_err in recvmmsg, though.
+These changes have survived long-running switchtest and full smokey
+test suite executing in parallel (including the GDB one). Tested on
+4.19.84/x86, arm and arm64.
 
-Reported-by: Lange Norbert <norbert.lange@andritz.com>
-Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
----
- kernel/cobalt/rtdm/fd.c | 20 ++++++++------------
- 1 file changed, 8 insertions(+), 12 deletions(-)
+Philippe Gerum (7):
+  cobalt/process: skip trap handling for the root thread
+  cobalt/thread: update inline documentation
+  cobalt/posix: fix missed rescheduling opportunities
+  cobalt/process: remove superfluous check for non-relaxed state
+  cobalt/thread: fix scheduler breakage on thread suspension
+  cobalt/sched: drop useless rmb in lock check
+  cobalt/sched: block CPU migration when rescheduling over root
 
-diff --git a/kernel/cobalt/rtdm/fd.c b/kernel/cobalt/rtdm/fd.c
-index 0a1c6e44ed..5b2c3834da 100644
---- a/kernel/cobalt/rtdm/fd.c
-+++ b/kernel/cobalt/rtdm/fd.c
-@@ -734,14 +734,12 @@ int __rtdm_fd_recvmmsg(int ufd, void __user *u_msgvec, unsigned int vlen,
- 		xnlock_put_irqrestore(&nklock, s);
- 	}
- 
--	if (datagrams > 0 &&
--	    (ret == 0 || ret == -ETIMEDOUT || ret == -EWOULDBLOCK)) {
--		/* NOTE: SO_ERROR should be honored for other errors. */
--		rtdm_fd_put(fd);
--		return datagrams;
--	}
- fail:
- 	rtdm_fd_put(fd);
-+
-+	if (datagrams > 0)
-+		ret = datagrams;
-+
- out:
- 	trace_cobalt_fd_recvmmsg_status(current, fd, ufd, ret);
- 
-@@ -826,13 +824,11 @@ int __rtdm_fd_sendmmsg(int ufd, void __user *u_msgvec, unsigned int vlen,
- 		datagrams++;
- 	}
- 
--	if (datagrams > 0 && (ret == 0 || ret == -EWOULDBLOCK)) {
--		/* NOTE: SO_ERROR should be honored for other errors. */
--		rtdm_fd_put(fd);
--		return datagrams;
--	}
--
- 	rtdm_fd_put(fd);
-+
-+	if (datagrams > 0)
-+		ret = datagrams;
-+
- out:
- 	trace_cobalt_fd_sendmmsg_status(current, fd, ufd, ret);
- 
--- 
-2.16.4
-
+ include/cobalt/kernel/sched.h | 46 ++++++++++++++---------------------
+ kernel/cobalt/posix/process.c | 26 +++++++++-----------
+ kernel/cobalt/thread.c        | 35 ++++++++++++++------------
+ 3 files changed, 49 insertions(+), 58 deletions(-)
 
 -- 
-Siemens AG, Corporate Technology, CT RDA IOT SES-DE
-Corporate Competence Center Embedded Linux
+2.21.0
+
 
