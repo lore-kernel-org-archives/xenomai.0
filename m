@@ -1,12 +1,17 @@
-From: Philippe  Gerum <rpm@xenomai.org>
-Subject: [PATCH 7/7] cobalt/sched: block CPU migration when rescheduling over
- root
-Date: Fri, 22 Nov 2019 18:19:49 +0100
-Message-Id: <20191122171949.18021-8-rpm@xenomai.org>
-In-Reply-To: <20191122171949.18021-1-rpm@xenomai.org>
-References: <20191122171949.18021-1-rpm@xenomai.org>
+Subject: Re: Deadlock during debugging
+References: <VI1PR05MB5917D854245374A7BF4E34BFF64D0@VI1PR05MB5917.eurprd05.prod.outlook.com>
+ <e16b6953-47d4-4a80-ed21-d138be84cac4@xenomai.org>
+ <31819e6d-285d-e139-efc2-8b6ad157a66f@xenomai.org>
+ <733dde4d-f546-c270-11ca-7996a0fe182c@xenomai.org>
+ <71190701-958e-851b-894d-5445a552398a@siemens.com>
+From: Philippe Gerum <rpm@xenomai.org>
+Message-ID: <89b073f1-7d13-b7de-82a2-519c7ebb2793@xenomai.org>
+Date: Fri, 22 Nov 2019 18:35:22 +0100
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+In-Reply-To: <71190701-958e-851b-894d-5445a552398a@siemens.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,81 +20,33 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
+To: Jan Kiszka <jan.kiszka@siemens.com>
+Cc: "Xenomai (xenomai@xenomai.org)" <xenomai@xenomai.org>
 
-From: Philippe Gerum <rpm@xenomai.org>
+On 11/21/19 4:52 PM, Jan Kiszka wrote:
+> On 21.11.19 16:31, Philippe Gerum wrote:
+>> On 11/19/19 6:39 PM, Philippe Gerum wrote:
+>>> On 11/19/19 5:46 PM, Philippe Gerum via Xenomai wrote:
+>>>> On 11/18/19 4:13 PM, Lange Norbert via Xenomai wrote:
+>>>>> Hello,
+>>>>>
+>>>>> Here's one of my deadlocks, the output seems interleaved from 2 concurrent dumps,
+>>>>> I ran the crashlog through decode_stacktrace.sh.
+>>>>>
+>>>>
+>>>> Ok, I can reproduce this one, including in a vm. The symptom can be either a lockup, or recursive faults. I'm on it.
+>>>>
+>>>
+>>> #0b9e81807 seems to have introduced a regression. Something there may be subtly at odds with the core scheduler logic. More later.
+>>
+>> Eh, no. #0b9e81807 only exposed a very serious and longstanding issue into the scheduler core, which may cause a CPU to pick threads from a remote runqueue in rare circumstances. And that bug is definitely mine. I need to review more code to make sure no more horror shows alike are waiting for prime time. This bug affects all Xenomai series, 3.1, 3.0, 2.x.
+>>
+> 
+> Uh... good that we surfaced this now. Curious to see the result!
+> 
 
-In seldom cases, we might call xnsched_run() from the root context.
-This call might be subject to CPU migration as the root stage would
-likely be unstalled. In such a case, block CPU migration entirely
-while checking for early exit conditions which involves accessing
-per-cpu data.
+Good news is that unlike initially suspected, Xenomai 2.x is _not_ affected by the thread-suspend bug. The synchronous bp feature increased the likeliness of triggering it, as XNDBGSTOP needs to be sent to multiple threads while single-stepping.
 
-Signed-off-by: Philippe Gerum <rpm@xenomai.org>
----
- include/cobalt/kernel/sched.h | 39 ++++++++++++++---------------------
- 1 file changed, 16 insertions(+), 23 deletions(-)
-
-diff --git a/include/cobalt/kernel/sched.h b/include/cobalt/kernel/sched.h
-index c66e29d4c..4adfccb75 100644
---- a/include/cobalt/kernel/sched.h
-+++ b/include/cobalt/kernel/sched.h
-@@ -300,26 +300,6 @@ static inline int __xnsched_run(struct xnsched *sched)
- 	/*
- 	 * Reschedule if XNSCHED is pending, but never over an IRQ
- 	 * handler or in the middle of unlocked context switch.
--	 *
--	 * NOTE: Since ___xnsched_run() won't run immediately if an
--	 * escalation to primary domain is needed, we won't use
--	 * critical scheduler information before we actually run in
--	 * primary mode; therefore we can first test the scheduler
--	 * status then escalate.
--	 *
--	 * Running in the primary domain means that no Linux-triggered
--	 * CPU migration may occur from that point either. Finally,
--	 * since migration is always a self-directed operation for
--	 * Xenomai threads, we can safely read the scheduler state
--	 * bits without holding the nklock.
--	 *
--	 * Said differently, if we race here because of a CPU
--	 * migration, it must have been Linux-triggered because we run
--	 * in secondary mode; in which case we will escalate to the
--	 * primary domain, then unwind the current call frame without
--	 * running the rescheduling procedure in
--	 * ___xnsched_run(). Therefore, the scheduler slot
--	 * (i.e. "sched") will be either valid, or unused.
- 	 */
- 	if (((sched->status|sched->lflags) &
- 	     (XNINIRQ|XNINSW|XNRESCHED)) != XNRESCHED)
-@@ -332,11 +312,24 @@ static inline int xnsched_run(void)
- {
- 	struct xnsched *sched = xnsched_current();
- 	struct xnthread *curr = sched->curr;
-+	int ret = 0;
-+	spl_t s;
- 
--	if (unlikely(curr->lock_count > 0))
--		return 0;
-+	/*
-+	 * If running over any root thread, make sure to lock out CPU
-+	 * migration in order to always refer to the proper
-+	 * runqueue. Otherwise, we are running in primary mode and as
-+	 * such cannot change CPU.
-+	 */
-+	if (unlikely(xnthread_test_state(curr, XNROOT))) {
-+		splhigh(s);
-+		/* xnsched_pick_next() will check for lock count. */
-+		ret = __xnsched_run(xnsched_current());
-+		splexit(s);
-+	} else if (likely(curr->lock_count == 0))
-+		ret = __xnsched_run(sched);
- 
--	return __xnsched_run(sched);
-+	return ret;
- }
- 
- void xnsched_lock(void);
 -- 
-2.21.0
-
+Philippe.
 
