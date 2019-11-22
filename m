@@ -1,7 +1,9 @@
 From: Philippe  Gerum <rpm@xenomai.org>
-Subject: [PATCH 0/7] Scheduler related fixes
-Date: Fri, 22 Nov 2019 18:19:42 +0100
-Message-Id: <20191122171949.18021-1-rpm@xenomai.org>
+Subject: [PATCH 1/7] cobalt/process: skip trap handling for the root thread
+Date: Fri, 22 Nov 2019 18:19:43 +0100
+Message-Id: <20191122171949.18021-2-rpm@xenomai.org>
+In-Reply-To: <20191122171949.18021-1-rpm@xenomai.org>
+References: <20191122171949.18021-1-rpm@xenomai.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
@@ -16,29 +18,48 @@ To: xenomai@xenomai.org
 
 From: Philippe Gerum <rpm@xenomai.org>
 
-Patch #5 is the most critical fix to 3.1-rc, which is direly needed by
-the 3.0.x series too. Unlike previously stated, Xenomai 2.x is immune
-to this issue. Although less critical, patches #3 and #7 are important
-as well.
+Bottom line: the root thread is special, in that it must always be in
+a runnable state, never bear any blocking bit.
 
-These changes have survived long-running switchtest and full smokey
-test suite executing in parallel (including the GDB one). Tested on
-4.19.84/x86, arm and arm64.
+Running the trap handler when sched->curr points at the root thread
+means that we got a synchronous exception while running regular root
+context code on the head stage, which is not related to any action we
+might want to perform in the handler for Cobalt threads. Return early
+in such a case.
 
-Philippe Gerum (7):
-  cobalt/process: skip trap handling for the root thread
-  cobalt/thread: update inline documentation
-  cobalt/posix: fix missed rescheduling opportunities
-  cobalt/process: remove superfluous check for non-relaxed state
-  cobalt/thread: fix scheduler breakage on thread suspension
-  cobalt/sched: drop useless rmb in lock check
-  cobalt/sched: block CPU migration when rescheduling over root
+Signed-off-by: Philippe Gerum <rpm@xenomai.org>
+---
+ kernel/cobalt/posix/process.c | 10 +++++-----
+ 1 file changed, 5 insertions(+), 5 deletions(-)
 
- include/cobalt/kernel/sched.h | 46 ++++++++++++++---------------------
- kernel/cobalt/posix/process.c | 26 +++++++++-----------
- kernel/cobalt/thread.c        | 35 ++++++++++++++------------
- 3 files changed, 49 insertions(+), 58 deletions(-)
-
+diff --git a/kernel/cobalt/posix/process.c b/kernel/cobalt/posix/process.c
+index f96abfa66..b90e53507 100644
+--- a/kernel/cobalt/posix/process.c
++++ b/kernel/cobalt/posix/process.c
+@@ -803,6 +803,11 @@ static inline int handle_exception(struct ipipe_trap_data *d)
+ 	sched = xnsched_current();
+ 	thread = sched->curr;
+ 
++	trace_cobalt_thread_fault(d);
++
++	if (xnthread_test_state(thread, XNROOT))
++		return 0;
++
+ #ifdef IPIPE_KEVT_USERINTRET
+ 	if (xnarch_fault_bp_p(d) && user_mode(d->regs)) {
+ 		spl_t s;
+@@ -817,11 +822,6 @@ static inline int handle_exception(struct ipipe_trap_data *d)
+ 	}
+ #endif
+ 
+-	if (xnthread_test_state(thread, XNROOT))
+-		return 0;
+-
+-	trace_cobalt_thread_fault(d);
+-
+ 	if (xnarch_fault_fpu_p(d)) {
+ #ifdef CONFIG_XENO_ARCH_FPU
+ 		spl_t s;
 -- 
 2.21.0
 
