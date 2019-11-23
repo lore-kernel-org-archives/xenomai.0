@@ -1,14 +1,15 @@
+From: Philippe Gerum <rpm@xenomai.org>
 Subject: Re: [PATCH 6/7] cobalt/sched: drop useless rmb in lock check
 References: <20191122171949.18021-1-rpm@xenomai.org>
  <20191122171949.18021-7-rpm@xenomai.org>
-From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <95329dfe-c04a-ec25-af96-da12559b9ab6@siemens.com>
-Date: Sat, 23 Nov 2019 09:02:14 +0100
+ <95329dfe-c04a-ec25-af96-da12559b9ab6@siemens.com>
+Message-ID: <a0ecd70f-4b93-27f9-48ef-a0b304c42898@xenomai.org>
+Date: Sat, 23 Nov 2019 18:27:17 +0100
 MIME-Version: 1.0
-In-Reply-To: <20191122171949.18021-7-rpm@xenomai.org>
-Content-Type: text/plain; charset=utf-8; format=flowed
+In-Reply-To: <95329dfe-c04a-ec25-af96-da12559b9ab6@siemens.com>
+Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: base64
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,60 +18,70 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Philippe Gerum <rpm@xenomai.org>, xenomai@xenomai.org
+To: Jan Kiszka <jan.kiszka@siemens.com>, xenomai@xenomai.org
 
-On 22.11.19 18:19, Philippe Gerum via Xenomai wrote:
-> From: Philippe Gerum <rpm@xenomai.org>
-> 
-> Signed-off-by: Philippe Gerum <rpm@xenomai.org>
-> ---
->   include/cobalt/kernel/sched.h | 15 ++++++---------
->   1 file changed, 6 insertions(+), 9 deletions(-)
-> 
-> diff --git a/include/cobalt/kernel/sched.h b/include/cobalt/kernel/sched.h
-> index 3b0825d67..c66e29d4c 100644
-> --- a/include/cobalt/kernel/sched.h
-> +++ b/include/cobalt/kernel/sched.h
-> @@ -298,6 +298,9 @@ void __xnsched_run_handler(void);
->   static inline int __xnsched_run(struct xnsched *sched)
->   {
->   	/*
-> +	 * Reschedule if XNSCHED is pending, but never over an IRQ
-> +	 * handler or in the middle of unlocked context switch.
-> +	 *
->   	 * NOTE: Since ___xnsched_run() won't run immediately if an
->   	 * escalation to primary domain is needed, we won't use
->   	 * critical scheduler information before we actually run in
-> @@ -328,15 +331,9 @@ static inline int __xnsched_run(struct xnsched *sched)
->   static inline int xnsched_run(void)
->   {
->   	struct xnsched *sched = xnsched_current();
-> -	/*
-> -	 * No rescheduling is possible, either if:
-> -	 *
-> -	 * - the current thread holds the scheduler lock
-> -	 * - an ISR context is active
-> -	 * - we are caught in the middle of an unlocked context switch.
-> -	 */
-> -	smp_rmb();
-
-I think we still want at least READ_ONCE semantic here for the sched 
-readout. If we can be migrated in the middle of this function, the check 
-for sched->curr_lock_count must happen against the same sched we trigger 
-the xnsched_run for later on.
-
-Jan
-
-> -	if (unlikely(sched->curr->lock_count > 0))
-> +	struct xnthread *curr = sched->curr;
-> +
-> +	if (unlikely(curr->lock_count > 0))
->   		return 0;
->   
->   	return __xnsched_run(sched);
-> 
-
--- 
-Siemens AG, Corporate Technology, CT RDA IOT SES-DE
-Corporate Competence Center Embedded Linux
+T24gMTEvMjMvMTkgOTowMiBBTSwgSmFuIEtpc3prYSB3cm90ZToNCj4gT24gMjIuMTEuMTkg
+MTg6MTksIFBoaWxpcHBlIEdlcnVtIHZpYSBYZW5vbWFpIHdyb3RlOg0KPj4gRnJvbTogUGhp
+bGlwcGUgR2VydW0gPHJwbUB4ZW5vbWFpLm9yZz4NCj4+DQo+PiBTaWduZWQtb2ZmLWJ5OiBQ
+aGlsaXBwZSBHZXJ1bSA8cnBtQHhlbm9tYWkub3JnPg0KPj4gLS0tDQo+PiDCoCBpbmNsdWRl
+L2NvYmFsdC9rZXJuZWwvc2NoZWQuaCB8IDE1ICsrKysrKy0tLS0tLS0tLQ0KPj4gwqAgMSBm
+aWxlIGNoYW5nZWQsIDYgaW5zZXJ0aW9ucygrKSwgOSBkZWxldGlvbnMoLSkNCj4+DQo+PiBk
+aWZmIC0tZ2l0IGEvaW5jbHVkZS9jb2JhbHQva2VybmVsL3NjaGVkLmggYi9pbmNsdWRlL2Nv
+YmFsdC9rZXJuZWwvc2NoZWQuaA0KPj4gaW5kZXggM2IwODI1ZDY3Li5jNjZlMjlkNGMgMTAw
+NjQ0DQo+PiAtLS0gYS9pbmNsdWRlL2NvYmFsdC9rZXJuZWwvc2NoZWQuaA0KPj4gKysrIGIv
+aW5jbHVkZS9jb2JhbHQva2VybmVsL3NjaGVkLmgNCj4+IEBAIC0yOTgsNiArMjk4LDkgQEAg
+dm9pZCBfX3huc2NoZWRfcnVuX2hhbmRsZXIodm9pZCk7DQo+PiDCoCBzdGF0aWMgaW5saW5l
+IGludCBfX3huc2NoZWRfcnVuKHN0cnVjdCB4bnNjaGVkICpzY2hlZCkNCj4+IMKgIHsNCj4+
+IMKgwqDCoMKgwqAgLyoNCj4+ICvCoMKgwqDCoCAqIFJlc2NoZWR1bGUgaWYgWE5TQ0hFRCBp
+cyBwZW5kaW5nLCBidXQgbmV2ZXIgb3ZlciBhbiBJUlENCj4+ICvCoMKgwqDCoCAqIGhhbmRs
+ZXIgb3IgaW4gdGhlIG1pZGRsZSBvZiB1bmxvY2tlZCBjb250ZXh0IHN3aXRjaC4NCj4+ICvC
+oMKgwqDCoCAqDQo+PiDCoMKgwqDCoMKgwqAgKiBOT1RFOiBTaW5jZSBfX194bnNjaGVkX3J1
+bigpIHdvbid0IHJ1biBpbW1lZGlhdGVseSBpZiBhbg0KPj4gwqDCoMKgwqDCoMKgICogZXNj
+YWxhdGlvbiB0byBwcmltYXJ5IGRvbWFpbiBpcyBuZWVkZWQsIHdlIHdvbid0IHVzZQ0KPj4g
+wqDCoMKgwqDCoMKgICogY3JpdGljYWwgc2NoZWR1bGVyIGluZm9ybWF0aW9uIGJlZm9yZSB3
+ZSBhY3R1YWxseSBydW4gaW4NCj4+IEBAIC0zMjgsMTUgKzMzMSw5IEBAIHN0YXRpYyBpbmxp
+bmUgaW50IF9feG5zY2hlZF9ydW4oc3RydWN0IHhuc2NoZWQgKnNjaGVkKQ0KPj4gwqAgc3Rh
+dGljIGlubGluZSBpbnQgeG5zY2hlZF9ydW4odm9pZCkNCj4+IMKgIHsNCj4+IMKgwqDCoMKg
+wqAgc3RydWN0IHhuc2NoZWQgKnNjaGVkID0geG5zY2hlZF9jdXJyZW50KCk7DQo+PiAtwqDC
+oMKgIC8qDQo+PiAtwqDCoMKgwqAgKiBObyByZXNjaGVkdWxpbmcgaXMgcG9zc2libGUsIGVp
+dGhlciBpZjoNCj4+IC3CoMKgwqDCoCAqDQo+PiAtwqDCoMKgwqAgKiAtIHRoZSBjdXJyZW50
+IHRocmVhZCBob2xkcyB0aGUgc2NoZWR1bGVyIGxvY2sNCj4+IC3CoMKgwqDCoCAqIC0gYW4g
+SVNSIGNvbnRleHQgaXMgYWN0aXZlDQo+PiAtwqDCoMKgwqAgKiAtIHdlIGFyZSBjYXVnaHQg
+aW4gdGhlIG1pZGRsZSBvZiBhbiB1bmxvY2tlZCBjb250ZXh0IHN3aXRjaC4NCj4+IC3CoMKg
+wqDCoCAqLw0KPj4gLcKgwqDCoCBzbXBfcm1iKCk7DQo+IA0KPiBJIHRoaW5rIHdlIHN0aWxs
+IHdhbnQgYXQgbGVhc3QgUkVBRF9PTkNFIHNlbWFudGljIGhlcmUgZm9yIHRoZSBzY2hlZCBy
+ZWFkb3V0LiBJZiB3ZSBjYW4gYmUgbWlncmF0ZWQgaW4gdGhlIG1pZGRsZSBvZiB0aGlzIGZ1
+bmN0aW9uLCB0aGUgY2hlY2sgZm9yIHNjaGVkLT5jdXJyX2xvY2tfY291bnQgbXVzdCBoYXBw
+ZW4gYWdhaW5zdCB0aGUgc2FtZSBzY2hlZCB3ZSB0cmlnZ2VyIHRoZSB4bnNjaGVkX3J1biBm
+b3IgbGF0ZXIgb24uDQo+IA0KDQpJdCdzIG5vdCBvYnZpb3VzIHRvIG1lIHdoeSBwcmV2ZW50
+aW5nIGludmVudGVkIGxvYWRzIHdpdGggUkVBRF9PTkNFKHNjaGVkKSB3b3VsZCBidXkgdXMg
+YW55dGhpbmcgYmVjYXVzZSBpZiB3ZSBnZXQgbWlncmF0ZWQsIHRoZW4gd2UgbXVzdCBiZSBy
+dW5uaW5nIG92ZXIgdGhlIHJvb3Qgc3RhZ2UsIHRoZXJlZm9yZSBfX194bnNjaGVkX3J1bigp
+IHdpbGwgZXNjYWxhdGUgdGhlIHJlcXVlc3QsIGFuZCB0aGUgY3VycmVudCBzY2hlZCBwb2lu
+dGVyIHdpbGwgYmUgcmVsb2FkZWQgaW50ZXJydXB0LWZyZWUgZnJvbSB0aGVyZSBldmVudHVh
+bGx5LiBJT1csIHNjaGVkIGluIHhuc2NoZWRfcnVuKCkgaXMgaWdub3JlZCBieSB0aGUgYWN0
+dWFsIHNjaGVkdWxpbmcgYmFja2VuZCAoaS5lLiBfX194bnNjaGVkX3J1bigpKSB3aGVuIGl0
+IHdhcyBjYWxsZWQgZnJvbSBhIGNvbnRleHQgd2hpY2ggbWlnaHQgYmUgc3ViamVjdCB0byBD
+UFUgbWlncmF0aW9uLiBUaGlzIGlzIHRoZSByZWFzb24gd2h5IFtfX114bnNjaGVkX3J1bigp
+IG9ubHkgdXNlIHRoZXNlIGRhdGEgYWNjZXNzZXMgYXMgaGludHMsIHdoaWNoIF9feG5zY2hl
+ZF9ydW4oKSBzaG91bGQgY29uZmlybSBsYXRlciBvbiAodHlwaWNhbGx5LCB3ZSB3b3VsZCBy
+ZWNoZWNrIGZvciB0aGUgY3VycmVudCB0aHJlYWQncyBsb2NrX2NvdW50IGluIHBpY2tfbmV4
+dCgpKS4gRG8geW91IGhhdmUgYSBwcmVjaXNlIHNlcXVlbmNlIG9mIG9wZXJhdGlvbnMgaW4g
+bWluZCB0aGF0IHdvdWxkIGp1c3RpZnkgUkVBRF9PTkNFKHNjaGVkKT8gSSBtdXN0IGFkbWl0
+IHRoYXQgd2hhdCBjb21waWxlciB3cml0ZXJzIGNhbiBwZXJ2ZXJzZWx5IGRlY2lkZSB5b3Vy
+IGNvZGUgaXMgZ29pbmcgdG8gZG8gZXZlbnR1YWxseSBvbmNlIHRoZWlyIG9wdGltaXphdGlv
+biB0ZWNobmlxdWVzIGhhdmUgbWV0aG9kaWNhbGx5IHNocmVkZGVkIHlvdXIgbW9zdCBiYXNp
+YyBhc3N1bXB0aW9ucyB0ZW5kcyB0byBsZWF2ZSBtZSBkYXplZCBhbmQgY29uZnVzZWQsIHNv
+IG1heWJlIEknbSBtaXNzaW5nIGEgcG9pbnQgaGVyZS4NCg0KRm9yIGV4dHJhLXNhZmV0eSwg
+SSB3b3VsZCByYXRoZXIgUkVBRF9PTkNFKHNjaGVkLT5jdXJyKSBpbnN0ZWFkIG9mIFJFQURf
+T05DRShzY2hlZCksIGluIG9yZGVyIHRvIHByZXZlbnQgdGhlIGNvbXBpbGVyIGZyb20gZ29p
+bmcgd2lsZCB3aXRoIGxvYWQgdGVhcmluZyBzaW5jZSBzY2hlZC0+Y3VyciBpcyBhY3R1YWxs
+eSBhIHNoYXJlZCBkYXRhLCB1bmxpa2Ugc2NoZWQuDQoNClRoZSBpc3N1ZSBJIGNhbiBzZWUg
+d2l0aCBhbGxvd2luZyBtaWdyYXRpb24gdGhlcmUgaXMgd2hldGhlciB3ZSB3b3VsZCBtaXNz
+IGEgcmVzY2hlZHVsaW5nIG9wcG9ydHVuaXR5IGJ5IHN3aXRjaGluZyB0byBhbm90aGVyIENQ
+VSBhZnRlciBoYXZpbmcgZGV0ZXJtaW5lZCB0aGF0IHdlIGRpZCBuZWVkIHRoZSBvcmlnaW4g
+Q1BVIHRvIGV4ZWN1dGUgdGhlIHJlc2NoZWR1bGluZyBwcm9jZWR1cmUsIGJ1dCBmYWlsIHRv
+IGRvIGJ5IHJ1bm5pbmcgaXQgZm9yIHRoZSBkZXN0aW5hdGlvbiBDUFUgaW5zdGVhZC4gQWRk
+cmVzc2luZyB0aGlzIHdhcyB0aGUgaW50ZW50IGJlaGluZCBwYXRjaCAjNyBhY3R1YWxseS4N
+Cg0KLS0gDQpQaGlsaXBwZS4NCg==
 
