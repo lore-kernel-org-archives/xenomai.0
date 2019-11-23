@@ -1,17 +1,14 @@
+Subject: Re: [PATCH 6/7] cobalt/sched: drop useless rmb in lock check
+References: <20191122171949.18021-1-rpm@xenomai.org>
+ <20191122171949.18021-7-rpm@xenomai.org>
+From: Jan Kiszka <jan.kiszka@siemens.com>
+Message-ID: <95329dfe-c04a-ec25-af96-da12559b9ab6@siemens.com>
+Date: Sat, 23 Nov 2019 09:02:14 +0100
 MIME-Version: 1.0
-References: <CADYdroN-i9yrpd-wjPSW36GUptRV+kOCJT=Yv6+Z5sCVBmo_SQ@mail.gmail.com>
- <2012667816.853.1574437363737.JavaMail.zimbra@efficios.com>
- <4aab99be-5451-4582-f75d-7637614b1d37@siemens.com>
- <CADYdroOh+T8pOcNBW74KSMfCh--ujD8L3_G96LWR1migpsUq0g@mail.gmail.com>
- <63a51fa5-db96-9cf9-0eb3-51954ebf98f4@siemens.com>
- <CADYdroP+H3DiqCaH9o1jHxAurh_2YG_p7MK4H2kFqSoTCV0w6A@mail.gmail.com>
- <a2036ba8-c22a-e549-b68d-35524ee7f9a9@siemens.com>
-In-Reply-To: <a2036ba8-c22a-e549-b68d-35524ee7f9a9@siemens.com>
-From: Norbert Lange <nolange79@gmail.com>
-Date: Fri, 22 Nov 2019 22:38:12 +0100
-Message-ID: <CADYdroOEBSeZ3Hjs0mTLx2n8+G-zREXG+Np95mJhnjWXUFbEAg@mail.gmail.com>
-Subject: Re: [lttng-dev] Using lttng-ust with xenomai
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <20191122171949.18021-7-rpm@xenomai.org>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -20,104 +17,60 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jan Kiszka <jan.kiszka@siemens.com>
-Cc: Mathieu Desnoyers <mathieu.desnoyers@efficios.com>, lttng-dev <lttng-dev@lists.lttng.org>, Xenomai <xenomai@xenomai.org>, paulmck <paulmck@kernel.org>
+To: Philippe Gerum <rpm@xenomai.org>, xenomai@xenomai.org
 
-> >>>>>> liburcu has configure options allow forcing the usage of this syscall
-> >>>>>> but not disabling it, which likely is necessary for Xenomai.
-> >>>>>
-> >>>>> I suspect what you'd need there is a way to allow a process to tell
-> >>>>> liburcu-bp (or liburcu) to always use the fall-back mechanism which does
-> >>>>> not rely on sys_membarrier. This could be allowed before the first use of
-> >>>>> the library. I think extending the liburcu APIs to allow this should be
-> >>>>> straightforward enough. This approach would be more flexible than requiring
-> >>>>> liburcu to be specialized at configure time. This new API would return an error
-> >>>>> if invoked with a liburcu library compiled with --disable-sys-membarrier-fallback.
-> >>>>>
-> >>>>> If you have control over your entire system's kernel, you may want to try
-> >>>>> just configuring the kernel within CONFIG_MEMBARRIER=n in the meantime.
-> >>>>>
-> >>>>> Another thing to make sure is to have a glibc and Linux kernel which perform
-> >>>>> clock_gettime() as vDSO for the monotonic clock, because you don't want a
-> >>>>> system call there. If that does not work for you, you can alternatively
-> >>>>> implement your own lttng-ust and lttng-modules clock plugin .so/.ko to override
-> >>>>> the clock used by lttng, and for instance use TSC directly. See for instance
-> >>>>> the lttng-ust(3) LTTNG_UST_CLOCK_PLUGIN environment variable.
-> >>>>
-> >>>> clock_gettime & Co for a Xenomai application is syscall-free as well.
-> >>>
-> >>> Yes, and that gave me a deadlock already, if a library us not compiled
-> >>> for Xenomai,
-> >>> it will either use the syscall (and you detect that immediatly) or it
-> >>> will work most of the time,
-> >>> and lock up once in a while if a Linux thread took the "writer lock"
-> >>> of the VDSO structures
-> >>> and your high priority xenomai thread is busy waiting infinitely.
-> >>>
-> >>> Only sane approach would be to use either the xenomai function directly,
-> >>> or recreate the function (rdtsc + interpolation on x86).
-> >>
-> >> rdtsc is not portable, thus a no-go.
-> >
-> > Its not portable, but you have equivalents on ARM, powerpc.
-> > ie. "Do the same think as Xenomai"
->
-> If you use existing code, I'm fine. Just not invent something "new" here.
+On 22.11.19 18:19, Philippe Gerum via Xenomai wrote:
+> From: Philippe Gerum <rpm@xenomai.org>
+> 
+> Signed-off-by: Philippe Gerum <rpm@xenomai.org>
+> ---
+>   include/cobalt/kernel/sched.h | 15 ++++++---------
+>   1 file changed, 6 insertions(+), 9 deletions(-)
+> 
+> diff --git a/include/cobalt/kernel/sched.h b/include/cobalt/kernel/sched.h
+> index 3b0825d67..c66e29d4c 100644
+> --- a/include/cobalt/kernel/sched.h
+> +++ b/include/cobalt/kernel/sched.h
+> @@ -298,6 +298,9 @@ void __xnsched_run_handler(void);
+>   static inline int __xnsched_run(struct xnsched *sched)
+>   {
+>   	/*
+> +	 * Reschedule if XNSCHED is pending, but never over an IRQ
+> +	 * handler or in the middle of unlocked context switch.
+> +	 *
+>   	 * NOTE: Since ___xnsched_run() won't run immediately if an
+>   	 * escalation to primary domain is needed, we won't use
+>   	 * critical scheduler information before we actually run in
+> @@ -328,15 +331,9 @@ static inline int __xnsched_run(struct xnsched *sched)
+>   static inline int xnsched_run(void)
+>   {
+>   	struct xnsched *sched = xnsched_current();
+> -	/*
+> -	 * No rescheduling is possible, either if:
+> -	 *
+> -	 * - the current thread holds the scheduler lock
+> -	 * - an ISR context is active
+> -	 * - we are caught in the middle of an unlocked context switch.
+> -	 */
+> -	smp_rmb();
 
-The idea it to build the lttng plugin from the same code,
-just using the things that are necessary for reading the monotonic clock
+I think we still want at least READ_ONCE semantic here for the sched 
+readout. If we can be migrated in the middle of this function, the check 
+for sched->curr_lock_count must happen against the same sched we trigger 
+the xnsched_run for later on.
 
-> >>> Either compiling/patching lttng for Cobalt (which I really would not
-> >>> want to do) or using a
-> >>> clock plugin.
-> >>
-> >> I suspect you will want to have at least a plugin that was built against
-> >> Xenomai libs.
-> >
-> > That will then do alot other stuff like spwaning a printf thread.
-> >
-> >>
-> >>> If the later is supposed to be minimal, then that would mean I would
-> >>> have to get the
-> >>> interpolation factors cobalt uses (without bringing in libcobalt).
-> >>>
-> >>> Btw. the Xenomai and Linux monotonic clocks arent synchronised at all
-> >>> AFAIK, so timestamps will
-> >>> be different to the rest of Linux.
-> >>
-> >> CLOCK_HOST_REALTIME is synchronized.
-> >
-> > Thats not monotonic?
->
-> Yeah, it's REALTIME, in synch with CLOCK_REALTIME of Linux.
-> CLOCK_MONOTONIC should have a static offset at worst. I think that could
-> be resolved if it wasn't yet.
+Jan
 
-Linux CLOCK_MONOTONIC is skew corrected to increment at the same rate as
-CLOCK_REALTIME.
-You might have a chance with Linux CLOCK_MONOTONIC_RAW,
-if you use the identical scaling method.
+> -	if (unlikely(sched->curr->lock_count > 0))
+> +	struct xnthread *curr = sched->curr;
+> +
+> +	if (unlikely(curr->lock_count > 0))
+>   		return 0;
+>   
+>   	return __xnsched_run(sched);
+> 
 
->
-> >
-> >>
-> >>> On my last plattform I did some tracing using internal stamp and
-> >>> regulary wrote a
-> >>> block with internal and external timestamps so those could be
-> >>> converted "offline".
-> >>
-> >> Sounds not like something we want to promote.
-> >
-> > This was a questing to lttng and its tool environment. I suppose we
-> > werent the first
-> > ones with multiple clocks in a system.
-> > If anything needs to be done in Xenomai it might be a concurrent
-> > readout of Linux/cobalt time(s),
-> > the rest would be done offline, potentially on another system.
->
-> Sure, doable, but I prefer not having to do that.
-
-It might offer alot flexibility you don't get otherwise (without a ton of work).
-
-Norbert
+-- 
+Siemens AG, Corporate Technology, CT RDA IOT SES-DE
+Corporate Competence Center Embedded Linux
 
