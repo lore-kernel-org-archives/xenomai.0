@@ -1,7 +1,7 @@
 From: Philippe  Gerum <rpm@xenomai.org>
-Subject: [PATCH v2 2/7] cobalt/thread: update inline documentation
-Date: Sun, 24 Nov 2019 16:46:03 +0100
-Message-Id: <20191124154608.9353-2-rpm@xenomai.org>
+Subject: [PATCH v2 3/7] cobalt/posix: fix missed rescheduling opportunities
+Date: Sun, 24 Nov 2019 16:46:04 +0100
+Message-Id: <20191124154608.9353-3-rpm@xenomai.org>
 In-Reply-To: <20191124154608.9353-1-rpm@xenomai.org>
 References: <20191124154608.9353-1-rpm@xenomai.org>
 MIME-Version: 1.0
@@ -18,40 +18,50 @@ To: xenomai@xenomai.org
 
 From: Philippe Gerum <rpm@xenomai.org>
 
+stop_debugged_thread() may suspend threads running on a remote CPU, we
+have to kick the rescheduling procedure for these changes to take
+effect asap. Make sure xnsched_run() is kicked from the call sites
+once they are done updating the scheduler state.
+
 Signed-off-by: Philippe Gerum <rpm@xenomai.org>
 ---
- kernel/cobalt/thread.c | 16 ++++++++--------
- 1 file changed, 8 insertions(+), 8 deletions(-)
+ kernel/cobalt/posix/process.c | 9 ++++-----
+ 1 file changed, 4 insertions(+), 5 deletions(-)
 
-diff --git a/kernel/cobalt/thread.c b/kernel/cobalt/thread.c
-index 666b4d4ca..a95396a0d 100644
---- a/kernel/cobalt/thread.c
-+++ b/kernel/cobalt/thread.c
-@@ -1012,16 +1012,16 @@ void xnthread_suspend(struct xnthread *thread, int mask,
- 	 * We only care for threads that are not current, and for
- 	 * XNSUSP, XNDELAY, XNDORMANT and XNHELD conditions, because:
- 	 *
--	 * - There is no point in dealing with relaxed threads, since
--	 * personalities have to ask for primary mode switch when
--	 * processing any syscall which may block the caller
--	 * (i.e. __xn_exec_primary).
-+	 * - There is no point in dealing with a relaxed thread which
-+	 * is current, since personalities have to ask for primary
-+	 * mode switch when processing any syscall which may block the
-+	 * caller (i.e. __xn_exec_primary).
- 	 *
- 	 * - among all blocking bits (XNTHREAD_BLOCK_BITS), only
--	 * XNSUSP, XNDELAY and XNHELD may be applied by the current
--	 * thread to a non-current thread. XNPEND is always added by
--	 * the caller to its own state, XNMIGRATE and XNRELAX have
--	 * special semantics escaping this issue.
-+	 * XNSUSP, XNDELAY, XNHELD and XNDBGSTOP may be applied by the
-+	 * current thread to a non-current thread. XNPEND is always
-+	 * added by the caller to its own state, XNMIGRATE, XNRELAX
-+	 * and XNDBGSTOP have special semantics escaping this issue.
- 	 *
- 	 * We don't signal threads which are already in a dormant
- 	 * state, since they are suspended by definition.
+diff --git a/kernel/cobalt/posix/process.c b/kernel/cobalt/posix/process.c
+index b90e53507..1e003108e 100644
+--- a/kernel/cobalt/posix/process.c
++++ b/kernel/cobalt/posix/process.c
+@@ -819,6 +819,7 @@ static inline int handle_exception(struct ipipe_trap_data *d)
+ 		}
+ 		stop_debugged_process(thread);
+ 		xnlock_put_irqrestore(&nklock, s);
++		xnsched_run();
+ 	}
+ #endif
+ 
+@@ -1295,10 +1296,8 @@ static int handle_sigwake_event(struct task_struct *p)
+ 			cobalt_register_debugged_thread(thread);
+ 	}
+ 
+-	if (xnthread_test_state(thread, XNRELAX)) {
+-		xnlock_put_irqrestore(&nklock, s);
+-		return KEVENT_PROPAGATE;
+-	}
++	if (xnthread_test_state(thread, XNRELAX))
++		goto out;
+ 
+ 	/*
+ 	 * If kicking a shadow thread in primary mode, make sure Linux
+@@ -1320,7 +1319,7 @@ static int handle_sigwake_event(struct task_struct *p)
+ 		xnthread_resume(thread, XNDBGSTOP);
+ 
+ 	__xnthread_kick(thread);
+-
++out:
+ 	xnsched_run();
+ 
+ 	xnlock_put_irqrestore(&nklock, s);
 -- 
 2.21.0
 
