@@ -1,7 +1,7 @@
 From: Philippe  Gerum <rpm@xenomai.org>
-Subject: [PATCH] cobalt/thread: fix scheduler breakage on thread suspension
-Date: Sun, 24 Nov 2019 12:20:18 +0100
-Message-Id: <20191124112018.624-1-rpm@xenomai.org>
+Subject: [PATCH v2 1/7] cobalt/process: skip trap handling for the root thread
+Date: Sun, 24 Nov 2019 16:46:02 +0100
+Message-Id: <20191124154608.9353-1-rpm@xenomai.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
@@ -16,87 +16,48 @@ To: xenomai@xenomai.org
 
 From: Philippe Gerum <rpm@xenomai.org>
 
-In the event that xnthread_suspend() adds blocking bit(s) to a thread
-which is running in primary mode on a remote CPU at the time of the
-call, a spurious rescheduling call is performed, causing the local CPU
-to pick its next thread from the remote CPU's runqueue.
+Bottom line: the root thread is special, in that it must always be in
+a runnable state, never bear any blocking bit.
 
-CPU0                              CPU1
-----                              ----
-                                  t2: ...
-t1: suspend(t2)                       ...
-       |
-       |
-       +------> t2->sched == t2->sched->curr (i.e. running primary)
-                           |
-                           |
-                           +----> __xnsched_run(t2->sched);
-                                        |
-                                        |
-                                        v
-                          CPU0: ___xnsched__run(CPU1.sched);
-
-IOW, CPU0 would pick the next thread from CPU1's runqueue. Conditions
-for observing this bug:
-
-- t1 is running in primary mode on the local CPU (such as
-  CPU0:sched->curr == t1) , so that the rescheduling request needs no
-  prior escalation to the head stage, allowing ___xnsched_run() to
-  execute immediately using the sched slot pointer received from
-  __xnsched_run().
-
-- t2 is running in primary mode on a remote CPU (such as
-  CPU1:sched->curr == t2) when t1 attempts to suspend it via a call to
-  xnthread_suspend().
+Running the trap handler when sched->curr points at the root thread
+means that we got a synchronous exception while running regular root
+context code on the head stage, which is not related to any action we
+might want to perform in the handler for Cobalt threads. Return early
+in such a case.
 
 Signed-off-by: Philippe Gerum <rpm@xenomai.org>
 ---
- kernel/cobalt/thread.c | 24 +++++++++++++++---------
- 1 file changed, 15 insertions(+), 9 deletions(-)
+ kernel/cobalt/posix/process.c | 10 +++++-----
+ 1 file changed, 5 insertions(+), 5 deletions(-)
 
-diff --git a/kernel/cobalt/thread.c b/kernel/cobalt/thread.c
-index a95396a0d..a5f8e1b00 100644
---- a/kernel/cobalt/thread.c
-+++ b/kernel/cobalt/thread.c
-@@ -962,12 +962,15 @@ void xnthread_suspend(struct xnthread *thread, int mask,
- 	 * opportunity for interrupt delivery right before switching
- 	 * context, which shortens the uninterruptible code path.
- 	 *
--	 * We have to shut irqs off before __xnsched_run() though: if
--	 * an interrupt could preempt us in ___xnsched_run() right
--	 * after the call to xnarch_escalate() but before we grab the
--	 * nklock, we would enter the critical section in
--	 * xnsched_run() while running in secondary mode, which would
--	 * defeat the purpose of xnarch_escalate().
-+	 * We have to shut irqs off before calling __xnsched_run()
-+	 * though: if an interrupt could preempt us right after
-+	 * xnarch_escalate() is passed but before the nklock is
-+	 * grabbed, we would enter the critical section in
-+	 * ___xnsched_run() from the root domain, which would defeat
-+	 * the purpose of escalating the request.
-+	 *
-+	 * NOTE: using __xnsched_run() for rescheduling allows us to
-+	 * break the scheduler lock temporarily.
- 	 */
- 	if (likely(thread == sched->curr)) {
- 		xnsched_set_resched(sched);
-@@ -978,10 +981,13 @@ void xnthread_suspend(struct xnthread *thread, int mask,
- 			return;
- 		}
- 		/*
--		 * If the thread is runnning on another CPU,
--		 * xnsched_run will trigger the IPI as required.
-+		 * If the thread is runnning on a remote CPU,
-+		 * xnsched_run() will trigger the IPI as required.  In
-+		 * this case, sched refers to a remote runqueue, so
-+		 * make sure to always kick the rescheduling procedure
-+		 * for the local one.
- 		 */
--		__xnsched_run(sched);
-+		__xnsched_run(xnsched_current());
- 		goto out;
- 	}
+diff --git a/kernel/cobalt/posix/process.c b/kernel/cobalt/posix/process.c
+index f96abfa66..b90e53507 100644
+--- a/kernel/cobalt/posix/process.c
++++ b/kernel/cobalt/posix/process.c
+@@ -803,6 +803,11 @@ static inline int handle_exception(struct ipipe_trap_data *d)
+ 	sched = xnsched_current();
+ 	thread = sched->curr;
  
++	trace_cobalt_thread_fault(d);
++
++	if (xnthread_test_state(thread, XNROOT))
++		return 0;
++
+ #ifdef IPIPE_KEVT_USERINTRET
+ 	if (xnarch_fault_bp_p(d) && user_mode(d->regs)) {
+ 		spl_t s;
+@@ -817,11 +822,6 @@ static inline int handle_exception(struct ipipe_trap_data *d)
+ 	}
+ #endif
+ 
+-	if (xnthread_test_state(thread, XNROOT))
+-		return 0;
+-
+-	trace_cobalt_thread_fault(d);
+-
+ 	if (xnarch_fault_fpu_p(d)) {
+ #ifdef CONFIG_XENO_ARCH_FPU
+ 		spl_t s;
 -- 
 2.21.0
 
