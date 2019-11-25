@@ -1,11 +1,15 @@
-From: Lange Norbert <norbert.lange@andritz.com>
-Subject: Impact and use of the membarrier syscall
-Date: Mon, 25 Nov 2019 09:31:52 +0000
-Message-ID: <VI1PR05MB5917198E23A5251C3794E4C2F64A0@VI1PR05MB5917.eurprd05.prod.outlook.com>
-Content-Language: en-US
+Subject: Re: [PATCH v2 3/7] cobalt/posix: fix missed rescheduling opportunities
+References: <20191124154608.9353-1-rpm@xenomai.org>
+ <20191124154608.9353-3-rpm@xenomai.org>
+ <59725ae2-796c-d065-7646-2d6382916519@siemens.com>
+From: Philippe Gerum <rpm@xenomai.org>
+Message-ID: <b70a9a8a-c158-8e6d-29a3-ad43e570c8af@xenomai.org>
+Date: Mon, 25 Nov 2019 11:09:04 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+In-Reply-To: <59725ae2-796c-d065-7646-2d6382916519@siemens.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -14,49 +18,37 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "Xenomai (xenomai@xenomai.org)" <xenomai@xenomai.org>
+To: Jan Kiszka <jan.kiszka@siemens.com>, xenomai@xenomai.org
 
-Hello,
+On 11/25/19 10:09 AM, Jan Kiszka wrote:
+> On 24.11.19 16:46, Philippe Gerum via Xenomai wrote:
+>> From: Philippe Gerum <rpm@xenomai.org>
+>>
+>> stop_debugged_thread() may suspend threads running on a remote CPU, we
+>> have to kick the rescheduling procedure for these changes to take
+>> effect asap. Make sure xnsched_run() is kicked from the call sites
+>> once they are done updating the scheduler state.
+>>
+>> Signed-off-by: Philippe Gerum <rpm@xenomai.org>
+>> ---
+>>   kernel/cobalt/posix/process.c | 9 ++++-----
+>>   1 file changed, 4 insertions(+), 5 deletions(-)
+>>
+>> diff --git a/kernel/cobalt/posix/process.c b/kernel/cobalt/posix/process.c
+>> index b90e53507..1e003108e 100644
+>> --- a/kernel/cobalt/posix/process.c
+>> +++ b/kernel/cobalt/posix/process.c
+>> @@ -819,6 +819,7 @@ static inline int handle_exception(struct ipipe_trap_data *d)
+>>           }
+>>           stop_debugged_process(thread);
+>>           xnlock_put_irqrestore(&nklock, s);
+>> +        xnsched_run();
+> 
+> To reduce the potential (but unavoidable) delay between the exception and the remote thread stops, shouldn't this move under the lock? For the wakeup, we do this below.
+> 
 
-I looked at this sycall, as lttng makes use of it, and the last posts on th=
-is ML would imply that Xenomai is using "IPI" aswell.
-This raises a few questions:
+That is not necessary. We can't be preempted by the regular kernel logic in this routine since we are running over the head stage, so the only possible preemption would come from a Cobalt interrupt, which would imply that the rescheduling procedure was kicked even earlier (in order to switch us out) and the pending IPIs would have already been sent as a result of this.
 
+-- 
+Philippe.
 
--          Could an linux app (like lttng), that uses the membarrier syscal=
-l create IRQs/IPIs that ultimately negative affect realtime threads?
-Ie. should this be kernel config be recommended to be disabled for Xenomai.
-
--          Does the syscall do anything for running Xenomai threads (partic=
-ularly, Lttng makes use of MEMBARRIER_CMD_PRIVATE_EXPEDITED).
-
-Regards, Norbert
-________________________________
-
-This message and any attachments are solely for the use of the intended rec=
-ipients. They may contain privileged and/or confidential information or oth=
-er information protected from disclosure. If you are not an intended recipi=
-ent, you are hereby notified that you received this email in error and that=
- any review, dissemination, distribution or copying of this email and any a=
-ttachment is strictly prohibited. If you have received this email in error,=
- please contact the sender and delete the message and any attachment from y=
-our system.
-
-ANDRITZ HYDRO GmbH
-
-
-Rechtsform/ Legal form: Gesellschaft mit beschr?nkter Haftung / Corporation
-
-Firmensitz/ Registered seat: Wien
-
-Firmenbuchgericht/ Court of registry: Handelsgericht Wien
-
-Firmenbuchnummer/ Company registration: FN 61833 g
-
-DVR: 0605077
-
-UID-Nr.: ATU14756806
-
-
-Thank You
-________________________________
