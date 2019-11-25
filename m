@@ -1,11 +1,15 @@
-Date: Fri, 15 Nov 2019 00:31:16 +0000
-From: Jeff Webb <w1@codecraftsmen.org>
-Reply-To: Jeff Webb <w1@codecraftsmen.org>
-Subject: RE: [ANNOUNCE] Xenomai v3.1-rc3 available
-Message-ID: <y27Ah4Xs-t8bhib0n5wvb0RE8X2b-B4GbVUz2PHHbETtMbl4SjmsFQP7GPGLfWozQrc_BW9MqoZFFIq0RYnMjvl_VQ0ecJz5Tp5fcaXPKcg=@codecraftsmen.org>
+Subject: Re: [PATCH v2 7/7] cobalt/sched: restrict rescheduling hints to
+ migration-safe context
+References: <20191124154608.9353-1-rpm@xenomai.org>
+ <20191124154608.9353-7-rpm@xenomai.org>
+From: Philippe Gerum <rpm@xenomai.org>
+Message-ID: <84756ec0-56b6-e781-9693-aeebf06b6cbc@xenomai.org>
+Date: Mon, 25 Nov 2019 11:40:41 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+In-Reply-To: <20191124154608.9353-7-rpm@xenomai.org>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -14,34 +18,39 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: "Xenomai@xenomai.org" <Xenomai@xenomai.org>
 
-I am building a Xenomai cobalt kernel under Ubuntu 18.04 based on:
+On 11/24/19 4:46 PM, Philippe Gerum wrote:
+> From: Philippe Gerum <rpm@xenomai.org>
+> 
+> XNINIRQ, XNINSW and XNSCHED are quick hints loaded from per-cpu data
+> which are considered by the main rescheduling call (xnsched_run()) to
+> figure out whether the actual rescheduling backend (___xnsched_run())
+> should actually run immediately, or be postponed to a later call.
+> 
+> In seldom cases, we might call xnsched_run() from the root thread with
+> hard irqs enabled.  Because such requests also depend on those hints,
+> they are sensitive to CPU migration. The changes address this issue,
+> considering that such requests can be forwarded to ___xnsched_run()
+> directly - ignoring the hints - because the following premises apply
+> in this case:
+> 
 
-   Linux 4.19.75
-   Xenomai 3.1-rc3
-   ipipe-core-4.19.75-x86-7.patch
+Please drop this patch, it still does not solve the main issue which is that we might lose a rescheduling opportunity over the root stage in case of a CPU migration, e.g.:
 
-After running prepare-kernel.sh and "makeolddefconfig" (using the unmodifie=
-d default .config), I get this error:
+CPU0                            CPU1
+----                            ----
 
-   WARNING: unmet direct dependencies detected for PARAVIRT
-     Depends on [n]: HYPERVISOR_GUEST [=3Dy] && !IPIPE [=3Dy]
-     Selected by [m]:
-     - HYPERV [=3Dm] && X86 [=3Dy] && ACPI [=3Dy] && X86_LOCAL_APIC [=3Dy] =
-&& HYPERVISOR_GUEST [=3Dy]
+xnthread_resume/suspend(T)
+<CPU migration>
+                                xnsched_run()
+                                    |
+                                    |
+                                    v
+                          would only apply to rq(CPU1), missing updates to rq(CPU0)
 
-I turned off HYPERVISOR_GUEST manually to fix the warning.  I hadn't seen t=
-his type of error before, but perhaps something could be done in the patch =
-to make the default config consistent...  Just FYI.
+To fix this, I don't see any other (sane) way than requiring all calls to xnsched_run() over the root stage to happen within an atomic section shared with the wakeup/suspend signal. Those cases should be few anyway, so a reasonable way of dealing with this issue would be to add an assertion to xnsched_run(), which should trigger upon migration-unsafe calling contexts, and fix a couple of call sites in the core.
 
-Otherwise, everything went fine with the build process and initial testing.=
-  I will be giving this build some more testing over the next week or so an=
-d will let you know if I find any issues.
-
-Thanks,
-
--Jeff
-
-
+-- 
+Philippe.
 
