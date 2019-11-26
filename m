@@ -1,13 +1,13 @@
-Subject: Re: Xenomai crashes when braking into the debugger
-References: <oCTXNhYPNrFqmthwoeR4fQyxnXGl41aoUVYyaRhIckO4b3HyTRyNCYJzkB58WAQI6Ob0Lij2d5lmcy1rJSwTkM-GCo30htAi5C98qIi5W24=@codecraftsmen.org>
-From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <5abfd650-c763-122e-7884-da5bc93a8a9f@siemens.com>
-Date: Thu, 14 Nov 2019 08:43:24 +0100
+Date: Tue, 26 Nov 2019 17:27:05 +0000
+From: Jeff Webb <w1@codecraftsmen.org>
+Reply-To: Jeff Webb <w1@codecraftsmen.org>
+Subject: Re: [PATCH] lib/cobalt: Fix help for --print-sync-delay
+Message-ID: <7TKnZNvXD85GzmpCAHRv-yZ9LE9bw9uYRZKQcpnRfHhqelMq4VdzUmEP3ViFcSr4BsVNKHBVdCQz6QFgHodqWr2Y4FJ3OsRmBvWNQKAEAis=@codecraftsmen.org>
+In-Reply-To: <f4ccbc37-42d1-e683-aa26-8eadb4428470@siemens.com>
+References: <f4ccbc37-42d1-e683-aa26-8eadb4428470@siemens.com>
 MIME-Version: 1.0
-In-Reply-To: <oCTXNhYPNrFqmthwoeR4fQyxnXGl41aoUVYyaRhIckO4b3HyTRyNCYJzkB58WAQI6Ob0Lij2d5lmcy1rJSwTkM-GCo30htAi5C98qIi5W24=@codecraftsmen.org>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,64 +16,56 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jeff Webb <w1@codecraftsmen.org>, "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Jan Kiszka <jan.kiszka@siemens.com>
+Cc: Xenomai <xenomai@xenomai.org>, Steve Freyder <steve@freyder.net>
 
-On 14.11.19 02:58, Jeff Webb via Xenomai wrote:
-> Lange Norbert via Xenomai wrote:
->>> From: Jan Kiszka <jan.kiszka at siemens.com>
->>> On 13.11.19 16:18, Lange Norbert via Xenomai wrote:
->>>> I am running into some bad issues with debugging, can't really narrow
->>>> down when they happen, but usually when I run through GDB and want to
->>>> "break" (pause execution), it seems to be related to *other* Xenomai
->>> programs running at the same time (as said its hard to narrow down).
->>>
->>> We have a gdb test case. Does it trigger for you as well when you run some
->>> other program in parallel?
->>>
->>> Also, could you provide the kernel full log? Possibly, enabling the I-pipe
->>> tracer with panic dump could be useful as well. But the most important step
->>> would be to create reproducibility for a third party like me.
->>
->> Currently the issue is gone, and I don't have time for researching the cause.
->> is panic dump a kernel compilation config?
-> 
-> I think one of my colleagues has experienced something similar.
-> He said that a when one application was stopped in a breakpoint,
-> it caused sem_timedwait calls in another application to not time
-> out until execution of the other program was resumed.  I will ask
-> and see if he can put together a reproducible test case.  I know
-> the problem was repeatable at one point with the two applications
-> he was working with.
+On 11/16/19 2:53 AM, Jan Kiszka via Xenomai wrote:
+> From: Jan Kiszka <jan.kiszka@siemens.com>
+>
+> Misnamed by the original commit f42334abc373.
+>
+> While at it, also fix indention style.
+>
+> Reported-by: Steve Freyder <steve@freyder.net>
+> Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
+> ---
+>
+> Seems like I missed this because it wasn't presented as patch.
+> Will go to stable as well.
+>
+>   lib/cobalt/init.c | 8 ++++----
+>   1 file changed, 4 insertions(+), 4 deletions(-)
+>
+> diff --git a/lib/cobalt/init.c b/lib/cobalt/init.c
+> index 02a99c569c..9b506d872d 100644
+> --- a/lib/cobalt/init.c
+> +++ b/lib/cobalt/init.c
+> @@ -353,10 +353,10 @@ static int cobalt_parse_option(int optnum, const ch=
+ar *optarg)
+>
+>   static void cobalt_help(void)
+>   {
+> -        fprintf(stderr, "--main-prio=3D<prio>main thread priority\n");
+> -        fprintf(stderr, "--print-buffer-size=3D<bytes>size of a print re=
+lay buffer (16k)\n");
+> -        fprintf(stderr, "--print-buffer-count=3D<num>number of print rel=
+ay buffers (4)\n");
+> -        fprintf(stderr, "--print-buffer-syncdelay=3D<ms>max delay of out=
+put synchronization (100 ms)\n");
+> +fprintf(stderr, "--main-prio=3D<prio>main thread priority\n");
+> +fprintf(stderr, "--print-buffer-size=3D<bytes>size of a print relay buff=
+er (16k)\n");
+> +fprintf(stderr, "--print-buffer-count=3D<num>number of print relay buffe=
+rs (4)\n");
+> +fprintf(stderr, "--print-sync-delay=3D<ms>max delay of output synchroniz=
+ation (100 ms)\n");
+>   }
+>
+>   static struct setup_descriptor cobalt_interface =3D {
+>
 
-This particular behavior is solved in 3.1 by 
-https://gitlab.denx.de/Xenomai/xenomai/commit/9ebc2b6ea49406026e9e69d8fa490b3f8d8f0a24.
+This patch fixes the issue for me.  Thanks!
 
-> 
-> I have personally experienced what seems (to me) to be a similar
-> issue involving signal handling where a signal handling thread
-> received a SIGINT via sigwait (other threads had SIGINT blocked),
-> and tried to set a global variable that should have caused the
-> other threads to terminate.  The other threads had an issue where
-> they would not wake up from sem_timedwait calls (or even sleep
-> calls) after the SIGINT was received by the other thread, so they
-> would not terminate properly.  The same code worked fine under
-> Xenomai 2.6.  I tried to create a standalone example to reproduce
-> this today, but I could recreate the problem.  I know it was very
-> reproducible when I was constructing a work-around for it.
-> 
-> Could it be that some fault occurs that causes subsequent bad
-> behavior with respect to signal handling (SIGINT/debugging) that
-> is fixed by a reboot?
-> 
-> Just trying to shed some light on the problem.  I think there is
-> a bug here somewhere...
+-Jeff
 
-Stand-alone test cases or test sequences are always welcome! Just please 
-also make sure 3.1-rc as debugging code changed there quite a bit.
-
-Jan
-
--- 
-Siemens AG, Corporate Technology, CT RDA IOT SES-DE
-Corporate Competence Center Embedded Linux
 
