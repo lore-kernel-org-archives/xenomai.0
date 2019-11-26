@@ -1,11 +1,16 @@
-Date: Tue, 26 Nov 2019 17:33:56 +0000
-From: Jeff Webb <w1@codecraftsmen.org>
-Reply-To: Jeff Webb <w1@codecraftsmen.org>
-Subject: Building deb packages
-Message-ID: <a6zvfTWG8HmL1m3CKsFlVVKFO4CznsabNKtz6u1vD1P4HVWcun3mWGHs11YE4exIKjC48U7t5383dTEbXZfYmMeFvHqNnrmzjp0izgkWFys=@codecraftsmen.org>
+Subject: Re: [ANNOUNCE] Xenomai v3.1-rc3 available
+References: <y27Ah4Xs-t8bhib0n5wvb0RE8X2b-B4GbVUz2PHHbETtMbl4SjmsFQP7GPGLfWozQrc_BW9MqoZFFIq0RYnMjvl_VQ0ecJz5Tp5fcaXPKcg=@codecraftsmen.org>
+ <e2ceb276-09e5-2a11-ac34-3926668615e0@siemens.com>
+ <6A8KLFuCLPtKt-g8GWZEP4G0rMK4ZA6RRo-1DSBHkySvKYcPcyydk9ON5HCyWrTPvdMz7BQdFAVYWPmkAs1zuogrEDjXI0dWDwVnFJYiIFc=@codecraftsmen.org>
+ <ThBEK6LcImOy7l4McXiAt42fRQ1jdF6qmnYznYFw-AYdDnGzGhs3gs4FHzjpMJxODeg3PDylWkmWB1xgTr-b_wbB4eJ79rvqTny2vlYq9ZA=@codecraftsmen.org>
+From: Jan Kiszka <jan.kiszka@siemens.com>
+Message-ID: <f5bfb2f7-6352-e49b-47a5-1efa06ca8a8d@siemens.com>
+Date: Tue, 26 Nov 2019 18:38:42 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+In-Reply-To: <ThBEK6LcImOy7l4McXiAt42fRQ1jdF6qmnYznYFw-AYdDnGzGhs3gs4FHzjpMJxODeg3PDylWkmWB1xgTr-b_wbB4eJ79rvqTny2vlYq9ZA=@codecraftsmen.org>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -14,90 +19,56 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Xenomai <xenomai@xenomai.org>
+To: Jeff Webb <w1@codecraftsmen.org>
+Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-I have previously used make-kpkg to build deb packages for my Ubuntu system=
-s.  This process worked, but the linux-headers package was never quite righ=
-t.  I could not build my own kernel drivers (e.g. custom UDD drivers) on an=
-other system without copying the build directory over or monkeying with the=
- headers package.
+On 26.11.19 18:29, Jeff Webb wrote:
+> On 11/15/19 5:14 PM, Jeff Webb via Xenomai wrote:
+>> On Friday, November 15, 2019 4:40 AM, Jan Kiszka <jan.kiszka@siemens.com> wrote:
+>>> On 15.11.19 01:31, Jeff Webb via Xenomai wrote:
+>>>> I am building a Xenomai cobalt kernel under Ubuntu 18.04 based on:
+>>>>
+>>>>       Linux 4.19.75
+>>>>       Xenomai 3.1-rc3
+>>>>       ipipe-core-4.19.75-x86-7.patch
+>>>>
+>>>>
+>>>> After running prepare-kernel.sh and "makeolddefconfig" (using the unmodified default .config), I get this error:
+>>>>
+>>>>       WARNING: unmet direct dependencies detected for PARAVIRT
+>>>>         Depends on [n]: HYPERVISOR_GUEST [=y] && !IPIPE [=y]
+>>>>         Selected by [m]:
+>>>>         - HYPERV [=m] && X86 [=y] && ACPI [=y] && X86_LOCAL_APIC [=y] && HYPERVISOR_GUEST [=y]
+>>>>
+>>>>
+>>>> I turned off HYPERVISOR_GUEST manually to fix the warning. I hadn't seen this type of error before, but perhaps something could be done in the patch to make the default config consistent... Just FYI.
+>>>
+>>> It's HYPERV what causes this, by also pulling PARAVIRT which is not
+>>> compatible with I-pipe. We need to tag that config as well to avoid this.
+>>>
+>>>> Otherwise, everything went fine with the build process and initial testing. I will be giving this build some more testing over the next week or so and will let you know if I find any issues.
+>>>
+>>> Great to hear, thanks.
+>>
+>> I haven't done extensive testing yet, but I tried several of our real-time applications with the new build, and things seem to be working so far.  Even on a different (but perhaps similar), older set of hardware from the one that has the intremap issues, I get the same kernel BUG messages (using the same 4.19 kernel build) mentioned in my other email:
+>>
+>>     https://xenomai.org/pipermail/xenomai/2019-November/041988.html
+>>
+>> but things appear to be functioning properly as far as I can tell.
+>>
+>> This is just some more feedback on the latest kernel / xenomai release candidate.
+> 
+> All is going well so far with Xenomai v3.1-rc3 / ipipe-core-4.19.84-x86-8.patch.  Given the recent patches posted to the list, are there plans for another RC, or will the next release be the official 3.1?
+> 
 
-With my latest builds, I tried make deb-pkg with 4.19.84 and 4.4.199-cip39.=
-  The linux-headers package built with this process *almost* works.  There =
-were, however just a few Xenomai headers that were missing.  This following=
- patch to 4.19.84 fixed the issue:
+Thanks for validating!
 
---- ../tmp/linux-4.19.84/scripts/package/builddeb2019-11-12 12:21:46.000000=
-000 -0600
-+++ scripts/package/builddeb2019-11-18 17:46:34.948776288 -0600
-@@ -157,7 +157,7 @@
-  (cd $srctree; find . -name Makefile\* -o -name Kconfig\* -o -name \*.pl) =
-> "$objtree/debian/hdrsrcfiles"
-  (cd $srctree; find arch/*/include include scripts -type f -o -type l) >> =
-"$objtree/debian/hdrsrcfiles"
-  (cd $srctree; find arch/$SRCARCH -name module.lds -o -name Kbuild.platfor=
-ms -o -name Platform) >> "$objtree/debian/hdrsrcfiles"
--(cd $srctree; find $(find arch/$SRCARCH -name include -o -name scripts -ty=
-pe d) -type f) >> "$objtree/debian/hdrsrcfiles"
-+(cd $srctree; find $(find arch/$SRCARCH -name include -o -name scripts -ty=
-pe d) -type f -o -type l) >> "$objtree/debian/hdrsrcfiles"
-  if grep -q '^CONFIG_STACK_VALIDATION=3Dy' $KCONFIG_CONFIG ; then
-  (cd $objtree; find tools/objtool -type f -executable) >> "$objtree/debian=
-/hdrobjfiles"
-  fi
+The scheduler changes qualify for another -rc, yes, I'm just waiting for 
+an update from Philippe for a closing patch on this topic.
 
+Jan
 
-For 4.4.199-cip39, I had to pull in this same fix, plus a couple of others =
-(backported from later kernels).  Here is that patch:
-
-
---- ../tmp/linux-cip-4.4.199-cip39/scripts/package/builddeb2019-11-08 15:42=
-:52.000000000 -0600
-+++ scripts/package/builddeb2019-11-19 16:16:40.651617778 -0600
-@@ -26,6 +26,8 @@
-  # Fix ownership and permissions
-  chown -R root:root "$pdir"
-  chmod -R go-w "$pdir"
-+# in case we are in a restrictive umask environment like 0077
-+chmod -R a+rX "$pdir"
-
-  # Create the package
-  dpkg-gencontrol $forcearch -Vkernel:debarch=3D"${debarch}" -p$pname -P"$p=
-dir"
-@@ -322,10 +324,10 @@
-
-  # Build kernel header package
-  (cd $srctree; find . -name Makefile\* -o -name Kconfig\* -o -name \*.pl) =
-> "$objtree/debian/hdrsrcfiles"
--(cd $srctree; find arch/$SRCARCH/include include scripts -type f) >> "$obj=
-tree/debian/hdrsrcfiles"
-+(cd $srctree; find arch/$SRCARCH/include include scripts -type f -o -type =
-l) >> "$objtree/debian/hdrsrcfiles"
-  (cd $srctree; find arch/$SRCARCH -name module.lds -o -name Kbuild.platfor=
-ms -o -name Platform) >> "$objtree/debian/hdrsrcfiles"
--(cd $srctree; find $(find arch/$SRCARCH -name include -o -name scripts -ty=
-pe d) -type f) >> "$objtree/debian/hdrsrcfiles"
--(cd $objtree; find arch/$SRCARCH/include Module.symvers include scripts -t=
-ype f) >> "$objtree/debian/hdrobjfiles"
-+(cd $srctree; find $(find arch/$SRCARCH -name include -o -name scripts -ty=
-pe d) -type f -o -type l) >> "$objtree/debian/hdrsrcfiles"
-+(cd $objtree; find arch/$SRCARCH/include Module.symvers include scripts -t=
-ype f -o -type l) >> "$objtree/debian/hdrobjfiles"
-  destdir=3D$kernel_headers_dir/usr/src/linux-headers-$version
-  mkdir -p "$destdir"
-  (cd $srctree; tar -c -f - -T -) < "$objtree/debian/hdrsrcfiles" | (cd $de=
-stdir; tar -xf -)
-
-
-Hopefully these patches don't get mangled in transit, as I am pasting them =
-inline.  I know I am not submitting these patches in the proper way, but I'=
-m not sure what to submit a proper patch against and wanted to let others k=
-now about what I found.  I can resubmit these if they are appropriate for i=
-nclusion in Xenomai or the ipipe patch -- just let me know how this should =
-be done.
-
-Thanks,
-
--Jeff
-
+-- 
+Siemens AG, Corporate Technology, CT RDA IOT SES-DE
+Corporate Competence Center Embedded Linux
 
