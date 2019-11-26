@@ -1,13 +1,14 @@
+Date: Tue, 26 Nov 2019 18:06:32 +0000
+From: Jeff Webb <w1@codecraftsmen.org>
+Reply-To: Jeff Webb <w1@codecraftsmen.org>
 Subject: Re: Building deb packages
+Message-ID: <rOql7M13UpQ86c6D3l2RkZfn2hfdic4R0_-GagsurIAJJqe5mwDdFHqYOrDo8LSpNcCCw-_wiOjBp2WaWcyTagPWwE461jmNCgwW5ead5vk=@codecraftsmen.org>
+In-Reply-To: <378aee64-da86-da9f-eb46-5059949e37d7@siemens.com>
 References: <a6zvfTWG8HmL1m3CKsFlVVKFO4CznsabNKtz6u1vD1P4HVWcun3mWGHs11YE4exIKjC48U7t5383dTEbXZfYmMeFvHqNnrmzjp0izgkWFys=@codecraftsmen.org>
-From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <378aee64-da86-da9f-eb46-5059949e37d7@siemens.com>
-Date: Tue, 26 Nov 2019 18:45:35 +0100
+ <378aee64-da86-da9f-eb46-5059949e37d7@siemens.com>
 MIME-Version: 1.0
-In-Reply-To: <a6zvfTWG8HmL1m3CKsFlVVKFO4CznsabNKtz6u1vD1P4HVWcun3mWGHs11YE4exIKjC48U7t5383dTEbXZfYmMeFvHqNnrmzjp0izgkWFys=@codecraftsmen.org>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,75 +17,61 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jeff Webb <w1@codecraftsmen.org>, Xenomai <xenomai@xenomai.org>
+To: Jan Kiszka <jan.kiszka@siemens.com>
+Cc: Xenomai <xenomai@xenomai.org>
 
-On 26.11.19 18:33, Jeff Webb via Xenomai wrote:
-> I have previously used make-kpkg to build deb packages for my Ubuntu systems.  This process worked, but the linux-headers package was never quite right.  I could not build my own kernel drivers (e.g. custom UDD drivers) on another system without copying the build directory over or monkeying with the headers package.
-> 
-> With my latest builds, I tried make deb-pkg with 4.19.84 and 4.4.199-cip39.  The linux-headers package built with this process *almost* works.  There were, however just a few Xenomai headers that were missing.  This following patch to 4.19.84 fixed the issue:
-> 
-> --- ../tmp/linux-4.19.84/scripts/package/builddeb2019-11-12 12:21:46.000000000 -0600
-> +++ scripts/package/builddeb2019-11-18 17:46:34.948776288 -0600
-> @@ -157,7 +157,7 @@
->    (cd $srctree; find . -name Makefile\* -o -name Kconfig\* -o -name \*.pl) > "$objtree/debian/hdrsrcfiles"
->    (cd $srctree; find arch/*/include include scripts -type f -o -type l) >> "$objtree/debian/hdrsrcfiles"
->    (cd $srctree; find arch/$SRCARCH -name module.lds -o -name Kbuild.platforms -o -name Platform) >> "$objtree/debian/hdrsrcfiles"
-> -(cd $srctree; find $(find arch/$SRCARCH -name include -o -name scripts -type d) -type f) >> "$objtree/debian/hdrsrcfiles"
-> +(cd $srctree; find $(find arch/$SRCARCH -name include -o -name scripts -type d) -type f -o -type l) >> "$objtree/debian/hdrsrcfiles"
-
-How did you prepare the kernel with Xenomai, link or patch mode?
-
-If link: This looks incomplete because link targets to Xenomai sources 
-should be missing from the package.
-
-If patch: Which links exactly do we miss here?
-
->    if grep -q '^CONFIG_STACK_VALIDATION=y' $KCONFIG_CONFIG ; then
->    (cd $objtree; find tools/objtool -type f -executable) >> "$objtree/debian/hdrobjfiles"
->    fi
-> 
-> 
-> For 4.4.199-cip39, I had to pull in this same fix, plus a couple of others (backported from later kernels).  Here is that patch:
-
-If you tell me the upstream commits, I could pick them up.
-
-> 
-> 
-> --- ../tmp/linux-cip-4.4.199-cip39/scripts/package/builddeb2019-11-08 15:42:52.000000000 -0600
-> +++ scripts/package/builddeb2019-11-19 16:16:40.651617778 -0600
-> @@ -26,6 +26,8 @@
->    # Fix ownership and permissions
->    chown -R root:root "$pdir"
->    chmod -R go-w "$pdir"
-> +# in case we are in a restrictive umask environment like 0077
-> +chmod -R a+rX "$pdir"
-> 
->    # Create the package
->    dpkg-gencontrol $forcearch -Vkernel:debarch="${debarch}" -p$pname -P"$pdir"
-> @@ -322,10 +324,10 @@
-> 
->    # Build kernel header package
->    (cd $srctree; find . -name Makefile\* -o -name Kconfig\* -o -name \*.pl) > "$objtree/debian/hdrsrcfiles"
-> -(cd $srctree; find arch/$SRCARCH/include include scripts -type f) >> "$objtree/debian/hdrsrcfiles"
-> +(cd $srctree; find arch/$SRCARCH/include include scripts -type f -o -type l) >> "$objtree/debian/hdrsrcfiles"
->    (cd $srctree; find arch/$SRCARCH -name module.lds -o -name Kbuild.platforms -o -name Platform) >> "$objtree/debian/hdrsrcfiles"
-> -(cd $srctree; find $(find arch/$SRCARCH -name include -o -name scripts -type d) -type f) >> "$objtree/debian/hdrsrcfiles"
-> -(cd $objtree; find arch/$SRCARCH/include Module.symvers include scripts -type f) >> "$objtree/debian/hdrobjfiles"
-> +(cd $srctree; find $(find arch/$SRCARCH -name include -o -name scripts -type d) -type f -o -type l) >> "$objtree/debian/hdrsrcfiles"
-> +(cd $objtree; find arch/$SRCARCH/include Module.symvers include scripts -type f -o -type l) >> "$objtree/debian/hdrobjfiles"
->    destdir=$kernel_headers_dir/usr/src/linux-headers-$version
->    mkdir -p "$destdir"
->    (cd $srctree; tar -c -f - -T -) < "$objtree/debian/hdrsrcfiles" | (cd $destdir; tar -xf -)
-> 
-> 
-> Hopefully these patches don't get mangled in transit, as I am pasting them inline.  I know I am not submitting these patches in the proper way, but I'm not sure what to submit a proper patch against and wanted to let others know about what I found.  I can resubmit these if they are appropriate for inclusion in Xenomai or the ipipe patch -- just let me know how this should be done.
-
-Patches were mangled, indeed - some whitespaces got lost e.g. Thanks 
-nevertheless.
-
-Jan
-
--- 
-Siemens AG, Corporate Technology, CT RDA IOT SES-DE
-Corporate Competence Center Embedded Linux
-
+4oCQ4oCQ4oCQ4oCQ4oCQ4oCQ4oCQIE9yaWdpbmFsIE1lc3NhZ2Ug4oCQ4oCQ4oCQ4oCQ4oCQ4oCQ
+4oCQCk9uIFR1ZXNkYXksIE5vdmVtYmVyIDI2LCAyMDE5IDExOjQ1IEFNLCBKYW4gS2lzemthIDxq
+YW4ua2lzemthQHNpZW1lbnMuY29tPiB3cm90ZToKCj4gT24gMjYuMTEuMTkgMTg6MzMsIEplZmYg
+V2ViYiB2aWEgWGVub21haSB3cm90ZToKPgo+ID4gSSBoYXZlIHByZXZpb3VzbHkgdXNlZCBtYWtl
+LWtwa2cgdG8gYnVpbGQgZGViIHBhY2thZ2VzIGZvciBteSBVYnVudHUgc3lzdGVtcy4gVGhpcyBw
+cm9jZXNzIHdvcmtlZCwgYnV0IHRoZSBsaW51eC1oZWFkZXJzIHBhY2thZ2Ugd2FzIG5ldmVyIHF1
+aXRlIHJpZ2h0LiBJIGNvdWxkIG5vdCBidWlsZCBteSBvd24ga2VybmVsIGRyaXZlcnMgKGUuZy4g
+Y3VzdG9tIFVERCBkcml2ZXJzKSBvbiBhbm90aGVyIHN5c3RlbSB3aXRob3V0IGNvcHlpbmcgdGhl
+IGJ1aWxkIGRpcmVjdG9yeSBvdmVyIG9yIG1vbmtleWluZyB3aXRoIHRoZSBoZWFkZXJzIHBhY2th
+Z2UuCj4gPiBXaXRoIG15IGxhdGVzdCBidWlsZHMsIEkgdHJpZWQgbWFrZSBkZWItcGtnIHdpdGgg
+NC4xOS44NCBhbmQgNC40LjE5OS1jaXAzOS4gVGhlIGxpbnV4LWhlYWRlcnMgcGFja2FnZSBidWls
+dCB3aXRoIHRoaXMgcHJvY2VzcyBhbG1vc3Qgd29ya3MuIFRoZXJlIHdlcmUsIGhvd2V2ZXIganVz
+dCBhIGZldyBYZW5vbWFpIGhlYWRlcnMgdGhhdCB3ZXJlIG1pc3NpbmcuIFRoaXMgZm9sbG93aW5n
+IHBhdGNoIHRvIDQuMTkuODQgZml4ZWQgdGhlIGlzc3VlOgo+Cj4gSG93IGRpZCB5b3UgcHJlcGFy
+ZSB0aGUga2VybmVsIHdpdGggWGVub21haSwgbGluayBvciBwYXRjaCBtb2RlPwo+Cj4gSWYgbGlu
+azogVGhpcyBsb29rcyBpbmNvbXBsZXRlIGJlY2F1c2UgbGluayB0YXJnZXRzIHRvIFhlbm9tYWkg
+c291cmNlcwo+IHNob3VsZCBiZSBtaXNzaW5nIGZyb20gdGhlIHBhY2thZ2UuCj4KPiBJZiBwYXRj
+aDogV2hpY2ggbGlua3MgZXhhY3RseSBkbyB3ZSBtaXNzIGhlcmU/CgpJJ20gbm90IHN1cmUuLi4g
+SSBkaWRuJ3QgZ2l2ZSBhbnkgc3BlY2lmaWMgb3B0aW9uIHJlZ2FyZGluZyB0aGlzIGFuZCBJIGFt
+IGF3YXkgZnJvbSBteSBzeXN0ZW0uICBUaGUgbGludXgtaGVhZGVycyBwYWNrYWdlIGhhZCBsaW5r
+cyB0byB0aGUgeGVub21haSBoZWFkZXIgZmlsZXMgaW4gdGhlIHhlbm9tYWkgc291cmNlIHBhY2th
+Z2UuICBNb3N0IG9mIHRoZSByZXF1aXJlZCBsaW5rcyB0byB4ZW5vbWFpIGhlYWRlcnMgd2VyZSB0
+aGVyZSwganVzdCBhIGhhbmRmdWwgaW4gb25lIGV4dHJhIGRlZXAgc3ViZGlyZWN0b3J5IHdlcmUg
+bWlzc2luZyAtLSBob3BlZnVsbHkgeW91IGNhbiB0ZWxsIHdoaWNoIG9uZXMgZnJvbSB0aGUgcGF0
+Y2guICAoSSBjYW4gZm9sbG93IHVwIHdpdGggc3BlY2lmaWNzIGxhdGVyLCBpZiBpdCBpcyBub3Qg
+Y2xlYXIgd2hhdCBpcyBtaXNzaW5nIC0tIGp1c3QgbGV0IG1lIGtub3cuKQoKPiA+IEZvciA0LjQu
+MTk5LWNpcDM5LCBJIGhhZCB0byBwdWxsIGluIHRoaXMgc2FtZSBmaXgsIHBsdXMgYSBjb3VwbGUg
+b2Ygb3RoZXJzIChiYWNrcG9ydGVkIGZyb20gbGF0ZXIga2VybmVscykuIEhlcmUgaXMgdGhhdCBw
+YXRjaDoKPiBJZiB5b3UgdGVsbCBtZSB0aGUgdXBzdHJlYW0gY29tbWl0cywgSSBjb3VsZCBwaWNr
+IHRoZW0gdXAuCgpJJ20gbm90IHN1cmUgZXhhY3RseSB3aXRoIHVwc3RyZWFtIGNvbW1pdHMsIGJ1
+dCBJIGp1c3QgbG9va2VkIGF0IHRoZSBidWlsZGRlYiBzY3JpcHQgZnJvbSB0aGUgNC4xOSBrZXJu
+ZWwgYW5kIHB1bGxlZCBpbiB0aGUgY2hhbmdlcyByZXF1aXJlZCB0byBmaXggYSBjb3VwbGUgaXNz
+dWVzIEkgaGFkIHdoZW4gYnVpbGRpbmcgd2l0aCB0aGUgNC40IGJ1aWxkZGViIHNjcmlwdC4gIFlv
+dSBjYW4gc2VlIHdoYXQgSSBkaWQgZnJvbSB0aGUgcGF0Y2guCgo+ID4gSG9wZWZ1bGx5IHRoZXNl
+IHBhdGNoZXMgZG9uJ3QgZ2V0IG1hbmdsZWQgaW4gdHJhbnNpdCwgYXMgSSBhbSBwYXN0aW5nIHRo
+ZW0gaW5saW5lLiBJIGtub3cgSSBhbSBub3Qgc3VibWl0dGluZyB0aGVzZSBwYXRjaGVzIGluIHRo
+ZSBwcm9wZXIgd2F5LCBidXQgSSdtIG5vdCBzdXJlIHdoYXQgdG8gc3VibWl0IGEgcHJvcGVyIHBh
+dGNoIGFnYWluc3QgYW5kIHdhbnRlZCB0byBsZXQgb3RoZXJzIGtub3cgYWJvdXQgd2hhdCBJIGZv
+dW5kLiBJIGNhbiByZXN1Ym1pdCB0aGVzZSBpZiB0aGV5IGFyZSBhcHByb3ByaWF0ZSBmb3IgaW5j
+bHVzaW9uIGluIFhlbm9tYWkgb3IgdGhlIGlwaXBlIHBhdGNoIC0tIGp1c3QgbGV0IG1lIGtub3cg
+aG93IHRoaXMgc2hvdWxkIGJlIGRvbmUuCj4KPiBQYXRjaGVzIHdlcmUgbWFuZ2xlZCwgaW5kZWVk
+IC0gc29tZSB3aGl0ZXNwYWNlcyBnb3QgbG9zdCBlLmcuIFRoYW5rcwo+IG5ldmVydGhlbGVzcy4K
+ClNvcnJ5IGFib3V0IHRoYXQuICBJIGFtIGF0dGFjaGluZyB0aGVtIHRvIHRoaXMgcmVwbHkuICBJ
+IHdpbGwgYmUgYXdheSBmcm9tIHdvcmsgZm9yIGEgbGl0dGxlIHdoaWxlLCBzbyBJIG1heSBiZSBk
+ZWxheWVkIGluIHJlc3BvbmRpbmcgdG8gZnVydGhlciBlbWFpbHMuCgpUaGFua3MhCgotSmVmZgoK
+LS0tLS0tLS0tLS0tLS0gbmV4dCBwYXJ0IC0tLS0tLS0tLS0tLS0tCkEgbm9uLXRleHQgYXR0YWNo
+bWVudCB3YXMgc2NydWJiZWQuLi4KTmFtZToga2VybmVsLWhlYWRlci1pbnN0YWxsLWxpbnV4LTQu
+NC4xOTktY2lwMzkucGF0Y2gKVHlwZTogdGV4dC94LXBhdGNoClNpemU6IDE2NTQgYnl0ZXMKRGVz
+Yzogbm90IGF2YWlsYWJsZQpVUkw6IDxodHRwOi8veGVub21haS5vcmcvcGlwZXJtYWlsL3hlbm9t
+YWkvYXR0YWNobWVudHMvMjAxOTExMjYvZmJlOTk0N2UvYXR0YWNobWVudC5iaW4+Ci0tLS0tLS0t
+LS0tLS0tIG5leHQgcGFydCAtLS0tLS0tLS0tLS0tLQpBIG5vbi10ZXh0IGF0dGFjaG1lbnQgd2Fz
+IHNjcnViYmVkLi4uCk5hbWU6IGtlcm5lbC1oZWFkZXItaW5zdGFsbC1saW51eC00LjE5Ljg0LnBh
+dGNoClR5cGU6IHRleHQveC1wYXRjaApTaXplOiA5MzUgYnl0ZXMKRGVzYzogbm90IGF2YWlsYWJs
+ZQpVUkw6IDxodHRwOi8veGVub21haS5vcmcvcGlwZXJtYWlsL3hlbm9tYWkvYXR0YWNobWVudHMv
+MjAxOTExMjYvZmJlOTk0N2UvYXR0YWNobWVudC0wMDAxLmJpbj4K
