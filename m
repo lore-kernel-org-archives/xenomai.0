@@ -1,15 +1,11 @@
-Subject: Re: [ANNOUNCE] Xenomai v3.1-rc3 available
-References: <y27Ah4Xs-t8bhib0n5wvb0RE8X2b-B4GbVUz2PHHbETtMbl4SjmsFQP7GPGLfWozQrc_BW9MqoZFFIq0RYnMjvl_VQ0ecJz5Tp5fcaXPKcg=@codecraftsmen.org>
- <e2ceb276-09e5-2a11-ac34-3926668615e0@siemens.com>
- <6A8KLFuCLPtKt-g8GWZEP4G0rMK4ZA6RRo-1DSBHkySvKYcPcyydk9ON5HCyWrTPvdMz7BQdFAVYWPmkAs1zuogrEDjXI0dWDwVnFJYiIFc=@codecraftsmen.org>
- <ThBEK6LcImOy7l4McXiAt42fRQ1jdF6qmnYznYFw-AYdDnGzGhs3gs4FHzjpMJxODeg3PDylWkmWB1xgTr-b_wbB4eJ79rvqTny2vlYq9ZA=@codecraftsmen.org>
- <f5bfb2f7-6352-e49b-47a5-1efa06ca8a8d@siemens.com>
-From: Philippe Gerum <rpm@xenomai.org>
-Message-ID: <81b51127-ecdd-e3d2-050e-8f3e8f3dadd7@xenomai.org>
-Date: Wed, 27 Nov 2019 17:48:53 +0100
+Subject: Re: Request: offer CLOCK_HOST_MONOTONIC for systemwide tracing
+References: <VI1PR05MB59174B701138FA0BF37AB250F6440@VI1PR05MB5917.eurprd05.prod.outlook.com>
+From: Jan Kiszka <jan.kiszka@siemens.com>
+Message-ID: <1455128f-2b97-62c7-7e11-7278686715bb@siemens.com>
+Date: Wed, 27 Nov 2019 18:06:27 +0100
 MIME-Version: 1.0
-In-Reply-To: <f5bfb2f7-6352-e49b-47a5-1efa06ca8a8d@siemens.com>
-Content-Type: text/plain; charset="utf-8"
+In-Reply-To: <VI1PR05MB59174B701138FA0BF37AB250F6440@VI1PR05MB5917.eurprd05.prod.outlook.com>
+Content-Type: text/plain; charset="utf-8"; format="flowed"
 Content-Language: en-US
 Content-Transfer-Encoding: 8bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
@@ -20,76 +16,58 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jan Kiszka <jan.kiszka@siemens.com>, Jeff Webb <w1@codecraftsmen.org>
-Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Lange Norbert <norbert.lange@andritz.com>, "Xenomai (xenomai@xenomai.org)" <xenomai@xenomai.org>
+Cc: "mathieu.desnoyers@efficios.com" <mathieu.desnoyers@efficios.com>
 
-On 11/26/19 6:38 PM, Jan Kiszka via Xenomai wrote:
-> On 26.11.19 18:29, Jeff Webb wrote:
->> On 11/15/19 5:14 PM, Jeff Webb via Xenomai wrote:
->>> On Friday, November 15, 2019 4:40 AM, Jan Kiszka
->>> <jan.kiszka@siemens.com> wrote:
->>>> On 15.11.19 01:31, Jeff Webb via Xenomai wrote:
->>>>> I am building a Xenomai cobalt kernel under Ubuntu 18.04 based on:
->>>>>
->>>>>       Linux 4.19.75
->>>>>       Xenomai 3.1-rc3
->>>>>       ipipe-core-4.19.75-x86-7.patch
->>>>>
->>>>>
->>>>> After running prepare-kernel.sh and "makeolddefconfig" (using the
->>>>> unmodified default .config), I get this error:
->>>>>
->>>>>       WARNING: unmet direct dependencies detected for PARAVIRT
->>>>>         Depends on [n]: HYPERVISOR_GUEST [=y] && !IPIPE [=y]
->>>>>         Selected by [m]:
->>>>>         - HYPERV [=m] && X86 [=y] && ACPI [=y] && X86_LOCAL_APIC [=y]
->>>>> && HYPERVISOR_GUEST [=y]
->>>>>
->>>>>
->>>>> I turned off HYPERVISOR_GUEST manually to fix the warning. I hadn't
->>>>> seen this type of error before, but perhaps something could be done in
->>>>> the patch to make the default config consistent... Just FYI.
->>>>
->>>> It's HYPERV what causes this, by also pulling PARAVIRT which is not
->>>> compatible with I-pipe. We need to tag that config as well to avoid this.
->>>>
->>>>> Otherwise, everything went fine with the build process and initial
->>>>> testing. I will be giving this build some more testing over the next
->>>>> week or so and will let you know if I find any issues.
->>>>
->>>> Great to hear, thanks.
->>>
->>> I haven't done extensive testing yet, but I tried several of our
->>> real-time applications with the new build, and things seem to be working
->>> so far.  Even on a different (but perhaps similar), older set of
->>> hardware from the one that has the intremap issues, I get the same
->>> kernel BUG messages (using the same 4.19 kernel build) mentioned in my
->>> other email:
->>>
->>>     https://xenomai.org/pipermail/xenomai/2019-November/041988.html
->>>
->>> but things appear to be functioning properly as far as I can tell.
->>>
->>> This is just some more feedback on the latest kernel / xenomai release
->>> candidate.
->>
->> All is going well so far with Xenomai v3.1-rc3 /
->> ipipe-core-4.19.84-x86-8.patch.  Given the recent patches posted to the
->> list, are there plans for another RC, or will the next release be the
->> official 3.1?
->>
+On 27.11.19 17:20, Lange Norbert via Xenomai wrote:
+> Hello,
 > 
-> Thanks for validating!
-> 
-> The scheduler changes qualify for another -rc, yes, I'm just waiting for an
-> update from Philippe for a closing patch on this topic.
-> 
+> Systemwide traces would require the same clock, so Linux processes use CLOCK_MONOTONIC (they normally do by default),
+> Kernel traces should do so too (ktime_get_mono_fast_ns).
+> Xenomai Processes/Thread have no reliable to produce matching traces. The idea would be to
+> configure the tracing frameworks to use the new CLOCK_HOST_MONOTONIC for those.
 
-Patiently reviewing all call sites kicking the rescheduling procedure here.
-The picture does not look as simple as I originally thought. No blocker,
-but a bit more work to prevent the root stage from rescheduling with hard
-irqs on.
+Do we know what makes the two monotonic clock deviate? Does Linux apply 
+the frequency modifications of the realtime clock on the monotonic one 
+as well?
+
+> As concrete example, Lttng would use a clock plugin (only) for Xenomai.
+> 
+> I looked at the kernel sources if I can add this myself quickly, but seems to be involve
+> some stuff like kevents which I know nothing about (killing the “quickly” part at the very least).
+> 
+> The request would be that
+> - Similar to CLOCK_HOST_REALTIME, a CLOCK_HOST_MONOTONIC would result in timestamps that a very close to the plain Linux CLOCK_MONOTONIC.
+> - This should happen without syscalls and be very efficient
+> - In respect to being able to attach preloaded tracer dso’s (like tracing malloc/free), the call should work correctly before cobalt is initialized (could be worked around, but still..)
+> 
+> Other alternatives (most not realistic):
+> 
+> Calling the linux vdso functions might result in deadlocks [1].
+> 
+> A “safe” variant like ktime_get_mono_fast_ns is not accessible per syscall or userspace vDSO.
+> 
+> The normal xenomai CLOCK_MONOTONIC is not skew corrected to REALTIME
+> 
+> CLOCK_MONOTONIC_RAW perhaps might be easily convertible between domains, but likely
+> problematic on several CPUs (unstable TSC, not in sync between CPUs)
+
+We do not support such CPUs with Xenomai (and they get rarer these days).
+
+> 
+> As a sidenote, recent Kernels (5.3?) have a cleaned up and unified vDSO framework,
+> Potentially could grab stuff from there.
+
+If we go for hardening the kernel's gtod data updates, I guess we could 
+also switch to that as source. I now wonder why that path wasn't 
+considered back then, or why it wasn't possible.
+
+Thinking longer term, synchronizing the two clock sets not just for 
+tracing would likely be beneficial - PTP/TSN...
+
+Jan
 
 -- 
-Philippe.
+Siemens AG, Corporate Technology, CT RDA IOT SES-DE
+Corporate Competence Center Embedded Linux
 
