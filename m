@@ -1,14 +1,10 @@
-From: Lange Norbert <norbert.lange@andritz.com>
-Subject: RE: Request: offer CLOCK_HOST_MONOTONIC for systemwide tracing
-Date: Wed, 27 Nov 2019 17:24:41 +0000
-Message-ID: <VI1PR05MB5917ADBEBF8023AA25323339F6440@VI1PR05MB5917.eurprd05.prod.outlook.com>
-References: <VI1PR05MB59174B701138FA0BF37AB250F6440@VI1PR05MB5917.eurprd05.prod.outlook.com>
- <1455128f-2b97-62c7-7e11-7278686715bb@siemens.com>
-In-Reply-To: <1455128f-2b97-62c7-7e11-7278686715bb@siemens.com>
-Content-Language: en-US
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+From: Philippe  Gerum <rpm@xenomai.org>
+Subject: [PATCH 1/2] cobalt/sched: guard against missed rescheduling upon CPU
+ migration
+Date: Wed, 27 Nov 2019 19:16:23 +0100
+Message-Id: <20191127181624.3043-1-rpm@xenomai.org>
 MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,93 +13,351 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jan Kiszka <jan.kiszka@siemens.com>, "Xenomai (xenomai@xenomai.org)" <xenomai@xenomai.org>
-Cc: "mathieu.desnoyers@efficios.com" <mathieu.desnoyers@efficios.com>
+To: xenomai@xenomai.org
 
-DQoNCj4gLS0tLS1PcmlnaW5hbCBNZXNzYWdlLS0tLS0NCj4gRnJvbTogSmFuIEtpc3prYSA8amFu
-Lmtpc3prYUBzaWVtZW5zLmNvbT4NCj4gU2VudDogTWl0dHdvY2gsIDI3LiBOb3ZlbWJlciAyMDE5
-IDE4OjA2DQo+IFRvOiBMYW5nZSBOb3JiZXJ0IDxub3JiZXJ0LmxhbmdlQGFuZHJpdHouY29tPjsg
-WGVub21haQ0KPiAoeGVub21haUB4ZW5vbWFpLm9yZykgPHhlbm9tYWlAeGVub21haS5vcmc+DQo+
-IENjOiBtYXRoaWV1LmRlc25veWVyc0BlZmZpY2lvcy5jb20NCj4gU3ViamVjdDogUmU6IFJlcXVl
-c3Q6IG9mZmVyIENMT0NLX0hPU1RfTU9OT1RPTklDIGZvciBzeXN0ZW13aWRlDQo+IHRyYWNpbmcN
-Cj4NCj4gTk9OLUFORFJJVFogU09VUkNFOiBCRSBDQVVUSU9VUyBXSVRIIENPTlRFTlQsIExJTktT
-IE9SDQo+IEFUVEFDSE1FTlRTLg0KPg0KPg0KPiBPbiAyNy4xMS4xOSAxNzoyMCwgTGFuZ2UgTm9y
-YmVydCB2aWEgWGVub21haSB3cm90ZToNCj4gPiBIZWxsbywNCj4gPg0KPiA+IFN5c3RlbXdpZGUg
-dHJhY2VzIHdvdWxkIHJlcXVpcmUgdGhlIHNhbWUgY2xvY2ssIHNvIExpbnV4IHByb2Nlc3NlcyB1
-c2UNCj4gPiBDTE9DS19NT05PVE9OSUMgKHRoZXkgbm9ybWFsbHkgZG8gYnkgZGVmYXVsdCksIEtl
-cm5lbCB0cmFjZXMgc2hvdWxkDQo+IGRvIHNvIHRvbyAoa3RpbWVfZ2V0X21vbm9fZmFzdF9ucyku
-DQo+ID4gWGVub21haSBQcm9jZXNzZXMvVGhyZWFkIGhhdmUgbm8gcmVsaWFibGUgdG8gcHJvZHVj
-ZSBtYXRjaGluZyB0cmFjZXMuDQo+ID4gVGhlIGlkZWEgd291bGQgYmUgdG8gY29uZmlndXJlIHRo
-ZSB0cmFjaW5nIGZyYW1ld29ya3MgdG8gdXNlIHRoZSBuZXcNCj4gQ0xPQ0tfSE9TVF9NT05PVE9O
-SUMgZm9yIHRob3NlLg0KPg0KPiBEbyB3ZSBrbm93IHdoYXQgbWFrZXMgdGhlIHR3byBtb25vdG9u
-aWMgY2xvY2sgZGV2aWF0ZT8gRG9lcyBMaW51eCBhcHBseQ0KPiB0aGUgZnJlcXVlbmN5IG1vZGlm
-aWNhdGlvbnMgb2YgdGhlIHJlYWx0aW1lIGNsb2NrIG9uIHRoZSBtb25vdG9uaWMgb25lIGFzDQo+
-IHdlbGw/DQoNClllcyBpdCBkb2VzLCBpdCBsZWF2ZXMgb3V0IHRoZSBqdW1wcyBidXQgcmF0ZSBp
-cyBhZGp1c3RlZC4NCg0KPg0KPiA+IEFzIGNvbmNyZXRlIGV4YW1wbGUsIEx0dG5nIHdvdWxkIHVz
-ZSBhIGNsb2NrIHBsdWdpbiAob25seSkgZm9yIFhlbm9tYWkuDQo+ID4NCj4gPiBJIGxvb2tlZCBh
-dCB0aGUga2VybmVsIHNvdXJjZXMgaWYgSSBjYW4gYWRkIHRoaXMgbXlzZWxmIHF1aWNrbHksIGJ1
-dA0KPiA+IHNlZW1zIHRvIGJlIGludm9sdmUgc29tZSBzdHVmZiBsaWtlIGtldmVudHMgd2hpY2gg
-SSBrbm93IG5vdGhpbmcgYWJvdXQNCj4gKGtpbGxpbmcgdGhlIOKAnHF1aWNrbHnigJ0gcGFydCBh
-dCB0aGUgdmVyeSBsZWFzdCkuDQo+ID4NCj4gPiBUaGUgcmVxdWVzdCB3b3VsZCBiZSB0aGF0DQo+
-ID4gLSBTaW1pbGFyIHRvIENMT0NLX0hPU1RfUkVBTFRJTUUsIGEgQ0xPQ0tfSE9TVF9NT05PVE9O
-SUMgd291bGQNCj4gcmVzdWx0IGluIHRpbWVzdGFtcHMgdGhhdCBhIHZlcnkgY2xvc2UgdG8gdGhl
-IHBsYWluIExpbnV4IENMT0NLX01PTk9UT05JQy4NCj4gPiAtIFRoaXMgc2hvdWxkIGhhcHBlbiB3
-aXRob3V0IHN5c2NhbGxzIGFuZCBiZSB2ZXJ5IGVmZmljaWVudA0KPiA+IC0gSW4gcmVzcGVjdCB0
-byBiZWluZyBhYmxlIHRvIGF0dGFjaCBwcmVsb2FkZWQgdHJhY2VyIGRzb+KAmXMgKGxpa2UNCj4g
-PiB0cmFjaW5nIG1hbGxvYy9mcmVlKSwgdGhlIGNhbGwgc2hvdWxkIHdvcmsgY29ycmVjdGx5IGJl
-Zm9yZSBjb2JhbHQgaXMNCj4gPiBpbml0aWFsaXplZCAoY291bGQgYmUgd29ya2VkIGFyb3VuZCwg
-YnV0IHN0aWxsLi4pDQo+ID4NCj4gPiBPdGhlciBhbHRlcm5hdGl2ZXMgKG1vc3Qgbm90IHJlYWxp
-c3RpYyk6DQo+ID4NCj4gPiBDYWxsaW5nIHRoZSBsaW51eCB2ZHNvIGZ1bmN0aW9ucyBtaWdodCBy
-ZXN1bHQgaW4gZGVhZGxvY2tzIFsxXS4NCj4gPg0KPiA+IEEg4oCcc2FmZeKAnSB2YXJpYW50IGxp
-a2Uga3RpbWVfZ2V0X21vbm9fZmFzdF9ucyBpcyBub3QgYWNjZXNzaWJsZSBwZXIgc3lzY2FsbA0K
-PiBvciB1c2Vyc3BhY2UgdkRTTy4NCj4gPg0KPiA+IFRoZSBub3JtYWwgeGVub21haSBDTE9DS19N
-T05PVE9OSUMgaXMgbm90IHNrZXcgY29ycmVjdGVkIHRvDQo+IFJFQUxUSU1FDQo+ID4NCj4gPiBD
-TE9DS19NT05PVE9OSUNfUkFXIHBlcmhhcHMgbWlnaHQgYmUgZWFzaWx5IGNvbnZlcnRpYmxlIGJl
-dHdlZW4NCj4gPiBkb21haW5zLCBidXQgbGlrZWx5IHByb2JsZW1hdGljIG9uIHNldmVyYWwgQ1BV
-cyAodW5zdGFibGUgVFNDLCBub3QgaW4NCj4gPiBzeW5jIGJldHdlZW4gQ1BVcykNCj4NCj4gV2Ug
-ZG8gbm90IHN1cHBvcnQgc3VjaCBDUFVzIHdpdGggWGVub21haSAoYW5kIHRoZXkgZ2V0IHJhcmVy
-IHRoZXNlIGRheXMpLg0KDQpZb3UgdXNlIHNvbWUgc3BlY2lmaWMgYXJjaGl0ZWN0dXJhbCB0aW1l
-ciBsaWtlIHJkc3RjIG9uIHg4Ni4gVGhlIG1vbm90b25pYyBjbG9jaw0KY291bGQgaGF2ZSBkaWZm
-ZXJlbnQvc3dpdGNoYWJsZSBzb3VyY2VzLg0KDQo+ID4NCj4gPiBBcyBhIHNpZGVub3RlLCByZWNl
-bnQgS2VybmVscyAoNS4zPykgaGF2ZSBhIGNsZWFuZWQgdXAgYW5kIHVuaWZpZWQNCj4gPiB2RFNP
-IGZyYW1ld29yaywgUG90ZW50aWFsbHkgY291bGQgZ3JhYiBzdHVmZiBmcm9tIHRoZXJlLg0KPg0K
-PiBJZiB3ZSBnbyBmb3IgaGFyZGVuaW5nIHRoZSBrZXJuZWwncyBndG9kIGRhdGEgdXBkYXRlcywg
-SSBndWVzcyB3ZSBjb3VsZCBhbHNvDQo+IHN3aXRjaCB0byB0aGF0IGFzIHNvdXJjZS4gSSBub3cg
-d29uZGVyIHdoeSB0aGF0IHBhdGggd2Fzbid0IGNvbnNpZGVyZWQgYmFjaw0KPiB0aGVuLCBvciB3
-aHkgaXQgd2Fzbid0IHBvc3NpYmxlLg0KDQpXZWxsLCB0aGV5IGFyZSBwYXJhbm9pZCBhYm91dCBr
-ZWVwaW5nIHRoZSBtb25vdG9uaWMgY2xvY2sgbW9ub3RvbmljLg0KTG9vayBhdCB0aGUgaW1wbGVt
-ZW50YXRpb24gZm9yIGt0aW1lX2dldF9tb25vX2Zhc3RfbnMsDQp0aGlzIGhhcyBhIHByb3BlciBp
-bXBsZW1lbnRhdGlvbiBmb3IgInNhZmUiIGFjY2VzcywgYnV0IGl0IG1pZ2h0IHZpb2xhdGUNCnRo
-ZSBtb25vdG9uaWMgcHJvcGVydHkgbm93IGFuZCB0aGVuLg0KKHdoaWNoIHdvdWxkIGJlIHBlcmZl
-Y3RseSBmaW5lIGZvciBhIHRpbWVzdGFtcCBzb3VyY2UpDQoNCj4NCj4gVGhpbmtpbmcgbG9uZ2Vy
-IHRlcm0sIHN5bmNocm9uaXppbmcgdGhlIHR3byBjbG9jayBzZXRzIG5vdCBqdXN0IGZvciB0cmFj
-aW5nDQo+IHdvdWxkIGxpa2VseSBiZSBiZW5lZmljaWFsIC0gUFRQL1RTTi4uLg0KDQpTdXJlLCBi
-dXQgSSB3b3VsZCBrZWVwIGEgY2xvY2sgdGhhdCBpcyBhcyBzaW1wbGUgYXMgY29iYWx0cyBjbG9j
-ayBub3cgKGllLiB3aGF0IHNob3VsZCBoYXZlIGJlZW4NCkNMT0NLX01PTk9UT05JQ19SQVcgYW5k
-IGFyZ3VhYmx5IHRoZSBkZWZhdWx0KSwNCmZvciBkdXJhdGlvbnMgb2YgbWF4IGEgY291cGxlIHNl
-Y29uZHMgeW91IHR5cGljYWxseSBuZWVkLCBldmVyeXRoaW5nIGVsc2Ugd291bGQgYmUgb3Zlcmtp
-bGwuDQoNCkZvciB0aW1lc3RhbXBzIChhbmQgYWJzb2x1dGUgd2FpdHMpIGEgc3luY2hyb25pemVk
-IGNsb2NrIG1pZ2h0IG1ha2Ugc2Vuc2UuDQoNCkFkZGluZyB0aGUgaW50ZXJwb2xhdGlvbiB2YWx1
-ZXMgZnJvbSBrdGltZV9nZXRfbW9ub19mYXN0X25zIHRvIHRoZSBMaW51eCB2RFNPDQp3aXRob3V0
-IHRoZSB1c3VhbCBsb2NrIChidXQgYWx0ZXJuYXRpbmcgYnVmZmVycywgbGlrZSB0aGUgZnVuY3Rp
-b24gZG9lcykNCm1pZ2h0IGJlIHRoZSBiZXN0IHNvbHV0aW9uLCBBRkFJVSB0aGlzIHRpbWUgaXMg
-dGhlIHNhbWUgYXMgQ0xPQ0tfTU9OT1RPTklDLA0KIChpZS4gYnV0IGlzIG5vdCAiYnVsbGV0cHJv
-b2YgbW9ub3RvbmljIikgdXNlZCBmb3Iga2VybmVsIHRyYWNlcy4NCg0KDQpOb3JiZXJ0DQpfX19f
-X19fX19fX19fX19fX19fX19fX19fX19fX19fXw0KDQpUaGlzIG1lc3NhZ2UgYW5kIGFueSBhdHRh
-Y2htZW50cyBhcmUgc29sZWx5IGZvciB0aGUgdXNlIG9mIHRoZSBpbnRlbmRlZCByZWNpcGllbnRz
-LiBUaGV5IG1heSBjb250YWluIHByaXZpbGVnZWQgYW5kL29yIGNvbmZpZGVudGlhbCBpbmZvcm1h
-dGlvbiBvciBvdGhlciBpbmZvcm1hdGlvbiBwcm90ZWN0ZWQgZnJvbSBkaXNjbG9zdXJlLiBJZiB5
-b3UgYXJlIG5vdCBhbiBpbnRlbmRlZCByZWNpcGllbnQsIHlvdSBhcmUgaGVyZWJ5IG5vdGlmaWVk
-IHRoYXQgeW91IHJlY2VpdmVkIHRoaXMgZW1haWwgaW4gZXJyb3IgYW5kIHRoYXQgYW55IHJldmll
-dywgZGlzc2VtaW5hdGlvbiwgZGlzdHJpYnV0aW9uIG9yIGNvcHlpbmcgb2YgdGhpcyBlbWFpbCBh
-bmQgYW55IGF0dGFjaG1lbnQgaXMgc3RyaWN0bHkgcHJvaGliaXRlZC4gSWYgeW91IGhhdmUgcmVj
-ZWl2ZWQgdGhpcyBlbWFpbCBpbiBlcnJvciwgcGxlYXNlIGNvbnRhY3QgdGhlIHNlbmRlciBhbmQg
-ZGVsZXRlIHRoZSBtZXNzYWdlIGFuZCBhbnkgYXR0YWNobWVudCBmcm9tIHlvdXIgc3lzdGVtLg0K
-DQpBTkRSSVRaIEhZRFJPIEdtYkgNCg0KDQpSZWNodHNmb3JtLyBMZWdhbCBmb3JtOiBHZXNlbGxz
-Y2hhZnQgbWl0IGJlc2NocsOkbmt0ZXIgSGFmdHVuZyAvIENvcnBvcmF0aW9uDQoNCkZpcm1lbnNp
-dHovIFJlZ2lzdGVyZWQgc2VhdDogV2llbg0KDQpGaXJtZW5idWNoZ2VyaWNodC8gQ291cnQgb2Yg
-cmVnaXN0cnk6IEhhbmRlbHNnZXJpY2h0IFdpZW4NCg0KRmlybWVuYnVjaG51bW1lci8gQ29tcGFu
-eSByZWdpc3RyYXRpb246IEZOIDYxODMzIGcNCg0KRFZSOiAwNjA1MDc3DQoNClVJRC1Oci46IEFU
-VTE0NzU2ODA2DQoNCg0KVGhhbmsgWW91DQpfX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
-Xw0K
+From: Philippe Gerum <rpm@xenomai.org>
+
+In some cases, we may want to kick the rescheduling procedure
+(xnsched_run()) from call sites running over the root thread with hard
+irqs enabled, which could lead to a missed rescheduling opportunity,
+due to a CPU migration issue:
+
+    CPU0					CPU1
+    ----                         		----
+    t0: ...
+            <context switch>
+    t1: xnthread_resume(t0)
+             xnsched_run()
+             <CPU MIGRATION -->
+                  |                             |
+                  |                             |
+                  x                             |
+          (missed rescheduling)                 v
+                                    ___xnsched_run(CPU1.sched)
+
+To address this issue, make sure xnsched_run() is either called from
+the head domain from which CPU migration cannot happen, or with hard
+interrupts disabled. In most cases, non-atomic calls to xnsched_run()
+were moved inside the latest nklocked-section which might have changed
+the scheduler state, like suspending or resuming threads. Otherwise,
+the new xnsched_run_irqson() helper is called, which ensures that hard
+interrupts are disabled before branching to xnsched_run().
+
+Finally, turning on CONFIG_XENO_OPT_DEBUG_COBALT enables a (oneshot)
+assertion which detects invalid calls from the root domain with hard
+irqs enabled.
+---
+ include/cobalt/kernel/rtdm/driver.h |  4 +--
+ include/cobalt/kernel/sched.h       | 38 +++++++----------------------
+ kernel/cobalt/posix/mqueue.c        | 13 ++++------
+ kernel/cobalt/posix/process.c       |  3 ++-
+ kernel/cobalt/posix/timerfd.c       |  9 +++----
+ kernel/cobalt/rtdm/drvlib.c         |  2 +-
+ kernel/cobalt/sched.c               | 37 ++++++++++++++++++++++------
+ kernel/cobalt/select.c              |  6 ++---
+ kernel/cobalt/thread.c              |  4 +--
+ 9 files changed, 56 insertions(+), 60 deletions(-)
+
+diff --git a/include/cobalt/kernel/rtdm/driver.h b/include/cobalt/kernel/rtdm/driver.h
+index d3d5d6b27..9a39c2c06 100644
+--- a/include/cobalt/kernel/rtdm/driver.h
++++ b/include/cobalt/kernel/rtdm/driver.h
+@@ -1045,7 +1045,7 @@ static inline void rtdm_task_set_priority(rtdm_task_t *task, int priority)
+ {
+ 	union xnsched_policy_param param = { .rt = { .prio = priority } };
+ 	xnthread_set_schedparam(task, &xnsched_class_rt, &param);
+-	xnsched_run();
++	xnsched_run_irqson();
+ }
+ 
+ static inline int rtdm_task_set_period(rtdm_task_t *task,
+@@ -1064,7 +1064,7 @@ static inline int rtdm_task_unblock(rtdm_task_t *task)
+ {
+ 	int res = xnthread_unblock(task);
+ 
+-	xnsched_run();
++	xnsched_run_irqson();
+ 	return res;
+ }
+ 
+diff --git a/include/cobalt/kernel/sched.h b/include/cobalt/kernel/sched.h
+index 3b0825d67..d9ce568b5 100644
+--- a/include/cobalt/kernel/sched.h
++++ b/include/cobalt/kernel/sched.h
+@@ -298,25 +298,8 @@ void __xnsched_run_handler(void);
+ static inline int __xnsched_run(struct xnsched *sched)
+ {
+ 	/*
+-	 * NOTE: Since ___xnsched_run() won't run immediately if an
+-	 * escalation to primary domain is needed, we won't use
+-	 * critical scheduler information before we actually run in
+-	 * primary mode; therefore we can first test the scheduler
+-	 * status then escalate.
+-	 *
+-	 * Running in the primary domain means that no Linux-triggered
+-	 * CPU migration may occur from that point either. Finally,
+-	 * since migration is always a self-directed operation for
+-	 * Xenomai threads, we can safely read the scheduler state
+-	 * bits without holding the nklock.
+-	 *
+-	 * Said differently, if we race here because of a CPU
+-	 * migration, it must have been Linux-triggered because we run
+-	 * in secondary mode; in which case we will escalate to the
+-	 * primary domain, then unwind the current call frame without
+-	 * running the rescheduling procedure in
+-	 * ___xnsched_run(). Therefore, the scheduler slot
+-	 * (i.e. "sched") will be either valid, or unused.
++	 * Reschedule if XNSCHED is pending, but never over an IRQ
++	 * handler or in the middle of unlocked context switch.
+ 	 */
+ 	if (((sched->status|sched->lflags) &
+ 	     (XNINIRQ|XNINSW|XNRESCHED)) != XNRESCHED)
+@@ -328,20 +311,17 @@ static inline int __xnsched_run(struct xnsched *sched)
+ static inline int xnsched_run(void)
+ {
+ 	struct xnsched *sched = xnsched_current();
++	struct xnthread *curr = READ_ONCE(sched->curr);
++
+ 	/*
+-	 * No rescheduling is possible, either if:
+-	 *
+-	 * - the current thread holds the scheduler lock
+-	 * - an ISR context is active
+-	 * - we are caught in the middle of an unlocked context switch.
++	 * If running over the root thread, hard irqs must be off
++	 * (asserted out of line in ___xnsched_run()).
+ 	 */
+-	smp_rmb();
+-	if (unlikely(sched->curr->lock_count > 0))
+-		return 0;
+-
+-	return __xnsched_run(sched);
++	return curr->lock_count > 0 ? 0 : __xnsched_run(sched);
+ }
+ 
++int xnsched_run_irqson(void);
++
+ void xnsched_lock(void);
+ 
+ void xnsched_unlock(void);
+diff --git a/kernel/cobalt/posix/mqueue.c b/kernel/cobalt/posix/mqueue.c
+index 5c644b2c4..cd1cf3ce8 100644
+--- a/kernel/cobalt/posix/mqueue.c
++++ b/kernel/cobalt/posix/mqueue.c
+@@ -158,22 +158,19 @@ static inline int mq_init(struct cobalt_mq *mq, const struct mq_attr *attr)
+ 
+ static inline void mq_destroy(struct cobalt_mq *mq)
+ {
+-	int resched;
+ 	spl_t s;
+ 
+ 	xnlock_get_irqsave(&nklock, s);
+-	resched = (xnsynch_destroy(&mq->receivers) == XNSYNCH_RESCHED);
+-	resched = (xnsynch_destroy(&mq->senders) == XNSYNCH_RESCHED) || resched;
++	xnsynch_destroy(&mq->receivers);
++	xnsynch_destroy(&mq->senders);
+ 	list_del(&mq->link);
++	xnsched_run();
+ 	xnlock_put_irqrestore(&nklock, s);
+-	xnselect_destroy(&mq->read_select);
+-	xnselect_destroy(&mq->write_select);
++	xnselect_destroy(&mq->read_select); /* Reschedules. */
++	xnselect_destroy(&mq->write_select); /* Ditto. */
+ 	xnregistry_remove(mq->handle);
+ 	xnheap_vfree(mq->mem);
+ 	kfree(mq);
+-
+-	if (resched)
+-		xnsched_run();
+ }
+ 
+ static int mq_unref_inner(struct cobalt_mq *mq, spl_t s)
+diff --git a/kernel/cobalt/posix/process.c b/kernel/cobalt/posix/process.c
+index 90949e519..25d945821 100644
+--- a/kernel/cobalt/posix/process.c
++++ b/kernel/cobalt/posix/process.c
+@@ -1147,7 +1147,8 @@ static void __handle_taskexit_event(struct task_struct *p)
+ 	xnlock_put_irqrestore(&nklock, s);
+ 
+ 	xnthread_run_handler_stack(thread, exit_thread);
+-	xnsched_run();
++
++	xnsched_run_irqson();
+ 
+ 	if (xnthread_test_state(thread, XNUSER)) {
+ 		cobalt_umm_free(&cobalt_kernel_ppd.umm, thread->u_window);
+diff --git a/kernel/cobalt/posix/timerfd.c b/kernel/cobalt/posix/timerfd.c
+index 610206047..29046cfec 100644
+--- a/kernel/cobalt/posix/timerfd.c
++++ b/kernel/cobalt/posix/timerfd.c
+@@ -131,18 +131,15 @@ timerfd_select(struct rtdm_fd *fd, struct xnselector *selector,
+ static void timerfd_close(struct rtdm_fd *fd)
+ {
+ 	struct cobalt_tfd *tfd = container_of(fd, struct cobalt_tfd, fd);
+-	int resched;
+ 	spl_t s;
+ 
+ 	xnlock_get_irqsave(&nklock, s);
+ 	xntimer_destroy(&tfd->timer);
+-	resched = xnsynch_destroy(&tfd->readers) == XNSYNCH_RESCHED;
++	xnsynch_destroy(&tfd->readers);
++	xnsched_run();
+ 	xnlock_put_irqrestore(&nklock, s);
+-	xnselect_destroy(&tfd->read_select);
++	xnselect_destroy(&tfd->read_select); /* Reschedules. */
+ 	xnfree(tfd);
+-
+-	if (resched)
+-		xnsched_run();
+ }
+ 
+ static struct rtdm_fd_ops timerfd_ops = {
+diff --git a/kernel/cobalt/rtdm/drvlib.c b/kernel/cobalt/rtdm/drvlib.c
+index 5778ad559..1ed6c9a1f 100644
+--- a/kernel/cobalt/rtdm/drvlib.c
++++ b/kernel/cobalt/rtdm/drvlib.c
+@@ -1300,7 +1300,7 @@ void rtdm_mutex_unlock(rtdm_mutex_t *mutex)
+ 
+ 	if (unlikely(xnsynch_release(&mutex->synch_base,
+ 				     xnsched_current_thread())))
+-		xnsched_run();
++		xnsched_run_irqson();
+ }
+ EXPORT_SYMBOL_GPL(rtdm_mutex_unlock);
+ 
+diff --git a/kernel/cobalt/sched.c b/kernel/cobalt/sched.c
+index 74dc7a961..1c89452d1 100644
+--- a/kernel/cobalt/sched.c
++++ b/kernel/cobalt/sched.c
+@@ -376,10 +376,8 @@ struct xnsched *xnsched_finish_unlocked_switch(struct xnsched *sched)
+ void xnsched_lock(void)
+ {
+ 	struct xnsched *sched = xnsched_current();
+-	struct xnthread *curr = sched->curr;
++	struct xnthread *curr = READ_ONCE(sched->curr);
+ 
+-	if (sched->lflags & XNINIRQ)
+-		return;
+ 	/*
+ 	 * CAUTION: The fast xnthread_current() accessor carries the
+ 	 * relevant lock nesting count only if current runs in primary
+@@ -391,6 +389,9 @@ void xnsched_lock(void)
+ 	XENO_WARN_ON_ONCE(COBALT, (curr->state & XNROOT) &&
+ 			  !hard_irqs_disabled());
+ 
++	if (sched->lflags & XNINIRQ)
++		return;
++
+ 	curr->lock_count++;
+ }
+ EXPORT_SYMBOL_GPL(xnsched_lock);
+@@ -398,14 +399,17 @@ EXPORT_SYMBOL_GPL(xnsched_lock);
+ void xnsched_unlock(void)
+ {
+ 	struct xnsched *sched = xnsched_current();
+-	struct xnthread *curr = sched->curr;
++	struct xnthread *curr = READ_ONCE(sched->curr);
++
++	XENO_WARN_ON_ONCE(COBALT, (curr->state & XNROOT) &&
++			  !hard_irqs_disabled());
+ 
+ 	if (sched->lflags & XNINIRQ)
+ 		return;
+-	
++
+ 	if (!XENO_ASSERT(COBALT, curr->lock_count > 0))
+ 		return;
+-	
++
+ 	if (--curr->lock_count == 0) {
+ 		xnthread_clear_localinfo(curr, XNLBALERT);
+ 		xnsched_run();
+@@ -962,6 +966,8 @@ int ___xnsched_run(struct xnsched *sched)
+ 	int switched, shadow;
+ 	spl_t s;
+ 
++	XENO_WARN_ON_ONCE(COBALT, !hard_irqs_disabled() && ipipe_root_p);
++
+ 	if (xnarch_escalate())
+ 		return 0;
+ 
+@@ -1000,7 +1006,11 @@ reschedule:
+ 
+ 	trace_cobalt_switch_context(prev, next);
+ 
+-	sched->curr = next;
++	/*
++	 * sched->curr is shared locklessly with xnsched_run(), be
++	 * careful about load/store tearing.
++	 */
++	WRITE_ONCE(sched->curr, next);
+ 	shadow = 1;
+ 
+ 	if (xnthread_test_state(prev, XNROOT)) {
+@@ -1064,6 +1074,19 @@ shadow_epilogue:
+ }
+ EXPORT_SYMBOL_GPL(___xnsched_run);
+ 
++int xnsched_run_irqson(void)
++{
++	spl_t s;
++	int ret;
++
++	splhigh(s);
++	ret = xnsched_run();
++	splexit(s);
++
++	return ret;
++}
++EXPORT_SYMBOL_GPL(xnsched_run_irqson);
++
+ #ifdef CONFIG_XENO_OPT_VFILE
+ 
+ static struct xnvfile_directory sched_vfroot;
+diff --git a/kernel/cobalt/select.c b/kernel/cobalt/select.c
+index 7f839f159..df3d960db 100644
+--- a/kernel/cobalt/select.c
++++ b/kernel/cobalt/select.c
+@@ -409,7 +409,6 @@ static void xnselector_destroy_loop(void *cookie)
+ 	struct xnselect_binding *binding, *tmpb;
+ 	struct xnselector *selector, *tmps;
+ 	struct xnselect *fd;
+-	int resched;
+ 	spl_t s;
+ 
+ 	xnlock_get_irqsave(&nklock, s);
+@@ -430,12 +429,11 @@ static void xnselector_destroy_loop(void *cookie)
+ 			xnlock_get_irqsave(&nklock, s);
+ 		}
+ 	release:
+-		resched = xnsynch_destroy(&selector->synchbase) == XNSYNCH_RESCHED;
++		xnsynch_destroy(&selector->synchbase);
++		xnsched_run();
+ 		xnlock_put_irqrestore(&nklock, s);
+ 
+ 		xnfree(selector);
+-		if (resched)
+-			xnsched_run();
+ 
+ 		xnlock_get_irqsave(&nklock, s);
+ 	}
+diff --git a/kernel/cobalt/thread.c b/kernel/cobalt/thread.c
+index a5f8e1b00..5260fb1e7 100644
+--- a/kernel/cobalt/thread.c
++++ b/kernel/cobalt/thread.c
+@@ -1582,9 +1582,9 @@ check_self_cancel:
+ 	} else
+ 		__xnthread_kick(thread);
+ out:
+-	xnlock_put_irqrestore(&nklock, s);
+-
+ 	xnsched_run();
++
++	xnlock_put_irqrestore(&nklock, s);
+ }
+ EXPORT_SYMBOL_GPL(xnthread_cancel);
+ 
+-- 
+2.21.0
+
 
