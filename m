@@ -1,11 +1,20 @@
+Subject: Re: [ANNOUNCE] Xenomai v3.1-rc3 available
+References: <y27Ah4Xs-t8bhib0n5wvb0RE8X2b-B4GbVUz2PHHbETtMbl4SjmsFQP7GPGLfWozQrc_BW9MqoZFFIq0RYnMjvl_VQ0ecJz5Tp5fcaXPKcg=@codecraftsmen.org>
+ <e2ceb276-09e5-2a11-ac34-3926668615e0@siemens.com>
+ <6A8KLFuCLPtKt-g8GWZEP4G0rMK4ZA6RRo-1DSBHkySvKYcPcyydk9ON5HCyWrTPvdMz7BQdFAVYWPmkAs1zuogrEDjXI0dWDwVnFJYiIFc=@codecraftsmen.org>
+ <ThBEK6LcImOy7l4McXiAt42fRQ1jdF6qmnYznYFw-AYdDnGzGhs3gs4FHzjpMJxODeg3PDylWkmWB1xgTr-b_wbB4eJ79rvqTny2vlYq9ZA=@codecraftsmen.org>
+ <f5bfb2f7-6352-e49b-47a5-1efa06ca8a8d@siemens.com>
+ <81b51127-ecdd-e3d2-050e-8f3e8f3dadd7@xenomai.org>
+ <90c16354-8001-455d-7128-c614eae492fd@siemens.com>
+ <93921563-1769-4863-2e2d-bedaea114b32@xenomai.org>
 From: Jan Kiszka <jan.kiszka@siemens.com>
-Subject: [PATCH] rtdm: Remove early exit from send/recvmmsg on vlan == 0
-Message-ID: <fc82c876-9115-7a59-726a-5b4baf01de27@siemens.com>
-Date: Fri, 15 Nov 2019 10:44:51 +0100
+Message-ID: <c440bddc-756f-1b91-c2b3-06a5cac16c73@siemens.com>
+Date: Wed, 27 Nov 2019 21:16:13 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+In-Reply-To: <93921563-1769-4863-2e2d-bedaea114b32@xenomai.org>
+Content-Type: text/plain; charset="utf-8"; format="flowed"
 Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -14,58 +23,92 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Xenomai <xenomai@xenomai.org>
+To: Philippe Gerum <rpm@xenomai.org>, Jeff Webb <w1@codecraftsmen.org>
+Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-From: Jan Kiszka <jan.kiszka@siemens.com>
+On 27.11.19 21:14, Philippe Gerum wrote:
+> On 11/27/19 6:07 PM, Jan Kiszka wrote:
+>> On 27.11.19 17:48, Philippe Gerum wrote:
+>>> On 11/26/19 6:38 PM, Jan Kiszka via Xenomai wrote:
+>>>> On 26.11.19 18:29, Jeff Webb wrote:
+>>>>> On 11/15/19 5:14 PM, Jeff Webb via Xenomai wrote:
+>>>>>> On Friday, November 15, 2019 4:40 AM, Jan Kiszka
+>>>>>> <jan.kiszka@siemens.com> wrote:
+>>>>>>> On 15.11.19 01:31, Jeff Webb via Xenomai wrote:
+>>>>>>>> I am building a Xenomai cobalt kernel under Ubuntu 18.04 based on:
+>>>>>>>>
+>>>>>>>>         Linux 4.19.75
+>>>>>>>>         Xenomai 3.1-rc3
+>>>>>>>>         ipipe-core-4.19.75-x86-7.patch
+>>>>>>>>
+>>>>>>>>
+>>>>>>>> After running prepare-kernel.sh and "makeolddefconfig" (using the
+>>>>>>>> unmodified default .config), I get this error:
+>>>>>>>>
+>>>>>>>>         WARNING: unmet direct dependencies detected for PARAVIRT
+>>>>>>>>           Depends on [n]: HYPERVISOR_GUEST [=y] && !IPIPE [=y]
+>>>>>>>>           Selected by [m]:
+>>>>>>>>           - HYPERV [=m] && X86 [=y] && ACPI [=y] && X86_LOCAL_APIC [=y]
+>>>>>>>> && HYPERVISOR_GUEST [=y]
+>>>>>>>>
+>>>>>>>>
+>>>>>>>> I turned off HYPERVISOR_GUEST manually to fix the warning. I hadn't
+>>>>>>>> seen this type of error before, but perhaps something could be done in
+>>>>>>>> the patch to make the default config consistent... Just FYI.
+>>>>>>>
+>>>>>>> It's HYPERV what causes this, by also pulling PARAVIRT which is not
+>>>>>>> compatible with I-pipe. We need to tag that config as well to avoid this.
+>>>>>>>
+>>>>>>>> Otherwise, everything went fine with the build process and initial
+>>>>>>>> testing. I will be giving this build some more testing over the next
+>>>>>>>> week or so and will let you know if I find any issues.
+>>>>>>>
+>>>>>>> Great to hear, thanks.
+>>>>>>
+>>>>>> I haven't done extensive testing yet, but I tried several of our
+>>>>>> real-time applications with the new build, and things seem to be working
+>>>>>> so far.  Even on a different (but perhaps similar), older set of
+>>>>>> hardware from the one that has the intremap issues, I get the same
+>>>>>> kernel BUG messages (using the same 4.19 kernel build) mentioned in my
+>>>>>> other email:
+>>>>>>
+>>>>>>       https://xenomai.org/pipermail/xenomai/2019-November/041988.html
+>>>>>>
+>>>>>> but things appear to be functioning properly as far as I can tell.
+>>>>>>
+>>>>>> This is just some more feedback on the latest kernel / xenomai release
+>>>>>> candidate.
+>>>>>
+>>>>> All is going well so far with Xenomai v3.1-rc3 /
+>>>>> ipipe-core-4.19.84-x86-8.patch.  Given the recent patches posted to the
+>>>>> list, are there plans for another RC, or will the next release be the
+>>>>> official 3.1?
+>>>>>
+>>>>
+>>>> Thanks for validating!
+>>>>
+>>>> The scheduler changes qualify for another -rc, yes, I'm just waiting for an
+>>>> update from Philippe for a closing patch on this topic.
+>>>>
+>>>
+>>> Patiently reviewing all call sites kicking the rescheduling procedure here.
+>>> The picture does not look as simple as I originally thought. No blocker,
+>>> but a bit more work to prevent the root stage from rescheduling with hard
+>>> irqs on.
+>>>
+>>
+>> Well, I have my own blocker now anyway (__SCHED_CURRENT removal)...
+>>
+> 
+> With the v2 series, I'm done with the reschedule-over-root mess. Non-regression
+> tests are happy, switchtest too. This definitely calls for another -rc though.
+> 
 
-This enables tracing and is not really needed.
+Will have a look, and we will test as good as possible.
 
-Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
----
- kernel/cobalt/rtdm/fd.c | 10 ++--------
- 1 file changed, 2 insertions(+), 8 deletions(-)
+Patches have no signed-off, though. Should I add them?
 
-diff --git a/kernel/cobalt/rtdm/fd.c b/kernel/cobalt/rtdm/fd.c
-index 5b2c3834da..eb80aa7bf5 100644
---- a/kernel/cobalt/rtdm/fd.c
-+++ b/kernel/cobalt/rtdm/fd.c
-@@ -656,16 +656,13 @@ int __rtdm_fd_recvmmsg(int ufd, void __user *u_msgvec, unsigned int vlen,
- 	struct cobalt_recvmmsg_timer rq;
- 	xntmode_t tmode = XN_RELATIVE;
- 	struct timespec ts = { 0 };
--	int ret, datagrams = 0;
-+	int ret = 0, datagrams = 0;
- 	xnticks_t timeout = 0;
- 	struct mmsghdr mmsg;
- 	struct rtdm_fd *fd;
- 	void __user *u_p;
- 	ssize_t len;
- 	spl_t s;
--	
--	if (vlen == 0)
--		return 0;
- 
- 	fd = rtdm_fd_get(ufd, 0);
- 	if (IS_ERR(fd)) {
-@@ -786,14 +783,11 @@ int __rtdm_fd_sendmmsg(int ufd, void __user *u_msgvec, unsigned int vlen,
- 		       int (*get_mmsg)(struct mmsghdr *mmsg, void __user *u_mmsg),
- 		       int (*put_mmsg)(void __user **u_mmsg_p, const struct mmsghdr *mmsg))
- {
--	int ret, datagrams = 0;
-+	int ret = 0, datagrams = 0;
- 	struct mmsghdr mmsg;
- 	struct rtdm_fd *fd;
- 	void __user *u_p;
- 	ssize_t len;
--	
--	if (vlen == 0)
--		return 0;
- 
- 	fd = rtdm_fd_get(ufd, 0);
- 	if (IS_ERR(fd)) {
--- 
-2.16.4
-
+Jan
 
 -- 
 Siemens AG, Corporate Technology, CT RDA IOT SES-DE
