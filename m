@@ -1,12 +1,14 @@
-From: Philippe  Gerum <rpm@xenomai.org>
-Subject: [PATCH 2/2] drivers/testing: heapcheck: silence UMR warning (false
- positive)
-Date: Wed, 27 Nov 2019 19:16:24 +0100
-Message-Id: <20191127181624.3043-2-rpm@xenomai.org>
-In-Reply-To: <20191127181624.3043-1-rpm@xenomai.org>
+Subject: Re: [PATCH 1/2] cobalt/sched: guard against missed rescheduling upon
+ CPU migration
 References: <20191127181624.3043-1-rpm@xenomai.org>
+From: Philippe Gerum <rpm@xenomai.org>
+Message-ID: <88a366e4-7d0a-cea3-1b22-65103628fa78@xenomai.org>
+Date: Wed, 27 Nov 2019 19:17:57 +0100
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+In-Reply-To: <20191127181624.3043-1-rpm@xenomai.org>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,36 +17,20 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
+To: Philippe Gerum <rpm@xenomai.org>
+Cc: "Xenomai@xenomai.org" <Xenomai@xenomai.org>
 
-From: Philippe Gerum <rpm@xenomai.org>
+On 11/27/19 7:16 PM, Philippe Gerum wrote:
+> From: Philippe Gerum <rpm@xenomai.org>
+> 
+> In some cases, we may want to kick the rescheduling procedure
+> (xnsched_run()) from call sites running over the root thread with hard
+> irqs enabled, which could lead to a missed rescheduling opportunity,
+> due to a CPU migration issue:
+> 
 
----
- kernel/drivers/testing/heapcheck.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+To early to push, please do not consider this one.
 
-diff --git a/kernel/drivers/testing/heapcheck.c b/kernel/drivers/testing/heapcheck.c
-index 4eb6a5aae..023a06ca6 100644
---- a/kernel/drivers/testing/heapcheck.c
-+++ b/kernel/drivers/testing/heapcheck.c
-@@ -449,7 +449,7 @@ static int heapcheck_ioctl(struct rtdm_fd *fd,
- 	struct rttst_heap_stathdr sthdr;
- 	struct rttst_heap_parms parms;
- 	int ret;
--	
-+
- 	switch (request) {
- 	case RTTST_RTIOC_HEAP_CHECK:
- 		ret = rtdm_copy_from_user(fd, &parms, arg, sizeof(parms));
-@@ -464,6 +464,7 @@ static int heapcheck_ioctl(struct rtdm_fd *fd,
- 		ret = rtdm_copy_to_user(fd, arg, &parms, sizeof(parms));
- 		break;
- 	case RTTST_RTIOC_HEAP_STAT_COLLECT:
-+		sthdr.buf = NULL;
- 		ret = rtdm_copy_from_user(fd, &sthdr, arg, sizeof(sthdr));
- 		if (ret)
- 			return ret;
 -- 
-2.21.0
-
+Philippe.
 
