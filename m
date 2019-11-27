@@ -1,11 +1,18 @@
-From: Philippe  Gerum <rpm@xenomai.org>
-Subject: [PATCH v2 3/3] cobalt/sched: guard against missed rescheduling upon
- CPU migration
-Date: Wed, 27 Nov 2019 21:08:10 +0100
-Message-Id: <20191127200810.19869-3-rpm@xenomai.org>
-In-Reply-To: <20191127200810.19869-1-rpm@xenomai.org>
-References: <20191127200810.19869-1-rpm@xenomai.org>
+Subject: Re: [ANNOUNCE] Xenomai v3.1-rc3 available
+References: <y27Ah4Xs-t8bhib0n5wvb0RE8X2b-B4GbVUz2PHHbETtMbl4SjmsFQP7GPGLfWozQrc_BW9MqoZFFIq0RYnMjvl_VQ0ecJz5Tp5fcaXPKcg=@codecraftsmen.org>
+ <e2ceb276-09e5-2a11-ac34-3926668615e0@siemens.com>
+ <6A8KLFuCLPtKt-g8GWZEP4G0rMK4ZA6RRo-1DSBHkySvKYcPcyydk9ON5HCyWrTPvdMz7BQdFAVYWPmkAs1zuogrEDjXI0dWDwVnFJYiIFc=@codecraftsmen.org>
+ <ThBEK6LcImOy7l4McXiAt42fRQ1jdF6qmnYznYFw-AYdDnGzGhs3gs4FHzjpMJxODeg3PDylWkmWB1xgTr-b_wbB4eJ79rvqTny2vlYq9ZA=@codecraftsmen.org>
+ <f5bfb2f7-6352-e49b-47a5-1efa06ca8a8d@siemens.com>
+ <81b51127-ecdd-e3d2-050e-8f3e8f3dadd7@xenomai.org>
+ <90c16354-8001-455d-7128-c614eae492fd@siemens.com>
+From: Philippe Gerum <rpm@xenomai.org>
+Message-ID: <93921563-1769-4863-2e2d-bedaea114b32@xenomai.org>
+Date: Wed, 27 Nov 2019 21:14:34 +0100
 MIME-Version: 1.0
+In-Reply-To: <90c16354-8001-455d-7128-c614eae492fd@siemens.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Language: en-US
 Content-Transfer-Encoding: 8bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
@@ -15,297 +22,85 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
+To: Jan Kiszka <jan.kiszka@siemens.com>, Jeff Webb <w1@codecraftsmen.org>
+Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-From: Philippe Gerum <rpm@xenomai.org>
+On 11/27/19 6:07 PM, Jan Kiszka wrote:
+> On 27.11.19 17:48, Philippe Gerum wrote:
+>> On 11/26/19 6:38 PM, Jan Kiszka via Xenomai wrote:
+>>> On 26.11.19 18:29, Jeff Webb wrote:
+>>>> On 11/15/19 5:14 PM, Jeff Webb via Xenomai wrote:
+>>>>> On Friday, November 15, 2019 4:40 AM, Jan Kiszka
+>>>>> <jan.kiszka@siemens.com> wrote:
+>>>>>> On 15.11.19 01:31, Jeff Webb via Xenomai wrote:
+>>>>>>> I am building a Xenomai cobalt kernel under Ubuntu 18.04 based on:
+>>>>>>>
+>>>>>>>        Linux 4.19.75
+>>>>>>>        Xenomai 3.1-rc3
+>>>>>>>        ipipe-core-4.19.75-x86-7.patch
+>>>>>>>
+>>>>>>>
+>>>>>>> After running prepare-kernel.sh and "makeolddefconfig" (using the
+>>>>>>> unmodified default .config), I get this error:
+>>>>>>>
+>>>>>>>        WARNING: unmet direct dependencies detected for PARAVIRT
+>>>>>>>          Depends on [n]: HYPERVISOR_GUEST [=y] && !IPIPE [=y]
+>>>>>>>          Selected by [m]:
+>>>>>>>          - HYPERV [=m] && X86 [=y] && ACPI [=y] && X86_LOCAL_APIC [=y]
+>>>>>>> && HYPERVISOR_GUEST [=y]
+>>>>>>>
+>>>>>>>
+>>>>>>> I turned off HYPERVISOR_GUEST manually to fix the warning. I hadn't
+>>>>>>> seen this type of error before, but perhaps something could be done in
+>>>>>>> the patch to make the default config consistent... Just FYI.
+>>>>>>
+>>>>>> It's HYPERV what causes this, by also pulling PARAVIRT which is not
+>>>>>> compatible with I-pipe. We need to tag that config as well to avoid this.
+>>>>>>
+>>>>>>> Otherwise, everything went fine with the build process and initial
+>>>>>>> testing. I will be giving this build some more testing over the next
+>>>>>>> week or so and will let you know if I find any issues.
+>>>>>>
+>>>>>> Great to hear, thanks.
+>>>>>
+>>>>> I haven't done extensive testing yet, but I tried several of our
+>>>>> real-time applications with the new build, and things seem to be working
+>>>>> so far.  Even on a different (but perhaps similar), older set of
+>>>>> hardware from the one that has the intremap issues, I get the same
+>>>>> kernel BUG messages (using the same 4.19 kernel build) mentioned in my
+>>>>> other email:
+>>>>>
+>>>>>      https://xenomai.org/pipermail/xenomai/2019-November/041988.html
+>>>>>
+>>>>> but things appear to be functioning properly as far as I can tell.
+>>>>>
+>>>>> This is just some more feedback on the latest kernel / xenomai release
+>>>>> candidate.
+>>>>
+>>>> All is going well so far with Xenomai v3.1-rc3 /
+>>>> ipipe-core-4.19.84-x86-8.patch.  Given the recent patches posted to the
+>>>> list, are there plans for another RC, or will the next release be the
+>>>> official 3.1?
+>>>>
+>>>
+>>> Thanks for validating!
+>>>
+>>> The scheduler changes qualify for another -rc, yes, I'm just waiting for an
+>>> update from Philippe for a closing patch on this topic.
+>>>
+>>
+>> Patiently reviewing all call sites kicking the rescheduling procedure here.
+>> The picture does not look as simple as I originally thought. No blocker,
+>> but a bit more work to prevent the root stage from rescheduling with hard
+>> irqs on.
+>>
+> 
+> Well, I have my own blocker now anyway (__SCHED_CURRENT removal)...
+> 
 
-Kicking the rescheduling procedure (xnsched_run()) from call sites
-running over the root thread with hard irqs enabled may lead to
-missing a rescheduling opportunity as a consequence of a CPU
-migration, e.g.:
+With the v2 series, I'm done with the reschedule-over-root mess. Non-regression
+tests are happy, switchtest too. This definitely calls for another -rc though.
 
-    CPU0					CPU1
-    ----                         		----
-    t0: ...
-            <context switch>
-    t1: xnthread_resume(t0)
-             xnsched_run()
-             <CPU MIGRATION -->
-                  |                             |
-                  |                             |
-                  x                             |
-          (missed rescheduling)                 v
-                                    ___xnsched_run(CPU1.sched)
-
-To address this issue, make sure every call to xnsched_run() either
-runs from the head domain which is not affected by CPU migration, or
-moves into the latest atomic section which might have changed the
-scheduler state.
-
-Turning on CONFIG_XENO_OPT_DEBUG_COBALT also enables a (oneshot)
-assertion which detects invalid calls from the root domain with hard
-irqs enabled.
----
- include/cobalt/kernel/rtdm/driver.h | 11 ++++++++-
- include/cobalt/kernel/sched.h       | 36 ++++++-----------------------
- kernel/cobalt/posix/mqueue.c        | 13 ++++-------
- kernel/cobalt/posix/timerfd.c       |  9 +++-----
- kernel/cobalt/sched.c               | 20 ++++++++++++----
- kernel/cobalt/select.c              |  6 ++---
- kernel/cobalt/thread.c              |  4 ++--
- 7 files changed, 44 insertions(+), 55 deletions(-)
-
-diff --git a/include/cobalt/kernel/rtdm/driver.h b/include/cobalt/kernel/rtdm/driver.h
-index d3d5d6b27..57495f12f 100644
---- a/include/cobalt/kernel/rtdm/driver.h
-+++ b/include/cobalt/kernel/rtdm/driver.h
-@@ -1044,8 +1044,12 @@ static inline void __deprecated rtdm_task_join_nrt(rtdm_task_t *task,
- static inline void rtdm_task_set_priority(rtdm_task_t *task, int priority)
- {
- 	union xnsched_policy_param param = { .rt = { .prio = priority } };
-+	spl_t s;
-+
-+	splhigh(s);
- 	xnthread_set_schedparam(task, &xnsched_class_rt, &param);
- 	xnsched_run();
-+	splexit(s);
- }
- 
- static inline int rtdm_task_set_period(rtdm_task_t *task,
-@@ -1062,9 +1066,14 @@ static inline int rtdm_task_set_period(rtdm_task_t *task,
- 
- static inline int rtdm_task_unblock(rtdm_task_t *task)
- {
--	int res = xnthread_unblock(task);
-+	spl_t s;
-+	int res;
- 
-+	splhigh(s);
-+	res = xnthread_unblock(task);
- 	xnsched_run();
-+	splexit(s);
-+
- 	return res;
- }
- 
-diff --git a/include/cobalt/kernel/sched.h b/include/cobalt/kernel/sched.h
-index 3b0825d67..7fc11a198 100644
---- a/include/cobalt/kernel/sched.h
-+++ b/include/cobalt/kernel/sched.h
-@@ -298,25 +298,8 @@ void __xnsched_run_handler(void);
- static inline int __xnsched_run(struct xnsched *sched)
- {
- 	/*
--	 * NOTE: Since ___xnsched_run() won't run immediately if an
--	 * escalation to primary domain is needed, we won't use
--	 * critical scheduler information before we actually run in
--	 * primary mode; therefore we can first test the scheduler
--	 * status then escalate.
--	 *
--	 * Running in the primary domain means that no Linux-triggered
--	 * CPU migration may occur from that point either. Finally,
--	 * since migration is always a self-directed operation for
--	 * Xenomai threads, we can safely read the scheduler state
--	 * bits without holding the nklock.
--	 *
--	 * Said differently, if we race here because of a CPU
--	 * migration, it must have been Linux-triggered because we run
--	 * in secondary mode; in which case we will escalate to the
--	 * primary domain, then unwind the current call frame without
--	 * running the rescheduling procedure in
--	 * ___xnsched_run(). Therefore, the scheduler slot
--	 * (i.e. "sched") will be either valid, or unused.
-+	 * Reschedule if XNSCHED is pending, but never over an IRQ
-+	 * handler or in the middle of unlocked context switch.
- 	 */
- 	if (((sched->status|sched->lflags) &
- 	     (XNINIRQ|XNINSW|XNRESCHED)) != XNRESCHED)
-@@ -328,18 +311,13 @@ static inline int __xnsched_run(struct xnsched *sched)
- static inline int xnsched_run(void)
- {
- 	struct xnsched *sched = xnsched_current();
-+	struct xnthread *curr = READ_ONCE(sched->curr);
-+
- 	/*
--	 * No rescheduling is possible, either if:
--	 *
--	 * - the current thread holds the scheduler lock
--	 * - an ISR context is active
--	 * - we are caught in the middle of an unlocked context switch.
-+	 * If running over the root thread, hard irqs must be off
-+	 * (asserted out of line in ___xnsched_run()).
- 	 */
--	smp_rmb();
--	if (unlikely(sched->curr->lock_count > 0))
--		return 0;
--
--	return __xnsched_run(sched);
-+	return curr->lock_count > 0 ? 0 : __xnsched_run(sched);
- }
- 
- void xnsched_lock(void);
-diff --git a/kernel/cobalt/posix/mqueue.c b/kernel/cobalt/posix/mqueue.c
-index 5c644b2c4..cd1cf3ce8 100644
---- a/kernel/cobalt/posix/mqueue.c
-+++ b/kernel/cobalt/posix/mqueue.c
-@@ -158,22 +158,19 @@ static inline int mq_init(struct cobalt_mq *mq, const struct mq_attr *attr)
- 
- static inline void mq_destroy(struct cobalt_mq *mq)
- {
--	int resched;
- 	spl_t s;
- 
- 	xnlock_get_irqsave(&nklock, s);
--	resched = (xnsynch_destroy(&mq->receivers) == XNSYNCH_RESCHED);
--	resched = (xnsynch_destroy(&mq->senders) == XNSYNCH_RESCHED) || resched;
-+	xnsynch_destroy(&mq->receivers);
-+	xnsynch_destroy(&mq->senders);
- 	list_del(&mq->link);
-+	xnsched_run();
- 	xnlock_put_irqrestore(&nklock, s);
--	xnselect_destroy(&mq->read_select);
--	xnselect_destroy(&mq->write_select);
-+	xnselect_destroy(&mq->read_select); /* Reschedules. */
-+	xnselect_destroy(&mq->write_select); /* Ditto. */
- 	xnregistry_remove(mq->handle);
- 	xnheap_vfree(mq->mem);
- 	kfree(mq);
--
--	if (resched)
--		xnsched_run();
- }
- 
- static int mq_unref_inner(struct cobalt_mq *mq, spl_t s)
-diff --git a/kernel/cobalt/posix/timerfd.c b/kernel/cobalt/posix/timerfd.c
-index 610206047..29046cfec 100644
---- a/kernel/cobalt/posix/timerfd.c
-+++ b/kernel/cobalt/posix/timerfd.c
-@@ -131,18 +131,15 @@ timerfd_select(struct rtdm_fd *fd, struct xnselector *selector,
- static void timerfd_close(struct rtdm_fd *fd)
- {
- 	struct cobalt_tfd *tfd = container_of(fd, struct cobalt_tfd, fd);
--	int resched;
- 	spl_t s;
- 
- 	xnlock_get_irqsave(&nklock, s);
- 	xntimer_destroy(&tfd->timer);
--	resched = xnsynch_destroy(&tfd->readers) == XNSYNCH_RESCHED;
-+	xnsynch_destroy(&tfd->readers);
-+	xnsched_run();
- 	xnlock_put_irqrestore(&nklock, s);
--	xnselect_destroy(&tfd->read_select);
-+	xnselect_destroy(&tfd->read_select); /* Reschedules. */
- 	xnfree(tfd);
--
--	if (resched)
--		xnsched_run();
- }
- 
- static struct rtdm_fd_ops timerfd_ops = {
-diff --git a/kernel/cobalt/sched.c b/kernel/cobalt/sched.c
-index 74dc7a961..f7e662a38 100644
---- a/kernel/cobalt/sched.c
-+++ b/kernel/cobalt/sched.c
-@@ -376,10 +376,11 @@ struct xnsched *xnsched_finish_unlocked_switch(struct xnsched *sched)
- void xnsched_lock(void)
- {
- 	struct xnsched *sched = xnsched_current();
--	struct xnthread *curr = sched->curr;
-+	struct xnthread *curr = READ_ONCE(sched->curr);
- 
- 	if (sched->lflags & XNINIRQ)
- 		return;
-+
- 	/*
- 	 * CAUTION: The fast xnthread_current() accessor carries the
- 	 * relevant lock nesting count only if current runs in primary
-@@ -398,14 +399,17 @@ EXPORT_SYMBOL_GPL(xnsched_lock);
- void xnsched_unlock(void)
- {
- 	struct xnsched *sched = xnsched_current();
--	struct xnthread *curr = sched->curr;
-+	struct xnthread *curr = READ_ONCE(sched->curr);
-+
-+	XENO_WARN_ON_ONCE(COBALT, (curr->state & XNROOT) &&
-+			  !hard_irqs_disabled());
- 
- 	if (sched->lflags & XNINIRQ)
- 		return;
--	
-+
- 	if (!XENO_ASSERT(COBALT, curr->lock_count > 0))
- 		return;
--	
-+
- 	if (--curr->lock_count == 0) {
- 		xnthread_clear_localinfo(curr, XNLBALERT);
- 		xnsched_run();
-@@ -962,6 +966,8 @@ int ___xnsched_run(struct xnsched *sched)
- 	int switched, shadow;
- 	spl_t s;
- 
-+	XENO_WARN_ON_ONCE(COBALT, !hard_irqs_disabled() && ipipe_root_p);
-+
- 	if (xnarch_escalate())
- 		return 0;
- 
-@@ -1000,7 +1006,11 @@ reschedule:
- 
- 	trace_cobalt_switch_context(prev, next);
- 
--	sched->curr = next;
-+	/*
-+	 * sched->curr is shared locklessly with xnsched_run(), be
-+	 * careful about load/store tearing.
-+	 */
-+	WRITE_ONCE(sched->curr, next);
- 	shadow = 1;
- 
- 	if (xnthread_test_state(prev, XNROOT)) {
-diff --git a/kernel/cobalt/select.c b/kernel/cobalt/select.c
-index 7f839f159..df3d960db 100644
---- a/kernel/cobalt/select.c
-+++ b/kernel/cobalt/select.c
-@@ -409,7 +409,6 @@ static void xnselector_destroy_loop(void *cookie)
- 	struct xnselect_binding *binding, *tmpb;
- 	struct xnselector *selector, *tmps;
- 	struct xnselect *fd;
--	int resched;
- 	spl_t s;
- 
- 	xnlock_get_irqsave(&nklock, s);
-@@ -430,12 +429,11 @@ static void xnselector_destroy_loop(void *cookie)
- 			xnlock_get_irqsave(&nklock, s);
- 		}
- 	release:
--		resched = xnsynch_destroy(&selector->synchbase) == XNSYNCH_RESCHED;
-+		xnsynch_destroy(&selector->synchbase);
-+		xnsched_run();
- 		xnlock_put_irqrestore(&nklock, s);
- 
- 		xnfree(selector);
--		if (resched)
--			xnsched_run();
- 
- 		xnlock_get_irqsave(&nklock, s);
- 	}
-diff --git a/kernel/cobalt/thread.c b/kernel/cobalt/thread.c
-index a5f8e1b00..5260fb1e7 100644
---- a/kernel/cobalt/thread.c
-+++ b/kernel/cobalt/thread.c
-@@ -1582,9 +1582,9 @@ check_self_cancel:
- 	} else
- 		__xnthread_kick(thread);
- out:
--	xnlock_put_irqrestore(&nklock, s);
--
- 	xnsched_run();
-+
-+	xnlock_put_irqrestore(&nklock, s);
- }
- EXPORT_SYMBOL_GPL(xnthread_cancel);
- 
 -- 
-2.21.0
-
+Philippe.
 
