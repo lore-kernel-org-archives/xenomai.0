@@ -1,12 +1,11 @@
-From: Philippe  Gerum <rpm@xenomai.org>
-Subject: [PATCH v2 3/3] cobalt/sched: guard against missed rescheduling upon
- CPU migration
-Date: Thu, 28 Nov 2019 11:02:28 +0100
-Message-Id: <20191128100228.25727-3-rpm@xenomai.org>
-In-Reply-To: <20191128100228.25727-1-rpm@xenomai.org>
-References: <20191128100228.25727-1-rpm@xenomai.org>
+Content-Type: text/plain; charset="utf-8"
+In-Reply-To: <241a-5ddf8500-7-6709f900@16316240>
+From: =?utf-8?q?Fran=C3=A7ois_Legal?= <devel@thom.fr.eu.org>
+Date: Fri, 29 Nov 2019 15:38:55 +0100
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Message-ID: <241a-5de12d80-d-6709f900@16316339>
+Subject: =?utf-8?q?Re=3A?= Weird crash integrating new RTNET driver
+Content-Transfer-Encoding: quoted-printable
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,297 +16,150 @@ List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: xenomai@xenomai.org
 
-From: Philippe Gerum <rpm@xenomai.org>
+Le Jeudi, Novembre 28, 2019 09:27 CET, Fran=C3=A7ois Legal via Xenomai =
+<xenomai@xenomai.org> a =C3=A9crit: 
+ 
+> Hello,
+> 
+> I'm having a weird kernel crash at porting an existing custom network=
+ driver to RTNET.
+> After the second unicast packet is received by the NIC (at the second=
+ interrupt to be more precise), the kernel crashes while signaling the =
+pending threads on the rtdev event (rtdev->stack=5Fevent) during the ca=
+ll to rt=5Fmark=5Fstack=5Fmgr.
+> I dug as deep as I could, and found out that xnsynch=5Fflush does not=
+ seem to detect that there is only one pending thread on the event, and=
+ thus tries to write to a poisonned list pointer.
+> 
+> See the crash dump below.
+> My configuration is linux 4.4.189 running on ARM Cortex A9 hardware, =
+with xenomai 3.0.9.
+> 
+> [   40.673006] Unable to handle kernel NULL pointer dereference at vi=
+rtual address 00000104
+> [   40.681009] pgd =3D 40004000
+> [   40.683698] [00000104] *pgd=3D00000000
+> [   40.687261] Internal error: Oops: 817 [#1] PREEMPT SMP ARM
+> [   40.692732] CPU: 0 PID: 0 Comm: swapper/0 Not tainted 4.4.189 #14
+> [   40.698801] Hardware name: Xilinx Zynq Platform
+> [   40.703314] I-pipe domain: Xenomai
+> [   40.706702] task: 416a4328 ti: 416a0000 task.ti: 416a0000
+> [   40.712097] PC is at xnsynch=5Fflush+0xb0/0x174
+> [   40.716429] LR is at xnthread=5Fresume+0x100/0x2a8
+> [   40.721026] pc : [<400970a8>]    lr : [<40098118>]    psr: 2000019=
+3
+> [   40.721026] sp : 416a1e00  ip : 00000200  fp : 00000098
+> [   40.732480] r10: 416a54b8  r9 : 416a2578  r8 : 00000100
+> [   40.737689] r7 : 00000200  r6 : 00000000  r5 : 00000000  r4 : 4176=
+0858
+> [   40.744198] r3 : 41760620  r2 : 00000100  r1 : 00000002  r0 : 4176=
+0620
+> [   40.750711] Flags: nzCv  IRQs off  FIQs on  Mode SVC=5F32  ISA ARM=
+  Segment none
+> [   40.757914] Control: 18c5387d  Table: 1993804a  DAC: 00000051
+> [   40.763642] Process swapper/0 (pid: 0, stack limit =3D 0x416a0220)=
 
-Kicking the rescheduling procedure (xnsched_run()) from call sites
-running over the root thread with hard irqs enabled may lead to
-missing a rescheduling opportunity as a consequence of a CPU
-migration, e.g.:
+> [   40.769631] Stack: (0x416a1e00 to 0x416a2000)
+> [   40.773977] 1e00: 00000003 41760848 5f557410 00000001 41760848 416=
+99fb0 41699fb0 416a2578
+> [   40.782136] 1e20: 416a54b8 5f5d4400 00000001 400a2dc4 5fbd2280 5f5=
+d4560 61fa0000 750cd714
+> [   40.790294] 1e40: 00000009 00000003 416a554c 403ef728 00000000 416=
+a2578 41698278 00000000
+> [   40.798454] 1e60: 416a20c0 5fbd2280 00000037 416a2578 416a54b8 fff=
+f0f00 5f5d4588 416a2578
+> [   40.806613] 1e80: 41733340 40090524 00000037 41744b80 281977d5 000=
+00003 416a2578 5fbd2db0
+> [   40.814772] 1ea0: 00000000 4169b280 5fbd2154 41722c40 00000000 5fb=
+cfe18 5fbcfe14 5fbd2150
+> [   40.822931] 1ec0: 41699fb0 416a2578 5fbd108c 41699fb0 1e537000 5fb=
+cfe10 41733340 40088ab0
+> [   40.831090] 1ee0: 416a9254 00000037 416a1f40 5fbcfe10 416a1f40 000=
+00037 416a1f40 f8f00100
+> [   40.839250] 1f00: f8f01100 416982c4 404e37c8 4000934c 416c25c0 416=
+a2700 f8f0010c 400095c8
+> [   40.847408] 1f20: 40088758 40088784 60000013 ffffffff 416a1f74 416=
+a23c0 416a2578 400139d4
+> [   40.855567] 1f40: 00000000 5fbcfe10 00000000 00000000 41698e10 416=
+a2498 416a2450 416dcc00
+> [   40.863727] 1f60: 416a23c0 416a2578 416982c4 404e37c8 1e537000 416=
+a1f90 40088758 40088784
+> [   40.871886] 1f80: 60000013 ffffffff 00000051 416a2450 416a0000 400=
+59cf8 416a1fa4 416dca57
+> [   40.880045] 1fa0: 4066aa38 416dcc00 4066aa38 4062fc98 ffffffff fff=
+fffff 00000000 4062f680
+> [   40.888204] 1fc0: 00000000 5fffce40 00000000 4066aa38 00000000 416=
+dce94 416a2440 4066aa34
+> [   40.896364] 1fe0: 416a536c 0000406a 413fc090 00000000 00000000 000=
+0807c 00000000 00000000
+> [   40.904541] [<400970a8>] (xnsynch=5Fflush) from [<400a2dc4>] (rtdm=
+=5Fevent=5Fsignal+0x70/0x144)
+> [   40.912689] [<400a2dc4>] (rtdm=5Fevent=5Fsignal) from [<403ef728>]=
+ (rt=5Fmacip=5Finterrupt=5Frx+0x20c/0x248)
+> [   40.921627] [<403ef728>] (rt=5Fmacip=5Finterrupt=5Frx) from [<4009=
+0524>] (xnintr=5Firq=5Fhandler+0xc8/0x378)
+> [   40.930574] [<40090524>] (xnintr=5Firq=5Fhandler) from [<40088ab0>=
+] (dispatch=5Firq=5Fhead+0x9c/0x15c)
+> [   40.939162] [<40088ab0>] (dispatch=5Firq=5Fhead) from [<4000934c>]=
+ (=5F=5Fipipe=5Fgrab=5Firq+0x64/0x7c)
+> [   40.947490] [<4000934c>] (=5F=5Fipipe=5Fgrab=5Firq) from [<400095c=
+8>] (gic=5Fhandle=5Firq+0x48/0x8c)
+> [   40.955556] Exception stack(0x416a1f20 to 0x416a1f68)
+> [   40.960596] 1f20: 40088758 40088784 60000013 ffffffff 416a1f74 416=
+a23c0 416a2578 400139d4
+> [   40.968755] 1f40: 00000000 5fbcfe10 00000000 00000000 41698e10 416=
+a2498 416a2450 416dcc00
+> [   40.976909] 1f60: 416a23c0 416a2578
+> [   40.980387] [<400095c8>] (gic=5Fhandle=5Firq) from [<400139d4>] (=5F=
+=5Firq=5Fsvc+0x54/0x80)
+> [   40.987845] Exception stack(0x416a1f40 to 0x416a1f88)
+> [   40.992886] 1f40: 00000000 5fbcfe10 00000000 00000000 41698e10 416=
+a2498 416a2450 416dcc00
+> [   41.001044] 1f60: 416a23c0 416a2578 416982c4 404e37c8 1e537000 416=
+a1f90 40088758 40088784
+> [   41.009199] 1f80: 60000013 ffffffff
+> [   41.012679] [<400139d4>] (=5F=5Firq=5Fsvc) from [<40088784>] (ipip=
+e=5Funstall=5Froot+0x3c/0x50)
+> [   41.020495] [<40088784>] (ipipe=5Funstall=5Froot) from [<40059cf8>=
+] (cpu=5Fstartup=5Fentry+0x144/0x1c8)
+> [   41.029174] [<40059cf8>] (cpu=5Fstartup=5Fentry) from [<4062fc98>]=
+ (start=5Fkernel+0x3c8/0x3d4)
+> [   41.037327] Code: e3a06000 e593c06c e1a00003 e3a01002 (e582c004)
+> [   41.043401] ---[ end trace a517e81af11fe3d4 ]---
+> [   41.048000] Kernel panic - not syncing: Attempted to kill the idle=
+ task!
+> [   42.227682] SMP: failed to stop secondary CPUs
+> [   42.232040] ---[ end Kernel panic - not syncing: Attempted to kill=
+ the idle task!
+> 
+> Thanks in advance
+> 
+> Fran=C3=A7ois
+> 
+> 
+ 
+Hello again.
 
-    CPU0					CPU1
-    ----                         		----
-    t0: ...
-            <context switch>
-    t1: xnthread_resume(t0)
-             xnsched_run()
-             <CPU MIGRATION -->
-                  |                             |
-                  |                             |
-                  x                             |
-          (missed rescheduling)                 v
-                                    ___xnsched_run(CPU1.sched)
+I ended up finding the CONFIG=5FDEBUG=5FLIST kernel hacking flag and ac=
+tivated it.
+It turns out (thus I have no idea why) that the rt=5Fstak=5Fmgr=5Ftask =
+() is adding the same thread multiple times to the list (I put a break =
+in the list=5Fadd debug function and I got the following backtrace :
 
-To address this issue, make sure every call to xnsched_run() either
-runs from the head domain which is not affected by CPU migration, or
-moves into the latest atomic section which might have changed the
-scheduler state.
+ =5F=5Flist=5Fadd(): lib/list=5Fdebug.c, line 34
+list=5Fadd(): include/linux/list.h, line 63
+xnsynch=5Fsleep=5Fon(): kernel/xenomai/synch.c, line 186
+rtdm=5Fevent=5Ftimedwait(): kernel/xenomai/rtdm/drvlib.c, line 898
+rtdm=5Fevent=5Fwait(): kernel/xenomai/rtdm/drvlib.c, line 828
+rt=5Fstack=5Fmgr=5Ftask(): .../xenomai/net/stack/stack=5Fmgr.c, line 20=
+4
+...
 
-Turning on CONFIG_XENO_OPT_DEBUG_COBALT also enables a (oneshot)
-assertion which detects invalid calls from the root domain with hard
-irqs enabled.
+I'll try to understand what's going on here, but any help would be appr=
+eciated.
 
-Signed-off-by: Philippe Gerum <rpm@xenomai.org>
----
- include/cobalt/kernel/rtdm/driver.h | 11 ++++++++-
- include/cobalt/kernel/sched.h       | 36 ++++++-----------------------
- kernel/cobalt/posix/mqueue.c        | 13 ++++-------
- kernel/cobalt/posix/timerfd.c       |  9 +++-----
- kernel/cobalt/sched.c               | 20 ++++++++++++----
- kernel/cobalt/select.c              |  6 ++---
- kernel/cobalt/thread.c              |  4 ++--
- 7 files changed, 44 insertions(+), 55 deletions(-)
+Thanks
 
-diff --git a/include/cobalt/kernel/rtdm/driver.h b/include/cobalt/kernel/rtdm/driver.h
-index d3d5d6b27..57495f12f 100644
---- a/include/cobalt/kernel/rtdm/driver.h
-+++ b/include/cobalt/kernel/rtdm/driver.h
-@@ -1044,8 +1044,12 @@ static inline void __deprecated rtdm_task_join_nrt(rtdm_task_t *task,
- static inline void rtdm_task_set_priority(rtdm_task_t *task, int priority)
- {
- 	union xnsched_policy_param param = { .rt = { .prio = priority } };
-+	spl_t s;
-+
-+	splhigh(s);
- 	xnthread_set_schedparam(task, &xnsched_class_rt, &param);
- 	xnsched_run();
-+	splexit(s);
- }
- 
- static inline int rtdm_task_set_period(rtdm_task_t *task,
-@@ -1062,9 +1066,14 @@ static inline int rtdm_task_set_period(rtdm_task_t *task,
- 
- static inline int rtdm_task_unblock(rtdm_task_t *task)
- {
--	int res = xnthread_unblock(task);
-+	spl_t s;
-+	int res;
- 
-+	splhigh(s);
-+	res = xnthread_unblock(task);
- 	xnsched_run();
-+	splexit(s);
-+
- 	return res;
- }
- 
-diff --git a/include/cobalt/kernel/sched.h b/include/cobalt/kernel/sched.h
-index 3b0825d67..7fc11a198 100644
---- a/include/cobalt/kernel/sched.h
-+++ b/include/cobalt/kernel/sched.h
-@@ -298,25 +298,8 @@ void __xnsched_run_handler(void);
- static inline int __xnsched_run(struct xnsched *sched)
- {
- 	/*
--	 * NOTE: Since ___xnsched_run() won't run immediately if an
--	 * escalation to primary domain is needed, we won't use
--	 * critical scheduler information before we actually run in
--	 * primary mode; therefore we can first test the scheduler
--	 * status then escalate.
--	 *
--	 * Running in the primary domain means that no Linux-triggered
--	 * CPU migration may occur from that point either. Finally,
--	 * since migration is always a self-directed operation for
--	 * Xenomai threads, we can safely read the scheduler state
--	 * bits without holding the nklock.
--	 *
--	 * Said differently, if we race here because of a CPU
--	 * migration, it must have been Linux-triggered because we run
--	 * in secondary mode; in which case we will escalate to the
--	 * primary domain, then unwind the current call frame without
--	 * running the rescheduling procedure in
--	 * ___xnsched_run(). Therefore, the scheduler slot
--	 * (i.e. "sched") will be either valid, or unused.
-+	 * Reschedule if XNSCHED is pending, but never over an IRQ
-+	 * handler or in the middle of unlocked context switch.
- 	 */
- 	if (((sched->status|sched->lflags) &
- 	     (XNINIRQ|XNINSW|XNRESCHED)) != XNRESCHED)
-@@ -328,18 +311,13 @@ static inline int __xnsched_run(struct xnsched *sched)
- static inline int xnsched_run(void)
- {
- 	struct xnsched *sched = xnsched_current();
-+	struct xnthread *curr = READ_ONCE(sched->curr);
-+
- 	/*
--	 * No rescheduling is possible, either if:
--	 *
--	 * - the current thread holds the scheduler lock
--	 * - an ISR context is active
--	 * - we are caught in the middle of an unlocked context switch.
-+	 * If running over the root thread, hard irqs must be off
-+	 * (asserted out of line in ___xnsched_run()).
- 	 */
--	smp_rmb();
--	if (unlikely(sched->curr->lock_count > 0))
--		return 0;
--
--	return __xnsched_run(sched);
-+	return curr->lock_count > 0 ? 0 : __xnsched_run(sched);
- }
- 
- void xnsched_lock(void);
-diff --git a/kernel/cobalt/posix/mqueue.c b/kernel/cobalt/posix/mqueue.c
-index 5c644b2c4..cd1cf3ce8 100644
---- a/kernel/cobalt/posix/mqueue.c
-+++ b/kernel/cobalt/posix/mqueue.c
-@@ -158,22 +158,19 @@ static inline int mq_init(struct cobalt_mq *mq, const struct mq_attr *attr)
- 
- static inline void mq_destroy(struct cobalt_mq *mq)
- {
--	int resched;
- 	spl_t s;
- 
- 	xnlock_get_irqsave(&nklock, s);
--	resched = (xnsynch_destroy(&mq->receivers) == XNSYNCH_RESCHED);
--	resched = (xnsynch_destroy(&mq->senders) == XNSYNCH_RESCHED) || resched;
-+	xnsynch_destroy(&mq->receivers);
-+	xnsynch_destroy(&mq->senders);
- 	list_del(&mq->link);
-+	xnsched_run();
- 	xnlock_put_irqrestore(&nklock, s);
--	xnselect_destroy(&mq->read_select);
--	xnselect_destroy(&mq->write_select);
-+	xnselect_destroy(&mq->read_select); /* Reschedules. */
-+	xnselect_destroy(&mq->write_select); /* Ditto. */
- 	xnregistry_remove(mq->handle);
- 	xnheap_vfree(mq->mem);
- 	kfree(mq);
--
--	if (resched)
--		xnsched_run();
- }
- 
- static int mq_unref_inner(struct cobalt_mq *mq, spl_t s)
-diff --git a/kernel/cobalt/posix/timerfd.c b/kernel/cobalt/posix/timerfd.c
-index 610206047..29046cfec 100644
---- a/kernel/cobalt/posix/timerfd.c
-+++ b/kernel/cobalt/posix/timerfd.c
-@@ -131,18 +131,15 @@ timerfd_select(struct rtdm_fd *fd, struct xnselector *selector,
- static void timerfd_close(struct rtdm_fd *fd)
- {
- 	struct cobalt_tfd *tfd = container_of(fd, struct cobalt_tfd, fd);
--	int resched;
- 	spl_t s;
- 
- 	xnlock_get_irqsave(&nklock, s);
- 	xntimer_destroy(&tfd->timer);
--	resched = xnsynch_destroy(&tfd->readers) == XNSYNCH_RESCHED;
-+	xnsynch_destroy(&tfd->readers);
-+	xnsched_run();
- 	xnlock_put_irqrestore(&nklock, s);
--	xnselect_destroy(&tfd->read_select);
-+	xnselect_destroy(&tfd->read_select); /* Reschedules. */
- 	xnfree(tfd);
--
--	if (resched)
--		xnsched_run();
- }
- 
- static struct rtdm_fd_ops timerfd_ops = {
-diff --git a/kernel/cobalt/sched.c b/kernel/cobalt/sched.c
-index 74dc7a961..f7e662a38 100644
---- a/kernel/cobalt/sched.c
-+++ b/kernel/cobalt/sched.c
-@@ -376,10 +376,11 @@ struct xnsched *xnsched_finish_unlocked_switch(struct xnsched *sched)
- void xnsched_lock(void)
- {
- 	struct xnsched *sched = xnsched_current();
--	struct xnthread *curr = sched->curr;
-+	struct xnthread *curr = READ_ONCE(sched->curr);
- 
- 	if (sched->lflags & XNINIRQ)
- 		return;
-+
- 	/*
- 	 * CAUTION: The fast xnthread_current() accessor carries the
- 	 * relevant lock nesting count only if current runs in primary
-@@ -398,14 +399,17 @@ EXPORT_SYMBOL_GPL(xnsched_lock);
- void xnsched_unlock(void)
- {
- 	struct xnsched *sched = xnsched_current();
--	struct xnthread *curr = sched->curr;
-+	struct xnthread *curr = READ_ONCE(sched->curr);
-+
-+	XENO_WARN_ON_ONCE(COBALT, (curr->state & XNROOT) &&
-+			  !hard_irqs_disabled());
- 
- 	if (sched->lflags & XNINIRQ)
- 		return;
--	
-+
- 	if (!XENO_ASSERT(COBALT, curr->lock_count > 0))
- 		return;
--	
-+
- 	if (--curr->lock_count == 0) {
- 		xnthread_clear_localinfo(curr, XNLBALERT);
- 		xnsched_run();
-@@ -962,6 +966,8 @@ int ___xnsched_run(struct xnsched *sched)
- 	int switched, shadow;
- 	spl_t s;
- 
-+	XENO_WARN_ON_ONCE(COBALT, !hard_irqs_disabled() && ipipe_root_p);
-+
- 	if (xnarch_escalate())
- 		return 0;
- 
-@@ -1000,7 +1006,11 @@ reschedule:
- 
- 	trace_cobalt_switch_context(prev, next);
- 
--	sched->curr = next;
-+	/*
-+	 * sched->curr is shared locklessly with xnsched_run(), be
-+	 * careful about load/store tearing.
-+	 */
-+	WRITE_ONCE(sched->curr, next);
- 	shadow = 1;
- 
- 	if (xnthread_test_state(prev, XNROOT)) {
-diff --git a/kernel/cobalt/select.c b/kernel/cobalt/select.c
-index 7f839f159..df3d960db 100644
---- a/kernel/cobalt/select.c
-+++ b/kernel/cobalt/select.c
-@@ -409,7 +409,6 @@ static void xnselector_destroy_loop(void *cookie)
- 	struct xnselect_binding *binding, *tmpb;
- 	struct xnselector *selector, *tmps;
- 	struct xnselect *fd;
--	int resched;
- 	spl_t s;
- 
- 	xnlock_get_irqsave(&nklock, s);
-@@ -430,12 +429,11 @@ static void xnselector_destroy_loop(void *cookie)
- 			xnlock_get_irqsave(&nklock, s);
- 		}
- 	release:
--		resched = xnsynch_destroy(&selector->synchbase) == XNSYNCH_RESCHED;
-+		xnsynch_destroy(&selector->synchbase);
-+		xnsched_run();
- 		xnlock_put_irqrestore(&nklock, s);
- 
- 		xnfree(selector);
--		if (resched)
--			xnsched_run();
- 
- 		xnlock_get_irqsave(&nklock, s);
- 	}
-diff --git a/kernel/cobalt/thread.c b/kernel/cobalt/thread.c
-index a5f8e1b00..5260fb1e7 100644
---- a/kernel/cobalt/thread.c
-+++ b/kernel/cobalt/thread.c
-@@ -1582,9 +1582,9 @@ check_self_cancel:
- 	} else
- 		__xnthread_kick(thread);
- out:
--	xnlock_put_irqrestore(&nklock, s);
--
- 	xnsched_run();
-+
-+	xnlock_put_irqrestore(&nklock, s);
- }
- EXPORT_SYMBOL_GPL(xnthread_cancel);
- 
--- 
-2.21.0
+Fran=C3=A7ois
 
 
