@@ -1,15 +1,14 @@
-Subject: Re: [PATCH 2/2] cobalt/sched: quota: fix use-after-free in
- quota_remove operation
-References: <20191129150303.11116-1-rpm@xenomai.org>
- <20191129150303.11116-2-rpm@xenomai.org>
- <61ecd1f1-8bef-d120-0776-4e0feffed4c2@siemens.com>
- <0ca6c5ba-9200-ecbb-e330-c6c9da7dccad@xenomai.org>
-From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <a80504b7-0613-2846-3cea-b4e6e6b8f977@siemens.com>
-Date: Fri, 29 Nov 2019 19:05:56 +0100
+Subject: Re: [PATCH v2 3/3] cobalt/sched: guard against missed rescheduling
+ upon CPU migration
+References: <20191128100228.25727-1-rpm@xenomai.org>
+ <20191128100228.25727-3-rpm@xenomai.org>
+ <e110a0f9-ff69-2565-6aaf-7c8eca029030@siemens.com>
+From: Philippe Gerum <rpm@xenomai.org>
+Message-ID: <ef7e0b6f-6dcc-6190-c547-fa9169deaa7e@xenomai.org>
+Date: Fri, 29 Nov 2019 19:37:44 +0100
 MIME-Version: 1.0
-In-Reply-To: <0ca6c5ba-9200-ecbb-e330-c6c9da7dccad@xenomai.org>
-Content-Type: text/plain; charset="utf-8"; format="flowed"
+In-Reply-To: <e110a0f9-ff69-2565-6aaf-7c8eca029030@siemens.com>
+Content-Type: text/plain; charset="utf-8"
 Content-Language: en-US
 Content-Transfer-Encoding: 8bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
@@ -20,59 +19,85 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Philippe Gerum <rpm@xenomai.org>, xenomai@xenomai.org
+To: Jan Kiszka <jan.kiszka@siemens.com>, xenomai@xenomai.org
 
-On 29.11.19 19:01, Philippe Gerum wrote:
-> On 11/29/19 6:48 PM, Jan Kiszka wrote:
->> On 29.11.19 16:03, Philippe Gerum via Xenomai wrote:
->>> From: Philippe Gerum <rpm@xenomai.org>
->>>
->>> KASAN detected this issue while removing a quota group, as a result of
->>> accessing members from the xnsched_quota_group struct after the
->>> container struct was freed.
->>>
->>> Signed-off-by: Philippe Gerum <rpm@xenomai.org>
->>> ---
->>>    kernel/cobalt/posix/sched.c | 6 +++++-
->>>    1 file changed, 5 insertions(+), 1 deletion(-)
->>>
->>> diff --git a/kernel/cobalt/posix/sched.c b/kernel/cobalt/posix/sched.c
->>> index f018ac3e8..7e457a9a8 100644
->>> --- a/kernel/cobalt/posix/sched.c
->>> +++ b/kernel/cobalt/posix/sched.c
->>> @@ -446,8 +446,12 @@ int set_quota_config(int cpu, union sched_config
->>> *config, size_t len)
->>>            }
->>>            list_del(&group->next);
->>>            xnlock_put_irqrestore(&nklock, s);
->>> +        iq->tgid = tg->tgid;
->>> +        iq->quota = tg->quota_percent;
->>> +        iq->quota_peak = tg->quota_peak_percent;
->>> +        iq->quota_sum = quota_sum;
+On 11/29/19 7:04 PM, Jan Kiszka wrote:
+> On 28.11.19 11:02, Philippe Gerum via Xenomai wrote:
+>> From: Philippe Gerum <rpm@xenomai.org>
 >>
->> Good catch.
->>
->> But do some of these setting make sense in the first place? Our manual says:
->>
->> "All three operations fill in the @a config.info structure with the information
->> reflecting the state of the scheduler on @a cpu with respect to @a policy,
->> after the requested changes have been applied."
->>
->> The group is gone now, so only quota_sum should have a meaning.
+>>     static inline int rtdm_task_set_period(rtdm_task_t *task,
+>> @@ -1062,9 +1066,14 @@ static inline int rtdm_task_set_period(rtdm_task_t *task,
+>>     static inline int rtdm_task_unblock(rtdm_task_t *task)
+>>   {
+>> -    int res = xnthread_unblock(task);
+>> +    spl_t s;
+>> +    int res;
+>>   +    splhigh(s);
+>> +    res = xnthread_unblock(task);
+>>       xnsched_run();
+>> +    splexit(s);
+>> +
+>>       return res;
+>>   }
 > 
-> Agreed, other stuff beyond quota_sum does not make much sense once the group is
-> deleted. However, this was kept for staying in line with the grey area in the
-> doc you referred to, which is (too) open for interpretation: since it does
-> _not_ treat the removal operation specifically wrt those return values, some
-> adventurous people might expect the tgid to be valid in the returned structure
-> for instance.
+> Both become non-trivial this way and should be un-inlined. I will do that on top.
+>
+
+Fair enough. I did not consider moving this out-of-line since those helpers are
+infrequently used (or at least
+should be).
+
+>>            (XNINIRQ|XNINSW|XNRESCHED)) != XNRESCHED)
+>> @@ -328,18 +311,13 @@ static inline int __xnsched_run(struct xnsched *sched)
+>>   static inline int xnsched_run(void)
+>>   {
+>>       struct xnsched *sched = xnsched_current();
+>> +    struct xnthread *curr = READ_ONCE(sched->curr);
+> 
+> But now we no longer need that READ_ONCE: I see only one use case below.>>> index 74dc7a961..f7e662a38 100644
+>> --- a/kernel/cobalt/sched.c
+>> +++ b/kernel/cobalt/sched.c
+>> @@ -376,10 +376,11 @@ struct xnsched *xnsched_finish_unlocked_switch(struct
+>> xnsched *sched)
+>>   void xnsched_lock(void)
+>>   {
+>>       struct xnsched *sched = xnsched_current();
+>> -    struct xnthread *curr = sched->curr;
+>> +    struct xnthread *curr = READ_ONCE(sched->curr);
+> 
+> And here we READ_ONCE for the consistency of the XENO_WARN?
+>
+
+This is paired with writing to sched->curr in ___xnsched_run(). In theory, we
+might have multiple subsequent stores to sched->curr from a remote CPU in the
+time span of a single read from the local CPU. If we allow the compiler to go
+wild with load tearing here, this might cause the reader to observe a pointer
+value which might actually be a merge between the multiple stores.
+
+Since these are inline helpers, we could indeed use a barrier for preventing
+load fusing with subsequent code within the same scope, but I don't think this
+would be of any help with load tearing.
+
+>> +    /*
+>> +     * sched->curr is shared locklessly with xnsched_run(), be
+>> +     * careful about load/store tearing.
+>> +     */
+>> +    WRITE_ONCE(sched->curr, next);
+> 
+> But xnsched_run touches the value only once. Do we rather want a barrier here?
 > 
 
-Ack.
-
-Jan
+This is the converse issue. WRITE_ONCE() is there to prevent the compiler from
+writing to sched->curr piecemeal (store tearing) with multiple accesses, while
+other folks read that value (like xnsched_lock(), xnsched_run()). In theory, we
+might have an issue with store tearing since sched->curr can be considered a
+shared memory accessed locklessly, and we don't know how braindamage the
+compiler might be, e.g. in case it feels too much pressure on the register file
+when generating code. Typically, having a 64bit pointer store split into a
+couple of 32bit writes would look funny at first, funky in the end. Granted,
+the access to sched->curr is always aligned, no immediate value is stored
+there, but well, WRITE_ONCE() is for peace of mind with other cases.
 
 -- 
-Siemens AG, Corporate Technology, CT RDA IOT SES-DE
-Corporate Competence Center Embedded Linux
+Philippe.
 
