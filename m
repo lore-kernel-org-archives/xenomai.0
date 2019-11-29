@@ -1,12 +1,8 @@
-Subject: Re: Weird crash integrating new RTNET driver
-References: <241a-5de12d80-d-6709f900@16316339>
-From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <c3677c24-edab-f235-5dcd-3f4a4043e83e@siemens.com>
-Date: Fri, 29 Nov 2019 15:45:25 +0100
+From: Philippe  Gerum <rpm@xenomai.org>
+Subject: [PATCH 1/2] net/proxy: fix non-rt signal overflow
+Date: Fri, 29 Nov 2019 16:03:02 +0100
+Message-Id: <20191129150303.11116-1-rpm@xenomai.org>
 MIME-Version: 1.0
-In-Reply-To: <241a-5de12d80-d-6709f900@16316339>
-Content-Type: text/plain; charset="utf-8"; format="flowed"
-Content-Language: en-US
 Content-Transfer-Encoding: 8bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
@@ -16,109 +12,74 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: =?UTF-8?Q?Fran=c3=a7ois_Legal?= <devel@thom.fr.eu.org>, xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-On 29.11.19 15:38, François Legal via Xenomai wrote:
-> Le Jeudi, Novembre 28, 2019 09:27 CET, François Legal via Xenomai <xenomai@xenomai.org> a écrit:
->   
->> Hello,
->>
->> I'm having a weird kernel crash at porting an existing custom network driver to RTNET.
->> After the second unicast packet is received by the NIC (at the second interrupt to be more precise), the kernel crashes while signaling the pending threads on the rtdev event (rtdev->stack_event) during the call to rt_mark_stack_mgr.
->> I dug as deep as I could, and found out that xnsynch_flush does not seem to detect that there is only one pending thread on the event, and thus tries to write to a poisonned list pointer.
->>
->> See the crash dump below.
->> My configuration is linux 4.4.189 running on ARM Cortex A9 hardware, with xenomai 3.0.9.
->>
->> [   40.673006] Unable to handle kernel NULL pointer dereference at virtual address 00000104
->> [   40.681009] pgd = 40004000
->> [   40.683698] [00000104] *pgd=00000000
->> [   40.687261] Internal error: Oops: 817 [#1] PREEMPT SMP ARM
->> [   40.692732] CPU: 0 PID: 0 Comm: swapper/0 Not tainted 4.4.189 #14
->> [   40.698801] Hardware name: Xilinx Zynq Platform
->> [   40.703314] I-pipe domain: Xenomai
->> [   40.706702] task: 416a4328 ti: 416a0000 task.ti: 416a0000
->> [   40.712097] PC is at xnsynch_flush+0xb0/0x174
->> [   40.716429] LR is at xnthread_resume+0x100/0x2a8
->> [   40.721026] pc : [<400970a8>]    lr : [<40098118>]    psr: 20000193
->> [   40.721026] sp : 416a1e00  ip : 00000200  fp : 00000098
->> [   40.732480] r10: 416a54b8  r9 : 416a2578  r8 : 00000100
->> [   40.737689] r7 : 00000200  r6 : 00000000  r5 : 00000000  r4 : 41760858
->> [   40.744198] r3 : 41760620  r2 : 00000100  r1 : 00000002  r0 : 41760620
->> [   40.750711] Flags: nzCv  IRQs off  FIQs on  Mode SVC_32  ISA ARM  Segment none
->> [   40.757914] Control: 18c5387d  Table: 1993804a  DAC: 00000051
->> [   40.763642] Process swapper/0 (pid: 0, stack limit = 0x416a0220)
->> [   40.769631] Stack: (0x416a1e00 to 0x416a2000)
->> [   40.773977] 1e00: 00000003 41760848 5f557410 00000001 41760848 41699fb0 41699fb0 416a2578
->> [   40.782136] 1e20: 416a54b8 5f5d4400 00000001 400a2dc4 5fbd2280 5f5d4560 61fa0000 750cd714
->> [   40.790294] 1e40: 00000009 00000003 416a554c 403ef728 00000000 416a2578 41698278 00000000
->> [   40.798454] 1e60: 416a20c0 5fbd2280 00000037 416a2578 416a54b8 ffff0f00 5f5d4588 416a2578
->> [   40.806613] 1e80: 41733340 40090524 00000037 41744b80 281977d5 00000003 416a2578 5fbd2db0
->> [   40.814772] 1ea0: 00000000 4169b280 5fbd2154 41722c40 00000000 5fbcfe18 5fbcfe14 5fbd2150
->> [   40.822931] 1ec0: 41699fb0 416a2578 5fbd108c 41699fb0 1e537000 5fbcfe10 41733340 40088ab0
->> [   40.831090] 1ee0: 416a9254 00000037 416a1f40 5fbcfe10 416a1f40 00000037 416a1f40 f8f00100
->> [   40.839250] 1f00: f8f01100 416982c4 404e37c8 4000934c 416c25c0 416a2700 f8f0010c 400095c8
->> [   40.847408] 1f20: 40088758 40088784 60000013 ffffffff 416a1f74 416a23c0 416a2578 400139d4
->> [   40.855567] 1f40: 00000000 5fbcfe10 00000000 00000000 41698e10 416a2498 416a2450 416dcc00
->> [   40.863727] 1f60: 416a23c0 416a2578 416982c4 404e37c8 1e537000 416a1f90 40088758 40088784
->> [   40.871886] 1f80: 60000013 ffffffff 00000051 416a2450 416a0000 40059cf8 416a1fa4 416dca57
->> [   40.880045] 1fa0: 4066aa38 416dcc00 4066aa38 4062fc98 ffffffff ffffffff 00000000 4062f680
->> [   40.888204] 1fc0: 00000000 5fffce40 00000000 4066aa38 00000000 416dce94 416a2440 4066aa34
->> [   40.896364] 1fe0: 416a536c 0000406a 413fc090 00000000 00000000 0000807c 00000000 00000000
->> [   40.904541] [<400970a8>] (xnsynch_flush) from [<400a2dc4>] (rtdm_event_signal+0x70/0x144)
->> [   40.912689] [<400a2dc4>] (rtdm_event_signal) from [<403ef728>] (rt_macip_interrupt_rx+0x20c/0x248)
->> [   40.921627] [<403ef728>] (rt_macip_interrupt_rx) from [<40090524>] (xnintr_irq_handler+0xc8/0x378)
->> [   40.930574] [<40090524>] (xnintr_irq_handler) from [<40088ab0>] (dispatch_irq_head+0x9c/0x15c)
->> [   40.939162] [<40088ab0>] (dispatch_irq_head) from [<4000934c>] (__ipipe_grab_irq+0x64/0x7c)
->> [   40.947490] [<4000934c>] (__ipipe_grab_irq) from [<400095c8>] (gic_handle_irq+0x48/0x8c)
->> [   40.955556] Exception stack(0x416a1f20 to 0x416a1f68)
->> [   40.960596] 1f20: 40088758 40088784 60000013 ffffffff 416a1f74 416a23c0 416a2578 400139d4
->> [   40.968755] 1f40: 00000000 5fbcfe10 00000000 00000000 41698e10 416a2498 416a2450 416dcc00
->> [   40.976909] 1f60: 416a23c0 416a2578
->> [   40.980387] [<400095c8>] (gic_handle_irq) from [<400139d4>] (__irq_svc+0x54/0x80)
->> [   40.987845] Exception stack(0x416a1f40 to 0x416a1f88)
->> [   40.992886] 1f40: 00000000 5fbcfe10 00000000 00000000 41698e10 416a2498 416a2450 416dcc00
->> [   41.001044] 1f60: 416a23c0 416a2578 416982c4 404e37c8 1e537000 416a1f90 40088758 40088784
->> [   41.009199] 1f80: 60000013 ffffffff
->> [   41.012679] [<400139d4>] (__irq_svc) from [<40088784>] (ipipe_unstall_root+0x3c/0x50)
->> [   41.020495] [<40088784>] (ipipe_unstall_root) from [<40059cf8>] (cpu_startup_entry+0x144/0x1c8)
->> [   41.029174] [<40059cf8>] (cpu_startup_entry) from [<4062fc98>] (start_kernel+0x3c8/0x3d4)
->> [   41.037327] Code: e3a06000 e593c06c e1a00003 e3a01002 (e582c004)
->> [   41.043401] ---[ end trace a517e81af11fe3d4 ]---
->> [   41.048000] Kernel panic - not syncing: Attempted to kill the idle task!
->> [   42.227682] SMP: failed to stop secondary CPUs
->> [   42.232040] ---[ end Kernel panic - not syncing: Attempted to kill the idle task!
->>
->> Thanks in advance
->>
->> François
->>
->>
->   
-> Hello again.
-> 
-> I ended up finding the CONFIG_DEBUG_LIST kernel hacking flag and activated it.
-> It turns out (thus I have no idea why) that the rt_stak_mgr_task () is adding the same thread multiple times to the list (I put a break in the list_add debug function and I got the following backtrace :
-> 
->   __list_add(): lib/list_debug.c, line 34
-> list_add(): include/linux/list.h, line 63
-> xnsynch_sleep_on(): kernel/xenomai/synch.c, line 186
-> rtdm_event_timedwait(): kernel/xenomai/rtdm/drvlib.c, line 898
-> rtdm_event_wait(): kernel/xenomai/rtdm/drvlib.c, line 828
-> rt_stack_mgr_task(): .../xenomai/net/stack/stack_mgr.c, line 204
-> ...
-> 
-> I'll try to understand what's going on here, but any help would be appreciated.
+From: Philippe Gerum <rpm@xenomai.org>
 
-Where is the second case?
+rtdm_nrtsig_pend() is based on ipipe_post_root_work(), which keeps a
+copy of every request descriptor internally until it is consumed by
+the secondary mode handler. Triggering rtdm_nrtsig_pend() every time a
+packet is relayed from the stack to the virtual netdev may cause such
+request buffer to overflow under pressure.
 
-A threads adds itself here, so it would be hard to do this twice.
+To address this issue, trigger the non-rt signal from
+rtnetproxy_recv() only when the proxy RX queue transitions from empty
+to non-empty as a result of enqueuing the next skb. To this end,
+rtskb_queue_tail_check() is introduced.
 
-The RTnet Ethernet driver is self-made?
+Signed-off-by: Philippe Gerum <rpm@xenomai.org>
+---
+ kernel/drivers/net/addons/proxy.c        |  4 ++--
+ kernel/drivers/net/stack/include/rtskb.h | 20 ++++++++++++++++++++
+ 2 files changed, 22 insertions(+), 2 deletions(-)
 
-Jan
-
+diff --git a/kernel/drivers/net/addons/proxy.c b/kernel/drivers/net/addons/proxy.c
+index 9b8d29924..0b3ec74fa 100644
+--- a/kernel/drivers/net/addons/proxy.c
++++ b/kernel/drivers/net/addons/proxy.c
+@@ -218,8 +218,8 @@ static void rtnetproxy_recv(struct rtskb *rtskb)
+ 		return;
+ 	}
+ 
+-	rtskb_queue_tail(&rx_queue, rtskb);
+-	rtdm_nrtsig_pend(&rtnetproxy_rx_signal);
++	if (rtskb_queue_tail_check(&rx_queue, rtskb))
++		rtdm_nrtsig_pend(&rtnetproxy_rx_signal);
+ }
+ 
+ /* ************************************************************************
+diff --git a/kernel/drivers/net/stack/include/rtskb.h b/kernel/drivers/net/stack/include/rtskb.h
+index d9839d6ab..8f0294fe3 100644
+--- a/kernel/drivers/net/stack/include/rtskb.h
++++ b/kernel/drivers/net/stack/include/rtskb.h
+@@ -438,6 +438,26 @@ static inline void rtskb_queue_tail(struct rtskb_queue *queue,
+ 	rtdm_lock_put_irqrestore(&queue->lock, context);
+ }
+ 
++/***
++ *  rtskb_queue_tail_check - variant of rtskb_queue_tail
++ *          returning true on empty->non empty transition.
++ *  @queue: queue to use
++ *  @skb: buffer to queue
++ */
++static inline bool rtskb_queue_tail_check(struct rtskb_queue *queue,
++					  struct rtskb *skb)
++{
++	rtdm_lockctx_t context;
++	bool ret;
++
++	rtdm_lock_get_irqsave(&queue->lock, context);
++	ret = queue->first == NULL;
++	__rtskb_queue_tail(queue, skb);
++	rtdm_lock_put_irqrestore(&queue->lock, context);
++
++	return ret;
++}
++
+ /***
+  *  __rtskb_prio_queue_tail - insert a buffer at the prioritized queue tail
+  *                            (w/o locks)
 -- 
-Siemens AG, Corporate Technology, CT RDA IOT SES-DE
-Corporate Competence Center Embedded Linux
+2.21.0
+
 
