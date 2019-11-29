@@ -1,7 +1,10 @@
 From: Philippe  Gerum <rpm@xenomai.org>
-Subject: [PATCH 1/2] net/proxy: fix non-rt signal overflow
-Date: Fri, 29 Nov 2019 16:03:02 +0100
-Message-Id: <20191129150303.11116-1-rpm@xenomai.org>
+Subject: [PATCH 2/2] cobalt/sched: quota: fix use-after-free in quota_remove
+ operation
+Date: Fri, 29 Nov 2019 16:03:03 +0100
+Message-Id: <20191129150303.11116-2-rpm@xenomai.org>
+In-Reply-To: <20191129150303.11116-1-rpm@xenomai.org>
+References: <20191129150303.11116-1-rpm@xenomai.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
@@ -16,69 +19,33 @@ To: xenomai@xenomai.org
 
 From: Philippe Gerum <rpm@xenomai.org>
 
-rtdm_nrtsig_pend() is based on ipipe_post_root_work(), which keeps a
-copy of every request descriptor internally until it is consumed by
-the secondary mode handler. Triggering rtdm_nrtsig_pend() every time a
-packet is relayed from the stack to the virtual netdev may cause such
-request buffer to overflow under pressure.
-
-To address this issue, trigger the non-rt signal from
-rtnetproxy_recv() only when the proxy RX queue transitions from empty
-to non-empty as a result of enqueuing the next skb. To this end,
-rtskb_queue_tail_check() is introduced.
+KASAN detected this issue while removing a quota group, as a result of
+accessing members from the xnsched_quota_group struct after the
+container struct was freed.
 
 Signed-off-by: Philippe Gerum <rpm@xenomai.org>
 ---
- kernel/drivers/net/addons/proxy.c        |  4 ++--
- kernel/drivers/net/stack/include/rtskb.h | 20 ++++++++++++++++++++
- 2 files changed, 22 insertions(+), 2 deletions(-)
+ kernel/cobalt/posix/sched.c | 6 +++++-
+ 1 file changed, 5 insertions(+), 1 deletion(-)
 
-diff --git a/kernel/drivers/net/addons/proxy.c b/kernel/drivers/net/addons/proxy.c
-index 9b8d29924..0b3ec74fa 100644
---- a/kernel/drivers/net/addons/proxy.c
-+++ b/kernel/drivers/net/addons/proxy.c
-@@ -218,8 +218,8 @@ static void rtnetproxy_recv(struct rtskb *rtskb)
- 		return;
- 	}
- 
--	rtskb_queue_tail(&rx_queue, rtskb);
--	rtdm_nrtsig_pend(&rtnetproxy_rx_signal);
-+	if (rtskb_queue_tail_check(&rx_queue, rtskb))
-+		rtdm_nrtsig_pend(&rtnetproxy_rx_signal);
- }
- 
- /* ************************************************************************
-diff --git a/kernel/drivers/net/stack/include/rtskb.h b/kernel/drivers/net/stack/include/rtskb.h
-index d9839d6ab..8f0294fe3 100644
---- a/kernel/drivers/net/stack/include/rtskb.h
-+++ b/kernel/drivers/net/stack/include/rtskb.h
-@@ -438,6 +438,26 @@ static inline void rtskb_queue_tail(struct rtskb_queue *queue,
- 	rtdm_lock_put_irqrestore(&queue->lock, context);
- }
- 
-+/***
-+ *  rtskb_queue_tail_check - variant of rtskb_queue_tail
-+ *          returning true on empty->non empty transition.
-+ *  @queue: queue to use
-+ *  @skb: buffer to queue
-+ */
-+static inline bool rtskb_queue_tail_check(struct rtskb_queue *queue,
-+					  struct rtskb *skb)
-+{
-+	rtdm_lockctx_t context;
-+	bool ret;
-+
-+	rtdm_lock_get_irqsave(&queue->lock, context);
-+	ret = queue->first == NULL;
-+	__rtskb_queue_tail(queue, skb);
-+	rtdm_lock_put_irqrestore(&queue->lock, context);
-+
-+	return ret;
-+}
-+
- /***
-  *  __rtskb_prio_queue_tail - insert a buffer at the prioritized queue tail
-  *                            (w/o locks)
+diff --git a/kernel/cobalt/posix/sched.c b/kernel/cobalt/posix/sched.c
+index f018ac3e8..7e457a9a8 100644
+--- a/kernel/cobalt/posix/sched.c
++++ b/kernel/cobalt/posix/sched.c
+@@ -446,8 +446,12 @@ int set_quota_config(int cpu, union sched_config *config, size_t len)
+ 		}
+ 		list_del(&group->next);
+ 		xnlock_put_irqrestore(&nklock, s);
++		iq->tgid = tg->tgid;
++		iq->quota = tg->quota_percent;
++		iq->quota_peak = tg->quota_peak_percent;
++		iq->quota_sum = quota_sum;
+ 		xnfree(group);
+-		break;
++		return 0;
+ 	case sched_quota_set:
+ 		xnlock_get_irqsave(&nklock, s);
+ 		sched = xnsched_struct(cpu);
 -- 
 2.21.0
 
