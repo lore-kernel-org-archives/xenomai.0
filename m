@@ -1,7 +1,9 @@
 From: Philippe  Gerum <rpm@xenomai.org>
-Subject: [PATCH 1/3] net/cap: fix non-rt signal overflow
-Date: Sat, 30 Nov 2019 19:39:27 +0100
-Message-Id: <20191130183929.11034-1-rpm@xenomai.org>
+Subject: [PATCH 2/3] net/rtmac: vnic: fix non-rt signal overflow
+Date: Sat, 30 Nov 2019 19:39:28 +0100
+Message-Id: <20191130183929.11034-2-rpm@xenomai.org>
+In-Reply-To: <20191130183929.11034-1-rpm@xenomai.org>
+References: <20191130183929.11034-1-rpm@xenomai.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
@@ -19,8 +21,8 @@ From: Philippe Gerum <rpm@xenomai.org>
 rtdm_nrtsig_pend() is based on ipipe_post_root_work(), which keeps a
 copy of every request descriptor internally until it is consumed by
 the secondary mode handler. Triggering rtdm_nrtsig_pend() every time a
-packet is relayed from the stack to the tap device may cause such
-request buffer to overflow under pressure.
+packet is relayed from the stack to the VNIC may cause such request
+buffer to overflow under pressure.
 
 To address this issue, trigger the non-rt signal only when the RX
 queue transitions from empty to non-empty state as a result of
@@ -28,71 +30,23 @@ enqueuing the next skb.
 
 Signed-off-by: Philippe Gerum <rpm@xenomai.org>
 ---
- kernel/drivers/net/addons/cap.c | 18 ++++++++++++------
- 1 file changed, 12 insertions(+), 6 deletions(-)
+ kernel/drivers/net/stack/rtmac/rtmac_vnic.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/kernel/drivers/net/addons/cap.c b/kernel/drivers/net/addons/cap.c
-index 5f83e19e3..293fcc84b 100644
---- a/kernel/drivers/net/addons/cap.c
-+++ b/kernel/drivers/net/addons/cap.c
-@@ -59,6 +59,7 @@ void rtcap_rx_hook(struct rtskb *rtskb)
- {
- 	int                     ifindex;
- 	int                     active;
-+	bool			trigger = false;
+diff --git a/kernel/drivers/net/stack/rtmac/rtmac_vnic.c b/kernel/drivers/net/stack/rtmac/rtmac_vnic.c
+index 85ee35002..138e276ad 100644
+--- a/kernel/drivers/net/stack/rtmac/rtmac_vnic.c
++++ b/kernel/drivers/net/stack/rtmac/rtmac_vnic.c
+@@ -52,8 +52,8 @@ int rtmac_vnic_rx(struct rtskb *rtskb, u16 type)
  
- 	if (rtskb->cap_flags & RTSKB_CAP_SHARED)
- 		return;
-@@ -81,9 +82,10 @@ void rtcap_rx_hook(struct rtskb *rtskb)
- 		return;
- 	}
+ 	rtskb->protocol = type;
  
--	if (cap_queue.first == NULL)
-+	if (cap_queue.first == NULL) {
- 		cap_queue.first = rtskb;
--	else
-+		trigger = true;
-+	} else
- 		cap_queue.last->cap_next = rtskb;
- 	cap_queue.last = rtskb;
- 	rtskb->cap_next = NULL;
-@@ -91,13 +93,15 @@ void rtcap_rx_hook(struct rtskb *rtskb)
- 	rtskb->cap_flags |= RTSKB_CAP_SHARED;
- 	rtskb->cap_dev = rtskb->rtdev;
+-	rtskb_queue_tail(&rx_queue, rtskb);
+-	rtdm_nrtsig_pend(&vnic_signal);
++	if (rtskb_queue_tail_check(&rx_queue, rtskb))
++		rtdm_nrtsig_pend(&vnic_signal);
  
--	rtdm_nrtsig_pend(&cap_signal);
-+	if (trigger)
-+		rtdm_nrtsig_pend(&cap_signal);
- }
- 
- int rtcap_xmit_hook(struct rtskb *rtskb, struct rtnet_device *rtdev)
- {
- 	struct tap_device_t *tap_dev = &tap_device[rtskb->rtdev->ifindex];
- 	rtdm_lockctx_t context;
-+	bool trigger = false;
- 	int active;
- 
- 	active = tap_dev->present & XMIT_HOOK;
-@@ -121,15 +125,17 @@ int rtcap_xmit_hook(struct rtskb *rtskb, struct rtnet_device *rtdev)
- 
- 	rtdm_lock_get_irqsave(&rtcap_lock, context);
- 
--	if (cap_queue.first == NULL)
-+	if (cap_queue.first == NULL) {
- 		cap_queue.first = rtskb;
--	else
-+		trigger = true;
-+	} else
- 		cap_queue.last->cap_next = rtskb;
- 	cap_queue.last = rtskb;
- 
- 	rtdm_lock_put_irqrestore(&rtcap_lock, context);
- 
--	rtdm_nrtsig_pend(&cap_signal);
-+	if (trigger)
-+		rtdm_nrtsig_pend(&cap_signal);
- done:
- 	return tap_dev->orig_xmit(rtskb, rtdev);
+ 	return 0;
  }
 -- 
 2.21.0
