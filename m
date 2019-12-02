@@ -1,7 +1,11 @@
 From: Jan Kiszka <jan.kiszka@siemens.com>
-Subject: [PATCH 0/5] Rework pthread_setschedprio support
-Date: Mon,  2 Dec 2019 08:12:13 +0100
-Message-Id: <cover.1575270738.git.jan.kiszka@siemens.com>
+Subject: [PATCH 1/5] cobalt/posix/thread: Factor out thread_lookup_or_shadow
+Date: Mon,  2 Dec 2019 08:12:14 +0100
+Message-Id: <33e64f417b0ecf14bb9f97ffe91f4ce401ae34fb.1575270738.git.jan.kiszka@siemens.com>
+In-Reply-To: <cover.1575270738.git.jan.kiszka@siemens.com>
+References: <cover.1575270738.git.jan.kiszka@siemens.com>
+In-Reply-To: <cover.1575270738.git.jan.kiszka@siemens.com>
+References: <cover.1575270738.git.jan.kiszka@siemens.com>
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -12,32 +16,78 @@ List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: xenomai@xenomai.org
 
-It turned out just in time that the __CURRENT_SCHED-approach is broken
-and not reasonably fixable. This introduces a separate syscall for
-implementing that posix function.
+From: Jan Kiszka <jan.kiszka@siemens.com>
 
-Jan
+This pattern will be reused by cobalt_thread_setschedprio.
 
-Jan Kiszka (5):
-  cobalt/posix/thread: Factor out thread_lookup_or_shadow
-  cobalt/posix: Add thread_setschedprio
-  lib/cobalt: Use new thread_setschedprio syscall
-  Revert "cobalt/kernel: Introduce __SCHED_CURRENT policy to
-    setschedparam_ex"
-  testsuite/smokey: Add pthread_setschedprio to setsched test case
+Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
+---
+ kernel/cobalt/posix/thread.c | 38 ++++++++++++++++++++++++++------------
+ 1 file changed, 26 insertions(+), 12 deletions(-)
 
- include/cobalt/uapi/sched.h                        |  3 -
- include/cobalt/uapi/syscall.h                      |  1 +
- .../arch/x86/include/asm/xenomai/syscall32-table.h |  1 +
- kernel/cobalt/posix/syscall32.c                    |  9 +++
- kernel/cobalt/posix/syscall32.h                    |  6 ++
- kernel/cobalt/posix/thread.c                       | 85 ++++++++++++++++------
- kernel/cobalt/posix/thread.h                       | 11 +++
- kernel/cobalt/trace/cobalt-posix.h                 | 18 ++++-
- lib/cobalt/thread.c                                | 33 ++++++++-
- testsuite/smokey/setsched/setsched.c               | 19 +++++
- 10 files changed, 155 insertions(+), 31 deletions(-)
-
+diff --git a/kernel/cobalt/posix/thread.c b/kernel/cobalt/posix/thread.c
+index 30c31bb6d9..9f1c802b63 100644
+--- a/kernel/cobalt/posix/thread.c
++++ b/kernel/cobalt/posix/thread.c
+@@ -463,32 +463,46 @@ static inline int pthread_setmode_np(int clrmask, int setmask, int *mode_r)
+ 	return 0;
+ }
+ 
+-int cobalt_thread_setschedparam_ex(unsigned long pth,
+-				   int policy,
+-				   const struct sched_param_ex *param_ex,
+-				   __u32 __user *u_winoff,
+-				   int __user *u_promoted)
++static struct cobalt_thread *thread_lookup_or_shadow(unsigned long pth,
++						     __u32 __user *u_winoff,
++						     int *promoted_r)
+ {
+ 	struct cobalt_local_hkey hkey;
+ 	struct cobalt_thread *thread;
+-	int ret, promoted = 0;
++
++	*promoted_r = 0;
+ 
+ 	hkey.u_pth = pth;
+ 	hkey.mm = current->mm;
+-	trace_cobalt_pthread_setschedparam(pth, policy, param_ex);
+ 
+ 	thread = thread_lookup(&hkey);
+ 	if (thread == NULL) {
+ 		if (u_winoff == NULL)
+-			return -ESRCH;
++			return ERR_PTR(-ESRCH);
+ 			
+ 		thread = cobalt_thread_shadow(&hkey, u_winoff);
+-		if (IS_ERR(thread))
+-			return PTR_ERR(thread);
+-
+-		promoted = 1;
++		if (!IS_ERR(thread))
++			*promoted_r = 1;
+ 	}
+ 
++	return thread;
++}
++
++int cobalt_thread_setschedparam_ex(unsigned long pth,
++				   int policy,
++				   const struct sched_param_ex *param_ex,
++				   __u32 __user *u_winoff,
++				   int __user *u_promoted)
++{
++	struct cobalt_thread *thread;
++	int ret, promoted;
++
++	trace_cobalt_pthread_setschedparam(pth, policy, param_ex);
++
++	thread = thread_lookup_or_shadow(pth, u_winoff, &promoted);
++	if (IS_ERR(thread))
++		return PTR_ERR(thread);
++
+ 	ret = __cobalt_thread_setschedparam_ex(thread, policy, param_ex);
+ 	if (ret)
+ 		return ret;
 -- 
 2.16.4
 
