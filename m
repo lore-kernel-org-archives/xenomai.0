@@ -1,11 +1,10 @@
-Subject: Re: [ANNOUNCE] Xenomai v3.1-rc4 available
-References: <313ed563-6a6e-a7f4-93a4-06013d2a239d@siemens.com>
- <VI1PR05MB59176576A69489C94150844CF65A0@VI1PR05MB5917.eurprd05.prod.outlook.com>
+Subject: Re: [PATCH] net/cap: fix non-rt signal overflow
+References: <20191202151810.4743-1-rpm@xenomai.org>
 From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <7ef3daec-e12d-a40e-4bbc-92005e316929@siemens.com>
-Date: Wed, 11 Dec 2019 09:43:27 +0100
+Message-ID: <be3070c2-5f14-b67a-a60f-b43064ea0f6a@siemens.com>
+Date: Mon, 2 Dec 2019 17:53:57 +0100
 MIME-Version: 1.0
-In-Reply-To: <VI1PR05MB59176576A69489C94150844CF65A0@VI1PR05MB5917.eurprd05.prod.outlook.com>
+In-Reply-To: <20191202151810.4743-1-rpm@xenomai.org>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -17,77 +16,90 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Lange Norbert <norbert.lange@andritz.com>, Xenomai <xenomai@xenomai.org>
+To: Philippe Gerum <rpm@xenomai.org>, xenomai@xenomai.org
 
-On 11.12.19 09:38, Lange Norbert wrote:
+On 02.12.19 16:18, Philippe Gerum via Xenomai wrote:
+> From: Philippe Gerum <rpm@xenomai.org>
 > 
+> rtdm_nrtsig_pend() is based on ipipe_post_root_work(), which keeps a
+> copy of every request descriptor internally until it is consumed by
+> the secondary mode handler. Triggering rtdm_nrtsig_pend() every time a
+> packet is relayed from the stack to the tap device may cause such
+> request buffer to overflow under pressure.
 > 
->> -----Original Message-----
->> From: Xenomai <xenomai-bounces@xenomai.org> On Behalf Of Jan Kiszka
->> via Xenomai
->> Sent: Freitag, 6. Dezember 2019 15:44
->> To: Xenomai <xenomai@xenomai.org>
->> Subject: [ANNOUNCE] Xenomai v3.1-rc4 available
->>
->> NON-ANDRITZ SOURCE: BE CAUTIOUS WITH CONTENT, LINKS OR
->> ATTACHMENTS.
->>
->>
->> Hi all,
->>
->> after running into a number of critical issues around the scheduler but also
->> one of the new ABIs, this -rc is a fairly important one:
->>
->> https://gitlab.denx.de/Xenomai/xenomai/-/archive/v3.1-rc4/xenomai-v3.1-
->> rc4.tar.bz2
->> https://gitlab.denx.de/Xenomai/xenomai/commits/v3.1-rc4
->>
->> Changes since rc3:
->>
->> Jan Kiszka (15):
->>       rtdm: Do not return an error from send/recvmmsg if there are packets
->>       rtdm: Remove early exit from send/recvmmsg on vlan == 0
->>       ci: Always build the latest release
->>       lib/cobalt: Fix help for --print-sync-delay
->>       alchemy: Fully initialize tcb->self
->>       testsuite/smokey/posix-cond: Make more robust for execution in VMs
->>       cobalt/posix/thread: Factor out thread_lookup_or_shadow
->>       cobalt/posix: Add thread_setschedprio
->>       lib/cobalt: Use new thread_setschedprio syscall
->>       Revert "cobalt/kernel: Introduce __SCHED_CURRENT policy to
->> setschedparam_ex"
->>       testsuite/smokey: Fix setsched /wrt lazy scheduling parameter application
->>       testsuite/smokey: Add pthread_setschedprio to setsched test case
->>       debian: Enable lazy-setsched in userspace package
->>       cobalt/intr: Move IRQ exit trace point in non-shared case
->>       config: Bump version number
->>
->> Philippe Gerum (16):
->>       copperplate/heapobj-pshared: fix element size for array init
->>       testsuite/mq-2: clarify test implementation
->>       boilerplate/avl: fix NULL link representation in pshared mode - take #2
->>       cobalt/process: skip trap handling for the root thread
->>       cobalt/thread: update inline documentation
->>       cobalt/posix: fix missed rescheduling opportunities
->>       cobalt/process: remove superfluous check for non-relaxed state
->>       cobalt/thread: fix scheduler breakage on thread suspension
->>       drivers/testing: heapcheck: silence UMR warning (false positive)
->>       cobalt/process: exit_thread handlers should reschedule as needed
->>       net/proxy: fix non-rt signal overflow
->>       cobalt/sched: quota: fix use-after-free in quota_remove operation
->>       net/rtmac: vnic: fix non-rt signal overflow
->>       net/rtpc: fix non-rt signal overflow
->>       net/cap: fix non-rt signal overflow
->>       cobalt/sched: guard against missed rescheduling upon CPU migration
->>
->> Please test so that we finalize 3.1 soon.
+> To address this issue, trigger the non-rt signal only when the RX
+> queue transitions from empty to non-empty state as a result of
+> enqueuing the next skb.
 > 
-> Running here without issues so far, and I used Phillipe's schedulerfixes since they appeared.
-> Looks good to me.
+> Signed-off-by: Philippe Gerum <rpm@xenomai.org>
+> ---
+>  kernel/drivers/net/addons/cap.c | 19 +++++++++++++------
+>  1 file changed, 13 insertions(+), 6 deletions(-)
 > 
-> Norbert
+> diff --git a/kernel/drivers/net/addons/cap.c b/kernel/drivers/net/addons/cap.c
+> index 4e0795e24..1e8644069 100644
+> --- a/kernel/drivers/net/addons/cap.c
+> +++ b/kernel/drivers/net/addons/cap.c
+> @@ -57,27 +57,32 @@ static struct tap_device_t {
+>  
+>  void rtcap_rx_hook(struct rtskb *rtskb)
+>  {
+> +	bool			trigger = false;
+> +
+>  	if ((rtskb->cap_comp_skb = rtskb_pool_dequeue(&cap_pool)) == 0) {
+>  		tap_device[rtskb->rtdev->ifindex].tap_dev_stats.rx_dropped++;
+>  		return;
+>  	}
+>  
+> -	if (cap_queue.first == NULL)
+> +	if (cap_queue.first == NULL) {
+>  		cap_queue.first = rtskb;
+> -	else
+> +		trigger = true;
+> +	} else
+>  		cap_queue.last->cap_next = rtskb;
+>  	cap_queue.last = rtskb;
+>  	rtskb->cap_next = NULL;
+>  
+>  	rtskb->cap_flags |= RTSKB_CAP_SHARED;
+>  
+> -	rtdm_nrtsig_pend(&cap_signal);
+> +	if (trigger)
+> +		rtdm_nrtsig_pend(&cap_signal);
+>  }
+>  
+>  int rtcap_xmit_hook(struct rtskb *rtskb, struct rtnet_device *rtdev)
+>  {
+>  	struct tap_device_t *tap_dev = &tap_device[rtskb->rtdev->ifindex];
+>  	rtdm_lockctx_t context;
+> +	bool trigger = false;
+>  
+>  	if ((rtskb->cap_comp_skb = rtskb_pool_dequeue(&cap_pool)) == 0) {
+>  		tap_dev->tap_dev_stats.rx_dropped++;
+> @@ -93,15 +98,17 @@ int rtcap_xmit_hook(struct rtskb *rtskb, struct rtnet_device *rtdev)
+>  
+>  	rtdm_lock_get_irqsave(&rtcap_lock, context);
+>  
+> -	if (cap_queue.first == NULL)
+> +	if (cap_queue.first == NULL) {
+>  		cap_queue.first = rtskb;
+> -	else
+> +		trigger = true;
+> +	} else
+>  		cap_queue.last->cap_next = rtskb;
+>  	cap_queue.last = rtskb;
+>  
+>  	rtdm_lock_put_irqrestore(&rtcap_lock, context);
+>  
+> -	rtdm_nrtsig_pend(&cap_signal);
+> +	if (trigger)
+> +		rtdm_nrtsig_pend(&cap_signal);
+>  
+>  	return tap_dev->orig_xmit(rtskb, rtdev);
+>  }
+> 
 
-Thanks for the feedback (taking it to the ML)!
+thanks, applied
 
 Jan
 
