@@ -1,16 +1,11 @@
-Date: Mon, 09 Dec 2019 14:30:42 +0000
-From: Jeff Webb <w1@codecraftsmen.org>
-Reply-To: Jeff Webb <w1@codecraftsmen.org>
-Subject: Re: Building deb packages
-Message-ID: <jycMJT1P7zI2tMBKKeg25_LsPFpOGDEXheOd5ZX-896nCaMXbeGW8Fqotj5_nedq4d85SvEuUYt-rP83ZN7k04Bu0PBuzLPIKGwHV3HrFXk=@codecraftsmen.org>
-In-Reply-To: <CAArsGaaj=sFSOsTkGsAYTsZPJQwutR4EZE8kJBFWefFbzhCHCQ@mail.gmail.com>
-References: <a6zvfTWG8HmL1m3CKsFlVVKFO4CznsabNKtz6u1vD1P4HVWcun3mWGHs11YE4exIKjC48U7t5383dTEbXZfYmMeFvHqNnrmzjp0izgkWFys=@codecraftsmen.org>
- <378aee64-da86-da9f-eb46-5059949e37d7@siemens.com>
- <rOql7M13UpQ86c6D3l2RkZfn2hfdic4R0_-GagsurIAJJqe5mwDdFHqYOrDo8LSpNcCCw-_wiOjBp2WaWcyTagPWwE461jmNCgwW5ead5vk=@codecraftsmen.org>
- <cdbee450-251e-b79b-ac38-ddf1f9aaf568@siemens.com>
- <CAArsGaaj=sFSOsTkGsAYTsZPJQwutR4EZE8kJBFWefFbzhCHCQ@mail.gmail.com>
+Date: Mon, 2 Dec 2019 10:22:30 -0600 (CST)
+From: Per Oberg <pero@wolfram.com>
+Message-ID: <1875295414.3479272.1575303750696.JavaMail.zimbra@wolfram.com>
+In-Reply-To: <7ef777be-f422-bd61-e19b-2b02772487f4@xenomai.org>
+References: <7ef777be-f422-bd61-e19b-2b02772487f4@xenomai.org>
+Subject: Re: Moving on
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: quoted-printable
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
@@ -20,33 +15,42 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Tormod Volden <lists.tormod@gmail.com>
-Cc: Xenomai <xenomai@xenomai.org>
+To: Philippe Gerum <rpm@xenomai.org>
+Cc: xenomai <Xenomai@xenomai.org>
 
-=E2=80=90=E2=80=90=E2=80=90=E2=80=90=E2=80=90=E2=80=90=E2=80=90 Original Me=
-ssage =E2=80=90=E2=80=90=E2=80=90=E2=80=90=E2=80=90=E2=80=90=E2=80=90
-On Wednesday, November 27, 2019 2:22 AM, Tormod Volden <lists.tormod@gmail.=
-com> wrote:
+----- Den 2 dec 2019, p=C3=A5 kl 17:05, xenomai xenomai@xenomai.org skrev:
 
-> Hi Jeff,
-> I just want to chime in here. Not sure if it is related to issue that
-> you mention you had with make-kpkg. There is a bug* in the Debian
-> "kernel-package" package, that makes make-kpkg add some header files
-> to the resulting kernel_headers .deb files that it shouldn't. The
-> extra headers cause trouble when you later want to build packages on
-> the computer where those .debs are installed.
->
-> The workaround, until this is fixed in kernel-package, is to remove
-> the headers_install entry in headers.mk from the kernel-package, e.g.:
-> sudo sed -i.orig '/headers_install/s/\$/# $/'
-> /usr/share/kernel-package/ruleset/targets/headers.mk
+> It has been two years since I stepped down as Xenomai's lead maintainer.
+> In the meantime, Jan took over and did a very good job in this role as
+> expected.
 
-Thanks for the information on this issue.  I may look into that in the futu=
-re, but I will use "make deb-pkg" with the prepare-kernel --outpatch option=
- for now.
+> Since this transition period is now taking an end, I'm switching focus
+> to the EVL project [1] I have been nurturing for some time, with the
+> goal to make it production-grade next year. In a nutshell, EVL is about
+> laying the groundwork for dual kernel systems to become first-class
+> citizens of Linux. This work includes a SMP scalable real-time core
+> which can be maintained with common kernel knowledge over the latest
+> mainline kernel series, a standard driver model, and a single, compact AP=
+I.
 
-Thanks again for the help.
+> I will still review patches coming my way for the I-pipe ARM and arm64
+> trees for a few weeks, until the next maintainer is appointed for these
+> architectures. I'll be around to help with Xenomai core issues if needed.
 
--Jeff
+> Thanks,
 
+> [1] https://evlproject.org/
+
+> --
+> Philippe.
+
+Thank you for your invaluable work!=20
+As a software developer in the real time control field I must say that goin=
+g to work is a real joy, and Xenomai is a part of that. Hope you feel the s=
+ame.
+
+I am certainly looking forward to see what will come out of EVL, but before=
+ that: Make sure to have a real Happy Holidays !
+
+Per =C3=96berg=20
 
