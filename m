@@ -1,14 +1,14 @@
-From: smpd support <symphonic.mpd@gmail.com>
-Subject: Re: arm64 support
-Date: Mon, 2 Dec 2019 12:29:38 +0000
-Message-ID: <DM5PR15MB11630EF73A861E9528FA74FFF0430@DM5PR15MB1163.namprd15.prod.outlook.com>
-References: <DM5PR15MB11635BC3912646333637C66FF0430@DM5PR15MB1163.namprd15.prod.outlook.com>,
- <9c64de1d-dacd-3d1e-674e-0e5b93d55ab3@siemens.com>
-In-Reply-To: <9c64de1d-dacd-3d1e-674e-0e5b93d55ab3@siemens.com>
-Content-Language: en-US
+Subject: Re: [PATCH 1/3] net/cap: fix non-rt signal overflow
+References: <20191130183929.11034-1-rpm@xenomai.org>
+ <49116397-83cb-2837-9df0-50ff5cf73b7a@siemens.com>
+From: Philippe Gerum <rpm@xenomai.org>
+Message-ID: <6f5556ef-2564-4e01-a17e-4334d894f994@xenomai.org>
+Date: Mon, 2 Dec 2019 16:17:33 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset="iso-2022-jp"
-Content-Transfer-Encoding: quoted-printable
+In-Reply-To: <49116397-83cb-2837-9df0-50ff5cf73b7a@siemens.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,73 +17,88 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jan Kiszka <jan.kiszka@siemens.com>
-Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Jan Kiszka <jan.kiszka@siemens.com>, xenomai@xenomai.org
 
-Thank you for your reply.
+On 12/2/19 7:46 AM, Jan Kiszka wrote:
+> On 30.11.19 19:39, Philippe Gerum via Xenomai wrote:
+>> From: Philippe Gerum <rpm@xenomai.org>
+>>
+>> rtdm_nrtsig_pend() is based on ipipe_post_root_work(), which keeps a
+>> copy of every request descriptor internally until it is consumed by
+>> the secondary mode handler. Triggering rtdm_nrtsig_pend() every time a
+>> packet is relayed from the stack to the tap device may cause such
+>> request buffer to overflow under pressure.
+>>
+>> To address this issue, trigger the non-rt signal only when the RX
+>> queue transitions from empty to non-empty state as a result of
+>> enqueuing the next skb.
+>>
+>> Signed-off-by: Philippe Gerum <rpm@xenomai.org>
+>> ---
+>>   kernel/drivers/net/addons/cap.c | 18 ++++++++++++------
+>>   1 file changed, 12 insertions(+), 6 deletions(-)
+>>
+>> diff --git a/kernel/drivers/net/addons/cap.c b/kernel/drivers/net/addons/cap.c
+>> index 5f83e19e3..293fcc84b 100644
+>> --- a/kernel/drivers/net/addons/cap.c
+>> +++ b/kernel/drivers/net/addons/cap.c
+>> @@ -59,6 +59,7 @@ void rtcap_rx_hook(struct rtskb *rtskb)
+>>   {
+>>       int                     ifindex;
+>>       int                     active;
+>> +    bool            trigger = false;
+>>         if (rtskb->cap_flags & RTSKB_CAP_SHARED)
+>>           return;
+>> @@ -81,9 +82,10 @@ void rtcap_rx_hook(struct rtskb *rtskb)
+>>           return;
+>>       }
+>>   -    if (cap_queue.first == NULL)
+>> +    if (cap_queue.first == NULL) {
+>>           cap_queue.first = rtskb;
+>> -    else
+>> +        trigger = true;
+>> +    } else
+>>           cap_queue.last->cap_next = rtskb;
+>>       cap_queue.last = rtskb;
+>>       rtskb->cap_next = NULL;
+>> @@ -91,13 +93,15 @@ void rtcap_rx_hook(struct rtskb *rtskb)
+>>       rtskb->cap_flags |= RTSKB_CAP_SHARED;
+>>       rtskb->cap_dev = rtskb->rtdev;
+>>   -    rtdm_nrtsig_pend(&cap_signal);
+>> +    if (trigger)
+>> +        rtdm_nrtsig_pend(&cap_signal);
+>>   }
+>>     int rtcap_xmit_hook(struct rtskb *rtskb, struct rtnet_device *rtdev)
+>>   {
+>>       struct tap_device_t *tap_dev = &tap_device[rtskb->rtdev->ifindex];
+>>       rtdm_lockctx_t context;
+>> +    bool trigger = false;
+>>       int active;
+>>         active = tap_dev->present & XMIT_HOOK;
+>> @@ -121,15 +125,17 @@ int rtcap_xmit_hook(struct rtskb *rtskb, struct rtnet_device *rtdev)
+>>         rtdm_lock_get_irqsave(&rtcap_lock, context);
+>>   -    if (cap_queue.first == NULL)
+>> +    if (cap_queue.first == NULL) {
+>>           cap_queue.first = rtskb;
+>> -    else
+>> +        trigger = true;
+>> +    } else
+>>           cap_queue.last->cap_next = rtskb;
+>>       cap_queue.last = rtskb;
+>>         rtdm_lock_put_irqrestore(&rtcap_lock, context);
+>>   -    rtdm_nrtsig_pend(&cap_signal);
+>> +    if (trigger)
+>> +        rtdm_nrtsig_pend(&cap_signal);
+>>   done:
+>>       return tap_dev->orig_xmit(rtskb, rtdev);
+>>   }
+>>
+> 
+> Doesn't apply to next - what's your baseline?
+> 
 
-  *   Linux 4.19.81 (Raspberry pi github repos)
-  *   ipipe-core-4.19.55-arm64-4.patch
-  *   Xenomai-3.1-rc3
+Mm, sorry. That one went on top of the multicast+VLAN support which is pending in my rtnet queue. A patch rebased on -next is on its way.
 
-When I build with arm64 and run it on a Raspberry Pi 3,
-mmap fails when I run userland tools.
-(The situation is the same for all tools such as corectl.)
+-- 
+Philippe.
 
-I think it's a matter of kernel configuration,
-so I'm going to do trial and error.
-If you have any advice, please let me know.
-
-```
-root [ /opt/xenomai/sbin ]# ./corectl
-   0"000.000| BUG in cobalt_check_features(): [main] failed mmap(/dev/mem):=
- Operation not permitted
-```
-
-Excerpt the log at startup.
-```
-root [ ~ ]# dmesg |grep pipe
-[ 0.000346] Interrupt pipeline (release #4)
-[ 0.414059] I-pipe: head domain Xenomai registered.
-
-root [ ~ ]# dmesg |grep Xeno
-[ 0.413758] [Xenomai] scheduling class idle registered.
-[ 0.413807] [Xenomai] scheduling class rt registered.
-[ 0.414059] I-pipe: head domain Xenomai registered.
-[ 0.418702] [Xenomai] Cobalt v3.1-rc3
-```
-
----
-
-For comparison, here is a log from Linux 4.14. 52 (arm) on Raspberry Pi 3.
-
-pi@smpd:~ $ dmesg |grep pipe
-[ 0.000000] I-pipe, 19.200 MHz clocksource, wrap in 960767920505705 ms
-[ 0.000000] clocksource: ipipe_tsc: mask: 0xffffffffffffffff max_cycles: 0x=
-46d987e47, max_idle_ns: 440795202767 ns
-[ 0.000316] Interrupt pipeline (release #4)
-[ 0.390886] clocksource: Switched to clocksource ipipe_tsc
-[ 0.406179] I-pipe: head domain Xenomai registered.
-
-pi@smpd:~ $ dmesg |grep Xeno
-[ 0.406084] [Xenomai] scheduling class idle registered.
-[ 0.406087] [Xenomai] scheduling class rt registered.
-[ 0.406179] I-pipe: head domain Xenomai registered.
-[ 0.407629] [Xenomai] Cobalt v3.0.7 (Lingering Dawn)
-
-K.Yoshioka
-
-________________________________
-=1B$B:9=3DP?M=1B(B: Jan Kiszka <jan.kiszka@siemens.com>
-=1B$BAw?.F|;~=1B(B: =1B$B7nMKF|=1B(B, 12=1B$B7n=1B(B 2, 2019 8:46 =1B$B8a8e=
-=1B(B
-=1B$B08@h=1B(B: smpd support; xenomai@xenomai.org
-=1B$B7oL>=1B(B: Re: arm64 support
-
-Try 3.1-rc3 (or the master branch directly). 4.19-based I-pipe is
-strongly recommended. See also [1] for a working arm64 setup, on a hikey
-though.
-
-Jan
-
-[1] https://gitlab.denx.de/Xenomai/xenomai-images
