@@ -1,7 +1,8 @@
 From: Jan Kiszka <jan.kiszka@siemens.com>
-Subject: [PATCH 2/5] cobalt/posix: Add thread_setschedprio
-Date: Mon,  2 Dec 2019 08:12:15 +0100
-Message-Id: <fcbfaf4b61507bda49b446486fb5dc2432af198a.1575270738.git.jan.kiszka@siemens.com>
+Subject: [PATCH 4/5] Revert "cobalt/kernel: Introduce __SCHED_CURRENT policy
+ to setschedparam_ex"
+Date: Mon,  2 Dec 2019 08:12:17 +0100
+Message-Id: <65a045606878421fbfebe1adb693a16be0556bae.1575270738.git.jan.kiszka@siemens.com>
 In-Reply-To: <cover.1575270738.git.jan.kiszka@siemens.com>
 References: <cover.1575270738.git.jan.kiszka@siemens.com>
 In-Reply-To: <cover.1575270738.git.jan.kiszka@siemens.com>
@@ -18,195 +19,73 @@ To: xenomai@xenomai.org
 
 From: Jan Kiszka <jan.kiszka@siemens.com>
 
-The approach of using thread_setschedparam_ex with __SCHED_CURRENT
-failed for policies with complex parameter sets. Therefore, introduce a
-syscall that is fully aware of how to apply only the priority change to
-the target thread's scheduling settings.
+This reverts commit b3c70f1a470397c915a6c206d07c7c342c164df4.
 
-We need a compat path as well because we are passing down pointers.
+Was broken by design and is now no longer needed.
 
 Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
 ---
- include/cobalt/uapi/syscall.h                      |  1 +
- .../arch/x86/include/asm/xenomai/syscall32-table.h |  1 +
- kernel/cobalt/posix/syscall32.c                    |  9 ++++++
- kernel/cobalt/posix/syscall32.h                    |  6 ++++
- kernel/cobalt/posix/thread.c                       | 37 ++++++++++++++++++++++
- kernel/cobalt/posix/thread.h                       | 11 +++++++
- kernel/cobalt/trace/cobalt-posix.h                 | 15 +++++++++
- 7 files changed, 80 insertions(+)
+ include/cobalt/uapi/sched.h        |  3 ---
+ kernel/cobalt/posix/thread.c       | 10 ----------
+ kernel/cobalt/trace/cobalt-posix.h |  3 +--
+ 3 files changed, 1 insertion(+), 15 deletions(-)
 
-diff --git a/include/cobalt/uapi/syscall.h b/include/cobalt/uapi/syscall.h
-index 1cb22a5936..aa3c308d0b 100644
---- a/include/cobalt/uapi/syscall.h
-+++ b/include/cobalt/uapi/syscall.h
-@@ -121,6 +121,7 @@
- #define sc_cobalt_recvmmsg			98
- #define sc_cobalt_sendmmsg			99
- #define sc_cobalt_clock_adjtime			100
-+#define sc_cobalt_thread_setschedprio		101
+diff --git a/include/cobalt/uapi/sched.h b/include/cobalt/uapi/sched.h
+index 2a1df44b49..b672095c3b 100644
+--- a/include/cobalt/uapi/sched.h
++++ b/include/cobalt/uapi/sched.h
+@@ -21,9 +21,6 @@
+ #define SCHED_COBALT		42
+ #define SCHED_WEAK		43
  
- #define __NR_COBALT_SYSCALLS			128 /* Power of 2 */
- 
-diff --git a/kernel/cobalt/arch/x86/include/asm/xenomai/syscall32-table.h b/kernel/cobalt/arch/x86/include/asm/xenomai/syscall32-table.h
-index 7484c3a955..4784377b06 100644
---- a/kernel/cobalt/arch/x86/include/asm/xenomai/syscall32-table.h
-+++ b/kernel/cobalt/arch/x86/include/asm/xenomai/syscall32-table.h
-@@ -27,6 +27,7 @@
- __COBALT_CALL32emu_THUNK(thread_create)
- __COBALT_CALL32emu_THUNK(thread_setschedparam_ex)
- __COBALT_CALL32emu_THUNK(thread_getschedparam_ex)
-+__COBALT_CALL32emu_THUNK(thread_setschedprio)
- __COBALT_CALL32emu_THUNK(sem_open)
- __COBALT_CALL32x_THUNK(sem_open)
- __COBALT_CALL32emu_THUNK(sem_timedwait)
-diff --git a/kernel/cobalt/posix/syscall32.c b/kernel/cobalt/posix/syscall32.c
-index a2482b7a00..faa7ef53a6 100644
---- a/kernel/cobalt/posix/syscall32.c
-+++ b/kernel/cobalt/posix/syscall32.c
-@@ -88,6 +88,15 @@ COBALT_SYSCALL32emu(thread_getschedparam_ex, current,
- 	return ret ?: sys32_put_param_ex(policy, u_param, &param_ex);
- }
- 
-+COBALT_SYSCALL32emu(thread_setschedprio, conforming,
-+		    (compat_ulong_t pth,
-+		     int prio,
-+		     __u32 __user *u_winoff,
-+		     int __user *u_promoted))
-+{
-+	return cobalt_thread_setschedprio(pth, prio, u_winoff, u_promoted);
-+}
-+
- static inline int sys32_fetch_timeout(struct timespec *ts,
- 				      const void __user *u_ts)
- {
-diff --git a/kernel/cobalt/posix/syscall32.h b/kernel/cobalt/posix/syscall32.h
-index 5ba6513f38..34904f96bd 100644
---- a/kernel/cobalt/posix/syscall32.h
-+++ b/kernel/cobalt/posix/syscall32.h
-@@ -45,6 +45,12 @@ COBALT_SYSCALL32emu_DECL(thread_getschedparam_ex,
- 			  int __user *u_policy,
- 			  struct compat_sched_param_ex __user *u_param));
- 
-+COBALT_SYSCALL32emu_DECL(thread_setschedprio,
-+			 (compat_ulong_t pth,
-+			  int prio,
-+			  __u32 __user *u_winoff,
-+			  int __user *u_promoted));
-+
- COBALT_SYSCALL32emu_DECL(clock_getres,
- 			 (clockid_t clock_id,
- 			  struct compat_timespec __user *u_ts));
+-/* for internal use */
+-#define __SCHED_CURRENT		44
+-
+ #ifndef SCHED_SPORADIC
+ #define SCHED_SPORADIC		10
+ #define sched_ss_low_priority	sched_u.ss.__sched_low_priority
 diff --git a/kernel/cobalt/posix/thread.c b/kernel/cobalt/posix/thread.c
-index 9f1c802b63..c2a9fb46c5 100644
+index c2a9fb46c5..bf9c082123 100644
 --- a/kernel/cobalt/posix/thread.c
 +++ b/kernel/cobalt/posix/thread.c
-@@ -568,6 +568,43 @@ COBALT_SYSCALL(thread_getschedparam_ex, current,
- 	return cobalt_copy_to_user(u_param, &param_ex, sizeof(param_ex));
- }
+@@ -242,7 +242,6 @@ struct xnthread_personality *cobalt_thread_finalize(struct xnthread *zombie)
+ int __cobalt_thread_setschedparam_ex(struct cobalt_thread *thread, int policy,
+ 				     const struct sched_param_ex *param_ex)
+ {
+-	struct xnthread *base_thread = &thread->threadbase;
+ 	struct xnsched_class *sched_class;
+ 	union xnsched_policy_param param;
+ 	xnticks_t tslice;
+@@ -257,15 +256,6 @@ int __cobalt_thread_setschedparam_ex(struct cobalt_thread *thread, int policy,
+ 		goto out;
+ 	}
  
-+int cobalt_thread_setschedprio(unsigned long pth,
-+			       int prio,
-+			       __u32 __user *u_winoff,
-+			       int __user *u_promoted)
-+{
-+	struct sched_param_ex param_ex;
-+	struct cobalt_thread *thread;
-+	int ret, policy, promoted;
-+
-+	trace_cobalt_pthread_setschedprio(pth, prio);
-+
-+	thread = thread_lookup_or_shadow(pth, u_winoff, &promoted);
-+	if (IS_ERR(thread))
-+		return PTR_ERR(thread);
-+
-+	ret = __cobalt_thread_getschedparam_ex(thread, &policy, &param_ex);
-+	if (ret)
-+		return ret;
-+
-+	param_ex.sched_priority = prio;
-+
-+	ret = __cobalt_thread_setschedparam_ex(thread, policy, &param_ex);
-+	if (ret)
-+		return ret;
-+
-+	return cobalt_copy_to_user(u_promoted, &promoted, sizeof(promoted));
-+}
-+
-+COBALT_SYSCALL(thread_setschedprio, conforming,
-+	       (unsigned long pth,
-+		int prio,
-+		__u32 __user *u_winoff,
-+		int __user *u_promoted))
-+{
-+	return cobalt_thread_setschedprio(pth, prio, u_winoff, u_promoted);
-+}
-+
- int __cobalt_thread_create(unsigned long pth, int policy,
- 			   struct sched_param_ex *param_ex,
- 			   int xid, __u32 __user *u_winoff)
-diff --git a/kernel/cobalt/posix/thread.h b/kernel/cobalt/posix/thread.h
-index fec9d17859..51be372a7a 100644
---- a/kernel/cobalt/posix/thread.h
-+++ b/kernel/cobalt/posix/thread.h
-@@ -139,6 +139,11 @@ int __cobalt_thread_getschedparam_ex(struct cobalt_thread *thread,
- 				     int *policy_r,
- 				     struct sched_param_ex *param_ex);
- 
-+int cobalt_thread_setschedprio(unsigned long pth,
-+			       int prio,
-+			       __u32 __user *u_winoff,
-+			       int __user *u_promoted);
-+
- struct cobalt_thread *cobalt_thread_find(pid_t pid);
- 
- struct cobalt_thread *cobalt_thread_find_local(pid_t pid);
-@@ -181,6 +186,12 @@ COBALT_SYSCALL_DECL(thread_getschedparam_ex,
- 		     int __user *u_policy,
- 		     struct sched_param_ex __user *u_param));
- 
-+COBALT_SYSCALL_DECL(thread_setschedprio,
-+		    (unsigned long pth,
-+		     int prio,
-+		     __u32 __user *u_winoff,
-+		     int __user *u_promoted));
-+
- void cobalt_thread_map(struct xnthread *curr);
- 
- struct xnthread_personality *cobalt_thread_exit(struct xnthread *curr);
+-	if (policy == __SCHED_CURRENT) {
+-		policy = base_thread->base_class->policy;
+-		if (xnthread_base_priority(base_thread) == 0)
+-			policy = SCHED_NORMAL;
+-		else if (base_thread->base_class == &xnsched_class_rt &&
+-			 xnthread_test_state(base_thread, XNRRB))
+-			policy = SCHED_RR;
+-	}
+-
+ 	tslice = thread->threadbase.rrperiod;
+ 	sched_class = cobalt_sched_policy_param(&param, policy,
+ 						param_ex, &tslice);
 diff --git a/kernel/cobalt/trace/cobalt-posix.h b/kernel/cobalt/trace/cobalt-posix.h
-index bda7bdd3c8..83ec748586 100644
+index 83ec748586..aa78efbc01 100644
 --- a/kernel/cobalt/trace/cobalt-posix.h
 +++ b/kernel/cobalt/trace/cobalt-posix.h
-@@ -70,6 +70,7 @@
- 		__cobalt_symbolic_syscall(thread_kill),			\
- 		__cobalt_symbolic_syscall(thread_setschedparam_ex),	\
- 		__cobalt_symbolic_syscall(thread_getschedparam_ex),	\
-+		__cobalt_symbolic_syscall(thread_setschedprio),		\
- 		__cobalt_symbolic_syscall(thread_getstat),		\
- 		__cobalt_symbolic_syscall(sem_init),			\
- 		__cobalt_symbolic_syscall(sem_destroy),			\
-@@ -311,6 +312,20 @@ DEFINE_EVENT(cobalt_posix_schedparam, cobalt_pthread_getschedparam,
- 	TP_ARGS(pth, policy, param_ex)
- );
+@@ -202,8 +202,7 @@ DECLARE_EVENT_CLASS(syscall_exit,
+ 			 {SCHED_QUOTA, "quota"},		\
+ 			 {SCHED_SPORADIC, "sporadic"},		\
+ 			 {SCHED_COBALT, "cobalt"},		\
+-			 {SCHED_WEAK, "weak"},			\
+-			 {__SCHED_CURRENT, "<current>"})
++			 {SCHED_WEAK, "weak"})
  
-+TRACE_EVENT(cobalt_pthread_setschedprio,
-+	TP_PROTO(unsigned long pth, int prio),
-+	TP_ARGS(pth, prio),
-+	TP_STRUCT__entry(
-+		__field(unsigned long, pth)
-+		__field(int, prio)
-+	),
-+	TP_fast_assign(
-+		__entry->pth = pth;
-+		__entry->prio = prio;
-+	),
-+	TP_printk("pth=%p prio=%d", (void *)__entry->pth, __entry->prio)
-+);
-+
- #define cobalt_print_thread_mode(__mode)			\
- 	__print_flags(__mode, "|",				\
- 		      {PTHREAD_WARNSW, "warnsw"},		\
+ const char *cobalt_trace_parse_sched_params(struct trace_seq *, int,
+ 					    struct sched_param_ex *);
 -- 
 2.16.4
 
