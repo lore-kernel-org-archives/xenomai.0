@@ -1,7 +1,8 @@
 From: Jan Kiszka <jan.kiszka@siemens.com>
-Subject: [PATCH 3/5] lib/cobalt: Use new thread_setschedprio syscall
-Date: Mon,  2 Dec 2019 08:12:16 +0100
-Message-Id: <4e5c96d58adeb69cdb6faaa482b16e74c28b0c60.1575270738.git.jan.kiszka@siemens.com>
+Subject: [PATCH 5/5] testsuite/smokey: Add pthread_setschedprio to setsched
+ test case
+Date: Mon,  2 Dec 2019 08:12:18 +0100
+Message-Id: <4af0372c57edcd1be1eb82ed7f8756d4ca4c5d69.1575270738.git.jan.kiszka@siemens.com>
 In-Reply-To: <cover.1575270738.git.jan.kiszka@siemens.com>
 References: <cover.1575270738.git.jan.kiszka@siemens.com>
 In-Reply-To: <cover.1575270738.git.jan.kiszka@siemens.com>
@@ -18,60 +19,53 @@ To: xenomai@xenomai.org
 
 From: Jan Kiszka <jan.kiszka@siemens.com>
 
-Switch the implementation of pthread_setschedprio to the new cobalt
-syscall in order to avoid scheduler setting corruptions for SCHED_QUOTA
-and similar complex policies.
+Now that this path goes via an own syscall, better test it.
+
+At this chance, make sure that the test runs the scheduler changes from
+primary mode.
 
 Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
 ---
- lib/cobalt/thread.c | 33 +++++++++++++++++++++++++++++----
- 1 file changed, 29 insertions(+), 4 deletions(-)
+ testsuite/smokey/setsched/setsched.c | 19 +++++++++++++++++++
+ 1 file changed, 19 insertions(+)
 
-diff --git a/lib/cobalt/thread.c b/lib/cobalt/thread.c
-index 86db6343c9..bb23cdcb97 100644
---- a/lib/cobalt/thread.c
-+++ b/lib/cobalt/thread.c
-@@ -666,11 +666,36 @@ int pthread_setschedparam_ex(pthread_t thread,
+diff --git a/testsuite/smokey/setsched/setsched.c b/testsuite/smokey/setsched/setsched.c
+index f227f654cc..111de9f378 100644
+--- a/testsuite/smokey/setsched/setsched.c
++++ b/testsuite/smokey/setsched/setsched.c
+@@ -77,6 +77,8 @@ static void *thread_body(void *arg)
+ 	check_rt_schedparams(SCHED_FIFO, 1);
+ 	check_linux_schedparams(SCHED_FIFO, 1);
  
- COBALT_IMPL(int, pthread_setschedprio, (pthread_t thread, int prio))
- {
--	struct sched_param_ex param_ex = {
--		.sched_priority = prio,
--	};
-+	__u32 u_winoff, *u_winoff_ptr;
-+	int ret, promoted;
++	cobalt_thread_harden();
++
+ 	if (smokey_check_status(cobalt_thread_stat(thread_pid, &stats)))
+ 		pthread_exit((void *)(long)-EINVAL);
+ 	msw = stats.msw;
+@@ -94,6 +96,23 @@ static void *thread_body(void *arg)
  
--	return pthread_setschedparam_ex(thread, __SCHED_CURRENT, &param_ex);
-+	/* See pthread_setschedparam_ex. */
-+	if (cobalt_eager_setsched()) {
-+		ret = __STD(pthread_setschedprio(thread, prio));
-+		if (ret)
-+			return ret;
-+	}
+ 	check_linux_schedparams(SCHED_FIFO, 2);
+ 
++	cobalt_thread_harden();
 +
-+	/* only request promotion when this targets the current thread */
-+	u_winoff_ptr = thread == pthread_self() ? &u_winoff : NULL;
++	if (smokey_check_status(cobalt_thread_stat(thread_pid, &stats)))
++		pthread_exit((void *)(long)-EINVAL);
++	msw = stats.msw;
 +
-+	ret = -XENOMAI_SYSCALL4(sc_cobalt_thread_setschedprio,
-+				thread, prio, u_winoff_ptr, &promoted);
++	if (smokey_check_status(pthread_setschedprio(pthread_self(), 3)))
++		pthread_exit((void *)(long)-EINVAL);
 +
-+	/*
-+	 * If the kernel has no reference to the target thread. let glibc
-+	 * handle the call.
-+	 */
-+	if (ret == ESRCH)
-+		return __STD(pthread_setschedprio(thread, prio));
++	check_rt_schedparams(SCHED_FIFO, 3);
 +
-+	if (ret == 0 && promoted) {
-+		cobalt_sigshadow_install_once();
-+		cobalt_set_tsd(u_winoff);
-+		cobalt_thread_harden();
-+	}
++	if (smokey_check_status(cobalt_thread_stat(thread_pid, &stats)) ||
++	    !smokey_assert(stats.msw == msw))
++		pthread_exit((void *)(long)-EINVAL);
 +
-+	return ret;
++	check_linux_schedparams(SCHED_FIFO, 3);
++
+ 	return (void *)0L;
  }
  
- /**
 -- 
 2.16.4
 
