@@ -1,15 +1,12 @@
-From: Lange Norbert <norbert.lange@andritz.com>
-Subject: RE: 4.19.94-cip18-xeno10 regression: bugs out when changing drivers
-Date: Thu, 16 Jan 2020 11:19:59 +0000
-Message-ID: <VI1PR05MB5917B1638EA581D844412884F6360@VI1PR05MB5917.eurprd05.prod.outlook.com>
-References: <VI1PR05MB5917A7E625E49CAF9E17444AF6370@VI1PR05MB5917.eurprd05.prod.outlook.com>
- <VI1PR05MB591763C3E4010F3F6DAD323CF6370@VI1PR05MB5917.eurprd05.prod.outlook.com>
- <6ed5e265-1797-7aba-a2db-bca55ad55a5d@siemens.com>
-In-Reply-To: <6ed5e265-1797-7aba-a2db-bca55ad55a5d@siemens.com>
-Content-Language: en-US
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-MIME-Version: 1.0
+From: Jan Kiszka <jan.kiszka@siemens.com>
+Subject: [PATCH v2 6/7] testsuite/smokey: Add pthread_setschedprio to setsched
+ test case
+Date: Tue,  3 Dec 2019 12:32:16 +0100
+Message-Id: <32cce80f7a2c715d03b57548adf6853916245883.1575372737.git.jan.kiszka@siemens.com>
+In-Reply-To: <cover.1575372737.git.jan.kiszka@siemens.com>
+References: <cover.1575372737.git.jan.kiszka@siemens.com>
+In-Reply-To: <cover.1575372737.git.jan.kiszka@siemens.com>
+References: <cover.1575372737.git.jan.kiszka@siemens.com>
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -18,45 +15,50 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jan Kiszka <jan.kiszka@siemens.com>, "Xenomai (xenomai@xenomai.org)" <xenomai@xenomai.org>
+To: xenomai@xenomai.org
 
-DQoNCj4gLS0tLS1PcmlnaW5hbCBNZXNzYWdlLS0tLS0NCj4gRnJvbTogSmFuIEtpc3prYSA8amFu
-Lmtpc3prYUBzaWVtZW5zLmNvbT4NCj4gU2VudDogTWl0dHdvY2gsIDE1LiBKw6RubmVyIDIwMjAg
-MjM6MDcNCj4gVG86IExhbmdlIE5vcmJlcnQgPG5vcmJlcnQubGFuZ2VAYW5kcml0ei5jb20+OyBY
-ZW5vbWFpDQo+ICh4ZW5vbWFpQHhlbm9tYWkub3JnKSA8eGVub21haUB4ZW5vbWFpLm9yZz4NCj4g
-U3ViamVjdDogUmU6IDQuMTkuOTQtY2lwMTgteGVubzEwIHJlZ3Jlc3Npb246IGJ1Z3Mgb3V0IHdo
-ZW4gY2hhbmdpbmcNCj4gZHJpdmVycw0KPg0KPiBOT04tQU5EUklUWiBTT1VSQ0U6IEJFIENBVVRJ
-T1VTIFdJVEggQ09OVEVOVCwgTElOS1MgT1INCj4gQVRUQUNITUVOVFMuDQo+DQo+DQo+IE9uIDE1
-LjAxLjIwIDE4OjEyLCBMYW5nZSBOb3JiZXJ0IHZpYSBYZW5vbWFpIHdyb3RlOg0KPiA+DQo+ID4g
-UmV2ZXJ0aW5nIGNvbW1pdCAjMDM5M2I4NzIwMTI4ICJwdHA6IGZpeCB0aGUgcmFjZSBiZXR3ZWVu
-IHRoZSByZWxlYXNlIG9mDQo+IHB0cF9jbG9jayBhbmQgY2RldiIgZml4ZXMgdGhlIGlzc3VlLg0K
-PiA+IEkgZG9uJ3Qgc2VlIGFueSBsb2NrcyBvciBzaW1pbGFyIGludm9sdmVkIHRvIGl0IGRvZXNu
-J3QgYXBwZWFyIHRvIGJlIHJlbGF0ZWQgdG8NCj4gWGVub21haSBhdCBhbGwuDQo+ID4NCj4NCj4g
-SXQgbWlnaHQgYmUgdGhhdCB0aGlzIGNvbW1pdCBsYWNrcyBzb21lIGRlcGVuZGVuY2llcyAtIHRo
-ZSBzdGFibGUgdHJlZSBpbg0KPiB1bmZvcnR1bmF0ZWx5IG5vdCBhcyBzdGFibGUgYXMgb25lIG1h
-eSBleHBlY3QuDQoNCkFuZCBpdCBwYXNzZWQgdGhyb3VnaCBjaXAgYXN3ZWxsLCBub3QgcmVhbGx5
-IHJlYXNzdXJpbmcgOnsNCg0KPiBJZiB5b3UgY2FuIHJlcHJvZHVjZSB0aGlzIHdpdGggYSB2YW5p
-bGxhIHN0YWJsZSwgYWxzbyB3aXRoIHRoZSBsYXRlc3Qgb25lICguOTYpLA0KPiBwbGVhc2UgcmVw
-b3J0IHVwc3RyZWFtLiBJZiBpdCBzaG91bGQgYmUgLWNpcCBzcGVjaWZpYywgaS5lLg0KPiBub3Qg
-cHJlc2VudCBpbiA0LjE5Ljk1ICh3aGljaCB3b3VsZCBiZSBhIHN1cnByaXNlIGluIHRoaXMgYXJl
-YSksIHBsZWFzZSByZXBvcnQNCj4gdGhlcmUuDQoNCk5vcGUsIG5lZWRzIGEgcGF0Y2ggaGF0IG5v
-dCBldmVuIGluIG1hc3RlciwgYnV0IHNob3VsZCBiZSBzb29uOg0KaHR0cHM6Ly9sb3JlLmtlcm5l
-bC5vcmcvbmV0ZGV2LzIwMjAwMTEzMTMwMDA5LjI5MzgtMS12ZHJvbm92QHJlZGhhdC5jb20vDQoN
-Cg0KTm9yYmVydA0KX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX18NCg0KVGhpcyBtZXNz
-YWdlIGFuZCBhbnkgYXR0YWNobWVudHMgYXJlIHNvbGVseSBmb3IgdGhlIHVzZSBvZiB0aGUgaW50
-ZW5kZWQgcmVjaXBpZW50cy4gVGhleSBtYXkgY29udGFpbiBwcml2aWxlZ2VkIGFuZC9vciBjb25m
-aWRlbnRpYWwgaW5mb3JtYXRpb24gb3Igb3RoZXIgaW5mb3JtYXRpb24gcHJvdGVjdGVkIGZyb20g
-ZGlzY2xvc3VyZS4gSWYgeW91IGFyZSBub3QgYW4gaW50ZW5kZWQgcmVjaXBpZW50LCB5b3UgYXJl
-IGhlcmVieSBub3RpZmllZCB0aGF0IHlvdSByZWNlaXZlZCB0aGlzIGVtYWlsIGluIGVycm9yIGFu
-ZCB0aGF0IGFueSByZXZpZXcsIGRpc3NlbWluYXRpb24sIGRpc3RyaWJ1dGlvbiBvciBjb3B5aW5n
-IG9mIHRoaXMgZW1haWwgYW5kIGFueSBhdHRhY2htZW50IGlzIHN0cmljdGx5IHByb2hpYml0ZWQu
-IElmIHlvdSBoYXZlIHJlY2VpdmVkIHRoaXMgZW1haWwgaW4gZXJyb3IsIHBsZWFzZSBjb250YWN0
-IHRoZSBzZW5kZXIgYW5kIGRlbGV0ZSB0aGUgbWVzc2FnZSBhbmQgYW55IGF0dGFjaG1lbnQgZnJv
-bSB5b3VyIHN5c3RlbS4NCg0KQU5EUklUWiBIWURSTyBHbWJIDQoNCg0KUmVjaHRzZm9ybS8gTGVn
-YWwgZm9ybTogR2VzZWxsc2NoYWZ0IG1pdCBiZXNjaHLDpG5rdGVyIEhhZnR1bmcgLyBDb3Jwb3Jh
-dGlvbg0KDQpGaXJtZW5zaXR6LyBSZWdpc3RlcmVkIHNlYXQ6IFdpZW4NCg0KRmlybWVuYnVjaGdl
-cmljaHQvIENvdXJ0IG9mIHJlZ2lzdHJ5OiBIYW5kZWxzZ2VyaWNodCBXaWVuDQoNCkZpcm1lbmJ1
-Y2hudW1tZXIvIENvbXBhbnkgcmVnaXN0cmF0aW9uOiBGTiA2MTgzMyBnDQoNCkRWUjogMDYwNTA3
-Nw0KDQpVSUQtTnIuOiBBVFUxNDc1NjgwNg0KDQoNClRoYW5rIFlvdQ0KX19fX19fX19fX19fX19f
-X19fX19fX19fX19fX19fX18NCg==
+From: Jan Kiszka <jan.kiszka@siemens.com>
+
+Now that this path goes via an own syscall, better test it.
+
+Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
+---
+ testsuite/smokey/setsched/setsched.c | 21 +++++++++++++++++++++
+ 1 file changed, 21 insertions(+)
+
+diff --git a/testsuite/smokey/setsched/setsched.c b/testsuite/smokey/setsched/setsched.c
+index 16bfc49571..fc348a86ed 100644
+--- a/testsuite/smokey/setsched/setsched.c
++++ b/testsuite/smokey/setsched/setsched.c
+@@ -102,6 +102,27 @@ static void *thread_body(void *arg)
+ 
+ 	check_linux_schedparams(SCHED_FIFO, 2);
+ 
++	cobalt_thread_harden();
++
++#ifdef CONFIG_XENO_LAZY_SETSCHED
++	if (smokey_check_status(cobalt_thread_stat(thread_pid, &stats)))
++		pthread_exit((void *)(long)-EINVAL);
++	msw = stats.msw;
++#endif
++
++	if (smokey_check_status(pthread_setschedprio(pthread_self(), 3)))
++		pthread_exit((void *)(long)-EINVAL);
++
++	check_rt_schedparams(SCHED_FIFO, 3);
++
++#ifdef CONFIG_XENO_LAZY_SETSCHED
++	if (smokey_check_status(cobalt_thread_stat(thread_pid, &stats)) ||
++	    !smokey_assert(stats.msw == msw))
++		pthread_exit((void *)(long)-EINVAL);
++#endif
++
++	check_linux_schedparams(SCHED_FIFO, 3);
++
+ 	return (void *)0L;
+ }
+ 
+-- 
+2.16.4
+
 
