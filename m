@@ -1,14 +1,7 @@
-From: Steven Seeger <steven.seeger@flightsystems.net>
-Subject: Re: [PATCH] powerpc: ipipe: Do full exit checks after
- __ipipe_call_mayday
-Date: Thu, 19 Dec 2019 12:01:53 -0500
-Message-ID: <1738468.DV2hKNJMbQ@omoikane>
-In-Reply-To: <fd31a72f-ac46-034b-bfc6-4e125b4fde78@siemens.com>
-References: <d93a6092-b340-b74b-ff3d-51ac5c438c25@siemens.com>
- <fd31a72f-ac46-034b-bfc6-4e125b4fde78@siemens.com>
-Content-Transfer-Encoding: 7Bit
-Content-Type: text/plain; charset="us-ascii"
-MIME-Version: 1.0
+From: Jan Kiszka <jan.kiszka@siemens.com>
+Subject: [PATCH v2 0/7] Rework pthread_setschedprio support
+Date: Tue,  3 Dec 2019 12:32:10 +0100
+Message-Id: <cover.1575372737.git.jan.kiszka@siemens.com>
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,26 +10,44 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jan Kiszka <jan.kiszka@siemens.com>
-Cc: Xenomai <xenomai@xenomai.org>, Philippe Gerum <rpm@xenomai.org>
+To: xenomai@xenomai.org
 
-On Thursday, December 19, 2019 11:53:36 AM EST Jan Kiszka wrote:
-> > Ho, ho, this is an early X-mas gift.
+It turned out just in time that the __CURRENT_SCHED-approach is broken
+and not reasonably fixable. This introduces a separate syscall for
+implementing that posix function.
 
-Thanks for finding this. I'm a terrible PPC maintainer so if anyone else wants 
-to volunteer to take my place.... ;)
- 
-> Looking at DoSyscall in entry_32.S, it seems we lack such a careful
-> check there as well. But that's too much assembly for me ATM.
+Changes in v2:
+ - account for !CONFIG_XENO_LAZY_SETSCHED in setsched test
+ - split smokey changes into two patches
+ - enable lazy-setsched in debian package
 
-Thanks for the tip I should be able to look into this tomorrow for you. Can 
-you point me to the relevant sections in arm that I should compare to? 
+Jan
 
-Any more details (such as desired check/operation) you can provide would be 
-beneficial.
+Jan Kiszka (7):
+  cobalt/posix/thread: Factor out thread_lookup_or_shadow
+  cobalt/posix: Add thread_setschedprio
+  lib/cobalt: Use new thread_setschedprio syscall
+  Revert "cobalt/kernel: Introduce __SCHED_CURRENT policy to
+    setschedparam_ex"
+  testsuite/smokey: Fix setsched /wrt lazy scheduling parameter
+    application
+  testsuite/smokey: Add pthread_setschedprio to setsched test case
+  debian: Enable lazy-setsched in userspace package
 
-Steven
+ debian/rules                                       |  1 +
+ include/cobalt/uapi/sched.h                        |  3 -
+ include/cobalt/uapi/syscall.h                      |  1 +
+ .../arch/x86/include/asm/xenomai/syscall32-table.h |  1 +
+ kernel/cobalt/posix/syscall32.c                    |  9 +++
+ kernel/cobalt/posix/syscall32.h                    |  6 ++
+ kernel/cobalt/posix/thread.c                       | 85 ++++++++++++++++------
+ kernel/cobalt/posix/thread.h                       | 11 +++
+ kernel/cobalt/trace/cobalt-posix.h                 | 18 ++++-
+ lib/cobalt/thread.c                                | 33 ++++++++-
+ testsuite/smokey/setsched/setsched.c               | 31 +++++++-
+ 11 files changed, 167 insertions(+), 32 deletions(-)
 
-
+-- 
+2.16.4
 
 
