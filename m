@@ -1,15 +1,12 @@
-Subject: Re: Cobalt deadlock for no apparent reason
-References: <VI1PR05MB5917D1906A1A32505BFE5168F6320@VI1PR05MB5917.eurprd05.prod.outlook.com>
- <d46517cf-88fb-2449-1a0c-5d4b87cb6e3d@siemens.com>
- <VI1PR05MB5917663000526B5A5A3A5BE5F60C0@VI1PR05MB5917.eurprd05.prod.outlook.com>
-From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <cd6eeaab-b89d-4cda-9ce6-52ee70582a21@siemens.com>
-Date: Wed, 22 Jan 2020 18:19:50 +0100
+From: Steven Seeger <steven.seeger@flightsystems.net>
+Subject: Re: Moving on
+Date: Tue, 03 Dec 2019 10:08:19 -0500
+Message-ID: <2144994.kNte9iif2h@omoikane>
+In-Reply-To: <7ef777be-f422-bd61-e19b-2b02772487f4@xenomai.org>
+References: <7ef777be-f422-bd61-e19b-2b02772487f4@xenomai.org>
+Content-Transfer-Encoding: 7Bit
+Content-Type: text/plain; charset="us-ascii"
 MIME-Version: 1.0
-In-Reply-To: <VI1PR05MB5917663000526B5A5A3A5BE5F60C0@VI1PR05MB5917.eurprd05.prod.outlook.com>
-Content-Type: text/plain; charset="utf-8"; format="flowed"
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -18,107 +15,36 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Lange Norbert <norbert.lange@andritz.com>, "Xenomai (xenomai@xenomai.org)" <xenomai@xenomai.org>
+To: xenomai@xenomai.org
+Cc: Philippe Gerum <rpm@xenomai.org>, "Xenomai@xenomai.org" <Xenomai@xenomai.org>
 
-On 22.01.20 11:11, Lange Norbert wrote:
+On Monday, December 2, 2019 11:05:06 AM EST Philippe Gerum wrote:
+> It has been two years since I stepped down as Xenomai's lead maintainer.
+> In the meantime, Jan took over and did a very good job in this role as
+> expected.
 > 
+> Since this transition period is now taking an end, I'm switching focus
+> to the EVL project [1] I have been nurturing for some time, with the
+> goal to make it production-grade next year. In a nutshell, EVL is about
+> laying the groundwork for dual kernel systems to become first-class
+> citizens of Linux. This work includes a SMP scalable real-time core
+> which can be maintained with common kernel knowledge over the latest
+> mainline kernel series, a standard driver model, and a single, compact API.
 > 
->> -----Original Message-----
->> From: Jan Kiszka <jan.kiszka@siemens.com>
->> Sent: Dienstag, 21. Jänner 2020 18:46
->> To: Lange Norbert <norbert.lange@andritz.com>; Xenomai
->> (xenomai@xenomai.org) <xenomai@xenomai.org>
->> Subject: Re: Cobalt deadlock for no apparent reason
->>
->> NON-ANDRITZ SOURCE: BE CAUTIOUS WITH CONTENT, LINKS OR
->> ATTACHMENTS.
->>
->>
->> On 20.01.20 19:03, Lange Norbert via Xenomai wrote:
->>> Hello,
->>>
->>> I got a deadlock while running through gdbserver, this is an
->>> implementation of a synchronized queue, Fup side waits via condition
->> variable, main wants to push data, but main fails to acquire the mutex.
->>> The mutex is an errorchecking type, without priority inheritance, and not
->> used elsewhere.
->>>
->>>
->>> The task are as following:
->>>
->>> CPU  PID    CLASS  TYPE      PRI   TIMEOUT       STAT       NAME
->>>     1  1686   rt     cobalt      4   -             Wt         main
->>>     3  1690   rt     cobalt      2   -             Wt         fup.medium
->>>
->>> main is stuck in this function
->>>
->>> int mutex_lock(struct mutex_data *pData) {
->>>       pthread_t threadId = pthread_self();
->>>       // assert(pthread_equal(threadId, pData->m_LockId) == 0);
->>> ->    int r = pthread_mutex_lock(&pData->m_Mutex);
->>>       assert(r == 0);
->>>       pData->m_LockId = threadId;
->>>       return r;
->>> }
->>>
->>> In libcobalt:
->>>     do
->>>       ret = XENOMAI_SYSCALL1(sc_cobalt_mutex_lock, _mutex);
->>>     while (ret == -EINTR);
->>>
->>> fup.medium is stuck in:
->>>
->>> int conditionvar_wait(struct conditionvar_data *pData, struct
->>> mutex_data *pMutex) {
->>>       pthread_t sid = pthread_self();
->>>       assert(pthread_equal(sid, pMutex->m_LockId) != 0);
->>>       pMutex->m_LockId = 0;
->>> ->    int r = pthread_cond_wait(&pData->m_CondVar, &pMutex-
->>> m_Mutex);
->>>       assert(r == 0);
->>>       pMutex->m_LockId = sid;
->>>       return r;
->>> }
->>>
->>> In libcobalt:
->>>     while (err == -EINTR)
->>>       err = XENOMAI_SYSCALL2(sc_cobalt_cond_wait_epilogue, _cnd, _mx);
->>>
->>
->> This is likely tricky to debug by just looking at things. Can you factor out a
->> reproducer?
-> 
-> Well, the "no apparent reason" is key here, it's not easily reproducible either.
-> Might help if you tell me how I could end up in this situation, AFAIK the pthread_cond_wait function got an interrupt,
-> when can this occur for example.
 
-Well, we have the cond_wait apparently being signaled (condition met) 
-and on its way back, "just" trying to reacquire the mutex it dropped 
-while waiting. On the other hand, that mutex is also not available for 
-the other context trying to call mutex_lock. Now, we either have one of 
-those two instances actually holding the lock while not noticing it - or 
-there is a third instance in possession of the lock. From the code and 
-information you sent, this is impossible to guess.
+Philippe,
 
-> It seems limited to running under a debugger (or just happens a lot less without), and when the process dlopen's libraries this pauses
-> the process for example. At that time the fup.medium is supposed to stick in pthread_cond_wait (means the dlopens might cause spurious wakeups)
-> and notified after everything is ready to run.
+It's been great to work with you on Xenomai when my work has allowed me to do 
+so. I really hope that we can stay in touch and continue to work together in 
+the future. I suspect at some point some of the folks in the PPC circles I 
+work with are going to have an interest in trying out EVL. I'm especially 
+hopeful the end result will be one where a casual user can contribute without 
+having many different contexts to keep track of in their heads. ;)
 
-The debugger might be the catalyst for the issue, or it is actually 
-causing it. Again, impossible to guess from the given information:
+Have a Merry Christmas. I hope your kid is back to being a soccer star by now. 
+;)
 
-> 
-> So, if you have any idea how I could narrow it down, I migh be able to build a reproducer. Right now I am going to use a timed mutex to atleast detect the issue.
+Steven
 
-- identify the owner of the lock at the time of the deadlock, based on
-   the data structures - maybe that is already telling the story
 
-- take an ftrace of the situation so that the flow of context switches
-   and debugger interceptions can be reconstructed
-
-Jan
-
--- 
-Siemens AG, Corporate Technology, CT RDA IOT SES-DE
-Corporate Competence Center Embedded Linux
 
