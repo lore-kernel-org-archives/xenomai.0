@@ -1,13 +1,11 @@
-Subject: Re: how to make an ipipe patch
-References: <5E142C68.1040506@kylinos.cn>
 From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <2a638305-e12d-db7a-d314-cdf9dba59a47@siemens.com>
-Date: Tue, 7 Jan 2020 08:10:51 +0100
-MIME-Version: 1.0
-In-Reply-To: <5E142C68.1040506@kylinos.cn>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Subject: [PATCH v2 3/7] lib/cobalt: Use new thread_setschedprio syscall
+Date: Tue,  3 Dec 2019 12:32:13 +0100
+Message-Id: <4e5c96d58adeb69cdb6faaa482b16e74c28b0c60.1575372737.git.jan.kiszka@siemens.com>
+In-Reply-To: <cover.1575372737.git.jan.kiszka@siemens.com>
+References: <cover.1575372737.git.jan.kiszka@siemens.com>
+In-Reply-To: <cover.1575372737.git.jan.kiszka@siemens.com>
+References: <cover.1575372737.git.jan.kiszka@siemens.com>
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,38 +14,65 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: chensong <chensong@kylinos.cn>, xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-On 07.01.20 07:59, chensong via Xenomai wrote:
-> Hi,
-> 
-> i'm working on enabling xenomai in a specific arm64 device, 
-> unfortunately, the kernel version in its sdk is 4.4.154, which doesn't 
-> have an available ipipe patch in 
-> https://xenomai.org/downloads/ipipe/v4.x/arm64/ (like 
-> ipipe-core-4.4.164-arm64-4.patch )
+From: Jan Kiszka <jan.kiszka@siemens.com>
 
-Right, I-pipe was never developed on 4.4 for ARM64. That arch 
-effectively started to work with 4.14, and now it's on 4.19. 4.4 will be 
-a tough challenge. Better double-check with your vendor if they have a 
-more recent SDK - or, much better, if their support is in mainline by now.
+Switch the implementation of pthread_setschedprio to the new cobalt
+syscall in order to avoid scheduler setting corruptions for SCHED_QUOTA
+and similar complex policies.
 
-> 
-> I'm trying to make the patch on my own, however, i haven't found any 
-> guide about this online, i would appreciate it if someone can guide me 
-> here, step by step, many thanks.
+Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
+---
+ lib/cobalt/thread.c | 33 +++++++++++++++++++++++++++++----
+ 1 file changed, 29 insertions(+), 4 deletions(-)
 
-The most detailed guild is the patch queue for 4.19 in git now. It's 
-generic part is already available on 4.4-cip via x86 and ARM, but the 
-arm64-specific would have to be backported, somehow.
-
-Some information may also be derivable from 
-https://gitlab.denx.de/Xenomai/xenomai/wikis/Porting_Xenomai_To_A_New_Arm_SOC, 
-though that was targeting ARM.
-
-Jan
-
+diff --git a/lib/cobalt/thread.c b/lib/cobalt/thread.c
+index 86db6343c9..bb23cdcb97 100644
+--- a/lib/cobalt/thread.c
++++ b/lib/cobalt/thread.c
+@@ -666,11 +666,36 @@ int pthread_setschedparam_ex(pthread_t thread,
+ 
+ COBALT_IMPL(int, pthread_setschedprio, (pthread_t thread, int prio))
+ {
+-	struct sched_param_ex param_ex = {
+-		.sched_priority = prio,
+-	};
++	__u32 u_winoff, *u_winoff_ptr;
++	int ret, promoted;
+ 
+-	return pthread_setschedparam_ex(thread, __SCHED_CURRENT, &param_ex);
++	/* See pthread_setschedparam_ex. */
++	if (cobalt_eager_setsched()) {
++		ret = __STD(pthread_setschedprio(thread, prio));
++		if (ret)
++			return ret;
++	}
++
++	/* only request promotion when this targets the current thread */
++	u_winoff_ptr = thread == pthread_self() ? &u_winoff : NULL;
++
++	ret = -XENOMAI_SYSCALL4(sc_cobalt_thread_setschedprio,
++				thread, prio, u_winoff_ptr, &promoted);
++
++	/*
++	 * If the kernel has no reference to the target thread. let glibc
++	 * handle the call.
++	 */
++	if (ret == ESRCH)
++		return __STD(pthread_setschedprio(thread, prio));
++
++	if (ret == 0 && promoted) {
++		cobalt_sigshadow_install_once();
++		cobalt_set_tsd(u_winoff);
++		cobalt_thread_harden();
++	}
++
++	return ret;
+ }
+ 
+ /**
 -- 
-Siemens AG, Corporate Technology, CT RDA IOT SES-DE
-Corporate Competence Center Embedded Linux
+2.16.4
+
 
