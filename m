@@ -1,9 +1,11 @@
-From: Philippe  Gerum <rpm@xenomai.org>
-Subject: [PATCH] net/cap: fix non-rt signal overflow
-Date: Mon,  2 Dec 2019 16:18:10 +0100
-Message-Id: <20191202151810.4743-1-rpm@xenomai.org>
+From: Jan Kiszka <jan.kiszka@siemens.com>
+Subject: [PATCH] cobalt/intr: Move IRQ exit trace point in non-shared case
+Message-ID: <cc4d7e75-5e09-761e-b050-34e0f8e6e328@siemens.com>
+Date: Thu, 5 Dec 2019 18:40:37 +0100
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -12,87 +14,41 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
+To: Xenomai <xenomai@xenomai.org>
 
-From: Philippe Gerum <rpm@xenomai.org>
+From: Jan Kiszka <jan.kiszka@siemens.com>
 
-rtdm_nrtsig_pend() is based on ipipe_post_root_work(), which keeps a
-copy of every request descriptor internally until it is consumed by
-the secondary mode handler. Triggering rtdm_nrtsig_pend() every time a
-packet is relayed from the stack to the tap device may cause such
-request buffer to overflow under pressure.
+This was missed in cfa2c51de424.
 
-To address this issue, trigger the non-rt signal only when the RX
-queue transitions from empty to non-empty state as a result of
-enqueuing the next skb.
-
-Signed-off-by: Philippe Gerum <rpm@xenomai.org>
+Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
 ---
- kernel/drivers/net/addons/cap.c | 19 +++++++++++++------
- 1 file changed, 13 insertions(+), 6 deletions(-)
+ kernel/cobalt/intr.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/kernel/drivers/net/addons/cap.c b/kernel/drivers/net/addons/cap.c
-index 4e0795e24..1e8644069 100644
---- a/kernel/drivers/net/addons/cap.c
-+++ b/kernel/drivers/net/addons/cap.c
-@@ -57,27 +57,32 @@ static struct tap_device_t {
+diff --git a/kernel/cobalt/intr.c b/kernel/cobalt/intr.c
+index d6fc0af6fa..d45c223268 100644
+--- a/kernel/cobalt/intr.c
++++ b/kernel/cobalt/intr.c
+@@ -671,12 +671,12 @@ done:
+ out:
+ 	switch_from_irqstats(sched, prev);
  
- void rtcap_rx_hook(struct rtskb *rtskb)
- {
-+	bool			trigger = false;
++	trace_cobalt_irq_exit(irq);
 +
- 	if ((rtskb->cap_comp_skb = rtskb_pool_dequeue(&cap_pool)) == 0) {
- 		tap_device[rtskb->rtdev->ifindex].tap_dev_stats.rx_dropped++;
- 		return;
+ 	if (--sched->inesting == 0) {
+ 		sched->lflags &= ~XNINIRQ;
+ 		xnsched_run();
  	}
- 
--	if (cap_queue.first == NULL)
-+	if (cap_queue.first == NULL) {
- 		cap_queue.first = rtskb;
--	else
-+		trigger = true;
-+	} else
- 		cap_queue.last->cap_next = rtskb;
- 	cap_queue.last = rtskb;
- 	rtskb->cap_next = NULL;
- 
- 	rtskb->cap_flags |= RTSKB_CAP_SHARED;
- 
--	rtdm_nrtsig_pend(&cap_signal);
-+	if (trigger)
-+		rtdm_nrtsig_pend(&cap_signal);
+-
+-	trace_cobalt_irq_exit(irq);
  }
  
- int rtcap_xmit_hook(struct rtskb *rtskb, struct rtnet_device *rtdev)
- {
- 	struct tap_device_t *tap_dev = &tap_device[rtskb->rtdev->ifindex];
- 	rtdm_lockctx_t context;
-+	bool trigger = false;
- 
- 	if ((rtskb->cap_comp_skb = rtskb_pool_dequeue(&cap_pool)) == 0) {
- 		tap_dev->tap_dev_stats.rx_dropped++;
-@@ -93,15 +98,17 @@ int rtcap_xmit_hook(struct rtskb *rtskb, struct rtnet_device *rtdev)
- 
- 	rtdm_lock_get_irqsave(&rtcap_lock, context);
- 
--	if (cap_queue.first == NULL)
-+	if (cap_queue.first == NULL) {
- 		cap_queue.first = rtskb;
--	else
-+		trigger = true;
-+	} else
- 		cap_queue.last->cap_next = rtskb;
- 	cap_queue.last = rtskb;
- 
- 	rtdm_lock_put_irqrestore(&rtcap_lock, context);
- 
--	rtdm_nrtsig_pend(&cap_signal);
-+	if (trigger)
-+		rtdm_nrtsig_pend(&cap_signal);
- 
- 	return tap_dev->orig_xmit(rtskb, rtdev);
- }
+ int __init xnintr_mount(void)
 -- 
-2.21.0
+2.16.4
 
+
+-- 
+Siemens AG, Corporate Technology, CT RDA IOT SES-DE
+Corporate Competence Center Embedded Linux
 
