@@ -1,23 +1,12 @@
+Subject: Re: undefined reference to `rt_task_create
+References: <d3c4d944-807a-a2d4-7ec1-2d1639f36f78@vbm-grp.com>
+From: "Electronic Dept. - Vbm Group" <electronic@vbm-grp.com>
+Message-ID: <48de04a3-9f2c-d3e6-8a80-568a497015c1@vbm-grp.com>
+Date: Thu, 5 Dec 2019 08:35:42 +0100
 MIME-Version: 1.0
-References: <CAPm8-H6oDc4NogRLTFvi7-9vOv=a2OGE=fiRib1yUEOyR-rsAQ@mail.gmail.com>
- <CALLqZ8Qa1+WLUQHw7woNOJZGgjmhkjms+QYLpT9ggnD47XsUog@mail.gmail.com>
- <CAPm8-H6rz3ArzOcYas1mQyYfw-njGfQwZGriQz3Hrg5MdU9+vg@mail.gmail.com>
- <CALLqZ8TtxHc-hsqkKMx2iX1_GZftFOEFnLSYH37UJVs4d5VM8A@mail.gmail.com>
- <CALLqZ8S6jvvU0xp+bb19uMVnFP9AS7=KSn1XugsBShU78YVM-A@mail.gmail.com>
- <86518a45-5c2d-3322-da91-fe0f248d0253@siemens.com>
- <CAPm8-H7REC_UQ2GV7aJbj1+Wx2dNiAL-67W8sjYk+a_Y5Ur6EA@mail.gmail.com>
- <CAPm8-H4U06gsNqQLVKHgyAzUcEcg7fJv48UR7uvM2jfjzQx+bA@mail.gmail.com>
- <CALLqZ8Rq7Ar5=KMgkYNaVOMHyp08yTPvGdShQTLb=E3OSU061Q@mail.gmail.com>
- <CAPm8-H7foEfOFTHTFwG1iDp-eUdH6=e-tGrEDC28ony-0WXdvQ@mail.gmail.com>
- <CAPm8-H7gUZGKbYG9L-fhoGndzN3fcPhqQ9WuJ7cP=HDVPNemSA@mail.gmail.com>
- <CALLqZ8Ts5sApS5JjOKVY3DLyShJzBzd2FNRZYBQ0y5u2MiBAUg@mail.gmail.com>
- <CALLqZ8TObDwBbmu_ijwi7Mis38JquYqO2f1TorNWBt5qyk+FoQ@mail.gmail.com>
-In-Reply-To: <CALLqZ8TObDwBbmu_ijwi7Mis38JquYqO2f1TorNWBt5qyk+FoQ@mail.gmail.com>
-From: Greg Gallagher <greg@embeddedgreg.com>
-Date: Fri, 31 Jan 2020 00:43:01 -0500
-Message-ID: <CALLqZ8Q=GqLpdxBAoPLqyniySKG8w_CeBJp1PW+KtB=1H8OEtg@mail.gmail.com>
-Subject: Re: system freeze - beaglebone black xenomai - gpio interrupts driver
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <d3c4d944-807a-a2d4-7ec1-2d1639f36f78@vbm-grp.com>
+Content-Language: en-US
+Content-Type: text/plain; charset="iso-8859-15"; format="flowed"
 Content-Transfer-Encoding: quoted-printable
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
@@ -27,551 +16,385 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Laurentiu-Cristian Duca <laurentiu.duca@gmail.com>
-Cc: Jan Kiszka <jan.kiszka@siemens.com>, xenomai <xenomai@xenomai.org>
+To: xenomai@xenomai.org
 
-Hey,
+Hello Jan,
 
-On Wed, Jan 29, 2020 at 11:58 AM Greg Gallagher <greg@embeddedgreg.com> wro=
-te:
+thank you for your answer.
+
+My Xenomai version is:
+
+Xenomai/cobalt v3.0.9 -- #5b99a61 (2019-11-04 19:44:03 +0100)
+
+My kernel version is:
+
+Linux arm 4.4.113-ti-xenomai-r149.1 #1 SMP Mon Oct 21 11:55:55 CEST 2019=20
+armv7l GNU/Linux
+
+If it can be useful the result of xeno-test is:
+
+Started child 676: /bin/bash /usr/xenomai/bin/xeno-test-run-wrapper=20
+./xeno-test
+++ echo 0
+++ testdir=3D/usr/xenomai/bin
+++ /usr/xenomai/bin/smokey --run
+arith OK
+bufp skipped (no kernel support)
+cpu_affinity OK
+iddp skipped (no kernel support)
+leaks OK
+net_packet_dgram skipped (no kernel support)
+net_packet_raw skipped (no kernel support)
+net_udp skipped (no kernel support)
+posix_clock OK
+posix_cond OK
+posix_fork OK
+mutex_trylock not supported
+posix_mutex OK
+posix_select OK
+rtdm skipped (no kernel support)
+sched_quota skipped (no kernel support)
+sched_tp skipped (no kernel support)
+setsched OK
+sigdebug skipped (no kernel support)
+timerfd OK
+tsc OK
+vdso_access OK
+xddp skipped (no kernel support)
+++ /usr/xenomai/bin/clocktest -D -T 30 -C CLOCK_HOST_REALTIME
+hostrt data area is live
+sequence counter : 197044
+wall_time_sec=A0=A0=A0 : 1575475032
+wall_time_nsec=A0=A0 : 492643503
+wall_to_monotonic_sec=A0=A0=A0 : -1575471617
+wall_to_monotonic_nsec=A0=A0 : 197320093
+cycle_last=A0=A0=A0=A0=A0=A0 : 81979795008
+mask=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0 : 0xffffffffffffffff
+mult=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0 : 699025481
+shift=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0 : 24
+
+=3D=3D Testing built-in CLOCK_HOST_REALTIME (32)
+CPU=A0=A0=A0=A0=A0 ToD offset [us] ToD drift [us/s]=A0=A0=A0=A0=A0 warps ma=
+x delta [us]
+--- -------------------- ---------------- ---------- --------------
+ =A0 0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0 3.3=A0=A0=A0=A0=
+=A0=A0=A0=A0=A0=A0=A0 0.054=A0=A0=A0=A0=A0=A0=A0=A0=A0 0 0.0
+++ /usr/xenomai/bin/switchtest -T 30
+=3D=3D Testing FPU check routines...
+d0: 1 !=3D 2
+d1: 1 !=3D 2
+d2: 1 !=3D 2
+d3: 1 !=3D 2
+d4: 1 !=3D 2
+d5: 1 !=3D 2
+d6: 1 !=3D 2
+d7: 1 !=3D 2
+d8: 1 !=3D 2
+d9: 1 !=3D 2
+d10: 1 !=3D 2
+d11: 1 !=3D 2
+d12: 1 !=3D 2
+d13: 1 !=3D 2
+d14: 1 !=3D 2
+d15: 1 !=3D 2
+=3D=3D FPU check routines: OK.
+=3D=3D Threads: sleeper_ufps0-0 rtk0-1 rtk0-2 rtk_fp0-3 rtk_fp0-4=20
+rtk_fp_ufpp0-5 rtk_fp_ufpp0-6 rtup0-7 rtup0-8 rtup_ufpp0-9 rtup_ufpp0-10=20
+rtus0-11 rtus0-12 rtus_ufps0-13 rtus_ufps0-14 rtuo0-15 rtuo0-16=20
+rtuo_ufpp0-17 rtuo_ufpp0-18 rtuo_ufps0-19 rtuo_ufps0-20=20
+rtuo_ufpp_ufps0-21 rtuo_ufpp_ufps0-22
+RTT|=A0 00:00:01
+RTH|---------cpu|ctx switches|-------total
+RTD|=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0 0|=A0=A0=A0=A0=A0=A0 15937|=A0=A0=A0=A0=
+=A0=A0 15937
+RTD|=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0 0|=A0=A0=A0=A0=A0=A0 15732|=A0=A0=A0=A0=
+=A0=A0 31669
+RTD|=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0 0|=A0=A0=A0=A0=A0=A0 15736|=A0=A0=A0=A0=
+=A0=A0 47405
+RTD|=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0 0|=A0=A0=A0=A0=A0=A0 15797|=A0=A0=A0=A0=
+=A0=A0 63202
+RTD|=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0 0|=A0=A0=A0=A0=A0=A0 15801|=A0=A0=A0=A0=
+=A0=A0 79003
+RTD|=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0 0|=A0=A0=A0=A0=A0=A0 15667|=A0=A0=A0=A0=
+=A0=A0 94670
+RTD|=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0 0|=A0=A0=A0=A0=A0=A0 15730|=A0=A0=A0=A0=
+=A0 110400
+RTD|=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0 0|=A0=A0=A0=A0=A0=A0 15661|=A0=A0=A0=A0=
+=A0 126061
+RTD|=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0 0|=A0=A0=A0=A0=A0=A0 15801|=A0=A0=A0=A0=
+=A0 141862
+RTD|=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0 0|=A0=A0=A0=A0=A0=A0 15801|=A0=A0=A0=A0=
+=A0 157663
+RTD|=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0 0|=A0=A0=A0=A0=A0=A0 15801|=A0=A0=A0=A0=
+=A0 173464
+RTD|=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0 0|=A0=A0=A0=A0=A0=A0 15801|=A0=A0=A0=A0=
+=A0 189265
+RTD|=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0 0|=A0=A0=A0=A0=A0=A0 15736|=A0=A0=A0=A0=
+=A0 205001
+RTD|=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0 0|=A0=A0=A0=A0=A0=A0 15801|=A0=A0=A0=A0=
+=A0 220802
+RTD|=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0 0|=A0=A0=A0=A0=A0=A0 15866|=A0=A0=A0=A0=
+=A0 236668
+RTD|=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0 0|=A0=A0=A0=A0=A0=A0 15732|=A0=A0=A0=A0=
+=A0 252400
+RTD|=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0 0|=A0=A0=A0=A0=A0=A0 15736|=A0=A0=A0=A0=
+=A0 268136
+RTD|=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0 0|=A0=A0=A0=A0=A0=A0 15866|=A0=A0=A0=A0=
+=A0 284002
+RTD|=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0 0|=A0=A0=A0=A0=A0=A0 15732|=A0=A0=A0=A0=
+=A0 299734
+RTD|=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0 0|=A0=A0=A0=A0=A0=A0 15663|=A0=A0=A0=A0=
+=A0 315397
+RTD|=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0 0|=A0=A0=A0=A0=A0=A0 15732|=A0=A0=A0=A0=
+=A0 331129
+RTT|=A0 00:00:22
+RTH|---------cpu|ctx switches|-------total
+RTD|=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0 0|=A0=A0=A0=A0=A0=A0 15801|=A0=A0=A0=A0=
+=A0 346930
+RTD|=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0 0|=A0=A0=A0=A0=A0=A0 15734|=A0=A0=A0=A0=
+=A0 362664
+RTD|=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0 0|=A0=A0=A0=A0=A0=A0 15734|=A0=A0=A0=A0=
+=A0 378398
+RTD|=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0 0|=A0=A0=A0=A0=A0=A0 15799|=A0=A0=A0=A0=
+=A0 394197
+RTD|=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0 0|=A0=A0=A0=A0=A0=A0 15799|=A0=A0=A0=A0=
+=A0 409996
+RTD|=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0 0|=A0=A0=A0=A0=A0=A0 15801|=A0=A0=A0=A0=
+=A0 425797
+RTD|=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0 0|=A0=A0=A0=A0=A0=A0 15734|=A0=A0=A0=A0=
+=A0 441531
+RTD|=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0 0|=A0=A0=A0=A0=A0=A0 15799|=A0=A0=A0=A0=
+=A0 457330
+RTD|=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0 0|=A0=A0=A0=A0=A0=A0 14490|=A0=A0=A0=A0=
+=A0 471820
+++ start_load
+++ echo start_load
+++ false
+++ check_alive /usr/xenomai/bin/latency
+++ echo check_alive /usr/xenomai/bin/latency
+++ wait_load
+++ read rc
+Started child 744: dohell 900
+Started child 745: /usr/xenomai/bin/latency
+=3D=3D Sampling period: 1000 us
+=3D=3D Test mode: periodic user-mode task
+=3D=3D All results in microseconds
+warming up...
+RTT|=A0 00:00:01=A0 (periodic user-mode task, 1000 us period, priority 99)
+RTH|----lat min|----lat avg|----lat max|-overrun|---msw|---lat=20
+best|--lat worst
+RTD|=A0=A0=A0=A0 14.416|=A0=A0=A0=A0 29.666|=A0=A0=A0=A0 55.416|=A0=A0=A0=
+=A0=A0=A0 0|=A0=A0=A0=A0 0| 14.416|=A0=A0=A0=A0 55.416
+RTD|=A0=A0=A0=A0 14.374|=A0=A0=A0=A0 29.543|=A0=A0=A0=A0 53.583|=A0=A0=A0=
+=A0=A0=A0 0|=A0=A0=A0=A0 0| 14.374|=A0=A0=A0=A0 55.416
+RTD|=A0=A0=A0=A0 14.374|=A0=A0=A0=A0 28.730|=A0=A0=A0=A0 54.582|=A0=A0=A0=
+=A0=A0=A0 0|=A0=A0=A0=A0 0| 14.374|=A0=A0=A0=A0 55.416
+RTD|=A0=A0=A0=A0 14.374|=A0=A0=A0=A0 28.170|=A0=A0=A0=A0 56.249|=A0=A0=A0=
+=A0=A0=A0 0|=A0=A0=A0=A0 0| 14.374|=A0=A0=A0=A0 56.249
+RTD|=A0=A0=A0=A0 14.374|=A0=A0=A0=A0 28.609|=A0=A0=A0=A0 54.374|=A0=A0=A0=
+=A0=A0=A0 0|=A0=A0=A0=A0 0| 14.374|=A0=A0=A0=A0 56.249
+RTD|=A0=A0=A0=A0 14.332|=A0=A0=A0=A0 27.711|=A0=A0=A0=A0 55.874|=A0=A0=A0=
+=A0=A0=A0 0|=A0=A0=A0=A0 0| 14.332|=A0=A0=A0=A0 56.249
+RTD|=A0=A0=A0=A0 14.331|=A0=A0=A0=A0 28.196|=A0=A0=A0=A0 57.956|=A0=A0=A0=
+=A0=A0=A0 0|=A0=A0=A0=A0 0| 14.331|=A0=A0=A0=A0 57.956
+RTD|=A0=A0=A0=A0 14.373|=A0=A0=A0=A0 27.163|=A0=A0=A0=A0 54.915|=A0=A0=A0=
+=A0=A0=A0 0|=A0=A0=A0=A0 0| 14.331|=A0=A0=A0=A0 57.956
+RTD|=A0=A0=A0=A0 14.331|=A0=A0=A0=A0 28.497|=A0=A0=A0=A0 61.623|=A0=A0=A0=
+=A0=A0=A0 0|=A0=A0=A0=A0 0| 14.331|=A0=A0=A0=A0 61.623
+RTD|=A0=A0=A0=A0 11.414|=A0=A0=A0=A0 28.633|=A0=A0=A0=A0 56.914|=A0=A0=A0=
+=A0=A0=A0 0|=A0=A0=A0=A0 0| 11.414|=A0=A0=A0=A0 61.623
+RTD|=A0=A0=A0=A0 14.414|=A0=A0=A0=A0 27.801|=A0=A0=A0=A0 60.914|=A0=A0=A0=
+=A0=A0=A0 0|=A0=A0=A0=A0 0| 11.414|=A0=A0=A0=A0 61.623
+RTD|=A0=A0=A0=A0 14.372|=A0=A0=A0=A0 27.482|=A0=A0=A0=A0 57.289|=A0=A0=A0=
+=A0=A0=A0 0|=A0=A0=A0=A0 0| 11.414|=A0=A0=A0=A0 61.623
+RTD|=A0=A0=A0=A0 14.372|=A0=A0=A0=A0 28.480|=A0=A0=A0=A0 56.038|=A0=A0=A0=
+=A0=A0=A0 0|=A0=A0=A0=A0 0| 11.414|=A0=A0=A0=A0 61.623
+RTD|=A0=A0=A0=A0 14.371|=A0=A0=A0=A0 28.990|=A0=A0=A0=A0 56.413|=A0=A0=A0=
+=A0=A0=A0 0|=A0=A0=A0=A0 0| 11.414|=A0=A0=A0=A0 61.623
+RTD|=A0=A0=A0=A0 14.371|=A0=A0=A0=A0 28.460|=A0=A0=A0=A0 54.371|=A0=A0=A0=
+=A0=A0=A0 0|=A0=A0=A0=A0 0| 11.414|=A0=A0=A0=A0 61.623
+RTD|=A0=A0=A0=A0 14.371|=A0=A0=A0=A0 27.868|=A0=A0=A0=A0 54.704|=A0=A0=A0=
+=A0=A0=A0 0|=A0=A0=A0=A0 0| 11.414|=A0=A0=A0=A0 61.623
+RTD|=A0=A0=A0=A0 14.412|=A0=A0=A0=A0 27.557|=A0=A0=A0=A0 53.746|=A0=A0=A0=
+=A0=A0=A0 0|=A0=A0=A0=A0 0| 11.414|=A0=A0=A0=A0 61.623
+RTD|=A0=A0=A0=A0 14.287|=A0=A0=A0=A0 27.530|=A0=A0=A0=A0 53.287|=A0=A0=A0=
+=A0=A0=A0 0|=A0=A0=A0=A0 0| 11.414|=A0=A0=A0=A0 61.623
+RTD|=A0=A0=A0=A0 14.370|=A0=A0=A0=A0 26.841|=A0=A0=A0=A0 55.829|=A0=A0=A0=
+=A0=A0=A0 0|=A0=A0=A0=A0 0| 11.414|=A0=A0=A0=A0 61.623
+RTD|=A0=A0=A0=A0 14.412|=A0=A0=A0=A0 26.846|=A0=A0=A0=A0 52.912|=A0=A0=A0=
+=A0=A0=A0 0|=A0=A0=A0=A0 0| 11.414|=A0=A0=A0=A0 61.623
+RTD|=A0=A0=A0=A0 14.411|=A0=A0=A0=A0 26.671|=A0=A0=A0=A0 53.953|=A0=A0=A0=
+=A0=A0=A0 0|=A0=A0=A0=A0 0| 11.414|=A0=A0=A0=A0 61.623
+RTT|=A0 00:00:22=A0 (periodic user-mode task, 1000 us period, priority 99)
+RTH|----lat min|----lat avg|----lat max|-overrun|---msw|---lat=20
+best|--lat worst
+RTD|=A0=A0=A0=A0 14.411|=A0=A0=A0=A0 26.720|=A0=A0=A0=A0 54.245|=A0=A0=A0=
+=A0=A0=A0 0|=A0=A0=A0=A0 0| 11.414|=A0=A0=A0=A0 61.623
+RTD|=A0=A0=A0=A0 14.369|=A0=A0=A0=A0 26.391|=A0=A0=A0=A0 57.869|=A0=A0=A0=
+=A0=A0=A0 0|=A0=A0=A0=A0 0| 11.414|=A0=A0=A0=A0 61.623
+RTD|=A0=A0=A0=A0 14.411|=A0=A0=A0=A0 26.184|=A0=A0=A0=A0 55.536|=A0=A0=A0=
+=A0=A0=A0 0|=A0=A0=A0=A0 0| 11.414|=A0=A0=A0=A0 61.623
+RTD|=A0=A0=A0=A0 14.411|=A0=A0=A0=A0 26.052|=A0=A0=A0=A0 54.286|=A0=A0=A0=
+=A0=A0=A0 0|=A0=A0=A0=A0 0| 11.414|=A0=A0=A0=A0 61.623
+RTD|=A0=A0=A0=A0 14.410|=A0=A0=A0=A0 26.045|=A0=A0=A0=A0 54.369|=A0=A0=A0=
+=A0=A0=A0 0|=A0=A0=A0=A0 0| 11.414|=A0=A0=A0=A0 61.623
+RTD|=A0=A0=A0=A0 13.577|=A0=A0=A0=A0 26.106|=A0=A0=A0=A0 56.410|=A0=A0=A0=
+=A0=A0=A0 0|=A0=A0=A0=A0 0| 11.414|=A0=A0=A0=A0 61.623
+RTD|=A0=A0=A0=A0=A0 9.243|=A0=A0=A0=A0 25.842|=A0=A0=A0=A0 54.452|=A0=A0=A0=
+=A0=A0=A0 0|=A0=A0=A0=A0 0| 9.243|=A0=A0=A0=A0 61.623
+RTD|=A0=A0=A0=A0 14.285|=A0=A0=A0=A0 26.535|=A0=A0=A0=A0 54.701|=A0=A0=A0=
+=A0=A0=A0 0|=A0=A0=A0=A0 0| 9.243|=A0=A0=A0=A0 61.623
+RTD|=A0=A0=A0=A0 14.326|=A0=A0=A0=A0 26.546|=A0=A0=A0=A0 54.409|=A0=A0=A0=
+=A0=A0=A0 0|=A0=A0=A0=A0 0| 9.243|=A0=A0=A0=A0 61.623
+RTD|=A0=A0=A0=A0 14.368|=A0=A0=A0=A0 26.472|=A0=A0=A0=A0 52.284|=A0=A0=A0=
+=A0=A0=A0 0|=A0=A0=A0=A0 0| 9.243|=A0=A0=A0=A0 61.623
+RTD|=A0=A0=A0=A0 14.409|=A0=A0=A0=A0 26.455|=A0=A0=A0=A0 53.867|=A0=A0=A0=
+=A0=A0=A0 0|=A0=A0=A0=A0 0| 9.243|=A0=A0=A0=A0 61.623
+RTD|=A0=A0=A0=A0 14.409|=A0=A0=A0=A0 26.570|=A0=A0=A0=A0 54.784|=A0=A0=A0=
+=A0=A0=A0 0|=A0=A0=A0=A0 0| 9.243|=A0=A0=A0=A0 61.623
+RTD|=A0=A0=A0=A0 14.325|=A0=A0=A0=A0 26.518|=A0=A0=A0=A0 54.367|=A0=A0=A0=
+=A0=A0=A0 0|=A0=A0=A0=A0 0| 9.243|=A0=A0=A0=A0 61.623
+RTD|=A0=A0=A0=A0 14.325|=A0=A0=A0=A0 26.566|=A0=A0=A0=A0 52.492|=A0=A0=A0=
+=A0=A0=A0 0|=A0=A0=A0=A0 0| 9.243|=A0=A0=A0=A0 61.623
+RTD|=A0=A0=A0=A0 14.241|=A0=A0=A0=A0 26.803|=A0=A0=A0=A0 53.616|=A0=A0=A0=
+=A0=A0=A0 0|=A0=A0=A0=A0 0| 9.243|=A0=A0=A0=A0 61.623
+RTD|=A0=A0=A0=A0 14.408|=A0=A0=A0=A0 26.506|=A0=A0=A0=A0 53.783|=A0=A0=A0=
+=A0=A0=A0 0|=A0=A0=A0=A0 0| 9.243|=A0=A0=A0=A0 61.623
+RTD|=A0=A0=A0=A0 14.324|=A0=A0=A0=A0 26.520|=A0=A0=A0=A0 54.407|=A0=A0=A0=
+=A0=A0=A0 0|=A0=A0=A0=A0 0| 9.243|=A0=A0=A0=A0 61.623
+RTD|=A0=A0=A0=A0 14.282|=A0=A0=A0=A0 26.762|=A0=A0=A0=A0 52.616|=A0=A0=A0=
+=A0=A0=A0 0|=A0=A0=A0=A0 0| 9.243|=A0=A0=A0=A0 61.623
+RTD|=A0=A0=A0=A0 14.365|=A0=A0=A0=A0 26.757|=A0=A0=A0=A0 53.657|=A0=A0=A0=
+=A0=A0=A0 0|=A0=A0=A0=A0 0| 9.243|=A0=A0=A0=A0 61.623
+RTD|=A0=A0=A0=A0 14.323|=A0=A0=A0=A0 26.326|=A0=A0=A0=A0 53.657|=A0=A0=A0=
+=A0=A0=A0 0|=A0=A0=A0=A0 0| 9.243|=A0=A0=A0=A0 61.623
+RTD|=A0=A0=A0=A0 14.406|=A0=A0=A0=A0 26.473|=A0=A0=A0=A0 55.907|=A0=A0=A0=
+=A0=A0=A0 0|=A0=A0=A0=A0 0| 9.243|=A0=A0=A0=A0 61.623
+
+Thank you for your help.
+
+Best Regards
+Davide Brunelli
+
+*Electronic Vbm Group*
+e-mail: electronic2@vbm-grp.com <mailto:electronic2@vbm-grp.com>
+
+Vbm Group <http://service.vbm-grp.com/signature/logogrp.png>
+
+
+Vbm Group Vbm Group Vbm Group
+
+
+*Vbm Group is a trademark of VI.BE.MAC S.p.a.*
+
+*Declaration according to Law No. 196 of 30 June 2003*
+We hereby inform you that your data will be treated automatically,=20
+according to the current security regulations for written=20
+correspondence; your data will not be spread by Vi.Be.Mac. Spa. In any=20
+way, as far as your data are concerned, you have the rights indicated in=20
+art. No. 13 L. 675/1996 (such as access, cancellation, modification,=20
+objection, etc.). Vi.Be.Mac. Spa. Is the holder of treatment of your=20
+data. Vi.Be.Mac. is located in via Monte Pastello, 7/i (Vr) Italy. For=20
+further information, please write to: privacy@vibemac.com According to=20
+Art. No. 13 of law 196/2003, in any moment and free of any charge you=20
+have the right to deny the use of your personal data to send you written=20
+correspondence. You just have to advise about this by writing to:=20
+privacy@vibemac.com
+
+
+*Informativa ai sensi del d.lgs n. 196, 30.6.2003*
+I suoi dati saranno trattati in forma automatizzata, nel rispetto delle=20
+idonee misure di sicurezza, per l'invio di comunicazioni e non saranno=20
+soggetti a diffusione all'esterno di Vi.Be.Mac. Spa. In relazione al=20
+trattamento dei dati, potr=E0 esercitare i diritti (accesso,cancellazione, =
+
+rettifica, opposizione, etc.) specificamente previsti dall'art. 13 L.=20
+675/1996 e nelle modalit=E0 ivi contemplate. Titolare del trattamento dei=20
+dati =E8 Vi.Be.Mac. Spa, con sede legale in San Giovanni Lupatoto (Vr) via =
+
+Monte Pastello 7/i. Per informazioni scrivere a privacy@vibemac.com Ai=20
+sensi dell'art. 13 del d.lgs. 196/2003, potr=E0 opporsi in ogni momento,=20
+in via gratuita, al trattamento dei suoi dati al fine dell'invio di=20
+analoghe comunicazioni a mezzo di posta elettronica, semplicemente=20
+comunicandocelo all'indirizzo e-mail privacy@vibemac.com Qualsiasi=20
+utilizzo non autorizzato del presente messaggio nonch=E8 dei suoi allegati =
+
+=E8 vietato e potrebbe costituire reato. Se lei ha ricevuto erroneamente=20
+il presente messaggio, Le saremmo grati se via e-mail ce ne comunicasse=20
+la ricezione e provvedesse alla distruzione del messaggio stesso e dei=20
+suoi eventuali allegati.
+
+VI.BE.MAC s.p.a. - 37057 S. GIOVANNI LUPATOTO (VR) ITALY - Via Monte=20
+Pastello, 7/i - Tel. +39 045 8778151/52 - Fax +39 045 8779024 - Cod.=20
+Fisc./Partita IVA 01264050236- Cap. Soc. Euro 2.000.000,00 int. Vers. -=20
+Reg. Imprese di VERONA N. 01264050236 - REA N. 170441
+Societ=E0 soggetta a direzione e coordinamento di Jack Europe S.=E0.r.l.
+Il 04/12/2019 12:10, Jan Kiszka ha scritto:
+> On 04.12.19 12:01, Electronic Dept. - Vbm Group via Xenomai wrote:
+>> Goodmorning,
+>> I'm using a Beaglebone black and I'm doing the first tests with Xenomai.
+>> I've created a kernel patched with Xenomai from here:
+>> https://github.com/RobertCNelson/ti-linux-kernel-dev/tree/ti-linux-xenom=
+ai-4.4.y
+>>
+>> and installed Xenomai libraries following:
+>> https://forum.digikey.com/t/how-to-cross-compile-application-for-xenomai=
+-with-beaglebone/4943/3
+>>
+>>
+>>
+>> I've made a test file named cyclic_test.c and the following Makefile:
+>>
+>> MAIN_SRC=3D cyclic_test
+>> TARGET=A0=A0=A0 =3D cyclic_test
+>>
+>> SKIN =A0=A0=A0 :=3D alchemy
+>> CFLAGS =A0=A0=A0 :=3D $(shell /usr/xenomai/bin/xeno-config --skin=3D$(sk=
+in) --cflags)
+>> LDFLAGS :=3D $(shell /usr/xenomai/bin/xeno-config --skin=3D$(skin) --ldf=
+lags)
+>> CC =A0=A0=A0 :=3D $(shell /usr/xenomai/bin/xeno-config --cc)
+>>
+>> $(TARGET): $(MAIN_SRC).c
+>>  =A0=A0=A0 $(CC) -o $@ $< $(CFLAGS) $(LDFLAGS)
+>>
+>> clean:
+>>  =A0=A0=A0 @rm $(MAIN_SRC)
+>>
+>>
+>> And I get the following response:
+>>
+>> gcc -o cyclic_test cyclic_test.c -I/usr/xenomai/include/cobalt
+>> -I/usr/xenomai/in
+>> clude -march=3Darmv7-a -mfpu=3Dvfp3 -D_GNU_SOURCE -D_REENTRANT
+>> -fasynchronous-unwind
+>> -tables -D__COBALT__ -Wl,--no-as-needed
+>> -Wl,@/usr/xenomai/lib/modechk.wrappers
+>> /usr/xenomai/lib/xenomai/bootstrap.o -Wl,--wrap=3Dmain
+>> -Wl,--dynamic-list=3D/usr/xen
+>> omai/lib/dynlist.ld -L/usr/xenomai/lib -lcobalt -lmodechk -lpthread -lrt
+>> -march=3D
+>> armv7-a -mfpu=3Dvfp3
+>> /tmp/ccNmb1Fm.o: In function `rt_timer_read':
+>> cyclic_test.c:(.text+0xe): undefined reference to `clockobj_get_time'
+>> cyclic_test.c:(.text+0x20): undefined reference to `alchemy_clock'
+>> /tmp/ccNmb1Fm.o: In function `loop_task_proc':
+>> cyclic_test.c:(.text+0x32): undefined reference to `rt_task_self'
+>> cyclic_test.c:(.text+0x40): undefined reference to `rt_task_inquire'
+>> cyclic_test.c:(.text+0x76): undefined reference to `rt_task_set_periodic'
+>> cyclic_test.c:(.text+0xc4): undefined reference to `rt_task_wait_period'
+>> /tmp/ccNmb1Fm.o: In function `main':
+>> cyclic_test.c:(.text+0x11c): undefined reference to `rt_task_create'
+>> cyclic_test.c:(.text+0x12e): undefined reference to `rt_task_start'
+>> collect2: error: ld returned 1 exit status
+>> Makefile:10: recipe for target 'cyclic_test' failed
+>> make: *** [cyclic_test] Error 1
+>>
+>> Can you advise me plase?
+>> Thank you very much.
+> You are missing "-lalchemy" in your linker flags. Normally, xeno-config
+> --skin=3Dalchemy --ldflags returns this, at least for me here with both
+> latest stable and the 3.1-rc. What version are you using?
 >
-> Hey,
+> Jan
 >
-> On Wed, Jan 29, 2020 at 12:07 AM Greg Gallagher <greg@embeddedgreg.com> w=
-rote:
-> >
-> > Hi,
-> >
-> > On Tue, Jan 28, 2020 at 7:37 AM Laurentiu-Cristian Duca
-> > <laurentiu.duca@gmail.com> wrote:
-> > >
-> > > Again, to make things clear:
-> > > I have tested two modules: one with RTDM gpio-interrupts and one with
-> > > classic linux interrupts.
-> > > The one with RTDM gpio-interrupts:
-> > > - makes kernel freeze on 4.14.71 and 4.19.82 ipipe-enabled kernels
-> > > - works (but with ipipe warnings when interrupt arrives) in 4.4.71 an=
-d 4.9.51
-> > > The one with classic linux interrupts:
-> > > - works in PREEMPT_RT linux (tested on 5.4.5 and 4.19.59 PREEMPT_RT
-> > > non-ipipe non-xenomai)
-> > > - makes kernel freeze when interrupt arrives on 4.14.71 and 4.19.82
-> > > for xenomai ipipe enabled kernels
-> > >
-> > > On 1/28/20, Laurentiu-Cristian Duca <laurentiu.duca@gmail.com> wrote:
-> > > > This does not happen with non-ipipe enabled kernels.
-> > > > I have tested a classic gpio-interrupt module on PREEMPT_RT and it =
-works,
-> > > > but when I tested it on an ipipe-enabled kernel (4.14.71 and 4.19.8=
-2)
-> > > > got kernel freeze.
-> > > >
-> > > > On 1/28/20, Greg Gallagher <greg@embeddedgreg.com> wrote:
-> > > >> On Tue, Jan 28, 2020 at 7:11 AM Laurentiu-Cristian Duca <
-> > > >> laurentiu.duca@gmail.com> wrote:
-> > > >>
-> > > >>> I forgot to say that I've tested 4.14.71 with xenomai 3.0.9
-> > > >>>
-> > > >>> On 1/28/20, Laurentiu-Cristian Duca <laurentiu.duca@gmail.com> wr=
-ote:
-> > > >>> > Hello Jan and friends,
-> > > >>> >
-> > > >>> > The situation is the following for bbb:
-> > > >>> > - 4.14.71 and 4.19.82 xenomai-3 master enabled kernels
-> > > >>> > freeze when trying to use gpio-interrupts;
-> > > >>> > when interrupt comes the gpioout is toggled but the system
-> > > >>> > do not respond anymore to keyboard and nothing more is shown on=
- the
-> > > >>> screen
-> > > >>> > - note that even if I try a classic (linux only, non-xenomai)
-> > > >>
-> > > >> This happens even with non-ipipe enables kernels?
-> > > >
-> > > >>
-> > > >>
-> > > >>> > gpio interrupt handler in 4.19.82 with xenomai-3
-> > > >>> > the system freeze when interrupt comes
-> > > >>> > - 4.9.51 and 4.4.71 xenomai 3.0.5 enabled kernels work
-> > > >>> > blinking gpioout and do not block,
-> > > >>> > but both show warnings when interrupt comes
-> > > >>> > which significantly increase interrupt latency.
-> > > >>> >
-> > > >>> >
-> > > >>> > On 1/28/20, Jan Kiszka <jan.kiszka@siemens.com> wrote:
-> > > >>> >> On 24.01.20 07:24, Greg Gallagher via Xenomai wrote:
-> > > >>> >>> I sent a patch offline, if you could try it that would be gre=
-at.
-> > > >>> >>> I'm
-> > > >>> >>> having issues getting my board set up.
-> > > >>> >>>
-> > > >>> >>
-> > > >>> >> Do we know by now if this is an I-pipe issue or rather somethi=
-ng
-> > > >>> >> cobalt-related?
-> > > >>> >>
-> > > >>> >> Jan
-> > > >>> >>
-> > > >>> >>> On Thu, Jan 23, 2020 at 1:13 PM Greg Gallagher
-> > > >>> >>> <greg@embeddedgreg.com>
-> > > >>> >>> wrote:
-> > > >>> >>>>
-> > > >>> >>>> Hi,
-> > > >>> >>>>
-> > > >>> >>>> On Thu, Jan 23, 2020 at 12:15 PM Laurentiu-Cristian Duca
-> > > >>> >>>> <laurentiu.duca@gmail.com> wrote:
-> > > >>> >>>>>
-> > > >>> >>>>> Hi, the interrupt comes one per second in my test, so there=
- is no
-> > > >>> >>>>> flood.
-> > > >>> >>>>> In 4.19 the system it blinks the gpioout but it does not re=
-spond
-> > > >>> >>>>> to
-> > > >>> >>>>> keyboard and does not show anything more on the screen.
-> > > >>> >>>>
-> > > >>> >>>> Okay, there's a couple things that are different between 4.4=
- and
-> > > >>> >>>> 4.19
-> > > >>> >>>> that I'm looking into, which is taking me a little long then=
- I
-> > > >>> >>>> thought.  I won't have this patch ready till tomorrow mornin=
-g.  I
-> > > >>> >>>> finally have beaglebone black hardware, I'll make sure the k=
-ernel
-> > > >>> >>>> boots and then send the patch to you for testing.
-> > > >>> >>>>
-> > > >>> >>>> -Greg
-> > > >>> >>>>
-> > > >>> >>>>
-> > > >>> >>>>>
-> > > >>> >>>>> On Thu, Jan 23, 2020, 19:03 Greg Gallagher <greg@embeddedgr=
-eg.com>
-> > > >>> >>>>> wrote:
-> > > >>> >>>>>>
-> > > >>> >>>>>> Hi,
-> > > >>> >>>>>>
-> > > >>> >>>>>> On Thu, Jan 23, 2020 at 9:21 AM Laurentiu-Cristian Duca vi=
-a
-> > > >>> >>>>>> Xenomai
-> > > >>> >>>>>> <xenomai@xenomai.org> wrote:
-> > > >>> >>>>>>>
-> > > >>> >>>>>>> Hello xenomai community,
-> > > >>> >>>>>>>
-> > > >>> >>>>>>>      I have successfully tested in xenomai SPI with inter=
-rupts
-> > > >>> >>>>>>> on
-> > > >>> >>>>>>> bbb.
-> > > >>> >>>>>>> However, on bbb, if I try to test a basic gpio interrupts
-> > > >>> >>>>>>> driver,
-> > > >>> >>>>>>> problems appear.
-> > > >>> >>>>>>>      Please see details below. I appreciate any idea.
-> > > >>> >>>>>>>
-> > > >>> >>>>>>> 1. xenomai-3 master linux 4.19.82, default dts
-> > > >>> >>>>>>> # insmod xeno_osc-gpio-rtdm.ko
-> > > >>> >>>>>>> [  105.582245]  IRQ number 62 !
-> > > >>> >>>>>>> [  105.585976] after request irq =3D 62
-> > > >>> >>>>>>> System freeze when first interrupt occurs and I must powe=
-r off.
-> > > >>> >>>>>> Is it possible to use raw_printk and see if the system is =
-still
-> > > >>> >>>>>> working but possibly getting flooded by interrupts?  When =
-I
-> > > >>> >>>>>> encountered this issue with the BCM2835 port I placed a
-> > > >>> >>>>>> raw_printk
-> > > >>> in
-> > > >>> >>>>>> one of the functions that initially handles the interrupt =
-to see
-> > > >>> >>>>>> if
-> > > >>> >>>>>> it
-> > > >>> >>>>>> was being ack'd.
-> > > >>> >>>>>>>
-> > > >>> >>>>>>>
-> > > >>> >>>>>>> 2. xenomai 3.0.5 linux 4.4.71, default dts
-> > > >>> >>>>>>> # insmod xeno_osc-gpio-rtdm.ko
-> > > >>> >>>>>>> [   39.901907]  IRQ number 142 !
-> > > >>> >>>>>>> [   39.905447] after request irq =3D 142
-> > > >>> >>>>>>>
-> > > >>> >>>>>>> When first interrupt occurs:
-> > > >>> >>>>>>> [  322.104560] irq 142, desc: df15e500, depth: 1, count: =
-0,
-> > > >>> >>>>>>> unhandled:
-> > > >>> >>>>>>> 0
-> > > >>> >>>>>>> [  322.111310] ->handle_irq():  c00998b4,
-> > > >>> >>>>>>> handle_edge_irq+0x0/0x168
-> > > >>> >>>>>>> [  322.117606] ->irq_data.chip(): df156710, 0xdf156710
-> > > >>> >>>>>>> [  322.122702] ->action():   (null)
-> > > >>> >>>>>>> [  322.126067]    IRQ_NOPROBE set
-> > > >>> >>>>>>> [  322.129252] unexpected IRQ trap at vector 8e
-> > > >>> >>>>>>> [  322.133706] ------------[ cut here ]------------
-> > > >>> >>>>>>> [  322.138530] WARNING: CPU: 0 PID: 0 at kernel/irq/chip.=
-c:843
-> > > >>> >>>>>>> __ipipe_ack_bad_irq+0x24/0x3c()
-> > > >>> >>>>>>> [  322.147244] Modules linked in: xeno_osc_gpio_rtdm(O)
-> > > >>> >>>>>>> [  322.152444] CPU: 0 PID: 0 Comm: swapper/0 Tainted: G
-> > > >>> >>>>>>> O
-> > > >>> >>>>>>> 4.4.71-ipipe #1
-> > > >>> >>>>>>> [  322.160434] Hardware name: Generic AM33XX (Flattened D=
-evice
-> > > >>> Tree)
-> > > >>> >>>>>>> [  322.166791] I-pipe domain: Linux
-> > > >>> >>>>>>> [  322.170175] [<c0017bf4>] (unwind_backtrace) from [<c00=
-13d58>]
-> > > >>> >>>>>>> (show_stack+0x10/0x14)
-> > > >>> >>>>>>> [  322.178273] [<c0013d58>] (show_stack) from [<c0368a0c>=
-]
-> > > >>> >>>>>>> (dump_stack+0x9c/0xc4)
-> > > >>> >>>>>>> [  322.185829] [<c0368a0c>] (dump_stack) from [<c003d168>=
-]
-> > > >>> >>>>>>> (warn_slowpath_common+0x78/0xb4)
-> > > >>> >>>>>>> [  322.194280] [<c003d168>] (warn_slowpath_common) from
-> > > >>> [<c003d240>]
-> > > >>> >>>>>>> (warn_slowpath_null+0x1c/0x24)
-> > > >>> >>>>>>> [  322.203455] [<c003d240>] (warn_slowpath_null) from
-> > > >>> >>>>>>> [<c00991a8>]
-> > > >>> >>>>>>> (__ipipe_ack_bad_irq+0x24/0x3c)
-> > > >>> >>>>>>> [  322.212542] [<c00991a8>] (__ipipe_ack_bad_irq) from
-> > > >>> >>>>>>> [<c00df9b4>]
-> > > >>> >>>>>>> (__ipipe_dispatch_irq+0x78/0x1d8)
-> > > >>> >>>>>>> [  322.221903] [<c00df9b4>] (__ipipe_dispatch_irq) from
-> > > >>> [<c03a3948>]
-> > > >>> >>>>>>> (omap_gpio_irq_handler+0x134/0x1a4)
-> > > >>> >>>>>>> [  322.231532] [<c03a3948>] (omap_gpio_irq_handler) from
-> > > >>> >>>>>>> [<c0095b1c>]
-> > > >>> >>>>>>> (handle_irq_event_percpu+0xa4/0x304)
-> > > >>> >>>>>>> [  322.241341] [<c0095b1c>] (handle_irq_event_percpu) fro=
-m
-> > > >>> >>>>>>> [<c0095db4>] (handle_irq_event+0x38/0x5c)
-> > > >>> >>>>>>> [  322.250605] [<c0095db4>] (handle_irq_event) from [<c00=
-99858>]
-> > > >>> >>>>>>> (handle_level_irq+0x88/0xe4)
-> > > >>> >>>>>>> [  322.259235] [<c0099858>] (handle_level_irq) from [<c00=
-95198>]
-> > > >>> >>>>>>> (generic_handle_irq+0x20/0x34)
-> > > >>> >>>>>>> [  322.268045] [<c0095198>] (generic_handle_irq) from
-> > > >>> >>>>>>> [<c009547c>]
-> > > >>> >>>>>>> (__handle_domain_irq+0x64/0xd4)
-> > > >>> >>>>>>> [  322.277127] [<c009547c>] (__handle_domain_irq) from
-> > > >>> >>>>>>> [<c00df228>]
-> > > >>> >>>>>>> (__ipipe_do_sync_stage+0x21c/0x25c)
-> > > >>> >>>>>>> [  322.286665] [<c00df228>] (__ipipe_do_sync_stage) from
-> > > >>> >>>>>>> [<c00093e4>]
-> > > >>> >>>>>>> (__ipipe_grab_irq+0x5c/0x7c)
-> > > >>> >>>>>>> [  322.295753] [<c00093e4>] (__ipipe_grab_irq) from [<c06=
-462f4>]
-> > > >>> >>>>>>> (__irq_svc+0x54/0x60)
-> > > >>> >>>>>>> [  322.303745] Exception stack(0xc0937f58 to 0xc0937fa0)
-> > > >>> >>>>>>> [  322.309017] 7f40:
-> > > >>> >>>>>>>      00000000 df91d240
-> > > >>> >>>>>>> [  322.317556] 7f60: 00000000 00000000 c092e240 c0938a24
-> > > >>> >>>>>>> 00000000
-> > > >>> >>>>>>> c09f4c3c c09389c4 00000001
-> > > >>> >>>>>>> [  322.326095] 7f80: c064d88c 00000000 00000000 c0937fa8
-> > > >>> >>>>>>> c0080f04
-> > > >>> >>>>>>> c00df35c 60000013 ffffffff
-> > > >>> >>>>>>> [  322.334634] [<c06462f4>] (__irq_svc) from [<c00df35c>]
-> > > >>> >>>>>>> (ipipe_unstall_root+0x38/0x50)
-> > > >>> >>>>>>> [  322.342822] [<c00df35c>] (ipipe_unstall_root) from
-> > > >>> >>>>>>> [<c0080f04>]
-> > > >>> >>>>>>> (cpu_startup_entry+0x68/0x2b8)
-> > > >>> >>>>>>> [  322.351826] [<c0080f04>] (cpu_startup_entry) from
-> > > >>> >>>>>>> [<c08b0c28>]
-> > > >>> >>>>>>> (start_kernel+0x370/0x3e8)
-> > > >>> >>>>>>> [  322.360361] ---[ end trace 3de49b4cee31ba0b ]---
-> > > >>> >>>>>>>
-> > > >>> >>>>>>> When other interrupts occur:
-> > > >>> >>>>>>> [  322.365188] irq 142, desc: df15e500, depth: 1, count: =
-0,
-> > > >>> >>>>>>> unhandled:
-> > > >>> >>>>>>> 0
-> > > >>> >>>>>>> [  322.371908] ->handle_irq():  c00998b4,
-> > > >>> >>>>>>> handle_edge_irq+0x0/0x168
-> > > >>> >>>>>>> [  322.378183] ->irq_data.chip(): df156710, 0xdf156710
-> > > >>> >>>>>>> [  322.383277] ->action():   (null)
-> > > >>> >>>>>>> [  322.386641]    IRQ_NOPROBE set
-> > > >>> >>>>>>> [  322.389825] unexpected IRQ trap at vector 8e
-> > > >>> >>>>>>> [  324.664939] irq 142, desc: df15e500, depth: 1, count: =
-0,
-> > > >>> >>>>>>> unhandled:
-> > > >>> >>>>>>> 0
-> > > >>> >>>>>>> [  324.671684] ->handle_irq():  c00998b4,
-> > > >>> >>>>>>> handle_edge_irq+0x0/0x168
-> > > >>> >>>>>>> [  324.677980] ->irq_data.chip(): df156710, 0xdf156710
-> > > >>> >>>>>>> [  324.683077] ->action():   (null)
-> > > >>> >>>>>>> [  324.686442]    IRQ_NOPROBE set
-> > > >>> >>>>>>> ...
-> > > >>> >>>>>>>
-> > > >>> >>>>>>>
-> > > >>> >>>>>>>
-> > > >>> >>>>>>> 3. Source code of the basic gpio interrupt driver:
-> > > >>> >>>>>>>
-> > > >>> >>>>>>> #include <linux/fs.h>
-> > > >>> >>>>>>> #include <linux/gpio.h>
-> > > >>> >>>>>>> #include <linux/interrupt.h>
-> > > >>> >>>>>>> #include <linux/module.h>
-> > > >>> >>>>>>>
-> > > >>> >>>>>>> #include <rtdm/driver.h>
-> > > >>> >>>>>>>
-> > > >>> >>>>>>>
-> > > >>> >>>>>>> static unsigned int irq_num;
-> > > >>> >>>>>>> // bbb gpios that work on PREEMPT_RT linux 4.19.59 and 5.=
-4.5
-> > > >>> >>>>>>> with
-> > > >>> >>>>>>> default dts
-> > > >>> >>>>>>> static unsigned int gpio_out =3D 48;
-> > > >>> >>>>>>> static unsigned int gpio_in =3D 115;
-> > > >>> >>>>>>> static bool value =3D false;
-> > > >>> >>>>>>> static rtdm_irq_t irq_handle;
-> > > >>> >>>>>>> static int num_of_intr =3D 0;
-> > > >>> >>>>>>>
-> > > >>> >>>>>>>
-> > > >>> >>>>>>> static int gpio_irq_handler(rtdm_irq_t * irq)
-> > > >>> >>>>>>> {
-> > > >>> >>>>>>>      value =3D !value;
-> > > >>> >>>>>>>      gpio_set_value(gpio_out, value); // toggle the led
-> > > >>> >>>>>>> everytime
-> > > >>> >>>>>>> irq
-> > > >>> >>>>>>> handler is invoked
-> > > >>> >>>>>>>      trace_printk("GPIO interrupt \n");
-> > > >>> >>>>>>>      num_of_intr++;
-> > > >>> >>>>>>>      return RTDM_IRQ_HANDLED;
-> > > >>> >>>>>>> }
-> > > >>> >>>>>>>
-> > > >>> >>>>>>>
-> > > >>> >>>>>>> static int __init rtdm_init (void)
-> > > >>> >>>>>>> {
-> > > >>> >>>>>>>      int err;
-> > > >>> >>>>>>>
-> > > >>> >>>>>>>      if ((err =3D gpio_request(gpio_in, THIS_MODULE->name=
-)) !=3D 0)
-> > > >>> >>>>>>> {
-> > > >>> >>>>>>>          printk(" gpio_request gpio_in failed ! \n");
-> > > >>> >>>>>>>          return err;
-> > > >>> >>>>>>>      }
-> > > >>> >>>>>>>
-> > > >>> >>>>>>>      if ((err =3D gpio_direction_input(gpio_in)) !=3D 0) =
-{
-> > > >>> >>>>>>>          printk(" gpio_direction_input gpio_in failed ! \=
-n");
-> > > >>> >>>>>>>          gpio_free(gpio_in);
-> > > >>> >>>>>>>
-> > > >>> >>>>>>>          return err;
-> > > >>> >>>>>>>      }
-> > > >>> >>>>>>>
-> > > >>> >>>>>>>      irq_num =3D gpio_to_irq(gpio_in);
-> > > >>> >>>>>>>
-> > > >>> >>>>>>>      printk(" IRQ number %d !  \n",irq_num);
-> > > >>> >>>>>>>
-> > > >>> >>>>>>>      if ((err =3D gpio_request(gpio_out, THIS_MODULE->nam=
-e)) !=3D 0)
-> > > >>> >>>>>>> {
-> > > >>> >>>>>>>          printk(" gpio_request gpio_out failed ! \n");
-> > > >>> >>>>>>>          gpio_free(gpio_in);
-> > > >>> >>>>>>>          return err;
-> > > >>> >>>>>>>      }
-> > > >>> >>>>>>>
-> > > >>> >>>>>>>      if ((err =3D gpio_direction_output(gpio_out, 0)) !=
-=3D 0) {
-> > > >>> >>>>>>>          printk(" gpio_direction_input gpio_out failed ! =
-\n");
-> > > >>> >>>>>>>          gpio_free(gpio_out);
-> > > >>> >>>>>>>          gpio_free(gpio_in);
-> > > >>> >>>>>>>          return err;
-> > > >>> >>>>>>>      }
-> > > >>> >>>>>>>
-> > > >>> >>>>>>>      err =3D irq_set_irq_type(irq_num,  IRQF_TRIGGER_RISI=
-NG);
-> > > >>> >>>>>>>
-> > > >>> >>>>>>>      if(err) {
-> > > >>> >>>>>>>          gpio_free(gpio_out);
-> > > >>> >>>>>>>          gpio_free(gpio_in);
-> > > >>> >>>>>>>          printk(" irq_set_irq_type failed ! \n");
-> > > >>> >>>>>>>          return err;
-> > > >>> >>>>>>>      }
-> > > >>> >>>>>>>
-> > > >>> >>>>>>>      err =3D
-> > > >>> >>>>>>>
-> > > >>> rtdm_irq_request(&irq_handle,irq_num,(rtdm_irq_handler_t)gpio_irq=
-_handler,
-> > > >>> >>>>>>>                  RTDM_IRQTYPE_EDGE,THIS_MODULE->name, NUL=
-L);
-> > > >>> >>>>>>>
-> > > >>> >>>>>>>      printk("after request irq =3D %d \n",irq_handle.irq)=
-;
-> > > >>> >>>>>>>
-> > > >>> >>>>>>>      if(err) {
-> > > >>> >>>>>>>          gpio_free(gpio_out);
-> > > >>> >>>>>>>          gpio_free(gpio_in);
-> > > >>> >>>>>>>          printk(" rtdm_irq_request failed ! \n");
-> > > >>> >>>>>>>          return err;
-> > > >>> >>>>>>>      }
-> > > >>> >>>>>>>
-> > > >>> >>>>>>>      err =3D rtdm_irq_enable(&irq_handle);
-> > > >>> >>>>>>>
-> > > >>> >>>>>>>      if (err < 0) {
-> > > >>> >>>>>>>          printk("rtdm_irq_enable failed \n");
-> > > >>> >>>>>>>          return err;
-> > > >>> >>>>>>>      }
-> > > >>> >>>>>>>      return 0;
-> > > >>> >>>>>>>
-> > > >>> >>>>>>>
-> > > >>> >>>>>>> }
-> > > >>> >>>>>>>
-> > > >>> >>>>>>>
-> > > >>> >>>>>>>
-> > > >>> >>>>>>> static void __exit rtdm_exit (void)
-> > > >>> >>>>>>> {
-> > > >>> >>>>>>>      rtdm_irq_free(&irq_handle);
-> > > >>> >>>>>>>      gpio_free(gpio_out);
-> > > >>> >>>>>>>      gpio_free(gpio_in);
-> > > >>> >>>>>>>
-> > > >>> >>>>>>>      printk("The number of intr is %d \n",num_of_intr);
-> > > >>> >>>>>>> }
-> > > >>> >>>>>>>
-> > > >>> >>>>>>>
-> > > >>> >>>>>>> module_init(rtdm_init);
-> > > >>> >>>>>>> module_exit(rtdm_exit);
-> > > >>> >>>>>>> MODULE_LICENSE("GPL");
-> > > >>> >>>>>>>
-> > > >>> >>>>>>>
-> > > >>> >>>>>>> Thank you,
-> > > >>> >>>>>>> L-C Duca
-> > > >>> >>>>>>>
-> > > >>> >>>>>> My above comments would be good to start debugging the iss=
-ue.
-> > > >>> >>>>>> Looking
-> > > >>> >>>>>> at the ipipe trees I think we are missing some ipipe thing=
-s in
-> > > >>> >>>>>> the
-> > > >>> >>>>>> GPIO driver from 4.4 to 4.19.  When I diff the files it lo=
-oks
-> > > >>> >>>>>> like
-> > > >>> >>>>>> there are some things missing in 4.19.  I can make a patch=
- for
-> > > >>> >>>>>> you
-> > > >>> to
-> > > >>> >>>>>> try, I'll have it ready shortly.
-> > > >>> >>>>>>
-> > > >>> >>>>>> -Greg
-> > > >>> >>>
-> > > >>> >>
-> > > >>> >> --
-> > > >>> >> Siemens AG, Corporate Technology, CT RDA IOT SES-DE
-> > > >>> >> Corporate Competence Center Embedded Linux
-> > > >>> >>
-> > > >>> >
-> > > >>>
-> > > >> I think this is an ipipe issue, I am able to reproduce but I=E2=80=
-=99ll need a
-> > > >> little more time to confirm my findings, printascii is not working=
- for me
-> > > >> on this SOC.
-> > > >>
-> > > >> Greg
-> > > >>
-> > > >
-> >
-> > This is definitely an ipipe issue so this should not hold up any new
-> > Xenomai release.  I was able to get the following back trace with the
-> > Ipipe debugging turned on.
-> >
-> > root@busterarm:/home# [   75.141504] I-pipe: Detected illicit call
-> > from head domain 'Xenomai'
-> > [   75.141504]         into a regular Linux service
-> > [   75.152566] CPU: 0 PID: 0 Comm: swapper/0 Tainted: G        W  O
-> >   4.19.82-ga0888f089f79-dirty #8
-> > [   75.161755] Hardware name: Generic AM33XX (Flattened Device Tree)
-> > [   75.167890] I-pipe domain: Xenomai
-> > [   75.171334] [<c0112c3c>] (unwind_backtrace) from [<c010d204>]
-> > (show_stack+0x10/0x14)
-> > [   75.179136] [<c010d204>] (show_stack) from [<c08af6d8>]
-> > (dump_stack+0xe8/0x110)
-> > [   75.186502] [<c08af6d8>] (dump_stack) from [<c02111a0>]
-> > (ipipe_test_and_stall_root+0x8/0x34)
-> > [   75.195001] [<c02111a0>] (ipipe_test_and_stall_root) from
-> > [<c08cb874>] (_raw_spin_lock_irqsave+0x14/0x4c)
-> > [   75.204643] [<c08cb874>] (_raw_spin_lock_irqsave) from [<c0553660>]
-> > (gpio_to_desc+0x14/0xd0)
-> > [   75.214200] [<c0553660>] (gpio_to_desc) from [<bf44501c>]
-> > (gpio_irq_handler+0x1c/0x48 [rtdm_test])
-> > [   75.223238] [<bf44501c>] (gpio_irq_handler [rtdm_test]) from
-> > [<c0259bd0>] (xnintr_irq_handler+0xfc/0x4f4)
-> > [   75.232872] [<c0259bd0>] (xnintr_irq_handler) from [<c02121d4>]
-> > (__ipipe_do_sync_stage+0x134/0x218)
-> > [   75.241980] [<c02121d4>] (__ipipe_do_sync_stage) from [<c02123ac>]
-> > (__ipipe_do_sync_pipeline+0x88/0xf8)
-> > [   75.251437] [<c02123ac>] (__ipipe_do_sync_pipeline) from
-> > [<c01179c0>] (__ipipe_grab_irq+0x4c/0xac)
-> > [   75.260455] [<c01179c0>] (__ipipe_grab_irq) from [<c0101b2c>]
-> > (__irq_svc+0x6c/0x78)
-> > [   75.268161] Exception stack(0xc0d01e38 to 0xc0d01e80)
-> > [   75.273252] 1e20:
-> >     0000040c 00000000
-> > [   75.281488] 1e40: 00000001 c15127c0 df94ccdc c14ff280 00000001
-> > c14ff280 0000040d 00000001
-> > [   75.289723] 1e60: 00000020 0000000c df94ccec c0d01e88 df94cce4
-> > c02121c0 600b0113 ffffffff
-> > [   75.297958] [<c0101b2c>] (__irq_svc) from [<c02121c0>]
-> > (__ipipe_do_sync_stage+0x120/0x218)
-> > [   75.306281] [<c02121c0>] (__ipipe_do_sync_stage) from [<c02122f4>]
-> > (ipipe_unstall_root+0x3c/0x48)
-> > [   75.315215] [<c02122f4>] (ipipe_unstall_root) from [<c08cb98c>]
-> > (_raw_spin_unlock_irqrestore+0x34/0x40)
-> > [   75.324672] [<c08cb98c>] (_raw_spin_unlock_irqrestore) from
-> > [<c055a314>] (omap_gpio_irq_handler+0x100/0x138)
-> > [   75.334564] [<c055a314>] (omap_gpio_irq_handler) from [<c0212a9c>]
-> > (__ipipe_dispatch_irq+0xe0/0x21c)
-> > [   75.343757] [<c0212a9c>] (__ipipe_dispatch_irq) from [<c01179c0>]
-> > (__ipipe_grab_irq+0x4c/0xac)
-> > [   75.352427] [<c01179c0>] (__ipipe_grab_irq) from [<c0101b2c>]
-> > (__irq_svc+0x6c/0x78)
-> > [   75.360132] Exception stack(0xc0d01f28 to 0xc0d01f70)
-> > [   75.365226] 1f20:                   1eccd000 00000001 df94ccdc
-> > 00000000 c0c7fcdc c0d089b4
-> > [   75.373462] 1f40: 00000001 c0d089fc c0dc8155 c0abf870 c0c5ea4c
-> > c0d08980 00000000 c0d01f78
-> > [   75.381693] 1f60: c02122c8 c02122ec 600b0013 ffffffff
-> > [   75.386788] [<c0101b2c>] (__irq_svc) from [<c02122ec>]
-> > (ipipe_unstall_root+0x34/0x48)
-> > [   75.394677] [<c02122ec>] (ipipe_unstall_root) from [<c017009c>]
-> > (do_idle+0xd8/0x1d4)
-> > [   75.402475] [<c017009c>] (do_idle) from [<c0170414>]
-> > (cpu_startup_entry+0x18/0x1c)
-> > [   75.410102] [<c0170414>] (cpu_startup_entry) from [<c0c00da0>]
-> > (start_kernel+0x3f8/0x4a8)
-> > [   75.418341] GPIO interrupt
-> >
-> > Looks like we are returning from the ipipe domain into the Linux
-> > domain.  This is probably causing the system to lock up.  I'll
-> > hopefully finish this up this week unless someone else sees the
-> > problem.
-> >
-> > Thanks
-> >
-> > Greg
->
-> I think I have this solved, patch up tonight or tomorrow depending on tes=
-ting.
->
-> -Greg
-
-This issue ends up being two issues.  The first is the stack trace
-above.  It's being caused by calling a Linux call while in the head
-domain.  This scenario is described in the ipipe documentation, where
-the head domain tries to return into the root domain.  To fix this
-don't use gpio_set_value in the interrupt handler to set the gpio
-value use gpiod_set_raw_value instead.  The xenomai gpio driver
-(gpio-core.c) can be used as a guide when using the Linux gpiolib in
-the RTDM context.  I'm not sure if the trace_printk is safe to have
-there as well, but I'm assuming that's just there for debug purposes.
-The second issue is trickier to debug and is what is causing the lock
-up.  From my test runs with limit debugging tools, since printascii
-isn't working great on beaglebone for some reason, it looks like the
-gpio interrupt is flooding the system and causing it to be
-unresponsive.  This is probably to do with not holding the irq or
-possibly there's an issue when the driver is suppose to ack it.
-Anyway, I'll dig into that now and hopefully wrap that up this
-weekend.  If anyone has gotten printascii to work with beaglebone and
-could post there config to get it working that would be greatly
-appreciated.
-
--Greg
-
