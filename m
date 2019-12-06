@@ -1,7 +1,7 @@
 From: Jan Kiszka <jan.kiszka@siemens.com>
-Subject: [ANNOUNCE] Xenomai v3.1-rc4 available
-Message-ID: <313ed563-6a6e-a7f4-93a4-06013d2a239d@siemens.com>
-Date: Fri, 6 Dec 2019 15:43:59 +0100
+Subject: [PATCH] ci: Do not stumble over annotated ipipe tags
+Message-ID: <0b906f3c-ad12-104d-0e24-325ad37c6547@siemens.com>
+Date: Fri, 6 Dec 2019 19:34:47 +0100
 MIME-Version: 1.0
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
@@ -16,57 +16,42 @@ List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: Xenomai <xenomai@xenomai.org>
 
-Hi all,
+From: Jan Kiszka <jan.kiszka@siemens.com>
 
-after running into a number of critical issues around the scheduler but 
-also one of the new ABIs, this -rc is a fairly important one:
+Currently not an issue for the kernels we pull here, but 4.14-ppc would
+break e.g. because ls-remote --tags gives
 
-https://gitlab.denx.de/Xenomai/xenomai/-/archive/v3.1-rc4/xenomai-v3.1-rc4.tar.bz2
-https://gitlab.denx.de/Xenomai/xenomai/commits/v3.1-rc4
+... ipipe-core-4.14.36-ppc32-1.1
+... ipipe-core-4.14.36-ppc32-1.1^{}
 
-Changes since rc3:
+with the second one representing the dereferentiation of the annotated
+tag. We only need the first one, though, while the second breaks git
+clone. --refs filters this.
 
-Jan Kiszka (15):
-      rtdm: Do not return an error from send/recvmmsg if there are packets
-      rtdm: Remove early exit from send/recvmmsg on vlan == 0
-      ci: Always build the latest release
-      lib/cobalt: Fix help for --print-sync-delay
-      alchemy: Fully initialize tcb->self
-      testsuite/smokey/posix-cond: Make more robust for execution in VMs
-      cobalt/posix/thread: Factor out thread_lookup_or_shadow
-      cobalt/posix: Add thread_setschedprio
-      lib/cobalt: Use new thread_setschedprio syscall
-      Revert "cobalt/kernel: Introduce __SCHED_CURRENT policy to setschedparam_ex"
-      testsuite/smokey: Fix setsched /wrt lazy scheduling parameter application
-      testsuite/smokey: Add pthread_setschedprio to setsched test case
-      debian: Enable lazy-setsched in userspace package
-      cobalt/intr: Move IRQ exit trace point in non-shared case
-      config: Bump version number
+Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
+---
 
-Philippe Gerum (16):
-      copperplate/heapobj-pshared: fix element size for array init
-      testsuite/mq-2: clarify test implementation
-      boilerplate/avl: fix NULL link representation in pshared mode - take #2
-      cobalt/process: skip trap handling for the root thread
-      cobalt/thread: update inline documentation
-      cobalt/posix: fix missed rescheduling opportunities
-      cobalt/process: remove superfluous check for non-relaxed state
-      cobalt/thread: fix scheduler breakage on thread suspension
-      drivers/testing: heapcheck: silence UMR warning (false positive)
-      cobalt/process: exit_thread handlers should reschedule as needed
-      net/proxy: fix non-rt signal overflow
-      cobalt/sched: quota: fix use-after-free in quota_remove operation
-      net/rtmac: vnic: fix non-rt signal overflow
-      net/rtpc: fix non-rt signal overflow
-      net/cap: fix non-rt signal overflow
-      cobalt/sched: guard against missed rescheduling upon CPU migration
+Already applied to stable in order to fix the ppc ci build there.
 
-Please test so that we finalize 3.1 soon.
+ .travis.yml | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-Jan
+diff --git a/.travis.yml b/.travis.yml
+index 7f3cba96e9..d56b6e494e 100644
+--- a/.travis.yml
++++ b/.travis.yml
+@@ -25,7 +25,7 @@ install:
+   - sudo update-alternatives --install /usr/bin/aarch64-linux-gnu-gcc aarch64-linux-gnu-gcc /usr/bin/aarch64-linux-gnu-gcc-8 800
+   - sudo update-alternatives --install /usr/bin/arm-linux-gnueabihf-gcc arm-linux-gnueabihf-gcc /usr/bin/arm-linux-gnueabihf-gcc-8 800
+   - sudo update-alternatives --install /usr/bin/powerpc-linux-gnu-gcc powerpc-linux-gnu-gcc /usr/bin/powerpc-linux-gnu-gcc-8 800
+-  - REV=$(git ls-remote --tags ${IPIPE_KERNEL} | sed "s|.*[[:space:]]refs/tags/||" | grep "${IPIPE_REV}" | sort -r -n -t - -k 5 -k 6 | head -1)
++  - REV=$(git ls-remote --tags --refs ${IPIPE_KERNEL} | sed "s|.*[[:space:]]refs/tags/||" | grep "${IPIPE_REV}" | sort -r -n -t - -k 5 -k 6 | head -1)
+   - test -n "${REV}" || REV="${IPIPE_REV}"
+   - echo "Cloning branch/tag ${REV}"
+   - git clone --depth 1 --branch ${REV} ${IPIPE_KERNEL} ${KDIR}
+-- 
+2.16.4
 
-PS: A new stable 3.0 release is scheduled as well, just need to finish 
-some local testing.
 
 -- 
 Siemens AG, Corporate Technology, CT RDA IOT SES-DE
