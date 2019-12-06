@@ -1,10 +1,9 @@
 MIME-Version: 1.0
-From: Yang Zhou <zhouy2048@gmail.com>
-Date: Thu, 5 Dec 2019 16:50:52 +0800
-Message-ID: <CAOaMMZkMh5bQ-qS5nuc2A6-4e7rdYyMBSnJ2J7LdL9h7LeFHZg@mail.gmail.com>
-Subject: cant visit xenomai exercise
+From: Wei Lou <highouse1990@gmail.com>
+Date: Fri, 6 Dec 2019 15:30:18 +0800
+Message-ID: <CAOW0jKGnArrCBZ0gzHXXVUa+78m5pTK+VrROuoC5+pGJ2y_hWQ@mail.gmail.com>
+Subject: Re: [Xenomai] Rtnet driver of RTL8111/8168/8411
 Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,8 +14,4 @@ List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: xenomai@xenomai.org
 
-hello
-I can=E2=80=99t view your xenomai exercise website in Ex3.
-https://xenomai.org/pipermail/xenomai/2017-August/037561.html
-Can you send me all of the xenomai exercise?
-Best wish for you
+How to update Rtnet driver of RTL8111/8168/8411
