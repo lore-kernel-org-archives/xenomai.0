@@ -1,12 +1,16 @@
-From: Jan Kiszka <jan.kiszka@siemens.com>
-Subject: [xneomai-images][PATCH] linux-xenomai: Add 4.19-backport to 4.14 for
- BeagleBoneBlack irqchip
-Message-ID: <3daa9b1b-f011-0dcc-f406-4584f74def82@siemens.com>
-Date: Mon, 9 Dec 2019 14:42:25 +0100
+Date: Mon, 09 Dec 2019 14:26:54 +0000
+From: Jeff Webb <w1@codecraftsmen.org>
+Reply-To: Jeff Webb <w1@codecraftsmen.org>
+Subject: Re: Building deb packages
+Message-ID: <8YS9k_yd_WllKtM3vkhLkTmOEOBJ0HCL1D_gPjh5pGyozIsnRdlHfq4rG84NYXhfD2ZSAHjPs2BE7UXqjqb-GhgPjjTFELZ3glf9fLVp6FI=@codecraftsmen.org>
+In-Reply-To: <cdbee450-251e-b79b-ac38-ddf1f9aaf568@siemens.com>
+References: <a6zvfTWG8HmL1m3CKsFlVVKFO4CznsabNKtz6u1vD1P4HVWcun3mWGHs11YE4exIKjC48U7t5383dTEbXZfYmMeFvHqNnrmzjp0izgkWFys=@codecraftsmen.org>
+ <378aee64-da86-da9f-eb46-5059949e37d7@siemens.com>
+ <rOql7M13UpQ86c6D3l2RkZfn2hfdic4R0_-GagsurIAJJqe5mwDdFHqYOrDo8LSpNcCCw-_wiOjBp2WaWcyTagPWwE461jmNCgwW5ead5vk=@codecraftsmen.org>
+ <cdbee450-251e-b79b-ac38-ddf1f9aaf568@siemens.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,70 +19,67 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Xenomai <xenomai@xenomai.org>
+To: Jan Kiszka <jan.kiszka@siemens.com>
+Cc: Xenomai <xenomai@xenomai.org>
 
-From: Jan Kiszka <jan.kiszka@siemens.com>
-
-Required to resolve a boot-up warning of 4.14.96 on that target when
-doing a stable test.
-
-Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
----
- ...ps65217-ipipe-enable-interrupt-pipelining.patch | 24 ++++++++++++++++++++++
- recipes-kernel/linux/linux-xenomai_4.14.bb         |  4 +++-
- 2 files changed, 27 insertions(+), 1 deletion(-)
- create mode 100644 recipes-kernel/linux/files/0001-mfd-tps65217-ipipe-enable-interrupt-pipelining.patch
-
-diff --git a/recipes-kernel/linux/files/0001-mfd-tps65217-ipipe-enable-interrupt-pipelining.patch b/recipes-kernel/linux/files/0001-mfd-tps65217-ipipe-enable-interrupt-pipelining.patch
-new file mode 100644
-index 0000000..a6a0297
---- /dev/null
-+++ b/recipes-kernel/linux/files/0001-mfd-tps65217-ipipe-enable-interrupt-pipelining.patch
-@@ -0,0 +1,24 @@
-+From 1682a7f1da2af8f30a51dfc49fae6bdd241e070a Mon Sep 17 00:00:00 2001
-+From: Philippe Gerum <rpm@xenomai.org>
-+Date: Wed, 3 Apr 2019 15:23:55 +0200
-+Subject: [PATCH] mfd: tps65217: ipipe: enable interrupt pipelining
-+
-+---
-+ drivers/mfd/tps65217.c | 1 +
-+ 1 file changed, 1 insertion(+)
-+
-+diff --git a/drivers/mfd/tps65217.c b/drivers/mfd/tps65217.c
-+index 7566ce4457a0..23095cdc1ced 100644
-+--- a/drivers/mfd/tps65217.c
-++++ b/drivers/mfd/tps65217.c
-+@@ -84,6 +84,7 @@ static struct irq_chip tps65217_irq_chip = {
-+ 	.irq_bus_sync_unlock	= tps65217_irq_sync_unlock,
-+ 	.irq_enable		= tps65217_irq_enable,
-+ 	.irq_disable		= tps65217_irq_disable,
-++	.flags			= IRQCHIP_PIPELINE_SAFE,
-+ };
-+ 
-+ static struct mfd_cell tps65217s[] = {
-+-- 
-+2.16.4
-+
-diff --git a/recipes-kernel/linux/linux-xenomai_4.14.bb b/recipes-kernel/linux/linux-xenomai_4.14.bb
-index f147eed..88f0845 100644
---- a/recipes-kernel/linux/linux-xenomai_4.14.bb
-+++ b/recipes-kernel/linux/linux-xenomai_4.14.bb
-@@ -18,7 +18,9 @@ PV_amd64 = "4.14.134+"
- SRC_URI_append_arm64 = " git://gitlab.denx.de/Xenomai/ipipe-arm64.git;protocol=https;nobranch=1;tag=ipipe-core-4.14.78-arm64-2"
- PV_arm64 = "4.14.78+"
- 
--SRC_URI_append_armhf = " git://gitlab.denx.de/Xenomai/ipipe-arm.git;protocol=https;branch=stable/4.14.96-arm"
-+SRC_URI_append_armhf = " \
-+    git://gitlab.denx.de/Xenomai/ipipe-arm.git;protocol=https;branch=stable/4.14.96-arm \
-+    file://0001-mfd-tps65217-ipipe-enable-interrupt-pipelining.patch"
- SRCREV_armhf = "723539db0d5a1c995c9bb5524abe311a97b33e43"
- PV_armhf = "4.14.96+"
- 
--- 
-2.16.4
-
-
--- 
-Siemens AG, Corporate Technology, CT RDA IOT SES-DE
-Corporate Competence Center Embedded Linux
-
+T24gMTEvMjYvMTkgMTI6MTUgUE0sIEphbiBLaXN6a2EgdmlhIFhlbm9tYWkgd3JvdGU6Cj4gT24g
+MjYuMTEuMTkgMTk6MDYsIEplZmYgV2ViYiB3cm90ZToKPj4g4oCQ4oCQ4oCQ4oCQ4oCQ4oCQ4oCQ
+IE9yaWdpbmFsIE1lc3NhZ2Ug4oCQ4oCQ4oCQ4oCQ4oCQ4oCQ4oCQCj4+IE9uIFR1ZXNkYXksIE5v
+dmVtYmVyIDI2LCAyMDE5IDExOjQ1IEFNLCBKYW4gS2lzemthIDxqYW4ua2lzemthQHNpZW1lbnMu
+Y29tPiB3cm90ZToKPj4+IE9uIDI2LjExLjE5IDE4OjMzLCBKZWZmIFdlYmIgdmlhIFhlbm9tYWkg
+d3JvdGU6Cj4+Pgo+Pj4+IEkgaGF2ZSBwcmV2aW91c2x5IHVzZWQgbWFrZS1rcGtnIHRvIGJ1aWxk
+IGRlYiBwYWNrYWdlcyBmb3IgbXkgVWJ1bnR1IHN5c3RlbXMuIFRoaXMgcHJvY2VzcyB3b3JrZWQs
+IGJ1dCB0aGUgbGludXgtaGVhZGVycyBwYWNrYWdlIHdhcyBuZXZlciBxdWl0ZSByaWdodC4gSSBj
+b3VsZCBub3QgYnVpbGQgbXkgb3duIGtlcm5lbCBkcml2ZXJzIChlLmcuIGN1c3RvbSBVREQgZHJp
+dmVycykgb24gYW5vdGhlciBzeXN0ZW0gd2l0aG91dCBjb3B5aW5nIHRoZSBidWlsZCBkaXJlY3Rv
+cnkgb3ZlciBvciBtb25rZXlpbmcgd2l0aCB0aGUgaGVhZGVycyBwYWNrYWdlLgo+Pj4+IFdpdGgg
+bXkgbGF0ZXN0IGJ1aWxkcywgSSB0cmllZCBtYWtlIGRlYi1wa2cgd2l0aCA0LjE5Ljg0IGFuZCA0
+LjQuMTk5LWNpcDM5LiBUaGUgbGludXgtaGVhZGVycyBwYWNrYWdlIGJ1aWx0IHdpdGggdGhpcyBw
+cm9jZXNzIGFsbW9zdCB3b3Jrcy4gVGhlcmUgd2VyZSwgaG93ZXZlciBqdXN0IGEgZmV3IFhlbm9t
+YWkgaGVhZGVycyB0aGF0IHdlcmUgbWlzc2luZy4gVGhpcyBmb2xsb3dpbmcgcGF0Y2ggdG8gNC4x
+OS44NCBmaXhlZCB0aGUgaXNzdWU6Cj4+Pgo+Pj4gSG93IGRpZCB5b3UgcHJlcGFyZSB0aGUga2Vy
+bmVsIHdpdGggWGVub21haSwgbGluayBvciBwYXRjaCBtb2RlPwo+Pj4KPj4+IElmIGxpbms6IFRo
+aXMgbG9va3MgaW5jb21wbGV0ZSBiZWNhdXNlIGxpbmsgdGFyZ2V0cyB0byBYZW5vbWFpIHNvdXJj
+ZXMKPj4+IHNob3VsZCBiZSBtaXNzaW5nIGZyb20gdGhlIHBhY2thZ2UuCj4+Pgo+Pj4gSWYgcGF0
+Y2g6IFdoaWNoIGxpbmtzIGV4YWN0bHkgZG8gd2UgbWlzcyBoZXJlPwo+Pgo+PiBJJ20gbm90IHN1
+cmUuLi4gSSBkaWRuJ3QgZ2l2ZSBhbnkgc3BlY2lmaWMgb3B0aW9uIHJlZ2FyZGluZyB0aGlzIGFu
+ZCBJIGFtIGF3YXkgZnJvbSBteSBzeXN0ZW0uICBUaGUgbGludXgtaGVhZGVycyBwYWNrYWdlIGhh
+ZCBsaW5rcyB0byB0aGUgeGVub21haSBoZWFkZXIgZmlsZXMgaW4gdGhlIHhlbm9tYWkgc291cmNl
+IHBhY2thZ2UuICBNb3N0IG9mIHRoZSByZXF1aXJlZCBsaW5rcyB0byB4ZW5vbWFpIGhlYWRlcnMg
+d2VyZSB0aGVyZSwganVzdCBhIGhhbmRmdWwgaW4gb25lIGV4dHJhIGRlZXAgc3ViZGlyZWN0b3J5
+IHdlcmUgbWlzc2luZyAtLSBob3BlZnVsbHkgeW91IGNhbiB0ZWxsIHdoaWNoIG9uZXMgZnJvbSB0
+aGUgcGF0Y2guICAoSSBjYW4gZm9sbG93IHVwIHdpdGggc3BlY2lmaWNzIGxhdGVyLCBpZiBpdCBp
+cyBub3QgY2xlYXIgd2hhdCBpcyBtaXNzaW5nIC0tIGp1c3QgbGV0IG1lIGtub3cuKQo+Cj4gVGhh
+dCBleHBsYWlucyB3aGF0IHdlbnQgd3Jvbmc6IFRoZSBsaW5rIGFwcHJvYWNoLCBkZWZhdWx0IG1v
+ZGUgb2YgcHJlcGFyZS1rZXJuZWwuc2gsIGlzIG5vdCBpbnRlbmRlZCB0byBiZSB0aGUgc291cmNl
+IG9mIGEga2VybmVsIHBhY2thZ2luZy4gSXQgY3JlYXRlIGEgZGVwZW5kZW5jeSBiZXR3ZWVuIHRo
+ZSBoZWFkZXIgcGFja2FnZSBhbmQgdGhlIHhlbm9tYWkgc291cmNlIHBhY2thZ2UgdGhhdCBpcyBs
+aWtlbHkgbm90IG1vZGVsZWQgaW4geW91ciBhcHByb2FjaCBhcyB3ZWxsLgo+Cj4gVXNlIHByZXBh
+cmUta2VybmVsIHdpdGggLS1vdXRwYXRjaCwgYXBwbHkgdGhhdCBwYXRjaCB0byB0aGUga2VybmVs
+IGJlZm9yZSB0aGUgYnVpbGQsIGFuZCB0aGVuIGdlbmVyYXRlIHRoZSBwYWNrYWdlLiBUaGF0IGtl
+cm5lbC1oZWFkZXIgcGFja2FnZSBzaG91bGQgdGhlbiBiZSBmaW5lIHdpdGhvdXQgZnVydGhlciBw
+YXRjaGluZy4KClRvIGZvbGxvdyB1cCBmb3IgY29tcGxldGVuZXNzLCB0aGUgc3BlY2lmaWMgcHJv
+YmxlbSB3YXMgdGhhdCB0aGlzIGZpbGUgY291bGQgbm90IGJlIGZvdW5kOgoKICAgL3Vzci9zcmMv
+bGludXgtaGVhZGVycy00LjE5Ljc1L2FyY2gveDg2L3hlbm9tYWkvaW5jbHVkZS9hc20veGVub21h
+aS93cmFwcGVycy5oCgpQbGVhc2Ugc2VlIHRoZSBhdHRhY2hlZCB0ZXh0IGZpbGUgZm9yIG1vcmUg
+ZGV0YWlscy4KClRoaXMgaXMgYmVjYXVzZSB0aGUgaGVhZGVyIGZpbGVzIHVuZGVyIGFyY2gveDg2
+L3hlbm9tYWkgYXJlIGxpbmtzLCBhbmQgdGhlIGJ1aWxkZGViIHNjcmlwdCB3aWxsIG5vdCBpbmNs
+dWRlIGxpbmtzIHVuZGVyIHRoaXMgZGlyZWN0b3J5IGluIHRoZSBrZXJuZWwtaGVhZGVycyBwYWNr
+YWdlIChub24tbGluayBmaWxlcyBhcmUgaW5jbHVkZWQpLiAgTGlua3MgaW4gc29tZSBvdGhlciBk
+aXJlY3RvcmllcyAqd2lsbCogYmUgaW5jbHVkZWQuCgpVc2luZyAtLW91dHBhdGNoIGZpeGVzIHRo
+ZSBwcm9ibGVtLiAgTXkgb25lLWxpbmUgcGF0Y2ggZm9yIHRoZSA0LjE5Ljg0IHNjcmlwdHMvcGFj
+a2FnZS9idWlsZGRlYiBzY3JpcHQgZml4ZXMgdGhpcyBpc3N1ZSB3aGVuIG5vdCB1c2luZyAtLW91
+dHBhdGNoLCBidXQgb2YgY291cnNlIHRoZSB4ZW5vbWFpLWtlcm5lbC1zb3VyY2UgcGFja2FnZSBu
+ZWVkcyB0byBiZSBpbnN0YWxsZWQgc28gdGhhdCB0aGUgbGlua3MgaGF2ZSBhIHZhbGlkIHRhcmdl
+dC4KCi0oY2QgJHNyY3RyZWU7IGZpbmQgJChmaW5kIGFyY2gvJFNSQ0FSQ0ggLW5hbWUgaW5jbHVk
+ZSAtbyAtbmFtZSBzY3JpcHRzIC10eXBlIGQpIC10eXBlIGYpID4+ICIkb2JqdHJlZS9kZWJpYW4v
+aGRyc3JjZmlsZXMiCisoY2QgJHNyY3RyZWU7IGZpbmQgJChmaW5kIGFyY2gvJFNSQ0FSQ0ggLW5h
+bWUgaW5jbHVkZSAtbyAtbmFtZSBzY3JpcHRzIC10eXBlIGQpIC10eXBlIGYgLW8gLXR5cGUgbCkg
+Pj4gIiRvYmp0cmVlL2RlYmlhbi9oZHJzcmNmaWxlcyIKCkkgYW0gZmluZSB3aXRoIHVzaW5nIC0t
+b3V0cGF0Y2gsIGJ1dCBoYXZpbmcgdGhlIG90aGVyIGFwcHJvYWNoIHdvcmsgYXMgd2VsbCBtaWdo
+dCBzYXZlIG90aGVycyBzb21lIGdyaWVmLiAgSnVzdCBGWUkuCgpUaGFua3MgZm9yIHBvaW50aW5n
+IG1lIGluIHRoZSByaWdodCBkaXJlY3Rpb24hCgotSmVmZgoKLS0tLS0tLS0tLS0tLS0gbmV4dCBw
+YXJ0IC0tLS0tLS0tLS0tLS0tCkFuIGVtYmVkZGVkIGFuZCBjaGFyc2V0LXVuc3BlY2lmaWVkIHRl
+eHQgd2FzIHNjcnViYmVkLi4uCk5hbWU6IG1pc3NpbmdfaGVhZGVycy50eHQKVVJMOiA8aHR0cDov
+L3hlbm9tYWkub3JnL3BpcGVybWFpbC94ZW5vbWFpL2F0dGFjaG1lbnRzLzIwMTkxMjA5LzJmYTM4
+MzcxL2F0dGFjaG1lbnQudHh0Pgo=
