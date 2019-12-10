@@ -1,12 +1,17 @@
-From: Jan Kiszka <jan.kiszka@siemens.com>
-Subject: [xneomai-images][PATCH] linux-xenomai: Update to
- ipipe-core-4.14.110-arm-7
-Message-ID: <e6626ca7-54b3-1d81-9f33-1e4be8028bc9@siemens.com>
-Date: Tue, 10 Dec 2019 18:51:14 +0100
+Subject: Re: Lockdep splat around rq->lock (Was: Re: [Xenomai] am335x xenomai)
+References: <CAOf5uw=i62dBaP1KidqJ09RFYz7hwPDj4e9cCwvNQzq9h61n5A@mail.gmail.com>
+ <CAFLxGvz9X3qtz-tK6egDLuNn2OB6iYuy__-th=61mAbHynV+qg@mail.gmail.com>
+ <6858a3b5-adbc-c65f-c11c-92297d4dd8f7@siemens.com>
+ <2008645939.112092.1575975265668.JavaMail.zimbra@nod.at>
+ <45cda878-fa53-c1b2-881b-06d52e66a32a@siemens.com>
+From: Philippe Gerum <rpm@xenomai.org>
+Message-ID: <4298ac73-340f-5699-7176-ef48b5ab2294@xenomai.org>
+Date: Tue, 10 Dec 2019 19:03:22 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+In-Reply-To: <45cda878-fa53-c1b2-881b-06d52e66a32a@siemens.com>
+Content-Type: text/plain; charset="utf-8"
 Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,40 +20,31 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Xenomai <xenomai@xenomai.org>
+To: Jan Kiszka <jan.kiszka@siemens.com>, Richard Weinberger <richard@nod.at>
+Cc: Richard Weinberger <richard.weinberger@gmail.com>, Michael Nazzareno Trimarchi <michael@amarulasolutions.com>, xenomai <xenomai@xenomai.org>
 
-From: Jan Kiszka <jan.kiszka@siemens.com>
+On 12/10/19 2:08 PM, Jan Kiszka wrote:
+> On 10.12.19 11:54, Richard Weinberger wrote:
+>> ----- Ursprüngliche Mail -----
+>>> Von: "Jan Kiszka" <jan.kiszka@siemens.com>
+>>> Do you see the same issue with ipipe-core-4.19.82-arm-6 (and Xenomai 3.1)?
+>>
+>> Since my board does not boot with 4.19, I cannot tell. Still had no time
+>> to figure what is going on.
+>>
+>> Is this a known issue with a fix in newer ipipe releases?
+> 
+> Can't tell for ARM - Philippe?
+> 
 
-Comes with a patch needed for the BeagleBone Black.
+I-pipe 4.14 was the first version to officially support PROVE_LOCKING
+for arm and arm64. I did a quick check with 4.14.110 over i.MX6QP, and
+got no issue running switchtest.
 
-Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
----
-
-This replaces "linux-xenomai: Add 4.19-backport to 4.14 for BeagleBoneBlack irqchip".
-
- recipes-kernel/linux/linux-xenomai_4.14.bb | 5 ++---
- 1 file changed, 2 insertions(+), 3 deletions(-)
-
-diff --git a/recipes-kernel/linux/linux-xenomai_4.14.bb b/recipes-kernel/linux/linux-xenomai_4.14.bb
-index f147eed..1a5500d 100644
---- a/recipes-kernel/linux/linux-xenomai_4.14.bb
-+++ b/recipes-kernel/linux/linux-xenomai_4.14.bb
-@@ -18,8 +18,7 @@ PV_amd64 = "4.14.134+"
- SRC_URI_append_arm64 = " git://gitlab.denx.de/Xenomai/ipipe-arm64.git;protocol=https;nobranch=1;tag=ipipe-core-4.14.78-arm64-2"
- PV_arm64 = "4.14.78+"
- 
--SRC_URI_append_armhf = " git://gitlab.denx.de/Xenomai/ipipe-arm.git;protocol=https;branch=stable/4.14.96-arm"
--SRCREV_armhf = "723539db0d5a1c995c9bb5524abe311a97b33e43"
--PV_armhf = "4.14.96+"
-+SRC_URI_append_armhf = " git://gitlab.denx.de/Xenomai/ipipe-arm.git;protocol=https;nobranch=1;tag=ipipe-core-4.14.110-arm-7"
-+PV_armhf = "4.14.110+"
- 
- S = "${WORKDIR}/git"
--- 
-2.16.4
-
+On the other hand, kprobe support has not been considered so far (not
+even checked here). Since kprobing affects fault and IRQ handling, this
+may have something to do with such splat.
 
 -- 
-Siemens AG, Corporate Technology, CT RDA IOT SES-DE
-Corporate Competence Center Embedded Linux
+Philippe.
 
