@@ -1,19 +1,13 @@
-Date: Tue, 10 Dec 2019 20:52:24 +0100 (CET)
-From: Richard Weinberger <richard@nod.at>
-Message-ID: <739572661.112669.1576007544977.JavaMail.zimbra@nod.at>
-In-Reply-To: <e58f57ef-4de9-ea9c-708c-6138aa2662e0@siemens.com>
-References: <CAOf5uw=i62dBaP1KidqJ09RFYz7hwPDj4e9cCwvNQzq9h61n5A@mail.gmail.com>
- <CAFLxGvz9X3qtz-tK6egDLuNn2OB6iYuy__-th=61mAbHynV+qg@mail.gmail.com>
- <6858a3b5-adbc-c65f-c11c-92297d4dd8f7@siemens.com>
- <2008645939.112092.1575975265668.JavaMail.zimbra@nod.at>
- <45cda878-fa53-c1b2-881b-06d52e66a32a@siemens.com>
- <4298ac73-340f-5699-7176-ef48b5ab2294@xenomai.org>
- <316849456.112635.1576006265616.JavaMail.zimbra@nod.at>
- <e58f57ef-4de9-ea9c-708c-6138aa2662e0@siemens.com>
-Subject: Re: Lockdep splat around rq->lock (Was: Re: [Xenomai] am335x xenomai)
+Subject: Re: Moving on
+References: <BVo0ypPeyRjVDAXY2bL1uAbd2CJi1MNBqP8asmSMmiNFu3njHUsF61jfhoosdz0omSNgOI-MzLi1-EScgNo4JDWT_iF9wjd2cou2-SZjZPI=@codecraftsmen.org>
+From: Philippe Gerum <rpm@xenomai.org>
+Message-ID: <f363bb12-21d3-c7a4-5ddc-7a4ac6abb986@xenomai.org>
+Date: Tue, 10 Dec 2019 21:27:39 +0100
 MIME-Version: 1.0
+In-Reply-To: <BVo0ypPeyRjVDAXY2bL1uAbd2CJi1MNBqP8asmSMmiNFu3njHUsF61jfhoosdz0omSNgOI-MzLi1-EScgNo4JDWT_iF9wjd2cou2-SZjZPI=@codecraftsmen.org>
 Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -22,26 +16,22 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jan Kiszka <jan.kiszka@siemens.com>
-Cc: Philippe Gerum <rpm@xenomai.org>, Michael Nazzareno Trimarchi <michael@amarulasolutions.com>, xenomai <xenomai@xenomai.org>
+To: Jeff Webb <w1@codecraftsmen.org>
+Cc: Xenomai <xenomai@xenomai.org>, Steven Seeger <steven.seeger@flightsystems.net>, Greg Gallagher <greg@embeddedgreg.com>, Per Oberg <pero@wolfram.com>
 
------ Urspr=C3=BCngliche Mail -----
-> Von: "Jan Kiszka" <jan.kiszka@siemens.com>
-> That's untested even on x86 - and likely not working, with any kernel.
->=20
-> Do you have a use case for kprobe?
+On 12/9/19 3:47 PM, Jeff Webb wrote:
+>> Since this transition period is now taking an end, I'm switching focus
+>> to the EVL project [1] I have been nurturing for some time, with the
+>> goal to make it production-grade next year.
+>> [...]
+>> Philippe.
+> 
+> I am very excited about this as well, and look forward to diving into this soon.  Many, many thanks for your work on Xenomai throughout the years and for running this project with kindness, professionalism, and patience.
+> 
 
-Yes. On the old kernel we used to have many hooks (function pointers)
-within kernel to allow installing notification functions by our modules.
-It is basically a hand made tracing/notify framework.
+Thank you guys for your kind words. I wish everyone a happy end of year
+celebration.
 
-To get rid of the mess we decided to use kprobes instead of our plain
-pointers. So far the probes worked nicely and helped us a lot to cleanup
-the code base.
-
-If this is not supported, please make ipipe depend on !CONFIG_TRACEPOINTS. =
-:-(
-
-Thanks,
-//richard
+-- 
+Philippe.
 
