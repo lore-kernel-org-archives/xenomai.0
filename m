@@ -1,13 +1,19 @@
-Subject: Re: [PATCH] net/cap: fix non-rt signal overflow
-References: <20191202151810.4743-1-rpm@xenomai.org>
-From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <be3070c2-5f14-b67a-a60f-b43064ea0f6a@siemens.com>
-Date: Mon, 2 Dec 2019 17:53:57 +0100
+Date: Wed, 11 Dec 2019 11:17:31 +0100 (CET)
+From: Richard Weinberger <richard@nod.at>
+Message-ID: <2080699744.113026.1576059451250.JavaMail.zimbra@nod.at>
+In-Reply-To: <7b252bfb-2a37-ef80-a18a-c4603b98036c@siemens.com>
+References: <CAOf5uw=i62dBaP1KidqJ09RFYz7hwPDj4e9cCwvNQzq9h61n5A@mail.gmail.com>
+ <2008645939.112092.1575975265668.JavaMail.zimbra@nod.at>
+ <45cda878-fa53-c1b2-881b-06d52e66a32a@siemens.com>
+ <4298ac73-340f-5699-7176-ef48b5ab2294@xenomai.org>
+ <316849456.112635.1576006265616.JavaMail.zimbra@nod.at>
+ <e58f57ef-4de9-ea9c-708c-6138aa2662e0@siemens.com>
+ <739572661.112669.1576007544977.JavaMail.zimbra@nod.at>
+ <7b252bfb-2a37-ef80-a18a-c4603b98036c@siemens.com>
+Subject: Re: Lockdep splat around rq->lock (Was: Re: [Xenomai] am335x xenomai)
 MIME-Version: 1.0
-In-Reply-To: <20191202151810.4743-1-rpm@xenomai.org>
 Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: quoted-printable
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,94 +22,48 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Philippe Gerum <rpm@xenomai.org>, xenomai@xenomai.org
+To: Jan Kiszka <jan.kiszka@siemens.com>
+Cc: Philippe Gerum <rpm@xenomai.org>, Michael Nazzareno Trimarchi <michael@amarulasolutions.com>, xenomai <xenomai@xenomai.org>
 
-On 02.12.19 16:18, Philippe Gerum via Xenomai wrote:
-> From: Philippe Gerum <rpm@xenomai.org>
-> 
-> rtdm_nrtsig_pend() is based on ipipe_post_root_work(), which keeps a
-> copy of every request descriptor internally until it is consumed by
-> the secondary mode handler. Triggering rtdm_nrtsig_pend() every time a
-> packet is relayed from the stack to the tap device may cause such
-> request buffer to overflow under pressure.
-> 
-> To address this issue, trigger the non-rt signal only when the RX
-> queue transitions from empty to non-empty state as a result of
-> enqueuing the next skb.
-> 
-> Signed-off-by: Philippe Gerum <rpm@xenomai.org>
-> ---
->  kernel/drivers/net/addons/cap.c | 19 +++++++++++++------
->  1 file changed, 13 insertions(+), 6 deletions(-)
-> 
-> diff --git a/kernel/drivers/net/addons/cap.c b/kernel/drivers/net/addons/cap.c
-> index 4e0795e24..1e8644069 100644
-> --- a/kernel/drivers/net/addons/cap.c
-> +++ b/kernel/drivers/net/addons/cap.c
-> @@ -57,27 +57,32 @@ static struct tap_device_t {
->  
->  void rtcap_rx_hook(struct rtskb *rtskb)
->  {
-> +	bool			trigger = false;
-> +
->  	if ((rtskb->cap_comp_skb = rtskb_pool_dequeue(&cap_pool)) == 0) {
->  		tap_device[rtskb->rtdev->ifindex].tap_dev_stats.rx_dropped++;
->  		return;
->  	}
->  
-> -	if (cap_queue.first == NULL)
-> +	if (cap_queue.first == NULL) {
->  		cap_queue.first = rtskb;
-> -	else
-> +		trigger = true;
-> +	} else
->  		cap_queue.last->cap_next = rtskb;
->  	cap_queue.last = rtskb;
->  	rtskb->cap_next = NULL;
->  
->  	rtskb->cap_flags |= RTSKB_CAP_SHARED;
->  
-> -	rtdm_nrtsig_pend(&cap_signal);
-> +	if (trigger)
-> +		rtdm_nrtsig_pend(&cap_signal);
->  }
->  
->  int rtcap_xmit_hook(struct rtskb *rtskb, struct rtnet_device *rtdev)
->  {
->  	struct tap_device_t *tap_dev = &tap_device[rtskb->rtdev->ifindex];
->  	rtdm_lockctx_t context;
-> +	bool trigger = false;
->  
->  	if ((rtskb->cap_comp_skb = rtskb_pool_dequeue(&cap_pool)) == 0) {
->  		tap_dev->tap_dev_stats.rx_dropped++;
-> @@ -93,15 +98,17 @@ int rtcap_xmit_hook(struct rtskb *rtskb, struct rtnet_device *rtdev)
->  
->  	rtdm_lock_get_irqsave(&rtcap_lock, context);
->  
-> -	if (cap_queue.first == NULL)
-> +	if (cap_queue.first == NULL) {
->  		cap_queue.first = rtskb;
-> -	else
-> +		trigger = true;
-> +	} else
->  		cap_queue.last->cap_next = rtskb;
->  	cap_queue.last = rtskb;
->  
->  	rtdm_lock_put_irqrestore(&rtcap_lock, context);
->  
-> -	rtdm_nrtsig_pend(&cap_signal);
-> +	if (trigger)
-> +		rtdm_nrtsig_pend(&cap_signal);
->  
->  	return tap_dev->orig_xmit(rtskb, rtdev);
->  }
-> 
+----- Urspr=C3=BCngliche Mail -----
+> Von: "Jan Kiszka" <jan.kiszka@siemens.com>
+> An: "richard" <richard@nod.at>
+> CC: "Philippe Gerum" <rpm@xenomai.org>, "Michael Nazzareno Trimarchi" <mi=
+chael@amarulasolutions.com>, "xenomai"
+> <xenomai@xenomai.org>
+> Gesendet: Mittwoch, 11. Dezember 2019 08:24:41
+> Betreff: Re: Lockdep splat around rq->lock (Was: Re: [Xenomai] am335x xen=
+omai)
 
-thanks, applied
+> On 10.12.19 20:52, Richard Weinberger wrote:
+>> ----- Urspr=C3=BCngliche Mail -----
+>>> Von: "Jan Kiszka" <jan.kiszka@siemens.com>
+>>> That's untested even on x86 - and likely not working, with any kernel.
+>>>
+>>> Do you have a use case for kprobe?
+>>=20
+>> Yes. On the old kernel we used to have many hooks (function pointers)
+>> within kernel to allow installing notification functions by our modules.
+>> It is basically a hand made tracing/notify framework.
+>>=20
+>> To get rid of the mess we decided to use kprobes instead of our plain
+>> pointers. So far the probes worked nicely and helped us a lot to cleanup
+>> the code base.
+>>=20
+>> If this is not supported, please make ipipe depend on !CONFIG_TRACEPOINT=
+S. :-(
+>=20
+> CONFIG_KPROBES. We do support tracing (ftrace, down to functions), and
+> that is what I would recommend to you.
+>=20
+> In general, there are likely more things from the debugging section
+> unsupported. It's hard to hunt them all down, but CONFIG_KPROBES is
+> probably worth to add.
 
-Jan
+Let's put it differently. What is missing to have reliable kprobes?
+Maybe this is a small and nice project to get a better grip on ipipe
+internals.
 
--- 
-Siemens AG, Corporate Technology, CT RDA IOT SES-DE
-Corporate Competence Center Embedded Linux
+Thanks,
+//richard
 
