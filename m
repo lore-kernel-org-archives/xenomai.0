@@ -1,21 +1,13 @@
-Subject: Re: Lockdep splat around rq->lock (Was: Re: [Xenomai] am335x xenomai)
-References: <CAOf5uw=i62dBaP1KidqJ09RFYz7hwPDj4e9cCwvNQzq9h61n5A@mail.gmail.com>
- <CAFLxGvz9X3qtz-tK6egDLuNn2OB6iYuy__-th=61mAbHynV+qg@mail.gmail.com>
- <6858a3b5-adbc-c65f-c11c-92297d4dd8f7@siemens.com>
- <2008645939.112092.1575975265668.JavaMail.zimbra@nod.at>
- <45cda878-fa53-c1b2-881b-06d52e66a32a@siemens.com>
- <4298ac73-340f-5699-7176-ef48b5ab2294@xenomai.org>
- <316849456.112635.1576006265616.JavaMail.zimbra@nod.at>
- <e58f57ef-4de9-ea9c-708c-6138aa2662e0@siemens.com>
- <739572661.112669.1576007544977.JavaMail.zimbra@nod.at>
-From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <7b252bfb-2a37-ef80-a18a-c4603b98036c@siemens.com>
-Date: Wed, 11 Dec 2019 08:24:41 +0100
-MIME-Version: 1.0
-In-Reply-To: <739572661.112669.1576007544977.JavaMail.zimbra@nod.at>
-Content-Type: text/plain; charset="utf-8"
+From: Lange Norbert <norbert.lange@andritz.com>
+Subject: RE: Moving on
+Date: Wed, 11 Dec 2019 08:35:29 +0000
+Message-ID: <VI1PR05MB59172024A3264461BD338402F65A0@VI1PR05MB5917.eurprd05.prod.outlook.com>
+References: <7ef777be-f422-bd61-e19b-2b02772487f4@xenomai.org>
+In-Reply-To: <7ef777be-f422-bd61-e19b-2b02772487f4@xenomai.org>
 Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+MIME-Version: 1.0
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -24,36 +16,45 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Richard Weinberger <richard@nod.at>
-Cc: Philippe Gerum <rpm@xenomai.org>, Michael Nazzareno Trimarchi <michael@amarulasolutions.com>, xenomai <xenomai@xenomai.org>
+To: "Xenomai (xenomai@xenomai.org)" <xenomai@xenomai.org>
 
-On 10.12.19 20:52, Richard Weinberger wrote:
-> ----- Ursprüngliche Mail -----
->> Von: "Jan Kiszka" <jan.kiszka@siemens.com>
->> That's untested even on x86 - and likely not working, with any kernel.
->>
->> Do you have a use case for kprobe?
-> 
-> Yes. On the old kernel we used to have many hooks (function pointers)
-> within kernel to allow installing notification functions by our modules.
-> It is basically a hand made tracing/notify framework.
-> 
-> To get rid of the mess we decided to use kprobes instead of our plain
-> pointers. So far the probes worked nicely and helped us a lot to cleanup
-> the code base.
-> 
-> If this is not supported, please make ipipe depend on !CONFIG_TRACEPOINTS. :-(
-
-CONFIG_KPROBES. We do support tracing (ftrace, down to functions), and
-that is what I would recommend to you.
-
-In general, there are likely more things from the debugging section
-unsupported. It's hard to hunt them all down, but CONFIG_KPROBES is
-probably worth to add.
-
-Jan
-
--- 
-Siemens AG, Corporate Technology, CT RDA IOT SES-DE
-Corporate Competence Center Embedded Linux
+DQoNCj4gLS0tLS1PcmlnaW5hbCBNZXNzYWdlLS0tLS0NCj4gRnJvbTogWGVub21haSA8eGVub21h
+aS1ib3VuY2VzQHhlbm9tYWkub3JnPiBPbiBCZWhhbGYgT2YgUGhpbGlwcGUNCj4gR2VydW0gdmlh
+IFhlbm9tYWkNCj4gU2VudDogTW9udGFnLCAyLiBEZXplbWJlciAyMDE5IDE3OjA1DQo+IFRvOiBY
+ZW5vbWFpQHhlbm9tYWkub3JnDQo+IFN1YmplY3Q6IE1vdmluZyBvbg0KPg0KPg0KPiBJdCBoYXMg
+YmVlbiB0d28geWVhcnMgc2luY2UgSSBzdGVwcGVkIGRvd24gYXMgWGVub21haSdzIGxlYWQgbWFp
+bnRhaW5lci4NCj4gSW4gdGhlIG1lYW50aW1lLCBKYW4gdG9vayBvdmVyIGFuZCBkaWQgYSB2ZXJ5
+IGdvb2Qgam9iIGluIHRoaXMgcm9sZSBhcw0KPiBleHBlY3RlZC4NCj4NCj4gU2luY2UgdGhpcyB0
+cmFuc2l0aW9uIHBlcmlvZCBpcyBub3cgdGFraW5nIGFuIGVuZCwgSSdtIHN3aXRjaGluZyBmb2N1
+cyB0byB0aGUNCj4gRVZMIHByb2plY3QgWzFdIEkgaGF2ZSBiZWVuIG51cnR1cmluZyBmb3Igc29t
+ZSB0aW1lLCB3aXRoIHRoZSBnb2FsIHRvIG1ha2UgaXQNCj4gcHJvZHVjdGlvbi1ncmFkZSBuZXh0
+IHllYXIuIEluIGEgbnV0c2hlbGwsIEVWTCBpcyBhYm91dCBsYXlpbmcgdGhlIGdyb3VuZHdvcmsN
+Cj4gZm9yIGR1YWwga2VybmVsIHN5c3RlbXMgdG8gYmVjb21lIGZpcnN0LWNsYXNzIGNpdGl6ZW5z
+IG9mIExpbnV4LiBUaGlzIHdvcmsNCj4gaW5jbHVkZXMgYSBTTVAgc2NhbGFibGUgcmVhbC10aW1l
+IGNvcmUgd2hpY2ggY2FuIGJlIG1haW50YWluZWQgd2l0aA0KPiBjb21tb24ga2VybmVsIGtub3ds
+ZWRnZSBvdmVyIHRoZSBsYXRlc3QgbWFpbmxpbmUga2VybmVsIHNlcmllcywgYSBzdGFuZGFyZA0K
+PiBkcml2ZXIgbW9kZWwsIGFuZCBhIHNpbmdsZSwgY29tcGFjdCBBUEkNCj4NCj4gSSB3aWxsIHN0
+aWxsIHJldmlldyBwYXRjaGVzIGNvbWluZyBteSB3YXkgZm9yIHRoZSBJLXBpcGUgQVJNIGFuZCBh
+cm02NCB0cmVlcw0KPiBmb3IgYSBmZXcgd2Vla3MsIHVudGlsIHRoZSBuZXh0IG1haW50YWluZXIg
+aXMgYXBwb2ludGVkIGZvciB0aGVzZQ0KPiBhcmNoaXRlY3R1cmVzLiBJJ2xsIGJlIGFyb3VuZCB0
+byBoZWxwIHdpdGggWGVub21haSBjb3JlIGlzc3VlcyBpZiBuZWVkZWQuDQoNCkRvZXNudCBzZWVt
+IGxpa2UgeW91IHdpbGwgbW92ZSB0b28gZmFyIGF3YXksIGdvb2QgbHVjayB3aXRoIEVWTCAoYW5k
+IGdldHRpbmcgaXQgdXBzdHJlYW1lZCBpZiB0aGF04oCZcyB0aGUgYWltKS4NCg0KTm9yYmVydA0K
+X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX18NCg0KVGhpcyBtZXNzYWdlIGFuZCBhbnkg
+YXR0YWNobWVudHMgYXJlIHNvbGVseSBmb3IgdGhlIHVzZSBvZiB0aGUgaW50ZW5kZWQgcmVjaXBp
+ZW50cy4gVGhleSBtYXkgY29udGFpbiBwcml2aWxlZ2VkIGFuZC9vciBjb25maWRlbnRpYWwgaW5m
+b3JtYXRpb24gb3Igb3RoZXIgaW5mb3JtYXRpb24gcHJvdGVjdGVkIGZyb20gZGlzY2xvc3VyZS4g
+SWYgeW91IGFyZSBub3QgYW4gaW50ZW5kZWQgcmVjaXBpZW50LCB5b3UgYXJlIGhlcmVieSBub3Rp
+ZmllZCB0aGF0IHlvdSByZWNlaXZlZCB0aGlzIGVtYWlsIGluIGVycm9yIGFuZCB0aGF0IGFueSBy
+ZXZpZXcsIGRpc3NlbWluYXRpb24sIGRpc3RyaWJ1dGlvbiBvciBjb3B5aW5nIG9mIHRoaXMgZW1h
+aWwgYW5kIGFueSBhdHRhY2htZW50IGlzIHN0cmljdGx5IHByb2hpYml0ZWQuIElmIHlvdSBoYXZl
+IHJlY2VpdmVkIHRoaXMgZW1haWwgaW4gZXJyb3IsIHBsZWFzZSBjb250YWN0IHRoZSBzZW5kZXIg
+YW5kIGRlbGV0ZSB0aGUgbWVzc2FnZSBhbmQgYW55IGF0dGFjaG1lbnQgZnJvbSB5b3VyIHN5c3Rl
+bS4NCg0KQU5EUklUWiBIWURSTyBHbWJIDQoNCg0KUmVjaHRzZm9ybS8gTGVnYWwgZm9ybTogR2Vz
+ZWxsc2NoYWZ0IG1pdCBiZXNjaHLDpG5rdGVyIEhhZnR1bmcgLyBDb3Jwb3JhdGlvbg0KDQpGaXJt
+ZW5zaXR6LyBSZWdpc3RlcmVkIHNlYXQ6IFdpZW4NCg0KRmlybWVuYnVjaGdlcmljaHQvIENvdXJ0
+IG9mIHJlZ2lzdHJ5OiBIYW5kZWxzZ2VyaWNodCBXaWVuDQoNCkZpcm1lbmJ1Y2hudW1tZXIvIENv
+bXBhbnkgcmVnaXN0cmF0aW9uOiBGTiA2MTgzMyBnDQoNCkRWUjogMDYwNTA3Nw0KDQpVSUQtTnIu
+OiBBVFUxNDc1NjgwNg0KDQoNClRoYW5rIFlvdQ0KX19fX19fX19fX19fX19fX19fX19fX19fX19f
+X19fX18NCg==
 
