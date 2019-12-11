@@ -1,13 +1,14 @@
-From: Lange Norbert <norbert.lange@andritz.com>
-Subject: RE: Moving on
-Date: Wed, 11 Dec 2019 08:35:29 +0000
-Message-ID: <VI1PR05MB59172024A3264461BD338402F65A0@VI1PR05MB5917.eurprd05.prod.outlook.com>
-References: <7ef777be-f422-bd61-e19b-2b02772487f4@xenomai.org>
-In-Reply-To: <7ef777be-f422-bd61-e19b-2b02772487f4@xenomai.org>
-Content-Language: en-US
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+Subject: Re: [ANNOUNCE] Xenomai v3.1-rc4 available
+References: <313ed563-6a6e-a7f4-93a4-06013d2a239d@siemens.com>
+ <VI1PR05MB59176576A69489C94150844CF65A0@VI1PR05MB5917.eurprd05.prod.outlook.com>
+From: Jan Kiszka <jan.kiszka@siemens.com>
+Message-ID: <7ef3daec-e12d-a40e-4bbc-92005e316929@siemens.com>
+Date: Wed, 11 Dec 2019 09:43:27 +0100
 MIME-Version: 1.0
+In-Reply-To: <VI1PR05MB59176576A69489C94150844CF65A0@VI1PR05MB5917.eurprd05.prod.outlook.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,45 +17,81 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "Xenomai (xenomai@xenomai.org)" <xenomai@xenomai.org>
+To: Lange Norbert <norbert.lange@andritz.com>, Xenomai <xenomai@xenomai.org>
 
-DQoNCj4gLS0tLS1PcmlnaW5hbCBNZXNzYWdlLS0tLS0NCj4gRnJvbTogWGVub21haSA8eGVub21h
-aS1ib3VuY2VzQHhlbm9tYWkub3JnPiBPbiBCZWhhbGYgT2YgUGhpbGlwcGUNCj4gR2VydW0gdmlh
-IFhlbm9tYWkNCj4gU2VudDogTW9udGFnLCAyLiBEZXplbWJlciAyMDE5IDE3OjA1DQo+IFRvOiBY
-ZW5vbWFpQHhlbm9tYWkub3JnDQo+IFN1YmplY3Q6IE1vdmluZyBvbg0KPg0KPg0KPiBJdCBoYXMg
-YmVlbiB0d28geWVhcnMgc2luY2UgSSBzdGVwcGVkIGRvd24gYXMgWGVub21haSdzIGxlYWQgbWFp
-bnRhaW5lci4NCj4gSW4gdGhlIG1lYW50aW1lLCBKYW4gdG9vayBvdmVyIGFuZCBkaWQgYSB2ZXJ5
-IGdvb2Qgam9iIGluIHRoaXMgcm9sZSBhcw0KPiBleHBlY3RlZC4NCj4NCj4gU2luY2UgdGhpcyB0
-cmFuc2l0aW9uIHBlcmlvZCBpcyBub3cgdGFraW5nIGFuIGVuZCwgSSdtIHN3aXRjaGluZyBmb2N1
-cyB0byB0aGUNCj4gRVZMIHByb2plY3QgWzFdIEkgaGF2ZSBiZWVuIG51cnR1cmluZyBmb3Igc29t
-ZSB0aW1lLCB3aXRoIHRoZSBnb2FsIHRvIG1ha2UgaXQNCj4gcHJvZHVjdGlvbi1ncmFkZSBuZXh0
-IHllYXIuIEluIGEgbnV0c2hlbGwsIEVWTCBpcyBhYm91dCBsYXlpbmcgdGhlIGdyb3VuZHdvcmsN
-Cj4gZm9yIGR1YWwga2VybmVsIHN5c3RlbXMgdG8gYmVjb21lIGZpcnN0LWNsYXNzIGNpdGl6ZW5z
-IG9mIExpbnV4LiBUaGlzIHdvcmsNCj4gaW5jbHVkZXMgYSBTTVAgc2NhbGFibGUgcmVhbC10aW1l
-IGNvcmUgd2hpY2ggY2FuIGJlIG1haW50YWluZWQgd2l0aA0KPiBjb21tb24ga2VybmVsIGtub3ds
-ZWRnZSBvdmVyIHRoZSBsYXRlc3QgbWFpbmxpbmUga2VybmVsIHNlcmllcywgYSBzdGFuZGFyZA0K
-PiBkcml2ZXIgbW9kZWwsIGFuZCBhIHNpbmdsZSwgY29tcGFjdCBBUEkNCj4NCj4gSSB3aWxsIHN0
-aWxsIHJldmlldyBwYXRjaGVzIGNvbWluZyBteSB3YXkgZm9yIHRoZSBJLXBpcGUgQVJNIGFuZCBh
-cm02NCB0cmVlcw0KPiBmb3IgYSBmZXcgd2Vla3MsIHVudGlsIHRoZSBuZXh0IG1haW50YWluZXIg
-aXMgYXBwb2ludGVkIGZvciB0aGVzZQ0KPiBhcmNoaXRlY3R1cmVzLiBJJ2xsIGJlIGFyb3VuZCB0
-byBoZWxwIHdpdGggWGVub21haSBjb3JlIGlzc3VlcyBpZiBuZWVkZWQuDQoNCkRvZXNudCBzZWVt
-IGxpa2UgeW91IHdpbGwgbW92ZSB0b28gZmFyIGF3YXksIGdvb2QgbHVjayB3aXRoIEVWTCAoYW5k
-IGdldHRpbmcgaXQgdXBzdHJlYW1lZCBpZiB0aGF04oCZcyB0aGUgYWltKS4NCg0KTm9yYmVydA0K
-X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX18NCg0KVGhpcyBtZXNzYWdlIGFuZCBhbnkg
-YXR0YWNobWVudHMgYXJlIHNvbGVseSBmb3IgdGhlIHVzZSBvZiB0aGUgaW50ZW5kZWQgcmVjaXBp
-ZW50cy4gVGhleSBtYXkgY29udGFpbiBwcml2aWxlZ2VkIGFuZC9vciBjb25maWRlbnRpYWwgaW5m
-b3JtYXRpb24gb3Igb3RoZXIgaW5mb3JtYXRpb24gcHJvdGVjdGVkIGZyb20gZGlzY2xvc3VyZS4g
-SWYgeW91IGFyZSBub3QgYW4gaW50ZW5kZWQgcmVjaXBpZW50LCB5b3UgYXJlIGhlcmVieSBub3Rp
-ZmllZCB0aGF0IHlvdSByZWNlaXZlZCB0aGlzIGVtYWlsIGluIGVycm9yIGFuZCB0aGF0IGFueSBy
-ZXZpZXcsIGRpc3NlbWluYXRpb24sIGRpc3RyaWJ1dGlvbiBvciBjb3B5aW5nIG9mIHRoaXMgZW1h
-aWwgYW5kIGFueSBhdHRhY2htZW50IGlzIHN0cmljdGx5IHByb2hpYml0ZWQuIElmIHlvdSBoYXZl
-IHJlY2VpdmVkIHRoaXMgZW1haWwgaW4gZXJyb3IsIHBsZWFzZSBjb250YWN0IHRoZSBzZW5kZXIg
-YW5kIGRlbGV0ZSB0aGUgbWVzc2FnZSBhbmQgYW55IGF0dGFjaG1lbnQgZnJvbSB5b3VyIHN5c3Rl
-bS4NCg0KQU5EUklUWiBIWURSTyBHbWJIDQoNCg0KUmVjaHRzZm9ybS8gTGVnYWwgZm9ybTogR2Vz
-ZWxsc2NoYWZ0IG1pdCBiZXNjaHLDpG5rdGVyIEhhZnR1bmcgLyBDb3Jwb3JhdGlvbg0KDQpGaXJt
-ZW5zaXR6LyBSZWdpc3RlcmVkIHNlYXQ6IFdpZW4NCg0KRmlybWVuYnVjaGdlcmljaHQvIENvdXJ0
-IG9mIHJlZ2lzdHJ5OiBIYW5kZWxzZ2VyaWNodCBXaWVuDQoNCkZpcm1lbmJ1Y2hudW1tZXIvIENv
-bXBhbnkgcmVnaXN0cmF0aW9uOiBGTiA2MTgzMyBnDQoNCkRWUjogMDYwNTA3Nw0KDQpVSUQtTnIu
-OiBBVFUxNDc1NjgwNg0KDQoNClRoYW5rIFlvdQ0KX19fX19fX19fX19fX19fX19fX19fX19fX19f
-X19fX18NCg==
+On 11.12.19 09:38, Lange Norbert wrote:
+> 
+> 
+>> -----Original Message-----
+>> From: Xenomai <xenomai-bounces@xenomai.org> On Behalf Of Jan Kiszka
+>> via Xenomai
+>> Sent: Freitag, 6. Dezember 2019 15:44
+>> To: Xenomai <xenomai@xenomai.org>
+>> Subject: [ANNOUNCE] Xenomai v3.1-rc4 available
+>>
+>> NON-ANDRITZ SOURCE: BE CAUTIOUS WITH CONTENT, LINKS OR
+>> ATTACHMENTS.
+>>
+>>
+>> Hi all,
+>>
+>> after running into a number of critical issues around the scheduler but also
+>> one of the new ABIs, this -rc is a fairly important one:
+>>
+>> https://gitlab.denx.de/Xenomai/xenomai/-/archive/v3.1-rc4/xenomai-v3.1-
+>> rc4.tar.bz2
+>> https://gitlab.denx.de/Xenomai/xenomai/commits/v3.1-rc4
+>>
+>> Changes since rc3:
+>>
+>> Jan Kiszka (15):
+>>       rtdm: Do not return an error from send/recvmmsg if there are packets
+>>       rtdm: Remove early exit from send/recvmmsg on vlan == 0
+>>       ci: Always build the latest release
+>>       lib/cobalt: Fix help for --print-sync-delay
+>>       alchemy: Fully initialize tcb->self
+>>       testsuite/smokey/posix-cond: Make more robust for execution in VMs
+>>       cobalt/posix/thread: Factor out thread_lookup_or_shadow
+>>       cobalt/posix: Add thread_setschedprio
+>>       lib/cobalt: Use new thread_setschedprio syscall
+>>       Revert "cobalt/kernel: Introduce __SCHED_CURRENT policy to
+>> setschedparam_ex"
+>>       testsuite/smokey: Fix setsched /wrt lazy scheduling parameter application
+>>       testsuite/smokey: Add pthread_setschedprio to setsched test case
+>>       debian: Enable lazy-setsched in userspace package
+>>       cobalt/intr: Move IRQ exit trace point in non-shared case
+>>       config: Bump version number
+>>
+>> Philippe Gerum (16):
+>>       copperplate/heapobj-pshared: fix element size for array init
+>>       testsuite/mq-2: clarify test implementation
+>>       boilerplate/avl: fix NULL link representation in pshared mode - take #2
+>>       cobalt/process: skip trap handling for the root thread
+>>       cobalt/thread: update inline documentation
+>>       cobalt/posix: fix missed rescheduling opportunities
+>>       cobalt/process: remove superfluous check for non-relaxed state
+>>       cobalt/thread: fix scheduler breakage on thread suspension
+>>       drivers/testing: heapcheck: silence UMR warning (false positive)
+>>       cobalt/process: exit_thread handlers should reschedule as needed
+>>       net/proxy: fix non-rt signal overflow
+>>       cobalt/sched: quota: fix use-after-free in quota_remove operation
+>>       net/rtmac: vnic: fix non-rt signal overflow
+>>       net/rtpc: fix non-rt signal overflow
+>>       net/cap: fix non-rt signal overflow
+>>       cobalt/sched: guard against missed rescheduling upon CPU migration
+>>
+>> Please test so that we finalize 3.1 soon.
+> 
+> Running here without issues so far, and I used Phillipe's schedulerfixes since they appeared.
+> Looks good to me.
+> 
+> Norbert
+
+Thanks for the feedback (taking it to the ML)!
+
+Jan
+
+-- 
+Siemens AG, Corporate Technology, CT RDA IOT SES-DE
+Corporate Competence Center Embedded Linux
 
