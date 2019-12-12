@@ -1,10 +1,13 @@
-From: Lange Norbert <norbert.lange@andritz.com>
-Subject: Inspecting heap allocations?
-Date: Thu, 12 Dec 2019 12:29:00 +0000
-Message-ID: <VI1PR05MB59171CA57D6945AB7E64112FF6550@VI1PR05MB5917.eurprd05.prod.outlook.com>
-Content-Language: en-US
+Date: Thu, 12 Dec 2019 14:18:51 +0000
+From: Jeff Webb <jeff.webb@protonmail.com>
+Reply-To: Jeff Webb <jeff.webb@protonmail.com>
+Subject: Re: [ANNOUNCE] Xenomai 3.0.10 released
+Message-ID: <E4eOs70N4955OVheXsuW2lT5cFP9jpl73y4_EmdIZsP-8vXczsgtYjpe1bKZLQdy3fIfhTvxYAbzwlyuKvzg9eXa33sSMN_jER3zDdxrE88=@protonmail.com>
+In-Reply-To: <19bbd92b-9d19-eff5-8b66-30e7825b9220@siemens.com>
+References: <8wpv79_me5liHbd4OzRAJqQ8h4itwxhL_-mICsJBiz8eH85PjroDi8SB8aBHhfZTyNugCjhXRkO-IwZ3OCnOdUEGfFMtQNqbZNjGSbWGdpQ=@protonmail.com>
+ <19bbd92b-9d19-eff5-8b66-30e7825b9220@siemens.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="iso-8859-1"
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: quoted-printable
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
@@ -14,58 +17,48 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "Xenomai (xenomai@xenomai.org)" <xenomai@xenomai.org>
+To: Jan Kiszka <jan.kiszka@siemens.com>
+Cc: Xenomai <xenomai@xenomai.org>
 
-Hello,
+=E2=80=90=E2=80=90=E2=80=90=E2=80=90=E2=80=90=E2=80=90=E2=80=90 Original Me=
+ssage =E2=80=90=E2=80=90=E2=80=90=E2=80=90=E2=80=90=E2=80=90=E2=80=90
+On Tuesday, December 10, 2019 10:29 AM, Jan Kiszka <jan.kiszka@siemens.com>=
+ wrote:
 
-I have some circumstances where I run out of global heap and then simple st=
-ull like creating a mutex fails with ENOMEM.
-My suspicion is an IDDP connection between 2 processes, where 1 process mig=
-ht send a lot small packets before the other will pull them (I will try usi=
-ng a local pool).
+> On 10.12.19 17:23, Jeff Webb via Xenomai wrote:
+>
+> > I had an issue when trying to configure a kernel patched using 3.0.10. =
+My process was similar to the process I used when testing other releases. H=
+ere is what I did:
+> > Download xenomai-v3.0.10.tar.bz2 from "Download" button here:
+> > https://gitlab.denx.de/Xenomai/xenomai/-/tags
+> > tar -xvf xenomai-v3.0.10.tar.bz2
+> > cd xenomai-v3.0.10/
+> > DEBEMAIL=3D"your@email" DEBFULLNAME=3D"Your Name" debchange -v 3.0.10 R=
+elease 3.0.10
+> > debuild -uc -us
+> > cd ..
+> > sudo dpkg -i libxenomai-dev_3.0.10_amd64.deb \
+> > xenomai-kernel-source_3.0.10_all.deb \
+> > libxenomai1_3.0.10_amd64.deb \
+> > xenomai-runtime_3.0.10_amd64.deb
+> > tar -xvf linux-4.19.84.tar.xz
+>
+> I should have left the note from the 3.0.9 release in this one:
+> con
+> "Note again that the 3.0.x series works up to kernel 4.14. For 4.19
+> support, please switch to master, the source of upcoming 3.1."
+>
+> Well, there are RCs for 3.1 by now :)
 
-In the future, is there a way to dump the owners of heap objects?
+Sorry, I knew this, but forgot about it.  The error message wasn't enough t=
+o help me make the connection.
 
-Mit besten Gr=FC=DFen / Kind regards
+In any case, things seem to work fine with 4.4.199-cip39/3.0.10.  We will s=
+tick with 4.19.84/3.1-rc4 for further testing, though.
 
-NORBERT LANGE
+Thanks,
 
-AT-RD3
-
-ANDRITZ HYDRO GmbH
-Eibesbrunnergasse 20
-1120 Vienna / AUSTRIA
-p: +43 50805 56684
-norbert.lange@andritz.com<mailto:norbert.lange@andritz.com>
-andritz.com<http://www.andritz.com/>
-
-________________________________
-
-This message and any attachments are solely for the use of the intended rec=
-ipients. They may contain privileged and/or confidential information or oth=
-er information protected from disclosure. If you are not an intended recipi=
-ent, you are hereby notified that you received this email in error and that=
- any review, dissemination, distribution or copying of this email and any a=
-ttachment is strictly prohibited. If you have received this email in error,=
- please contact the sender and delete the message and any attachment from y=
-our system.
-
-ANDRITZ HYDRO GmbH
-
-
-Rechtsform/ Legal form: Gesellschaft mit beschr=E4nkter Haftung / Corporati=
-on
-
-Firmensitz/ Registered seat: Wien
-
-Firmenbuchgericht/ Court of registry: Handelsgericht Wien
-
-Firmenbuchnummer/ Company registration: FN 61833 g
-
-DVR: 0605077
-
-UID-Nr.: ATU14756806
+-Jeff
 
 
-Thank You
-________________________________
