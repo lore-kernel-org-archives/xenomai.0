@@ -1,11 +1,15 @@
-From: Lange Norbert <norbert.lange@andritz.com>
-Subject: 3.1rc4: rcu_sched self-detected stall on CPU
-Date: Fri, 13 Dec 2019 12:37:54 +0000
-Message-ID: <VI1PR05MB59177B111DEE0A49A8282A09F6540@VI1PR05MB5917.eurprd05.prod.outlook.com>
-Content-Language: en-US
+Subject: Re: stalled head domain with 3.1rc4
+References: <VI1PR05MB5917452476FF30146D701888F6540@VI1PR05MB5917.eurprd05.prod.outlook.com>
+ <VI1PR05MB591740A31653FE8542171311F6540@VI1PR05MB5917.eurprd05.prod.outlook.com>
+ <VI1PR05MB5917FB6355396C28F99B79EDF6540@VI1PR05MB5917.eurprd05.prod.outlook.com>
+From: Jan Kiszka <jan.kiszka@siemens.com>
+Message-ID: <978c3a94-ae94-3982-3fdc-22e6f28d4aa4@siemens.com>
+Date: Fri, 13 Dec 2019 14:12:52 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+In-Reply-To: <VI1PR05MB5917FB6355396C28F99B79EDF6540@VI1PR05MB5917.eurprd05.prod.outlook.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -14,197 +18,106 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "Xenomai (xenomai@xenomai.org)" <xenomai@xenomai.org>
+To: Lange Norbert <norbert.lange@andritz.com>, "Xenomai (xenomai@xenomai.org)" <xenomai@xenomai.org>
 
-Got this stall, when trying to reboot. Apparently a Xenomai process can't b=
-e killed.
+On 13.12.19 13:25, Lange Norbert via Xenomai wrote:
+> Same thing with panic trace enabled (another, longer trace with 4000 samples attached)
+> 
+> [  292.743618] I-pipe: Detected stalled head domain, probably caused by a bug.
+> [  292.743618]         A critical section may have been left unterminated.
+> [  292.757195] CPU: 0 PID: 1159 Comm: trace-cmd Tainted: G        W         4.19.84-xeno8-static #1
+> [  292.765986] Hardware name: TQ-Group TQMxE39M/Type2 - Board Product Name, BIOS 5.12.30.21.20 08/05/2019
+> [  292.775304] I-pipe domain: Linux
+> [  292.778546] Call Trace:
+> [  292.781005]  <IRQ>
+> [  292.783034]  dump_stack+0x8c/0xc0
+> [  292.786363]  ipipe_root_only.cold+0x11/0x32
+> [  292.790560]  ipipe_stall_root+0xe/0x60
+> [  292.794322]  __ipipe_trap_prologue+0x11d/0x2f0
+> [  292.798782]  int3+0x45/0x70
+> [  292.801592] RIP: 0010:xntimer_start+0x3a/0x330
+> [  292.806050] Code: 55 49 89 d5 41 54 55 48 89 fd 53 48 83 ec 10 48 8b 47 70 4c 8b 37 48 63 40 18 4d 8b a6 90 00 00 00 4c 03 24 c5 00 e3f
+> [  292.824832] RSP: 0018:ffff97d43ac03e78 EFLAGS: 00000082
+> [  292.830075] RAX: 0000000000000000 RBX: 0000000000025090 RCX: 0000000000000000
+> [  292.837219] RDX: 0000000000000000 RSI: 00000000000c6130 RDI: ffff97d43aeb0708
+> [  292.844367] RBP: ffff97d43aeb0708 R08: 0000000000000000 R09: 000000000027e6d0
+> [  292.851514] R10: 00000043f5344961 R11: 00000043f5344961 R12: ffff97d43aebb020
+> [  292.858658] R13: 0000000000000000 R14: ffffffff9e03bca0 R15: 00000000000c6130
+> [  292.865804]  ? xntimer_start+0x3a/0x330
+> [  292.869653]  program_htick_shot+0x8d/0x130
+> [  292.873761]  clockevents_program_event+0x88/0xe0
+> [  292.878392]  hrtimer_interrupt+0x140/0x230
+> [  292.882502]  smp_apic_timer_interrupt+0x46/0x110
+> [  292.887132]  __ipipe_do_sync_stage+0x15d/0x1c0
+> [  292.891592]  __ipipe_handle_irq+0xa0/0x220
+> [  292.895699]  ipipe_reschedule_interrupt+0x12/0x40
+> [  292.900412]  </IRQ>
+> [  292.902525] RIP: 0010:smp_call_function_many+0x1b6/0x250
+> [  292.907848] Code: e8 4f 23 6c 00 3b 05 5d 5f 01 01 89 c7 0f 83 c4 fe ff ff 48 63 c7 48 8b 0b 48 03 0c c5 00 e3 f1 9d 8b 41 18 a8 01 745
+> [  292.926626] RSP: 0018:ffffab24c0c9bb40 EFLAGS: 00000202 ORIG_RAX: ffffffffffffff15
+> [  292.934210] RAX: 0000000000000003 RBX: ffff97d43aeb4c00 RCX: ffff97d43b2b7ac0
+> [  292.941357] RDX: 0000000000000001 RSI: 0000000000000000 RDI: 0000000000000001
+> [  292.948500] RBP: ffffffff9d017b70 R08: ffff97d43aeb4c08 R09: 000000000002e248
+> [  292.955644] R10: ffff97d43aeb7780 R11: ffff97d43a003800 R12: 0000000000000000
+> [  292.962789] R13: ffff97d43aeb4c08 R14: 0000000000000004 R15: 0000000000000001
+> [  292.969936]  ? optimize_nops.isra.0+0x90/0x90
+> [  292.974306]  ? optimize_nops.isra.0+0x90/0x90
+> [  292.978673]  ? xntimer_start+0x39/0x330
+> [  292.982519]  ? xntimer_start+0x3a/0x330
+> [  292.986368]  on_each_cpu+0x28/0x50
+> [  292.989782]  ? xntimer_start+0x39/0x330
+> [  292.993630]  text_poke_bp+0x68/0xde
+> [  292.997128]  ? trace_event_raw_event_cobalt_thread_suspend+0xe0/0xe0
+> [  293.003495]  __jump_label_transform.isra.0+0x102/0x150
+> [  293.008645]  arch_jump_label_transform+0x2e/0x40
+> [  293.013276]  __jump_label_update+0x67/0xa0
+> [  293.017382]  static_key_slow_inc_cpuslocked+0x75/0x80
+> [  293.022445]  static_key_slow_inc+0x16/0x20
+> [  293.026555]  tracepoint_probe_register_prio+0x1f3/0x2a0
+> [  293.031790]  ? trace_event_raw_event_cobalt_thread_suspend+0xe0/0xe0
+> [  293.038155]  __ftrace_event_enable_disable+0x6f/0x230
+> [  293.043217]  __ftrace_set_clr_event_nolock+0xe6/0x130
+> [  293.048280]  system_enable_write+0xaa/0xe0
+> [  293.052392]  do_iter_write+0x140/0x180
+> [  293.056151]  vfs_writev+0xa6/0xf0
+> [  293.059484]  do_writev+0x5f/0x100
+> [  293.062813]  do_syscall_64+0x82/0x4e0
+> [  293.066489]  entry_SYSCALL_64_after_hwframe+0x44/0xa9
+> [  293.071554] RIP: 0033:0x45874c
+> [  293.074619] Code: ed 01 48 29 d0 49 83 c5 10 49 8b 55 08 48 63 dd 48 29 c2 49 01 45 00 49 89 55 08 49 63 7f 78 4c 89 e0 4c 89 ee 48 898
+> [  293.093397] RSP: 002b:00007ffc91a57a00 EFLAGS: 00000202 ORIG_RAX: 0000000000000014
+> [  293.100983] RAX: ffffffffffffffda RBX: 0000000000000002 RCX: 000000000045874c
+> [  293.108129] RDX: 0000000000000002 RSI: 00007ffc91a57a10 RDI: 0000000000000005
+> [  293.115275] RBP: 0000000000000002 R08: 0000000000b7d4e0 R09: 8080808080808080
+> [  293.122422] R10: 0000000000000005 R11: 0000000000000202 R12: 0000000000000014
+> [  293.129569] R13: 00007ffc91a57a10 R14: 0000000000000001 R15: 0000000000b7d4e0
+> [  293.136722] I-pipe tracer log (100 points):
+> [  293.140917]  |*#func                    0 ipipe_trace_panic_freeze+0x0 (ipipe_root_only+0xcf)
+> [  293.149511]  |*#func                    0 ipipe_root_only+0x0 (ipipe_stall_root+0xe)
+> [  293.157323]  |*#func                   -1 ipipe_stall_root+0x0 (__ipipe_trap_prologue+0x11d)
+> [  293.165833]  |*#func                   -1 ipipe_test_root+0x0 (__ipipe_trap_prologue+0xbf)
+> [  293.174165]  |*#func                   -2 __ipipe_trap_prologue+0x0 (int3+0x45)
+> [  293.181541]  |*#func                   -2 xntimer_start+0x0 (program_htick_shot+0x8d)
 
-[  350.298889] rcu: INFO: rcu_sched self-detected stall on CPU
-[  350.304621] rcu:        2-....: (20999 ticks this GP) idle=3D546/1/0x400=
-0000000000002 softirq=3D9363/9363 fqs=3D5108
-[  350.314280] rcu:         (t=3D21000 jiffies g=3D26533 q=3D91)
-[  350.319134] NMI backtrace for cpu 2
-[  350.322716] CPU: 2 PID: 1 Comm: systemd Tainted: G        W         4.19=
-.84-xeno8-static #1
-[  350.331151] Hardware name: TQ-Group TQMxE39M/Type2 - Board Product Name,=
- BIOS 5.12.30.21.20 08/05/2019
-[  350.340542] I-pipe domain: Linux
-[  350.343855] Call Trace:
-[  350.346398]  <IRQ>
-[  350.348510]  dump_stack+0x8c/0xc0
-[  350.351922]  nmi_cpu_backtrace.cold+0x14/0x53
-[  350.356371]  ? lapic_can_unplug_cpu.cold+0x42/0x42
-[  350.361255]  nmi_trigger_cpumask_backtrace+0x7a/0x87
-[  350.366314]  rcu_dump_cpu_stacks+0x86/0xbe
-[  350.370507]  rcu_check_callbacks.cold+0x1fb/0x363
-[  350.375318]  update_process_times+0x41/0x80
-[  350.379595]  tick_sched_handle+0x34/0x50
-[  350.383610]  tick_sched_timer+0x38/0x80
-[  350.387540]  __hrtimer_run_queues+0xfd/0x270
-[  350.391900]  ? tick_sched_do_timer+0x60/0x60
-[  350.396277]  hrtimer_interrupt+0x106/0x230
-[  350.400489]  smp_apic_timer_interrupt+0x46/0x110
-[  350.405204]  __ipipe_do_sync_stage+0x15d/0x1c0
-[  350.409748]  __ipipe_handle_irq+0xa0/0x220
-[  350.413953]  apic_timer_interrupt+0x12/0x40
-[  350.418225]  </IRQ>
-[  350.420419] RIP: 0010:smp_call_function_single+0xd5/0x120
-[  350.425907] Code: 00 00 75 5d 48 8d 65 e8 5b 41 5c 41 5d 5d c3 48 8d 74 =
-24 20 4c 89 e2 4c 89 e9 e8 56 fe ff ff 8b 54 24 38 83 e2 01 74 0b f3 90 <8b=
-> 54 24 38 83 e2 01 75 f5 eb bf 89 7c 24 1c e8 87 eb 01 00 8b 7c
-[  350.444761] RSP: 0018:ffffa22840047b80 EFLAGS: 00000202 ORIG_RAX: ffffff=
-ffffffff13
-[  350.452471] RAX: 0000000000000000 RBX: 0000000000000001 RCX: 00000000000=
-0000b
-[  350.459687] RDX: 0000000000000001 RSI: ffff956bbb561548 RDI: 00000000000=
-a0040
-[  350.466902] RBP: ffffa22840047bf8 R08: 00000000000a0040 R09: 00000000000=
-2e248
-[  350.474119] R10: 000000000000b2dc R11: 00000000006468fd R12: ffffffff8e5=
-6c120
-[  350.481338] R13: ffffa22840047c08 R14: ffffa22840047cb0 R15: ffffa228400=
-47ce0
-[  350.488571]  ? perf_cgroup_attach+0x70/0x70
-[  350.492878]  ? trace+0x59/0x8d
-[  350.496026]  ? perf_cgroup_attach+0x70/0x70
-[  350.500306]  ? smp_call_function_single+0x5/0x120
-[  350.505109]  task_function_call+0x45/0x70
-[  350.509208]  ? perf_cgroup_switch+0x170/0x170
-[  350.513657]  perf_cgroup_attach+0x37/0x70
-[  350.517757]  cgroup_migrate_execute+0x2c3/0x370
-[  350.522392]  cgroup_attach_task+0x154/0x1f0
-[  350.526707]  cgroup_procs_write+0xc7/0x100
-[  350.530905]  cgroup_file_write+0x88/0x150
-[  350.535012]  kernfs_fop_write+0x10b/0x190
-[  350.539121]  __vfs_write+0x34/0x190
-[  350.542711]  ? __vfs_write+0x5/0x190
-[  350.546377]  ? rcu_all_qs+0x5/0x80
-[  350.549867]  vfs_write+0xb6/0x190
-[  350.553282]  ksys_write+0x57/0xd0
-[  350.556696]  do_syscall_64+0x82/0x4e0
-[  350.560473]  entry_SYSCALL_64_after_hwframe+0x44/0xa9
-[  350.565614] RIP: 0033:0x7f6e72efd4e4
-[  350.569280] Code: 00 f7 d8 64 89 02 48 c7 c0 ff ff ff ff eb bc 0f 1f 80 =
-00 00 00 00 48 8d 05 19 22 0d 00 8b 00 85 c0 75 13 b8 01 00 00 00 0f 05 <48=
-> 3d 00 f0 ff ff 77 54 c3 0f 1f 00 48 8d 64 24 d8 48 89 54 24 18
-[  350.588133] RSP: 002b:00007ffd434b8cb8 EFLAGS: 00000246 ORIG_RAX: 000000=
-0000000001
-[  350.595845] RAX: ffffffffffffffda RBX: 0000000000000005 RCX: 00007f6e72e=
-fd4e4
-[  350.603061] RDX: 0000000000000005 RSI: 00007ffd434b8e8a RDI: 00000000000=
-0002a
-[  350.610279] RBP: 00007ffd434b8e8a R08: 0000000000000000 R09: 00000000000=
-00005
-[  350.617495] R10: 0000000000000000 R11: 0000000000000246 R12: 00000000000=
-00005
-[  350.624714] R13: 00000000009abaf0 R14: 0000000000000005 R15: 00007f6e72f=
-c6760
-[  413.301893] rcu: INFO: rcu_sched self-detected stall on CPU
-[  413.307621] rcu:        2-....: (83670 ticks this GP) idle=3D546/1/0x400=
-0000000000002 softirq=3D9363/9363 fqs=3D20382
-[  413.317366] rcu:         (t=3D84003 jiffies g=3D26533 q=3D170)
-[  413.322307] NMI backtrace for cpu 2
-[  413.325887] CPU: 2 PID: 1 Comm: systemd Tainted: G        W         4.19=
-.84-xeno8-static #1
-[  413.334321] Hardware name: TQ-Group TQMxE39M/Type2 - Board Product Name,=
- BIOS 5.12.30.21.20 08/05/2019
-[  413.343712] I-pipe domain: Linux
-[  413.347025] Call Trace:
-[  413.349566]  <IRQ>
-[  413.351677]  dump_stack+0x8c/0xc0
-[  413.355089]  nmi_cpu_backtrace.cold+0x14/0x53
-[  413.359535]  ? lapic_can_unplug_cpu.cold+0x42/0x42
-[  413.364418]  nmi_trigger_cpumask_backtrace+0x7a/0x87
-[  413.369480]  rcu_dump_cpu_stacks+0x86/0xbe
-[  413.373672]  rcu_check_callbacks.cold+0x1fb/0x363
-[  413.378482]  update_process_times+0x41/0x80
-[  413.382761]  tick_sched_handle+0x34/0x50
-[  413.386769]  tick_sched_timer+0x38/0x80
-[  413.390698]  __hrtimer_run_queues+0xfd/0x270
-[  413.395058]  ? tick_sched_do_timer+0x60/0x60
-[  413.399434]  hrtimer_interrupt+0x106/0x230
-[  413.403644]  smp_apic_timer_interrupt+0x46/0x110
-[  413.408358]  __ipipe_do_sync_stage+0x15d/0x1c0
-[  413.412904]  __ipipe_handle_irq+0xa0/0x220
-[  413.417112]  apic_timer_interrupt+0x12/0x40
-[  413.421382]  </IRQ>
-[  413.423576] RIP: 0010:smp_call_function_single+0xd5/0x120
-[  413.429063] Code: 00 00 75 5d 48 8d 65 e8 5b 41 5c 41 5d 5d c3 48 8d 74 =
-24 20 4c 89 e2 4c 89 e9 e8 56 fe ff ff 8b 54 24 38 83 e2 01 74 0b f3 90 <8b=
-> 54 24 38 83 e2 01 75 f5 eb bf 89 7c 24 1c e8 87 eb 01 00 8b 7c
-[  413.447913] RSP: 0018:ffffa22840047b80 EFLAGS: 00000202 ORIG_RAX: ffffff=
-ffffffff13
-[  413.455622] RAX: 0000000000000000 RBX: 0000000000000001 RCX: 00000000000=
-0000b
-[  413.462838] RDX: 0000000000000001 RSI: ffff956bbb561548 RDI: 00000000000=
-a0040
-[  413.470059] RBP: ffffa22840047bf8 R08: 00000000000a0040 R09: 00000000000=
-2e248
-[  413.477275] R10: 000000000000b2dc R11: 00000000006468fd R12: ffffffff8e5=
-6c120
-[  413.484491] R13: ffffa22840047c08 R14: ffffa22840047cb0 R15: ffffa228400=
-47ce0
-[  413.491723]  ? perf_cgroup_attach+0x70/0x70
-[  413.496032]  ? trace+0x59/0x8d
-[  413.499181]  ? perf_cgroup_attach+0x70/0x70
-[  413.503461]  ? smp_call_function_single+0x5/0x120
-[  413.508267]  task_function_call+0x45/0x70
-[  413.512369]  ? perf_cgroup_switch+0x170/0x170
-[  413.516820]  perf_cgroup_attach+0x37/0x70
-[  413.520927]  cgroup_migrate_execute+0x2c3/0x370
-[  413.525566]  cgroup_attach_task+0x154/0x1f0
-[  413.529879]  cgroup_procs_write+0xc7/0x100
-[  413.534074]  cgroup_file_write+0x88/0x150
-[  413.538184]  kernfs_fop_write+0x10b/0x190
-[  413.542293]  __vfs_write+0x34/0x190
-[  413.545888]  ? __vfs_write+0x5/0x190
-[  413.549555]  ? rcu_all_qs+0x5/0x80
-[  413.553048]  vfs_write+0xb6/0x190
-[  413.556467]  ksys_write+0x57/0xd0
-[  413.559883]  do_syscall_64+0x82/0x4e0
-[  413.563666]  entry_SYSCALL_64_after_hwframe+0x44/0xa9
-[  413.568808] RIP: 0033:0x7f6e72efd4e4
-[  413.572472] Code: 00 f7 d8 64 89 02 48 c7 c0 ff ff ff ff eb bc 0f 1f 80 =
-00 00 00 00 48 8d 05 19 22 0d 00 8b 00 85 c0 75 13 b8 01 00 00 00 0f 05 <48=
-> 3d 00 f0 ff ff 77 54 c3 0f 1f 00 48 8d 64 24 d8 48 89 54 24 18
-[  413.591328] RSP: 002b:00007ffd434b8cb8 EFLAGS: 00000246 ORIG_RAX: 000000=
-0000000001
-[  413.599039] RAX: ffffffffffffffda RBX: 0000000000000005 RCX: 00007f6e72e=
-fd4e4
-[  413.606259] RDX: 0000000000000005 RSI: 00007ffd434b8e8a RDI: 00000000000=
-0002a
-[  413.613475] RBP: 00007ffd434b8e8a R08: 0000000000000000 R09: 00000000000=
-00005
-[  413.620692] R10: 0000000000000000 R11: 0000000000000246 R12: 00000000000=
-00005
-[  413.627909] R13: 00000000009abaf0 R14: 0000000000000005 R15: 00007f6e72f=
-c6760
-________________________________
+I suspect we see the hot-enabling of a tracepoint in xntimer_start here.
+That's done on x86 by injecting an int3 at the call-out while patching
+in the full instruction. If we are unlucky, that int3 is hit before the
+patching is done. Let me check if we handled that better in the past.
 
-This message and any attachments are solely for the use of the intended rec=
-ipients. They may contain privileged and/or confidential information or oth=
-er information protected from disclosure. If you are not an intended recipi=
-ent, you are hereby notified that you received this email in error and that=
- any review, dissemination, distribution or copying of this email and any a=
-ttachment is strictly prohibited. If you have received this email in error,=
- please contact the sender and delete the message and any attachment from y=
-our system.
+BTW, I usually only enable tracing before starting the workload. OTH,
+there are paths like this remaining even then, so this is just reducing
+likelyhood. What it avoids is that the application sees the latency that
+tracing activation brings.
 
-ANDRITZ HYDRO GmbH
+Jan
 
+> [  293.189440]  | #begin   0x80000000     -3 program_htick_shot+0xdb (<00000000>)
+> [  293.196726]    #func                   -3 program_htick_shot+0x0 (clockevents_program_event+0x88)
+> [  293.205665]    #func                   -4 ktime_get+0x0 (clockevents_program_event+0x4d)
+> [  293.213823]    #func                   -4 clockevents_program_event+0x0 (hrtimer_interrupt+0x140)
+> [  293.222759]    #func                   -5 tick_program_event+0x0 (hrtimer_interrupt+0x140)
 
-Rechtsform/ Legal form: Gesellschaft mit beschr?nkter Haftung / Corporation
+-- 
+Siemens AG, Corporate Technology, CT RDA IOT SES-DE
+Corporate Competence Center Embedded Linux
 
-Firmensitz/ Registered seat: Wien
-
-Firmenbuchgericht/ Court of registry: Handelsgericht Wien
-
-Firmenbuchnummer/ Company registration: FN 61833 g
-
-DVR: 0605077
-
-UID-Nr.: ATU14756806
-
-
-Thank You
-________________________________
