@@ -1,8 +1,10 @@
+Subject: Re: Inspecting heap allocations?
+References: <VI1PR05MB59171CA57D6945AB7E64112FF6550@VI1PR05MB5917.eurprd05.prod.outlook.com>
 From: Jan Kiszka <jan.kiszka@siemens.com>
-Subject: [PATCH] cobalt: Fix uclibc build
-Message-ID: <c103ee81-d2b6-6289-9869-1d372d9a205f@siemens.com>
-Date: Thu, 12 Dec 2019 16:49:50 +0100
+Message-ID: <acfe093b-01e1-1dd3-6125-61f9ac18f7e5@siemens.com>
+Date: Fri, 13 Dec 2019 08:41:43 +0100
 MIME-Version: 1.0
+In-Reply-To: <VI1PR05MB59171CA57D6945AB7E64112FF6550@VI1PR05MB5917.eurprd05.prod.outlook.com>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -14,79 +16,24 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Xenomai <xenomai@xenomai.org>
-Cc: Steven Seeger <steven.seeger@flightsystems.net>
+To: Lange Norbert <norbert.lange@andritz.com>, "Xenomai (xenomai@xenomai.org)" <xenomai@xenomai.org>
 
-From: Jan Kiszka <jan.kiszka@siemens.com>
+On 12.12.19 13:29, Lange Norbert via Xenomai wrote:
+> Hello,
+> 
+> I have some circumstances where I run out of global heap and then simple stull like creating a mutex fails with ENOMEM.
+> My suspicion is an IDDP connection between 2 processes, where 1 process might send a lot small packets before the other will pull them (I will try using a local pool).
+> 
+> In the future, is there a way to dump the owners of heap objects?
 
-Add missing forward declaration of timex, avoid incorrect alias
-creations by COBALT_IMPL due to wrongly defined fputc and putchar.
+I was considering this recently as well when we had a xnmalloc leak in a
+driver. But it was possibly via a quick hack.
 
-Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
----
- include/cobalt/stdio.h | 4 ++--
- include/cobalt/time.h  | 2 ++
- lib/cobalt/printf.c    | 2 --
- 3 files changed, 4 insertions(+), 4 deletions(-)
+In fact, I'm wondering why we are using xnmalloc so extensively. Most of
+the allocations are non-rt and could perfectly use kmalloc which would
+provide tooling. And would not be heap-size constrained.
 
-diff --git a/include/cobalt/stdio.h b/include/cobalt/stdio.h
-index 7108ffbc1d..5b9df80069 100644
---- a/include/cobalt/stdio.h
-+++ b/include/cobalt/stdio.h
-@@ -73,7 +73,7 @@ static inline int __real_putchar(int c)
- int __wrap_putchar(int c);
- int __cobalt_putchar(int c);
- #undef putchar
--#define putchar __wrap_putchar
-+#define putchar putchar
- #endif
- 
- #ifndef fputc
-@@ -86,7 +86,7 @@ static inline int __real_fputc(int c, FILE *stream)
- int __wrap_fputc(int c, FILE *stream);
- int __cobalt_fputc(int c, FILE *stream);
- #undef fputc
--#define fputc __wrap_fputc
-+#define fputc fputc
- #endif
- 
- COBALT_DECL(size_t,
-diff --git a/include/cobalt/time.h b/include/cobalt/time.h
-index 9bafe341f7..e3f355c611 100644
---- a/include/cobalt/time.h
-+++ b/include/cobalt/time.h
-@@ -30,6 +30,8 @@
- extern "C" {
- #endif
- 
-+struct timex;
-+
- COBALT_DECL(int, clock_getres(clockid_t clock_id,
- 			      struct timespec *tp));
- 
-diff --git a/lib/cobalt/printf.c b/lib/cobalt/printf.c
-index 261eccbab8..8982ddc937 100644
---- a/lib/cobalt/printf.c
-+++ b/lib/cobalt/printf.c
-@@ -793,7 +793,6 @@ COBALT_IMPL(int, puts, (const char *s))
- 	}
- }
- 
--#undef fputc
- COBALT_IMPL(int, fputc, (int c, FILE *stream))
- {
- 	if (!cobalt_is_relaxed())
-@@ -804,7 +803,6 @@ COBALT_IMPL(int, fputc, (int c, FILE *stream))
- 	}
- }
- 
--#undef putchar
- COBALT_IMPL(int, putchar, (int c))
- {
- 	if (!cobalt_is_relaxed())
--- 
-2.16.4
-
+Jan
 
 -- 
 Siemens AG, Corporate Technology, CT RDA IOT SES-DE
