@@ -1,4 +1,5 @@
 Subject: Re: stalled head domain with 3.1rc4
+From: Jan Kiszka <jan.kiszka@siemens.com>
 References: <VI1PR05MB5917452476FF30146D701888F6540@VI1PR05MB5917.eurprd05.prod.outlook.com>
  <VI1PR05MB591740A31653FE8542171311F6540@VI1PR05MB5917.eurprd05.prod.outlook.com>
  <VI1PR05MB5917FB6355396C28F99B79EDF6540@VI1PR05MB5917.eurprd05.prod.outlook.com>
@@ -8,11 +9,11 @@ References: <VI1PR05MB5917452476FF30146D701888F6540@VI1PR05MB5917.eurprd05.prod.
  <VI1PR05MB591737DED93D2292E8CEB058F6510@VI1PR05MB5917.eurprd05.prod.outlook.com>
  <07e9ac3c-789e-f399-edd3-cf7d7e8db4e1@siemens.com>
  <VI1PR05MB5917F25EE52D5E9C8F43B8B0F6510@VI1PR05MB5917.eurprd05.prod.outlook.com>
-From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <d5809aba-5e62-212e-5519-ac024e4862fb@siemens.com>
-Date: Mon, 16 Dec 2019 14:45:58 +0100
+ <d5809aba-5e62-212e-5519-ac024e4862fb@siemens.com>
+Message-ID: <a041380a-7277-cb30-836e-13c9ae9ebeb7@siemens.com>
+Date: Mon, 16 Dec 2019 15:30:26 +0100
 MIME-Version: 1.0
-In-Reply-To: <VI1PR05MB5917F25EE52D5E9C8F43B8B0F6510@VI1PR05MB5917.eurprd05.prod.outlook.com>
+In-Reply-To: <d5809aba-5e62-212e-5519-ac024e4862fb@siemens.com>
 Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -26,18 +27,23 @@ List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: Lange Norbert <norbert.lange@andritz.com>, "Xenomai (xenomai@xenomai.org)" <xenomai@xenomai.org>
 
-On 16.12.19 14:03, Lange Norbert wrote:
->> I still need to find the actually used pattern in the latest kernel.
->> It's not the one I suspected.
+On 16.12.19 14:45, Jan Kiszka wrote:
+> On 16.12.19 14:03, Lange Norbert wrote:
+>>> I still need to find the actually used pattern in the latest kernel.
+>>> It's not the one I suspected.
+>>>
+>>> Do I have your config for this setup already?
 >>
->> Do I have your config for this setup already?
+>> Attached now
 > 
-> Attached now
+> Analyzing... not very different to mine /wrt tracing.
+> 
+> Can you reproduce the issue by running only some of the Xenomai test 
+> cases while turning on tracing?
+> 
 
-Analyzing... not very different to mine /wrt tracing.
-
-Can you reproduce the issue by running only some of the Xenomai test 
-cases while turning on tracing?
+Please retry without CONFIG_JUMP_LABEL. I think this brings in the 
+unsupported dynamic (and we should make it depend on !IPIPE).
 
 Jan
 
