@@ -1,18 +1,19 @@
-From: Lange Norbert <norbert.lange@andritz.com>
-Subject: RE: stalled head domain with 3.1rc4
-Date: Mon, 16 Dec 2019 12:50:26 +0000
-Message-ID: <VI1PR05MB591737DED93D2292E8CEB058F6510@VI1PR05MB5917.eurprd05.prod.outlook.com>
+Subject: Re: stalled head domain with 3.1rc4
 References: <VI1PR05MB5917452476FF30146D701888F6540@VI1PR05MB5917.eurprd05.prod.outlook.com>
  <VI1PR05MB591740A31653FE8542171311F6540@VI1PR05MB5917.eurprd05.prod.outlook.com>
  <VI1PR05MB5917FB6355396C28F99B79EDF6540@VI1PR05MB5917.eurprd05.prod.outlook.com>
  <978c3a94-ae94-3982-3fdc-22e6f28d4aa4@siemens.com>
  <VI1PR05MB5917084161925CAB5627714DF6540@VI1PR05MB5917.eurprd05.prod.outlook.com>
  <6ef04e88-b7aa-2025-3ec8-ec11e8ff8ec5@siemens.com>
-In-Reply-To: <6ef04e88-b7aa-2025-3ec8-ec11e8ff8ec5@siemens.com>
-Content-Language: en-US
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+ <VI1PR05MB591737DED93D2292E8CEB058F6510@VI1PR05MB5917.eurprd05.prod.outlook.com>
+From: Jan Kiszka <jan.kiszka@siemens.com>
+Message-ID: <07e9ac3c-789e-f399-edd3-cf7d7e8db4e1@siemens.com>
+Date: Mon, 16 Dec 2019 13:56:54 +0100
 MIME-Version: 1.0
+In-Reply-To: <VI1PR05MB591737DED93D2292E8CEB058F6510@VI1PR05MB5917.eurprd05.prod.outlook.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -21,175 +22,202 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jan Kiszka <jan.kiszka@siemens.com>, "Xenomai (xenomai@xenomai.org)" <xenomai@xenomai.org>
+To: Lange Norbert <norbert.lange@andritz.com>, "Xenomai (xenomai@xenomai.org)" <xenomai@xenomai.org>
 
-DQoNCj4gLS0tLS1PcmlnaW5hbCBNZXNzYWdlLS0tLS0NCj4gRnJvbTogSmFuIEtpc3prYSA8amFu
-Lmtpc3prYUBzaWVtZW5zLmNvbT4NCj4gU2VudDogRnJlaXRhZywgMTMuIERlemVtYmVyIDIwMTkg
-MTQ6NDQNCj4gVG86IExhbmdlIE5vcmJlcnQgPG5vcmJlcnQubGFuZ2VAYW5kcml0ei5jb20+OyBY
-ZW5vbWFpDQo+ICh4ZW5vbWFpQHhlbm9tYWkub3JnKSA8eGVub21haUB4ZW5vbWFpLm9yZz4NCj4g
-U3ViamVjdDogUmU6IHN0YWxsZWQgaGVhZCBkb21haW4gd2l0aCAzLjFyYzQNCj4NCj4gTk9OLUFO
-RFJJVFogU09VUkNFOiBCRSBDQVVUSU9VUyBXSVRIIENPTlRFTlQsIExJTktTIE9SDQo+IEFUVEFD
-SE1FTlRTLg0KPg0KPg0KPiBPbiAxMy4xMi4xOSAxNDozNSwgTGFuZ2UgTm9yYmVydCB3cm90ZToN
-Cj4gPg0KPiA+DQo+ID4+IC0tLS0tT3JpZ2luYWwgTWVzc2FnZS0tLS0tDQo+ID4+IEZyb206IEph
-biBLaXN6a2EgPGphbi5raXN6a2FAc2llbWVucy5jb20+DQo+ID4+IFNlbnQ6IEZyZWl0YWcsIDEz
-LiBEZXplbWJlciAyMDE5IDE0OjEzDQo+ID4+IFRvOiBMYW5nZSBOb3JiZXJ0IDxub3JiZXJ0Lmxh
-bmdlQGFuZHJpdHouY29tPjsgWGVub21haQ0KPiA+PiAoeGVub21haUB4ZW5vbWFpLm9yZykgPHhl
-bm9tYWlAeGVub21haS5vcmc+DQo+ID4+IFN1YmplY3Q6IFJlOiBzdGFsbGVkIGhlYWQgZG9tYWlu
-IHdpdGggMy4xcmM0DQo+ID4+DQo+ID4+IE5PTi1BTkRSSVRaIFNPVVJDRTogQkUgQ0FVVElPVVMg
-V0lUSCBDT05URU5ULCBMSU5LUyBPUg0KPiBBVFRBQ0hNRU5UUy4NCj4gPj4NCj4gPj4NCj4gPj4g
-T24gMTMuMTIuMTkgMTM6MjUsIExhbmdlIE5vcmJlcnQgdmlhIFhlbm9tYWkgd3JvdGU6DQo+ID4+
-PiBTYW1lIHRoaW5nIHdpdGggcGFuaWMgdHJhY2UgZW5hYmxlZCAoYW5vdGhlciwgbG9uZ2VyIHRy
-YWNlIHdpdGggNDAwMA0KPiA+Pj4gc2FtcGxlcyBhdHRhY2hlZCkNCj4gPj4+DQo+ID4+PiBbICAy
-OTIuNzQzNjE4XSBJLXBpcGU6IERldGVjdGVkIHN0YWxsZWQgaGVhZCBkb21haW4sIHByb2JhYmx5
-IGNhdXNlZCBieQ0KPiBhDQo+ID4+IGJ1Zy4NCj4gPj4+IFsgIDI5Mi43NDM2MThdICAgICAgICAg
-QSBjcml0aWNhbCBzZWN0aW9uIG1heSBoYXZlIGJlZW4gbGVmdCB1bnRlcm1pbmF0ZWQuDQo+ID4+
-PiBbICAyOTIuNzU3MTk1XSBDUFU6IDAgUElEOiAxMTU5IENvbW06IHRyYWNlLWNtZCBUYWludGVk
-OiBHICAgICAgICBXDQo+ID4+IDQuMTkuODQteGVubzgtc3RhdGljICMxDQo+ID4+PiBbICAyOTIu
-NzY1OTg2XSBIYXJkd2FyZSBuYW1lOiBUUS1Hcm91cCBUUU14RTM5TS9UeXBlMiAtIEJvYXJkDQo+
-ID4+IFByb2R1Y3QNCj4gPj4+IE5hbWUsIEJJT1MgNS4xMi4zMC4yMS4yMCAwOC8wNS8yMDE5IFsg
-IDI5Mi43NzUzMDRdIEktcGlwZSBkb21haW46DQo+ID4+PiBMaW51eCBbICAyOTIuNzc4NTQ2XSBD
-YWxsIFRyYWNlOg0KPiA+Pj4gWyAgMjkyLjc4MTAwNV0gIDxJUlE+DQo+ID4+PiBbICAyOTIuNzgz
-MDM0XSAgZHVtcF9zdGFjaysweDhjLzB4YzANCj4gPj4+IFsgIDI5Mi43ODYzNjNdICBpcGlwZV9y
-b290X29ubHkuY29sZCsweDExLzB4MzIgWyAgMjkyLjc5MDU2MF0NCj4gPj4+IGlwaXBlX3N0YWxs
-X3Jvb3QrMHhlLzB4NjAgWyAgMjkyLjc5NDMyMl0NCj4gPj4+IF9faXBpcGVfdHJhcF9wcm9sb2d1
-ZSsweDExZC8weDJmMCBbICAyOTIuNzk4NzgyXSAgaW50MysweDQ1LzB4NzAgWw0KPiA+Pj4gMjky
-LjgwMTU5Ml0gUklQOiAwMDEwOnhudGltZXJfc3RhcnQrMHgzYS8weDMzMCBbICAyOTIuODA2MDUw
-XSBDb2RlOiA1NQ0KPiA+Pj4gNDkgODkgZDUgNDEgNTQgNTUgNDggODkgZmQgNTMgNDggODMgZWMg
-MTAgNDggOGIgNDcgNzAgNGMgOGIgMzcgNDggNjMNCj4gPj4+IDQwIDE4IDRkIDhiIGE2IDkwIDAw
-IDAwIDAwIDRjIDAzIDI0IGM1IDAwIGUzZiBbICAyOTIuODI0ODMyXSBSU1A6DQo+ID4+PiAwMDE4
-OmZmZmY5N2Q0M2FjMDNlNzggRUZMQUdTOiAwMDAwMDA4MiBbICAyOTIuODMwMDc1XSBSQVg6DQo+
-ID4+PiAwMDAwMDAwMDAwMDAwMDAwIFJCWDogMDAwMDAwMDAwMDAyNTA5MCBSQ1g6IDAwMDAwMDAw
-MDAwMDAwMDAgWw0KPiA+Pj4gMjkyLjgzNzIxOV0gUkRYOiAwMDAwMDAwMDAwMDAwMDAwIFJTSTog
-MDAwMDAwMDAwMDBjNjEzMCBSREk6DQo+ID4+PiBmZmZmOTdkNDNhZWIwNzA4IFsgIDI5Mi44NDQz
-NjddIFJCUDogZmZmZjk3ZDQzYWViMDcwOCBSMDg6DQo+ID4+PiAwMDAwMDAwMDAwMDAwMDAwIFIw
-OTogMDAwMDAwMDAwMDI3ZTZkMCBbICAyOTIuODUxNTE0XSBSMTA6DQo+ID4+PiAwMDAwMDA0M2Y1
-MzQ0OTYxIFIxMTogMDAwMDAwNDNmNTM0NDk2MSBSMTI6IGZmZmY5N2Q0M2FlYmIwMjAgWw0KPiA+
-Pj4gMjkyLjg1ODY1OF0gUjEzOiAwMDAwMDAwMDAwMDAwMDAwIFIxNDogZmZmZmZmZmY5ZTAzYmNh
-MCBSMTU6DQo+ID4+PiAwMDAwMDAwMDAwMGM2MTMwIFsgIDI5Mi44NjU4MDRdICA/IHhudGltZXJf
-c3RhcnQrMHgzYS8weDMzMCBbDQo+ID4+PiAyOTIuODY5NjUzXSAgcHJvZ3JhbV9odGlja19zaG90
-KzB4OGQvMHgxMzAgWyAgMjkyLjg3Mzc2MV0NCj4gPj4+IGNsb2NrZXZlbnRzX3Byb2dyYW1fZXZl
-bnQrMHg4OC8weGUwDQo+ID4+PiBbICAyOTIuODc4MzkyXSAgaHJ0aW1lcl9pbnRlcnJ1cHQrMHgx
-NDAvMHgyMzAgWyAgMjkyLjg4MjUwMl0NCj4gPj4+IHNtcF9hcGljX3RpbWVyX2ludGVycnVwdCsw
-eDQ2LzB4MTEwDQo+ID4+PiBbICAyOTIuODg3MTMyXSAgX19pcGlwZV9kb19zeW5jX3N0YWdlKzB4
-MTVkLzB4MWMwIFsgIDI5Mi44OTE1OTJdDQo+ID4+PiBfX2lwaXBlX2hhbmRsZV9pcnErMHhhMC8w
-eDIyMCBbICAyOTIuODk1Njk5XQ0KPiA+Pj4gaXBpcGVfcmVzY2hlZHVsZV9pbnRlcnJ1cHQrMHgx
-Mi8weDQwDQo+ID4+PiBbICAyOTIuOTAwNDEyXSAgPC9JUlE+DQo+ID4+PiBbICAyOTIuOTAyNTI1
-XSBSSVA6IDAwMTA6c21wX2NhbGxfZnVuY3Rpb25fbWFueSsweDFiNi8weDI1MA0KPiA+Pj4gWyAg
-MjkyLjkwNzg0OF0gQ29kZTogZTggNGYgMjMgNmMgMDAgM2IgMDUgNWQgNWYgMDEgMDEgODkgYzcg
-MGYgODMgYzQNCj4gPj4+IGZlIGZmIGZmIDQ4IDYzIGM3IDQ4IDhiIDBiIDQ4IDAzIDBjIGM1IDAw
-IGUzIGYxIDlkIDhiIDQxIDE4IGE4IDAxIDc0NQ0KPiA+Pj4gWyAgMjkyLjkyNjYyNl0gUlNQOiAw
-MDE4OmZmZmZhYjI0YzBjOWJiNDAgRUZMQUdTOiAwMDAwMDIwMiBPUklHX1JBWDoNCj4gPj4+IGZm
-ZmZmZmZmZmZmZmZmMTUgWyAgMjkyLjkzNDIxMF0gUkFYOiAwMDAwMDAwMDAwMDAwMDAzIFJCWDoN
-Cj4gPj4+IGZmZmY5N2Q0M2FlYjRjMDAgUkNYOiBmZmZmOTdkNDNiMmI3YWMwIFsgIDI5Mi45NDEz
-NTddIFJEWDoNCj4gPj4+IDAwMDAwMDAwMDAwMDAwMDEgUlNJOiAwMDAwMDAwMDAwMDAwMDAwIFJE
-STogMDAwMDAwMDAwMDAwMDAwMSBbDQo+ID4+PiAyOTIuOTQ4NTAwXSBSQlA6IGZmZmZmZmZmOWQw
-MTdiNzAgUjA4OiBmZmZmOTdkNDNhZWI0YzA4IFIwOToNCj4gPj4+IDAwMDAwMDAwMDAwMmUyNDgg
-WyAgMjkyLjk1NTY0NF0gUjEwOiBmZmZmOTdkNDNhZWI3NzgwIFIxMToNCj4gPj4+IGZmZmY5N2Q0
-M2EwMDM4MDAgUjEyOiAwMDAwMDAwMDAwMDAwMDAwIFsgIDI5Mi45NjI3ODldIFIxMzoNCj4gPj4+
-IGZmZmY5N2Q0M2FlYjRjMDggUjE0OiAwMDAwMDAwMDAwMDAwMDA0IFIxNTogMDAwMDAwMDAwMDAw
-MDAwMSBbDQo+ID4+PiAyOTIuOTY5OTM2XSAgPyBvcHRpbWl6ZV9ub3BzLmlzcmEuMCsweDkwLzB4
-OTAgWyAgMjkyLjk3NDMwNl0gID8NCj4gPj4+IG9wdGltaXplX25vcHMuaXNyYS4wKzB4OTAvMHg5
-MCBbICAyOTIuOTc4NjczXSAgPw0KPiA+Pj4geG50aW1lcl9zdGFydCsweDM5LzB4MzMwIFsgIDI5
-Mi45ODI1MTldICA/IHhudGltZXJfc3RhcnQrMHgzYS8weDMzMCBbDQo+ID4+PiAyOTIuOTg2MzY4
-XSAgb25fZWFjaF9jcHUrMHgyOC8weDUwIFsgIDI5Mi45ODk3ODJdICA/DQo+ID4+PiB4bnRpbWVy
-X3N0YXJ0KzB4MzkvMHgzMzAgWyAgMjkyLjk5MzYzMF0gIHRleHRfcG9rZV9icCsweDY4LzB4ZGUg
-Ww0KPiA+Pj4gMjkyLjk5NzEyOF0gID8NCj4gPj4gdHJhY2VfZXZlbnRfcmF3X2V2ZW50X2NvYmFs
-dF90aHJlYWRfc3VzcGVuZCsweGUwLzB4ZTANCj4gPj4+IFsgIDI5My4wMDM0OTVdICBfX2p1bXBf
-bGFiZWxfdHJhbnNmb3JtLmlzcmEuMCsweDEwMi8weDE1MA0KPiA+Pj4gWyAgMjkzLjAwODY0NV0g
-IGFyY2hfanVtcF9sYWJlbF90cmFuc2Zvcm0rMHgyZS8weDQwDQo+ID4+PiBbICAyOTMuMDEzMjc2
-XSAgX19qdW1wX2xhYmVsX3VwZGF0ZSsweDY3LzB4YTAgWyAgMjkzLjAxNzM4Ml0NCj4gPj4+IHN0
-YXRpY19rZXlfc2xvd19pbmNfY3B1c2xvY2tlZCsweDc1LzB4ODANCj4gPj4+IFsgIDI5My4wMjI0
-NDVdICBzdGF0aWNfa2V5X3Nsb3dfaW5jKzB4MTYvMHgyMCBbICAyOTMuMDI2NTU1XQ0KPiA+Pj4g
-dHJhY2Vwb2ludF9wcm9iZV9yZWdpc3Rlcl9wcmlvKzB4MWYzLzB4MmEwDQo+ID4+PiBbICAyOTMu
-MDMxNzkwXSAgPw0KPiA+Pj4gdHJhY2VfZXZlbnRfcmF3X2V2ZW50X2NvYmFsdF90aHJlYWRfc3Vz
-cGVuZCsweGUwLzB4ZTANCj4gPj4+IFsgIDI5My4wMzgxNTVdICBfX2Z0cmFjZV9ldmVudF9lbmFi
-bGVfZGlzYWJsZSsweDZmLzB4MjMwDQo+ID4+PiBbICAyOTMuMDQzMjE3XSAgX19mdHJhY2Vfc2V0
-X2Nscl9ldmVudF9ub2xvY2srMHhlNi8weDEzMA0KPiA+Pj4gWyAgMjkzLjA0ODI4MF0gIHN5c3Rl
-bV9lbmFibGVfd3JpdGUrMHhhYS8weGUwIFsgIDI5My4wNTIzOTJdDQo+ID4+PiBkb19pdGVyX3dy
-aXRlKzB4MTQwLzB4MTgwIFsgIDI5My4wNTYxNTFdICB2ZnNfd3JpdGV2KzB4YTYvMHhmMCBbDQo+
-ID4+PiAyOTMuMDU5NDg0XSAgZG9fd3JpdGV2KzB4NWYvMHgxMDAgWyAgMjkzLjA2MjgxM10NCj4g
-Pj4+IGRvX3N5c2NhbGxfNjQrMHg4Mi8weDRlMCBbICAyOTMuMDY2NDg5XQ0KPiA+Pj4gZW50cnlf
-U1lTQ0FMTF82NF9hZnRlcl9od2ZyYW1lKzB4NDQvMHhhOQ0KPiA+Pj4gWyAgMjkzLjA3MTU1NF0g
-UklQOiAwMDMzOjB4NDU4NzRjDQo+ID4+PiBbICAyOTMuMDc0NjE5XSBDb2RlOiBlZCAwMSA0OCAy
-OSBkMCA0OSA4MyBjNSAxMCA0OSA4YiA1NSAwOCA0OCA2MyBkZA0KPiA+Pj4gNDggMjkgYzIgNDkg
-MDEgNDUgMDAgNDkgODkgNTUgMDggNDkgNjMgN2YgNzggNGMgODkgZTAgNGMgODkgZWUgNDggODk4
-DQo+ID4+PiBbICAyOTMuMDkzMzk3XSBSU1A6IDAwMmI6MDAwMDdmZmM5MWE1N2EwMCBFRkxBR1M6
-IDAwMDAwMjAyIE9SSUdfUkFYOg0KPiA+Pj4gMDAwMDAwMDAwMDAwMDAxNCBbICAyOTMuMTAwOTgz
-XSBSQVg6IGZmZmZmZmZmZmZmZmZmZGEgUkJYOg0KPiA+Pj4gMDAwMDAwMDAwMDAwMDAwMiBSQ1g6
-IDAwMDAwMDAwMDA0NTg3NGMgWyAgMjkzLjEwODEyOV0gUkRYOg0KPiA+Pj4gMDAwMDAwMDAwMDAw
-MDAwMiBSU0k6IDAwMDA3ZmZjOTFhNTdhMTAgUkRJOiAwMDAwMDAwMDAwMDAwMDA1IFsNCj4gPj4+
-IDI5My4xMTUyNzVdIFJCUDogMDAwMDAwMDAwMDAwMDAwMiBSMDg6IDAwMDAwMDAwMDBiN2Q0ZTAg
-UjA5Og0KPiA+Pj4gODA4MDgwODA4MDgwODA4MCBbICAyOTMuMTIyNDIyXSBSMTA6IDAwMDAwMDAw
-MDAwMDAwMDUgUjExOg0KPiA+PiAwMDAwMDAwMDAwMDAwMjAyIFIxMjogMDAwMDAwMDAwMDAwMDAx
-NCBbICAyOTMuMTI5NTY5XSBSMTM6DQo+ID4+IDAwMDA3ZmZjOTFhNTdhMTAgUjE0OiAwMDAwMDAw
-MDAwMDAwMDAxIFIxNTogMDAwMDAwMDAwMGI3ZDRlMCBbDQo+ID4+IDI5My4xMzY3MjJdIEktcGlw
-ZSB0cmFjZXIgbG9nICgxMDAgcG9pbnRzKToNCj4gPj4+IFsgIDI5My4xNDA5MTddICB8KiNmdW5j
-ICAgICAgICAgICAgICAgICAgICAwIGlwaXBlX3RyYWNlX3BhbmljX2ZyZWV6ZSsweDANCj4gPj4g
-KGlwaXBlX3Jvb3Rfb25seSsweGNmKQ0KPiA+Pj4gWyAgMjkzLjE0OTUxMV0gIHwqI2Z1bmMgICAg
-ICAgICAgICAgICAgICAgIDAgaXBpcGVfcm9vdF9vbmx5KzB4MA0KPiA+PiAoaXBpcGVfc3RhbGxf
-cm9vdCsweGUpDQo+ID4+PiBbICAyOTMuMTU3MzIzXSAgfCojZnVuYyAgICAgICAgICAgICAgICAg
-ICAtMSBpcGlwZV9zdGFsbF9yb290KzB4MA0KPiA+PiAoX19pcGlwZV90cmFwX3Byb2xvZ3VlKzB4
-MTFkKQ0KPiA+Pj4gWyAgMjkzLjE2NTgzM10gIHwqI2Z1bmMgICAgICAgICAgICAgICAgICAgLTEg
-aXBpcGVfdGVzdF9yb290KzB4MA0KPiA+PiAoX19pcGlwZV90cmFwX3Byb2xvZ3VlKzB4YmYpDQo+
-ID4+PiBbICAyOTMuMTc0MTY1XSAgfCojZnVuYyAgICAgICAgICAgICAgICAgICAtMiBfX2lwaXBl
-X3RyYXBfcHJvbG9ndWUrMHgwDQo+IChpbnQzKzB4NDUpDQo+ID4+PiBbICAyOTMuMTgxNTQxXSAg
-fCojZnVuYyAgICAgICAgICAgICAgICAgICAtMiB4bnRpbWVyX3N0YXJ0KzB4MA0KPiA+PiAocHJv
-Z3JhbV9odGlja19zaG90KzB4OGQpDQo+ID4+DQo+ID4+IEkgc3VzcGVjdCB3ZSBzZWUgdGhlIGhv
-dC1lbmFibGluZyBvZiBhIHRyYWNlcG9pbnQgaW4geG50aW1lcl9zdGFydCBoZXJlLg0KPiA+PiBU
-aGF0J3MgZG9uZSBvbiB4ODYgYnkgaW5qZWN0aW5nIGFuIGludDMgYXQgdGhlIGNhbGwtb3V0IHdo
-aWxlIHBhdGNoaW5nIGluIHRoZQ0KPiBmdWxsDQo+ID4+IGluc3RydWN0aW9uLiBJZiB3ZSBhcmUg
-dW5sdWNreSwgdGhhdCBpbnQzIGlzIGhpdCBiZWZvcmUgdGhlIHBhdGNoaW5nIGlzIGRvbmUuDQo+
-IExldA0KPiA+PiBtZSBjaGVjayBpZiB3ZSBoYW5kbGVkIHRoYXQgYmV0dGVyIGluIHRoZSBwYXN0
-Lg0KPiA+DQo+ID4gV2hhdCBpcyB0aGUgZmFsbG91dCBpZiB0aGlzIGhhcHBlbnMsIERvZXMgaXQg
-YWZmZWN0IHRoZSBzeXN0ZW0gbmVnYXRpdmVseQ0KPiAoYXBhcnQgZnJvbSBoaWNrdXBzIGluIFJU
-KT8NCj4gPiBGcm9tIG15IHRlc3QgaXQgbmV2ZXIgaGFwcGVuZWQgYWZ0ZXIgaGl0dGluZyB0aGUg
-c3RhbGxlZCBoZWFkIGRvbWFpbiBvbmNlDQo+IChpcyB0aGlzIGEgQlVHX09OQ0UgbWVzc2FnZT8p
-Lg0KPg0KPiBBZnRlciBhIHdhcm5pbmcsIHlvdSBzaG91bGQgbm90IGFzc3VtZSB0aGUgc3lzdGVt
-IHRvIGJlIHN0aWxsIGluIGEgZ29vZA0KPiBzdGF0ZSwgc3BlY2lmaWNhbGx5IHdpdGggSS1waXBl
-L1hlbm9tYWkgZW5hYmxlZC4gSWYgeW91IGNhbiBzdGlsbA0KPiBjb2xsZWN0IHNvbWUgZGVidWdn
-aW5nIGluZm9ybWF0aW9uLCB0aGVuIGl0J3MgZ29vZCBkYXkuDQoNCk9rLg0KPg0KPiA+DQo+ID4g
-VGhpcyBpbnQzIG5lY2Vzc2FyeSB0byBpbnZhbGlkYXRlIEktY2FjaGVzPw0KPiA+IFRoZXJlIGFy
-ZSB0cmlja3MgdG8gYXRvbWljYWxseSBwYXRjaCB0aGUgc3R1YnMgZXZlbiBvbiB3YXJ0eSB4ODYg
-c3R1ZmYgbGlrZQ0KPiBMTFZNJ3MgWFJheSBbMV0NCj4NCj4gVGhlIGNvZGUgaW4gdGhlIGtlcm5l
-bCBhcyBldm9sdmVkIG92ZXIgYSBsb25nIHRpbWUgYW5kIGlzIHZlcnkgbGlrZWx5DQo+IHRoZXJl
-IGluIHRoZSBjdXJyZW50IGZvcm0gZm9yIGdvb2QgcmVhc29ucy4gSSBuZWVkIHRvIGRpZyB0aGVt
-IG91dCwgdGhleQ0KPiB3aWxsIGJlIGluIGdpdCBvciBpbiBjb21tZW50cy4NCg0KVGhlIHhyYXkg
-YXBwcm9hY2ggZG9lcyBuZWFybHkgdGhlIHNhbWUsIGJ1dCB1c2VzIGEgdHdvIGJ5dGUgaW5zdHJ1
-Y3Rpb24NCnRvIHNraXAgb3ZlciB0aGUgcmVtYWluaW5nIGJ5dGVzLiBFZmZlY3RpdmVseSBhIG5v
-LW9wLg0KSnVzdCBuZWVkIHRvIGVuc3VyZSB0aGUgb3AgaXMgYWxpZ25lZCBvbiAyLWJ5dGUsIHdo
-aWNoIHdvdWxkIGJlIHRoZSBvbmx5IG9idmlvdXMNCmRpc2FkdmFudGFnZSB0byB1c2luZyBpbnQz
-Lg0KUGVyaGFwcyB0aGUgbGludXgga2VybmVsIHVzZWQgdGhlIHNhbWUgZnVuY3Rpb25zIGZvciBk
-eW5hbWljIHVwcm9iZXMgYW5kIG90aGVyIHN0dWZmLA0KQnV0IGZ0cmFjZSBtYWNyb3Mgc2hvdWxk
-IGJlIGFibGUgdG8gZW5zdXJlIHRoZSBvcGNvZGVzIGFyZSBhbGlnbmVkPw0KDQpJZS4gb25lIGNv
-dWxkIHBvdGVudGlhbGx5IHVzZSB0aGUgMiBieXRlIGFwcHJvYWNoIGlmIGFsaWduZWQsIHRoZSBp
-bnQzIGlmIG5vdC4NCkFuZCBlbnN1cmUgb3Bjb2RlcyBhcmUgYWxpZ25lZCBmb3IgdGhlIGZ0cmFj
-ZSBzdWJzeXN0ZW0uDQpUb29rIGEgcGVlayBhdCB0aGUga2VybmVsIGNvZGUsIGJ1dCBpdHMgd2F5
-IHRvIGNvbnZvbHV0ZWQgdG8gdW5kZXJzdGFuZCBpbiBhIGNvdXBsZSBtaW51dGVzLg0KDQo+DQo+
-ID4NCj4gPj4gQlRXLCBJIHVzdWFsbHkgb25seSBlbmFibGUgdHJhY2luZyBiZWZvcmUgc3RhcnRp
-bmcgdGhlIHdvcmtsb2FkLiBPVEgsDQo+IHRoZXJlDQo+ID4+IGFyZSBwYXRocyBsaWtlIHRoaXMg
-cmVtYWluaW5nIGV2ZW4gdGhlbiwgc28gdGhpcyBpcyBqdXN0IHJlZHVjaW5nIGxpa2VseWhvb2Qu
-DQo+ID4+IFdoYXQgaXQgYXZvaWRzIGlzIHRoYXQgdGhlIGFwcGxpY2F0aW9uIHNlZXMgdGhlIGxh
-dGVuY3kgdGhhdCB0cmFjaW5nDQo+IGFjdGl2YXRpb24NCj4gPj4gYnJpbmdzLg0KPiA+DQo+ID4g
-WW91IGFyZSBsdWNreSBpZiB5b3UgY2FuIGVhc2lseSB0ZXN0IHdvcmtsb2FkcyBsaWtlIHRoYXQu
-IEkgaGF2ZSB0byB0YWtlDQo+IHNldmVyYWwgc3RlcHMgYW5kIGRpZCBub3Qgd2FudA0KPiA+IHRv
-IGNyZWF0ZSBodWdlIHRyYWNlcyBiZWZvcmUgdGhlIHNwYW4gb2YgdGhlIHdvcmtsb2FkLg0KPg0K
-PiBXZSBhcmUgdXN1YWxseSBydW5uaW5nIHRyYWNlciBpbiBmbGlnaHQgcmVjb3JkZXIsIGFsc28g
-Zm9yIGh1Z2Ugd29ya2xvYWRzLg0KDQpPaywgbmVlZCB0byBsZWFybiBuZXcgc3R1ZmYgdGhlbi4N
-Cg0KTm9yYmVydA0KX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX18NCg0KVGhpcyBtZXNz
-YWdlIGFuZCBhbnkgYXR0YWNobWVudHMgYXJlIHNvbGVseSBmb3IgdGhlIHVzZSBvZiB0aGUgaW50
-ZW5kZWQgcmVjaXBpZW50cy4gVGhleSBtYXkgY29udGFpbiBwcml2aWxlZ2VkIGFuZC9vciBjb25m
-aWRlbnRpYWwgaW5mb3JtYXRpb24gb3Igb3RoZXIgaW5mb3JtYXRpb24gcHJvdGVjdGVkIGZyb20g
-ZGlzY2xvc3VyZS4gSWYgeW91IGFyZSBub3QgYW4gaW50ZW5kZWQgcmVjaXBpZW50LCB5b3UgYXJl
-IGhlcmVieSBub3RpZmllZCB0aGF0IHlvdSByZWNlaXZlZCB0aGlzIGVtYWlsIGluIGVycm9yIGFu
-ZCB0aGF0IGFueSByZXZpZXcsIGRpc3NlbWluYXRpb24sIGRpc3RyaWJ1dGlvbiBvciBjb3B5aW5n
-IG9mIHRoaXMgZW1haWwgYW5kIGFueSBhdHRhY2htZW50IGlzIHN0cmljdGx5IHByb2hpYml0ZWQu
-IElmIHlvdSBoYXZlIHJlY2VpdmVkIHRoaXMgZW1haWwgaW4gZXJyb3IsIHBsZWFzZSBjb250YWN0
-IHRoZSBzZW5kZXIgYW5kIGRlbGV0ZSB0aGUgbWVzc2FnZSBhbmQgYW55IGF0dGFjaG1lbnQgZnJv
-bSB5b3VyIHN5c3RlbS4NCg0KQU5EUklUWiBIWURSTyBHbWJIDQoNCg0KUmVjaHRzZm9ybS8gTGVn
-YWwgZm9ybTogR2VzZWxsc2NoYWZ0IG1pdCBiZXNjaHLDpG5rdGVyIEhhZnR1bmcgLyBDb3Jwb3Jh
-dGlvbg0KDQpGaXJtZW5zaXR6LyBSZWdpc3RlcmVkIHNlYXQ6IFdpZW4NCg0KRmlybWVuYnVjaGdl
-cmljaHQvIENvdXJ0IG9mIHJlZ2lzdHJ5OiBIYW5kZWxzZ2VyaWNodCBXaWVuDQoNCkZpcm1lbmJ1
-Y2hudW1tZXIvIENvbXBhbnkgcmVnaXN0cmF0aW9uOiBGTiA2MTgzMyBnDQoNCkRWUjogMDYwNTA3
-Nw0KDQpVSUQtTnIuOiBBVFUxNDc1NjgwNg0KDQoNClRoYW5rIFlvdQ0KX19fX19fX19fX19fX19f
-X19fX19fX19fX19fX19fX18NCg==
+On 16.12.19 13:50, Lange Norbert wrote:
+> 
+> 
+>> -----Original Message-----
+>> From: Jan Kiszka <jan.kiszka@siemens.com>
+>> Sent: Freitag, 13. Dezember 2019 14:44
+>> To: Lange Norbert <norbert.lange@andritz.com>; Xenomai
+>> (xenomai@xenomai.org) <xenomai@xenomai.org>
+>> Subject: Re: stalled head domain with 3.1rc4
+>>
+>> NON-ANDRITZ SOURCE: BE CAUTIOUS WITH CONTENT, LINKS OR
+>> ATTACHMENTS.
+>>
+>>
+>> On 13.12.19 14:35, Lange Norbert wrote:
+>>>
+>>>
+>>>> -----Original Message-----
+>>>> From: Jan Kiszka <jan.kiszka@siemens.com>
+>>>> Sent: Freitag, 13. Dezember 2019 14:13
+>>>> To: Lange Norbert <norbert.lange@andritz.com>; Xenomai
+>>>> (xenomai@xenomai.org) <xenomai@xenomai.org>
+>>>> Subject: Re: stalled head domain with 3.1rc4
+>>>>
+>>>> NON-ANDRITZ SOURCE: BE CAUTIOUS WITH CONTENT, LINKS OR
+>> ATTACHMENTS.
+>>>>
+>>>>
+>>>> On 13.12.19 13:25, Lange Norbert via Xenomai wrote:
+>>>>> Same thing with panic trace enabled (another, longer trace with 4000
+>>>>> samples attached)
+>>>>>
+>>>>> [  292.743618] I-pipe: Detected stalled head domain, probably caused by
+>> a
+>>>> bug.
+>>>>> [  292.743618]         A critical section may have been left unterminated.
+>>>>> [  292.757195] CPU: 0 PID: 1159 Comm: trace-cmd Tainted: G        W
+>>>> 4.19.84-xeno8-static #1
+>>>>> [  292.765986] Hardware name: TQ-Group TQMxE39M/Type2 - Board
+>>>> Product
+>>>>> Name, BIOS 5.12.30.21.20 08/05/2019 [  292.775304] I-pipe domain:
+>>>>> Linux [  292.778546] Call Trace:
+>>>>> [  292.781005]  <IRQ>
+>>>>> [  292.783034]  dump_stack+0x8c/0xc0
+>>>>> [  292.786363]  ipipe_root_only.cold+0x11/0x32 [  292.790560]
+>>>>> ipipe_stall_root+0xe/0x60 [  292.794322]
+>>>>> __ipipe_trap_prologue+0x11d/0x2f0 [  292.798782]  int3+0x45/0x70 [
+>>>>> 292.801592] RIP: 0010:xntimer_start+0x3a/0x330 [  292.806050] Code: 55
+>>>>> 49 89 d5 41 54 55 48 89 fd 53 48 83 ec 10 48 8b 47 70 4c 8b 37 48 63
+>>>>> 40 18 4d 8b a6 90 00 00 00 4c 03 24 c5 00 e3f [  292.824832] RSP:
+>>>>> 0018:ffff97d43ac03e78 EFLAGS: 00000082 [  292.830075] RAX:
+>>>>> 0000000000000000 RBX: 0000000000025090 RCX: 0000000000000000 [
+>>>>> 292.837219] RDX: 0000000000000000 RSI: 00000000000c6130 RDI:
+>>>>> ffff97d43aeb0708 [  292.844367] RBP: ffff97d43aeb0708 R08:
+>>>>> 0000000000000000 R09: 000000000027e6d0 [  292.851514] R10:
+>>>>> 00000043f5344961 R11: 00000043f5344961 R12: ffff97d43aebb020 [
+>>>>> 292.858658] R13: 0000000000000000 R14: ffffffff9e03bca0 R15:
+>>>>> 00000000000c6130 [  292.865804]  ? xntimer_start+0x3a/0x330 [
+>>>>> 292.869653]  program_htick_shot+0x8d/0x130 [  292.873761]
+>>>>> clockevents_program_event+0x88/0xe0
+>>>>> [  292.878392]  hrtimer_interrupt+0x140/0x230 [  292.882502]
+>>>>> smp_apic_timer_interrupt+0x46/0x110
+>>>>> [  292.887132]  __ipipe_do_sync_stage+0x15d/0x1c0 [  292.891592]
+>>>>> __ipipe_handle_irq+0xa0/0x220 [  292.895699]
+>>>>> ipipe_reschedule_interrupt+0x12/0x40
+>>>>> [  292.900412]  </IRQ>
+>>>>> [  292.902525] RIP: 0010:smp_call_function_many+0x1b6/0x250
+>>>>> [  292.907848] Code: e8 4f 23 6c 00 3b 05 5d 5f 01 01 89 c7 0f 83 c4
+>>>>> fe ff ff 48 63 c7 48 8b 0b 48 03 0c c5 00 e3 f1 9d 8b 41 18 a8 01 745
+>>>>> [  292.926626] RSP: 0018:ffffab24c0c9bb40 EFLAGS: 00000202 ORIG_RAX:
+>>>>> ffffffffffffff15 [  292.934210] RAX: 0000000000000003 RBX:
+>>>>> ffff97d43aeb4c00 RCX: ffff97d43b2b7ac0 [  292.941357] RDX:
+>>>>> 0000000000000001 RSI: 0000000000000000 RDI: 0000000000000001 [
+>>>>> 292.948500] RBP: ffffffff9d017b70 R08: ffff97d43aeb4c08 R09:
+>>>>> 000000000002e248 [  292.955644] R10: ffff97d43aeb7780 R11:
+>>>>> ffff97d43a003800 R12: 0000000000000000 [  292.962789] R13:
+>>>>> ffff97d43aeb4c08 R14: 0000000000000004 R15: 0000000000000001 [
+>>>>> 292.969936]  ? optimize_nops.isra.0+0x90/0x90 [  292.974306]  ?
+>>>>> optimize_nops.isra.0+0x90/0x90 [  292.978673]  ?
+>>>>> xntimer_start+0x39/0x330 [  292.982519]  ? xntimer_start+0x3a/0x330 [
+>>>>> 292.986368]  on_each_cpu+0x28/0x50 [  292.989782]  ?
+>>>>> xntimer_start+0x39/0x330 [  292.993630]  text_poke_bp+0x68/0xde [
+>>>>> 292.997128]  ?
+>>>> trace_event_raw_event_cobalt_thread_suspend+0xe0/0xe0
+>>>>> [  293.003495]  __jump_label_transform.isra.0+0x102/0x150
+>>>>> [  293.008645]  arch_jump_label_transform+0x2e/0x40
+>>>>> [  293.013276]  __jump_label_update+0x67/0xa0 [  293.017382]
+>>>>> static_key_slow_inc_cpuslocked+0x75/0x80
+>>>>> [  293.022445]  static_key_slow_inc+0x16/0x20 [  293.026555]
+>>>>> tracepoint_probe_register_prio+0x1f3/0x2a0
+>>>>> [  293.031790]  ?
+>>>>> trace_event_raw_event_cobalt_thread_suspend+0xe0/0xe0
+>>>>> [  293.038155]  __ftrace_event_enable_disable+0x6f/0x230
+>>>>> [  293.043217]  __ftrace_set_clr_event_nolock+0xe6/0x130
+>>>>> [  293.048280]  system_enable_write+0xaa/0xe0 [  293.052392]
+>>>>> do_iter_write+0x140/0x180 [  293.056151]  vfs_writev+0xa6/0xf0 [
+>>>>> 293.059484]  do_writev+0x5f/0x100 [  293.062813]
+>>>>> do_syscall_64+0x82/0x4e0 [  293.066489]
+>>>>> entry_SYSCALL_64_after_hwframe+0x44/0xa9
+>>>>> [  293.071554] RIP: 0033:0x45874c
+>>>>> [  293.074619] Code: ed 01 48 29 d0 49 83 c5 10 49 8b 55 08 48 63 dd
+>>>>> 48 29 c2 49 01 45 00 49 89 55 08 49 63 7f 78 4c 89 e0 4c 89 ee 48 898
+>>>>> [  293.093397] RSP: 002b:00007ffc91a57a00 EFLAGS: 00000202 ORIG_RAX:
+>>>>> 0000000000000014 [  293.100983] RAX: ffffffffffffffda RBX:
+>>>>> 0000000000000002 RCX: 000000000045874c [  293.108129] RDX:
+>>>>> 0000000000000002 RSI: 00007ffc91a57a10 RDI: 0000000000000005 [
+>>>>> 293.115275] RBP: 0000000000000002 R08: 0000000000b7d4e0 R09:
+>>>>> 8080808080808080 [  293.122422] R10: 0000000000000005 R11:
+>>>> 0000000000000202 R12: 0000000000000014 [  293.129569] R13:
+>>>> 00007ffc91a57a10 R14: 0000000000000001 R15: 0000000000b7d4e0 [
+>>>> 293.136722] I-pipe tracer log (100 points):
+>>>>> [  293.140917]  |*#func                    0 ipipe_trace_panic_freeze+0x0
+>>>> (ipipe_root_only+0xcf)
+>>>>> [  293.149511]  |*#func                    0 ipipe_root_only+0x0
+>>>> (ipipe_stall_root+0xe)
+>>>>> [  293.157323]  |*#func                   -1 ipipe_stall_root+0x0
+>>>> (__ipipe_trap_prologue+0x11d)
+>>>>> [  293.165833]  |*#func                   -1 ipipe_test_root+0x0
+>>>> (__ipipe_trap_prologue+0xbf)
+>>>>> [  293.174165]  |*#func                   -2 __ipipe_trap_prologue+0x0
+>> (int3+0x45)
+>>>>> [  293.181541]  |*#func                   -2 xntimer_start+0x0
+>>>> (program_htick_shot+0x8d)
+>>>>
+>>>> I suspect we see the hot-enabling of a tracepoint in xntimer_start here.
+>>>> That's done on x86 by injecting an int3 at the call-out while patching in the
+>> full
+>>>> instruction. If we are unlucky, that int3 is hit before the patching is done.
+>> Let
+>>>> me check if we handled that better in the past.
+>>>
+>>> What is the fallout if this happens, Does it affect the system negatively
+>> (apart from hickups in RT)?
+>>>  From my test it never happened after hitting the stalled head domain once
+>> (is this a BUG_ONCE message?).
+>>
+>> After a warning, you should not assume the system to be still in a good
+>> state, specifically with I-pipe/Xenomai enabled. If you can still
+>> collect some debugging information, then it's good day.
+> 
+> Ok.
+>>
+>>>
+>>> This int3 necessary to invalidate I-caches?
+>>> There are tricks to atomically patch the stubs even on warty x86 stuff like
+>> LLVM's XRay [1]
+>>
+>> The code in the kernel as evolved over a long time and is very likely
+>> there in the current form for good reasons. I need to dig them out, they
+>> will be in git or in comments.
+> 
+> The xray approach does nearly the same, but uses a two byte instruction
+> to skip over the remaining bytes. Effectively a no-op.
+> Just need to ensure the op is aligned on 2-byte, which would be the only obvious
+> disadvantage to using int3.
+> Perhaps the linux kernel used the same functions for dynamic uprobes and other stuff,
+> But ftrace macros should be able to ensure the opcodes are aligned?
+> 
+> Ie. one could potentially use the 2 byte approach if aligned, the int3 if not.
+> And ensure opcodes are aligned for the ftrace subsystem.
+> Took a peek at the kernel code, but its way to convoluted to understand in a couple minutes.
+> 
+
+I still need to find the actually used pattern in the latest kernel. 
+It's not the one I suspected.
+
+Do I have your config for this setup already?
+
+>>
+>>>
+>>>> BTW, I usually only enable tracing before starting the workload. OTH,
+>> there
+>>>> are paths like this remaining even then, so this is just reducing likelyhood.
+>>>> What it avoids is that the application sees the latency that tracing
+>> activation
+>>>> brings.
+>>>
+>>> You are lucky if you can easily test workloads like that. I have to take
+>> several steps and did not want
+>>> to create huge traces before the span of the workload.
+>>
+>> We are usually running tracer in flight recorder, also for huge workloads.
+> 
+> Ok, need to learn new stuff then.
+
+Not too complex, though: trace-cmd start ..., possibly setting the 
+buffer size larger, and then you need to trigger the stop from the 
+application once it detected something unusual (echo 0 > 
+...tracing/tracing_on). After that, you have all the time for trace-cmd 
+extract.
+
+Jan
+
+-- 
+Siemens AG, Corporate Technology, CT RDA IOT SES-DE
+Corporate Competence Center Embedded Linux
 
