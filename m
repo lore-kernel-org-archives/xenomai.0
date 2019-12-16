@@ -1,23 +1,11 @@
 From: Lange Norbert <norbert.lange@andritz.com>
-Subject: RE: stalled head domain with 3.1rc4
-Date: Mon, 16 Dec 2019 15:43:04 +0000
-Message-ID: <VI1PR05MB591742785198F358B21CB147F6510@VI1PR05MB5917.eurprd05.prod.outlook.com>
-References: <VI1PR05MB5917452476FF30146D701888F6540@VI1PR05MB5917.eurprd05.prod.outlook.com>
- <VI1PR05MB591740A31653FE8542171311F6540@VI1PR05MB5917.eurprd05.prod.outlook.com>
- <VI1PR05MB5917FB6355396C28F99B79EDF6540@VI1PR05MB5917.eurprd05.prod.outlook.com>
- <978c3a94-ae94-3982-3fdc-22e6f28d4aa4@siemens.com>
- <VI1PR05MB5917084161925CAB5627714DF6540@VI1PR05MB5917.eurprd05.prod.outlook.com>
- <6ef04e88-b7aa-2025-3ec8-ec11e8ff8ec5@siemens.com>
- <VI1PR05MB591737DED93D2292E8CEB058F6510@VI1PR05MB5917.eurprd05.prod.outlook.com>
- <07e9ac3c-789e-f399-edd3-cf7d7e8db4e1@siemens.com>
- <VI1PR05MB5917F25EE52D5E9C8F43B8B0F6510@VI1PR05MB5917.eurprd05.prod.outlook.com>
- <d5809aba-5e62-212e-5519-ac024e4862fb@siemens.com>
- <a041380a-7277-cb30-836e-13c9ae9ebeb7@siemens.com>
-In-Reply-To: <a041380a-7277-cb30-836e-13c9ae9ebeb7@siemens.com>
+Subject: CONFIG_XENO_DRIVERS_NET_CHECKED not possible to enable
+Date: Mon, 16 Dec 2019 17:49:30 +0000
+Message-ID: <VI1PR05MB591714E870DB124146B05FB4F6510@VI1PR05MB5917.eurprd05.prod.outlook.com>
 Content-Language: en-US
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
 MIME-Version: 1.0
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -26,40 +14,51 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jan Kiszka <jan.kiszka@siemens.com>, "Xenomai (xenomai@xenomai.org)" <xenomai@xenomai.org>
+To: "Xenomai (xenomai@xenomai.org)" <xenomai@xenomai.org>
 
-DQoNCj4gLS0tLS1PcmlnaW5hbCBNZXNzYWdlLS0tLS0NCj4gRnJvbTogSmFuIEtpc3prYSA8amFu
-Lmtpc3prYUBzaWVtZW5zLmNvbT4NCj4gU2VudDogTW9udGFnLCAxNi4gRGV6ZW1iZXIgMjAxOSAx
-NTozMA0KPiBUbzogTGFuZ2UgTm9yYmVydCA8bm9yYmVydC5sYW5nZUBhbmRyaXR6LmNvbT47IFhl
-bm9tYWkNCj4gKHhlbm9tYWlAeGVub21haS5vcmcpIDx4ZW5vbWFpQHhlbm9tYWkub3JnPg0KPiBT
-dWJqZWN0OiBSZTogc3RhbGxlZCBoZWFkIGRvbWFpbiB3aXRoIDMuMXJjNA0KPg0KPiBOT04tQU5E
-UklUWiBTT1VSQ0U6IEJFIENBVVRJT1VTIFdJVEggQ09OVEVOVCwgTElOS1MgT1INCj4gQVRUQUNI
-TUVOVFMuDQo+DQo+DQo+IE9uIDE2LjEyLjE5IDE0OjQ1LCBKYW4gS2lzemthIHdyb3RlOg0KPiA+
-IE9uIDE2LjEyLjE5IDE0OjAzLCBMYW5nZSBOb3JiZXJ0IHdyb3RlOg0KPiA+Pj4gSSBzdGlsbCBu
-ZWVkIHRvIGZpbmQgdGhlIGFjdHVhbGx5IHVzZWQgcGF0dGVybiBpbiB0aGUgbGF0ZXN0IGtlcm5l
-bC4NCj4gPj4+IEl0J3Mgbm90IHRoZSBvbmUgSSBzdXNwZWN0ZWQuDQo+ID4+Pg0KPiA+Pj4gRG8g
-SSBoYXZlIHlvdXIgY29uZmlnIGZvciB0aGlzIHNldHVwIGFscmVhZHk/DQo+ID4+DQo+ID4+IEF0
-dGFjaGVkIG5vdw0KPiA+DQo+ID4gQW5hbHl6aW5nLi4uIG5vdCB2ZXJ5IGRpZmZlcmVudCB0byBt
-aW5lIC93cnQgdHJhY2luZy4NCj4gPg0KPiA+IENhbiB5b3UgcmVwcm9kdWNlIHRoZSBpc3N1ZSBi
-eSBydW5uaW5nIG9ubHkgc29tZSBvZiB0aGUgWGVub21haSB0ZXN0DQo+ID4gY2FzZXMgd2hpbGUg
-dHVybmluZyBvbiB0cmFjaW5nPw0KPiA+DQo+DQo+IFBsZWFzZSByZXRyeSB3aXRob3V0IENPTkZJ
-R19KVU1QX0xBQkVMLiBJIHRoaW5rIHRoaXMgYnJpbmdzIGluIHRoZQ0KPiB1bnN1cHBvcnRlZCBk
-eW5hbWljIChhbmQgd2Ugc2hvdWxkIG1ha2UgaXQgZGVwZW5kIG9uICFJUElQRSkuDQoNClllcywg
-Y2FudCByZXByb2R1Y2UgYW55bW9yZS4gVGhhbmtzLg0KDQpfX19fX19fX19fX19fX19fX19fX19f
-X19fX19fX19fXw0KDQpUaGlzIG1lc3NhZ2UgYW5kIGFueSBhdHRhY2htZW50cyBhcmUgc29sZWx5
-IGZvciB0aGUgdXNlIG9mIHRoZSBpbnRlbmRlZCByZWNpcGllbnRzLiBUaGV5IG1heSBjb250YWlu
-IHByaXZpbGVnZWQgYW5kL29yIGNvbmZpZGVudGlhbCBpbmZvcm1hdGlvbiBvciBvdGhlciBpbmZv
-cm1hdGlvbiBwcm90ZWN0ZWQgZnJvbSBkaXNjbG9zdXJlLiBJZiB5b3UgYXJlIG5vdCBhbiBpbnRl
-bmRlZCByZWNpcGllbnQsIHlvdSBhcmUgaGVyZWJ5IG5vdGlmaWVkIHRoYXQgeW91IHJlY2VpdmVk
-IHRoaXMgZW1haWwgaW4gZXJyb3IgYW5kIHRoYXQgYW55IHJldmlldywgZGlzc2VtaW5hdGlvbiwg
-ZGlzdHJpYnV0aW9uIG9yIGNvcHlpbmcgb2YgdGhpcyBlbWFpbCBhbmQgYW55IGF0dGFjaG1lbnQg
-aXMgc3RyaWN0bHkgcHJvaGliaXRlZC4gSWYgeW91IGhhdmUgcmVjZWl2ZWQgdGhpcyBlbWFpbCBp
-biBlcnJvciwgcGxlYXNlIGNvbnRhY3QgdGhlIHNlbmRlciBhbmQgZGVsZXRlIHRoZSBtZXNzYWdl
-IGFuZCBhbnkgYXR0YWNobWVudCBmcm9tIHlvdXIgc3lzdGVtLg0KDQpBTkRSSVRaIEhZRFJPIEdt
-YkgNCg0KDQpSZWNodHNmb3JtLyBMZWdhbCBmb3JtOiBHZXNlbGxzY2hhZnQgbWl0IGJlc2NocsOk
-bmt0ZXIgSGFmdHVuZyAvIENvcnBvcmF0aW9uDQoNCkZpcm1lbnNpdHovIFJlZ2lzdGVyZWQgc2Vh
-dDogV2llbg0KDQpGaXJtZW5idWNoZ2VyaWNodC8gQ291cnQgb2YgcmVnaXN0cnk6IEhhbmRlbHNn
-ZXJpY2h0IFdpZW4NCg0KRmlybWVuYnVjaG51bW1lci8gQ29tcGFueSByZWdpc3RyYXRpb246IEZO
-IDYxODMzIGcNCg0KRFZSOiAwNjA1MDc3DQoNClVJRC1Oci46IEFUVTE0NzU2ODA2DQoNCg0KVGhh
-bmsgWW91DQpfX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fXw0K
+Seems to me like a lot instances of XENO_DRIVERS_NET_CHECKED should be rena=
+med to XENO_DRIVERS_RTNET_CHECKED
 
+Mit besten Gr=FC=DFen / Kind regards
+
+NORBERT LANGE
+
+AT-RD3
+
+ANDRITZ HYDRO GmbH
+Eibesbrunnergasse 20
+1120 Vienna / AUSTRIA
+p: +43 50805 56684
+norbert.lange@andritz.com<mailto:norbert.lange@andritz.com>
+andritz.com<http://www.andritz.com/>
+
+________________________________
+
+This message and any attachments are solely for the use of the intended rec=
+ipients. They may contain privileged and/or confidential information or oth=
+er information protected from disclosure. If you are not an intended recipi=
+ent, you are hereby notified that you received this email in error and that=
+ any review, dissemination, distribution or copying of this email and any a=
+ttachment is strictly prohibited. If you have received this email in error,=
+ please contact the sender and delete the message and any attachment from y=
+our system.
+
+ANDRITZ HYDRO GmbH
+
+
+Rechtsform/ Legal form: Gesellschaft mit beschr=E4nkter Haftung / Corporati=
+on
+
+Firmensitz/ Registered seat: Wien
+
+Firmenbuchgericht/ Court of registry: Handelsgericht Wien
+
+Firmenbuchnummer/ Company registration: FN 61833 g
+
+DVR: 0605077
+
+UID-Nr.: ATU14756806
+
+
+Thank You
+________________________________
