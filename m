@@ -1,7 +1,7 @@
 From: xenomai@xenomai.org
-Subject: [I-PIPE] ipipe-core-4.19.89-x86-9 released
-Message-Id: <E1ih8VC-0001Zd-JR@xenomai.org>
-Date: Tue, 17 Dec 2019 09:46:46 +0100
+Subject: [I-PIPE] ipipe-core-4.19.88-cip16-x86-9 released
+Message-Id: <E1ih8lT-00021b-CD@xenomai.org>
+Date: Tue, 17 Dec 2019 10:03:35 +0100
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -12,8 +12,8 @@ List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: xenomai@xenomai.org
 
-Download URL: https://xenomai.org/downloads/ipipe/v4.x/x86/ipipe-core-4.19.89-x86-9.patch
+Download URL: https://xenomai.org/downloads/ipipe/v4.x/x86/ipipe-core-4.19.88-cip16-x86-9.patch
 
 Repository: https://git.xenomai.org/ipipe-x86
-Release tag: ipipe-core-4.19.89-x86-9
+Release tag: ipipe-core-4.19.88-cip16-x86-9
 
