@@ -1,11 +1,13 @@
-From: Jan Kiszka <jan.kiszka@siemens.com>
-Subject: [PATCH v2 7/7] debian: Enable lazy-setsched in userspace package
-Date: Tue,  3 Dec 2019 12:32:17 +0100
-Message-Id: <1070b04bc3c5d886efef0cad7d02ae6252eaf07b.1575372737.git.jan.kiszka@siemens.com>
-In-Reply-To: <cover.1575372737.git.jan.kiszka@siemens.com>
-References: <cover.1575372737.git.jan.kiszka@siemens.com>
-In-Reply-To: <cover.1575372737.git.jan.kiszka@siemens.com>
-References: <cover.1575372737.git.jan.kiszka@siemens.com>
+From: Lange Norbert <norbert.lange@andritz.com>
+Subject: RE: [I-PIPE] ipipe-core-4.19.89-x86-9 released
+Date: Tue, 17 Dec 2019 10:14:32 +0000
+Message-ID: <VI1PR05MB59172E4CC85ED99A31B077A5F6500@VI1PR05MB5917.eurprd05.prod.outlook.com>
+References: <E1ih8VC-0001Zd-JR@xenomai.org>
+In-Reply-To: <E1ih8VC-0001Zd-JR@xenomai.org>
+Content-Language: en-US
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+MIME-Version: 1.0
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -14,33 +16,33 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
+To: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-From: Jan Kiszka <jan.kiszka@siemens.com>
-
-This feature is useful for applications tuning scheduling parameters
-from within RT contexts. Primarily a topic for legacy applications. But
-as this doesn't come with noteworthy downsides, make it available in the
-generic package configuration.
-
-Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
----
- debian/rules | 1 +
- 1 file changed, 1 insertion(+)
-
-diff --git a/debian/rules b/debian/rules
-index 06e3523a6c..68e7a4e378 100755
---- a/debian/rules
-+++ b/debian/rules
-@@ -18,6 +18,7 @@ CONFIG_OPTS = --prefix=/usr \
-             --mandir=/usr/share/man \
-             --with-testdir=/usr/lib/xenomai/testsuite \
-             --enable-smp \
-+            --enable-lazy-setsched \
-             --enable-debug=symbols
- 
- ifneq ($(DEB_HOST_GNU_TYPE),$(DEB_BUILD_GNU_TYPE))
--- 
-2.16.4
-
+SXMgdGhlcmUgYW4gZWFzaWx5IGRpZ2VzdGlibGUgbGlzdCBvZiBpLXBpcGUgY2hhbmdlcyAob24g
+dG9wIG9mIHRoZSB1cHN0cmVhbSBLZXJuZWwpPw0KDQpOb3JiZXJ0DQoNCj4gLS0tLS1PcmlnaW5h
+bCBNZXNzYWdlLS0tLS0NCj4gRnJvbTogWGVub21haSA8eGVub21haS1ib3VuY2VzQHhlbm9tYWku
+b3JnPiBPbiBCZWhhbGYgT2YgeGVub21haS0tLQ0KPiB2aWEgWGVub21haQ0KPiBTZW50OiBEaWVu
+c3RhZywgMTcuIERlemVtYmVyIDIwMTkgMDk6NDcNCj4gVG86IHhlbm9tYWlAeGVub21haS5vcmcN
+Cj4gU3ViamVjdDogW0ktUElQRV0gaXBpcGUtY29yZS00LjE5Ljg5LXg4Ni05IHJlbGVhc2VkDQo+
+DQo+IE5PTi1BTkRSSVRaIFNPVVJDRTogQkUgQ0FVVElPVVMgV0lUSCBDT05URU5ULCBMSU5LUyBP
+Ug0KPiBBVFRBQ0hNRU5UUy4NCj4NCj4NCj4gRG93bmxvYWQgVVJMOiBodHRwczovL3hlbm9tYWku
+b3JnL2Rvd25sb2Fkcy9pcGlwZS92NC54L3g4Ni9pcGlwZS1jb3JlLQ0KPiA0LjE5Ljg5LXg4Ni05
+LnBhdGNoDQo+DQo+IFJlcG9zaXRvcnk6IGh0dHBzOi8vZ2l0Lnhlbm9tYWkub3JnL2lwaXBlLXg4
+NiBSZWxlYXNlIHRhZzogaXBpcGUtY29yZS0NCj4gNC4xOS44OS14ODYtOQ0KDQpfX19fX19fX19f
+X19fX19fX19fX19fX19fX19fX19fXw0KDQpUaGlzIG1lc3NhZ2UgYW5kIGFueSBhdHRhY2htZW50
+cyBhcmUgc29sZWx5IGZvciB0aGUgdXNlIG9mIHRoZSBpbnRlbmRlZCByZWNpcGllbnRzLiBUaGV5
+IG1heSBjb250YWluIHByaXZpbGVnZWQgYW5kL29yIGNvbmZpZGVudGlhbCBpbmZvcm1hdGlvbiBv
+ciBvdGhlciBpbmZvcm1hdGlvbiBwcm90ZWN0ZWQgZnJvbSBkaXNjbG9zdXJlLiBJZiB5b3UgYXJl
+IG5vdCBhbiBpbnRlbmRlZCByZWNpcGllbnQsIHlvdSBhcmUgaGVyZWJ5IG5vdGlmaWVkIHRoYXQg
+eW91IHJlY2VpdmVkIHRoaXMgZW1haWwgaW4gZXJyb3IgYW5kIHRoYXQgYW55IHJldmlldywgZGlz
+c2VtaW5hdGlvbiwgZGlzdHJpYnV0aW9uIG9yIGNvcHlpbmcgb2YgdGhpcyBlbWFpbCBhbmQgYW55
+IGF0dGFjaG1lbnQgaXMgc3RyaWN0bHkgcHJvaGliaXRlZC4gSWYgeW91IGhhdmUgcmVjZWl2ZWQg
+dGhpcyBlbWFpbCBpbiBlcnJvciwgcGxlYXNlIGNvbnRhY3QgdGhlIHNlbmRlciBhbmQgZGVsZXRl
+IHRoZSBtZXNzYWdlIGFuZCBhbnkgYXR0YWNobWVudCBmcm9tIHlvdXIgc3lzdGVtLg0KDQpBTkRS
+SVRaIEhZRFJPIEdtYkgNCg0KDQpSZWNodHNmb3JtLyBMZWdhbCBmb3JtOiBHZXNlbGxzY2hhZnQg
+bWl0IGJlc2NocsOkbmt0ZXIgSGFmdHVuZyAvIENvcnBvcmF0aW9uDQoNCkZpcm1lbnNpdHovIFJl
+Z2lzdGVyZWQgc2VhdDogV2llbg0KDQpGaXJtZW5idWNoZ2VyaWNodC8gQ291cnQgb2YgcmVnaXN0
+cnk6IEhhbmRlbHNnZXJpY2h0IFdpZW4NCg0KRmlybWVuYnVjaG51bW1lci8gQ29tcGFueSByZWdp
+c3RyYXRpb246IEZOIDYxODMzIGcNCg0KRFZSOiAwNjA1MDc3DQoNClVJRC1Oci46IEFUVTE0NzU2
+ODA2DQoNCg0KVGhhbmsgWW91DQpfX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fXw0K
 
