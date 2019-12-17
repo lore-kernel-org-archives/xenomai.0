@@ -1,14 +1,11 @@
-From: Lange Norbert <norbert.lange@andritz.com>
-Subject: RE: CONFIG_XENO_DRIVERS_NET_CHECKED not possible to enable
-Date: Tue, 17 Dec 2019 11:16:04 +0000
-Message-ID: <VI1PR05MB591746AF0D4224A05439D0EBF6500@VI1PR05MB5917.eurprd05.prod.outlook.com>
-References: <VI1PR05MB591714E870DB124146B05FB4F6510@VI1PR05MB5917.eurprd05.prod.outlook.com>
- <743f7e3a-46ea-69a3-f4e2-b42395540d35@siemens.com>
-In-Reply-To: <743f7e3a-46ea-69a3-f4e2-b42395540d35@siemens.com>
-Content-Language: en-US
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+From: Jan Kiszka <jan.kiszka@siemens.com>
+Subject: [PATCH] cobalt: sched-quota: Fix live-updating if quotas, once more
+Message-ID: <35b12f3f-f3ac-012b-ab5e-0b225324dff3@siemens.com>
+Date: Tue, 17 Dec 2019 20:36:45 +0100
 MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,37 +14,80 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jan Kiszka <jan.kiszka@siemens.com>, "Xenomai (xenomai@xenomai.org)" <xenomai@xenomai.org>
+To: Xenomai <xenomai@xenomai.org>
 
-PiAtLS0tLU9yaWdpbmFsIE1lc3NhZ2UtLS0tLQ0KPiBGcm9tOiBKYW4gS2lzemthIDxqYW4ua2lz
-emthQHNpZW1lbnMuY29tPg0KPiBTZW50OiBEaWVuc3RhZywgMTcuIERlemVtYmVyIDIwMTkgMDc6
-NTMNCj4gVG86IExhbmdlIE5vcmJlcnQgPG5vcmJlcnQubGFuZ2VAYW5kcml0ei5jb20+OyBYZW5v
-bWFpDQo+ICh4ZW5vbWFpQHhlbm9tYWkub3JnKSA8eGVub21haUB4ZW5vbWFpLm9yZz4NCj4gU3Vi
-amVjdDogUmU6IENPTkZJR19YRU5PX0RSSVZFUlNfTkVUX0NIRUNLRUQgbm90IHBvc3NpYmxlIHRv
-IGVuYWJsZQ0KPg0KPiBOT04tQU5EUklUWiBTT1VSQ0U6IEJFIENBVVRJT1VTIFdJVEggQ09OVEVO
-VCwgTElOS1MgT1INCj4gQVRUQUNITUVOVFMuDQo+DQo+DQo+IE9uIDE2LjEyLjE5IDE4OjQ5LCBM
-YW5nZSBOb3JiZXJ0IHZpYSBYZW5vbWFpIHdyb3RlOg0KPiA+IFNlZW1zIHRvIG1lIGxpa2UgYSBs
-b3QgaW5zdGFuY2VzIG9mIFhFTk9fRFJJVkVSU19ORVRfQ0hFQ0tFRCBzaG91bGQNCj4gYmUNCj4g
-PiByZW5hbWVkIHRvIFhFTk9fRFJJVkVSU19SVE5FVF9DSEVDS0VEDQo+ID4NCj4NCj4gR29vZCBj
-YXRjaCwgd2FzIGFsd2F5cyB3cm9uZy4gQnV0IGFzIHRoZSBoaWdoZXItbGV2ZWwgY29uZmlnIGlz
-IGNhbGxlZA0KPiBYRU5PX0RSSVZFUlNfTkVULCB3ZSBzaG91bGQgcmF0aGVyIHJlbmFtZQ0KPiBY
-RU5PX0RSSVZFUlNfUlRORVRfQ0hFQ0tFRC4NCg0KRml4aW5nIGFuZCBlbmFibGluZyB0aGUgb3B0
-aW9uIHJlc3VsdHMgaW4gbXVsdGlwbGUgY29tcGlsZSBlcnJvcnMsDQpzbyBpdCBwcm9iYWJseSB3
-YXMgbmV2ZXIgdGVzdGVkIGVpdGhlci4NCl9fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
-DQoNClRoaXMgbWVzc2FnZSBhbmQgYW55IGF0dGFjaG1lbnRzIGFyZSBzb2xlbHkgZm9yIHRoZSB1
-c2Ugb2YgdGhlIGludGVuZGVkIHJlY2lwaWVudHMuIFRoZXkgbWF5IGNvbnRhaW4gcHJpdmlsZWdl
-ZCBhbmQvb3IgY29uZmlkZW50aWFsIGluZm9ybWF0aW9uIG9yIG90aGVyIGluZm9ybWF0aW9uIHBy
-b3RlY3RlZCBmcm9tIGRpc2Nsb3N1cmUuIElmIHlvdSBhcmUgbm90IGFuIGludGVuZGVkIHJlY2lw
-aWVudCwgeW91IGFyZSBoZXJlYnkgbm90aWZpZWQgdGhhdCB5b3UgcmVjZWl2ZWQgdGhpcyBlbWFp
-bCBpbiBlcnJvciBhbmQgdGhhdCBhbnkgcmV2aWV3LCBkaXNzZW1pbmF0aW9uLCBkaXN0cmlidXRp
-b24gb3IgY29weWluZyBvZiB0aGlzIGVtYWlsIGFuZCBhbnkgYXR0YWNobWVudCBpcyBzdHJpY3Rs
-eSBwcm9oaWJpdGVkLiBJZiB5b3UgaGF2ZSByZWNlaXZlZCB0aGlzIGVtYWlsIGluIGVycm9yLCBw
-bGVhc2UgY29udGFjdCB0aGUgc2VuZGVyIGFuZCBkZWxldGUgdGhlIG1lc3NhZ2UgYW5kIGFueSBh
-dHRhY2htZW50IGZyb20geW91ciBzeXN0ZW0uDQoNCkFORFJJVFogSFlEUk8gR21iSA0KDQoNClJl
-Y2h0c2Zvcm0vIExlZ2FsIGZvcm06IEdlc2VsbHNjaGFmdCBtaXQgYmVzY2hyw6Rua3RlciBIYWZ0
-dW5nIC8gQ29ycG9yYXRpb24NCg0KRmlybWVuc2l0ei8gUmVnaXN0ZXJlZCBzZWF0OiBXaWVuDQoN
-CkZpcm1lbmJ1Y2hnZXJpY2h0LyBDb3VydCBvZiByZWdpc3RyeTogSGFuZGVsc2dlcmljaHQgV2ll
-bg0KDQpGaXJtZW5idWNobnVtbWVyLyBDb21wYW55IHJlZ2lzdHJhdGlvbjogRk4gNjE4MzMgZw0K
-DQpEVlI6IDA2MDUwNzcNCg0KVUlELU5yLjogQVRVMTQ3NTY4MDYNCg0KDQpUaGFuayBZb3UNCl9f
-X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fDQo=
+From: Jan Kiszka <jan.kiszka@siemens.com>
+
+f116e7eb9b56 already tried to enable live updates of a quota group but
+got one thing wrong and missed another catch:
+
+First, we must not use group_is_active() to check if the group is
+currently consuming time. That has to be the same logic as in
+xnsched_quota_pick(), i.e. a check of the currently running thread on
+the target sched belongs to the modified group.
+
+The second issue is that, if a group had no budget on refill or consumed
+it in this period already, an extension of the budget missed to move
+expired threads back to the runqueue.
+
+Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
+---
+ kernel/cobalt/sched-quota.c | 18 +++++++++++++++---
+ 1 file changed, 15 insertions(+), 3 deletions(-)
+
+diff --git a/kernel/cobalt/sched-quota.c b/kernel/cobalt/sched-quota.c
+index bb31833088..4c3383b5f6 100644
+--- a/kernel/cobalt/sched-quota.c
++++ b/kernel/cobalt/sched-quota.c
+@@ -584,8 +584,10 @@ void xnsched_quota_set_limit(struct xnsched_quota_group *tg,
+ 			     int quota_percent, int quota_peak_percent,
+ 			     int *quota_sum_r)
+ {
+-	struct xnsched_quota *qs = &tg->sched->quota;
++	struct xnsched *sched = tg->sched;
++	struct xnsched_quota *qs = &sched->quota;
+ 	xnticks_t old_quota_ns = tg->quota_ns;
++	struct xnthread *thread, *tmp, *curr;
+ 	xnticks_t now, elapsed, consumed;
+ 
+ 	atomic_only();
+@@ -611,7 +613,9 @@ void xnsched_quota_set_limit(struct xnsched_quota_group *tg,
+ 	tg->quota_percent = quota_percent;
+ 	tg->quota_peak_percent = quota_peak_percent;
+ 
+-	if (group_is_active(tg)) {
++	curr = sched->curr;
++	if (curr->quota == tg &&
++	    xnthread_test_state(curr, XNREADY|XNTHREAD_BLOCK_BITS) == 0) {
+ 		now = xnclock_read_monotonic(&nkclock);
+ 
+ 		elapsed = now - tg->run_start_ns;
+@@ -638,11 +642,19 @@ void xnsched_quota_set_limit(struct xnsched_quota_group *tg,
+ 
+ 	*quota_sum_r = quota_sum_all(qs);
+ 
++	if (tg->run_budget_ns > 0) {
++		list_for_each_entry_safe_reverse(thread, tmp, &tg->expired,
++						 quota_expired) {
++			list_del_init(&thread->quota_expired);
++			xnsched_addq(&sched->rt.runnable, thread);
++		}
++	}
++
+ 	/*
+ 	 * Apply the new budget immediately, in case a member of this
+ 	 * group is currently running.
+ 	 */
+-	xnsched_set_resched(tg->sched);
++	xnsched_set_resched(sched);
+ 	xnsched_run();
+ }
+ EXPORT_SYMBOL_GPL(xnsched_quota_set_limit);
+-- 
+2.16.4
+
+
+-- 
+Siemens AG, Corporate Technology, CT RDA IOT SES-DE
+Corporate Competence Center Embedded Linux
 
