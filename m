@@ -1,7 +1,7 @@
 From: Jan Kiszka <jan.kiszka@siemens.com>
-Subject: [xenomai-images][PATCH] Use github as PREMIRROR
-Message-ID: <1e308eb3-ae0e-a80f-803a-cdc026952739@siemens.com>
-Date: Thu, 19 Dec 2019 12:27:40 +0100
+Subject: [PATCH] powerpc: ipipe: Do full exit checks after __ipipe_call_mayday
+Message-ID: <d93a6092-b340-b74b-ff3d-51ac5c438c25@siemens.com>
+Date: Thu, 19 Dec 2019 17:46:05 +0100
 MIME-Version: 1.0
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
@@ -14,28 +14,49 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Xenomai <xenomai@xenomai.org>
+To: Steven Seeger <steven.seeger@flightsystems.net>
+Cc: Xenomai <xenomai@xenomai.org>, Philippe Gerum <rpm@xenomai.org>
 
 From: Jan Kiszka <jan.kiszka@siemens.com>
 
-This removes load from gitlab.denx.de and is likely also more reliable.
+The mayday event tends to push us into root mode. So we must check
+__ipipe_root_p again afterwards.
+
+This fixes the gdb synchronous stop test case in Xenomai.
 
 Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
 ---
- kas.yml | 3 +++
- 1 file changed, 3 insertions(+)
 
-diff --git a/kas.yml b/kas.yml
-index e3c6641..78bd83d 100644
---- a/kas.yml
-+++ b/kas.yml
-@@ -41,3 +41,6 @@ local_conf_header:
-     ISAR_CROSS_COMPILE = "1"
-   xenomai-version: |
-     PREFERRED_VERSION_xenomai ?= "stable"
-+  github-mirror: |
-+    PREMIRRORS_prepend = " \
-+        git://gitlab.denx.de/Xenomai/ git://github.com/xenomai-ci/ \n"
+Ho, ho, this is an early X-mas gift.
+
+ arch/powerpc/kernel/ipipe.c | 7 +++----
+ 1 file changed, 3 insertions(+), 4 deletions(-)
+
+diff --git a/arch/powerpc/kernel/ipipe.c b/arch/powerpc/kernel/ipipe.c
+index 30c56d922a2c..fefb0542acd8 100644
+--- a/arch/powerpc/kernel/ipipe.c
++++ b/arch/powerpc/kernel/ipipe.c
+@@ -240,9 +240,7 @@ EXPORT_SYMBOL_GPL(ipipe_get_sysinfo);
+ 
+ static int __ipipe_exit_irq(struct pt_regs *regs)
+ {
+-	int root = __ipipe_root_p;
+-
+-	if (root) {
++	if (__ipipe_root_p) {
+ #ifdef CONFIG_PPC_970_NAP
+ 		struct thread_info *ti = current_thread_info();
+ 		/* Emulate the napping check when 100% sure we do run
+@@ -258,7 +256,8 @@ static int __ipipe_exit_irq(struct pt_regs *regs)
+ 	if (user_mode(regs) && ipipe_test_thread_flag(TIP_MAYDAY))
+ 		__ipipe_call_mayday(regs);
+ 
+-	if (root && !test_bit(IPIPE_STALL_FLAG, &__ipipe_root_status))
++	if (__ipipe_root_p &&
++	    !test_bit(IPIPE_STALL_FLAG, &__ipipe_root_status))
+ 		return 1;
+ 
+ 	return 0;
 -- 
 2.16.4
 
