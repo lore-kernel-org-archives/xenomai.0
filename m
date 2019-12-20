@@ -1,17 +1,9 @@
-Subject: Re: [PATCH] powerpc: ipipe: Do full exit checks after
- __ipipe_call_mayday
-References: <d93a6092-b340-b74b-ff3d-51ac5c438c25@siemens.com>
- <1738468.DV2hKNJMbQ@omoikane>
- <d09d638e-276b-9a4d-28e9-e58392bb6aeb@siemens.com>
- <15932776.13ek4xDJqg@omoikane>
-From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <77ed81c9-e26f-a5ea-63c1-3135e7e18091@siemens.com>
-Date: Thu, 19 Dec 2019 18:24:16 +0100
 MIME-Version: 1.0
-In-Reply-To: <15932776.13ek4xDJqg@omoikane>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+From: Laurentiu-Cristian Duca <laurentiu.duca@gmail.com>
+Date: Fri, 20 Dec 2019 13:14:20 +0200
+Message-ID: <CAPm8-H7RNuMLSmiB-NdJ+Edck-GQy1dRmmPzc2un_V1f7QsQtA@mail.gmail.com>
+Subject: [patch 1/4] fix: spi_master_read_rt()
+Content-Type: text/plain; charset="UTF-8"
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -20,29 +12,32 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Steven Seeger <steven.seeger@flightsystems.net>
-Cc: Xenomai <xenomai@xenomai.org>, Philippe Gerum <rpm@xenomai.org>
+To: xenomai <xenomai@xenomai.org>
 
-On 19.12.19 18:15, Steven Seeger wrote:
-> On Thursday, December 19, 2019 12:14:27 PM EST Jan Kiszka wrote:
->>
->> Check ipipe-arm/ipipe/master:arch/arm/kernel/entry-common.S for the call
->> to ipipe_call_mayday. I suspect that pattern transfers nicely.
->>
->> Jan
-> 
-> Will do. Can you point me to a smokey test that will prove the implemention is
-> fixed? Preferably if you have something that shows it's currently broken.
+>From 6e9138e92a4b9a3f163faeb4ad04f257157fd2f5 Mon Sep 17 00:00:00 2001
+From: Laurentiu-Cristian Duca <laurentiu.duca@gmail.com>
+Date: Fri, 20 Dec 2019 13:00:42 +0200
+Subject: [PATCH] - spi_master_read_rt(): if master->ops->read() returns > 0,
+ then copy data to userspace.
 
-Hmm, I suppose we have none, otherwise this would have triggered 
-earlier. The pattern exposing it may be: Thread A blocks on RT syscall, 
-thread B injects Linux signal to thread A, then hands over control. 
-Next, thread A should be migrated on return from the syscall, but the 
-pending signal delivery should be delayed.
+Signed-off-by: Laurentiu-Cristian Duca <laurentiu.duca@gmail.com>
+---
+ kernel/drivers/spi/spi-master.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-Jan
-
+diff --git a/kernel/drivers/spi/spi-master.c b/kernel/drivers/spi/spi-master.c
+index 12a1ad1f1..1e81bd02e 100644
+--- a/kernel/drivers/spi/spi-master.c
++++ b/kernel/drivers/spi/spi-master.c
+@@ -240,7 +240,7 @@ static ssize_t spi_master_read_rt(struct rtdm_fd *fd,
+ 		do_chip_deselect(slave);
+ 	}
+ 	rtdm_mutex_unlock(&master->bus_lock);
+-	if (ret == 0)
++	if (ret > 0)
+ 		ret = rtdm_safe_copy_to_user(fd, u_buf, rx, len);
+ 	
+ 	xnfree(rx);
 -- 
-Siemens AG, Corporate Technology, CT RDA IOT SES-DE
-Corporate Competence Center Embedded Linux
+2.17.1
 
