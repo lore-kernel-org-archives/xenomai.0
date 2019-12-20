@@ -1,12 +1,13 @@
+From: Steven Seeger <steven.seeger@flightsystems.net>
+Subject: Re: [PATCH] powerpc: ipipe: Do full exit checks after
+ __ipipe_call_mayday
+Date: Fri, 20 Dec 2019 17:19:10 -0500
+Message-ID: <3547025.FgZ9TNa1CN@omoikane>
+In-Reply-To: <d93a6092-b340-b74b-ff3d-51ac5c438c25@siemens.com>
+References: <d93a6092-b340-b74b-ff3d-51ac5c438c25@siemens.com>
+Content-Transfer-Encoding: 7Bit
+Content-Type: text/plain; charset="us-ascii"
 MIME-Version: 1.0
-In-Reply-To: <35685293-62b6-02c9-481f-9d1527d9bd73@siemens.com>
-References: <CAPm8-H7RNuMLSmiB-NdJ+Edck-GQy1dRmmPzc2un_V1f7QsQtA@mail.gmail.com>
- <35685293-62b6-02c9-481f-9d1527d9bd73@siemens.com>
-From: Laurentiu-Cristian Duca <laurentiu.duca@gmail.com>
-Date: Fri, 20 Dec 2019 17:16:20 +0200
-Message-ID: <CAPm8-H7PUFai3vxe0XM31CvxUn9DJzO548xcakMvcWX=t0f71w@mail.gmail.com>
-Subject: Re: [patch 1/4] fix: spi_master_read_rt()
-Content-Type: text/plain; charset="UTF-8"
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,83 +17,45 @@ List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: Jan Kiszka <jan.kiszka@siemens.com>
-Cc: xenomai <xenomai@xenomai.org>
+Cc: Xenomai <xenomai@xenomai.org>, Philippe Gerum <rpm@xenomai.org>
 
-On 12/20/19, Jan Kiszka <jan.kiszka@siemens.com> wrote:
-> On 20.12.19 12:14, Laurentiu-Cristian Duca via Xenomai wrote:
->>  From 6e9138e92a4b9a3f163faeb4ad04f257157fd2f5 Mon Sep 17 00:00:00 2001
->> From: Laurentiu-Cristian Duca <laurentiu.duca@gmail.com>
->> Date: Fri, 20 Dec 2019 13:00:42 +0200
->> Subject: [PATCH] - spi_master_read_rt(): if master->ops->read() returns >
->> 0,
->>   then copy data to userspace.
->>
->
-> I'm lacking a little bit the description of the issue here, means a
-> brief but catchy subject line and then some separate paragraph which
-> explains /why/ we need the change.
->
->> Signed-off-by: Laurentiu-Cristian Duca <laurentiu.duca@gmail.com>
->> ---
->>   kernel/drivers/spi/spi-master.c | 2 +-
->>   1 file changed, 1 insertion(+), 1 deletion(-)
->>
->> diff --git a/kernel/drivers/spi/spi-master.c
->> b/kernel/drivers/spi/spi-master.c
->> index 12a1ad1f1..1e81bd02e 100644
->> --- a/kernel/drivers/spi/spi-master.c
->> +++ b/kernel/drivers/spi/spi-master.c
->> @@ -240,7 +240,7 @@ static ssize_t spi_master_read_rt(struct rtdm_fd *fd,
->>   		do_chip_deselect(slave);
->>   	}
->>   	rtdm_mutex_unlock(&master->bus_lock);
->> -	if (ret == 0)
->> +	if (ret > 0)
->>   		ret = rtdm_safe_copy_to_user(fd, u_buf, rx, len);
->>   	
->>   	xnfree(rx);
->>
->
-> To my reading of the two existing master drivers, this change is not
-> needed so far. They either return < 0 on error or the requested length
-> on success.
->
-> However, I see the point that, if the interface should be "return the
-> actual length", we should only copy back that length. But that's also
-> not what the change does because that would require passing ret as
-> length to copy_to_user, rather than len. Am I missing something?
->
-  The error was in the line "if (ret == 0)" which is false
-when the read successfully returns len and the copy_to_user does not happen.
-So I put "if (ret > 0)".
-Indeed, instead of len should pass ret to copy_to_user as a follow of
-read() definition.
+Tried running with your patch, Jan. I made sure the files I sent you I had 
+worked on were the same I had sent you. I wound up with a crash in 
+do_user_signal during the smokey gdb test.
 
-> BTW, this claims to be patch 1 of 4, but the other three are still
-> missing on the list.
-I reduce the number of patches from 4 to 2 (this error correction and
-bbb spi rt driver)
-by postponing the ioctl() enhancement
-(allowing user to send less data than mmaped - which I have tested on
-rpi and bbb,
-but further tests need to be done for spi-sun6i.c and I do not have the board)
-until implementing a public test (eventually in spitest.c).
+# LD_LIBRARY_PATH=/usr/xenomai/lib /usr/xenomai/bin/smokey --run=gdb
+[   10.650031] Unable to handle kernel paging request for instruction fetch
+[   10.656762] Faulting instruction address: 0xc0010b00
+[   10.661736] Oops: Kernel access of bad area, sig: 11 [#1]
+[   10.667124] BE PREEMPT Aitech SP0S100
+[   10.670780] Modules linked in: unix
+[   10.674268] CPU: 0 PID: 982 Comm: smokey Not tainted 4.19.55-aitech #96
+[   10.680871] I-pipe domain: Linux
+[   10.684089] NIP:  c0010b00 LR: c0010ad8 CTR: c00a8f1c
+[   10.689131] REGS: ee8cbe90 TRAP: 0400   Not tainted  (4.19.55-aitech)
+[   10.695559] MSR:  00009220 <EE,ME,DE,IR>  CR: 24000284  XER: 20000000
+[   10.701998] 
+[   10.701998] GPR00: 00000000 ee8cbf40 ef156bc0 00000000 c0007890 ef156bc0 
+00000000 5d084753 
+[   10.701998] GPR08: c055b068 00000001 c0599a60 00021000 22000282 1004870c 
+00000000 00000000 
+[   10.701998] GPR16: 00000000 00000000 00000000 00000000 00000000 00000000 
+00000000 10040000 
+[   10.701998] GPR24: 00000000 b7ffc000 1001e480 1001e4b0 10041198 100425d0 
+00000002 bffff9d0 
+[   10.736886] NIP [c0010b00] do_user_signal+0x20/0x34
+[   10.741755] LR [c0010ad8] recheck+0x48/0x50
+[   10.745927] Call Trace:
+[   10.748362] Instruction dump:
+[   10.751322] 7d400124 48089e21 2c830000 4186ffa0 614a8000 7d400124 806100b0 
+70600001 
+[   10.759066] 41820010 bda10044 5463003c 906100b0 <38610010> 7d244b78 
+4bff7add b9a10044 
+[   10.766985] ---[ end trace d102d53b0f8d6db9 ]---
+[   10.771591] 
 
-Thanks for kindness,
-L-C.
 
->
-> Regarding submission format: buildroot has a nice setup tutorial how to
-> route local git commits to mailing lists, individually or as series.
-> Have a look at
-> https://buildroot.org/downloads/manual/manual.html#submitting-patches,
-> specifically "Preparing a patch series".
->
-> Thanks,
-> Jan
->
-> --
-> Siemens AG, Corporate Technology, CT RDA IOT SES-DE
-> Corporate Competence Center Embedded Linux
->
+
+
+
 
