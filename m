@@ -1,12 +1,15 @@
-From: Jan Kiszka <jan.kiszka@siemens.com>
-Subject: [PATCH v2 4/7] Revert "cobalt/kernel: Introduce __SCHED_CURRENT
- policy to setschedparam_ex"
-Date: Tue,  3 Dec 2019 12:32:14 +0100
-Message-Id: <65a045606878421fbfebe1adb693a16be0556bae.1575372737.git.jan.kiszka@siemens.com>
-In-Reply-To: <cover.1575372737.git.jan.kiszka@siemens.com>
-References: <cover.1575372737.git.jan.kiszka@siemens.com>
-In-Reply-To: <cover.1575372737.git.jan.kiszka@siemens.com>
-References: <cover.1575372737.git.jan.kiszka@siemens.com>
+From: Steven Seeger <steven.seeger@flightsystems.net>
+Subject: Re: [PATCH] powerpc: ipipe: Do full exit checks after
+ __ipipe_call_mayday
+Date: Fri, 20 Dec 2019 19:14:28 -0500
+Message-ID: <30328229.FlIjBx1lN1@omoikane>
+In-Reply-To: <77ed81c9-e26f-a5ea-63c1-3135e7e18091@siemens.com>
+References: <d93a6092-b340-b74b-ff3d-51ac5c438c25@siemens.com>
+ <15932776.13ek4xDJqg@omoikane>
+ <77ed81c9-e26f-a5ea-63c1-3135e7e18091@siemens.com>
+Content-Transfer-Encoding: 7Bit
+Content-Type: text/plain; charset="us-ascii"
+MIME-Version: 1.0
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,78 +18,19 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
+To: Jan Kiszka <jan.kiszka@siemens.com>
+Cc: Xenomai <xenomai@xenomai.org>, Philippe Gerum <rpm@xenomai.org>
 
-From: Jan Kiszka <jan.kiszka@siemens.com>
+Jan,
 
-This reverts commit b3c70f1a470397c915a6c206d07c7c342c164df4.
+I took a look at entry-common.S and entry_32.S and I think we have the correct 
+check. The flow is a little different, but it seems to work as far as I can 
+tell.
 
-Was broken by design and is now no longer needed.
+This was originally Philippe's code. Maybe he can take a quick look. ;)
 
-Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
----
- include/cobalt/uapi/sched.h        |  3 ---
- kernel/cobalt/posix/thread.c       | 10 ----------
- kernel/cobalt/trace/cobalt-posix.h |  3 +--
- 3 files changed, 1 insertion(+), 15 deletions(-)
+Steven
 
-diff --git a/include/cobalt/uapi/sched.h b/include/cobalt/uapi/sched.h
-index 2a1df44b49..b672095c3b 100644
---- a/include/cobalt/uapi/sched.h
-+++ b/include/cobalt/uapi/sched.h
-@@ -21,9 +21,6 @@
- #define SCHED_COBALT		42
- #define SCHED_WEAK		43
- 
--/* for internal use */
--#define __SCHED_CURRENT		44
--
- #ifndef SCHED_SPORADIC
- #define SCHED_SPORADIC		10
- #define sched_ss_low_priority	sched_u.ss.__sched_low_priority
-diff --git a/kernel/cobalt/posix/thread.c b/kernel/cobalt/posix/thread.c
-index c2a9fb46c5..bf9c082123 100644
---- a/kernel/cobalt/posix/thread.c
-+++ b/kernel/cobalt/posix/thread.c
-@@ -242,7 +242,6 @@ struct xnthread_personality *cobalt_thread_finalize(struct xnthread *zombie)
- int __cobalt_thread_setschedparam_ex(struct cobalt_thread *thread, int policy,
- 				     const struct sched_param_ex *param_ex)
- {
--	struct xnthread *base_thread = &thread->threadbase;
- 	struct xnsched_class *sched_class;
- 	union xnsched_policy_param param;
- 	xnticks_t tslice;
-@@ -257,15 +256,6 @@ int __cobalt_thread_setschedparam_ex(struct cobalt_thread *thread, int policy,
- 		goto out;
- 	}
- 
--	if (policy == __SCHED_CURRENT) {
--		policy = base_thread->base_class->policy;
--		if (xnthread_base_priority(base_thread) == 0)
--			policy = SCHED_NORMAL;
--		else if (base_thread->base_class == &xnsched_class_rt &&
--			 xnthread_test_state(base_thread, XNRRB))
--			policy = SCHED_RR;
--	}
--
- 	tslice = thread->threadbase.rrperiod;
- 	sched_class = cobalt_sched_policy_param(&param, policy,
- 						param_ex, &tslice);
-diff --git a/kernel/cobalt/trace/cobalt-posix.h b/kernel/cobalt/trace/cobalt-posix.h
-index 83ec748586..aa78efbc01 100644
---- a/kernel/cobalt/trace/cobalt-posix.h
-+++ b/kernel/cobalt/trace/cobalt-posix.h
-@@ -202,8 +202,7 @@ DECLARE_EVENT_CLASS(syscall_exit,
- 			 {SCHED_QUOTA, "quota"},		\
- 			 {SCHED_SPORADIC, "sporadic"},		\
- 			 {SCHED_COBALT, "cobalt"},		\
--			 {SCHED_WEAK, "weak"},			\
--			 {__SCHED_CURRENT, "<current>"})
-+			 {SCHED_WEAK, "weak"})
- 
- const char *cobalt_trace_parse_sched_params(struct trace_seq *, int,
- 					    struct sched_param_ex *);
--- 
-2.16.4
+
 
 
