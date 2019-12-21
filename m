@@ -1,15 +1,7 @@
-From: Steven Seeger <steven.seeger@flightsystems.net>
-Subject: Re: [PATCH] powerpc: ipipe: Do full exit checks after
- __ipipe_call_mayday
-Date: Fri, 20 Dec 2019 19:14:28 -0500
-Message-ID: <30328229.FlIjBx1lN1@omoikane>
-In-Reply-To: <77ed81c9-e26f-a5ea-63c1-3135e7e18091@siemens.com>
-References: <d93a6092-b340-b74b-ff3d-51ac5c438c25@siemens.com>
- <15932776.13ek4xDJqg@omoikane>
- <77ed81c9-e26f-a5ea-63c1-3135e7e18091@siemens.com>
-Content-Transfer-Encoding: 7Bit
-Content-Type: text/plain; charset="us-ascii"
-MIME-Version: 1.0
+From: xenomai@xenomai.org
+Subject: [I-PIPE] ipipe-core-4.19.55-ppc32-2 released
+Message-Id: <E1iiSVz-0001TJ-3U@xenomai.org>
+Date: Sat, 21 Dec 2019 01:21:03 +0100
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -18,19 +10,10 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jan Kiszka <jan.kiszka@siemens.com>
-Cc: Xenomai <xenomai@xenomai.org>, Philippe Gerum <rpm@xenomai.org>
+To: xenomai@xenomai.org
 
-Jan,
+Download URL: https://xenomai.org/downloads/ipipe/v4.x/ppc32/ipipe-core-4.19.55-ppc32-2.patch
 
-I took a look at entry-common.S and entry_32.S and I think we have the correct 
-check. The flow is a little different, but it seems to work as far as I can 
-tell.
-
-This was originally Philippe's code. Maybe he can take a quick look. ;)
-
-Steven
-
-
-
+Repository: https://git.xenomai.org/ipipe-ppc32
+Release tag: ipipe-core-4.19.55-ppc32-2
 
