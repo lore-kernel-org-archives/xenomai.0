@@ -1,11 +1,11 @@
-From: Jan Kiszka <jan.kiszka@siemens.com>
-Subject: [PATCH v2 2/7] cobalt/posix: Add thread_setschedprio
-Date: Tue,  3 Dec 2019 12:32:12 +0100
-Message-Id: <fcbfaf4b61507bda49b446486fb5dc2432af198a.1575372737.git.jan.kiszka@siemens.com>
-In-Reply-To: <cover.1575372737.git.jan.kiszka@siemens.com>
-References: <cover.1575372737.git.jan.kiszka@siemens.com>
-In-Reply-To: <cover.1575372737.git.jan.kiszka@siemens.com>
-References: <cover.1575372737.git.jan.kiszka@siemens.com>
+MIME-Version: 1.0
+In-Reply-To: <CAPm8-H589E2WZB=UxrVjbmsxD-7UcLMke56XHKK6Zy_iSS9oDg@mail.gmail.com>
+References: <CAPm8-H589E2WZB=UxrVjbmsxD-7UcLMke56XHKK6Zy_iSS9oDg@mail.gmail.com>
+From: Laurentiu-Cristian Duca <laurentiu.duca@gmail.com>
+Date: Thu, 2 Jan 2020 14:28:20 +0200
+Message-ID: <CAPm8-H7_SCD7PodzfBYCk7kz-QULEf_ofRGh45y9ga=TfeOTow@mail.gmail.com>
+Subject: Re: [patch 2/5] SPI_RTIOC_TRANSFER_N ioctl with len parameter
+Content-Type: text/plain; charset="UTF-8"
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -14,200 +14,98 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
+To: xenomai <xenomai@xenomai.org>
 
-From: Jan Kiszka <jan.kiszka@siemens.com>
+SPI_RTIOC_TRANSFER_N is also useful because it allows
+the user to make SPI transfers of arbitrary length
+by using the same mmapped memory area.
 
-The approach of using thread_setschedparam_ex with __SCHED_CURRENT
-failed for policies with complex parameter sets. Therefore, introduce a
-syscall that is fully aware of how to apply only the priority change to
-the target thread's scheduling settings.
-
-We need a compat path as well because we are passing down pointers.
-
-Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
----
- include/cobalt/uapi/syscall.h                      |  1 +
- .../arch/x86/include/asm/xenomai/syscall32-table.h |  1 +
- kernel/cobalt/posix/syscall32.c                    |  9 ++++++
- kernel/cobalt/posix/syscall32.h                    |  6 ++++
- kernel/cobalt/posix/thread.c                       | 37 ++++++++++++++++++++++
- kernel/cobalt/posix/thread.h                       | 11 +++++++
- kernel/cobalt/trace/cobalt-posix.h                 | 15 +++++++++
- 7 files changed, 80 insertions(+)
-
-diff --git a/include/cobalt/uapi/syscall.h b/include/cobalt/uapi/syscall.h
-index 1cb22a5936..aa3c308d0b 100644
---- a/include/cobalt/uapi/syscall.h
-+++ b/include/cobalt/uapi/syscall.h
-@@ -121,6 +121,7 @@
- #define sc_cobalt_recvmmsg			98
- #define sc_cobalt_sendmmsg			99
- #define sc_cobalt_clock_adjtime			100
-+#define sc_cobalt_thread_setschedprio		101
- 
- #define __NR_COBALT_SYSCALLS			128 /* Power of 2 */
- 
-diff --git a/kernel/cobalt/arch/x86/include/asm/xenomai/syscall32-table.h b/kernel/cobalt/arch/x86/include/asm/xenomai/syscall32-table.h
-index 7484c3a955..4784377b06 100644
---- a/kernel/cobalt/arch/x86/include/asm/xenomai/syscall32-table.h
-+++ b/kernel/cobalt/arch/x86/include/asm/xenomai/syscall32-table.h
-@@ -27,6 +27,7 @@
- __COBALT_CALL32emu_THUNK(thread_create)
- __COBALT_CALL32emu_THUNK(thread_setschedparam_ex)
- __COBALT_CALL32emu_THUNK(thread_getschedparam_ex)
-+__COBALT_CALL32emu_THUNK(thread_setschedprio)
- __COBALT_CALL32emu_THUNK(sem_open)
- __COBALT_CALL32x_THUNK(sem_open)
- __COBALT_CALL32emu_THUNK(sem_timedwait)
-diff --git a/kernel/cobalt/posix/syscall32.c b/kernel/cobalt/posix/syscall32.c
-index a2482b7a00..faa7ef53a6 100644
---- a/kernel/cobalt/posix/syscall32.c
-+++ b/kernel/cobalt/posix/syscall32.c
-@@ -88,6 +88,15 @@ COBALT_SYSCALL32emu(thread_getschedparam_ex, current,
- 	return ret ?: sys32_put_param_ex(policy, u_param, &param_ex);
- }
- 
-+COBALT_SYSCALL32emu(thread_setschedprio, conforming,
-+		    (compat_ulong_t pth,
-+		     int prio,
-+		     __u32 __user *u_winoff,
-+		     int __user *u_promoted))
-+{
-+	return cobalt_thread_setschedprio(pth, prio, u_winoff, u_promoted);
-+}
-+
- static inline int sys32_fetch_timeout(struct timespec *ts,
- 				      const void __user *u_ts)
- {
-diff --git a/kernel/cobalt/posix/syscall32.h b/kernel/cobalt/posix/syscall32.h
-index 5ba6513f38..34904f96bd 100644
---- a/kernel/cobalt/posix/syscall32.h
-+++ b/kernel/cobalt/posix/syscall32.h
-@@ -45,6 +45,12 @@ COBALT_SYSCALL32emu_DECL(thread_getschedparam_ex,
- 			  int __user *u_policy,
- 			  struct compat_sched_param_ex __user *u_param));
- 
-+COBALT_SYSCALL32emu_DECL(thread_setschedprio,
-+			 (compat_ulong_t pth,
-+			  int prio,
-+			  __u32 __user *u_winoff,
-+			  int __user *u_promoted));
-+
- COBALT_SYSCALL32emu_DECL(clock_getres,
- 			 (clockid_t clock_id,
- 			  struct compat_timespec __user *u_ts));
-diff --git a/kernel/cobalt/posix/thread.c b/kernel/cobalt/posix/thread.c
-index 9f1c802b63..c2a9fb46c5 100644
---- a/kernel/cobalt/posix/thread.c
-+++ b/kernel/cobalt/posix/thread.c
-@@ -568,6 +568,43 @@ COBALT_SYSCALL(thread_getschedparam_ex, current,
- 	return cobalt_copy_to_user(u_param, &param_ex, sizeof(param_ex));
- }
- 
-+int cobalt_thread_setschedprio(unsigned long pth,
-+			       int prio,
-+			       __u32 __user *u_winoff,
-+			       int __user *u_promoted)
-+{
-+	struct sched_param_ex param_ex;
-+	struct cobalt_thread *thread;
-+	int ret, policy, promoted;
-+
-+	trace_cobalt_pthread_setschedprio(pth, prio);
-+
-+	thread = thread_lookup_or_shadow(pth, u_winoff, &promoted);
-+	if (IS_ERR(thread))
-+		return PTR_ERR(thread);
-+
-+	ret = __cobalt_thread_getschedparam_ex(thread, &policy, &param_ex);
-+	if (ret)
-+		return ret;
-+
-+	param_ex.sched_priority = prio;
-+
-+	ret = __cobalt_thread_setschedparam_ex(thread, policy, &param_ex);
-+	if (ret)
-+		return ret;
-+
-+	return cobalt_copy_to_user(u_promoted, &promoted, sizeof(promoted));
-+}
-+
-+COBALT_SYSCALL(thread_setschedprio, conforming,
-+	       (unsigned long pth,
-+		int prio,
-+		__u32 __user *u_winoff,
-+		int __user *u_promoted))
-+{
-+	return cobalt_thread_setschedprio(pth, prio, u_winoff, u_promoted);
-+}
-+
- int __cobalt_thread_create(unsigned long pth, int policy,
- 			   struct sched_param_ex *param_ex,
- 			   int xid, __u32 __user *u_winoff)
-diff --git a/kernel/cobalt/posix/thread.h b/kernel/cobalt/posix/thread.h
-index fec9d17859..51be372a7a 100644
---- a/kernel/cobalt/posix/thread.h
-+++ b/kernel/cobalt/posix/thread.h
-@@ -139,6 +139,11 @@ int __cobalt_thread_getschedparam_ex(struct cobalt_thread *thread,
- 				     int *policy_r,
- 				     struct sched_param_ex *param_ex);
- 
-+int cobalt_thread_setschedprio(unsigned long pth,
-+			       int prio,
-+			       __u32 __user *u_winoff,
-+			       int __user *u_promoted);
-+
- struct cobalt_thread *cobalt_thread_find(pid_t pid);
- 
- struct cobalt_thread *cobalt_thread_find_local(pid_t pid);
-@@ -181,6 +186,12 @@ COBALT_SYSCALL_DECL(thread_getschedparam_ex,
- 		     int __user *u_policy,
- 		     struct sched_param_ex __user *u_param));
- 
-+COBALT_SYSCALL_DECL(thread_setschedprio,
-+		    (unsigned long pth,
-+		     int prio,
-+		     __u32 __user *u_winoff,
-+		     int __user *u_promoted));
-+
- void cobalt_thread_map(struct xnthread *curr);
- 
- struct xnthread_personality *cobalt_thread_exit(struct xnthread *curr);
-diff --git a/kernel/cobalt/trace/cobalt-posix.h b/kernel/cobalt/trace/cobalt-posix.h
-index bda7bdd3c8..83ec748586 100644
---- a/kernel/cobalt/trace/cobalt-posix.h
-+++ b/kernel/cobalt/trace/cobalt-posix.h
-@@ -70,6 +70,7 @@
- 		__cobalt_symbolic_syscall(thread_kill),			\
- 		__cobalt_symbolic_syscall(thread_setschedparam_ex),	\
- 		__cobalt_symbolic_syscall(thread_getschedparam_ex),	\
-+		__cobalt_symbolic_syscall(thread_setschedprio),		\
- 		__cobalt_symbolic_syscall(thread_getstat),		\
- 		__cobalt_symbolic_syscall(sem_init),			\
- 		__cobalt_symbolic_syscall(sem_destroy),			\
-@@ -311,6 +312,20 @@ DEFINE_EVENT(cobalt_posix_schedparam, cobalt_pthread_getschedparam,
- 	TP_ARGS(pth, policy, param_ex)
- );
- 
-+TRACE_EVENT(cobalt_pthread_setschedprio,
-+	TP_PROTO(unsigned long pth, int prio),
-+	TP_ARGS(pth, prio),
-+	TP_STRUCT__entry(
-+		__field(unsigned long, pth)
-+		__field(int, prio)
-+	),
-+	TP_fast_assign(
-+		__entry->pth = pth;
-+		__entry->prio = prio;
-+	),
-+	TP_printk("pth=%p prio=%d", (void *)__entry->pth, __entry->prio)
-+);
-+
- #define cobalt_print_thread_mode(__mode)			\
- 	__print_flags(__mode, "|",				\
- 		      {PTHREAD_WARNSW, "warnsw"},		\
--- 
-2.16.4
-
+On 12/30/19, Laurentiu-Cristian Duca <laurentiu.duca@gmail.com> wrote:
+> From d47ede0283b68ac972d7f6a4b87ba1caa4fa9d5f Mon Sep 17 00:00:00 2001
+> From: Laurentiu-Cristian Duca <laurentiu.duca@gmail.com>
+> Date: Mon, 23 Dec 2019 16:49:05 +0200
+> Subject: [PATCH] SPI_RTIOC_TRANSFER_N ioctl with len parameter to transfer
+>  only len bytes to SPI slave
+>
+> Note that set_iobufs() used in xenomai-spi-drivers
+> (spi-bcm2835.c and other drivers using its model)
+> allocates for the user ioctl(SPI_RTIOC_SET_IOBUFS)
+> len = L1_CACHE_ALIGN(len) * 2;
+> (half for tx and half for rx)
+> which in case of am335x for example the resulted len will be greater than
+> 2 multiplied with user requested len. So, ioctl(SPI_RTIOC_TRANSFER)
+> will transfer more bytes than requested in case of am335x.
+> Hence, a new ioctl(SPI_RTIOC_TRANSFER_N, int requested_len) was added
+> to transfer only requested_len bytes to SPI slave.
+>
+> Signed-off-by: Laurentiu-Cristian Duca <laurentiu.duca@gmail.com>
+> ---
+>  include/rtdm/uapi/spi.h         |  1 +
+>  kernel/drivers/spi/spi-master.c | 15 ++++++++++++++-
+>  kernel/drivers/spi/spi-master.h |  1 +
+>  3 files changed, 16 insertions(+), 1 deletion(-)
+>
+> diff --git a/include/rtdm/uapi/spi.h b/include/rtdm/uapi/spi.h
+> index 8f042377f..001d08ab7 100644
+> --- a/include/rtdm/uapi/spi.h
+> +++ b/include/rtdm/uapi/spi.h
+> @@ -37,5 +37,6 @@ struct rtdm_spi_iobufs {
+>  #define SPI_RTIOC_GET_CONFIG		_IOR(RTDM_CLASS_SPI, 1, struct
+> rtdm_spi_config)
+>  #define SPI_RTIOC_SET_IOBUFS		_IOR(RTDM_CLASS_SPI, 2, struct
+> rtdm_spi_iobufs)
+>  #define SPI_RTIOC_TRANSFER		_IO(RTDM_CLASS_SPI, 3)
+> +#define SPI_RTIOC_TRANSFER_N            _IOR(RTDM_CLASS_SPI, 4, int)
+>
+>  #endif /* !_RTDM_UAPI_SPI_H */
+> diff --git a/kernel/drivers/spi/spi-master.c
+> b/kernel/drivers/spi/spi-master.c
+> index e04f7ca10..104af8023 100644
+> --- a/kernel/drivers/spi/spi-master.c
+> +++ b/kernel/drivers/spi/spi-master.c
+> @@ -150,7 +150,7 @@ static int spi_master_ioctl_rt(struct rtdm_fd *fd,
+>  	struct rtdm_spi_remote_slave *slave = fd_to_slave(fd);
+>  	struct rtdm_spi_master *master = slave->master;
+>  	struct rtdm_spi_config config;
+> -	int ret;
+> +	int ret, len;
+>
+>  	switch (request) {
+>  	case SPI_RTIOC_SET_CONFIG:
+> @@ -178,6 +178,19 @@ static int spi_master_ioctl_rt(struct rtdm_fd *fd,
+>  			rtdm_mutex_unlock(&master->bus_lock);
+>  		}
+>  		break;
+> +	case SPI_RTIOC_TRANSFER_N:
+> +		ret = -EINVAL;
+> +		if (master->ops->transfer_iobufs_n) {
+> +			len = (int)arg;
+> +			rtdm_mutex_lock(&master->bus_lock);
+> +			ret = do_chip_select(slave);
+> +			if (ret == 0) {
+> +				ret = master->ops->transfer_iobufs_n(slave, len);
+> +				do_chip_deselect(slave);
+> +			}
+> +			rtdm_mutex_unlock(&master->bus_lock);
+> +		}
+> +		break;
+>  	default:
+>  		ret = -ENOSYS;
+>  	}
+> diff --git a/kernel/drivers/spi/spi-master.h
+> b/kernel/drivers/spi/spi-master.h
+> index b5a9ce762..ecfea2f90 100644
+> --- a/kernel/drivers/spi/spi-master.h
+> +++ b/kernel/drivers/spi/spi-master.h
+> @@ -39,6 +39,7 @@ struct rtdm_spi_master_ops {
+>  			   struct vm_area_struct *vma);
+>  	void (*mmap_release)(struct rtdm_spi_remote_slave *slave);
+>  	int (*transfer_iobufs)(struct rtdm_spi_remote_slave *slave);
+> +	int (*transfer_iobufs_n)(struct rtdm_spi_remote_slave *slave, int len);
+>  	ssize_t (*write)(struct rtdm_spi_remote_slave *slave,
+>  			 const void *tx, size_t len);
+>  	ssize_t (*read)(struct rtdm_spi_remote_slave *slave,
+> --
+> 2.17.1
+>
 
