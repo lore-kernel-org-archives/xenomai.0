@@ -1,11 +1,11 @@
-From: Jan Kiszka <jan.kiszka@siemens.com>
-Subject: [PATCH v2 3/7] lib/cobalt: Use new thread_setschedprio syscall
-Date: Tue,  3 Dec 2019 12:32:13 +0100
-Message-Id: <4e5c96d58adeb69cdb6faaa482b16e74c28b0c60.1575372737.git.jan.kiszka@siemens.com>
-In-Reply-To: <cover.1575372737.git.jan.kiszka@siemens.com>
-References: <cover.1575372737.git.jan.kiszka@siemens.com>
-In-Reply-To: <cover.1575372737.git.jan.kiszka@siemens.com>
-References: <cover.1575372737.git.jan.kiszka@siemens.com>
+From: Johannes Holtz <johannes.holtz@compador.de>
+Subject: migrating to xenomai 3
+Message-ID: <269aa40f-de14-b7a5-0486-98df418befbf@compador.de>
+Date: Tue, 7 Jan 2020 11:42:24 +0100
+MIME-Version: 1.0
+Content-Type: text/plain; charset="utf-8"; format="flowed"
+Content-Transfer-Encoding: 8bit
+Content-Language: en-US
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,63 +16,58 @@ List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: xenomai@xenomai.org
 
-From: Jan Kiszka <jan.kiszka@siemens.com>
+Hi,
 
-Switch the implementation of pthread_setschedprio to the new cobalt
-syscall in order to avoid scheduler setting corruptions for SCHED_QUOTA
-and similar complex policies.
+after a long and exhausting year I finally found time to experiment on 
+migrating our application from Xenomai 2.6.4 to Xenomai 3.
 
-Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
----
- lib/cobalt/thread.c | 33 +++++++++++++++++++++++++++++----
- 1 file changed, 29 insertions(+), 4 deletions(-)
+So I downloaded the latest stable release 3.0.10 and somehow found out I 
+can't use the 4.19 ipipe kernel but the 4.14 so i also got that. 
+patched, build, installed and tested the kernel an the binaries and now 
+I was going to see what I have to do to build my application.
 
-diff --git a/lib/cobalt/thread.c b/lib/cobalt/thread.c
-index 86db6343c9..bb23cdcb97 100644
---- a/lib/cobalt/thread.c
-+++ b/lib/cobalt/thread.c
-@@ -666,11 +666,36 @@ int pthread_setschedparam_ex(pthread_t thread,
- 
- COBALT_IMPL(int, pthread_setschedprio, (pthread_t thread, int prio))
- {
--	struct sched_param_ex param_ex = {
--		.sched_priority = prio,
--	};
-+	__u32 u_winoff, *u_winoff_ptr;
-+	int ret, promoted;
- 
--	return pthread_setschedparam_ex(thread, __SCHED_CURRENT, &param_ex);
-+	/* See pthread_setschedparam_ex. */
-+	if (cobalt_eager_setsched()) {
-+		ret = __STD(pthread_setschedprio(thread, prio));
-+		if (ret)
-+			return ret;
-+	}
-+
-+	/* only request promotion when this targets the current thread */
-+	u_winoff_ptr = thread == pthread_self() ? &u_winoff : NULL;
-+
-+	ret = -XENOMAI_SYSCALL4(sc_cobalt_thread_setschedprio,
-+				thread, prio, u_winoff_ptr, &promoted);
-+
-+	/*
-+	 * If the kernel has no reference to the target thread. let glibc
-+	 * handle the call.
-+	 */
-+	if (ret == ESRCH)
-+		return __STD(pthread_setschedprio(thread, prio));
-+
-+	if (ret == 0 && promoted) {
-+		cobalt_sigshadow_install_once();
-+		cobalt_set_tsd(u_winoff);
-+		cobalt_thread_harden();
-+	}
-+
-+	return ret;
- }
- 
- /**
--- 
-2.16.4
+I used to build my app with these flags:
+
+XENO_CONFIG    = /opt/xenomai/bin/xeno-config
+XENO_CFLAGS    = $(shell $(XENO_CONFIG) --skin=rtdm  --cflags 2>/dev/null)
+XENO_LDFLAGS    = $(shell $(XENO_CONFIG) --skin=rtdm --ldflags 
+2>/dev/null) -lnative
+
+If you ask why I use rtdm and native. I need -lnative else I get this:
+
+rt_x_threads.c:(.text+0x3e9): undefined reference to `rt_timer_read'
+rt_x_threads.c:(.text+0x3fd): undefined reference to `rt_task_join'
+rt_x_threads.c:(.text+0x40b): undefined reference to `rt_task_delete'
+rt_x_threads.c:(.text+0x429): undefined reference to `rt_timer_read'
+
+And I need -lrtdm else I get this:
+
+rt_x_ipc.c:(.text+0x4a): undefined reference to `rt_dev_socket'
+rt_x_ipc.c:(.text+0x9e): undefined reference to `rt_dev_ioctl'
+rt_x_ipc.c:(.text+0xde): undefined reference to `rt_dev_ioctl'
+rt_x_ipc.c:(.text+0x112): undefined reference to `rt_dev_ioctl'
+rt_x_ipc.c:(.text+0x16c): undefined reference to `rt_dev_ioctl'
+rt_x_ipc.c:(.text+0x17f): undefined reference to `rt_dev_close'
+rt_x_ipc.c:(.text+0x1ac): undefined reference to `rt_dev_close'
+rt_x_ipc.c:(.text+0x206): undefined reference to `rt_dev_close'
+rt_x_ipc.c:(.text+0x219): undefined reference to `rt_dev_close'
+
+I wanted to used the native interface so I can distinguish rt syscalls 
+from standard posix calls.
+
+
+FFD to my migration. I build Xenomai in cobalt skin and not mercury. I 
+added the --compat switch to xeno-config but -lnative and -lrtdm are 
+both not found anymore. Meaning there is a ton of undefined references.
+
+What would be the best strategy to solve this? Do I have to migrate all 
+my native calls to posix calls or is there maybe a wrapper?
+
+
+
+Cheers
+
+Johannes
+
 
 
