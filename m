@@ -1,11 +1,10 @@
 MIME-Version: 1.0
-References: <CAKsggZxO58KU27Uf_-i3yLgk4kcjoOUqSS_PZLC0gndXBNU=GQ@mail.gmail.com>
- <f912dfe0-7ac8-dbf9-1451-e6012eae8792@siemens.com>
-In-Reply-To: <f912dfe0-7ac8-dbf9-1451-e6012eae8792@siemens.com>
-From: Stefano Zambon <stefano@elk.audio>
-Date: Thu, 9 Jan 2020 17:06:33 +0100
-Message-ID: <CAKsggZyhih5STuU2o0UjCaHe0uRyk_=sC6iw7Mh2Wr3xSmKbMA@mail.gmail.com>
-Subject: Re: Open source audio project for Raspberry Pi 3
+References: <mailman.113.1577718625.956.xenomai@xenomai.org>
+In-Reply-To: <mailman.113.1577718625.956.xenomai@xenomai.org>
+From: Nitin Kulkarni <nitin@elk.audio>
+Date: Thu, 9 Jan 2020 17:47:46 +0100
+Message-ID: <CAPgPmP0n8Z+czZjEFe6C5dapwBGRdjX6p7MSK1BNdJB30RX6iA@mail.gmail.com>
+Subject: Re: [patch 2/5] SPI_RTIOC_TRANSFER_N ioctl with len parameter
 Content-Type: text/plain; charset="UTF-8"
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
@@ -15,24 +14,48 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
+To: laurentiu.duca@gmail.com
+Cc: xenomai@xenomai.org
 
-Hi Jan,
-
-On Thu, 9 Jan 2020 at 16:36, Jan Kiszka <jan.kiszka@siemens.com> wrote:
 >
-> Thanks for sharing, looks like a really nice user story! Do you consider
-> presenting it at some community event(s) as well?
+> Date: Mon, 30 Dec 2019 17:07:21 +0200
+> From: Laurentiu-Cristian Duca <laurentiu.duca@gmail.com>
+> To: xenomai <xenomai@xenomai.org>
+> Subject: [patch 2/5] SPI_RTIOC_TRANSFER_N ioctl with len parameter
+> Message-ID:
+>         <CAPm8-H589E2WZB=
+> UxrVjbmsxD-7UcLMke56XHKK6Zy_iSS9oDg@mail.gmail.com>
+> Content-Type: text/plain; charset="UTF-8"
+>
+> >From d47ede0283b68ac972d7f6a4b87ba1caa4fa9d5f Mon Sep 17 00:00:00 2001
+> From: Laurentiu-Cristian Duca <laurentiu.duca@gmail.com>
+> Date: Mon, 23 Dec 2019 16:49:05 +0200
+> Subject: [PATCH] SPI_RTIOC_TRANSFER_N ioctl with len parameter to transfer
+>  only len bytes to SPI slave
+>
+> Note that set_iobufs() used in xenomai-spi-drivers
+> (spi-bcm2835.c and other drivers using its model)
+> allocates for the user ioctl(SPI_RTIOC_SET_IOBUFS)
+> len = L1_CACHE_ALIGN(len) * 2;
+> (half for tx and half for rx)
+> which in case of am335x for example the resulted len will be greater than
+> 2 multiplied with user requested len. So, ioctl(SPI_RTIOC_TRANSFER)
+> will transfer more bytes than requested in case of am335x.
+> Hence, a new ioctl(SPI_RTIOC_TRANSFER_N, int requested_len) was added
+> to transfer only requested_len bytes to SPI slave.
+>
 
+For the above patch that you submitted a few days ago,
+I just wanted to know if you tested on RPI 3B or 3B+ board ?
+I had some issues with the Xenomai SPI RTDM drivers with RPI 3B+.
+It was long back but what I can remember is that the GPIO interrupts were
+working fine with rtdm interrupts but none of the peripheral devices'
+interrupts were working.
 
-Thanks!
-We presented it at audio-focused events like the Audio Developer Conference
-(ADC 2019) in London last November, where we had a workshop and a short
-talk.
+Since the SPI RTDM driver works in interrupt mode, I couldn't use it and
+had to go for a polling based driver. Just want to confirm if you didn't
+have to do anything special to use the xenomai drivers for SPI on RPI
+3B/3B+.
 
-This year we have already other community events planned but always in the
-audio/music world. If you can suggest some more generic events, we can
-consider going there depending on timing & other factors.
-
-Cheers,
-Stefano
+Thanks,
+Nitin
