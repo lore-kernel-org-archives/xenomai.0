@@ -1,13 +1,12 @@
-Subject: Re: Open source audio project for Raspberry Pi 3
-References: <CAKsggZxO58KU27Uf_-i3yLgk4kcjoOUqSS_PZLC0gndXBNU=GQ@mail.gmail.com>
-From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <f912dfe0-7ac8-dbf9-1451-e6012eae8792@siemens.com>
-Date: Thu, 9 Jan 2020 16:36:43 +0100
 MIME-Version: 1.0
-In-Reply-To: <CAKsggZxO58KU27Uf_-i3yLgk4kcjoOUqSS_PZLC0gndXBNU=GQ@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+References: <CAKsggZxO58KU27Uf_-i3yLgk4kcjoOUqSS_PZLC0gndXBNU=GQ@mail.gmail.com>
+ <f912dfe0-7ac8-dbf9-1451-e6012eae8792@siemens.com>
+In-Reply-To: <f912dfe0-7ac8-dbf9-1451-e6012eae8792@siemens.com>
+From: Stefano Zambon <stefano@elk.audio>
+Date: Thu, 9 Jan 2020 17:06:33 +0100
+Message-ID: <CAKsggZyhih5STuU2o0UjCaHe0uRyk_=sC6iw7Mh2Wr3xSmKbMA@mail.gmail.com>
+Subject: Re: Open source audio project for Raspberry Pi 3
+Content-Type: text/plain; charset="UTF-8"
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,48 +15,24 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Stefano Zambon <stefano@elk.audio>, xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-Hi Stefano,
+Hi Jan,
 
-On 09.01.20 13:05, Stefano Zambon via Xenomai wrote:
-> Hi,
-> 
-> we just finalized to release on Github the full source code for our
-> professional audio distribution based on Xenomai:
-> https://github.com/elk-audio
-> 
-> This is somehow similar to the Bela project for Beaglebone which has been
-> around for quite a while and also completely open sourced:
-> https://github.com/BelaPlatform
-> 
-> I thought to mention it here since it is quite a complete example for
-> Xenomai on the RPi, including a DMA-capable I2S driver, a sensor driver
-> (through SPI) that handles both GPIOs and ADCs, multicore support in both
-> primary and secondary context, C++17 Xenomai applications, CMake-based
-> projects, Yocto/Openembedded configuration.
-> 
-> We are aware that some parts deviate a little bit from Xenomai's standard
-> guidelines, mostly in userspace we don't use the wrapper magic to
-> automatically replace POSIX calls with Cobalt alternatives as we prefer
-> explicit use of Cobalt functions.
-> 
-> In order to run the software, you would need a custom Hat for the RPi but
-> it shouldn't be hard to customize the drivers for other audio codecs. I
-> hope this won't sound like shameless self-promotion, we make very little
-> money on the Hardware and the full HW project is open-sourced, including
-> the production files so literally anyone can print the boards on its own.
-> 
-> Cheers,
-> Stefano
-> 
+On Thu, 9 Jan 2020 at 16:36, Jan Kiszka <jan.kiszka@siemens.com> wrote:
+>
+> Thanks for sharing, looks like a really nice user story! Do you consider
+> presenting it at some community event(s) as well?
 
-Thanks for sharing, looks like a really nice user story! Do you consider 
-presenting it at some community event(s) as well?
 
-Jan
+Thanks!
+We presented it at audio-focused events like the Audio Developer Conference
+(ADC 2019) in London last November, where we had a workshop and a short
+talk.
 
--- 
-Siemens AG, Corporate Technology, CT RDA IOT SES-DE
-Corporate Competence Center Embedded Linux
+This year we have already other community events planned but always in the
+audio/music world. If you can suggest some more generic events, we can
+consider going there depending on timing & other factors.
 
+Cheers,
+Stefano
