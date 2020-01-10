@@ -1,11 +1,12 @@
-From: Lange Norbert <norbert.lange@andritz.com>
-Subject: Xenomai + conan + cmake: Building with less headaches
-Date: Thu, 9 Jan 2020 17:04:35 +0000
-Message-ID: <DB8PR05MB591578CA1D260D01A9475AC0F6390@DB8PR05MB5915.eurprd05.prod.outlook.com>
-Content-Language: en-US
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+In-Reply-To: <CAPgPmP0n8Z+czZjEFe6C5dapwBGRdjX6p7MSK1BNdJB30RX6iA@mail.gmail.com>
+References: <mailman.113.1577718625.956.xenomai@xenomai.org>
+ <CAPgPmP0n8Z+czZjEFe6C5dapwBGRdjX6p7MSK1BNdJB30RX6iA@mail.gmail.com>
+From: Laurentiu-Cristian Duca <laurentiu.duca@gmail.com>
+Date: Fri, 10 Jan 2020 13:57:08 +0200
+Message-ID: <CAPm8-H7D3EUc5CxT67dnn3z_KOdnoamxsKS-2Mkogsmv1y2R6w@mail.gmail.com>
+Subject: Re: [patch 2/5] SPI_RTIOC_TRANSFER_N ioctl with len parameter
+Content-Type: text/plain; charset="UTF-8"
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -14,70 +15,65 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "Xenomai (xenomai@xenomai.org)" <xenomai@xenomai.org>
+To: Nitin Kulkarni <nitin@elk.audio>
+Cc: xenomai@xenomai.org
 
-VGhpcyBpcyBzb21lIHNjaGVtZSBJIGFtIHRyeWluZyB0byBjb29rIHVwIGZvciBvdXIgaW50ZXJu
-YWwgZGV2ZWxvcG1lbnQsDQp3aGljaCBzaG91bGQgcHJvZHVjZSBwcm9kdWN0aW9uIGJpbmFyaWVz
-LCBhbmQgb2ZmZXJpbmcgdGhlbSBmb3IgbG9jYWwNCmRldmVsb3BtZW50Lg0KDQpJdCB1c2VzIFhl
-bm9tYWkgMy4wLjksIHNvbWUgdGltZSBhZnRlciAzLjEgaXMgcmVsZWFzZWQgYW5kIEkgYW0gbGVz
-cyBzdHJlc3NlZA0Kd2l0aCBvdGhlciB3b3JrIEkgcGxhbiB0byBjbGVhbiB1cCBhbGwgaW52b2x2
-ZWQgc3R1ZmYsIHNvIGNvbnNpZGVyIHRoaXMgYQ0KcHJldmlldy4NCg0KQ29uYW4gaXMgbm90IGRl
-cGVuZGVudCBvbiBDTWFrZSwgQ01ha2UgaXMgbm90IGRlcGVuZGVudCBvbiBDb25hbiwNCmJ1dCB0
-aGUgaW50ZWdyYXRpb24gYmV0d2VlbiB0aG9zZSAyIGlzIGZhciBiZXR0ZXIgdGhhbiBvdGhlciBv
-cHRpb25zLg0KDQojIyBEZXZlbG9waW5nIHdpdGggY29uYW4NCg0KdGhpcyB0YWtlcyBjYXJlIG9m
-IHRoZSBkZXBlbmRlbmNpZXMgKGFuZCB0aGVpciBkZXBlbmRlbmNpZXMpLA0KdGhlIGJhc2ljIGlk
-ZWEgaXMgdGhhdCB5b3UgcnVuIGBjb25hbiBpbnN0YWxsIC4uLmAgdGhlIGRlcGVuZGVuY2llcyBl
-bmQgdXANCnNvbWV3aGVyZSBhbmQgdGhlIGN3ZCBoYXMgYSBzY3JpcHQgZm9yIHlvdXIgYnVpbGRz
-eXN0ZW0gdG8gcmVzb2x2ZSB0aG9zZS4NCg0KKFBhY2thZ2luZyBmb3IgY29uYW4gaXMgaGFyZGVy
-LCBteSBhdHRlbXB0IGlzIGF0IFsyXSkNCg0KIyMgRGV2ZWxvcGluZyB3aXRoIENNYWtlDQoNCkNN
-YWtlIGlzIG9uZSBvZiB0aGUgc3VwcG9ydGVkIGJ1aWxkc3lzdGVtLCBhbmQgSSByaWdnZWQgdXAg
-YSBwYXRjaHNldCB0byBhZGQNCnN1cHBvcnQgZm9yIFhlbm9tYWkgKEkgd291bGQgd2FudCB0byB1
-cHN0cmVhbSB0aGlzIG9uZSBkYXkpLg0KQXMgc2FpZCwgdGhpcyBpcyBub3Qgc3RyaWN0bHkgcmVx
-dWlyZWQgYnV0IGVhc2VzIHVwIGludGVncmF0aW9uLg0KDQpDTWFrZSB3aWxsIHRha2UgY2FyZSBv
-ZiBhbGwgdGhvc2Ugd3JhcHBlciBmbGFncyBhbmQgYm9vdHN0cmFwIGNvZGUuDQoNCiMjIEJpZyBw
-aWN0dXJlDQoNCkkgYXR0YWNoZWQgb25lIHNtYWxsIHByb2plY3QsIHJpcHBlZCBmcm9tIFhlbm9t
-YWkgYW5kIGF1Z21lbnRlZCB3aXRoDQpDTWFrZSArIGNvbmFuIGZpbGVzLiBBIHNtYWxsIHNjcmlw
-dCAiYnVpbGQuc2giIHNob3VsZCBiZSBjYWxsZWQgZnJvbQ0KKm91c2lkZSogdGhlIHNvdXJjZSB0
-cmVlLg0KDQpXaGF0IHRoaXMgZG9lcyBpczoNCg0KMSkgIFJlc29sdmVzIHRoZSBkZXBlbmRlbmNp
-ZXMgLSBpbiB0aGlzIGNhc2UgWGVub21haS4NCkl0IHdpbGwgdHJ5IHRvIHJlc29sdmUgYSBiaW5h
-cnkgZmlyc3QsIHRoaXMgbWVhbnMgdGhlIGZpcnN0IHRpbWUgeW91IHdpbGwNCmJ1aWxkIHRoZSBY
-ZW5vbWFpIGxpYnJhcmllcywgdGhlIG5leHQgdGltZSB5b3Ugd2lsbCByZXVzZSBhIGNhY2hlZCB2
-ZXJzaW9uLg0KDQoyKSAgQ29uZmlndXJlcyB0aGUgcHJvamVjdCwgQ01ha2Ugd2lsbCBwaWNrIHVw
-IHRoZSBkZXBlbmRlbmNpZXMNCg0KMykgIEJ1aWxkDQoNCkZvciBhIGRldmVsb3BlciB0aGlzIG1l
-YW5zIGhlIGp1c3QgbmVlZHMgdG8gaW5zdGFsbCBhIGxvY2FsIHRvb2xjaGFpbg0KKG9yIG5vbmUg
-YXQgYWxsIGlmIHRoZSBzeXN0ZW0gY29tcGlsZXIgaXMgc3VmZmljaWVudCBmb3IgZXggdW5pdCB0
-ZXN0cykuDQpUaGUgcGFja2FnZXMgY2FuIGNvbWUgZnJvbSBhIHZhcmlldHkgb2Ygc291cmNlczoN
-Cg0KLSAgIEV4aXN0aW5nIG9wZW4gc291cmNlIHBhY2thZ2VzIChsaWtlIGd0ZXN0LCB4bWxwYXJz
-ZXJzLCBldGMuLi4pLg0KICAgIGlmIHlvdXIgYXJjaGl0ZWN0dXJlIGZpdHMsIHlvdSB3b250IGV2
-ZW4gaGF2ZSB0byBjb21waWxlIG9uY2UuDQotICAgTG9jYWxseSBzaGFyZWQgcGFja2FnZXMuIGll
-LjogcHJvZHVjdGlvbiBiaW5hcmllcywgdHlwaWNhbGx5IGJ5IGJ1aWxkLXNlcnZlcnMNCi0gICBM
-b2NhbGx5IGNhY2hlZCBiaW5hcmllcy4gWW91ciBvd24gYnVpbGRzLCBidXQgcG90ZW50aWFsbHkg
-c2hhcmVkIGFjcm9zcyBwcm9qZWN0cw0KDQpXaGF0IEkgd291bGQgd2FudCBpbiB0aGUgbG9uZ3Rl
-cm0gaXMgdG8gZ2V0IFsxXSB1cHN0cmVhbWVkIChhZnRlciBhIGNsZWFudXAgb3IgMiksDQp0aGUg
-c291cmNlIHBhY2thZ2UgaXMgdXBsb2FkZWQgdG8gWzJdLg0KR29pbmcgZXZlbiBmdXJ0aGVyLCB0
-aGUgdGhlIGNvbmFuIHBhY2thZ2VzIGNvdWxkIGJlIGJ1aWx0IGFuZCB1cGxvYWRlZCBmb3IgY29t
-bW9uIGVub3VnaCB0YXJnZXRzLCBzbyBidWlsZGluZyB0aGUgZXhhbXBsZSBhdHRhY2hlZCB3aWxs
-IHdvcmsgZm9yIGV4LiBvbiBwbGFpbiB4ODYgZGViaWFuLg0KDQpSZWdhcmRzLCBOb3JiZXJ0DQoN
-ClsxXSAtIGh0dHBzOi8vZ2l0aHViLmNvbS9ub2xhbmdlL2NtYWtlX3hlbm9tYWkNClsyXSAtIGh0
-dHBzOi8vYmludHJheS5jb20vbm9sYW5nZTc5L2NvbmFuL3hlbm9tYWkzJTNBeGVub21haTMNCl9f
-X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fDQoNClRoaXMgbWVzc2FnZSBhbmQgYW55IGF0
-dGFjaG1lbnRzIGFyZSBzb2xlbHkgZm9yIHRoZSB1c2Ugb2YgdGhlIGludGVuZGVkIHJlY2lwaWVu
-dHMuIFRoZXkgbWF5IGNvbnRhaW4gcHJpdmlsZWdlZCBhbmQvb3IgY29uZmlkZW50aWFsIGluZm9y
-bWF0aW9uIG9yIG90aGVyIGluZm9ybWF0aW9uIHByb3RlY3RlZCBmcm9tIGRpc2Nsb3N1cmUuIElm
-IHlvdSBhcmUgbm90IGFuIGludGVuZGVkIHJlY2lwaWVudCwgeW91IGFyZSBoZXJlYnkgbm90aWZp
-ZWQgdGhhdCB5b3UgcmVjZWl2ZWQgdGhpcyBlbWFpbCBpbiBlcnJvciBhbmQgdGhhdCBhbnkgcmV2
-aWV3LCBkaXNzZW1pbmF0aW9uLCBkaXN0cmlidXRpb24gb3IgY29weWluZyBvZiB0aGlzIGVtYWls
-IGFuZCBhbnkgYXR0YWNobWVudCBpcyBzdHJpY3RseSBwcm9oaWJpdGVkLiBJZiB5b3UgaGF2ZSBy
-ZWNlaXZlZCB0aGlzIGVtYWlsIGluIGVycm9yLCBwbGVhc2UgY29udGFjdCB0aGUgc2VuZGVyIGFu
-ZCBkZWxldGUgdGhlIG1lc3NhZ2UgYW5kIGFueSBhdHRhY2htZW50IGZyb20geW91ciBzeXN0ZW0u
-DQoNCkFORFJJVFogSFlEUk8gR21iSA0KDQoNClJlY2h0c2Zvcm0vIExlZ2FsIGZvcm06IEdlc2Vs
-bHNjaGFmdCBtaXQgYmVzY2hyw6Rua3RlciBIYWZ0dW5nIC8gQ29ycG9yYXRpb24NCg0KRmlybWVu
-c2l0ei8gUmVnaXN0ZXJlZCBzZWF0OiBXaWVuDQoNCkZpcm1lbmJ1Y2hnZXJpY2h0LyBDb3VydCBv
-ZiByZWdpc3RyeTogSGFuZGVsc2dlcmljaHQgV2llbg0KDQpGaXJtZW5idWNobnVtbWVyLyBDb21w
-YW55IHJlZ2lzdHJhdGlvbjogRk4gNjE4MzMgZw0KDQpEVlI6IDA2MDUwNzcNCg0KVUlELU5yLjog
-QVRVMTQ3NTY4MDYNCg0KDQpUaGFuayBZb3UNCl9fX19fX19fX19fX19fX19fX19fX19fX19fX19f
-X19fDQotLS0tLS0tLS0tLS0tLSBuZXh0IHBhcnQgLS0tLS0tLS0tLS0tLS0KQSBub24tdGV4dCBh
-dHRhY2htZW50IHdhcyBzY3J1YmJlZC4uLgpOYW1lOiBjeWNsaWN0ZXN0LnRhci54egpUeXBlOiBh
-cHBsaWNhdGlvbi9vY3RldC1zdHJlYW0KU2l6ZTogMjEyMzIgYnl0ZXMKRGVzYzogY3ljbGljdGVz
-dC50YXIueHoKVVJMOiA8aHR0cDovL3hlbm9tYWkub3JnL3BpcGVybWFpbC94ZW5vbWFpL2F0dGFj
-aG1lbnRzLzIwMjAwMTA5LzE3NzE2OWM5L2F0dGFjaG1lbnQub2JqPgo=
+Hi Nitin,
+
+  rpi 3b has bcm2837 chip.
+Xenomai SPI drivers are for bcm2835. I only tested bcm2835 drivers on rpi 0.
+However, from rpi doc:
+"Note that the BCM2837 processor is an evolution of the BCM2835
+processor. The only real differences are that the BCM2837 can address
+more RAM (up to 1Gbyte) and the ARM CPU complex has been upgraded from
+a single core ARM11 in BCM2835 to a Quad core Cortex A53 with
+dedicated 512Kbyte L2 cache in BCM2837.  All IO interfaces and
+peripherals stay the same and hence the two chips are largely software
+and hardware compatible."
+
+On 1/9/20, Nitin Kulkarni <nitin@elk.audio> wrote:
+>>
+>> Date: Mon, 30 Dec 2019 17:07:21 +0200
+>> From: Laurentiu-Cristian Duca <laurentiu.duca@gmail.com>
+>> To: xenomai <xenomai@xenomai.org>
+>> Subject: [patch 2/5] SPI_RTIOC_TRANSFER_N ioctl with len parameter
+>> Message-ID:
+>>         <CAPm8-H589E2WZB=
+>> UxrVjbmsxD-7UcLMke56XHKK6Zy_iSS9oDg@mail.gmail.com>
+>> Content-Type: text/plain; charset="UTF-8"
+>>
+>> >From d47ede0283b68ac972d7f6a4b87ba1caa4fa9d5f Mon Sep 17 00:00:00 2001
+>> From: Laurentiu-Cristian Duca <laurentiu.duca@gmail.com>
+>> Date: Mon, 23 Dec 2019 16:49:05 +0200
+>> Subject: [PATCH] SPI_RTIOC_TRANSFER_N ioctl with len parameter to
+>> transfer
+>>  only len bytes to SPI slave
+>>
+>> Note that set_iobufs() used in xenomai-spi-drivers
+>> (spi-bcm2835.c and other drivers using its model)
+>> allocates for the user ioctl(SPI_RTIOC_SET_IOBUFS)
+>> len = L1_CACHE_ALIGN(len) * 2;
+>> (half for tx and half for rx)
+>> which in case of am335x for example the resulted len will be greater than
+>> 2 multiplied with user requested len. So, ioctl(SPI_RTIOC_TRANSFER)
+>> will transfer more bytes than requested in case of am335x.
+>> Hence, a new ioctl(SPI_RTIOC_TRANSFER_N, int requested_len) was added
+>> to transfer only requested_len bytes to SPI slave.
+>>
+>
+> For the above patch that you submitted a few days ago,
+> I just wanted to know if you tested on RPI 3B or 3B+ board ?
+> I had some issues with the Xenomai SPI RTDM drivers with RPI 3B+.
+> It was long back but what I can remember is that the GPIO interrupts were
+> working fine with rtdm interrupts but none of the peripheral devices'
+> interrupts were working.
+>
+> Since the SPI RTDM driver works in interrupt mode, I couldn't use it and
+> had to go for a polling based driver. Just want to confirm if you didn't
+> have to do anything special to use the xenomai drivers for SPI on RPI
+> 3B/3B+.
+>
+> Thanks,
+> Nitin
+>
+
