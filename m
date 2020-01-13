@@ -1,13 +1,13 @@
-Subject: Re: clocktest issue
-References: <VI1PR04MB51361D40890D174B5294A897FE350@VI1PR04MB5136.eurprd04.prod.outlook.com>
-From: Jan Kiszka <jan.kiszka@web.de>
-Message-ID: <82d002a4-3527-cd30-d9da-1f2ed6b25128@web.de>
-Date: Mon, 13 Jan 2020 07:24:05 +0100
+Subject: Re: [patch 1/5] spi-master.c: spi_master_read_rt()
+References: <CAPm8-H5XxArzdkjuy8dS-Hkud4aaNE11DrOQEmc+-a2MgxndbQ@mail.gmail.com>
+From: Jan Kiszka <jan.kiszka@siemens.com>
+Message-ID: <3d7b646b-2a1d-ac39-f16c-f88623fb90bd@siemens.com>
+Date: Mon, 13 Jan 2020 18:02:09 +0100
 MIME-Version: 1.0
-In-Reply-To: <VI1PR04MB51361D40890D174B5294A897FE350@VI1PR04MB5136.eurprd04.prod.outlook.com>
+In-Reply-To: <CAPm8-H5XxArzdkjuy8dS-Hkud4aaNE11DrOQEmc+-a2MgxndbQ@mail.gmail.com>
 Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Language: en-US
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 7bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,75 +16,64 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jerry Huang <jerry.huang@nxp.com>, "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Laurentiu-Cristian Duca <laurentiu.duca@gmail.com>, xenomai <xenomai@xenomai.org>
 
-On 13.01.20 04:38, Jerry Huang via Xenomai wrote:
-> Hello,
-> Now I am testing some Xenomai features, but I got some issues, any guys =
-can give some comment about them?
->
-> 1.    Clockset
->
-> # clocktest -C 32
->
-> clock_gettime failed for clock id 32
->
-> XNVDSO_FEAT_HOST_REALTIME not available
->
->
->
-> I-PIPE patches provide this features for arm64 on Linux-4.19? if yes, ho=
-w to enable it?
->
->
->
-> 2.    Smokey
->
-> # smokey --run
->
-> arith OK
->
-> bufp OK
->
-> cpu_affinity skipped (no kernel support)
->
-> fpu_stress OK
->
-> iddp OK
->
-> leaks OK
->
-> net_packet_dgram skipped (no kernel support)
->
-> net_packet_raw skipped (no kernel support)
->
-> net_udp skipped (no kernel support)
->
-> posix_clock OK
->
-> cond_wait waited 9999.860 us
->
->
->
->          How to enable cpu_affinity features in kernel? I used parameter=
- in bootloader "xenomai.supported_cpus=3D0x3" (I just have 2 cores), but i=
-t seems this feature yet not works.
->
->
->
-> 3.    My environment:
-> Arm64 with Linux-4.19.68
-> Ipipe-arm64:
-> CommitID: 282d55f6 arm64: ipipe: bump release code<https://gitlab.denx.d=
-e/Xenomai/ipipe-arm64/commit/282d55f6a742adb870b8d3451f112902b31b1742>
-> Xenomai:
-> Branch: next; CommitID: d3cdecbe1 ci: Update ARM/ARM64 4.19 kernel relea=
-ses
->
+Sorry for the late feedback - my backlog grew too large.
 
-The arm64 version of the I-pipe patch lacks CONFIG_IPIPE_HAVE_HOSTRT.
-Look at the arm patch around __ipipe_update_vsyscall to see what needs
-to be added. Patches welcome!
+On 30.12.19 16:06, Laurentiu-Cristian Duca via Xenomai wrote:
+>  From 15c59317fe1a9d60e20d470de3aca09bca5b99d0 Mon Sep 17 00:00:00 2001
+> From: Laurentiu-Cristian Duca <laurentiu.duca@gmail.com>
+> Date: Fri, 20 Dec 2019 17:35:50 +0200
+> Subject: [PATCH] spi-master.c: spi_master_read_rt(): when master->ops->read()
+>   completes successfully it returns > 0, so, in this case, copy data to
+>   userspace.
+
+Unfortunately, this is not a consumable format for me. I just need
+
+From: Laurentiu-Cristian Duca <laurentiu.duca@gmail.com>
+
+at the top of the commit message body. Look at [1] e.g. for the 
+resulting format.
+
+When you use git format-patch, set --from to some dummy address. That 
+will make it generate patches with the correct additional "From:" line 
+included. For the actual sending, you can use the normal address again.
+
+Moreover, I need a shorter subject line, something like
+
+     spi: Fix return code handling in spi_master_read_rt
+
+And then write about why this change is correct (basically your current 
+subject line).
+
+> 
+> Signed-off-by: Laurentiu-Cristian Duca <laurentiu.duca@gmail.com>
+> ---
+>   kernel/drivers/spi/spi-master.c | 4 ++--
+>   1 file changed, 2 insertions(+), 2 deletions(-)
+> 
+> diff --git a/kernel/drivers/spi/spi-master.c b/kernel/drivers/spi/spi-master.c
+> index 12a1ad1f1..e04f7ca10 100644
+> --- a/kernel/drivers/spi/spi-master.c
+> +++ b/kernel/drivers/spi/spi-master.c
+> @@ -240,8 +240,8 @@ static ssize_t spi_master_read_rt(struct rtdm_fd *fd,
+>   		do_chip_deselect(slave);
+>   	}
+>   	rtdm_mutex_unlock(&master->bus_lock);
+> -	if (ret == 0)
+> -		ret = rtdm_safe_copy_to_user(fd, u_buf, rx, len);
+> +	if (ret > 0)
+> +		ret = rtdm_safe_copy_to_user(fd, u_buf, rx, ret);
+>   	
+>   	xnfree(rx);
+>   	
+> 
 
 Jan
+
+[1] https://xenomai.org/pipermail/xenomai/2019-December/042210.html
+
+-- 
+Siemens AG, Corporate Technology, CT RDA IOT SES-DE
+Corporate Competence Center Embedded Linux
 
