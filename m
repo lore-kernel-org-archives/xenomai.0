@@ -1,8 +1,8 @@
 MIME-Version: 1.0
 From: Laurentiu-Cristian Duca <laurentiu.duca@gmail.com>
-Date: Tue, 14 Jan 2020 18:22:49 +0200
-Message-ID: <CAPm8-H5EbHi3HPsUMTzdzQswVsGnuOvD0PqZr2QkjO+LqOiBCw@mail.gmail.com>
-Subject: [PATCH 2/5] spi: new SPI_RTIOC_TRANSFER_N ioctl option
+Date: Tue, 14 Jan 2020 18:22:59 +0200
+Message-ID: <CAPm8-H6rT9Qg6z=hQ93yM96iVEzw11C=3OhxQUXCHFovwXhpMA@mail.gmail.com>
+Subject: [PATCH 3/5] spi: add functions ..._transfer_iobufs_n()
 Content-Type: text/plain; charset="UTF-8"
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
@@ -16,73 +16,94 @@ To: xenomai <xenomai@xenomai.org>
 
 From: Laurentiu-Cristian Duca <laurentiu.duca@gmail.com>
 
-SPI_RTIOC_TRANSFER_N allows the user
-to make SPI transfers of arbitrary lengths
-by using the same mmapped memory area.
+spi-bcm2835.c, spi-sun6i.c:
+In order to support SPI_RTIOC_TRANSFER_N ioctl option
+add functions bcm2835_transfer_iobufs_n() and sun6i_transfer_iobufs_n()
+which are similar to ..._transfer_iobufs(),
+but allow user specified len for spi transfer.
 
 Signed-off-by: Laurentiu-Cristian Duca <laurentiu.duca@gmail.com>
 ---
- include/rtdm/uapi/spi.h         |  1 +
- kernel/drivers/spi/spi-master.c | 15 ++++++++++++++-
- kernel/drivers/spi/spi-master.h |  1 +
- 3 files changed, 16 insertions(+), 1 deletion(-)
+ kernel/drivers/spi/spi-bcm2835.c | 19 +++++++++++++++++++
+ kernel/drivers/spi/spi-sun6i.c   | 19 +++++++++++++++++++
+ 2 files changed, 38 insertions(+)
 
-diff --git a/include/rtdm/uapi/spi.h b/include/rtdm/uapi/spi.h
-index 8f042377f..184a2b027 100644
---- a/include/rtdm/uapi/spi.h
-+++ b/include/rtdm/uapi/spi.h
-@@ -37,5 +37,6 @@ struct rtdm_spi_iobufs {
- #define SPI_RTIOC_GET_CONFIG		_IOR(RTDM_CLASS_SPI, 1, struct rtdm_spi_config)
- #define SPI_RTIOC_SET_IOBUFS		_IOR(RTDM_CLASS_SPI, 2, struct rtdm_spi_iobufs)
- #define SPI_RTIOC_TRANSFER		_IO(RTDM_CLASS_SPI, 3)
-+#define SPI_RTIOC_TRANSFER_N		_IOR(RTDM_CLASS_SPI, 4, int)
+diff --git a/kernel/drivers/spi/spi-bcm2835.c b/kernel/drivers/spi/spi-bcm2835.c
+index e4a95d081..fab6f6e77 100644
+--- a/kernel/drivers/spi/spi-bcm2835.c
++++ b/kernel/drivers/spi/spi-bcm2835.c
+@@ -318,6 +318,24 @@ static int bcm2835_transfer_iobufs(struct
+rtdm_spi_remote_slave *slave)
+ 	return do_transfer_irq(slave);
+ }
 
- #endif /* !_RTDM_UAPI_SPI_H */
-diff --git a/kernel/drivers/spi/spi-master.c b/kernel/drivers/spi/spi-master.c
-index e04f7ca10..104af8023 100644
---- a/kernel/drivers/spi/spi-master.c
-+++ b/kernel/drivers/spi/spi-master.c
-@@ -150,7 +150,7 @@ static int spi_master_ioctl_rt(struct rtdm_fd *fd,
- 	struct rtdm_spi_remote_slave *slave = fd_to_slave(fd);
- 	struct rtdm_spi_master *master = slave->master;
- 	struct rtdm_spi_config config;
--	int ret;
-+	int ret, len;
++static int bcm2835_transfer_iobufs_n(struct rtdm_spi_remote_slave *slave,
++										 int len)
++{
++	struct spi_master_bcm2835 *spim = to_master_bcm2835(slave);
++	struct spi_slave_bcm2835 *bcm = to_slave_bcm2835(slave);
++
++	if ((bcm->io_len == 0) ||
++		(len <= 0) || (len > (bcm->io_len / 2)))
++		return -EINVAL;
++
++	spim->tx_len = len;
++	spim->rx_len = len;
++	spim->tx_buf = bcm->io_virt + bcm->io_len / 2;
++	spim->rx_buf = bcm->io_virt;
++
++	return do_transfer_irq(slave);
++}
++
+ static ssize_t bcm2835_read(struct rtdm_spi_remote_slave *slave,
+ 			    void *rx, size_t len)
+ {
+@@ -549,6 +567,7 @@ static struct rtdm_spi_master_ops bcm2835_master_ops = {
+ 	.mmap_iobufs = bcm2835_mmap_iobufs,
+ 	.mmap_release = bcm2835_mmap_release,
+ 	.transfer_iobufs = bcm2835_transfer_iobufs,
++	.transfer_iobufs_n = bcm2835_transfer_iobufs_n,
+ 	.write = bcm2835_write,
+ 	.read = bcm2835_read,
+ 	.attach_slave = bcm2835_attach_slave,
+diff --git a/kernel/drivers/spi/spi-sun6i.c b/kernel/drivers/spi/spi-sun6i.c
+index ec08c98d8..940c98b31 100644
+--- a/kernel/drivers/spi/spi-sun6i.c
++++ b/kernel/drivers/spi/spi-sun6i.c
+@@ -355,6 +355,24 @@ static int sun6i_transfer_iobufs(struct
+rtdm_spi_remote_slave *slave)
+ 	return do_transfer_irq(slave);
+ }
 
- 	switch (request) {
- 	case SPI_RTIOC_SET_CONFIG:
-@@ -178,6 +178,19 @@ static int spi_master_ioctl_rt(struct rtdm_fd *fd,
- 			rtdm_mutex_unlock(&master->bus_lock);
- 		}
- 		break;
-+	case SPI_RTIOC_TRANSFER_N:
-+		ret = -EINVAL;
-+		if (master->ops->transfer_iobufs_n) {
-+			len = (int)arg;
-+			rtdm_mutex_lock(&master->bus_lock);
-+			ret = do_chip_select(slave);
-+			if (ret == 0) {
-+				ret = master->ops->transfer_iobufs_n(slave, len);
-+				do_chip_deselect(slave);
-+			}
-+			rtdm_mutex_unlock(&master->bus_lock);
-+		}
-+		break;
- 	default:
- 		ret = -ENOSYS;
- 	}
-diff --git a/kernel/drivers/spi/spi-master.h b/kernel/drivers/spi/spi-master.h
-index b5a9ce762..ecfea2f90 100644
---- a/kernel/drivers/spi/spi-master.h
-+++ b/kernel/drivers/spi/spi-master.h
-@@ -39,6 +39,7 @@ struct rtdm_spi_master_ops {
- 			   struct vm_area_struct *vma);
- 	void (*mmap_release)(struct rtdm_spi_remote_slave *slave);
- 	int (*transfer_iobufs)(struct rtdm_spi_remote_slave *slave);
-+	int (*transfer_iobufs_n)(struct rtdm_spi_remote_slave *slave, int len);
- 	ssize_t (*write)(struct rtdm_spi_remote_slave *slave,
- 			 const void *tx, size_t len);
- 	ssize_t (*read)(struct rtdm_spi_remote_slave *slave,
++static int sun6i_transfer_iobufs_n(struct rtdm_spi_remote_slave *slave,
++								 int len)
++{
++	struct spi_master_sun6i *spim = to_master_sun6i(slave);
++	struct spi_slave_sun6i *sun6i = to_slave_sun6i(slave);
++
++	if ((sun6i->io_len == 0) ||
++		(len <= 0) || (len > (sun6i->io_len / 2)))
++		return -EINVAL;
++
++	spim->tx_len = len;
++	spim->rx_len = len;
++	spim->tx_buf = sun6i->io_virt + sun6i->io_len / 2;
++	spim->rx_buf = sun6i->io_virt;
++
++	return do_transfer_irq(slave);
++}
++
+ static ssize_t sun6i_read(struct rtdm_spi_remote_slave *slave,
+ 			  void *rx, size_t len)
+ {
+@@ -480,6 +498,7 @@ static struct rtdm_spi_master_ops sun6i_master_ops = {
+ 	.mmap_iobufs = sun6i_mmap_iobufs,
+ 	.mmap_release = sun6i_mmap_release,
+ 	.transfer_iobufs = sun6i_transfer_iobufs,
++	.transfer_iobufs_n = sun6i_transfer_iobufs_n,
+ 	.write = sun6i_write,
+ 	.read = sun6i_read,
+ 	.attach_slave = sun6i_attach_slave,
 -- 
 2.17.1
 
