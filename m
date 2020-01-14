@@ -1,8 +1,8 @@
 MIME-Version: 1.0
 From: Laurentiu-Cristian Duca <laurentiu.duca@gmail.com>
-Date: Tue, 14 Jan 2020 18:22:59 +0200
-Message-ID: <CAPm8-H6rT9Qg6z=hQ93yM96iVEzw11C=3OhxQUXCHFovwXhpMA@mail.gmail.com>
-Subject: [PATCH 3/5] spi: add functions ..._transfer_iobufs_n()
+Date: Tue, 14 Jan 2020 18:23:14 +0200
+Message-ID: <CAPm8-H6UHKikxeh-NgZ7A+vGNeqsE7ZBa=Lp5_fHE+aiJ2Zh0g@mail.gmail.com>
+Subject: [PATCH 5/5] extending spitest with SPI_RTIOC_TRANSFER_N ioctl
 Content-Type: text/plain; charset="UTF-8"
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
@@ -16,94 +16,87 @@ To: xenomai <xenomai@xenomai.org>
 
 From: Laurentiu-Cristian Duca <laurentiu.duca@gmail.com>
 
-spi-bcm2835.c, spi-sun6i.c:
-In order to support SPI_RTIOC_TRANSFER_N ioctl option
-add functions bcm2835_transfer_iobufs_n() and sun6i_transfer_iobufs_n()
-which are similar to ..._transfer_iobufs(),
-but allow user specified len for spi transfer.
+The ioctl_n user parameter must be set to non-zero value
+in order to perform ioctl(SPI_RTIOC_TRANSFER_N, TRANSFER_SIZE);
+if ioctl_n is 0 or undefined then the test performs ioctl(SPI_RTIOC_TRANSFER).
+Default SPI clock speed is set to 40MHz instead of 60MHz
+because bbb am335x realtime SPI driver has its maximum set to this value.
 
 Signed-off-by: Laurentiu-Cristian Duca <laurentiu.duca@gmail.com>
 ---
- kernel/drivers/spi/spi-bcm2835.c | 19 +++++++++++++++++++
- kernel/drivers/spi/spi-sun6i.c   | 19 +++++++++++++++++++
- 2 files changed, 38 insertions(+)
+ testsuite/spitest/spitest.c | 27 +++++++++++++++++++++------
+ 1 file changed, 21 insertions(+), 6 deletions(-)
 
-diff --git a/kernel/drivers/spi/spi-bcm2835.c b/kernel/drivers/spi/spi-bcm2835.c
-index e4a95d081..fab6f6e77 100644
---- a/kernel/drivers/spi/spi-bcm2835.c
-+++ b/kernel/drivers/spi/spi-bcm2835.c
-@@ -318,6 +318,24 @@ static int bcm2835_transfer_iobufs(struct
-rtdm_spi_remote_slave *slave)
- 	return do_transfer_irq(slave);
- }
+diff --git a/testsuite/spitest/spitest.c b/testsuite/spitest/spitest.c
+index debf1b673..e3a1c6a44 100644
+--- a/testsuite/spitest/spitest.c
++++ b/testsuite/spitest/spitest.c
+@@ -40,17 +40,19 @@ smokey_test_plugin(spi_transfer,
+ 			   SMOKEY_STRING(device),
+ 			   SMOKEY_INT(speed),
+ 			   SMOKEY_BOOL(latency),
++			   SMOKEY_INT(ioctl_n)
+ 		   ),
+    "Run a SPI transfer.\n"
+    "\tdevice=<device-path>\n"
+    "\tspeed=<speed-hz>\n"
+-   "\tlatency"
++   "\tlatency\n"
++   "\tioctl_n=<set to non-zero to use SPI_RTIOC_TRANSFER_N ioctl>"
+ );
 
-+static int bcm2835_transfer_iobufs_n(struct rtdm_spi_remote_slave *slave,
-+										 int len)
-+{
-+	struct spi_master_bcm2835 *spim = to_master_bcm2835(slave);
-+	struct spi_slave_bcm2835 *bcm = to_slave_bcm2835(slave);
-+
-+	if ((bcm->io_len == 0) ||
-+		(len <= 0) || (len > (bcm->io_len / 2)))
-+		return -EINVAL;
-+
-+	spim->tx_len = len;
-+	spim->rx_len = len;
-+	spim->tx_buf = bcm->io_virt + bcm->io_len / 2;
-+	spim->rx_buf = bcm->io_virt;
-+
-+	return do_transfer_irq(slave);
-+}
-+
- static ssize_t bcm2835_read(struct rtdm_spi_remote_slave *slave,
- 			    void *rx, size_t len)
+ #define ONE_BILLION	1000000000
+ #define TEN_MILLIONS	10000000
+
+-static int with_traffic = 1, with_latency;
++static int with_traffic = 1, with_latency, with_ioctl_n = 0;
+
+ #define SEQ_SHIFT 24
+ #define SEQ_MASK  ((1 << SEQ_SHIFT) - 1)
+@@ -311,8 +313,16 @@ static int do_spi_loop(int fd)
+ 			if (ret < 0)
+ 				break;
+ 			clock_gettime(CLOCK_MONOTONIC, &start);
+-			if (!__Terrno(ret, ioctl(fd, SPI_RTIOC_TRANSFER)))
+-				return ret;
++			if(with_ioctl_n == 0) {
++				if (!__Terrno(ret,
++					ioctl(fd, SPI_RTIOC_TRANSFER)))
++					return ret;
++			} else {
++                                if (!__Terrno(ret,
++					ioctl(fd, SPI_RTIOC_TRANSFER_N,
++						TRANSFER_SIZE)))
++                                        return ret;
++			}
+ 			if (with_latency) {
+ 				clock_gettime(CLOCK_MONOTONIC, &now);
+ 				dt = (int32_t)diff_ts(&now, &start);
+@@ -348,7 +358,7 @@ static int do_spi_loop(int fd)
+
+ static int run_spi_transfer(struct smokey_test *t, int argc, char
+*const argv[])
  {
-@@ -549,6 +567,7 @@ static struct rtdm_spi_master_ops bcm2835_master_ops = {
- 	.mmap_iobufs = bcm2835_mmap_iobufs,
- 	.mmap_release = bcm2835_mmap_release,
- 	.transfer_iobufs = bcm2835_transfer_iobufs,
-+	.transfer_iobufs_n = bcm2835_transfer_iobufs_n,
- 	.write = bcm2835_write,
- 	.read = bcm2835_read,
- 	.attach_slave = bcm2835_attach_slave,
-diff --git a/kernel/drivers/spi/spi-sun6i.c b/kernel/drivers/spi/spi-sun6i.c
-index ec08c98d8..940c98b31 100644
---- a/kernel/drivers/spi/spi-sun6i.c
-+++ b/kernel/drivers/spi/spi-sun6i.c
-@@ -355,6 +355,24 @@ static int sun6i_transfer_iobufs(struct
-rtdm_spi_remote_slave *slave)
- 	return do_transfer_irq(slave);
- }
+-	int fd, ret, speed_hz = 60000000;
++	int fd, ret, speed_hz = 40000000;
+ 	struct rtdm_spi_config config;
+ 	struct rtdm_spi_iobufs iobufs;
+ 	const char *device = NULL;
+@@ -366,7 +376,12 @@ static int run_spi_transfer(struct smokey_test
+*t, int argc, char *const argv[])
 
-+static int sun6i_transfer_iobufs_n(struct rtdm_spi_remote_slave *slave,
-+								 int len)
-+{
-+	struct spi_master_sun6i *spim = to_master_sun6i(slave);
-+	struct spi_slave_sun6i *sun6i = to_slave_sun6i(slave);
+ 	if (SMOKEY_ARG_ISSET(spi_transfer, speed))
+ 		speed_hz = SMOKEY_ARG_INT(spi_transfer, speed);
+-	
 +
-+	if ((sun6i->io_len == 0) ||
-+		(len <= 0) || (len > (sun6i->io_len / 2)))
-+		return -EINVAL;
++        if (SMOKEY_ARG_ISSET(spi_transfer, ioctl_n)) {
++		with_ioctl_n = SMOKEY_ARG_INT(spi_transfer, ioctl_n);
++		smokey_note("ioctl_n enabled; using SPI_RTIOC_TRANSFER_N");
++	}
 +
-+	spim->tx_len = len;
-+	spim->rx_len = len;
-+	spim->tx_buf = sun6i->io_virt + sun6i->io_len / 2;
-+	spim->rx_buf = sun6i->io_virt;
-+
-+	return do_transfer_irq(slave);
-+}
-+
- static ssize_t sun6i_read(struct rtdm_spi_remote_slave *slave,
- 			  void *rx, size_t len)
- {
-@@ -480,6 +498,7 @@ static struct rtdm_spi_master_ops sun6i_master_ops = {
- 	.mmap_iobufs = sun6i_mmap_iobufs,
- 	.mmap_release = sun6i_mmap_release,
- 	.transfer_iobufs = sun6i_transfer_iobufs,
-+	.transfer_iobufs_n = sun6i_transfer_iobufs_n,
- 	.write = sun6i_write,
- 	.read = sun6i_read,
- 	.attach_slave = sun6i_attach_slave,
+ 	if (!SMOKEY_ARG_ISSET(spi_transfer, device)) {
+ 		warning("missing device= specification");
+ 		return -EINVAL;
 -- 
 2.17.1
 
