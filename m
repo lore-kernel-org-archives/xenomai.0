@@ -1,12 +1,11 @@
 From: Jan Kiszka <jan.kiszka@siemens.com>
-Subject: [PATCH v2 6/7] testsuite/smokey: Add pthread_setschedprio to setsched
- test case
-Date: Tue,  3 Dec 2019 12:32:16 +0100
-Message-Id: <32cce80f7a2c715d03b57548adf6853916245883.1575372737.git.jan.kiszka@siemens.com>
-In-Reply-To: <cover.1575372737.git.jan.kiszka@siemens.com>
-References: <cover.1575372737.git.jan.kiszka@siemens.com>
-In-Reply-To: <cover.1575372737.git.jan.kiszka@siemens.com>
-References: <cover.1575372737.git.jan.kiszka@siemens.com>
+Subject: [PATCH] Uninstall udev files
+Message-ID: <ab85da62-8424-4130-532d-3e076b115267@siemens.com>
+Date: Thu, 16 Jan 2020 17:52:57 +0100
+MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,50 +14,41 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
+To: Xenomai <xenomai@xenomai.org>
 
 From: Jan Kiszka <jan.kiszka@siemens.com>
 
-Now that this path goes via an own syscall, better test it.
+At least the copied-in files can and should be removed on uninstall, but
+we do not make any efforts to remove us again from a pre-existing
+udev.rules.
 
 Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
 ---
- testsuite/smokey/setsched/setsched.c | 21 +++++++++++++++++++++
- 1 file changed, 21 insertions(+)
+ Makefile.am | 8 ++++++++
+ 1 file changed, 8 insertions(+)
 
-diff --git a/testsuite/smokey/setsched/setsched.c b/testsuite/smokey/setsched/setsched.c
-index 16bfc49571..fc348a86ed 100644
---- a/testsuite/smokey/setsched/setsched.c
-+++ b/testsuite/smokey/setsched/setsched.c
-@@ -102,6 +102,27 @@ static void *thread_body(void *arg)
+diff --git a/Makefile.am b/Makefile.am
+index 37143dc709..ec1d0a07ec 100644
+--- a/Makefile.am
++++ b/Makefile.am
+@@ -50,4 +50,12 @@ install-user: install
  
- 	check_linux_schedparams(SCHED_FIFO, 2);
+ install-exec-local: udev-rules
  
-+	cobalt_thread_harden();
++uninstall-local:
++if XENO_COBALT
++	cd $(srcdir)/kernel/cobalt/udev ; \
++	for f in *.rules ; do \
++	    $(RM) $(DESTDIR)$(sysconfdir)/udev/rules.d/$$f ; \
++	done
++endif
 +
-+#ifdef CONFIG_XENO_LAZY_SETSCHED
-+	if (smokey_check_status(cobalt_thread_stat(thread_pid, &stats)))
-+		pthread_exit((void *)(long)-EINVAL);
-+	msw = stats.msw;
-+#endif
-+
-+	if (smokey_check_status(pthread_setschedprio(pthread_self(), 3)))
-+		pthread_exit((void *)(long)-EINVAL);
-+
-+	check_rt_schedparams(SCHED_FIFO, 3);
-+
-+#ifdef CONFIG_XENO_LAZY_SETSCHED
-+	if (smokey_check_status(cobalt_thread_stat(thread_pid, &stats)) ||
-+	    !smokey_assert(stats.msw == msw))
-+		pthread_exit((void *)(long)-EINVAL);
-+#endif
-+
-+	check_linux_schedparams(SCHED_FIFO, 3);
-+
- 	return (void *)0L;
- }
- 
+ .PHONY: FORCE
 -- 
 2.16.4
 
+
+-- 
+Siemens AG, Corporate Technology, CT RDA IOT SES-DE
+Corporate Competence Center Embedded Linux
 
