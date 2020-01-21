@@ -1,11 +1,13 @@
-From: Lange Norbert <norbert.lange@andritz.com>
-Subject: Cobalt deadlock for no apparent reason
-Date: Mon, 20 Jan 2020 18:03:41 +0000
-Message-ID: <VI1PR05MB5917D1906A1A32505BFE5168F6320@VI1PR05MB5917.eurprd05.prod.outlook.com>
-Content-Language: en-US
+Subject: Re: RFC: making dlopen support default on for debian/rules
+References: <20200120090144.1d93b807@md1za8fc.ad001.siemens.net>
+From: Jan Kiszka <jan.kiszka@siemens.com>
+Message-ID: <e46f7501-c7d8-0c0a-55f7-dbcee4201088@siemens.com>
+Date: Tue, 21 Jan 2020 18:41:09 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
+In-Reply-To: <20200120090144.1d93b807@md1za8fc.ad001.siemens.net>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -14,99 +16,30 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "Xenomai (xenomai@xenomai.org)" <xenomai@xenomai.org>
+To: Henning Schild <henning.schild@siemens.com>, Xenomai <xenomai@xenomai.org>
 
-Hello,
+On 20.01.20 09:01, Henning Schild via Xenomai wrote:
+> Hi all,
+> 
+> i do carry a local patch to make the debian packages dlopen-aware for
+> quite some time now. It used to be that debian packaging was not well
+> supported and just carried for reference.
+> But with the rise of Isar in the building Xenomai world the current
+> view on the debian/ support might change.
+> 
+> What are your thoughts on putting "--enable-dlopen-libs" into
+> debian/rules? I would be happy to send a patch.
 
-I got a deadlock while running through gdbserver, this is an implementation=
- of a synchronized queue,
-Fup side waits via condition variable, main wants to push data, but main fa=
-ils to acquire the mutex.
-The mutex is an errorchecking type, without priority inheritance, and not u=
-sed elsewhere.
+I'm not really opposed to it.
 
+The primary impact of the switch is changing the TLS model to something 
+dlopen-friendly. That comes with a couple of extra instructions, maybe 
+an extra cacheline need. At least for x86, the impact should be minimal. 
+On weaker platforms, it might be measurable.
 
-The task are as following:
+On the other hand, people short on cycles and sensitive to such overhead 
+may do their own tuning anyway, use a custom kernel and possibly also a 
+custom userland. Distro packages are about broad functionality.
 
-CPU  PID    CLASS  TYPE      PRI   TIMEOUT       STAT       NAME
-  1  1686   rt     cobalt      4   -             Wt         main
-  3  1690   rt     cobalt      2   -             Wt         fup.medium
+Jan
 
-main is stuck in this function
-
-int mutex_lock(struct mutex_data *pData)
-{
-    pthread_t threadId =3D pthread_self();
-    // assert(pthread_equal(threadId, pData->m_LockId) =3D=3D 0);
-->    int r =3D pthread_mutex_lock(&pData->m_Mutex);
-    assert(r =3D=3D 0);
-    pData->m_LockId =3D threadId;
-    return r;
-}
-
-In libcobalt:
-  do
-    ret =3D XENOMAI_SYSCALL1(sc_cobalt_mutex_lock, _mutex);
-  while (ret =3D=3D -EINTR);
-
-fup.medium is stuck in:
-
-int conditionvar_wait(struct conditionvar_data *pData, struct mutex_data *p=
-Mutex)
-{
-    pthread_t sid =3D pthread_self();
-    assert(pthread_equal(sid, pMutex->m_LockId) !=3D 0);
-    pMutex->m_LockId =3D 0;
-->    int r =3D pthread_cond_wait(&pData->m_CondVar, &pMutex->m_Mutex);
-    assert(r =3D=3D 0);
-    pMutex->m_LockId =3D sid;
-    return r;
-}
-
-In libcobalt:
-  while (err =3D=3D -EINTR)
-    err =3D XENOMAI_SYSCALL2(sc_cobalt_cond_wait_epilogue, _cnd, _mx);
-
-Mit besten Gr=FC=DFen / Kind regards
-
-NORBERT LANGE
-
-AT-RD3
-
-ANDRITZ HYDRO GmbH
-Eibesbrunnergasse 20
-1120 Vienna / AUSTRIA
-p: +43 50805 56684
-norbert.lange@andritz.com<mailto:norbert.lange@andritz.com>
-andritz.com<http://www.andritz.com/>
-
-________________________________
-
-This message and any attachments are solely for the use of the intended rec=
-ipients. They may contain privileged and/or confidential information or oth=
-er information protected from disclosure. If you are not an intended recipi=
-ent, you are hereby notified that you received this email in error and that=
- any review, dissemination, distribution or copying of this email and any a=
-ttachment is strictly prohibited. If you have received this email in error,=
- please contact the sender and delete the message and any attachment from y=
-our system.
-
-ANDRITZ HYDRO GmbH
-
-
-Rechtsform/ Legal form: Gesellschaft mit beschr=E4nkter Haftung / Corporati=
-on
-
-Firmensitz/ Registered seat: Wien
-
-Firmenbuchgericht/ Court of registry: Handelsgericht Wien
-
-Firmenbuchnummer/ Company registration: FN 61833 g
-
-DVR: 0605077
-
-UID-Nr.: ATU14756806
-
-
-Thank You
-________________________________
