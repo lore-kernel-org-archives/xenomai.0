@@ -1,10 +1,10 @@
-Subject: Re: RFC: making dlopen support default on for debian/rules
-References: <20200120090144.1d93b807@md1za8fc.ad001.siemens.net>
+Subject: Re: [PATCH] spi: update Makefile and Kconfig to include bbb spi driver
+References: <20200120132217.3802-1-laurentiu.duca@gmail.com>
 From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <e46f7501-c7d8-0c0a-55f7-dbcee4201088@siemens.com>
-Date: Tue, 21 Jan 2020 18:41:09 +0100
+Message-ID: <fa436ab6-7ef2-2c29-e594-f1ae09535854@siemens.com>
+Date: Tue, 21 Jan 2020 18:44:57 +0100
 MIME-Version: 1.0
-In-Reply-To: <20200120090144.1d93b807@md1za8fc.ad001.siemens.net>
+In-Reply-To: <20200120132217.3802-1-laurentiu.duca@gmail.com>
 Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -16,30 +16,61 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Henning Schild <henning.schild@siemens.com>, Xenomai <xenomai@xenomai.org>
+To: Laurentiu-Cristian Duca <laurentiu.duca@gmail.com>, xenomai@xenomai.org
 
-On 20.01.20 09:01, Henning Schild via Xenomai wrote:
-> Hi all,
+On 20.01.20 14:22, Laurentiu-Cristian Duca via Xenomai wrote:
+> Updated SPI Makefile and Kconfig in order to contain the option
+> to compile am335x beaglebone black omap4 spi real-time driver.
 > 
-> i do carry a local patch to make the debian packages dlopen-aware for
-> quite some time now. It used to be that debian packaging was not well
-> supported and just carried for reference.
-> But with the rise of Isar in the building Xenomai world the current
-> view on the debian/ support might change.
+> Signed-off-by: Laurentiu-Cristian Duca <laurentiu.duca@gmail.com>
+> ---
+>   kernel/drivers/spi/Kconfig  | 10 ++++++++++
+>   kernel/drivers/spi/Makefile |  2 ++
+>   2 files changed, 12 insertions(+)
 > 
-> What are your thoughts on putting "--enable-dlopen-libs" into
-> debian/rules? I would be happy to send a patch.
+> diff --git a/kernel/drivers/spi/Kconfig b/kernel/drivers/spi/Kconfig
+> index c2d47aa6c..b48aaf3f9 100644
+> --- a/kernel/drivers/spi/Kconfig
+> +++ b/kernel/drivers/spi/Kconfig
+> @@ -22,6 +22,16 @@ config XENO_DRIVERS_SPI_SUN6I
+>   	Enables support for the SPI controller available from
+>   	Allwinner's A31, H3 SoCs.
+>   
+> +config XENO_DRIVERS_SPI_OMAP2_MCSPI_RT
+> +	tristate "McSPI rt-driver for OMAP"
+> +	depends on HAS_DMA
+> +	depends on ARCH_OMAP2PLUS || COMPILE_TEST
+> +	select XENO_DRIVERS_SPI
+> +	help
+> +
+> +	SPI real-time master controller for OMAP24XX and later Multichannel SPI
+> +	(McSPI) modules.
+> +
+>   config XENO_DRIVERS_SPI_DEBUG
+>          depends on XENO_DRIVERS_SPI
+>          bool "Enable SPI core debugging features"
+> diff --git a/kernel/drivers/spi/Makefile b/kernel/drivers/spi/Makefile
+> index 075641f92..889033c4f 100644
+> --- a/kernel/drivers/spi/Makefile
+> +++ b/kernel/drivers/spi/Makefile
+> @@ -7,6 +7,8 @@ xeno_spi-y := spi-master.o spi-device.o
+>   
+>   obj-$(CONFIG_XENO_DRIVERS_SPI_BCM2835) += xeno_spi_bcm2835.o
+>   obj-$(CONFIG_XENO_DRIVERS_SPI_SUN6I) += xeno_spi_sun6i.o
+> +obj-$(CONFIG_XENO_DRIVERS_SPI_OMAP2_MCSPI_RT) += xeno_spi_omap2_mcspi_rt.o
+>   
+>   xeno_spi_bcm2835-y := spi-bcm2835.o
+>   xeno_spi_sun6i-y := spi-sun6i.o
+> +xeno_spi_omap2_mcspi_rt-y := spi-omap2-mcspi-rt.o
+> 
 
-I'm not really opposed to it.
-
-The primary impact of the switch is changing the TLS model to something 
-dlopen-friendly. That comes with a couple of extra instructions, maybe 
-an extra cacheline need. At least for x86, the impact should be minimal. 
-On weaker platforms, it might be measurable.
-
-On the other hand, people short on cycles and sensitive to such overhead 
-may do their own tuning anyway, use a custom kernel and possibly also a 
-custom userland. Distro packages are about broad functionality.
+Thanks, applied to next. I've also turned it on in CI build testing - we 
+need to check the build logs if that catches it on ARM builds. If not, 
+we should tune that config further to ensure this.
 
 Jan
+
+-- 
+Siemens AG, Corporate Technology, CT RDA IOT SES-DE
+Corporate Competence Center Embedded Linux
 
