@@ -1,10 +1,10 @@
-Subject: Re: [PATCH] spi: update Makefile and Kconfig to include bbb spi driver
-References: <20200120132217.3802-1-laurentiu.duca@gmail.com>
+Subject: Re: Cobalt deadlock for no apparent reason
+References: <VI1PR05MB5917D1906A1A32505BFE5168F6320@VI1PR05MB5917.eurprd05.prod.outlook.com>
 From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <fa436ab6-7ef2-2c29-e594-f1ae09535854@siemens.com>
-Date: Tue, 21 Jan 2020 18:44:57 +0100
+Message-ID: <d46517cf-88fb-2449-1a0c-5d4b87cb6e3d@siemens.com>
+Date: Tue, 21 Jan 2020 18:45:56 +0100
 MIME-Version: 1.0
-In-Reply-To: <20200120132217.3802-1-laurentiu.duca@gmail.com>
+In-Reply-To: <VI1PR05MB5917D1906A1A32505BFE5168F6320@VI1PR05MB5917.eurprd05.prod.outlook.com>
 Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -16,57 +16,59 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Laurentiu-Cristian Duca <laurentiu.duca@gmail.com>, xenomai@xenomai.org
+To: Lange Norbert <norbert.lange@andritz.com>, "Xenomai (xenomai@xenomai.org)" <xenomai@xenomai.org>
 
-On 20.01.20 14:22, Laurentiu-Cristian Duca via Xenomai wrote:
-> Updated SPI Makefile and Kconfig in order to contain the option
-> to compile am335x beaglebone black omap4 spi real-time driver.
+On 20.01.20 19:03, Lange Norbert via Xenomai wrote:
+> Hello,
 > 
-> Signed-off-by: Laurentiu-Cristian Duca <laurentiu.duca@gmail.com>
-> ---
->   kernel/drivers/spi/Kconfig  | 10 ++++++++++
->   kernel/drivers/spi/Makefile |  2 ++
->   2 files changed, 12 insertions(+)
+> I got a deadlock while running through gdbserver, this is an implementation of a synchronized queue,
+> Fup side waits via condition variable, main wants to push data, but main fails to acquire the mutex.
+> The mutex is an errorchecking type, without priority inheritance, and not used elsewhere.
 > 
-> diff --git a/kernel/drivers/spi/Kconfig b/kernel/drivers/spi/Kconfig
-> index c2d47aa6c..b48aaf3f9 100644
-> --- a/kernel/drivers/spi/Kconfig
-> +++ b/kernel/drivers/spi/Kconfig
-> @@ -22,6 +22,16 @@ config XENO_DRIVERS_SPI_SUN6I
->   	Enables support for the SPI controller available from
->   	Allwinner's A31, H3 SoCs.
->   
-> +config XENO_DRIVERS_SPI_OMAP2_MCSPI_RT
-> +	tristate "McSPI rt-driver for OMAP"
-> +	depends on HAS_DMA
-> +	depends on ARCH_OMAP2PLUS || COMPILE_TEST
-> +	select XENO_DRIVERS_SPI
-> +	help
-> +
-> +	SPI real-time master controller for OMAP24XX and later Multichannel SPI
-> +	(McSPI) modules.
-> +
->   config XENO_DRIVERS_SPI_DEBUG
->          depends on XENO_DRIVERS_SPI
->          bool "Enable SPI core debugging features"
-> diff --git a/kernel/drivers/spi/Makefile b/kernel/drivers/spi/Makefile
-> index 075641f92..889033c4f 100644
-> --- a/kernel/drivers/spi/Makefile
-> +++ b/kernel/drivers/spi/Makefile
-> @@ -7,6 +7,8 @@ xeno_spi-y := spi-master.o spi-device.o
->   
->   obj-$(CONFIG_XENO_DRIVERS_SPI_BCM2835) += xeno_spi_bcm2835.o
->   obj-$(CONFIG_XENO_DRIVERS_SPI_SUN6I) += xeno_spi_sun6i.o
-> +obj-$(CONFIG_XENO_DRIVERS_SPI_OMAP2_MCSPI_RT) += xeno_spi_omap2_mcspi_rt.o
->   
->   xeno_spi_bcm2835-y := spi-bcm2835.o
->   xeno_spi_sun6i-y := spi-sun6i.o
-> +xeno_spi_omap2_mcspi_rt-y := spi-omap2-mcspi-rt.o
+> 
+> The task are as following:
+> 
+> CPU  PID    CLASS  TYPE      PRI   TIMEOUT       STAT       NAME
+>    1  1686   rt     cobalt      4   -             Wt         main
+>    3  1690   rt     cobalt      2   -             Wt         fup.medium
+> 
+> main is stuck in this function
+> 
+> int mutex_lock(struct mutex_data *pData)
+> {
+>      pthread_t threadId = pthread_self();
+>      // assert(pthread_equal(threadId, pData->m_LockId) == 0);
+> ->    int r = pthread_mutex_lock(&pData->m_Mutex);
+>      assert(r == 0);
+>      pData->m_LockId = threadId;
+>      return r;
+> }
+> 
+> In libcobalt:
+>    do
+>      ret = XENOMAI_SYSCALL1(sc_cobalt_mutex_lock, _mutex);
+>    while (ret == -EINTR);
+> 
+> fup.medium is stuck in:
+> 
+> int conditionvar_wait(struct conditionvar_data *pData, struct mutex_data *pMutex)
+> {
+>      pthread_t sid = pthread_self();
+>      assert(pthread_equal(sid, pMutex->m_LockId) != 0);
+>      pMutex->m_LockId = 0;
+> ->    int r = pthread_cond_wait(&pData->m_CondVar, &pMutex->m_Mutex);
+>      assert(r == 0);
+>      pMutex->m_LockId = sid;
+>      return r;
+> }
+> 
+> In libcobalt:
+>    while (err == -EINTR)
+>      err = XENOMAI_SYSCALL2(sc_cobalt_cond_wait_epilogue, _cnd, _mx);
 > 
 
-Thanks, applied to next. I've also turned it on in CI build testing - we 
-need to check the build logs if that catches it on ARM builds. If not, 
-we should tune that config further to ensure this.
+This is likely tricky to debug by just looking at things. Can you factor 
+out a reproducer?
 
 Jan
 
