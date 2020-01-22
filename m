@@ -1,14 +1,15 @@
-From: Lange Norbert <norbert.lange@andritz.com>
-Subject: RE: Cobalt deadlock for no apparent reason
-Date: Wed, 22 Jan 2020 10:11:28 +0000
-Message-ID: <VI1PR05MB5917663000526B5A5A3A5BE5F60C0@VI1PR05MB5917.eurprd05.prod.outlook.com>
+Subject: Re: Cobalt deadlock for no apparent reason
 References: <VI1PR05MB5917D1906A1A32505BFE5168F6320@VI1PR05MB5917.eurprd05.prod.outlook.com>
  <d46517cf-88fb-2449-1a0c-5d4b87cb6e3d@siemens.com>
-In-Reply-To: <d46517cf-88fb-2449-1a0c-5d4b87cb6e3d@siemens.com>
-Content-Language: en-US
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+ <VI1PR05MB5917663000526B5A5A3A5BE5F60C0@VI1PR05MB5917.eurprd05.prod.outlook.com>
+From: Jan Kiszka <jan.kiszka@siemens.com>
+Message-ID: <cd6eeaab-b89d-4cda-9ce6-52ee70582a21@siemens.com>
+Date: Wed, 22 Jan 2020 18:19:50 +0100
 MIME-Version: 1.0
+In-Reply-To: <VI1PR05MB5917663000526B5A5A3A5BE5F60C0@VI1PR05MB5917.eurprd05.prod.outlook.com>
+Content-Type: text/plain; charset="utf-8"; format="flowed"
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,74 +18,107 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jan Kiszka <jan.kiszka@siemens.com>, "Xenomai (xenomai@xenomai.org)" <xenomai@xenomai.org>
+To: Lange Norbert <norbert.lange@andritz.com>, "Xenomai (xenomai@xenomai.org)" <xenomai@xenomai.org>
 
-DQoNCj4gLS0tLS1PcmlnaW5hbCBNZXNzYWdlLS0tLS0NCj4gRnJvbTogSmFuIEtpc3prYSA8amFu
-Lmtpc3prYUBzaWVtZW5zLmNvbT4NCj4gU2VudDogRGllbnN0YWcsIDIxLiBKw6RubmVyIDIwMjAg
-MTg6NDYNCj4gVG86IExhbmdlIE5vcmJlcnQgPG5vcmJlcnQubGFuZ2VAYW5kcml0ei5jb20+OyBY
-ZW5vbWFpDQo+ICh4ZW5vbWFpQHhlbm9tYWkub3JnKSA8eGVub21haUB4ZW5vbWFpLm9yZz4NCj4g
-U3ViamVjdDogUmU6IENvYmFsdCBkZWFkbG9jayBmb3Igbm8gYXBwYXJlbnQgcmVhc29uDQo+DQo+
-IE5PTi1BTkRSSVRaIFNPVVJDRTogQkUgQ0FVVElPVVMgV0lUSCBDT05URU5ULCBMSU5LUyBPUg0K
-PiBBVFRBQ0hNRU5UUy4NCj4NCj4NCj4gT24gMjAuMDEuMjAgMTk6MDMsIExhbmdlIE5vcmJlcnQg
-dmlhIFhlbm9tYWkgd3JvdGU6DQo+ID4gSGVsbG8sDQo+ID4NCj4gPiBJIGdvdCBhIGRlYWRsb2Nr
-IHdoaWxlIHJ1bm5pbmcgdGhyb3VnaCBnZGJzZXJ2ZXIsIHRoaXMgaXMgYW4NCj4gPiBpbXBsZW1l
-bnRhdGlvbiBvZiBhIHN5bmNocm9uaXplZCBxdWV1ZSwgRnVwIHNpZGUgd2FpdHMgdmlhIGNvbmRp
-dGlvbg0KPiB2YXJpYWJsZSwgbWFpbiB3YW50cyB0byBwdXNoIGRhdGEsIGJ1dCBtYWluIGZhaWxz
-IHRvIGFjcXVpcmUgdGhlIG11dGV4Lg0KPiA+IFRoZSBtdXRleCBpcyBhbiBlcnJvcmNoZWNraW5n
-IHR5cGUsIHdpdGhvdXQgcHJpb3JpdHkgaW5oZXJpdGFuY2UsIGFuZCBub3QNCj4gdXNlZCBlbHNl
-d2hlcmUuDQo+ID4NCj4gPg0KPiA+IFRoZSB0YXNrIGFyZSBhcyBmb2xsb3dpbmc6DQo+ID4NCj4g
-PiBDUFUgIFBJRCAgICBDTEFTUyAgVFlQRSAgICAgIFBSSSAgIFRJTUVPVVQgICAgICAgU1RBVCAg
-ICAgICBOQU1FDQo+ID4gICAgMSAgMTY4NiAgIHJ0ICAgICBjb2JhbHQgICAgICA0ICAgLSAgICAg
-ICAgICAgICBXdCAgICAgICAgIG1haW4NCj4gPiAgICAzICAxNjkwICAgcnQgICAgIGNvYmFsdCAg
-ICAgIDIgICAtICAgICAgICAgICAgIFd0ICAgICAgICAgZnVwLm1lZGl1bQ0KPiA+DQo+ID4gbWFp
-biBpcyBzdHVjayBpbiB0aGlzIGZ1bmN0aW9uDQo+ID4NCj4gPiBpbnQgbXV0ZXhfbG9jayhzdHJ1
-Y3QgbXV0ZXhfZGF0YSAqcERhdGEpIHsNCj4gPiAgICAgIHB0aHJlYWRfdCB0aHJlYWRJZCA9IHB0
-aHJlYWRfc2VsZigpOw0KPiA+ICAgICAgLy8gYXNzZXJ0KHB0aHJlYWRfZXF1YWwodGhyZWFkSWQs
-IHBEYXRhLT5tX0xvY2tJZCkgPT0gMCk7DQo+ID4gLT4gICAgaW50IHIgPSBwdGhyZWFkX211dGV4
-X2xvY2soJnBEYXRhLT5tX011dGV4KTsNCj4gPiAgICAgIGFzc2VydChyID09IDApOw0KPiA+ICAg
-ICAgcERhdGEtPm1fTG9ja0lkID0gdGhyZWFkSWQ7DQo+ID4gICAgICByZXR1cm4gcjsNCj4gPiB9
-DQo+ID4NCj4gPiBJbiBsaWJjb2JhbHQ6DQo+ID4gICAgZG8NCj4gPiAgICAgIHJldCA9IFhFTk9N
-QUlfU1lTQ0FMTDEoc2NfY29iYWx0X211dGV4X2xvY2ssIF9tdXRleCk7DQo+ID4gICAgd2hpbGUg
-KHJldCA9PSAtRUlOVFIpOw0KPiA+DQo+ID4gZnVwLm1lZGl1bSBpcyBzdHVjayBpbjoNCj4gPg0K
-PiA+IGludCBjb25kaXRpb252YXJfd2FpdChzdHJ1Y3QgY29uZGl0aW9udmFyX2RhdGEgKnBEYXRh
-LCBzdHJ1Y3QNCj4gPiBtdXRleF9kYXRhICpwTXV0ZXgpIHsNCj4gPiAgICAgIHB0aHJlYWRfdCBz
-aWQgPSBwdGhyZWFkX3NlbGYoKTsNCj4gPiAgICAgIGFzc2VydChwdGhyZWFkX2VxdWFsKHNpZCwg
-cE11dGV4LT5tX0xvY2tJZCkgIT0gMCk7DQo+ID4gICAgICBwTXV0ZXgtPm1fTG9ja0lkID0gMDsN
-Cj4gPiAtPiAgICBpbnQgciA9IHB0aHJlYWRfY29uZF93YWl0KCZwRGF0YS0+bV9Db25kVmFyLCAm
-cE11dGV4LQ0KPiA+bV9NdXRleCk7DQo+ID4gICAgICBhc3NlcnQociA9PSAwKTsNCj4gPiAgICAg
-IHBNdXRleC0+bV9Mb2NrSWQgPSBzaWQ7DQo+ID4gICAgICByZXR1cm4gcjsNCj4gPiB9DQo+ID4N
-Cj4gPiBJbiBsaWJjb2JhbHQ6DQo+ID4gICAgd2hpbGUgKGVyciA9PSAtRUlOVFIpDQo+ID4gICAg
-ICBlcnIgPSBYRU5PTUFJX1NZU0NBTEwyKHNjX2NvYmFsdF9jb25kX3dhaXRfZXBpbG9ndWUsIF9j
-bmQsIF9teCk7DQo+ID4NCj4NCj4gVGhpcyBpcyBsaWtlbHkgdHJpY2t5IHRvIGRlYnVnIGJ5IGp1
-c3QgbG9va2luZyBhdCB0aGluZ3MuIENhbiB5b3UgZmFjdG9yIG91dCBhDQo+IHJlcHJvZHVjZXI/
-DQoNCldlbGwsIHRoZSAibm8gYXBwYXJlbnQgcmVhc29uIiBpcyBrZXkgaGVyZSwgaXQncyBub3Qg
-ZWFzaWx5IHJlcHJvZHVjaWJsZSBlaXRoZXIuDQpNaWdodCBoZWxwIGlmIHlvdSB0ZWxsIG1lIGhv
-dyBJIGNvdWxkIGVuZCB1cCBpbiB0aGlzIHNpdHVhdGlvbiwgQUZBSUsgdGhlIHB0aHJlYWRfY29u
-ZF93YWl0IGZ1bmN0aW9uIGdvdCBhbiBpbnRlcnJ1cHQsDQp3aGVuIGNhbiB0aGlzIG9jY3VyIGZv
-ciBleGFtcGxlLg0KSXQgc2VlbXMgbGltaXRlZCB0byBydW5uaW5nIHVuZGVyIGEgZGVidWdnZXIg
-KG9yIGp1c3QgaGFwcGVucyBhIGxvdCBsZXNzIHdpdGhvdXQpLCBhbmQgd2hlbiB0aGUgcHJvY2Vz
-cyBkbG9wZW4ncyBsaWJyYXJpZXMgdGhpcyBwYXVzZXMNCnRoZSBwcm9jZXNzIGZvciBleGFtcGxl
-LiBBdCB0aGF0IHRpbWUgdGhlIGZ1cC5tZWRpdW0gaXMgc3VwcG9zZWQgdG8gc3RpY2sgaW4gcHRo
-cmVhZF9jb25kX3dhaXQgKG1lYW5zIHRoZSBkbG9wZW5zIG1pZ2h0IGNhdXNlIHNwdXJpb3VzIHdh
-a2V1cHMpDQphbmQgbm90aWZpZWQgYWZ0ZXIgZXZlcnl0aGluZyBpcyByZWFkeSB0byBydW4uDQoN
-ClNvLCBpZiB5b3UgaGF2ZSBhbnkgaWRlYSBob3cgSSBjb3VsZCBuYXJyb3cgaXQgZG93biwgSSBt
-aWdoIGJlIGFibGUgdG8gYnVpbGQgYSByZXByb2R1Y2VyLiBSaWdodCBub3cgSSBhbSBnb2luZyB0
-byB1c2UgYSB0aW1lZCBtdXRleCB0byBhdGxlYXN0IGRldGVjdCB0aGUgaXNzdWUuDQoNCk5vcmJl
-cnQNCl9fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fDQoNClRoaXMgbWVzc2FnZSBhbmQg
-YW55IGF0dGFjaG1lbnRzIGFyZSBzb2xlbHkgZm9yIHRoZSB1c2Ugb2YgdGhlIGludGVuZGVkIHJl
-Y2lwaWVudHMuIFRoZXkgbWF5IGNvbnRhaW4gcHJpdmlsZWdlZCBhbmQvb3IgY29uZmlkZW50aWFs
-IGluZm9ybWF0aW9uIG9yIG90aGVyIGluZm9ybWF0aW9uIHByb3RlY3RlZCBmcm9tIGRpc2Nsb3N1
-cmUuIElmIHlvdSBhcmUgbm90IGFuIGludGVuZGVkIHJlY2lwaWVudCwgeW91IGFyZSBoZXJlYnkg
-bm90aWZpZWQgdGhhdCB5b3UgcmVjZWl2ZWQgdGhpcyBlbWFpbCBpbiBlcnJvciBhbmQgdGhhdCBh
-bnkgcmV2aWV3LCBkaXNzZW1pbmF0aW9uLCBkaXN0cmlidXRpb24gb3IgY29weWluZyBvZiB0aGlz
-IGVtYWlsIGFuZCBhbnkgYXR0YWNobWVudCBpcyBzdHJpY3RseSBwcm9oaWJpdGVkLiBJZiB5b3Ug
-aGF2ZSByZWNlaXZlZCB0aGlzIGVtYWlsIGluIGVycm9yLCBwbGVhc2UgY29udGFjdCB0aGUgc2Vu
-ZGVyIGFuZCBkZWxldGUgdGhlIG1lc3NhZ2UgYW5kIGFueSBhdHRhY2htZW50IGZyb20geW91ciBz
-eXN0ZW0uDQoNCkFORFJJVFogSFlEUk8gR21iSA0KDQoNClJlY2h0c2Zvcm0vIExlZ2FsIGZvcm06
-IEdlc2VsbHNjaGFmdCBtaXQgYmVzY2hyw6Rua3RlciBIYWZ0dW5nIC8gQ29ycG9yYXRpb24NCg0K
-RmlybWVuc2l0ei8gUmVnaXN0ZXJlZCBzZWF0OiBXaWVuDQoNCkZpcm1lbmJ1Y2hnZXJpY2h0LyBD
-b3VydCBvZiByZWdpc3RyeTogSGFuZGVsc2dlcmljaHQgV2llbg0KDQpGaXJtZW5idWNobnVtbWVy
-LyBDb21wYW55IHJlZ2lzdHJhdGlvbjogRk4gNjE4MzMgZw0KDQpEVlI6IDA2MDUwNzcNCg0KVUlE
-LU5yLjogQVRVMTQ3NTY4MDYNCg0KDQpUaGFuayBZb3UNCl9fX19fX19fX19fX19fX19fX19fX19f
-X19fX19fX19fDQo=
+On 22.01.20 11:11, Lange Norbert wrote:
+> 
+> 
+>> -----Original Message-----
+>> From: Jan Kiszka <jan.kiszka@siemens.com>
+>> Sent: Dienstag, 21. Jänner 2020 18:46
+>> To: Lange Norbert <norbert.lange@andritz.com>; Xenomai
+>> (xenomai@xenomai.org) <xenomai@xenomai.org>
+>> Subject: Re: Cobalt deadlock for no apparent reason
+>>
+>> NON-ANDRITZ SOURCE: BE CAUTIOUS WITH CONTENT, LINKS OR
+>> ATTACHMENTS.
+>>
+>>
+>> On 20.01.20 19:03, Lange Norbert via Xenomai wrote:
+>>> Hello,
+>>>
+>>> I got a deadlock while running through gdbserver, this is an
+>>> implementation of a synchronized queue, Fup side waits via condition
+>> variable, main wants to push data, but main fails to acquire the mutex.
+>>> The mutex is an errorchecking type, without priority inheritance, and not
+>> used elsewhere.
+>>>
+>>>
+>>> The task are as following:
+>>>
+>>> CPU  PID    CLASS  TYPE      PRI   TIMEOUT       STAT       NAME
+>>>     1  1686   rt     cobalt      4   -             Wt         main
+>>>     3  1690   rt     cobalt      2   -             Wt         fup.medium
+>>>
+>>> main is stuck in this function
+>>>
+>>> int mutex_lock(struct mutex_data *pData) {
+>>>       pthread_t threadId = pthread_self();
+>>>       // assert(pthread_equal(threadId, pData->m_LockId) == 0);
+>>> ->    int r = pthread_mutex_lock(&pData->m_Mutex);
+>>>       assert(r == 0);
+>>>       pData->m_LockId = threadId;
+>>>       return r;
+>>> }
+>>>
+>>> In libcobalt:
+>>>     do
+>>>       ret = XENOMAI_SYSCALL1(sc_cobalt_mutex_lock, _mutex);
+>>>     while (ret == -EINTR);
+>>>
+>>> fup.medium is stuck in:
+>>>
+>>> int conditionvar_wait(struct conditionvar_data *pData, struct
+>>> mutex_data *pMutex) {
+>>>       pthread_t sid = pthread_self();
+>>>       assert(pthread_equal(sid, pMutex->m_LockId) != 0);
+>>>       pMutex->m_LockId = 0;
+>>> ->    int r = pthread_cond_wait(&pData->m_CondVar, &pMutex-
+>>> m_Mutex);
+>>>       assert(r == 0);
+>>>       pMutex->m_LockId = sid;
+>>>       return r;
+>>> }
+>>>
+>>> In libcobalt:
+>>>     while (err == -EINTR)
+>>>       err = XENOMAI_SYSCALL2(sc_cobalt_cond_wait_epilogue, _cnd, _mx);
+>>>
+>>
+>> This is likely tricky to debug by just looking at things. Can you factor out a
+>> reproducer?
+> 
+> Well, the "no apparent reason" is key here, it's not easily reproducible either.
+> Might help if you tell me how I could end up in this situation, AFAIK the pthread_cond_wait function got an interrupt,
+> when can this occur for example.
+
+Well, we have the cond_wait apparently being signaled (condition met) 
+and on its way back, "just" trying to reacquire the mutex it dropped 
+while waiting. On the other hand, that mutex is also not available for 
+the other context trying to call mutex_lock. Now, we either have one of 
+those two instances actually holding the lock while not noticing it - or 
+there is a third instance in possession of the lock. From the code and 
+information you sent, this is impossible to guess.
+
+> It seems limited to running under a debugger (or just happens a lot less without), and when the process dlopen's libraries this pauses
+> the process for example. At that time the fup.medium is supposed to stick in pthread_cond_wait (means the dlopens might cause spurious wakeups)
+> and notified after everything is ready to run.
+
+The debugger might be the catalyst for the issue, or it is actually 
+causing it. Again, impossible to guess from the given information:
+
+> 
+> So, if you have any idea how I could narrow it down, I migh be able to build a reproducer. Right now I am going to use a timed mutex to atleast detect the issue.
+
+- identify the owner of the lock at the time of the deadlock, based on
+   the data structures - maybe that is already telling the story
+
+- take an ftrace of the situation so that the flow of context switches
+   and debugger interceptions can be reconstructed
+
+Jan
+
+-- 
+Siemens AG, Corporate Technology, CT RDA IOT SES-DE
+Corporate Competence Center Embedded Linux
 
