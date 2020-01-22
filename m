@@ -1,13 +1,14 @@
-Subject: Re: [PATCH] debian: Enable dlopen-libs in userspace package
-References: <20200121183401.24327-1-henning.schild@siemens.com>
+Subject: Re: [PATCH] spi: update Makefile and Kconfig to include bbb spi driver
+References: <20200120132217.3802-1-laurentiu.duca@gmail.com>
+ <fa436ab6-7ef2-2c29-e594-f1ae09535854@siemens.com>
 From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <dd88330f-5b06-d4ac-b625-52b812149a24@siemens.com>
-Date: Wed, 22 Jan 2020 18:21:55 +0100
+Message-ID: <65c3cb94-cf60-3083-8e95-9009f5bfd8e9@siemens.com>
+Date: Wed, 22 Jan 2020 18:24:56 +0100
 MIME-Version: 1.0
-In-Reply-To: <20200121183401.24327-1-henning.schild@siemens.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
+In-Reply-To: <fa436ab6-7ef2-2c29-e594-f1ae09535854@siemens.com>
+Content-Type: text/plain; charset="utf-8"; format="flowed"
 Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,41 +17,62 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Henning Schild <henning.schild@siemens.com>, xenomai@xenomai.org
+To: Laurentiu-Cristian Duca <laurentiu.duca@gmail.com>, xenomai@xenomai.org
 
-On 21.01.20 19:34, Henning Schild via Xenomai wrote:
-> From: Henning Schild <henning.schild@siemens.com>
+On 21.01.20 18:44, Jan Kiszka via Xenomai wrote:
+> On 20.01.20 14:22, Laurentiu-Cristian Duca via Xenomai wrote:
+>> Updated SPI Makefile and Kconfig in order to contain the option
+>> to compile am335x beaglebone black omap4 spi real-time driver.
+>>
+>> Signed-off-by: Laurentiu-Cristian Duca <laurentiu.duca@gmail.com>
+>> ---
+>>   kernel/drivers/spi/Kconfig  | 10 ++++++++++
+>>   kernel/drivers/spi/Makefile |  2 ++
+>>   2 files changed, 12 insertions(+)
+>>
+>> diff --git a/kernel/drivers/spi/Kconfig b/kernel/drivers/spi/Kconfig
+>> index c2d47aa6c..b48aaf3f9 100644
+>> --- a/kernel/drivers/spi/Kconfig
+>> +++ b/kernel/drivers/spi/Kconfig
+>> @@ -22,6 +22,16 @@ config XENO_DRIVERS_SPI_SUN6I
+>>       Enables support for the SPI controller available from
+>>       Allwinner's A31, H3 SoCs.
+>> +config XENO_DRIVERS_SPI_OMAP2_MCSPI_RT
+>> +    tristate "McSPI rt-driver for OMAP"
+>> +    depends on HAS_DMA
+>> +    depends on ARCH_OMAP2PLUS || COMPILE_TEST
+>> +    select XENO_DRIVERS_SPI
+>> +    help
+>> +
+>> +    SPI real-time master controller for OMAP24XX and later 
+>> Multichannel SPI
+>> +    (McSPI) modules.
+>> +
+>>   config XENO_DRIVERS_SPI_DEBUG
+>>          depends on XENO_DRIVERS_SPI
+>>          bool "Enable SPI core debugging features"
+>> diff --git a/kernel/drivers/spi/Makefile b/kernel/drivers/spi/Makefile
+>> index 075641f92..889033c4f 100644
+>> --- a/kernel/drivers/spi/Makefile
+>> +++ b/kernel/drivers/spi/Makefile
+>> @@ -7,6 +7,8 @@ xeno_spi-y := spi-master.o spi-device.o
+>>   obj-$(CONFIG_XENO_DRIVERS_SPI_BCM2835) += xeno_spi_bcm2835.o
+>>   obj-$(CONFIG_XENO_DRIVERS_SPI_SUN6I) += xeno_spi_sun6i.o
+>> +obj-$(CONFIG_XENO_DRIVERS_SPI_OMAP2_MCSPI_RT) += 
+>> xeno_spi_omap2_mcspi_rt.o
+>>   xeno_spi_bcm2835-y := spi-bcm2835.o
+>>   xeno_spi_sun6i-y := spi-sun6i.o
+>> +xeno_spi_omap2_mcspi_rt-y := spi-omap2-mcspi-rt.o
+>>
 > 
-> This feature might not be widely used but those debian packages are
-> supposed to be generic. Having it default on brings more benefits than
-> drawbacks for generic packages.
-> 
-> Signed-off-by: Henning Schild <henning.schild@siemens.com>
-> ---
->   debian/rules | 3 ++-
->   1 file changed, 2 insertions(+), 1 deletion(-)
-> 
-> diff --git a/debian/rules b/debian/rules
-> index 68e7a4e37..22c90586d 100755
-> --- a/debian/rules
-> +++ b/debian/rules
-> @@ -19,7 +19,8 @@ CONFIG_OPTS = --prefix=/usr \
->               --with-testdir=/usr/lib/xenomai/testsuite \
->               --enable-smp \
->               --enable-lazy-setsched \
-> -            --enable-debug=symbols
-> +            --enable-debug=symbols \
-> +            --enable-dlopen-libs
->   
->   ifneq ($(DEB_HOST_GNU_TYPE),$(DEB_BUILD_GNU_TYPE))
->   	CONFIG_OPTS += --build $(DEB_BUILD_GNU_TYPE) --host $(DEB_HOST_GNU_TYPE)
+> Thanks, applied to next. I've also turned it on in CI build testing - we 
+> need to check the build logs if that catches it on ARM builds. If not, 
+> we should tune that config further to ensure this.
 > 
 
-Thanks, applied.
+ From the build log at [1], it seems this worked.
 
 Jan
 
--- 
-Siemens AG, Corporate Technology, CT RDA IOT SES-DE
-Corporate Competence Center Embedded Linux
+[1] https://travis-ci.com/xenomai-ci/xenomai/jobs/278036896
 
