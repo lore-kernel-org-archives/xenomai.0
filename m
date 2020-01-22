@@ -1,12 +1,13 @@
-From: Steven Seeger <steven.seeger@flightsystems.net>
-Subject: Re: Moving on
-Date: Tue, 03 Dec 2019 10:08:19 -0500
-Message-ID: <2144994.kNte9iif2h@omoikane>
-In-Reply-To: <7ef777be-f422-bd61-e19b-2b02772487f4@xenomai.org>
-References: <7ef777be-f422-bd61-e19b-2b02772487f4@xenomai.org>
-Content-Transfer-Encoding: 7Bit
-Content-Type: text/plain; charset="us-ascii"
+Subject: Re: [PATCH] debian: Enable dlopen-libs in userspace package
+References: <20200121183401.24327-1-henning.schild@siemens.com>
+From: Jan Kiszka <jan.kiszka@siemens.com>
+Message-ID: <dd88330f-5b06-d4ac-b625-52b812149a24@siemens.com>
+Date: Wed, 22 Jan 2020 18:21:55 +0100
 MIME-Version: 1.0
+In-Reply-To: <20200121183401.24327-1-henning.schild@siemens.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,36 +16,41 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
-Cc: Philippe Gerum <rpm@xenomai.org>, "Xenomai@xenomai.org" <Xenomai@xenomai.org>
+To: Henning Schild <henning.schild@siemens.com>, xenomai@xenomai.org
 
-On Monday, December 2, 2019 11:05:06 AM EST Philippe Gerum wrote:
-> It has been two years since I stepped down as Xenomai's lead maintainer.
-> In the meantime, Jan took over and did a very good job in this role as
-> expected.
+On 21.01.20 19:34, Henning Schild via Xenomai wrote:
+> From: Henning Schild <henning.schild@siemens.com>
 > 
-> Since this transition period is now taking an end, I'm switching focus
-> to the EVL project [1] I have been nurturing for some time, with the
-> goal to make it production-grade next year. In a nutshell, EVL is about
-> laying the groundwork for dual kernel systems to become first-class
-> citizens of Linux. This work includes a SMP scalable real-time core
-> which can be maintained with common kernel knowledge over the latest
-> mainline kernel series, a standard driver model, and a single, compact API.
+> This feature might not be widely used but those debian packages are
+> supposed to be generic. Having it default on brings more benefits than
+> drawbacks for generic packages.
+> 
+> Signed-off-by: Henning Schild <henning.schild@siemens.com>
+> ---
+>   debian/rules | 3 ++-
+>   1 file changed, 2 insertions(+), 1 deletion(-)
+> 
+> diff --git a/debian/rules b/debian/rules
+> index 68e7a4e37..22c90586d 100755
+> --- a/debian/rules
+> +++ b/debian/rules
+> @@ -19,7 +19,8 @@ CONFIG_OPTS = --prefix=/usr \
+>               --with-testdir=/usr/lib/xenomai/testsuite \
+>               --enable-smp \
+>               --enable-lazy-setsched \
+> -            --enable-debug=symbols
+> +            --enable-debug=symbols \
+> +            --enable-dlopen-libs
+>   
+>   ifneq ($(DEB_HOST_GNU_TYPE),$(DEB_BUILD_GNU_TYPE))
+>   	CONFIG_OPTS += --build $(DEB_BUILD_GNU_TYPE) --host $(DEB_HOST_GNU_TYPE)
 > 
 
-Philippe,
+Thanks, applied.
 
-It's been great to work with you on Xenomai when my work has allowed me to do 
-so. I really hope that we can stay in touch and continue to work together in 
-the future. I suspect at some point some of the folks in the PPC circles I 
-work with are going to have an interest in trying out EVL. I'm especially 
-hopeful the end result will be one where a casual user can contribute without 
-having many different contexts to keep track of in their heads. ;)
+Jan
 
-Have a Merry Christmas. I hope your kid is back to being a soccer star by now. 
-;)
-
-Steven
-
-
+-- 
+Siemens AG, Corporate Technology, CT RDA IOT SES-DE
+Corporate Competence Center Embedded Linux
 
