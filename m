@@ -1,9 +1,9 @@
 MIME-Version: 1.0
-In-Reply-To: <CAPm8-H6oDc4NogRLTFvi7-9vOv=a2OGE=fiRib1yUEOyR-rsAQ@mail.gmail.com>
 References: <CAPm8-H6oDc4NogRLTFvi7-9vOv=a2OGE=fiRib1yUEOyR-rsAQ@mail.gmail.com>
-From: Laurentiu-Cristian Duca <laurentiu.duca@gmail.com>
-Date: Thu, 23 Jan 2020 16:29:51 +0200
-Message-ID: <CAPm8-H4Eg7JyVccjrhz-5zjD=6c9FQ9xYu2LBBUB9qcd6=zB-g@mail.gmail.com>
+In-Reply-To: <CAPm8-H6oDc4NogRLTFvi7-9vOv=a2OGE=fiRib1yUEOyR-rsAQ@mail.gmail.com>
+From: Greg Gallagher <greg@embeddedgreg.com>
+Date: Thu, 23 Jan 2020 12:03:38 -0500
+Message-ID: <CALLqZ8Qa1+WLUQHw7woNOJZGgjmhkjms+QYLpT9ggnD47XsUog@mail.gmail.com>
 Subject: Re: system freeze - beaglebone black xenomai - gpio interrupts driver
 Content-Type: text/plain; charset="UTF-8"
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
@@ -14,15 +14,16 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai <xenomai@xenomai.org>
+To: Laurentiu-Cristian Duca <laurentiu.duca@gmail.com>
+Cc: xenomai <xenomai@xenomai.org>
 
-I forgot to mention that on xenomai 3.0.5 linux 4.4.71 with default dts,
-although warnings appear, the driver works
-but in xenomai-3 master linux 4.19.82 with default dts got system freeze.
+Hi,
 
-On 1/23/20, Laurentiu-Cristian Duca <laurentiu.duca@gmail.com> wrote:
+On Thu, Jan 23, 2020 at 9:21 AM Laurentiu-Cristian Duca via Xenomai
+<xenomai@xenomai.org> wrote:
+>
 > Hello xenomai community,
-> 	
+>
 >     I have successfully tested in xenomai SPI with interrupts on bbb.
 > However, on bbb, if I try to test a basic gpio interrupts driver,
 > problems appear.
@@ -33,6 +34,11 @@ On 1/23/20, Laurentiu-Cristian Duca <laurentiu.duca@gmail.com> wrote:
 > [  105.582245]  IRQ number 62 !
 > [  105.585976] after request irq = 62
 > System freeze when first interrupt occurs and I must power off.
+Is it possible to use raw_printk and see if the system is still
+working but possibly getting flooded by interrupts?  When I
+encountered this issue with the BCM2835 port I placed a raw_printk in
+one of the functions that initially handles the interrupt to see if it
+was being ack'd.
 >
 >
 > 2. xenomai 3.0.5 linux 4.4.71, default dts
@@ -127,8 +133,7 @@ On 1/23/20, Laurentiu-Cristian Duca <laurentiu.duca@gmail.com> wrote:
 >
 >
 > static unsigned int irq_num;
-> // bbb gpios that work on PREEMPT_RT linux 4.19.59 and 5.4.5 with default
-> dts
+> // bbb gpios that work on PREEMPT_RT linux 4.19.59 and 5.4.5 with default dts
 > static unsigned int gpio_out = 48;
 > static unsigned int gpio_in = 115;
 > static bool value = false;
@@ -189,9 +194,8 @@ On 1/23/20, Laurentiu-Cristian Duca <laurentiu.duca@gmail.com> wrote:
 >         return err;
 >     }
 >
->     err =
-> rtdm_irq_request(&irq_handle,irq_num,(rtdm_irq_handler_t)gpio_irq_handler,
-> 		RTDM_IRQTYPE_EDGE,THIS_MODULE->name, NULL);
+>     err = rtdm_irq_request(&irq_handle,irq_num,(rtdm_irq_handler_t)gpio_irq_handler,
+>                 RTDM_IRQTYPE_EDGE,THIS_MODULE->name, NULL);
 >
 >     printk("after request irq = %d \n",irq_handle.irq);
 >
@@ -233,4 +237,11 @@ On 1/23/20, Laurentiu-Cristian Duca <laurentiu.duca@gmail.com> wrote:
 > Thank you,
 > L-C Duca
 >
+My above comments would be good to start debugging the issue.  Looking
+at the ipipe trees I think we are missing some ipipe things in the
+GPIO driver from 4.4 to 4.19.  When I diff the files it looks like
+there are some things missing in 4.19.  I can make a patch for you to
+try, I'll have it ready shortly.
+
+-Greg
 
