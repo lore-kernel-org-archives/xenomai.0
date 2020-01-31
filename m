@@ -1,15 +1,12 @@
-Subject: Re: bug in eventobj_wait when using EVOBJ_ALL mode
-References: <CAMJ=MEd18keoeV3DQZ5Z+CjKWEYqRfHPLp=bM=65tvW6518CAA@mail.gmail.com>
- <619c981a-d855-b51c-0c50-ab6b140b08ff@siemens.com>
- <CAMJ=MEfe8t-+2aojcZ_JSsZfRCrTRWbDkccfxtPRuGtaWhYvEA@mail.gmail.com>
 From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <03339b5b-c20d-6029-f6f6-c498200df678@siemens.com>
-Date: Fri, 31 Jan 2020 14:30:07 +0100
-MIME-Version: 1.0
-In-Reply-To: <CAMJ=MEfe8t-+2aojcZ_JSsZfRCrTRWbDkccfxtPRuGtaWhYvEA@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Subject: [PATCH 2/3] kernel/cobalt/posix: Fix cobalt_event_wait for
+ COBALT_EVENT_ALL case
+Date: Fri, 31 Jan 2020 15:37:59 +0100
+Message-Id: <14607200d908a4c5bb585a70b951cd2ea27babdb.1580481480.git.jan.kiszka@siemens.com>
+In-Reply-To: <cover.1580481480.git.jan.kiszka@siemens.com>
+References: <cover.1580481480.git.jan.kiszka@siemens.com>
+In-Reply-To: <cover.1580481480.git.jan.kiszka@siemens.com>
+References: <cover.1580481480.git.jan.kiszka@siemens.com>
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -18,62 +15,35 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Ronny Meeus <ronny.meeus@gmail.com>
-Cc: xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-On 31.01.20 12:37, Ronny Meeus wrote:
-> Op vr 31 jan. 2020 om 11:41 schreef Jan Kiszka <jan.kiszka@siemens.com>:
->>
->> On 31.01.20 10:46, Ronny Meeus via Xenomai wrote:
->>> Hello
->>>
->>> Following patch corrects an issue when passing the EVOBJ_ALL mode to the
->>> eventobj_wait function.
->>>
->>> The expected behavior of this function to my understanding is:
->>> eventobj_wait in EVOBJ_ALL mode is supposed to return when all the bits
->>> specified by the caller are set in core.value (=pending events).
->>> The state of the other bits in core.value is not relevant.
->>>
->>> The current behavior is that it returns when all bits are set AND no
->>> other events
->>> are pending in the core.value, which is not correct in my opinion.
->>>
->>> diff --git a/lib/copperplate/eventobj.c b/lib/copperplate/eventobj.c
->>> --- a/lib/copperplate/eventobj.c
->>> +++ b/lib/copperplate/eventobj.c
->>> @@ -217,7 +217,7 @@ int eventobj_wait(struct eventobj *evobj
->>>           }
->>>
->>>           waitval = evobj->EVOBJ_ANY & bits;
->>                               ^^^^^^^^^
->> Looks like you either hand-edited the patch, or there is something
->> broken in your repo.
-> 
-> I think I changed the code by accident in the mail since the patch in my
-> repo is correct.
-> 
->>
->>> -       testval = mode & EVOBJ_ANY ? waitval : evobj->core.value;
->>> +       testval = mode & EVOBJ_ANY ? waitval : bits;
->>>
->>>           if (waitval && waitval == testval) {
->>>                   *bits_r = waitval;
->>>
->>
->> This looks indeed like a bug, also present in the corresponding cobalt
->> kernel logic. Can you enhance lib/alchemy/testsuite/event-1.c to cover
->> this case and provide a patch for both paths?
-> 
-> I can look into it but at this moment I have no time for it.
-> Next to that I will also not be able to run the cobalt test since I have no
-> environment for that.
+From: Jan Kiszka <jan.kiszka@siemens.com>
 
-I've reproduced and validated the fix. Will send patches soon.
+When we wait for all passed event bits to be set, we need to test for
+those bits, not the ones that are currently pending. The current code
+fails to detect that the condition is met when both the desired as well
+as other events are already pending.
 
-Jan
+Reported by: Ronny Meeus <ronny.meeus@gmail.com>
+Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
+---
+ kernel/cobalt/posix/event.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
+diff --git a/kernel/cobalt/posix/event.c b/kernel/cobalt/posix/event.c
+index 407ef8d8e1..c566a09e36 100644
+--- a/kernel/cobalt/posix/event.c
++++ b/kernel/cobalt/posix/event.c
+@@ -153,7 +153,7 @@ int __cobalt_event_wait(struct cobalt_event_shadow __user *u_event,
+ 
+ 	state->flags |= COBALT_EVENT_PENDED;
+ 	rbits = state->value & bits;
+-	testval = mode & COBALT_EVENT_ANY ? rbits : state->value;
++	testval = mode & COBALT_EVENT_ANY ? rbits : bits;
+ 	if (rbits && rbits == testval)
+ 		goto done;
+ 
 -- 
-Siemens AG, Corporate Technology, CT RDA IOT SES-DE
-Corporate Competence Center Embedded Linux
+2.16.4
+
 
