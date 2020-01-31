@@ -1,16 +1,11 @@
-Subject: Re: [RFC] simplify wait_for_rcu_grace_period
-References: <1498b3cc-767f-703c-116b-ae102be3e510@siemens.com>
- <9555bd80-150f-19d2-ddac-d92ac01b0ac1@xenomai.org>
- <df780f75-e210-5c09-fa3a-ecb564868e6e@siemens.com>
- <f6a24e2d-d5ce-9013-aacb-6f097853443b@xenomai.org>
-From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <686faea3-6afc-91f0-1b77-975a7a7f4b57@siemens.com>
-Date: Tue, 4 Feb 2020 10:09:44 +0100
 MIME-Version: 1.0
-In-Reply-To: <f6a24e2d-d5ce-9013-aacb-6f097853443b@xenomai.org>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+References: <CAPm8-H4LK2cdVkiK=AmVE1UT8kCOehDxsHafkh7EupOoQRebnA@mail.gmail.com>
+In-Reply-To: <CAPm8-H4LK2cdVkiK=AmVE1UT8kCOehDxsHafkh7EupOoQRebnA@mail.gmail.com>
+From: Greg Gallagher <greg@embeddedgreg.com>
+Date: Fri, 31 Jan 2020 15:34:47 -0500
+Message-ID: <CALLqZ8SqKMgFuvQNjX0SNL183O8d6trDRqxPg-e7A3SJGZ-L7Q@mail.gmail.com>
+Subject: Re: Beaglebone black raw_printk
+Content-Type: text/plain; charset="UTF-8"
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -19,61 +14,28 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Philippe Gerum <rpm@xenomai.org>
-Cc: Xenomai <xenomai@xenomai.org>
+To: Laurentiu-Cristian Duca <laurentiu.duca@gmail.com>
+Cc: xenomai <xenomai@xenomai.org>
 
-On 04.02.20 09:44, Philippe Gerum wrote:
-> On 2/3/20 8:00 PM, Jan Kiszka wrote:
->> On 03.02.20 19:51, Philippe Gerum wrote:
->>> On 1/31/20 9:43 PM, Jan Kiszka wrote:
->>>> Hi Philippe,
->>>>
->>>> any reason why you didn't use synchronize_rcu for
->>>> wait_for_rcu_grace_period back then?
->>>>
->>>
->>> Likely because because we might observe multiple grace periods between
->>> the moment joinee->exited is posted and the joinee eventually
->>> schedules out.
->>>
->>
->> I didn't find a difference in the logic you open-coded and what the
->> kernel does behind synchronize_rcu, therefore I'm asking.
->>
-> 
-> So you mean you would want to replace call_rcu() + completion with
-> synchronize_rcu()? Sure you could.
+Hi
 
-Yes, that is my proposal.
+On Fri, Jan 31, 2020 at 7:04 AM Laurentiu-Cristian Duca
+<laurentiu.duca@gmail.com> wrote:
+>
+> Hello xenomai family
+>
+>   In this way I was able to use raw_printk on evl.
+> Maybe works on xenomai too.
+>
+> CONFIG_DEBUG_RAW_PRINTK=y
+> CONFIG_DEBUG_LL=y
+> # under LL menu entry
+> CONFIG_DEBUG_UART_8250=y
+> CONFIG_DEBUG_UART_PHYS=0x44e09000
+> CONFIG_DEBUG_UART_VIRT=0xf9e09000
 
-> 
->>>>
->>>>
->>>> I'm currently debugging a hanging xnthread_join in
->>>> wait_for_rcu_grace_period and stumbled over this (both variants hang
->>>> equally well, though).
->>>>
->>> I'm not entirely surprised. Fully relying on RCU for this was more of a
->>> work around to address the module unload issue rather than a reliable
->>> fix.
->>>
->>
->> The lockup is on synchronize_rcu / the open-coded waiting itself. The
->> joinee is long gone. And that lockup goes away when switching to
->> HZ_PERIODIC. I still need to dig deeper to understand why we get no
->> update in that particular case.
->>
-> 
-> Is the joiner blocked on the completion waiting for a grace period which
-> never ends? Or, is the task never unregistered from the pid table?
-> 
+Thanks!! That worked great, I now have printascii working and can
+debug with more success.  I was missing the UART_8250 part.
 
-We are stuck in the completion waiting, not on checking for the pid to 
-become invalid.
-
-Jan
-
--- 
-Siemens AG, Corporate Technology, CT RDA IOT SES-DE
-Corporate Competence Center Embedded Linux
+-Greg
 
