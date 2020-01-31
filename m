@@ -1,14 +1,11 @@
-Subject: Re: undefined reference to `rt_task_create
-References: <d3c4d944-807a-a2d4-7ec1-2d1639f36f78@vbm-grp.com>
- <48de04a3-9f2c-d3e6-8a80-568a497015c1@vbm-grp.com>
-From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <5cf98ffb-d244-1030-552e-a1ebed830df0@siemens.com>
-Date: Thu, 5 Dec 2019 08:44:52 +0100
+From: Philippe  Gerum <rpm@xenomai.org>
+Subject: [PATCH 3/8] build: fix make distcheck
+Date: Fri, 31 Jan 2020 16:27:08 +0100
+Message-Id: <20200131152713.1811748-4-rpm@xenomai.org>
+In-Reply-To: <20200131152713.1811748-1-rpm@xenomai.org>
+References: <20200131152713.1811748-1-rpm@xenomai.org>
 MIME-Version: 1.0
-In-Reply-To: <48de04a3-9f2c-d3e6-8a80-568a497015c1@vbm-grp.com>
-Content-Type: text/plain; charset=iso-8859-15
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,24 +14,52 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "Electronic Dept. - Vbm Group" <electronic@vbm-grp.com>, xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-On 05.12.19 08:35, Electronic Dept. - Vbm Group via Xenomai wrote:
-> Hello Jan,
-> 
-> thank you for your answer.
-> 
-> My Xenomai version is:
-> 
-> Xenomai/cobalt v3.0.9 -- #5b99a61 (2019-11-04 19:44:03 +0100)
+From: Philippe Gerum <rpm@xenomai.org>
 
-OK, but when I call "xeno-config --skin=alchemy --ldflags" for that
-version, I do have "-lalchemy" in the output. That would fix your
-linking issue. Can you check the output you get?
+Uninstall udev rules.
 
-Jan
+Signed-off-by: Philippe Gerum <rpm@xenomai.org>
+---
+ Makefile.am | 13 +++++++++++--
+ 1 file changed, 11 insertions(+), 2 deletions(-)
 
+diff --git a/Makefile.am b/Makefile.am
+index ec1d0a07e..891e53f66 100644
+--- a/Makefile.am
++++ b/Makefile.am
+@@ -29,7 +29,7 @@ dist-hook:
+ 	rm -fr `find $(distdir) -name '.svn' -o -name CVS  -o -name '.#*' \
+ 		-o -name '*~' -o -name autom4te.cache`
+ 
+-udev-rules:
++install-udev-rules:
+ if XENO_COBALT
+ 	if test -r $(DESTDIR)/$(sysconfdir)/udev/udev.rules ; then \
+ 	    for f in $(srcdir)/kernel/cobalt/udev/*.rules ; do \
+@@ -45,10 +45,19 @@ if XENO_COBALT
+ 	fi
+ endif
+ 
++uninstall-udev-rules:
++if XENO_COBALT
++	cd $(srcdir)/kernel/cobalt/udev && for f in *.rules; do \
++	    rm -f $(DESTDIR)/$(sysconfdir)/udev/rules.d/$$f ; \
++	done
++endif
++
+ # legacy alias
+ install-user: install
+ 
+-install-exec-local: udev-rules
++install-exec-local: install-udev-rules
++
++uninstall-local: uninstall-udev-rules
+ 
+ uninstall-local:
+ if XENO_COBALT
 -- 
-Siemens AG, Corporate Technology, CT RDA IOT SES-DE
-Corporate Competence Center Embedded Linux
+2.24.1
+
 
