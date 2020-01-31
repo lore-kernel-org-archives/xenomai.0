@@ -1,8 +1,7 @@
 From: Jan Kiszka <jan.kiszka@siemens.com>
-Subject: [PATCH 3.0-only] cobalt/process: Fix incomplete backport of
- __handle_taskexit_event change
-Message-ID: <2e2d6a9e-cf45-94c3-a9a7-3bc68dd844e5@siemens.com>
-Date: Fri, 7 Feb 2020 16:12:51 +0100
+Subject: [RFC] simplify wait_for_rcu_grace_period
+Message-ID: <1498b3cc-767f-703c-116b-ae102be3e510@siemens.com>
+Date: Fri, 31 Jan 2020 21:43:42 +0100
 MIME-Version: 1.0
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
@@ -15,47 +14,66 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Xenomai <xenomai@xenomai.org>
+To: Philippe Gerum <rpm@xenomai.org>
+Cc: Xenomai <xenomai@xenomai.org>
 
-From: Jan Kiszka <jan.kiszka@siemens.com>
+Hi Philippe,
 
-Commit f7d83e55135c which tried to backport commit 393ece85166a from
-master missed that there is no interrupt protection via
-xnlock_get_irqsave in 3.0. But we need in order to protect xnsched_run
-when running over the secondary domain as we always do here. In fact,
-xnsched_run will complain via a warning about this.
+any reason why you didn't use synchronize_rcu for 
+wait_for_rcu_grace_period back then?
 
-Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
----
- kernel/cobalt/posix/process.c | 3 +++
- 1 file changed, 3 insertions(+)
-
-diff --git a/kernel/cobalt/posix/process.c b/kernel/cobalt/posix/process.c
-index a65e947d51..52e544321e 100644
---- a/kernel/cobalt/posix/process.c
-+++ b/kernel/cobalt/posix/process.c
-@@ -1041,6 +1041,7 @@ static void __handle_taskexit_event(struct task_struct *p)
+diff --git a/kernel/cobalt/thread.c b/kernel/cobalt/thread.c
+index 31d9ceac0f..59038a84cd 100644
+--- a/kernel/cobalt/thread.c
++++ b/kernel/cobalt/thread.c
+@@ -1596,31 +1596,12 @@ out:
+ }
+ EXPORT_SYMBOL_GPL(xnthread_cancel);
+ 
+-struct wait_grace_struct {
+-	struct completion done;
+-	struct rcu_head rcu;
+-};
+-
+-static void grace_elapsed(struct rcu_head *head)
+-{
+-	struct wait_grace_struct *wgs;
+-
+-	wgs = container_of(head, struct wait_grace_struct, rcu);
+-	complete(&wgs->done);
+-}
+-
+ static void wait_for_rcu_grace_period(struct pid *pid)
  {
- 	struct cobalt_ppd *sys_ppd;
- 	struct xnthread *thread;
-+	spl_t s;
- 
- 	/*
- 	 * We are called for both kernel and user shadows over the
-@@ -1055,7 +1056,9 @@ static void __handle_taskexit_event(struct task_struct *p)
- 	if (xnthread_test_state(thread, XNSSTEP))
- 		unregister_debugged_thread(thread);
- 
-+	splhigh(s);
- 	xnsched_run();
-+	splexit(s);
- 
- 	xnthread_run_handler_stack(thread, exit_thread);
- 
--- 
-2.16.4
+-	struct wait_grace_struct wait = {
+-		.done = COMPLETION_INITIALIZER_ONSTACK(wait.done),
+-	};
+ 	struct task_struct *p;
+-
+-	init_rcu_head_on_stack(&wait.rcu);
+ 	
+ 	for (;;) {
+-		call_rcu(&wait.rcu, grace_elapsed);
+-		wait_for_completion(&wait.done);
++		synchronize_rcu();
+ 		if (pid == NULL)
+ 			break;
+ 		rcu_read_lock();
+@@ -1628,7 +1609,6 @@ static void wait_for_rcu_grace_period(struct pid *pid)
+ 		rcu_read_unlock();
+ 		if (p == NULL)
+ 			break;
+-		reinit_completion(&wait.done);
+ 	}
+ }
 
 
+I'm currently debugging a hanging xnthread_join in 
+wait_for_rcu_grace_period and stumbled over this (both variants hang 
+equally well, though).
+
+Jan
+ 
 -- 
 Siemens AG, Corporate Technology, CT RDA IOT SES-DE
 Corporate Competence Center Embedded Linux
