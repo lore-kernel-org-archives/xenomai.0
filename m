@@ -1,13 +1,14 @@
-Subject: Re: [PATCH 0/8] Assorted fixes
+From: "Meng, Fino" <fino.meng@intel.com>
+Subject: RE: [PATCH 0/8] Assorted fixes
+Date: Fri, 31 Jan 2020 16:25:38 +0000
+Message-ID: <230535ea0245408dbd941bc26c4f6df9@intel.com>
 References: <20200131152713.1811748-1-rpm@xenomai.org>
-From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <0c811fd4-dc46-0bce-99b3-64c150725d3d@siemens.com>
-Date: Fri, 31 Jan 2020 16:55:33 +0100
-MIME-Version: 1.0
-In-Reply-To: <20200131152713.1811748-1-rpm@xenomai.org>
-Content-Type: text/plain; charset=utf-8; format=flowed
+ <0c811fd4-dc46-0bce-99b3-64c150725d3d@siemens.com>
+In-Reply-To: <0c811fd4-dc46-0bce-99b3-64c150725d3d@siemens.com>
 Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+MIME-Version: 1.0
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,54 +17,55 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Philippe Gerum <rpm@xenomai.org>, xenomai@xenomai.org
+To: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On 31.01.20 16:27, Philippe Gerum via Xenomai wrote:
-> From: Philippe Gerum <rpm@xenomai.org>
-> 
-> The first four commits fix the doc generation which has been broken
-> for some time, the rest addresses runtime issues detected in the
-> field. See commit logs for details.
-
-Thanks for the fixes. Patch 3 needs folding - or we simply drop it.
-
-For the other issues: I suppose we need more torture tests...
-
-Jan
-
-> 
-> These patches are on top of the master branch.
-> 
-> Philippe Gerum (8):
->    doc: fix assorted Doxygen warnings
->    doc: do not discard pdflatex output
->    build: fix make distcheck
->    doc: fix asciidoc generation
->    cobalt/registry: fix export/unexport race on object deletion
->    cobalt/registry: prevent use-after-free triggered by object removal
->    drivers/ipc: bufp: fix rd/rd and wr/wr races
->    boilerplate: setup: fix infinite loop in CPU list parser
-> 
->   Makefile.am                                   | 13 ++++-
->   configure.ac                                  |  2 +-
->   doc/asciidoc/Makefile.am                      |  8 ++--
->   doc/doxygen/Makefile.am                       |  2 +-
->   doc/doxygen/xeno3prm-common.conf.in           | 13 ++---
->   include/cobalt/kernel/registry.h              |  5 +-
->   .../cobalt/kernel/rtdm/analogy/subdevice.h    |  2 -
->   include/cobalt/kernel/rtdm/driver.h           |  6 +--
->   include/cobalt/kernel/stat.h                  |  2 +-
->   include/cobalt/kernel/timer.h                 |  2 -
->   include/rtdm/uapi/can.h                       |  4 +-
->   kernel/cobalt/registry.c                      | 48 ++++++++++++-------
->   kernel/cobalt/rtdm/device.c                   |  2 +-
->   kernel/cobalt/timer.c                         |  3 ++
->   kernel/drivers/ipc/bufp.c                     | 26 ++++++----
->   lib/boilerplate/setup.c                       |  3 +-
->   16 files changed, 84 insertions(+), 57 deletions(-)
-> 
-
--- 
-Siemens AG, Corporate Technology, CT RDA IOT SES-DE
-Corporate Competence Center Embedded Linux
+SGkgSmFuDQoNClJlZ2FyZGluZyB0byB0b3J0dXJlIHRlc3RzLCBkbyB3ZSBoYXZlIGEgcmVjb21t
+ZW5kIHRlc3Qgc3VpdGUgJiB3b3JraW5nIGZsb3cgIGZyb20gdGhlIGNvbW11bml0eT8gDQpJIHNl
+YXJjaGVkIHhlbm9tYWkgd2lraSBidXQgZGlkbid0IGZpbmQgYSBndWlkZSBmb3IgdGhpcy4gDQpX
+ZSBwbGFuIHRvIHJlY29tbWVuZCBVUCBFeHRyZW1lIGJvYXJkIChodHRwczovL3VwLWJvYXJkLm9y
+Zy91cC14dHJlbWUvKSAgdG8gcHVibGljIHVzZXJzIHNpbmNlIGl0J3MgZWFzeSB0byBidXkgZm9y
+IGFueW9uZQ0KQW5kIHdlIHdhbnQgdG8gd3JpdGUgYSBndWlkZSBmb3IgdG9ydHVyZSB0ZXN0LCBh
+dCBsZWFzdCBmb3IgdGhlc2UgYm9hcmRzLCANCg0KQlIgLyBGaW5vIE1lbmcgKOWtn+elpeWkqykN
+CkludGVsIOKAkyBJT1RHIERldmVsb3BlciBFbmFibGluZw0KDQotLS0tLU9yaWdpbmFsIE1lc3Nh
+Z2UtLS0tLQ0KRnJvbTogWGVub21haSA8eGVub21haS1ib3VuY2VzQHhlbm9tYWkub3JnPiBPbiBC
+ZWhhbGYgT2YgSmFuIEtpc3prYSB2aWEgWGVub21haQ0KU2VudDogRnJpZGF5LCBKYW51YXJ5IDMx
+LCAyMDIwIDExOjU2IFBNDQpUbzogUGhpbGlwcGUgR2VydW0gPHJwbUB4ZW5vbWFpLm9yZz47IHhl
+bm9tYWlAeGVub21haS5vcmcNClN1YmplY3Q6IFJlOiBbUEFUQ0ggMC84XSBBc3NvcnRlZCBmaXhl
+cw0KDQpPbiAzMS4wMS4yMCAxNjoyNywgUGhpbGlwcGUgR2VydW0gdmlhIFhlbm9tYWkgd3JvdGU6
+DQo+IEZyb206IFBoaWxpcHBlIEdlcnVtIDxycG1AeGVub21haS5vcmc+DQo+IA0KPiBUaGUgZmly
+c3QgZm91ciBjb21taXRzIGZpeCB0aGUgZG9jIGdlbmVyYXRpb24gd2hpY2ggaGFzIGJlZW4gYnJv
+a2VuIA0KPiBmb3Igc29tZSB0aW1lLCB0aGUgcmVzdCBhZGRyZXNzZXMgcnVudGltZSBpc3N1ZXMg
+ZGV0ZWN0ZWQgaW4gdGhlIA0KPiBmaWVsZC4gU2VlIGNvbW1pdCBsb2dzIGZvciBkZXRhaWxzLg0K
+DQpUaGFua3MgZm9yIHRoZSBmaXhlcy4gUGF0Y2ggMyBuZWVkcyBmb2xkaW5nIC0gb3Igd2Ugc2lt
+cGx5IGRyb3AgaXQuDQoNCkZvciB0aGUgb3RoZXIgaXNzdWVzOiBJIHN1cHBvc2Ugd2UgbmVlZCBt
+b3JlIHRvcnR1cmUgdGVzdHMuLi4NCg0KSmFuDQoNCj4gDQo+IFRoZXNlIHBhdGNoZXMgYXJlIG9u
+IHRvcCBvZiB0aGUgbWFzdGVyIGJyYW5jaC4NCj4gDQo+IFBoaWxpcHBlIEdlcnVtICg4KToNCj4g
+ICAgZG9jOiBmaXggYXNzb3J0ZWQgRG94eWdlbiB3YXJuaW5ncw0KPiAgICBkb2M6IGRvIG5vdCBk
+aXNjYXJkIHBkZmxhdGV4IG91dHB1dA0KPiAgICBidWlsZDogZml4IG1ha2UgZGlzdGNoZWNrDQo+
+ICAgIGRvYzogZml4IGFzY2lpZG9jIGdlbmVyYXRpb24NCj4gICAgY29iYWx0L3JlZ2lzdHJ5OiBm
+aXggZXhwb3J0L3VuZXhwb3J0IHJhY2Ugb24gb2JqZWN0IGRlbGV0aW9uDQo+ICAgIGNvYmFsdC9y
+ZWdpc3RyeTogcHJldmVudCB1c2UtYWZ0ZXItZnJlZSB0cmlnZ2VyZWQgYnkgb2JqZWN0IHJlbW92
+YWwNCj4gICAgZHJpdmVycy9pcGM6IGJ1ZnA6IGZpeCByZC9yZCBhbmQgd3Ivd3IgcmFjZXMNCj4g
+ICAgYm9pbGVycGxhdGU6IHNldHVwOiBmaXggaW5maW5pdGUgbG9vcCBpbiBDUFUgbGlzdCBwYXJz
+ZXINCj4gDQo+ICAgTWFrZWZpbGUuYW0gICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
+IHwgMTMgKysrKy0NCj4gICBjb25maWd1cmUuYWMgICAgICAgICAgICAgICAgICAgICAgICAgICAg
+ICAgICAgfCAgMiArLQ0KPiAgIGRvYy9hc2NpaWRvYy9NYWtlZmlsZS5hbSAgICAgICAgICAgICAg
+ICAgICAgICB8ICA4ICsrLS0NCj4gICBkb2MvZG94eWdlbi9NYWtlZmlsZS5hbSAgICAgICAgICAg
+ICAgICAgICAgICAgfCAgMiArLQ0KPiAgIGRvYy9kb3h5Z2VuL3hlbm8zcHJtLWNvbW1vbi5jb25m
+LmluICAgICAgICAgICB8IDEzICsrLS0tDQo+ICAgaW5jbHVkZS9jb2JhbHQva2VybmVsL3JlZ2lz
+dHJ5LmggICAgICAgICAgICAgIHwgIDUgKy0NCj4gICAuLi4vY29iYWx0L2tlcm5lbC9ydGRtL2Fu
+YWxvZ3kvc3ViZGV2aWNlLmggICAgfCAgMiAtDQo+ICAgaW5jbHVkZS9jb2JhbHQva2VybmVsL3J0
+ZG0vZHJpdmVyLmggICAgICAgICAgIHwgIDYgKy0tDQo+ICAgaW5jbHVkZS9jb2JhbHQva2VybmVs
+L3N0YXQuaCAgICAgICAgICAgICAgICAgIHwgIDIgKy0NCj4gICBpbmNsdWRlL2NvYmFsdC9rZXJu
+ZWwvdGltZXIuaCAgICAgICAgICAgICAgICAgfCAgMiAtDQo+ICAgaW5jbHVkZS9ydGRtL3VhcGkv
+Y2FuLmggICAgICAgICAgICAgICAgICAgICAgIHwgIDQgKy0NCj4gICBrZXJuZWwvY29iYWx0L3Jl
+Z2lzdHJ5LmMgICAgICAgICAgICAgICAgICAgICAgfCA0OCArKysrKysrKysrKystLS0tLS0tDQo+
+ICAga2VybmVsL2NvYmFsdC9ydGRtL2RldmljZS5jICAgICAgICAgICAgICAgICAgIHwgIDIgKy0N
+Cj4gICBrZXJuZWwvY29iYWx0L3RpbWVyLmMgICAgICAgICAgICAgICAgICAgICAgICAgfCAgMyAr
+Kw0KPiAgIGtlcm5lbC9kcml2ZXJzL2lwYy9idWZwLmMgICAgICAgICAgICAgICAgICAgICB8IDI2
+ICsrKysrKy0tLS0NCj4gICBsaWIvYm9pbGVycGxhdGUvc2V0dXAuYyAgICAgICAgICAgICAgICAg
+ICAgICAgfCAgMyArLQ0KPiAgIDE2IGZpbGVzIGNoYW5nZWQsIDg0IGluc2VydGlvbnMoKyksIDU3
+IGRlbGV0aW9ucygtKQ0KPiANCg0KLS0NClNpZW1lbnMgQUcsIENvcnBvcmF0ZSBUZWNobm9sb2d5
+LCBDVCBSREEgSU9UIFNFUy1ERSBDb3Jwb3JhdGUgQ29tcGV0ZW5jZSBDZW50ZXIgRW1iZWRkZWQg
+TGludXgNCg0K
 
