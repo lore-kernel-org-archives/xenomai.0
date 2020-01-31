@@ -1,7 +1,8 @@
 From: Jan Kiszka <jan.kiszka@siemens.com>
-Subject: [PATCH 1/3] lib/alchemy/testsuite: Add event test case for EV_ALL bug
-Date: Fri, 31 Jan 2020 15:37:58 +0100
-Message-Id: <6acf665fca26973c97a2961a66e85f17785eaaee.1580481480.git.jan.kiszka@siemens.com>
+Subject: [PATCH 3/3] lib/copperplate: Fix eventobj_wait for COBALT_EVENT_ALL
+ case
+Date: Fri, 31 Jan 2020 15:38:00 +0100
+Message-Id: <167f29892476b23976ec23669805c798b6d068ba.1580481480.git.jan.kiszka@siemens.com>
 In-Reply-To: <cover.1580481480.git.jan.kiszka@siemens.com>
 References: <cover.1580481480.git.jan.kiszka@siemens.com>
 In-Reply-To: <cover.1580481480.git.jan.kiszka@siemens.com>
@@ -18,41 +19,30 @@ To: xenomai@xenomai.org
 
 From: Jan Kiszka <jan.kiszka@siemens.com>
 
-This fails so far due to a bug in the event wait implementations, both
-with cobalt and mercury.
+When we wait for all passed event bits to be set, we need to test for
+those bits, not the ones that are currently pending. The current code
+fails to detect that the condition is met when both the desired as well
+as other events are already pending.
 
+Reported by: Ronny Meeus <ronny.meeus@gmail.com>
 Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
 ---
- lib/alchemy/testsuite/event-1.c | 9 +++++++++
- 1 file changed, 9 insertions(+)
+ lib/copperplate/eventobj.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/lib/alchemy/testsuite/event-1.c b/lib/alchemy/testsuite/event-1.c
-index fdf962736e..0893df36de 100644
---- a/lib/alchemy/testsuite/event-1.c
-+++ b/lib/alchemy/testsuite/event-1.c
-@@ -63,6 +63,7 @@ static void foreground_task(void *arg)
+diff --git a/lib/copperplate/eventobj.c b/lib/copperplate/eventobj.c
+index ff8c526282..dce5bd242f 100644
+--- a/lib/copperplate/eventobj.c
++++ b/lib/copperplate/eventobj.c
+@@ -217,7 +217,7 @@ int eventobj_wait(struct eventobj *evobj,
+ 	}
  
- int main(int argc, char *const argv[])
- {
-+	unsigned int flags;
- 	int ret;
+ 	waitval = evobj->core.value & bits;
+-	testval = mode & EVOBJ_ANY ? waitval : evobj->core.value;
++	testval = mode & EVOBJ_ANY ? waitval : bits;
  
- 	traceobj_init(&trobj, argv[0], 0);
-@@ -70,6 +71,14 @@ int main(int argc, char *const argv[])
- 	ret = rt_event_create(&event, "EVENT", 0, EV_FIFO);
- 	traceobj_check(&trobj, ret, 0);
- 
-+	ret = rt_event_signal(&event, 0x3);
-+	traceobj_check(&trobj, ret, 0);
-+	ret = rt_event_wait(&event, 0x1, &flags, EV_ALL, TM_NONBLOCK);
-+	traceobj_check(&trobj, ret, 0);
-+	traceobj_assert(&trobj, flags == 0x1);
-+	ret = rt_event_clear(&event, 0x3, NULL);
-+	traceobj_check(&trobj, ret, 0);
-+
- 	ret = rt_task_create(&t_bgnd, "BGND", 0,  20, 0);
- 	traceobj_check(&trobj, ret, 0);
- 
+ 	if (waitval && waitval == testval) {
+ 		*bits_r = waitval;
 -- 
 2.16.4
 
