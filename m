@@ -1,7 +1,7 @@
 From: Philippe  Gerum <rpm@xenomai.org>
-Subject: [PATCH 3/8] build: fix make distcheck
-Date: Fri, 31 Jan 2020 16:27:08 +0100
-Message-Id: <20200131152713.1811748-4-rpm@xenomai.org>
+Subject: [PATCH 4/8] doc: fix asciidoc generation
+Date: Fri, 31 Jan 2020 16:27:09 +0100
+Message-Id: <20200131152713.1811748-5-rpm@xenomai.org>
 In-Reply-To: <20200131152713.1811748-1-rpm@xenomai.org>
 References: <20200131152713.1811748-1-rpm@xenomai.org>
 MIME-Version: 1.0
@@ -18,47 +18,30 @@ To: xenomai@xenomai.org
 
 From: Philippe Gerum <rpm@xenomai.org>
 
-Uninstall udev rules.
-
 Signed-off-by: Philippe Gerum <rpm@xenomai.org>
 ---
- Makefile.am | 13 +++++++++++--
- 1 file changed, 11 insertions(+), 2 deletions(-)
+ doc/asciidoc/Makefile.am | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
 
-diff --git a/Makefile.am b/Makefile.am
-index ec1d0a07e..891e53f66 100644
---- a/Makefile.am
-+++ b/Makefile.am
-@@ -29,7 +29,7 @@ dist-hook:
- 	rm -fr `find $(distdir) -name '.svn' -o -name CVS  -o -name '.#*' \
- 		-o -name '*~' -o -name autom4te.cache`
+diff --git a/doc/asciidoc/Makefile.am b/doc/asciidoc/Makefile.am
+index f88e19391..9d06e7798 100644
+--- a/doc/asciidoc/Makefile.am
++++ b/doc/asciidoc/Makefile.am
+@@ -105,10 +105,10 @@ $(tmpdir)/%.txt: %.adoc Makefile plaintext.conf plaintext.xsl
+ 	awk -f $(srcdir)/plaintext_postproc.awk $(tmpdir)/$*.txt > $@
  
--udev-rules:
-+install-udev-rules:
- if XENO_COBALT
- 	if test -r $(DESTDIR)/$(sysconfdir)/udev/udev.rules ; then \
- 	    for f in $(srcdir)/kernel/cobalt/udev/*.rules ; do \
-@@ -45,10 +45,19 @@ if XENO_COBALT
- 	fi
- endif
+ html/asciidoc-icons:
+-	@$(RM) -R asciidoc-icons
+-	@test -d /usr/share/asciidoc/images && \
+-	cp -a /usr/share/asciidoc/images/icons html/asciidoc-icons || \
+-	cp -a /usr/share/asciidoc/icons html/asciidoc-icons
++	$(RM) -R asciidoc-icons
++	@test -d /usr/share/doc/asciidoc/images/ && \
++	cp -a /usr/share/doc/asciidoc/images/icons/ html/asciidoc-icons || \
++	cp -a /usr/share/asciidoc/images/icons/ html/asciidoc-icons
  
-+uninstall-udev-rules:
-+if XENO_COBALT
-+	cd $(srcdir)/kernel/cobalt/udev && for f in *.rules; do \
-+	    rm -f $(DESTDIR)/$(sysconfdir)/udev/rules.d/$$f ; \
-+	done
-+endif
-+
- # legacy alias
- install-user: install
+ html/asciidoc-icons/callouts: html/asciidoc-icons
  
--install-exec-local: udev-rules
-+install-exec-local: install-udev-rules
-+
-+uninstall-local: uninstall-udev-rules
- 
- uninstall-local:
- if XENO_COBALT
 -- 
 2.24.1
 
