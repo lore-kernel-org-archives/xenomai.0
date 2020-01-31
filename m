@@ -1,14 +1,9 @@
+From: Philippe  Gerum <rpm@xenomai.org>
+Subject: [PATCH 0/8] Assorted fixes
+Date: Fri, 31 Jan 2020 16:27:05 +0100
+Message-Id: <20200131152713.1811748-1-rpm@xenomai.org>
 MIME-Version: 1.0
-References: <CAMJ=MEd18keoeV3DQZ5Z+CjKWEYqRfHPLp=bM=65tvW6518CAA@mail.gmail.com>
- <619c981a-d855-b51c-0c50-ab6b140b08ff@siemens.com>
- <CAMJ=MEfe8t-+2aojcZ_JSsZfRCrTRWbDkccfxtPRuGtaWhYvEA@mail.gmail.com>
- <03339b5b-c20d-6029-f6f6-c498200df678@siemens.com>
-In-Reply-To: <03339b5b-c20d-6029-f6f6-c498200df678@siemens.com>
-From: Ronny Meeus <ronny.meeus@gmail.com>
-Date: Fri, 31 Jan 2020 16:19:54 +0100
-Message-ID: <CAMJ=MEeN=UMOwsku4i4-vsOUzn2dAyHk0q1wVSs_g-xGyXXkmA@mail.gmail.com>
-Subject: Re: bug in eventobj_wait when using EVOBJ_ALL mode
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,68 +12,45 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jan Kiszka <jan.kiszka@siemens.com>
-Cc: xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-Op vr 31 jan. 2020 om 14:30 schreef Jan Kiszka <jan.kiszka@siemens.com>:
->
-> On 31.01.20 12:37, Ronny Meeus wrote:
-> > Op vr 31 jan. 2020 om 11:41 schreef Jan Kiszka <jan.kiszka@siemens.com>:
-> >>
-> >> On 31.01.20 10:46, Ronny Meeus via Xenomai wrote:
-> >>> Hello
-> >>>
-> >>> Following patch corrects an issue when passing the EVOBJ_ALL mode to the
-> >>> eventobj_wait function.
-> >>>
-> >>> The expected behavior of this function to my understanding is:
-> >>> eventobj_wait in EVOBJ_ALL mode is supposed to return when all the bits
-> >>> specified by the caller are set in core.value (=pending events).
-> >>> The state of the other bits in core.value is not relevant.
-> >>>
-> >>> The current behavior is that it returns when all bits are set AND no
-> >>> other events
-> >>> are pending in the core.value, which is not correct in my opinion.
-> >>>
-> >>> diff --git a/lib/copperplate/eventobj.c b/lib/copperplate/eventobj.c
-> >>> --- a/lib/copperplate/eventobj.c
-> >>> +++ b/lib/copperplate/eventobj.c
-> >>> @@ -217,7 +217,7 @@ int eventobj_wait(struct eventobj *evobj
-> >>>           }
-> >>>
-> >>>           waitval = evobj->EVOBJ_ANY & bits;
-> >>                               ^^^^^^^^^
-> >> Looks like you either hand-edited the patch, or there is something
-> >> broken in your repo.
-> >
-> > I think I changed the code by accident in the mail since the patch in my
-> > repo is correct.
-> >
-> >>
-> >>> -       testval = mode & EVOBJ_ANY ? waitval : evobj->core.value;
-> >>> +       testval = mode & EVOBJ_ANY ? waitval : bits;
-> >>>
-> >>>           if (waitval && waitval == testval) {
-> >>>                   *bits_r = waitval;
-> >>>
-> >>
-> >> This looks indeed like a bug, also present in the corresponding cobalt
-> >> kernel logic. Can you enhance lib/alchemy/testsuite/event-1.c to cover
-> >> this case and provide a patch for both paths?
-> >
-> > I can look into it but at this moment I have no time for it.
-> > Next to that I will also not be able to run the cobalt test since I have no
-> > environment for that.
->
-> I've reproduced and validated the fix. Will send patches soon.
+From: Philippe Gerum <rpm@xenomai.org>
 
-Thanks Jan!
-Great support.
+The first four commits fix the doc generation which has been broken
+for some time, the rest addresses runtime issues detected in the
+field. See commit logs for details.
 
->
-> Jan
->
-> --
-> Siemens AG, Corporate Technology, CT RDA IOT SES-DE
-> Corporate Competence Center Embedded Linux
+These patches are on top of the master branch.
+
+Philippe Gerum (8):
+  doc: fix assorted Doxygen warnings
+  doc: do not discard pdflatex output
+  build: fix make distcheck
+  doc: fix asciidoc generation
+  cobalt/registry: fix export/unexport race on object deletion
+  cobalt/registry: prevent use-after-free triggered by object removal
+  drivers/ipc: bufp: fix rd/rd and wr/wr races
+  boilerplate: setup: fix infinite loop in CPU list parser
+
+ Makefile.am                                   | 13 ++++-
+ configure.ac                                  |  2 +-
+ doc/asciidoc/Makefile.am                      |  8 ++--
+ doc/doxygen/Makefile.am                       |  2 +-
+ doc/doxygen/xeno3prm-common.conf.in           | 13 ++---
+ include/cobalt/kernel/registry.h              |  5 +-
+ .../cobalt/kernel/rtdm/analogy/subdevice.h    |  2 -
+ include/cobalt/kernel/rtdm/driver.h           |  6 +--
+ include/cobalt/kernel/stat.h                  |  2 +-
+ include/cobalt/kernel/timer.h                 |  2 -
+ include/rtdm/uapi/can.h                       |  4 +-
+ kernel/cobalt/registry.c                      | 48 ++++++++++++-------
+ kernel/cobalt/rtdm/device.c                   |  2 +-
+ kernel/cobalt/timer.c                         |  3 ++
+ kernel/drivers/ipc/bufp.c                     | 26 ++++++----
+ lib/boilerplate/setup.c                       |  3 +-
+ 16 files changed, 84 insertions(+), 57 deletions(-)
+
+-- 
+2.24.1
+
 
