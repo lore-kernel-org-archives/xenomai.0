@@ -1,12 +1,16 @@
-From: "Q. Gylstorff" <Quirin.Gylstorff@siemens.com>
-Subject: [xenomai-images PATCH 2/2] recipes-kernel/linux: Allow overwrite of
- KERNEL_DEFCONFIG
-Date: Fri, 14 Feb 2020 09:38:19 +0100
-Message-Id: <20200214083819.31451-3-Quirin.Gylstorff@siemens.com>
-In-Reply-To: <20200214083819.31451-1-Quirin.Gylstorff@siemens.com>
-References: <20200214083819.31451-1-Quirin.Gylstorff@siemens.com>
+Date: Sat, 1 Feb 2020 11:23:01 +0100
+From: Henning Schild <henning.schild@siemens.com>
+Subject: Re: [PATCH 0/8] Assorted fixes
+Message-ID: <20200201112301.5d3146d9@md1za8fc.ad001.siemens.net>
+In-Reply-To: <CALLqZ8Qk-BEuYjYtRpqkTVT5N9iWJHpU=3n109jCMCy4Yd_8TA@mail.gmail.com>
+References: <20200131152713.1811748-1-rpm@xenomai.org>
+ <0c811fd4-dc46-0bce-99b3-64c150725d3d@siemens.com>
+ <230535ea0245408dbd941bc26c4f6df9@intel.com>
+ <bbab7ccf-0f5e-617a-2d94-afc79f2d7efa@siemens.com>
+ <CALLqZ8Qk-BEuYjYtRpqkTVT5N9iWJHpU=3n109jCMCy4Yd_8TA@mail.gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,82 +19,100 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
+To: Greg Gallagher via Xenomai <xenomai@xenomai.org>
 
-From: Quirin Gylstorff <quirin.gylstorff@siemens.com>
+Am Fri, 31 Jan 2020 14:20:33 -0500
+schrieb Greg Gallagher via Xenomai <xenomai@xenomai.org>:
 
-Signed-off-by: Quirin Gylstorff <quirin.gylstorff@siemens.com>
----
- kas.yml                                       |  4 +++
- ...inux-Weak-KERNEL_DEFCONFIG-to-allow-.patch | 29 +++++++++++++++++++
- recipes-kernel/linux/linux-xenomai.inc        |  2 +-
- 3 files changed, 34 insertions(+), 1 deletion(-)
- create mode 100644 patches/0001-recipes-kernel-linux-Weak-KERNEL_DEFCONFIG-to-allow-.patch
+> HI,
+> 
+> 
+> On Fri, Jan 31, 2020 at 12:53 PM Jan Kiszka via Xenomai
+> <xenomai@xenomai.org> wrote:
+> >
+> > Hi Fino,
+> >
+> > On 31.01.20 17:25, Meng, Fino wrote:  
+> > > Hi Jan
+> > >
+> > > Regarding to torture tests, do we have a recommend test suite &
+> > > working flow  from the community? I searched xenomai wiki but
+> > > didn't find a guide for this.  
+> >
+> > Out testing leaves a bit of room for improvement, but it is getting
+> > better. What we have so far is the smokey testsuite which is part of
+> > many of our test runs. It has some shortcomings, e.g. unstructured
+> > reporting, but it is at least a baseline. There are some further
+> > tests, like switchtest, that are also included when running
+> > xeno-test. And then there are loose ends like lib/*/testsuite that
+> > should probably be hooked up.  
+> Is there anything on the wiki with what tests are needed or what area
+> we need to focus on for unit tests?
+> 
+> >  
+> > > We plan to recommend UP Extreme board
+> > > (https://up-board.org/up-xtreme/)  to public users since it's
+> > > easy to buy for anyone And we want to write a guide for torture
+> > > test, at least for these boards,  
+> >
+> > Defining reference boards is indeed another topic. I think we
+> > started that at some point on the list, but it did not go very far.
+> >  
+> 
+> IMHO, based on what people on the list are posting as boards being
+> used, beaglebone black or similar variant, raspberry-pi 2b  or
+> Zynq-7000 would be good choices for arm boards.  Raspberry pi 3 and
+> possibly Ultra96 for the ARM64 variants?  I have these boards on hand
+> and would help out with testing as I can.
+> >
+> > On x86, the situation is rather comfortable as the reference image
+> > we produce with xenomai-images works well on many boards and larger
+> > systems. I don't have an UP board around but many products that
+> > have at least similar SoCs. We once played with a Minnow board but
+> > that was, well, not recommendable. The UP Xtreme could be another
+> > option.  
+> 
+> > The next level is then automated execution of tests. There are many
+> > ways, the one we are preparing so far is LAVA-based. Quirin started
+> > that in
+> > https://code.siemens.com/ebsy/debian/xenomai-images/tree/master/tests.
+> > He is busy the next weeks but he wants to follow-up on that with
+> > more details afterwards so that we can discuss in the community if
+> > that could become an official pattern for Xenomai.
+> >  
+> I like the idea of Lava, would there be extra hardware needed if
+> someone wanted to create the test setup at home?
+> I can't access the link above, is it possible to open that link up to
+> the public?
 
-diff --git a/kas.yml b/kas.yml
-index d04b9c3..52c81e3 100644
---- a/kas.yml
-+++ b/kas.yml
-@@ -23,6 +23,10 @@ repos:
-     refspec: 18b3e9a15d1f054f5d1e697c66a8f1f9befc0537
-     layers:
-       meta:
-+    patches:
-+      weak-kernel-config:
-+        path: patches/0001-recipes-kernel-linux-Weak-KERNEL_DEFCONFIG-to-allow-.patch
-+        repo: xenomai
- 
- bblayers_conf_header:
-   standard: |
-diff --git a/patches/0001-recipes-kernel-linux-Weak-KERNEL_DEFCONFIG-to-allow-.patch b/patches/0001-recipes-kernel-linux-Weak-KERNEL_DEFCONFIG-to-allow-.patch
-new file mode 100644
-index 0000000..6b68473
---- /dev/null
-+++ b/patches/0001-recipes-kernel-linux-Weak-KERNEL_DEFCONFIG-to-allow-.patch
-@@ -0,0 +1,29 @@
-+From 8fe37bbc21ae24ae628fdbe64316fd3753385f4c Mon Sep 17 00:00:00 2001
-+From: Quirin Gylstorff <quirin.gylstorff@siemens.com>
-+Date: Wed, 15 Jan 2020 15:24:43 +0100
-+Subject: [PATCH] recipes-kernel/linux: Weak KERNEL_DEFCONFIG to allow
-+ overwrites
-+To: isar-users@googlegroups.com
-+Cc: Jan Kiszka <jan.kiszka@siemens.com>
-+
-+Signed-off-by: Quirin Gylstorff <quirin.gylstorff@siemens.com>
-+---
-+ meta/recipes-kernel/linux/linux-custom.inc | 2 +-
-+ 1 file changed, 1 insertion(+), 1 deletion(-)
-+
-+diff --git a/meta/recipes-kernel/linux/linux-custom.inc b/meta/recipes-kernel/linux/linux-custom.inc
-+index d31da3b..4fb7ca2 100644
-+--- a/meta/recipes-kernel/linux/linux-custom.inc
-++++ b/meta/recipes-kernel/linux/linux-custom.inc
-+@@ -39,7 +39,7 @@ KERNEL_LIBC_DEV_DEPLOY ?= "0"
-+ 
-+ LINUX_VERSION_EXTENSION ?= ""
-+ 
-+-KERNEL_DEFCONFIG ?= ""
-++KERNEL_DEFCONFIG ??= ""
-+ 
-+ # Add our template meta-data to the sources
-+ FILESEXTRAPATHS_prepend := "${FILE_DIRNAME}/files:"
-+-- 
-+2.20.1
-+
-diff --git a/recipes-kernel/linux/linux-xenomai.inc b/recipes-kernel/linux/linux-xenomai.inc
-index 3407b82..185b60b 100644
---- a/recipes-kernel/linux/linux-xenomai.inc
-+++ b/recipes-kernel/linux/linux-xenomai.inc
-@@ -11,7 +11,7 @@
- 
- require recipes-kernel/linux/linux-custom.inc
- 
--KERNEL_DEFCONFIG = "${DISTRO_ARCH}_defconfig"
-+KERNEL_DEFCONFIG ?= "${DISTRO_ARCH}_defconfig"
- 
- SRC_URI += "file://${KERNEL_DEFCONFIG}"
- 
--- 
-2.20.1
+Quickly enabling people to build their own lab is a clear goal.
+Community labs could be hooked into the central CI-CD-CT, so an
+upstream commit could eventually trigger a test+report in all
+maintainers labs wherever those may be.
+But in fact private labs would be the prime target. 
+
+Your lab setup will need a machine being able to run docker or you need
+to install lava yourself. You will want power-sockets that can be
+switched from that box. Serial connections to the target(s), maybe
+dhcp+pxe+nfs, remote flashers, USB-mass-storage gadget ...
+Ideally you want targets that support fully automatic CD. So full
+network boot or boot from USB or boot from a flash that you can write
+from the outside, no SDCards and other manual steps.
+
+ARM targets that have a bootloader which supports dhcp/tftp are well
+understood and easy to hook in.
+
+Henning
+
+> > Any comments, suggestions in this area are of course welcome!
+> >
+> > Thanks,
+> > Jan
+> >
+> > --
+> > Siemens AG, Corporate Technology, CT RDA IOT SES-DE
+> > Corporate Competence Center Embedded Linux
+> >  
+> 
 
 
