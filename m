@@ -1,19 +1,19 @@
-Date: Tue, 25 Feb 2020 09:31:25 -0600 (CST)
-From: Per Oberg <pero@wolfram.com>
-Message-ID: <1294487288.461675.1582644685411.JavaMail.zimbra@wolfram.com>
-In-Reply-To: <d6b19aa8-c978-617c-bb85-335634e47ac1@b-tu.de>
-References: <2eb86315-dc9d-1096-14a7-c3bd2b32a668@b-tu.de>
- <1021522818.445580.1582639862351.JavaMail.zimbra@wolfram.com>
- <cb174dde-7680-ba74-9aca-7da7adc870dc@b-tu.de>
- <984885226.450915.1582641841732.JavaMail.zimbra@wolfram.com>
- <1987057484.452222.1582642123490.JavaMail.zimbra@wolfram.com>
- <6a5fc541-8519-56d0-f4b4-c7e29f4b38f3@b-tu.de>
- <1253430772.456171.1582643215737.JavaMail.zimbra@wolfram.com>
- <d6b19aa8-c978-617c-bb85-335634e47ac1@b-tu.de>
-Subject: Re: Xenomai RTnet - Kernel module not loading
+Subject: Re: [PATCH 0/8] Assorted fixes
+References: <20200131152713.1811748-1-rpm@xenomai.org>
+ <0c811fd4-dc46-0bce-99b3-64c150725d3d@siemens.com>
+ <230535ea0245408dbd941bc26c4f6df9@intel.com>
+ <bbab7ccf-0f5e-617a-2d94-afc79f2d7efa@siemens.com>
+ <CALLqZ8Qk-BEuYjYtRpqkTVT5N9iWJHpU=3n109jCMCy4Yd_8TA@mail.gmail.com>
+ <20200201112301.5d3146d9@md1za8fc.ad001.siemens.net>
+ <4c3daf5ff92549a3a751b8332a0b612d@intel.com>
+From: Jan Kiszka <jan.kiszka@siemens.com>
+Message-ID: <49bc9b58-f7ed-a455-3eac-0284ee2f6339@siemens.com>
+Date: Mon, 3 Feb 2020 08:00:12 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
+In-Reply-To: <4c3daf5ff92549a3a751b8332a0b612d@intel.com>
+Content-Type: text/plain; charset="utf-8"; format="flowed"
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -22,50 +22,122 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Benji <miethben@b-tu.de>
-Cc: xenomai <xenomai@xenomai.org>
+To: "Meng, Fino" <fino.meng@intel.com>, "xenomai@xenomai.org" <xenomai@xenomai.org>
 
------ Den 25 feb 2020, p=C3=A5 kl 16:15, Benji miethben@b-tu.de skrev:
+On 01.02.20 12:35, Meng, Fino via Xenomai wrote:
+> Thanks Jan & Henning,  got some ideas.
+> In 2020 our team's focus is modify UEFI BIOS for real time capability;
+> Most of OEM's industry PC cannot reach good worst case jitter using out of box BIOS,  these items needed by PnP configs are hidden;
+> We want to push BIOS vendors and OEMs do real-time, deterministic, predictable BIOS, for Industry PC.
 
-> On 2/25/20 4:06 PM, Per Oberg wrote:
+That would be highly appreciated from a Xenomai perspective! I know that 
+not all IPC vendors so far invests in making their BIOS RT-ready. And 
+Xenomai would possibly be able to overcome in such boxes the nasty "turn 
+off all NMI sources" hack (where it works at all). I hope your changes 
+also find their way into OSS firmware, like Coreboot (which is of 
+strategic importance here).
 
+Jan
 
-> > Are you sure you are running on the cobalt/rt enabled kernel?
+> 
+> BR / Fino (孟祥夫)
+> Intel – IOTG Developer Enabling
+> 
+> -----Original Message-----
+> From: Xenomai <xenomai-bounces@xenomai.org> On Behalf Of Henning Schild via Xenomai
+> Sent: Saturday, February 1, 2020 6:23 PM
+> To: Greg Gallagher via Xenomai <xenomai@xenomai.org>
+> Subject: Re: [PATCH 0/8] Assorted fixes
+> 
+> Am Fri, 31 Jan 2020 14:20:33 -0500
+> schrieb Greg Gallagher via Xenomai <xenomai@xenomai.org>:
+> 
+>> HI,
+>>
+>>
+>> On Fri, Jan 31, 2020 at 12:53 PM Jan Kiszka via Xenomai
+>> <xenomai@xenomai.org> wrote:
+>>>
+>>> Hi Fino,
+>>>
+>>> On 31.01.20 17:25, Meng, Fino wrote:
+>>>> Hi Jan
+>>>>
+>>>> Regarding to torture tests, do we have a recommend test suite &
+>>>> working flow  from the community? I searched xenomai wiki but
+>>>> didn't find a guide for this.
+>>>
+>>> Out testing leaves a bit of room for improvement, but it is getting
+>>> better. What we have so far is the smokey testsuite which is part of
+>>> many of our test runs. It has some shortcomings, e.g. unstructured
+>>> reporting, but it is at least a baseline. There are some further
+>>> tests, like switchtest, that are also included when running
+>>> xeno-test. And then there are loose ends like lib/*/testsuite that
+>>> should probably be hooked up.
+>> Is there anything on the wiki with what tests are needed or what area
+>> we need to focus on for unit tests?
+>>
+>>>   
+>>>> We plan to recommend UP Extreme board
+>>>> (https://up-board.org/up-xtreme/)  to public users since it's easy
+>>>> to buy for anyone And we want to write a guide for torture test,
+>>>> at least for these boards,
+>>>
+>>> Defining reference boards is indeed another topic. I think we
+>>> started that at some point on the list, but it did not go very far.
+>>>   
+>>
+>> IMHO, based on what people on the list are posting as boards being
+>> used, beaglebone black or similar variant, raspberry-pi 2b  or
+>> Zynq-7000 would be good choices for arm boards.  Raspberry pi 3 and
+>> possibly Ultra96 for the ARM64 variants?  I have these boards on hand
+>> and would help out with testing as I can.
+>>>
+>>> On x86, the situation is rather comfortable as the reference image
+>>> we produce with xenomai-images works well on many boards and larger
+>>> systems. I don't have an UP board around but many products that have
+>>> at least similar SoCs. We once played with a Minnow board but that
+>>> was, well, not recommendable. The UP Xtreme could be another option.
+>>
+>>> The next level is then automated execution of tests. There are many
+>>> ways, the one we are preparing so far is LAVA-based. Quirin started
+>>> that in
+>>> https://code.siemens.com/ebsy/debian/xenomai-images/tree/master/tests.
+>>> He is busy the next weeks but he wants to follow-up on that with
+>>> more details afterwards so that we can discuss in the community if
+>>> that could become an official pattern for Xenomai.
+>>>   
+>> I like the idea of Lava, would there be extra hardware needed if
+>> someone wanted to create the test setup at home?
+>> I can't access the link above, is it possible to open that link up to
+>> the public?
+> 
+> Quickly enabling people to build their own lab is a clear goal.
+> Community labs could be hooked into the central CI-CD-CT, so an upstream commit could eventually trigger a test+report in all maintainers labs wherever those may be.
+> But in fact private labs would be the prime target.
+> 
+> Your lab setup will need a machine being able to run docker or you need to install lava yourself. You will want power-sockets that can be switched from that box. Serial connections to the target(s), maybe
+> dhcp+pxe+nfs, remote flashers, USB-mass-storage gadget ...
+> Ideally you want targets that support fully automatic CD. So full network boot or boot from USB or boot from a flash that you can write from the outside, no SDCards and other manual steps.
+> 
+> ARM targets that have a bootloader which supports dhcp/tftp are well understood and easy to hook in.
+> 
+> Henning
+> 
+>>> Any comments, suggestions in this area are of course welcome!
+>>>
+>>> Thanks,
+>>> Jan
+>>>
+>>> --
+>>> Siemens AG, Corporate Technology, CT RDA IOT SES-DE Corporate
+>>> Competence Center Embedded Linux
+>>>   
+>>
+> 
+> 
 
-> > When running "dmesg | grep Xenomai" do you see something like
-
-> > # [ 1.417024] [Xenomai] scheduling class idle registered.
-> > # [ 1.417025] [Xenomai] scheduling class rt registered.
->> # [ 1.417045] [Xenomai] disabling automatic C1E state promotion on Intel
-> > processor
-> > # [ 1.417055] [Xenomai] SMI-enabled chipset found, but SMI workaround d=
-isabled
-> > # [ 1.417088] I-pipe: head domain Xenomai registered.
-> > # [ 1.417704] [Xenomai] allowing access to group 1234
-> > # [ 1.417726] [Xenomai] Cobalt v3.0.5 (Sisyphus's Boulder) [DEBUG]
-
-> > Regards
-> > Per =C3=96berg
-
-
-> I thought system is running on cobalt kernel. But looks like there is an
-> initialisation error. What is meaning of error code -19?
-
-> > $ dmesg | grep Xenomai
-> > [ 8.543295] [Xenomai] scheduling class idle registered.
-> > [ 8.543302] [Xenomai] scheduling class rt registered.
-> > [ 8.543333] [Xenomai] init failed, code -19
-
-I haven't seen that one myself. But check out:=20
-
-https://xenomai.org/pipermail/xenomai/2015-September/thread.html#35066
-
-and
-
-https://gitlab.denx.de/Xenomai/xenomai/-/wikis/Troubleshooting#no-timer
-
-(Although i see the in-page link is broken check the section about timers)
-
-
-Per =C3=96berg=20
+-- 
+Siemens AG, Corporate Technology, CT RDA IOT SES-DE
+Corporate Competence Center Embedded Linux
 
