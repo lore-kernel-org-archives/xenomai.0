@@ -1,13 +1,13 @@
+Subject: Re: [RFC] simplify wait_for_rcu_grace_period
+References: <1498b3cc-767f-703c-116b-ae102be3e510@siemens.com>
+From: Philippe Gerum <rpm@xenomai.org>
+Message-ID: <9555bd80-150f-19d2-ddac-d92ac01b0ac1@xenomai.org>
+Date: Mon, 3 Feb 2020 19:51:49 +0100
 MIME-Version: 1.0
-References: <CAKP50V4e5Np-wFPzOLPHiVtKhwxnLreg18zTZRYs6-pTTqTN4Q@mail.gmail.com>
- <8e2ed529-3c99-3f3b-bb29-430645870df2@siemens.com>
-In-Reply-To: <8e2ed529-3c99-3f3b-bb29-430645870df2@siemens.com>
-From: Matheus Leitzke <senseipinto@gmail.com>
-Date: Mon, 3 Feb 2020 15:42:07 -0300
-Message-ID: <CAKP50V5MBY2KHZWFVzEqNa3x6Lo2+Lhhfu6ve-9z0GG_60AnVg@mail.gmail.com>
-Subject: Re: What is the highest value returned by rt_timer_read?
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+In-Reply-To: <1498b3cc-767f-703c-116b-ae102be3e510@siemens.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,65 +17,27 @@ List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: Jan Kiszka <jan.kiszka@siemens.com>
-Cc: xenomai@xenomai.org
+Cc: Xenomai <xenomai@xenomai.org>
 
-I am using a Raspberry Pi 3 B+.
-I want to know that value because it is needed to correctly calculates
-difference of time when occurs counting overflow.
-For example:
-
-...
-now =3D rt_timer_read();
-if(now >=3D before)
-{
-     diff =3D now - before;
-}
-else
-{ // in case of counting overflow
-     diff =3D MAX_TIME - now +  before;
-}
-before =3D now;
-...
-
-So, as you said MAX_TIME =3D (1 << 64) - 1?
-
-
-Em ter., 28 de jan. de 2020 =C3=A0s 06:16, Jan Kiszka <jan.kiszka@siemens.c=
-om>
-escreveu:
-
-> On 24.01.20 20:02, Matheus Leitzke via Xenomai wrote:
-> > Hello,
-> >
-> > As I didn't find it in the API manual, I'm using the list to clear my
-> > doubts.
-> > What is the highest value returned by rt_timer_read function on Xenomai=
- 3
-> > Alchemy skin?
->
-> Type-wise, it's a 64-bit value, thus (1 << 64) - 1. But we are reading
-> from arch-dependent TSCs that may have a smaller range, specifically
-> after converting their values to nanoseconds. About which platform are
-> we talking here?
->
-> --
-> Siemens AG, Corporate Technology, CT RDA IOT SES-DE
-> Corporate Competence Center Embedded Linux
+On 1/31/20 9:43 PM, Jan Kiszka wrote:
+> Hi Philippe,
+> 
+> any reason why you didn't use synchronize_rcu for 
+> wait_for_rcu_grace_period back then?
 >
 
+Likely because because we might observe multiple grace periods between
+the moment joinee->exited is posted and the joinee eventually schedules out.
 
---=20
-_________________________________________________
+> 
+> 
+> I'm currently debugging a hanging xnthread_join in 
+> wait_for_rcu_grace_period and stumbled over this (both variants hang 
+> equally well, though).
+> 
+I'm not entirely surprised. Fully relying on RCU for this was more of a
+work around to address the module unload issue rather than a reliable fix.
 
-Prof.  *Matheus Leitzke Pinto*
+-- 
+Philippe.
 
-Instituto Federal de Santa Catarina - IFSC / Campus Chapec=C3=B3
-Endere=C3=A7o: Rua Nereu Ramos, 3450 D - Semin=C3=A1rio, Chapec=C3=B3 =E2=
-=80=93 SC
-CEP: 89813-000
-Celulares: (53) 81189999 (Tim, Whats App); (49) 89143113 (Claro)
-Curr=C3=ADculo Lattes:
-http://buscatextual.cnpq.br/buscatextual/visualizacv.do?id=3DK8793291J7
-
-Emails: matheus.pinto@ifsc.edu.br; lpinto.matheus@gmail.com;
-senseipinto@gmail.com <senseipinto@gmail.com>
