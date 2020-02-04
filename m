@@ -1,12 +1,13 @@
 Subject: Re: [RFC] simplify wait_for_rcu_grace_period
 References: <1498b3cc-767f-703c-116b-ae102be3e510@siemens.com>
  <9555bd80-150f-19d2-ddac-d92ac01b0ac1@xenomai.org>
-From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <df780f75-e210-5c09-fa3a-ecb564868e6e@siemens.com>
-Date: Mon, 3 Feb 2020 20:00:56 +0100
+ <df780f75-e210-5c09-fa3a-ecb564868e6e@siemens.com>
+From: Philippe Gerum <rpm@xenomai.org>
+Message-ID: <f6a24e2d-d5ce-9013-aacb-6f097853443b@xenomai.org>
+Date: Tue, 4 Feb 2020 09:44:13 +0100
 MIME-Version: 1.0
-In-Reply-To: <9555bd80-150f-19d2-ddac-d92ac01b0ac1@xenomai.org>
-Content-Type: text/plain; charset=utf-8; format=flowed
+In-Reply-To: <df780f75-e210-5c09-fa3a-ecb564868e6e@siemens.com>
+Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
@@ -17,42 +18,50 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Philippe Gerum <rpm@xenomai.org>
+To: Jan Kiszka <jan.kiszka@siemens.com>
 Cc: Xenomai <xenomai@xenomai.org>
 
-On 03.02.20 19:51, Philippe Gerum wrote:
-> On 1/31/20 9:43 PM, Jan Kiszka wrote:
->> Hi Philippe,
+On 2/3/20 8:00 PM, Jan Kiszka wrote:
+> On 03.02.20 19:51, Philippe Gerum wrote:
+>> On 1/31/20 9:43 PM, Jan Kiszka wrote:
+>>> Hi Philippe,
+>>>
+>>> any reason why you didn't use synchronize_rcu for
+>>> wait_for_rcu_grace_period back then?
+>>>
 >>
->> any reason why you didn't use synchronize_rcu for
->> wait_for_rcu_grace_period back then?
+>> Likely because because we might observe multiple grace periods between
+>> the moment joinee->exited is posted and the joinee eventually
+>> schedules out.
 >>
 > 
-> Likely because because we might observe multiple grace periods between
-> the moment joinee->exited is posted and the joinee eventually schedules out.
+> I didn't find a difference in the logic you open-coded and what the
+> kernel does behind synchronize_rcu, therefore I'm asking.
 > 
 
-I didn't find a difference in the logic you open-coded and what the 
-kernel does behind synchronize_rcu, therefore I'm asking.
+So you mean you would want to replace call_rcu() + completion with
+synchronize_rcu()? Sure you could.
 
+>>>
+>>>
+>>> I'm currently debugging a hanging xnthread_join in
+>>> wait_for_rcu_grace_period and stumbled over this (both variants hang
+>>> equally well, though).
+>>>
+>> I'm not entirely surprised. Fully relying on RCU for this was more of a
+>> work around to address the module unload issue rather than a reliable
+>> fix.
 >>
->>
->> I'm currently debugging a hanging xnthread_join in
->> wait_for_rcu_grace_period and stumbled over this (both variants hang
->> equally well, though).
->>
-> I'm not entirely surprised. Fully relying on RCU for this was more of a
-> work around to address the module unload issue rather than a reliable fix.
+> 
+> The lockup is on synchronize_rcu / the open-coded waiting itself. The
+> joinee is long gone. And that lockup goes away when switching to
+> HZ_PERIODIC. I still need to dig deeper to understand why we get no
+> update in that particular case.
 > 
 
-The lockup is on synchronize_rcu / the open-coded waiting itself. The 
-joinee is long gone. And that lockup goes away when switching to 
-HZ_PERIODIC. I still need to dig deeper to understand why we get no 
-update in that particular case.
-
-Jan
+Is the joiner blocked on the completion waiting for a grace period which
+never ends? Or, is the task never unregistered from the pid table?
 
 -- 
-Siemens AG, Corporate Technology, CT RDA IOT SES-DE
-Corporate Competence Center Embedded Linux
+Philippe.
 
