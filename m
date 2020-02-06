@@ -1,11 +1,11 @@
-From: Jan Kiszka <jan.kiszka@siemens.com>
-Subject: [ANNOUNCE] Xenomai 3.1 is out!
-Message-ID: <5e8d9df2-071b-2243-97ac-9a983b404fc7@siemens.com>
-Date: Tue, 4 Feb 2020 18:43:04 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+From: Yuri Zaporozhets <yuri.zaporozhets@gmail.com>
+Date: Thu, 6 Feb 2020 11:44:13 +0100
+Message-ID: <CAEkURaYmxbe5xr+ZEQH_hK7-uUcYPyPOyAjoAbG0Ugt64=aJ4Q@mail.gmail.com>
+Subject: Xenomai 3.1 x86: Duplicate definition of arch_io_reserve_memtype_wc()
+ and arch_io_free_memtype_wc() when CONFIG_X86_PAT is disabled
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -14,47 +14,37 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Xenomai <xenomai@xenomai.org>
+To: xenomai@xenomai.org
 
-Hi all,
+Hello all,
 
-finally: release 3.1 is ready. This is the second major release of the 
-Xenomai 3 generation and, as this project is moving with a rather 
-careful speed, a big step for all of us.
+Compilation of Linux kernel 4.19.94 with Xenomai-3.1 for x86_64 (with
+the latest i-pipe CIP patch for 4.19) cannot be successfully done
+because of two functions mentioned in Subject are doubly-defined.
 
-I'm trying to summarize a bit the 471 commits since 3.0.7 (+2 commits, 
-that's were we finally forked):
+ipipe.h includes irq.h which in turn includes "include/linux/io.h",
+where these two functions are defined as stubs. But pat.c also defines
+them, and they are not stubs.
 
-  - support for ARM64
-  - support for kernels up to 4.19
-  - discontinued support for blackfin and powerpc64
-  - priority ceiling protocol for mutexes, fast path syscall-free
-  - lazy (syscall free) schedparam propagation from user to kernel space
-  - improved debugging of RT application
-    (synchronous stop and resume of RT threads)
-  - reworked and enhances RT-TCP implementation
-  - RTDM-based GPIO PWM generator driver
-  - am335x (beaglebone black) omap4 spi real-time driver
-  - flexcan driver update
-  - improved teardown on RTDM driver removal
-  - expanded smokey testsuite
-  - ...and many smaller improvements
+A quick solution would be to surround these two functions in pat.c
+with #ifdef CONFIG_X86_PAT.
 
-Makes 484 files changed, 33719 insertions(+), 23060 deletions(-). There 
-are a lot of fixes in the there as well, but as long as they were 
-affecting also 3.0.x, they went into stable already. Note that 3.0.x is 
-not dead. We will continue to maintain it as stable version being used 
-not only in our products.
+This problem is not present in Xenomai-3.0.10.
 
-This release had 21 different contributors, which is a good, stable 
-number - though this can always be improved. Thanks to all your work on 
-Xenomai, keep up with it!
+Full inclusion list:
 
-Jan
+In file included from ./include/linux/irq.h:20:0,
+                 from ./include/linux/ipipe.h:29,
+                 from ./arch/x86/include/asm/uaccess.h:10,
+                 from ./include/linux/uaccess.h:14,
+                 from ./include/linux/compat.h:19,
+                 from ./arch/x86/include/asm/mtrr.h:99,
+                 from arch/x86/mm/pat.c:28:
+./include/linux/io.h:177:19: note: previous definition of
+=E2=80=98arch_io_reserve_memtype_wc=E2=80=99 was here:
+ static inline int arch_io_reserve_memtype_wc(...)
 
-PS: Download, webpage and docs still need to be updated, give me a day.
-
--- 
-Siemens AG, Corporate Technology, CT RDA IOT SES-DE
-Corporate Competence Center Embedded Linux
+--
+Regards,
+Yuri
 
