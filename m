@@ -1,11 +1,9 @@
-Subject: Re: IPIPE patch for 32-bit 4.19 LTS kernel
-References: <CAOtEsNiOhntwWoOzf6hquHv9v962aLhA=L49-vtUw1izNYgFmA@mail.gmail.com>
- <20200206173523.77e086a3@md1za8fc.ad001.siemens.net>
 From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <e9e17ff7-618c-dc0e-f80b-f3871a3d9fd4@siemens.com>
-Date: Thu, 6 Feb 2020 17:46:22 +0100
+Subject: [PATCH 3.0-only] cobalt/process: Fix incomplete backport of
+ __handle_taskexit_event change
+Message-ID: <2e2d6a9e-cf45-94c3-a9a7-3bc68dd844e5@siemens.com>
+Date: Fri, 7 Feb 2020 16:12:51 +0100
 MIME-Version: 1.0
-In-Reply-To: <20200206173523.77e086a3@md1za8fc.ad001.siemens.net>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -17,51 +15,46 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Henning Schild <henning.schild@siemens.com>, Matthias Winkler <spmmaze@gmail.com>, Xenomai <xenomai@xenomai.org>
+To: Xenomai <xenomai@xenomai.org>
 
-On 06.02.20 17:35, Henning Schild via Xenomai wrote:
-> Hi,
-> 
-> Am Thu, 6 Feb 2020 16:55:15 +0100
-> schrieb Matthias Winkler via Xenomai <xenomai@xenomai.org>:
-> 
->> Hello Xenomai-Users,
->>
->> Has anybody ported the xenomai patch
->> for kernel 4.19.101 in 32-Bit?
-> 
-> That target has not been looked at in a long time, i am not sure
-> whether it is officially discontinued or just happened like that.
+From: Jan Kiszka <jan.kiszka@siemens.com>
 
-I assume everyone is talking about x86 here.
+Commit f7d83e55135c which tried to backport commit 393ece85166a from
+master missed that there is no interrupt protection via
+xnlock_get_irqsave in 3.0. But we need in order to protect xnsched_run
+when running over the secondary domain as we always do here. In fact,
+xnsched_run will complain via a warning about this.
 
-For I-pipe, x86-32 is discontinued:
+Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
+---
+ kernel/cobalt/posix/process.c | 3 +++
+ 1 file changed, 3 insertions(+)
 
-Kconfig:
-    select HAVE_IPIPE_SUPPORT if X86_64
+diff --git a/kernel/cobalt/posix/process.c b/kernel/cobalt/posix/process.c
+index a65e947d51..52e544321e 100644
+--- a/kernel/cobalt/posix/process.c
++++ b/kernel/cobalt/posix/process.c
+@@ -1041,6 +1041,7 @@ static void __handle_taskexit_event(struct task_struct *p)
+ {
+ 	struct cobalt_ppd *sys_ppd;
+ 	struct xnthread *thread;
++	spl_t s;
+ 
+ 	/*
+ 	 * We are called for both kernel and user shadows over the
+@@ -1055,7 +1056,9 @@ static void __handle_taskexit_event(struct task_struct *p)
+ 	if (xnthread_test_state(thread, XNSSTEP))
+ 		unregister_debugged_thread(thread);
+ 
++	splhigh(s);
+ 	xnsched_run();
++	splexit(s);
+ 
+ 	xnthread_run_handler_stack(thread, exit_thread);
+ 
+-- 
+2.16.4
 
-> 
-> I remember multiple discussions around it and nobody stood up and said
-> they cared about it.
-> 
->> We need to support also our older devices with 32bit CPUs.
->> Help or hints would be appreciated!
-> 
-> I think ipipe-4.4.y has 32bit support and still has long lifetime ahead
-> of it combined with CIP https://www.cip-project.org/
-> 
-
-While the code is still present, it is not tested anymore, just like the
-kernel itself is barely testing x86-32. So the risk is high that
-something is obviously (build) or subtly (runtime) broken.
-
-It's not that this would not be fixable, it's just that no one takes
-care of it, as Henning said. We don't have internal use cases for
-Xenomai on x86-32 anymore (all targets are are least on x86-64 kernels),
-and the community does not look into this as well. If someone steps up,
-I would support that effort, no question.
-
-Jan
 
 -- 
 Siemens AG, Corporate Technology, CT RDA IOT SES-DE
