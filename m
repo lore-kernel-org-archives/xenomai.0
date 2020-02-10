@@ -1,8 +1,8 @@
 From: Jan Kiszka <jan.kiszka@siemens.com>
-Subject: [xenomai-images][PATCH 07/10] linux-xenomai: Enable latest 4.4 build
- with Xenomai 3.0
-Date: Mon, 10 Feb 2020 19:17:46 +0100
-Message-Id: <ad5fe8f558b33ec0eecd932996d84cfe546a4b70.1581358669.git.jan.kiszka@siemens.com>
+Subject: [xenomai-images][PATCH 06/10] xenomai: Consolidate master and next
+ recipes
+Date: Mon, 10 Feb 2020 19:17:45 +0100
+Message-Id: <a2bbe8d3da470dc12dde95d6f6d40a0979221e51.1581358669.git.jan.kiszka@siemens.com>
 In-Reply-To: <cover.1581358669.git.jan.kiszka@siemens.com>
 References: <cover.1581358669.git.jan.kiszka@siemens.com>
 In-Reply-To: <cover.1581358669.git.jan.kiszka@siemens.com>
@@ -19,50 +19,25 @@ To: xenomai@xenomai.org
 
 From: Jan Kiszka <jan.kiszka@siemens.com>
 
-When building with Xenomai 3.0, the meaning of "latest kernel" is
-different from 3.1 and head. Rather than adding some
-opt-linux-latest-4.4.yml, enhance the linux-xenomai_latest recipe with
-that knowledge.
+These can be come one, just using a link from one to the other.
 
 Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
 ---
- opt-linux-latest.yml                         |  2 +-
- recipes-kernel/linux/linux-xenomai.inc       |  1 +
- recipes-kernel/linux/linux-xenomai_latest.bb | 25 +++++++++++++++++--------
- 3 files changed, 19 insertions(+), 9 deletions(-)
+ recipes-xenomai/xenomai/xenomai_master.bb |  8 ++++----
+ recipes-xenomai/xenomai/xenomai_next.bb   | 22 +---------------------
+ 2 files changed, 5 insertions(+), 25 deletions(-)
+ mode change 100644 => 120000 recipes-xenomai/xenomai/xenomai_next.bb
 
-diff --git a/opt-linux-latest.yml b/opt-linux-latest.yml
-index a55c78f..7cf291a 100644
---- a/opt-linux-latest.yml
-+++ b/opt-linux-latest.yml
-@@ -14,4 +14,4 @@ header:
- 
- local_conf_header:
-   linux-xenomai-latest: |
--    PREFERRED_VERSION_linux-xenomai = "9999-latest"
-+    PREFERRED_VERSION_linux-xenomai = "9999-%"
-diff --git a/recipes-kernel/linux/linux-xenomai.inc b/recipes-kernel/linux/linux-xenomai.inc
-index 3388776..baa353b 100644
---- a/recipes-kernel/linux/linux-xenomai.inc
-+++ b/recipes-kernel/linux/linux-xenomai.inc
-@@ -19,6 +19,7 @@ DEPENDS += "xenomai-kernel-source"
- KBUILD_DEPENDS += "xenomai-kernel-source"
- 
- LINUX_COMMIT="${@bb.fetch2.get_srcrev(d).strip('AUTOINC+')}"
-+
- dpkg_runbuild_prepend() {
- 	case ${DISTRO_ARCH} in
- 	armhf)
-diff --git a/recipes-kernel/linux/linux-xenomai_latest.bb b/recipes-kernel/linux/linux-xenomai_latest.bb
-index 4aa246d..506dbdd 100644
---- a/recipes-kernel/linux/linux-xenomai_latest.bb
-+++ b/recipes-kernel/linux/linux-xenomai_latest.bb
-@@ -1,24 +1,33 @@
+diff --git a/recipes-xenomai/xenomai/xenomai_master.bb b/recipes-xenomai/xenomai/xenomai_master.bb
+index d95ede6..0852c0c 100644
+--- a/recipes-xenomai/xenomai/xenomai_master.bb
++++ b/recipes-xenomai/xenomai/xenomai_master.bb
+@@ -1,10 +1,11 @@
  #
  # Xenomai Real-Time System
  #
 -# Copyright (c) Siemens AG, 2019
-+# Copyright (c) Siemens AG, 2019-2020
++# Copyright (c) Siemens AG, 2018-2020
  #
  # Authors:
  #  Quirin Gylstorff <quirin.gylstorff@siemens.com>
@@ -70,35 +45,52 @@ index 4aa246d..506dbdd 100644
  #
  # SPDX-License-Identifier: MIT
  #
+@@ -12,8 +13,7 @@
+ require xenomai.inc
  
- require recipes-kernel/linux/linux-xenomai.inc
+ SRC_URI = " \
+-    git://gitlab.denx.de/Xenomai/xenomai.git;protocol=https;branch=master"
++    git://gitlab.denx.de/Xenomai/xenomai.git;protocol=https;branch=${PV}"
+ SRCREV = "${AUTOREV}"
+-PV = "master"
+-S = "${WORKDIR}/git"
  
--PV = "9999-latest"
-+PV = "9999-g${LINUX_COMMIT}"
- 
--SRC_URI_append_amd64 = " git://gitlab.denx.de/Xenomai/ipipe-x86.git;protocol=https;branch=ipipe-x86-4.19.y"
--SRCREV_amd64 = "${AUTOREV}"
-+def is_xeno_3_0(d):
-+    xeno_ver = d.getVar('PREFERRED_VERSION_xenomai') or ''
-+    return xeno_ver.startswith('3.0') or xeno_ver == 'stable-3.0.x'
- 
--SRC_URI_append_arm64 = " git://gitlab.denx.de/Xenomai/ipipe-arm64.git;protocol=https;branch=ipipe/master"
--SRCREV_arm64 = "${AUTOREV}"
-+GIT_REPO_amd64 = "${@'ipipe.git' if is_xeno_3_0(d) else 'ipipe-x86.git'}"
-+GIT_BRANCH_amd64 = "${@'ipipe-4.4.y-cip' if is_xeno_3_0(d) else 'ipipe-x86-4.19.y'}"
-+
-+GIT_REPO_armhf = "${@'ipipe.git' if is_xeno_3_0(d) else 'ipipe-arm.git'}"
-+GIT_BRANCH_armhf = "${@'ipipe-4.4.y-cip' if is_xeno_3_0(d) else 'ipipe/master'}"
-+
-+GIT_REPO_arm64 = "ipipe-arm64.git"
-+GIT_BRANCH_arm64 = "ipipe/master"
-+
-+SRC_URI += "git://gitlab.denx.de/Xenomai/${GIT_REPO};protocol=https;branch=${GIT_BRANCH}"
-+SRCREV = "${AUTOREV}"
- 
--SRC_URI_append_armhf = " git://gitlab.denx.de/Xenomai/ipipe-arm.git;protocol=https;branch=ipipe/master"
--SRCREV_armhf = "${AUTOREV}"
- S = "${WORKDIR}/git"
++S = "${WORKDIR}/git"
+diff --git a/recipes-xenomai/xenomai/xenomai_next.bb b/recipes-xenomai/xenomai/xenomai_next.bb
+deleted file mode 100644
+index e216124..0000000
+--- a/recipes-xenomai/xenomai/xenomai_next.bb
++++ /dev/null
+@@ -1,21 +0,0 @@
+-#
+-# Xenomai Real-Time System
+-#
+-# Copyright (c) Siemens AG, 2018
+-#
+-# Authors:
+-#  Jan Kiszka <jan.kiszka@siemens.com>
+-#
+-# SPDX-License-Identifier: MIT
+-#
+-
+-require xenomai.inc
+-
+-SRC_URI = " \
+-    git://gitlab.denx.de/Xenomai/xenomai.git;protocol=https;branch=next"
+-SRCREV = "${AUTOREV}" 
+-PV = "next"
+-
+-S = "${WORKDIR}/git"
+-
+-
+diff --git a/recipes-xenomai/xenomai/xenomai_next.bb b/recipes-xenomai/xenomai/xenomai_next.bb
+new file mode 120000
+index 0000000..69b56dc
+--- /dev/null
++++ b/recipes-xenomai/xenomai/xenomai_next.bb
+@@ -0,0 +1 @@
++xenomai_master.bb
+\ No newline at end of file
 -- 
 2.16.4
 
