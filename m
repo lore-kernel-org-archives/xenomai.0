@@ -1,11 +1,8 @@
 From: Jan Kiszka <jan.kiszka@siemens.com>
-Subject: [PATCH] smokey: Close tmp file at end of sigdebug test
-Message-ID: <76d23c96-50c4-88b1-fe46-6c11e6b0d880@siemens.com>
-Date: Mon, 10 Feb 2020 18:52:19 +0100
-MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Subject: [xenomai-images][PATCH 00/10] Updates,
+ improved support for building latest revisions
+Date: Mon, 10 Feb 2020 19:17:39 +0100
+Message-Id: <cover.1581358669.git.jan.kiszka@siemens.com>
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -14,36 +11,60 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Xenomai <xenomai@xenomai.org>
+To: xenomai@xenomai.org
 
-From: Jan Kiszka <jan.kiszka@siemens.com>
+This is part I which should make us ready for 3.1. What is missing are
+a number of CI test enhancements and cleanups that Quirin is working on.
+Will come on top.
 
-The rtdm test relies on successively free file descriptors which is
-violated by this test when the run after each other.
+Jan
 
-Reported-by: Gylstorff Quirin <quirin.gylstorff@siemens.com>
-Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
----
- testsuite/smokey/sigdebug/sigdebug.c | 1 +
- 1 file changed, 1 insertion(+)
 
-diff --git a/testsuite/smokey/sigdebug/sigdebug.c b/testsuite/smokey/sigdebug/sigdebug.c
-index 15f9e4dae3..9cb5162c14 100644
---- a/testsuite/smokey/sigdebug/sigdebug.c
-+++ b/testsuite/smokey/sigdebug/sigdebug.c
-@@ -292,6 +292,7 @@ static int run_sigdebug(struct smokey_test *t, int argc, char *const argv[])
- 	err = sem_destroy(&send_signal);
- 	check_no_error("sem_destroy", err);
- 
-+	close(tmp_fd);
- 	if (wd) {
- 		fprintf(wd, "%d", wdog_delay);
- 		fclose(wd);
+CC: Quirin Gylstorff <quirin.gylstorff@siemens.com>
+
+Jan Kiszka (9):
+  Update Isar revision
+  xenomai: Update to 3.0.10
+  Switch to Xenomai 3.1
+  Switch Xenomai 3.0 to kernel 4.4
+  Provide Xenomai 3.0.x target
+  xenomai: Consolidate master and next recipes
+  linux-xenomai: Enable latest 4.4 build with Xenomai 3.0
+  linux-xenomai: Update to ipipe-core-4.19.94-cip18-x86-10
+  Switch to github as source explicitly
+
+Quirin Gylstorff (1):
+  recipes-kernel/linux: add exception handling
+
+ conf/distro/include/xenomai-version.inc            |  12 +-
+ conf/distro/xenomai-demo.conf                      |   2 +
+ conf/machine/hikey.conf                            |   1 -
+ conf/machine/qemu-arm64.conf                       |   1 -
+ kas.yml                                            |  13 +-
+ opt-linux-latest.yml                               |   5 +-
+ opt-xenomai-3.0.x.yml                              |  17 ++
+ opt-xenomai-next.yml                               |   3 -
+ ...nel-linux-build-kernel-Allow-kernel-build.patch | 173 ---------------------
+ recipes-kernel/linux/linux-xenomai.inc             |   9 +-
+ recipes-kernel/linux/linux-xenomai_4.14.bb         |   6 +-
+ recipes-kernel/linux/linux-xenomai_4.19.bb         |  11 +-
+ recipes-kernel/linux/linux-xenomai_4.4.bb          |  20 +++
+ recipes-kernel/linux/linux-xenomai_latest.bb       |  25 ++-
+ .../{xenomai_3.0.9.bb => xenomai_3.0.10.bb}        |   2 +-
+ .../xenomai/{xenomai_next.bb => xenomai_3.1.bb}    |   8 +-
+ recipes-xenomai/xenomai/xenomai_master.bb          |   8 +-
+ recipes-xenomai/xenomai/xenomai_next.bb            |  22 +--
+ .../{xenomai_stable.bb => xenomai_stable-3.0.x.bb} |   7 +-
+ 19 files changed, 93 insertions(+), 252 deletions(-)
+ create mode 100644 opt-xenomai-3.0.x.yml
+ delete mode 100644 patches/0001-recipes-kernel-linux-build-kernel-Allow-kernel-build.patch
+ create mode 100644 recipes-kernel/linux/linux-xenomai_4.4.bb
+ rename recipes-xenomai/xenomai/{xenomai_3.0.9.bb => xenomai_3.0.10.bb} (79%)
+ copy recipes-xenomai/xenomai/{xenomai_next.bb => xenomai_3.1.bb} (55%)
+ mode change 100644 => 120000 recipes-xenomai/xenomai/xenomai_next.bb
+ rename recipes-xenomai/xenomai/{xenomai_stable.bb => xenomai_stable-3.0.x.bb} (56%)
+
 -- 
 2.16.4
 
-
--- 
-Siemens AG, Corporate Technology, CT RDA IOT SES-DE
-Corporate Competence Center Embedded Linux
 
