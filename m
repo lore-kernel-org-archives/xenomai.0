@@ -1,11 +1,13 @@
-From: "Kloock, Lennard" <Lennard.Kloock@meg.mee.com>
-Subject: Installing RTnet
-Date: Mon, 10 Feb 2020 13:10:30 +0000
-Message-ID: <62607370399744fa9b6b6b3fe761f190@meg.mee.com>
-Content-Language: de-DE
+Subject: Re: Migrate project from Debian 8 Xenomai 2.x to Debain 9 Xenomai 3.x
+References: <23edaf750b0b41ef9a129bbaf2758d9f@RCDC-MAIL09.corp.diehl.com>
+From: Jan Kiszka <jan.kiszka@siemens.com>
+Message-ID: <0281e4a5-a2b2-bac5-1e30-ea2bb85f3d8d@siemens.com>
+Date: Mon, 10 Feb 2020 14:22:41 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+In-Reply-To: <23edaf750b0b41ef9a129bbaf2758d9f@RCDC-MAIL09.corp.diehl.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -14,63 +16,35 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Carsten EHRMANN <Carsten.Ehrmann@diehl.com>, "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-Hello all,
+On 10.02.20 13:03, Carsten EHRMANN via Xenomai wrote:
+> Hello,
+> 
+> 
+> Because of new PC hardware I have to use debain 9 and Xenomai 3. Xenomai is running on the system, I run the testsuite scripts. I found a migration document on xenomai.org and changed the includepaths and so on in my sourcecode. But now when I want to compile the code I got this error
+> In file included from ./CSRTPosixQue.h:20:0,
+>               from ./CSRTTask.h:20,
+>               from main.cpp:26:
+> /usr/xenomai/include/trank/native/task.h: In function 'int rt_task_notify(RT_TASK*, rt_sigset_t)':
+> /usr/xenomai/include/trank/native/task.h:41:64: error: 'trank_warning' was not declared in this scope
+> trank_warning("in-kernel native API is gone, rebase over RTDM");
+> 
+> But this "trank_warning" is defined in trank.h which is included
+> 
 
-i have succesfully installed Xenomai 3.0.5 with linux 4.9.90, but I am havi=
-ng trouble installing RTnet on an i218-lm.
+Where you using xeno-config to obtain paths and other compiler switches? 
+If not, please compare your settings. If yes, a simple test case would 
+be nice. But it can't be very simple because
 
-I followed these steps:
-1) ifconfig eth0 down
-2) rmmod e1000e
-3) configured /usr/xenomai/etc/rtnet.conf according to https://gitlab.denx.=
-de/Xenomai/xenomai/-/wikis/RTnet
-4) modprobe rtpacket
-5) modprobe rtnet
-6) modprobe rt_e1000e
+#include <native/task.h>
+int main() {}
 
-But now if I try to run rtnet with  ./rtnet start I get the following error=
-s:
+compiles via "gcc $(xeno-config --skin native --cflags) ..."
 
-ioctl: No such device
-ioctl: No such device
-ioctl: No such device
-ioctl: No such device
-ioctl (add): No such device
-ioctl (add): No such device
-ioctl (add): No such device
-ioctl (add): No such device
-vnic0: ERROR while getting interface flags: No such device
-SIOCSIFADDR: No such device
-vnic0: ERROR while getting interface flags: No such device
-SIOCSIFNETMASK: No such device
-Waiting for all slaves...ioctl: No such device
-ioctl: No such device
+Jan
 
-./rtifconfig only show the local loopback but not rteth0
-
-Dmesg shows that rtnet and the driver are being loaded
-
-[  391.184595]
-               *** RTnet for Xenomai v3.0.5 ***
-
-[  391.184596] RTnet: initialising real-time networking
-[  400.034853] rt_e1000e: Intel(R) PRO/1000 Network Driver - 1.5.1-k-rt
-[  400.034854] rt_e1000e: Copyright(c) 1999 - 2011 Intel Corporation.
-
-But with lspci -knn it shows that the NIC doesn't pick up the real time dri=
-ver:
-
-00:1f.6 Ethernet controller [0200]: Intel Corporation Ethernet Connection I=
-219-LM [8086:156f] (rev 21)
-                Subsystem: Gigabyte Technology Co., Ltd Ethernet Connection=
- I219-LM [1458:e000]
-                Kernel modules: e1000e
-
-Did I do something wrong or is my I219-LM NIC not supported by RTnet?
-
-Many Thanks
-
-Lennard Kloock
+-- 
+Siemens AG, Corporate Technology, CT RDA IOT SES-DE
+Corporate Competence Center Embedded Linux
 
