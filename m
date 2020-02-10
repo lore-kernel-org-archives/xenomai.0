@@ -1,14 +1,15 @@
-From: Carsten EHRMANN <Carsten.Ehrmann@diehl.com>
-Subject: RE: Migrate project from Debian 8 Xenomai 2.x to Debain 9 Xenomai 3.x
-Date: Mon, 10 Feb 2020 14:20:04 +0000
-Message-ID: <373cc865d6c34dda997ac6745bae99cd@RCDC-MAIL09.corp.diehl.com>
+Subject: Re: Migrate project from Debian 8 Xenomai 2.x to Debain 9 Xenomai 3.x
 References: <23edaf750b0b41ef9a129bbaf2758d9f@RCDC-MAIL09.corp.diehl.com>
  <0281e4a5-a2b2-bac5-1e30-ea2bb85f3d8d@siemens.com>
-In-Reply-To: <0281e4a5-a2b2-bac5-1e30-ea2bb85f3d8d@siemens.com>
-Content-Language: de-DE
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+ <373cc865d6c34dda997ac6745bae99cd@RCDC-MAIL09.corp.diehl.com>
+From: Jan Kiszka <jan.kiszka@siemens.com>
+Message-ID: <9cc5a0de-1db9-e46f-7aa8-30e41b1ac926@siemens.com>
+Date: Mon, 10 Feb 2020 15:40:20 +0100
 MIME-Version: 1.0
+In-Reply-To: <373cc865d6c34dda997ac6745bae99cd@RCDC-MAIL09.corp.diehl.com>
+Content-Type: text/plain; charset="utf-8"; format="flowed"
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,81 +18,115 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jan Kiszka <jan.kiszka@siemens.com>, "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Carsten EHRMANN <Carsten.Ehrmann@diehl.com>, "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-SGkgSmFuLA0KDQpkbyBJIGhhdmUgdG8gaW5jbHVkZSB0aGUgeGVuby1jb25maWcgZmlsZT8g
-SSBqdXN0IGNvbmZpZ3VyZWQgaXQgd2l0aCAieGVuby1jb25maWcgLS1za2luPW5hdGl2ZSIu
-DQoNCkkgdXNlIGEgcHJvamVjdCBmaWxlIHdoZXJlIGluY2x1ZGVzIGFyZSBkZWZpbmVkLCBz
-ZWUgYmVsb3c6DQoNCnVuaXggew0KVEVNUExBVEUgPSBhcHANCn0gZWxzZSB7DQpURU1QTEFU
-RSA9IHZjYXBwDQp9DQpDT05GSUcgLT0gcXQNCkNPTkZJRyArPSBkZWJ1Z19hbmRfcmVsZWFz
-ZSB3YXJuX29uIGV4Y2VwdGlvbnMgcnR0aSANCkRlYnVnIHsNCiAgICBUQVJHRVQgPSBDU1JU
-RGFlbW9uDQogICAgQ09ORklHICs9IGNvbnNvbGUNCiAgICBPQkpFQ1RTX0RJUiA9IC4uL3Rt
-cC9vYmovQ1NSVERhZW1vbi9kZWJ1Zw0KICAgIERFU1RESVIgPSAuLi9saWIvQ1NSVERhZW1v
-bg0KICAgIERMTERFU1RESVIgPSAuLi9kbGwvQ1NSVERhZW1vbg0KICAgIFNDT1BFPWRlYnVn
-DQogICAgdW5peCB7DQogICAgICAgIFFNQUtFX0NYWEZMQUdTICs9IA0KICAgICAgICBRTUFL
-RV9DRkxBR1MgKz0gDQogICAgICAgIFFNQUtFX0xGTEFHUyArPQ0KICAgIH0gZWxzZSB7DQog
-ICAgICAgIFFNQUtFX1BPU1RfTElOSyA9IENPUFkgL1kgLi4vbGliL0NTUlREYWVtb24vKi5w
-ZGIgLi4vZGxsL0NTUlREYWVtb24vIA0KICAgIH0NCn0gZWxzZSB7DQogICAgVEFSR0VUID0g
-Q1NSVERhZW1vbg0KICAgIE9CSkVDVFNfRElSID0gLi4vdG1wL29iai9DU1JURGFlbW9uL3Jl
-bGVhc2UNCiAgICBERVNURElSID0gLi4vbGliL0NTUlREYWVtb24NCiAgICBETExERVNURElS
-ID0gLi4vZGxsL0NTUlREYWVtb24NCiAgICBERUZJTkVTICs9IFFUX05PX0RFQlVHX09VVFBV
-VCBOREVCVUcNCiAgICBTQ09QRT1yZWxlYXNlDQp9DQoNCg0KUU1BS0VfTElCRElSICs9IC91
-c3IveGVub21haS9saWINCklOQ0xVREVQQVRIICs9IC91c3IveGVub21haS9pbmNsdWRlDQoN
-Cg0KDQoNCl9fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
-X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
-X19fXw0KQml0dGUgw7xiZXJsZWdlbiBTaWUsIG9iIFNpZSBkaWVzZSBOYWNocmljaHQgd2ly
-a2xpY2ggYXVzZHJ1Y2tlbiBtw7xzc2VuLyBiZWZvcmUgcHJpbnRpbmcsIHRoaW5rIGFib3V0
-IGVudmlyb25tZW50YWwgcmVzcG9uc2liaWxpdHkuDQpEaWVobCBNZXRlcmluZyBHbWJILCBJ
-bmR1c3RyaWVzdHJhw59lIDEzLCA5MTUyMiBBbnNiYWNoDQpUZWxlZm9uICsgNDkgOTgxIDE4
-MDYgMCwgVGVsZWZheCArNDkgOTgxIDE4MDYgNjE1DQpTaXR6IGRlciBHZXNlbGxzY2hhZnQ6
-IEFuc2JhY2gsIFJlZ2lzdGVyZ2VyaWNodDogQW5zYmFjaCBIUkIgNjkNCkdlc2Now6RmdHNm
-w7xocmVyOiBEci4gQ2hyaXN0b2YgQm9zYmFjaCAoU3ByZWNoZXIpLCBUaG9tYXMgR2FzdG5l
-ciwgSmVhbi1GcmFuw6dvaXMgTWFyZ3VldA0KRGVyIEluaGFsdCBkZXIgdm9yc3RlaGVuZGVu
-IEUtTWFpbCBpc3QgbmljaHQgcmVjaHRsaWNoIGJpbmRlbmQuIERpZXNlIEUtTWFpbCBlbnRo
-w6RsdCB2ZXJ0cmF1bGljaGUgdW5kL29kZXIgcmVjaHRsaWNoIGdlc2Now7x0enRlIEluZm9y
-bWF0aW9uZW4uIEluZm9ybWllcmVuIFNpZSB1bnMgYml0dGUsIHdlbm4gU2llIGRpZXNlIEUt
-TWFpbCBmw6Rsc2NobGljaGVyd2Vpc2UgZXJoYWx0ZW4gaGFiZW4uIEJpdHRlIGzDtnNjaGVu
-IFNpZSBpbiBkaWVzZW0gRmFsbCBkaWUgTmFjaHJpY2h0LiBKZWRlIHVuZXJsYXVidGUgRm9y
-bSBkZXIgUmVwcm9kdWt0aW9uLCBCZWthbm50Z2FiZSwgw4RuZGVydW5nLCBWZXJ0ZWlsdW5n
-IHVuZC9vZGVyIFB1Ymxpa2F0aW9uIGRpZXNlciBFLU1haWwgaXN0IHN0cmVuZ3N0ZW5zIHVu
-dGVyc2FndC4NClRoZSBjb250ZW50cyBvZiB0aGUgYWJvdmUgbWVudGlvbmVkIGUtbWFpbCBp
-cyBub3QgbGVnYWxseSBiaW5kaW5nLiBUaGlzIGUtbWFpbCBjb250YWlucyBjb25maWRlbnRp
-YWwgYW5kL29yIGxlZ2FsbHkgcHJvdGVjdGVkIGluZm9ybWF0aW9uLiBQbGVhc2UgaW5mb3Jt
-IHVzIGlmIHlvdSBoYXZlIHJlY2VpdmVkIHRoaXMgZS1tYWlsIGJ5IG1pc3Rha2UgYW5kIGRl
-bGV0ZSBpdCBpbiBzdWNoIGEgY2FzZS4gRWFjaCB1bmF1dGhvcml6ZWQgcmVwcm9kdWN0aW9u
-LCBkaXNjbG9zdXJlLCBhbHRlcmF0aW9uLCBkaXN0cmlidXRpb24gYW5kL29yIHB1YmxpY2F0
-aW9uIG9mIHRoaXMgZS1tYWlsIGlzIHN0cmljdGx5IHByb2hpYml0ZWQuDQpJbmZvcm1hdGlv
-bmVuIHp1bSBEYXRlbnNjaHV0eiBmaW5kZW4gU2llIGF1ZiB1bnNlcmVyIEhvbWVwYWdlLg0K
-aHR0cHM6Ly93d3cuZGllaGwuY29tL21ldGVyaW5nL2RlL2RpZWhsLW1ldGVyaW5nL2RhdGEt
-cHJvdGVjdGlvbg0KSW5mb3JtYXRpb24gYWJvdXQgZGF0YSBwcm90ZWN0aW9uIGNhbiBiZSBm
-b3VuZCBvbiBvdXIgaG9tZXBhZ2UuDQpodHRwczovL3d3dy5kaWVobC5jb20vbWV0ZXJpbmcv
-ZW4vZGllaGwtbWV0ZXJpbmcvZGF0YS1wcm90ZWN0aW9uDQoNCg0KLS0tLS1PcmlnaW5hbCBN
-ZXNzYWdlLS0tLS0NCkZyb206IEphbiBLaXN6a2EgPGphbi5raXN6a2FAc2llbWVucy5jb20+
-IA0KU2VudDogTW9uZGF5LCBGZWJydWFyeSAxMCwgMjAyMCAyOjIzIFBNDQpUbzogQ2Fyc3Rl
-biBFSFJNQU5OIDxDYXJzdGVuLkVocm1hbm5AZGllaGwuY29tPjsgeGVub21haUB4ZW5vbWFp
-Lm9yZw0KU3ViamVjdDogUmU6IE1pZ3JhdGUgcHJvamVjdCBmcm9tIERlYmlhbiA4IFhlbm9t
-YWkgMi54IHRvIERlYmFpbiA5IFhlbm9tYWkgMy54DQoNCk9uIDEwLjAyLjIwIDEzOjAzLCBD
-YXJzdGVuIEVIUk1BTk4gdmlhIFhlbm9tYWkgd3JvdGU6DQo+IEhlbGxvLA0KPiANCj4gDQo+
-IEJlY2F1c2Ugb2YgbmV3IFBDIGhhcmR3YXJlIEkgaGF2ZSB0byB1c2UgZGViYWluIDkgYW5k
-IFhlbm9tYWkgMy4gDQo+IFhlbm9tYWkgaXMgcnVubmluZyBvbiB0aGUgc3lzdGVtLCBJIHJ1
-biB0aGUgdGVzdHN1aXRlIHNjcmlwdHMuIEkgZm91bmQgYSBtaWdyYXRpb24gZG9jdW1lbnQg
-b24geGVub21haS5vcmcgYW5kIGNoYW5nZWQgdGhlIGluY2x1ZGVwYXRocyBhbmQgc28gb24g
-aW4gbXkgc291cmNlY29kZS4gQnV0IG5vdyB3aGVuIEkgd2FudCB0byBjb21waWxlIHRoZSBj
-b2RlIEkgZ290IHRoaXMgZXJyb3IgSW4gZmlsZSBpbmNsdWRlZCBmcm9tIC4vQ1NSVFBvc2l4
-UXVlLmg6MjA6MCwNCj4gICAgICAgICAgICAgICBmcm9tIC4vQ1NSVFRhc2suaDoyMCwNCj4g
-ICAgICAgICAgICAgICBmcm9tIG1haW4uY3BwOjI2Og0KPiAvdXNyL3hlbm9tYWkvaW5jbHVk
-ZS90cmFuay9uYXRpdmUvdGFzay5oOiBJbiBmdW5jdGlvbiAnaW50IHJ0X3Rhc2tfbm90aWZ5
-KFJUX1RBU0sqLCBydF9zaWdzZXRfdCknOg0KPiAvdXNyL3hlbm9tYWkvaW5jbHVkZS90cmFu
-ay9uYXRpdmUvdGFzay5oOjQxOjY0OiBlcnJvcjogJ3RyYW5rX3dhcm5pbmcnIA0KPiB3YXMg
-bm90IGRlY2xhcmVkIGluIHRoaXMgc2NvcGUgdHJhbmtfd2FybmluZygiaW4ta2VybmVsIG5h
-dGl2ZSBBUEkgaXMgDQo+IGdvbmUsIHJlYmFzZSBvdmVyIFJURE0iKTsNCj4gDQo+IEJ1dCB0
-aGlzICJ0cmFua193YXJuaW5nIiBpcyBkZWZpbmVkIGluIHRyYW5rLmggd2hpY2ggaXMgaW5j
-bHVkZWQNCj4gDQoNCldoZXJlIHlvdSB1c2luZyB4ZW5vLWNvbmZpZyB0byBvYnRhaW4gcGF0
-aHMgYW5kIG90aGVyIGNvbXBpbGVyIHN3aXRjaGVzPyANCklmIG5vdCwgcGxlYXNlIGNvbXBh
-cmUgeW91ciBzZXR0aW5ncy4gSWYgeWVzLCBhIHNpbXBsZSB0ZXN0IGNhc2Ugd291bGQgYmUg
-bmljZS4gQnV0IGl0IGNhbid0IGJlIHZlcnkgc2ltcGxlIGJlY2F1c2UNCg0KI2luY2x1ZGUg
-PG5hdGl2ZS90YXNrLmg+DQppbnQgbWFpbigpIHt9DQoNCmNvbXBpbGVzIHZpYSAiZ2NjICQo
-eGVuby1jb25maWcgLS1za2luIG5hdGl2ZSAtLWNmbGFncykgLi4uIg0KDQpKYW4NCg0KLS0N
-ClNpZW1lbnMgQUcsIENvcnBvcmF0ZSBUZWNobm9sb2d5LCBDVCBSREEgSU9UIFNFUy1ERSBD
-b3Jwb3JhdGUgQ29tcGV0ZW5jZSBDZW50ZXIgRW1iZWRkZWQgTGludXgNCg==
+On 10.02.20 15:20, Carsten EHRMANN wrote:
+> Hi Jan,
+> 
+> do I have to include the xeno-config file? I just configured it with "xeno-config --skin=native".
+
+You can use your own hard-coded switches, provided you know what you are 
+doing. Otherwise, picking them up during the build from xeno-config is 
+recommended. It's enough to do it once during make startup.
+
+> 
+> I use a project file where includes are defined, see below:
+> 
+> unix {
+> TEMPLATE = app
+> } else {
+> TEMPLATE = vcapp
+> }
+> CONFIG -= qt
+> CONFIG += debug_and_release warn_on exceptions rtti
+> Debug {
+>      TARGET = CSRTDaemon
+>      CONFIG += console
+>      OBJECTS_DIR = ../tmp/obj/CSRTDaemon/debug
+>      DESTDIR = ../lib/CSRTDaemon
+>      DLLDESTDIR = ../dll/CSRTDaemon
+>      SCOPE=debug
+>      unix {
+>          QMAKE_CXXFLAGS +=
+>          QMAKE_CFLAGS +=
+>          QMAKE_LFLAGS +=
+>      } else {
+>          QMAKE_POST_LINK = COPY /Y ../lib/CSRTDaemon/*.pdb ../dll/CSRTDaemon/
+>      }
+> } else {
+>      TARGET = CSRTDaemon
+>      OBJECTS_DIR = ../tmp/obj/CSRTDaemon/release
+>      DESTDIR = ../lib/CSRTDaemon
+>      DLLDESTDIR = ../dll/CSRTDaemon
+>      DEFINES += QT_NO_DEBUG_OUTPUT NDEBUG
+>      SCOPE=release
+> }
+> 
+> 
+> QMAKE_LIBDIR += /usr/xenomai/lib
+> INCLUDEPATH += /usr/xenomai/include
+> 
+
+Again, what matters is what is passed to the individual gcc invocation. 
+Check that. Otherwise, again, please send a reproduction case. We can't 
+debug your local setup remotely.
+
+Jan
+
+> 
+> 
+> 
+> _________________________________________________________________________________________________________
+> Bitte überlegen Sie, ob Sie diese Nachricht wirklich ausdrucken müssen/ before printing, think about environmental responsibility.
+> Diehl Metering GmbH, Industriestraße 13, 91522 Ansbach
+> Telefon + 49 981 1806 0, Telefax +49 981 1806 615
+> Sitz der Gesellschaft: Ansbach, Registergericht: Ansbach HRB 69
+> Geschäftsführer: Dr. Christof Bosbach (Sprecher), Thomas Gastner, Jean-François Marguet
+> Der Inhalt der vorstehenden E-Mail ist nicht rechtlich bindend. Diese E-Mail enthält vertrauliche und/oder rechtlich geschützte Informationen. Informieren Sie uns bitte, wenn Sie diese E-Mail fälschlicherweise erhalten haben. Bitte löschen Sie in diesem Fall die Nachricht. Jede unerlaubte Form der Reproduktion, Bekanntgabe, Änderung, Verteilung und/oder Publikation dieser E-Mail ist strengstens untersagt.
+> The contents of the above mentioned e-mail is not legally binding. This e-mail contains confidential and/or legally protected information. Please inform us if you have received this e-mail by mistake and delete it in such a case. Each unauthorized reproduction, disclosure, alteration, distribution and/or publication of this e-mail is strictly prohibited.
+> Informationen zum Datenschutz finden Sie auf unserer Homepage.
+> https://www.diehl.com/metering/de/diehl-metering/data-protection
+> Information about data protection can be found on our homepage.
+> https://www.diehl.com/metering/en/diehl-metering/data-protection
+> 
+> 
+> -----Original Message-----
+> From: Jan Kiszka <jan.kiszka@siemens.com>
+> Sent: Monday, February 10, 2020 2:23 PM
+> To: Carsten EHRMANN <Carsten.Ehrmann@diehl.com>; xenomai@xenomai.org
+> Subject: Re: Migrate project from Debian 8 Xenomai 2.x to Debain 9 Xenomai 3.x
+> 
+> On 10.02.20 13:03, Carsten EHRMANN via Xenomai wrote:
+>> Hello,
+>>
+>>
+>> Because of new PC hardware I have to use debain 9 and Xenomai 3.
+>> Xenomai is running on the system, I run the testsuite scripts. I found a migration document on xenomai.org and changed the includepaths and so on in my sourcecode. But now when I want to compile the code I got this error In file included from ./CSRTPosixQue.h:20:0,
+>>                from ./CSRTTask.h:20,
+>>                from main.cpp:26:
+>> /usr/xenomai/include/trank/native/task.h: In function 'int rt_task_notify(RT_TASK*, rt_sigset_t)':
+>> /usr/xenomai/include/trank/native/task.h:41:64: error: 'trank_warning'
+>> was not declared in this scope trank_warning("in-kernel native API is
+>> gone, rebase over RTDM");
+>>
+>> But this "trank_warning" is defined in trank.h which is included
+>>
+> 
+> Where you using xeno-config to obtain paths and other compiler switches?
+> If not, please compare your settings. If yes, a simple test case would be nice. But it can't be very simple because
+> 
+> #include <native/task.h>
+> int main() {}
+> 
+> compiles via "gcc $(xeno-config --skin native --cflags) ..."
+> 
+> Jan
+> 
+> --
+> Siemens AG, Corporate Technology, CT RDA IOT SES-DE Corporate Competence Center Embedded Linux
+> 
+
+-- 
+Siemens AG, Corporate Technology, CT RDA IOT SES-DE
+Corporate Competence Center Embedded Linux
 
