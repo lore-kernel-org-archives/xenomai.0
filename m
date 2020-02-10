@@ -1,10 +1,10 @@
-From: Carsten EHRMANN <Carsten.Ehrmann@diehl.com>
-Subject: Migrate project from Debian 8 Xenomai 2.x to Debain 9 Xenomai 3.x
-Date: Mon, 10 Feb 2020 12:03:32 +0000
-Message-ID: <23edaf750b0b41ef9a129bbaf2758d9f@RCDC-MAIL09.corp.diehl.com>
+From: "Kloock, Lennard" <Lennard.Kloock@meg.mee.com>
+Subject: Installing RTnet
+Date: Mon, 10 Feb 2020 13:10:30 +0000
+Message-ID: <62607370399744fa9b6b6b3fe761f190@meg.mee.com>
 Content-Language: de-DE
 MIME-Version: 1.0
-Content-Type: text/plain; charset="iso-8859-1"
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
@@ -16,62 +16,61 @@ List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-Hello,
+Hello all,
 
+i have succesfully installed Xenomai 3.0.5 with linux 4.9.90, but I am havi=
+ng trouble installing RTnet on an i218-lm.
 
-Because of new PC hardware I have to use debain 9 and Xenomai 3. Xenomai =
-is running on the system, I run the testsuite scripts. I found a migratio=
-n document on xenomai.org and changed the includepaths and so on in my so=
-urcecode. But now when I want to compile the code I got this error
-In file included from ./CSRTPosixQue.h:20:0,
-             from ./CSRTTask.h:20,
-             from main.cpp:26:
-/usr/xenomai/include/trank/native/task.h: In function =27int rt_task_noti=
-fy(RT_TASK*, rt_sigset_t)=27:
-/usr/xenomai/include/trank/native/task.h:41:64: error: =27trank_warning=
-=27 was not declared in this scope
-trank_warning(=22in-kernel native API is gone, rebase over RTDM=22);
+I followed these steps:
+1) ifconfig eth0 down
+2) rmmod e1000e
+3) configured /usr/xenomai/etc/rtnet.conf according to https://gitlab.denx.=
+de/Xenomai/xenomai/-/wikis/RTnet
+4) modprobe rtpacket
+5) modprobe rtnet
+6) modprobe rt_e1000e
 
-But this =22trank_warning=22 is defined in trank.h which is included
+But now if I try to run rtnet with  ./rtnet start I get the following error=
+s:
 
+ioctl: No such device
+ioctl: No such device
+ioctl: No such device
+ioctl: No such device
+ioctl (add): No such device
+ioctl (add): No such device
+ioctl (add): No such device
+ioctl (add): No such device
+vnic0: ERROR while getting interface flags: No such device
+SIOCSIFADDR: No such device
+vnic0: ERROR while getting interface flags: No such device
+SIOCSIFNETMASK: No such device
+Waiting for all slaves...ioctl: No such device
+ioctl: No such device
 
-Mit freundlichen Gr=FC=DFen / Best regards
-Carsten Ehrmann
-T-S092 Industrial Engineering / Test Engineering & Software
+./rtifconfig only show the local loopback but not rteth0
 
-Diehl Metering
-Industriestr. 13
-91522 Ansbach
-Germany
+Dmesg shows that rtnet and the driver are being loaded
 
-Phone: +49 981 1806-252
-E-Mail: carsten.ehrmann@diehl.com<mailto:carsten.ehrmann@diehl.com>
-Web: www.diehl.com/metering<../../../../../metzan/AppData/Local/Temp/note=
-sE05E9E/www.diehl.com/metering>
+[  391.184595]
+               *** RTnet for Xenomai v3.0.5 ***
 
+[  391.184596] RTnet: initialising real-time networking
+[  400.034853] rt_e1000e: Intel(R) PRO/1000 Network Driver - 1.5.1-k-rt
+[  400.034854] rt_e1000e: Copyright(c) 1999 - 2011 Intel Corporation.
 
+But with lspci -knn it shows that the NIC doesn't pick up the real time dri=
+ver:
 
-_________________________________________________________________________=
-________________________________
-Bitte =FCberlegen Sie, ob Sie diese Nachricht wirklich ausdrucken m=FCsse=
-n/ before printing, think about environmental responsibility.
-Diehl Metering GmbH, Industriestra=DFe 13, 91522 Ansbach
-Telefon + 49 981 1806 0, Telefax +49 981 1806 615
-Sitz der Gesellschaft: Ansbach, Registergericht: Ansbach HRB 69
-Gesch=E4ftsf=FChrer: Dr. Christof Bosbach (Sprecher), Thomas Gastner, Jea=
-n-Fran=E7ois Marguet
-Der Inhalt der vorstehenden E-Mail ist nicht rechtlich bindend. Diese E-M=
-ail enth=E4lt vertrauliche und/oder rechtlich gesch=FCtzte Informationen.=
- Informieren Sie uns bitte, wenn Sie diese E-Mail f=E4lschlicherweise erh=
-alten haben. Bitte l=F6schen Sie in diesem Fall die Nachricht. Jede unerl=
-aubte Form der Reproduktion, Bekanntgabe, =C4nderung, Verteilung und/oder=
- Publikation dieser E-Mail ist strengstens untersagt.
-The contents of the above mentioned e-mail is not legally binding. This e=
--mail contains confidential and/or legally protected information. Please =
-inform us if you have received this e-mail by mistake and delete it in su=
-ch a case. Each unauthorized reproduction, disclosure, alteration, distri=
-bution and/or publication of this e-mail is strictly prohibited.
-Informationen zum Datenschutz finden Sie auf unserer Homepage.
-https://www.diehl.com/metering/de/diehl-metering/data-protection
-Information about data protection can be found on our homepage.
-https://www.diehl.com/metering/en/diehl-metering/data-protection
+00:1f.6 Ethernet controller [0200]: Intel Corporation Ethernet Connection I=
+219-LM [8086:156f] (rev 21)
+                Subsystem: Gigabyte Technology Co., Ltd Ethernet Connection=
+ I219-LM [1458:e000]
+                Kernel modules: e1000e
+
+Did I do something wrong or is my I219-LM NIC not supported by RTnet?
+
+Many Thanks
+
+Lennard Kloock
+
