@@ -1,7 +1,8 @@
 From: Jan Kiszka <jan.kiszka@siemens.com>
-Subject: [xenomai-images][PATCH 04/10] Switch Xenomai 3.0 to kernel 4.4
-Date: Mon, 10 Feb 2020 19:17:43 +0100
-Message-Id: <8f2cd06600fede6e403f3cfd560828e9a088ab57.1581358669.git.jan.kiszka@siemens.com>
+Subject: [xenomai-images][PATCH 09/10] linux-xenomai: Update to
+ ipipe-core-4.19.94-cip18-x86-10
+Date: Mon, 10 Feb 2020 19:17:48 +0100
+Message-Id: <ae9090b060b6284f96f423f772c3f98f337657fa.1581358669.git.jan.kiszka@siemens.com>
 In-Reply-To: <cover.1581358669.git.jan.kiszka@siemens.com>
 References: <cover.1581358669.git.jan.kiszka@siemens.com>
 In-Reply-To: <cover.1581358669.git.jan.kiszka@siemens.com>
@@ -18,55 +19,32 @@ To: xenomai@xenomai.org
 
 From: Jan Kiszka <jan.kiszka@siemens.com>
 
-The reason for this is that only 4.4 is still maintained, thus should
-rather be exposed to testing.
-
 Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
 ---
- conf/distro/include/xenomai-version.inc   |  2 +-
- recipes-kernel/linux/linux-xenomai_4.4.bb | 20 ++++++++++++++++++++
- 2 files changed, 21 insertions(+), 1 deletion(-)
- create mode 100644 recipes-kernel/linux/linux-xenomai_4.4.bb
+ recipes-kernel/linux/linux-xenomai_4.19.bb | 5 ++---
+ 1 file changed, 2 insertions(+), 3 deletions(-)
 
-diff --git a/conf/distro/include/xenomai-version.inc b/conf/distro/include/xenomai-version.inc
-index 2696b5c..9bf3087 100644
---- a/conf/distro/include/xenomai-version.inc
-+++ b/conf/distro/include/xenomai-version.inc
-@@ -11,7 +11,7 @@
+diff --git a/recipes-kernel/linux/linux-xenomai_4.19.bb b/recipes-kernel/linux/linux-xenomai_4.19.bb
+index 8623f1b..e0757c2 100644
+--- a/recipes-kernel/linux/linux-xenomai_4.19.bb
++++ b/recipes-kernel/linux/linux-xenomai_4.19.bb
+@@ -12,14 +12,13 @@
+ require recipes-kernel/linux/linux-xenomai.inc
  
- XENOMAI_DEFAULT_KERNEL_VERSION = "4.19%"
- XENOMAI_3_0_VERSION_LIST = "3.0 3.0% 3.0.% 3.0.10"
--XENOMAI_3_0_KERNEL_VERSION = "4.14%"
-+XENOMAI_3_0_KERNEL_VERSION = "4.4%"
- # if PREFERRED_VERSION_xenomai contains any item from XENOMAI_3_0_VERSION_LIST use
- # XENOMAI_3_0_KERNEL_VERSION
- PREFERRED_VERSION_linux-xenomai ?= "${@bb.utils.contains_any('PREFERRED_VERSION_xenomai','${XENOMAI_3_0_VERSION_LIST}','${XENOMAI_3_0_KERNEL_VERSION}','${XENOMAI_DEFAULT_KERNEL_VERSION}',d) }"
-diff --git a/recipes-kernel/linux/linux-xenomai_4.4.bb b/recipes-kernel/linux/linux-xenomai_4.4.bb
-new file mode 100644
-index 0000000..f76e847
---- /dev/null
-+++ b/recipes-kernel/linux/linux-xenomai_4.4.bb
-@@ -0,0 +1,20 @@
-+#
-+# Xenomai Real-Time System
-+#
-+# Copyright (c) Siemens AG, 2018-2020
-+#
-+# Authors:
-+#  Jan Kiszka <jan.kiszka@siemens.com>
-+#
-+# SPDX-License-Identifier: MIT
-+#
-+
-+require recipes-kernel/linux/linux-xenomai.inc
-+
-+SRC_URI_append_amd64 = " git://gitlab.denx.de/Xenomai/ipipe.git;protocol=https;nobranch=1;tag=ipipe-core-4.4.208-cip41-x86-21"
-+PV_amd64 = "4.4.208+"
-+
-+SRC_URI_append_armhf = " git://gitlab.denx.de/Xenomai/ipipe.git;protocol=https;nobranch=1;tag=ipipe-core-4.4.176-arm-10"
-+PV_armhf = "4.4.176+"
-+
-+S = "${WORKDIR}/git"
+ SRC_URI_append_amd64 = " git://gitlab.denx.de/Xenomai/ipipe-x86.git;protocol=https;nobranch=1"
+-SRCREV_amd64 ?= "f83bda3e0785ae2e0ea8ad530bc903d2b420c2c7"
+-PV_amd64 ?= "4.19.66+"
++SRCREV_amd64 ?= "ipipe-core-4.19.94-cip18-x86-10"
++PV_amd64 ?= "4.19.94+"
+ 
+ SRC_URI_append_arm64 = " git://gitlab.denx.de/Xenomai/ipipe-arm64.git;protocol=https;nobranch=1"
+ SRCREV_arm64 ?= "ipipe-core-4.19.55-arm64-4"
+ PV_arm64 ?= "4.19.55+"
+ 
+-
+ SRC_URI_append_armhf = " git://gitlab.denx.de/Xenomai/ipipe-arm.git;protocol=https;nobranch=1"
+ SRCREV_armhf ?= "ipipe-core-4.19.55-arm-5"
+ PV_armhf ?= "4.19.55+"
 -- 
 2.16.4
 
