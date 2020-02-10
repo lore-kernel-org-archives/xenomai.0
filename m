@@ -1,14 +1,11 @@
-Subject: Re: some ftrace events are missed
-References: <5e7d13d1-ee38-b1ee-3392-4bc19ff8cc4a@kylinos.cn>
- <9429d894-9879-8266-5c36-7c566de9bf00@siemens.com>
-From: song <chensong@kylinos.cn>
-Message-ID: <d9cae73e-de46-9682-5b2c-c480dc64207f@kylinos.cn>+C9B4027D7EE3A134
-Date: Mon, 10 Feb 2020 20:48:53 +0800
+From: Carsten EHRMANN <Carsten.Ehrmann@diehl.com>
+Subject: Migrate project from Debian 8 Xenomai 2.x to Debain 9 Xenomai 3.x
+Date: Mon, 10 Feb 2020 12:03:32 +0000
+Message-ID: <23edaf750b0b41ef9a129bbaf2758d9f@RCDC-MAIL09.corp.diehl.com>
+Content-Language: de-DE
 MIME-Version: 1.0
-In-Reply-To: <9429d894-9879-8266-5c36-7c566de9bf00@siemens.com>
-Content-Type: text/plain; charset="utf-8"; format="flowed"
-Content-Transfer-Encoding: 8bit
-Content-Language: en-US
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,69 +14,64 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jan Kiszka <jan.kiszka@siemens.com>, xenomai@xenomai.org
+To: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-I was pretty sure that all events were enabled before testing with "echo 
-1 > events/enable", somehow, the events i cared about were missed.I used 
-trace-cmd as your suggestion, it took effect, i saw what i wanted.
+Hello,
 
-I haven't figured out how different they are, but at least i can 
-continue my work in my hand, many thanks.
 
-BR
+Because of new PC hardware I have to use debain 9 and Xenomai 3. Xenomai =
+is running on the system, I run the testsuite scripts. I found a migratio=
+n document on xenomai.org and changed the includepaths and so on in my so=
+urcecode. But now when I want to compile the code I got this error
+In file included from ./CSRTPosixQue.h:20:0,
+             from ./CSRTTask.h:20,
+             from main.cpp:26:
+/usr/xenomai/include/trank/native/task.h: In function =27int rt_task_noti=
+fy(RT_TASK*, rt_sigset_t)=27:
+/usr/xenomai/include/trank/native/task.h:41:64: error: =27trank_warning=
+=27 was not declared in this scope
+trank_warning(=22in-kernel native API is gone, rebase over RTDM=22);
 
-/Song
+But this =22trank_warning=22 is defined in trank.h which is included
 
-On 2020/2/3 下午3:00, Jan Kiszka wrote:
-> On 02.02.20 13:22, song via Xenomai wrote:
->> hi guys,
->>
->> I'm working on an issue with ftrace events, the call stack is like that:
->>
->> __cobalt_clock_nanosleep
->>      xnthread_suspend
->>          xntimer_start
->>              xnclock_core_ns_to_ticks
->>                  xntimer_enqueue_and_program
->>                      xnclock_program_shot()
->>                          xnclock_core_local_shot
->>                              ipipe_timer_set
->>
->>
->> I tried to enable ftrace event with "-f" in cyclictest,however, i can 
->> only find:
->>
->> cobalt_clock_entry: clock_irq=4
->> cobalt_timer_expire: timer=ffffffc07ffd5800
->> cobalt_clock_exit: clock_irq=4
->> cobalt_timer_start ....
->>
->> event traces like trace_cobalt_clock_nanosleep or 
->> trace_cobalt_thread_suspend are missed, they are all defined in 
->> cobalt_core.h/cobalt_posix.h and visible in 
->> /sys/kernel/debugfs/tracing/events/cobalt-core(cobalt-posix).
->
-> Are those events also enabled when you do the tracing? Try catching 
-> them via "trace-cmd record -e 'cobalt*' if unsure.
->
-> Jan
->
->>
->> Does anyone have the same problem before and i would appreciate it if 
->> you could let me know the way to solve it,many thanks
->>
->> BR
->>
->> Song
->>
->>
->>
->>
->>
->>
->>
->>
+
+Mit freundlichen Gr=FC=DFen / Best regards
+Carsten Ehrmann
+T-S092 Industrial Engineering / Test Engineering & Software
+
+Diehl Metering
+Industriestr. 13
+91522 Ansbach
+Germany
+
+Phone: +49 981 1806-252
+E-Mail: carsten.ehrmann@diehl.com<mailto:carsten.ehrmann@diehl.com>
+Web: www.diehl.com/metering<../../../../../metzan/AppData/Local/Temp/note=
+sE05E9E/www.diehl.com/metering>
 
 
 
-
+_________________________________________________________________________=
+________________________________
+Bitte =FCberlegen Sie, ob Sie diese Nachricht wirklich ausdrucken m=FCsse=
+n/ before printing, think about environmental responsibility.
+Diehl Metering GmbH, Industriestra=DFe 13, 91522 Ansbach
+Telefon + 49 981 1806 0, Telefax +49 981 1806 615
+Sitz der Gesellschaft: Ansbach, Registergericht: Ansbach HRB 69
+Gesch=E4ftsf=FChrer: Dr. Christof Bosbach (Sprecher), Thomas Gastner, Jea=
+n-Fran=E7ois Marguet
+Der Inhalt der vorstehenden E-Mail ist nicht rechtlich bindend. Diese E-M=
+ail enth=E4lt vertrauliche und/oder rechtlich gesch=FCtzte Informationen.=
+ Informieren Sie uns bitte, wenn Sie diese E-Mail f=E4lschlicherweise erh=
+alten haben. Bitte l=F6schen Sie in diesem Fall die Nachricht. Jede unerl=
+aubte Form der Reproduktion, Bekanntgabe, =C4nderung, Verteilung und/oder=
+ Publikation dieser E-Mail ist strengstens untersagt.
+The contents of the above mentioned e-mail is not legally binding. This e=
+-mail contains confidential and/or legally protected information. Please =
+inform us if you have received this e-mail by mistake and delete it in su=
+ch a case. Each unauthorized reproduction, disclosure, alteration, distri=
+bution and/or publication of this e-mail is strictly prohibited.
+Informationen zum Datenschutz finden Sie auf unserer Homepage.
+https://www.diehl.com/metering/de/diehl-metering/data-protection
+Information about data protection can be found on our homepage.
+https://www.diehl.com/metering/en/diehl-metering/data-protection
