@@ -1,13 +1,10 @@
-Subject: Re: 3.1 rt_imx_uart.c regression
-References: <752a846a-bd43-299d-53e7-ee7b7a864a53@freyder.net>
-From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <e22553f3-73da-84fb-b48f-3c443acd4552@siemens.com>
-Date: Mon, 10 Feb 2020 07:53:21 +0100
+Subject: [MAINTENANCE] Downtime on gitlab.denx.de
+From: Wolfgang Denk <wd@denx.de>
 MIME-Version: 1.0
-In-Reply-To: <752a846a-bd43-299d-53e7-ee7b7a864a53@freyder.net>
-Content-Type: text/plain; charset="utf-8"; format="flowed"
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+Content-type: text/plain; charset=UTF-8
+Content-transfer-encoding: 8bit
+Date: Mon, 10 Feb 2020 11:33:46 +0100
+Message-Id: <20200210103346.CCF9D2403FE@gemini.denx.de>
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,105 +13,31 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: steve freyder <steve@freyder.net>, "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: xenomai@xenomai.org
 
-On 10.02.20 02:28, steve freyder via Xenomai wrote:
-> Hello Xenomai group.
-> 
-> 
-> We appear to have a regression in the rt_imx_uart driver in Xenomai 
-> 3.1.  The problem didn't exist in 3.0.7, and I believe it did exist in 
-> 3.0.10.  Between those two I did not try to narrow it down.  I 
-> discovered this when connecting a UART on a 3.1 system to a UART on a 
-> 3.0.7 system, both being IMX6 Dual-Lite SOM's, and the cross-connected 
-> UARTs would not intercommunicate (100% framing errors).  A simple TX/RX 
-> loopback test on either system was successful, but the cross-connect 
-> (like cross-link.c might use) was unsuccessful with a mixed 3.0.7 <--> 
-> 3.1 environment.
-> 
-> 
-> I traced this to the setting (or not setting) of the UCR2_SRST bit in 
-> the rt_imx_uart_set_config() routine.  The IMX6 TRM defines this bit as 
-> SRST_B (B as in 'bar' as in inverted) and so setting this bit means *no 
-> software reset", so not setting it results in a software reset, which 
-> results in leaving the UART clock divisors at default and the resulting 
-> rate is 80mhz.  The user-selected (via ioctl()) baud rate and other 
-> parameters therefore have no effect.
-> 
-> 
-> The patch below fixes this problem.  I hope I have the proper format.
-> 
-> 
-> There may be another "benign" issue with this driver, but I would defer 
-> that to someone more familiar with it.  Specifically, it's with the 
-> routine rt_imx_uart_setup_ufcr(), whose function appears to be 
-> duplicated in rt_imx_uart_set_config().  In the driver init, 
-> rt_imx_uart_setup_ufcr() is called after the call to 
-> rt_imx_uart_set_config(), but in another place it is not called after 
-> the set_config() call.  I think rt_imx_uart_setup_ufcr() should be 
-> removed along with the call to it during initialization but the patch 
-> below does not include that mod.
-> 
-> 
-> Finally, the fact that this made it through testing brings up the test 
-> methodology for UART driver validation as concerns "character timing". 
-> With this kind of bug, simple loopback tests probably pass.  In a short 
-> test program that I built, I had code to read the nanosecond clock 
-> before initiating transmission, and then again after reception 
-> completed, and displaying the delta time.  Using that, the problem 
-> showed itself immediately (the delta ns for transmission of a single 
-> character was between 40K and 100K, much too fast given my 
-> ioctl(SET_CONFIG) had requested 9600 baud).  I wonder if it's worth 
-> adding a similar check to the testing logic.
-> 
-> 
-> Best regards,
-> 
-> Steve
-> 
-> 
-> 
-> ====================================================================================== 
-> 
-> 
-> diff --git a/kernel/drivers/serial/rt_imx_uart.c 
-> b/kernel/drivers/serial/rt_imx_uart.c
-> index 2b27b7d..6894c1c 100644
-> --- a/kernel/drivers/serial/rt_imx_uart.c
-> +++ b/kernel/drivers/serial/rt_imx_uart.c
-> @@ -703,9 +703,9 @@ static int rt_imx_uart_set_config(struct 
-> rt_imx_uart_ctx *ctx,
->                  uint64_t tdiv64;
-> 
->                  if (ctx->config.data_bits == RTSER_8_BITS)
-> -                       ucr2 = UCR2_WS | UCR2_IRTS;
-> +                       ucr2 = UCR2_WS | UCR2_SRST | UCR2_IRTS;
->                  else
-> -                       ucr2 = UCR2_IRTS;
-> +                       ucr2 = UCR2_SRST | UCR2_IRTS;
-> 
+Hello all,
 
-Yep, that got broken in dcba8ed40183.
+our hoster has announced maintenance works on all our machines; this
+also affects the gitlab server and thus the Xenomai git repositories.
 
+The works will be performed between
 
-Could you write a patch in the standard format?
+	Monday,  Feb. 10, 22:00 = 10:00 p. m. CET,
+and
+	Tuesday, Feb. 11, 06:00 = 06:00 a. m. CET.
 
-Subject: brief description
+The downtime can be up to 8 hours.
 
-Commit message explaining the reason (can be simple here, just pointed 
-out the inverse logic of UCR2).
+I apologize for the inconvenience, but we cannot help it.
 
-Signed-off-by: ...
----
-<Patch>
+Best regards,
 
-
-git format-patch does the formatting if you feed in the right content. 
-Thanks!
-
-Jan
+Wolfgang Denk
 
 -- 
-Siemens AG, Corporate Technology, CT RDA IOT SES-DE
-Corporate Competence Center Embedded Linux
+DENX Software Engineering GmbH,      Managing Director: Wolfgang Denk
+HRB 165235 Munich, Office: Kirchenstr.5, D-82194 Groebenzell, Germany
+Phone: (+49)-8142-66989-10 Fax: (+49)-8142-66989-80 Email: wd@denx.de
+Inside every old person is a young person wondering what happened.
+                              - Terry Pratchett, _Moving Pictures_
 
