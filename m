@@ -1,10 +1,14 @@
-Subject: [MAINTENANCE] Downtime on gitlab.denx.de
-From: Wolfgang Denk <wd@denx.de>
+Subject: Re: some ftrace events are missed
+References: <5e7d13d1-ee38-b1ee-3392-4bc19ff8cc4a@kylinos.cn>
+ <9429d894-9879-8266-5c36-7c566de9bf00@siemens.com>
+From: song <chensong@kylinos.cn>
+Message-ID: <d9cae73e-de46-9682-5b2c-c480dc64207f@kylinos.cn>+C9B4027D7EE3A134
+Date: Mon, 10 Feb 2020 20:48:53 +0800
 MIME-Version: 1.0
-Content-type: text/plain; charset=UTF-8
-Content-transfer-encoding: 8bit
-Date: Mon, 10 Feb 2020 11:33:46 +0100
-Message-Id: <20200210103346.CCF9D2403FE@gemini.denx.de>
+In-Reply-To: <9429d894-9879-8266-5c36-7c566de9bf00@siemens.com>
+Content-Type: text/plain; charset="utf-8"; format="flowed"
+Content-Transfer-Encoding: 8bit
+Content-Language: en-US
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -13,31 +17,69 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
+To: Jan Kiszka <jan.kiszka@siemens.com>, xenomai@xenomai.org
 
-Hello all,
+I was pretty sure that all events were enabled before testing with "echo 
+1 > events/enable", somehow, the events i cared about were missed.I used 
+trace-cmd as your suggestion, it took effect, i saw what i wanted.
 
-our hoster has announced maintenance works on all our machines; this
-also affects the gitlab server and thus the Xenomai git repositories.
+I haven't figured out how different they are, but at least i can 
+continue my work in my hand, many thanks.
 
-The works will be performed between
+BR
 
-	Monday,  Feb. 10, 22:00 = 10:00 p. m. CET,
-and
-	Tuesday, Feb. 11, 06:00 = 06:00 a. m. CET.
+/Song
 
-The downtime can be up to 8 hours.
+On 2020/2/3 下午3:00, Jan Kiszka wrote:
+> On 02.02.20 13:22, song via Xenomai wrote:
+>> hi guys,
+>>
+>> I'm working on an issue with ftrace events, the call stack is like that:
+>>
+>> __cobalt_clock_nanosleep
+>>      xnthread_suspend
+>>          xntimer_start
+>>              xnclock_core_ns_to_ticks
+>>                  xntimer_enqueue_and_program
+>>                      xnclock_program_shot()
+>>                          xnclock_core_local_shot
+>>                              ipipe_timer_set
+>>
+>>
+>> I tried to enable ftrace event with "-f" in cyclictest,however, i can 
+>> only find:
+>>
+>> cobalt_clock_entry: clock_irq=4
+>> cobalt_timer_expire: timer=ffffffc07ffd5800
+>> cobalt_clock_exit: clock_irq=4
+>> cobalt_timer_start ....
+>>
+>> event traces like trace_cobalt_clock_nanosleep or 
+>> trace_cobalt_thread_suspend are missed, they are all defined in 
+>> cobalt_core.h/cobalt_posix.h and visible in 
+>> /sys/kernel/debugfs/tracing/events/cobalt-core(cobalt-posix).
+>
+> Are those events also enabled when you do the tracing? Try catching 
+> them via "trace-cmd record -e 'cobalt*' if unsure.
+>
+> Jan
+>
+>>
+>> Does anyone have the same problem before and i would appreciate it if 
+>> you could let me know the way to solve it,many thanks
+>>
+>> BR
+>>
+>> Song
+>>
+>>
+>>
+>>
+>>
+>>
+>>
+>>
 
-I apologize for the inconvenience, but we cannot help it.
 
-Best regards,
 
-Wolfgang Denk
-
--- 
-DENX Software Engineering GmbH,      Managing Director: Wolfgang Denk
-HRB 165235 Munich, Office: Kirchenstr.5, D-82194 Groebenzell, Germany
-Phone: (+49)-8142-66989-10 Fax: (+49)-8142-66989-80 Email: wd@denx.de
-Inside every old person is a young person wondering what happened.
-                              - Terry Pratchett, _Moving Pictures_
 
