@@ -1,14 +1,15 @@
-From: "Kloock, Lennard" <Lennard.Kloock@meg.mee.com>
-Subject: AW: Installing RTnet
-Date: Mon, 10 Feb 2020 14:08:28 +0000
-Message-ID: <253c31947f8147cead1cead259b10797@meg.mee.com>
+Subject: Re: Installing RTnet
 References: <62607370399744fa9b6b6b3fe761f190@meg.mee.com>
  <98102434-0273-fda9-2568-fbe543c8ea48@siemens.com>
-In-Reply-To: <98102434-0273-fda9-2568-fbe543c8ea48@siemens.com>
-Content-Language: de-DE
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+ <253c31947f8147cead1cead259b10797@meg.mee.com>
+From: Jan Kiszka <jan.kiszka@siemens.com>
+Message-ID: <a8c00a6e-24cd-4f85-0c86-4c27c7219a40@siemens.com>
+Date: Mon, 10 Feb 2020 15:13:07 +0100
 MIME-Version: 1.0
+In-Reply-To: <253c31947f8147cead1cead259b10797@meg.mee.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,15 +18,33 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jan Kiszka <jan.kiszka@siemens.com>, "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: "Kloock, Lennard" <Lennard.Kloock@meg.mee.com>, "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-SGV5LA0KDQpUaGFuayB5b3UuDQpEbyB5b3Uga25vdyBpZiB0aGUgSTIxOC1WIGlzIHN1cHBvcnRl
-ZCBvbiBYZW5vbWFpIDMueD8NCg0KTGVubmFyZCBLbG9vY2sNCg0KT24gMTAuMDIuMjAgMTQ6Mjgg
-S2lzemthLCBKYW4gd3JvdGU6IA0KDQo+IC4uLml0IHdvbid0IGhlbHAgYXMgdGhhdCBOSUMgaXMg
-bm90IHN1cHBvcnRlZC4gVGhlcmUgd2FzIHNvbWUgdXBkYXRlIG9mIHRoZSAgZHJpdmVyIHNoYXJl
-ZCBhIHdoaWxlIGFnbywgYnV0IEknbSBhbHNvIG5vdCBzdXJlIGlmIHRoYXQgd291bGQgaGF2ZSBo
-ZWxwZWQgLSBpdCB3YXMgdXNpbmcgYW4gb2xkIGtlcm5lbCBhcyBiYXNlbGluZSwgdG9vLg0KPiAN
-Cj4gSmFuDQo+IA0KPiAtLQ0KPiBTaWVtZW5zIEFHLCBDb3Jwb3JhdGUgVGVjaG5vbG9neSwgQ1Qg
-UkRBIElPVCBTRVMtREUgQ29ycG9yYXRlIENvbXBldGVuY2UgQ2VudGVyIEVtYmVkZGVkIExpbnV4
-DQo=
+On 10.02.20 15:08, Kloock, Lennard wrote:
+> Hey,
+> 
+> Thank you.
+> Do you know if the I218-V is supported on Xenomai 3.x?
+
+A first indication is the presence of the PCI ID (or their symbolic 
+value) in a Xenomai driver. Wait... E1000_DEV_ID_PCH_LPT_I217_V is 
+present, thus worth a try.
+
+Jan
+
+> 
+> Lennard Kloock
+> 
+> On 10.02.20 14:28 Kiszka, Jan wrote:
+> 
+>> ...it won't help as that NIC is not supported. There was some update of the  driver shared a while ago, but I'm also not sure if that would have helped - it was using an old kernel as baseline, too.
+>>
+>> Jan
+>>
+>> --
+>> Siemens AG, Corporate Technology, CT RDA IOT SES-DE Corporate Competence Center Embedded Linux
+
+-- 
+Siemens AG, Corporate Technology, CT RDA IOT SES-DE
+Corporate Competence Center Embedded Linux
 
