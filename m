@@ -1,17 +1,11 @@
-Subject: Re: Migrate project from Debian 8 Xenomai 2.x to Debain 9 Xenomai 3.x
-References: <23edaf750b0b41ef9a129bbaf2758d9f@RCDC-MAIL09.corp.diehl.com>
- <0281e4a5-a2b2-bac5-1e30-ea2bb85f3d8d@siemens.com>
- <373cc865d6c34dda997ac6745bae99cd@RCDC-MAIL09.corp.diehl.com>
- <9cc5a0de-1db9-e46f-7aa8-30e41b1ac926@siemens.com>
- <f92ca27d1ba34380b47c0c451da4f61b@RCDC-MAIL09.corp.diehl.com>
 From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <925e50f4-8395-2a15-3654-73ea1f241f1c@siemens.com>
-Date: Mon, 10 Feb 2020 17:17:51 +0100
+Subject: [PATCH] smokey: Close tmp file at end of sigdebug test
+Message-ID: <76d23c96-50c4-88b1-fe46-6c11e6b0d880@siemens.com>
+Date: Mon, 10 Feb 2020 18:52:19 +0100
 MIME-Version: 1.0
-In-Reply-To: <f92ca27d1ba34380b47c0c451da4f61b@RCDC-MAIL09.corp.diehl.com>
-Content-Type: text/plain; charset="utf-8"; format="flowed"
+Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -20,26 +14,34 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Carsten EHRMANN <Carsten.Ehrmann@diehl.com>, "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Xenomai <xenomai@xenomai.org>
 
-On 10.02.20 16:27, Carsten EHRMANN wrote:
-> Hi Jan,
-> 
-> I made a simple reproduction example (see attached 4 files).
-> I got this error again:
-> 
-> In file included from main.cpp:28:0:
-> /usr/xenomai/include/trank/native/task.h: In function ‘int rt_task_notify(RT_TASK*, rt_sigset_t)’:
-> /usr/xenomai/include/trank/native/task.h:41:64: error: ‘trank_warning’ was not declared in this scope
->    trank_warning("in-kernel native API is gone, rebase over RTDM");
-> 
+From: Jan Kiszka <jan.kiszka@siemens.com>
 
-Your makefile is incomplete, but this works fine here with Xenomai 3.1 
-(I'm sure it does equally well with 3.0.x):
+The rtdm test relies on successively free file descriptors which is
+violated by this test when the run after each other.
 
-g++ -o main main.cpp $(xeno-config --skin=native --cflags --ldflags)
+Reported-by: Gylstorff Quirin <quirin.gylstorff@siemens.com>
+Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
+---
+ testsuite/smokey/sigdebug/sigdebug.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-Jan
+diff --git a/testsuite/smokey/sigdebug/sigdebug.c b/testsuite/smokey/sigdebug/sigdebug.c
+index 15f9e4dae3..9cb5162c14 100644
+--- a/testsuite/smokey/sigdebug/sigdebug.c
++++ b/testsuite/smokey/sigdebug/sigdebug.c
+@@ -292,6 +292,7 @@ static int run_sigdebug(struct smokey_test *t, int argc, char *const argv[])
+ 	err = sem_destroy(&send_signal);
+ 	check_no_error("sem_destroy", err);
+ 
++	close(tmp_fd);
+ 	if (wd) {
+ 		fprintf(wd, "%d", wdog_delay);
+ 		fclose(wd);
+-- 
+2.16.4
+
 
 -- 
 Siemens AG, Corporate Technology, CT RDA IOT SES-DE
