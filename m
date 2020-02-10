@@ -1,15 +1,13 @@
-From: <dietmar.schindler@manrolandgoss.com>
-Subject: RE: What is the highest value returned by rt_timer_read?
-Date: Mon, 10 Feb 2020 13:26:15 +0000
-Message-ID: <29cf350bf30045f3bf3976b7e622b12d@AUSMXMBX04.mrws.biz>
-References: <CAKP50V4e5Np-wFPzOLPHiVtKhwxnLreg18zTZRYs6-pTTqTN4Q@mail.gmail.com>
- <8e2ed529-3c99-3f3b-bb29-430645870df2@siemens.com>
- <CAKP50V5MBY2KHZWFVzEqNa3x6Lo2+Lhhfu6ve-9z0GG_60AnVg@mail.gmail.com>
-In-Reply-To: <CAKP50V5MBY2KHZWFVzEqNa3x6Lo2+Lhhfu6ve-9z0GG_60AnVg@mail.gmail.com>
-Content-Language: de-DE
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+Subject: Re: Installing RTnet
+References: <62607370399744fa9b6b6b3fe761f190@meg.mee.com>
+From: Jan Kiszka <jan.kiszka@siemens.com>
+Message-ID: <98102434-0273-fda9-2568-fbe543c8ea48@siemens.com>
+Date: Mon, 10 Feb 2020 14:27:52 +0100
 MIME-Version: 1.0
+In-Reply-To: <62607370399744fa9b6b6b3fe761f190@meg.mee.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -18,37 +16,68 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
+To: "Kloock, Lennard" <Lennard.Kloock@meg.mee.com>, "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-PiBGcm9tOiBYZW5vbWFpIDx4ZW5vbWFpLWJvdW5jZXNAeGVub21haS5vcmc+IE9uIEJlaGFsZiBP
-ZiBNYXRoZXVzIExlaXR6a2UgdmlhIFhlbm9tYWkNCj4gU2VudDogTW9uZGF5LCBGZWJydWFyeSAz
-LCAyMDIwIDc6NDIgUE0NCj4NCj4g4oCmDQo+IEkgd2FudCB0byBrbm93IHRoYXQgdmFsdWUgYmVj
-YXVzZSBpdCBpcyBuZWVkZWQgdG8gY29ycmVjdGx5IGNhbGN1bGF0ZXMNCj4gZGlmZmVyZW5jZSBv
-ZiB0aW1lIHdoZW4gb2NjdXJzIGNvdW50aW5nIG92ZXJmbG93Lg0KPiBGb3IgZXhhbXBsZToNCj4N
-Cj4gLi4uDQo+IG5vdyA9IHJ0X3RpbWVyX3JlYWQoKTsNCj4gaWYobm93ID49IGJlZm9yZSkNCj4g
-ew0KPiAgICAgIGRpZmYgPSBub3cgLSBiZWZvcmU7DQo+IH0NCj4gZWxzZQ0KPiB7IC8vIGluIGNh
-c2Ugb2YgY291bnRpbmcgb3ZlcmZsb3cNCj4gICAgICBkaWZmID0gTUFYX1RJTUUgLSBub3cgKyAg
-YmVmb3JlOw0KPiB9DQo+IGJlZm9yZSA9IG5vdzsNCj4gLi4uDQoNCkZvciBkaWZmIHRvIGJlIGNv
-cnJlY3QsIGl0IHdvdWxkIGhhdmUgdG8gYmUNCg0KICAgICBkaWZmID0gTUFYX1RJTUUrMSAtIG5v
-dyArICBiZWZvcmU7DQoNCm9yIHNpbWlsYXIuDQotLQ0KUmVnYXJkcywNCkRpZXRtYXIgU2NoaW5k
-bGVyDQpfX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fXw0KbWFucm9sYW5kIEdvc3Mgd2Vi
-IHN5c3RlbXMgR21iSCB8IE1hbmFnaW5nIERpcmVjdG9yOiBGcmFueiBLcmllY2hiYXVtDQpSZWdp
-c3RlcmVkIE9mZmljZTogQXVnc2J1cmcgfCBUcmFkZSBSZWdpc3RlcjogQUcgQXVnc2J1cmcgfCBI
-UkItTm8uOiAzMjYwOSB8IFZBVDogREU4MTU3NjQ4NTcNCg0KQ29uZmlkZW50aWFsaXR5IG5vdGU6
-DQpUaGlzIG1lc3NhZ2UgYW5kIGFueSBhdHRhY2hlZCBkb2N1bWVudHMgbWF5IGNvbnRhaW4gY29u
-ZmlkZW50aWFsIG9yIHByb3ByaWV0YXJ5IGluZm9ybWF0aW9uIG9mIG1hbnJvbGFuZHxHb3NzLiBU
-aGVzZSBtYXRlcmlhbHMgYXJlIGludGVuZGVkIG9ubHkgZm9yIHRoZSB1c2Ugb2YgdGhlIGludGVu
-ZGVkIHJlY2lwaWVudC4gSWYgeW91IGFyZSBub3QgdGhlIGludGVuZGVkIHJlY2lwaWVudCBvZiB0
-aGlzIHRyYW5zbWlzc2lvbiwgeW91IGFyZSBoZXJlYnkgbm90aWZpZWQgdGhhdCBhbnkgZGlzdHJp
-YnV0aW9uLCBkaXNjbG9zdXJlLCBwcmludGluZywgY29weWluZywgc3RvcmFnZSwgbW9kaWZpY2F0
-aW9uIG9yIHRoZSB0YWtpbmcgb2YgYW55IGFjdGlvbiBpbiByZWxpYW5jZSB1cG9uIHRoaXMgdHJh
-bnNtaXNzaW9uIGlzIHN0cmljdGx5IHByb2hpYml0ZWQuIERlbGl2ZXJ5IG9mIHRoaXMgbWVzc2Fn
-ZSB0byBhbnkgcGVyc29uIG90aGVyIHRoYW4gdGhlIGludGVuZGVkIHJlY2lwaWVudCBzaGFsbCBu
-b3QgY29tcHJvbWlzZSBvciB3YWl2ZSBzdWNoIGNvbmZpZGVudGlhbGl0eSwgcHJpdmlsZWdlIG9y
-IGV4ZW1wdGlvbiBmcm9tIGRpc2Nsb3N1cmUgYXMgdG8gdGhpcyBjb21tdW5pY2F0aW9uLiBJZiB5
-b3UgaGF2ZSByZWNlaXZlZCB0aGlzIGNvbW11bmljYXRpb24gaW4gZXJyb3IsIHBsZWFzZSBpbW1l
-ZGlhdGVseSBub3RpZnkgdGhlIHNlbmRlciBhbmQgZGVsZXRlIHRoZSBtZXNzYWdlIGZyb20geW91
-ciBzeXN0ZW0uIEFsbCBsaWFiaWxpdHkgZm9yIHZpcnVzZXMgaXMgZXhjbHVkZWQgdG8gdGhlIGZ1
-bGxlc3QgZXh0ZW50IHBlcm1pdHRlZCBieSBsYXcuDQpfX19fX19fX19fX19fX19fX19fX19fX19f
-X19fX19fXw0K
+On 10.02.20 14:10, Kloock, Lennard via Xenomai wrote:
+> Hello all,
+> 
+> i have succesfully installed Xenomai 3.0.5 with linux 4.9.90, but I am having trouble installing RTnet on an i218-lm.
+
+I would always recommend using the latest version when trying something 
+new, both for Xenomai and the kernel. But in this case...
+
+> 
+> I followed these steps:
+> 1) ifconfig eth0 down
+> 2) rmmod e1000e
+> 3) configured /usr/xenomai/etc/rtnet.conf according to https://gitlab.denx.de/Xenomai/xenomai/-/wikis/RTnet
+> 4) modprobe rtpacket
+> 5) modprobe rtnet
+> 6) modprobe rt_e1000e
+> 
+> But now if I try to run rtnet with  ./rtnet start I get the following errors:
+> 
+> ioctl: No such device
+> ioctl: No such device
+> ioctl: No such device
+> ioctl: No such device
+> ioctl (add): No such device
+> ioctl (add): No such device
+> ioctl (add): No such device
+> ioctl (add): No such device
+> vnic0: ERROR while getting interface flags: No such device
+> SIOCSIFADDR: No such device
+> vnic0: ERROR while getting interface flags: No such device
+> SIOCSIFNETMASK: No such device
+> Waiting for all slaves...ioctl: No such device
+> ioctl: No such device
+> 
+> ./rtifconfig only show the local loopback but not rteth0
+> 
+> Dmesg shows that rtnet and the driver are being loaded
+> 
+> [  391.184595]
+>                 *** RTnet for Xenomai v3.0.5 ***
+> 
+> [  391.184596] RTnet: initialising real-time networking
+> [  400.034853] rt_e1000e: Intel(R) PRO/1000 Network Driver - 1.5.1-k-rt
+> [  400.034854] rt_e1000e: Copyright(c) 1999 - 2011 Intel Corporation.
+> 
+> But with lspci -knn it shows that the NIC doesn't pick up the real time driver:
+> 
+> 00:1f.6 Ethernet controller [0200]: Intel Corporation Ethernet Connection I219-LM [8086:156f] (rev 21)
+>                  Subsystem: Gigabyte Technology Co., Ltd Ethernet Connection I219-LM [1458:e000]
+>                  Kernel modules: e1000e
+> 
+> Did I do something wrong or is my I219-LM NIC not supported by RTnet?
+
+...it won't help as that NIC is not supported. There was some update of 
+the  driver shared a while ago, but I'm also not sure if that would have 
+helped - it was using an old kernel as baseline, too.
+
+Jan
+
+-- 
+Siemens AG, Corporate Technology, CT RDA IOT SES-DE
+Corporate Competence Center Embedded Linux
 
