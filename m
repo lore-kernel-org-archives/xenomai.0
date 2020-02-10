@@ -1,7 +1,8 @@
 From: Jan Kiszka <jan.kiszka@siemens.com>
-Subject: [xenomai-images][PATCH 05/10] Provide Xenomai 3.0.x target
-Date: Mon, 10 Feb 2020 19:17:44 +0100
-Message-Id: <426b390b64b0fbeb6fea791c50ee77ff5e2f09d2.1581358669.git.jan.kiszka@siemens.com>
+Subject: [xenomai-images][PATCH 08/10] recipes-kernel/linux: add exception
+ handling
+Date: Mon, 10 Feb 2020 19:17:47 +0100
+Message-Id: <95577874f89c7063bad877eaec2907f06bd34e8e.1581358669.git.jan.kiszka@siemens.com>
 In-Reply-To: <cover.1581358669.git.jan.kiszka@siemens.com>
 References: <cover.1581358669.git.jan.kiszka@siemens.com>
 In-Reply-To: <cover.1581358669.git.jan.kiszka@siemens.com>
@@ -16,67 +17,37 @@ List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: xenomai@xenomai.org
 
-From: Jan Kiszka <jan.kiszka@siemens.com>
+From: Quirin Gylstorff <quirin.gylstorff@siemens.com>
 
-This allows to build the latest revision from stable/v3.0.x, primarily
-for testing purposes.
+If SRCREV is not available for given DISTRO_ARCH and kernel version
+get_srcrev raise a FetchError exception. Avoid a build error be
+catching the exception.
 
+[Jan: style fixing]
 Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
 ---
- opt-xenomai-3.0.x.yml                           | 17 +++++++++++++++++
- recipes-xenomai/xenomai/xenomai_stable-3.0.x.bb | 19 +++++++++++++++++++
- 2 files changed, 36 insertions(+)
- create mode 100644 opt-xenomai-3.0.x.yml
- create mode 100644 recipes-xenomai/xenomai/xenomai_stable-3.0.x.bb
+ recipes-kernel/linux/linux-xenomai.inc | 8 +++++++-
+ 1 file changed, 7 insertions(+), 1 deletion(-)
 
-diff --git a/opt-xenomai-3.0.x.yml b/opt-xenomai-3.0.x.yml
-new file mode 100644
-index 0000000..591f3fc
---- /dev/null
-+++ b/opt-xenomai-3.0.x.yml
-@@ -0,0 +1,17 @@
-+#
-+# Xenomai Real-Time System
-+#
-+# Copyright (c) Siemens AG, 2020
-+#
-+# Authors:
-+#  Jan Kiszka <jan.kiszka@siemens.com>
-+#
-+# SPDX-License-Identifier: MIT
-+#
+diff --git a/recipes-kernel/linux/linux-xenomai.inc b/recipes-kernel/linux/linux-xenomai.inc
+index baa353b..ad3629b 100644
+--- a/recipes-kernel/linux/linux-xenomai.inc
++++ b/recipes-kernel/linux/linux-xenomai.inc
+@@ -18,7 +18,13 @@ SRC_URI += "file://${KERNEL_DEFCONFIG}"
+ DEPENDS += "xenomai-kernel-source"
+ KBUILD_DEPENDS += "xenomai-kernel-source"
+ 
+-LINUX_COMMIT="${@bb.fetch2.get_srcrev(d).strip('AUTOINC+')}"
++def get_commit(d):
++    try:
++        return bb.fetch2.get_srcrev(d).strip('AUTOINC+')
++    except bb.fetch2.FetchError:
++        return ""
 +
-+header:
-+  version: 8
-+
-+local_conf_header:
-+  xenomai-3-0-x: |
-+    PREFERRED_VERSION_xenomai = "stable-3.0.x"
-diff --git a/recipes-xenomai/xenomai/xenomai_stable-3.0.x.bb b/recipes-xenomai/xenomai/xenomai_stable-3.0.x.bb
-new file mode 100644
-index 0000000..34cb4b1
---- /dev/null
-+++ b/recipes-xenomai/xenomai/xenomai_stable-3.0.x.bb
-@@ -0,0 +1,19 @@
-+#
-+# Xenomai Real-Time System
-+#
-+# Copyright (c) Siemens AG, 2018-2020
-+#
-+# Authors:
-+#  Quirin Gylstorff <quirin.gylstorff@siemens.com>
-+#  Jan Kiszka <jan.kiszka@siemens.com>
-+#
-+# SPDX-License-Identifier: MIT
-+#
-+
-+require xenomai.inc
-+
-+SRC_URI = " \
-+    git://gitlab.denx.de/Xenomai/xenomai.git;protocol=https;branch=stable/v3.0.x"
-+SRCREV = "${AUTOREV}"
-+
-+S = "${WORKDIR}/git"
++LINUX_COMMIT ?= "${@get_commit(d)}"
+ 
+ dpkg_runbuild_prepend() {
+ 	case ${DISTRO_ARCH} in
 -- 
 2.16.4
 
