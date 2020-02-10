@@ -1,8 +1,7 @@
 From: Jan Kiszka <jan.kiszka@siemens.com>
-Subject: [xenomai-images][PATCH 08/10] recipes-kernel/linux: add exception
- handling
-Date: Mon, 10 Feb 2020 19:17:47 +0100
-Message-Id: <95577874f89c7063bad877eaec2907f06bd34e8e.1581358669.git.jan.kiszka@siemens.com>
+Subject: [xenomai-images][PATCH 02/10] xenomai: Update to 3.0.10
+Date: Mon, 10 Feb 2020 19:17:41 +0100
+Message-Id: <fa24d7c349e4f9b589626e48ff3d754be60a0a4e.1581358669.git.jan.kiszka@siemens.com>
 In-Reply-To: <cover.1581358669.git.jan.kiszka@siemens.com>
 References: <cover.1581358669.git.jan.kiszka@siemens.com>
 In-Reply-To: <cover.1581358669.git.jan.kiszka@siemens.com>
@@ -17,37 +16,32 @@ List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: xenomai@xenomai.org
 
-From: Quirin Gylstorff <quirin.gylstorff@siemens.com>
+From: Jan Kiszka <jan.kiszka@siemens.com>
 
-If SRCREV is not available for given DISTRO_ARCH and kernel version
-get_srcrev raise a FetchError exception. Avoid a build error be
-catching the exception.
-
-[Jan: style fixing]
 Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
 ---
- recipes-kernel/linux/linux-xenomai.inc | 8 +++++++-
- 1 file changed, 7 insertions(+), 1 deletion(-)
+ conf/distro/include/xenomai-version.inc                         | 2 +-
+ recipes-xenomai/xenomai/{xenomai_3.0.9.bb => xenomai_3.0.10.bb} | 0
+ 2 files changed, 1 insertion(+), 1 deletion(-)
+ rename recipes-xenomai/xenomai/{xenomai_3.0.9.bb => xenomai_3.0.10.bb} (100%)
 
-diff --git a/recipes-kernel/linux/linux-xenomai.inc b/recipes-kernel/linux/linux-xenomai.inc
-index baa353b..ad3629b 100644
---- a/recipes-kernel/linux/linux-xenomai.inc
-+++ b/recipes-kernel/linux/linux-xenomai.inc
-@@ -18,7 +18,13 @@ SRC_URI += "file://${KERNEL_DEFCONFIG}"
- DEPENDS += "xenomai-kernel-source"
- KBUILD_DEPENDS += "xenomai-kernel-source"
+diff --git a/conf/distro/include/xenomai-version.inc b/conf/distro/include/xenomai-version.inc
+index 524ca39..286d3a7 100644
+--- a/conf/distro/include/xenomai-version.inc
++++ b/conf/distro/include/xenomai-version.inc
+@@ -10,7 +10,7 @@
+ #
  
--LINUX_COMMIT="${@bb.fetch2.get_srcrev(d).strip('AUTOINC+')}"
-+def get_commit(d):
-+    try:
-+        return bb.fetch2.get_srcrev(d).strip('AUTOINC+')
-+    except bb.fetch2.FetchError:
-+        return ""
-+
-+LINUX_COMMIT ?= "${@get_commit(d)}"
- 
- dpkg_runbuild_prepend() {
- 	case ${DISTRO_ARCH} in
+ XENOMAI_NEXT_KERNEL_VERSION = "4.19%"
+-XENOMAI_STABLE_VERSION_LIST = "stable 3.0 3.0% 3.0.% 3.0.9"
++XENOMAI_STABLE_VERSION_LIST = "stable 3.0 3.0% 3.0.% 3.0.10"
+ XENOMAI_STABLE_KERNEL_VERSION = "4.14%"
+ # if PREFERRED_VERSION_xenomai contains any item from XENOMAI_STABLE_VERSION_LIST use
+ # XENOMAI_STABLE_KERNEL_VERSION
+diff --git a/recipes-xenomai/xenomai/xenomai_3.0.9.bb b/recipes-xenomai/xenomai/xenomai_3.0.10.bb
+similarity index 100%
+rename from recipes-xenomai/xenomai/xenomai_3.0.9.bb
+rename to recipes-xenomai/xenomai/xenomai_3.0.10.bb
 -- 
 2.16.4
 
