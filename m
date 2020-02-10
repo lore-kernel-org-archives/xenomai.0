@@ -1,10 +1,8 @@
-Subject: Re: [PATCH 1/1] Restore proper operation of ioctl(SET_CONFIG)
-References: <1581360882-8724-1-git-send-email-steve@freyder.net>
 From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <75ff8160-5a37-3708-37e4-2a634dae3fb3@siemens.com>
-Date: Mon, 10 Feb 2020 19:56:53 +0100
+Subject: Towards Xenomai on Dovetail
+Message-ID: <97687b86-9c39-e808-d49c-04b0178d8c31@siemens.com>
+Date: Mon, 10 Feb 2020 19:57:19 +0100
 MIME-Version: 1.0
-In-Reply-To: <1581360882-8724-1-git-send-email-steve@freyder.net>
 Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -16,37 +14,20 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Stephen Freyder <steve@freyder.net>, xenomai@xenomai.org
+To: Philippe Gerum <rpm@xenomai.org>
+Cc: Xenomai <xenomai@xenomai.org>
 
-On 10.02.20 19:54, Stephen Freyder via Xenomai wrote:
-> Disable software reset by setting SRST_B=1 when writing to UCR2 in
-> rt_imx_uart_set_config.
-> 
-> Signed-off-by: Stephen Freyder <steve@freyder.net>
-> ---
->   kernel/drivers/serial/rt_imx_uart.c | 4 ++--
->   1 file changed, 2 insertions(+), 2 deletions(-)
-> 
-> diff --git a/kernel/drivers/serial/rt_imx_uart.c b/kernel/drivers/serial/rt_imx_uart.c
-> index 2b27b7d..6894c1c 100644
-> --- a/kernel/drivers/serial/rt_imx_uart.c
-> +++ b/kernel/drivers/serial/rt_imx_uart.c
-> @@ -703,9 +703,9 @@ static int rt_imx_uart_set_config(struct rt_imx_uart_ctx *ctx,
->   		uint64_t tdiv64;
->   
->   		if (ctx->config.data_bits == RTSER_8_BITS)
-> -			ucr2 = UCR2_WS | UCR2_IRTS;
-> +			ucr2 = UCR2_WS | UCR2_SRST | UCR2_IRTS;
->   		else
-> -			ucr2 = UCR2_IRTS;
-> +			ucr2 = UCR2_SRST | UCR2_IRTS;
->   
->   		if (ctx->config.handshake == RTSER_RTSCTS_HAND) {
->   			if (port->have_rtscts) {
-> 
+Hi Philippe,
 
-Thanks, applied.
+could you give a rough overview what areas would be just mapping API 
+calls, what would be more different and what is simply missing in 
+Dovetail in order to place Xenomai on top of it?
 
+BTW, something like a folded Dovetail patch queue does not exist yet, 
+does it? Would it make sense to create something like that, or is it 
+still too early?
+
+Thanks,
 Jan
 
 -- 
