@@ -1,13 +1,12 @@
-From: Lange Norbert <norbert.lange@andritz.com>
-Subject: RE: Installing RTnet
-Date: Tue, 11 Feb 2020 09:45:53 +0000
-Message-ID: <DB8PR05MB59156F2BFC556A1F6C5E3031F6180@DB8PR05MB5915.eurprd05.prod.outlook.com>
-References: <62607370399744fa9b6b6b3fe761f190@meg.mee.com>
+Date: Tue, 11 Feb 2020 17:59:37 +0100 (CET)
+From: g.strobbe@telenet.be
+Message-ID: <2127311423.64174230.1581440377143.JavaMail.zimbra@telenet.be>
 In-Reply-To: <62607370399744fa9b6b6b3fe761f190@meg.mee.com>
-Content-Language: en-US
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+References: <62607370399744fa9b6b6b3fe761f190@meg.mee.com>
+Subject: Re: Installing RTnet
 MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 7bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,69 +15,84 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "Kloock, Lennard" <Lennard.Kloock@meg.mee.com>, "Xenomai
- (xenomai@xenomai.org)" <xenomai@xenomai.org>
+To: "Kloock, Lennard" <Lennard.Kloock@meg.mee.com>
+Cc: xenomai <xenomai@xenomai.org>
 
-DQoNCj4gLS0tLS1PcmlnaW5hbCBNZXNzYWdlLS0tLS0NCj4gRnJvbTogWGVub21haSA8eGVub21h
-aS1ib3VuY2VzQHhlbm9tYWkub3JnPiBPbiBCZWhhbGYgT2YgS2xvb2NrLA0KPiBMZW5uYXJkIHZp
-YSBYZW5vbWFpDQo+IFNlbnQ6IE1vbnRhZywgMTAuIEZlYnJ1YXIgMjAyMCAxNDoxMQ0KPiBUbzog
-eGVub21haUB4ZW5vbWFpLm9yZw0KPiBTdWJqZWN0OiBJbnN0YWxsaW5nIFJUbmV0DQo+DQo+IE5P
-Ti1BTkRSSVRaIFNPVVJDRTogQkUgQ0FVVElPVVMgV0lUSCBDT05URU5ULCBMSU5LUyBPUg0KPiBB
-VFRBQ0hNRU5UUy4NCj4NCj4NCj4gSGVsbG8gYWxsLA0KPg0KPiBpIGhhdmUgc3VjY2VzZnVsbHkg
-aW5zdGFsbGVkIFhlbm9tYWkgMy4wLjUgd2l0aCBsaW51eCA0LjkuOTAsIGJ1dCBJIGFtIGhhdmlu
-Zw0KPiB0cm91YmxlIGluc3RhbGxpbmcgUlRuZXQgb24gYW4gaTIxOC1sbS4NCj4NCj4gSSBmb2xs
-b3dlZCB0aGVzZSBzdGVwczoNCj4gMSkgaWZjb25maWcgZXRoMCBkb3duDQo+IDIpIHJtbW9kIGUx
-MDAwZQ0KPiAzKSBjb25maWd1cmVkIC91c3IveGVub21haS9ldGMvcnRuZXQuY29uZiBhY2NvcmRp
-bmcgdG8NCj4gaHR0cHM6Ly9naXRsYWIuZGVueC5kZS9YZW5vbWFpL3hlbm9tYWkvLS93aWtpcy9S
-VG5ldA0KPiA0KSBtb2Rwcm9iZSBydHBhY2tldA0KPiA1KSBtb2Rwcm9iZSBydG5ldA0KPiA2KSBt
-b2Rwcm9iZSBydF9lMTAwMGUNCj4NCj4gQnV0IG5vdyBpZiBJIHRyeSB0byBydW4gcnRuZXQgd2l0
-aCAgLi9ydG5ldCBzdGFydCBJIGdldCB0aGUgZm9sbG93aW5nIGVycm9yczoNCj4NCj4gaW9jdGw6
-IE5vIHN1Y2ggZGV2aWNlDQo+IGlvY3RsOiBObyBzdWNoIGRldmljZQ0KPiBpb2N0bDogTm8gc3Vj
-aCBkZXZpY2UNCj4gaW9jdGw6IE5vIHN1Y2ggZGV2aWNlDQo+IGlvY3RsIChhZGQpOiBObyBzdWNo
-IGRldmljZQ0KPiBpb2N0bCAoYWRkKTogTm8gc3VjaCBkZXZpY2UNCj4gaW9jdGwgKGFkZCk6IE5v
-IHN1Y2ggZGV2aWNlDQo+IGlvY3RsIChhZGQpOiBObyBzdWNoIGRldmljZQ0KPiB2bmljMDogRVJS
-T1Igd2hpbGUgZ2V0dGluZyBpbnRlcmZhY2UgZmxhZ3M6IE5vIHN1Y2ggZGV2aWNlDQo+IFNJT0NT
-SUZBRERSOiBObyBzdWNoIGRldmljZQ0KPiB2bmljMDogRVJST1Igd2hpbGUgZ2V0dGluZyBpbnRl
-cmZhY2UgZmxhZ3M6IE5vIHN1Y2ggZGV2aWNlDQo+IFNJT0NTSUZORVRNQVNLOiBObyBzdWNoIGRl
-dmljZQ0KPiBXYWl0aW5nIGZvciBhbGwgc2xhdmVzLi4uaW9jdGw6IE5vIHN1Y2ggZGV2aWNlDQo+
-IGlvY3RsOiBObyBzdWNoIGRldmljZQ0KPg0KPiAuL3J0aWZjb25maWcgb25seSBzaG93IHRoZSBs
-b2NhbCBsb29wYmFjayBidXQgbm90IHJ0ZXRoMA0KPg0KPiBEbWVzZyBzaG93cyB0aGF0IHJ0bmV0
-IGFuZCB0aGUgZHJpdmVyIGFyZSBiZWluZyBsb2FkZWQNCj4NCj4gWyAgMzkxLjE4NDU5NV0NCj4g
-ICAgICAgICAgICAgICAgKioqIFJUbmV0IGZvciBYZW5vbWFpIHYzLjAuNSAqKioNCj4NCj4gWyAg
-MzkxLjE4NDU5Nl0gUlRuZXQ6IGluaXRpYWxpc2luZyByZWFsLXRpbWUgbmV0d29ya2luZyBbICA0
-MDAuMDM0ODUzXQ0KPiBydF9lMTAwMGU6IEludGVsKFIpIFBSTy8xMDAwIE5ldHdvcmsgRHJpdmVy
-IC0gMS41LjEtay1ydCBbICA0MDAuMDM0ODU0XQ0KPiBydF9lMTAwMGU6IENvcHlyaWdodChjKSAx
-OTk5IC0gMjAxMSBJbnRlbCBDb3Jwb3JhdGlvbi4NCj4NCj4gQnV0IHdpdGggbHNwY2kgLWtubiBp
-dCBzaG93cyB0aGF0IHRoZSBOSUMgZG9lc24ndCBwaWNrIHVwIHRoZSByZWFsIHRpbWUgZHJpdmVy
-Og0KPg0KPiAwMDoxZi42IEV0aGVybmV0IGNvbnRyb2xsZXIgWzAyMDBdOiBJbnRlbCBDb3Jwb3Jh
-dGlvbiBFdGhlcm5ldCBDb25uZWN0aW9uDQo+IEkyMTktTE0gWzgwODY6MTU2Zl0gKHJldiAyMSkN
-Cj4gICAgICAgICAgICAgICAgIFN1YnN5c3RlbTogR2lnYWJ5dGUgVGVjaG5vbG9neSBDby4sIEx0
-ZCBFdGhlcm5ldCBDb25uZWN0aW9uIEkyMTktDQo+IExNIFsxNDU4OmUwMDBdDQo+ICAgICAgICAg
-ICAgICAgICBLZXJuZWwgbW9kdWxlczogZTEwMDBlDQo+DQo+IERpZCBJIGRvIHNvbWV0aGluZyB3
-cm9uZyBvciBpcyBteSBJMjE5LUxNIE5JQyBub3Qgc3VwcG9ydGVkIGJ5IFJUbmV0Pw0KDQpDYW50
-IHRlbGwgaWYgeW91ciBkZXZpY2UgaXMgc3VwcG9ydGVkLCBidXQgcnRuZXQgd2lsbCBuZXZlciAq
-cmVwbGFjZSogYSBsaW51eCBkcml2ZXIgYXV0b21hdGljYWxseSwNCnlvdSBuZWVkIHRvIG1ha2Ug
-c3VyZSB0aGUgaGFyZHdhcmUgaXMgbm90IGJvdW5kIHRvIGEgZHJpdmVyLCBvciBtYW51YWxseSB1
-bi9iaW5kDQp0byB0aGUgcnRuZXQgZHJpdmVyLg0KDQojIGtpY2sgb3V0IGtlcm5lbCBtb2R1bGVz
-DQptb2Rwcm9iZSAtciBlMTAwMGUNCm1vZHByb2JlIHJ0bmV0DQptb2Rwcm9iZSBydF9lMTAwMGUN
-Cg0KDQojIG1hbnVhbGwgcmViaW5kLCBsb29rIGluIHRoIGUxMDAwZSBmb2xkZXIgZm9yIHRoZSBj
-b3JyZWN0IG5hbWUNCmVjaG8gIjAwOjFmLjYiID4gL3N5cy9idXMvcGNpL2RyaXZlcnMvZTEwMDBl
-L3VuYmluZA0KZWNobyAiMDA6MWYuNiIgPiAvc3lzL2J1cy9wY2kvZHJpdmVycy9ydF9lMTAwMGUv
-YmluZA0KDQpOb3JiZXJ0DQoNCl9fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fDQoNClRo
-aXMgbWVzc2FnZSBhbmQgYW55IGF0dGFjaG1lbnRzIGFyZSBzb2xlbHkgZm9yIHRoZSB1c2Ugb2Yg
-dGhlIGludGVuZGVkIHJlY2lwaWVudHMuIFRoZXkgbWF5IGNvbnRhaW4gcHJpdmlsZWdlZCBhbmQv
-b3IgY29uZmlkZW50aWFsIGluZm9ybWF0aW9uIG9yIG90aGVyIGluZm9ybWF0aW9uIHByb3RlY3Rl
-ZCBmcm9tIGRpc2Nsb3N1cmUuIElmIHlvdSBhcmUgbm90IGFuIGludGVuZGVkIHJlY2lwaWVudCwg
-eW91IGFyZSBoZXJlYnkgbm90aWZpZWQgdGhhdCB5b3UgcmVjZWl2ZWQgdGhpcyBlbWFpbCBpbiBl
-cnJvciBhbmQgdGhhdCBhbnkgcmV2aWV3LCBkaXNzZW1pbmF0aW9uLCBkaXN0cmlidXRpb24gb3Ig
-Y29weWluZyBvZiB0aGlzIGVtYWlsIGFuZCBhbnkgYXR0YWNobWVudCBpcyBzdHJpY3RseSBwcm9o
-aWJpdGVkLiBJZiB5b3UgaGF2ZSByZWNlaXZlZCB0aGlzIGVtYWlsIGluIGVycm9yLCBwbGVhc2Ug
-Y29udGFjdCB0aGUgc2VuZGVyIGFuZCBkZWxldGUgdGhlIG1lc3NhZ2UgYW5kIGFueSBhdHRhY2ht
-ZW50IGZyb20geW91ciBzeXN0ZW0uDQoNCkFORFJJVFogSFlEUk8gR21iSA0KDQoNClJlY2h0c2Zv
-cm0vIExlZ2FsIGZvcm06IEdlc2VsbHNjaGFmdCBtaXQgYmVzY2hyw6Rua3RlciBIYWZ0dW5nIC8g
-Q29ycG9yYXRpb24NCg0KRmlybWVuc2l0ei8gUmVnaXN0ZXJlZCBzZWF0OiBXaWVuDQoNCkZpcm1l
-bmJ1Y2hnZXJpY2h0LyBDb3VydCBvZiByZWdpc3RyeTogSGFuZGVsc2dlcmljaHQgV2llbg0KDQpG
-aXJtZW5idWNobnVtbWVyLyBDb21wYW55IHJlZ2lzdHJhdGlvbjogRk4gNjE4MzMgZw0KDQpEVlI6
-IDA2MDUwNzcNCg0KVUlELU5yLjogQVRVMTQ3NTY4MDYNCg0KDQpUaGFuayBZb3UNCl9fX19fX19f
-X19fX19fX19fX19fX19fX19fX19fX19fDQo=
+
+----- On Feb 10, 2020, at 2:10 PM, xenomai xenomai@xenomai.org wrote:
+
+> Hello all,
+> 
+> i have succesfully installed Xenomai 3.0.5 with linux 4.9.90, but I am having
+> trouble installing RTnet on an i218-lm.
+> 
+> I followed these steps:
+> 1) ifconfig eth0 down
+> 2) rmmod e1000e
+> 3) configured /usr/xenomai/etc/rtnet.conf according to
+> https://gitlab.denx.de/Xenomai/xenomai/-/wikis/RTnet
+> 4) modprobe rtpacket
+> 5) modprobe rtnet
+> 6) modprobe rt_e1000e
+> 
+> But now if I try to run rtnet with  ./rtnet start I get the following errors:
+> 
+> ioctl: No such device
+> ioctl: No such device
+> ioctl: No such device
+> ioctl: No such device
+> ioctl (add): No such device
+> ioctl (add): No such device
+> ioctl (add): No such device
+> ioctl (add): No such device
+> vnic0: ERROR while getting interface flags: No such device
+> SIOCSIFADDR: No such device
+> vnic0: ERROR while getting interface flags: No such device
+> SIOCSIFNETMASK: No such device
+> Waiting for all slaves...ioctl: No such device
+> ioctl: No such device
+> 
+> ./rtifconfig only show the local loopback but not rteth0
+> 
+> Dmesg shows that rtnet and the driver are being loaded
+> 
+> [  391.184595]
+>               *** RTnet for Xenomai v3.0.5 ***
+> 
+> [  391.184596] RTnet: initialising real-time networking
+> [  400.034853] rt_e1000e: Intel(R) PRO/1000 Network Driver - 1.5.1-k-rt
+> [  400.034854] rt_e1000e: Copyright(c) 1999 - 2011 Intel Corporation.
+> 
+> But with lspci -knn it shows that the NIC doesn't pick up the real time driver:
+> 
+> 00:1f.6 Ethernet controller [0200]: Intel Corporation Ethernet Connection
+> I219-LM [8086:156f] (rev 21)
+>                Subsystem: Gigabyte Technology Co., Ltd Ethernet Connection I219-LM [1458:e000]
+>                Kernel modules: e1000e
+> 
+> Did I do something wrong or is my I219-LM NIC not supported by RTnet?
+> 
+> Many Thanks
+> 
+> Lennard Kloock
+
+Hey Lennard,
+
+I had the same problem but with an Intel I219-V Ethernet Controller.
+
+See https://www.mail-archive.com/xenomai@xenomai.org/msg16000.html
+
+It runs nice now on my setup.
+
+I checked my /xenomai/kernel/drivers/net/drivers/e1000e/hw.h and your device is in as well so it should be supported.
+
+#define E1000_DEV_ID_PCH_SPT_I219_LM		0x156F	/* SPT PCH */
+
+Best regards,
+
+Gino 
+
+
+
+
 
