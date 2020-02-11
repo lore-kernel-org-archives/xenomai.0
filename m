@@ -1,14 +1,13 @@
-Date: Mon, 10 Feb 2020 22:29:18 +0100
-From: Henning Schild <henning.schild@siemens.com>
-Subject: Re: Migrate project from Debian 8 Xenomai 2.x to Debain 9 Xenomai 3.x
-Message-ID: <20200210222918.37d1e803@md1za8fc.ad001.siemens.net>
-In-Reply-To: <373cc865d6c34dda997ac6745bae99cd@RCDC-MAIL09.corp.diehl.com>
-References: <23edaf750b0b41ef9a129bbaf2758d9f@RCDC-MAIL09.corp.diehl.com>
- <0281e4a5-a2b2-bac5-1e30-ea2bb85f3d8d@siemens.com>
- <373cc865d6c34dda997ac6745bae99cd@RCDC-MAIL09.corp.diehl.com>
+From: Lange Norbert <norbert.lange@andritz.com>
+Subject: RE: Installing RTnet
+Date: Tue, 11 Feb 2020 09:45:53 +0000
+Message-ID: <DB8PR05MB59156F2BFC556A1F6C5E3031F6180@DB8PR05MB5915.eurprd05.prod.outlook.com>
+References: <62607370399744fa9b6b6b3fe761f190@meg.mee.com>
+In-Reply-To: <62607370399744fa9b6b6b3fe761f190@meg.mee.com>
+Content-Language: en-US
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,136 +16,69 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Carsten EHRMANN via Xenomai <xenomai@xenomai.org>
-Cc: Carsten EHRMANN <Carsten.Ehrmann@diehl.com>, Jan Kiszka <jan.kiszka@siemens.com>
+To: "Kloock, Lennard" <Lennard.Kloock@meg.mee.com>, "Xenomai
+ (xenomai@xenomai.org)" <xenomai@xenomai.org>
 
-Hi Carsten,
-
-the sniplets look like cmake. There are more cmake-xenomai-users
-around, i would suggest to dig in the archive of the mailinglist. AFAIK
-there have been contributions that did not get merged but will probably
-solve your problem.
-
-If that is the case we should keep in mind that xenomai users seem to
-like cmake and consider those cmake patches more relevant for the
-project.
-
-regards,
-Henning
-
-On Mon, 10 Feb 2020 14:20:04 +0000
-Carsten EHRMANN via Xenomai <xenomai@xenomai.org> wrote:
-
-> Hi Jan,
->=20
-> do I have to include the xeno-config file? I just configured it with
-> "xeno-config --skin=3Dnative".
->=20
-> I use a project file where includes are defined, see below:
->=20
-> unix {
-> TEMPLATE =3D app
-> } else {
-> TEMPLATE =3D vcapp
-> }
-> CONFIG -=3D qt
-> CONFIG +=3D debug_and_release warn_on exceptions rtti=20
-> Debug {
->     TARGET =3D CSRTDaemon
->     CONFIG +=3D console
->     OBJECTS_DIR =3D ../tmp/obj/CSRTDaemon/debug
->     DESTDIR =3D ../lib/CSRTDaemon
->     DLLDESTDIR =3D ../dll/CSRTDaemon
->     SCOPE=3Ddebug
->     unix {
->         QMAKE_CXXFLAGS +=3D=20
->         QMAKE_CFLAGS +=3D=20
->         QMAKE_LFLAGS +=3D
->     } else {
->         QMAKE_POST_LINK =3D COPY /Y ../lib/CSRTDaemon/*.pdb
-> ../dll/CSRTDaemon/ }
-> } else {
->     TARGET =3D CSRTDaemon
->     OBJECTS_DIR =3D ../tmp/obj/CSRTDaemon/release
->     DESTDIR =3D ../lib/CSRTDaemon
->     DLLDESTDIR =3D ../dll/CSRTDaemon
->     DEFINES +=3D QT_NO_DEBUG_OUTPUT NDEBUG
->     SCOPE=3Drelease
-> }
->=20
->=20
-> QMAKE_LIBDIR +=3D /usr/xenomai/lib
-> INCLUDEPATH +=3D /usr/xenomai/include
->=20
->=20
->=20
->=20
-> _________________________________________________________________________=
-________________________________
-> Bitte =C3=BCberlegen Sie, ob Sie diese Nachricht wirklich ausdrucken
-> m=C3=BCssen/ before printing, think about environmental responsibility.
-> Diehl Metering GmbH, Industriestra=C3=9Fe 13, 91522 Ansbach Telefon + 49
-> 981 1806 0, Telefax +49 981 1806 615 Sitz der Gesellschaft: Ansbach,
-> Registergericht: Ansbach HRB 69 Gesch=C3=A4ftsf=C3=BChrer: Dr. Christof B=
-osbach
-> (Sprecher), Thomas Gastner, Jean-Fran=C3=A7ois Marguet Der Inhalt der
-> vorstehenden E-Mail ist nicht rechtlich bindend. Diese E-Mail enth=C3=A4lt
-> vertrauliche und/oder rechtlich gesch=C3=BCtzte Informationen. Informieren
-> Sie uns bitte, wenn Sie diese E-Mail f=C3=A4lschlicherweise erhalten
-> haben. Bitte l=C3=B6schen Sie in diesem Fall die Nachricht. Jede
-> unerlaubte Form der Reproduktion, Bekanntgabe, =C3=84nderung, Verteilung
-> und/oder Publikation dieser E-Mail ist strengstens untersagt. The
-> contents of the above mentioned e-mail is not legally binding. This
-> e-mail contains confidential and/or legally protected information.
-> Please inform us if you have received this e-mail by mistake and
-> delete it in such a case. Each unauthorized reproduction, disclosure,
-> alteration, distribution and/or publication of this e-mail is
-> strictly prohibited. Informationen zum Datenschutz finden Sie auf
-> unserer Homepage.
-> https://www.diehl.com/metering/de/diehl-metering/data-protection
-> Information about data protection can be found on our homepage.
-> https://www.diehl.com/metering/en/diehl-metering/data-protection
->=20
->=20
-> -----Original Message-----
-> From: Jan Kiszka <jan.kiszka@siemens.com>=20
-> Sent: Monday, February 10, 2020 2:23 PM
-> To: Carsten EHRMANN <Carsten.Ehrmann@diehl.com>; xenomai@xenomai.org
-> Subject: Re: Migrate project from Debian 8 Xenomai 2.x to Debain 9
-> Xenomai 3.x
->=20
-> On 10.02.20 13:03, Carsten EHRMANN via Xenomai wrote:
-> > Hello,
-> >=20
-> >=20
-> > Because of new PC hardware I have to use debain 9 and Xenomai 3.=20
-> > Xenomai is running on the system, I run the testsuite scripts. I
-> > found a migration document on xenomai.org and changed the
-> > includepaths and so on in my sourcecode. But now when I want to
-> > compile the code I got this error In file included from
-> > ./CSRTPosixQue.h:20:0, from ./CSRTTask.h:20, from main.cpp:26:
-> > /usr/xenomai/include/trank/native/task.h: In function 'int
-> > rt_task_notify(RT_TASK*, rt_sigset_t)':
-> > /usr/xenomai/include/trank/native/task.h:41:64: error:
-> > 'trank_warning' was not declared in this scope
-> > trank_warning("in-kernel native API is gone, rebase over RTDM");
-> >=20
-> > But this "trank_warning" is defined in trank.h which is included
-> >  =20
->=20
-> Where you using xeno-config to obtain paths and other compiler
-> switches? If not, please compare your settings. If yes, a simple test
-> case would be nice. But it can't be very simple because
->=20
-> #include <native/task.h>
-> int main() {}
->=20
-> compiles via "gcc $(xeno-config --skin native --cflags) ..."
->=20
-> Jan
->=20
-> --
-> Siemens AG, Corporate Technology, CT RDA IOT SES-DE Corporate
-> Competence Center Embedded Linux
-
+DQoNCj4gLS0tLS1PcmlnaW5hbCBNZXNzYWdlLS0tLS0NCj4gRnJvbTogWGVub21haSA8eGVub21h
+aS1ib3VuY2VzQHhlbm9tYWkub3JnPiBPbiBCZWhhbGYgT2YgS2xvb2NrLA0KPiBMZW5uYXJkIHZp
+YSBYZW5vbWFpDQo+IFNlbnQ6IE1vbnRhZywgMTAuIEZlYnJ1YXIgMjAyMCAxNDoxMQ0KPiBUbzog
+eGVub21haUB4ZW5vbWFpLm9yZw0KPiBTdWJqZWN0OiBJbnN0YWxsaW5nIFJUbmV0DQo+DQo+IE5P
+Ti1BTkRSSVRaIFNPVVJDRTogQkUgQ0FVVElPVVMgV0lUSCBDT05URU5ULCBMSU5LUyBPUg0KPiBB
+VFRBQ0hNRU5UUy4NCj4NCj4NCj4gSGVsbG8gYWxsLA0KPg0KPiBpIGhhdmUgc3VjY2VzZnVsbHkg
+aW5zdGFsbGVkIFhlbm9tYWkgMy4wLjUgd2l0aCBsaW51eCA0LjkuOTAsIGJ1dCBJIGFtIGhhdmlu
+Zw0KPiB0cm91YmxlIGluc3RhbGxpbmcgUlRuZXQgb24gYW4gaTIxOC1sbS4NCj4NCj4gSSBmb2xs
+b3dlZCB0aGVzZSBzdGVwczoNCj4gMSkgaWZjb25maWcgZXRoMCBkb3duDQo+IDIpIHJtbW9kIGUx
+MDAwZQ0KPiAzKSBjb25maWd1cmVkIC91c3IveGVub21haS9ldGMvcnRuZXQuY29uZiBhY2NvcmRp
+bmcgdG8NCj4gaHR0cHM6Ly9naXRsYWIuZGVueC5kZS9YZW5vbWFpL3hlbm9tYWkvLS93aWtpcy9S
+VG5ldA0KPiA0KSBtb2Rwcm9iZSBydHBhY2tldA0KPiA1KSBtb2Rwcm9iZSBydG5ldA0KPiA2KSBt
+b2Rwcm9iZSBydF9lMTAwMGUNCj4NCj4gQnV0IG5vdyBpZiBJIHRyeSB0byBydW4gcnRuZXQgd2l0
+aCAgLi9ydG5ldCBzdGFydCBJIGdldCB0aGUgZm9sbG93aW5nIGVycm9yczoNCj4NCj4gaW9jdGw6
+IE5vIHN1Y2ggZGV2aWNlDQo+IGlvY3RsOiBObyBzdWNoIGRldmljZQ0KPiBpb2N0bDogTm8gc3Vj
+aCBkZXZpY2UNCj4gaW9jdGw6IE5vIHN1Y2ggZGV2aWNlDQo+IGlvY3RsIChhZGQpOiBObyBzdWNo
+IGRldmljZQ0KPiBpb2N0bCAoYWRkKTogTm8gc3VjaCBkZXZpY2UNCj4gaW9jdGwgKGFkZCk6IE5v
+IHN1Y2ggZGV2aWNlDQo+IGlvY3RsIChhZGQpOiBObyBzdWNoIGRldmljZQ0KPiB2bmljMDogRVJS
+T1Igd2hpbGUgZ2V0dGluZyBpbnRlcmZhY2UgZmxhZ3M6IE5vIHN1Y2ggZGV2aWNlDQo+IFNJT0NT
+SUZBRERSOiBObyBzdWNoIGRldmljZQ0KPiB2bmljMDogRVJST1Igd2hpbGUgZ2V0dGluZyBpbnRl
+cmZhY2UgZmxhZ3M6IE5vIHN1Y2ggZGV2aWNlDQo+IFNJT0NTSUZORVRNQVNLOiBObyBzdWNoIGRl
+dmljZQ0KPiBXYWl0aW5nIGZvciBhbGwgc2xhdmVzLi4uaW9jdGw6IE5vIHN1Y2ggZGV2aWNlDQo+
+IGlvY3RsOiBObyBzdWNoIGRldmljZQ0KPg0KPiAuL3J0aWZjb25maWcgb25seSBzaG93IHRoZSBs
+b2NhbCBsb29wYmFjayBidXQgbm90IHJ0ZXRoMA0KPg0KPiBEbWVzZyBzaG93cyB0aGF0IHJ0bmV0
+IGFuZCB0aGUgZHJpdmVyIGFyZSBiZWluZyBsb2FkZWQNCj4NCj4gWyAgMzkxLjE4NDU5NV0NCj4g
+ICAgICAgICAgICAgICAgKioqIFJUbmV0IGZvciBYZW5vbWFpIHYzLjAuNSAqKioNCj4NCj4gWyAg
+MzkxLjE4NDU5Nl0gUlRuZXQ6IGluaXRpYWxpc2luZyByZWFsLXRpbWUgbmV0d29ya2luZyBbICA0
+MDAuMDM0ODUzXQ0KPiBydF9lMTAwMGU6IEludGVsKFIpIFBSTy8xMDAwIE5ldHdvcmsgRHJpdmVy
+IC0gMS41LjEtay1ydCBbICA0MDAuMDM0ODU0XQ0KPiBydF9lMTAwMGU6IENvcHlyaWdodChjKSAx
+OTk5IC0gMjAxMSBJbnRlbCBDb3Jwb3JhdGlvbi4NCj4NCj4gQnV0IHdpdGggbHNwY2kgLWtubiBp
+dCBzaG93cyB0aGF0IHRoZSBOSUMgZG9lc24ndCBwaWNrIHVwIHRoZSByZWFsIHRpbWUgZHJpdmVy
+Og0KPg0KPiAwMDoxZi42IEV0aGVybmV0IGNvbnRyb2xsZXIgWzAyMDBdOiBJbnRlbCBDb3Jwb3Jh
+dGlvbiBFdGhlcm5ldCBDb25uZWN0aW9uDQo+IEkyMTktTE0gWzgwODY6MTU2Zl0gKHJldiAyMSkN
+Cj4gICAgICAgICAgICAgICAgIFN1YnN5c3RlbTogR2lnYWJ5dGUgVGVjaG5vbG9neSBDby4sIEx0
+ZCBFdGhlcm5ldCBDb25uZWN0aW9uIEkyMTktDQo+IExNIFsxNDU4OmUwMDBdDQo+ICAgICAgICAg
+ICAgICAgICBLZXJuZWwgbW9kdWxlczogZTEwMDBlDQo+DQo+IERpZCBJIGRvIHNvbWV0aGluZyB3
+cm9uZyBvciBpcyBteSBJMjE5LUxNIE5JQyBub3Qgc3VwcG9ydGVkIGJ5IFJUbmV0Pw0KDQpDYW50
+IHRlbGwgaWYgeW91ciBkZXZpY2UgaXMgc3VwcG9ydGVkLCBidXQgcnRuZXQgd2lsbCBuZXZlciAq
+cmVwbGFjZSogYSBsaW51eCBkcml2ZXIgYXV0b21hdGljYWxseSwNCnlvdSBuZWVkIHRvIG1ha2Ug
+c3VyZSB0aGUgaGFyZHdhcmUgaXMgbm90IGJvdW5kIHRvIGEgZHJpdmVyLCBvciBtYW51YWxseSB1
+bi9iaW5kDQp0byB0aGUgcnRuZXQgZHJpdmVyLg0KDQojIGtpY2sgb3V0IGtlcm5lbCBtb2R1bGVz
+DQptb2Rwcm9iZSAtciBlMTAwMGUNCm1vZHByb2JlIHJ0bmV0DQptb2Rwcm9iZSBydF9lMTAwMGUN
+Cg0KDQojIG1hbnVhbGwgcmViaW5kLCBsb29rIGluIHRoIGUxMDAwZSBmb2xkZXIgZm9yIHRoZSBj
+b3JyZWN0IG5hbWUNCmVjaG8gIjAwOjFmLjYiID4gL3N5cy9idXMvcGNpL2RyaXZlcnMvZTEwMDBl
+L3VuYmluZA0KZWNobyAiMDA6MWYuNiIgPiAvc3lzL2J1cy9wY2kvZHJpdmVycy9ydF9lMTAwMGUv
+YmluZA0KDQpOb3JiZXJ0DQoNCl9fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fDQoNClRo
+aXMgbWVzc2FnZSBhbmQgYW55IGF0dGFjaG1lbnRzIGFyZSBzb2xlbHkgZm9yIHRoZSB1c2Ugb2Yg
+dGhlIGludGVuZGVkIHJlY2lwaWVudHMuIFRoZXkgbWF5IGNvbnRhaW4gcHJpdmlsZWdlZCBhbmQv
+b3IgY29uZmlkZW50aWFsIGluZm9ybWF0aW9uIG9yIG90aGVyIGluZm9ybWF0aW9uIHByb3RlY3Rl
+ZCBmcm9tIGRpc2Nsb3N1cmUuIElmIHlvdSBhcmUgbm90IGFuIGludGVuZGVkIHJlY2lwaWVudCwg
+eW91IGFyZSBoZXJlYnkgbm90aWZpZWQgdGhhdCB5b3UgcmVjZWl2ZWQgdGhpcyBlbWFpbCBpbiBl
+cnJvciBhbmQgdGhhdCBhbnkgcmV2aWV3LCBkaXNzZW1pbmF0aW9uLCBkaXN0cmlidXRpb24gb3Ig
+Y29weWluZyBvZiB0aGlzIGVtYWlsIGFuZCBhbnkgYXR0YWNobWVudCBpcyBzdHJpY3RseSBwcm9o
+aWJpdGVkLiBJZiB5b3UgaGF2ZSByZWNlaXZlZCB0aGlzIGVtYWlsIGluIGVycm9yLCBwbGVhc2Ug
+Y29udGFjdCB0aGUgc2VuZGVyIGFuZCBkZWxldGUgdGhlIG1lc3NhZ2UgYW5kIGFueSBhdHRhY2ht
+ZW50IGZyb20geW91ciBzeXN0ZW0uDQoNCkFORFJJVFogSFlEUk8gR21iSA0KDQoNClJlY2h0c2Zv
+cm0vIExlZ2FsIGZvcm06IEdlc2VsbHNjaGFmdCBtaXQgYmVzY2hyw6Rua3RlciBIYWZ0dW5nIC8g
+Q29ycG9yYXRpb24NCg0KRmlybWVuc2l0ei8gUmVnaXN0ZXJlZCBzZWF0OiBXaWVuDQoNCkZpcm1l
+bmJ1Y2hnZXJpY2h0LyBDb3VydCBvZiByZWdpc3RyeTogSGFuZGVsc2dlcmljaHQgV2llbg0KDQpG
+aXJtZW5idWNobnVtbWVyLyBDb21wYW55IHJlZ2lzdHJhdGlvbjogRk4gNjE4MzMgZw0KDQpEVlI6
+IDA2MDUwNzcNCg0KVUlELU5yLjogQVRVMTQ3NTY4MDYNCg0KDQpUaGFuayBZb3UNCl9fX19fX19f
+X19fX19fX19fX19fX19fX19fX19fX19fDQo=
 
