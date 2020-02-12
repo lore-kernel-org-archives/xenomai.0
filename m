@@ -1,16 +1,27 @@
-From: Carsten EHRMANN <Carsten.Ehrmann@diehl.com>
-Subject: RE: Migrate project from Debian 8 Xenomai 2.x to Debain 9 Xenomai 3.x
-Date: Wed, 12 Feb 2020 07:02:50 +0000
-Message-ID: <c9a33f2037904f8db4bd5a89909c8e83@RCDC-MAIL09.corp.diehl.com>
-References: <23edaf750b0b41ef9a129bbaf2758d9f@RCDC-MAIL09.corp.diehl.com>
- <0281e4a5-a2b2-bac5-1e30-ea2bb85f3d8d@siemens.com>
- <373cc865d6c34dda997ac6745bae99cd@RCDC-MAIL09.corp.diehl.com>
- <20200210222918.37d1e803@md1za8fc.ad001.siemens.net>
-In-Reply-To: <20200210222918.37d1e803@md1za8fc.ad001.siemens.net>
-Content-Language: de-DE
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
 MIME-Version: 1.0
+References: <CAPm8-H6oDc4NogRLTFvi7-9vOv=a2OGE=fiRib1yUEOyR-rsAQ@mail.gmail.com>
+ <CALLqZ8Qa1+WLUQHw7woNOJZGgjmhkjms+QYLpT9ggnD47XsUog@mail.gmail.com>
+ <CAPm8-H6rz3ArzOcYas1mQyYfw-njGfQwZGriQz3Hrg5MdU9+vg@mail.gmail.com>
+ <CALLqZ8TtxHc-hsqkKMx2iX1_GZftFOEFnLSYH37UJVs4d5VM8A@mail.gmail.com>
+ <CALLqZ8S6jvvU0xp+bb19uMVnFP9AS7=KSn1XugsBShU78YVM-A@mail.gmail.com>
+ <86518a45-5c2d-3322-da91-fe0f248d0253@siemens.com>
+ <CAPm8-H7REC_UQ2GV7aJbj1+Wx2dNiAL-67W8sjYk+a_Y5Ur6EA@mail.gmail.com>
+ <CAPm8-H4U06gsNqQLVKHgyAzUcEcg7fJv48UR7uvM2jfjzQx+bA@mail.gmail.com>
+ <CALLqZ8Rq7Ar5=KMgkYNaVOMHyp08yTPvGdShQTLb=E3OSU061Q@mail.gmail.com>
+ <CAPm8-H7foEfOFTHTFwG1iDp-eUdH6=e-tGrEDC28ony-0WXdvQ@mail.gmail.com>
+ <CAPm8-H7gUZGKbYG9L-fhoGndzN3fcPhqQ9WuJ7cP=HDVPNemSA@mail.gmail.com>
+ <CALLqZ8Ts5sApS5JjOKVY3DLyShJzBzd2FNRZYBQ0y5u2MiBAUg@mail.gmail.com>
+ <CALLqZ8TObDwBbmu_ijwi7Mis38JquYqO2f1TorNWBt5qyk+FoQ@mail.gmail.com>
+ <CALLqZ8Q=GqLpdxBAoPLqyniySKG8w_CeBJp1PW+KtB=1H8OEtg@mail.gmail.com>
+ <CAPm8-H6=F0eFKxvwYQbCmb8pK9rfq9Y2L2W3+96hPH96m81-kw@mail.gmail.com>
+ <CALLqZ8SjR5A-KFs_Ayw8xrG-UJW-BJpkm2CX6-ESPrr19HBKmQ@mail.gmail.com>
+In-Reply-To: <CALLqZ8SjR5A-KFs_Ayw8xrG-UJW-BJpkm2CX6-ESPrr19HBKmQ@mail.gmail.com>
+From: Greg Gallagher <greg@embeddedgreg.com>
+Date: Wed, 12 Feb 2020 02:04:28 -0500
+Message-ID: <CALLqZ8SdpSN6CEwTH5jZertXK6Cr5L3eaOegRvMhKVE8S_cc1A@mail.gmail.com>
+Subject: Re: system freeze - beaglebone black xenomai - gpio interrupts driver
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -19,133 +30,649 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Henning Schild <henning.schild@siemens.com>, Carsten EHRMANN via Xenomai <xenomai@xenomai.org>
+To: Laurentiu-Cristian Duca <laurentiu.duca@gmail.com>
+Cc: Jan Kiszka <jan.kiszka@siemens.com>, xenomai <xenomai@xenomai.org>
 
-SGkgSGVubmluZywNCg0Kd2UgZG9uJ3QgdXNlIGNtYWtlLCB3ZSB1c2UgcW1ha2UuIEJ1dCB0
-aGFua3MgZm9yIHlvdXIgaGludCwgbWF5YmUgSSBmaW5kIHNvbWV0aGluZyBhYm91dCBxbWFr
-ZSB0aGVyZSwgdG9vLg0KDQpCZXN0IHJlZ2FyZHMsDQpDYXJzdGVuDQoNCg0KDQpfX19fX19f
-X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
-X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX18NCkJpdHRlIMO8
-YmVybGVnZW4gU2llLCBvYiBTaWUgZGllc2UgTmFjaHJpY2h0IHdpcmtsaWNoIGF1c2RydWNr
-ZW4gbcO8c3Nlbi8gYmVmb3JlIHByaW50aW5nLCB0aGluayBhYm91dCBlbnZpcm9ubWVudGFs
-IHJlc3BvbnNpYmlsaXR5Lg0KRGllaGwgTWV0ZXJpbmcgR21iSCwgSW5kdXN0cmllc3RyYcOf
-ZSAxMywgOTE1MjIgQW5zYmFjaA0KVGVsZWZvbiArIDQ5IDk4MSAxODA2IDAsIFRlbGVmYXgg
-KzQ5IDk4MSAxODA2IDYxNQ0KU2l0eiBkZXIgR2VzZWxsc2NoYWZ0OiBBbnNiYWNoLCBSZWdp
-c3RlcmdlcmljaHQ6IEFuc2JhY2ggSFJCIDY5DQpHZXNjaMOkZnRzZsO8aHJlcjogRHIuIENo
-cmlzdG9mIEJvc2JhY2ggKFNwcmVjaGVyKSwgVGhvbWFzIEdhc3RuZXIsIEplYW4tRnJhbsOn
-b2lzIE1hcmd1ZXQNCkRlciBJbmhhbHQgZGVyIHZvcnN0ZWhlbmRlbiBFLU1haWwgaXN0IG5p
-Y2h0IHJlY2h0bGljaCBiaW5kZW5kLiBEaWVzZSBFLU1haWwgZW50aMOkbHQgdmVydHJhdWxp
-Y2hlIHVuZC9vZGVyIHJlY2h0bGljaCBnZXNjaMO8dHp0ZSBJbmZvcm1hdGlvbmVuLiBJbmZv
-cm1pZXJlbiBTaWUgdW5zIGJpdHRlLCB3ZW5uIFNpZSBkaWVzZSBFLU1haWwgZsOkbHNjaGxp
-Y2hlcndlaXNlIGVyaGFsdGVuIGhhYmVuLiBCaXR0ZSBsw7ZzY2hlbiBTaWUgaW4gZGllc2Vt
-IEZhbGwgZGllIE5hY2hyaWNodC4gSmVkZSB1bmVybGF1YnRlIEZvcm0gZGVyIFJlcHJvZHVr
-dGlvbiwgQmVrYW5udGdhYmUsIMOEbmRlcnVuZywgVmVydGVpbHVuZyB1bmQvb2RlciBQdWJs
-aWthdGlvbiBkaWVzZXIgRS1NYWlsIGlzdCBzdHJlbmdzdGVucyB1bnRlcnNhZ3QuDQpUaGUg
-Y29udGVudHMgb2YgdGhlIGFib3ZlIG1lbnRpb25lZCBlLW1haWwgaXMgbm90IGxlZ2FsbHkg
-YmluZGluZy4gVGhpcyBlLW1haWwgY29udGFpbnMgY29uZmlkZW50aWFsIGFuZC9vciBsZWdh
-bGx5IHByb3RlY3RlZCBpbmZvcm1hdGlvbi4gUGxlYXNlIGluZm9ybSB1cyBpZiB5b3UgaGF2
-ZSByZWNlaXZlZCB0aGlzIGUtbWFpbCBieSBtaXN0YWtlIGFuZCBkZWxldGUgaXQgaW4gc3Vj
-aCBhIGNhc2UuIEVhY2ggdW5hdXRob3JpemVkIHJlcHJvZHVjdGlvbiwgZGlzY2xvc3VyZSwg
-YWx0ZXJhdGlvbiwgZGlzdHJpYnV0aW9uIGFuZC9vciBwdWJsaWNhdGlvbiBvZiB0aGlzIGUt
-bWFpbCBpcyBzdHJpY3RseSBwcm9oaWJpdGVkLg0KSW5mb3JtYXRpb25lbiB6dW0gRGF0ZW5z
-Y2h1dHogZmluZGVuIFNpZSBhdWYgdW5zZXJlciBIb21lcGFnZS4NCmh0dHBzOi8vd3d3LmRp
-ZWhsLmNvbS9tZXRlcmluZy9kZS9kaWVobC1tZXRlcmluZy9kYXRhLXByb3RlY3Rpb24NCklu
-Zm9ybWF0aW9uIGFib3V0IGRhdGEgcHJvdGVjdGlvbiBjYW4gYmUgZm91bmQgb24gb3VyIGhv
-bWVwYWdlLg0KaHR0cHM6Ly93d3cuZGllaGwuY29tL21ldGVyaW5nL2VuL2RpZWhsLW1ldGVy
-aW5nL2RhdGEtcHJvdGVjdGlvbg0KDQoNCi0tLS0tT3JpZ2luYWwgTWVzc2FnZS0tLS0tDQpG
-cm9tOiBIZW5uaW5nIFNjaGlsZCA8aGVubmluZy5zY2hpbGRAc2llbWVucy5jb20+IA0KU2Vu
-dDogTW9uZGF5LCBGZWJydWFyeSAxMCwgMjAyMCAxMDoyOSBQTQ0KVG86IENhcnN0ZW4gRUhS
-TUFOTiB2aWEgWGVub21haSA8eGVub21haUB4ZW5vbWFpLm9yZz4NCkNjOiBDYXJzdGVuIEVI
-Uk1BTk4gPENhcnN0ZW4uRWhybWFubkBkaWVobC5jb20+OyBKYW4gS2lzemthIDxqYW4ua2lz
-emthQHNpZW1lbnMuY29tPg0KU3ViamVjdDogUmU6IE1pZ3JhdGUgcHJvamVjdCBmcm9tIERl
-YmlhbiA4IFhlbm9tYWkgMi54IHRvIERlYmFpbiA5IFhlbm9tYWkgMy54DQoNCkhpIENhcnN0
-ZW4sDQoNCnRoZSBzbmlwbGV0cyBsb29rIGxpa2UgY21ha2UuIFRoZXJlIGFyZSBtb3JlIGNt
-YWtlLXhlbm9tYWktdXNlcnMgYXJvdW5kLCBpIHdvdWxkIHN1Z2dlc3QgdG8gZGlnIGluIHRo
-ZSBhcmNoaXZlIG9mIHRoZSBtYWlsaW5nbGlzdC4gQUZBSUsgdGhlcmUgaGF2ZSBiZWVuIGNv
-bnRyaWJ1dGlvbnMgdGhhdCBkaWQgbm90IGdldCBtZXJnZWQgYnV0IHdpbGwgcHJvYmFibHkg
-c29sdmUgeW91ciBwcm9ibGVtLg0KDQpJZiB0aGF0IGlzIHRoZSBjYXNlIHdlIHNob3VsZCBr
-ZWVwIGluIG1pbmQgdGhhdCB4ZW5vbWFpIHVzZXJzIHNlZW0gdG8gbGlrZSBjbWFrZSBhbmQg
-Y29uc2lkZXIgdGhvc2UgY21ha2UgcGF0Y2hlcyBtb3JlIHJlbGV2YW50IGZvciB0aGUgcHJv
-amVjdC4NCg0KcmVnYXJkcywNCkhlbm5pbmcNCg0KT24gTW9uLCAxMCBGZWIgMjAyMCAxNDoy
-MDowNCArMDAwMA0KQ2Fyc3RlbiBFSFJNQU5OIHZpYSBYZW5vbWFpIDx4ZW5vbWFpQHhlbm9t
-YWkub3JnPiB3cm90ZToNCg0KPiBIaSBKYW4sDQo+IA0KPiBkbyBJIGhhdmUgdG8gaW5jbHVk
-ZSB0aGUgeGVuby1jb25maWcgZmlsZT8gSSBqdXN0IGNvbmZpZ3VyZWQgaXQgd2l0aCANCj4g
-Inhlbm8tY29uZmlnIC0tc2tpbj1uYXRpdmUiLg0KPiANCj4gSSB1c2UgYSBwcm9qZWN0IGZp
-bGUgd2hlcmUgaW5jbHVkZXMgYXJlIGRlZmluZWQsIHNlZSBiZWxvdzoNCj4gDQo+IHVuaXgg
-ew0KPiBURU1QTEFURSA9IGFwcA0KPiB9IGVsc2Ugew0KPiBURU1QTEFURSA9IHZjYXBwDQo+
-IH0NCj4gQ09ORklHIC09IHF0DQo+IENPTkZJRyArPSBkZWJ1Z19hbmRfcmVsZWFzZSB3YXJu
-X29uIGV4Y2VwdGlvbnMgcnR0aSBEZWJ1ZyB7DQo+ICAgICBUQVJHRVQgPSBDU1JURGFlbW9u
-DQo+ICAgICBDT05GSUcgKz0gY29uc29sZQ0KPiAgICAgT0JKRUNUU19ESVIgPSAuLi90bXAv
-b2JqL0NTUlREYWVtb24vZGVidWcNCj4gICAgIERFU1RESVIgPSAuLi9saWIvQ1NSVERhZW1v
-bg0KPiAgICAgRExMREVTVERJUiA9IC4uL2RsbC9DU1JURGFlbW9uDQo+ICAgICBTQ09QRT1k
-ZWJ1Zw0KPiAgICAgdW5peCB7DQo+ICAgICAgICAgUU1BS0VfQ1hYRkxBR1MgKz0gDQo+ICAg
-ICAgICAgUU1BS0VfQ0ZMQUdTICs9IA0KPiAgICAgICAgIFFNQUtFX0xGTEFHUyArPQ0KPiAg
-ICAgfSBlbHNlIHsNCj4gICAgICAgICBRTUFLRV9QT1NUX0xJTksgPSBDT1BZIC9ZIC4uL2xp
-Yi9DU1JURGFlbW9uLyoucGRiIA0KPiAuLi9kbGwvQ1NSVERhZW1vbi8gfSB9IGVsc2Ugew0K
-PiAgICAgVEFSR0VUID0gQ1NSVERhZW1vbg0KPiAgICAgT0JKRUNUU19ESVIgPSAuLi90bXAv
-b2JqL0NTUlREYWVtb24vcmVsZWFzZQ0KPiAgICAgREVTVERJUiA9IC4uL2xpYi9DU1JURGFl
-bW9uDQo+ICAgICBETExERVNURElSID0gLi4vZGxsL0NTUlREYWVtb24NCj4gICAgIERFRklO
-RVMgKz0gUVRfTk9fREVCVUdfT1VUUFVUIE5ERUJVRw0KPiAgICAgU0NPUEU9cmVsZWFzZQ0K
-PiB9DQo+IA0KPiANCj4gUU1BS0VfTElCRElSICs9IC91c3IveGVub21haS9saWINCj4gSU5D
-TFVERVBBVEggKz0gL3Vzci94ZW5vbWFpL2luY2x1ZGUNCj4gDQo+IA0KPiANCj4gDQo+IF9f
-X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
-X19fX19fX19fX19fX18NCj4gX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX18N
-Cj4gQml0dGUgw7xiZXJsZWdlbiBTaWUsIG9iIFNpZSBkaWVzZSBOYWNocmljaHQgd2lya2xp
-Y2ggYXVzZHJ1Y2tlbiANCj4gbcO8c3Nlbi8gYmVmb3JlIHByaW50aW5nLCB0aGluayBhYm91
-dCBlbnZpcm9ubWVudGFsIHJlc3BvbnNpYmlsaXR5Lg0KPiBEaWVobCBNZXRlcmluZyBHbWJI
-LCBJbmR1c3RyaWVzdHJhw59lIDEzLCA5MTUyMiBBbnNiYWNoIFRlbGVmb24gKyA0OQ0KPiA5
-ODEgMTgwNiAwLCBUZWxlZmF4ICs0OSA5ODEgMTgwNiA2MTUgU2l0eiBkZXIgR2VzZWxsc2No
-YWZ0OiBBbnNiYWNoLA0KPiBSZWdpc3RlcmdlcmljaHQ6IEFuc2JhY2ggSFJCIDY5IEdlc2No
-w6RmdHNmw7xocmVyOiBEci4gQ2hyaXN0b2YgQm9zYmFjaCANCj4gKFNwcmVjaGVyKSwgVGhv
-bWFzIEdhc3RuZXIsIEplYW4tRnJhbsOnb2lzIE1hcmd1ZXQgRGVyIEluaGFsdCBkZXIgDQo+
-IHZvcnN0ZWhlbmRlbiBFLU1haWwgaXN0IG5pY2h0IHJlY2h0bGljaCBiaW5kZW5kLiBEaWVz
-ZSBFLU1haWwgZW50aMOkbHQgDQo+IHZlcnRyYXVsaWNoZSB1bmQvb2RlciByZWNodGxpY2gg
-Z2VzY2jDvHR6dGUgSW5mb3JtYXRpb25lbi4gSW5mb3JtaWVyZW4gDQo+IFNpZSB1bnMgYml0
-dGUsIHdlbm4gU2llIGRpZXNlIEUtTWFpbCBmw6Rsc2NobGljaGVyd2Vpc2UgZXJoYWx0ZW4g
-aGFiZW4uIA0KPiBCaXR0ZSBsw7ZzY2hlbiBTaWUgaW4gZGllc2VtIEZhbGwgZGllIE5hY2hy
-aWNodC4gSmVkZSB1bmVybGF1YnRlIEZvcm0gDQo+IGRlciBSZXByb2R1a3Rpb24sIEJla2Fu
-bnRnYWJlLCDDhG5kZXJ1bmcsIFZlcnRlaWx1bmcgdW5kL29kZXIgDQo+IFB1Ymxpa2F0aW9u
-IGRpZXNlciBFLU1haWwgaXN0IHN0cmVuZ3N0ZW5zIHVudGVyc2FndC4gVGhlIGNvbnRlbnRz
-IG9mIA0KPiB0aGUgYWJvdmUgbWVudGlvbmVkIGUtbWFpbCBpcyBub3QgbGVnYWxseSBiaW5k
-aW5nLiBUaGlzIGUtbWFpbCANCj4gY29udGFpbnMgY29uZmlkZW50aWFsIGFuZC9vciBsZWdh
-bGx5IHByb3RlY3RlZCBpbmZvcm1hdGlvbi4NCj4gUGxlYXNlIGluZm9ybSB1cyBpZiB5b3Ug
-aGF2ZSByZWNlaXZlZCB0aGlzIGUtbWFpbCBieSBtaXN0YWtlIGFuZCANCj4gZGVsZXRlIGl0
-IGluIHN1Y2ggYSBjYXNlLiBFYWNoIHVuYXV0aG9yaXplZCByZXByb2R1Y3Rpb24sIGRpc2Ns
-b3N1cmUsIA0KPiBhbHRlcmF0aW9uLCBkaXN0cmlidXRpb24gYW5kL29yIHB1YmxpY2F0aW9u
-IG9mIHRoaXMgZS1tYWlsIGlzIHN0cmljdGx5IA0KPiBwcm9oaWJpdGVkLiBJbmZvcm1hdGlv
-bmVuIHp1bSBEYXRlbnNjaHV0eiBmaW5kZW4gU2llIGF1ZiB1bnNlcmVyIA0KPiBIb21lcGFn
-ZS4NCj4gaHR0cHM6Ly93d3cuZGllaGwuY29tL21ldGVyaW5nL2RlL2RpZWhsLW1ldGVyaW5n
-L2RhdGEtcHJvdGVjdGlvbg0KPiBJbmZvcm1hdGlvbiBhYm91dCBkYXRhIHByb3RlY3Rpb24g
-Y2FuIGJlIGZvdW5kIG9uIG91ciBob21lcGFnZS4NCj4gaHR0cHM6Ly93d3cuZGllaGwuY29t
-L21ldGVyaW5nL2VuL2RpZWhsLW1ldGVyaW5nL2RhdGEtcHJvdGVjdGlvbg0KPiANCj4gDQo+
-IC0tLS0tT3JpZ2luYWwgTWVzc2FnZS0tLS0tDQo+IEZyb206IEphbiBLaXN6a2EgPGphbi5r
-aXN6a2FAc2llbWVucy5jb20+DQo+IFNlbnQ6IE1vbmRheSwgRmVicnVhcnkgMTAsIDIwMjAg
-MjoyMyBQTQ0KPiBUbzogQ2Fyc3RlbiBFSFJNQU5OIDxDYXJzdGVuLkVocm1hbm5AZGllaGwu
-Y29tPjsgeGVub21haUB4ZW5vbWFpLm9yZw0KPiBTdWJqZWN0OiBSZTogTWlncmF0ZSBwcm9q
-ZWN0IGZyb20gRGViaWFuIDggWGVub21haSAyLnggdG8gRGViYWluIDkgDQo+IFhlbm9tYWkg
-My54DQo+IA0KPiBPbiAxMC4wMi4yMCAxMzowMywgQ2Fyc3RlbiBFSFJNQU5OIHZpYSBYZW5v
-bWFpIHdyb3RlOg0KPiA+IEhlbGxvLA0KPiA+IA0KPiA+IA0KPiA+IEJlY2F1c2Ugb2YgbmV3
-IFBDIGhhcmR3YXJlIEkgaGF2ZSB0byB1c2UgZGViYWluIDkgYW5kIFhlbm9tYWkgMy4gDQo+
-ID4gWGVub21haSBpcyBydW5uaW5nIG9uIHRoZSBzeXN0ZW0sIEkgcnVuIHRoZSB0ZXN0c3Vp
-dGUgc2NyaXB0cy4gSSANCj4gPiBmb3VuZCBhIG1pZ3JhdGlvbiBkb2N1bWVudCBvbiB4ZW5v
-bWFpLm9yZyBhbmQgY2hhbmdlZCB0aGUgDQo+ID4gaW5jbHVkZXBhdGhzIGFuZCBzbyBvbiBp
-biBteSBzb3VyY2Vjb2RlLiBCdXQgbm93IHdoZW4gSSB3YW50IHRvIA0KPiA+IGNvbXBpbGUg
-dGhlIGNvZGUgSSBnb3QgdGhpcyBlcnJvciBJbiBmaWxlIGluY2x1ZGVkIGZyb20gDQo+ID4g
-Li9DU1JUUG9zaXhRdWUuaDoyMDowLCBmcm9tIC4vQ1NSVFRhc2suaDoyMCwgZnJvbSBtYWlu
-LmNwcDoyNjoNCj4gPiAvdXNyL3hlbm9tYWkvaW5jbHVkZS90cmFuay9uYXRpdmUvdGFzay5o
-OiBJbiBmdW5jdGlvbiAnaW50IA0KPiA+IHJ0X3Rhc2tfbm90aWZ5KFJUX1RBU0sqLCBydF9z
-aWdzZXRfdCknOg0KPiA+IC91c3IveGVub21haS9pbmNsdWRlL3RyYW5rL25hdGl2ZS90YXNr
-Lmg6NDE6NjQ6IGVycm9yOg0KPiA+ICd0cmFua193YXJuaW5nJyB3YXMgbm90IGRlY2xhcmVk
-IGluIHRoaXMgc2NvcGUgDQo+ID4gdHJhbmtfd2FybmluZygiaW4ta2VybmVsIG5hdGl2ZSBB
-UEkgaXMgZ29uZSwgcmViYXNlIG92ZXIgUlRETSIpOw0KPiA+IA0KPiA+IEJ1dCB0aGlzICJ0
-cmFua193YXJuaW5nIiBpcyBkZWZpbmVkIGluIHRyYW5rLmggd2hpY2ggaXMgaW5jbHVkZWQN
-Cj4gPiAgIA0KPiANCj4gV2hlcmUgeW91IHVzaW5nIHhlbm8tY29uZmlnIHRvIG9idGFpbiBw
-YXRocyBhbmQgb3RoZXIgY29tcGlsZXIgDQo+IHN3aXRjaGVzPyBJZiBub3QsIHBsZWFzZSBj
-b21wYXJlIHlvdXIgc2V0dGluZ3MuIElmIHllcywgYSBzaW1wbGUgdGVzdCANCj4gY2FzZSB3
-b3VsZCBiZSBuaWNlLiBCdXQgaXQgY2FuJ3QgYmUgdmVyeSBzaW1wbGUgYmVjYXVzZQ0KPiAN
-Cj4gI2luY2x1ZGUgPG5hdGl2ZS90YXNrLmg+DQo+IGludCBtYWluKCkge30NCj4gDQo+IGNv
-bXBpbGVzIHZpYSAiZ2NjICQoeGVuby1jb25maWcgLS1za2luIG5hdGl2ZSAtLWNmbGFncykg
-Li4uIg0KPiANCj4gSmFuDQo+IA0KPiAtLQ0KPiBTaWVtZW5zIEFHLCBDb3Jwb3JhdGUgVGVj
-aG5vbG9neSwgQ1QgUkRBIElPVCBTRVMtREUgQ29ycG9yYXRlIA0KPiBDb21wZXRlbmNlIENl
-bnRlciBFbWJlZGRlZCBMaW51eA0K
+Hi
+
+On Sat, Feb 8, 2020 at 7:51 AM Greg Gallagher <greg@embeddedgreg.com> wrote=
+:
+>
+> Hi,
+>
+> On Sat, Feb 8, 2020 at 6:56 AM Laurentiu-Cristian Duca <laurentiu.duca@gm=
+ail.com> wrote:
+>>
+>> Hello there
+>>
+>>   Greg, any news?
+>>
+Good news, looks like I have a fix.  I'll need a night or two to clean
+up the patch but I should have it up for review by Friday.
+
+-Greg
+
+>> Thanks
+>
+>
+> Still working on it, I=E2=80=99ve only had a couple hours this week to wo=
+rk on it. I=E2=80=99m debugging the irq storm that happens after we trigger=
+ the gpio interrupt.  I plan on spending some time this weekend on it.
+>
+> Greg
+>>
+>>
+>> On 1/31/20, Greg Gallagher <greg@embeddedgreg.com> wrote:
+>> > Hey,
+>> >
+>> > On Wed, Jan 29, 2020 at 11:58 AM Greg Gallagher <greg@embeddedgreg.com=
+>
+>> > wrote:
+>> >>
+>> >> Hey,
+>> >>
+>> >> On Wed, Jan 29, 2020 at 12:07 AM Greg Gallagher <greg@embeddedgreg.co=
+m>
+>> >> wrote:
+>> >> >
+>> >> > Hi,
+>> >> >
+>> >> > On Tue, Jan 28, 2020 at 7:37 AM Laurentiu-Cristian Duca
+>> >> > <laurentiu.duca@gmail.com> wrote:
+>> >> > >
+>> >> > > Again, to make things clear:
+>> >> > > I have tested two modules: one with RTDM gpio-interrupts and one =
+with
+>> >> > > classic linux interrupts.
+>> >> > > The one with RTDM gpio-interrupts:
+>> >> > > - makes kernel freeze on 4.14.71 and 4.19.82 ipipe-enabled kernel=
+s
+>> >> > > - works (but with ipipe warnings when interrupt arrives) in 4.4.7=
+1 and
+>> >> > > 4.9.51
+>> >> > > The one with classic linux interrupts:
+>> >> > > - works in PREEMPT_RT linux (tested on 5.4.5 and 4.19.59 PREEMPT_=
+RT
+>> >> > > non-ipipe non-xenomai)
+>> >> > > - makes kernel freeze when interrupt arrives on 4.14.71 and 4.19.=
+82
+>> >> > > for xenomai ipipe enabled kernels
+>> >> > >
+>> >> > > On 1/28/20, Laurentiu-Cristian Duca <laurentiu.duca@gmail.com> wr=
+ote:
+>> >> > > > This does not happen with non-ipipe enabled kernels.
+>> >> > > > I have tested a classic gpio-interrupt module on PREEMPT_RT and=
+ it
+>> >> > > > works,
+>> >> > > > but when I tested it on an ipipe-enabled kernel (4.14.71 and
+>> >> > > > 4.19.82)
+>> >> > > > got kernel freeze.
+>> >> > > >
+>> >> > > > On 1/28/20, Greg Gallagher <greg@embeddedgreg.com> wrote:
+>> >> > > >> On Tue, Jan 28, 2020 at 7:11 AM Laurentiu-Cristian Duca <
+>> >> > > >> laurentiu.duca@gmail.com> wrote:
+>> >> > > >>
+>> >> > > >>> I forgot to say that I've tested 4.14.71 with xenomai 3.0.9
+>> >> > > >>>
+>> >> > > >>> On 1/28/20, Laurentiu-Cristian Duca <laurentiu.duca@gmail.com=
+>
+>> >> > > >>> wrote:
+>> >> > > >>> > Hello Jan and friends,
+>> >> > > >>> >
+>> >> > > >>> > The situation is the following for bbb:
+>> >> > > >>> > - 4.14.71 and 4.19.82 xenomai-3 master enabled kernels
+>> >> > > >>> > freeze when trying to use gpio-interrupts;
+>> >> > > >>> > when interrupt comes the gpioout is toggled but the system
+>> >> > > >>> > do not respond anymore to keyboard and nothing more is show=
+n on
+>> >> > > >>> > the
+>> >> > > >>> screen
+>> >> > > >>> > - note that even if I try a classic (linux only, non-xenoma=
+i)
+>> >> > > >>
+>> >> > > >> This happens even with non-ipipe enables kernels?
+>> >> > > >
+>> >> > > >>
+>> >> > > >>
+>> >> > > >>> > gpio interrupt handler in 4.19.82 with xenomai-3
+>> >> > > >>> > the system freeze when interrupt comes
+>> >> > > >>> > - 4.9.51 and 4.4.71 xenomai 3.0.5 enabled kernels work
+>> >> > > >>> > blinking gpioout and do not block,
+>> >> > > >>> > but both show warnings when interrupt comes
+>> >> > > >>> > which significantly increase interrupt latency.
+>> >> > > >>> >
+>> >> > > >>> >
+>> >> > > >>> > On 1/28/20, Jan Kiszka <jan.kiszka@siemens.com> wrote:
+>> >> > > >>> >> On 24.01.20 07:24, Greg Gallagher via Xenomai wrote:
+>> >> > > >>> >>> I sent a patch offline, if you could try it that would be
+>> >> > > >>> >>> great.
+>> >> > > >>> >>> I'm
+>> >> > > >>> >>> having issues getting my board set up.
+>> >> > > >>> >>>
+>> >> > > >>> >>
+>> >> > > >>> >> Do we know by now if this is an I-pipe issue or rather
+>> >> > > >>> >> something
+>> >> > > >>> >> cobalt-related?
+>> >> > > >>> >>
+>> >> > > >>> >> Jan
+>> >> > > >>> >>
+>> >> > > >>> >>> On Thu, Jan 23, 2020 at 1:13 PM Greg Gallagher
+>> >> > > >>> >>> <greg@embeddedgreg.com>
+>> >> > > >>> >>> wrote:
+>> >> > > >>> >>>>
+>> >> > > >>> >>>> Hi,
+>> >> > > >>> >>>>
+>> >> > > >>> >>>> On Thu, Jan 23, 2020 at 12:15 PM Laurentiu-Cristian Duca
+>> >> > > >>> >>>> <laurentiu.duca@gmail.com> wrote:
+>> >> > > >>> >>>>>
+>> >> > > >>> >>>>> Hi, the interrupt comes one per second in my test, so t=
+here
+>> >> > > >>> >>>>> is no
+>> >> > > >>> >>>>> flood.
+>> >> > > >>> >>>>> In 4.19 the system it blinks the gpioout but it does no=
+t
+>> >> > > >>> >>>>> respond
+>> >> > > >>> >>>>> to
+>> >> > > >>> >>>>> keyboard and does not show anything more on the screen.
+>> >> > > >>> >>>>
+>> >> > > >>> >>>> Okay, there's a couple things that are different between=
+ 4.4
+>> >> > > >>> >>>> and
+>> >> > > >>> >>>> 4.19
+>> >> > > >>> >>>> that I'm looking into, which is taking me a little long =
+then
+>> >> > > >>> >>>> I
+>> >> > > >>> >>>> thought.  I won't have this patch ready till tomorrow
+>> >> > > >>> >>>> morning.  I
+>> >> > > >>> >>>> finally have beaglebone black hardware, I'll make sure t=
+he
+>> >> > > >>> >>>> kernel
+>> >> > > >>> >>>> boots and then send the patch to you for testing.
+>> >> > > >>> >>>>
+>> >> > > >>> >>>> -Greg
+>> >> > > >>> >>>>
+>> >> > > >>> >>>>
+>> >> > > >>> >>>>>
+>> >> > > >>> >>>>> On Thu, Jan 23, 2020, 19:03 Greg Gallagher
+>> >> > > >>> >>>>> <greg@embeddedgreg.com>
+>> >> > > >>> >>>>> wrote:
+>> >> > > >>> >>>>>>
+>> >> > > >>> >>>>>> Hi,
+>> >> > > >>> >>>>>>
+>> >> > > >>> >>>>>> On Thu, Jan 23, 2020 at 9:21 AM Laurentiu-Cristian Duc=
+a
+>> >> > > >>> >>>>>> via
+>> >> > > >>> >>>>>> Xenomai
+>> >> > > >>> >>>>>> <xenomai@xenomai.org> wrote:
+>> >> > > >>> >>>>>>>
+>> >> > > >>> >>>>>>> Hello xenomai community,
+>> >> > > >>> >>>>>>>
+>> >> > > >>> >>>>>>>      I have successfully tested in xenomai SPI with
+>> >> > > >>> >>>>>>> interrupts
+>> >> > > >>> >>>>>>> on
+>> >> > > >>> >>>>>>> bbb.
+>> >> > > >>> >>>>>>> However, on bbb, if I try to test a basic gpio interr=
+upts
+>> >> > > >>> >>>>>>> driver,
+>> >> > > >>> >>>>>>> problems appear.
+>> >> > > >>> >>>>>>>      Please see details below. I appreciate any idea.
+>> >> > > >>> >>>>>>>
+>> >> > > >>> >>>>>>> 1. xenomai-3 master linux 4.19.82, default dts
+>> >> > > >>> >>>>>>> # insmod xeno_osc-gpio-rtdm.ko
+>> >> > > >>> >>>>>>> [  105.582245]  IRQ number 62 !
+>> >> > > >>> >>>>>>> [  105.585976] after request irq =3D 62
+>> >> > > >>> >>>>>>> System freeze when first interrupt occurs and I must =
+power
+>> >> > > >>> >>>>>>> off.
+>> >> > > >>> >>>>>> Is it possible to use raw_printk and see if the system=
+ is
+>> >> > > >>> >>>>>> still
+>> >> > > >>> >>>>>> working but possibly getting flooded by interrupts?  W=
+hen
+>> >> > > >>> >>>>>> I
+>> >> > > >>> >>>>>> encountered this issue with the BCM2835 port I placed =
+a
+>> >> > > >>> >>>>>> raw_printk
+>> >> > > >>> in
+>> >> > > >>> >>>>>> one of the functions that initially handles the interr=
+upt
+>> >> > > >>> >>>>>> to see
+>> >> > > >>> >>>>>> if
+>> >> > > >>> >>>>>> it
+>> >> > > >>> >>>>>> was being ack'd.
+>> >> > > >>> >>>>>>>
+>> >> > > >>> >>>>>>>
+>> >> > > >>> >>>>>>> 2. xenomai 3.0.5 linux 4.4.71, default dts
+>> >> > > >>> >>>>>>> # insmod xeno_osc-gpio-rtdm.ko
+>> >> > > >>> >>>>>>> [   39.901907]  IRQ number 142 !
+>> >> > > >>> >>>>>>> [   39.905447] after request irq =3D 142
+>> >> > > >>> >>>>>>>
+>> >> > > >>> >>>>>>> When first interrupt occurs:
+>> >> > > >>> >>>>>>> [  322.104560] irq 142, desc: df15e500, depth: 1, cou=
+nt:
+>> >> > > >>> >>>>>>> 0,
+>> >> > > >>> >>>>>>> unhandled:
+>> >> > > >>> >>>>>>> 0
+>> >> > > >>> >>>>>>> [  322.111310] ->handle_irq():  c00998b4,
+>> >> > > >>> >>>>>>> handle_edge_irq+0x0/0x168
+>> >> > > >>> >>>>>>> [  322.117606] ->irq_data.chip(): df156710, 0xdf15671=
+0
+>> >> > > >>> >>>>>>> [  322.122702] ->action():   (null)
+>> >> > > >>> >>>>>>> [  322.126067]    IRQ_NOPROBE set
+>> >> > > >>> >>>>>>> [  322.129252] unexpected IRQ trap at vector 8e
+>> >> > > >>> >>>>>>> [  322.133706] ------------[ cut here ]------------
+>> >> > > >>> >>>>>>> [  322.138530] WARNING: CPU: 0 PID: 0 at
+>> >> > > >>> >>>>>>> kernel/irq/chip.c:843
+>> >> > > >>> >>>>>>> __ipipe_ack_bad_irq+0x24/0x3c()
+>> >> > > >>> >>>>>>> [  322.147244] Modules linked in: xeno_osc_gpio_rtdm(=
+O)
+>> >> > > >>> >>>>>>> [  322.152444] CPU: 0 PID: 0 Comm: swapper/0 Tainted:=
+ G
+>> >> > > >>> >>>>>>> O
+>> >> > > >>> >>>>>>> 4.4.71-ipipe #1
+>> >> > > >>> >>>>>>> [  322.160434] Hardware name: Generic AM33XX (Flatten=
+ed
+>> >> > > >>> >>>>>>> Device
+>> >> > > >>> Tree)
+>> >> > > >>> >>>>>>> [  322.166791] I-pipe domain: Linux
+>> >> > > >>> >>>>>>> [  322.170175] [<c0017bf4>] (unwind_backtrace) from
+>> >> > > >>> >>>>>>> [<c0013d58>]
+>> >> > > >>> >>>>>>> (show_stack+0x10/0x14)
+>> >> > > >>> >>>>>>> [  322.178273] [<c0013d58>] (show_stack) from
+>> >> > > >>> >>>>>>> [<c0368a0c>]
+>> >> > > >>> >>>>>>> (dump_stack+0x9c/0xc4)
+>> >> > > >>> >>>>>>> [  322.185829] [<c0368a0c>] (dump_stack) from
+>> >> > > >>> >>>>>>> [<c003d168>]
+>> >> > > >>> >>>>>>> (warn_slowpath_common+0x78/0xb4)
+>> >> > > >>> >>>>>>> [  322.194280] [<c003d168>] (warn_slowpath_common) fr=
+om
+>> >> > > >>> [<c003d240>]
+>> >> > > >>> >>>>>>> (warn_slowpath_null+0x1c/0x24)
+>> >> > > >>> >>>>>>> [  322.203455] [<c003d240>] (warn_slowpath_null) from
+>> >> > > >>> >>>>>>> [<c00991a8>]
+>> >> > > >>> >>>>>>> (__ipipe_ack_bad_irq+0x24/0x3c)
+>> >> > > >>> >>>>>>> [  322.212542] [<c00991a8>] (__ipipe_ack_bad_irq) fro=
+m
+>> >> > > >>> >>>>>>> [<c00df9b4>]
+>> >> > > >>> >>>>>>> (__ipipe_dispatch_irq+0x78/0x1d8)
+>> >> > > >>> >>>>>>> [  322.221903] [<c00df9b4>] (__ipipe_dispatch_irq) fr=
+om
+>> >> > > >>> [<c03a3948>]
+>> >> > > >>> >>>>>>> (omap_gpio_irq_handler+0x134/0x1a4)
+>> >> > > >>> >>>>>>> [  322.231532] [<c03a3948>] (omap_gpio_irq_handler) f=
+rom
+>> >> > > >>> >>>>>>> [<c0095b1c>]
+>> >> > > >>> >>>>>>> (handle_irq_event_percpu+0xa4/0x304)
+>> >> > > >>> >>>>>>> [  322.241341] [<c0095b1c>] (handle_irq_event_percpu)
+>> >> > > >>> >>>>>>> from
+>> >> > > >>> >>>>>>> [<c0095db4>] (handle_irq_event+0x38/0x5c)
+>> >> > > >>> >>>>>>> [  322.250605] [<c0095db4>] (handle_irq_event) from
+>> >> > > >>> >>>>>>> [<c0099858>]
+>> >> > > >>> >>>>>>> (handle_level_irq+0x88/0xe4)
+>> >> > > >>> >>>>>>> [  322.259235] [<c0099858>] (handle_level_irq) from
+>> >> > > >>> >>>>>>> [<c0095198>]
+>> >> > > >>> >>>>>>> (generic_handle_irq+0x20/0x34)
+>> >> > > >>> >>>>>>> [  322.268045] [<c0095198>] (generic_handle_irq) from
+>> >> > > >>> >>>>>>> [<c009547c>]
+>> >> > > >>> >>>>>>> (__handle_domain_irq+0x64/0xd4)
+>> >> > > >>> >>>>>>> [  322.277127] [<c009547c>] (__handle_domain_irq) fro=
+m
+>> >> > > >>> >>>>>>> [<c00df228>]
+>> >> > > >>> >>>>>>> (__ipipe_do_sync_stage+0x21c/0x25c)
+>> >> > > >>> >>>>>>> [  322.286665] [<c00df228>] (__ipipe_do_sync_stage) f=
+rom
+>> >> > > >>> >>>>>>> [<c00093e4>]
+>> >> > > >>> >>>>>>> (__ipipe_grab_irq+0x5c/0x7c)
+>> >> > > >>> >>>>>>> [  322.295753] [<c00093e4>] (__ipipe_grab_irq) from
+>> >> > > >>> >>>>>>> [<c06462f4>]
+>> >> > > >>> >>>>>>> (__irq_svc+0x54/0x60)
+>> >> > > >>> >>>>>>> [  322.303745] Exception stack(0xc0937f58 to 0xc0937f=
+a0)
+>> >> > > >>> >>>>>>> [  322.309017] 7f40:
+>> >> > > >>> >>>>>>>      00000000 df91d240
+>> >> > > >>> >>>>>>> [  322.317556] 7f60: 00000000 00000000 c092e240 c0938=
+a24
+>> >> > > >>> >>>>>>> 00000000
+>> >> > > >>> >>>>>>> c09f4c3c c09389c4 00000001
+>> >> > > >>> >>>>>>> [  322.326095] 7f80: c064d88c 00000000 00000000 c0937=
+fa8
+>> >> > > >>> >>>>>>> c0080f04
+>> >> > > >>> >>>>>>> c00df35c 60000013 ffffffff
+>> >> > > >>> >>>>>>> [  322.334634] [<c06462f4>] (__irq_svc) from [<c00df3=
+5c>]
+>> >> > > >>> >>>>>>> (ipipe_unstall_root+0x38/0x50)
+>> >> > > >>> >>>>>>> [  322.342822] [<c00df35c>] (ipipe_unstall_root) from
+>> >> > > >>> >>>>>>> [<c0080f04>]
+>> >> > > >>> >>>>>>> (cpu_startup_entry+0x68/0x2b8)
+>> >> > > >>> >>>>>>> [  322.351826] [<c0080f04>] (cpu_startup_entry) from
+>> >> > > >>> >>>>>>> [<c08b0c28>]
+>> >> > > >>> >>>>>>> (start_kernel+0x370/0x3e8)
+>> >> > > >>> >>>>>>> [  322.360361] ---[ end trace 3de49b4cee31ba0b ]---
+>> >> > > >>> >>>>>>>
+>> >> > > >>> >>>>>>> When other interrupts occur:
+>> >> > > >>> >>>>>>> [  322.365188] irq 142, desc: df15e500, depth: 1, cou=
+nt:
+>> >> > > >>> >>>>>>> 0,
+>> >> > > >>> >>>>>>> unhandled:
+>> >> > > >>> >>>>>>> 0
+>> >> > > >>> >>>>>>> [  322.371908] ->handle_irq():  c00998b4,
+>> >> > > >>> >>>>>>> handle_edge_irq+0x0/0x168
+>> >> > > >>> >>>>>>> [  322.378183] ->irq_data.chip(): df156710, 0xdf15671=
+0
+>> >> > > >>> >>>>>>> [  322.383277] ->action():   (null)
+>> >> > > >>> >>>>>>> [  322.386641]    IRQ_NOPROBE set
+>> >> > > >>> >>>>>>> [  322.389825] unexpected IRQ trap at vector 8e
+>> >> > > >>> >>>>>>> [  324.664939] irq 142, desc: df15e500, depth: 1, cou=
+nt:
+>> >> > > >>> >>>>>>> 0,
+>> >> > > >>> >>>>>>> unhandled:
+>> >> > > >>> >>>>>>> 0
+>> >> > > >>> >>>>>>> [  324.671684] ->handle_irq():  c00998b4,
+>> >> > > >>> >>>>>>> handle_edge_irq+0x0/0x168
+>> >> > > >>> >>>>>>> [  324.677980] ->irq_data.chip(): df156710, 0xdf15671=
+0
+>> >> > > >>> >>>>>>> [  324.683077] ->action():   (null)
+>> >> > > >>> >>>>>>> [  324.686442]    IRQ_NOPROBE set
+>> >> > > >>> >>>>>>> ...
+>> >> > > >>> >>>>>>>
+>> >> > > >>> >>>>>>>
+>> >> > > >>> >>>>>>>
+>> >> > > >>> >>>>>>> 3. Source code of the basic gpio interrupt driver:
+>> >> > > >>> >>>>>>>
+>> >> > > >>> >>>>>>> #include <linux/fs.h>
+>> >> > > >>> >>>>>>> #include <linux/gpio.h>
+>> >> > > >>> >>>>>>> #include <linux/interrupt.h>
+>> >> > > >>> >>>>>>> #include <linux/module.h>
+>> >> > > >>> >>>>>>>
+>> >> > > >>> >>>>>>> #include <rtdm/driver.h>
+>> >> > > >>> >>>>>>>
+>> >> > > >>> >>>>>>>
+>> >> > > >>> >>>>>>> static unsigned int irq_num;
+>> >> > > >>> >>>>>>> // bbb gpios that work on PREEMPT_RT linux 4.19.59 an=
+d
+>> >> > > >>> >>>>>>> 5.4.5
+>> >> > > >>> >>>>>>> with
+>> >> > > >>> >>>>>>> default dts
+>> >> > > >>> >>>>>>> static unsigned int gpio_out =3D 48;
+>> >> > > >>> >>>>>>> static unsigned int gpio_in =3D 115;
+>> >> > > >>> >>>>>>> static bool value =3D false;
+>> >> > > >>> >>>>>>> static rtdm_irq_t irq_handle;
+>> >> > > >>> >>>>>>> static int num_of_intr =3D 0;
+>> >> > > >>> >>>>>>>
+>> >> > > >>> >>>>>>>
+>> >> > > >>> >>>>>>> static int gpio_irq_handler(rtdm_irq_t * irq)
+>> >> > > >>> >>>>>>> {
+>> >> > > >>> >>>>>>>      value =3D !value;
+>> >> > > >>> >>>>>>>      gpio_set_value(gpio_out, value); // toggle the l=
+ed
+>> >> > > >>> >>>>>>> everytime
+>> >> > > >>> >>>>>>> irq
+>> >> > > >>> >>>>>>> handler is invoked
+>> >> > > >>> >>>>>>>      trace_printk("GPIO interrupt \n");
+>> >> > > >>> >>>>>>>      num_of_intr++;
+>> >> > > >>> >>>>>>>      return RTDM_IRQ_HANDLED;
+>> >> > > >>> >>>>>>> }
+>> >> > > >>> >>>>>>>
+>> >> > > >>> >>>>>>>
+>> >> > > >>> >>>>>>> static int __init rtdm_init (void)
+>> >> > > >>> >>>>>>> {
+>> >> > > >>> >>>>>>>      int err;
+>> >> > > >>> >>>>>>>
+>> >> > > >>> >>>>>>>      if ((err =3D gpio_request(gpio_in, THIS_MODULE->=
+name))
+>> >> > > >>> >>>>>>> !=3D 0)
+>> >> > > >>> >>>>>>> {
+>> >> > > >>> >>>>>>>          printk(" gpio_request gpio_in failed ! \n");
+>> >> > > >>> >>>>>>>          return err;
+>> >> > > >>> >>>>>>>      }
+>> >> > > >>> >>>>>>>
+>> >> > > >>> >>>>>>>      if ((err =3D gpio_direction_input(gpio_in)) !=3D=
+ 0) {
+>> >> > > >>> >>>>>>>          printk(" gpio_direction_input gpio_in failed=
+ !
+>> >> > > >>> >>>>>>> \n");
+>> >> > > >>> >>>>>>>          gpio_free(gpio_in);
+>> >> > > >>> >>>>>>>
+>> >> > > >>> >>>>>>>          return err;
+>> >> > > >>> >>>>>>>      }
+>> >> > > >>> >>>>>>>
+>> >> > > >>> >>>>>>>      irq_num =3D gpio_to_irq(gpio_in);
+>> >> > > >>> >>>>>>>
+>> >> > > >>> >>>>>>>      printk(" IRQ number %d !  \n",irq_num);
+>> >> > > >>> >>>>>>>
+>> >> > > >>> >>>>>>>      if ((err =3D gpio_request(gpio_out, THIS_MODULE-=
+>name))
+>> >> > > >>> >>>>>>> !=3D 0)
+>> >> > > >>> >>>>>>> {
+>> >> > > >>> >>>>>>>          printk(" gpio_request gpio_out failed ! \n")=
+;
+>> >> > > >>> >>>>>>>          gpio_free(gpio_in);
+>> >> > > >>> >>>>>>>          return err;
+>> >> > > >>> >>>>>>>      }
+>> >> > > >>> >>>>>>>
+>> >> > > >>> >>>>>>>      if ((err =3D gpio_direction_output(gpio_out, 0))=
+ !=3D 0)
+>> >> > > >>> >>>>>>> {
+>> >> > > >>> >>>>>>>          printk(" gpio_direction_input gpio_out faile=
+d !
+>> >> > > >>> >>>>>>> \n");
+>> >> > > >>> >>>>>>>          gpio_free(gpio_out);
+>> >> > > >>> >>>>>>>          gpio_free(gpio_in);
+>> >> > > >>> >>>>>>>          return err;
+>> >> > > >>> >>>>>>>      }
+>> >> > > >>> >>>>>>>
+>> >> > > >>> >>>>>>>      err =3D irq_set_irq_type(irq_num,
+>> >> > > >>> >>>>>>> IRQF_TRIGGER_RISING);
+>> >> > > >>> >>>>>>>
+>> >> > > >>> >>>>>>>      if(err) {
+>> >> > > >>> >>>>>>>          gpio_free(gpio_out);
+>> >> > > >>> >>>>>>>          gpio_free(gpio_in);
+>> >> > > >>> >>>>>>>          printk(" irq_set_irq_type failed ! \n");
+>> >> > > >>> >>>>>>>          return err;
+>> >> > > >>> >>>>>>>      }
+>> >> > > >>> >>>>>>>
+>> >> > > >>> >>>>>>>      err =3D
+>> >> > > >>> >>>>>>>
+>> >> > > >>> rtdm_irq_request(&irq_handle,irq_num,(rtdm_irq_handler_t)gpio=
+_irq_handler,
+>> >> > > >>> >>>>>>>                  RTDM_IRQTYPE_EDGE,THIS_MODULE->name,
+>> >> > > >>> >>>>>>> NULL);
+>> >> > > >>> >>>>>>>
+>> >> > > >>> >>>>>>>      printk("after request irq =3D %d \n",irq_handle.=
+irq);
+>> >> > > >>> >>>>>>>
+>> >> > > >>> >>>>>>>      if(err) {
+>> >> > > >>> >>>>>>>          gpio_free(gpio_out);
+>> >> > > >>> >>>>>>>          gpio_free(gpio_in);
+>> >> > > >>> >>>>>>>          printk(" rtdm_irq_request failed ! \n");
+>> >> > > >>> >>>>>>>          return err;
+>> >> > > >>> >>>>>>>      }
+>> >> > > >>> >>>>>>>
+>> >> > > >>> >>>>>>>      err =3D rtdm_irq_enable(&irq_handle);
+>> >> > > >>> >>>>>>>
+>> >> > > >>> >>>>>>>      if (err < 0) {
+>> >> > > >>> >>>>>>>          printk("rtdm_irq_enable failed \n");
+>> >> > > >>> >>>>>>>          return err;
+>> >> > > >>> >>>>>>>      }
+>> >> > > >>> >>>>>>>      return 0;
+>> >> > > >>> >>>>>>>
+>> >> > > >>> >>>>>>>
+>> >> > > >>> >>>>>>> }
+>> >> > > >>> >>>>>>>
+>> >> > > >>> >>>>>>>
+>> >> > > >>> >>>>>>>
+>> >> > > >>> >>>>>>> static void __exit rtdm_exit (void)
+>> >> > > >>> >>>>>>> {
+>> >> > > >>> >>>>>>>      rtdm_irq_free(&irq_handle);
+>> >> > > >>> >>>>>>>      gpio_free(gpio_out);
+>> >> > > >>> >>>>>>>      gpio_free(gpio_in);
+>> >> > > >>> >>>>>>>
+>> >> > > >>> >>>>>>>      printk("The number of intr is %d \n",num_of_intr=
+);
+>> >> > > >>> >>>>>>> }
+>> >> > > >>> >>>>>>>
+>> >> > > >>> >>>>>>>
+>> >> > > >>> >>>>>>> module_init(rtdm_init);
+>> >> > > >>> >>>>>>> module_exit(rtdm_exit);
+>> >> > > >>> >>>>>>> MODULE_LICENSE("GPL");
+>> >> > > >>> >>>>>>>
+>> >> > > >>> >>>>>>>
+>> >> > > >>> >>>>>>> Thank you,
+>> >> > > >>> >>>>>>> L-C Duca
+>> >> > > >>> >>>>>>>
+>> >> > > >>> >>>>>> My above comments would be good to start debugging the
+>> >> > > >>> >>>>>> issue.
+>> >> > > >>> >>>>>> Looking
+>> >> > > >>> >>>>>> at the ipipe trees I think we are missing some ipipe t=
+hings
+>> >> > > >>> >>>>>> in
+>> >> > > >>> >>>>>> the
+>> >> > > >>> >>>>>> GPIO driver from 4.4 to 4.19.  When I diff the files i=
+t
+>> >> > > >>> >>>>>> looks
+>> >> > > >>> >>>>>> like
+>> >> > > >>> >>>>>> there are some things missing in 4.19.  I can make a p=
+atch
+>> >> > > >>> >>>>>> for
+>> >> > > >>> >>>>>> you
+>> >> > > >>> to
+>> >> > > >>> >>>>>> try, I'll have it ready shortly.
+>> >> > > >>> >>>>>>
+>> >> > > >>> >>>>>> -Greg
+>> >> > > >>> >>>
+>> >> > > >>> >>
+>> >> > > >>> >> --
+>> >> > > >>> >> Siemens AG, Corporate Technology, CT RDA IOT SES-DE
+>> >> > > >>> >> Corporate Competence Center Embedded Linux
+>> >> > > >>> >>
+>> >> > > >>> >
+>> >> > > >>>
+>> >> > > >> I think this is an ipipe issue, I am able to reproduce but I=
+=E2=80=99ll
+>> >> > > >> need a
+>> >> > > >> little more time to confirm my findings, printascii is not wor=
+king
+>> >> > > >> for me
+>> >> > > >> on this SOC.
+>> >> > > >>
+>> >> > > >> Greg
+>> >> > > >>
+>> >> > > >
+>> >> >
+>> >> > This is definitely an ipipe issue so this should not hold up any ne=
+w
+>> >> > Xenomai release.  I was able to get the following back trace with t=
+he
+>> >> > Ipipe debugging turned on.
+>> >> >
+>> >> > root@busterarm:/home# [   75.141504] I-pipe: Detected illicit call
+>> >> > from head domain 'Xenomai'
+>> >> > [   75.141504]         into a regular Linux service
+>> >> > [   75.152566] CPU: 0 PID: 0 Comm: swapper/0 Tainted: G        W  O
+>> >> >   4.19.82-ga0888f089f79-dirty #8
+>> >> > [   75.161755] Hardware name: Generic AM33XX (Flattened Device Tree=
+)
+>> >> > [   75.167890] I-pipe domain: Xenomai
+>> >> > [   75.171334] [<c0112c3c>] (unwind_backtrace) from [<c010d204>]
+>> >> > (show_stack+0x10/0x14)
+>> >> > [   75.179136] [<c010d204>] (show_stack) from [<c08af6d8>]
+>> >> > (dump_stack+0xe8/0x110)
+>> >> > [   75.186502] [<c08af6d8>] (dump_stack) from [<c02111a0>]
+>> >> > (ipipe_test_and_stall_root+0x8/0x34)
+>> >> > [   75.195001] [<c02111a0>] (ipipe_test_and_stall_root) from
+>> >> > [<c08cb874>] (_raw_spin_lock_irqsave+0x14/0x4c)
+>> >> > [   75.204643] [<c08cb874>] (_raw_spin_lock_irqsave) from [<c055366=
+0>]
+>> >> > (gpio_to_desc+0x14/0xd0)
+>> >> > [   75.214200] [<c0553660>] (gpio_to_desc) from [<bf44501c>]
+>> >> > (gpio_irq_handler+0x1c/0x48 [rtdm_test])
+>> >> > [   75.223238] [<bf44501c>] (gpio_irq_handler [rtdm_test]) from
+>> >> > [<c0259bd0>] (xnintr_irq_handler+0xfc/0x4f4)
+>> >> > [   75.232872] [<c0259bd0>] (xnintr_irq_handler) from [<c02121d4>]
+>> >> > (__ipipe_do_sync_stage+0x134/0x218)
+>> >> > [   75.241980] [<c02121d4>] (__ipipe_do_sync_stage) from [<c02123ac=
+>]
+>> >> > (__ipipe_do_sync_pipeline+0x88/0xf8)
+>> >> > [   75.251437] [<c02123ac>] (__ipipe_do_sync_pipeline) from
+>> >> > [<c01179c0>] (__ipipe_grab_irq+0x4c/0xac)
+>> >> > [   75.260455] [<c01179c0>] (__ipipe_grab_irq) from [<c0101b2c>]
+>> >> > (__irq_svc+0x6c/0x78)
+>> >> > [   75.268161] Exception stack(0xc0d01e38 to 0xc0d01e80)
+>> >> > [   75.273252] 1e20:
+>> >> >     0000040c 00000000
+>> >> > [   75.281488] 1e40: 00000001 c15127c0 df94ccdc c14ff280 00000001
+>> >> > c14ff280 0000040d 00000001
+>> >> > [   75.289723] 1e60: 00000020 0000000c df94ccec c0d01e88 df94cce4
+>> >> > c02121c0 600b0113 ffffffff
+>> >> > [   75.297958] [<c0101b2c>] (__irq_svc) from [<c02121c0>]
+>> >> > (__ipipe_do_sync_stage+0x120/0x218)
+>> >> > [   75.306281] [<c02121c0>] (__ipipe_do_sync_stage) from [<c02122f4=
+>]
+>> >> > (ipipe_unstall_root+0x3c/0x48)
+>> >> > [   75.315215] [<c02122f4>] (ipipe_unstall_root) from [<c08cb98c>]
+>> >> > (_raw_spin_unlock_irqrestore+0x34/0x40)
+>> >> > [   75.324672] [<c08cb98c>] (_raw_spin_unlock_irqrestore) from
+>> >> > [<c055a314>] (omap_gpio_irq_handler+0x100/0x138)
+>> >> > [   75.334564] [<c055a314>] (omap_gpio_irq_handler) from [<c0212a9c=
+>]
+>> >> > (__ipipe_dispatch_irq+0xe0/0x21c)
+>> >> > [   75.343757] [<c0212a9c>] (__ipipe_dispatch_irq) from [<c01179c0>=
+]
+>> >> > (__ipipe_grab_irq+0x4c/0xac)
+>> >> > [   75.352427] [<c01179c0>] (__ipipe_grab_irq) from [<c0101b2c>]
+>> >> > (__irq_svc+0x6c/0x78)
+>> >> > [   75.360132] Exception stack(0xc0d01f28 to 0xc0d01f70)
+>> >> > [   75.365226] 1f20:                   1eccd000 00000001 df94ccdc
+>> >> > 00000000 c0c7fcdc c0d089b4
+>> >> > [   75.373462] 1f40: 00000001 c0d089fc c0dc8155 c0abf870 c0c5ea4c
+>> >> > c0d08980 00000000 c0d01f78
+>> >> > [   75.381693] 1f60: c02122c8 c02122ec 600b0013 ffffffff
+>> >> > [   75.386788] [<c0101b2c>] (__irq_svc) from [<c02122ec>]
+>> >> > (ipipe_unstall_root+0x34/0x48)
+>> >> > [   75.394677] [<c02122ec>] (ipipe_unstall_root) from [<c017009c>]
+>> >> > (do_idle+0xd8/0x1d4)
+>> >> > [   75.402475] [<c017009c>] (do_idle) from [<c0170414>]
+>> >> > (cpu_startup_entry+0x18/0x1c)
+>> >> > [   75.410102] [<c0170414>] (cpu_startup_entry) from [<c0c00da0>]
+>> >> > (start_kernel+0x3f8/0x4a8)
+>> >> > [   75.418341] GPIO interrupt
+>> >> >
+>> >> > Looks like we are returning from the ipipe domain into the Linux
+>> >> > domain.  This is probably causing the system to lock up.  I'll
+>> >> > hopefully finish this up this week unless someone else sees the
+>> >> > problem.
+>> >> >
+>> >> > Thanks
+>> >> >
+>> >> > Greg
+>> >>
+>> >> I think I have this solved, patch up tonight or tomorrow depending on
+>> >> testing.
+>> >>
+>> >> -Greg
+>> >
+>> > This issue ends up being two issues.  The first is the stack trace
+>> > above.  It's being caused by calling a Linux call while in the head
+>> > domain.  This scenario is described in the ipipe documentation, where
+>> > the head domain tries to return into the root domain.  To fix this
+>> > don't use gpio_set_value in the interrupt handler to set the gpio
+>> > value use gpiod_set_raw_value instead.  The xenomai gpio driver
+>> > (gpio-core.c) can be used as a guide when using the Linux gpiolib in
+>> > the RTDM context.  I'm not sure if the trace_printk is safe to have
+>> > there as well, but I'm assuming that's just there for debug purposes.
+>> > The second issue is trickier to debug and is what is causing the lock
+>> > up.  From my test runs with limit debugging tools, since printascii
+>> > isn't working great on beaglebone for some reason, it looks like the
+>> > gpio interrupt is flooding the system and causing it to be
+>> > unresponsive.  This is probably to do with not holding the irq or
+>> > possibly there's an issue when the driver is suppose to ack it.
+>> > Anyway, I'll dig into that now and hopefully wrap that up this
+>> > weekend.  If anyone has gotten printascii to work with beaglebone and
+>> > could post there config to get it working that would be greatly
+>> > appreciated.
+>> >
+>> > -Greg
+>> >
+>>
+>>
 
