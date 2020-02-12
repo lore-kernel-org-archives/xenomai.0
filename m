@@ -1,12 +1,18 @@
-Date: Tue, 11 Feb 2020 17:59:37 +0100 (CET)
-From: g.strobbe@telenet.be
-Message-ID: <2127311423.64174230.1581440377143.JavaMail.zimbra@telenet.be>
-In-Reply-To: <62607370399744fa9b6b6b3fe761f190@meg.mee.com>
-References: <62607370399744fa9b6b6b3fe761f190@meg.mee.com>
-Subject: Re: Installing RTnet
+From: Carsten EHRMANN <Carsten.Ehrmann@diehl.com>
+Subject: RE: Migrate project from Debian 8 Xenomai 2.x to Debain 9 Xenomai 3.x
+Date: Wed, 12 Feb 2020 06:49:33 +0000
+Message-ID: <b4806aec7c5746bc83fa897b09ce7ab1@RCDC-MAIL09.corp.diehl.com>
+References: <23edaf750b0b41ef9a129bbaf2758d9f@RCDC-MAIL09.corp.diehl.com>
+ <0281e4a5-a2b2-bac5-1e30-ea2bb85f3d8d@siemens.com>
+ <373cc865d6c34dda997ac6745bae99cd@RCDC-MAIL09.corp.diehl.com>
+ <9cc5a0de-1db9-e46f-7aa8-30e41b1ac926@siemens.com>
+ <f92ca27d1ba34380b47c0c451da4f61b@RCDC-MAIL09.corp.diehl.com>
+ <925e50f4-8395-2a15-3654-73ea1f241f1c@siemens.com>
+In-Reply-To: <925e50f4-8395-2a15-3654-73ea1f241f1c@siemens.com>
+Content-Language: de-DE
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 7bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,84 +21,58 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "Kloock, Lennard" <Lennard.Kloock@meg.mee.com>
-Cc: xenomai <xenomai@xenomai.org>
+To: Jan Kiszka <jan.kiszka@siemens.com>, "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-
------ On Feb 10, 2020, at 2:10 PM, xenomai xenomai@xenomai.org wrote:
-
-> Hello all,
-> 
-> i have succesfully installed Xenomai 3.0.5 with linux 4.9.90, but I am having
-> trouble installing RTnet on an i218-lm.
-> 
-> I followed these steps:
-> 1) ifconfig eth0 down
-> 2) rmmod e1000e
-> 3) configured /usr/xenomai/etc/rtnet.conf according to
-> https://gitlab.denx.de/Xenomai/xenomai/-/wikis/RTnet
-> 4) modprobe rtpacket
-> 5) modprobe rtnet
-> 6) modprobe rt_e1000e
-> 
-> But now if I try to run rtnet with  ./rtnet start I get the following errors:
-> 
-> ioctl: No such device
-> ioctl: No such device
-> ioctl: No such device
-> ioctl: No such device
-> ioctl (add): No such device
-> ioctl (add): No such device
-> ioctl (add): No such device
-> ioctl (add): No such device
-> vnic0: ERROR while getting interface flags: No such device
-> SIOCSIFADDR: No such device
-> vnic0: ERROR while getting interface flags: No such device
-> SIOCSIFNETMASK: No such device
-> Waiting for all slaves...ioctl: No such device
-> ioctl: No such device
-> 
-> ./rtifconfig only show the local loopback but not rteth0
-> 
-> Dmesg shows that rtnet and the driver are being loaded
-> 
-> [  391.184595]
->               *** RTnet for Xenomai v3.0.5 ***
-> 
-> [  391.184596] RTnet: initialising real-time networking
-> [  400.034853] rt_e1000e: Intel(R) PRO/1000 Network Driver - 1.5.1-k-rt
-> [  400.034854] rt_e1000e: Copyright(c) 1999 - 2011 Intel Corporation.
-> 
-> But with lspci -knn it shows that the NIC doesn't pick up the real time driver:
-> 
-> 00:1f.6 Ethernet controller [0200]: Intel Corporation Ethernet Connection
-> I219-LM [8086:156f] (rev 21)
->                Subsystem: Gigabyte Technology Co., Ltd Ethernet Connection I219-LM [1458:e000]
->                Kernel modules: e1000e
-> 
-> Did I do something wrong or is my I219-LM NIC not supported by RTnet?
-> 
-> Many Thanks
-> 
-> Lennard Kloock
-
-Hey Lennard,
-
-I had the same problem but with an Intel I219-V Ethernet Controller.
-
-See https://www.mail-archive.com/xenomai@xenomai.org/msg16000.html
-
-It runs nice now on my setup.
-
-I checked my /xenomai/kernel/drivers/net/drivers/e1000e/hw.h and your device is in as well so it should be supported.
-
-#define E1000_DEV_ID_PCH_SPT_I219_LM		0x156F	/* SPT PCH */
-
-Best regards,
-
-Gino 
-
-
-
-
+SGkgSmFuLA0KDQphZnRlciBhIGxpdHRsZSB0cnkgYW5kIGVycm9yLCBpdCB3b3JrcyEgTm93
+IEkgaGF2ZSB0byBpbnRlZ3JhdGUgaXQgdG8gb3VyIHByb2plY3QgZmlsZSBvciBtYWtlZmls
+ZS4NCg0KVGhhbmtzIGEgbG90IGZvciB5b3VyIGhlbHAhDQoNCkJlc3QgcmVnYXJkcw0KQ2Fy
+c3Rlbg0KDQoNCg0KX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
+X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
+X19fX19fX19fDQpCaXR0ZSDDvGJlcmxlZ2VuIFNpZSwgb2IgU2llIGRpZXNlIE5hY2hyaWNo
+dCB3aXJrbGljaCBhdXNkcnVja2VuIG3DvHNzZW4vIGJlZm9yZSBwcmludGluZywgdGhpbmsg
+YWJvdXQgZW52aXJvbm1lbnRhbCByZXNwb25zaWJpbGl0eS4NCkRpZWhsIE1ldGVyaW5nIEdt
+YkgsIEluZHVzdHJpZXN0cmHDn2UgMTMsIDkxNTIyIEFuc2JhY2gNClRlbGVmb24gKyA0OSA5
+ODEgMTgwNiAwLCBUZWxlZmF4ICs0OSA5ODEgMTgwNiA2MTUNClNpdHogZGVyIEdlc2VsbHNj
+aGFmdDogQW5zYmFjaCwgUmVnaXN0ZXJnZXJpY2h0OiBBbnNiYWNoIEhSQiA2OQ0KR2VzY2jD
+pGZ0c2bDvGhyZXI6IERyLiBDaHJpc3RvZiBCb3NiYWNoIChTcHJlY2hlciksIFRob21hcyBH
+YXN0bmVyLCBKZWFuLUZyYW7Dp29pcyBNYXJndWV0DQpEZXIgSW5oYWx0IGRlciB2b3JzdGVo
+ZW5kZW4gRS1NYWlsIGlzdCBuaWNodCByZWNodGxpY2ggYmluZGVuZC4gRGllc2UgRS1NYWls
+IGVudGjDpGx0IHZlcnRyYXVsaWNoZSB1bmQvb2RlciByZWNodGxpY2ggZ2VzY2jDvHR6dGUg
+SW5mb3JtYXRpb25lbi4gSW5mb3JtaWVyZW4gU2llIHVucyBiaXR0ZSwgd2VubiBTaWUgZGll
+c2UgRS1NYWlsIGbDpGxzY2hsaWNoZXJ3ZWlzZSBlcmhhbHRlbiBoYWJlbi4gQml0dGUgbMO2
+c2NoZW4gU2llIGluIGRpZXNlbSBGYWxsIGRpZSBOYWNocmljaHQuIEplZGUgdW5lcmxhdWJ0
+ZSBGb3JtIGRlciBSZXByb2R1a3Rpb24sIEJla2FubnRnYWJlLCDDhG5kZXJ1bmcsIFZlcnRl
+aWx1bmcgdW5kL29kZXIgUHVibGlrYXRpb24gZGllc2VyIEUtTWFpbCBpc3Qgc3RyZW5nc3Rl
+bnMgdW50ZXJzYWd0Lg0KVGhlIGNvbnRlbnRzIG9mIHRoZSBhYm92ZSBtZW50aW9uZWQgZS1t
+YWlsIGlzIG5vdCBsZWdhbGx5IGJpbmRpbmcuIFRoaXMgZS1tYWlsIGNvbnRhaW5zIGNvbmZp
+ZGVudGlhbCBhbmQvb3IgbGVnYWxseSBwcm90ZWN0ZWQgaW5mb3JtYXRpb24uIFBsZWFzZSBp
+bmZvcm0gdXMgaWYgeW91IGhhdmUgcmVjZWl2ZWQgdGhpcyBlLW1haWwgYnkgbWlzdGFrZSBh
+bmQgZGVsZXRlIGl0IGluIHN1Y2ggYSBjYXNlLiBFYWNoIHVuYXV0aG9yaXplZCByZXByb2R1
+Y3Rpb24sIGRpc2Nsb3N1cmUsIGFsdGVyYXRpb24sIGRpc3RyaWJ1dGlvbiBhbmQvb3IgcHVi
+bGljYXRpb24gb2YgdGhpcyBlLW1haWwgaXMgc3RyaWN0bHkgcHJvaGliaXRlZC4NCkluZm9y
+bWF0aW9uZW4genVtIERhdGVuc2NodXR6IGZpbmRlbiBTaWUgYXVmIHVuc2VyZXIgSG9tZXBh
+Z2UuDQpodHRwczovL3d3dy5kaWVobC5jb20vbWV0ZXJpbmcvZGUvZGllaGwtbWV0ZXJpbmcv
+ZGF0YS1wcm90ZWN0aW9uDQpJbmZvcm1hdGlvbiBhYm91dCBkYXRhIHByb3RlY3Rpb24gY2Fu
+IGJlIGZvdW5kIG9uIG91ciBob21lcGFnZS4NCmh0dHBzOi8vd3d3LmRpZWhsLmNvbS9tZXRl
+cmluZy9lbi9kaWVobC1tZXRlcmluZy9kYXRhLXByb3RlY3Rpb24NCg0KDQotLS0tLU9yaWdp
+bmFsIE1lc3NhZ2UtLS0tLQ0KRnJvbTogSmFuIEtpc3prYSA8amFuLmtpc3prYUBzaWVtZW5z
+LmNvbT4gDQpTZW50OiBNb25kYXksIEZlYnJ1YXJ5IDEwLCAyMDIwIDU6MTggUE0NClRvOiBD
+YXJzdGVuIEVIUk1BTk4gPENhcnN0ZW4uRWhybWFubkBkaWVobC5jb20+OyB4ZW5vbWFpQHhl
+bm9tYWkub3JnDQpTdWJqZWN0OiBSZTogTWlncmF0ZSBwcm9qZWN0IGZyb20gRGViaWFuIDgg
+WGVub21haSAyLnggdG8gRGViYWluIDkgWGVub21haSAzLngNCg0KT24gMTAuMDIuMjAgMTY6
+MjcsIENhcnN0ZW4gRUhSTUFOTiB3cm90ZToNCj4gSGkgSmFuLA0KPiANCj4gSSBtYWRlIGEg
+c2ltcGxlIHJlcHJvZHVjdGlvbiBleGFtcGxlIChzZWUgYXR0YWNoZWQgNCBmaWxlcykuDQo+
+IEkgZ290IHRoaXMgZXJyb3IgYWdhaW46DQo+IA0KPiBJbiBmaWxlIGluY2x1ZGVkIGZyb20g
+bWFpbi5jcHA6Mjg6MDoNCj4gL3Vzci94ZW5vbWFpL2luY2x1ZGUvdHJhbmsvbmF0aXZlL3Rh
+c2suaDogSW4gZnVuY3Rpb24g4oCYaW50IHJ0X3Rhc2tfbm90aWZ5KFJUX1RBU0sqLCBydF9z
+aWdzZXRfdCnigJk6DQo+IC91c3IveGVub21haS9pbmNsdWRlL3RyYW5rL25hdGl2ZS90YXNr
+Lmg6NDE6NjQ6IGVycm9yOiDigJh0cmFua193YXJuaW5n4oCZIHdhcyBub3QgZGVjbGFyZWQg
+aW4gdGhpcyBzY29wZQ0KPiAgICB0cmFua193YXJuaW5nKCJpbi1rZXJuZWwgbmF0aXZlIEFQ
+SSBpcyBnb25lLCByZWJhc2Ugb3ZlciBSVERNIik7DQo+IA0KDQpZb3VyIG1ha2VmaWxlIGlz
+IGluY29tcGxldGUsIGJ1dCB0aGlzIHdvcmtzIGZpbmUgaGVyZSB3aXRoIFhlbm9tYWkgMy4x
+IChJJ20gc3VyZSBpdCBkb2VzIGVxdWFsbHkgd2VsbCB3aXRoIDMuMC54KToNCg0KZysrIC1v
+IG1haW4gbWFpbi5jcHAgJCh4ZW5vLWNvbmZpZyAtLXNraW49bmF0aXZlIC0tY2ZsYWdzIC0t
+bGRmbGFncykNCg0KSmFuDQoNCi0tDQpTaWVtZW5zIEFHLCBDb3Jwb3JhdGUgVGVjaG5vbG9n
+eSwgQ1QgUkRBIElPVCBTRVMtREUgQ29ycG9yYXRlIENvbXBldGVuY2UgQ2VudGVyIEVtYmVk
+ZGVkIExpbnV4DQo=
 
