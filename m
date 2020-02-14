@@ -1,12 +1,13 @@
-From: "Q. Gylstorff" <Quirin.Gylstorff@siemens.com>
-Subject: [xenomai-images PATCH v2 9/9] recipes-xenomai/xenomai.inc: add
- exception handling
-Date: Fri, 14 Feb 2020 13:27:03 +0100
-Message-Id: <20200214122703.7947-10-Quirin.Gylstorff@siemens.com>
-In-Reply-To: <20200214122703.7947-1-Quirin.Gylstorff@siemens.com>
-References: <20200214122703.7947-1-Quirin.Gylstorff@siemens.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <CAPnNZ0UJEFhQXnmkH=RyBWVuXWiymw-S3jCcH+U5B_1VESALJA@mail.gmail.com>
+ <cd4f3b32-d2bf-a96d-527a-5f7f3403e4d2@siemens.com>
+In-Reply-To: <cd4f3b32-d2bf-a96d-527a-5f7f3403e4d2@siemens.com>
+From: Antoine Hoarau <antoine@flr.io>
+Date: Fri, 14 Feb 2020 14:46:40 +0100
+Message-ID: <CAPnNZ0Vt=mVk-JQoZM3TSGBBFOwqc+7KtnhtHVR89iLBo+cRqg@mail.gmail.com>
+Subject: Re: undefined symbol in tests
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,39 +16,34 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
+To: Jan Kiszka <jan.kiszka@siemens.com>
+Cc: Xenomai <xenomai@xenomai.org>
 
-From: Quirin Gylstorff <quirin.gylstorff@siemens.com>
+I generated the debian then installed them in the "xenomai computer"
+Maybe something is wrong in the debian script.
+The computer is an IPC127e.
 
-If SRCREV is not available for given DISTRO_ARCH and xenomai version
-get_srcrev raise a FetchError exception. Avoid a build error be
-catching the exception.
+Le ven. 14 f=C3=A9vr. 2020 =C3=A0 10:53, Jan Kiszka <jan.kiszka@siemens.com=
+> a =C3=A9crit :
 
-Signed-off-by: Quirin Gylstorff <quirin.gylstorff@siemens.com>
----
- recipes-xenomai/xenomai/xenomai.inc | 8 +++++++-
- 1 file changed, 7 insertions(+), 1 deletion(-)
-
-diff --git a/recipes-xenomai/xenomai/xenomai.inc b/recipes-xenomai/xenomai/xenomai.inc
-index 3df635c..0a082a4 100644
---- a/recipes-xenomai/xenomai/xenomai.inc
-+++ b/recipes-xenomai/xenomai/xenomai.inc
-@@ -13,7 +13,13 @@ inherit dpkg
- 
- PROVIDES += "xenomai-kernel-source xenomai-runtime xenomai-runtime-dbgsym libxenomai1 libxenomai-dev libxenomai1-dbgsym"
- # use bitbake get_srcrev to get the current commit id
--COMMIT="${@bb.fetch2.get_srcrev(d).strip('AUTOINC+')}"
-+def get_commit(d):
-+    try:
-+        return bb.fetch2.get_srcrev(d).strip('AUTOINC+')
-+    except bb.fetch2.FetchError:
-+        return ""
-+
-+COMMIT="${@get_commit(d)}"
- do_prepare_build() {
- 	# The xenomai-kernel-source package is supposed to be generic, but we
- 	# build it per architecture in Isar, and those packages happen to be
--- 
-2.20.1
-
-
+> On 14.02.20 10:48, Antoine Hoarau via Xenomai wrote:
+> > If I run xeno tests I get :
+> > symbol lookup error: /usr/lib/libalchemy.so.0: undefined symbol:
+> __real_free
+> > /usr/lib/xenomai/testsuite/smokey: test dlopen failed: Unknown error -1=
+27
+> > child 1458 returned: exited with status 1
+> >
+> > Tests on 3.1 release.
+> >
+>
+> As this ran through our testlab here, there must be some local deviation
+> in your build. Can you provide more details on how and for what you built=
+?
+>
+> Jan
+>
+> --
+> Siemens AG, Corporate Technology, CT RDA IOT SES-DE
+> Corporate Competence Center Embedded Linux
+>
