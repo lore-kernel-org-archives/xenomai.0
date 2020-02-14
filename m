@@ -1,12 +1,12 @@
-Subject: Re: [xenomai-images PATCH 08/11] ci: add new build options
+Subject: Re: [xenomai-images PATCH 07/11] ci: Remove proxy settings
 References: <20200214073259.1769-1-Quirin.Gylstorff@siemens.com>
- <20200214073259.1769-9-Quirin.Gylstorff@siemens.com>
- <b5c2503b-e08e-9214-3546-feb03c5f74ea@siemens.com>
+ <20200214073259.1769-8-Quirin.Gylstorff@siemens.com>
+ <959fd91e-88a5-bec5-bbda-87b3844291a9@siemens.com>
 From: Gylstorff Quirin <quirin.gylstorff@siemens.com>
-Message-ID: <10a58e2b-7d30-595e-02a7-b74e3723c2d1@siemens.com>
-Date: Fri, 14 Feb 2020 10:19:28 +0100
+Message-ID: <cf122305-070d-d2ec-770f-b22397ac0964@siemens.com>
+Date: Fri, 14 Feb 2020 10:21:38 +0100
 MIME-Version: 1.0
-In-Reply-To: <b5c2503b-e08e-9214-3546-feb03c5f74ea@siemens.com>
+In-Reply-To: <959fd91e-88a5-bec5-bbda-87b3844291a9@siemens.com>
 Content-Type: text/plain; charset="utf-8"; format="flowed"
 Content-Language: en-US
 Content-Transfer-Encoding: 8bit
@@ -22,64 +22,85 @@ To: Jan Kiszka <jan.kiszka@siemens.com>, xenomai@xenomai.org
 
 
 
-On 2/14/20 9:48 AM, Jan Kiszka wrote:
+On 2/14/20 9:47 AM, Jan Kiszka wrote:
 > On 14.02.20 08:32, Q. Gylstorff wrote:
 >> From: Quirin Gylstorff <quirin.gylstorff@siemens.com>
 >>
 >> Signed-off-by: Quirin Gylstorff <quirin.gylstorff@siemens.com>
 >> ---
->>   .gitlab-ci.yml | 30 ++++++++++++++++++++++++++++++
->>   1 file changed, 30 insertions(+)
+>>   .gitlab-ci.yml | 8 ++------
+>>   1 file changed, 2 insertions(+), 6 deletions(-)
 >>
 >> diff --git a/.gitlab-ci.yml b/.gitlab-ci.yml
->> index 54542b1..608d5db 100644
+>> index b8dbbc5..54542b1 100644
 >> --- a/.gitlab-ci.yml
 >> +++ b/.gitlab-ci.yml
->> @@ -147,3 +147,33 @@ lava-test:board-x86-64-efi:linux-4.4:
+>> @@ -14,10 +14,6 @@ stages:
+>>   variables:
+>>     GIT_STRATEGY: clone
+>> -  http_proxy: "$HTTP_PROXY"
+>> -  https_proxy: "$HTTPS_PROXY"
+>> -  ftp_proxy: "$FTP_PROXY"
+>> -  no_proxy: "$NO_PROXY"
+> 
+> Even if we no longer need it, let's keep this as pattern
+Sure
+> 
+>>     XENOMAI_BUILD_OPTION: ":opt-xenomai-next.yml"
+>>     LINUX_BUILD_OPTION: ":opt-linux-latest.yml"
+>>     ISAR_IMAGE: demo-image
+>> @@ -31,13 +27,13 @@ default:
+>>   .add-lava-ssh-config:
+>>     before_script:
+>>       - mkdir -p -m=700 ~/.ssh
+>> -    - echo "ProxyCommand socat - PROXY:$(echo $https_proxy | sed 
+>> 's|.*://\([^:]*\).*|\1|'):%h:%p,proxyport=$(echo $https_proxy | sed 
+>> 's|.*:\([0-9]*\)$|\1|')" >> ~/.ssh/config && chmod 600 ~/.ssh/config
+> 
+> This should likely be fixed to take empty proxies into account. Then it 
+> can stay.
+
+That will be a long line in the ci file, but the alternative to use a 
+extra script is IHMO not much better.
+
+Quirin
+> 
+>>       - echo "$LAVA_SSH_UPLOAD_KEY" | tr -d '\r' > ~/.ssh/lava_id_rsa 
+>> && chmod 600 ~/.ssh/lava_id_rsa
+>>       - echo "$LAVA_SSH_KNOWN_HOSTS" >> ~/.ssh/known_hosts && chmod 
+>> 644 ~/.ssh/known_hosts
+>>   .build:
+>>     extends: .add-lava-ssh-config
+>>     stage: build
+>> +  image: kasproject/kas-isar:latest
+> 
+> Unrelated - and incorrect - change.
+> 
+>>     script:
+>>       - kas build 
+>> kas.yml:board-${TARGET}.yml${XENOMAI_BUILD_OPTION}${LINUX_BUILD_OPTION}${BUILD_OPTIONS} 
+>>
+>>       - scripts/deploy_for_testing.sh ${TARGET}
+>> @@ -92,6 +88,7 @@ build:board-hikey:
 >>     variables:
->>       TARGET: x86-64
->>       DEPLOY_DIR_EXTENSION: "4.4"
+>>       TARGET: hikey
+>>       BUILD_OPTIONS: ":opt-lava-test.yml"
 >> +
->> +build:board-beaglebone:xenomai-3.0.x:
->> +  extends: .build
->> +  variables:
->> +    TARGET: beagle-bone-black
->> +    XENOMAI_BUILD_OPTION: ":opt-xenomai-3.0.x.yml"
->> +    BUILD_OPTIONS: ":opt-lava-test.yml"
->> +    DEPLOY_DIR_EXTENSION: "xenomai-3.0.x"
->> +
->> +lava-test:board-beaglebone:xenomai-3.0.x:
->> +  needs: [ "build:board-beaglebone:xenomai-3.0.x" ]
->> +  extends: .test
->> +  variables:
->> +    TARGET: beaglebone
->> +    DEPLOY_DIR_EXTENSION: "xenomai-3.0.x"
->> +
->> +build:board-x86-64-efi:xenomai-3.0.x:
->> +  extends: .build
->> +  variables:
->> +    TARGET: x86-64-efi
->> +    XENOMAI_BUILD_OPTION: ":opt-xenomai-3.0.x.yml"
->> +    BUILD_OPTIONS: ":opt-lava-test.yml"
->> +    DEPLOY_DIR_EXTENSION: "xenomai-3.0.x"
->> +
->> +lava-test:board-x86-64-efi:xenomai-3.0.x:
->> +  needs: [ "build:board-x86-64-efi:xenomai-3.0.x" ]
->> +  extends: .test
->> +  variables:
->> +    TARGET: x86-64
->> +    DEPLOY_DIR_EXTENSION: "xenomai-3.0.x"
+>>   lava-test:board-hikey:
+>>     needs: [ "build:board-hikey" ]
+>>     extends: .test
+>> @@ -104,7 +101,6 @@ build:board-beaglebone:
+>>       TARGET: beagle-bone-black
+>>       BUILD_OPTIONS: ":opt-lava-test.yml"
+>> -
+>>   lava-test:board-beaglebone:
+>>     needs: [ "build:board-beaglebone" ]
+>>     extends: .test
 >>
 > 
-> See my comment on the other patch: A set of xenomai-3.0.x/linux-latest 
-> for x86 and arm would be good enough for now
+> Unrelated changes.
 > 
 > Jan
 > 
-
-I will remove 4.4 and let xenomai-3.0.x stay. v2 will be posted as soon
-as the tests are run.
-
-Quirin
 
 
