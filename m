@@ -1,7 +1,8 @@
 From: "Q. Gylstorff" <Quirin.Gylstorff@siemens.com>
-Subject: [xenomai-images PATCH 04/11] recipes-kernel/linux: Add 4.4
-Date: Fri, 14 Feb 2020 08:32:54 +0100
-Message-Id: <20200214073259.1769-5-Quirin.Gylstorff@siemens.com>
+Subject: [xenomai-images PATCH 09/11] recipes-xenomai/xenomai.inc: Add missing
+ libxenomai-dev
+Date: Fri, 14 Feb 2020 08:32:59 +0100
+Message-Id: <20200214073259.1769-10-Quirin.Gylstorff@siemens.com>
 In-Reply-To: <20200214073259.1769-1-Quirin.Gylstorff@siemens.com>
 References: <20200214073259.1769-1-Quirin.Gylstorff@siemens.com>
 MIME-Version: 1.0
@@ -18,37 +19,27 @@ To: xenomai@xenomai.org
 
 From: Quirin Gylstorff <quirin.gylstorff@siemens.com>
 
-Add recipe for linux 4.4.
+To build against libxenomai headers are necessary.
 
 Signed-off-by: Quirin Gylstorff <quirin.gylstorff@siemens.com>
 ---
- opt-linux-4.4.yml | 17 +++++++++++++++++
- 1 file changed, 17 insertions(+)
- create mode 100644 opt-linux-4.4.yml
+ recipes-xenomai/xenomai/xenomai.inc | 3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
 
-diff --git a/opt-linux-4.4.yml b/opt-linux-4.4.yml
-new file mode 100644
-index 0000000..bb24a04
---- /dev/null
-+++ b/opt-linux-4.4.yml
-@@ -0,0 +1,17 @@
-+#
-+# Xenomai Real-Time System
-+#
-+# Copyright (c) Siemens AG, 2020
-+#
-+# Authors:
-+#  Quirin Gylstorff <quirin.gylstorff@siemens.com>
-+#
-+# SPDX-License-Identifier: MIT
-+#
-+
-+header:
-+  version: 8
-+
-+local_conf_header:
-+  linux-xenomai-latest: |
-+    PREFERRED_VERSION_linux-xenomai = "4.4%"
+diff --git a/recipes-xenomai/xenomai/xenomai.inc b/recipes-xenomai/xenomai/xenomai.inc
+index bd07347..3df635c 100644
+--- a/recipes-xenomai/xenomai/xenomai.inc
++++ b/recipes-xenomai/xenomai/xenomai.inc
+@@ -11,8 +11,7 @@
+ 
+ inherit dpkg
+ 
+-PROVIDES += "xenomai-kernel-source xenomai-runtime xenomai-runtime-dbgsym libxenomai1-dbgsym"
+-
++PROVIDES += "xenomai-kernel-source xenomai-runtime xenomai-runtime-dbgsym libxenomai1 libxenomai-dev libxenomai1-dbgsym"
+ # use bitbake get_srcrev to get the current commit id
+ COMMIT="${@bb.fetch2.get_srcrev(d).strip('AUTOINC+')}"
+ do_prepare_build() {
 -- 
 2.20.1
 
