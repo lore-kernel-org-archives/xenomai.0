@@ -1,7 +1,10 @@
 From: "Q. Gylstorff" <Quirin.Gylstorff@siemens.com>
-Subject: [xenomai-images PATCH 0/2] Add support for x86(32bit) 
-Date: Fri, 14 Feb 2020 09:38:17 +0100
-Message-Id: <20200214083819.31451-1-Quirin.Gylstorff@siemens.com>
+Subject: [xenomai-images PATCH 1/2] recipes-kernel/linux-xenomai: Add support
+ for DISTRO_ARCH i386
+Date: Fri, 14 Feb 2020 09:38:18 +0100
+Message-Id: <20200214083819.31451-2-Quirin.Gylstorff@siemens.com>
+In-Reply-To: <20200214083819.31451-1-Quirin.Gylstorff@siemens.com>
+References: <20200214083819.31451-1-Quirin.Gylstorff@siemens.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
@@ -16,19 +19,24 @@ To: xenomai@xenomai.org
 
 From: Quirin Gylstorff <quirin.gylstorff@siemens.com>
 
-Add missing entry for x86 32 build. Allow overwrite of derived
-isar layers. Patch is send upstream to isar.
+Signed-off-by: Quirin Gylstorff <quirin.gylstorff@siemens.com>
+---
+ recipes-kernel/linux/linux-xenomai.inc | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-Quirin Gylstorff (2):
-  recipes-kernel/linux-xenomai: Add support for DISTRO_ARCH i386
-  recipes-kernel/linux: Allow overwrite of KERNEL_DEFCONFIG
-
- kas.yml                                       |  4 +++
- ...inux-Weak-KERNEL_DEFCONFIG-to-allow-.patch | 29 +++++++++++++++++++
- recipes-kernel/linux/linux-xenomai.inc        |  4 +--
- 3 files changed, 35 insertions(+), 2 deletions(-)
- create mode 100644 patches/0001-recipes-kernel-linux-Weak-KERNEL_DEFCONFIG-to-allow-.patch
-
+diff --git a/recipes-kernel/linux/linux-xenomai.inc b/recipes-kernel/linux/linux-xenomai.inc
+index ad3629b..3407b82 100644
+--- a/recipes-kernel/linux/linux-xenomai.inc
++++ b/recipes-kernel/linux/linux-xenomai.inc
+@@ -34,7 +34,7 @@ dpkg_runbuild_prepend() {
+ 	arm64)
+ 		ARCH=arm64
+ 		;;
+-	amd64)
++	amd64|i386)
+ 		ARCH=x86
+ 		;;
+ 	*)
 -- 
 2.20.1
 
