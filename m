@@ -1,7 +1,9 @@
 From: "Q. Gylstorff" <Quirin.Gylstorff@siemens.com>
-Subject: [xenomai-images PATCH 00/11] Add 4.4 testing and cleanup ci
-Date: Fri, 14 Feb 2020 08:32:50 +0100
-Message-Id: <20200214073259.1769-1-Quirin.Gylstorff@siemens.com>
+Subject: [xenomai-images PATCH 06/11] ci: add option for 4.19
+Date: Fri, 14 Feb 2020 08:32:56 +0100
+Message-Id: <20200214073259.1769-7-Quirin.Gylstorff@siemens.com>
+In-Reply-To: <20200214073259.1769-1-Quirin.Gylstorff@siemens.com>
+References: <20200214073259.1769-1-Quirin.Gylstorff@siemens.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
@@ -16,35 +18,35 @@ To: xenomai@xenomai.org
 
 From: Quirin Gylstorff <quirin.gylstorff@siemens.com>
 
-Add testing for Xenomai 3.0.x and 4.4. Also clean up the ci scripts
-to avoid code duplications. Add new target ipc227e for 4.4 testing.
-
-Quirin Gylstorff (11):
-  ci: remove code duplications
-  ci: Use gitlab extends instead of YAML Anchors
-  scripts: Allow other layers to reuse scripts
-  recipes-kernel/linux: Add 4.4
-  ci: Add linux-4.4 build and tests
-  ci: add option for 4.19
-  ci: Remove proxy settings
-  ci: add new build options
-  recipes-xenomai/xenomai.inc: Add missing libxenomai-dev
-  recipes-xenomai/xenomai.inc:  add exception handling
-  ci: Add target ipc227e for testing 4.4
-
- .gitlab-ci.yml                             | 205 ++++++++++++---------
- opt-linux-4.19.yml                         |  17 ++
- opt-linux-4.4.yml                          |  17 ++
- recipes-kernel/linux/files/amd64_defconfig |   3 +-
- recipes-xenomai/xenomai/xenomai.inc        |  11 +-
- scripts/deploy_for_testing.sh              |  42 +++--
- scripts/run-lava-tests.sh                  |  58 +++---
- tests/jobs/xenomai-ipc227e.yml             |  74 ++++++++
- 8 files changed, 295 insertions(+), 132 deletions(-)
+Signed-off-by: Quirin Gylstorff <quirin.gylstorff@siemens.com>
+---
+ opt-linux-4.19.yml | 17 +++++++++++++++++
+ 1 file changed, 17 insertions(+)
  create mode 100644 opt-linux-4.19.yml
- create mode 100644 opt-linux-4.4.yml
- create mode 100644 tests/jobs/xenomai-ipc227e.yml
 
+diff --git a/opt-linux-4.19.yml b/opt-linux-4.19.yml
+new file mode 100644
+index 0000000..1613e1c
+--- /dev/null
++++ b/opt-linux-4.19.yml
+@@ -0,0 +1,17 @@
++#
++# Xenomai Real-Time System
++#
++# Copyright (c) Siemens AG, 2020
++#
++# Authors:
++#  Quirin Gylstorff <quirin.gylstorff@siemens.com>
++#
++# SPDX-License-Identifier: MIT
++#
++
++header:
++  version: 8
++
++local_conf_header:
++  linux-xenomai-latest: |
++    PREFERRED_VERSION_linux-xenomai = "4.19%"
 -- 
 2.20.1
 
