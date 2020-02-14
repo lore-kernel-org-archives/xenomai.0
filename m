@@ -1,7 +1,7 @@
 From: "Q. Gylstorff" <Quirin.Gylstorff@siemens.com>
-Subject: [xenomai-images PATCH v2 4/9] Add kas option for 4.4
-Date: Fri, 14 Feb 2020 13:26:58 +0100
-Message-Id: <20200214122703.7947-5-Quirin.Gylstorff@siemens.com>
+Subject: [xenomai-images PATCH v2 7/9] ci: Make proxycommand conditional
+Date: Fri, 14 Feb 2020 13:27:01 +0100
+Message-Id: <20200214122703.7947-8-Quirin.Gylstorff@siemens.com>
 In-Reply-To: <20200214122703.7947-1-Quirin.Gylstorff@siemens.com>
 References: <20200214122703.7947-1-Quirin.Gylstorff@siemens.com>
 MIME-Version: 1.0
@@ -18,35 +18,27 @@ To: xenomai@xenomai.org
 
 From: Quirin Gylstorff <quirin.gylstorff@siemens.com>
 
+To execute the ci in environments with and without proxy check
+if https_proxy is set.
+
 Signed-off-by: Quirin Gylstorff <quirin.gylstorff@siemens.com>
 ---
- opt-linux-4.4.yml | 17 +++++++++++++++++
- 1 file changed, 17 insertions(+)
- create mode 100644 opt-linux-4.4.yml
+ .gitlab-ci.yml | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/opt-linux-4.4.yml b/opt-linux-4.4.yml
-new file mode 100644
-index 0000000..bb24a04
---- /dev/null
-+++ b/opt-linux-4.4.yml
-@@ -0,0 +1,17 @@
-+#
-+# Xenomai Real-Time System
-+#
-+# Copyright (c) Siemens AG, 2020
-+#
-+# Authors:
-+#  Quirin Gylstorff <quirin.gylstorff@siemens.com>
-+#
-+# SPDX-License-Identifier: MIT
-+#
-+
-+header:
-+  version: 8
-+
-+local_conf_header:
-+  linux-xenomai-latest: |
-+    PREFERRED_VERSION_linux-xenomai = "4.4%"
+diff --git a/.gitlab-ci.yml b/.gitlab-ci.yml
+index 3f0dcfd..cda9f5b 100644
+--- a/.gitlab-ci.yml
++++ b/.gitlab-ci.yml
+@@ -31,7 +31,7 @@ default:
+ .add-lava-ssh-config:
+   before_script:
+     - mkdir -p -m=700 ~/.ssh
+-    - echo "ProxyCommand socat - PROXY:$(echo $https_proxy | sed 's|.*://\([^:]*\).*|\1|'):%h:%p,proxyport=$(echo $https_proxy | sed 's|.*:\([0-9]*\)$|\1|')" >> ~/.ssh/config && chmod 600 ~/.ssh/config
++    - if [ -n "$https_proxy" ]; then echo "ProxyCommand socat - PROXY:$(echo $https_proxy | sed 's|.*://\([^:]*\).*|\1|'):%h:%p,proxyport=$(echo $https_proxy | sed 's|.*:\([0-9]*\)$|\1|')" >> ~/.ssh/config && chmod 600 ~/.ssh/config; fi;
+     - echo "$LAVA_SSH_UPLOAD_KEY" | tr -d '\r' > ~/.ssh/lava_id_rsa && chmod 600 ~/.ssh/lava_id_rsa
+     - echo "$LAVA_SSH_KNOWN_HOSTS" >> ~/.ssh/known_hosts && chmod 644 ~/.ssh/known_hosts
+ 
 -- 
 2.20.1
 
