@@ -1,18 +1,17 @@
-From: "Meng, Fino" <fino.meng@intel.com>
-Subject: RE: [PATCH 0/8] Assorted fixes
-Date: Sat, 1 Feb 2020 11:35:17 +0000
-Message-ID: <4c3daf5ff92549a3a751b8332a0b612d@intel.com>
-References: <20200131152713.1811748-1-rpm@xenomai.org>
- <0c811fd4-dc46-0bce-99b3-64c150725d3d@siemens.com>
- <230535ea0245408dbd941bc26c4f6df9@intel.com>
- <bbab7ccf-0f5e-617a-2d94-afc79f2d7efa@siemens.com>
- <CALLqZ8Qk-BEuYjYtRpqkTVT5N9iWJHpU=3n109jCMCy4Yd_8TA@mail.gmail.com>
- <20200201112301.5d3146d9@md1za8fc.ad001.siemens.net>
-In-Reply-To: <20200201112301.5d3146d9@md1za8fc.ad001.siemens.net>
-Content-Language: en-US
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+Subject: Re: Still some lockups when enabling ftrace
+References: <VI1PR05MB5917457C869A655D0B4CEDD8F6160@VI1PR05MB5917.eurprd05.prod.outlook.com>
+ <VI1PR05MB59174B685B454642A74A9E39F6160@VI1PR05MB5917.eurprd05.prod.outlook.com>
+ <5ad922f3-74a7-9724-ac15-669d51facca0@siemens.com>
+ <e70bb54a-b3d0-f4e3-6770-606bbd135001@siemens.com>
+ <9eab4c74-6317-9687-4693-89534f7ee978@xenomai.org>
+From: Jan Kiszka <jan.kiszka@siemens.com>
+Message-ID: <a456a2db-7f80-a334-02b0-e53892b5f6a2@siemens.com>
+Date: Mon, 17 Feb 2020 18:33:29 +0100
 MIME-Version: 1.0
+In-Reply-To: <9eab4c74-6317-9687-4693-89534f7ee978@xenomai.org>
+Content-Type: text/plain; charset="utf-8"; format="flowed"
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -21,87 +20,82 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Philippe Gerum <rpm@xenomai.org>, Lange Norbert <norbert.lange@andritz.com>, "Xenomai (xenomai@xenomai.org)" <xenomai@xenomai.org>
 
-VGhhbmtzIEphbiAmIEhlbm5pbmcsICBnb3Qgc29tZSBpZGVhcy4NCkluIDIwMjAgb3VyIHRlYW0n
-cyBmb2N1cyBpcyBtb2RpZnkgVUVGSSBCSU9TIGZvciByZWFsIHRpbWUgY2FwYWJpbGl0eTsNCk1v
-c3Qgb2YgT0VNJ3MgaW5kdXN0cnkgUEMgY2Fubm90IHJlYWNoIGdvb2Qgd29yc3QgY2FzZSBqaXR0
-ZXIgdXNpbmcgb3V0IG9mIGJveCBCSU9TLCAgdGhlc2UgaXRlbXMgbmVlZGVkIGJ5IFBuUCBjb25m
-aWdzIGFyZSBoaWRkZW47DQpXZSB3YW50IHRvIHB1c2ggQklPUyB2ZW5kb3JzIGFuZCBPRU1zIGRv
-IHJlYWwtdGltZSwgZGV0ZXJtaW5pc3RpYywgcHJlZGljdGFibGUgQklPUywgZm9yIEluZHVzdHJ5
-IFBDLiANCg0KQlIgLyBGaW5vICjlrZ/npaXlpKspDQpJbnRlbCDigJMgSU9URyBEZXZlbG9wZXIg
-RW5hYmxpbmcNCg0KLS0tLS1PcmlnaW5hbCBNZXNzYWdlLS0tLS0NCkZyb206IFhlbm9tYWkgPHhl
-bm9tYWktYm91bmNlc0B4ZW5vbWFpLm9yZz4gT24gQmVoYWxmIE9mIEhlbm5pbmcgU2NoaWxkIHZp
-YSBYZW5vbWFpDQpTZW50OiBTYXR1cmRheSwgRmVicnVhcnkgMSwgMjAyMCA2OjIzIFBNDQpUbzog
-R3JlZyBHYWxsYWdoZXIgdmlhIFhlbm9tYWkgPHhlbm9tYWlAeGVub21haS5vcmc+DQpTdWJqZWN0
-OiBSZTogW1BBVENIIDAvOF0gQXNzb3J0ZWQgZml4ZXMNCg0KQW0gRnJpLCAzMSBKYW4gMjAyMCAx
-NDoyMDozMyAtMDUwMA0Kc2NocmllYiBHcmVnIEdhbGxhZ2hlciB2aWEgWGVub21haSA8eGVub21h
-aUB4ZW5vbWFpLm9yZz46DQoNCj4gSEksDQo+IA0KPiANCj4gT24gRnJpLCBKYW4gMzEsIDIwMjAg
-YXQgMTI6NTMgUE0gSmFuIEtpc3prYSB2aWEgWGVub21haSANCj4gPHhlbm9tYWlAeGVub21haS5v
-cmc+IHdyb3RlOg0KPiA+DQo+ID4gSGkgRmlubywNCj4gPg0KPiA+IE9uIDMxLjAxLjIwIDE3OjI1
-LCBNZW5nLCBGaW5vIHdyb3RlOiAgDQo+ID4gPiBIaSBKYW4NCj4gPiA+DQo+ID4gPiBSZWdhcmRp
-bmcgdG8gdG9ydHVyZSB0ZXN0cywgZG8gd2UgaGF2ZSBhIHJlY29tbWVuZCB0ZXN0IHN1aXRlICYg
-DQo+ID4gPiB3b3JraW5nIGZsb3cgIGZyb20gdGhlIGNvbW11bml0eT8gSSBzZWFyY2hlZCB4ZW5v
-bWFpIHdpa2kgYnV0IA0KPiA+ID4gZGlkbid0IGZpbmQgYSBndWlkZSBmb3IgdGhpcy4NCj4gPg0K
-PiA+IE91dCB0ZXN0aW5nIGxlYXZlcyBhIGJpdCBvZiByb29tIGZvciBpbXByb3ZlbWVudCwgYnV0
-IGl0IGlzIGdldHRpbmcgDQo+ID4gYmV0dGVyLiBXaGF0IHdlIGhhdmUgc28gZmFyIGlzIHRoZSBz
-bW9rZXkgdGVzdHN1aXRlIHdoaWNoIGlzIHBhcnQgb2YgDQo+ID4gbWFueSBvZiBvdXIgdGVzdCBy
-dW5zLiBJdCBoYXMgc29tZSBzaG9ydGNvbWluZ3MsIGUuZy4gdW5zdHJ1Y3R1cmVkIA0KPiA+IHJl
-cG9ydGluZywgYnV0IGl0IGlzIGF0IGxlYXN0IGEgYmFzZWxpbmUuIFRoZXJlIGFyZSBzb21lIGZ1
-cnRoZXIgDQo+ID4gdGVzdHMsIGxpa2Ugc3dpdGNodGVzdCwgdGhhdCBhcmUgYWxzbyBpbmNsdWRl
-ZCB3aGVuIHJ1bm5pbmcgDQo+ID4geGVuby10ZXN0LiBBbmQgdGhlbiB0aGVyZSBhcmUgbG9vc2Ug
-ZW5kcyBsaWtlIGxpYi8qL3Rlc3RzdWl0ZSB0aGF0IA0KPiA+IHNob3VsZCBwcm9iYWJseSBiZSBo
-b29rZWQgdXAuDQo+IElzIHRoZXJlIGFueXRoaW5nIG9uIHRoZSB3aWtpIHdpdGggd2hhdCB0ZXN0
-cyBhcmUgbmVlZGVkIG9yIHdoYXQgYXJlYSANCj4gd2UgbmVlZCB0byBmb2N1cyBvbiBmb3IgdW5p
-dCB0ZXN0cz8NCj4gDQo+ID4gIA0KPiA+ID4gV2UgcGxhbiB0byByZWNvbW1lbmQgVVAgRXh0cmVt
-ZSBib2FyZA0KPiA+ID4gKGh0dHBzOi8vdXAtYm9hcmQub3JnL3VwLXh0cmVtZS8pICB0byBwdWJs
-aWMgdXNlcnMgc2luY2UgaXQncyBlYXN5IA0KPiA+ID4gdG8gYnV5IGZvciBhbnlvbmUgQW5kIHdl
-IHdhbnQgdG8gd3JpdGUgYSBndWlkZSBmb3IgdG9ydHVyZSB0ZXN0LCANCj4gPiA+IGF0IGxlYXN0
-IGZvciB0aGVzZSBib2FyZHMsDQo+ID4NCj4gPiBEZWZpbmluZyByZWZlcmVuY2UgYm9hcmRzIGlz
-IGluZGVlZCBhbm90aGVyIHRvcGljLiBJIHRoaW5rIHdlIA0KPiA+IHN0YXJ0ZWQgdGhhdCBhdCBz
-b21lIHBvaW50IG9uIHRoZSBsaXN0LCBidXQgaXQgZGlkIG5vdCBnbyB2ZXJ5IGZhci4NCj4gPiAg
-DQo+IA0KPiBJTUhPLCBiYXNlZCBvbiB3aGF0IHBlb3BsZSBvbiB0aGUgbGlzdCBhcmUgcG9zdGlu
-ZyBhcyBib2FyZHMgYmVpbmcgDQo+IHVzZWQsIGJlYWdsZWJvbmUgYmxhY2sgb3Igc2ltaWxhciB2
-YXJpYW50LCByYXNwYmVycnktcGkgMmIgIG9yDQo+IFp5bnEtNzAwMCB3b3VsZCBiZSBnb29kIGNo
-b2ljZXMgZm9yIGFybSBib2FyZHMuICBSYXNwYmVycnkgcGkgMyBhbmQgDQo+IHBvc3NpYmx5IFVs
-dHJhOTYgZm9yIHRoZSBBUk02NCB2YXJpYW50cz8gIEkgaGF2ZSB0aGVzZSBib2FyZHMgb24gaGFu
-ZCANCj4gYW5kIHdvdWxkIGhlbHAgb3V0IHdpdGggdGVzdGluZyBhcyBJIGNhbi4NCj4gPg0KPiA+
-IE9uIHg4NiwgdGhlIHNpdHVhdGlvbiBpcyByYXRoZXIgY29tZm9ydGFibGUgYXMgdGhlIHJlZmVy
-ZW5jZSBpbWFnZSANCj4gPiB3ZSBwcm9kdWNlIHdpdGggeGVub21haS1pbWFnZXMgd29ya3Mgd2Vs
-bCBvbiBtYW55IGJvYXJkcyBhbmQgbGFyZ2VyIA0KPiA+IHN5c3RlbXMuIEkgZG9uJ3QgaGF2ZSBh
-biBVUCBib2FyZCBhcm91bmQgYnV0IG1hbnkgcHJvZHVjdHMgdGhhdCBoYXZlIA0KPiA+IGF0IGxl
-YXN0IHNpbWlsYXIgU29Dcy4gV2Ugb25jZSBwbGF5ZWQgd2l0aCBhIE1pbm5vdyBib2FyZCBidXQg
-dGhhdCANCj4gPiB3YXMsIHdlbGwsIG5vdCByZWNvbW1lbmRhYmxlLiBUaGUgVVAgWHRyZW1lIGNv
-dWxkIGJlIGFub3RoZXIgb3B0aW9uLg0KPiANCj4gPiBUaGUgbmV4dCBsZXZlbCBpcyB0aGVuIGF1
-dG9tYXRlZCBleGVjdXRpb24gb2YgdGVzdHMuIFRoZXJlIGFyZSBtYW55IA0KPiA+IHdheXMsIHRo
-ZSBvbmUgd2UgYXJlIHByZXBhcmluZyBzbyBmYXIgaXMgTEFWQS1iYXNlZC4gUXVpcmluIHN0YXJ0
-ZWQgDQo+ID4gdGhhdCBpbiANCj4gPiBodHRwczovL2NvZGUuc2llbWVucy5jb20vZWJzeS9kZWJp
-YW4veGVub21haS1pbWFnZXMvdHJlZS9tYXN0ZXIvdGVzdHMuDQo+ID4gSGUgaXMgYnVzeSB0aGUg
-bmV4dCB3ZWVrcyBidXQgaGUgd2FudHMgdG8gZm9sbG93LXVwIG9uIHRoYXQgd2l0aCANCj4gPiBt
-b3JlIGRldGFpbHMgYWZ0ZXJ3YXJkcyBzbyB0aGF0IHdlIGNhbiBkaXNjdXNzIGluIHRoZSBjb21t
-dW5pdHkgaWYgDQo+ID4gdGhhdCBjb3VsZCBiZWNvbWUgYW4gb2ZmaWNpYWwgcGF0dGVybiBmb3Ig
-WGVub21haS4NCj4gPiAgDQo+IEkgbGlrZSB0aGUgaWRlYSBvZiBMYXZhLCB3b3VsZCB0aGVyZSBi
-ZSBleHRyYSBoYXJkd2FyZSBuZWVkZWQgaWYgDQo+IHNvbWVvbmUgd2FudGVkIHRvIGNyZWF0ZSB0
-aGUgdGVzdCBzZXR1cCBhdCBob21lPw0KPiBJIGNhbid0IGFjY2VzcyB0aGUgbGluayBhYm92ZSwg
-aXMgaXQgcG9zc2libGUgdG8gb3BlbiB0aGF0IGxpbmsgdXAgdG8gDQo+IHRoZSBwdWJsaWM/DQoN
-ClF1aWNrbHkgZW5hYmxpbmcgcGVvcGxlIHRvIGJ1aWxkIHRoZWlyIG93biBsYWIgaXMgYSBjbGVh
-ciBnb2FsLg0KQ29tbXVuaXR5IGxhYnMgY291bGQgYmUgaG9va2VkIGludG8gdGhlIGNlbnRyYWwg
-Q0ktQ0QtQ1QsIHNvIGFuIHVwc3RyZWFtIGNvbW1pdCBjb3VsZCBldmVudHVhbGx5IHRyaWdnZXIg
-YSB0ZXN0K3JlcG9ydCBpbiBhbGwgbWFpbnRhaW5lcnMgbGFicyB3aGVyZXZlciB0aG9zZSBtYXkg
-YmUuDQpCdXQgaW4gZmFjdCBwcml2YXRlIGxhYnMgd291bGQgYmUgdGhlIHByaW1lIHRhcmdldC4g
-DQoNCllvdXIgbGFiIHNldHVwIHdpbGwgbmVlZCBhIG1hY2hpbmUgYmVpbmcgYWJsZSB0byBydW4g
-ZG9ja2VyIG9yIHlvdSBuZWVkIHRvIGluc3RhbGwgbGF2YSB5b3Vyc2VsZi4gWW91IHdpbGwgd2Fu
-dCBwb3dlci1zb2NrZXRzIHRoYXQgY2FuIGJlIHN3aXRjaGVkIGZyb20gdGhhdCBib3guIFNlcmlh
-bCBjb25uZWN0aW9ucyB0byB0aGUgdGFyZ2V0KHMpLCBtYXliZQ0KZGhjcCtweGUrbmZzLCByZW1v
-dGUgZmxhc2hlcnMsIFVTQi1tYXNzLXN0b3JhZ2UgZ2FkZ2V0IC4uLg0KSWRlYWxseSB5b3Ugd2Fu
-dCB0YXJnZXRzIHRoYXQgc3VwcG9ydCBmdWxseSBhdXRvbWF0aWMgQ0QuIFNvIGZ1bGwgbmV0d29y
-ayBib290IG9yIGJvb3QgZnJvbSBVU0Igb3IgYm9vdCBmcm9tIGEgZmxhc2ggdGhhdCB5b3UgY2Fu
-IHdyaXRlIGZyb20gdGhlIG91dHNpZGUsIG5vIFNEQ2FyZHMgYW5kIG90aGVyIG1hbnVhbCBzdGVw
-cy4NCg0KQVJNIHRhcmdldHMgdGhhdCBoYXZlIGEgYm9vdGxvYWRlciB3aGljaCBzdXBwb3J0cyBk
-aGNwL3RmdHAgYXJlIHdlbGwgdW5kZXJzdG9vZCBhbmQgZWFzeSB0byBob29rIGluLg0KDQpIZW5u
-aW5nDQoNCj4gPiBBbnkgY29tbWVudHMsIHN1Z2dlc3Rpb25zIGluIHRoaXMgYXJlYSBhcmUgb2Yg
-Y291cnNlIHdlbGNvbWUhDQo+ID4NCj4gPiBUaGFua3MsDQo+ID4gSmFuDQo+ID4NCj4gPiAtLQ0K
-PiA+IFNpZW1lbnMgQUcsIENvcnBvcmF0ZSBUZWNobm9sb2d5LCBDVCBSREEgSU9UIFNFUy1ERSBD
-b3Jwb3JhdGUgDQo+ID4gQ29tcGV0ZW5jZSBDZW50ZXIgRW1iZWRkZWQgTGludXgNCj4gPiAgDQo+
-IA0KDQoNCg==
+On 17.02.20 18:25, Philippe Gerum wrote:
+> On 2/17/20 6:15 PM, Jan Kiszka via Xenomai wrote:
+>> On 17.02.20 17:57, Jan Kiszka via Xenomai wrote:
+>>> On 17.02.20 17:50, Lange Norbert via Xenomai wrote:
+>>>> I managed to narrow it down to this:
+>>>>
+>>>> trace-cmd start  -e 'tlb:tlb_flush'
+>>>>
+>>>> Seems to bug the kernel even if no cobalt thread is running, only a
+>>>> rt_igb and the rtnet stack.
+>>>>
+>>>
+>>> OK, that was already my idea as well.
+>>>
+>>> That rcu_irq_enter_irqson must not be there. Trying to understand
+>>> right now how it can sneak in. What are your RCU configs?
+>>>
+>>
+>> Found it.
+>>
+>> Preconditions: CONFIG_PREEMPT_NONE/VOLUNTARY -> CONFIG_TREE_RCU
+>>
+>> Now switch_mm_irqs_off, which we also use for primary tasks, carries
+>> some trace_tlb_flush_rcuidle. The "_rcuidle" appendix makes the
+>> difference. Such tracepoints end up in tracepoint.h's __DO_TRACE in the
+>> rcuidle path that contains a rcu_irq_enter_irqson of this form:
+>>
+>> void rcu_irq_exit_irqson(void)
+>> {
+>>      unsigned long flags;
+>>
+>>      local_irq_save(flags);
+>>      rcu_irq_exit();
+>>      local_irq_restore(flags);
+>> }
+>>
+>> And those local_irq* bite us. With CONFIG_TINY_RCU, rcu_irq_exit_irqson
+>> is empty.
+>>
+>> I guess we need to skip the problematic tracepoints, either when I-pipe
+>> is on or when the caller is in the primary domain.
+>>
+>> Jan
+>>
+> 
+> Dovetail solves it that way, this can be easily transposed to the
+> I-pipe, the semantics are strictly identical between ipipe_root_p and
+> running_inband():
+> 
+> diff --git a/include/linux/tracepoint.h b/include/linux/tracepoint.h
+> index 1fb11daa5c53..fd43fa65f20a 100644
+> --- a/include/linux/tracepoint.h
+> +++ b/include/linux/tracepoint.h
+> @@ -210,7 +210,7 @@ static inline struct tracepoint
+> *tracepoint_ptr_deref(tracepoint_ptr_t *p)
+>   			__DO_TRACE(&__tracepoint_##name,		\
+>   				TP_PROTO(data_proto),			\
+>   				TP_ARGS(data_args),			\
+> -				TP_CONDITION(cond), 1);			\
+> +				TP_CONDITION(cond), running_inband());	\
+>   	}
+>   #else
+>   #define __DECLARE_TRACE_RCU(name, proto, args, cond, data_proto, data_args)
+> 
+
+Did you analyze if this is safe? The related commit is, well, not very 
+telling.
+
+BTW, there is also __trace_stack which needs some attention for similar 
+reasons. Probably less frequently used, thus not hit so far.
+
+Jan
+
+-- 
+Siemens AG, Corporate Technology, CT RDA IOT SES-DE
+Corporate Competence Center Embedded Linux
 
