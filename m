@@ -1,15 +1,11 @@
-Subject: Re: Still some lockups when enabling ftrace
-References: <VI1PR05MB5917457C869A655D0B4CEDD8F6160@VI1PR05MB5917.eurprd05.prod.outlook.com>
- <VI1PR05MB59174B685B454642A74A9E39F6160@VI1PR05MB5917.eurprd05.prod.outlook.com>
- <5ad922f3-74a7-9724-ac15-669d51facca0@siemens.com>
 From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <e70bb54a-b3d0-f4e3-6770-606bbd135001@siemens.com>
-Date: Mon, 17 Feb 2020 18:15:43 +0100
+Subject: [PATCH] testsuite: Fix installation path of smokey_net_server
+Message-ID: <b60117b0-5380-8a01-1cb5-9ea1054ff166@siemens.com>
+Date: Mon, 17 Feb 2020 18:16:28 +0100
 MIME-Version: 1.0
-In-Reply-To: <5ad922f3-74a7-9724-ac15-669d51facca0@siemens.com>
-Content-Type: text/plain; charset="utf-8"; format="flowed"
+Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -18,49 +14,31 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Lange Norbert <norbert.lange@andritz.com>, "Xenomai (xenomai@xenomai.org)" <xenomai@xenomai.org>
+To: Xenomai <xenomai@xenomai.org>
 
-On 17.02.20 17:57, Jan Kiszka via Xenomai wrote:
-> On 17.02.20 17:50, Lange Norbert via Xenomai wrote:
->> I managed to narrow it down to this:
->>
->> trace-cmd start  -e 'tlb:tlb_flush'
->>
->> Seems to bug the kernel even if no cobalt thread is running, only a 
->> rt_igb and the rtnet stack.
->>
-> 
-> OK, that was already my idea as well.
-> 
-> That rcu_irq_enter_irqson must not be there. Trying to understand right 
-> now how it can sneak in. What are your RCU configs?
-> 
+From: Jan Kiszka <jan.kiszka@siemens.com>
 
-Found it.
+Put it where the rest goes as well.
 
-Preconditions: CONFIG_PREEMPT_NONE/VOLUNTARY -> CONFIG_TREE_RCU
+Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
+---
+ testsuite/smokey/net_common/Makefile.am | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-Now switch_mm_irqs_off, which we also use for primary tasks, carries 
-some trace_tlb_flush_rcuidle. The "_rcuidle" appendix makes the 
-difference. Such tracepoints end up in tracepoint.h's __DO_TRACE in the 
-rcuidle path that contains a rcu_irq_enter_irqson of this form:
+diff --git a/testsuite/smokey/net_common/Makefile.am b/testsuite/smokey/net_common/Makefile.am
+index 5185449feb..71ee52f430 100644
+--- a/testsuite/smokey/net_common/Makefile.am
++++ b/testsuite/smokey/net_common/Makefile.am
+@@ -1,4 +1,5 @@
+-bin_PROGRAMS = smokey_net_server
++testdir = @XENO_TEST_DIR@
++test_PROGRAMS = smokey_net_server
+ 
+ noinst_LIBRARIES = libnet_common.a
+ noinst_HEADERS = \
+-- 
+2.16.4
 
-void rcu_irq_exit_irqson(void)
-{
-	unsigned long flags;
-
-	local_irq_save(flags);
-	rcu_irq_exit();
-	local_irq_restore(flags);
-}
-
-And those local_irq* bite us. With CONFIG_TINY_RCU, rcu_irq_exit_irqson 
-is empty.
-
-I guess we need to skip the problematic tracepoints, either when I-pipe 
-is on or when the caller is in the primary domain.
-
-Jan
 
 -- 
 Siemens AG, Corporate Technology, CT RDA IOT SES-DE
