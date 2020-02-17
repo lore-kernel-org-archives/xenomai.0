@@ -4,11 +4,12 @@ References: <20200214122703.7947-1-Quirin.Gylstorff@siemens.com>
  <20200214122703.7947-3-Quirin.Gylstorff@siemens.com>
  <483ac0b8-3d0d-e4cb-2215-ee036efd1fa3@siemens.com>
  <a70111fc-4961-3f2a-d30d-bf62bbee8069@siemens.com>
-From: Gylstorff Quirin <quirin.gylstorff@siemens.com>
-Message-ID: <9f43afd8-45f7-3a8f-82bd-6a422bacd7b0@siemens.com>
-Date: Mon, 17 Feb 2020 17:12:04 +0100
+ <9f43afd8-45f7-3a8f-82bd-6a422bacd7b0@siemens.com>
+From: Jan Kiszka <jan.kiszka@siemens.com>
+Message-ID: <d18a6d66-c0d0-10ad-c4f0-c589e9cd24f2@siemens.com>
+Date: Mon, 17 Feb 2020 17:50:03 +0100
 MIME-Version: 1.0
-In-Reply-To: <a70111fc-4961-3f2a-d30d-bf62bbee8069@siemens.com>
+In-Reply-To: <9f43afd8-45f7-3a8f-82bd-6a422bacd7b0@siemens.com>
 Content-Type: text/plain; charset="utf-8"; format="flowed"
 Content-Language: en-US
 Content-Transfer-Encoding: 8bit
@@ -20,177 +21,83 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jan Kiszka <jan.kiszka@siemens.com>, xenomai@xenomai.org
+To: Gylstorff Quirin <quirin.gylstorff@siemens.com>, xenomai@xenomai.org
 
-
-
-On 2/17/20 12:45 PM, Jan Kiszka wrote:
-> On 17.02.20 12:43, Jan Kiszka via Xenomai wrote:
->> On 14.02.20 13:26, Q. Gylstorff wrote:
->>> From: Quirin Gylstorff <quirin.gylstorff@siemens.com>
+On 17.02.20 17:12, Gylstorff Quirin wrote:
+> 
+> 
+> On 2/17/20 12:45 PM, Jan Kiszka wrote:
+>> On 17.02.20 12:43, Jan Kiszka via Xenomai wrote:
+>>> On 14.02.20 13:26, Q. Gylstorff wrote:
+>>>> From: Quirin Gylstorff <quirin.gylstorff@siemens.com>
+>>>>
+>>>> Gitlab uses extends as an alternative to YAML Anchors since 11.3.
+>>>>
+>>>> Signed-off-by: Quirin Gylstorff <quirin.gylstorff@siemens.com>
+>>>> ---
+>>>>   .gitlab-ci.yml | 35 ++++++++++++++++++-----------------
+>>>>   1 file changed, 18 insertions(+), 17 deletions(-)
+>>>>
+>>>> diff --git a/.gitlab-ci.yml b/.gitlab-ci.yml
+>>>> index e5dd3c1..4b3f970 100644
+>>>> --- a/.gitlab-ci.yml
+>>>> +++ b/.gitlab-ci.yml
+>>>> @@ -25,22 +25,23 @@ default:
+>>>>   # add lavacli to the container and install the ssh keys
+>>>>   # for the test infrastructure
+>>>> -.add-lava-ssh-config: &lava-ssh-key
+>>>> +.add-lava-ssh-config:
+>>>>     before_script:
+>>>>       - mkdir -p -m=700 ~/.ssh
+>>>>       - echo "$LAVA_SSH_UPLOAD_KEY" | tr -d '\r' > ~/.ssh/id_rsa && 
+>>>> chmod 600 ~/.ssh/id_rsa
+>>>>       - echo "ProxyCommand socat - PROXY:$(echo $https_proxy | sed 
+>>>> 's|.*://\([^:]*\).*|\1|'):%h:%p,proxyport=$(echo $https_proxy | sed 
+>>>> 's|.*:\([0-9]*\)$|\1|')" >> ~/.ssh/config && chmod 600 ~/.ssh/config
+>>>>       - echo "$LAVA_SSH_KNOWN_HOSTS" >> ~/.ssh/known_hosts && chmod 
+>>>> 644 ~/.ssh/known_hosts
+>>>> -.build: &build-job
+>>>> -  <<: *lava-ssh-key
+>>>> +.build:
+>>>> +  extends: .add-lava-ssh-config
+>>>>     stage: build
+>>>>     script:
+>>>>       - kas build 
+>>>> kas.yml:board-${TARGET}.yml${XENOMAI_BUILD_OPTION}${LINUX_BUILD_OPTION}${BUILD_OPTIONS} 
+>>>>
+>>>>       - scripts/deploy_for_testing.sh ${TARGET}
+>>>> -.test: &test-job
+>>>> -  <<: *lava-ssh-key
+>>>> +.test:
+>>>> +  extends: .add-lava-ssh-config
+>>>> +  image: kasproject/kas-isar:latest
 >>>
->>> Gitlab uses extends as an alternative to YAML Anchors since 11.3.
->>>
->>> Signed-off-by: Quirin Gylstorff <quirin.gylstorff@siemens.com>
->>> ---
->>>   .gitlab-ci.yml | 35 ++++++++++++++++++-----------------
->>>   1 file changed, 18 insertions(+), 17 deletions(-)
->>>
->>> diff --git a/.gitlab-ci.yml b/.gitlab-ci.yml
->>> index e5dd3c1..4b3f970 100644
->>> --- a/.gitlab-ci.yml
->>> +++ b/.gitlab-ci.yml
->>> @@ -25,22 +25,23 @@ default:
->>>   # add lavacli to the container and install the ssh keys
->>>   # for the test infrastructure
->>> -.add-lava-ssh-config: &lava-ssh-key
->>> +.add-lava-ssh-config:
->>>     before_script:
->>>       - mkdir -p -m=700 ~/.ssh
->>>       - echo "$LAVA_SSH_UPLOAD_KEY" | tr -d '\r' > ~/.ssh/id_rsa && 
->>> chmod 600 ~/.ssh/id_rsa
->>>       - echo "ProxyCommand socat - PROXY:$(echo $https_proxy | sed 
->>> 's|.*://\([^:]*\).*|\1|'):%h:%p,proxyport=$(echo $https_proxy | sed 
->>> 's|.*:\([0-9]*\)$|\1|')" >> ~/.ssh/config && chmod 600 ~/.ssh/config
->>>       - echo "$LAVA_SSH_KNOWN_HOSTS" >> ~/.ssh/known_hosts && chmod 
->>> 644 ~/.ssh/known_hosts
->>> -.build: &build-job
->>> -  <<: *lava-ssh-key
->>> +.build:
->>> +  extends: .add-lava-ssh-config
->>>     stage: build
->>>     script:
->>>       - kas build 
->>> kas.yml:board-${TARGET}.yml${XENOMAI_BUILD_OPTION}${LINUX_BUILD_OPTION}${BUILD_OPTIONS} 
->>>
->>>       - scripts/deploy_for_testing.sh ${TARGET}
->>> -.test: &test-job
->>> -  <<: *lava-ssh-key
->>> +.test:
->>> +  extends: .add-lava-ssh-config
->>> +  image: kasproject/kas-isar:latest
+>>> This image is new (or I missed it in v1). Intentional?
 >>
->> This image is new (or I missed it in v1). Intentional?
+>> BTW, changing to kas-isar:2.0 might be good so that we do not run into 
+>> surprises with CI.
 > 
-> BTW, changing to kas-isar:2.0 might be good so that we do not run into 
-> surprises with CI.
+> I can do that in a v3.
 
-I can do that in a v3.
-> 
-> Jan
-> 
+No need for v3, but I'd take a patch on top.
+
 >>
 >> Jan
-
-
-This was added by my for local testing - if you execute the gitlab ci 
-runner on your own machine it does not read the default settings and
-each test needs to addd its own image. This entry can be removed.
-
-Quirin
-
 >>
->>>     stage: lava-test
->>>     script:
->>>       - scripts/install-lavacli.sh
->>> @@ -51,51 +52,51 @@ default:
->>>   build:qemu-amd64:
->>> -  <<: *build-job
->>> +  extends: .build
->>>     variables:
->>>       TARGET: qemu-amd64
->>>   lava-test:qemu-amd64:
->>>     needs: [ "build:qemu-amd64" ]
->>> -  <<: *test-job
->>> +  extends: .test
->>>     variables:
->>>       TARGET: qemu-amd64
->>>   build:qemu-armhf:
->>> -  <<: *build-job
->>> +  extends: .build
->>>     variables:
->>>       TARGET: qemu-armhf
->>>   lava-test:qemu-armhf:
->>>     needs: [ "build:qemu-armhf" ]
->>> -  <<: *test-job
->>> +  extends: .test
->>>     variables:
->>>       TARGET: qemu-armhf
->>>   build:qemu-arm64:
->>> -  <<: *build-job
->>> +  extends: .build
->>>     variables:
->>>       TARGET: qemu-arm64
->>>   lava-test:qemu-arm64:
->>>     needs: [ "build:qemu-arm64" ]
->>> -  <<: *test-job
->>> +  extends: .test
->>>     variables:
->>>       TARGET: qemu-arm64
->>>   build:board-hikey:
->>> -  <<: *build-job
->>> +  extends: .build
->>>     variables:
->>>       TARGET: hikey
->>>       BUILD_OPTIONS: ":opt-lava-test.yml"
->>>   lava-test:board-hikey:
->>>     needs: [ "build:board-hikey" ]
->>> -  <<: *test-job
->>> +  extends: .test
->>>     variables:
->>>       TARGET: hikey
->>>   build:board-beaglebone:
->>> -  <<: *build-job
->>> +  extends: .build
->>>     variables:
->>>       TARGET: beagle-bone-black
->>>       BUILD_OPTIONS: ":opt-lava-test.yml"
->>> @@ -103,18 +104,18 @@ build:board-beaglebone:
->>>   lava-test:board-beaglebone:
->>>     needs: [ "build:board-beaglebone" ]
->>> -  <<: *test-job
->>> +  extends: .test
->>>     variables:
->>>       TARGET: beaglebone
->>>   build:board-x86-64-efi:
->>> -  <<: *build-job
->>> +  extends: .build
->>>     variables:
->>>       TARGET: x86-64-efi
->>>       BUILD_OPTIONS: ":opt-lava-test.yml"
->>>   lava-test:board-x86-64-efi:
->>>     needs: [ "build:board-x86-64-efi" ]
->>> -  <<: *test-job
->>> +  extends: .test
->>>     variables:
->>>       TARGET: x86-64
 >>>
->>
+>>> Jan
 > 
+> 
+> This was added by my for local testing - if you execute the gitlab ci 
+> runner on your own machine it does not read the default settings and
+> each test needs to addd its own image. This entry can be removed.
+
+OK, done so while merging the series.
+
+Thanks,
+Jan
 
 -- 
-Quirin Gylstorff
-
-Siemens AG
-Corporate Technology
-Research in Digitalization and Automation
-Smart Embedded Systems
-CT RDA IOT SES-DE
-Otto-Hahn-Ring 6
-81739 Muenchen, Germany
-Mobile: +49 173 3746683
-mailto:quirin.gylstorff@siemens.com
-www.siemens.com/ingenuityforlife
-
-Siemens Aktiengesellschaft: Chairman of the Supervisory Board: Jim 
-Hagemann Snabe; Managing Board: Joe Kaeser, Chairman, President and 
-Chief Executive Officer; Roland Busch, Lisa Davis, Klaus Helmrich, 
-Cedrik Neike, Michael Sen, Ralf P. Thomas; Registered offices: Berlin 
-and Munich, Germany; Commercial registries: Berlin Charlottenburg, HRB 
-12300, Munich, HRB 6684; WEEE-Reg.-No. DE 23691322
-
-Important notice: This e-mail and any attachment thereof contain 
-corporate proprietary information. If you have received it by mistake, 
-please notify us immediately by reply e-mail and delete this e-mail and 
-its attachments from your system. Thank you.
+Siemens AG, Corporate Technology, CT RDA IOT SES-DE
+Corporate Competence Center Embedded Linux
 
