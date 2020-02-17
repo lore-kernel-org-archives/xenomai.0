@@ -1,11 +1,17 @@
-From: Lange Norbert <norbert.lange@andritz.com>
-Subject: Still some lockups when enabling ftrace
-Date: Mon, 17 Feb 2020 16:08:56 +0000
-Message-ID: <VI1PR05MB5917457C869A655D0B4CEDD8F6160@VI1PR05MB5917.eurprd05.prod.outlook.com>
-Content-Language: en-US
+Subject: Re: [xenomai-images PATCH v2 2/9] ci: Use gitlab extends instead of
+ YAML Anchors
+References: <20200214122703.7947-1-Quirin.Gylstorff@siemens.com>
+ <20200214122703.7947-3-Quirin.Gylstorff@siemens.com>
+ <483ac0b8-3d0d-e4cb-2215-ee036efd1fa3@siemens.com>
+ <a70111fc-4961-3f2a-d30d-bf62bbee8069@siemens.com>
+From: Gylstorff Quirin <quirin.gylstorff@siemens.com>
+Message-ID: <9f43afd8-45f7-3a8f-82bd-6a422bacd7b0@siemens.com>
+Date: Mon, 17 Feb 2020 17:12:04 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
+In-Reply-To: <a70111fc-4961-3f2a-d30d-bf62bbee8069@siemens.com>
+Content-Type: text/plain; charset="utf-8"; format="flowed"
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -14,124 +20,177 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "Xenomai (xenomai@xenomai.org)" <xenomai@xenomai.org>
-
-Hello,
-
-Enabling traces still can lockup Xenomai, apparently if any cobalt thread i=
-s running.
-
-trace-cmd record -e all
-
-[11598.080137] I-pipe: Detected illicit call from head domain 'Xenomai'
-[11598.080137]         into a regular Linux service
-[11598.091070] CPU: 3 PID: 948 Comm: sshd Not tainted 4.19.98-cip19-xeno10-=
-static #1
-[11598.098531] Hardware name: TQ-Group TQMxE39M/Type2 - Board Product Name,=
- BIOS 5.12.30.21.18 04/12/2019
-[11598.107813] I-pipe domain: Xenomai
-[11598.111215] Call Trace:
-[11598.113666]  <IRQ>
-[11598.115690]  dump_stack+0x8c/0xc0
-[11598.119011]  ipipe_stall_root+0xc/0x30
-[11598.122768]  rcu_irq_enter_irqson+0x13/0x40
-[11598.126947]  switch_mm_irqs_off+0x441/0x4e0
-[11598.131132]  xnarch_switch_to+0x2b/0x70
-[11598.134968]  ___xnsched_run+0x1b6/0x480
-[11598.138806]  xnintr_core_clock_handler+0x224/0x2f0
-[11598.143602]  dispatch_irq_head+0x95/0x130
-[11598.147622]  __ipipe_handle_irq+0x94/0x200
-[11598.151730]  apic_timer_interrupt+0x12/0x40
-[11598.155914]  </IRQ>
-[11598.158021] RIP: 0010:copy_user_generic_unrolled+0xb1/0xc0
-[11598.163513] Code: 8b 06 4c 89 07 48 8d 76 08 48 8d 7f 08 ff c9 75 ee 21 =
-d2 74 10 89 d1 8a 06 88 07 48 ff c6 48 ff c7 ff c9 75 f2 31 c0 0f 01 ca <c3=
-> 66 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 00 0f 2
-[11598.182250] RSP: 0018:ffff95ffc0947c50 EFLAGS: 00000246 ORIG_RAX: ffffff=
-ffffffff13
-[11598.189809] RAX: 0000000000000000 RBX: 000000000000001e RCX: 00000000000=
-00000
-[11598.196934] RDX: 0000000000000006 RSI: ffff95ffc006f2f0 RDI: 00007fff3aa=
-91f7e
-[11598.204055] RBP: ffff90d2f952a400 R08: 726f63657220706f R09: 00007fff3aa=
-91f60
-[11598.211179] R10: 000000000000095c R11: ffff90d2f3e1596c R12: ffff95ffc09=
-47d40
-[11598.218306] R13: ffff95ffc006f000 R14: ffff95ffc0947d48 R15: ffff95ffc00=
-6f2d2
-[11598.225447]  _copy_to_user+0x28/0x30
-[11598.229027]  copy_from_read_buf+0x97/0x150
-[11598.233127]  n_tty_read+0x202/0x920
-[11598.236624]  ? set_fd_set.part.0+0x37/0x40
-[11598.240720]  ? core_sys_select+0x278/0x2d0
-[11598.244818]  ? rcu_all_qs+0x5/0x80
-[11598.248229]  ? _cond_resched+0x15/0x30
-[11598.251985]  ? ldsem_down_read+0x38/0x200
-[11598.255997]  ? do_wait_intr_irq+0x90/0x90
-[11598.260004]  tty_read+0x83/0xf0
-[11598.263141]  __vfs_read+0x34/0x180
-[11598.266540]  ? trace_buffer_unlock_commit_regs+0x37/0x90
-[11598.271853]  ? trace_event_buffer_commit+0x66/0x1d0
-[11598.276735]  vfs_read+0x9d/0x150
-[11598.279968]  ksys_read+0x57/0xd0
-[11598.283201]  do_syscall_64+0x78/0x3d0
-[11598.286864]  ? __do_page_fault+0x206/0x400
-[11598.290954]  entry_SYSCALL_64_after_hwframe+0x44/0xa9
-[11598.296000] RIP: 0033:0x7effc6e2c441
-[11598.299590] Code: Bad RIP value.
-[11598.302820] RSP: 002b:00007fff3aa91f58 EFLAGS: 00000246 ORIG_RAX: 000000=
-0000000000
-[11598.310371] RAX: ffffffffffffffda RBX: 00007effc6d1b2c0 RCX: 00
+To: Jan Kiszka <jan.kiszka@siemens.com>, xenomai@xenomai.org
 
 
-Mit besten Gr=FC=DFen / Kind regards
 
-NORBERT LANGE
+On 2/17/20 12:45 PM, Jan Kiszka wrote:
+> On 17.02.20 12:43, Jan Kiszka via Xenomai wrote:
+>> On 14.02.20 13:26, Q. Gylstorff wrote:
+>>> From: Quirin Gylstorff <quirin.gylstorff@siemens.com>
+>>>
+>>> Gitlab uses extends as an alternative to YAML Anchors since 11.3.
+>>>
+>>> Signed-off-by: Quirin Gylstorff <quirin.gylstorff@siemens.com>
+>>> ---
+>>>   .gitlab-ci.yml | 35 ++++++++++++++++++-----------------
+>>>   1 file changed, 18 insertions(+), 17 deletions(-)
+>>>
+>>> diff --git a/.gitlab-ci.yml b/.gitlab-ci.yml
+>>> index e5dd3c1..4b3f970 100644
+>>> --- a/.gitlab-ci.yml
+>>> +++ b/.gitlab-ci.yml
+>>> @@ -25,22 +25,23 @@ default:
+>>>   # add lavacli to the container and install the ssh keys
+>>>   # for the test infrastructure
+>>> -.add-lava-ssh-config: &lava-ssh-key
+>>> +.add-lava-ssh-config:
+>>>     before_script:
+>>>       - mkdir -p -m=700 ~/.ssh
+>>>       - echo "$LAVA_SSH_UPLOAD_KEY" | tr -d '\r' > ~/.ssh/id_rsa && 
+>>> chmod 600 ~/.ssh/id_rsa
+>>>       - echo "ProxyCommand socat - PROXY:$(echo $https_proxy | sed 
+>>> 's|.*://\([^:]*\).*|\1|'):%h:%p,proxyport=$(echo $https_proxy | sed 
+>>> 's|.*:\([0-9]*\)$|\1|')" >> ~/.ssh/config && chmod 600 ~/.ssh/config
+>>>       - echo "$LAVA_SSH_KNOWN_HOSTS" >> ~/.ssh/known_hosts && chmod 
+>>> 644 ~/.ssh/known_hosts
+>>> -.build: &build-job
+>>> -  <<: *lava-ssh-key
+>>> +.build:
+>>> +  extends: .add-lava-ssh-config
+>>>     stage: build
+>>>     script:
+>>>       - kas build 
+>>> kas.yml:board-${TARGET}.yml${XENOMAI_BUILD_OPTION}${LINUX_BUILD_OPTION}${BUILD_OPTIONS} 
+>>>
+>>>       - scripts/deploy_for_testing.sh ${TARGET}
+>>> -.test: &test-job
+>>> -  <<: *lava-ssh-key
+>>> +.test:
+>>> +  extends: .add-lava-ssh-config
+>>> +  image: kasproject/kas-isar:latest
+>>
+>> This image is new (or I missed it in v1). Intentional?
+> 
+> BTW, changing to kas-isar:2.0 might be good so that we do not run into 
+> surprises with CI.
 
-AT-RD3
-
-ANDRITZ HYDRO GmbH
-Eibesbrunnergasse 20
-1120 Vienna / AUSTRIA
-p: +43 50805 56684
-norbert.lange@andritz.com<mailto:norbert.lange@andritz.com>
-andritz.com<http://www.andritz.com/>
-
-________________________________
-
-This message and any attachments are solely for the use of the intended rec=
-ipients. They may contain privileged and/or confidential information or oth=
-er information protected from disclosure. If you are not an intended recipi=
-ent, you are hereby notified that you received this email in error and that=
- any review, dissemination, distribution or copying of this email and any a=
-ttachment is strictly prohibited. If you have received this email in error,=
- please contact the sender and delete the message and any attachment from y=
-our system.
-
-ANDRITZ HYDRO GmbH
+I can do that in a v3.
+> 
+> Jan
+> 
+>>
+>> Jan
 
 
-Rechtsform/ Legal form: Gesellschaft mit beschr=E4nkter Haftung / Corporati=
-on
+This was added by my for local testing - if you execute the gitlab ci 
+runner on your own machine it does not read the default settings and
+each test needs to addd its own image. This entry can be removed.
 
-Firmensitz/ Registered seat: Wien
+Quirin
 
-Firmenbuchgericht/ Court of registry: Handelsgericht Wien
+>>
+>>>     stage: lava-test
+>>>     script:
+>>>       - scripts/install-lavacli.sh
+>>> @@ -51,51 +52,51 @@ default:
+>>>   build:qemu-amd64:
+>>> -  <<: *build-job
+>>> +  extends: .build
+>>>     variables:
+>>>       TARGET: qemu-amd64
+>>>   lava-test:qemu-amd64:
+>>>     needs: [ "build:qemu-amd64" ]
+>>> -  <<: *test-job
+>>> +  extends: .test
+>>>     variables:
+>>>       TARGET: qemu-amd64
+>>>   build:qemu-armhf:
+>>> -  <<: *build-job
+>>> +  extends: .build
+>>>     variables:
+>>>       TARGET: qemu-armhf
+>>>   lava-test:qemu-armhf:
+>>>     needs: [ "build:qemu-armhf" ]
+>>> -  <<: *test-job
+>>> +  extends: .test
+>>>     variables:
+>>>       TARGET: qemu-armhf
+>>>   build:qemu-arm64:
+>>> -  <<: *build-job
+>>> +  extends: .build
+>>>     variables:
+>>>       TARGET: qemu-arm64
+>>>   lava-test:qemu-arm64:
+>>>     needs: [ "build:qemu-arm64" ]
+>>> -  <<: *test-job
+>>> +  extends: .test
+>>>     variables:
+>>>       TARGET: qemu-arm64
+>>>   build:board-hikey:
+>>> -  <<: *build-job
+>>> +  extends: .build
+>>>     variables:
+>>>       TARGET: hikey
+>>>       BUILD_OPTIONS: ":opt-lava-test.yml"
+>>>   lava-test:board-hikey:
+>>>     needs: [ "build:board-hikey" ]
+>>> -  <<: *test-job
+>>> +  extends: .test
+>>>     variables:
+>>>       TARGET: hikey
+>>>   build:board-beaglebone:
+>>> -  <<: *build-job
+>>> +  extends: .build
+>>>     variables:
+>>>       TARGET: beagle-bone-black
+>>>       BUILD_OPTIONS: ":opt-lava-test.yml"
+>>> @@ -103,18 +104,18 @@ build:board-beaglebone:
+>>>   lava-test:board-beaglebone:
+>>>     needs: [ "build:board-beaglebone" ]
+>>> -  <<: *test-job
+>>> +  extends: .test
+>>>     variables:
+>>>       TARGET: beaglebone
+>>>   build:board-x86-64-efi:
+>>> -  <<: *build-job
+>>> +  extends: .build
+>>>     variables:
+>>>       TARGET: x86-64-efi
+>>>       BUILD_OPTIONS: ":opt-lava-test.yml"
+>>>   lava-test:board-x86-64-efi:
+>>>     needs: [ "build:board-x86-64-efi" ]
+>>> -  <<: *test-job
+>>> +  extends: .test
+>>>     variables:
+>>>       TARGET: x86-64
+>>>
+>>
+> 
 
-Firmenbuchnummer/ Company registration: FN 61833 g
+-- 
+Quirin Gylstorff
 
-DVR: 0605077
+Siemens AG
+Corporate Technology
+Research in Digitalization and Automation
+Smart Embedded Systems
+CT RDA IOT SES-DE
+Otto-Hahn-Ring 6
+81739 Muenchen, Germany
+Mobile: +49 173 3746683
+mailto:quirin.gylstorff@siemens.com
+www.siemens.com/ingenuityforlife
 
-UID-Nr.: ATU14756806
+Siemens Aktiengesellschaft: Chairman of the Supervisory Board: Jim 
+Hagemann Snabe; Managing Board: Joe Kaeser, Chairman, President and 
+Chief Executive Officer; Roland Busch, Lisa Davis, Klaus Helmrich, 
+Cedrik Neike, Michael Sen, Ralf P. Thomas; Registered offices: Berlin 
+and Munich, Germany; Commercial registries: Berlin Charlottenburg, HRB 
+12300, Munich, HRB 6684; WEEE-Reg.-No. DE 23691322
 
+Important notice: This e-mail and any attachment thereof contain 
+corporate proprietary information. If you have received it by mistake, 
+please notify us immediately by reply e-mail and delete this e-mail and 
+its attachments from your system. Thank you.
 
-Thank You
-________________________________
--------------- next part --------------
-A non-text attachment was scrubbed...
-Name: config-4.19.tar.xz
-Type: application/octet-stream
-Size: 20180 bytes
-Desc: config-4.19.tar.xz
-URL: <http://xenomai.org/pipermail/xenomai/attachments/20200217/bb047cbd/at=
-tachment.obj>
