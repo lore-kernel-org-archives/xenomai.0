@@ -1,16 +1,16 @@
-Subject: Re: Still some lockups when enabling ftrace
+From: Lange Norbert <norbert.lange@andritz.com>
+Subject: RE: Still some lockups when enabling ftrace
+Date: Mon, 17 Feb 2020 17:27:15 +0000
+Message-ID: <VI1PR05MB5917BC4E92F6F3D81E948889F6160@VI1PR05MB5917.eurprd05.prod.outlook.com>
 References: <VI1PR05MB5917457C869A655D0B4CEDD8F6160@VI1PR05MB5917.eurprd05.prod.outlook.com>
  <VI1PR05MB59174B685B454642A74A9E39F6160@VI1PR05MB5917.eurprd05.prod.outlook.com>
  <5ad922f3-74a7-9724-ac15-669d51facca0@siemens.com>
  <e70bb54a-b3d0-f4e3-6770-606bbd135001@siemens.com>
-From: Philippe Gerum <rpm@xenomai.org>
-Message-ID: <9eab4c74-6317-9687-4693-89534f7ee978@xenomai.org>
-Date: Mon, 17 Feb 2020 18:25:34 +0100
-MIME-Version: 1.0
 In-Reply-To: <e70bb54a-b3d0-f4e3-6770-606bbd135001@siemens.com>
-Content-Type: text/plain; charset="utf-8"
 Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+MIME-Version: 1.0
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -19,71 +19,62 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jan Kiszka <jan.kiszka@siemens.com>, Lange Norbert <norbert.lange@andritz.com>, "Xenomai (xenomai@xenomai.org)" <xenomai@xenomai.org>
+To: Jan Kiszka <jan.kiszka@siemens.com>, "Xenomai (xenomai@xenomai.org)" <xenomai@xenomai.org>
 
-On 2/17/20 6:15 PM, Jan Kiszka via Xenomai wrote:
-> On 17.02.20 17:57, Jan Kiszka via Xenomai wrote:
->> On 17.02.20 17:50, Lange Norbert via Xenomai wrote:
->>> I managed to narrow it down to this:
->>>
->>> trace-cmd start  -e 'tlb:tlb_flush'
->>>
->>> Seems to bug the kernel even if no cobalt thread is running, only a
->>> rt_igb and the rtnet stack.
->>>
->>
->> OK, that was already my idea as well.
->>
->> That rcu_irq_enter_irqson must not be there. Trying to understand
->> right now how it can sneak in. What are your RCU configs?
->>
-> 
-> Found it.
-> 
-> Preconditions: CONFIG_PREEMPT_NONE/VOLUNTARY -> CONFIG_TREE_RCU
-> 
-> Now switch_mm_irqs_off, which we also use for primary tasks, carries
-> some trace_tlb_flush_rcuidle. The "_rcuidle" appendix makes the
-> difference. Such tracepoints end up in tracepoint.h's __DO_TRACE in the
-> rcuidle path that contains a rcu_irq_enter_irqson of this form:
-> 
-> void rcu_irq_exit_irqson(void)
-> {
->     unsigned long flags;
-> 
->     local_irq_save(flags);
->     rcu_irq_exit();
->     local_irq_restore(flags);
-> }
-> 
-> And those local_irq* bite us. With CONFIG_TINY_RCU, rcu_irq_exit_irqson
-> is empty.
-> 
-> I guess we need to skip the problematic tracepoints, either when I-pipe
-> is on or when the caller is in the primary domain.
-> 
-> Jan
->
-
-Dovetail solves it that way, this can be easily transposed to the
-I-pipe, the semantics are strictly identical between ipipe_root_p and
-running_inband():
-
-diff --git a/include/linux/tracepoint.h b/include/linux/tracepoint.h
-index 1fb11daa5c53..fd43fa65f20a 100644
---- a/include/linux/tracepoint.h
-+++ b/include/linux/tracepoint.h
-@@ -210,7 +210,7 @@ static inline struct tracepoint
-*tracepoint_ptr_deref(tracepoint_ptr_t *p)
- 			__DO_TRACE(&__tracepoint_##name,		\
- 				TP_PROTO(data_proto),			\
- 				TP_ARGS(data_args),			\
--				TP_CONDITION(cond), 1);			\
-+				TP_CONDITION(cond), running_inband());	\
- 	}
- #else
- #define __DECLARE_TRACE_RCU(name, proto, args, cond, data_proto, data_args)
-
--- 
-Philippe.
+DQoNCj4gLS0tLS1PcmlnaW5hbCBNZXNzYWdlLS0tLS0NCj4gRnJvbTogSmFuIEtpc3prYSA8amFu
+Lmtpc3prYUBzaWVtZW5zLmNvbT4NCj4gU2VudDogTW9udGFnLCAxNy4gRmVicnVhciAyMDIwIDE4
+OjE2DQo+IFRvOiBMYW5nZSBOb3JiZXJ0IDxub3JiZXJ0LmxhbmdlQGFuZHJpdHouY29tPjsgWGVu
+b21haQ0KPiAoeGVub21haUB4ZW5vbWFpLm9yZykgPHhlbm9tYWlAeGVub21haS5vcmc+DQo+IFN1
+YmplY3Q6IFJlOiBTdGlsbCBzb21lIGxvY2t1cHMgd2hlbiBlbmFibGluZyBmdHJhY2UNCj4NCj4g
+Tk9OLUFORFJJVFogU09VUkNFOiBCRSBDQVVUSU9VUyBXSVRIIENPTlRFTlQsIExJTktTIE9SDQo+
+IEFUVEFDSE1FTlRTLg0KPg0KPg0KPiBPbiAxNy4wMi4yMCAxNzo1NywgSmFuIEtpc3prYSB2aWEg
+WGVub21haSB3cm90ZToNCj4gPiBPbiAxNy4wMi4yMCAxNzo1MCwgTGFuZ2UgTm9yYmVydCB2aWEg
+WGVub21haSB3cm90ZToNCj4gPj4gSSBtYW5hZ2VkIHRvIG5hcnJvdyBpdCBkb3duIHRvIHRoaXM6
+DQo+ID4+DQo+ID4+IHRyYWNlLWNtZCBzdGFydCAgLWUgJ3RsYjp0bGJfZmx1c2gnDQo+ID4+DQo+
+ID4+IFNlZW1zIHRvIGJ1ZyB0aGUga2VybmVsIGV2ZW4gaWYgbm8gY29iYWx0IHRocmVhZCBpcyBy
+dW5uaW5nLCBvbmx5IGENCj4gPj4gcnRfaWdiIGFuZCB0aGUgcnRuZXQgc3RhY2suDQo+ID4+DQo+
+ID4NCj4gPiBPSywgdGhhdCB3YXMgYWxyZWFkeSBteSBpZGVhIGFzIHdlbGwuDQo+ID4NCj4gPiBU
+aGF0IHJjdV9pcnFfZW50ZXJfaXJxc29uIG11c3Qgbm90IGJlIHRoZXJlLiBUcnlpbmcgdG8gdW5k
+ZXJzdGFuZA0KPiA+IHJpZ2h0IG5vdyBob3cgaXQgY2FuIHNuZWFrIGluLiBXaGF0IGFyZSB5b3Vy
+IFJDVSBjb25maWdzPw0KPiA+DQo+DQo+IEZvdW5kIGl0Lg0KPg0KPiBQcmVjb25kaXRpb25zOiBD
+T05GSUdfUFJFRU1QVF9OT05FL1ZPTFVOVEFSWSAtPg0KPiBDT05GSUdfVFJFRV9SQ1UNCj4NCj4g
+Tm93IHN3aXRjaF9tbV9pcnFzX29mZiwgd2hpY2ggd2UgYWxzbyB1c2UgZm9yIHByaW1hcnkgdGFz
+a3MsIGNhcnJpZXMgc29tZQ0KPiB0cmFjZV90bGJfZmx1c2hfcmN1aWRsZS4gVGhlICJfcmN1aWRs
+ZSIgYXBwZW5kaXggbWFrZXMgdGhlIGRpZmZlcmVuY2UuIFN1Y2gNCj4gdHJhY2Vwb2ludHMgZW5k
+IHVwIGluIHRyYWNlcG9pbnQuaCdzIF9fRE9fVFJBQ0UgaW4gdGhlIHJjdWlkbGUgcGF0aCB0aGF0
+DQo+IGNvbnRhaW5zIGEgcmN1X2lycV9lbnRlcl9pcnFzb24gb2YgdGhpcyBmb3JtOg0KPg0KPiB2
+b2lkIHJjdV9pcnFfZXhpdF9pcnFzb24odm9pZCkNCj4gew0KPiAgICAgICAgIHVuc2lnbmVkIGxv
+bmcgZmxhZ3M7DQo+DQo+ICAgICAgICAgbG9jYWxfaXJxX3NhdmUoZmxhZ3MpOw0KPiAgICAgICAg
+IHJjdV9pcnFfZXhpdCgpOw0KPiAgICAgICAgIGxvY2FsX2lycV9yZXN0b3JlKGZsYWdzKTsNCj4g
+fQ0KPg0KPiBBbmQgdGhvc2UgbG9jYWxfaXJxKiBiaXRlIHVzLiBXaXRoIENPTkZJR19USU5ZX1JD
+VSwgcmN1X2lycV9leGl0X2lycXNvbiBpcw0KPiBlbXB0eS4NCj4NCj4gSSBndWVzcyB3ZSBuZWVk
+IHRvIHNraXAgdGhlIHByb2JsZW1hdGljIHRyYWNlcG9pbnRzLCBlaXRoZXIgd2hlbiBJLXBpcGUg
+aXMgb24NCj4gb3Igd2hlbiB0aGUgY2FsbGVyIGlzIGluIHRoZSBwcmltYXJ5IGRvbWFpbi4NCg0K
+VGhhdCByY3VpZGxlIHNwcnVuZyBpbnRvIG15IGV5ZSBhc3dlbGwsIGJ1dCBub3QgYmVjYXVzZSBJ
+IGhhdmUgYW55IGNsdWUgd2hhdCBoYXBwZW5zDQppbiB0aGUgc3lzdGVtLg0KDQpJIGFza2VkIHNv
+bWUgdGltZSBhZ28sIGFib3V0IHJlbGF0ZWQgc3R1ZmYgKElQSSwgTUVNQkFSUklFUl9DTURfUFJJ
+VkFURV9FWFBFRElURUQpDQpSZWxhdGVkIHRvIEx0dG5nIHdoZXRoZXIgdGhvc2UgYXJlIHNhZmUg
+dG8gdXNlIGF0IGFsbC4NCklQSXMgc3RpbGwgYXJlIGludGVycnVwdHMgYW5kIHdpbGwgaGF2ZSB0
+byBhZmZlY3QgQ29iYWx0IEFGQUlLLCBhbmQgYSBsb3Qgb2YgYXNzZXJ0aW9ucyBhcmUNClRoYXQg
+dGhleSBhcmUgdmVyeSBmYXN0ICh3aGlsZSB0aGV5IG1pZ2h0IGJlIGJsb2NrZWQgYSBjb3VwbGUg
+bXMgd2l0aCByZWFsdGltZSB0YXNrcykuDQoNCmh0dHBzOi8vd3d3Lnhlbm9tYWkub3JnL3BpcGVy
+bWFpbC94ZW5vbWFpLzIwMTktTm92ZW1iZXIvMDQyMDgwLmh0bWwNCg0KUXVpdGUgZ29vZCB5b3Ug
+Zm91bmQgaXQgdGhhdCBmYXN0IGFueXdheSA7KQ0KDQpUaGFua3MsIE5vcmJlcnQNCg0KX19fX19f
+X19fX19fX19fX19fX19fX19fX19fX19fX18NCg0KVGhpcyBtZXNzYWdlIGFuZCBhbnkgYXR0YWNo
+bWVudHMgYXJlIHNvbGVseSBmb3IgdGhlIHVzZSBvZiB0aGUgaW50ZW5kZWQgcmVjaXBpZW50cy4g
+VGhleSBtYXkgY29udGFpbiBwcml2aWxlZ2VkIGFuZC9vciBjb25maWRlbnRpYWwgaW5mb3JtYXRp
+b24gb3Igb3RoZXIgaW5mb3JtYXRpb24gcHJvdGVjdGVkIGZyb20gZGlzY2xvc3VyZS4gSWYgeW91
+IGFyZSBub3QgYW4gaW50ZW5kZWQgcmVjaXBpZW50LCB5b3UgYXJlIGhlcmVieSBub3RpZmllZCB0
+aGF0IHlvdSByZWNlaXZlZCB0aGlzIGVtYWlsIGluIGVycm9yIGFuZCB0aGF0IGFueSByZXZpZXcs
+IGRpc3NlbWluYXRpb24sIGRpc3RyaWJ1dGlvbiBvciBjb3B5aW5nIG9mIHRoaXMgZW1haWwgYW5k
+IGFueSBhdHRhY2htZW50IGlzIHN0cmljdGx5IHByb2hpYml0ZWQuIElmIHlvdSBoYXZlIHJlY2Vp
+dmVkIHRoaXMgZW1haWwgaW4gZXJyb3IsIHBsZWFzZSBjb250YWN0IHRoZSBzZW5kZXIgYW5kIGRl
+bGV0ZSB0aGUgbWVzc2FnZSBhbmQgYW55IGF0dGFjaG1lbnQgZnJvbSB5b3VyIHN5c3RlbS4NCg0K
+QU5EUklUWiBIWURSTyBHbWJIDQoNCg0KUmVjaHRzZm9ybS8gTGVnYWwgZm9ybTogR2VzZWxsc2No
+YWZ0IG1pdCBiZXNjaHLDpG5rdGVyIEhhZnR1bmcgLyBDb3Jwb3JhdGlvbg0KDQpGaXJtZW5zaXR6
+LyBSZWdpc3RlcmVkIHNlYXQ6IFdpZW4NCg0KRmlybWVuYnVjaGdlcmljaHQvIENvdXJ0IG9mIHJl
+Z2lzdHJ5OiBIYW5kZWxzZ2VyaWNodCBXaWVuDQoNCkZpcm1lbmJ1Y2hudW1tZXIvIENvbXBhbnkg
+cmVnaXN0cmF0aW9uOiBGTiA2MTgzMyBnDQoNCkRWUjogMDYwNTA3Nw0KDQpVSUQtTnIuOiBBVFUx
+NDc1NjgwNg0KDQoNClRoYW5rIFlvdQ0KX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX18N
+Cg==
 
