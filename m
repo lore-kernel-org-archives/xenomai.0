@@ -1,15 +1,15 @@
+Subject: Re: [xenomai-images PATCH v2 2/9] ci: Use gitlab extends instead of
+ YAML Anchors
+References: <20200214122703.7947-1-Quirin.Gylstorff@siemens.com>
+ <20200214122703.7947-3-Quirin.Gylstorff@siemens.com>
+From: Jan Kiszka <jan.kiszka@siemens.com>
+Message-ID: <483ac0b8-3d0d-e4cb-2215-ee036efd1fa3@siemens.com>
+Date: Mon, 17 Feb 2020 12:43:20 +0100
 MIME-Version: 1.0
-References: <CAPnNZ0UJEFhQXnmkH=RyBWVuXWiymw-S3jCcH+U5B_1VESALJA@mail.gmail.com>
- <cd4f3b32-d2bf-a96d-527a-5f7f3403e4d2@siemens.com>
- <CAPnNZ0Vt=mVk-JQoZM3TSGBBFOwqc+7KtnhtHVR89iLBo+cRqg@mail.gmail.com>
- <b6aa1c1a-7f68-c678-01ca-7cbb0fddffde@siemens.com>
-In-Reply-To: <b6aa1c1a-7f68-c678-01ca-7cbb0fddffde@siemens.com>
-From: Antoine Hoarau <antoine@flr.io>
-Date: Fri, 14 Feb 2020 15:15:17 +0100
-Message-ID: <CAPnNZ0Xv3gB5xnXaGN8wBfbgZgBB5XfDv9zBmyO9wD4T4WOBbA@mail.gmail.com>
-Subject: Re: undefined symbol in tests
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+In-Reply-To: <20200214122703.7947-3-Quirin.Gylstorff@siemens.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -18,57 +18,142 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jan Kiszka <jan.kiszka@siemens.com>
-Cc: Xenomai <xenomai@xenomai.org>
+To: "Q. Gylstorff" <Quirin.Gylstorff@siemens.com>, xenomai@xenomai.org
 
-I just built the debians:
-debchange -v 3.1 Release 3.1
-debuild -uc -us
+On 14.02.20 13:26, Q. Gylstorff wrote:
+> From: Quirin Gylstorff <quirin.gylstorff@siemens.com>
+> 
+> Gitlab uses extends as an alternative to YAML Anchors since 11.3.
+> 
+> Signed-off-by: Quirin Gylstorff <quirin.gylstorff@siemens.com>
+> ---
+>   .gitlab-ci.yml | 35 ++++++++++++++++++-----------------
+>   1 file changed, 18 insertions(+), 17 deletions(-)
+> 
+> diff --git a/.gitlab-ci.yml b/.gitlab-ci.yml
+> index e5dd3c1..4b3f970 100644
+> --- a/.gitlab-ci.yml
+> +++ b/.gitlab-ci.yml
+> @@ -25,22 +25,23 @@ default:
+>   
+>   # add lavacli to the container and install the ssh keys
+>   # for the test infrastructure
+> -.add-lava-ssh-config: &lava-ssh-key
+> +.add-lava-ssh-config:
+>     before_script:
+>       - mkdir -p -m=700 ~/.ssh
+>       - echo "$LAVA_SSH_UPLOAD_KEY" | tr -d '\r' > ~/.ssh/id_rsa && chmod 600 ~/.ssh/id_rsa
+>       - echo "ProxyCommand socat - PROXY:$(echo $https_proxy | sed 's|.*://\([^:]*\).*|\1|'):%h:%p,proxyport=$(echo $https_proxy | sed 's|.*:\([0-9]*\)$|\1|')" >> ~/.ssh/config && chmod 600 ~/.ssh/config
+>       - echo "$LAVA_SSH_KNOWN_HOSTS" >> ~/.ssh/known_hosts && chmod 644 ~/.ssh/known_hosts
+>   
+> -.build: &build-job
+> -  <<: *lava-ssh-key
+> +.build:
+> +  extends: .add-lava-ssh-config
+>     stage: build
+>     script:
+>       - kas build kas.yml:board-${TARGET}.yml${XENOMAI_BUILD_OPTION}${LINUX_BUILD_OPTION}${BUILD_OPTIONS}
+>       - scripts/deploy_for_testing.sh ${TARGET}
+>   
+> -.test: &test-job
+> -  <<: *lava-ssh-key
+> +.test:
+> +  extends: .add-lava-ssh-config
+> +  image: kasproject/kas-isar:latest
 
+This image is new (or I missed it in v1). Intentional?
 
-Le ven. 14 f=C3=A9vr. 2020 =C3=A0 14:52, Jan Kiszka <jan.kiszka@siemens.com=
-> a =C3=A9crit :
+Jan
 
-> On 14.02.20 14:46, Antoine Hoarau wrote:
-> > I generated the debian then installed them in the "xenomai computer"
-> > Maybe something is wrong in the debian script.
-> > The computer is an IPC127e.
->
-> We are testing on 227e, which is very close, without that issue. Were
-> you using xenomai-images for the generation or did you just build the
-> debian packages?
->
-> Jan
->
-> >
-> > Le ven. 14 f=C3=A9vr. 2020 =C3=A0 10:53, Jan Kiszka <jan.kiszka@siemens=
-.com
-> > <mailto:jan.kiszka@siemens.com>> a =C3=A9crit :
-> >
-> >     On 14.02.20 10:48, Antoine Hoarau via Xenomai wrote:
-> >      > If I run xeno tests I get :
-> >      > symbol lookup error: /usr/lib/libalchemy.so.0: undefined symbol:
-> >     __real_free
-> >      > /usr/lib/xenomai/testsuite/smokey: test dlopen failed: Unknown
-> >     error -127
-> >      > child 1458 returned: exited with status 1
-> >      >
-> >      > Tests on 3.1 release.
-> >      >
-> >
-> >     As this ran through our testlab here, there must be some local
-> >     deviation
-> >     in your build. Can you provide more details on how and for what you
-> >     built?
-> >
-> >     Jan
-> >
-> >     --
-> >     Siemens AG, Corporate Technology, CT RDA IOT SES-DE
-> >     Corporate Competence Center Embedded Linux
-> >
->
-> --
-> Siemens AG, Corporate Technology, CT RDA IOT SES-DE
-> Corporate Competence Center Embedded Linux
->
+>     stage: lava-test
+>     script:
+>       - scripts/install-lavacli.sh
+> @@ -51,51 +52,51 @@ default:
+>   
+>   
+>   build:qemu-amd64:
+> -  <<: *build-job
+> +  extends: .build
+>     variables:
+>       TARGET: qemu-amd64
+>   
+>   lava-test:qemu-amd64:
+>     needs: [ "build:qemu-amd64" ]
+> -  <<: *test-job
+> +  extends: .test
+>     variables:
+>       TARGET: qemu-amd64
+>   
+>   build:qemu-armhf:
+> -  <<: *build-job
+> +  extends: .build
+>     variables:
+>       TARGET: qemu-armhf
+>   
+>   lava-test:qemu-armhf:
+>     needs: [ "build:qemu-armhf" ]
+> -  <<: *test-job
+> +  extends: .test
+>     variables:
+>       TARGET: qemu-armhf
+>   
+>   build:qemu-arm64:
+> -  <<: *build-job
+> +  extends: .build
+>     variables:
+>       TARGET: qemu-arm64
+>   
+>   lava-test:qemu-arm64:
+>     needs: [ "build:qemu-arm64" ]
+> -  <<: *test-job
+> +  extends: .test
+>     variables:
+>       TARGET: qemu-arm64
+>   
+>   build:board-hikey:
+> -  <<: *build-job
+> +  extends: .build
+>     variables:
+>       TARGET: hikey
+>       BUILD_OPTIONS: ":opt-lava-test.yml"
+>   lava-test:board-hikey:
+>     needs: [ "build:board-hikey" ]
+> -  <<: *test-job
+> +  extends: .test
+>     variables:
+>       TARGET: hikey
+>   
+>   build:board-beaglebone:
+> -  <<: *build-job
+> +  extends: .build
+>     variables:
+>       TARGET: beagle-bone-black
+>       BUILD_OPTIONS: ":opt-lava-test.yml"
+> @@ -103,18 +104,18 @@ build:board-beaglebone:
+>   
+>   lava-test:board-beaglebone:
+>     needs: [ "build:board-beaglebone" ]
+> -  <<: *test-job
+> +  extends: .test
+>     variables:
+>       TARGET: beaglebone
+>   
+>   build:board-x86-64-efi:
+> -  <<: *build-job
+> +  extends: .build
+>     variables:
+>       TARGET: x86-64-efi
+>       BUILD_OPTIONS: ":opt-lava-test.yml"
+>   
+>   lava-test:board-x86-64-efi:
+>     needs: [ "build:board-x86-64-efi" ]
+> -  <<: *test-job
+> +  extends: .test
+>     variables:
+>       TARGET: x86-64
+> 
+
+-- 
+Siemens AG, Corporate Technology, CT RDA IOT SES-DE
+Corporate Competence Center Embedded Linux
+
