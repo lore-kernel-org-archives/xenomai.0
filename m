@@ -1,13 +1,19 @@
-Subject: Re: Towards Xenomai on Dovetail
-References: <97687b86-9c39-e808-d49c-04b0178d8c31@siemens.com>
-From: Philippe Gerum <philippe.gerum@gmail.com>
-Message-ID: <3a0bab49-a40f-75d3-9abb-26a7a2e2341c@gmail.com>
-Date: Tue, 18 Feb 2020 18:36:45 +0100
 MIME-Version: 1.0
-In-Reply-To: <97687b86-9c39-e808-d49c-04b0178d8c31@siemens.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+References: <CAPnNZ0UJEFhQXnmkH=RyBWVuXWiymw-S3jCcH+U5B_1VESALJA@mail.gmail.com>
+ <cd4f3b32-d2bf-a96d-527a-5f7f3403e4d2@siemens.com>
+ <CAPnNZ0Vt=mVk-JQoZM3TSGBBFOwqc+7KtnhtHVR89iLBo+cRqg@mail.gmail.com>
+ <b6aa1c1a-7f68-c678-01ca-7cbb0fddffde@siemens.com>
+ <CAPnNZ0Xv3gB5xnXaGN8wBfbgZgBB5XfDv9zBmyO9wD4T4WOBbA@mail.gmail.com>
+ <c0ac33c8-51a8-d2c9-e8cf-088bc17f033a@siemens.com>
+ <CAPnNZ0WyMCjodtJopJ7h0=28OVxeZHSgN6sQ9KJFKvf-aKYhug@mail.gmail.com>
+ <00236a7b-33bc-a8ee-859e-6956d3679ce2@siemens.com>
+In-Reply-To: <00236a7b-33bc-a8ee-859e-6956d3679ce2@siemens.com>
+From: Antoine Hoarau <antoine@flr.io>
+Date: Tue, 18 Feb 2020 18:45:28 +0100
+Message-ID: <CAPnNZ0WnsfxCrGWRhV0J0ROYB6t0wHTD25w4f8-cm1k5y4yvWg@mail.gmail.com>
+Subject: Re: undefined symbol in tests
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,88 +22,69 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jan Kiszka <jan.kiszka@siemens.com>
+To: Gylstorff Quirin <quirin.gylstorff@siemens.com>
 Cc: Xenomai <xenomai@xenomai.org>
 
-On 2/10/20 7:57 PM, Jan Kiszka wrote:
-> Hi Philippe,
-> 
-> could you give a rough overview what areas would be just mapping API
-> calls, what would be more different and what is simply missing in
-> Dovetail in order to place Xenomai on top of it?
+Le mar. 18 f=C3=A9vr. 2020 =C3=A0 12:12, Gylstorff Quirin <
+quirin.gylstorff@siemens.com> a =C3=A9crit :
 
-By order of trickiness:
+> Hi Antoine,
+>
+> On 2/18/20 12:04 AM, Antoine Hoarau via Xenomai wrote:
+> > # ldd /usr/lib/xenomai/testsuite/libalchemy-test.so
+> >          linux-vdso.so.1 (0x00007fff1f944000)
+> >          libcobalt.so.2 =3D> /usr/lib/libcobalt.so.2 (0x00007f2a40bc900=
+0)
+> >          libalchemy.so.0 =3D> /usr/lib/libalchemy.so.0 (0x00007f2a409b1=
+000)
+> >          libcopperplate.so.0 =3D> /usr/lib/libcopperplate.so.0
+> > (0x00007f2a407a3000)
+> >          libc.so.6 =3D> /lib/x86_64-linux-gnu/libc.so.6
+> (0x00007f2a403b2000)
+> >          librt.so.1 =3D> /lib/x86_64-linux-gnu/librt.so.1
+> (0x00007f2a401aa000)
+> >          libpthread.so.0 =3D> /lib/x86_64-linux-gnu/libpthread.so.0
+> > (0x00007f2a3ff8b000)
+> >          /lib64/ld-linux-x86-64.so.2 (0x00007f2a40ff4000)
+> >
+> >
+> > For info I added --enable-dlopen-libs
+> > As in https://xenomai.org/pipermail/xenomai/2020-January/042306.html
+> >
+> > Le lun. 17 f=C3=A9vr. 2020 =C3=A0 17:51, Jan Kiszka <jan.kiszka@siemens=
+.com> a
+> =C3=A9crit :
+> >
+> >> On 14.02.20 15:15, Antoine Hoarau wrote:
+> >>> I just built the debians:
+> >>> debchange -v 3.1 Release 3.1
+> >>> debuild -uc -us
+> >>>
+>
+> What is the Debian version and CPU architecture of your build system?A
 
-- Dovetail assumes the companion core shares the same timekeeping bases
-and unit with the common kernel, providing some help in doing so. The
-core should switch to nanosecs, ktime_t internally. Typically, MMIO
-clock sources which are not architected can be exported directly by the
-vDSO (e.g. ARM with its truckload of different clock sources). IOW, no
-more tsc-based timekeeping, CLOCK_HOST_REALTIME becomes useless as
-clock_gettime() is usable from any context. This deeply affects the
-Xenomai timer framework, and the way libcobalt reads time (no need for
-tsc->ns conversion, the vDSO delivers nanosecs via clock_gettime()). In
-the wake of such change, there would be no reason to keep the arith
-support in Xenomai.
 
-- kernel/cobalt/irq.c and related can go. Dovetail integrates the
-so-called "out-of-band" IRQ management directly into the mainline genirq
-logic. This means Xenomai can switch to the request/free_irq() interface
-or related.
+A very standard Ubuntu 18.04 x64.
+Debuild version 2.17.12ubuntu1.1
 
-- kernel/cobalt/arch/*/ and related can go, almost entirely. There is
-direct support for context switching including fpu management for
-threads controlled by the companion (e.g. real-time) core. This means
-that Xenomai's scheduler core should be adapted to use the available
-dovetail interface for this. The workings are explained in the
-description of the so-called "alternate scheduling" Dovetail implements [3].
-
-- support for synchronous breakpoints would need to be reworked a bit,
-around the ptrace()-related events Dovetail triggers (TASK_PTSTOP,
-PTSTEP, PTCONT). As a consequence, the most ugly KEVT_SCHEDULE event is
-gone.
-
-- although this would not be a requirement for a port, you could reuse
-the native VFS support for out-of-band I/O handling in character drivers
-Dovetail brings, in order to drop the RTDM-specific file descriptor
-management [2], simplifying things even further.
-
-- the I-pipe tracer has gone in dovetail. ftrace's regular "function
-tracer" is safe in all contexts, directly adds information related to
-the IRQ pipelining logic. This means the trace* API in Xenomai would
-have to be enabled in a different way.
-
-- the APC interface can go entirely, along with the
-ipipe_post_root_work() call, all this can be obtained using the regular
-irq_work() API now.
-
-- straightforward renames such as ipipe_spin_lock to hard_spin_lock etc.
-
-Although there may be never enough of it, there is still a fair amount
-of documentation already available for all of this at [1]. I'm gathering
-the bits for writing a document which could be titled "How to write your
-own Linux co-kernel on top of Dovetail". This needs time, I'm a slow writer.
-
-The detailed note I sent you in July '18 about how Dovetail was
-diverging from the I-pipe is still relevant for the most part. The
-update logic for an irqchip to support interrupt pipelining has been
-simplified compared to the description in this note though (no more
-pipeline-specific handlers basically).
-
-[1] https://evlproject.org/dovetail/
-[2] https://evlproject.org/core/kernel-api/
-[3] https://evlproject.org/dovetail/altsched/
-
-> 
-> BTW, something like a folded Dovetail patch queue does not exist yet,
-> does it? Would it make sense to create something like that, or is it
-> still too early?
-> 
-
-I could add this. Please note that Dovetail API stability across kernel
-releases is not guaranteed, although I tend to minimize such changes
-when this does not impede improving the code.
-
--- 
-Philippe.
-
+>
+>
+> >>
+> >> I've done that (well, minus debchange) on a Debian 10, installed a
+> >> Xenomai kernel, and ran xeno-test - no problem. I would need this info=
+:
+> >>
+> >> ldd /usr/lib/xenomai/testsuite/libalchemy-test.so
+> >>
+> >> Jan
+> >>
+> >> --
+> >> Siemens AG, Corporate Technology, CT RDA IOT SES-DE
+> >> Corporate Competence Center Embedded Linux
+> >>Quirin
+>
+> Siemens AG
+> Corporate Technology
+> CT RDA IOT SES-DE
+>
+>
