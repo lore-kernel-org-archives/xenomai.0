@@ -1,19 +1,11 @@
+From: steve freyder <steve@freyder.net>
+Subject: xenomai app running under gdb hangs on 3.1/arm32
+Message-ID: <76cffbb0-cd34-760d-9e4b-a4dafa3bc19c@freyder.net>
+Date: Tue, 18 Feb 2020 16:33:33 -0600
 MIME-Version: 1.0
-References: <CAPnNZ0UJEFhQXnmkH=RyBWVuXWiymw-S3jCcH+U5B_1VESALJA@mail.gmail.com>
- <cd4f3b32-d2bf-a96d-527a-5f7f3403e4d2@siemens.com>
- <CAPnNZ0Vt=mVk-JQoZM3TSGBBFOwqc+7KtnhtHVR89iLBo+cRqg@mail.gmail.com>
- <b6aa1c1a-7f68-c678-01ca-7cbb0fddffde@siemens.com>
- <CAPnNZ0Xv3gB5xnXaGN8wBfbgZgBB5XfDv9zBmyO9wD4T4WOBbA@mail.gmail.com>
- <c0ac33c8-51a8-d2c9-e8cf-088bc17f033a@siemens.com>
- <CAPnNZ0WyMCjodtJopJ7h0=28OVxeZHSgN6sQ9KJFKvf-aKYhug@mail.gmail.com>
- <00236a7b-33bc-a8ee-859e-6956d3679ce2@siemens.com>
-In-Reply-To: <00236a7b-33bc-a8ee-859e-6956d3679ce2@siemens.com>
-From: Antoine Hoarau <antoine@flr.io>
-Date: Tue, 18 Feb 2020 18:45:28 +0100
-Message-ID: <CAPnNZ0WnsfxCrGWRhV0J0ROYB6t0wHTD25w4f8-cm1k5y4yvWg@mail.gmail.com>
-Subject: Re: undefined symbol in tests
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset="utf-8"; format="flowed"
+Content-Transfer-Encoding: 8bit
+Content-Language: en-US
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -22,69 +14,76 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Gylstorff Quirin <quirin.gylstorff@siemens.com>
-Cc: Xenomai <xenomai@xenomai.org>
+To: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-Le mar. 18 f=C3=A9vr. 2020 =C3=A0 12:12, Gylstorff Quirin <
-quirin.gylstorff@siemens.com> a =C3=A9crit :
-
-> Hi Antoine,
->
-> On 2/18/20 12:04 AM, Antoine Hoarau via Xenomai wrote:
-> > # ldd /usr/lib/xenomai/testsuite/libalchemy-test.so
-> >          linux-vdso.so.1 (0x00007fff1f944000)
-> >          libcobalt.so.2 =3D> /usr/lib/libcobalt.so.2 (0x00007f2a40bc900=
-0)
-> >          libalchemy.so.0 =3D> /usr/lib/libalchemy.so.0 (0x00007f2a409b1=
-000)
-> >          libcopperplate.so.0 =3D> /usr/lib/libcopperplate.so.0
-> > (0x00007f2a407a3000)
-> >          libc.so.6 =3D> /lib/x86_64-linux-gnu/libc.so.6
-> (0x00007f2a403b2000)
-> >          librt.so.1 =3D> /lib/x86_64-linux-gnu/librt.so.1
-> (0x00007f2a401aa000)
-> >          libpthread.so.0 =3D> /lib/x86_64-linux-gnu/libpthread.so.0
-> > (0x00007f2a3ff8b000)
-> >          /lib64/ld-linux-x86-64.so.2 (0x00007f2a40ff4000)
-> >
-> >
-> > For info I added --enable-dlopen-libs
-> > As in https://xenomai.org/pipermail/xenomai/2020-January/042306.html
-> >
-> > Le lun. 17 f=C3=A9vr. 2020 =C3=A0 17:51, Jan Kiszka <jan.kiszka@siemens=
-.com> a
-> =C3=A9crit :
-> >
-> >> On 14.02.20 15:15, Antoine Hoarau wrote:
-> >>> I just built the debians:
-> >>> debchange -v 3.1 Release 3.1
-> >>> debuild -uc -us
-> >>>
->
-> What is the Debian version and CPU architecture of your build system?A
+Hello again Xenomai group,
 
 
-A very standard Ubuntu 18.04 x64.
-Debuild version 2.17.12ubuntu1.1
+Was testing gdb on xenomai 3.1, ran into this (Xenomai 3.1 on armv7-a, 
+iMX6-dual-lite)
 
->
->
-> >>
-> >> I've done that (well, minus debchange) on a Debian 10, installed a
-> >> Xenomai kernel, and ran xeno-test - no problem. I would need this info=
-:
-> >>
-> >> ldd /usr/lib/xenomai/testsuite/libalchemy-test.so
-> >>
-> >> Jan
-> >>
-> >> --
-> >> Siemens AG, Corporate Technology, CT RDA IOT SES-DE
-> >> Corporate Competence Center Embedded Linux
-> >>Quirin
->
-> Siemens AG
-> Corporate Technology
-> CT RDA IOT SES-DE
->
->
+root@g3l-21:~ # gdb /usr/bin/rtcanrecv
+GNU gdb (GDB) 8.3.1
+Copyright (C) 2019 Free Software Foundation, Inc.
+License GPLv3+: GNU GPL version 3 or later 
+<http://gnu.org/licenses/gpl.html>
+This is free software: you are free to change and redistribute it.
+There is NO WARRANTY, to the extent permitted by law.
+Type "show copying" and "show warranty" for details.
+This GDB was configured as "arm-emac-linux-gnueabi".
+Type "show configuration" for configuration details.
+For bug reporting instructions, please see:
+<http://www.gnu.org/software/gdb/bugs/>.
+Find the GDB manual and other documentation resources online at:
+     <http://www.gnu.org/software/gdb/documentation/>.
+
+For help, type "help".
+Type "apropos word" to search for commands related to "word"...
+Reading symbols from /usr/bin/rtcanrecv...
+(No debugging symbols found in /usr/bin/rtcanrecv)
+(gdb) break main
+Breakpoint 1 at 0x10d50
+(gdb) run --trace=10
+Starting program: /usr/bin/rtcanrecv --trace=10
+warning: Unable to find libthread_db matching inferior's thread library, 
+thread debugging will not be available.
+--  cold init from program
+--  cobalt->init()
+--  connected to Cobalt
+--  memory locked
+--  memory heaps mapped
+[New LWP 1931]
+--  boilerplate->init()
+
+-- copperplate->init()
+
+
+[ at this point the program is hung, so press Control-C ]
+
+^C
+Thread 1 "rtcanrecv" received signal SIGINT, Interrupt.
+0x76fca4a0 in __cobalt_pthread_mutex_lock (mutex=0x484c20c8 
+<heapmem_main>) at 
+/home/sdf/xenobuild/imx-xenomai/xenomai-3.1/lib/cobalt/mutex.c:375
+375                     ret = XENOMAI_SYSCALL1(sc_cobalt_mutex_lock, 
+_mutex);
+(gdb)
+
+So this appears to be hung taking the mutex on "heapmem_main".  I'm not 
+running any other Xenomai programs on this system when this happens so I 
+presume it's locked by another thread in this program but we haven't 
+even made it to main() yet.
+
+
+This is a stock 3.1 build using the stock /usr/bin/rtcanrecv test program.
+
+
+Any thoughts?
+
+
+Thanks,
+
+Steve
+
+
+
