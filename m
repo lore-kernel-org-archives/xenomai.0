@@ -1,14 +1,19 @@
-From: Lange Norbert <norbert.lange@andritz.com>
-Subject: RE: [PATCH ipipe-noarch] ipipe: Disable rcuidle trace path when
- running over the head domain
-Date: Tue, 18 Feb 2020 10:11:56 +0000
-Message-ID: <VI1PR05MB5917F023FAC7A3F8677125CAF6110@VI1PR05MB5917.eurprd05.prod.outlook.com>
-References: <e9561ccb-175f-8cb2-2a93-48e90f262f97@siemens.com>
-In-Reply-To: <e9561ccb-175f-8cb2-2a93-48e90f262f97@siemens.com>
-Content-Language: en-US
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+Subject: Re: undefined symbol in tests
+References: <CAPnNZ0UJEFhQXnmkH=RyBWVuXWiymw-S3jCcH+U5B_1VESALJA@mail.gmail.com>
+ <cd4f3b32-d2bf-a96d-527a-5f7f3403e4d2@siemens.com>
+ <CAPnNZ0Vt=mVk-JQoZM3TSGBBFOwqc+7KtnhtHVR89iLBo+cRqg@mail.gmail.com>
+ <b6aa1c1a-7f68-c678-01ca-7cbb0fddffde@siemens.com>
+ <CAPnNZ0Xv3gB5xnXaGN8wBfbgZgBB5XfDv9zBmyO9wD4T4WOBbA@mail.gmail.com>
+ <c0ac33c8-51a8-d2c9-e8cf-088bc17f033a@siemens.com>
+ <CAPnNZ0WyMCjodtJopJ7h0=28OVxeZHSgN6sQ9KJFKvf-aKYhug@mail.gmail.com>
+From: Gylstorff Quirin <quirin.gylstorff@siemens.com>
+Message-ID: <00236a7b-33bc-a8ee-859e-6956d3679ce2@siemens.com>
+Date: Tue, 18 Feb 2020 12:11:55 +0100
 MIME-Version: 1.0
+In-Reply-To: <CAPnNZ0WyMCjodtJopJ7h0=28OVxeZHSgN6sQ9KJFKvf-aKYhug@mail.gmail.com>
+Content-Type: text/plain; charset="utf-8"; format="flowed"
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,62 +22,52 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jan Kiszka <jan.kiszka@siemens.com>, Philippe Gerum <rpm@xenomai.org>, Xenomai <xenomai@xenomai.org>
+To: xenomai@xenomai.org, antoine@flr.io
 
-SGVsbG8gSmFuLA0KDQp5ZXMgdGhpcyBmaXhlcyB0aGUgaXNzdWUgZm9yIG1lLCB3aGF0J3MgdGhl
-IGRvd25zaWRlIG9mIG5vdCB1c2luZyAqX3JjdWlkbGUsDQppcyB0aGF0IGEgcGVyZm9ybWFuY2Ug
-b3B0aW1pemF0aW9uPw0KDQpOb3JiZXJ0IExhbmdlDQoNCj4gLS0tLS1PcmlnaW5hbCBNZXNzYWdl
-LS0tLS0NCj4gRnJvbTogSmFuIEtpc3prYSA8amFuLmtpc3prYUBzaWVtZW5zLmNvbT4NCj4gU2Vu
-dDogTW9udGFnLCAxNy4gRmVicnVhciAyMDIwIDE5OjA2DQo+IFRvOiBQaGlsaXBwZSBHZXJ1bSA8
-cnBtQHhlbm9tYWkub3JnPjsgWGVub21haQ0KPiA8eGVub21haUB4ZW5vbWFpLm9yZz4NCj4gQ2M6
-IExhbmdlIE5vcmJlcnQgPG5vcmJlcnQubGFuZ2VAYW5kcml0ei5jb20+DQo+IFN1YmplY3Q6IFtQ
-QVRDSCBpcGlwZS1ub2FyY2hdIGlwaXBlOiBEaXNhYmxlIHJjdWlkbGUgdHJhY2UgcGF0aCB3aGVu
-IHJ1bm5pbmcNCj4gb3ZlciB0aGUgaGVhZCBkb21haW4NCj4NCj4gTk9OLUFORFJJVFogU09VUkNF
-OiBCRSBDQVVUSU9VUyBXSVRIIENPTlRFTlQsIExJTktTIE9SDQo+IEFUVEFDSE1FTlRTLg0KPg0K
-Pg0KPiBGcm9tOiBKYW4gS2lzemthIDxqYW4ua2lzemthQHNpZW1lbnMuY29tPg0KPg0KPiBXZSBk
-byBub3QgbmVlZCB0aGUgc3BlY2lhbCBoYW5kbGluZyBvZiBfX0RPX1RSQUNFKC4uLiwgcmN1aWRs
-ZT0xKSB3aGVuDQo+IHJ1bm5pbmcgb3ZlciB0aGUgaGVhZCBkb21haW4uIEluIGZhY3QsIHdlIGNh
-bm5vdCB1c2UgaXQgYmVjYXVzZSBpdA0KPiBzd2l0Y2hlcyB0byBzcmN1IHdoaWNoIGlzIGluY29t
-cGF0aWJsZSB3aXRoIHRoYXQgY29udGV4dC4gSXQncyBzYWZlIHRvDQo+IHN3aXRjaCB0byBub3Jt
-YWwgUkNVIGJlY2F1c2Ugbm8gaGVhZCBkb21haW4gY2FsbGVyIG9mIGEgdHJhY2VfKl9yY3VpZGxl
-DQo+IHRyYWNlcG9pbnRzIHNob3VsZCBkbyB0aGlzIGZyb20gcmN1LXByb2JsZW1hdGljIHBhdGhz
-LCBzcGVjaWZpY2FsbHkNCj4gaWRsZS4NCj4NCj4gUG9ydGVkIGZyb20gdGhlIGRvdmV0YWlsIHF1
-ZXVlLg0KPg0KPiBTaWduZWQtb2ZmLWJ5OiBKYW4gS2lzemthIDxqYW4ua2lzemthQHNpZW1lbnMu
-Y29tPg0KPiAtLS0NCj4NCj4gUGhpbGlwcGUsIGRvZXMgdGhpcyBkZXNjcmlwdGlvbiBtYWtlIHNl
-bnNlPw0KPg0KPiBOb3JiZXJ0LCBwbGVhc2UgdGVzdC4NCj4NCj4gIGluY2x1ZGUvbGludXgvdHJh
-Y2Vwb2ludC5oIHwgMyArKy0NCj4gIDEgZmlsZSBjaGFuZ2VkLCAyIGluc2VydGlvbnMoKyksIDEg
-ZGVsZXRpb24oLSkNCj4NCj4gZGlmZiAtLWdpdCBhL2luY2x1ZGUvbGludXgvdHJhY2Vwb2ludC5o
-IGIvaW5jbHVkZS9saW51eC90cmFjZXBvaW50LmgNCj4gaW5kZXggZTlkZThhZDBiYWQ3Li44M2Rm
-MjJhNmYyODQgMTAwNjQ0DQo+IC0tLSBhL2luY2x1ZGUvbGludXgvdHJhY2Vwb2ludC5oDQo+ICsr
-KyBiL2luY2x1ZGUvbGludXgvdHJhY2Vwb2ludC5oDQo+IEBAIC0yMSw2ICsyMSw3IEBADQo+ICAj
-aW5jbHVkZSA8bGludXgvY3B1bWFzay5oPg0KPiAgI2luY2x1ZGUgPGxpbnV4L3JjdXBkYXRlLmg+
-DQo+ICAjaW5jbHVkZSA8bGludXgvdHJhY2Vwb2ludC1kZWZzLmg+DQo+ICsjaW5jbHVkZSA8bGlu
-dXgvaXBpcGUuaD4NCj4NCj4gIHN0cnVjdCBtb2R1bGU7DQo+ICBzdHJ1Y3QgdHJhY2Vwb2ludDsN
-Cj4gQEAgLTIxMiw3ICsyMTMsNyBAQCBzdGF0aWMgaW5saW5lIHN0cnVjdCB0cmFjZXBvaW50DQo+
-ICp0cmFjZXBvaW50X3B0cl9kZXJlZih0cmFjZXBvaW50X3B0cl90ICpwKQ0KPiAgICAgICAgICAg
-ICAgICAgICAgICAgICBfX0RPX1RSQUNFKCZfX3RyYWNlcG9pbnRfIyNuYW1lLCAgICAgICAgICAg
-ICAgICBcDQo+ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgVFBfUFJPVE8oZGF0YV9w
-cm90byksICAgICAgICAgICAgICAgICAgIFwNCj4gICAgICAgICAgICAgICAgICAgICAgICAgICAg
-ICAgICBUUF9BUkdTKGRhdGFfYXJncyksICAgICAgICAgICAgICAgICAgICAgXA0KPiAtICAgICAg
-ICAgICAgICAgICAgICAgICAgICAgICAgIFRQX0NPTkRJVElPTihjb25kKSwgMSk7ICAgICAgICAg
-ICAgICAgICBcDQo+ICsgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgVFBfQ09ORElUSU9O
-KGNvbmQpLCBpcGlwZV9yb290X3ApOyAgICAgIFwNCj4gICAgICAgICB9DQo+ICAjZWxzZQ0KPiAg
-I2RlZmluZSBfX0RFQ0xBUkVfVFJBQ0VfUkNVKG5hbWUsIHByb3RvLCBhcmdzLCBjb25kLCBkYXRh
-X3Byb3RvLA0KPiBkYXRhX2FyZ3MpDQo+IC0tDQo+IDIuMTYuNA0KX19fX19fX19fX19fX19fX19f
-X19fX19fX19fX19fX18NCg0KVGhpcyBtZXNzYWdlIGFuZCBhbnkgYXR0YWNobWVudHMgYXJlIHNv
-bGVseSBmb3IgdGhlIHVzZSBvZiB0aGUgaW50ZW5kZWQgcmVjaXBpZW50cy4gVGhleSBtYXkgY29u
-dGFpbiBwcml2aWxlZ2VkIGFuZC9vciBjb25maWRlbnRpYWwgaW5mb3JtYXRpb24gb3Igb3RoZXIg
-aW5mb3JtYXRpb24gcHJvdGVjdGVkIGZyb20gZGlzY2xvc3VyZS4gSWYgeW91IGFyZSBub3QgYW4g
-aW50ZW5kZWQgcmVjaXBpZW50LCB5b3UgYXJlIGhlcmVieSBub3RpZmllZCB0aGF0IHlvdSByZWNl
-aXZlZCB0aGlzIGVtYWlsIGluIGVycm9yIGFuZCB0aGF0IGFueSByZXZpZXcsIGRpc3NlbWluYXRp
-b24sIGRpc3RyaWJ1dGlvbiBvciBjb3B5aW5nIG9mIHRoaXMgZW1haWwgYW5kIGFueSBhdHRhY2ht
-ZW50IGlzIHN0cmljdGx5IHByb2hpYml0ZWQuIElmIHlvdSBoYXZlIHJlY2VpdmVkIHRoaXMgZW1h
-aWwgaW4gZXJyb3IsIHBsZWFzZSBjb250YWN0IHRoZSBzZW5kZXIgYW5kIGRlbGV0ZSB0aGUgbWVz
-c2FnZSBhbmQgYW55IGF0dGFjaG1lbnQgZnJvbSB5b3VyIHN5c3RlbS4NCg0KQU5EUklUWiBIWURS
-TyBHbWJIDQoNCg0KUmVjaHRzZm9ybS8gTGVnYWwgZm9ybTogR2VzZWxsc2NoYWZ0IG1pdCBiZXNj
-aHLDpG5rdGVyIEhhZnR1bmcgLyBDb3Jwb3JhdGlvbg0KDQpGaXJtZW5zaXR6LyBSZWdpc3RlcmVk
-IHNlYXQ6IFdpZW4NCg0KRmlybWVuYnVjaGdlcmljaHQvIENvdXJ0IG9mIHJlZ2lzdHJ5OiBIYW5k
-ZWxzZ2VyaWNodCBXaWVuDQoNCkZpcm1lbmJ1Y2hudW1tZXIvIENvbXBhbnkgcmVnaXN0cmF0aW9u
-OiBGTiA2MTgzMyBnDQoNCkRWUjogMDYwNTA3Nw0KDQpVSUQtTnIuOiBBVFUxNDc1NjgwNg0KDQoN
-ClRoYW5rIFlvdQ0KX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX18NCg==
+Hi Antoine,
+
+On 2/18/20 12:04 AM, Antoine Hoarau via Xenomai wrote:
+> # ldd /usr/lib/xenomai/testsuite/libalchemy-test.so
+>          linux-vdso.so.1 (0x00007fff1f944000)
+>          libcobalt.so.2 => /usr/lib/libcobalt.so.2 (0x00007f2a40bc9000)
+>          libalchemy.so.0 => /usr/lib/libalchemy.so.0 (0x00007f2a409b1000)
+>          libcopperplate.so.0 => /usr/lib/libcopperplate.so.0
+> (0x00007f2a407a3000)
+>          libc.so.6 => /lib/x86_64-linux-gnu/libc.so.6 (0x00007f2a403b2000)
+>          librt.so.1 => /lib/x86_64-linux-gnu/librt.so.1 (0x00007f2a401aa000)
+>          libpthread.so.0 => /lib/x86_64-linux-gnu/libpthread.so.0
+> (0x00007f2a3ff8b000)
+>          /lib64/ld-linux-x86-64.so.2 (0x00007f2a40ff4000)
+> 
+> 
+> For info I added --enable-dlopen-libs
+> As in https://xenomai.org/pipermail/xenomai/2020-January/042306.html
+> 
+> Le lun. 17 févr. 2020 à 17:51, Jan Kiszka <jan.kiszka@siemens.com> a écrit :
+> 
+>> On 14.02.20 15:15, Antoine Hoarau wrote:
+>>> I just built the debians:
+>>> debchange -v 3.1 Release 3.1
+>>> debuild -uc -us
+>>>
+
+What is the Debian version and CPU architecture of your build system?
+
+>>
+>> I've done that (well, minus debchange) on a Debian 10, installed a
+>> Xenomai kernel, and ran xeno-test - no problem. I would need this info:
+>>
+>> ldd /usr/lib/xenomai/testsuite/libalchemy-test.so
+>>
+>> Jan
+>>
+>> --
+>> Siemens AG, Corporate Technology, CT RDA IOT SES-DE
+>> Corporate Competence Center Embedded Linux
+>>Quirin
+
+Siemens AG
+Corporate Technology
+CT RDA IOT SES-DE
+
 
