@@ -1,11 +1,13 @@
-From: song <chensong@kylinos.cn>
-Subject: some ftrace events are missed
-Message-ID: <5e7d13d1-ee38-b1ee-3392-4bc19ff8cc4a@kylinos.cn>+FAD0AF27CFDEBD83
-Date: Sun, 2 Feb 2020 20:22:06 +0800
+Subject: Re: Fix of long size in port bitmap index
+References: <CAG6b3EpL6OZcHgOR8o--Frr51e7tDYgwDGs9+L7xUh48sTpoSQ@mail.gmail.com>
+From: Jan Kiszka <jan.kiszka@siemens.com>
+Message-ID: <23bf2dcc-8881-59b4-d146-0d365bd99c8f@siemens.com>
+Date: Wed, 19 Feb 2020 09:57:10 +0100
 MIME-Version: 1.0
+In-Reply-To: <CAG6b3EpL6OZcHgOR8o--Frr51e7tDYgwDGs9+L7xUh48sTpoSQ@mail.gmail.com>
 Content-Type: text/plain; charset="utf-8"; format="flowed"
-Content-Transfer-Encoding: 8bit
 Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -14,46 +16,29 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
+To: =?UTF-8?B?TWF0w7rFoSBPbGVrxaHDoWs=?= <oleksak.matus@gmail.com>, xenomai@xenomai.org
 
-hi guys,
+On 18.02.20 18:19, Matúš Olekšák via Xenomai wrote:
+> Hi,
+> I am running xenomai application on 64bit Linux and I had to increase
+> RT_UDP_SOCKETS to 128 and I discovered that my application started to
+> behave strangely. I have done some debugging and I discovered that in
+> function rt_udp_socket you presume that all systems have 32 bit long. Which
+> is not true on x86_64 and you are rewriting other values because of wrong
+> index. So I suggest to replace constant 32 with BITS_PER_LONG, so that all
+> systems will have the right value. Patch is attached to this email. Also
+> this is my first contribution to xenomai, so I am not sure if this is
+> correct way.
 
-I'm working on an issue with ftrace events, the call stack is like that:
+Good catch! Could you send a patch according to CONTRIBUTING.md, 
+specifically one with proper subject, issue description (including a 
+hint that this didn't bite yet due to RT_UDP_SOCKETS = 64) and the 
+signed-off line?
 
-__cobalt_clock_nanosleep
-     xnthread_suspend
-         xntimer_start
-             xnclock_core_ns_to_ticks
-                 xntimer_enqueue_and_program
-                     xnclock_program_shot()
-                         xnclock_core_local_shot
-                             ipipe_timer_set
+TIA!
+Jan
 
-
-I tried to enable ftrace event with "-f" in cyclictest,however, i can 
-only find:
-
-cobalt_clock_entry: clock_irq=4
-cobalt_timer_expire: timer=ffffffc07ffd5800
-cobalt_clock_exit: clock_irq=4
-cobalt_timer_start ....
-
-event traces like trace_cobalt_clock_nanosleep or 
-trace_cobalt_thread_suspend are missed, they are all defined in 
-cobalt_core.h/cobalt_posix.h and visible in 
-/sys/kernel/debugfs/tracing/events/cobalt-core(cobalt-posix).
-
-Does anyone have the same problem before and i would appreciate it if 
-you could let me know the way to solve it,many thanks
-
-BR
-
-Song
-
-
-
-
-
-
-
+-- 
+Siemens AG, Corporate Technology, CT RDA IOT SES-DE
+Corporate Competence Center Embedded Linux
 
