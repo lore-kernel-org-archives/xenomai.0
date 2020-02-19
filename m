@@ -1,15 +1,16 @@
-Subject: Re: xenomai app running under gdb hangs on 3.1/arm32
-References: <76cffbb0-cd34-760d-9e4b-a4dafa3bc19c@freyder.net>
- <d89b5115-6837-46f4-7cf3-1b70f25b64ce@siemens.com>
- <76d7c7af-4d41-8546-6714-b4bfb947f686@siemens.com>
-From: steve freyder <steve@freyder.net>
-Message-ID: <4ba86f82-cd74-da16-a9eb-81a488c9708a@freyder.net>
-Date: Wed, 19 Feb 2020 08:58:46 -0600
+Subject: Re: Towards Xenomai on Dovetail
+References: <97687b86-9c39-e808-d49c-04b0178d8c31@siemens.com>
+ <3a0bab49-a40f-75d3-9abb-26a7a2e2341c@gmail.com>
+ <ad9db5ea-1f12-8022-6593-bf451da9aa2d@siemens.com>
+ <ae9c2c3b-ba95-6cf2-ce02-945cb63f75a7@xenomai.org>
+From: Jan Kiszka <jan.kiszka@siemens.com>
+Message-ID: <4f93c8e7-bb3c-6c95-409c-0ecac2e6bc2d@siemens.com>
+Date: Wed, 19 Feb 2020 16:26:36 +0100
 MIME-Version: 1.0
-In-Reply-To: <76d7c7af-4d41-8546-6714-b4bfb947f686@siemens.com>
+In-Reply-To: <ae9c2c3b-ba95-6cf2-ce02-945cb63f75a7@xenomai.org>
+Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Language: en-US
-Content-Transfer-Encoding: base64
-Content-Type: text/plain; charset="utf-8"; Format="flowed"
+Content-Transfer-Encoding: 7bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -18,92 +19,83 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Philippe Gerum <rpm@xenomai.org>, Philippe Gerum <philippe.gerum@gmail.com>
+Cc: Xenomai <xenomai@xenomai.org>
 
-T24gMi8xOS8yMDIwIDQ6MDIgQU0sIEphbiBLaXN6a2Egd3JvdGU6Cj4gT24gMTkuMDIuMjAgMDk6
-NTYsIEphbiBLaXN6a2EgdmlhIFhlbm9tYWkgd3JvdGU6Cj4+IE9uIDE4LjAyLjIwIDIzOjMzLCBz
-dGV2ZSBmcmV5ZGVyIHZpYSBYZW5vbWFpIHdyb3RlOgo+Pj4gSGVsbG8gYWdhaW4gWGVub21haSBn
-cm91cCwKPj4+Cj4+Pgo+Pj4gV2FzIHRlc3RpbmcgZ2RiIG9uIHhlbm9tYWkgMy4xLCByYW4gaW50
-byB0aGlzIChYZW5vbWFpIDMuMSBvbiAKPj4+IGFybXY3LWEsIGlNWDYtZHVhbC1saXRlKQo+Pj4K
-Pj4+IHJvb3RAZzNsLTIxOn4gIyBnZGIgL3Vzci9iaW4vcnRjYW5yZWN2Cj4+PiBHTlUgZ2RiIChH
-REIpIDguMy4xCj4+PiBDb3B5cmlnaHQgKEMpIDIwMTkgRnJlZSBTb2Z0d2FyZSBGb3VuZGF0aW9u
-LCBJbmMuCj4+PiBMaWNlbnNlIEdQTHYzKzogR05VIEdQTCB2ZXJzaW9uIDMgb3IgbGF0ZXIgCj4+
-PiA8aHR0cDovL2dudS5vcmcvbGljZW5zZXMvZ3BsLmh0bWw+Cj4+PiBUaGlzIGlzIGZyZWUgc29m
-dHdhcmU6IHlvdSBhcmUgZnJlZSB0byBjaGFuZ2UgYW5kIHJlZGlzdHJpYnV0ZSBpdC4KPj4+IFRo
-ZXJlIGlzIE5PIFdBUlJBTlRZLCB0byB0aGUgZXh0ZW50IHBlcm1pdHRlZCBieSBsYXcuCj4+PiBU
-eXBlICJzaG93IGNvcHlpbmciIGFuZCAic2hvdyB3YXJyYW50eSIgZm9yIGRldGFpbHMuCj4+PiBU
-aGlzIEdEQiB3YXMgY29uZmlndXJlZCBhcyAiYXJtLWVtYWMtbGludXgtZ251ZWFiaSIuCj4+PiBU
-eXBlICJzaG93IGNvbmZpZ3VyYXRpb24iIGZvciBjb25maWd1cmF0aW9uIGRldGFpbHMuCj4+PiBG
-b3IgYnVnIHJlcG9ydGluZyBpbnN0cnVjdGlvbnMsIHBsZWFzZSBzZWU6Cj4+PiA8aHR0cDovL3d3
-dy5nbnUub3JnL3NvZnR3YXJlL2dkYi9idWdzLz4uCj4+PiBGaW5kIHRoZSBHREIgbWFudWFsIGFu
-ZCBvdGhlciBkb2N1bWVudGF0aW9uIHJlc291cmNlcyBvbmxpbmUgYXQ6Cj4+PiDCoMKgwqDCoCA8
-aHR0cDovL3d3dy5nbnUub3JnL3NvZnR3YXJlL2dkYi9kb2N1bWVudGF0aW9uLz4uCj4+Pgo+Pj4g
-Rm9yIGhlbHAsIHR5cGUgImhlbHAiLgo+Pj4gVHlwZSAiYXByb3BvcyB3b3JkIiB0byBzZWFyY2gg
-Zm9yIGNvbW1hbmRzIHJlbGF0ZWQgdG8gIndvcmQiLi4uCj4+PiBSZWFkaW5nIHN5bWJvbHMgZnJv
-bSAvdXNyL2Jpbi9ydGNhbnJlY3YuLi4KPj4+IChObyBkZWJ1Z2dpbmcgc3ltYm9scyBmb3VuZCBp
-biAvdXNyL2Jpbi9ydGNhbnJlY3YpCj4+PiAoZ2RiKSBicmVhayBtYWluCj4+PiBCcmVha3BvaW50
-IDEgYXQgMHgxMGQ1MAo+Pj4gKGdkYikgcnVuIC0tdHJhY2U9MTAKPj4+IFN0YXJ0aW5nIHByb2dy
-YW06IC91c3IvYmluL3J0Y2FucmVjdiAtLXRyYWNlPTEwCj4+PiB3YXJuaW5nOiBVbmFibGUgdG8g
-ZmluZCBsaWJ0aHJlYWRfZGIgbWF0Y2hpbmcgaW5mZXJpb3IncyB0aHJlYWQgCj4+PiBsaWJyYXJ5
-LCB0aHJlYWQgZGVidWdnaW5nIHdpbGwgbm90IGJlIGF2YWlsYWJsZS4KPj4+IC0twqAgY29sZCBp
-bml0IGZyb20gcHJvZ3JhbQo+Pj4gLS3CoCBjb2JhbHQtPmluaXQoKQo+Pj4gLS3CoCBjb25uZWN0
-ZWQgdG8gQ29iYWx0Cj4+PiAtLcKgIG1lbW9yeSBsb2NrZWQKPj4+IC0twqAgbWVtb3J5IGhlYXBz
-IG1hcHBlZAo+Pj4gW05ldyBMV1AgMTkzMV0KPj4+IC0twqAgYm9pbGVycGxhdGUtPmluaXQoKQo+
-Pj4KPj4+IC0tIGNvcHBlcnBsYXRlLT5pbml0KCkKPj4+Cj4+Pgo+Pj4gWyBhdCB0aGlzIHBvaW50
-IHRoZSBwcm9ncmFtIGlzIGh1bmcsIHNvIHByZXNzIENvbnRyb2wtQyBdCj4+Pgo+Pj4gXkMKPj4+
-IFRocmVhZCAxICJydGNhbnJlY3YiIHJlY2VpdmVkIHNpZ25hbCBTSUdJTlQsIEludGVycnVwdC4K
-Pj4+IDB4NzZmY2E0YTAgaW4gX19jb2JhbHRfcHRocmVhZF9tdXRleF9sb2NrIChtdXRleD0weDQ4
-NGMyMGM4IAo+Pj4gPGhlYXBtZW1fbWFpbj4pIGF0IAo+Pj4gL2hvbWUvc2RmL3hlbm9idWlsZC9p
-bXgteGVub21haS94ZW5vbWFpLTMuMS9saWIvY29iYWx0L211dGV4LmM6Mzc1Cj4+PiAzNzXCoMKg
-wqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgIHJldCA9IFhFTk9NQUlfU1lTQ0FM
-TDEoc2NfY29iYWx0X211dGV4X2xvY2ssIAo+Pj4gX211dGV4KTsKPj4+IChnZGIpCj4+Pgo+Pj4g
-U28gdGhpcyBhcHBlYXJzIHRvIGJlIGh1bmcgdGFraW5nIHRoZSBtdXRleCBvbiAiaGVhcG1lbV9t
-YWluIi7CoCBJJ20gCj4+PiBub3QgcnVubmluZyBhbnkgb3RoZXIgWGVub21haSBwcm9ncmFtcyBv
-biB0aGlzIHN5c3RlbSB3aGVuIHRoaXMgCj4+PiBoYXBwZW5zIHNvIEkgcHJlc3VtZSBpdCdzIGxv
-Y2tlZCBieSBhbm90aGVyIHRocmVhZCBpbiB0aGlzIHByb2dyYW0gCj4+PiBidXQgd2UgaGF2ZW4n
-dCBldmVuIG1hZGUgaXQgdG8gbWFpbigpIHlldC4KPj4+Cj4+Pgo+Pj4gVGhpcyBpcyBhIHN0b2Nr
-IDMuMSBidWlsZCB1c2luZyB0aGUgc3RvY2sgL3Vzci9iaW4vcnRjYW5yZWN2IHRlc3QgCj4+PiBw
-cm9ncmFtLgo+Pj4KPj4+Cj4+PiBBbnkgdGhvdWdodHM/Cj4+Pgo+Pgo+PiBUcnlpbmcgdG8gcmVw
-cm9kdWNlIHZpYSBxZW11LWFybWhmIHRhcmdldCBvZiB4ZW5vbWFpLWltYWdlcy4gQXJlIHlvdSAK
-Pj4gb24ga2VybmVsIDQuMTkuNTU/Cj4+Cj4KPiBJdCdzIG5vdCByZXByb2R1Y2libGUgaW4gdGhh
-dCBxZW11IHRhcmdldCB3aXRoIHhlbm9fY2FuX3ZpcnQgZGV2aWNlcy4gCj4gQ2FuIHlvdSBzcGVj
-aWZ5IHRoZSBkaWZmZXJlbmNlcyBpbiB5b3VyIGNvbmZpZz8KPgo+IEphbgo+CkphbiwKCgpNeSBr
-ZXJuZWwgaXMgNC4xNC44NS7CoCBCZWxvdyBpcyBteSBYZW5vbWFpIGNvbmZpZ3VyYXRpb24gZnJv
-bSAKLS1kdW1wLWNvbmZpZywgYW5kIGF0dGFjaGVkIGlzIHRoZSBjb25maWcuZ3ogZnJvbSB0aGUg
-TGludXgga2VybmVsLgoKLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0t
-LS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tCgoKYmFzZWQgb24gWGVub21haS9jb2JhbHQg
-djMuMQpDT05GSUdfTU1VPTEKQ09ORklHX1NNUD0xCkNPTkZJR19YRU5PX0JVSUxEX0FSR1M9IiAn
-Q0ZMQUdTPS1tYXJjaD1hcm12Ny1hIC1nIC1PMCcgCictLXdpdGgtY29yZT1jb2JhbHQnICctLWVu
-YWJsZS1zbXAnICctLWVuYWJsZS1wc2hhcmVkJyAKJy0taG9zdD1hcm0tZW1hYy1saW51eC1nbnVl
-YWJpJyAnaG9zdF9hbGlhcz1hcm0tZW1hYy1saW51eC1nbnVlYWJpJyAKJ0NDPWFybS1lbWFjLWxp
-bnV4LWdudWVhYmktZ2NjwqAgLW1hcmNoPWFybXY3LWEgLW1mcHU9bmVvbiAKLW1mbG9hdC1hYmk9
-c29mdGZwIAotLXN5c3Jvb3Q9L29wdC9lbWFjLzUuMS9zeXNyb290cy9hcm12N2EtbmVvbi1lbWFj
-LWxpbnV4LWdudWVhYmknIAonTERGTEFHUz0tV2wsLU8xIC1XbCwtLWhhc2gtc3R5bGU9Z251IC1X
-bCwtLWFzLW5lZWRlZCcgJ0NQUEZMQUdTPScgCidDUFA9YXJtLWVtYWMtbGludXgtZ251ZWFiaS1n
-Y2MgLUXCoCAtbWFyY2g9YXJtdjctYSAtbWZwdT1uZW9uwqAgCi1tZmxvYXQtYWJpPXNvZnRmcCAK
-LS1zeXNyb290PS9vcHQvZW1hYy81LjEvc3lzcm9vdHMvYXJtdjdhLW5lb24tZW1hYy1saW51eC1n
-bnVlYWJpJyAKJ1BLR19DT05GSUdfUEFUSD0vb3B0L2VtYWMvNS4xL3N5c3Jvb3RzL2FybXY3YS1u
-ZW9uLWVtYWMtbGludXgtZ251ZWFiaS91c3IvbGliL3BrZ2NvbmZpZyciCkNPTkZJR19YRU5PX0JV
-SUxEX1NUUklORz0ieDg2XzY0LXBjLWxpbnV4LWdudSIKQ09ORklHX1hFTk9fQ09CQUxUPTEKQ09O
-RklHX1hFTk9fQ09NUElMRVI9ImdjYyB2ZXJzaW9uIDUuMy4wIChHQ0MpICIKQ09ORklHX1hFTk9f
-REVGQVVMVF9QRVJJT0Q9MTAwMDAwMApDT05GSUdfWEVOT19GT1JUSUZZPTEKQ09ORklHX1hFTk9f
-SEVBUE1FTT0xCkNPTkZJR19YRU5PX0hPU1RfU1RSSU5HPSJhcm0tZW1hYy1saW51eC1nbnVlYWJp
-IgpDT05GSUdfWEVOT19MT1JFU19DTE9DS19ESVNBQkxFRD0xCkNPTkZJR19YRU5PX1BSRUZJWD0i
-L3Vzci94ZW5vbWFpIgpDT05GSUdfWEVOT19QU0hBUkVEPTEKQ09ORklHX1hFTk9fUkFXX0NMT0NL
-X0VOQUJMRUQ9MQpDT05GSUdfWEVOT19SRVZJU0lPTl9MRVZFTD0KQ09ORklHX1hFTk9fU0FOSVRZ
-PTEKQ09ORklHX1hFTk9fVExTX01PREVMPSJpbml0aWFsLWV4ZWMiCkNPTkZJR19YRU5PX1VBUElf
-TEVWRUw9MTUKQ09ORklHX1hFTk9fVkVSU0lPTl9NQUpPUj0zCkNPTkZJR19YRU5PX1ZFUlNJT05f
-TUlOT1I9MQpDT05GSUdfWEVOT19WRVJTSU9OX1NUUklORz0iMy4xIgotLS0KQ09ORklHX1hFTk9f
-QVNZTkNfQ0FOQ0VMIGlzIE9GRgpDT05GSUdfWEVOT19DT1BQRVJQTEFURV9DTE9DS19SRVNUUklD
-VEVEIGlzIE9GRgpDT05GSUdfWEVOT19ERUJVRyBpcyBPRkYKQ09ORklHX1hFTk9fREVCVUdfRlVM
-TCBpcyBPRkYKQ09ORklHX1hFTk9fTEFaWV9TRVRTQ0hFRCBpcyBPRkYKQ09ORklHX1hFTk9fTElC
-U19ETE9QRU4gaXMgT0ZGCkNPTkZJR19YRU5PX01FUkNVUlkgaXMgT0ZGCkNPTkZJR19YRU5PX1JF
-R0lTVFJZIGlzIE9GRgpDT05GSUdfWEVOT19SRUdJU1RSWV9ST09UIGlzIE9GRgpDT05GSUdfWEVO
-T19UTFNGIGlzIE9GRgpDT05GSUdfWEVOT19WQUxHUklORF9BUEkgaXMgT0ZGCkNPTkZJR19YRU5P
-X1dPUktBUk9VTkRfQ09ORFZBUl9QSSBpcyBPRkYKQ09ORklHX1hFTk9fWDg2X1ZTWVNDQUxMIGlz
-IE9GRgotLS0KUFRIUkVBRF9TVEFDS19ERUZBVUxUPTY1NTM2CkFVVE9NQVRJQ19CT09UU1RSQVA9
-MQoKLS0tLS0tLS0tLS0tLS0gbmV4dCBwYXJ0IC0tLS0tLS0tLS0tLS0tCkEgbm9uLXRleHQgYXR0
-YWNobWVudCB3YXMgc2NydWJiZWQuLi4KTmFtZTogY29uZmlnLmd6ClR5cGU6IGFwcGxpY2F0aW9u
-L3gtZ3ppcApTaXplOiAyNTI2OSBieXRlcwpEZXNjOiBub3QgYXZhaWxhYmxlClVSTDogPGh0dHA6
-Ly94ZW5vbWFpLm9yZy9waXBlcm1haWwveGVub21haS9hdHRhY2htZW50cy8yMDIwMDIxOS81NDA1
-ZmM5YS9hdHRhY2htZW50LmJpbj4K
+On 19.02.20 15:58, Philippe Gerum wrote:
+> On 2/19/20 1:48 PM, Jan Kiszka via Xenomai wrote:
+>> On 18.02.20 18:36, Philippe Gerum wrote:
+>>> On 2/10/20 7:57 PM, Jan Kiszka wrote:
+>>>> Hi Philippe,
+>>>>
+>>>> could you give a rough overview what areas would be just mapping API
+>>>> calls, what would be more different and what is simply missing in
+>>>> Dovetail in order to place Xenomai on top of it?
+>>>
+>>> By order of trickiness:
+>>>
+>>> - Dovetail assumes the companion core shares the same timekeeping bases
+>>> and unit with the common kernel, providing some help in doing so. The
+>>> core should switch to nanosecs, ktime_t internally. Typically, MMIO
+>>> clock sources which are not architected can be exported directly by the
+>>> vDSO (e.g. ARM with its truckload of different clock sources). IOW, no
+>>> more tsc-based timekeeping, CLOCK_HOST_REALTIME becomes useless as
+>>> clock_gettime() is usable from any context. This deeply affects the
+>>> Xenomai timer framework, and the way libcobalt reads time (no need for
+>>> tsc->ns conversion, the vDSO delivers nanosecs via clock_gettime()). In
+>>> the wake of such change, there would be no reason to keep the arith
+>>> support in Xenomai.
+>>>
+>>> - kernel/cobalt/irq.c and related can go. Dovetail integrates the
+>>> so-called "out-of-band" IRQ management directly into the mainline genirq
+>>> logic. This means Xenomai can switch to the request/free_irq() interface
+>>> or related.
+>>>
+>>> - kernel/cobalt/arch/*/ and related can go, almost entirely. There is
+>>> direct support for context switching including fpu management for
+>>> threads controlled by the companion (e.g. real-time) core. This means
+>>> that Xenomai's scheduler core should be adapted to use the available
+>>> dovetail interface for this. The workings are explained in the
+>>> description of the so-called "alternate scheduling" Dovetail
+>>> implements [3].
+>>>
+>>> - support for synchronous breakpoints would need to be reworked a bit,
+>>> around the ptrace()-related events Dovetail triggers (TASK_PTSTOP,
+>>> PTSTEP, PTCONT). As a consequence, the most ugly KEVT_SCHEDULE event is
+>>> gone.
+>>>
+>>> - although this would not be a requirement for a port, you could reuse
+>>> the native VFS support for out-of-band I/O handling in character drivers
+>>> Dovetail brings, in order to drop the RTDM-specific file descriptor
+>>> management [2], simplifying things even further.
+>>
+>> One after the other, indeed. For RTDM, I will have to look into more
+>> details to asses the user-visible impact. Currently, your approach is
+>> not yet up-to-speed with RTDM, specifically due to a missing socket
+>> interface (RTnet, RT-CAN, ...).
+>>
+> 
+> RTDM sockets are fundamentally a user-space layer aimed at presenting a
+> POSIX-like API to application; the way this layer talks to Cobalt could
+> be implemented fully using a chardev interface internally. Actually,
+> more than 2/3 of the services exposed by a RTDM protocol driver are
+> currently attached to the Cobalt core via a chardev interface
+> (connect(), bind(), set/getsockopt(), etc).
+> 
+> The fact that EVL does not aim at POSIX compliance explains why there is
+> no pressure in having this. Dovetail may extend the net_device
+> abstraction with support for out-of-band I/O, whether this should go up
+> to the socket layer as a service access point is undecided. I just don't
+> know yet. Still musing with the idea. Bottom line for me is keep it simple.
+> 
+
+Having been there already with RTDM, hmm, 15 years ago, I will predict 
+that this approach won't be the final one. That said, it may indeed be a 
+good idea to stay at that simple level while trying to sell things upstream.
+
+Jan
+
+-- 
+Siemens AG, Corporate Technology, CT RDA IOT SES-DE
+Corporate Competence Center Embedded Linux
+
