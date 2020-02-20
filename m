@@ -1,12 +1,10 @@
-Subject: Re: [PATCH] Fixed long size in UDP port bitmap index
-References: <CAG6b3Eos-mVCQHyHVh6Vr=4xr+ud_t+EsvW8o939i6MpJbcC6Q@mail.gmail.com>
-From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <53c1c8f2-4a5f-79f6-cc66-be13613563d7@siemens.com>
-Date: Thu, 20 Feb 2020 08:29:48 +0100
+From: LOCHE Daniel <dloche@laas.fr>
+Subject: rt_task_bind blocking: inter-process ?
+Message-ID: <4392cb58-f99f-f1d6-b4c7-58c75040cf01@laas.fr>
+Date: Thu, 20 Feb 2020 14:29:27 +0100
 MIME-Version: 1.0
-In-Reply-To: <CAG6b3Eos-mVCQHyHVh6Vr=4xr+ud_t+EsvW8o939i6MpJbcC6Q@mail.gmail.com>
-Content-Type: text/plain; charset="utf-8"
 Content-Language: en-US
+Content-Type: text/plain; charset="utf-8"; format="flowed"
 Content-Transfer-Encoding: 8bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
@@ -16,45 +14,77 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: =?UTF-8?B?TWF0w7rFoSBPbGVrxaHDoWs=?= <oleksak.matus@gmail.com>, xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-On 19.02.20 19:59, Matúš Olekšák via Xenomai wrote:
-> Hello,
-> I am posting once again this patch. Now it is according CONTRIBUTING.md.
-> There is issue when you are using 64bit Linux and increasing RT_UDP_SOCKETS
-> above 64, because on 64 bit Linux long has 64 bits instead of hardcoded 32
-> bits. This patch fixes the situation on both 32 and 64 bit OS.
-> 
-> Signed-off-by: Matúš Olekšák <oleksak.matus@gmail.com>
-> ---
-> kernel/drivers/net/stack/ipv4/udp/udp.c | 2 +-
-> 1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/kernel/drivers/net/stack/ipv4/udp/udp.c
-> b/kernel/drivers/net/stack/ipv4/udp/udp.c
-> index 5e3679780..c26b4bd81 100644
-> --- a/kernel/drivers/net/stack/ipv4/udp/udp.c
-> +++ b/kernel/drivers/net/stack/ipv4/udp/udp.c
-> @@ -301,7 +301,7 @@ int rt_udp_socket(struct rtdm_fd *fd)
->                         break;
->         index = ffz(port_bitmap[i]);
->         set_bit(index, &port_bitmap[i]);
-> -       index += i * 32;
-> +       index += i * BITS_PER_LONG;
->         sock->prot.inet.reg_index = index;
->         sock->prot.inet.sport = index + auto_port_start;
-> 
-> --
-> 2.25.1
-> 
+Hello everyone,
 
-Massaged a bit to apply it (mail client eat all tabs, and the commit log 
-(message body) needs to look like it shall be recorded in git).
+I a currently factoring my application to go from a multi-thread one to 
+a multi-process one (C++11).
+I am using Xenomai 3.0.5 on Linux Mint 18.04 (on a Intel 8250U 
+computer), 90% alchemy library (10% posix).
+(either processes or tasks, let's call all of those "tasks" here after 
+for easier understanding)
 
-Thanks!
-Jan
+*Context : *Basically, during the setup phase of the execution, 
+previously I was reading a list of "task" parameters from a file
+and launched consequently the correct amount of rt_task_create() / 
+launch() from my main process.
+All my RT_TASK links to the threads were stored in the main thread to 
+manage them.
 
--- 
-Siemens AG, Corporate Technology, CT RDA IOT SES-DE
-Corporate Competence Center Embedded Linux
+Now, I have to go through a fork() for every task, followed by a 
+rt_task_shadow(). OK.
+But to get in my main process the link to the RT_TASK of every xenomai 
+process created, I have to use rt_task_bind().
+Issue is here : whatever arguments I give to rt_task_bind(), it blocks 
+as long as the searched task name exists... don't know why.
 
+Here is a sample code bellow ... what is wrong exactly ? Is it possible 
+to use rt_task_bind with inter-process tasks..? Why the "TM_NONBLOCK" 
+does nothing..? Thanks for your help.
+
+Daniel
+
+#include <alchemy/task.h>
+#include <alchemy/timer.h>
+#include <sys/types.h>
+#include <unistd.h>
+
+int main ()
+
+{
+     const char* taskNames[3] = {"task0", "task1", "task2"};
+     for (int i = 0, i < 3, ++i)
+     {
+             pid_t pid = fork()
+             if (pid) //
+             {
+                 sleep(1); // wait a little before going through another 
+fork.
+
+         } else { // child process
+             RT_TASK _t;
+             rt_task_shadow(&_t, taskNames[i], 50, 0);
+             rt_printf("Success creating task %s", taskNames[i]);
+             sleep(15);        /* placeholder, should do real-time stuff
+    here, then end process. */
+             exit(EXIT_SUCCESS);
+         }
+
+    }
+
+     // Only "main" process goes here.
+
+     RT_TASK _t;
+     for (int i = 0, i < 3, ++i)
+     {
+         int ret = rt_task_bind(&t, taskNames[i], TM_NONBLOCK); // <== 
+HERE. TM_NONBLOCK, TM_INFINITE or a time value, changes    nothing.... 
+never goes here.
+         if (ret) printf("Error : could not bind task. Error #%d", ret);
+         else printf("Bind to task %s done.", taskNames[i]);
+     }
+     /* Do stuff here on the binded tasks */
+     exit(EXIT_SUCCESS);
+
+}
