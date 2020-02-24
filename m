@@ -1,15 +1,8 @@
-Subject: Re: rt_task_bind blocking: inter-process ?
-References: <4392cb58-f99f-f1d6-b4c7-58c75040cf01@laas.fr>
- <89e083e9-ca3f-6f4a-b9f6-0ab8f988db1d@freyder.net>
- <52fb4d78-1a90-13af-6833-b5b8c98942c5@laas.fr>
-From: steve freyder <steve@freyder.net>
-Message-ID: <5c76c05c-65f6-8b0b-e486-b7835faf0afe@freyder.net>
-Date: Fri, 21 Feb 2020 11:40:12 -0600
-MIME-Version: 1.0
-In-Reply-To: <52fb4d78-1a90-13af-6833-b5b8c98942c5@laas.fr>
-Content-Type: text/plain; charset="utf-8"; format="flowed"
-Content-Transfer-Encoding: 8bit
-Content-Language: en-US
+From: Greg Gallagher <greg@embeddedgreg.com>
+Subject: [PATCH] Fix up the gpio-omap driver so the current version can be
+ used with the ipipe.
+Date: Mon, 24 Feb 2020 01:31:36 -0500
+Message-Id: <20200224063136.11493-1-greg@embeddedgreg.com>
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -20,261 +13,230 @@ List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: xenomai@xenomai.org
 
-On 2/21/2020 10:10 AM, LOCHE Daniel via Xenomai wrote:
-> On 20/02/2020 à 22:36, steve freyder via Xenomai wrote:
->> On 2/20/2020 7:29 AM, LOCHE Daniel via Xenomai wrote:
->>> Hello everyone,
->>>
->>> I a currently factoring my application to go from a multi-thread one 
->>> to a multi-process one (C++11).
->>> I am using Xenomai 3.0.5 on Linux Mint 18.04 (on a Intel 8250U 
->>> computer), 90% alchemy library (10% posix).
->>> (either processes or tasks, let's call all of those "tasks" here 
->>> after for easier understanding)
->>>
->>> *Context : *Basically, during the setup phase of the execution, 
->>> previously I was reading a list of "task" parameters from a file
->>> and launched consequently the correct amount of rt_task_create() / 
->>> launch() from my main process.
->>> All my RT_TASK links to the threads were stored in the main thread 
->>> to manage them.
->>>
->>> Now, I have to go through a fork() for every task, followed by a 
->>> rt_task_shadow(). OK.
->>> But to get in my main process the link to the RT_TASK of every 
->>> xenomai process created, I have to use rt_task_bind().
->>> Issue is here : whatever arguments I give to rt_task_bind(), it 
->>> blocks as long as the searched task name exists... don't know why.
->>>
->>> Here is a sample code bellow ... what is wrong exactly ? Is it 
->>> possible to use rt_task_bind with inter-process tasks..? Why the 
->>> "TM_NONBLOCK" does nothing..? Thanks for your help.
->>>
->>> Daniel
->>>
->>> #include <alchemy/task.h>
->>> #include <alchemy/timer.h>
->>> #include <sys/types.h>
->>> #include <unistd.h>
->>>
->>> int main ()
->>>
->>> {
->>>     const char* taskNames[3] = {"task0", "task1", "task2"};
->>>     for (int i = 0, i < 3, ++i)
->>>     {
->>>             pid_t pid = fork()
->>>             if (pid) //
->>>             {
->>>                 sleep(1); // wait a little before going through 
->>> another fork.
->>>
->>>         } else { // child process
->>>             RT_TASK _t;
->>>             rt_task_shadow(&_t, taskNames[i], 50, 0);
->>>             rt_printf("Success creating task %s", taskNames[i]);
->>>             sleep(15);        /* placeholder, should do real-time stuff
->>>    here, then end process. */
->>>             exit(EXIT_SUCCESS);
->>>         }
->>>
->>>    }
->>>
->>>     // Only "main" process goes here.
->>>
->>>     RT_TASK _t;
->>>     for (int i = 0, i < 3, ++i)
->>>     {
->>>         int ret = rt_task_bind(&t, taskNames[i], TM_NONBLOCK); // 
->>> <== HERE. TM_NONBLOCK, TM_INFINITE or a time value, changes    
->>> nothing.... never goes here.
->>>         if (ret) printf("Error : could not bind task. Error #%d", ret);
->>>         else printf("Bind to task %s done.", taskNames[i]);
->>>     }
->>>     /* Do stuff here on the binded tasks */
->>>     exit(EXIT_SUCCESS);
->>>
->>> }
->>
->> Daniel,
->>
->>
->> Are you using the --shared-registry and --session=foo switches when 
->> you run your program?  I don't believe there's any other way to get 
->> the registry (which is needed to register your task names so that 
->> rt_task_bind() can find them) shared across processes. The 
->> --shared-registry might be a default, but for sure the --session= 
->> switch is not a default - it defaults to an "anonymous session" which 
->> means that every process has its own registry - shared with nobody.
->>
->>
->> Also, calling fork() might be part of the problem, and if you're 
->> having rt_task_bind() problems then you definitely need to be 
->> checking the return code from your rt_task_shadow() calls.  Part of 
->> what happens there is putting the task name into the registry, so if 
->> that fails, your rt_task_bind() call will also have problems. Why it 
->> is hanging instead of returning -EAGAIN when you're using TM_NONBLOCK 
->> and the task doesn't exist, I don't know.
->>
->>
->> What you're attempting to do here does work if you:
->>
->>
->> 1) disable auto-init using xeno-config --no-auto-init in your build 
->> flags
->>
->> 2) call xenomai_init() explicitly in the child processes before you 
->> call rt_task_shadow()
->>
->> 3) don't call xenomai_init() in the parent task until *after* you 
->> have fork()'ed the child processes
->>
->>
->> I made a copy of your program and modified it to use the no-auto-init 
->> option on the xeno-config invocation, attached.
->>
->>
->> Steve
->>
->>
->>
->> -------------- next part --------------
->> #include <stdio.h>
->> #include <alchemy/task.h>
->> #include <alchemy/timer.h>
->> #include <stdlib.h>
->> #include <sys/types.h>
->> #include <unistd.h>
->> #include <xenomai/init.h>
->>
->> /*
->> * make sure everybody is in the same session and that
->> * we have registry sharing.
->> */
->> int do_xeno_init(void)  {
->>    char *args[] = {
->>        "program",
->>        "--shared-registry",
->>        "--session=test",
->>        NULL
->>    } ;
->>    char **argv = args ;
->>    int argc = (sizeof args/sizeof args[0])-1 ; /* exclude NULL */
->>
->>    xenomai_init(&argc,(char * const **)&argv) ;
->> }
->> #define XENO_INIT()     do_xeno_init()
->>
->> int main (int argc, char **argv)
->>
->> {
->>    static char* taskNames[3] = {"task0", "task1", "task2"};
->>
->>    setvbuf(stdout,NULL,_IOLBF,4096) ;
->>
->>    for (int i = 0 ; i < 3 ; ++i)
->>    {
->>            pid_t pid = fork() ;
->>
->>            if (pid < 0)  {
->>                perror("fork") ;
->>                continue ;
->>            }
->>            else if (pid)        // fork OK, we're parent
->>            {
->>                //sleep(1); // wait a little before going through 
->> another fork.
->>            } else { // child process
->>                RT_TASK _t;
->>                int ret = 0 ;
->>
->>                printf("calling xenomai_init()\n") ;
->>                XENO_INIT() ;
->>                rt_printf("process for %s running, pid %lu\n",
->>                    taskNames[i],getpid()) ;
->>                ret = rt_task_shadow(&_t, taskNames[i], 50, 0);
->>                rt_printf("shadow task %s returns %d\n", taskNames[i], 
->> ret) ;
->>                ret = rt_task_sleep(1e9*30) ;
->>                rt_printf("sleep returned status %d\n",ret) ;
->>                exit(EXIT_SUCCESS);
->>            }
->>
->>   }
->>
->>    // Only "main" process goes here.
->>
->>    printf("launching done, sleeping 5\n") ;
->>    sleep(5) ;
->>    printf("resuming, binding...\n") ;
->>
->>    printf("dumping the registry\n") ;
->>    system("find /run/xenomai") ;   // see what the registry is 
->> looking like
->>
->>    XENO_INIT() ;
->>
->>    for (int i = 0 ; i < 3 ; ++i)
->>    {
->>        RT_TASK _t;
->>        int ret ;
->>        printf("binding to %s\n",taskNames[i]) ;
->>        ret = rt_task_bind(&_t, taskNames[i], TM_NONBLOCK); // <== 
->> HERE. TM_NONBLOCK, TM_INFINITE or a time value, changes nothing.... 
->> never goes here.
->>        if (ret) printf("Error : could not bind task. Error #%d\n", ret);
->>        else printf("Bind to task %s done.\n", taskNames[i]);
->>    }
->>    /* Do stuff here on the binded tasks */
->>    exit(EXIT_SUCCESS);
->> }
->
-> Hello,
->
-> Thanks for the information. I did not know exactly what was behind the 
-> notion of "xenomai domain".
-> Things are getting more clear now.
-> In my actual code I was already looking at rt_task_shadow return 
-> value, but got nothing wrong here, that's why I did not put it on the 
-> sample code above.
->
-> Just launching your code, rt_task_bind() get a return value, that is 
-> -11 (=>EWOULDBLOCK, better than infinite blocking I had before..!).
-> However,   system("find /run/xenomai")   returns nothing : "No such 
-> file or directory."..!
-> I guess this means I don't have such folder on the computer and thus 
-> the xenomai task list cannot be found for rt_task_bind...
->
-> Any idea why ..?
->
-> Daniel
->
-My best guess would be "no pshared/registry support in your Xenomai build".
+Signed-off-by: Greg Gallagher <greg@embeddedgreg.com>
+---
+ drivers/gpio/gpio-omap.c | 112 +++++++++++++++++++++++++++++----------
+ 1 file changed, 83 insertions(+), 29 deletions(-)
 
-As far as I know, having shared registry support is something you need 
-to specify during your configuration process prior to building Xenomai. 
-You will probably want to look at this excellent document:
-
-
-https://xenomai.org/documentation/xenomai-3/html/README.INSTALL/
-
-
-specifically section 5.2.1 and --enable-pshared, and --enable-registry.
-
-It's possible your system wasn't generated with the appropriate shared 
-registry support, or that whomever configured the system used a 
-non-standard registry path (meaning find /run/xenomai wouldn't see it), 
-or possibly it *is* the default (/var/run/xenomai) but your system 
-doesn't have /var/run symlinked to /run like my system does (that's a 
-Linux choice more than a Xenomai choice). Also, you'd need to have your 
-Linux kernel configured to support the FUSE filesystem, and if that were 
-generated as a module, have that module loaded before you start any 
-Xenomai programs that need registry access.
-
-
-Steve
-
-
-
+diff --git a/drivers/gpio/gpio-omap.c b/drivers/gpio/gpio-omap.c
+index 39d25f599831..25355fa7b76b 100644
+--- a/drivers/gpio/gpio-omap.c
++++ b/drivers/gpio/gpio-omap.c
+@@ -29,6 +29,7 @@
+ #include <linux/ipipe.h>
+ #include <linux/platform_data/gpio-omap.h>
+ 
++
+ #define OFF_MODE	1
+ #define OMAP4_GPIO_DEBOUNCINGTIME_MASK 0xFF
+ 
+@@ -61,10 +62,11 @@ struct gpio_bank {
+ 	u32 toggle_mask;
+ #ifdef CONFIG_IPIPE
+ 	ipipe_spinlock_t lock;
++	ipipe_spinlock_t wa_lock;
+ #else
+ 	raw_spinlock_t lock;
+-#endif
+ 	raw_spinlock_t wa_lock;
++#endif
+ 	struct gpio_chip chip;
+ 	struct clk *dbck;
+ 	u32 mod_usage;
+@@ -575,18 +577,9 @@ static int omap_gpio_irq_type(struct irq_data *d, unsigned type)
+ 		goto error;
+ 	}
+ 	raw_spin_unlock_irqrestore(&bank->lock, flags);
+-
+-	if (type & (IRQ_TYPE_LEVEL_LOW | IRQ_TYPE_LEVEL_HIGH))
+-		irq_set_handler_locked(d, handle_level_irq);
+-	else if (type & (IRQ_TYPE_EDGE_FALLING | IRQ_TYPE_EDGE_RISING))
+-		/*
+-		 * Edge IRQs are already cleared/acked in irq_handler and
+-		 * not need to be masked, as result handle_edge_irq()
+-		 * logic is excessed here and may cause lose of interrupts.
+-		 * So just use handle_simple_irq.
+-		 */
+-		irq_set_handler_locked(d, handle_simple_irq);
+-
++	
++	irq_set_handler_locked(d, handle_level_irq);
++	
+ 	return 0;
+ 
+ error:
+@@ -745,12 +738,15 @@ static void omap_gpio_free(struct gpio_chip *chip, unsigned offset)
+ static void __omap_gpio_irq_handler(struct gpio_bank *bank)
+ {
+ 	void __iomem *isr_reg = NULL;
++	void __iomem *enabled_reg = NULL;
+ 	u32 enabled, isr, level_mask;
+ 	unsigned int bit;
+ 	unsigned long wa_lock_flags;
+ 	unsigned long lock_flags;
+ 
+ 	isr_reg = bank->base + bank->regs->irqstatus;
++	enabled_reg = bank->base + bank->regs->irqenable;
++
+ 	if (WARN_ON(!isr_reg))
+ 		return;
+ 
+@@ -759,7 +755,6 @@ static void __omap_gpio_irq_handler(struct gpio_bank *bank)
+ 
+ 		enabled = omap_get_gpio_irqbank_mask(bank);
+ 		isr = readl_relaxed(isr_reg) & enabled;
+-
+ 		if (bank->level_mask)
+ 			level_mask = bank->level_mask & enabled;
+ 		else
+@@ -809,7 +804,10 @@ static void __omap_gpio_irq_handler(struct gpio_bank *bank)
+ static void omap_gpio_irq_handler(struct irq_desc *d)
+ {
+ 	struct gpio_bank *bank = irq_desc_get_handler_data(d);
++
++	d->irq_data.chip->irq_ack(&d->irq_data);
+ 	__omap_gpio_irq_handler(bank);
++	d->irq_data.chip->irq_unmask(&d->irq_data);
+ }
+ 
+ #else
+@@ -896,39 +894,31 @@ static void omap_gpio_ack_irq(struct irq_data *d)
+ 	omap_clear_gpio_irqstatus(bank, offset);
+ }
+ 
+-static void omap_gpio_mask_irq(struct irq_data *d)
++static void __omap_gpio_mask_irq(struct irq_data *d)
+ {
+ 	struct gpio_bank *bank = omap_irq_data_get_bank(d);
+ 	unsigned offset = d->hwirq;
+-	unsigned long flags;
+ 
+-	raw_spin_lock_irqsave(&bank->lock, flags);
+-	omap_set_gpio_triggering(bank, offset, IRQ_TYPE_NONE);
+ 	omap_set_gpio_irqenable(bank, offset, 0);
+-	raw_spin_unlock_irqrestore(&bank->lock, flags);
++	omap_set_gpio_triggering(bank, offset, IRQ_TYPE_NONE);
+ }
+ 
+-static void omap_gpio_mask_ack_irq(struct irq_data *d)
++static void __omap_gpio_mask_ack_irq(struct irq_data *d)
+ {
+ 	struct gpio_bank *bank = omap_irq_data_get_bank(d);
+ 	unsigned offset = d->hwirq;
+-	unsigned long flags;
+-
+-	raw_spin_lock_irqsave(&bank->lock, flags);
++	
+ 	omap_set_gpio_irqenable(bank, offset, 0);
+ 	omap_set_gpio_triggering(bank, offset, IRQ_TYPE_NONE);
+-	omap_clear_gpio_irqstatus(bank, offset);
+-	raw_spin_unlock_irqrestore(&bank->lock, flags);
++	
+ }
+ 
+-static void omap_gpio_unmask_irq(struct irq_data *d)
++static void __omap_gpio_unmask_irq(struct irq_data *d)
+ {
+ 	struct gpio_bank *bank = omap_irq_data_get_bank(d);
+ 	unsigned offset = d->hwirq;
+ 	u32 trigger = irqd_get_trigger_type(d);
+-	unsigned long flags;
+ 
+-	raw_spin_lock_irqsave(&bank->lock, flags);
+ 	omap_set_gpio_irqenable(bank, offset, 1);
+ 
+ 	/*
+@@ -943,9 +933,69 @@ static void omap_gpio_unmask_irq(struct irq_data *d)
+ 	if (trigger)
+ 		omap_set_gpio_triggering(bank, offset, trigger);
+ 
++}
++
++static void omap_gpio_mask_irq(struct irq_data *d)
++{
++	struct gpio_bank *bank = omap_irq_data_get_bank(d);
++	unsigned long flags;
++
++	raw_spin_lock_irqsave(&bank->lock, flags);
++	ipipe_lock_irq(d->irq);
++	__omap_gpio_mask_irq(d);
++	raw_spin_unlock_irqrestore(&bank->lock, flags);
++}
++
++static void omap_gpio_mask_ack_irq(struct irq_data *d)
++{
++	struct gpio_bank *bank = omap_irq_data_get_bank(d);
++	unsigned long flags;
++
++	raw_spin_lock_irqsave(&bank->lock, flags);
++	__omap_gpio_mask_ack_irq(d);
++	ipipe_lock_irq(d->irq);
+ 	raw_spin_unlock_irqrestore(&bank->lock, flags);
+ }
+ 
++static void omap_gpio_unmask_irq(struct irq_data *d)
++{
++	struct gpio_bank *bank = omap_irq_data_get_bank(d);
++	unsigned long flags;
++	void __iomem *enabled_reg = NULL;
++	
++	raw_spin_lock_irqsave(&bank->lock, flags);
++	__omap_gpio_unmask_irq(d);	
++	ipipe_unlock_irq(d->irq);
++	raw_spin_unlock_irqrestore(&bank->lock, flags);
++	enabled_reg = bank->base + bank->regs->irqenable;
++}
++
++
++
++#ifdef CONFIG_IPIPE
++
++static void omap_gpio_irq_hold(struct irq_data *d)
++{
++	struct gpio_bank *bank = omap_irq_data_get_bank(d);
++	unsigned long flags;
++
++	raw_spin_lock_irqsave(&bank->lock, flags);
++	__omap_gpio_mask_ack_irq(d);
++	raw_spin_unlock_irqrestore(&bank->lock, flags);
++}
++
++static void omap_gpio_irq_release(struct irq_data *d)
++{
++	struct gpio_bank *bank = omap_irq_data_get_bank(d);
++	unsigned long flags;
++
++	raw_spin_lock_irqsave(&bank->lock, flags);
++	__omap_gpio_unmask_irq(d);	
++	raw_spin_unlock_irqrestore(&bank->lock, flags);
++}
++
++#endif
++
+ /*---------------------------------------------------------------------*/
+ 
+ static int omap_mpuio_suspend_noirq(struct device *dev)
+@@ -1240,7 +1290,7 @@ static int omap_gpio_chip_init(struct gpio_bank *bank, struct irq_chip *irqc)
+ 
+ 	irq = &bank->chip.irq;
+ 	irq->chip = irqc;
+-	irq->handler = handle_bad_irq;
++	irq->handler = handle_level_irq;
+ 	irq->default_type = IRQ_TYPE_NONE;
+ 	irq->num_parents = 1;
+ 	irq->parents = &bank->irq;
+@@ -1303,6 +1353,10 @@ static int omap_gpio_probe(struct platform_device *pdev)
+ 	irqc->irq_mask = omap_gpio_mask_irq,
+ 	irqc->irq_mask_ack = omap_gpio_mask_ack_irq,
+ 	irqc->irq_unmask = omap_gpio_unmask_irq,
++#ifdef CONFIG_IPIPE
++	irqc->irq_hold = omap_gpio_irq_hold,
++	irqc->irq_release = omap_gpio_irq_release,
++#endif
+ 	irqc->irq_set_type = omap_gpio_irq_type,
+ 	irqc->irq_set_wake = omap_gpio_wake_enable,
+ 	irqc->irq_bus_lock = omap_gpio_irq_bus_lock,
+-- 
+2.17.1
 
 
