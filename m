@@ -1,17 +1,18 @@
-Subject: Re: Interrupt timeout
+From: Lange Norbert <norbert.lange@andritz.com>
+Subject: RE: Interrupt timeout
+Date: Tue, 25 Feb 2020 17:53:10 +0000
+Message-ID: <VI1PR05MB591787E77D7AC62A5E4231E1F6ED0@VI1PR05MB5917.eurprd05.prod.outlook.com>
 References: <VI1PR05MB5917D6B0922458527599EDE1F6ED0@VI1PR05MB5917.eurprd05.prod.outlook.com>
  <CALLqZ8RSqv_OZTRApV+n+3zmgjz1KcLRBLmd+vLWE6MRYaS9ag@mail.gmail.com>
  <VI1PR05MB591716533325E3DB1EEBD573F6ED0@VI1PR05MB5917.eurprd05.prod.outlook.com>
  <2e8126ff-7b0d-e114-568f-1e38c530f895@siemens.com>
  <VI1PR05MB59178FFEA9E3D2E2E9D62D2FF6ED0@VI1PR05MB5917.eurprd05.prod.outlook.com>
-From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <8fcf4459-fb45-e80d-7158-cd664da30545@siemens.com>
-Date: Tue, 25 Feb 2020 18:05:08 +0100
-MIME-Version: 1.0
-In-Reply-To: <VI1PR05MB59178FFEA9E3D2E2E9D62D2FF6ED0@VI1PR05MB5917.eurprd05.prod.outlook.com>
-Content-Type: text/plain; charset="utf-8"; format="flowed"
+ <8fcf4459-fb45-e80d-7158-cd664da30545@siemens.com>
+In-Reply-To: <8fcf4459-fb45-e80d-7158-cd664da30545@siemens.com>
 Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+MIME-Version: 1.0
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -20,287 +21,323 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Lange Norbert <norbert.lange@andritz.com>, Greg Gallagher <greg@embeddedgreg.com>
+To: Jan Kiszka <jan.kiszka@siemens.com>, Greg Gallagher <greg@embeddedgreg.com>
 Cc: "Xenomai (xenomai@xenomai.org)" <xenomai@xenomai.org>
 
-On 25.02.20 16:55, Lange Norbert wrote:
-> 
-> 
->> -----Original Message-----
->> From: Jan Kiszka <jan.kiszka@siemens.com>
->> Sent: Dienstag, 25. Februar 2020 16:47
->> To: Lange Norbert <norbert.lange@andritz.com>; Greg Gallagher
->> <greg@embeddedgreg.com>
->> Cc: Xenomai (xenomai@xenomai.org) <xenomai@xenomai.org>
->> Subject: Re: Interrupt timeout
->>
->> NON-ANDRITZ SOURCE: BE CAUTIOUS WITH CONTENT, LINKS OR
->> ATTACHMENTS.
->>
->>
->> On 25.02.20 16:40, Lange Norbert via Xenomai wrote:
->>>
->>>
->>>> -----Original Message-----
->>>> From: Greg Gallagher <greg@embeddedgreg.com>
->>>> Sent: Dienstag, 25. Februar 2020 16:24
->>>> To: Lange Norbert <norbert.lange@andritz.com>
->>>> Cc: Xenomai (xenomai@xenomai.org) <xenomai@xenomai.org>; Philippe
->>>> Gerum (rpm@xenomai.org) <rpm@xenomai.org>
->>>> Subject: Re: Interrupt timeout
->>>>
->>>> NON-ANDRITZ SOURCE: BE CAUTIOUS WITH CONTENT, LINKS OR
->> ATTACHMENTS.
->>>>
->>>>
->>>> Hi,
->>>>
->>>> On Tue, Feb 25, 2020 at 8:57 AM Lange Norbert via Xenomai
->>>> <xenomai@xenomai.org> wrote:
->>>>>
->>>>> Hello,
->>>>>
->>>>> I hope you can give me some pointers to understand why this Bug
->>>> happened.
->>>>> It seems an interrupt got lost somehow, maybe some issue with
->>>> leveltriggers?
->>>>>
->>>>> Note that I run on an Apollo Lake, which would normally use
->>>>> PINCTRL_BROXTON, but that’s not fixed up for Xenomai yet. The system
->>>>> works fine from eMMC otherwise, this bug occurred only once so far.
->>>>>
->>>>> 00:1b.0 SD Host controller: Intel Corporation Atom/Celeron/Pentium
->>>>> Processor N4200/N3350/E3900 Series SDXC/MMC Host Controller (rev
->> 0b)
->>>>> Subsystem: Intel Corporation Celeron N3350/Pentium N4200/Atom
->> E3900
->>>>> Series SDXC/MMC Host Controller Kernel driver in use: sdhci-pci Kernel
->>>>> modules: sdhci_pci
->>>>> 00:1c.0 SD Host controller: Intel Corporation Atom/Celeron/Pentium
->>>>> Processor N4200/N3350/E3900 Series eMMC Controller (rev 0b)
->>>>> Subsystem: Intel Corporation Celeron N3350/Pentium N4200/Atom
->> E3900
->>>>> Series eMMC Controller Kernel driver in use: sdhci-pci Kernel modules:
->>>>> sdhci_pci
->>>>>
->>>>> # cat /proc/interrupts
->>>>>               CPU0       CPU1       CPU2       CPU3
->>>>>      0:         50          0          0          0   IO-APIC    2-edge      timer
->>>>>      4:          0          0        498          0   IO-APIC    4-edge      ttyS0
->>>>>      8:          0          0          0          0   IO-APIC    8-edge      rtc0
->>>>>      9:          0          0          0          0   IO-APIC    9-fasteoi   acpi
->>>>>     20:         20          0          0          0   IO-APIC   20-fasteoi   i801_smbus
->>>>>     39:          0       1315          0          0   IO-APIC   39-fasteoi   mmc0
->>>>>    129:          0          1          0          0   PCI-MSI 1048576-edge      enp2s0
->>>>>    130:          0          0        839          0   PCI-MSI 1048577-edge      enp2s0-rx-0
->>>>>    131:          0          0          0        773   PCI-MSI 1048578-edge      enp2s0-rx-1
->>>>>    132:        985          0          0          0   PCI-MSI 1048579-edge      enp2s0-tx-0
->>>>>    133:          0        773          0          0   PCI-MSI 1048580-edge      enp2s0-tx-1
->>>>>    134:          0          0          0          1   PCI-MSI 1572864-edge      enp3s0
->>>>>    135:      11464          0          0          0   PCI-MSI 1572865-edge      enp3s0-rx-0
->>>>>    136:          0        781          0          0   PCI-MSI 1572866-edge      enp3s0-rx-1
->>>>>    137:          0          0        899          0   PCI-MSI 1572867-edge      enp3s0-tx-0
->>>>>    138:          0          0          0       9701   PCI-MSI 1572868-edge      enp3s0-tx-1
->>>>>    139:          1          0          0          0   PCI-MSI 2097152-edge      enp4s0
->>>>>    140:          0       1985          0          0   PCI-MSI 2097153-edge      enp4s0-TxRx-
->> 0
->>>>>    141:          0          0        774          0   PCI-MSI 2097154-edge      enp4s0-TxRx-1
->>>>>    142:          0          0          0       1905   PCI-MSI 2097155-edge      enp4s0-TxRx-
->> 2
->>>>>    143:        775          0          0          0   PCI-MSI 2097156-edge      enp4s0-TxRx-3
->>>>>    144:          0          0      97790          0   PCI-MSI 344064-edge      xhci_hcd
->>>>>    NMI:          0          0          0          0   Non-maskable interrupts
->>>>>    LOC:      47839     147583      13807      32602   Local timer interrupts
->>>>>    SPU:          0          0          0          0   Spurious interrupts
->>>>>    PMI:          0          0          0          0   Performance monitoring interrupts
->>>>>    IWI:          0          0          0          0   IRQ work interrupts
->>>>>    RTR:          0          0          0          0   APIC ICR read retries
->>>>>    RES:      11955       6931       6567       4946   Rescheduling interrupts
->>>>>    CAL:        268        223        210        217   Function call interrupts
->>>>>    TLB:         63         57         61         50   TLB shootdowns
->>>>>    TRM:          0          0          0          0   Thermal event interrupts
->>>>>    THR:          0          0          0          0   Threshold APIC interrupts
->>>>>    MCE:          0          0          0          0   Machine check exceptions
->>>>>    MCP:          5          6          6          6   Machine check polls
->>>>>    ERR:          0
->>>>>    MIS:          0
->>>>>    PIN:          0          0          0          0   Posted-interrupt notification event
->>>>>    NPI:          0          0          0          0   Nested posted-interrupt event
->>>>>    PIW:          0          0          0          0   Posted-interrupt wakeup event
->>>>>
->>>>>
->>>>
->>>>> [  238.245509] mmc0: Timeout waiting for hardware interrupt.
->>>>> [  238.250944] mmc0: sdhci: ============ SDHCI REGISTER DUMP
->>>>> =========== [  238.257422] mmc0: sdhci: Sys addr:  0x20000008 |
->>>>> Version:  0x00001002 [  238.263900] mmc0: sdhci: Blk size:  0x00007200
->>>>> | Blk cnt:  0x00000000 [  238.270373] mmc0: sdhci: Argument:  0x00118678
->> |
->>>> Trn mode: 0x0000002b
->>>>> [  238.276848] mmc0: sdhci: Present:   0x1fff0000 | Host ctl: 0x0000003d
->>>>> [  238.283323] mmc0: sdhci: Power:     0x0000000b | Blk gap:  0x00000080
->>>>> [  238.289797] mmc0: sdhci: Wake-up:   0x00000000 | Clock:    0x00000007
->>>>> [  238.296265] mmc0: sdhci: Timeout:   0x00000007 | Int stat: 0x00000003
->>>>> [  238.302734] mmc0: sdhci: Int enab:  0x03ff000b | Sig enab:
->>>>> 0x03ff000b [  238.309206] mmc0: sdhci: ACmd stat: 0x00000000 | Slot int:
->>>> 0x00000001
->>>>> [  238.315682] mmc0: sdhci: Caps:      0x546ec881 | Caps_1:   0x80000807
->>>>> [  238.322154] mmc0: sdhci: Cmd:       0x0000193a | Max curr: 0x00000000
->>>>> [  238.328618] mmc0: sdhci: Resp[0]:   0x00000900 | Resp[1]:  0xffffffff
->>>>> [  238.335080] mmc0: sdhci: Resp[2]:   0x328f5903 | Resp[3]:  0x00000900
->>>>> [  238.341547] mmc0: sdhci: Host ctl2: 0x0000008d [  238.346016] mmc0:
->>>>> sdhci: ADMA Err:  0x00000000 | ADMA Ptr: 0x0000000179fcb20c [
->>>>> 238.353180] mmc0: sdhci:
->>>> ============================================
->>>>> [  248.485507] mmc0: Timeout waiting for hardware interrupt.
->>>>> [  248.490937] mmc0: sdhci: ============ SDHCI REGISTER DUMP
->>>>> =========== [  248.497412] mmc0: sdhci: Sys addr:  0x20000008 |
->>>>> Version:  0x00001002 [  248.503887] mmc0: sdhci: Blk size:  0x00007200
->>>>> | Blk cnt:  0x00000000 [  248.510362] mmc0: sdhci: Argument:  0x00000000
->> |
->>>> Trn mode: 0x00000023
->>>>> [  248.516838] mmc0: sdhci: Present:   0x1fff0000 | Host ctl: 0x0000003d
->>>>> [  248.523313] mmc0: sdhci: Power:     0x0000000b | Blk gap:  0x00000080
->>>>> [  248.529790] mmc0: sdhci: Wake-up:   0x00000000 | Clock:    0x00000007
->>>>> [  248.536266] mmc0: sdhci: Timeout:   0x0000000e | Int stat: 0x00018002
->>>>> [  248.542742] mmc0: sdhci: Int enab:  0x03ff000b | Sig enab:
->>>>> 0x03ff000b [  248.549219] mmc0: sdhci: ACmd stat: 0x00000000 | Slot int:
->>>> 0x00000001
->>>>> [  248.555693] mmc0: sdhci: Caps:      0x546ec881 | Caps_1:   0x80000807
->>>>> [  248.562167] mmc0: sdhci: Cmd:       0x00000c1b | Max curr: 0x00000000
->>>>> [  248.568643] mmc0: sdhci: Resp[0]:   0x00000900 | Resp[1]:  0xffffffff
->>>>> [  248.575117] mmc0: sdhci: Resp[2]:   0x328f5903 | Resp[3]:  0x00000900
->>>>> [  248.581594] mmc0: sdhci: Host ctl2: 0x0000008d [  248.586065] mmc0:
->>>>> sdhci: ADMA Err:  0x00000000 | ADMA Ptr: 0x0000000179fcb20c [
->>>>> 248.593228] mmc0: sdhci:
->>>> ============================================
->>>>> [  249.137502] rcu: INFO: rcu_sched detected stalls on CPUs/tasks:
->>>>> [  249.143462] rcu:     1-...!: (1 GPs behind)
->> idle=84a/1/0x4000000000000000
->>>> softirq=5875/5876 fqs=2479
->>>>> [  249.152458] rcu:     (detected by 3, t=21016 jiffies, g=5793, q=391)
->>>>> [  249.158588] Sending NMI from CPU 3 to CPUs 1:
->>>>> [  249.163984] rcu: rcu_sched kthread starved for 10920 jiffies! g5793
->>>>> f0x0 RCU_GP_WAIT_FQS(5) ->state=0x402 ->cpu=2 [  249.174284] rcu:
->> RCU
->>>> grace-period kthread stack dump:
->>>>> [  249.179364] rcu_sched       I    0    10      2 0x80000000
->>>>> [  249.184882] Call Trace:
->>>>> [  249.187360]  ? __schedule+0x340/0x8a0 [  249.191046]
->>>>> schedule+0x32/0x80 [  249.194211]  schedule_timeout+0x180/0x360 [
->>>>> 249.198248]  ? __next_timer_interrupt+0xd0/0xd0 [  249.202806]
->>>>> rcu_gp_kthread+0x522/0xec0 [  249.206667]  ?
->> call_rcu_sched+0x20/0x20
->>>>> [  249.210528]  kthread+0x115/0x130 [  249.213779]  ?
->>>>> kthread_create_worker_on_cpu+0x70/0x70
->>>>> [  249.218861]  ret_from_fork+0x20/0x30 [  256.449655] igb
->>>>> 0000:04:00.0 enp4s0: igb: enp4s0 NIC Link is Down [  258.725508] mmc0:
->>>>> Timeout waiting for hardware cmd interrupt.
->>>>> [  258.731286] mmc0: sdhci: ============ SDHCI REGISTER DUMP
->>>>> =========== [  258.737761] mmc0: sdhci: Sys addr:  0x20000008 |
->>>>> Version:  0x00001002 [  258.744238] mmc0: sdhci: Blk size:  0x00007200
->>>>> | Blk cnt:  0x00000000 [  258.750716] mmc0: sdhci: Argument:  0x00010000
->> |
->>>> Trn mode: 0x00000023
->>>>> [  258.757191] mmc0: sdhci: Present:   0x1fff0000 | Host ctl: 0x0000003d
->>>>> [  258.763666] mmc0: sdhci: Power:     0x0000000b | Blk gap:  0x00000080
->>>>> [  258.770143] mmc0: sdhci: Wake-up:   0x00000000 | Clock:    0x00000007
->>>>> [  258.776620] mmc0: sdhci: Timeout:   0x0000000e | Int stat: 0x00018001
->>>>> [  258.783097] mmc0: sdhci: Int enab:  0x03ff000b | Sig enab:
->>>>> 0x03ff000b [  258.789570] mmc0: sdhci: ACmd stat: 0x00000000 | Slot int:
->>>> 0x00000001
->>>>> [  258.796044] mmc0: sdhci: Caps:      0x546ec881 | Caps_1:   0x80000807
->>>>> [  258.802518] mmc0: sdhci: Cmd:       0x00000d1a | Max curr: 0x00000000
->>>>> [  258.808994] mmc0: sdhci: Resp[0]:   0x00400900 | Resp[1]:  0xffffffff
->>>>> [  258.815468] mmc0: sdhci: Resp[2]:   0x328f5903 | Resp[3]:  0x00000900
->>>>> [  258.821940] mmc0: sdhci: Host ctl2: 0x0000008d [  258.826411] mmc0:
->>>>> sdhci: ADMA Err:  0x00000000 | ADMA Ptr: 0x0000000179fcb20c [
->>>>> 258.833578] mmc0: sdhci:
->>>> ============================================
->>>>> [  268.965509] mmc0: Timeout waiting for hardware cmd interrupt.
->>>>> [  268.971285] mmc0: sdhci: ============ SDHCI REGISTER DUMP
->>>>> =========== [  268.977759] mmc0: sdhci: Sys addr:  0x20000008 |
->>>>> Version:  0x00001002 [  268.984233] mmc0: sdhci: Blk size:  0x00007200
->>>>> | Blk cnt:  0x00000000 [  268.990704] mmc0: sdhci: Argument:  0x00010000
->> |
->>>> Trn mode: 0x00000023
->>>>> [  268.997174] mmc0: sdhci: Present:   0x1fff0000 | Host ctl: 0x0000003d
->>>>> [  269.003647] mmc0: sdhci: Power:     0x0000000b | Blk gap:  0x00000080
->>>>> [  269.010118] mmc0: sdhci: Wake-up:   0x00000000 | Clock:    0x00000007
->>>>> [  269.016590] mmc0: sdhci: Timeout:   0x0000000e | Int stat: 0x00018001
->>>>> [  269.023067] mmc0: sdhci: Int enab:  0x03ff000b | Sig enab:
->>>>> 0x03ff000b [  269.029538] mmc0: sdhci: ACmd stat: 0x00000000 | Slot int:
->>>> 0x00000001
->>>>> [  269.036011] mmc0: sdhci: Caps:      0x546ec881 | Caps_1:   0x80000807
->>>>> [  269.042484] mmc0: sdhci: Cmd:       0x00000d1a | Max curr: 0x00000000
->>>>> [  269.048958] mmc0: sdhci: Resp[0]:   0x00000900 | Resp[1]:  0xffffffff
->>>>> [  269.055432] mmc0: sdhci: Resp[2]:   0x328f5903 | Resp[3]:  0x00000900
->>>>> [  269.061904] mmc0: sdhci: Host ctl2: 0x0000008d [  269.066373] mmc0:
->>>>> sdhci: ADMA Err:  0x00000000 | ADMA Ptr: 0x0000000179fcb20c [
->>>>> 269.073542] mmc0: sdhci:
->>>> ============================================
->>>>>
->>>>>
->>>>> Kind regards,
->>>>> Norbert
->>>> I've seen this before when I was playing around with getting the ipipe to
->> run
->>>> on my edison board.  I don't think it's ipipe related.  I found this thread on
->>>> patchwork:
->>>>
->>>> https://hes32-
->>>>
->> ctp.trendmicro.com:443/wis/clicktime/v1/query?url=https%3a%2f%2fpatch
->>>> work.kernel.org%2fpatch%2f10705823%2f&umid=244f247b-9424-4d97-
->> a301-
->>>> 43c83cda477c&auth=144056baf7302d777acad187aac74d4b9ba425e1-
->>>> f573aabf7731d50ca6bcfe66d4d4d92dfe84b1b2
->>>
->>> Ah thanks,
->>>
->>> Quote: "Commands and resets are under spin lock, so no possibility for
->> preemption,
->>> and certainly a few microseconds isn't going to make any difference to
->> these
->>> timeouts, so I don't see how this patch could help."
->>>
->>> So I guess this is not an issue under plain Linux, but Cobalt could preempt
->> for a
->>> couple of ms (or even longer if you managed to get an RT thread stuck).
->>
->> That may also be different on PREEMPT-RT.
->>
->>>>
->>>> There was another thread on the Ubuntu forums that solved the issue by
->>>> disabling the sdcard in the bios.
->>>
->>> I can't do that, as this is the eMMC the system is running from.
->>>
->>> BTW, if I would want to limit such issues, could I limit Linux IRQs (apart from
->> a handful of necessary maintainance/timer) to a single core?
->>>
->>
->> Yes, that's the best option on a multicore system for both sides, RT and
->> Linux.
-> 
-> Next question: how?
-> 
-> I played around with isolcpus, but that had severe sideeffects:
-> https://xenomai.org/pipermail/xenomai/2019-October/041902.html
-> 
-> This was before Philippe fixed some serious scheduler bugs,
-> but I stopped trying to do anything "smart" after ending up with random weirdness.
-> 
-
-isolcpus should work. If not, we need to debug and fix.
-
-Less convenient alternative: manually tuning /proc/irq/*/smp_affinity or 
-instructing irqbalanced to keep some cores free. cgroups with CPU 
-affinities can help to keep tasks away.
-
-Jan
-
--- 
-Siemens AG, Corporate Technology, CT RDA IOT SES-DE
-Corporate Competence Center Embedded Linux
+DQoNCj4gLS0tLS1PcmlnaW5hbCBNZXNzYWdlLS0tLS0NCj4gRnJvbTogSmFuIEtpc3prYSA8amFu
+Lmtpc3prYUBzaWVtZW5zLmNvbT4NCj4gU2VudDogRGllbnN0YWcsIDI1LiBGZWJydWFyIDIwMjAg
+MTg6MDUNCj4gVG86IExhbmdlIE5vcmJlcnQgPG5vcmJlcnQubGFuZ2VAYW5kcml0ei5jb20+OyBH
+cmVnIEdhbGxhZ2hlcg0KPiA8Z3JlZ0BlbWJlZGRlZGdyZWcuY29tPg0KPiBDYzogWGVub21haSAo
+eGVub21haUB4ZW5vbWFpLm9yZykgPHhlbm9tYWlAeGVub21haS5vcmc+DQo+IFN1YmplY3Q6IFJl
+OiBJbnRlcnJ1cHQgdGltZW91dA0KPg0KPiBOT04tQU5EUklUWiBTT1VSQ0U6IEJFIENBVVRJT1VT
+IFdJVEggQ09OVEVOVCwgTElOS1MgT1INCj4gQVRUQUNITUVOVFMuDQo+DQo+DQo+IE9uIDI1LjAy
+LjIwIDE2OjU1LCBMYW5nZSBOb3JiZXJ0IHdyb3RlOg0KPiA+DQo+ID4NCj4gPj4gLS0tLS1Pcmln
+aW5hbCBNZXNzYWdlLS0tLS0NCj4gPj4gRnJvbTogSmFuIEtpc3prYSA8amFuLmtpc3prYUBzaWVt
+ZW5zLmNvbT4NCj4gPj4gU2VudDogRGllbnN0YWcsIDI1LiBGZWJydWFyIDIwMjAgMTY6NDcNCj4g
+Pj4gVG86IExhbmdlIE5vcmJlcnQgPG5vcmJlcnQubGFuZ2VAYW5kcml0ei5jb20+OyBHcmVnIEdh
+bGxhZ2hlcg0KPiA+PiA8Z3JlZ0BlbWJlZGRlZGdyZWcuY29tPg0KPiA+PiBDYzogWGVub21haSAo
+eGVub21haUB4ZW5vbWFpLm9yZykgPHhlbm9tYWlAeGVub21haS5vcmc+DQo+ID4+IFN1YmplY3Q6
+IFJlOiBJbnRlcnJ1cHQgdGltZW91dA0KPiA+Pg0KPiA+PiBOT04tQU5EUklUWiBTT1VSQ0U6IEJF
+IENBVVRJT1VTIFdJVEggQ09OVEVOVCwgTElOS1MgT1INCj4gQVRUQUNITUVOVFMuDQo+ID4+DQo+
+ID4+DQo+ID4+IE9uIDI1LjAyLjIwIDE2OjQwLCBMYW5nZSBOb3JiZXJ0IHZpYSBYZW5vbWFpIHdy
+b3RlOg0KPiA+Pj4NCj4gPj4+DQo+ID4+Pj4gLS0tLS1PcmlnaW5hbCBNZXNzYWdlLS0tLS0NCj4g
+Pj4+PiBGcm9tOiBHcmVnIEdhbGxhZ2hlciA8Z3JlZ0BlbWJlZGRlZGdyZWcuY29tPg0KPiA+Pj4+
+IFNlbnQ6IERpZW5zdGFnLCAyNS4gRmVicnVhciAyMDIwIDE2OjI0DQo+ID4+Pj4gVG86IExhbmdl
+IE5vcmJlcnQgPG5vcmJlcnQubGFuZ2VAYW5kcml0ei5jb20+DQo+ID4+Pj4gQ2M6IFhlbm9tYWkg
+KHhlbm9tYWlAeGVub21haS5vcmcpIDx4ZW5vbWFpQHhlbm9tYWkub3JnPjsNCj4gUGhpbGlwcGUN
+Cj4gPj4+PiBHZXJ1bSAocnBtQHhlbm9tYWkub3JnKSA8cnBtQHhlbm9tYWkub3JnPg0KPiA+Pj4+
+IFN1YmplY3Q6IFJlOiBJbnRlcnJ1cHQgdGltZW91dA0KPiA+Pj4+DQo+ID4+Pj4gTk9OLUFORFJJ
+VFogU09VUkNFOiBCRSBDQVVUSU9VUyBXSVRIIENPTlRFTlQsIExJTktTIE9SDQo+ID4+IEFUVEFD
+SE1FTlRTLg0KPiA+Pj4+DQo+ID4+Pj4NCj4gPj4+PiBIaSwNCj4gPj4+Pg0KPiA+Pj4+IE9uIFR1
+ZSwgRmViIDI1LCAyMDIwIGF0IDg6NTcgQU0gTGFuZ2UgTm9yYmVydCB2aWEgWGVub21haQ0KPiA+
+Pj4+IDx4ZW5vbWFpQHhlbm9tYWkub3JnPiB3cm90ZToNCj4gPj4+Pj4NCj4gPj4+Pj4gSGVsbG8s
+DQo+ID4+Pj4+DQo+ID4+Pj4+IEkgaG9wZSB5b3UgY2FuIGdpdmUgbWUgc29tZSBwb2ludGVycyB0
+byB1bmRlcnN0YW5kIHdoeSB0aGlzIEJ1Zw0KPiA+Pj4+IGhhcHBlbmVkLg0KPiA+Pj4+PiBJdCBz
+ZWVtcyBhbiBpbnRlcnJ1cHQgZ290IGxvc3Qgc29tZWhvdywgbWF5YmUgc29tZSBpc3N1ZSB3aXRo
+DQo+ID4+Pj4gbGV2ZWx0cmlnZ2Vycz8NCj4gPj4+Pj4NCj4gPj4+Pj4gTm90ZSB0aGF0IEkgcnVu
+IG9uIGFuIEFwb2xsbyBMYWtlLCB3aGljaCB3b3VsZCBub3JtYWxseSB1c2UNCj4gPj4+Pj4gUElO
+Q1RSTF9CUk9YVE9OLCBidXQgdGhhdOKAmXMgbm90IGZpeGVkIHVwIGZvciBYZW5vbWFpIHlldC4g
+VGhlDQo+IHN5c3RlbQ0KPiA+Pj4+PiB3b3JrcyBmaW5lIGZyb20gZU1NQyBvdGhlcndpc2UsIHRo
+aXMgYnVnIG9jY3VycmVkIG9ubHkgb25jZSBzbyBmYXIuDQo+ID4+Pj4+DQo+ID4+Pj4+IDAwOjFi
+LjAgU0QgSG9zdCBjb250cm9sbGVyOiBJbnRlbCBDb3Jwb3JhdGlvbiBBdG9tL0NlbGVyb24vUGVu
+dGl1bQ0KPiA+Pj4+PiBQcm9jZXNzb3IgTjQyMDAvTjMzNTAvRTM5MDAgU2VyaWVzIFNEWEMvTU1D
+IEhvc3QgQ29udHJvbGxlciAocmV2DQo+ID4+IDBiKQ0KPiA+Pj4+PiBTdWJzeXN0ZW06IEludGVs
+IENvcnBvcmF0aW9uIENlbGVyb24gTjMzNTAvUGVudGl1bSBONDIwMC9BdG9tDQo+ID4+IEUzOTAw
+DQo+ID4+Pj4+IFNlcmllcyBTRFhDL01NQyBIb3N0IENvbnRyb2xsZXIgS2VybmVsIGRyaXZlciBp
+biB1c2U6IHNkaGNpLXBjaQ0KPiBLZXJuZWwNCj4gPj4+Pj4gbW9kdWxlczogc2RoY2lfcGNpDQo+
+ID4+Pj4+IDAwOjFjLjAgU0QgSG9zdCBjb250cm9sbGVyOiBJbnRlbCBDb3Jwb3JhdGlvbiBBdG9t
+L0NlbGVyb24vUGVudGl1bQ0KPiA+Pj4+PiBQcm9jZXNzb3IgTjQyMDAvTjMzNTAvRTM5MDAgU2Vy
+aWVzIGVNTUMgQ29udHJvbGxlciAocmV2IDBiKQ0KPiA+Pj4+PiBTdWJzeXN0ZW06IEludGVsIENv
+cnBvcmF0aW9uIENlbGVyb24gTjMzNTAvUGVudGl1bSBONDIwMC9BdG9tDQo+ID4+IEUzOTAwDQo+
+ID4+Pj4+IFNlcmllcyBlTU1DIENvbnRyb2xsZXIgS2VybmVsIGRyaXZlciBpbiB1c2U6IHNkaGNp
+LXBjaSBLZXJuZWwNCj4gbW9kdWxlczoNCj4gPj4+Pj4gc2RoY2lfcGNpDQo+ID4+Pj4+DQo+ID4+
+Pj4+ICMgY2F0IC9wcm9jL2ludGVycnVwdHMNCj4gPj4+Pj4gICAgICAgICAgICAgICBDUFUwICAg
+ICAgIENQVTEgICAgICAgQ1BVMiAgICAgICBDUFUzDQo+ID4+Pj4+ICAgICAgMDogICAgICAgICA1
+MCAgICAgICAgICAwICAgICAgICAgIDAgICAgICAgICAgMCAgIElPLUFQSUMgICAgMi1lZGdlICAg
+ICAgdGltZXINCj4gPj4+Pj4gICAgICA0OiAgICAgICAgICAwICAgICAgICAgIDAgICAgICAgIDQ5
+OCAgICAgICAgICAwICAgSU8tQVBJQyAgICA0LWVkZ2UgICAgICB0dHlTMA0KPiA+Pj4+PiAgICAg
+IDg6ICAgICAgICAgIDAgICAgICAgICAgMCAgICAgICAgICAwICAgICAgICAgIDAgICBJTy1BUElD
+ICAgIDgtZWRnZSAgICAgIHJ0YzANCj4gPj4+Pj4gICAgICA5OiAgICAgICAgICAwICAgICAgICAg
+IDAgICAgICAgICAgMCAgICAgICAgICAwICAgSU8tQVBJQyAgICA5LWZhc3Rlb2kgICBhY3BpDQo+
+ID4+Pj4+ICAgICAyMDogICAgICAgICAyMCAgICAgICAgICAwICAgICAgICAgIDAgICAgICAgICAg
+MCAgIElPLUFQSUMgICAyMC1mYXN0ZW9pICAgaTgwMV9zbWJ1cw0KPiA+Pj4+PiAgICAgMzk6ICAg
+ICAgICAgIDAgICAgICAgMTMxNSAgICAgICAgICAwICAgICAgICAgIDAgICBJTy1BUElDICAgMzkt
+ZmFzdGVvaSAgIG1tYzANCj4gPj4+Pj4gICAgMTI5OiAgICAgICAgICAwICAgICAgICAgIDEgICAg
+ICAgICAgMCAgICAgICAgICAwICAgUENJLU1TSSAxMDQ4NTc2LWVkZ2UgICAgICBlbnAyczANCj4g
+Pj4+Pj4gICAgMTMwOiAgICAgICAgICAwICAgICAgICAgIDAgICAgICAgIDgzOSAgICAgICAgICAw
+ICAgUENJLU1TSSAxMDQ4NTc3LWVkZ2UgICAgICBlbnAyczAtcngtMA0KPiA+Pj4+PiAgICAxMzE6
+ICAgICAgICAgIDAgICAgICAgICAgMCAgICAgICAgICAwICAgICAgICA3NzMgICBQQ0ktTVNJIDEw
+NDg1NzgtZWRnZSAgICAgIGVucDJzMC1yeC0xDQo+ID4+Pj4+ICAgIDEzMjogICAgICAgIDk4NSAg
+ICAgICAgICAwICAgICAgICAgIDAgICAgICAgICAgMCAgIFBDSS1NU0kgMTA0ODU3OS1lZGdlICAg
+ICAgZW5wMnMwLXR4LTANCj4gPj4+Pj4gICAgMTMzOiAgICAgICAgICAwICAgICAgICA3NzMgICAg
+ICAgICAgMCAgICAgICAgICAwICAgUENJLU1TSSAxMDQ4NTgwLWVkZ2UgICAgICBlbnAyczAtdHgt
+MQ0KPiA+Pj4+PiAgICAxMzQ6ICAgICAgICAgIDAgICAgICAgICAgMCAgICAgICAgICAwICAgICAg
+ICAgIDEgICBQQ0ktTVNJIDE1NzI4NjQtZWRnZSAgICAgIGVucDNzMA0KPiA+Pj4+PiAgICAxMzU6
+ICAgICAgMTE0NjQgICAgICAgICAgMCAgICAgICAgICAwICAgICAgICAgIDAgICBQQ0ktTVNJIDE1
+NzI4NjUtZWRnZSAgICAgIGVucDNzMC0NCj4gcngtMA0KPiA+Pj4+PiAgICAxMzY6ICAgICAgICAg
+IDAgICAgICAgIDc4MSAgICAgICAgICAwICAgICAgICAgIDAgICBQQ0ktTVNJIDE1NzI4NjYtZWRn
+ZSAgICAgIGVucDNzMC1yeC0xDQo+ID4+Pj4+ICAgIDEzNzogICAgICAgICAgMCAgICAgICAgICAw
+ICAgICAgICA4OTkgICAgICAgICAgMCAgIFBDSS1NU0kgMTU3Mjg2Ny1lZGdlICAgICAgZW5wM3Mw
+LXR4LTANCj4gPj4+Pj4gICAgMTM4OiAgICAgICAgICAwICAgICAgICAgIDAgICAgICAgICAgMCAg
+ICAgICA5NzAxICAgUENJLU1TSSAxNTcyODY4LWVkZ2UgICAgICBlbnAzczAtdHgtDQo+IDENCj4g
+Pj4+Pj4gICAgMTM5OiAgICAgICAgICAxICAgICAgICAgIDAgICAgICAgICAgMCAgICAgICAgICAw
+ICAgUENJLU1TSSAyMDk3MTUyLWVkZ2UgICAgICBlbnA0czANCj4gPj4+Pj4gICAgMTQwOiAgICAg
+ICAgICAwICAgICAgIDE5ODUgICAgICAgICAgMCAgICAgICAgICAwICAgUENJLU1TSSAyMDk3MTUz
+LWVkZ2UgICAgICBlbnA0czAtDQo+IFR4UngtDQo+ID4+IDANCj4gPj4+Pj4gICAgMTQxOiAgICAg
+ICAgICAwICAgICAgICAgIDAgICAgICAgIDc3NCAgICAgICAgICAwICAgUENJLU1TSSAyMDk3MTU0
+LWVkZ2UgICAgICBlbnA0czAtDQo+IFR4UngtMQ0KPiA+Pj4+PiAgICAxNDI6ICAgICAgICAgIDAg
+ICAgICAgICAgMCAgICAgICAgICAwICAgICAgIDE5MDUgICBQQ0ktTVNJIDIwOTcxNTUtZWRnZSAg
+ICAgIGVucDRzMC0NCj4gVHhSeC0NCj4gPj4gMg0KPiA+Pj4+PiAgICAxNDM6ICAgICAgICA3NzUg
+ICAgICAgICAgMCAgICAgICAgICAwICAgICAgICAgIDAgICBQQ0ktTVNJIDIwOTcxNTYtZWRnZSAg
+ICAgIGVucDRzMC0NCj4gVHhSeC0zDQo+ID4+Pj4+ICAgIDE0NDogICAgICAgICAgMCAgICAgICAg
+ICAwICAgICAgOTc3OTAgICAgICAgICAgMCAgIFBDSS1NU0kgMzQ0MDY0LWVkZ2UgICAgICB4aGNp
+X2hjZA0KPiA+Pj4+PiAgICBOTUk6ICAgICAgICAgIDAgICAgICAgICAgMCAgICAgICAgICAwICAg
+ICAgICAgIDAgICBOb24tbWFza2FibGUgaW50ZXJydXB0cw0KPiA+Pj4+PiAgICBMT0M6ICAgICAg
+NDc4MzkgICAgIDE0NzU4MyAgICAgIDEzODA3ICAgICAgMzI2MDIgICBMb2NhbCB0aW1lciBpbnRl
+cnJ1cHRzDQo+ID4+Pj4+ICAgIFNQVTogICAgICAgICAgMCAgICAgICAgICAwICAgICAgICAgIDAg
+ICAgICAgICAgMCAgIFNwdXJpb3VzIGludGVycnVwdHMNCj4gPj4+Pj4gICAgUE1JOiAgICAgICAg
+ICAwICAgICAgICAgIDAgICAgICAgICAgMCAgICAgICAgICAwICAgUGVyZm9ybWFuY2UgbW9uaXRv
+cmluZyBpbnRlcnJ1cHRzDQo+ID4+Pj4+ICAgIElXSTogICAgICAgICAgMCAgICAgICAgICAwICAg
+ICAgICAgIDAgICAgICAgICAgMCAgIElSUSB3b3JrIGludGVycnVwdHMNCj4gPj4+Pj4gICAgUlRS
+OiAgICAgICAgICAwICAgICAgICAgIDAgICAgICAgICAgMCAgICAgICAgICAwICAgQVBJQyBJQ1Ig
+cmVhZCByZXRyaWVzDQo+ID4+Pj4+ICAgIFJFUzogICAgICAxMTk1NSAgICAgICA2OTMxICAgICAg
+IDY1NjcgICAgICAgNDk0NiAgIFJlc2NoZWR1bGluZyBpbnRlcnJ1cHRzDQo+ID4+Pj4+ICAgIENB
+TDogICAgICAgIDI2OCAgICAgICAgMjIzICAgICAgICAyMTAgICAgICAgIDIxNyAgIEZ1bmN0aW9u
+IGNhbGwgaW50ZXJydXB0cw0KPiA+Pj4+PiAgICBUTEI6ICAgICAgICAgNjMgICAgICAgICA1NyAg
+ICAgICAgIDYxICAgICAgICAgNTAgICBUTEIgc2hvb3Rkb3ducw0KPiA+Pj4+PiAgICBUUk06ICAg
+ICAgICAgIDAgICAgICAgICAgMCAgICAgICAgICAwICAgICAgICAgIDAgICBUaGVybWFsIGV2ZW50
+IGludGVycnVwdHMNCj4gPj4+Pj4gICAgVEhSOiAgICAgICAgICAwICAgICAgICAgIDAgICAgICAg
+ICAgMCAgICAgICAgICAwICAgVGhyZXNob2xkIEFQSUMgaW50ZXJydXB0cw0KPiA+Pj4+PiAgICBN
+Q0U6ICAgICAgICAgIDAgICAgICAgICAgMCAgICAgICAgICAwICAgICAgICAgIDAgICBNYWNoaW5l
+IGNoZWNrIGV4Y2VwdGlvbnMNCj4gPj4+Pj4gICAgTUNQOiAgICAgICAgICA1ICAgICAgICAgIDYg
+ICAgICAgICAgNiAgICAgICAgICA2ICAgTWFjaGluZSBjaGVjayBwb2xscw0KPiA+Pj4+PiAgICBF
+UlI6ICAgICAgICAgIDANCj4gPj4+Pj4gICAgTUlTOiAgICAgICAgICAwDQo+ID4+Pj4+ICAgIFBJ
+TjogICAgICAgICAgMCAgICAgICAgICAwICAgICAgICAgIDAgICAgICAgICAgMCAgIFBvc3RlZC1p
+bnRlcnJ1cHQgbm90aWZpY2F0aW9uIGV2ZW50DQo+ID4+Pj4+ICAgIE5QSTogICAgICAgICAgMCAg
+ICAgICAgICAwICAgICAgICAgIDAgICAgICAgICAgMCAgIE5lc3RlZCBwb3N0ZWQtaW50ZXJydXB0
+IGV2ZW50DQo+ID4+Pj4+ICAgIFBJVzogICAgICAgICAgMCAgICAgICAgICAwICAgICAgICAgIDAg
+ICAgICAgICAgMCAgIFBvc3RlZC1pbnRlcnJ1cHQgd2FrZXVwIGV2ZW50DQo+ID4+Pj4+DQo+ID4+
+Pj4+DQo+ID4+Pj4NCj4gPj4+Pj4gWyAgMjM4LjI0NTUwOV0gbW1jMDogVGltZW91dCB3YWl0aW5n
+IGZvciBoYXJkd2FyZSBpbnRlcnJ1cHQuDQo+ID4+Pj4+IFsgIDIzOC4yNTA5NDRdIG1tYzA6IHNk
+aGNpOiA9PT09PT09PT09PT0gU0RIQ0kgUkVHSVNURVIgRFVNUA0KPiA+Pj4+PiA9PT09PT09PT09
+PSBbICAyMzguMjU3NDIyXSBtbWMwOiBzZGhjaTogU3lzIGFkZHI6ICAweDIwMDAwMDA4IHwNCj4g
+Pj4+Pj4gVmVyc2lvbjogIDB4MDAwMDEwMDIgWyAgMjM4LjI2MzkwMF0gbW1jMDogc2RoY2k6IEJs
+ayBzaXplOiAgMHgwMDAwNzIwMA0KPiA+Pj4+PiB8IEJsayBjbnQ6ICAweDAwMDAwMDAwIFsgIDIz
+OC4yNzAzNzNdIG1tYzA6IHNkaGNpOiBBcmd1bWVudDoNCj4gMHgwMDExODY3OA0KPiA+PiB8DQo+
+ID4+Pj4gVHJuIG1vZGU6IDB4MDAwMDAwMmINCj4gPj4+Pj4gWyAgMjM4LjI3Njg0OF0gbW1jMDog
+c2RoY2k6IFByZXNlbnQ6ICAgMHgxZmZmMDAwMCB8IEhvc3QgY3RsOg0KPiAweDAwMDAwMDNkDQo+
+ID4+Pj4+IFsgIDIzOC4yODMzMjNdIG1tYzA6IHNkaGNpOiBQb3dlcjogICAgIDB4MDAwMDAwMGIg
+fCBCbGsgZ2FwOg0KPiAweDAwMDAwMDgwDQo+ID4+Pj4+IFsgIDIzOC4yODk3OTddIG1tYzA6IHNk
+aGNpOiBXYWtlLXVwOiAgIDB4MDAwMDAwMDAgfCBDbG9jazoNCj4gMHgwMDAwMDAwNw0KPiA+Pj4+
+PiBbICAyMzguMjk2MjY1XSBtbWMwOiBzZGhjaTogVGltZW91dDogICAweDAwMDAwMDA3IHwgSW50
+IHN0YXQ6DQo+IDB4MDAwMDAwMDMNCj4gPj4+Pj4gWyAgMjM4LjMwMjczNF0gbW1jMDogc2RoY2k6
+IEludCBlbmFiOiAgMHgwM2ZmMDAwYiB8IFNpZyBlbmFiOg0KPiA+Pj4+PiAweDAzZmYwMDBiIFsg
+IDIzOC4zMDkyMDZdIG1tYzA6IHNkaGNpOiBBQ21kIHN0YXQ6IDB4MDAwMDAwMDAgfCBTbG90DQo+
+IGludDoNCj4gPj4+PiAweDAwMDAwMDAxDQo+ID4+Pj4+IFsgIDIzOC4zMTU2ODJdIG1tYzA6IHNk
+aGNpOiBDYXBzOiAgICAgIDB4NTQ2ZWM4ODEgfCBDYXBzXzE6DQo+IDB4ODAwMDA4MDcNCj4gPj4+
+Pj4gWyAgMjM4LjMyMjE1NF0gbW1jMDogc2RoY2k6IENtZDogICAgICAgMHgwMDAwMTkzYSB8IE1h
+eCBjdXJyOg0KPiAweDAwMDAwMDAwDQo+ID4+Pj4+IFsgIDIzOC4zMjg2MThdIG1tYzA6IHNkaGNp
+OiBSZXNwWzBdOiAgIDB4MDAwMDA5MDAgfCBSZXNwWzFdOiAgMHhmZmZmZmZmZg0KPiA+Pj4+PiBb
+ICAyMzguMzM1MDgwXSBtbWMwOiBzZGhjaTogUmVzcFsyXTogICAweDMyOGY1OTAzIHwgUmVzcFsz
+XToNCj4gMHgwMDAwMDkwMA0KPiA+Pj4+PiBbICAyMzguMzQxNTQ3XSBtbWMwOiBzZGhjaTogSG9z
+dCBjdGwyOiAweDAwMDAwMDhkIFsgIDIzOC4zNDYwMTZdDQo+IG1tYzA6DQo+ID4+Pj4+IHNkaGNp
+OiBBRE1BIEVycjogIDB4MDAwMDAwMDAgfCBBRE1BIFB0cjogMHgwMDAwMDAwMTc5ZmNiMjBjIFsN
+Cj4gPj4+Pj4gMjM4LjM1MzE4MF0gbW1jMDogc2RoY2k6DQo+ID4+Pj4gPT09PT09PT09PT09PT09
+PT09PT09PT09PT09PT09PT09PT09PT09PT09PT0NCj4gPj4+Pj4gWyAgMjQ4LjQ4NTUwN10gbW1j
+MDogVGltZW91dCB3YWl0aW5nIGZvciBoYXJkd2FyZSBpbnRlcnJ1cHQuDQo+ID4+Pj4+IFsgIDI0
+OC40OTA5MzddIG1tYzA6IHNkaGNpOiA9PT09PT09PT09PT0gU0RIQ0kgUkVHSVNURVIgRFVNUA0K
+PiA+Pj4+PiA9PT09PT09PT09PSBbICAyNDguNDk3NDEyXSBtbWMwOiBzZGhjaTogU3lzIGFkZHI6
+ICAweDIwMDAwMDA4IHwNCj4gPj4+Pj4gVmVyc2lvbjogIDB4MDAwMDEwMDIgWyAgMjQ4LjUwMzg4
+N10gbW1jMDogc2RoY2k6IEJsayBzaXplOiAgMHgwMDAwNzIwMA0KPiA+Pj4+PiB8IEJsayBjbnQ6
+ICAweDAwMDAwMDAwIFsgIDI0OC41MTAzNjJdIG1tYzA6IHNkaGNpOiBBcmd1bWVudDoNCj4gMHgw
+MDAwMDAwMA0KPiA+PiB8DQo+ID4+Pj4gVHJuIG1vZGU6IDB4MDAwMDAwMjMNCj4gPj4+Pj4gWyAg
+MjQ4LjUxNjgzOF0gbW1jMDogc2RoY2k6IFByZXNlbnQ6ICAgMHgxZmZmMDAwMCB8IEhvc3QgY3Rs
+Og0KPiAweDAwMDAwMDNkDQo+ID4+Pj4+IFsgIDI0OC41MjMzMTNdIG1tYzA6IHNkaGNpOiBQb3dl
+cjogICAgIDB4MDAwMDAwMGIgfCBCbGsgZ2FwOg0KPiAweDAwMDAwMDgwDQo+ID4+Pj4+IFsgIDI0
+OC41Mjk3OTBdIG1tYzA6IHNkaGNpOiBXYWtlLXVwOiAgIDB4MDAwMDAwMDAgfCBDbG9jazoNCj4g
+MHgwMDAwMDAwNw0KPiA+Pj4+PiBbICAyNDguNTM2MjY2XSBtbWMwOiBzZGhjaTogVGltZW91dDog
+ICAweDAwMDAwMDBlIHwgSW50IHN0YXQ6DQo+IDB4MDAwMTgwMDINCj4gPj4+Pj4gWyAgMjQ4LjU0
+Mjc0Ml0gbW1jMDogc2RoY2k6IEludCBlbmFiOiAgMHgwM2ZmMDAwYiB8IFNpZyBlbmFiOg0KPiA+
+Pj4+PiAweDAzZmYwMDBiIFsgIDI0OC41NDkyMTldIG1tYzA6IHNkaGNpOiBBQ21kIHN0YXQ6IDB4
+MDAwMDAwMDAgfCBTbG90DQo+IGludDoNCj4gPj4+PiAweDAwMDAwMDAxDQo+ID4+Pj4+IFsgIDI0
+OC41NTU2OTNdIG1tYzA6IHNkaGNpOiBDYXBzOiAgICAgIDB4NTQ2ZWM4ODEgfCBDYXBzXzE6DQo+
+IDB4ODAwMDA4MDcNCj4gPj4+Pj4gWyAgMjQ4LjU2MjE2N10gbW1jMDogc2RoY2k6IENtZDogICAg
+ICAgMHgwMDAwMGMxYiB8IE1heCBjdXJyOg0KPiAweDAwMDAwMDAwDQo+ID4+Pj4+IFsgIDI0OC41
+Njg2NDNdIG1tYzA6IHNkaGNpOiBSZXNwWzBdOiAgIDB4MDAwMDA5MDAgfCBSZXNwWzFdOiAgMHhm
+ZmZmZmZmZg0KPiA+Pj4+PiBbICAyNDguNTc1MTE3XSBtbWMwOiBzZGhjaTogUmVzcFsyXTogICAw
+eDMyOGY1OTAzIHwgUmVzcFszXToNCj4gMHgwMDAwMDkwMA0KPiA+Pj4+PiBbICAyNDguNTgxNTk0
+XSBtbWMwOiBzZGhjaTogSG9zdCBjdGwyOiAweDAwMDAwMDhkIFsgIDI0OC41ODYwNjVdDQo+IG1t
+YzA6DQo+ID4+Pj4+IHNkaGNpOiBBRE1BIEVycjogIDB4MDAwMDAwMDAgfCBBRE1BIFB0cjogMHgw
+MDAwMDAwMTc5ZmNiMjBjIFsNCj4gPj4+Pj4gMjQ4LjU5MzIyOF0gbW1jMDogc2RoY2k6DQo+ID4+
+Pj4gPT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT0NCj4gPj4+Pj4g
+WyAgMjQ5LjEzNzUwMl0gcmN1OiBJTkZPOiByY3Vfc2NoZWQgZGV0ZWN0ZWQgc3RhbGxzIG9uIENQ
+VXMvdGFza3M6DQo+ID4+Pj4+IFsgIDI0OS4xNDM0NjJdIHJjdTogICAgIDEtLi4uITogKDEgR1Bz
+IGJlaGluZCkNCj4gPj4gaWRsZT04NGEvMS8weDQwMDAwMDAwMDAwMDAwMDANCj4gPj4+PiBzb2Z0
+aXJxPTU4NzUvNTg3NiBmcXM9MjQ3OQ0KPiA+Pj4+PiBbICAyNDkuMTUyNDU4XSByY3U6ICAgICAo
+ZGV0ZWN0ZWQgYnkgMywgdD0yMTAxNiBqaWZmaWVzLCBnPTU3OTMsIHE9MzkxKQ0KPiA+Pj4+PiBb
+ICAyNDkuMTU4NTg4XSBTZW5kaW5nIE5NSSBmcm9tIENQVSAzIHRvIENQVXMgMToNCj4gPj4+Pj4g
+WyAgMjQ5LjE2Mzk4NF0gcmN1OiByY3Vfc2NoZWQga3RocmVhZCBzdGFydmVkIGZvciAxMDkyMCBq
+aWZmaWVzISBnNTc5Mw0KPiA+Pj4+PiBmMHgwIFJDVV9HUF9XQUlUX0ZRUyg1KSAtPnN0YXRlPTB4
+NDAyIC0+Y3B1PTIgWyAgMjQ5LjE3NDI4NF0gcmN1Og0KPiA+PiBSQ1UNCj4gPj4+PiBncmFjZS1w
+ZXJpb2Qga3RocmVhZCBzdGFjayBkdW1wOg0KPiA+Pj4+PiBbICAyNDkuMTc5MzY0XSByY3Vfc2No
+ZWQgICAgICAgSSAgICAwICAgIDEwICAgICAgMiAweDgwMDAwMDAwDQo+ID4+Pj4+IFsgIDI0OS4x
+ODQ4ODJdIENhbGwgVHJhY2U6DQo+ID4+Pj4+IFsgIDI0OS4xODczNjBdICA/IF9fc2NoZWR1bGUr
+MHgzNDAvMHg4YTAgWyAgMjQ5LjE5MTA0Nl0NCj4gPj4+Pj4gc2NoZWR1bGUrMHgzMi8weDgwIFsg
+IDI0OS4xOTQyMTFdICBzY2hlZHVsZV90aW1lb3V0KzB4MTgwLzB4MzYwIFsNCj4gPj4+Pj4gMjQ5
+LjE5ODI0OF0gID8gX19uZXh0X3RpbWVyX2ludGVycnVwdCsweGQwLzB4ZDAgWyAgMjQ5LjIwMjgw
+Nl0NCj4gPj4+Pj4gcmN1X2dwX2t0aHJlYWQrMHg1MjIvMHhlYzAgWyAgMjQ5LjIwNjY2N10gID8N
+Cj4gPj4gY2FsbF9yY3Vfc2NoZWQrMHgyMC8weDIwDQo+ID4+Pj4+IFsgIDI0OS4yMTA1MjhdICBr
+dGhyZWFkKzB4MTE1LzB4MTMwIFsgIDI0OS4yMTM3NzldICA/DQo+ID4+Pj4+IGt0aHJlYWRfY3Jl
+YXRlX3dvcmtlcl9vbl9jcHUrMHg3MC8weDcwDQo+ID4+Pj4+IFsgIDI0OS4yMTg4NjFdICByZXRf
+ZnJvbV9mb3JrKzB4MjAvMHgzMCBbICAyNTYuNDQ5NjU1XSBpZ2INCj4gPj4+Pj4gMDAwMDowNDow
+MC4wIGVucDRzMDogaWdiOiBlbnA0czAgTklDIExpbmsgaXMgRG93biBbICAyNTguNzI1NTA4XQ0K
+PiBtbWMwOg0KPiA+Pj4+PiBUaW1lb3V0IHdhaXRpbmcgZm9yIGhhcmR3YXJlIGNtZCBpbnRlcnJ1
+cHQuDQo+ID4+Pj4+IFsgIDI1OC43MzEyODZdIG1tYzA6IHNkaGNpOiA9PT09PT09PT09PT0gU0RI
+Q0kgUkVHSVNURVIgRFVNUA0KPiA+Pj4+PiA9PT09PT09PT09PSBbICAyNTguNzM3NzYxXSBtbWMw
+OiBzZGhjaTogU3lzIGFkZHI6ICAweDIwMDAwMDA4IHwNCj4gPj4+Pj4gVmVyc2lvbjogIDB4MDAw
+MDEwMDIgWyAgMjU4Ljc0NDIzOF0gbW1jMDogc2RoY2k6IEJsayBzaXplOiAgMHgwMDAwNzIwMA0K
+PiA+Pj4+PiB8IEJsayBjbnQ6ICAweDAwMDAwMDAwIFsgIDI1OC43NTA3MTZdIG1tYzA6IHNkaGNp
+OiBBcmd1bWVudDoNCj4gMHgwMDAxMDAwMA0KPiA+PiB8DQo+ID4+Pj4gVHJuIG1vZGU6IDB4MDAw
+MDAwMjMNCj4gPj4+Pj4gWyAgMjU4Ljc1NzE5MV0gbW1jMDogc2RoY2k6IFByZXNlbnQ6ICAgMHgx
+ZmZmMDAwMCB8IEhvc3QgY3RsOg0KPiAweDAwMDAwMDNkDQo+ID4+Pj4+IFsgIDI1OC43NjM2NjZd
+IG1tYzA6IHNkaGNpOiBQb3dlcjogICAgIDB4MDAwMDAwMGIgfCBCbGsgZ2FwOg0KPiAweDAwMDAw
+MDgwDQo+ID4+Pj4+IFsgIDI1OC43NzAxNDNdIG1tYzA6IHNkaGNpOiBXYWtlLXVwOiAgIDB4MDAw
+MDAwMDAgfCBDbG9jazoNCj4gMHgwMDAwMDAwNw0KPiA+Pj4+PiBbICAyNTguNzc2NjIwXSBtbWMw
+OiBzZGhjaTogVGltZW91dDogICAweDAwMDAwMDBlIHwgSW50IHN0YXQ6DQo+IDB4MDAwMTgwMDEN
+Cj4gPj4+Pj4gWyAgMjU4Ljc4MzA5N10gbW1jMDogc2RoY2k6IEludCBlbmFiOiAgMHgwM2ZmMDAw
+YiB8IFNpZyBlbmFiOg0KPiA+Pj4+PiAweDAzZmYwMDBiIFsgIDI1OC43ODk1NzBdIG1tYzA6IHNk
+aGNpOiBBQ21kIHN0YXQ6IDB4MDAwMDAwMDAgfCBTbG90DQo+IGludDoNCj4gPj4+PiAweDAwMDAw
+MDAxDQo+ID4+Pj4+IFsgIDI1OC43OTYwNDRdIG1tYzA6IHNkaGNpOiBDYXBzOiAgICAgIDB4NTQ2
+ZWM4ODEgfCBDYXBzXzE6DQo+IDB4ODAwMDA4MDcNCj4gPj4+Pj4gWyAgMjU4LjgwMjUxOF0gbW1j
+MDogc2RoY2k6IENtZDogICAgICAgMHgwMDAwMGQxYSB8IE1heCBjdXJyOg0KPiAweDAwMDAwMDAw
+DQo+ID4+Pj4+IFsgIDI1OC44MDg5OTRdIG1tYzA6IHNkaGNpOiBSZXNwWzBdOiAgIDB4MDA0MDA5
+MDAgfCBSZXNwWzFdOiAgMHhmZmZmZmZmZg0KPiA+Pj4+PiBbICAyNTguODE1NDY4XSBtbWMwOiBz
+ZGhjaTogUmVzcFsyXTogICAweDMyOGY1OTAzIHwgUmVzcFszXToNCj4gMHgwMDAwMDkwMA0KPiA+
+Pj4+PiBbICAyNTguODIxOTQwXSBtbWMwOiBzZGhjaTogSG9zdCBjdGwyOiAweDAwMDAwMDhkIFsg
+IDI1OC44MjY0MTFdDQo+IG1tYzA6DQo+ID4+Pj4+IHNkaGNpOiBBRE1BIEVycjogIDB4MDAwMDAw
+MDAgfCBBRE1BIFB0cjogMHgwMDAwMDAwMTc5ZmNiMjBjIFsNCj4gPj4+Pj4gMjU4LjgzMzU3OF0g
+bW1jMDogc2RoY2k6DQo+ID4+Pj4gPT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09
+PT09PT09PT0NCj4gPj4+Pj4gWyAgMjY4Ljk2NTUwOV0gbW1jMDogVGltZW91dCB3YWl0aW5nIGZv
+ciBoYXJkd2FyZSBjbWQgaW50ZXJydXB0Lg0KPiA+Pj4+PiBbICAyNjguOTcxMjg1XSBtbWMwOiBz
+ZGhjaTogPT09PT09PT09PT09IFNESENJIFJFR0lTVEVSIERVTVANCj4gPj4+Pj4gPT09PT09PT09
+PT0gWyAgMjY4Ljk3Nzc1OV0gbW1jMDogc2RoY2k6IFN5cyBhZGRyOiAgMHgyMDAwMDAwOCB8DQo+
+ID4+Pj4+IFZlcnNpb246ICAweDAwMDAxMDAyIFsgIDI2OC45ODQyMzNdIG1tYzA6IHNkaGNpOiBC
+bGsgc2l6ZTogIDB4MDAwMDcyMDANCj4gPj4+Pj4gfCBCbGsgY250OiAgMHgwMDAwMDAwMCBbICAy
+NjguOTkwNzA0XSBtbWMwOiBzZGhjaTogQXJndW1lbnQ6DQo+IDB4MDAwMTAwMDANCj4gPj4gfA0K
+PiA+Pj4+IFRybiBtb2RlOiAweDAwMDAwMDIzDQo+ID4+Pj4+IFsgIDI2OC45OTcxNzRdIG1tYzA6
+IHNkaGNpOiBQcmVzZW50OiAgIDB4MWZmZjAwMDAgfCBIb3N0IGN0bDoNCj4gMHgwMDAwMDAzZA0K
+PiA+Pj4+PiBbICAyNjkuMDAzNjQ3XSBtbWMwOiBzZGhjaTogUG93ZXI6ICAgICAweDAwMDAwMDBi
+IHwgQmxrIGdhcDoNCj4gMHgwMDAwMDA4MA0KPiA+Pj4+PiBbICAyNjkuMDEwMTE4XSBtbWMwOiBz
+ZGhjaTogV2FrZS11cDogICAweDAwMDAwMDAwIHwgQ2xvY2s6DQo+IDB4MDAwMDAwMDcNCj4gPj4+
+Pj4gWyAgMjY5LjAxNjU5MF0gbW1jMDogc2RoY2k6IFRpbWVvdXQ6ICAgMHgwMDAwMDAwZSB8IElu
+dCBzdGF0Og0KPiAweDAwMDE4MDAxDQo+ID4+Pj4+IFsgIDI2OS4wMjMwNjddIG1tYzA6IHNkaGNp
+OiBJbnQgZW5hYjogIDB4MDNmZjAwMGIgfCBTaWcgZW5hYjoNCj4gPj4+Pj4gMHgwM2ZmMDAwYiBb
+ICAyNjkuMDI5NTM4XSBtbWMwOiBzZGhjaTogQUNtZCBzdGF0OiAweDAwMDAwMDAwIHwgU2xvdA0K
+PiBpbnQ6DQo+ID4+Pj4gMHgwMDAwMDAwMQ0KPiA+Pj4+PiBbICAyNjkuMDM2MDExXSBtbWMwOiBz
+ZGhjaTogQ2FwczogICAgICAweDU0NmVjODgxIHwgQ2Fwc18xOg0KPiAweDgwMDAwODA3DQo+ID4+
+Pj4+IFsgIDI2OS4wNDI0ODRdIG1tYzA6IHNkaGNpOiBDbWQ6ICAgICAgIDB4MDAwMDBkMWEgfCBN
+YXggY3VycjoNCj4gMHgwMDAwMDAwMA0KPiA+Pj4+PiBbICAyNjkuMDQ4OTU4XSBtbWMwOiBzZGhj
+aTogUmVzcFswXTogICAweDAwMDAwOTAwIHwgUmVzcFsxXTogIDB4ZmZmZmZmZmYNCj4gPj4+Pj4g
+WyAgMjY5LjA1NTQzMl0gbW1jMDogc2RoY2k6IFJlc3BbMl06ICAgMHgzMjhmNTkwMyB8IFJlc3Bb
+M106DQo+IDB4MDAwMDA5MDANCj4gPj4+Pj4gWyAgMjY5LjA2MTkwNF0gbW1jMDogc2RoY2k6IEhv
+c3QgY3RsMjogMHgwMDAwMDA4ZCBbICAyNjkuMDY2MzczXQ0KPiBtbWMwOg0KPiA+Pj4+PiBzZGhj
+aTogQURNQSBFcnI6ICAweDAwMDAwMDAwIHwgQURNQSBQdHI6IDB4MDAwMDAwMDE3OWZjYjIwYyBb
+DQo+ID4+Pj4+IDI2OS4wNzM1NDJdIG1tYzA6IHNkaGNpOg0KPiA+Pj4+ID09PT09PT09PT09PT09
+PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09DQo+ID4+Pj4+DQo+ID4+Pj4+DQo+ID4+Pj4+
+IEtpbmQgcmVnYXJkcywNCj4gPj4+Pj4gTm9yYmVydA0KPiA+Pj4+IEkndmUgc2VlbiB0aGlzIGJl
+Zm9yZSB3aGVuIEkgd2FzIHBsYXlpbmcgYXJvdW5kIHdpdGggZ2V0dGluZyB0aGUgaXBpcGUNCj4g
+dG8NCj4gPj4gcnVuDQo+ID4+Pj4gb24gbXkgZWRpc29uIGJvYXJkLiAgSSBkb24ndCB0aGluayBp
+dCdzIGlwaXBlIHJlbGF0ZWQuICBJIGZvdW5kIHRoaXMgdGhyZWFkDQo+IG9uDQo+ID4+Pj4gcGF0
+Y2h3b3JrOg0KPiA+Pj4+DQo+ID4+Pj4gaHR0cHM6Ly9oZXMzMi0NCj4gPj4+Pg0KPiA+Pg0KPiBj
+dHAudHJlbmRtaWNyby5jb206NDQzL3dpcy9jbGlja3RpbWUvdjEvcXVlcnk/dXJsPWh0dHBzJTNh
+JTJmJTJmcGF0Y2gNCj4gPj4+PiB3b3JrLmtlcm5lbC5vcmclMmZwYXRjaCUyZjEwNzA1ODIzJTJm
+JnVtaWQ9MjQ0ZjI0N2ItOTQyNC00ZDk3LQ0KPiA+PiBhMzAxLQ0KPiA+Pj4+IDQzYzgzY2RhNDc3
+YyZhdXRoPTE0NDA1NmJhZjczMDJkNzc3YWNhZDE4N2FhYzc0ZDRiOWJhNDI1ZTEtDQo+ID4+Pj4g
+ZjU3M2FhYmY3NzMxZDUwY2E2YmNmZTY2ZDRkNGQ5MmRmZTg0YjFiMg0KPiA+Pj4NCj4gPj4+IEFo
+IHRoYW5rcywNCj4gPj4+DQo+ID4+PiBRdW90ZTogIkNvbW1hbmRzIGFuZCByZXNldHMgYXJlIHVu
+ZGVyIHNwaW4gbG9jaywgc28gbm8gcG9zc2liaWxpdHkgZm9yDQo+ID4+IHByZWVtcHRpb24sDQo+
+ID4+PiBhbmQgY2VydGFpbmx5IGEgZmV3IG1pY3Jvc2Vjb25kcyBpc24ndCBnb2luZyB0byBtYWtl
+IGFueSBkaWZmZXJlbmNlIHRvDQo+ID4+IHRoZXNlDQo+ID4+PiB0aW1lb3V0cywgc28gSSBkb24n
+dCBzZWUgaG93IHRoaXMgcGF0Y2ggY291bGQgaGVscC4iDQo+ID4+Pg0KPiA+Pj4gU28gSSBndWVz
+cyB0aGlzIGlzIG5vdCBhbiBpc3N1ZSB1bmRlciBwbGFpbiBMaW51eCwgYnV0IENvYmFsdCBjb3Vs
+ZCBwcmVlbXB0DQo+ID4+IGZvciBhDQo+ID4+PiBjb3VwbGUgb2YgbXMgKG9yIGV2ZW4gbG9uZ2Vy
+IGlmIHlvdSBtYW5hZ2VkIHRvIGdldCBhbiBSVCB0aHJlYWQgc3R1Y2spLg0KPiA+Pg0KPiA+PiBU
+aGF0IG1heSBhbHNvIGJlIGRpZmZlcmVudCBvbiBQUkVFTVBULVJULg0KPiA+Pg0KPiA+Pj4+DQo+
+ID4+Pj4gVGhlcmUgd2FzIGFub3RoZXIgdGhyZWFkIG9uIHRoZSBVYnVudHUgZm9ydW1zIHRoYXQg
+c29sdmVkIHRoZSBpc3N1ZQ0KPiBieQ0KPiA+Pj4+IGRpc2FibGluZyB0aGUgc2RjYXJkIGluIHRo
+ZSBiaW9zLg0KPiA+Pj4NCj4gPj4+IEkgY2FuJ3QgZG8gdGhhdCwgYXMgdGhpcyBpcyB0aGUgZU1N
+QyB0aGUgc3lzdGVtIGlzIHJ1bm5pbmcgZnJvbS4NCj4gPj4+DQo+ID4+PiBCVFcsIGlmIEkgd291
+bGQgd2FudCB0byBsaW1pdCBzdWNoIGlzc3VlcywgY291bGQgSSBsaW1pdCBMaW51eCBJUlFzIChh
+cGFydA0KPiBmcm9tDQo+ID4+IGEgaGFuZGZ1bCBvZiBuZWNlc3NhcnkgbWFpbnRhaW5hbmNlL3Rp
+bWVyKSB0byBhIHNpbmdsZSBjb3JlPw0KPiA+Pj4NCj4gPj4NCj4gPj4gWWVzLCB0aGF0J3MgdGhl
+IGJlc3Qgb3B0aW9uIG9uIGEgbXVsdGljb3JlIHN5c3RlbSBmb3IgYm90aCBzaWRlcywgUlQgYW5k
+DQo+ID4+IExpbnV4Lg0KPiA+DQo+ID4gTmV4dCBxdWVzdGlvbjogaG93Pw0KPiA+DQo+ID4gSSBw
+bGF5ZWQgYXJvdW5kIHdpdGggaXNvbGNwdXMsIGJ1dCB0aGF0IGhhZCBzZXZlcmUgc2lkZWVmZmVj
+dHM6DQo+ID4gaHR0cHM6Ly9oZXMzMi0NCj4gY3RwLnRyZW5kbWljcm8uY29tOjQ0My93aXMvY2xp
+Y2t0aW1lL3YxL3F1ZXJ5P3VybD1odHRwcyUzYSUyZiUyZnhlbm9tDQo+IGFpLm9yZyUyZnBpcGVy
+bWFpbCUyZnhlbm9tYWklMmYyMDE5JTJkT2N0b2JlciUyZjA0MTkwMi5odG1sJnVtaWQ9Yw0KPiA0
+NDQwNWU1LWIzNzgtNGU3Ny1hNjU1LQ0KPiA1MTBhMThlMWY4YTAmYXV0aD0xNDQwNTZiYWY3MzAy
+ZDc3N2FjYWQxODdhYWM3NGQ0YjliYTQyNWUxLQ0KPiA1N2ZjYjg3NGJmYjZjYmMwODNjNTZkYmEx
+NzNhZDMwMTI1ZDQxZTA4DQo+ID4NCj4gPiBUaGlzIHdhcyBiZWZvcmUgUGhpbGlwcGUgZml4ZWQg
+c29tZSBzZXJpb3VzIHNjaGVkdWxlciBidWdzLA0KPiA+IGJ1dCBJIHN0b3BwZWQgdHJ5aW5nIHRv
+IGRvIGFueXRoaW5nICJzbWFydCIgYWZ0ZXIgZW5kaW5nIHVwIHdpdGggcmFuZG9tDQo+IHdlaXJk
+bmVzcy4NCj4gPg0KPg0KPiBpc29sY3B1cyBzaG91bGQgd29yay4gSWYgbm90LCB3ZSBuZWVkIHRv
+IGRlYnVnIGFuZCBmaXguDQoNClNlZSBpdCBkb2VzLCBhdGxlYXN0IEkgZGlkIG5vdCBydW4gaW50
+byBwcm9ibGVtcyB5ZXQuDQoNCkkgYWRkZWQgImlycWFmZmluaXR5PTAgaXNvbGNwdXM9MS0zIiB0
+byB0aGUgY21kbGluZSwgd2hpY2ggYmluZHMgdGhlIGRyaXZlciBpcnFzIHRvIGNvcmUgMCwNCmFu
+ZCBwcmV2ZW50cyBhdXRvbWF0aWMgc2NoZWR1bGluZyB0byB0aGUgcmVtYWluaW5nIGNwdXMuDQoN
+CkkgYW0gYSBiaXQgdW5jbGVhciBob3cgdGhlIFhlbm9tYWktc2lkZSBpcyBzdXBwb3NlZCB0byB3
+b3JrLg0KDQpTZXR0aW5nICJ4ZW5vbWFpLnN1cHBvcnRlZF9jcHVzPTB4ZSIgd2lsbCBzdHJpY3Rs
+eSBkZW55IHJ1bm5pbmcgYW55dGhpbmcgdGhlcmUsDQpNeSBwcm9jZXNzIGRpZCBiYWlsIG91dCB3
+aXRoDQpbICAgMjcuNzI2NjgxXSBbWGVub21haV0gdGhyZWFkIHJ0Z2F0ZVs3OTNdIHN3aXRjaGVk
+IHRvIG5vbi1ydCBDUFUwLCBhYm9ydGVkLg0KDQpUaGF0IG1lYW5zIEkgZWl0aGVyIGhhdmUgdG8N
+CmVjaG8gMHhmZmZmZmZmZSA+IC9wcm9jL3hlbm9tYWkvYWZmaW5pdHkNCg0Kb3Igc2V0IGFmZmlu
+aXR5IG1hbnVhbGx5IChlYXJseSBlbm91Z2gpIGVhY2ggdGltZS4NCldoYXRldmVyIEkgZG8sIEkg
+Z3Vlc3MgeGVub21haXMgInByaW50ZiIgdGhyZWFkIHdpbGwgYWx3YXlzIGhhdmUgdG8gcnVuDQpv
+biBhIGNvYmFsdC1lbmFibGVkIHRocmVhZCwgZXZlbiBpZiBpdHMganVzdCB1c2luZyBsaW51eCBz
+eWNhbGxzPw0KDQpXaHkgaXMgdGhlcmUgbm8geGVub21haS5hZmZpbml0eSBrZXJuZWwgY29tbWFu
+ZGxpbmUgcGFyYW1ldGVyIChvciBhbHRlcm5hdGl2ZWx5IGFuIHhlbm9tYWkuaXNvbGNwdXMpPw0K
+DQoNCj4NCj4gTGVzcyBjb252ZW5pZW50IGFsdGVybmF0aXZlOiBtYW51YWxseSB0dW5pbmcgL3By
+b2MvaXJxLyovc21wX2FmZmluaXR5IG9yDQo+IGluc3RydWN0aW5nIGlycWJhbGFuY2VkIHRvIGtl
+ZXAgc29tZSBjb3JlcyBmcmVlLiBjZ3JvdXBzIHdpdGggQ1BVDQo+IGFmZmluaXRpZXMgY2FuIGhl
+bHAgdG8ga2VlcCB0YXNrcyBhd2F5Lg0KDQpZZXMsIHN5c3RlbWQtc3lzdGVtLmNvbmYgaGFzIGFu
+IENQVUFmZmluaXR5IG9wdGlvbi4gVGhlIExpbnV4LXNpZGUgc2VlbXMgc29sdmVkDQp3aXRoIHRo
+ZSB0d28ga2VybmVsIHBhcmFtZXRlcnMgYW55d2F5cy4NCg0KVGhhbmtzLA0KTm9yYmVydA0KDQpf
+X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fXw0KDQpUaGlzIG1lc3NhZ2UgYW5kIGFueSBh
+dHRhY2htZW50cyBhcmUgc29sZWx5IGZvciB0aGUgdXNlIG9mIHRoZSBpbnRlbmRlZCByZWNpcGll
+bnRzLiBUaGV5IG1heSBjb250YWluIHByaXZpbGVnZWQgYW5kL29yIGNvbmZpZGVudGlhbCBpbmZv
+cm1hdGlvbiBvciBvdGhlciBpbmZvcm1hdGlvbiBwcm90ZWN0ZWQgZnJvbSBkaXNjbG9zdXJlLiBJ
+ZiB5b3UgYXJlIG5vdCBhbiBpbnRlbmRlZCByZWNpcGllbnQsIHlvdSBhcmUgaGVyZWJ5IG5vdGlm
+aWVkIHRoYXQgeW91IHJlY2VpdmVkIHRoaXMgZW1haWwgaW4gZXJyb3IgYW5kIHRoYXQgYW55IHJl
+dmlldywgZGlzc2VtaW5hdGlvbiwgZGlzdHJpYnV0aW9uIG9yIGNvcHlpbmcgb2YgdGhpcyBlbWFp
+bCBhbmQgYW55IGF0dGFjaG1lbnQgaXMgc3RyaWN0bHkgcHJvaGliaXRlZC4gSWYgeW91IGhhdmUg
+cmVjZWl2ZWQgdGhpcyBlbWFpbCBpbiBlcnJvciwgcGxlYXNlIGNvbnRhY3QgdGhlIHNlbmRlciBh
+bmQgZGVsZXRlIHRoZSBtZXNzYWdlIGFuZCBhbnkgYXR0YWNobWVudCBmcm9tIHlvdXIgc3lzdGVt
+Lg0KDQpBTkRSSVRaIEhZRFJPIEdtYkgNCg0KDQpSZWNodHNmb3JtLyBMZWdhbCBmb3JtOiBHZXNl
+bGxzY2hhZnQgbWl0IGJlc2NocsOkbmt0ZXIgSGFmdHVuZyAvIENvcnBvcmF0aW9uDQoNCkZpcm1l
+bnNpdHovIFJlZ2lzdGVyZWQgc2VhdDogV2llbg0KDQpGaXJtZW5idWNoZ2VyaWNodC8gQ291cnQg
+b2YgcmVnaXN0cnk6IEhhbmRlbHNnZXJpY2h0IFdpZW4NCg0KRmlybWVuYnVjaG51bW1lci8gQ29t
+cGFueSByZWdpc3RyYXRpb246IEZOIDYxODMzIGcNCg0KRFZSOiAwNjA1MDc3DQoNClVJRC1Oci46
+IEFUVTE0NzU2ODA2DQoNCg0KVGhhbmsgWW91DQpfX19fX19fX19fX19fX19fX19fX19fX19fX19f
+X19fXw0K
 
