@@ -1,14 +1,15 @@
-From: Lange Norbert <norbert.lange@andritz.com>
-Subject: RE: Interrupt timeout
-Date: Tue, 25 Feb 2020 15:40:56 +0000
-Message-ID: <VI1PR05MB591716533325E3DB1EEBD573F6ED0@VI1PR05MB5917.eurprd05.prod.outlook.com>
+Subject: Re: Interrupt timeout
 References: <VI1PR05MB5917D6B0922458527599EDE1F6ED0@VI1PR05MB5917.eurprd05.prod.outlook.com>
  <CALLqZ8RSqv_OZTRApV+n+3zmgjz1KcLRBLmd+vLWE6MRYaS9ag@mail.gmail.com>
-In-Reply-To: <CALLqZ8RSqv_OZTRApV+n+3zmgjz1KcLRBLmd+vLWE6MRYaS9ag@mail.gmail.com>
-Content-Language: en-US
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+ <VI1PR05MB591716533325E3DB1EEBD573F6ED0@VI1PR05MB5917.eurprd05.prod.outlook.com>
+From: Jan Kiszka <jan.kiszka@siemens.com>
+Message-ID: <2e8126ff-7b0d-e114-568f-1e38c530f895@siemens.com>
+Date: Tue, 25 Feb 2020 16:46:34 +0100
 MIME-Version: 1.0
+In-Reply-To: <VI1PR05MB591716533325E3DB1EEBD573F6ED0@VI1PR05MB5917.eurprd05.prod.outlook.com>
+Content-Type: text/plain; charset="utf-8"; format="flowed"
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,251 +18,238 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Greg Gallagher <greg@embeddedgreg.com>
-Cc: "Xenomai (xenomai@xenomai.org)" <xenomai@xenomai.org>, "Philippe Gerum
- (rpm@xenomai.org)" <rpm@xenomai.org>
+To: Lange Norbert <norbert.lange@andritz.com>, Greg Gallagher <greg@embeddedgreg.com>
+Cc: "Xenomai (xenomai@xenomai.org)" <xenomai@xenomai.org>
 
-DQoNCj4gLS0tLS1PcmlnaW5hbCBNZXNzYWdlLS0tLS0NCj4gRnJvbTogR3JlZyBHYWxsYWdoZXIg
-PGdyZWdAZW1iZWRkZWRncmVnLmNvbT4NCj4gU2VudDogRGllbnN0YWcsIDI1LiBGZWJydWFyIDIw
-MjAgMTY6MjQNCj4gVG86IExhbmdlIE5vcmJlcnQgPG5vcmJlcnQubGFuZ2VAYW5kcml0ei5jb20+
-DQo+IENjOiBYZW5vbWFpICh4ZW5vbWFpQHhlbm9tYWkub3JnKSA8eGVub21haUB4ZW5vbWFpLm9y
-Zz47IFBoaWxpcHBlDQo+IEdlcnVtIChycG1AeGVub21haS5vcmcpIDxycG1AeGVub21haS5vcmc+
-DQo+IFN1YmplY3Q6IFJlOiBJbnRlcnJ1cHQgdGltZW91dA0KPg0KPiBOT04tQU5EUklUWiBTT1VS
-Q0U6IEJFIENBVVRJT1VTIFdJVEggQ09OVEVOVCwgTElOS1MgT1INCj4gQVRUQUNITUVOVFMuDQo+
-DQo+DQo+IEhpLA0KPg0KPiBPbiBUdWUsIEZlYiAyNSwgMjAyMCBhdCA4OjU3IEFNIExhbmdlIE5v
-cmJlcnQgdmlhIFhlbm9tYWkNCj4gPHhlbm9tYWlAeGVub21haS5vcmc+IHdyb3RlOg0KPiA+DQo+
-ID4gSGVsbG8sDQo+ID4NCj4gPiBJIGhvcGUgeW91IGNhbiBnaXZlIG1lIHNvbWUgcG9pbnRlcnMg
-dG8gdW5kZXJzdGFuZCB3aHkgdGhpcyBCdWcNCj4gaGFwcGVuZWQuDQo+ID4gSXQgc2VlbXMgYW4g
-aW50ZXJydXB0IGdvdCBsb3N0IHNvbWVob3csIG1heWJlIHNvbWUgaXNzdWUgd2l0aA0KPiBsZXZl
-bHRyaWdnZXJzPw0KPiA+DQo+ID4gTm90ZSB0aGF0IEkgcnVuIG9uIGFuIEFwb2xsbyBMYWtlLCB3
-aGljaCB3b3VsZCBub3JtYWxseSB1c2UNCj4gPiBQSU5DVFJMX0JST1hUT04sIGJ1dCB0aGF04oCZ
-cyBub3QgZml4ZWQgdXAgZm9yIFhlbm9tYWkgeWV0LiBUaGUgc3lzdGVtDQo+ID4gd29ya3MgZmlu
-ZSBmcm9tIGVNTUMgb3RoZXJ3aXNlLCB0aGlzIGJ1ZyBvY2N1cnJlZCBvbmx5IG9uY2Ugc28gZmFy
-Lg0KPiA+DQo+ID4gMDA6MWIuMCBTRCBIb3N0IGNvbnRyb2xsZXI6IEludGVsIENvcnBvcmF0aW9u
-IEF0b20vQ2VsZXJvbi9QZW50aXVtDQo+ID4gUHJvY2Vzc29yIE40MjAwL04zMzUwL0UzOTAwIFNl
-cmllcyBTRFhDL01NQyBIb3N0IENvbnRyb2xsZXIgKHJldiAwYikNCj4gPiBTdWJzeXN0ZW06IElu
-dGVsIENvcnBvcmF0aW9uIENlbGVyb24gTjMzNTAvUGVudGl1bSBONDIwMC9BdG9tIEUzOTAwDQo+
-ID4gU2VyaWVzIFNEWEMvTU1DIEhvc3QgQ29udHJvbGxlciBLZXJuZWwgZHJpdmVyIGluIHVzZTog
-c2RoY2ktcGNpIEtlcm5lbA0KPiA+IG1vZHVsZXM6IHNkaGNpX3BjaQ0KPiA+IDAwOjFjLjAgU0Qg
-SG9zdCBjb250cm9sbGVyOiBJbnRlbCBDb3Jwb3JhdGlvbiBBdG9tL0NlbGVyb24vUGVudGl1bQ0K
-PiA+IFByb2Nlc3NvciBONDIwMC9OMzM1MC9FMzkwMCBTZXJpZXMgZU1NQyBDb250cm9sbGVyIChy
-ZXYgMGIpDQo+ID4gU3Vic3lzdGVtOiBJbnRlbCBDb3Jwb3JhdGlvbiBDZWxlcm9uIE4zMzUwL1Bl
-bnRpdW0gTjQyMDAvQXRvbSBFMzkwMA0KPiA+IFNlcmllcyBlTU1DIENvbnRyb2xsZXIgS2VybmVs
-IGRyaXZlciBpbiB1c2U6IHNkaGNpLXBjaSBLZXJuZWwgbW9kdWxlczoNCj4gPiBzZGhjaV9wY2kN
-Cj4gPg0KPiA+ICMgY2F0IC9wcm9jL2ludGVycnVwdHMNCj4gPiAgICAgICAgICAgICBDUFUwICAg
-ICAgIENQVTEgICAgICAgQ1BVMiAgICAgICBDUFUzDQo+ID4gICAgMDogICAgICAgICA1MCAgICAg
-ICAgICAwICAgICAgICAgIDAgICAgICAgICAgMCAgIElPLUFQSUMgICAgMi1lZGdlICAgICAgdGlt
-ZXINCj4gPiAgICA0OiAgICAgICAgICAwICAgICAgICAgIDAgICAgICAgIDQ5OCAgICAgICAgICAw
-ICAgSU8tQVBJQyAgICA0LWVkZ2UgICAgICB0dHlTMA0KPiA+ICAgIDg6ICAgICAgICAgIDAgICAg
-ICAgICAgMCAgICAgICAgICAwICAgICAgICAgIDAgICBJTy1BUElDICAgIDgtZWRnZSAgICAgIHJ0
-YzANCj4gPiAgICA5OiAgICAgICAgICAwICAgICAgICAgIDAgICAgICAgICAgMCAgICAgICAgICAw
-ICAgSU8tQVBJQyAgICA5LWZhc3Rlb2kgICBhY3BpDQo+ID4gICAyMDogICAgICAgICAyMCAgICAg
-ICAgICAwICAgICAgICAgIDAgICAgICAgICAgMCAgIElPLUFQSUMgICAyMC1mYXN0ZW9pICAgaTgw
-MV9zbWJ1cw0KPiA+ICAgMzk6ICAgICAgICAgIDAgICAgICAgMTMxNSAgICAgICAgICAwICAgICAg
-ICAgIDAgICBJTy1BUElDICAgMzktZmFzdGVvaSAgIG1tYzANCj4gPiAgMTI5OiAgICAgICAgICAw
-ICAgICAgICAgIDEgICAgICAgICAgMCAgICAgICAgICAwICAgUENJLU1TSSAxMDQ4NTc2LWVkZ2Ug
-ICAgICBlbnAyczANCj4gPiAgMTMwOiAgICAgICAgICAwICAgICAgICAgIDAgICAgICAgIDgzOSAg
-ICAgICAgICAwICAgUENJLU1TSSAxMDQ4NTc3LWVkZ2UgICAgICBlbnAyczAtcngtMA0KPiA+ICAx
-MzE6ICAgICAgICAgIDAgICAgICAgICAgMCAgICAgICAgICAwICAgICAgICA3NzMgICBQQ0ktTVNJ
-IDEwNDg1NzgtZWRnZSAgICAgIGVucDJzMC1yeC0xDQo+ID4gIDEzMjogICAgICAgIDk4NSAgICAg
-ICAgICAwICAgICAgICAgIDAgICAgICAgICAgMCAgIFBDSS1NU0kgMTA0ODU3OS1lZGdlICAgICAg
-ZW5wMnMwLXR4LTANCj4gPiAgMTMzOiAgICAgICAgICAwICAgICAgICA3NzMgICAgICAgICAgMCAg
-ICAgICAgICAwICAgUENJLU1TSSAxMDQ4NTgwLWVkZ2UgICAgICBlbnAyczAtdHgtMQ0KPiA+ICAx
-MzQ6ICAgICAgICAgIDAgICAgICAgICAgMCAgICAgICAgICAwICAgICAgICAgIDEgICBQQ0ktTVNJ
-IDE1NzI4NjQtZWRnZSAgICAgIGVucDNzMA0KPiA+ICAxMzU6ICAgICAgMTE0NjQgICAgICAgICAg
-MCAgICAgICAgICAwICAgICAgICAgIDAgICBQQ0ktTVNJIDE1NzI4NjUtZWRnZSAgICAgIGVucDNz
-MC1yeC0wDQo+ID4gIDEzNjogICAgICAgICAgMCAgICAgICAgNzgxICAgICAgICAgIDAgICAgICAg
-ICAgMCAgIFBDSS1NU0kgMTU3Mjg2Ni1lZGdlICAgICAgZW5wM3MwLXJ4LTENCj4gPiAgMTM3OiAg
-ICAgICAgICAwICAgICAgICAgIDAgICAgICAgIDg5OSAgICAgICAgICAwICAgUENJLU1TSSAxNTcy
-ODY3LWVkZ2UgICAgICBlbnAzczAtdHgtMA0KPiA+ICAxMzg6ICAgICAgICAgIDAgICAgICAgICAg
-MCAgICAgICAgICAwICAgICAgIDk3MDEgICBQQ0ktTVNJIDE1NzI4NjgtZWRnZSAgICAgIGVucDNz
-MC10eC0xDQo+ID4gIDEzOTogICAgICAgICAgMSAgICAgICAgICAwICAgICAgICAgIDAgICAgICAg
-ICAgMCAgIFBDSS1NU0kgMjA5NzE1Mi1lZGdlICAgICAgZW5wNHMwDQo+ID4gIDE0MDogICAgICAg
-ICAgMCAgICAgICAxOTg1ICAgICAgICAgIDAgICAgICAgICAgMCAgIFBDSS1NU0kgMjA5NzE1My1l
-ZGdlICAgICAgZW5wNHMwLVR4UngtMA0KPiA+ICAxNDE6ICAgICAgICAgIDAgICAgICAgICAgMCAg
-ICAgICAgNzc0ICAgICAgICAgIDAgICBQQ0ktTVNJIDIwOTcxNTQtZWRnZSAgICAgIGVucDRzMC1U
-eFJ4LTENCj4gPiAgMTQyOiAgICAgICAgICAwICAgICAgICAgIDAgICAgICAgICAgMCAgICAgICAx
-OTA1ICAgUENJLU1TSSAyMDk3MTU1LWVkZ2UgICAgICBlbnA0czAtVHhSeC0yDQo+ID4gIDE0Mzog
-ICAgICAgIDc3NSAgICAgICAgICAwICAgICAgICAgIDAgICAgICAgICAgMCAgIFBDSS1NU0kgMjA5
-NzE1Ni1lZGdlICAgICAgZW5wNHMwLVR4UngtMw0KPiA+ICAxNDQ6ICAgICAgICAgIDAgICAgICAg
-ICAgMCAgICAgIDk3NzkwICAgICAgICAgIDAgICBQQ0ktTVNJIDM0NDA2NC1lZGdlICAgICAgeGhj
-aV9oY2QNCj4gPiAgTk1JOiAgICAgICAgICAwICAgICAgICAgIDAgICAgICAgICAgMCAgICAgICAg
-ICAwICAgTm9uLW1hc2thYmxlIGludGVycnVwdHMNCj4gPiAgTE9DOiAgICAgIDQ3ODM5ICAgICAx
-NDc1ODMgICAgICAxMzgwNyAgICAgIDMyNjAyICAgTG9jYWwgdGltZXIgaW50ZXJydXB0cw0KPiA+
-ICBTUFU6ICAgICAgICAgIDAgICAgICAgICAgMCAgICAgICAgICAwICAgICAgICAgIDAgICBTcHVy
-aW91cyBpbnRlcnJ1cHRzDQo+ID4gIFBNSTogICAgICAgICAgMCAgICAgICAgICAwICAgICAgICAg
-IDAgICAgICAgICAgMCAgIFBlcmZvcm1hbmNlIG1vbml0b3JpbmcgaW50ZXJydXB0cw0KPiA+ICBJ
-V0k6ICAgICAgICAgIDAgICAgICAgICAgMCAgICAgICAgICAwICAgICAgICAgIDAgICBJUlEgd29y
-ayBpbnRlcnJ1cHRzDQo+ID4gIFJUUjogICAgICAgICAgMCAgICAgICAgICAwICAgICAgICAgIDAg
-ICAgICAgICAgMCAgIEFQSUMgSUNSIHJlYWQgcmV0cmllcw0KPiA+ICBSRVM6ICAgICAgMTE5NTUg
-ICAgICAgNjkzMSAgICAgICA2NTY3ICAgICAgIDQ5NDYgICBSZXNjaGVkdWxpbmcgaW50ZXJydXB0
-cw0KPiA+ICBDQUw6ICAgICAgICAyNjggICAgICAgIDIyMyAgICAgICAgMjEwICAgICAgICAyMTcg
-ICBGdW5jdGlvbiBjYWxsIGludGVycnVwdHMNCj4gPiAgVExCOiAgICAgICAgIDYzICAgICAgICAg
-NTcgICAgICAgICA2MSAgICAgICAgIDUwICAgVExCIHNob290ZG93bnMNCj4gPiAgVFJNOiAgICAg
-ICAgICAwICAgICAgICAgIDAgICAgICAgICAgMCAgICAgICAgICAwICAgVGhlcm1hbCBldmVudCBp
-bnRlcnJ1cHRzDQo+ID4gIFRIUjogICAgICAgICAgMCAgICAgICAgICAwICAgICAgICAgIDAgICAg
-ICAgICAgMCAgIFRocmVzaG9sZCBBUElDIGludGVycnVwdHMNCj4gPiAgTUNFOiAgICAgICAgICAw
-ICAgICAgICAgIDAgICAgICAgICAgMCAgICAgICAgICAwICAgTWFjaGluZSBjaGVjayBleGNlcHRp
-b25zDQo+ID4gIE1DUDogICAgICAgICAgNSAgICAgICAgICA2ICAgICAgICAgIDYgICAgICAgICAg
-NiAgIE1hY2hpbmUgY2hlY2sgcG9sbHMNCj4gPiAgRVJSOiAgICAgICAgICAwDQo+ID4gIE1JUzog
-ICAgICAgICAgMA0KPiA+ICBQSU46ICAgICAgICAgIDAgICAgICAgICAgMCAgICAgICAgICAwICAg
-ICAgICAgIDAgICBQb3N0ZWQtaW50ZXJydXB0IG5vdGlmaWNhdGlvbiBldmVudA0KPiA+ICBOUEk6
-ICAgICAgICAgIDAgICAgICAgICAgMCAgICAgICAgICAwICAgICAgICAgIDAgICBOZXN0ZWQgcG9z
-dGVkLWludGVycnVwdCBldmVudA0KPiA+ICBQSVc6ICAgICAgICAgIDAgICAgICAgICAgMCAgICAg
-ICAgICAwICAgICAgICAgIDAgICBQb3N0ZWQtaW50ZXJydXB0IHdha2V1cCBldmVudA0KPiA+DQo+
-ID4NCj4NCj4gPiBbICAyMzguMjQ1NTA5XSBtbWMwOiBUaW1lb3V0IHdhaXRpbmcgZm9yIGhhcmR3
-YXJlIGludGVycnVwdC4NCj4gPiBbICAyMzguMjUwOTQ0XSBtbWMwOiBzZGhjaTogPT09PT09PT09
-PT09IFNESENJIFJFR0lTVEVSIERVTVANCj4gPiA9PT09PT09PT09PSBbICAyMzguMjU3NDIyXSBt
-bWMwOiBzZGhjaTogU3lzIGFkZHI6ICAweDIwMDAwMDA4IHwNCj4gPiBWZXJzaW9uOiAgMHgwMDAw
-MTAwMiBbICAyMzguMjYzOTAwXSBtbWMwOiBzZGhjaTogQmxrIHNpemU6ICAweDAwMDA3MjAwDQo+
-ID4gfCBCbGsgY250OiAgMHgwMDAwMDAwMCBbICAyMzguMjcwMzczXSBtbWMwOiBzZGhjaTogQXJn
-dW1lbnQ6ICAweDAwMTE4Njc4IHwNCj4gVHJuIG1vZGU6IDB4MDAwMDAwMmINCj4gPiBbICAyMzgu
-Mjc2ODQ4XSBtbWMwOiBzZGhjaTogUHJlc2VudDogICAweDFmZmYwMDAwIHwgSG9zdCBjdGw6IDB4
-MDAwMDAwM2QNCj4gPiBbICAyMzguMjgzMzIzXSBtbWMwOiBzZGhjaTogUG93ZXI6ICAgICAweDAw
-MDAwMDBiIHwgQmxrIGdhcDogIDB4MDAwMDAwODANCj4gPiBbICAyMzguMjg5Nzk3XSBtbWMwOiBz
-ZGhjaTogV2FrZS11cDogICAweDAwMDAwMDAwIHwgQ2xvY2s6ICAgIDB4MDAwMDAwMDcNCj4gPiBb
-ICAyMzguMjk2MjY1XSBtbWMwOiBzZGhjaTogVGltZW91dDogICAweDAwMDAwMDA3IHwgSW50IHN0
-YXQ6IDB4MDAwMDAwMDMNCj4gPiBbICAyMzguMzAyNzM0XSBtbWMwOiBzZGhjaTogSW50IGVuYWI6
-ICAweDAzZmYwMDBiIHwgU2lnIGVuYWI6DQo+ID4gMHgwM2ZmMDAwYiBbICAyMzguMzA5MjA2XSBt
-bWMwOiBzZGhjaTogQUNtZCBzdGF0OiAweDAwMDAwMDAwIHwgU2xvdCBpbnQ6DQo+IDB4MDAwMDAw
-MDENCj4gPiBbICAyMzguMzE1NjgyXSBtbWMwOiBzZGhjaTogQ2FwczogICAgICAweDU0NmVjODgx
-IHwgQ2Fwc18xOiAgIDB4ODAwMDA4MDcNCj4gPiBbICAyMzguMzIyMTU0XSBtbWMwOiBzZGhjaTog
-Q21kOiAgICAgICAweDAwMDAxOTNhIHwgTWF4IGN1cnI6IDB4MDAwMDAwMDANCj4gPiBbICAyMzgu
-MzI4NjE4XSBtbWMwOiBzZGhjaTogUmVzcFswXTogICAweDAwMDAwOTAwIHwgUmVzcFsxXTogIDB4
-ZmZmZmZmZmYNCj4gPiBbICAyMzguMzM1MDgwXSBtbWMwOiBzZGhjaTogUmVzcFsyXTogICAweDMy
-OGY1OTAzIHwgUmVzcFszXTogIDB4MDAwMDA5MDANCj4gPiBbICAyMzguMzQxNTQ3XSBtbWMwOiBz
-ZGhjaTogSG9zdCBjdGwyOiAweDAwMDAwMDhkIFsgIDIzOC4zNDYwMTZdIG1tYzA6DQo+ID4gc2Ro
-Y2k6IEFETUEgRXJyOiAgMHgwMDAwMDAwMCB8IEFETUEgUHRyOiAweDAwMDAwMDAxNzlmY2IyMGMg
-Ww0KPiA+IDIzOC4zNTMxODBdIG1tYzA6IHNkaGNpOg0KPiA9PT09PT09PT09PT09PT09PT09PT09
-PT09PT09PT09PT09PT09PT09PT09PQ0KPiA+IFsgIDI0OC40ODU1MDddIG1tYzA6IFRpbWVvdXQg
-d2FpdGluZyBmb3IgaGFyZHdhcmUgaW50ZXJydXB0Lg0KPiA+IFsgIDI0OC40OTA5MzddIG1tYzA6
-IHNkaGNpOiA9PT09PT09PT09PT0gU0RIQ0kgUkVHSVNURVIgRFVNUA0KPiA+ID09PT09PT09PT09
-IFsgIDI0OC40OTc0MTJdIG1tYzA6IHNkaGNpOiBTeXMgYWRkcjogIDB4MjAwMDAwMDggfA0KPiA+
-IFZlcnNpb246ICAweDAwMDAxMDAyIFsgIDI0OC41MDM4ODddIG1tYzA6IHNkaGNpOiBCbGsgc2l6
-ZTogIDB4MDAwMDcyMDANCj4gPiB8IEJsayBjbnQ6ICAweDAwMDAwMDAwIFsgIDI0OC41MTAzNjJd
-IG1tYzA6IHNkaGNpOiBBcmd1bWVudDogIDB4MDAwMDAwMDAgfA0KPiBUcm4gbW9kZTogMHgwMDAw
-MDAyMw0KPiA+IFsgIDI0OC41MTY4MzhdIG1tYzA6IHNkaGNpOiBQcmVzZW50OiAgIDB4MWZmZjAw
-MDAgfCBIb3N0IGN0bDogMHgwMDAwMDAzZA0KPiA+IFsgIDI0OC41MjMzMTNdIG1tYzA6IHNkaGNp
-OiBQb3dlcjogICAgIDB4MDAwMDAwMGIgfCBCbGsgZ2FwOiAgMHgwMDAwMDA4MA0KPiA+IFsgIDI0
-OC41Mjk3OTBdIG1tYzA6IHNkaGNpOiBXYWtlLXVwOiAgIDB4MDAwMDAwMDAgfCBDbG9jazogICAg
-MHgwMDAwMDAwNw0KPiA+IFsgIDI0OC41MzYyNjZdIG1tYzA6IHNkaGNpOiBUaW1lb3V0OiAgIDB4
-MDAwMDAwMGUgfCBJbnQgc3RhdDogMHgwMDAxODAwMg0KPiA+IFsgIDI0OC41NDI3NDJdIG1tYzA6
-IHNkaGNpOiBJbnQgZW5hYjogIDB4MDNmZjAwMGIgfCBTaWcgZW5hYjoNCj4gPiAweDAzZmYwMDBi
-IFsgIDI0OC41NDkyMTldIG1tYzA6IHNkaGNpOiBBQ21kIHN0YXQ6IDB4MDAwMDAwMDAgfCBTbG90
-IGludDoNCj4gMHgwMDAwMDAwMQ0KPiA+IFsgIDI0OC41NTU2OTNdIG1tYzA6IHNkaGNpOiBDYXBz
-OiAgICAgIDB4NTQ2ZWM4ODEgfCBDYXBzXzE6ICAgMHg4MDAwMDgwNw0KPiA+IFsgIDI0OC41NjIx
-NjddIG1tYzA6IHNkaGNpOiBDbWQ6ICAgICAgIDB4MDAwMDBjMWIgfCBNYXggY3VycjogMHgwMDAw
-MDAwMA0KPiA+IFsgIDI0OC41Njg2NDNdIG1tYzA6IHNkaGNpOiBSZXNwWzBdOiAgIDB4MDAwMDA5
-MDAgfCBSZXNwWzFdOiAgMHhmZmZmZmZmZg0KPiA+IFsgIDI0OC41NzUxMTddIG1tYzA6IHNkaGNp
-OiBSZXNwWzJdOiAgIDB4MzI4ZjU5MDMgfCBSZXNwWzNdOiAgMHgwMDAwMDkwMA0KPiA+IFsgIDI0
-OC41ODE1OTRdIG1tYzA6IHNkaGNpOiBIb3N0IGN0bDI6IDB4MDAwMDAwOGQgWyAgMjQ4LjU4NjA2
-NV0gbW1jMDoNCj4gPiBzZGhjaTogQURNQSBFcnI6ICAweDAwMDAwMDAwIHwgQURNQSBQdHI6IDB4
-MDAwMDAwMDE3OWZjYjIwYyBbDQo+ID4gMjQ4LjU5MzIyOF0gbW1jMDogc2RoY2k6DQo+ID09PT09
-PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09DQo+ID4gWyAgMjQ5LjEzNzUw
-Ml0gcmN1OiBJTkZPOiByY3Vfc2NoZWQgZGV0ZWN0ZWQgc3RhbGxzIG9uIENQVXMvdGFza3M6DQo+
-ID4gWyAgMjQ5LjE0MzQ2Ml0gcmN1OiAgICAgMS0uLi4hOiAoMSBHUHMgYmVoaW5kKSBpZGxlPTg0
-YS8xLzB4NDAwMDAwMDAwMDAwMDAwMA0KPiBzb2Z0aXJxPTU4NzUvNTg3NiBmcXM9MjQ3OQ0KPiA+
-IFsgIDI0OS4xNTI0NThdIHJjdTogICAgIChkZXRlY3RlZCBieSAzLCB0PTIxMDE2IGppZmZpZXMs
-IGc9NTc5MywgcT0zOTEpDQo+ID4gWyAgMjQ5LjE1ODU4OF0gU2VuZGluZyBOTUkgZnJvbSBDUFUg
-MyB0byBDUFVzIDE6DQo+ID4gWyAgMjQ5LjE2Mzk4NF0gcmN1OiByY3Vfc2NoZWQga3RocmVhZCBz
-dGFydmVkIGZvciAxMDkyMCBqaWZmaWVzISBnNTc5Mw0KPiA+IGYweDAgUkNVX0dQX1dBSVRfRlFT
-KDUpIC0+c3RhdGU9MHg0MDIgLT5jcHU9MiBbICAyNDkuMTc0Mjg0XSByY3U6IFJDVQ0KPiBncmFj
-ZS1wZXJpb2Qga3RocmVhZCBzdGFjayBkdW1wOg0KPiA+IFsgIDI0OS4xNzkzNjRdIHJjdV9zY2hl
-ZCAgICAgICBJICAgIDAgICAgMTAgICAgICAyIDB4ODAwMDAwMDANCj4gPiBbICAyNDkuMTg0ODgy
-XSBDYWxsIFRyYWNlOg0KPiA+IFsgIDI0OS4xODczNjBdICA/IF9fc2NoZWR1bGUrMHgzNDAvMHg4
-YTAgWyAgMjQ5LjE5MTA0Nl0NCj4gPiBzY2hlZHVsZSsweDMyLzB4ODAgWyAgMjQ5LjE5NDIxMV0g
-IHNjaGVkdWxlX3RpbWVvdXQrMHgxODAvMHgzNjAgWw0KPiA+IDI0OS4xOTgyNDhdICA/IF9fbmV4
-dF90aW1lcl9pbnRlcnJ1cHQrMHhkMC8weGQwIFsgIDI0OS4yMDI4MDZdDQo+ID4gcmN1X2dwX2t0
-aHJlYWQrMHg1MjIvMHhlYzAgWyAgMjQ5LjIwNjY2N10gID8gY2FsbF9yY3Vfc2NoZWQrMHgyMC8w
-eDIwDQo+ID4gWyAgMjQ5LjIxMDUyOF0gIGt0aHJlYWQrMHgxMTUvMHgxMzAgWyAgMjQ5LjIxMzc3
-OV0gID8NCj4gPiBrdGhyZWFkX2NyZWF0ZV93b3JrZXJfb25fY3B1KzB4NzAvMHg3MA0KPiA+IFsg
-IDI0OS4yMTg4NjFdICByZXRfZnJvbV9mb3JrKzB4MjAvMHgzMCBbICAyNTYuNDQ5NjU1XSBpZ2IN
-Cj4gPiAwMDAwOjA0OjAwLjAgZW5wNHMwOiBpZ2I6IGVucDRzMCBOSUMgTGluayBpcyBEb3duIFsg
-IDI1OC43MjU1MDhdIG1tYzA6DQo+ID4gVGltZW91dCB3YWl0aW5nIGZvciBoYXJkd2FyZSBjbWQg
-aW50ZXJydXB0Lg0KPiA+IFsgIDI1OC43MzEyODZdIG1tYzA6IHNkaGNpOiA9PT09PT09PT09PT0g
-U0RIQ0kgUkVHSVNURVIgRFVNUA0KPiA+ID09PT09PT09PT09IFsgIDI1OC43Mzc3NjFdIG1tYzA6
-IHNkaGNpOiBTeXMgYWRkcjogIDB4MjAwMDAwMDggfA0KPiA+IFZlcnNpb246ICAweDAwMDAxMDAy
-IFsgIDI1OC43NDQyMzhdIG1tYzA6IHNkaGNpOiBCbGsgc2l6ZTogIDB4MDAwMDcyMDANCj4gPiB8
-IEJsayBjbnQ6ICAweDAwMDAwMDAwIFsgIDI1OC43NTA3MTZdIG1tYzA6IHNkaGNpOiBBcmd1bWVu
-dDogIDB4MDAwMTAwMDAgfA0KPiBUcm4gbW9kZTogMHgwMDAwMDAyMw0KPiA+IFsgIDI1OC43NTcx
-OTFdIG1tYzA6IHNkaGNpOiBQcmVzZW50OiAgIDB4MWZmZjAwMDAgfCBIb3N0IGN0bDogMHgwMDAw
-MDAzZA0KPiA+IFsgIDI1OC43NjM2NjZdIG1tYzA6IHNkaGNpOiBQb3dlcjogICAgIDB4MDAwMDAw
-MGIgfCBCbGsgZ2FwOiAgMHgwMDAwMDA4MA0KPiA+IFsgIDI1OC43NzAxNDNdIG1tYzA6IHNkaGNp
-OiBXYWtlLXVwOiAgIDB4MDAwMDAwMDAgfCBDbG9jazogICAgMHgwMDAwMDAwNw0KPiA+IFsgIDI1
-OC43NzY2MjBdIG1tYzA6IHNkaGNpOiBUaW1lb3V0OiAgIDB4MDAwMDAwMGUgfCBJbnQgc3RhdDog
-MHgwMDAxODAwMQ0KPiA+IFsgIDI1OC43ODMwOTddIG1tYzA6IHNkaGNpOiBJbnQgZW5hYjogIDB4
-MDNmZjAwMGIgfCBTaWcgZW5hYjoNCj4gPiAweDAzZmYwMDBiIFsgIDI1OC43ODk1NzBdIG1tYzA6
-IHNkaGNpOiBBQ21kIHN0YXQ6IDB4MDAwMDAwMDAgfCBTbG90IGludDoNCj4gMHgwMDAwMDAwMQ0K
-PiA+IFsgIDI1OC43OTYwNDRdIG1tYzA6IHNkaGNpOiBDYXBzOiAgICAgIDB4NTQ2ZWM4ODEgfCBD
-YXBzXzE6ICAgMHg4MDAwMDgwNw0KPiA+IFsgIDI1OC44MDI1MThdIG1tYzA6IHNkaGNpOiBDbWQ6
-ICAgICAgIDB4MDAwMDBkMWEgfCBNYXggY3VycjogMHgwMDAwMDAwMA0KPiA+IFsgIDI1OC44MDg5
-OTRdIG1tYzA6IHNkaGNpOiBSZXNwWzBdOiAgIDB4MDA0MDA5MDAgfCBSZXNwWzFdOiAgMHhmZmZm
-ZmZmZg0KPiA+IFsgIDI1OC44MTU0NjhdIG1tYzA6IHNkaGNpOiBSZXNwWzJdOiAgIDB4MzI4ZjU5
-MDMgfCBSZXNwWzNdOiAgMHgwMDAwMDkwMA0KPiA+IFsgIDI1OC44MjE5NDBdIG1tYzA6IHNkaGNp
-OiBIb3N0IGN0bDI6IDB4MDAwMDAwOGQgWyAgMjU4LjgyNjQxMV0gbW1jMDoNCj4gPiBzZGhjaTog
-QURNQSBFcnI6ICAweDAwMDAwMDAwIHwgQURNQSBQdHI6IDB4MDAwMDAwMDE3OWZjYjIwYyBbDQo+
-ID4gMjU4LjgzMzU3OF0gbW1jMDogc2RoY2k6DQo+ID09PT09PT09PT09PT09PT09PT09PT09PT09
-PT09PT09PT09PT09PT09PT09DQo+ID4gWyAgMjY4Ljk2NTUwOV0gbW1jMDogVGltZW91dCB3YWl0
-aW5nIGZvciBoYXJkd2FyZSBjbWQgaW50ZXJydXB0Lg0KPiA+IFsgIDI2OC45NzEyODVdIG1tYzA6
-IHNkaGNpOiA9PT09PT09PT09PT0gU0RIQ0kgUkVHSVNURVIgRFVNUA0KPiA+ID09PT09PT09PT09
-IFsgIDI2OC45Nzc3NTldIG1tYzA6IHNkaGNpOiBTeXMgYWRkcjogIDB4MjAwMDAwMDggfA0KPiA+
-IFZlcnNpb246ICAweDAwMDAxMDAyIFsgIDI2OC45ODQyMzNdIG1tYzA6IHNkaGNpOiBCbGsgc2l6
-ZTogIDB4MDAwMDcyMDANCj4gPiB8IEJsayBjbnQ6ICAweDAwMDAwMDAwIFsgIDI2OC45OTA3MDRd
-IG1tYzA6IHNkaGNpOiBBcmd1bWVudDogIDB4MDAwMTAwMDAgfA0KPiBUcm4gbW9kZTogMHgwMDAw
-MDAyMw0KPiA+IFsgIDI2OC45OTcxNzRdIG1tYzA6IHNkaGNpOiBQcmVzZW50OiAgIDB4MWZmZjAw
-MDAgfCBIb3N0IGN0bDogMHgwMDAwMDAzZA0KPiA+IFsgIDI2OS4wMDM2NDddIG1tYzA6IHNkaGNp
-OiBQb3dlcjogICAgIDB4MDAwMDAwMGIgfCBCbGsgZ2FwOiAgMHgwMDAwMDA4MA0KPiA+IFsgIDI2
-OS4wMTAxMThdIG1tYzA6IHNkaGNpOiBXYWtlLXVwOiAgIDB4MDAwMDAwMDAgfCBDbG9jazogICAg
-MHgwMDAwMDAwNw0KPiA+IFsgIDI2OS4wMTY1OTBdIG1tYzA6IHNkaGNpOiBUaW1lb3V0OiAgIDB4
-MDAwMDAwMGUgfCBJbnQgc3RhdDogMHgwMDAxODAwMQ0KPiA+IFsgIDI2OS4wMjMwNjddIG1tYzA6
-IHNkaGNpOiBJbnQgZW5hYjogIDB4MDNmZjAwMGIgfCBTaWcgZW5hYjoNCj4gPiAweDAzZmYwMDBi
-IFsgIDI2OS4wMjk1MzhdIG1tYzA6IHNkaGNpOiBBQ21kIHN0YXQ6IDB4MDAwMDAwMDAgfCBTbG90
-IGludDoNCj4gMHgwMDAwMDAwMQ0KPiA+IFsgIDI2OS4wMzYwMTFdIG1tYzA6IHNkaGNpOiBDYXBz
-OiAgICAgIDB4NTQ2ZWM4ODEgfCBDYXBzXzE6ICAgMHg4MDAwMDgwNw0KPiA+IFsgIDI2OS4wNDI0
-ODRdIG1tYzA6IHNkaGNpOiBDbWQ6ICAgICAgIDB4MDAwMDBkMWEgfCBNYXggY3VycjogMHgwMDAw
-MDAwMA0KPiA+IFsgIDI2OS4wNDg5NThdIG1tYzA6IHNkaGNpOiBSZXNwWzBdOiAgIDB4MDAwMDA5
-MDAgfCBSZXNwWzFdOiAgMHhmZmZmZmZmZg0KPiA+IFsgIDI2OS4wNTU0MzJdIG1tYzA6IHNkaGNp
-OiBSZXNwWzJdOiAgIDB4MzI4ZjU5MDMgfCBSZXNwWzNdOiAgMHgwMDAwMDkwMA0KPiA+IFsgIDI2
-OS4wNjE5MDRdIG1tYzA6IHNkaGNpOiBIb3N0IGN0bDI6IDB4MDAwMDAwOGQgWyAgMjY5LjA2NjM3
-M10gbW1jMDoNCj4gPiBzZGhjaTogQURNQSBFcnI6ICAweDAwMDAwMDAwIHwgQURNQSBQdHI6IDB4
-MDAwMDAwMDE3OWZjYjIwYyBbDQo+ID4gMjY5LjA3MzU0Ml0gbW1jMDogc2RoY2k6DQo+ID09PT09
-PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09DQo+ID4NCj4gPg0KPiA+IEtp
-bmQgcmVnYXJkcywNCj4gPiBOb3JiZXJ0DQo+IEkndmUgc2VlbiB0aGlzIGJlZm9yZSB3aGVuIEkg
-d2FzIHBsYXlpbmcgYXJvdW5kIHdpdGggZ2V0dGluZyB0aGUgaXBpcGUgdG8gcnVuDQo+IG9uIG15
-IGVkaXNvbiBib2FyZC4gIEkgZG9uJ3QgdGhpbmsgaXQncyBpcGlwZSByZWxhdGVkLiAgSSBmb3Vu
-ZCB0aGlzIHRocmVhZCBvbg0KPiBwYXRjaHdvcms6DQo+DQo+IGh0dHBzOi8vaGVzMzItDQo+IGN0
-cC50cmVuZG1pY3JvLmNvbTo0NDMvd2lzL2NsaWNrdGltZS92MS9xdWVyeT91cmw9aHR0cHMlM2El
-MmYlMmZwYXRjaA0KPiB3b3JrLmtlcm5lbC5vcmclMmZwYXRjaCUyZjEwNzA1ODIzJTJmJnVtaWQ9
-MjQ0ZjI0N2ItOTQyNC00ZDk3LWEzMDEtDQo+IDQzYzgzY2RhNDc3YyZhdXRoPTE0NDA1NmJhZjcz
-MDJkNzc3YWNhZDE4N2FhYzc0ZDRiOWJhNDI1ZTEtDQo+IGY1NzNhYWJmNzczMWQ1MGNhNmJjZmU2
-NmQ0ZDRkOTJkZmU4NGIxYjINCg0KQWggdGhhbmtzLA0KDQpRdW90ZTogIkNvbW1hbmRzIGFuZCBy
-ZXNldHMgYXJlIHVuZGVyIHNwaW4gbG9jaywgc28gbm8gcG9zc2liaWxpdHkgZm9yIHByZWVtcHRp
-b24sDQphbmQgY2VydGFpbmx5IGEgZmV3IG1pY3Jvc2Vjb25kcyBpc24ndCBnb2luZyB0byBtYWtl
-IGFueSBkaWZmZXJlbmNlIHRvIHRoZXNlDQp0aW1lb3V0cywgc28gSSBkb24ndCBzZWUgaG93IHRo
-aXMgcGF0Y2ggY291bGQgaGVscC4iDQoNClNvIEkgZ3Vlc3MgdGhpcyBpcyBub3QgYW4gaXNzdWUg
-dW5kZXIgcGxhaW4gTGludXgsIGJ1dCBDb2JhbHQgY291bGQgcHJlZW1wdCBmb3IgYQ0KY291cGxl
-IG9mIG1zIChvciBldmVuIGxvbmdlciBpZiB5b3UgbWFuYWdlZCB0byBnZXQgYW4gUlQgdGhyZWFk
-IHN0dWNrKS4NCj4NCj4gVGhlcmUgd2FzIGFub3RoZXIgdGhyZWFkIG9uIHRoZSBVYnVudHUgZm9y
-dW1zIHRoYXQgc29sdmVkIHRoZSBpc3N1ZSBieQ0KPiBkaXNhYmxpbmcgdGhlIHNkY2FyZCBpbiB0
-aGUgYmlvcy4NCg0KSSBjYW4ndCBkbyB0aGF0LCBhcyB0aGlzIGlzIHRoZSBlTU1DIHRoZSBzeXN0
-ZW0gaXMgcnVubmluZyBmcm9tLg0KDQpCVFcsIGlmIEkgd291bGQgd2FudCB0byBsaW1pdCBzdWNo
-IGlzc3VlcywgY291bGQgSSBsaW1pdCBMaW51eCBJUlFzIChhcGFydCBmcm9tIGEgaGFuZGZ1bCBv
-ZiBuZWNlc3NhcnkgbWFpbnRhaW5hbmNlL3RpbWVyKSB0byBhIHNpbmdsZSBjb3JlPw0KDQpUaGFu
-a3MsIE5vcmJlcnQNCl9fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fDQoNClRoaXMgbWVz
-c2FnZSBhbmQgYW55IGF0dGFjaG1lbnRzIGFyZSBzb2xlbHkgZm9yIHRoZSB1c2Ugb2YgdGhlIGlu
-dGVuZGVkIHJlY2lwaWVudHMuIFRoZXkgbWF5IGNvbnRhaW4gcHJpdmlsZWdlZCBhbmQvb3IgY29u
-ZmlkZW50aWFsIGluZm9ybWF0aW9uIG9yIG90aGVyIGluZm9ybWF0aW9uIHByb3RlY3RlZCBmcm9t
-IGRpc2Nsb3N1cmUuIElmIHlvdSBhcmUgbm90IGFuIGludGVuZGVkIHJlY2lwaWVudCwgeW91IGFy
-ZSBoZXJlYnkgbm90aWZpZWQgdGhhdCB5b3UgcmVjZWl2ZWQgdGhpcyBlbWFpbCBpbiBlcnJvciBh
-bmQgdGhhdCBhbnkgcmV2aWV3LCBkaXNzZW1pbmF0aW9uLCBkaXN0cmlidXRpb24gb3IgY29weWlu
-ZyBvZiB0aGlzIGVtYWlsIGFuZCBhbnkgYXR0YWNobWVudCBpcyBzdHJpY3RseSBwcm9oaWJpdGVk
-LiBJZiB5b3UgaGF2ZSByZWNlaXZlZCB0aGlzIGVtYWlsIGluIGVycm9yLCBwbGVhc2UgY29udGFj
-dCB0aGUgc2VuZGVyIGFuZCBkZWxldGUgdGhlIG1lc3NhZ2UgYW5kIGFueSBhdHRhY2htZW50IGZy
-b20geW91ciBzeXN0ZW0uDQoNCkFORFJJVFogSFlEUk8gR21iSA0KDQoNClJlY2h0c2Zvcm0vIExl
-Z2FsIGZvcm06IEdlc2VsbHNjaGFmdCBtaXQgYmVzY2hyw6Rua3RlciBIYWZ0dW5nIC8gQ29ycG9y
-YXRpb24NCg0KRmlybWVuc2l0ei8gUmVnaXN0ZXJlZCBzZWF0OiBXaWVuDQoNCkZpcm1lbmJ1Y2hn
-ZXJpY2h0LyBDb3VydCBvZiByZWdpc3RyeTogSGFuZGVsc2dlcmljaHQgV2llbg0KDQpGaXJtZW5i
-dWNobnVtbWVyLyBDb21wYW55IHJlZ2lzdHJhdGlvbjogRk4gNjE4MzMgZw0KDQpEVlI6IDA2MDUw
-NzcNCg0KVUlELU5yLjogQVRVMTQ3NTY4MDYNCg0KDQpUaGFuayBZb3UNCl9fX19fX19fX19fX19f
-X19fX19fX19fX19fX19fX19fDQo=
+On 25.02.20 16:40, Lange Norbert via Xenomai wrote:
+> 
+> 
+>> -----Original Message-----
+>> From: Greg Gallagher <greg@embeddedgreg.com>
+>> Sent: Dienstag, 25. Februar 2020 16:24
+>> To: Lange Norbert <norbert.lange@andritz.com>
+>> Cc: Xenomai (xenomai@xenomai.org) <xenomai@xenomai.org>; Philippe
+>> Gerum (rpm@xenomai.org) <rpm@xenomai.org>
+>> Subject: Re: Interrupt timeout
+>>
+>> NON-ANDRITZ SOURCE: BE CAUTIOUS WITH CONTENT, LINKS OR
+>> ATTACHMENTS.
+>>
+>>
+>> Hi,
+>>
+>> On Tue, Feb 25, 2020 at 8:57 AM Lange Norbert via Xenomai
+>> <xenomai@xenomai.org> wrote:
+>>>
+>>> Hello,
+>>>
+>>> I hope you can give me some pointers to understand why this Bug
+>> happened.
+>>> It seems an interrupt got lost somehow, maybe some issue with
+>> leveltriggers?
+>>>
+>>> Note that I run on an Apollo Lake, which would normally use
+>>> PINCTRL_BROXTON, but that’s not fixed up for Xenomai yet. The system
+>>> works fine from eMMC otherwise, this bug occurred only once so far.
+>>>
+>>> 00:1b.0 SD Host controller: Intel Corporation Atom/Celeron/Pentium
+>>> Processor N4200/N3350/E3900 Series SDXC/MMC Host Controller (rev 0b)
+>>> Subsystem: Intel Corporation Celeron N3350/Pentium N4200/Atom E3900
+>>> Series SDXC/MMC Host Controller Kernel driver in use: sdhci-pci Kernel
+>>> modules: sdhci_pci
+>>> 00:1c.0 SD Host controller: Intel Corporation Atom/Celeron/Pentium
+>>> Processor N4200/N3350/E3900 Series eMMC Controller (rev 0b)
+>>> Subsystem: Intel Corporation Celeron N3350/Pentium N4200/Atom E3900
+>>> Series eMMC Controller Kernel driver in use: sdhci-pci Kernel modules:
+>>> sdhci_pci
+>>>
+>>> # cat /proc/interrupts
+>>>              CPU0       CPU1       CPU2       CPU3
+>>>     0:         50          0          0          0   IO-APIC    2-edge      timer
+>>>     4:          0          0        498          0   IO-APIC    4-edge      ttyS0
+>>>     8:          0          0          0          0   IO-APIC    8-edge      rtc0
+>>>     9:          0          0          0          0   IO-APIC    9-fasteoi   acpi
+>>>    20:         20          0          0          0   IO-APIC   20-fasteoi   i801_smbus
+>>>    39:          0       1315          0          0   IO-APIC   39-fasteoi   mmc0
+>>>   129:          0          1          0          0   PCI-MSI 1048576-edge      enp2s0
+>>>   130:          0          0        839          0   PCI-MSI 1048577-edge      enp2s0-rx-0
+>>>   131:          0          0          0        773   PCI-MSI 1048578-edge      enp2s0-rx-1
+>>>   132:        985          0          0          0   PCI-MSI 1048579-edge      enp2s0-tx-0
+>>>   133:          0        773          0          0   PCI-MSI 1048580-edge      enp2s0-tx-1
+>>>   134:          0          0          0          1   PCI-MSI 1572864-edge      enp3s0
+>>>   135:      11464          0          0          0   PCI-MSI 1572865-edge      enp3s0-rx-0
+>>>   136:          0        781          0          0   PCI-MSI 1572866-edge      enp3s0-rx-1
+>>>   137:          0          0        899          0   PCI-MSI 1572867-edge      enp3s0-tx-0
+>>>   138:          0          0          0       9701   PCI-MSI 1572868-edge      enp3s0-tx-1
+>>>   139:          1          0          0          0   PCI-MSI 2097152-edge      enp4s0
+>>>   140:          0       1985          0          0   PCI-MSI 2097153-edge      enp4s0-TxRx-0
+>>>   141:          0          0        774          0   PCI-MSI 2097154-edge      enp4s0-TxRx-1
+>>>   142:          0          0          0       1905   PCI-MSI 2097155-edge      enp4s0-TxRx-2
+>>>   143:        775          0          0          0   PCI-MSI 2097156-edge      enp4s0-TxRx-3
+>>>   144:          0          0      97790          0   PCI-MSI 344064-edge      xhci_hcd
+>>>   NMI:          0          0          0          0   Non-maskable interrupts
+>>>   LOC:      47839     147583      13807      32602   Local timer interrupts
+>>>   SPU:          0          0          0          0   Spurious interrupts
+>>>   PMI:          0          0          0          0   Performance monitoring interrupts
+>>>   IWI:          0          0          0          0   IRQ work interrupts
+>>>   RTR:          0          0          0          0   APIC ICR read retries
+>>>   RES:      11955       6931       6567       4946   Rescheduling interrupts
+>>>   CAL:        268        223        210        217   Function call interrupts
+>>>   TLB:         63         57         61         50   TLB shootdowns
+>>>   TRM:          0          0          0          0   Thermal event interrupts
+>>>   THR:          0          0          0          0   Threshold APIC interrupts
+>>>   MCE:          0          0          0          0   Machine check exceptions
+>>>   MCP:          5          6          6          6   Machine check polls
+>>>   ERR:          0
+>>>   MIS:          0
+>>>   PIN:          0          0          0          0   Posted-interrupt notification event
+>>>   NPI:          0          0          0          0   Nested posted-interrupt event
+>>>   PIW:          0          0          0          0   Posted-interrupt wakeup event
+>>>
+>>>
+>>
+>>> [  238.245509] mmc0: Timeout waiting for hardware interrupt.
+>>> [  238.250944] mmc0: sdhci: ============ SDHCI REGISTER DUMP
+>>> =========== [  238.257422] mmc0: sdhci: Sys addr:  0x20000008 |
+>>> Version:  0x00001002 [  238.263900] mmc0: sdhci: Blk size:  0x00007200
+>>> | Blk cnt:  0x00000000 [  238.270373] mmc0: sdhci: Argument:  0x00118678 |
+>> Trn mode: 0x0000002b
+>>> [  238.276848] mmc0: sdhci: Present:   0x1fff0000 | Host ctl: 0x0000003d
+>>> [  238.283323] mmc0: sdhci: Power:     0x0000000b | Blk gap:  0x00000080
+>>> [  238.289797] mmc0: sdhci: Wake-up:   0x00000000 | Clock:    0x00000007
+>>> [  238.296265] mmc0: sdhci: Timeout:   0x00000007 | Int stat: 0x00000003
+>>> [  238.302734] mmc0: sdhci: Int enab:  0x03ff000b | Sig enab:
+>>> 0x03ff000b [  238.309206] mmc0: sdhci: ACmd stat: 0x00000000 | Slot int:
+>> 0x00000001
+>>> [  238.315682] mmc0: sdhci: Caps:      0x546ec881 | Caps_1:   0x80000807
+>>> [  238.322154] mmc0: sdhci: Cmd:       0x0000193a | Max curr: 0x00000000
+>>> [  238.328618] mmc0: sdhci: Resp[0]:   0x00000900 | Resp[1]:  0xffffffff
+>>> [  238.335080] mmc0: sdhci: Resp[2]:   0x328f5903 | Resp[3]:  0x00000900
+>>> [  238.341547] mmc0: sdhci: Host ctl2: 0x0000008d [  238.346016] mmc0:
+>>> sdhci: ADMA Err:  0x00000000 | ADMA Ptr: 0x0000000179fcb20c [
+>>> 238.353180] mmc0: sdhci:
+>> ============================================
+>>> [  248.485507] mmc0: Timeout waiting for hardware interrupt.
+>>> [  248.490937] mmc0: sdhci: ============ SDHCI REGISTER DUMP
+>>> =========== [  248.497412] mmc0: sdhci: Sys addr:  0x20000008 |
+>>> Version:  0x00001002 [  248.503887] mmc0: sdhci: Blk size:  0x00007200
+>>> | Blk cnt:  0x00000000 [  248.510362] mmc0: sdhci: Argument:  0x00000000 |
+>> Trn mode: 0x00000023
+>>> [  248.516838] mmc0: sdhci: Present:   0x1fff0000 | Host ctl: 0x0000003d
+>>> [  248.523313] mmc0: sdhci: Power:     0x0000000b | Blk gap:  0x00000080
+>>> [  248.529790] mmc0: sdhci: Wake-up:   0x00000000 | Clock:    0x00000007
+>>> [  248.536266] mmc0: sdhci: Timeout:   0x0000000e | Int stat: 0x00018002
+>>> [  248.542742] mmc0: sdhci: Int enab:  0x03ff000b | Sig enab:
+>>> 0x03ff000b [  248.549219] mmc0: sdhci: ACmd stat: 0x00000000 | Slot int:
+>> 0x00000001
+>>> [  248.555693] mmc0: sdhci: Caps:      0x546ec881 | Caps_1:   0x80000807
+>>> [  248.562167] mmc0: sdhci: Cmd:       0x00000c1b | Max curr: 0x00000000
+>>> [  248.568643] mmc0: sdhci: Resp[0]:   0x00000900 | Resp[1]:  0xffffffff
+>>> [  248.575117] mmc0: sdhci: Resp[2]:   0x328f5903 | Resp[3]:  0x00000900
+>>> [  248.581594] mmc0: sdhci: Host ctl2: 0x0000008d [  248.586065] mmc0:
+>>> sdhci: ADMA Err:  0x00000000 | ADMA Ptr: 0x0000000179fcb20c [
+>>> 248.593228] mmc0: sdhci:
+>> ============================================
+>>> [  249.137502] rcu: INFO: rcu_sched detected stalls on CPUs/tasks:
+>>> [  249.143462] rcu:     1-...!: (1 GPs behind) idle=84a/1/0x4000000000000000
+>> softirq=5875/5876 fqs=2479
+>>> [  249.152458] rcu:     (detected by 3, t=21016 jiffies, g=5793, q=391)
+>>> [  249.158588] Sending NMI from CPU 3 to CPUs 1:
+>>> [  249.163984] rcu: rcu_sched kthread starved for 10920 jiffies! g5793
+>>> f0x0 RCU_GP_WAIT_FQS(5) ->state=0x402 ->cpu=2 [  249.174284] rcu: RCU
+>> grace-period kthread stack dump:
+>>> [  249.179364] rcu_sched       I    0    10      2 0x80000000
+>>> [  249.184882] Call Trace:
+>>> [  249.187360]  ? __schedule+0x340/0x8a0 [  249.191046]
+>>> schedule+0x32/0x80 [  249.194211]  schedule_timeout+0x180/0x360 [
+>>> 249.198248]  ? __next_timer_interrupt+0xd0/0xd0 [  249.202806]
+>>> rcu_gp_kthread+0x522/0xec0 [  249.206667]  ? call_rcu_sched+0x20/0x20
+>>> [  249.210528]  kthread+0x115/0x130 [  249.213779]  ?
+>>> kthread_create_worker_on_cpu+0x70/0x70
+>>> [  249.218861]  ret_from_fork+0x20/0x30 [  256.449655] igb
+>>> 0000:04:00.0 enp4s0: igb: enp4s0 NIC Link is Down [  258.725508] mmc0:
+>>> Timeout waiting for hardware cmd interrupt.
+>>> [  258.731286] mmc0: sdhci: ============ SDHCI REGISTER DUMP
+>>> =========== [  258.737761] mmc0: sdhci: Sys addr:  0x20000008 |
+>>> Version:  0x00001002 [  258.744238] mmc0: sdhci: Blk size:  0x00007200
+>>> | Blk cnt:  0x00000000 [  258.750716] mmc0: sdhci: Argument:  0x00010000 |
+>> Trn mode: 0x00000023
+>>> [  258.757191] mmc0: sdhci: Present:   0x1fff0000 | Host ctl: 0x0000003d
+>>> [  258.763666] mmc0: sdhci: Power:     0x0000000b | Blk gap:  0x00000080
+>>> [  258.770143] mmc0: sdhci: Wake-up:   0x00000000 | Clock:    0x00000007
+>>> [  258.776620] mmc0: sdhci: Timeout:   0x0000000e | Int stat: 0x00018001
+>>> [  258.783097] mmc0: sdhci: Int enab:  0x03ff000b | Sig enab:
+>>> 0x03ff000b [  258.789570] mmc0: sdhci: ACmd stat: 0x00000000 | Slot int:
+>> 0x00000001
+>>> [  258.796044] mmc0: sdhci: Caps:      0x546ec881 | Caps_1:   0x80000807
+>>> [  258.802518] mmc0: sdhci: Cmd:       0x00000d1a | Max curr: 0x00000000
+>>> [  258.808994] mmc0: sdhci: Resp[0]:   0x00400900 | Resp[1]:  0xffffffff
+>>> [  258.815468] mmc0: sdhci: Resp[2]:   0x328f5903 | Resp[3]:  0x00000900
+>>> [  258.821940] mmc0: sdhci: Host ctl2: 0x0000008d [  258.826411] mmc0:
+>>> sdhci: ADMA Err:  0x00000000 | ADMA Ptr: 0x0000000179fcb20c [
+>>> 258.833578] mmc0: sdhci:
+>> ============================================
+>>> [  268.965509] mmc0: Timeout waiting for hardware cmd interrupt.
+>>> [  268.971285] mmc0: sdhci: ============ SDHCI REGISTER DUMP
+>>> =========== [  268.977759] mmc0: sdhci: Sys addr:  0x20000008 |
+>>> Version:  0x00001002 [  268.984233] mmc0: sdhci: Blk size:  0x00007200
+>>> | Blk cnt:  0x00000000 [  268.990704] mmc0: sdhci: Argument:  0x00010000 |
+>> Trn mode: 0x00000023
+>>> [  268.997174] mmc0: sdhci: Present:   0x1fff0000 | Host ctl: 0x0000003d
+>>> [  269.003647] mmc0: sdhci: Power:     0x0000000b | Blk gap:  0x00000080
+>>> [  269.010118] mmc0: sdhci: Wake-up:   0x00000000 | Clock:    0x00000007
+>>> [  269.016590] mmc0: sdhci: Timeout:   0x0000000e | Int stat: 0x00018001
+>>> [  269.023067] mmc0: sdhci: Int enab:  0x03ff000b | Sig enab:
+>>> 0x03ff000b [  269.029538] mmc0: sdhci: ACmd stat: 0x00000000 | Slot int:
+>> 0x00000001
+>>> [  269.036011] mmc0: sdhci: Caps:      0x546ec881 | Caps_1:   0x80000807
+>>> [  269.042484] mmc0: sdhci: Cmd:       0x00000d1a | Max curr: 0x00000000
+>>> [  269.048958] mmc0: sdhci: Resp[0]:   0x00000900 | Resp[1]:  0xffffffff
+>>> [  269.055432] mmc0: sdhci: Resp[2]:   0x328f5903 | Resp[3]:  0x00000900
+>>> [  269.061904] mmc0: sdhci: Host ctl2: 0x0000008d [  269.066373] mmc0:
+>>> sdhci: ADMA Err:  0x00000000 | ADMA Ptr: 0x0000000179fcb20c [
+>>> 269.073542] mmc0: sdhci:
+>> ============================================
+>>>
+>>>
+>>> Kind regards,
+>>> Norbert
+>> I've seen this before when I was playing around with getting the ipipe to run
+>> on my edison board.  I don't think it's ipipe related.  I found this thread on
+>> patchwork:
+>>
+>> https://hes32-
+>> ctp.trendmicro.com:443/wis/clicktime/v1/query?url=https%3a%2f%2fpatch
+>> work.kernel.org%2fpatch%2f10705823%2f&umid=244f247b-9424-4d97-a301-
+>> 43c83cda477c&auth=144056baf7302d777acad187aac74d4b9ba425e1-
+>> f573aabf7731d50ca6bcfe66d4d4d92dfe84b1b2
+> 
+> Ah thanks,
+> 
+> Quote: "Commands and resets are under spin lock, so no possibility for preemption,
+> and certainly a few microseconds isn't going to make any difference to these
+> timeouts, so I don't see how this patch could help."
+> 
+> So I guess this is not an issue under plain Linux, but Cobalt could preempt for a
+> couple of ms (or even longer if you managed to get an RT thread stuck).
+
+That may also be different on PREEMPT-RT.
+
+>>
+>> There was another thread on the Ubuntu forums that solved the issue by
+>> disabling the sdcard in the bios.
+> 
+> I can't do that, as this is the eMMC the system is running from.
+> 
+> BTW, if I would want to limit such issues, could I limit Linux IRQs (apart from a handful of necessary maintainance/timer) to a single core?
+> 
+
+Yes, that's the best option on a multicore system for both sides, RT and 
+Linux.
+
+Jan
+
+-- 
+Siemens AG, Corporate Technology, CT RDA IOT SES-DE
+Corporate Competence Center Embedded Linux
 
