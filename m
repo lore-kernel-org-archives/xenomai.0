@@ -1,14 +1,12 @@
-Subject: Re: Xenomai RTnet - Kernel module not loading
-References: <2eb86315-dc9d-1096-14a7-c3bd2b32a668@b-tu.de>
- <1021522818.445580.1582639862351.JavaMail.zimbra@wolfram.com>
-From: Benji <miethben@b-tu.de>
-Message-ID: <cb174dde-7680-ba74-9aca-7da7adc870dc@b-tu.de>
-Date: Tue, 25 Feb 2020 15:24:37 +0100
+Date: Tue, 25 Feb 2020 15:30:54 +0100
+From: Henning Schild <henning.schild@siemens.com>
+Subject: Re: [PATCH] libs: Add linking dependencies to libraries
+Message-ID: <20200225153054.5c7830da@md1za8fc.ad001.siemens.net>
+In-Reply-To: <4d132aef-75ce-3b7a-21b7-d8f8afde1967@siemens.com>
+References: <4d132aef-75ce-3b7a-21b7-d8f8afde1967@siemens.com>
 MIME-Version: 1.0
-In-Reply-To: <1021522818.445580.1582639862351.JavaMail.zimbra@wolfram.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: de-DE
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,113 +15,147 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Per Oberg <pero@wolfram.com>
-Cc: xenomai <xenomai@xenomai.org>
+To: Jan Kiszka via Xenomai <xenomai@xenomai.org>, Antoine Hoarau <antoine@flr.io>
 
-On 2/25/20 3:11 PM, Per Oberg wrote:
->=20
-> ----- Den 25 feb 2020, p=C3=A5 kl 15:02, xenomai xenomai@xenomai.org sk=
-rev:
->=20
->> Hello all,
->=20
->> I'm a student working on a project comparing different real time OS
->> approaches. Trying to get RTnet working on a Xenomai Cobalt kernel, bu=
-t
->> stuck on loading required kernel modules.
->=20
->> System is running on Ubuntu 18.04 and uses following versions to build
->> Xenomai kernel:
->=20
->> Linux Kernel: 4.19.89
->> IPIPE: 4.19.89
->> Xenomai: 3.1
->=20
->> Kernel is build as described in Xenomai wiki and configured with RTnet
->> as kernel module.
->=20
->> After installing xenomai kernel and checking the module, everything
->> looks ok.
->=20
->>> $ sudo modinfo /lib/modules/4.19.89/kernel/drivers/xenomai/net/stack/=
-rtnet.ko
->>> filename: /lib/modules/4.19.89/kernel/drivers/xenomai/net/stack/rtnet=
-.ko
->>> description: RTnet stack core
->>> license: GPL
->>> srcversion: E1B65CA6F28C7B08C111720
->>> depends:
->>> retpoline: Y
->>> intree: Y
->>> name: rtnet
->>> vermagic: 4.19.89 SMP mod_unload
->>> signat: PKCS#7
->>> signer:
->>> sig_key:
->>> sig_hashalgo: md4
->>> parm: stack_mgr_prio:Priority of the stack manager task (uint)
->>> parm: socket_rtskbs:Default number of realtime socket buffers in sock=
-et pools
->>> (uint)
->>> parm: global_rtskbs:Number of realtime socket buffers in global pool =
-(uint)
->>> parm: device_rtskbs:Number of additional global realtime socket buffe=
-rs per
->>> network adapter (uint)
->=20
->> But kernel module can't be loaded.
->=20
->>> $ sudo insmod /lib/modules/4.19.89/kernel/drivers/xenomai/net/stack/r=
-tnet.ko
->>> insmod: ERROR: could not insert module
->>> /lib/modules/4.19.89/kernel/drivers/xenomai/net/stack/rtnet.ko: Funct=
-ion not
->>> implemented
->=20
->> Has anybody a hint how to build/ load RTnet kernel module properly?
->=20
-> Can you load any other modules? Did you include "loadable module suppor=
-t" in your kernel config?=20
->=20
-> If you do a simple "lsmod", does it say anything about other loaded mod=
-ules ?
->=20
->=20
->> Thanks
->> Benji
->=20
->=20
-> Per =C3=96berg=20
->=20
+I guess that is related to lds --(no-)as-needed which is different in
+the ubuntu toolchain. Back when i looked into it Ubuntu managed to
+patch the default behaviour but forgot to patch the man-pages ;)
 
-Loading other modules is possible. But rtnet is not listed as a loadable
-module, see below.
-In kernel config 'MODULE_UNLOAD' and 'MODULES' are set.
+See
+https://gitlab.denx.de/Xenomai/xenomai/commit/83dea2ad712ee2d2137942c7ab9891da7d4ef841
 
-> Module                  Size  Used by
-> snd_hda_codec_hdmi     49152  1
-> snd_hda_codec_realtek   110592  1
-> snd_hda_codec_generic    73728  1 snd_hda_codec_realtek
-> rfcomm                 69632  16
-> cmac                   16384  1
-> bnep                   20480  2
-> intel_rapl             20480  0
-> x86_pkg_temp_thermal    16384  0
-> intel_powerclamp       16384  0
-> coretemp               16384  0
-> arc4                   16384  2
-> i915                 1703936  6
-> iwlmvm                372736  0
-> mac80211              786432  1 iwlmvm
-> kvm_intel             184320  0
-> kvm                   622592  1 kvm_intel
-> iwlwifi               303104  1 iwlmvm
-> cec                    49152  1 i915
-> rc_core                45056  1 cec
-> drm_kms_helper        167936  1 i915
-> snd_hda_intel          40960  3
-> ...
+Maybe this can actually be reverted after the proposed fix.
 
-Thanks
-Benji
+Henning
+
+On Wed, 19 Feb 2020 13:31:29 +0100
+Jan Kiszka via Xenomai <xenomai@xenomai.org> wrote:
+
+> From: Jan Kiszka <jan.kiszka@siemens.com>
+> 
+> This ensures that no optimization will drop dependencies of our shared
+> objects, preventing to load them via dlopen without explicitly loading
+> those dropped dependencies first. See also
+> https://xenomai.org/pipermail/xenomai/2020-February/042449.html
+> 
+> As trank now explicitly depends on alchemy, reorder the build to
+> ensure that the latter is available before the former is built
+> (analogy is only moved for consistency reasons).
+> 
+> Reported-by: Antoine Hoarau <antoine@flr.io>
+> Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
+> ---
+>  lib/Makefile.am         | 11 +++++++----
+>  lib/alchemy/Makefile.am |  4 ++++
+>  lib/analogy/Makefile.am |  2 ++
+>  lib/psos/Makefile.am    |  4 ++++
+>  lib/trank/Makefile.am   |  4 ++++
+>  lib/vxworks/Makefile.am |  4 ++++
+>  6 files changed, 25 insertions(+), 4 deletions(-)
+> 
+> diff --git a/lib/Makefile.am b/lib/Makefile.am
+> index c927a9bd85..e909030564 100644
+> --- a/lib/Makefile.am
+> +++ b/lib/Makefile.am
+> @@ -1,10 +1,7 @@
+>  SUBDIRS = boilerplate
+>  
+>  if XENO_COBALT
+> -SUBDIRS +=	\
+> -	cobalt	\
+> -	analogy	\
+> -	trank
+> +SUBDIRS += cobalt
+>  else
+>  SUBDIRS += mercury
+>  endif
+> @@ -16,6 +13,12 @@ SUBDIRS +=		\
+>  	vxworks		\
+>  	psos
+>  
+> +if XENO_COBALT
+> +SUBDIRS += 		\
+> +	analogy		\
+> +	trank
+> +endif
+> +
+>  DIST_SUBDIRS = 		\
+>  	alchemy		\
+>  	analogy		\
+> diff --git a/lib/alchemy/Makefile.am b/lib/alchemy/Makefile.am
+> index 5362695ed2..f97bd69bf8 100644
+> --- a/lib/alchemy/Makefile.am
+> +++ b/lib/alchemy/Makefile.am
+> @@ -2,6 +2,10 @@ lib_LTLIBRARIES = libalchemy.la
+>  
+>  libalchemy_la_LDFLAGS = @XENO_LIB_LDFLAGS@ -version-info 0:0:0
+>  
+> +libalchemy_la_LIBADD =
+> 	\
+> +	@XENO_CORE_LDADD@					\
+> +	$(top_builddir)/lib/copperplate/libcopperplate.la
+> +
+>  libalchemy_la_SOURCES =	\
+>  	init.c		\
+>  	internal.c	\
+> diff --git a/lib/analogy/Makefile.am b/lib/analogy/Makefile.am
+> index e53d8a11ab..4c6f0de013 100644
+> --- a/lib/analogy/Makefile.am
+> +++ b/lib/analogy/Makefile.am
+> @@ -2,6 +2,8 @@ lib_LTLIBRARIES = libanalogy.la
+>  
+>  libanalogy_la_LDFLAGS = @XENO_LIB_LDFLAGS@ -version-info 1:0:0 -lm
+>  
+> +libanalogy_la_LIBADD = @XENO_CORE_LDADD@
+> +
+>  libanalogy_la_SOURCES =	\
+>  	async.c		\
+>  	descriptor.c	\
+> diff --git a/lib/psos/Makefile.am b/lib/psos/Makefile.am
+> index 4eb7ad84ce..6fe50881cc 100644
+> --- a/lib/psos/Makefile.am
+> +++ b/lib/psos/Makefile.am
+> @@ -2,6 +2,10 @@ lib_LTLIBRARIES = libpsos.la
+>  
+>  libpsos_la_LDFLAGS = @XENO_LIB_LDFLAGS@ -version-info 0:0:0
+>  
+> +libpsos_la_LIBADD =						\
+> +	@XENO_CORE_LDADD@					\
+> +	$(top_builddir)/lib/copperplate/libcopperplate.la
+> +
+>  libpsos_la_SOURCES =	\
+>  	init.c		\
+>  	internal.h	\
+> diff --git a/lib/trank/Makefile.am b/lib/trank/Makefile.am
+> index 816a1a4047..ee353c6f20 100644
+> --- a/lib/trank/Makefile.am
+> +++ b/lib/trank/Makefile.am
+> @@ -3,6 +3,10 @@ lib_LTLIBRARIES = libtrank.la
+>  
+>  libtrank_la_LDFLAGS = @XENO_LIB_LDFLAGS@ -version-info 0:0:0
+>  
+> +libtrank_la_LIBADD =						\
+> +	@XENO_CORE_LDADD@					\
+> +	$(top_builddir)/lib/alchemy/libalchemy.la
+> +
+>  libtrank_la_SOURCES =	\
+>  	init.c		\
+>  	internal.c	\
+> diff --git a/lib/vxworks/Makefile.am b/lib/vxworks/Makefile.am
+> index a123864079..4217a994b0 100644
+> --- a/lib/vxworks/Makefile.am
+> +++ b/lib/vxworks/Makefile.am
+> @@ -2,6 +2,10 @@ lib_LTLIBRARIES = libvxworks.la
+>  
+>  libvxworks_la_LDFLAGS = @XENO_LIB_LDFLAGS@ -version-info 0:0:0
+>  
+> +libvxworks_la_LIBADD =
+> 	\
+> +	@XENO_CORE_LDADD@					\
+> +	$(top_builddir)/lib/copperplate/libcopperplate.la
+> +
+>  libvxworks_la_SOURCES = \
+>  	init.c		\
+>  	errnoLib.c	\
+
 
