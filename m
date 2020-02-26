@@ -1,19 +1,7 @@
-Subject: Re: Interrupt timeout
-References: <VI1PR05MB5917D6B0922458527599EDE1F6ED0@VI1PR05MB5917.eurprd05.prod.outlook.com>
- <CALLqZ8RSqv_OZTRApV+n+3zmgjz1KcLRBLmd+vLWE6MRYaS9ag@mail.gmail.com>
- <VI1PR05MB591716533325E3DB1EEBD573F6ED0@VI1PR05MB5917.eurprd05.prod.outlook.com>
- <2e8126ff-7b0d-e114-568f-1e38c530f895@siemens.com>
- <VI1PR05MB59178FFEA9E3D2E2E9D62D2FF6ED0@VI1PR05MB5917.eurprd05.prod.outlook.com>
- <8fcf4459-fb45-e80d-7158-cd664da30545@siemens.com>
- <VI1PR05MB591787E77D7AC62A5E4231E1F6ED0@VI1PR05MB5917.eurprd05.prod.outlook.com>
-From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <34e9e31f-82c0-a0ed-df4a-e5efd3014397@siemens.com>
-Date: Tue, 25 Feb 2020 19:17:24 +0100
-MIME-Version: 1.0
-In-Reply-To: <VI1PR05MB591787E77D7AC62A5E4231E1F6ED0@VI1PR05MB5917.eurprd05.prod.outlook.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+From: Greg Gallagher <greg@embeddedgreg.com>
+Subject: [PATCH] Add RTDM gpio driver for the OMAP family of SOCs
+Date: Wed, 26 Feb 2020 01:00:13 -0500
+Message-Id: <20200226060013.16809-1-greg@embeddedgreg.com>
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -22,52 +10,105 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Lange Norbert <norbert.lange@andritz.com>, Greg Gallagher <greg@embeddedgreg.com>
-Cc: "Xenomai (xenomai@xenomai.org)" <xenomai@xenomai.org>
+To: xenomai@xenomai.org
 
-On 25.02.20 18:53, Lange Norbert wrote:
->> isolcpus should work. If not, we need to debug and fix.
-> 
-> See it does, atleast I did not run into problems yet.
-> 
-> I added "irqaffinity=0 isolcpus=1-3" to the cmdline, which binds the driver irqs to core 0,
-> and prevents automatic scheduling to the remaining cpus.
-> 
-> I am a bit unclear how the Xenomai-side is supposed to work.
-> 
-> Setting "xenomai.supported_cpus=0xe" will strictly deny running anything there,
-> My process did bail out with
-> [   27.726681] [Xenomai] thread rtgate[793] switched to non-rt CPU0, aborted.
-> 
-> That means I either have to
-> echo 0xfffffffe > /proc/xenomai/affinity
-> 
-> or set affinity manually (early enough) each time.
-> Whatever I do, I guess xenomais "printf" thread will always have to run
-> on a cobalt-enabled thread, even if its just using linux sycalls?
-> 
-> Why is there no xenomai.affinity kernel commandline parameter (or alternatively an xenomai.isolcpus)?
-> 
+Add new gpio RTDM driver for OMAP family of SOCs, tested on beaglebone black
+and beaglebone green (AM335x)
 
-xenomai.supported_cpus=0xe should work for your case. Processes starting 
-RT threads without forcing them to CPU 0 should find them auto-migrated 
-to a supported RT core. Well, that's without isolcpus. You probably need 
-to start them right away on one of those isolated cores.
+Signed-off-by: Greg Gallagher <greg@embeddedgreg.com>
+---
+ kernel/drivers/gpio/Kconfig     |  8 ++++++
+ kernel/drivers/gpio/Makefile    |  2 ++
+ kernel/drivers/gpio/gpio-omap.c | 43 +++++++++++++++++++++++++++++++++
+ 3 files changed, 53 insertions(+)
+ create mode 100644 kernel/drivers/gpio/gpio-omap.c
 
-> 
->>
->> Less convenient alternative: manually tuning /proc/irq/*/smp_affinity or
->> instructing irqbalanced to keep some cores free. cgroups with CPU
->> affinities can help to keep tasks away.
-> 
-> Yes, systemd-system.conf has an CPUAffinity option. The Linux-side seems solved
-> with the two kernel parameters anyways.
-
-Perfect.
-
-Jan
-
+diff --git a/kernel/drivers/gpio/Kconfig b/kernel/drivers/gpio/Kconfig
+index 48475f291..dbc862754 100644
+--- a/kernel/drivers/gpio/Kconfig
++++ b/kernel/drivers/gpio/Kconfig
+@@ -49,6 +49,14 @@ config XENO_DRIVERS_GPIO_XILINX
+ 	Enables support for the GPIO controller available from
+ 	Xilinx's softcore IP.
+ 
++config XENO_DRIVERS_GPIO_OMAP
++	depends on ARCH_OMAP2PLUS || ARCH_OMAP
++	tristate "Support for OMAP GPIOs"
++	help
++
++	Enables support for the GPIO controller available from
++	OMAP family SOC.
++
+ config XENO_DRIVERS_GPIO_DEBUG
+        bool "Enable GPIO core debugging features"
+ 
+diff --git a/kernel/drivers/gpio/Makefile b/kernel/drivers/gpio/Makefile
+index 8648fcca9..7bcf59949 100644
+--- a/kernel/drivers/gpio/Makefile
++++ b/kernel/drivers/gpio/Makefile
+@@ -5,6 +5,7 @@ obj-$(CONFIG_XENO_DRIVERS_GPIO_MXC) += xeno-gpio-mxc.o
+ obj-$(CONFIG_XENO_DRIVERS_GPIO_SUN8I_H3) += xeno-gpio-sun8i-h3.o
+ obj-$(CONFIG_XENO_DRIVERS_GPIO_ZYNQ7000) += xeno-gpio-zynq7000.o
+ obj-$(CONFIG_XENO_DRIVERS_GPIO_XILINX) += xeno-gpio-xilinx.o
++obj-$(CONFIG_XENO_DRIVERS_GPIO_OMAP) += xeno-gpio-omap.o
+ obj-$(CONFIG_XENO_DRIVERS_GPIO) += gpio-core.o
+ 
+ xeno-gpio-bcm2835-y := gpio-bcm2835.o
+@@ -12,3 +13,4 @@ xeno-gpio-mxc-y := gpio-mxc.o
+ xeno-gpio-sun8i-h3-y := gpio-sun8i-h3.o
+ xeno-gpio-zynq7000-y := gpio-zynq7000.o
+ xeno-gpio-xilinx-y := gpio-xilinx.o
++xeno-gpio-omap-y := gpio-omap.o
+diff --git a/kernel/drivers/gpio/gpio-omap.c b/kernel/drivers/gpio/gpio-omap.c
+new file mode 100644
+index 000000000..5f10278f3
+--- /dev/null
++++ b/kernel/drivers/gpio/gpio-omap.c
+@@ -0,0 +1,43 @@
++/**
++ * @note Copyright (C) 2020 Greg Gallagher <greg@embeddedgreg.com>
++ *
++ * This program is free software; you can redistribute it and/or
++ * modify it under the terms of the GNU General Public License as
++ * published by the Free Software Foundation; either version 2 of the
++ * License, or (at your option) any later version.
++ *
++ * This program is distributed in the hope that it will be useful,
++ * but WITHOUT ANY WARRANTY; without even the implied warranty of
++ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
++ * GNU General Public License for more details.
++ *
++ * You should have received a copy of the GNU General Public License
++ * along with this program; if not, write to the Free Software
++ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
++ */
++#include <linux/module.h>
++#include <rtdm/gpio.h>
++
++#define RTDM_SUBCLASS_OMAP  6
++
++static const char *compat_array[] = {
++	"ti,omap4-gpio",
++	"ti,omap3-gpio",
++	"ti,omap2-gpio",
++};
++
++static int __init omap_gpio_init(void)
++{
++	return rtdm_gpiochip_scan_array_of(NULL, compat_array,
++					   ARRAY_SIZE(compat_array),
++					   RTDM_SUBCLASS_OMAP);
++}
++module_init(omap_gpio_init);
++
++static void __exit omap_gpio_exit(void)
++{
++	rtdm_gpiochip_remove_of(RTDM_SUBCLASS_OMAP);
++}
++module_exit(omap_gpio_exit);
++
++MODULE_LICENSE("GPL");
 -- 
-Siemens AG, Corporate Technology, CT RDA IOT SES-DE
-Corporate Competence Center Embedded Linux
+2.17.1
+
 
