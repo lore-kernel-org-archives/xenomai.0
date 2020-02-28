@@ -1,17 +1,12 @@
-From: Ralf Moder <ralf.moder@hbkworld.com>
-Subject: Re: Ipipe-Patch for kernel version 5.4.23
-Date: Tue, 3 Mar 2020 13:46:58 +0000
-Message-ID: <1a4b8b29-2c9d-676b-cedc-d7eddb461189@hbm.com>
-References: <DB8PR09MB3612215A31188B5C00AD779BF0E70@DB8PR09MB3612.eurprd09.prod.outlook.com>
- <c4a79189-6696-a109-97f6-8cadbb36923e@siemens.com>
- <CALLqZ8TNspMLYOfrA11_xB6dh=LjXiTV8_P12+s_a_exUv6tqQ@mail.gmail.com>
- <68ddab50-1002-7100-a745-3387b28592b2@siemens.com>
-In-Reply-To: <68ddab50-1002-7100-a745-3387b28592b2@siemens.com>
-Content-Language: de-DE
-Content-Type: text/plain; charset="utf-8"
-Content-ID: <037672A634EE324EB0446C2F1A8C72BB@eurprd09.prod.outlook.com>
-Content-Transfer-Encoding: base64
 MIME-Version: 1.0
+References: <CAFLxGvyr7f8bUxaEVpEwSGYEvX4FrkpGBV6qa2sR3SHq3wi_Yw@mail.gmail.com>
+ <20200228221131.hvtpjrjm42ocbxjo@csclub.uwaterloo.ca>
+In-Reply-To: <20200228221131.hvtpjrjm42ocbxjo@csclub.uwaterloo.ca>
+From: Richard Weinberger <richard.weinberger@gmail.com>
+Date: Fri, 28 Feb 2020 23:16:41 +0100
+Message-ID: <CAFLxGvyzQ4FdHx1_YyeYKTfj76KC487BvDkGPfu6wVs3oqhVLA@mail.gmail.com>
+Subject: Re: 32bit compat mode for arm64
+Content-Type: text/plain; charset="UTF-8"
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -20,67 +15,36 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jan Kiszka <jan.kiszka@siemens.com>, Greg Gallagher <greg@embeddedgreg.com>, Ralf Moder <ralf.moder@hbkworld.com>
-Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Lennart Sorensen <lsorense@csclub.uwaterloo.ca>
+Cc: xenomai@xenomai.org
 
-QW0gMDIuMDMuMjAgdW0gMTc6MDEgc2NocmllYiBKYW4gS2lzemthOg0KPiBPbiAwMi4wMy4yMCAx
-NjoxNywgR3JlZyBHYWxsYWdoZXIgd3JvdGU6DQo+Pg0KPj4gT24gTW9uLCBNYXIgMiwgMjAyMCBh
-dCA3OjM4IEFNIEphbiBLaXN6a2EgdmlhIFhlbm9tYWkNCj4+IDx4ZW5vbWFpQHhlbm9tYWkub3Jn
-IDxtYWlsdG86eGVub21haUB4ZW5vbWFpLm9yZz4+IHdyb3RlOg0KPj4NCj4+ICAgICBPbiAwMi4w
-My4yMCAxMTowMCwgUmFsZiBNb2RlciB2aWEgWGVub21haSB3cm90ZToNCj4+ICAgICAgPiBIZWxs
-byBldmVyeW9uZSwNCj4+ICAgICAgPiBJIG5lZWQgdGhlIGtlcm5lbCB2ZXJzaW9uIDUuNC4yMyBp
-biBhbiBlbWJlZGRlZCBsaW51eCBwcm9qZWN0DQo+PiAgICAgYmVjYXVzZSBvZiBkcml2ZXIgc3R1
-ZmYgYnV0IGFsc28gdGhlIFhlbm9tYWkgZXh0ZW5zaW9uLiBIb3cgYmlnIGlzDQo+PiAgICAgdGhl
-IHByb2JhYmlsaXR5IHRoYXQgYW4gSS1waXBlIHBhdGNoIGZvciB0aGUgNS40IHZlcnNpb24gd2ls
-bCBiZQ0KPj4gICAgIHJlbGVhc2VkIGluIHRoZSBuZXh0IDIgdG8gMyBtb250aHM/DQo+Pg0KPj4g
-ICAgIEkgd291bGQgZmlyc3Qgb2YgYWxsIHNheSB0aGF0IGl0J3MgPjAuIEJ1dCBiZXlvbmQgdGhh
-dCwgaXQNCj4+IGRlcGVuZHMgb24NCj4+ICAgICB0aGUgYXJjaGl0ZWN0dXJlOiB4ODYgc2hvdWxk
-IGJlIGF2YWlsYWJsZSBvbiA1LjQgaW4gdGhlIG5leHQgbW9udGhzDQo+PiAgICAgd2l0aA0KPj4g
-ICAgIGEgcHJvYmFiaWxpdHkgPj41MCUgYXMgdGhhdCB3aWxsIGJlIG15IHByaW1hcnkgdGFyZ2V0
-IGZvciBsb29raW5nDQo+PiBpbnRvDQo+PiAgICAgaG93IHRvIG1vdmUgZm9yd2FyZC4gQVJNIGFu
-ZCBBUk02NCBjdXJyZW50bHkgbGFja3MgYSBtYWludGFpbmVyLg0KPj4gSWYgd2UNCj4+ICAgICBh
-cmUgbHVja3ksIHRoZSBiYXNlIGVuYWJsaW5nIHZpYSBQaGlsaXBwZSdzIGRvdmV0YWlsIHF1ZXVl
-IHdpbGwNCj4+IGVuYWJsZQ0KPj4gICAgIHRob3NlIG1vcmUgb3IgbGVzcyBhcyB3ZWxsLiBCdXQg
-aXQgd2lsbCBkZWZpbml0ZWx5IHRha2Ugc29tZW9uZQ0KPj4gdG8gdGFrZQ0KPj4gICAgIHJlc3Bv
-bnNpYmlsaXR5IGZvciB0aG9zZSBhcmNocyBiZWNhdXNlIG15IGNvbGxlYWd1ZXMgYW5kIEkgY3Vy
-cmVudGx5DQo+PiAgICAgY2Fubm90IGludmVzdCBiZXlvbmQgaW50ZWdyYXRpbmcgY29udHJpYnV0
-aW9ucy4gVGhlcmUgaXMgYWxzbyBwcGMzMg0KPj4gICAgICh3aGljaCBoYXMgYSBtYWludGFpbmVy
-KSwgYnV0IEkgc3VwcG9zZSB0aGF0IHRoaXMgaXMgbm90IHlvdXINCj4+IHRhcmdldC4NCj4+DQo+
-PiAgICAgSmFuDQo+Pg0KPj4gICAgIC0tICAgICBTaWVtZW5zIEFHLCBDb3Jwb3JhdGUgVGVjaG5v
-bG9neSwgQ1QgUkRBIElPVCBTRVMtREUNCj4+ICAgICBDb3Jwb3JhdGUgQ29tcGV0ZW5jZSBDZW50
-ZXIgRW1iZWRkZWQgTGludXgNCj4+DQo+PiBJZiB5b3UgbmVlZCB0aGlzIGZvciBhcm0gSSB3YXMg
-Z29pbmcgdG8gdHJ5IHRvIHBvcnQgdGhlIGlwaXBlIHRvIDUuNA0KPj4gaW4gdGhlIG5lYXIgZnV0
-dXJlLiBFZmZvcnQgd2lzZSBpdCBzaG91bGRuJ3QgYmUgdG9vIGJhZCwgYnV0IGl0IGFsbA0KPj4g
-ZGVwZW5kcyBvbiBob3cgbXVjaCB0aGUgdXBzdHJlYW0gY2hhbmdlcyBpbXBhY3QgdXMuICBXaGF0
-IGJvYXJkIGFyZQ0KPj4geW91IHRhcmdldGluZz8NCml0IGlzIGEgU29DIGZyb20geGlsaW54IHdp
-dGggMiBhcm0gY29ydGV4IGE1MyBrZXJuZWwgb24gaXQNCj4NCj4gSSBzdXBwb3NlIHRoYXQgcXVl
-c3Rpb25zIGFkZHJlc3NlcyBSYWxmIChwcm92aWRlZCBoZSBydW5zIG9uIEFSTSkuDQo+DQo+IEFz
-IG1lbnRpb25lZCBiZWZvcmUsIG91ciB0aW55IHRlc3QgbGFiIGN1cnJlbnRseSBjb250YWlucyBm
-b3IgQVJNIGENCj4gQmVhZ2xlQm9uZSBCbGFjayBhbmQgUUVNVSBpbnN0YW5jZS4NClRoZSBFU1BS
-RVNTT2JpbiBmcm9tIG1hcnZlbGwgY291bGQgYmUgYSBnb29kIGV2YWwgYm9hcmQgZm9yIHRlc3Rp
-bmcgLklmDQp5b3UgbmVlZCBpdCB3ZSBjYW4gc2VuZCB5b3Ugb25lLiBPciB3ZSBjYW4gdGVzdCBu
-ZXcgcGF0Y2hlcyBoZXJlIGluIG91cg0KY29tcGFueS4NCj4+DQo+PiBKYW4sIEkgY2FuICBoZWxw
-IG91dCBtYWludGFpbmluZyB0aGUgQVJNIGlwaXBlLiAgV2UgY2FuIHRhbGsgb2ZmbGluZQ0KPj4g
-aWYgeW91J2QgbGlrZS4NCkl0IHdvdWxkIGJlIGdyZWF0IGlmIHlvdSBjb3VsZCBrZWVwIHVzIHVw
-IHRvIGRhdGUgb24geW91ciBwcm9ncmVzcyBpbg0KcGF0Y2hpbmcga2VybmVsIHZlcnNpb24gNS40
-LiBJZiB3ZSBjYW4gc3VwcG9ydCB5b3UgaW4gYW55IHdheSwgbGV0IHVzIGtub3cuDQoNCj4gVGhh
-dCB3b3VsZCBiZSBncmVhdCwgbG9va2luZyBmb3J3YXJkIQ0KPg0KPiBKYW4NCj4NClJhbGYNCg0K
-SG90dGluZ2VyIEJhbGR3aW4gTWVzc3RlY2huaWsgR21iSCwgSW0gVGllZmVuIFNlZSA0NSwgNjQy
-OTMgRGFybXN0YWR0LCBHZXJtYW55IHwgd3d3LmhibS5jb20gUmVnaXN0ZXJlZCBhcyBHbWJIIChH
-ZXJtYW4gbGltaXRlZCBsaWFiaWxpdHkgY29ycG9yYXRpb24pIGluIHRoZSBjb21tZXJjaWFsIHJl
-Z2lzdGVyIGF0IHRoZSBsb2NhbCBjb3VydCBvZiBEYXJtc3RhZHQsIEhSQiAxMTQ3IENvbXBhbnkg
-ZG9taWNpbGVkIGluIERhcm1zdGFkdCB8IE1hbmFnaW5nIERpcmVjdG9yczogVGhvbWFzIExpcHBv
-ayAmIEplbnMgV2llZ2FuZCB8IENoYWlybWFuIG9mIHRoZSBib2FyZDogSm9zZXBoIE1pY2hhZWwg
-Vm9yaWggQWxzIEdlc2VsbHNjaGFmdCBtaXQgYmVzY2hyw6Rua3RlciBIYWZ0dW5nIGVpbmdldHJh
-Z2VuIGltIEhhbmRlbHNyZWdpc3RlciBkZXMgQW10c2dlcmljaHRzIERhcm1zdGFkdCB1bnRlciBI
-UkIgMTE0NyBTaXR6IGRlciBHZXNlbGxzY2hhZnQ6IERhcm1zdGFkdCB8IEdlc2Now6RmdHNmw7xo
-cnVuZzogVGhvbWFzIExpcHBvayAmIEplbnMgV2llZ2FuZCB8IEF1ZnNpY2h0c3JhdHN2b3JzaXR6
-ZW5kZXI6IEpvc2VwaCBNaWNoYWVsIFZvcmloIFRoZSBpbmZvcm1hdGlvbiBpbiB0aGlzIGVtYWls
-IGlzIGNvbmZpZGVudGlhbC4gSXQgaXMgaW50ZW5kZWQgc29sZWx5IGZvciB0aGUgYWRkcmVzc2Vl
-LiBJZiB5b3UgYXJlIG5vdCB0aGUgaW50ZW5kZWQgcmVjaXBpZW50LCBwbGVhc2UgbGV0IG1lIGtu
-b3cgYW5kIGRlbGV0ZSB0aGlzIGVtYWlsLiBEaWUgaW4gZGllc2VyIEUtTWFpbCBlbnRoYWx0ZW5l
-IEluZm9ybWF0aW9uIGlzdCB2ZXJ0cmF1bGljaCB1bmQgbGVkaWdsaWNoIGbDvHIgZGVuIEVtcGbD
-pG5nZXIgYmVzdGltbXQuIFNvbGx0ZW4gU2llIG5pY2h0IGRlciBlaWdlbnRsaWNoZSBFbXBmw6Ru
-Z2VyIHNlaW4sIGluZm9ybWllcmVuIFNpZSBtaWNoIGJpdHRlIGt1cnogdW5kIGzDtnNjaGVuIGRp
-ZXNlIEUtTWFpbC4NCg==
+On Fri, Feb 28, 2020 at 11:11 PM Lennart Sorensen
+<lsorense@csclub.uwaterloo.ca> wrote:
+>
+> On Fri, Feb 28, 2020 at 10:01:04PM +0100, Richard Weinberger via Xenomai wrote:
+> > I noticed that running 32bit arm EABI xenomai userspace is currently
+> > not possible
+> > on arm64 kernels.
+> >
+> > From a quick look I see the following tasks to make it happen:
+> > - syscall gate adaptations for cobalt arm32 syscalls (they are
+> > different from regular arm EABI)
+> > - teach ipipe_root_nr_syscalls() on arm64 about __NR_compat_syscalls
+> > - Don't use XENOMAI_ABI_REV for compat userspace on arm64
+> > - Implement a syscall32-table.h (for COBALT_SYSCALL32emu_DECL() and friends)
+> >
+> > Is this something which will be supported sooner or later?
+> > ...or is there a massive show-stopper I didn't notice so far?
+>
+> Even x86 doesn't allow 32 bit userspace xenomai to run on a 64 bit kernel.
+> I suspect the use case is just so insignificant that noone wants to
+> bother working on such support.
+
+Huh?
+I currently do so...
+It was broken but got fixed.
+
+-- 
+Thanks,
+//richard
 
