@@ -1,9 +1,16 @@
+Subject: Re: 32bit compat mode for arm64
+References: <CAFLxGvyr7f8bUxaEVpEwSGYEvX4FrkpGBV6qa2sR3SHq3wi_Yw@mail.gmail.com>
+ <CAFLxGvwo_gPu9EbMkcicjJ9tCP228oRXQ2XiCb11YBs11xDFJg@mail.gmail.com>
+ <3c8788a1-be5b-c424-b16c-1d1903b9e045@siemens.com>
+ <CAFLxGvxGmuCPp7ReWWcvrSaLsqs5xupR=Ljzg0T6-QS1M46GSw@mail.gmail.com>
+From: Jan Kiszka <jan.kiszka@siemens.com>
+Message-ID: <adffa3ac-86ef-46f7-9dbe-94acbd81c451@siemens.com>
+Date: Mon, 2 Mar 2020 13:39:22 +0100
 MIME-Version: 1.0
-From: =?UTF-8?B?5a2Z5LiW6b6Z?= <sunshilong369@gmail.com>
-Date: Mon, 6 Apr 2020 15:31:11 +0800
-Message-ID: <CAAvDm6bGS6agUeAEUMVR5cu=wAYJJkQ7_ZPQPBoKGzZPj3Ts4A@mail.gmail.com>
-Subject: How to use the rtdm udd?
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <CAFLxGvxGmuCPp7ReWWcvrSaLsqs5xupR=Ljzg0T6-QS1M46GSw@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -12,9 +19,58 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai-git@xenomai.org, xenomai@xenomai.org
+To: Richard Weinberger <richard.weinberger@gmail.com>
+Cc: xenomai@xenomai.org
 
-How to use the rtdm udd?
-Is there some examples to show how to use it?Is there some material on how
-to use it?
-Thanks.Looking forward to your replay.
+On 02.03.20 13:34, Richard Weinberger wrote:
+> On Mon, Mar 2, 2020 at 1:21 PM Jan Kiszka <jan.kiszka@siemens.com> wrote:
+>>
+>> On 29.02.20 12:46, Richard Weinberger via Xenomai wrote:
+>>> On Fri, Feb 28, 2020 at 10:01 PM Richard Weinberger
+>>> <richard.weinberger@gmail.com> wrote:
+>>>>
+>>>> Hi!
+>>>>
+>>>> I noticed that running 32bit arm EABI xenomai userspace is currently
+>>>> not possible
+>>>> on arm64 kernels.
+>>>>
+>>>>   From a quick look I see the following tasks to make it happen:
+>>>> - syscall gate adaptations for cobalt arm32 syscalls (they are
+>>>> different from regular arm EABI)
+>>>> - teach ipipe_root_nr_syscalls() on arm64 about __NR_compat_syscalls
+>>>> - Don't use XENOMAI_ABI_REV for compat userspace on arm64
+>>>> - Implement a syscall32-table.h (for COBALT_SYSCALL32emu_DECL() and friends)
+>>>
+>>> One more thing: TSC emulation is missing on arm64.
+>>>
+>>
+>> What exactly are you referring to?
+> 
+> I think CONFIG_IPIPE_ARM_KUSER_TSC.
+> 
+> In lib/cobalt/arch/arm/features.c cobalt_check_features() sets a
+> function pointer:
+>          __xn_tscinfo.kuser_tsc_get =
+>                  (__xn_rdtsc_t *)(0xffff1004 -
+>                                  ((*(unsigned *)(0xffff0ffc) + 3) << 5));
+> 
+> On arm64 this pointer is invalid.
+> 
+
+To my understanding, there is not need for those workarounds on ARM64 
+because that arch provides a userspace-accessible TSC architecturally.
+
+> Anyway, I did already some prototyping and managed to run 32bit
+> Xenomai applications on
+> arm64.
+> As soon I have something to show I'll send patches. :-)
+
+Great.
+
+Jan
+
+-- 
+Siemens AG, Corporate Technology, CT RDA IOT SES-DE
+Corporate Competence Center Embedded Linux
+
