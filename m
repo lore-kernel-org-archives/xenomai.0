@@ -1,15 +1,14 @@
-Subject: Re: Regarding Xenomai patch to the kernel 4.15.38
-References: <CAF_6Mayw_popagGGG14B+na6wtH2CFGeBnvYreRSUizQe14w6g@mail.gmail.com>
- <a4469868-3c21-8efd-7469-a9cd6e025742@web.de>
- <CAF_6Maycted8=dyTk42+DEJbrwzWKy4S_4vpnffyvB8yv6HQ2w@mail.gmail.com>
-From: Jan Kiszka <jan.kiszka@web.de>
-Message-ID: <fa9bbef6-7e9b-a249-f716-2f3afbc0d810@web.de>
-Date: Tue, 31 Mar 2020 10:03:18 +0200
+Subject: Re: [PATCH] arm: ipipe: Fix up the omap-gpio driver to deliver
+ interrupts properly to the pipeline.
+References: <20200302042504.8524-1-greg@embeddedgreg.com>
+From: Jan Kiszka <jan.kiszka@siemens.com>
+Message-ID: <8058ffd7-ab19-c309-855b-0d114d2884db@siemens.com>
+Date: Mon, 2 Mar 2020 13:29:11 +0100
 MIME-Version: 1.0
-In-Reply-To: <CAF_6Maycted8=dyTk42+DEJbrwzWKy4S_4vpnffyvB8yv6HQ2w@mail.gmail.com>
+In-Reply-To: <20200302042504.8524-1-greg@embeddedgreg.com>
 Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Language: en-US
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 7bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -18,109 +17,245 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: gopi ratnakaram <gopi.ratnakaram@svayarobotics.com>
-Cc: Xenomai <xenomai@xenomai.org>
+To: Greg Gallagher <greg@embeddedgreg.com>, xenomai@xenomai.org
 
-[re-adding the mailing list]
+On 02.03.20 05:25, Greg Gallagher via Xenomai wrote:
+> OMAP gpio driver was changed upstream to be able to support threaded IRQ handler,
+> this change impacted how the ipipe dealt with this driver. Since the ipipe expects
+> a chained handler and now it's a generic one, we need to ack the event in the
+> interrupt controller before calling the handler and unmask it after.
+> 
+> Level flow handler must be used for pipelined interrupts. Since the IRQ handler
+>   on the root stage may be delayed until the real-time core releases the CPU, we
+> need to mask the IRQ to prevent an IRQ storm when the interrupts are enabled again.
+> 
+> Convert wa_lock to ipipe_spinlock, since wa_lock is used in the irq_chip functions
+> which when called from the head stage can't use a Linux kernel service.
+> 
+> Add the hold/release handlers for robustness.
+> 
+> Signed-off-by: Greg Gallagher <greg@embeddedgreg.com>
+> ---
+>   drivers/gpio/gpio-omap.c | 120 ++++++++++++++++++++++++++++++---------
+>   1 file changed, 93 insertions(+), 27 deletions(-)
+> 
+> diff --git a/drivers/gpio/gpio-omap.c b/drivers/gpio/gpio-omap.c
+> index 39d25f599831..d52fcf5bed66 100644
+> --- a/drivers/gpio/gpio-omap.c
+> +++ b/drivers/gpio/gpio-omap.c
+> @@ -61,10 +61,11 @@ struct gpio_bank {
+>   	u32 toggle_mask;
+>   #ifdef CONFIG_IPIPE
+>   	ipipe_spinlock_t lock;
+> +	ipipe_spinlock_t wa_lock;
+>   #else
+>   	raw_spinlock_t lock;
+> -#endif
+>   	raw_spinlock_t wa_lock;
+> +#endif
+>   	struct gpio_chip chip;
+>   	struct clk *dbck;
+>   	u32 mod_usage;
+> @@ -575,18 +576,20 @@ static int omap_gpio_irq_type(struct irq_data *d, unsigned type)
+>   		goto error;
+>   	}
+>   	raw_spin_unlock_irqrestore(&bank->lock, flags);
+> -
+> -	if (type & (IRQ_TYPE_LEVEL_LOW | IRQ_TYPE_LEVEL_HIGH))
+> +#ifdef CONFIG_IPIPE
+> +	irq_set_handler_locked(d, handle_level_irq);
+> +#else
+> +        if (type & (IRQ_TYPE_LEVEL_LOW | IRQ_TYPE_LEVEL_HIGH))
+>   		irq_set_handler_locked(d, handle_level_irq);
+> -	else if (type & (IRQ_TYPE_EDGE_FALLING | IRQ_TYPE_EDGE_RISING))
+> -		/*
+> -		 * Edge IRQs are already cleared/acked in irq_handler and
+> -		 * not need to be masked, as result handle_edge_irq()
+> -		 * logic is excessed here and may cause lose of interrupts.
+> -		 * So just use handle_simple_irq.
+> -		 */
+> -		irq_set_handler_locked(d, handle_simple_irq);
+> -
+> +        else if (type & (IRQ_TYPE_EDGE_FALLING | IRQ_TYPE_EDGE_RISING))
+> +                /*
+> +                 * Edge IRQs are already cleared/acked in irq_handler and
+> +                 * not need to be masked, as result handle_edge_irq()
+> +                 * logic is excessed here and may cause lose of interrupts.
+> +                 * So just use handle_simple_irq.
+> +                 */
+> +                irq_set_handler_locked(d, handle_simple_irq);
+> +#endif	
+>   	return 0;
+>   
+>   error:
+> @@ -759,7 +762,7 @@ static void __omap_gpio_irq_handler(struct gpio_bank *bank)
+>   
+>   		enabled = omap_get_gpio_irqbank_mask(bank);
+>   		isr = readl_relaxed(isr_reg) & enabled;
+> -
+> +		
+>   		if (bank->level_mask)
+>   			level_mask = bank->level_mask & enabled;
+>   		else
+> @@ -809,7 +812,10 @@ static void __omap_gpio_irq_handler(struct gpio_bank *bank)
+>   static void omap_gpio_irq_handler(struct irq_desc *d)
+>   {
+>   	struct gpio_bank *bank = irq_desc_get_handler_data(d);
+> +
+> +	d->irq_data.chip->irq_ack(&d->irq_data);
+>   	__omap_gpio_irq_handler(bank);
+> +	d->irq_data.chip->irq_unmask(&d->irq_data);
+>   }
+>   
+>   #else
+> @@ -896,39 +902,31 @@ static void omap_gpio_ack_irq(struct irq_data *d)
+>   	omap_clear_gpio_irqstatus(bank, offset);
+>   }
+>   
+> -static void omap_gpio_mask_irq(struct irq_data *d)
+> +static void __omap_gpio_mask_irq(struct irq_data *d)
+>   {
+>   	struct gpio_bank *bank = omap_irq_data_get_bank(d);
+>   	unsigned offset = d->hwirq;
+> -	unsigned long flags;
+>   
+> -	raw_spin_lock_irqsave(&bank->lock, flags);
+> -	omap_set_gpio_triggering(bank, offset, IRQ_TYPE_NONE);
+>   	omap_set_gpio_irqenable(bank, offset, 0);
+> -	raw_spin_unlock_irqrestore(&bank->lock, flags);
+> +	omap_set_gpio_triggering(bank, offset, IRQ_TYPE_NONE);
+>   }
+>   
+> -static void omap_gpio_mask_ack_irq(struct irq_data *d)
+> +static void __omap_gpio_mask_ack_irq(struct irq_data *d)
+>   {
+>   	struct gpio_bank *bank = omap_irq_data_get_bank(d);
+>   	unsigned offset = d->hwirq;
+> -	unsigned long flags;
+> -
+> -	raw_spin_lock_irqsave(&bank->lock, flags);
+> +	
+>   	omap_set_gpio_irqenable(bank, offset, 0);
+>   	omap_set_gpio_triggering(bank, offset, IRQ_TYPE_NONE);
+> -	omap_clear_gpio_irqstatus(bank, offset);
+> -	raw_spin_unlock_irqrestore(&bank->lock, flags);
+> +	
+>   }
+>   
+> -static void omap_gpio_unmask_irq(struct irq_data *d)
+> +static void __omap_gpio_unmask_irq(struct irq_data *d)
+>   {
+>   	struct gpio_bank *bank = omap_irq_data_get_bank(d);
+>   	unsigned offset = d->hwirq;
+>   	u32 trigger = irqd_get_trigger_type(d);
+> -	unsigned long flags;
+>   
+> -	raw_spin_lock_irqsave(&bank->lock, flags);
+>   	omap_set_gpio_irqenable(bank, offset, 1);
+>   
+>   	/*
+> @@ -943,9 +941,69 @@ static void omap_gpio_unmask_irq(struct irq_data *d)
+>   	if (trigger)
+>   		omap_set_gpio_triggering(bank, offset, trigger);
+>   
+> +}
+> +
+> +static void omap_gpio_mask_irq(struct irq_data *d)
+> +{
+> +	struct gpio_bank *bank = omap_irq_data_get_bank(d);
+> +	unsigned long flags;
+> +
+> +	raw_spin_lock_irqsave(&bank->lock, flags);
+> +	ipipe_lock_irq(d->irq);
+> +	__omap_gpio_mask_irq(d);
+> +	raw_spin_unlock_irqrestore(&bank->lock, flags);
+> +}
+> +
+> +static void omap_gpio_mask_ack_irq(struct irq_data *d)
+> +{
+> +	struct gpio_bank *bank = omap_irq_data_get_bank(d);
+> +	unsigned long flags;
+> +
+> +	raw_spin_lock_irqsave(&bank->lock, flags);
+> +	__omap_gpio_mask_ack_irq(d);
+> +	ipipe_lock_irq(d->irq);
+> +	raw_spin_unlock_irqrestore(&bank->lock, flags);
+> +}
+> +
+> +static void omap_gpio_unmask_irq(struct irq_data *d)
+> +{
+> +	struct gpio_bank *bank = omap_irq_data_get_bank(d);
+> +	unsigned long flags;
+> +	void __iomem *enabled_reg = NULL;
+> +	
+> +	raw_spin_lock_irqsave(&bank->lock, flags);
+> +	__omap_gpio_unmask_irq(d);	
+> +	ipipe_unlock_irq(d->irq);
+> +	raw_spin_unlock_irqrestore(&bank->lock, flags);
+> +	enabled_reg = bank->base + bank->regs->irqenable;
+> +}
+> +
+> +
+> +
+> +#ifdef CONFIG_IPIPE
+> +
+> +static void omap_gpio_irq_hold(struct irq_data *d)
+> +{
+> +	struct gpio_bank *bank = omap_irq_data_get_bank(d);
+> +	unsigned long flags;
+> +
+> +	raw_spin_lock_irqsave(&bank->lock, flags);
+> +	__omap_gpio_mask_ack_irq(d);
+>   	raw_spin_unlock_irqrestore(&bank->lock, flags);
+>   }
+>   
+> +static void omap_gpio_irq_release(struct irq_data *d)
+> +{
+> +	struct gpio_bank *bank = omap_irq_data_get_bank(d);
+> +	unsigned long flags;
+> +
+> +	raw_spin_lock_irqsave(&bank->lock, flags);
+> +	__omap_gpio_unmask_irq(d);	
+> +	raw_spin_unlock_irqrestore(&bank->lock, flags);
+> +}
+> +
+> +#endif
+> +
+>   /*---------------------------------------------------------------------*/
+>   
+>   static int omap_mpuio_suspend_noirq(struct device *dev)
+> @@ -1240,7 +1298,11 @@ static int omap_gpio_chip_init(struct gpio_bank *bank, struct irq_chip *irqc)
+>   
+>   	irq = &bank->chip.irq;
+>   	irq->chip = irqc;
+> +#ifdef CONFIG_IPIPE
+> +	irq->handler = handle_level_irq;
+> +#else
+>   	irq->handler = handle_bad_irq;
+> +#endif
+>   	irq->default_type = IRQ_TYPE_NONE;
+>   	irq->num_parents = 1;
+>   	irq->parents = &bank->irq;
+> @@ -1303,6 +1365,10 @@ static int omap_gpio_probe(struct platform_device *pdev)
+>   	irqc->irq_mask = omap_gpio_mask_irq,
+>   	irqc->irq_mask_ack = omap_gpio_mask_ack_irq,
+>   	irqc->irq_unmask = omap_gpio_unmask_irq,
+> +#ifdef CONFIG_IPIPE
+> +	irqc->irq_hold = omap_gpio_irq_hold,
+> +	irqc->irq_release = omap_gpio_irq_release,
+> +#endif
+>   	irqc->irq_set_type = omap_gpio_irq_type,
+>   	irqc->irq_set_wake = omap_gpio_wake_enable,
+>   	irqc->irq_bus_lock = omap_gpio_irq_bus_lock,
+> 
 
-On 31.03.20 08:42, gopi ratnakaram wrote:
-> Dear Jan Kiszka,
->
-> Thankyou for the response,
-> *It is possible but not wise unless you are deep into the I-pipe details=
-.*
-> Please provide me some help related to do this and what kind of details
-> I-pipe details are needed to do this activity?
->
+Thanks, applied to ipipe/master on ipipe-arm. Note that fixing the 
+whitespace mistakes made the patch even smaller. Please cross-check if 
+the result is fine.
 
-If you apply the I-pipe patch queue on kernel version different from the
-one it has been developed for, you will likely run into merge conflicts.
-Then you need to understand what was changed in the original kernel by
-the commits, what changed in the target kernel and what needs to be done
-to resolve the conflict correctly. That can be trivial or highly complex.
-
-Even worse, there can be logical conflicts that do not cause merge
-issues but will make the result fail during runtime. Then you need to be
-able to debug the incorrect behavior and identify the incorrect or
-missing changes on your target kernel.
-
-IOW: You need to build a good understanding of both the kernel
-subsystems changed by I-pipe as well as of I-pipe itself in order to
-safely port it to a downstream or legacy kernel yourself.
-
-> *But once you are, you also realize that using a distro kernel will only
-> *
-> *complicate things for this.*
->
-> My question here is why there is no I-pipe patch available=C2=A0for 4.15=
- from
-> the following xenomai site?
-> https://xenomai.org/downloads/ipipe/v4.x/x86/
-
-Because we only target long-term supported kernel versions. 4.15 is EOL
-since 2 years now, so nothing you want to use anymore. The Ubuntu kernel
-(I strongly suspect that this is what you are actually targeting) is
-still maintained by Canonical. But it is also a downstream kernel with
-additional changes that may cause their own conflicts. However, there is
-generally no reason to use that particular kernel when changing it
-anyway for the sake of Xenomai.
-
->
-> *Just use the latest support long-term stable kernel with Xenomai (by no=
-w
-> 4.19-cip based) for you Ubuntu installation, just like we do for the
-> Debian-based demo images [1]. *
-> *
-> *
-> Can I patch higher version I-pipe patch for the kernel version I use?
-> (Example: for linux kernel=C2=A0version 4.15.38 can I use the I-pipe 4.1=
-9.y
-> or should I use the same version of I-pipe patch).
-
-Yes - but see my first comment on what can happen.
-
-Best regards,
 Jan
 
->
-> --best regards
-> R Gopi Krishna,
->
->
-> On Mon, Mar 30, 2020 at 10:12 PM Jan Kiszka <jan.kiszka@web.de
-> <mailto:jan.kiszka@web.de>> wrote:
->
->     On 30.03.20 10:53, gopi ratnakaram via Xenomai wrote:
->      > Team,
->      >
->      > I have a specific requirement that where i need to patch xenomai
->     3 to my
->      > linux kernel 4.15.38 which is running on Ubuntu16.04/Ubuntu18.04.
->     When I
->      > try checking with the following help from
->      >
->      > https://www.xenomai.org/pipermail/xenomai/2018-June/039004.html
->      >
->      > But, I was unable to apply/create arch specific packages.
->      >
->      > Is it possible to create ipipe patch to the corresponding kernel
->     4.15.38,
->      > if yes please let me know required steps to do the same.
->
->     It is possible but not wise unless you are deep into the I-pipe deta=
-ils.
->     But once you are, you also realize that using a distro kernel will o=
-nly
->     complicate things for this.
->
->     Just use the latest support long-term stable kernel with Xenomai (by=
- now
->     4.19-cip based) for you Ubuntu installation, just like we do for the
->     Debian-based demo images [1].
->
->     Jan
->
->     [1] https://gitlab.denx.de/Xenomai/xenomai-images
->
-
+-- 
+Siemens AG, Corporate Technology, CT RDA IOT SES-DE
+Corporate Competence Center Embedded Linux
 
