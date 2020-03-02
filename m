@@ -1,11 +1,12 @@
-From: Jan Kiszka <jan.kiszka@siemens.com>
-Subject: [PATCH] ipipe: Dump panic traces with KERN_EMERG
-Message-ID: <c4e99800-8758-acf0-1418-df9b7c289c07@siemens.com>
-Date: Mon, 6 Apr 2020 13:57:26 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+References: <CAFLxGvyr7f8bUxaEVpEwSGYEvX4FrkpGBV6qa2sR3SHq3wi_Yw@mail.gmail.com>
+ <40a67d93-847a-d67f-bbc7-a6494591e97e@siemens.com>
+In-Reply-To: <40a67d93-847a-d67f-bbc7-a6494591e97e@siemens.com>
+From: Richard Weinberger <richard.weinberger@gmail.com>
+Date: Mon, 2 Mar 2020 13:52:49 +0100
+Message-ID: <CAFLxGvz=dSU0wzn6-_EjVXe3TZaOCkHN1X0OPUBROdehHy6YSQ@mail.gmail.com>
+Subject: Re: 32bit compat mode for arm64
+Content-Type: text/plain; charset="UTF-8"
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -14,53 +15,19 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Xenomai <xenomai@xenomai.org>
+To: Jan Kiszka <jan.kiszka@siemens.com>
+Cc: xenomai@xenomai.org
 
-From: Jan Kiszka <jan.kiszka@siemens.com>
+On Mon, Mar 2, 2020 at 1:16 PM Jan Kiszka <jan.kiszka@siemens.com> wrote:
 
-This is in line with what ftrace does and ensures that setups with
-lowered log levels will not miss this important information.
+> Well, if there is a strong use case, usually proprietary legacy software
+> that refuses to be ported to 64-bit, I would not refuse such a contribution.
 
-Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
----
+This is exactly the case. The said application was designed with 32bits in mind
+and it is almost impossible to change that.
+At least I can recompile it. ;-)
 
-Corresponding patch for 4.4.y-cip will be queued as well.
-
- kernel/ipipe/tracer.c | 7 ++++---
- 1 file changed, 4 insertions(+), 3 deletions(-)
-
-diff --git a/kernel/ipipe/tracer.c b/kernel/ipipe/tracer.c
-index 2d75199b086b..d0f7cc95c799 100644
---- a/kernel/ipipe/tracer.c
-+++ b/kernel/ipipe/tracer.c
-@@ -680,7 +680,7 @@ void ipipe_trace_panic_dump(void)
- 
- 	ipipe_context_check_off();
- 
--	printk(KERN_CONT "I-pipe tracer log (%d points):\n", cnt);
-+	printk(KERN_EMERG "I-pipe tracer log (%d points):\n", cnt);
- 
- 	start = pos = WRAP_POINT_NO(panic_path->trace_pos-1);
- 
-@@ -690,7 +690,7 @@ void ipipe_trace_panic_dump(void)
- 		char info[16];
- 		int i;
- 
--		printk(KERN_CONT " %c",
-+		printk(KERN_EMERG " %c",
- 		       (point->flags & IPIPE_TFLG_HWIRQ_OFF) ? '|' : ' ');
- 
- 		for (i = IPIPE_TFLG_DOMSTATE_BITS; i >= 0; i--)
-@@ -720,7 +720,8 @@ void ipipe_trace_panic_dump(void)
- 
- 				case IPIPE_TRACE_EVENT:
- 					__ipipe_get_event_date(info,
--							       panic_path, point);
-+							       panic_path,
-+							       point);
- 					printk(KERN_CONT "%s", info);
- 					break;
- 
 -- 
-2.16.4
+Thanks,
+//richard
 
