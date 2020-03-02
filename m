@@ -1,7 +1,16 @@
-From: Richard Weinberger <richard@nod.at>
-Subject: [PATCH] docs: Remove outdated note on biarch on x86
-Date: Mon,  2 Mar 2020 21:36:59 +0100
-Message-Id: <20200302203659.9359-1-richard@nod.at>
+Subject: Re: 32bit compat mode for arm64
+References: <CAFLxGvyr7f8bUxaEVpEwSGYEvX4FrkpGBV6qa2sR3SHq3wi_Yw@mail.gmail.com>
+ <20200228221131.hvtpjrjm42ocbxjo@csclub.uwaterloo.ca>
+ <CAFLxGvyzQ4FdHx1_YyeYKTfj76KC487BvDkGPfu6wVs3oqhVLA@mail.gmail.com>
+ <20200302202538.jkj7girqce43tgp4@csclub.uwaterloo.ca>
+From: Jan Kiszka <jan.kiszka@siemens.com>
+Message-ID: <31eb9d8b-1b2a-43d6-82a7-3c3606085534@siemens.com>
+Date: Mon, 2 Mar 2020 21:33:15 +0100
+MIME-Version: 1.0
+In-Reply-To: <20200302202538.jkj7girqce43tgp4@csclub.uwaterloo.ca>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -10,34 +19,25 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
-Cc: lsorense@csclub.uwaterloo.ca, Richard Weinberger <richard@nod.at>
+To: Lennart Sorensen <lsorense@csclub.uwaterloo.ca>, Richard Weinberger <richard.weinberger@gmail.com>
+Cc: xenomai@xenomai.org
 
-Since fab9bf585638 ("cobalt: x86: Use ipipe_root_nr_syscalls") it is
-possible to run x86_32 Xenomai userspace on x86_64 kernels.
+On 02.03.20 21:25, Lennart Sorensen via Xenomai wrote:
+> On Fri, Feb 28, 2020 at 11:16:41PM +0100, Richard Weinberger wrote:
+>> Huh?
+>> I currently do so...
+>> It was broken but got fixed.
+> 
+> OK, then apparently section 3.4.1 of
+> https://xenomai.org/documentation/xenomai-3/html/README.INSTALL/ is wrong.
+> 
 
-Reported-by: Lennart Sorensen <lsorense@csclub.uwaterloo.ca>
-Signed-off-by: Richard Weinberger <richard@nod.at>
----
- doc/asciidoc/README.INSTALL.adoc | 4 +---
- 1 file changed, 1 insertion(+), 3 deletions(-)
+Sigh, outdated. Compat support was added a long time ago, prior to 3.0 
+in fact.
 
-diff --git a/doc/asciidoc/README.INSTALL.adoc b/doc/asciidoc/README.INSTALL.adoc
-index cbd2adcd54ed..c83fda8ada70 100644
---- a/doc/asciidoc/README.INSTALL.adoc
-+++ b/doc/asciidoc/README.INSTALL.adoc
-@@ -186,9 +186,7 @@ Building a _Cobalt/x86_ kernel (32/64bit)
- ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
- 
- Building _Xenomai/cobalt_ for x86 is almost the same for 32bit and 64bit
--platforms. You should note, however, that it is not possible to run
--Xenomai libraries compiled for x86_32 on a kernel compiled for x86_64,
--and conversely.
-+platforms.
- 
- Assuming that you want to build natively for a x86_64 system (x86_32
- cross-build options from x86_64 appear between brackets), you would
+Jan
+
 -- 
-2.16.4
-
+Siemens AG, Corporate Technology, CT RDA IOT SES-DE
+Corporate Competence Center Embedded Linux
 
