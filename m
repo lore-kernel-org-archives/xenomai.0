@@ -1,15 +1,8 @@
-Subject: Re: [RTnet] RTcfg: error -11
-References: <20200309155830.Horde.qT5DihtwzbpuZDudGbUV2U3@webmail.b-tu.de>
- <5d6a118f-744f-a577-3e8e-dd4edbc3e371@siemens.com>
- <3850b65e-1778-519b-4a06-17f34602a81c@b-tu.de>
-From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <48a0a4a2-c987-80d7-eecc-c5ea0ddf2bfa@siemens.com>
-Date: Tue, 10 Mar 2020 10:23:54 +0100
-MIME-Version: 1.0
-In-Reply-To: <3850b65e-1778-519b-4a06-17f34602a81c@b-tu.de>
-Content-Type: text/plain; charset="utf-8"; format="flowed"
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+From: Greg Gallagher <greg@embeddedgreg.com>
+Subject: [PATCH] arm: ipipe: Fix up the omap-gpio driver to deliver interrupts
+ properly to the pipeline.
+Date: Sun,  1 Mar 2020 23:25:04 -0500
+Message-Id: <20200302042504.8524-1-greg@embeddedgreg.com>
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -18,70 +11,236 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Benji <miethben@b-tu.de>, xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-On 10.03.20 09:09, Benji wrote:
-> On 3/9/20 7:53 PM, Jan Kiszka wrote:
->> On 09.03.20 15:58, Benji via Xenomai wrote:
->>> Hi,
->>>
->>> i try to get RTnet up and running, but there are some issues with setup.
->>>
->>> Two system are connected via a switch. Both have 2 network interface,
->>> Intel i210 and Intel 82574L. Only Intel i210 is used by Xenomai/ RTnet.
->>> One system is configured as master in 'rtnet.conf', the other one as a
->>> slave. If 'rtnet start' is executed following outputs appears.
->>>
->>> Master:
->>>
->>>> Waiting for all slaves...
->>>
->>> Slave:
->>>
->>>> Stage 1: searching for master...
->>>
->>> RT interface came up as 'rtifconfig' is shown, but both hang on there
->>> stages.
->>>
->>> At master the dmesg output are floated with messages like:
->>>
->>>> [  323.903321] rt_igb: rteth0: Reset adapter
->>>> [  323.905082] TDMA: Failed to transmit sync frame!
->>>> [  323.910082] TDMA: Failed to transmit sync frame!
->>>> [  323.915083] TDMA: Failed to transmit sync frame!
->>>> [  323.920083] TDMA: Failed to transmit sync frame!
->>>> [  323.932087] RTcfg: error -11 while sending stage 1 frame
->>>
->>> Anybody knows that error -11 means? I can't find any information on
->>> this error code.
->>
->> EAGAIN - the tx queue is filled up, no packets go out, eventually the
->> sender is out of (statically allocated) resources. Does transmission
->> work fine without RTmac/TDMA? Might be that interrupt are not coming
->> (/proc/xenomai/irq).
->>
->> Jan
->>
-> 
-> Hi,
-> 
-> i doesn't try yet without TDMA.
-> 
-> /proc/xenomai/irq:
-> 
->> cat /proc/xenomai/irq
-> IRQ         CPU0	[sync]
-> 353:           0        [reschedule]
-> 4354:          0        [timer-ipi]4355:    9995614        [timer/0]
-> 4419:         65        [virtual]
-> 
+OMAP gpio driver was changed upstream to be able to support threaded IRQ handler,
+this change impacted how the ipipe dealt with this driver. Since the ipipe expects
+a chained handler and now it's a generic one, we need to ack the event in the
+interrupt controller before calling the handler and unmask it after.
 
-Either the rteth0 is down at this point, or you have an even more 
-fundamental problem with the rt_igb. But I suspect the former.
+Level flow handler must be used for pipelined interrupts. Since the IRQ handler
+ on the root stage may be delayed until the real-time core releases the CPU, we
+need to mask the IRQ to prevent an IRQ storm when the interrupts are enabled again.
 
-Jan
+Convert wa_lock to ipipe_spinlock, since wa_lock is used in the irq_chip functions
+which when called from the head stage can't use a Linux kernel service.
 
+Add the hold/release handlers for robustness.
+
+Signed-off-by: Greg Gallagher <greg@embeddedgreg.com>
+---
+ drivers/gpio/gpio-omap.c | 120 ++++++++++++++++++++++++++++++---------
+ 1 file changed, 93 insertions(+), 27 deletions(-)
+
+diff --git a/drivers/gpio/gpio-omap.c b/drivers/gpio/gpio-omap.c
+index 39d25f599831..d52fcf5bed66 100644
+--- a/drivers/gpio/gpio-omap.c
++++ b/drivers/gpio/gpio-omap.c
+@@ -61,10 +61,11 @@ struct gpio_bank {
+ 	u32 toggle_mask;
+ #ifdef CONFIG_IPIPE
+ 	ipipe_spinlock_t lock;
++	ipipe_spinlock_t wa_lock;
+ #else
+ 	raw_spinlock_t lock;
+-#endif
+ 	raw_spinlock_t wa_lock;
++#endif
+ 	struct gpio_chip chip;
+ 	struct clk *dbck;
+ 	u32 mod_usage;
+@@ -575,18 +576,20 @@ static int omap_gpio_irq_type(struct irq_data *d, unsigned type)
+ 		goto error;
+ 	}
+ 	raw_spin_unlock_irqrestore(&bank->lock, flags);
+-
+-	if (type & (IRQ_TYPE_LEVEL_LOW | IRQ_TYPE_LEVEL_HIGH))
++#ifdef CONFIG_IPIPE
++	irq_set_handler_locked(d, handle_level_irq);
++#else
++        if (type & (IRQ_TYPE_LEVEL_LOW | IRQ_TYPE_LEVEL_HIGH))
+ 		irq_set_handler_locked(d, handle_level_irq);
+-	else if (type & (IRQ_TYPE_EDGE_FALLING | IRQ_TYPE_EDGE_RISING))
+-		/*
+-		 * Edge IRQs are already cleared/acked in irq_handler and
+-		 * not need to be masked, as result handle_edge_irq()
+-		 * logic is excessed here and may cause lose of interrupts.
+-		 * So just use handle_simple_irq.
+-		 */
+-		irq_set_handler_locked(d, handle_simple_irq);
+-
++        else if (type & (IRQ_TYPE_EDGE_FALLING | IRQ_TYPE_EDGE_RISING))
++                /*
++                 * Edge IRQs are already cleared/acked in irq_handler and
++                 * not need to be masked, as result handle_edge_irq()
++                 * logic is excessed here and may cause lose of interrupts.
++                 * So just use handle_simple_irq.
++                 */
++                irq_set_handler_locked(d, handle_simple_irq);
++#endif	
+ 	return 0;
+ 
+ error:
+@@ -759,7 +762,7 @@ static void __omap_gpio_irq_handler(struct gpio_bank *bank)
+ 
+ 		enabled = omap_get_gpio_irqbank_mask(bank);
+ 		isr = readl_relaxed(isr_reg) & enabled;
+-
++		
+ 		if (bank->level_mask)
+ 			level_mask = bank->level_mask & enabled;
+ 		else
+@@ -809,7 +812,10 @@ static void __omap_gpio_irq_handler(struct gpio_bank *bank)
+ static void omap_gpio_irq_handler(struct irq_desc *d)
+ {
+ 	struct gpio_bank *bank = irq_desc_get_handler_data(d);
++
++	d->irq_data.chip->irq_ack(&d->irq_data);
+ 	__omap_gpio_irq_handler(bank);
++	d->irq_data.chip->irq_unmask(&d->irq_data);
+ }
+ 
+ #else
+@@ -896,39 +902,31 @@ static void omap_gpio_ack_irq(struct irq_data *d)
+ 	omap_clear_gpio_irqstatus(bank, offset);
+ }
+ 
+-static void omap_gpio_mask_irq(struct irq_data *d)
++static void __omap_gpio_mask_irq(struct irq_data *d)
+ {
+ 	struct gpio_bank *bank = omap_irq_data_get_bank(d);
+ 	unsigned offset = d->hwirq;
+-	unsigned long flags;
+ 
+-	raw_spin_lock_irqsave(&bank->lock, flags);
+-	omap_set_gpio_triggering(bank, offset, IRQ_TYPE_NONE);
+ 	omap_set_gpio_irqenable(bank, offset, 0);
+-	raw_spin_unlock_irqrestore(&bank->lock, flags);
++	omap_set_gpio_triggering(bank, offset, IRQ_TYPE_NONE);
+ }
+ 
+-static void omap_gpio_mask_ack_irq(struct irq_data *d)
++static void __omap_gpio_mask_ack_irq(struct irq_data *d)
+ {
+ 	struct gpio_bank *bank = omap_irq_data_get_bank(d);
+ 	unsigned offset = d->hwirq;
+-	unsigned long flags;
+-
+-	raw_spin_lock_irqsave(&bank->lock, flags);
++	
+ 	omap_set_gpio_irqenable(bank, offset, 0);
+ 	omap_set_gpio_triggering(bank, offset, IRQ_TYPE_NONE);
+-	omap_clear_gpio_irqstatus(bank, offset);
+-	raw_spin_unlock_irqrestore(&bank->lock, flags);
++	
+ }
+ 
+-static void omap_gpio_unmask_irq(struct irq_data *d)
++static void __omap_gpio_unmask_irq(struct irq_data *d)
+ {
+ 	struct gpio_bank *bank = omap_irq_data_get_bank(d);
+ 	unsigned offset = d->hwirq;
+ 	u32 trigger = irqd_get_trigger_type(d);
+-	unsigned long flags;
+ 
+-	raw_spin_lock_irqsave(&bank->lock, flags);
+ 	omap_set_gpio_irqenable(bank, offset, 1);
+ 
+ 	/*
+@@ -943,9 +941,69 @@ static void omap_gpio_unmask_irq(struct irq_data *d)
+ 	if (trigger)
+ 		omap_set_gpio_triggering(bank, offset, trigger);
+ 
++}
++
++static void omap_gpio_mask_irq(struct irq_data *d)
++{
++	struct gpio_bank *bank = omap_irq_data_get_bank(d);
++	unsigned long flags;
++
++	raw_spin_lock_irqsave(&bank->lock, flags);
++	ipipe_lock_irq(d->irq);
++	__omap_gpio_mask_irq(d);
++	raw_spin_unlock_irqrestore(&bank->lock, flags);
++}
++
++static void omap_gpio_mask_ack_irq(struct irq_data *d)
++{
++	struct gpio_bank *bank = omap_irq_data_get_bank(d);
++	unsigned long flags;
++
++	raw_spin_lock_irqsave(&bank->lock, flags);
++	__omap_gpio_mask_ack_irq(d);
++	ipipe_lock_irq(d->irq);
++	raw_spin_unlock_irqrestore(&bank->lock, flags);
++}
++
++static void omap_gpio_unmask_irq(struct irq_data *d)
++{
++	struct gpio_bank *bank = omap_irq_data_get_bank(d);
++	unsigned long flags;
++	void __iomem *enabled_reg = NULL;
++	
++	raw_spin_lock_irqsave(&bank->lock, flags);
++	__omap_gpio_unmask_irq(d);	
++	ipipe_unlock_irq(d->irq);
++	raw_spin_unlock_irqrestore(&bank->lock, flags);
++	enabled_reg = bank->base + bank->regs->irqenable;
++}
++
++
++
++#ifdef CONFIG_IPIPE
++
++static void omap_gpio_irq_hold(struct irq_data *d)
++{
++	struct gpio_bank *bank = omap_irq_data_get_bank(d);
++	unsigned long flags;
++
++	raw_spin_lock_irqsave(&bank->lock, flags);
++	__omap_gpio_mask_ack_irq(d);
+ 	raw_spin_unlock_irqrestore(&bank->lock, flags);
+ }
+ 
++static void omap_gpio_irq_release(struct irq_data *d)
++{
++	struct gpio_bank *bank = omap_irq_data_get_bank(d);
++	unsigned long flags;
++
++	raw_spin_lock_irqsave(&bank->lock, flags);
++	__omap_gpio_unmask_irq(d);	
++	raw_spin_unlock_irqrestore(&bank->lock, flags);
++}
++
++#endif
++
+ /*---------------------------------------------------------------------*/
+ 
+ static int omap_mpuio_suspend_noirq(struct device *dev)
+@@ -1240,7 +1298,11 @@ static int omap_gpio_chip_init(struct gpio_bank *bank, struct irq_chip *irqc)
+ 
+ 	irq = &bank->chip.irq;
+ 	irq->chip = irqc;
++#ifdef CONFIG_IPIPE
++	irq->handler = handle_level_irq;
++#else 
+ 	irq->handler = handle_bad_irq;
++#endif
+ 	irq->default_type = IRQ_TYPE_NONE;
+ 	irq->num_parents = 1;
+ 	irq->parents = &bank->irq;
+@@ -1303,6 +1365,10 @@ static int omap_gpio_probe(struct platform_device *pdev)
+ 	irqc->irq_mask = omap_gpio_mask_irq,
+ 	irqc->irq_mask_ack = omap_gpio_mask_ack_irq,
+ 	irqc->irq_unmask = omap_gpio_unmask_irq,
++#ifdef CONFIG_IPIPE
++	irqc->irq_hold = omap_gpio_irq_hold,
++	irqc->irq_release = omap_gpio_irq_release,
++#endif
+ 	irqc->irq_set_type = omap_gpio_irq_type,
+ 	irqc->irq_set_wake = omap_gpio_wake_enable,
+ 	irqc->irq_bus_lock = omap_gpio_irq_bus_lock,
 -- 
-Siemens AG, Corporate Technology, CT RDA IOT SES-DE
-Corporate Competence Center Embedded Linux
+2.17.1
+
 
