@@ -1,15 +1,12 @@
-Subject: Re: [xenomai-images PATCH 0/2] Add support for x86(32bit)
-References: <20200214083819.31451-1-Quirin.Gylstorff@siemens.com>
- <44e9c257-f95b-9d39-8b0c-b81a6e91bae2@siemens.com>
- <278881260.559316.1584996188827@mail.yahoo.com>
-From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <a1c16d83-8230-693b-a3c4-d0c524331a92@siemens.com>
-Date: Mon, 23 Mar 2020 21:49:16 +0100
-MIME-Version: 1.0
-In-Reply-To: <278881260.559316.1584996188827@mail.yahoo.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
+From: "Bradley Valdenebro Peter (DC-AE/ESW52)"
+ <Peter.BradleyValdenebro@boschrexroth.nl>
+Subject: IRQ's off issue
+Date: Mon, 2 Mar 2020 11:03:39 +0000
+Message-ID: <3594e210190a4c74ae039e2a2f9859f3@boschrexroth.nl>
 Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+MIME-Version: 1.0
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -18,20 +15,53 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Alec Ari <neotheuser@ymail.com>, Xenomai <xenomai@xenomai.org>
+To: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On 23.03.20 21:43, Alec Ari wrote:
-> Don't you need to modify entry_32.S for IPIPE?
-> 
-
-Subject might have been misleading: It only adds support to the image 
-generator to build 32-bit userland. The kernel remains 64-bit. This 
-allows us to model a product scenario on top - and to stress the compat 
-code path in the test lab this way.
-
-Jan
-
--- 
-Siemens AG, Corporate Technology, CT RDA IOT SES-DE
-Corporate Competence Center Embedded Linux
+SGVsbG8gWGVub21haSB0ZWFtLA0KDQpXZSBuZWVkIHlvdSBoZWxwIHVuZGVyc3RhbmRpbmcgYW5k
+IHNvbHZpbmcgYSBwb3NzaWJsZSBJUlEncyBvZmYgaXNzdWUuDQpXZSBhcmUgcnVubmluZyBhIFhl
+bm9tYWkvTGludXggc2V0dXAgb24gYSBaeW5xIFotNzAyMCBTb0MgKFdlIHJ1biBMaW51eCBvbiBD
+UFUwIGFuZCBYZW5vbWFpIG9uIENQVTEpOg0KIC0gTGludXggdmVyc2lvbiA0LjQuMC14aWxpbngg
+KGdjYyB2ZXJzaW9uIDguMy4wIChCdWlsZHJvb3QgMjAxOS4wMi0wMDA4MC1nYzMxZDQ4ZSkgKSAj
+MSBTTVAgUFJFRU1QVA0KIC0gaXBpcGUgQVJNIHBhdGNoICM4DQogLSBYZW5vbWFpIDMuMC4xMA0K
+DQpMYXRlbHkgd2UgaGF2ZSBiZWVuIGV4cGVyaWVuY2luZyB0aGF0IG91ciBoaWdoZXN0IHByaW9y
+aXR5IHJlYWwgdGltZSBYZW5vbWFpIHRocmVhZCBzb3J0IG9mIGhhbHRzIGZvciBhcm91bmQgMW1z
+IGV2ZXJ5IG5vdyBhbmQgdGhlbi4NCkFmdGVyIHNvbWUgaW52ZXN0aWdhdGlvbiBhbmQgdGVzdHMg
+d2UgZGVjaWRlZCB0byBlbmFibGUgaXBpcGUgdHJhY2UgdG8gbWVhc3VyZSBJUlFzLW9mZiB0aW1l
+cy4gU2VlIGJlbG93IHRoZSBvdXRwdXQgb2YgL3Byb2MvaXBpcGUvdHJhY2UvbWF4DQoNCkktcGlw
+ZSB3b3JzdC1jYXNlIHRyYWNpbmcgc2VydmljZSBvbiA0LjQuMC14aWxpbngvaXBpcGUgcmVsZWFz
+ZSAjOA0KLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0t
+LS0tLS0tLS0tLQ0KQ1BVOiAwLCBCZWdpbjogMjk0NDM2NjIxNjU0OSBjeWNsZXMsIFRyYWNlIFBv
+aW50czogMiAoLTEwLysxKSwgTGVuZ3RoOiA3ODAgdXMNCkNhbGlicmF0ZWQgbWluaW11bSB0cmFj
+ZS1wb2ludCBvdmVyaGVhZDogMC4yODggdXMNCg0KICstLS0tLSBIYXJkIElSUXMgKCd8JzogbG9j
+a2VkKQ0KIHwrLS0gWGVub21haQ0KIHx8Ky0gTGludXggKCcqJzogZG9tYWluIHN0YWxsZWQsICcr
+JzogY3VycmVudCwgJyMnOiBjdXJyZW50K3N0YWxsZWQpDQogfHx8ICAgICAgICAgICAgICAgICAg
+ICAgICstLS0tLS0tLS0tIERlbGF5IGZsYWcgKCcrJzogPiAxIHVzLCAnISc6ID4gMTAgdXMpDQog
+fHx8ICAgICAgICAgICAgICAgICAgICAgIHwgICAgICAgICstIE5NSSBub2lzZSAoJ04nKQ0KIHx8
+fCAgICAgICAgICAgICAgICAgICAgICB8ICAgICAgICB8DQogICAgICAgICAgVHlwZSAgICBVc2Vy
+IFZhbC4gICBUaW1lICAgIERlbGF5ICBGdW5jdGlvbiAoUGFyZW50KQ0KIHwgK2JlZ2luICAgMHg4
+MDAwMDAwMSAgIC0xMiAgICAgIDAuNDE0ICBpcGlwZV9zdGFsbF9yb290KzB4NTQgKDwwMDAwMDAw
+MD4pDQogfCAjZW5kICAgICAweDgwMDAwMDAxICAgLTExICAgICAgMC44MjIgIGlwaXBlX3N0YWxs
+X3Jvb3QrMHg4YyAoPDAwMDAwMDAwPikNCiB8ICNiZWdpbiAgIDB4ODAwMDAwMDEgICAtMTEgICAg
+ICAwLjQxNCAgaXBpcGVfdGVzdF9hbmRfc3RhbGxfcm9vdCsweDVjICg8MDAwMDAwMDA+KQ0KIHwg
+I2VuZCAgICAgMHg4MDAwMDAwMSAgIC0xMCAgICAgIDEuMDk1ICBpcGlwZV90ZXN0X2FuZF9zdGFs
+bF9yb290KzB4OTggKDwwMDAwMDAwMD4pDQogfCAjYmVnaW4gICAweDkwMDAwMDAwICAgIC05ICAg
+ICAgMC42NjUgIF9faXJxX3N2YysweDU4IChhcmNoX2NwdV9pZGxlKzB4MCkNCiB8ICNiZWdpbiAg
+IDB4MDAwMDAwMjUgICAgLTggICAgICAyLjg4MyAgX19pcGlwZV9ncmFiX2lycSsweDM4ICg8MDAw
+MDAwMDA+KQ0KIHwjKlsgIDU1OF0gU2FtcGxlSSA0OSAgICAtNSAgICAgIDIuNjE5ICB4bnRocmVh
+ZF9yZXN1bWUrMHg4OCAoPDAwMDAwMDAwPikNCiB8IypbICAgIDBdIC08Pz4tICAgLTEgICAgLTMg
+ICAgICAyLjA1MiAgX19feG5zY2hlZF9ydW4rMHhmYyAoPDAwMDAwMDAwPikNCiB8ICNlbmQgICAg
+IDB4MDAwMDAwMjUgICAgLTEgICAgICAwLjc2MCAgX19pcGlwZV9ncmFiX2lycSsweDdjICg8MDAw
+MDAwMDA+KQ0KIHwgI2VuZCAgICAgMHg5MDAwMDAwMCAgICAgMCAgICAgIDAuNTMwICBfX2lwaXBl
+X2Zhc3Rfc3ZjX2lycV9leGl0KzB4MWMgKGFyY2hfY3B1X2lkbGUrMHgwKQ0KPnwgI2JlZ2luICAg
+MHg4MDAwMDAwMCAgICAgMCEgNzgwLjExMCAgYXJjaF9jcHVfaWRsZSsweDljICg8MDAwMDAwMDA+
+KQ0KPHwgK2VuZCAgICAgMHg4MDAwMDAwMCAgIDc4MCAgICAgIDAuNTcwICBpcGlwZV91bnN0YWxs
+X3Jvb3QrMHg2NCAoPDAwMDAwMDAwPikNCiB8ICtiZWdpbiAgIDB4OTAwMDAwMDAgICA3ODAgICAg
+ICAwLjAwMCAgX19pcnFfc3ZjKzB4NTggKGlwaXBlX3Vuc3RhbGxfcm9vdCsweDY4KQ0KDQoNCldl
+IGhhdmUgdHJvdWJsZSB1bmRlcnN0YW5kaW5nIHRoZSBvdXRwdXQgYnV0IHdlIGNhbiBzZWUgYSBt
+YXggbGVuZ3RoIG9mIDc4MHVzIG9uIENQVTAuIFdlIGZpbmQgdGhpcyB2YWx1ZSBleHRyZW1lbHkg
+aGlnaC4NCldpdGggb3VyIGN1cnJlbnQgcmVxdWlyZW1lbnRzIGFueXRoaW5nIGJleW9uZCAxMHVz
+IGlzIG5vdCBhY2NlcHRhYmxlLg0KDQpDYW4gc29tZW9uZSB3aXRoIGV4cGVyaWVuY2Ugd2l0aCB0
+aGUgaXBpcGUgdHJhY2VyIHBsZWFzZSBoZWxwIHVzIHVuZGVyc3RhbmQgd2hhdCBpcyBnb2luZyBv
+biBhbmQgaG93IGNhbiB3ZSBmaXggaXQ/DQoNClRoYW5rcyBpbiBhZHZhbmNlIGZvciB5b3VyIHN1
+cHBvcnQuDQoNCkJlc3QgcmVnYXJkcy4NClBldGVyIEJyYWRsZXkNCuKAiw0K
 
