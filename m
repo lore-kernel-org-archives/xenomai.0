@@ -1,17 +1,15 @@
-Subject: =?utf-8?q?Re=3A_rt=5Ftask=5Funblock=28=29_POSIX_alternative?=
-Date: Thu, 09 Apr 2020 17:00:09 +0200
-From: =?utf-8?q?Petr_=c4=8cervenka?= <grugh@centrum.cz>
-References: <20200407154117.5D7D71C2@centrum.cz>,
- <b9ce43ab-526d-71b8-c761-150dc7c1fd3f@siemens.com>,
- <20200407171816.E0B3979D@centrum.cz>,
- <CAFLxGvx2EhOgUnB1VkW+7TendLUcsZ0XGGcwYhiPw7PcxwFkTw@mail.gmail.com>,
- <20200408114406.6119E0D9@centrum.cz>
- <CAFLxGvx9-awne2He+ULqOzwf0cGae1s_k+-b8tdiM+uT67+cYg@mail.gmail.com>
-In-Reply-To: <CAFLxGvx9-awne2He+ULqOzwf0cGae1s_k+-b8tdiM+uT67+cYg@mail.gmail.com>
+Subject: Re: IRQ's off issue
+References: <3594e210190a4c74ae039e2a2f9859f3@boschrexroth.nl>
+ <c6cc67a3-c7cb-adc6-f0af-1d4161b95fad@siemens.com>
+ <e2f386eeed1e491891bff9bb94efd336@boschrexroth.nl>
+From: Jan Kiszka <jan.kiszka@siemens.com>
+Message-ID: <411693a4-c812-cabd-6b14-28ac6ceefd7f@siemens.com>
+Date: Mon, 2 Mar 2020 14:26:22 +0100
 MIME-Version: 1.0
-Message-Id: <20200409170009.5B0DAA77@centrum.cz>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+In-Reply-To: <e2f386eeed1e491891bff9bb94efd336@boschrexroth.nl>
+Content-Type: text/plain; charset="utf-8"; format="flowed"
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -20,195 +18,103 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: =?utf-8?q?Richard_Weinberger?= <richard.weinberger@gmail.com>
-Cc: Jan Kiszka <jan.kiszka@siemens.com>, Xenomai <xenomai@xenomai.org>
+To: "Bradley Valdenebro Peter (DC-AE/ESW52)" <Peter.BradleyValdenebro@boschrexroth.nl>, "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-> BTW:
-> Why do you think nothing can interrupt a read() from a timerfd?
-> If read() blocks on a timerfd the calling thread will be put into
-> interruptable sleep.
-=C2=A0
-"I" was not able to send a signal to the task and interrupt it.
-Here is an example. Please let me know, how to improve it to interrupt the =
-read() before its timeout:
-=C2=A0
-#include <math.h>
-#include <pthread.h>
-#include <stdint.h>
-#include <signal.h>
-#include <stdio.h>
-#include <string.h>
-#include <sys/mman.h>
-#include <sys/timerfd.h>
-#include <unistd.h>
+On 02.03.20 14:09, Bradley Valdenebro Peter (DC-AE/ESW52) wrote:
+> Hello Jan,
+> 
+> Thanks for your fast response.
+> 
+> Power management is not active but if the ipipe trace IRQ's off shows the maximum time without an interrupt the value 780us might be alright.
+> We are currently running our highest priority real time Xenomai thread with a period of 1ms.
+> If we change the thread to a period of 125us we can see the value of the ipipe tracing dropping to 115us.
+> 
+> We were under the assumption that the ipipe trace IRQ's off shows the longest time interrupts have been disabled and not the longest time without an interrupt.
+> Is this assumption incorrect?
 
-#define AUTO_KILL
+Yes, but it might be misguided by improper instrumentations around going 
+idle. If interrupts were actually off during wfi, we would never return 
+from it.
 
-#define SECOND=C2=A0 1000000000l=C2=A0=C2=A0=C2=A0=C2=A0 // ns
-#define PERIOD=C2=A0 (5 * SECOND)=C2=A0=C2=A0=C2=A0 // ns
-#define SLEEP=C2=A0=C2=A0 (1 * SECOND)=C2=A0=C2=A0=C2=A0 // ns
+It's better to use the break-trace feature of the ipipe tracer 
+(xntrace_user_freeze), capturing the point where your application needs 
+to run and detected an exceptional (or just new maximum) delay. This is 
+also how the "latency" tool uses is.
 
-using namespace std;
+Jan
 
-static pid_t mainTask_pid;
-static pthread_t task;
-static int timer_fd;
-static bool end =3D false;
+> 
+> Regards.
+> Peter Bradley.
+> ​
+> 
+> -----Original Message-----
+> From: Jan Kiszka <jan.kiszka@siemens.com>
+> Sent: 02 March 2020 13:45
+> To: Bradley Valdenebro Peter (DC-AE/ESW52) <Peter.BradleyValdenebro@boschrexroth.nl>; xenomai@xenomai.org
+> Subject: Re: IRQ's off issue
+> 
+> On 02.03.20 12:03, Bradley Valdenebro Peter (DC-AE/ESW52) via Xenomai wrote:
+>> Hello Xenomai team,
+>>
+>> We need you help understanding and solving a possible IRQ's off issue.
+>> We are running a Xenomai/Linux setup on a Zynq Z-7020 SoC (We run Linux on CPU0 and Xenomai on CPU1):
+>>    - Linux version 4.4.0-xilinx (gcc version 8.3.0 (Buildroot 2019.02-00080-gc31d48e) ) #1 SMP PREEMPT
+>>    - ipipe ARM patch #8
+>>    - Xenomai 3.0.10
+>>
+>> Lately we have been experiencing that our highest priority real time Xenomai thread sort of halts for around 1ms every now and then.
+>> After some investigation and tests we decided to enable ipipe trace to
+>> measure IRQs-off times. See below the output of /proc/ipipe/trace/max
+>>
+>> I-pipe worst-case tracing service on 4.4.0-xilinx/ipipe release #8
+>> -------------------------------------------------------------
+>> CPU: 0, Begin: 2944366216549 cycles, Trace Points: 2 (-10/+1), Length:
+>> 780 us Calibrated minimum trace-point overhead: 0.288 us
+>>
+>>    +----- Hard IRQs ('|': locked)
+>>    |+-- Xenomai
+>>    ||+- Linux ('*': domain stalled, '+': current, '#': current+stalled)
+>>    |||                      +---------- Delay flag ('+': > 1 us, '!': > 10 us)
+>>    |||                      |        +- NMI noise ('N')
+>>    |||                      |        |
+>>             Type    User Val.   Time    Delay  Function (Parent)
+>>    | +begin   0x80000001   -12      0.414  ipipe_stall_root+0x54 (<00000000>)
+>>    | #end     0x80000001   -11      0.822  ipipe_stall_root+0x8c (<00000000>)
+>>    | #begin   0x80000001   -11      0.414  ipipe_test_and_stall_root+0x5c (<00000000>)
+>>    | #end     0x80000001   -10      1.095  ipipe_test_and_stall_root+0x98 (<00000000>)
+>>    | #begin   0x90000000    -9      0.665  __irq_svc+0x58 (arch_cpu_idle+0x0)
+>>    | #begin   0x00000025    -8      2.883  __ipipe_grab_irq+0x38 (<00000000>)
+>>    |#*[  558] SampleI 49    -5      2.619  xnthread_resume+0x88 (<00000000>)
+>>    |#*[    0] -<?>-   -1    -3      2.052  ___xnsched_run+0xfc (<00000000>)
+>>    | #end     0x00000025    -1      0.760  __ipipe_grab_irq+0x7c (<00000000>)
+>>    | #end     0x90000000     0      0.530  __ipipe_fast_svc_irq_exit+0x1c (arch_cpu_idle+0x0)
+>>> | #begin   0x80000000     0! 780.110  arch_cpu_idle+0x9c (<00000000>)
+>> <| +end     0x80000000   780      0.570  ipipe_unstall_root+0x64 (<00000000>)
+>>    | +begin   0x90000000   780      0.000  __irq_svc+0x58 (ipipe_unstall_root+0x68)
+> 
+> Looks like the CPU was idle and received no IRQ during that time. Is some power management active? Is some timer misprogrammed? Or where should the next interrupt have from?
+> 
+>>
+>> We have trouble understanding the output but we can see a max length of 780us on CPU0. We find this value extremely high.
+>> With our current requirements anything beyond 10us is not acceptable.
+> 
+> 780 us is definitely off on that target, but 10 us will likely be too ambitious as well. Maybe, maybe, with well configured strict core isolation, practically no Linux load on the RT core and your critical RT code path always in cache... But I would consider that highly risky, given this low-end CPU on that target SoC.
+> 
+> Jan
+> 
+>>
+>> Can someone with experience with the ipipe tracer please help us understand what is going on and how can we fix it?
+>>
+>> Thanks in advance for your support.
+>>
+>> Best regards.
+>> Peter Bradley
+>> ​
+>>
+> 
 
-void signalHandler(int signal) {
-=C2=A0=C2=A0=C2=A0 int err;
-=C2=A0=C2=A0=C2=A0 printf("Signal handler: %d\n", signal);
-=C2=A0=C2=A0=C2=A0 end =3D true;
-=C2=A0=C2=A0=C2=A0 err =3D pthread_kill(task, SIGINT);
-=C2=A0=C2=A0=C2=A0 if (err !=3D 0) {
-=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 printf("pthread_kill failed: %d =
-(%s)\n", err, strerror(-err));
-=C2=A0=C2=A0=C2=A0 }
-=C2=A0=C2=A0=C2=A0 printf("Signal handler end\n");
-}
-
-void timediff (struct timespec *result, const struct timespec *t1, const st=
-ruct timespec *t2) {
-=C2=A0=C2=A0=C2=A0 result->tv_sec =3D t2->tv_sec - t1->tv_sec;
-=C2=A0=C2=A0=C2=A0 result->tv_nsec =3D t2->tv_nsec - t1->tv_nsec;
-=C2=A0=C2=A0=C2=A0 if (result->tv_nsec >=3D SECOND) {
-=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 result->tv_nsec -=3D SECOND;
-=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 result->tv_sec++;
-=C2=A0=C2=A0=C2=A0 }
-=C2=A0=C2=A0=C2=A0 if (result->tv_nsec < 0) {
-=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 result->tv_nsec +=3D SECOND;
-=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 result->tv_sec--;
-=C2=A0=C2=A0=C2=A0 }
-}
-
-static void *taskHandler(void *cookie) {
-=C2=A0=C2=A0=C2=A0 int err;
-
-=C2=A0=C2=A0=C2=A0 printf("Task started\n");
-
-=C2=A0=C2=A0=C2=A0 signal(SIGINT, signalHandler);
-=C2=A0=C2=A0=C2=A0 signal(SIGTERM, signalHandler);
-
-=C2=A0=C2=A0=C2=A0 // Get current time
-=C2=A0=C2=A0=C2=A0 struct timespec start;
-=C2=A0=C2=A0=C2=A0 clock_gettime(CLOCK_MONOTONIC, &start);
-
-=C2=A0=C2=A0=C2=A0 // Set task period
-=C2=A0=C2=A0=C2=A0 timer_fd =3D timerfd_create(CLOCK_MONOTONIC, 0);
-=C2=A0=C2=A0=C2=A0 struct itimerspec timer_conf;
-=C2=A0=C2=A0=C2=A0 timer_conf.it_value.tv_sec=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
- =3D start.tv_sec;
-=C2=A0=C2=A0=C2=A0 timer_conf.it_value.tv_nsec=C2=A0=C2=A0=C2=A0=C2=A0 =3D =
-start.tv_nsec;
-=C2=A0=C2=A0=C2=A0 timer_conf.it_interval.tv_sec=C2=A0=C2=A0 =3D PERIOD / S=
-ECOND;
-=C2=A0=C2=A0=C2=A0 timer_conf.it_interval.tv_nsec=C2=A0 =3D PERIOD % SECOND=
-;
-=C2=A0=C2=A0=C2=A0 printf("Set period: %.3gs\n", timer_conf.it_interval.tv_=
-sec + (double) timer_conf.it_interval.tv_nsec / SECOND);
-=C2=A0=C2=A0=C2=A0 err =3D timerfd_settime(timer_fd, TFD_TIMER_ABSTIME, &ti=
-mer_conf, NULL);
-=C2=A0=C2=A0=C2=A0 if (err !=3D 0) {
-=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 printf("timerfd_settime failed: =
-%d (%s)\n", err, strerror(-err));
-=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 return NULL;
-=C2=A0=C2=A0=C2=A0 }
-
-=C2=A0=C2=A0=C2=A0 // Main cycle
-=C2=A0=C2=A0=C2=A0 while (!end) {
-=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 // Wait next period
-=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 uint64_t ticks;
-=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 ::read(timer_fd, &ticks, sizeof =
-(ticks));
-
-=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 // Get current time
-=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 struct timespec now, result;
-=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 clock_gettime(CLOCK_MONOTONIC, &=
-now);
-
-=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 // Printf wait time
-=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 timediff(&result, &start, &now);
-=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 printf("Task livind: %.3gs\n", r=
-esult.tv_sec + (double) result.tv_nsec / SECOND);
-=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 start =3D now;
-=C2=A0=C2=A0=C2=A0 }
-
-=C2=A0=C2=A0=C2=A0 ::close(timer_fd);
-=C2=A0=C2=A0=C2=A0 printf("Task ended\n");
-}
-
-/*
-=C2=A0*=20
-=C2=A0*/
-int main(int argc, char** argv) {
-=C2=A0=C2=A0=C2=A0 unsigned long overruns;
-=C2=A0=C2=A0=C2=A0 int err;
-
-=C2=A0=C2=A0=C2=A0 mlockall(MCL_CURRENT | MCL_FUTURE);
-
-=C2=A0=C2=A0=C2=A0 // Setup signal handler
-=C2=A0=C2=A0=C2=A0 signal(SIGINT, signalHandler);
-=C2=A0=C2=A0=C2=A0 signal(SIGTERM, signalHandler);
-
-=C2=A0=C2=A0=C2=A0 // Get current process ID
-=C2=A0=C2=A0=C2=A0 mainTask_pid =3D getpid();
-
-=C2=A0=C2=A0=C2=A0 // Make main task real-time (prio 1)
-=C2=A0=C2=A0=C2=A0 sched_param param;
-=C2=A0=C2=A0=C2=A0 memset(&param, 0, sizeof(param));
-=C2=A0=C2=A0=C2=A0 param.sched_priority =3D 1;
-=C2=A0=C2=A0=C2=A0 err =3D sched_setscheduler(mainTask_pid, SCHED_FIFO, &pa=
-ram);
-=C2=A0=C2=A0=C2=A0 if (err !=3D 0) {
-=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 printf("sched_setscheduler faile=
-d: %d (%s)\n", err, strerror(-err));
-=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 goto sched_setscheduler_err;
-=C2=A0=C2=A0=C2=A0 }
-
-=C2=A0=C2=A0=C2=A0 // Create new task (prio 2)
-=C2=A0=C2=A0=C2=A0 pthread_attr_t tattr;
-=C2=A0=C2=A0=C2=A0 pthread_attr_init(&tattr);
-=C2=A0=C2=A0=C2=A0 pthread_attr_setinheritsched(&tattr, PTHREAD_EXPLICIT_SC=
-HED);
-=C2=A0=C2=A0=C2=A0 pthread_attr_setschedpolicy(&tattr, SCHED_FIFO);
-=C2=A0=C2=A0=C2=A0 memset(&param, 0, sizeof (param));
-=C2=A0=C2=A0=C2=A0 param.sched_priority =3D 2;
-=C2=A0=C2=A0=C2=A0 pthread_attr_setschedparam(&tattr, &param);
-=C2=A0=C2=A0=C2=A0 err =3D pthread_create(&task, &tattr, taskHandler, NULL)=
-;
-=C2=A0=C2=A0=C2=A0 if (err !=3D 0) {
-=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 printf("pthread_create failed: %=
-d (%s)\n", err, strerror(-err));
-=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 goto pthread_create_err;
-=C2=A0=C2=A0=C2=A0 }
-
-#ifndef AUTO_KILL
-=C2=A0=C2=A0=C2=A0 printf("Press ^C to stop!\n");
-=C2=A0=C2=A0=C2=A0 do {
-=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 pause();
-=C2=A0=C2=A0=C2=A0 } while(!end);
-#else
-=C2=A0=C2=A0=C2=A0 usleep(SLEEP / 1000);
-
-=C2=A0=C2=A0=C2=A0 // Call of signal handler
-=C2=A0=C2=A0=C2=A0 err =3D kill(0, SIGINT);=C2=A0 // THE ONLY ONE WHICH WOR=
-KS !!!
-=C2=A0=C2=A0=C2=A0 //err =3D kill(getpid(), SIGINT);
-=C2=A0=C2=A0=C2=A0 //err =3D kill(mainTask_pid, SIGINT);
-=C2=A0=C2=A0=C2=A0 //err =3D pthread_kill(pthread_self(), SIGINT);
-=C2=A0=C2=A0=C2=A0 //err =3D pthread_kill(task, SIGINT);
-=C2=A0=C2=A0=C2=A0 if (err !=3D 0) {
-=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 printf("pthread_kill failed: %d =
-(%s)\n", err, strerror(-err));
-=C2=A0=C2=A0=C2=A0 }
-#endif
-
-=C2=A0=C2=A0=C2=A0 printf("Waiting for join\n");
-=C2=A0=C2=A0=C2=A0 //pthread_cancel(task);
-=C2=A0=C2=A0=C2=A0 pthread_join(task, NULL);
-pthread_create_err:
-sched_setaffinity_err:
-sched_setscheduler_err:
-=C2=A0=C2=A0=C2=A0 return 0;
-}
+-- 
+Siemens AG, Corporate Technology, CT RDA IOT SES-DE
+Corporate Competence Center Embedded Linux
 
