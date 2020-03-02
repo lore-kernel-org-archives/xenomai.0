@@ -1,16 +1,16 @@
-From: Lange Norbert <norbert.lange@andritz.com>
-Subject: RE: Ipipe-Patch for kernel version 5.4.23
-Date: Mon, 2 Mar 2020 16:11:57 +0000
-Message-ID: <VI1PR05MB5917E4F66562046953DD3B1CF6E70@VI1PR05MB5917.eurprd05.prod.outlook.com>
+MIME-Version: 1.0
 References: <DB8PR09MB3612215A31188B5C00AD779BF0E70@DB8PR09MB3612.eurprd09.prod.outlook.com>
  <c4a79189-6696-a109-97f6-8cadbb36923e@siemens.com>
  <VI1PR05MB5917AF77FA0B8FCCC934C810F6E70@VI1PR05MB5917.eurprd05.prod.outlook.com>
  <d761d87d-f0c4-4bb0-17aa-694121620d17@siemens.com>
-In-Reply-To: <d761d87d-f0c4-4bb0-17aa-694121620d17@siemens.com>
-Content-Language: en-US
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-MIME-Version: 1.0
+ <VI1PR05MB5917E4F66562046953DD3B1CF6E70@VI1PR05MB5917.eurprd05.prod.outlook.com>
+In-Reply-To: <VI1PR05MB5917E4F66562046953DD3B1CF6E70@VI1PR05MB5917.eurprd05.prod.outlook.com>
+From: Greg Gallagher <greg@embeddedgreg.com>
+Date: Mon, 2 Mar 2020 11:24:56 -0500
+Message-ID: <CALLqZ8Rv3pQBM4aOW7=Qb0Gfg37_GFGUgN9cLGtE8fBhi7mStw@mail.gmail.com>
+Subject: Re: Ipipe-Patch for kernel version 5.4.23
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -19,83 +19,166 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jan Kiszka <jan.kiszka@siemens.com>, "Xenomai (xenomai@xenomai.org)" <xenomai@xenomai.org>
+To: Lange Norbert <norbert.lange@andritz.com>
+Cc: Jan Kiszka <jan.kiszka@siemens.com>, "Xenomai (xenomai@xenomai.org)" <xenomai@xenomai.org>
 
-DQoNCj4gLS0tLS1PcmlnaW5hbCBNZXNzYWdlLS0tLS0NCj4gRnJvbTogSmFuIEtpc3prYSA8amFu
-Lmtpc3prYUBzaWVtZW5zLmNvbT4NCj4gU2VudDogTW9udGFnLCAyLiBNw6RyeiAyMDIwIDE2OjU5
-DQo+IFRvOiBMYW5nZSBOb3JiZXJ0IDxub3JiZXJ0LmxhbmdlQGFuZHJpdHouY29tPg0KPiBTdWJq
-ZWN0OiBSZTogSXBpcGUtUGF0Y2ggZm9yIGtlcm5lbCB2ZXJzaW9uIDUuNC4yMw0KPg0KPiBOT04t
-QU5EUklUWiBTT1VSQ0U6IEJFIENBVVRJT1VTIFdJVEggQ09OVEVOVCwgTElOS1MgT1INCj4gQVRU
-QUNITUVOVFMuDQo+DQo+DQo+IE9mZmxpc3QgYnkgaW50ZW50aW9uPw0KDQpOb3BlLCBqdXN0IE91
-dGxvb2sgaGF0aW5nIG1lLg0KDQpOb3JiZXJ0DQoNCj4NCj4gSmFuDQo+DQo+IE9uIDAyLjAzLjIw
-IDE2OjI2LCBMYW5nZSBOb3JiZXJ0IHdyb3RlOg0KPiA+DQo+ID4NCj4gPj4gLS0tLS1PcmlnaW5h
-bCBNZXNzYWdlLS0tLS0NCj4gPj4gRnJvbTogWGVub21haSA8eGVub21haS1ib3VuY2VzQHhlbm9t
-YWkub3JnPiBPbiBCZWhhbGYgT2YgSmFuDQo+IEtpc3prYQ0KPiA+PiB2aWEgWGVub21haQ0KPiA+
-PiBTZW50OiBNb250YWcsIDIuIE3DpHJ6IDIwMjAgMTM6MzgNCj4gPj4gVG86IFJhbGYgTW9kZXIg
-PHJhbGYubW9kZXJAaGJrd29ybGQuY29tPjsgeGVub21haUB4ZW5vbWFpLm9yZw0KPiA+PiBTdWJq
-ZWN0OiBSZTogSXBpcGUtUGF0Y2ggZm9yIGtlcm5lbCB2ZXJzaW9uIDUuNC4yMw0KPiA+Pg0KPiA+
-PiBOT04tQU5EUklUWiBTT1VSQ0U6IEJFIENBVVRJT1VTIFdJVEggQ09OVEVOVCwgTElOS1MgT1IN
-Cj4gQVRUQUNITUVOVFMuDQo+ID4+DQo+ID4+DQo+ID4+IE9uIDAyLjAzLjIwIDExOjAwLCBSYWxm
-IE1vZGVyIHZpYSBYZW5vbWFpIHdyb3RlOg0KPiA+Pj4gSGVsbG8gZXZlcnlvbmUsDQo+ID4+PiBJ
-IG5lZWQgdGhlIGtlcm5lbCB2ZXJzaW9uIDUuNC4yMyBpbiBhbiBlbWJlZGRlZCBsaW51eCBwcm9q
-ZWN0IGJlY2F1c2UNCj4gb2YNCj4gPj4gZHJpdmVyIHN0dWZmIGJ1dCBhbHNvIHRoZSBYZW5vbWFp
-IGV4dGVuc2lvbi4gSG93IGJpZyBpcyB0aGUgcHJvYmFiaWxpdHkNCj4gdGhhdCBhbg0KPiA+PiBJ
-LXBpcGUgcGF0Y2ggZm9yIHRoZSA1LjQgdmVyc2lvbiB3aWxsIGJlIHJlbGVhc2VkIGluIHRoZSBu
-ZXh0IDIgdG8gMyBtb250aHM/DQo+ID4+DQo+ID4+IEkgd291bGQgZmlyc3Qgb2YgYWxsIHNheSB0
-aGF0IGl0J3MgPjAuIEJ1dCBiZXlvbmQgdGhhdCwgaXQgZGVwZW5kcyBvbiB0aGUNCj4gPj4gYXJj
-aGl0ZWN0dXJlOiB4ODYgc2hvdWxkIGJlIGF2YWlsYWJsZSBvbiA1LjQgaW4gdGhlIG5leHQgbW9u
-dGhzIHdpdGggYQ0KPiA+PiBwcm9iYWJpbGl0eSA+PjUwJSBhcyB0aGF0IHdpbGwgYmUgbXkgcHJp
-bWFyeSB0YXJnZXQgZm9yIGxvb2tpbmcgaW50byBob3cgdG8NCj4gPj4gbW92ZSBmb3J3YXJkLiBB
-Uk0gYW5kIEFSTTY0IGN1cnJlbnRseSBsYWNrcyBhIG1haW50YWluZXIuIElmIHdlIGFyZQ0KPiBs
-dWNreSwNCj4gPj4gdGhlIGJhc2UgZW5hYmxpbmcgdmlhIFBoaWxpcHBlJ3MgZG92ZXRhaWwgcXVl
-dWUgd2lsbCBlbmFibGUgdGhvc2UgbW9yZSBvcg0KPiBsZXNzDQo+ID4+IGFzIHdlbGwuIEJ1dCBp
-dCB3aWxsIGRlZmluaXRlbHkgdGFrZSBzb21lb25lIHRvIHRha2UgcmVzcG9uc2liaWxpdHkgZm9y
-IHRob3NlDQo+ID4+IGFyY2hzIGJlY2F1c2UgbXkgY29sbGVhZ3VlcyBhbmQgSSBjdXJyZW50bHkg
-Y2Fubm90IGludmVzdCBiZXlvbmQNCj4gaW50ZWdyYXRpbmcNCj4gPj4gY29udHJpYnV0aW9ucy4g
-VGhlcmUgaXMgYWxzbyBwcGMzMiAod2hpY2ggaGFzIGEgbWFpbnRhaW5lciksIGJ1dCBJIHN1cHBv
-c2UNCj4gPj4gdGhhdCB0aGlzIGlzIG5vdCB5b3VyIHRhcmdldC4NCj4gPj4NCj4gPj4gSmFuDQo+
-ID4NCj4gPiBJIHN0aWxsIGNhbid0IGVzdGltYXRlIHRoZSBpbXBhY3Qgb2Ygc3dhcHBpbmcgdG8g
-ZG92ZXRhaWwsIGhvdyBtdWNoICJyaXBwbGVzIg0KPiB0aGlzIHdpbGwgY2F1c2UuDQo+ID4gSSBz
-dXBwb3NlIHRoZSBjb2JhbHQgdXNlcm1vZGUgaW50ZXJmYWNlIHdpbGwgc3RheSB0aGUgc2FtZS4N
-Cj4gPg0KPiA+IC0gICBXaWxsIGRyaXZlcnMgKHJ0bmV0KSBiZSBhZmZlY3RlZD8NCj4gPiAtICAg
-QUZBSVUgdGhlcmUgZmluYWxseSB3aWxsIGJlIHNoYXJlZCBjbG9ja3MgKG1vbm90b25pYywgcmVh
-bHRpbWUpIGJldHdlZW4NCj4gY29iYWx0IGFuZCBsaW51eD8NCj4gPg0KPiA+IEkgd291bGQgb2Yg
-Y291cnNlIHdlbGNvbWUgYSA1LjQga2VybmVsLCBhbGxvd2luZyBtZSB0byBkcm9wIHNldmVyYWwN
-Cj4gYmFja3BvcnRlZCBwYXRjaGVzLA0KPiA+IGF0IHRoZSBzYW1lIHRpbWUgaXQncyBub3QgYSBy
-ZWFsbHkgZ29vZCB0aW1lIHRvIHN3YXAgdGhlIGJhc2ljIGJ1aWxkaW5nIGJsb2Nrcw0KPiBmb3Ig
-dXMuDQo+ID4NCj4gPiBOb3JiZXJ0DQo+ID4gX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
-X18NCj4gPg0KPiA+IFRoaXMgbWVzc2FnZSBhbmQgYW55IGF0dGFjaG1lbnRzIGFyZSBzb2xlbHkg
-Zm9yIHRoZSB1c2Ugb2YgdGhlIGludGVuZGVkDQo+IHJlY2lwaWVudHMuIFRoZXkgbWF5IGNvbnRh
-aW4gcHJpdmlsZWdlZCBhbmQvb3IgY29uZmlkZW50aWFsIGluZm9ybWF0aW9uIG9yDQo+IG90aGVy
-IGluZm9ybWF0aW9uIHByb3RlY3RlZCBmcm9tIGRpc2Nsb3N1cmUuIElmIHlvdSBhcmUgbm90IGFu
-IGludGVuZGVkDQo+IHJlY2lwaWVudCwgeW91IGFyZSBoZXJlYnkgbm90aWZpZWQgdGhhdCB5b3Ug
-cmVjZWl2ZWQgdGhpcyBlbWFpbCBpbiBlcnJvciBhbmQNCj4gdGhhdCBhbnkgcmV2aWV3LCBkaXNz
-ZW1pbmF0aW9uLCBkaXN0cmlidXRpb24gb3IgY29weWluZyBvZiB0aGlzIGVtYWlsIGFuZCBhbnkN
-Cj4gYXR0YWNobWVudCBpcyBzdHJpY3RseSBwcm9oaWJpdGVkLiBJZiB5b3UgaGF2ZSByZWNlaXZl
-ZCB0aGlzIGVtYWlsIGluIGVycm9yLA0KPiBwbGVhc2UgY29udGFjdCB0aGUgc2VuZGVyIGFuZCBk
-ZWxldGUgdGhlIG1lc3NhZ2UgYW5kIGFueSBhdHRhY2htZW50IGZyb20NCj4geW91ciBzeXN0ZW0u
-DQo+ID4NCj4gPiBBTkRSSVRaIEhZRFJPIEdtYkgNCj4gPg0KPiA+DQo+ID4gUmVjaHRzZm9ybS8g
-TGVnYWwgZm9ybTogR2VzZWxsc2NoYWZ0IG1pdCBiZXNjaHLDpG5rdGVyIEhhZnR1bmcgLw0KPiBD
-b3Jwb3JhdGlvbg0KPiA+DQo+ID4gRmlybWVuc2l0ei8gUmVnaXN0ZXJlZCBzZWF0OiBXaWVuDQo+
-ID4NCj4gPiBGaXJtZW5idWNoZ2VyaWNodC8gQ291cnQgb2YgcmVnaXN0cnk6IEhhbmRlbHNnZXJp
-Y2h0IFdpZW4NCj4gPg0KPiA+IEZpcm1lbmJ1Y2hudW1tZXIvIENvbXBhbnkgcmVnaXN0cmF0aW9u
-OiBGTiA2MTgzMyBnDQo+ID4NCj4gPiBEVlI6IDA2MDUwNzcNCj4gPg0KPiA+IFVJRC1Oci46IEFU
-VTE0NzU2ODA2DQo+ID4NCj4gPg0KPiA+IFRoYW5rIFlvdQ0KPiA+IF9fX19fX19fX19fX19fX19f
-X19fX19fX19fX19fX19fDQo+ID4NCl9fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fDQoN
-ClRoaXMgbWVzc2FnZSBhbmQgYW55IGF0dGFjaG1lbnRzIGFyZSBzb2xlbHkgZm9yIHRoZSB1c2Ug
-b2YgdGhlIGludGVuZGVkIHJlY2lwaWVudHMuIFRoZXkgbWF5IGNvbnRhaW4gcHJpdmlsZWdlZCBh
-bmQvb3IgY29uZmlkZW50aWFsIGluZm9ybWF0aW9uIG9yIG90aGVyIGluZm9ybWF0aW9uIHByb3Rl
-Y3RlZCBmcm9tIGRpc2Nsb3N1cmUuIElmIHlvdSBhcmUgbm90IGFuIGludGVuZGVkIHJlY2lwaWVu
-dCwgeW91IGFyZSBoZXJlYnkgbm90aWZpZWQgdGhhdCB5b3UgcmVjZWl2ZWQgdGhpcyBlbWFpbCBp
-biBlcnJvciBhbmQgdGhhdCBhbnkgcmV2aWV3LCBkaXNzZW1pbmF0aW9uLCBkaXN0cmlidXRpb24g
-b3IgY29weWluZyBvZiB0aGlzIGVtYWlsIGFuZCBhbnkgYXR0YWNobWVudCBpcyBzdHJpY3RseSBw
-cm9oaWJpdGVkLiBJZiB5b3UgaGF2ZSByZWNlaXZlZCB0aGlzIGVtYWlsIGluIGVycm9yLCBwbGVh
-c2UgY29udGFjdCB0aGUgc2VuZGVyIGFuZCBkZWxldGUgdGhlIG1lc3NhZ2UgYW5kIGFueSBhdHRh
-Y2htZW50IGZyb20geW91ciBzeXN0ZW0uDQoNCkFORFJJVFogSFlEUk8gR21iSA0KDQoNClJlY2h0
-c2Zvcm0vIExlZ2FsIGZvcm06IEdlc2VsbHNjaGFmdCBtaXQgYmVzY2hyw6Rua3RlciBIYWZ0dW5n
-IC8gQ29ycG9yYXRpb24NCg0KRmlybWVuc2l0ei8gUmVnaXN0ZXJlZCBzZWF0OiBXaWVuDQoNCkZp
-cm1lbmJ1Y2hnZXJpY2h0LyBDb3VydCBvZiByZWdpc3RyeTogSGFuZGVsc2dlcmljaHQgV2llbg0K
-DQpGaXJtZW5idWNobnVtbWVyLyBDb21wYW55IHJlZ2lzdHJhdGlvbjogRk4gNjE4MzMgZw0KDQpE
-VlI6IDA2MDUwNzcNCg0KVUlELU5yLjogQVRVMTQ3NTY4MDYNCg0KDQpUaGFuayBZb3UNCl9fX19f
-X19fX19fX19fX19fX19fX19fX19fX19fX19fDQo=
+On Mon, Mar 2, 2020 at 11:12 AM Lange Norbert via Xenomai
+<xenomai@xenomai.org> wrote:
+>
+>
+>
+> > -----Original Message-----
+> > From: Jan Kiszka <jan.kiszka@siemens.com>
+> > Sent: Montag, 2. M=C3=A4rz 2020 16:59
+> > To: Lange Norbert <norbert.lange@andritz.com>
+> > Subject: Re: Ipipe-Patch for kernel version 5.4.23
+> >
+> > NON-ANDRITZ SOURCE: BE CAUTIOUS WITH CONTENT, LINKS OR
+> > ATTACHMENTS.
+> >
+> >
+> > Offlist by intention?
+>
+> Nope, just Outlook hating me.
+>
+> Norbert
+>
+> >
+> > Jan
+> >
+> > On 02.03.20 16:26, Lange Norbert wrote:
+> > >
+> > >
+> > >> -----Original Message-----
+> > >> From: Xenomai <xenomai-bounces@xenomai.org> On Behalf Of Jan
+> > Kiszka
+> > >> via Xenomai
+> > >> Sent: Montag, 2. M=C3=A4rz 2020 13:38
+> > >> To: Ralf Moder <ralf.moder@hbkworld.com>; xenomai@xenomai.org
+> > >> Subject: Re: Ipipe-Patch for kernel version 5.4.23
+> > >>
+> > >> NON-ANDRITZ SOURCE: BE CAUTIOUS WITH CONTENT, LINKS OR
+> > ATTACHMENTS.
+> > >>
+> > >>
+> > >> On 02.03.20 11:00, Ralf Moder via Xenomai wrote:
+> > >>> Hello everyone,
+> > >>> I need the kernel version 5.4.23 in an embedded linux project becau=
+se
+> > of
+> > >> driver stuff but also the Xenomai extension. How big is the probabil=
+ity
+> > that an
+> > >> I-pipe patch for the 5.4 version will be released in the next 2 to 3=
+ months?
+> > >>
+> > >> I would first of all say that it's >0. But beyond that, it depends o=
+n the
+> > >> architecture: x86 should be available on 5.4 in the next months with=
+ a
+> > >> probability >>50% as that will be my primary target for looking into=
+ how to
+> > >> move forward. ARM and ARM64 currently lacks a maintainer. If we are
+> > lucky,
+> > >> the base enabling via Philippe's dovetail queue will enable those mo=
+re or
+> > less
+> > >> as well. But it will definitely take someone to take responsibility =
+for those
+> > >> archs because my colleagues and I currently cannot invest beyond
+> > integrating
+> > >> contributions. There is also ppc32 (which has a maintainer), but I s=
+uppose
+> > >> that this is not your target.
+> > >>
+> > >> Jan
+> > >
+> > > I still can't estimate the impact of swapping to dovetail, how much "=
+ripples"
+> > this will cause.
+> > > I suppose the cobalt usermode interface will stay the same.
+> > >
+> > > -   Will drivers (rtnet) be affected?
+I don't think there will be a big impact, but that may depend on how
+the RTDM core is ported over.
+
+> > > -   AFAIU there finally will be shared clocks (monotonic, realtime) b=
+etween
+> > cobalt and linux?
+> > >
+> > > I would of course welcome a 5.4 kernel, allowing me to drop several
+> > backported patches,
+> > > at the same time it's not a really good time to swap the basic buildi=
+ng blocks
+> > for us.
+x86 5.4 kernel?
+> > >
+> > > Norbert
+> > > ________________________________
+> > >
+> > > This message and any attachments are solely for the use of the intend=
+ed
+> > recipients. They may contain privileged and/or confidential information=
+ or
+> > other information protected from disclosure. If you are not an intended
+> > recipient, you are hereby notified that you received this email in erro=
+r and
+> > that any review, dissemination, distribution or copying of this email a=
+nd any
+> > attachment is strictly prohibited. If you have received this email in e=
+rror,
+> > please contact the sender and delete the message and any attachment fro=
+m
+> > your system.
+> > >
+> > > ANDRITZ HYDRO GmbH
+> > >
+> > >
+> > > Rechtsform/ Legal form: Gesellschaft mit beschr=C3=A4nkter Haftung /
+> > Corporation
+> > >
+> > > Firmensitz/ Registered seat: Wien
+> > >
+> > > Firmenbuchgericht/ Court of registry: Handelsgericht Wien
+> > >
+> > > Firmenbuchnummer/ Company registration: FN 61833 g
+> > >
+> > > DVR: 0605077
+> > >
+> > > UID-Nr.: ATU14756806
+> > >
+> > >
+> > > Thank You
+> > > ________________________________
+> > >
+> ________________________________
+>
+> This message and any attachments are solely for the use of the intended r=
+ecipients. They may contain privileged and/or confidential information or o=
+ther information protected from disclosure. If you are not an intended reci=
+pient, you are hereby notified that you received this email in error and th=
+at any review, dissemination, distribution or copying of this email and any=
+ attachment is strictly prohibited. If you have received this email in erro=
+r, please contact the sender and delete the message and any attachment from=
+ your system.
+>
+> ANDRITZ HYDRO GmbH
+>
+>
+> Rechtsform/ Legal form: Gesellschaft mit beschr=C3=A4nkter Haftung / Corp=
+oration
+>
+> Firmensitz/ Registered seat: Wien
+>
+> Firmenbuchgericht/ Court of registry: Handelsgericht Wien
+>
+> Firmenbuchnummer/ Company registration: FN 61833 g
+>
+> DVR: 0605077
+>
+> UID-Nr.: ATU14756806
+>
+>
+> Thank You
+> ________________________________
 
