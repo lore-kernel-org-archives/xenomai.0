@@ -1,9 +1,14 @@
+Subject: Re: 32bit compat mode for arm64
+References: <CAFLxGvyr7f8bUxaEVpEwSGYEvX4FrkpGBV6qa2sR3SHq3wi_Yw@mail.gmail.com>
+ <CAFLxGvwo_gPu9EbMkcicjJ9tCP228oRXQ2XiCb11YBs11xDFJg@mail.gmail.com>
+From: Jan Kiszka <jan.kiszka@siemens.com>
+Message-ID: <3c8788a1-be5b-c424-b16c-1d1903b9e045@siemens.com>
+Date: Mon, 2 Mar 2020 13:21:34 +0100
 MIME-Version: 1.0
-From: gopi ratnakaram <gopi.ratnakaram@svayarobotics.com>
-Date: Mon, 30 Mar 2020 14:23:02 +0530
-Message-ID: <CAF_6Mayw_popagGGG14B+na6wtH2CFGeBnvYreRSUizQe14w6g@mail.gmail.com>
-Subject: Regarding Xenomai patch to the kernel 4.15.38
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <CAFLxGvwo_gPu9EbMkcicjJ9tCP228oRXQ2XiCb11YBs11xDFJg@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -12,20 +17,33 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
+To: Richard Weinberger <richard.weinberger@gmail.com>, xenomai@xenomai.org
 
-Team,
+On 29.02.20 12:46, Richard Weinberger via Xenomai wrote:
+> On Fri, Feb 28, 2020 at 10:01 PM Richard Weinberger
+> <richard.weinberger@gmail.com> wrote:
+>>
+>> Hi!
+>>
+>> I noticed that running 32bit arm EABI xenomai userspace is currently
+>> not possible
+>> on arm64 kernels.
+>>
+>>  From a quick look I see the following tasks to make it happen:
+>> - syscall gate adaptations for cobalt arm32 syscalls (they are
+>> different from regular arm EABI)
+>> - teach ipipe_root_nr_syscalls() on arm64 about __NR_compat_syscalls
+>> - Don't use XENOMAI_ABI_REV for compat userspace on arm64
+>> - Implement a syscall32-table.h (for COBALT_SYSCALL32emu_DECL() and friends)
+> 
+> One more thing: TSC emulation is missing on arm64.
+> 
 
-I have a specific requirement that where i need to patch xenomai 3 to my
-linux kernel 4.15.38 which is running on Ubuntu16.04/Ubuntu18.04. When I
-try checking with the following help from
+What exactly are you referring to?
 
-https://www.xenomai.org/pipermail/xenomai/2018-June/039004.html
+Jan
 
-But, I was unable to apply/create arch specific packages.
+-- 
+Siemens AG, Corporate Technology, CT RDA IOT SES-DE
+Corporate Competence Center Embedded Linux
 
-Is it possible to create ipipe patch to the corresponding kernel 4.15.38,
-if yes please let me know required steps to do the same.
-
---best regards,
-Gopal,
