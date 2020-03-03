@@ -1,4 +1,7 @@
-Subject: Re: Migrate project from Debian 8 Xenomai 2.x to Debain 9 Xenomai 3.x
+From: Carsten EHRMANN <Carsten.Ehrmann@diehl.com>
+Subject: RE: Migrate project from Debian 8 Xenomai 2.x to Debain 9 Xenomai 3.x
+Date: Tue, 3 Mar 2020 12:02:38 +0000
+Message-ID: <ee2bea74fc5b40af8fbc9cff17c9bd78@RCDC-MAIL09.corp.diehl.com>
 References: <23edaf750b0b41ef9a129bbaf2758d9f@RCDC-MAIL09.corp.diehl.com>
  <0281e4a5-a2b2-bac5-1e30-ea2bb85f3d8d@siemens.com>
  <373cc865d6c34dda997ac6745bae99cd@RCDC-MAIL09.corp.diehl.com>
@@ -7,14 +10,12 @@ References: <23edaf750b0b41ef9a129bbaf2758d9f@RCDC-MAIL09.corp.diehl.com>
  <925e50f4-8395-2a15-3654-73ea1f241f1c@siemens.com>
  <b4806aec7c5746bc83fa897b09ce7ab1@RCDC-MAIL09.corp.diehl.com>
  <d36eca04d68b4434bde75d9cfa8c1418@RCDC-MAIL09.corp.diehl.com>
-From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <f7fc8190-afe3-872e-d7aa-dcabcd576a77@siemens.com>
-Date: Tue, 3 Mar 2020 11:51:51 +0100
+ <f7fc8190-afe3-872e-d7aa-dcabcd576a77@siemens.com>
+In-Reply-To: <f7fc8190-afe3-872e-d7aa-dcabcd576a77@siemens.com>
+Content-Language: de-DE
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-In-Reply-To: <d36eca04d68b4434bde75d9cfa8c1418@RCDC-MAIL09.corp.diehl.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -23,27 +24,60 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Carsten EHRMANN <Carsten.Ehrmann@diehl.com>, "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Jan Kiszka <jan.kiszka@siemens.com>, "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On 03.03.20 11:44, Carsten EHRMANN wrote:
-> Hi Jan,
-> 
-> after a few try and error I got the code compiled. When I try to start the executable I got the following error from rt_pipe_create(): -97
-> 
-> I use the function as follow: if(rt_pipe_create(&mControlPipe,aControlPipeName,P_MINOR_AUTO,2048) >= 0)
-> 
-> In the logfile there is no error from the kernel. Latency, Clock and Switch test have been ok.
-> 
-> Do you know what this mean? I haven't found anything .
-> 
-
-EAFNOSUPPORT - seems your kernel lacks support for the pipe or some 
-module is missing. Make sure you have XENO_DRIVERS_RTIPC_XDDP and the 
-xeno_rtipc.ko is loaded (if it's a module).
-
-Jan
-
--- 
-Siemens AG, Corporate Technology, CT RDA IOT SES-DE
-Corporate Competence Center Embedded Linux
+SGkgSmFuLA0KDQpJIGRvbid0IGhhdmUgb25lIG9mIHRoZSBmaWxlcw0KDQotIC91c3Ivc3Jj
+L2xpbnV4LTQuOS4xNDYvaW5jbHVkZS9jb25maWcveGVuby9kcml2ZXJzL3J0aXBjL3hkZHAu
+aA0KDQotIC9saWIvbW9kdWxlcy80LjkuMTQ2L2tlcm5lbC9kcml2ZXJzL3hlbm9tYWkgL2lw
+Yy94ZW5vX3J0aXBjLmtvDQoNCg0KV2hlcmUgZG8gSSBnZXQgdGhlbT8gRG8gdGhleSBoYXZl
+IHRvIGJlIGluc3RhbGxlZCB3aGVuIGJ1aWxkaW5nIHRoZSBrZXJuZWw/DQoNCg0KDQpDYXJz
+dGVuDQoNCg0KDQpfX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
+X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
+X19fX19fX18NCkJpdHRlIMO8YmVybGVnZW4gU2llLCBvYiBTaWUgZGllc2UgTmFjaHJpY2h0
+IHdpcmtsaWNoIGF1c2RydWNrZW4gbcO8c3Nlbi8gYmVmb3JlIHByaW50aW5nLCB0aGluayBh
+Ym91dCBlbnZpcm9ubWVudGFsIHJlc3BvbnNpYmlsaXR5Lg0KRGllaGwgTWV0ZXJpbmcgR21i
+SCwgSW5kdXN0cmllc3RyYcOfZSAxMywgOTE1MjIgQW5zYmFjaA0KVGVsZWZvbiArIDQ5IDk4
+MSAxODA2IDAsIFRlbGVmYXggKzQ5IDk4MSAxODA2IDYxNQ0KU2l0eiBkZXIgR2VzZWxsc2No
+YWZ0OiBBbnNiYWNoLCBSZWdpc3RlcmdlcmljaHQ6IEFuc2JhY2ggSFJCIDY5DQpHZXNjaMOk
+ZnRzZsO8aHJlcjogRHIuIENocmlzdG9mIEJvc2JhY2ggKFNwcmVjaGVyKSwgVGhvbWFzIEdh
+c3RuZXIsIEplYW4tRnJhbsOnb2lzIE1hcmd1ZXQNCkRlciBJbmhhbHQgZGVyIHZvcnN0ZWhl
+bmRlbiBFLU1haWwgaXN0IG5pY2h0IHJlY2h0bGljaCBiaW5kZW5kLiBEaWVzZSBFLU1haWwg
+ZW50aMOkbHQgdmVydHJhdWxpY2hlIHVuZC9vZGVyIHJlY2h0bGljaCBnZXNjaMO8dHp0ZSBJ
+bmZvcm1hdGlvbmVuLiBJbmZvcm1pZXJlbiBTaWUgdW5zIGJpdHRlLCB3ZW5uIFNpZSBkaWVz
+ZSBFLU1haWwgZsOkbHNjaGxpY2hlcndlaXNlIGVyaGFsdGVuIGhhYmVuLiBCaXR0ZSBsw7Zz
+Y2hlbiBTaWUgaW4gZGllc2VtIEZhbGwgZGllIE5hY2hyaWNodC4gSmVkZSB1bmVybGF1YnRl
+IEZvcm0gZGVyIFJlcHJvZHVrdGlvbiwgQmVrYW5udGdhYmUsIMOEbmRlcnVuZywgVmVydGVp
+bHVuZyB1bmQvb2RlciBQdWJsaWthdGlvbiBkaWVzZXIgRS1NYWlsIGlzdCBzdHJlbmdzdGVu
+cyB1bnRlcnNhZ3QuDQpUaGUgY29udGVudHMgb2YgdGhlIGFib3ZlIG1lbnRpb25lZCBlLW1h
+aWwgaXMgbm90IGxlZ2FsbHkgYmluZGluZy4gVGhpcyBlLW1haWwgY29udGFpbnMgY29uZmlk
+ZW50aWFsIGFuZC9vciBsZWdhbGx5IHByb3RlY3RlZCBpbmZvcm1hdGlvbi4gUGxlYXNlIGlu
+Zm9ybSB1cyBpZiB5b3UgaGF2ZSByZWNlaXZlZCB0aGlzIGUtbWFpbCBieSBtaXN0YWtlIGFu
+ZCBkZWxldGUgaXQgaW4gc3VjaCBhIGNhc2UuIEVhY2ggdW5hdXRob3JpemVkIHJlcHJvZHVj
+dGlvbiwgZGlzY2xvc3VyZSwgYWx0ZXJhdGlvbiwgZGlzdHJpYnV0aW9uIGFuZC9vciBwdWJs
+aWNhdGlvbiBvZiB0aGlzIGUtbWFpbCBpcyBzdHJpY3RseSBwcm9oaWJpdGVkLg0KSW5mb3Jt
+YXRpb25lbiB6dW0gRGF0ZW5zY2h1dHogZmluZGVuIFNpZSBhdWYgdW5zZXJlciBIb21lcGFn
+ZS4NCmh0dHBzOi8vd3d3LmRpZWhsLmNvbS9tZXRlcmluZy9kZS9kaWVobC1tZXRlcmluZy9k
+YXRhLXByb3RlY3Rpb24NCkluZm9ybWF0aW9uIGFib3V0IGRhdGEgcHJvdGVjdGlvbiBjYW4g
+YmUgZm91bmQgb24gb3VyIGhvbWVwYWdlLg0KaHR0cHM6Ly93d3cuZGllaGwuY29tL21ldGVy
+aW5nL2VuL2RpZWhsLW1ldGVyaW5nL2RhdGEtcHJvdGVjdGlvbg0KDQoNCi0tLS0tT3JpZ2lu
+YWwgTWVzc2FnZS0tLS0tDQpGcm9tOiBKYW4gS2lzemthIDxqYW4ua2lzemthQHNpZW1lbnMu
+Y29tPiANClNlbnQ6IFR1ZXNkYXksIE1hcmNoIDMsIDIwMjAgMTE6NTIgQU0NClRvOiBDYXJz
+dGVuIEVIUk1BTk4gPENhcnN0ZW4uRWhybWFubkBkaWVobC5jb20+OyB4ZW5vbWFpQHhlbm9t
+YWkub3JnDQpTdWJqZWN0OiBSZTogTWlncmF0ZSBwcm9qZWN0IGZyb20gRGViaWFuIDggWGVu
+b21haSAyLnggdG8gRGViYWluIDkgWGVub21haSAzLngNCg0KT24gMDMuMDMuMjAgMTE6NDQs
+IENhcnN0ZW4gRUhSTUFOTiB3cm90ZToNCj4gSGkgSmFuLA0KPiANCj4gYWZ0ZXIgYSBmZXcg
+dHJ5IGFuZCBlcnJvciBJIGdvdCB0aGUgY29kZSBjb21waWxlZC4gV2hlbiBJIHRyeSB0byBz
+dGFydCANCj4gdGhlIGV4ZWN1dGFibGUgSSBnb3QgdGhlIGZvbGxvd2luZyBlcnJvciBmcm9t
+IHJ0X3BpcGVfY3JlYXRlKCk6IC05Nw0KPiANCj4gSSB1c2UgdGhlIGZ1bmN0aW9uIGFzIGZv
+bGxvdzogDQo+IGlmKHJ0X3BpcGVfY3JlYXRlKCZtQ29udHJvbFBpcGUsYUNvbnRyb2xQaXBl
+TmFtZSxQX01JTk9SX0FVVE8sMjA0OCkgPj0gDQo+IDApDQo+IA0KPiBJbiB0aGUgbG9nZmls
+ZSB0aGVyZSBpcyBubyBlcnJvciBmcm9tIHRoZSBrZXJuZWwuIExhdGVuY3ksIENsb2NrIGFu
+ZCBTd2l0Y2ggdGVzdCBoYXZlIGJlZW4gb2suDQo+IA0KPiBEbyB5b3Uga25vdyB3aGF0IHRo
+aXMgbWVhbj8gSSBoYXZlbid0IGZvdW5kIGFueXRoaW5nIC4NCj4gDQoNCkVBRk5PU1VQUE9S
+VCAtIHNlZW1zIHlvdXIga2VybmVsIGxhY2tzIHN1cHBvcnQgZm9yIHRoZSBwaXBlIG9yIHNv
+bWUgbW9kdWxlIGlzIG1pc3NpbmcuIE1ha2Ugc3VyZSB5b3UgaGF2ZSBYRU5PX0RSSVZFUlNf
+UlRJUENfWEREUCBhbmQgdGhlIHhlbm9fcnRpcGMua28gaXMgbG9hZGVkIChpZiBpdCdzIGEg
+bW9kdWxlKS4NCg0KSmFuDQoNCi0tDQpTaWVtZW5zIEFHLCBDb3Jwb3JhdGUgVGVjaG5vbG9n
+eSwgQ1QgUkRBIElPVCBTRVMtREUgQ29ycG9yYXRlIENvbXBldGVuY2UgQ2VudGVyIEVtYmVk
+ZGVkIExpbnV4DQo=
 
