@@ -1,4 +1,7 @@
-MIME-Version: 1.0
+From: Carsten EHRMANN <Carsten.Ehrmann@diehl.com>
+Subject: RE: Migrate project from Debian 8 Xenomai 2.x to Debain 9 Xenomai 3.x
+Date: Tue, 3 Mar 2020 13:02:23 +0000
+Message-ID: <6b399d7610174bb585e2fb439d735402@RCDC-MAIL09.corp.diehl.com>
 References: <23edaf750b0b41ef9a129bbaf2758d9f@RCDC-MAIL09.corp.diehl.com>
  <0281e4a5-a2b2-bac5-1e30-ea2bb85f3d8d@siemens.com>
  <373cc865d6c34dda997ac6745bae99cd@RCDC-MAIL09.corp.diehl.com>
@@ -9,12 +12,12 @@ References: <23edaf750b0b41ef9a129bbaf2758d9f@RCDC-MAIL09.corp.diehl.com>
  <d36eca04d68b4434bde75d9cfa8c1418@RCDC-MAIL09.corp.diehl.com>
  <f7fc8190-afe3-872e-d7aa-dcabcd576a77@siemens.com>
  <ee2bea74fc5b40af8fbc9cff17c9bd78@RCDC-MAIL09.corp.diehl.com>
-In-Reply-To: <ee2bea74fc5b40af8fbc9cff17c9bd78@RCDC-MAIL09.corp.diehl.com>
-From: Richard Weinberger <richard.weinberger@gmail.com>
-Date: Tue, 3 Mar 2020 13:08:21 +0100
-Message-ID: <CAFLxGvyxyfU0_F+mqymZg1d+X_Rzw9=LoZQAXuF5J8skR8n2Xg@mail.gmail.com>
-Subject: Re: Migrate project from Debian 8 Xenomai 2.x to Debain 9 Xenomai 3.x
-Content-Type: text/plain; charset="UTF-8"
+ <CAFLxGvyxyfU0_F+mqymZg1d+X_Rzw9=LoZQAXuF5J8skR8n2Xg@mail.gmail.com>
+In-Reply-To: <CAFLxGvyxyfU0_F+mqymZg1d+X_Rzw9=LoZQAXuF5J8skR8n2Xg@mail.gmail.com>
+Content-Language: de-DE
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+MIME-Version: 1.0
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -23,26 +26,67 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Carsten EHRMANN <Carsten.Ehrmann@diehl.com>
+To: Richard Weinberger <richard.weinberger@gmail.com>
 Cc: Jan Kiszka <jan.kiszka@siemens.com>, "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On Tue, Mar 3, 2020 at 1:03 PM Carsten EHRMANN via Xenomai
-<xenomai@xenomai.org> wrote:
->
-> Hi Jan,
->
-> I don't have one of the files
->
-> - /usr/src/linux-4.9.146/include/config/xeno/drivers/rtipc/xddp.h
->
-> - /lib/modules/4.9.146/kernel/drivers/xenomai /ipc/xeno_rtipc.ko
->
->
-> Where do I get them? Do they have to be installed when building the kernel?
-
-Did you enable CONFIG_XENO_DRIVERS_RTIPC_XDDP in your kernel.
-
--- 
-Thanks,
-//richard
+VGhhbmtzLCBJIGFkZGVkIC0tcG9zaXggdG8gDQoNCnNoZWxsICAkJFhFTk9fQ09ORklHIC0t
+c2tpbj1uYXRpdmUgLS1sZGZsYWdzIC0tcG9zaXgNCg0Kc28gSSBoYXZlIHRoaXMgY2FsbDoN
+Cg0KZysrIC1jIC1waXBlIC1JL3Vzci94ZW5vbWFpL2luY2x1ZGUvdHJhbmsvcG9zaXggLUkv
+dXNyL3hlbm9tYWkvaW5jbHVkZS90cmFuayAtRF9fWEVOT19DT01QQVRfXyAtSS91c3IveGVu
+b21haS9pbmNsdWRlL2NvYmFsdCAtSS91c3IveGVub21haS9pbmNsdWRlIC1tMzIgLU8yIC1E
+X0dOVV9TT1VSQ0UgLURfUkVFTlRSQU5UIC1mYXN5bmNocm9ub3VzLXVud2luZC10YWJsZXMg
+LURfX0NPQkFMVF9fIC1JL3Vzci94ZW5vbWFpL2luY2x1ZGUvYWxjaGVteSAtRF9fQ09CQUxU
+X1dSQVBfXyAtTzIgLVdhbGwgLVcgLWZQSUMgLURRVF9OT19ERUJVR19PVVRQVVQgLUROREVC
+VUcgLUkuIC1JL3Vzci94ZW5vbWFpL2luY2x1ZGUgLUkuIC1JLi4vaW5jIC1JLi4vaW5jL0NT
+UlREYWVtb24vIC1JLi4vaW5jL0NTQmFzZSAtSS4uL2luYy9DU1Bvc2l4QWJzdHJhY3Rpb24g
+LUkuLi9pbmMvQ1NQcm94aWVzIC1JLi4vaW5jL0NTQXBwbGljYXRpb24gLUkuLi9pbmMvQ1NB
+cHBsaWNhdGlvbi90ZWxlZ3JhbXMgLUkuLi9pbmMvQ1NBcHBsaWNhdGlvbi90YXNrcyAtSS4u
+L2luYy9DU0FwcGxpY2F0aW9uL3F1ZXMgLUkuLi9pbmMvQ1NBcHBsaWNhdGlvbi9ldmVudHMg
+LUkvdXNyL2xpYi9pMzg2LWxpbnV4LWdudS9xdDUvbWtzcGVjcy9saW51eC1nKysgLW8gLi4v
+dG1wL29iai9DU1JURGFlbW9uL3JlbGVhc2UvQ1NSVFBvc2l4UXVlLm8gQ1NSVFBvc2l4UXVl
+LmNwcA0KDQoNCg0KYnV0IEkgc3RpbGwgaGF2ZSB0aGUgc2FtZSBlcnJvci4gDQoNCg0KQ2Fy
+c3Rlbg0KDQoNCg0KX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
+X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
+X19fX19fX19fDQpCaXR0ZSDDvGJlcmxlZ2VuIFNpZSwgb2IgU2llIGRpZXNlIE5hY2hyaWNo
+dCB3aXJrbGljaCBhdXNkcnVja2VuIG3DvHNzZW4vIGJlZm9yZSBwcmludGluZywgdGhpbmsg
+YWJvdXQgZW52aXJvbm1lbnRhbCByZXNwb25zaWJpbGl0eS4NCkRpZWhsIE1ldGVyaW5nIEdt
+YkgsIEluZHVzdHJpZXN0cmHDn2UgMTMsIDkxNTIyIEFuc2JhY2gNClRlbGVmb24gKyA0OSA5
+ODEgMTgwNiAwLCBUZWxlZmF4ICs0OSA5ODEgMTgwNiA2MTUNClNpdHogZGVyIEdlc2VsbHNj
+aGFmdDogQW5zYmFjaCwgUmVnaXN0ZXJnZXJpY2h0OiBBbnNiYWNoIEhSQiA2OQ0KR2VzY2jD
+pGZ0c2bDvGhyZXI6IERyLiBDaHJpc3RvZiBCb3NiYWNoIChTcHJlY2hlciksIFRob21hcyBH
+YXN0bmVyLCBKZWFuLUZyYW7Dp29pcyBNYXJndWV0DQpEZXIgSW5oYWx0IGRlciB2b3JzdGVo
+ZW5kZW4gRS1NYWlsIGlzdCBuaWNodCByZWNodGxpY2ggYmluZGVuZC4gRGllc2UgRS1NYWls
+IGVudGjDpGx0IHZlcnRyYXVsaWNoZSB1bmQvb2RlciByZWNodGxpY2ggZ2VzY2jDvHR6dGUg
+SW5mb3JtYXRpb25lbi4gSW5mb3JtaWVyZW4gU2llIHVucyBiaXR0ZSwgd2VubiBTaWUgZGll
+c2UgRS1NYWlsIGbDpGxzY2hsaWNoZXJ3ZWlzZSBlcmhhbHRlbiBoYWJlbi4gQml0dGUgbMO2
+c2NoZW4gU2llIGluIGRpZXNlbSBGYWxsIGRpZSBOYWNocmljaHQuIEplZGUgdW5lcmxhdWJ0
+ZSBGb3JtIGRlciBSZXByb2R1a3Rpb24sIEJla2FubnRnYWJlLCDDhG5kZXJ1bmcsIFZlcnRl
+aWx1bmcgdW5kL29kZXIgUHVibGlrYXRpb24gZGllc2VyIEUtTWFpbCBpc3Qgc3RyZW5nc3Rl
+bnMgdW50ZXJzYWd0Lg0KVGhlIGNvbnRlbnRzIG9mIHRoZSBhYm92ZSBtZW50aW9uZWQgZS1t
+YWlsIGlzIG5vdCBsZWdhbGx5IGJpbmRpbmcuIFRoaXMgZS1tYWlsIGNvbnRhaW5zIGNvbmZp
+ZGVudGlhbCBhbmQvb3IgbGVnYWxseSBwcm90ZWN0ZWQgaW5mb3JtYXRpb24uIFBsZWFzZSBp
+bmZvcm0gdXMgaWYgeW91IGhhdmUgcmVjZWl2ZWQgdGhpcyBlLW1haWwgYnkgbWlzdGFrZSBh
+bmQgZGVsZXRlIGl0IGluIHN1Y2ggYSBjYXNlLiBFYWNoIHVuYXV0aG9yaXplZCByZXByb2R1
+Y3Rpb24sIGRpc2Nsb3N1cmUsIGFsdGVyYXRpb24sIGRpc3RyaWJ1dGlvbiBhbmQvb3IgcHVi
+bGljYXRpb24gb2YgdGhpcyBlLW1haWwgaXMgc3RyaWN0bHkgcHJvaGliaXRlZC4NCkluZm9y
+bWF0aW9uZW4genVtIERhdGVuc2NodXR6IGZpbmRlbiBTaWUgYXVmIHVuc2VyZXIgSG9tZXBh
+Z2UuDQpodHRwczovL3d3dy5kaWVobC5jb20vbWV0ZXJpbmcvZGUvZGllaGwtbWV0ZXJpbmcv
+ZGF0YS1wcm90ZWN0aW9uDQpJbmZvcm1hdGlvbiBhYm91dCBkYXRhIHByb3RlY3Rpb24gY2Fu
+IGJlIGZvdW5kIG9uIG91ciBob21lcGFnZS4NCmh0dHBzOi8vd3d3LmRpZWhsLmNvbS9tZXRl
+cmluZy9lbi9kaWVobC1tZXRlcmluZy9kYXRhLXByb3RlY3Rpb24NCg0KDQotLS0tLU9yaWdp
+bmFsIE1lc3NhZ2UtLS0tLQ0KRnJvbTogUmljaGFyZCBXZWluYmVyZ2VyIDxyaWNoYXJkLndl
+aW5iZXJnZXJAZ21haWwuY29tPiANClNlbnQ6IFR1ZXNkYXksIE1hcmNoIDMsIDIwMjAgMTow
+OCBQTQ0KVG86IENhcnN0ZW4gRUhSTUFOTiA8Q2Fyc3Rlbi5FaHJtYW5uQGRpZWhsLmNvbT4N
+CkNjOiBKYW4gS2lzemthIDxqYW4ua2lzemthQHNpZW1lbnMuY29tPjsgeGVub21haUB4ZW5v
+bWFpLm9yZw0KU3ViamVjdDogUmU6IE1pZ3JhdGUgcHJvamVjdCBmcm9tIERlYmlhbiA4IFhl
+bm9tYWkgMi54IHRvIERlYmFpbiA5IFhlbm9tYWkgMy54DQoNCk9uIFR1ZSwgTWFyIDMsIDIw
+MjAgYXQgMTowMyBQTSBDYXJzdGVuIEVIUk1BTk4gdmlhIFhlbm9tYWkgPHhlbm9tYWlAeGVu
+b21haS5vcmc+IHdyb3RlOg0KPg0KPiBIaSBKYW4sDQo+DQo+IEkgZG9uJ3QgaGF2ZSBvbmUg
+b2YgdGhlIGZpbGVzDQo+DQo+IC0gL3Vzci9zcmMvbGludXgtNC45LjE0Ni9pbmNsdWRlL2Nv
+bmZpZy94ZW5vL2RyaXZlcnMvcnRpcGMveGRkcC5oDQo+DQo+IC0gL2xpYi9tb2R1bGVzLzQu
+OS4xNDYva2VybmVsL2RyaXZlcnMveGVub21haSAvaXBjL3hlbm9fcnRpcGMua28NCj4NCj4N
+Cj4gV2hlcmUgZG8gSSBnZXQgdGhlbT8gRG8gdGhleSBoYXZlIHRvIGJlIGluc3RhbGxlZCB3
+aGVuIGJ1aWxkaW5nIHRoZSBrZXJuZWw/DQoNCkRpZCB5b3UgZW5hYmxlIENPTkZJR19YRU5P
+X0RSSVZFUlNfUlRJUENfWEREUCBpbiB5b3VyIGtlcm5lbC4NCg0KLS0NClRoYW5rcywNCi8v
+cmljaGFyZA0K
 
