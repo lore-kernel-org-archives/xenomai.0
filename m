@@ -1,16 +1,18 @@
-MIME-Version: 1.0
+From: Ralf Moder <ralf.moder@hbkworld.com>
+Subject: Re: Ipipe-Patch for kernel version 5.4.23
+Date: Tue, 3 Mar 2020 14:23:39 +0000
+Message-ID: <39eee7a6-f95c-e55e-8922-3cef387abe93@hbm.com>
 References: <DB8PR09MB3612215A31188B5C00AD779BF0E70@DB8PR09MB3612.eurprd09.prod.outlook.com>
  <c4a79189-6696-a109-97f6-8cadbb36923e@siemens.com>
  <CALLqZ8TNspMLYOfrA11_xB6dh=LjXiTV8_P12+s_a_exUv6tqQ@mail.gmail.com>
  <68ddab50-1002-7100-a745-3387b28592b2@siemens.com>
  <1a4b8b29-2c9d-676b-cedc-d7eddb461189@hbm.com>
-In-Reply-To: <1a4b8b29-2c9d-676b-cedc-d7eddb461189@hbm.com>
-From: Greg Gallagher <greg@embeddedgreg.com>
-Date: Tue, 3 Mar 2020 08:53:11 -0500
-Message-ID: <CALLqZ8S63mKXCpWcAeb7haW4x03Y07evBxJPD-j2ciJY40=9NA@mail.gmail.com>
-Subject: Re: Ipipe-Patch for kernel version 5.4.23
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+ <CALLqZ8S63mKXCpWcAeb7haW4x03Y07evBxJPD-j2ciJY40=9NA@mail.gmail.com>
+In-Reply-To: <CALLqZ8S63mKXCpWcAeb7haW4x03Y07evBxJPD-j2ciJY40=9NA@mail.gmail.com>
+Content-Language: de-DE
+MIME-Version: 1.0
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -19,98 +21,73 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Ralf Moder <ralf.moder@hbkworld.com>
+To: Greg Gallagher <greg@embeddedgreg.com>, Ralf Moder <ralf.moder@hbkworld.com>
 Cc: Jan Kiszka <jan.kiszka@siemens.com>, "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On Tue, Mar 3, 2020 at 8:46 AM Ralf Moder <ralf.moder@hbkworld.com> wrote:
-
-> Am 02.03.20 um 17:01 schrieb Jan Kiszka:
-> > On 02.03.20 16:17, Greg Gallagher wrote:
-> >>
-> >> On Mon, Mar 2, 2020 at 7:38 AM Jan Kiszka via Xenomai
-> >> <xenomai@xenomai.org <mailto:xenomai@xenomai.org>> wrote:
-> >>
-> >>     On 02.03.20 11:00, Ralf Moder via Xenomai wrote:
-> >>      > Hello everyone,
-> >>      > I need the kernel version 5.4.23 in an embedded linux project
-> >>     because of driver stuff but also the Xenomai extension. How big is
-> >>     the probability that an I-pipe patch for the 5.4 version will be
-> >>     released in the next 2 to 3 months?
-> >>
-> >>     I would first of all say that it's >0. But beyond that, it
-> >> depends on
-> >>     the architecture: x86 should be available on 5.4 in the next month=
-s
-> >>     with
-> >>     a probability >>50% as that will be my primary target for looking
-> >> into
-> >>     how to move forward. ARM and ARM64 currently lacks a maintainer.
-> >> If we
-> >>     are lucky, the base enabling via Philippe's dovetail queue will
-> >> enable
-> >>     those more or less as well. But it will definitely take someone
-> >> to take
-> >>     responsibility for those archs because my colleagues and I current=
-ly
-> >>     cannot invest beyond integrating contributions. There is also ppc3=
-2
-> >>     (which has a maintainer), but I suppose that this is not your
-> >> target.
-> >>
-> >>     Jan
-> >>
-> >>     --     Siemens AG, Corporate Technology, CT RDA IOT SES-DE
-> >>     Corporate Competence Center Embedded Linux
-> >>
-> >> If you need this for arm I was going to try to port the ipipe to 5.4
-> >> in the near future. Effort wise it shouldn't be too bad, but it all
-> >> depends on how much the upstream changes impact us.  What board are
-> >> you targeting?
-> it is a SoC from xilinx with 2 arm cortex a53 kernel on it
-
-This is an ultrascale? I=E2=80=99ve run the current ipipe code (4.19) on th=
-e
-ultra96 without issue.
-
-
-> >
-> > I suppose that questions addresses Ralf (provided he runs on ARM).
-> >
-> > As mentioned before, our tiny test lab currently contains for ARM a
-> > BeagleBone Black and QEMU instance.
-> The ESPRESSObin from marvell could be a good eval board for testing .If
-> you need it we can send you one. Or we can test new patches here in our
-> company.
-> >>
-> >> Jan, I can  help out maintaining the ARM ipipe.  We can talk offline
-> >> if you'd like.
-> It would be great if you could keep us up to date on your progress in
-> patching kernel version 5.4. If we can support you in any way, let us kno=
-w.
->
-> > That would be great, looking forward!
-> >
-> > Jan
-> >
-> Ralf
->
-> Hottinger Baldwin Messtechnik GmbH, Im Tiefen See 45, 64293 Darmstadt,
-> Germany | www.hbm.com Registered as GmbH (German limited liability
-> corporation) in the commercial register at the local court of Darmstadt,
-> HRB 1147 Company domiciled in Darmstadt | Managing Directors: Thomas Lipp=
-ok
-> & Jens Wiegand | Chairman of the board: Joseph Michael Vorih Als
-> Gesellschaft mit beschr=C3=A4nkter Haftung eingetragen im Handelsregister=
- des
-> Amtsgerichts Darmstadt unter HRB 1147 Sitz der Gesellschaft: Darmstadt |
-> Gesch=C3=A4ftsf=C3=BChrung: Thomas Lippok & Jens Wiegand | Aufsichtsratsv=
-orsitzender:
-> Joseph Michael Vorih The information in this email is confidential. It is
-> intended solely for the addressee. If you are not the intended recipient,
-> please let me know and delete this email. Die in dieser E-Mail enthaltene
-> Information ist vertraulich und lediglich f=C3=BCr den Empf=C3=A4nger bes=
-timmt.
-> Sollten Sie nicht der eigentliche Empf=C3=A4nger sein, informieren Sie mi=
-ch
-> bitte kurz und l=C3=B6schen diese E-Mail.
->
+QW0gMDMuMDMuMjAgdW0gMTQ6NTMgc2NocmllYiBHcmVnIEdhbGxhZ2hlcjoNCg0KDQpPbiBUdWUs
+IE1hciAzLCAyMDIwIGF0IDg6NDYgQU0gUmFsZiBNb2RlciA8cmFsZi5tb2RlckBoYmt3b3JsZC5j
+b208bWFpbHRvOnJhbGYubW9kZXJAaGJrd29ybGQuY29tPj4gd3JvdGU6DQpBbSAwMi4wMy4yMCB1
+bSAxNzowMSBzY2hyaWViIEphbiBLaXN6a2E6DQo+IE9uIDAyLjAzLjIwIDE2OjE3LCBHcmVnIEdh
+bGxhZ2hlciB3cm90ZToNCj4+DQo+PiBPbiBNb24sIE1hciAyLCAyMDIwIGF0IDc6MzggQU0gSmFu
+IEtpc3prYSB2aWEgWGVub21haQ0KPj4gPHhlbm9tYWlAeGVub21haS5vcmc8bWFpbHRvOnhlbm9t
+YWlAeGVub21haS5vcmc+IDxtYWlsdG86eGVub21haUB4ZW5vbWFpLm9yZzxtYWlsdG86eGVub21h
+aUB4ZW5vbWFpLm9yZz4+PiB3cm90ZToNCj4+DQo+PiAgICAgT24gMDIuMDMuMjAgMTE6MDAsIFJh
+bGYgTW9kZXIgdmlhIFhlbm9tYWkgd3JvdGU6DQo+PiAgICAgID4gSGVsbG8gZXZlcnlvbmUsDQo+
+PiAgICAgID4gSSBuZWVkIHRoZSBrZXJuZWwgdmVyc2lvbiA1LjQuMjMgaW4gYW4gZW1iZWRkZWQg
+bGludXggcHJvamVjdA0KPj4gICAgIGJlY2F1c2Ugb2YgZHJpdmVyIHN0dWZmIGJ1dCBhbHNvIHRo
+ZSBYZW5vbWFpIGV4dGVuc2lvbi4gSG93IGJpZyBpcw0KPj4gICAgIHRoZSBwcm9iYWJpbGl0eSB0
+aGF0IGFuIEktcGlwZSBwYXRjaCBmb3IgdGhlIDUuNCB2ZXJzaW9uIHdpbGwgYmUNCj4+ICAgICBy
+ZWxlYXNlZCBpbiB0aGUgbmV4dCAyIHRvIDMgbW9udGhzPw0KPj4NCj4+ICAgICBJIHdvdWxkIGZp
+cnN0IG9mIGFsbCBzYXkgdGhhdCBpdCdzID4wLiBCdXQgYmV5b25kIHRoYXQsIGl0DQo+PiBkZXBl
+bmRzIG9uDQo+PiAgICAgdGhlIGFyY2hpdGVjdHVyZTogeDg2IHNob3VsZCBiZSBhdmFpbGFibGUg
+b24gNS40IGluIHRoZSBuZXh0IG1vbnRocw0KPj4gICAgIHdpdGgNCj4+ICAgICBhIHByb2JhYmls
+aXR5ID4+NTAlIGFzIHRoYXQgd2lsbCBiZSBteSBwcmltYXJ5IHRhcmdldCBmb3IgbG9va2luZw0K
+Pj4gaW50bw0KPj4gICAgIGhvdyB0byBtb3ZlIGZvcndhcmQuIEFSTSBhbmQgQVJNNjQgY3VycmVu
+dGx5IGxhY2tzIGEgbWFpbnRhaW5lci4NCj4+IElmIHdlDQo+PiAgICAgYXJlIGx1Y2t5LCB0aGUg
+YmFzZSBlbmFibGluZyB2aWEgUGhpbGlwcGUncyBkb3ZldGFpbCBxdWV1ZSB3aWxsDQo+PiBlbmFi
+bGUNCj4+ICAgICB0aG9zZSBtb3JlIG9yIGxlc3MgYXMgd2VsbC4gQnV0IGl0IHdpbGwgZGVmaW5p
+dGVseSB0YWtlIHNvbWVvbmUNCj4+IHRvIHRha2UNCj4+ICAgICByZXNwb25zaWJpbGl0eSBmb3Ig
+dGhvc2UgYXJjaHMgYmVjYXVzZSBteSBjb2xsZWFndWVzIGFuZCBJIGN1cnJlbnRseQ0KPj4gICAg
+IGNhbm5vdCBpbnZlc3QgYmV5b25kIGludGVncmF0aW5nIGNvbnRyaWJ1dGlvbnMuIFRoZXJlIGlz
+IGFsc28gcHBjMzINCj4+ICAgICAod2hpY2ggaGFzIGEgbWFpbnRhaW5lciksIGJ1dCBJIHN1cHBv
+c2UgdGhhdCB0aGlzIGlzIG5vdCB5b3VyDQo+PiB0YXJnZXQuDQo+Pg0KPj4gICAgIEphbg0KPj4N
+Cj4+ICAgICAtLSAgICAgU2llbWVucyBBRywgQ29ycG9yYXRlIFRlY2hub2xvZ3ksIENUIFJEQSBJ
+T1QgU0VTLURFDQo+PiAgICAgQ29ycG9yYXRlIENvbXBldGVuY2UgQ2VudGVyIEVtYmVkZGVkIExp
+bnV4DQo+Pg0KPj4gSWYgeW91IG5lZWQgdGhpcyBmb3IgYXJtIEkgd2FzIGdvaW5nIHRvIHRyeSB0
+byBwb3J0IHRoZSBpcGlwZSB0byA1LjQNCj4+IGluIHRoZSBuZWFyIGZ1dHVyZS4gRWZmb3J0IHdp
+c2UgaXQgc2hvdWxkbid0IGJlIHRvbyBiYWQsIGJ1dCBpdCBhbGwNCj4+IGRlcGVuZHMgb24gaG93
+IG11Y2ggdGhlIHVwc3RyZWFtIGNoYW5nZXMgaW1wYWN0IHVzLiAgV2hhdCBib2FyZCBhcmUNCj4+
+IHlvdSB0YXJnZXRpbmc/DQppdCBpcyBhIFNvQyBmcm9tIHhpbGlueCB3aXRoIDIgYXJtIGNvcnRl
+eCBhNTMga2VybmVsIG9uIGl0DQpUaGlzIGlzIGFuIHVsdHJhc2NhbGU/IEnigJl2ZSBydW4gdGhl
+IGN1cnJlbnQgaXBpcGUgY29kZSAoNC4xOSkgb24gdGhlIHVsdHJhOTYgd2l0aG91dCBpc3N1ZS4N
+Cg0KWW91IGFyZSByaWdodC4gSXQgaXMgYSBYaWxpbnggVWx0cmFTY2FsZSsgWlUyQ0cuICBGb3Ig
+c29tZSByZWFzb25zIHdlIG5lZWQgdGhlIDUuNCBrZXJuZWwgdmVyc2lvbiBvbiB0aGlzIGJvYXJk
+Lg0KDQoNCj4NCj4gSSBzdXBwb3NlIHRoYXQgcXVlc3Rpb25zIGFkZHJlc3NlcyBSYWxmIChwcm92
+aWRlZCBoZSBydW5zIG9uIEFSTSkuDQo+DQo+IEFzIG1lbnRpb25lZCBiZWZvcmUsIG91ciB0aW55
+IHRlc3QgbGFiIGN1cnJlbnRseSBjb250YWlucyBmb3IgQVJNIGENCj4gQmVhZ2xlQm9uZSBCbGFj
+ayBhbmQgUUVNVSBpbnN0YW5jZS4NClRoZSBFU1BSRVNTT2JpbiBmcm9tIG1hcnZlbGwgY291bGQg
+YmUgYSBnb29kIGV2YWwgYm9hcmQgZm9yIHRlc3RpbmcgLklmDQp5b3UgbmVlZCBpdCB3ZSBjYW4g
+c2VuZCB5b3Ugb25lLiBPciB3ZSBjYW4gdGVzdCBuZXcgcGF0Y2hlcyBoZXJlIGluIG91cg0KY29t
+cGFueS4NCj4+DQo+PiBKYW4sIEkgY2FuICBoZWxwIG91dCBtYWludGFpbmluZyB0aGUgQVJNIGlw
+aXBlLiAgV2UgY2FuIHRhbGsgb2ZmbGluZQ0KPj4gaWYgeW91J2QgbGlrZS4NCkl0IHdvdWxkIGJl
+IGdyZWF0IGlmIHlvdSBjb3VsZCBrZWVwIHVzIHVwIHRvIGRhdGUgb24geW91ciBwcm9ncmVzcyBp
+bg0KcGF0Y2hpbmcga2VybmVsIHZlcnNpb24gNS40LiBJZiB3ZSBjYW4gc3VwcG9ydCB5b3UgaW4g
+YW55IHdheSwgbGV0IHVzIGtub3cuDQoNCj4gVGhhdCB3b3VsZCBiZSBncmVhdCwgbG9va2luZyBm
+b3J3YXJkIQ0KPg0KPiBKYW4NCj4NClJhbGYNCg0KDQoNCg0KSG90dGluZ2VyIEJhbGR3aW4gTWVz
+c3RlY2huaWsgR21iSCwgSW0gVGllZmVuIFNlZSA0NSwgNjQyOTMgRGFybXN0YWR0LCBHZXJtYW55
+IHwgd3d3LmhibS5jb20gUmVnaXN0ZXJlZCBhcyBHbWJIIChHZXJtYW4gbGltaXRlZCBsaWFiaWxp
+dHkgY29ycG9yYXRpb24pIGluIHRoZSBjb21tZXJjaWFsIHJlZ2lzdGVyIGF0IHRoZSBsb2NhbCBj
+b3VydCBvZiBEYXJtc3RhZHQsIEhSQiAxMTQ3IENvbXBhbnkgZG9taWNpbGVkIGluIERhcm1zdGFk
+dCB8IE1hbmFnaW5nIERpcmVjdG9yczogVGhvbWFzIExpcHBvayAmIEplbnMgV2llZ2FuZCB8IENo
+YWlybWFuIG9mIHRoZSBib2FyZDogSm9zZXBoIE1pY2hhZWwgVm9yaWggQWxzIEdlc2VsbHNjaGFm
+dCBtaXQgYmVzY2hyw6Rua3RlciBIYWZ0dW5nIGVpbmdldHJhZ2VuIGltIEhhbmRlbHNyZWdpc3Rl
+ciBkZXMgQW10c2dlcmljaHRzIERhcm1zdGFkdCB1bnRlciBIUkIgMTE0NyBTaXR6IGRlciBHZXNl
+bGxzY2hhZnQ6IERhcm1zdGFkdCB8IEdlc2Now6RmdHNmw7xocnVuZzogVGhvbWFzIExpcHBvayAm
+IEplbnMgV2llZ2FuZCB8IEF1ZnNpY2h0c3JhdHN2b3JzaXR6ZW5kZXI6IEpvc2VwaCBNaWNoYWVs
+IFZvcmloIFRoZSBpbmZvcm1hdGlvbiBpbiB0aGlzIGVtYWlsIGlzIGNvbmZpZGVudGlhbC4gSXQg
+aXMgaW50ZW5kZWQgc29sZWx5IGZvciB0aGUgYWRkcmVzc2VlLiBJZiB5b3UgYXJlIG5vdCB0aGUg
+aW50ZW5kZWQgcmVjaXBpZW50LCBwbGVhc2UgbGV0IG1lIGtub3cgYW5kIGRlbGV0ZSB0aGlzIGVt
+YWlsLiBEaWUgaW4gZGllc2VyIEUtTWFpbCBlbnRoYWx0ZW5lIEluZm9ybWF0aW9uIGlzdCB2ZXJ0
+cmF1bGljaCB1bmQgbGVkaWdsaWNoIGbDvHIgZGVuIEVtcGbDpG5nZXIgYmVzdGltbXQuIFNvbGx0
+ZW4gU2llIG5pY2h0IGRlciBlaWdlbnRsaWNoZSBFbXBmw6RuZ2VyIHNlaW4sIGluZm9ybWllcmVu
+IFNpZSBtaWNoIGJpdHRlIGt1cnogdW5kIGzDtnNjaGVuIGRpZXNlIEUtTWFpbC4NCg==
