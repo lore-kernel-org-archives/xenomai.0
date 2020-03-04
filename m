@@ -1,14 +1,11 @@
-Subject: Re: Public xenomai testing infrastructure
-References: <06aa62dc-b2da-9330-2ecc-e358c35f27cf@siemens.com>
- <c298eafc-c2e9-a576-9905-cc22427302e6@siemens.com>
-From: Gylstorff Quirin <quirin.gylstorff@siemens.com>
-Message-ID: <e79de6ef-14d8-20e8-0530-5e49592f048f@siemens.com>
-Date: Fri, 6 Mar 2020 14:05:01 +0100
+Content-Type: text/plain; charset="utf-8"
+In-Reply-To: <CALLqZ8Tkf0TKd5aydGwF_UTii4Hk1aerJpNnG_2mWhDYhg9fGg@mail.gmail.com>
+From: =?utf-8?q?Fran=C3=A7ois_Legal?= <francois.legal@thom.fr.eu.org>
+Date: Wed, 04 Mar 2020 17:28:46 +0100
 MIME-Version: 1.0
-In-Reply-To: <c298eafc-c2e9-a576-9905-cc22427302e6@siemens.com>
-Content-Type: text/plain; charset="utf-8"; format="flowed"
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+Message-ID: <7230-5e5fd700-9-4d48c480@89257876>
+Subject: =?utf-8?q?Re=3A?= GPIO interrupt not working on Zynq7000
+Content-Transfer-Encoding: quoted-printable
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,82 +14,91 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jan Kiszka <jan.kiszka@siemens.com>, "xenomai@xenomai.org" <xenomai@xenomai.org>, greg@embeddedgreg.com
+To: Greg Gallagher <greg@embeddedgreg.com>
+Cc: Jan Kiszka <jan.kiszka@siemens.com>, =?utf-8?q?Xenomai=40xenomai=2Eorg?= <xenomai@xenomai.org>
 
+Le Mercredi, Mars 04, 2020 17:12 CET, Greg Gallagher <greg@embeddedgreg=
+.com> a =C3=A9crit: 
+ 
+> On Wed, Mar 4, 2020 at 11:08 AM Jan Kiszka <jan.kiszka@siemens.com> w=
+rote:
+> >
+> > On 04.03.20 17:00, Fran=C3=A7ois Legal via Xenomai wrote:
+> > > Le Mercredi, Mars 04, 2020 16:48 CET, Greg Gallagher <greg@embedd=
+edgreg.com> a =C3=A9crit:
+> > >
+> > >> hi,
+> > >>
+> > >> On Wed, Mar 4, 2020 at 9:40 AM Fran=C3=A7ois Legal <devel@thom.f=
+r.eu.org> wrote:
+> > >>>
+> > >>> Le Mercredi, Mars 04, 2020 14:57 CET, Greg Gallagher <greg@embe=
+ddedgreg.com> a =C3=A9crit:
+> > >>>
+> > >>>> Hi,
+> > >>>>
+> > >>>> On Wed, Mar 4, 2020 at 4:01 AM Fran=C3=A7ois Legal via Xenomai=
+ <
+> > >>>> xenomai@xenomai.org> wrote:
+> > >>>>
+> > >>>>> Hello,
+> > >>>>>
+> > >>>>> trying to diagnose an interrupt problem on a Zynq 7000 hardwa=
+re. The
+> > >>>>> environment is linux 4.4.189, xenomai 3.0.9.
+> > >>
+> > >> Are you building directly from the ipipe repo or applying one of=
+ the
+> > >> patches?  If it's a patch what patch are you applying?
+> > >
+> > > I'm applying ipipe-core-4.4.176-arm-10.patch with slight modifica=
+tions (KUSER=5FTSC is not enabled for Zynq 7000 in that patch)
+> > >
+> >
+> > You know that you can find a newer version in
+> > https://gitlab.denx.de/Xenomai/ipipe/tree/ipipe-4.4.y-cip? I'm just=
+ not
+> > releasing it as I'm lacking test feedback on the updates. It is not=
 
-
-On 3/5/20 2:51 PM, Jan Kiszka wrote:
-> On 05.03.20 14:41, Gylstorff Quirin wrote:
->> Hi all,
->>
->> As Jan mentioned in some post we have a CI infrastructure[1]
->> - currently only internal available - based on gitlab & LAVA[2].
->>   We plan to create a public version of this infrastructure.
->>
->> The setup will similar to the testing in CIP project[3]. The results
->> of a build are transferred via a public LAVA master to private 
->> instances of LAVA workers to the device-under-test and executed and 
->> the result displayed on the LAVA master.
->>
->> We intend to use xenomai-images to build  kernel,root file system and 
->> xenomai.
->>
->> The CI infrastructure will have the following components:
->> - Public/Private Builds with gitlab, travis or similar
->> - Public Lava Master (scheduling of test and display of results)
->> - Private Lava worker connect to Hardware targets
->>
->> Current open topics for the CI Infrastructure
->> - where to execute the public builds?
->>    - gitlab oss program[4]
->>      - can we run builds of xenomai-image
->>    - travis
->         (then paid, we won't scale as free project)
+> > supposed to resolve the GPIO issue, though.
+> >
+> > Jan
+> >
+> > --
+> > Siemens AG, Corporate Technology, CT RDA IOT SES-DE
+> > Corporate Competence Center Embedded Linux
 > 
->       - AWS, like we do in the CIP project via
->         https://gitlab.com/cip-project/cip-testing/gitlab-cloud-ci
+> I'll have to look at this a little more closely, I don't think you
+> need to clear the pending status unless something changed upstream on=
+
+> us.  The chained handler should be calling a mask and ack to hold the=
+
+> line  and then unmask once the handler is called.  In userspace you'r=
+e
+> just calling select on the gpio path?  I can test this with just the
+> ipipe first and see if we can isolate the issue to either the ipipe o=
+r
+> Xenomai.  It may take me a couple of days to get setup with my Zynq
+> board again, can you try the 4.4.y branch Jan mentioned, I'll use tha=
+t
+> as a starting point when I start debugging.
 > 
->>    - somewhere else
->> - Where to store the build artifacts?
->>    - AWS buckets
->>    - locally on the Master
+> Thanks
 > 
-> You mean the Lava Master, I suppose.
-> 
->> - How long to store the build artifacts?
->>    - 1 week
-> 
-> - until overwritten by a newer version - unfortunately not a feature of
->    gitlab artifacts
-> 
->> - Where to run the public Lava Master?
->>    - AWS or similar instance
->>      - Payment of the instance
->>    - Physical Server
->>      - Who can host the server
->>
->>
->> [1]: 
->> https://gitlab.denx.de/Xenomai/xenomai-images/blob/master/tests/README.md#test-architecture 
->>
->> [2]: https://lavasoftware.org/
->> [3]: 
->> https://wiki.linuxfoundation.org/civilinfrastructureplatform/ciptesting/centalisedtesting 
->>
->> [4]: 
->> https://about.gitlab.com/handbook/marketing/community-relations/opensource-program/ 
->>
->>
+> Greg
+ 
+Your comment on using the ipipe repo made me go there and have a look. =
+It seems I found the answer.
+In the zynq=5Fgpio=5Fhandle=5Fbank=5Firq, the ipipe repo uses "ipipe=5F=
+handle=5Fdemuxed=5Firq" whereas mine used "generic=5Fhandle=5Firq"
 
-I tested xenomai-images with in my gitlab account and it work  - slowly ;-)
+It seems that my problem is solved now.
 
-You can check out the build:
-https://gitlab.com/Quirin.Gy/xenomai-images-test/pipelines/123917771
+So I think I saw the announcement for ipipe-core-4.4.196-cip38-x86-19.p=
+atch, but nothing for arm.
 
-Next test would be to store the results as artifacts.
+Thanks
 
-Quirin
-
-
+Fran=C3=A7ois
 
 
