@@ -1,11 +1,13 @@
-From: Gylstorff Quirin <quirin.gylstorff@siemens.com>
-Subject: Public xenomai testing infrastructure
-Message-ID: <06aa62dc-b2da-9330-2ecc-e358c35f27cf@siemens.com>
-Date: Thu, 5 Mar 2020 14:41:42 +0100
+Subject: Re: Public xenomai testing infrastructure
+References: <06aa62dc-b2da-9330-2ecc-e358c35f27cf@siemens.com>
+From: Jan Kiszka <jan.kiszka@siemens.com>
+Message-ID: <c298eafc-c2e9-a576-9905-cc22427302e6@siemens.com>
+Date: Thu, 5 Mar 2020 14:51:55 +0100
 MIME-Version: 1.0
+In-Reply-To: <06aa62dc-b2da-9330-2ecc-e358c35f27cf@siemens.com>
+Content-Type: text/plain; charset="utf-8"; format="flowed"
 Content-Language: en-US
-Content-Transfer-Encoding: base64
-Content-Type: text/plain; charset="utf-8"; Format="flowed"
+Content-Transfer-Encoding: 8bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -14,69 +16,98 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "xenomai@xenomai.org" <xenomai@xenomai.org>, "Kiszka, Jan (CT RDA IOT SES-DE)" <jan.kiszka@siemens.com>, greg@embeddedgreg.com
+To: Gylstorff Quirin <quirin.gylstorff@siemens.com>, "xenomai@xenomai.org" <xenomai@xenomai.org>, greg@embeddedgreg.com
 
-SGkgYWxsLAoKQXMgSmFuIG1lbnRpb25lZCBpbiBzb21lIHBvc3Qgd2UgaGF2ZSBhIENJIGluZnJh
-c3RydWN0dXJlWzFdCi0gY3VycmVudGx5IG9ubHkgaW50ZXJuYWwgYXZhaWxhYmxlIC0gYmFzZWQg
-b24gZ2l0bGFiICYgTEFWQVsyXS4KICBXZSBwbGFuIHRvIGNyZWF0ZSBhIHB1YmxpYyB2ZXJzaW9u
-IG9mIHRoaXMgaW5mcmFzdHJ1Y3R1cmUuCgpUaGUgc2V0dXAgd2lsbCBzaW1pbGFyIHRvIHRoZSB0
-ZXN0aW5nIGluIENJUCBwcm9qZWN0WzNdLiBUaGUgcmVzdWx0cwpvZiBhIGJ1aWxkIGFyZSB0cmFu
-c2ZlcnJlZCB2aWEgYSBwdWJsaWMgTEFWQSBtYXN0ZXIgdG8gcHJpdmF0ZSBpbnN0YW5jZXMgCm9m
-IExBVkEgd29ya2VycyB0byB0aGUgZGV2aWNlLXVuZGVyLXRlc3QgYW5kIGV4ZWN1dGVkIGFuZCB0
-aGUgcmVzdWx0IApkaXNwbGF5ZWQgb24gdGhlIExBVkEgbWFzdGVyLgoKV2UgaW50ZW5kIHRvIHVz
-ZSB4ZW5vbWFpLWltYWdlcyB0byBidWlsZCAga2VybmVsLHJvb3QgZmlsZSBzeXN0ZW0gYW5kIAp4
-ZW5vbWFpLgoKVGhlIENJIGluZnJhc3RydWN0dXJlIHdpbGwgaGF2ZSB0aGUgZm9sbG93aW5nIGNv
-bXBvbmVudHM6Ci0gUHVibGljL1ByaXZhdGUgQnVpbGRzIHdpdGggZ2l0bGFiLCB0cmF2aXMgb3Ig
-c2ltaWxhcgotIFB1YmxpYyBMYXZhIE1hc3RlciAoc2NoZWR1bGluZyBvZiB0ZXN0IGFuZCBkaXNw
-bGF5IG9mIHJlc3VsdHMpCi0gUHJpdmF0ZSBMYXZhIHdvcmtlciBjb25uZWN0IHRvIEhhcmR3YXJl
-IHRhcmdldHMKCkN1cnJlbnQgb3BlbiB0b3BpY3MgZm9yIHRoZSBDSSBJbmZyYXN0cnVjdHVyZQot
-IHdoZXJlIHRvIGV4ZWN1dGUgdGhlIHB1YmxpYyBidWlsZHM/CiAgIC0gZ2l0bGFiIG9zcyBwcm9n
-cmFtWzRdCiAgICAgLSBjYW4gd2UgcnVuIGJ1aWxkcyBvZiB4ZW5vbWFpLWltYWdlCiAgIC0gdHJh
-dmlzCiAgIC0gc29tZXdoZXJlIGVsc2UKLSBXaGVyZSB0byBzdG9yZSB0aGUgYnVpbGQgYXJ0aWZh
-Y3RzPwogICAtIEFXUyBidWNrZXRzCiAgIC0gbG9jYWxseSBvbiB0aGUgTWFzdGVyCi0gSG93IGxv
-bmcgdG8gc3RvcmUgdGhlIGJ1aWxkIGFydGlmYWN0cz8KICAgLSAxIHdlZWsKLSBXaGVyZSB0byBy
-dW4gdGhlIHB1YmxpYyBMYXZhIE1hc3Rlcj8KICAgLSBBV1Mgb3Igc2ltaWxhciBpbnN0YW5jZQog
-ICAgIC0gUGF5bWVudCBvZiB0aGUgaW5zdGFuY2UKICAgLSBQaHlzaWNhbCBTZXJ2ZXIKICAgICAt
-IFdobyBjYW4gaG9zdCB0aGUgc2VydmVyCgoKWzFdOiAKaHR0cHM6Ly9naXRsYWIuZGVueC5kZS9Y
-ZW5vbWFpL3hlbm9tYWktaW1hZ2VzL2Jsb2IvbWFzdGVyL3Rlc3RzL1JFQURNRS5tZCN0ZXN0LWFy
-Y2hpdGVjdHVyZQpbMl06IGh0dHBzOi8vbGF2YXNvZnR3YXJlLm9yZy8KWzNdOiAKaHR0cHM6Ly93
-aWtpLmxpbnV4Zm91bmRhdGlvbi5vcmcvY2l2aWxpbmZyYXN0cnVjdHVyZXBsYXRmb3JtL2NpcHRl
-c3RpbmcvY2VudGFsaXNlZHRlc3RpbmcKWzRdOiAKaHR0cHM6Ly9hYm91dC5naXRsYWIuY29tL2hh
-bmRib29rL21hcmtldGluZy9jb21tdW5pdHktcmVsYXRpb25zL29wZW5zb3VyY2UtcHJvZ3JhbS8K
-ClF1aXJpbgotLS0KUXVpcmluIEd5bHN0b3JmZgoKU2llbWVucyBBRwpDb3Jwb3JhdGUgVGVjaG5v
-bG9neQpSZXNlYXJjaCBpbiBEaWdpdGFsaXphdGlvbiBhbmQgQXV0b21hdGlvbgpTbWFydCBFbWJl
-ZGRlZCBTeXN0ZW1zCkNUIFJEQSBJT1QgU0VTLURFCk90dG8tSGFobi1SaW5nIDYKODE3MzkgTXVl
-bmNoZW4sIEdlcm1hbnkKTW9iaWxlOiArNDkgMTczIDM3NDY2ODMKbWFpbHRvOnF1aXJpbi5neWxz
-dG9yZmZAc2llbWVucy5jb20Kd3d3LnNpZW1lbnMuY29tL2luZ2VudWl0eWZvcmxpZmUKClNpZW1l
-bnMgQWt0aWVuZ2VzZWxsc2NoYWZ0OiBDaGFpcm1hbiBvZiB0aGUgU3VwZXJ2aXNvcnkgQm9hcmQ6
-IEppbSAKSGFnZW1hbm4gU25hYmU7IE1hbmFnaW5nIEJvYXJkOiBKb2UgS2Flc2VyLCBDaGFpcm1h
-biwgUHJlc2lkZW50IGFuZCAKQ2hpZWYgRXhlY3V0aXZlIE9mZmljZXI7IFJvbGFuZCBCdXNjaCwg
-TGlzYSBEYXZpcywgS2xhdXMgSGVsbXJpY2gsIApDZWRyaWsgTmVpa2UsIE1pY2hhZWwgU2VuLCBS
-YWxmIFAuIFRob21hczsgUmVnaXN0ZXJlZCBvZmZpY2VzOiBCZXJsaW4gCmFuZCBNdW5pY2gsIEdl
-cm1hbnk7IENvbW1lcmNpYWwgcmVnaXN0cmllczogQmVybGluIENoYXJsb3R0ZW5idXJnLCBIUkIg
-CjEyMzAwLCBNdW5pY2gsIEhSQiA2Njg0OyBXRUVFLVJlZy4tTm8uIERFIDIzNjkxMzIyCgoKLS0t
-LS0tLS0tLS0tLS0gbmV4dCBwYXJ0IC0tLS0tLS0tLS0tLS0tCiAgICAgICAgICAgICAgICAgICAg
-ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICstLS0tLS0t
-LS0tLS0tLS0rCiAgICB8ICAgICAgICAgICAgICAgfAogICAgfCAgQnVpbGRzeXN0ZW0gIHwKICAg
-IHwgICAgIChnaXRsYWIpICB8LS0tLQogICAgfCAgICAgICAgICAgICAgIHwgICAgXC0tLS0tICAg
-ICstLS0tLS0tLS0rCiAgICArLS0tLS0tLS0tLS0tLS0tKyAgICAgICAgICBcLS0tfCAgICAgICAg
-IHwKICAgICAgICAgICAgICAgIFwgICAgICAgICAgICAgICAgICB8IFN0b3JhZ2UgfAogICAgICAg
-ICAgICAgICAgIFwgICAgICAgICAgICAgICAgIHwgQnVpbGQgICB8CiAgICAgICAgICAgICAgICAg
-IFwgICAgICAgICAgICAgICAgfCByZXN1bHRzIHwKICAgICAgICAgICAgICAgICAgIFwgICAgICAg
-ICAgICAgICB8ICAgICAgICAgfAogICAgICAgICAgICAgICAgICAgfCAgICAgICAgICAgICAgICst
-LS0tLS0tLS0rCiAgICAgICAgICAgICAgICAgICAgXCAgICAgICAgICAgICAgICAgICBcCiAgICAg
-ICAgICAgICAgICAgICAgIFwgICAgICAgICAgICAgICAgICAgXAogICAgICAgICAgICAgICArLS0t
-LS0tLS0tLS0tLSsgICAgICAgICAgICBcLQogICAgICAgICAgICAgICB8ICAgICAgICAgICAgIHwg
-ICAgICAgICAgICAgIFwKICAgICAgICAgICAgICAgfCBMQVZBIE1hc3RlciB8ICAgICAgICAgICAg
-ICAgXAogICAgICAgICAgICAgICB8ICAgICAgICAgICAgIHwgICAgICAgICAgICArLS0tLS0tLS0t
-LS0tLS0tLS0tLS0tKwogICAgICAgICAgICAgICB8ICAgICAgICAgICAgIHwtLS0tLS0tLS0tLS18
-ICBMQVZBIFdvcmtlciAgICAgICAgfAogICAgICAgICAgICAgICB8ICAgICAgICAgICAgIHwgICAg
-ICAgICAgICB8ICAgICAgICAgICAgICAgICAgICAgfAogICAgICAgICAgICAgICArLS0tLS0tLS0t
-LS0tLSsgICAgICAgICAgICArLSstLS0tLS0tKy0tLS0tLS0tLSstKwogICAgICAgICAgICAgICAg
-ICAgICAgICAgICAgICAgICAgICAgICAgICAgIHwgICAgICAgfCAgICAgICAgIHwKICAgICAgICAg
-ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgKy0rLSsgICstLSstLS0rICArLS0rLS0r
-ICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICB8IEQgfCAg
-fCBEVVQgIHwgIHwgRFVUIHwKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
-ICAgfCBVIHwgIHwgICAgICB8ICB8ICAgICB8CiAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
-ICAgICAgICAgICAgIHwgVCB8ICB8ICAgICAgfCAgfCAgICAgfAogICAgICAgICAgICAgICAgICAg
-ICAgICAgICAgICAgICAgICAgICAgICArLS0tKyAgKy0tLS0tLSsgICstLS0tLSsKICAgCiAK
+On 05.03.20 14:41, Gylstorff Quirin wrote:
+> Hi all,
+> 
+> As Jan mentioned in some post we have a CI infrastructure[1]
+> - currently only internal available - based on gitlab & LAVA[2].
+>   We plan to create a public version of this infrastructure.
+> 
+> The setup will similar to the testing in CIP project[3]. The results
+> of a build are transferred via a public LAVA master to private instances 
+> of LAVA workers to the device-under-test and executed and the result 
+> displayed on the LAVA master.
+> 
+> We intend to use xenomai-images to build  kernel,root file system and 
+> xenomai.
+> 
+> The CI infrastructure will have the following components:
+> - Public/Private Builds with gitlab, travis or similar
+> - Public Lava Master (scheduling of test and display of results)
+> - Private Lava worker connect to Hardware targets
+> 
+> Current open topics for the CI Infrastructure
+> - where to execute the public builds?
+>    - gitlab oss program[4]
+>      - can we run builds of xenomai-image
+>    - travis
+        (then paid, we won't scale as free project)
+
+      - AWS, like we do in the CIP project via
+        https://gitlab.com/cip-project/cip-testing/gitlab-cloud-ci
+
+>    - somewhere else
+> - Where to store the build artifacts?
+>    - AWS buckets
+>    - locally on the Master
+
+You mean the Lava Master, I suppose.
+
+> - How long to store the build artifacts?
+>    - 1 week
+
+- until overwritten by a newer version - unfortunately not a feature of
+   gitlab artifacts
+
+> - Where to run the public Lava Master?
+>    - AWS or similar instance
+>      - Payment of the instance
+>    - Physical Server
+>      - Who can host the server
+> 
+> 
+> [1]: 
+> https://gitlab.denx.de/Xenomai/xenomai-images/blob/master/tests/README.md#test-architecture 
+> 
+> [2]: https://lavasoftware.org/
+> [3]: 
+> https://wiki.linuxfoundation.org/civilinfrastructureplatform/ciptesting/centalisedtesting 
+> 
+> [4]: 
+> https://about.gitlab.com/handbook/marketing/community-relations/opensource-program/ 
+> 
+> 
+> Quirin
+> ---
+> Quirin Gylstorff
+> 
+> Siemens AG
+> Corporate Technology
+> Research in Digitalization and Automation
+> Smart Embedded Systems
+> CT RDA IOT SES-DE
+> Otto-Hahn-Ring 6
+> 81739 Muenchen, Germany
+> Mobile: +49 173 3746683
+> mailto:quirin.gylstorff@siemens.com
+> www.siemens.com/ingenuityforlife
+> 
+> Siemens Aktiengesellschaft: Chairman of the Supervisory Board: Jim 
+> Hagemann Snabe; Managing Board: Joe Kaeser, Chairman, President and 
+> Chief Executive Officer; Roland Busch, Lisa Davis, Klaus Helmrich, 
+> Cedrik Neike, Michael Sen, Ralf P. Thomas; Registered offices: Berlin 
+> and Munich, Germany; Commercial registries: Berlin Charlottenburg, HRB 
+> 12300, Munich, HRB 6684; WEEE-Reg.-No. DE 23691322
+> 
+> 
+
+Thanks for this overview, Quirin!
+
+Jan
+
+-- 
+Siemens AG, Corporate Technology, CT RDA IOT SES-DE
+Corporate Competence Center Embedded Linux
+
