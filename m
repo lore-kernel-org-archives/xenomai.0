@@ -1,13 +1,21 @@
-Subject: Re: GPIO interrupt not working on Zynq7000
-References: <7231-5e5fe800-13-3b6a0580@56070974>
-From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <263bc4d0-d93a-45fa-936f-26a6ec0193ba@siemens.com>
-Date: Wed, 4 Mar 2020 18:46:35 +0100
+From: Ralf Moder <ralf.moder@hbkworld.com>
+Subject: Re: Ipipe-Patch for kernel version 5.4.23
+Date: Thu, 5 Mar 2020 09:50:33 +0000
+Message-ID: <555de64b-a175-cac7-e98c-83cfb898ce78@hbm.com>
+References: <DB8PR09MB3612215A31188B5C00AD779BF0E70@DB8PR09MB3612.eurprd09.prod.outlook.com>
+ <c4a79189-6696-a109-97f6-8cadbb36923e@siemens.com>
+ <CALLqZ8TNspMLYOfrA11_xB6dh=LjXiTV8_P12+s_a_exUv6tqQ@mail.gmail.com>
+ <68ddab50-1002-7100-a745-3387b28592b2@siemens.com>
+ <1a4b8b29-2c9d-676b-cedc-d7eddb461189@hbm.com>
+ <CALLqZ8S63mKXCpWcAeb7haW4x03Y07evBxJPD-j2ciJY40=9NA@mail.gmail.com>
+ <39eee7a6-f95c-e55e-8922-3cef387abe93@hbm.com>
+ <657c12d0-b0c9-f359-8f29-a266ad08ddc1@siemens.com>
+In-Reply-To: <657c12d0-b0c9-f359-8f29-a266ad08ddc1@siemens.com>
+Content-Language: de-DE
+Content-Type: text/plain; charset="utf-8"
+Content-ID: <746E9875785E744190C3FD6AC97AD9AA@eurprd09.prod.outlook.com>
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-In-Reply-To: <7231-5e5fe800-13-3b6a0580@56070974>
-Content-Type: text/plain; charset="utf-8"; format="flowed"
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,36 +24,83 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: =?UTF-8?Q?Fran=c3=a7ois_Legal?= <devel@thom.fr.eu.org>
-Cc: Greg Gallagher <greg@embeddedgreg.com>, "Xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Jan Kiszka <jan.kiszka@siemens.com>, Ralf Moder <ralf.moder@hbkworld.com>, Greg Gallagher <greg@embeddedgreg.com>
+Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On 04.03.20 18:40, François Legal wrote:
-> Le Mercredi, Mars 04, 2020 18:13 CET, Jan Kiszka <jan.kiszka@siemens.com> a écrit:
->   
->> On 04.03.20 18:04, François Legal wrote:
->>> So to terminate on that ipipe topic, I checked the legacy ipipe 4.4.y / 4.4.y-cip branches, and none fo them seem to handle the zynq-gpio correctly. It looks like this has been fixed in 4.9.y branch.
->>>
->>> Shall I submit a patch on this ?
->>
->> That would be perfect. I already cherry-picked a few ARM patches from
->> newer releases that Philippe pointed me to. If those apply, just list
->> the commit shas. If not, please send the adjusted ones as backport. I
->> would recommend to also check ipipe-4.19 for potential further fixes.
->>
->> Jan
->>
->> -- 
->> Siemens AG, Corporate Technology, CT RDA IOT SES-DE
->> Corporate Competence Center Embedded Linux
->   
->   I think this "389e3638" is the one
-> 
-
-Thanks, I've applied that quickly and pushed it for your testing purposes.
-
-Jan
-
--- 
-Siemens AG, Corporate Technology, CT RDA IOT SES-DE
-Corporate Competence Center Embedded Linux
+QW0gMDMuMDMuMjAgdW0gMTU6NDggc2NocmllYiBKYW4gS2lzemthOg0KPiBPbiAwMy4wMy4yMCAx
+NToyMywgUmFsZiBNb2RlciB3cm90ZToNCj4+IEFtIDAzLjAzLjIwIHVtIDE0OjUzIHNjaHJpZWIg
+R3JlZyBHYWxsYWdoZXI6DQo+Pj4NCj4+Pg0KPj4+IE9uIFR1ZSwgTWFyIDMsIDIwMjAgYXQgODo0
+NiBBTSBSYWxmIE1vZGVyIDxyYWxmLm1vZGVyQGhia3dvcmxkLmNvbQ0KPj4+IDxtYWlsdG86cmFs
+Zi5tb2RlckBoYmt3b3JsZC5jb20+PiB3cm90ZToNCj4+Pg0KPj4+ICAgICBBbSAwMi4wMy4yMCB1
+bSAxNzowMSBzY2hyaWViIEphbiBLaXN6a2E6DQo+Pj4gICAgID4gT24gMDIuMDMuMjAgMTY6MTcs
+IEdyZWcgR2FsbGFnaGVyIHdyb3RlOg0KPj4+ICAgICA+Pg0KPj4+ICAgICA+PiBPbiBNb24sIE1h
+ciAyLCAyMDIwIGF0IDc6MzggQU0gSmFuIEtpc3prYSB2aWEgWGVub21haQ0KPj4+ICAgICA+PiA8
+eGVub21haUB4ZW5vbWFpLm9yZyA8bWFpbHRvOnhlbm9tYWlAeGVub21haS5vcmc+DQo+Pj4gICAg
+IDxtYWlsdG86eGVub21haUB4ZW5vbWFpLm9yZyA8bWFpbHRvOnhlbm9tYWlAeGVub21haS5vcmc+
+Pj4gd3JvdGU6DQo+Pj4gICAgID4+DQo+Pj4gICAgID4+ICAgICBPbiAwMi4wMy4yMCAxMTowMCwg
+UmFsZiBNb2RlciB2aWEgWGVub21haSB3cm90ZToNCj4+PiAgICAgPj4gICAgICA+IEhlbGxvIGV2
+ZXJ5b25lLA0KPj4+ICAgICA+PiAgICAgID4gSSBuZWVkIHRoZSBrZXJuZWwgdmVyc2lvbiA1LjQu
+MjMgaW4gYW4gZW1iZWRkZWQgbGludXgNCj4+PiAgICAgcHJvamVjdA0KPj4+ICAgICA+PiAgICAg
+YmVjYXVzZSBvZiBkcml2ZXIgc3R1ZmYgYnV0IGFsc28gdGhlIFhlbm9tYWkgZXh0ZW5zaW9uLiBI
+b3cNCj4+PiAgICAgYmlnIGlzDQo+Pj4gICAgID4+ICAgICB0aGUgcHJvYmFiaWxpdHkgdGhhdCBh
+biBJLXBpcGUgcGF0Y2ggZm9yIHRoZSA1LjQgdmVyc2lvbg0KPj4+ICAgICB3aWxsIGJlDQo+Pj4g
+ICAgID4+ICAgICByZWxlYXNlZCBpbiB0aGUgbmV4dCAyIHRvIDMgbW9udGhzPw0KPj4+ICAgICA+
+Pg0KPj4+ICAgICA+PiAgICAgSSB3b3VsZCBmaXJzdCBvZiBhbGwgc2F5IHRoYXQgaXQncyA+MC4g
+QnV0IGJleW9uZCB0aGF0LCBpdA0KPj4+ICAgICA+PiBkZXBlbmRzIG9uDQo+Pj4gICAgID4+ICAg
+ICB0aGUgYXJjaGl0ZWN0dXJlOiB4ODYgc2hvdWxkIGJlIGF2YWlsYWJsZSBvbiA1LjQgaW4gdGhl
+DQo+Pj4gICAgIG5leHQgbW9udGhzDQo+Pj4gICAgID4+ICAgICB3aXRoDQo+Pj4gICAgID4+ICAg
+ICBhIHByb2JhYmlsaXR5ID4+NTAlIGFzIHRoYXQgd2lsbCBiZSBteSBwcmltYXJ5IHRhcmdldCBm
+b3INCj4+PiAgICAgbG9va2luZw0KPj4+ICAgICA+PiBpbnRvDQo+Pj4gICAgID4+ICAgICBob3cg
+dG8gbW92ZSBmb3J3YXJkLiBBUk0gYW5kIEFSTTY0IGN1cnJlbnRseSBsYWNrcyBhDQo+Pj4gICAg
+IG1haW50YWluZXIuDQo+Pj4gICAgID4+IElmIHdlDQo+Pj4gICAgID4+ICAgICBhcmUgbHVja3ks
+IHRoZSBiYXNlIGVuYWJsaW5nIHZpYSBQaGlsaXBwZSdzIGRvdmV0YWlsDQo+Pj4gcXVldWUgd2ls
+bA0KPj4+ICAgICA+PiBlbmFibGUNCj4+PiAgICAgPj4gICAgIHRob3NlIG1vcmUgb3IgbGVzcyBh
+cyB3ZWxsLiBCdXQgaXQgd2lsbCBkZWZpbml0ZWx5IHRha2UNCj4+PiBzb21lb25lDQo+Pj4gICAg
+ID4+IHRvIHRha2UNCj4+PiAgICAgPj4gICAgIHJlc3BvbnNpYmlsaXR5IGZvciB0aG9zZSBhcmNo
+cyBiZWNhdXNlIG15IGNvbGxlYWd1ZXMgYW5kIEkNCj4+PiAgICAgY3VycmVudGx5DQo+Pj4gICAg
+ID4+ICAgICBjYW5ub3QgaW52ZXN0IGJleW9uZCBpbnRlZ3JhdGluZyBjb250cmlidXRpb25zLiBU
+aGVyZSBpcw0KPj4+ICAgICBhbHNvIHBwYzMyDQo+Pj4gICAgID4+ICAgICAod2hpY2ggaGFzIGEg
+bWFpbnRhaW5lciksIGJ1dCBJIHN1cHBvc2UgdGhhdCB0aGlzIGlzIG5vdA0KPj4+IHlvdXINCj4+
+PiAgICAgPj4gdGFyZ2V0Lg0KPj4+ICAgICA+Pg0KPj4+ICAgICA+PiAgICAgSmFuDQo+Pj4gICAg
+ID4+DQo+Pj4gICAgID4+ICAgICAtLSAgICAgU2llbWVucyBBRywgQ29ycG9yYXRlIFRlY2hub2xv
+Z3ksIENUIFJEQSBJT1QgU0VTLURFDQo+Pj4gICAgID4+ICAgICBDb3Jwb3JhdGUgQ29tcGV0ZW5j
+ZSBDZW50ZXIgRW1iZWRkZWQgTGludXgNCj4+PiAgICAgPj4NCj4+PiAgICAgPj4gSWYgeW91IG5l
+ZWQgdGhpcyBmb3IgYXJtIEkgd2FzIGdvaW5nIHRvIHRyeSB0byBwb3J0IHRoZSBpcGlwZQ0KPj4+
+ICAgICB0byA1LjQNCj4+PiAgICAgPj4gaW4gdGhlIG5lYXIgZnV0dXJlLiBFZmZvcnQgd2lzZSBp
+dCBzaG91bGRuJ3QgYmUgdG9vIGJhZCwgYnV0DQo+Pj4gaXQgYWxsDQo+Pj4gICAgID4+IGRlcGVu
+ZHMgb24gaG93IG11Y2ggdGhlIHVwc3RyZWFtIGNoYW5nZXMgaW1wYWN0IHVzLiAgV2hhdA0KPj4+
+IGJvYXJkIGFyZQ0KPj4+ICAgICA+PiB5b3UgdGFyZ2V0aW5nPw0KPj4+ICAgICBpdCBpcyBhIFNv
+QyBmcm9tIHhpbGlueCB3aXRoIDIgYXJtIGNvcnRleCBhNTMga2VybmVsIG9uIGl0DQo+Pj4NCj4+
+PiBUaGlzIGlzIGFuIHVsdHJhc2NhbGU/IEnigJl2ZSBydW4gdGhlIGN1cnJlbnQgaXBpcGUgY29k
+ZSAoNC4xOSkgb24gdGhlDQo+Pj4gdWx0cmE5NiB3aXRob3V0IGlzc3VlLg0KPj4NCj4+IFlvdSBh
+cmUgcmlnaHQuIEl0IGlzIGEgWGlsaW54IFVsdHJhU2NhbGUrIFpVMkNHLiAgRm9yIHNvbWUgcmVh
+c29ucyB3ZQ0KPj4gbmVlZCB0aGUgNS40IGtlcm5lbCB2ZXJzaW9uIG9uIHRoaXMgYm9hcmQuDQo+
+DQo+IEluIHRoZSBDSVAgcHJvamVjdCwgQ3liZXJ0cnVzdCBpcyBjdXJyZW50bHkgd29ya2luZyBv
+biBhIG1haW5saW5lDQo+IGJhY2twb3J0IG9mIFVsdHJhU2NhbGUgcGF0Y2hlcyB0byA0LjE5LWNp
+cC4gSSBoYXZlIG5vIG92ZXJ2aWV3IGFib3V0DQo+IHdoYXQgdGhleSBhbHJlYWR5IHN1cHBvcnQg
+b3IgY2FuIHJlYWxpc3RpY2FsbHkgYWNoaWV2ZSwgYnV0IGl0IG1heSBiZQ0KPiBhIHBsYW4gQi4g
+SWYgdGhlcmUgaXMgaW50ZXJlc3QsIEkgY2FuIGFzayB0aGVtIGZvciBhbiB1cGRhdGUgb24gdGhl
+DQo+IGN1cnJlbnQgc3RhdHVzLg0KVGhpcyBjb3VsZCBwb3NzaWJseSBiZSBhbiBhbHRlcm5hdGl2
+ZSB0byBhIG5ld2VyIGtlcm5lbCB2ZXJzaW9uLiBJdA0Kd291bGQgYmUgZ3JlYXQgaWYgeW91IGNv
+dWxkIGFjdHVhbGx5IGZpbmQgb3V0IHdoaWNoIGRyaXZlcnMgYXJlDQpjdXJyZW50bHkgYmFja3Bv
+cnRlZCB0aGVyZS4gV2UgZXNwZWNpYWxseSBuZWVkIHRoZSBsYXRlc3QgZHJpdmVycw0KcmVnYXJk
+aW5nIFBDSSBFeHByZXNzIGVuZHBvaW50IGZ1bmN0aW9uYWxpdHkuDQo+DQo+IEphbg0KPg0KUmFs
+Zg0KDQpIb3R0aW5nZXIgQmFsZHdpbiBNZXNzdGVjaG5payBHbWJILCBJbSBUaWVmZW4gU2VlIDQ1
+LCA2NDI5MyBEYXJtc3RhZHQsIEdlcm1hbnkgfCB3d3cuaGJtLmNvbSBSZWdpc3RlcmVkIGFzIEdt
+YkggKEdlcm1hbiBsaW1pdGVkIGxpYWJpbGl0eSBjb3Jwb3JhdGlvbikgaW4gdGhlIGNvbW1lcmNp
+YWwgcmVnaXN0ZXIgYXQgdGhlIGxvY2FsIGNvdXJ0IG9mIERhcm1zdGFkdCwgSFJCIDExNDcgQ29t
+cGFueSBkb21pY2lsZWQgaW4gRGFybXN0YWR0IHwgTWFuYWdpbmcgRGlyZWN0b3JzOiBUaG9tYXMg
+TGlwcG9rICYgSmVucyBXaWVnYW5kIHwgQ2hhaXJtYW4gb2YgdGhlIGJvYXJkOiBKb3NlcGggTWlj
+aGFlbCBWb3JpaCBBbHMgR2VzZWxsc2NoYWZ0IG1pdCBiZXNjaHLDpG5rdGVyIEhhZnR1bmcgZWlu
+Z2V0cmFnZW4gaW0gSGFuZGVsc3JlZ2lzdGVyIGRlcyBBbXRzZ2VyaWNodHMgRGFybXN0YWR0IHVu
+dGVyIEhSQiAxMTQ3IFNpdHogZGVyIEdlc2VsbHNjaGFmdDogRGFybXN0YWR0IHwgR2VzY2jDpGZ0
+c2bDvGhydW5nOiBUaG9tYXMgTGlwcG9rICYgSmVucyBXaWVnYW5kIHwgQXVmc2ljaHRzcmF0c3Zv
+cnNpdHplbmRlcjogSm9zZXBoIE1pY2hhZWwgVm9yaWggVGhlIGluZm9ybWF0aW9uIGluIHRoaXMg
+ZW1haWwgaXMgY29uZmlkZW50aWFsLiBJdCBpcyBpbnRlbmRlZCBzb2xlbHkgZm9yIHRoZSBhZGRy
+ZXNzZWUuIElmIHlvdSBhcmUgbm90IHRoZSBpbnRlbmRlZCByZWNpcGllbnQsIHBsZWFzZSBsZXQg
+bWUga25vdyBhbmQgZGVsZXRlIHRoaXMgZW1haWwuIERpZSBpbiBkaWVzZXIgRS1NYWlsIGVudGhh
+bHRlbmUgSW5mb3JtYXRpb24gaXN0IHZlcnRyYXVsaWNoIHVuZCBsZWRpZ2xpY2ggZsO8ciBkZW4g
+RW1wZsOkbmdlciBiZXN0aW1tdC4gU29sbHRlbiBTaWUgbmljaHQgZGVyIGVpZ2VudGxpY2hlIEVt
+cGbDpG5nZXIgc2VpbiwgaW5mb3JtaWVyZW4gU2llIG1pY2ggYml0dGUga3VyeiB1bmQgbMO2c2No
+ZW4gZGllc2UgRS1NYWlsLg0K
 
