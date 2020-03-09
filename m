@@ -1,6 +1,6 @@
-Date: Mon, 09 Mar 2020 15:58:30 +0100
-Message-ID: <20200309155830.Horde.qT5DihtwzbpuZDudGbUV2U3@webmail.b-tu.de>
-From: Benji <miethben@b-tu.de>
+Date: Mon, 09 Mar 2020 15:49:16 +0100
+Message-ID: <20200309154916.Horde.GWjy0cwScoo5KPIgz0z_cFe@webmail.b-tu.de>
+From: Benji Miethke <benji.miethke@b-tu.de>
 Subject: [RTnet] RTcfg: error -11
 Content-Type: text/plain; charset=utf-8; format=flowed; DelSp=Yes
 MIME-Version: 1.0
@@ -13,15 +13,15 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
+To: xenomai <xenomai@xenomai.org>
 
 Hi,
 
 i try to get RTnet up and running, but there are some issues with setup.
 
-Two system are connected via a switch. Both have 2 network interface,
+Two system are connected via a switch. Both have 2 network interface,  
 Intel i210 and Intel 82574L. Only Intel i210 is used by Xenomai/ RTnet.
-One system is configured as master in 'rtnet.conf', the other one as a
+One system is configured as master in 'rtnet.conf', the other one as a  
 slave. If 'rtnet start' is executed following outputs appears.
 
 Master:
@@ -43,7 +43,7 @@ At master the dmesg output are floated with messages like:
 > [  323.920083] TDMA: Failed to transmit sync frame!
 > [  323.932087] RTcfg: error -11 while sending stage 1 frame
 
-Anybody knows that error -11 means? I can't find any information on
+Anybody knows that error -11 means? I can't find any information on  
 this error code.
 
 Thanks
