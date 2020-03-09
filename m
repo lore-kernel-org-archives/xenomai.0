@@ -1,11 +1,21 @@
+From: Carsten EHRMANN <Carsten.Ehrmann@diehl.com>
+Subject: RE: Migrate project from Debian 8 Xenomai 2.x to Debain 9 Xenomai 3.x
+Date: Mon, 9 Mar 2020 08:26:29 +0000
+Message-ID: <86a30c2cabca45439f0ed4c2bd6fb9fc@RCDC-MAIL09.corp.diehl.com>
+References: <23edaf750b0b41ef9a129bbaf2758d9f@RCDC-MAIL09.corp.diehl.com>
+ <d36eca04d68b4434bde75d9cfa8c1418@RCDC-MAIL09.corp.diehl.com>
+ <f7fc8190-afe3-872e-d7aa-dcabcd576a77@siemens.com>
+ <ee2bea74fc5b40af8fbc9cff17c9bd78@RCDC-MAIL09.corp.diehl.com>
+ <CAFLxGvyxyfU0_F+mqymZg1d+X_Rzw9=LoZQAXuF5J8skR8n2Xg@mail.gmail.com>
+ <6b399d7610174bb585e2fb439d735402@RCDC-MAIL09.corp.diehl.com>
+ <8f7a0986-8549-fd2c-f49b-65595f9a1d16@siemens.com>
+ <77fa7cc8d0a54c03b41a8fcadd786a8f@RCDC-MAIL09.corp.diehl.com>
+ <857866991.69963.1583406441558.JavaMail.zimbra@nod.at>
+In-Reply-To: <857866991.69963.1583406441558.JavaMail.zimbra@nod.at>
+Content-Language: de-DE
 Content-Type: text/plain; charset="utf-8"
-In-Reply-To: <CALLqZ8Tkf0TKd5aydGwF_UTii4Hk1aerJpNnG_2mWhDYhg9fGg@mail.gmail.com>
-From: =?utf-8?q?Fran=C3=A7ois_Legal?= <francois.legal@thom.fr.eu.org>
-Date: Wed, 04 Mar 2020 17:28:46 +0100
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-Message-ID: <7230-5e5fd700-9-4d48c480@89257876>
-Subject: =?utf-8?q?Re=3A?= GPIO interrupt not working on Zynq7000
-Content-Transfer-Encoding: quoted-printable
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -14,91 +24,83 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Greg Gallagher <greg@embeddedgreg.com>
-Cc: Jan Kiszka <jan.kiszka@siemens.com>, =?utf-8?q?Xenomai=40xenomai=2Eorg?= <xenomai@xenomai.org>
+To: Richard Weinberger <richard@nod.at>
+Cc: Jan Kiszka <jan.kiszka@siemens.com>, xenomai <xenomai@xenomai.org>
 
-Le Mercredi, Mars 04, 2020 17:12 CET, Greg Gallagher <greg@embeddedgreg=
-.com> a =C3=A9crit: 
- 
-> On Wed, Mar 4, 2020 at 11:08 AM Jan Kiszka <jan.kiszka@siemens.com> w=
-rote:
-> >
-> > On 04.03.20 17:00, Fran=C3=A7ois Legal via Xenomai wrote:
-> > > Le Mercredi, Mars 04, 2020 16:48 CET, Greg Gallagher <greg@embedd=
-edgreg.com> a =C3=A9crit:
-> > >
-> > >> hi,
-> > >>
-> > >> On Wed, Mar 4, 2020 at 9:40 AM Fran=C3=A7ois Legal <devel@thom.f=
-r.eu.org> wrote:
-> > >>>
-> > >>> Le Mercredi, Mars 04, 2020 14:57 CET, Greg Gallagher <greg@embe=
-ddedgreg.com> a =C3=A9crit:
-> > >>>
-> > >>>> Hi,
-> > >>>>
-> > >>>> On Wed, Mar 4, 2020 at 4:01 AM Fran=C3=A7ois Legal via Xenomai=
- <
-> > >>>> xenomai@xenomai.org> wrote:
-> > >>>>
-> > >>>>> Hello,
-> > >>>>>
-> > >>>>> trying to diagnose an interrupt problem on a Zynq 7000 hardwa=
-re. The
-> > >>>>> environment is linux 4.4.189, xenomai 3.0.9.
-> > >>
-> > >> Are you building directly from the ipipe repo or applying one of=
- the
-> > >> patches?  If it's a patch what patch are you applying?
-> > >
-> > > I'm applying ipipe-core-4.4.176-arm-10.patch with slight modifica=
-tions (KUSER=5FTSC is not enabled for Zynq 7000 in that patch)
-> > >
-> >
-> > You know that you can find a newer version in
-> > https://gitlab.denx.de/Xenomai/ipipe/tree/ipipe-4.4.y-cip? I'm just=
- not
-> > releasing it as I'm lacking test feedback on the updates. It is not=
-
-> > supposed to resolve the GPIO issue, though.
-> >
-> > Jan
-> >
-> > --
-> > Siemens AG, Corporate Technology, CT RDA IOT SES-DE
-> > Corporate Competence Center Embedded Linux
-> 
-> I'll have to look at this a little more closely, I don't think you
-> need to clear the pending status unless something changed upstream on=
-
-> us.  The chained handler should be calling a mask and ack to hold the=
-
-> line  and then unmask once the handler is called.  In userspace you'r=
-e
-> just calling select on the gpio path?  I can test this with just the
-> ipipe first and see if we can isolate the issue to either the ipipe o=
-r
-> Xenomai.  It may take me a couple of days to get setup with my Zynq
-> board again, can you try the 4.4.y branch Jan mentioned, I'll use tha=
-t
-> as a starting point when I start debugging.
-> 
-> Thanks
-> 
-> Greg
- 
-Your comment on using the ipipe repo made me go there and have a look. =
-It seems I found the answer.
-In the zynq=5Fgpio=5Fhandle=5Fbank=5Firq, the ipipe repo uses "ipipe=5F=
-handle=5Fdemuxed=5Firq" whereas mine used "generic=5Fhandle=5Firq"
-
-It seems that my problem is solved now.
-
-So I think I saw the announcement for ipipe-core-4.4.196-cip38-x86-19.p=
-atch, but nothing for arm.
-
-Thanks
-
-Fran=C3=A7ois
-
+SGkgLA0KDQpzbyB4ZW5vX3J0aXBjIGlzIHVwIG5vdywgbGlzdGVkIGluICJsc21vZCB8IGdy
+ZXAgeGVubyINCg0KTm93IEkgZ290IGFub3RoZXIgZXJyb3IgZnJvbSBydF9waXBlX2NyZWF0
+ZSgpOiAtMjINCg0KV2hhdCBkb2VzIHRoaXMgbWVhbj8NCkFyZSB0aGVzZSBlcnJvcmNvZGVz
+IGxpc3RlZCBzb21ld2hlcmU/DQoNCg0KQ2Fyc3Rlbg0KDQoNCg0KDQpfX19fX19fX19fX19f
+X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
+X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX18NCkJpdHRlIMO8YmVybGVn
+ZW4gU2llLCBvYiBTaWUgZGllc2UgTmFjaHJpY2h0IHdpcmtsaWNoIGF1c2RydWNrZW4gbcO8
+c3Nlbi8gYmVmb3JlIHByaW50aW5nLCB0aGluayBhYm91dCBlbnZpcm9ubWVudGFsIHJlc3Bv
+bnNpYmlsaXR5Lg0KRGllaGwgTWV0ZXJpbmcgR21iSCwgSW5kdXN0cmllc3RyYcOfZSAxMywg
+OTE1MjIgQW5zYmFjaA0KVGVsZWZvbiArIDQ5IDk4MSAxODA2IDAsIFRlbGVmYXggKzQ5IDk4
+MSAxODA2IDYxNQ0KU2l0eiBkZXIgR2VzZWxsc2NoYWZ0OiBBbnNiYWNoLCBSZWdpc3Rlcmdl
+cmljaHQ6IEFuc2JhY2ggSFJCIDY5DQpHZXNjaMOkZnRzZsO8aHJlcjogRHIuIENocmlzdG9m
+IEJvc2JhY2ggKFNwcmVjaGVyKSwgVGhvbWFzIEdhc3RuZXIsIEplYW4tRnJhbsOnb2lzIE1h
+cmd1ZXQNCkRlciBJbmhhbHQgZGVyIHZvcnN0ZWhlbmRlbiBFLU1haWwgaXN0IG5pY2h0IHJl
+Y2h0bGljaCBiaW5kZW5kLiBEaWVzZSBFLU1haWwgZW50aMOkbHQgdmVydHJhdWxpY2hlIHVu
+ZC9vZGVyIHJlY2h0bGljaCBnZXNjaMO8dHp0ZSBJbmZvcm1hdGlvbmVuLiBJbmZvcm1pZXJl
+biBTaWUgdW5zIGJpdHRlLCB3ZW5uIFNpZSBkaWVzZSBFLU1haWwgZsOkbHNjaGxpY2hlcndl
+aXNlIGVyaGFsdGVuIGhhYmVuLiBCaXR0ZSBsw7ZzY2hlbiBTaWUgaW4gZGllc2VtIEZhbGwg
+ZGllIE5hY2hyaWNodC4gSmVkZSB1bmVybGF1YnRlIEZvcm0gZGVyIFJlcHJvZHVrdGlvbiwg
+QmVrYW5udGdhYmUsIMOEbmRlcnVuZywgVmVydGVpbHVuZyB1bmQvb2RlciBQdWJsaWthdGlv
+biBkaWVzZXIgRS1NYWlsIGlzdCBzdHJlbmdzdGVucyB1bnRlcnNhZ3QuDQpUaGUgY29udGVu
+dHMgb2YgdGhlIGFib3ZlIG1lbnRpb25lZCBlLW1haWwgaXMgbm90IGxlZ2FsbHkgYmluZGlu
+Zy4gVGhpcyBlLW1haWwgY29udGFpbnMgY29uZmlkZW50aWFsIGFuZC9vciBsZWdhbGx5IHBy
+b3RlY3RlZCBpbmZvcm1hdGlvbi4gUGxlYXNlIGluZm9ybSB1cyBpZiB5b3UgaGF2ZSByZWNl
+aXZlZCB0aGlzIGUtbWFpbCBieSBtaXN0YWtlIGFuZCBkZWxldGUgaXQgaW4gc3VjaCBhIGNh
+c2UuIEVhY2ggdW5hdXRob3JpemVkIHJlcHJvZHVjdGlvbiwgZGlzY2xvc3VyZSwgYWx0ZXJh
+dGlvbiwgZGlzdHJpYnV0aW9uIGFuZC9vciBwdWJsaWNhdGlvbiBvZiB0aGlzIGUtbWFpbCBp
+cyBzdHJpY3RseSBwcm9oaWJpdGVkLg0KSW5mb3JtYXRpb25lbiB6dW0gRGF0ZW5zY2h1dHog
+ZmluZGVuIFNpZSBhdWYgdW5zZXJlciBIb21lcGFnZS4NCmh0dHBzOi8vd3d3LmRpZWhsLmNv
+bS9tZXRlcmluZy9kZS9kaWVobC1tZXRlcmluZy9kYXRhLXByb3RlY3Rpb24NCkluZm9ybWF0
+aW9uIGFib3V0IGRhdGEgcHJvdGVjdGlvbiBjYW4gYmUgZm91bmQgb24gb3VyIGhvbWVwYWdl
+Lg0KaHR0cHM6Ly93d3cuZGllaGwuY29tL21ldGVyaW5nL2VuL2RpZWhsLW1ldGVyaW5nL2Rh
+dGEtcHJvdGVjdGlvbg0KDQoNCi0tLS0tT3JpZ2luYWwgTWVzc2FnZS0tLS0tDQpGcm9tOiBS
+aWNoYXJkIFdlaW5iZXJnZXIgPHJpY2hhcmRAbm9kLmF0PiANClNlbnQ6IFRodXJzZGF5LCBN
+YXJjaCA1LCAyMDIwIDEyOjA3IFBNDQpUbzogQ2Fyc3RlbiBFSFJNQU5OIDxDYXJzdGVuLkVo
+cm1hbm5AZGllaGwuY29tPg0KQ2M6IEphbiBLaXN6a2EgPGphbi5raXN6a2FAc2llbWVucy5j
+b20+OyB4ZW5vbWFpIDx4ZW5vbWFpQHhlbm9tYWkub3JnPg0KU3ViamVjdDogUmU6IE1pZ3Jh
+dGUgcHJvamVjdCBmcm9tIERlYmlhbiA4IFhlbm9tYWkgMi54IHRvIERlYmFpbiA5IFhlbm9t
+YWkgMy54DQoNCi0tLS0tIFVyc3Byw7xuZ2xpY2hlIE1haWwgLS0tLS0NCj4gVm9uOiAiQ2Fy
+c3RlbiBFSFJNQU5OIiA8Q2Fyc3Rlbi5FaHJtYW5uQGRpZWhsLmNvbT4NCj4gQW46ICJKYW4g
+S2lzemthIiA8amFuLmtpc3prYUBzaWVtZW5zLmNvbT4sICJSaWNoYXJkIFdlaW5iZXJnZXIi
+IA0KPiA8cmljaGFyZC53ZWluYmVyZ2VyQGdtYWlsLmNvbT4NCj4gQ0M6ICJ4ZW5vbWFpIiA8
+eGVub21haUB4ZW5vbWFpLm9yZz4NCj4gR2VzZW5kZXQ6IERvbm5lcnN0YWcsIDUuIE3DpHJ6
+IDIwMjAgMTE6MTc6MjYNCj4gQmV0cmVmZjogUkU6IE1pZ3JhdGUgcHJvamVjdCBmcm9tIERl
+YmlhbiA4IFhlbm9tYWkgMi54IHRvIERlYmFpbiA5IA0KPiBYZW5vbWFpIDMueA0KDQo+IEhp
+IEphbiwNCj4gDQo+IHNyeSwgbXkgZmF1bHQuDQo+IA0KPiBJIGVuYWJsZWQgUlRJUEMgYXMg
+d2VsbCBhcyBYRERQDQo+IA0KPiANCj4gX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
+X19fX19fX18NCj4gIyBSZWFsLXRpbWUgSVBDIGRyaXZlcnMNCj4gIw0KPiBDT05GSUdfWEVO
+T19EUklWRVJTX1JUSVBDPW0NCj4gQ09ORklHX1hFTk9fRFJJVkVSU19SVElQQ19YRERQPXkN
+Cj4gQ09ORklHX1hFTk9fRFJJVkVSU19SVElQQ19JRERQPXkNCj4gQ09ORklHX1hFTk9fT1BU
+X0lERFBfTlJQT1JUPTMyDQo+IENPTkZJR19YRU5PX0RSSVZFUlNfUlRJUENfQlVGUD15DQo+
+IENPTkZJR19YRU5PX09QVF9CVUZQX05SUE9SVD0zMg0KPiBfX19fX19fX19fX19fX19fX19f
+X19fX19fX19fX19fX19fX19fXw0KPiANCj4gVGhlbiBidWlsZCB0aGUga2VybmVsIGFnYWlu
+Lg0KPiANCj4gVGhlbiBJIGNoZWNrZWQgd2VhdGhlciB4ZW5vX3J0aXBjLmtvIHdhcyBsb2Fk
+ZWQsIGl0IHdhc24ndC4gSSB0cmllZCBpdCANCj4gd2l0aCBpbnNtb2QgYW5kIG1vZHByb2Jl
+IGJ1dCBib3RoIGdvdCBlcnJvcjogVW5rbm93biBzeW1ib2wgaW4gbW9kdWxlDQo+IA0KPiBU
+aGUgRG1lc2c6DQo+IFsgIDIzMC4xOTA4NjddIHhlbm9fcnRpcGM6IFVua25vd24gc3ltYm9s
+IHhubWFwX2RlbGV0ZSAoZXJyIDApIFsgIA0KPiAyMzAuMTkwOTAwXSB4ZW5vX3J0aXBjOiBV
+bmtub3duIHN5bWJvbCB4bnBpcGVfY29ubmVjdCAoZXJyIDApIFsgIA0KPiAyMzAuMTkxMDEx
+XSB4ZW5vX3J0aXBjOiBVbmtub3duIHN5bWJvbCB4bnBpcGVfc3RhdGVzIChlcnIgMCkgWyAg
+DQo+IDIzMC4xOTEwNDNdIHhlbm9fcnRpcGM6IFVua25vd24gc3ltYm9sIHhubWFwX2VudGVy
+IChlcnIgMCkgWyAgDQo+IDIzMC4xOTEwNjhdIHhlbm9fcnRpcGM6IFVua25vd24gc3ltYm9s
+IHhucGlwZV9tZml4dXAgKGVyciAwKSBbICANCj4gMjMwLjE5MTEyMl0geGVub19ydGlwYzog
+VW5rbm93biBzeW1ib2wgeG5waXBlX2Rpc2Nvbm5lY3QgKGVyciAwKSBbICANCj4gMjMwLjE5
+MTE4MF0geGVub19ydGlwYzogVW5rbm93biBzeW1ib2wgeG5tYXBfY3JlYXRlIChlcnIgMCkg
+WyAgDQo+IDIzMC4xOTEyMzFdIHhlbm9fcnRpcGM6IFVua25vd24gc3ltYm9sIHhubWFwX3Jl
+bW92ZSAoZXJyIDApIFsgIA0KPiAyMzAuMTkxMzEwXSB4ZW5vX3J0aXBjOiBVbmtub3duIHN5
+bWJvbCB4bnBpcGVfc2VuZCAoZXJyIDApIFsgIA0KPiAyMzAuMTkxMzQxXSB4ZW5vX3J0aXBj
+OiBVbmtub3duIHN5bWJvbCB4bnBpcGVfcmVjdiAoZXJyIDApDQo+IA0KPiANCj4gDQo+IERv
+IEkgbmVlZCBzb21lIG90aGVyIHhlbm9tYWkgc2V0dGluZ3MgZW5hYmxlZCBvciAgbGlicmFy
+aWVzPw0KDQpMb29rcyBtb3JlIGxpa2Uga2VybmVsIGFuZCBtb2R1bGUgZG8gbm90IG1hdGNo
+Lg0KQSBjb21tb24gcHJvYmxlbSBpcyB0aGF0IG9uZSBlbmFibGVzIGRyaXZlcnMgYW5kIGp1
+c3QgY29waWVzIHRoZSBuZXcgbW9kdWxlcyBidXQgZW5hYmxpbmcgZHJpdmVycyBjaGFuZ2Vz
+IGFsc28gY29yZSBrZXJuZWwgc3R1ZmYgYW5kIHRoZXJlZm9yZSB5b3UgbmVlZCBhbHNvIHRv
+IGluc3RhbGwgdGhlIHJlY2VudGx5IGJ1aWxkIGtlcm5lbC4NCg0KVGhhbmtzLA0KLy9yaWNo
+YXJkDQo=
 
