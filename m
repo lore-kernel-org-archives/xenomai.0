@@ -1,8 +1,23 @@
-From: Greg Gallagher <greg@embeddedgreg.com>
-Subject: [PATCH] arm: ipipe: Fix up the omap-gpio driver to deliver interrupts
- properly to the pipeline.
-Date: Sun,  1 Mar 2020 23:25:04 -0500
-Message-Id: <20200302042504.8524-1-greg@embeddedgreg.com>
+From: Carsten EHRMANN <Carsten.Ehrmann@diehl.com>
+Subject: RE: Migrate project from Debian 8 Xenomai 2.x to Debain 9 Xenomai 3.x
+Date: Tue, 10 Mar 2020 11:51:46 +0000
+Message-ID: <26140626378e40f7addaa773bce96d17@RCDC-MAIL09.corp.diehl.com>
+References: <23edaf750b0b41ef9a129bbaf2758d9f@RCDC-MAIL09.corp.diehl.com>
+ <d36eca04d68b4434bde75d9cfa8c1418@RCDC-MAIL09.corp.diehl.com>
+ <f7fc8190-afe3-872e-d7aa-dcabcd576a77@siemens.com>
+ <ee2bea74fc5b40af8fbc9cff17c9bd78@RCDC-MAIL09.corp.diehl.com>
+ <CAFLxGvyxyfU0_F+mqymZg1d+X_Rzw9=LoZQAXuF5J8skR8n2Xg@mail.gmail.com>
+ <6b399d7610174bb585e2fb439d735402@RCDC-MAIL09.corp.diehl.com>
+ <8f7a0986-8549-fd2c-f49b-65595f9a1d16@siemens.com>
+ <77fa7cc8d0a54c03b41a8fcadd786a8f@RCDC-MAIL09.corp.diehl.com>
+ <857866991.69963.1583406441558.JavaMail.zimbra@nod.at>
+ <86a30c2cabca45439f0ed4c2bd6fb9fc@RCDC-MAIL09.corp.diehl.com>
+ <40d1f688-eed6-3c30-edbb-698c594e070f@siemens.com>
+In-Reply-To: <40d1f688-eed6-3c30-edbb-698c594e070f@siemens.com>
+Content-Language: de-DE
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+MIME-Version: 1.0
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -11,236 +26,73 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
+To: Jan Kiszka <jan.kiszka@siemens.com>, Richard Weinberger <richard@nod.at>
+Cc: xenomai <xenomai@xenomai.org>
 
-OMAP gpio driver was changed upstream to be able to support threaded IRQ handler,
-this change impacted how the ipipe dealt with this driver. Since the ipipe expects
-a chained handler and now it's a generic one, we need to ack the event in the
-interrupt controller before calling the handler and unmask it after.
-
-Level flow handler must be used for pipelined interrupts. Since the IRQ handler
- on the root stage may be delayed until the real-time core releases the CPU, we
-need to mask the IRQ to prevent an IRQ storm when the interrupts are enabled again.
-
-Convert wa_lock to ipipe_spinlock, since wa_lock is used in the irq_chip functions
-which when called from the head stage can't use a Linux kernel service.
-
-Add the hold/release handlers for robustness.
-
-Signed-off-by: Greg Gallagher <greg@embeddedgreg.com>
----
- drivers/gpio/gpio-omap.c | 120 ++++++++++++++++++++++++++++++---------
- 1 file changed, 93 insertions(+), 27 deletions(-)
-
-diff --git a/drivers/gpio/gpio-omap.c b/drivers/gpio/gpio-omap.c
-index 39d25f599831..d52fcf5bed66 100644
---- a/drivers/gpio/gpio-omap.c
-+++ b/drivers/gpio/gpio-omap.c
-@@ -61,10 +61,11 @@ struct gpio_bank {
- 	u32 toggle_mask;
- #ifdef CONFIG_IPIPE
- 	ipipe_spinlock_t lock;
-+	ipipe_spinlock_t wa_lock;
- #else
- 	raw_spinlock_t lock;
--#endif
- 	raw_spinlock_t wa_lock;
-+#endif
- 	struct gpio_chip chip;
- 	struct clk *dbck;
- 	u32 mod_usage;
-@@ -575,18 +576,20 @@ static int omap_gpio_irq_type(struct irq_data *d, unsigned type)
- 		goto error;
- 	}
- 	raw_spin_unlock_irqrestore(&bank->lock, flags);
--
--	if (type & (IRQ_TYPE_LEVEL_LOW | IRQ_TYPE_LEVEL_HIGH))
-+#ifdef CONFIG_IPIPE
-+	irq_set_handler_locked(d, handle_level_irq);
-+#else
-+        if (type & (IRQ_TYPE_LEVEL_LOW | IRQ_TYPE_LEVEL_HIGH))
- 		irq_set_handler_locked(d, handle_level_irq);
--	else if (type & (IRQ_TYPE_EDGE_FALLING | IRQ_TYPE_EDGE_RISING))
--		/*
--		 * Edge IRQs are already cleared/acked in irq_handler and
--		 * not need to be masked, as result handle_edge_irq()
--		 * logic is excessed here and may cause lose of interrupts.
--		 * So just use handle_simple_irq.
--		 */
--		irq_set_handler_locked(d, handle_simple_irq);
--
-+        else if (type & (IRQ_TYPE_EDGE_FALLING | IRQ_TYPE_EDGE_RISING))
-+                /*
-+                 * Edge IRQs are already cleared/acked in irq_handler and
-+                 * not need to be masked, as result handle_edge_irq()
-+                 * logic is excessed here and may cause lose of interrupts.
-+                 * So just use handle_simple_irq.
-+                 */
-+                irq_set_handler_locked(d, handle_simple_irq);
-+#endif	
- 	return 0;
- 
- error:
-@@ -759,7 +762,7 @@ static void __omap_gpio_irq_handler(struct gpio_bank *bank)
- 
- 		enabled = omap_get_gpio_irqbank_mask(bank);
- 		isr = readl_relaxed(isr_reg) & enabled;
--
-+		
- 		if (bank->level_mask)
- 			level_mask = bank->level_mask & enabled;
- 		else
-@@ -809,7 +812,10 @@ static void __omap_gpio_irq_handler(struct gpio_bank *bank)
- static void omap_gpio_irq_handler(struct irq_desc *d)
- {
- 	struct gpio_bank *bank = irq_desc_get_handler_data(d);
-+
-+	d->irq_data.chip->irq_ack(&d->irq_data);
- 	__omap_gpio_irq_handler(bank);
-+	d->irq_data.chip->irq_unmask(&d->irq_data);
- }
- 
- #else
-@@ -896,39 +902,31 @@ static void omap_gpio_ack_irq(struct irq_data *d)
- 	omap_clear_gpio_irqstatus(bank, offset);
- }
- 
--static void omap_gpio_mask_irq(struct irq_data *d)
-+static void __omap_gpio_mask_irq(struct irq_data *d)
- {
- 	struct gpio_bank *bank = omap_irq_data_get_bank(d);
- 	unsigned offset = d->hwirq;
--	unsigned long flags;
- 
--	raw_spin_lock_irqsave(&bank->lock, flags);
--	omap_set_gpio_triggering(bank, offset, IRQ_TYPE_NONE);
- 	omap_set_gpio_irqenable(bank, offset, 0);
--	raw_spin_unlock_irqrestore(&bank->lock, flags);
-+	omap_set_gpio_triggering(bank, offset, IRQ_TYPE_NONE);
- }
- 
--static void omap_gpio_mask_ack_irq(struct irq_data *d)
-+static void __omap_gpio_mask_ack_irq(struct irq_data *d)
- {
- 	struct gpio_bank *bank = omap_irq_data_get_bank(d);
- 	unsigned offset = d->hwirq;
--	unsigned long flags;
--
--	raw_spin_lock_irqsave(&bank->lock, flags);
-+	
- 	omap_set_gpio_irqenable(bank, offset, 0);
- 	omap_set_gpio_triggering(bank, offset, IRQ_TYPE_NONE);
--	omap_clear_gpio_irqstatus(bank, offset);
--	raw_spin_unlock_irqrestore(&bank->lock, flags);
-+	
- }
- 
--static void omap_gpio_unmask_irq(struct irq_data *d)
-+static void __omap_gpio_unmask_irq(struct irq_data *d)
- {
- 	struct gpio_bank *bank = omap_irq_data_get_bank(d);
- 	unsigned offset = d->hwirq;
- 	u32 trigger = irqd_get_trigger_type(d);
--	unsigned long flags;
- 
--	raw_spin_lock_irqsave(&bank->lock, flags);
- 	omap_set_gpio_irqenable(bank, offset, 1);
- 
- 	/*
-@@ -943,9 +941,69 @@ static void omap_gpio_unmask_irq(struct irq_data *d)
- 	if (trigger)
- 		omap_set_gpio_triggering(bank, offset, trigger);
- 
-+}
-+
-+static void omap_gpio_mask_irq(struct irq_data *d)
-+{
-+	struct gpio_bank *bank = omap_irq_data_get_bank(d);
-+	unsigned long flags;
-+
-+	raw_spin_lock_irqsave(&bank->lock, flags);
-+	ipipe_lock_irq(d->irq);
-+	__omap_gpio_mask_irq(d);
-+	raw_spin_unlock_irqrestore(&bank->lock, flags);
-+}
-+
-+static void omap_gpio_mask_ack_irq(struct irq_data *d)
-+{
-+	struct gpio_bank *bank = omap_irq_data_get_bank(d);
-+	unsigned long flags;
-+
-+	raw_spin_lock_irqsave(&bank->lock, flags);
-+	__omap_gpio_mask_ack_irq(d);
-+	ipipe_lock_irq(d->irq);
-+	raw_spin_unlock_irqrestore(&bank->lock, flags);
-+}
-+
-+static void omap_gpio_unmask_irq(struct irq_data *d)
-+{
-+	struct gpio_bank *bank = omap_irq_data_get_bank(d);
-+	unsigned long flags;
-+	void __iomem *enabled_reg = NULL;
-+	
-+	raw_spin_lock_irqsave(&bank->lock, flags);
-+	__omap_gpio_unmask_irq(d);	
-+	ipipe_unlock_irq(d->irq);
-+	raw_spin_unlock_irqrestore(&bank->lock, flags);
-+	enabled_reg = bank->base + bank->regs->irqenable;
-+}
-+
-+
-+
-+#ifdef CONFIG_IPIPE
-+
-+static void omap_gpio_irq_hold(struct irq_data *d)
-+{
-+	struct gpio_bank *bank = omap_irq_data_get_bank(d);
-+	unsigned long flags;
-+
-+	raw_spin_lock_irqsave(&bank->lock, flags);
-+	__omap_gpio_mask_ack_irq(d);
- 	raw_spin_unlock_irqrestore(&bank->lock, flags);
- }
- 
-+static void omap_gpio_irq_release(struct irq_data *d)
-+{
-+	struct gpio_bank *bank = omap_irq_data_get_bank(d);
-+	unsigned long flags;
-+
-+	raw_spin_lock_irqsave(&bank->lock, flags);
-+	__omap_gpio_unmask_irq(d);	
-+	raw_spin_unlock_irqrestore(&bank->lock, flags);
-+}
-+
-+#endif
-+
- /*---------------------------------------------------------------------*/
- 
- static int omap_mpuio_suspend_noirq(struct device *dev)
-@@ -1240,7 +1298,11 @@ static int omap_gpio_chip_init(struct gpio_bank *bank, struct irq_chip *irqc)
- 
- 	irq = &bank->chip.irq;
- 	irq->chip = irqc;
-+#ifdef CONFIG_IPIPE
-+	irq->handler = handle_level_irq;
-+#else 
- 	irq->handler = handle_bad_irq;
-+#endif
- 	irq->default_type = IRQ_TYPE_NONE;
- 	irq->num_parents = 1;
- 	irq->parents = &bank->irq;
-@@ -1303,6 +1365,10 @@ static int omap_gpio_probe(struct platform_device *pdev)
- 	irqc->irq_mask = omap_gpio_mask_irq,
- 	irqc->irq_mask_ack = omap_gpio_mask_ack_irq,
- 	irqc->irq_unmask = omap_gpio_unmask_irq,
-+#ifdef CONFIG_IPIPE
-+	irqc->irq_hold = omap_gpio_irq_hold,
-+	irqc->irq_release = omap_gpio_irq_release,
-+#endif
- 	irqc->irq_set_type = omap_gpio_irq_type,
- 	irqc->irq_set_wake = omap_gpio_wake_enable,
- 	irqc->irq_bus_lock = omap_gpio_irq_bus_lock,
--- 
-2.17.1
-
+SGksDQoNCnNyeSBJIGRvbid0IGhhdmUgYW55IGZ1dGhlciBtZXNzYWdlcy4gSSB0cmllZCB0
+byBkZWJ1ZyB0aGUgY29kZSBpbiBDb2RlYmxvY2tzIGJ1dCB0aGlzIGRpZG4ndCB3b3JrLCBv
+bmx5IGJ1aWxkLiBBbHNvIGRlYnVnIHRoZSBleGVjdXRhYmxlIGluIGVjbGlwc2UgZmFpbGVk
+Lg0KDQpUaGUgb25seSBwYXJ0IGluIHBpcGUuYyB3aGVyZSBFSU5WQUwgaXMgdXNlZCB3aXRo
+IHJ0X3BpcGVfY3JlYXRlKCkgaXMgaGVyZToNCg0KaWYgKG1pbm9yID09IFBfTUlOT1JfQVVU
+Tykgew0KCQkvKiBGZXRjaCB0aGUgYXNzaWduZWQgbWlub3IgZGV2aWNlLiAqLw0KCQlhZGRy
+bGVuID0gc2l6ZW9mKHNhZGRyKTsNCgkJcmV0ID0gX19SVChnZXRzb2NrbmFtZShzb2NrLCAo
+c3RydWN0IHNvY2thZGRyICopJnNhZGRyLCAmYWRkcmxlbikpOw0KCQlpZiAocmV0KQ0KCQkJ
+Z290byBmYWlsX3NvY2tvcHQ7DQoJCWlmIChhZGRybGVuICE9IHNpemVvZihzYWRkcikpIHsN
+CgkJCXJldCA9IC1FSU5WQUw7DQoJCQlnb3RvIGZhaWxfcmVnaXN0ZXI7DQoJCX0NCgkJbWlu
+b3IgPSBzYWRkci5zaXBjX3BvcnQ7DQoJfQ0KDQoNClNvIHRoZSBnaXZlbiBhbmQgcmV0dXJu
+ZWQgbGVuZ2h0IGRvZXNuJ3QgZml0IHRvZ2V0aGVyIGJ1dCB0aGlzIGlzIGEgdGhpbmcgSSBo
+YXZlIG5vIGluZmx1ZW5jZSwgb3I/DQoNCkFsc28gdHJpZWQgdG8gZmluZCBfX1JUKCkgIHRv
+IGdldCBmdXRoZXIgaW5mb3JtYXRpb24uDQoNCkRvIHlvdSBoYXZlIGFueSBpZGVhIHdoYXQg
+Y291bGQgYmUgdGhlIHJlYXNvbj8NCg0KDQoNCkNhcnN0ZW4NCg0KDQoNCg0KDQpfX19fX19f
+X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
+X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX18NCkJpdHRlIMO8
+YmVybGVnZW4gU2llLCBvYiBTaWUgZGllc2UgTmFjaHJpY2h0IHdpcmtsaWNoIGF1c2RydWNr
+ZW4gbcO8c3Nlbi8gYmVmb3JlIHByaW50aW5nLCB0aGluayBhYm91dCBlbnZpcm9ubWVudGFs
+IHJlc3BvbnNpYmlsaXR5Lg0KRGllaGwgTWV0ZXJpbmcgR21iSCwgSW5kdXN0cmllc3RyYcOf
+ZSAxMywgOTE1MjIgQW5zYmFjaA0KVGVsZWZvbiArIDQ5IDk4MSAxODA2IDAsIFRlbGVmYXgg
+KzQ5IDk4MSAxODA2IDYxNQ0KU2l0eiBkZXIgR2VzZWxsc2NoYWZ0OiBBbnNiYWNoLCBSZWdp
+c3RlcmdlcmljaHQ6IEFuc2JhY2ggSFJCIDY5DQpHZXNjaMOkZnRzZsO8aHJlcjogRHIuIENo
+cmlzdG9mIEJvc2JhY2ggKFNwcmVjaGVyKSwgVGhvbWFzIEdhc3RuZXIsIEplYW4tRnJhbsOn
+b2lzIE1hcmd1ZXQNCkRlciBJbmhhbHQgZGVyIHZvcnN0ZWhlbmRlbiBFLU1haWwgaXN0IG5p
+Y2h0IHJlY2h0bGljaCBiaW5kZW5kLiBEaWVzZSBFLU1haWwgZW50aMOkbHQgdmVydHJhdWxp
+Y2hlIHVuZC9vZGVyIHJlY2h0bGljaCBnZXNjaMO8dHp0ZSBJbmZvcm1hdGlvbmVuLiBJbmZv
+cm1pZXJlbiBTaWUgdW5zIGJpdHRlLCB3ZW5uIFNpZSBkaWVzZSBFLU1haWwgZsOkbHNjaGxp
+Y2hlcndlaXNlIGVyaGFsdGVuIGhhYmVuLiBCaXR0ZSBsw7ZzY2hlbiBTaWUgaW4gZGllc2Vt
+IEZhbGwgZGllIE5hY2hyaWNodC4gSmVkZSB1bmVybGF1YnRlIEZvcm0gZGVyIFJlcHJvZHVr
+dGlvbiwgQmVrYW5udGdhYmUsIMOEbmRlcnVuZywgVmVydGVpbHVuZyB1bmQvb2RlciBQdWJs
+aWthdGlvbiBkaWVzZXIgRS1NYWlsIGlzdCBzdHJlbmdzdGVucyB1bnRlcnNhZ3QuDQpUaGUg
+Y29udGVudHMgb2YgdGhlIGFib3ZlIG1lbnRpb25lZCBlLW1haWwgaXMgbm90IGxlZ2FsbHkg
+YmluZGluZy4gVGhpcyBlLW1haWwgY29udGFpbnMgY29uZmlkZW50aWFsIGFuZC9vciBsZWdh
+bGx5IHByb3RlY3RlZCBpbmZvcm1hdGlvbi4gUGxlYXNlIGluZm9ybSB1cyBpZiB5b3UgaGF2
+ZSByZWNlaXZlZCB0aGlzIGUtbWFpbCBieSBtaXN0YWtlIGFuZCBkZWxldGUgaXQgaW4gc3Vj
+aCBhIGNhc2UuIEVhY2ggdW5hdXRob3JpemVkIHJlcHJvZHVjdGlvbiwgZGlzY2xvc3VyZSwg
+YWx0ZXJhdGlvbiwgZGlzdHJpYnV0aW9uIGFuZC9vciBwdWJsaWNhdGlvbiBvZiB0aGlzIGUt
+bWFpbCBpcyBzdHJpY3RseSBwcm9oaWJpdGVkLg0KSW5mb3JtYXRpb25lbiB6dW0gRGF0ZW5z
+Y2h1dHogZmluZGVuIFNpZSBhdWYgdW5zZXJlciBIb21lcGFnZS4NCmh0dHBzOi8vd3d3LmRp
+ZWhsLmNvbS9tZXRlcmluZy9kZS9kaWVobC1tZXRlcmluZy9kYXRhLXByb3RlY3Rpb24NCklu
+Zm9ybWF0aW9uIGFib3V0IGRhdGEgcHJvdGVjdGlvbiBjYW4gYmUgZm91bmQgb24gb3VyIGhv
+bWVwYWdlLg0KaHR0cHM6Ly93d3cuZGllaGwuY29tL21ldGVyaW5nL2VuL2RpZWhsLW1ldGVy
+aW5nL2RhdGEtcHJvdGVjdGlvbg0KDQoNCi0tLS0tT3JpZ2luYWwgTWVzc2FnZS0tLS0tDQpG
+cm9tOiBKYW4gS2lzemthIDxqYW4ua2lzemthQHNpZW1lbnMuY29tPiANClNlbnQ6IE1vbmRh
+eSwgTWFyY2ggOSwgMjAyMCA5OjU1IEFNDQpUbzogQ2Fyc3RlbiBFSFJNQU5OIDxDYXJzdGVu
+LkVocm1hbm5AZGllaGwuY29tPjsgUmljaGFyZCBXZWluYmVyZ2VyIDxyaWNoYXJkQG5vZC5h
+dD4NCkNjOiB4ZW5vbWFpIDx4ZW5vbWFpQHhlbm9tYWkub3JnPg0KU3ViamVjdDogUmU6IE1p
+Z3JhdGUgcHJvamVjdCBmcm9tIERlYmlhbiA4IFhlbm9tYWkgMi54IHRvIERlYmFpbiA5IFhl
+bm9tYWkgMy54DQoNCk9uIDA5LjAzLjIwIDA5OjI2LCBDYXJzdGVuIEVIUk1BTk4gd3JvdGU6
+DQo+IEhpICwNCj4gDQo+IHNvIHhlbm9fcnRpcGMgaXMgdXAgbm93LCBsaXN0ZWQgaW4gImxz
+bW9kIHwgZ3JlcCB4ZW5vIg0KPiANCj4gTm93IEkgZ290IGFub3RoZXIgZXJyb3IgZnJvbSBy
+dF9waXBlX2NyZWF0ZSgpOiAtMjINCj4gDQo+IFdoYXQgZG9lcyB0aGlzIG1lYW4/DQo+IEFy
+ZSB0aGVzZSBlcnJvcmNvZGVzIGxpc3RlZCBzb21ld2hlcmU/DQo+IA0KDQpbbXkgJ2Vycm5v
+JyBzY3JpcHRdDQoNCiMhL2Jpbi9zaA0KRVJSTk9fSEVBREVSUz0iL3Vzci9pbmNsdWRlL2Fz
+bS1nZW5lcmljL2Vycm5vLWJhc2UuaCAvdXNyL2luY2x1ZGUvYXNtLWdlbmVyaWMvZXJybm8u
+aCINCmlmIFsgIiQxIiA9ICIiIF07IHRoZW4NCiAgICAgICAgRVJSPSJbWzpkaWdpdDpdXSsi
+DQplbHNlDQogICAgICAgIEVSUj0kMQ0KZmkNCmdyZXAgLUUgIltbOnNwYWNlOl1dJEVSUltb
+OnNwYWNlOl1dLyIgJEVSUk5PX0hFQURFUlMNCg0KV2l0aCB0aGF0IGluZm9ybWF0aW9uLCB5
+b3UgY2FuIGNoZWNrIHdoZXJlIHRoZSBmdW5jdGlvbiBtYXkgdGhyb3VnaCBFSU5WQUwuIEl0
+J3Mgbm90IGEgY29tbW9uIGVycm9yLCB0aG91Z2ggKHdlIG1heSBuZWVkIHRvIGRvY3VtZW50
+IHJlYXNvbnMgZm9yIGl0KS4gRG8geW91IGdldCBmdXJ0aGVyIG1lc3NhZ2VzPyBUcnkgdG8g
+YXR0YWNoIGEgZGVidWdnZXIgdG8gZmluZCBvdXQgd2l0aCBjYWxsIGluIHJ0X3BpcGVfY3Jl
+YXRlIChsaWIvYWxjaGVteS9waXBlLmMpIHJldHVybnMgdGhpcyBjb2RlLg0KDQpKYW4NCg0K
+LS0NClNpZW1lbnMgQUcsIENvcnBvcmF0ZSBUZWNobm9sb2d5LCBDVCBSREEgSU9UIFNFUy1E
+RSBDb3Jwb3JhdGUgQ29tcGV0ZW5jZSBDZW50ZXIgRW1iZWRkZWQgTGludXgNCg==
 
