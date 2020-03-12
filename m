@@ -1,23 +1,12 @@
-From: Carsten EHRMANN <Carsten.Ehrmann@diehl.com>
-Subject: RE: Migrate project from Debian 8 Xenomai 2.x to Debain 9 Xenomai 3.x
-Date: Tue, 10 Mar 2020 11:51:46 +0000
-Message-ID: <26140626378e40f7addaa773bce96d17@RCDC-MAIL09.corp.diehl.com>
-References: <23edaf750b0b41ef9a129bbaf2758d9f@RCDC-MAIL09.corp.diehl.com>
- <d36eca04d68b4434bde75d9cfa8c1418@RCDC-MAIL09.corp.diehl.com>
- <f7fc8190-afe3-872e-d7aa-dcabcd576a77@siemens.com>
- <ee2bea74fc5b40af8fbc9cff17c9bd78@RCDC-MAIL09.corp.diehl.com>
- <CAFLxGvyxyfU0_F+mqymZg1d+X_Rzw9=LoZQAXuF5J8skR8n2Xg@mail.gmail.com>
- <6b399d7610174bb585e2fb439d735402@RCDC-MAIL09.corp.diehl.com>
- <8f7a0986-8549-fd2c-f49b-65595f9a1d16@siemens.com>
- <77fa7cc8d0a54c03b41a8fcadd786a8f@RCDC-MAIL09.corp.diehl.com>
- <857866991.69963.1583406441558.JavaMail.zimbra@nod.at>
- <86a30c2cabca45439f0ed4c2bd6fb9fc@RCDC-MAIL09.corp.diehl.com>
- <40d1f688-eed6-3c30-edbb-698c594e070f@siemens.com>
-In-Reply-To: <40d1f688-eed6-3c30-edbb-698c594e070f@siemens.com>
-Content-Language: de-DE
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+From: Jan Kiszka <jan.kiszka@siemens.com>
+Subject: [RFC][PATCH 4.19] x86/ipipe: Protect TLB flushing against context
+ switch by head domain
+Message-ID: <266b8c4f-ffec-d04e-ab83-9ae4cbf3486f@siemens.com>
+Date: Thu, 12 Mar 2020 14:48:51 +0100
 MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -26,73 +15,123 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jan Kiszka <jan.kiszka@siemens.com>, Richard Weinberger <richard@nod.at>
-Cc: xenomai <xenomai@xenomai.org>
+To: Xenomai <xenomai@xenomai.org>, Philippe Gerum <rpm@xenomai.org>
 
-SGksDQoNCnNyeSBJIGRvbid0IGhhdmUgYW55IGZ1dGhlciBtZXNzYWdlcy4gSSB0cmllZCB0
-byBkZWJ1ZyB0aGUgY29kZSBpbiBDb2RlYmxvY2tzIGJ1dCB0aGlzIGRpZG4ndCB3b3JrLCBv
-bmx5IGJ1aWxkLiBBbHNvIGRlYnVnIHRoZSBleGVjdXRhYmxlIGluIGVjbGlwc2UgZmFpbGVk
-Lg0KDQpUaGUgb25seSBwYXJ0IGluIHBpcGUuYyB3aGVyZSBFSU5WQUwgaXMgdXNlZCB3aXRo
-IHJ0X3BpcGVfY3JlYXRlKCkgaXMgaGVyZToNCg0KaWYgKG1pbm9yID09IFBfTUlOT1JfQVVU
-Tykgew0KCQkvKiBGZXRjaCB0aGUgYXNzaWduZWQgbWlub3IgZGV2aWNlLiAqLw0KCQlhZGRy
-bGVuID0gc2l6ZW9mKHNhZGRyKTsNCgkJcmV0ID0gX19SVChnZXRzb2NrbmFtZShzb2NrLCAo
-c3RydWN0IHNvY2thZGRyICopJnNhZGRyLCAmYWRkcmxlbikpOw0KCQlpZiAocmV0KQ0KCQkJ
-Z290byBmYWlsX3NvY2tvcHQ7DQoJCWlmIChhZGRybGVuICE9IHNpemVvZihzYWRkcikpIHsN
-CgkJCXJldCA9IC1FSU5WQUw7DQoJCQlnb3RvIGZhaWxfcmVnaXN0ZXI7DQoJCX0NCgkJbWlu
-b3IgPSBzYWRkci5zaXBjX3BvcnQ7DQoJfQ0KDQoNClNvIHRoZSBnaXZlbiBhbmQgcmV0dXJu
-ZWQgbGVuZ2h0IGRvZXNuJ3QgZml0IHRvZ2V0aGVyIGJ1dCB0aGlzIGlzIGEgdGhpbmcgSSBo
-YXZlIG5vIGluZmx1ZW5jZSwgb3I/DQoNCkFsc28gdHJpZWQgdG8gZmluZCBfX1JUKCkgIHRv
-IGdldCBmdXRoZXIgaW5mb3JtYXRpb24uDQoNCkRvIHlvdSBoYXZlIGFueSBpZGVhIHdoYXQg
-Y291bGQgYmUgdGhlIHJlYXNvbj8NCg0KDQoNCkNhcnN0ZW4NCg0KDQoNCg0KDQpfX19fX19f
-X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
-X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX18NCkJpdHRlIMO8
-YmVybGVnZW4gU2llLCBvYiBTaWUgZGllc2UgTmFjaHJpY2h0IHdpcmtsaWNoIGF1c2RydWNr
-ZW4gbcO8c3Nlbi8gYmVmb3JlIHByaW50aW5nLCB0aGluayBhYm91dCBlbnZpcm9ubWVudGFs
-IHJlc3BvbnNpYmlsaXR5Lg0KRGllaGwgTWV0ZXJpbmcgR21iSCwgSW5kdXN0cmllc3RyYcOf
-ZSAxMywgOTE1MjIgQW5zYmFjaA0KVGVsZWZvbiArIDQ5IDk4MSAxODA2IDAsIFRlbGVmYXgg
-KzQ5IDk4MSAxODA2IDYxNQ0KU2l0eiBkZXIgR2VzZWxsc2NoYWZ0OiBBbnNiYWNoLCBSZWdp
-c3RlcmdlcmljaHQ6IEFuc2JhY2ggSFJCIDY5DQpHZXNjaMOkZnRzZsO8aHJlcjogRHIuIENo
-cmlzdG9mIEJvc2JhY2ggKFNwcmVjaGVyKSwgVGhvbWFzIEdhc3RuZXIsIEplYW4tRnJhbsOn
-b2lzIE1hcmd1ZXQNCkRlciBJbmhhbHQgZGVyIHZvcnN0ZWhlbmRlbiBFLU1haWwgaXN0IG5p
-Y2h0IHJlY2h0bGljaCBiaW5kZW5kLiBEaWVzZSBFLU1haWwgZW50aMOkbHQgdmVydHJhdWxp
-Y2hlIHVuZC9vZGVyIHJlY2h0bGljaCBnZXNjaMO8dHp0ZSBJbmZvcm1hdGlvbmVuLiBJbmZv
-cm1pZXJlbiBTaWUgdW5zIGJpdHRlLCB3ZW5uIFNpZSBkaWVzZSBFLU1haWwgZsOkbHNjaGxp
-Y2hlcndlaXNlIGVyaGFsdGVuIGhhYmVuLiBCaXR0ZSBsw7ZzY2hlbiBTaWUgaW4gZGllc2Vt
-IEZhbGwgZGllIE5hY2hyaWNodC4gSmVkZSB1bmVybGF1YnRlIEZvcm0gZGVyIFJlcHJvZHVr
-dGlvbiwgQmVrYW5udGdhYmUsIMOEbmRlcnVuZywgVmVydGVpbHVuZyB1bmQvb2RlciBQdWJs
-aWthdGlvbiBkaWVzZXIgRS1NYWlsIGlzdCBzdHJlbmdzdGVucyB1bnRlcnNhZ3QuDQpUaGUg
-Y29udGVudHMgb2YgdGhlIGFib3ZlIG1lbnRpb25lZCBlLW1haWwgaXMgbm90IGxlZ2FsbHkg
-YmluZGluZy4gVGhpcyBlLW1haWwgY29udGFpbnMgY29uZmlkZW50aWFsIGFuZC9vciBsZWdh
-bGx5IHByb3RlY3RlZCBpbmZvcm1hdGlvbi4gUGxlYXNlIGluZm9ybSB1cyBpZiB5b3UgaGF2
-ZSByZWNlaXZlZCB0aGlzIGUtbWFpbCBieSBtaXN0YWtlIGFuZCBkZWxldGUgaXQgaW4gc3Vj
-aCBhIGNhc2UuIEVhY2ggdW5hdXRob3JpemVkIHJlcHJvZHVjdGlvbiwgZGlzY2xvc3VyZSwg
-YWx0ZXJhdGlvbiwgZGlzdHJpYnV0aW9uIGFuZC9vciBwdWJsaWNhdGlvbiBvZiB0aGlzIGUt
-bWFpbCBpcyBzdHJpY3RseSBwcm9oaWJpdGVkLg0KSW5mb3JtYXRpb25lbiB6dW0gRGF0ZW5z
-Y2h1dHogZmluZGVuIFNpZSBhdWYgdW5zZXJlciBIb21lcGFnZS4NCmh0dHBzOi8vd3d3LmRp
-ZWhsLmNvbS9tZXRlcmluZy9kZS9kaWVobC1tZXRlcmluZy9kYXRhLXByb3RlY3Rpb24NCklu
-Zm9ybWF0aW9uIGFib3V0IGRhdGEgcHJvdGVjdGlvbiBjYW4gYmUgZm91bmQgb24gb3VyIGhv
-bWVwYWdlLg0KaHR0cHM6Ly93d3cuZGllaGwuY29tL21ldGVyaW5nL2VuL2RpZWhsLW1ldGVy
-aW5nL2RhdGEtcHJvdGVjdGlvbg0KDQoNCi0tLS0tT3JpZ2luYWwgTWVzc2FnZS0tLS0tDQpG
-cm9tOiBKYW4gS2lzemthIDxqYW4ua2lzemthQHNpZW1lbnMuY29tPiANClNlbnQ6IE1vbmRh
-eSwgTWFyY2ggOSwgMjAyMCA5OjU1IEFNDQpUbzogQ2Fyc3RlbiBFSFJNQU5OIDxDYXJzdGVu
-LkVocm1hbm5AZGllaGwuY29tPjsgUmljaGFyZCBXZWluYmVyZ2VyIDxyaWNoYXJkQG5vZC5h
-dD4NCkNjOiB4ZW5vbWFpIDx4ZW5vbWFpQHhlbm9tYWkub3JnPg0KU3ViamVjdDogUmU6IE1p
-Z3JhdGUgcHJvamVjdCBmcm9tIERlYmlhbiA4IFhlbm9tYWkgMi54IHRvIERlYmFpbiA5IFhl
-bm9tYWkgMy54DQoNCk9uIDA5LjAzLjIwIDA5OjI2LCBDYXJzdGVuIEVIUk1BTk4gd3JvdGU6
-DQo+IEhpICwNCj4gDQo+IHNvIHhlbm9fcnRpcGMgaXMgdXAgbm93LCBsaXN0ZWQgaW4gImxz
-bW9kIHwgZ3JlcCB4ZW5vIg0KPiANCj4gTm93IEkgZ290IGFub3RoZXIgZXJyb3IgZnJvbSBy
-dF9waXBlX2NyZWF0ZSgpOiAtMjINCj4gDQo+IFdoYXQgZG9lcyB0aGlzIG1lYW4/DQo+IEFy
-ZSB0aGVzZSBlcnJvcmNvZGVzIGxpc3RlZCBzb21ld2hlcmU/DQo+IA0KDQpbbXkgJ2Vycm5v
-JyBzY3JpcHRdDQoNCiMhL2Jpbi9zaA0KRVJSTk9fSEVBREVSUz0iL3Vzci9pbmNsdWRlL2Fz
-bS1nZW5lcmljL2Vycm5vLWJhc2UuaCAvdXNyL2luY2x1ZGUvYXNtLWdlbmVyaWMvZXJybm8u
-aCINCmlmIFsgIiQxIiA9ICIiIF07IHRoZW4NCiAgICAgICAgRVJSPSJbWzpkaWdpdDpdXSsi
-DQplbHNlDQogICAgICAgIEVSUj0kMQ0KZmkNCmdyZXAgLUUgIltbOnNwYWNlOl1dJEVSUltb
-OnNwYWNlOl1dLyIgJEVSUk5PX0hFQURFUlMNCg0KV2l0aCB0aGF0IGluZm9ybWF0aW9uLCB5
-b3UgY2FuIGNoZWNrIHdoZXJlIHRoZSBmdW5jdGlvbiBtYXkgdGhyb3VnaCBFSU5WQUwuIEl0
-J3Mgbm90IGEgY29tbW9uIGVycm9yLCB0aG91Z2ggKHdlIG1heSBuZWVkIHRvIGRvY3VtZW50
-IHJlYXNvbnMgZm9yIGl0KS4gRG8geW91IGdldCBmdXJ0aGVyIG1lc3NhZ2VzPyBUcnkgdG8g
-YXR0YWNoIGEgZGVidWdnZXIgdG8gZmluZCBvdXQgd2l0aCBjYWxsIGluIHJ0X3BpcGVfY3Jl
-YXRlIChsaWIvYWxjaGVteS9waXBlLmMpIHJldHVybnMgdGhpcyBjb2RlLg0KDQpKYW4NCg0K
-LS0NClNpZW1lbnMgQUcsIENvcnBvcmF0ZSBUZWNobm9sb2d5LCBDVCBSREEgSU9UIFNFUy1E
-RSBDb3Jwb3JhdGUgQ29tcGV0ZW5jZSBDZW50ZXIgRW1iZWRkZWQgTGludXgNCg==
+From: Jan Kiszka <jan.kiszka@siemens.com>
+
+A Xenomai application is very rarely triggering
+
+WARNING: CPU: 0 PID: 1997 at arch/x86/mm/tlb.c:560 [...]
+(local_tlb_gen > mm_tlb_gen)
+
+This could be triggered by loaded_mm and loaded_mm_asid becoming out of
+sync when flush_tlb_func_common is interrupted by the head domain to
+switch a real-time task right between the retrieval of both values, or
+maybe even after that but before writing mm_tlb_gen back to
+cpu_tlbstate.ctxs[loaded_mm_asid].tlb_gen.
+
+Avoid that case by making the retrieval atomic while keeping the TLB
+flush interruptible. Now, there could still be interrupt during the
+flush. To avoid writing back to the wrong context, we first atomically
+check after the flush if nothing changed and only write if that is the
+case. That may mean another TLB flush is triggered needlessly, but
+that's rare and acceptable.
+
+Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
+---
+
+Due to the rare nature of this issue, we are not yet confident to have 
+truly fixed it this way.
+
+Philippe, I'm seeing some similar attempt in dovetail but it appears to 
+me it's missing some cases. Too bad that development was forking here 
+and information isn't flowing smoothly yet.
+
+ arch/x86/mm/tlb.c | 33 +++++++++++++++++++++++++--------
+ 1 file changed, 25 insertions(+), 8 deletions(-)
+
+diff --git a/arch/x86/mm/tlb.c b/arch/x86/mm/tlb.c
+index 1fcf20673982..9fbf0a5f710e 100644
+--- a/arch/x86/mm/tlb.c
++++ b/arch/x86/mm/tlb.c
+@@ -518,17 +518,27 @@ static void flush_tlb_func_common(const struct flush_tlb_info *f,
+ 	 * - f->new_tlb_gen: the generation that the requester of the flush
+ 	 *                   wants us to catch up to.
+ 	 */
+-	struct mm_struct *loaded_mm = this_cpu_read(cpu_tlbstate.loaded_mm);
+-	u32 loaded_mm_asid = this_cpu_read(cpu_tlbstate.loaded_mm_asid);
+-	u64 mm_tlb_gen = atomic64_read(&loaded_mm->context.tlb_gen);
+-	u64 local_tlb_gen = this_cpu_read(cpu_tlbstate.ctxs[loaded_mm_asid].tlb_gen);
++	struct mm_struct *loaded_mm;
++	u32 loaded_mm_asid;
++	u64 mm_tlb_gen;
++	u64 local_tlb_gen;
+ 	unsigned long flags;
+ 
+ 	/* This code cannot presently handle being reentered. */
+ 	VM_WARN_ON(!irqs_disabled());
+ 
+-	if (unlikely(loaded_mm == &init_mm))
++	flags = hard_cond_local_irq_save();
++
++	loaded_mm = this_cpu_read(cpu_tlbstate.loaded_mm);
++	loaded_mm_asid = this_cpu_read(cpu_tlbstate.loaded_mm_asid);
++	mm_tlb_gen = atomic64_read(&loaded_mm->context.tlb_gen);
++	loaded_mm_asid = this_cpu_read(cpu_tlbstate.loaded_mm_asid);
++	local_tlb_gen = this_cpu_read(cpu_tlbstate.ctxs[loaded_mm_asid].tlb_gen);
++
++	if (unlikely(loaded_mm == &init_mm)) {
++		hard_cond_local_irq_restore(flags);
+ 		return;
++	}
+ 
+ 	VM_WARN_ON(this_cpu_read(cpu_tlbstate.ctxs[loaded_mm_asid].ctx_id) !=
+ 		   loaded_mm->context.ctx_id);
+@@ -540,13 +550,13 @@ static void flush_tlb_func_common(const struct flush_tlb_info *f,
+ 		 * garbage into our TLB.  Since switching to init_mm is barely
+ 		 * slower than a minimal flush, just switch to init_mm.
+ 		 */
+-		flags = hard_cond_local_irq_save();
+ 		switch_mm_irqs_off(NULL, &init_mm, NULL);
+ 		hard_cond_local_irq_restore(flags);
+ 		return;
+ 	}
+ 
+ 	if (unlikely(local_tlb_gen == mm_tlb_gen)) {
++		hard_cond_local_irq_restore(flags);
+ 		/*
+ 		 * There's nothing to do: we're already up to date.  This can
+ 		 * happen if two concurrent flushes happen -- the first flush to
+@@ -560,6 +570,8 @@ static void flush_tlb_func_common(const struct flush_tlb_info *f,
+ 	WARN_ON_ONCE(local_tlb_gen > mm_tlb_gen);
+ 	WARN_ON_ONCE(f->new_tlb_gen > mm_tlb_gen);
+ 
++	hard_cond_local_irq_restore(flags);
++
+ 	/*
+ 	 * If we get to this point, we know that our TLB is out of date.
+ 	 * This does not strictly imply that we need to flush (it's
+@@ -620,8 +632,13 @@ static void flush_tlb_func_common(const struct flush_tlb_info *f,
+ 		trace_tlb_flush(reason, TLB_FLUSH_ALL);
+ 	}
+ 
+-	/* Both paths above update our state to mm_tlb_gen. */
+-	this_cpu_write(cpu_tlbstate.ctxs[loaded_mm_asid].tlb_gen, mm_tlb_gen);
++	flags = hard_cond_local_irq_save();
++	if (loaded_mm == this_cpu_read(cpu_tlbstate.loaded_mm) &&
++	    loaded_mm_asid == this_cpu_read(cpu_tlbstate.loaded_mm_asid)) {
++		/* Both paths above update our state to mm_tlb_gen. */
++		this_cpu_write(cpu_tlbstate.ctxs[loaded_mm_asid].tlb_gen, mm_tlb_gen);
++	}
++	hard_cond_local_irq_restore(flags);
+ }
+ 
+ static void flush_tlb_func_local(void *info, enum tlb_flush_reason reason)
+-- 
+2.16.4
+
+
+-- 
+Siemens AG, Corporate Technology, CT RDA IOT SES-DE
+Corporate Competence Center Embedded Linux
 
