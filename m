@@ -1,24 +1,14 @@
-Subject: Re: Xenomai RTnet - Kernel module not loading
-References: <2eb86315-dc9d-1096-14a7-c3bd2b32a668@b-tu.de>
- <1021522818.445580.1582639862351.JavaMail.zimbra@wolfram.com>
- <cb174dde-7680-ba74-9aca-7da7adc870dc@b-tu.de>
- <984885226.450915.1582641841732.JavaMail.zimbra@wolfram.com>
- <1987057484.452222.1582642123490.JavaMail.zimbra@wolfram.com>
- <6a5fc541-8519-56d0-f4b4-c7e29f4b38f3@b-tu.de>
- <1253430772.456171.1582643215737.JavaMail.zimbra@wolfram.com>
- <d6b19aa8-c978-617c-bb85-335634e47ac1@b-tu.de>
- <1294487288.461675.1582644685411.JavaMail.zimbra@wolfram.com>
- <cbce49c7-0cca-73de-bc4f-bb4efd29b7d7@b-tu.de>
- <CALLqZ8R3rKRUyvqyVcG18ovxVTniU6SiCGRi0_nKQ0z4kp1QSA@mail.gmail.com>
- <64403b82-a520-35c7-f406-d3de98cb453d@b-tu.de>
-From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <c53a8199-fc7a-c899-ecaa-a9e64f5428dd@siemens.com>
-Date: Thu, 27 Feb 2020 19:55:53 +0100
+From: Wolfgang Denk <wd@denx.de>
+Subject: Re: Namespace pollution due to compiler.h in Xenomai 3.1
 MIME-Version: 1.0
-In-Reply-To: <64403b82-a520-35c7-f406-d3de98cb453d@b-tu.de>
-Content-Type: text/plain; charset="utf-8"; format="flowed"
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+Content-type: text/plain; charset=UTF-8
+Content-transfer-encoding: 8bit
+In-reply-to: <20200313141229.7C87C24003E@gemini.denx.de>
+References: <CAFLxGvw70Rm88zfFXRqLv2_qJkd=k_C-mYxLCX0qnFwCYyGZyg@mail.gmail.com>
+ <b5fe4180-4d04-3031-6d12-b7c9ccfa22ad@siemens.com>
+ <20200313141229.7C87C24003E@gemini.denx.de>
+Date: Fri, 13 Mar 2020 15:22:48 +0100
+Message-Id: <20200313142248.2B7CE24003E@gemini.denx.de>
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -27,67 +17,42 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Benji <miethben@b-tu.de>, Greg Gallagher <greg@embeddedgreg.com>
-Cc: xenomai <xenomai@xenomai.org>
+To: Wolfgang Denk via Xenomai <xenomai@xenomai.org>
 
-On 27.02.20 19:51, Benji via Xenomai wrote:
-> On 2/27/20 4:51 PM, Greg Gallagher wrote:
->>>>> I thought system is running on cobalt kernel. But looks like there is an
->>>>> initialisation error. What is meaning of error code -19?
->>>>
->>>>>> $ dmesg | grep Xenomai
->>>>>> [ 8.543295] [Xenomai] scheduling class idle registered.
->>>>>> [ 8.543302] [Xenomai] scheduling class rt registered.
->>>>>> [ 8.543333] [Xenomai] init failed, code -19
->>>>
->>>> I haven't seen that one myself. But check out:
->>>>
->>>> https://xenomai.org/pipermail/xenomai/2015-September/thread.html#35066
->>>>
->>>> and
->>>>
->>>> https://gitlab.denx.de/Xenomai/xenomai/-/wikis/Troubleshooting#no-timer
->>>>
->>>> (Although i see the in-page link is broken check the section about timers)
->>>>
->>>>
->>>> Per Öberg
->>>>
->>> Hi,
->>>
->>> the hint was in the right direction. There is something strange in my
->>> build process. In kernel configuration i disable options described in
->>> Xenomai Wiki (like CPU_FREQ, KGDB..). After running 'make bzImage
->>> modules' and checking .config file, disabled option are enabled again.
->>>
->>> Are there dependencies to force enable these option without notice?
->>>
->>> Thanks
->>> Benji
->>>
->> Did you use menuconfig? I use menuconfig to disable those options and
->> it makes it very clear if there are other options that need to be
->> disabled as well.
->>
->> -Greg
->>
-> 
-> I use menuconfig. But some options can't be disabled like CPU_FREQ or
-> page migration. You're right there are warning about enabled options but
-> as i said they can't be disable. So i edit .config file manually to meet
-> requirement from Xenomai wiki.
-> 
-> Can somebody provide me a working configuration for x86_64 architecture?
-> 
+Hi,
 
-See https://gitlab.denx.de/Xenomai/xenomai-images for a working image 
-and 
-https://gitlab.denx.de/Xenomai/xenomai-images/blob/master/recipes-kernel/linux/files/amd64_defconfig 
-for a working config.
+In message <20200313141229.7C87C24003E@gemini.denx.de> I wrote:
+>
+> > > We noticed because out application also defines __packed...
+> >
+> > That's indeed bad style which I didn't realize so far. All those 
+> > short-hands should be prefixed, e.g. like qt does (Q_NORETURN, Q_LIKELY 
+> > etc.).
+>
+> Was there not a rule in ANSI C that the use of double underscores in
+> identifiers is reserved compiler internal definitions?  I would expect
+> that it's ok in compiler.h but incorrect in any application headers.
 
-Jan
+For example C99 section 7.1.3 (see [1]):
+
+        All identifiers that begin with an underscore and either an
+        uppercase letter or another underscore are always reserved
+        for any use.
+
+[1] https://busybox.net/~landley/c99-draft.html#7.1.3
+
+
+So IMHO any definition of __packed... in application code is not
+standard conforming.
+
+Best regards,
+
+Wolfgang Denk
 
 -- 
-Siemens AG, Corporate Technology, CT RDA IOT SES-DE
-Corporate Competence Center Embedded Linux
+DENX Software Engineering GmbH,      Managing Director: Wolfgang Denk
+HRB 165235 Munich, Office: Kirchenstr.5, D-82194 Groebenzell, Germany
+Phone: (+49)-8142-66989-10 Fax: (+49)-8142-66989-80 Email: wd@denx.de
+If a train station is a place where a train stops,
+                                           then what's a workstation?
 
