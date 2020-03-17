@@ -1,11 +1,9 @@
-Subject: Re: Alchemy API queue size issue
-References: <AM0PR07MB54107060F24921876BC65F77E6F60@AM0PR07MB5410.eurprd07.prod.outlook.com>
 From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <3c7280ad-32bb-4da1-0eda-17ee1a57e028@siemens.com>
-Date: Tue, 17 Mar 2020 18:29:25 +0100
+Subject: [xenomai-images][PATCH] linux-xenomai: Switch x86 latest to CIP feed
+Message-ID: <844a360a-005b-32ae-b203-5d961325945e@siemens.com>
+Date: Tue, 17 Mar 2020 20:13:00 +0100
 MIME-Version: 1.0
-In-Reply-To: <AM0PR07MB54107060F24921876BC65F77E6F60@AM0PR07MB5410.eurprd07.prod.outlook.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
@@ -16,39 +14,29 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "Merckx, Sebastiaan (Nokia - BE/Antwerp)" <sebastiaan.merckx@nokia.com>, "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Xenomai <xenomai@xenomai.org>
 
-On 17.03.20 11:26, Merckx, Sebastiaan (Nokia - BE/Antwerp) via Xenomai 
-wrote:
-> Hello,
-> 
-> We noticed a bug in the alchemy API of xenomai library. The allocated memory for queues seemed too big.
-> I assume that below is the fix (and we are using the patch internally).
-> Let me know if you need more info or if this would not be correct.
-> 
-> Best Regards,
-> Sebastiaan Merckx
-> 
-> diff --git a/lib/alchemy/queue.c b/lib/alchemy/queue.c
-> --- a/lib/alchemy/queue.c
-> +++ b/lib/alchemy/queue.c
-> @@ -261,7 +261,7 @@ int rt_queue_create(RT_QUEUE *queue, con
->                                     poolsize + (poolsize * 5 / 100));
->          else
->                  ret = heapobj_init_array(&qcb->hobj, qcb->name,
-> -                                        (poolsize / qlimit) *
-> +                                        (poolsize / qlimit) +
->                                           sizeof(struct alchemy_queue_msg),
->                                           qlimit);
->          if (ret)
-> 
+From: Jan Kiszka <jan.kiszka@siemens.com>
 
-That was fixed in 5e54f18b640e, available since v3.0.4. I suppose you 
-are sitting on a seriously outdated branch. ;)
+Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
+---
+ recipes-kernel/linux/linux-xenomai_latest.bb | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-Jan
-
+diff --git a/recipes-kernel/linux/linux-xenomai_latest.bb b/recipes-kernel/linux/linux-xenomai_latest.bb
+index 8f6636b..9ad8e56 100644
+--- a/recipes-kernel/linux/linux-xenomai_latest.bb
++++ b/recipes-kernel/linux/linux-xenomai_latest.bb
+@@ -19,7 +19,7 @@ def is_xeno_3_0(d):
+     return xeno_ver.startswith('3.0') or xeno_ver == 'stable-3.0.x'
+ 
+ GIT_REPO_amd64 = "${@'ipipe.git' if is_xeno_3_0(d) else 'ipipe-x86.git'}"
+-GIT_BRANCH_amd64 = "${@'ipipe-4.4.y-cip' if is_xeno_3_0(d) else 'ipipe-x86-4.19.y'}"
++GIT_BRANCH_amd64 = "${@'ipipe-4.4.y-cip' if is_xeno_3_0(d) else 'ipipe-x86-4.19.y-cip'}"
+ 
+ GIT_REPO_armhf = "${@'ipipe.git' if is_xeno_3_0(d) else 'ipipe-arm.git'}"
+ GIT_BRANCH_armhf = "${@'ipipe-4.4.y-cip' if is_xeno_3_0(d) else 'ipipe/master'}"
 -- 
-Siemens AG, Corporate Technology, CT RDA IOT SES-DE
-Corporate Competence Center Embedded Linux
+2.16.4
+
 
