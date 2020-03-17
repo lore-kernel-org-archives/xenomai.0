@@ -1,16 +1,12 @@
-Subject: Re: Namespace pollution due to compiler.h in Xenomai 3.1
-References: <CAFLxGvw70Rm88zfFXRqLv2_qJkd=k_C-mYxLCX0qnFwCYyGZyg@mail.gmail.com>
- <b5fe4180-4d04-3031-6d12-b7c9ccfa22ad@siemens.com>
- <20200313141229.7C87C24003E@gemini.denx.de>
- <20200313142248.2B7CE24003E@gemini.denx.de>
-From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <c891070d-ca78-97ed-8a39-faab4d5f34b4@siemens.com>
-Date: Fri, 13 Mar 2020 15:42:29 +0100
-MIME-Version: 1.0
-In-Reply-To: <20200313142248.2B7CE24003E@gemini.denx.de>
-Content-Type: text/plain; charset=utf-8; format=flowed
+From: "Bradley Valdenebro Peter (DC-AE/ESW52)"
+ <Peter.BradleyValdenebro@boschrexroth.nl>
+Subject: RT thread seems blocked
+Date: Tue, 17 Mar 2020 10:22:31 +0000
+Message-ID: <bb4f7cd9487f411daa1f5d948761aa65@boschrexroth.nl>
 Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+MIME-Version: 1.0
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -19,44 +15,28 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Wolfgang Denk <wd@denx.de>, Wolfgang Denk via Xenomai <xenomai@xenomai.org>
+To: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On 13.03.20 15:22, Wolfgang Denk wrote:
-> Hi,
-> 
-> In message <20200313141229.7C87C24003E@gemini.denx.de> I wrote:
->>
->>>> We noticed because out application also defines __packed...
->>>
->>> That's indeed bad style which I didn't realize so far. All those
->>> short-hands should be prefixed, e.g. like qt does (Q_NORETURN, Q_LIKELY
->>> etc.).
->>
->> Was there not a rule in ANSI C that the use of double underscores in
->> identifiers is reserved compiler internal definitions?  I would expect
->> that it's ok in compiler.h but incorrect in any application headers.
-> 
-> For example C99 section 7.1.3 (see [1]):
-> 
->          All identifiers that begin with an underscore and either an
->          uppercase letter or another underscore are always reserved
->          for any use.
-> 
-> [1] https://busybox.net/~landley/c99-draft.html#7.1.3
-> 
-> 
-> So IMHO any definition of __packed... in application code is not
-> standard conforming.
-> 
-
-That is correct as well and should be fixed in their application.
-
-Still, I don't think Xenomai should use such defines on its own when 
-other libs avoid this as well.
-
-Jan
-
--- 
-Siemens AG, Corporate Technology, CT RDA IOT SES-DE
-Corporate Competence Center Embedded Linux
+SGVsbG8gWGVub21haSB0ZWFtLA0KDQpXZSBhcmUgcnVubmluZyBhIFhlbm9tYWkvTGludXggc2V0
+dXAgb24gYSBaeW5xIFotNzAyMCBTb0MgKFdlIHJ1biBMaW51eCBvbiBDUFUwIGFuZCBYZW5vbWFp
+IG9uIENQVTEpOg0KIC0gTGludXggdmVyc2lvbiA0LjQuMC14aWxpbnggKGdjYyB2ZXJzaW9uIDgu
+My4wIChCdWlsZHJvb3QgMjAxOS4wMi0wMDA4MC1nYzMxZDQ4ZSkgKSAjMSBTTVAgUFJFRU1QVA0K
+IC0gaXBpcGUgQVJNIHBhdGNoICM4DQogLSBYZW5vbWFpIDMuMC4xMA0KDQpMYXRlbHkgd2UgaGF2
+ZSBiZWVuIGV4cGVyaWVuY2luZyB0aGF0IG91ciBoaWdoZXN0IHByaW9yaXR5IHJlYWwgdGltZSBY
+ZW5vbWFpIHRocmVhZCBoYWx0cyBmb3IgYXJvdW5kIDFtcyBldmVyeSBub3cgYW5kIHRoZW4uIFdl
+IHNlZSBpdCBoYXBwZW5pbmcgZHVyaW5nIGRpZmZlcmVudCBwb2ludHMgaW4gb3VyIHRocmVhZC4N
+Cg0KVGhpcyB0aHJlYWQgaXMgdHJpZ2dlcmVkIGJ5IGFuIGludGVycnVwdCBnZW5lcmF0ZWQgZnJv
+bSB0aGUgWnlucSBmcGdhIGxvZ2ljIGV2ZXJ5IDEyNXVzLiBXZSBoYXZlIGFuIGZwZ2EgY291bnRl
+ciB3aGljaCBpcyBpbmNyZW1lbnRlZCBldmVyeSB0aW1lIGFuIGludGVycnVwdCBpcyBnZW5lcmF0
+ZWQuDQpXZSBjYW4gc2VlIGluIG91ciBsb2dnaW5nIHRoYXQgd2UgY2FuIG1pc3MgdXAgdG8gNCBj
+b3VudHMgKH4xbXMpIGFuZCB3ZSBkbyBub3Qga25vdyB3aGF0IGlzIGdvaW5nIG9uIGR1cmluZyB0
+aGF0IHRpbWUuIA0KDQpXZSBoYXZlIHRyaWVkIHVzaW5nIHRoZSBpcGlwZS10cmFjZXIgYnV0IHRo
+YXQgZ2l2ZXMgc29tZSBvdmVyaGVhZCBhbmQgdGhlIGlzc3VlIGlzbid0IHJlcHJvZHVjaWJsZS4N
+ClRoZSBzYW1lIHdpdGggZnRyYWNlLg0KDQpTd2l0Y2hpbmcgZnJvbSBYZW5vbWFpIDMuMC4xMCB0
+byAzLjEgd2Ugc2VlIHRoZSBudW1iZXIgb2Ygb2NjdXJyZW5jZXMgZGVjcmVhc2UgYnV0IHN0aWxs
+IHdlIHNlZSB0aGVtLg0KSXQgaXMgcXVpdGUgZGlmZmljdWx0IHRvIHJlcHJvZHVjZS4gSXQgaGFw
+cGVucyBhcm91bmQgb25jZSBldmVyeSAyNCBob3Vycy4NCg0KSGF2ZSB5b3UgZ290IGFueSBpZGVh
+cz8NCkFyZSB0aGVyZSBhbnkga25vd24gWGVub21haS9pcGlwZSBidWdzIHRoYXQgY291bGQgZXhw
+bGFpbiB0aGlzIGJlaGF2aW91cj8NCg0KVGhhbmtzIGluIGFkdmFuY2UgZm9yIHlvdXIgc3VwcG9y
+dC4NCg0KQmVzdCByZWdhcmRzLg0KUGV0ZXIgQnJhZGxleQ0K4oCLDQo=
 
