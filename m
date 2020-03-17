@@ -1,12 +1,13 @@
-From: "Bradley Valdenebro Peter (DC-AE/ESW52)"
- <Peter.BradleyValdenebro@boschrexroth.nl>
-Subject: RT thread seems blocked
-Date: Tue, 17 Mar 2020 10:22:31 +0000
-Message-ID: <bb4f7cd9487f411daa1f5d948761aa65@boschrexroth.nl>
-Content-Language: en-US
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+Subject: Re: RT thread seems blocked
+References: <bb4f7cd9487f411daa1f5d948761aa65@boschrexroth.nl>
+From: Jan Kiszka <jan.kiszka@siemens.com>
+Message-ID: <b2a97400-db79-c156-2775-d2b67ea7ccf7@siemens.com>
+Date: Tue, 17 Mar 2020 11:45:15 +0100
 MIME-Version: 1.0
+In-Reply-To: <bb4f7cd9487f411daa1f5d948761aa65@boschrexroth.nl>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,28 +16,37 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: "Bradley Valdenebro Peter (DC-AE/ESW52)" <Peter.BradleyValdenebro@boschrexroth.nl>, "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-SGVsbG8gWGVub21haSB0ZWFtLA0KDQpXZSBhcmUgcnVubmluZyBhIFhlbm9tYWkvTGludXggc2V0
-dXAgb24gYSBaeW5xIFotNzAyMCBTb0MgKFdlIHJ1biBMaW51eCBvbiBDUFUwIGFuZCBYZW5vbWFp
-IG9uIENQVTEpOg0KIC0gTGludXggdmVyc2lvbiA0LjQuMC14aWxpbnggKGdjYyB2ZXJzaW9uIDgu
-My4wIChCdWlsZHJvb3QgMjAxOS4wMi0wMDA4MC1nYzMxZDQ4ZSkgKSAjMSBTTVAgUFJFRU1QVA0K
-IC0gaXBpcGUgQVJNIHBhdGNoICM4DQogLSBYZW5vbWFpIDMuMC4xMA0KDQpMYXRlbHkgd2UgaGF2
-ZSBiZWVuIGV4cGVyaWVuY2luZyB0aGF0IG91ciBoaWdoZXN0IHByaW9yaXR5IHJlYWwgdGltZSBY
-ZW5vbWFpIHRocmVhZCBoYWx0cyBmb3IgYXJvdW5kIDFtcyBldmVyeSBub3cgYW5kIHRoZW4uIFdl
-IHNlZSBpdCBoYXBwZW5pbmcgZHVyaW5nIGRpZmZlcmVudCBwb2ludHMgaW4gb3VyIHRocmVhZC4N
-Cg0KVGhpcyB0aHJlYWQgaXMgdHJpZ2dlcmVkIGJ5IGFuIGludGVycnVwdCBnZW5lcmF0ZWQgZnJv
-bSB0aGUgWnlucSBmcGdhIGxvZ2ljIGV2ZXJ5IDEyNXVzLiBXZSBoYXZlIGFuIGZwZ2EgY291bnRl
-ciB3aGljaCBpcyBpbmNyZW1lbnRlZCBldmVyeSB0aW1lIGFuIGludGVycnVwdCBpcyBnZW5lcmF0
-ZWQuDQpXZSBjYW4gc2VlIGluIG91ciBsb2dnaW5nIHRoYXQgd2UgY2FuIG1pc3MgdXAgdG8gNCBj
-b3VudHMgKH4xbXMpIGFuZCB3ZSBkbyBub3Qga25vdyB3aGF0IGlzIGdvaW5nIG9uIGR1cmluZyB0
-aGF0IHRpbWUuIA0KDQpXZSBoYXZlIHRyaWVkIHVzaW5nIHRoZSBpcGlwZS10cmFjZXIgYnV0IHRo
-YXQgZ2l2ZXMgc29tZSBvdmVyaGVhZCBhbmQgdGhlIGlzc3VlIGlzbid0IHJlcHJvZHVjaWJsZS4N
-ClRoZSBzYW1lIHdpdGggZnRyYWNlLg0KDQpTd2l0Y2hpbmcgZnJvbSBYZW5vbWFpIDMuMC4xMCB0
-byAzLjEgd2Ugc2VlIHRoZSBudW1iZXIgb2Ygb2NjdXJyZW5jZXMgZGVjcmVhc2UgYnV0IHN0aWxs
-IHdlIHNlZSB0aGVtLg0KSXQgaXMgcXVpdGUgZGlmZmljdWx0IHRvIHJlcHJvZHVjZS4gSXQgaGFw
-cGVucyBhcm91bmQgb25jZSBldmVyeSAyNCBob3Vycy4NCg0KSGF2ZSB5b3UgZ290IGFueSBpZGVh
-cz8NCkFyZSB0aGVyZSBhbnkga25vd24gWGVub21haS9pcGlwZSBidWdzIHRoYXQgY291bGQgZXhw
-bGFpbiB0aGlzIGJlaGF2aW91cj8NCg0KVGhhbmtzIGluIGFkdmFuY2UgZm9yIHlvdXIgc3VwcG9y
-dC4NCg0KQmVzdCByZWdhcmRzLg0KUGV0ZXIgQnJhZGxleQ0K4oCLDQo=
+On 17.03.20 11:22, Bradley Valdenebro Peter (DC-AE/ESW52) via Xenomai wrote:
+> Hello Xenomai team,
+> 
+> We are running a Xenomai/Linux setup on a Zynq Z-7020 SoC (We run Linux on CPU0 and Xenomai on CPU1):
+>   - Linux version 4.4.0-xilinx (gcc version 8.3.0 (Buildroot 2019.02-00080-gc31d48e) ) #1 SMP PREEMPT
+>   - ipipe ARM patch #8
+>   - Xenomai 3.0.10
+> 
+> Lately we have been experiencing that our highest priority real time Xenomai thread halts for around 1ms every now and then. We see it happening during different points in our thread.
+> 
+> This thread is triggered by an interrupt generated from the Zynq fpga logic every 125us. We have an fpga counter which is incremented every time an interrupt is generated.
+> We can see in our logging that we can miss up to 4 counts (~1ms) and we do not know what is going on during that time.
+> 
+> We have tried using the ipipe-tracer but that gives some overhead and the issue isn't reproducible.
+> The same with ftrace.
+> 
+> Switching from Xenomai 3.0.10 to 3.1 we see the number of occurrences decrease but still we see them.
+> It is quite difficult to reproduce. It happens around once every 24 hours.
+> 
+> Have you got any ideas?
+> Are there any known Xenomai/ipipe bugs that could explain this behaviour?
+> 
+
+Already tried ipipe-4.4.y-cip head? I can't promise it helps, but it 
+does contain quite a few fixes, compared to your baseline.
+
+Jan
+
+-- 
+Siemens AG, Corporate Technology, CT RDA IOT SES-DE
+Corporate Competence Center Embedded Linux
 
