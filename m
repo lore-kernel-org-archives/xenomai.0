@@ -1,11 +1,10 @@
-From: Jan Kiszka <jan.kiszka@siemens.com>
-Subject: [xenomai-images][PATCH] linux-xenomai: Switch x86 latest to CIP feed
-Message-ID: <844a360a-005b-32ae-b203-5d961325945e@siemens.com>
-Date: Tue, 17 Mar 2020 20:13:00 +0100
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Date: Wed, 18 Mar 2020 09:58:35 +0100
+Subject: Get physical link status on an RTNET driven NIC
+Message-ID: <7232-5e71e280-17-2896e5c0@29286636>
+From: =?utf-8?q?Fran=C3=A7ois_Legal?= <devel@thom.fr.eu.org>
+Content-Transfer-Encoding: quoted-printable
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -14,29 +13,18 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Xenomai <xenomai@xenomai.org>
+To: Jan Kiszka via Xenomai <xenomai@xenomai.org>
 
-From: Jan Kiszka <jan.kiszka@siemens.com>
+Hello,
 
-Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
----
- recipes-kernel/linux/linux-xenomai_latest.bb | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+I wa wondering if there was any mean to get the physical link state of =
+a network interface driven through RTDM/RTNET.
 
-diff --git a/recipes-kernel/linux/linux-xenomai_latest.bb b/recipes-kernel/linux/linux-xenomai_latest.bb
-index 8f6636b..9ad8e56 100644
---- a/recipes-kernel/linux/linux-xenomai_latest.bb
-+++ b/recipes-kernel/linux/linux-xenomai_latest.bb
-@@ -19,7 +19,7 @@ def is_xeno_3_0(d):
-     return xeno_ver.startswith('3.0') or xeno_ver == 'stable-3.0.x'
- 
- GIT_REPO_amd64 = "${@'ipipe.git' if is_xeno_3_0(d) else 'ipipe-x86.git'}"
--GIT_BRANCH_amd64 = "${@'ipipe-4.4.y-cip' if is_xeno_3_0(d) else 'ipipe-x86-4.19.y'}"
-+GIT_BRANCH_amd64 = "${@'ipipe-4.4.y-cip' if is_xeno_3_0(d) else 'ipipe-x86-4.19.y-cip'}"
- 
- GIT_REPO_armhf = "${@'ipipe.git' if is_xeno_3_0(d) else 'ipipe-arm.git'}"
- GIT_BRANCH_armhf = "${@'ipipe-4.4.y-cip' if is_xeno_3_0(d) else 'ipipe/master'}"
--- 
-2.16.4
+I check /sys/class/net/rteth*/carrier but it does not seem to work on R=
+T interfaces.
+
+Thanks in advance
+
+Fran=C3=A7ois
 
 
