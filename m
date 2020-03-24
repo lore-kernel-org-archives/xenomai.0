@@ -1,14 +1,15 @@
-From: "Bradley Valdenebro Peter (DC-AE/ESW52)"
- <Peter.BradleyValdenebro@boschrexroth.nl>
-Subject: RE: RT thread seems blocked
-Date: Tue, 24 Mar 2020 11:43:17 +0000
-Message-ID: <e5b86e2706e6490fa1ceb591c9f8a9a1@boschrexroth.nl>
+Subject: Re: RT thread seems blocked
 References: <bb4f7cd9487f411daa1f5d948761aa65@boschrexroth.nl>
- <b2a97400-db79-c156-2775-d2b67ea7ccf7@siemens.com> 
-Content-Language: en-US
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+ <b2a97400-db79-c156-2775-d2b67ea7ccf7@siemens.com>
+ <e5b86e2706e6490fa1ceb591c9f8a9a1@boschrexroth.nl>
+From: Jan Kiszka <jan.kiszka@siemens.com>
+Message-ID: <e5d0bf30-640b-2bc8-a257-00c2a5ef8637@siemens.com>
+Date: Tue, 24 Mar 2020 12:53:15 +0100
 MIME-Version: 1.0
+In-Reply-To: <e5b86e2706e6490fa1ceb591c9f8a9a1@boschrexroth.nl>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,56 +18,37 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jan Kiszka <jan.kiszka@siemens.com>, "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: "Bradley Valdenebro Peter (DC-AE/ESW52)" <Peter.BradleyValdenebro@boschrexroth.nl>, "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-SGVsbG8sDQoNCldlIHJ1biBzb21lIHRlc3RzIGR1cmluZyB0aGUgd2Vla2VuZCBhbmQgYWx0aG91
-Z2ggd2UgaGF2ZSBsZXNzIG9jY3VycmVuY2VzIHdlIHN0aWxsIGluZGVlZCBzZWUgdGhlbS4NCg0K
-T25lIGludGVyZXN0aW5nIHRoaW5nIHdlIHNlZSBiZXNpZGVzIHRoZSAxbXMgc3RhbGxpbmcgaXMg
-dGhhdCBzb21ldGltZXMgd2Ugc2VlIG92ZXIgMTAwdXMgYmV0d2VlbiBJUlEgYW5kIElTUiBzdGFy
-dC4gDQpBdCB0aGlzIHBvaW50IHdlIGRvIG5vdCBrbm93IGhvdyB0byBwcm9jZWVkIGZ1cnRoZXIu
-IEFueSBoZWxwIG9yIHN1Z2dlc3Rpb24gaXMgZ3JlYXRseSBhcHByZWNpYXRlZC4NCg0KTWV0IHZy
-aWVuZGVsaWprZSBncm9ldGVuIC8gQmVzdCByZWdhcmRzLA0KDQpQZXRlciBCcmFkbGV5DQpEQy1B
-RS9FU1c1MiANCg0KVGVsLiArMzEgNDAgMjU3LTg4NTgNCuKAiw0KDQotLS0tLU9yaWdpbmFsIE1l
-c3NhZ2UtLS0tLQ0KRnJvbTogQnJhZGxleSBWYWxkZW5lYnJvIFBldGVyIChEQy1BRS9FU1c1Mikg
-DQpTZW50OiAyMCBNYXJjaCAyMDIwIDExOjE0DQpUbzogJ0phbiBLaXN6a2EnIDxqYW4ua2lzemth
-QHNpZW1lbnMuY29tPjsgeGVub21haUB4ZW5vbWFpLm9yZw0KU3ViamVjdDogUkU6IFJUIHRocmVh
-ZCBzZWVtcyBibG9ja2VkDQoNCkhlbGxvIEphbiwNCg0KRm9sbG93aW5nIHlvdXIgYWR2aWNlIHdl
-IGNoYW5nZWQgb3VyIHNldHVwIGFuZCB3ZSBhcmUgbm93IHJ1bm5pbmcgdGhlIGZvbGxvd2luZzoN
-Cg0KCSQgdW5hbWUgLWENCgkJTGludXggd29tMDMgNC4xNC4xMTAtbWFpbmxpbmUgIzEgU01QIFBS
-RUVNUFQgVHVlIE1hciAxNyAxNzoyNToyMiBDRVQgMjAyMCBhcm12N2wgR05VL0xpbnV4DQoJJCBj
-YXQgL3Byb2MveGVub21haS92ZXJzaW9uDQoJCTMuMQ0KCSQgY2F0IC9wcm9jL2lwaXBlL3ZlcnNp
-b24NCgkJNw0KSXQgaXMgc3RpbGwgZWFybHkgdG8gc2F5IGJ1dCBpdCBpcyBsb29raW5nIGJldHRl
-ci4NCldlIHdpbGwga2VlcCB5b3UgdXBkYXRlZC4NCg0KQmVzdCByZWdhcmRzLA0KDQpQZXRlciBC
-cmFkbGV5DQrigIsNCi0tLS0tT3JpZ2luYWwgTWVzc2FnZS0tLS0tDQpGcm9tOiBKYW4gS2lzemth
-IDxqYW4ua2lzemthQHNpZW1lbnMuY29tPiANClNlbnQ6IDE3IE1hcmNoIDIwMjAgMTE6NDUNClRv
-OiBCcmFkbGV5IFZhbGRlbmVicm8gUGV0ZXIgKERDLUFFL0VTVzUyKSA8UGV0ZXIuQnJhZGxleVZh
-bGRlbmVicm9AYm9zY2hyZXhyb3RoLm5sPjsgeGVub21haUB4ZW5vbWFpLm9yZw0KU3ViamVjdDog
-UmU6IFJUIHRocmVhZCBzZWVtcyBibG9ja2VkDQoNCk9uIDE3LjAzLjIwIDExOjIyLCBCcmFkbGV5
-IFZhbGRlbmVicm8gUGV0ZXIgKERDLUFFL0VTVzUyKSB2aWEgWGVub21haSB3cm90ZToNCj4gSGVs
-bG8gWGVub21haSB0ZWFtLA0KPiANCj4gV2UgYXJlIHJ1bm5pbmcgYSBYZW5vbWFpL0xpbnV4IHNl
-dHVwIG9uIGEgWnlucSBaLTcwMjAgU29DIChXZSBydW4gTGludXggb24gQ1BVMCBhbmQgWGVub21h
-aSBvbiBDUFUxKToNCj4gICAtIExpbnV4IHZlcnNpb24gNC40LjAteGlsaW54IChnY2MgdmVyc2lv
-biA4LjMuMCAoQnVpbGRyb290IDIwMTkuMDItMDAwODAtZ2MzMWQ0OGUpICkgIzEgU01QIFBSRUVN
-UFQNCj4gICAtIGlwaXBlIEFSTSBwYXRjaCAjOA0KPiAgIC0gWGVub21haSAzLjAuMTANCj4gDQo+
-IExhdGVseSB3ZSBoYXZlIGJlZW4gZXhwZXJpZW5jaW5nIHRoYXQgb3VyIGhpZ2hlc3QgcHJpb3Jp
-dHkgcmVhbCB0aW1lIFhlbm9tYWkgdGhyZWFkIGhhbHRzIGZvciBhcm91bmQgMW1zIGV2ZXJ5IG5v
-dyBhbmQgdGhlbi4gV2Ugc2VlIGl0IGhhcHBlbmluZyBkdXJpbmcgZGlmZmVyZW50IHBvaW50cyBp
-biBvdXIgdGhyZWFkLg0KPiANCj4gVGhpcyB0aHJlYWQgaXMgdHJpZ2dlcmVkIGJ5IGFuIGludGVy
-cnVwdCBnZW5lcmF0ZWQgZnJvbSB0aGUgWnlucSBmcGdhIGxvZ2ljIGV2ZXJ5IDEyNXVzLiBXZSBo
-YXZlIGFuIGZwZ2EgY291bnRlciB3aGljaCBpcyBpbmNyZW1lbnRlZCBldmVyeSB0aW1lIGFuIGlu
-dGVycnVwdCBpcyBnZW5lcmF0ZWQuDQo+IFdlIGNhbiBzZWUgaW4gb3VyIGxvZ2dpbmcgdGhhdCB3
-ZSBjYW4gbWlzcyB1cCB0byA0IGNvdW50cyAofjFtcykgYW5kIHdlIGRvIG5vdCBrbm93IHdoYXQg
-aXMgZ29pbmcgb24gZHVyaW5nIHRoYXQgdGltZS4NCj4gDQo+IFdlIGhhdmUgdHJpZWQgdXNpbmcg
-dGhlIGlwaXBlLXRyYWNlciBidXQgdGhhdCBnaXZlcyBzb21lIG92ZXJoZWFkIGFuZCB0aGUgaXNz
-dWUgaXNuJ3QgcmVwcm9kdWNpYmxlLg0KPiBUaGUgc2FtZSB3aXRoIGZ0cmFjZS4NCj4gDQo+IFN3
-aXRjaGluZyBmcm9tIFhlbm9tYWkgMy4wLjEwIHRvIDMuMSB3ZSBzZWUgdGhlIG51bWJlciBvZiBv
-Y2N1cnJlbmNlcyBkZWNyZWFzZSBidXQgc3RpbGwgd2Ugc2VlIHRoZW0uDQo+IEl0IGlzIHF1aXRl
-IGRpZmZpY3VsdCB0byByZXByb2R1Y2UuIEl0IGhhcHBlbnMgYXJvdW5kIG9uY2UgZXZlcnkgMjQg
-aG91cnMuDQo+IA0KPiBIYXZlIHlvdSBnb3QgYW55IGlkZWFzPw0KPiBBcmUgdGhlcmUgYW55IGtu
-b3duIFhlbm9tYWkvaXBpcGUgYnVncyB0aGF0IGNvdWxkIGV4cGxhaW4gdGhpcyBiZWhhdmlvdXI/
-DQo+IA0KDQpBbHJlYWR5IHRyaWVkIGlwaXBlLTQuNC55LWNpcCBoZWFkPyBJIGNhbid0IHByb21p
-c2UgaXQgaGVscHMsIGJ1dCBpdCBkb2VzIGNvbnRhaW4gcXVpdGUgYSBmZXcgZml4ZXMsIGNvbXBh
-cmVkIHRvIHlvdXIgYmFzZWxpbmUuDQoNCkphbg0KDQotLQ0KU2llbWVucyBBRywgQ29ycG9yYXRl
-IFRlY2hub2xvZ3ksIENUIFJEQSBJT1QgU0VTLURFIENvcnBvcmF0ZSBDb21wZXRlbmNlIENlbnRl
-ciBFbWJlZGRlZCBMaW51eA0K
+On 24.03.20 12:43, Bradley Valdenebro Peter (DC-AE/ESW52) wrote:
+> Hello,
+> 
+> We run some tests during the weekend and although we have less occurrences we still indeed see them.
+> 
+> One interesting thing we see besides the 1ms stalling is that sometimes we see over 100us between IRQ and ISR start.
+> At this point we do not know how to proceed further. Any help or suggestion is greatly appreciated.
+> 
+
+That is usually where you should start to look into tracing. Option A is 
+event-level tracing via standard ftrace. Use
+
+trace-cmd record -e "cobalt*" -e sched -e signal
+
+to record such a trace. Ideally instrument the point where the latency 
+is off in your application via xnftrace_printf() (will leave a mark in 
+that recorded trace). Check via "trace-cmd report" if the schedule 
+around that peak is what you would expect.
+
+For digging even deeper, down to function level: 
+https://gitlab.denx.de/Xenomai/xenomai/-/wikis/Using_The_I_Pipe_Tracer, 
+specifically look into xntrace_user_freeze(), calling that from your 
+application when you spot an excessive latency to stop the trace.
+
+If the result is not clear to you, share it to get a community inspection.
+
+Jan
+
+-- 
+Siemens AG, Corporate Technology, CT RDA IOT SES-DE
+Corporate Competence Center Embedded Linux
 
