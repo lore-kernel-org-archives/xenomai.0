@@ -1,11 +1,17 @@
+From: "Bradley Valdenebro Peter (DC-AE/ESW52)"
+ <Peter.BradleyValdenebro@boschrexroth.nl>
+Subject: RE: RT thread seems blocked
+Date: Wed, 25 Mar 2020 07:59:05 +0000
+Message-ID: <c85c4aeb88144795a588b4d8af1818f8@boschrexroth.nl>
+References: <bb4f7cd9487f411daa1f5d948761aa65@boschrexroth.nl>
+ <b2a97400-db79-c156-2775-d2b67ea7ccf7@siemens.com>
+ <e5b86e2706e6490fa1ceb591c9f8a9a1@boschrexroth.nl>
+ <e5d0bf30-640b-2bc8-a257-00c2a5ef8637@siemens.com>
+In-Reply-To: <e5d0bf30-640b-2bc8-a257-00c2a5ef8637@siemens.com>
+Content-Language: en-US
 Content-Type: text/plain; charset="utf-8"
-In-Reply-To: <5126083f-9855-158e-c039-984032fe05ee@siemens.com>
-From: =?utf-8?q?Fran=C3=A7ois_Legal?= <devel@thom.fr.eu.org>
-Date: Tue, 24 Mar 2020 19:37:17 +0100
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-Message-ID: <7231-5e7a5380-21-3b6a0580@56072393>
-Subject: =?utf-8?q?Re=3A?= Slow path detected in RTCAP
-Content-Transfer-Encoding: quoted-printable
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -14,81 +20,49 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jan Kiszka <jan.kiszka@siemens.com>
-Cc: xenomai@xenomai.org
+To: Jan Kiszka <jan.kiszka@siemens.com>, "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-Le Mardi, Mars 24, 2020 18:01 CET, Jan Kiszka <jan.kiszka@siemens.com> =
-a =C3=A9crit: 
- 
-> On 24.03.20 17:05, Fran=C3=A7ois Legal via Xenomai wrote:
-> > Hello,
-> > 
-> > I'm trying to port an old application that used to be running on DS=
-PBIOS to Xenomai, using RTNET for the network part.
-> > I'm getting some weird results with semaphores, but before that I g=
-ot that debug dump :
-> > 
-> > [   49.201310] WARNING: CPU: 0 PID: 958 at /home/dev/UCC/linux-4.4.=
-189/kernel/ipipe/core.c:1912 =5F=5Fipipe=5Fpost=5Fwork=5Froot+0xe8/0xfc=
-()
-> > [   49.214809] CPU: 0 PID: 958 Comm: Ma=C3=AEtre de R=C3=A9s Not ta=
-inted 4.4.189 #47
-> > [   49.222636] Hardware name: Xilinx Zynq Platform
-> > [   49.227791] I-pipe domain: Xenomai
-> > [   49.231705] [<c00159e8>] (unwind=5Fbacktrace) from [<c0012e24>] =
-(show=5Fstack+0x10/0x14)
-> > [   49.240511] [<c0012e24>] (show=5Fstack) from [<c0222798>] (dump=5F=
-stack+0x104/0x120)
-> > [   49.248887] [<c0222798>] (dump=5Fstack) from [<c0025568>] (warn=5F=
-slowpath=5Fcommon+0x80/0xb0)
-> > [   49.258162] [<c0025568>] (warn=5Fslowpath=5Fcommon) from [<c0025=
-660>] (warn=5Fslowpath=5Fnull+0x1c/0x24)
-> > [   49.268172] [<c0025660>] (warn=5Fslowpath=5Fnull) from [<c008b7b=
-c>] (=5F=5Fipipe=5Fpost=5Fwork=5Froot+0xe8/0xfc)
-> > [   49.278344] [<c008b7bc>] (=5F=5Fipipe=5Fpost=5Fwork=5Froot) from=
- [<c00a4df0>] (rtdm=5Fnrtsig=5Fpend+0x24/0x2c)
-> > [   49.288219] [<c00a4df0>] (rtdm=5Fnrtsig=5Fpend) from [<c034e2c8>=
-] (rtcap=5Fxmit=5Fhook+0x150/0x1bc)
-> > [   49.297550] [<c034e2c8>] (rtcap=5Fxmit=5Fhook) from [<c033fc64>]=
- (rtdev=5Flocked=5Fxmit+0x28/0x3c)
-> > [   49.307010] [<c033fc64>] (rtdev=5Flocked=5Fxmit) from [<c0340be4=
->] (rtdev=5Fxmit+0x38/0x84)
-> > [   49.315871] [<c0340be4>] (rtdev=5Fxmit) from [<c034935c>] (rt=5F=
-packet=5Fsendmsg+0x2d4/0x304)
-> > [   49.324865] [<c034935c>] (rt=5Fpacket=5Fsendmsg) from [<c00a6380=
->] (rtdm=5Ffd=5Fsendmsg+0x80/0x98)
-> > [   49.334205] [<c00a6380>] (rtdm=5Ffd=5Fsendmsg) from [<c00aa0d8>]=
- (CoBaLt=5Fsendmsg+0x78/0xa4)
-> > [   49.343275] [<c00aa0d8>] (CoBaLt=5Fsendmsg) from [<c00b602c>] (h=
-andle=5Fhead=5Fsyscall+0x168/0x320)
-> > [   49.352953] [<c00b602c>] (handle=5Fhead=5Fsyscall) from [<c000f9=
-d0>] (local=5Frestart+0x20/0x44)
-> > [
-> > 
-> > The indicated thread "Ma=C3=AEtre de R=C3=A9s" is a xenomai posix t=
-hread.
-> > 
-> > I see that the call stack includes RTCAP code, and I checked that t=
-his does not happen when RTCAP is disabled in kernel build. Anyway, Is =
-this slow path to be expected in RTCAP ?
-> > 
-
-Yes. On 3.0.9.
-
-> 
-> This issue is supposed to be fixed in 3.1 via b2f253fd21b8. Are you o=
-n 
-> 3.0.x? If you could try out a backport, we could merge that into stab=
-le 
-> as well.
-
-I'll check that then submit a patch
-
-> 
-> Jan
-> 
-> -- 
-> Siemens AG, Corporate Technology, CT RDA IOT SES-DE
-> Corporate Competence Center Embedded Linux
-
+SGVsbG8sDQoNClRoYW5rcyBmb3IgeW91ciBzdXBwb3J0IEphbi4NCg0KV2UgaGF2ZSBhbHJlYWR5
+IHRyaWVkIHdpdGggZnRyYWNlIGFuZCB3ZSBjb3VsZG4ndCByZXByb2R1Y2UgdGhlIGlzc3VlLiBX
+ZSB0aGluayBiZWNhdXNlIHRoZSBpbnRyb2R1Y2VkIG92ZXJoZWFkLiBXZSB1c3VhbGx5IHJlY29y
+ZCB0aGUgZm9sbG93aW5nIGV2ZW50czoNCg0KCXN1ZG8gdHJhY2UtY21kIHN0YXJ0IC1lIGlwaSAt
+ZSBpcnEgLWUgcmN1IC1lIHdvcmtxdWV1ZV9leGVjdXRlX2VuZCAtZSB3b3JrcXVldWVfZXhlY3V0
+ZV9zdGFydCAtZSBtbV9wYWdlX2FsbG9jIC1lIG1tX3BhZ2VfZnJlZSANCgkJCS1lIHNjaGVkX21p
+Z3JhdGVfdGFzayAtZSBzY2hlZF9zd2l0Y2ggLWUgY29iYWx0X2lycV9leGl0IC1lIGNvYmFsdF9p
+cnFfZW50cnkgLWUgY29iYWx0X3RocmVhZF9taWdyYXRlIC1lIGNvYmFsdF9zd2l0Y2hfY29udGV4
+dCANCgkJCS1lIGNvYmFsdF9oZWFkX3N5c2V4aXQgLWUgY29iYWx0X2Nsb2NrX2VudHJ5IC1lIGNv
+YmFsdF9jbG9ja19leGl0DQoNCldvdWxkIGNoYW5naW5nIHRvIHRyYWNlLWNtZCByZWNvcmQgLWUg
+ImNvYmFsdCoiIC1lIHNjaGVkIC1lIHNpZ25hbCBtYWtlIGEgZGlmZmVyZW5jZT8NCg0KV2UgaGF2
+ZSBhbHNvIHRyaWVkIHVzaW5nIHRoZSBpcGlwZSB0cmFjZXIgYnV0IHRoZXJlIHdlIGFsc28gaGFk
+IG5vIGx1Y2suIFdlIGRpZG4ndCB1c2UgeG50cmFjZV91c2VyX2ZyZWV6ZSgpIGJ1dCB3ZSBtb25p
+dG9yZWQgdGhlIHRyYWNlIElSUXMtb2ZmIHRpbWVzIGluIC9wcm9jLg0KVXNpbmcgeG50cmFjZV91
+c2VyX2ZyZWV6ZSgpIG1pZ2h0IGJlIHdvcnRoIGEgdHJ5Lg0KDQpCZXN0IHJlZ2FyZHMsDQoNClBl
+dGVyIEJyYWRsZXkNCuKAiw0KLS0tLS1PcmlnaW5hbCBNZXNzYWdlLS0tLS0NCkZyb206IEphbiBL
+aXN6a2EgPGphbi5raXN6a2FAc2llbWVucy5jb20+IA0KU2VudDogMjQgTWFyY2ggMjAyMCAxMjo1
+Mw0KVG86IEJyYWRsZXkgVmFsZGVuZWJybyBQZXRlciAoREMtQUUvRVNXNTIpIDxQZXRlci5CcmFk
+bGV5VmFsZGVuZWJyb0Bib3NjaHJleHJvdGgubmw+OyB4ZW5vbWFpQHhlbm9tYWkub3JnDQpTdWJq
+ZWN0OiBSZTogUlQgdGhyZWFkIHNlZW1zIGJsb2NrZWQNCg0KT24gMjQuMDMuMjAgMTI6NDMsIEJy
+YWRsZXkgVmFsZGVuZWJybyBQZXRlciAoREMtQUUvRVNXNTIpIHdyb3RlOg0KPiBIZWxsbywNCj4g
+DQo+IFdlIHJ1biBzb21lIHRlc3RzIGR1cmluZyB0aGUgd2Vla2VuZCBhbmQgYWx0aG91Z2ggd2Ug
+aGF2ZSBsZXNzIG9jY3VycmVuY2VzIHdlIHN0aWxsIGluZGVlZCBzZWUgdGhlbS4NCj4gDQo+IE9u
+ZSBpbnRlcmVzdGluZyB0aGluZyB3ZSBzZWUgYmVzaWRlcyB0aGUgMW1zIHN0YWxsaW5nIGlzIHRo
+YXQgc29tZXRpbWVzIHdlIHNlZSBvdmVyIDEwMHVzIGJldHdlZW4gSVJRIGFuZCBJU1Igc3RhcnQu
+DQo+IEF0IHRoaXMgcG9pbnQgd2UgZG8gbm90IGtub3cgaG93IHRvIHByb2NlZWQgZnVydGhlci4g
+QW55IGhlbHAgb3Igc3VnZ2VzdGlvbiBpcyBncmVhdGx5IGFwcHJlY2lhdGVkLg0KPiANCg0KVGhh
+dCBpcyB1c3VhbGx5IHdoZXJlIHlvdSBzaG91bGQgc3RhcnQgdG8gbG9vayBpbnRvIHRyYWNpbmcu
+IE9wdGlvbiBBIGlzIGV2ZW50LWxldmVsIHRyYWNpbmcgdmlhIHN0YW5kYXJkIGZ0cmFjZS4gVXNl
+DQoNCnRyYWNlLWNtZCByZWNvcmQgLWUgImNvYmFsdCoiIC1lIHNjaGVkIC1lIHNpZ25hbA0KDQp0
+byByZWNvcmQgc3VjaCBhIHRyYWNlLiBJZGVhbGx5IGluc3RydW1lbnQgdGhlIHBvaW50IHdoZXJl
+IHRoZSBsYXRlbmN5IGlzIG9mZiBpbiB5b3VyIGFwcGxpY2F0aW9uIHZpYSB4bmZ0cmFjZV9wcmlu
+dGYoKSAod2lsbCBsZWF2ZSBhIG1hcmsgaW4gdGhhdCByZWNvcmRlZCB0cmFjZSkuIENoZWNrIHZp
+YSAidHJhY2UtY21kIHJlcG9ydCIgaWYgdGhlIHNjaGVkdWxlIGFyb3VuZCB0aGF0IHBlYWsgaXMg
+d2hhdCB5b3Ugd291bGQgZXhwZWN0Lg0KDQpGb3IgZGlnZ2luZyBldmVuIGRlZXBlciwgZG93biB0
+byBmdW5jdGlvbiBsZXZlbDogDQpodHRwczovL2dpdGxhYi5kZW54LmRlL1hlbm9tYWkveGVub21h
+aS8tL3dpa2lzL1VzaW5nX1RoZV9JX1BpcGVfVHJhY2VyLA0Kc3BlY2lmaWNhbGx5IGxvb2sgaW50
+byB4bnRyYWNlX3VzZXJfZnJlZXplKCksIGNhbGxpbmcgdGhhdCBmcm9tIHlvdXIgYXBwbGljYXRp
+b24gd2hlbiB5b3Ugc3BvdCBhbiBleGNlc3NpdmUgbGF0ZW5jeSB0byBzdG9wIHRoZSB0cmFjZS4N
+Cg0KSWYgdGhlIHJlc3VsdCBpcyBub3QgY2xlYXIgdG8geW91LCBzaGFyZSBpdCB0byBnZXQgYSBj
+b21tdW5pdHkgaW5zcGVjdGlvbi4NCg0KSmFuDQoNCi0tDQpTaWVtZW5zIEFHLCBDb3Jwb3JhdGUg
+VGVjaG5vbG9neSwgQ1QgUkRBIElPVCBTRVMtREUgQ29ycG9yYXRlIENvbXBldGVuY2UgQ2VudGVy
+IEVtYmVkZGVkIExpbnV4DQo=
 
