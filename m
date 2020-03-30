@@ -1,7 +1,9 @@
-From: xenomai@xenomai.org
-Subject: [I-PIPE] ipipe-core-4.19.106-cip21-arm-07 released
-Message-Id: <E1jI9NX-0001bq-77@xenomai.org>
-Date: Sat, 28 Mar 2020 12:11:51 +0100
+MIME-Version: 1.0
+From: gopi ratnakaram <gopi.ratnakaram@svayarobotics.com>
+Date: Mon, 30 Mar 2020 14:23:02 +0530
+Message-ID: <CAF_6Mayw_popagGGG14B+na6wtH2CFGeBnvYreRSUizQe14w6g@mail.gmail.com>
+Subject: Regarding Xenomai patch to the kernel 4.15.38
+Content-Type: text/plain; charset="UTF-8"
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -12,8 +14,18 @@ List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: xenomai@xenomai.org
 
-Download URL: https://xenomai.org/downloads/ipipe/v4.x/arm/ipipe-core-4.19.106-cip21-arm-07.patch
+Team,
 
-Repository: https://git.xenomai.org/ipipe-arm
-Release tag: ipipe-core-4.19.106-cip21-arm-07
+I have a specific requirement that where i need to patch xenomai 3 to my
+linux kernel 4.15.38 which is running on Ubuntu16.04/Ubuntu18.04. When I
+try checking with the following help from
 
+https://www.xenomai.org/pipermail/xenomai/2018-June/039004.html
+
+But, I was unable to apply/create arch specific packages.
+
+Is it possible to create ipipe patch to the corresponding kernel 4.15.38,
+if yes please let me know required steps to do the same.
+
+--best regards,
+Gopal,
