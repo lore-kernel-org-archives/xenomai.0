@@ -1,12 +1,12 @@
 MIME-Version: 1.0
 From: songqianyu <songqianyu@countrygarden.com.cn>
 Subject: =?utf-8?Q?=E5=9B=9E=E5=A4=8D:_Xenomai_Digest,_Vol_95,_Issue_29?=
-Date: Mon, 30 Mar 2020 19:44:12 +0800
+Date: Mon, 30 Mar 2020 19:44:11 +0800
 In-Reply-To: <mailman.72.1585300052.1004.xenomai@xenomai.org>
 References: <mailman.72.1585300052.1004.xenomai@xenomai.org>
-Message-ID: <ca8f2c7f-b58d-4754-840e-abf24dcc3f9b@BGY-SDEX05.countrygarden.com.cn>
+Message-ID: <366d9b76-d478-484c-8ac7-afceaebca934@BGY-SDEX05.countrygarden.com.cn>
 Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: base64
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,788 +17,514 @@ List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-I do this test by : first run altency and cyclictest xenomai examples, the =
-second echo 1 > enable , echo 1 > max, cat max;  or  echo 1 > frozen, then =
-cat frozen, if have problem, please tell me which is the right steps for me=
- to do these test? Thank you.
-
-=E5=8F=91=E9=80=81=E8=87=AA Windows 10 =E7=89=88=E9=82=AE=E4=BB=B6<https://=
-go.microsoft.com/fwlink/?LinkId=3D550986>=E5=BA=94=E7=94=A8
-
-=E5=8F=91=E4=BB=B6=E4=BA=BA: xenomai-request@xenomai.org<mailto:xenomai-req=
-uest@xenomai.org>
-=E5=8F=91=E9=80=81=E6=97=B6=E9=97=B4: 2020=E5=B9=B43=E6=9C=8827=E6=97=A5 17=
-:07
-=E6=94=B6=E4=BB=B6=E4=BA=BA: xenomai@xenomai.org<mailto:xenomai@xenomai.org=
->
-=E4=B8=BB=E9=A2=98: Xenomai Digest, Vol 95, Issue 29
-
-Send Xenomai mailing list submissions to
-       xenomai@xenomai.org
-
-To subscribe or unsubscribe via the World Wide Web, visit
-       https://xenomai.org/mailman/listinfo/xenomai
-or, via email, send a message with subject or body 'help' to
-       xenomai-request@xenomai.org
-
-You can reach the person managing the list at
-       xenomai-owner@xenomai.org
-
-When replying, please edit your Subject line so it is more specific
-than "Re: Contents of Xenomai digest..."
-
-
-Today's Topics:
-
-   1. RE: Hello=EF=BC=8CEveryone=EF=BC=81when I using I-pipe trace=EF=BC=8C=
- I have
-      some problems about it=EF=BC=8CPlease give me some suggestions=E3=80=
-=82In
-      addition, how is the frozen tool used? Why does the data obtained
-      by cat frozen not change when I run the intensity demo? (Meng, Fino)
-   2. Re: Directory /proc/xenomai/registry/rtipc/xddp does not
-      exist (Jan Kiszka)
-   3. Re: Hello=EF=BC=8CEveryone=EF=BC=81when I using I-pipe trace=EF=BC=8C=
- I have
-      some problems about it=EF=BC=8CPlease give me some suggestions=E3=80=
-=82In
-      addition, how is the frozen tool used? Why does the data obtained
-      by cat frozen not change when I run the intensity demo? (Jan Kiszka)
-
-
-----------------------------------------------------------------------
-
-Message: 1
-Date: Fri, 27 Mar 2020 00:27:03 +0000
-From: "Meng, Fino" <fino.meng@intel.com>
-To: songqianyu <songqianyu@countrygarden.com.cn>
-Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
-Subject: RE: Hello=EF=BC=8CEveryone=EF=BC=81when I using I-pipe trace=EF=BC=
-=8C I have
-       some problems about it=EF=BC=8CPlease give me some suggestions=E3=80=
-=82In
-       addition, how is the frozen tool used? Why does the data obtained by
-       cat frozen not change when I run the intensity demo?
-Message-ID: <f9f60fd4adf34e8d9987fa8c7e27b3fa@intel.com>
-Content-Type: text/plain; charset=3D"utf-8"
-
-Hello Qianyu,
-
-Would you pls provide more details on the steps how did u do the test,
-assume other people not familiar with what u doing and , can repeat your te=
-st from your description easily,
-thanks!
-
-BR / Fino (=E5=AD=9F=E7=A5=A5=E5=A4=AB)
-Intel =E2=80=93 IOTG Developer Enabling
-
------Original Message-----
-From: Xenomai <xenomai-bounces@xenomai.org> On Behalf Of songqianyu via Xen=
-omai
-Sent: Wednesday, March 25, 2020 5:07 PM
-To: xenomai@xenomai.org
-Subject: Hello=EF=BC=8CEveryone=EF=BC=81when I using I-pipe trace=EF=BC=8C =
-I have some problems about it=EF=BC=8CPlease give me some suggestions=E3=80=
-=82In addition, how is the frozen tool used? Why does the data obtained by =
-cat frozen not change when I run the intensity demo?
-
-When I use the max tool, the maximum value of cat is always in the function=
- ipipe_test_root + 0x0. I don't think the demo on the wiki website is like =
-this. What's the matter?
-
-1=E3=80=81              Type    User Val.   Time    Delay  Function (Parent=
-)
-
-2=E3=80=81             #func                  -1    0.098  ipipe_unstall_ro=
-ot+0x0 (ipipe_restore_root+0x1c)
-
-3=E3=80=81           | #begin   0x80000000    -1    0.109  ipipe_unstall_ro=
-ot+0x51 (ipipe_restore_root+0x1c)
-
-4=E3=80=81           | #func                   0    0.147  ipipe_root_only+=
-0x0 (ipipe_unstall_root+0x16)
-
-5=E3=80=81           | +end     0x80000000     0    0.107  ipipe_trace_end+=
-0x14 (ipipe_unstall_root+0x42)
-
-6=E3=80=81             +func                   0    0.122  mutex_unlock+0x0=
- (n_tty_read+0x2fb)
-
-7=E3=80=81             +func                   0    0.107  tty_ldisc_deref+=
-0x0 (tty_read+0xa4)
-
-8=E3=80=81             +func                   0    0.108  ldsem_up_read+0x=
-0 (tty_ldisc_deref+0x16)
-
-9=E3=80=81             +func                   0    0.110  ktime_get_real_s=
-econds+0x0 (tty_read+0xae)
-
-10=E3=80=81          +func                   0    0.109  __fsnotify_parent+=
-0x0 (vfs_read+0x10a)
-
-11=E3=80=81          +func                   0    0.112  fsnotify+0x0 (vfs_=
-read+0x123)
-
-12=E3=80=81       >| +begin   0x80000000     0    0.460  do_syscall_64+0x2c=
-7 (entry_SYSCALL_64_after_hwframe+0x49)
-
-13=E3=80=81       :| +func                   0!  55.409  ipipe_test_root+0x=
-0 (trace_hardirqs_on_virt_caller+0x79)
-
-14=E3=80=81       :| +func                  55    0.127  __ipipe_handle_irq=
-+0x0 (apic_timer_interrupt+0x12)
-
-15=E3=80=81       :| +begin   0x00001103    55    0.136  <7f9e5eee38c4> (ap=
-ic_timer_interrupt+0x12)
-
-16=E3=80=81       :| +func                  56    0.116  __ipipe_dispatch_i=
-rq+0x0 (__ipipe_handle_irq+0xa6)
-
-17=E3=80=81       :| +func                  56    0.139  irq_to_desc+0x0 (_=
-_ipipe_dispatch_irq+0x35)
-
-18=E3=80=81       :| +func                  56    0.144  __ipipe_ack_hrtime=
-r_irq+0x0 (__ipipe_dispatch_irq+0x102)
-
-19=E3=80=81       :| +func                  56    0.187  lapic_itimer_ack+0=
-x0 (__ipipe_ack_hrtimer_irq+0x5f)
-
-20=E3=80=81       :| +func                  56    0.163  dispatch_irq_head+=
-0x0 (__ipipe_dispatch_irq+0xb6)
-
-21=E3=80=81       :|# func                  56    0.160  xnintr_core_clock_=
-handler+0x0 (dispatch_irq_head+0x9d)
-
-22=E3=80=81       :|# func                  57    0.134  xnlock_dbg_prepare=
-_acquire+0x0 (xnintr_core_clock_handler+0x296)
-
-23=E3=80=81       :|# func                  57    0.107  xnlock_dbg_acquire=
-d+0x0 (xnintr_core_clock_handler+0x2df)
-
-24=E3=80=81       :|# func                  57    0.171  xnclock_tick+0x0 (=
-xnintr_core_clock_handler+0xf1)
-
-25=E3=80=81       :|# func                  57    0.107  cobalt_timer_handl=
-er+0x0 (xnclock_tick+0xc5)
-
-26=E3=80=81       :|# func                  57    0.106  cobalt_signal_send=
-_pid+0x0 (cobalt_timer_handler+0x2a)
-
-27=E3=80=81       :|# func                  57    0.117  cobalt_thread_find=
-+0x0 (cobalt_signal_send_pid+0x12)
-
-28=E3=80=81       :|# func                  57    0.119  cobalt_signal_send=
-+0x0 (cobalt_signal_send_pid+0x24)
-
-29=E3=80=81       :|# func                  57    0.125  xnsynch_wakeup_one=
-_sleeper+0x0 (cobalt_signal_send+0xa6)
-
-30=E3=80=81       :|# func                  58    0.139  xnthread_resume+0x=
-0 (xnsynch_wakeup_one_sleeper+0xda)
-
-31=E3=80=81       :|# [ 7092] alt-sam 99    58    0.178  xnthread_resume+0x=
-a9 (xnsynch_wakeup_one_sleeper+0xda)
-
-32=E3=80=81       :|# func                  58    0.117  xntimerq_insert+0x=
-0 (xnclock_tick+0x21c)
-
-33=E3=80=81       :|# func                  58    0.098  xnclock_core_local=
-_shot+0x0 (xnclock_tick+0x245)
-
-34=E3=80=81       :|# event   tick@155      58    0.102  xnclock_core_local=
-_shot+0x67 (xnclock_tick+0x245)
-
-35=E3=80=81       :|# func                  58    0.150  ipipe_timer_set+0x=
-0 (xnclock_core_local_shot+0x6f)
-
-36=E3=80=81       :|# func                  58    0.177  lapic_next_deadlin=
-e+0x0 (ipipe_timer_set+0x79)
-
-37=E3=80=81       :|# func                  59    0.127  xnlock_dbg_release=
-+0x0 (xnintr_core_clock_handler+0x110)
-
-38=E3=80=81       :|# func                  59    0.157  ___xnsched_run+0x0=
- (xnintr_core_clock_handler+0x336)
-
-39=E3=80=81       :|# func                  59    0.122  xnlock_dbg_prepare=
-_acquire+0x0 (___xnsched_run+0x3fc)
-
-40=E3=80=81       :|# func                  59    0.105  xnlock_dbg_acquire=
-d+0x0 (___xnsched_run+0x444)
-
-41=E3=80=81       :|# [ 7053] bash    -1    59    0.105  ___xnsched_run+0xe=
-3 (xnintr_core_clock_handler+0x336)
-
-42=E3=80=81       :|# func                  59    0.109  xnsched_pick_next+=
-0x0 (___xnsched_run+0x124)
-
-43=E3=80=81       :|# func                  59    0.135  __ipipe_notify_vm_=
-preemption+0x0 (___xnsched_run+0x517)
-
-44=E3=80=81       :|# func                  59    0.110  xnarch_leave_root+=
-0x0 (___xnsched_run+0x54c)
-
-45=E3=80=81       :|# func                  59    0.109  xntimer_start+0x0 =
-(___xnsched_run+0x56f)
-
-46=E3=80=81       :|# func                  60    0.108  xnclock_core_ns_to=
-_ticks+0x0 (xntimer_start+0x1b8)
-
-47=E3=80=81       :|# func                  60    0.104  xntimer_enqueue_an=
-d_program+0x0 (xntimer_start+0xfe)
-
-48=E3=80=81       :|# func                  60    0.110  xntimerq_insert+0x=
-0 (xntimer_enqueue_and_program+0x18)
-
-49=E3=80=81       :|# func                  60    0.132  xntimer_heading_p+=
-0x0 (xntimer_enqueue_and_program+0x2d)
-
-50=E3=80=81       :|# func                  60    0.115  xnarch_switch_to+0=
-x0 (___xnsched_run+0x1da)
-
-51=E3=80=81       :|# func                  60    0.158  switch_mm_irqs_off=
-+0x0 (xnarch_switch_to+0x2f)
-
-52=E3=80=81       :|# func                  60    0.445  load_new_mm_cr3+0x=
-0 (switch_mm_irqs_off+0x326)
-
-53=E3=80=81       :|# func                  61    0.145  xnthread_switch_fp=
-u+0x0 (___xnsched_run+0x22d)
-
-54=E3=80=81       :|# func                  61    0.095  xnarch_switch_fpu+=
-0x0 (xnthread_switch_fpu+0x2d)
-
-55=E3=80=81       :|# [ 7092] alt-sam 99    61    0.225  ___xnsched_run+0x2=
-4d (xnthread_suspend+0x497)
-
-56=E3=80=81       :|# func                  61    0.111  cobalt_timer_deliv=
-er+0x0 (signal_wait+0x556)
-
-57=E3=80=81       :|# func                  61    0.106  xntimer_get_overru=
-ns+0x0 (cobalt_timer_deliver+0x6d)
-
-58=E3=80=81       :|# func                  61    0.110  xnclock_core_ns_to=
-_ticks+0x0 (xntimer_get_overruns+0x35)
-
-59=E3=80=81       :|# func                  62    0.128  xnlock_dbg_release=
-+0x0 (signal_wait+0x528)
-
-60=E3=80=81       :|# func                  62    0.110  __ipipe_restore_he=
-ad+0x0 (signal_wait+0x294)
-
-61=E3=80=81       <|+ end     0x80000000    62    0.278  ipipe_trace_end+0x=
-14 (__ipipe_restore_head+0x5b)
-
-62=E3=80=81        |+ begin   0x80000000    62    0.000  do_syscall_64+0x71=
- (entry_SYSCALL_64_after_hwframe+0x49)
-
-
-
-In addition, how is the frozen tool used? Why does the data obtained by cat=
- frozen not change when I run the intensity demo?
-I-pipe frozen back-tracing service on 4.19.84-bros-debug/ipipe release #8
-------------------------------------------------------------
-CPU: 0, Freeze: 245367883938480 cycles, Trace Points: 30 (+10) Calibrated m=
-inimum trace-point overhead: 0.064 us
-
-+----- Hard IRQs ('|': locked)
-|+-- Xenomai
-||+- Linux ('*': domain stalled, '+': current, '#': current+stalled)
-|||                        +---------- Delay flag ('+': > 1 us, '!': > 10 u=
-s)
-|||                        |        +- NMI noise ('N')
-|||                        |        |
-    Type    User Val.   Time    Delay  Function (Parent)
-:  +func                  -5    0.120  vfs_write+0x0 (ksys_write+0x5c)
-:  +func                  -5    0.134  rw_verify_area+0x0 (vfs_write+0x77)
-:  +func                  -5    0.163  security_file_permission+0x0 (rw_ver=
-ify_area+0x4e)
-:  +func                  -5    0.110  apparmor_file_permission+0x0 (securi=
-ty_file_permission+0x3b)
-:  +func                  -5    0.136  common_file_perm+0x0 (apparmor_file_=
-permission+0x1a)
-:  +func                  -4    0.160  aa_file_perm+0x0 (common_file_perm+0=
-x4d)
-:  +func                  -4    0.105  __sb_start_write+0x0 (vfs_write+0x19=
-5)
-:  +func                  -4    0.099  ipipe_root_only+0x0 (__sb_start_writ=
-e+0x3f)
-:| +begin   0x80000001    -4    0.119  ipipe_root_only+0x79 (__sb_start_wri=
-te+0x3f)
-:| +end     0x80000001    -4    0.113  ipipe_trace_end+0x14 (ipipe_root_onl=
-y+0x63)
-:  +func                  -4    0.106  _cond_resched+0x0 (__sb_start_write+=
-0x44)
-:  +func                  -4    0.107  rcu_all_qs+0x0 (_cond_resched+0x19)
-:  +func                  -4    0.138  __vfs_write+0x0 (vfs_write+0xb8)
-:  +func                  -3    0.183  proc_reg_write+0x0 (__vfs_write+0x3a=
-)
-:  +func                  -3    0.121  __ipipe_frozen_ctrl+0x0 (proc_reg_wr=
-ite+0x45)
-:  +func                  -3    0.108  __check_object_size+0x0 (__ipipe_fro=
-zen_ctrl+0x42)
-:  +func                  -3    0.614  check_stack_object+0x0 (__check_obje=
-ct_size+0x45)
-:  +func                  -2    0.115  mutex_lock+0x0 (__ipipe_frozen_ctrl+=
-0x92)
-:  +func                  -2    0.100  ipipe_root_only+0x0 (mutex_lock+0x12=
-)
-:| +begin   0x80000001    -2    0.134  ipipe_root_only+0x79 (mutex_lock+0x1=
-2)
-:| +end     0x80000001    -2    0.122  ipipe_trace_end+0x14 (ipipe_root_onl=
-y+0x63)
-:  +func                  -2    0.117  _cond_resched+0x0 (mutex_lock+0x17)
-:  +func                  -2    0.133  rcu_all_qs+0x0 (_cond_resched+0x19)
-:  +func                  -2    0.110  ipipe_trace_frozen_reset+0x0 (__ipip=
-e_frozen_ctrl+0x97)
-:  +func                  -2    0.104  __ipipe_global_path_lock+0x0 (ipipe_=
-trace_frozen_reset+0x21)
-:  +func                  -2    0.110  __ipipe_spin_lock_irqsave+0x0 (__ipi=
-pe_global_path_lock+0x15)
-:| +begin   0x80000001    -1+   1.644  __ipipe_spin_lock_irqsave+0x72 (__ip=
-ipe_global_path_lock+0x15)
-:| #func                   0    0.151  __ipipe_spin_unlock_irqcomplete+0x0 =
-(__ipipe_global_path_unlock+0x73)
-:| +end     0x80000001     0    0.113  ipipe_trace_end+0x14 (__ipipe_spin_u=
-nlock_irqcomplete+0x37)
-<  +freeze  0xffffffffffffffff     0    0.139  proc_reg_write+0x45 (__vfs_w=
-rite+0x3a)
-   +func                   0    0.122  mutex_unlock+0x0 (__ipipe_frozen_ctr=
-l+0xb1)
-   +func                   0    0.110  unuse_pde+0x0 (proc_reg_write+0x50)
-   +func                   0    0.110  __fsnotify_parent+0x0 (vfs_write+0x1=
-41)
-   +func                   0    0.127  fsnotify+0x0 (vfs_write+0x15a)
-   +func                   0    0.115  __sb_end_write+0x0 (vfs_write+0x16e)
-| +begin   0x80000000     0    0.483  do_syscall_64+0x2c7 (entry_SYSCALL_64=
-_after_hwframe+0x49)
-| +func                   1    1.109  ipipe_test_root+0x0 (trace_hardirqs_o=
-n_virt_caller+0x79)
-| +func                   2    0.139  do_syscall_64+0x0 (entry_SYSCALL_64_a=
-fter_hwframe+0x49)
-| +end     0x80000000     2    0.113  ipipe_trace_end+0x14 (do_syscall_64+0=
-x7d)
-   +func                   2    0.000  ipipe_handle_syscall+0x0 (do_syscall=
-_64+0x46)
-Can you tell me what the information reflects?
-=E5=8F=91=E9=80=81=E8=87=AA Windows 10 =E7=89=88=E9=82=AE=E4=BB=B6<https://=
-go.microsoft.com/fwlink/?LinkId=3D550986>=E5=BA=94=E7=94=A8
-
-________________________________
-This information may contain confidential and/or privileged material and is=
- only transmitted for the intended recipient. Any review, retransmission, c=
-onversion to hard copy, copying, reproduction, circulation, publication, di=
-ssemination or other use of, or taking of any action, or omission to take a=
-ction, in reliance upon this information by persons or entities other than =
-the intended recipient is prohibited. If you have received this message in =
-error, please contact the sender and delete the material from any computer,=
- disk drive, diskette, or other storage device or media.
-=E6=9C=AC=E4=BF=A1=E6=81=AF=E5=8F=AF=E8=83=BD=E5=8C=85=E6=8B=AC=E6=9F=90=E4=
-=BA=9B=E4=BF=9D=E5=AF=86=E7=9A=84=E8=B3=87=E6=96=99=EF=BC=8C=E4=B8=A6=E4=B8=
-=94=E5=8F=AA=E7=99=BC=E9=80=81=E7=B5=A6=E7=89=B9=E5=AE=9A=E7=9A=84=E6=94=B6=
-=E4=BF=A1=E4=BA=BA=E3=80=82=E7=A6=81=E6=AD=A2=E9=99=A4=E7=89=B9=E5=AE=9A=E6=
-=94=B6=E4=BF=A1=E4=BA=BA=E4=BB=A5=E5=A4=96=E7=9A=84=E5=85=B6=E4=BB=96=E4=BB=
-=BB=E4=BD=95=E4=BA=BA=E5=A3=AB=E6=88=96=E6=A9=9F=E6=A7=8B=E9=96=B1=E8=AE=80=
-=E3=80=81=E8=BD=89=E7=99=BC=E3=80=81=E5=88=97=E5=8D=B0=E3=80=81=E8=A4=87=E8=
-=A3=BD=E3=80=81=E5=82=B3=E9=96=B1=E3=80=81=E5=87=BA=E7=89=88=E3=80=81=E6=95=
-=A3=E6=92=AD=E6=88=96=E4=BB=A5=E5=85=B6=E5=AE=83=E6=96=B9=E5=BC=8F=E4=BD=BF=
-=E7=94=A8=E6=9C=AC=E4=BF=A1=E6=81=AF=EF=BC=8C=E6=88=96=E4=BE=9D=E8=B3=B4=E6=
-=9C=AC=E4=BF=A1=E6=81=AF=E4=BD=9C=E5=87=BA=E6=88=96=E4=B8=8D=E4=BD=9C=E5=87=
-=BA=E4=BB=BB=E4=BD=95=E8=A1=8C=E7=82=BA=E3=80=82=E5=A6=82=E6=9E=9C=E9=96=A3=
-=E4=B8=8B=E9=8C=AF=E8=AA=A4=E5=9C=B0=E6=94=B6=E5=88=B0=E6=9C=AC=E4=BF=A1=E6=
-=81=AF=EF=BC=8C=E8=AB=8B=E8=81=AF=E7=B5=A1=E7=99=BC=E4=BF=A1=E4=BA=BA=E4=B8=
-=A6=E5=BE=9E=E4=BB=BB=E4=BD=95=E9=9B=BB=E8=85=A6=E3=80=81=E7=A3=81=E7=89=87=
-=E3=80=81=E7=A3=81=E7=A2=9F=E6=88=96=E5=85=B6=E5=AE=83=E5=AD=98=E5=84=B2=E8=
-=A3=9D=E7=BD=AE=E6=88=96=E5=AA=92=E9=AB=94=E4=B8=AD=E5=88=AA=E9=99=A4=E6=9C=
-=AC=E4=BF=A1=E6=81=AF=E3=80=82
-
-------------------------------
-
-Message: 2
-Date: Fri, 27 Mar 2020 10:07:25 +0100
-From: Jan Kiszka <jan.kiszka@web.de>
-To: Jona Ostermann <Jona.Ostermann@janztec.com>, "xenomai@xenomai.org"
-       <xenomai@xenomai.org>
-Subject: Re: Directory /proc/xenomai/registry/rtipc/xddp does not
-       exist
-Message-ID: <4426b307-184f-0422-afe8-2d9d41625608@web.de>
-Content-Type: text/plain; charset=3Dutf-8; format=3Dflowed
-
-On 26.03.20 11:12, Jona Ostermann via Xenomai wrote:
-> Hello,
->
-> one of our customers hast he problem that he needs a registry link in the=
- directory /proc/xenomai/registry/rtipc/xddp.
-> But the directory does not exist, only /proc/xenomai/registry/ exists.
->
-> What could be the problem?
-> Is a special kernel configuration required or does a special kernel modul=
-e need to be loaded?
->
-
-The links show up once xddp is being used. You can check that via
-smokey's xddp test.
-
-If that is not the case, compare configuration and versions of the
-reference xenomai-images against your setup and share your findings.
-
-Jan
-
-
-
-------------------------------
-
-Message: 3
-Date: Fri, 27 Mar 2020 10:07:18 +0100
-From: Jan Kiszka <jan.kiszka@web.de>
-To: songqianyu <songqianyu@countrygarden.com.cn>,
-       "xenomai@xenomai.org" <xenomai@xenomai.org>
-Subject: Re: Hello=EF=BC=8CEveryone=EF=BC=81when I using I-pipe trace=EF=BC=
-=8C I have
-       some problems about it=EF=BC=8CPlease give me some suggestions=E3=80=
-=82In
-       addition, how is the frozen tool used? Why does the data obtained by
-       cat frozen not change when I run the intensity demo?
-Message-ID: <ec884898-f272-ebb4-79f5-06276ccd6734@web.de>
-Content-Type: text/plain; charset=3Dutf-8; format=3Dflowed
-
-On 25.03.20 10:06, songqianyu via Xenomai wrote:
-> When I use the max tool, the maximum value of cat is always in the functi=
-on ipipe_test_root + 0x0. I don't think the demo on the wiki website is lik=
-e this. What's the matter?
->
-> 1=E3=80=81              Type    User Val.   Time    Delay  Function (Pare=
-nt)
->
-> 2=E3=80=81             #func                  -1    0.098  ipipe_unstall_=
-root+0x0 (ipipe_restore_root+0x1c)
->
-> 3=E3=80=81           | #begin   0x80000000    -1    0.109  ipipe_unstall_=
-root+0x51 (ipipe_restore_root+0x1c)
->
-> 4=E3=80=81           | #func                   0    0.147  ipipe_root_onl=
-y+0x0 (ipipe_unstall_root+0x16)
->
-> 5=E3=80=81           | +end     0x80000000     0    0.107  ipipe_trace_en=
-d+0x14 (ipipe_unstall_root+0x42)
->
-> 6=E3=80=81             +func                   0    0.122  mutex_unlock+0=
-x0 (n_tty_read+0x2fb)
->
-> 7=E3=80=81             +func                   0    0.107  tty_ldisc_dere=
-f+0x0 (tty_read+0xa4)
->
-> 8=E3=80=81             +func                   0    0.108  ldsem_up_read+=
-0x0 (tty_ldisc_deref+0x16)
->
-> 9=E3=80=81             +func                   0    0.110  ktime_get_real=
-_seconds+0x0 (tty_read+0xae)
->
-> 10=E3=80=81          +func                   0    0.109  __fsnotify_paren=
-t+0x0 (vfs_read+0x10a)
->
-> 11=E3=80=81          +func                   0    0.112  fsnotify+0x0 (vf=
-s_read+0x123)
->
-> 12=E3=80=81       >| +begin   0x80000000     0    0.460  do_syscall_64+0x=
-2c7 (entry_SYSCALL_64_after_hwframe+0x49)
->
-> 13=E3=80=81       :| +func                   0!  55.409  ipipe_test_root+=
-0x0 (trace_hardirqs_on_virt_caller+0x79)
->
-> 14=E3=80=81       :| +func                  55    0.127  __ipipe_handle_i=
-rq+0x0 (apic_timer_interrupt+0x12)
->
-> 15=E3=80=81       :| +begin   0x00001103    55    0.136  <7f9e5eee38c4> (=
-apic_timer_interrupt+0x12)
->
-
-This pattern looks to me like we are missing an "interrupts enable"
-("end") instrumentation.
-
-What is your configuration, which versions are you using?
-
-> 16=E3=80=81       :| +func                  56    0.116  __ipipe_dispatch=
-_irq+0x0 (__ipipe_handle_irq+0xa6)
->
-> 17=E3=80=81       :| +func                  56    0.139  irq_to_desc+0x0 =
-(__ipipe_dispatch_irq+0x35)
->
-> 18=E3=80=81       :| +func                  56    0.144  __ipipe_ack_hrti=
-mer_irq+0x0 (__ipipe_dispatch_irq+0x102)
->
-> 19=E3=80=81       :| +func                  56    0.187  lapic_itimer_ack=
-+0x0 (__ipipe_ack_hrtimer_irq+0x5f)
->
-> 20=E3=80=81       :| +func                  56    0.163  dispatch_irq_hea=
-d+0x0 (__ipipe_dispatch_irq+0xb6)
->
-> 21=E3=80=81       :|# func                  56    0.160  xnintr_core_cloc=
-k_handler+0x0 (dispatch_irq_head+0x9d)
->
-> 22=E3=80=81       :|# func                  57    0.134  xnlock_dbg_prepa=
-re_acquire+0x0 (xnintr_core_clock_handler+0x296)
->
-> 23=E3=80=81       :|# func                  57    0.107  xnlock_dbg_acqui=
-red+0x0 (xnintr_core_clock_handler+0x2df)
->
-> 24=E3=80=81       :|# func                  57    0.171  xnclock_tick+0x0=
- (xnintr_core_clock_handler+0xf1)
->
-> 25=E3=80=81       :|# func                  57    0.107  cobalt_timer_han=
-dler+0x0 (xnclock_tick+0xc5)
->
-> 26=E3=80=81       :|# func                  57    0.106  cobalt_signal_se=
-nd_pid+0x0 (cobalt_timer_handler+0x2a)
->
-> 27=E3=80=81       :|# func                  57    0.117  cobalt_thread_fi=
-nd+0x0 (cobalt_signal_send_pid+0x12)
->
-> 28=E3=80=81       :|# func                  57    0.119  cobalt_signal_se=
-nd+0x0 (cobalt_signal_send_pid+0x24)
->
-> 29=E3=80=81       :|# func                  57    0.125  xnsynch_wakeup_o=
-ne_sleeper+0x0 (cobalt_signal_send+0xa6)
->
-> 30=E3=80=81       :|# func                  58    0.139  xnthread_resume+=
-0x0 (xnsynch_wakeup_one_sleeper+0xda)
->
-> 31=E3=80=81       :|# [ 7092] alt-sam 99    58    0.178  xnthread_resume+=
-0xa9 (xnsynch_wakeup_one_sleeper+0xda)
->
-> 32=E3=80=81       :|# func                  58    0.117  xntimerq_insert+=
-0x0 (xnclock_tick+0x21c)
->
-> 33=E3=80=81       :|# func                  58    0.098  xnclock_core_loc=
-al_shot+0x0 (xnclock_tick+0x245)
->
-> 34=E3=80=81       :|# event   tick@155      58    0.102  xnclock_core_loc=
-al_shot+0x67 (xnclock_tick+0x245)
->
-> 35=E3=80=81       :|# func                  58    0.150  ipipe_timer_set+=
-0x0 (xnclock_core_local_shot+0x6f)
->
-> 36=E3=80=81       :|# func                  58    0.177  lapic_next_deadl=
-ine+0x0 (ipipe_timer_set+0x79)
->
-> 37=E3=80=81       :|# func                  59    0.127  xnlock_dbg_relea=
-se+0x0 (xnintr_core_clock_handler+0x110)
->
-> 38=E3=80=81       :|# func                  59    0.157  ___xnsched_run+0=
-x0 (xnintr_core_clock_handler+0x336)
->
-> 39=E3=80=81       :|# func                  59    0.122  xnlock_dbg_prepa=
-re_acquire+0x0 (___xnsched_run+0x3fc)
->
-> 40=E3=80=81       :|# func                  59    0.105  xnlock_dbg_acqui=
-red+0x0 (___xnsched_run+0x444)
->
-> 41=E3=80=81       :|# [ 7053] bash    -1    59    0.105  ___xnsched_run+0=
-xe3 (xnintr_core_clock_handler+0x336)
->
-> 42=E3=80=81       :|# func                  59    0.109  xnsched_pick_nex=
-t+0x0 (___xnsched_run+0x124)
->
-> 43=E3=80=81       :|# func                  59    0.135  __ipipe_notify_v=
-m_preemption+0x0 (___xnsched_run+0x517)
->
-> 44=E3=80=81       :|# func                  59    0.110  xnarch_leave_roo=
-t+0x0 (___xnsched_run+0x54c)
->
-> 45=E3=80=81       :|# func                  59    0.109  xntimer_start+0x=
-0 (___xnsched_run+0x56f)
->
-> 46=E3=80=81       :|# func                  60    0.108  xnclock_core_ns_=
-to_ticks+0x0 (xntimer_start+0x1b8)
->
-> 47=E3=80=81       :|# func                  60    0.104  xntimer_enqueue_=
-and_program+0x0 (xntimer_start+0xfe)
->
-> 48=E3=80=81       :|# func                  60    0.110  xntimerq_insert+=
-0x0 (xntimer_enqueue_and_program+0x18)
->
-> 49=E3=80=81       :|# func                  60    0.132  xntimer_heading_=
-p+0x0 (xntimer_enqueue_and_program+0x2d)
->
-> 50=E3=80=81       :|# func                  60    0.115  xnarch_switch_to=
-+0x0 (___xnsched_run+0x1da)
->
-> 51=E3=80=81       :|# func                  60    0.158  switch_mm_irqs_o=
-ff+0x0 (xnarch_switch_to+0x2f)
->
-> 52=E3=80=81       :|# func                  60    0.445  load_new_mm_cr3+=
-0x0 (switch_mm_irqs_off+0x326)
->
-> 53=E3=80=81       :|# func                  61    0.145  xnthread_switch_=
-fpu+0x0 (___xnsched_run+0x22d)
->
-> 54=E3=80=81       :|# func                  61    0.095  xnarch_switch_fp=
-u+0x0 (xnthread_switch_fpu+0x2d)
->
-> 55=E3=80=81       :|# [ 7092] alt-sam 99    61    0.225  ___xnsched_run+0=
-x24d (xnthread_suspend+0x497)
->
-> 56=E3=80=81       :|# func                  61    0.111  cobalt_timer_del=
-iver+0x0 (signal_wait+0x556)
->
-> 57=E3=80=81       :|# func                  61    0.106  xntimer_get_over=
-runs+0x0 (cobalt_timer_deliver+0x6d)
->
-> 58=E3=80=81       :|# func                  61    0.110  xnclock_core_ns_=
-to_ticks+0x0 (xntimer_get_overruns+0x35)
->
-> 59=E3=80=81       :|# func                  62    0.128  xnlock_dbg_relea=
-se+0x0 (signal_wait+0x528)
->
-> 60=E3=80=81       :|# func                  62    0.110  __ipipe_restore_=
-head+0x0 (signal_wait+0x294)
->
-> 61=E3=80=81       <|+ end     0x80000000    62    0.278  ipipe_trace_end+=
-0x14 (__ipipe_restore_head+0x5b)
->
-> 62=E3=80=81        |+ begin   0x80000000    62    0.000  do_syscall_64+0x=
-71 (entry_SYSCALL_64_after_hwframe+0x49)
->
->
->
-> In addition, how is the frozen tool used? Why does the data obtained by c=
-at frozen not change when I run the intensity demo?
-> I-pipe frozen back-tracing service on 4.19.84-bros-debug/ipipe release #8
-> ------------------------------------------------------------
-> CPU: 0, Freeze: 245367883938480 cycles, Trace Points: 30 (+10)
-> Calibrated minimum trace-point overhead: 0.064 us
->
-> +----- Hard IRQs ('|': locked)
-> |+-- Xenomai
-> ||+- Linux ('*': domain stalled, '+': current, '#': current+stalled)
-> |||                        +---------- Delay flag ('+': > 1 us, '!': > 10=
- us)
-> |||                        |        +- NMI noise ('N')
-> |||                        |        |
->      Type    User Val.   Time    Delay  Function (Parent)
-> :  +func                  -5    0.120  vfs_write+0x0 (ksys_write+0x5c)
-> :  +func                  -5    0.134  rw_verify_area+0x0 (vfs_write+0x77=
-)
-> :  +func                  -5    0.163  security_file_permission+0x0 (rw_v=
-erify_area+0x4e)
-> :  +func                  -5    0.110  apparmor_file_permission+0x0 (secu=
-rity_file_permission+0x3b)
-> :  +func                  -5    0.136  common_file_perm+0x0 (apparmor_fil=
-e_permission+0x1a)
-> :  +func                  -4    0.160  aa_file_perm+0x0 (common_file_perm=
-+0x4d)
-> :  +func                  -4    0.105  __sb_start_write+0x0 (vfs_write+0x=
-195)
-> :  +func                  -4    0.099  ipipe_root_only+0x0 (__sb_start_wr=
-ite+0x3f)
-> :| +begin   0x80000001    -4    0.119  ipipe_root_only+0x79 (__sb_start_w=
-rite+0x3f)
-> :| +end     0x80000001    -4    0.113  ipipe_trace_end+0x14 (ipipe_root_o=
-nly+0x63)
-> :  +func                  -4    0.106  _cond_resched+0x0 (__sb_start_writ=
-e+0x44)
-> :  +func                  -4    0.107  rcu_all_qs+0x0 (_cond_resched+0x19=
-)
-> :  +func                  -4    0.138  __vfs_write+0x0 (vfs_write+0xb8)
-> :  +func                  -3    0.183  proc_reg_write+0x0 (__vfs_write+0x=
-3a)
-> :  +func                  -3    0.121  __ipipe_frozen_ctrl+0x0 (proc_reg_=
-write+0x45)
-> :  +func                  -3    0.108  __check_object_size+0x0 (__ipipe_f=
-rozen_ctrl+0x42)
-> :  +func                  -3    0.614  check_stack_object+0x0 (__check_ob=
-ject_size+0x45)
-> :  +func                  -2    0.115  mutex_lock+0x0 (__ipipe_frozen_ctr=
-l+0x92)
-> :  +func                  -2    0.100  ipipe_root_only+0x0 (mutex_lock+0x=
-12)
-> :| +begin   0x80000001    -2    0.134  ipipe_root_only+0x79 (mutex_lock+0=
-x12)
-> :| +end     0x80000001    -2    0.122  ipipe_trace_end+0x14 (ipipe_root_o=
-nly+0x63)
-> :  +func                  -2    0.117  _cond_resched+0x0 (mutex_lock+0x17=
-)
-> :  +func                  -2    0.133  rcu_all_qs+0x0 (_cond_resched+0x19=
-)
-> :  +func                  -2    0.110  ipipe_trace_frozen_reset+0x0 (__ip=
-ipe_frozen_ctrl+0x97)
-> :  +func                  -2    0.104  __ipipe_global_path_lock+0x0 (ipip=
-e_trace_frozen_reset+0x21)
-> :  +func                  -2    0.110  __ipipe_spin_lock_irqsave+0x0 (__i=
-pipe_global_path_lock+0x15)
-> :| +begin   0x80000001    -1+   1.644  __ipipe_spin_lock_irqsave+0x72 (__=
-ipipe_global_path_lock+0x15)
-> :| #func                   0    0.151  __ipipe_spin_unlock_irqcomplete+0x=
-0 (__ipipe_global_path_unlock+0x73)
-> :| +end     0x80000001     0    0.113  ipipe_trace_end+0x14 (__ipipe_spin=
-_unlock_irqcomplete+0x37)
-> <  +freeze  0xffffffffffffffff     0    0.139  proc_reg_write+0x45 (__vfs=
-_write+0x3a)
->     +func                   0    0.122  mutex_unlock+0x0 (__ipipe_frozen_=
-ctrl+0xb1)
->     +func                   0    0.110  unuse_pde+0x0 (proc_reg_write+0x5=
-0)
->     +func                   0    0.110  __fsnotify_parent+0x0 (vfs_write+=
-0x141)
->     +func                   0    0.127  fsnotify+0x0 (vfs_write+0x15a)
->     +func                   0    0.115  __sb_end_write+0x0 (vfs_write+0x1=
-6e)
-> | +begin   0x80000000     0    0.483  do_syscall_64+0x2c7 (entry_SYSCALL_=
-64_after_hwframe+0x49)
-> | +func                   1    1.109  ipipe_test_root+0x0 (trace_hardirqs=
-_on_virt_caller+0x79)
-> | +func                   2    0.139  do_syscall_64+0x0 (entry_SYSCALL_64=
-_after_hwframe+0x49)
-> | +end     0x80000000     2    0.113  ipipe_trace_end+0x14 (do_syscall_64=
-+0x7d)
->     +func                   2    0.000  ipipe_handle_syscall+0x0 (do_sysc=
-all_64+0x46)
-> Can you tell me what the information reflects?
-
-Did you study
-https://gitlab.denx.de/Xenomai/xenomai/-/wikis/Using_The_I_Pipe_Tracer
-already?
-
-Jan
-
-
-
-------------------------------
-
-Subject: Digest Footer
-
-
-
-
-------------------------------
-
-End of Xenomai Digest, Vol 95, Issue 29
-***************************************
-
-________________________________
-This information may contain confidential and/or privileged material and is=
- only transmitted for the intended recipient. Any review, retransmission, c=
-onversion to hard copy, copying, reproduction, circulation, publication, di=
-ssemination or other use of, or taking of any action, or omission to take a=
-ction, in reliance upon this information by persons or entities other than =
-the intended recipient is prohibited. If you have received this message in =
-error, please contact the sender and delete the material from any computer,=
- disk drive, diskette, or other storage device or media.
-=E6=9C=AC=E4=BF=A1=E6=81=AF=E5=8F=AF=E8=83=BD=E5=8C=85=E6=8B=AC=E6=9F=90=E4=
-=BA=9B=E4=BF=9D=E5=AF=86=E7=9A=84=E8=B3=87=E6=96=99=EF=BC=8C=E4=B8=A6=E4=B8=
-=94=E5=8F=AA=E7=99=BC=E9=80=81=E7=B5=A6=E7=89=B9=E5=AE=9A=E7=9A=84=E6=94=B6=
-=E4=BF=A1=E4=BA=BA=E3=80=82=E7=A6=81=E6=AD=A2=E9=99=A4=E7=89=B9=E5=AE=9A=E6=
-=94=B6=E4=BF=A1=E4=BA=BA=E4=BB=A5=E5=A4=96=E7=9A=84=E5=85=B6=E4=BB=96=E4=BB=
-=BB=E4=BD=95=E4=BA=BA=E5=A3=AB=E6=88=96=E6=A9=9F=E6=A7=8B=E9=96=B1=E8=AE=80=
-=E3=80=81=E8=BD=89=E7=99=BC=E3=80=81=E5=88=97=E5=8D=B0=E3=80=81=E8=A4=87=E8=
-=A3=BD=E3=80=81=E5=82=B3=E9=96=B1=E3=80=81=E5=87=BA=E7=89=88=E3=80=81=E6=95=
-=A3=E6=92=AD=E6=88=96=E4=BB=A5=E5=85=B6=E5=AE=83=E6=96=B9=E5=BC=8F=E4=BD=BF=
-=E7=94=A8=E6=9C=AC=E4=BF=A1=E6=81=AF=EF=BC=8C=E6=88=96=E4=BE=9D=E8=B3=B4=E6=
-=9C=AC=E4=BF=A1=E6=81=AF=E4=BD=9C=E5=87=BA=E6=88=96=E4=B8=8D=E4=BD=9C=E5=87=
-=BA=E4=BB=BB=E4=BD=95=E8=A1=8C=E7=82=BA=E3=80=82=E5=A6=82=E6=9E=9C=E9=96=A3=
-=E4=B8=8B=E9=8C=AF=E8=AA=A4=E5=9C=B0=E6=94=B6=E5=88=B0=E6=9C=AC=E4=BF=A1=E6=
-=81=AF=EF=BC=8C=E8=AB=8B=E8=81=AF=E7=B5=A1=E7=99=BC=E4=BF=A1=E4=BA=BA=E4=B8=
-=A6=E5=BE=9E=E4=BB=BB=E4=BD=95=E9=9B=BB=E8=85=A6=E3=80=81=E7=A3=81=E7=89=87=
-=E3=80=81=E7=A3=81=E7=A2=9F=E6=88=96=E5=85=B6=E5=AE=83=E5=AD=98=E5=84=B2=E8=
-=A3=9D=E7=BD=AE=E6=88=96=E5=AA=92=E9=AB=94=E4=B8=AD=E5=88=AA=E9=99=A4=E6=9C=
-=AC=E4=BF=A1=E6=81=AF=E3=80=82
+VGhpbmtzIGZvciB5b3VyIGhlbHAhCkkgaGF2ZSByZWFkIHhlbm9tYWkgd2lraSBhYm91dCBpcGlw
+ZS10cmFjZe+8jCBidXQgSSBjYW7igJh0IHVuZGVyc3RhbmQgZnJvemVuIHRvb2wgYW5kIG1heO+8
+jG15IHRyYWNlIHJlc3VsdCBpcyBkaWZmZXJlbnQgd2l0aCB0aGUgcmVzdWx0IG9mIGV4YW1wbGUg
+aW4gd2lraSAsIHRoaXMgaXMgbXkgLmNvbmZpZyBmaWxlLCBpcyBteSAuY29uZmlnIGZpbGUgaGF2
+ZSBzb21lIHByb2JsZW0/Cgrlj5HpgIHoh6ogV2luZG93cyAxMCDniYjpgq7ku7Y8aHR0cHM6Ly9n
+by5taWNyb3NvZnQuY29tL2Z3bGluay8/TGlua0lkPTU1MDk4Nj7lupTnlKgKCuWPkeS7tuS6ujog
+eGVub21haS1yZXF1ZXN0QHhlbm9tYWkub3JnPG1haWx0bzp4ZW5vbWFpLXJlcXVlc3RAeGVub21h
+aS5vcmc+CuWPkemAgeaXtumXtDogMjAyMOW5tDPmnIgyN+aXpSAxNzowNwrmlLbku7bkuro6IHhl
+bm9tYWlAeGVub21haS5vcmc8bWFpbHRvOnhlbm9tYWlAeGVub21haS5vcmc+CuS4u+mimDogWGVu
+b21haSBEaWdlc3QsIFZvbCA5NSwgSXNzdWUgMjkKClNlbmQgWGVub21haSBtYWlsaW5nIGxpc3Qg
+c3VibWlzc2lvbnMgdG8KICAgICAgIHhlbm9tYWlAeGVub21haS5vcmcKClRvIHN1YnNjcmliZSBv
+ciB1bnN1YnNjcmliZSB2aWEgdGhlIFdvcmxkIFdpZGUgV2ViLCB2aXNpdAogICAgICAgaHR0cHM6
+Ly94ZW5vbWFpLm9yZy9tYWlsbWFuL2xpc3RpbmZvL3hlbm9tYWkKb3IsIHZpYSBlbWFpbCwgc2Vu
+ZCBhIG1lc3NhZ2Ugd2l0aCBzdWJqZWN0IG9yIGJvZHkgJ2hlbHAnIHRvCiAgICAgICB4ZW5vbWFp
+LXJlcXVlc3RAeGVub21haS5vcmcKCllvdSBjYW4gcmVhY2ggdGhlIHBlcnNvbiBtYW5hZ2luZyB0
+aGUgbGlzdCBhdAogICAgICAgeGVub21haS1vd25lckB4ZW5vbWFpLm9yZwoKV2hlbiByZXBseWlu
+ZywgcGxlYXNlIGVkaXQgeW91ciBTdWJqZWN0IGxpbmUgc28gaXQgaXMgbW9yZSBzcGVjaWZpYwp0
+aGFuICJSZTogQ29udGVudHMgb2YgWGVub21haSBkaWdlc3QuLi4iCgoKVG9kYXkncyBUb3BpY3M6
+CgogICAxLiBSRTogSGVsbG/vvIxFdmVyeW9uZe+8gXdoZW4gSSB1c2luZyBJLXBpcGUgdHJhY2Xv
+vIwgSSBoYXZlCiAgICAgIHNvbWUgcHJvYmxlbXMgYWJvdXQgaXTvvIxQbGVhc2UgZ2l2ZSBtZSBz
+b21lIHN1Z2dlc3Rpb25z44CCSW4KICAgICAgYWRkaXRpb24sIGhvdyBpcyB0aGUgZnJvemVuIHRv
+b2wgdXNlZD8gV2h5IGRvZXMgdGhlIGRhdGEgb2J0YWluZWQKICAgICAgYnkgY2F0IGZyb3plbiBu
+b3QgY2hhbmdlIHdoZW4gSSBydW4gdGhlIGludGVuc2l0eSBkZW1vPyAoTWVuZywgRmlubykKICAg
+Mi4gUmU6IERpcmVjdG9yeSAvcHJvYy94ZW5vbWFpL3JlZ2lzdHJ5L3J0aXBjL3hkZHAgZG9lcyBu
+b3QKICAgICAgZXhpc3QgKEphbiBLaXN6a2EpCiAgIDMuIFJlOiBIZWxsb++8jEV2ZXJ5b25l77yB
+d2hlbiBJIHVzaW5nIEktcGlwZSB0cmFjZe+8jCBJIGhhdmUKICAgICAgc29tZSBwcm9ibGVtcyBh
+Ym91dCBpdO+8jFBsZWFzZSBnaXZlIG1lIHNvbWUgc3VnZ2VzdGlvbnPjgIJJbgogICAgICBhZGRp
+dGlvbiwgaG93IGlzIHRoZSBmcm96ZW4gdG9vbCB1c2VkPyBXaHkgZG9lcyB0aGUgZGF0YSBvYnRh
+aW5lZAogICAgICBieSBjYXQgZnJvemVuIG5vdCBjaGFuZ2Ugd2hlbiBJIHJ1biB0aGUgaW50ZW5z
+aXR5IGRlbW8/IChKYW4gS2lzemthKQoKCi0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0t
+LS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0KCk1lc3NhZ2U6IDEKRGF0ZTog
+RnJpLCAyNyBNYXIgMjAyMCAwMDoyNzowMyArMDAwMApGcm9tOiAiTWVuZywgRmlubyIgPGZpbm8u
+bWVuZ0BpbnRlbC5jb20+ClRvOiBzb25ncWlhbnl1IDxzb25ncWlhbnl1QGNvdW50cnlnYXJkZW4u
+Y29tLmNuPgpDYzogInhlbm9tYWlAeGVub21haS5vcmciIDx4ZW5vbWFpQHhlbm9tYWkub3JnPgpT
+dWJqZWN0OiBSRTogSGVsbG/vvIxFdmVyeW9uZe+8gXdoZW4gSSB1c2luZyBJLXBpcGUgdHJhY2Xv
+vIwgSSBoYXZlCiAgICAgICBzb21lIHByb2JsZW1zIGFib3V0IGl077yMUGxlYXNlIGdpdmUgbWUg
+c29tZSBzdWdnZXN0aW9uc+OAgkluCiAgICAgICBhZGRpdGlvbiwgaG93IGlzIHRoZSBmcm96ZW4g
+dG9vbCB1c2VkPyBXaHkgZG9lcyB0aGUgZGF0YSBvYnRhaW5lZCBieQogICAgICAgY2F0IGZyb3pl
+biBub3QgY2hhbmdlIHdoZW4gSSBydW4gdGhlIGludGVuc2l0eSBkZW1vPwpNZXNzYWdlLUlEOiA8
+ZjlmNjBmZDRhZGYzNGU4ZDk5ODdmYThjN2UyN2IzZmFAaW50ZWwuY29tPgpDb250ZW50LVR5cGU6
+IHRleHQvcGxhaW47IGNoYXJzZXQ9InV0Zi04IgoKSGVsbG8gUWlhbnl1LAoKV291bGQgeW91IHBs
+cyBwcm92aWRlIG1vcmUgZGV0YWlscyBvbiB0aGUgc3RlcHMgaG93IGRpZCB1IGRvIHRoZSB0ZXN0
+LAphc3N1bWUgb3RoZXIgcGVvcGxlIG5vdCBmYW1pbGlhciB3aXRoIHdoYXQgdSBkb2luZyBhbmQg
+LCBjYW4gcmVwZWF0IHlvdXIgdGVzdCBmcm9tIHlvdXIgZGVzY3JpcHRpb24gZWFzaWx5LAp0aGFu
+a3MhCgpCUiAvIEZpbm8gKOWtn+elpeWkqykKSW50ZWwg4oCTIElPVEcgRGV2ZWxvcGVyIEVuYWJs
+aW5nCgotLS0tLU9yaWdpbmFsIE1lc3NhZ2UtLS0tLQpGcm9tOiBYZW5vbWFpIDx4ZW5vbWFpLWJv
+dW5jZXNAeGVub21haS5vcmc+IE9uIEJlaGFsZiBPZiBzb25ncWlhbnl1IHZpYSBYZW5vbWFpClNl
+bnQ6IFdlZG5lc2RheSwgTWFyY2ggMjUsIDIwMjAgNTowNyBQTQpUbzogeGVub21haUB4ZW5vbWFp
+Lm9yZwpTdWJqZWN0OiBIZWxsb++8jEV2ZXJ5b25l77yBd2hlbiBJIHVzaW5nIEktcGlwZSB0cmFj
+Ze+8jCBJIGhhdmUgc29tZSBwcm9ibGVtcyBhYm91dCBpdO+8jFBsZWFzZSBnaXZlIG1lIHNvbWUg
+c3VnZ2VzdGlvbnPjgIJJbiBhZGRpdGlvbiwgaG93IGlzIHRoZSBmcm96ZW4gdG9vbCB1c2VkPyBX
+aHkgZG9lcyB0aGUgZGF0YSBvYnRhaW5lZCBieSBjYXQgZnJvemVuIG5vdCBjaGFuZ2Ugd2hlbiBJ
+IHJ1biB0aGUgaW50ZW5zaXR5IGRlbW8/CgpXaGVuIEkgdXNlIHRoZSBtYXggdG9vbCwgdGhlIG1h
+eGltdW0gdmFsdWUgb2YgY2F0IGlzIGFsd2F5cyBpbiB0aGUgZnVuY3Rpb24gaXBpcGVfdGVzdF9y
+b290ICsgMHgwLiBJIGRvbid0IHRoaW5rIHRoZSBkZW1vIG9uIHRoZSB3aWtpIHdlYnNpdGUgaXMg
+bGlrZSB0aGlzLiBXaGF0J3MgdGhlIG1hdHRlcj8KCjHjgIEgICAgICAgICAgICAgIFR5cGUgICAg
+VXNlciBWYWwuICAgVGltZSAgICBEZWxheSAgRnVuY3Rpb24gKFBhcmVudCkKCjLjgIEgICAgICAg
+ICAgICAgI2Z1bmMgICAgICAgICAgICAgICAgICAtMSAgICAwLjA5OCAgaXBpcGVfdW5zdGFsbF9y
+b290KzB4MCAoaXBpcGVfcmVzdG9yZV9yb290KzB4MWMpCgoz44CBICAgICAgICAgICB8ICNiZWdp
+biAgIDB4ODAwMDAwMDAgICAgLTEgICAgMC4xMDkgIGlwaXBlX3Vuc3RhbGxfcm9vdCsweDUxIChp
+cGlwZV9yZXN0b3JlX3Jvb3QrMHgxYykKCjTjgIEgICAgICAgICAgIHwgI2Z1bmMgICAgICAgICAg
+ICAgICAgICAgMCAgICAwLjE0NyAgaXBpcGVfcm9vdF9vbmx5KzB4MCAoaXBpcGVfdW5zdGFsbF9y
+b290KzB4MTYpCgo144CBICAgICAgICAgICB8ICtlbmQgICAgIDB4ODAwMDAwMDAgICAgIDAgICAg
+MC4xMDcgIGlwaXBlX3RyYWNlX2VuZCsweDE0IChpcGlwZV91bnN0YWxsX3Jvb3QrMHg0MikKCjbj
+gIEgICAgICAgICAgICAgK2Z1bmMgICAgICAgICAgICAgICAgICAgMCAgICAwLjEyMiAgbXV0ZXhf
+dW5sb2NrKzB4MCAobl90dHlfcmVhZCsweDJmYikKCjfjgIEgICAgICAgICAgICAgK2Z1bmMgICAg
+ICAgICAgICAgICAgICAgMCAgICAwLjEwNyAgdHR5X2xkaXNjX2RlcmVmKzB4MCAodHR5X3JlYWQr
+MHhhNCkKCjjjgIEgICAgICAgICAgICAgK2Z1bmMgICAgICAgICAgICAgICAgICAgMCAgICAwLjEw
+OCAgbGRzZW1fdXBfcmVhZCsweDAgKHR0eV9sZGlzY19kZXJlZisweDE2KQoKOeOAgSAgICAgICAg
+ICAgICArZnVuYyAgICAgICAgICAgICAgICAgICAwICAgIDAuMTEwICBrdGltZV9nZXRfcmVhbF9z
+ZWNvbmRzKzB4MCAodHR5X3JlYWQrMHhhZSkKCjEw44CBICAgICAgICAgICtmdW5jICAgICAgICAg
+ICAgICAgICAgIDAgICAgMC4xMDkgIF9fZnNub3RpZnlfcGFyZW50KzB4MCAodmZzX3JlYWQrMHgx
+MGEpCgoxMeOAgSAgICAgICAgICArZnVuYyAgICAgICAgICAgICAgICAgICAwICAgIDAuMTEyICBm
+c25vdGlmeSsweDAgKHZmc19yZWFkKzB4MTIzKQoKMTLjgIEgICAgICAgPnwgK2JlZ2luICAgMHg4
+MDAwMDAwMCAgICAgMCAgICAwLjQ2MCAgZG9fc3lzY2FsbF82NCsweDJjNyAoZW50cnlfU1lTQ0FM
+TF82NF9hZnRlcl9od2ZyYW1lKzB4NDkpCgoxM+OAgSAgICAgICA6fCArZnVuYyAgICAgICAgICAg
+ICAgICAgICAwISAgNTUuNDA5ICBpcGlwZV90ZXN0X3Jvb3QrMHgwICh0cmFjZV9oYXJkaXJxc19v
+bl92aXJ0X2NhbGxlcisweDc5KQoKMTTjgIEgICAgICAgOnwgK2Z1bmMgICAgICAgICAgICAgICAg
+ICA1NSAgICAwLjEyNyAgX19pcGlwZV9oYW5kbGVfaXJxKzB4MCAoYXBpY190aW1lcl9pbnRlcnJ1
+cHQrMHgxMikKCjE144CBICAgICAgIDp8ICtiZWdpbiAgIDB4MDAwMDExMDMgICAgNTUgICAgMC4x
+MzYgIDw3ZjllNWVlZTM4YzQ+IChhcGljX3RpbWVyX2ludGVycnVwdCsweDEyKQoKMTbjgIEgICAg
+ICAgOnwgK2Z1bmMgICAgICAgICAgICAgICAgICA1NiAgICAwLjExNiAgX19pcGlwZV9kaXNwYXRj
+aF9pcnErMHgwIChfX2lwaXBlX2hhbmRsZV9pcnErMHhhNikKCjE344CBICAgICAgIDp8ICtmdW5j
+ICAgICAgICAgICAgICAgICAgNTYgICAgMC4xMzkgIGlycV90b19kZXNjKzB4MCAoX19pcGlwZV9k
+aXNwYXRjaF9pcnErMHgzNSkKCjE444CBICAgICAgIDp8ICtmdW5jICAgICAgICAgICAgICAgICAg
+NTYgICAgMC4xNDQgIF9faXBpcGVfYWNrX2hydGltZXJfaXJxKzB4MCAoX19pcGlwZV9kaXNwYXRj
+aF9pcnErMHgxMDIpCgoxOeOAgSAgICAgICA6fCArZnVuYyAgICAgICAgICAgICAgICAgIDU2ICAg
+IDAuMTg3ICBsYXBpY19pdGltZXJfYWNrKzB4MCAoX19pcGlwZV9hY2tfaHJ0aW1lcl9pcnErMHg1
+ZikKCjIw44CBICAgICAgIDp8ICtmdW5jICAgICAgICAgICAgICAgICAgNTYgICAgMC4xNjMgIGRp
+c3BhdGNoX2lycV9oZWFkKzB4MCAoX19pcGlwZV9kaXNwYXRjaF9pcnErMHhiNikKCjIx44CBICAg
+ICAgIDp8IyBmdW5jICAgICAgICAgICAgICAgICAgNTYgICAgMC4xNjAgIHhuaW50cl9jb3JlX2Ns
+b2NrX2hhbmRsZXIrMHgwIChkaXNwYXRjaF9pcnFfaGVhZCsweDlkKQoKMjLjgIEgICAgICAgOnwj
+IGZ1bmMgICAgICAgICAgICAgICAgICA1NyAgICAwLjEzNCAgeG5sb2NrX2RiZ19wcmVwYXJlX2Fj
+cXVpcmUrMHgwICh4bmludHJfY29yZV9jbG9ja19oYW5kbGVyKzB4Mjk2KQoKMjPjgIEgICAgICAg
+OnwjIGZ1bmMgICAgICAgICAgICAgICAgICA1NyAgICAwLjEwNyAgeG5sb2NrX2RiZ19hY3F1aXJl
+ZCsweDAgKHhuaW50cl9jb3JlX2Nsb2NrX2hhbmRsZXIrMHgyZGYpCgoyNOOAgSAgICAgICA6fCMg
+ZnVuYyAgICAgICAgICAgICAgICAgIDU3ICAgIDAuMTcxICB4bmNsb2NrX3RpY2srMHgwICh4bmlu
+dHJfY29yZV9jbG9ja19oYW5kbGVyKzB4ZjEpCgoyNeOAgSAgICAgICA6fCMgZnVuYyAgICAgICAg
+ICAgICAgICAgIDU3ICAgIDAuMTA3ICBjb2JhbHRfdGltZXJfaGFuZGxlcisweDAgKHhuY2xvY2tf
+dGljaysweGM1KQoKMjbjgIEgICAgICAgOnwjIGZ1bmMgICAgICAgICAgICAgICAgICA1NyAgICAw
+LjEwNiAgY29iYWx0X3NpZ25hbF9zZW5kX3BpZCsweDAgKGNvYmFsdF90aW1lcl9oYW5kbGVyKzB4
+MmEpCgoyN+OAgSAgICAgICA6fCMgZnVuYyAgICAgICAgICAgICAgICAgIDU3ICAgIDAuMTE3ICBj
+b2JhbHRfdGhyZWFkX2ZpbmQrMHgwIChjb2JhbHRfc2lnbmFsX3NlbmRfcGlkKzB4MTIpCgoyOOOA
+gSAgICAgICA6fCMgZnVuYyAgICAgICAgICAgICAgICAgIDU3ICAgIDAuMTE5ICBjb2JhbHRfc2ln
+bmFsX3NlbmQrMHgwIChjb2JhbHRfc2lnbmFsX3NlbmRfcGlkKzB4MjQpCgoyOeOAgSAgICAgICA6
+fCMgZnVuYyAgICAgICAgICAgICAgICAgIDU3ICAgIDAuMTI1ICB4bnN5bmNoX3dha2V1cF9vbmVf
+c2xlZXBlcisweDAgKGNvYmFsdF9zaWduYWxfc2VuZCsweGE2KQoKMzDjgIEgICAgICAgOnwjIGZ1
+bmMgICAgICAgICAgICAgICAgICA1OCAgICAwLjEzOSAgeG50aHJlYWRfcmVzdW1lKzB4MCAoeG5z
+eW5jaF93YWtldXBfb25lX3NsZWVwZXIrMHhkYSkKCjMx44CBICAgICAgIDp8IyBbIDcwOTJdIGFs
+dC1zYW0gOTkgICAgNTggICAgMC4xNzggIHhudGhyZWFkX3Jlc3VtZSsweGE5ICh4bnN5bmNoX3dh
+a2V1cF9vbmVfc2xlZXBlcisweGRhKQoKMzLjgIEgICAgICAgOnwjIGZ1bmMgICAgICAgICAgICAg
+ICAgICA1OCAgICAwLjExNyAgeG50aW1lcnFfaW5zZXJ0KzB4MCAoeG5jbG9ja190aWNrKzB4MjFj
+KQoKMzPjgIEgICAgICAgOnwjIGZ1bmMgICAgICAgICAgICAgICAgICA1OCAgICAwLjA5OCAgeG5j
+bG9ja19jb3JlX2xvY2FsX3Nob3QrMHgwICh4bmNsb2NrX3RpY2srMHgyNDUpCgozNOOAgSAgICAg
+ICA6fCMgZXZlbnQgICB0aWNrQDE1NSAgICAgIDU4ICAgIDAuMTAyICB4bmNsb2NrX2NvcmVfbG9j
+YWxfc2hvdCsweDY3ICh4bmNsb2NrX3RpY2srMHgyNDUpCgozNeOAgSAgICAgICA6fCMgZnVuYyAg
+ICAgICAgICAgICAgICAgIDU4ICAgIDAuMTUwICBpcGlwZV90aW1lcl9zZXQrMHgwICh4bmNsb2Nr
+X2NvcmVfbG9jYWxfc2hvdCsweDZmKQoKMzbjgIEgICAgICAgOnwjIGZ1bmMgICAgICAgICAgICAg
+ICAgICA1OCAgICAwLjE3NyAgbGFwaWNfbmV4dF9kZWFkbGluZSsweDAgKGlwaXBlX3RpbWVyX3Nl
+dCsweDc5KQoKMzfjgIEgICAgICAgOnwjIGZ1bmMgICAgICAgICAgICAgICAgICA1OSAgICAwLjEy
+NyAgeG5sb2NrX2RiZ19yZWxlYXNlKzB4MCAoeG5pbnRyX2NvcmVfY2xvY2tfaGFuZGxlcisweDEx
+MCkKCjM444CBICAgICAgIDp8IyBmdW5jICAgICAgICAgICAgICAgICAgNTkgICAgMC4xNTcgIF9f
+X3huc2NoZWRfcnVuKzB4MCAoeG5pbnRyX2NvcmVfY2xvY2tfaGFuZGxlcisweDMzNikKCjM544CB
+ICAgICAgIDp8IyBmdW5jICAgICAgICAgICAgICAgICAgNTkgICAgMC4xMjIgIHhubG9ja19kYmdf
+cHJlcGFyZV9hY3F1aXJlKzB4MCAoX19feG5zY2hlZF9ydW4rMHgzZmMpCgo0MOOAgSAgICAgICA6
+fCMgZnVuYyAgICAgICAgICAgICAgICAgIDU5ICAgIDAuMTA1ICB4bmxvY2tfZGJnX2FjcXVpcmVk
+KzB4MCAoX19feG5zY2hlZF9ydW4rMHg0NDQpCgo0MeOAgSAgICAgICA6fCMgWyA3MDUzXSBiYXNo
+ICAgIC0xICAgIDU5ICAgIDAuMTA1ICBfX194bnNjaGVkX3J1bisweGUzICh4bmludHJfY29yZV9j
+bG9ja19oYW5kbGVyKzB4MzM2KQoKNDLjgIEgICAgICAgOnwjIGZ1bmMgICAgICAgICAgICAgICAg
+ICA1OSAgICAwLjEwOSAgeG5zY2hlZF9waWNrX25leHQrMHgwIChfX194bnNjaGVkX3J1bisweDEy
+NCkKCjQz44CBICAgICAgIDp8IyBmdW5jICAgICAgICAgICAgICAgICAgNTkgICAgMC4xMzUgIF9f
+aXBpcGVfbm90aWZ5X3ZtX3ByZWVtcHRpb24rMHgwIChfX194bnNjaGVkX3J1bisweDUxNykKCjQ0
+44CBICAgICAgIDp8IyBmdW5jICAgICAgICAgICAgICAgICAgNTkgICAgMC4xMTAgIHhuYXJjaF9s
+ZWF2ZV9yb290KzB4MCAoX19feG5zY2hlZF9ydW4rMHg1NGMpCgo0NeOAgSAgICAgICA6fCMgZnVu
+YyAgICAgICAgICAgICAgICAgIDU5ICAgIDAuMTA5ICB4bnRpbWVyX3N0YXJ0KzB4MCAoX19feG5z
+Y2hlZF9ydW4rMHg1NmYpCgo0NuOAgSAgICAgICA6fCMgZnVuYyAgICAgICAgICAgICAgICAgIDYw
+ICAgIDAuMTA4ICB4bmNsb2NrX2NvcmVfbnNfdG9fdGlja3MrMHgwICh4bnRpbWVyX3N0YXJ0KzB4
+MWI4KQoKNDfjgIEgICAgICAgOnwjIGZ1bmMgICAgICAgICAgICAgICAgICA2MCAgICAwLjEwNCAg
+eG50aW1lcl9lbnF1ZXVlX2FuZF9wcm9ncmFtKzB4MCAoeG50aW1lcl9zdGFydCsweGZlKQoKNDjj
+gIEgICAgICAgOnwjIGZ1bmMgICAgICAgICAgICAgICAgICA2MCAgICAwLjExMCAgeG50aW1lcnFf
+aW5zZXJ0KzB4MCAoeG50aW1lcl9lbnF1ZXVlX2FuZF9wcm9ncmFtKzB4MTgpCgo0OeOAgSAgICAg
+ICA6fCMgZnVuYyAgICAgICAgICAgICAgICAgIDYwICAgIDAuMTMyICB4bnRpbWVyX2hlYWRpbmdf
+cCsweDAgKHhudGltZXJfZW5xdWV1ZV9hbmRfcHJvZ3JhbSsweDJkKQoKNTDjgIEgICAgICAgOnwj
+IGZ1bmMgICAgICAgICAgICAgICAgICA2MCAgICAwLjExNSAgeG5hcmNoX3N3aXRjaF90bysweDAg
+KF9fX3huc2NoZWRfcnVuKzB4MWRhKQoKNTHjgIEgICAgICAgOnwjIGZ1bmMgICAgICAgICAgICAg
+ICAgICA2MCAgICAwLjE1OCAgc3dpdGNoX21tX2lycXNfb2ZmKzB4MCAoeG5hcmNoX3N3aXRjaF90
+bysweDJmKQoKNTLjgIEgICAgICAgOnwjIGZ1bmMgICAgICAgICAgICAgICAgICA2MCAgICAwLjQ0
+NSAgbG9hZF9uZXdfbW1fY3IzKzB4MCAoc3dpdGNoX21tX2lycXNfb2ZmKzB4MzI2KQoKNTPjgIEg
+ICAgICAgOnwjIGZ1bmMgICAgICAgICAgICAgICAgICA2MSAgICAwLjE0NSAgeG50aHJlYWRfc3dp
+dGNoX2ZwdSsweDAgKF9fX3huc2NoZWRfcnVuKzB4MjJkKQoKNTTjgIEgICAgICAgOnwjIGZ1bmMg
+ICAgICAgICAgICAgICAgICA2MSAgICAwLjA5NSAgeG5hcmNoX3N3aXRjaF9mcHUrMHgwICh4bnRo
+cmVhZF9zd2l0Y2hfZnB1KzB4MmQpCgo1NeOAgSAgICAgICA6fCMgWyA3MDkyXSBhbHQtc2FtIDk5
+ICAgIDYxICAgIDAuMjI1ICBfX194bnNjaGVkX3J1bisweDI0ZCAoeG50aHJlYWRfc3VzcGVuZCsw
+eDQ5NykKCjU244CBICAgICAgIDp8IyBmdW5jICAgICAgICAgICAgICAgICAgNjEgICAgMC4xMTEg
+IGNvYmFsdF90aW1lcl9kZWxpdmVyKzB4MCAoc2lnbmFsX3dhaXQrMHg1NTYpCgo1N+OAgSAgICAg
+ICA6fCMgZnVuYyAgICAgICAgICAgICAgICAgIDYxICAgIDAuMTA2ICB4bnRpbWVyX2dldF9vdmVy
+cnVucysweDAgKGNvYmFsdF90aW1lcl9kZWxpdmVyKzB4NmQpCgo1OOOAgSAgICAgICA6fCMgZnVu
+YyAgICAgICAgICAgICAgICAgIDYxICAgIDAuMTEwICB4bmNsb2NrX2NvcmVfbnNfdG9fdGlja3Mr
+MHgwICh4bnRpbWVyX2dldF9vdmVycnVucysweDM1KQoKNTnjgIEgICAgICAgOnwjIGZ1bmMgICAg
+ICAgICAgICAgICAgICA2MiAgICAwLjEyOCAgeG5sb2NrX2RiZ19yZWxlYXNlKzB4MCAoc2lnbmFs
+X3dhaXQrMHg1MjgpCgo2MOOAgSAgICAgICA6fCMgZnVuYyAgICAgICAgICAgICAgICAgIDYyICAg
+IDAuMTEwICBfX2lwaXBlX3Jlc3RvcmVfaGVhZCsweDAgKHNpZ25hbF93YWl0KzB4Mjk0KQoKNjHj
+gIEgICAgICAgPHwrIGVuZCAgICAgMHg4MDAwMDAwMCAgICA2MiAgICAwLjI3OCAgaXBpcGVfdHJh
+Y2VfZW5kKzB4MTQgKF9faXBpcGVfcmVzdG9yZV9oZWFkKzB4NWIpCgo2MuOAgSAgICAgICAgfCsg
+YmVnaW4gICAweDgwMDAwMDAwICAgIDYyICAgIDAuMDAwICBkb19zeXNjYWxsXzY0KzB4NzEgKGVu
+dHJ5X1NZU0NBTExfNjRfYWZ0ZXJfaHdmcmFtZSsweDQ5KQoKCgpJbiBhZGRpdGlvbiwgaG93IGlz
+IHRoZSBmcm96ZW4gdG9vbCB1c2VkPyBXaHkgZG9lcyB0aGUgZGF0YSBvYnRhaW5lZCBieSBjYXQg
+ZnJvemVuIG5vdCBjaGFuZ2Ugd2hlbiBJIHJ1biB0aGUgaW50ZW5zaXR5IGRlbW8/CkktcGlwZSBm
+cm96ZW4gYmFjay10cmFjaW5nIHNlcnZpY2Ugb24gNC4xOS44NC1icm9zLWRlYnVnL2lwaXBlIHJl
+bGVhc2UgIzgKLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0t
+LS0tLS0tLS0tLS0tCkNQVTogMCwgRnJlZXplOiAyNDUzNjc4ODM5Mzg0ODAgY3ljbGVzLCBUcmFj
+ZSBQb2ludHM6IDMwICgrMTApIENhbGlicmF0ZWQgbWluaW11bSB0cmFjZS1wb2ludCBvdmVyaGVh
+ZDogMC4wNjQgdXMKCistLS0tLSBIYXJkIElSUXMgKCd8JzogbG9ja2VkKQp8Ky0tIFhlbm9tYWkK
+fHwrLSBMaW51eCAoJyonOiBkb21haW4gc3RhbGxlZCwgJysnOiBjdXJyZW50LCAnIyc6IGN1cnJl
+bnQrc3RhbGxlZCkKfHx8ICAgICAgICAgICAgICAgICAgICAgICAgKy0tLS0tLS0tLS0gRGVsYXkg
+ZmxhZyAoJysnOiA+IDEgdXMsICchJzogPiAxMCB1cykKfHx8ICAgICAgICAgICAgICAgICAgICAg
+ICAgfCAgICAgICAgKy0gTk1JIG5vaXNlICgnTicpCnx8fCAgICAgICAgICAgICAgICAgICAgICAg
+IHwgICAgICAgIHwKICAgIFR5cGUgICAgVXNlciBWYWwuICAgVGltZSAgICBEZWxheSAgRnVuY3Rp
+b24gKFBhcmVudCkKOiAgK2Z1bmMgICAgICAgICAgICAgICAgICAtNSAgICAwLjEyMCAgdmZzX3dy
+aXRlKzB4MCAoa3N5c193cml0ZSsweDVjKQo6ICArZnVuYyAgICAgICAgICAgICAgICAgIC01ICAg
+IDAuMTM0ICByd192ZXJpZnlfYXJlYSsweDAgKHZmc193cml0ZSsweDc3KQo6ICArZnVuYyAgICAg
+ICAgICAgICAgICAgIC01ICAgIDAuMTYzICBzZWN1cml0eV9maWxlX3Blcm1pc3Npb24rMHgwIChy
+d192ZXJpZnlfYXJlYSsweDRlKQo6ICArZnVuYyAgICAgICAgICAgICAgICAgIC01ICAgIDAuMTEw
+ICBhcHBhcm1vcl9maWxlX3Blcm1pc3Npb24rMHgwIChzZWN1cml0eV9maWxlX3Blcm1pc3Npb24r
+MHgzYikKOiAgK2Z1bmMgICAgICAgICAgICAgICAgICAtNSAgICAwLjEzNiAgY29tbW9uX2ZpbGVf
+cGVybSsweDAgKGFwcGFybW9yX2ZpbGVfcGVybWlzc2lvbisweDFhKQo6ICArZnVuYyAgICAgICAg
+ICAgICAgICAgIC00ICAgIDAuMTYwICBhYV9maWxlX3Blcm0rMHgwIChjb21tb25fZmlsZV9wZXJt
+KzB4NGQpCjogICtmdW5jICAgICAgICAgICAgICAgICAgLTQgICAgMC4xMDUgIF9fc2Jfc3RhcnRf
+d3JpdGUrMHgwICh2ZnNfd3JpdGUrMHgxOTUpCjogICtmdW5jICAgICAgICAgICAgICAgICAgLTQg
+ICAgMC4wOTkgIGlwaXBlX3Jvb3Rfb25seSsweDAgKF9fc2Jfc3RhcnRfd3JpdGUrMHgzZikKOnwg
+K2JlZ2luICAgMHg4MDAwMDAwMSAgICAtNCAgICAwLjExOSAgaXBpcGVfcm9vdF9vbmx5KzB4Nzkg
+KF9fc2Jfc3RhcnRfd3JpdGUrMHgzZikKOnwgK2VuZCAgICAgMHg4MDAwMDAwMSAgICAtNCAgICAw
+LjExMyAgaXBpcGVfdHJhY2VfZW5kKzB4MTQgKGlwaXBlX3Jvb3Rfb25seSsweDYzKQo6ICArZnVu
+YyAgICAgICAgICAgICAgICAgIC00ICAgIDAuMTA2ICBfY29uZF9yZXNjaGVkKzB4MCAoX19zYl9z
+dGFydF93cml0ZSsweDQ0KQo6ICArZnVuYyAgICAgICAgICAgICAgICAgIC00ICAgIDAuMTA3ICBy
+Y3VfYWxsX3FzKzB4MCAoX2NvbmRfcmVzY2hlZCsweDE5KQo6ICArZnVuYyAgICAgICAgICAgICAg
+ICAgIC00ICAgIDAuMTM4ICBfX3Zmc193cml0ZSsweDAgKHZmc193cml0ZSsweGI4KQo6ICArZnVu
+YyAgICAgICAgICAgICAgICAgIC0zICAgIDAuMTgzICBwcm9jX3JlZ193cml0ZSsweDAgKF9fdmZz
+X3dyaXRlKzB4M2EpCjogICtmdW5jICAgICAgICAgICAgICAgICAgLTMgICAgMC4xMjEgIF9faXBp
+cGVfZnJvemVuX2N0cmwrMHgwIChwcm9jX3JlZ193cml0ZSsweDQ1KQo6ICArZnVuYyAgICAgICAg
+ICAgICAgICAgIC0zICAgIDAuMTA4ICBfX2NoZWNrX29iamVjdF9zaXplKzB4MCAoX19pcGlwZV9m
+cm96ZW5fY3RybCsweDQyKQo6ICArZnVuYyAgICAgICAgICAgICAgICAgIC0zICAgIDAuNjE0ICBj
+aGVja19zdGFja19vYmplY3QrMHgwIChfX2NoZWNrX29iamVjdF9zaXplKzB4NDUpCjogICtmdW5j
+ICAgICAgICAgICAgICAgICAgLTIgICAgMC4xMTUgIG11dGV4X2xvY2srMHgwIChfX2lwaXBlX2Zy
+b3plbl9jdHJsKzB4OTIpCjogICtmdW5jICAgICAgICAgICAgICAgICAgLTIgICAgMC4xMDAgIGlw
+aXBlX3Jvb3Rfb25seSsweDAgKG11dGV4X2xvY2srMHgxMikKOnwgK2JlZ2luICAgMHg4MDAwMDAw
+MSAgICAtMiAgICAwLjEzNCAgaXBpcGVfcm9vdF9vbmx5KzB4NzkgKG11dGV4X2xvY2srMHgxMikK
+OnwgK2VuZCAgICAgMHg4MDAwMDAwMSAgICAtMiAgICAwLjEyMiAgaXBpcGVfdHJhY2VfZW5kKzB4
+MTQgKGlwaXBlX3Jvb3Rfb25seSsweDYzKQo6ICArZnVuYyAgICAgICAgICAgICAgICAgIC0yICAg
+IDAuMTE3ICBfY29uZF9yZXNjaGVkKzB4MCAobXV0ZXhfbG9jaysweDE3KQo6ICArZnVuYyAgICAg
+ICAgICAgICAgICAgIC0yICAgIDAuMTMzICByY3VfYWxsX3FzKzB4MCAoX2NvbmRfcmVzY2hlZCsw
+eDE5KQo6ICArZnVuYyAgICAgICAgICAgICAgICAgIC0yICAgIDAuMTEwICBpcGlwZV90cmFjZV9m
+cm96ZW5fcmVzZXQrMHgwIChfX2lwaXBlX2Zyb3plbl9jdHJsKzB4OTcpCjogICtmdW5jICAgICAg
+ICAgICAgICAgICAgLTIgICAgMC4xMDQgIF9faXBpcGVfZ2xvYmFsX3BhdGhfbG9jaysweDAgKGlw
+aXBlX3RyYWNlX2Zyb3plbl9yZXNldCsweDIxKQo6ICArZnVuYyAgICAgICAgICAgICAgICAgIC0y
+ICAgIDAuMTEwICBfX2lwaXBlX3NwaW5fbG9ja19pcnFzYXZlKzB4MCAoX19pcGlwZV9nbG9iYWxf
+cGF0aF9sb2NrKzB4MTUpCjp8ICtiZWdpbiAgIDB4ODAwMDAwMDEgICAgLTErICAgMS42NDQgIF9f
+aXBpcGVfc3Bpbl9sb2NrX2lycXNhdmUrMHg3MiAoX19pcGlwZV9nbG9iYWxfcGF0aF9sb2NrKzB4
+MTUpCjp8ICNmdW5jICAgICAgICAgICAgICAgICAgIDAgICAgMC4xNTEgIF9faXBpcGVfc3Bpbl91
+bmxvY2tfaXJxY29tcGxldGUrMHgwIChfX2lwaXBlX2dsb2JhbF9wYXRoX3VubG9jaysweDczKQo6
+fCArZW5kICAgICAweDgwMDAwMDAxICAgICAwICAgIDAuMTEzICBpcGlwZV90cmFjZV9lbmQrMHgx
+NCAoX19pcGlwZV9zcGluX3VubG9ja19pcnFjb21wbGV0ZSsweDM3KQo8ICArZnJlZXplICAweGZm
+ZmZmZmZmZmZmZmZmZmYgICAgIDAgICAgMC4xMzkgIHByb2NfcmVnX3dyaXRlKzB4NDUgKF9fdmZz
+X3dyaXRlKzB4M2EpCiAgICtmdW5jICAgICAgICAgICAgICAgICAgIDAgICAgMC4xMjIgIG11dGV4
+X3VubG9jaysweDAgKF9faXBpcGVfZnJvemVuX2N0cmwrMHhiMSkKICAgK2Z1bmMgICAgICAgICAg
+ICAgICAgICAgMCAgICAwLjExMCAgdW51c2VfcGRlKzB4MCAocHJvY19yZWdfd3JpdGUrMHg1MCkK
+ICAgK2Z1bmMgICAgICAgICAgICAgICAgICAgMCAgICAwLjExMCAgX19mc25vdGlmeV9wYXJlbnQr
+MHgwICh2ZnNfd3JpdGUrMHgxNDEpCiAgICtmdW5jICAgICAgICAgICAgICAgICAgIDAgICAgMC4x
+MjcgIGZzbm90aWZ5KzB4MCAodmZzX3dyaXRlKzB4MTVhKQogICArZnVuYyAgICAgICAgICAgICAg
+ICAgICAwICAgIDAuMTE1ICBfX3NiX2VuZF93cml0ZSsweDAgKHZmc193cml0ZSsweDE2ZSkKfCAr
+YmVnaW4gICAweDgwMDAwMDAwICAgICAwICAgIDAuNDgzICBkb19zeXNjYWxsXzY0KzB4MmM3IChl
+bnRyeV9TWVNDQUxMXzY0X2FmdGVyX2h3ZnJhbWUrMHg0OSkKfCArZnVuYyAgICAgICAgICAgICAg
+ICAgICAxICAgIDEuMTA5ICBpcGlwZV90ZXN0X3Jvb3QrMHgwICh0cmFjZV9oYXJkaXJxc19vbl92
+aXJ0X2NhbGxlcisweDc5KQp8ICtmdW5jICAgICAgICAgICAgICAgICAgIDIgICAgMC4xMzkgIGRv
+X3N5c2NhbGxfNjQrMHgwIChlbnRyeV9TWVNDQUxMXzY0X2FmdGVyX2h3ZnJhbWUrMHg0OSkKfCAr
+ZW5kICAgICAweDgwMDAwMDAwICAgICAyICAgIDAuMTEzICBpcGlwZV90cmFjZV9lbmQrMHgxNCAo
+ZG9fc3lzY2FsbF82NCsweDdkKQogICArZnVuYyAgICAgICAgICAgICAgICAgICAyICAgIDAuMDAw
+ICBpcGlwZV9oYW5kbGVfc3lzY2FsbCsweDAgKGRvX3N5c2NhbGxfNjQrMHg0NikKQ2FuIHlvdSB0
+ZWxsIG1lIHdoYXQgdGhlIGluZm9ybWF0aW9uIHJlZmxlY3RzPwrlj5HpgIHoh6ogV2luZG93cyAx
+MCDniYjpgq7ku7Y8aHR0cHM6Ly9nby5taWNyb3NvZnQuY29tL2Z3bGluay8/TGlua0lkPTU1MDk4
+Nj7lupTnlKgKCl9fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fClRoaXMgaW5mb3JtYXRp
+b24gbWF5IGNvbnRhaW4gY29uZmlkZW50aWFsIGFuZC9vciBwcml2aWxlZ2VkIG1hdGVyaWFsIGFu
+ZCBpcyBvbmx5IHRyYW5zbWl0dGVkIGZvciB0aGUgaW50ZW5kZWQgcmVjaXBpZW50LiBBbnkgcmV2
+aWV3LCByZXRyYW5zbWlzc2lvbiwgY29udmVyc2lvbiB0byBoYXJkIGNvcHksIGNvcHlpbmcsIHJl
+cHJvZHVjdGlvbiwgY2lyY3VsYXRpb24sIHB1YmxpY2F0aW9uLCBkaXNzZW1pbmF0aW9uIG9yIG90
+aGVyIHVzZSBvZiwgb3IgdGFraW5nIG9mIGFueSBhY3Rpb24sIG9yIG9taXNzaW9uIHRvIHRha2Ug
+YWN0aW9uLCBpbiByZWxpYW5jZSB1cG9uIHRoaXMgaW5mb3JtYXRpb24gYnkgcGVyc29ucyBvciBl
+bnRpdGllcyBvdGhlciB0aGFuIHRoZSBpbnRlbmRlZCByZWNpcGllbnQgaXMgcHJvaGliaXRlZC4g
+SWYgeW91IGhhdmUgcmVjZWl2ZWQgdGhpcyBtZXNzYWdlIGluIGVycm9yLCBwbGVhc2UgY29udGFj
+dCB0aGUgc2VuZGVyIGFuZCBkZWxldGUgdGhlIG1hdGVyaWFsIGZyb20gYW55IGNvbXB1dGVyLCBk
+aXNrIGRyaXZlLCBkaXNrZXR0ZSwgb3Igb3RoZXIgc3RvcmFnZSBkZXZpY2Ugb3IgbWVkaWEuCuac
+rOS/oeaBr+WPr+iDveWMheaLrOafkOS6m+S/neWvhueahOizh+aWme+8jOS4puS4lOWPqueZvOmA
+gee1pueJueWumueahOaUtuS/oeS6uuOAguemgeatoumZpOeJueWumuaUtuS/oeS6uuS7peWkluea
+hOWFtuS7luS7u+S9leS6uuWjq+aIluapn+ani+mWseiugOOAgei9ieeZvOOAgeWIl+WNsOOAgeik
+h+ijveOAgeWCs+mWseOAgeWHuueJiOOAgeaVo+aSreaIluS7peWFtuWug+aWueW8j+S9v+eUqOac
+rOS/oeaBr++8jOaIluS+neiztOacrOS/oeaBr+S9nOWHuuaIluS4jeS9nOWHuuS7u+S9leihjOeC
+uuOAguWmguaenOmWo+S4i+mMr+iqpOWcsOaUtuWIsOacrOS/oeaBr++8jOiri+iBr+e1oeeZvOS/
+oeS6uuS4puW+nuS7u+S9lembu+iFpuOAgeejgeeJh+OAgeejgeein+aIluWFtuWug+WtmOWEsuij
+nee9ruaIluWqkumrlOS4reWIqumZpOacrOS/oeaBr+OAggoKLS0tLS0tLS0tLS0tLS0tLS0tLS0t
+LS0tLS0tLS0tCgpNZXNzYWdlOiAyCkRhdGU6IEZyaSwgMjcgTWFyIDIwMjAgMTA6MDc6MjUgKzAx
+MDAKRnJvbTogSmFuIEtpc3prYSA8amFuLmtpc3prYUB3ZWIuZGU+ClRvOiBKb25hIE9zdGVybWFu
+biA8Sm9uYS5Pc3Rlcm1hbm5AamFuenRlYy5jb20+LCAieGVub21haUB4ZW5vbWFpLm9yZyIKICAg
+ICAgIDx4ZW5vbWFpQHhlbm9tYWkub3JnPgpTdWJqZWN0OiBSZTogRGlyZWN0b3J5IC9wcm9jL3hl
+bm9tYWkvcmVnaXN0cnkvcnRpcGMveGRkcCBkb2VzIG5vdAogICAgICAgZXhpc3QKTWVzc2FnZS1J
+RDogPDQ0MjZiMzA3LTE4NGYtMDQyMi1hZmU4LTJkOWQ0MTYyNTYwOEB3ZWIuZGU+CkNvbnRlbnQt
+VHlwZTogdGV4dC9wbGFpbjsgY2hhcnNldD11dGYtODsgZm9ybWF0PWZsb3dlZAoKT24gMjYuMDMu
+MjAgMTE6MTIsIEpvbmEgT3N0ZXJtYW5uIHZpYSBYZW5vbWFpIHdyb3RlOgo+IEhlbGxvLAo+Cj4g
+b25lIG9mIG91ciBjdXN0b21lcnMgaGFzdCBoZSBwcm9ibGVtIHRoYXQgaGUgbmVlZHMgYSByZWdp
+c3RyeSBsaW5rIGluIHRoZSBkaXJlY3RvcnkgL3Byb2MveGVub21haS9yZWdpc3RyeS9ydGlwYy94
+ZGRwLgo+IEJ1dCB0aGUgZGlyZWN0b3J5IGRvZXMgbm90IGV4aXN0LCBvbmx5IC9wcm9jL3hlbm9t
+YWkvcmVnaXN0cnkvIGV4aXN0cy4KPgo+IFdoYXQgY291bGQgYmUgdGhlIHByb2JsZW0/Cj4gSXMg
+YSBzcGVjaWFsIGtlcm5lbCBjb25maWd1cmF0aW9uIHJlcXVpcmVkIG9yIGRvZXMgYSBzcGVjaWFs
+IGtlcm5lbCBtb2R1bGUgbmVlZCB0byBiZSBsb2FkZWQ/Cj4KClRoZSBsaW5rcyBzaG93IHVwIG9u
+Y2UgeGRkcCBpcyBiZWluZyB1c2VkLiBZb3UgY2FuIGNoZWNrIHRoYXQgdmlhCnNtb2tleSdzIHhk
+ZHAgdGVzdC4KCklmIHRoYXQgaXMgbm90IHRoZSBjYXNlLCBjb21wYXJlIGNvbmZpZ3VyYXRpb24g
+YW5kIHZlcnNpb25zIG9mIHRoZQpyZWZlcmVuY2UgeGVub21haS1pbWFnZXMgYWdhaW5zdCB5b3Vy
+IHNldHVwIGFuZCBzaGFyZSB5b3VyIGZpbmRpbmdzLgoKSmFuCgoKCi0tLS0tLS0tLS0tLS0tLS0t
+LS0tLS0tLS0tLS0tLQoKTWVzc2FnZTogMwpEYXRlOiBGcmksIDI3IE1hciAyMDIwIDEwOjA3OjE4
+ICswMTAwCkZyb206IEphbiBLaXN6a2EgPGphbi5raXN6a2FAd2ViLmRlPgpUbzogc29uZ3FpYW55
+dSA8c29uZ3FpYW55dUBjb3VudHJ5Z2FyZGVuLmNvbS5jbj4sCiAgICAgICAieGVub21haUB4ZW5v
+bWFpLm9yZyIgPHhlbm9tYWlAeGVub21haS5vcmc+ClN1YmplY3Q6IFJlOiBIZWxsb++8jEV2ZXJ5
+b25l77yBd2hlbiBJIHVzaW5nIEktcGlwZSB0cmFjZe+8jCBJIGhhdmUKICAgICAgIHNvbWUgcHJv
+YmxlbXMgYWJvdXQgaXTvvIxQbGVhc2UgZ2l2ZSBtZSBzb21lIHN1Z2dlc3Rpb25z44CCSW4KICAg
+ICAgIGFkZGl0aW9uLCBob3cgaXMgdGhlIGZyb3plbiB0b29sIHVzZWQ/IFdoeSBkb2VzIHRoZSBk
+YXRhIG9idGFpbmVkIGJ5CiAgICAgICBjYXQgZnJvemVuIG5vdCBjaGFuZ2Ugd2hlbiBJIHJ1biB0
+aGUgaW50ZW5zaXR5IGRlbW8/Ck1lc3NhZ2UtSUQ6IDxlYzg4NDg5OC1mMjcyLWViYjQtNzlmNS0w
+NjI3NmNjZDY3MzRAd2ViLmRlPgpDb250ZW50LVR5cGU6IHRleHQvcGxhaW47IGNoYXJzZXQ9dXRm
+LTg7IGZvcm1hdD1mbG93ZWQKCk9uIDI1LjAzLjIwIDEwOjA2LCBzb25ncWlhbnl1IHZpYSBYZW5v
+bWFpIHdyb3RlOgo+IFdoZW4gSSB1c2UgdGhlIG1heCB0b29sLCB0aGUgbWF4aW11bSB2YWx1ZSBv
+ZiBjYXQgaXMgYWx3YXlzIGluIHRoZSBmdW5jdGlvbiBpcGlwZV90ZXN0X3Jvb3QgKyAweDAuIEkg
+ZG9uJ3QgdGhpbmsgdGhlIGRlbW8gb24gdGhlIHdpa2kgd2Vic2l0ZSBpcyBsaWtlIHRoaXMuIFdo
+YXQncyB0aGUgbWF0dGVyPwo+Cj4gMeOAgSAgICAgICAgICAgICAgVHlwZSAgICBVc2VyIFZhbC4g
+ICBUaW1lICAgIERlbGF5ICBGdW5jdGlvbiAoUGFyZW50KQo+Cj4gMuOAgSAgICAgICAgICAgICAj
+ZnVuYyAgICAgICAgICAgICAgICAgIC0xICAgIDAuMDk4ICBpcGlwZV91bnN0YWxsX3Jvb3QrMHgw
+IChpcGlwZV9yZXN0b3JlX3Jvb3QrMHgxYykKPgo+IDPjgIEgICAgICAgICAgIHwgI2JlZ2luICAg
+MHg4MDAwMDAwMCAgICAtMSAgICAwLjEwOSAgaXBpcGVfdW5zdGFsbF9yb290KzB4NTEgKGlwaXBl
+X3Jlc3RvcmVfcm9vdCsweDFjKQo+Cj4gNOOAgSAgICAgICAgICAgfCAjZnVuYyAgICAgICAgICAg
+ICAgICAgICAwICAgIDAuMTQ3ICBpcGlwZV9yb290X29ubHkrMHgwIChpcGlwZV91bnN0YWxsX3Jv
+b3QrMHgxNikKPgo+IDXjgIEgICAgICAgICAgIHwgK2VuZCAgICAgMHg4MDAwMDAwMCAgICAgMCAg
+ICAwLjEwNyAgaXBpcGVfdHJhY2VfZW5kKzB4MTQgKGlwaXBlX3Vuc3RhbGxfcm9vdCsweDQyKQo+
+Cj4gNuOAgSAgICAgICAgICAgICArZnVuYyAgICAgICAgICAgICAgICAgICAwICAgIDAuMTIyICBt
+dXRleF91bmxvY2srMHgwIChuX3R0eV9yZWFkKzB4MmZiKQo+Cj4gN+OAgSAgICAgICAgICAgICAr
+ZnVuYyAgICAgICAgICAgICAgICAgICAwICAgIDAuMTA3ICB0dHlfbGRpc2NfZGVyZWYrMHgwICh0
+dHlfcmVhZCsweGE0KQo+Cj4gOOOAgSAgICAgICAgICAgICArZnVuYyAgICAgICAgICAgICAgICAg
+ICAwICAgIDAuMTA4ICBsZHNlbV91cF9yZWFkKzB4MCAodHR5X2xkaXNjX2RlcmVmKzB4MTYpCj4K
+PiA544CBICAgICAgICAgICAgICtmdW5jICAgICAgICAgICAgICAgICAgIDAgICAgMC4xMTAgIGt0
+aW1lX2dldF9yZWFsX3NlY29uZHMrMHgwICh0dHlfcmVhZCsweGFlKQo+Cj4gMTDjgIEgICAgICAg
+ICAgK2Z1bmMgICAgICAgICAgICAgICAgICAgMCAgICAwLjEwOSAgX19mc25vdGlmeV9wYXJlbnQr
+MHgwICh2ZnNfcmVhZCsweDEwYSkKPgo+IDEx44CBICAgICAgICAgICtmdW5jICAgICAgICAgICAg
+ICAgICAgIDAgICAgMC4xMTIgIGZzbm90aWZ5KzB4MCAodmZzX3JlYWQrMHgxMjMpCj4KPiAxMuOA
+gSAgICAgICA+fCArYmVnaW4gICAweDgwMDAwMDAwICAgICAwICAgIDAuNDYwICBkb19zeXNjYWxs
+XzY0KzB4MmM3IChlbnRyeV9TWVNDQUxMXzY0X2FmdGVyX2h3ZnJhbWUrMHg0OSkKPgo+IDEz44CB
+ICAgICAgIDp8ICtmdW5jICAgICAgICAgICAgICAgICAgIDAhICA1NS40MDkgIGlwaXBlX3Rlc3Rf
+cm9vdCsweDAgKHRyYWNlX2hhcmRpcnFzX29uX3ZpcnRfY2FsbGVyKzB4NzkpCj4KPiAxNOOAgSAg
+ICAgICA6fCArZnVuYyAgICAgICAgICAgICAgICAgIDU1ICAgIDAuMTI3ICBfX2lwaXBlX2hhbmRs
+ZV9pcnErMHgwIChhcGljX3RpbWVyX2ludGVycnVwdCsweDEyKQo+Cj4gMTXjgIEgICAgICAgOnwg
+K2JlZ2luICAgMHgwMDAwMTEwMyAgICA1NSAgICAwLjEzNiAgPDdmOWU1ZWVlMzhjND4gKGFwaWNf
+dGltZXJfaW50ZXJydXB0KzB4MTIpCj4KClRoaXMgcGF0dGVybiBsb29rcyB0byBtZSBsaWtlIHdl
+IGFyZSBtaXNzaW5nIGFuICJpbnRlcnJ1cHRzIGVuYWJsZSIKKCJlbmQiKSBpbnN0cnVtZW50YXRp
+b24uCgpXaGF0IGlzIHlvdXIgY29uZmlndXJhdGlvbiwgd2hpY2ggdmVyc2lvbnMgYXJlIHlvdSB1
+c2luZz8KCj4gMTbjgIEgICAgICAgOnwgK2Z1bmMgICAgICAgICAgICAgICAgICA1NiAgICAwLjEx
+NiAgX19pcGlwZV9kaXNwYXRjaF9pcnErMHgwIChfX2lwaXBlX2hhbmRsZV9pcnErMHhhNikKPgo+
+IDE344CBICAgICAgIDp8ICtmdW5jICAgICAgICAgICAgICAgICAgNTYgICAgMC4xMzkgIGlycV90
+b19kZXNjKzB4MCAoX19pcGlwZV9kaXNwYXRjaF9pcnErMHgzNSkKPgo+IDE444CBICAgICAgIDp8
+ICtmdW5jICAgICAgICAgICAgICAgICAgNTYgICAgMC4xNDQgIF9faXBpcGVfYWNrX2hydGltZXJf
+aXJxKzB4MCAoX19pcGlwZV9kaXNwYXRjaF9pcnErMHgxMDIpCj4KPiAxOeOAgSAgICAgICA6fCAr
+ZnVuYyAgICAgICAgICAgICAgICAgIDU2ICAgIDAuMTg3ICBsYXBpY19pdGltZXJfYWNrKzB4MCAo
+X19pcGlwZV9hY2tfaHJ0aW1lcl9pcnErMHg1ZikKPgo+IDIw44CBICAgICAgIDp8ICtmdW5jICAg
+ICAgICAgICAgICAgICAgNTYgICAgMC4xNjMgIGRpc3BhdGNoX2lycV9oZWFkKzB4MCAoX19pcGlw
+ZV9kaXNwYXRjaF9pcnErMHhiNikKPgo+IDIx44CBICAgICAgIDp8IyBmdW5jICAgICAgICAgICAg
+ICAgICAgNTYgICAgMC4xNjAgIHhuaW50cl9jb3JlX2Nsb2NrX2hhbmRsZXIrMHgwIChkaXNwYXRj
+aF9pcnFfaGVhZCsweDlkKQo+Cj4gMjLjgIEgICAgICAgOnwjIGZ1bmMgICAgICAgICAgICAgICAg
+ICA1NyAgICAwLjEzNCAgeG5sb2NrX2RiZ19wcmVwYXJlX2FjcXVpcmUrMHgwICh4bmludHJfY29y
+ZV9jbG9ja19oYW5kbGVyKzB4Mjk2KQo+Cj4gMjPjgIEgICAgICAgOnwjIGZ1bmMgICAgICAgICAg
+ICAgICAgICA1NyAgICAwLjEwNyAgeG5sb2NrX2RiZ19hY3F1aXJlZCsweDAgKHhuaW50cl9jb3Jl
+X2Nsb2NrX2hhbmRsZXIrMHgyZGYpCj4KPiAyNOOAgSAgICAgICA6fCMgZnVuYyAgICAgICAgICAg
+ICAgICAgIDU3ICAgIDAuMTcxICB4bmNsb2NrX3RpY2srMHgwICh4bmludHJfY29yZV9jbG9ja19o
+YW5kbGVyKzB4ZjEpCj4KPiAyNeOAgSAgICAgICA6fCMgZnVuYyAgICAgICAgICAgICAgICAgIDU3
+ICAgIDAuMTA3ICBjb2JhbHRfdGltZXJfaGFuZGxlcisweDAgKHhuY2xvY2tfdGljaysweGM1KQo+
+Cj4gMjbjgIEgICAgICAgOnwjIGZ1bmMgICAgICAgICAgICAgICAgICA1NyAgICAwLjEwNiAgY29i
+YWx0X3NpZ25hbF9zZW5kX3BpZCsweDAgKGNvYmFsdF90aW1lcl9oYW5kbGVyKzB4MmEpCj4KPiAy
+N+OAgSAgICAgICA6fCMgZnVuYyAgICAgICAgICAgICAgICAgIDU3ICAgIDAuMTE3ICBjb2JhbHRf
+dGhyZWFkX2ZpbmQrMHgwIChjb2JhbHRfc2lnbmFsX3NlbmRfcGlkKzB4MTIpCj4KPiAyOOOAgSAg
+ICAgICA6fCMgZnVuYyAgICAgICAgICAgICAgICAgIDU3ICAgIDAuMTE5ICBjb2JhbHRfc2lnbmFs
+X3NlbmQrMHgwIChjb2JhbHRfc2lnbmFsX3NlbmRfcGlkKzB4MjQpCj4KPiAyOeOAgSAgICAgICA6
+fCMgZnVuYyAgICAgICAgICAgICAgICAgIDU3ICAgIDAuMTI1ICB4bnN5bmNoX3dha2V1cF9vbmVf
+c2xlZXBlcisweDAgKGNvYmFsdF9zaWduYWxfc2VuZCsweGE2KQo+Cj4gMzDjgIEgICAgICAgOnwj
+IGZ1bmMgICAgICAgICAgICAgICAgICA1OCAgICAwLjEzOSAgeG50aHJlYWRfcmVzdW1lKzB4MCAo
+eG5zeW5jaF93YWtldXBfb25lX3NsZWVwZXIrMHhkYSkKPgo+IDMx44CBICAgICAgIDp8IyBbIDcw
+OTJdIGFsdC1zYW0gOTkgICAgNTggICAgMC4xNzggIHhudGhyZWFkX3Jlc3VtZSsweGE5ICh4bnN5
+bmNoX3dha2V1cF9vbmVfc2xlZXBlcisweGRhKQo+Cj4gMzLjgIEgICAgICAgOnwjIGZ1bmMgICAg
+ICAgICAgICAgICAgICA1OCAgICAwLjExNyAgeG50aW1lcnFfaW5zZXJ0KzB4MCAoeG5jbG9ja190
+aWNrKzB4MjFjKQo+Cj4gMzPjgIEgICAgICAgOnwjIGZ1bmMgICAgICAgICAgICAgICAgICA1OCAg
+ICAwLjA5OCAgeG5jbG9ja19jb3JlX2xvY2FsX3Nob3QrMHgwICh4bmNsb2NrX3RpY2srMHgyNDUp
+Cj4KPiAzNOOAgSAgICAgICA6fCMgZXZlbnQgICB0aWNrQDE1NSAgICAgIDU4ICAgIDAuMTAyICB4
+bmNsb2NrX2NvcmVfbG9jYWxfc2hvdCsweDY3ICh4bmNsb2NrX3RpY2srMHgyNDUpCj4KPiAzNeOA
+gSAgICAgICA6fCMgZnVuYyAgICAgICAgICAgICAgICAgIDU4ICAgIDAuMTUwICBpcGlwZV90aW1l
+cl9zZXQrMHgwICh4bmNsb2NrX2NvcmVfbG9jYWxfc2hvdCsweDZmKQo+Cj4gMzbjgIEgICAgICAg
+OnwjIGZ1bmMgICAgICAgICAgICAgICAgICA1OCAgICAwLjE3NyAgbGFwaWNfbmV4dF9kZWFkbGlu
+ZSsweDAgKGlwaXBlX3RpbWVyX3NldCsweDc5KQo+Cj4gMzfjgIEgICAgICAgOnwjIGZ1bmMgICAg
+ICAgICAgICAgICAgICA1OSAgICAwLjEyNyAgeG5sb2NrX2RiZ19yZWxlYXNlKzB4MCAoeG5pbnRy
+X2NvcmVfY2xvY2tfaGFuZGxlcisweDExMCkKPgo+IDM444CBICAgICAgIDp8IyBmdW5jICAgICAg
+ICAgICAgICAgICAgNTkgICAgMC4xNTcgIF9fX3huc2NoZWRfcnVuKzB4MCAoeG5pbnRyX2NvcmVf
+Y2xvY2tfaGFuZGxlcisweDMzNikKPgo+IDM544CBICAgICAgIDp8IyBmdW5jICAgICAgICAgICAg
+ICAgICAgNTkgICAgMC4xMjIgIHhubG9ja19kYmdfcHJlcGFyZV9hY3F1aXJlKzB4MCAoX19feG5z
+Y2hlZF9ydW4rMHgzZmMpCj4KPiA0MOOAgSAgICAgICA6fCMgZnVuYyAgICAgICAgICAgICAgICAg
+IDU5ICAgIDAuMTA1ICB4bmxvY2tfZGJnX2FjcXVpcmVkKzB4MCAoX19feG5zY2hlZF9ydW4rMHg0
+NDQpCj4KPiA0MeOAgSAgICAgICA6fCMgWyA3MDUzXSBiYXNoICAgIC0xICAgIDU5ICAgIDAuMTA1
+ICBfX194bnNjaGVkX3J1bisweGUzICh4bmludHJfY29yZV9jbG9ja19oYW5kbGVyKzB4MzM2KQo+
+Cj4gNDLjgIEgICAgICAgOnwjIGZ1bmMgICAgICAgICAgICAgICAgICA1OSAgICAwLjEwOSAgeG5z
+Y2hlZF9waWNrX25leHQrMHgwIChfX194bnNjaGVkX3J1bisweDEyNCkKPgo+IDQz44CBICAgICAg
+IDp8IyBmdW5jICAgICAgICAgICAgICAgICAgNTkgICAgMC4xMzUgIF9faXBpcGVfbm90aWZ5X3Zt
+X3ByZWVtcHRpb24rMHgwIChfX194bnNjaGVkX3J1bisweDUxNykKPgo+IDQ044CBICAgICAgIDp8
+IyBmdW5jICAgICAgICAgICAgICAgICAgNTkgICAgMC4xMTAgIHhuYXJjaF9sZWF2ZV9yb290KzB4
+MCAoX19feG5zY2hlZF9ydW4rMHg1NGMpCj4KPiA0NeOAgSAgICAgICA6fCMgZnVuYyAgICAgICAg
+ICAgICAgICAgIDU5ICAgIDAuMTA5ICB4bnRpbWVyX3N0YXJ0KzB4MCAoX19feG5zY2hlZF9ydW4r
+MHg1NmYpCj4KPiA0NuOAgSAgICAgICA6fCMgZnVuYyAgICAgICAgICAgICAgICAgIDYwICAgIDAu
+MTA4ICB4bmNsb2NrX2NvcmVfbnNfdG9fdGlja3MrMHgwICh4bnRpbWVyX3N0YXJ0KzB4MWI4KQo+
+Cj4gNDfjgIEgICAgICAgOnwjIGZ1bmMgICAgICAgICAgICAgICAgICA2MCAgICAwLjEwNCAgeG50
+aW1lcl9lbnF1ZXVlX2FuZF9wcm9ncmFtKzB4MCAoeG50aW1lcl9zdGFydCsweGZlKQo+Cj4gNDjj
+gIEgICAgICAgOnwjIGZ1bmMgICAgICAgICAgICAgICAgICA2MCAgICAwLjExMCAgeG50aW1lcnFf
+aW5zZXJ0KzB4MCAoeG50aW1lcl9lbnF1ZXVlX2FuZF9wcm9ncmFtKzB4MTgpCj4KPiA0OeOAgSAg
+ICAgICA6fCMgZnVuYyAgICAgICAgICAgICAgICAgIDYwICAgIDAuMTMyICB4bnRpbWVyX2hlYWRp
+bmdfcCsweDAgKHhudGltZXJfZW5xdWV1ZV9hbmRfcHJvZ3JhbSsweDJkKQo+Cj4gNTDjgIEgICAg
+ICAgOnwjIGZ1bmMgICAgICAgICAgICAgICAgICA2MCAgICAwLjExNSAgeG5hcmNoX3N3aXRjaF90
+bysweDAgKF9fX3huc2NoZWRfcnVuKzB4MWRhKQo+Cj4gNTHjgIEgICAgICAgOnwjIGZ1bmMgICAg
+ICAgICAgICAgICAgICA2MCAgICAwLjE1OCAgc3dpdGNoX21tX2lycXNfb2ZmKzB4MCAoeG5hcmNo
+X3N3aXRjaF90bysweDJmKQo+Cj4gNTLjgIEgICAgICAgOnwjIGZ1bmMgICAgICAgICAgICAgICAg
+ICA2MCAgICAwLjQ0NSAgbG9hZF9uZXdfbW1fY3IzKzB4MCAoc3dpdGNoX21tX2lycXNfb2ZmKzB4
+MzI2KQo+Cj4gNTPjgIEgICAgICAgOnwjIGZ1bmMgICAgICAgICAgICAgICAgICA2MSAgICAwLjE0
+NSAgeG50aHJlYWRfc3dpdGNoX2ZwdSsweDAgKF9fX3huc2NoZWRfcnVuKzB4MjJkKQo+Cj4gNTTj
+gIEgICAgICAgOnwjIGZ1bmMgICAgICAgICAgICAgICAgICA2MSAgICAwLjA5NSAgeG5hcmNoX3N3
+aXRjaF9mcHUrMHgwICh4bnRocmVhZF9zd2l0Y2hfZnB1KzB4MmQpCj4KPiA1NeOAgSAgICAgICA6
+fCMgWyA3MDkyXSBhbHQtc2FtIDk5ICAgIDYxICAgIDAuMjI1ICBfX194bnNjaGVkX3J1bisweDI0
+ZCAoeG50aHJlYWRfc3VzcGVuZCsweDQ5NykKPgo+IDU244CBICAgICAgIDp8IyBmdW5jICAgICAg
+ICAgICAgICAgICAgNjEgICAgMC4xMTEgIGNvYmFsdF90aW1lcl9kZWxpdmVyKzB4MCAoc2lnbmFs
+X3dhaXQrMHg1NTYpCj4KPiA1N+OAgSAgICAgICA6fCMgZnVuYyAgICAgICAgICAgICAgICAgIDYx
+ICAgIDAuMTA2ICB4bnRpbWVyX2dldF9vdmVycnVucysweDAgKGNvYmFsdF90aW1lcl9kZWxpdmVy
+KzB4NmQpCj4KPiA1OOOAgSAgICAgICA6fCMgZnVuYyAgICAgICAgICAgICAgICAgIDYxICAgIDAu
+MTEwICB4bmNsb2NrX2NvcmVfbnNfdG9fdGlja3MrMHgwICh4bnRpbWVyX2dldF9vdmVycnVucysw
+eDM1KQo+Cj4gNTnjgIEgICAgICAgOnwjIGZ1bmMgICAgICAgICAgICAgICAgICA2MiAgICAwLjEy
+OCAgeG5sb2NrX2RiZ19yZWxlYXNlKzB4MCAoc2lnbmFsX3dhaXQrMHg1MjgpCj4KPiA2MOOAgSAg
+ICAgICA6fCMgZnVuYyAgICAgICAgICAgICAgICAgIDYyICAgIDAuMTEwICBfX2lwaXBlX3Jlc3Rv
+cmVfaGVhZCsweDAgKHNpZ25hbF93YWl0KzB4Mjk0KQo+Cj4gNjHjgIEgICAgICAgPHwrIGVuZCAg
+ICAgMHg4MDAwMDAwMCAgICA2MiAgICAwLjI3OCAgaXBpcGVfdHJhY2VfZW5kKzB4MTQgKF9faXBp
+cGVfcmVzdG9yZV9oZWFkKzB4NWIpCj4KPiA2MuOAgSAgICAgICAgfCsgYmVnaW4gICAweDgwMDAw
+MDAwICAgIDYyICAgIDAuMDAwICBkb19zeXNjYWxsXzY0KzB4NzEgKGVudHJ5X1NZU0NBTExfNjRf
+YWZ0ZXJfaHdmcmFtZSsweDQ5KQo+Cj4KPgo+IEluIGFkZGl0aW9uLCBob3cgaXMgdGhlIGZyb3pl
+biB0b29sIHVzZWQ/IFdoeSBkb2VzIHRoZSBkYXRhIG9idGFpbmVkIGJ5IGNhdCBmcm96ZW4gbm90
+IGNoYW5nZSB3aGVuIEkgcnVuIHRoZSBpbnRlbnNpdHkgZGVtbz8KPiBJLXBpcGUgZnJvemVuIGJh
+Y2stdHJhY2luZyBzZXJ2aWNlIG9uIDQuMTkuODQtYnJvcy1kZWJ1Zy9pcGlwZSByZWxlYXNlICM4
+Cj4gLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0t
+LS0tLS0tCj4gQ1BVOiAwLCBGcmVlemU6IDI0NTM2Nzg4MzkzODQ4MCBjeWNsZXMsIFRyYWNlIFBv
+aW50czogMzAgKCsxMCkKPiBDYWxpYnJhdGVkIG1pbmltdW0gdHJhY2UtcG9pbnQgb3ZlcmhlYWQ6
+IDAuMDY0IHVzCj4KPiArLS0tLS0gSGFyZCBJUlFzICgnfCc6IGxvY2tlZCkKPiB8Ky0tIFhlbm9t
+YWkKPiB8fCstIExpbnV4ICgnKic6IGRvbWFpbiBzdGFsbGVkLCAnKyc6IGN1cnJlbnQsICcjJzog
+Y3VycmVudCtzdGFsbGVkKQo+IHx8fCAgICAgICAgICAgICAgICAgICAgICAgICstLS0tLS0tLS0t
+IERlbGF5IGZsYWcgKCcrJzogPiAxIHVzLCAnISc6ID4gMTAgdXMpCj4gfHx8ICAgICAgICAgICAg
+ICAgICAgICAgICAgfCAgICAgICAgKy0gTk1JIG5vaXNlICgnTicpCj4gfHx8ICAgICAgICAgICAg
+ICAgICAgICAgICAgfCAgICAgICAgfAo+ICAgICAgVHlwZSAgICBVc2VyIFZhbC4gICBUaW1lICAg
+IERlbGF5ICBGdW5jdGlvbiAoUGFyZW50KQo+IDogICtmdW5jICAgICAgICAgICAgICAgICAgLTUg
+ICAgMC4xMjAgIHZmc193cml0ZSsweDAgKGtzeXNfd3JpdGUrMHg1YykKPiA6ICArZnVuYyAgICAg
+ICAgICAgICAgICAgIC01ICAgIDAuMTM0ICByd192ZXJpZnlfYXJlYSsweDAgKHZmc193cml0ZSsw
+eDc3KQo+IDogICtmdW5jICAgICAgICAgICAgICAgICAgLTUgICAgMC4xNjMgIHNlY3VyaXR5X2Zp
+bGVfcGVybWlzc2lvbisweDAgKHJ3X3ZlcmlmeV9hcmVhKzB4NGUpCj4gOiAgK2Z1bmMgICAgICAg
+ICAgICAgICAgICAtNSAgICAwLjExMCAgYXBwYXJtb3JfZmlsZV9wZXJtaXNzaW9uKzB4MCAoc2Vj
+dXJpdHlfZmlsZV9wZXJtaXNzaW9uKzB4M2IpCj4gOiAgK2Z1bmMgICAgICAgICAgICAgICAgICAt
+NSAgICAwLjEzNiAgY29tbW9uX2ZpbGVfcGVybSsweDAgKGFwcGFybW9yX2ZpbGVfcGVybWlzc2lv
+bisweDFhKQo+IDogICtmdW5jICAgICAgICAgICAgICAgICAgLTQgICAgMC4xNjAgIGFhX2ZpbGVf
+cGVybSsweDAgKGNvbW1vbl9maWxlX3Blcm0rMHg0ZCkKPiA6ICArZnVuYyAgICAgICAgICAgICAg
+ICAgIC00ICAgIDAuMTA1ICBfX3NiX3N0YXJ0X3dyaXRlKzB4MCAodmZzX3dyaXRlKzB4MTk1KQo+
+IDogICtmdW5jICAgICAgICAgICAgICAgICAgLTQgICAgMC4wOTkgIGlwaXBlX3Jvb3Rfb25seSsw
+eDAgKF9fc2Jfc3RhcnRfd3JpdGUrMHgzZikKPiA6fCArYmVnaW4gICAweDgwMDAwMDAxICAgIC00
+ICAgIDAuMTE5ICBpcGlwZV9yb290X29ubHkrMHg3OSAoX19zYl9zdGFydF93cml0ZSsweDNmKQo+
+IDp8ICtlbmQgICAgIDB4ODAwMDAwMDEgICAgLTQgICAgMC4xMTMgIGlwaXBlX3RyYWNlX2VuZCsw
+eDE0IChpcGlwZV9yb290X29ubHkrMHg2MykKPiA6ICArZnVuYyAgICAgICAgICAgICAgICAgIC00
+ICAgIDAuMTA2ICBfY29uZF9yZXNjaGVkKzB4MCAoX19zYl9zdGFydF93cml0ZSsweDQ0KQo+IDog
+ICtmdW5jICAgICAgICAgICAgICAgICAgLTQgICAgMC4xMDcgIHJjdV9hbGxfcXMrMHgwIChfY29u
+ZF9yZXNjaGVkKzB4MTkpCj4gOiAgK2Z1bmMgICAgICAgICAgICAgICAgICAtNCAgICAwLjEzOCAg
+X192ZnNfd3JpdGUrMHgwICh2ZnNfd3JpdGUrMHhiOCkKPiA6ICArZnVuYyAgICAgICAgICAgICAg
+ICAgIC0zICAgIDAuMTgzICBwcm9jX3JlZ193cml0ZSsweDAgKF9fdmZzX3dyaXRlKzB4M2EpCj4g
+OiAgK2Z1bmMgICAgICAgICAgICAgICAgICAtMyAgICAwLjEyMSAgX19pcGlwZV9mcm96ZW5fY3Ry
+bCsweDAgKHByb2NfcmVnX3dyaXRlKzB4NDUpCj4gOiAgK2Z1bmMgICAgICAgICAgICAgICAgICAt
+MyAgICAwLjEwOCAgX19jaGVja19vYmplY3Rfc2l6ZSsweDAgKF9faXBpcGVfZnJvemVuX2N0cmwr
+MHg0MikKPiA6ICArZnVuYyAgICAgICAgICAgICAgICAgIC0zICAgIDAuNjE0ICBjaGVja19zdGFj
+a19vYmplY3QrMHgwIChfX2NoZWNrX29iamVjdF9zaXplKzB4NDUpCj4gOiAgK2Z1bmMgICAgICAg
+ICAgICAgICAgICAtMiAgICAwLjExNSAgbXV0ZXhfbG9jaysweDAgKF9faXBpcGVfZnJvemVuX2N0
+cmwrMHg5MikKPiA6ICArZnVuYyAgICAgICAgICAgICAgICAgIC0yICAgIDAuMTAwICBpcGlwZV9y
+b290X29ubHkrMHgwIChtdXRleF9sb2NrKzB4MTIpCj4gOnwgK2JlZ2luICAgMHg4MDAwMDAwMSAg
+ICAtMiAgICAwLjEzNCAgaXBpcGVfcm9vdF9vbmx5KzB4NzkgKG11dGV4X2xvY2srMHgxMikKPiA6
+fCArZW5kICAgICAweDgwMDAwMDAxICAgIC0yICAgIDAuMTIyICBpcGlwZV90cmFjZV9lbmQrMHgx
+NCAoaXBpcGVfcm9vdF9vbmx5KzB4NjMpCj4gOiAgK2Z1bmMgICAgICAgICAgICAgICAgICAtMiAg
+ICAwLjExNyAgX2NvbmRfcmVzY2hlZCsweDAgKG11dGV4X2xvY2srMHgxNykKPiA6ICArZnVuYyAg
+ICAgICAgICAgICAgICAgIC0yICAgIDAuMTMzICByY3VfYWxsX3FzKzB4MCAoX2NvbmRfcmVzY2hl
+ZCsweDE5KQo+IDogICtmdW5jICAgICAgICAgICAgICAgICAgLTIgICAgMC4xMTAgIGlwaXBlX3Ry
+YWNlX2Zyb3plbl9yZXNldCsweDAgKF9faXBpcGVfZnJvemVuX2N0cmwrMHg5NykKPiA6ICArZnVu
+YyAgICAgICAgICAgICAgICAgIC0yICAgIDAuMTA0ICBfX2lwaXBlX2dsb2JhbF9wYXRoX2xvY2sr
+MHgwIChpcGlwZV90cmFjZV9mcm96ZW5fcmVzZXQrMHgyMSkKPiA6ICArZnVuYyAgICAgICAgICAg
+ICAgICAgIC0yICAgIDAuMTEwICBfX2lwaXBlX3NwaW5fbG9ja19pcnFzYXZlKzB4MCAoX19pcGlw
+ZV9nbG9iYWxfcGF0aF9sb2NrKzB4MTUpCj4gOnwgK2JlZ2luICAgMHg4MDAwMDAwMSAgICAtMSsg
+ICAxLjY0NCAgX19pcGlwZV9zcGluX2xvY2tfaXJxc2F2ZSsweDcyIChfX2lwaXBlX2dsb2JhbF9w
+YXRoX2xvY2srMHgxNSkKPiA6fCAjZnVuYyAgICAgICAgICAgICAgICAgICAwICAgIDAuMTUxICBf
+X2lwaXBlX3NwaW5fdW5sb2NrX2lycWNvbXBsZXRlKzB4MCAoX19pcGlwZV9nbG9iYWxfcGF0aF91
+bmxvY2srMHg3MykKPiA6fCArZW5kICAgICAweDgwMDAwMDAxICAgICAwICAgIDAuMTEzICBpcGlw
+ZV90cmFjZV9lbmQrMHgxNCAoX19pcGlwZV9zcGluX3VubG9ja19pcnFjb21wbGV0ZSsweDM3KQo+
+IDwgICtmcmVlemUgIDB4ZmZmZmZmZmZmZmZmZmZmZiAgICAgMCAgICAwLjEzOSAgcHJvY19yZWdf
+d3JpdGUrMHg0NSAoX192ZnNfd3JpdGUrMHgzYSkKPiAgICAgK2Z1bmMgICAgICAgICAgICAgICAg
+ICAgMCAgICAwLjEyMiAgbXV0ZXhfdW5sb2NrKzB4MCAoX19pcGlwZV9mcm96ZW5fY3RybCsweGIx
+KQo+ICAgICArZnVuYyAgICAgICAgICAgICAgICAgICAwICAgIDAuMTEwICB1bnVzZV9wZGUrMHgw
+IChwcm9jX3JlZ193cml0ZSsweDUwKQo+ICAgICArZnVuYyAgICAgICAgICAgICAgICAgICAwICAg
+IDAuMTEwICBfX2Zzbm90aWZ5X3BhcmVudCsweDAgKHZmc193cml0ZSsweDE0MSkKPiAgICAgK2Z1
+bmMgICAgICAgICAgICAgICAgICAgMCAgICAwLjEyNyAgZnNub3RpZnkrMHgwICh2ZnNfd3JpdGUr
+MHgxNWEpCj4gICAgICtmdW5jICAgICAgICAgICAgICAgICAgIDAgICAgMC4xMTUgIF9fc2JfZW5k
+X3dyaXRlKzB4MCAodmZzX3dyaXRlKzB4MTZlKQo+IHwgK2JlZ2luICAgMHg4MDAwMDAwMCAgICAg
+MCAgICAwLjQ4MyAgZG9fc3lzY2FsbF82NCsweDJjNyAoZW50cnlfU1lTQ0FMTF82NF9hZnRlcl9o
+d2ZyYW1lKzB4NDkpCj4gfCArZnVuYyAgICAgICAgICAgICAgICAgICAxICAgIDEuMTA5ICBpcGlw
+ZV90ZXN0X3Jvb3QrMHgwICh0cmFjZV9oYXJkaXJxc19vbl92aXJ0X2NhbGxlcisweDc5KQo+IHwg
+K2Z1bmMgICAgICAgICAgICAgICAgICAgMiAgICAwLjEzOSAgZG9fc3lzY2FsbF82NCsweDAgKGVu
+dHJ5X1NZU0NBTExfNjRfYWZ0ZXJfaHdmcmFtZSsweDQ5KQo+IHwgK2VuZCAgICAgMHg4MDAwMDAw
+MCAgICAgMiAgICAwLjExMyAgaXBpcGVfdHJhY2VfZW5kKzB4MTQgKGRvX3N5c2NhbGxfNjQrMHg3
+ZCkKPiAgICAgK2Z1bmMgICAgICAgICAgICAgICAgICAgMiAgICAwLjAwMCAgaXBpcGVfaGFuZGxl
+X3N5c2NhbGwrMHgwIChkb19zeXNjYWxsXzY0KzB4NDYpCj4gQ2FuIHlvdSB0ZWxsIG1lIHdoYXQg
+dGhlIGluZm9ybWF0aW9uIHJlZmxlY3RzPwoKRGlkIHlvdSBzdHVkeQpodHRwczovL2dpdGxhYi5k
+ZW54LmRlL1hlbm9tYWkveGVub21haS8tL3dpa2lzL1VzaW5nX1RoZV9JX1BpcGVfVHJhY2VyCmFs
+cmVhZHk/CgpKYW4KCgoKLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tCgpTdWJqZWN0OiBE
+aWdlc3QgRm9vdGVyCgoKCgotLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0KCkVuZCBvZiBY
+ZW5vbWFpIERpZ2VzdCwgVm9sIDk1LCBJc3N1ZSAyOQoqKioqKioqKioqKioqKioqKioqKioqKioq
+KioqKioqKioqKioqKioKCl9fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fClRoaXMgaW5m
+b3JtYXRpb24gbWF5IGNvbnRhaW4gY29uZmlkZW50aWFsIGFuZC9vciBwcml2aWxlZ2VkIG1hdGVy
+aWFsIGFuZCBpcyBvbmx5IHRyYW5zbWl0dGVkIGZvciB0aGUgaW50ZW5kZWQgcmVjaXBpZW50LiBB
+bnkgcmV2aWV3LCByZXRyYW5zbWlzc2lvbiwgY29udmVyc2lvbiB0byBoYXJkIGNvcHksIGNvcHlp
+bmcsIHJlcHJvZHVjdGlvbiwgY2lyY3VsYXRpb24sIHB1YmxpY2F0aW9uLCBkaXNzZW1pbmF0aW9u
+IG9yIG90aGVyIHVzZSBvZiwgb3IgdGFraW5nIG9mIGFueSBhY3Rpb24sIG9yIG9taXNzaW9uIHRv
+IHRha2UgYWN0aW9uLCBpbiByZWxpYW5jZSB1cG9uIHRoaXMgaW5mb3JtYXRpb24gYnkgcGVyc29u
+cyBvciBlbnRpdGllcyBvdGhlciB0aGFuIHRoZSBpbnRlbmRlZCByZWNpcGllbnQgaXMgcHJvaGli
+aXRlZC4gSWYgeW91IGhhdmUgcmVjZWl2ZWQgdGhpcyBtZXNzYWdlIGluIGVycm9yLCBwbGVhc2Ug
+Y29udGFjdCB0aGUgc2VuZGVyIGFuZCBkZWxldGUgdGhlIG1hdGVyaWFsIGZyb20gYW55IGNvbXB1
+dGVyLCBkaXNrIGRyaXZlLCBkaXNrZXR0ZSwgb3Igb3RoZXIgc3RvcmFnZSBkZXZpY2Ugb3IgbWVk
+aWEuCuacrOS/oeaBr+WPr+iDveWMheaLrOafkOS6m+S/neWvhueahOizh+aWme+8jOS4puS4lOWP
+queZvOmAgee1pueJueWumueahOaUtuS/oeS6uuOAguemgeatoumZpOeJueWumuaUtuS/oeS6uuS7
+peWklueahOWFtuS7luS7u+S9leS6uuWjq+aIluapn+ani+mWseiugOOAgei9ieeZvOOAgeWIl+WN
+sOOAgeikh+ijveOAgeWCs+mWseOAgeWHuueJiOOAgeaVo+aSreaIluS7peWFtuWug+aWueW8j+S9
+v+eUqOacrOS/oeaBr++8jOaIluS+neiztOacrOS/oeaBr+S9nOWHuuaIluS4jeS9nOWHuuS7u+S9
+leihjOeCuuOAguWmguaenOmWo+S4i+mMr+iqpOWcsOaUtuWIsOacrOS/oeaBr++8jOiri+iBr+e1
+oeeZvOS/oeS6uuS4puW+nuS7u+S9lembu+iFpuOAgeejgeeJh+OAgeejgeein+aIluWFtuWug+Wt
+mOWEsuijnee9ruaIluWqkumrlOS4reWIqumZpOacrOS/oeaBr+OAggotLS0tLS0tLS0tLS0tLSBu
+ZXh0IHBhcnQgLS0tLS0tLS0tLS0tLS0KQSBub24tdGV4dCBhdHRhY2htZW50IHdhcyBzY3J1YmJl
+ZC4uLgpOYW1lOiBteWNvbmZpZwpUeXBlOiBhcHBsaWNhdGlvbi9vY3RldC1zdHJlYW0KU2l6ZTog
+MjE5MTk4IGJ5dGVzCkRlc2M6IG5vdCBhdmFpbGFibGUKVVJMOiA8aHR0cDovL3hlbm9tYWkub3Jn
+L3BpcGVybWFpbC94ZW5vbWFpL2F0dGFjaG1lbnRzLzIwMjAwMzMwL2IzMjU5YzdkL2F0dGFjaG1l
+bnQub2JqPgo=
