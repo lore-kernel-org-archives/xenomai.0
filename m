@@ -1,15 +1,14 @@
+Subject: Re: Regarding Xenomai patch to the kernel 4.15.38
+References: <CAF_6Mayw_popagGGG14B+na6wtH2CFGeBnvYreRSUizQe14w6g@mail.gmail.com>
+ <a4469868-3c21-8efd-7469-a9cd6e025742@web.de>
+ <CAF_6Maycted8=dyTk42+DEJbrwzWKy4S_4vpnffyvB8yv6HQ2w@mail.gmail.com>
+From: Jan Kiszka <jan.kiszka@web.de>
+Message-ID: <fa9bbef6-7e9b-a249-f716-2f3afbc0d810@web.de>
+Date: Tue, 31 Mar 2020 10:03:18 +0200
 MIME-Version: 1.0
-References: <OFE47A3410.5F2DBC65-ONC125853B.0053B5B9@LocalDomain>
- <mailman.77.1585580886.1004.xenomai@xenomai.org>
- <mailman.78.1585585273.1004.xenomai@xenomai.org>
- <OFE64A70E5.1C5DA65E-ONC125853B.005BB303@LocalDomain>
- <mailman.81.1585587423.1004.xenomai@xenomai.org>
-In-Reply-To: <mailman.81.1585587423.1004.xenomai@xenomai.org>
-From: Greg Gallagher <greg@embeddedgreg.com>
-Date: Mon, 30 Mar 2020 13:20:51 -0400
-Message-ID: <CALLqZ8SXWxW3d_6Vh+Wh=54KUMKHGRCJ9MzVdC3Y=xds5wqrbw@mail.gmail.com>
-Subject: Re: Re: Odp: Re: Serial driver 16550a on Beaglebone Black
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <CAF_6Maycted8=dyTk42+DEJbrwzWKy4S_4vpnffyvB8yv6HQ2w@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
 Content-Transfer-Encoding: quoted-printable
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
@@ -19,139 +18,109 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: =?UTF-8?Q?Micha=C5=82_Hanusek?= <mhanusek@energotest.com.pl>
-Cc: Jan Kiszka <jan.kiszka@web.de>, "Xenomai@xenomai.org" <xenomai@xenomai.org>
+To: gopi ratnakaram <gopi.ratnakaram@svayarobotics.com>
+Cc: Xenomai <xenomai@xenomai.org>
 
-On Mon, Mar 30, 2020 at 12:58 PM Micha=C5=82 Hanusek via Xenomai
-<xenomai@xenomai.org> wrote:
->
->  =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
->  Do: Micha=C5=82 Hanusek <mhanusek@energotest.com.pl>, greg@embeddedgreg.=
-com
->  Od: Jan Kiszka <jan.kiszka@web.de>
->  Data: 2020-03-30 06:41PM
->  DW: xenomai@xenomai.org
->  Temat: Re: Odp: Re: Serial driver 16550a on Beaglebone Black
->  =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
->    On 30.03.20 18:21, Micha=C5=82 Hanusek via Xenomai wrote:
-> >       On Mon, Mar 30, 2020 at 11:08 AM Micha=C5=82 Hanusek via Xenomai
-> >       <xenomai@xenomai.org> wrote:
-> >       >
-> >       >
-> >       > Hello.
-> >       > How to enable a driver 16550a (xeno_16550A) and configure the
-> >       serial port?
-> >       >
-> >       > I loaded the driver to the kernel (for the /dev/ttyS4 port) but
-> >       the device in the /dev/rtdm/rtser... location did not appear.
-> >       Do you have the vanilla kernel driver loaded as well?  You need t=
-o
-> >       unbind the serial port you want the 16550A to work with.
-> >       I don't think this has been tested on beaglebone black but I coul=
-d
-> >       be wrong.
-> >
-> >       I'm use kernel
-> >       from [1]https://github.com/beagleboard/linux/tree/4.9-xenomai
-> >
->
-> Don't do this. This is a downstream integration of unknown quality. And
-> it is definitely outdated. We support the BBB with proper upstream
-> kernels + the I-pipe patch, and that is frequently tested.
->
-> That said, where does the 16550A-compatible uart come from on your BBB?
-> It has omap3 uarts in its SOC.
->
-> Jan
->
->
-> Im completely newbie.
-> My main goal is to run the Application using serial ports on BeagleBone B=
-lack (Linux / Xenomai).
->
-> What should I use?
-> Linux kernel 5.6 + i-pipe?
-> Which driver should I use?
-> M.H
-Here's a good start:
+[re-adding the mailing list]
 
-https://gitlab.denx.de/Xenomai/xenomai/-/wikis/Setting_Up
-
-For kernel version, use the ipipe-arm kernel, you can clone it from
-the git repot:
-https://gitlab.denx.de/Xenomai/ipipe-arm
-
-or you can use the patches that are created instead and located on gitlab.
-
-To Jan's point if you don't know if you can use the 16550A driver with
-your SOC you may want to confirm before going any further.  Currently
-the SPI and gpio drivers are supported so if you are looking to get
-familiar with Xenomai it may be easier to use a SPI device or create
-some code that plays with GPIO hardware.  I'm not sure if that would
-help.
-
-You can also use Xenomai images to get up and running fairly quick
-with BBB but I'm just getting to know that area now so I'll defer to
-someone else to help with that.
-
-
+On 31.03.20 08:42, gopi ratnakaram wrote:
+> Dear Jan Kiszka,
 >
-> >       >
-> >       > Please help.
-> >       >
-> >       > Linux kernel 4.9.88 + Xenomai patch
-> >       >
-> >       I would use a newer kernel and ipipe patch, 4.9 is currently no
-> >       supported.  I don't think it get the gpio fixes either.
-> >       Newer kernel? The newest kernel for BBB (with xenomai) is:
-> >
-> >       [2]https://github.com/beagleboard/linux/tree/4.14-xenomai
-> >
-> >       > root@beaglebone:/home/debian# lsmod
-> >       > Module                  Size  Used by
-> >       > xeno_16550A            17350  0
-> >       >
-> >       > root@beaglebone:/home/debian# modprobe xeno_16550A io=3D0x481A8=
-000
-> >       irq=3D159 baud_base=3D115200 start_index=3D0
-> >       >
-> >       > root@beaglebone:/home/debian# cat /proc/tty/driver/serial
-> >       > serinfo:1.0 driver revision:
-> >       > 0: uart:8250 mmio:0x44E09000 irq:158 tx:11568 rx:98 brk:63
-> >       RTS|CTS|DTR|DSR
-> >       > 1: uart:unknown port:00000000 irq:0
-> >       > 2: uart:unknown port:00000000 irq:0
-> >       > 3: uart:unknown port:00000000 irq:0
-> >       > 4: uart:8250 mmio:0x481A8000 irq:159 tx:2 rx:1 brk:1 CTS|DSR
-> >       > 5: uart:unknown port:00000000 irq:0
-> >       >
-> >       > root@beaglebone:/home/debian# setserial /dev/ttyS4
-> >       > /dev/ttyO4, UART: 8250, Port: 0x0000, IRQ: 159
-> >       >
-> >       > root@beaglebone:/home/debian# ls /dev/rtdm/
-> >       > autotune        memdev-private  memdev-shared   memdev-sys
-> >       switchtest      timerbench
-> >       > Szanujemy Twoj=C4=85 prywatno=C5=9B=C4=87, dbamy o bezpiecze=C5=
-=84stwo Twoich danych
-> >       osobowych,  Sprawd=C5=BA szczeg=C3=B3=C5=82y !
-> >       -Greg
-> >       >
-> >
-> >     Szanujemy Twoj=C4=85 prywatno=C5=9B=C4=87, dbamy o bezpiecze=C5=84s=
-two Twoich danych
-> >     osobowych, [3]Sprawd=C5=BA szczeg=C3=B3=C5=82y!
-> >
-> > References
-> >
-> >     1. https://github.com/beagleboard/linux/tree/4.9-xenomai
-> >     2. https://github.com/beagleboard/linux/tree/4.14-xenomai
-> >     3. http://www.energotest.com.pl/o-firmie/polityka-prywatno=C5=9Bci.=
-html
-> >
->
->     Szanujemy Twoj=C4=85 prywatno=C5=9B=C4=87, dbamy o bezpiecze=C5=84stw=
-o Twoich danych osobowych,  Sprawd=C5=BA szczeg=C3=B3=C5=82y !
+> Thankyou for the response,
+> *It is possible but not wise unless you are deep into the I-pipe details=
+.*
+> Please provide me some help related to do this and what kind of details
+> I-pipe details are needed to do this activity?
 >
 
--Greg
+If you apply the I-pipe patch queue on kernel version different from the
+one it has been developed for, you will likely run into merge conflicts.
+Then you need to understand what was changed in the original kernel by
+the commits, what changed in the target kernel and what needs to be done
+to resolve the conflict correctly. That can be trivial or highly complex.
+
+Even worse, there can be logical conflicts that do not cause merge
+issues but will make the result fail during runtime. Then you need to be
+able to debug the incorrect behavior and identify the incorrect or
+missing changes on your target kernel.
+
+IOW: You need to build a good understanding of both the kernel
+subsystems changed by I-pipe as well as of I-pipe itself in order to
+safely port it to a downstream or legacy kernel yourself.
+
+> *But once you are, you also realize that using a distro kernel will only
+> *
+> *complicate things for this.*
+>
+> My question here is why there is no I-pipe patch available=C2=A0for 4.15=
+ from
+> the following xenomai site?
+> https://xenomai.org/downloads/ipipe/v4.x/x86/
+
+Because we only target long-term supported kernel versions. 4.15 is EOL
+since 2 years now, so nothing you want to use anymore. The Ubuntu kernel
+(I strongly suspect that this is what you are actually targeting) is
+still maintained by Canonical. But it is also a downstream kernel with
+additional changes that may cause their own conflicts. However, there is
+generally no reason to use that particular kernel when changing it
+anyway for the sake of Xenomai.
+
+>
+> *Just use the latest support long-term stable kernel with Xenomai (by no=
+w
+> 4.19-cip based) for you Ubuntu installation, just like we do for the
+> Debian-based demo images [1]. *
+> *
+> *
+> Can I patch higher version I-pipe patch for the kernel version I use?
+> (Example: for linux kernel=C2=A0version 4.15.38 can I use the I-pipe 4.1=
+9.y
+> or should I use the same version of I-pipe patch).
+
+Yes - but see my first comment on what can happen.
+
+Best regards,
+Jan
+
+>
+> --best regards
+> R Gopi Krishna,
+>
+>
+> On Mon, Mar 30, 2020 at 10:12 PM Jan Kiszka <jan.kiszka@web.de
+> <mailto:jan.kiszka@web.de>> wrote:
+>
+>     On 30.03.20 10:53, gopi ratnakaram via Xenomai wrote:
+>      > Team,
+>      >
+>      > I have a specific requirement that where i need to patch xenomai
+>     3 to my
+>      > linux kernel 4.15.38 which is running on Ubuntu16.04/Ubuntu18.04.
+>     When I
+>      > try checking with the following help from
+>      >
+>      > https://www.xenomai.org/pipermail/xenomai/2018-June/039004.html
+>      >
+>      > But, I was unable to apply/create arch specific packages.
+>      >
+>      > Is it possible to create ipipe patch to the corresponding kernel
+>     4.15.38,
+>      > if yes please let me know required steps to do the same.
+>
+>     It is possible but not wise unless you are deep into the I-pipe deta=
+ils.
+>     But once you are, you also realize that using a distro kernel will o=
+nly
+>     complicate things for this.
+>
+>     Just use the latest support long-term stable kernel with Xenomai (by=
+ now
+>     4.19-cip based) for you Ubuntu installation, just like we do for the
+>     Debian-based demo images [1].
+>
+>     Jan
+>
+>     [1] https://gitlab.denx.de/Xenomai/xenomai-images
+>
+
 
