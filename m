@@ -1,15 +1,16 @@
-From: Jona Ostermann <Jona.Ostermann@janztec.com>
-Subject: AW: Directory /proc/xenomai/registry/rtipc/xddp does not exist
-Date: Wed, 1 Apr 2020 09:38:55 +0000
-Message-ID: <LEXPR01MB0224CBFBE73173F2167F54FD8FC90@LEXPR01MB0224.DEUPRD01.PROD.OUTLOOK.DE>
+Subject: Re: Directory /proc/xenomai/registry/rtipc/xddp does not exist
 References: <LEXPR01MB0701827C1E997DC3541284B58FCF0@LEXPR01MB0701.DEUPRD01.PROD.OUTLOOK.DE>
  <4426b307-184f-0422-afe8-2d9d41625608@web.de>
  <LEXPR01MB0224A5674739063B3262F5028FC80@LEXPR01MB0224.DEUPRD01.PROD.OUTLOOK.DE>
-In-Reply-To: <LEXPR01MB0224A5674739063B3262F5028FC80@LEXPR01MB0224.DEUPRD01.PROD.OUTLOOK.DE>
-Content-Language: de-DE
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+ <LEXPR01MB0224CBFBE73173F2167F54FD8FC90@LEXPR01MB0224.DEUPRD01.PROD.OUTLOOK.DE>
+From: Jan Kiszka <jan.kiszka@web.de>
+Message-ID: <0df9f459-7fb2-c042-7ccb-8cbab6595219@web.de>
+Date: Wed, 1 Apr 2020 13:48:40 +0200
 MIME-Version: 1.0
+In-Reply-To: <LEXPR01MB0224CBFBE73173F2167F54FD8FC90@LEXPR01MB0224.DEUPRD01.PROD.OUTLOOK.DE>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: quoted-printable
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -18,39 +19,77 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jan Kiszka <jan.kiszka@web.de>, "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Jona Ostermann <Jona.Ostermann@janztec.com>, "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-SGVsbG8gSmFuLA0KDQpvdXIgY3VzdG9tZXIgc3RpbGwgaGFzIHNvbWUgcHJvYmxlbXMgY3JlYXRp
-bmcgdGhpcyBsaW5rLg0KVGhleSB3ZXJlIHVzaW5nIFhlbm9tYWkgMiBiZWZvcmUgYW5kIG5vdyBo
-YXZlIHN3aXRjaGVkIHRvIFhlbm9tYWkgMy4xLg0KDQpUaGV5IHdlcmUgdXNpbmcgdGhlIGZ1bmN0
-aW9uIHJ0X3BpcGVfY3JlYXRlIGluIFhlbm9tYWkgMiwgaXMgdGhlcmUgYW55dGhpbmcgZGlmZmVy
-ZW50IGluIFhlbm9tYWkgMz8NCg0KV2UgaGF2ZSBzZXQgdGhlIGZvbGxvd2luZyBrZXJuZWwgY29u
-ZmlndXJhdGlvbiBmw7xyIFhERFA6DQoNCkNPTkZJR19YRU5PX0RSSVZFUlNfUlRJUEM9bQ0KQ09O
-RklHX1hFTk9fRFJJVkVSU19SVElQQ19YRERQPXkNCkNPTkZJR19YRU5PX0RSSVZFUlNfUlRJUENf
-SUREUD15DQpDT05GSUdfWEVOT19PUFRfSUREUF9OUlBPUlQ9MzINCkNPTkZJR19YRU5PX0RSSVZF
-UlNfUlRJUENfQlVGUD15DQpDT05GSUdfWEVOT19PUFRfQlVGUF9OUlBPUlQ9MzINCg0KSXMgdGhl
-cmUgYW55dGhpbmcgZWxzZSBuZWVkZWQ/DQoNCkJlc3QgUmVnYXJkcw0KSm9uYQ0KDQotLS0tLVVy
-c3Byw7xuZ2xpY2hlIE5hY2hyaWNodC0tLS0tDQpWb246IEpvbmEgT3N0ZXJtYW5uIA0KR2VzZW5k
-ZXQ6IERpZW5zdGFnLCAzMS4gTcOkcnogMjAyMCAxNjowMw0KQW46ICdKYW4gS2lzemthJyA8amFu
-Lmtpc3prYUB3ZWIuZGU+OyB4ZW5vbWFpQHhlbm9tYWkub3JnDQpCZXRyZWZmOiBBVzogRGlyZWN0
-b3J5IC9wcm9jL3hlbm9tYWkvcmVnaXN0cnkvcnRpcGMveGRkcCBkb2VzIG5vdCBleGlzdA0KDQpI
-ZWxsbyBKYW4sDQoNCnRoYW5rIHlvdSwgeW91IGFyZSBjb3JyZWN0Lg0KVXNpbmcgdGhlIHhkZHAt
-bGFiZWwgZGVtbyB0b29sIHRoZSBsaW5rIGlzIGNyZWF0ZWQuDQpTbyBpdCBpcyBhbiBhcHBsaWNh
-dGlvbiBlcnJvciBhbmQgbm90IGEgWGVub21haSBjb25maWd1cmF0aW9uIGVycm9yLg0KDQpCZXN0
-IHJlZ2FyZHMNCkpvbmENCg0KLS0tLS1VcnNwcsO8bmdsaWNoZSBOYWNocmljaHQtLS0tLQ0KVm9u
-OiBKYW4gS2lzemthIDxqYW4ua2lzemthQHdlYi5kZT4gDQpHZXNlbmRldDogRnJlaXRhZywgMjcu
-IE3DpHJ6IDIwMjAgMTA6MDcNCkFuOiBKb25hIE9zdGVybWFubiA8Sm9uYS5Pc3Rlcm1hbm5AamFu
-enRlYy5jb20+OyB4ZW5vbWFpQHhlbm9tYWkub3JnDQpCZXRyZWZmOiBSZTogRGlyZWN0b3J5IC9w
-cm9jL3hlbm9tYWkvcmVnaXN0cnkvcnRpcGMveGRkcCBkb2VzIG5vdCBleGlzdA0KDQpPbiAyNi4w
-My4yMCAxMToxMiwgSm9uYSBPc3Rlcm1hbm4gdmlhIFhlbm9tYWkgd3JvdGU6DQo+IEhlbGxvLA0K
-Pg0KPiBvbmUgb2Ygb3VyIGN1c3RvbWVycyBoYXN0IGhlIHByb2JsZW0gdGhhdCBoZSBuZWVkcyBh
-IHJlZ2lzdHJ5IGxpbmsgaW4gdGhlIGRpcmVjdG9yeSAvcHJvYy94ZW5vbWFpL3JlZ2lzdHJ5L3J0
-aXBjL3hkZHAuDQo+IEJ1dCB0aGUgZGlyZWN0b3J5IGRvZXMgbm90IGV4aXN0LCBvbmx5IC9wcm9j
-L3hlbm9tYWkvcmVnaXN0cnkvIGV4aXN0cy4NCj4NCj4gV2hhdCBjb3VsZCBiZSB0aGUgcHJvYmxl
-bT8NCj4gSXMgYSBzcGVjaWFsIGtlcm5lbCBjb25maWd1cmF0aW9uIHJlcXVpcmVkIG9yIGRvZXMg
-YSBzcGVjaWFsIGtlcm5lbCBtb2R1bGUgbmVlZCB0byBiZSBsb2FkZWQ/DQo+DQoNClRoZSBsaW5r
-cyBzaG93IHVwIG9uY2UgeGRkcCBpcyBiZWluZyB1c2VkLiBZb3UgY2FuIGNoZWNrIHRoYXQgdmlh
-IHNtb2tleSdzIHhkZHAgdGVzdC4NCg0KSWYgdGhhdCBpcyBub3QgdGhlIGNhc2UsIGNvbXBhcmUg
-Y29uZmlndXJhdGlvbiBhbmQgdmVyc2lvbnMgb2YgdGhlIHJlZmVyZW5jZSB4ZW5vbWFpLWltYWdl
-cyBhZ2FpbnN0IHlvdXIgc2V0dXAgYW5kIHNoYXJlIHlvdXIgZmluZGluZ3MuDQoNCkphbg0K
+On 01.04.20 11:38, Jona Ostermann wrote:
+> Hello Jan,
+>
+> our customer still has some problems creating this link.
+> They were using Xenomai 2 before and now have switched to Xenomai 3.1.
+>
+> They were using the function rt_pipe_create in Xenomai 2, is there anyth=
+ing different in Xenomai 3?
+>
+> We have set the following kernel configuration f=C3=BCr XDDP:
+>
+> CONFIG_XENO_DRIVERS_RTIPC=3Dm
+> CONFIG_XENO_DRIVERS_RTIPC_XDDP=3Dy
+> CONFIG_XENO_DRIVERS_RTIPC_IDDP=3Dy
+> CONFIG_XENO_OPT_IDDP_NRPORT=3D32
+> CONFIG_XENO_DRIVERS_RTIPC_BUFP=3Dy
+> CONFIG_XENO_OPT_BUFP_NRPORT=3D32
+>
+> Is there anything else needed?
+
+Rather than guessing what might have changed and what might affect you:
+Can you provide a test case for what is not working as expected?
+
+Jan
+
+>
+> Best Regards
+> Jona
+>
+> -----Urspr=C3=BCngliche Nachricht-----
+> Von: Jona Ostermann
+> Gesendet: Dienstag, 31. M=C3=A4rz 2020 16:03
+> An: 'Jan Kiszka' <jan.kiszka@web.de>; xenomai@xenomai.org
+> Betreff: AW: Directory /proc/xenomai/registry/rtipc/xddp does not exist
+>
+> Hello Jan,
+>
+> thank you, you are correct.
+> Using the xddp-label demo tool the link is created.
+> So it is an application error and not a Xenomai configuration error.
+>
+> Best regards
+> Jona
+>
+> -----Urspr=C3=BCngliche Nachricht-----
+> Von: Jan Kiszka <jan.kiszka@web.de>
+> Gesendet: Freitag, 27. M=C3=A4rz 2020 10:07
+> An: Jona Ostermann <Jona.Ostermann@janztec.com>; xenomai@xenomai.org
+> Betreff: Re: Directory /proc/xenomai/registry/rtipc/xddp does not exist
+>
+> On 26.03.20 11:12, Jona Ostermann via Xenomai wrote:
+>> Hello,
+>>
+>> one of our customers hast he problem that he needs a registry link in t=
+he directory /proc/xenomai/registry/rtipc/xddp.
+>> But the directory does not exist, only /proc/xenomai/registry/ exists.
+>>
+>> What could be the problem?
+>> Is a special kernel configuration required or does a special kernel mod=
+ule need to be loaded?
+>>
+>
+> The links show up once xddp is being used. You can check that via smokey=
+'s xddp test.
+>
+> If that is not the case, compare configuration and versions of the refer=
+ence xenomai-images against your setup and share your findings.
+>
+> Jan
+>
+
 
