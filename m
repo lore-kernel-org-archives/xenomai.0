@@ -1,13 +1,15 @@
-Subject: Re: ipipe kernel image compile error
-References: <CA+K1mPH9u0FPKHO1gDFAn+Oz42MZe5Aw_j1GcZWd1LAWx6-QTQ@mail.gmail.com>
-From: Jan Kiszka <jan.kiszka@web.de>
-Message-ID: <28b4efd1-1013-02f1-e3e3-6ee0871e58c2@web.de>
-Date: Wed, 1 Apr 2020 09:06:24 +0200
+From: Jona Ostermann <Jona.Ostermann@janztec.com>
+Subject: AW: Directory /proc/xenomai/registry/rtipc/xddp does not exist
+Date: Wed, 1 Apr 2020 09:38:55 +0000
+Message-ID: <LEXPR01MB0224CBFBE73173F2167F54FD8FC90@LEXPR01MB0224.DEUPRD01.PROD.OUTLOOK.DE>
+References: <LEXPR01MB0701827C1E997DC3541284B58FCF0@LEXPR01MB0701.DEUPRD01.PROD.OUTLOOK.DE>
+ <4426b307-184f-0422-afe8-2d9d41625608@web.de>
+ <LEXPR01MB0224A5674739063B3262F5028FC80@LEXPR01MB0224.DEUPRD01.PROD.OUTLOOK.DE>
+In-Reply-To: <LEXPR01MB0224A5674739063B3262F5028FC80@LEXPR01MB0224.DEUPRD01.PROD.OUTLOOK.DE>
+Content-Language: de-DE
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-In-Reply-To: <CA+K1mPH9u0FPKHO1gDFAn+Oz42MZe5Aw_j1GcZWd1LAWx6-QTQ@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: quoted-printable
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,54 +18,39 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: C Smith <csmithquestions@gmail.com>, Xenomai List <xenomai@xenomai.org>
+To: Jan Kiszka <jan.kiszka@web.de>, "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On 31.03.20 23:42, C Smith via Xenomai wrote:
-> Hi,
->
-> I'm having a problem compiling Kernel 4.19.109 with
-> ipipe-core-4.19.109-cip22-x86-11.patch using Xenomai-3.1.
->
-> $ scripts/prepare-kernel.sh --linux=3D../linux/
-> --ipipe=3D../ipipe-core-4.19.109-cip22-x86-11.patch --arch=3Dx86
->
-> I'm compiling with:
-> $ m -j4 bzImage
->
-> I'm getting following error:
->
-> arch/x86/kernel/apb_timer.c: In function =E2=80=98apbt_set_mapping=E2=80=
-=99:
-> arch/x86/kernel/apb_timer.c:122:21: error: too few arguments to function
-> =E2=80=98dw_apb_clocksource_init=E2=80=99
->    clocksource_apbt =3D dw_apb_clocksource_init(APBT_CLOCKSOURCE_RATING,
->                       ^~~~~~~~~~~~~~~~~~~~~~~
-> In file included from arch/x86/kernel/apb_timer.c:31:
-> ./include/linux/dw_apb_timer.h:50:1: note: declared here
->   dw_apb_clocksource_init(unsigned rating, const char *name, void __iome=
-m
-> *base,
->   ^~~~~~~~~~~~~~~~~~~~~~~
-> make[2]: *** [scripts/Makefile.build:303: arch/x86/kernel/apb_timer.o]
-> Error 1
-> make[1]: *** [scripts/Makefile.build:544: arch/x86/kernel] Error 2
-> make[1]: *** Waiting for unfinished jobs....
->
->
->   config_20200331
-> <https://drive.google.com/file/d/1n3gdgMogUUKjleWzEgAEGu_330mYX_io/view?=
-usp=3Ddrive_web>
->
-
-I thought we came across this already and fixed it but... no:
-
-https://gitlab.denx.de/Xenomai/ipipe-noarch/-/commit/a1cfa77db06c3967fc8c7=
-90eefa656562f0fba5d
-is broken as it is not arch-agnostic. I'll rip that off from the x86
-tree for the next release.
-
-Meanwhile, you can work around that by disabling CONFIG_X86_INTEL_MID -
-unless you are on an Intel MID platform. Are you?
-
-Jan
+SGVsbG8gSmFuLA0KDQpvdXIgY3VzdG9tZXIgc3RpbGwgaGFzIHNvbWUgcHJvYmxlbXMgY3JlYXRp
+bmcgdGhpcyBsaW5rLg0KVGhleSB3ZXJlIHVzaW5nIFhlbm9tYWkgMiBiZWZvcmUgYW5kIG5vdyBo
+YXZlIHN3aXRjaGVkIHRvIFhlbm9tYWkgMy4xLg0KDQpUaGV5IHdlcmUgdXNpbmcgdGhlIGZ1bmN0
+aW9uIHJ0X3BpcGVfY3JlYXRlIGluIFhlbm9tYWkgMiwgaXMgdGhlcmUgYW55dGhpbmcgZGlmZmVy
+ZW50IGluIFhlbm9tYWkgMz8NCg0KV2UgaGF2ZSBzZXQgdGhlIGZvbGxvd2luZyBrZXJuZWwgY29u
+ZmlndXJhdGlvbiBmw7xyIFhERFA6DQoNCkNPTkZJR19YRU5PX0RSSVZFUlNfUlRJUEM9bQ0KQ09O
+RklHX1hFTk9fRFJJVkVSU19SVElQQ19YRERQPXkNCkNPTkZJR19YRU5PX0RSSVZFUlNfUlRJUENf
+SUREUD15DQpDT05GSUdfWEVOT19PUFRfSUREUF9OUlBPUlQ9MzINCkNPTkZJR19YRU5PX0RSSVZF
+UlNfUlRJUENfQlVGUD15DQpDT05GSUdfWEVOT19PUFRfQlVGUF9OUlBPUlQ9MzINCg0KSXMgdGhl
+cmUgYW55dGhpbmcgZWxzZSBuZWVkZWQ/DQoNCkJlc3QgUmVnYXJkcw0KSm9uYQ0KDQotLS0tLVVy
+c3Byw7xuZ2xpY2hlIE5hY2hyaWNodC0tLS0tDQpWb246IEpvbmEgT3N0ZXJtYW5uIA0KR2VzZW5k
+ZXQ6IERpZW5zdGFnLCAzMS4gTcOkcnogMjAyMCAxNjowMw0KQW46ICdKYW4gS2lzemthJyA8amFu
+Lmtpc3prYUB3ZWIuZGU+OyB4ZW5vbWFpQHhlbm9tYWkub3JnDQpCZXRyZWZmOiBBVzogRGlyZWN0
+b3J5IC9wcm9jL3hlbm9tYWkvcmVnaXN0cnkvcnRpcGMveGRkcCBkb2VzIG5vdCBleGlzdA0KDQpI
+ZWxsbyBKYW4sDQoNCnRoYW5rIHlvdSwgeW91IGFyZSBjb3JyZWN0Lg0KVXNpbmcgdGhlIHhkZHAt
+bGFiZWwgZGVtbyB0b29sIHRoZSBsaW5rIGlzIGNyZWF0ZWQuDQpTbyBpdCBpcyBhbiBhcHBsaWNh
+dGlvbiBlcnJvciBhbmQgbm90IGEgWGVub21haSBjb25maWd1cmF0aW9uIGVycm9yLg0KDQpCZXN0
+IHJlZ2FyZHMNCkpvbmENCg0KLS0tLS1VcnNwcsO8bmdsaWNoZSBOYWNocmljaHQtLS0tLQ0KVm9u
+OiBKYW4gS2lzemthIDxqYW4ua2lzemthQHdlYi5kZT4gDQpHZXNlbmRldDogRnJlaXRhZywgMjcu
+IE3DpHJ6IDIwMjAgMTA6MDcNCkFuOiBKb25hIE9zdGVybWFubiA8Sm9uYS5Pc3Rlcm1hbm5AamFu
+enRlYy5jb20+OyB4ZW5vbWFpQHhlbm9tYWkub3JnDQpCZXRyZWZmOiBSZTogRGlyZWN0b3J5IC9w
+cm9jL3hlbm9tYWkvcmVnaXN0cnkvcnRpcGMveGRkcCBkb2VzIG5vdCBleGlzdA0KDQpPbiAyNi4w
+My4yMCAxMToxMiwgSm9uYSBPc3Rlcm1hbm4gdmlhIFhlbm9tYWkgd3JvdGU6DQo+IEhlbGxvLA0K
+Pg0KPiBvbmUgb2Ygb3VyIGN1c3RvbWVycyBoYXN0IGhlIHByb2JsZW0gdGhhdCBoZSBuZWVkcyBh
+IHJlZ2lzdHJ5IGxpbmsgaW4gdGhlIGRpcmVjdG9yeSAvcHJvYy94ZW5vbWFpL3JlZ2lzdHJ5L3J0
+aXBjL3hkZHAuDQo+IEJ1dCB0aGUgZGlyZWN0b3J5IGRvZXMgbm90IGV4aXN0LCBvbmx5IC9wcm9j
+L3hlbm9tYWkvcmVnaXN0cnkvIGV4aXN0cy4NCj4NCj4gV2hhdCBjb3VsZCBiZSB0aGUgcHJvYmxl
+bT8NCj4gSXMgYSBzcGVjaWFsIGtlcm5lbCBjb25maWd1cmF0aW9uIHJlcXVpcmVkIG9yIGRvZXMg
+YSBzcGVjaWFsIGtlcm5lbCBtb2R1bGUgbmVlZCB0byBiZSBsb2FkZWQ/DQo+DQoNClRoZSBsaW5r
+cyBzaG93IHVwIG9uY2UgeGRkcCBpcyBiZWluZyB1c2VkLiBZb3UgY2FuIGNoZWNrIHRoYXQgdmlh
+IHNtb2tleSdzIHhkZHAgdGVzdC4NCg0KSWYgdGhhdCBpcyBub3QgdGhlIGNhc2UsIGNvbXBhcmUg
+Y29uZmlndXJhdGlvbiBhbmQgdmVyc2lvbnMgb2YgdGhlIHJlZmVyZW5jZSB4ZW5vbWFpLWltYWdl
+cyBhZ2FpbnN0IHlvdXIgc2V0dXAgYW5kIHNoYXJlIHlvdXIgZmluZGluZ3MuDQoNCkphbg0K
 
