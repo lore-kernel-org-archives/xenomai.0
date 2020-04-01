@@ -1,13 +1,17 @@
-Subject: Re: Ipipe-Patch for kernel version 5.4.23
-References: <DB8PR09MB3612215A31188B5C00AD779BF0E70@DB8PR09MB3612.eurprd09.prod.outlook.com>
-From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <c4a79189-6696-a109-97f6-8cadbb36923e@siemens.com>
-Date: Mon, 2 Mar 2020 13:37:31 +0100
+From: Jona Ostermann <Jona.Ostermann@janztec.com>
+Subject: AW: Directory /proc/xenomai/registry/rtipc/xddp does not exist
+Date: Wed, 1 Apr 2020 12:42:02 +0000
+Message-ID: <LEXPR01MB022490D6751540555CCD07018FC90@LEXPR01MB0224.DEUPRD01.PROD.OUTLOOK.DE>
+References: <LEXPR01MB0701827C1E997DC3541284B58FCF0@LEXPR01MB0701.DEUPRD01.PROD.OUTLOOK.DE>
+ <4426b307-184f-0422-afe8-2d9d41625608@web.de>
+ <LEXPR01MB0224A5674739063B3262F5028FC80@LEXPR01MB0224.DEUPRD01.PROD.OUTLOOK.DE>
+ <LEXPR01MB0224CBFBE73173F2167F54FD8FC90@LEXPR01MB0224.DEUPRD01.PROD.OUTLOOK.DE>
+ <0df9f459-7fb2-c042-7ccb-8cbab6595219@web.de>
+In-Reply-To: <0df9f459-7fb2-c042-7ccb-8cbab6595219@web.de>
+Content-Language: de-DE
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-In-Reply-To: <DB8PR09MB3612215A31188B5C00AD779BF0E70@DB8PR09MB3612.eurprd09.prod.outlook.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,25 +20,52 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Ralf Moder <ralf.moder@hbkworld.com>, "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Jan Kiszka <jan.kiszka@web.de>, "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On 02.03.20 11:00, Ralf Moder via Xenomai wrote:
-> Hello everyone,
-> I need the kernel version 5.4.23 in an embedded linux project because of driver stuff but also the Xenomai extension. How big is the probability that an I-pipe patch for the 5.4 version will be released in the next 2 to 3 months?
-
-I would first of all say that it's >0. But beyond that, it depends on 
-the architecture: x86 should be available on 5.4 in the next months with 
-a probability >>50% as that will be my primary target for looking into 
-how to move forward. ARM and ARM64 currently lacks a maintainer. If we 
-are lucky, the base enabling via Philippe's dovetail queue will enable 
-those more or less as well. But it will definitely take someone to take 
-responsibility for those archs because my colleagues and I currently 
-cannot invest beyond integrating contributions. There is also ppc32 
-(which has a maintainer), but I suppose that this is not your target.
-
-Jan
-
--- 
-Siemens AG, Corporate Technology, CT RDA IOT SES-DE
-Corporate Competence Center Embedded Linux
+SGVsbG8gSmFuLA0KDQp0aGFua3MgZm9yIHRoZSBpbnRlcmVzdCBpbiBvdXIgcHJvYmxlbS4NCg0K
+T3VyIGN1c3RvbWVyIGhhcyBwcm92aWRlZCBhIHNob3J0IGFuZCBzaW1wbGUgdGVzdCBjYXNlOiBo
+dHRwczovL3Bhc3RlYmluLmNvbS9MU0dWaExGaA0KDQpCZXN0IFJlZ2FyZHMNCkpvbmENCg0KLS0t
+LS1VcnNwcsO8bmdsaWNoZSBOYWNocmljaHQtLS0tLQ0KVm9uOiBKYW4gS2lzemthIDxqYW4ua2lz
+emthQHdlYi5kZT4gDQpHZXNlbmRldDogTWl0dHdvY2gsIDEuIEFwcmlsIDIwMjAgMTM6NDkNCkFu
+OiBKb25hIE9zdGVybWFubiA8Sm9uYS5Pc3Rlcm1hbm5AamFuenRlYy5jb20+OyB4ZW5vbWFpQHhl
+bm9tYWkub3JnDQpCZXRyZWZmOiBSZTogRGlyZWN0b3J5IC9wcm9jL3hlbm9tYWkvcmVnaXN0cnkv
+cnRpcGMveGRkcCBkb2VzIG5vdCBleGlzdA0KDQpPbiAwMS4wNC4yMCAxMTozOCwgSm9uYSBPc3Rl
+cm1hbm4gd3JvdGU6DQo+IEhlbGxvIEphbiwNCj4NCj4gb3VyIGN1c3RvbWVyIHN0aWxsIGhhcyBz
+b21lIHByb2JsZW1zIGNyZWF0aW5nIHRoaXMgbGluay4NCj4gVGhleSB3ZXJlIHVzaW5nIFhlbm9t
+YWkgMiBiZWZvcmUgYW5kIG5vdyBoYXZlIHN3aXRjaGVkIHRvIFhlbm9tYWkgMy4xLg0KPg0KPiBU
+aGV5IHdlcmUgdXNpbmcgdGhlIGZ1bmN0aW9uIHJ0X3BpcGVfY3JlYXRlIGluIFhlbm9tYWkgMiwg
+aXMgdGhlcmUgYW55dGhpbmcgZGlmZmVyZW50IGluIFhlbm9tYWkgMz8NCj4NCj4gV2UgaGF2ZSBz
+ZXQgdGhlIGZvbGxvd2luZyBrZXJuZWwgY29uZmlndXJhdGlvbiBmw7xyIFhERFA6DQo+DQo+IENP
+TkZJR19YRU5PX0RSSVZFUlNfUlRJUEM9bQ0KPiBDT05GSUdfWEVOT19EUklWRVJTX1JUSVBDX1hE
+RFA9eQ0KPiBDT05GSUdfWEVOT19EUklWRVJTX1JUSVBDX0lERFA9eQ0KPiBDT05GSUdfWEVOT19P
+UFRfSUREUF9OUlBPUlQ9MzINCj4gQ09ORklHX1hFTk9fRFJJVkVSU19SVElQQ19CVUZQPXkNCj4g
+Q09ORklHX1hFTk9fT1BUX0JVRlBfTlJQT1JUPTMyDQo+DQo+IElzIHRoZXJlIGFueXRoaW5nIGVs
+c2UgbmVlZGVkPw0KDQpSYXRoZXIgdGhhbiBndWVzc2luZyB3aGF0IG1pZ2h0IGhhdmUgY2hhbmdl
+ZCBhbmQgd2hhdCBtaWdodCBhZmZlY3QgeW91Og0KQ2FuIHlvdSBwcm92aWRlIGEgdGVzdCBjYXNl
+IGZvciB3aGF0IGlzIG5vdCB3b3JraW5nIGFzIGV4cGVjdGVkPw0KDQpKYW4NCg0KPg0KPiBCZXN0
+IFJlZ2FyZHMNCj4gSm9uYQ0KPg0KPiAtLS0tLVVyc3Byw7xuZ2xpY2hlIE5hY2hyaWNodC0tLS0t
+DQo+IFZvbjogSm9uYSBPc3Rlcm1hbm4NCj4gR2VzZW5kZXQ6IERpZW5zdGFnLCAzMS4gTcOkcnog
+MjAyMCAxNjowMw0KPiBBbjogJ0phbiBLaXN6a2EnIDxqYW4ua2lzemthQHdlYi5kZT47IHhlbm9t
+YWlAeGVub21haS5vcmcNCj4gQmV0cmVmZjogQVc6IERpcmVjdG9yeSAvcHJvYy94ZW5vbWFpL3Jl
+Z2lzdHJ5L3J0aXBjL3hkZHAgZG9lcyBub3QgZXhpc3QNCj4NCj4gSGVsbG8gSmFuLA0KPg0KPiB0
+aGFuayB5b3UsIHlvdSBhcmUgY29ycmVjdC4NCj4gVXNpbmcgdGhlIHhkZHAtbGFiZWwgZGVtbyB0
+b29sIHRoZSBsaW5rIGlzIGNyZWF0ZWQuDQo+IFNvIGl0IGlzIGFuIGFwcGxpY2F0aW9uIGVycm9y
+IGFuZCBub3QgYSBYZW5vbWFpIGNvbmZpZ3VyYXRpb24gZXJyb3IuDQo+DQo+IEJlc3QgcmVnYXJk
+cw0KPiBKb25hDQo+DQo+IC0tLS0tVXJzcHLDvG5nbGljaGUgTmFjaHJpY2h0LS0tLS0NCj4gVm9u
+OiBKYW4gS2lzemthIDxqYW4ua2lzemthQHdlYi5kZT4NCj4gR2VzZW5kZXQ6IEZyZWl0YWcsIDI3
+LiBNw6RyeiAyMDIwIDEwOjA3DQo+IEFuOiBKb25hIE9zdGVybWFubiA8Sm9uYS5Pc3Rlcm1hbm5A
+amFuenRlYy5jb20+OyB4ZW5vbWFpQHhlbm9tYWkub3JnDQo+IEJldHJlZmY6IFJlOiBEaXJlY3Rv
+cnkgL3Byb2MveGVub21haS9yZWdpc3RyeS9ydGlwYy94ZGRwIGRvZXMgbm90IGV4aXN0DQo+DQo+
+IE9uIDI2LjAzLjIwIDExOjEyLCBKb25hIE9zdGVybWFubiB2aWEgWGVub21haSB3cm90ZToNCj4+
+IEhlbGxvLA0KPj4NCj4+IG9uZSBvZiBvdXIgY3VzdG9tZXJzIGhhc3QgaGUgcHJvYmxlbSB0aGF0
+IGhlIG5lZWRzIGEgcmVnaXN0cnkgbGluayBpbiB0aGUgZGlyZWN0b3J5IC9wcm9jL3hlbm9tYWkv
+cmVnaXN0cnkvcnRpcGMveGRkcC4NCj4+IEJ1dCB0aGUgZGlyZWN0b3J5IGRvZXMgbm90IGV4aXN0
+LCBvbmx5IC9wcm9jL3hlbm9tYWkvcmVnaXN0cnkvIGV4aXN0cy4NCj4+DQo+PiBXaGF0IGNvdWxk
+IGJlIHRoZSBwcm9ibGVtPw0KPj4gSXMgYSBzcGVjaWFsIGtlcm5lbCBjb25maWd1cmF0aW9uIHJl
+cXVpcmVkIG9yIGRvZXMgYSBzcGVjaWFsIGtlcm5lbCBtb2R1bGUgbmVlZCB0byBiZSBsb2FkZWQ/
+DQo+Pg0KPg0KPiBUaGUgbGlua3Mgc2hvdyB1cCBvbmNlIHhkZHAgaXMgYmVpbmcgdXNlZC4gWW91
+IGNhbiBjaGVjayB0aGF0IHZpYSBzbW9rZXkncyB4ZGRwIHRlc3QuDQo+DQo+IElmIHRoYXQgaXMg
+bm90IHRoZSBjYXNlLCBjb21wYXJlIGNvbmZpZ3VyYXRpb24gYW5kIHZlcnNpb25zIG9mIHRoZSBy
+ZWZlcmVuY2UgeGVub21haS1pbWFnZXMgYWdhaW5zdCB5b3VyIHNldHVwIGFuZCBzaGFyZSB5b3Vy
+IGZpbmRpbmdzLg0KPg0KPiBKYW4NCj4NCg0K
 
