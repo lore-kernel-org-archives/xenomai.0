@@ -1,17 +1,9 @@
-Subject: Re: Directory /proc/xenomai/registry/rtipc/xddp does not exist
-References: <LEXPR01MB0701827C1E997DC3541284B58FCF0@LEXPR01MB0701.DEUPRD01.PROD.OUTLOOK.DE>
- <4426b307-184f-0422-afe8-2d9d41625608@web.de>
- <LEXPR01MB0224A5674739063B3262F5028FC80@LEXPR01MB0224.DEUPRD01.PROD.OUTLOOK.DE>
- <LEXPR01MB0224CBFBE73173F2167F54FD8FC90@LEXPR01MB0224.DEUPRD01.PROD.OUTLOOK.DE>
- <0df9f459-7fb2-c042-7ccb-8cbab6595219@web.de>
- <LEXPR01MB022490D6751540555CCD07018FC90@LEXPR01MB0224.DEUPRD01.PROD.OUTLOOK.DE>
-From: Jan Kiszka <jan.kiszka@web.de>
-Message-ID: <02c1021d-0449-6664-e84e-921056121d1e@web.de>
-Date: Wed, 1 Apr 2020 14:58:03 +0200
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-In-Reply-To: <LEXPR01MB022490D6751540555CCD07018FC90@LEXPR01MB0224.DEUPRD01.PROD.OUTLOOK.DE>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
+Date: Fri, 03 Apr 2020 10:37:53 +0200
+Subject: =?utf-8?q?=5BPATCH=5D?= RTNet builtin kernel - Fix IP protocols
+Message-ID: <7231-5e86f600-29-3b6a0580@56072459>
+From: =?utf-8?q?Fran=C3=A7ois_Legal?= <devel@thom.fr.eu.org>
 Content-Transfer-Encoding: quoted-printable
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
@@ -21,105 +13,46 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jona Ostermann <Jona.Ostermann@janztec.com>, "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: xenomai@xenomai.org
 
-On 01.04.20 14:42, Jona Ostermann wrote:
-> Hello Jan,
->
-> thanks for the interest in our problem.
->
-> Our customer has provided a short and simple test case: https://pastebin=
-.com/LSGVhLFh
+From: Fran=C3=A7ois LEGAL <devel@thom.fr.eu.org>
 
-OK, with the syntax error fixed and compiled like this
+The link order of IP protocols does not allow to do UDP/TCP over IP wit=
+h RTNet builtin as protocol list gets zeroed by af=5Finet when initiali=
+zing
 
-g++ -o rtpipe-test rtpipe-test.cpp $(xeno-config --skin=3Dnative --cflags =
---ldflags)
+Signed-off-by: Fran=C3=A7ois LEGAL <devel@thom.fr.eu.org>
 
-it runs fine. Furthermore, the registry entry is visible as long as you
-keep the application running (the version you provided deletes it
-immediately because it shuts down immediately).
+Subject: [PATCH] RTNet builtin kernel - Fix IP protocols
+---
+ kernel/drivers/net/stack/ipv4/Makefile | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
 
-Jan
+diff --git a/kernel/drivers/net/stack/ipv4/Makefile b/kernel/drivers/ne=
+t/stack/ipv4/Makefile
+index f0fcd36..7d45d23 100644
+--- a/kernel/drivers/net/stack/ipv4/Makefile
++++ b/kernel/drivers/net/stack/ipv4/Makefile
+@@ -1,9 +1,5 @@
+ ccflags-y +=3D -Idrivers/xenomai/net/stack/include
+ 
+-obj-$(CONFIG=5FXENO=5FDRIVERS=5FNET=5FRTIPV4=5FUDP) +=3D udp/
+-
+-obj-$(CONFIG=5FXENO=5FDRIVERS=5FNET=5FRTIPV4=5FTCP) +=3D tcp/
+-
+ obj-$(CONFIG=5FXENO=5FDRIVERS=5FNET=5FRTIPV4) +=3D rtipv4.o
+ 
+ rtipv4-y :=3D \
+@@ -16,4 +12,8 @@ rtipv4-y :=3D \
+ 	ip=5Foutput.o \
+ 	ip=5Ffragment.o
+ 
++obj-$(CONFIG=5FXENO=5FDRIVERS=5FNET=5FRTIPV4=5FUDP) +=3D udp/
++
++obj-$(CONFIG=5FXENO=5FDRIVERS=5FNET=5FRTIPV4=5FTCP) +=3D tcp/
++
+ rtipv4-$(CONFIG=5FXENO=5FDRIVERS=5FNET=5FRTIPV4=5FICMP) +=3D icmp.o
+-- 
+2.1.4
 
->
-> Best Regards
-> Jona
->
-> -----Urspr=C3=BCngliche Nachricht-----
-> Von: Jan Kiszka <jan.kiszka@web.de>
-> Gesendet: Mittwoch, 1. April 2020 13:49
-> An: Jona Ostermann <Jona.Ostermann@janztec.com>; xenomai@xenomai.org
-> Betreff: Re: Directory /proc/xenomai/registry/rtipc/xddp does not exist
->
-> On 01.04.20 11:38, Jona Ostermann wrote:
->> Hello Jan,
->>
->> our customer still has some problems creating this link.
->> They were using Xenomai 2 before and now have switched to Xenomai 3.1.
->>
->> They were using the function rt_pipe_create in Xenomai 2, is there anyt=
-hing different in Xenomai 3?
->>
->> We have set the following kernel configuration f=C3=BCr XDDP:
->>
->> CONFIG_XENO_DRIVERS_RTIPC=3Dm
->> CONFIG_XENO_DRIVERS_RTIPC_XDDP=3Dy
->> CONFIG_XENO_DRIVERS_RTIPC_IDDP=3Dy
->> CONFIG_XENO_OPT_IDDP_NRPORT=3D32
->> CONFIG_XENO_DRIVERS_RTIPC_BUFP=3Dy
->> CONFIG_XENO_OPT_BUFP_NRPORT=3D32
->>
->> Is there anything else needed?
->
-> Rather than guessing what might have changed and what might affect you:
-> Can you provide a test case for what is not working as expected?
->
-> Jan
->
->>
->> Best Regards
->> Jona
->>
->> -----Urspr=C3=BCngliche Nachricht-----
->> Von: Jona Ostermann
->> Gesendet: Dienstag, 31. M=C3=A4rz 2020 16:03
->> An: 'Jan Kiszka' <jan.kiszka@web.de>; xenomai@xenomai.org
->> Betreff: AW: Directory /proc/xenomai/registry/rtipc/xddp does not exist
->>
->> Hello Jan,
->>
->> thank you, you are correct.
->> Using the xddp-label demo tool the link is created.
->> So it is an application error and not a Xenomai configuration error.
->>
->> Best regards
->> Jona
->>
->> -----Urspr=C3=BCngliche Nachricht-----
->> Von: Jan Kiszka <jan.kiszka@web.de>
->> Gesendet: Freitag, 27. M=C3=A4rz 2020 10:07
->> An: Jona Ostermann <Jona.Ostermann@janztec.com>; xenomai@xenomai.org
->> Betreff: Re: Directory /proc/xenomai/registry/rtipc/xddp does not exist
->>
->> On 26.03.20 11:12, Jona Ostermann via Xenomai wrote:
->>> Hello,
->>>
->>> one of our customers hast he problem that he needs a registry link in =
-the directory /proc/xenomai/registry/rtipc/xddp.
->>> But the directory does not exist, only /proc/xenomai/registry/ exists.
->>>
->>> What could be the problem?
->>> Is a special kernel configuration required or does a special kernel mo=
-dule need to be loaded?
->>>
->>
->> The links show up once xddp is being used. You can check that via smoke=
-y's xddp test.
->>
->> If that is not the case, compare configuration and versions of the refe=
-rence xenomai-images against your setup and share your findings.
->>
->> Jan
->>
 
