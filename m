@@ -1,12 +1,9 @@
+Date: Mon, 6 Apr 2020 18:15:40 +0200 (CEST)
+From: Paal Tamas <paal_to@freemail.hu>
+Subject: Xenomai 3.1 missing munmap Posix wrapper
+Message-ID: <freemail.20200406181540.86462.1@fmxmldata05.freemail.hu>
 MIME-Version: 1.0
-References: <CAFLxGvyr7f8bUxaEVpEwSGYEvX4FrkpGBV6qa2sR3SHq3wi_Yw@mail.gmail.com>
- <40a67d93-847a-d67f-bbc7-a6494591e97e@siemens.com>
-In-Reply-To: <40a67d93-847a-d67f-bbc7-a6494591e97e@siemens.com>
-From: Richard Weinberger <richard.weinberger@gmail.com>
-Date: Mon, 2 Mar 2020 13:52:49 +0100
-Message-ID: <CAFLxGvz=dSU0wzn6-_EjVXe3TZaOCkHN1X0OPUBROdehHy6YSQ@mail.gmail.com>
-Subject: Re: 32bit compat mode for arm64
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; CHARSET=UTF-8
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,19 +12,14 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jan Kiszka <jan.kiszka@siemens.com>
-Cc: xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-On Mon, Mar 2, 2020 at 1:16 PM Jan Kiszka <jan.kiszka@siemens.com> wrote:
+Hello Everybody,
 
-> Well, if there is a strong use case, usually proprietary legacy software
-> that refuses to be ported to 64-bit, I would not refuse such a contribution.
+I just migrated from 2.6.2.1. to 3.1 and run into an issue in my user mode application.
+The Posix wrapper for the munmap() function is missing. I mean the cobalt.wrappers file does not have a --wrap munmap line and the library does not have the function either. Why is that? 
+The mmap wrapper is there. I need to unmap the memory before closing the file descriptor. At least I did it this way in my old sources. Can I skip the munmap() call in this new Xenomai version before closing the descriptor?
 
-This is exactly the case. The said application was designed with 32bits in mind
-and it is almost impossible to change that.
-At least I can recompile it. ;-)
-
--- 
-Thanks,
-//richard
+Than you,
+Tamas
 
