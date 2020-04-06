@@ -1,11 +1,13 @@
+Subject: Re: [PATCH] RTNet builtin kernel - Fix IP protocols
+References: <7231-5e86f600-29-3b6a0580@56072459>
+From: Jan Kiszka <jan.kiszka@siemens.com>
+Message-ID: <5c46bad0-be55-14de-0312-66f560bc22bd@siemens.com>
+Date: Mon, 6 Apr 2020 07:57:49 +0200
 MIME-Version: 1.0
-From: =?UTF-8?B?5a2Z5LiW6b6Z?= <sunshilong369@gmail.com>
-Date: Sun, 5 Apr 2020 16:06:38 +0800
-Message-ID: <CAAvDm6bLF29EmmZHhraskjapoTwM36RL9=caaQFosQ4doOR1cQ@mail.gmail.com>
-Subject: question about the calculation of overload bytes in function
- add_extent()
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+In-Reply-To: <7231-5e86f600-29-3b6a0580@56072459>
+Content-Type: text/plain; charset="utf-8"; format="flowed"
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -14,51 +16,59 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai-git@xenomai.org, xenomai@xenomai.org
+To: =?UTF-8?Q?Fran=c3=a7ois_Legal?= <devel@thom.fr.eu.org>, xenomai@xenomai.org
 
-Question about the calculation of overload memory in function add_extent()
-in heapmem.c line:607(the source is listed below)
-In the source code, notes that"overhead memory we need for storing our meta
-data as calculated by HEAPMEM_ARENA_SIZE()".(The source of
-HEAPMEM_ARENA_SIZE macro is also listed below.)
-@@To simplify the problem=EF=BC=8Cwe ignore the alignment.@@
->From the HEAPMEM_ARENA_SIZE macro in code, we can draw the conclusion
-HEAPMEM_ARENA_SIZE(size)=3D__size+sizeof(struct
-heapmem_extent)+(__size/HEAPMEM_PAGE_SIZE)*HEAPMEM_PGMAP_BYTES
-So, the overhead i think is=EF=BC=9A
-overhead =3D HEAPMEM_ARENA_SIZE(size)-size =3D sizeof(struct
-heapmem_extent)+(__size/HEAPMEM_PAGE_SIZE)*HEAPMEM_PGMAP_BYTES
-If we use the representation explained in the source code, then
-overhead =3D o =3D e+(a*p)/m
-It's not equals to the calculation in the source, which is
-        o =3D ((a * m + e * p) / (p + m))
+On 03.04.20 10:37, François Legal via Xenomai wrote:
+> From: François LEGAL <devel@thom.fr.eu.org>
+> 
+> The link order of IP protocols does not allow to do UDP/TCP over IP with RTNet builtin as protocol list gets zeroed by af_inet when initializing
 
-@representation explained in source code(the whole source code is listed
-below)
- * o =3D overhead
- * e =3D sizeof(heapmem_extent)
- * p =3D HEAPMEM_PAGE_SIZE
- * m =3D HEAPMEM_PGMAP_BYTES  =3Dsizeof(struct heapmem_pgentry)
+Thanks, applied.
 
+Actually, that rt_inet_protocols clearing in rt_ipv4_proto_init is 
+redundant because that variable is global, thus zero-initialized anyway. 
+Still, the ordering should be as you patch now put it.
 
+> 
+> Signed-off-by: François LEGAL <devel@thom.fr.eu.org>
+> 
+> Subject: [PATCH] RTNet builtin kernel - Fix IP protocols
 
-Note: "__size/HEAPMEM_PAGE_SIZE" equals to "__size>>
-HEAPMEM_PAGE_SHIFT"(which is the orignal code)
+This line is wrong here. The email already carries the subject, and this 
+will only show up at the wrong place in the commit log.
 
+Jan
 
-@source code of macro HEAPMEM_ARENA_SIZE
-#define __HEAPMEM_MAP_SIZE(__nrpages) \
-((__nrpages) * HEAPMEM_PGMAP_BYTES)
-/*note by myslef :(__size)>>HEAPMEM_PAGE_SHIFT is the number of pages of
-memory pool
-__HEAPMEM_MAP_SIZE((__size) >> HEAPMEM_PAGE_SHIFT)calculats the memory size
-for storing the struct of heapmem_pgentry=E3=80=82*/
-#define __HEAPMEM_ARENA_SIZE(__size) \
-(__size + \
- __align_to(sizeof(struct heapmem_extent) + \
-    __HEAPMEM_MAP_SIZE((__size) >> HEAPMEM_PAGE_SHIFT), \
-    HEAPMEM_MIN_ALIGN))
+> ---
+>   kernel/drivers/net/stack/ipv4/Makefile | 8 ++++----
+>   1 file changed, 4 insertions(+), 4 deletions(-)
+> 
+> diff --git a/kernel/drivers/net/stack/ipv4/Makefile b/kernel/drivers/net/stack/ipv4/Makefile
+> index f0fcd36..7d45d23 100644
+> --- a/kernel/drivers/net/stack/ipv4/Makefile
+> +++ b/kernel/drivers/net/stack/ipv4/Makefile
+> @@ -1,9 +1,5 @@
+>   ccflags-y += -Idrivers/xenomai/net/stack/include
+>   
+> -obj-$(CONFIG_XENO_DRIVERS_NET_RTIPV4_UDP) += udp/
+> -
+> -obj-$(CONFIG_XENO_DRIVERS_NET_RTIPV4_TCP) += tcp/
+> -
+>   obj-$(CONFIG_XENO_DRIVERS_NET_RTIPV4) += rtipv4.o
+>   
+>   rtipv4-y := \
+> @@ -16,4 +12,8 @@ rtipv4-y := \
+>   	ip_output.o \
+>   	ip_fragment.o
+>   
+> +obj-$(CONFIG_XENO_DRIVERS_NET_RTIPV4_UDP) += udp/
+> +
+> +obj-$(CONFIG_XENO_DRIVERS_NET_RTIPV4_TCP) += tcp/
+> +
+>   rtipv4-$(CONFIG_XENO_DRIVERS_NET_RTIPV4_ICMP) += icmp.o
+> 
 
-/*
- * Calculate the minimal size of the memory arena needed to contain a
- * heap of __user_size bytes, including our meta data for managing it.
+-- 
+Siemens AG, Corporate Technology, CT RDA IOT SES-DE
+Corporate Competence Center Embedded Linux
+
