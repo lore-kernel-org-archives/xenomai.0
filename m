@@ -1,11 +1,10 @@
-Subject: Re: Is anybody can show me a simple rtdm driver to read/write virtual
- memory device?
-References: <CAAvDm6Zsm-gF+HwBLx1jo4-WHHu37_YoPGOTvgey3FVeWVCMWA@mail.gmail.com>
+Subject: Re: How to use the rtdm udd?
+References: <CAAvDm6bGS6agUeAEUMVR5cu=wAYJJkQ7_ZPQPBoKGzZPj3Ts4A@mail.gmail.com>
 From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <03215306-db00-75ce-e473-3de10cb233e7@siemens.com>
-Date: Mon, 6 Apr 2020 09:45:00 +0200
+Message-ID: <24efb99e-bf45-8265-3ad5-d6ad4d90a4a1@siemens.com>
+Date: Mon, 6 Apr 2020 09:47:10 +0200
 MIME-Version: 1.0
-In-Reply-To: <CAAvDm6Zsm-gF+HwBLx1jo4-WHHu37_YoPGOTvgey3FVeWVCMWA@mail.gmail.com>
+In-Reply-To: <CAAvDm6bGS6agUeAEUMVR5cu=wAYJJkQ7_ZPQPBoKGzZPj3Ts4A@mail.gmail.com>
 Content-Type: text/plain; charset="utf-8"; format="flowed"
 Content-Language: en-US
 Content-Transfer-Encoding: 8bit
@@ -19,21 +18,16 @@ List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: =?UTF-8?B?5a2Z5LiW6b6Z?= <sunshilong369@gmail.com>, xenomai@xenomai.org
 
-On 06.04.20 09:22, 孙世龙 via Xenomai wrote:
-> Is anybody could show me a simple xenomai3 rtdm driver to read/write
-> virtual memory device?
-> A virtual memory device to:
->      write "hello world" to memory device in real real time(It's appricate
-> if the write operation could wake up the read task which allready waited to
-> read)
-> read  the memory device in real time(It's appricate if the read operation
-> could wake up the write task which allready waited to write)
+On 06.04.20 09:31, 孙世龙 via Xenomai wrote:
+> How to use the rtdm udd?
+> Is there some examples to show how to use it?Is there some material on how
+> to use it?
+> Thanks.Looking forward to your replay.
 > 
 
-What do you mean with "virtual memory"?
-
-If you are looking for a pattern how a driver implements read/write 
-callbacks, maybe study the serial drivers. They come closest to "simple".
+In fact, we lack an example driver. However, the usage is analoguous to 
+the kernel's UIO framework, and details a documented in 
+https://gitlab.denx.de/Xenomai/xenomai/-/blob/master/include/cobalt/kernel/rtdm/udd.h
 
 Jan
 
