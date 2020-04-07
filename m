@@ -1,13 +1,14 @@
-Subject: Re: [PATCH] Add RTDM gpio driver for the OMAP family of SOCs
-References: <20200226060013.16809-1-greg@embeddedgreg.com>
+Subject: =?UTF-8?Q?Re=3a_Does_the_function_malloc=28=29_uses_the_real_malloc?=
+ =?UTF-8?Q?_or_the_wrap_one_in_heapobj=5fpkg=5finit=5fprivate=28=ef=bc=89=2e?=
+References: <CAAvDm6bD0n33+qGDny57N54SABDaMBSU+4PyY05moy3Yxn+7yQ@mail.gmail.com>
 From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <99bc0061-f3eb-6e80-f14a-2eb1356eaa22@siemens.com>
-Date: Mon, 2 Mar 2020 14:05:22 +0100
+Message-ID: <f110409a-3042-4ca7-c6ec-1633090a9dc6@siemens.com>
+Date: Tue, 7 Apr 2020 11:55:25 +0200
 MIME-Version: 1.0
-In-Reply-To: <20200226060013.16809-1-greg@embeddedgreg.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
+In-Reply-To: <CAAvDm6bD0n33+qGDny57N54SABDaMBSU+4PyY05moy3Yxn+7yQ@mail.gmail.com>
+Content-Type: text/plain; charset="utf-8"; format="flowed"
 Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,108 +17,25 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Greg Gallagher <greg@embeddedgreg.com>, xenomai@xenomai.org
+To: =?UTF-8?B?5a2Z5LiW6b6Z?= <sunshilong369@gmail.com>, xenomai@xenomai.org
 
-On 26.02.20 07:00, Greg Gallagher via Xenomai wrote:
-> Add new gpio RTDM driver for OMAP family of SOCs, tested on beaglebone black
-> and beaglebone green (AM335x)
+On 07.04.20 11:13, 孙世龙 via Xenomai wrote:
+> The source code url is
+> https://gitlab.denx.de/Xenomai/xenomai/-/blob/v3.1/lib/copperplate/
+> heapobj-heapmem.c  line:107
 > 
-> Signed-off-by: Greg Gallagher <greg@embeddedgreg.com>
-> ---
->   kernel/drivers/gpio/Kconfig     |  8 ++++++
->   kernel/drivers/gpio/Makefile    |  2 ++
->   kernel/drivers/gpio/gpio-omap.c | 43 +++++++++++++++++++++++++++++++++
->   3 files changed, 53 insertions(+)
->   create mode 100644 kernel/drivers/gpio/gpio-omap.c
+> In the source code listed above, function heapobj_pkg_init_private()  calls
+> malloc().
+> I hope to know whether it calls the wrapper function or
+> the real malloc function which provides by the glibc?
 > 
-> diff --git a/kernel/drivers/gpio/Kconfig b/kernel/drivers/gpio/Kconfig
-> index 48475f291..dbc862754 100644
-> --- a/kernel/drivers/gpio/Kconfig
-> +++ b/kernel/drivers/gpio/Kconfig
-> @@ -49,6 +49,14 @@ config XENO_DRIVERS_GPIO_XILINX
->   	Enables support for the GPIO controller available from
->   	Xilinx's softcore IP.
->   
-> +config XENO_DRIVERS_GPIO_OMAP
-> +	depends on ARCH_OMAP2PLUS || ARCH_OMAP
-> +	tristate "Support for OMAP GPIOs"
-> +	help
-> +
-> +	Enables support for the GPIO controller available from
-> +	OMAP family SOC.
-> +
->   config XENO_DRIVERS_GPIO_DEBUG
->          bool "Enable GPIO core debugging features"
->   
-> diff --git a/kernel/drivers/gpio/Makefile b/kernel/drivers/gpio/Makefile
-> index 8648fcca9..7bcf59949 100644
-> --- a/kernel/drivers/gpio/Makefile
-> +++ b/kernel/drivers/gpio/Makefile
-> @@ -5,6 +5,7 @@ obj-$(CONFIG_XENO_DRIVERS_GPIO_MXC) += xeno-gpio-mxc.o
->   obj-$(CONFIG_XENO_DRIVERS_GPIO_SUN8I_H3) += xeno-gpio-sun8i-h3.o
->   obj-$(CONFIG_XENO_DRIVERS_GPIO_ZYNQ7000) += xeno-gpio-zynq7000.o
->   obj-$(CONFIG_XENO_DRIVERS_GPIO_XILINX) += xeno-gpio-xilinx.o
-> +obj-$(CONFIG_XENO_DRIVERS_GPIO_OMAP) += xeno-gpio-omap.o
->   obj-$(CONFIG_XENO_DRIVERS_GPIO) += gpio-core.o
->   
->   xeno-gpio-bcm2835-y := gpio-bcm2835.o
-> @@ -12,3 +13,4 @@ xeno-gpio-mxc-y := gpio-mxc.o
->   xeno-gpio-sun8i-h3-y := gpio-sun8i-h3.o
->   xeno-gpio-zynq7000-y := gpio-zynq7000.o
->   xeno-gpio-xilinx-y := gpio-xilinx.o
-> +xeno-gpio-omap-y := gpio-omap.o
-> diff --git a/kernel/drivers/gpio/gpio-omap.c b/kernel/drivers/gpio/gpio-omap.c
-> new file mode 100644
-> index 000000000..5f10278f3
-> --- /dev/null
-> +++ b/kernel/drivers/gpio/gpio-omap.c
-> @@ -0,0 +1,43 @@
-> +/**
-> + * @note Copyright (C) 2020 Greg Gallagher <greg@embeddedgreg.com>
-> + *
-> + * This program is free software; you can redistribute it and/or
-> + * modify it under the terms of the GNU General Public License as
-> + * published by the Free Software Foundation; either version 2 of the
-> + * License, or (at your option) any later version.
-> + *
-> + * This program is distributed in the hope that it will be useful,
-> + * but WITHOUT ANY WARRANTY; without even the implied warranty of
-> + * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-> + * GNU General Public License for more details.
-> + *
-> + * You should have received a copy of the GNU General Public License
-> + * along with this program; if not, write to the Free Software
-> + * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
-> + */
-> +#include <linux/module.h>
-> +#include <rtdm/gpio.h>
-> +
-> +#define RTDM_SUBCLASS_OMAP  6
-> +
-> +static const char *compat_array[] = {
-> +	"ti,omap4-gpio",
-> +	"ti,omap3-gpio",
-> +	"ti,omap2-gpio",
-> +};
-> +
-> +static int __init omap_gpio_init(void)
-> +{
-> +	return rtdm_gpiochip_scan_array_of(NULL, compat_array,
-> +					   ARRAY_SIZE(compat_array),
-> +					   RTDM_SUBCLASS_OMAP);
-> +}
-> +module_init(omap_gpio_init);
-> +
-> +static void __exit omap_gpio_exit(void)
-> +{
-> +	rtdm_gpiochip_remove_of(RTDM_SUBCLASS_OMAP);
-> +}
-> +module_exit(omap_gpio_exit);
-> +
-> +MODULE_LICENSE("GPL");
+> How could I distinguish a function directs to the wrapper function or
+> the real one which provides by the glibc?
 > 
 
-Thanks, applied to next. Also enabled in CI.
+(Transparent) wrapping only happens when an object is linked with the 
+related options (-Wl,XXX.wrappers). Internal libs are not built like 
+that (you can always check the build log), so the original malloc is called.
 
 Jan
 
