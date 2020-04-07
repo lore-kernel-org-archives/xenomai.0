@@ -1,10 +1,10 @@
-Date: Mon, 6 Apr 2020 19:15:16 +0200 (CEST)
-From: Paal Tamas <paal_to@freemail.hu>
-Subject: Re: Xenomai 3.1 missing munmap Posix wrapper
-In-Reply-To: <c98f69ff-7d3f-7d96-3e09-6b1f8e21d721@siemens.com>
-Message-ID: <freemail.20200406191516.65294.1@fmxmldata10.freemail.hu>
 MIME-Version: 1.0
-Content-Type: text/plain; CHARSET=UTF-8
+From: =?UTF-8?B?5a2Z5LiW6b6Z?= <sunshilong369@gmail.com>
+Date: Tue, 7 Apr 2020 17:13:47 +0800
+Message-ID: <CAAvDm6bD0n33+qGDny57N54SABDaMBSU+4PyY05moy3Yxn+7yQ@mail.gmail.com>
+Subject: =?UTF-8?Q?Does_the_function_malloc=28=29_uses_the_real_malloc_or_t?=
+ =?UTF-8?Q?he_wrap_one_in_heapobj=5Fpkg=5Finit=5Fprivate=28=EF=BC=89=2E?=
+Content-Type: text/plain; charset="UTF-8"
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -13,43 +13,18 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jan Kiszka <jan.kiszka@siemens.com>
-Cc: xenomai@xenomai.org
+To: xenomai@xenomai.org
 
->>>> Hello Everybody,
->>>>
->>>> I just migrated from 2.6.2.1. to 3.1 and run into an issue in my user mode application.
->>>> The Posix wrapper for the munmap() function is missing. I mean the cobalt.wrappers file does not have a --wrap munmap line and the library does not have the function either. Why is that?
->>>> The mmap wrapper is there. I need to unmap the memory before closing the file descriptor. At least I did it this way in my old sources. Can I skip the munmap() call in this new Xenomai version before closing the descriptor?
->>>
->>> You mmap memory against an RTDM device handle, the only difference to
->>> mmap against a Linux device is who provides the memory. Releasing that
->>> mapping is just the same as with Linux: call munmap.
->>>
->>> If your driver has anything to do on release, register vmops with the
->>> backing vma. See e.g. spi_master_mmap.
->>>
->>> Jan
->>>
->> 
->> This is an ARM system (MX6) where I use the external parallel bus of the CPU to communicate with an FPGA in a real-time fashion in user mode. I need to access memory mapped registers of the CPU during the configuration of the CPU external bus interface, and the address range I use to "access" the FPGA is mapped to memory as well. In the old 2.6.2.1 system I was using the mmap() and munmap() wrapper functions for this purpose. I linked only Xenomai libraries to my executable.
->> Do you mean I should not use the mmap() wrapper from the cobalt library anymore. Use the Linux equivalent in 3.1? Will it not lead to any trouble? I mean will I not switch to secondary mode when I access the memory I mapped this way for example?
->
->Mapping an unmapping were never time sensitive operations. No magic 
->happened when they were executed, memory locking was the magic to ensure 
->that backing memory is always available on access (but even that is 
->unrelated when we talk about device memory, e.g. MMIO).
->
->The only reason for mmap being wrapped is that it can be used on 
->resources (represented by RTDM file descriptors) the Linux kernel itself 
->has no knowledge about, only Xenomai. If you use mmap to map /dev/mem, 
->ie. without a proper kernel driver, this will continue to work as before.
->
->Jan
->
+The source code url is
+https://gitlab.denx.de/Xenomai/xenomai/-/blob/v3.1/lib/copperplate/
+heapobj-heapmem.c  line:107
 
-Understood. Thank you very much for the explanation. 
-What I did technically is removed the mmap and munmap wrappers from my makefile. This led to an error-free compilation. I assume the Linux libraries got into the business this way...
-Thanks again,
-Tamas
+In the source code listed above, function heapobj_pkg_init_private()  calls
+malloc().
+I hope to know whether it calls the wrapper function or
+the real malloc function which provides by the glibc?
 
+How could I distinguish a function directs to the wrapper function or
+the real one which provides by the glibc?
+
+Thanks a lot. Looking forward to your replay.
