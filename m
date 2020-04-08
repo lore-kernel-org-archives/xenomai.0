@@ -1,13 +1,10 @@
-Subject: =?UTF-8?Q?Re=3a_Why_X11_influences_the_latency_of_xenomai=ef=bc=9f?=
-References: <CAAvDm6aDLFL1OzT8A2ufYrCrxwR4ROgS+v6ZUqSkq_K2tb3m_A@mail.gmail.com>
-From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <093ba9fd-6327-00d7-7b1e-da71dfc1cb4e@siemens.com>
-Date: Wed, 8 Apr 2020 11:05:21 +0200
 MIME-Version: 1.0
-In-Reply-To: <CAAvDm6aDLFL1OzT8A2ufYrCrxwR4ROgS+v6ZUqSkq_K2tb3m_A@mail.gmail.com>
-Content-Type: text/plain; charset="utf-8"; format="flowed"
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+From: =?UTF-8?B?5a2Z5LiW6b6Z?= <sunshilong369@gmail.com>
+Date: Wed, 8 Apr 2020 17:30:57 +0800
+Message-ID: <CAAvDm6ZF68ruV20tdOkNY_RX=BD87jgqvJTY1dOOejSgQEsq4A@mail.gmail.com>
+Subject: What function does cobalt_thread_probe() provides.
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,22 +13,14 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: =?UTF-8?B?5a2Z5LiW6b6Z?= <sunshilong369@gmail.com>, xenomai <xenomai@xenomai.org>
+To: xenomai <xenomai@xenomai.org>
 
-On 08.04.20 10:39, 孙世龙 via Xenomai wrote:
-> Hi,
->      Why X11 influences the latency of xenomai？I guess it has some relation
-> to GPU.Could you make me more clearly?
->      I have solved the latency . I am using QT runing on linux framebuffer
-> ,disabled X11 at all.I really hope to why  X11 influences the latency of
-> xenomai
+Hi=EF=BC=8C
+     I am using xenomai-v3.0.9.
 
-It's not X11, it's the side effects of certain GPU usage patterns on 
-your particular platform. Can you specify more details about both?
+     I wonder the function cobalt_thread_probe() provides.The source code
+is really simple which is listed below.I could not find any clue in the
+entrie project.
+     I don't think the function is really to kill some process.
 
-Jan
-
--- 
-Siemens AG, Corporate Technology, CT RDA IOT SES-DE
-Corporate Competence Center Embedded Linux
-
+     Best regards.
