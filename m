@@ -1,10 +1,15 @@
+Subject: =?utf-8?q?Re=3A_rt=5Ftask=5Funblock=28=29_POSIX_alternative?=
+Date: Wed, 08 Apr 2020 11:44:06 +0200
+From: =?utf-8?q?Petr_=c4=8cervenka?= <grugh@centrum.cz>
+References: <20200407154117.5D7D71C2@centrum.cz>,
+ <b9ce43ab-526d-71b8-c761-150dc7c1fd3f@siemens.com>,
+ <20200407171816.E0B3979D@centrum.cz>
+ <CAFLxGvx2EhOgUnB1VkW+7TendLUcsZ0XGGcwYhiPw7PcxwFkTw@mail.gmail.com>
+In-Reply-To: <CAFLxGvx2EhOgUnB1VkW+7TendLUcsZ0XGGcwYhiPw7PcxwFkTw@mail.gmail.com>
 MIME-Version: 1.0
-From: =?UTF-8?B?5a2Z5LiW6b6Z?= <sunshilong369@gmail.com>
-Date: Wed, 8 Apr 2020 17:37:00 +0800
-Message-ID: <CAAvDm6YJ9kvzr8uGvkb6fbh2u6_Cti+QghVy4zg1XaDndSp_iQ@mail.gmail.com>
-Subject: What function does cobalt_thread_probe() provides.
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Message-Id: <20200408114406.6119E0D9@centrum.cz>
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -13,22 +18,10 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai <xenomai@xenomai.org>
+To: =?utf-8?q?Richard_Weinberger?= <richard.weinberger@gmail.com>
+Cc: Jan Kiszka <jan.kiszka@siemens.com>, Xenomai <xenomai@xenomai.org>
 
-Hi=EF=BC=8C
-     I am using xenomai-v3.0.9.
+> Use pthread_kill() plus a custom signal. Such as SIGRTMIN + 2.
+Calling of kill() or pthread_kill() does not help. Nothing is able to interrupt read() from timerfd (only pthread_cancel). Do I have to prepare the task or timerfd to be interruptible by a signal?
+Petr
 
-     I wonder the function cobalt_thread_probe() provides.
-     The source code is really simple which is listed below.
-     I could not find any clue in the entrie project.
-     I don't think the function is really to kill some process.
-
-    xenomai-v3.0.9/lib/copperplate/internal.c:94
-    int cobalt_thread_probe(pid_t pid)
-  {
-
-      return XENOMAI_SYSCALL2(sc_cobalt_kill, pid, 0);
-  }
-
-
-     Best regards.
