@@ -1,7 +1,7 @@
 MIME-Version: 1.0
 From: =?UTF-8?B?5a2Z5LiW6b6Z?= <sunshilong369@gmail.com>
-Date: Wed, 8 Apr 2020 17:30:57 +0800
-Message-ID: <CAAvDm6ZF68ruV20tdOkNY_RX=BD87jgqvJTY1dOOejSgQEsq4A@mail.gmail.com>
+Date: Wed, 8 Apr 2020 17:37:00 +0800
+Message-ID: <CAAvDm6YJ9kvzr8uGvkb6fbh2u6_Cti+QghVy4zg1XaDndSp_iQ@mail.gmail.com>
 Subject: What function does cobalt_thread_probe() provides.
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
@@ -18,9 +18,17 @@ To: xenomai <xenomai@xenomai.org>
 Hi=EF=BC=8C
      I am using xenomai-v3.0.9.
 
-     I wonder the function cobalt_thread_probe() provides.The source code
-is really simple which is listed below.I could not find any clue in the
-entrie project.
+     I wonder the function cobalt_thread_probe() provides.
+     The source code is really simple which is listed below.
+     I could not find any clue in the entrie project.
      I don't think the function is really to kill some process.
+
+    xenomai-v3.0.9/lib/copperplate/internal.c:94
+    int cobalt_thread_probe(pid_t pid)
+  {
+
+      return XENOMAI_SYSCALL2(sc_cobalt_kill, pid, 0);
+  }
+
 
      Best regards.
