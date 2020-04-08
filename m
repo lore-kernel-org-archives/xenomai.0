@@ -1,16 +1,13 @@
+Subject: Re: What function does cobalt_thread_probe() provides.
+References: <20200408115535.628C1F0D@centrum.cz>
+From: Jan Kiszka <jan.kiszka@siemens.com>
+Message-ID: <71837375-fdaf-b01c-c25b-e41fe6a7acdc@siemens.com>
+Date: Wed, 8 Apr 2020 12:38:02 +0200
 MIME-Version: 1.0
-References: <20200407154117.5D7D71C2@centrum.cz>
- <b9ce43ab-526d-71b8-c761-150dc7c1fd3f@siemens.com>
- <20200407171816.E0B3979D@centrum.cz>
- <CAFLxGvx2EhOgUnB1VkW+7TendLUcsZ0XGGcwYhiPw7PcxwFkTw@mail.gmail.com>
- <20200408114406.6119E0D9@centrum.cz>
-In-Reply-To: <20200408114406.6119E0D9@centrum.cz>
-From: Richard Weinberger <richard.weinberger@gmail.com>
-Date: Wed, 8 Apr 2020 12:06:06 +0200
-Message-ID: <CAFLxGvxyysB-5KUmVGx3q_oeTzrU6Q5LSRk=FCTZ4n2Ahm4-2A@mail.gmail.com>
-Subject: Re: rt_task_unblock() POSIX alternative
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+In-Reply-To: <20200408115535.628C1F0D@centrum.cz>
+Content-Type: text/plain; charset="utf-8"; format="flowed"
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -19,23 +16,19 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: =?UTF-8?Q?Petr_=C4=8Cervenka?= <grugh@centrum.cz>
-Cc: Jan Kiszka <jan.kiszka@siemens.com>, Xenomai <xenomai@xenomai.org>
+To: =?UTF-8?Q?Petr_=c4=8cervenka?= <grugh@centrum.cz>, Xenomai <xenomai@xenomai.org>, sunshilong369@gmail.com
 
-On Wed, Apr 8, 2020 at 11:44 AM Petr =C4=8Cervenka <grugh@centrum.cz> wrote=
-:
->
-> > Use pthread_kill() plus a custom signal. Such as SIGRTMIN + 2.
-> Calling of kill() or pthread_kill() does not help. Nothing is able to int=
-errupt read() from timerfd (only pthread_cancel). Do I have to prepare the =
-task or timerfd to be interruptible by a signal?
+On 08.04.20 11:55, Petr Červenka via Xenomai wrote:
+> Kill doesn't mean to "kill" anything, but to send a signal to a thread.
+> I bet that cobalt_thread_probe() is meant to send a signal 0 with no reaction, only to find out if the thread exists and is xenomai capable.
+> Petr
+> 
 
-Using the signal you can interrupt the system call. Of course only if
-the system call is currently interruptable.
-pthread_cancel() in async mode also just sends a signal (SIGCANCEL)
-and terminates the thread in a more or less sane way.
+Exactly.
 
---=20
-Thanks,
-//richard
+Jan
+
+-- 
+Siemens AG, Corporate Technology, CT RDA IOT SES-DE
+Corporate Competence Center Embedded Linux
 
