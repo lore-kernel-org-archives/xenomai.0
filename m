@@ -1,15 +1,18 @@
-Subject: Re: IRQ's off issue
-References: <3594e210190a4c74ae039e2a2f9859f3@boschrexroth.nl>
- <c6cc67a3-c7cb-adc6-f0af-1d4161b95fad@siemens.com>
- <e2f386eeed1e491891bff9bb94efd336@boschrexroth.nl>
-From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <411693a4-c812-cabd-6b14-28ac6ceefd7f@siemens.com>
-Date: Mon, 2 Mar 2020 14:26:22 +0100
 MIME-Version: 1.0
-In-Reply-To: <e2f386eeed1e491891bff9bb94efd336@boschrexroth.nl>
-Content-Type: text/plain; charset="utf-8"; format="flowed"
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+References: <20200407154117.5D7D71C2@centrum.cz>
+ <b9ce43ab-526d-71b8-c761-150dc7c1fd3f@siemens.com>
+ <20200407171816.E0B3979D@centrum.cz>
+ <CAFLxGvx2EhOgUnB1VkW+7TendLUcsZ0XGGcwYhiPw7PcxwFkTw@mail.gmail.com>
+ <20200408114406.6119E0D9@centrum.cz>
+ <CAFLxGvx9-awne2He+ULqOzwf0cGae1s_k+-b8tdiM+uT67+cYg@mail.gmail.com>
+ <20200409170009.5B0DAA77@centrum.cz>
+In-Reply-To: <20200409170009.5B0DAA77@centrum.cz>
+From: Richard Weinberger <richard.weinberger@gmail.com>
+Date: Thu, 9 Apr 2020 18:13:37 +0200
+Message-ID: <CAFLxGvy8SP+4mr3PYYRHuxww=22w28RjaDPUgDSVFVHx-_cQ_g@mail.gmail.com>
+Subject: Re: rt_task_unblock() POSIX alternative
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -18,103 +21,81 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "Bradley Valdenebro Peter (DC-AE/ESW52)" <Peter.BradleyValdenebro@boschrexroth.nl>, "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: =?UTF-8?Q?Petr_=C4=8Cervenka?= <grugh@centrum.cz>
+Cc: Jan Kiszka <jan.kiszka@siemens.com>, Xenomai <xenomai@xenomai.org>
 
-On 02.03.20 14:09, Bradley Valdenebro Peter (DC-AE/ESW52) wrote:
-> Hello Jan,
-> 
-> Thanks for your fast response.
-> 
-> Power management is not active but if the ipipe trace IRQ's off shows the maximum time without an interrupt the value 780us might be alright.
-> We are currently running our highest priority real time Xenomai thread with a period of 1ms.
-> If we change the thread to a period of 125us we can see the value of the ipipe tracing dropping to 115us.
-> 
-> We were under the assumption that the ipipe trace IRQ's off shows the longest time interrupts have been disabled and not the longest time without an interrupt.
-> Is this assumption incorrect?
+On Thu, Apr 9, 2020 at 5:00 PM Petr =C4=8Cervenka <grugh@centrum.cz> wrote:
+>
+> > BTW:
+> > Why do you think nothing can interrupt a read() from a timerfd?
+> > If read() blocks on a timerfd the calling thread will be put into
+> > interruptable sleep.
+>
+> "I" was not able to send a signal to the task and interrupt it.
+> Here is an example. Please let me know, how to improve it to interrupt th=
+e read() before its timeout:
+>
+> #include <math.h>
+> #include <pthread.h>
+> #include <stdint.h>
+> #include <signal.h>
+> #include <stdio.h>
+> #include <string.h>
+> #include <sys/mman.h>
+> #include <sys/timerfd.h>
+> #include <unistd.h>
+>
+> #define AUTO_KILL
+>
+> #define SECOND  1000000000l     // ns
+> #define PERIOD  (5 * SECOND)    // ns
+> #define SLEEP   (1 * SECOND)    // ns
+>
+> using namespace std;
+>
+> static pid_t mainTask_pid;
+> static pthread_t task;
+> static int timer_fd;
+> static bool end =3D false;
+>
+> void signalHandler(int signal) {
+>     int err;
+>     printf("Signal handler: %d\n", signal);
+>     end =3D true;
+>     err =3D pthread_kill(task, SIGINT);
+>     if (err !=3D 0) {
+>         printf("pthread_kill failed: %d (%s)\n", err, strerror(-err));
+>     }
+>     printf("Signal handler end\n");
+> }
+>
+> void timediff (struct timespec *result, const struct timespec *t1, const =
+struct timespec *t2) {
+>     result->tv_sec =3D t2->tv_sec - t1->tv_sec;
+>     result->tv_nsec =3D t2->tv_nsec - t1->tv_nsec;
+>     if (result->tv_nsec >=3D SECOND) {
+>         result->tv_nsec -=3D SECOND;
+>         result->tv_sec++;
+>     }
+>     if (result->tv_nsec < 0) {
+>         result->tv_nsec +=3D SECOND;
+>         result->tv_sec--;
+>     }
+> }
+>
+> static void *taskHandler(void *cookie) {
+>     int err;
+>
+>     printf("Task started\n");
+>
+>     signal(SIGINT, signalHandler);
+>     signal(SIGTERM, signalHandler);
 
-Yes, but it might be misguided by improper instrumentations around going 
-idle. If interrupts were actually off during wfi, we would never return 
-from it.
+Don't use signal().
+Use sigaction() and *don't* set SA_RESTART. Maybe read() is always restarte=
+d...
 
-It's better to use the break-trace feature of the ipipe tracer 
-(xntrace_user_freeze), capturing the point where your application needs 
-to run and detected an exceptional (or just new maximum) delay. This is 
-also how the "latency" tool uses is.
-
-Jan
-
-> 
-> Regards.
-> Peter Bradley.
-> ​
-> 
-> -----Original Message-----
-> From: Jan Kiszka <jan.kiszka@siemens.com>
-> Sent: 02 March 2020 13:45
-> To: Bradley Valdenebro Peter (DC-AE/ESW52) <Peter.BradleyValdenebro@boschrexroth.nl>; xenomai@xenomai.org
-> Subject: Re: IRQ's off issue
-> 
-> On 02.03.20 12:03, Bradley Valdenebro Peter (DC-AE/ESW52) via Xenomai wrote:
->> Hello Xenomai team,
->>
->> We need you help understanding and solving a possible IRQ's off issue.
->> We are running a Xenomai/Linux setup on a Zynq Z-7020 SoC (We run Linux on CPU0 and Xenomai on CPU1):
->>    - Linux version 4.4.0-xilinx (gcc version 8.3.0 (Buildroot 2019.02-00080-gc31d48e) ) #1 SMP PREEMPT
->>    - ipipe ARM patch #8
->>    - Xenomai 3.0.10
->>
->> Lately we have been experiencing that our highest priority real time Xenomai thread sort of halts for around 1ms every now and then.
->> After some investigation and tests we decided to enable ipipe trace to
->> measure IRQs-off times. See below the output of /proc/ipipe/trace/max
->>
->> I-pipe worst-case tracing service on 4.4.0-xilinx/ipipe release #8
->> -------------------------------------------------------------
->> CPU: 0, Begin: 2944366216549 cycles, Trace Points: 2 (-10/+1), Length:
->> 780 us Calibrated minimum trace-point overhead: 0.288 us
->>
->>    +----- Hard IRQs ('|': locked)
->>    |+-- Xenomai
->>    ||+- Linux ('*': domain stalled, '+': current, '#': current+stalled)
->>    |||                      +---------- Delay flag ('+': > 1 us, '!': > 10 us)
->>    |||                      |        +- NMI noise ('N')
->>    |||                      |        |
->>             Type    User Val.   Time    Delay  Function (Parent)
->>    | +begin   0x80000001   -12      0.414  ipipe_stall_root+0x54 (<00000000>)
->>    | #end     0x80000001   -11      0.822  ipipe_stall_root+0x8c (<00000000>)
->>    | #begin   0x80000001   -11      0.414  ipipe_test_and_stall_root+0x5c (<00000000>)
->>    | #end     0x80000001   -10      1.095  ipipe_test_and_stall_root+0x98 (<00000000>)
->>    | #begin   0x90000000    -9      0.665  __irq_svc+0x58 (arch_cpu_idle+0x0)
->>    | #begin   0x00000025    -8      2.883  __ipipe_grab_irq+0x38 (<00000000>)
->>    |#*[  558] SampleI 49    -5      2.619  xnthread_resume+0x88 (<00000000>)
->>    |#*[    0] -<?>-   -1    -3      2.052  ___xnsched_run+0xfc (<00000000>)
->>    | #end     0x00000025    -1      0.760  __ipipe_grab_irq+0x7c (<00000000>)
->>    | #end     0x90000000     0      0.530  __ipipe_fast_svc_irq_exit+0x1c (arch_cpu_idle+0x0)
->>> | #begin   0x80000000     0! 780.110  arch_cpu_idle+0x9c (<00000000>)
->> <| +end     0x80000000   780      0.570  ipipe_unstall_root+0x64 (<00000000>)
->>    | +begin   0x90000000   780      0.000  __irq_svc+0x58 (ipipe_unstall_root+0x68)
-> 
-> Looks like the CPU was idle and received no IRQ during that time. Is some power management active? Is some timer misprogrammed? Or where should the next interrupt have from?
-> 
->>
->> We have trouble understanding the output but we can see a max length of 780us on CPU0. We find this value extremely high.
->> With our current requirements anything beyond 10us is not acceptable.
-> 
-> 780 us is definitely off on that target, but 10 us will likely be too ambitious as well. Maybe, maybe, with well configured strict core isolation, practically no Linux load on the RT core and your critical RT code path always in cache... But I would consider that highly risky, given this low-end CPU on that target SoC.
-> 
-> Jan
-> 
->>
->> Can someone with experience with the ipipe tracer please help us understand what is going on and how can we fix it?
->>
->> Thanks in advance for your support.
->>
->> Best regards.
->> Peter Bradley
->> ​
->>
-> 
-
--- 
-Siemens AG, Corporate Technology, CT RDA IOT SES-DE
-Corporate Competence Center Embedded Linux
+--=20
+Thanks,
+//richard
 
