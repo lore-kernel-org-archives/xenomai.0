@@ -1,8 +1,8 @@
 MIME-Version: 1.0
 From: =?UTF-8?B?5a2Z5LiW6b6Z?= <sunshilong369@gmail.com>
-Date: Fri, 10 Apr 2020 11:53:04 +0800
-Message-ID: <CAAvDm6b4+VjdosMZOY=QZT1UqomhAwSffTYcVaF6AvYxXQdbTA@mail.gmail.com>
-Subject: I think lib/copperplate depends on glic while using dual kernel
+Date: Fri, 10 Apr 2020 11:56:58 +0800
+Message-ID: <CAAvDm6YExdCv-Bk9RCin4ah7HTjEuiO2RzN835PsDBt_UoEbbg@mail.gmail.com>
+Subject: I think lib/copperplate depends on glibc while using dual kernel
  configuration.Am i right?
 Content-Type: text/plain; charset="UTF-8"
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
@@ -16,10 +16,12 @@ List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
 To: xenomai <xenomai@xenomai.org>
 
 Hi,
-   Two figures are contains in url
+  I am using xenomai-3.1.
+
+   Two figures are contained in url
 https://gitlab.denx.de/Xenomai/xenomai/-/wikis/Start_Here.
 
-   Since the architecture showed in Figure 2. Xenomai 3 single kernel
+   Since the architecture showed in figure 2 named xenomai 3 single kernel
 configuration, i could draw the conclusion that copperplate interface
 depends on the glibc.
 
