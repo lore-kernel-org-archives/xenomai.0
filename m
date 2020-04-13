@@ -1,9 +1,8 @@
 MIME-Version: 1.0
 From: =?UTF-8?B?5a2Z5LiW6b6Z?= <sunshilong369@gmail.com>
-Date: Mon, 13 Apr 2020 11:13:49 +0800
-Message-ID: <CAAvDm6aGF4MyODidv3qjCuUoUVVEEa4qh4H_X6iQvaKPAkvumw@mail.gmail.com>
-Subject: Could anybody make me more clearly that the differences bettween
- rtdm_event_wait and rtdm_wait_condition?
+Date: Mon, 13 Apr 2020 15:20:33 +0800
+Message-ID: <CAAvDm6bFOv=0_9kcX5BUtPYs3dRh-aVc7XARY7BtDo5Pu4Mz-Q@mail.gmail.com>
+Subject: How could I allocate a huge memory in rtdm driver?
 Content-Type: text/plain; charset="UTF-8"
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
@@ -16,13 +15,14 @@ List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
 To: xenomai <xenomai@xenomai.org>
 
 Hi,
-       Could anybody make me more clearly that the differences bettween
-rtdm_event_wait and rtdm_wait_condition?
+     I am using xenomai 3.1.
 
-       I think they both support to wait for some condition become true.
+     How could I allocate a huge memory which may be larger then 50MB in
+rtdm driver?
 
-       Another question is about the differences betteew
-rtdm_wait_condition and rtdm_wait_condition_lock.I could not find any
-actual usage of the two function throughout all source code (v3.1).
+     I have tried rtdm_malloc function,but it returns NULL.
 
-       Best regards.
+    To provide the operating system a large amount of free memory, I do
+this test when the ubuntu is started at once in vmware.
+
+    Best regards.
