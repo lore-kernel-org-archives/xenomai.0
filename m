@@ -1,11 +1,26 @@
-Date: Sun, 26 Apr 2020 19:04:35 +0800
-From: "huang.mb@softlinkcloud.cn" <huang.mb@softlinkcloud.cn>
-Subject: issue when porting a linux posix applicaiton to a xenomai application
-Mime-Version: 1.0
-Message-ID: <2020042619043472883924@softlinkcloud.cn>+9C6A0D321B23B4ED
-Content-Type: text/plain;
-	charset="GB2312"
-Content-Transfer-Encoding: base64
+MIME-Version: 1.0
+References: <20200407154117.5D7D71C2@centrum.cz>
+ <b9ce43ab-526d-71b8-c761-150dc7c1fd3f@siemens.com>
+ <20200407171816.E0B3979D@centrum.cz>
+ <CAFLxGvx2EhOgUnB1VkW+7TendLUcsZ0XGGcwYhiPw7PcxwFkTw@mail.gmail.com>
+ <20200408114406.6119E0D9@centrum.cz>
+ <CAFLxGvx9-awne2He+ULqOzwf0cGae1s_k+-b8tdiM+uT67+cYg@mail.gmail.com>
+ <20200409170009.5B0DAA77@centrum.cz>
+ <CAFLxGvy8SP+4mr3PYYRHuxww=22w28RjaDPUgDSVFVHx-_cQ_g@mail.gmail.com>
+ <20200409201057.74CB5ED0@centrum.cz>
+ <CAFLxGvxuZw57FvaAQEAxseamoPhHdKX7wfZoaZxKskgeXa4V9g@mail.gmail.com>
+ <20200414101600.F9AA555D@centrum.cz>
+ <CAFLxGvz7ewnVv57QiEfCG76tjGcJ5v9KSg0QNHwtMa0Hihp_dQ@mail.gmail.com>
+ <20200414111059.39716137@centrum.cz>
+ <CAFLxGvx4qs8ONbaiU37rFNqXy=n8Hat_p-V7fLAAxgskbuU_GA@mail.gmail.com>
+ <6b8c89d1-bae0-90f5-4935-925fb0af2137@siemens.com>
+In-Reply-To: <6b8c89d1-bae0-90f5-4935-925fb0af2137@siemens.com>
+From: Richard Weinberger <richard.weinberger@gmail.com>
+Date: Tue, 14 Apr 2020 12:23:42 +0200
+Message-ID: <CAFLxGvzkubcKhrzWvHQqQ6Stv4xD=LU2k6Uvhymk=YKHpKt91w@mail.gmail.com>
+Subject: Re: rt_task_unblock() POSIX alternative
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -14,119 +29,75 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai <xenomai@xenomai.org>
+To: Jan Kiszka <jan.kiszka@siemens.com>
+Cc: =?UTF-8?Q?Petr_=C4=8Cervenka?= <grugh@centrum.cz>, Xenomai <xenomai@xenomai.org>
 
-SGkgYWxsOg0KDQppIGhhdmUgcG9ydGVkIGEgYyBiYXNlZCBhcHBsaWNhdGlvbiB3aGljaCBpcyBh
-IHByb2ZpbmV0IG5ldHdvcmsgc3RhY2sgIGFuZCBpdCB3YXMgcnVubmluZyBvayBpbiBjb21tb24g
-eDg2IGxpbnV4IHBsYXRmb3JtIGFzIGEgcmVndWxhciBwcm9jZXNzIGV4Y2VwdCBzb21lIHJlYWx0
-aW1lIGlzc3VlLg0KDQpGb3IgdGhlIHJlYWx0aW1lIGlzc3VlLGkgaGF2ZSB0byBwb3J0ZWQgdG8g
-YSB4ZW5vbWFpIGFwcGxpY2F0aW9uDQoNClRoZSBwcm9maW5ldCBhcHBsaWNhdGlvbiB1c2luZyB0
-aGUgcG9zaXggaW50ZXJmYWNlIHNvIGkgdXNlIHhlbm9tYWkgMy4xJ3MgcG9zaXggc2tpbiBmb3Ig
-dGhlIHBvcnRpbmcuDQoNCkJ1dCBhZnRlciBpIGhhZCBwb3J0ZWQgaXQgdG8gdGhlIHhlbm9tYWkt
-cG9zaXggb25lICxpIGZvdW5kIGl0IGNvdWxkIHJlY2VpdmUgbmV0d29yayBtZXNzYWdlIGJ1dCBp
-dCBmYWlsZWQgdG8gc2VuZCB0aGUgbWVzc2FnZSBvdXQuIChieSBjb21wYXJpc29uIHRvICB0aGUg
-cmVndWxhciBvbmUgdXNpbmcNCiJ3YXRjaCAtbiAwLjEgaWZjb25maWcgZXRoMCIpLiBJdCBzZWVt
-ZWQgdGhhdCBzb21lIHRocmVhZCdzIGJsb2NraW5nIGFuZCBpIGRpZCBub3Qga25vd24gaG93IHRv
-IGludmVzdGVnYXRlIHRoZSBpc3N1ZS4NCg0KVGhlICAvcHJvYy94ZW5vbWFpL3NjaGVkL3N0YXQg
-d2FzIGxpa2UgdGhpczoNCkNQVSAgUElEICAgIE1TVyAgICAgICAgQ1NXICAgICAgICBYU0MgICAg
-ICAgIFBGICAgIFNUQVQgICAgICAgJUNQVSAgTkFNRQogIDAgIDAgICAgICAwICAgICAgICAgIDAg
-ICAgICAgICAgMCAgICAgICAgICAwICAgICAwMDIxODAwMCAgMTAwLjAgIFtST09ULzBdCiAgMSAg
-MCAgICAgIDAgICAgICAgICAgMCAgICAgICAgICAwICAgICAgICAgIDAgICAgIDAwMjE4MDAwICAx
-MDAuMCAgW1JPT1QvMV0KICAyICAwICAgICAgMCAgICAgICAgICAxMTkzMzIgICAgIDAgICAgICAg
-ICAgMCAgICAgMDAyMTgwMDAgIDEwMC4wICBbUk9PVC8yXQogIDMgIDAgICAgICAwICAgICAgICAg
-IDE3NDE3MSAgICAgMCAgICAgICAgICAwICAgICAwMDIxODAwMCAgIDk5LjggIFtST09ULzNdCiAg
-MyAgMTcyMSAgIDE0ICAgICAgICAgMjc0OSAgICAgICAyOTMwICAgICAgIDAgICAgIDAwMjQ4MDQ0
-ICAgIDAuMCAgZGtzd19saW51eAogIDMgIDE3MjMgICAyICAgICAgICAgIDQgICAgICAgICAgNyAg
-ICAgICAgICAwICAgICAwMDI0MjA0MiAgICAwLjAgIFRhc2tfQVNZTkNfVGltZXIKICAzICAxNzI0
-ICAgMiAgICAgICAgICA0ICAgICAgICAgIDQgICAgICAgICAgMCAgICAgMDAyNDIwNDIgICAgMC4w
-ICBUYXNrX09TX1RpbWVyCiAgMyAgMTcyNSAgIDQgICAgICAgICAgMjMgICAgICAgICA2OSAgICAg
-ICAgIDAgICAgIDAwMjQyMDQyICAgIDAuMCAgUHJpbnRSUzIzMlBvc3RUYXNrCiAgMyAgMTcyNiAg
-IDIgICAgICAgICAgMyAgICAgICAgICAzICAgICAgICAgIDAgICAgIDAwMjQyMDQyICAgIDAuMCAg
-UG5pb19OdkRhdGEKICAzICAxNzI3ICAgMyAgICAgICAgICA1NDUzICAgICAgIDU0NDggICAgICAg
-MCAgICAgMDAyNGEwNDQgICAgMC4wICBQbmlvX0lkbGUKICAzICAxNzI4ICAgNyAgICAgICAgICAy
-NyAgICAgICAgIDE4OCAgICAgICAgMCAgICAgMDAyNGEwYzAgICAgMC4wICBNYWluQXBwbAogIDMg
-IDE3MjkgICAyICAgICAgICAgIDEzNTIyMiAgICAgNjc2MDk1ICAgICAwICAgICAwMDI0YTA0NCAg
-ICAwLjEgIFBuaW9fQ3ljbGVJTwogIDMgIDE3MzAgICAzNDYzICAgICAgIDM0NjMgICAgICAgMzQ2
-NCAgICAgICAwICAgICAwMDI0YTBjMCAgICAwLjAgIHNuaWZmX3BhY2tldAogIDMgIDE3MzEgICAx
-MSAgICAgICAgIDI3MjE5ICAgICAgMjc0NDggICAgICAwICAgICAwMDI0YTA0NCAgICAwLjAgIHRf
-SURMCiAgMyAgMTczMiAgIDYgICAgICAgICAgODQgICAgICAgICAyMTUgICAgICAgIDAgICAgIDAw
-MjRhMDQyICAgIDAuMCAgdF9BUFAKICAzICAxNzMzICAgNDU5ICAgICAgICA0NjYxICAgICAgIDg5
-NjEgICAgICAgMCAgICAgMDAyNGEwNDIgICAgMC4wICB0X0VERAogIDMgIDE3MzQgICAyICAgICAg
-ICAgIDExMiAgICAgICAgMTY2ICAgICAgICAwICAgICAwMDI0YTA0MiAgICAwLjAgIHRfT1JHCiAg
-MyAgMTczNSAgIDMwICAgICAgICAgMTA3MSAgICAgICA3MzQ2ICAgICAgIDAgICAgIDAwMjRhMDQy
-ICAgIDAuMCAgdF9QTk8KICAzICAxNzM2ICAgMyAgICAgICAgICAyNDY1ICAgICAgIDUzMzkgICAg
-ICAgMCAgICAgMDAyNGEwNDIgICAgMC4wICB0X1RDUAogIDMgIDE3MzcgICAyICAgICAgICAgIDI2
-ICAgICAgICAgNDIgICAgICAgICAwICAgICAwMDI0YTA0MiAgICAwLjAgIHRfUE9GCiAgMyAgMTcz
-OCAgIDIgICAgICAgICAgMTAgICAgICAgICAxMCAgICAgICAgIDAgICAgIDAwMjQyMDQyICAgIDAu
-MCAgdF9SRU0KICAzICAxNzM5ICAgMyAgICAgICAgICA1MyAgICAgICAgIDg1ICAgICAgICAgMCAg
-ICAgMDAyNGEwNDIgICAgMC4wICB0X1NUUAogIDMgIDE3NDAgICAyICAgICAgICAgIDUgICAgICAg
-ICAgMzAgICAgICAgICAwICAgICAwMDI0YTA0MiAgICAwLjAgIFBuaW9fUG5wYlBvc3QKICAzICAx
-NzQxICAgMiAgICAgICAgICAyNSAgICAgICAgIDEzOCAgICAgICAgMCAgICAgMDAyNGEwNDIgICAg
-MC4wICBQbmlvX1BucGIKICAwICAwICAgICAgMCAgICAgICAgICAxNjUyMDAgICAgIDAgICAgICAg
-ICAgMCAgICAgMDAwMDAwMDAgICAgMC4wICBbSVJRMjMwNTogW3RpbWVyXV0KICAxICAwICAgICAg
-MCAgICAgICAgICAxMjU1MSAgICAgIDAgICAgICAgICAgMCAgICAgMDAwMDAwMDAgICAgMC4wICBb
-SVJRMjMwNTogW3RpbWVyXV0KICAyICAwICAgICAgMCAgICAgICAgICA4OTM3OTMgICAgIDAgICAg
-ICAgICAgMCAgICAgMDAwMDAwMDAgICAgMC4wICBbSVJRMjMwNTogW3RpbWVyXV0KICAzICAwICAg
-ICAgMCAgICAgICAgICAyNzkxMjk5ICAgIDAgICAgICAgICAgMCAgICAgMDAwMDAwMDAgICAgMC4x
-ICBbSVJRMjMwNTogW3RpbWVyXV0NCnRoZSAvcHJvYy94ZW5vbWFpL3NjaGVkL3RocmVhZCB3YXMg
-bGlrZSB0aGlzOg0KQ1BVICBQSUQgICAgQ0xBU1MgIFRZUEUgICAgICBQUkkgICBUSU1FT1VUICAg
-ICAgIFNUQVQgICAgICAgTkFNRQogIDAgIDAgICAgICBpZGxlICAgY29yZSAgICAgICAtMSAgIC0g
-ICAgICAgICAgICAgUiAgICAgICAgICBbUk9PVC8wXQogIDEgIDAgICAgICBpZGxlICAgY29yZSAg
-ICAgICAtMSAgIC0gICAgICAgICAgICAgUiAgICAgICAgICBbUk9PVC8xXQogIDIgIDAgICAgICBp
-ZGxlICAgY29yZSAgICAgICAtMSAgIC0gICAgICAgICAgICAgUiAgICAgICAgICBbUk9PVC8yXQog
-IDMgIDAgICAgICBpZGxlICAgY29yZSAgICAgICAtMSAgIC0gICAgICAgICAgICAgUiAgICAgICAg
-ICBbUk9PVC8zXQogIDMgIDE3MjEgICBydCAgICAgY29iYWx0ICAgICAxOSAgIDY5OG1zMzY5dXMg
-ICAgRCAgICAgICAgICBka3N3X2xpbnV4CiAgMyAgMTcyMyAgIHJ0ICAgICBjb2JhbHQgICAgIDIw
-ICAgLSAgICAgICAgICAgICBXciAgICAgICAgIFRhc2tfQVNZTkNfVGltZXIKICAzICAxNzI0ICAg
-cnQgICAgIGNvYmFsdCAgICAgMjAgICAtICAgICAgICAgICAgIFdyICAgICAgICAgVGFza19PU19U
-aW1lcgogIDMgIDE3MjUgICBydCAgICAgY29iYWx0ICAgICAgNiAgIC0gICAgICAgICAgICAgV3Ig
-ICAgICAgICBQcmludFJTMjMyUG9zdFRhc2sKICAzICAxNzI2ICAgcnQgICAgIGNvYmFsdCAgICAg
-IDUgICAtICAgICAgICAgICAgIFdyICAgICAgICAgUG5pb19OdkRhdGEKICAzICAxNzI3ICAgcnQg
-ICAgIGNvYmFsdCAgICAgIDEgICA0NjFtczUwdXMgICAgIERyICAgICAgICAgUG5pb19JZGxlCiAg
-MyAgMTcyOCAgIHJ0ICAgICBjb2JhbHQgICAgICA0ICAgLSAgICAgICAgICAgICBYciAgICAgICAg
-IE1haW5BcHBsCiAgMyAgMTcyOSAgIHJ0ICAgICBjb2JhbHQgICAgIDE5ICAgOG1zODI4dXMgICAg
-ICBEciAgICAgICAgIFBuaW9fQ3ljbGVJTwogIDMgIDE3MzAgICBydCAgICAgY29iYWx0ICAgICAx
-OSAgIC0gICAgICAgICAgICAgWHIgICAgICAgICBzbmlmZl9wYWNrZXQKICAzICAxNzMxICAgcnQg
-ICAgIGNvYmFsdCAgICAgMTEgICA5OG1zNjc5dXMgICAgIERyICAgICAgICAgdF9JREwKICAzICAx
-NzMyICAgcnQgICAgIGNvYmFsdCAgICAgMTAgICAtICAgICAgICAgICAgIFdyICAgICAgICAgdF9B
-UFAKICAzICAxNzMzICAgcnQgICAgIGNvYmFsdCAgICAgMTggICAtICAgICAgICAgICAgIFdyICAg
-ICAgICAgdF9FREQKICAzICAxNzM0ICAgcnQgICAgIGNvYmFsdCAgICAgMTcgICAtICAgICAgICAg
-ICAgIFdyICAgICAgICAgdF9PUkcKICAzICAxNzM1ICAgcnQgICAgIGNvYmFsdCAgICAgMTYgICAt
-ICAgICAgICAgICAgIFdyICAgICAgICAgdF9QTk8KICAzICAxNzM2ICAgcnQgICAgIGNvYmFsdCAg
-ICAgMTUgICAtICAgICAgICAgICAgIFdyICAgICAgICAgdF9UQ1AKICAzICAxNzM3ICAgcnQgICAg
-IGNvYmFsdCAgICAgMTQgICAtICAgICAgICAgICAgIFdyICAgICAgICAgdF9QT0YKICAzICAxNzM4
-ICAgcnQgICAgIGNvYmFsdCAgICAgMTMgICAtICAgICAgICAgICAgIFdyICAgICAgICAgdF9SRU0K
-ICAzICAxNzM5ICAgcnQgICAgIGNvYmFsdCAgICAgMTIgICAtICAgICAgICAgICAgIFdyICAgICAg
-ICAgdF9TVFAKICAzICAxNzQwICAgcnQgICAgIGNvYmFsdCAgICAgMTAgICAtICAgICAgICAgICAg
-IFdyICAgICAgICAgUG5pb19QbnBiUG9zdAogIDMgIDE3NDEgICBydCAgICAgY29iYWx0ICAgICAg
-OSAgIC0gICAgICAgICAgICAgV3IgICAgICAgICBQbmlvX1BucGIKDQp0aGUgZG1lc2cgYWJvdXQg
-eGVub21haToNCg0KWyAgICAwLjAwMDAwMF0gTGludXggdmVyc2lvbiAzLjE4LjIwLXhlbm9tYWkt
-My4xLTIwMjAwNDE3LTAyIChyb290QGNwYWMpIChnY2MgdmVyc2lvbiA1LjUuMCAyMDE3MTAxMCAo
-VWJ1bnR1IDUuNS4wLTEydWJ1bnR1MSkgKSAjMSBTTVAgRnJpIEFwciAxNyAxNjoyMzoxMiBIS1Qg
-MjAyMA0KWyAgICAwLjAwMDAwMF0gS2VybmVsIGNvbW1hbmQgbGluZTogQk9PVF9JTUFHRT0vdm1s
-aW51ei0zLjE4LjIwLXhlbm9tYWktMy4xLTIwMjAwNDE3LTAyIHJvb3Q9VVVJRD0yODUxYWI5Yi0x
-NzY2LTQxYTAtYjg4Mi0zY2FhOWE5NzViZjYgcm8gaXNvbGNwdXM9MSBxdWlldCBzcGxhc2ggdGV4
-dCB2dC5oYW5kb2ZmPTcNClsgICAgMS4yNTc5MjJdIFtYZW5vbWFpXSBzY2hlZHVsaW5nIGNsYXNz
-IGlkbGUgcmVnaXN0ZXJlZC4NClsgICAgMS4yNTc5MjZdIFtYZW5vbWFpXSBzY2hlZHVsaW5nIGNs
-YXNzIHJ0IHJlZ2lzdGVyZWQuDQpbICAgIDEuMjU3OTY5XSBbWGVub21haV0gU01JLWVuYWJsZWQg
-Y2hpcHNldCBmb3VuZCwgYnV0IFNNSSB3b3JrYXJvdW5kIGRpc2FibGVkDQpbICAgIDEuMjU3OTY5
-XSAgICAgICAgICAgKHNlZSB4ZW5vbWFpLnNtaSBwYXJhbWV0ZXIpLiBZb3UgbWlnaHQgZW5jb3Vu
-dGVyDQpbICAgIDEuMjU4MDA1XSBJLXBpcGU6IGhlYWQgZG9tYWluIFhlbm9tYWkgcmVnaXN0ZXJl
-ZC4NClsgICAgMS4yNjA4MzddIFtYZW5vbWFpXSBDb2JhbHQgdjMuMSBbREVCVUddDQpbICAgIDEu
-MzcxNTYyXSB1c2IgdXNiMTogTWFudWZhY3R1cmVyOiBMaW51eCAzLjE4LjIwLXhlbm9tYWktMy4x
-LTIwMjAwNDE3LTAyIGVoY2lfaGNkDQoNCm15IGFwcGxpY2F0aW9uIGNtYWtlIHhlbm9tYWkgY29t
-cGlsaW5nIHNldHRpbmc6DQoNCmV4ZWN1dGVfcHJvY2VzcyhDT01NQU5EIHhlbm8tY29uZmlnIC0t
-cG9zaXggLS1jZmxhZ3MgT1VUUFVUX1ZBUklBQkxFIFhFTk9fQ0ZMQUdTIE9VVFBVVF9TVFJJUF9U
-UkFJTElOR19XSElURVNQQUNFKQ0KZXhlY3V0ZV9wcm9jZXNzKENPTU1BTkQgeGVuby1jb25maWcg
-LS1wb3NpeCAtLWxkZmxhZ3MgT1VUUFVUX1ZBUklBQkxFIFhFTk9fTERGTEFHUyBPVVRQVVRfU1RS
-SVBfVFJBSUxJTkdfV0hJVEVTUEFDRSkNCnNldChDTUFLRV9DX0ZMQUdTICIke0NNQUtFX0NfRkxB
-R1N9ICR7WEVOT19DRkxBR1N9IikNCnNldChDTUFLRV9FWEVfTElOS0VSX0ZMQUdTICIke0NNQUtF
-X1NIQVJFRF9MSU5LRVJfRkxBR1N9ICR7WEVOT19MREZMQUdTfSIpDQoNCm15IGhhcmR3YXJlIHBs
-YXRmb3JtIGFuZCBvcyBpcyANCg0KSW50ZWwoUikgQ2VsZXJvbihSKSBDUFUgIEoxOTAwICBAIDEu
-OTlHSHogaTY4Ng0KVWJ1bnR1IDE0LjA0IDMuMTguMjAgDQoNCmNhbiBhbnkgb25lIGhlbHAgbWUg
-dG8gZmluZCBvdXQgd2h5IHRoaXMgcG9zaXggcG9ydGluZyBhcHBsaWNhdGlvbiBiZWhhdmlvdXIg
-YWJub3JtYWx5IGNvbXBhcmluZyB0byB0aGUgcmVndWxhciBvbmUgdXNpbmcgdGhlIGFib3ZlIGRh
-dGEuDQoNCndoYXQgbWVhc3VyZXMgc2hvdWxkIGkgdGFrZSB0byBtYWtlIHN1cmUgaXQgaGFzIHNh
-bWUgdGhyZWFkIHJ1bm5pbmcgYmVoYXZpb3VyIGFmdGVyIHBvdGluZyB0byB0aGUgeGVub21haS1w
-b3NpeCBvbmUuDQoNCg0KDQoNCkJlc3QgUmVnYXJkcw0KSHVhbmcgTWlhbmJvDQq157uwo7orODYx
-MzY4MjYxMjk1OQ0K
+On Tue, Apr 14, 2020 at 12:07 PM Jan Kiszka <jan.kiszka@siemens.com> wrote:
+>
+> On 14.04.20 11:46, Richard Weinberger wrote:
+> > On Tue, Apr 14, 2020 at 11:11 AM Petr =C4=8Cervenka <grugh@centrum.cz> =
+wrote:
+> >>
+> >>> I fear there seems to be a confusion between POSIX tasks and POSIX sk=
+in.
+> >>> Is your goal programming Xenomai realtime threads using POSIX alike A=
+PIs?
+> >>> Or are you looking for a pedant of rt_task_unblock() to unblock a
+> >>> POSIX task, without Xenomai realtime threads?
+> >>>
+> >>> The solution I provided is for the latter case.
+> >>
+> >>
+> >>
+> >> My original goal was to port a very complex realtime application from =
+Xenomai 2.6.5 Native skin to Xenomai 3.1 POSIX skin. So I made series of ex=
+amples, where I tried to verify porting of several designs used in the orig=
+. application. And rt_task_unblock() for reconfiguration of the waiting thr=
+eads in the orig app was one of them.
+> >>
+> >> Now I'm very curious, why the (my explicit) signals in Xenomai POSIX s=
+kin are not working for me as I would expect.
+> >>
+> >>
+> >>
+> >> Here is my compile command:
+> >>
+> >> g++ -fasynchronous-unwind-tables   -c -g -D_DEBUG -D_GNU_SOURCE -D_REE=
+NTRANT -D__COBALT_WRAP__ -D__COBALT__ -I/usr/xenomai/include/cobalt -I/usr/=
+xenomai/include -MMD -MP -MF "build/Debug/GNU-Linux/main.o.d" -o build/Debu=
+g/GNU-Linux/main.o main.cpp
+> >>
+> >>
+> >>
+> >> Here is my link command:
+> >>
+> >> g++ -fasynchronous-unwind-tables    -o dist/Debug/GNU-Linux/countertes=
+tapp_4 build/Debug/GNU-Linux/main.o -L/usr/xenomai/lib -Wl,-rpath,'/usr/xen=
+omai/lib' -Wl,--no-as-needed -Wl,@/usr/xenomai/lib/cobalt.wrappers -Wl,@/us=
+r/xenomai/lib/modechk.wrappers /usr/xenomai/lib/xenomai/bootstrap.o -Wl,--w=
+rap=3Dmain -Wl,--dynamic-list=3D/usr/xenomai/lib/dynlist.ld -lcobalt -lmode=
+chk -lpthread -lrt
+> >>
+> >>
+> >>
+> >> I'm using Netbeans IDE for my attemps, but the I tried to integrate xe=
+no-config --posix --cflags or --ldflags result into the project settings as=
+ much as possible.
+> >
+> > Okay. Now things get clearer.
+> > pthread_kill() will be wrapped to Xenomai, but you installed a signal
+> > handler for a Linux process.
+> >
+> > What you basically need is a function in the Xenomai POSIX skin which
+> > calls threadobj_unblock().
+> >
+>
+> Below the working version for unblocking the RT task with non-RT signal.
+
+This interrupts the Linux syscall, yes. Does this also work when the
+thread blocks on the Xenomai/Cobalt side?
+
+--=20
+Thanks,
+//richard
+
