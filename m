@@ -1,21 +1,24 @@
-Subject: Re: FAILURE run_gdb:287: checking expression "primary_mode", expected
- "$", found "N"
-References: <20200131152713.1811748-1-rpm@xenomai.org>
- <0c811fd4-dc46-0bce-99b3-64c150725d3d@siemens.com>
- <230535ea0245408dbd941bc26c4f6df9@intel.com>
- <bbab7ccf-0f5e-617a-2d94-afc79f2d7efa@siemens.com>
- <CALLqZ8Qk-BEuYjYtRpqkTVT5N9iWJHpU=3n109jCMCy4Yd_8TA@mail.gmail.com>
- <20200201112301.5d3146d9@md1za8fc.ad001.siemens.net>
- <20200420221850.xjzzrpdfoherz6hm@altlinux.org>
- <20200421002728.wugbqtzibmbuqyzk@altlinux.org>
-From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <5c0e4c46-e58f-f256-3946-c63470be511a@siemens.com>
-Date: Tue, 21 Apr 2020 12:00:35 +0200
 MIME-Version: 1.0
-In-Reply-To: <20200421002728.wugbqtzibmbuqyzk@altlinux.org>
-Content-Type: text/plain; charset=koi8-r; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+References: <20200407154117.5D7D71C2@centrum.cz>
+ <b9ce43ab-526d-71b8-c761-150dc7c1fd3f@siemens.com>
+ <20200407171816.E0B3979D@centrum.cz>
+ <CAFLxGvx2EhOgUnB1VkW+7TendLUcsZ0XGGcwYhiPw7PcxwFkTw@mail.gmail.com>
+ <20200408114406.6119E0D9@centrum.cz>
+ <CAFLxGvx9-awne2He+ULqOzwf0cGae1s_k+-b8tdiM+uT67+cYg@mail.gmail.com>
+ <20200409170009.5B0DAA77@centrum.cz>
+ <CAFLxGvy8SP+4mr3PYYRHuxww=22w28RjaDPUgDSVFVHx-_cQ_g@mail.gmail.com>
+ <20200409201057.74CB5ED0@centrum.cz>
+ <CAFLxGvxuZw57FvaAQEAxseamoPhHdKX7wfZoaZxKskgeXa4V9g@mail.gmail.com>
+ <20200414101600.F9AA555D@centrum.cz>
+ <CAFLxGvz7ewnVv57QiEfCG76tjGcJ5v9KSg0QNHwtMa0Hihp_dQ@mail.gmail.com>
+ <20200414111059.39716137@centrum.cz>
+In-Reply-To: <20200414111059.39716137@centrum.cz>
+From: Richard Weinberger <richard.weinberger@gmail.com>
+Date: Tue, 14 Apr 2020 11:46:14 +0200
+Message-ID: <CAFLxGvx4qs8ONbaiU37rFNqXy=n8Hat_p-V7fLAAxgskbuU_GA@mail.gmail.com>
+Subject: Re: rt_task_unblock() POSIX alternative
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -24,33 +27,66 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Xenomai <xenomai@xenomai.org>
+To: =?UTF-8?Q?Petr_=C4=8Cervenka?= <grugh@centrum.cz>
+Cc: Jan Kiszka <jan.kiszka@siemens.com>, Xenomai <xenomai@xenomai.org>
 
-On 21.04.20 02:27, Vitaly Chikunov via Xenomai wrote:
-> 2. There is additional problem with gdb test, though. If I have in my
-> `.gdbinit' value of `prompt' redefined - gdb test fails to recognize the
-> prompt.  I recommend adding `-nx' option to gdb arguments so that
-> `.gdbinit' is not read by default.
-> 
-> gdb --help:
->    --nh               Do not read ~/.gdbinit.
->    --nx               Do not read any .gdbinit files in any directory.
-> 
-> I believe these changes will make xeno-test more robust.
-> 
+On Tue, Apr 14, 2020 at 11:11 AM Petr =C4=8Cervenka <grugh@centrum.cz> wrot=
+e:
+>
+> > I fear there seems to be a confusion between POSIX tasks and POSIX skin=
+.
+> > Is your goal programming Xenomai realtime threads using POSIX alike API=
+s?
+> > Or are you looking for a pedant of rt_task_unblock() to unblock a
+> > POSIX task, without Xenomai realtime threads?
+> >
+> > The solution I provided is for the latter case.
+>
+>
+>
+> My original goal was to port a very complex realtime application from Xen=
+omai 2.6.5 Native skin to Xenomai 3.1 POSIX skin. So I made series of examp=
+les, where I tried to verify porting of several designs used in the orig. a=
+pplication. And rt_task_unblock() for reconfiguration of the waiting thread=
+s in the orig app was one of them.
+>
+> Now I'm very curious, why the (my explicit) signals in Xenomai POSIX skin=
+ are not working for me as I would expect.
+>
+>
+>
+> Here is my compile command:
+>
+> g++ -fasynchronous-unwind-tables   -c -g -D_DEBUG -D_GNU_SOURCE -D_REENTR=
+ANT -D__COBALT_WRAP__ -D__COBALT__ -I/usr/xenomai/include/cobalt -I/usr/xen=
+omai/include -MMD -MP -MF "build/Debug/GNU-Linux/main.o.d" -o build/Debug/G=
+NU-Linux/main.o main.cpp
+>
+>
+>
+> Here is my link command:
+>
+> g++ -fasynchronous-unwind-tables    -o dist/Debug/GNU-Linux/countertestap=
+p_4 build/Debug/GNU-Linux/main.o -L/usr/xenomai/lib -Wl,-rpath,'/usr/xenoma=
+i/lib' -Wl,--no-as-needed -Wl,@/usr/xenomai/lib/cobalt.wrappers -Wl,@/usr/x=
+enomai/lib/modechk.wrappers /usr/xenomai/lib/xenomai/bootstrap.o -Wl,--wrap=
+=3Dmain -Wl,--dynamic-list=3D/usr/xenomai/lib/dynlist.ld -lcobalt -lmodechk=
+ -lpthread -lrt
+>
+>
+>
+> I'm using Netbeans IDE for my attemps, but the I tried to integrate xeno-=
+config --posix --cflags or --ldflags result into the project settings as mu=
+ch as possible.
 
-Good point! Should be added to the smokey gdb testcase where it starts 
-gdb. Would you send a patch?
+Okay. Now things get clearer.
+pthread_kill() will be wrapped to Xenomai, but you installed a signal
+handler for a Linux process.
 
-> 3. Also, note that `-k' switch is not worked.
+What you basically need is a function in the Xenomai POSIX skin which
+calls threadobj_unblock().
 
-There are several test cases in smokey, gdb included, that terminate the 
-test process on errors. Probably, those need to be changed to return an 
-error code from the test main function. Not trivial in all cases.
-
-Jan
-
--- 
-Siemens AG, Corporate Technology, CT RDA IOT SES-DE
-Corporate Competence Center Embedded Linux
+--=20
+Thanks,
+//richard
 
