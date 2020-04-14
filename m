@@ -1,15 +1,11 @@
-Subject: Re: Public xenomai testing infrastructure
-References: <06aa62dc-b2da-9330-2ecc-e358c35f27cf@siemens.com>
- <c298eafc-c2e9-a576-9905-cc22427302e6@siemens.com>
- <e79de6ef-14d8-20e8-0530-5e49592f048f@siemens.com>
-From: Gylstorff Quirin <quirin.gylstorff@siemens.com>
-Message-ID: <23ec95b6-263b-503e-8202-7abacac1ea94@siemens.com>
-Date: Fri, 17 Apr 2020 09:41:52 +0200
 MIME-Version: 1.0
-In-Reply-To: <e79de6ef-14d8-20e8-0530-5e49592f048f@siemens.com>
-Content-Type: text/plain; charset="utf-8"; format="flowed"
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+References: <89d53aa4-dce0-a519-8f53-09b7e1733208@siemens.com>
+In-Reply-To: <89d53aa4-dce0-a519-8f53-09b7e1733208@siemens.com>
+From: Richard Weinberger <richard.weinberger@gmail.com>
+Date: Tue, 14 Apr 2020 11:10:03 +0200
+Message-ID: <CAFLxGvzPB=BWy8Hy3-Ecw8YyLFVwUtUZ6G5mzXufM=KZQ7hbiQ@mail.gmail.com>
+Subject: Re: [PATCH] ipipe: tracer: Hook into panic path just like ftrace does
+Content-Type: text/plain; charset="UTF-8"
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -18,120 +14,106 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
+To: Jan Kiszka <jan.kiszka@siemens.com>
+Cc: Xenomai <xenomai@xenomai.org>
 
-Hi all,
+On Tue, Apr 14, 2020 at 8:10 AM Jan Kiszka via Xenomai
+<xenomai@xenomai.org> wrote:
+>
+> From: Jan Kiszka <jan.kiszka@siemens.com>
+>
+> This uses the same pattern as ftrace for calling ipipe_trace_panic_dump,
+> resulting in one fill less that needs to be patched for ipipe.
+>
+> Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
+> ---
+>  kernel/ipipe/tracer.c | 37 +++++++++++++++++++++++++++++++++++++
+>  lib/bust_spinlocks.c  |  1 -
+>  2 files changed, 37 insertions(+), 1 deletion(-)
+>
+> diff --git a/kernel/ipipe/tracer.c b/kernel/ipipe/tracer.c
+> index d0f7cc95c799..181d4df20a6a 100644
+> --- a/kernel/ipipe/tracer.c
+> +++ b/kernel/ipipe/tracer.c
+> @@ -24,6 +24,7 @@
+>  #include <linux/module.h>
+>  #include <linux/version.h>
+>  #include <linux/kallsyms.h>
+> +#include <linux/kdebug.h>
+>  #include <linux/seq_file.h>
+>  #include <linux/proc_fs.h>
+>  #include <linux/ctype.h>
+> @@ -745,6 +746,36 @@ void ipipe_trace_panic_dump(void)
+>  }
+>  EXPORT_SYMBOL_GPL(ipipe_trace_panic_dump);
+>
+> +static int ipipe_trace_panic_handler(struct notifier_block *this,
+> +                                    unsigned long event, void *unused)
+> +{
+> +       ipipe_trace_panic_dump();
+> +       return NOTIFY_OK;
+> +}
+> +
+> +static struct notifier_block ipipe_trace_panic_notifier = {
+> +       .notifier_call  = ipipe_trace_panic_handler,
+> +       .priority       = 150,
 
-I had some time at hand and this how a public run of the xenomai test 
-infrastructure could look like:
+Are you using the same priorities as ftrace on purpose?
+I'd expect to get dumps from the ipipe tracer and ftrace in a well
+defined order.
 
-https://gitlab.com/Quirin.Gy/xenomai-images-test/pipelines/136863923
+> +};
+> +
+> +static int ipipe_trace_die_handler(struct notifier_block *self,
+> +                                  unsigned long val, void *data)
+> +{
+> +       switch (val) {
+> +       case DIE_OOPS:
+> +               ipipe_trace_panic_dump();
+> +               break;
+> +       default:
+> +               break;
+> +       }
+> +       return NOTIFY_OK;
+> +}
+> +
+> +static struct notifier_block ipipe_trace_die_notifier = {
+> +       .notifier_call = ipipe_trace_die_handler,
+> +       .priority = 200,
+> +};
+> +
+>  #endif /* CONFIG_IPIPE_TRACE_PANIC */
+>
+>
+> @@ -1484,4 +1515,10 @@ void __init __ipipe_init_tracer(void)
+>         __ipipe_create_trace_proc_val(trace_dir, "enable",
+>                                       &ipipe_trace_enable);
+>  #endif /* !CONFIG_IPIPE_TRACE_MCOUNT */
+> +
+> +#ifdef CONFIG_IPIPE_TRACE_PANIC
+> +       atomic_notifier_chain_register(&panic_notifier_list,
+> +                                      &ipipe_trace_panic_notifier);
+> +       register_die_notifier(&ipipe_trace_die_notifier);
+> +#endif /* CONFIG_IPIPE_TRACE_PANIC */
+>  }
+> diff --git a/lib/bust_spinlocks.c b/lib/bust_spinlocks.c
+> index 4ed2db7609f5..def8e659a0c1 100644
+> --- a/lib/bust_spinlocks.c
+> +++ b/lib/bust_spinlocks.c
+> @@ -27,7 +27,6 @@ void __attribute__((weak)) bust_spinlocks(int yes)
+>                 unblank_screen();
+>  #endif
+>                 console_unblank();
+> -               ipipe_trace_panic_dump();
+>                 if (--oops_in_progress == 0)
+>                         wake_up_klogd();
+>         }
+> --
+> 2.16.4
+>
 
-Best regards
-Quirin
-
-On 3/6/20 2:05 PM, Gylstorff Quirin via Xenomai wrote:
-> 
-> 
-> On 3/5/20 2:51 PM, Jan Kiszka wrote:
->> On 05.03.20 14:41, Gylstorff Quirin wrote:
->>> Hi all,
->>>
->>> As Jan mentioned in some post we have a CI infrastructure[1]
->>> - currently only internal available - based on gitlab & LAVA[2].
->>>   We plan to create a public version of this infrastructure.
->>>
->>> The setup will similar to the testing in CIP project[3]. The results
->>> of a build are transferred via a public LAVA master to private 
->>> instances of LAVA workers to the device-under-test and executed and 
->>> the result displayed on the LAVA master.
->>>
->>> We intend to use xenomai-images to build  kernel,root file system and 
->>> xenomai.
->>>
->>> The CI infrastructure will have the following components:
->>> - Public/Private Builds with gitlab, travis or similar
->>> - Public Lava Master (scheduling of test and display of results)
->>> - Private Lava worker connect to Hardware targets
->>>
->>> Current open topics for the CI Infrastructure
->>> - where to execute the public builds?
->>>    - gitlab oss program[4]
->>>      - can we run builds of xenomai-image
->>>    - travis
->>         (then paid, we won't scale as free project)
->>
->>       - AWS, like we do in the CIP project via
->>         https://gitlab.com/cip-project/cip-testing/gitlab-cloud-ci
->>
->>>    - somewhere else
->>> - Where to store the build artifacts?
->>>    - AWS buckets
->>>    - locally on the Master
->>
->> You mean the Lava Master, I suppose.
->>
->>> - How long to store the build artifacts?
->>>    - 1 week
->>
->> - until overwritten by a newer version - unfortunately not a feature of
->>    gitlab artifacts
->>
->>> - Where to run the public Lava Master?
->>>    - AWS or similar instance
->>>      - Payment of the instance
->>>    - Physical Server
->>>      - Who can host the server
->>>
->>>
->>> [1]: 
->>> https://gitlab.denx.de/Xenomai/xenomai-images/blob/master/tests/README.md#test-architecture 
->>>
->>> [2]: https://lavasoftware.org/
->>> [3]: 
->>> https://wiki.linuxfoundation.org/civilinfrastructureplatform/ciptesting/centalisedtesting 
->>>
->>> [4]: 
->>> https://about.gitlab.com/handbook/marketing/community-relations/opensource-program/ 
->>>
->>>
-> 
-> I tested xenomai-images with in my gitlab account and it work  - slowly ;-)
-> 
-> You can check out the build:
-> https://gitlab.com/Quirin.Gy/xenomai-images-test/pipelines/123917771
-> 
-> Next test would be to store the results as artifacts.
-> 
-> Quirin
-> 
-> 
-> 
-> 
 
 -- 
-Quirin Gylstorff
-
-Siemens AG
-Corporate Technology
-Research in Digitalization and Automation
-Smart Embedded Systems
-CT RDA IOT SES-DE
-Otto-Hahn-Ring 6
-81739 Muenchen, Germany
-Mobile: +49 173 3746683
-mailto:quirin.gylstorff@siemens.com
-www.siemens.com/ingenuityforlife
-
-Siemens Aktiengesellschaft: Chairman of the Supervisory Board: Jim 
-Hagemann Snabe; Managing Board: Joe Kaeser, Chairman, President and 
-Chief Executive Officer; Roland Busch, Lisa Davis, Klaus Helmrich, 
-Cedrik Neike, Michael Sen, Ralf P. Thomas; Registered offices: Berlin 
-and Munich, Germany; Commercial registries: Berlin Charlottenburg, HRB 
-12300, Munich, HRB 6684; WEEE-Reg.-No. DE 23691322
-
-Important notice: This e-mail and any attachment thereof contain 
-corporate proprietary information. If you have received it by mistake, 
-please notify us immediately by reply e-mail and delete this e-mail and 
-its attachments from your system. Thank you.
+Thanks,
+//richard
 
