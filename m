@@ -1,15 +1,14 @@
-From: "Meng, Fino" <fino.meng@intel.com>
-Subject: RE: Regarding Xenomai patch installation on Live USB
-Date: Mon, 20 Apr 2020 10:47:42 +0000
-Message-ID: <12b763460ec5434aa92ba46320489bd2@intel.com>
-References: <CAF_6Maz771xdyW4j3Cs7uOpo61SJ_pqq6YvOOgaYnE+Hrc+Jbg@mail.gmail.com>
- <af70dd6489c242c3858b7d089a25707d@intel.com>
- <CAF_6Max5yA+mh1ejwVu_Bg5dKr1tnaY2TYUTQQYEnCgpqLUYNw@mail.gmail.com>
-In-Reply-To: <CAF_6Max5yA+mh1ejwVu_Bg5dKr1tnaY2TYUTQQYEnCgpqLUYNw@mail.gmail.com>
-Content-Language: en-US
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+Subject: Re: [PATCH] ipipe: tracer: Hook into panic path just like ftrace does
+References: <89d53aa4-dce0-a519-8f53-09b7e1733208@siemens.com>
+ <CAFLxGvzPB=BWy8Hy3-Ecw8YyLFVwUtUZ6G5mzXufM=KZQ7hbiQ@mail.gmail.com>
+From: Jan Kiszka <jan.kiszka@siemens.com>
+Message-ID: <76ce4148-ea3c-fd50-f300-a019b17e8f01@siemens.com>
+Date: Tue, 14 Apr 2020 11:18:21 +0200
 MIME-Version: 1.0
+In-Reply-To: <CAFLxGvzPB=BWy8Hy3-Ecw8YyLFVwUtUZ6G5mzXufM=KZQ7hbiQ@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -18,48 +17,116 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: gopi ratnakaram <gopi.ratnakaram@svayarobotics.com>
-Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>, "Pu, Yanfeng" <yanfeng.pu@intel.com>
+To: Richard Weinberger <richard.weinberger@gmail.com>
+Cc: Xenomai <xenomai@xenomai.org>
 
-DQo+DQo+VGhhbmsgeW91IGZvciB5b3VyIGVtYWlsIHJlc3BvbnNlIEZpbm8uDQo+DQo+TWF5YmUg
-ZHVlIHRvIDQuOS4qIGlzIHRvbyBmYXIgYXdheSBmcm9tIFVidW50dSAxODA0J3Mgb3JpZ2luYWwg
-a2VybmVsOyBXaGF0IHdpbGwgYmUgdGhlIGlzc3VlIGluIHRoaXMgY2FzZT8gRHVlIHRvIGFueSBo
-YXJkd2FyZQ0KPmRyaXZlciBkZXBlbmRlbmN5IGNhdXNpbmcgdGhpcyBpc3N1ZT8NCj4NCj5XZSBt
-YWtlIHRoaXMgcmVwbyBmb3IgY29udmVuaWVuY2UsIEtlcm5lbCB2ZXJzaW9uIGlzIDQuMTkuNTkg
-d2l0aCBzb21lIEludGVsIEJTUCBwYXRjaGVzLg0KPndvcmtpbmcgZ29vZCBvbiBVYnVudHUgMTgw
-NDsgYnV0IGRpZG4ndCBtYWtlIGl0IG9uIExpdmUgVVNCIHlldCwgaHR0cHM6Ly9naXRodWIuY29t
-L2ludGVsL2xpbnV4LXN0YWJsZS14ZW5vbWFpL3dpa2kvR3VpZGUtDQo+b2YtWGVub21haS1CdWls
-ZC1hbmQtSW5zdGFsbGF0aW9uLW9uLVRvcC1vZi1VYnVudHUNCj4NCj4NCj5JcyB0aGVyZSBhbnkg
-cmVzdHJpY3Rpb24gdG8gdXNlIHRoZSBYZW5vbWFpIG9uIGxpdmUgVVNCIG9yIGNhbiBJIHByb2Nl
-ZWQgYW5kIGluc3RhbGwgdXNpbmcgdGhlIHN0ZXBzIHByb3ZpZGVkIGJ5IHlvdT8NCj4NCg0KV2Ug
-ZGlkbid0IHN0dWR5IGl0IHlldCwgd2UgaW50ZXJuYWxseSBidWlsZCBvdXQgbGl2ZSBVU0IgaW1h
-Z2UgZnJvbSB5b2N0by9iaXRiYWtlIGJhc2VkIGNvZGViYXNlOyB1IGNhbiB0cnksIA0KDQo+DQo+
-T25lIG1vcmUgdGhpbmcgaXMgSSBhbSB0cnlpbmcgdG8gaW5zdGFsbCB0aGlzIG9uIGEgc3BlY2lm
-aWMgbW90aGVyYm9hcmQgb2YgaW5kdXN0cmlhbCBncmFkZSB3aGljaCBpcyBiYXNlZCBvbiBhIGMy
-NDZwIGNoaXBzZXQgYW5kDQo+Y29yZSBpNyA2IGNvcmUgcHJvY2Vzc29yIChpNyA4NzAwKS4gV2ls
-bCBteSBoYXJkd2FyZSBjYXVzZSBhbnkgaXNzdWUuIEJlY2F1c2UgSSBoYXZlIGluc3RhbGxlZCBY
-ZW5vbWFpIG9uIGRpZmZlcmVudCBQQ3MgYW5kDQo+TGFwdG9wcyBtdWx0aXBsZSB0aW1lcyBhbmQg
-bmV2ZXIgZmFjZWQgYW55IGlzc3VlLg0KDQpXZSBoYXZlIHNlZW4gNC45Liogd29ya2luZyBvbiBu
-ZXdlc3QgV0hMLVUgYW5kIG90aGVyIHBsYXRmb3JtOyB0aGUgdGhpbmcgaXMgaWYgaXQgZmFpbCB0
-byBib290IGFueSBjZXJ0YWluIG1hY2hpbmUsIA0KSXQgdGFrZSB0aW1lIHRvIGRlYnVnLCB1IG1h
-eSBuZWVkIGEgc2VyaWFsIHBvcnQgdG8gcHJpbnRvdXQgYm9vdCBsb2cgdG8gc3BlZWQgdXAgdGhl
-IGRlYnVnIHByb2Nlc3MuDQoNCj4NCj4tLXRoYW5rcyAmIHJlZ2FyZHMsDQo+UiBHb3BpIEtyaXNo
-bmENCj4NCj4NCj4NCj5PbiBNb24sIEFwciAyMCwgMjAyMCBhdCAxMDo1NyBBTSBNZW5nLCBGaW5v
-IDxmaW5vLm1lbmdAaW50ZWwuY29tIDxtYWlsdG86Zmluby5tZW5nQGludGVsLmNvbT4gPiB3cm90
-ZToNCj4NCj4NCj4NCj4JPg0KPgk+RGVhciB0ZWFtIG1lbWJlcnMsDQo+CT4NCj4JPkkgdHJpZWQg
-aW5zdGFsbGluZyB0aGUgWGVub21haSBwYXRjaCBvbiBsaXZlIFVTQiBsb2FkZWQgd2l0aCBVYnVu
-dHUgMTguMDQuDQo+CT5JIGhhdmUgcGF0Y2hlZCBrZXJuZWwgdmVyc2lvbiA0LjkuMzggYW5kIHRy
-aWVkIHRvIGJvb3QgdGhlIFhlbm9tYWkgcGF0Y2hlZCBvbmUuIFdoZW4gSSB0cnkgdG8gYm9vdCBt
-eSBtb3RoZXJib2FyZA0KPml0IGlzDQo+CT51bmFibGUgdG8gYm9vdC4gQ2FuIEkgaW5zdGFsbCB0
-aGUgWGVub21haSBwYXRjaCBvbiBMaXZlIFVTQj8gV2hhdCBpcyBjYXVzaW5nIHRoaXMgcHJvYmxl
-bT8NCj4JPg0KPgk+LS1iZXN0IHJlZ2FyZHMsDQo+CT5SIEdvcGkgS3Jpc2huYSwNCj4NCj4NCj4J
-TWF5YmUgZHVlIHRvIDQuOS4qIGlzIHRvbyBmYXIgYXdheSBmcm9tIFVidW50dSAxODA0J3Mgb3Jp
-Z2luYWwga2VybmVsOw0KPglXZSBtYWtlIHRoaXMgcmVwbyBmb3IgY29udmVuaWVuY2UsIEtlcm5l
-bCB2ZXJzaW9uIGlzIDQuMTkuNTkgd2l0aCBzb21lIEludGVsIEJTUCBwYXRjaGVzLg0KPgl3b3Jr
-aW5nIGdvb2Qgb24gVWJ1bnR1IDE4MDQ7IGJ1dCBkaWRuJ3QgbWFrZSBpdCBvbiBMaXZlIFVTQiB5
-ZXQsDQo+CWh0dHBzOi8vZ2l0aHViLmNvbS9pbnRlbC9saW51eC1zdGFibGUteGVub21haS93aWtp
-L0d1aWRlLW9mLVhlbm9tYWktQnVpbGQtYW5kLUluc3RhbGxhdGlvbi1vbi1Ub3Atb2YtVWJ1bnR1
-DQo+DQo+CUJSIC8gRmlubyAo5a2f56Wl5aSrKQ0KPglJbnRlbCDigJMgSU9URyBEZXZlbG9wZXIg
-RW5hYmxpbmcNCj4NCg0KDQpCUiAvIEZpbm8gKOWtn+elpeWkqykNCkludGVsIOKAkyBJT1RHIERl
-dmVsb3BlciBFbmFibGluZw0KDQo=
+On 14.04.20 11:10, Richard Weinberger wrote:
+> On Tue, Apr 14, 2020 at 8:10 AM Jan Kiszka via Xenomai
+> <xenomai@xenomai.org> wrote:
+>>
+>> From: Jan Kiszka <jan.kiszka@siemens.com>
+>>
+>> This uses the same pattern as ftrace for calling ipipe_trace_panic_dump,
+>> resulting in one fill less that needs to be patched for ipipe.
+>>
+>> Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
+>> ---
+>>   kernel/ipipe/tracer.c | 37 +++++++++++++++++++++++++++++++++++++
+>>   lib/bust_spinlocks.c  |  1 -
+>>   2 files changed, 37 insertions(+), 1 deletion(-)
+>>
+>> diff --git a/kernel/ipipe/tracer.c b/kernel/ipipe/tracer.c
+>> index d0f7cc95c799..181d4df20a6a 100644
+>> --- a/kernel/ipipe/tracer.c
+>> +++ b/kernel/ipipe/tracer.c
+>> @@ -24,6 +24,7 @@
+>>   #include <linux/module.h>
+>>   #include <linux/version.h>
+>>   #include <linux/kallsyms.h>
+>> +#include <linux/kdebug.h>
+>>   #include <linux/seq_file.h>
+>>   #include <linux/proc_fs.h>
+>>   #include <linux/ctype.h>
+>> @@ -745,6 +746,36 @@ void ipipe_trace_panic_dump(void)
+>>   }
+>>   EXPORT_SYMBOL_GPL(ipipe_trace_panic_dump);
+>>
+>> +static int ipipe_trace_panic_handler(struct notifier_block *this,
+>> +                                    unsigned long event, void *unused)
+>> +{
+>> +       ipipe_trace_panic_dump();
+>> +       return NOTIFY_OK;
+>> +}
+>> +
+>> +static struct notifier_block ipipe_trace_panic_notifier = {
+>> +       .notifier_call  = ipipe_trace_panic_handler,
+>> +       .priority       = 150,
+> 
+> Are you using the same priorities as ftrace on purpose?
+> I'd expect to get dumps from the ipipe tracer and ftrace in a well
+> defined order.
+
+Actually, I just copied over and thought of this panic trace as a 
+replacement of ftrace because the latter is not pipeline-aware, lacking 
+state information about it. I don't see the use case of have both 
+enabled yet, do you?
+
+Jan
+
+> 
+>> +};
+>> +
+>> +static int ipipe_trace_die_handler(struct notifier_block *self,
+>> +                                  unsigned long val, void *data)
+>> +{
+>> +       switch (val) {
+>> +       case DIE_OOPS:
+>> +               ipipe_trace_panic_dump();
+>> +               break;
+>> +       default:
+>> +               break;
+>> +       }
+>> +       return NOTIFY_OK;
+>> +}
+>> +
+>> +static struct notifier_block ipipe_trace_die_notifier = {
+>> +       .notifier_call = ipipe_trace_die_handler,
+>> +       .priority = 200,
+>> +};
+>> +
+>>   #endif /* CONFIG_IPIPE_TRACE_PANIC */
+>>
+>>
+>> @@ -1484,4 +1515,10 @@ void __init __ipipe_init_tracer(void)
+>>          __ipipe_create_trace_proc_val(trace_dir, "enable",
+>>                                        &ipipe_trace_enable);
+>>   #endif /* !CONFIG_IPIPE_TRACE_MCOUNT */
+>> +
+>> +#ifdef CONFIG_IPIPE_TRACE_PANIC
+>> +       atomic_notifier_chain_register(&panic_notifier_list,
+>> +                                      &ipipe_trace_panic_notifier);
+>> +       register_die_notifier(&ipipe_trace_die_notifier);
+>> +#endif /* CONFIG_IPIPE_TRACE_PANIC */
+>>   }
+>> diff --git a/lib/bust_spinlocks.c b/lib/bust_spinlocks.c
+>> index 4ed2db7609f5..def8e659a0c1 100644
+>> --- a/lib/bust_spinlocks.c
+>> +++ b/lib/bust_spinlocks.c
+>> @@ -27,7 +27,6 @@ void __attribute__((weak)) bust_spinlocks(int yes)
+>>                  unblank_screen();
+>>   #endif
+>>                  console_unblank();
+>> -               ipipe_trace_panic_dump();
+>>                  if (--oops_in_progress == 0)
+>>                          wake_up_klogd();
+>>          }
+>> --
+>> 2.16.4
+>>
+> 
+> 
+
+-- 
+Siemens AG, Corporate Technology, CT RDA IOT SES-DE
+Corporate Competence Center Embedded Linux
 
