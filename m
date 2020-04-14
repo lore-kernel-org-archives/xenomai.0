@@ -1,9 +1,27 @@
+Subject: Re: rt_task_unblock() POSIX alternative
+References: <20200407154117.5D7D71C2@centrum.cz>
+ <20200408114406.6119E0D9@centrum.cz>
+ <CAFLxGvx9-awne2He+ULqOzwf0cGae1s_k+-b8tdiM+uT67+cYg@mail.gmail.com>
+ <20200409170009.5B0DAA77@centrum.cz>
+ <CAFLxGvy8SP+4mr3PYYRHuxww=22w28RjaDPUgDSVFVHx-_cQ_g@mail.gmail.com>
+ <20200409201057.74CB5ED0@centrum.cz>
+ <CAFLxGvxuZw57FvaAQEAxseamoPhHdKX7wfZoaZxKskgeXa4V9g@mail.gmail.com>
+ <20200414101600.F9AA555D@centrum.cz>
+ <CAFLxGvz7ewnVv57QiEfCG76tjGcJ5v9KSg0QNHwtMa0Hihp_dQ@mail.gmail.com>
+ <20200414111059.39716137@centrum.cz>
+ <CAFLxGvx4qs8ONbaiU37rFNqXy=n8Hat_p-V7fLAAxgskbuU_GA@mail.gmail.com>
+ <6b8c89d1-bae0-90f5-4935-925fb0af2137@siemens.com>
+ <CAFLxGvzkubcKhrzWvHQqQ6Stv4xD=LU2k6Uvhymk=YKHpKt91w@mail.gmail.com>
+ <da711d20-6897-3a80-d327-2f054c8bdd88@siemens.com>
+ <CAFLxGvyoGbnQULdswrikMg-tBetnq-UA5fn_0jqQd1BLgH2U6A@mail.gmail.com>
+ <50cc036c-3afd-5afd-8c94-3bdfa9d7aa6c@siemens.com>
+ <CAFLxGvyhPEskS+QfD4QUQXYLRDvYN2QZXma73AMrwF3+0-roqQ@mail.gmail.com>
 From: Jan Kiszka <jan.kiszka@siemens.com>
-Subject: [PATCH] x86: ipipe: Turn off context check in __ipipe_trap_prologue
-Message-ID: <70c51d28-9fc5-31b8-6f50-26986d3e7eb7@siemens.com>
-Date: Tue, 14 Apr 2020 08:11:35 +0200
+Message-ID: <6a6aed9a-c2af-f498-4e27-bde61646a395@siemens.com>
+Date: Tue, 14 Apr 2020 13:01:58 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+In-Reply-To: <CAFLxGvyhPEskS+QfD4QUQXYLRDvYN2QZXma73AMrwF3+0-roqQ@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
@@ -14,37 +32,37 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Xenomai <xenomai@xenomai.org>
+To: Richard Weinberger <richard.weinberger@gmail.com>
+Cc: =?UTF-8?Q?Petr_=c4=8cervenka?= <grugh@centrum.cz>, Xenomai <xenomai@xenomai.org>
 
-From: Jan Kiszka <jan.kiszka@siemens.com>
+On 14.04.20 12:56, Richard Weinberger wrote:
+> On Tue, Apr 14, 2020 at 12:44 PM Jan Kiszka <jan.kiszka@siemens.com> wrote:
+> 
+>>> While we are here, is there a guarantee that rt_task_unblock() can unblock
+>>> a thread in every situation?
+>>> I have a large Xenomai 2 application on my desk which seems to assumes that.
+>>
+>> IIRC, it does so for the native/alchemy API.
+>>
+>>>
+>>> As far as I understand it, unblocking tasks is best effort.
+>>> /me has pthread_mutex_lock() in mind which must not return -EINTR as
+>>> required by POSIX.
+>>>
+>>
+>> Well, when mixing APIs, you can end up in such conflicting goals, indeed.
+> 
+> I fear more about Xenomai internals which are now based on POSIX APIs.
+> IIRC we talked regarding this issue some time ago.
+> 
+> Found the mail:
+> https://www.xenomai.org/pipermail/xenomai/2019-July/041221.html
 
-If the head domain is stalled due to a bug, reporting the fault will
-trigger also the context checker at various points, piling up misleading
-bug reports.
+Indeed, there is a todo...
 
-Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
----
- arch/x86/kernel/ipipe.c | 7 +++++++
- 1 file changed, 7 insertions(+)
+Jan
 
-diff --git a/arch/x86/kernel/ipipe.c b/arch/x86/kernel/ipipe.c
-index afe730649a5f..5c74312f3331 100644
---- a/arch/x86/kernel/ipipe.c
-+++ b/arch/x86/kernel/ipipe.c
-@@ -421,6 +421,13 @@ dotraplinkage int __ipipe_trap_prologue(struct pt_regs *regs, int trapnr, unsign
- 		ipd = __ipipe_current_domain;
- 		__ipipe_set_current_domain(ipipe_root_domain);
- 
-+		/*
-+		 * Prevent warnings of this debug checker to focus on the
-+		 * actual bug.
-+		 */
-+		if (test_bit(IPIPE_STALL_FLAG, &__ipipe_head_status))
-+			ipipe_context_check_off();
-+
- 		/* Sync Linux interrupt state with hardware state on entry. */
- 		if (entry_irqs_off)
- 			local_irq_disable();
 -- 
-2.16.4
+Siemens AG, Corporate Technology, CT RDA IOT SES-DE
+Corporate Competence Center Embedded Linux
 
