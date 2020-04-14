@@ -1,7 +1,5 @@
-MIME-Version: 1.0
+Subject: Re: rt_task_unblock() POSIX alternative
 References: <20200407154117.5D7D71C2@centrum.cz>
- <20200408114406.6119E0D9@centrum.cz>
- <CAFLxGvx9-awne2He+ULqOzwf0cGae1s_k+-b8tdiM+uT67+cYg@mail.gmail.com>
  <20200409170009.5B0DAA77@centrum.cz>
  <CAFLxGvy8SP+4mr3PYYRHuxww=22w28RjaDPUgDSVFVHx-_cQ_g@mail.gmail.com>
  <20200409201057.74CB5ED0@centrum.cz>
@@ -17,12 +15,15 @@ References: <20200407154117.5D7D71C2@centrum.cz>
  <50cc036c-3afd-5afd-8c94-3bdfa9d7aa6c@siemens.com>
  <CAFLxGvyhPEskS+QfD4QUQXYLRDvYN2QZXma73AMrwF3+0-roqQ@mail.gmail.com>
  <6a6aed9a-c2af-f498-4e27-bde61646a395@siemens.com>
-In-Reply-To: <6a6aed9a-c2af-f498-4e27-bde61646a395@siemens.com>
-From: Richard Weinberger <richard.weinberger@gmail.com>
-Date: Tue, 14 Apr 2020 13:05:56 +0200
-Message-ID: <CAFLxGvxDDdhQmkMD0hj1QTEQtxyDpbGeueBG8PY5a2gorUffNg@mail.gmail.com>
-Subject: Re: rt_task_unblock() POSIX alternative
-Content-Type: text/plain; charset="UTF-8"
+ <CAFLxGvxDDdhQmkMD0hj1QTEQtxyDpbGeueBG8PY5a2gorUffNg@mail.gmail.com>
+From: Jan Kiszka <jan.kiszka@siemens.com>
+Message-ID: <790e59d5-03ab-e2f9-fad4-45c16acbcda6@siemens.com>
+Date: Tue, 14 Apr 2020 13:30:03 +0200
+MIME-Version: 1.0
+In-Reply-To: <CAFLxGvxDDdhQmkMD0hj1QTEQtxyDpbGeueBG8PY5a2gorUffNg@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -31,40 +32,48 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jan Kiszka <jan.kiszka@siemens.com>
-Cc: =?UTF-8?Q?Petr_=C4=8Cervenka?= <grugh@centrum.cz>, Xenomai <xenomai@xenomai.org>
+To: Richard Weinberger <richard.weinberger@gmail.com>
+Cc: =?UTF-8?Q?Petr_=c4=8cervenka?= <grugh@centrum.cz>, Xenomai <xenomai@xenomai.org>
 
-On Tue, Apr 14, 2020 at 1:02 PM Jan Kiszka <jan.kiszka@siemens.com> wrote:
->
-> On 14.04.20 12:56, Richard Weinberger wrote:
-> > On Tue, Apr 14, 2020 at 12:44 PM Jan Kiszka <jan.kiszka@siemens.com> wrote:
-> >
-> >>> While we are here, is there a guarantee that rt_task_unblock() can unblock
-> >>> a thread in every situation?
-> >>> I have a large Xenomai 2 application on my desk which seems to assumes that.
-> >>
-> >> IIRC, it does so for the native/alchemy API.
-> >>
-> >>>
-> >>> As far as I understand it, unblocking tasks is best effort.
-> >>> /me has pthread_mutex_lock() in mind which must not return -EINTR as
-> >>> required by POSIX.
-> >>>
-> >>
-> >> Well, when mixing APIs, you can end up in such conflicting goals, indeed.
-> >
-> > I fear more about Xenomai internals which are now based on POSIX APIs.
-> > IIRC we talked regarding this issue some time ago.
-> >
-> > Found the mail:
-> > https://www.xenomai.org/pipermail/xenomai/2019-July/041221.html
->
-> Indeed, there is a todo...
+On 14.04.20 13:05, Richard Weinberger wrote:
+> On Tue, Apr 14, 2020 at 1:02 PM Jan Kiszka <jan.kiszka@siemens.com> wrote:
+>>
+>> On 14.04.20 12:56, Richard Weinberger wrote:
+>>> On Tue, Apr 14, 2020 at 12:44 PM Jan Kiszka <jan.kiszka@siemens.com> wrote:
+>>>
+>>>>> While we are here, is there a guarantee that rt_task_unblock() can unblock
+>>>>> a thread in every situation?
+>>>>> I have a large Xenomai 2 application on my desk which seems to assumes that.
+>>>>
+>>>> IIRC, it does so for the native/alchemy API.
+>>>>
+>>>>>
+>>>>> As far as I understand it, unblocking tasks is best effort.
+>>>>> /me has pthread_mutex_lock() in mind which must not return -EINTR as
+>>>>> required by POSIX.
+>>>>>
+>>>>
+>>>> Well, when mixing APIs, you can end up in such conflicting goals, indeed.
+>>>
+>>> I fear more about Xenomai internals which are now based on POSIX APIs.
+>>> IIRC we talked regarding this issue some time ago.
+>>>
+>>> Found the mail:
+>>> https://www.xenomai.org/pipermail/xenomai/2019-July/041221.html
+>>
+>> Indeed, there is a todo...
+> 
+> No big deal. I actually try hard to get rid of all rt_task_unblock()
+> users in our code base. :-)
+> 
 
-No big deal. I actually try hard to get rid of all rt_task_unblock()
-users in our code base. :-)
+Well, some fix is needed in any case, at least to the docs stating the 
+rt_mutex_acquire* will return -EINTR when interrupted by 
+rt_task_unblock. That is currently not true.
+
+Jan
 
 -- 
-Thanks,
-//richard
+Siemens AG, Corporate Technology, CT RDA IOT SES-DE
+Corporate Competence Center Embedded Linux
 
