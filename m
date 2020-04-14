@@ -1,7 +1,7 @@
 From: Jan Kiszka <jan.kiszka@siemens.com>
-Subject: [PATCH] ipipe: tracer: Hook into panic path just like ftrace does
-Message-ID: <89d53aa4-dce0-a519-8f53-09b7e1733208@siemens.com>
-Date: Tue, 14 Apr 2020 08:10:02 +0200
+Subject: [PATCH] x86: ipipe: Turn off context check in __ipipe_trap_prologue
+Message-ID: <70c51d28-9fc5-31b8-6f50-26986d3e7eb7@siemens.com>
+Date: Tue, 14 Apr 2020 08:11:35 +0200
 MIME-Version: 1.0
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
@@ -18,87 +18,33 @@ To: Xenomai <xenomai@xenomai.org>
 
 From: Jan Kiszka <jan.kiszka@siemens.com>
 
-This uses the same pattern as ftrace for calling ipipe_trace_panic_dump,
-resulting in one fill less that needs to be patched for ipipe.
+If the head domain is stalled due to a bug, reporting the fault will
+trigger also the context checker at various points, piling up misleading
+bug reports.
 
 Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
 ---
- kernel/ipipe/tracer.c | 37 +++++++++++++++++++++++++++++++++++++
- lib/bust_spinlocks.c  |  1 -
- 2 files changed, 37 insertions(+), 1 deletion(-)
+ arch/x86/kernel/ipipe.c | 7 +++++++
+ 1 file changed, 7 insertions(+)
 
-diff --git a/kernel/ipipe/tracer.c b/kernel/ipipe/tracer.c
-index d0f7cc95c799..181d4df20a6a 100644
---- a/kernel/ipipe/tracer.c
-+++ b/kernel/ipipe/tracer.c
-@@ -24,6 +24,7 @@
- #include <linux/module.h>
- #include <linux/version.h>
- #include <linux/kallsyms.h>
-+#include <linux/kdebug.h>
- #include <linux/seq_file.h>
- #include <linux/proc_fs.h>
- #include <linux/ctype.h>
-@@ -745,6 +746,36 @@ void ipipe_trace_panic_dump(void)
- }
- EXPORT_SYMBOL_GPL(ipipe_trace_panic_dump);
+diff --git a/arch/x86/kernel/ipipe.c b/arch/x86/kernel/ipipe.c
+index afe730649a5f..5c74312f3331 100644
+--- a/arch/x86/kernel/ipipe.c
++++ b/arch/x86/kernel/ipipe.c
+@@ -421,6 +421,13 @@ dotraplinkage int __ipipe_trap_prologue(struct pt_regs *regs, int trapnr, unsign
+ 		ipd = __ipipe_current_domain;
+ 		__ipipe_set_current_domain(ipipe_root_domain);
  
-+static int ipipe_trace_panic_handler(struct notifier_block *this,
-+				     unsigned long event, void *unused)
-+{
-+	ipipe_trace_panic_dump();
-+	return NOTIFY_OK;
-+}
++		/*
++		 * Prevent warnings of this debug checker to focus on the
++		 * actual bug.
++		 */
++		if (test_bit(IPIPE_STALL_FLAG, &__ipipe_head_status))
++			ipipe_context_check_off();
 +
-+static struct notifier_block ipipe_trace_panic_notifier = {
-+	.notifier_call  = ipipe_trace_panic_handler,
-+	.priority       = 150,
-+};
-+
-+static int ipipe_trace_die_handler(struct notifier_block *self,
-+				   unsigned long val, void *data)
-+{
-+	switch (val) {
-+	case DIE_OOPS:
-+		ipipe_trace_panic_dump();
-+		break;
-+	default:
-+		break;
-+	}
-+	return NOTIFY_OK;
-+}
-+
-+static struct notifier_block ipipe_trace_die_notifier = {
-+	.notifier_call = ipipe_trace_die_handler,
-+	.priority = 200,
-+};
-+
- #endif /* CONFIG_IPIPE_TRACE_PANIC */
- 
- 
-@@ -1484,4 +1515,10 @@ void __init __ipipe_init_tracer(void)
- 	__ipipe_create_trace_proc_val(trace_dir, "enable",
- 				      &ipipe_trace_enable);
- #endif /* !CONFIG_IPIPE_TRACE_MCOUNT */
-+
-+#ifdef CONFIG_IPIPE_TRACE_PANIC
-+	atomic_notifier_chain_register(&panic_notifier_list,
-+				       &ipipe_trace_panic_notifier);
-+	register_die_notifier(&ipipe_trace_die_notifier);
-+#endif /* CONFIG_IPIPE_TRACE_PANIC */
- }
-diff --git a/lib/bust_spinlocks.c b/lib/bust_spinlocks.c
-index 4ed2db7609f5..def8e659a0c1 100644
---- a/lib/bust_spinlocks.c
-+++ b/lib/bust_spinlocks.c
-@@ -27,7 +27,6 @@ void __attribute__((weak)) bust_spinlocks(int yes)
- 		unblank_screen();
- #endif
- 		console_unblank();
--		ipipe_trace_panic_dump();
- 		if (--oops_in_progress == 0)
- 			wake_up_klogd();
- 	}
+ 		/* Sync Linux interrupt state with hardware state on entry. */
+ 		if (entry_irqs_off)
+ 			local_irq_disable();
 -- 
 2.16.4
 
