@@ -1,22 +1,13 @@
+Subject: Re: [PATCH] dovetail: Add missing uapi header include
+References: <b9c1832b-033a-c95a-124a-cd2f16487588@siemens.com>
+From: Philippe Gerum <rpm@xenomai.org>
+Message-ID: <afcae6c6-b0da-8e47-3448-e443bdaf6b5a@xenomai.org>
+Date: Wed, 15 Apr 2020 10:39:02 +0200
 MIME-Version: 1.0
-References: <20200407154117.5D7D71C2@centrum.cz>
- <b9ce43ab-526d-71b8-c761-150dc7c1fd3f@siemens.com>
- <20200407171816.E0B3979D@centrum.cz>
- <CAFLxGvx2EhOgUnB1VkW+7TendLUcsZ0XGGcwYhiPw7PcxwFkTw@mail.gmail.com>
- <20200408114406.6119E0D9@centrum.cz>
- <CAFLxGvx9-awne2He+ULqOzwf0cGae1s_k+-b8tdiM+uT67+cYg@mail.gmail.com>
- <20200409170009.5B0DAA77@centrum.cz>
- <CAFLxGvy8SP+4mr3PYYRHuxww=22w28RjaDPUgDSVFVHx-_cQ_g@mail.gmail.com>
- <20200409201057.74CB5ED0@centrum.cz>
- <CAFLxGvxuZw57FvaAQEAxseamoPhHdKX7wfZoaZxKskgeXa4V9g@mail.gmail.com>
- <20200414101600.F9AA555D@centrum.cz>
-In-Reply-To: <20200414101600.F9AA555D@centrum.cz>
-From: Richard Weinberger <richard.weinberger@gmail.com>
-Date: Tue, 14 Apr 2020 10:30:17 +0200
-Message-ID: <CAFLxGvz7ewnVv57QiEfCG76tjGcJ5v9KSg0QNHwtMa0Hihp_dQ@mail.gmail.com>
-Subject: Re: rt_task_unblock() POSIX alternative
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+In-Reply-To: <b9c1832b-033a-c95a-124a-cd2f16487588@siemens.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -25,43 +16,34 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: =?UTF-8?Q?Petr_=C4=8Cervenka?= <grugh@centrum.cz>
-Cc: Jan Kiszka <jan.kiszka@siemens.com>, Xenomai <xenomai@xenomai.org>
+To: Jan Kiszka <jan.kiszka@siemens.com>
+Cc: Xenomai <xenomai@xenomai.org>
 
-On Tue, Apr 14, 2020 at 10:16 AM Petr =C4=8Cervenka <grugh@centrum.cz> wrot=
-e:
->
-> Hello Richard.
-> Sorry for late answer because of the Easter.
->
->  > I gave your program a try.
-> > With this changes it works (at least how I understand your test case).
->  >
-> > Task started
-> > Set period: 5s
-> > Task livind: 9.9e-05s
-> > Waiting for join
-> > Signal handler: 41
-> > Signal handler end
-> > Task livind: 0.999s
-> > Task ended
->  >
-> > ...
->
-> There has to be something with my version of Xenomai, IPIPE or configurat=
-ion. Not even your example is working for me. Morover in your example outpu=
-t is clearly visible, that the first waiting is interrupted 9.9e-05s after =
-first attempt to wait by some unknown signal. Such thing has never happened=
- to me in POSIX, only in Alchemy.
+On 4/14/20 7:30 PM, Jan Kiszka wrote:
+> From: Jan Kiszka <jan.kiszka@siemens.com>
+> 
+> Needed for __OOB_SYSCALL_BIT at least.
+> 
+> Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
+> ---
+> 
+> This targets current dovetail/master.
+> 
+> BTW, evl/master seems to lag behind dovetail/master ATM.
+> 
 
-I fear there seems to be a confusion between POSIX tasks and POSIX skin.
-Is your goal programming Xenomai realtime threads using POSIX alike APIs?
-Or are you looking for a pedant of rt_task_unblock() to unblock a
-POSIX task, without Xenomai realtime threads?
+Thanks, but I already pushed the equivalent fix a couple of days ago.
+Both evl/master and dovetail/master are in sync with respect to the
+dovetail-related bits. I made sure of this as a result of rebasing them
+over 5.7-rc1.
 
-The solution I provided is for the latter case.
+Author: Philippe Gerum <rpm@xenomai.org>
+Date:   Mon Apr 13 19:44:24 2020 +0200
 
---=20
-Thanks,
-//richard
+    dovetail: include header for __OOB_SYSCALL_BIT
+
+    Signed-off-by: Philippe Gerum
+
+-- 
+Philippe.
 
