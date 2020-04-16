@@ -1,14 +1,10 @@
-Subject: Re: [I-PIPE] ipipe-core-4.19.114-cip24-x86-12 released
-References: <E1jP0Hl-00023d-8g@xenomai.org>
- <CAPnNZ0WM_0usCLzZaspWuJcbHVx3w6vG9QxDsBJxH68j+-QHjg@mail.gmail.com>
-From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <16aa3b41-ea73-1da6-713d-ce088944e8ed@siemens.com>
-Date: Thu, 16 Apr 2020 13:49:25 +0200
 MIME-Version: 1.0
-In-Reply-To: <CAPnNZ0WM_0usCLzZaspWuJcbHVx3w6vG9QxDsBJxH68j+-QHjg@mail.gmail.com>
-Content-Type: text/plain; charset="utf-8"; format="flowed"
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+From: =?UTF-8?B?5a2Z5LiW6b6Z?= <sunshilong369@gmail.com>
+Date: Thu, 16 Apr 2020 20:45:06 +0800
+Message-ID: <CAAvDm6azJWrtUeOsiwB3F4AJtGJCAs=vV=NBenocR4zw4jy0TA@mail.gmail.com>
+Subject: Could give me some guideline on how to locate the source code of the
+ xenomai system calls.
+Content-Type: text/plain; charset="UTF-8"
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,36 +13,30 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Antoine Hoarau <antoine@flr.io>, Xenomai <xenomai@xenomai.org>
+To: xenomai <xenomai@xenomai.org>
 
-On 16.04.20 13:18, Antoine Hoarau via Xenomai wrote:
-> This is great ! Could you elaborate on the -cip meaning ?
-> It is still not clear to me. Thanks !
+     Could give me some guideline on how to locate the source code of
+the xenomai system calls.
 
-Sure: It's a super-long-term stable kernel, based on standard LTS (as 
-long as that is available), augmented with some BSP backports from newer 
-kernel versions. For x86, the primary aspect is the maintenance period. 
-4.19-cip has an projected EOL in early 2029.
+     I confirm that there is corresponding binary file after compiling
+the source code which include xenomai and linux.You can see the log
+listed below for detail.
 
-See also 
-https://wiki.linuxfoundation.org/civilinfrastructureplatform/cipkernelmaintenance 
-for more background.
+     What puzzled me is that i could not locate the corresponding source
+code.
 
-Jan
+    For example.
+    The log to locate the system call named as cobalt_sched_yield.
+    $ grep -inr cobalt_sched_yield
+    Binary file kernel/xenomai/built-in.o matches
+    Binary file kernel/xenomai/posix/xenomai.o matches
+    Binary file kernel/xenomai/posix/syscall.o matches
+    Binary file kernel/xenomai/posix/sched.o matches
+    Binary file kernel/xenomai/posix/built-in.o matches
+    Binary file kernel/built-in.o matches
+    Binary file vmlinux matches
+    Binary file .tmp_vmlinux2 matches
+    $ #log end
 
-> 
-> Le jeu. 16 avr. 2020 à 10:54, xenomai--- via Xenomai <xenomai@xenomai.org>
-> a écrit :
-> 
->> Download URL:
->> https://xenomai.org/downloads/ipipe/v4.x/x86/ipipe-core-4.19.114-cip24-x86-12.patch
->>
->> Repository: https://git.xenomai.org/ipipe-x86
->> Release tag: ipipe-core-4.19.114-cip24-x86-12
->>
->>
-
--- 
-Siemens AG, Corporate Technology, CT RDA IOT SES-DE
-Corporate Competence Center Embedded Linux
-
+    Look forward to hearing from you.
+    Best regards.
