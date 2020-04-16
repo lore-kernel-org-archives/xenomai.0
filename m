@@ -1,7 +1,9 @@
-From: xenomai@xenomai.org
-Subject: [I-PIPE] ipipe-core-4.19.114-cip24-arm-08 released
-Message-Id: <E1jOv4Q-0007cU-A0@xenomai.org>
-Date: Thu, 16 Apr 2020 05:20:06 +0200
+MIME-Version: 1.0
+From: Abhin pulikkottil <abhin.pulikkottil@svayarobotics.com>
+Date: Thu, 16 Apr 2020 09:48:40 +0530
+Message-ID: <CAGRwck3wJrmihcu06RDKQtOWXLeG8DMVXgV41+dpodnGi4QUZQ@mail.gmail.com>
+Subject: Regarding "hwmatch" error
+Content-Type: text/plain; charset="UTF-8"
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -12,8 +14,22 @@ List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: xenomai@xenomai.org
 
-Download URL: https://xenomai.org/downloads/ipipe/v4.x/arm/ipipe-core-4.19.114-cip24-arm-08.patch
+Hi,
 
-Repository: https://git.xenomai.org/ipipe-arm
-Release tag: ipipe-core-4.19.114-cip24-arm-08
+I have used xenomai - 3.0.5 to patch linux-4.9.38 on ubuntu 18.04. I have
+completed the building process without any errors. When I rebooted to the
+builded OS, I am facing some errors as follows:
 
+error : can't find command 'hwmatch'
+
+Loading Linux 4.9.38
+
+Loading Initial ramdisk
+
+because of this error I cannot proceed further. Kindly look into this error
+and help me to resolve this issue.
+
+
+Thanks and regards
+
+Abhin Philip P
