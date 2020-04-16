@@ -1,14 +1,9 @@
+Date: Thu, 16 Apr 2020 11:08:25 -0500 (CDT)
+From: Per Oberg <pero@wolfram.com>
+Message-ID: <2018325684.72682.1587053305425.JavaMail.zimbra@wolfram.com>
+Subject: RTNet and setsockopt
 MIME-Version: 1.0
-References: <CAAvDm6azJWrtUeOsiwB3F4AJtGJCAs=vV=NBenocR4zw4jy0TA@mail.gmail.com>
- <CAFLxGvyuv2sM1QK1EYeLdHL46nSXuvGNbB1K4Qcb5jN0y=TG_w@mail.gmail.com>
- <CAAvDm6ZkvMoJRamqOdr9s2Mn-LzuMDjDyEmG23WBn_kP4B0H0A@mail.gmail.com>
-In-Reply-To: <CAAvDm6ZkvMoJRamqOdr9s2Mn-LzuMDjDyEmG23WBn_kP4B0H0A@mail.gmail.com>
-From: Richard Weinberger <richard.weinberger@gmail.com>
-Date: Thu, 16 Apr 2020 16:22:59 +0200
-Message-ID: <CAFLxGvyoRgN1ut1Pg1y4ebWCXqKTZpbqCXqEoHErWKE1KTfmaw@mail.gmail.com>
-Subject: Re: Could give me some guideline on how to locate the source code of
- the xenomai system calls.
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: quoted-printable
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
@@ -18,35 +13,33 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: =?UTF-8?B?5a2Z5LiW6b6Z?= <sunshilong369@gmail.com>
-Cc: xenomai <xenomai@xenomai.org>
+To: xenomai <xenomai@xenomai.org>
 
-On Thu, Apr 16, 2020 at 4:08 PM =E5=AD=99=E4=B8=96=E9=BE=99 <sunshilong369@=
-gmail.com> wrote:
->
-> >>      What puzzled me is that i could not locate the corresponding sour=
-ce
-> >> code.
-> >>
-> >>    For example.
-> >>     The log to locate the system call named as cobalt_sched_yield.
-> > >    $ grep -inr cobalt_sched_yield
->
-> >Grep for COBALT_SYSCALL and sched_yield.
-> >Richard
->
->       I am glad to hear from you.
->       Thank you for your prompt reply.
->
->       It does not work well.
->       For detials, see below.
->
->       ~/linux-4.9.38$   grep -nr COBALT  |  grep  sched_yield
+Dear list
 
--R, not -r. You have to follow symlinks.
-Or just work in the xenomai source dir.
+I am "porting" a posix application using raw network packages to RTNet. The=
+ old code is trying to use setsockopt and ioctl. The calls I am trying to u=
+se are=20
 
---=20
-Thanks,
-//richard
+setsockopt:=20
+ SO_RCVTIMEO
+ SO_SNDTIMEO
+ SO_DONTROUTE
+
+These return "No such device". I guess that this is because setsockopt is n=
+ot rt-compatible, correct ? ( There seem to be no corresponding rt_setsocko=
+pt... )
+
+ioctl :
+ IFF_PROMISC | IFF_BROADCAST
+
+These return "Operation not supported".=20
+
+My code works fairly well as it is, and I probably do not need SO_DONTROUTE=
+, IFF_PROMISC, and IFF_BROADCAST with rtnet. I would, however, like to have=
+ SO_RCVTIMEO, SO_SNDTIMEO or nonblock. Do I need to use O_NONBLOCK together=
+ with send() instead or am I missing something ?
+
+Best Regards
+Per =C3=96berg=20
 
