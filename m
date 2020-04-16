@@ -1,13 +1,10 @@
-Date: Thu, 16 Apr 2020 02:42:00 -0500 (CDT)
-From: Per Oberg <pero@wolfram.com>
-Message-ID: <1580304675.19577.1587022920108.JavaMail.zimbra@wolfram.com>
-In-Reply-To: <938058433.19478.1587022667392.JavaMail.zimbra@wolfram.com>
-References: <CAGRwck3wJrmihcu06RDKQtOWXLeG8DMVXgV41+dpodnGi4QUZQ@mail.gmail.com>
- <938058433.19478.1587022667392.JavaMail.zimbra@wolfram.com>
-Subject: Re: Regarding "hwmatch" error
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
+From: =?UTF-8?B?5a2Z5LiW6b6Z?= <sunshilong369@gmail.com>
+Date: Thu, 16 Apr 2020 15:49:57 +0800
+Message-ID: <CAAvDm6ZqF-KdCS1Fz9MrXb7b16Otega46S=PH6CaJU3wcZt21Q@mail.gmail.com>
+Subject: Must I provide both rt function and nrt function for the ops of rtdm
+ driver ?
+Content-Type: text/plain; charset="UTF-8"
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,47 +14,15 @@ List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: xenomai <xenomai@xenomai.org>
-Cc: Abhin pulikkottil <abhin.pulikkottil@svayarobotics.com>
 
------ Den 16 apr 2020, p=C3=A5 kl 9:37, Per =C3=96berg pero@wolfram.com skr=
-ev:
+Hi,
+        Must I provide both rt function and nrt function for the ops of
+rtdm driver ?
+        Must I implement the rt read and nrt read operation if i need
+provide read operation for my rtdm driver?What I have to consider?
+        I have searched all over the source code of xenomai-v3.1.I find
+that most rtdm driver have both rt_ioctl and nrt_ioctl  ,but none
+nrt_read\nrt_write function is implemented except the driver named analogy.
 
-> ---- Den 16 apr 2020, p=C3=A5 kl 6:18, xenomai xenomai@xenomai.org skrev:
-
-> > Hi,
-
-> > I have used xenomai - 3.0.5 to patch linux-4.9.38 on ubuntu 18.04. I ha=
-ve
-> > completed the building process without any errors. When I rebooted to t=
-he
-> > builded OS, I am facing some errors as follows:
-
-> > error : can't find command 'hwmatch'
-
-Have a look at the first anser to this:
-
-https://askubuntu.com/questions/766355/error-unknown-command-hwmatch
-
-Maybe that will help you. However, because it's also loading the initial ra=
-mdik I suspect that there are further errors down the road. Where does it s=
-top ?
-
-> This looks like it's output from GRUB, i.e. before your new kernel is eve=
-n
-> loaded. How did you go about putting your new kernel in your grub config?
-> (Are you using EFI boot or legacy?)
-
-> > Loading Linux 4.9.38
-
-> > Loading Initial ramdisk
-
-> > because of this error I cannot proceed further. Kindly look into this e=
-rror
-> > and help me to resolve this issue.
-
-> > Thanks and regards
-
-> > Abhin Philip P
-
-> Per =C3=96berg
-
+         Look forward to hearing from you.
+         Thanks a lot.
