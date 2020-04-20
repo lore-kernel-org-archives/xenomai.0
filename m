@@ -1,13 +1,15 @@
-MIME-Version: 1.0
+From: "Meng, Fino" <fino.meng@intel.com>
+Subject: RE: Regarding Xenomai patch installation on Live USB
+Date: Mon, 20 Apr 2020 10:47:42 +0000
+Message-ID: <12b763460ec5434aa92ba46320489bd2@intel.com>
 References: <CAF_6Maz771xdyW4j3Cs7uOpo61SJ_pqq6YvOOgaYnE+Hrc+Jbg@mail.gmail.com>
  <af70dd6489c242c3858b7d089a25707d@intel.com>
-In-Reply-To: <af70dd6489c242c3858b7d089a25707d@intel.com>
-From: gopi ratnakaram <gopi.ratnakaram@svayarobotics.com>
-Date: Mon, 20 Apr 2020 11:33:03 +0530
-Message-ID: <CAF_6Max5yA+mh1ejwVu_Bg5dKr1tnaY2TYUTQQYEnCgpqLUYNw@mail.gmail.com>
-Subject: Re: Regarding Xenomai patch installation on Live USB
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+ <CAF_6Max5yA+mh1ejwVu_Bg5dKr1tnaY2TYUTQQYEnCgpqLUYNw@mail.gmail.com>
+In-Reply-To: <CAF_6Max5yA+mh1ejwVu_Bg5dKr1tnaY2TYUTQQYEnCgpqLUYNw@mail.gmail.com>
+Content-Language: en-US
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+MIME-Version: 1.0
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,61 +18,48 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "Meng, Fino" <fino.meng@intel.com>
-Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>, "Pu,
- Yanfeng" <yanfeng.pu@intel.com>
+To: gopi ratnakaram <gopi.ratnakaram@svayarobotics.com>
+Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>, "Pu, Yanfeng" <yanfeng.pu@intel.com>
 
-Thank you for your email response Fino.
+DQo+DQo+VGhhbmsgeW91IGZvciB5b3VyIGVtYWlsIHJlc3BvbnNlIEZpbm8uDQo+DQo+TWF5YmUg
+ZHVlIHRvIDQuOS4qIGlzIHRvbyBmYXIgYXdheSBmcm9tIFVidW50dSAxODA0J3Mgb3JpZ2luYWwg
+a2VybmVsOyBXaGF0IHdpbGwgYmUgdGhlIGlzc3VlIGluIHRoaXMgY2FzZT8gRHVlIHRvIGFueSBo
+YXJkd2FyZQ0KPmRyaXZlciBkZXBlbmRlbmN5IGNhdXNpbmcgdGhpcyBpc3N1ZT8NCj4NCj5XZSBt
+YWtlIHRoaXMgcmVwbyBmb3IgY29udmVuaWVuY2UsIEtlcm5lbCB2ZXJzaW9uIGlzIDQuMTkuNTkg
+d2l0aCBzb21lIEludGVsIEJTUCBwYXRjaGVzLg0KPndvcmtpbmcgZ29vZCBvbiBVYnVudHUgMTgw
+NDsgYnV0IGRpZG4ndCBtYWtlIGl0IG9uIExpdmUgVVNCIHlldCwgaHR0cHM6Ly9naXRodWIuY29t
+L2ludGVsL2xpbnV4LXN0YWJsZS14ZW5vbWFpL3dpa2kvR3VpZGUtDQo+b2YtWGVub21haS1CdWls
+ZC1hbmQtSW5zdGFsbGF0aW9uLW9uLVRvcC1vZi1VYnVudHUNCj4NCj4NCj5JcyB0aGVyZSBhbnkg
+cmVzdHJpY3Rpb24gdG8gdXNlIHRoZSBYZW5vbWFpIG9uIGxpdmUgVVNCIG9yIGNhbiBJIHByb2Nl
+ZWQgYW5kIGluc3RhbGwgdXNpbmcgdGhlIHN0ZXBzIHByb3ZpZGVkIGJ5IHlvdT8NCj4NCg0KV2Ug
+ZGlkbid0IHN0dWR5IGl0IHlldCwgd2UgaW50ZXJuYWxseSBidWlsZCBvdXQgbGl2ZSBVU0IgaW1h
+Z2UgZnJvbSB5b2N0by9iaXRiYWtlIGJhc2VkIGNvZGViYXNlOyB1IGNhbiB0cnksIA0KDQo+DQo+
+T25lIG1vcmUgdGhpbmcgaXMgSSBhbSB0cnlpbmcgdG8gaW5zdGFsbCB0aGlzIG9uIGEgc3BlY2lm
+aWMgbW90aGVyYm9hcmQgb2YgaW5kdXN0cmlhbCBncmFkZSB3aGljaCBpcyBiYXNlZCBvbiBhIGMy
+NDZwIGNoaXBzZXQgYW5kDQo+Y29yZSBpNyA2IGNvcmUgcHJvY2Vzc29yIChpNyA4NzAwKS4gV2ls
+bCBteSBoYXJkd2FyZSBjYXVzZSBhbnkgaXNzdWUuIEJlY2F1c2UgSSBoYXZlIGluc3RhbGxlZCBY
+ZW5vbWFpIG9uIGRpZmZlcmVudCBQQ3MgYW5kDQo+TGFwdG9wcyBtdWx0aXBsZSB0aW1lcyBhbmQg
+bmV2ZXIgZmFjZWQgYW55IGlzc3VlLg0KDQpXZSBoYXZlIHNlZW4gNC45Liogd29ya2luZyBvbiBu
+ZXdlc3QgV0hMLVUgYW5kIG90aGVyIHBsYXRmb3JtOyB0aGUgdGhpbmcgaXMgaWYgaXQgZmFpbCB0
+byBib290IGFueSBjZXJ0YWluIG1hY2hpbmUsIA0KSXQgdGFrZSB0aW1lIHRvIGRlYnVnLCB1IG1h
+eSBuZWVkIGEgc2VyaWFsIHBvcnQgdG8gcHJpbnRvdXQgYm9vdCBsb2cgdG8gc3BlZWQgdXAgdGhl
+IGRlYnVnIHByb2Nlc3MuDQoNCj4NCj4tLXRoYW5rcyAmIHJlZ2FyZHMsDQo+UiBHb3BpIEtyaXNo
+bmENCj4NCj4NCj4NCj5PbiBNb24sIEFwciAyMCwgMjAyMCBhdCAxMDo1NyBBTSBNZW5nLCBGaW5v
+IDxmaW5vLm1lbmdAaW50ZWwuY29tIDxtYWlsdG86Zmluby5tZW5nQGludGVsLmNvbT4gPiB3cm90
+ZToNCj4NCj4NCj4NCj4JPg0KPgk+RGVhciB0ZWFtIG1lbWJlcnMsDQo+CT4NCj4JPkkgdHJpZWQg
+aW5zdGFsbGluZyB0aGUgWGVub21haSBwYXRjaCBvbiBsaXZlIFVTQiBsb2FkZWQgd2l0aCBVYnVu
+dHUgMTguMDQuDQo+CT5JIGhhdmUgcGF0Y2hlZCBrZXJuZWwgdmVyc2lvbiA0LjkuMzggYW5kIHRy
+aWVkIHRvIGJvb3QgdGhlIFhlbm9tYWkgcGF0Y2hlZCBvbmUuIFdoZW4gSSB0cnkgdG8gYm9vdCBt
+eSBtb3RoZXJib2FyZA0KPml0IGlzDQo+CT51bmFibGUgdG8gYm9vdC4gQ2FuIEkgaW5zdGFsbCB0
+aGUgWGVub21haSBwYXRjaCBvbiBMaXZlIFVTQj8gV2hhdCBpcyBjYXVzaW5nIHRoaXMgcHJvYmxl
+bT8NCj4JPg0KPgk+LS1iZXN0IHJlZ2FyZHMsDQo+CT5SIEdvcGkgS3Jpc2huYSwNCj4NCj4NCj4J
+TWF5YmUgZHVlIHRvIDQuOS4qIGlzIHRvbyBmYXIgYXdheSBmcm9tIFVidW50dSAxODA0J3Mgb3Jp
+Z2luYWwga2VybmVsOw0KPglXZSBtYWtlIHRoaXMgcmVwbyBmb3IgY29udmVuaWVuY2UsIEtlcm5l
+bCB2ZXJzaW9uIGlzIDQuMTkuNTkgd2l0aCBzb21lIEludGVsIEJTUCBwYXRjaGVzLg0KPgl3b3Jr
+aW5nIGdvb2Qgb24gVWJ1bnR1IDE4MDQ7IGJ1dCBkaWRuJ3QgbWFrZSBpdCBvbiBMaXZlIFVTQiB5
+ZXQsDQo+CWh0dHBzOi8vZ2l0aHViLmNvbS9pbnRlbC9saW51eC1zdGFibGUteGVub21haS93aWtp
+L0d1aWRlLW9mLVhlbm9tYWktQnVpbGQtYW5kLUluc3RhbGxhdGlvbi1vbi1Ub3Atb2YtVWJ1bnR1
+DQo+DQo+CUJSIC8gRmlubyAo5a2f56Wl5aSrKQ0KPglJbnRlbCDigJMgSU9URyBEZXZlbG9wZXIg
+RW5hYmxpbmcNCj4NCg0KDQpCUiAvIEZpbm8gKOWtn+elpeWkqykNCkludGVsIOKAkyBJT1RHIERl
+dmVsb3BlciBFbmFibGluZw0KDQo=
 
-Maybe due to 4.9.* is too far away from Ubuntu 1804's original kernel;
-*What will be the issue in this case? Due to any hardware driver dependency
-causing this issue?*
-
-We make this repo for convenience, Kernel version is 4.19.59 with some
-Intel BSP patches.
-working good on Ubuntu 1804; but didn't make it on Live USB yet,
-https://github.com/intel/linux-stable-xenomai/wiki/Guide-of-Xenomai-Build-a=
-nd-Installation-on-Top-of-Ubuntu
-
-*Is there any restriction to use the Xenomai on live USB or can I proceed
-and install using the steps provided by you?*
-
-*One more thing is I am trying to install this on a specific motherboard of
-industrial grade which is based on a c246p chipset and core i7 6 core
-processor (i7 8700). Will my hardware cause any issue. Because I have
-installed Xenomai on different PCs and Laptops multiple times and never
-faced any issue.  *
-
---thanks & regards,
-R Gopi Krishna
-
-
-
-On Mon, Apr 20, 2020 at 10:57 AM Meng, Fino <fino.meng@intel.com> wrote:
-
->
-> >
-> >Dear team members,
-> >
-> >I tried installing the Xenomai patch on live USB loaded with Ubuntu 18.0=
-4.
-> >I have patched kernel version 4.9.38 and tried to boot the Xenomai
-> patched one. When I try to boot my motherboard it is
-> >unable to boot. Can I install the Xenomai patch on Live USB? What is
-> causing this problem?
-> >
-> >--best regards,
-> >R Gopi Krishna,
->
->
-> Maybe due to 4.9.* is too far away from Ubuntu 1804's original kernel;
-> We make this repo for convenience, Kernel version is 4.19.59 with some
-> Intel BSP patches.
-> working good on Ubuntu 1804; but didn't make it on Live USB yet,
->
-> https://github.com/intel/linux-stable-xenomai/wiki/Guide-of-Xenomai-Build=
--and-Installation-on-Top-of-Ubuntu
->
-> BR / Fino (=E5=AD=9F=E7=A5=A5=E5=A4=AB)
-> Intel =E2=80=93 IOTG Developer Enabling
->
