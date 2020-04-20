@@ -1,13 +1,13 @@
-Subject: =?UTF-8?B?UmU6IEkgd29uZGVyIHdoYXQg4oCcYXBj4oCdIHN0YW5kcyBmb3I/?=
-References: <CAAvDm6bPuRWZUvdazP=_at0WpLYWp3A8fXXwNU8EWJdguGzabw@mail.gmail.com>
-From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <f0e93159-7e03-9927-6945-cea08c821d10@siemens.com>
-Date: Mon, 20 Apr 2020 07:56:50 +0200
 MIME-Version: 1.0
-In-Reply-To: <CAAvDm6bPuRWZUvdazP=_at0WpLYWp3A8fXXwNU8EWJdguGzabw@mail.gmail.com>
-Content-Type: text/plain; charset="utf-8"; format="flowed"
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+References: <CAF_6Maz771xdyW4j3Cs7uOpo61SJ_pqq6YvOOgaYnE+Hrc+Jbg@mail.gmail.com>
+ <af70dd6489c242c3858b7d089a25707d@intel.com>
+In-Reply-To: <af70dd6489c242c3858b7d089a25707d@intel.com>
+From: gopi ratnakaram <gopi.ratnakaram@svayarobotics.com>
+Date: Mon, 20 Apr 2020 11:33:03 +0530
+Message-ID: <CAF_6Max5yA+mh1ejwVu_Bg5dKr1tnaY2TYUTQQYEnCgpqLUYNw@mail.gmail.com>
+Subject: Re: Regarding Xenomai patch installation on Live USB
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,43 +16,61 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: =?UTF-8?B?5a2Z5LiW6b6Z?= <sunshilong369@gmail.com>, xenomai <xenomai@xenomai.org>
+To: "Meng, Fino" <fino.meng@intel.com>
+Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>, "Pu,
+ Yanfeng" <yanfeng.pu@intel.com>
 
-On 20.04.20 06:49, 孙世龙 via Xenomai wrote:
-> Hi,
->         I wonder what “apc” stands for?
->         There are some fileds  named start with "apc"  in struct
-> cobalt_pipeline.
->         For instance, "apc_virq"、" apc_map"、" apc_table".
-> 
->         For your convenience, I listed the struct mentioned in this email.
-> 
->        struct cobalt_pipeline {
-> 
->     struct ipipe_domain domain;
->     unsigned long timer_freq;
->     unsigned long clock_freq;
->     unsigned int apc_virq;
->     unsigned long apc_map;
->     unsigned int escalate_virq;
->     struct {
->        void (*handler)(void *cookie);
->        void *cookie;
->        const char *name;
->     } apc_table[BITS_PER_LONG];
-> #ifdef CONFIG_SMP
->     cpumask_t supported_cpus;
-> #endif
-> };
-> 
+Thank you for your email response Fino.
 
-"Asynchronous Procedure Call" - This is to invoke a function 
-(accompanied by some data pointer) in Linux context, asynchronously to 
-the triggering real-time context.
+Maybe due to 4.9.* is too far away from Ubuntu 1804's original kernel;
+*What will be the issue in this case? Due to any hardware driver dependency
+causing this issue?*
 
-Jan
+We make this repo for convenience, Kernel version is 4.19.59 with some
+Intel BSP patches.
+working good on Ubuntu 1804; but didn't make it on Live USB yet,
+https://github.com/intel/linux-stable-xenomai/wiki/Guide-of-Xenomai-Build-a=
+nd-Installation-on-Top-of-Ubuntu
 
--- 
-Siemens AG, Corporate Technology, CT RDA IOT SES-DE
-Corporate Competence Center Embedded Linux
+*Is there any restriction to use the Xenomai on live USB or can I proceed
+and install using the steps provided by you?*
 
+*One more thing is I am trying to install this on a specific motherboard of
+industrial grade which is based on a c246p chipset and core i7 6 core
+processor (i7 8700). Will my hardware cause any issue. Because I have
+installed Xenomai on different PCs and Laptops multiple times and never
+faced any issue.  *
+
+--thanks & regards,
+R Gopi Krishna
+
+
+
+On Mon, Apr 20, 2020 at 10:57 AM Meng, Fino <fino.meng@intel.com> wrote:
+
+>
+> >
+> >Dear team members,
+> >
+> >I tried installing the Xenomai patch on live USB loaded with Ubuntu 18.0=
+4.
+> >I have patched kernel version 4.9.38 and tried to boot the Xenomai
+> patched one. When I try to boot my motherboard it is
+> >unable to boot. Can I install the Xenomai patch on Live USB? What is
+> causing this problem?
+> >
+> >--best regards,
+> >R Gopi Krishna,
+>
+>
+> Maybe due to 4.9.* is too far away from Ubuntu 1804's original kernel;
+> We make this repo for convenience, Kernel version is 4.19.59 with some
+> Intel BSP patches.
+> working good on Ubuntu 1804; but didn't make it on Live USB yet,
+>
+> https://github.com/intel/linux-stable-xenomai/wiki/Guide-of-Xenomai-Build=
+-and-Installation-on-Top-of-Ubuntu
+>
+> BR / Fino (=E5=AD=9F=E7=A5=A5=E5=A4=AB)
+> Intel =E2=80=93 IOTG Developer Enabling
+>
