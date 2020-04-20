@@ -1,15 +1,18 @@
-Subject: Re: [PATCH v2] cobalt: allow to compile without __USE_LARGEFILE64
-References: <20200417083559.10684-1-nolange79@gmail.com>
- <2538ff79-f37c-eb3e-16a3-b40f7efe9006@siemens.com>
- <CADYdroMpT2pr46R7gzKeBsHRV+x+y5m8T3u1YbcgD68em9mQTQ@mail.gmail.com>
-From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <e78e63aa-1e63-e26d-4e82-5e4cf90cd60b@siemens.com>
-Date: Mon, 20 Apr 2020 15:15:11 +0200
+Date: Tue, 21 Apr 2020 01:18:50 +0300
+From: Vitaly Chikunov <vt@altlinux.org>
+Subject: FAILURE run_gdb:287: checking expression "primary_mode", expected
+ "$", found "N"
+Message-ID: <20200420221850.xjzzrpdfoherz6hm@altlinux.org>
+References: <20200131152713.1811748-1-rpm@xenomai.org>
+ <0c811fd4-dc46-0bce-99b3-64c150725d3d@siemens.com>
+ <230535ea0245408dbd941bc26c4f6df9@intel.com>
+ <bbab7ccf-0f5e-617a-2d94-afc79f2d7efa@siemens.com>
+ <CALLqZ8Qk-BEuYjYtRpqkTVT5N9iWJHpU=3n109jCMCy4Yd_8TA@mail.gmail.com>
+ <20200201112301.5d3146d9@md1za8fc.ad001.siemens.net>
 MIME-Version: 1.0
-In-Reply-To: <CADYdroMpT2pr46R7gzKeBsHRV+x+y5m8T3u1YbcgD68em9mQTQ@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=koi8-r
+Content-Disposition: inline
+In-Reply-To: <20200201112301.5d3146d9@md1za8fc.ad001.siemens.net>
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -18,65 +21,44 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Norbert Lange <nolange79@gmail.com>
-Cc: Xenomai <xenomai@xenomai.org>
+To: Xenomai <xenomai@xenomai.org>
 
-On 20.04.20 13:21, Norbert Lange wrote:
-> Well, I dont think 1-2 lines of a preprocessor checks count as some
-> kind of intellectual work.
-> I wouldn't think that way if I take some pretty much known math
-> formula from wikipedia.
+Hello,
 
-This is just a convenience topic for the maintainer. In fact, he already 
-has tooling to remind him of fixing up this primarily cosmetic issue 
-prior to applying a patch.
+I try ipipe-core-4.19.114-cip24-x86-12 + xenomai-3.1 patches.
+But how to interpret this test result?
 
-Jan
+  4.19.114-xenomai-alt1.cip24.12:~# xeno-test -k
+  Started child 6707: /bin/bash /usr/lib/xenomai/xeno-test-run-wrapper /usr/bin/xeno-test -k
+  ++ echo 0
+  ++ testdir=/usr/lib/xenomai
+  ++ /usr/lib/xenomai/smokey --run --keep-going random_alloc_rounds=64 pattern_check_rounds=64
+  arith OK
+  bufp OK
+  cpu_affinity skipped (no kernel support)
+  fpu_stress OK
+  FAILURE run_gdb:287: checking expression "primary_mode", expected "$", found "N"
+  child 6707 returned: exited with status 1
+  4.19.114-xenomai-alt1.cip24.12:~#
 
-> 
-> Norbert
-> 
-> Am So., 19. Apr. 2020 um 11:22 Uhr schrieb Jan Kiszka <jan.kiszka@siemens.com>:
->>
->> On 17.04.20 10:35, Norbert Lange via Xenomai wrote:
->>> A header uses the off64_t which is only conditionally available,
->>> causing compile failures.
->>> The macro might be necessary to compile cobalt libraries,
->>> but should not be needed for software depending on them.
->>>
->>> Signed-off-by: Norbert Lange <nolange79@gmail.com>
->>> ---
->>>    include/cobalt/sys/mman.h | 2 ++
->>>    1 file changed, 2 insertions(+)
->>>
->>> diff --git a/include/cobalt/sys/mman.h b/include/cobalt/sys/mman.h
->>> index 1c47777a2..75a00da0c 100644
->>> --- a/include/cobalt/sys/mman.h
->>> +++ b/include/cobalt/sys/mman.h
->>> @@ -31,8 +31,10 @@ extern "C" {
->>>    COBALT_DECL(void *, mmap(void *addr, size_t length, int prot, int flags,
->>>                         int fd, off_t offset));
->>>
->>> +#if defined(_LARGEFILE64_SOURCE) || defined(_GNU_SOURCE)
->>>    COBALT_DECL(void *, mmap64(void *addr, size_t length, int prot, int flags,
->>>                           int fd, off64_t offset));
->>> +#endif
->>>
->>>    #ifdef __cplusplus
->>>    }
->>>
->>
->> Thanks, applied.
->>
->> A "From:" line in the message would be nice to avoid that the authorship
->> goes to xenomai@xenomai.org.
->>
->> Jan
->>
->> --
->> Siemens AG, Corporate Technology, CT RDA IOT SES-DE
->> Corporate Competence Center Embedded Linux
--- 
-Siemens AG, Corporate Technology, CT RDA IOT SES-DE
-Corporate Competence Center Embedded Linux
+System info:
+
+  4.19.114-xenomai-alt1.cip24.12:~# xeno-config --info
+  Xenomai version: Xenomai/cobalt v3.0.9 -- #5b99a6128 (2019-11-04 19:44:03 +0100)
+  Linux REX 4.19.114-xenomai-alt1.cip24.12 #1 SMP Sun Apr 19 09:59:30 UTC 2020 x86_64 GNU/Linux
+  Kernel parameters: BOOT_IMAGE=/boot/vmlinuz-4.19.114-xenomai-alt1.cip24.12 root=UUID=56b25751-2d48-4138-99ac-7e48a8ecbf63 ro nokaslr panic=0 console=ttyS1,115200 kgdboc=ttyS1,115200
+  I-pipe release #12 detected
+  Cobalt core 3.1 detected
+  Compiler: gcc version 9.2.1 20200123 (ALT Sisyphus 9.2.1-alt3) (GCC)
+  Build args: --build=x86_64-alt-linux --host=x86_64-alt-linux --prefix=/usr --exec-prefix=/usr --bindir=/usr/bin --sbindir=/usr/sbin --sysconfdir=/etc --datadir=/usr/share --includedir=/usr/include --libdir=/usr/lib64 --libexecdir=/usr/lib --localstatedir=/var/lib --sharedstatedir=/var/lib --mandir=/usr/share/man --infodir=/usr/share/info --disable-dependency-tracking --disable-silent-rules --without-included-gettext --with-core=cobalt --includedir=/usr/include/xenomai --with-testdir=/usr/lib/xenomai build_alias=x86_64-alt-linux host_alias=x86_64-alt-linux CFLAGS=-fno-omit-frame-pointer
+
+gdb version is 8.3.
+
+A bit of background: I try to build Xenomai packages for ALT linux, so that
+people can experiment with open-source real-time system. This is intended for
+amd64 platform. I wish that there is not errors or crashes in basic
+functionality.
+
+Thanks,
+
 
