@@ -1,9 +1,10 @@
 MIME-Version: 1.0
-From: gopi ratnakaram <gopi.ratnakaram@svayarobotics.com>
-Date: Mon, 20 Apr 2020 09:49:06 +0530
-Message-ID: <CAF_6Maz771xdyW4j3Cs7uOpo61SJ_pqq6YvOOgaYnE+Hrc+Jbg@mail.gmail.com>
-Subject: Regarding Xenomai patch installation on Live USB
+From: =?UTF-8?B?5a2Z5LiW6b6Z?= <sunshilong369@gmail.com>
+Date: Mon, 20 Apr 2020 12:49:38 +0800
+Message-ID: <CAAvDm6bPuRWZUvdazP=_at0WpLYWp3A8fXXwNU8EWJdguGzabw@mail.gmail.com>
+Subject: =?UTF-8?B?SSB3b25kZXIgd2hhdCDigJxhcGPigJ0gc3RhbmRzIGZvcj8=?=
 Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -12,14 +13,35 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
+To: xenomai <xenomai@xenomai.org>
 
-Dear team members,
+Hi,
+       I wonder what =E2=80=9Capc=E2=80=9D stands for?
+       There are some fileds  named start with "apc"  in struct
+cobalt_pipeline.
+       For instance, "apc_virq"=E3=80=81" apc_map"=E3=80=81" apc_table".
 
-I tried installing the Xenomai patch on live USB loaded with Ubuntu 18.04.
-I have patched kernel version 4.9.38 and tried to boot the Xenomai patched
-one. When I try to boot my motherboard it is unable to boot. Can I install
-the Xenomai patch on Live USB? What is causing this problem?
+       For your convenience, I listed the struct mentioned in this email.
 
---best regards,
-R Gopi Krishna,
+      struct cobalt_pipeline {
+
+   struct ipipe_domain domain;
+   unsigned long timer_freq;
+   unsigned long clock_freq;
+   unsigned int apc_virq;
+   unsigned long apc_map;
+   unsigned int escalate_virq;
+   struct {
+      void (*handler)(void *cookie);
+      void *cookie;
+      const char *name;
+   } apc_table[BITS_PER_LONG];
+#ifdef CONFIG_SMP
+   cpumask_t supported_cpus;
+#endif
+};
+
+
+   Thanks for your attention.
+
+   Looking forward to hearing from you.
