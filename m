@@ -1,8 +1,9 @@
 MIME-Version: 1.0
 From: =?UTF-8?B?5a2Z5LiW6b6Z?= <sunshilong369@gmail.com>
-Date: Tue, 21 Apr 2020 13:38:30 +0800
-Message-ID: <CAAvDm6bELZHyw+nq=WtBRn-G2qtH-fCkoKot-1uwmwMs_1Q=qQ@mail.gmail.com>
-Subject: 
+Date: Tue, 21 Apr 2020 13:40:43 +0800
+Message-ID: <CAAvDm6b_T_7c6yViStCnOJ=HFfaOOfhuqs35GtVrKinm8rrvyg@mail.gmail.com>
+Subject: What' the meaning of snapshot-driven Which is seen in the comments of
+ the code of xenomai-v3.1.      
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
