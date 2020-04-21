@@ -1,16 +1,21 @@
-Subject: Re: [Xenomai-images PATCH 1/4] ci: Build and test from gitlab.com
-References: <20200421083130.13437-1-Quirin.Gylstorff@siemens.com>
- <20200421083130.13437-2-Quirin.Gylstorff@siemens.com>
- <4663240e-8873-a24a-7d4a-7b2620c76e5a@siemens.com>
- <ac5f000d-4d86-1ca8-1bac-8cf5e2f97241@siemens.com>
+Subject: Re: FAILURE run_gdb:287: checking expression "primary_mode", expected
+ "$", found "N"
+References: <20200131152713.1811748-1-rpm@xenomai.org>
+ <0c811fd4-dc46-0bce-99b3-64c150725d3d@siemens.com>
+ <230535ea0245408dbd941bc26c4f6df9@intel.com>
+ <bbab7ccf-0f5e-617a-2d94-afc79f2d7efa@siemens.com>
+ <CALLqZ8Qk-BEuYjYtRpqkTVT5N9iWJHpU=3n109jCMCy4Yd_8TA@mail.gmail.com>
+ <20200201112301.5d3146d9@md1za8fc.ad001.siemens.net>
+ <20200420221850.xjzzrpdfoherz6hm@altlinux.org>
+ <20200421002728.wugbqtzibmbuqyzk@altlinux.org>
 From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <4228c1a1-b749-44fb-6ec5-b40e45f0bcc0@siemens.com>
-Date: Tue, 21 Apr 2020 11:29:46 +0200
+Message-ID: <5c0e4c46-e58f-f256-3946-c63470be511a@siemens.com>
+Date: Tue, 21 Apr 2020 12:00:35 +0200
 MIME-Version: 1.0
-In-Reply-To: <ac5f000d-4d86-1ca8-1bac-8cf5e2f97241@siemens.com>
-Content-Type: text/plain; charset="utf-8"; format="flowed"
+In-Reply-To: <20200421002728.wugbqtzibmbuqyzk@altlinux.org>
+Content-Type: text/plain; charset=koi8-r; format=flowed
 Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -19,266 +24,29 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Gylstorff Quirin <quirin.gylstorff@siemens.com>, xenomai@xenomai.org
+To: Xenomai <xenomai@xenomai.org>
 
-On 21.04.20 11:19, Gylstorff Quirin wrote:
+On 21.04.20 02:27, Vitaly Chikunov via Xenomai wrote:
+> 2. There is additional problem with gdb test, though. If I have in my
+> `.gdbinit' value of `prompt' redefined - gdb test fails to recognize the
+> prompt.  I recommend adding `-nx' option to gdb arguments so that
+> `.gdbinit' is not read by default.
 > 
+> gdb --help:
+>    --nh               Do not read ~/.gdbinit.
+>    --nx               Do not read any .gdbinit files in any directory.
 > 
-> On 4/21/20 11:09 AM, Jan Kiszka wrote:
->> On 21.04.20 10:31, Q. Gylstorff wrote:
->>> From: Quirin Gylstorff <quirin.gylstorff@siemens.com>
->>>
->>> Adapt scripts and gitlab-ci.yml to build on public available
->>> gitlab infrastructure.
->>>
->>> As the internal gitlab system has no artifact storage and
->>> it is not possible to deactivate arifact upload with a variable
->>> split the gitlab-ci.yml. The .gitlab-ci.yml in the root points
->>> to .ci/gitlab-com.yml.
->>
->> Why hidden ".ci/" and not just "ci/"?
+> I believe these changes will make xeno-test more robust.
 > 
-> I modeled it after the .gitlab-ci.yml. If it is better to have it
-> visible a will ajust that in a second patch set.
-> 
->>
->>>
->>> Signed-off-by: Quirin Gylstorff <quirin.gylstorff@siemens.com>
->>> ---
->>>   .ci/gitlab-ci-base.yml                        | 153 ++++++++++++++++++
->>>   .ci/gitlab-com.yml                            |  26 +++
->>>   .ci/siemens-ci.yml                            |  22 +++
->>>   .gitlab-ci.yml                                | 145 +----------------
->>>   scripts/deploy_for_testing.sh                 |   4 +-
->>>   scripts/get-build-id.sh                       |  29 ++++
->>>   scripts/install-lavacli.sh                    |   5 +-
->>>   scripts/run-lava-tests.sh                     |   8 +-
->>>   ...bone.yml => xenomai-beagle-bone-black.yml} |   4 +-
->>>   tests/jobs/xenomai-hikey.yml                  |   4 +-
->>>   tests/jobs/xenomai-ipc227e.yml                |   6 +-
->>>   tests/jobs/xenomai-minnow.yml                 |   6 +-
->>>   tests/jobs/xenomai-qemu-amd64.yml             |   6 +-
->>>   tests/jobs/xenomai-qemu-arm64.yml             |   6 +-
->>>   tests/jobs/xenomai-qemu-armhf.yml             |   6 +-
->>>   ...omai-x86-64.yml => xenomai-x86-64-efi.yml} |   6 +-
->>>   16 files changed, 265 insertions(+), 171 deletions(-)
->>>   create mode 100644 .ci/gitlab-ci-base.yml
->>>   create mode 100644 .ci/gitlab-com.yml
->>>   create mode 100644 .ci/siemens-ci.yml
->>>   create mode 100755 scripts/get-build-id.sh
->>>   rename tests/jobs/{xenomai-beaglebone.yml => 
->>> xenomai-beagle-bone-black.yml} (91%)
->>>   rename tests/jobs/{xenomai-x86-64.yml => xenomai-x86-64-efi.yml} (86%)
->>>
->>> diff --git a/.ci/gitlab-ci-base.yml b/.ci/gitlab-ci-base.yml
->>> new file mode 100644
->>> index 0000000..e8d259f
->>> --- /dev/null
->>> +++ b/.ci/gitlab-ci-base.yml
->>> @@ -0,0 +1,153 @@
->>> +#
->>> +# Xenomai Real-Time System
->>> +#
->>> +# Copyright (c) Siemens AG, 2019 - 2020
->>> +#
->>> +# Authors:
->>> +#  Quirin Gylstorff <quirin.gylstorff@siemens.com>
->>> +#
->>> +# SPDX-License-Identifier: MIT
->>> +#
->>> +stages:
->>> +  - build
->>> +  - lava-test
->>> +
->>> +variables:
->>> +  GIT_STRATEGY: clone
->>> +  http_proxy: "$HTTP_PROXY"
->>> +  https_proxy: "$HTTPS_PROXY"
->>> +  ftp_proxy: "$FTP_PROXY"
->>> +  no_proxy: "$NO_PROXY"
->>> +  XENOMAI_BUILD_OPTION: ":opt-xenomai-next.yml"
->>> +  LINUX_BUILD_OPTION: ":opt-linux-latest.yml"
->>> +  ISAR_IMAGE: demo-image
->>> +  ISAR_DISTRIBUTION: xenomai-demo
->>> +
->>> +default:
->>> +  image: kasproject/kas-isar:latest
->>> +
->>> +# add lavacli to the container and install the ssh keys
->>> +# for the test infrastructure
->>> +.add-lava-ssh-config:
->>> +  before_script:
->>> +    - mkdir -p -m=700 ~/.ssh
->>> +    - if [ -n "$https_proxy" ]; then echo "ProxyCommand socat - 
->>> PROXY:$(echo $https_proxy | sed 
->>> 's|.*://\([^:]*\).*|\1|'):%h:%p,proxyport=$(echo $https_proxy | sed 
->>> 's|.*:\([0-9]*\)$|\1|')" >> ~/.ssh/config && chmod 600 ~/.ssh/config; 
->>> fi;
->>> +    - echo "$LAVA_SSH_UPLOAD_KEY" | tr -d '\r' > ~/.ssh/lava_id_rsa 
->>> && chmod 600 ~/.ssh/lava_id_rsa
->>> +    - echo "$LAVA_SSH_KNOWN_HOSTS" >> ~/.ssh/known_hosts && chmod 
->>> 644 ~/.ssh/known_hosts
->>> +
->>> +.test:
->>> +  extends: .add-lava-ssh-config
->>> +  stage: lava-test
->>> +  script:
->>> +    - scripts/install-lavacli.sh
->>> +    - export BUILD_JOB_ID=$(scripts/get-build-id.sh ${BUILD_JOB_NAME})
->>> +    - scripts/run-lava-tests.sh ${TARGET}
->>> +  variables:
->>> +    BUILD_JOB_NAME: "build:board-${TARGET}${TARGET_EXTENSION}"
->>> +  only:
->>> +    variables:
->>> +      - $LAVA_SSH_USER
->>> +
->>> +
->>> +build:board-qemu-amd64:
->>> +  extends: .build
->>> +  variables:
->>> +    TARGET: qemu-amd64
->>> +
->>> +lava-test:qemu-amd64:
->>> +  needs: [ "build:board-qemu-amd64" ]
->>> +  dependencies: [ "build:board-qemu-amd64" ]
->>> +  extends: .test
->>> +  variables:
->>> +    TARGET: qemu-amd64
->>> +
->>> +build:board-qemu-armhf:
->>> +  extends: .build
->>> +  variables:
->>> +    TARGET: qemu-armhf
->>> +
->>> +lava-test:qemu-armhf:
->>> +  needs: [ "build:board-qemu-armhf" ]
->>> +  extends: .test
->>> +  variables:
->>> +    TARGET: qemu-armhf
->>> +
->>> +build:board-qemu-arm64:
->>> +  extends: .build
->>> +  variables:
->>> +    TARGET: qemu-arm64
->>> +
->>> +lava-test:qemu-arm64:
->>> +  needs: [ "build:board-qemu-arm64" ]
->>> +  extends: .test
->>> +  variables:
->>> +    TARGET: qemu-arm64
->>> +
->>> +build:board-hikey:
->>> +  extends: .build
->>> +  variables:
->>> +    TARGET: hikey
->>> +    BUILD_OPTIONS: ":opt-lava-test.yml"
->>> +
->>> +lava-test:board-hikey:
->>> +  needs: [ "build:board-hikey" ]
->>> +  extends: .test
->>> +  variables:
->>> +    TARGET: hikey
->>> +
->>> +build:board-beagle-bone-black:
->>> +  extends: .build
->>> +  variables:
->>> +    TARGET: beagle-bone-black
->>> +    BUILD_OPTIONS: ":opt-lava-test.yml"
->>> +
->>> +lava-test:board-beagle-bone-black:
->>> +  needs: [ "build:board-beagle-bone-black" ]
->>> +  extends: .test
->>> +  variables:
->>> +    TARGET: beagle-bone-black
->>> +
->>> +build:board-x86-64-efi:
->>> +  extends: .build
->>> +  variables:
->>> +    TARGET: x86-64-efi
->>> +    BUILD_OPTIONS: ":opt-lava-test.yml"
->>> +
->>> +lava-test:board-x86-64-efi:
->>> +  needs: [ "build:board-x86-64-efi" ]
->>> +  extends: .test
->>> +  variables:
->>> +    TARGET: x86-64-efi
->>> +
->>> +build:board-beagle-bone-black:xenomai-3.0.x:
->>> +  extends: .build
->>> +  variables:
->>> +    TARGET: beagle-bone-black
->>> +    XENOMAI_BUILD_OPTION: ":opt-xenomai-3.0.x.yml"
->>> +    BUILD_OPTIONS: ":opt-lava-test.yml"
->>> +    DEPLOY_DIR_EXTENSION: "xenomai-3.0.x"
->>> +
->>> +lava-test:board-beagle-bone-black:xenomai-3.0.x:
->>> +  needs: [ "build:board-beagle-bone-black:xenomai-3.0.x" ]
->>> +  extends: .test
->>> +  variables:
->>> +    TARGET: beagle-bone-black
->>> +    DEPLOY_DIR_EXTENSION: "xenomai-3.0.x"
->>> +    TARGET_EXTENSION: ":xenomai-3.0.x"
->>> +
->>> +build:board-x86-64-efi:xenomai-3.0.x:
->>> +  extends: .build
->>> +  variables:
->>> +    TARGET: x86-64-efi
->>> +    XENOMAI_BUILD_OPTION: ":opt-xenomai-3.0.x.yml"
->>> +    BUILD_OPTIONS: ":opt-lava-test.yml"
->>> +    DEPLOY_DIR_EXTENSION: "xenomai-3.0.x"
->>> +
->>> +lava-test:board-x86-64-efi:xenomai-3.0.x:
->>> +  needs: [ "build:board-x86-64-efi:xenomai-3.0.x" ]
->>> +  extends: .test
->>> +  variables:
->>> +    TARGET: x86-64-efi
->>> +    DEPLOY_DIR_EXTENSION: "xenomai-3.0.x"
->>> +    TARGET_EXTENSION: ":xenomai-3.0.x"
->>> +
->>> diff --git a/.ci/gitlab-com.yml b/.ci/gitlab-com.yml
->>> new file mode 100644
->>> index 0000000..0abb3fb
->>> --- /dev/null
->>> +++ b/.ci/gitlab-com.yml
->>> @@ -0,0 +1,26 @@
->>> +#
->>> +# Xenomai Real-Time System
->>> +#
->>> +# Copyright (c) Siemens AG, 2019 - 2020
->>> +#
->>> +# Authors:
->>> +#  Quirin Gylstorff <quirin.gylstorff@siemens.com>
->>> +#
->>> +# SPDX-License-Identifier: MIT
->>> +#
->>> +.build:
->>> +  extends: .add-lava-ssh-config
->>> +  stage: build
->>> +  script:
->>> +    - kas build 
->>> kas.yml:board-${TARGET}.yml${XENOMAI_BUILD_OPTION}${LINUX_BUILD_OPTION}${BUILD_OPTIONS} 
->>>
->>> +  artifacts:
->>> +    paths:
->>> +    - build/tmp/deploy/images/${TARGET}/
->>
->> Can't we put that path completely into a variable and leave that empty 
->> for CI setups that do not support (large) artifacts?
->>
->> Jan
-> 
-> 
-> I tried that and it leads to an invalid gitlab-ci.yml. This is kind of a 
-> workaround to work with artifacts. If we use another storage backend 
-> (aws) with our own upload scripts we can use your sugestion.
 
-OK, was just a quick idea.
+Good point! Should be added to the smokey gdb testcase where it starts 
+gdb. Would you send a patch?
 
-Then I would suggest to move your new config for gitlab.com to 
-.gitlab-ci.yml and provide a .gitlab-ci-no-artifacts.yml (or so) for our 
-special case. That way, the default setup will become artifacts-based, 
-and no one need to fiddle with the related CI settings when cloning the 
-repo on gitlab.com.
+> 3. Also, note that `-k' switch is not worked.
+
+There are several test cases in smokey, gdb included, that terminate the 
+test process on errors. Probably, those need to be changed to return an 
+error code from the test main function. Not trivial in all cases.
 
 Jan
 
