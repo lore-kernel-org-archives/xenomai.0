@@ -1,9 +1,14 @@
-From: Vitaly Chikunov <vt@altlinux.org>
-Subject: [PATCH] testsuite/smokey: Do not load .gdbinit in gdb test
-Date: Thu, 23 Apr 2020 09:45:35 +0300
-Message-Id: <20200423064535.6261-1-vt@altlinux.org>
+From: Jona Ostermann <Jona.Ostermann@janztec.com>
+Subject: AW: Error on running xeno-test
+Date: Thu, 23 Apr 2020 09:28:38 +0000
+Message-ID: <LEXPR01MB1215DDD2E16D0B66B71B26928FD30@LEXPR01MB1215.DEUPRD01.PROD.OUTLOOK.DE>
+References: <LEXPR01MB1215811EAA36B9C17EFE718C8FD20@LEXPR01MB1215.DEUPRD01.PROD.OUTLOOK.DE>
+ <4e46a42b-e8f0-f96b-8589-f05f6c76512b@siemens.com>
+In-Reply-To: <4e46a42b-e8f0-f96b-8589-f05f6c76512b@siemens.com>
+Content-Language: de-DE
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -12,30 +17,36 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jan Kiszka <jan.kiszka@siemens.com>, Xenomai <xenomai@xenomai.org>
+To: Jan Kiszka <jan.kiszka@siemens.com>, "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-Avoid possible prompt being redefined in `.gdbinit' which could break
-gdb test.
-
-Signed-off-by: Vitaly Chikunov <vt@altlinux.org>
----
- testsuite/smokey/gdb/gdb.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git testsuite/smokey/gdb/gdb.c testsuite/smokey/gdb/gdb.c
-index cc11d2352..eabf75e6a 100644
---- testsuite/smokey/gdb/gdb.c
-+++ testsuite/smokey/gdb/gdb.c
-@@ -273,7 +273,7 @@ static int run_gdb(struct smokey_test *t, int argc, char *const argv[])
- 
- 			snprintf(run_param, sizeof(run_param), "--run=%d",
- 				 t->__reserved.id);
--			execlp("gdb", "gdb", "--args",
-+			execlp("gdb", "gdb", "--nx", "--args",
- 			      argv[0], run_param, "run_target", (char *)NULL);
- 			_exit(ESRCH);
- 
--- 
-2.21.0
-
+SGVsbG8gSmFuLA0KDQp0aGFua3MgYWdhaW4sIGluc3RhbGxpbmcgZ2RiIHNvbHZlZCB0aGlzIGlz
+c3VlLg0KDQpJZiBJIHVuZGVyc3RhbmQgdGhlIGhlbHAgdGV4dCBvZiB0aGUgeGVuby10ZXN0IGNv
+bW1hbmQgY29ycmVjdGx5LCBJIHN1cHBvc2UgaXQgc3RhcnRzIGEgc2VyaWVzIG9mIHRlc3RzIGFu
+ZCBhdCB0aGUgZW5kIGl0IHN0YXJ0cyBhIGxhdGVuY3kgdGVzdC4NCkFjY29yZGluZyB0byB0aGUg
+aGVscCB0ZXh0IHRoaXMgd2lsbCB0YWtlIDE1IG1pbnV0ZXMgYnkgZGVmYXVsdCBpZiBubyBzcGVj
+aWFsIHBhcmFtZXRlciBpcyBwYXNzZWQsIGJ1dCB0aGUgY29tbWFuZCBpcyBydW5uaW5nIGZvciBv
+dmVyIGFuIGhvdXIgbm93IGFuZCB0aGVyZSBhcmUgbm8gb3V0cHV0cyBhbnltb3JlIGFmdGVyICJm
+cHVfc3RyZXNzIE9LIg0KDQpJcyB0aGlzIHRoZSBub3JtYWwgYmVoYXZpb3Igb2YgeGVuby10ZXN0
+Pw0KV2lsbCBpdCBvbmx5IGV4aXQgaWYgbGlrZSBhbiBlcnJvciBoYXBwZW5zIG9yIHNvbWV0aGlu
+Zz8NCg0KQmVzdCByZWdhcmRzDQpKb25hIA0KDQotLS0tLVVyc3Byw7xuZ2xpY2hlIE5hY2hyaWNo
+dC0tLS0tDQpWb246IEphbiBLaXN6a2EgPGphbi5raXN6a2FAc2llbWVucy5jb20+IA0KR2VzZW5k
+ZXQ6IE1pdHR3b2NoLCAyMi4gQXByaWwgMjAyMCAxMTo0Ng0KQW46IEpvbmEgT3N0ZXJtYW5uIDxK
+b25hLk9zdGVybWFubkBqYW56dGVjLmNvbT47IHhlbm9tYWlAeGVub21haS5vcmcNCkJldHJlZmY6
+IFJlOiBFcnJvciBvbiBydW5uaW5nIHhlbm8tdGVzdA0KDQpPbiAyMi4wNC4yMCAxMToyNiwgSm9u
+YSBPc3Rlcm1hbm4gdmlhIFhlbm9tYWkgd3JvdGU6DQo+IEhlbGxvLA0KPiANCj4gSSBhbSBjdXJy
+ZW50eSB0ZXN0aW5nIG15IFhlbm9tYWkgQ29iYWx0IHYzLjEgaW5zdGFsbGF0aW9uIG9uIERlYmlh
+biA5IHdpdGgga2VybmVsIHZlcnNpb24gNC45LjE0Ni4NCj4gDQo+IFdoZW4gcnVubmluZyB4ZW5v
+LXRlc3QsIEkgZ2V0IHRoZSBmb2xsb3dpbmcgb3V0cHV0Og0KPiANCj4gKysgZWNobyAwDQo+ICsr
+IHRlc3RkaXI9L3Vzci94ZW5vbWFpL2Jpbg0KPiArKyAvdXNyL3hlbm9tYWkvYmluL3Ntb2tleSAt
+LXJ1biByYW5kb21fYWxsb2Nfcm91bmRzPTY0IA0KPiArKyBwYXR0ZXJuX2NoZWNrX3JvdW5kcz02
+NA0KPiBhcml0aCBPSw0KPiBidWZwIE9LDQo+IGNwdV9hZmZpbml0eSBza2lwcGVkIChubyBrZXJu
+ZWwgc3VwcG9ydCkgZnB1X3N0cmVzcyBPSyBGQUlMVVJFIA0KPiBoYW5kbGVfc2lnY2hsZDo3ODog
+Z2RiIGV4ZWN1dGlvbiByZXR1cm5lZCAzIGluc3RlYWQgb2YgMCAtIE5vIHN1Y2ggDQo+IHByb2Nl
+wqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoCDCoMKgwqDCoMKg
+wqDCoMKgwqDCoMKgwqDCoMKgc3MgY2hpbGQgODgwIHJldHVybmVkOiANCj4gZXhpdGVkIHdpdGgg
+c3RhdHVzIDENCj4gDQo+IA0KPiB3aGF0IGNvdWxkIGNhdXNlIHRoaXMgZXJyb3I/DQo+IA0KDQpE
+byB5b3UgaGF2ZSBnZGIgaW5zdGFsbGVkIG9uIHRoZSB0YXJnZXQ/IElmIHRoYXQgc2hvdWxkIGJl
+IHRoZSBlcnJvciwgd2UgbGlrZWx5IG5lZWQgdG8gaW1wcm92ZSBvbiByZXBvcnRpbmcgaXQuDQoN
+Ckphbg0KDQotLQ0KU2llbWVucyBBRywgQ29ycG9yYXRlIFRlY2hub2xvZ3ksIENUIFJEQSBJT1Qg
+U0VTLURFIENvcnBvcmF0ZSBDb21wZXRlbmNlIENlbnRlciBFbWJlZGRlZCBMaW51eA0K
 
