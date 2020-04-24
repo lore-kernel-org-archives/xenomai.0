@@ -1,15 +1,8 @@
-MIME-Version: 1.0
-References: <CAF_6Maz771xdyW4j3Cs7uOpo61SJ_pqq6YvOOgaYnE+Hrc+Jbg@mail.gmail.com>
- <af70dd6489c242c3858b7d089a25707d@intel.com>
- <CAF_6Max5yA+mh1ejwVu_Bg5dKr1tnaY2TYUTQQYEnCgpqLUYNw@mail.gmail.com>
- <12b763460ec5434aa92ba46320489bd2@intel.com>
-In-Reply-To: <12b763460ec5434aa92ba46320489bd2@intel.com>
-From: gopi ratnakaram <gopi.ratnakaram@svayarobotics.com>
-Date: Fri, 24 Apr 2020 13:13:45 +0530
-Message-ID: <CAF_6MayeRyBLzPtr-WN6crY+Uf-iBALjmt8gHdsosQymCG+=eQ@mail.gmail.com>
-Subject: Re: Regarding Xenomai patch installation on Live USB
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+From: Laurentiu-Cristian Duca <laurentiu.duca@gmail.com>
+Subject: [PATCH] Avoid a possible too early interrupt from the omap mcSPI
+ controller
+Date: Fri, 24 Apr 2020 14:41:30 +0300
+Message-Id: <20200424114130.5881-1-laurentiu.duca@gmail.com>
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -18,115 +11,95 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "Meng, Fino" <fino.meng@intel.com>
-Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>, "Pu,
- Yanfeng" <yanfeng.pu@intel.com>
+To: xenomai@xenomai.org
+Cc: Laurentiu-Cristian Duca <laurentiu.duca@gmail.com>
 
-Dear Fino,
+In order to avoid a possible too early interrupt
+from the omap mcSPI controller,
+disable interrupts before writing the number of bytes from the SPI message
+that fill up the omap mcSPI controller queue,
+and enable interrupts after that.
 
-After doing all of the steps mentioned in the following link,
+Signed-off-by: Laurentiu-Cristian Duca <laurentiu.duca@gmail.com>
+---
+ kernel/drivers/spi/spi-omap2-mcspi-rt.c | 28 ++++++++++++++++++++++++-
+ 1 file changed, 27 insertions(+), 1 deletion(-)
 
-https://github.com/intel/linux-stable-xenomai/wiki/Guide-
+diff --git a/kernel/drivers/spi/spi-omap2-mcspi-rt.c b/kernel/drivers/spi/spi-omap2-mcspi-rt.c
+index a7a005b22..03678b991 100644
+--- a/kernel/drivers/spi/spi-omap2-mcspi-rt.c
++++ b/kernel/drivers/spi/spi-omap2-mcspi-rt.c
+@@ -149,6 +149,7 @@ struct spi_master_omap2_mcspi {
+ 	int rx_len;
+ 	int fifo_depth;
+ 	rtdm_event_t transfer_done;
++	rtdm_lock_t lock;
+ 	unsigned int pin_dir:1;
+ 	struct omap2_mcspi_cs cs[OMAP2_MCSPI_CS_N];
+ 	/* logging */
+@@ -421,6 +422,26 @@ static void mcspi_wr_fifo(struct spi_master_omap2_mcspi *spim, int cs_id)
+ 	}
+ }
+ 
++static void mcspi_wr_fifo_bh(struct spi_master_omap2_mcspi *spim, int cs_id)
++{
++	u8 byte;
++	int i;
++	rtdm_lockctx_t c;
++
++	rtdm_lock_get_irqsave(&spim->lock, c);
++
++	for (i = 0; i < spim->fifo_depth; i++) {
++		if (spim->tx_len <= 0)
++			byte = 0;
++		else
++			byte = spim->tx_buf ? *spim->tx_buf++ : 0;
++		mcspi_wr_cs_reg(spim, cs_id, OMAP2_MCSPI_TX0, byte);
++		spim->tx_len--;
++	}
++
++	rtdm_lock_put_irqrestore(&spim->lock, c);
++}
++
+ static int omap2_mcspi_interrupt(rtdm_irq_t *irqh)
+ {
+ 	struct spi_master_omap2_mcspi *spim;
+@@ -428,6 +449,8 @@ static int omap2_mcspi_interrupt(rtdm_irq_t *irqh)
+ 	int i, cs_id = 0;
+ 
+ 	spim = rtdm_irq_get_arg(irqh, struct spi_master_omap2_mcspi);
++	rtdm_lock_get(&spim->lock);
++
+ 	for (i = 0; i < OMAP2_MCSPI_CS_N; i++)
+ 		if (spim->cs[i].chosen) {
+ 			cs_id = i;
+@@ -459,6 +482,8 @@ static int omap2_mcspi_interrupt(rtdm_irq_t *irqh)
+ 		rtdm_event_signal(&spim->transfer_done);
+ 	}
+ 
++	rtdm_lock_put(&spim->lock);
++
+ 	return RTDM_IRQ_HANDLED;
+ }
+ 
+@@ -572,7 +597,7 @@ static int do_transfer_irq_bh(struct rtdm_spi_remote_slave *slave)
+ 	mcspi_wr_reg(spim, OMAP2_MCSPI_IRQENABLE, l);
+ 
+ 	/* TX_EMPTY will be raised only after data is transfered */
+-	mcspi_wr_fifo(spim, slave->chip_select);
++	mcspi_wr_fifo_bh(spim, slave->chip_select);
+ 
+ 	/* wait for transfer completion */
+ 	ret = rtdm_event_wait(&spim->transfer_done);
+@@ -905,6 +930,7 @@ static int omap2_mcspi_probe(struct platform_device *pdev)
+ 
+ 	spim = container_of(master, struct spi_master_omap2_mcspi, master);
+ 	rtdm_event_init(&spim->transfer_done, 0);
++	rtdm_lock_init(&spim->lock);
+ 
+ 	spim->pin_dir = pin_dir;
+ 	r = platform_get_resource(pdev, IORESOURCE_MEM, 0);
+-- 
+2.17.1
 
-the following error I am getting during testing on my C246P chipset based
-industrial motherboard loaded with Ubuntu18.04.
 
-$ sudo /opt/xenomai-3.1/bin/latency
-   0"000.000| BUG in low_init(): [main] Cobalt core not enabled in kernel
-
-Is there any installation related issue and how can I resolve this issue?
-
-I tried the same in my laptop loaded  with Ubuntu 16.04, I didn't face any
-issue and everything works fine. I am also checking with a laptop loaded
-with Ubuntu 18.04.
-
-I am totally confused that this issue is  with the motherboard or Ubuntu
-version?
-
-
---best regards,
-R Gopi Krishna,
-
-
-On Mon, Apr 20, 2020 at 4:17 PM Meng, Fino <fino.meng@intel.com> wrote:
-
->
-> >
-> >Thank you for your email response Fino.
-> >
-> >Maybe due to 4.9.* is too far away from Ubuntu 1804's original kernel;
-> What will be the issue in this case? Due to any hardware
-> >driver dependency causing this issue?
-> >
-> >We make this repo for convenience, Kernel version is 4.19.59 with some
-> Intel BSP patches.
-> >working good on Ubuntu 1804; but didn't make it on Live USB yet,
-> https://github.com/intel/linux-stable-xenomai/wiki/Guide-
-> >of-Xenomai-Build-and-Installation-on-Top-of-Ubuntu
-> >
-> >
-> >Is there any restriction to use the Xenomai on live USB or can I proceed
-> and install using the steps provided by you?
-> >
->
-> We didn't study it yet, we internally build out live USB image from
-> yocto/bitbake based codebase; u can try,
->
-> >
-> >One more thing is I am trying to install this on a specific motherboard
-> of industrial grade which is based on a c246p chipset and
-> >core i7 6 core processor (i7 8700). Will my hardware cause any issue.
-> Because I have installed Xenomai on different PCs and
-> >Laptops multiple times and never faced any issue.
->
-> We have seen 4.9.* working on newest WHL-U and other platform; the thing
-> is if it fail to boot any certain machine,
-> It take time to debug, u may need a serial port to printout boot log to
-> speed up the debug process.
->
-> >
-> >--thanks & regards,
-> >R Gopi Krishna
-> >
-> >
-> >
-> >On Mon, Apr 20, 2020 at 10:57 AM Meng, Fino <fino.meng@intel.com <mailto=
-:
-> fino.meng@intel.com> > wrote:
-> >
-> >
-> >
-> >       >
-> >       >Dear team members,
-> >       >
-> >       >I tried installing the Xenomai patch on live USB loaded with
-> Ubuntu 18.04.
-> >       >I have patched kernel version 4.9.38 and tried to boot the
-> Xenomai patched one. When I try to boot my motherboard
-> >it is
-> >       >unable to boot. Can I install the Xenomai patch on Live USB? Wha=
-t
-> is causing this problem?
-> >       >
-> >       >--best regards,
-> >       >R Gopi Krishna,
-> >
-> >
-> >       Maybe due to 4.9.* is too far away from Ubuntu 1804's original
-> kernel;
-> >       We make this repo for convenience, Kernel version is 4.19.59 with
-> some Intel BSP patches.
-> >       working good on Ubuntu 1804; but didn't make it on Live USB yet,
-> >
-> https://github.com/intel/linux-stable-xenomai/wiki/Guide-of-Xenomai-Build=
--and-Installation-on-Top-of-Ubuntu
-> >
-> >       BR / Fino (=E5=AD=9F=E7=A5=A5=E5=A4=AB)
-> >       Intel =E2=80=93 IOTG Developer Enabling
-> >
->
->
-> BR / Fino (=E5=AD=9F=E7=A5=A5=E5=A4=AB)
-> Intel =E2=80=93 IOTG Developer Enabling
->
->
