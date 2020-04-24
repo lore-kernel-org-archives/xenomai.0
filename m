@@ -1,17 +1,13 @@
-From: "Meng, Fino" <fino.meng@intel.com>
-Subject: RE: Regarding Xenomai patch installation on Live USB
-Date: Fri, 24 Apr 2020 15:11:39 +0000
-Message-ID: <a605224b78834171943ba2818e8169e9@intel.com>
-References: <CAF_6Maz771xdyW4j3Cs7uOpo61SJ_pqq6YvOOgaYnE+Hrc+Jbg@mail.gmail.com>
- <af70dd6489c242c3858b7d089a25707d@intel.com>
- <CAF_6Max5yA+mh1ejwVu_Bg5dKr1tnaY2TYUTQQYEnCgpqLUYNw@mail.gmail.com>
- <12b763460ec5434aa92ba46320489bd2@intel.com>
- <CAF_6MayeRyBLzPtr-WN6crY+Uf-iBALjmt8gHdsosQymCG+=eQ@mail.gmail.com>
-In-Reply-To: <CAF_6MayeRyBLzPtr-WN6crY+Uf-iBALjmt8gHdsosQymCG+=eQ@mail.gmail.com>
-Content-Language: en-US
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+Subject: Re: [PATCH] testsuite/smokey: Do not load .gdbinit in gdb test
+References: <20200423064535.6261-1-vt@altlinux.org>
+From: Jan Kiszka <jan.kiszka@siemens.com>
+Message-ID: <944369d8-86f0-d79c-1fb2-06108781200d@siemens.com>
+Date: Fri, 24 Apr 2020 19:23:08 +0200
 MIME-Version: 1.0
+In-Reply-To: <20200423064535.6261-1-vt@altlinux.org>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -20,77 +16,37 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: gopi ratnakaram <gopi.ratnakaram@svayarobotics.com>
-Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>, "Pu, Yanfeng" <yanfeng.pu@intel.com>
+To: Vitaly Chikunov <vt@altlinux.org>, Xenomai <xenomai@xenomai.org>
 
-DQo+RnJvbTogZ29waSByYXRuYWthcmFtIDxnb3BpLnJhdG5ha2FyYW1Ac3ZheWFyb2JvdGljcy5j
-b20+IFNlbnQ6IEZyaWRheSwgQXByaWwgMjQsIDIwMjAgMzo0NCBQTQ0KPg0KPkRlYXIgRmlubywN
-Cj4NCj5BZnRlciBkb2luZyBhbGwgb2YgdGhlIHN0ZXBzIG1lbnRpb25lZCBpbiB0aGUgZm9sbG93
-aW5nIGxpbmssDQo+aHR0cHM6Ly9naXRodWIuY29tL2ludGVsL2xpbnV4LXN0YWJsZS14ZW5vbWFp
-L3dpa2kvR3VpZGUtDQo+dGhlIGZvbGxvd2luZyBlcnJvciBJIGFtIGdldHRpbmcgZHVyaW5nIHRl
-c3Rpbmcgb24gbXkgQzI0NlAgY2hpcHNldCBiYXNlZCBpbmR1c3RyaWFsIG1vdGhlcmJvYXJkIGxv
-YWRlZCB3aXRoIFVidW50dTE4LjA0Lg0KPiQgc3VkbyAvb3B0L3hlbm9tYWktMy4xL2Jpbi9sYXRl
-bmN5DQo+ICAwIjAwMC4wMDB8IEJVRyBpbiBsb3dfaW5pdCgpOiBbbWFpbl0gQ29iYWx0IGNvcmUg
-bm90IGVuYWJsZWQgaW4ga2VybmVsIA0KPg0KPklzIHRoZXJlIGFueSBpbnN0YWxsYXRpb24gcmVs
-YXRlZCBpc3N1ZSBhbmQgaG93IGNhbiBJIHJlc29sdmUgdGhpcyBpc3N1ZT8NCj5JIHRyaWVkIHRo
-ZSBzYW1lIGluIG15IGxhcHRvcCBsb2FkZWQgIHdpdGggVWJ1bnR1IDE2LjA0LCBJIGRpZG4ndCBm
-YWNlIGFueSBpc3N1ZSBhbmQgZXZlcnl0aGluZyB3b3JrcyBmaW5lLiBJIGFtIGFsc28gY2hlY2tp
-bmcgd2l0aCBhIGxhcHRvcCBsb2FkZWQgd2l0aCBVYnVudHUgMTguMDQuDQo+SSBhbSB0b3RhbGx5
-IGNvbmZ1c2VkIHRoYXQgdGhpcyBpc3N1ZSBpcyAgd2l0aCB0aGUgbW90aGVyYm9hcmQgb3IgVWJ1
-bnR1IHZlcnNpb24/DQoNCkxvb2tzIGxpa2UgdSBkaWRuJ3Qgc2VsZWN0IFhlbm9tYWkgcGF0Y2hl
-ZCBrZXJuZWwgb24gZ3J1YiBtZW51Ow0KDQokc3VkbyBuYW5vIC9ldGMvZGVmYXVsdC9ncnViDQoj
-IyMgY29tbWVudCBvdXQgR1JVQl9USU1FT1VUX1NUWUxFPWhpZGRlbg0KIyMjIHVwZGF0ZSBHUlVC
-X1RJTUVPVVQ9MTANCiRzdWRvIHVwZGF0ZS1ncnViICAjIyMgZG9uJ3QgZm9yZ2V0IHRoaXMNCiRz
-dWRvIHJlYm9vdA0KIyMjIGdydWIgbWVudSBzaG91bGQgc2hvdyBkdXJpbmcgYm9vdCwgd2FpdCBm
-b3IgMTAgc2Vjb25kcywgDQojIyMgZW50ZXIgYWR2YW5jZWQgb3B0aW9ucyBhbmQgc2VsZWN0IExp
-bnV4IDQuMTkuNTkteGVub21haSsNCiMjIyB1IGNhbiBjaGVjayBpZiBrZXJuZWwgcGF0Y2hlZCB3
-aXRoIFhlbm9tYWkgSS1QaXBlIHBhdGNoZXMgYnkNCiRkbWVzZyB8IGdyZXAgLWkgeGVub21haQ0K
-DQpXZSB3aWxsIGFkZCB0aGlzIHBhcnQgb24gdGhlIHdpa2k7IA0KDQpCUiAvIEZpbm8gKOWtn+el
-peWkqykNCkludGVsIOKAkyBJT1RHIERldmVsb3BlciBFbmFibGluZw0KDQpPbiBNb24sIEFwciAy
-MCwgMjAyMCBhdCA0OjE3IFBNIE1lbmcsIEZpbm8gPGZpbm8ubWVuZ0BpbnRlbC5jb20gPG1haWx0
-bzpmaW5vLm1lbmdAaW50ZWwuY29tPiA+IHdyb3RlOg0KDQoNCg0KCT4NCgk+VGhhbmsgeW91IGZv
-ciB5b3VyIGVtYWlsIHJlc3BvbnNlIEZpbm8uDQoJPg0KCT5NYXliZSBkdWUgdG8gNC45LiogaXMg
-dG9vIGZhciBhd2F5IGZyb20gVWJ1bnR1IDE4MDQncyBvcmlnaW5hbCBrZXJuZWw7IFdoYXQgd2ls
-bCBiZSB0aGUgaXNzdWUgaW4gdGhpcyBjYXNlPyBEdWUgdG8gYW55IGhhcmR3YXJlDQoJPmRyaXZl
-ciBkZXBlbmRlbmN5IGNhdXNpbmcgdGhpcyBpc3N1ZT8NCgk+DQoJPldlIG1ha2UgdGhpcyByZXBv
-IGZvciBjb252ZW5pZW5jZSwgS2VybmVsIHZlcnNpb24gaXMgNC4xOS41OSB3aXRoIHNvbWUgSW50
-ZWwgQlNQIHBhdGNoZXMuDQoJPndvcmtpbmcgZ29vZCBvbiBVYnVudHUgMTgwNDsgYnV0IGRpZG4n
-dCBtYWtlIGl0IG9uIExpdmUgVVNCIHlldCwgaHR0cHM6Ly9naXRodWIuY29tL2ludGVsL2xpbnV4
-LXN0YWJsZS14ZW5vbWFpL3dpa2kvR3VpZGUtDQoJPm9mLVhlbm9tYWktQnVpbGQtYW5kLUluc3Rh
-bGxhdGlvbi1vbi1Ub3Atb2YtVWJ1bnR1DQoJPg0KCT4NCgk+SXMgdGhlcmUgYW55IHJlc3RyaWN0
-aW9uIHRvIHVzZSB0aGUgWGVub21haSBvbiBsaXZlIFVTQiBvciBjYW4gSSBwcm9jZWVkIGFuZCBp
-bnN0YWxsIHVzaW5nIHRoZSBzdGVwcyBwcm92aWRlZCBieSB5b3U/DQoJPg0KCQ0KCVdlIGRpZG4n
-dCBzdHVkeSBpdCB5ZXQsIHdlIGludGVybmFsbHkgYnVpbGQgb3V0IGxpdmUgVVNCIGltYWdlIGZy
-b20geW9jdG8vYml0YmFrZSBiYXNlZCBjb2RlYmFzZTsgdSBjYW4gdHJ5LCANCgkNCgk+DQoJPk9u
-ZSBtb3JlIHRoaW5nIGlzIEkgYW0gdHJ5aW5nIHRvIGluc3RhbGwgdGhpcyBvbiBhIHNwZWNpZmlj
-IG1vdGhlcmJvYXJkIG9mIGluZHVzdHJpYWwgZ3JhZGUgd2hpY2ggaXMgYmFzZWQgb24gYSBjMjQ2
-cCBjaGlwc2V0IGFuZA0KCT5jb3JlIGk3IDYgY29yZSBwcm9jZXNzb3IgKGk3IDg3MDApLiBXaWxs
-IG15IGhhcmR3YXJlIGNhdXNlIGFueSBpc3N1ZS4gQmVjYXVzZSBJIGhhdmUgaW5zdGFsbGVkIFhl
-bm9tYWkgb24gZGlmZmVyZW50IFBDcyBhbmQNCgk+TGFwdG9wcyBtdWx0aXBsZSB0aW1lcyBhbmQg
-bmV2ZXIgZmFjZWQgYW55IGlzc3VlLg0KCQ0KCVdlIGhhdmUgc2VlbiA0LjkuKiB3b3JraW5nIG9u
-IG5ld2VzdCBXSEwtVSBhbmQgb3RoZXIgcGxhdGZvcm07IHRoZSB0aGluZyBpcyBpZiBpdCBmYWls
-IHRvIGJvb3QgYW55IGNlcnRhaW4gbWFjaGluZSwgDQoJSXQgdGFrZSB0aW1lIHRvIGRlYnVnLCB1
-IG1heSBuZWVkIGEgc2VyaWFsIHBvcnQgdG8gcHJpbnRvdXQgYm9vdCBsb2cgdG8gc3BlZWQgdXAg
-dGhlIGRlYnVnIHByb2Nlc3MuDQoJDQoJPg0KCT4tLXRoYW5rcyAmIHJlZ2FyZHMsDQoJPlIgR29w
-aSBLcmlzaG5hDQoJPg0KCT4NCgk+DQoJPk9uIE1vbiwgQXByIDIwLCAyMDIwIGF0IDEwOjU3IEFN
-IE1lbmcsIEZpbm8gPGZpbm8ubWVuZ0BpbnRlbC5jb20gPG1haWx0bzpmaW5vLm1lbmdAaW50ZWwu
-Y29tPiAgPG1haWx0bzpmaW5vLm1lbmdAaW50ZWwuY29tIDxtYWlsdG86Zmluby5tZW5nQGludGVs
-LmNvbT4gPiA+IHdyb3RlOg0KCT4NCgk+DQoJPg0KCT4gICAgICAgPg0KCT4gICAgICAgPkRlYXIg
-dGVhbSBtZW1iZXJzLA0KCT4gICAgICAgPg0KCT4gICAgICAgPkkgdHJpZWQgaW5zdGFsbGluZyB0
-aGUgWGVub21haSBwYXRjaCBvbiBsaXZlIFVTQiBsb2FkZWQgd2l0aCBVYnVudHUgMTguMDQuDQoJ
-PiAgICAgICA+SSBoYXZlIHBhdGNoZWQga2VybmVsIHZlcnNpb24gNC45LjM4IGFuZCB0cmllZCB0
-byBib290IHRoZSBYZW5vbWFpIHBhdGNoZWQgb25lLiBXaGVuIEkgdHJ5IHRvIGJvb3QgbXkgbW90
-aGVyYm9hcmQNCgk+aXQgaXMNCgk+ICAgICAgID51bmFibGUgdG8gYm9vdC4gQ2FuIEkgaW5zdGFs
-bCB0aGUgWGVub21haSBwYXRjaCBvbiBMaXZlIFVTQj8gV2hhdCBpcyBjYXVzaW5nIHRoaXMgcHJv
-YmxlbT8NCgk+ICAgICAgID4NCgk+ICAgICAgID4tLWJlc3QgcmVnYXJkcywNCgk+ICAgICAgID5S
-IEdvcGkgS3Jpc2huYSwNCgk+DQoJPg0KCT4gICAgICAgTWF5YmUgZHVlIHRvIDQuOS4qIGlzIHRv
-byBmYXIgYXdheSBmcm9tIFVidW50dSAxODA0J3Mgb3JpZ2luYWwga2VybmVsOw0KCT4gICAgICAg
-V2UgbWFrZSB0aGlzIHJlcG8gZm9yIGNvbnZlbmllbmNlLCBLZXJuZWwgdmVyc2lvbiBpcyA0LjE5
-LjU5IHdpdGggc29tZSBJbnRlbCBCU1AgcGF0Y2hlcy4NCgk+ICAgICAgIHdvcmtpbmcgZ29vZCBv
-biBVYnVudHUgMTgwNDsgYnV0IGRpZG4ndCBtYWtlIGl0IG9uIExpdmUgVVNCIHlldCwNCgk+ICAg
-ICAgIGh0dHBzOi8vZ2l0aHViLmNvbS9pbnRlbC9saW51eC1zdGFibGUteGVub21haS93aWtpL0d1
-aWRlLW9mLVhlbm9tYWktQnVpbGQtYW5kLUluc3RhbGxhdGlvbi1vbi1Ub3Atb2YtVWJ1bnR1DQoJ
-Pg0KCT4gICAgICAgQlIgLyBGaW5vICjlrZ/npaXlpKspDQoJPiAgICAgICBJbnRlbCDigJMgSU9U
-RyBEZXZlbG9wZXIgRW5hYmxpbmcNCgk+DQoJDQoJDQoJQlIgLyBGaW5vICjlrZ/npaXlpKspDQoJ
-SW50ZWwg4oCTIElPVEcgRGV2ZWxvcGVyIEVuYWJsaW5nDQoJDQoJDQoNCg==
+On 23.04.20 08:45, Vitaly Chikunov wrote:
+> Avoid possible prompt being redefined in `.gdbinit' which could break
+> gdb test.
+> 
+> Signed-off-by: Vitaly Chikunov <vt@altlinux.org>
+> ---
+>   testsuite/smokey/gdb/gdb.c | 2 +-
+>   1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git testsuite/smokey/gdb/gdb.c testsuite/smokey/gdb/gdb.c
+> index cc11d2352..eabf75e6a 100644
+> --- testsuite/smokey/gdb/gdb.c
+> +++ testsuite/smokey/gdb/gdb.c
+> @@ -273,7 +273,7 @@ static int run_gdb(struct smokey_test *t, int argc, char *const argv[])
+>   
+>   			snprintf(run_param, sizeof(run_param), "--run=%d",
+>   				 t->__reserved.id);
+> -			execlp("gdb", "gdb", "--args",
+> +			execlp("gdb", "gdb", "--nx", "--args",
+>   			      argv[0], run_param, "run_target", (char *)NULL);
+>   			_exit(ESRCH);
+>   
+> 
+
+Thanks, applied.
+
+Jan
+
+-- 
+Siemens AG, Corporate Technology, CT RDA IOT SES-DE
+Corporate Competence Center Embedded Linux
 
