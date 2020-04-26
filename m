@@ -1,13 +1,11 @@
-Subject: Re: Problem with gdb
-References: <e393e320-54ea-7a16-d645-3441c80cdc0c@mitrol.it>
-From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <23d1e027-2e62-8d52-de94-0e9d53b6aa5c@siemens.com>
-Date: Sun, 26 Apr 2020 10:33:46 +0200
-MIME-Version: 1.0
-In-Reply-To: <e393e320-54ea-7a16-d645-3441c80cdc0c@mitrol.it>
-Content-Type: text/plain; charset="iso-8859-15"; format="flowed"
-Content-Language: en-US
-Content-Transfer-Encoding: quoted-printable
+Date: Sun, 26 Apr 2020 19:04:35 +0800
+From: "huang.mb@softlinkcloud.cn" <huang.mb@softlinkcloud.cn>
+Subject: issue when porting a linux posix applicaiton to a xenomai application
+Mime-Version: 1.0
+Message-ID: <2020042619043472883924@softlinkcloud.cn>+9C6A0D321B23B4ED
+Content-Type: text/plain;
+	charset="GB2312"
+Content-Transfer-Encoding: base64
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,224 +14,119 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Paolo Minazzi <Paolo.Minazzi@mitrol.it>, xenomai@xenomai.org
+To: xenomai <xenomai@xenomai.org>
 
-On 25.04.20 09:18, Paolo Minazzi via Xenomai wrote:
-> I'm Paolo Minazzi.
-> I am working on an ARM board with iMX6SX.
->=20
-> Linux kernel : 4.9
-> Ipipe=A0=A0=A0=A0=A0=A0=A0 : ipipe-core-4.9.38-arm-3.patch
-
-Can you cross-check with ipipe-core-4.19.114-cip24-arm-08? 4.9 is=20
-unmaintained regarding I-pipe.
-
-> Xenomai=A0=A0=A0=A0=A0 : 3.1
->=20
-> All works well.
-> I have a problem debugging with GDB (both native and remote).
-> The problem is that before an alchemy small demo starts, I have the hit=20
-> 2 times CTRL-C and use "c" command.
->=20
-> Details:
-> [1] gdb demo
-> [2] I use the "r" command to run.
->  =A0=A0=A0 gdb remain blocked
-> [3] I press CTRL-C, then "c" command.
->  =A0=A0=A0 gdb remain blocked
-> [4] I press CTRL-C, then "c" command.
->  =A0=A0=A0 Then demo start correctly
->=20
-> Can you help me ?
->=20
-
-How did you build Xenomai (configure options)? How are you building your=20
-demo?
-
-Jan
-
-> Kind regards,
-> Paolo Minazzi
->=20
->=20
-> EXTRA DETAILS
-> =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
->=20
-> GDB SESSION
->  =A0=A0=A0=A0=A0=A0=A0 GNU gdb (GDB) 7.12
->  =A0=A0=A0=A0=A0=A0=A0 Copyright (C) 2016 Free Software Foundation, Inc.
->  =A0=A0=A0=A0=A0=A0=A0 License GPLv3+: GNU GPL version 3 or later=20
-> <http://gnu.org/licenses/gpl.html>
->  =A0=A0=A0=A0=A0=A0=A0 This is free software: you are free to change and =
-redistribute it.
->  =A0=A0=A0=A0=A0=A0=A0 There is NO WARRANTY, to the extent permitted by l=
-aw. Type=20
-> "show copying"
->  =A0=A0=A0=A0=A0=A0=A0 and "show warranty" for details.
->  =A0=A0=A0=A0=A0=A0=A0 This GDB was configured as "arm-linux-gnueabihf".
->  =A0=A0=A0=A0=A0=A0=A0 Type "show configuration" for configuration detail=
-s.
->  =A0=A0=A0=A0=A0=A0=A0 For bug reporting instructions, please see:
->  =A0=A0=A0=A0=A0=A0=A0 <http://www.gnu.org/software/gdb/bugs/>.
->  =A0=A0=A0=A0=A0=A0=A0 Find the GDB manual and other documentation resour=
-ces online at:
->  =A0=A0=A0=A0=A0=A0=A0 <http://www.gnu.org/software/gdb/documentation/>.
->  =A0=A0=A0=A0=A0=A0=A0 For help, type "help".
->  =A0=A0=A0=A0=A0=A0=A0 Type "apropos word" to search for commands related=
- to "word"...
->  =A0=A0=A0=A0=A0=A0=A0 Reading symbols from demo...done.
->  =A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0 (gdb) r
->  =A0=A0=A0=A0=A0=A0=A0 Starting program: /demo
->  =A0=A0=A0=A0=A0=A0=A0 [Thread debugging using libthread_db enabled]
->  =A0=A0=A0=A0=A0=A0=A0 Using host libthread_db library "/lib/libthread_db=
-.so.1".
->  =A0=A0=A0=A0=A0=A0=A0 [New Thread 0xb6c61470 (LWP 432)]
->  =A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0 <<< BLOCKED. I press CTRL-=
-C >>>
->  =A0=A0=A0=A0=A0=A0=A0 Thread 1 "demo" received signal SIGINT, Interrupt.
->  =A0=A0=A0=A0=A0=A0=A0 0xb6fa4d08 in __wrap_pthread_mutex_lock () from=20
-> /lib/libcobalt.so.2
->  =A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0 (gdb) c
->  =A0=A0=A0=A0=A0=A0=A0 Continuing.
->  =A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0 <<< BLOCKED. I press CTRL-=
-C >>>
->  =A0=A0=A0=A0=A0=A0=A0 Thread 1 "demo" received signal SIGINT, Interrupt.
->  =A0=A0=A0=A0=A0=A0=A0 0xb6fa4d08 in __wrap_pthread_mutex_lock () from=20
-> /lib/libcobalt.so.2
->  =A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0 (gdb) c
->  =A0=A0=A0=A0=A0=A0=A0 Continuing.
->  =A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0 <<< NOW DEMO RUN CORRECTLY=
- >>>
->=20
-> BACKTRACE
->  =A0=A0=A0=A0=A0=A0=A0 If at [3] I use backtrace gdb command:
->  =A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0 (gdb) backtrace
->  =A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0 #0=A0 0xb6fa4d08 in __wrap=
-_pthread_mutex_lock () from=20
-> /lib/libcobalt.so.2
->  =A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0 #1=A0 0xb6fa8cb2 in add_ex=
-tent () from /lib/libcobalt.so.2
->  =A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0 #2=A0 0xb6fa9122 in heapme=
-m_init () from /lib/libcobalt.so.2
->  =A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0 #3=A0 0xb6fc0db2 in heapob=
-j_pkg_init_private () from=20
-> /lib/libcopperplate.so.0
->  =A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0 #4=A0 0xb6fbe9d4 in copper=
-plate_init () from=20
-> /lib/libcopperplate.so.0
->  =A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0 #5=A0 0xb6fa9ae2 in __xeno=
-mai_init () from=20
-> /lib/libcobalt.so.2
->  =A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0 #6=A0 0xb6fa9fbe in xenoma=
-i_init () from /lib/libcobalt.so.2
->  =A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0 #7=A0 0x00008928 in xenoma=
-i_bootstrap ()
->  =A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0 #8=A0 0x00008b64 in __libc=
-_csu_init ()
->  =A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0 #9=A0 0xb6e7af98 in __libc=
-_start_main () from /lib/libc.so.6
->  =A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0 #10 0x00008966 in _start ()
->  =A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0 Backtrace stopped: previou=
-s frame identical to this=20
-> frame (corrupt stack?)
->=20
->  =A0=A0=A0=A0=A0=A0=A0 If at [4] I use backtrace gdb command:
->  =A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0 (gdb) backtrace
->  =A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0 #0=A0 0xb6fa4d08 in __wrap=
-_pthread_mutex_lock () from=20
-> /lib/libcobalt.so.2
->  =A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0 #1=A0 0xb6fa8d9a in heapme=
-m_alloc () from=20
-> /lib/libcobalt.so.2
->  =A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0 #2=A0 0xb6fbfaec in __thre=
-adobj_alloc () from=20
-> /lib/libcopperplate.so.0
->  =A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0 #3=A0 0xb6fc0318 in thread=
-obj_pkg_init () from=20
-> /lib/libcopperplate.so.0
->  =A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0 #4=A0 0xb6fbea28 in copper=
-plate_init () from=20
-> /lib/libcopperplate.so.0
->  =A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0 #5=A0 0xb6fa9ae2 in __xeno=
-mai_init () from=20
-> /lib/libcobalt.so.2
->  =A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0 #6=A0 0xb6fa9fbe in xenoma=
-i_init () from /lib/libcobalt.so.2
->  =A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0 #7=A0 0x00008928 in xenoma=
-i_bootstrap ()
->  =A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0 #8=A0 0x00008b64 in __libc=
-_csu_init ()
->  =A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0 #9=A0 0xb6e7af98 in __libc=
-_start_main () from /lib/libc.so.6
->  =A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0 #10 0x00008966 in _start ()
->  =A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0 Backtrace stopped: previou=
-s frame identical to this=20
-> frame (corrupt stack?)
->=20
->=20
-> /proc/xenomai/sched
->  =A0=A0=A0=A0=A0=A0=A0 When gdb is blocked ([3] and [4]) I always have th=
-is situation:
->  =A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0 /# cat /proc/xenomai/sched=
-/stat
->  =A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0 CPU=A0 PID=A0=A0=A0 MSW=A0=
-=A0=A0=A0=A0=A0=A0 CSW=A0=A0=A0=A0=A0=A0=A0 XSC=A0=A0=A0=A0=A0=A0=A0 PF=20
-> STAT=A0=A0=A0=A0=A0=A0 %CPU=A0 NAME
->  =A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0 0=A0 0=A0=A0=A0=A0=
-=A0 0=A0=A0=A0=A0=A0=A0=A0=A0=A0 779=A0=A0=A0=A0=A0=A0=A0 0=A0=A0=A0=A0=A0=
-=A0=A0=A0=A0 0=20
-> 00018000=A0 100.0=A0 [ROOT]
->  =A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0 0=A0 19165=A0 1=A0=
-=A0=A0=A0=A0=A0=A0=A0=A0 1=A0=A0=A0=A0=A0=A0=A0=A0=A0 4=A0=A0=A0=A0=A0=A0=
-=A0=A0=A0 0=20
-> 00460040=A0=A0=A0 0.0=A0 demo
->  =A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0 0=A0 0=A0=A0=A0=A0=
-=A0 0=A0=A0=A0=A0=A0=A0=A0=A0=A0 39725=A0=A0=A0=A0=A0 0=A0=A0=A0=A0=A0=A0=
-=A0=A0=A0 0=20
-> 00000000=A0=A0=A0 0.0=A0 [IRQ16: [timer]]
->=20
->=20
-> DEMO.c
-> =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
->  =A0=A0=A0=A0=A0=A0=A0 #include <stdio.h>
->  =A0=A0=A0=A0=A0=A0=A0 #include <alchemy/task.h>
->=20
->  =A0=A0=A0=A0=A0=A0=A0 RT_TASK rt_task;
->  =A0=A0=A0=A0=A0=A0=A0 volatile unsigned int cnt;
->=20
->  =A0=A0=A0=A0=A0=A0=A0 void rt_inc_fn(void *dummy) {
->  =A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0 while(1) {
->  =A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0 cn=
-t++;
->  =A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0 rt=
-_task_sleep(100*1000*1000);
->  =A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0 }
->  =A0=A0=A0=A0=A0=A0=A0 }
->=20
->  =A0=A0=A0=A0=A0=A0=A0 int main(int argc, char **argv) {
->  =A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0 int ret;
->  =A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0 ret =3D rt_task_create(&rt=
-_task, "demo", 0, 50, 0);
->  =A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0 assert(ret=3D=3D0);
->  =A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0 ret =3D rt_task_start(&rt_=
-task, &rt_inc_fn, NULL);
->  =A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0 assert(ret=3D=3D0);
->  =A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0 while(1) {
->  =A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0 us=
-leep(1000000);
->  =A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0 pr=
-intf("%d\n", cnt);
->  =A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0 }
->  =A0=A0=A0=A0=A0=A0=A0 }
-> =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
->=20
->=20
-
---=20
-Siemens AG, Corporate Technology, CT RDA IOT SES-DE
-Corporate Competence Center Embedded Linux
-
+SGkgYWxsOg0KDQppIGhhdmUgcG9ydGVkIGEgYyBiYXNlZCBhcHBsaWNhdGlvbiB3aGljaCBpcyBh
+IHByb2ZpbmV0IG5ldHdvcmsgc3RhY2sgIGFuZCBpdCB3YXMgcnVubmluZyBvayBpbiBjb21tb24g
+eDg2IGxpbnV4IHBsYXRmb3JtIGFzIGEgcmVndWxhciBwcm9jZXNzIGV4Y2VwdCBzb21lIHJlYWx0
+aW1lIGlzc3VlLg0KDQpGb3IgdGhlIHJlYWx0aW1lIGlzc3VlLGkgaGF2ZSB0byBwb3J0ZWQgdG8g
+YSB4ZW5vbWFpIGFwcGxpY2F0aW9uDQoNClRoZSBwcm9maW5ldCBhcHBsaWNhdGlvbiB1c2luZyB0
+aGUgcG9zaXggaW50ZXJmYWNlIHNvIGkgdXNlIHhlbm9tYWkgMy4xJ3MgcG9zaXggc2tpbiBmb3Ig
+dGhlIHBvcnRpbmcuDQoNCkJ1dCBhZnRlciBpIGhhZCBwb3J0ZWQgaXQgdG8gdGhlIHhlbm9tYWkt
+cG9zaXggb25lICxpIGZvdW5kIGl0IGNvdWxkIHJlY2VpdmUgbmV0d29yayBtZXNzYWdlIGJ1dCBp
+dCBmYWlsZWQgdG8gc2VuZCB0aGUgbWVzc2FnZSBvdXQuIChieSBjb21wYXJpc29uIHRvICB0aGUg
+cmVndWxhciBvbmUgdXNpbmcNCiJ3YXRjaCAtbiAwLjEgaWZjb25maWcgZXRoMCIpLiBJdCBzZWVt
+ZWQgdGhhdCBzb21lIHRocmVhZCdzIGJsb2NraW5nIGFuZCBpIGRpZCBub3Qga25vd24gaG93IHRv
+IGludmVzdGVnYXRlIHRoZSBpc3N1ZS4NCg0KVGhlICAvcHJvYy94ZW5vbWFpL3NjaGVkL3N0YXQg
+d2FzIGxpa2UgdGhpczoNCkNQVSAgUElEICAgIE1TVyAgICAgICAgQ1NXICAgICAgICBYU0MgICAg
+ICAgIFBGICAgIFNUQVQgICAgICAgJUNQVSAgTkFNRQogIDAgIDAgICAgICAwICAgICAgICAgIDAg
+ICAgICAgICAgMCAgICAgICAgICAwICAgICAwMDIxODAwMCAgMTAwLjAgIFtST09ULzBdCiAgMSAg
+MCAgICAgIDAgICAgICAgICAgMCAgICAgICAgICAwICAgICAgICAgIDAgICAgIDAwMjE4MDAwICAx
+MDAuMCAgW1JPT1QvMV0KICAyICAwICAgICAgMCAgICAgICAgICAxMTkzMzIgICAgIDAgICAgICAg
+ICAgMCAgICAgMDAyMTgwMDAgIDEwMC4wICBbUk9PVC8yXQogIDMgIDAgICAgICAwICAgICAgICAg
+IDE3NDE3MSAgICAgMCAgICAgICAgICAwICAgICAwMDIxODAwMCAgIDk5LjggIFtST09ULzNdCiAg
+MyAgMTcyMSAgIDE0ICAgICAgICAgMjc0OSAgICAgICAyOTMwICAgICAgIDAgICAgIDAwMjQ4MDQ0
+ICAgIDAuMCAgZGtzd19saW51eAogIDMgIDE3MjMgICAyICAgICAgICAgIDQgICAgICAgICAgNyAg
+ICAgICAgICAwICAgICAwMDI0MjA0MiAgICAwLjAgIFRhc2tfQVNZTkNfVGltZXIKICAzICAxNzI0
+ICAgMiAgICAgICAgICA0ICAgICAgICAgIDQgICAgICAgICAgMCAgICAgMDAyNDIwNDIgICAgMC4w
+ICBUYXNrX09TX1RpbWVyCiAgMyAgMTcyNSAgIDQgICAgICAgICAgMjMgICAgICAgICA2OSAgICAg
+ICAgIDAgICAgIDAwMjQyMDQyICAgIDAuMCAgUHJpbnRSUzIzMlBvc3RUYXNrCiAgMyAgMTcyNiAg
+IDIgICAgICAgICAgMyAgICAgICAgICAzICAgICAgICAgIDAgICAgIDAwMjQyMDQyICAgIDAuMCAg
+UG5pb19OdkRhdGEKICAzICAxNzI3ICAgMyAgICAgICAgICA1NDUzICAgICAgIDU0NDggICAgICAg
+MCAgICAgMDAyNGEwNDQgICAgMC4wICBQbmlvX0lkbGUKICAzICAxNzI4ICAgNyAgICAgICAgICAy
+NyAgICAgICAgIDE4OCAgICAgICAgMCAgICAgMDAyNGEwYzAgICAgMC4wICBNYWluQXBwbAogIDMg
+IDE3MjkgICAyICAgICAgICAgIDEzNTIyMiAgICAgNjc2MDk1ICAgICAwICAgICAwMDI0YTA0NCAg
+ICAwLjEgIFBuaW9fQ3ljbGVJTwogIDMgIDE3MzAgICAzNDYzICAgICAgIDM0NjMgICAgICAgMzQ2
+NCAgICAgICAwICAgICAwMDI0YTBjMCAgICAwLjAgIHNuaWZmX3BhY2tldAogIDMgIDE3MzEgICAx
+MSAgICAgICAgIDI3MjE5ICAgICAgMjc0NDggICAgICAwICAgICAwMDI0YTA0NCAgICAwLjAgIHRf
+SURMCiAgMyAgMTczMiAgIDYgICAgICAgICAgODQgICAgICAgICAyMTUgICAgICAgIDAgICAgIDAw
+MjRhMDQyICAgIDAuMCAgdF9BUFAKICAzICAxNzMzICAgNDU5ICAgICAgICA0NjYxICAgICAgIDg5
+NjEgICAgICAgMCAgICAgMDAyNGEwNDIgICAgMC4wICB0X0VERAogIDMgIDE3MzQgICAyICAgICAg
+ICAgIDExMiAgICAgICAgMTY2ICAgICAgICAwICAgICAwMDI0YTA0MiAgICAwLjAgIHRfT1JHCiAg
+MyAgMTczNSAgIDMwICAgICAgICAgMTA3MSAgICAgICA3MzQ2ICAgICAgIDAgICAgIDAwMjRhMDQy
+ICAgIDAuMCAgdF9QTk8KICAzICAxNzM2ICAgMyAgICAgICAgICAyNDY1ICAgICAgIDUzMzkgICAg
+ICAgMCAgICAgMDAyNGEwNDIgICAgMC4wICB0X1RDUAogIDMgIDE3MzcgICAyICAgICAgICAgIDI2
+ICAgICAgICAgNDIgICAgICAgICAwICAgICAwMDI0YTA0MiAgICAwLjAgIHRfUE9GCiAgMyAgMTcz
+OCAgIDIgICAgICAgICAgMTAgICAgICAgICAxMCAgICAgICAgIDAgICAgIDAwMjQyMDQyICAgIDAu
+MCAgdF9SRU0KICAzICAxNzM5ICAgMyAgICAgICAgICA1MyAgICAgICAgIDg1ICAgICAgICAgMCAg
+ICAgMDAyNGEwNDIgICAgMC4wICB0X1NUUAogIDMgIDE3NDAgICAyICAgICAgICAgIDUgICAgICAg
+ICAgMzAgICAgICAgICAwICAgICAwMDI0YTA0MiAgICAwLjAgIFBuaW9fUG5wYlBvc3QKICAzICAx
+NzQxICAgMiAgICAgICAgICAyNSAgICAgICAgIDEzOCAgICAgICAgMCAgICAgMDAyNGEwNDIgICAg
+MC4wICBQbmlvX1BucGIKICAwICAwICAgICAgMCAgICAgICAgICAxNjUyMDAgICAgIDAgICAgICAg
+ICAgMCAgICAgMDAwMDAwMDAgICAgMC4wICBbSVJRMjMwNTogW3RpbWVyXV0KICAxICAwICAgICAg
+MCAgICAgICAgICAxMjU1MSAgICAgIDAgICAgICAgICAgMCAgICAgMDAwMDAwMDAgICAgMC4wICBb
+SVJRMjMwNTogW3RpbWVyXV0KICAyICAwICAgICAgMCAgICAgICAgICA4OTM3OTMgICAgIDAgICAg
+ICAgICAgMCAgICAgMDAwMDAwMDAgICAgMC4wICBbSVJRMjMwNTogW3RpbWVyXV0KICAzICAwICAg
+ICAgMCAgICAgICAgICAyNzkxMjk5ICAgIDAgICAgICAgICAgMCAgICAgMDAwMDAwMDAgICAgMC4x
+ICBbSVJRMjMwNTogW3RpbWVyXV0NCnRoZSAvcHJvYy94ZW5vbWFpL3NjaGVkL3RocmVhZCB3YXMg
+bGlrZSB0aGlzOg0KQ1BVICBQSUQgICAgQ0xBU1MgIFRZUEUgICAgICBQUkkgICBUSU1FT1VUICAg
+ICAgIFNUQVQgICAgICAgTkFNRQogIDAgIDAgICAgICBpZGxlICAgY29yZSAgICAgICAtMSAgIC0g
+ICAgICAgICAgICAgUiAgICAgICAgICBbUk9PVC8wXQogIDEgIDAgICAgICBpZGxlICAgY29yZSAg
+ICAgICAtMSAgIC0gICAgICAgICAgICAgUiAgICAgICAgICBbUk9PVC8xXQogIDIgIDAgICAgICBp
+ZGxlICAgY29yZSAgICAgICAtMSAgIC0gICAgICAgICAgICAgUiAgICAgICAgICBbUk9PVC8yXQog
+IDMgIDAgICAgICBpZGxlICAgY29yZSAgICAgICAtMSAgIC0gICAgICAgICAgICAgUiAgICAgICAg
+ICBbUk9PVC8zXQogIDMgIDE3MjEgICBydCAgICAgY29iYWx0ICAgICAxOSAgIDY5OG1zMzY5dXMg
+ICAgRCAgICAgICAgICBka3N3X2xpbnV4CiAgMyAgMTcyMyAgIHJ0ICAgICBjb2JhbHQgICAgIDIw
+ICAgLSAgICAgICAgICAgICBXciAgICAgICAgIFRhc2tfQVNZTkNfVGltZXIKICAzICAxNzI0ICAg
+cnQgICAgIGNvYmFsdCAgICAgMjAgICAtICAgICAgICAgICAgIFdyICAgICAgICAgVGFza19PU19U
+aW1lcgogIDMgIDE3MjUgICBydCAgICAgY29iYWx0ICAgICAgNiAgIC0gICAgICAgICAgICAgV3Ig
+ICAgICAgICBQcmludFJTMjMyUG9zdFRhc2sKICAzICAxNzI2ICAgcnQgICAgIGNvYmFsdCAgICAg
+IDUgICAtICAgICAgICAgICAgIFdyICAgICAgICAgUG5pb19OdkRhdGEKICAzICAxNzI3ICAgcnQg
+ICAgIGNvYmFsdCAgICAgIDEgICA0NjFtczUwdXMgICAgIERyICAgICAgICAgUG5pb19JZGxlCiAg
+MyAgMTcyOCAgIHJ0ICAgICBjb2JhbHQgICAgICA0ICAgLSAgICAgICAgICAgICBYciAgICAgICAg
+IE1haW5BcHBsCiAgMyAgMTcyOSAgIHJ0ICAgICBjb2JhbHQgICAgIDE5ICAgOG1zODI4dXMgICAg
+ICBEciAgICAgICAgIFBuaW9fQ3ljbGVJTwogIDMgIDE3MzAgICBydCAgICAgY29iYWx0ICAgICAx
+OSAgIC0gICAgICAgICAgICAgWHIgICAgICAgICBzbmlmZl9wYWNrZXQKICAzICAxNzMxICAgcnQg
+ICAgIGNvYmFsdCAgICAgMTEgICA5OG1zNjc5dXMgICAgIERyICAgICAgICAgdF9JREwKICAzICAx
+NzMyICAgcnQgICAgIGNvYmFsdCAgICAgMTAgICAtICAgICAgICAgICAgIFdyICAgICAgICAgdF9B
+UFAKICAzICAxNzMzICAgcnQgICAgIGNvYmFsdCAgICAgMTggICAtICAgICAgICAgICAgIFdyICAg
+ICAgICAgdF9FREQKICAzICAxNzM0ICAgcnQgICAgIGNvYmFsdCAgICAgMTcgICAtICAgICAgICAg
+ICAgIFdyICAgICAgICAgdF9PUkcKICAzICAxNzM1ICAgcnQgICAgIGNvYmFsdCAgICAgMTYgICAt
+ICAgICAgICAgICAgIFdyICAgICAgICAgdF9QTk8KICAzICAxNzM2ICAgcnQgICAgIGNvYmFsdCAg
+ICAgMTUgICAtICAgICAgICAgICAgIFdyICAgICAgICAgdF9UQ1AKICAzICAxNzM3ICAgcnQgICAg
+IGNvYmFsdCAgICAgMTQgICAtICAgICAgICAgICAgIFdyICAgICAgICAgdF9QT0YKICAzICAxNzM4
+ICAgcnQgICAgIGNvYmFsdCAgICAgMTMgICAtICAgICAgICAgICAgIFdyICAgICAgICAgdF9SRU0K
+ICAzICAxNzM5ICAgcnQgICAgIGNvYmFsdCAgICAgMTIgICAtICAgICAgICAgICAgIFdyICAgICAg
+ICAgdF9TVFAKICAzICAxNzQwICAgcnQgICAgIGNvYmFsdCAgICAgMTAgICAtICAgICAgICAgICAg
+IFdyICAgICAgICAgUG5pb19QbnBiUG9zdAogIDMgIDE3NDEgICBydCAgICAgY29iYWx0ICAgICAg
+OSAgIC0gICAgICAgICAgICAgV3IgICAgICAgICBQbmlvX1BucGIKDQp0aGUgZG1lc2cgYWJvdXQg
+eGVub21haToNCg0KWyAgICAwLjAwMDAwMF0gTGludXggdmVyc2lvbiAzLjE4LjIwLXhlbm9tYWkt
+My4xLTIwMjAwNDE3LTAyIChyb290QGNwYWMpIChnY2MgdmVyc2lvbiA1LjUuMCAyMDE3MTAxMCAo
+VWJ1bnR1IDUuNS4wLTEydWJ1bnR1MSkgKSAjMSBTTVAgRnJpIEFwciAxNyAxNjoyMzoxMiBIS1Qg
+MjAyMA0KWyAgICAwLjAwMDAwMF0gS2VybmVsIGNvbW1hbmQgbGluZTogQk9PVF9JTUFHRT0vdm1s
+aW51ei0zLjE4LjIwLXhlbm9tYWktMy4xLTIwMjAwNDE3LTAyIHJvb3Q9VVVJRD0yODUxYWI5Yi0x
+NzY2LTQxYTAtYjg4Mi0zY2FhOWE5NzViZjYgcm8gaXNvbGNwdXM9MSBxdWlldCBzcGxhc2ggdGV4
+dCB2dC5oYW5kb2ZmPTcNClsgICAgMS4yNTc5MjJdIFtYZW5vbWFpXSBzY2hlZHVsaW5nIGNsYXNz
+IGlkbGUgcmVnaXN0ZXJlZC4NClsgICAgMS4yNTc5MjZdIFtYZW5vbWFpXSBzY2hlZHVsaW5nIGNs
+YXNzIHJ0IHJlZ2lzdGVyZWQuDQpbICAgIDEuMjU3OTY5XSBbWGVub21haV0gU01JLWVuYWJsZWQg
+Y2hpcHNldCBmb3VuZCwgYnV0IFNNSSB3b3JrYXJvdW5kIGRpc2FibGVkDQpbICAgIDEuMjU3OTY5
+XSAgICAgICAgICAgKHNlZSB4ZW5vbWFpLnNtaSBwYXJhbWV0ZXIpLiBZb3UgbWlnaHQgZW5jb3Vu
+dGVyDQpbICAgIDEuMjU4MDA1XSBJLXBpcGU6IGhlYWQgZG9tYWluIFhlbm9tYWkgcmVnaXN0ZXJl
+ZC4NClsgICAgMS4yNjA4MzddIFtYZW5vbWFpXSBDb2JhbHQgdjMuMSBbREVCVUddDQpbICAgIDEu
+MzcxNTYyXSB1c2IgdXNiMTogTWFudWZhY3R1cmVyOiBMaW51eCAzLjE4LjIwLXhlbm9tYWktMy4x
+LTIwMjAwNDE3LTAyIGVoY2lfaGNkDQoNCm15IGFwcGxpY2F0aW9uIGNtYWtlIHhlbm9tYWkgY29t
+cGlsaW5nIHNldHRpbmc6DQoNCmV4ZWN1dGVfcHJvY2VzcyhDT01NQU5EIHhlbm8tY29uZmlnIC0t
+cG9zaXggLS1jZmxhZ3MgT1VUUFVUX1ZBUklBQkxFIFhFTk9fQ0ZMQUdTIE9VVFBVVF9TVFJJUF9U
+UkFJTElOR19XSElURVNQQUNFKQ0KZXhlY3V0ZV9wcm9jZXNzKENPTU1BTkQgeGVuby1jb25maWcg
+LS1wb3NpeCAtLWxkZmxhZ3MgT1VUUFVUX1ZBUklBQkxFIFhFTk9fTERGTEFHUyBPVVRQVVRfU1RS
+SVBfVFJBSUxJTkdfV0hJVEVTUEFDRSkNCnNldChDTUFLRV9DX0ZMQUdTICIke0NNQUtFX0NfRkxB
+R1N9ICR7WEVOT19DRkxBR1N9IikNCnNldChDTUFLRV9FWEVfTElOS0VSX0ZMQUdTICIke0NNQUtF
+X1NIQVJFRF9MSU5LRVJfRkxBR1N9ICR7WEVOT19MREZMQUdTfSIpDQoNCm15IGhhcmR3YXJlIHBs
+YXRmb3JtIGFuZCBvcyBpcyANCg0KSW50ZWwoUikgQ2VsZXJvbihSKSBDUFUgIEoxOTAwICBAIDEu
+OTlHSHogaTY4Ng0KVWJ1bnR1IDE0LjA0IDMuMTguMjAgDQoNCmNhbiBhbnkgb25lIGhlbHAgbWUg
+dG8gZmluZCBvdXQgd2h5IHRoaXMgcG9zaXggcG9ydGluZyBhcHBsaWNhdGlvbiBiZWhhdmlvdXIg
+YWJub3JtYWx5IGNvbXBhcmluZyB0byB0aGUgcmVndWxhciBvbmUgdXNpbmcgdGhlIGFib3ZlIGRh
+dGEuDQoNCndoYXQgbWVhc3VyZXMgc2hvdWxkIGkgdGFrZSB0byBtYWtlIHN1cmUgaXQgaGFzIHNh
+bWUgdGhyZWFkIHJ1bm5pbmcgYmVoYXZpb3VyIGFmdGVyIHBvdGluZyB0byB0aGUgeGVub21haS1w
+b3NpeCBvbmUuDQoNCg0KDQoNCkJlc3QgUmVnYXJkcw0KSHVhbmcgTWlhbmJvDQq157uwo7orODYx
+MzY4MjYxMjk1OQ0K
