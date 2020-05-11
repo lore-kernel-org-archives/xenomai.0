@@ -1,10 +1,11 @@
-Subject: Re: Could anybody help to reslove the question about _RTIOC_LISTEN?
-References: <CAAvDm6YJC2r0Kj6+sLAueja0cBnua161gXbtprgh94GknCJQ9Q@mail.gmail.com>
+Subject: Re: What are the relations bettween COBALT_SYSCALL(ioctl, handover,
+ args...) and COBALT_IMPL(int, ioctl, args...)?d
+References: <CAAvDm6Zk5xh-8R12MxuJKgc8b2Gw5K1hLqLHcwdzj=bDqJoyHw@mail.gmail.com>
 From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <ee8ed0f9-356a-d172-8c8c-c74bbdf30913@siemens.com>
-Date: Mon, 11 May 2020 08:48:09 +0200
+Message-ID: <d800b23b-2654-f722-bdf5-5ea55435ac5d@siemens.com>
+Date: Mon, 11 May 2020 08:50:23 +0200
 MIME-Version: 1.0
-In-Reply-To: <CAAvDm6YJC2r0Kj6+sLAueja0cBnua161gXbtprgh94GknCJQ9Q@mail.gmail.com>
+In-Reply-To: <CAAvDm6Zk5xh-8R12MxuJKgc8b2Gw5K1hLqLHcwdzj=bDqJoyHw@mail.gmail.com>
 Content-Type: text/plain; charset="utf-8"; format="flowed"
 Content-Language: en-US
 Content-Transfer-Encoding: 8bit
@@ -18,18 +19,23 @@ List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: =?UTF-8?B?5a2Z5LiW6b6Z?= <sunshilong369@gmail.com>, xenomai <xenomai@xenomai.org>
 
-On 11.05.20 07:59, 孙世龙 via Xenomai wrote:
+On 11.05.20 08:22, 孙世龙 via Xenomai wrote:
 > Hi,
->         As per the source code(
-> https://gitlab.denx.de/Xenomai/xenomai/-/blob/v3.0.9/kernel/drivers/net/stack/ipv4/tcp/tcp.c),
-> I could see that some code have relation to  _RTIOC_LISTEN.For details, see
-> below.
+>      What are the relations bettween* COBALT_SYSCALL(ioctl, handover,
+> args...) *and* COBALT_IMPL(int, ioctl,  args...)*?
+>      The related source code could be seen in the urls listed below.
+>       https://gitlab.denx.de/Xenomai/xenomai/-/blob/v3.0.9/lib/cobalt/rtdm.c
+> （COBALT_SYSCALL(
+> ioctl )）
+> https://gitlab.denx.de/Xenomai/xenomai/-/blob/v3.0.9/kernel/cobalt/posix/io.c （
+> COBALT_IMPL(int, ioctl,  args...) ）
+> 
+>       Similar question is bettween *COBALT_SYSCALL_DECL(sched_yield, (void) *
+> and * COBALT_IMPL(int, sched_yield, (void)).*
 > 
 
-lib/cobalt/rtdm.c, COBALT_IMPL(int, listen, (int fd, int backlog)). So, 
-if you wrap your posix application, it will first try _RTIOC_LISTEN via 
-Xenomai on an fd and then fall back to regular listen. If the fd 
-happened to be an rt-tcp socket, that driver above will be called.
+The former site issues the ioctl to the Xenomai core, the latter is the 
+entry point (after generic syscall handling) inside the kernel.
 
 Jan
 
