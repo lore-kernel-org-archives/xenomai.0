@@ -1,13 +1,13 @@
-From: "Meng, Fino" <fino.meng@intel.com>
-Subject: RE: Q: about mutex lock bettween rt thread and nrt thread.
-Date: Sun, 10 May 2020 14:17:03 +0000
-Message-ID: <BN6PR11MB16203EC08765DE4712447835EEA00@BN6PR11MB1620.namprd11.prod.outlook.com>
-References: <CAAvDm6YS03s6A76n_As4Bo4BkpcdYXOzmSkC3LGCseTJv_fTfA@mail.gmail.com>
-In-Reply-To: <CAAvDm6YS03s6A76n_As4Bo4BkpcdYXOzmSkC3LGCseTJv_fTfA@mail.gmail.com>
-Content-Language: en-US
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
 MIME-Version: 1.0
+References: <CAAvDm6YS03s6A76n_As4Bo4BkpcdYXOzmSkC3LGCseTJv_fTfA@mail.gmail.com>
+ <BN6PR11MB16203EC08765DE4712447835EEA00@BN6PR11MB1620.namprd11.prod.outlook.com>
+In-Reply-To: <BN6PR11MB16203EC08765DE4712447835EEA00@BN6PR11MB1620.namprd11.prod.outlook.com>
+From: =?UTF-8?B?5a2Z5LiW6b6Z?= <sunshilong369@gmail.com>
+Date: Mon, 11 May 2020 13:10:27 +0800
+Message-ID: <CAAvDm6ZxYUq10Bm=stKRNboob9sm5NZOsF5KroKu9x-QcjMj9A@mail.gmail.com>
+Subject: Re: Q: about mutex lock bettween rt thread and nrt thread.
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,31 +16,59 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: =?utf-8?B?5a2Z5LiW6b6Z?= <sunshilong369@gmail.com>
+To: "Meng, Fino" <fino.meng@intel.com>
 Cc: xenomai <xenomai@xenomai.org>
 
-DQo+U2VudDogU3VuZGF5LCBNYXkgMTAsIDIwMjAgMToxMiBQTQ0KPg0KPkhpLA0KPkkgdGhpbmsg
-bXV0ZXggbG9jayBzaG91bGQgbm90IGJlIHNoYXJlZCBiZXR0d2VlbiBydCB0aHJlYWQgYW5kIG5y
-dCB0aHJlYWQsIGJlY2F1c2UgaWYgaSB1c2UgdGhlIHBvc2l4IG11dGV4IGFwaQ0KPmltcGxlbWVu
-dGVkIGJ5IGxpbnV4LGl0IGNhdXNlcyB0aGUgcnQgdGhyZWFkIHN3aXRjaCB0byB0aGUgc2Vjb25k
-YXJ5IG1vZGUuDQo+DQo+ICAgIEFzIHBlciB0aGUgZG9jdW1lbnRhdGlvbihodHRwczovL3hlbm9t
-YWkub3JnL2RvY3VtZW50YXRpb24vDQo+eGVub21haS0zL2h0bWwveGVubzNwcm0vZ3JvdXBfX2Fs
-Y2hlbXlfX211dGV4Lmh0bWwNCj4jZ2E4ZjdkYjMwNGJiNWE4MzlkODE2MTRmMDBjNGNkZTE0NSks
-DQo+dGhlIG11dGV4IGFwaSBpbXBsZW1lbnRlZCBieSB4ZW5vbWFpIGNvdWxkIG5vdCBiZSB1c2Vk
-IGluIG5vcm1hbCBsaW51eCB0aHJlYWQuDQo+DQo+U28saG93IHRvIHNoYXJlIHRoZSBzYW1lIG11
-dGV4IGJldHR3ZWVuIHJ0IHRocmVhZCBhbmQgbnJ0IHRocmVhZD9Db3VsZCB5b3Ugb2ZmZXIgc29t
-ZSBndWlkYW5jZSBvbiB0aGF0Pw0KPg0KPlRoYW5rIHlvdSBmb3IgeW91ciBhdHRlbnRpb24uDQo+
-TG9va2luZyBmb3J3YXJkIHRvIGhlYXJpbmcgZnJvbSB5b3UuDQoNCkkgd291bGQgbGlrZSB0byBz
-YXksIGlmIHN1YmNvbnNjaW91c2x5IHdhbnQgdG8gdXNlIG11dGV4IG9yIHNvbWUgb3RoZXIgbG9j
-ayBiZXR3ZWVuIENvYmFsdCB0aHJlYWQNCmFuZCBMaW51eCBrZXJuZWwgdGhyZWFkLCBpdCdzIGJl
-dHRlciBmaW5kIGFub3RoZXIgcGF0dGVybiB0byBleGNoYW5nZSBkYXRhIG90aGVyIHRoYW4gYSBt
-dXRleC9sb2NrLiBGb3IgZXhhbXBsZSwNCkNvYmFsdCB0aHJlYWQgY29udGludW91cyB3cml0ZSBk
-YXRhIHRvIGEgcGllY2Ugb2YgbWVtb3J5LCBMaW51eCBrZXJuZWwgdGhyZWFkIGNvbnRpbnVvdXMg
-cmVhZC4gDQpUaGlzIG1heSBsb3NlIHNvbWUgc2FtcGxlcyBhbHRob3VnaCwgYnV0IGNhbiBsZXQg
-Q29iYWx0IHRocmVhZCByZXR1cm4gaW1tZWRpYXRlbHkgd2l0aG91dCBibG9ja2luZy4NCklmIGxv
-c2Ugc2FtcGxlIGlzIG5vdCBhY2NlcHRhYmxlLCB0cnkgWEREUCwgIENvYmFsdCB0aHJlYWQgY2Fu
-IGFsc28gd3JpdGUmcmV0dXJuIHdpdGhvdXQgYmxvY2tpbmcuDQpJZiBIZWFkIGRvbWFpbidzIGlu
-dGVycnVwdHMgJiB0aHJlYWRzIG9jY3VwaWVkIENQVSwgdGhlIHN5c3RlbSBtYXkgZGVhZGxvY2sg
-dGhlcmUgc2luY2Ugbm90aGluZyBjYW4ga2lsbCB0aGVtLg0KDQoNCkJSIC8gRmlubyAo5a2f56Wl
-5aSrKQ0KSW50ZWwg4oCTIElPVEcgRGV2ZWxvcGVyIEVuYWJsaW5nDQo=
+Hi,
+    Thank you for your response.
 
+    >>If Head domain's interrupts & threads occupied CPU, the system may
+deadlock there since nothing can kill them.
+    What do you mean? I could not get the idea.When this happen? And
+how?Does it have relation to XDDP?
+
+    Thank you for your attention.
+    Look forward to hearing from you.
+
+Meng, Fino <fino.meng@intel.com> =E4=BA=8E2020=E5=B9=B45=E6=9C=8810=E6=97=
+=A5=E5=91=A8=E6=97=A5 =E4=B8=8B=E5=8D=8810:17=E5=86=99=E9=81=93=EF=BC=9A
+
+>
+> >Sent: Sunday, May 10, 2020 1:12 PM
+> >
+> >Hi,
+> >I think mutex lock should not be shared bettween rt thread and nrt
+> thread, because if i use the posix mutex api
+> >implemented by linux,it causes the rt thread switch to the secondary mod=
+e.
+> >
+> >    As per the documentation(https://xenomai.org/documentation/
+> >xenomai-3/html/xeno3prm/group__alchemy__mutex.html
+> >#ga8f7db304bb5a839d81614f00c4cde145),
+> >the mutex api implemented by xenomai could not be used in normal linux
+> thread.
+> >
+> >So,how to share the same mutex bettween rt thread and nrt thread?Could
+> you offer some guidance on that?
+> >
+> >Thank you for your attention.
+> >Looking forward to hearing from you.
+>
+> I would like to say, if subconsciously want to use mutex or some other
+> lock between Cobalt thread
+> and Linux kernel thread, it's better find another pattern to exchange dat=
+a
+> other than a mutex/lock. For example,
+> Cobalt thread continuous write data to a piece of memory, Linux kernel
+> thread continuous read.
+> This may lose some samples although, but can let Cobalt thread return
+> immediately without blocking.
+> If lose sample is not acceptable, try XDDP,  Cobalt thread can also
+> write&return without blocking.
+> If Head domain's interrupts & threads occupied CPU, the system may
+> deadlock there since nothing can kill them.
+>
+>
+> BR / Fino (=E5=AD=9F=E7=A5=A5=E5=A4=AB)
+> Intel =E2=80=93 IOTG Developer Enabling
+>
