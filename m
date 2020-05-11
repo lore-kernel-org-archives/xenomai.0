@@ -1,12 +1,9 @@
-From: ayaida marwane <ayaida_marwane@yahoo.fr>
-Content-Type: text/plain;
-	charset=us-ascii
-Content-Transfer-Encoding: quoted-printable
-Mime-Version: 1.0 (Mac OS X Mail 13.0 \(3608.60.0.2.5\))
-Subject: RT I2C Raspberry Driver
-Message-Id: <2499CEB7-33FE-4F86-B075-FB4C5E9751FF@yahoo.fr>
-Date: Mon, 11 May 2020 09:04:45 +0200
-References: <2499CEB7-33FE-4F86-B075-FB4C5E9751FF.ref@yahoo.fr>
+MIME-Version: 1.0
+From: =?UTF-8?B?5a2Z5LiW6b6Z?= <sunshilong369@gmail.com>
+Date: Mon, 11 May 2020 15:51:10 +0800
+Message-ID: <CAAvDm6ZbtJJPRfFPDhsxpR-njnJfEHvrJvG0Jrr=ob3=O-08pA@mail.gmail.com>
+Subject: Why xddp-stream demo process could not be terminate by ctrl + C.
+Content-Type: text/plain; charset="UTF-8"
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,22 +12,18 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
+To: xenomai <xenomai@xenomai.org>
 
-Dear all,
-
-We need to communicate in RT with a sensor (accelerometer) working with =
-I2C protocol using a Raspberry 3 or 4 with Xenomai 3. The objective is, =
-for example, to detect a collision in RT.
-
-Is there any driver already existing in Xenomai 3 that could help us?
-
-To do this, we want to use RTDM driver for that. If not possible, we =
-could use also Alchemy or Posix Skin or other from Kernel or Userland. =
-The most important is to do it in RT.
-
-Could you help us please?
-
-Best regards,
-Marwane Ayaida.=
-
+Hi,
+     I could run the xddp-stream demo process normally indeed.
+     But when i intend to terminate the process by ctrl+c, nothing has
+happened.
+     The only way i found useful is to use the shell command(sudo killall
+-9 xddp-stream) to terminate it.
+     I*'m really confused.*
+*     As per the source code of
+xddp-stream(https://gitlab.denx.de/Xenomai/xenomai/-/blob/v3.0.9//demo/posix/cobalt/xddp-stream.c
+<https://gitlab.denx.de/Xenomai/xenomai/-/blob/v3.0.9//demo/posix/cobalt/xddp-stream.c>),
+there no api used to capture the ctrl+c signal.*
+     Thank you for your attention.
+     Look forward to hearing from you.
