@@ -1,11 +1,13 @@
+Subject: Re: Could std::atomic<T> be shared bettween rt thread and nrt thread?
+References: <CAAvDm6Yoj5ex9C49EfyRMBryBCsE78N_wjsS+2y2h4t_mMN33g@mail.gmail.com>
+From: Jan Kiszka <jan.kiszka@siemens.com>
+Message-ID: <5a05522a-edb9-4f1d-6973-eb72c31a9dc1@siemens.com>
+Date: Mon, 11 May 2020 08:40:53 +0200
 MIME-Version: 1.0
-From: =?UTF-8?B?5a2Z5LiW6b6Z?= <sunshilong369@gmail.com>
-Date: Mon, 11 May 2020 14:22:53 +0800
-Message-ID: <CAAvDm6Zk5xh-8R12MxuJKgc8b2Gw5K1hLqLHcwdzj=bDqJoyHw@mail.gmail.com>
-Subject: What are the relations bettween COBALT_SYSCALL(ioctl, handover,
- args...) and COBALT_IMPL(int, ioctl, args...)?d
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+In-Reply-To: <CAAvDm6Yoj5ex9C49EfyRMBryBCsE78N_wjsS+2y2h4t_mMN33g@mail.gmail.com>
+Content-Type: text/plain; charset="utf-8"; format="flowed"
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -14,22 +16,26 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai <xenomai@xenomai.org>
+To: =?UTF-8?B?5a2Z5LiW6b6Z?= <sunshilong369@gmail.com>, xenomai <xenomai@xenomai.org>
 
-Hi,
-    What are the relations bettween* COBALT_SYSCALL(ioctl, handover,
-args...) *and* COBALT_IMPL(int, ioctl,  args...)*?
-    The related source code could be seen in the urls listed below.
-     https://gitlab.denx.de/Xenomai/xenomai/-/blob/v3.0.9/lib/cobalt/rtdm.c
-=EF=BC=88COBALT_SYSCALL(
-ioctl )=EF=BC=89
-https://gitlab.denx.de/Xenomai/xenomai/-/blob/v3.0.9/kernel/cobalt/posix/io=
-.c =EF=BC=88
-COBALT_IMPL(int, ioctl,  args...) =EF=BC=89
+On 09.05.20 10:28, 孙世龙 via Xenomai wrote:
+> Hi,
+>       Could std::atomic<T> be shared bettween rt thread and nrt thread?
+>       Is it cause latency problem?
+>       Is it cause rt thread to switch to secondary mode?
+> 
 
-     Similar question is bettween *COBALT_SYSCALL_DECL(sched_yield, (void) =
-*
-and * COBALT_IMPL(int, sched_yield, (void)).*
+I'm not familiar with their implementation details. As long as they use 
+architectural atomic instructions and no syscalls, this is safe.
 
-    Thank you for your attention.
-    Look forward to hearing from you.
+The problem with runtime libraries - and that also applies to C++ - is 
+that you need to know their internals in order to use them safely for 
+time-critical code. It's out of scope for the Xenomai project, we only 
+provide that best-effort detection mechanism (SIGDEBUG).
+
+Jan
+
+-- 
+Siemens AG, Corporate Technology, CT RDA IOT SES-DE
+Corporate Competence Center Embedded Linux
+
