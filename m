@@ -1,14 +1,15 @@
-Subject: =?UTF-8?Q?Re=3a_When_the_linux_process_could_recieve_the_message_tr?=
- =?UTF-8?Q?ansport_through_XDDP=ef=bc=9f?=
-References: <CAAvDm6bKxtaf-xg5bM+SGgt39CrTh94chO9rfs-NuAO4nwPx3w@mail.gmail.com>
-From: steve freyder <steve@freyder.net>
-Message-ID: <37d2adba-f2e4-dd77-89cc-a6d5ee95ee34@freyder.net>
-Date: Mon, 11 May 2020 22:42:57 -0500
-MIME-Version: 1.0
-In-Reply-To: <CAAvDm6bKxtaf-xg5bM+SGgt39CrTh94chO9rfs-NuAO4nwPx3w@mail.gmail.com>
+From: "Meng, Fino" <fino.meng@intel.com>
+Subject: RE: Q: about mutex lock bettween rt thread and nrt thread.
+Date: Tue, 12 May 2020 05:05:01 +0000
+Message-ID: <BN6PR11MB162007122A999C2D6675CEB8EEBE0@BN6PR11MB1620.namprd11.prod.outlook.com>
+References: <CAAvDm6YS03s6A76n_As4Bo4BkpcdYXOzmSkC3LGCseTJv_fTfA@mail.gmail.com>
+ <BN6PR11MB16203EC08765DE4712447835EEA00@BN6PR11MB1620.namprd11.prod.outlook.com>
+ <CAAvDm6ZxYUq10Bm=stKRNboob9sm5NZOsF5KroKu9x-QcjMj9A@mail.gmail.com>
+In-Reply-To: <CAAvDm6ZxYUq10Bm=stKRNboob9sm5NZOsF5KroKu9x-QcjMj9A@mail.gmail.com>
 Content-Language: en-US
-Content-Type: text/plain; charset="utf-8"; format="flowed"
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+MIME-Version: 1.0
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,44 +18,48 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: =?UTF-8?B?5a2Z5LiW6b6Z?= <sunshilong369@gmail.com>, xenomai <xenomai@xenomai.org>
+To: =?utf-8?B?5a2Z5LiW6b6Z?= <sunshilong369@gmail.com>
+Cc: xenomai <xenomai@xenomai.org>
 
-On 5/11/2020 9:16 PM, 孙世龙 via Xenomai wrote:
-> Hi,
->       As i am using XDDP to transport messages bettween the head domain and
-> linux domain(i mean there are two processes, one is rt process, the other
-> is linux process.),I wonder that when the linux process could recieve the
-> message？
->       *Will ADOES wake up the related linux process at once when the head
-> domain write something to the XDDP node?* Or, the linux process has to wait
-> for the schedule of linux kernel, if the processor is busy, it may wait for
-> a long long time.
->
->       Thank you for your attention.
->       Looking forward to hearing from you.
-
-The Linux process cannot wake up immediately, otherwise what would be 
-the point of having an RT co-kernel if it didn't preempt the non-RT 
-environment.
-
-
-If the RT process wishes to give the non-RT process an opportunity to 
-run in order to receive the just-sent message, it had better relinquish 
-the CPU.  Inserting an rt_sleep() call (or equivalent) might be one 
-(inelegant?) option, but certainly nothing in iPipe or anything at that 
-layer is going to magically solve that problem for you.
-
-
-If you're going to build code that makes a NRT process a subordinate of 
-an RT process, you're going to have to employ some non-standard logic 
-and get creative about how you deal with the inverted priority 
-relationship that implicitly exists between the RT/NRT schedulers 
-involved in that scenario.  XDDP is a bidirectional data relay, not a 
-scheduler.
-
-
-Regards,
-
-Steve
-
+DQoNCj5TZW50OiBNb25kYXksIE1heSAxMSwgMjAyMCAxOjEwIFBNDQo+DQo+SGksDQo+ICAgIFRo
+YW5rIHlvdSBmb3IgeW91ciByZXNwb25zZS4NCj4NCj4gICAgPj5JZiBIZWFkIGRvbWFpbidzIGlu
+dGVycnVwdHMgJiB0aHJlYWRzIG9jY3VwaWVkIENQVSwgdGhlIHN5c3RlbSBtYXkgZGVhZGxvY2sg
+dGhlcmUgc2luY2Ugbm90aGluZyBjYW4ga2lsbCB0aGVtLg0KPiAgICBXaGF0IGRvIHlvdSBtZWFu
+PyBJIGNvdWxkIG5vdCBnZXQgdGhlIGlkZWEuV2hlbiB0aGlzIGhhcHBlbj8gQW5kIGhvdz9Eb2Vz
+IGl0IGhhdmUgcmVsYXRpb24gdG8gWEREUD8NCg0KTm90IHJlbGF0ZWQgdG8gWEREUDsgaW4gU0NI
+RURfRklGTywgaGlnaGVzdCBwcmlvcml0eSB0aHJlYWQgY2FuIGFsd2F5cyBvY2N1cHkgQ1BVLCBu
+byBhbnkgdGltZSBzbG90IGZvciBsb3dlciBwcm8gdGhyZWFkczsNCiBpZiBoaWdoZXN0IHByaSB0
+aHJlYWQgaGFzIGJ1ZywgZXguICBhIGRlYWQgbG9vcCwgIGFzc3VtZSBvbmx5IG9uZSBjb3JlIHN5
+c3RlbSwgdGhlIGNvcmUgd2lsbCBqdXN0IG9jY3VwaWVkLCB0aGUgc3lzdGVtDQpsb29rcyBsaWtl
+IGhhbmcgdXAuIElmIG5vIHdhdGNoZG9nIHRvIHRyaWdnZXIgYSByZWJvb3QsIHRoZSBkZWFkIGxv
+b3Agd2lsbCBmb3JldmVyLCB0aGVuIHRoZSBzeXN0ZW0gY2Fubm90IHJlc3BvbnNlIHRvIGFueXRo
+aW5nIGVsc2U7DQoNCkJSIGZpbm8NCg0KPg0KPiAgICBUaGFuayB5b3UgZm9yIHlvdXIgYXR0ZW50
+aW9uLg0KPiAgICBMb29rIGZvcndhcmQgdG8gaGVhcmluZyBmcm9tIHlvdS4NCj4NCj5NZW5nLCBG
+aW5vIDxmaW5vLm1lbmdAaW50ZWwuY29tIDxtYWlsdG86Zmluby5tZW5nQGludGVsLmNvbT4gPiDk
+uo4yMDIw5bm0NeaciDEw5pel5ZGo5pelIOS4i+WNiDEwOjE35YaZ6YGT77yaDQo+DQo+DQo+DQo+
+CT5TZW50OiBTdW5kYXksIE1heSAxMCwgMjAyMCAxOjEyIFBNDQo+CT4NCj4JPkhpLA0KPgk+SSB0
+aGluayBtdXRleCBsb2NrIHNob3VsZCBub3QgYmUgc2hhcmVkIGJldHR3ZWVuIHJ0IHRocmVhZCBh
+bmQgbnJ0IHRocmVhZCwgYmVjYXVzZSBpZiBpIHVzZSB0aGUgcG9zaXggbXV0ZXggYXBpDQo+CT5p
+bXBsZW1lbnRlZCBieSBsaW51eCxpdCBjYXVzZXMgdGhlIHJ0IHRocmVhZCBzd2l0Y2ggdG8gdGhl
+IHNlY29uZGFyeSBtb2RlLg0KPgk+DQo+CT4gICAgQXMgcGVyIHRoZSBkb2N1bWVudGF0aW9uKGh0
+dHBzOi8veGVub21haS5vcmcvZG9jdW1lbnRhdGlvbi8NCj4JPnhlbm9tYWktMy9odG1sL3hlbm8z
+cHJtL2dyb3VwX19hbGNoZW15X19tdXRleC5odG1sDQo+CT4jZ2E4ZjdkYjMwNGJiNWE4MzlkODE2
+MTRmMDBjNGNkZTE0NSksDQo+CT50aGUgbXV0ZXggYXBpIGltcGxlbWVudGVkIGJ5IHhlbm9tYWkg
+Y291bGQgbm90IGJlIHVzZWQgaW4gbm9ybWFsIGxpbnV4IHRocmVhZC4NCj4JPg0KPgk+U28saG93
+IHRvIHNoYXJlIHRoZSBzYW1lIG11dGV4IGJldHR3ZWVuIHJ0IHRocmVhZCBhbmQgbnJ0IHRocmVh
+ZD9Db3VsZCB5b3Ugb2ZmZXIgc29tZSBndWlkYW5jZSBvbiB0aGF0Pw0KPgk+DQo+CT5UaGFuayB5
+b3UgZm9yIHlvdXIgYXR0ZW50aW9uLg0KPgk+TG9va2luZyBmb3J3YXJkIHRvIGhlYXJpbmcgZnJv
+bSB5b3UuDQo+DQo+CUkgd291bGQgbGlrZSB0byBzYXksIGlmIHN1YmNvbnNjaW91c2x5IHdhbnQg
+dG8gdXNlIG11dGV4IG9yIHNvbWUgb3RoZXIgbG9jayBiZXR3ZWVuIENvYmFsdCB0aHJlYWQNCj4J
+YW5kIExpbnV4IGtlcm5lbCB0aHJlYWQsIGl0J3MgYmV0dGVyIGZpbmQgYW5vdGhlciBwYXR0ZXJu
+IHRvIGV4Y2hhbmdlIGRhdGEgb3RoZXIgdGhhbiBhIG11dGV4L2xvY2suIEZvciBleGFtcGxlLA0K
+PglDb2JhbHQgdGhyZWFkIGNvbnRpbnVvdXMgd3JpdGUgZGF0YSB0byBhIHBpZWNlIG9mIG1lbW9y
+eSwgTGludXgga2VybmVsIHRocmVhZCBjb250aW51b3VzIHJlYWQuDQo+CVRoaXMgbWF5IGxvc2Ug
+c29tZSBzYW1wbGVzIGFsdGhvdWdoLCBidXQgY2FuIGxldCBDb2JhbHQgdGhyZWFkIHJldHVybiBp
+bW1lZGlhdGVseSB3aXRob3V0IGJsb2NraW5nLg0KPglJZiBsb3NlIHNhbXBsZSBpcyBub3QgYWNj
+ZXB0YWJsZSwgdHJ5IFhERFAsICBDb2JhbHQgdGhyZWFkIGNhbiBhbHNvIHdyaXRlJnJldHVybiB3
+aXRob3V0IGJsb2NraW5nLg0KPglJZiBIZWFkIGRvbWFpbidzIGludGVycnVwdHMgJiB0aHJlYWRz
+IG9jY3VwaWVkIENQVSwgdGhlIHN5c3RlbSBtYXkgZGVhZGxvY2sgdGhlcmUgc2luY2Ugbm90aGlu
+ZyBjYW4ga2lsbCB0aGVtLg0KPg0KPg0KPglCUiAvIEZpbm8gKOWtn+elpeWkqykNCj4JSW50ZWwg
+4oCTIElPVEcgRGV2ZWxvcGVyIEVuYWJsaW5nDQo+DQoNCg==
 
