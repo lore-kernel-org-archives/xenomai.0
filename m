@@ -1,15 +1,14 @@
-From: "Meng, Fino" <fino.meng@intel.com>
-Subject: RE: Q: about mutex lock bettween rt thread and nrt thread.
-Date: Tue, 12 May 2020 05:05:01 +0000
-Message-ID: <BN6PR11MB162007122A999C2D6675CEB8EEBE0@BN6PR11MB1620.namprd11.prod.outlook.com>
-References: <CAAvDm6YS03s6A76n_As4Bo4BkpcdYXOzmSkC3LGCseTJv_fTfA@mail.gmail.com>
- <BN6PR11MB16203EC08765DE4712447835EEA00@BN6PR11MB1620.namprd11.prod.outlook.com>
- <CAAvDm6ZxYUq10Bm=stKRNboob9sm5NZOsF5KroKu9x-QcjMj9A@mail.gmail.com>
-In-Reply-To: <CAAvDm6ZxYUq10Bm=stKRNboob9sm5NZOsF5KroKu9x-QcjMj9A@mail.gmail.com>
-Content-Language: en-US
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
 MIME-Version: 1.0
+References: <CAAvDm6bKxtaf-xg5bM+SGgt39CrTh94chO9rfs-NuAO4nwPx3w@mail.gmail.com>
+ <37d2adba-f2e4-dd77-89cc-a6d5ee95ee34@freyder.net>
+In-Reply-To: <37d2adba-f2e4-dd77-89cc-a6d5ee95ee34@freyder.net>
+From: =?UTF-8?B?5a2Z5LiW6b6Z?= <sunshilong369@gmail.com>
+Date: Tue, 12 May 2020 14:37:47 +0800
+Message-ID: <CAAvDm6ZKzpHp5g6G2x71-HSzOaq88E6TbhbbUMBZwx+pE9-NhA@mail.gmail.com>
+Subject: =?UTF-8?Q?Re=3A_When_the_linux_process_could_recieve_the_message?=
+ =?UTF-8?Q?_transport_through_XDDP=EF=BC=9F?=
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -18,48 +17,88 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: =?utf-8?B?5a2Z5LiW6b6Z?= <sunshilong369@gmail.com>
+To: steve freyder <steve@freyder.net>
 Cc: xenomai <xenomai@xenomai.org>
 
-DQoNCj5TZW50OiBNb25kYXksIE1heSAxMSwgMjAyMCAxOjEwIFBNDQo+DQo+SGksDQo+ICAgIFRo
-YW5rIHlvdSBmb3IgeW91ciByZXNwb25zZS4NCj4NCj4gICAgPj5JZiBIZWFkIGRvbWFpbidzIGlu
-dGVycnVwdHMgJiB0aHJlYWRzIG9jY3VwaWVkIENQVSwgdGhlIHN5c3RlbSBtYXkgZGVhZGxvY2sg
-dGhlcmUgc2luY2Ugbm90aGluZyBjYW4ga2lsbCB0aGVtLg0KPiAgICBXaGF0IGRvIHlvdSBtZWFu
-PyBJIGNvdWxkIG5vdCBnZXQgdGhlIGlkZWEuV2hlbiB0aGlzIGhhcHBlbj8gQW5kIGhvdz9Eb2Vz
-IGl0IGhhdmUgcmVsYXRpb24gdG8gWEREUD8NCg0KTm90IHJlbGF0ZWQgdG8gWEREUDsgaW4gU0NI
-RURfRklGTywgaGlnaGVzdCBwcmlvcml0eSB0aHJlYWQgY2FuIGFsd2F5cyBvY2N1cHkgQ1BVLCBu
-byBhbnkgdGltZSBzbG90IGZvciBsb3dlciBwcm8gdGhyZWFkczsNCiBpZiBoaWdoZXN0IHByaSB0
-aHJlYWQgaGFzIGJ1ZywgZXguICBhIGRlYWQgbG9vcCwgIGFzc3VtZSBvbmx5IG9uZSBjb3JlIHN5
-c3RlbSwgdGhlIGNvcmUgd2lsbCBqdXN0IG9jY3VwaWVkLCB0aGUgc3lzdGVtDQpsb29rcyBsaWtl
-IGhhbmcgdXAuIElmIG5vIHdhdGNoZG9nIHRvIHRyaWdnZXIgYSByZWJvb3QsIHRoZSBkZWFkIGxv
-b3Agd2lsbCBmb3JldmVyLCB0aGVuIHRoZSBzeXN0ZW0gY2Fubm90IHJlc3BvbnNlIHRvIGFueXRo
-aW5nIGVsc2U7DQoNCkJSIGZpbm8NCg0KPg0KPiAgICBUaGFuayB5b3UgZm9yIHlvdXIgYXR0ZW50
-aW9uLg0KPiAgICBMb29rIGZvcndhcmQgdG8gaGVhcmluZyBmcm9tIHlvdS4NCj4NCj5NZW5nLCBG
-aW5vIDxmaW5vLm1lbmdAaW50ZWwuY29tIDxtYWlsdG86Zmluby5tZW5nQGludGVsLmNvbT4gPiDk
-uo4yMDIw5bm0NeaciDEw5pel5ZGo5pelIOS4i+WNiDEwOjE35YaZ6YGT77yaDQo+DQo+DQo+DQo+
-CT5TZW50OiBTdW5kYXksIE1heSAxMCwgMjAyMCAxOjEyIFBNDQo+CT4NCj4JPkhpLA0KPgk+SSB0
-aGluayBtdXRleCBsb2NrIHNob3VsZCBub3QgYmUgc2hhcmVkIGJldHR3ZWVuIHJ0IHRocmVhZCBh
-bmQgbnJ0IHRocmVhZCwgYmVjYXVzZSBpZiBpIHVzZSB0aGUgcG9zaXggbXV0ZXggYXBpDQo+CT5p
-bXBsZW1lbnRlZCBieSBsaW51eCxpdCBjYXVzZXMgdGhlIHJ0IHRocmVhZCBzd2l0Y2ggdG8gdGhl
-IHNlY29uZGFyeSBtb2RlLg0KPgk+DQo+CT4gICAgQXMgcGVyIHRoZSBkb2N1bWVudGF0aW9uKGh0
-dHBzOi8veGVub21haS5vcmcvZG9jdW1lbnRhdGlvbi8NCj4JPnhlbm9tYWktMy9odG1sL3hlbm8z
-cHJtL2dyb3VwX19hbGNoZW15X19tdXRleC5odG1sDQo+CT4jZ2E4ZjdkYjMwNGJiNWE4MzlkODE2
-MTRmMDBjNGNkZTE0NSksDQo+CT50aGUgbXV0ZXggYXBpIGltcGxlbWVudGVkIGJ5IHhlbm9tYWkg
-Y291bGQgbm90IGJlIHVzZWQgaW4gbm9ybWFsIGxpbnV4IHRocmVhZC4NCj4JPg0KPgk+U28saG93
-IHRvIHNoYXJlIHRoZSBzYW1lIG11dGV4IGJldHR3ZWVuIHJ0IHRocmVhZCBhbmQgbnJ0IHRocmVh
-ZD9Db3VsZCB5b3Ugb2ZmZXIgc29tZSBndWlkYW5jZSBvbiB0aGF0Pw0KPgk+DQo+CT5UaGFuayB5
-b3UgZm9yIHlvdXIgYXR0ZW50aW9uLg0KPgk+TG9va2luZyBmb3J3YXJkIHRvIGhlYXJpbmcgZnJv
-bSB5b3UuDQo+DQo+CUkgd291bGQgbGlrZSB0byBzYXksIGlmIHN1YmNvbnNjaW91c2x5IHdhbnQg
-dG8gdXNlIG11dGV4IG9yIHNvbWUgb3RoZXIgbG9jayBiZXR3ZWVuIENvYmFsdCB0aHJlYWQNCj4J
-YW5kIExpbnV4IGtlcm5lbCB0aHJlYWQsIGl0J3MgYmV0dGVyIGZpbmQgYW5vdGhlciBwYXR0ZXJu
-IHRvIGV4Y2hhbmdlIGRhdGEgb3RoZXIgdGhhbiBhIG11dGV4L2xvY2suIEZvciBleGFtcGxlLA0K
-PglDb2JhbHQgdGhyZWFkIGNvbnRpbnVvdXMgd3JpdGUgZGF0YSB0byBhIHBpZWNlIG9mIG1lbW9y
-eSwgTGludXgga2VybmVsIHRocmVhZCBjb250aW51b3VzIHJlYWQuDQo+CVRoaXMgbWF5IGxvc2Ug
-c29tZSBzYW1wbGVzIGFsdGhvdWdoLCBidXQgY2FuIGxldCBDb2JhbHQgdGhyZWFkIHJldHVybiBp
-bW1lZGlhdGVseSB3aXRob3V0IGJsb2NraW5nLg0KPglJZiBsb3NlIHNhbXBsZSBpcyBub3QgYWNj
-ZXB0YWJsZSwgdHJ5IFhERFAsICBDb2JhbHQgdGhyZWFkIGNhbiBhbHNvIHdyaXRlJnJldHVybiB3
-aXRob3V0IGJsb2NraW5nLg0KPglJZiBIZWFkIGRvbWFpbidzIGludGVycnVwdHMgJiB0aHJlYWRz
-IG9jY3VwaWVkIENQVSwgdGhlIHN5c3RlbSBtYXkgZGVhZGxvY2sgdGhlcmUgc2luY2Ugbm90aGlu
-ZyBjYW4ga2lsbCB0aGVtLg0KPg0KPg0KPglCUiAvIEZpbm8gKOWtn+elpeWkqykNCj4JSW50ZWwg
-4oCTIElPVEcgRGV2ZWxvcGVyIEVuYWJsaW5nDQo+DQoNCg==
+Hi,Steve:
+     Thank you for the clarification.
 
+    >>Will ADOES wake up the related linux process at once when the head
+    >>domain write something to the XDDP node?* Or, the linux process
+    >>has to wait for the schedule of linux kernel, if the processor is
+    >>busy, it may wait for a long long time.
+    >The Linux process cannot wake up immediately, otherwise what would
+    >be the point of having an RT co-kernel if it didn't preempt the
+    >non-RT environment.
+     Yea=EF=BC=8CI can't agree  more.
+     Imagine this  scenario, your processor have 4 cores and you only have
+one
+     RT process which has single thread.So, there are 3 cores could be used
+     for the linux processes at least. What i am interested in is that* if =
+*
+*     the linux process wait to receive message through XDDP has to compete=
+*
+*     for the cpu resources** with so many other linux processes .*
+
+     >If you're going to build code that makes a NRT process a subordinate
+     >of an RT process, you're going to have to employ some non-standard
+    >logic and get creative about how you deal with the inverted priority
+    >relationship that implicitly exists between the RT/NRT schedulers
+    >involved in that scenario.
+
+    What do you mean by " employ  some non-standard logic"=EF=BC=9FCould yo=
+u make
+me more clearlly?
+
+     Thank you for your attention.
+     Look forward to hearing from you.
+
+steve freyder <steve@freyder.net> =E4=BA=8E2020=E5=B9=B45=E6=9C=8812=E6=97=
+=A5=E5=91=A8=E4=BA=8C =E4=B8=8A=E5=8D=8811:43=E5=86=99=E9=81=93=EF=BC=9A
+
+> On 5/11/2020 9:16 PM, =E5=AD=99=E4=B8=96=E9=BE=99 via Xenomai wrote:
+>
+> Hi,
+>      As i am using XDDP to transport messages bettween the head domain an=
+d
+> linux domain(i mean there are two processes, one is rt process, the other
+> is linux process.),I wonder that when the linux process could recieve the
+> message=EF=BC=9F
+>      *Will ADOES wake up the related linux process at once when the head
+> domain write something to the XDDP node?* Or, the linux process has to wa=
+it
+> for the schedule of linux kernel, if the processor is busy, it may wait f=
+or
+> a long long time.
+>
+>      Thank you for your attention.
+>      Looking forward to hearing from you.
+>
+> The Linux process cannot wake up immediately, otherwise what would be the
+> point of having an RT co-kernel if it didn't preempt the non-RT environme=
+nt.
+>
+>
+> If the RT process wishes to give the non-RT process an opportunity to run
+> in order to receive the just-sent message, it had better relinquish the
+> CPU.  Inserting an rt_sleep() call (or equivalent) might be one
+> (inelegant?) option, but certainly nothing in iPipe or anything at that
+> layer is going to magically solve that problem for you.
+>
+>
+> If you're going to build code that makes a NRT process a subordinate of a=
+n
+> RT process, you're going to have to employ some non-standard logic and ge=
+t
+> creative about how you deal with the inverted priority relationship that
+> implicitly exists between the RT/NRT schedulers involved in that scenario=
+.
+> XDDP is a bidirectional data relay, not a scheduler.
+>
+>
+> Regards,
+>
+> Steve
+>
+>
+>
