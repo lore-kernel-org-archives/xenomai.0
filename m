@@ -1,14 +1,11 @@
-From: "Meng, Fino" <fino.meng@intel.com>
-Subject: RE: strategy of isar-debian bsp for x86-64
-Date: Thu, 14 May 2020 00:59:46 +0000
-Message-ID: <BN6PR11MB16201879D899E55BD895972CEEBC0@BN6PR11MB1620.namprd11.prod.outlook.com>
-References: <BN6PR11MB1620D18376AC410EC44ED57DEEBF0@BN6PR11MB1620.namprd11.prod.outlook.com>
- <58ad2c34-0d06-b3f0-4f0f-5ad4739325b3@siemens.com>
-In-Reply-To: <58ad2c34-0d06-b3f0-4f0f-5ad4739325b3@siemens.com>
-Content-Language: en-US
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
 MIME-Version: 1.0
+From: =?UTF-8?B?5a2Z5LiW6b6Z?= <sunshilong369@gmail.com>
+Date: Thu, 14 May 2020 13:37:35 +0800
+Message-ID: <CAAvDm6Yzkph-2ecSBV_MFaYFOgO4v1gAmZi7gs-UJiLZCw3bsQ@mail.gmail.com>
+Subject: When would a real time process be able to resume running again after
+ it have called rt_task_sleep?   
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,37 +14,18 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jan Kiszka <jan.kiszka@siemens.com>, xenomai <xenomai@xenomai.org>, Gylstorff Quirin <quirin.gylstorff@siemens.com>
-Cc: "Pirou, Florent" <florent.pirou@intel.com>, "Quast, Johannes" <johannes.quast@intel.com>, "Ouillette, Jeremy" <jeremy.ouillette@intel.com>
+To: xenomai <xenomai@xenomai.org>
 
-DQoNCg0KPlNlbnQ6IFRodXJzZGF5LCBNYXkgMTQsIDIwMjAgMTI6MTUgQU0NCj4NCj5IaSBGaW5v
-LA0KPg0KPk9uIDEzLjA1LjIwIDE3OjU2LCBNZW5nLCBGaW5vIHdyb3RlOg0KPj4gSGkgSmFuICYg
-UXVpcmluOg0KPj4NCj4+IFdlIGhhdmUgc3R1ZGllZCBJU0FSICYga2FzLWRvY2tlciBpbiB0aGVz
-ZSAyIHdlZWtzIGFuZCBtYXN0ZXJlZCBiYXNpYw0KPj4ga25vd2xlZGdlcywgdGhhbmtzIGZvciB0
-aGUgZXhhbXBsZSBjb2RlDQo+PiBnaXRsYWIuZGVueC5kZS9YZW5vbWFpL3hlbm9tYWktaW1hZ2Vz
-Ow0KPj4NCj4+IHRoZW4gd2Ugd2FudCB0byBtYWtlIGEgcHJvZHVjdGlvbiBCU1AgZm9yIGdlbmVy
-YWwgeDg2LTY0IHVlZmkgYm9hcmQsDQo+PiBpbmNsdWRpbmcgWGVub21haS9wcmVlbXB0LXJ0L3Zh
-bmlsbGEga2VybmVsIGJ1dCBjdXJyZW50bHkgaW4gcmVwbyAoZ2l0bGFiLmRlbnguZGUvWGVub21h
-aS94ZW5vbWFpLWltYWdlcyksIHRoZSBuYW1lDQo+b2YgZGlzdHJvICYgdGFyZ2V0IGluY2x1ZGVz
-ICJkZW1vIiwgaW4ga2FzLnltbDoNCj4+IHRoaXMgbWF5IGNvbmZ1c2Ugb3VyIHVzZXJzLg0KPj4N
-Cj4+IFNvIEkgd291bGQgdG8gYXNrIGZvciB5b3VyIHN1Z2dlc3Rpb24gZm9yIGZ1cnRoZXIgc3Ry
-YXRlZ3k6DQo+PiAxKSB3ZSB3b3JrIHRvZ2V0aGVyIG9uIGdpdGxhYi5kZW54LmRlL1hlbm9tYWkv
-eGVub21haS1pbWFnZXMsIG9yIG1heWJlDQo+PiBvdGhlciB1cmwsIGFkZCBvdXIgcmVjaXBlcyA7
-DQo+PiAyKSB3ZSBjcmVhdGUgYSBmb2xrIG9uIGdpdGh1Yi5jb20vaW50ZWwvbmV3LW5hbWUtb2Yt
-dGhlLWJzcDsNCj4+IGhvdyBkbyB1IHRoaW5rPyBUaGFua3N+DQo+Pg0KPg0KPlRoZXJlIGlzIGFs
-c28gb3B0aW9uIDMpOiBZb3UgYWRkIGEgbGF5ZXIgdGhhdCByZXVzZXMgeGVub21haS1pbWFnZXMg
-KGluY2x1ZGVzIGl0KSwgYWRkaW5nIG9ubHkgZGV2aWF0aW9ucyBmcm9tIGl0IG9uIHRvcC4NCj4N
-Cj5JIHdvdWxkIG5vdCByZWNvbW1lbmQgdG8gZm9yaywgcmF0aGVyIHRvIHdvcmsgb24gMSkgb3Ig
-ZW5oYW5jZSB4ZW5vbWFpLWltYWdlcyBzbyB0aGF0IDMpIGlzIGFsbW9zdCB0cml2aWFsLiBJdCBh
-bHNvIGRlcGVuZHMNCj5vbiB3aGF0IHlvdSB3YW50IHRvIGN1c3RvbWl6ZSBhbmQgaG93IHlvdSB3
-YW50IHRvIGRvIGNvbmZpZ3VyYXRpb24gYW5kIHJlbGVhc2UgbWFuYWdlbWVudCBvZiB0aGUgcmVz
-dWx0LiBBZGRpbmcgZS5nLg0KPm5vbi1jb2JhbHQga2VybmVsIGNvbmZpZ3VyYXRpb25zIHRvIGFs
-bG93IHRlc3Rpbmcgb2YgdGhlIG1lcmN1cnkgc2V0dXAgb2YgWGVub21haSBvciBjb21wYXJpbmcg
-UlQgcXVhbGl0aWVzIHdvdWxkIGJlIG9mDQo+Y29tbW9uIHZhbHVlLg0KPg0KPkphbg0KPg0KPi0t
-DQo+U2llbWVucyBBRywgQ29ycG9yYXRlIFRlY2hub2xvZ3ksIENUIFJEQSBJT1QgU0VTLURFIENv
-cnBvcmF0ZSBDb21wZXRlbmNlIENlbnRlciBFbWJlZGRlZCBMaW51eA0KDQpUaGFua3MhIFllcywg
-IG5ldyBmb2xrIGlzIHBhaW5mdWwgdG8gbWFpbnRhaW4uIA0KVGhlbiBJIHdpbGwgdXNlIHhlbm9t
-YWktaW1hZ2VzIGFzIGJhc2UsIHB1dCBkZXZpYXRpb25zIGluIGdpdGh1Yi5jb20vaW50ZWwvbWV0
-YS14ZW5vbWFpLWludGVsDQoNCkJSIC8gRmlubyAo5a2f56Wl5aSrKQ0KSW50ZWwg4oCTIElPVEcg
-RGV2ZWxvcGVyIEVuYWJsaW5nDQo=
+Hi,
+     I wonder that when a *real time process* would be able to resume
+running again after it have called rt_task_sleep.
 
+    Assuming that many *real time processes* with higher priority are
+running in parallel=EF=BC=8CI think the process(which have called rt_task_s=
+leep)
+have to wait for available cpu resources *even if its sleep duration has *
+*expired*. So, the real duaration may be longer then the setting value.
+Am i right?
+
+    Thank you for attention.
+    Look forward to hearing from you.
