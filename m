@@ -1,13 +1,14 @@
-Subject: Re: strategy of isar-debian bsp for x86-64
+From: "Meng, Fino" <fino.meng@intel.com>
+Subject: RE: strategy of isar-debian bsp for x86-64
+Date: Thu, 14 May 2020 00:59:46 +0000
+Message-ID: <BN6PR11MB16201879D899E55BD895972CEEBC0@BN6PR11MB1620.namprd11.prod.outlook.com>
 References: <BN6PR11MB1620D18376AC410EC44ED57DEEBF0@BN6PR11MB1620.namprd11.prod.outlook.com>
-From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <58ad2c34-0d06-b3f0-4f0f-5ad4739325b3@siemens.com>
-Date: Wed, 13 May 2020 18:15:13 +0200
-MIME-Version: 1.0
-In-Reply-To: <BN6PR11MB1620D18376AC410EC44ED57DEEBF0@BN6PR11MB1620.namprd11.prod.outlook.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
+ <58ad2c34-0d06-b3f0-4f0f-5ad4739325b3@siemens.com>
+In-Reply-To: <58ad2c34-0d06-b3f0-4f0f-5ad4739325b3@siemens.com>
 Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+MIME-Version: 1.0
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,40 +17,37 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "Meng, Fino" <fino.meng@intel.com>, xenomai <xenomai@xenomai.org>, Gylstorff Quirin <quirin.gylstorff@siemens.com>
+To: Jan Kiszka <jan.kiszka@siemens.com>, xenomai <xenomai@xenomai.org>, Gylstorff Quirin <quirin.gylstorff@siemens.com>
 Cc: "Pirou, Florent" <florent.pirou@intel.com>, "Quast, Johannes" <johannes.quast@intel.com>, "Ouillette, Jeremy" <jeremy.ouillette@intel.com>
 
-Hi Fino,
-
-On 13.05.20 17:56, Meng, Fino wrote:
-> Hi Jan & Quirin:
-> 
-> We have studied ISAR & kas-docker in these 2 weeks and mastered basic knowledges,
-> thanks for the example code gitlab.denx.de/Xenomai/xenomai-images;
-> 
-> then we want to make a production BSP for general x86-64 uefi board,  including Xenomai/preempt-rt/vanilla kernel
-> but currently in repo (gitlab.denx.de/Xenomai/xenomai-images), the name of distro & target includes "demo", in kas.yml:
-> this may confuse our users.
-> 
-> So I would to ask for your suggestion for further strategy:
-> 1) we work together on gitlab.denx.de/Xenomai/xenomai-images, or maybe other url, add our recipes ;
-> 2) we create a folk on github.com/intel/new-name-of-the-bsp;
-> how do u think? Thanks~
-> 
-
-There is also option 3): You add a layer that reuses xenomai-images 
-(includes it), adding only deviations from it on top.
-
-I would not recommend to fork, rather to work on 1) or enhance 
-xenomai-images so that 3) is almost trivial. It also depends on what you 
-want to customize and how you want to do configuration and release 
-management of the result. Adding e.g. non-cobalt kernel configurations 
-to allow testing of the mercury setup of Xenomai or comparing RT 
-qualities would be of common value.
-
-Jan
-
--- 
-Siemens AG, Corporate Technology, CT RDA IOT SES-DE
-Corporate Competence Center Embedded Linux
+DQoNCg0KPlNlbnQ6IFRodXJzZGF5LCBNYXkgMTQsIDIwMjAgMTI6MTUgQU0NCj4NCj5IaSBGaW5v
+LA0KPg0KPk9uIDEzLjA1LjIwIDE3OjU2LCBNZW5nLCBGaW5vIHdyb3RlOg0KPj4gSGkgSmFuICYg
+UXVpcmluOg0KPj4NCj4+IFdlIGhhdmUgc3R1ZGllZCBJU0FSICYga2FzLWRvY2tlciBpbiB0aGVz
+ZSAyIHdlZWtzIGFuZCBtYXN0ZXJlZCBiYXNpYw0KPj4ga25vd2xlZGdlcywgdGhhbmtzIGZvciB0
+aGUgZXhhbXBsZSBjb2RlDQo+PiBnaXRsYWIuZGVueC5kZS9YZW5vbWFpL3hlbm9tYWktaW1hZ2Vz
+Ow0KPj4NCj4+IHRoZW4gd2Ugd2FudCB0byBtYWtlIGEgcHJvZHVjdGlvbiBCU1AgZm9yIGdlbmVy
+YWwgeDg2LTY0IHVlZmkgYm9hcmQsDQo+PiBpbmNsdWRpbmcgWGVub21haS9wcmVlbXB0LXJ0L3Zh
+bmlsbGEga2VybmVsIGJ1dCBjdXJyZW50bHkgaW4gcmVwbyAoZ2l0bGFiLmRlbnguZGUvWGVub21h
+aS94ZW5vbWFpLWltYWdlcyksIHRoZSBuYW1lDQo+b2YgZGlzdHJvICYgdGFyZ2V0IGluY2x1ZGVz
+ICJkZW1vIiwgaW4ga2FzLnltbDoNCj4+IHRoaXMgbWF5IGNvbmZ1c2Ugb3VyIHVzZXJzLg0KPj4N
+Cj4+IFNvIEkgd291bGQgdG8gYXNrIGZvciB5b3VyIHN1Z2dlc3Rpb24gZm9yIGZ1cnRoZXIgc3Ry
+YXRlZ3k6DQo+PiAxKSB3ZSB3b3JrIHRvZ2V0aGVyIG9uIGdpdGxhYi5kZW54LmRlL1hlbm9tYWkv
+eGVub21haS1pbWFnZXMsIG9yIG1heWJlDQo+PiBvdGhlciB1cmwsIGFkZCBvdXIgcmVjaXBlcyA7
+DQo+PiAyKSB3ZSBjcmVhdGUgYSBmb2xrIG9uIGdpdGh1Yi5jb20vaW50ZWwvbmV3LW5hbWUtb2Yt
+dGhlLWJzcDsNCj4+IGhvdyBkbyB1IHRoaW5rPyBUaGFua3N+DQo+Pg0KPg0KPlRoZXJlIGlzIGFs
+c28gb3B0aW9uIDMpOiBZb3UgYWRkIGEgbGF5ZXIgdGhhdCByZXVzZXMgeGVub21haS1pbWFnZXMg
+KGluY2x1ZGVzIGl0KSwgYWRkaW5nIG9ubHkgZGV2aWF0aW9ucyBmcm9tIGl0IG9uIHRvcC4NCj4N
+Cj5JIHdvdWxkIG5vdCByZWNvbW1lbmQgdG8gZm9yaywgcmF0aGVyIHRvIHdvcmsgb24gMSkgb3Ig
+ZW5oYW5jZSB4ZW5vbWFpLWltYWdlcyBzbyB0aGF0IDMpIGlzIGFsbW9zdCB0cml2aWFsLiBJdCBh
+bHNvIGRlcGVuZHMNCj5vbiB3aGF0IHlvdSB3YW50IHRvIGN1c3RvbWl6ZSBhbmQgaG93IHlvdSB3
+YW50IHRvIGRvIGNvbmZpZ3VyYXRpb24gYW5kIHJlbGVhc2UgbWFuYWdlbWVudCBvZiB0aGUgcmVz
+dWx0LiBBZGRpbmcgZS5nLg0KPm5vbi1jb2JhbHQga2VybmVsIGNvbmZpZ3VyYXRpb25zIHRvIGFs
+bG93IHRlc3Rpbmcgb2YgdGhlIG1lcmN1cnkgc2V0dXAgb2YgWGVub21haSBvciBjb21wYXJpbmcg
+UlQgcXVhbGl0aWVzIHdvdWxkIGJlIG9mDQo+Y29tbW9uIHZhbHVlLg0KPg0KPkphbg0KPg0KPi0t
+DQo+U2llbWVucyBBRywgQ29ycG9yYXRlIFRlY2hub2xvZ3ksIENUIFJEQSBJT1QgU0VTLURFIENv
+cnBvcmF0ZSBDb21wZXRlbmNlIENlbnRlciBFbWJlZGRlZCBMaW51eA0KDQpUaGFua3MhIFllcywg
+IG5ldyBmb2xrIGlzIHBhaW5mdWwgdG8gbWFpbnRhaW4uIA0KVGhlbiBJIHdpbGwgdXNlIHhlbm9t
+YWktaW1hZ2VzIGFzIGJhc2UsIHB1dCBkZXZpYXRpb25zIGluIGdpdGh1Yi5jb20vaW50ZWwvbWV0
+YS14ZW5vbWFpLWludGVsDQoNCkJSIC8gRmlubyAo5a2f56Wl5aSrKQ0KSW50ZWwg4oCTIElPVEcg
+RGV2ZWxvcGVyIEVuYWJsaW5nDQo=
 
