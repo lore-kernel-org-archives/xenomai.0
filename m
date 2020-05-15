@@ -1,12 +1,14 @@
-MIME-Version: 1.0
-References: <MW3PR18MB36730B88CBB748555D90D4FCDABD0@MW3PR18MB3673.namprd18.prod.outlook.com>
-In-Reply-To: <MW3PR18MB36730B88CBB748555D90D4FCDABD0@MW3PR18MB3673.namprd18.prod.outlook.com>
-From: Greg Gallagher <greg@embeddedgreg.com>
-Date: Fri, 15 May 2020 16:35:23 -0400
-Message-ID: <CALLqZ8S0a1TaWX+Q038kD-LLMAr6Q=9PosmLt-JMby8M7OY8FA@mail.gmail.com>
+From: Joshua Karch <jkarch48@hotmail.com>
 Subject: Re: Unable to get xeno-gpio-xilinx to work on Zynq Ultrascale +
  platform
-Content-Type: text/plain; charset="UTF-8"
+Date: Fri, 15 May 2020 20:42:13 +0000
+Message-ID: <MW3PR18MB367372D9FE88BA250C4AC292DABD0@MW3PR18MB3673.namprd18.prod.outlook.com>
+References: <MW3PR18MB36730B88CBB748555D90D4FCDABD0@MW3PR18MB3673.namprd18.prod.outlook.com>,
+ <CALLqZ8S0a1TaWX+Q038kD-LLMAr6Q=9PosmLt-JMby8M7OY8FA@mail.gmail.com>
+In-Reply-To: <CALLqZ8S0a1TaWX+Q038kD-LLMAr6Q=9PosmLt-JMby8M7OY8FA@mail.gmail.com>
+Content-Language: en-US
+MIME-Version: 1.0
+Content-Type: text/plain; charset="iso-8859-1"
 Content-Transfer-Encoding: quoted-printable
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
@@ -16,8 +18,18 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Joshua Karch <jkarch48@hotmail.com>
+To: Greg Gallagher <greg@embeddedgreg.com>
 Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
+
+Hi Greg!
+
+________________________________
+From: Greg Gallagher <greg@embeddedgreg.com>
+Sent: Friday, May 15, 2020 1:35 PM
+To: Joshua Karch <jkarch48@hotmail.com>
+Cc: xenomai@xenomai.org <xenomai@xenomai.org>
+Subject: Re: Unable to get xeno-gpio-xilinx to work on Zynq Ultrascale + pl=
+atform
 
 Hi,
 
@@ -152,3 +164,21 @@ Thanks
 
 Greg
 
+
+
+Thank you for your help with this! The other thing I had to do to make this=
+ work was to edit drivers/xenomai/gpio/Kconfig to enable depends on
+ARCH_ZYNQ || ARCH_ZYNQMP because I assume the AXI driver should be the same=
+ for either ZYNQ or ZYNQMP, is that a safe assumption?
+
+
+config XENO_DRIVERS_GPIO_XILINX
+depends on ARCH_ZYNQ
+depends on ARCH_ZYNQ || ARCH_ZYNQMP
+tristate "Support for Xilinx GPIOs"
+
+help
+
+Best,
+
+Josh
