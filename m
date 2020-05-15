@@ -1,17 +1,19 @@
-MIME-Version: 1.0
+From: Joshua Karch <jkarch48@hotmail.com>
+Subject: Re: Unable to get xeno-gpio-xilinx to work on Zynq Ultrascale +
+ platform
+Date: Fri, 15 May 2020 21:22:01 +0000
+Message-ID: <MW3PR18MB36736B94D56069A581749E6FDABD0@MW3PR18MB3673.namprd18.prod.outlook.com>
 References: <MW3PR18MB36730B88CBB748555D90D4FCDABD0@MW3PR18MB3673.namprd18.prod.outlook.com>
  <CALLqZ8S0a1TaWX+Q038kD-LLMAr6Q=9PosmLt-JMby8M7OY8FA@mail.gmail.com>
  <MW3PR18MB367372D9FE88BA250C4AC292DABD0@MW3PR18MB3673.namprd18.prod.outlook.com>
  <CALLqZ8RQ+Yz+mkBXc8S=BmS5_EM1otykiRZQ-KU5gCJu8eM19w@mail.gmail.com>
- <MW3PR18MB367363218E5F906501D209D2DABD0@MW3PR18MB3673.namprd18.prod.outlook.com>
-In-Reply-To: <MW3PR18MB367363218E5F906501D209D2DABD0@MW3PR18MB3673.namprd18.prod.outlook.com>
-From: Greg Gallagher <greg@embeddedgreg.com>
-Date: Fri, 15 May 2020 17:08:52 -0400
-Message-ID: <CALLqZ8Ts4CnEDxDHia91w80m1P-Hke9+HC1XWktzQGhpO+bcrw@mail.gmail.com>
-Subject: Re: Unable to get xeno-gpio-xilinx to work on Zynq Ultrascale +
- platform
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+ <MW3PR18MB367363218E5F906501D209D2DABD0@MW3PR18MB3673.namprd18.prod.outlook.com>,
+ <CALLqZ8Ts4CnEDxDHia91w80m1P-Hke9+HC1XWktzQGhpO+bcrw@mail.gmail.com>
+In-Reply-To: <CALLqZ8Ts4CnEDxDHia91w80m1P-Hke9+HC1XWktzQGhpO+bcrw@mail.gmail.com>
+Content-Language: en-US
+MIME-Version: 1.0
+Content-Type: text/plain; charset="windows-1252"
+Content-Transfer-Encoding: quoted-printable
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -20,216 +22,462 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Joshua Karch <jkarch48@hotmail.com>
+To: Greg Gallagher <greg@embeddedgreg.com>
 Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-SGksCgoKT24gRnJpLCBNYXkgMTUsIDIwMjAgYXQgNDo1MyBQTSBKb3NodWEgS2FyY2ggPGprYXJj
-aDQ4QGhvdG1haWwuY29tPiB3cm90ZToKCj4KPgo+Cj4KPiBTZW50IGZyb20gTWFpbCA8aHR0cHM6
-Ly9nby5taWNyb3NvZnQuY29tL2Z3bGluay8/TGlua0lkPTU1MDk4Nj4gZm9yCj4gV2luZG93cyAx
-MAo+Cj4KPgo+ICpGcm9tOiAqR3JlZyBHYWxsYWdoZXIgPGdyZWdAZW1iZWRkZWRncmVnLmNvbT4K
-PiAqU2VudDogKkZyaWRheSwgTWF5IDE1LCAyMDIwIDQ6NDYgUE0KPiAqVG86ICpKb3NodWEgS2Fy
-Y2ggPGprYXJjaDQ4QGhvdG1haWwuY29tPgo+ICpDYzogKnhlbm9tYWlAeGVub21haS5vcmcKPiAq
-U3ViamVjdDogKlJlOiBVbmFibGUgdG8gZ2V0IHhlbm8tZ3Bpby14aWxpbnggdG8gd29yayBvbiBa
-eW5xIFVsdHJhc2NhbGUKPiArIHBsYXRmb3JtCj4KPgo+Cj4gSEksCj4KPgo+Cj4gT24gRnJpLCBN
-YXkgMTUsIDIwMjAgYXQgNDo0MiBQTSBKb3NodWEgS2FyY2ggPGprYXJjaDQ4QGhvdG1haWwuY29t
-PiB3cm90ZToKPgo+IEhpIEdyZWchCj4KPgo+Cj4gKkZyb206KiBHcmVnIEdhbGxhZ2hlciA8Z3Jl
-Z0BlbWJlZGRlZGdyZWcuY29tPgo+ICpTZW50OiogRnJpZGF5LCBNYXkgMTUsIDIwMjAgMTozNSBQ
-TQo+ICpUbzoqIEpvc2h1YSBLYXJjaCA8amthcmNoNDhAaG90bWFpbC5jb20+Cj4gKkNjOiogeGVu
-b21haUB4ZW5vbWFpLm9yZyA8eGVub21haUB4ZW5vbWFpLm9yZz4KPiAqU3ViamVjdDoqIFJlOiBV
-bmFibGUgdG8gZ2V0IHhlbm8tZ3Bpby14aWxpbnggdG8gd29yayBvbiBaeW5xIFVsdHJhc2NhbGUK
-PiArIHBsYXRmb3JtCj4KPgo+Cj4gSGksCj4KPiBPbiBGcmksIE1heSAxNSwgMjAyMCBhdCA0OjI5
-IFBNIEpvc2h1YSBLYXJjaCB2aWEgWGVub21haQo+IDx4ZW5vbWFpQHhlbm9tYWkub3JnPiB3cm90
-ZToKPiA+Cj4gPiBIZWxsbywKPiA+Cj4gPiBUaGlzIG15IGZpcnN0IHBvc3QgaW4gMTAgeWVhcnMg
-dG8gdGhlIFhlbm9tYWkgZ3JvdXAsIGp1c3QgYXMgdGhlIEVWTAo+IHByb2plY3QgY29tZXMgb25s
-aW5lISAgSSdtIHRyeWluZyB0byBnZXQgdGhlIHhlbm8tZ3Bpby14aWxpbnggZHJpdmVyCj4gd29y
-a2luZyBidXQgYW0gZW5jb3VudGVyaW5nIHRoZSBmb2xsb3dpbmcgZGlmZmljdWx0aWVzOgo+ID4g
-KDEpICBJdCBzZWVtcyB0aGUgc3RhbmRhcmQgbm9uIFhlbm9tYWkgZ3Bpby14aWxpbnggZHJpdmVy
-IFN5c0ZTIGFyZQo+IHByZXJlcXVpc2l0ZXMgdG8gbWFraW5nIHRoZSBkcml2ZXIgd29yay4gIFVu
-bGlrZSB0aGUgU0pBMTAwMCBDQU4gRHJpdmVycyBJCj4gdXNlZCBpbiB0aGUgcGFzdCB3aGljaCB3
-ZXJlIHN0YW5kYWxvbmUsIEknbSBzZWVpbmcgYSBsb3Qgb2YgY2x1ZXMgdGhhdCB0aGUKPiBYZW5v
-IEdQSU8gZHJpdmVycyBuZWVkIHRvIHBpZ2d5YmFjayBvbiB0b3Agb2YgdGhlIGNvcmUgTGludXgg
-RHJpdmVycy4gICBJCj4gZ3Vlc3MgdGhpcyBpcyBhIGNoYW5nZSBmcm9tIHdoZW4gSSBsYXN0IHdv
-cmtlZCB3aXRoIFhlbm9tYWkgMTAgeWVhcnMgYWdvCj4gd2hlcmUgSSB1c2VkIHhlbm8tMTY1NTBB
-IGFuZCBTSkExMDAwIGFzIFJUU0VSIGFuZCBSVENBTiBkcml2ZXJzLgo+ID4KPiA+IFdoZW4gSSBh
-dHRlbXB0IHRvIG1vZHByb2JlIHhlbm8tZ3Bpby14aWxpbnggSSByZWNlaXZlIGEgbWVzc2FnZSBz
-dGF0aW5nOgo+ID4KPiA+IG1vZHByb2JlOiBFUlJPUjogY291bGQgbm90IGluc2VydCAneGVub19n
-cGlvX3hpbGlueCc6IE5vIHN1Y2ggZGV2aWNlCj4gPiBEZXZpY2UgVHJlZToKPiA+ICMgY2F0IC9w
-cm9jL2RldmljZS10cmVlL2F4aWdwaW9AYTAwMDAwMDAvY29tcGF0aWJsZQo+ID4geGxueCx4cHMt
-Z3Bpby0xLjAwLmEKPiA+Cj4gPiBJbiBYZW5vbWFpICBncGlvLXhpbGlueC5jOgo+ID4gICAgICAg
-ICByZXR1cm4gcnRkbV9ncGlvY2hpcF9zY2FuX29mKE5VTEwsICJ4bG54LHhwcy1ncGlvLTEuMDAu
-YSIsCj4gPiAgICAgICAgICAgICAgICAgICAgICBSVERNX1NVQkNMQVNTX1hJTElOWCk7Cj4gPgo+
-ID4KPiA+IEkgaW5zdHJ1bWVudGVkIHRoZSBYZW5vbWFpIGdwaW8teGlsaW54LmMgIGFuZCBncGlv
-LWNvcmUuYyB0byBzZWUgaWYgdGhlCj4gb2ZfZmluZF9jb21wYXRpYmxlX25vZGUgZnVuY3Rpb24g
-ZmFpbHMgYW5kIGluZGVlZCBpdCBkb2VzIGZpbmQgbm8gc3VjaAo+IGRldmljZS4gIEFsc28gSSBu
-b3RlZCB0aGF0IHRoZXJlIGFyZSBubyBYaWxpbnggc3BlY2lmaWMgcmVnaXN0ZXJzIGluIHRoZQo+
-IGdwaW8tY29yZS5jIG9yIGluIGdwaW8teGlsaW54LmMsIG1ha2luZyBtZSBiZWxpZXZlIHRoYXQg
-dGhpcyBkcml2ZXIgaXMKPiBwaWdneWJhY2tpbmcgb24gdG9wIG9mIHRoZSBYaWxpbnggZHJpdmVy
-Lgo+ID4KPiA+IEhvd2V2ZXI6IHdoZW4gSSBtb2Rwcm9iZSBncGlvLXhpbGlueCB0aGUgb2ZfZmlu
-ZF9jb21wYXRpYmxlX25vZGUKPiBmdW5jdGlvbiBubyBsb25nZXIgZmFpbHMsIHNvIEkgZ3Vlc3Mg
-b2ZfZmluZF9jb21wYXRpYmxlX25vZGUgd29ya3Mgb25seQo+IHdpdGggbG9hZGVkIGRyaXZlcnMg
-LyBHUElPIENoaXBzLiAgVGhlIGlzc3VlIGlzLCBncGlvLXhpbGlueCBoYXMgYWxyZWFkeQo+IGRv
-bmUgdGhlIFNZU0ZTIHJlZ2lzdHJhdGlvbiwgc28gSSBnZXQgdGhlIGZvbGxvd2luZyBlcnJvcnM6
-ICBTZWVtcyAgdGhlCj4gZHJpdmVyIHdhbnRzIHRvIHVzZSB0aGUgc2FtZSBuYW1lcyBmb3IgUlQg
-d2l0aCBTWVNGUyBhcyBub24gUlQuIFRoZSBrZXkKPiBlcnJvciBpcyAiCj4gPiBrb2JqZWN0X2Fk
-ZF9pbnRlcm5hbCBmYWlsZWQgZm9yICFheGlncGlvQGEwMDAwMDAwIHdpdGggLUVFWElTVCwgZAo+
-ID4gb24ndCB0cnkgdG8gcmVnaXN0ZXIgdGhpbmdzIHdpdGggdGhlIHNhbWUgbmFtZSBpbiB0aGUg
-c2FtZSBkaXJlY3RvcnkuCj4gPiAiCj4gPgo+ID4gVGhvdWdodHM/Cj4gPgo+ID4gSm9zaCBLYXJj
-aAo+ID4KPiA+Cj4gPiBtb2Rwcm9iZSB4ZW5vLWdwaW8teGlsaW54Cj4gPiBbICAgNTUuNzc4NjU2
-XSB0ZXN0IHByb2JpbmcgeGlsaW54IGdwaW8gcnQKPiA+IFsgICA1NS43ODI3NTNdIHN5c2ZzOiBj
-YW5ub3QgY3JlYXRlIGR1cGxpY2F0ZSBmaWxlbmFtZQo+ICcvY2xhc3MvIWF4aWdwaW9AYTAwMDAw
-MDAKPiA+ICcKPiA+IFsgICA1NS43ODk5OTFdIENQVTogMSBQSUQ6IDIzNyBDb21tOiBtb2Rwcm9i
-ZSBUYWludGVkOiBHICAgICAgICBXCj4gTyAgICAgIDQuMTkuNQo+ID4gNSAjOAo+ID4gWyAgIDU1
-Ljc5NzQ3MF0gSGFyZHdhcmUgbmFtZTogWnlucU1QIFpDVTEwMiBSZXYxLjAgKERUKQo+ID4gWyAg
-IDU1LjgwMjQyMl0gSS1waXBlIGRvbWFpbjogTGludXgKPiA+IFsgICA1NS44MDU2NDNdIENhbGwg
-dHJhY2U6Cj4gPiBbICAgNTUuODA4MDkwXSAgZHVtcF9iYWNrdHJhY2UrMHgwLzB4MTYwCj4gPiBb
-ICAgNTUuODExNzQ4XSAgc2hvd19zdGFjaysweDE0LzB4MjAKPiA+IFsgICA1NS44MTUwNTZdICBk
-dW1wX3N0YWNrKzB4Y2MvMHhmNAo+ID4gWyAgIDU1LjgxODM2M10gIHN5c2ZzX3dhcm5fZHVwKzB4
-NjAvMHg4MAo+ID4gWyAgIDU1LjgyMjAxNl0gIHN5c2ZzX2NyZWF0ZV9kaXJfbnMrMHhjYy8weGYw
-Cj4gPiBbICAgNTUuODI2MTA2XSAga29iamVjdF9hZGRfaW50ZXJuYWwrMHhhYy8weDJhMAo+ID4g
-WyAgIDU1LjgzMDM2N10gIGtzZXRfcmVnaXN0ZXIrMHg1MC8weDgwCj4gPiBbICAgNTUuODMzOTM3
-XSAgX19jbGFzc19yZWdpc3RlcisweGJjLzB4MTcwCj4gPiBbICAgNTUuODM3ODUwXSAgX19jbGFz
-c19jcmVhdGUrMHg1MC8weDkwCj4gPiBbICAgNTUuODQxNTA3XSAgcnRkbV9ncGlvY2hpcF9hZGQr
-MHgzMC8weDI2MAo+ID4gWyAgIDU1Ljg0NTUwN10gIHJ0ZG1fZ3Bpb2NoaXBfYWxsb2MrMHg1MC8w
-eGUwCj4gPiBbICAgNTUuODQ5NTk2XSAgcnRkbV9ncGlvY2hpcF9zY2FuX29mLnBhcnQuMSsweDEz
-OC8weDFlMAo+ID4gWyAgIDU1Ljg1NDY0MF0gIHJ0ZG1fZ3Bpb2NoaXBfc2Nhbl9vZisweDIwLzB4
-MzAKPiA+IFsgICA1NS44NTg5MDVdICB4aWxpbnhfZ3Bpb19pbml0KzB4MjgvMHgxMDAwIFt4ZW5v
-X2dwaW9feGlsaW54XQo+ID4gWyAgIDU1Ljg2NDU1NF0gIGRvX29uZV9pbml0Y2FsbCsweDc0LzB4
-MTc4Cj4gPiBbICAgNTUuODY4MzgyXSAgZG9faW5pdF9tb2R1bGUrMHg1NC8weDFkMAo+ID4gWyAg
-IDU1Ljg3MjEyMl0gIGxvYWRfbW9kdWxlKzB4MWI5MC8weDIxMjAKPiA+IFsgICA1NS44NzU4NjRd
-ICBfX3NlX3N5c19maW5pdF9tb2R1bGUrMHhiOC8weGQwCj4gPiBbICAgNTUuODgwMTI3XSAgX19h
-cm02NF9zeXNfZmluaXRfbW9kdWxlKzB4MTgvMHgyMAo+ID4gWyAgIDU1Ljg4NDY1MF0gIGVsMF9z
-dmNfY29tbW9uKzB4YmMvMHgxYTAKPiA+IFsgICA1NS44ODgzOTBdICBlbDBfc3ZjX2hhbmRsZXIr
-MHg2OC8weDgwCj4gPiBbICAgNTUuODkyMTMxXSAgZWwwX3N2YysweDgvMHgxOAo+ID4gWyAgIDU1
-Ljg5NTExNF0ga29iamVjdF9hZGRfaW50ZXJuYWwgZmFpbGVkIGZvciAhYXhpZ3Bpb0BhMDAwMDAw
-MCB3aXRoCj4gLUVFWElTVCwgZAo+ID4gb24ndCB0cnkgdG8gcmVnaXN0ZXIgdGhpbmdzIHdpdGgg
-dGhlIHNhbWUgbmFtZSBpbiB0aGUgc2FtZSBkaXJlY3RvcnkuCj4gPiBbICAgNTUuOTA4MjU0XSBb
-WGVub21haV0gY2Fubm90IGNyZWF0ZSBzeXNmcyBjbGFzcwo+ID4gWyAgIDU1LjkxMjc5Nl0gc3lz
-ZnM6IGNhbm5vdCBjcmVhdGUgZHVwbGljYXRlIGZpbGVuYW1lCj4gJy9jbGFzcy8hYXhpZ3Bpb0Bh
-MDAwMDAwMAo+ID4gJwo+ID4gWyAgIDU1LjkyMDAyMV0gQ1BVOiAxIFBJRDogMjM3IENvbW06IG1v
-ZHByb2JlIFRhaW50ZWQ6IEcgICAgICAgIFcKPiBPICAgICAgNC4xOS41Cj4gPiA1ICM4Cj4gPiBb
-ICAgNTUuOTI3NTAwXSBIYXJkd2FyZSBuYW1lOiBaeW5xTVAgWkNVMTAyIFJldjEuMCAoRFQpCj4g
-PiBbICAgNTUuOTMyNDUzXSBJLXBpcGUgZG9tYWluOiBMaW51eAo+ID4gWyAgIDU1LjkzNTY3Ml0g
-Q2FsbCB0cmFjZToKPiA+IFsgICA1NS45MzgxMTVdICBkdW1wX2JhY2t0cmFjZSsweDAvMHgxNjAK
-PiA+IFsgICA1NS45NDE3NjldICBzaG93X3N0YWNrKzB4MTQvMHgyMAo+ID4gWyAgIDU1Ljk0NTA3
-N10gIGR1bXBfc3RhY2srMHhjYy8weGY0Cj4gPiBbICAgNTUuOTQ4Mzg0XSAgc3lzZnNfd2Fybl9k
-dXArMHg2MC8weDgwCj4gPiBbICAgNTUuOTUyMDM4XSAgc3lzZnNfY3JlYXRlX2Rpcl9ucysweGNj
-LzB4ZjAKPiA+IFsgICA1NS45NTYxMjddICBrb2JqZWN0X2FkZF9pbnRlcm5hbCsweGFjLzB4MmEw
-Cj4gPiBbICAgNTUuOTYwMzg5XSAga3NldF9yZWdpc3RlcisweDUwLzB4ODAKPiA+IFsgICA1NS45
-NjM5NTddICBfX2NsYXNzX3JlZ2lzdGVyKzB4YmMvMHgxNzAKPiA+IFsgICA1NS45Njc4NzJdICBf
-X2NsYXNzX2NyZWF0ZSsweDUwLzB4OTAKPiA+IFsgICA1NS45NzE1MjddICBydGRtX2dwaW9jaGlw
-X2FkZCsweDMwLzB4MjYwCj4gPiBbICAgNTUuOTc1NTI5XSAgcnRkbV9ncGlvY2hpcF9hbGxvYysw
-eDUwLzB4ZTAKPiA+IFsgICA1NS45Nzk2MThdICBydGRtX2dwaW9jaGlwX3NjYW5fb2YucGFydC4x
-KzB4MTM4LzB4MWUwCj4gPiBbICAgNTUuOTg0NjYzXSAgcnRkbV9ncGlvY2hpcF9zY2FuX29mKzB4
-MjAvMHgzMAo+ID4gWyAgIDU1Ljk4ODkyNV0gIHhpbGlueF9ncGlvX2luaXQrMHgyOC8weDEwMDAg
-W3hlbm9fZ3Bpb194aWxpbnhdCj4gPiBbICAgNTUuOTk0NTc2XSAgZG9fb25lX2luaXRjYWxsKzB4
-NzQvMHgxNzgKPiA+IFsgICA1NS45OTg0MDNdICBkb19pbml0X21vZHVsZSsweDU0LzB4MWQwCj4g
-PiBbICAgNTYuMDAyMTQ0XSAgbG9hZF9tb2R1bGUrMHgxYjkwLzB4MjEyMAo+ID4gWyAgIDU2LjAw
-NTg4Nl0gIF9fc2Vfc3lzX2Zpbml0X21vZHVsZSsweGI4LzB4ZDAKPiA+IFsgICA1Ni4wMTAxNDld
-ICBfX2FybTY0X3N5c19maW5pdF9tb2R1bGUrMHgxOC8weDIwCj4gPiBbICAgNTYuMDE0NjcyXSAg
-ZWwwX3N2Y19jb21tb24rMHhiYy8weDFhMAo+ID4gWyAgIDU2LjAxODQxMl0gIGVsMF9zdmNfaGFu
-ZGxlcisweDY4LzB4ODAKPiA+IFsgICA1Ni4wMjIxNTNdICBlbDBfc3ZjKzB4OC8weDE4Cj4gPiBb
-ICAgNTYuMDI1MTI4XSBrb2JqZWN0X2FkZF9pbnRlcm5hbCBmYWlsZWQgZm9yICFheGlncGlvQGEw
-MDAwMDAwIHdpdGgKPiAtRUVYSVNULCBkCj4gPiBvbid0IHRyeSB0byByZWdpc3RlciB0aGluZ3Mg
-d2l0aCB0aGUgc2FtZSBuYW1lIGluIHRoZSBzYW1lIGRpcmVjdG9yeS4KPiA+IFsgICA1Ni4wMzgy
-NjNdIFtYZW5vbWFpXSBjYW5ub3QgY3JlYXRlIHN5c2ZzIGNsYXNzCj4gPiBbICAgNTYuMDQyNzk4
-XSBYZW5vIFNjYW4gcmV0dXJucyAtMTcKPiA+ICMKPiA+Cj4gPgo+ID4KPiBJIGNhbiB0YWtlIGEg
-bG9vay4gIFRoaXMgd2FzIHdvcmtpbmcgb24gdGhlIFp5bnEtNzAwMCwgYnV0IEkgaGF2ZW4ndAo+
-IHRlc3RlZCBpdCBvbiB0aGUgVWx0cmFzY2FsZS4gIEknbGwgc2VlIGlmIEkgY2FuIHJlcHJvZHVj
-ZS4KPgo+Cj4gVGhhbmtzCj4KPiBHcmVnCj4KPgo+Cj4KPgo+Cj4KPiBUaGFuayB5b3UgZm9yIHlv
-dXIgaGVscCB3aXRoIHRoaXMhIFRoZSBvdGhlciB0aGluZyBJIGhhZCB0byBkbyB0byBtYWtlCj4g
-dGhpcyB3b3JrIHdhcyB0byBlZGl0IGRyaXZlcnMveGVub21haS9ncGlvL0tjb25maWcgdG8gZW5h
-YmxlIGRlcGVuZHMgb24KPgo+IEFSQ0hfWllOUSB8fCBBUkNIX1pZTlFNUCBiZWNhdXNlIEkgYXNz
-dW1lIHRoZSBBWEkgZHJpdmVyIHNob3VsZCBiZSB0aGUKPiBzYW1lIGZvciBlaXRoZXIgWllOUSBv
-ciBaWU5RTVAsIGlzIHRoYXQgYSBzYWZlIGFzc3VtcHRpb24/Cj4KPgo+Cj4gSSBhc3N1bWUgdGhh
-dCBpcyBjb3JyZWN0LCBidXQgSSdsbCBkb3VibGUgY2hlY2suICBJIGhhdmUgYSBVbHRyYTk2IGhl
-cmUKPiB0aGF0IEkgY2FuIGZpcmUgdXAgYW5kIHRlc3Qgb24uCj4KPgo+Cj4KPgo+Cj4KPiBjb25m
-aWcgWEVOT19EUklWRVJTX0dQSU9fWElMSU5YCj4KPgo+Cj4gZGVwZW5kcyBvbiBBUkNIX1pZTlEK
-Pgo+Cj4KPiBkZXBlbmRzIG9uIEFSQ0hfWllOUSB8fCBBUkNIX1pZTlFNUAo+Cj4KPgo+IHRyaXN0
-YXRlICJTdXBwb3J0IGZvciBYaWxpbnggR1BJT3MiCj4KPgo+Cj4KPgo+IFllcCwgdGhlc2Ugd2ls
-bCBuZWVkIHRvIGJlIGVuYWJsZWQgZm9yIHRoZSBBWEkgZ3Bpb3MgdG8gYnVpbGQgZm9yIHRoZQo+
-IFp5bnFNUCBhcmNoLgo+Cj4KPgo+IGhlbHAKPgo+Cj4KPiBCZXN0LAo+Cj4KPgo+IEpvc2gKPgo+
-IEknbGwgYW5zd2VyIHRoZSBxdWVzdGlvbnMgeW91IGhhdmUgaW4geW91ciBmaXJzdCBwb3N0IG9u
-Y2UgSSBsb29rIGF0IHRoZQo+IGRyaXZlciBhZ2FpbiwgSSB3YW50IHRvIG1ha2Ugc3VyZSBteSBh
-c3N1bXB0aW9ucyBhcmUgY29ycmVjdC4gIEkgaGF2ZW4ndAo+IGxvb2tlZCBhdCB0aGUgR1BJTyBj
-b3JlIGluIGEgY291cGxlIG9mIG1vbnRocy4KPgo+Cj4KPiBUaGFua3MKPgo+Cj4KPiBHcmVnCj4K
-Pgo+Cj4gR3JlZywgc291bmRzIGdyZWF0ISBUaGFuayB5b3UhICBXZSBhcmUgcnVubmluZyBMaW51
-eCA0LjE5LjU1IHdoaWNoIGlzCj4gYmFzZWQgb24gdGhlIExpbnV4LXhsbnggNC4xOSBkaXN0cmli
-dXRpb24sIHdpdGggWGVub21haSAzLjEgYW5kIENvYmFsdAo+IENvcmUuICBDdXJyZW50bHkgSSBo
-YXZlIFN5c2ZzIGFuZCB0aGUga2VybmVsIG1vZHVsZSBlbmFibGVkLgo+Cj4gWW914oCZbGwgbmVl
-ZCB0byBkaXNhYmxlIHRoZSBub24gcnQgb25lLiBJ4oCZbGwgaGF2ZSBhIG1vcmUgaW4tZGVwdGgK
-ZXhwbGFuYXRpb24gb25jZSBJIHRlc3QgaXQgb3V0LgoKPgo+Cj4gT25lIG90aGVyIGZ1bmt5IHRo
-aW5nIHRoYXQgbWlnaHQgYmUgaW52b2x2ZWQgaXMgd2l0aCB0aGUgYmFzZSBncGlvLXhpbGlueAo+
-IGRyaXZlci4gIEkgZ2V0IGEgbWVzc2FnZSBhbmQgYSB0cmFjZSB0aGF0IGdwaW8teGlsaW54IGlz
-IG5vdCDigJxwaXBlbGluZQo+IHNhZmXigJ0gd2hlbiBsb2FkaW5nIHVwIG9uIHRoZSBkbWVzZy4g
-IEhvd2V2ZXIgdGhlIGJhc2UsIG5vbi1YZW5vbWFpIEdQSU8KPiBkcml2ZXIgZG9lcyBzZWVtIHRv
-IGNvbW11bmljYXRlIHdpdGggaGFyZHdhcmUuCj4KPgo+Cj4gICAgMTMuMzg5MDcwXSAtLS0tLS0t
-LS0tLS1bIGN1dCBoZXJlIF0tLS0tLS0tLS0tLS0KPgo+IFsgICAxMy4zOTM2OTFdIGlycWNoaXAg
-eGdwaW8gaXMgbm90IHBpcGVsaW5lLXNhZmUhCj4KPiBbICAgMTMuMzkzNzExXSBXQVJOSU5HOiBD
-UFU6IDAgUElEOiAxNDUgYXQga2VybmVsL2lycS9jaGlwLmM6NTUKPiBpcnFfc2V0X2NoaXArMHhi
-NC8weGQwCj4KPiBbICAgMTMuNDA1ODgzXSBNb2R1bGVzIGxpbmtlZCBpbjogZ3Bpb194aWxpbngo
-KykKPgo+IFsgICAxMy40MTAyNDBdIENQVTogMCBQSUQ6IDE0NSBDb21tOiBzeXN0ZW1kLXVkZXZk
-IE5vdCB0YWludGVkIDQuMTkuNTUgIzkKPgo+IFsgICAxMy40MTY3NThdIEhhcmR3YXJlIG5hbWU6
-IFp5bnFNUCBaQ1UxMDIgUmV2MS4wIChEVCkKPgo+IFsgICAxMy40MjE3MTNdIEktcGlwZSBkb21h
-aW46IExpbnV4Cj4KPiBbICAgMTMuNDI0OTM1XSBwc3RhdGU6IDQwMDAwMDA1IChuWmN2IGRhaWYg
-LVBBTiAtVUFPKQo+Cj4gWyAgIDEzLjQyOTcyMF0gcGMgOiBpcnFfc2V0X2NoaXArMHhiNC8weGQw
-Cj4KPiBbICAgMTMuNDMzNTQ2XSBsciA6IGlycV9zZXRfY2hpcCsweGI0LzB4ZDAKPgo+IFsgICAx
-My40MzczNzJdIHNwIDogZmZmZmZmODAwOTU0MzgyMAo+Cj4gWyAgIDEzLjQ0MDY3OV0geDI5OiBm
-ZmZmZmY4MDA5NTQzODIwIHgyODogZmZmZmZmODAwMGEzMzIwMAo+Cj4gWyAgIDEzLjQ0NTk4NV0g
-eDI3OiBmZmZmZmY4MDAwYTMwN2YwIHgyNjogZmZmZmZmODAwMGEzMGIyMAo+Cj4gWyAgIDEzLjQ1
-MTI4OV0geDI1OiBmZmZmZmY4MDAwYTMwNDEwIHgyNDogZmZmZmZmODAwOGRmOTY4OAo+Cj4gWyAg
-IDEzLjQ1NjU5M10geDIzOiBmZmZmZmY4MDA4MGY3MzAwIHgyMjogZmZmZmZmODAwMGEzMzAwMAo+
-Cj4gWyAgIDEzLjQ2MTg5N10geDIxOiBmZmZmZmZjODVkMzliZTAwIHgyMDogZmZmZmZmODAwMGEz
-MzAwMAo+Cj4gWyAgIDEzLjQ2NzIwMV0geDE5OiBmZmZmZmY4MDA4ZGY5Njg4IHgxODogMDAwMDAw
-MDAwMDAwMDAxMAo+Cj4gWyAgIDEzLjQ3MjUwNV0geDE3OiAwMDAwMDAwMDAwMDAwMDAxIHgxNjog
-MDAwMDAwMDAwMDAwMDAwNwo+Cj4gWyAgIDEzLjQ3NzgwOV0geDE1OiBmZmZmZmZmZmZmZmZmZmZm
-IHgxNDogMDcyMDA3MjAwNzIwMDcyMAo+Cj4gWyAgIDEzLjQ4MzExM10geDEzOiAwNzIwMDcyMDA3
-MjAwNzIwIHgxMjogMDcyMDA3MjAwNzIwMDcyMAo+Cj4gWyAgIDEzLjQ4ODQxN10geDExOiAwNzIw
-MDcyMDA3MjAwNzIwIHgxMDogMDcyMDA3MjAwNzIwMDcyMAo+Cj4gWyAgIDEzLjQ5MzcyMV0geDkg
-OiBmZmZmZmY4MDA5NTQzODIwIHg4IDogNjE3MzJkNjU2ZTY5NmM2NQo+Cj4gWyAgIDEzLjQ5OTAy
-NV0geDcgOiBmZmZmZmY4MDA4ZTk3MDAwIHg2IDogMDAwMDAwMDAwMDAwMDE2NAo+Cj4gWyAgIDEz
-LjUwNDMyOV0geDUgOiAwMDAwMDAwMDAwMDAwMDAxIHg0IDogZmZmZmZmYzg3ZmY1MDk4OAo+Cj4g
-WyAgIDEzLjUwOTYzM10geDMgOiBmZmZmZmZjODdmZjUwOTg4IHgyIDogMDAwMDAwMDAwMDAwMDAw
-Nwo+Cj4gWyAgIDEzLjUxNDkzN10geDEgOiBmOTBiMjQ5ZTNkOWFkZDAwIHgwIDogMDAwMDAwMDAw
-MDAwMDAwMAo+Cj4gWyAgIDEzLjUyMDI0Ml0gQ2FsbCB0cmFjZToKPgo+IFsgICAxMy41MjI2ODJd
-ICBpcnFfc2V0X2NoaXArMHhiNC8weGQwCj4KPiBbICAgMTMuNTI2MTY0XSAgaXJxX3NldF9jaGlw
-X2FuZF9oYW5kbGVyX25hbWUrMHgyMC8weDUwCj4KPiBbICAgMTMuNTMxMTI1XSAgeGdwaW9faXJx
-X3NldHVwKzB4ZTQvMHgxODAgW2dwaW9feGlsaW54XQo+Cj4gWyAgIDEzLjUzNjE3NV0gIHhncGlv
-X29mX3Byb2JlKzB4MjVjLzB4NTYwIFtncGlvX3hpbGlueF0KPgo+IFsgICAxMy41NDEyMTldICBw
-bGF0Zm9ybV9kcnZfcHJvYmUrMHg1MC8weGEwCj4KPiBbICAgMTMuNTQ1MjE3XSAgcmVhbGx5X3By
-b2JlKzB4MWQwLzB4MjgwCj4KPiBbICAgMTMuNTQ4ODcxXSAgZHJpdmVyX3Byb2JlX2RldmljZSsw
-eDU0LzB4ZjAKPgo+IFsgICAxMy41NTI5NjBdICBfX2RyaXZlcl9hdHRhY2grMHhlNC8weGYwCj4K
-PiBbICAgMTMuNTU2NzAzXSAgYnVzX2Zvcl9lYWNoX2RldisweDcwLzB4YzAKPgo+IFsgICAxMy41
-NjA1MzJdICBkcml2ZXJfYXR0YWNoKzB4MjAvMHgzMAo+Cj4gWyAgIDEzLjU2NDA5OV0gIGJ1c19h
-ZGRfZHJpdmVyKzB4MWRjLzB4MjEwCj4KPiBbICAgMTMuNTY3OTI2XSAgZHJpdmVyX3JlZ2lzdGVy
-KzB4NjAvMHgxMTAKPgo+IFsgICAxMy41NzE3NTVdICBfX3BsYXRmb3JtX2RyaXZlcl9yZWdpc3Rl
-cisweDQ0LzB4NTAKPgo+IFsgICAxMy41NzY0NTVdICB4Z3Bpb19pbml0KzB4MjAvMHgxMDAwIFtn
-cGlvX3hpbGlueF0KPgo+IFsgICAxMy41ODExNTFdICBkb19vbmVfaW5pdGNhbGwrMHg3NC8weDE3
-OAo+Cj4gWyAgIDEzLjU4NDk3OF0gIGRvX2luaXRfbW9kdWxlKzB4NTQvMHgxZDAKPgo+IFsgICAx
-My41ODg3MTldICBsb2FkX21vZHVsZSsweDFiOTAvMHgyMTIwCj4KPiBbICAgMTMuNTkyNDYxXSAg
-X19zZV9zeXNfZmluaXRfbW9kdWxlKzB4YjgvMHhkMAo+Cj4gWyAgIDEzLjU5NjcyMl0gIF9fYXJt
-NjRfc3lzX2Zpbml0X21vZHVsZSsweDE4LzB4MjAKPgo+IFsgICAxMy42MDEyNDddICBlbDBfc3Zj
-X2NvbW1vbisweGJjLzB4MWEwCj4KPiBbICAgMTMuNjA0OTg3XSAgZWwwX3N2Y19oYW5kbGVyKzB4
-NjgvMHg4MAo+Cj4gWyAgIDEzLjYwODcyOF0gIGVsMF9zdmMrMHg4LzB4MTgKPgo+IFsgICAxMy42
-MTE2ODZdIC0tLVsgZW5kIHRyYWNlIDhlZTc1NDk1NTllNDk5ZTAgXS0tLQo+Cj4KPgo+IEZvciBy
-ZWZlcmVuY2U6IG15IGRldmljZSB0cmVlIGVudHJ5IGlmIG5lZWRlZDoKPgo+ICAgICAgICAgYXhp
-X2dwaW9fMDogYXhpZ3Bpb0BhMDAwMDAwMAo+Cj4gICAgICAgICB7Cj4KPiAgICAgICAgICAgICAg
-ICAgI2dwaW8tY2VsbHMgPSA8Mj47Cj4KPiAgICAgICAgICAgICAgICAgI2ludGVycnVwdC1jZWxs
-cyA9IDwyPjsKPgo+ICAgICAgICAgICAgICAgICBjb21wYXRpYmxlID0gInhsbngseHBzLWdwaW8t
-MS4wMC5hIjsKPgo+ICAgICAgICAgICAgICAgICBncGlvLWNvbnRyb2xsZXIgOwo+Cj4gICAgICAg
-ICAgICAgICAgIGludGVycnVwdC1wYXJlbnQgPSA8JmdpYz47Cj4KPiAgICAgICAgICAgICAgICAg
-aW50ZXJydXB0cyA9IDwgMCA4OSA0ID47Cj4KPiAgICAgICAgICAgICAgICAgcmVnID0gPCAweDAg
-MHhhMDAwMDAwMCAweDAgMHgxMDAwID47Cj4KPiAgICAgICAgICAgICAgICAgeGxueCxhbGwtaW5w
-dXRzID0gPDB4MD47Cj4KPiAgICAgICAgICAgICAgICAgeGxueCxhbGwtaW5wdXRzLTIgPSA8MHgw
-PjsKPgo+ICAgICAgICAgICAgICAgICB4bG54LGRvdXQtZGVmYXVsdCA9IDwweDA+Owo+Cj4gICAg
-ICAgICAgICAgICAgIHhsbngsZG91dC1kZWZhdWx0LTIgPSA8MHgwPjsKPgo+ICAgICAgICAgICAg
-ICAgICB4bG54LGdwaW8td2lkdGggPSA8MHg0PjsKPgo+ICAgICAgICAgICAgICAgICB4bG54LGdw
-aW8yLXdpZHRoID0gPDB4ND47Cj4KPiAgICAgICAgICAgICAgICAgeGxueCxpbnRlcnJ1cHQtcHJl
-c2VudCA9IDwweDE+Owo+Cj4gICAgICAgICAgICAgICAgIHhsbngsaXMtZHVhbCA9IDwweDE+Owo+
-Cj4gICAgICAgICAgICAgICAgIHhsbngsdHJpLWRlZmF1bHQgPSA8MHhmZmZmZmZmZj47Cj4KPiAg
-ICAgICAgICAgICAgICAgeGxueCx0cmktZGVmYXVsdC0yID0gPDB4ZmZmZmZmZmY+Owo+Cj4gICAg
-ICAgICB9Owo+Cj4KPgo+IEJlc3QsCj4KPiBKb3NoCj4KPgo+Ci0tLS0tLS0tLS0tLS0tIG5leHQg
-cGFydCAtLS0tLS0tLS0tLS0tLQpBIG5vbi10ZXh0IGF0dGFjaG1lbnQgd2FzIHNjcnViYmVkLi4u
-Ck5hbWU6IDI4OEVFNDE1NzdGQjQwRDdBQkEzMEQ0MzhCQUI0NDI4LnBuZwpUeXBlOiBpbWFnZS9w
-bmcKU2l6ZTogMTYwIGJ5dGVzCkRlc2M6IG5vdCBhdmFpbGFibGUKVVJMOiA8aHR0cDovL3hlbm9t
-YWkub3JnL3BpcGVybWFpbC94ZW5vbWFpL2F0dGFjaG1lbnRzLzIwMjAwNTE1L2MxM2E2ZjA5L2F0
-dGFjaG1lbnQucG5nPgo=
+
+
+________________________________
+From: Greg Gallagher <greg@embeddedgreg.com>
+Sent: Friday, May 15, 2020 2:08 PM
+To: Joshua Karch <jkarch48@hotmail.com>
+Cc: xenomai@xenomai.org <xenomai@xenomai.org>
+Subject: Re: Unable to get xeno-gpio-xilinx to work on Zynq Ultrascale + pl=
+atform
+
+Hi,
+
+
+On Fri, May 15, 2020 at 4:53 PM Joshua Karch <jkarch48@hotmail.com<mailto:j=
+karch48@hotmail.com>> wrote:
+
+
+
+
+
+Sent from Mail<https://eur01.safelinks.protection.outlook.com/?url=3Dhttps%=
+3A%2F%2Fgo.microsoft.com%2Ffwlink%2F%3FLinkId%3D550986&data=3D02%7C01%7C%7C=
+d9b9eae8db584bc9d4e608d7f9143295%7C84df9e7fe9f640afb435aaaaaaaaaaaa%7C1%7C0=
+%7C637251737447796792&sdata=3DYpnIgV7MML6mL8EyYWK64fewpiXvmLtO2I5rY16Im3k%3=
+D&reserved=3D0> for Windows 10
+
+
+
+From: Greg Gallagher<mailto:greg@embeddedgreg.com>
+Sent: Friday, May 15, 2020 4:46 PM
+To: Joshua Karch<mailto:jkarch48@hotmail.com>
+Cc: xenomai@xenomai.org<mailto:xenomai@xenomai.org>
+Subject: Re: Unable to get xeno-gpio-xilinx to work on Zynq Ultrascale + pl=
+atform
+
+
+
+HI,
+
+
+
+On Fri, May 15, 2020 at 4:42 PM Joshua Karch <jkarch48@hotmail.com<mailto:j=
+karch48@hotmail.com>> wrote:
+
+Hi Greg!
+
+
+
+[cid:1721a229cb1ad64f8031]
+
+From: Greg Gallagher <greg@embeddedgreg.com<mailto:greg@embeddedgreg.com>>
+Sent: Friday, May 15, 2020 1:35 PM
+To: Joshua Karch <jkarch48@hotmail.com<mailto:jkarch48@hotmail.com>>
+Cc: xenomai@xenomai.org<mailto:xenomai@xenomai.org> <xenomai@xenomai.org<ma=
+ilto:xenomai@xenomai.org>>
+Subject: Re: Unable to get xeno-gpio-xilinx to work on Zynq Ultrascale + pl=
+atform
+
+
+
+Hi,
+
+On Fri, May 15, 2020 at 4:29 PM Joshua Karch via Xenomai
+<xenomai@xenomai.org<mailto:xenomai@xenomai.org>> wrote:
+>
+> Hello,
+>
+> This my first post in 10 years to the Xenomai group, just as the EVL proj=
+ect comes online!  I'm trying to get the xeno-gpio-xilinx driver working bu=
+t am encountering the following difficulties:
+> (1)  It seems the standard non Xenomai gpio-xilinx driver SysFS are prere=
+quisites to making the driver work.  Unlike the SJA1000 CAN Drivers I used =
+in the past which were standalone, I'm seeing a lot of clues that the Xeno =
+GPIO drivers need to piggyback on top of the core Linux Drivers.   I guess =
+this is a change from when I last worked with Xenomai 10 years ago where I =
+used xeno-16550A and SJA1000 as RTSER and RTCAN drivers.
+>
+> When I attempt to modprobe xeno-gpio-xilinx I receive a message stating:
+>
+> modprobe: ERROR: could not insert 'xeno_gpio_xilinx': No such device
+> Device Tree:
+> # cat /proc/device-tree/axigpio@a0000000/compatible
+> xlnx,xps-gpio-1.00.a
+>
+> In Xenomai  gpio-xilinx.c:
+>         return rtdm_gpiochip_scan_of(NULL, "xlnx,xps-gpio-1.00.a",
+>                      RTDM_SUBCLASS_XILINX);
+>
+>
+> I instrumented the Xenomai gpio-xilinx.c  and gpio-core.c to see if the o=
+f_find_compatible_node function fails and indeed it does find no such devic=
+e.  Also I noted that there are no Xilinx specific registers in the gpio-co=
+re.c or in gpio-xilinx.c, making me believe that this driver is piggybackin=
+g on top of the Xilinx driver.
+>
+> However: when I modprobe gpio-xilinx the of_find_compatible_node function=
+ no longer fails, so I guess of_find_compatible_node works only with loaded=
+ drivers / GPIO Chips.  The issue is, gpio-xilinx has already done the SYSF=
+S registration, so I get the following errors:  Seems  the driver wants to =
+use the same names for RT with SYSFS as non RT. The key error is "
+> kobject_add_internal failed for !axigpio@a0000000 with -EEXIST, d
+> on't try to register things with the same name in the same directory.
+> "
+>
+> Thoughts?
+>
+> Josh Karch
+>
+>
+> modprobe xeno-gpio-xilinx
+> [   55.778656] test probing xilinx gpio rt
+> [   55.782753] sysfs: cannot create duplicate filename '/class/!axigpio@a=
+0000000
+> '
+> [   55.789991] CPU: 1 PID: 237 Comm: modprobe Tainted: G        W  O     =
+ 4.19.5
+> 5 #8
+> [   55.797470] Hardware name: ZynqMP ZCU102 Rev1.0 (DT)
+> [   55.802422] I-pipe domain: Linux
+> [   55.805643] Call trace:
+> [   55.808090]  dump_backtrace+0x0/0x160
+> [   55.811748]  show_stack+0x14/0x20
+> [   55.815056]  dump_stack+0xcc/0xf4
+> [   55.818363]  sysfs_warn_dup+0x60/0x80
+> [   55.822016]  sysfs_create_dir_ns+0xcc/0xf0
+> [   55.826106]  kobject_add_internal+0xac/0x2a0
+> [   55.830367]  kset_register+0x50/0x80
+> [   55.833937]  __class_register+0xbc/0x170
+> [   55.837850]  __class_create+0x50/0x90
+> [   55.841507]  rtdm_gpiochip_add+0x30/0x260
+> [   55.845507]  rtdm_gpiochip_alloc+0x50/0xe0
+> [   55.849596]  rtdm_gpiochip_scan_of.part.1+0x138/0x1e0
+> [   55.854640]  rtdm_gpiochip_scan_of+0x20/0x30
+> [   55.858905]  xilinx_gpio_init+0x28/0x1000 [xeno_gpio_xilinx]
+> [   55.864554]  do_one_initcall+0x74/0x178
+> [   55.868382]  do_init_module+0x54/0x1d0
+> [   55.872122]  load_module+0x1b90/0x2120
+> [   55.875864]  __se_sys_finit_module+0xb8/0xd0
+> [   55.880127]  __arm64_sys_finit_module+0x18/0x20
+> [   55.884650]  el0_svc_common+0xbc/0x1a0
+> [   55.888390]  el0_svc_handler+0x68/0x80
+> [   55.892131]  el0_svc+0x8/0x18
+> [   55.895114] kobject_add_internal failed for !axigpio@a0000000 with -EE=
+XIST, d
+> on't try to register things with the same name in the same directory.
+> [   55.908254] [Xenomai] cannot create sysfs class
+> [   55.912796] sysfs: cannot create duplicate filename '/class/!axigpio@a=
+0000000
+> '
+> [   55.920021] CPU: 1 PID: 237 Comm: modprobe Tainted: G        W  O     =
+ 4.19.5
+> 5 #8
+> [   55.927500] Hardware name: ZynqMP ZCU102 Rev1.0 (DT)
+> [   55.932453] I-pipe domain: Linux
+> [   55.935672] Call trace:
+> [   55.938115]  dump_backtrace+0x0/0x160
+> [   55.941769]  show_stack+0x14/0x20
+> [   55.945077]  dump_stack+0xcc/0xf4
+> [   55.948384]  sysfs_warn_dup+0x60/0x80
+> [   55.952038]  sysfs_create_dir_ns+0xcc/0xf0
+> [   55.956127]  kobject_add_internal+0xac/0x2a0
+> [   55.960389]  kset_register+0x50/0x80
+> [   55.963957]  __class_register+0xbc/0x170
+> [   55.967872]  __class_create+0x50/0x90
+> [   55.971527]  rtdm_gpiochip_add+0x30/0x260
+> [   55.975529]  rtdm_gpiochip_alloc+0x50/0xe0
+> [   55.979618]  rtdm_gpiochip_scan_of.part.1+0x138/0x1e0
+> [   55.984663]  rtdm_gpiochip_scan_of+0x20/0x30
+> [   55.988925]  xilinx_gpio_init+0x28/0x1000 [xeno_gpio_xilinx]
+> [   55.994576]  do_one_initcall+0x74/0x178
+> [   55.998403]  do_init_module+0x54/0x1d0
+> [   56.002144]  load_module+0x1b90/0x2120
+> [   56.005886]  __se_sys_finit_module+0xb8/0xd0
+> [   56.010149]  __arm64_sys_finit_module+0x18/0x20
+> [   56.014672]  el0_svc_common+0xbc/0x1a0
+> [   56.018412]  el0_svc_handler+0x68/0x80
+> [   56.022153]  el0_svc+0x8/0x18
+> [   56.025128] kobject_add_internal failed for !axigpio@a0000000 with -EE=
+XIST, d
+> on't try to register things with the same name in the same directory.
+> [   56.038263] [Xenomai] cannot create sysfs class
+> [   56.042798] Xeno Scan returns -17
+> #
+>
+>
+>
+I can take a look.  This was working on the Zynq-7000, but I haven't
+tested it on the Ultrascale.  I'll see if I can reproduce.
+
+Thanks
+
+Greg
+
+
+
+
+
+
+
+Thank you for your help with this! The other thing I had to do to make this=
+ work was to edit drivers/xenomai/gpio/Kconfig to enable depends on
+
+ARCH_ZYNQ || ARCH_ZYNQMP because I assume the AXI driver should be the same=
+ for either ZYNQ or ZYNQMP, is that a safe assumption?
+
+
+
+I assume that is correct, but I'll double check.  I have a Ultra96 here tha=
+t I can fire up and test on.
+
+
+
+
+
+
+
+config XENO_DRIVERS_GPIO_XILINX
+
+
+
+depends on ARCH_ZYNQ
+
+
+
+depends on ARCH_ZYNQ || ARCH_ZYNQMP
+
+
+
+tristate "Support for Xilinx GPIOs"
+
+
+
+
+
+Yep, these will need to be enabled for the AXI gpios to build for the ZynqM=
+P arch.
+
+
+
+help
+
+
+
+Best,
+
+
+
+Josh
+
+I'll answer the questions you have in your first post once I look at the dr=
+iver again, I want to make sure my assumptions are correct.  I haven't look=
+ed at the GPIO core in a couple of months.
+
+
+
+Thanks
+
+
+
+Greg
+
+
+
+Greg, sounds great! Thank you!  We are running Linux 4.19.55 which is based=
+ on the Linux-xlnx 4.19 distribution, with Xenomai 3.1 and Cobalt Core.  Cu=
+rrently I have Sysfs and the kernel module enabled.
+
+You=92ll need to disable the non rt one. I=92ll have a more in-depth explan=
+ation once I test it out.
+
+
+
+One other funky thing that might be involved is with the base gpio-xilinx d=
+river.  I get a message and a trace that gpio-xilinx is not =93pipeline saf=
+e=94 when loading up on the dmesg.  However the base, non-Xenomai GPIO driv=
+er does seem to communicate with hardware.
+
+
+
+   13.389070] ------------[ cut here ]------------
+
+[   13.393691] irqchip xgpio is not pipeline-safe!
+
+[   13.393711] WARNING: CPU: 0 PID: 145 at kernel/irq/chip.c:55 irq_set_chi=
+p+0xb4/0xd0
+
+[   13.405883] Modules linked in: gpio_xilinx(+)
+
+[   13.410240] CPU: 0 PID: 145 Comm: systemd-udevd Not tainted 4.19.55 #9
+
+[   13.416758] Hardware name: ZynqMP ZCU102 Rev1.0 (DT)
+
+[   13.421713] I-pipe domain: Linux
+
+[   13.424935] pstate: 40000005 (nZcv daif -PAN -UAO)
+
+[   13.429720] pc : irq_set_chip+0xb4/0xd0
+
+[   13.433546] lr : irq_set_chip+0xb4/0xd0
+
+[   13.437372] sp : ffffff8009543820
+
+[   13.440679] x29: ffffff8009543820 x28: ffffff8000a33200
+
+[   13.445985] x27: ffffff8000a307f0 x26: ffffff8000a30b20
+
+[   13.451289] x25: ffffff8000a30410 x24: ffffff8008df9688
+
+[   13.456593] x23: ffffff80080f7300 x22: ffffff8000a33000
+
+[   13.461897] x21: ffffffc85d39be00 x20: ffffff8000a33000
+
+[   13.467201] x19: ffffff8008df9688 x18: 0000000000000010
+
+[   13.472505] x17: 0000000000000001 x16: 0000000000000007
+
+[   13.477809] x15: ffffffffffffffff x14: 0720072007200720
+
+[   13.483113] x13: 0720072007200720 x12: 0720072007200720
+
+[   13.488417] x11: 0720072007200720 x10: 0720072007200720
+
+[   13.493721] x9 : ffffff8009543820 x8 : 61732d656e696c65
+
+[   13.499025] x7 : ffffff8008e97000 x6 : 0000000000000164
+
+[   13.504329] x5 : 0000000000000001 x4 : ffffffc87ff50988
+
+[   13.509633] x3 : ffffffc87ff50988 x2 : 0000000000000007
+
+[   13.514937] x1 : f90b249e3d9add00 x0 : 0000000000000000
+
+[   13.520242] Call trace:
+
+[   13.522682]  irq_set_chip+0xb4/0xd0
+
+[   13.526164]  irq_set_chip_and_handler_name+0x20/0x50
+
+[   13.531125]  xgpio_irq_setup+0xe4/0x180 [gpio_xilinx]
+
+[   13.536175]  xgpio_of_probe+0x25c/0x560 [gpio_xilinx]
+
+[   13.541219]  platform_drv_probe+0x50/0xa0
+
+[   13.545217]  really_probe+0x1d0/0x280
+
+[   13.548871]  driver_probe_device+0x54/0xf0
+
+[   13.552960]  __driver_attach+0xe4/0xf0
+
+[   13.556703]  bus_for_each_dev+0x70/0xc0
+
+[   13.560532]  driver_attach+0x20/0x30
+
+[   13.564099]  bus_add_driver+0x1dc/0x210
+
+[   13.567926]  driver_register+0x60/0x110
+
+[   13.571755]  __platform_driver_register+0x44/0x50
+
+[   13.576455]  xgpio_init+0x20/0x1000 [gpio_xilinx]
+
+[   13.581151]  do_one_initcall+0x74/0x178
+
+[   13.584978]  do_init_module+0x54/0x1d0
+
+[   13.588719]  load_module+0x1b90/0x2120
+
+[   13.592461]  __se_sys_finit_module+0xb8/0xd0
+
+[   13.596722]  __arm64_sys_finit_module+0x18/0x20
+
+[   13.601247]  el0_svc_common+0xbc/0x1a0
+
+[   13.604987]  el0_svc_handler+0x68/0x80
+
+[   13.608728]  el0_svc+0x8/0x18
+
+[   13.611686] ---[ end trace 8ee7549559e499e0 ]---
+
+
+
+For reference: my device tree entry if needed:
+
+        axi_gpio_0: axigpio@a0000000
+
+        {
+
+                #gpio-cells =3D <2>;
+
+                #interrupt-cells =3D <2>;
+
+                compatible =3D "xlnx,xps-gpio-1.00.a";
+
+                gpio-controller ;
+
+                interrupt-parent =3D <&gic>;
+
+                interrupts =3D < 0 89 4 >;
+
+                reg =3D < 0x0 0xa0000000 0x0 0x1000 >;
+
+                xlnx,all-inputs =3D <0x0>;
+
+                xlnx,all-inputs-2 =3D <0x0>;
+
+                xlnx,dout-default =3D <0x0>;
+
+                xlnx,dout-default-2 =3D <0x0>;
+
+                xlnx,gpio-width =3D <0x4>;
+
+                xlnx,gpio2-width =3D <0x4>;
+
+                xlnx,interrupt-present =3D <0x1>;
+
+                xlnx,is-dual =3D <0x1>;
+
+                xlnx,tri-default =3D <0xffffffff>;
+
+                xlnx,tri-default-2 =3D <0xffffffff>;
+
+        };
+
+
+
+Best,
+
+Josh
+
+
+
+Greg,  Sounds great re your explanation about disabling the non rt driver. =
+ The question I'll have is, where in the GPIO core does the register magic =
+take place?  For example, the AXI Core has the following register offsets f=
+rom the base:  Are these offsets standard?
+
+Best, Josh
+
+
+
+CH1_OFFSET 0x00000000
+CH2_OFFSET 0x00000008
+GLOBAL_INTERRUPT_ENABLE_OFFSET 0x0000011C
+AXI_IP_INTERRUPT_ENABLE_OFFSET 0x00000128
+INTERRUPT_STATUS_REGISTER_OFFSET 0x00000120
+TRISTATE_CONTROL_CH1_OFFSET 0x00000004
+TRISTATE_CONTROL_CH2_OFFSET 0x0000000C
+-------------- next part --------------
+A non-text attachment was scrubbed...
+Name: 288EE41577FB40D7ABA30D438BAB4428.png
+Type: image/png
+Size: 160 bytes
+Desc: 288EE41577FB40D7ABA30D438BAB4428.png
+URL: <http://xenomai.org/pipermail/xenomai/attachments/20200515/b23c595e/at=
+tachment.png>
