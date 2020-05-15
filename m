@@ -1,10 +1,10 @@
-From: Marco Tessore <marco.tessore@axelsw.it>
-Subject: About RTNet setup
-Date: Fri, 15 May 2020 13:15:32 +0000
-Message-ID: <97020454f0464394b9128a7620d8d631@axelsw.it>
-Content-Language: it-IT
+From: Joshua Karch <jkarch48@hotmail.com>
+Subject: Unable to get xeno-gpio-xilinx to work on Zynq Ultrascale + platform
+Date: Fri, 15 May 2020 20:28:20 +0000
+Message-ID: <MW3PR18MB36730B88CBB748555D90D4FCDABD0@MW3PR18MB3673.namprd18.prod.outlook.com>
+Content-Language: en-US
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset="iso-8859-1"
 Content-Transfer-Encoding: quoted-printable
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
@@ -14,75 +14,126 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "Xenomai@xenomai.org" <Xenomai@xenomai.org>
+To: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-Good morning,
-I'm working in a project where I need send and receive RAW ethernet packet =
-in realtime.
-I'm using a Xenomai 3.1 porting on an Ubuntu machine.
-RTNet is enabled in the kernel as modules.
+Hello,
 
-The problem is that I don't really know how to setup the network in userspa=
-ce.
+This my first post in 10 years to the Xenomai group, just as the EVL projec=
+t comes online!  I'm trying to get the xeno-gpio-xilinx driver working but =
+am encountering the following difficulties:
+(1)  It seems the standard non Xenomai gpio-xilinx driver SysFS are prerequ=
+isites to making the driver work.  Unlike the SJA1000 CAN Drivers I used in=
+ the past which were standalone, I'm seeing a lot of clues that the Xeno GP=
+IO drivers need to piggyback on top of the core Linux Drivers.   I guess th=
+is is a change from when I last worked with Xenomai 10 years ago where I us=
+ed xeno-16550A and SJA1000 as RTSER and RTCAN drivers.
 
-If this mailing list is not appropriate for the issue please tell me where =
-I can write.
+When I attempt to modprobe xeno-gpio-xilinx I receive a message stating:
 
-The results of  rtifconfig is:
-rteth0    Medium: Ethernet  Hardware address: 6C:B3:11:52:4C:E9
-          IP address: 192.168.178.142  Broadcast address: 192.168.178.255
-          UP BROADCAST RUNNING  MTU: 1500
-          RX packets:0 errors:0 dropped:0 overruns:0 frame:0
-          TX packets:0 errors:0 dropped:0 overruns:0 carrier:0
-          collisions:0
-          RX bytes:0 (0.0 b)  TX bytes:0 (0.0 b)
+modprobe: ERROR: could not insert 'xeno_gpio_xilinx': No such device
+Device Tree:
+# cat /proc/device-tree/axigpio@a0000000/compatible
+xlnx,xps-gpio-1.00.a
 
-rtlo      Medium: Local Loopback
-          IP address: 127.0.0.1
-          UP LOOPBACK RUNNING  MTU: 1500
-
-So I tried rtping to ping another machine, in my network: that machine is n=
-ot a realtime one, and rtping response is that there's no route to host.
-The first question is: does the other machine need to run rtnet as well to =
-respond to the rtping protocol, or it's simply a realtime implementation of=
- the standard ping?
-
-The second question is: to send and receive custom ethernet frames from a u=
-serspace process,
-What is the best configuration of rtnet.conf ? I don't really need rt-tcpip=
- and I don't know how TDMA works.
-
-Third question is about the API to use: I'm trying to see the examples, but=
- I'have some troubles to actually implement this.
-
-I'll appreciate any help
-Kind Regards
-Marco Tessore
+In Xenomai  gpio-xilinx.c:
+        return rtdm_gpiochip_scan_of(NULL, "xlnx,xps-gpio-1.00.a",
+                     RTDM_SUBCLASS_XILINX);
 
 
+I instrumented the Xenomai gpio-xilinx.c  and gpio-core.c to see if the of_=
+find_compatible_node function fails and indeed it does find no such device.=
+  Also I noted that there are no Xilinx specific registers in the gpio-core=
+.c or in gpio-xilinx.c, making me believe that this driver is piggybacking =
+on top of the Xilinx driver.
 
-Marco Tessore
+However: when I modprobe gpio-xilinx the of_find_compatible_node function n=
+o longer fails, so I guess of_find_compatible_node works only with loaded d=
+rivers / GPIO Chips.  The issue is, gpio-xilinx has already done the SYSFS =
+registration, so I get the following errors:  Seems  the driver wants to us=
+e the same names for RT with SYSFS as non RT. The key error is "
+kobject_add_internal failed for !axigpio@a0000000 with -EEXIST, d
+on't try to register things with the same name in the same directory.
+"
 
-AXEL S.r.l.
-Via del Cannino, 3
-21020 Crosio della Valle (VA) - ITALY
-Tel: +39 0332 949600
-Fax: +39 0332 969315
-E-mail: marco.tessore@axelsw.it<mailto:marco.tessore@axelsw.it>
-Web site: www.axelsoftware.it<http://www.axelsoftware.it>
+Thoughts?
 
-Le informazioni contenute in questo messaggio e negli eventuali allegati so=
-no riservate e ad uso esclusivo del destinatario. Qualora abbiate ricevuto =
-questo messaggio per errore, siete cortesemente pregati di darne immediata =
-comunicazione al mittente e di provvedere alla sua distruzione. Grazie.
-(Regolamento Europeo Protezione dei Dati n. 2016/679 ("GDPR")/D. Lgs 30.6.2=
-003 n. 196)
+Josh Karch
 
-The information contained in this e-mail and any attachments are confidenti=
-al and are intended for the use of the individual or entity to which they a=
-re addressed. If you are not among the named recipients, please notify the =
-sender immediately by reply e-mail and then delete this message from your s=
-ystem. Thank you.
-(Decree 196/2003 and Regulation (EU) 2016/679)
+
+modprobe xeno-gpio-xilinx
+[   55.778656] test probing xilinx gpio rt
+[   55.782753] sysfs: cannot create duplicate filename '/class/!axigpio@a00=
+00000
+'
+[   55.789991] CPU: 1 PID: 237 Comm: modprobe Tainted: G        W  O      4=
+.19.5
+5 #8
+[   55.797470] Hardware name: ZynqMP ZCU102 Rev1.0 (DT)
+[   55.802422] I-pipe domain: Linux
+[   55.805643] Call trace:
+[   55.808090]  dump_backtrace+0x0/0x160
+[   55.811748]  show_stack+0x14/0x20
+[   55.815056]  dump_stack+0xcc/0xf4
+[   55.818363]  sysfs_warn_dup+0x60/0x80
+[   55.822016]  sysfs_create_dir_ns+0xcc/0xf0
+[   55.826106]  kobject_add_internal+0xac/0x2a0
+[   55.830367]  kset_register+0x50/0x80
+[   55.833937]  __class_register+0xbc/0x170
+[   55.837850]  __class_create+0x50/0x90
+[   55.841507]  rtdm_gpiochip_add+0x30/0x260
+[   55.845507]  rtdm_gpiochip_alloc+0x50/0xe0
+[   55.849596]  rtdm_gpiochip_scan_of.part.1+0x138/0x1e0
+[   55.854640]  rtdm_gpiochip_scan_of+0x20/0x30
+[   55.858905]  xilinx_gpio_init+0x28/0x1000 [xeno_gpio_xilinx]
+[   55.864554]  do_one_initcall+0x74/0x178
+[   55.868382]  do_init_module+0x54/0x1d0
+[   55.872122]  load_module+0x1b90/0x2120
+[   55.875864]  __se_sys_finit_module+0xb8/0xd0
+[   55.880127]  __arm64_sys_finit_module+0x18/0x20
+[   55.884650]  el0_svc_common+0xbc/0x1a0
+[   55.888390]  el0_svc_handler+0x68/0x80
+[   55.892131]  el0_svc+0x8/0x18
+[   55.895114] kobject_add_internal failed for !axigpio@a0000000 with -EEXI=
+ST, d
+on't try to register things with the same name in the same directory.
+[   55.908254] [Xenomai] cannot create sysfs class
+[   55.912796] sysfs: cannot create duplicate filename '/class/!axigpio@a00=
+00000
+'
+[   55.920021] CPU: 1 PID: 237 Comm: modprobe Tainted: G        W  O      4=
+.19.5
+5 #8
+[   55.927500] Hardware name: ZynqMP ZCU102 Rev1.0 (DT)
+[   55.932453] I-pipe domain: Linux
+[   55.935672] Call trace:
+[   55.938115]  dump_backtrace+0x0/0x160
+[   55.941769]  show_stack+0x14/0x20
+[   55.945077]  dump_stack+0xcc/0xf4
+[   55.948384]  sysfs_warn_dup+0x60/0x80
+[   55.952038]  sysfs_create_dir_ns+0xcc/0xf0
+[   55.956127]  kobject_add_internal+0xac/0x2a0
+[   55.960389]  kset_register+0x50/0x80
+[   55.963957]  __class_register+0xbc/0x170
+[   55.967872]  __class_create+0x50/0x90
+[   55.971527]  rtdm_gpiochip_add+0x30/0x260
+[   55.975529]  rtdm_gpiochip_alloc+0x50/0xe0
+[   55.979618]  rtdm_gpiochip_scan_of.part.1+0x138/0x1e0
+[   55.984663]  rtdm_gpiochip_scan_of+0x20/0x30
+[   55.988925]  xilinx_gpio_init+0x28/0x1000 [xeno_gpio_xilinx]
+[   55.994576]  do_one_initcall+0x74/0x178
+[   55.998403]  do_init_module+0x54/0x1d0
+[   56.002144]  load_module+0x1b90/0x2120
+[   56.005886]  __se_sys_finit_module+0xb8/0xd0
+[   56.010149]  __arm64_sys_finit_module+0x18/0x20
+[   56.014672]  el0_svc_common+0xbc/0x1a0
+[   56.018412]  el0_svc_handler+0x68/0x80
+[   56.022153]  el0_svc+0x8/0x18
+[   56.025128] kobject_add_internal failed for !axigpio@a0000000 with -EEXI=
+ST, d
+on't try to register things with the same name in the same directory.
+[   56.038263] [Xenomai] cannot create sysfs class
+[   56.042798] Xeno Scan returns -17
+#
+
 
 
