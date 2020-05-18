@@ -1,12 +1,15 @@
-From: ayaida marwane <ayaida_marwane@yahoo.fr>
-Mime-Version: 1.0 (Mac OS X Mail 13.0 \(3608.60.0.2.5\))
-Subject: RTDM Printk do not work on rtdm_timer_handler_t 
-Message-Id: <D5DEC4F7-7609-4B43-9DF7-BEBFEEFB1AC1@yahoo.fr>
-Date: Mon, 18 May 2020 11:27:31 +0200
-References: <D5DEC4F7-7609-4B43-9DF7-BEBFEEFB1AC1.ref@yahoo.fr>
-Content-Type: text/plain;
-	charset=utf-8
-Content-Transfer-Encoding: quoted-printable
+From: Marco Tessore <marco.tessore@axelsw.it>
+Subject: R: About RTNet setup
+Date: Mon, 18 May 2020 10:19:55 +0000
+Message-ID: <51be0a78a78643a08fad60d41dcef953@axelsw.it>
+References: <97020454f0464394b9128a7620d8d631@axelsw.it>
+ <cf47f625-f978-6f19-6512-d8af176cb6c7@siemens.com>
+ <f22c83fb4b1243358c3bea5cbeb06e11@axelsw.it>
+In-Reply-To: <f22c83fb4b1243358c3bea5cbeb06e11@axelsw.it>
+Content-Language: it-IT
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+MIME-Version: 1.0
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,79 +18,97 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
+To: Jan Kiszka <jan.kiszka@siemens.com>, "Xenomai@xenomai.org" <Xenomai@xenomai.org>
 
-Dear all,
-
-I have tried this code :
-
-=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=
-=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=
-=94=E2=80=94=E2=80=94=E2=80=94
-
-#include <rtdm/driver.h>
-
-static int periode_us =3D 1000;
-module_param(periode_us, int, 0644);
-
-static void timer_task(rtdm_timer_t *);
-static rtdm_timer_t rtimer;
-
-static int __init init_oscillateur (void)
-{
-        int err;
-
-        rtdm_printk(KERN_INFO "%s.%s() : Initialisation\n", =
-THIS_MODULE->name, __FUNCTION__);
-
-        if ((err =3D rtdm_timer_init(& rtimer, timer_task, =
-"Timer_Task")) !=3D 0) {
-                return err;
-        }
-
-        if ((err =3D rtdm_timer_start(& rtimer, periode_us*1000, =
-periode_us*1000, RTDM_TIMERMODE_RELATIVE)) !=3D 0) {
-                rtdm_timer_destroy(& rtimer);
-                return err;
-        }
-
-        return 0;
-}
-
-static void __exit exit_oscillateur (void)
-{
-        rtdm_timer_stop(& rtimer);
-        rtdm_timer_destroy(& rtimer);
-        rtdm_printk(KERN_INFO "%s.%s() : Exit\n", THIS_MODULE->name, =
-__FUNCTION__);
-}
-
-static void timer_task(rtdm_timer_t * unused)
-{
-        rtdm_printk(KERN_INFO "%s.%s() : Appel Timer\n", =
-THIS_MODULE->name, __FUNCTION__);
-}
-
-module_init(init_oscillateur);
-module_exit(exit_oscillateur);
-MODULE_LICENSE("GPL");
-
-
-=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=
-=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=
-=94=E2=80=94=E2=80=94=E2=80=94
-
-However, when I execute the code, we have only :
-
-[ 6696.615556] oscillateur_gpio_rtdm.init_oscillateur() : Initialisation
-[ 6705.148129] oscillateur_gpio_rtdm.exit_oscillateur() : Exit
-
-So, why the rtdm_printk in the timer_task is never called?
-
-Thanks for your help.
-
-BR,
-Marwane.
-
-
+U29ycnkgSmFuLCBqdXN0IG9uZSBtb3JlIHF1ZXN0aW9uOg0KSSd2ZSBpbXBsZW1lbnRlZCBhIHNp
+bXBsZSB0YXNrIHRoYXQgc2VuZCBhIHBhY2tldCwNCmFuZCB0aGVuIHJlY2VpdmUgYSByZXNwb25z
+ZS4NCkkga25vdyB0aGUgcmVzcG9uc2UgY29tZSBiYWNrLCBvbiB0aGUgbmV0d29yaywgaW4gY291
+cGxlIG9mIHVzZWNvbmRzLg0KQnV0LCBmcm9tIHRoZSBzZW5kIHRvIHRoZSByZWNlaXZlIEkgbWVh
+c3VyZSAxMDAgbXMuDQpZb3Uga25vdyB3aHkgdGhpcyBkZWxheToNCklzIHRoZSBzZW5kIG9yIHRo
+ZSByZWNlaXZlIHNsb3c/DQpZb3Uga25vdyB0aGVyZSdzIHNvbWUgcGFyYW1ldGVyIHRvIGFkanVz
+dD8NCg0KVGhhbmsgeW91DQpNYXJjbw0KDQoNCk1hcmNvIFRlc3NvcmUNCg0KQVhFTCBTLnIubC4N
+ClZpYSBkZWwgQ2FubmlubywgMw0KMjEwMjAgQ3Jvc2lvIGRlbGxhIFZhbGxlIChWQSkgLSBJVEFM
+WQ0KVGVsOiArMzkgMDMzMiA5NDk2MDANCkZheDogKzM5IDAzMzIgOTY5MzE1DQpFLW1haWw6IG1h
+cmNvLnRlc3NvcmVAYXhlbHN3Lml0DQpXZWIgc2l0ZTogd3d3LmF4ZWxzb2Z0d2FyZS5pdA0KDQpM
+ZSBpbmZvcm1hemlvbmkgY29udGVudXRlIGluIHF1ZXN0byBtZXNzYWdnaW8gZSBuZWdsaSBldmVu
+dHVhbGkgYWxsZWdhdGkgc29ubyByaXNlcnZhdGUgZSBhZCB1c28gZXNjbHVzaXZvIGRlbCBkZXN0
+aW5hdGFyaW8uIFF1YWxvcmEgYWJiaWF0ZSByaWNldnV0byBxdWVzdG8gbWVzc2FnZ2lvIHBlciBl
+cnJvcmUsIHNpZXRlIGNvcnRlc2VtZW50ZSBwcmVnYXRpIGRpIGRhcm5lIGltbWVkaWF0YSBjb211
+bmljYXppb25lIGFsIG1pdHRlbnRlIGUgZGkgcHJvdnZlZGVyZSBhbGxhIHN1YSBkaXN0cnV6aW9u
+ZS4gR3JhemllLg0KKFJlZ29sYW1lbnRvIEV1cm9wZW8gUHJvdGV6aW9uZSBkZWkgRGF0aSBuLiAy
+MDE2LzY3OSAo4oCcR0RQUuKAnSkvRC4gTGdzIDMwLjYuMjAwMyBuLiAxOTYpDQoNClRoZSBpbmZv
+cm1hdGlvbiBjb250YWluZWQgaW4gdGhpcyBlLW1haWwgYW5kIGFueSBhdHRhY2htZW50cyBhcmUg
+Y29uZmlkZW50aWFsIGFuZCBhcmUgaW50ZW5kZWQgZm9yIHRoZSB1c2Ugb2YgdGhlIGluZGl2aWR1
+YWwgb3IgZW50aXR5IHRvIHdoaWNoIHRoZXkgYXJlIGFkZHJlc3NlZC4gSWYgeW91IGFyZSBub3Qg
+YW1vbmcgdGhlIG5hbWVkIHJlY2lwaWVudHMsIHBsZWFzZSBub3RpZnkgdGhlIHNlbmRlciBpbW1l
+ZGlhdGVseSBieSByZXBseSBlLW1haWwgYW5kIHRoZW4gZGVsZXRlIHRoaXMgbWVzc2FnZSBmcm9t
+IHlvdXIgc3lzdGVtLiBUaGFuayB5b3UuDQooRGVjcmVlIDE5Ni8yMDAzIGFuZCBSZWd1bGF0aW9u
+IChFVSkgMjAxNi82NzkpDQoNCg0KLS0tLS1NZXNzYWdnaW8gb3JpZ2luYWxlLS0tLS0NCkRhOiBN
+YXJjbyBUZXNzb3JlIA0KSW52aWF0bzogbHVuZWTDrCAxOCBtYWdnaW8gMjAyMCAxMToxMw0KQTog
+J0phbiBLaXN6a2EnIDxqYW4ua2lzemthQHNpZW1lbnMuY29tPjsgWGVub21haUB4ZW5vbWFpLm9y
+Zw0KT2dnZXR0bzogUjogQWJvdXQgUlROZXQgc2V0dXANCg0KVGhhbmsgeW91IEphbg0KDQoNCk1h
+cmNvIFRlc3NvcmUNCg0KQVhFTCBTLnIubC4NClZpYSBkZWwgQ2FubmlubywgMw0KMjEwMjAgQ3Jv
+c2lvIGRlbGxhIFZhbGxlIChWQSkgLSBJVEFMWQ0KVGVsOiArMzkgMDMzMiA5NDk2MDANCkZheDog
+KzM5IDAzMzIgOTY5MzE1DQpFLW1haWw6IG1hcmNvLnRlc3NvcmVAYXhlbHN3Lml0DQpXZWIgc2l0
+ZTogd3d3LmF4ZWxzb2Z0d2FyZS5pdA0KDQpMZSBpbmZvcm1hemlvbmkgY29udGVudXRlIGluIHF1
+ZXN0byBtZXNzYWdnaW8gZSBuZWdsaSBldmVudHVhbGkgYWxsZWdhdGkgc29ubyByaXNlcnZhdGUg
+ZSBhZCB1c28gZXNjbHVzaXZvIGRlbCBkZXN0aW5hdGFyaW8uIFF1YWxvcmEgYWJiaWF0ZSByaWNl
+dnV0byBxdWVzdG8gbWVzc2FnZ2lvIHBlciBlcnJvcmUsIHNpZXRlIGNvcnRlc2VtZW50ZSBwcmVn
+YXRpIGRpIGRhcm5lIGltbWVkaWF0YSBjb211bmljYXppb25lIGFsIG1pdHRlbnRlIGUgZGkgcHJv
+dnZlZGVyZSBhbGxhIHN1YSBkaXN0cnV6aW9uZS4gR3JhemllLg0KKFJlZ29sYW1lbnRvIEV1cm9w
+ZW8gUHJvdGV6aW9uZSBkZWkgRGF0aSBuLiAyMDE2LzY3OSAo4oCcR0RQUuKAnSkvRC4gTGdzIDMw
+LjYuMjAwMyBuLiAxOTYpDQoNClRoZSBpbmZvcm1hdGlvbiBjb250YWluZWQgaW4gdGhpcyBlLW1h
+aWwgYW5kIGFueSBhdHRhY2htZW50cyBhcmUgY29uZmlkZW50aWFsIGFuZCBhcmUgaW50ZW5kZWQg
+Zm9yIHRoZSB1c2Ugb2YgdGhlIGluZGl2aWR1YWwgb3IgZW50aXR5IHRvIHdoaWNoIHRoZXkgYXJl
+IGFkZHJlc3NlZC4gSWYgeW91IGFyZSBub3QgYW1vbmcgdGhlIG5hbWVkIHJlY2lwaWVudHMsIHBs
+ZWFzZSBub3RpZnkgdGhlIHNlbmRlciBpbW1lZGlhdGVseSBieSByZXBseSBlLW1haWwgYW5kIHRo
+ZW4gZGVsZXRlIHRoaXMgbWVzc2FnZSBmcm9tIHlvdXIgc3lzdGVtLiBUaGFuayB5b3UuDQooRGVj
+cmVlIDE5Ni8yMDAzIGFuZCBSZWd1bGF0aW9uIChFVSkgMjAxNi82NzkpDQoNCg0KLS0tLS1NZXNz
+YWdnaW8gb3JpZ2luYWxlLS0tLS0NCkRhOiBKYW4gS2lzemthIDxqYW4ua2lzemthQHNpZW1lbnMu
+Y29tPg0KSW52aWF0bzogbHVuZWTDrCAxOCBtYWdnaW8gMjAyMCAxMDo1Nw0KQTogTWFyY28gVGVz
+c29yZSA8bWFyY28udGVzc29yZUBheGVsc3cuaXQ+OyBYZW5vbWFpQHhlbm9tYWkub3JnDQpPZ2dl
+dHRvOiBSZTogQWJvdXQgUlROZXQgc2V0dXANCg0KT24gMTUuMDUuMjAgMTU6MTUsIE1hcmNvIFRl
+c3NvcmUgdmlhIFhlbm9tYWkgd3JvdGU6DQo+IEdvb2QgbW9ybmluZywNCj4gSSdtIHdvcmtpbmcg
+aW4gYSBwcm9qZWN0IHdoZXJlIEkgbmVlZCBzZW5kIGFuZCByZWNlaXZlIFJBVyBldGhlcm5ldCBw
+YWNrZXQgaW4gcmVhbHRpbWUuDQo+IEknbSB1c2luZyBhIFhlbm9tYWkgMy4xIHBvcnRpbmcgb24g
+YW4gVWJ1bnR1IG1hY2hpbmUuDQo+IFJUTmV0IGlzIGVuYWJsZWQgaW4gdGhlIGtlcm5lbCBhcyBt
+b2R1bGVzLg0KPiANCj4gVGhlIHByb2JsZW0gaXMgdGhhdCBJIGRvbid0IHJlYWxseSBrbm93IGhv
+dyB0byBzZXR1cCB0aGUgbmV0d29yayBpbiB1c2Vyc3BhY2UuDQo+IA0KPiBJZiB0aGlzIG1haWxp
+bmcgbGlzdCBpcyBub3QgYXBwcm9wcmlhdGUgZm9yIHRoZSBpc3N1ZSBwbGVhc2UgdGVsbCBtZSB3
+aGVyZSBJIGNhbiB3cml0ZS4NCj4gDQo+IFRoZSByZXN1bHRzIG9mICBydGlmY29uZmlnIGlzOg0K
+PiBydGV0aDAgICAgTWVkaXVtOiBFdGhlcm5ldCAgSGFyZHdhcmUgYWRkcmVzczogNkM6QjM6MTE6
+NTI6NEM6RTkNCj4gICAgICAgICAgICBJUCBhZGRyZXNzOiAxOTIuMTY4LjE3OC4xNDIgIEJyb2Fk
+Y2FzdCBhZGRyZXNzOiAxOTIuMTY4LjE3OC4yNTUNCj4gICAgICAgICAgICBVUCBCUk9BRENBU1Qg
+UlVOTklORyAgTVRVOiAxNTAwDQo+ICAgICAgICAgICAgUlggcGFja2V0czowIGVycm9yczowIGRy
+b3BwZWQ6MCBvdmVycnVuczowIGZyYW1lOjANCj4gICAgICAgICAgICBUWCBwYWNrZXRzOjAgZXJy
+b3JzOjAgZHJvcHBlZDowIG92ZXJydW5zOjAgY2FycmllcjowDQo+ICAgICAgICAgICAgY29sbGlz
+aW9uczowDQo+ICAgICAgICAgICAgUlggYnl0ZXM6MCAoMC4wIGIpICBUWCBieXRlczowICgwLjAg
+YikNCj4gDQo+IHJ0bG8gICAgICBNZWRpdW06IExvY2FsIExvb3BiYWNrDQo+ICAgICAgICAgICAg
+SVAgYWRkcmVzczogMTI3LjAuMC4xDQo+ICAgICAgICAgICAgVVAgTE9PUEJBQ0sgUlVOTklORyAg
+TVRVOiAxNTAwDQo+IA0KPiBTbyBJIHRyaWVkIHJ0cGluZyB0byBwaW5nIGFub3RoZXIgbWFjaGlu
+ZSwgaW4gbXkgbmV0d29yazogdGhhdCBtYWNoaW5lIGlzIG5vdCBhIHJlYWx0aW1lIG9uZSwgYW5k
+IHJ0cGluZyByZXNwb25zZSBpcyB0aGF0IHRoZXJlJ3Mgbm8gcm91dGUgdG8gaG9zdC4NCj4gVGhl
+IGZpcnN0IHF1ZXN0aW9uIGlzOiBkb2VzIHRoZSBvdGhlciBtYWNoaW5lIG5lZWQgdG8gcnVuIHJ0
+bmV0IGFzIHdlbGwgdG8gcmVzcG9uZCB0byB0aGUgcnRwaW5nIHByb3RvY29sLCBvciBpdCdzIHNp
+bXBseSBhIHJlYWx0aW1lIGltcGxlbWVudGF0aW9uIG9mIHRoZSBzdGFuZGFyZCBwaW5nPw0KDQpO
+bywgYnV0IEFSUCByZXNvbHV0aW9uIG9mIFJUbmV0IG5vZGVzIHdvcmsgb25seSBvbiBleHBsaWNp
+dCByZXF1ZXN0LiBZb3UgbmVlZCB0byBydW4gInJ0cm91dGUgc29saWNpdCA8aXA+IiBmb3IgdGhh
+dCwgb3IgdGhlIG90aGVyIHNpZGUgbmVlZHMgdG8gcGluZyB5b3UuDQoNCj4gDQo+IFRoZSBzZWNv
+bmQgcXVlc3Rpb24gaXM6IHRvIHNlbmQgYW5kIHJlY2VpdmUgY3VzdG9tIGV0aGVybmV0IGZyYW1l
+cyANCj4gZnJvbSBhIHVzZXJzcGFjZSBwcm9jZXNzLCBXaGF0IGlzIHRoZSBiZXN0IGNvbmZpZ3Vy
+YXRpb24gb2YgcnRuZXQuY29uZiA/IEkgZG9uJ3QgcmVhbGx5IG5lZWQgcnQtdGNwaXAgYW5kIEkg
+ZG9uJ3Qga25vdyBob3cgVERNQSB3b3Jrcy4NCj4gDQoNCllvdSBkb24ndCBydG5ldC5jb25mIGFu
+ZCB0aGUgc2V0dXAgdG9vbCB0aGVuLiBKdXN0IGxvYWQgdGhlIHJ0bmV0LCBydF9wYWNrZXQsIGFu
+ZCBydC08ZHJpdmVyPiBtb2R1bGVzIChwcm92aWRlZCB5b3UgdW5ib3VuZCB0aGUgdGFyZ2V0IGlu
+dGVyZmFjZSBmcm9tIHRoZSBMaW51eCBkcml2ZXIgYWxyZWFkeSksIHJ1biBydGlmY29uZmlnIG9u
+IHRoZSBydGV0aDAgaW50ZXJmYWNlLCBhbmQgdGhlbiB5b3UgY2FuIHVzZSBBRl9QQUNLRVQgc29j
+a2V0cyBmcm9tIHlvdXIgUlQgYXBwbGljYXRpb25zLg0KDQo+IFRoaXJkIHF1ZXN0aW9uIGlzIGFi
+b3V0IHRoZSBBUEkgdG8gdXNlOiBJJ20gdHJ5aW5nIHRvIHNlZSB0aGUgZXhhbXBsZXMsIGJ1dCBJ
+J2hhdmUgc29tZSB0cm91YmxlcyB0byBhY3R1YWxseSBpbXBsZW1lbnQgdGhpcy4NCg0KU2VlIGRl
+bW8vcG9zaXgvY29iYWx0L2V0aF9wX2FsbC5jIG9yDQp0ZXN0c3VpdGUvc21va2V5L25ldF9wYWNr
+ZXRfcmF3L3BhY2tldF9yYXcuYyAobm90IHNlbGYtc3RhbmRpbmcsIHRob3VnaCkgZm9yIGV4YW1w
+bGVzLiBTdHVkeSAibWFuIDcgcGFja2V0IiBmb3IgdGhlIHJhdyBpbnRlcmZhY2UgKFJUbmV0IGlz
+IHdpZGVseSBjb21wYXRpYmxlKS4NCg0KSFRILA0KSmFuDQoNCi0tDQpTaWVtZW5zIEFHLCBDb3Jw
+b3JhdGUgVGVjaG5vbG9neSwgQ1QgUkRBIElPVCBTRVMtREUgQ29ycG9yYXRlIENvbXBldGVuY2Ug
+Q2VudGVyIEVtYmVkZGVkIExpbnV4DQo=
 
