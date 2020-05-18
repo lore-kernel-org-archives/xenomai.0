@@ -1,14 +1,12 @@
-Subject: Re: Could nomal linux threads and xenomai threads run together in the
- same process?
-References: <CAAvDm6bhWJ_j67eJ9p9d1Efj6kTDdCV6TrVE90Z6Y=OPZxQxjQ@mail.gmail.com>
-From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <3f8a90fd-4c3f-7d75-7669-2c43603f5e77@siemens.com>
-Date: Mon, 18 May 2020 11:22:58 +0200
-MIME-Version: 1.0
-In-Reply-To: <CAAvDm6bhWJ_j67eJ9p9d1Efj6kTDdCV6TrVE90Z6Y=OPZxQxjQ@mail.gmail.com>
-Content-Type: text/plain; charset="utf-8"; format="flowed"
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+From: ayaida marwane <ayaida_marwane@yahoo.fr>
+Mime-Version: 1.0 (Mac OS X Mail 13.0 \(3608.60.0.2.5\))
+Subject: RTDM Printk do not work on rtdm_timer_handler_t 
+Message-Id: <D5DEC4F7-7609-4B43-9DF7-BEBFEEFB1AC1@yahoo.fr>
+Date: Mon, 18 May 2020 11:27:31 +0200
+References: <D5DEC4F7-7609-4B43-9DF7-BEBFEEFB1AC1.ref@yahoo.fr>
+Content-Type: text/plain;
+	charset=utf-8
+Content-Transfer-Encoding: quoted-printable
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,31 +15,79 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: =?UTF-8?B?5a2Z5LiW6b6Z?= <sunshilong369@gmail.com>, xenomai <xenomai@xenomai.org>
+To: xenomai@xenomai.org
 
-On 18.05.20 11:16, 孙世龙 via Xenomai wrote:
-> Hi,
-> As per the documentation
-> (https://research.idi.ntnu.no/multicore/_media/
-> linux_xenomai_hard_real-time_en_read-only_.pdf  *page number:11*),
-> it give me the sense that *nomal linux threads *which are not normal
-> xenomai thread whose scheduling policy is SCHED_OTHER and *xenomai threads*
-> could
-> run together *in the same process*? Is that really the case?
-> 
-> Thank you for your attention to this matter.
-> Look forward to hearing from you.
-> 
+Dear all,
 
-Yes, that works fine. However, if your ordinary Linux thread should 
-access a Xenomai API that may block (on RT resources), it has to be at 
-least wrapped with Xenomai shadow thread. But that happens automatically 
-if you are using the POSIX interface and build the application with the 
-options xeno-config reports.
+I have tried this code :
 
-Jan
+=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=
+=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=
+=94=E2=80=94=E2=80=94=E2=80=94
 
--- 
-Siemens AG, Corporate Technology, CT RDA IOT SES-DE
-Corporate Competence Center Embedded Linux
+#include <rtdm/driver.h>
+
+static int periode_us =3D 1000;
+module_param(periode_us, int, 0644);
+
+static void timer_task(rtdm_timer_t *);
+static rtdm_timer_t rtimer;
+
+static int __init init_oscillateur (void)
+{
+        int err;
+
+        rtdm_printk(KERN_INFO "%s.%s() : Initialisation\n", =
+THIS_MODULE->name, __FUNCTION__);
+
+        if ((err =3D rtdm_timer_init(& rtimer, timer_task, =
+"Timer_Task")) !=3D 0) {
+                return err;
+        }
+
+        if ((err =3D rtdm_timer_start(& rtimer, periode_us*1000, =
+periode_us*1000, RTDM_TIMERMODE_RELATIVE)) !=3D 0) {
+                rtdm_timer_destroy(& rtimer);
+                return err;
+        }
+
+        return 0;
+}
+
+static void __exit exit_oscillateur (void)
+{
+        rtdm_timer_stop(& rtimer);
+        rtdm_timer_destroy(& rtimer);
+        rtdm_printk(KERN_INFO "%s.%s() : Exit\n", THIS_MODULE->name, =
+__FUNCTION__);
+}
+
+static void timer_task(rtdm_timer_t * unused)
+{
+        rtdm_printk(KERN_INFO "%s.%s() : Appel Timer\n", =
+THIS_MODULE->name, __FUNCTION__);
+}
+
+module_init(init_oscillateur);
+module_exit(exit_oscillateur);
+MODULE_LICENSE("GPL");
+
+
+=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=
+=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=
+=94=E2=80=94=E2=80=94=E2=80=94
+
+However, when I execute the code, we have only :
+
+[ 6696.615556] oscillateur_gpio_rtdm.init_oscillateur() : Initialisation
+[ 6705.148129] oscillateur_gpio_rtdm.exit_oscillateur() : Exit
+
+So, why the rtdm_printk in the timer_task is never called?
+
+Thanks for your help.
+
+BR,
+Marwane.
+
+
 
