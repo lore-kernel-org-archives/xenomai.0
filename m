@@ -1,15 +1,16 @@
-From: Marco Tessore <marco.tessore@axelsw.it>
-Subject: R: About RTNet setup
-Date: Mon, 18 May 2020 10:19:55 +0000
-Message-ID: <51be0a78a78643a08fad60d41dcef953@axelsw.it>
+Subject: Re: R: About RTNet setup
 References: <97020454f0464394b9128a7620d8d631@axelsw.it>
  <cf47f625-f978-6f19-6512-d8af176cb6c7@siemens.com>
  <f22c83fb4b1243358c3bea5cbeb06e11@axelsw.it>
-In-Reply-To: <f22c83fb4b1243358c3bea5cbeb06e11@axelsw.it>
-Content-Language: it-IT
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+ <51be0a78a78643a08fad60d41dcef953@axelsw.it>
+From: Jan Kiszka <jan.kiszka@siemens.com>
+Message-ID: <d23bceea-708f-92e1-5794-7cfe339feda9@siemens.com>
+Date: Mon, 18 May 2020 12:43:37 +0200
 MIME-Version: 1.0
+In-Reply-To: <51be0a78a78643a08fad60d41dcef953@axelsw.it>
+Content-Type: text/plain; charset="utf-8"; format="flowed"
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -18,97 +19,128 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jan Kiszka <jan.kiszka@siemens.com>, "Xenomai@xenomai.org" <Xenomai@xenomai.org>
+To: Marco Tessore <marco.tessore@axelsw.it>, "Xenomai@xenomai.org" <Xenomai@xenomai.org>
 
-U29ycnkgSmFuLCBqdXN0IG9uZSBtb3JlIHF1ZXN0aW9uOg0KSSd2ZSBpbXBsZW1lbnRlZCBhIHNp
-bXBsZSB0YXNrIHRoYXQgc2VuZCBhIHBhY2tldCwNCmFuZCB0aGVuIHJlY2VpdmUgYSByZXNwb25z
-ZS4NCkkga25vdyB0aGUgcmVzcG9uc2UgY29tZSBiYWNrLCBvbiB0aGUgbmV0d29yaywgaW4gY291
-cGxlIG9mIHVzZWNvbmRzLg0KQnV0LCBmcm9tIHRoZSBzZW5kIHRvIHRoZSByZWNlaXZlIEkgbWVh
-c3VyZSAxMDAgbXMuDQpZb3Uga25vdyB3aHkgdGhpcyBkZWxheToNCklzIHRoZSBzZW5kIG9yIHRo
-ZSByZWNlaXZlIHNsb3c/DQpZb3Uga25vdyB0aGVyZSdzIHNvbWUgcGFyYW1ldGVyIHRvIGFkanVz
-dD8NCg0KVGhhbmsgeW91DQpNYXJjbw0KDQoNCk1hcmNvIFRlc3NvcmUNCg0KQVhFTCBTLnIubC4N
-ClZpYSBkZWwgQ2FubmlubywgMw0KMjEwMjAgQ3Jvc2lvIGRlbGxhIFZhbGxlIChWQSkgLSBJVEFM
-WQ0KVGVsOiArMzkgMDMzMiA5NDk2MDANCkZheDogKzM5IDAzMzIgOTY5MzE1DQpFLW1haWw6IG1h
-cmNvLnRlc3NvcmVAYXhlbHN3Lml0DQpXZWIgc2l0ZTogd3d3LmF4ZWxzb2Z0d2FyZS5pdA0KDQpM
-ZSBpbmZvcm1hemlvbmkgY29udGVudXRlIGluIHF1ZXN0byBtZXNzYWdnaW8gZSBuZWdsaSBldmVu
-dHVhbGkgYWxsZWdhdGkgc29ubyByaXNlcnZhdGUgZSBhZCB1c28gZXNjbHVzaXZvIGRlbCBkZXN0
-aW5hdGFyaW8uIFF1YWxvcmEgYWJiaWF0ZSByaWNldnV0byBxdWVzdG8gbWVzc2FnZ2lvIHBlciBl
-cnJvcmUsIHNpZXRlIGNvcnRlc2VtZW50ZSBwcmVnYXRpIGRpIGRhcm5lIGltbWVkaWF0YSBjb211
-bmljYXppb25lIGFsIG1pdHRlbnRlIGUgZGkgcHJvdnZlZGVyZSBhbGxhIHN1YSBkaXN0cnV6aW9u
-ZS4gR3JhemllLg0KKFJlZ29sYW1lbnRvIEV1cm9wZW8gUHJvdGV6aW9uZSBkZWkgRGF0aSBuLiAy
-MDE2LzY3OSAo4oCcR0RQUuKAnSkvRC4gTGdzIDMwLjYuMjAwMyBuLiAxOTYpDQoNClRoZSBpbmZv
-cm1hdGlvbiBjb250YWluZWQgaW4gdGhpcyBlLW1haWwgYW5kIGFueSBhdHRhY2htZW50cyBhcmUg
-Y29uZmlkZW50aWFsIGFuZCBhcmUgaW50ZW5kZWQgZm9yIHRoZSB1c2Ugb2YgdGhlIGluZGl2aWR1
-YWwgb3IgZW50aXR5IHRvIHdoaWNoIHRoZXkgYXJlIGFkZHJlc3NlZC4gSWYgeW91IGFyZSBub3Qg
-YW1vbmcgdGhlIG5hbWVkIHJlY2lwaWVudHMsIHBsZWFzZSBub3RpZnkgdGhlIHNlbmRlciBpbW1l
-ZGlhdGVseSBieSByZXBseSBlLW1haWwgYW5kIHRoZW4gZGVsZXRlIHRoaXMgbWVzc2FnZSBmcm9t
-IHlvdXIgc3lzdGVtLiBUaGFuayB5b3UuDQooRGVjcmVlIDE5Ni8yMDAzIGFuZCBSZWd1bGF0aW9u
-IChFVSkgMjAxNi82NzkpDQoNCg0KLS0tLS1NZXNzYWdnaW8gb3JpZ2luYWxlLS0tLS0NCkRhOiBN
-YXJjbyBUZXNzb3JlIA0KSW52aWF0bzogbHVuZWTDrCAxOCBtYWdnaW8gMjAyMCAxMToxMw0KQTog
-J0phbiBLaXN6a2EnIDxqYW4ua2lzemthQHNpZW1lbnMuY29tPjsgWGVub21haUB4ZW5vbWFpLm9y
-Zw0KT2dnZXR0bzogUjogQWJvdXQgUlROZXQgc2V0dXANCg0KVGhhbmsgeW91IEphbg0KDQoNCk1h
-cmNvIFRlc3NvcmUNCg0KQVhFTCBTLnIubC4NClZpYSBkZWwgQ2FubmlubywgMw0KMjEwMjAgQ3Jv
-c2lvIGRlbGxhIFZhbGxlIChWQSkgLSBJVEFMWQ0KVGVsOiArMzkgMDMzMiA5NDk2MDANCkZheDog
-KzM5IDAzMzIgOTY5MzE1DQpFLW1haWw6IG1hcmNvLnRlc3NvcmVAYXhlbHN3Lml0DQpXZWIgc2l0
-ZTogd3d3LmF4ZWxzb2Z0d2FyZS5pdA0KDQpMZSBpbmZvcm1hemlvbmkgY29udGVudXRlIGluIHF1
-ZXN0byBtZXNzYWdnaW8gZSBuZWdsaSBldmVudHVhbGkgYWxsZWdhdGkgc29ubyByaXNlcnZhdGUg
-ZSBhZCB1c28gZXNjbHVzaXZvIGRlbCBkZXN0aW5hdGFyaW8uIFF1YWxvcmEgYWJiaWF0ZSByaWNl
-dnV0byBxdWVzdG8gbWVzc2FnZ2lvIHBlciBlcnJvcmUsIHNpZXRlIGNvcnRlc2VtZW50ZSBwcmVn
-YXRpIGRpIGRhcm5lIGltbWVkaWF0YSBjb211bmljYXppb25lIGFsIG1pdHRlbnRlIGUgZGkgcHJv
-dnZlZGVyZSBhbGxhIHN1YSBkaXN0cnV6aW9uZS4gR3JhemllLg0KKFJlZ29sYW1lbnRvIEV1cm9w
-ZW8gUHJvdGV6aW9uZSBkZWkgRGF0aSBuLiAyMDE2LzY3OSAo4oCcR0RQUuKAnSkvRC4gTGdzIDMw
-LjYuMjAwMyBuLiAxOTYpDQoNClRoZSBpbmZvcm1hdGlvbiBjb250YWluZWQgaW4gdGhpcyBlLW1h
-aWwgYW5kIGFueSBhdHRhY2htZW50cyBhcmUgY29uZmlkZW50aWFsIGFuZCBhcmUgaW50ZW5kZWQg
-Zm9yIHRoZSB1c2Ugb2YgdGhlIGluZGl2aWR1YWwgb3IgZW50aXR5IHRvIHdoaWNoIHRoZXkgYXJl
-IGFkZHJlc3NlZC4gSWYgeW91IGFyZSBub3QgYW1vbmcgdGhlIG5hbWVkIHJlY2lwaWVudHMsIHBs
-ZWFzZSBub3RpZnkgdGhlIHNlbmRlciBpbW1lZGlhdGVseSBieSByZXBseSBlLW1haWwgYW5kIHRo
-ZW4gZGVsZXRlIHRoaXMgbWVzc2FnZSBmcm9tIHlvdXIgc3lzdGVtLiBUaGFuayB5b3UuDQooRGVj
-cmVlIDE5Ni8yMDAzIGFuZCBSZWd1bGF0aW9uIChFVSkgMjAxNi82NzkpDQoNCg0KLS0tLS1NZXNz
-YWdnaW8gb3JpZ2luYWxlLS0tLS0NCkRhOiBKYW4gS2lzemthIDxqYW4ua2lzemthQHNpZW1lbnMu
-Y29tPg0KSW52aWF0bzogbHVuZWTDrCAxOCBtYWdnaW8gMjAyMCAxMDo1Nw0KQTogTWFyY28gVGVz
-c29yZSA8bWFyY28udGVzc29yZUBheGVsc3cuaXQ+OyBYZW5vbWFpQHhlbm9tYWkub3JnDQpPZ2dl
-dHRvOiBSZTogQWJvdXQgUlROZXQgc2V0dXANCg0KT24gMTUuMDUuMjAgMTU6MTUsIE1hcmNvIFRl
-c3NvcmUgdmlhIFhlbm9tYWkgd3JvdGU6DQo+IEdvb2QgbW9ybmluZywNCj4gSSdtIHdvcmtpbmcg
-aW4gYSBwcm9qZWN0IHdoZXJlIEkgbmVlZCBzZW5kIGFuZCByZWNlaXZlIFJBVyBldGhlcm5ldCBw
-YWNrZXQgaW4gcmVhbHRpbWUuDQo+IEknbSB1c2luZyBhIFhlbm9tYWkgMy4xIHBvcnRpbmcgb24g
-YW4gVWJ1bnR1IG1hY2hpbmUuDQo+IFJUTmV0IGlzIGVuYWJsZWQgaW4gdGhlIGtlcm5lbCBhcyBt
-b2R1bGVzLg0KPiANCj4gVGhlIHByb2JsZW0gaXMgdGhhdCBJIGRvbid0IHJlYWxseSBrbm93IGhv
-dyB0byBzZXR1cCB0aGUgbmV0d29yayBpbiB1c2Vyc3BhY2UuDQo+IA0KPiBJZiB0aGlzIG1haWxp
-bmcgbGlzdCBpcyBub3QgYXBwcm9wcmlhdGUgZm9yIHRoZSBpc3N1ZSBwbGVhc2UgdGVsbCBtZSB3
-aGVyZSBJIGNhbiB3cml0ZS4NCj4gDQo+IFRoZSByZXN1bHRzIG9mICBydGlmY29uZmlnIGlzOg0K
-PiBydGV0aDAgICAgTWVkaXVtOiBFdGhlcm5ldCAgSGFyZHdhcmUgYWRkcmVzczogNkM6QjM6MTE6
-NTI6NEM6RTkNCj4gICAgICAgICAgICBJUCBhZGRyZXNzOiAxOTIuMTY4LjE3OC4xNDIgIEJyb2Fk
-Y2FzdCBhZGRyZXNzOiAxOTIuMTY4LjE3OC4yNTUNCj4gICAgICAgICAgICBVUCBCUk9BRENBU1Qg
-UlVOTklORyAgTVRVOiAxNTAwDQo+ICAgICAgICAgICAgUlggcGFja2V0czowIGVycm9yczowIGRy
-b3BwZWQ6MCBvdmVycnVuczowIGZyYW1lOjANCj4gICAgICAgICAgICBUWCBwYWNrZXRzOjAgZXJy
-b3JzOjAgZHJvcHBlZDowIG92ZXJydW5zOjAgY2FycmllcjowDQo+ICAgICAgICAgICAgY29sbGlz
-aW9uczowDQo+ICAgICAgICAgICAgUlggYnl0ZXM6MCAoMC4wIGIpICBUWCBieXRlczowICgwLjAg
-YikNCj4gDQo+IHJ0bG8gICAgICBNZWRpdW06IExvY2FsIExvb3BiYWNrDQo+ICAgICAgICAgICAg
-SVAgYWRkcmVzczogMTI3LjAuMC4xDQo+ICAgICAgICAgICAgVVAgTE9PUEJBQ0sgUlVOTklORyAg
-TVRVOiAxNTAwDQo+IA0KPiBTbyBJIHRyaWVkIHJ0cGluZyB0byBwaW5nIGFub3RoZXIgbWFjaGlu
-ZSwgaW4gbXkgbmV0d29yazogdGhhdCBtYWNoaW5lIGlzIG5vdCBhIHJlYWx0aW1lIG9uZSwgYW5k
-IHJ0cGluZyByZXNwb25zZSBpcyB0aGF0IHRoZXJlJ3Mgbm8gcm91dGUgdG8gaG9zdC4NCj4gVGhl
-IGZpcnN0IHF1ZXN0aW9uIGlzOiBkb2VzIHRoZSBvdGhlciBtYWNoaW5lIG5lZWQgdG8gcnVuIHJ0
-bmV0IGFzIHdlbGwgdG8gcmVzcG9uZCB0byB0aGUgcnRwaW5nIHByb3RvY29sLCBvciBpdCdzIHNp
-bXBseSBhIHJlYWx0aW1lIGltcGxlbWVudGF0aW9uIG9mIHRoZSBzdGFuZGFyZCBwaW5nPw0KDQpO
-bywgYnV0IEFSUCByZXNvbHV0aW9uIG9mIFJUbmV0IG5vZGVzIHdvcmsgb25seSBvbiBleHBsaWNp
-dCByZXF1ZXN0LiBZb3UgbmVlZCB0byBydW4gInJ0cm91dGUgc29saWNpdCA8aXA+IiBmb3IgdGhh
-dCwgb3IgdGhlIG90aGVyIHNpZGUgbmVlZHMgdG8gcGluZyB5b3UuDQoNCj4gDQo+IFRoZSBzZWNv
-bmQgcXVlc3Rpb24gaXM6IHRvIHNlbmQgYW5kIHJlY2VpdmUgY3VzdG9tIGV0aGVybmV0IGZyYW1l
-cyANCj4gZnJvbSBhIHVzZXJzcGFjZSBwcm9jZXNzLCBXaGF0IGlzIHRoZSBiZXN0IGNvbmZpZ3Vy
-YXRpb24gb2YgcnRuZXQuY29uZiA/IEkgZG9uJ3QgcmVhbGx5IG5lZWQgcnQtdGNwaXAgYW5kIEkg
-ZG9uJ3Qga25vdyBob3cgVERNQSB3b3Jrcy4NCj4gDQoNCllvdSBkb24ndCBydG5ldC5jb25mIGFu
-ZCB0aGUgc2V0dXAgdG9vbCB0aGVuLiBKdXN0IGxvYWQgdGhlIHJ0bmV0LCBydF9wYWNrZXQsIGFu
-ZCBydC08ZHJpdmVyPiBtb2R1bGVzIChwcm92aWRlZCB5b3UgdW5ib3VuZCB0aGUgdGFyZ2V0IGlu
-dGVyZmFjZSBmcm9tIHRoZSBMaW51eCBkcml2ZXIgYWxyZWFkeSksIHJ1biBydGlmY29uZmlnIG9u
-IHRoZSBydGV0aDAgaW50ZXJmYWNlLCBhbmQgdGhlbiB5b3UgY2FuIHVzZSBBRl9QQUNLRVQgc29j
-a2V0cyBmcm9tIHlvdXIgUlQgYXBwbGljYXRpb25zLg0KDQo+IFRoaXJkIHF1ZXN0aW9uIGlzIGFi
-b3V0IHRoZSBBUEkgdG8gdXNlOiBJJ20gdHJ5aW5nIHRvIHNlZSB0aGUgZXhhbXBsZXMsIGJ1dCBJ
-J2hhdmUgc29tZSB0cm91YmxlcyB0byBhY3R1YWxseSBpbXBsZW1lbnQgdGhpcy4NCg0KU2VlIGRl
-bW8vcG9zaXgvY29iYWx0L2V0aF9wX2FsbC5jIG9yDQp0ZXN0c3VpdGUvc21va2V5L25ldF9wYWNr
-ZXRfcmF3L3BhY2tldF9yYXcuYyAobm90IHNlbGYtc3RhbmRpbmcsIHRob3VnaCkgZm9yIGV4YW1w
-bGVzLiBTdHVkeSAibWFuIDcgcGFja2V0IiBmb3IgdGhlIHJhdyBpbnRlcmZhY2UgKFJUbmV0IGlz
-IHdpZGVseSBjb21wYXRpYmxlKS4NCg0KSFRILA0KSmFuDQoNCi0tDQpTaWVtZW5zIEFHLCBDb3Jw
-b3JhdGUgVGVjaG5vbG9neSwgQ1QgUkRBIElPVCBTRVMtREUgQ29ycG9yYXRlIENvbXBldGVuY2Ug
-Q2VudGVyIEVtYmVkZGVkIExpbnV4DQo=
+On 18.05.20 12:19, Marco Tessore wrote:
+> Sorry Jan, just one more question:
+> I've implemented a simple task that send a packet,
+> and then receive a response.
+> I know the response come back, on the network, in couple of useconds.
+> But, from the send to the receive I measure 100 ms.
+> You know why this delay:
+> Is the send or the receive slow?
+> You know there's some parameter to adjust?
+
+Check if RX interrupts are coming for the NIC. After that RX IRQ, the 
+RTnet stack manager is running. That's an in-kernel Xenomai thread. It 
+will wake up your application blocking on a receive. You can follow that 
+likely via an ftrace (e.g. kernelshark) recording of "cobalt" events.
+
+Jan
+
+> 
+> Thank you
+> Marco
+> 
+> 
+> Marco Tessore
+> 
+> AXEL S.r.l.
+> Via del Cannino, 3
+> 21020 Crosio della Valle (VA) - ITALY
+> Tel: +39 0332 949600
+> Fax: +39 0332 969315
+> E-mail: marco.tessore@axelsw.it
+> Web site: www.axelsoftware.it
+> 
+> Le informazioni contenute in questo messaggio e negli eventuali allegati sono riservate e ad uso esclusivo del destinatario. Qualora abbiate ricevuto questo messaggio per errore, siete cortesemente pregati di darne immediata comunicazione al mittente e di provvedere alla sua distruzione. Grazie.
+> (Regolamento Europeo Protezione dei Dati n. 2016/679 (“GDPR”)/D. Lgs 30.6.2003 n. 196)
+> 
+> The information contained in this e-mail and any attachments are confidential and are intended for the use of the individual or entity to which they are addressed. If you are not among the named recipients, please notify the sender immediately by reply e-mail and then delete this message from your system. Thank you.
+> (Decree 196/2003 and Regulation (EU) 2016/679)
+> 
+> 
+> -----Messaggio originale-----
+> Da: Marco Tessore
+> Inviato: lunedì 18 maggio 2020 11:13
+> A: 'Jan Kiszka' <jan.kiszka@siemens.com>; Xenomai@xenomai.org
+> Oggetto: R: About RTNet setup
+> 
+> Thank you Jan
+> 
+> 
+> Marco Tessore
+> 
+> AXEL S.r.l.
+> Via del Cannino, 3
+> 21020 Crosio della Valle (VA) - ITALY
+> Tel: +39 0332 949600
+> Fax: +39 0332 969315
+> E-mail: marco.tessore@axelsw.it
+> Web site: www.axelsoftware.it
+> 
+> Le informazioni contenute in questo messaggio e negli eventuali allegati sono riservate e ad uso esclusivo del destinatario. Qualora abbiate ricevuto questo messaggio per errore, siete cortesemente pregati di darne immediata comunicazione al mittente e di provvedere alla sua distruzione. Grazie.
+> (Regolamento Europeo Protezione dei Dati n. 2016/679 (“GDPR”)/D. Lgs 30.6.2003 n. 196)
+> 
+> The information contained in this e-mail and any attachments are confidential and are intended for the use of the individual or entity to which they are addressed. If you are not among the named recipients, please notify the sender immediately by reply e-mail and then delete this message from your system. Thank you.
+> (Decree 196/2003 and Regulation (EU) 2016/679)
+> 
+> 
+> -----Messaggio originale-----
+> Da: Jan Kiszka <jan.kiszka@siemens.com>
+> Inviato: lunedì 18 maggio 2020 10:57
+> A: Marco Tessore <marco.tessore@axelsw.it>; Xenomai@xenomai.org
+> Oggetto: Re: About RTNet setup
+> 
+> On 15.05.20 15:15, Marco Tessore via Xenomai wrote:
+>> Good morning,
+>> I'm working in a project where I need send and receive RAW ethernet packet in realtime.
+>> I'm using a Xenomai 3.1 porting on an Ubuntu machine.
+>> RTNet is enabled in the kernel as modules.
+>>
+>> The problem is that I don't really know how to setup the network in userspace.
+>>
+>> If this mailing list is not appropriate for the issue please tell me where I can write.
+>>
+>> The results of  rtifconfig is:
+>> rteth0    Medium: Ethernet  Hardware address: 6C:B3:11:52:4C:E9
+>>             IP address: 192.168.178.142  Broadcast address: 192.168.178.255
+>>             UP BROADCAST RUNNING  MTU: 1500
+>>             RX packets:0 errors:0 dropped:0 overruns:0 frame:0
+>>             TX packets:0 errors:0 dropped:0 overruns:0 carrier:0
+>>             collisions:0
+>>             RX bytes:0 (0.0 b)  TX bytes:0 (0.0 b)
+>>
+>> rtlo      Medium: Local Loopback
+>>             IP address: 127.0.0.1
+>>             UP LOOPBACK RUNNING  MTU: 1500
+>>
+>> So I tried rtping to ping another machine, in my network: that machine is not a realtime one, and rtping response is that there's no route to host.
+>> The first question is: does the other machine need to run rtnet as well to respond to the rtping protocol, or it's simply a realtime implementation of the standard ping?
+> 
+> No, but ARP resolution of RTnet nodes work only on explicit request. You need to run "rtroute solicit <ip>" for that, or the other side needs to ping you.
+> 
+>>
+>> The second question is: to send and receive custom ethernet frames
+>> from a userspace process, What is the best configuration of rtnet.conf ? I don't really need rt-tcpip and I don't know how TDMA works.
+>>
+> 
+> You don't rtnet.conf and the setup tool then. Just load the rtnet, rt_packet, and rt-<driver> modules (provided you unbound the target interface from the Linux driver already), run rtifconfig on the rteth0 interface, and then you can use AF_PACKET sockets from your RT applications.
+> 
+>> Third question is about the API to use: I'm trying to see the examples, but I'have some troubles to actually implement this.
+> 
+> See demo/posix/cobalt/eth_p_all.c or
+> testsuite/smokey/net_packet_raw/packet_raw.c (not self-standing, though) for examples. Study "man 7 packet" for the raw interface (RTnet is widely compatible).
+> 
+> HTH,
+> Jan
+> 
+> --
+> Siemens AG, Corporate Technology, CT RDA IOT SES-DE Corporate Competence Center Embedded Linux
+> 
+
+
+-- 
+Siemens AG, Corporate Technology, CT RDA IOT SES-DE
+Corporate Competence Center Embedded Linux
 
