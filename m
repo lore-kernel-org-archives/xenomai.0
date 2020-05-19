@@ -1,8 +1,8 @@
 MIME-Version: 1.0
 From: =?UTF-8?B?5a2Z5LiW6b6Z?= <sunshilong369@gmail.com>
-Date: Tue, 19 May 2020 13:29:50 +0800
-Message-ID: <CAAvDm6ZVOMmRkpdQJJf4YwcPMP+DOGer4UsWaqUYRHtv+jBPZg@mail.gmail.com>
-Subject: Question about the xenomai.
+Date: Tue, 19 May 2020 13:34:44 +0800
+Message-ID: <CAAvDm6bFLEfm5wMxOpKwsQgn2+gTea=5CuHwGeRk3-X=nXLScg@mail.gmail.com>
+Subject: Question about the complie skin.
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
@@ -16,40 +16,42 @@ List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
 To: xenomai <xenomai@xenomai.org>
 
 Hi,
-I am using xenomai-3.1.
-    I complied source code with xenomai native skin for months.
-I did not notice any complie error indeed and the final binary
-programs could run well.
+    I am using xenomai-3.1.
+    I complied source code with xenomai *native skin* for months.
+I did not notice any complie error indeed and the
+* final binary programs could run well*.
     But, i encoutered some problems this time while the source
-code had called rt_alarm_create(still complie the source code with
+code had called *rt_alarm_create*(still complie the source code with
 xenomai native skin).Though i have include the corresponding header
 file(#include <alchemy/timer.h>),gcc complier still complained,
-"warning: implicit declaration of function =E2=80=98rt_alarm_create=E2=80=
-=99".
+"*warning: implicit declaration of function =E2=80=98rt_alarm_create=E2=80=
+=99*".
 (For g++ complier, i got another kind of complie error:
 " error: =E2=80=98rt_alarm_create=E2=80=99 was not declared in this scope".=
 )
-Ignore of the warning aforementioned, I could complie the source
-code successfully with gcc indeed.The the binary program could
-be started up.But you could not see any output produced by the
-routine started by rt_alarm_create in the terminal.
+Ignore of the warning aforementioned,
 
-    The source code, retated cmakelist and the complie error
-are listed at the end of this email.
 
-In addition, I noticed that the usage Options of xeno-config
+*I could complie the source code successfully with gcc indeed.The the
+binary program could be started up.But you could not see any output
+produced by the routine started by rt_alarm_create in the terminal.*
+
+
+*The source code, retated cmakelist and the complie error are listed at the
+end of this email.*
+
+In addition, I noticed that the *usage Options of xeno-config*
 shows it supports these skins:
-posix|vxworks|psos|alchemy|rtdm|smokey|cobalt(no native skin indeed).
-But,if you pass "--skin=3Dnative" to xeno-config, it is ok(no error
+posix|vxworks|psos|alchemy|rtdm|smokey|cobalt(*no native skin indeed*).
+But,if you* pass "--skin=3Dnative" to xeno-config, it is ok*(no error
 message outputs) and the final complied binary program could run
 normally in the most cases.
 
-I have sloved this problem by use alchemy skin instead.
-I have thought over and over, but i still could not understand.
+
+* I have sloved this problem by use alchemy skin instead.I have thought
+over and over, but i still could not understand.*
 My heart would be full of thanks if you could do me a favor.
 
-Thank you for your attention to  this matter.
-Look forward to hearing from you.
 
 //source code
 //filename=EF=BC=9A rt_alarmtest.c
