@@ -1,15 +1,19 @@
 MIME-Version: 1.0
-References: <CAAvDm6bFLEfm5wMxOpKwsQgn2+gTea=5CuHwGeRk3-X=nXLScg@mail.gmail.com>
- <CABk+T1sBMVKjDhmyJJ1N4Rpfh-9-mAc9OJhBYnDfjyBR2Xpoow@mail.gmail.com>
- <CAAvDm6ZHAwDqSR2CjunNFAPaWx33nF_241hiTdtRL9s_iXNRzQ@mail.gmail.com>
- <CABk+T1toVC75tyF=AbxHMtfTSXhUGCtP4_4fMMHGnNCQFNZ8Jg@mail.gmail.com>
-In-Reply-To: <CABk+T1toVC75tyF=AbxHMtfTSXhUGCtP4_4fMMHGnNCQFNZ8Jg@mail.gmail.com>
-From: =?UTF-8?B?5a2Z5LiW6b6Z?= <sunshilong369@gmail.com>
-Date: Wed, 20 May 2020 14:02:05 +0800
-Message-ID: <CAAvDm6aHLdBAOWWurpPuDuBVGmp=Q+8f+6A7ip8vc8ZjgcLC7w@mail.gmail.com>
-Subject: Re: Question about the complie skin.
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+References: <MW3PR18MB36730B88CBB748555D90D4FCDABD0@MW3PR18MB3673.namprd18.prod.outlook.com>
+ <CALLqZ8S0a1TaWX+Q038kD-LLMAr6Q=9PosmLt-JMby8M7OY8FA@mail.gmail.com>
+ <MW3PR18MB367372D9FE88BA250C4AC292DABD0@MW3PR18MB3673.namprd18.prod.outlook.com>
+ <CALLqZ8RQ+Yz+mkBXc8S=BmS5_EM1otykiRZQ-KU5gCJu8eM19w@mail.gmail.com>
+ <MW3PR18MB367363218E5F906501D209D2DABD0@MW3PR18MB3673.namprd18.prod.outlook.com>
+ <CALLqZ8Ts4CnEDxDHia91w80m1P-Hke9+HC1XWktzQGhpO+bcrw@mail.gmail.com>
+ <MW3PR18MB36736B94D56069A581749E6FDABD0@MW3PR18MB3673.namprd18.prod.outlook.com>
+In-Reply-To: <MW3PR18MB36736B94D56069A581749E6FDABD0@MW3PR18MB3673.namprd18.prod.outlook.com>
+From: Greg Gallagher <greg@embeddedgreg.com>
+Date: Wed, 20 May 2020 23:38:30 -0400
+Message-ID: <CALLqZ8QQp0OWc4gTLK0vXPNuSC5Yb6js=TPVLRvKqc0PgoabrA@mail.gmail.com>
+Subject: Re: Unable to get xeno-gpio-xilinx to work on Zynq Ultrascale +
+ platform
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -18,292 +22,259 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: gbcwbz <cwbddzxx@gmail.com>
-Cc: xenomai <xenomai@xenomai.org>
+To: Joshua Karch <jkarch48@hotmail.com>
+Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-Hi,Cheng
-
-   Thank you so much for your reply.
-
->As I know from Xenomai documentation, the trank folder is for
->compatibility with Xenomai 2.
->And if you really want to write in Xenomai2 manner, you should
->include <native/alarm.h> maybe.
-  I have followed your advice and have tried it.I find that the interface
-of
-*rt_alarm_create *is not same bettween xenomai 2 and xenomai 3.
-
->>     I complied source code with xenomai *native skin* for months.
->> I did not notice any complie error indeed and the
->> * final binary programs could run well*.
->>     But, i encoutered some problems this time while the source
->> code had called *rt_alarm_create*(still complie the source code with
->> xenomai native skin).Though i have include the corresponding header
->> file(#include <alchemy/timer.h>),gcc complier still complained,
->> "*warning: implicit declaration of function =E2=80=98rt_alarm_create=E2=
-=80=99*".
->> (For g++ complier, i got another kind of complie error:
->> " error: =E2=80=98rt_alarm_create=E2=80=99 was not declared in this scop=
-e".)
->> Ignore of the warning aforementioned,
->>
->>
->> I could complie the source code successfully with gcc indeed.The the
->> binary program could be started up.But you could not see any output
->> produced by the routine started by rt_alarm_create in the terminal.
-
-*    I still hope to dig deep. I wanna find out why the code
-aforementioned *
-*in the first email could be compiled  successfully with gcc indeed (and
-why *
-*the **binary program **could be started up).*
-*    Do you have a interest in it?*
-
-    Best regards.
-    Look forward to hearing from you.
-
-gbcwbz <cwbddzxx@gmail.com> =E4=BA=8E2020=E5=B9=B45=E6=9C=8820=E6=97=A5=E5=
-=91=A8=E4=B8=89 =E4=B8=8A=E5=8D=8811:58=E5=86=99=E9=81=93=EF=BC=9A
-
-> Hi,
->   As I know from Xenomai documentation, the trank folder is for
-> compatibility with Xenomai 2.
-> And if you really want to write in Xenomai2 manner, you should include
-> <native/alarm.h> maybe.
->
-> xeno-config --native --cflags
-> -I/opt/xenomai-3.1/include/trank -D__XENO_COMPAT__
-> -I/opt/xenomai-3.1/include/cobalt -I/opt/xenomai-3.1/include
-> -D_GNU_SOURCE -D_REENTRANT -fasynchronous-unwind-tables -D__COBALT__
-> -I/opt/xenomai-3.1/include/alchemy
->
-> You wan to use Xenomai2 API, and included header <alchemy/alarm.h> for
-> Xenomai3
->
-> Regards
-> Bryan Cheng
->
-> =E5=AD=99=E4=B8=96=E9=BE=99 <sunshilong369@gmail.com> =E4=BA=8E2020=E5=B9=
-=B45=E6=9C=8820=E6=97=A5=E5=91=A8=E4=B8=89 =E4=B8=8A=E5=8D=8811:19=E5=86=99=
-=E9=81=93=EF=BC=9A
-> >
-> >      Thank you for the reply.
-> > >>     I complied source code with xenomai *native skin* for months.
-> > >> I did not notice any complie error indeed and the
-> > >> * final binary programs could run well*.
-> > >>     But, i encoutered some problems this time while the source
-> > >> code had called *rt_alarm_create*(still complie the source code with
-> > >> xenomai native skin).Though i have include the corresponding header
-> > >> file(#include <alchemy/timer.h>),gcc complier still complained,
-> > >> "*warning: implicit declaration of function =E2=80=98rt_alarm_create=
-=E2=80=99*".
-> > >> (For g++ complier, i got another kind of complie error:
-> > >> " error: =E2=80=98rt_alarm_create=E2=80=99 was not declared in this =
-scope".)
-> > >> Ignore of the warning aforementioned,
-> > >>
-> > >>
-> > >> I could complie the source code successfully with gcc indeed.The the
-> > >> binary program could be started up.But you could not see any output
-> > >> produced by the routine started by rt_alarm_create in the terminal.
-> >
-> > > The compatibility wrappers are not very complete.
-> >
-> >      But, there are wrappers for rt_alarm_create and rt_alarm_start
-> indeed.
-> > You are able to see the related source code on
-> >
-> https://gitlab.denx.de/Xenomai/xenomai/-/blob/v3.1/include/trank/native/a=
-larm.h
-> > and
-> https://gitlab.denx.de/Xenomai/xenomai/-/blob/v3.1/lib/trank/native.c .
-> >
-> >     Thank you for your attention to this question.
-> >     I would be thankful for any hint on it.
-> >
-> >
-> >
-> > gbcwbz <cwbddzxx@gmail.com> =E4=BA=8E2020=E5=B9=B45=E6=9C=8820=E6=97=A5=
-=E5=91=A8=E4=B8=89 =E4=B8=8A=E5=8D=889:48=E5=86=99=E9=81=93=EF=BC=9A
-> >>
-> >> Hi,
-> >>     According to
-> >>
-> https://xenomai.org/documentation/xenomai-3/html/man1/xeno-config/index.h=
-tml
-> >>
-> >> > --native and --skin=3Dnative are accepted for backward compatibility
-> purpose. They are stricly equivalent to passing --alchemy --compat.
-> >>
-> >> You should not use --native in new xenomai3 programs, use --alchemy
-> instead.
-> >>
-> >>
-> >> > --compat
-> >> >    Enable the Xenomai 2.x compatibility mode for the API/skin
-> selected. This switch affects the Alchemy and POSIX APIs, turning on a se=
-t
-> of source-level compatibility wrappers when present.
-> >>
-> >> The compatibility wrappers are not very complete.
-> >>
-> >> Regards
-> >> Bryan Cheng
-> >>
-> >> =E5=AD=99=E4=B8=96=E9=BE=99 via Xenomai <xenomai@xenomai.org> =E4=BA=
-=8E2020=E5=B9=B45=E6=9C=8819=E6=97=A5=E5=91=A8=E4=BA=8C =E4=B8=8B=E5=8D=881=
-:35=E5=86=99=E9=81=93=EF=BC=9A
-> >> >
-> >> > Hi,
-> >> >     I am using xenomai-3.1.
-> >> >     I complied source code with xenomai *native skin* for months.
-> >> > I did not notice any complie error indeed and the
-> >> > * final binary programs could run well*.
-> >> >     But, i encoutered some problems this time while the source
-> >> > code had called *rt_alarm_create*(still complie the source code with
-> >> > xenomai native skin).Though i have include the corresponding header
-> >> > file(#include <alchemy/timer.h>),gcc complier still complained,
-> >> > "*warning: implicit declaration of function =E2=80=98rt_alarm_create=
-=E2=80=99*".
-> >> > (For g++ complier, i got another kind of complie error:
-> >> > " error: =E2=80=98rt_alarm_create=E2=80=99 was not declared in this =
-scope".)
-> >> > Ignore of the warning aforementioned,
-> >> >
-> >> >
-> >> > *I could complie the source code successfully with gcc indeed.The th=
-e
-> >> > binary program could be started up.But you could not see any output
-> >> > produced by the routine started by rt_alarm_create in the terminal.*
-> >> >
-> >> >
-> >> > *The source code, retated cmakelist and the complie error are listed
-> at the
-> >> > end of this email.*
-> >> >
-> >> > In addition, I noticed that the *usage Options of xeno-config*
-> >> > shows it supports these skins:
-> >> > posix|vxworks|psos|alchemy|rtdm|smokey|cobalt(*no native skin
-> indeed*).
-> >> > But,if you* pass "--skin=3Dnative" to xeno-config, it is ok*(no erro=
-r
-> >> > message outputs) and the final complied binary program could run
-> >> > normally in the most cases.
-> >> >
-> >> >
-> >> > * I have sloved this problem by use alchemy skin instead.I have
-> thought
-> >> > over and over, but i still could not understand.*
-> >> > My heart would be full of thanks if you could do me a favor.
-> >> >
-> >> >
-> >> > //source code
-> >> > //filename=EF=BC=9A rt_alarmtest.c
-> >> > #include <unistd.h>
-> >> > #include <stdio.h>
-> >> > #include <stdlib.h>
-> >> > #include <alchemy/task.h>
-> >> > #include <alchemy/timer.h>
-> >> > #include <alchemy/alarm.h>
-> >> >
-> >> > static void alarm_handler(void *arg)
-> >> > {
-> >> >     printf("enter alarm_routine\n");
-> >> > }
-> >> >
-> >> > int main(int argc, char* argv[])
-> >> > {
-> >> >     RT_TASK rtMainTask;
-> >> >     int ret =3D 0;
-> >> >     RT_ALARM alrm;
-> >> >
-> >> >     rt_task_shadow(&rtMainTask, "main", 1, 0);
-> >> >     ret =3D rt_alarm_create(&alrm, "ALARM", alarm_handler, NULL);
-> >> >     if(ret !=3D 0)
-> >> >     {
-> >> >         printf("rt_alarm_create returned error, ret=3D%d\n", ret);
-> >> >     }
-> >> >
-> >> >     ret =3D rt_alarm_start(&alrm, 200000000ULL, 200000000ULL);
-> >> >     if(ret !=3D 0)
-> >> >     {
-> >> >         printf("rt_alarm_start returned error, ret=3D%d\n", ret);
-> >> >     }
-> >> >
-> >> >     printf("loop begin\n");
-> >> >     while(1)
-> >> >     {
-> >> > //      rt_printf("loop ");
-> >> >         sleep(1);
-> >> >     }
-> >> > }
-> >> >
-> >> > //CMakeList.txt
-> >> > cmake_minimum_required(VERSION 3.6)
-> >> >
-> >> > project(rt_alarmtest)
-> >> >
-> >> > set(SRCS rt_alarmtest.c)
-> >> >
-> >> > set(XENO_CONFIG  /usr/xenomai/bin/xeno-config)
-> >> > set(XENO_SKIN  native)
-> >> >
-> >> > execute_process(COMMAND ${XENO_CONFIG} --${XENO_SKIN} --cflags
-> >> > OUTPUT_VARIABLE XENO_CFLAGS OUTPUT_STRIP_TRAILING_WHITESPACE)
-> >> > execute_process(COMMAND ${XENO_CONFIG} --${XENO_SKIN} --ldflags
-> >> > OUTPUT_VARIABLE XENO_LDFLAGS OUTPUT_STRIP_TRAILING_WHITESPACE)
-> >> >
-> >> > message(STATUS "Xeno Skin: ${XENO_SKIN}")
-> >> > message(STATUS "Xeno cflags: ${XENO_CFLAGS}")
-> >> > message(STATUS "Xeno ldflags: ${XENO_LDFLAGS}")
-> >> >
-> >> > message(STATUS "Xeno source files: ${SRCS}")
-> >> >
-> >> > set(CMAKE_C_FLAGS "-g")
-> >> >
-> >> > set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${XENO_CFLAGS}")
-> >> > message(STATUS "C_FLAGS: ${CMAKE_C_FLAGS}")
-> >> > set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS}
-> ${XENO_LDFLAGS}")
-> >> > add_executable(rt_alarm_test ${SRCS})
-> >> >
-> >> > //log of compiling the source code
-> >> > #make
-> >> > [ 50%] Building C object CMakeFiles/rt_alarm_test.dir/rt_alarm.c.o
-> >> > /home/joy/xenomai/rt_alarm/rt_alarm.c: In function =E2=80=98main=E2=
-=80=99:
-> >> > /home/joy/xenomai/rt_alarm/rt_alarm.c:23:11: warning: implicit
-> declaration
-> >> > of function =E2=80=98rt_alarm_create=E2=80=99 [-Wimplicit-function-d=
-eclaration]
-> >> >      ret =3D rt_alarm_create(&alrm, "ALARM", alarm_handler, NULL);
-> >> >            ^
-> >> > [100%] Linking C executable rt_alarm_test
-> >> > [100%] Built target rt_alarm_test
-> >> >
-> >> > //running log
-> >> > $ ./rt_alarm_test
-> >> > loop begin
-> >> > #No more log, though the program is still running.
-> >> > #No output could be seen from the routine which started by the
-> >> > rt_alarm_create
-> >> > #And you case see the increasement of XSC and CSW indeed.Why?
-> >> >
-> >> >
-> >> > //some related information
-> >> > joy@ubt-16-04-wk:~/xenomai$ cat /proc/xenomai/sched/stat
-> >> > CPU  PID    MSW        CSW        XSC        PF    STAT       %CPU
-> NAME
-> >> >   0  44552  38         40         121        0     000480c0    0.0
-> main
-> >> >   0  44554  2          52         58         0     00048042    0.0
-> >> >  timer-internal
-> >> >
-> >> > joy@ubt-16-04-wk:~/xenomai$ cat /proc/xenomai/sched/stat
-> >> > CPU  PID    MSW        CSW        XSC        PF    STAT       %CPU
-> NAME
-> >> >   0  44552  38         40         121        0     000480c0    0.0
-> main
-> >> >   0  44554  2          106        112        0     00048042    0.0
-> >> >  timer-internal
->
+SGksCgpPbiBGcmksIE1heSAxNSwgMjAyMCBhdCA1OjIyIFBNIEpvc2h1YSBLYXJjaCA8amthcmNo
+NDhAaG90bWFpbC5jb20+IHdyb3RlOgoKPgo+Cj4gLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0t
+LS0tCj4gKkZyb206KiBHcmVnIEdhbGxhZ2hlciA8Z3JlZ0BlbWJlZGRlZGdyZWcuY29tPgo+ICpT
+ZW50OiogRnJpZGF5LCBNYXkgMTUsIDIwMjAgMjowOCBQTQo+ICpUbzoqIEpvc2h1YSBLYXJjaCA8
+amthcmNoNDhAaG90bWFpbC5jb20+Cj4gKkNjOiogeGVub21haUB4ZW5vbWFpLm9yZyA8eGVub21h
+aUB4ZW5vbWFpLm9yZz4KPiAqU3ViamVjdDoqIFJlOiBVbmFibGUgdG8gZ2V0IHhlbm8tZ3Bpby14
+aWxpbnggdG8gd29yayBvbiBaeW5xIFVsdHJhc2NhbGUKPiArIHBsYXRmb3JtCj4KPiBIaSwKPgo+
+Cj4gT24gRnJpLCBNYXkgMTUsIDIwMjAgYXQgNDo1MyBQTSBKb3NodWEgS2FyY2ggPGprYXJjaDQ4
+QGhvdG1haWwuY29tPiB3cm90ZToKPgo+Cj4KPgo+Cj4gU2VudCBmcm9tIE1haWwKPiA8aHR0cHM6
+Ly9ldXIwMS5zYWZlbGlua3MucHJvdGVjdGlvbi5vdXRsb29rLmNvbS8/dXJsPWh0dHBzJTNBJTJG
+JTJGZ28ubWljcm9zb2Z0LmNvbSUyRmZ3bGluayUyRiUzRkxpbmtJZCUzRDU1MDk4NiZkYXRhPTAy
+JTdDMDElN0MlN0NkOWI5ZWFlOGRiNTg0YmM5ZDRlNjA4ZDdmOTE0MzI5NSU3Qzg0ZGY5ZTdmZTlm
+NjQwYWZiNDM1YWFhYWFhYWFhYWFhJTdDMSU3QzAlN0M2MzcyNTE3Mzc0NDc3OTY3OTImc2RhdGE9
+WXBuSWdWN01NTDZtTDhFeVlXSzY0ZmV3cGlYdm1MdE8ySTVyWTE2SW0zayUzRCZyZXNlcnZlZD0w
+Pgo+IGZvciBXaW5kb3dzIDEwCj4KPgo+Cj4gKkZyb206ICpHcmVnIEdhbGxhZ2hlciA8Z3JlZ0Bl
+bWJlZGRlZGdyZWcuY29tPgo+ICpTZW50OiAqRnJpZGF5LCBNYXkgMTUsIDIwMjAgNDo0NiBQTQo+
+ICpUbzogKkpvc2h1YSBLYXJjaCA8amthcmNoNDhAaG90bWFpbC5jb20+Cj4gKkNjOiAqeGVub21h
+aUB4ZW5vbWFpLm9yZwo+ICpTdWJqZWN0OiAqUmU6IFVuYWJsZSB0byBnZXQgeGVuby1ncGlvLXhp
+bGlueCB0byB3b3JrIG9uIFp5bnEgVWx0cmFzY2FsZQo+ICsgcGxhdGZvcm0KPgo+Cj4KPiBISSwK
+Pgo+Cj4KPiBPbiBGcmksIE1heSAxNSwgMjAyMCBhdCA0OjQyIFBNIEpvc2h1YSBLYXJjaCA8amth
+cmNoNDhAaG90bWFpbC5jb20+IHdyb3RlOgo+Cj4gSGkgR3JlZyEKPgo+Cj4KPiAqRnJvbToqIEdy
+ZWcgR2FsbGFnaGVyIDxncmVnQGVtYmVkZGVkZ3JlZy5jb20+Cj4gKlNlbnQ6KiBGcmlkYXksIE1h
+eSAxNSwgMjAyMCAxOjM1IFBNCj4gKlRvOiogSm9zaHVhIEthcmNoIDxqa2FyY2g0OEBob3RtYWls
+LmNvbT4KPiAqQ2M6KiB4ZW5vbWFpQHhlbm9tYWkub3JnIDx4ZW5vbWFpQHhlbm9tYWkub3JnPgo+
+ICpTdWJqZWN0OiogUmU6IFVuYWJsZSB0byBnZXQgeGVuby1ncGlvLXhpbGlueCB0byB3b3JrIG9u
+IFp5bnEgVWx0cmFzY2FsZQo+ICsgcGxhdGZvcm0KPgo+Cj4KPiBIaSwKPgo+IE9uIEZyaSwgTWF5
+IDE1LCAyMDIwIGF0IDQ6MjkgUE0gSm9zaHVhIEthcmNoIHZpYSBYZW5vbWFpCj4gPHhlbm9tYWlA
+eGVub21haS5vcmc+IHdyb3RlOgo+ID4KPiA+IEhlbGxvLAo+ID4KPiA+IFRoaXMgbXkgZmlyc3Qg
+cG9zdCBpbiAxMCB5ZWFycyB0byB0aGUgWGVub21haSBncm91cCwganVzdCBhcyB0aGUgRVZMCj4g
+cHJvamVjdCBjb21lcyBvbmxpbmUhICBJJ20gdHJ5aW5nIHRvIGdldCB0aGUgeGVuby1ncGlvLXhp
+bGlueCBkcml2ZXIKPiB3b3JraW5nIGJ1dCBhbSBlbmNvdW50ZXJpbmcgdGhlIGZvbGxvd2luZyBk
+aWZmaWN1bHRpZXM6Cj4gPiAoMSkgIEl0IHNlZW1zIHRoZSBzdGFuZGFyZCBub24gWGVub21haSBn
+cGlvLXhpbGlueCBkcml2ZXIgU3lzRlMgYXJlCj4gcHJlcmVxdWlzaXRlcyB0byBtYWtpbmcgdGhl
+IGRyaXZlciB3b3JrLiAgVW5saWtlIHRoZSBTSkExMDAwIENBTiBEcml2ZXJzIEkKPiB1c2VkIGlu
+IHRoZSBwYXN0IHdoaWNoIHdlcmUgc3RhbmRhbG9uZSwgSSdtIHNlZWluZyBhIGxvdCBvZiBjbHVl
+cyB0aGF0IHRoZQo+IFhlbm8gR1BJTyBkcml2ZXJzIG5lZWQgdG8gcGlnZ3liYWNrIG9uIHRvcCBv
+ZiB0aGUgY29yZSBMaW51eCBEcml2ZXJzLiAgIEkKPiBndWVzcyB0aGlzIGlzIGEgY2hhbmdlIGZy
+b20gd2hlbiBJIGxhc3Qgd29ya2VkIHdpdGggWGVub21haSAxMCB5ZWFycyBhZ28KPiB3aGVyZSBJ
+IHVzZWQgeGVuby0xNjU1MEEgYW5kIFNKQTEwMDAgYXMgUlRTRVIgYW5kIFJUQ0FOIGRyaXZlcnMu
+Cj4gPgo+ID4gV2hlbiBJIGF0dGVtcHQgdG8gbW9kcHJvYmUgeGVuby1ncGlvLXhpbGlueCBJIHJl
+Y2VpdmUgYSBtZXNzYWdlIHN0YXRpbmc6Cj4gPgo+ID4gbW9kcHJvYmU6IEVSUk9SOiBjb3VsZCBu
+b3QgaW5zZXJ0ICd4ZW5vX2dwaW9feGlsaW54JzogTm8gc3VjaCBkZXZpY2UKPiA+IERldmljZSBU
+cmVlOgo+ID4gIyBjYXQgL3Byb2MvZGV2aWNlLXRyZWUvYXhpZ3Bpb0BhMDAwMDAwMC9jb21wYXRp
+YmxlCj4gPiB4bG54LHhwcy1ncGlvLTEuMDAuYQo+ID4KPiA+IEluIFhlbm9tYWkgIGdwaW8teGls
+aW54LmM6Cj4gPiAgICAgICAgIHJldHVybiBydGRtX2dwaW9jaGlwX3NjYW5fb2YoTlVMTCwgInhs
+bngseHBzLWdwaW8tMS4wMC5hIiwKPiA+ICAgICAgICAgICAgICAgICAgICAgIFJURE1fU1VCQ0xB
+U1NfWElMSU5YKTsKPiA+Cj4gPgo+ID4gSSBpbnN0cnVtZW50ZWQgdGhlIFhlbm9tYWkgZ3Bpby14
+aWxpbnguYyAgYW5kIGdwaW8tY29yZS5jIHRvIHNlZSBpZiB0aGUKPiBvZl9maW5kX2NvbXBhdGli
+bGVfbm9kZSBmdW5jdGlvbiBmYWlscyBhbmQgaW5kZWVkIGl0IGRvZXMgZmluZCBubyBzdWNoCj4g
+ZGV2aWNlLiAgQWxzbyBJIG5vdGVkIHRoYXQgdGhlcmUgYXJlIG5vIFhpbGlueCBzcGVjaWZpYyBy
+ZWdpc3RlcnMgaW4gdGhlCj4gZ3Bpby1jb3JlLmMgb3IgaW4gZ3Bpby14aWxpbnguYywgbWFraW5n
+IG1lIGJlbGlldmUgdGhhdCB0aGlzIGRyaXZlciBpcwo+IHBpZ2d5YmFja2luZyBvbiB0b3Agb2Yg
+dGhlIFhpbGlueCBkcml2ZXIuCj4gPgo+ID4gSG93ZXZlcjogd2hlbiBJIG1vZHByb2JlIGdwaW8t
+eGlsaW54IHRoZSBvZl9maW5kX2NvbXBhdGlibGVfbm9kZQo+IGZ1bmN0aW9uIG5vIGxvbmdlciBm
+YWlscywgc28gSSBndWVzcyBvZl9maW5kX2NvbXBhdGlibGVfbm9kZSB3b3JrcyBvbmx5Cj4gd2l0
+aCBsb2FkZWQgZHJpdmVycyAvIEdQSU8gQ2hpcHMuICBUaGUgaXNzdWUgaXMsIGdwaW8teGlsaW54
+IGhhcyBhbHJlYWR5Cj4gZG9uZSB0aGUgU1lTRlMgcmVnaXN0cmF0aW9uLCBzbyBJIGdldCB0aGUg
+Zm9sbG93aW5nIGVycm9yczogIFNlZW1zICB0aGUKPiBkcml2ZXIgd2FudHMgdG8gdXNlIHRoZSBz
+YW1lIG5hbWVzIGZvciBSVCB3aXRoIFNZU0ZTIGFzIG5vbiBSVC4gVGhlIGtleQo+IGVycm9yIGlz
+ICIKPiA+IGtvYmplY3RfYWRkX2ludGVybmFsIGZhaWxlZCBmb3IgIWF4aWdwaW9AYTAwMDAwMDAg
+d2l0aCAtRUVYSVNULCBkCj4gPiBvbid0IHRyeSB0byByZWdpc3RlciB0aGluZ3Mgd2l0aCB0aGUg
+c2FtZSBuYW1lIGluIHRoZSBzYW1lIGRpcmVjdG9yeS4KPiA+ICIKPiA+Cj4gPiBUaG91Z2h0cz8K
+PiA+Cj4gPiBKb3NoIEthcmNoCj4gPgo+ID4KPiA+IG1vZHByb2JlIHhlbm8tZ3Bpby14aWxpbngK
+PiA+IFsgICA1NS43Nzg2NTZdIHRlc3QgcHJvYmluZyB4aWxpbnggZ3BpbyBydAo+ID4gWyAgIDU1
+Ljc4Mjc1M10gc3lzZnM6IGNhbm5vdCBjcmVhdGUgZHVwbGljYXRlIGZpbGVuYW1lCj4gJy9jbGFz
+cy8hYXhpZ3Bpb0BhMDAwMDAwMAo+ID4gJwo+ID4gWyAgIDU1Ljc4OTk5MV0gQ1BVOiAxIFBJRDog
+MjM3IENvbW06IG1vZHByb2JlIFRhaW50ZWQ6IEcgICAgICAgIFcKPiBPICAgICAgNC4xOS41Cj4g
+PiA1ICM4Cj4gPiBbICAgNTUuNzk3NDcwXSBIYXJkd2FyZSBuYW1lOiBaeW5xTVAgWkNVMTAyIFJl
+djEuMCAoRFQpCj4gPiBbICAgNTUuODAyNDIyXSBJLXBpcGUgZG9tYWluOiBMaW51eAo+ID4gWyAg
+IDU1LjgwNTY0M10gQ2FsbCB0cmFjZToKPiA+IFsgICA1NS44MDgwOTBdICBkdW1wX2JhY2t0cmFj
+ZSsweDAvMHgxNjAKPiA+IFsgICA1NS44MTE3NDhdICBzaG93X3N0YWNrKzB4MTQvMHgyMAo+ID4g
+WyAgIDU1LjgxNTA1Nl0gIGR1bXBfc3RhY2srMHhjYy8weGY0Cj4gPiBbICAgNTUuODE4MzYzXSAg
+c3lzZnNfd2Fybl9kdXArMHg2MC8weDgwCj4gPiBbICAgNTUuODIyMDE2XSAgc3lzZnNfY3JlYXRl
+X2Rpcl9ucysweGNjLzB4ZjAKPiA+IFsgICA1NS44MjYxMDZdICBrb2JqZWN0X2FkZF9pbnRlcm5h
+bCsweGFjLzB4MmEwCj4gPiBbICAgNTUuODMwMzY3XSAga3NldF9yZWdpc3RlcisweDUwLzB4ODAK
+PiA+IFsgICA1NS44MzM5MzddICBfX2NsYXNzX3JlZ2lzdGVyKzB4YmMvMHgxNzAKPiA+IFsgICA1
+NS44Mzc4NTBdICBfX2NsYXNzX2NyZWF0ZSsweDUwLzB4OTAKPiA+IFsgICA1NS44NDE1MDddICBy
+dGRtX2dwaW9jaGlwX2FkZCsweDMwLzB4MjYwCj4gPiBbICAgNTUuODQ1NTA3XSAgcnRkbV9ncGlv
+Y2hpcF9hbGxvYysweDUwLzB4ZTAKPiA+IFsgICA1NS44NDk1OTZdICBydGRtX2dwaW9jaGlwX3Nj
+YW5fb2YucGFydC4xKzB4MTM4LzB4MWUwCj4gPiBbICAgNTUuODU0NjQwXSAgcnRkbV9ncGlvY2hp
+cF9zY2FuX29mKzB4MjAvMHgzMAo+ID4gWyAgIDU1Ljg1ODkwNV0gIHhpbGlueF9ncGlvX2luaXQr
+MHgyOC8weDEwMDAgW3hlbm9fZ3Bpb194aWxpbnhdCj4gPiBbICAgNTUuODY0NTU0XSAgZG9fb25l
+X2luaXRjYWxsKzB4NzQvMHgxNzgKPiA+IFsgICA1NS44NjgzODJdICBkb19pbml0X21vZHVsZSsw
+eDU0LzB4MWQwCj4gPiBbICAgNTUuODcyMTIyXSAgbG9hZF9tb2R1bGUrMHgxYjkwLzB4MjEyMAo+
+ID4gWyAgIDU1Ljg3NTg2NF0gIF9fc2Vfc3lzX2Zpbml0X21vZHVsZSsweGI4LzB4ZDAKPiA+IFsg
+ICA1NS44ODAxMjddICBfX2FybTY0X3N5c19maW5pdF9tb2R1bGUrMHgxOC8weDIwCj4gPiBbICAg
+NTUuODg0NjUwXSAgZWwwX3N2Y19jb21tb24rMHhiYy8weDFhMAo+ID4gWyAgIDU1Ljg4ODM5MF0g
+IGVsMF9zdmNfaGFuZGxlcisweDY4LzB4ODAKPiA+IFsgICA1NS44OTIxMzFdICBlbDBfc3ZjKzB4
+OC8weDE4Cj4gPiBbICAgNTUuODk1MTE0XSBrb2JqZWN0X2FkZF9pbnRlcm5hbCBmYWlsZWQgZm9y
+ICFheGlncGlvQGEwMDAwMDAwIHdpdGgKPiAtRUVYSVNULCBkCj4gPiBvbid0IHRyeSB0byByZWdp
+c3RlciB0aGluZ3Mgd2l0aCB0aGUgc2FtZSBuYW1lIGluIHRoZSBzYW1lIGRpcmVjdG9yeS4KPiA+
+IFsgICA1NS45MDgyNTRdIFtYZW5vbWFpXSBjYW5ub3QgY3JlYXRlIHN5c2ZzIGNsYXNzCj4gPiBb
+ICAgNTUuOTEyNzk2XSBzeXNmczogY2Fubm90IGNyZWF0ZSBkdXBsaWNhdGUgZmlsZW5hbWUKPiAn
+L2NsYXNzLyFheGlncGlvQGEwMDAwMDAwCj4gPiAnCj4gPiBbICAgNTUuOTIwMDIxXSBDUFU6IDEg
+UElEOiAyMzcgQ29tbTogbW9kcHJvYmUgVGFpbnRlZDogRyAgICAgICAgVwo+IE8gICAgICA0LjE5
+LjUKPiA+IDUgIzgKPiA+IFsgICA1NS45Mjc1MDBdIEhhcmR3YXJlIG5hbWU6IFp5bnFNUCBaQ1Ux
+MDIgUmV2MS4wIChEVCkKPiA+IFsgICA1NS45MzI0NTNdIEktcGlwZSBkb21haW46IExpbnV4Cj4g
+PiBbICAgNTUuOTM1NjcyXSBDYWxsIHRyYWNlOgo+ID4gWyAgIDU1LjkzODExNV0gIGR1bXBfYmFj
+a3RyYWNlKzB4MC8weDE2MAo+ID4gWyAgIDU1Ljk0MTc2OV0gIHNob3dfc3RhY2srMHgxNC8weDIw
+Cj4gPiBbICAgNTUuOTQ1MDc3XSAgZHVtcF9zdGFjaysweGNjLzB4ZjQKPiA+IFsgICA1NS45NDgz
+ODRdICBzeXNmc193YXJuX2R1cCsweDYwLzB4ODAKPiA+IFsgICA1NS45NTIwMzhdICBzeXNmc19j
+cmVhdGVfZGlyX25zKzB4Y2MvMHhmMAo+ID4gWyAgIDU1Ljk1NjEyN10gIGtvYmplY3RfYWRkX2lu
+dGVybmFsKzB4YWMvMHgyYTAKPiA+IFsgICA1NS45NjAzODldICBrc2V0X3JlZ2lzdGVyKzB4NTAv
+MHg4MAo+ID4gWyAgIDU1Ljk2Mzk1N10gIF9fY2xhc3NfcmVnaXN0ZXIrMHhiYy8weDE3MAo+ID4g
+WyAgIDU1Ljk2Nzg3Ml0gIF9fY2xhc3NfY3JlYXRlKzB4NTAvMHg5MAo+ID4gWyAgIDU1Ljk3MTUy
+N10gIHJ0ZG1fZ3Bpb2NoaXBfYWRkKzB4MzAvMHgyNjAKPiA+IFsgICA1NS45NzU1MjldICBydGRt
+X2dwaW9jaGlwX2FsbG9jKzB4NTAvMHhlMAo+ID4gWyAgIDU1Ljk3OTYxOF0gIHJ0ZG1fZ3Bpb2No
+aXBfc2Nhbl9vZi5wYXJ0LjErMHgxMzgvMHgxZTAKPiA+IFsgICA1NS45ODQ2NjNdICBydGRtX2dw
+aW9jaGlwX3NjYW5fb2YrMHgyMC8weDMwCj4gPiBbICAgNTUuOTg4OTI1XSAgeGlsaW54X2dwaW9f
+aW5pdCsweDI4LzB4MTAwMCBbeGVub19ncGlvX3hpbGlueF0KPiA+IFsgICA1NS45OTQ1NzZdICBk
+b19vbmVfaW5pdGNhbGwrMHg3NC8weDE3OAo+ID4gWyAgIDU1Ljk5ODQwM10gIGRvX2luaXRfbW9k
+dWxlKzB4NTQvMHgxZDAKPiA+IFsgICA1Ni4wMDIxNDRdICBsb2FkX21vZHVsZSsweDFiOTAvMHgy
+MTIwCj4gPiBbICAgNTYuMDA1ODg2XSAgX19zZV9zeXNfZmluaXRfbW9kdWxlKzB4YjgvMHhkMAo+
+ID4gWyAgIDU2LjAxMDE0OV0gIF9fYXJtNjRfc3lzX2Zpbml0X21vZHVsZSsweDE4LzB4MjAKPiA+
+IFsgICA1Ni4wMTQ2NzJdICBlbDBfc3ZjX2NvbW1vbisweGJjLzB4MWEwCj4gPiBbICAgNTYuMDE4
+NDEyXSAgZWwwX3N2Y19oYW5kbGVyKzB4NjgvMHg4MAo+ID4gWyAgIDU2LjAyMjE1M10gIGVsMF9z
+dmMrMHg4LzB4MTgKPiA+IFsgICA1Ni4wMjUxMjhdIGtvYmplY3RfYWRkX2ludGVybmFsIGZhaWxl
+ZCBmb3IgIWF4aWdwaW9AYTAwMDAwMDAgd2l0aAo+IC1FRVhJU1QsIGQKPiA+IG9uJ3QgdHJ5IHRv
+IHJlZ2lzdGVyIHRoaW5ncyB3aXRoIHRoZSBzYW1lIG5hbWUgaW4gdGhlIHNhbWUgZGlyZWN0b3J5
+Lgo+ID4gWyAgIDU2LjAzODI2M10gW1hlbm9tYWldIGNhbm5vdCBjcmVhdGUgc3lzZnMgY2xhc3MK
+PiA+IFsgICA1Ni4wNDI3OThdIFhlbm8gU2NhbiByZXR1cm5zIC0xNwo+ID4gIwo+ID4KPiA+Cj4g
+Pgo+IEkgY2FuIHRha2UgYSBsb29rLiAgVGhpcyB3YXMgd29ya2luZyBvbiB0aGUgWnlucS03MDAw
+LCBidXQgSSBoYXZlbid0Cj4gdGVzdGVkIGl0IG9uIHRoZSBVbHRyYXNjYWxlLiAgSSdsbCBzZWUg
+aWYgSSBjYW4gcmVwcm9kdWNlLgo+Cj4KPiBUaGFua3MKPgo+IEdyZWcKPgo+Cj4KPgo+Cj4KPgo+
+IFRoYW5rIHlvdSBmb3IgeW91ciBoZWxwIHdpdGggdGhpcyEgVGhlIG90aGVyIHRoaW5nIEkgaGFk
+IHRvIGRvIHRvIG1ha2UKPiB0aGlzIHdvcmsgd2FzIHRvIGVkaXQgZHJpdmVycy94ZW5vbWFpL2dw
+aW8vS2NvbmZpZyB0byBlbmFibGUgZGVwZW5kcyBvbgo+Cj4gQVJDSF9aWU5RIHx8IEFSQ0hfWllO
+UU1QIGJlY2F1c2UgSSBhc3N1bWUgdGhlIEFYSSBkcml2ZXIgc2hvdWxkIGJlIHRoZQo+IHNhbWUg
+Zm9yIGVpdGhlciBaWU5RIG9yIFpZTlFNUCwgaXMgdGhhdCBhIHNhZmUgYXNzdW1wdGlvbj8KPgo+
+Cj4KPiBJIGFzc3VtZSB0aGF0IGlzIGNvcnJlY3QsIGJ1dCBJJ2xsIGRvdWJsZSBjaGVjay4gIEkg
+aGF2ZSBhIFVsdHJhOTYgaGVyZQo+IHRoYXQgSSBjYW4gZmlyZSB1cCBhbmQgdGVzdCBvbi4KPgo+
+Cj4KPgo+Cj4KPgo+IGNvbmZpZyBYRU5PX0RSSVZFUlNfR1BJT19YSUxJTlgKPgo+Cj4KPiBkZXBl
+bmRzIG9uIEFSQ0hfWllOUQo+Cj4KPgo+IGRlcGVuZHMgb24gQVJDSF9aWU5RIHx8IEFSQ0hfWllO
+UU1QCj4KPgo+Cj4gdHJpc3RhdGUgIlN1cHBvcnQgZm9yIFhpbGlueCBHUElPcyIKPgo+Cj4KPgo+
+Cj4gWWVwLCB0aGVzZSB3aWxsIG5lZWQgdG8gYmUgZW5hYmxlZCBmb3IgdGhlIEFYSSBncGlvcyB0
+byBidWlsZCBmb3IgdGhlCj4gWnlucU1QIGFyY2guCj4KPgo+Cj4gaGVscAo+Cj4KPgo+IEJlc3Qs
+Cj4KPgo+Cj4gSm9zaAo+Cj4gSSdsbCBhbnN3ZXIgdGhlIHF1ZXN0aW9ucyB5b3UgaGF2ZSBpbiB5
+b3VyIGZpcnN0IHBvc3Qgb25jZSBJIGxvb2sgYXQgdGhlCj4gZHJpdmVyIGFnYWluLCBJIHdhbnQg
+dG8gbWFrZSBzdXJlIG15IGFzc3VtcHRpb25zIGFyZSBjb3JyZWN0LiAgSSBoYXZlbid0Cj4gbG9v
+a2VkIGF0IHRoZSBHUElPIGNvcmUgaW4gYSBjb3VwbGUgb2YgbW9udGhzLgo+Cj4KPgo+IFRoYW5r
+cwo+Cj4KPgo+IEdyZWcKPgo+Cj4KPiBHcmVnLCBzb3VuZHMgZ3JlYXQhIFRoYW5rIHlvdSEgIFdl
+IGFyZSBydW5uaW5nIExpbnV4IDQuMTkuNTUgd2hpY2ggaXMKPiBiYXNlZCBvbiB0aGUgTGludXgt
+eGxueCA0LjE5IGRpc3RyaWJ1dGlvbiwgd2l0aCBYZW5vbWFpIDMuMSBhbmQgQ29iYWx0Cj4gQ29y
+ZS4gIEN1cnJlbnRseSBJIGhhdmUgU3lzZnMgYW5kIHRoZSBrZXJuZWwgbW9kdWxlIGVuYWJsZWQu
+Cj4KPiBZb3XigJlsbCBuZWVkIHRvIGRpc2FibGUgdGhlIG5vbiBydCBvbmUuIEnigJlsbCBoYXZl
+IGEgbW9yZSBpbi1kZXB0aAo+IGV4cGxhbmF0aW9uIG9uY2UgSSB0ZXN0IGl0IG91dC4KPgo+Cj4K
+PiBPbmUgb3RoZXIgZnVua3kgdGhpbmcgdGhhdCBtaWdodCBiZSBpbnZvbHZlZCBpcyB3aXRoIHRo
+ZSBiYXNlIGdwaW8teGlsaW54Cj4gZHJpdmVyLiAgSSBnZXQgYSBtZXNzYWdlIGFuZCBhIHRyYWNl
+IHRoYXQgZ3Bpby14aWxpbnggaXMgbm90IOKAnHBpcGVsaW5lCj4gc2FmZeKAnSB3aGVuIGxvYWRp
+bmcgdXAgb24gdGhlIGRtZXNnLiAgSG93ZXZlciB0aGUgYmFzZSwgbm9uLVhlbm9tYWkgR1BJTwo+
+IGRyaXZlciBkb2VzIHNlZW0gdG8gY29tbXVuaWNhdGUgd2l0aCBoYXJkd2FyZS4KPgo+Cj4KPiAg
+ICAxMy4zODkwNzBdIC0tLS0tLS0tLS0tLVsgY3V0IGhlcmUgXS0tLS0tLS0tLS0tLQo+Cj4gWyAg
+IDEzLjM5MzY5MV0gaXJxY2hpcCB4Z3BpbyBpcyBub3QgcGlwZWxpbmUtc2FmZSEKPgo+IFsgICAx
+My4zOTM3MTFdIFdBUk5JTkc6IENQVTogMCBQSUQ6IDE0NSBhdCBrZXJuZWwvaXJxL2NoaXAuYzo1
+NQo+IGlycV9zZXRfY2hpcCsweGI0LzB4ZDAKPgo+IFsgICAxMy40MDU4ODNdIE1vZHVsZXMgbGlu
+a2VkIGluOiBncGlvX3hpbGlueCgrKQo+Cj4gWyAgIDEzLjQxMDI0MF0gQ1BVOiAwIFBJRDogMTQ1
+IENvbW06IHN5c3RlbWQtdWRldmQgTm90IHRhaW50ZWQgNC4xOS41NSAjOQo+Cj4gWyAgIDEzLjQx
+Njc1OF0gSGFyZHdhcmUgbmFtZTogWnlucU1QIFpDVTEwMiBSZXYxLjAgKERUKQo+Cj4gWyAgIDEz
+LjQyMTcxM10gSS1waXBlIGRvbWFpbjogTGludXgKPgo+IFsgICAxMy40MjQ5MzVdIHBzdGF0ZTog
+NDAwMDAwMDUgKG5aY3YgZGFpZiAtUEFOIC1VQU8pCj4KPiBbICAgMTMuNDI5NzIwXSBwYyA6IGly
+cV9zZXRfY2hpcCsweGI0LzB4ZDAKPgo+IFsgICAxMy40MzM1NDZdIGxyIDogaXJxX3NldF9jaGlw
+KzB4YjQvMHhkMAo+Cj4gWyAgIDEzLjQzNzM3Ml0gc3AgOiBmZmZmZmY4MDA5NTQzODIwCj4KPiBb
+ICAgMTMuNDQwNjc5XSB4Mjk6IGZmZmZmZjgwMDk1NDM4MjAgeDI4OiBmZmZmZmY4MDAwYTMzMjAw
+Cj4KPiBbICAgMTMuNDQ1OTg1XSB4Mjc6IGZmZmZmZjgwMDBhMzA3ZjAgeDI2OiBmZmZmZmY4MDAw
+YTMwYjIwCj4KPiBbICAgMTMuNDUxMjg5XSB4MjU6IGZmZmZmZjgwMDBhMzA0MTAgeDI0OiBmZmZm
+ZmY4MDA4ZGY5Njg4Cj4KPiBbICAgMTMuNDU2NTkzXSB4MjM6IGZmZmZmZjgwMDgwZjczMDAgeDIy
+OiBmZmZmZmY4MDAwYTMzMDAwCj4KPiBbICAgMTMuNDYxODk3XSB4MjE6IGZmZmZmZmM4NWQzOWJl
+MDAgeDIwOiBmZmZmZmY4MDAwYTMzMDAwCj4KPiBbICAgMTMuNDY3MjAxXSB4MTk6IGZmZmZmZjgw
+MDhkZjk2ODggeDE4OiAwMDAwMDAwMDAwMDAwMDEwCj4KPiBbICAgMTMuNDcyNTA1XSB4MTc6IDAw
+MDAwMDAwMDAwMDAwMDEgeDE2OiAwMDAwMDAwMDAwMDAwMDA3Cj4KPiBbICAgMTMuNDc3ODA5XSB4
+MTU6IGZmZmZmZmZmZmZmZmZmZmYgeDE0OiAwNzIwMDcyMDA3MjAwNzIwCj4KPiBbICAgMTMuNDgz
+MTEzXSB4MTM6IDA3MjAwNzIwMDcyMDA3MjAgeDEyOiAwNzIwMDcyMDA3MjAwNzIwCj4KPiBbICAg
+MTMuNDg4NDE3XSB4MTE6IDA3MjAwNzIwMDcyMDA3MjAgeDEwOiAwNzIwMDcyMDA3MjAwNzIwCj4K
+PiBbICAgMTMuNDkzNzIxXSB4OSA6IGZmZmZmZjgwMDk1NDM4MjAgeDggOiA2MTczMmQ2NTZlNjk2
+YzY1Cj4KPiBbICAgMTMuNDk5MDI1XSB4NyA6IGZmZmZmZjgwMDhlOTcwMDAgeDYgOiAwMDAwMDAw
+MDAwMDAwMTY0Cj4KPiBbICAgMTMuNTA0MzI5XSB4NSA6IDAwMDAwMDAwMDAwMDAwMDEgeDQgOiBm
+ZmZmZmZjODdmZjUwOTg4Cj4KPiBbICAgMTMuNTA5NjMzXSB4MyA6IGZmZmZmZmM4N2ZmNTA5ODgg
+eDIgOiAwMDAwMDAwMDAwMDAwMDA3Cj4KPiBbICAgMTMuNTE0OTM3XSB4MSA6IGY5MGIyNDllM2Q5
+YWRkMDAgeDAgOiAwMDAwMDAwMDAwMDAwMDAwCj4KPiBbICAgMTMuNTIwMjQyXSBDYWxsIHRyYWNl
+Ogo+Cj4gWyAgIDEzLjUyMjY4Ml0gIGlycV9zZXRfY2hpcCsweGI0LzB4ZDAKPgo+IFsgICAxMy41
+MjYxNjRdICBpcnFfc2V0X2NoaXBfYW5kX2hhbmRsZXJfbmFtZSsweDIwLzB4NTAKPgo+IFsgICAx
+My41MzExMjVdICB4Z3Bpb19pcnFfc2V0dXArMHhlNC8weDE4MCBbZ3Bpb194aWxpbnhdCj4KPiBb
+ICAgMTMuNTM2MTc1XSAgeGdwaW9fb2ZfcHJvYmUrMHgyNWMvMHg1NjAgW2dwaW9feGlsaW54XQo+
+Cj4gWyAgIDEzLjU0MTIxOV0gIHBsYXRmb3JtX2Rydl9wcm9iZSsweDUwLzB4YTAKPgo+IFsgICAx
+My41NDUyMTddICByZWFsbHlfcHJvYmUrMHgxZDAvMHgyODAKPgo+IFsgICAxMy41NDg4NzFdICBk
+cml2ZXJfcHJvYmVfZGV2aWNlKzB4NTQvMHhmMAo+Cj4gWyAgIDEzLjU1Mjk2MF0gIF9fZHJpdmVy
+X2F0dGFjaCsweGU0LzB4ZjAKPgo+IFsgICAxMy41NTY3MDNdICBidXNfZm9yX2VhY2hfZGV2KzB4
+NzAvMHhjMAo+Cj4gWyAgIDEzLjU2MDUzMl0gIGRyaXZlcl9hdHRhY2grMHgyMC8weDMwCj4KPiBb
+ICAgMTMuNTY0MDk5XSAgYnVzX2FkZF9kcml2ZXIrMHgxZGMvMHgyMTAKPgo+IFsgICAxMy41Njc5
+MjZdICBkcml2ZXJfcmVnaXN0ZXIrMHg2MC8weDExMAo+Cj4gWyAgIDEzLjU3MTc1NV0gIF9fcGxh
+dGZvcm1fZHJpdmVyX3JlZ2lzdGVyKzB4NDQvMHg1MAo+Cj4gWyAgIDEzLjU3NjQ1NV0gIHhncGlv
+X2luaXQrMHgyMC8weDEwMDAgW2dwaW9feGlsaW54XQo+Cj4gWyAgIDEzLjU4MTE1MV0gIGRvX29u
+ZV9pbml0Y2FsbCsweDc0LzB4MTc4Cj4KPiBbICAgMTMuNTg0OTc4XSAgZG9faW5pdF9tb2R1bGUr
+MHg1NC8weDFkMAo+Cj4gWyAgIDEzLjU4ODcxOV0gIGxvYWRfbW9kdWxlKzB4MWI5MC8weDIxMjAK
+Pgo+IFsgICAxMy41OTI0NjFdICBfX3NlX3N5c19maW5pdF9tb2R1bGUrMHhiOC8weGQwCj4KPiBb
+ICAgMTMuNTk2NzIyXSAgX19hcm02NF9zeXNfZmluaXRfbW9kdWxlKzB4MTgvMHgyMAo+Cj4gWyAg
+IDEzLjYwMTI0N10gIGVsMF9zdmNfY29tbW9uKzB4YmMvMHgxYTAKPgo+IFsgICAxMy42MDQ5ODdd
+ICBlbDBfc3ZjX2hhbmRsZXIrMHg2OC8weDgwCj4KPiBbICAgMTMuNjA4NzI4XSAgZWwwX3N2Yysw
+eDgvMHgxOAo+Cj4gWyAgIDEzLjYxMTY4Nl0gLS0tWyBlbmQgdHJhY2UgOGVlNzU0OTU1OWU0OTll
+MCBdLS0tCj4KPgo+Cj4gRm9yIHJlZmVyZW5jZTogbXkgZGV2aWNlIHRyZWUgZW50cnkgaWYgbmVl
+ZGVkOgo+Cj4gICAgICAgICBheGlfZ3Bpb18wOiBheGlncGlvQGEwMDAwMDAwCj4KPiAgICAgICAg
+IHsKPgo+ICAgICAgICAgICAgICAgICAjZ3Bpby1jZWxscyA9IDwyPjsKPgo+ICAgICAgICAgICAg
+ICAgICAjaW50ZXJydXB0LWNlbGxzID0gPDI+Owo+Cj4gICAgICAgICAgICAgICAgIGNvbXBhdGli
+bGUgPSAieGxueCx4cHMtZ3Bpby0xLjAwLmEiOwo+Cj4gICAgICAgICAgICAgICAgIGdwaW8tY29u
+dHJvbGxlciA7Cj4KPiAgICAgICAgICAgICAgICAgaW50ZXJydXB0LXBhcmVudCA9IDwmZ2ljPjsK
+Pgo+ICAgICAgICAgICAgICAgICBpbnRlcnJ1cHRzID0gPCAwIDg5IDQgPjsKPgo+ICAgICAgICAg
+ICAgICAgICByZWcgPSA8IDB4MCAweGEwMDAwMDAwIDB4MCAweDEwMDAgPjsKPgo+ICAgICAgICAg
+ICAgICAgICB4bG54LGFsbC1pbnB1dHMgPSA8MHgwPjsKPgo+ICAgICAgICAgICAgICAgICB4bG54
+LGFsbC1pbnB1dHMtMiA9IDwweDA+Owo+Cj4gICAgICAgICAgICAgICAgIHhsbngsZG91dC1kZWZh
+dWx0ID0gPDB4MD47Cj4KPiAgICAgICAgICAgICAgICAgeGxueCxkb3V0LWRlZmF1bHQtMiA9IDww
+eDA+Owo+Cj4gICAgICAgICAgICAgICAgIHhsbngsZ3Bpby13aWR0aCA9IDwweDQ+Owo+Cj4gICAg
+ICAgICAgICAgICAgIHhsbngsZ3BpbzItd2lkdGggPSA8MHg0PjsKPgo+ICAgICAgICAgICAgICAg
+ICB4bG54LGludGVycnVwdC1wcmVzZW50ID0gPDB4MT47Cj4KPiAgICAgICAgICAgICAgICAgeGxu
+eCxpcy1kdWFsID0gPDB4MT47Cj4KPiAgICAgICAgICAgICAgICAgeGxueCx0cmktZGVmYXVsdCA9
+IDwweGZmZmZmZmZmPjsKPgo+ICAgICAgICAgICAgICAgICB4bG54LHRyaS1kZWZhdWx0LTIgPSA8
+MHhmZmZmZmZmZj47Cj4KPiAgICAgICAgIH07Cj4KPgo+Cj4gQmVzdCwKPgo+IEpvc2gKPgo+Cj4K
+PiBHcmVnLCAgU291bmRzIGdyZWF0IHJlIHlvdXIgZXhwbGFuYXRpb24gYWJvdXQgZGlzYWJsaW5n
+IHRoZSBub24gcnQKPiBkcml2ZXIuICBUaGUgcXVlc3Rpb24gSSdsbCBoYXZlIGlzLCB3aGVyZSBp
+biB0aGUgR1BJTyBjb3JlIGRvZXMgdGhlCj4gcmVnaXN0ZXIgbWFnaWMgdGFrZSBwbGFjZT8gIEZv
+ciBleGFtcGxlLCB0aGUgQVhJIENvcmUgaGFzIHRoZSBmb2xsb3dpbmcKPiByZWdpc3RlciBvZmZz
+ZXRzIGZyb20gdGhlIGJhc2U6ICBBcmUgdGhlc2Ugb2Zmc2V0cyBzdGFuZGFyZD8KPgo+IEJlc3Qs
+IEpvc2gKPgo+Cj4KPiBDSDFfT0ZGU0VUIDB4MDAwMDAwMDAKPiBDSDJfT0ZGU0VUIDB4MDAwMDAw
+MDgKPiBHTE9CQUxfSU5URVJSVVBUX0VOQUJMRV9PRkZTRVQgMHgwMDAwMDExQwo+IEFYSV9JUF9J
+TlRFUlJVUFRfRU5BQkxFX09GRlNFVCAweDAwMDAwMTI4Cj4gSU5URVJSVVBUX1NUQVRVU19SRUdJ
+U1RFUl9PRkZTRVQgMHgwMDAwMDEyMAo+IFRSSVNUQVRFX0NPTlRST0xfQ0gxX09GRlNFVCAweDAw
+MDAwMDA0Cj4gVFJJU1RBVEVfQ09OVFJPTF9DSDJfT0ZGU0VUIDB4MDAwMDAwMEMKPgo+CkkgaGFk
+IHNvbWUgdGltZSB0byB0ZXN0IHRoaXMgb24gdGhlIFp5bnEtNzAwMCBhbmQgSSBjYW4gc2VlIHdl
+IGFyZSBmYWlsaW5nCndoZW4gaW5zZXJ0aW5nIHRoZSBtb2R1bGUuICBJJ2xsIGNvbnRpbnVlIHRv
+IGRpZyBmdXJ0aGVyIGludG8gdGhpcy4gIFRoZQpncGlvIGRyaXZlciBjYW4gZXhpc3Qgd2l0aCBv
+ciB3aXRob3V0IHRoZSBub24tcnQgdmVyc2lvbiAodGhhdCdzIG15CmNvbmNsdXNpb24gZm9yIG5v
+dykgLiAgV2UgdXNlIHNvbWUgZnVuY3Rpb25zIGZyb20gdGhlIGdwaW9saWIgdGhhdCBkb24ndApy
+ZWx5IG9uIHRoZSBMaW51eCBrZXJuZWwgcmVzb3VyY2VzIHRvIHB1bGwgaW5mb3JtYXRpb24gZnJv
+bSB0aGUgZGV2aWNldHJlZQphbmQgdGhlbiByZWdpc3RlciB0aGUgZ3BpbyBwaW5zIHVuZGVyIC9k
+ZXYvcnRkbS88Z3Bpb19waW4+LiAgV2UgZG9uJ3QgcGljawp1cCBzcGVjaWZpYyBub2RlIHZhbHVl
+cyBmcm9tIHRoZSBkZXZpY2V0cmVlIGFuZCB3ZSBkb24ndCBhc2sgdGhlIG5vbi1ydApkcml2ZXIg
+Zm9yIHRob3NlIHZhbHVlcyBlaXRoZXIuICBQdWxsaW5nIHNwZWNpZmljIHZhbHVlcyBjb3VsZCBi
+ZSBhZGRlZCBidXQKdGhhdCBzaG91bGQgZ28gaW50byB0aGUgeGlsaW54LWdwaW8gcnRkbSBkcml2
+ZXIgbm90IHRoZSBydGRtIGdwaW9saWIgY29kZS4KT25lIG90aGVyIGlzc3VlIHRoYXQgSSBmb3Vu
+ZCBpcyB0aGF0IHRoZSBncGlvLXhpbGlueCBkcml2ZXIgaW4gdGhlIHhpbGlueApsaW51eCB0cmVl
+IGhhcyBhbiBpbnRlcnJ1cHQgY2hpcCB3aGVyZSBpbiBtYWlubGluZSAoYXQgbGVhc3QgNC4xOSkg
+dGhlcmUgaXMKbm8gaW50ZXJydXB0IGNoaXAgaW4gdGhlIGdwaW8gY29kZS4gIFRoaXMgaXMgd2h5
+IHlvdSBhcmUgc2VlaW5nIHRoZSB3YXJuCnNheWluZyBpdCdzIG5vdCBwaXBlbGluZSBzYWZlLiAg
+IElmIHlvdSByZXF1aXJlIHRoZXNlIGdwaW9zIHRvIGJlIGludGVycnVwdApzb3VyY2VzIHRoZW4g
+eW91J2xsIG5lZWQgdG8gYWRkIHRoZSBjb2RlIHRoYXQgYWxsb3dzIHRoZXNlIGludGVycnVwdHMg
+dG8gYmUKcGlwZWxpbmUgc2FmZS4gIEkgY2FuIGhlbHAgd2l0aCB0aGF0LiAgSSdsbCBhbHNvIGZv
+bGxvdyB1cCB3aXRoIHRoZQp1cHN0cmVhbSBrZXJuZWwgYXMgdG8gd2h5IHRoaXMgaGFzbid0IG1h
+ZGUgaXRzIHdheSB0byBtYWlubGluZSwgaXQncwpwb3NzaWJsZSB4aWxpbngganVzdCBuZXZlciB1
+cHN0cmVhbWVkIHRob3NlIGNoYW5nZXMuCgpJJ2xsIGtlZXAgd29ya2luZyBvbiB0aGlzLAoKR3Jl
+ZwotLS0tLS0tLS0tLS0tLSBuZXh0IHBhcnQgLS0tLS0tLS0tLS0tLS0KQSBub24tdGV4dCBhdHRh
+Y2htZW50IHdhcyBzY3J1YmJlZC4uLgpOYW1lOiAyODhFRTQxNTc3RkI0MEQ3QUJBMzBENDM4QkFC
+NDQyOC5wbmcKVHlwZTogaW1hZ2UvcG5nClNpemU6IDE2MCBieXRlcwpEZXNjOiBub3QgYXZhaWxh
+YmxlClVSTDogPGh0dHA6Ly94ZW5vbWFpLm9yZy9waXBlcm1haWwveGVub21haS9hdHRhY2htZW50
+cy8yMDIwMDUyMC8zZjc0YmQ3Ni9hdHRhY2htZW50LnBuZz4K
