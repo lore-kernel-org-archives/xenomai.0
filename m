@@ -1,13 +1,13 @@
-From: ayaida marwane <ayaida_marwane@yahoo.fr>
-Content-Type: text/plain;
-	charset=utf-8
+MIME-Version: 1.0
+References: <CALLqZ8Qghrg49fRsAxxASOqxzGXY2qv55-x6N1n+b-X91OHNsg@mail.gmail.com>
+ <OFA7FC04E3.F2DD910D-ON00258570.004B41AD-00258570.004C0C86@notes.ce.collabserv.com>
+In-Reply-To: <OFA7FC04E3.F2DD910D-ON00258570.004B41AD-00258570.004C0C86@notes.ce.collabserv.com>
+From: Greg Gallagher <greg@embeddedgreg.com>
+Date: Fri, 22 May 2020 10:08:55 -0400
+Message-ID: <CALLqZ8Tyh_DBHvmHnHNjuxZ8Wb8wXBtpgG08bw-J_St_Hzz_Jg@mail.gmail.com>
+Subject: Re: Porting Xenomai to STM32MP1
+Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
-Mime-Version: 1.0 (Mac OS X Mail 13.0 \(3608.60.0.2.5\))
-Subject: RTDM Kernel Driver exchanging with Linux Application via /dev/rtp0/
- using RTIPC Protocol and XDDP socket
-Message-Id: <94C4E050-9732-4A9D-B358-7F93BB36E96D@yahoo.fr>
-Date: Wed, 29 Apr 2020 23:21:53 +0200
-References: <94C4E050-9732-4A9D-B358-7F93BB36E96D.ref@yahoo.fr>
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,149 +16,157 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
+To: Cesare Masetti <cesare.masetti@marposs.com>
+Cc: "Xenomai@xenomai.org" <xenomai@xenomai.org>
 
-Dear all,
+On Fri, May 22, 2020 at 9:50 AM Cesare Masetti
+<cesare.masetti@marposs.com> wrote:
+>
+> Hi,
+>
+> >----- Messaggio di origine -----
+> >Da: "Greg Gallagher" <greg@embeddedgreg.com>
+> >A: "Cesare Masetti" <cesare.masetti@marposs.com>
+> >Cc: "Xenomai@xenomai.org" <xenomai@xenomai.org>
+> >Oggetto: Re: Porting Xenomai to STM32MP1
+> >Data: Gio 21 Mag 2020 7:41 PM
+> >
+> >Hi,
+> >
+> >On Thu, May 21, 2020 at 4:53 AM Cesare Masetti via Xenomai
+> ><xenomai@xenomai.org> wrote:
+> >>
+> >>    Hello,
+> >>    I'm trying to port Xenomai to a new arm SOC, here follow my specs:
+> >>
+> >>    - ARMv7 architecture
+> >>    - STM32MP157 SOC, on STM32MP157C-DK2 evaluation board
+> >>    this SOC has a dual Cortex-A7 and a single Cortex-M4, it has an ARM=
+ GIC
+> >>    and it should have also an architected timer.
+> >>    - Linux version 4.19.108, patched by ST, retrieved from
+> >>    [1]https://github.com/STMicroelectronics/linux/tree/v4.19-stm32mp-r=
+3.1
+> >>    - ipipe patch ipipe-core-4.19.110-arm-07.patch
+> >>    - xenomai 3.1 stable
+> >>
+> >>    I followed the porting guide step-by-step. At first I had issues at
+> >>    booting with CONFIG_IPIPE enabled, due to some irq chips defined in
+> >>    this SOC, but I managed to solve them. Now it boots correctly,
+> >>    apparently everything works fine.
+> >>    With CONFIG_XENOMAI enabled the booting halts at
+> >>    [Xenomai] scheduling class rt registered.
+> >>    I found that it is stuck in ipipe_critical_enter,
+> >>    precisely at
+> >>    while (!cpumask_equal(&online, &__ipipe_cpu_pass_map))
+> >>
+> >>    I've attached kernel configuration and boot log.
+> >>    After checking it seems to me that core 0 is sending
+> >>    an IPI to core 1 with no response, could I be right?
+> >>    Any help would be really appreciated.
+> >>    Thank you in advance and congratulations for your great work.
+> >>
+> >>    Cesare Masetti
+> >>    R&D Measuring Systems - Hardware Designer
+> >>    cesare.masetti@marposs.com
+> >>
+> >>    ______________________________________________________
+> >>    MARPOSS S.p.A., with a sole shareholder
+> >>    Via Saliceto, 13 - 40010 BENTIVOGLIO (BO) - ITALY
+> >>    Share Capital euro 15,000,000 paid in full - Tax Code and Registrat=
+ion
+> >>    No. at Business Register of Bologna 03354081204
+> >>    Economic and Administrative Index No. 516318 - VAT IT 03354081204
+> >>      [2][USEMAP:cid:_signatureCompleta2.1.jpg_MMAI-BM8GAW]
+> >>    ______________________________________________________
+> >>    The   information  contained  in  this e-mail  and  any  attachment=
+s is
+> >>    confidential  and  may  also  be  privileged. If you have received =
+the
+> >>    e-mail and any attachments by mistake, please inform us  immediatel=
+y,
+> >>    destroy them without storing or copying them on any medium, and do =
+not
+> >>    disclose or use the contents for any purpose.
+> >>    Although our systems implement reasonable precautions against virus=
+es
+> >>    and other threats, we cannot accept responsibility for any loss or
+> >>    damage arising from managing the contents of this e-mail.
+> >>    P  Please consider the environment before printing this e-mail
+> >>
+> >> References
+> >>
+> >>    1. https://github.com/STMicroelectronics/linux/tree/v4.19-stm32mp-r=
+3.1
+> >>    2. LYNXIMGMAP:file://localhost/tmp/tmpJcxPOM.html#image-marposs
+> >>
+> >> [USEMAP]
+> >> file://localhost/tmp/tmpJcxPOM.html#image-marposs
+> >>    1. http://www.marposs.com/
+> >>    2. https://www.facebook.com/Marposs
+> >>    3. http://www.linkedin.com/company/marposs
+> >>    4. https://www.instagram.com/marpossgram
+> >>    5. https://twitter.com/Marposs
+> >>    6. https://www.youtube.com/user/MisterMTech
+> >> -------------- next part --------------
+> >> A non-text attachment was scrubbed...
+> >> Name: not available
+> >> Type: image/jpeg
+> >> Size: 19872 bytes
+> >> Desc: not available
+> >> URL: <http://xenomai.org/pipermail/xenomai/attachments/20200521/a133eb=
+59/attachment.jpe>;
+> >> -------------- next part --------------
+> >> An embedded and charset-unspecified text was scrubbed...
+> >> Name: config.txt
+> >> URL: <http://xenomai.org/pipermail/xenomai/attachments/20200521/a133eb=
+59/attachment.txt>;
+> >> -------------- next part --------------
+> >> An embedded and charset-unspecified text was scrubbed...
+> >> Name: kernel_log.txt
+> >> URL: <http://xenomai.org/pipermail/xenomai/attachments/20200521/a133eb=
+59/attachment-0001.txt>;
+> >
+> >It's hard to see from just the log what is happening.  To confirm, you
+> >can boot without Xenomai but just the ipipe without issue?  Are you
+> >able to post the patch of the port for us to look at?
+> >
+> >Thanks
+> >
+> >Greg
+>
+> I confirm that I can boot without issue with CONFIG_IPIPE enabled
+> and CONFIG_XENOMAI disabled. Attached a patch with my changes.
+> Thank you very much,
+>
+> Cesare
+>
+>
+>
+> ______________________________________________________
+>
+> MARPOSS S.p.A., with a sole shareholder
+> Via Saliceto, 13 - 40010 BENTIVOGLIO (BO) - ITALY
+>
+> Share Capital euro 15,000,000 paid in full - Tax Code and Registration No=
+. at Business Register of Bologna 03354081204
+> Economic and Administrative Index No. 516318 - VAT IT 03354081204
+>
+> ______________________________________________________
+>
+> The   information  contained  in  this e-mail  and  any  attachments is c=
+onfidential  and  may  also  be  privileged. If you have received the e-mai=
+l and any attachments by mistake, please inform us  immediately, destroy th=
+em without storing or copying them on any medium, and do not disclose or us=
+e the contents for any purpose.
+> Although our systems implement reasonable precautions against viruses and=
+ other threats, we cannot accept responsibility for any loss or damage aris=
+ing from managing the contents of this e-mail.
+>
+> P  Please consider the environment before printing this e-mail
 
-I am trying to develop a simple example of a RTDM driver running from =
-Xenomai Kernel, that exchanges a string ("Hello world!") with a Linux =
-Application using /dev/rtp0.
+I'll have time to look this over this weekend, I'm trying to get
+another arm and arm64 release out in the next couple of days as well.
 
-I already succeeded doing this with Xenomai 2 using RT_PIPE. However, as =
-I understand, this using RT_PIPE from the Kernel depreciated in Xenomai =
-3 and it is recommended to use RTIPC Protocol and a XDDP socket.
-
-In the documentation, there are some examples (xddp-echo.c, xddp-label.c =
-and xddp-stream.c), that worked well in my Xenomai 3.0.7 installed on a =
-Raspberry Pi3.
-
-However, these examples are using a simple socket Protocol (socket(), =
-bind(), sendto() and recvfrom()) using the POSIX Skin. So, using this in =
-a RTDM module, will surely not work.
-
-Therefore, as I understand, I have to use the Real-time IPC defined in =
-the RTDM Skin  (socket__AF_RTIPC(), bind__AF_RTIPC(), =
-sendmsg__AF_RTIPC() and recvmsg__AF_RTIPC()).
-
-I started with a simple example (inspired from xddp-echo.c):
-
-=
---------------------------------------------------------------------------=
--------------------------------------------------------------
-
-#include <rtdm/driver.h>
-#include <rtdm/ipc.h>
-
-#define XDDP_PORT 0
-static const char *msg =3D "Hello world!";
-
-static int __init my_module_init (void)
-{
-        int s;
-
-        rtdm_printk(KERN_INFO "%s.%s()\n", THIS_MODULE->name, =
-__FUNCTION__);
-
-        s =3D socket__AF_RTIPC(AF_RTIPC, SOCK_DGRAM, IPCPROTO_XDDP);
-        if (s < 0) {
-                rtdm_printk(KERN_INFO "socket error\n");
-        }
-}
-
-static void __exit my_module_exit (void)
-{
-        rtdm_printk(KERN_INFO "%s.%s()\n", THIS_MODULE->name, =
-__FUNCTION__);
-}
-
-module_init(my_module_init);
-module_exit(my_module_exit);
-MODULE_LICENSE("GPL =C2=BB);
-
-=
---------------------------------------------------------------------------=
--------------------------------------------------------------
-
-The Makefile used to compile is this one:
-
-=
---------------------------------------------------------------------------=
--------------------------------------------------------------
-
-obj-m +=3D rtdm-xddp.o
-
-        KERNEL_DIR ?=3D /usr/src/linux
-        MODULE_DIR :=3D $(shell pwd)
-
-modules:
-        $(MAKE) -C $(KERNEL_DIR) SUBDIRS=3D$(MODULE_DIR) modules
-
-clean::
-        rm -f  *.o  .*.o  .*.o.* *.ko  .*.ko  *.mod.* .*.mod.* .*.cmd *~
-        rm -f Module.symvers Module.markers modules.order
-        rm -rf .tmp_versions
-
-=
---------------------------------------------------------------------------=
--------------------------------------------------------------
-
-The error that I have is:
-
-=
---------------------------------------------------------------------------=
--------------------------------------------------------------
-
-root@raspberrypi:/home/pi/TD3/xddp-noyau# make
-make -C /usr/src/linux SUBDIRS=3D/home/pi/TD3/xddp-noyau modules
-make[1] : on entre dans le r=C3=A9pertoire =C2=AB /usr/src/linux =C2=BB
-  CC [M]  /home/pi/TD3/xddp-noyau/rtdm-xddp.o
-/home/pi/TD3/xddp-noyau/rtdm-xddp.c: In function =E2=80=98my_module_init=E2=
-=80=99:
-/home/pi/TD3/xddp-noyau/rtdm-xddp.c:35:13: error: implicit declaration =
-of function =E2=80=98socket__AF_RTIPC=E2=80=99; did you mean =
-=E2=80=98socket_seq_show=E2=80=99? =
-[-Werror=3Dimplicit-function-declaration]
-         s =3D socket__AF_RTIPC(AF_RTIPC, SOCK_DGRAM, IPCPROTO_XDDP);
-             ^~~~~~~~~~~~~~~~
-             socket_seq_show
-At top level:
-/home/pi/TD3/xddp-noyau/rtdm-xddp.c:16:20: warning: =E2=80=98msg=E2=80=99 =
-defined but not used [-Wunused-variable]
- static const char *msg =3D "Hello world!";
-                    ^~~
-cc1: some warnings being treated as errors
-make[2]: *** [scripts/Makefile.build:335: =
-/home/pi/TD3/xddp-noyau/rtdm-xddp.o] Error 1
-make[1]: *** [Makefile:1528: _module_/home/pi/TD3/xddp-noyau] Error 2
-make[1] : on quitte le r=C3=A9pertoire =C2=AB /usr/src/linux =C2=BB
-make: *** [Makefile:8: modules] Error 2
-
-=
---------------------------------------------------------------------------=
--------------------------------------------------------------
-
-I verified that socket__AF_RTIPC is  well defined in rtdm/uapi/ipc.h, =
-which is included on rtdm/ipc.h. So with #include <rtdm/ipc.h>, I must =
-have resolved this issue and socket__AF_RTIPC must be already declared.
-
-I did not even add for now the other RTIPC socket's methods =
-(bind__AF_RTIPC(), sendmsg__AF_RTIPC() and recvmsg__AF_RTIPC()).
-
-Am I understanding well or I missed something? Could you please clarify =
-if I am wrong. Perhaps, this is not possible?
-
-Otherwise, did you have such an example using RTIPC Protocol to =
-communicate with a Linux application, It could inspire me to fix my =
-error. I did not found any example on the net...
-
-Thank you for your support.
-
-Best regards,
-Marwane Ayaida.
-
-
-
-
-
-
+-Greg
 
