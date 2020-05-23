@@ -1,7 +1,7 @@
 From: Joshua Karch <jkarch48@hotmail.com>
 Subject: Re: Xenomai Digest, Vol 97, Issue 31
-Date: Sat, 23 May 2020 13:46:06 +0000
-Message-ID: <MW3PR18MB36737407136F14329F93B0E5DAB50@MW3PR18MB3673.namprd18.prod.outlook.com>
+Date: Sat, 23 May 2020 15:55:11 +0000
+Message-ID: <MW3PR18MB3673E90FCDEB79A282DE332ADAB50@MW3PR18MB3673.namprd18.prod.outlook.com>
 References: <mailman.3.1590228001.16508.xenomai@xenomai.org>
 In-Reply-To: <mailman.3.1590228001.16508.xenomai@xenomai.org>
 Content-Language: en-US
@@ -586,10 +586,79 @@ thanks
 
 Greg
 
->
-Thanks Greg, I'll give the mainline kernel a try!
 
-Best, Josh
+
+Quick Update:  I think I found the problem!  After Greg and I talked about =
+dual registration I did more digging.
+The Xilinx GPIO driver registers two channels with the same label /class/am=
+ba/axigpio@xxxx because it is a dual channel GPIO driver.  I did a few thin=
+gs:
+(1) I added the code to make the stock linux-xilinx gpio-xilinx driver pipe=
+line safe but will need to test that more before submitting that to the wid=
+er group.
+(2) I edited my device tree so only channel one of two per GPIO core is loa=
+ded.
+(3) I further instrumented the code in rtdm_gpiochip_scan_of after list_for=
+_each_entry_safe.
+
+This is before editing the GPIO device tree to make it load the XGpio drive=
+r single channel
+# modprobe xeno-gpio-xilinx
+[   69.893002] test probing xilinx gpio rt
+[   69.897049] chip name being allocated /amba/axigpio@a0003000
+[   69.903352] chip name being allocated /amba/axigpio@a0003000
+[   69.909102] sysfs: cannot create duplicate filename '/class/!amba!axigpi=
+o@a00
+03000'
+[   69.916780] CPU: 3 PID: 250 Comm: modprobe Tainted: G        W  O      4=
+.19.5
+5 #22
+[   69.924344] Hardware name: ZynqMP ZCU102 Rev1.0 (DT)
+[   69.929296] I-pipe domain: Linux
+[   69.932517] Call trace:
+[   69.934964]  dump_backtrace+0x0/0x160
+[   69.938622]  show_stack+0x14/0x20
+[   69.941930]  dump_stack+0xcc/0xf4
+[   69.945237]  sysfs_warn_dup+0x60/0x80
+[   69.948890]  sysfs_create_dir_ns+0xcc/0xf0
+[   69.952981]  kobject_add_internal+0xac/0x2a0
+[   69.957241]  kset_register+0x50/0x80
+[   69.960811]  __class_register+0xbc/0x170
+[   69.964724]  __class_create+0x50/0x90
+[   69.968380]  rtdm_gpiochip_add+0x30/0x260
+[   69.972381]  rtdm_gpiochip_alloc+0x50/0xe0
+[   69.976470]  rtdm_gpiochip_scan_of.part.1+0x1a0/0x220
+[   69.981514]  rtdm_gpiochip_scan_of+0x20/0x30
+[   69.985780]  xilinx_gpio_init+0x28/0x1000 [xeno_gpio_xilinx]
+[   69.991428]  do_one_initcall+0x74/0x178
+[   69.995257]  do_init_module+0x54/0x1d0
+[   69.998996]  load_module+0x1b90/0x2120
+[   70.002738]  __se_sys_finit_module+0xb8/0xd0
+[   70.007001]  __arm64_sys_finit_module+0x18/0x20
+[   70.011524]  el0_svc_common+0xbc/0x1a0
+[   70.015264]  el0_svc_handler+0x68/0x80
+[   70.019005]  el0_svc+0x8/0x18
+[   70.021985] kobject_add_internal failed for !amba!axigpio@a0003000 with =
+-EEXI
+ST, don't try to register things with the same name in the same directory.
+[   70.035550] [Xenomai] cannot create sysfs class
+[   70.040084] Xeno Scan returns -17
+
+After editing device tree for single channel operation
+# modprobe xeno_gpio_xilinx
+[   44.281671] test probing xilinx gpio rt
+[   44.285709] chip name being allocated /amba/axigpio@a0003000
+[   44.294902] could not find compatible node
+[   44.299009] Xeno Scan returns 0
+
+So looks like we need to somehow differentiate the two channels that are cr=
+eated using the same label /amba/axigpio@a0003000 and probably do that in s=
+uch a way that it doesn't mess up other drivers' use of gpio-core.
+
+Best,
+Josh
+
+
 -------------- next part --------------
 A non-text attachment was scrubbed...
 Name: 288EE41577FB40D7ABA30D438BAB4428.png
