@@ -1,13 +1,11 @@
-Subject: Re: XENO_OPT_DEBUG_MUTEX_SLEEP and serial drivers
-References: <e2afc05d-6965-f5a1-700f-32d419156f5b@rsi-elektrotechnik.de>
-From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <26937928-896e-f829-4862-2ed9279adaa8@siemens.com>
-Date: Wed, 27 May 2020 13:03:00 +0200
-MIME-Version: 1.0
-In-Reply-To: <e2afc05d-6965-f5a1-700f-32d419156f5b@rsi-elektrotechnik.de>
-Content-Type: text/plain; charset=utf-8
+From: "Meng, Fino" <fino.meng@intel.com>
+Subject: tested cpu/hardware for ipipe-x86-4.19.y-cip
+Date: Wed, 27 May 2020 12:07:43 +0000
+Message-ID: <BN6PR11MB1620092660A6607B68195DE5EEB10@BN6PR11MB1620.namprd11.prod.outlook.com>
 Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+MIME-Version: 1.0
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,32 +14,16 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jan Leupold <leupold@rsi-elektrotechnik.de>, "Xenomai (xenomai@xenomai.org)" <xenomai@xenomai.org>
+To: xenomai <xenomai@xenomai.org>
+Cc: "Pirou, Florent" <florent.pirou@intel.com>
 
-On 27.05.20 11:11, Jan Leupold via Xenomai wrote:
-> Hi,
-> 
-> it seems to me that the write() methods in 16550.c, mpc52xx_uart.c and
-> rt_imx_uart.c cause a SIGDEBUG when used on a kernel with
-> XENO_OPT_DEBUG_MUTEX_SLEEP set.
-> 
-> All drivers lock a mutex (named "out_lock") for the duration of these
-> functions and eventually call rtdm_event_timedwait() later - with the
-> mutex locked.
-> 
-> I think it is a good thing to serialize write() there, but it does not combine
-> well with the debug option. Currently I disable the test with
-> pthread_setmode_np() for the duration of write() in the application,
-> but maybe someone has a better idea how to deal with it.
-
-Good catch.
-
-We would need to a way to tag in-kernel mutexes that are fine to hold
-while sleeping. Those could be exempted from xnthread_get/put_resource().
-
-Jan
-
--- 
-Siemens AG, Corporate Technology, CT RDA IOT SES-DE
-Corporate Competence Center Embedded Linux
+aGkgSmFuJlF1aXJpbjoNCg0Kd2l0aCB0aGUgeDg2LTY0X2RlZmNvbmZpZyBpbiAgZ2l0bGFiLmRl
+bnguZGUvWGVub21haS94ZW5vbWFpLWltYWdlcywgDQp0aGUgYnVpbHQgaW1hZ2UgY2Fubm90IGJv
+b3Qgb24gb3VyIHRlc3QgZGV2aWNlIChDUFUgaXMgV0hMODY2NVUpDQphZnRlciBjaGFuZ2VkIHRv
+IGFub3RoZXIgZGVmY29uZmlnLCBmaW5hbGx5IHdlIG1ha2UgaXQgYm9vdCBPSy4NClRvIHByaW50
+IGJvb3QgbXNnIHdlIGFkZCBrZXJuZWwgY21kbGluZTogY29uc29sZT10dHkxIGNvbnNvbGU9dHR5
+UzAsIDExNTIwMG44IA0KU28gSSBhbSBjdXJpb3VzIG9uIHdoaWNoIGNwdSB0aGF0IHlvdSBhcmUg
+dGVzdGluZyBpcGlwZS14ODYtNC4xOS55LWNpcD8gDQpXaHkgY29uc29sZSBpcyBtaXNzaW5nIGlu
+IHRoZSBrZXJuZWwgY21kbGluZT8gDQoNCkJSIC8gRmlubyAo5a2f56Wl5aSrKQ0KSW50ZWwg4oCT
+IElPVEcgRGV2ZWxvcGVyIEVuYWJsaW5nDQoNCg==
 
