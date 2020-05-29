@@ -1,9 +1,7 @@
-MIME-Version: 1.0
-From: =?UTF-8?B?5a2Z5LiW6b6Z?= <sunshilong369@gmail.com>
-Date: Thu, 28 May 2020 20:47:21 +0800
-Message-ID: <CAAvDm6ak44P++vt5B=O+mMu8ZEezQSDJAh3KR5Y7i-ScczRbUQ@mail.gmail.com>
-Subject: Could interuption be handled while process context is switching?
-Content-Type: text/plain; charset="UTF-8"
+From: xenomai@xenomai.org
+Subject: [I-PIPE] ipipe-core-4.19.124-cip27-arm64-07 released
+Message-Id: <E1jeWII-0004yD-WE@xenomai.org>
+Date: Fri, 29 May 2020 06:06:54 +0200
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -12,6 +10,10 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai <xenomai@xenomai.org>
+To: xenomai@xenomai.org
 
-Could interuption be handled while process context is switching?
+Download URL: https://xenomai.org/downloads/ipipe/v4.x/arm64/ipipe-core-4.19.124-cip27-arm64-07.patch
+
+Repository: https://git.xenomai.org/ipipe-arm64
+Release tag: ipipe-core-4.19.124-cip27-arm64-07
+
