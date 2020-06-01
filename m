@@ -1,7 +1,9 @@
 From: "Meng, Fino" <fino.meng@intel.com>
-Subject: how to customize kernel command line in a kas-docker project? 
-Date: Tue, 5 May 2020 18:25:32 +0000
-Message-ID: <e0fdd47a4fb34d0c9ffa74b55d244467@intel.com>
+Subject: RE: Handling MSI-X interrupts in the head stage for x86 platform
+Date: Mon, 1 Jun 2020 09:23:35 +0000
+Message-ID: <BN6PR11MB16208D6D883154537467F163EE8A0@BN6PR11MB1620.namprd11.prod.outlook.com>
+References: <2fa58638-4b6f-330f-98d7-194bdfa47780@nicevt.ru>
+In-Reply-To: <2fa58638-4b6f-330f-98d7-194bdfa47780@nicevt.ru>
 Content-Language: en-US
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: base64
@@ -16,18 +18,14 @@ List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: xenomai <xenomai@xenomai.org>
 
-aGkgdGVhbSwNCg0KVGhlc2UgZGF5cyBJIGFtIHdvcmtpbmcgb24gaHR0cHM6Ly9naXRsYWIuZGVu
-eC5kZS9YZW5vbWFpL3hlbm9tYWktaW1hZ2VzIHdoaWNoIHVzZSBrYXMtZG9ja2VyLCANCkkgbmVl
-ZCB0byBjdXN0b21pemUga2VybmVsIGNvbW1hbmQgbGluZSBmb3IgbXkgYnVpbGQuICBUaGUgMiB3
-YXlzIEkgZm91bmQgbm93Og0KDQoxKSBkaXJlY3RseSBtb2RpZnkgd2ljL3g4Ni02NC1lZmkud2tz
-LCB1cGRhdGUgZm9sbG93aW5nIGxpbmU6IA0KYm9vdGxvYWRlciAtLXB0YWJsZSBncHQgLS10aW1l
-b3V0PTUgLS1hcHBlbmQgInJ3IHJvb3R3YWl0IGNvbnNvbGU9dHR5UzAsMTE1MjAwIg0KDQoyKSBh
-ZGQgY29uZmlnIGZpbGVzIGZvciBhIG5ldyBib2FyZDogYm9hcmQteHh4LnltbCwgY29uZi9tYWNo
-aW5lL3h4eC5jb25mLCB3aWMveHh4LndrczsNCnRoZW4gYWRkIG15IG93biBrZXJuZWwgY21kbGlu
-ZSBpbiB4eHgud2tzOw0KDQppcyBpdCBwb3NzaWJsZSB0byBhY2hpZXZlIHRoaXMgdGFzayBpbiBh
-IG5vbi1pbnRydXNpdmUgd2F5LCB3aXRob3V0IGFkZGluZyBuZXcgYm9hcmQ/IA0KYWRkIG5ldyBj
-bWRsaW5lIGluIGEgbmV3IGZpbGUgYW5kIG92ZXJyaWRlIHRoZSBvcmlnaW5hbCwgDQpzYW1lIHdv
-cmtpbmcgbWVjaGFuaXNtIGFzICAiUFJFRkVSUkVEX1ZFUlNJT05fbGludXgteGVub21haSIgPw0K
-DQoNCkJSIC8gRmlubyAo5a2f56Wl5aSrKQ0KSW50ZWwg4oCTIElPVEcgRGV2ZWxvcGVyIEVuYWJs
-aW5nDQoNCg==
+DQoNCj5TZW50OiBNb25kYXksIEp1bmUgMSwgMjAyMCA0OjA5IFBNDQo+DQo+SGkgYWxsIQ0KPg0K
+PkkgaGF2ZSBhIFBDSWUgZGV2aWNlIGluIHg4NiBtb3RoZXJib2FyZCB0aGF0IGdlbmVyYXRlIHBl
+cmlvZGljIE1TSS1YIGludGVycnVwdHMgYW5kIEkgd291bGQgbGlrZSB0byBoYW5kbGUgdGhlbSBp
+biB0aGUgaGVhZA0KPnN0YWdlLCBob3cgaXQgY2FuIGJlIGRvbmU/DQo+VGhhbmsgeW91ISBBcHBy
+ZWNpYXRlIGFueSBoZWxwIQ0KPg0KPkJlc3QsDQo+IMKgwqAgQWxleA0KDQpIaSBBbGV4LA0KDQpL
+ZXJuZWwvZHJpdmVyL3NlcmlhbC8xNjU1MEEuYyBpcyBhIHBjaSBkZXZpY2UsIGFuZCBoYXZlIGxl
+c3MgY29kZSB0aGFuIG5ldC9pZ2IgZHJpdmVyLCANCldoaWNoIHNwZWNpZmljIGRldmljZSB1IHdh
+bnQgdG8gZW5hYmxlPyBEb2VzIGl0IGhhdmUgYSB2YW5pbGxhIGtlcm5lbCBkcml2ZXIgYWxyZWFk
+eT8NCg0KQlIgLyBGaW5vICjlrZ/npaXlpKspDQpJbnRlbCDigJMgSU9URyBEZXZlbG9wZXIgRW5h
+YmxpbmcNCg0K
 
