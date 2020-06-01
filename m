@@ -1,13 +1,11 @@
-From: "Meng, Fino" <fino.meng@intel.com>
-Subject: RE: Handling MSI-X interrupts in the head stage for x86 platform
-Date: Mon, 1 Jun 2020 09:23:35 +0000
-Message-ID: <BN6PR11MB16208D6D883154537467F163EE8A0@BN6PR11MB1620.namprd11.prod.outlook.com>
-References: <2fa58638-4b6f-330f-98d7-194bdfa47780@nicevt.ru>
-In-Reply-To: <2fa58638-4b6f-330f-98d7-194bdfa47780@nicevt.ru>
-Content-Language: en-US
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
 MIME-Version: 1.0
+References: <5ed4bf2d.1c69fb81.29f0f.b36cSMTPIN_ADDED_BROKEN@mx.google.com>
+In-Reply-To: <5ed4bf2d.1c69fb81.29f0f.b36cSMTPIN_ADDED_BROKEN@mx.google.com>
+From: Greg Gallagher <greg@embeddedgreg.com>
+Date: Mon, 1 Jun 2020 09:51:28 -0400
+Message-ID: <CALLqZ8QXO7zg7a7qAFkSSHnY9jcv2bQs3L+cWNomYqBFS=Kz2A@mail.gmail.com>
+Subject: Re: an xhci problem on raspberry pi 4b
+Content-Type: text/plain; charset="UTF-8"
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,16 +14,49 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai <xenomai@xenomai.org>
+To: chensong <chensong@tj.kylinos.cn>
+Cc: "Xenomai@xenomai.org" <xenomai@xenomai.org>
 
-DQoNCj5TZW50OiBNb25kYXksIEp1bmUgMSwgMjAyMCA0OjA5IFBNDQo+DQo+SGkgYWxsIQ0KPg0K
-PkkgaGF2ZSBhIFBDSWUgZGV2aWNlIGluIHg4NiBtb3RoZXJib2FyZCB0aGF0IGdlbmVyYXRlIHBl
-cmlvZGljIE1TSS1YIGludGVycnVwdHMgYW5kIEkgd291bGQgbGlrZSB0byBoYW5kbGUgdGhlbSBp
-biB0aGUgaGVhZA0KPnN0YWdlLCBob3cgaXQgY2FuIGJlIGRvbmU/DQo+VGhhbmsgeW91ISBBcHBy
-ZWNpYXRlIGFueSBoZWxwIQ0KPg0KPkJlc3QsDQo+IMKgwqAgQWxleA0KDQpIaSBBbGV4LA0KDQpL
-ZXJuZWwvZHJpdmVyL3NlcmlhbC8xNjU1MEEuYyBpcyBhIHBjaSBkZXZpY2UsIGFuZCBoYXZlIGxl
-c3MgY29kZSB0aGFuIG5ldC9pZ2IgZHJpdmVyLCANCldoaWNoIHNwZWNpZmljIGRldmljZSB1IHdh
-bnQgdG8gZW5hYmxlPyBEb2VzIGl0IGhhdmUgYSB2YW5pbGxhIGtlcm5lbCBkcml2ZXIgYWxyZWFk
-eT8NCg0KQlIgLyBGaW5vICjlrZ/npaXlpKspDQpJbnRlbCDigJMgSU9URyBEZXZlbG9wZXIgRW5h
-YmxpbmcNCg0K
+Hi,
+
+On Mon, Jun 1, 2020 at 4:41 AM chensong via Xenomai <xenomai@xenomai.org> wrote:
+>
+> hi guys,
+>
+> I have a raspberry pi 4b and i have had xenoami running on it. Here is
+> what i did:
+>
+I don't think anyone has tried this yet, so you are one of the first :)
+
+> 1,git clone https://github.com/raspberrypi/linux.git
+> 2,git checkout -b rpi-4.19.y remotes/origin/rpi-4.19.y
+> 3,./xenomai3.1-devel/scripts/prepare-kernel.sh --arch=arm64
+> --linux=rpi-kernel
+> --ipipe=./nudt-hgj-xenomai-tjrd/scripts/prepare-kernel.sh --arch=arm64
+
+What ipipe patch are you using?
+
+> --linux=rpi-kernel
+> 4,make bcm2711_xeno_defconfig
+> 5,make
+>
+I'm not sure if the rpi4 is in mainline yet but you may have more
+success trying this with the mainline kernel
+
+
+> As a result, usb is not working appropriately, there is no input devices
+> and sometimes system is hanging there when connecting an usb device.
+>
+> Has anyone managed to enable xenomai on rspberry pi 4b? Can you
+> reporduce this problem and how is it fixed? Please help, many thanks.
+
+If you use a serial terminal can you open a shell?
+>
+> BR
+>
+> chensong
+>
+>
+-Greg
+>
 
