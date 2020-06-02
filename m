@@ -1,13 +1,11 @@
-Subject: Re: "invalid use of FPU" on x86_64 architecture
-References: <em9b7bdc8b-b4c0-42d6-9bb9-715021076898@nbmcorallini>
-From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <c64eec68-a4b8-18a8-0b98-7893ba2bb83d@siemens.com>
-Date: Wed, 3 Jun 2020 17:08:35 +0200
-MIME-Version: 1.0
-In-Reply-To: <em9b7bdc8b-b4c0-42d6-9bb9-715021076898@nbmcorallini>
-Content-Type: text/plain; charset=utf-8
+From: "atanas.karaatanasov@omron.com" <atanas.karaatanasov@omron.com>
+Subject: Xenomai
+Date: Tue, 2 Jun 2020 16:59:06 +0000
+Message-ID: <OSBPR01MB32868DFBE54550B754DC65E7EA8B0@OSBPR01MB3286.jpnprd01.prod.outlook.com>
 Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+MIME-Version: 1.0
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,24 +14,21 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Marco Corallini <MCorallini@sigmaspa.com>, "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On 03.06.20 16:48, Marco Corallini via Xenomai wrote:
-> Hi all.
-> 
-> I've got an application running on linux 4.1.18 with Xenomai 2.6.5
->   (commit 917dcebb26ec492f276cdc3b55867aa90e01fa12).
-
-Unfortunately, both are completely unsupported versions by now. Any
-chance to reproduce the issue on a maintained configuration?
-
-A lot of bugs have been addressed since then, and it would a huge effort
-to find out which could be relevant. And then the next question will be
-if those could still be backported.
-
-Jan
-
--- 
-Siemens AG, Corporate Technology, CT RDA IOT SES-DE
-Corporate Competence Center Embedded Linux
-
+SGVsbG8sCgpNeSBuYW1lIGlzIEF0YW5hcyBhbmQgSSB3b3JrIGZvciBPTVJPTi4gICBXZSBhcmUg
+dXNpbmcgWGVub21haSBSVE9TIHdpdGggTGludXggRGViaWFuIGluIG9uZSBvZiBvdXIgcHJvZHVj
+dC4KCkkgd291bGQgdG8gY2hlY2sgaWYgdGhlcmUgaXMgYW55IG1ldGhvZCAvIGVtYWlsIHdoZXJl
+IEkgY2FuIGFzayB0ZWNobmljYWwgcXVlc3Rpb24uCgpQbGVhc2UgbGV0IG1lIGtub3cuCgpUaGFu
+ayB5b3UsCkF0YW5hcwpbY2lkOmltYWdlMDAxLmpwZ0AwMUQ0QzNBNi4yNTY3OTVDMF0KQXRhbmFz
+IEthcmFhdGFuYXNvdgpBZHZhbmNlZCBNb3Rpb24gRW5naW5lZXItIEFtZXJpY2FzCk1vYmlsZTog
+ODEzLjIxMC43NjAzCkF0YW5hcy5LYXJhYXRhbmFzb3ZAb21yb24uY29tPG1haWx0bzpBdGFuYXMu
+S2FyYWF0YW5hc292QG9tcm9uLmNvbT4KT21yb24gQXV0b21hdGlvbiBBbWVyaWNhcwpOb3ZpLCBN
+SSAyOTE4NQpvbXJvbjI0Ny5jb20gIHwgIENvbm5lY3Qgd2l0aCB1czogb21yb24yNDcuY29tL3Nv
+Y2lhbDxvbXJvbjI0Ny5jb20vc29jaWFsPgpUaGlzIGlzIGEgY29uZmlkZW50aWFsIG1lc3NhZ2Uu
+IElmIHJlY2VpdmVkIGluIGVycm9yLCBkZWxldGUgaXQgYW5kIG5vdGlmeSB0aGUgc2VuZGVyLgoK
+LS0tLS0tLS0tLS0tLS0gbmV4dCBwYXJ0IC0tLS0tLS0tLS0tLS0tCkEgbm9uLXRleHQgYXR0YWNo
+bWVudCB3YXMgc2NydWJiZWQuLi4KTmFtZTogaW1hZ2UwMDEuanBnClR5cGU6IGltYWdlL2pwZWcK
+U2l6ZTogNDU3NSBieXRlcwpEZXNjOiBpbWFnZTAwMS5qcGcKVVJMOiA8aHR0cDovL3hlbm9tYWku
+b3JnL3BpcGVybWFpbC94ZW5vbWFpL2F0dGFjaG1lbnRzLzIwMjAwNjAyLzQyMjEzNDJiL2F0dGFj
+aG1lbnQuanBnPgo=
