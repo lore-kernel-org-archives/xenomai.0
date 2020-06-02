@@ -1,13 +1,12 @@
-MIME-Version: 1.0
-References: <CALLqZ8Qghrg49fRsAxxASOqxzGXY2qv55-x6N1n+b-X91OHNsg@mail.gmail.com>
- <OFA7FC04E3.F2DD910D-ON00258570.004B41AD-00258570.004C0C86@notes.ce.collabserv.com>
-In-Reply-To: <OFA7FC04E3.F2DD910D-ON00258570.004B41AD-00258570.004C0C86@notes.ce.collabserv.com>
-From: Greg Gallagher <greg@embeddedgreg.com>
-Date: Tue, 2 Jun 2020 13:30:31 -0400
-Message-ID: <CALLqZ8TzmGoaaqsOcP-cxjOYY4b3yUHBuopRxS6vLHJLp+=M6Q@mail.gmail.com>
-Subject: Re: Porting Xenomai to STM32MP1
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+From: ayaida marwane <ayaida_marwane@yahoo.fr>
+Mime-Version: 1.0 (Mac OS X Mail 13.4 \(3608.80.23.2.2\))
+Subject: rtdm_task_init does not work with Xenomai 3
+Message-Id: <BCA29F40-0C3A-4DF7-9FE9-EF5D55C66C27@yahoo.fr>
+Date: Tue, 2 Jun 2020 20:34:35 +0200
+References: <BCA29F40-0C3A-4DF7-9FE9-EF5D55C66C27.ref@yahoo.fr>
+Content-Type: text/plain;
+	charset=utf-8
+Content-Transfer-Encoding: quoted-printable
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,115 +15,95 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Cesare Masetti <cesare.masetti@marposs.com>
-Cc: "Xenomai@xenomai.org" <xenomai@xenomai.org>
+To: xenomai@xenomai.org
 
-SGksCgpPbiBGcmksIE1heSAyMiwgMjAyMCBhdCA5OjUwIEFNIENlc2FyZSBNYXNldHRpIDxjZXNh
-cmUubWFzZXR0aUBtYXJwb3NzLmNvbT4Kd3JvdGU6Cgo+IEhpLAo+Cj4gPi0tLS0tIE1lc3NhZ2dp
-byBkaSBvcmlnaW5lIC0tLS0tCj4gPkRhOiAiR3JlZyBHYWxsYWdoZXIiIDxncmVnQGVtYmVkZGVk
-Z3JlZy5jb20+Cj4gPkE6ICJDZXNhcmUgTWFzZXR0aSIgPGNlc2FyZS5tYXNldHRpQG1hcnBvc3Mu
-Y29tPgo+ID5DYzogIlhlbm9tYWlAeGVub21haS5vcmciIDx4ZW5vbWFpQHhlbm9tYWkub3JnPgo+
-ID5PZ2dldHRvOiBSZTogUG9ydGluZyBYZW5vbWFpIHRvIFNUTTMyTVAxCj4gPkRhdGE6IEdpbyAy
-MSBNYWcgMjAyMCA3OjQxIFBNCj4gPgo+ID5IaSwKPiA+Cj4gPk9uIFRodSwgTWF5IDIxLCAyMDIw
-IGF0IDQ6NTMgQU0gQ2VzYXJlIE1hc2V0dGkgdmlhIFhlbm9tYWkKPiA+PHhlbm9tYWlAeGVub21h
-aS5vcmc+IHdyb3RlOgo+ID4+Cj4gPj4gICAgSGVsbG8sCj4gPj4gICAgSSdtIHRyeWluZyB0byBw
-b3J0IFhlbm9tYWkgdG8gYSBuZXcgYXJtIFNPQywgaGVyZSBmb2xsb3cgbXkgc3BlY3M6Cj4gPj4K
-PiA+PiAgICAtIEFSTXY3IGFyY2hpdGVjdHVyZQo+ID4+ICAgIC0gU1RNMzJNUDE1NyBTT0MsIG9u
-IFNUTTMyTVAxNTdDLURLMiBldmFsdWF0aW9uIGJvYXJkCj4gPj4gICAgdGhpcyBTT0MgaGFzIGEg
-ZHVhbCBDb3J0ZXgtQTcgYW5kIGEgc2luZ2xlIENvcnRleC1NNCwgaXQgaGFzIGFuIEFSTQo+IEdJ
-Qwo+ID4+ICAgIGFuZCBpdCBzaG91bGQgaGF2ZSBhbHNvIGFuIGFyY2hpdGVjdGVkIHRpbWVyLgo+
-ID4+ICAgIC0gTGludXggdmVyc2lvbiA0LjE5LjEwOCwgcGF0Y2hlZCBieSBTVCwgcmV0cmlldmVk
-IGZyb20KPiA+PiAgICBbMV0KPiBodHRwczovL2dpdGh1Yi5jb20vU1RNaWNyb2VsZWN0cm9uaWNz
-L2xpbnV4L3RyZWUvdjQuMTktc3RtMzJtcC1yMy4xCj4gPj4gICAgLSBpcGlwZSBwYXRjaCBpcGlw
-ZS1jb3JlLTQuMTkuMTEwLWFybS0wNy5wYXRjaAo+ID4+ICAgIC0geGVub21haSAzLjEgc3RhYmxl
-Cj4gPj4KPiA+PiAgICBJIGZvbGxvd2VkIHRoZSBwb3J0aW5nIGd1aWRlIHN0ZXAtYnktc3RlcC4g
-QXQgZmlyc3QgSSBoYWQgaXNzdWVzIGF0Cj4gPj4gICAgYm9vdGluZyB3aXRoIENPTkZJR19JUElQ
-RSBlbmFibGVkLCBkdWUgdG8gc29tZSBpcnEgY2hpcHMgZGVmaW5lZCBpbgo+ID4+ICAgIHRoaXMg
-U09DLCBidXQgSSBtYW5hZ2VkIHRvIHNvbHZlIHRoZW0uIE5vdyBpdCBib290cyBjb3JyZWN0bHks
-Cj4gPj4gICAgYXBwYXJlbnRseSBldmVyeXRoaW5nIHdvcmtzIGZpbmUuCj4gPj4gICAgV2l0aCBD
-T05GSUdfWEVOT01BSSBlbmFibGVkIHRoZSBib290aW5nIGhhbHRzIGF0Cj4gPj4gICAgW1hlbm9t
-YWldIHNjaGVkdWxpbmcgY2xhc3MgcnQgcmVnaXN0ZXJlZC4KPiA+PiAgICBJIGZvdW5kIHRoYXQg
-aXQgaXMgc3R1Y2sgaW4gaXBpcGVfY3JpdGljYWxfZW50ZXIsCj4gPj4gICAgcHJlY2lzZWx5IGF0
-Cj4gPj4gICAgd2hpbGUgKCFjcHVtYXNrX2VxdWFsKCZvbmxpbmUsICZfX2lwaXBlX2NwdV9wYXNz
-X21hcCkpCj4gPj4KPiA+PiAgICBJJ3ZlIGF0dGFjaGVkIGtlcm5lbCBjb25maWd1cmF0aW9uIGFu
-ZCBib290IGxvZy4KPiA+PiAgICBBZnRlciBjaGVja2luZyBpdCBzZWVtcyB0byBtZSB0aGF0IGNv
-cmUgMCBpcyBzZW5kaW5nCj4gPj4gICAgYW4gSVBJIHRvIGNvcmUgMSB3aXRoIG5vIHJlc3BvbnNl
-LCBjb3VsZCBJIGJlIHJpZ2h0Pwo+ID4+ICAgIEFueSBoZWxwIHdvdWxkIGJlIHJlYWxseSBhcHBy
-ZWNpYXRlZC4KPiA+PiAgICBUaGFuayB5b3UgaW4gYWR2YW5jZSBhbmQgY29uZ3JhdHVsYXRpb25z
-IGZvciB5b3VyIGdyZWF0IHdvcmsuCj4gPj4KPiA+PiAgICBDZXNhcmUgTWFzZXR0aQo+ID4+ICAg
-IFImRCBNZWFzdXJpbmcgU3lzdGVtcyAtIEhhcmR3YXJlIERlc2lnbmVyCj4gPj4gICAgY2VzYXJl
-Lm1hc2V0dGlAbWFycG9zcy5jb20KPiA+Pgo+ID4+ICAgIF9fX19fX19fX19fX19fX19fX19fX19f
-X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fXwo+ID4+ICAgIE1BUlBPU1MgUy5wLkEuLCB3
-aXRoIGEgc29sZSBzaGFyZWhvbGRlcgo+ID4+ICAgIFZpYSBTYWxpY2V0bywgMTMgLSA0MDAxMCBC
-RU5USVZPR0xJTyAoQk8pIC0gSVRBTFkKPiA+PiAgICBTaGFyZSBDYXBpdGFsIGV1cm8gMTUsMDAw
-LDAwMCBwYWlkIGluIGZ1bGwgLSBUYXggQ29kZSBhbmQKPiBSZWdpc3RyYXRpb24KPiA+PiAgICBO
-by4gYXQgQnVzaW5lc3MgUmVnaXN0ZXIgb2YgQm9sb2duYSAwMzM1NDA4MTIwNAo+ID4+ICAgIEVj
-b25vbWljIGFuZCBBZG1pbmlzdHJhdGl2ZSBJbmRleCBOby4gNTE2MzE4IC0gVkFUIElUIDAzMzU0
-MDgxMjA0Cj4gPj4gICAgICBbMl1bVVNFTUFQOmNpZDpfc2lnbmF0dXJlQ29tcGxldGEyLjEuanBn
-X01NQUktQk04R0FXXQo+ID4+ICAgIF9fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
-X19fX19fX19fX19fX19fX19fXwo+ID4+ICAgIFRoZSAgIGluZm9ybWF0aW9uICBjb250YWluZWQg
-IGluICB0aGlzIGUtbWFpbCAgYW5kICBhbnkgIGF0dGFjaG1lbnRzCj4gaXMKPiA+PiAgICBjb25m
-aWRlbnRpYWwgIGFuZCAgbWF5ICBhbHNvICBiZSAgcHJpdmlsZWdlZC4gSWYgeW91IGhhdmUgcmVj
-ZWl2ZWQKPiB0aGUKPiA+PiAgICBlLW1haWwgYW5kIGFueSBhdHRhY2htZW50cyBieSBtaXN0YWtl
-LCBwbGVhc2UgaW5mb3JtIHVzICBpbW1lZGlhdGVseSwKPiA+PiAgICBkZXN0cm95IHRoZW0gd2l0
-aG91dCBzdG9yaW5nIG9yIGNvcHlpbmcgdGhlbSBvbiBhbnkgbWVkaXVtLCBhbmQgZG8KPiBub3QK
-PiA+PiAgICBkaXNjbG9zZSBvciB1c2UgdGhlIGNvbnRlbnRzIGZvciBhbnkgcHVycG9zZS4KPiA+
-PiAgICBBbHRob3VnaCBvdXIgc3lzdGVtcyBpbXBsZW1lbnQgcmVhc29uYWJsZSBwcmVjYXV0aW9u
-cyBhZ2FpbnN0IHZpcnVzZXMKPiA+PiAgICBhbmQgb3RoZXIgdGhyZWF0cywgd2UgY2Fubm90IGFj
-Y2VwdCByZXNwb25zaWJpbGl0eSBmb3IgYW55IGxvc3Mgb3IKPiA+PiAgICBkYW1hZ2UgYXJpc2lu
-ZyBmcm9tIG1hbmFnaW5nIHRoZSBjb250ZW50cyBvZiB0aGlzIGUtbWFpbC4KPiA+PiAgICBQICBQ
-bGVhc2UgY29uc2lkZXIgdGhlIGVudmlyb25tZW50IGJlZm9yZSBwcmludGluZyB0aGlzIGUtbWFp
-bAo+ID4+Cj4gPj4gUmVmZXJlbmNlcwo+ID4+Cj4gPj4gICAgMS4KPiBodHRwczovL2dpdGh1Yi5j
-b20vU1RNaWNyb2VsZWN0cm9uaWNzL2xpbnV4L3RyZWUvdjQuMTktc3RtMzJtcC1yMy4xCj4gPj4g
-ICAgMi4gTFlOWElNR01BUDpmaWxlOi8vbG9jYWxob3N0L3RtcC90bXBKY3hQT00uaHRtbCNpbWFn
-ZS1tYXJwb3NzCj4gPj4KPiA+PiBbVVNFTUFQXQo+ID4+IGZpbGU6Ly9sb2NhbGhvc3QvdG1wL3Rt
-cEpjeFBPTS5odG1sI2ltYWdlLW1hcnBvc3MKPiA+PiAgICAxLiBodHRwOi8vd3d3Lm1hcnBvc3Mu
-Y29tLwo+ID4+ICAgIDIuIGh0dHBzOi8vd3d3LmZhY2Vib29rLmNvbS9NYXJwb3NzCj4gPj4gICAg
-My4gaHR0cDovL3d3dy5saW5rZWRpbi5jb20vY29tcGFueS9tYXJwb3NzCj4gPj4gICAgNC4gaHR0
-cHM6Ly93d3cuaW5zdGFncmFtLmNvbS9tYXJwb3NzZ3JhbQo+ID4+ICAgIDUuIGh0dHBzOi8vdHdp
-dHRlci5jb20vTWFycG9zcwo+ID4+ICAgIDYuIGh0dHBzOi8vd3d3LnlvdXR1YmUuY29tL3VzZXIv
-TWlzdGVyTVRlY2gKPiA+PiAtLS0tLS0tLS0tLS0tLSBuZXh0IHBhcnQgLS0tLS0tLS0tLS0tLS0K
-PiA+PiBBIG5vbi10ZXh0IGF0dGFjaG1lbnQgd2FzIHNjcnViYmVkLi4uCj4gPj4gTmFtZTogbm90
-IGF2YWlsYWJsZQo+ID4+IFR5cGU6IGltYWdlL2pwZWcKPiA+PiBTaXplOiAxOTg3MiBieXRlcwo+
-ID4+IERlc2M6IG5vdCBhdmFpbGFibGUKPiA+PiBVUkw6IDwKPiBodHRwOi8veGVub21haS5vcmcv
-cGlwZXJtYWlsL3hlbm9tYWkvYXR0YWNobWVudHMvMjAyMDA1MjEvYTEzM2ViNTkvYXR0YWNobWVu
-dC5qcGU+Cj4gOwo+ID4+IC0tLS0tLS0tLS0tLS0tIG5leHQgcGFydCAtLS0tLS0tLS0tLS0tLQo+
-ID4+IEFuIGVtYmVkZGVkIGFuZCBjaGFyc2V0LXVuc3BlY2lmaWVkIHRleHQgd2FzIHNjcnViYmVk
-Li4uCj4gPj4gTmFtZTogY29uZmlnLnR4dAo+ID4+IFVSTDogPAo+IGh0dHA6Ly94ZW5vbWFpLm9y
-Zy9waXBlcm1haWwveGVub21haS9hdHRhY2htZW50cy8yMDIwMDUyMS9hMTMzZWI1OS9hdHRhY2ht
-ZW50LnR4dD4KPiA7Cj4gPj4gLS0tLS0tLS0tLS0tLS0gbmV4dCBwYXJ0IC0tLS0tLS0tLS0tLS0t
-Cj4gPj4gQW4gZW1iZWRkZWQgYW5kIGNoYXJzZXQtdW5zcGVjaWZpZWQgdGV4dCB3YXMgc2NydWJi
-ZWQuLi4KPiA+PiBOYW1lOiBrZXJuZWxfbG9nLnR4dAo+ID4+IFVSTDogPAo+IGh0dHA6Ly94ZW5v
-bWFpLm9yZy9waXBlcm1haWwveGVub21haS9hdHRhY2htZW50cy8yMDIwMDUyMS9hMTMzZWI1OS9h
-dHRhY2htZW50LTAwMDEudHh0Pgo+IDsKPiA+Cj4gPkl0J3MgaGFyZCB0byBzZWUgZnJvbSBqdXN0
-IHRoZSBsb2cgd2hhdCBpcyBoYXBwZW5pbmcuICBUbyBjb25maXJtLCB5b3UKPiA+Y2FuIGJvb3Qg
-d2l0aG91dCBYZW5vbWFpIGJ1dCBqdXN0IHRoZSBpcGlwZSB3aXRob3V0IGlzc3VlPyAgQXJlIHlv
-dQo+ID5hYmxlIHRvIHBvc3QgdGhlIHBhdGNoIG9mIHRoZSBwb3J0IGZvciB1cyB0byBsb29rIGF0
-Pwo+ID4KPiA+VGhhbmtzCj4gPgo+ID5HcmVnCj4KPiBJIGNvbmZpcm0gdGhhdCBJIGNhbiBib290
-IHdpdGhvdXQgaXNzdWUgd2l0aCBDT05GSUdfSVBJUEUgZW5hYmxlZAo+IGFuZCBDT05GSUdfWEVO
-T01BSSBkaXNhYmxlZC4gQXR0YWNoZWQgYSBwYXRjaCB3aXRoIG15IGNoYW5nZXMuCj4gVGhhbmsg
-eW91IHZlcnkgbXVjaCwKPgo+IENlc2FyZQo+Cj4KPgo+IF9fX19fX19fX19fX19fX19fX19fX19f
-X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fXwo+Cj4gTUFSUE9TUyBTLnAuQS4sIHdpdGgg
-YSBzb2xlIHNoYXJlaG9sZGVyCj4gVmlhIFNhbGljZXRvLCAxMyAtIDQwMDEwIEJFTlRJVk9HTElP
-IChCTykgLSBJVEFMWQo+Cj4gU2hhcmUgQ2FwaXRhbCBldXJvIDE1LDAwMCwwMDAgcGFpZCBpbiBm
-dWxsIC0gVGF4IENvZGUgYW5kIFJlZ2lzdHJhdGlvbiBOby4KPiBhdCBCdXNpbmVzcyBSZWdpc3Rl
-ciBvZiBCb2xvZ25hIDAzMzU0MDgxMjA0Cj4gRWNvbm9taWMgYW5kIEFkbWluaXN0cmF0aXZlIElu
-ZGV4IE5vLiA1MTYzMTggLSBWQVQgSVQgMDMzNTQwODEyMDQKPgo+IF9fX19fX19fX19fX19fX19f
-X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fXwo+Cj4gKlRoZSAgIGluZm9ybWF0
-aW9uICBjb250YWluZWQgIGluICB0aGlzIGUtbWFpbCAgYW5kICBhbnkgIGF0dGFjaG1lbnRzIGlz
-Cj4gY29uZmlkZW50aWFsICBhbmQgIG1heSAgYWxzbyAgYmUgIHByaXZpbGVnZWQuIElmIHlvdSBo
-YXZlIHJlY2VpdmVkIHRoZQo+IGUtbWFpbCBhbmQgYW55IGF0dGFjaG1lbnRzIGJ5IG1pc3Rha2Us
-IHBsZWFzZSBpbmZvcm0gdXMgIGltbWVkaWF0ZWx5LAo+IGRlc3Ryb3kgdGhlbSB3aXRob3V0IHN0
-b3Jpbmcgb3IgY29weWluZyB0aGVtIG9uIGFueSBtZWRpdW0sIGFuZCBkbyBub3QKPiBkaXNjbG9z
-ZSBvciB1c2UgdGhlIGNvbnRlbnRzIGZvciBhbnkgcHVycG9zZS4qCj4gKkFsdGhvdWdoIG91ciBz
-eXN0ZW1zIGltcGxlbWVudCByZWFzb25hYmxlIHByZWNhdXRpb25zIGFnYWluc3QgdmlydXNlcyBh
-bmQKPiBvdGhlciB0aHJlYXRzLCB3ZSBjYW5ub3QgYWNjZXB0IHJlc3BvbnNpYmlsaXR5IGZvciBh
-bnkgbG9zcyBvciBkYW1hZ2UKPiBhcmlzaW5nIGZyb20gbWFuYWdpbmcgdGhlIGNvbnRlbnRzIG9m
-IHRoaXMgZS1tYWlsLiAqCj4KPiAqUCogICpQbGVhc2UgY29uc2lkZXIgdGhlIGVudmlyb25tZW50
-IGJlZm9yZSBwcmludGluZyB0aGlzIGUtbWFpbCoKPgoKQXJlIHlvdSBzdGlsbCBzZWVpbmcgdGhl
-IGlzc3VlPyAgSSBmaW5hbGx5IGxvb2tlZCBvdmVyIHRoZSBkaWZmLCBzdGlsbApsb29raW5nIGF0
-IGEgZmV3IHRoaW5ncyBidXQgaXQgbG9va3MgZ29vZC4KLS0tLS0tLS0tLS0tLS0gbmV4dCBwYXJ0
-IC0tLS0tLS0tLS0tLS0tCkEgbm9uLXRleHQgYXR0YWNobWVudCB3YXMgc2NydWJiZWQuLi4KTmFt
-ZTogbm9uYW1lClR5cGU6IGltYWdlL2pwZWcKU2l6ZTogMTk4NzIgYnl0ZXMKRGVzYzogbm90IGF2
-YWlsYWJsZQpVUkw6IDxodHRwOi8veGVub21haS5vcmcvcGlwZXJtYWlsL3hlbm9tYWkvYXR0YWNo
-bWVudHMvMjAyMDA2MDIvOTlkMTM1YjYvYXR0YWNobWVudC5qcGU+Cg==
+Dear all,
+
+I tried to have an example using rtdm_task_init with Xenomai 3.0.7. The =
+example is tis one:
+
+=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=
+=80=94=20
+
+#include <rtdm/driver.h>
+static int periode_us =3D 1000;
+static int a, ret;
+module_param(periode_us, int, 0644);
+
+rtdm_task_t task;
+
+void task_ultrason(void *arg){
+   a=3D1;
+   rtdm_printk(KERN_INFO "%s.%s() : hello =3D %d\n", THIS_MODULE->name, =
+__FUNCTION__,a);
+}
+
+int __init ultrason_init(void) {
+   a=3D0;
+   rtdm_printk(KERN_INFO "%s.%s() : hello =3D %d\n", THIS_MODULE->name, =
+__FUNCTION__,a);
+   ret =3D rtdm_task_init(&task, "ultrason", task_ultrason, NULL, 99, =
+periode_us*1000);
+   if (ret) {
+        rtdm_printk(KERN_INFO "%s.%s() : error rtdm_task_init, hello =3D =
+%d\n", THIS_MODULE->name, __FUNCTION__,a);
+   }
+   else  rtdm_printk(KERN_INFO "%s.%s() : success rtdm_task_init, hello =
+=3D %d\n", THIS_MODULE->name, __FUNCTION__,a);
+   return 0;
+}
+void __exit ultrason_exit(void) {
+   a=3D2;
+   rtdm_task_destroy(&task);
+   rtdm_printk(KERN_INFO "%s.%s() : hello =3D %d\n", THIS_MODULE->name, =
+__FUNCTION__,a);
+   }
+
+module_init(ultrason_init);
+module_exit(ultrason_exit);
+MODULE_LICENSE("GPL =C2=BB);
+
+=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=
+=80=94=20
+
+When I insert the module and remove it, I found in dmesg:
+
+=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=
+=80=94=20
+
+[ 5045.187448] test.ultrason_init() : hello =3D 0
+[ 5045.189495] test.ultrason_init() : success rtdm_task_init, hello =3D =
+0
+[ 5049.631665] test.ultrason_exit() : hello =3D 2
+
+=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=
+=80=94=20
+
+The task_ultrason is never called.
+
+I read from =
+https://gitlab.denx.de/Xenomai/xenomai/-/wikis/Migrating_From_Xenomai_2_To=
+_3 =
+<https://gitlab.denx.de/Xenomai/xenomai/-/wikis/Migrating_From_Xenomai_2_T=
+o_3>, that rtdm_task_init() shall be called from secondary mode.
+
+Since Xenomai 3, rtdm_task_init() involves creating a regular kernel =
+thread, which will be given real-time capabilities, such as running =
+under the control of the Cobalt kernel. In order to invoke standard =
+kernel services, rtdm_task_init() must be called from a regular Linux =
+kernel context.
+
+So, how to adapt my example to call rtdm_task_init() from  from a =
+regular Linux kernel context to make this example working?
+
+Thank you for your help.
+
+BR,
+Marwane.
+
+
+
+
+
+
+
