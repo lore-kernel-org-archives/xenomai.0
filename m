@@ -1,15 +1,14 @@
-Subject: Re: Handling MSI-X interrupts in the head stage for x86 platform
-References: <2fa58638-4b6f-330f-98d7-194bdfa47780@nicevt.ru>
- <BN6PR11MB16208D6D883154537467F163EE8A0@BN6PR11MB1620.namprd11.prod.outlook.com>
- <8a764653-73e2-4e9f-b90b-3f67f0696712@nicevt.ru>
+Subject: Re: [PATCH] Enable zynq gpio and xilinx gpio support for the Zynq MP
+ platform.
+References: <20200531032907.790647-1-greg@embeddedgreg.com>
 From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <79687b68-7263-5018-5e92-37f8d6bb8806@siemens.com>
-Date: Tue, 2 Jun 2020 09:46:41 +0200
+Message-ID: <32e1d40f-94a9-431b-b995-2be2fa930350@siemens.com>
+Date: Tue, 2 Jun 2020 09:48:23 +0200
 MIME-Version: 1.0
-In-Reply-To: <8a764653-73e2-4e9f-b90b-3f67f0696712@nicevt.ru>
-Content-Type: text/plain; charset="utf-8"
+In-Reply-To: <20200531032907.790647-1-greg@embeddedgreg.com>
+Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -18,56 +17,46 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Alexander Frolov <frolov@nicevt.ru>, xenomai@xenomai.org
+To: Greg Gallagher <greg@embeddedgreg.com>, xenomai@xenomai.org
+Cc: Joshua Karch <jkarch48@hotmail.com>
 
-On 02.06.20 08:40, Alexander Frolov via Xenomai wrote:
+On 31.05.20 05:29, Greg Gallagher via Xenomai wrote:
+> From: Joshua Karch <jkarch48@hotmail.com>
 > 
+>     	Signed-off-by: Joshua Karch <jkarch48@hotmail.com>
+> 	Signed-off-by: Greg Gallagher <greg@embeddedgreg.com>
+> ---
+>  kernel/drivers/gpio/Kconfig | 4 ++--
+>  1 file changed, 2 insertions(+), 2 deletions(-)
 > 
-> On 6/1/20 12:23 PM, Meng, Fino via Xenomai wrote:
->>
->>> Sent: Monday, June 1, 2020 4:09 PM
->>>
->>> Hi all!
->>>
->>> I have a PCIe device in x86 motherboard that generate periodic MSI-X
->>> interrupts and I would like to handle them in the head
->>> stage, how it can be done?
->>> Thank you! Appreciate any help!
->>>
->>> Best,
->>>     Alex
->> Hi Alex,
->>
->> Kernel/driver/serial/16550A.c is a pci device, and have less code than
->> net/igb driver,
->> Which specific device u want to enable? Does it have a vanilla kernel
->> driver already?
-> 
-> Not sure that 16550A uses MSI-X interrupts. However, net/igb does. Is it
-> only driver in Xenomai that supports MSI-X?
-> 
-> 
-> I am using FPGA based device for periodic interrupts which is totally
-> custom. We have are own driver.
-> 
-> Nevertheless, I have tested its latency from root stage driver and it is
-> appropriately good (not over than 60us). It seems that
-> msix irqs are not stalled anywhere. Is it possible?
-> 
-> Can I guarantee that there will be no condition when MSIX interrupt will
-> be deferred by head stage on more than that? What latency
-> improvement I can expect from moving to RTDM based driver?
+> diff --git a/kernel/drivers/gpio/Kconfig b/kernel/drivers/gpio/Kconfig
+> index dbc862754..44f41688c 100644
+> --- a/kernel/drivers/gpio/Kconfig
+> +++ b/kernel/drivers/gpio/Kconfig
+> @@ -34,7 +34,7 @@ config XENO_DRIVERS_GPIO_SUN8I_H3
+>  	SoC, as found on the NanoPI boards.
+>  
+>  config XENO_DRIVERS_GPIO_ZYNQ7000
+> -	depends on ARCH_ZYNQ
+> +	depends on ARCH_ZYNQ || ARCH_ZYNQMP
+>  	tristate "Support for Zynq7000 GPIOs"
+>  	help
+>  
+> @@ -42,7 +42,7 @@ config XENO_DRIVERS_GPIO_ZYNQ7000
+>  	Xilinx's Zynq7000 SoC.
+>  
+>  config XENO_DRIVERS_GPIO_XILINX
+> -	depends on ARCH_ZYNQ
+> +	depends on ARCH_ZYNQ || ARCH_ZYNQMP
+>  	tristate "Support for Xilinx GPIOs"
+>  	help
+>  
 > 
 
-Head stage defers according to priorities: There there is an interrupt
-or a task for head stage pending, that will win. No guarantees beyond
-what your own workload can guarantee. In addition, no guarantees
-architecturally on what will happen in Linux (root stage) which could
-defer your interrupt. If you want determinism, move it to head stage.
+Massaged and applied.
 
+Thanks,
 Jan
-
-PS: MSI-X works as well as MSI or legacy INTx.
 
 -- 
 Siemens AG, Corporate Technology, CT RDA IOT SES-DE
