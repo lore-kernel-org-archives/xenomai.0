@@ -1,11 +1,13 @@
-From: "atanas.karaatanasov@omron.com" <atanas.karaatanasov@omron.com>
-Subject: Xenomai
-Date: Tue, 2 Jun 2020 16:59:06 +0000
-Message-ID: <OSBPR01MB32868DFBE54550B754DC65E7EA8B0@OSBPR01MB3286.jpnprd01.prod.outlook.com>
-Content-Language: en-US
+Subject: Re: Xenomai
+References: <OSBPR01MB32868DFBE54550B754DC65E7EA8B0@OSBPR01MB3286.jpnprd01.prod.outlook.com>
+From: Jan Kiszka <jan.kiszka@siemens.com>
+Message-ID: <5f8b14d9-ceb0-6653-a4f3-c69f2a3dc80a@siemens.com>
+Date: Thu, 4 Jun 2020 09:08:20 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+In-Reply-To: <OSBPR01MB32868DFBE54550B754DC65E7EA8B0@OSBPR01MB3286.jpnprd01.prod.outlook.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -14,21 +16,23 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: "atanas.karaatanasov@omron.com" <atanas.karaatanasov@omron.com>, "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-SGVsbG8sCgpNeSBuYW1lIGlzIEF0YW5hcyBhbmQgSSB3b3JrIGZvciBPTVJPTi4gICBXZSBhcmUg
-dXNpbmcgWGVub21haSBSVE9TIHdpdGggTGludXggRGViaWFuIGluIG9uZSBvZiBvdXIgcHJvZHVj
-dC4KCkkgd291bGQgdG8gY2hlY2sgaWYgdGhlcmUgaXMgYW55IG1ldGhvZCAvIGVtYWlsIHdoZXJl
-IEkgY2FuIGFzayB0ZWNobmljYWwgcXVlc3Rpb24uCgpQbGVhc2UgbGV0IG1lIGtub3cuCgpUaGFu
-ayB5b3UsCkF0YW5hcwpbY2lkOmltYWdlMDAxLmpwZ0AwMUQ0QzNBNi4yNTY3OTVDMF0KQXRhbmFz
-IEthcmFhdGFuYXNvdgpBZHZhbmNlZCBNb3Rpb24gRW5naW5lZXItIEFtZXJpY2FzCk1vYmlsZTog
-ODEzLjIxMC43NjAzCkF0YW5hcy5LYXJhYXRhbmFzb3ZAb21yb24uY29tPG1haWx0bzpBdGFuYXMu
-S2FyYWF0YW5hc292QG9tcm9uLmNvbT4KT21yb24gQXV0b21hdGlvbiBBbWVyaWNhcwpOb3ZpLCBN
-SSAyOTE4NQpvbXJvbjI0Ny5jb20gIHwgIENvbm5lY3Qgd2l0aCB1czogb21yb24yNDcuY29tL3Nv
-Y2lhbDxvbXJvbjI0Ny5jb20vc29jaWFsPgpUaGlzIGlzIGEgY29uZmlkZW50aWFsIG1lc3NhZ2Uu
-IElmIHJlY2VpdmVkIGluIGVycm9yLCBkZWxldGUgaXQgYW5kIG5vdGlmeSB0aGUgc2VuZGVyLgoK
-LS0tLS0tLS0tLS0tLS0gbmV4dCBwYXJ0IC0tLS0tLS0tLS0tLS0tCkEgbm9uLXRleHQgYXR0YWNo
-bWVudCB3YXMgc2NydWJiZWQuLi4KTmFtZTogaW1hZ2UwMDEuanBnClR5cGU6IGltYWdlL2pwZWcK
-U2l6ZTogNDU3NSBieXRlcwpEZXNjOiBpbWFnZTAwMS5qcGcKVVJMOiA8aHR0cDovL3hlbm9tYWku
-b3JnL3BpcGVybWFpbC94ZW5vbWFpL2F0dGFjaG1lbnRzLzIwMjAwNjAyLzQyMjEzNDJiL2F0dGFj
-aG1lbnQuanBnPgo=
+On 02.06.20 18:59, atanas.karaatanasov--- via Xenomai wrote:
+> Hello,
+> 
+> My name is Atanas and I work for OMRON.   We are using Xenomai RTOS with Linux Debian in one of our product.
+> 
+> I would to check if there is any method / email where I can ask technical question.
+> 
+> Please let me know.
+
+This is this the right location (likely - we do not know your exact
+question yet).
+
+Jan
+
+-- 
+Siemens AG, Corporate Technology, CT RDA IOT SES-DE
+Corporate Competence Center Embedded Linux
+
