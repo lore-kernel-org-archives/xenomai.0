@@ -1,11 +1,13 @@
-From: Jouko Haapaluoma <jouko.haapaluoma@wapice.com>
-Subject: [PATCH 1/9] mach-at91: Add IPIPE_ARM_KUSER_TSC for SAMA5D3
-Date: Fri, 12 Jun 2020 11:44:32 +0000
-Message-ID: <HE1PR03MB31157E597F87E7B88756C79FE5810@HE1PR03MB3115.eurprd03.prod.outlook.com>
-Content-Language: en-US
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+Subject: Re: Xenomai.org certificate expired
+References: <MN2PR19MB3967B89DB2DD0090FD0E7237D5890@MN2PR19MB3967.namprd19.prod.outlook.com>
+From: Philippe Gerum <rpm@xenomai.org>
+Message-ID: <4cb3d2bb-f345-0019-51ab-74a9c5c7b1f6@xenomai.org>
+Date: Thu, 4 Jun 2020 18:18:05 +0200
 MIME-Version: 1.0
+In-Reply-To: <MN2PR19MB3967B89DB2DD0090FD0E7237D5890@MN2PR19MB3967.namprd19.prod.outlook.com>
+Content-Type: text/plain; charset="windows-1252"
+Content-Language: en-US
+Content-Transfer-Encoding: quoted-printable
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -14,29 +16,21 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Josh Karch <jkarch@FirstMode.com>, "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-From: Tuomo Jauhiainen <tuomo.jauhiainen@wapice.com>
+On 6/4/20 5:55 PM, Josh Karch via Xenomai wrote:
+> Hi All,
+>=20
+> While using Buildroot to download Xeno 3.1 I found that the certificate h=
+ad expired, which killed the build:
+> I got the following message
+> "ERROR: The certificate of =91xenomai.org=92 is not trusted." followed by=
+ a failed build.  Is this a recent expiration?
+>=20
 
-Add ipipe build support for SAMA5D3 SoC
+I renewed it last year. This expiration happened in the wake of the Sectigo
+mess on May 30. I'll fix this.
 
-Signed-off-by: Jouko Haapaluoma <jouko.haapaluoma@wapice.com>
----
- arch/arm/mach-at91/Kconfig | 1 +
- 1 file changed, 1 insertion(+)
-
-diff --git a/arch/arm/mach-at91/Kconfig b/arch/arm/mach-at91/Kconfig
-index 903f23c..bd11a69 100644
---- a/arch/arm/mach-at91/Kconfig
-+++ b/arch/arm/mach-at91/Kconfig
-@@ -41,6 +41,7 @@ config SOC_SAMA5D3
- 	select HAVE_AT91_SMD
- 	select HAVE_AT91_USB_CLK
- 	select PINCTRL_AT91
-+	select IPIPE_ARM_KUSER_TSC if IPIPE
- 	help
- 	  Select this if you are using one of Microchip's SAMA5D3 family SoC.
- 	  This support covers SAMA5D31, SAMA5D33, SAMA5D34, SAMA5D35, SAMA5D36.
 --=20
-2.2.2
+Philippe.
 
