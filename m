@@ -1,15 +1,11 @@
-Date: Sat, 13 Jun 2020 03:05:09 -0500 (CDT)
-From: Per Oberg <pero@wolfram.com>
-Message-ID: <121459932.109963.1592035509405.JavaMail.zimbra@wolfram.com>
-In-Reply-To: <393bccc6-8d64-b382-dc54-14893cbd385c@siemens.com>
-References: <1293572894.22066.1591975586278.JavaMail.zimbra@wolfram.com>
- <f545866d-efc1-e35e-5f69-6a40102a5cb0@siemens.com>
- <544072279.25640.1591976851898.JavaMail.zimbra@wolfram.com>
- <393bccc6-8d64-b382-dc54-14893cbd385c@siemens.com>
-Subject: Re: Exception #14 in kernel space when using rttcp
-MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+From: Lange Norbert <norbert.lange@andritz.com>
+Subject: Still getting Deadlocks with condition variables
+Date: Fri, 5 Jun 2020 14:36:39 +0000
+Message-ID: <VI1PR05MB59177F9BC5CD74A181467003F6860@VI1PR05MB5917.eurprd05.prod.outlook.com>
+Content-Language: en-US
+Content-Type: text/plain; charset="iso-8859-1"
 Content-Transfer-Encoding: quoted-printable
+MIME-Version: 1.0
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -18,189 +14,198 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai <xenomai@xenomai.org>
+To: "Xenomai (xenomai@xenomai.org)" <xenomai@xenomai.org>
+
+Hello,
+
+I brought this up once or twice at this ML [1], I am still getting some occ=
+asional lockups. Now the first time without running under an debugger,
+
+Harwdare is a TQMxE39M (Goldmont Atom)
+Kernel: 4.19.124-cip27-xeno12-static x86_64
+I-pipe Version: 12
+Xenomai Version: 3.1
+Glibc Version 2.28
+
+What happens (as far as I understand it):
+
+The setup is an project with several cobalt threads (no "native" Linux thre=
+ad as far as I can tell, apart maybe from the cobalt's printf thread).
+They mostly sleep, and are triggered if work is available, the project also=
+ can load DSOs (specialized maths) during configuration stage - during this=
+ stages is when the exceptions occur
 
 
------ Den 12 jun 2020, p=C3=A5 kl 17:54, Jan Kiszka jan.kiszka@siemens.com =
-skrev:
+1.   Linux Thread LWP 682 calls SYS_futex "wake"
 
-> On 12.06.20 17:47, Per Oberg via Xenomai wrote:
-> > ----- Den 12 jun 2020, p=C3=A5 kl 17:33, Jan Kiszka jan.kiszka@siemens.=
-com skrev:
+Code immediately before syscall, file x86_64/lowlevellock.S:
+movl$0, (%rdi)
+LOAD_FUTEX_WAKE (%esi)
+movl$1, %edx/* Wake one thread.  */
+movl$SYS_futex, %eax
+syscall
 
-> >> On 12.06.20 17:26, Per Oberg via Xenomai wrote:
-> >>> Hi list
+2. Xenomai switches a cobalt thread to secondary, potentially because all t=
+hreads are in primary:
 
-> >>> I get a massive amount of "swithching ... to secondary mode after exc=
-eption #14
-> >>> in kernel-space ..." followed by a WARNING as shown below.
+Jun 05 12:35:19 buildroot kernel: [Xenomai] switching dispatcher to seconda=
+ry mode after exception #14 from user-space at 0x7fd731299115 (pid 681)
 
-> >>> Can someone enlighten me regarding the meaning of exception #14 ?
+Note that most threads are stuck waiting for a condvar in sc_cobalt_cond_wa=
+it_prologue (cond.c:313), LWP 681 is at the next instruction.
 
-> >>> Is the "WARNING: CPU: 0 ..." the cause or the symptom ? It has a macr=
-o at fd.c
-> >>> calling "XENO_WARN_ON(COBALT, fd->refs <=3D 0);
+3. Xenomai gets XCPU signal -> coredump
 
+gdb) thread apply all bt 3
 
-> >> Likely related: The WARN_ON triggers a stack dump and that may trigger
-> >> fixable or ignorable faults. We may consider converting that
-> >> XENO_WARN_ON into XENO_WARN_ON_ONCE.
+Thread 9 (LWP 682):
+#0  __lll_unlock_wake () at ../sysdeps/unix/sysv/linux/x86_64/lowlevellock.=
+S:339
+#1  0x00007fd731275d65 in __pthread_mutex_unlock_usercnt (mutex=3D0x7fd7312=
+f6968 <_rtld_global+2312>, decr=3D1) at pthread_mutex_unlock.c:54
+#2  0x00007fd7312e0442 in ?? () from /home/lano/Downloads/bugcrash/lib64/ld=
+-linux-x86-64.so.2
+#3  0x00007fd7312c72ac in ?? () from /lib/libdl.so.2
+#4  0x00007fd73104211f in _dl_catch_exception () from /lib/libc.so.6
+#5  0x00007fd731042190 in _dl_catch_error () from /lib/libc.so.6
+#6  0x00007fd7312c7975 in ?? () from /lib/libdl.so.2
+#7  0x00007fd7312c7327 in dlopen () from /lib/libdl.so.2
+(More stack frames follow...)
 
-> >> What is actually interesting is the warning itself. Reference counting
-> >> became imbalanced. How do you trigger that?
+Thread 8 (LWP 686):
+#0  0x00007fd731298d48 in __cobalt_clock_nanosleep (clock_id=3D0, flags=3D0=
+, rqtp=3D0x7fd727e3ad10, rmtp=3D0x0) at /opt/hipase2/src/xenomai-3.1.0/lib/=
+cobalt/clock.c:312
+#1  0x00007fd731298d81 in __cobalt_nanosleep (rqtp=3D<optimized out>, rmtp=
+=3D<optimized out>) at /opt/hipase2/src/xenomai-3.1.0/lib/cobalt/clock.c:35=
+4
+#2  0x0000000000434590 in operator() (__closure=3D0x7fd720006fb8) at ../../=
+acpu.runner/asim/asim_com.cpp:685
+(More stack frames follow...)
 
->> Where do you see that? I can't figure out anything about what is going o=
-n from
-> > that warning...
+Thread 7 (LWP 677):
+#0  0x00007fd73127b6c6 in __GI___nanosleep (requested_time=3Drequested_time=
+@entry=3D0x7fd7312b1fb0 <syncdelay>, remaining=3Dremaining@entry=3D0x0) at =
+../sysdeps/unix/sysv/linux/nanosleep.c:28
+#1  0x00007fd73129b746 in printer_loop (arg=3D<optimized out>) at /opt/hipa=
+se2/src/xenomai-3.1.0/lib/cobalt/printf.c:635
+#2  0x00007fd7312720f7 in start_thread (arg=3D<optimized out>) at pthread_c=
+reate.c:486
+(More stack frames follow...)
 
+Thread 6 (LWP 685):
+#0  0x00007fd73129910a in __cobalt_pthread_cond_wait (cond=3D0x7fd72f269660=
+, mutex=3D0x7fd72f269630) at /opt/hipase2/src/xenomai-3.1.0/lib/cobalt/cond=
+.c:313
+#1  0x000000000046377c in conditionvar_wait (pData=3D0x7fd72f269660, pMutex=
+=3D0x7fd72f269630) at ../../alib/src/alib/posix/conditionvar.c:66
+#2  0x000000000040a620 in HIPASE::Posix::CAlib_ConditionVariable::wait (thi=
+s=3D0x7fd72f269660, lock=3D...) at ../../alib/include/alib/alib_conditionva=
+r_posix.h:67
+(More stack frames follow...)
 
-> Warning at .../rtdm/fd.c:299:
+Thread 5 (LWP 684):
+#0  0x00007fd73129910a in __cobalt_pthread_cond_wait (cond=3D0x7fd72f267790=
+, mutex=3D0x7fd72f267760) at /opt/hipase2/src/xenomai-3.1.0/lib/cobalt/cond=
+.c:313
+#1  0x000000000046377c in conditionvar_wait (pData=3D0x7fd72f267790, pMutex=
+=3D0x7fd72f267760) at ../../alib/src/alib/posix/conditionvar.c:66
+#2  0x000000000040a620 in HIPASE::Posix::CAlib_ConditionVariable::wait (thi=
+s=3D0x7fd72f267790, lock=3D...) at ../../alib/include/alib/alib_conditionva=
+r_posix.h:67
+(More stack frames follow...)
 
-> static void __put_fd(struct rtdm_fd *fd, spl_t s)
-> {
-> ...
-> XENO_WARN_ON(COBALT, fd->refs <=3D 0);
+Thread 4 (LWP 680):
+#0  0x00007fd73129910a in __cobalt_pthread_cond_wait (cond=3D0xfeafa0 <(ano=
+nymous namespace)::m_MainTaskStart>, mutex=3D0xfeaf60 <(anonymous namespace=
+)::m_TaskMutex>) at /opt/hipase2/src/xenomai-3.1.0/lib/cobalt/cond.c:313
+#1  0x000000000046377c in conditionvar_wait (pData=3D0xfeafa0 <(anonymous n=
+amespace)::m_MainTaskStart>, pMutex=3D0xfeaf60 <(anonymous namespace)::m_Ta=
+skMutex>) at ../../alib/src/alib/posix/conditionvar.c:66
+#2  0x000000000040a620 in HIPASE::Posix::CAlib_ConditionVariable::wait (thi=
+s=3D0xfeafa0 <(anonymous namespace)::m_MainTaskStart>, lock=3D...) at ../..=
+/alib/include/alib/alib_conditionvar_posix.h:67
+(More stack frames follow...)
 
-Oh, yes of course. Didn't make the connections to the source. Thought you c=
-ould see it directly in the kernel message. My bad.=20
+Thread 3 (LWP 683):
+#0  0x00007fd73129910a in __cobalt_pthread_cond_wait (cond=3D0x7fd72f2658c0=
+, mutex=3D0x7fd72f265890) at /opt/hipase2/src/xenomai-3.1.0/lib/cobalt/cond=
+.c:313
+#1  0x000000000046377c in conditionvar_wait (pData=3D0x7fd72f2658c0, pMutex=
+=3D0x7fd72f265890) at ../../alib/src/alib/posix/conditionvar.c:66
+#2  0x000000000040a620 in HIPASE::Posix::CAlib_ConditionVariable::wait (thi=
+s=3D0x7fd72f2658c0, lock=3D...) at ../../alib/include/alib/alib_conditionva=
+r_posix.h:67
+(More stack frames follow...)
 
-> So, the file descriptor is released although its internal reference
-> counter says it's not held. That is a bug in the kernel, likely leading
-> to use-after-release issues.
+Thread 2 (LWP 675):
+#0  0x00007fd73129aea4 in __cobalt_pthread_mutex_lock (mutex=3D<optimized o=
+ut>) at /opt/hipase2/src/xenomai-3.1.0/lib/cobalt/mutex.c:375
+#1  0x000000000046390a in mutex_lock (pData=3D0xfeaf60 <(anonymous namespac=
+e)::m_TaskMutex>) at ../../alib/src/alib/posix/mutex.c:33
+#2  0x000000000040a530 in HIPASE::Posix::CAlib_Mutex::lock (this=3D0xfeaf60=
+ <(anonymous namespace)::m_TaskMutex>) at ../../alib/include/alib/alib_mute=
+x_posix.h:67
+(More stack frames follow...)
 
->> Not sure what I am actually doing, but I'd be glad to debug it if I knew=
- where
-> > to start.
-
->> I'm working on compiling a network library for use in Xenomai. It uses a=
- lot of
->> extra stuff to get everything up and running,but in the end it will use =
-UDP for
-> > the data exchange. So switching to secondary mode may be ok during the =
-startup.
-
-
-> I suppose you are writing a userspace application that uses RT-TCP here.
-> That usage pattern up to the point you see the first warning would be
-> interesting, ideally as minimal testcase. Also the configuration of the
-> RTnet stack (compile-time and runtime).
-
-One thing that is noteworthy is that I was running Xenomai 3.1 with a 4.9.9=
-0 kernel (reporting itself as Xenomai 3.1), which seems like a big mess up.=
- When I cleaned up my build-tree properly it wouldn't compile anymore which=
- gave me the idea that I somehow managed to mix and match two xenomai versi=
-ons in the same kernel.=20
-
-Anyway, I recompiled everything from scratch using :
-Xenomai 3.1
-Linux 4.19.114-cip24 with ipipe patch 12=20
-
-Now I get other errors, but I'm not sure yet whether that is because I have=
- turned on the watchdog. I did a little quick-and dirty config of the kerne=
-l to get it up and running so I am not sure exactly how much that differs b=
-etween my this and my old setup. Here goes:=20
-
-[ 1054.259075] [Xenomai] watchdog triggered on CPU #0 -- runaway thread 'RT=
-Test' signaled
-[ 1054.260509] ------------[ cut here ]------------
-[ 1054.260510] [Xenomai] switching rtnet-stack to secondary mode after exce=
-ption #6 in kernel-space at 0xffffffff8bd7064b (pid 1449)
-[ 1054.260517] WARNING: CPU: 0 PID: 1449 at /usr/src/kernel/kernel/xenomai/=
-rtdm/fd.c:299 __put_fd+0x26b/0x2c0
-[ 1054.260517] Modules linked in: rttcp rtudp rtipv4 rt_igb rtnet x86_pkg_t=
-emp_thermal
-[ 1054.260521] CPU: 0 PID: 1449 Comm: rtnet-stack Not tainted 4.19.114-cip2=
-4xeno-cobalt #1
-[ 1054.260522] Hardware name: Default string Default string/SKYBAY, BIOS 5.=
-0.1.1 04/18/2016
-[ 1054.260522] I-pipe domain: Linux
-[ 1054.260524] RIP: 0010:__put_fd+0x26b/0x2c0
-[ 1054.260525] Code: 83 e0 01 49 39 c4 74 08 4c 89 e7 e8 8f 98 f9 ff 48 8d =
-7d b0 e8 36 99 f9 ff e9 81 fe ff ff 48 c7 c7 e0 b0 db 8c e8 1e 4b f3 ff <0f=
-> 0b 41 8b 5d 18 e9 ca fd ff ff 48 8b 05 eb d0 2d 01 49 c7 45 30
-[ 1054.260525] RSP: 0018:ffff94f9c0223dc0 EFLAGS: 00010282
-[ 1054.260526] RAX: 0000000000000028 RBX: 0000000000000000 RCX: 00000000000=
-00001
-[ 1054.260527] RDX: 0000000000000000 RSI: 0000000000001140 RDI: ffffffff8d7=
-7d500
-[ 1054.260528] RBP: ffff94f9c0223e20 R08: 0000000000000045 R09: 00000000000=
-2e7c0
-[ 1054.260528] R10: ffff94f9c0223e38 R11: 0000000000000000 R12: 00000000000=
-00000
-[ 1054.260529] R13: ffff919461fb4800 R14: 0000000000000000 R15: ffffffffc01=
-1d1e0
-[ 1054.260529] FS:  0000000000000000(0000) GS:ffff919465a00000(0000) knlGS:=
-0000000000000000
-[ 1054.260530] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-[ 1054.260531] CR2: 0000000000000000 CR3: 00000001dba0a001 CR4: 00000000003=
-606f0
-[ 1054.260531] Call Trace:
-[ 1054.260534]  ? rtdm_nrtsig_pend+0x43/0x70
-[ 1054.260536]  ? rtdm_cleanup+0x10/0x10
-[ 1054.260537]  ? rtdm_fd_unlock+0x9b/0xd0
-[ 1054.260538]  rtdm_fd_unlock+0x9b/0xd0
-[ 1054.260540]  rt_ip_rcv+0x129/0x180 [rtipv4]
-[ 1054.260542]  rt_stack_deliver+0x22c/0x3a0 [rtnet]
-[ 1054.260544]  ? xnthread_map+0x370/0x370
-[ 1054.260545]  rt_stack_mgr_task+0x66/0xa0 [rtnet]
-[ 1054.260546]  kthread_trampoline+0x77/0x133
-[ 1054.260548]  kthread+0x10e/0x130
-[ 1054.260550]  ? kthread_create_worker_on_cpu+0x70/0x70
-[ 1054.260552]  ret_from_fork+0x36/0x50
-[ 1054.260554] ---[ end trace a6a10c1d0c5fd7df ]---
-[ 1054.260555] ------------[ cut here ]------------
-[ 1054.260571] WARNING: CPU: 0 PID: 1449 at /usr/src/kernel/kernel/xenomai/=
-rtdm/drvlib.c:884 rtdm_event_timedwait+0x50/0x320
-[ 1054.260572] Modules linked in: rttcp rtudp rtipv4 rt_igb rtnet x86_pkg_t=
-emp_thermal
-[ 1054.260573] CPU: 0 PID: 1449 Comm: rtnet-stack Tainted: G        W      =
-   4.19.114-cip24xeno-cobalt #1
-[ 1054.260574] Hardware name: Default string Default string/SKYBAY, BIOS 5.=
-0.1.1 04/18/2016
-[ 1054.260574] I-pipe domain: Linux
-[ 1054.260575] RIP: 0010:rtdm_event_timedwait+0x50/0x320
-[ 1054.260575] Code: c0 48 85 f6 78 46 48 c7 c2 40 01 03 00 48 89 d0 65 48 =
-03 05 da 17 2a 74 f6 40 09 40 74 19 48 c7 c7 e0 b0 db 8c e8 f9 77 f3 ff <0f=
-> 0b 41 bc ff ff ff ff e9 24 01 00 00 65 48 03 15 b3 17 2a 74 48
-[ 1054.260576] RSP: 0018:ffff94f9c0223e80 EFLAGS: 00010282
-[ 1054.260576] RAX: 0000000000000024 RBX: ffffffffc0105e00 RCX: 00000000000=
-00000
-[ 1054.260577] RDX: 0000000000000000 RSI: ffffffff8cdd42b1 RDI: 00000000fff=
-fffff
-[ 1054.260577] RBP: ffffffffc0104300 R08: ffff919465a00000 R09: 00000000000=
-00466
-[ 1054.260578] R10: ffff94f9c0223e38 R11: 0000000000000000 R12: ffff94f9c02=
-b3a90
-[ 1054.260578] R13: 0000000000000000 R14: 0000000000000000 R15: ffffffffc01=
-04300
-[ 1054.260579] FS:  0000000000000000(0000) GS:ffff919465a00000(0000) knlGS:=
-0000000000000000
-[ 1054.260579] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-[ 1054.260580] CR2: 0000000000000000 CR3: 00000001dba0a001 CR4: 00000000003=
-606f0
-[ 1054.260580] Call Trace:
-[ 1054.260580]  ? rt_stack_deliver+0x28b/0x3a0 [rtnet]
-[ 1054.260581]  ? xnthread_map+0x370/0x370
-[ 1054.260581]  rt_stack_mgr_task+0x27/0xa0 [rtnet]
-[ 1054.260582]  kthread_trampoline+0x77/0x133
-[ 1054.260582]  kthread+0x10e/0x130
-[ 1054.260583]  ? kthread_create_worker_on_cpu+0x70/0x70
-[ 1054.260583]  ret_from_fork+0x36/0x50
-[ 1054.260584] ---[ end trace a6a10c1d0c5fd7e0 ]---
+Thread 1 (LWP 681):
+#0  __cobalt_pthread_cond_wait (cond=3D0xfeafe0 <(anonymous namespace)::m_D=
+ispatcherTaskStart>, mutex=3D0xfeaf60 <(anonymous namespace)::m_TaskMutex>)=
+ at /opt/hipase2/src/xenomai-3.1.0/lib/cobalt/cond.c:316
+#1  0x000000000046377c in conditionvar_wait (pData=3D0xfeafe0 <(anonymous n=
+amespace)::m_DispatcherTaskStart>, pMutex=3D0xfeaf60 <(anonymous namespace)=
+::m_TaskMutex>) at ../../alib/src/alib/posix/conditionvar.c:66
+#2  0x000000000040a620 in HIPASE::Posix::CAlib_ConditionVariable::wait (thi=
+s=3D0xfeafe0 <(anonymous namespace)::m_DispatcherTaskStart>, lock=3D...) at=
+ ../../alib/include/alib/alib_conditionvar_posix.h:67
+(More stack frames follow...)
 
 
-I will try to make a minimal example of my example and my current setup. Am=
- I right in believing that there is now a "Standard distro" for xenomai tha=
-t I can try this on with well known settings? If so, how can I take it out =
-for a spin?
+
+[1] - https://xenomai.org/pipermail/xenomai/2020-January/042299.html
 
 
-> Jan
+Mit besten Gr=FC=DFen / Kind regards
 
-> --
-> Siemens AG, Corporate Technology, CT RDA IOT SES-DE
-> Corporate Competence Center Embedded Linux
+NORBERT LANGE
 
-Thanks
-Per =C3=96berg=20
+AT-RD3
+
+ANDRITZ HYDRO GmbH
+Eibesbrunnergasse 20
+1120 Vienna / AUSTRIA
+p: +43 50805 56684
+norbert.lange@andritz.com
+andritz.com
+
+________________________________
+
+This message and any attachments are solely for the use of the intended rec=
+ipients. They may contain privileged and/or confidential information or oth=
+er information protected from disclosure. If you are not an intended recipi=
+ent, you are hereby notified that you received this email in error and that=
+ any review, dissemination, distribution or copying of this email and any a=
+ttachment is strictly prohibited. If you have received this email in error,=
+ please contact the sender and delete the message and any attachment from y=
+our system.
+
+ANDRITZ HYDRO GmbH
+
+
+Rechtsform/ Legal form: Gesellschaft mit beschr=E4nkter Haftung / Corporati=
+on
+
+Firmensitz/ Registered seat: Wien
+
+Firmenbuchgericht/ Court of registry: Handelsgericht Wien
+
+Firmenbuchnummer/ Company registration: FN 61833 g
+
+DVR: 0605077
+
+UID-Nr.: ATU14756806
+
+
+Thank You
+________________________________
 
