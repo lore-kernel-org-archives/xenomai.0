@@ -1,14 +1,13 @@
-Subject: Re: [RFC]Are there some potential problems that I should be aware of
- if I use the kvmalloc() instead of kmalloc() in xnheap_init()?
-References: <CAAvDm6b-4a-n8HDRRQZScEKF1AmeJyWvYA1MH9MdOC43DMGzvw@mail.gmail.com>
-From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <5d727e35-c291-a917-f64b-90a1cfcb37b6@siemens.com>
-Date: Mon, 29 Jun 2020 16:48:22 +0200
+Subject: Re: Still getting Deadlocks with condition variables
+References: <VI1PR05MB59177F9BC5CD74A181467003F6860@VI1PR05MB5917.eurprd05.prod.outlook.com>
+From: Philippe Gerum <rpm@xenomai.org>
+Message-ID: <260342fe-450f-a30b-72c2-751961bc28dd@xenomai.org>
+Date: Sun, 7 Jun 2020 22:15:51 +0200
 MIME-Version: 1.0
-In-Reply-To: <CAAvDm6b-4a-n8HDRRQZScEKF1AmeJyWvYA1MH9MdOC43DMGzvw@mail.gmail.com>
-Content-Type: text/plain; charset="utf-8"; format="flowed"
+In-Reply-To: <VI1PR05MB59177F9BC5CD74A181467003F6860@VI1PR05MB5917.eurprd05.prod.outlook.com>
+Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,109 +16,139 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: =?UTF-8?B?5a2Z5LiW6b6ZIHN1bnNoaWxvbmc=?= <sunshilong369@gmail.com>, xenomai <xenomai@xenomai.org>
+To: Lange Norbert <norbert.lange@andritz.com>, "Xenomai (xenomai@xenomai.org)" <xenomai@xenomai.org>
 
-On 27.06.20 09:23, 孙世龙 sunshilong wrote:
-> Hi, list
+On 6/5/20 4:36 PM, Lange Norbert wrote:
+> Hello,
 > 
-> I found a solution to solve the problem(i.e. page allocation failure:
-> order:9, mode:0x60c0c0 (GFP_KERNEL|__GFP_COMP|__GFP_ZERO),
-> nodemask=(null)). But I don't know whether there are some potential problems
-> or not if I repalce kmalloc() function by kvmalloc() (or vmalloc()) in
-> xnheap_init()?
+> I brought this up once or twice at this ML [1], I am still getting some occasional lockups. Now the first time without running under an debugger,
 > 
-> I'm using xenomai3.1+linux4.19.84.
+> Harwdare is a TQMxE39M (Goldmont Atom)
+> Kernel: 4.19.124-cip27-xeno12-static x86_64
+> I-pipe Version: 12
+> Xenomai Version: 3.1
+> Glibc Version 2.28
 > 
-> Here is the related call trace
-> (the whole log is seen at the footnote, I'd try to explain
-> my current understanding to the related code snippet blow):
-> dump_stack+0x9e/0xc8
-> warn_alloc+0x100/0x190
-> __alloc_pages_slowpath+0xb93/0xbd0
-> __alloc_pages_nodemask+0x26d/0x2b0
-> alloc_pages_current+0x6a/0xe0
-> kmalloc_order+0x18/0x40
-> kmalloc_order_trace+0x24/0xb0
-> __kmalloc+0x20e/0x230
-> ? __vmalloc_node_range+0x171/0x250
-> xnheap_init+0x87/0x200
-> ? remove_process+0xc0/0xc0
-> cobalt_umm_init+0x61/0xb0
+> What happens (as far as I understand it):
 > 
-> Here is my current understanding of the most related snippet:
-> As the aforementioned call trace, the failure has some relation
-> to xnheap_init().
-> 
-> Kzalloc() is invoked by xnheap_init() in the xenomai source code(see
-> https://gitlab.denx.de/Xenomai/xenomai/-/blob/v3.1/kernel/cobalt/heap.c).
-> For your convenience, here is the most related code:
-> int xnheap_init(struct xnheap *heap, void *membase, size_t size)
-> {
->      ...
-> nrpages = size >> XNHEAP_PAGE_SHIFT;
-> heap->pagemap = kzalloc(sizeof(struct xnheap_pgentry) * nrpages,
-> GFP_KERNEL);
-> ...
-> }
+> The setup is an project with several cobalt threads (no "native" Linux thread as far as I can tell, apart maybe from the cobalt's printf thread).
+> They mostly sleep, and are triggered if work is available, the project also can load DSOs (specialized maths) during configuration stage - during this stages is when the exceptions occur
 > 
 > 
-> As per the source of Linux kernel
-> (https://elixir.bootlin.com/linux/v4.9.182/source/include/linux/slab.h#L634),
-> kzalloc() invokes kmalloc() with a option of __GFP_ZERO.
-> So, we can say that kmalloc() is finally called by xnheap_init().
+> 1.   Linux Thread LWP 682 calls SYS_futex "wake"
 > 
-> What's the exact value of the variable "size" (which is one of the input
-> arguments of xnheap_init())?
-> There is a clue from the said call trace.
+> Code immediately before syscall, file x86_64/lowlevellock.S:
+> movl$0, (%rdi)
+> LOAD_FUTEX_WAKE (%esi)
+> movl$1, %edx/* Wake one thread.  */
+> movl$SYS_futex, %eax
+> syscall
 > 
-> Attach_process() is invoked by cobalt_umm_init().
-> It's the attach_proceess function passes the value to xnheap_init function(
-> see https://gitlab.denx.de/Xenomai/xenomai/-/blob/v3.1/kernel/cobalt/posix/process.c).
-> For your convenience, here is the most related code:
-> static int attach_process(struct cobalt_process *process)
-> {
-> ...
-> ret = cobalt_umm_init(&p->umm, CONFIG_XENO_OPT_PRIVATE_HEAPSZ * 1024,
->       post_ppd_release);
-> if (ret)
-> return ret;
-> ...
-> }
+> 2. Xenomai switches a cobalt thread to secondary, potentially because all threads are in primary:
 > 
-> So, the size passes to kmalloc() has a direct relation (for details,
-> see below) to
-> CONFIG_XENO_OPT_PRIVATE_HEAPSZ.
-> And CONFIG_XENO_OPT_PRIVATE_HEAPSZ is set to 81920(i.e. 81920KB
-> memory needs to be allocated by vmalloc()) when setting the kconfig.
-> Our user application may report the error of out of memory if I set
-> CONFIG_XENO_OPT_PRIVATE_HEAPSZ to a relatively small value(say 40MB).
-> 
-> As I said before, I have set the size of  private heap to a huge value.
-> This huge memory could be allocated by __vmalloc() successfully.
-> The private heap is managed by "pages" and each of the pages is 512Bytes.
-> Xenomai uses the struct named xnheap_pgentry to indicates the usage of
-> each page(of the private heap).
-> Each xnheap_pgentry needs 12Bytes(i.e. sizeof(xnheap_pgentry)=12).
-> 
-> And the said variable named nrpages is equivalent to the above equation.
-> So another 1920KB(i.e. nrpages*sizeof(xnheap_pgentry) memory
-> (to indicates the usage of each page of the private heap)
-> has to be allocated by kmalloc(). And it finally caused the allocation
-> failure.
-> 
-> I think the kmalloc function should be replaced by kvmalloc() or
->   vmalloc(). It just needs some memory to store the array of
-> struct xnheap_pgentry. So the memory does not need to be physically
-> continuous. What do you think about it?
+> Jun 05 12:35:19 buildroot kernel: [Xenomai] switching dispatcher to secondary mode after exception #14 from user-space at 0x7fd731299115 (pid 681)
 > 
 
-Good analysis! I see no issue in replacing kmalloc with kvmalloc. Would 
-you write such a patch with a short reasoning?
+This kernel message tells a different story, thread pid 681 received a #PF,
+maybe due to accessing its own stack (cond.c, line 316). This may be a minor
+fault though, nothing invalid. Such fault is not supposed to occur for Xenomai
+threads on x86, but that would be another issue. Code-wise, I'm referring to
+the current state of the master branch for lib/cobalt/cond.c, which seems to
+match your description.
 
-Thanks,
-Jan
+> Note that most threads are stuck waiting for a condvar in sc_cobalt_cond_wait_prologue (cond.c:313), LWP 681 is at the next instruction.
+> 
+> 3. Xenomai gets XCPU signal -> coredump
+> 
+
+More precisely, Xenomai is likely sending this signal to your application,
+since it had to switch pid 681 to secondary mode for fixing up the #PF event.
+You may have set PTHREAD_WARNSW with pthread_setmode_np() for that thread.
+
+> gdb) thread apply all bt 3
+> 
+> Thread 9 (LWP 682):
+> #0  __lll_unlock_wake () at ../sysdeps/unix/sysv/linux/x86_64/lowlevellock.S:339
+> #1  0x00007fd731275d65 in __pthread_mutex_unlock_usercnt (mutex=0x7fd7312f6968 <_rtld_global+2312>, decr=1) at pthread_mutex_unlock.c:54
+> #2  0x00007fd7312e0442 in ?? () from /home/lano/Downloads/bugcrash/lib64/ld-linux-x86-64.so.2
+> #3  0x00007fd7312c72ac in ?? () from /lib/libdl.so.2
+> #4  0x00007fd73104211f in _dl_catch_exception () from /lib/libc.so.6
+> #5  0x00007fd731042190 in _dl_catch_error () from /lib/libc.so.6
+> #6  0x00007fd7312c7975 in ?? () from /lib/libdl.so.2
+> #7  0x00007fd7312c7327 in dlopen () from /lib/libdl.so.2
+> (More stack frames follow...)
+> 
+> Thread 8 (LWP 686):
+> #0  0x00007fd731298d48 in __cobalt_clock_nanosleep (clock_id=0, flags=0, rqtp=0x7fd727e3ad10, rmtp=0x0) at /opt/hipase2/src/xenomai-3.1.0/lib/cobalt/clock.c:312
+> #1  0x00007fd731298d81 in __cobalt_nanosleep (rqtp=<optimized out>, rmtp=<optimized out>) at /opt/hipase2/src/xenomai-3.1.0/lib/cobalt/clock.c:354
+> #2  0x0000000000434590 in operator() (__closure=0x7fd720006fb8) at ../../acpu.runner/asim/asim_com.cpp:685
+> (More stack frames follow...)
+> 
+> Thread 7 (LWP 677):
+> #0  0x00007fd73127b6c6 in __GI___nanosleep (requested_time=requested_time@entry=0x7fd7312b1fb0 <syncdelay>, remaining=remaining@entry=0x0) at ../sysdeps/unix/sysv/linux/nanosleep.c:28
+> #1  0x00007fd73129b746 in printer_loop (arg=<optimized out>) at /opt/hipase2/src/xenomai-3.1.0/lib/cobalt/printf.c:635
+> #2  0x00007fd7312720f7 in start_thread (arg=<optimized out>) at pthread_create.c:486
+> (More stack frames follow...)
+> 
+> Thread 6 (LWP 685):
+> #0  0x00007fd73129910a in __cobalt_pthread_cond_wait (cond=0x7fd72f269660, mutex=0x7fd72f269630) at /opt/hipase2/src/xenomai-3.1.0/lib/cobalt/cond.c:313
+> #1  0x000000000046377c in conditionvar_wait (pData=0x7fd72f269660, pMutex=0x7fd72f269630) at ../../alib/src/alib/posix/conditionvar.c:66
+> #2  0x000000000040a620 in HIPASE::Posix::CAlib_ConditionVariable::wait (this=0x7fd72f269660, lock=...) at ../../alib/include/alib/alib_conditionvar_posix.h:67
+> (More stack frames follow...)
+> 
+> Thread 5 (LWP 684):
+> #0  0x00007fd73129910a in __cobalt_pthread_cond_wait (cond=0x7fd72f267790, mutex=0x7fd72f267760) at /opt/hipase2/src/xenomai-3.1.0/lib/cobalt/cond.c:313
+> #1  0x000000000046377c in conditionvar_wait (pData=0x7fd72f267790, pMutex=0x7fd72f267760) at ../../alib/src/alib/posix/conditionvar.c:66
+> #2  0x000000000040a620 in HIPASE::Posix::CAlib_ConditionVariable::wait (this=0x7fd72f267790, lock=...) at ../../alib/include/alib/alib_conditionvar_posix.h:67
+> (More stack frames follow...)
+> 
+> Thread 4 (LWP 680):
+> #0  0x00007fd73129910a in __cobalt_pthread_cond_wait (cond=0xfeafa0 <(anonymous namespace)::m_MainTaskStart>, mutex=0xfeaf60 <(anonymous namespace)::m_TaskMutex>) at /opt/hipase2/src/xenomai-3.1.0/lib/cobalt/cond.c:313
+> #1  0x000000000046377c in conditionvar_wait (pData=0xfeafa0 <(anonymous namespace)::m_MainTaskStart>, pMutex=0xfeaf60 <(anonymous namespace)::m_TaskMutex>) at ../../alib/src/alib/posix/conditionvar.c:66
+> #2  0x000000000040a620 in HIPASE::Posix::CAlib_ConditionVariable::wait (this=0xfeafa0 <(anonymous namespace)::m_MainTaskStart>, lock=...) at ../../alib/include/alib/alib_conditionvar_posix.h:67
+> (More stack frames follow...)
+> 
+> Thread 3 (LWP 683):
+> #0  0x00007fd73129910a in __cobalt_pthread_cond_wait (cond=0x7fd72f2658c0, mutex=0x7fd72f265890) at /opt/hipase2/src/xenomai-3.1.0/lib/cobalt/cond.c:313
+> #1  0x000000000046377c in conditionvar_wait (pData=0x7fd72f2658c0, pMutex=0x7fd72f265890) at ../../alib/src/alib/posix/conditionvar.c:66
+> #2  0x000000000040a620 in HIPASE::Posix::CAlib_ConditionVariable::wait (this=0x7fd72f2658c0, lock=...) at ../../alib/include/alib/alib_conditionvar_posix.h:67
+> (More stack frames follow...)
+> 
+> Thread 2 (LWP 675):
+> #0  0x00007fd73129aea4 in __cobalt_pthread_mutex_lock (mutex=<optimized out>) at /opt/hipase2/src/xenomai-3.1.0/lib/cobalt/mutex.c:375
+> #1  0x000000000046390a in mutex_lock (pData=0xfeaf60 <(anonymous namespace)::m_TaskMutex>) at ../../alib/src/alib/posix/mutex.c:33
+> #2  0x000000000040a530 in HIPASE::Posix::CAlib_Mutex::lock (this=0xfeaf60 <(anonymous namespace)::m_TaskMutex>) at ../../alib/include/alib/alib_mutex_posix.h:67
+> (More stack frames follow...)
+> 
+> Thread 1 (LWP 681):
+> #0  __cobalt_pthread_cond_wait (cond=0xfeafe0 <(anonymous namespace)::m_DispatcherTaskStart>, mutex=0xfeaf60 <(anonymous namespace)::m_TaskMutex>) at /opt/hipase2/src/xenomai-3.1.0/lib/cobalt/cond.c:316
+> #1  0x000000000046377c in conditionvar_wait (pData=0xfeafe0 <(anonymous namespace)::m_DispatcherTaskStart>, pMutex=0xfeaf60 <(anonymous namespace)::m_TaskMutex>) at ../../alib/src/alib/posix/conditionvar.c:66
+> #2  0x000000000040a620 in HIPASE::Posix::CAlib_ConditionVariable::wait (this=0xfeafe0 <(anonymous namespace)::m_DispatcherTaskStart>, lock=...) at ../../alib/include/alib/alib_conditionvar_posix.h:67
+> (More stack frames follow...)
+> 
+> 
+> 
+> [1] - https://xenomai.org/pipermail/xenomai/2020-January/042299.html
+> 
+
+You refer to an older post describing a lockup, but this post describes an
+application crashing with a core dump. What made you draw the conclusion that
+the same bug would be at work? Also, could you give some details regarding the
+following:
+
+- what do you mean by 'lockup' in this case? Can you still access the board or
+is there some runaway real-time code locking out everything else when this
+happens? My understanding is that this is no hard lock up otherwise the
+watchdog would have triggered. If this is a softer kind of lockup instead,
+what does /proc/xenomai/sched/stat tell you about the thread states after the
+problem occurred?
+
+- did you determine that using the dynamic linker is required to trigger the
+bug yet? Or could you observe it without such interaction with dl?
+
+- what is the typical size of your Xenomai thread stack? It defaults to 64k
+min with Xenomai 3.1.
 
 -- 
-Siemens AG, Corporate Technology, CT RDA IOT SES-DE
-Corporate Competence Center Embedded Linux
+Philippe.
 
