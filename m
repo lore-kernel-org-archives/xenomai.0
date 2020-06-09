@@ -1,18 +1,13 @@
-From: ayaida marwane <ayaida_marwane@yahoo.fr>
-Message-Id: <0BB76352-85ED-456D-B17B-DB98305A88A5@yahoo.fr>
-Mime-Version: 1.0 (Mac OS X Mail 13.4 \(3608.80.23.2.2\))
-Subject: Re: rtdm_task_init does not work with Xenomai 3
-Date: Tue, 9 Jun 2020 17:32:34 +0200
-In-Reply-To: <7b099c91-99be-58e6-b46c-47f8364d7bee@xenomai.org>
-References: <BCA29F40-0C3A-4DF7-9FE9-EF5D55C66C27.ref@yahoo.fr>
- <BCA29F40-0C3A-4DF7-9FE9-EF5D55C66C27@yahoo.fr>
- <B5BA411F-973C-4EDA-B87D-F323D28D3DEF@yahoo.fr>
- <68aba520-be16-e25e-61ad-32a7061e43e1@xenomai.org>
- <6CF6D216-15CD-4ABE-B85C-590975DE822D@yahoo.fr>
- <7b099c91-99be-58e6-b46c-47f8364d7bee@xenomai.org>
-Content-Type: text/plain;
-	charset=utf-8
-Content-Transfer-Encoding: quoted-printable
+Subject: Re: Bad ioctl in rtnet
+References: <1442415265.1178196.1591714159280.JavaMail.zimbra@wolfram.com>
+From: Philippe Gerum <rpm@xenomai.org>
+Message-ID: <a1e62b28-3090-26cd-aa99-5b04e0dace4f@xenomai.org>
+Date: Tue, 9 Jun 2020 18:16:36 +0200
+MIME-Version: 1.0
+In-Reply-To: <1442415265.1178196.1591714159280.JavaMail.zimbra@wolfram.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -21,264 +16,98 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Philippe Gerum <rpm@xenomai.org>
-Cc: xenomai@xenomai.org
+To: Per Oberg <pero@wolfram.com>, xenomai <xenomai@xenomai.org>
 
+On 6/9/20 4:49 PM, Per Oberg via Xenomai wrote:
+> Hello list!
+> 
+> I get this error when running a posix-wrapper-compiled software pacakge on rtnet. Could someone please help me pinpoint which ioctl is causing this? (Does it say in the text below or do I need to start spreading breadcrumbs ? )
+> 
+> [ 85.577201] I-pipe domain: Linux 
+> [ 85.577624] task: ffff880262df6c00 task.stack: ffffc9000138c000 
+> [ 85.578058] RIP: 0010:[<ffffffffa02b4787>] [<ffffffffa02b4787>] rt_ip_ioctl+0x27/0x120 [rtipv4] 
+> [ 85.578512] RSP: 0018:ffffc9000138fda8 EFLAGS: 00010246 
+> [ 85.578958] RAX: 000000000007ffff RBX: 0000000040180021 RCX: ffff88026dd00000 
+> [ 85.579409] RDX: 00007ffcb6bd3470 RSI: 0000000040180021 RDI: ffff880262b33a00 
+> [ 85.579858] RBP: ffffc9000138fdd0 R08: 0000000000000052 R09: ffff880262df6c00 
+> [ 85.580310] R10: 00000000000000e6 R11: 0000000000000000 R12: ffff880262b33a00 
+> [ 85.580763] R13: 0000000040180021 R14: 00007ffcb6bd3470 R15: 0000000062b33a00 
+> [ 85.581217] FS: 00007fd21c07c480(0000) GS:ffff88026dd00000(0000) knlGS:0000000000000000 
+> [ 85.581674] CS: 0010 DS: 0000 ES: 0000 CR0: 000000008005003b 
+> [ 85.582133] CR2: 00007ffcb6bd3470 CR3: 0000000261a90000 CR4: 0000000000360630 
+> [ 85.582602] Stack: 
+> [ 85.583067] ffffffffa02bf6f7 0000000000000001 ffffffff81178cd0 ffff880262b33a00 
+> [ 85.583554] 0000000000000004 ffffc9000138fe60 ffffffff811725be 0000000000000202 
+> [ 85.584040] ffff880262df6c00 ffff880200000010 ffffc9000138fe70 ffffc9000138fe08 
+> [ 85.584531] Call Trace: 
+> [ 85.585015] [<ffffffffa02bf6f7>] ? rt_udp_ioctl+0x67/0x8c [rtudp] 
+> [ 85.585511] [<ffffffff81178cd0>] ? CoBaLt_fcntl+0x20/0x20 
+> [ 85.586002] [<ffffffff811725be>] rtdm_fd_ioctl+0xee/0x280 
+> [ 85.586488] [<ffffffff81178cd0>] ? CoBaLt_fcntl+0x20/0x20 
+> [ 85.586975] [<ffffffff810a0933>] ? __ipipe_migrate_head+0x73/0xf0 
+> [ 85.587466] [<ffffffff81178cd0>] ? CoBaLt_fcntl+0x20/0x20 
+> [ 85.587957] [<ffffffff81178cde>] CoBaLt_ioctl+0xe/0x20 
+> [ 85.588445] [<ffffffff81188472>] ipipe_syscall_hook+0x112/0x350 
+> [ 85.588932] [<ffffffff8110acb8>] __ipipe_notify_syscall+0xc8/0x190 
+> [ 85.589421] [<ffffffff8110adaa>] ipipe_handle_syscall+0x2a/0xb0 
+> [ 85.589912] [<ffffffff81001c3d>] do_syscall_64+0x2d/0xf0 
+> [ 85.590404] [<ffffffff818dffbe>] entry_SYSCALL_64_after_swapgs+0x58/0xc6 
+> [ 85.590897] Code: 68 b8 eb b0 e8 ab d4 62 e1 81 fe 27 00 10 40 0f 84 c1 00 00 00 7e 73 81 fe 20 00 18 40 74 3c 81 fe 21 00 18 40 0f 85 a0 00 00 00 <8b> 02 8b 4a 10 4c 8b 
+> 42 08 8b 72 04 85 c0 0f 85 d6 00 00 00 83 
+> [ 85.592061] RIP [<ffffffffa02b4787>] rt_ip_ioctl+0x27/0x120 [rtipv4] 
+> [ 85.592592] RSP <ffffc9000138fda8> 
+> [ 85.593120] CR2: 00007ffcb6bd3470
 
+The header of this kernel splat - which should normally give you some hint
+about the code which triggers it - seems to be missing from the pasted text
+above. Anyway, quick and dirty trick to locate it:
 
-> Le 9 juin 2020 =C3=A0 12:53, Philippe Gerum <rpm@xenomai.org> a =C3=A9cr=
-it :
->=20
-> On 6/9/20 11:25 AM, ayaida marwane wrote:
->> Hi Philippe,
->>=20
->>> Le 8 juin 2020 =C3=A0 09:36, Philippe Gerum <rpm@xenomai.org
->>> <mailto:rpm@xenomai.org>> a =C3=A9crit :
->>>=20
->>> On 6/7/20 10:33 PM, ayaida marwane via Xenomai wrote:
->>>> Hi,
->>>>=20
->>>> Any suggestion about the request below?
->>>>=20
->>>> Thanks!
->>>>=20
->>>> BR,
->>>> Marwane.
->>>>=20
->>>>> Le 2 juin 2020 =C3=A0 20:34, ayaida marwane via Xenomai =
-<xenomai@xenomai.org
->>>>> <mailto:xenomai@xenomai.org>> a =C3=A9crit :
->>>>>=20
->>>>> Dear all,
->>>>>=20
->>>>> I tried to have an example using rtdm_task_init with Xenomai =
-3.0.7. The
->>>>> example is tis one:
->>>>>=20
->>>>> =E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=
-=94=E2=80=94
->>>>>=20
->>>>> #include <rtdm/driver.h>
->>>>> static int periode_us =3D 1000;
->>>>> static int a, ret;
->>>>> module_param(periode_us, int, 0644);
->>>>>=20
->>>>> rtdm_task_t task;
->>>>>=20
->>>>> void task_ultrason(void *arg){
->>>>>  a=3D1;
->>>>>  rtdm_printk(KERN_INFO "%s.%s() : hello =3D %d\n", =
-THIS_MODULE->name,
->>>>> __FUNCTION__,a);
->>>>> }
->>>>>=20
->>>>> int __init ultrason_init(void) {
->>>>>  a=3D0;
->>>>>  rtdm_printk(KERN_INFO "%s.%s() : hello =3D %d\n", =
-THIS_MODULE->name,
->>>>> __FUNCTION__,a);
->>>>>  ret =3D rtdm_task_init(&task, "ultrason", task_ultrason, NULL, =
-99,
->>>>> periode_us*1000);
->>>>>  if (ret) {
->>>>>       rtdm_printk(KERN_INFO "%s.%s() : error rtdm_task_init, hello =
-=3D
->>>>> %d\n", THIS_MODULE->name, __FUNCTION__,a);
->>>>>  }
->>>>>  else  rtdm_printk(KERN_INFO "%s.%s() : success rtdm_task_init, =
-hello =3D
->>>>> %d\n", THIS_MODULE->name, __FUNCTION__,a);
->>>>>  return 0;
->>>>> }
->>>>> void __exit ultrason_exit(void) {
->>>>>  a=3D2;
->>>>>  rtdm_task_destroy(&task);
->>>>>  rtdm_printk(KERN_INFO "%s.%s() : hello =3D %d\n", =
-THIS_MODULE->name,
->>>>> __FUNCTION__,a);
->>>>>  }
->>>>>=20
->>>>> module_init(ultrason_init);
->>>>> module_exit(ultrason_exit);
->>>>> MODULE_LICENSE("GPL =C2=BB);
->>>>>=20
->>>>> =E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=
-=94=E2=80=94
->>>>>=20
->>>>> When I insert the module and remove it, I found in dmesg:
->>>>>=20
->>>>> =E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=
-=94=E2=80=94
->>>>>=20
->>>>> [ 5045.187448] test.ultrason_init() : hello =3D 0
->>>>> [ 5045.189495] test.ultrason_init() : success rtdm_task_init, =
-hello =3D 0
->>>>> [ 5049.631665] test.ultrason_exit() : hello =3D 2
->>>=20
->>> This looks like a I bug fixed many moons ago in the printk support =
-code for
->>> the pipeline. This issue caused printk() output sent from the head =
-stage not
->>> to appear in the kernel log, a regression due to upstream changes =
-which went
->>> unnoticed.
->>>=20
->>> You may want to update your I-pipe patch to the latest available in =
-your
->>> kernel series to make sure the fix is there. If not, your rt task =
-would indeed
->>> run shortly as requested by rtdm_task_init(), but the feedback would =
-be
->>> spuriously elided.
->>>=20
->>> A trivial way to check this without ftracing: have task_ultrason() =
-call
->>> rtdm_task_sleep(10000000000ULL) before exiting, then you would have =
-10 secs to
->>> manually check it was actually spawned by reading =
-/proc/xenomai/sched/threads.
->>>=20
->>> --=20
->>> Philippe.
->>=20
->> T tried your suggestion. I added rtdm_task_sleep(10000000000ULL)
->> in task_ultrason():
->>=20
->> *#include**<rtdm/driver.h>*
->> staticintperiode_us =3D 1000;
->> staticinta, ret;
->> module_param(periode_us, int, 0644);
->>=20
->> rtdm_task_t task;
->>=20
->> voidtask_ultrason(void*arg){
->>    a=3D1;
->>    rtdm_printk(*KERN_INFO**"%s.%s() : hello =3D %d\n"*, =
-*THIS_MODULE*->name,
->> *__FUNCTION__*,a);
->>    rtdm_task_sleep(10000000000ULL);
->>    }
->>=20
->> int__init ultrason_init(void) {
->>    a=3D0;
->>    rtdm_printk(*KERN_INFO**"%s.%s() : hello =3D %d\n"*, =
-*THIS_MODULE*->name,
->> *__FUNCTION__*,a);
->>    ret =3D rtdm_task_init(&task, *"ultrason"*, task_ultrason, *NULL*, =
-30,
->> periode_us*1000);
->>    *if*(ret) {
->>         rtdm_printk(*KERN_INFO**"%s.%s() : error rtdm_task_init, =
-hello =3D
->> %d\n"*, *THIS_MODULE*->name, *__FUNCTION__*,a);
->>    }
->>    *else*  rtdm_printk(*KERN_INFO**"%s.%s() : success rtdm_task_init, =
-hello =3D
->> %d\n"*, *THIS_MODULE*->name, *__FUNCTION__*,a);
->>   rtdm_task_set_period(&task, 0, periode_us*1000);
->>    return0;
->> }
->> void__exit ultrason_exit(void) {
->>    a=3D2;
->>    rtdm_task_destroy(&task);
->>    rtdm_printk(*KERN_INFO**"%s.%s() : hello =3D %d\n"*, =
-*THIS_MODULE*->name,
->> *__FUNCTION__*,a);
->>    }
->>=20
->> module_init(ultrason_init);
->> module_exit(ultrason_exit);
->> *MODULE_LICENSE*(*"GPL"*);
->>=20
->> When, I load the module after its compilation, I obtained:
->>=20
->> root@raspberrypi:/home/pi/tests# cat /proc/xenomai/sched/threads
->> CPU  PID    CLASS  TYPE      PRI   TIMEOUT       STAT       NAME
->>   0  0      idle   core       -1   -             R          [ROOT/0]
->>   1  0      idle   core       -1   -             R          [ROOT/1]
->>   2  0      idle   core       -1   -             R          [ROOT/2]
->>   3  0      idle   core       -1   -             R          [ROOT/3]
->> root@raspberrypi:/home/pi/tests# insmod test.ko
->> root@raspberrypi:/home/pi/tests# cat /proc/xenomai/sched/threads
->> CPU  PID    CLASS  TYPE      PRI   TIMEOUT       STAT       NAME
->>   0  0      idle   core       -1   -             R          [ROOT/0]
->>   1  0      idle   core       -1   -             R          [ROOT/1]
->>   2  0      idle   core       -1   -             R          [ROOT/2]
->>   3  0      idle   core       -1   -             R          [ROOT/3]
->> root@raspberrypi:/home/pi/tests# cat /proc/xenomai/sched/threads
->> CPU  PID    CLASS  TYPE      PRI   TIMEOUT       STAT       NAME
->>   0  0      idle   core       -1   -             R          [ROOT/0]
->>   1  0      idle   core       -1   -             R          [ROOT/1]
->>   2  0      idle   core       -1   -             R          [ROOT/2]
->>   3  0      idle   core       -1   -             R          [ROOT/3]
->> root@raspberrypi:/home/pi/tests# cat /proc/xenomai/sched/threads
->> CPU  PID    CLASS  TYPE      PRI   TIMEOUT       STAT       NAME
->>   0  0      idle   core       -1   -             R          [ROOT/0]
->>   1  0      idle   core       -1   -             R          [ROOT/1]
->>   2  0      idle   core       -1   -             R          [ROOT/2]
->>   3  0      idle   core       -1   -             R          [ROOT/3]
->> root@raspberrypi:/home/pi/tests# cat /proc/xenomai/sched/threads
->> CPU  PID    CLASS  TYPE      PRI   TIMEOUT       STAT       NAME
->>   0  0      idle   core       -1   -             R          [ROOT/0]
->>   1  0      idle   core       -1   -             R          [ROOT/1]
->>   2  0      idle   core       -1   -             R          [ROOT/2]
->>   3  0      idle   core       -1   -             R          [ROOT/3]
->> root@raspberrypi:/home/pi/tests# rmmod test
->>=20
->>=20
->> So, the task_ultrason() is never scheduled. It seems very strange=E2=80=
-=A6
->>=20
->> Do I something wrong?
->>=20
->=20
-> Nope, my bad, your task is periodic, so it would be awaken by the =
-first tick
-> from the sleep after 1 ms then exit. Just set the task period to zero =
-in
-> rtdk_task_init() only for the purpose of testing.
->=20
-> PS: you do not need to call rtdm_task_set_period() for a task right =
-after
-> having created that task, mentioning the same period value. This is =
-redundant.
->=20
-> --=20
-> Philippe.
+$ $CROSS_COMPILE-objdump -dl
+$linux-build-tree/drivers/xenomai/net/stack/ipv4/rtipv4.o | grep -A 30
+'<rt_ip_ioctl>:'
 
+00000000000029f0 <rt_ip_ioctl>:
+rt_ip_ioctl():
+linux/drivers/xenomai/net/stack/ipv4/ip_sock.c:209
+    29f0:	41 54                	push   %r12
+    29f2:	4c 8d 27             	lea    (%rdi),%r12
+    29f5:	55                   	push   %rbp
+rtdm_fd_to_private():
+linux/include/xenomai/rtdm/driver.h:163
+    29f6:	48 8d 2f             	lea    (%rdi),%rbp
+rt_ip_ioctl():
+linux/drivers/xenomai/net/stack/ipv4/ip_sock.c:209
+    29f9:	48 8d 64 24 e0       	lea    -0x20(%rsp),%rsp
+rtdm_fd_to_private():
+linux/include/xenomai/rtdm/driver.h:163
+    29fe:	48 83 c5 58          	add    $0x58,%rbp
+rt_ip_ioctl():
+linux/drivers/xenomai/net/stack/ipv4/ip_sock.c:209
+    2a02:	65 48 8b 04 25 28 00 	mov    %gs:0x28,%rax
+    2a09:	00 00
+    2a0b:	48 89 44 24 18       	mov    %rax,0x18(%rsp)
+    2a10:	31 c0                	xor    %eax,%eax
+linux/drivers/xenomai/net/stack/ipv4/ip_sock.c:215
+    2a12:	81 fe 20 00 18 40    	cmp    $0x40180020,%esi
+    2a18:	0f 84 d5 00 00 00    	je     2af3 <rt_ip_ioctl+0x103>
+    2a1e:	7f 5f                	jg     2a7f <rt_ip_ioctl+0x8f>
+    2a20:	81 fe 26 00 10 40    	cmp    $0x40100026,%esi
+    2a26:	0f 84 98 00 00 00    	je     2ac4 <rt_ip_ioctl+0xd4>
+    2a2c:	81 fe 27 00 10 40    	cmp    $0x40100027,%esi
+    2a32:	0f 85 81 00 00 00    	jne    2ab9 <rt_ip_ioctl+0xc9>
+linux/drivers/xenomai/net/stack/ipv4/ip_sock.c:243
+    2a38:	b9 10 00 00 00       	mov    $0x10,%ecx
 
-Thank you Philippe, it works well now, when I put the period to 0:
+rt_ip_ioctl+0x27 would then be 000029f0 + 0x27, i.e. 00002a17 which would be
+somewhere after xenomai/net/stack/ipv4/ip_sock.c:215. This IP does not seem to
+match anything sensible in my dump (v3.1), but you may be using a different
+Xenomai code base, so this may explain. At any rate, this seems to be one of
+the generic sockopt handlers (setopt, getopt, getname, setname). Anyway, you
+get the point.
 
-root@raspberrypi:/home/pi/tests# insmod test.ko
-root@raspberrypi:/home/pi/tests# cat /proc/xenomai/sched/threads
-CPU  PID    CLASS  TYPE      PRI   TIMEOUT       STAT       NAME
-  0  0      idle   core       -1   -             R          [ROOT/0]
-  1  0      idle   core       -1   -             R          [ROOT/1]
-  2  0      idle   core       -1   -             R          [ROOT/2]
-  3  0      idle   core       -1   -             R          [ROOT/3]
-  3  1015   rt     core       30   5s964ms894us  D          [ultrason]
-root@raspberrypi:/home/pi/tests# cat /proc/xenomai/sched/threads
-CPU  PID    CLASS  TYPE      PRI   TIMEOUT       STAT       NAME
-  0  0      idle   core       -1   -             R          [ROOT/0]
-  1  0      idle   core       -1   -             R          [ROOT/1]
-  2  0      idle   core       -1   -             R          [ROOT/2]
-  3  0      idle   core       -1   -             R          [ROOT/3]
-  3  1015   rt     core       30   890ms509us    D          [ultrason]
-root@raspberrypi:/home/pi/tests# cat /proc/xenomai/sched/threads
-CPU  PID    CLASS  TYPE      PRI   TIMEOUT       STAT       NAME
-  0  0      idle   core       -1   -             R          [ROOT/0]
-  1  0      idle   core       -1   -             R          [ROOT/1]
-  2  0      idle   core       -1   -             R          [ROOT/2]
-  3  0      idle   core       -1   -             R          [ROOT/3]
+PS: with the static portion of the kernel, you would have used addr2line
+directly on the vmlinux image, using the %RIP value as a hint to the command.
 
-When I put it periodic, why I did not see it anymore in =
-/proc/xenomai/sched/threads  even with a sleep?
-
-PS : Ok rtdm_task_set_period(), I added it since it does not work to =
-test.
-
-BR,
-Marwane.
-
-
+-- 
+Philippe.
 
