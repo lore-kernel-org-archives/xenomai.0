@@ -1,13 +1,16 @@
-Subject: Re: Bad ioctl in rtnet
-References: <1442415265.1178196.1591714159280.JavaMail.zimbra@wolfram.com>
-From: Philippe Gerum <rpm@xenomai.org>
-Message-ID: <a1e62b28-3090-26cd-aa99-5b04e0dace4f@xenomai.org>
-Date: Tue, 9 Jun 2020 18:16:36 +0200
-MIME-Version: 1.0
-In-Reply-To: <1442415265.1178196.1591714159280.JavaMail.zimbra@wolfram.com>
-Content-Type: text/plain; charset=utf-8
+From: Lange Norbert <norbert.lange@andritz.com>
+Subject: RE: Still getting Deadlocks with condition variables
+Date: Tue, 9 Jun 2020 17:10:50 +0000
+Message-ID: <VI1PR05MB591734315C0968D56FAEE846F6820@VI1PR05MB5917.eurprd05.prod.outlook.com>
+References: <VI1PR05MB59177F9BC5CD74A181467003F6860@VI1PR05MB5917.eurprd05.prod.outlook.com>
+ <260342fe-450f-a30b-72c2-751961bc28dd@xenomai.org>
+ <VI1PR05MB5917E09F83A6B78BC1798287F6850@VI1PR05MB5917.eurprd05.prod.outlook.com>
+ <4f24ced8-5317-3520-70e7-1c2e2dd24603@xenomai.org>
+In-Reply-To: <4f24ced8-5317-3520-70e7-1c2e2dd24603@xenomai.org>
 Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+MIME-Version: 1.0
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,98 +19,131 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Per Oberg <pero@wolfram.com>, xenomai <xenomai@xenomai.org>
+To: Philippe Gerum <rpm@xenomai.org>, "Xenomai (xenomai@xenomai.org)" <xenomai@xenomai.org>, "'jan.kiszka@siemens.com'" <jan.kiszka@siemens.com>
 
-On 6/9/20 4:49 PM, Per Oberg via Xenomai wrote:
-> Hello list!
-> 
-> I get this error when running a posix-wrapper-compiled software pacakge on rtnet. Could someone please help me pinpoint which ioctl is causing this? (Does it say in the text below or do I need to start spreading breadcrumbs ? )
-> 
-> [ 85.577201] I-pipe domain: Linux 
-> [ 85.577624] task: ffff880262df6c00 task.stack: ffffc9000138c000 
-> [ 85.578058] RIP: 0010:[<ffffffffa02b4787>] [<ffffffffa02b4787>] rt_ip_ioctl+0x27/0x120 [rtipv4] 
-> [ 85.578512] RSP: 0018:ffffc9000138fda8 EFLAGS: 00010246 
-> [ 85.578958] RAX: 000000000007ffff RBX: 0000000040180021 RCX: ffff88026dd00000 
-> [ 85.579409] RDX: 00007ffcb6bd3470 RSI: 0000000040180021 RDI: ffff880262b33a00 
-> [ 85.579858] RBP: ffffc9000138fdd0 R08: 0000000000000052 R09: ffff880262df6c00 
-> [ 85.580310] R10: 00000000000000e6 R11: 0000000000000000 R12: ffff880262b33a00 
-> [ 85.580763] R13: 0000000040180021 R14: 00007ffcb6bd3470 R15: 0000000062b33a00 
-> [ 85.581217] FS: 00007fd21c07c480(0000) GS:ffff88026dd00000(0000) knlGS:0000000000000000 
-> [ 85.581674] CS: 0010 DS: 0000 ES: 0000 CR0: 000000008005003b 
-> [ 85.582133] CR2: 00007ffcb6bd3470 CR3: 0000000261a90000 CR4: 0000000000360630 
-> [ 85.582602] Stack: 
-> [ 85.583067] ffffffffa02bf6f7 0000000000000001 ffffffff81178cd0 ffff880262b33a00 
-> [ 85.583554] 0000000000000004 ffffc9000138fe60 ffffffff811725be 0000000000000202 
-> [ 85.584040] ffff880262df6c00 ffff880200000010 ffffc9000138fe70 ffffc9000138fe08 
-> [ 85.584531] Call Trace: 
-> [ 85.585015] [<ffffffffa02bf6f7>] ? rt_udp_ioctl+0x67/0x8c [rtudp] 
-> [ 85.585511] [<ffffffff81178cd0>] ? CoBaLt_fcntl+0x20/0x20 
-> [ 85.586002] [<ffffffff811725be>] rtdm_fd_ioctl+0xee/0x280 
-> [ 85.586488] [<ffffffff81178cd0>] ? CoBaLt_fcntl+0x20/0x20 
-> [ 85.586975] [<ffffffff810a0933>] ? __ipipe_migrate_head+0x73/0xf0 
-> [ 85.587466] [<ffffffff81178cd0>] ? CoBaLt_fcntl+0x20/0x20 
-> [ 85.587957] [<ffffffff81178cde>] CoBaLt_ioctl+0xe/0x20 
-> [ 85.588445] [<ffffffff81188472>] ipipe_syscall_hook+0x112/0x350 
-> [ 85.588932] [<ffffffff8110acb8>] __ipipe_notify_syscall+0xc8/0x190 
-> [ 85.589421] [<ffffffff8110adaa>] ipipe_handle_syscall+0x2a/0xb0 
-> [ 85.589912] [<ffffffff81001c3d>] do_syscall_64+0x2d/0xf0 
-> [ 85.590404] [<ffffffff818dffbe>] entry_SYSCALL_64_after_swapgs+0x58/0xc6 
-> [ 85.590897] Code: 68 b8 eb b0 e8 ab d4 62 e1 81 fe 27 00 10 40 0f 84 c1 00 00 00 7e 73 81 fe 20 00 18 40 74 3c 81 fe 21 00 18 40 0f 85 a0 00 00 00 <8b> 02 8b 4a 10 4c 8b 
-> 42 08 8b 72 04 85 c0 0f 85 d6 00 00 00 83 
-> [ 85.592061] RIP [<ffffffffa02b4787>] rt_ip_ioctl+0x27/0x120 [rtipv4] 
-> [ 85.592592] RSP <ffffc9000138fda8> 
-> [ 85.593120] CR2: 00007ffcb6bd3470
-
-The header of this kernel splat - which should normally give you some hint
-about the code which triggers it - seems to be missing from the pasted text
-above. Anyway, quick and dirty trick to locate it:
-
-$ $CROSS_COMPILE-objdump -dl
-$linux-build-tree/drivers/xenomai/net/stack/ipv4/rtipv4.o | grep -A 30
-'<rt_ip_ioctl>:'
-
-00000000000029f0 <rt_ip_ioctl>:
-rt_ip_ioctl():
-linux/drivers/xenomai/net/stack/ipv4/ip_sock.c:209
-    29f0:	41 54                	push   %r12
-    29f2:	4c 8d 27             	lea    (%rdi),%r12
-    29f5:	55                   	push   %rbp
-rtdm_fd_to_private():
-linux/include/xenomai/rtdm/driver.h:163
-    29f6:	48 8d 2f             	lea    (%rdi),%rbp
-rt_ip_ioctl():
-linux/drivers/xenomai/net/stack/ipv4/ip_sock.c:209
-    29f9:	48 8d 64 24 e0       	lea    -0x20(%rsp),%rsp
-rtdm_fd_to_private():
-linux/include/xenomai/rtdm/driver.h:163
-    29fe:	48 83 c5 58          	add    $0x58,%rbp
-rt_ip_ioctl():
-linux/drivers/xenomai/net/stack/ipv4/ip_sock.c:209
-    2a02:	65 48 8b 04 25 28 00 	mov    %gs:0x28,%rax
-    2a09:	00 00
-    2a0b:	48 89 44 24 18       	mov    %rax,0x18(%rsp)
-    2a10:	31 c0                	xor    %eax,%eax
-linux/drivers/xenomai/net/stack/ipv4/ip_sock.c:215
-    2a12:	81 fe 20 00 18 40    	cmp    $0x40180020,%esi
-    2a18:	0f 84 d5 00 00 00    	je     2af3 <rt_ip_ioctl+0x103>
-    2a1e:	7f 5f                	jg     2a7f <rt_ip_ioctl+0x8f>
-    2a20:	81 fe 26 00 10 40    	cmp    $0x40100026,%esi
-    2a26:	0f 84 98 00 00 00    	je     2ac4 <rt_ip_ioctl+0xd4>
-    2a2c:	81 fe 27 00 10 40    	cmp    $0x40100027,%esi
-    2a32:	0f 85 81 00 00 00    	jne    2ab9 <rt_ip_ioctl+0xc9>
-linux/drivers/xenomai/net/stack/ipv4/ip_sock.c:243
-    2a38:	b9 10 00 00 00       	mov    $0x10,%ecx
-
-rt_ip_ioctl+0x27 would then be 000029f0 + 0x27, i.e. 00002a17 which would be
-somewhere after xenomai/net/stack/ipv4/ip_sock.c:215. This IP does not seem to
-match anything sensible in my dump (v3.1), but you may be using a different
-Xenomai code base, so this may explain. At any rate, this seems to be one of
-the generic sockopt handlers (setopt, getopt, getname, setname). Anyway, you
-get the point.
-
-PS: with the static portion of the kernel, you would have used addr2line
-directly on the vmlinux image, using the %RIP value as a hint to the command.
-
--- 
-Philippe.
+DQoNCj4gLS0tLS1PcmlnaW5hbCBNZXNzYWdlLS0tLS0NCj4gRnJvbTogUGhpbGlwcGUgR2VydW0g
+PHJwbUB4ZW5vbWFpLm9yZz4NCj4gU2VudDogTW9udGFnLCA4LiBKdW5pIDIwMjAgMTY6MTcNCj4g
+VG86IExhbmdlIE5vcmJlcnQgPG5vcmJlcnQubGFuZ2VAYW5kcml0ei5jb20+OyBYZW5vbWFpDQo+
+ICh4ZW5vbWFpQHhlbm9tYWkub3JnKSA8eGVub21haUB4ZW5vbWFpLm9yZz4NCj4gU3ViamVjdDog
+UmU6IFN0aWxsIGdldHRpbmcgRGVhZGxvY2tzIHdpdGggY29uZGl0aW9uIHZhcmlhYmxlcw0KPg0K
+PiBOT04tQU5EUklUWiBTT1VSQ0U6IEJFIENBVVRJT1VTIFdJVEggQ09OVEVOVCwgTElOS1MgT1IN
+Cj4gQVRUQUNITUVOVFMuDQo+DQo+DQo+IE9uIDYvOC8yMCAxMjowOCBQTSwgTGFuZ2UgTm9yYmVy
+dCB3cm90ZToNCj4gPg0KPiA+PiBUaGlzIGtlcm5lbCBtZXNzYWdlIHRlbGxzIGEgZGlmZmVyZW50
+IHN0b3J5LCB0aHJlYWQgcGlkIDY4MSByZWNlaXZlZA0KPiA+PiBhICNQRiwgbWF5YmUgZHVlIHRv
+IGFjY2Vzc2luZyBpdHMgb3duIHN0YWNrIChjb25kLmMsIGxpbmUgMzE2KS4gVGhpcw0KPiA+PiBt
+YXkgYmUgYSBtaW5vciBmYXVsdCB0aG91Z2gsIG5vdGhpbmcgaW52YWxpZC4gU3VjaCBmYXVsdCBp
+cyBub3QNCj4gPj4gc3VwcG9zZWQgdG8gb2NjdXIgZm9yIFhlbm9tYWkgdGhyZWFkcyBvbiB4ODYs
+IGJ1dCB0aGF0IHdvdWxkIGJlDQo+ID4+IGFub3RoZXIgaXNzdWUuIENvZGUtd2lzZSwgSSdtIHJl
+ZmVycmluZyB0byB0aGUgY3VycmVudCBzdGF0ZSBvZiB0aGUNCj4gPj4gbWFzdGVyIGJyYW5jaCBm
+b3IgbGliL2NvYmFsdC9jb25kLmMsIHdoaWNoIHNlZW1zIHRvIG1hdGNoIHlvdXINCj4gZGVzY3Jp
+cHRpb24uDQo+ID4NCj4gPiBJIGRvbnQga25vdyB3aGF0IHlvdSBtZWFuIHdpdGggbWlub3IgZmF1
+bHQsIGZyb20gdGhlIHBlcnNwZWN0aXZlIG9mDQo+IExpbnV4Pw0KPiA+IEEgUlQgdGhyZWFkIGdl
+dHRpbmcgZGVtb3RlZCB0byBMaW51eCBpcyByYXRoZXIgc2VyaW91cyB0byBtZS4NCj4gPg0KPg0K
+PiBNaW5vciBmcm9tIGEgTU1VIHN0YW5kcG9pbnQ6IHRoZSBtZW1vcnkgdGhlIENQVSAgZGVyZWZl
+cmVuY2VkIGlzIHZhbGlkDQo+IGJ1dCBubyBwYWdlIHRhYmxlIGVudHJ5IGN1cnJlbnRseSBtYXBz
+IGl0LiBTbywgI1BGIGluIHRoaXMgY2FzZSBzZWVtcyB0byBiZSBhDQo+ICdtaW5vcicNCj4gZmF1
+bHQgaW4gTU1VIGxpbmdvLCBidXQgaXQgaXMgc3RpbGwgbm90IGV4cGVjdGVkLg0KPg0KPiA+IEFs
+c28sIHRoZSB0aGluZyBpcyB0aGF0IEkgd291bGQgbm90IGtub3cgaG93IGEgUEYgaW4gdGhlIGxv
+bmcgcnVubmluZw0KPiA+IHRocmVhZCwgd2l0aCBsb2NrZWQgbWVtb3J5LCBXaXRoIHRoZSBjYWxs
+IGJlaW5nIGNsb3NlIHRvIHRoZSB0aHJlYWQNCj4gPiBlbnRyeSBwb2ludCBpbiBhIHdhaXQtZm9y
+LWNvbmR2YXItbG9vcCwgbmV2ZXIgdXNpbmcgbW9yZSB0aGFuIGFuDQo+ID4gaW5zaWduaWZpY2Fu
+dD4gYW1vdW50IG9mIHN0YWNrIGF0IHRoaXMgdGltZSBzaG91bGQgYmUgcG9zc2libGUuPg0KPg0K
+PiBFeGNlcHQgaWYgbWFwcGluZyBhbiBleGVjdXRhYmxlIHNlZ21lbnQgdmlhIGRsb3BlbigpIGNv
+bWVzIGludG8gcGxheSwNCj4gYWZmZWN0aW5nIHRoZSBwYWdlIHRhYmxlLiBPbmx5IGFuIGFzc3Vt
+cHRpb24gYXQgdGhpcyBzdGFnZS4NCj4NCj4gPiBPbiB0aGUgb3RoZXIgaGFuZCwgdGhlIG5vbi1S
+VCB0aHJlYWQgbG9hZHMgYSBEU08gYW5kIGlzIHN0dWNrIHNvbWV3aGVyZQ0KPiBhZnRlciBhbGxv
+Y2F0aW5nIG1lbW9yeS4NCj4gPiBNeSBndWVzcyB3b3VsZCBiZSB0aGF0IHRoZSBQRiBlbmRzIHVw
+IGF0IHRoZSB3cm9uZyB0aHJlYWQuDQo+ID4NCj4NCj4gQXMgSmFuIHBvaW50ZWQgb3V0LCAjUEYg
+YXJlIHN5bmNocm9ub3VzbHkgdGFrZW4sIHN5bmNocm9ub3VzbHkgaGFuZGxlZC4gSQ0KPiByZWFs
+bHkgZG9uJ3Qgc2VlIGhvdyAjUEYgaGFuZGxpbmcgY291bGQgZXZlciB3YW5kZXIuDQo+DQo+ID4+
+Pg0KPiA+Pg0KPiA+PiBZb3UgcmVmZXIgdG8gYW4gb2xkZXIgcG9zdCBkZXNjcmliaW5nIGEgbG9j
+a3VwLCBidXQgdGhpcyBwb3N0DQo+ID4+IGRlc2NyaWJlcyBhbiBhcHBsaWNhdGlvbiBjcmFzaGlu
+ZyB3aXRoIGEgY29yZSBkdW1wLiBXaGF0IG1hZGUgeW91DQo+ID4+IGRyYXcgdGhlIGNvbmNsdXNp
+b24gdGhhdCB0aGUgc2FtZSBidWcgd291bGQgYmUgYXQgd29yaz8NCj4gPg0KPiA+IFNhbWUgYnVn
+LCBkaWZmZXJlbnQgUFRIUkVBRF9XQVJOU1cgc2V0dGluZyBpcyBteSBndWVzcy4NCj4gPiBUaGUg
+dW5kZXJseWluZyBpc3N1ZSB0aGF0IGEgdW5yZWxhdGVkIHNpZ25hbCBlbmRzIHVwIHRvIGEgUlQg
+dGhyZWFkLg0KPiA+DQo+ID4+IEFsc28sIGNvdWxkIHlvdSBnaXZlIHNvbWUgZGV0YWlscw0KPiA+
+PiByZWdhcmRpbmcgdGhlDQo+ID4+IGZvbGxvd2luZzoNCj4gPj4NCj4gPj4gLSB3aGF0IGRvIHlv
+dSBtZWFuIGJ5ICdsb2NrdXAnIGluIHRoaXMgY2FzZT8gQ2FuIHlvdSBzdGlsbCBhY2Nlc3MgdGhl
+DQo+ID4+IGJvYXJkIG9yIGlzIHRoZXJlIHNvbWUgcnVuYXdheSByZWFsLXRpbWUgY29kZSBsb2Nr
+aW5nIG91dCBldmVyeXRoaW5nDQo+ID4+IGVsc2Ugd2hlbiB0aGlzIGhhcHBlbnM/IE15IHVuZGVy
+c3RhbmRpbmcgaXMgdGhhdCB0aGlzIGlzIG5vIGhhcmQgbG9jaw0KPiA+PiB1cCBvdGhlcndpc2Ug
+dGhlIHdhdGNoZG9nIHdvdWxkIGhhdmUgdHJpZ2dlcmVkLiBJZiB0aGlzIGlzIGEgc29mdGVyDQo+
+ID4+IGtpbmQgb2YgbG9ja3VwIGluc3RlYWQsIHdoYXQgZG9lcyAvcHJvYy94ZW5vbWFpL3NjaGVk
+L3N0YXQgdGVsbCB5b3UNCj4gPj4gYWJvdXQgdGhlIHRocmVhZCBzdGF0ZXMgYWZ0ZXIgdGhlIHBy
+b2JsZW0gb2NjdXJyZWQ/DQo+ID4NCj4gPiBUaGlzIHdhcyBhIHBvc3QtbW9ydGVtLCBubyBhY2Nl
+c3MgdG8gL3Byb2MveGVub21haS9zY2hlZC9zdGF0IGFueW1vcmUuDQo+ID4gbG9ja3VwIG1lYW5z
+IGRlYWRsb2NrICh0aGUgdGhyZWFkIGdldHRpbmcgdGhlIHNpZ25hbCBob2xkcyBhIG11dGV4LA0K
+PiA+IGJ1dCBpcyBzdHVjayksIENvcmVkdW1wIGhhcHBlbnMgaWYgUFRIUkVBRF9XQVJOU1cgaXMg
+ZW5hYmxlZCAobWVhbnMNCj4gaXQgYXNzZXJ0cyBvdXQgYmVmb3JlKS4NCj4gPg0KPiA+PiAtIGRp
+ZCB5b3UgZGV0ZXJtaW5lIHRoYXQgdXNpbmcgdGhlIGR5bmFtaWMgbGlua2VyIGlzIHJlcXVpcmVk
+IHRvDQo+ID4+IHRyaWdnZXIgdGhlIGJ1ZyB5ZXQ/IE9yIGNvdWxkIHlvdSBvYnNlcnZlIGl0IHdp
+dGhvdXQgc3VjaCBpbnRlcmFjdGlvbiB3aXRoDQo+IGRsPw0KPiA+DQo+ID4gQUZBSUssIGFsd2F5
+cyBvY2N1cnJlZCBhdCB0aGUgc3RhZ2Ugd2hlcmUgd2UgbG9hZCBhICJjb25maWd1cmF0aW9uIiwg
+YW5kDQo+IGxvYWQgRFNPcy4NCj4gPg0KPiA+Pg0KPiA+PiAtIHdoYXQgaXMgdGhlIHR5cGljYWwg
+c2l6ZSBvZiB5b3VyIFhlbm9tYWkgdGhyZWFkIHN0YWNrPyBJdCBkZWZhdWx0cw0KPiA+PiB0byA2
+NGsgbWluIHdpdGggWGVub21haSAzLjEuDQo+ID4NCj4gPiAxTUINCj4NCj4gSSB3b3VsZCBkaWcg
+dGhlIGZvbGxvd2luZyBkaXN0aW5jdCBpc3N1ZXM6DQo+DQo+IC0gd2h5IGlzICNQRiB0YWtlbiBv
+biBhbiBhcHBhcmVudGx5IGlubm9jdW91cyBpbnN0cnVjdGlvbi4gZGxvcGVuKDMpLQ0KPiA+bW1h
+cCgyKSBtaWdodCBiZSBpbnZvbHZlZC4gV2l0aCBhIHNpbXBsZSB0ZXN0IGNhc2UsIHlvdSBjb3Vs
+ZCBjaGVjayB0aGUNCj4gaW1wYWN0IG9mIGxvYWRpbmcvdW5sb2FkaW5nIERTT3Mgb24gbWVtb3J5
+IG1hbmFnZW1lbnQgZm9yIHJlYWwtdGltZQ0KPiB0aHJlYWRzIHJ1bm5pbmcgaW4gcGFyYWxsZWwu
+IFNldHRpbmcgdGhlIFdBUk5TVyBiaXQgb24gZm9yIHRoZXNlIHRocmVhZHMNCj4gd291bGQgYmUg
+cmVxdWlyZWQuDQo+DQo+IC0gd2hldGhlciBkZWFsaW5nIHdpdGggYSBzaWduYWwgYWR2ZXJzZWx5
+IGFmZmVjdHMgdGhlIHdhaXQtc2lkZSBvZiBhIFhlbm9tYWkNCj4gY29uZHZhci4gVGhlcmUgaXMg
+YSBzcGVjaWZpYyB0cmljayB0byBoYW5kbGUgdGhpcyBpbiB0aGUgQ29iYWx0IGFuZCBsaWJjb2Jh
+bHQNCj4gY29kZSwgd2hpY2ggaXMgdGhlIHJlYXNvbiBmb3IgdGhlIHdhaXRfcHJvbG9ndWUgLyB3
+YWl0X2VwaWxvZ3VlIGRhbmNlIGluIHRoZQ0KPiBpbXBsZW1lbnRhdGlvbiBJSVJDLiBVbmRlcnN0
+YW5kaW5nIHdoeSB0aGF0IHRocmVhZCByZWNlaXZlcyBhIHNpZ25hbCBpbiB0aGUNCj4gZmlyc3Qg
+cGxhY2Ugd291bGQgaGVscCB0b28uIEFjY29yZGluZyB0byB5b3VyIGRlc2NyaXB0aW9uLCB0aGlz
+IG1heSBub3QgYmUNCj4gZGlyZWN0bHkgZHVlIHRvIHRha2luZyAjUEYsIGJ1dCBtYXkgYmUgYW4g
+aW5kaXJlY3QgY29uc2VxdWVuY2Ugb2YgdGhhdCBldmVudA0KPiBvbiBzaWJsaW5nIHRocmVhZHMg
+KHByb3BhZ2F0aW9uIG9mIGEgZGVidWcgY29uZGl0aW9uIG9mIHNvbWUgc29ydCwgc3VjaCBhcw0K
+PiB0aG9zZSBkZXRlY3RlZCBieSBDT05GSUdfWEVOT19PUFRfREVCVUdfTVVURVgqKS4NCj4NCj4g
+QXQgYW55IHJhdGUsIHlvdSBtYXkgd2FudCB0byBlbmFibGUgdGhlIGZ1bmN0aW9uIGZ0cmFjZXIs
+IGVuYWJsaW5nDQo+IGNvbmRpdGlvbmFsIHNuYXBzaG90cywgZS5nLiB3aGVuIFNJR1hDUFUgaXMg
+c2VudCBieSB0aGUgY29iYWx0IGNvcmUuDQo+IEd1ZXNzd29yayB3aXRoIHN1Y2ggYnVnIGlzIHVu
+bGlrZWx5IHRvIHVuY292ZXIgZXZlcnkgYXNwZWN0IG9mIHRoZSBpc3N1ZSwNCj4gaGFyZCBkYXRh
+IHdvdWxkIGJlIHJlcXVpcmVkIHRvIGdvIHRvIHRoZSBib3R0b20gb2YgaXQuIFdpdGggYSBiaXQg
+b2YgbHVjaywgdGhhdA0KPiBidWcgaXMgbm90IHRpbWUtc2Vuc2l0aXZlIGluIGEgd2F5IHRoYXQg
+dGhlIG92ZXJoZWFkIGR1ZSB0byBmdHJhY2luZyB3b3VsZA0KPiBwYXBlciBvdmVyIGl0Lg0KPg0K
+PiAtLQ0KPiBQaGlsaXBwZS4NCg0KVGhpcyBhaW50IGV4YWN0bHkgZWFzeSB0byByZXByb2R1Y2Us
+IG1hbmFnZWQgdG8gZ2V0IHNvbWV0aGluZyB0aGF0IG9mdGVuIHJlcHJvZHVjZXMganVzdCBub3cu
+DQpUcmFjaW5nIGhvd2V2ZXIgaGlkZXMgdGhlIGlzc3VlLCBhcyB3ZWxsIGFzIGRpc2FibGluZyBQ
+VEhSRUFEX1dBUk5TVyAoY291bGQgYmUganVzdCB0aGF0IHRoaXMgY2hhbmdlcyB0aW1pbmcgZW5v
+dWdoIHRvIG1ha2UgYSBkaWZmZXJlbmNlKS4NCg0KDQpJIGdvdCBhIGZldyBpbnN0YW5jZXMgd2hl
+cmUgdGhlIHRocmVhZCBsb2FkaW5nIERTT1MgaXMgc3R1Y2sgaW4gYW4gb21uaW91cw0KX19tYWtl
+X3N0YWNrc19leGVjdXRhYmxlLCB0aGF0IHNlZW1pbmdseSBpdGVyYXRlcyB0aHJvdWdoICphbGwq
+IHRocmVhZCBzdGFja3MsDQpBbmQgY2FsbHMgX19tcHJvdGVjdCBvbiB0aGVtLg0KDQpJZiB0aGF0
+4oCZcyB0aGUgY2F1c2UsIGFuZCBpZiB0aGUgY29iYWx0IHRocmVhZCB1c2UgdGhhdCBzYW1lIHN0
+YWNrLA0KYW5kIGlmIHRoZSBzeXNjYWxsIGRvZXMgc29tZXRoaW5nIGZ1bm55IGxpa2UgdGFraW5n
+IGF3YXkgd3JpdGUgcHJvdGVjdGlvbiBpbi1iZXR3ZWVuLA0KdGhlbiB0aGlzIGNvdWxkIGJlIHRo
+ZSBleHBsYW5hdGlvbiAoZG9u4oCZdCBrbm93IGhvdyB0aGlzIGNvdWxkIGV2ZXIgYmUgdmFsaWQg
+dGhvdWdoKS4NCg0KaW50DQpfX21ha2Vfc3RhY2tzX2V4ZWN1dGFibGUgKHZvaWQgKipzdGFja19l
+bmRwKQ0Kew0KICAvKiBGaXJzdCB0aGUgbWFpbiB0aHJlYWQncyBzdGFjay4gICovDQogIGludCBl
+cnIgPSBfZGxfbWFrZV9zdGFja19leGVjdXRhYmxlIChzdGFja19lbmRwKTsNCiAgaWYgKGVyciAh
+PSAwKQ0KICAgIHJldHVybiBlcnI7DQoNCiNpZmRlZiBORUVEX1NFUEFSQVRFX1JFR0lTVEVSX1NU
+QUNLDQogIGNvbnN0IHNpemVfdCBwYWdlbWFzayA9IH4oX19nZXRwYWdlc2l6ZSAoKSAtIDEpOw0K
+I2VuZGlmDQoNCiAgbGxsX2xvY2sgKHN0YWNrX2NhY2hlX2xvY2ssIExMTF9QUklWQVRFKTsNCg0K
+ICBsaXN0X3QgKnJ1bnA7DQogIGxpc3RfZm9yX2VhY2ggKHJ1bnAsICZzdGFja191c2VkKQ0KICAg
+IHsNCiAgICAgIGVyciA9IGNoYW5nZV9zdGFja19wZXJtIChsaXN0X2VudHJ5IChydW5wLCBzdHJ1
+Y3QgcHRocmVhZCwgbGlzdCkNCiNpZmRlZiBORUVEX1NFUEFSQVRFX1JFR0lTVEVSX1NUQUNLDQog
+ICAgICAgLCBwYWdlbWFzaw0KI2VuZGlmDQogICAgICAgKTsNCiAgICAgIGlmIChlcnIgIT0gMCkN
+CmJyZWFrOw0KICAgIH0NCg0KcmVnYXJkcywgTm9yYmVydA0KX19fX19fX19fX19fX19fX19fX19f
+X19fX19fX19fX18NCg0KVGhpcyBtZXNzYWdlIGFuZCBhbnkgYXR0YWNobWVudHMgYXJlIHNvbGVs
+eSBmb3IgdGhlIHVzZSBvZiB0aGUgaW50ZW5kZWQgcmVjaXBpZW50cy4gVGhleSBtYXkgY29udGFp
+biBwcml2aWxlZ2VkIGFuZC9vciBjb25maWRlbnRpYWwgaW5mb3JtYXRpb24gb3Igb3RoZXIgaW5m
+b3JtYXRpb24gcHJvdGVjdGVkIGZyb20gZGlzY2xvc3VyZS4gSWYgeW91IGFyZSBub3QgYW4gaW50
+ZW5kZWQgcmVjaXBpZW50LCB5b3UgYXJlIGhlcmVieSBub3RpZmllZCB0aGF0IHlvdSByZWNlaXZl
+ZCB0aGlzIGVtYWlsIGluIGVycm9yIGFuZCB0aGF0IGFueSByZXZpZXcsIGRpc3NlbWluYXRpb24s
+IGRpc3RyaWJ1dGlvbiBvciBjb3B5aW5nIG9mIHRoaXMgZW1haWwgYW5kIGFueSBhdHRhY2htZW50
+IGlzIHN0cmljdGx5IHByb2hpYml0ZWQuIElmIHlvdSBoYXZlIHJlY2VpdmVkIHRoaXMgZW1haWwg
+aW4gZXJyb3IsIHBsZWFzZSBjb250YWN0IHRoZSBzZW5kZXIgYW5kIGRlbGV0ZSB0aGUgbWVzc2Fn
+ZSBhbmQgYW55IGF0dGFjaG1lbnQgZnJvbSB5b3VyIHN5c3RlbS4NCg0KQU5EUklUWiBIWURSTyBH
+bWJIDQoNCg0KUmVjaHRzZm9ybS8gTGVnYWwgZm9ybTogR2VzZWxsc2NoYWZ0IG1pdCBiZXNjaHLD
+pG5rdGVyIEhhZnR1bmcgLyBDb3Jwb3JhdGlvbg0KDQpGaXJtZW5zaXR6LyBSZWdpc3RlcmVkIHNl
+YXQ6IFdpZW4NCg0KRmlybWVuYnVjaGdlcmljaHQvIENvdXJ0IG9mIHJlZ2lzdHJ5OiBIYW5kZWxz
+Z2VyaWNodCBXaWVuDQoNCkZpcm1lbmJ1Y2hudW1tZXIvIENvbXBhbnkgcmVnaXN0cmF0aW9uOiBG
+TiA2MTgzMyBnDQoNCkRWUjogMDYwNTA3Nw0KDQpVSUQtTnIuOiBBVFUxNDc1NjgwNg0KDQoNClRo
+YW5rIFlvdQ0KX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX18NCg==
 
