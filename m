@@ -1,12 +1,12 @@
-From: Josh Karch <jkarch@FirstMode.com>
-Subject: Re: Xenomai Digest, Vol 97, Issue 33
-Date: Wed, 10 Jun 2020 20:22:40 +0000
-Message-ID: <MN2PR19MB3967DBAD6C4DF8932FEBFDECD5830@MN2PR19MB3967.namprd19.prod.outlook.com>
-References: <mailman.5.1590314402.6785.xenomai@xenomai.org>
-In-Reply-To: <mailman.5.1590314402.6785.xenomai@xenomai.org>
-Content-Language: en-US
+Date: Fri, 12 Jun 2020 03:02:35 -0500 (CDT)
+From: Per Oberg <pero@wolfram.com>
+Message-ID: <546573816.537171.1591948955392.JavaMail.zimbra@wolfram.com>
+In-Reply-To: <a1e62b28-3090-26cd-aa99-5b04e0dace4f@xenomai.org>
+References: <1442415265.1178196.1591714159280.JavaMail.zimbra@wolfram.com>
+ <a1e62b28-3090-26cd-aa99-5b04e0dace4f@xenomai.org>
+Subject: Re: Bad ioctl in rtnet
 MIME-Version: 1.0
-Content-Type: text/plain; charset="iso-8859-1"
+Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: quoted-printable
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
@@ -16,197 +16,203 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: xenomai <xenomai@xenomai.org>
+
+----- Den 9 jun 2020, p=C3=A5 kl 18:16, Philippe Gerum rpm@xenomai.org skre=
+v:
+
+> On 6/9/20 4:49 PM, Per Oberg via Xenomai wrote:
+> > Hello list!
+
+>> I get this error when running a posix-wrapper-compiled software pacakge =
+on
+>> rtnet. Could someone please help me pinpoint which ioctl is causing this=
+? (Does
+> > it say in the text below or do I need to start spreading breadcrumbs ? =
+)
+
+> > [ 85.577201] I-pipe domain: Linux
+> > [ 85.577624] task: ffff880262df6c00 task.stack: ffffc9000138c000
+>> [ 85.578058] RIP: 0010:[<ffffffffa02b4787>] [<ffffffffa02b4787>]
+> > rt_ip_ioctl+0x27/0x120 [rtipv4]
+> > [ 85.578512] RSP: 0018:ffffc9000138fda8 EFLAGS: 00010246
+> > [ 85.578958] RAX: 000000000007ffff RBX: 0000000040180021 RCX: ffff88026=
+dd00000
+> > [ 85.579409] RDX: 00007ffcb6bd3470 RSI: 0000000040180021 RDI: ffff88026=
+2b33a00
+> > [ 85.579858] RBP: ffffc9000138fdd0 R08: 0000000000000052 R09: ffff88026=
+2df6c00
+> > [ 85.580310] R10: 00000000000000e6 R11: 0000000000000000 R12: ffff88026=
+2b33a00
+> > [ 85.580763] R13: 0000000040180021 R14: 00007ffcb6bd3470 R15: 000000006=
+2b33a00
+>> [ 85.581217] FS: 00007fd21c07c480(0000) GS:ffff88026dd00000(0000)
+> > knlGS:0000000000000000
+> > [ 85.581674] CS: 0010 DS: 0000 ES: 0000 CR0: 000000008005003b
+> > [ 85.582133] CR2: 00007ffcb6bd3470 CR3: 0000000261a90000 CR4: 000000000=
+0360630
+> > [ 85.582602] Stack:
+> > [ 85.583067] ffffffffa02bf6f7 0000000000000001 ffffffff81178cd0 ffff880=
+262b33a00
+> > [ 85.583554] 0000000000000004 ffffc9000138fe60 ffffffff811725be 0000000=
+000000202
+> > [ 85.584040] ffff880262df6c00 ffff880200000010 ffffc9000138fe70 ffffc90=
+00138fe08
+> > [ 85.584531] Call Trace:
+> > [ 85.585015] [<ffffffffa02bf6f7>] ? rt_udp_ioctl+0x67/0x8c [rtudp]
+> > [ 85.585511] [<ffffffff81178cd0>] ? CoBaLt_fcntl+0x20/0x20
+> > [ 85.586002] [<ffffffff811725be>] rtdm_fd_ioctl+0xee/0x280
+> > [ 85.586488] [<ffffffff81178cd0>] ? CoBaLt_fcntl+0x20/0x20
+> > [ 85.586975] [<ffffffff810a0933>] ? __ipipe_migrate_head+0x73/0xf0
+> > [ 85.587466] [<ffffffff81178cd0>] ? CoBaLt_fcntl+0x20/0x20
+> > [ 85.587957] [<ffffffff81178cde>] CoBaLt_ioctl+0xe/0x20
+> > [ 85.588445] [<ffffffff81188472>] ipipe_syscall_hook+0x112/0x350
+> > [ 85.588932] [<ffffffff8110acb8>] __ipipe_notify_syscall+0xc8/0x190
+> > [ 85.589421] [<ffffffff8110adaa>] ipipe_handle_syscall+0x2a/0xb0
+> > [ 85.589912] [<ffffffff81001c3d>] do_syscall_64+0x2d/0xf0
+> > [ 85.590404] [<ffffffff818dffbe>] entry_SYSCALL_64_after_swapgs+0x58/0x=
+c6
+>> [ 85.590897] Code: 68 b8 eb b0 e8 ab d4 62 e1 81 fe 27 00 10 40 0f 84 c1=
+ 00 00
+>> 00 7e 73 81 fe 20 00 18 40 74 3c 81 fe 21 00 18 40 0f 85 a0 00 00 00 <8b=
+> 02 8b
+> > 4a 10 4c 8b
+> > 42 08 8b 72 04 85 c0 0f 85 d6 00 00 00 83
+> > [ 85.592061] RIP [<ffffffffa02b4787>] rt_ip_ioctl+0x27/0x120 [rtipv4]
+> > [ 85.592592] RSP <ffffc9000138fda8>
+> > [ 85.593120] CR2: 00007ffcb6bd3470
+
+> The header of this kernel splat - which should normally give you some hin=
+t
+> about the code which triggers it - seems to be missing from the pasted te=
+xt
+> above.
+
+Sorry about that, what was missing was essentially this:=20
+
+[174576.129988] [Xenomai] switching RTTest to secondary mode after exceptio=
+n #14 in kernel-space at 0xffffffffa02b4787 (pid 485)
+[174576.129994] BUG: unable to handle kernel paging request at 00007ffc6861=
+7830
+[174576.130379] IP: [<ffffffffa02b4787>] rt_ip_ioctl+0x27/0x120 [rtipv4]
+[174576.130757] PGD 80000002633d5067=20
+[174576.130765] PUD 2642a0067=20
+[174576.131131] PMD 24e848067=20
+[174576.131135] PTE 8000000262244067
+[174576.131507]=20
+[174576.131880] Oops: 0001 [#1] PREEMPT SMP
+[174576.132257] Modules linked in: rtudp rtipv4 intel_powerclamp intel_rapl=
+ i915 coretemp rt_igb e1000e pcan(O) rtnet video fan thermal_sys
+[174576.133071] CPU: 3 PID: 485 Comm: OpENer Tainted: G           O    4.9.=
+90-xeno-cobolt #1
+[174576.133485] Hardware name: Default string Default string/SKYBAY, BIOS 5=
+.0.1.1 04/18/2016
 
 
+> Anyway, quick and dirty trick to locate it:
 
-________________________________
-From: Xenomai <xenomai-bounces@xenomai.org> on behalf of xenomai-request@xe=
-nomai.org <xenomai-request@xenomai.org>
-Sent: Sunday, May 24, 2020 3:00 AM
-To: xenomai@xenomai.org <xenomai@xenomai.org>
-Subject: Xenomai Digest, Vol 97, Issue 33
+> $ $CROSS_COMPILE-objdump -dl
+> $linux-build-tree/drivers/xenomai/net/stack/ipv4/rtipv4.o | grep -A 30
+> '<rt_ip_ioctl>:'
 
-Send Xenomai mailing list submissions to
-        xenomai@xenomai.org
+> 00000000000029f0 <rt_ip_ioctl>:
+> rt_ip_ioctl():
+> linux/drivers/xenomai/net/stack/ipv4/ip_sock.c:209
+> 29f0: 41 54 push %r12
+> 29f2: 4c 8d 27 lea (%rdi),%r12
+> 29f5: 55 push %rbp
+> rtdm_fd_to_private():
+> linux/include/xenomai/rtdm/driver.h:163
+> 29f6: 48 8d 2f lea (%rdi),%rbp
+> rt_ip_ioctl():
+> linux/drivers/xenomai/net/stack/ipv4/ip_sock.c:209
+> 29f9: 48 8d 64 24 e0 lea -0x20(%rsp),%rsp
+> rtdm_fd_to_private():
+> linux/include/xenomai/rtdm/driver.h:163
+> 29fe: 48 83 c5 58 add $0x58,%rbp
+> rt_ip_ioctl():
+> linux/drivers/xenomai/net/stack/ipv4/ip_sock.c:209
+> 2a02: 65 48 8b 04 25 28 00 mov %gs:0x28,%rax
+> 2a09: 00 00
+> 2a0b: 48 89 44 24 18 mov %rax,0x18(%rsp)
+> 2a10: 31 c0 xor %eax,%eax
+> linux/drivers/xenomai/net/stack/ipv4/ip_sock.c:215
+> 2a12: 81 fe 20 00 18 40 cmp $0x40180020,%esi
+> 2a18: 0f 84 d5 00 00 00 je 2af3 <rt_ip_ioctl+0x103>
+> 2a1e: 7f 5f jg 2a7f <rt_ip_ioctl+0x8f>
+> 2a20: 81 fe 26 00 10 40 cmp $0x40100026,%esi
+> 2a26: 0f 84 98 00 00 00 je 2ac4 <rt_ip_ioctl+0xd4>
+> 2a2c: 81 fe 27 00 10 40 cmp $0x40100027,%esi
+> 2a32: 0f 85 81 00 00 00 jne 2ab9 <rt_ip_ioctl+0xc9>
+> linux/drivers/xenomai/net/stack/ipv4/ip_sock.c:243
+> 2a38: b9 10 00 00 00 mov $0x10,%ecx
 
-To subscribe or unsubscribe via the World Wide Web, visit
-        https://xenomai.org/mailman/listinfo/xenomai
-or, via email, send a message with subject or body 'help' to
-        xenomai-request@xenomai.org
+> rt_ip_ioctl+0x27 would then be 000029f0 + 0x27, i.e. 00002a17 which would=
+ be
+> somewhere after xenomai/net/stack/ipv4/ip_sock.c:215. This IP does not se=
+em to
+> match anything sensible in my dump (v3.1), but you may be using a differe=
+nt
+> Xenomai code base, so this may explain. At any rate, this seems to be one=
+ of
+> the generic sockopt handlers (setopt, getopt, getname, setname). Anyway, =
+you
+> get the point.
 
-You can reach the person managing the list at
-        xenomai-owner@xenomai.org
+So, I get this: (With 0x1760 + 0x27 =3D 0x1787)
 
-When replying, please edit your Subject line so it is more specific
-than "Re: Contents of Xenomai digest..."
+0000000000001760 <rt_ip_ioctl>:
+rt_ip_ioctl():
+    1760:       e8 00 00 00 00          callq  1765 <rt_ip_ioctl+0x5>
+    1765:       81 fe 27 00 10 40       cmp    $0x40100027,%esi
+    176b:       0f 84 c1 00 00 00       je     1832 <rt_ip_ioctl+0xd2>
+    1771:       7e 73                   jle    17e6 <rt_ip_ioctl+0x86>
+    1773:       81 fe 20 00 18 40       cmp    $0x40180020,%esi
+    1779:       74 3c                   je     17b7 <rt_ip_ioctl+0x57>
+    177b:       81 fe 21 00 18 40       cmp    $0x40180021,%esi
+    1781:       0f 85 a0 00 00 00       jne    1827 <rt_ip_ioctl+0xc7>
+    1787:       8b 02                   mov    (%rdx),%eax
+    1789:       8b 4a 10                mov    0x10(%rdx),%ecx
+    178c:       4c 8b 42 08             mov    0x8(%rdx),%r8
+    1790:       8b 72 04                mov    0x4(%rdx),%esi
+    1793:       85 c0                   test   %eax,%eax
+    1795:       0f 85 d6 00 00 00       jne    1871 <rt_ip_ioctl+0x111>
+    179b:       83 f9 03                cmp    $0x3,%ecx
+    179e:       0f 86 c7 00 00 00       jbe    186b <rt_ip_ioctl+0x10b>
+    17a4:       83 fe 01                cmp    $0x1,%esi
+    17a7:       0f 85 c4 00 00 00       jne    1871 <rt_ip_ioctl+0x111>
+    17ad:       41 8b 10                mov    (%r8),%edx
+    17b0:       88 97 60 01 00 00       mov    %dl,0x160(%rdi)
+    17b6:       c3                      retq  =20
+    17b7:       48 8b 42 10             mov    0x10(%rdx),%rax
+    17bb:       48 8b 4a 08             mov    0x8(%rdx),%rcx
+    17bf:       8b 52 04                mov    0x4(%rdx),%edx
+    17c2:       83 38 03                cmpl   $0x3,(%rax)
+    17c5:       0f 86 a0 00 00 00       jbe    186b <rt_ip_ioctl+0x10b>
+    17cb:       83 fa 01                cmp    $0x1,%edx
+    17ce:       0f 85 9d 00 00 00       jne    1871 <rt_ip_ioctl+0x111>
+    17d4:       0f b6 97 60 01 00 00    movzbl 0x160(%rdi),%edx
 
+I have no code-line references to match it with (yet) because it's not comp=
+iled with debug info. However, the "mov    (%rdx),%eax" does not seem like =
+an impossible offender.
+I am on xenomai-3.0.8a (I don't remember of the 'a' is my name or a real re=
+lease, it was due to an issue with a missing file missing in the original r=
+elease i believe...)
 
-Today's Topics:
+I'm not good enough in calling convention interpretation to figure out wher=
+e the value in %rdx came from so I'll likely have to enable the debugging f=
+lags and recompile before I'll get any further.
 
-   1. Re: unable to modprobe xeno_can_mem (rtcan_sja1000.c) device
-      with certain IRQ numbers (Wolfgang Grandegger)
+> PS: with the static portion of the kernel, you would have used addr2line
+> directly on the vmlinux image, using the %RIP value as a hint to the comm=
+and.
 
+Nice, good to know!
 
-----------------------------------------------------------------------
-
-Message: 1
-Date: Sat, 23 May 2020 19:38:56 +0200
-From: Wolfgang Grandegger <wg@grandegger.com>
-To: xenomai@xenomai.org
-Subject: Re: unable to modprobe xeno_can_mem (rtcan_sja1000.c) device
-        with certain IRQ numbers
-Message-ID: <a30dd164-b517-586e-5e6e-e5aba3fde2cd@grandegger.com>
-Content-Type: text/plain; charset=3Dutf-8
-
-Hello,
-
-Am 22.05.20 um 22:01 schrieb Josh Karch via Xenomai:
-> Hello,
->
-> Outside of the GPIO issues that I am having loading the xeno-gpio-xilinx =
-drivers, when trying to load the xeno_can_mem driver (which calls SJA1000) =
-I get the following segfault.  When I use a fake low IRQ number like 10, th=
-e xeno_can_mem driver loads, but 89, which is the Xilinx Ultrascale+MPSoC i=
-nterrupt number from the fabric to the processor side, connects to my SJA10=
-00 compatible CAN core.  I verified the driver loads once modified for my m=
-emory map.
-> The rtcan_sja1000.c segfaults on the following:
->
-> ret =3D rtdm_irq_request(&dev->irq_handle,
->   chip->irq_num, rtcan_sja_interrupt,
->   chip->irq_flags, sja_ctrl_name, dev);
->     if (ret) {
->
-> Note: rtcan_mem.c uses "RTDM_IRQTYPE_SHARED" as part of the IRQ request. =
-Could this be an issue?
->
-> Best,
-> Josh Karch
->
-> # modprobe xeno_can_mem mem=3D0xa0000000 irq=3D89
-> [  615.391303] RT-Socket-CAN 0.90.2 - (C) 2006 RT-Socket-CAN Development =
-Team
-> [  615.398993] RTCAN SJA1000 driver initialized
-> [  615.403892] Trying to install index 0 IRQ 89
-> [  615.408248] DDC CAN Core SJA1000 version 21
-> [  615.408269] Unable to handle kernel NULL pointer dereference at virtua=
-l addre
-> ss 0000000000000058
-> [  615.421243] Mem abort info:
-> [  615.424034]   ESR =3D 0x96000006
-> [  615.427091]   Exception class =3D DABT (current EL), IL =3D 32 bits
-> [  615.433013]   SET =3D 0, FnV =3D 0
-> [  615.436070]   EA =3D 0, S1PTW =3D 0
-> [  615.439209] Data abort info:
-> [  615.442082]   ISV =3D 0, ISS =3D 0x00000006
-> [  615.445920]   CM =3D 0, WnR =3D 0
-> [  615.448891] user pgtable: 4k pages, 39-bit VAs, pgdp =3D 0000000032bc8=
-0a0
-> [  615.455508] [0000000000000058] pgd=3D000000085d370003, pud=3D000000085=
-d370003, pm
-> d=3D0000000000000000
-> [  615.464218] Internal error: Oops: 96000006 [#1] SMP
-> [  615.469091] Modules linked in: xeno_can_mem(+) xeno_can_sja1000 xeno_c=
-an xili
-> nx_can gpio_xilinx gpio_tonka(O)
-> [  615.479010] Process modprobe (pid: 300, stack limit =3D 0x00000000141e=
-3791)
-> [  615.485797] CPU: 3 PID: 300 Comm: modprobe Tainted: G        W  O     =
- 4.19.5
-> 5 #21
-> [  615.493356] Hardware name: ZynqMP ZCU102 Rev1.0 (DT)
-> [  615.498309] I-pipe domain: Linux
-> [  615.501531] pstate: 20000005 (nzCv daif -PAN -UAO)
-> [  615.506320] pc : ipipe_set_irq_affinity+0x38/0xc0
-> [  615.511019] lr : ipipe_set_irq_affinity+0x30/0xc0
-> [  615.515714] sp : ffffff8009f63a20
-> [  615.519021] x29: ffffff8009f63a20 x28: ffffff8009f75000
-> [  615.524326] x27: 0000000000000100 x26: ffffff8000a66000
-> [  615.529630] x25: ffffff8000a66308 x24: ffffffc85d3fafb8
-> [  615.534934] x23: ffffff8008e07be0 x22: ffffffc85d3fac30
-> [  615.540238] x21: ffffff8008eced40 x20: ffffff8008df9688
-> [  615.545542] x19: 0000000000000059 x18: 0000000000000030
-> [  615.550846] x17: 0000000000000000 x16: ffffffc85d93cec0
-> [  615.556150] x15: ffffffffffffffff x14: 0000000000000000
-> [  615.561454] x13: 00000000000002da x12: 0000000000000001
-> [  615.566758] x11: 000000000000000a x10: 0000000000000040
-> [  615.572062] x9 : ffffff8008e0c7a8 x8 : ffffffbebffe7840
-> [  615.577366] x7 : 0000000000000000 x6 : ffffffc87b400240
-> [  615.582670] x5 : 000000000000003f x4 : ffffffc87b400241
-> [  615.587974] x3 : 0000000000000000 x2 : 0000000000000000
-> [  615.593278] x1 : 0000000000000059 x0 : 0000000000000000
-> [  615.598582] Call trace:
-> [  615.601022]  ipipe_set_irq_affinity+0x38/0xc0
-> [  615.605374]  xnintr_attach+0x7c/0x160
-> [  615.609028]  rtdm_irq_request+0x64/0xb0
-> [  615.612857]  rtcan_sja1000_register+0xdc/0x1d8 [xeno_can_sja1000]
-> [  615.618945]  rtcan_mem_init_one+0x16c/0x1e8 [xeno_can_mem]
-> [  615.624420]  rtcan_mem_init+0x3c/0xe18 [xeno_can_mem]
-> [  615.629462]  do_one_initcall+0x74/0x178
-> [  615.633290]  do_init_module+0x54/0x1d0
-> [  615.637031]  load_module+0x1b90/0x2120
-> [  615.640772]  __se_sys_finit_module+0xb8/0xd0
-> [  615.645035]  __arm64_sys_finit_module+0x18/0x20
-> [  615.649559]  el0_svc_common+0xbc/0x1a0
-> [  615.653299]  el0_svc_handler+0x68/0x80
-> [  615.657039]  el0_svc+0x8/0x18
-> [  615.660002] Code: 2a0003f3 94015eb5 b40003c0 f9402000 (f9402c00)
-> [  615.666088] ---[ end trace c7317888b13abfa7 ]---
-> Segmentation fault
-
-I think that "irq_get_chip(irq)" in "ipipe_set_irq_affinity()" returns
-NULL. Are your sure, that the IRQ number is correct? Did you get the
-SJA1000 from Linux already working?
-
-Maybe you can find some useful information in:
-
-  # mount -tdebugfs nope /sys/kernel/debug
-  # cat /sys/kernel/debug/irq...
-
-Or maybe some IRQ config is missing. A platform driver would be more
-appropriate, using configs from the device tree.
-
-Wolfgang
+> --
+> Philippe.
 
 
+Per =C3=96berg=20
 
-
-------------------------------
-Hi Wolfgang,
-
-So I finally was able to get IRQs registered by adding "generic-uio" to the=
- device tree.  That exposes the correct IRQs for the ZynqMP platform.  Howe=
-ver these interrupts don't trigger.  Is there something I need to do to ena=
-ble interrupts typically on the SJA1000 driver?  The driver enables all the=
- types of interrupts, but there isn't a "global interrupt enable" call.
-
-cat/proc/interrupts
- 45:          0          0          0          0     GICv2 122 Level     rt=
-can
- 46:          0          0          0          0     GICv2 121 Level     rt=
-can
- 47:          0          0          0          0     GICv2 124 Level     ax=
-igpio
- 48:          0          0          0          0     GICv2 123 Level     ax=
-igpio
-
-# cat /proc/xenomai/irq
-  IRQ         CPU0        CPU1        CPU2        CPU3
-    3:       12251       14535        9331       14961         [timer/0]
-   45:           0           0           0           0         SJA1000
-   46:           0           0           0           0         SJA1000
-
-Best,
-
-Josh
-
-Subject: Digest Footer
-
-
-
-
-------------------------------
-
-End of Xenomai Digest, Vol 97, Issue 33
-***************************************
