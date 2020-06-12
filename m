@@ -1,16 +1,17 @@
-From: Jouko Haapaluoma <jouko.haapaluoma@wapice.com>
-Subject: RE: [PATCH 0/9] arm: ipipe: Add basic I-pipe support for the SAMA5D3
- SoC
-Date: Fri, 12 Jun 2020 15:58:48 +0000
-Message-ID: <HE1PR03MB311538758AAB8CD1D6141B99E5810@HE1PR03MB3115.eurprd03.prod.outlook.com>
-References: <HE1PR03MB31154FC1C35ABA6CC541A8C9E5810@HE1PR03MB3115.eurprd03.prod.outlook.com>
- <702edf30-b134-ac8a-3e41-787a5428ac86@siemens.com>
- <CALLqZ8RhxCkRCbSkiWcFAtYp8VkwMCFG57LVz-uewgYmpy-1PA@mail.gmail.com>
-In-Reply-To: <CALLqZ8RhxCkRCbSkiWcFAtYp8VkwMCFG57LVz-uewgYmpy-1PA@mail.gmail.com>
-Content-Language: en-US
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+Subject: Re: RTDM Printk do not work on rtdm_timer_handler_t
+References: <D5DEC4F7-7609-4B43-9DF7-BEBFEEFB1AC1.ref@yahoo.fr>
+ <D5DEC4F7-7609-4B43-9DF7-BEBFEEFB1AC1@yahoo.fr>
+ <bbcae94e-9dbe-e95c-13f4-b67abee77cc6@siemens.com>
+ <021AD4AA-F3B2-4B07-B237-B037C2C389D0@yahoo.fr>
+ <5DB52BA0-59AD-48D9-BFA0-D2EDCC713847@yahoo.fr>
+From: Jan Kiszka <jan.kiszka@siemens.com>
+Message-ID: <329bf87f-adff-0ddb-1240-c74dea5757d9@siemens.com>
+Date: Fri, 12 Jun 2020 18:14:16 +0200
 MIME-Version: 1.0
+In-Reply-To: <5DB52BA0-59AD-48D9-BFA0-D2EDCC713847@yahoo.fr>
+Content-Type: text/plain; charset="utf-8"
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -19,21 +20,159 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Greg Gallagher <greg@embeddedgreg.com>, Jan Kiszka <jan.kiszka@siemens.com>
-Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: ayaida marwane <ayaida_marwane@yahoo.fr>
+Cc: xenomai@xenomai.org
 
-VGhhbmtzIGZvciByZXBsaWVzLCBhbnN3ZXJzIGZvciBib3RoIGJlbG93Lg0KDQo+IEdyZWF0LCB0
-aGFua3MgZm9yIHRoZSBwYXRjaGVzISBJIGFzc3VtZSBHcmVnIHdpbGwgbG9vayBpbnRvIHRoZW0g
-aW4gZGV0YWlscy4NCj4gUmVnYXJkaW5nIHRoZSBtYWlubGluZSBwYXRjaGVzOiBBcmUgdGhleSBz
-aW1wbHkgbWlzc2luZyBpbiA0LjE5IA0KPiBiZWNhdXNlIHRoZXkgd2VyZSBub3QgYmFja3BvcnRl
-ZCBhcyBmaXhlcyAoZmVhdHVyZSBwYXRjaGVzKT8gQXJlIHRoZXkgDQo+IHNhZmUgdG8gYmUgYXBw
-bGllZCBvbiBhIHN0YWJsZSBicmFuY2gsIGkuZS4gc2lkZS1lZmZlY3QgZnJlZSBmb3Igb3RoZXIg
-dGFyZ2V0cz8NCg0KVGhlIG1haW5saW5lIHBhdGNoZXMgYXJlIGluY2x1ZGVkIGluIExpbnV4IDUu
-Mi4gUHJvYmFibHkgdGhleSBhcmUgc2ltcGx5IG1pc3NpbmcuDQpJIHRoaW5rIHRoYXQgdGhlcmUg
-aXMgYSBsb3cgcmlzayBmb3Igc2lkZSBlZmZlY3RzIC0gcGF0Y2hlcyBhZmZlY3Qgb25seSBTQU1B
-NSAoYW5kIEFUOTEpLiBJLXBpcGUgaXMNCmFueXdheSBub3Qgc3VwcG9ydGVkIG9uIG90aGVyIFNB
-TUE1L0FUOTEgdGFyZ2V0cyBjdXJyZW50bHkuDQoNCj5BcmUgdGhlIG1haW5saW5lIGFuZCBQUkVF
-TVRQX1JUIHBhdGNoZXMgaW5jbHVkZWQgaW4gdGhlIHBhdGNoIHNlcmllcz8NClllcywgYm90aCBp
-bmNsdWRlZDogbWFpbmxpbmUgcGF0Y2hlcyBhcmUgZnJvbSBBbGV4YW5kcmUgQmVsbG9uaSwgUlRf
-UFJFRU1QVCBpcyBmcm9tIEJlbmVkaWt0IFNwcmFuZ2VyDQoNCkJSLA0KSm91a28NCg==
+On 08.06.20 12:13, ayaida marwane wrote:
+> Hi Jan and all,
+> 
+> Did you have any explanation for the issue below?
+> 
+> The timer is ticking and the printk is not working…
+> 
+
+I've just thrown you module a 4.19-x86, Xenomai 3.1, and I had a hard
+time unloading it because of all the timer messages it printed to the
+console. IOW, things can work as expected, and there must be something
+special in your setup.
+
+Can you reproduce with a qemu image from xenomai-images? If not (I
+suspect so), you will have a baseline to compare to and maybe identify
+the difference.
+
+Jan
+
+> Thanks for your help.
+> 
+> BR,
+> Marwane.
+> 
+>> Le 18 mai 2020 à 12:58, ayaida marwane <ayaida_marwane@yahoo.fr
+>> <mailto:ayaida_marwane@yahoo.fr>> a écrit :
+>>
+>> Hi Jan,
+>>
+>>> Le 18 mai 2020 à 12:47, Jan Kiszka <jan.kiszka@siemens.com
+>>> <mailto:jan.kiszka@siemens.com>> a écrit :
+>>>
+>>> On 18.05.20 11:27, ayaida marwane via Xenomai wrote:
+>>>> Dear all,
+>>>> I have tried this code :
+>>>> ————————————————————
+>>>> #include <rtdm/driver.h>
+>>>> static int periode_us = 1000;
+>>>> module_param(periode_us, int, 0644);
+>>>> static void timer_task(rtdm_timer_t *);
+>>>> static rtdm_timer_t rtimer;
+>>>> static int __init init_oscillateur (void)
+>>>> {
+>>>>         int err;
+>>>>         rtdm_printk(KERN_INFO "%s.%s() : Initialisation\n",
+>>>> THIS_MODULE->name, __FUNCTION__);
+>>>>         if ((err = rtdm_timer_init(& rtimer, timer_task,
+>>>> "Timer_Task")) != 0) {
+>>>>                 return err;
+>>>>         }
+>>>>         if ((err = rtdm_timer_start(& rtimer, periode_us*1000,
+>>>> periode_us*1000, RTDM_TIMERMODE_RELATIVE)) != 0) {
+>>>>                 rtdm_timer_destroy(& rtimer);
+>>>>                 return err;
+>>>>         }
+>>>>         return 0;
+>>>> }
+>>>> static void __exit exit_oscillateur (void)
+>>>> {
+>>>>         rtdm_timer_stop(& rtimer);
+>>>>         rtdm_timer_destroy(& rtimer);
+>>>>         rtdm_printk(KERN_INFO "%s.%s() : Exit\n", THIS_MODULE->name,
+>>>> __FUNCTION__);
+>>>> }
+>>>> static void timer_task(rtdm_timer_t * unused)
+>>>> {
+>>>>         rtdm_printk(KERN_INFO "%s.%s() : Appel Timer\n",
+>>>> THIS_MODULE->name, __FUNCTION__);
+>>>> }
+>>>> module_init(init_oscillateur);
+>>>> module_exit(exit_oscillateur);
+>>>> MODULE_LICENSE("GPL");
+>>>> ————————————————————
+>>>> However, when I execute the code, we have only :
+>>>> [ 6696.615556] oscillateur_gpio_rtdm.init_oscillateur() : Initialisation
+>>>> [ 6705.148129] oscillateur_gpio_rtdm.exit_oscillateur() : Exit
+>>>> So, why the rtdm_printk in the timer_task is never called?
+>>>> Thanks for your help.
+>>>> BR,
+>>>> Marwane.
+>>>
+>>> No obvious reason why is should print or run. You can start analyzing
+>>> by looking at stats in /proc/xenomai/timer, if yours is ticking.
+>>
+>> Here are the print, it is well ticking:
+>>
+>> root@raspberrypi:/tmp# cat /proc/xenomai/timer/coreclk 
+>> CPU  SCHED/SHOT            TIMEOUT     INTERVAL    NAME
+>> 0    4994886/166104        39ms482us   -           [host-timer/0]
+>> 1    563735/95608          579ms478us  -           [host-timer/1]
+>> 2    2089494/195494        9ms477us    -           [host-timer/2]
+>> 3    459336/80299          9ms474us    -           [host-timer/3]
+>> 0    39549/39548           817us       1ms         Timer_Task
+>> root@raspberrypi:/tmp# cat /proc/xenomai/timer/coreclk 
+>> CPU  SCHED/SHOT            TIMEOUT     INTERVAL    NAME
+>> 0    5000069/166391        28ms552us   -           [host-timer/0]
+>> 1    563799/95628          608ms547us  -           [host-timer/1]
+>> 2    2089896/195551        18ms546us   -           [host-timer/2]
+>> 3    459375/80325          8ms544us    -           [host-timer/3]
+>> 0    49840/49839           836us       1ms         Timer_Task
+>> root@raspberrypi:/tmp# cat /proc/xenomai/timer/coreclk 
+>> CPU  SCHED/SHOT            TIMEOUT     INTERVAL    NAME
+>> 0    5004901/166688        33ms17us    -           [host-timer/0]
+>> 1    563851/95643          133ms9us    -           [host-timer/1]
+>> 2    2090205/195607        13ms12us    -           [host-timer/2]
+>> 3    459405/80342          3ms9us      -           [host-timer/3]
+>> 0    59755/59754           253us       1ms         Timer_Task
+>> root@raspberrypi:/tmp# cat /proc/xenomai/timer/coreclk 
+>> CPU  SCHED/SHOT            TIMEOUT     INTERVAL    NAME
+>> 0    5008137/166872        13ms948us   -           [host-timer/0]
+>> 1    563895/95655          3ms945us    -           [host-timer/1]
+>> 2    2090576/195658        13ms942us   -           [host-timer/2]
+>> 3    459441/80356          4s293ms13u  -           [host-timer/3]
+>> 0    66294/66293           153us       1ms         Timer_Task
+>> root@raspberrypi:/tmp# cat /proc/xenomai/timer/coreclk 
+>> CPU  SCHED/SHOT            TIMEOUT     INTERVAL    NAME
+>> 0    5010223/167216        2ms315us    -           [host-timer/0]
+>> 1    563982/95686          282ms308us  -           [host-timer/1]
+>> 2    2091762/195739        12ms309us   -           [host-timer/2]
+>> 3    463114/80415          3s692ms24u  -           [host-timer/3]
+>> 0    78326/78325           462us       1ms         Timer_Task
+>>
+>> When I remove the module, it becomes:
+>>
+>> root@raspberrypi:/tmp# cat /proc/xenomai/timer/coreclk 
+>> CPU  SCHED/SHOT            TIMEOUT     INTERVAL    NAME
+>> 0    5016232/168735        5ms353us    -           [host-timer/0]
+>> 1    564360/95814          5ms349us    -           [host-timer/1]
+>> 2    2096430/196245        15ms347us   -           [host-timer/2]
+>> 3    476687/80559          104ms93us   -           [host-timer/3]
+>> root@raspberrypi:/tmp# cat /proc/xenomai/timer/coreclk 
+>> CPU  SCHED/SHOT            TIMEOUT     INTERVAL    NAME
+>> 0    5016716/168863        22ms398us   -           [host-timer/0]
+>> 1    564402/95829          2ms394us    -           [host-timer/1]
+>> 2    2096700/196275        12ms391us   -           [host-timer/2]
+>> 3    477826/80569          4s289ms909  -           [host-timer/3]
+>>
+>> So, I do not understand why it is not printing?
+>>
+>> Thanks for your help Jan!
+>>
+>>>
+>>> Jan
+>>>
+>>> -- 
+>>> Siemens AG, Corporate Technology, CT RDA IOT SES-DE
+>>> Corporate Competence Center Embedded Linux
+> 
+
+-- 
+Siemens AG, Corporate Technology, CT RDA IOT SES-DE
+Corporate Competence Center Embedded Linux
 
