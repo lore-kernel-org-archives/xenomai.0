@@ -1,14 +1,11 @@
-Subject: Re: RTDM Printk do not work on rtdm_timer_handler_t
-References: <D5DEC4F7-7609-4B43-9DF7-BEBFEEFB1AC1.ref@yahoo.fr>
- <D5DEC4F7-7609-4B43-9DF7-BEBFEEFB1AC1@yahoo.fr>
- <bbcae94e-9dbe-e95c-13f4-b67abee77cc6@siemens.com>
- <021AD4AA-F3B2-4B07-B237-B037C2C389D0@yahoo.fr>
- <5DB52BA0-59AD-48D9-BFA0-D2EDCC713847@yahoo.fr>
+Subject: Re: rtdm_task_init does not work with Xenomai 3
+References: <BCA29F40-0C3A-4DF7-9FE9-EF5D55C66C27.ref@yahoo.fr>
+ <BCA29F40-0C3A-4DF7-9FE9-EF5D55C66C27@yahoo.fr>
 From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <329bf87f-adff-0ddb-1240-c74dea5757d9@siemens.com>
-Date: Fri, 12 Jun 2020 18:14:16 +0200
+Message-ID: <61b3ec84-8d38-630a-8542-7b42faf71362@siemens.com>
+Date: Fri, 12 Jun 2020 18:17:07 +0200
 MIME-Version: 1.0
-In-Reply-To: <5DB52BA0-59AD-48D9-BFA0-D2EDCC713847@yahoo.fr>
+In-Reply-To: <BCA29F40-0C3A-4DF7-9FE9-EF5D55C66C27@yahoo.fr>
 Content-Type: text/plain; charset="utf-8"
 Content-Language: en-US
 Content-Transfer-Encoding: 8bit
@@ -20,157 +17,86 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: ayaida marwane <ayaida_marwane@yahoo.fr>
-Cc: xenomai@xenomai.org
+To: ayaida marwane <ayaida_marwane@yahoo.fr>, xenomai@xenomai.org
 
-On 08.06.20 12:13, ayaida marwane wrote:
-> Hi Jan and all,
+On 02.06.20 20:34, ayaida marwane via Xenomai wrote:
+> Dear all,
 > 
-> Did you have any explanation for the issue below?
+> I tried to have an example using rtdm_task_init with Xenomai 3.0.7. The example is tis one:
 > 
-> The timer is ticking and the printk is not working…
+> ————————— 
 > 
+> #include <rtdm/driver.h>
+> static int periode_us = 1000;
+> static int a, ret;
+> module_param(periode_us, int, 0644);
+> 
+> rtdm_task_t task;
+> 
+> void task_ultrason(void *arg){
+>    a=1;
+>    rtdm_printk(KERN_INFO "%s.%s() : hello = %d\n", THIS_MODULE->name, __FUNCTION__,a);
 
-I've just thrown you module a 4.19-x86, Xenomai 3.1, and I had a hard
-time unloading it because of all the timer messages it printed to the
-console. IOW, things can work as expected, and there must be something
-special in your setup.
-
-Can you reproduce with a qemu image from xenomai-images? If not (I
-suspect so), you will have a baseline to compare to and maybe identify
-the difference.
+This will only be printed once, then the task terminates. You likely
+want to put this in a loop and wait on the next cycle via
+rtdm_task_wait_period().
 
 Jan
 
-> Thanks for your help.
+> }
+> 
+> int __init ultrason_init(void) {
+>    a=0;
+>    rtdm_printk(KERN_INFO "%s.%s() : hello = %d\n", THIS_MODULE->name, __FUNCTION__,a);
+>    ret = rtdm_task_init(&task, "ultrason", task_ultrason, NULL, 99, periode_us*1000);
+>    if (ret) {
+>         rtdm_printk(KERN_INFO "%s.%s() : error rtdm_task_init, hello = %d\n", THIS_MODULE->name, __FUNCTION__,a);
+>    }
+>    else  rtdm_printk(KERN_INFO "%s.%s() : success rtdm_task_init, hello = %d\n", THIS_MODULE->name, __FUNCTION__,a);
+>    return 0;
+> }
+> void __exit ultrason_exit(void) {
+>    a=2;
+>    rtdm_task_destroy(&task);
+>    rtdm_printk(KERN_INFO "%s.%s() : hello = %d\n", THIS_MODULE->name, __FUNCTION__,a);
+>    }
+> 
+> module_init(ultrason_init);
+> module_exit(ultrason_exit);
+> MODULE_LICENSE("GPL »);
+> 
+> ————————— 
+> 
+> When I insert the module and remove it, I found in dmesg:
+> 
+> ————————— 
+> 
+> [ 5045.187448] test.ultrason_init() : hello = 0
+> [ 5045.189495] test.ultrason_init() : success rtdm_task_init, hello = 0
+> [ 5049.631665] test.ultrason_exit() : hello = 2
+> 
+> ————————— 
+> 
+> The task_ultrason is never called.
+> 
+> I read from https://gitlab.denx.de/Xenomai/xenomai/-/wikis/Migrating_From_Xenomai_2_To_3 <https://gitlab.denx.de/Xenomai/xenomai/-/wikis/Migrating_From_Xenomai_2_To_3>, that rtdm_task_init() shall be called from secondary mode.
+> 
+> Since Xenomai 3, rtdm_task_init() involves creating a regular kernel thread, which will be given real-time capabilities, such as running under the control of the Cobalt kernel. In order to invoke standard kernel services, rtdm_task_init() must be called from a regular Linux kernel context.
+> 
+> So, how to adapt my example to call rtdm_task_init() from  from a regular Linux kernel context to make this example working?
+> 
+> Thank you for your help.
 > 
 > BR,
 > Marwane.
 > 
->> Le 18 mai 2020 à 12:58, ayaida marwane <ayaida_marwane@yahoo.fr
->> <mailto:ayaida_marwane@yahoo.fr>> a écrit :
->>
->> Hi Jan,
->>
->>> Le 18 mai 2020 à 12:47, Jan Kiszka <jan.kiszka@siemens.com
->>> <mailto:jan.kiszka@siemens.com>> a écrit :
->>>
->>> On 18.05.20 11:27, ayaida marwane via Xenomai wrote:
->>>> Dear all,
->>>> I have tried this code :
->>>> ————————————————————
->>>> #include <rtdm/driver.h>
->>>> static int periode_us = 1000;
->>>> module_param(periode_us, int, 0644);
->>>> static void timer_task(rtdm_timer_t *);
->>>> static rtdm_timer_t rtimer;
->>>> static int __init init_oscillateur (void)
->>>> {
->>>>         int err;
->>>>         rtdm_printk(KERN_INFO "%s.%s() : Initialisation\n",
->>>> THIS_MODULE->name, __FUNCTION__);
->>>>         if ((err = rtdm_timer_init(& rtimer, timer_task,
->>>> "Timer_Task")) != 0) {
->>>>                 return err;
->>>>         }
->>>>         if ((err = rtdm_timer_start(& rtimer, periode_us*1000,
->>>> periode_us*1000, RTDM_TIMERMODE_RELATIVE)) != 0) {
->>>>                 rtdm_timer_destroy(& rtimer);
->>>>                 return err;
->>>>         }
->>>>         return 0;
->>>> }
->>>> static void __exit exit_oscillateur (void)
->>>> {
->>>>         rtdm_timer_stop(& rtimer);
->>>>         rtdm_timer_destroy(& rtimer);
->>>>         rtdm_printk(KERN_INFO "%s.%s() : Exit\n", THIS_MODULE->name,
->>>> __FUNCTION__);
->>>> }
->>>> static void timer_task(rtdm_timer_t * unused)
->>>> {
->>>>         rtdm_printk(KERN_INFO "%s.%s() : Appel Timer\n",
->>>> THIS_MODULE->name, __FUNCTION__);
->>>> }
->>>> module_init(init_oscillateur);
->>>> module_exit(exit_oscillateur);
->>>> MODULE_LICENSE("GPL");
->>>> ————————————————————
->>>> However, when I execute the code, we have only :
->>>> [ 6696.615556] oscillateur_gpio_rtdm.init_oscillateur() : Initialisation
->>>> [ 6705.148129] oscillateur_gpio_rtdm.exit_oscillateur() : Exit
->>>> So, why the rtdm_printk in the timer_task is never called?
->>>> Thanks for your help.
->>>> BR,
->>>> Marwane.
->>>
->>> No obvious reason why is should print or run. You can start analyzing
->>> by looking at stats in /proc/xenomai/timer, if yours is ticking.
->>
->> Here are the print, it is well ticking:
->>
->> root@raspberrypi:/tmp# cat /proc/xenomai/timer/coreclk 
->> CPU  SCHED/SHOT            TIMEOUT     INTERVAL    NAME
->> 0    4994886/166104        39ms482us   -           [host-timer/0]
->> 1    563735/95608          579ms478us  -           [host-timer/1]
->> 2    2089494/195494        9ms477us    -           [host-timer/2]
->> 3    459336/80299          9ms474us    -           [host-timer/3]
->> 0    39549/39548           817us       1ms         Timer_Task
->> root@raspberrypi:/tmp# cat /proc/xenomai/timer/coreclk 
->> CPU  SCHED/SHOT            TIMEOUT     INTERVAL    NAME
->> 0    5000069/166391        28ms552us   -           [host-timer/0]
->> 1    563799/95628          608ms547us  -           [host-timer/1]
->> 2    2089896/195551        18ms546us   -           [host-timer/2]
->> 3    459375/80325          8ms544us    -           [host-timer/3]
->> 0    49840/49839           836us       1ms         Timer_Task
->> root@raspberrypi:/tmp# cat /proc/xenomai/timer/coreclk 
->> CPU  SCHED/SHOT            TIMEOUT     INTERVAL    NAME
->> 0    5004901/166688        33ms17us    -           [host-timer/0]
->> 1    563851/95643          133ms9us    -           [host-timer/1]
->> 2    2090205/195607        13ms12us    -           [host-timer/2]
->> 3    459405/80342          3ms9us      -           [host-timer/3]
->> 0    59755/59754           253us       1ms         Timer_Task
->> root@raspberrypi:/tmp# cat /proc/xenomai/timer/coreclk 
->> CPU  SCHED/SHOT            TIMEOUT     INTERVAL    NAME
->> 0    5008137/166872        13ms948us   -           [host-timer/0]
->> 1    563895/95655          3ms945us    -           [host-timer/1]
->> 2    2090576/195658        13ms942us   -           [host-timer/2]
->> 3    459441/80356          4s293ms13u  -           [host-timer/3]
->> 0    66294/66293           153us       1ms         Timer_Task
->> root@raspberrypi:/tmp# cat /proc/xenomai/timer/coreclk 
->> CPU  SCHED/SHOT            TIMEOUT     INTERVAL    NAME
->> 0    5010223/167216        2ms315us    -           [host-timer/0]
->> 1    563982/95686          282ms308us  -           [host-timer/1]
->> 2    2091762/195739        12ms309us   -           [host-timer/2]
->> 3    463114/80415          3s692ms24u  -           [host-timer/3]
->> 0    78326/78325           462us       1ms         Timer_Task
->>
->> When I remove the module, it becomes:
->>
->> root@raspberrypi:/tmp# cat /proc/xenomai/timer/coreclk 
->> CPU  SCHED/SHOT            TIMEOUT     INTERVAL    NAME
->> 0    5016232/168735        5ms353us    -           [host-timer/0]
->> 1    564360/95814          5ms349us    -           [host-timer/1]
->> 2    2096430/196245        15ms347us   -           [host-timer/2]
->> 3    476687/80559          104ms93us   -           [host-timer/3]
->> root@raspberrypi:/tmp# cat /proc/xenomai/timer/coreclk 
->> CPU  SCHED/SHOT            TIMEOUT     INTERVAL    NAME
->> 0    5016716/168863        22ms398us   -           [host-timer/0]
->> 1    564402/95829          2ms394us    -           [host-timer/1]
->> 2    2096700/196275        12ms391us   -           [host-timer/2]
->> 3    477826/80569          4s289ms909  -           [host-timer/3]
->>
->> So, I do not understand why it is not printing?
->>
->> Thanks for your help Jan!
->>
->>>
->>> Jan
->>>
->>> -- 
->>> Siemens AG, Corporate Technology, CT RDA IOT SES-DE
->>> Corporate Competence Center Embedded Linux
 > 
+> 
+> 
+> 
+> 
+> 
+
 
 -- 
 Siemens AG, Corporate Technology, CT RDA IOT SES-DE
