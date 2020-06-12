@@ -1,11 +1,14 @@
-From: Jouko Haapaluoma <jouko.haapaluoma@wapice.com>
-Subject: [PATCH 9/9] pinctrl-at91: Add ipipe pipeline support
-Date: Fri, 12 Jun 2020 11:55:53 +0000
-Message-ID: <HE1PR03MB3115C8AF10E5F49E163223B6E5810@HE1PR03MB3115.eurprd03.prod.outlook.com>
-Content-Language: en-US
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+Subject: Re: [consult]locking/spinlock/:why *nklock* used in many places?
+ hello,
+References: <20200610140245.38252-1-alex_luca@163.com>
+From: Jan Kiszka <jan.kiszka@siemens.com>
+Message-ID: <c5d7fd3b-9592-2f87-7f1c-910087a9639c@siemens.com>
+Date: Fri, 12 Jun 2020 17:06:43 +0200
 MIME-Version: 1.0
+In-Reply-To: <20200610140245.38252-1-alex_luca@163.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -14,42 +17,44 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: alex_luca@163.com, xenomai@xenomai.org
+Cc: jamienstar@163.com
 
-From: Jouko Haapaluoma <jouko.haapaluoma@wapice.com>
+On 10.06.20 16:02, alex_luca--- via Xenomai wrote:
+> From: Carver lio <carver@tom.com>
+> 
+> We have some doubts on xenomai master.
+> 
+> We use ipipe-core-4.19.82-cip14-x86_64 + xenomai-3.1 on my machine
+> with 16 processors; everything is fine until we run the *latency -t0*
+> testcase on cpu1-cpu15 for our schedule benchmark.
+> 
+> What we found that the results of the testcase became very poor,
+> worse than testing on one processor. Then we config *IPIPE_TRACE=y*
+> and *XENO_OPT_DEBUG_LOCKING=y*, and run the same testcases, we found
+> the delays of the testcase caused by the Global *nklock*.
+> 
+> We are wondering why the same lock *nklock* is used in many places
+> in the xenomai source code. Is this necessary? Or do you have
+> optimizations for this situation in the future?
 
-Make AT91 pinctrl driver compatible with ipipe
+Yes, this scalability limitation is well known and was primarily a
+trade-off between locking simplicity and the ability to run RT
+applications spread across a large number of cores.
 
-Signed-off-by: Jouko Haapaluoma <jouko.haapaluoma@wapice.com>
----
- drivers/pinctrl/pinctrl-at91.c | 5 +++--
- 1 file changed, 3 insertions(+), 2 deletions(-)
+Reasonable right now is 4, maybe 8 cores at most for RT usage. You can
+scale the whole system to much more, we are deploying 32 cores and had
+once a setup with almost 200 cores, but then only by restricting Xenomai
+(and consequently its RT threads) to a small subset.
 
-diff --git a/drivers/pinctrl/pinctrl-at91.c b/drivers/pinctrl/pinctrl-at91.=
-c
-index 50f0ec4..c4f60c7 100644
---- a/drivers/pinctrl/pinctrl-at91.c
-+++ b/drivers/pinctrl/pinctrl-at91.c
-@@ -1582,6 +1582,7 @@ static struct irq_chip gpio_irqchip =3D {
- 	.irq_unmask	=3D gpio_irq_unmask,
- 	/* .irq_set_type is set dynamically */
- 	.irq_set_wake	=3D gpio_irq_set_wake,
-+	.flags		=3D IRQCHIP_PIPELINE_SAFE,
- };
-=20
- static void gpio_irq_handler(struct irq_desc *desc)
-@@ -1610,8 +1611,8 @@ static void gpio_irq_handler(struct irq_desc *desc)
- 		}
-=20
- 		for_each_set_bit(n, &isr, BITS_PER_LONG) {
--			generic_handle_irq(irq_find_mapping(
--					   gpio_chip->irq.domain, n));
-+			ipipe_handle_demuxed_irq(irq_find_mapping(
-+					gpio_chip->irq.domain, n));
- 		}
- 	}
- 	chained_irq_exit(chip, desc);
---=20
-2.2.2
+It's on the long-term agenda to lift this limitation because it can bite
+you also earlier when you are hunting for microseconds between rather
+independent applications spread across cores, like in the scenario you
+created.
 
+Jan
+
+-- 
+Siemens AG, Corporate Technology, CT RDA IOT SES-DE
+Corporate Competence Center Embedded Linux
 
