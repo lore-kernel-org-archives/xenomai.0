@@ -1,15 +1,13 @@
-Subject: Re: Exception #14 in kernel space when using rttcp
-References: <1293572894.22066.1591975586278.JavaMail.zimbra@wolfram.com>
- <f545866d-efc1-e35e-5f69-6a40102a5cb0@siemens.com>
- <544072279.25640.1591976851898.JavaMail.zimbra@wolfram.com>
-From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <393bccc6-8d64-b382-dc54-14893cbd385c@siemens.com>
-Date: Fri, 12 Jun 2020 17:54:39 +0200
 MIME-Version: 1.0
-In-Reply-To: <544072279.25640.1591976851898.JavaMail.zimbra@wolfram.com>
-Content-Type: text/plain; charset="utf-8"
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+References: <HE1PR03MB31154FC1C35ABA6CC541A8C9E5810@HE1PR03MB3115.eurprd03.prod.outlook.com>
+ <702edf30-b134-ac8a-3e41-787a5428ac86@siemens.com>
+In-Reply-To: <702edf30-b134-ac8a-3e41-787a5428ac86@siemens.com>
+From: Greg Gallagher <greg@embeddedgreg.com>
+Date: Fri, 12 Jun 2020 11:57:36 -0400
+Message-ID: <CALLqZ8SVZn3=8OPVQzQ9_t--8eaE+CMU929VX2aBqVHd4Hfddg@mail.gmail.com>
+Subject: Re: [PATCH 0/9] arm: ipipe: Add basic I-pipe support for the SAMA5D3
+ SoC
+Content-Type: text/plain; charset="UTF-8"
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -18,57 +16,68 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Per Oberg <pero@wolfram.com>, xenomai <xenomai@xenomai.org>
+To: Jan Kiszka <jan.kiszka@siemens.com>
+Cc: Jouko Haapaluoma <jouko.haapaluoma@wapice.com>, "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On 12.06.20 17:47, Per Oberg via Xenomai wrote:
-> ----- Den 12 jun 2020, på kl 17:33, Jan Kiszka jan.kiszka@siemens.com skrev:
-> 
->> On 12.06.20 17:26, Per Oberg via Xenomai wrote:
->>> Hi list
-> 
->>> I get a massive amount of "swithching ... to secondary mode after exception #14
->>> in kernel-space ..." followed by a WARNING as shown below.
-> 
->>> Can someone enlighten me regarding the meaning of exception #14 ?
-> 
->>> Is the "WARNING: CPU: 0 ..." the cause or the symptom ? It has a macro at fd.c
->>> calling "XENO_WARN_ON(COBALT, fd->refs <= 0);
-> 
-> 
->> Likely related: The WARN_ON triggers a stack dump and that may trigger
->> fixable or ignorable faults. We may consider converting that
->> XENO_WARN_ON into XENO_WARN_ON_ONCE.
-> 
->> What is actually interesting is the warning itself. Reference counting
->> became imbalanced. How do you trigger that?
-> 
-> Where do you see that? I can't figure out anything about what is going on from that warning...
-> 
+On Fri, Jun 12, 2020 at 11:22 AM Jan Kiszka <jan.kiszka@siemens.com> wrote:
+>
+> On 12.06.20 13:41, Jouko Haapaluoma via Xenomai wrote:
+> > This patch set adds basic I-pipe support for the SAMA5D3 SoC
+> >
+> > A few mainline patches need to be applied to the tcb_clksrc driver so
+> > that it can be used as the only clocksource. A patch from RT_PREEMPT
+> > was also merged to support higher than 32k clkevent frequency.
+> >
+> > Additional patch was created to increase the clkevent max_delta to 32-bit
+> > when TCB has 32-bit channels. This makes it possible to always use high
+> > resolution clkevent when 32-bit channels are available.
+> >
+> > After that the ipipe_timer and clksrc support can be added into tcb_clksrc.
+> >
+> > Pinctrl-at91 also requires usage of the ipipe_handle_demuxed_irq()
+> >
+> > Tested with latest ipipe-arm branch ipipe/master (Linux 4.19.82)
+> >
+> > Alexandre Belloni (4):
+> >   ARM: at91: move SoC specific definitions to SoC folder
+> >   clocksource/drivers/tcb_clksrc: Stop depending on atmel_tclib
+> >   clocksource/drivers/tcb_clksrc: Use tcb as sched_clock
+> >   clocksource/drivers/timer-atmel-pit: Rework Kconfig option
+> >
+> > Benedikt Spranger (1):
+> >   clocksource: TCLIB: Allow higher clock rates for clock events
+> >
+> > Jouko Haapaluoma (3):
+> >   tcb_clksrc: Always use high resolution with 32-bit channels
+> >   tcb_clksrc: Add ipipe_timer and ipipe_tsc support
+> >   pinctrl-at91: Add ipipe pipeline support
+> >
+> > Tuomo Jauhiainen (1):
+> >   mach-at91: Add IPIPE_ARM_KUSER_TSC for SAMA5D3
+> >
+> >  arch/arm/mach-at91/Kconfig                         |   1 +
+> >  drivers/clocksource/Kconfig                        |   5 +-
+> >  drivers/clocksource/tcb_clksrc.c                   | 237 +++++++++++++++------
+> >  drivers/misc/Kconfig                               |  20 +-
+> >  drivers/misc/atmel_tclib.c                         |   2 +-
+> >  drivers/pinctrl/pinctrl-at91.c                     |   5 +-
+> >  drivers/pwm/pwm-atmel-tcb.c                        |   2 +-
+> >  include/{linux/atmel_tc.h => soc/at91/atmel_tcb.h} |   4 +-
+> >  8 files changed, 189 insertions(+), 87 deletions(-)
+> >  rename include/{linux/atmel_tc.h => soc/at91/atmel_tcb.h} (99%)
+> >
+>
+> Great, thanks for the patches! I assume Greg will look into them in details.
+>
+> Regarding the mainline patches: Are they simply missing in 4.19 because
+> they were not backported as fixes (feature patches)? Are they safe to be
+> applied on a stable branch, i.e. side-effect free for other targets?
+>
+> Jan
+>
+> --
+> Siemens AG, Corporate Technology, CT RDA IOT SES-DE
+> Corporate Competence Center Embedded Linux
 
-Warning at .../rtdm/fd.c:299:
-
-static void __put_fd(struct rtdm_fd *fd, spl_t s)
-{
-	...
-	XENO_WARN_ON(COBALT, fd->refs <= 0);
-
-So, the file descriptor is released although its internal reference
-counter says it's not held. That is a bug in the kernel, likely leading
-to use-after-release issues.
-
-> Not sure what I am actually doing, but I'd be glad to debug it if I knew where to start. 
-> 
-> I'm working on compiling a network library for use in Xenomai. It uses a lot of extra stuff to get everything up and running,but in the end it will use UDP for the data exchange. So switching to secondary mode may be ok during the startup. 
-> 
-
-I suppose you are writing a userspace application that uses RT-TCP here.
-That usage pattern up to the point you see the first warning would be
-interesting, ideally as minimal testcase. Also the configuration of the
-RTnet stack (compile-time and runtime).
-
-Jan
-
--- 
-Siemens AG, Corporate Technology, CT RDA IOT SES-DE
-Corporate Competence Center Embedded Linux
+Found them, I'll apply them and run a few tests.
 
