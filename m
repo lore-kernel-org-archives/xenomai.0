@@ -1,15 +1,13 @@
-From: Josh Karch <jkarch@FirstMode.com>
-Subject: Re: Xenomai.org certificate expired
-Date: Thu, 4 Jun 2020 17:08:32 +0000
-Message-ID: <MN2PR19MB39674CDFC76BB31BF3CC1F06D5890@MN2PR19MB3967.namprd19.prod.outlook.com>
-References: <MN2PR19MB3967B89DB2DD0090FD0E7237D5890@MN2PR19MB3967.namprd19.prod.outlook.com>
- <4cb3d2bb-f345-0019-51ab-74a9c5c7b1f6@xenomai.org>,
- <e3918bc2-469e-0d51-1112-6b2e171acec1@xenomai.org>
-In-Reply-To: <e3918bc2-469e-0d51-1112-6b2e171acec1@xenomai.org>
-Content-Language: en-US
 MIME-Version: 1.0
-Content-Type: text/plain; charset="Windows-1252"
-Content-Transfer-Encoding: quoted-printable
+References: <HE1PR03MB31154FC1C35ABA6CC541A8C9E5810@HE1PR03MB3115.eurprd03.prod.outlook.com>
+ <702edf30-b134-ac8a-3e41-787a5428ac86@siemens.com>
+In-Reply-To: <702edf30-b134-ac8a-3e41-787a5428ac86@siemens.com>
+From: Greg Gallagher <greg@embeddedgreg.com>
+Date: Fri, 12 Jun 2020 11:36:19 -0400
+Message-ID: <CALLqZ8RhxCkRCbSkiWcFAtYp8VkwMCFG57LVz-uewgYmpy-1PA@mail.gmail.com>
+Subject: Re: [PATCH 0/9] arm: ipipe: Add basic I-pipe support for the SAMA5D3
+ SoC
+Content-Type: text/plain; charset="UTF-8"
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -18,42 +16,78 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Philippe Gerum <rpm@xenomai.org>, "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Jan Kiszka <jan.kiszka@siemens.com>
+Cc: Jouko Haapaluoma <jouko.haapaluoma@wapice.com>, "xenomai@xenomai.org" <xenomai@xenomai.org>
 
+Hi,
 
-
-________________________________
-From: Philippe Gerum <rpm@xenomai.org>
-Sent: Thursday, June 4, 2020 9:46 AM
-To: Josh Karch <jkarch@FirstMode.com>; xenomai@xenomai.org <xenomai@xenomai=
-.org>
-Subject: Re: Xenomai.org certificate expired
-
-On 6/4/20 6:18 PM, Philippe Gerum via Xenomai wrote:
-> On 6/4/20 5:55 PM, Josh Karch via Xenomai wrote:
->> Hi All,
->>
->> While using Buildroot to download Xeno 3.1 I found that the certificate =
-had expired, which killed the build:
->> I got the following message
->> "ERROR: The certificate of =91xenomai.org=92 is not trusted." followed b=
-y a failed build.  Is this a recent expiration?
->>
+On Fri, Jun 12, 2020 at 11:22 AM Jan Kiszka <jan.kiszka@siemens.com> wrote:
 >
-> I renewed it last year. This expiration happened in the wake of the Secti=
-go
-> mess on May 30. I'll fix this.
+> On 12.06.20 13:41, Jouko Haapaluoma via Xenomai wrote:
+> > This patch set adds basic I-pipe support for the SAMA5D3 SoC
+> >
+> > A few mainline patches need to be applied to the tcb_clksrc driver so
+> > that it can be used as the only clocksource. A patch from RT_PREEMPT
+> > was also merged to support higher than 32k clkevent frequency.
+> >
+> > Additional patch was created to increase the clkevent max_delta to 32-bit
+> > when TCB has 32-bit channels. This makes it possible to always use high
+> > resolution clkevent when 32-bit channels are available.
+> >
+> > After that the ipipe_timer and clksrc support can be added into tcb_clksrc.
+> >
+> > Pinctrl-at91 also requires usage of the ipipe_handle_demuxed_irq()
+> >
+> > Tested with latest ipipe-arm branch ipipe/master (Linux 4.19.82)
+> >
+> > Alexandre Belloni (4):
+> >   ARM: at91: move SoC specific definitions to SoC folder
+> >   clocksource/drivers/tcb_clksrc: Stop depending on atmel_tclib
+> >   clocksource/drivers/tcb_clksrc: Use tcb as sched_clock
+> >   clocksource/drivers/timer-atmel-pit: Rework Kconfig option
+> >
+> > Benedikt Spranger (1):
+> >   clocksource: TCLIB: Allow higher clock rates for clock events
+> >
+> > Jouko Haapaluoma (3):
+> >   tcb_clksrc: Always use high resolution with 32-bit channels
+> >   tcb_clksrc: Add ipipe_timer and ipipe_tsc support
+> >   pinctrl-at91: Add ipipe pipeline support
+> >
+> > Tuomo Jauhiainen (1):
+> >   mach-at91: Add IPIPE_ARM_KUSER_TSC for SAMA5D3
+> >
+> >  arch/arm/mach-at91/Kconfig                         |   1 +
+> >  drivers/clocksource/Kconfig                        |   5 +-
+> >  drivers/clocksource/tcb_clksrc.c                   | 237 +++++++++++++++------
+> >  drivers/misc/Kconfig                               |  20 +-
+> >  drivers/misc/atmel_tclib.c                         |   2 +-
+> >  drivers/pinctrl/pinctrl-at91.c                     |   5 +-
+> >  drivers/pwm/pwm-atmel-tcb.c                        |   2 +-
+> >  include/{linux/atmel_tc.h => soc/at91/atmel_tcb.h} |   4 +-
+> >  8 files changed, 189 insertions(+), 87 deletions(-)
+> >  rename include/{linux/atmel_tc.h => soc/at91/atmel_tcb.h} (99%)
+> >
 >
+> Great, thanks for the patches! I assume Greg will look into them in details.
+> Regarding the mainline patches: Are they simply missing in 4.19 because
+> they were not backported as fixes (feature patches)? Are they safe to be
+> applied on a stable branch, i.e. side-effect free for other targets?
+>
+> Jan
+>
+> --
+> Siemens AG, Corporate Technology, CT RDA IOT SES-DE
+> Corporate Competence Center Embedded Linux
 
-Fixed.
+I'll look into the details this weekend.  I didn't get the original
+patch series, maybe one of my filters caught it and filtered it out.
+If I can't find them I'll ping you off the list to get the patch.
 
-PS: Not required to access xenomai.org anymore, but you may want to upgrade
-your tls client side at some point though.
+Are the mainline and PREEMTP_RT patches included in the patch series?
+The latest ipipe kernel is 4.19.127 for cip and 4.19.114 (soon to be
+128).  These are in the ipipe/4.19.y branch and the pipe/4.19.y-cip
+branch.  I'll apply the patches to all the necessary branches.
 
---
-Philippe.
+-Greg
 
-Thanks Philippe! That fixes it!
-
-Best,
-Josh
