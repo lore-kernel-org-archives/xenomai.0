@@ -1,7 +1,7 @@
 From: Jouko Haapaluoma <jouko.haapaluoma@wapice.com>
-Subject: [PATCH 0/9] arm: ipipe: Add basic I-pipe support for the SAMA5D3 SoC
-Date: Fri, 12 Jun 2020 11:41:22 +0000
-Message-ID: <HE1PR03MB31154FC1C35ABA6CC541A8C9E5810@HE1PR03MB3115.eurprd03.prod.outlook.com>
+Subject: [PATCH 1/9] mach-at91: Add IPIPE_ARM_KUSER_TSC for SAMA5D3
+Date: Fri, 12 Jun 2020 11:44:32 +0000
+Message-ID: <HE1PR03MB31157E597F87E7B88756C79FE5810@HE1PR03MB3115.eurprd03.prod.outlook.com>
 Content-Language: en-US
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
@@ -16,52 +16,27 @@ List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-This patch set adds basic I-pipe support for the SAMA5D3 SoC
+From: Tuomo Jauhiainen <tuomo.jauhiainen@wapice.com>
 
-A few mainline patches need to be applied to the tcb_clksrc driver so
-that it can be used as the only clocksource. A patch from RT_PREEMPT
-was also merged to support higher than 32k clkevent frequency.
+Add ipipe build support for SAMA5D3 SoC
 
-Additional patch was created to increase the clkevent max_delta to 32-bit
-when TCB has 32-bit channels. This makes it possible to always use high
-resolution clkevent when 32-bit channels are available.
+Signed-off-by: Jouko Haapaluoma <jouko.haapaluoma@wapice.com>
+---
+ arch/arm/mach-at91/Kconfig | 1 +
+ 1 file changed, 1 insertion(+)
 
-After that the ipipe_timer and clksrc support can be added into tcb_clksrc.
-
-Pinctrl-at91 also requires usage of the ipipe_handle_demuxed_irq()
-
-Tested with latest ipipe-arm branch ipipe/master (Linux 4.19.82)
-
-Alexandre Belloni (4):
-  ARM: at91: move SoC specific definitions to SoC folder
-  clocksource/drivers/tcb_clksrc: Stop depending on atmel_tclib
-  clocksource/drivers/tcb_clksrc: Use tcb as sched_clock
-  clocksource/drivers/timer-atmel-pit: Rework Kconfig option
-
-Benedikt Spranger (1):
-  clocksource: TCLIB: Allow higher clock rates for clock events
-
-Jouko Haapaluoma (3):
-  tcb_clksrc: Always use high resolution with 32-bit channels
-  tcb_clksrc: Add ipipe_timer and ipipe_tsc support
-  pinctrl-at91: Add ipipe pipeline support
-
-Tuomo Jauhiainen (1):
-  mach-at91: Add IPIPE_ARM_KUSER_TSC for SAMA5D3
-
- arch/arm/mach-at91/Kconfig                         |   1 +
- drivers/clocksource/Kconfig                        |   5 +-
- drivers/clocksource/tcb_clksrc.c                   | 237 +++++++++++++++--=
-----
- drivers/misc/Kconfig                               |  20 +-
- drivers/misc/atmel_tclib.c                         |   2 +-
- drivers/pinctrl/pinctrl-at91.c                     |   5 +-
- drivers/pwm/pwm-atmel-tcb.c                        |   2 +-
- include/{linux/atmel_tc.h =3D> soc/at91/atmel_tcb.h} |   4 +-
- 8 files changed, 189 insertions(+), 87 deletions(-)
- rename include/{linux/atmel_tc.h =3D> soc/at91/atmel_tcb.h} (99%)
-
+diff --git a/arch/arm/mach-at91/Kconfig b/arch/arm/mach-at91/Kconfig
+index 903f23c..bd11a69 100644
+--- a/arch/arm/mach-at91/Kconfig
++++ b/arch/arm/mach-at91/Kconfig
+@@ -41,6 +41,7 @@ config SOC_SAMA5D3
+ 	select HAVE_AT91_SMD
+ 	select HAVE_AT91_USB_CLK
+ 	select PINCTRL_AT91
++	select IPIPE_ARM_KUSER_TSC if IPIPE
+ 	help
+ 	  Select this if you are using one of Microchip's SAMA5D3 family SoC.
+ 	  This support covers SAMA5D31, SAMA5D33, SAMA5D34, SAMA5D35, SAMA5D36.
 --=20
 2.2.2
-
 
