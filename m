@@ -1,13 +1,11 @@
-Subject: Re: Usage of xenomai-images
-References: <268263506.398534.1592235266643.JavaMail.zimbra@wolfram.com>
-From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <87c60740-7bc5-4790-ff6d-424a325fa871@siemens.com>
-Date: Mon, 15 Jun 2020 17:57:50 +0200
 MIME-Version: 1.0
-In-Reply-To: <268263506.398534.1592235266643.JavaMail.zimbra@wolfram.com>
-Content-Type: text/plain; charset="utf-8"
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+References: <HE1PR03MB3115C8AF10E5F49E163223B6E5810@HE1PR03MB3115.eurprd03.prod.outlook.com>
+In-Reply-To: <HE1PR03MB3115C8AF10E5F49E163223B6E5810@HE1PR03MB3115.eurprd03.prod.outlook.com>
+From: Greg Gallagher <greg@embeddedgreg.com>
+Date: Mon, 15 Jun 2020 17:14:33 -0400
+Message-ID: <CALLqZ8R+j4uxD-q5=UtfMe2m-W0CCA=M8uOc0=UM2zdLn_n9Vw@mail.gmail.com>
+Subject: Re: [PATCH 9/9] pinctrl-at91: Add ipipe pipeline support
+Content-Type: text/plain; charset="UTF-8"
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,50 +14,49 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Per Oberg <pero@wolfram.com>, xenomai <xenomai@xenomai.org>
+To: Jouko Haapaluoma <jouko.haapaluoma@wapice.com>
+Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>, "rpm@xenomai.org" <rpm@xenomai.org>
 
-On 15.06.20 17:34, Per Oberg via Xenomai wrote:
-> Hi list 
-> 
-> I thought I'd take the xenomai-images from [1] out for a spin and I think I got it working. However, A few pointers about what is what would have been helpful. 
-> 
-> E.g. 
-> 
-> Under "Building Target Images" there could have been a note saying that you need the kas.yml files and board-qemu-amd64.yml available. I feel those instructions are a bit incomplete. 
+On Fri, Jun 12, 2020 at 7:55 AM Jouko Haapaluoma
+<jouko.haapaluoma@wapice.com> wrote:
+>
+> From: Jouko Haapaluoma <jouko.haapaluoma@wapice.com>
+>
+> Make AT91 pinctrl driver compatible with ipipe
+>
+> Signed-off-by: Jouko Haapaluoma <jouko.haapaluoma@wapice.com>
+> ---
+>  drivers/pinctrl/pinctrl-at91.c | 5 +++--
+>  1 file changed, 3 insertions(+), 2 deletions(-)
+>
+> diff --git a/drivers/pinctrl/pinctrl-at91.c b/drivers/pinctrl/pinctrl-at91.c
+> index 50f0ec4..c4f60c7 100644
+> --- a/drivers/pinctrl/pinctrl-at91.c
+> +++ b/drivers/pinctrl/pinctrl-at91.c
+> @@ -1582,6 +1582,7 @@ static struct irq_chip gpio_irqchip = {
+>         .irq_unmask     = gpio_irq_unmask,
+>         /* .irq_set_type is set dynamically */
+>         .irq_set_wake   = gpio_irq_set_wake,
+> +       .flags          = IRQCHIP_PIPELINE_SAFE,
+>  };
+>
+>  static void gpio_irq_handler(struct irq_desc *desc)
+> @@ -1610,8 +1611,8 @@ static void gpio_irq_handler(struct irq_desc *desc)
+>                 }
+>
+>                 for_each_set_bit(n, &isr, BITS_PER_LONG) {
+> -                       generic_handle_irq(irq_find_mapping(
+> -                                          gpio_chip->irq.domain, n));
+> +                       ipipe_handle_demuxed_irq(irq_find_mapping(
+> +                                       gpio_chip->irq.domain, n));
+>                 }
+>         }
+>         chained_irq_exit(chip, desc);
+> --
+> 2.2.2
+>
+Everything looks good, did your testing include triggering any GPIO
+interrupts?  I don't see any specific problems, just curious.
 
-We are happy to take patches! It's always a bit tricky for the those
-using the tool every day in various projects to document the
-(non-)obvious parts for first-time users.
-
-> At docker-hub there are no comments/descriptions for the kas-isar and kas images so it's a bit difficult to know what to use. 
-> 
-> Now it seems to be working when using the provided "kas-docker" script, but then I tried using a bind-mount and bash to get inside the docker and run it from there. 'docker run -it --mount type=bind,source="$HOME"/kas-builder,target=/builder kasproject/kas bash'. 
-
-Such "simple" docker calls are where kas-docker evolved from. If you
-look at the latest version, it can do way more. It's goal is to provide
-the same frontend as kas natively.
-
-> 
-> For the "kas" docker image I get errors related to missing isar, and for the kas-isar docker image i get "mount: /proc/sys/fs/binfmt_misc: permission denied." so i tried adding the --privileged flag which seems to be working. Perhaps there could be a better "Start Here" guide giving some hints about this. 
-> 
-
-"kas-docker --isar build ..." is doing that for you. "docker/podman run"
-is for the experts. That's why we documented the former.
-
-> Also, are there any binary links to -wic files that I can download and run using my own qemu so that I don't have to build them myself?
-
-So far, there is no public build and, thus, artifacts. We will probably
-have them as catch-by of using xenomai-image for regular testing "soon".
-
-Jan
-
-> 
-> [1] https://gitlab.denx.de/Xenomai/xenomai-images
-> 
-> Per Öberg 
-> 
-
--- 
-Siemens AG, Corporate Technology, CT RDA IOT SES-DE
-Corporate Competence Center Embedded Linux
+-Greg
 
