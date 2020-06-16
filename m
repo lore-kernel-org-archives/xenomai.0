@@ -1,15 +1,16 @@
-From: Lange Norbert <norbert.lange@andritz.com>
-Subject: RE: TSN support on xenomai
-Date: Tue, 16 Jun 2020 09:41:37 +0000
-Message-ID: <VI1PR05MB59171660A06A205C47F6DF3AF69D0@VI1PR05MB5917.eurprd05.prod.outlook.com>
+Subject: Re: TSN support on xenomai
 References: <SG2PR04MB325361212B0F13BA9DE98BC0A49D0@SG2PR04MB3253.apcprd04.prod.outlook.com>
  <263bfd52-638e-1205-dc57-c0fb773b0acf@numalliance.com>
  <dee89c0f-c026-33c2-da13-42d090f58d6c@siemens.com>
-In-Reply-To: <dee89c0f-c026-33c2-da13-42d090f58d6c@siemens.com>
-Content-Language: en-US
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+ <VI1PR05MB59171660A06A205C47F6DF3AF69D0@VI1PR05MB5917.eurprd05.prod.outlook.com>
+From: Jan Kiszka <jan.kiszka@siemens.com>
+Message-ID: <c244091f-127a-e3ac-8116-b3624907f17a@siemens.com>
+Date: Tue, 16 Jun 2020 11:44:35 +0200
 MIME-Version: 1.0
+In-Reply-To: <VI1PR05MB59171660A06A205C47F6DF3AF69D0@VI1PR05MB5917.eurprd05.prod.outlook.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -18,45 +19,54 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jan Kiszka <jan.kiszka@siemens.com>, =?utf-8?B?U3TDqXBoYW5lIEFuY2Vsb3Q=?= <sancelot@numalliance.com>, "Xenomai (xenomai@xenomai.org)" <xenomai@xenomai.org>
+To: Lange Norbert <norbert.lange@andritz.com>, =?UTF-8?Q?St=c3=a9phane_Ancelot?= <sancelot@numalliance.com>, "Xenomai (xenomai@xenomai.org)" <xenomai@xenomai.org>
 
-DQoNCj4gLS0tLS1PcmlnaW5hbCBNZXNzYWdlLS0tLS0NCj4gRnJvbTogWGVub21haSA8eGVub21h
-aS1ib3VuY2VzQHhlbm9tYWkub3JnPiBPbiBCZWhhbGYgT2YgSmFuIEtpc3prYQ0KPiB2aWEgWGVu
-b21haQ0KPiBTZW50OiBEaWVuc3RhZywgMTYuIEp1bmkgMjAyMCAxMDo1OA0KPiBUbzogU3TDqXBo
-YW5lIEFuY2Vsb3QgPHNhbmNlbG90QG51bWFsbGlhbmNlLmNvbT47IHhlbm9tYWlAeGVub21haS5v
-cmcNCj4gU3ViamVjdDogUmU6IFRTTiBzdXBwb3J0IG9uIHhlbm9tYWkNCj4NCj4gTk9OLUFORFJJ
-VFogU09VUkNFOiBCRSBDQVVUSU9VUyBXSVRIIENPTlRFTlQsIExJTktTIE9SDQo+IEFUVEFDSE1F
-TlRTLg0KPg0KPg0KPiBPbiAxNi4wNi4yMCAxMDo1NSwgU3TDqXBoYW5lIEFuY2Vsb3QgdmlhIFhl
-bm9tYWkgd3JvdGU6DQo+ID4gSGksDQo+ID4NCj4gPiBUaGlzIGlzIG5hdGl2ZWx5IHN1cHBvcnRl
-ZCBpbiBzdGFuZGFyZCBsaW51eCBrZXJuZWwNCj4gPg0KPg0KPiBSaWdodC4gV2hhdCBpcyBtaXNz
-aW5nIGl0IGxpbmtpbmcgdGhlIFhlbm9tYWkgdGltZWJhc2Ugd2l0aCB0aGF0IG9mIHRoZSBrZXJu
-ZWwNCj4gc28gdGhhdCB3ZSB3b3VsZCBiZW5lZml0IGZyb20gTGludXggZG9pbmcgdGhlIHN5bmMg
-Zm9yIHVzIGFscmVhZHkuDQoNCkJ1dCB0aGF0IG1lYW5zIHlvdSBjYW4ndCB1c2UgdGhlIHN5bmNo
-cm9uaXppbmcgTklDIHdpdGggUlROZXQgLyBSZWFsdGltZSB0cmFmZmljLg0KDQpSZWdhcmRpbmcg
-bGlua2luZyB0aW1lYmFzZXMsIGl0IHdvdWxkIGhlbHAgKGZvciB2YXJpb3VzIHRoaW5ncykNCklm
-IHlvdSBjb3VsZCBlYXNpbHkgcmVhZCB0aG9zZSB2YXJpb3VzIHRpbWViYXNlcyBmcm9tIHRoZSBr
-ZXJuZWwuIFRoZSByZXN0IGNhbiBoYXBwZW4gaW4NCnVzZXJzcGFjZS4NCg0KSSBhY3R1YWxseSBo
-YXZlIDM6IExpbnV4IE1vbm90b25pYywgWGVub21haSBNb25vdG9uaWMsIGFuZCBhIFBQUyBzeW5j
-aHJvbml6ZWQgSUVFRTE1ODggY2xvY2ssDQpDYW50IGZvbGQgdGhlbSBpbnRvIG9uZSBidXQgc29t
-ZXRpbWVzIG5lZWQgdG8gbWFwIGJldHdlZW4gdGhlc2UuDQpTb2x2ZWQgdGhpcyBieSBsZXR0aW5n
-IHRoZSBOSUMgcmVhZCBvdXQgYWxsIDMgYW5kIHByb3ZpZGluZyB0aGVtIHRvIChYZW5vbWFpKSB1
-c2Vyc3BhY2UuDQoNCkJldHRlciB3b3VsZCBiZSBhIHNoYXJlZCBtbWFwICh3aXRoIDIgb3IgbW9y
-ZSBidWZmZXJzKSwgc28gdGhhdCBMaW51eCB0YXNrcyBjYW4gYXN5bmNocm9ub3VzbHkgZ2V0IHRo
-YXQgaW5mbyB0b28uDQoNCk5vcmJlcnQNCg0KX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
-X18NCg0KVGhpcyBtZXNzYWdlIGFuZCBhbnkgYXR0YWNobWVudHMgYXJlIHNvbGVseSBmb3IgdGhl
-IHVzZSBvZiB0aGUgaW50ZW5kZWQgcmVjaXBpZW50cy4gVGhleSBtYXkgY29udGFpbiBwcml2aWxl
-Z2VkIGFuZC9vciBjb25maWRlbnRpYWwgaW5mb3JtYXRpb24gb3Igb3RoZXIgaW5mb3JtYXRpb24g
-cHJvdGVjdGVkIGZyb20gZGlzY2xvc3VyZS4gSWYgeW91IGFyZSBub3QgYW4gaW50ZW5kZWQgcmVj
-aXBpZW50LCB5b3UgYXJlIGhlcmVieSBub3RpZmllZCB0aGF0IHlvdSByZWNlaXZlZCB0aGlzIGVt
-YWlsIGluIGVycm9yIGFuZCB0aGF0IGFueSByZXZpZXcsIGRpc3NlbWluYXRpb24sIGRpc3RyaWJ1
-dGlvbiBvciBjb3B5aW5nIG9mIHRoaXMgZW1haWwgYW5kIGFueSBhdHRhY2htZW50IGlzIHN0cmlj
-dGx5IHByb2hpYml0ZWQuIElmIHlvdSBoYXZlIHJlY2VpdmVkIHRoaXMgZW1haWwgaW4gZXJyb3Is
-IHBsZWFzZSBjb250YWN0IHRoZSBzZW5kZXIgYW5kIGRlbGV0ZSB0aGUgbWVzc2FnZSBhbmQgYW55
-IGF0dGFjaG1lbnQgZnJvbSB5b3VyIHN5c3RlbS4NCg0KQU5EUklUWiBIWURSTyBHbWJIDQoNCg0K
-UmVjaHRzZm9ybS8gTGVnYWwgZm9ybTogR2VzZWxsc2NoYWZ0IG1pdCBiZXNjaHLDpG5rdGVyIEhh
-ZnR1bmcgLyBDb3Jwb3JhdGlvbg0KDQpGaXJtZW5zaXR6LyBSZWdpc3RlcmVkIHNlYXQ6IFdpZW4N
-Cg0KRmlybWVuYnVjaGdlcmljaHQvIENvdXJ0IG9mIHJlZ2lzdHJ5OiBIYW5kZWxzZ2VyaWNodCBX
-aWVuDQoNCkZpcm1lbmJ1Y2hudW1tZXIvIENvbXBhbnkgcmVnaXN0cmF0aW9uOiBGTiA2MTgzMyBn
-DQoNCkRWUjogMDYwNTA3Nw0KDQpVSUQtTnIuOiBBVFUxNDc1NjgwNg0KDQoNClRoYW5rIFlvdQ0K
-X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX18NCg==
+On 16.06.20 11:41, Lange Norbert wrote:
+> 
+> 
+>> -----Original Message-----
+>> From: Xenomai <xenomai-bounces@xenomai.org> On Behalf Of Jan Kiszka
+>> via Xenomai
+>> Sent: Dienstag, 16. Juni 2020 10:58
+>> To: Stéphane Ancelot <sancelot@numalliance.com>; xenomai@xenomai.org
+>> Subject: Re: TSN support on xenomai
+>>
+>> NON-ANDRITZ SOURCE: BE CAUTIOUS WITH CONTENT, LINKS OR
+>> ATTACHMENTS.
+>>
+>>
+>> On 16.06.20 10:55, Stéphane Ancelot via Xenomai wrote:
+>>> Hi,
+>>>
+>>> This is natively supported in standard linux kernel
+>>>
+>>
+>> Right. What is missing it linking the Xenomai timebase with that of the kernel
+>> so that we would benefit from Linux doing the sync for us already.
+> 
+> But that means you can't use the synchronizing NIC with RTNet / Realtime traffic.
+> 
+> Regarding linking timebases, it would help (for various things)
+> If you could easily read those various timebases from the kernel. The rest can happen in
+> userspace.
+> 
+> I actually have 3: Linux Monotonic, Xenomai Monotonic, and a PPS synchronized IEEE1588 clock,
+> Cant fold them into one but sometimes need to map between these.
+> Solved this by letting the NIC read out all 3 and providing them to (Xenomai) userspace.
+> 
+> Better would be a shared mmap (with 2 or more buffers), so that Linux tasks can asynchronously get that info too.
+> 
+
+Latest Intel hardware supports mapping for the PTP time to the system
+time (tsc) natively. You only need to read out the conversion factors in
+the end. That's what we want to have as well.
+
+If using that will create a conflict with using the NIC for RT traffic?
+Likely. But that needs to be sorted out in the future, not only on Intel hw.
+
+Jan
+
+-- 
+Siemens AG, Corporate Technology, CT RDA IOT SES-DE
+Corporate Competence Center Embedded Linux
 
