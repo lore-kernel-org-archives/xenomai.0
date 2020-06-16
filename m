@@ -1,15 +1,17 @@
-Subject: Re: rtdm_munmap() kernel panic on 4.9.x
-References: <CAAjAsizNnLcRo4iuosFNerdzb0jiWHHV9ZMrumgQq-Femr92LQ@mail.gmail.com>
- <405eb559-282b-795e-85e7-bf81992d1412@xenomai.org>
- <CAAjAsiw5kov2XD0yndwzQmBVWofNyPm8f6M90SbZHMWz1cmtig@mail.gmail.com>
-From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <a43c788c-b8bb-3f31-52d6-2a30eadc2b22@siemens.com>
-Date: Tue, 16 Jun 2020 12:52:00 +0200
-MIME-Version: 1.0
-In-Reply-To: <CAAjAsiw5kov2XD0yndwzQmBVWofNyPm8f6M90SbZHMWz1cmtig@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8
+From: Peter Wong <tsnuser@outlook.com>
+Subject: Re: TSN support on xenomai
+Date: Tue, 16 Jun 2020 14:00:29 +0000
+Message-ID: <SG2PR04MB3253BF73D742CF3A816C1B61A49D0@SG2PR04MB3253.apcprd04.prod.outlook.com>
+References: <SG2PR04MB325361212B0F13BA9DE98BC0A49D0@SG2PR04MB3253.apcprd04.prod.outlook.com>
+ <263bfd52-638e-1205-dc57-c0fb773b0acf@numalliance.com>
+ <dee89c0f-c026-33c2-da13-42d090f58d6c@siemens.com>
+ <VI1PR05MB59171660A06A205C47F6DF3AF69D0@VI1PR05MB5917.eurprd05.prod.outlook.com>,
+ <c244091f-127a-e3ac-8116-b3624907f17a@siemens.com>
+In-Reply-To: <c244091f-127a-e3ac-8116-b3624907f17a@siemens.com>
 Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+MIME-Version: 1.0
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -18,109 +20,73 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Matteo Facchinetti <matteo.facchinetti@sirius-es.it>, Philippe Gerum <rpm@xenomai.org>
-Cc: xenomai@xenomai.org
+To: Lange Norbert <norbert.lange@andritz.com>, =?iso-8859-1?Q?St=E9phane_Ancelot?= <sancelot@numalliance.com>, "Xenomai
+ (xenomai@xenomai.org)" <xenomai@xenomai.org>, Jan Kiszka <jan.kiszka@siemens.com>
 
-On 16.06.20 11:59, Matteo Facchinetti via Xenomai wrote:
-> Il giorno ven 12 giu 2020 alle ore 21:55 Philippe Gerum <rpm@xenomai.org>
-> ha scritto:
-> 
->> On 6/12/20 11:52 AM, Matteo Facchinetti via Xenomai wrote:
+Can we compile linuxptp (cobalt POSIX wrap) to run on RTnet  + Xenomai I210=
+ driver so that we only need one NIC to run TSN on RTnet?
+
+________________________________
+From: Xenomai <xenomai-bounces@xenomai.org> on behalf of Jan Kiszka via Xen=
+omai <xenomai@xenomai.org>
+Sent: Tuesday, June 16, 2020 5:44 PM
+To: Lange Norbert <norbert.lange@andritz.com>; St=E9phane Ancelot <sancelot=
+@numalliance.com>; Xenomai (xenomai@xenomai.org) <xenomai@xenomai.org>
+Subject: Re: TSN support on xenomai
+
+On 16.06.20 11:41, Lange Norbert wrote:
+>
+>
+>> -----Original Message-----
+>> From: Xenomai <xenomai-bounces@xenomai.org> On Behalf Of Jan Kiszka
+>> via Xenomai
+>> Sent: Dienstag, 16. Juni 2020 10:58
+>> To: St=E9phane Ancelot <sancelot@numalliance.com>; xenomai@xenomai.org
+>> Subject: Re: TSN support on xenomai
+>>
+>> NON-ANDRITZ SOURCE: BE CAUTIOUS WITH CONTENT, LINKS OR
+>> ATTACHMENTS.
+>>
+>>
+>> On 16.06.20 10:55, St=E9phane Ancelot via Xenomai wrote:
 >>> Hi,
 >>>
->>> I have a problem on a kernel module that provide a remapped memory to a
->>> userspace process.
->>> In detail I'm using a kernel 4.9 with ipipe-core-4.9.51-arm-4.patch on a
->>> beaglebone like board and problem occurs when I close the program that
->> use
->>> this module.
->>> In the module close() I call the rtdm_munmap() to free remapped memory
->> but
->>> a kernel panic occurs when program is killed or exited.
+>>> This is natively supported in standard linux kernel
 >>>
->>> [<c0933b0c>] (down_write_killable) from [<c0264000>]
->> (vm_munmap+0x3c/0x6c)
->>> [<c0264000>] (vm_munmap) from [<c020eb58>] (rtdm_munmap+0x18/0x1c)
->>> [<c020eb58>] (rtdm_munmap) from [<bf067728>]
->> (canopen_sync_close+0x60/0xdc
->>> [canopen_sync])
->>> [<bf067728>] (canopen_sync_close [canopen_sync]) from [<c020c320>]
->>> (__rtdm_dev_close+0x3c/0x58)
->>> [<c020c320>] (__rtdm_dev_close) from [<c020f4b4>] (__put_fd+0xa4/0x120)
->>> [<c020f4b4>] (__put_fd) from [<c0210174>] (destroy_fd+0x44/0x54)
->>> [<c0210174>] (destroy_fd) from [<c0209140>] (xntree_cleanup+0x44/0x4c)
->>> [<c0209140>] (xntree_cleanup) from [<c0210e50>]
->> (rtdm_fd_cleanup+0x24/0x2c)
->>> [<c0210e50>] (rtdm_fd_cleanup) from [<c021a4cc>]
->>> (cobalt_process_detach+0xac/0x13c)
->>> [<c021a4cc>] (cobalt_process_detach) from [<c021a39c>]
->>> (remove_process+0xa4/0x108)
->>> [<c021a39c>] (remove_process) from [<c021b400>]
->>> (ipipe_kevent_hook+0x3b0/0x4c8)
->>> [<c021b400>] (ipipe_kevent_hook) from [<c01bb33c>]
->>> (__ipipe_notify_kevent+0x3c/0x7c)
->>> [<c01bb33c>] (__ipipe_notify_kevent) from [<c012b8c0>] (mmput+0x54/0x124)
->>> [<c012b8c0>] (mmput) from [<c01317c8>] (do_exit+0x39c/0xa08)
->>> [<c01317c8>] (do_exit) from [<c0131ee4>] (do_group_exit+0x64/0x10c)
->>> [<c0131ee4>] (do_group_exit) from [<c013d080>] (get_signal+0x338/0x8cc)
->>> [<c013d080>] (get_signal) from [<c010afd0>] (do_signal+0x84/0x414)
->>> [<c010afd0>] (do_signal) from [<c010b524>] (do_work_pending+0x90/0xf8)
->>> [<c010b524>] (do_work_pending) from [<c0107b80>]
->>> (slow_work_pending+0xc/0x20)
 >>
->> Calling rtdm_munmap() from a RTDM fd close() handler won't work reliably.
->> rtdm_munmap() must be called in the context of an active thread in order to
->> forcibly drop a mapping from its address space, undoing what a rtdm_mmap*
->> helper did upon request from a thread belonging to the same address space
->> via
->> some ioctl() handler.
->>
->> This stack frame shows that the close() handler in your driver was actually
->> called by the process cleanup code, as a result of dropping the last memory
->> mapping still attached to the process.
->>
->> As part of this cleanup, Cobalt would then find a lingering fd for the
->> exiting
->> process into its file table, invoke the close handler to shut it down, then
->> rtdm_munmap() would be called for the mapping created by the driver.
->> Problem
->> is that such mapping was already dismantled by the kernel prior to the
->> initial
->> cleanup call, leading to havoc. Incidentally, you would not have seen the
->> issue would such fd had been closed by the application before exiting,
->> which
->> would have papered over the issue.
->>
->> OK, understood!
-> This is also the reason because I didn't see this problem in my driver test
-> case.
-> 
-> This driver is a porting from Xenomai 2.6 and in this version rtdm_munmap()
-> in close() works properly.
-> For this reason, I wrongly thought of a problem.
-> 
-> 
-> 
->> The solution is simply to remove the rtdm_unmap() call from your close()
->> handler in the driver. Every mapping created by some rtdm_mmap*() call is
->> automatically dropped by the kernel when the process exits.
->>
->> I'm agree. Thanks.
-> I also add a newer ioctl to manually unmap this memory region in the case
-> that I want to close and reopen the driver in this program.
-> So application lifecycle when use this driver is:
-> open()
-> ioctl map()
-> ioctl unmap()
-> close()
+>> Right. What is missing it linking the Xenomai timebase with that of the =
+kernel
+>> so that we would benefit from Linux doing the sync for us already.
+>
+> But that means you can't use the synchronizing NIC with RTNet / Realtime =
+traffic.
+>
+> Regarding linking timebases, it would help (for various things)
+> If you could easily read those various timebases from the kernel. The res=
+t can happen in
+> userspace.
+>
+> I actually have 3: Linux Monotonic, Xenomai Monotonic, and a PPS synchron=
+ized IEEE1588 clock,
+> Cant fold them into one but sometimes need to map between these.
+> Solved this by letting the NIC read out all 3 and providing them to (Xeno=
+mai) userspace.
+>
+> Better would be a shared mmap (with 2 or more buffers), so that Linux tas=
+ks can asynchronously get that info too.
+>
 
-You can do unmap in close, that is not the problem (so the explicit
-ioctl is not needed - but also not harmfull). The problem is that, when
-a cleanup triggered the unmap already, you must not do it twice.
+Latest Intel hardware supports mapping for the PTP time to the system
+time (tsc) natively. You only need to read out the conversion factors in
+the end. That's what we want to have as well.
+
+If using that will create a conflict with using the NIC for RT traffic?
+Likely. But that needs to be sorted out in the future, not only on Intel hw=
+.
 
 Jan
 
--- 
+--
 Siemens AG, Corporate Technology, CT RDA IOT SES-DE
 Corporate Competence Center Embedded Linux
 
