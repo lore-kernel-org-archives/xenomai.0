@@ -1,11 +1,14 @@
+From: "Meng, Fino" <fino.meng@intel.com>
+Subject: RE: Usage of xenomai-images
+Date: Tue, 16 Jun 2020 00:32:33 +0000
+Message-ID: <BYAPR11MB3765C6A8CA1C8FA121E69974EE9D0@BYAPR11MB3765.namprd11.prod.outlook.com>
+References: <268263506.398534.1592235266643.JavaMail.zimbra@wolfram.com>
+ <87c60740-7bc5-4790-ff6d-424a325fa871@siemens.com>
+In-Reply-To: <87c60740-7bc5-4790-ff6d-424a325fa871@siemens.com>
+Content-Language: en-US
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-References: <HE1PR03MB3115C8AF10E5F49E163223B6E5810@HE1PR03MB3115.eurprd03.prod.outlook.com>
-In-Reply-To: <HE1PR03MB3115C8AF10E5F49E163223B6E5810@HE1PR03MB3115.eurprd03.prod.outlook.com>
-From: Greg Gallagher <greg@embeddedgreg.com>
-Date: Mon, 15 Jun 2020 17:14:33 -0400
-Message-ID: <CALLqZ8R+j4uxD-q5=UtfMe2m-W0CCA=M8uOc0=UM2zdLn_n9Vw@mail.gmail.com>
-Subject: Re: [PATCH 9/9] pinctrl-at91: Add ipipe pipeline support
-Content-Type: text/plain; charset="UTF-8"
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -14,49 +17,55 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jouko Haapaluoma <jouko.haapaluoma@wapice.com>
-Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>, "rpm@xenomai.org" <rpm@xenomai.org>
+To: xenomai <xenomai@xenomai.org>
 
-On Fri, Jun 12, 2020 at 7:55 AM Jouko Haapaluoma
-<jouko.haapaluoma@wapice.com> wrote:
->
-> From: Jouko Haapaluoma <jouko.haapaluoma@wapice.com>
->
-> Make AT91 pinctrl driver compatible with ipipe
->
-> Signed-off-by: Jouko Haapaluoma <jouko.haapaluoma@wapice.com>
-> ---
->  drivers/pinctrl/pinctrl-at91.c | 5 +++--
->  1 file changed, 3 insertions(+), 2 deletions(-)
->
-> diff --git a/drivers/pinctrl/pinctrl-at91.c b/drivers/pinctrl/pinctrl-at91.c
-> index 50f0ec4..c4f60c7 100644
-> --- a/drivers/pinctrl/pinctrl-at91.c
-> +++ b/drivers/pinctrl/pinctrl-at91.c
-> @@ -1582,6 +1582,7 @@ static struct irq_chip gpio_irqchip = {
->         .irq_unmask     = gpio_irq_unmask,
->         /* .irq_set_type is set dynamically */
->         .irq_set_wake   = gpio_irq_set_wake,
-> +       .flags          = IRQCHIP_PIPELINE_SAFE,
->  };
->
->  static void gpio_irq_handler(struct irq_desc *desc)
-> @@ -1610,8 +1611,8 @@ static void gpio_irq_handler(struct irq_desc *desc)
->                 }
->
->                 for_each_set_bit(n, &isr, BITS_PER_LONG) {
-> -                       generic_handle_irq(irq_find_mapping(
-> -                                          gpio_chip->irq.domain, n));
-> +                       ipipe_handle_demuxed_irq(irq_find_mapping(
-> +                                       gpio_chip->irq.domain, n));
->                 }
->         }
->         chained_irq_exit(chip, desc);
-> --
-> 2.2.2
->
-Everything looks good, did your testing include triggering any GPIO
-interrupts?  I don't see any specific problems, just curious.
-
--Greg
+DQoNCj5TZW50OiBNb25kYXksIEp1bmUgMTUsIDIwMjAgMTE6NTggUE0NCj4NCj5PbiAxNS4wNi4y
+MCAxNzozNCwgUGVyIE9iZXJnIHZpYSBYZW5vbWFpIHdyb3RlOg0KPj4gSGkgbGlzdA0KPj4NCj4+
+IEkgdGhvdWdodCBJJ2QgdGFrZSB0aGUgeGVub21haS1pbWFnZXMgZnJvbSBbMV0gb3V0IGZvciBh
+IHNwaW4gYW5kIEkgdGhpbmsgSSBnb3QgaXQgd29ya2luZy4gSG93ZXZlciwgQSBmZXcgcG9pbnRl
+cnMgYWJvdXQNCj53aGF0IGlzIHdoYXQgd291bGQgaGF2ZSBiZWVuIGhlbHBmdWwuDQo+Pg0KPj4g
+RS5nLg0KPj4NCj4+IFVuZGVyICJCdWlsZGluZyBUYXJnZXQgSW1hZ2VzIiB0aGVyZSBjb3VsZCBo
+YXZlIGJlZW4gYSBub3RlIHNheWluZyB0aGF0IHlvdSBuZWVkIHRoZSBrYXMueW1sIGZpbGVzIGFu
+ZCBib2FyZC1xZW11LQ0KPmFtZDY0LnltbCBhdmFpbGFibGUuIEkgZmVlbCB0aG9zZSBpbnN0cnVj
+dGlvbnMgYXJlIGEgYml0IGluY29tcGxldGUuDQo+DQo+V2UgYXJlIGhhcHB5IHRvIHRha2UgcGF0
+Y2hlcyEgSXQncyBhbHdheXMgYSBiaXQgdHJpY2t5IGZvciB0aGUgdGhvc2UgdXNpbmcgdGhlIHRv
+b2wgZXZlcnkgZGF5IGluIHZhcmlvdXMgcHJvamVjdHMgdG8gZG9jdW1lbnQNCj50aGUgKG5vbi0p
+b2J2aW91cyBwYXJ0cyBmb3IgZmlyc3QtdGltZSB1c2Vycy4NCj4NCj4+IEF0IGRvY2tlci1odWIg
+dGhlcmUgYXJlIG5vIGNvbW1lbnRzL2Rlc2NyaXB0aW9ucyBmb3IgdGhlIGthcy1pc2FyIGFuZCBr
+YXMgaW1hZ2VzIHNvIGl0J3MgYSBiaXQgZGlmZmljdWx0IHRvIGtub3cgd2hhdCB0bw0KPnVzZS4N
+Cj4+DQo+PiBOb3cgaXQgc2VlbXMgdG8gYmUgd29ya2luZyB3aGVuIHVzaW5nIHRoZSBwcm92aWRl
+ZCAia2FzLWRvY2tlciIgc2NyaXB0LCBidXQgdGhlbiBJIHRyaWVkIHVzaW5nIGEgYmluZC1tb3Vu
+dCBhbmQgYmFzaCB0bw0KPmdldCBpbnNpZGUgdGhlIGRvY2tlciBhbmQgcnVuIGl0IGZyb20gdGhl
+cmUuICdkb2NrZXIgcnVuIC1pdCAtLW1vdW50IHR5cGU9YmluZCxzb3VyY2U9IiRIT01FIi9rYXMt
+YnVpbGRlcix0YXJnZXQ9L2J1aWxkZXINCj5rYXNwcm9qZWN0L2thcyBiYXNoJy4NCj4NCj5TdWNo
+ICJzaW1wbGUiIGRvY2tlciBjYWxscyBhcmUgd2hlcmUga2FzLWRvY2tlciBldm9sdmVkIGZyb20u
+IElmIHlvdSBsb29rIGF0IHRoZSBsYXRlc3QgdmVyc2lvbiwgaXQgY2FuIGRvIHdheSBtb3JlLiBJ
+dCdzIGdvYWwNCj5pcyB0byBwcm92aWRlIHRoZSBzYW1lIGZyb250ZW5kIGFzIGthcyBuYXRpdmVs
+eS4NCj4NCj4+DQo+PiBGb3IgdGhlICJrYXMiIGRvY2tlciBpbWFnZSBJIGdldCBlcnJvcnMgcmVs
+YXRlZCB0byBtaXNzaW5nIGlzYXIsIGFuZCBmb3IgdGhlIGthcy1pc2FyIGRvY2tlciBpbWFnZSBp
+IGdldCAibW91bnQ6DQo+L3Byb2Mvc3lzL2ZzL2JpbmZtdF9taXNjOiBwZXJtaXNzaW9uIGRlbmll
+ZC4iIHNvIGkgdHJpZWQgYWRkaW5nIHRoZSAtLXByaXZpbGVnZWQgZmxhZyB3aGljaCBzZWVtcyB0
+byBiZSB3b3JraW5nLiBQZXJoYXBzDQo+dGhlcmUgY291bGQgYmUgYSBiZXR0ZXIgIlN0YXJ0IEhl
+cmUiIGd1aWRlIGdpdmluZyBzb21lIGhpbnRzIGFib3V0IHRoaXMuDQo+Pg0KPg0KPiJrYXMtZG9j
+a2VyIC0taXNhciBidWlsZCAuLi4iIGlzIGRvaW5nIHRoYXQgZm9yIHlvdS4gImRvY2tlci9wb2Rt
+YW4gcnVuIg0KPmlzIGZvciB0aGUgZXhwZXJ0cy4gVGhhdCdzIHdoeSB3ZSBkb2N1bWVudGVkIHRo
+ZSBmb3JtZXIuDQo+DQo+PiBBbHNvLCBhcmUgdGhlcmUgYW55IGJpbmFyeSBsaW5rcyB0byAtd2lj
+IGZpbGVzIHRoYXQgSSBjYW4gZG93bmxvYWQgYW5kIHJ1biB1c2luZyBteSBvd24gcWVtdSBzbyB0
+aGF0IEkgZG9uJ3QgaGF2ZSB0byBidWlsZA0KPnRoZW0gbXlzZWxmPw0KPg0KPlNvIGZhciwgdGhl
+cmUgaXMgbm8gcHVibGljIGJ1aWxkIGFuZCwgdGh1cywgYXJ0aWZhY3RzLiBXZSB3aWxsIHByb2Jh
+Ymx5IGhhdmUgdGhlbSBhcyBjYXRjaC1ieSBvZiB1c2luZyB4ZW5vbWFpLWltYWdlIGZvcg0KPnJl
+Z3VsYXIgdGVzdGluZyAic29vbiIuDQoNClVwZGF0ZSBteSBzdGF0dXM6IA0KT3VyIHByb2plY3Qg
+dXNlIHhlbm9tYWktaW1hZ2VzIGFzIHVwc3RyZWFtIHByb2plY3QsIGNsb25lIGl0IGFuZCBhZGQg
+c29tZSB5bWwgZm9yIGtlcm5lbCAmIHdpYyBmbGF2b3JzLiANCk9uIG91ciBXSEwtVSBib2FyZCwg
+IHdlIHN0aWxsIG5lZWQgdG8gY2hhbmdlIGEgZGVmY29uZmlnIGZvciB0aGUgY2lwLWtlcm5lbCBp
+biB4ZW5vbWFpLWltYWdlcywNCmh0dHBzOi8vZ2l0aHViLmNvbS9pbnRlbC9saW51eC1zdGFibGUt
+eGVub21haS9ibG9iL0YvNC4xOS41OS9iYXNlL2lwaXBlL3hlbm9tYWlfMy4xL2FyY2gveDg2L2Nv
+bmZpZ3MvYWNybl9kZWZjb25maWcNCm90aGVyd2lzZSBpdCB3aWxsIGZhaWwgdG8gbW91bnQgcm9v
+dGZzLCBhcyBJIHNlbnQgYmVmb3JlLg0KQWZ0ZXIgZmluaXNoaW5nIElnSCBFdGhlcmNhdCBtYXN0
+ZXIgbGliLCBJIHdpbGwgdHJ5IHRvIHJvb3QgY2F1c2UgaXQuIA0KDQpCUiAvIEZpbm8gKOWtn+el
+peWkqykNCkludGVsIOKAkyBJT1RHIERldmVsb3BlciBFbmFibGluZw0KDQo+DQo+SmFuDQo+DQo+
+Pg0KPj4gWzFdIGh0dHBzOi8vZ2l0bGFiLmRlbnguZGUvWGVub21haS94ZW5vbWFpLWltYWdlcw0K
+Pj4NCj4+IFBlciDDlmJlcmcNCj4+DQo+DQo+LS0NCj5TaWVtZW5zIEFHLCBDb3Jwb3JhdGUgVGVj
+aG5vbG9neSwgQ1QgUkRBIElPVCBTRVMtREUNCj5Db3Jwb3JhdGUgQ29tcGV0ZW5jZSBDZW50ZXIg
+RW1iZWRkZWQgTGludXgNCg0K
 
