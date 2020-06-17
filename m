@@ -1,16 +1,22 @@
-Subject: Re: an xhci problem on raspberry pi 4b
-References: <5ed4bf2d.1c69fb81.29f0f.b36cSMTPIN_ADDED_BROKEN@mx.google.com>
- <CALLqZ8QXO7zg7a7qAFkSSHnY9jcv2bQs3L+cWNomYqBFS=Kz2A@mail.gmail.com>
- <0d8b0098-16b6-1ba1-029a-2e642624967e@siemens.com>
- <5ED6132A.9090909@tj.kylinos.cn>
- <bc265a74-3c9f-d4ac-3455-45849e42e484@siemens.com>
-From: chensong <chensong@tj.kylinos.cn>
-Message-ID: <5ED8B6FC.6040203@tj.kylinos.cn>+1D7355D285A6AA76
-Date: Thu, 4 Jun 2020 16:55:24 +0800
+From: Peter Wong <tsnuser@outlook.com>
+Subject: Re: TSN support on xenomai
+Date: Wed, 17 Jun 2020 14:59:34 +0000
+Message-ID: <SG2PR04MB325305DCE18BB1D83FF31A81A49A0@SG2PR04MB3253.apcprd04.prod.outlook.com>
+References: <SG2PR04MB325361212B0F13BA9DE98BC0A49D0@SG2PR04MB3253.apcprd04.prod.outlook.com>
+ <263bfd52-638e-1205-dc57-c0fb773b0acf@numalliance.com>
+ <dee89c0f-c026-33c2-da13-42d090f58d6c@siemens.com>
+ <VI1PR05MB59171660A06A205C47F6DF3AF69D0@VI1PR05MB5917.eurprd05.prod.outlook.com>
+ <c244091f-127a-e3ac-8116-b3624907f17a@siemens.com>
+ <SG2PR04MB3253BF73D742CF3A816C1B61A49D0@SG2PR04MB3253.apcprd04.prod.outlook.com>
+ <ffc06274-9349-1883-3cb6-73a0d0cc0cf4@siemens.com>
+ <BYAPR11MB376590FC75BCFF24F87E64BDEE9A0@BYAPR11MB3765.namprd11.prod.outlook.com>
+ <SG2PR04MB3253B1CD0502D28DB492F601A49A0@SG2PR04MB3253.apcprd04.prod.outlook.com>,
+ <8e61c085-7b37-04ac-4658-fd724b581db4@numalliance.com>
+In-Reply-To: <8e61c085-7b37-04ac-4658-fd724b581db4@numalliance.com>
+Content-Language: en-US
 MIME-Version: 1.0
-In-Reply-To: <bc265a74-3c9f-d4ac-3455-45849e42e484@siemens.com>
-Content-Type: text/plain; charset="utf-8"; format="flowed"
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -19,53 +25,184 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jan Kiszka <jan.kiszka@siemens.com>, Greg Gallagher <greg@embeddedgreg.com>
-Cc: "Xenomai@xenomai.org" <xenomai@xenomai.org>
+To: =?iso-8859-1?Q?St=E9phane_Ancelot?= <sancelot@numalliance.com>, "Meng,
+ Fino" <fino.meng@intel.com>, Jan Kiszka <jan.kiszka@siemens.com>, Lange Norbert <norbert.lange@andritz.com>, "Xenomai (xenomai@xenomai.org)" <xenomai@xenomai.org>, "Pirou, Florent" <florent.pirou@intel.com>, "Gong,
+ Xiaoyan" <xiaoyan.gong@intel.com>, "Pu, Yanfeng" <yanfeng.pu@intel.com>, "Zhang, Wei E" <wei.e.zhang@intel.com>
 
-I think it's fixed
+Hi S.Ancelot,
 
-Brcm_MSI hasn't complied with IPIPE IRQ handling yet,as a result, it 
-still goes to the stack like:
-     brcm_pcie_msi_isr --
-     generic_handle_irq --
-     handle_simple_irq --
-     handle_irq_event --
-    __handle_irq_event_percpu.
+You have done some comparison between kernel network stack vs xenomai RTnet=
+ stack?  Can you share some data ?
 
-Regarding the warning, !irq_disabled is detected by ipipe_test_root,and 
-xhci_hcd doesn't work very well, sometimes, system is frozen when 
-connecting or disconnecting an usb device.
 
-Therefore, we have to replace generic_handle_irq by 
-ipipe_handle_demuxed_irq, then warning goes way and xhci_hcd works fine.
 
-On 2020年06月02日 17:08, Jan Kiszka wrote:
-> On 02.06.20 10:51, chensong wrote:
+
+
+
+
+________________________________
+From: St=E9phane Ancelot <sancelot@numalliance.com>
+Sent: Wednesday, June 17, 2020 9:19 PM
+To: Peter Wong <tsnuser@outlook.com>; Meng, Fino <fino.meng@intel.com>; Jan=
+ Kiszka <jan.kiszka@siemens.com>; Lange Norbert <norbert.lange@andritz.com>=
+; Xenomai (xenomai@xenomai.org) <xenomai@xenomai.org>; Pirou, Florent <flor=
+ent.pirou@intel.com>; Gong, Xiaoyan <xiaoyan.gong@intel.com>; Pu, Yanfeng <=
+yanfeng.pu@intel.com>; Zhang, Wei E <wei.e.zhang@intel.com>
+Subject: Re: TSN support on xenomai
+
+
+
+Le 17/06/2020 =E0 09:25, Peter Wong a =E9crit :
+I think of 2 benefit by running tsn over rtnet + xenomai network driver
+
+  *   better performance since xenomai delivering stringent real-time guara=
+ntee and rtnet is smaller network stack
+  *   xenomai rt application can run on tsn network
+
+Is that right?
+
+
+>From my experience  : The answer is no.
+
+
+The kernel network stack has been rewritten  in order being efficient to ac=
+hieve these tasks.
+
+
+Furthermore , thanks to the way TSN (or ethercat) protocol works you don't =
+need a very hard realtime OS, allowing a bigger jitter for the RT task usin=
+g  the network.
+
+This is up to the nic hardware component to  send the frame at the  program=
+med time . The only RT task requirement is that it should have provided the=
+ frame to the nic interfaces before the next clock sync occurs.
+
+
+Regards,
+
+S.Ancelot
+
+
+
+________________________________
+From: Meng, Fino <fino.meng@intel.com><mailto:fino.meng@intel.com>
+Sent: Wednesday, June 17, 2020 2:08 PM
+To: Jan Kiszka <jan.kiszka@siemens.com><mailto:jan.kiszka@siemens.com>; Pet=
+er Wong <tsnuser@outlook.com><mailto:tsnuser@outlook.com>; Lange Norbert <n=
+orbert.lange@andritz.com><mailto:norbert.lange@andritz.com>; St=E9phane Anc=
+elot <sancelot@numalliance.com><mailto:sancelot@numalliance.com>; Xenomai (=
+xenomai@xenomai.org<mailto:xenomai@xenomai.org>) <xenomai@xenomai.org><mail=
+to:xenomai@xenomai.org>; Pirou, Florent <florent.pirou@intel.com><mailto:fl=
+orent.pirou@intel.com>; Gong, Xiaoyan <xiaoyan.gong@intel.com><mailto:xiaoy=
+an.gong@intel.com>; Pu, Yanfeng <yanfeng.pu@intel.com><mailto:yanfeng.pu@in=
+tel.com>; Zhang, Wei E <wei.e.zhang@intel.com><mailto:wei.e.zhang@intel.com=
+>
+Subject: RE: TSN support on xenomai
+
+
+
+>Sent: Tuesday, June 16, 2020 10:39 PM
+>
+>On 16.06.20 16:00, Peter Wong wrote:
+>> Can we compile linuxptp (cobalt POSIX wrap) to run on RTnet  + Xenomai
+>> I210 driver so that we only need one NIC to run TSN on RTnet?
 >>
+>
+>There is nothing like that upstream so far. Maybe Fino or Florent
+>already have some plans, though I expect them to target newer hardware.
+>
+>Jan
+
+We are working on TSN over Xenomai/Cobalt.
+For example, have tested such simple case:
+The synchronizing NIC is inside Linux domain, the TSN stack on vanilla kern=
+el,
+Cobalt Thread share data to Linux thread first, then send out through TSN s=
+tack,
+Cyclic is 250us, 802.1Qbv enabled, single way, 5 minutes,
+with some stress-ng workload and 100M noise traffic,
+test result is identical with preempt-rt Linux, although this case may not
+match real world scenario.
+
+Our current target is find a BKM, let Xenomai app can use the TSN stack,
+so the synchronizing NIC is stay in vanilla kernel.
+Let TSN & RTNet merge into one NIC is not in current plan. But if found
+real world use case really need it, we would like to working on it,
+
+BR fino
+
+>
+>> ------------------------------------------------------------------------
+>> *From:* Xenomai <xenomai-bounces@xenomai.org><mailto:xenomai-bounces@xen=
+omai.org> on behalf of Jan Kiszka
+>> via Xenomai <xenomai@xenomai.org><mailto:xenomai@xenomai.org>
+>> *Sent:* Tuesday, June 16, 2020 5:44 PM
+>> *To:* Lange Norbert <norbert.lange@andritz.com><mailto:norbert.lange@and=
+ritz.com>; St=E9phane Ancelot
+>> <sancelot@numalliance.com><mailto:sancelot@numalliance.com>; Xenomai (xe=
+nomai@xenomai.org<mailto:xenomai@xenomai.org>)
+>> <xenomai@xenomai.org><mailto:xenomai@xenomai.org>
+>> *Subject:* Re: TSN support on xenomai
 >>
->> On 2020年06月02日 15:49, Jan Kiszka wrote:
->>> On 01.06.20 15:51, Greg Gallagher via Xenomai wrote:
->>>> I'm not sure if the rpi4 is in mainline yet but you may have more
->>>> success trying this with the mainline kernel
->>>>
+>> On 16.06.20 11:41, Lange Norbert wrote:
 >>>
->>> The RPi4 is still far aways from mainline, unfortunately. The usual
->>> downstream mess.
+>>>
+>>>> -----Original Message-----
+>>>> From: Xenomai <xenomai-bounces@xenomai.org><mailto:xenomai-bounces@xen=
+omai.org> On Behalf Of Jan Kiszka
+>>>> via Xenomai
+>>>> Sent: Dienstag, 16. Juni 2020 10:58
+>>>> To: St=E9phane Ancelot <sancelot@numalliance.com><mailto:sancelot@numa=
+lliance.com>; xenomai@xenomai.org<mailto:xenomai@xenomai.org>
+>>>> Subject: Re: TSN support on xenomai
+>>>>
+>>>> NON-ANDRITZ SOURCE: BE CAUTIOUS WITH CONTENT, LINKS OR
+>>>> ATTACHMENTS.
+>>>>
+>>>>
+>>>> On 16.06.20 10:55, St=E9phane Ancelot via Xenomai wrote:
+>>>>> Hi,
+>>>>>
+>>>>> This is natively supported in standard linux kernel
+>>>>>
+>>>>
+>>>> Right. What is missing it linking the Xenomai timebase with that of th=
+e kernel
+>>>> so that we would benefit from Linux doing the sync for us already.
+>>>
+>>> But that means you can't use the synchronizing NIC with RTNet / Realtim=
+e traffic.
+>>>
+>>> Regarding linking timebases, it would help (for various things)
+>>> If you could easily read those various timebases from the kernel. The r=
+est can happen in
+>>> userspace.
+>>>
+>>> I actually have 3: Linux Monotonic, Xenomai Monotonic, and a PPS synchr=
+onized IEEE1588 clock,
+>>> Cant fold them into one but sometimes need to map between these.
+>>> Solved this by letting the NIC read out all 3 and providing them to (Xe=
+nomai) userspace.
+>>>
+>>> Better would be a shared mmap (with 2 or more buffers), so that Linux t=
+asks can asynchronously get that info too.
+>>>
 >>
->> any thought about "[    0.712926] irq 38 handler xhci_msi_irq+0x0/0x30
->> enabled interrupts " in kernel/irq/handle.c:153?
+>> Latest Intel hardware supports mapping for the PTP time to the system
+>> time (tsc) natively. You only need to read out the conversion factors in
+>> the end. That's what we want to have as well.
 >>
->> call stack is like：irqs_diabled -- raw_irqs_diabled --
->> arch_irqs_diabled -- ipipe_test_root
+>> If using that will create a conflict with using the NIC for RT traffic?
+>> Likely. But that needs to be sorted out in the future, not only on Intel=
+ hw.
 >>
->> Not handled msi irq domain(Brcm_MSI) approprately?
+>> Jan
+>>
+>> --
+>> Siemens AG, Corporate Technology, CT RDA IOT SES-DE
+>> Corporate Competence Center Embedded Linux
+>>
 >
-> Often this means that some code path along the early interrupt handling
-> is not I-pipe aware (un-hardened spinlock etc.). Did you already try
-> enabling all I-pipe debug options?
->
-> Jan
->
-
-
-
+>--
+>Siemens AG, Corporate Technology, CT RDA IOT SES-DE
+>Corporate Competence Center Embedded Linux
