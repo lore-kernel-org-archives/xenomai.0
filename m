@@ -1,19 +1,20 @@
-From: "Meng, Fino" <fino.meng@intel.com>
-Subject: RE: TSN support on xenomai
-Date: Wed, 17 Jun 2020 06:08:22 +0000
-Message-ID: <BYAPR11MB376590FC75BCFF24F87E64BDEE9A0@BYAPR11MB3765.namprd11.prod.outlook.com>
+From: Peter Wong <tsnuser@outlook.com>
+Subject: Re: TSN support on xenomai
+Date: Wed, 17 Jun 2020 07:25:26 +0000
+Message-ID: <SG2PR04MB3253B1CD0502D28DB492F601A49A0@SG2PR04MB3253.apcprd04.prod.outlook.com>
 References: <SG2PR04MB325361212B0F13BA9DE98BC0A49D0@SG2PR04MB3253.apcprd04.prod.outlook.com>
  <263bfd52-638e-1205-dc57-c0fb773b0acf@numalliance.com>
  <dee89c0f-c026-33c2-da13-42d090f58d6c@siemens.com>
  <VI1PR05MB59171660A06A205C47F6DF3AF69D0@VI1PR05MB5917.eurprd05.prod.outlook.com>
  <c244091f-127a-e3ac-8116-b3624907f17a@siemens.com>
  <SG2PR04MB3253BF73D742CF3A816C1B61A49D0@SG2PR04MB3253.apcprd04.prod.outlook.com>
- <ffc06274-9349-1883-3cb6-73a0d0cc0cf4@siemens.com>
-In-Reply-To: <ffc06274-9349-1883-3cb6-73a0d0cc0cf4@siemens.com>
+ <ffc06274-9349-1883-3cb6-73a0d0cc0cf4@siemens.com>,
+ <BYAPR11MB376590FC75BCFF24F87E64BDEE9A0@BYAPR11MB3765.namprd11.prod.outlook.com>
+In-Reply-To: <BYAPR11MB376590FC75BCFF24F87E64BDEE9A0@BYAPR11MB3765.namprd11.prod.outlook.com>
 Content-Language: en-US
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
 MIME-Version: 1.0
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -22,72 +23,128 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jan Kiszka <jan.kiszka@siemens.com>, Peter Wong <tsnuser@outlook.com>, Lange Norbert <norbert.lange@andritz.com>, =?utf-8?B?U3TDqXBoYW5lIEFuY2Vsb3Q=?= <sancelot@numalliance.com>, "Xenomai
+To: "Meng, Fino" <fino.meng@intel.com>, Jan Kiszka <jan.kiszka@siemens.com>, Lange Norbert <norbert.lange@andritz.com>, =?iso-8859-1?Q?St=E9phane_Ancelot?= <sancelot@numalliance.com>, "Xenomai
  (xenomai@xenomai.org)" <xenomai@xenomai.org>, "Pirou, Florent" <florent.pirou@intel.com>, "Gong, Xiaoyan" <xiaoyan.gong@intel.com>, "Pu,
  Yanfeng" <yanfeng.pu@intel.com>, "Zhang, Wei E" <wei.e.zhang@intel.com>
 
-DQoNCj5TZW50OiBUdWVzZGF5LCBKdW5lIDE2LCAyMDIwIDEwOjM5IFBNDQo+DQo+T24gMTYuMDYu
-MjAgMTY6MDAsIFBldGVyIFdvbmcgd3JvdGU6DQo+PiBDYW4gd2UgY29tcGlsZSBsaW51eHB0cCAo
-Y29iYWx0IFBPU0lYIHdyYXApIHRvIHJ1biBvbiBSVG5ldMKgICsgWGVub21haQ0KPj4gSTIxMCBk
-cml2ZXIgc28gdGhhdCB3ZSBvbmx5IG5lZWQgb25lIE5JQyB0byBydW4gVFNOIG9uIFJUbmV0Pw0K
-Pj4NCj4NCj5UaGVyZSBpcyBub3RoaW5nIGxpa2UgdGhhdCB1cHN0cmVhbSBzbyBmYXIuIE1heWJl
-IEZpbm8gb3IgRmxvcmVudA0KPmFscmVhZHkgaGF2ZSBzb21lIHBsYW5zLCB0aG91Z2ggSSBleHBl
-Y3QgdGhlbSB0byB0YXJnZXQgbmV3ZXIgaGFyZHdhcmUuDQo+DQo+SmFuDQoNCldlIGFyZSB3b3Jr
-aW5nIG9uIFRTTiBvdmVyIFhlbm9tYWkvQ29iYWx0LiAgDQpGb3IgZXhhbXBsZSwgaGF2ZSB0ZXN0
-ZWQgc3VjaCBzaW1wbGUgY2FzZToNClRoZSBzeW5jaHJvbml6aW5nIE5JQyBpcyBpbnNpZGUgTGlu
-dXggZG9tYWluLCB0aGUgVFNOIHN0YWNrIG9uIHZhbmlsbGEga2VybmVsLA0KQ29iYWx0IFRocmVh
-ZCBzaGFyZSBkYXRhIHRvIExpbnV4IHRocmVhZCBmaXJzdCwgdGhlbiBzZW5kIG91dCB0aHJvdWdo
-IFRTTiBzdGFjaywgDQpDeWNsaWMgaXMgMjUwdXMsIDgwMi4xUWJ2IGVuYWJsZWQsIHNpbmdsZSB3
-YXksIDUgbWludXRlcywNCndpdGggc29tZSBzdHJlc3Mtbmcgd29ya2xvYWQgYW5kIDEwME0gbm9p
-c2UgdHJhZmZpYywNCnRlc3QgcmVzdWx0IGlzIGlkZW50aWNhbCB3aXRoIHByZWVtcHQtcnQgTGlu
-dXgsIGFsdGhvdWdoIHRoaXMgY2FzZSBtYXkgbm90DQptYXRjaCByZWFsIHdvcmxkIHNjZW5hcmlv
-Lg0KDQpPdXIgY3VycmVudCB0YXJnZXQgaXMgZmluZCBhIEJLTSwgbGV0IFhlbm9tYWkgYXBwIGNh
-biB1c2UgdGhlIFRTTiBzdGFjaywgDQpzbyB0aGUgc3luY2hyb25pemluZyBOSUMgaXMgc3RheSBp
-biB2YW5pbGxhIGtlcm5lbC4gDQpMZXQgVFNOICYgUlROZXQgbWVyZ2UgaW50byBvbmUgTklDIGlz
-IG5vdCBpbiBjdXJyZW50IHBsYW4uIEJ1dCBpZiBmb3VuZCANCnJlYWwgd29ybGQgdXNlIGNhc2Ug
-cmVhbGx5IG5lZWQgaXQsIHdlIHdvdWxkIGxpa2UgdG8gd29ya2luZyBvbiBpdCwNCg0KQlIgZmlu
-bw0KDQo+DQo+PiAtLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0t
-LS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0NCj4+ICpGcm9tOiogWGVub21haSA8eGVub21haS1i
-b3VuY2VzQHhlbm9tYWkub3JnPiBvbiBiZWhhbGYgb2YgSmFuIEtpc3prYQ0KPj4gdmlhIFhlbm9t
-YWkgPHhlbm9tYWlAeGVub21haS5vcmc+DQo+PiAqU2VudDoqIFR1ZXNkYXksIEp1bmUgMTYsIDIw
-MjAgNTo0NCBQTQ0KPj4gKlRvOiogTGFuZ2UgTm9yYmVydCA8bm9yYmVydC5sYW5nZUBhbmRyaXR6
-LmNvbT47IFN0w6lwaGFuZSBBbmNlbG90DQo+PiA8c2FuY2Vsb3RAbnVtYWxsaWFuY2UuY29tPjsg
-WGVub21haSAoeGVub21haUB4ZW5vbWFpLm9yZykNCj4+IDx4ZW5vbWFpQHhlbm9tYWkub3JnPg0K
-Pj4gKlN1YmplY3Q6KiBSZTogVFNOIHN1cHBvcnQgb24geGVub21haQ0KPj4NCj4+IE9uIDE2LjA2
-LjIwIDExOjQxLCBMYW5nZSBOb3JiZXJ0IHdyb3RlOg0KPj4+DQo+Pj4NCj4+Pj4gLS0tLS1Pcmln
-aW5hbCBNZXNzYWdlLS0tLS0NCj4+Pj4gRnJvbTogWGVub21haSA8eGVub21haS1ib3VuY2VzQHhl
-bm9tYWkub3JnPiBPbiBCZWhhbGYgT2YgSmFuIEtpc3prYQ0KPj4+PiB2aWEgWGVub21haQ0KPj4+
-PiBTZW50OiBEaWVuc3RhZywgMTYuIEp1bmkgMjAyMCAxMDo1OA0KPj4+PiBUbzogU3TDqXBoYW5l
-IEFuY2Vsb3QgPHNhbmNlbG90QG51bWFsbGlhbmNlLmNvbT47IHhlbm9tYWlAeGVub21haS5vcmcN
-Cj4+Pj4gU3ViamVjdDogUmU6IFRTTiBzdXBwb3J0IG9uIHhlbm9tYWkNCj4+Pj4NCj4+Pj4gTk9O
-LUFORFJJVFogU09VUkNFOiBCRSBDQVVUSU9VUyBXSVRIIENPTlRFTlQsIExJTktTIE9SDQo+Pj4+
-IEFUVEFDSE1FTlRTLg0KPj4+Pg0KPj4+Pg0KPj4+PiBPbiAxNi4wNi4yMCAxMDo1NSwgU3TDqXBo
-YW5lIEFuY2Vsb3QgdmlhIFhlbm9tYWkgd3JvdGU6DQo+Pj4+PiBIaSwNCj4+Pj4+DQo+Pj4+PiBU
-aGlzIGlzIG5hdGl2ZWx5IHN1cHBvcnRlZCBpbiBzdGFuZGFyZCBsaW51eCBrZXJuZWwNCj4+Pj4+
-DQo+Pj4+DQo+Pj4+IFJpZ2h0LiBXaGF0IGlzIG1pc3NpbmcgaXQgbGlua2luZyB0aGUgWGVub21h
-aSB0aW1lYmFzZSB3aXRoIHRoYXQgb2YgdGhlIGtlcm5lbA0KPj4+PiBzbyB0aGF0IHdlIHdvdWxk
-IGJlbmVmaXQgZnJvbSBMaW51eCBkb2luZyB0aGUgc3luYyBmb3IgdXMgYWxyZWFkeS4NCj4+Pg0K
-Pj4+IEJ1dCB0aGF0IG1lYW5zIHlvdSBjYW4ndCB1c2UgdGhlIHN5bmNocm9uaXppbmcgTklDIHdp
-dGggUlROZXQgLyBSZWFsdGltZSB0cmFmZmljLg0KPj4+DQo+Pj4gUmVnYXJkaW5nIGxpbmtpbmcg
-dGltZWJhc2VzLCBpdCB3b3VsZCBoZWxwIChmb3IgdmFyaW91cyB0aGluZ3MpDQo+Pj4gSWYgeW91
-IGNvdWxkIGVhc2lseSByZWFkIHRob3NlIHZhcmlvdXMgdGltZWJhc2VzIGZyb20gdGhlIGtlcm5l
-bC4gVGhlIHJlc3QgY2FuIGhhcHBlbiBpbg0KPj4+IHVzZXJzcGFjZS4NCj4+Pg0KPj4+IEkgYWN0
-dWFsbHkgaGF2ZSAzOiBMaW51eCBNb25vdG9uaWMsIFhlbm9tYWkgTW9ub3RvbmljLCBhbmQgYSBQ
-UFMgc3luY2hyb25pemVkIElFRUUxNTg4IGNsb2NrLA0KPj4+IENhbnQgZm9sZCB0aGVtIGludG8g
-b25lIGJ1dCBzb21ldGltZXMgbmVlZCB0byBtYXAgYmV0d2VlbiB0aGVzZS4NCj4+PiBTb2x2ZWQg
-dGhpcyBieSBsZXR0aW5nIHRoZSBOSUMgcmVhZCBvdXQgYWxsIDMgYW5kIHByb3ZpZGluZyB0aGVt
-IHRvIChYZW5vbWFpKSB1c2Vyc3BhY2UuDQo+Pj4NCj4+PiBCZXR0ZXIgd291bGQgYmUgYSBzaGFy
-ZWQgbW1hcCAod2l0aCAyIG9yIG1vcmUgYnVmZmVycyksIHNvIHRoYXQgTGludXggdGFza3MgY2Fu
-IGFzeW5jaHJvbm91c2x5IGdldCB0aGF0IGluZm8gdG9vLg0KPj4+DQo+Pg0KPj4gTGF0ZXN0IElu
-dGVsIGhhcmR3YXJlIHN1cHBvcnRzIG1hcHBpbmcgZm9yIHRoZSBQVFAgdGltZSB0byB0aGUgc3lz
-dGVtDQo+PiB0aW1lICh0c2MpIG5hdGl2ZWx5LiBZb3Ugb25seSBuZWVkIHRvIHJlYWQgb3V0IHRo
-ZSBjb252ZXJzaW9uIGZhY3RvcnMgaW4NCj4+IHRoZSBlbmQuIFRoYXQncyB3aGF0IHdlIHdhbnQg
-dG8gaGF2ZSBhcyB3ZWxsLg0KPj4NCj4+IElmIHVzaW5nIHRoYXQgd2lsbCBjcmVhdGUgYSBjb25m
-bGljdCB3aXRoIHVzaW5nIHRoZSBOSUMgZm9yIFJUIHRyYWZmaWM/DQo+PiBMaWtlbHkuIEJ1dCB0
-aGF0IG5lZWRzIHRvIGJlIHNvcnRlZCBvdXQgaW4gdGhlIGZ1dHVyZSwgbm90IG9ubHkgb24gSW50
-ZWwgaHcuDQo+Pg0KPj4gSmFuDQo+Pg0KPj4gLS0NCj4+IFNpZW1lbnMgQUcsIENvcnBvcmF0ZSBU
-ZWNobm9sb2d5LCBDVCBSREEgSU9UIFNFUy1ERQ0KPj4gQ29ycG9yYXRlIENvbXBldGVuY2UgQ2Vu
-dGVyIEVtYmVkZGVkIExpbnV4DQo+Pg0KPg0KPi0tDQo+U2llbWVucyBBRywgQ29ycG9yYXRlIFRl
-Y2hub2xvZ3ksIENUIFJEQSBJT1QgU0VTLURFDQo+Q29ycG9yYXRlIENvbXBldGVuY2UgQ2VudGVy
-IEVtYmVkZGVkIExpbnV4DQo=
+I think of 2 benefit by running tsn over rtnet + xenomai network driver
 
+  *   better performance since xenomai delivering stringent real-time guara=
+ntee and rtnet is smaller network stack
+  *   xenomai rt application can run on tsn network
+
+Is that right?
+
+
+________________________________
+From: Meng, Fino <fino.meng@intel.com>
+Sent: Wednesday, June 17, 2020 2:08 PM
+To: Jan Kiszka <jan.kiszka@siemens.com>; Peter Wong <tsnuser@outlook.com>; =
+Lange Norbert <norbert.lange@andritz.com>; St=E9phane Ancelot <sancelot@num=
+alliance.com>; Xenomai (xenomai@xenomai.org) <xenomai@xenomai.org>; Pirou, =
+Florent <florent.pirou@intel.com>; Gong, Xiaoyan <xiaoyan.gong@intel.com>; =
+Pu, Yanfeng <yanfeng.pu@intel.com>; Zhang, Wei E <wei.e.zhang@intel.com>
+Subject: RE: TSN support on xenomai
+
+
+
+>Sent: Tuesday, June 16, 2020 10:39 PM
+>
+>On 16.06.20 16:00, Peter Wong wrote:
+>> Can we compile linuxptp (cobalt POSIX wrap) to run on RTnet  + Xenomai
+>> I210 driver so that we only need one NIC to run TSN on RTnet?
+>>
+>
+>There is nothing like that upstream so far. Maybe Fino or Florent
+>already have some plans, though I expect them to target newer hardware.
+>
+>Jan
+
+We are working on TSN over Xenomai/Cobalt.
+For example, have tested such simple case:
+The synchronizing NIC is inside Linux domain, the TSN stack on vanilla kern=
+el,
+Cobalt Thread share data to Linux thread first, then send out through TSN s=
+tack,
+Cyclic is 250us, 802.1Qbv enabled, single way, 5 minutes,
+with some stress-ng workload and 100M noise traffic,
+test result is identical with preempt-rt Linux, although this case may not
+match real world scenario.
+
+Our current target is find a BKM, let Xenomai app can use the TSN stack,
+so the synchronizing NIC is stay in vanilla kernel.
+Let TSN & RTNet merge into one NIC is not in current plan. But if found
+real world use case really need it, we would like to working on it,
+
+BR fino
+
+>
+>> ------------------------------------------------------------------------
+>> *From:* Xenomai <xenomai-bounces@xenomai.org> on behalf of Jan Kiszka
+>> via Xenomai <xenomai@xenomai.org>
+>> *Sent:* Tuesday, June 16, 2020 5:44 PM
+>> *To:* Lange Norbert <norbert.lange@andritz.com>; St=E9phane Ancelot
+>> <sancelot@numalliance.com>; Xenomai (xenomai@xenomai.org)
+>> <xenomai@xenomai.org>
+>> *Subject:* Re: TSN support on xenomai
+>>
+>> On 16.06.20 11:41, Lange Norbert wrote:
+>>>
+>>>
+>>>> -----Original Message-----
+>>>> From: Xenomai <xenomai-bounces@xenomai.org> On Behalf Of Jan Kiszka
+>>>> via Xenomai
+>>>> Sent: Dienstag, 16. Juni 2020 10:58
+>>>> To: St=E9phane Ancelot <sancelot@numalliance.com>; xenomai@xenomai.org
+>>>> Subject: Re: TSN support on xenomai
+>>>>
+>>>> NON-ANDRITZ SOURCE: BE CAUTIOUS WITH CONTENT, LINKS OR
+>>>> ATTACHMENTS.
+>>>>
+>>>>
+>>>> On 16.06.20 10:55, St=E9phane Ancelot via Xenomai wrote:
+>>>>> Hi,
+>>>>>
+>>>>> This is natively supported in standard linux kernel
+>>>>>
+>>>>
+>>>> Right. What is missing it linking the Xenomai timebase with that of th=
+e kernel
+>>>> so that we would benefit from Linux doing the sync for us already.
+>>>
+>>> But that means you can't use the synchronizing NIC with RTNet / Realtim=
+e traffic.
+>>>
+>>> Regarding linking timebases, it would help (for various things)
+>>> If you could easily read those various timebases from the kernel. The r=
+est can happen in
+>>> userspace.
+>>>
+>>> I actually have 3: Linux Monotonic, Xenomai Monotonic, and a PPS synchr=
+onized IEEE1588 clock,
+>>> Cant fold them into one but sometimes need to map between these.
+>>> Solved this by letting the NIC read out all 3 and providing them to (Xe=
+nomai) userspace.
+>>>
+>>> Better would be a shared mmap (with 2 or more buffers), so that Linux t=
+asks can asynchronously get that info too.
+>>>
+>>
+>> Latest Intel hardware supports mapping for the PTP time to the system
+>> time (tsc) natively. You only need to read out the conversion factors in
+>> the end. That's what we want to have as well.
+>>
+>> If using that will create a conflict with using the NIC for RT traffic?
+>> Likely. But that needs to be sorted out in the future, not only on Intel=
+ hw.
+>>
+>> Jan
+>>
+>> --
+>> Siemens AG, Corporate Technology, CT RDA IOT SES-DE
+>> Corporate Competence Center Embedded Linux
+>>
+>
+>--
+>Siemens AG, Corporate Technology, CT RDA IOT SES-DE
+>Corporate Competence Center Embedded Linux
