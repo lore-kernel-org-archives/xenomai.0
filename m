@@ -1,14 +1,19 @@
+From: "Meng, Fino" <fino.meng@intel.com>
+Subject: RE: TSN support on xenomai
+Date: Wed, 17 Jun 2020 06:08:22 +0000
+Message-ID: <BYAPR11MB376590FC75BCFF24F87E64BDEE9A0@BYAPR11MB3765.namprd11.prod.outlook.com>
+References: <SG2PR04MB325361212B0F13BA9DE98BC0A49D0@SG2PR04MB3253.apcprd04.prod.outlook.com>
+ <263bfd52-638e-1205-dc57-c0fb773b0acf@numalliance.com>
+ <dee89c0f-c026-33c2-da13-42d090f58d6c@siemens.com>
+ <VI1PR05MB59171660A06A205C47F6DF3AF69D0@VI1PR05MB5917.eurprd05.prod.outlook.com>
+ <c244091f-127a-e3ac-8116-b3624907f17a@siemens.com>
+ <SG2PR04MB3253BF73D742CF3A816C1B61A49D0@SG2PR04MB3253.apcprd04.prod.outlook.com>
+ <ffc06274-9349-1883-3cb6-73a0d0cc0cf4@siemens.com>
+In-Reply-To: <ffc06274-9349-1883-3cb6-73a0d0cc0cf4@siemens.com>
+Content-Language: en-US
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-References: <CAAvDm6bQ-KGrCYbH+CJB2wsrHxpADObqJLmouZSuReXo-AjZDw@mail.gmail.com>
- <18c6faf4-3a30-3ebd-827e-d8ee52e13279@siemens.com>
-In-Reply-To: <18c6faf4-3a30-3ebd-827e-d8ee52e13279@siemens.com>
-From: =?UTF-8?B?5a2Z5LiW6b6Z?= <sunshilong369@gmail.com>
-Date: Wed, 17 Jun 2020 10:37:50 +0800
-Message-ID: <CAAvDm6biOSv-Zp_kvy9ODVhULvVSPRUFqz1So2gxeeO02POPmA@mail.gmail.com>
-Subject: Re: Error reproduecd again when using IDDP: BUG in low_init(): [main]
- binding failed: Cannot allocate memory.
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,448 +22,72 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jan Kiszka <jan.kiszka@siemens.com>
-Cc: xenomai <xenomai@xenomai.org>
+To: Jan Kiszka <jan.kiszka@siemens.com>, Peter Wong <tsnuser@outlook.com>, Lange Norbert <norbert.lange@andritz.com>, =?utf-8?B?U3TDqXBoYW5lIEFuY2Vsb3Q=?= <sancelot@numalliance.com>, "Xenomai
+ (xenomai@xenomai.org)" <xenomai@xenomai.org>, "Pirou, Florent" <florent.pirou@intel.com>, "Gong, Xiaoyan" <xiaoyan.gong@intel.com>, "Pu,
+ Yanfeng" <yanfeng.pu@intel.com>, "Zhang, Wei E" <wei.e.zhang@intel.com>
 
->You are likely creating a rather large heap here: 2^9 pages for control
->data managing the actual heap. What are your parameters to iddp,
->size-wise? Something that results in about 64MB? Or even more?
+DQoNCj5TZW50OiBUdWVzZGF5LCBKdW5lIDE2LCAyMDIwIDEwOjM5IFBNDQo+DQo+T24gMTYuMDYu
+MjAgMTY6MDAsIFBldGVyIFdvbmcgd3JvdGU6DQo+PiBDYW4gd2UgY29tcGlsZSBsaW51eHB0cCAo
+Y29iYWx0IFBPU0lYIHdyYXApIHRvIHJ1biBvbiBSVG5ldMKgICsgWGVub21haQ0KPj4gSTIxMCBk
+cml2ZXIgc28gdGhhdCB3ZSBvbmx5IG5lZWQgb25lIE5JQyB0byBydW4gVFNOIG9uIFJUbmV0Pw0K
+Pj4NCj4NCj5UaGVyZSBpcyBub3RoaW5nIGxpa2UgdGhhdCB1cHN0cmVhbSBzbyBmYXIuIE1heWJl
+IEZpbm8gb3IgRmxvcmVudA0KPmFscmVhZHkgaGF2ZSBzb21lIHBsYW5zLCB0aG91Z2ggSSBleHBl
+Y3QgdGhlbSB0byB0YXJnZXQgbmV3ZXIgaGFyZHdhcmUuDQo+DQo+SmFuDQoNCldlIGFyZSB3b3Jr
+aW5nIG9uIFRTTiBvdmVyIFhlbm9tYWkvQ29iYWx0LiAgDQpGb3IgZXhhbXBsZSwgaGF2ZSB0ZXN0
+ZWQgc3VjaCBzaW1wbGUgY2FzZToNClRoZSBzeW5jaHJvbml6aW5nIE5JQyBpcyBpbnNpZGUgTGlu
+dXggZG9tYWluLCB0aGUgVFNOIHN0YWNrIG9uIHZhbmlsbGEga2VybmVsLA0KQ29iYWx0IFRocmVh
+ZCBzaGFyZSBkYXRhIHRvIExpbnV4IHRocmVhZCBmaXJzdCwgdGhlbiBzZW5kIG91dCB0aHJvdWdo
+IFRTTiBzdGFjaywgDQpDeWNsaWMgaXMgMjUwdXMsIDgwMi4xUWJ2IGVuYWJsZWQsIHNpbmdsZSB3
+YXksIDUgbWludXRlcywNCndpdGggc29tZSBzdHJlc3Mtbmcgd29ya2xvYWQgYW5kIDEwME0gbm9p
+c2UgdHJhZmZpYywNCnRlc3QgcmVzdWx0IGlzIGlkZW50aWNhbCB3aXRoIHByZWVtcHQtcnQgTGlu
+dXgsIGFsdGhvdWdoIHRoaXMgY2FzZSBtYXkgbm90DQptYXRjaCByZWFsIHdvcmxkIHNjZW5hcmlv
+Lg0KDQpPdXIgY3VycmVudCB0YXJnZXQgaXMgZmluZCBhIEJLTSwgbGV0IFhlbm9tYWkgYXBwIGNh
+biB1c2UgdGhlIFRTTiBzdGFjaywgDQpzbyB0aGUgc3luY2hyb25pemluZyBOSUMgaXMgc3RheSBp
+biB2YW5pbGxhIGtlcm5lbC4gDQpMZXQgVFNOICYgUlROZXQgbWVyZ2UgaW50byBvbmUgTklDIGlz
+IG5vdCBpbiBjdXJyZW50IHBsYW4uIEJ1dCBpZiBmb3VuZCANCnJlYWwgd29ybGQgdXNlIGNhc2Ug
+cmVhbGx5IG5lZWQgaXQsIHdlIHdvdWxkIGxpa2UgdG8gd29ya2luZyBvbiBpdCwNCg0KQlIgZmlu
+bw0KDQo+DQo+PiAtLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0t
+LS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0NCj4+ICpGcm9tOiogWGVub21haSA8eGVub21haS1i
+b3VuY2VzQHhlbm9tYWkub3JnPiBvbiBiZWhhbGYgb2YgSmFuIEtpc3prYQ0KPj4gdmlhIFhlbm9t
+YWkgPHhlbm9tYWlAeGVub21haS5vcmc+DQo+PiAqU2VudDoqIFR1ZXNkYXksIEp1bmUgMTYsIDIw
+MjAgNTo0NCBQTQ0KPj4gKlRvOiogTGFuZ2UgTm9yYmVydCA8bm9yYmVydC5sYW5nZUBhbmRyaXR6
+LmNvbT47IFN0w6lwaGFuZSBBbmNlbG90DQo+PiA8c2FuY2Vsb3RAbnVtYWxsaWFuY2UuY29tPjsg
+WGVub21haSAoeGVub21haUB4ZW5vbWFpLm9yZykNCj4+IDx4ZW5vbWFpQHhlbm9tYWkub3JnPg0K
+Pj4gKlN1YmplY3Q6KiBSZTogVFNOIHN1cHBvcnQgb24geGVub21haQ0KPj4NCj4+IE9uIDE2LjA2
+LjIwIDExOjQxLCBMYW5nZSBOb3JiZXJ0IHdyb3RlOg0KPj4+DQo+Pj4NCj4+Pj4gLS0tLS1Pcmln
+aW5hbCBNZXNzYWdlLS0tLS0NCj4+Pj4gRnJvbTogWGVub21haSA8eGVub21haS1ib3VuY2VzQHhl
+bm9tYWkub3JnPiBPbiBCZWhhbGYgT2YgSmFuIEtpc3prYQ0KPj4+PiB2aWEgWGVub21haQ0KPj4+
+PiBTZW50OiBEaWVuc3RhZywgMTYuIEp1bmkgMjAyMCAxMDo1OA0KPj4+PiBUbzogU3TDqXBoYW5l
+IEFuY2Vsb3QgPHNhbmNlbG90QG51bWFsbGlhbmNlLmNvbT47IHhlbm9tYWlAeGVub21haS5vcmcN
+Cj4+Pj4gU3ViamVjdDogUmU6IFRTTiBzdXBwb3J0IG9uIHhlbm9tYWkNCj4+Pj4NCj4+Pj4gTk9O
+LUFORFJJVFogU09VUkNFOiBCRSBDQVVUSU9VUyBXSVRIIENPTlRFTlQsIExJTktTIE9SDQo+Pj4+
+IEFUVEFDSE1FTlRTLg0KPj4+Pg0KPj4+Pg0KPj4+PiBPbiAxNi4wNi4yMCAxMDo1NSwgU3TDqXBo
+YW5lIEFuY2Vsb3QgdmlhIFhlbm9tYWkgd3JvdGU6DQo+Pj4+PiBIaSwNCj4+Pj4+DQo+Pj4+PiBU
+aGlzIGlzIG5hdGl2ZWx5IHN1cHBvcnRlZCBpbiBzdGFuZGFyZCBsaW51eCBrZXJuZWwNCj4+Pj4+
+DQo+Pj4+DQo+Pj4+IFJpZ2h0LiBXaGF0IGlzIG1pc3NpbmcgaXQgbGlua2luZyB0aGUgWGVub21h
+aSB0aW1lYmFzZSB3aXRoIHRoYXQgb2YgdGhlIGtlcm5lbA0KPj4+PiBzbyB0aGF0IHdlIHdvdWxk
+IGJlbmVmaXQgZnJvbSBMaW51eCBkb2luZyB0aGUgc3luYyBmb3IgdXMgYWxyZWFkeS4NCj4+Pg0K
+Pj4+IEJ1dCB0aGF0IG1lYW5zIHlvdSBjYW4ndCB1c2UgdGhlIHN5bmNocm9uaXppbmcgTklDIHdp
+dGggUlROZXQgLyBSZWFsdGltZSB0cmFmZmljLg0KPj4+DQo+Pj4gUmVnYXJkaW5nIGxpbmtpbmcg
+dGltZWJhc2VzLCBpdCB3b3VsZCBoZWxwIChmb3IgdmFyaW91cyB0aGluZ3MpDQo+Pj4gSWYgeW91
+IGNvdWxkIGVhc2lseSByZWFkIHRob3NlIHZhcmlvdXMgdGltZWJhc2VzIGZyb20gdGhlIGtlcm5l
+bC4gVGhlIHJlc3QgY2FuIGhhcHBlbiBpbg0KPj4+IHVzZXJzcGFjZS4NCj4+Pg0KPj4+IEkgYWN0
+dWFsbHkgaGF2ZSAzOiBMaW51eCBNb25vdG9uaWMsIFhlbm9tYWkgTW9ub3RvbmljLCBhbmQgYSBQ
+UFMgc3luY2hyb25pemVkIElFRUUxNTg4IGNsb2NrLA0KPj4+IENhbnQgZm9sZCB0aGVtIGludG8g
+b25lIGJ1dCBzb21ldGltZXMgbmVlZCB0byBtYXAgYmV0d2VlbiB0aGVzZS4NCj4+PiBTb2x2ZWQg
+dGhpcyBieSBsZXR0aW5nIHRoZSBOSUMgcmVhZCBvdXQgYWxsIDMgYW5kIHByb3ZpZGluZyB0aGVt
+IHRvIChYZW5vbWFpKSB1c2Vyc3BhY2UuDQo+Pj4NCj4+PiBCZXR0ZXIgd291bGQgYmUgYSBzaGFy
+ZWQgbW1hcCAod2l0aCAyIG9yIG1vcmUgYnVmZmVycyksIHNvIHRoYXQgTGludXggdGFza3MgY2Fu
+IGFzeW5jaHJvbm91c2x5IGdldCB0aGF0IGluZm8gdG9vLg0KPj4+DQo+Pg0KPj4gTGF0ZXN0IElu
+dGVsIGhhcmR3YXJlIHN1cHBvcnRzIG1hcHBpbmcgZm9yIHRoZSBQVFAgdGltZSB0byB0aGUgc3lz
+dGVtDQo+PiB0aW1lICh0c2MpIG5hdGl2ZWx5LiBZb3Ugb25seSBuZWVkIHRvIHJlYWQgb3V0IHRo
+ZSBjb252ZXJzaW9uIGZhY3RvcnMgaW4NCj4+IHRoZSBlbmQuIFRoYXQncyB3aGF0IHdlIHdhbnQg
+dG8gaGF2ZSBhcyB3ZWxsLg0KPj4NCj4+IElmIHVzaW5nIHRoYXQgd2lsbCBjcmVhdGUgYSBjb25m
+bGljdCB3aXRoIHVzaW5nIHRoZSBOSUMgZm9yIFJUIHRyYWZmaWM/DQo+PiBMaWtlbHkuIEJ1dCB0
+aGF0IG5lZWRzIHRvIGJlIHNvcnRlZCBvdXQgaW4gdGhlIGZ1dHVyZSwgbm90IG9ubHkgb24gSW50
+ZWwgaHcuDQo+Pg0KPj4gSmFuDQo+Pg0KPj4gLS0NCj4+IFNpZW1lbnMgQUcsIENvcnBvcmF0ZSBU
+ZWNobm9sb2d5LCBDVCBSREEgSU9UIFNFUy1ERQ0KPj4gQ29ycG9yYXRlIENvbXBldGVuY2UgQ2Vu
+dGVyIEVtYmVkZGVkIExpbnV4DQo+Pg0KPg0KPi0tDQo+U2llbWVucyBBRywgQ29ycG9yYXRlIFRl
+Y2hub2xvZ3ksIENUIFJEQSBJT1QgU0VTLURFDQo+Q29ycG9yYXRlIENvbXBldGVuY2UgQ2VudGVy
+IEVtYmVkZGVkIExpbnV4DQo=
 
-The memory size for each page is 4KB, since "getconf PAGE_SIZE"
-says "4096".
-So, I think 2^9 pages are equivalent to 2MB(i.e. 2^9*4KB=3D2MB), not 64MB.
-Where am I wrong?
-And I didn't pass "--mempool-size" option to the program indeed.
-I think it should use the default heap size.
-
-I browsed the source code of xenomai-v3.1.
-I found that this error is outputted by *low_init() *which is called before
-the entry of the main function. On one hand, there is no chance to
-set the parameters of IDDP yet before the entry of the main function,
-on the other hand, this problem should have some relationships with
-IDDP since no such errors have been seen under other circumstances
-without using xddp and iddp.
-That is what confuses me.
-
-As to the parameters of iddp, here is the related code snippet
-(no other setting operations has been done other than this):
-
-* int fd =3D rt_dev_call(socket, AF_RTIPC, SOCK_DGRAM, IPCPROTO_IDDP); *
-* snprintf(iddpname, sizeof(iddpname), "iddp-%d", locator.port); *
-* struct _rtdm_setsockopt_args argOpt; *
-*struct rtipc_port_label plabel; *
-*argOpt.level =3D SOL_IDDP; *
-*argOpt.optname =3D IDDP_LABEL; *
-*argOpt.optval =3D &plabel; *
-*argOpt.optlen =3D sizeof(plabel); *
-*strcpy(plabel.label, iddpname); *
-*int ret =3D rt_dev_call(ioctl, fd, _RTIOC_SETSOCKOPT, &argOpt);*
-struct _rtdm_setsockaddr_args argbind;
-struct sockaddr_ipc svrAddr;
-svrAddr.sipc_family =3D AF_RTIPC;
-svrAddr.sipc_port =3D -1;
-argbind.addr =3D (struct sockaddr *)&svrAddr;
-argbind.addrlen =3D sizeof(svrAddr);
-ret =3D rt_dev_call(ioctl, fd, _RTIOC_BIND, &argbind);
-
-Thank you for your attention to this matter.
-Look forward to hearing from you.
-Best regards.
-
-Jan Kiszka <jan.kiszka@siemens.com> =E4=BA=8E2020=E5=B9=B46=E6=9C=8816=E6=
-=97=A5=E5=91=A8=E4=BA=8C =E4=B8=8B=E5=8D=885:39=E5=86=99=E9=81=93=EF=BC=9A
-
-> On 16.06.20 09:51, =E5=AD=99=E4=B8=96=E9=BE=99 via Xenomai wrote:
-> > Hi,
-> >     As the subject, I encounter this error when I restarted a realtime
-> > process that uses *IDDP *on x86 embedded system. I am using xenomai3.1.=
-0
-> > and linux4.19.84.
-> >     There are two points need to be emphasized:
-> >     1. After this error occurred, I could restart the program
-> successfully
-> > again. *This is different from the phenomenon I pointed out before whic=
-h
-> > still reports the same error when I tried restart it again*(for your
-> > convenience, *the related email is posted at the footnote*).
-> >     2. I have seen such errors *many times *when used *XDDP *on the sam=
-e
-> > platform.
-> >
-> >      Thank you for your attention to this matter.
-> >      Look forward to hearing from you.
-> >
-> >     *The error output from the terminal when restart the program which
-> uses
-> > IDDP*:
-> >     BUG_in_low_init(): [main]  binding failed: Cannot allocate memory.
-> >
-> >     *The related kernel log when using IDDP*:
-> > [22041.387673] HelloWorldExamp: page allocation failure: order:9,
->
-> You are likely creating a rather large heap here: 2^9 pages for control
-> data managing the actual heap. What are you parameters to iddp,
-> size-wise? Something that results in about 64MB? Or even more?
->
-> We can likely avoid this by switching from kmalloc to vmalloc in
-> xnheap_init.
->
-> Jan
->
-> > mode:0x60c0c0(GFP_KERNEL|__GFP_COMP|__GFP_ZERO), nodemask=3D(null)
-> > [22041.387678] HelloWorldExamp cpuset=3D/ mems_allowed=3D0
-> > [22041.387690] CPU: 3 PID: 27737 Comm: HelloWorldExamp Not tainted
-> > 4.19.84-bros #5
-> > [22041.387693] Hardware name: Advantech
-> UNO-2372G-J021AE/UNO-2372G-J021AE,
-> > BIOS 5.6.5 09/04/2019
-> > [22041.387695] I-pipe domain: Linux
-> > [22041.387697] Call Trace:
-> > [22041.387711]  dump_stack+0x9e/0xc8
-> > [22041.387718]  warn_alloc+0x100/0x190
-> > [22041.387725]  __alloc_pages_slowpath+0xb93/0xbd0
-> > [22041.387732]  __alloc_pages_nodemask+0x26d/0x2b0
-> > [22041.387739]  alloc_pages_current+0x6a/0xe0
-> > [22041.387744]  kmalloc_order+0x18/0x40
-> > [22041.387748]  kmalloc_order_trace+0x24/0xb0
-> > [22041.387754]  __kmalloc+0x20e/0x230
-> > [22041.387759]  ? __vmalloc_node_range+0x171/0x250
-> > [22041.387765]  xnheap_init+0x87/0x200
-> > [22041.387770]  ? remove_process+0xc0/0xc0
-> > [22041.387775]  cobalt_umm_init+0x61/0xb0
-> > [22041.387779]  cobalt_process_attach+0x64/0x4c0
-> > [22041.387784]  ? snprintf+0x45/0x70
-> > [22041.387790]  ? security_capable+0x46/0x60
-> > [22041.387794]  bind_personality+0x5a/0x120
-> > [22041.387798]  cobalt_bind_core+0x27/0x60
-> > [22041.387803]  CoBaLt_bind+0x18a/0x1d0
-> > [22041.387812]  ? handle_head_syscall+0x3f0/0x3f0
-> > [22041.387816]  ipipe_syscall_hook+0x119/0x340
-> > [22041.387822]  __ipipe_notify_syscall+0xd3/0x190
-> > [22041.387827]  ? __x64_sys_rt_sigaction+0x7b/0xd0
-> > [22041.387832]  ipipe_handle_syscall+0x3e/0xc0
-> > [22041.387837]  do_syscall_64+0x3b/0x250
-> > [22041.387842]  entry_SYSCALL_64_after_hwframe+0x44/0xa9
-> > [22041.387847] RIP: 0033:0x7ff3d074e481
-> > [22041.387852] Code: 89 c6 48 8b 05 10 6b 21 00 c7 04 24 00 00 00 a4 8b
-> 38
-> > 85 ff 75 43 bb 00 00 00 10 c7 44 24 04 11 00 00 00 48 89 e7 89 d8 0f 05
-> > <bf> 04 00 00 00 48 89 c3 e8 e2 e0 ff ff 8d 53 26 83 fa 26 0f 87 46
-> > [22041.387855] RSP: 002b:00007ffc62caf210 EFLAGS: 00000246 ORIG_RAX:
-> > 0000000010000000
-> > [22041.387860] RAX: ffffffffffffffda RBX: 0000000010000000 RCX:
-> > 00007ff3d074e481
-> > [22041.387863] RDX: 0000000000000000 RSI: 0000000000000000 RDI:
-> > 00007ffc62caf210
-> > [22041.387865] RBP: 00007ff3d20a3780 R08: 00007ffc62caf160 R09:
-> > 0000000000000000
-> > [22041.387868] R10: 0000000000000008 R11: 0000000000000246 R12:
-> > 00007ff3d0965b00
-> > [22041.387870] R13: 0000000001104320 R14: 00007ff3d0965d40 R15:
-> > 0000000001104050
-> > [22041.387876] Mem-Info:
-> > [22041.387885] active_anon:56054 inactive_anon:109301 isolated_anon:0
-> >                 active_file:110190 inactive_file:91980 isolated_file:0
-> >                 unevictable:9375 dirty:1 writeback:0 unstable:0
-> >                 slab_reclaimable:22463 slab_unreclaimable:19122
-> >                 mapped:101678 shmem:25642 pagetables:7663 bounce:0
-> >                 free:456443 free_pcp:0 free_cma:0
-> > [22041.387891] Node 0 active_anon:224216kB inactive_anon:437204kB
-> > active_file:440760kB inactive_file:367920kB unevictable:37500kB
-> > isolated(anon):0kB isolated(file):0kB mapped:406712kB dirty:4kB
-> > writeback:0kB shmem:102568kB writeback_tmp:0kB unstable:0kB
-> > all_unreclaimable? no
-> > [22041.387893] Node 0 DMA free:15892kB min:32kB low:44kB high:56kB
-> > active_anon:0kB inactive_anon:0kB active_file:0kB inactive_file:0kB
-> > unevictable:0kB writepending:0kB present:15992kB managed:15892kB
-> > mlocked:0kB kernel_stack:0kB pagetables:0kB bounce:0kB free_pcp:0kB
-> > local_pcp:0kB free_cma:0kB
-> > [22041.387901] lowmem_reserve[]: 0 2804 3762 3762
-> > [22041.387912] Node 0 DMA32 free:1798624kB min:5836kB low:8704kB
-> > high:11572kB active_anon:188040kB inactive_anon:219400kB
-> > active_file:184156kB inactive_file:346776kB unevictable:24900kB
-> > writepending:0kB present:3017476kB managed:2927216kB mlocked:24900kB
-> > kernel_stack:1712kB pagetables:7564kB bounce:0kB free_pcp:0kB
-> local_pcp:0kB
-> > free_cma:0kB
-> > [22041.387920] lowmem_reserve[]: 0 0 958 958
-> > [22041.387930] Node 0 Normal free:11256kB min:1992kB low:2972kB
-> high:3952kB
-> > active_anon:36084kB inactive_anon:218100kB active_file:257220kB
-> > inactive_file:21148kB unevictable:12600kB writepending:4kB
-> > present:1048576kB managed:981268kB mlocked:12600kB kernel_stack:5280kB
-> > pagetables:23088kB bounce:0kB free_pcp:0kB local_pcp:0kB free_cma:0kB
-> > [22041.387938] lowmem_reserve[]: 0 0 0 0
-> > [22041.387948] Node 0 DMA: 3*4kB (U) 3*8kB (U) 1*16kB (U) 1*32kB (U)
-> 3*64kB
-> > (U) 0*128kB 1*256kB (U) 0*512kB 1*1024kB (U) 1*2048kB (M) 3*4096kB (M) =
-=3D
-> > 15892kB
-> > [22041.387990] Node 0 DMA32: 14912*4kB (UME) 13850*8kB (UME) 9325*16kB
-> > (UME) 5961*32kB (UME) 3622*64kB (UME) 2359*128kB (UME) 1128*256kB (UME)
-> > 524*512kB (M) 194*1024kB (UM) 0*2048kB 0*4096kB =3D 1799872kB
-> > [22041.388033] Node 0 Normal: 1643*4kB (UME) 71*8kB (UME) 47*16kB (UM)
-> > 35*32kB (M) 38*64kB (M) 1*128kB (M) 0*256kB 0*512kB 0*1024kB 0*2048kB
-> > 0*4096kB =3D 11572kB
-> > [22041.388071] Node 0 hugepages_total=3D0 hugepages_free=3D0 hugepages_=
-surp=3D0
-> > hugepages_size=3D2048kB
-> > [22041.388073] 232507 total pagecache pages
-> > [22041.388077] 7 pages in swap cache
-> > [22041.388079] Swap cache stats: add 1015, delete 1008, find 0/1
-> > [22041.388081] Free swap  =3D 995068kB
-> > [22041.388083] Total swap =3D 999420kB
-> > [22041.388086] 1020511 pages RAM
-> > [22041.388088] 0 pages HighMem/MovableOnly
-> > [22041.388090] 39417 pages reserved
-> > [22041.388092] 0 pages hwpoisoned
-> >
-> >
-> > *For your convenience,  here is the former email which reports the
-> similar
-> > error when using XDDP.*
-> > *Hi=EF=BC=8C*
-> > *     I encounter an error when starts a realtime process on x86
-> > embedded system.*
-> > *     The point to be emphasized, all the realtime processes have worke=
-d
-> > well for more than one day. I have terminated the realtime processes,
-> > started them again now and then.*
-> > *      When I met the error showed below, none realtime process could b=
-e
-> > started again.*
-> >
-> > *     Thank you for your attention to this matter.*
-> > *     Look forward to hearing from you.*
-> >
-> >
-> >
-> >
-> >
-> >
-> >
-> >
-> >
-> > *#proceses error logyx@yx:~/Desktop/testfield$ sudo
-> > /usr/xenomai/demo/cyclictest   0"000.000| BUG in low_init(): [main]
-> binding
-> > failed: Cannot allocate memoryyx@yx:~/Desktop/testfield$ sudo
-> > /usr/xenomai/demo/iddp-label   0"000.000| BUG in low_init(): [main]
-> binding
-> > failed: Cannot allocate memoryyx@yx:~/Desktop/testfield$ sudo
-> > /usr/xenomai/demo/xddp-stream   0"000.000| BUG in low_init(): [main]
-> > binding failed: Cannot allocate memory*
-> > *#kernel start log which relates to xenomai*
-> >
-> >
-> >
-> >
-> >
-> >
-> >
-> >
-> > *[    1.892216] Scanning for low memory corruption every 60 seconds[
-> >  1.893662] [Xenomai] scheduling class idle registered.[    1.893666]
-> > [Xenomai] scheduling class rt registered.[    1.893719] [Xenomai]
-> > SMI-enabled chipset found, but SMI workaround disabled
-> >    (see xenomai.smi parameter). You might encounter
-> >  high latencies![    1.893825] I-pipe: head domain Xenomai registered.[
-> >  2.441991] [Xenomai] Cobalt v3.1*
-> >
-> >
-> >
-> >
-> >
-> >
-> >
-> >
-> >
-> >
-> >
-> >
-> > *#some information maybe usefullyx@yx:~/Desktop/testfield$ cat
-> > /proc/xenomai/heap    TOTAL      FREE  NAME 83886080  83875840  system
-> > heap 83886080  83885952  shared heap yx@yx:~/Desktop/testfield$ free
-> >       total        used        free      shared  buff/cache
->  availableMem:
-> >        3924376      746036      175456      103176     3002884
-> > 2938096Swap:        999420        1280
-> >  998140yx@yx:~/Desktop/testfield$*
-> >
-> >
-> >
-> >
-> >
-> >
-> >
-> >
-> >
-> >
-> >
-> >
-> >
-> >
-> >
-> >
-> >
-> >
-> >
-> >
-> >
-> >
-> >
-> >
-> >
-> >
-> >
-> >
-> >
-> >
-> >
-> >
-> >
-> >
-> >
-> >
-> >
-> >
-> >
-> >
-> >
-> >
-> >
-> >
-> >
-> >
-> >
-> >
-> >
-> >
-> >
-> >
-> >
-> >
-> >
-> >
-> >
-> >
-> >
-> >
-> >
-> >
-> >
-> >
-> >
-> >
-> >
-> >
-> > *#related kernel log when process crashesyx@yx:~/Desktop/testfield$
-> > dmesg[127458.765120] cyclictest: page allocation failure: order:9,
-> > mode:0x60c0c0(GFP_KERNEL|__GFP_COMP|__GFP_ZERO),
-> > nodemask=3D(null)[127458.765124] cyclictest cpuset=3D/
-> > mems_allowed=3D0[127458.765136] CPU: 1 PID: 22203 Comm: cyclictest Not
-> > tainted 4.19.84[127458.765139] Hardware name: [127458.765141] I-pipe
-> > domain: Linux[127458.765143] Call Trace:[127458.765156]
-> >  dump_stack+0x9e/0xc8[127458.765163]
-> warn_alloc+0x100/0x190[127458.765170]
-> >  __alloc_pages_slowpath+0xb93/0xbd0[127458.765177]
-> >  __alloc_pages_nodemask+0x26d/0x2b0[127458.765183]
-> >  alloc_pages_current+0x6a/0xe0[127458.765189]
-> >  kmalloc_order+0x18/0x40[127458.765193]
-> >  kmalloc_order_trace+0x24/0xb0[127458.765199]
-> >  __kmalloc+0x20e/0x230[127458.765204]  ?
-> > __vmalloc_node_range+0x171/0x250[127458.765209]
-> >  xnheap_init+0x87/0x200[127458.765214]  ?
-> > remove_process+0xc0/0xc0[127458.765219]
-> >  cobalt_umm_init+0x61/0xb0[127458.765224]
-> >  cobalt_process_attach+0x64/0x4c0[127458.765230]  ?
-> > security_capable+0x46/0x60[127458.765234]
-> >  bind_personality+0x5a/0x120[127458.765238]
-> >  cobalt_bind_core+0x27/0x60[127458.765243]
-> >  CoBaLt_bind+0x18a/0x1d0[127458.765252]  ?
-> > handle_head_syscall+0x3f0/0x3f0[127458.765256]
-> >  ipipe_syscall_hook+0x119/0x340[127458.765262]
-> >  __ipipe_notify_syscall+0xd3/0x190[127458.765267]  ?
-> > __x64_sys_rt_sigaction+0x7b/0xd0[127458.765271]
-> >  ipipe_handle_syscall+0x3e/0xc0[127458.765277]
-> >  do_syscall_64+0x3b/0x250[127458.765282]
-> >  entry_SYSCALL_64_after_hwframe+0x44/0xa9[127458.765287] RIP:
-> > 0033:0x7f566df60481[127458.765292] Code: 89 c6 48 8b 05 10 6b 21 00 c7 =
-04
-> > 24 00 00 00 a4 8b 38 85 ff 75 43 bb 00 00 00 10 c7 44 24 04 11 00 00 00
-> 48
-> > 89 e7 89 d8 0f 05 <bf> 04 00 00 00 48 89 c3 e8 e2 e0 ff ff 8d 53 26 83 =
-fa
-> > 26 0f 87 46[127458.765295] RSP: 002b:00007ffc0f2f7260 EFLAGS: 00000246
-> > ORIG_RAX: 0000000010000000[127458.765300] RAX: ffffffffffffffda RBX:
-> > 0000000010000000 RCX: 00007f566df60481[127458.765302] RDX:
-> 0000000000000000
-> > RSI: 0000000000000000 RDI: 00007ffc0f2f7260[127458.765305] RBP:
-> > 00007f566e383b00 R08: 00007ffc0f2f71b0 R09:
-> 0000000000000000[127458.765307]
-> > R10: 0000000000000008 R11: 0000000000000246 R12:
-> > 00007f566e177b00[127458.765310] R13: 0000000000712650 R14:
-> 00007f566e177d40
-> > R15: 0000000000712440[127458.765315] Mem-Info:[127458.765323]
-> > active_anon:73467 inactive_anon:73484 isolated_anon:0
-> >  active_file:280299 inactive_file:358436 isolated_file:0
-> >  unevictable:8 dirty:2 writeback:0 unstable:0
-> >  slab_reclaimable:66323 slab_unreclaimable:19884
-> >  mapped:51606 shmem:25794 pagetables:6947 bounce:0
-> >  free:25150 free_pcp:0 free_cma:0[127458.765329] Node 0
-> > active_anon:293868kB inactive_anon:293936kB active_file:1121196kB
-> > inactive_file:1433744kB unevictable:32kB isolated(anon):0kB
-> > isolated(file):0kB mapped:206424kB dirty:8kB writeback:0kB shmem:103176=
-kB
-> > writeback_tmp:0kB unstable:0kB all_unreclaimable? no[127458.765332] Nod=
-e
-> 0
-> > DMA free:15080kB min:32kB low:44kB high:56kB active_anon:0kB
-> > inactive_anon:0kB active_file:240kB inactive_file:548kB unevictable:0kB
-> > writepending:0kB present:15992kB managed:15892kB mlocked:0kB
-> > kernel_stack:0kB pagetables:0kB bounce:0kB free_pcp:0kB local_pcp:0kB
-> > free_cma:0kB[127458.765340] lowmem_reserve[]: 0 2805 3764
-> > 3764[127458.765350] Node 0 DMA32 free:77852kB min:5840kB low:8712kB
-> > high:11584kB active_anon:212020kB inactive_anon:81800kB
-> > active_file:900260kB inactive_file:1349344kB unevictable:0kB
-> > writepending:4kB present:3017476kB managed:2927216kB mlocked:0kB
-> > kernel_stack:1296kB pagetables:5452kB bounce:0kB free_pcp:0kB
-> local_pcp:0kB
-> > free_cma:0kB[127458.765358] lowmem_reserve[]: 0 0 958 958[127458.765369=
-]
-> > Node 0 Normal free:7668kB min:1992kB low:2972kB high:3952kB
-> > active_anon:81592kB inactive_anon:212236kB active_file:220696kB
-> > inactive_file:84104kB unevictable:32kB writepending:4kB present:1048576=
-kB
-> > managed:981268kB mlocked:32kB kernel_stack:5088kB pagetables:22336kB
-> > bounce:0kB free_pcp:0kB local_pcp:0kB free_cma:0kB[127458.765377]
-> > lowmem_reserve[]: 0 0 0 0[127458.765387] Node 0 DMA: 4*4kB (UM) 5*8kB
-> (UME)
-> > 1*16kB (U) 3*32kB (UME) 5*64kB (UME) 2*128kB (ME) 2*256kB (UE) 1*512kB
-> (E)
-> > 3*1024kB (UME) 1*2048kB (E) 2*4096kB (M) =3D 15080kB[127458.765433] Nod=
-e 0
-> > DMA32: 1334*4kB (UME) 443*8kB (UME) 384*16kB (UME) 350*32kB (UME)
-> 458*64kB
-> > (UME) 129*128kB (M) 27*256kB (UM) 0*512kB 0*1024kB 0*2048kB 0*4096kB =
-=3D
-> > 78960kB[127458.765472] Node 0 Normal: 1024*4kB (UMEH) 225*8kB (UMEH)
-> > 86*16kB (UMEH) 13*32kB (UME) 4*64kB (M) 0*128kB 0*256kB 0*512kB 0*1024k=
-B
-> > 0*2048kB 0*4096kB =3D 7944kB[127458.765508] Node 0 hugepages_total=3D0
-> > hugepages_free=3D0 hugepages_surp=3D0 hugepages_size=3D2048kB[127458.76=
-5510]
-> > 664534 total pagecache pages[127458.765514] 3 pages in swap
-> > cache[127458.765516] Swap cache stats: add 148, delete 145, find
-> > 0/0[127458.765518] Free swap  =3D 998140kB[127458.765520] Total swap =
-=3D
-> > 999420kB[127458.765523] 1020511 pages RAM[127458.765524] 0 pages
-> > HighMem/MovableOnly[127458.765526] 39417 pages reserved[127458.765528] =
-0
-> > pages hwpoisonedyx@yx:~/Desktop/testfield$  *
-> >
->
-> --
-> Siemens AG, Corporate Technology, CT RDA IOT SES-DE
-> Corporate Competence Center Embedded Linux
->
