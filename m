@@ -1,12 +1,10 @@
-Subject: Re: Migrating code, rt_dev_*() API missing
-References: <DB7PR04MB41555084C23F8CE5E85C5771F3940@DB7PR04MB4155.eurprd04.prod.outlook.com>
-From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <286a1bd0-13bb-8439-29ce-43a599bfe280@siemens.com>
-Date: Wed, 24 Jun 2020 08:59:59 +0200
+Date: Fri, 26 Jun 2020 16:54:19 +0200 (CEST)
+From: jeanmicheltaprest@free.fr
+Message-ID: <2036239901.240189362.1593183259994.JavaMail.root@zimbra14-e2.priv.proxad.net>
+In-Reply-To: <761356215.240180691.1593183018087.JavaMail.root@zimbra14-e2.priv.proxad.net>
+Subject: rt_task_create error EINVAL after a while
 MIME-Version: 1.0
-In-Reply-To: <DB7PR04MB41555084C23F8CE5E85C5771F3940@DB7PR04MB4155.eurprd04.prod.outlook.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
+Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: 7bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
@@ -16,31 +14,45 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "Kristiansen, Morten (INT)" <Morten.Kristiansen@Teledyne.com>, "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: xenomai@xenomai.org
 
-On 23.06.20 16:04, Kristiansen, Morten (INT) via Xenomai wrote:
-> I'm in the process of migrating from Xenomai 2.x to 3.1. Our application was using rt_dev_* to access an SPI port. According to the migration guide this class of functions seems to be removed and replaced by the rtdm_* equivalent. However, these functions doesn't seem to exist anywhere in the headers or libraries installed when building.
-> 
-> Should user space applications use rtdm_* (rtdm_open, rtdm_write) or should they use the native (open, write)
-> 
-> For reference, this is how I built Xenomai:
-> 1.     wget https://xenomai.org/downloads/xenomai/stable/xenomai-3.1.tar.bz2
-> 2.     tar -jxf xenomai-3.1.tar.bz2<https://xenomai.org/downloads/xenomai/stable/xenomai-3.1.tar.bz2>
-> 3.     mkdir build
-> 4.     cd build
-> 5.     ../xenomai-3.1/configure CFLAGS="-march=armv7-a -mfpu=vfp3" LDFLAGS="-march=armv7-a -mfpu=vfp3" --build=i686-pc-linux-gnu --host=arm-linux-gnueabihf --with-core=cobalt --enable-smp
-> 6.     make
-> 7.     mkdir ../xenomai-arm-install
-> 8.     make DESTDIR=../xenomai-arm-install install
-> 
 
-Use native open & Co. plus the appropriate wrapping as delivered by 
-xeno_config for the rtdm 'skin'. If you do not like to wrap, you can use 
-__RT(open(...)) etc.
+Hi All,
 
-Jan
+Hardware and firmware configuration :
+ARM Cortex A7 32 bit processor in an i.MX 6ULL NXP module
+with Linux 4.19.82 and Xenomai 3.0.9 ( Cobalt ).
 
--- 
-Siemens AG, Corporate Technology, CT RDA IOT SES-DE
-Corporate Competence Center Embedded Linux
+Problems with rt_task_create ( & object clusters ) 
+and access to the registry root path :
+==================================================
+
+The embedded Linux/Xenomai software application starts OK, 
+except when, after a while,
+rt_task_create is used to create RT Xenomai daughter tasks.
+
+Suddenly a call to rt_task_create fails with error EINVAL, 
+after many successfull calls to the same function.
+Warning debugging messages in the the Xenomai Alchemy and Copperplate
+libraries give EINVAL error 
+when calling syncobj_lock from syncluster_addobj ( object clusters )
+( called from create_tcb, which is called from rt_task_create ).
+
+I also noticed a problem to access to the root registry, 
+i don't know if it is related.
+The access to /var/run/xenomai/root/anon@724 blocks.
+The command 'ls /var/run/xenomai/root/anon@724' never returns.
+
+The xenomai libraries build was setup with the following command :
+./configure --target=arm-linux-gnueabihf --host=arm-linux-gnueabihf 
+--build=x86_64-pc-linux-gnu --prefix=/usr --exec-prefix=/usr 
+--sysconfdir=/etc --localstatedir=/var --program-prefix= 
+--disable-dependency-tracking --disable-static 
+--enable-shared --includedir=/usr/include/xenomai/ 
+--with-core=cobalt --enable-smp --enable-registry --enable-assert 
+--enable-async-cancel --enable-pshared
+
+Best regards
+
+Jean-Michel
 
