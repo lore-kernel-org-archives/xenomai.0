@@ -1,8 +1,7 @@
 From: Josh Karch <jkarch@FirstMode.com>
-Subject: Receiving "Operation Not Permitted" when setting
- RTCAN_RTIOC_RCV_TIMEOUT and reading from CAN over cobalt pthread
-Date: Wed, 1 Jul 2020 14:55:35 +0000
-Message-ID: <MN2PR19MB39672146FC17172A042EECFED56C0@MN2PR19MB3967.namprd19.prod.outlook.com>
+Subject: xeno_can_mem (and other driver) IRQ issues with Zynq UltraScale
+Date: Wed, 1 Jul 2020 15:15:20 +0000
+Message-ID: <MN2PR19MB39679C9A623AB7AFBC312DE5D56C0@MN2PR19MB3967.namprd19.prod.outlook.com>
 Content-Language: en-US
 MIME-Version: 1.0
 Content-Type: text/plain; charset="iso-8859-1"
@@ -19,48 +18,17 @@ To: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
 Hello,
 
-So a quick update, I was able to get the CAN drivers working, the issue as =
-was suggested is that Linux did not register the interrupts for the Zynq, a=
-nd I had to make a fake "generic-uio" module in the device tree to receive =
-a valid IRQ number, and now the CAN core registers properly.
-
-Now, I'm trying to create an application using the POSIX skin, based on the=
- rtcanrecv.c example.  Rather than using rt_task_shadow, I'm using pthread_=
-create.  My Makefile uses xeno-config with --skin=3Dposix and sets --cflags=
- and --ldflags, while wrap-link uses the POSIX ldflags. We are using libcob=
-alt.
-
-When I don't set the timeout IOCTL, my application runs, but it blocks inde=
-finitely until messages are received, however when I set the IOCTL (0.1 sec=
-)
-ret =3D ioctl(can_fd, RTCAN_RTIOC_RCV_TIMEOUT, &timeout);
-then make the read in my pthread
-
-ret =3D recvfrom(can_fd, (void *)&can_msg_frame, sizeof(can_frame_t), 0,
-                                  (struct sockaddr *)&can_address, &address=
-_length);
-
-I receive -EPERM rather than -ETIMEDOUT as a return.  The application is ru=
-n as root, and works normally unless the TIMEOUT ioctl above is triggered; =
- thoughts on where to look?
-
-Here are the lines of interest for the Makefile:
-CFLAGS :=3D $(shell $(DESTDIR)$(XENO_DIR)/$(XENO_CONFIG) --skin=3Dposix --c=
-flags)
-LDFLAGS :=3D $(shell $(DESTDIR)$(XENO_DIR)/$(XENO_CONFIG) --skin=3Dposix --=
-ldflags)
-
-$(PROGNAME):
-$(CC) -c  $(PROGNAME).c $(CFLAGS)
-$(DESTDIR)$(XENO_DIR)/$(WRAP_LINK) -v $(CC) -o $(PROGNAME) $(PROGNAME).o $(=
-LDFLAGS)
-
-My guess is if I make the application run as an rt_task it would work.
-Are there any special parameters needed to be set for pthread_create in ord=
-er to run in RT mode?
-
+I just wanted to give a quick update on the xeno_can_mem issues.  It appear=
+s for the Zynq UltraScale+ MPSoC that in order to register IRQs for use by =
+Xenomai Drivers you first need to create a "generic-uio" entry in the devic=
+e tree pointing to the device's PL (programmable logic) interrupt.  This wi=
+ll reserve the IRQ in Linux based on the mapping from whatever interrupt co=
+ntroller is being used.  At that point you can then modprobe the Xenomai dr=
+iver.  I was receiving faults trying to directly register the interrupt lin=
+e (#121 for example).
 
 Best,
+
 
 Josh Karch
 
