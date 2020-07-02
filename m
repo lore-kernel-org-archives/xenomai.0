@@ -1,11 +1,14 @@
-From: Josh Karch <jkarch@FirstMode.com>
-Subject: xeno_can_mem (and other driver) IRQ issues with Zynq UltraScale
-Date: Wed, 1 Jul 2020 15:15:20 +0000
-Message-ID: <MN2PR19MB39679C9A623AB7AFBC312DE5D56C0@MN2PR19MB3967.namprd19.prod.outlook.com>
+From: "Meng, Fino" <fino.meng@intel.com>
+Subject: RE: Receiving "Operation Not Permitted" when setting
+ RTCAN_RTIOC_RCV_TIMEOUT and reading from CAN over cobalt pthread
+Date: Thu, 2 Jul 2020 02:40:09 +0000
+Message-ID: <BYAPR11MB3765B4BBCD3D3DC9AFC9D7C1EE6D0@BYAPR11MB3765.namprd11.prod.outlook.com>
+References: <MN2PR19MB39672146FC17172A042EECFED56C0@MN2PR19MB3967.namprd19.prod.outlook.com>
+In-Reply-To: <MN2PR19MB39672146FC17172A042EECFED56C0@MN2PR19MB3967.namprd19.prod.outlook.com>
 Content-Language: en-US
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-Content-Type: text/plain; charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -14,21 +17,53 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Josh Karch <jkarch@FirstMode.com>
+Cc: "Xenomai (xenomai@xenomai.org)" <xenomai@xenomai.org>
 
-Hello,
-
-I just wanted to give a quick update on the xeno_can_mem issues.  It appear=
-s for the Zynq UltraScale+ MPSoC that in order to register IRQs for use by =
-Xenomai Drivers you first need to create a "generic-uio" entry in the devic=
-e tree pointing to the device's PL (programmable logic) interrupt.  This wi=
-ll reserve the IRQ in Linux based on the mapping from whatever interrupt co=
-ntroller is being used.  At that point you can then modprobe the Xenomai dr=
-iver.  I was receiving faults trying to directly register the interrupt lin=
-e (#121 for example).
-
-Best,
-
-
-Josh Karch
+TWF5YmUgaXQncyBkdWUgdG8gUlQgZ3JvdXAgc2NoZWR1bGluZywgd291bGQgdSB0cnkgdGhpczoN
+Cg0Kc3lzY3RsIC13IGtlcm5lbC5zY2hlZF9ydF9ydW50aW1lX3VzPS0xDQovL29yDQplY2hvICQk
+ID4gL3N5cy9mcy9jZ3JvdXAvY3B1L2Nncm91cC5wcm9jcw0KDQpodHRwczovL2dpdGh1Yi5jb20v
+c3lzdGVtZC9zeXN0ZW1kL2Jsb2IvbWFzdGVyL1JFQURNRQ0KICAgICAgICBXZSByZWNvbW1lbmQg
+dG8gdHVybiBvZmYgUmVhbC1UaW1lIGdyb3VwIHNjaGVkdWxpbmcgaW4gdGhlDQogICAgICAgIGtl
+cm5lbCB3aGVuIHVzaW5nIHN5c3RlbWQuIFJUIGdyb3VwIHNjaGVkdWxpbmcgZWZmZWN0aXZlbHkN
+CiAgICAgICAgbWFrZXMgUlQgc2NoZWR1bGluZyB1bmF2YWlsYWJsZSBmb3IgbW9zdCB1c2Vyc3Bh
+Y2UsIHNpbmNlIGl0DQogICAgICAgIHJlcXVpcmVzIGV4cGxpY2l0IGFzc2lnbm1lbnQgb2YgUlQg
+YnVkZ2V0cyB0byBlYWNoIHVuaXQgd2hvc2UNCiAgICAgICAgcHJvY2Vzc2VzIG1ha2luZyB1c2Ug
+b2YgUlQuIEFzIHRoZXJlJ3Mgbm8gc2Vuc2libGUgd2F5IHRvDQogICAgICAgIGFzc2lnbiB0aGVz
+ZSBidWRnZXRzIGF1dG9tYXRpY2FsbHkgdGhpcyBjYW5ub3QgcmVhbGx5IGJlDQogICAgICAgIGZp
+eGVkLCBhbmQgaXQncyBiZXN0IHRvIGRpc2FibGUgZ3JvdXAgc2NoZWR1bGluZyBoZW5jZS4NCiAg
+ICAgICAgICAgQ09ORklHX1JUX0dST1VQX1NDSEVEPW4NCg0KDQpCUiAvIEZpbm8gKOWtn+elpeWk
+qykNCkludGVsIOKAkyBJT1RHIERldmVsb3BlciBFbmFibGluZw0KDQo+U2VudDogV2VkbmVzZGF5
+LCBKdWx5IDEsIDIwMjAgMTA6NTYgUE0NCj5wdGhyZWFkDQo+DQo+SGVsbG8sDQo+DQo+U28gYSBx
+dWljayB1cGRhdGUsIEkgd2FzIGFibGUgdG8gZ2V0IHRoZSBDQU4gZHJpdmVycyB3b3JraW5nLCB0
+aGUgaXNzdWUgYXMgd2FzIHN1Z2dlc3RlZCBpcyB0aGF0IExpbnV4IGRpZCBub3QgcmVnaXN0ZXIg
+dGhlDQo+aW50ZXJydXB0cyBmb3IgdGhlIFp5bnEsIGFuZCBJIGhhZCB0byBtYWtlIGEgZmFrZSAi
+Z2VuZXJpYy11aW8iIG1vZHVsZSBpbiB0aGUgZGV2aWNlIHRyZWUgdG8gcmVjZWl2ZSBhIHZhbGlk
+IElSUSBudW1iZXIsIGFuZA0KPm5vdyB0aGUgQ0FOIGNvcmUgcmVnaXN0ZXJzIHByb3Blcmx5Lg0K
+Pg0KPk5vdywgSSdtIHRyeWluZyB0byBjcmVhdGUgYW4gYXBwbGljYXRpb24gdXNpbmcgdGhlIFBP
+U0lYIHNraW4sIGJhc2VkIG9uIHRoZSBydGNhbnJlY3YuYyBleGFtcGxlLiAgUmF0aGVyIHRoYW4g
+dXNpbmcNCj5ydF90YXNrX3NoYWRvdywgSSdtIHVzaW5nIHB0aHJlYWRfY3JlYXRlLiAgTXkgTWFr
+ZWZpbGUgdXNlcyB4ZW5vLWNvbmZpZyB3aXRoIC0tc2tpbj1wb3NpeCBhbmQgc2V0cyAtLWNmbGFn
+cyBhbmQgLS1sZGZsYWdzLCB3aGlsZQ0KPndyYXAtbGluayB1c2VzIHRoZSBQT1NJWCBsZGZsYWdz
+LiBXZSBhcmUgdXNpbmcgbGliY29iYWx0Lg0KPg0KPldoZW4gSSBkb24ndCBzZXQgdGhlIHRpbWVv
+dXQgSU9DVEwsIG15IGFwcGxpY2F0aW9uIHJ1bnMsIGJ1dCBpdCBibG9ja3MgaW5kZWZpbml0ZWx5
+IHVudGlsIG1lc3NhZ2VzIGFyZSByZWNlaXZlZCwgaG93ZXZlciB3aGVuIEkNCj5zZXQgdGhlIElP
+Q1RMICgwLjEgc2VjKSByZXQgPSBpb2N0bChjYW5fZmQsIFJUQ0FOX1JUSU9DX1JDVl9USU1FT1VU
+LCAmdGltZW91dCk7IHRoZW4gbWFrZSB0aGUgcmVhZCBpbiBteSBwdGhyZWFkDQo+DQo+cmV0ID0g
+cmVjdmZyb20oY2FuX2ZkLCAodm9pZCAqKSZjYW5fbXNnX2ZyYW1lLCBzaXplb2YoY2FuX2ZyYW1l
+X3QpLCAwLA0KPiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAoc3RydWN0IHNvY2th
+ZGRyICopJmNhbl9hZGRyZXNzLCAmYWRkcmVzc19sZW5ndGgpOw0KPg0KPkkgcmVjZWl2ZSAtRVBF
+Uk0gcmF0aGVyIHRoYW4gLUVUSU1FRE9VVCBhcyBhIHJldHVybi4gIFRoZSBhcHBsaWNhdGlvbiBp
+cyBydW4gYXMgcm9vdCwgYW5kIHdvcmtzIG5vcm1hbGx5IHVubGVzcyB0aGUgVElNRU9VVA0KPmlv
+Y3RsIGFib3ZlIGlzIHRyaWdnZXJlZDsgIHRob3VnaHRzIG9uIHdoZXJlIHRvIGxvb2s/DQo+DQo+
+SGVyZSBhcmUgdGhlIGxpbmVzIG9mIGludGVyZXN0IGZvciB0aGUgTWFrZWZpbGU6DQo+Q0ZMQUdT
+IDo9ICQoc2hlbGwgJChERVNURElSKSQoWEVOT19ESVIpLyQoWEVOT19DT05GSUcpIC0tc2tpbj1w
+b3NpeCAtLWNmbGFncykgTERGTEFHUyA6PSAkKHNoZWxsDQo+JChERVNURElSKSQoWEVOT19ESVIp
+LyQoWEVOT19DT05GSUcpIC0tc2tpbj1wb3NpeCAtLWxkZmxhZ3MpDQo+DQo+JChQUk9HTkFNRSk6
+DQo+JChDQykgLWMgICQoUFJPR05BTUUpLmMgJChDRkxBR1MpDQo+JChERVNURElSKSQoWEVOT19E
+SVIpLyQoV1JBUF9MSU5LKSAtdiAkKENDKSAtbyAkKFBST0dOQU1FKSAkKFBST0dOQU1FKS5vICQo
+TERGTEFHUykNCj4NCj5NeSBndWVzcyBpcyBpZiBJIG1ha2UgdGhlIGFwcGxpY2F0aW9uIHJ1biBh
+cyBhbiBydF90YXNrIGl0IHdvdWxkIHdvcmsuDQo+QXJlIHRoZXJlIGFueSBzcGVjaWFsIHBhcmFt
+ZXRlcnMgbmVlZGVkIHRvIGJlIHNldCBmb3IgcHRocmVhZF9jcmVhdGUgaW4gb3JkZXIgdG8gcnVu
+IGluIFJUIG1vZGU/DQo+DQo+DQo+QmVzdCwNCj4NCj5Kb3NoIEthcmNoDQoNCg==
 
