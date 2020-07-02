@@ -1,14 +1,15 @@
-Content-Type: text/plain;
-	charset=utf-8
-Mime-Version: 1.0 (Mac OS X Mail 13.4 \(3608.80.23.2.2\))
-Subject: Re: rtdm_task_init does not work with Xenomai 3
-From: ayaida marwane <ayaida_marwane@yahoo.fr>
-In-Reply-To: <BCA29F40-0C3A-4DF7-9FE9-EF5D55C66C27@yahoo.fr>
-Date: Sun, 7 Jun 2020 22:33:29 +0200
-Content-Transfer-Encoding: quoted-printable
-Message-Id: <B5BA411F-973C-4EDA-B87D-F323D28D3DEF@yahoo.fr>
-References: <BCA29F40-0C3A-4DF7-9FE9-EF5D55C66C27.ref@yahoo.fr>
- <BCA29F40-0C3A-4DF7-9FE9-EF5D55C66C27@yahoo.fr>
+Subject: Re: Receiving "Operation Not Permitted" when setting
+ RTCAN_RTIOC_RCV_TIMEOUT and reading from CAN over cobalt pthread
+References: <MN2PR19MB39672146FC17172A042EECFED56C0@MN2PR19MB3967.namprd19.prod.outlook.com>
+ <BYAPR11MB3765B4BBCD3D3DC9AFC9D7C1EE6D0@BYAPR11MB3765.namprd11.prod.outlook.com>
+From: Jan Kiszka <jan.kiszka@siemens.com>
+Message-ID: <80cc1802-0c93-05b9-534e-39c2f432db72@siemens.com>
+Date: Thu, 2 Jul 2020 06:49:44 +0200
+MIME-Version: 1.0
+In-Reply-To: <BYAPR11MB3765B4BBCD3D3DC9AFC9D7C1EE6D0@BYAPR11MB3765.namprd11.prod.outlook.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,110 +18,76 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Marwane Ayaida <ayaida_marwane@yahoo.fr>
-Cc: xenomai@xenomai.org
+To: "Meng, Fino" <fino.meng@intel.com>, Josh Karch <jkarch@FirstMode.com>
+Cc: "Xenomai (xenomai@xenomai.org)" <xenomai@xenomai.org>
 
-Hi,
+On 02.07.20 04:40, Meng, Fino via Xenomai wrote:
+> Maybe it's due to RT group scheduling, would u try this:
+> 
+> sysctl -w kernel.sched_rt_runtime_us=-1
+> //or
+> echo $$ > /sys/fs/cgroup/cpu/cgroup.procs
+> 
 
-Any suggestion about the request below?
+That is actually not evaluated by Xenomai for its own threads.
 
-Thanks!
+Jan
 
-BR,
-Marwane.
+> https://github.com/systemd/systemd/blob/master/README
+>         We recommend to turn off Real-Time group scheduling in the
+>         kernel when using systemd. RT group scheduling effectively
+>         makes RT scheduling unavailable for most userspace, since it
+>         requires explicit assignment of RT budgets to each unit whose
+>         processes making use of RT. As there's no sensible way to
+>         assign these budgets automatically this cannot really be
+>         fixed, and it's best to disable group scheduling hence.
+>            CONFIG_RT_GROUP_SCHED=n
+> 
+> 
+> BR / Fino (孟祥夫)
+> Intel – IOTG Developer Enabling
+> 
+>> Sent: Wednesday, July 1, 2020 10:56 PM
+>> pthread
+>>
+>> Hello,
+>>
+>> So a quick update, I was able to get the CAN drivers working, the issue as was suggested is that Linux did not register the
+>> interrupts for the Zynq, and I had to make a fake "generic-uio" module in the device tree to receive a valid IRQ number, and
+>> now the CAN core registers properly.
+>>
+>> Now, I'm trying to create an application using the POSIX skin, based on the rtcanrecv.c example.  Rather than using
+>> rt_task_shadow, I'm using pthread_create.  My Makefile uses xeno-config with --skin=posix and sets --cflags and --ldflags, while
+>> wrap-link uses the POSIX ldflags. We are using libcobalt.
+>>
+>> When I don't set the timeout IOCTL, my application runs, but it blocks indefinitely until messages are received, however when I
+>> set the IOCTL (0.1 sec) ret = ioctl(can_fd, RTCAN_RTIOC_RCV_TIMEOUT, &timeout); then make the read in my pthread
+>>
+>> ret = recvfrom(can_fd, (void *)&can_msg_frame, sizeof(can_frame_t), 0,
+>>                                  (struct sockaddr *)&can_address, &address_length);
+>>
+>> I receive -EPERM rather than -ETIMEDOUT as a return.  The application is run as root, and works normally unless the TIMEOUT
+>> ioctl above is triggered;  thoughts on where to look?
+>>
+>> Here are the lines of interest for the Makefile:
+>> CFLAGS := $(shell $(DESTDIR)$(XENO_DIR)/$(XENO_CONFIG) --skin=posix --cflags) LDFLAGS := $(shell
+>> $(DESTDIR)$(XENO_DIR)/$(XENO_CONFIG) --skin=posix --ldflags)
+>>
+>> $(PROGNAME):
+>> $(CC) -c  $(PROGNAME).c $(CFLAGS)
+>> $(DESTDIR)$(XENO_DIR)/$(WRAP_LINK) -v $(CC) -o $(PROGNAME) $(PROGNAME).o $(LDFLAGS)
+>>
+>> My guess is if I make the application run as an rt_task it would work.
+>> Are there any special parameters needed to be set for pthread_create in order to run in RT mode?
+>>
+>>
+>> Best,
+>>
+>> Josh Karch
+> 
 
-> Le 2 juin 2020 =C3=A0 20:34, ayaida marwane via Xenomai =
-<xenomai@xenomai.org> a =C3=A9crit :
->=20
-> Dear all,
->=20
-> I tried to have an example using rtdm_task_init with Xenomai 3.0.7. =
-The example is tis one:
->=20
-> =E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=
-=E2=80=94=20
->=20
-> #include <rtdm/driver.h>
-> static int periode_us =3D 1000;
-> static int a, ret;
-> module_param(periode_us, int, 0644);
->=20
-> rtdm_task_t task;
->=20
-> void task_ultrason(void *arg){
->   a=3D1;
->   rtdm_printk(KERN_INFO "%s.%s() : hello =3D %d\n", THIS_MODULE->name, =
-__FUNCTION__,a);
-> }
->=20
-> int __init ultrason_init(void) {
->   a=3D0;
->   rtdm_printk(KERN_INFO "%s.%s() : hello =3D %d\n", THIS_MODULE->name, =
-__FUNCTION__,a);
->   ret =3D rtdm_task_init(&task, "ultrason", task_ultrason, NULL, 99, =
-periode_us*1000);
->   if (ret) {
->        rtdm_printk(KERN_INFO "%s.%s() : error rtdm_task_init, hello =3D =
-%d\n", THIS_MODULE->name, __FUNCTION__,a);
->   }
->   else  rtdm_printk(KERN_INFO "%s.%s() : success rtdm_task_init, hello =
-=3D %d\n", THIS_MODULE->name, __FUNCTION__,a);
->   return 0;
-> }
-> void __exit ultrason_exit(void) {
->   a=3D2;
->   rtdm_task_destroy(&task);
->   rtdm_printk(KERN_INFO "%s.%s() : hello =3D %d\n", THIS_MODULE->name, =
-__FUNCTION__,a);
->   }
->=20
-> module_init(ultrason_init);
-> module_exit(ultrason_exit);
-> MODULE_LICENSE("GPL =C2=BB);
->=20
-> =E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=
-=E2=80=94=20
->=20
-> When I insert the module and remove it, I found in dmesg:
->=20
-> =E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=
-=E2=80=94=20
->=20
-> [ 5045.187448] test.ultrason_init() : hello =3D 0
-> [ 5045.189495] test.ultrason_init() : success rtdm_task_init, hello =3D =
-0
-> [ 5049.631665] test.ultrason_exit() : hello =3D 2
->=20
-> =E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=
-=E2=80=94=20
->=20
-> The task_ultrason is never called.
->=20
-> I read from =
-https://gitlab.denx.de/Xenomai/xenomai/-/wikis/Migrating_From_Xenomai_2_To=
-_3 =
-<https://gitlab.denx.de/Xenomai/xenomai/-/wikis/Migrating_From_Xenomai_2_T=
-o_3>, that rtdm_task_init() shall be called from secondary mode.
->=20
-> Since Xenomai 3, rtdm_task_init() involves creating a regular kernel =
-thread, which will be given real-time capabilities, such as running =
-under the control of the Cobalt kernel. In order to invoke standard =
-kernel services, rtdm_task_init() must be called from a regular Linux =
-kernel context.
->=20
-> So, how to adapt my example to call rtdm_task_init() from  from a =
-regular Linux kernel context to make this example working?
->=20
-> Thank you for your help.
->=20
-> BR,
-> Marwane.
->=20
->=20
->=20
->=20
->=20
->=20
->=20
 
+-- 
+Siemens AG, Corporate Technology, CT RDA IOT SES-DE
+Corporate Competence Center Embedded Linux
 
