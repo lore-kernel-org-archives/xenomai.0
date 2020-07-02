@@ -1,14 +1,14 @@
-From: "Meng, Fino" <fino.meng@intel.com>
-Subject: RE: Receiving "Operation Not Permitted" when setting
+Subject: Re: Receiving "Operation Not Permitted" when setting
  RTCAN_RTIOC_RCV_TIMEOUT and reading from CAN over cobalt pthread
-Date: Thu, 2 Jul 2020 02:40:09 +0000
-Message-ID: <BYAPR11MB3765B4BBCD3D3DC9AFC9D7C1EE6D0@BYAPR11MB3765.namprd11.prod.outlook.com>
 References: <MN2PR19MB39672146FC17172A042EECFED56C0@MN2PR19MB3967.namprd19.prod.outlook.com>
-In-Reply-To: <MN2PR19MB39672146FC17172A042EECFED56C0@MN2PR19MB3967.namprd19.prod.outlook.com>
-Content-Language: en-US
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+From: Jan Kiszka <jan.kiszka@siemens.com>
+Message-ID: <e4369869-59d5-742b-ff4b-a89d4f9f5328@siemens.com>
+Date: Thu, 2 Jul 2020 06:43:09 +0200
 MIME-Version: 1.0
+In-Reply-To: <MN2PR19MB39672146FC17172A042EECFED56C0@MN2PR19MB3967.namprd19.prod.outlook.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,53 +17,47 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Josh Karch <jkarch@FirstMode.com>
-Cc: "Xenomai (xenomai@xenomai.org)" <xenomai@xenomai.org>
+To: Josh Karch <jkarch@FirstMode.com>, "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-TWF5YmUgaXQncyBkdWUgdG8gUlQgZ3JvdXAgc2NoZWR1bGluZywgd291bGQgdSB0cnkgdGhpczoN
-Cg0Kc3lzY3RsIC13IGtlcm5lbC5zY2hlZF9ydF9ydW50aW1lX3VzPS0xDQovL29yDQplY2hvICQk
-ID4gL3N5cy9mcy9jZ3JvdXAvY3B1L2Nncm91cC5wcm9jcw0KDQpodHRwczovL2dpdGh1Yi5jb20v
-c3lzdGVtZC9zeXN0ZW1kL2Jsb2IvbWFzdGVyL1JFQURNRQ0KICAgICAgICBXZSByZWNvbW1lbmQg
-dG8gdHVybiBvZmYgUmVhbC1UaW1lIGdyb3VwIHNjaGVkdWxpbmcgaW4gdGhlDQogICAgICAgIGtl
-cm5lbCB3aGVuIHVzaW5nIHN5c3RlbWQuIFJUIGdyb3VwIHNjaGVkdWxpbmcgZWZmZWN0aXZlbHkN
-CiAgICAgICAgbWFrZXMgUlQgc2NoZWR1bGluZyB1bmF2YWlsYWJsZSBmb3IgbW9zdCB1c2Vyc3Bh
-Y2UsIHNpbmNlIGl0DQogICAgICAgIHJlcXVpcmVzIGV4cGxpY2l0IGFzc2lnbm1lbnQgb2YgUlQg
-YnVkZ2V0cyB0byBlYWNoIHVuaXQgd2hvc2UNCiAgICAgICAgcHJvY2Vzc2VzIG1ha2luZyB1c2Ug
-b2YgUlQuIEFzIHRoZXJlJ3Mgbm8gc2Vuc2libGUgd2F5IHRvDQogICAgICAgIGFzc2lnbiB0aGVz
-ZSBidWRnZXRzIGF1dG9tYXRpY2FsbHkgdGhpcyBjYW5ub3QgcmVhbGx5IGJlDQogICAgICAgIGZp
-eGVkLCBhbmQgaXQncyBiZXN0IHRvIGRpc2FibGUgZ3JvdXAgc2NoZWR1bGluZyBoZW5jZS4NCiAg
-ICAgICAgICAgQ09ORklHX1JUX0dST1VQX1NDSEVEPW4NCg0KDQpCUiAvIEZpbm8gKOWtn+elpeWk
-qykNCkludGVsIOKAkyBJT1RHIERldmVsb3BlciBFbmFibGluZw0KDQo+U2VudDogV2VkbmVzZGF5
-LCBKdWx5IDEsIDIwMjAgMTA6NTYgUE0NCj5wdGhyZWFkDQo+DQo+SGVsbG8sDQo+DQo+U28gYSBx
-dWljayB1cGRhdGUsIEkgd2FzIGFibGUgdG8gZ2V0IHRoZSBDQU4gZHJpdmVycyB3b3JraW5nLCB0
-aGUgaXNzdWUgYXMgd2FzIHN1Z2dlc3RlZCBpcyB0aGF0IExpbnV4IGRpZCBub3QgcmVnaXN0ZXIg
-dGhlDQo+aW50ZXJydXB0cyBmb3IgdGhlIFp5bnEsIGFuZCBJIGhhZCB0byBtYWtlIGEgZmFrZSAi
-Z2VuZXJpYy11aW8iIG1vZHVsZSBpbiB0aGUgZGV2aWNlIHRyZWUgdG8gcmVjZWl2ZSBhIHZhbGlk
-IElSUSBudW1iZXIsIGFuZA0KPm5vdyB0aGUgQ0FOIGNvcmUgcmVnaXN0ZXJzIHByb3Blcmx5Lg0K
-Pg0KPk5vdywgSSdtIHRyeWluZyB0byBjcmVhdGUgYW4gYXBwbGljYXRpb24gdXNpbmcgdGhlIFBP
-U0lYIHNraW4sIGJhc2VkIG9uIHRoZSBydGNhbnJlY3YuYyBleGFtcGxlLiAgUmF0aGVyIHRoYW4g
-dXNpbmcNCj5ydF90YXNrX3NoYWRvdywgSSdtIHVzaW5nIHB0aHJlYWRfY3JlYXRlLiAgTXkgTWFr
-ZWZpbGUgdXNlcyB4ZW5vLWNvbmZpZyB3aXRoIC0tc2tpbj1wb3NpeCBhbmQgc2V0cyAtLWNmbGFn
-cyBhbmQgLS1sZGZsYWdzLCB3aGlsZQ0KPndyYXAtbGluayB1c2VzIHRoZSBQT1NJWCBsZGZsYWdz
-LiBXZSBhcmUgdXNpbmcgbGliY29iYWx0Lg0KPg0KPldoZW4gSSBkb24ndCBzZXQgdGhlIHRpbWVv
-dXQgSU9DVEwsIG15IGFwcGxpY2F0aW9uIHJ1bnMsIGJ1dCBpdCBibG9ja3MgaW5kZWZpbml0ZWx5
-IHVudGlsIG1lc3NhZ2VzIGFyZSByZWNlaXZlZCwgaG93ZXZlciB3aGVuIEkNCj5zZXQgdGhlIElP
-Q1RMICgwLjEgc2VjKSByZXQgPSBpb2N0bChjYW5fZmQsIFJUQ0FOX1JUSU9DX1JDVl9USU1FT1VU
-LCAmdGltZW91dCk7IHRoZW4gbWFrZSB0aGUgcmVhZCBpbiBteSBwdGhyZWFkDQo+DQo+cmV0ID0g
-cmVjdmZyb20oY2FuX2ZkLCAodm9pZCAqKSZjYW5fbXNnX2ZyYW1lLCBzaXplb2YoY2FuX2ZyYW1l
-X3QpLCAwLA0KPiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAoc3RydWN0IHNvY2th
-ZGRyICopJmNhbl9hZGRyZXNzLCAmYWRkcmVzc19sZW5ndGgpOw0KPg0KPkkgcmVjZWl2ZSAtRVBF
-Uk0gcmF0aGVyIHRoYW4gLUVUSU1FRE9VVCBhcyBhIHJldHVybi4gIFRoZSBhcHBsaWNhdGlvbiBp
-cyBydW4gYXMgcm9vdCwgYW5kIHdvcmtzIG5vcm1hbGx5IHVubGVzcyB0aGUgVElNRU9VVA0KPmlv
-Y3RsIGFib3ZlIGlzIHRyaWdnZXJlZDsgIHRob3VnaHRzIG9uIHdoZXJlIHRvIGxvb2s/DQo+DQo+
-SGVyZSBhcmUgdGhlIGxpbmVzIG9mIGludGVyZXN0IGZvciB0aGUgTWFrZWZpbGU6DQo+Q0ZMQUdT
-IDo9ICQoc2hlbGwgJChERVNURElSKSQoWEVOT19ESVIpLyQoWEVOT19DT05GSUcpIC0tc2tpbj1w
-b3NpeCAtLWNmbGFncykgTERGTEFHUyA6PSAkKHNoZWxsDQo+JChERVNURElSKSQoWEVOT19ESVIp
-LyQoWEVOT19DT05GSUcpIC0tc2tpbj1wb3NpeCAtLWxkZmxhZ3MpDQo+DQo+JChQUk9HTkFNRSk6
-DQo+JChDQykgLWMgICQoUFJPR05BTUUpLmMgJChDRkxBR1MpDQo+JChERVNURElSKSQoWEVOT19E
-SVIpLyQoV1JBUF9MSU5LKSAtdiAkKENDKSAtbyAkKFBST0dOQU1FKSAkKFBST0dOQU1FKS5vICQo
-TERGTEFHUykNCj4NCj5NeSBndWVzcyBpcyBpZiBJIG1ha2UgdGhlIGFwcGxpY2F0aW9uIHJ1biBh
-cyBhbiBydF90YXNrIGl0IHdvdWxkIHdvcmsuDQo+QXJlIHRoZXJlIGFueSBzcGVjaWFsIHBhcmFt
-ZXRlcnMgbmVlZGVkIHRvIGJlIHNldCBmb3IgcHRocmVhZF9jcmVhdGUgaW4gb3JkZXIgdG8gcnVu
-IGluIFJUIG1vZGU/DQo+DQo+DQo+QmVzdCwNCj4NCj5Kb3NoIEthcmNoDQoNCg==
+On 01.07.20 16:55, Josh Karch via Xenomai wrote:
+> Hello,
+> 
+> So a quick update, I was able to get the CAN drivers working, the issue as was suggested is that Linux did not register the interrupts for the Zynq, and I had to make a fake "generic-uio" module in the device tree to receive a valid IRQ number, and now the CAN core registers properly.
+> 
+> Now, I'm trying to create an application using the POSIX skin, based on the rtcanrecv.c example.  Rather than using rt_task_shadow, I'm using pthread_create.  My Makefile uses xeno-config with --skin=posix and sets --cflags and --ldflags, while wrap-link uses the POSIX ldflags. We are using libcobalt.
+> 
+> When I don't set the timeout IOCTL, my application runs, but it blocks indefinitely until messages are received, however when I set the IOCTL (0.1 sec)
+> ret = ioctl(can_fd, RTCAN_RTIOC_RCV_TIMEOUT, &timeout);
+> then make the read in my pthread
+> 
+> ret = recvfrom(can_fd, (void *)&can_msg_frame, sizeof(can_frame_t), 0,
+>                                   (struct sockaddr *)&can_address, &address_length);
+> 
+> I receive -EPERM rather than -ETIMEDOUT as a return.  The application is run as root, and works normally unless the TIMEOUT ioctl above is triggered;  thoughts on where to look?
+> 
+> Here are the lines of interest for the Makefile:
+> CFLAGS := $(shell $(DESTDIR)$(XENO_DIR)/$(XENO_CONFIG) --skin=posix --cflags)
+> LDFLAGS := $(shell $(DESTDIR)$(XENO_DIR)/$(XENO_CONFIG) --skin=posix --ldflags)
+> 
+> $(PROGNAME):
+> $(CC) -c  $(PROGNAME).c $(CFLAGS)
+> $(DESTDIR)$(XENO_DIR)/$(WRAP_LINK) -v $(CC) -o $(PROGNAME) $(PROGNAME).o $(LDFLAGS)
+> 
+> My guess is if I make the application run as an rt_task it would work.
+> Are there any special parameters needed to be set for pthread_create in order to run in RT mode?
+> 
+
+If wrapping is worked fine (check the symbols that your application is
+actually calling: __wrap_ioctl? Also __wrap_socket?), you do not need
+special parameters to the thread creation, also SCHED_OTHER threads will
+be able to RTDM drivers then.
+
+Besides that offline check, you can also look if that thread shows up
+/proc/xenomai/sched/threads while it is existing.
+
+Jan
+
+-- 
+Siemens AG, Corporate Technology, CT RDA IOT SES-DE
+Corporate Competence Center Embedded Linux
 
