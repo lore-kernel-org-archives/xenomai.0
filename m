@@ -1,13 +1,7 @@
-Date: Fri, 3 Jul 2020 08:22:51 +0200 (CEST)
-From: Richard Weinberger <richard@nod.at>
-Message-ID: <1684715583.86100.1593757371692.JavaMail.zimbra@nod.at>
-In-Reply-To: <77dc555e-10dd-8e05-0770-1f1f673259fd@siemens.com>
-References: <CAFLxGvxru2Y==qboUgwHdsQvOT5MEL2O8CexkhkQpKz0Qj+jqw@mail.gmail.com>
- <77dc555e-10dd-8e05-0770-1f1f673259fd@siemens.com>
-Subject: Re: RTDM module ownership
-MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
+From: chensong <chensong@tj.kylinos.cn>
+Subject: [PATCH 0/2]GPIO Loopback Benchmark Tool
+Date: Fri,  3 Jul 2020 14:37:15 +0800
+Message-Id: <1593758235-9182-1-git-send-email-chensong@tj.kylinos.cn>
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,26 +10,45 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jan Kiszka <jan.kiszka@siemens.com>
-Cc: Richard Weinberger <richard.weinberger@gmail.com>, xenomai <xenomai@xenomai.org>
+To: xenomai@xenomai.org
 
------ Urspr=C3=BCngliche Mail -----
->> In contrast, on regular Linux rmmod will refuse to unload the module
->> if the device node is still open because fops_get() or other helpers
->> gained a reference on the owner.
->>=20
->=20
-> First of all, your driver is apparently not reacting on the close
-> request that it receives in that case. This leads the the stall you see.
+In general, we use cyclictest and latency to evaluate the determinism of our real
+time system. As we know, cyclictest and latency use hrtimer to set up a timer and
+calculate jitter by comparing expected wakeup time and real wakeup time.
 
-Huh? rmmmod triggers close of what?
-*confused*
-=20
-> Still, we could indeed run some module_put/get on open/socket/close. I
-> thought we did, but that was once RTnet [1].
+Besides that, we can also use GPIO to evaluate more modules in different scenarios. 
+In this case, i apply 2 GPIO ports, one is set as output, the other is interrupt, 
+at the same time, connect them with a cable. Once an signal is sent from output pin,
+an interrupt will be raised in interrupt pin immediately.
 
-Yes. Would be nice. :-)
+Timestamps are recorded before gpio_set_value and interrupt handler respectively, the
+diff between them is jitter.
 
-Thanks,
-//richard
+There is also an RT task running in the user space, which collects the information and
+output the summary at the end of the test. What's more, it also records the timestamps
+in user space, syscall overhead is included.
+
+Further, Making a little change will enable the tool working with latency box,once a
+signal from latency box is received in interrupt pin, the tool can send a signal at
+output pin as response. (I haven't got the latency box, so this function is not in 
+place yet)
+
+chensong (2):
+  demo/posix/cobalt: App of gpio loopback benchmark
+  kernel/driver/testing: Driver of gpio loopback benchmark
+
+ demo/posix/cobalt/Makefile.am      |   6 +
+ demo/posix/cobalt/gpioloop.c       | 516 +++++++++++++++++++++++++++++++++++++
+ kernel/drivers/testing/Kconfig     |   7 +
+ kernel/drivers/testing/Makefile    |   3 +
+ kernel/drivers/testing/gpiobench.c | 288 +++++++++++++++++++++
+ 5 files changed, 820 insertions(+)
+ create mode 100644 demo/posix/cobalt/gpioloop.c
+ create mode 100644 kernel/drivers/testing/gpiobench.c
+
+-- 
+2.7.4
+
+
+
 
