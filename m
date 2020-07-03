@@ -1,10 +1,13 @@
+Subject: Re: RTDM module ownership
+References: <CAFLxGvxru2Y==qboUgwHdsQvOT5MEL2O8CexkhkQpKz0Qj+jqw@mail.gmail.com>
+From: Jan Kiszka <jan.kiszka@siemens.com>
+Message-ID: <77dc555e-10dd-8e05-0770-1f1f673259fd@siemens.com>
+Date: Fri, 3 Jul 2020 08:14:15 +0200
 MIME-Version: 1.0
-From: =?UTF-8?B?5a2Z5LiW6b6ZIHN1bnNoaWxvbmc=?= <sunshilong369@gmail.com>
-Date: Fri, 3 Jul 2020 10:17:51 +0800
-Message-ID: <CAAvDm6b3qYf_a+hQOaRx1RgbnzZ3v6YsD7ZP-EDS-4XyCxjq2w@mail.gmail.com>
-Subject: What are the differences among these similar nanosleep functions?
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+In-Reply-To: <CAFLxGvxru2Y==qboUgwHdsQvOT5MEL2O8CexkhkQpKz0Qj+jqw@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -13,88 +16,37 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai <xenomai@xenomai.org>
+To: Richard Weinberger <richard.weinberger@gmail.com>, Xenomai <xenomai@xenomai.org>
 
-What are the differences among these similar nanosleep functions,
-especially the second one and the third one:
+On 02.07.20 10:32, Richard Weinberger via Xenomai wrote:
+> Hi!
+> 
+> I'm working on a kernel module which is used on plain Linux and
+> Xenomai (RTDM), while reviewing RTDM to understand refcounting I found
+> something that is not entirely clear to me.
+> 
+> Why does __rtdm_dev_open() not grab a reference on the RTDM module owner?
+> This leads to the case where one can rmmod the module while it is in use.
+> Unloading will block uninterruptible in rtdm_dev_unregister() in the
+> module's cleanup funktion.
+> 
+> In contrast, on regular Linux rmmod will refuse to unload the module
+> if the device node is still open because fops_get() or other helpers
+> gained a reference on the owner.
+> 
 
-https://gitlab.denx.de/Xenomai/xenomai/-/blob/v3.1/lib/cobalt/clock.c:
- line=EF=BC=9A353
-COBALT_IMPL(int, nanosleep, (const struct timespec *rqtp, struct timespec
-*rmtp))
-{
-int ret;
+First of all, your driver is apparently not reacting on the close 
+request that it receives in that case. This leads the the stall you see.
 
-ret =3D __WRAP(clock_nanosleep(CLOCK_REALTIME, 0, rqtp, rmtp));
-if (ret) {
-errno =3D ret;
-return -1;
-}
+Still, we could indeed run some module_put/get on open/socket/close. I 
+thought we did, but that was once RTnet [1].
 
-return 0;
-}
+Jan
 
-https://gitlab.denx.de/Xenomai/xenomai/-/blob/v3.1/kernel/cobalt/posix/cloc=
-k.c
-line:272
-int __cobalt_clock_nanosleep(clockid_t clock_id, int flags,
-     const struct timespec *rqt,
-     struct timespec *rmt)
-{
-struct restart_block *restart;
-struct xnthread *cur;
-xnsticks_t timeout, rem;
-spl_t s;
+[1] 
+https://gitlab.denx.de/Xenomai/xenomai/-/commit/11bbdef0e9486d8f952ea29023882449331af1aa
 
-trace_cobalt_clock_nanosleep(clock_id, flags, rqt);
+-- 
+Siemens AG, Corporate Technology, CT RDA IOT SES-DE
+Corporate Competence Center Embedded Linux
 
-if (clock_id !=3D CLOCK_MONOTONIC &&
-    clock_id !=3D CLOCK_MONOTONIC_RAW &&
-    clock_id !=3D CLOCK_REALTIME)
-return -EOPNOTSUPP;
-
-if (rqt->tv_sec < 0)
-return -EINVAL;
-
-if ((unsigned long)rqt->tv_nsec >=3D ONE_BILLION)
-return -EINVAL;
-
-if (flags & ~TIMER_ABSTIME)
-return -EINVAL;
-
-cur =3D xnthread_current();
-...
-}
-
-https://gitlab.denx.de/Xenomai/xenomai/-/blob/v3.1/kernel/cobalt/posix/cloc=
-k.c
-line:360
-COBALT_SYSCALL(clock_nanosleep, primary,
-       (clockid_t clock_id, int flags,
-const struct timespec __user *u_rqt,
-struct timespec __user *u_rmt))
-{
-struct timespec rqt, rmt, *rmtp =3D NULL;
-int ret;
-
-if (u_rmt)
-rmtp =3D &rmt;
-
-if (cobalt_copy_from_user(&rqt, u_rqt, sizeof(rqt)))
-return -EFAULT;
-
-ret =3D __cobalt_clock_nanosleep(clock_id, flags, &rqt, rmtp);
-if (ret =3D=3D -EINTR && flags =3D=3D 0 && rmtp) {
-if (cobalt_copy_to_user(u_rmt, rmtp, sizeof(*u_rmt)))
-return -EFAULT;
-}
-
-return ret;
-}
-
-BTW, the patch that you required has been sent out in the last email
-(refer to https://www.mail-archive.com/xenomai@xenomai.org/msg17909.html).
-
-Thank you for your attention to this matter.
-Looking forward to hearing from you.
-Best Regards.
