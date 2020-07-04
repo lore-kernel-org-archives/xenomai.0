@@ -1,15 +1,11 @@
-Subject: Re: rtdm_task_init does not work with Xenomai 3
-References: <BCA29F40-0C3A-4DF7-9FE9-EF5D55C66C27.ref@yahoo.fr>
- <BCA29F40-0C3A-4DF7-9FE9-EF5D55C66C27@yahoo.fr>
- <B5BA411F-973C-4EDA-B87D-F323D28D3DEF@yahoo.fr>
-From: Philippe Gerum <rpm@xenomai.org>
-Message-ID: <68aba520-be16-e25e-61ad-32a7061e43e1@xenomai.org>
-Date: Mon, 8 Jun 2020 09:36:49 +0200
+From: Robert Berger <xenomai.list@gmail.com>
+Subject: xenomai 3.1/ipipe-core-4.19.128-cip28-arm-10.patch
+Message-ID: <3617ad4d-730b-189b-8dd5-02c768cab1c3@gmail.com>
+Date: Sat, 4 Jul 2020 21:59:16 +0300
 MIME-Version: 1.0
-In-Reply-To: <B5BA411F-973C-4EDA-B87D-F323D28D3DEF@yahoo.fr>
-Content-Type: text/plain; charset="utf-8"
+Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -18,83 +14,73 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: ayaida marwane <ayaida_marwane@yahoo.fr>
-Cc: xenomai@xenomai.org
+To: "Xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On 6/7/20 10:33 PM, ayaida marwane via Xenomai wrote:
-> Hi,
-> 
-> Any suggestion about the request below?
-> 
-> Thanks!
-> 
-> BR,
-> Marwane.
-> 
->> Le 2 juin 2020 à 20:34, ayaida marwane via Xenomai <xenomai@xenomai.org> a écrit :
->>
->> Dear all,
->>
->> I tried to have an example using rtdm_task_init with Xenomai 3.0.7. The example is tis one:
->>
->> ————————— 
->>
->> #include <rtdm/driver.h>
->> static int periode_us = 1000;
->> static int a, ret;
->> module_param(periode_us, int, 0644);
->>
->> rtdm_task_t task;
->>
->> void task_ultrason(void *arg){
->>   a=1;
->>   rtdm_printk(KERN_INFO "%s.%s() : hello = %d\n", THIS_MODULE->name, __FUNCTION__,a);
->> }
->>
->> int __init ultrason_init(void) {
->>   a=0;
->>   rtdm_printk(KERN_INFO "%s.%s() : hello = %d\n", THIS_MODULE->name, __FUNCTION__,a);
->>   ret = rtdm_task_init(&task, "ultrason", task_ultrason, NULL, 99, periode_us*1000);
->>   if (ret) {
->>        rtdm_printk(KERN_INFO "%s.%s() : error rtdm_task_init, hello = %d\n", THIS_MODULE->name, __FUNCTION__,a);
->>   }
->>   else  rtdm_printk(KERN_INFO "%s.%s() : success rtdm_task_init, hello = %d\n", THIS_MODULE->name, __FUNCTION__,a);
->>   return 0;
->> }
->> void __exit ultrason_exit(void) {
->>   a=2;
->>   rtdm_task_destroy(&task);
->>   rtdm_printk(KERN_INFO "%s.%s() : hello = %d\n", THIS_MODULE->name, __FUNCTION__,a);
->>   }
->>
->> module_init(ultrason_init);
->> module_exit(ultrason_exit);
->> MODULE_LICENSE("GPL »);
->>
->> ————————— 
->>
->> When I insert the module and remove it, I found in dmesg:
->>
->> ————————— 
->>
->> [ 5045.187448] test.ultrason_init() : hello = 0
->> [ 5045.189495] test.ultrason_init() : success rtdm_task_init, hello = 0
->> [ 5049.631665] test.ultrason_exit() : hello = 2
+Hi,
 
-This looks like a I bug fixed many moons ago in the printk support code for
-the pipeline. This issue caused printk() output sent from the head stage not
-to appear in the kernel log, a regression due to upstream changes which went
-unnoticed.
+I just took the latest and greatest stuff and built it with some Yocto 
+dunfell/3.1.1 SDK for some 32 bit ARM i.mx6.
 
-You may want to update your I-pipe patch to the latest available in your
-kernel series to make sure the fix is there. If not, your rt task would indeed
-run shortly as requested by rtdm_task_init(), but the feedback would be
-spuriously elided.
+Xenomai/cobalt v3.1 -- #5714ceede (2020-02-04 16:06:11 +0100)
 
-A trivial way to check this without ftracing: have task_ultrason() call
-rtdm_task_sleep(10000000000ULL) before exiting, then you would have 10 secs to
-manually check it was actually spawned by reading /proc/xenomai/sched/threads.
+When I run xeno-test I get this:
 
--- 
-Philippe.
+./xeno-test
+++ echo 0
+++ testdir=/usr/local/xenomai/bin
+++ /usr/local/xenomai/bin/smokey --run random_alloc_rounds=64 
+pattern_check_rounds=64
+arith OK
+...
+posix_clock OK
+posix_cond OK
+posix_fork OK
+[  466.998532] [Xenomai] bad syscall <0x197>
+posix_mutex OK
+posix_select OK
+...
+
+0x197 (407) is not avail in 4.19[1], but in 5.4[2]
+
+[1] 
+https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux.git/tree/arch/arm/tools/syscall.tbl?h=v4.19.131#n416
+
+[2] 
+https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux.git/tree/arch/arm/tools/syscall.tbl?h=v5.4.50#n424 
+
+
+The SDK was built against 5.4 kernel headers (which is the default for 
+Yocto dunfell/3.1.1).
+
+If I run a small C app (without xenomai) which calls this:
+
+static void xeno_sleep_ms(unsigned int ms)
+{                               /* < 1000 */
+         struct timespec ts;
+
+         ts.tv_sec = 0;
+         ts.tv_nsec = ms * 1000000;
+         clock_nanosleep(CLOCK_MONOTONIC, 0, &ts, NULL);
+}
+
+all is good both with 4.19.x and 4.5.kernel.
+
+Can someone tell me tell me please where the bad syscall comes from?
+
+It looks like someone calls clock_nanosleep_time64, but xenomai is 
+developed against 4.19.x where this sycall does not exist, so my first 
+idea would be that it comes from the glibc which was built against 5.4 
+kernel headers. But the xenomai test case triggers it! I suspect some 
+sleep_ms(1) in some weird combination with something but I am not sure 
+about it.
+
+[  251.080655] [Xenomai] bad syscall <0x197>
+
+407     common  clock_nanosleep_time64          sys_clock_nanosleep
+
+Please point me towards where to search further.
+
+Regards,
+
+Robert
 
