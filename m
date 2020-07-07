@@ -1,12 +1,14 @@
-MIME-Version: 1.0
+From: "Meng, Fino" <fino.meng@intel.com>
+Subject: RE: About binding failed: Operation not permitted help
+Date: Tue, 7 Jul 2020 07:07:04 +0000
+Message-ID: <BYAPR11MB37650ECF216E0F8E818B3FD2EE660@BYAPR11MB3765.namprd11.prod.outlook.com>
 References: <4821ee5b-a118-ca86-7706-5ed77fed78d1@163.com>
-In-Reply-To: <4821ee5b-a118-ca86-7706-5ed77fed78d1@163.com>
-From: gbcwbz <cwbddzxx@gmail.com>
-Date: Tue, 7 Jul 2020 14:59:17 +0800
-Message-ID: <CABk+T1uqZjg7fqSxN0gD_2_0jeu93cw0ioWfQrW1R+cEg0GLgw@mail.gmail.com>
-Subject: Re: About binding failed: Operation not permitted help
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+ <CABk+T1uqZjg7fqSxN0gD_2_0jeu93cw0ioWfQrW1R+cEg0GLgw@mail.gmail.com>
+In-Reply-To: <CABk+T1uqZjg7fqSxN0gD_2_0jeu93cw0ioWfQrW1R+cEg0GLgw@mail.gmail.com>
+Content-Language: en-US
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+MIME-Version: 1.0
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,45 +17,42 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Caffreyfans <Caffreyfans@163.com>
-Cc: xenomai <xenomai@xenomai.org>
+To: gbcwbz <cwbddzxx@gmail.com>, Caffreyfans <Caffreyfans@163.com>
+Cc: "Xenomai (xenomai@xenomai.org)" <xenomai@xenomai.org>
 
-Hi,
-
-  read this https://gitlab.denx.de/Xenomai/xenomai/-/wikis/Running_As_Regul=
-ar_User
-
-  1. Create a user group named "xenomai", and get the group id, add
-kernel parameter xenomai.allowed_group=3D<gid>,
-replace <gid> with group id you just got.
-  2. Add your user name to "xenomai" group
-  3. Copy files in xenomai_install_directory/etc/udev/rules.d to
-/etc/udev/rules.d
-  4. Restart.
-
-Regards
-Bryan Cheng
-
-Caffreyfans via Xenomai <xenomai@xenomai.org> =E4=BA=8E2020=E5=B9=B47=E6=9C=
-=887=E6=97=A5=E5=91=A8=E4=BA=8C =E4=B8=8B=E5=8D=882:34=E5=86=99=E9=81=93=EF=
-=BC=9A
->
-> Hello, sir:
->
->            When I run Xenomai applications in an X64 environment, I find
-> that I must use root permissions to execute the application. If you do
-> not use privileged users, you will get the error "binding failed:
-> Operation not permitted". This error indicates that I also saw binding
-> failed: Operation not permitted
-> <https://gitlab.denx.de/Xenomai/xenomai/-/wikis/Troubleshooting#user-cont=
-ent-binding-failed-operation-not-permitted>
-> in the official documentation. But click on the link to find that there
-> is no document, so I would like to ask, could you help me know how to
-> allow ordinary users to execute Xenomai applications?
->
->
->                                                          Best wish
->
->                                          Author: Caffreyfans
->
+DQpUaGUgc3RlcHMgSSBoYXZlIHVzZWQ6IA0KDQoxKSBhZGQgeGVub21haSBncm91cA0KDQpgYGAN
+CnN1ZG8gYWRkZ3JvdXAgeGVub21haSAtLWdpZCAxMjM0DQpzdWRvIGFkZGdyb3VwIHJvb3QgeGVu
+b21haQ0Kc3VkbyB1c2VybW9kIC1hIC1HIHhlbm9tYWkgJFVTRVIgDQpgYGANCg0KMikgdXBkYXRl
+IGtlcm5lbCBjbWQNCg0KYGBgDQpzdWRvIHZpbSAvZXRjL2RlZmF1bHQvZ3J1Yg0KXFwgYWRkIHhl
+bm9tYWkuYWxsb3dlZF9ncm91cD0xMjM0IHRvIGtlcm5lbCBjbWQgbGluZQ0Kc3VkbyB1cGRhdGUt
+Z3J1Yg0KYGBgDQoNCjMpIHVkcGF0ZSB1ZGV2DQpgYGANCnN1ZG8gY3AgJHt4ZW5vbWFpLWRpcn0v
+ZXRjL3VkZXYvcnVsZXMuZC8qICAvZXRjL3VkZXYvcnVsZXMuZA0KYGBgDQoNCjQpIHJlYm9vdA0K
+DQpCdXQgd2UgYWx3YXlzIHVzZSByb290IGluIG91ciB0ZXN0LCBkaWRuJ3QgbWVldCBhIHJlcXVp
+cmVtZW50IHRvIHJ1biBhcyBjb21tb24gdXNlcnMgeWV0LA0KDQpCUiAvIEZpbm8gKOWtn+elpeWk
+qykNCkludGVsIOKAkyBJT1RHIERldmVsb3BlciBFbmFibGluZw0KDQo+U2VudDogVHVlc2RheSwg
+SnVseSA3LCAyMDIwIDI6NTkgUE0NCj4NCj5IaSwNCj4NCj4gIHJlYWQgdGhpcyBodHRwczovL2dp
+dGxhYi5kZW54LmRlL1hlbm9tYWkveGVub21haS8tL3dpa2lzL1J1bm5pbmdfQXNfUmVndWxhcl9V
+c2VyDQo+DQo+ICAxLiBDcmVhdGUgYSB1c2VyIGdyb3VwIG5hbWVkICJ4ZW5vbWFpIiwgYW5kIGdl
+dCB0aGUgZ3JvdXAgaWQsIGFkZCBrZXJuZWwgcGFyYW1ldGVyIHhlbm9tYWkuYWxsb3dlZF9ncm91
+cD08Z2lkPiwgcmVwbGFjZQ0KPjxnaWQ+IHdpdGggZ3JvdXAgaWQgeW91IGp1c3QgZ290Lg0KPiAg
+Mi4gQWRkIHlvdXIgdXNlciBuYW1lIHRvICJ4ZW5vbWFpIiBncm91cA0KPiAgMy4gQ29weSBmaWxl
+cyBpbiB4ZW5vbWFpX2luc3RhbGxfZGlyZWN0b3J5L2V0Yy91ZGV2L3J1bGVzLmQgdG8gL2V0Yy91
+ZGV2L3J1bGVzLmQNCj4gIDQuIFJlc3RhcnQuDQo+DQo+UmVnYXJkcw0KPkJyeWFuIENoZW5nDQo+
+DQo+Q2FmZnJleWZhbnMgdmlhIFhlbm9tYWkgPHhlbm9tYWlAeGVub21haS5vcmc+IOS6jjIwMjDl
+ubQ35pyIN+aXpeWRqOS6jCDkuIvljYgyOjM05YaZ6YGT77yaDQo+Pg0KPj4gSGVsbG8sIHNpcjoN
+Cj4+DQo+PiAgICAgICAgICAgIFdoZW4gSSBydW4gWGVub21haSBhcHBsaWNhdGlvbnMgaW4gYW4g
+WDY0IGVudmlyb25tZW50LCBJDQo+PiBmaW5kIHRoYXQgSSBtdXN0IHVzZSByb290IHBlcm1pc3Np
+b25zIHRvIGV4ZWN1dGUgdGhlIGFwcGxpY2F0aW9uLiBJZg0KPj4geW91IGRvIG5vdCB1c2UgcHJp
+dmlsZWdlZCB1c2VycywgeW91IHdpbGwgZ2V0IHRoZSBlcnJvciAiYmluZGluZyBmYWlsZWQ6DQo+
+PiBPcGVyYXRpb24gbm90IHBlcm1pdHRlZCIuIFRoaXMgZXJyb3IgaW5kaWNhdGVzIHRoYXQgSSBh
+bHNvIHNhdyBiaW5kaW5nDQo+PiBmYWlsZWQ6IE9wZXJhdGlvbiBub3QgcGVybWl0dGVkDQo+PiA8
+aHR0cHM6Ly9naXRsYWIuZGVueC5kZS9YZW5vbWFpL3hlbm9tYWkvLS93aWtpcy9Ucm91Ymxlc2hv
+b3RpbmcjdXNlci1jDQo+PiBvbnRlbnQtYmluZGluZy1mYWlsZWQtb3BlcmF0aW9uLW5vdC1wZXJt
+aXR0ZWQ+DQo+PiBpbiB0aGUgb2ZmaWNpYWwgZG9jdW1lbnRhdGlvbi4gQnV0IGNsaWNrIG9uIHRo
+ZSBsaW5rIHRvIGZpbmQgdGhhdA0KPj4gdGhlcmUgaXMgbm8gZG9jdW1lbnQsIHNvIEkgd291bGQg
+bGlrZSB0byBhc2ssIGNvdWxkIHlvdSBoZWxwIG1lIGtub3cNCj4+IGhvdyB0byBhbGxvdyBvcmRp
+bmFyeSB1c2VycyB0byBleGVjdXRlIFhlbm9tYWkgYXBwbGljYXRpb25zPw0KPj4NCj4+DQo+PiAg
+ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICBC
+ZXN0IHdpc2gNCj4+DQo+PiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
+IEF1dGhvcjogQ2FmZnJleWZhbnMNCj4+DQoNCg==
 
