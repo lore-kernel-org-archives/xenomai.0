@@ -1,14 +1,18 @@
-From: "Meng, Fino" <fino.meng@intel.com>
-Subject: RE: About binding failed: Operation not permitted help
-Date: Tue, 7 Jul 2020 07:07:04 +0000
-Message-ID: <BYAPR11MB37650ECF216E0F8E818B3FD2EE660@BYAPR11MB3765.namprd11.prod.outlook.com>
-References: <4821ee5b-a118-ca86-7706-5ed77fed78d1@163.com>
- <CABk+T1uqZjg7fqSxN0gD_2_0jeu93cw0ioWfQrW1R+cEg0GLgw@mail.gmail.com>
-In-Reply-To: <CABk+T1uqZjg7fqSxN0gD_2_0jeu93cw0ioWfQrW1R+cEg0GLgw@mail.gmail.com>
-Content-Language: en-US
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+Subject: Re: [PATCH 0/2]GPIO Loopback Benchmark Tool
+References: <1593758235-9182-1-git-send-email-chensong@tj.kylinos.cn>
+ <7da53e5c-fc93-e3e5-3af0-b00939cf6524@siemens.com>
+ <5f028011.1c69fb81.26862.50daSMTPIN_ADDED_BROKEN@mx.google.com>
+ <CALLqZ8RadVXGZf3YsXwANCXvyyZep-0u+quQ5B77mJKQ_Zj0pQ@mail.gmail.com>
+ <5f02eeff.1c69fb81.ced4d.a998SMTPIN_ADDED_BROKEN@mx.google.com>
+ <CALLqZ8RSgrd5_UhB16hB5oF87+yH=sCbdBPyCKXWpCmGKCT3Yw@mail.gmail.com>
+ <5F03C4EE.7080308@tj.kylinos.cn>
+From: chensong <chensong@tj.kylinos.cn>
+Message-ID: <5F042FFE.40700@tj.kylinos.cn>+7CA0FA5B94033C8E
+Date: Tue, 7 Jul 2020 16:19:10 +0800
 MIME-Version: 1.0
+In-Reply-To: <5F03C4EE.7080308@tj.kylinos.cn>
+Content-Type: text/plain; charset="utf-8"; format="flowed"
+Content-Transfer-Encoding: 8bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,42 +21,146 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: gbcwbz <cwbddzxx@gmail.com>, Caffreyfans <Caffreyfans@163.com>
-Cc: "Xenomai (xenomai@xenomai.org)" <xenomai@xenomai.org>
+To: xenomai@xenomai.org, greg@embeddedgreg.com
 
-DQpUaGUgc3RlcHMgSSBoYXZlIHVzZWQ6IA0KDQoxKSBhZGQgeGVub21haSBncm91cA0KDQpgYGAN
-CnN1ZG8gYWRkZ3JvdXAgeGVub21haSAtLWdpZCAxMjM0DQpzdWRvIGFkZGdyb3VwIHJvb3QgeGVu
-b21haQ0Kc3VkbyB1c2VybW9kIC1hIC1HIHhlbm9tYWkgJFVTRVIgDQpgYGANCg0KMikgdXBkYXRl
-IGtlcm5lbCBjbWQNCg0KYGBgDQpzdWRvIHZpbSAvZXRjL2RlZmF1bHQvZ3J1Yg0KXFwgYWRkIHhl
-bm9tYWkuYWxsb3dlZF9ncm91cD0xMjM0IHRvIGtlcm5lbCBjbWQgbGluZQ0Kc3VkbyB1cGRhdGUt
-Z3J1Yg0KYGBgDQoNCjMpIHVkcGF0ZSB1ZGV2DQpgYGANCnN1ZG8gY3AgJHt4ZW5vbWFpLWRpcn0v
-ZXRjL3VkZXYvcnVsZXMuZC8qICAvZXRjL3VkZXYvcnVsZXMuZA0KYGBgDQoNCjQpIHJlYm9vdA0K
-DQpCdXQgd2UgYWx3YXlzIHVzZSByb290IGluIG91ciB0ZXN0LCBkaWRuJ3QgbWVldCBhIHJlcXVp
-cmVtZW50IHRvIHJ1biBhcyBjb21tb24gdXNlcnMgeWV0LA0KDQpCUiAvIEZpbm8gKOWtn+elpeWk
-qykNCkludGVsIOKAkyBJT1RHIERldmVsb3BlciBFbmFibGluZw0KDQo+U2VudDogVHVlc2RheSwg
-SnVseSA3LCAyMDIwIDI6NTkgUE0NCj4NCj5IaSwNCj4NCj4gIHJlYWQgdGhpcyBodHRwczovL2dp
-dGxhYi5kZW54LmRlL1hlbm9tYWkveGVub21haS8tL3dpa2lzL1J1bm5pbmdfQXNfUmVndWxhcl9V
-c2VyDQo+DQo+ICAxLiBDcmVhdGUgYSB1c2VyIGdyb3VwIG5hbWVkICJ4ZW5vbWFpIiwgYW5kIGdl
-dCB0aGUgZ3JvdXAgaWQsIGFkZCBrZXJuZWwgcGFyYW1ldGVyIHhlbm9tYWkuYWxsb3dlZF9ncm91
-cD08Z2lkPiwgcmVwbGFjZQ0KPjxnaWQ+IHdpdGggZ3JvdXAgaWQgeW91IGp1c3QgZ290Lg0KPiAg
-Mi4gQWRkIHlvdXIgdXNlciBuYW1lIHRvICJ4ZW5vbWFpIiBncm91cA0KPiAgMy4gQ29weSBmaWxl
-cyBpbiB4ZW5vbWFpX2luc3RhbGxfZGlyZWN0b3J5L2V0Yy91ZGV2L3J1bGVzLmQgdG8gL2V0Yy91
-ZGV2L3J1bGVzLmQNCj4gIDQuIFJlc3RhcnQuDQo+DQo+UmVnYXJkcw0KPkJyeWFuIENoZW5nDQo+
-DQo+Q2FmZnJleWZhbnMgdmlhIFhlbm9tYWkgPHhlbm9tYWlAeGVub21haS5vcmc+IOS6jjIwMjDl
-ubQ35pyIN+aXpeWRqOS6jCDkuIvljYgyOjM05YaZ6YGT77yaDQo+Pg0KPj4gSGVsbG8sIHNpcjoN
-Cj4+DQo+PiAgICAgICAgICAgIFdoZW4gSSBydW4gWGVub21haSBhcHBsaWNhdGlvbnMgaW4gYW4g
-WDY0IGVudmlyb25tZW50LCBJDQo+PiBmaW5kIHRoYXQgSSBtdXN0IHVzZSByb290IHBlcm1pc3Np
-b25zIHRvIGV4ZWN1dGUgdGhlIGFwcGxpY2F0aW9uLiBJZg0KPj4geW91IGRvIG5vdCB1c2UgcHJp
-dmlsZWdlZCB1c2VycywgeW91IHdpbGwgZ2V0IHRoZSBlcnJvciAiYmluZGluZyBmYWlsZWQ6DQo+
-PiBPcGVyYXRpb24gbm90IHBlcm1pdHRlZCIuIFRoaXMgZXJyb3IgaW5kaWNhdGVzIHRoYXQgSSBh
-bHNvIHNhdyBiaW5kaW5nDQo+PiBmYWlsZWQ6IE9wZXJhdGlvbiBub3QgcGVybWl0dGVkDQo+PiA8
-aHR0cHM6Ly9naXRsYWIuZGVueC5kZS9YZW5vbWFpL3hlbm9tYWkvLS93aWtpcy9Ucm91Ymxlc2hv
-b3RpbmcjdXNlci1jDQo+PiBvbnRlbnQtYmluZGluZy1mYWlsZWQtb3BlcmF0aW9uLW5vdC1wZXJt
-aXR0ZWQ+DQo+PiBpbiB0aGUgb2ZmaWNpYWwgZG9jdW1lbnRhdGlvbi4gQnV0IGNsaWNrIG9uIHRo
-ZSBsaW5rIHRvIGZpbmQgdGhhdA0KPj4gdGhlcmUgaXMgbm8gZG9jdW1lbnQsIHNvIEkgd291bGQg
-bGlrZSB0byBhc2ssIGNvdWxkIHlvdSBoZWxwIG1lIGtub3cNCj4+IGhvdyB0byBhbGxvdyBvcmRp
-bmFyeSB1c2VycyB0byBleGVjdXRlIFhlbm9tYWkgYXBwbGljYXRpb25zPw0KPj4NCj4+DQo+PiAg
-ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICBC
-ZXN0IHdpc2gNCj4+DQo+PiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
-IEF1dGhvcjogQ2FmZnJleWZhbnMNCj4+DQoNCg==
+
+
+On 2020年07月07日 08:42, chensong via Xenomai wrote:
+>
+>
+> On 2020年07月07日 00:05, Greg Gallagher wrote:
+>> On Mon, Jul 6, 2020 at 5:29 AM chensong <chensong@tj.kylinos.cn> wrote:
+>>>
+>>>
+>>>
+>>> On 2020年07月06日 13:59, Greg Gallagher wrote:
+>>>> Hi
+>>>>
+>>>> On Sun, Jul 5, 2020 at 9:36 PM chensong via Xenomai
+>>>> <xenomai@xenomai.org> wrote:
+>>>>>
+>>>>>
+>>>>>
+>>>>> On 2020年07月03日 17:21, Jan Kiszka wrote:
+>>>>>> On 03.07.20 08:37, chensong via Xenomai wrote:
+>>>>>>> In general, we use cyclictest and latency to evaluate the
+>>>>>>> determinism
+>>>>>>> of our real
+>>>>>>> time system. As we know, cyclictest and latency use hrtimer to
+>>>>>>> set up
+>>>>>>> a timer and
+>>>>>>> calculate jitter by comparing expected wakeup time and real
+>>>>>>> wakeup time.
+>>>>>>>
+>>>>>>> Besides that, we can also use GPIO to evaluate more modules in
+>>>>>>> different scenarios.
+>>>>>>> In this case, i apply 2 GPIO ports, one is set as output, the
+>>>>>>> other is
+>>>>>>> interrupt,
+>>>>>>> at the same time, connect them with a cable. Once an signal is sent
+>>>>>>> from output pin,
+>>>>>>> an interrupt will be raised in interrupt pin immediately.
+>>>>>>>
+>>>>>>> Timestamps are recorded before gpio_set_value and interrupt handler
+>>>>>>> respectively, the
+>>>>>>> diff between them is jitter.
+>>>>>>>
+>>>>>>> There is also an RT task running in the user space, which
+>>>>>>> collects the
+>>>>>>> information and
+>>>>>>> output the summary at the end of the test. What's more, it also
+>>>>>>> records the timestamps
+>>>>>>> in user space, syscall overhead is included.
+>>>>>>>
+>>>>>>> Further, Making a little change will enable the tool working with
+>>>>>>> latency box,once a
+>>>>>>> signal from latency box is received in interrupt pin, the tool can
+>>>>>>> send a signal at
+>>>>>>> output pin as response. (I haven't got the latency box, so this
+>>>>>>> function is not in
+>>>>>>> place yet)
+>>>>>>>
+>>>>>>> chensong (2):
+>>>>>>>      demo/posix/cobalt: App of gpio loopback benchmark
+>>>>>>>      kernel/driver/testing: Driver of gpio loopback benchmark
+>>>>>>>
+>>>>>>>     demo/posix/cobalt/Makefile.am      |   6 +
+>>>>>>>     demo/posix/cobalt/gpioloop.c       | 516
+>>>>>>> +++++++++++++++++++++++++++++++++++++
+>>>>>>>     kernel/drivers/testing/Kconfig     |   7 +
+>>>>>>>     kernel/drivers/testing/Makefile    |   3 +
+>>>>>>>     kernel/drivers/testing/gpiobench.c | 288 +++++++++++++++++++++
+>>>>>>>     5 files changed, 820 insertions(+)
+>>>>>>>     create mode 100644 demo/posix/cobalt/gpioloop.c
+>>>>>>>     create mode 100644 kernel/drivers/testing/gpiobench.c
+>>>>>>>
+>>>>>>
+>>>>>> That is a valuable addition! We used to have such an interrupt
+>>>>>> benchmark
+>>>>>> in Xenomai 2 times or so, using a null modem connection (UART
+>>>>>> signals).
+>>>>>> GPIOs are more generic, though.
+>>>>>>
+>>>>>> Two things I would recommend doing differently:
+>>>>>>     - use RTDM GPIO device (maybe adding missing RTDM GPIO driver for
+>>>>>>       your targets)
+>>>>> gpiobench.c in patch2/2 is referring to gpio-core.c in
+>>>>> kernel/driver/gpio, they use similar RTDM strcuts or APIs such as
+>>>>> rtdm_driver, rtdm_dev_register.
+>>>>>
+>>>>> Could you please give me a sample of RTDM GPIO device? or what kind of
+>>>>> RTDM GPIO driver did i miss?
+>>>>>
+>>>> You could add a proper RTDM gpio driver similar to
+>>>> kernel/drivers/gpio/gpio-omap.c
+>>>>
+>>>> They are pretty easy to add since there's a gpio framework in Xenomai
+>>>> that uses some functions from gpiolib.  This commit
+>>>> d4416d68082f538cdbf08579f99738adbe80d39c may help as an example on how
+>>>> to add a new gpio driver. Let me know if I can help.
+>>> i think i understand gpio framework in gpio-omap.c and gpio-core.c,
+>>> therefore, gpiobench.c in my patch can be replaced. what's more, a new
+>>> file like gpio-bcm2711.c is needed.
+>>
+>> Is this for the Raspberry pi 4?  Does that use the bcm2835 gpio
+>> driver?  We already have that driver if that's the case.
+> For Raspberry pi 4b, same with rpi 4? I'm not sure which one. I found
+> them both in device tree.
+> If bcm2835 is the right driver, no more work to do.
+
+i verified bcm2835, it's working perfectly with rt task in my app(patch 
+1/2), therefore, gpiobench.c(patch2/2) is not necessary.
+
+thanks.
+
+>>>
+>>> I also looked into /testsuite/gpiotest/gpiotest.c, it's working with
+>>> gpio-core.c and read the timestamp of gpio interrupt, however, there is
+>>> no histogram, nor reacting to latency-box. i'm considering to add such
+>>> functionalities in either gpiotest.c or still in gpioloop.c of my patch?
+>>> which one would you prefer?
+
+i prefer to add asynchronous event in gpioloop.c, once received a signal 
+from gpio interrupt, send a signal back via gpio out as reaction.
+
+compared to gpiotest.c, gpioloop.c has histogram and ftrace. what do you 
+say? If it's ok for you, i will start preparing patch v2.
+
+>>>
+>>> by the way, could you please let me know how gpiotest is triggered in
+>>> smokey test,i read the code of smokey test and didn't manage to figure
+>>> it out.
+>>>
+>>>>
+>>>> -Greg
+>>>>
+>>>
+>>>
+>>
+>
+>
+>
+>
+
+
 
