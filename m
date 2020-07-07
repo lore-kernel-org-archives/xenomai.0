@@ -4,8 +4,8 @@ References: <16c407c9-8ed4-4b43-b38b-aac8a270e686@gmail.com>
  <a1b13b3e-3d27-586a-c8bb-fec44a368f58@gmail.com>
  <CALLqZ8REwJXSjZ4m3D3_VGdfgf66ZcG0_oWq0MajEn3jMCXQWw@mail.gmail.com>
 From: Robert Berger <xenomai.list@gmail.com>
-Message-ID: <de705804-291c-55de-66bd-0f3ee3a40138@gmail.com>
-Date: Wed, 8 Jul 2020 00:12:39 +0300
+Message-ID: <2ebbba9d-19be-86fe-59ee-6981f0dc5930@gmail.com>
+Date: Wed, 8 Jul 2020 01:57:43 +0300
 MIME-Version: 1.0
 In-Reply-To: <CALLqZ8REwJXSjZ4m3D3_VGdfgf66ZcG0_oWq0MajEn3jMCXQWw@mail.gmail.com>
 Content-Type: text/plain; charset=utf-8; format=flowed
@@ -24,45 +24,29 @@ Cc: "Xenomai@xenomai.org" <xenomai@xenomai.org>
 
 Hi,
 
-My comments are in-line
+I just had a chat on the Yocto IRC and they claim, that I should not 
+rebuild glibc against different kernel headers. That's yet another no no ;)
 
-On 07/07/2020 20:48, Greg Gallagher wrote:
-> Yocto seems to be expecting that the
-> kernel you are using is going to be 5.4 and is generating headers
-> based on that.  So apps think that 407 is a valid system call but our
-> 4.19 kernel doesn't know what system call that is.  I don't have a lot
-> of yocto experience but you could try moving to an older yocto branch
-> that supports 4.19 kernels and see what happens.
+Which version of glibc do you use?
 
-Well ;)
+I have version 2.31.
 
-Every OE/YP release comes with some default kernel version and one would 
-think the kernel headers of this kernel version are used to build the 
-glibc, which kind of is the case, but it's 2 different recipes.
+01:38:11) RP: RobertBerger: one llbc can be run against multiple kernels 
+and multiple kernel versions
+(01:39:26) rber@freenode: Yep, but I thought it's built against a kernel 
+version/some number of syscalls and you can upgrade the kernel 
+underneath, but not downgrade
+(01:40:26) rber@freenode: If you downgrade the kernel potentially 
+syscalls are being called which are not available in the old kernel.
+(01:41:27) RP: RobertBerger: that isn't how it works
+(01:41:42) rber@freenode: Ah OK ;)
+(01:41:50) rber@freenode: So you say it's a runtime thing?
+(01:42:46) RP: RobertBerger: the libc adapts to the kernel version its 
+running against. That kernel is in the range of "latest linux kernel 
+when the libc was released" to OLDEST_KERNEL
+(01:43:07) rber@freenode: OK
 
-So although I use kernel version 4.19.x to apply the xenomai patch it 
-still uses 5.4 kernel headers by default. I knew that and added my own 
-4.19 kernel-headers recipe. But it looks like it was not used to build 
-glibc, since I see some auto generated file with the 407 syscall.
-
-I am still fighting trying to build a glibc with 4.19 kernel headers 
-(which I think I managed).
-
-I'll keep you updated.
-
-> 
-> -Greg
-
-Thanks,
+Regards,
 
 Robert
-
-> 
->>
->> Will try something more drastic to see what happens.
->>
->> Regards,
->>
->> Robert
-
 
