@@ -1,14 +1,7 @@
-Subject: Re: xenomai 3.1/ipipe-core-4.19.128-cip28-arm-10.patch
-References: <16c407c9-8ed4-4b43-b38b-aac8a270e686@gmail.com>
- <CALLqZ8RXOhONVAti+XyW6dRSCWYcnLnyG1=fYyXQgU+k7RPWAA@mail.gmail.com>
-From: Robert Berger <xenomai.list@gmail.com>
-Message-ID: <8fc298f3-4087-6f06-ea87-8cc931e3ee91@gmail.com>
-Date: Tue, 7 Jul 2020 13:06:51 +0300
-MIME-Version: 1.0
-In-Reply-To: <CALLqZ8RXOhONVAti+XyW6dRSCWYcnLnyG1=fYyXQgU+k7RPWAA@mail.gmail.com>
-Content-Type: text/plain; charset="utf-8"; format="flowed"
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+From: alex_luca@163.com
+Subject: [PATCH] include/linux:add missing declations to some .h files
+Date: Tue,  7 Jul 2020 22:58:32 +0800
+Message-Id: <20200707145832.28715-1-alex_luca@163.com>
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,30 +10,47 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Greg Gallagher <greg@embeddedgreg.com>
-Cc: "Xenomai@xenomai.org" <xenomai@xenomai.org>
+To: jan.kiszka@siemens.com
+Cc: xenomai@xenomai.org, "Carver.lio" <liu.hailong6@zte.com.cn>
 
-Hi,
+From: "Carver.lio" <liu.hailong6@zte.com.cn>
 
-Please find my comments in-line
+On branch ipipe-x86-4.14.y *ipipe.h*  missing declaration of
+ipipe_root_nr_syscalls* and *ipipe_tickdev.h* missing declaration
+of *ipipe_host_timer_cleanup*  when CONFIG_IPIPE=N.
+---
+ include/linux/ipipe.h         | 4 ++++
+ include/linux/ipipe_tickdev.h | 2 ++
+ 2 files changed, 6 insertions(+)
 
-On 07/07/2020 02:49, Greg Gallagher wrote:
-> 
-> Hi,
->    I'll take a look this week with a build I've been testing the ipipe 
-> with.
-> 
-> Greg
-> 
+diff --git a/include/linux/ipipe.h b/include/linux/ipipe.h
+index b8a80eea..963709a8 100644
+--- a/include/linux/ipipe.h
++++ b/include/linux/ipipe.h
+@@ -718,4 +718,8 @@ static inline void __ipipe_pin_mapping_globally(unsigned long start,
+ { }
+ #endif
 
-Thanks!
++#ifndef ipipe_root_nr_syscalls
++#define ipipe_root_nr_syscalls(ti)	NR_syscalls
++#endif
++
+ #endif	/* !__LINUX_IPIPE_H */
+diff --git a/include/linux/ipipe_tickdev.h b/include/linux/ipipe_tickdev.h
+index ff8213f5..b52a9141 100644
+--- a/include/linux/ipipe_tickdev.h
++++ b/include/linux/ipipe_tickdev.h
+@@ -153,6 +153,8 @@ void __ipipe_timer_refresh_freq(unsigned int hrclock_freq);
 
-I am happy to test whatever you tell me.
+ #define ipipe_host_timer_register(clkevt) do { } while (0)
 
-What I am trying to figure out is whether it's a xenomai or a Yocto 
-problem;)
++#define ipipe_host_timer_cleanup(clkevt) do { } while (0)
++
+ #endif /* !CONFIG_IPIPE */
 
-Regards,
+ #ifdef CONFIG_IPIPE_HAVE_HOSTRT
+--
+2.17.1
 
-Robert
+
 
