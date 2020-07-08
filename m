@@ -1,10 +1,10 @@
-Subject: Re: Doubts in RTDM Driver-reg
-References: <CAJCHRmGZaeqaf6GGVQSxBRL9j6LyVumHLf+ZJpDShy1sqpuaww@mail.gmail.com>
+Subject: Re: How can I investigate the cause of "watchdog: BUG: soft lockup"?
+References: <CAAvDm6bA37PeCYST66hZniEFFLG1e7Sry408RyGxryhD2iehQA@mail.gmail.com>
 From: Jan Kiszka <jan.kiszka@web.de>
-Message-ID: <a87d1d99-a246-c9ed-e291-02f7a13b5fb6@web.de>
-Date: Wed, 8 Jul 2020 19:13:53 +0200
+Message-ID: <f569108e-bd2e-5c45-7164-69539360923e@web.de>
+Date: Wed, 8 Jul 2020 19:14:57 +0200
 MIME-Version: 1.0
-In-Reply-To: <CAJCHRmGZaeqaf6GGVQSxBRL9j6LyVumHLf+ZJpDShy1sqpuaww@mail.gmail.com>
+In-Reply-To: <CAAvDm6bA37PeCYST66hZniEFFLG1e7Sry408RyGxryhD2iehQA@mail.gmail.com>
 Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Language: en-US
 Content-Transfer-Encoding: quoted-printable
@@ -16,25 +16,23 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Lakshmi Dhanaraj <lakshmi.d@teclever.com>, xenomai@xenomai.org
+To: =?UTF-8?B?5a2Z5LiW6b6ZIHN1bnNoaWxvbmc=?= <sunshilong369@gmail.com>, xenomai <xenomai@xenomai.org>
 
-On 03.07.20 15:23, Lakshmi Dhanaraj via Xenomai wrote:
-> Hi,
->
-> I have a Reflective Memory 5565 hardware driver which is compiled in
-> xenomai-3.0.5(Linux-4.9.38+Ubuntu 18.04.1) & api functions are compiled
-> with xeno-config flags.
->
-> The api functions are communicated with the rfm2g driver using ioctl
-> calls.Now my doubt is the driver calls are forwarded to xenomai kernel o=
-r
-> generic kernel.Is there any necessity to recompile my driver with RTDM
-> wrapper for real-time access.
->
+On 04.07.20 03:56, =E5=AD=99=E4=B8=96=E9=BE=99 sunshilong via Xenomai wrot=
+e:
+> Hi, list
+> I encountered the error of "watchdog: BUG: soft lockup" when I sent
+> data through the can bus.
+> Could you please give me some hint on how to investigate the cause deepl=
+y?
+> Thank you for your attention to this matter.
 
-Porting a driver to RTDM involves more than recompiling. You need to
-design the driver for the RT execution environment. Study the existing
-drivers as well as the RTDM API to get an impression.
+ From the backtrace, it is not yet clear to me which role Xenomai/I-pipe
+plays here. Furthermore, it points to an out-of-tree CAN dri (advcan)
+which makes it even harder to tell cause and effect apart.
+
+In general, system-level tracing can help in such scenarios to gain an
+overview about what is going on.
 
 Jan
 
