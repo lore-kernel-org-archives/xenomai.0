@@ -1,10 +1,10 @@
-Subject: Re: Question on tx/rx queue in RTnet
-References: <CABQtCRFiwDnHmaGqudAxXOp5jrAykjP7cpL=S8Q2Ce2hVkocOQ@mail.gmail.com>
+Subject: Re: Doubts in RTDM Driver-reg
+References: <CAJCHRmGZaeqaf6GGVQSxBRL9j6LyVumHLf+ZJpDShy1sqpuaww@mail.gmail.com>
 From: Jan Kiszka <jan.kiszka@web.de>
-Message-ID: <2dd12c8e-1b44-1fc6-4cb3-6bc98725a3e9@web.de>
-Date: Wed, 8 Jul 2020 19:11:02 +0200
+Message-ID: <a87d1d99-a246-c9ed-e291-02f7a13b5fb6@web.de>
+Date: Wed, 8 Jul 2020 19:13:53 +0200
 MIME-Version: 1.0
-In-Reply-To: <CABQtCRFiwDnHmaGqudAxXOp5jrAykjP7cpL=S8Q2Ce2hVkocOQ@mail.gmail.com>
+In-Reply-To: <CAJCHRmGZaeqaf6GGVQSxBRL9j6LyVumHLf+ZJpDShy1sqpuaww@mail.gmail.com>
 Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Language: en-US
 Content-Transfer-Encoding: quoted-printable
@@ -16,30 +16,25 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jordan Paul <jordanjp7701@gmail.com>, xenomai@xenomai.org
+To: Lakshmi Dhanaraj <lakshmi.d@teclever.com>, xenomai@xenomai.org
 
-On 07.07.20 04:32, Jordan Paul via Xenomai wrote:
-> Hi
+On 03.07.20 15:23, Lakshmi Dhanaraj via Xenomai wrote:
+> Hi,
 >
-> I am using i210 driver with xenomai 3.1 on kernel 4.19
+> I have a Reflective Memory 5565 hardware driver which is compiled in
+> xenomai-3.0.5(Linux-4.9.38+Ubuntu 18.04.1) & api functions are compiled
+> with xeno-config flags.
 >
-> rt_igb 0000:01:00.0: Using MSI-X interrupts. 1 rx queue(s), 1 tx queue(s=
-)
->
->
-> based on the above dmesg log, I am currently getting 1 tx and 1 rx queue=
-,
-> is this by design for RTnet?
->
-> igb 0000:01:00.0: Using MSI-X interrupts. 4 rx queue(s), 4 tx queue(s)
->
->
-> compared with linux drivers for igb, I am getting 4 tx and 4 rx queue.
+> The api functions are communicated with the rfm2g driver using ioctl
+> calls.Now my doubt is the driver calls are forwarded to xenomai kernel o=
+r
+> generic kernel.Is there any necessity to recompile my driver with RTDM
+> wrapper for real-time access.
 >
 
-RTnet has indeed no infrastructure for supporting multiple queues per
-interface. Consequently, the related code in the ported drivers is
-deactivated (if it existed at all when ported).
+Porting a driver to RTDM involves more than recompiling. You need to
+design the driver for the RT execution environment. Study the existing
+drivers as well as the RTDM API to get an impression.
 
 Jan
 
