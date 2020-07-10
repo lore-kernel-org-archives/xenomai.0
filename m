@@ -1,14 +1,11 @@
-Subject: Re: [RFC]why xnlock_put and xnlock_clear_irqon release xnlock
- directly?
-References: <20200709152509.33099-1-alex_luca@163.com>
-From: Philippe Gerum <rpm@xenomai.org>
-Message-ID: <aa59adfc-533c-539f-f145-12e41147e53e@xenomai.org>
-Date: Fri, 10 Jul 2020 11:05:21 +0200
-MIME-Version: 1.0
-In-Reply-To: <20200709152509.33099-1-alex_luca@163.com>
-Content-Type: text/plain; charset=utf-8
+From: Lange Norbert <norbert.lange@andritz.com>
+Subject: What is the purpose of corectl
+Date: Fri, 10 Jul 2020 11:56:34 +0000
+Message-ID: <VI1PR05MB59172C8A7C452EBC0D1A81AAF6650@VI1PR05MB5917.eurprd05.prod.outlook.com>
 Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+MIME-Version: 1.0
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,71 +14,60 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: alex_luca@163.com, xenomai@xenomai.org
+To: "Xenomai (xenomai@xenomai.org)" <xenomai@xenomai.org>
 
-On 7/9/20 5:25 PM, alex_luca--- via Xenomai wrote:
-> From: Alex_luca@163.com
-> 
-> hello,list
-> I have some doubts on *struct nklock* operations. 
-> 
-> Both *xnlock_get* and *xnlock_get_irqsave* is allowed to be called
-> nested;they will check that if the nklock has been acquired. If so
-> they won't actually do the "get", but return a value of 2.
-> 
-> But the *xnlock_put*, which corresponding to *xnlock_get* never
-> checks and will actually release the lock. This is diffrent from
-> *xnlock_put_irqrestore*.
-> 
-> What puzzles me is the following:
-> {
->     ......
->     xnlock_get_irqsave(nklock, s)
->     ......
->         xnlock_get(nklock)
->         ......
->         xnlock_put(nklock)
->         ......
->     xnlock_put_irqrestore(nklock, s)
-> }
-> 
-> First, *xnlock_get_irqsave* get the nklock, and *xnlock_get* will skip;
-> Then *xnlock_put* is called, and it released the nklock; after a
-> while *xnlock_put_irqrestore* is called on the same cpu, it also seems
-> to release the nklock.
-> 
-> Will this above happen in xenomai?  But I have never seen this happen.
-> Or *xnlock_get* was guaranteed never been called nesting?
-> 
+Hello,
 
-This is right, there is such asymmetry between the irq-aware form and the
-plain one, which I believe was not intended but never caused any trouble yet
-because the problematic nesting does not happen in the current implementation.
-Kind of sleeping monster if you will. xnlock_get() is commonly used in IRQ
-handlers in order to save the redundant interrupt state fixup, so it would be
-the outer lock in this case, not the inner one.
+I just found the corectl tool (and the related syscall). After a stop, all =
+threads previously using cobalt services end up zombified,
+apparently never getting reaped. (Only useful thing is to reboot then IMHO)=
+.
 
-On a general note, if you plan to remove the ugly big lock from the Xenomai
-code base, I would suggest the following approach:
+Maybe if this tool could shutdown everything cleanly, I would run this befo=
+re unloading modules like rtnet as safety measure (unloading rtnet will jus=
+t block if its used).
 
-- rewrite the core synchronization (xnsynch) so that testing for a condition
-and sleeping on the related synchronization object (if that condition is
-unmet) does not have to be covered by the nklock in a single atomic section.
 
-- remove all other occurrences of code which would reschedule (xnsched_run())
-with the nklock held. This nesting has to go for the Xenomai core to be
-SMP-scalable.
+Mit besten Gr=FC=DFen / Kind regards
 
-Then you would need to pick a workable locking pattern. One involves
-introducing per-CPU runqueue locks covering the updates to the scheduler data,
-and per-thread locks protecting updates to the thread state. The locking order
-would be thread -> runqueue, with the runqueue lock held across context
-switches and released in the scheduling tail by the incoming thread.
+NORBERT LANGE
 
-This approach was followed in order to convert Cobalt into a SMP-scalable core
-which you can refer to as a working example if that helps:
-https://git.evlproject.org/linux-evl.git/tree/kernel/evl/sched/core.c?h=evl/master
+AT-RD3
 
--- 
-Philippe.
+ANDRITZ HYDRO GmbH
+Eibesbrunnergasse 20
+1120 Vienna / AUSTRIA
+p: +43 50805 56684
+norbert.lange@andritz.com<mailto:norbert.lange@andritz.com>
+andritz.com<http://www.andritz.com/>
 
+________________________________
+
+This message and any attachments are solely for the use of the intended rec=
+ipients. They may contain privileged and/or confidential information or oth=
+er information protected from disclosure. If you are not an intended recipi=
+ent, you are hereby notified that you received this email in error and that=
+ any review, dissemination, distribution or copying of this email and any a=
+ttachment is strictly prohibited. If you have received this email in error,=
+ please contact the sender and delete the message and any attachment from y=
+our system.
+
+ANDRITZ HYDRO GmbH
+
+
+Rechtsform/ Legal form: Gesellschaft mit beschr=E4nkter Haftung / Corporati=
+on
+
+Firmensitz/ Registered seat: Wien
+
+Firmenbuchgericht/ Court of registry: Handelsgericht Wien
+
+Firmenbuchnummer/ Company registration: FN 61833 g
+
+DVR: 0605077
+
+UID-Nr.: ATU14756806
+
+
+Thank You
+________________________________
