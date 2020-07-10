@@ -1,11 +1,11 @@
+From: Caffreyfans <Caffreyfans@163.com>
+Subject: [BUG] copperlate/eventobj.c ->>> eventobj_inquire(), don't work
+Message-ID: <e371ebd5-519a-cf6e-998e-b2591d4f1c48@163.com>
+Date: Fri, 10 Jul 2020 14:04:25 +0800
 MIME-Version: 1.0
-From: =?UTF-8?B?5a2Z5LiW6b6ZIHN1bnNoaWxvbmc=?= <sunshilong369@gmail.com>
-Date: Fri, 10 Jul 2020 12:48:53 +0800
-Message-ID: <CAAvDm6aiK9kisD4VQacgYLy6HrR4OWR=6u6DAmv_e=o=JXVayw@mail.gmail.com>
-Subject: Could you please give me some suggestions on how to investigatate the
- cause of killing timer-internal thread,
- which is created by the copperplate layer?
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset="utf-8"; format="flowed"
+Content-Transfer-Encoding: 8bit
+Content-Language: en-US
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -14,137 +14,58 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai <xenomai@xenomai.org>
+To: xenomai@xenomai.org
 
-Hi, list
+Hi sir,
 
-I encountered a hard lockup and the timer-internal thread(which is
-created by the
-copperplate layer) was killed by the watchdog.
-And the timer-internal thread is used for Xenomai timer.
-I have thought about it for a long time, but it still has not been solved.
-I would be grateful to have some help on this matter.
+     I'm trying to make another skin for xenomai.  When I do something 
+about "event". I use `eventobj_inquire()` to get event flags. But no 
+matter what value I post, I always get 0.
 
-Could you please give me some hints on this problem?
-What aspects should I pay attention to? How can I investigate the
-cause of this matter?
+     I find that eventobj_inquire() is not working. I know 
+`alchemy/event` also use `eventobj`. So I write a test code by using 
+alchemy skin. I am curious whether it is my own problem or there is an 
+error in xenomai.
 
-Thank you for your attention to this matter.
+Test code:
 
-Here is the full log:
-[72873.713376] NMI watchdog: Watchdog detected hard LOCKUP on cpu 0
-[72873.713380] Modules linked in: xeno_can_xilinx(OE) xeno_can(E)
-xeno_fpga_axi(OE) rfcomm bnep smsc95xx usbnet mii snd_soc_skl
-snd_soc_skl_ipc snd_soc_sst_ipc snd_soc_sst_dsp snd_hda_ext_core
-snd_soc_acpi_intel_match snd_soc_acpi nls_iso8859_1 snd_soc_core
-snd_compress ac97_bus 8250_dw snd_hda_codec_hdmi snd_pcm_dmaengine
-snd_hda_intel snd_hda_codec snd_hda_core snd_hwdep snd_pcm
-snd_seq_midi snd_seq_midi_event snd_rawmidi intel_rapl
-x86_pkg_temp_thermal intel_powerclamp coretemp kvm_intel snd_seq
-crct10dif_pclmul crc32_pclmul ghash_clmulni_intel pcbc snd_seq_device
-snd_timer btusb btrtl btbcm btintel snd bluetooth ecdh_generic
-aesni_intel aes_x86_64 crypto_simd cryptd soundcore glue_helper
-intel_cstate wmi_bmof intel_rapl_perf arc4 iwlmvm mac80211 iwlwifi
-idma64 virt_dma cfg80211 mei_me mei intel_lpss_pci
-[72873.713429]  mac_hid intel_lpss intel_pch_thermal parport_pc ppdev
-lp parport autofs4 mmc_block e1000e ahci libahci sdhci_pci cqhci sdhci
-i915 kvmgt vfio_mdev mdev vfio_iommu_type1 vfio kvm irqbypass video
-i2c_algo_bit drm_kms_helper syscopyarea sysfillrect sysimgblt wmi
-fb_sys_fops drm [last unloaded: xeno_can]
-[72873.713460] CPU: 0 PID: 0 Comm: swapper/0 Tainted: G        W  OE
-  4.19.84-x86-20200528 #2
-[72873.713461] Hardware name: Intel(R) Client Systems
-CM8CCB4R/CM8CCB4R, BIOS CBWHL357.0058.2020.0107.1849 01/07/2020
-[72873.713462] I-pipe domain: Xenomai
-[72873.713462] RIP: 0010:load_new_mm_cr3+0x41/0xf0
-[72873.713463] Code: 1a 01 48 01 fa 73 25 48 bf 00 00 00 00 00 00 00
-80 48 0b 3d 01 20 1d 01 83 c6 01 0f b7 f6 48 01 d0 48 09 f7 48 09 c7
-0f 22 df <5d> c3 48 c7 c0 00 00 00 80 48 2b 05 3f a1 10 01 eb cb 0f 1f
-44 00
-[72873.713464] RSP: 0018:ffff964630c03e08 EFLAGS: 00000082
-[72873.713466] RAX: 000000016672e000 RBX: ffff9645e2502800 RCX: 00000000000019f2
-[72873.713467] RDX: ffff9646a672e000 RSI: 0000000000000002 RDI: 800000016672e002
-[72873.713468] RBP: ffff964630c03e08 R08: ffff964627bebd00 R09: ffff964630c3e4f0
-[72873.713468] R10: ffff964630c03e78 R11: 0000000000000040 R12: ffffffff86288260
-[72873.713469] R13: 0000000000000001 R14: ffff96462672e960 R15: 0000000000000001
-[72873.713470] FS:  0000000000000000(0000) GS:ffff964630c00000(0000)
-knlGS:0000000000000000
-[72873.713471] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-[72873.713472] CR2: 00007f1037c6f020 CR3: 000000016672e002 CR4: 00000000003606f0
-[72873.713472] Call Trace:
-[72873.713473]  <IRQ>
-[72873.713474]  switch_mm_irqs_off+0x31b/0x4e0
-[72873.713475]  xnarch_switch_to+0x2f/0x80
-[72873.713476]  ___xnsched_run.part.74+0x154/0x480
-[72873.713476]  ___xnsched_run+0x35/0x50
-[72873.713477]  xnintr_irq_handler+0x346/0x4c0
-[72873.713478]  ? xnintr_core_clock_handler+0x1b6/0x360
-[72873.713479]  dispatch_irq_head+0x8e/0x110
-[72873.713479]  ? xnintr_irq_handler+0x5/0x4c0
-[72873.713481]  ? dispatch_irq_head+0x8e/0x110
-[72873.713482]  __ipipe_dispatch_irq+0xd9/0x1c0
-[72873.713483]  __ipipe_handle_irq+0x86/0x1e0
-[72873.713483]  common_interrupt+0xf/0x2c
-[72873.713484]  </IRQ>
-[72873.713485] RIP: 0010:timekeeping_max_deferment+0x2b/0x30
-[72873.713486] Code: bb d5 8f 00 55 48 89 e5 8b 15 11 c0 52 01 f6 c2
-01 75 15 48 8b 05 0d c0 52 01 48 8b 40 18 39 15 fb bf 52 01 75 e2 5d
-c3 f3 90 <eb> dc 0f 1f 00 e8 8b d5 8f 00 55 48 c7 07 00 00 00 00 48 c7
-47 08
-[72873.713487] RSP: 0018:ffffffff86203dd8 EFLAGS: 00000202 ORIG_RAX:
-ffffffffffffffdc
-[72873.713489] RAX: 0000000e1cc1b900 RBX: 000042464e21d06b RCX: 0000000000000202
-[72873.713489] RDX: 0000000000ee83ed RSI: 0000000000000000 RDI: 0000000000000001
-[72873.713490] RBP: ffffffff86203dd8 R08: 0000000000000246 R09: 000042546ae3896b
-[72873.713491] R10: 00000000000002ca R11: 0000000000000020 R12: 000042546ae3896b
-[72873.713492] R13: ffff964630c1c280 R14: 0000000000000000 R15: 0000000000000000
-[72873.713493]  tick_nohz_next_event+0x99/0x180
-[72873.713493]  tick_nohz_idle_stop_tick+0x15c/0x290
-[72873.713494]  ? mwait_idle+0x6e/0x1e0
-[72873.713495]  ? tsc_verify_tsc_adjust+0x3b/0xf0
-[72873.713496]  do_idle+0xa7/0x160
-[72873.713497]  cpu_startup_entry+0x73/0x80
-[72873.713497]  rest_init+0xa7/0xb0
-[72873.713498]  start_kernel+0x53f/0x560
-[72873.713499]  x86_64_start_reservations+0x24/0x26
-[72873.713500]  x86_64_start_kernel+0x74/0x77
-[72873.713500]  secondary_startup_64+0xa4/0xb0
-[72873.713518] NMI watchdog: Watchdog detected hard LOCKUP on cpu 1
-[72873.713519] Modules linked in: xeno_can_xilinx(OE) xeno_can(E)
-xeno_fpga_axi(OE) rfcomm bnep smsc95xx usbnet mii snd_soc_skl
-snd_soc_skl_ipc snd_soc_sst_ipc snd_soc_sst_dsp snd_hda_ext_core
-snd_soc_acpi_intel_match snd_soc_acpi nls_iso8859_1 snd_soc_core
-snd_compress ac97_bus 8250_dw snd_hda_codec_hdmi snd_pcm_dmaengine
-snd_hda_intel snd_hda_codec snd_hda_core snd_hwdep snd_pcm
-snd_seq_midi snd_seq_midi_event snd_rawmidi intel_rapl
-x86_pkg_temp_thermal intel_powerclamp coretemp kvm_intel snd_seq
-crct10dif_pclmul crc32_pclmul ghash_clmulni_intel pcbc snd_seq_device
-snd_timer btusb btrtl btbcm btintel snd bluetooth ecdh_generic
-aesni_intel aes_x86_64 crypto_simd cryptd soundcore glue_helper
-intel_cstate wmi_bmof intel_rapl_perf arc4 iwlmvm mac80211 iwlwifi
-idma64 virt_dma cfg80211 mei_me mei intel_lpss_pci
-[72873.713564]  mac_hid intel_lpss intel_pch_thermal parport_pc ppdev
-lp parport autofs4 mmc_block e1000e ahci libahci sdhci_pci cqhci sdhci
-i915 kvmgt vfio_mdev mdev vfio_iommu_type1 vfio kvm irqbypass video
-i2c_algo_bit drm_kms_helper syscopyarea sysfillrect sysimgblt wmi
-fb_sys_fops drm [last unloaded: xeno_can]
-[72873.713586] CPU: 1 PID: 4631 Comm: timer-internal Tainted: G
-W  OE     4.19.84-x86-20200528 #2
-[72873.713587] Hardware name: Intel(R) Client Systems
-CM8CCB4R/CM8CCB4R, BIOS CBWHL357.0058.2020.0107.1849 01/07/2020
-[72873.713588] I-pipe domain: Xenomai
-[72873.713588] RIP: 0033:0x7ffe88f86adf
-[72873.713590] Code: 32 48 29 d0 48 23 05 d0 c5 ff ff 8b 15 d2 c5 ff
-ff 48 0f af c2 e9 d0 fe ff ff 31 d2 e9 fd fe ff ff f3 90 e9 30 fe ff
-ff f3 90 <e9> 0f ff ff ff 31 c0 eb a3 31 c0 eb cd 0f 1f 40 00 55 48 85
-ff 48
-[72873.713590] RSP: 002b:00007fd87c44bab0 EFLAGS: 00000202
-[72873.713592] RAX: 00007ffe88f868f0 RBX: 0000000000000000 RCX: 00007fd87bbf62c0
-[72873.713593] RDX: 0000000000000000 RSI: 00007fd87c44bae0 RDI: 0000000000000000
-[72873.713594] RBP: 00007fd87c44bab0 R08: 0000000000ee83ed R09: 00007fd87c44c700
-[72873.713595] R10: 0000000000000001 R11: 0000000000000206 R12: 00007fd87c44bcb0
-[72873.713595] R13: 00007fd87c44bcc0 R14: 00007fd879d15fd8 R15: 00007fd879d15ed8
-[72873.713596] FS:  00007fd87c44c700 GS:  0000000000000000
-[72873.713597] [Xenomai] watchdog triggered on CPU #1 -- runaway
-thread 'timer-internal' signaled
+```
+
+     struct RT_EVENT event;
+
+     struct RT_EVENT_INFO info;
+
+     ret = rt_event_create(&event, "EVENT", 0, EV_FIFO);
+
+     rt_event_signal(&event, 0x2);
+
+     rt_event_inquire(&event, &info);
+
+     printf("info.value = %d\n", info.value);
+
+     printf("info.name = %s\n", info.name);
+
+     printf("info.nwaiters = %d\n", info.nwaiters);
+
+```
+
+Result:
+
+```
+
+     info.value = 0
+
+     info.name = "EVENT"
+
+     info.nwaiters = 0
+
+```
+
+Environment:
+
+       xenomai-3.1、Linux-4.19.114、--core cobalt.
+
+
+
+
 
