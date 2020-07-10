@@ -1,11 +1,13 @@
-From: Caffreyfans <Caffreyfans@163.com>
-Subject: [BUG] copperlate/eventobj.c ->>> eventobj_inquire(), don't work
-Message-ID: <e371ebd5-519a-cf6e-998e-b2591d4f1c48@163.com>
-Date: Fri, 10 Jul 2020 14:04:25 +0800
+Subject: Re: [BUG] copperlate/eventobj.c ->>> eventobj_inquire(), don't work
+References: <e371ebd5-519a-cf6e-998e-b2591d4f1c48@163.com>
+From: Philippe Gerum <rpm@xenomai.org>
+Message-ID: <d926b5a5-da09-c2f1-0b81-544cae7cc9d9@xenomai.org>
+Date: Fri, 10 Jul 2020 10:38:12 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"; format="flowed"
-Content-Transfer-Encoding: 8bit
+In-Reply-To: <e371ebd5-519a-cf6e-998e-b2591d4f1c48@163.com>
+Content-Type: text/plain; charset="utf-8"
 Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -14,58 +16,38 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
+To: Caffreyfans <Caffreyfans@163.com>, xenomai@xenomai.org
 
-Hi sir,
+On 7/10/20 8:04 AM, Caffreyfans via Xenomai wrote:
+> Hi sir,
+> 
+>     I'm trying to make another skin for xenomai.  When I do something about
+> "event". I use `eventobj_inquire()` to get event flags. But no matter what
+> value I post, I always get 0.
+> 
+>     I find that eventobj_inquire() is not working. I know `alchemy/event` also
+> use `eventobj`. So I write a test code by using alchemy skin. I am curious
+> whether it is my own problem or there is an error in xenomai.
+> 
 
-     I'm trying to make another skin for xenomai.  When I do something 
-about "event". I use `eventobj_inquire()` to get event flags. But no 
-matter what value I post, I always get 0.
+Most likely a bug in Xenomai. In addition, looking at cobalt_event_post(),
+there is a blatant race condition between the signal <-> wait operations. The
+in-kernel wait() operation serializes on the ugly big lock which is not going
+to help much against racing with the userland counterpart in
+cobalt_event_post(), which does this:
 
-     I find that eventobj_inquire() is not working. I know 
-`alchemy/event` also use `eventobj`. So I write a test code by using 
-alchemy skin. I am curious whether it is my own problem or there is an 
-error in xenomai.
+	__sync_or_and_fetch(&state->value, bits); /* full barrier. */
 
-Test code:
+	if ((state->flags & COBALT_EVENT_PENDED) == 0)
+		return 0;
 
-```
+The somebody-is-waiting bit tested above should be part of some atomic
+operation shared with the wait-side or covered by the ugly big lock, but the
+way it is implemented today can lead to spurious waits.
 
-     struct RT_EVENT event;
+The event code was fixed months ago for another bad issue, the whole thing
+looks fragile. You may want to review all of it.
 
-     struct RT_EVENT_INFO info;
-
-     ret = rt_event_create(&event, "EVENT", 0, EV_FIFO);
-
-     rt_event_signal(&event, 0x2);
-
-     rt_event_inquire(&event, &info);
-
-     printf("info.value = %d\n", info.value);
-
-     printf("info.name = %s\n", info.name);
-
-     printf("info.nwaiters = %d\n", info.nwaiters);
-
-```
-
-Result:
-
-```
-
-     info.value = 0
-
-     info.name = "EVENT"
-
-     info.nwaiters = 0
-
-```
-
-Environment:
-
-       xenomai-3.1、Linux-4.19.114、--core cobalt.
-
-
-
-
+-- 
+Philippe.
 
