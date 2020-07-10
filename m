@@ -1,13 +1,14 @@
-Subject: Re: [BUG] copperlate/eventobj.c ->>> eventobj_inquire(), don't work
-References: <e371ebd5-519a-cf6e-998e-b2591d4f1c48@163.com>
+Subject: Re: [RFC]why xnlock_put and xnlock_clear_irqon release xnlock
+ directly?
+References: <20200709152509.33099-1-alex_luca@163.com>
 From: Philippe Gerum <rpm@xenomai.org>
-Message-ID: <d926b5a5-da09-c2f1-0b81-544cae7cc9d9@xenomai.org>
-Date: Fri, 10 Jul 2020 10:38:12 +0200
+Message-ID: <aa59adfc-533c-539f-f145-12e41147e53e@xenomai.org>
+Date: Fri, 10 Jul 2020 11:05:21 +0200
 MIME-Version: 1.0
-In-Reply-To: <e371ebd5-519a-cf6e-998e-b2591d4f1c48@163.com>
-Content-Type: text/plain; charset="utf-8"
+In-Reply-To: <20200709152509.33099-1-alex_luca@163.com>
+Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,37 +17,70 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Caffreyfans <Caffreyfans@163.com>, xenomai@xenomai.org
+To: alex_luca@163.com, xenomai@xenomai.org
 
-On 7/10/20 8:04 AM, Caffreyfans via Xenomai wrote:
-> Hi sir,
+On 7/9/20 5:25 PM, alex_luca--- via Xenomai wrote:
+> From: Alex_luca@163.com
 > 
->     I'm trying to make another skin for xenomai.  When I do something about
-> "event". I use `eventobj_inquire()` to get event flags. But no matter what
-> value I post, I always get 0.
+> hello,list
+> I have some doubts on *struct nklock* operations. 
 > 
->     I find that eventobj_inquire() is not working. I know `alchemy/event` also
-> use `eventobj`. So I write a test code by using alchemy skin. I am curious
-> whether it is my own problem or there is an error in xenomai.
+> Both *xnlock_get* and *xnlock_get_irqsave* is allowed to be called
+> nested;they will check that if the nklock has been acquired. If so
+> they won't actually do the "get", but return a value of 2.
+> 
+> But the *xnlock_put*, which corresponding to *xnlock_get* never
+> checks and will actually release the lock. This is diffrent from
+> *xnlock_put_irqrestore*.
+> 
+> What puzzles me is the following:
+> {
+>     ......
+>     xnlock_get_irqsave(nklock, s)
+>     ......
+>         xnlock_get(nklock)
+>         ......
+>         xnlock_put(nklock)
+>         ......
+>     xnlock_put_irqrestore(nklock, s)
+> }
+> 
+> First, *xnlock_get_irqsave* get the nklock, and *xnlock_get* will skip;
+> Then *xnlock_put* is called, and it released the nklock; after a
+> while *xnlock_put_irqrestore* is called on the same cpu, it also seems
+> to release the nklock.
+> 
+> Will this above happen in xenomai?  But I have never seen this happen.
+> Or *xnlock_get* was guaranteed never been called nesting?
 > 
 
-Most likely a bug in Xenomai. In addition, looking at cobalt_event_post(),
-there is a blatant race condition between the signal <-> wait operations. The
-in-kernel wait() operation serializes on the ugly big lock which is not going
-to help much against racing with the userland counterpart in
-cobalt_event_post(), which does this:
+This is right, there is such asymmetry between the irq-aware form and the
+plain one, which I believe was not intended but never caused any trouble yet
+because the problematic nesting does not happen in the current implementation.
+Kind of sleeping monster if you will. xnlock_get() is commonly used in IRQ
+handlers in order to save the redundant interrupt state fixup, so it would be
+the outer lock in this case, not the inner one.
 
-	__sync_or_and_fetch(&state->value, bits); /* full barrier. */
+On a general note, if you plan to remove the ugly big lock from the Xenomai
+code base, I would suggest the following approach:
 
-	if ((state->flags & COBALT_EVENT_PENDED) == 0)
-		return 0;
+- rewrite the core synchronization (xnsynch) so that testing for a condition
+and sleeping on the related synchronization object (if that condition is
+unmet) does not have to be covered by the nklock in a single atomic section.
 
-The somebody-is-waiting bit tested above should be part of some atomic
-operation shared with the wait-side or covered by the ugly big lock, but the
-way it is implemented today can lead to spurious waits.
+- remove all other occurrences of code which would reschedule (xnsched_run())
+with the nklock held. This nesting has to go for the Xenomai core to be
+SMP-scalable.
 
-The event code was fixed months ago for another bad issue, the whole thing
-looks fragile. You may want to review all of it.
+Then you would need to pick a workable locking pattern. One involves
+introducing per-CPU runqueue locks covering the updates to the scheduler data,
+and per-thread locks protecting updates to the thread state. The locking order
+would be thread -> runqueue, with the runqueue lock held across context
+switches and released in the scheduling tail by the incoming thread.
+
+This approach was followed in order to convert Cobalt into a SMP-scalable core
+which you can refer to as a working example if that helps:
+https://git.evlproject.org/linux-evl.git/tree/kernel/evl/sched/core.c?h=evl/master
 
 -- 
 Philippe.
