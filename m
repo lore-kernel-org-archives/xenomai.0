@@ -1,10 +1,9 @@
-From: Alexander Frolov <frolov@nicevt.ru>
-Subject: Xenomai with isolcpus and workqueue task
-Message-ID: <c25a1993-e0e1-eebf-a4f8-a5c5f0d7604c@nicevt.ru>
-Date: Sat, 11 Jul 2020 17:25:48 +0300
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
+From: Matheus Leitzke <senseipinto@gmail.com>
+Date: Sat, 11 Jul 2020 14:42:59 -0300
+Message-ID: <CAKP50V6HKWY9p3jnP8EgEVeoqJj9rtUbSK2k8eqVs-y40cK8MA@mail.gmail.com>
+Subject: Problem when compiling Xenomai 3.0.8 user libraries with enable-debug
+Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
@@ -16,35 +15,34 @@ List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: xenomai@xenomai.org
 
-Hi all!
+Hello,
 
-I am using Xenomai 3.1 with 4.19.124 I-pipe patchon a smp motherboard.=C2=
-=A0=20
-For my RT task I allocate few CPU cores
-with isolcpus option. However, large latency spikes are noticed due to=20
-igb watchdog activities (I am using common
-igb driver, not rt_igb).
+I am setting my Xenomai user libraries with:
 
-Looking into igb sources, it was understood that workqueue is used for=20
-some tasks (afaiu, it is used to link status
-monitoring)
+./configure --host=3Darm-linux-gnueabihf --enable-smp --enable-debug=3Dfull
+--enable-pshared --with-core=3Dcobalt
 
-from igb_main.c
-...
- =C2=A0 INIT_WORK(&adapter->reset_task, igb_reset_task);
- =C2=A0 INIT_WORK(&adapter->watchdog_task, igb_watchdog_task);
-...
+But when I use make to compile the user libraries, the following error is
+throw:
 
-The Linux kernel scheduler runs this igb activities on isolated CPUs=20
-disregarding isolcpus option, ruining real-time
-system behavior.
+make[5]: Entering directory
+'/home/matheus/Downloads/xenomai-3.0.8/lib/cobalt/arch/arm'
+  CC       libarch_la-features.lo
+features.c: In function =E2=80=98cobalt_check_features=E2=80=99:
+features.c:78:1: error: r7 cannot be used in asm here
+ }
 
-So the question, is it a correct way to use normal igb on Xenomai at all=20
-or it is not recommended? What can be done
-to prohibit Linux scheduler to allocate those tasks on isolated cores?
+This error is thrown because the r7 register is being used in macro
+XENOMAI_SYSCALL2 inside cobalt_check_features from features,c cobalt file.
 
-Thank you!
+I try to follow this suggestion:
+https://tls.mbed.org/kb/development/arm-thumb-error-r7-cannot-be-used-in-as=
+m-here.
+However, when inserting "-fomit-frame-pointer" on Makefile c flags
+variables, this has no effect.
 
-Best,
- =C2=A0=C2=A0 Alex
+This error occurs only when I set --enable-debug flag.
 
+Do you have any suggestions?
+
+Matheus
