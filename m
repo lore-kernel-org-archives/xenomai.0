@@ -1,10 +1,10 @@
 MIME-Version: 1.0
-From: Matheus Leitzke <senseipinto@gmail.com>
-Date: Sat, 11 Jul 2020 14:42:59 -0300
-Message-ID: <CAKP50V6HKWY9p3jnP8EgEVeoqJj9rtUbSK2k8eqVs-y40cK8MA@mail.gmail.com>
-Subject: Problem when compiling Xenomai 3.0.8 user libraries with enable-debug
+From: =?UTF-8?B?5a2Z5LiW6b6ZIHN1bnNoaWxvbmc=?= <sunshilong369@gmail.com>
+Date: Sun, 12 Jul 2020 13:54:10 +0800
+Message-ID: <CAAvDm6Zrag3Rk0Gn1WDAYZxe+wAVsUy6BXQ9O2_EAAywet1O3Q@mail.gmail.com>
+Subject: Is it possible that Xenomai threads block the Linux domain NMIs from
+ being processed for some time?
 Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -13,36 +13,34 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
+To: xenomai <xenomai@xenomai.org>
 
-Hello,
+Hi, list
 
-I am setting my Xenomai user libraries with:
+As the paper on the official website(
+https://xenomai.org/documentation/branches/v2.0.x/pdf/Life-with-Adeos.pdf),
+which says that:
+However, thanks to the virtualization of the interrupt control Adeos
+brings, a higher priority domain can still receive interrupts, and
+eventually preempt any lower priority domain.
 
-./configure --host=3Darm-linux-gnueabihf --enable-smp --enable-debug=3Dfull
---enable-pshared --with-core=3Dcobalt
+And as far as I know from your website, Xenomai threads have higher
+priority than any Linux thread.
+But does they have higher priority than Linux domain interrupts?
+So several related questions raise:
+* If the CPUs are occupied by Xenomai threads for several seconds(e.g.
+  1s or 2s), will the NMIs for Linux domain have to wait for the
+  Xenomai threads releasing the CPUs?
+  Is it possible that Xenomai threads block the Linux domain NMIs from
+  being processed for some time?
 
-But when I use make to compile the user libraries, the following error is
-throw:
+* If the Linux domain is processing interrupts(normal interrupts and NMIs),
+  and a Xenomai thread is ready to ready at the same moment, will the
+  Xenomai thread run at once and block the processing of Linux domain
+  interrupts?
 
-make[5]: Entering directory
-'/home/matheus/Downloads/xenomai-3.0.8/lib/cobalt/arch/arm'
-  CC       libarch_la-features.lo
-features.c: In function =E2=80=98cobalt_check_features=E2=80=99:
-features.c:78:1: error: r7 cannot be used in asm here
- }
 
-This error is thrown because the r7 register is being used in macro
-XENOMAI_SYSCALL2 inside cobalt_check_features from features,c cobalt file.
+Thank you for your attention to this matter.
+Looking forward to hearing from you.
+Best Regards.
 
-I try to follow this suggestion:
-https://tls.mbed.org/kb/development/arm-thumb-error-r7-cannot-be-used-in-as=
-m-here.
-However, when inserting "-fomit-frame-pointer" on Makefile c flags
-variables, this has no effect.
-
-This error occurs only when I set --enable-debug flag.
-
-Do you have any suggestions?
-
-Matheus
