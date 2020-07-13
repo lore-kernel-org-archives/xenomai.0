@@ -1,15 +1,13 @@
-Subject: Re: Still getting Deadlocks with condition variables
-References: <VI1PR05MB59177F9BC5CD74A181467003F6860@VI1PR05MB5917.eurprd05.prod.outlook.com>
- <6fc1c380-1664-fe9b-6a68-4cf0c74a943b@siemens.com>
- <VI1PR05MB59170356CC280D9A859DC743F6850@VI1PR05MB5917.eurprd05.prod.outlook.com>
-From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <c092d45d-d6cd-9327-e10f-575b2da3a607@siemens.com>
-Date: Mon, 8 Jun 2020 12:09:19 +0200
-MIME-Version: 1.0
-In-Reply-To: <VI1PR05MB59170356CC280D9A859DC743F6850@VI1PR05MB5917.eurprd05.prod.outlook.com>
-Content-Type: text/plain; charset="utf-8"
+From: "Meng, Fino" <fino.meng@intel.com>
+Subject: RE: Xenomai with isolcpus and workqueue task
+Date: Mon, 13 Jul 2020 05:57:05 +0000
+Message-ID: <BYAPR11MB376564F447618B9352F5542EEE600@BYAPR11MB3765.namprd11.prod.outlook.com>
+References: <c25a1993-e0e1-eebf-a4f8-a5c5f0d7604c@nicevt.ru>
+In-Reply-To: <c25a1993-e0e1-eebf-a4f8-a5c5f0d7604c@nicevt.ru>
 Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+MIME-Version: 1.0
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -18,296 +16,34 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Lange Norbert <norbert.lange@andritz.com>, "Xenomai (xenomai@xenomai.org)" <xenomai@xenomai.org>
+To: Alexander Frolov <frolov@nicevt.ru>
+Cc: "Xenomai (xenomai@xenomai.org)" <xenomai@xenomai.org>
 
-On 08.06.20 11:48, Lange Norbert wrote:
-> 
-> 
->> -----Original Message-----
->> From: Jan Kiszka <jan.kiszka@siemens.com>
->> Sent: Freitag, 5. Juni 2020 17:40
->> To: Lange Norbert <norbert.lange@andritz.com>; Xenomai
->> (xenomai@xenomai.org) <xenomai@xenomai.org>
->> Subject: Re: Still getting Deadlocks with condition variables
->>
->> NON-ANDRITZ SOURCE: BE CAUTIOUS WITH CONTENT, LINKS OR
->> ATTACHMENTS.
->>
->>
->> On 05.06.20 16:36, Lange Norbert via Xenomai wrote:
->>> Hello,
->>>
->>> I brought this up once or twice at this ML [1], I am still getting
->>> some occasional lockups. Now the first time without running under an
->>> debugger,
->>>
->>> Harwdare is a TQMxE39M (Goldmont Atom)
->>> Kernel: 4.19.124-cip27-xeno12-static x86_64 I-pipe Version: 12 Xenomai
->>> Version: 3.1 Glibc Version 2.28
->>>
->>> What happens (as far as I understand it):
->>>
->>> The setup is an project with several cobalt threads (no "native" Linux
->> thread as far as I can tell, apart maybe from the cobalt's printf thread).
->>> They mostly sleep, and are triggered if work is available, the project
->>> also can load DSOs (specialized maths) during configuration stage -
->>> during this stages is when the exceptions occur
->>>
->>>
->>> 1.   Linux Thread LWP 682 calls SYS_futex "wake"
->>>
->>> Code immediately before syscall, file x86_64/lowlevellock.S:
->>> movl$0, (%rdi)
->>> LOAD_FUTEX_WAKE (%esi)
->>> movl$1, %edx/* Wake one thread.  */
->>> movl$SYS_futex, %eax
->>> syscall
->>>
->>> 2. Xenomai switches a cobalt thread to secondary, potentially because all
->> threads are in primary:
->>>
->>> Jun 05 12:35:19 buildroot kernel: [Xenomai] switching dispatcher to
->>> secondary mode after exception #14 from user-space at 0x7fd731299115
->>> (pid 681)
->>
->> #14 mean page fault, fixable or real. What is at that address? What address
->> was accessed by that instruction?
->>
->>>
->>> Note that most threads are stuck waiting for a condvar in
->> sc_cobalt_cond_wait_prologue (cond.c:313), LWP 681 is at the next
->> instruction.
->>>
->>
->> Stuck at what? Waiting for the condvar itsself or getting the enclosing mutex
->> again? What are the states of the involved synchonization objects?
-> 
-> All mutexes are free. There is one task (Thread 2) pulling the mutexes for the duration of signaling the condvars,
-> this task should never block outside of a sleep function giving it a 1ms cycle.
-> No deadlock is possible.
-> 
-> What happens is that for some weird reason, Thread 1 got a sporadic wakeup (handling a PF fault from another thread?),
-
-PFs are synchronous, not proxied.
-
-As Philippe also pointed out, understanding that PF is the first step.
-Afterwards, we may look into the secondary issue, if there is still one,
-and that would be be behavior around the condvars after that PF.
-
-Jan
-
-> Acquires the mutex and then either is getting demoted to Linux and cause a XCPU signal (if that check is enabled),
-> or stuck at sc_cobalt_cond_wait_epilogue infinitely.
-> 
-> Then Thread 2 will logically be stuck at re-aquiring the mutex.
-> 
-> I have an alternaivte implementation using Semaphores instead of condvars, I think I have never seen this issue crop up there.
-> 
->>
->> Jan
->>
->>> 3. Xenomai gets XCPU signal -> coredump
->>>
->>> gdb) thread apply all bt 3
->>>
->>> Thread 9 (LWP 682):
->>> #0  __lll_unlock_wake () at
->>> ../sysdeps/unix/sysv/linux/x86_64/lowlevellock.S:339
->>> #1  0x00007fd731275d65 in __pthread_mutex_unlock_usercnt
->>> (mutex=0x7fd7312f6968 <_rtld_global+2312>, decr=1) at
->>> pthread_mutex_unlock.c:54
->>> #2  0x00007fd7312e0442 in ?? () from
->>> /home/lano/Downloads/bugcrash/lib64/ld-linux-x86-64.so.2
->>> #3  0x00007fd7312c72ac in ?? () from /lib/libdl.so.2
->>> #4  0x00007fd73104211f in _dl_catch_exception () from /lib/libc.so.6
->>> #5  0x00007fd731042190 in _dl_catch_error () from /lib/libc.so.6
->>> #6  0x00007fd7312c7975 in ?? () from /lib/libdl.so.2
->>> #7  0x00007fd7312c7327 in dlopen () from /lib/libdl.so.2 (More stack
->>> frames follow...)
->>>
->>> Thread 8 (LWP 686):
->>> #0  0x00007fd731298d48 in __cobalt_clock_nanosleep (clock_id=0,
->>> flags=0, rqtp=0x7fd727e3ad10, rmtp=0x0) at
->>> /opt/hipase2/src/xenomai-3.1.0/lib/cobalt/clock.c:312
->>> #1  0x00007fd731298d81 in __cobalt_nanosleep (rqtp=<optimized out>,
->>> rmtp=<optimized out>) at
->>> /opt/hipase2/src/xenomai-3.1.0/lib/cobalt/clock.c:354
->>> #2  0x0000000000434590 in operator() (__closure=0x7fd720006fb8) at
->>> ../../acpu.runner/asim/asim_com.cpp:685
->>> (More stack frames follow...)
->>>
->>> Thread 7 (LWP 677):
->>> #0  0x00007fd73127b6c6 in __GI___nanosleep
->>> (requested_time=requested_time@entry=0x7fd7312b1fb0 <syncdelay>,
->>> remaining=remaining@entry=0x0) at
->>> ../sysdeps/unix/sysv/linux/nanosleep.c:28
->>> #1  0x00007fd73129b746 in printer_loop (arg=<optimized out>) at
->>> /opt/hipase2/src/xenomai-3.1.0/lib/cobalt/printf.c:635
->>> #2  0x00007fd7312720f7 in start_thread (arg=<optimized out>) at
->>> pthread_create.c:486 (More stack frames follow...)
->>>
->>> Thread 6 (LWP 685):
->>> #0  0x00007fd73129910a in __cobalt_pthread_cond_wait
->>> (cond=0x7fd72f269660, mutex=0x7fd72f269630) at
->>> /opt/hipase2/src/xenomai-3.1.0/lib/cobalt/cond.c:313
->>> #1  0x000000000046377c in conditionvar_wait (pData=0x7fd72f269660,
->>> pMutex=0x7fd72f269630) at ../../alib/src/alib/posix/conditionvar.c:66
->>> #2  0x000000000040a620 in HIPASE::Posix::CAlib_ConditionVariable::wait
->>> (this=0x7fd72f269660, lock=...) at
->>> ../../alib/include/alib/alib_conditionvar_posix.h:67
->>> (More stack frames follow...)
->>>
->>> Thread 5 (LWP 684):
->>> #0  0x00007fd73129910a in __cobalt_pthread_cond_wait
->>> (cond=0x7fd72f267790, mutex=0x7fd72f267760) at
->>> /opt/hipase2/src/xenomai-3.1.0/lib/cobalt/cond.c:313
->>> #1  0x000000000046377c in conditionvar_wait (pData=0x7fd72f267790,
->>> pMutex=0x7fd72f267760) at ../../alib/src/alib/posix/conditionvar.c:66
->>> #2  0x000000000040a620 in HIPASE::Posix::CAlib_ConditionVariable::wait
->>> (this=0x7fd72f267790, lock=...) at
->>> ../../alib/include/alib/alib_conditionvar_posix.h:67
->>> (More stack frames follow...)
->>>
->>> Thread 4 (LWP 680):
->>> #0  0x00007fd73129910a in __cobalt_pthread_cond_wait (cond=0xfeafa0
->>> <(anonymous namespace)::m_MainTaskStart>, mutex=0xfeaf60
->> <(anonymous
->>> namespace)::m_TaskMutex>) at
->>> /opt/hipase2/src/xenomai-3.1.0/lib/cobalt/cond.c:313
->>> #1  0x000000000046377c in conditionvar_wait (pData=0xfeafa0
->>> <(anonymous namespace)::m_MainTaskStart>, pMutex=0xfeaf60
->> <(anonymous
->>> namespace)::m_TaskMutex>) at
->>> ../../alib/src/alib/posix/conditionvar.c:66
->>> #2  0x000000000040a620 in HIPASE::Posix::CAlib_ConditionVariable::wait
->>> (this=0xfeafa0 <(anonymous namespace)::m_MainTaskStart>, lock=...) at
->>> ../../alib/include/alib/alib_conditionvar_posix.h:67
->>> (More stack frames follow...)
->>>
->>> Thread 3 (LWP 683):
->>> #0  0x00007fd73129910a in __cobalt_pthread_cond_wait
->>> (cond=0x7fd72f2658c0, mutex=0x7fd72f265890) at
->>> /opt/hipase2/src/xenomai-3.1.0/lib/cobalt/cond.c:313
->>> #1  0x000000000046377c in conditionvar_wait (pData=0x7fd72f2658c0,
->>> pMutex=0x7fd72f265890) at ../../alib/src/alib/posix/conditionvar.c:66
->>> #2  0x000000000040a620 in HIPASE::Posix::CAlib_ConditionVariable::wait
->>> (this=0x7fd72f2658c0, lock=...) at
->>> ../../alib/include/alib/alib_conditionvar_posix.h:67
->>> (More stack frames follow...)
->>>
->>> Thread 2 (LWP 675):
->>> #0  0x00007fd73129aea4 in __cobalt_pthread_mutex_lock
->>> (mutex=<optimized out>) at
->>> /opt/hipase2/src/xenomai-3.1.0/lib/cobalt/mutex.c:375
->>> #1  0x000000000046390a in mutex_lock (pData=0xfeaf60 <(anonymous
->>> namespace)::m_TaskMutex>) at ../../alib/src/alib/posix/mutex.c:33
->>> #2  0x000000000040a530 in HIPASE::Posix::CAlib_Mutex::lock
->>> (this=0xfeaf60 <(anonymous namespace)::m_TaskMutex>) at
->>> ../../alib/include/alib/alib_mutex_posix.h:67
->>> (More stack frames follow...)
->>>
->>> Thread 1 (LWP 681):
->>> #0  __cobalt_pthread_cond_wait (cond=0xfeafe0 <(anonymous
->>> namespace)::m_DispatcherTaskStart>, mutex=0xfeaf60 <(anonymous
->>> namespace)::m_TaskMutex>) at
->>> /opt/hipase2/src/xenomai-3.1.0/lib/cobalt/cond.c:316
->>> #1  0x000000000046377c in conditionvar_wait (pData=0xfeafe0
->>> <(anonymous namespace)::m_DispatcherTaskStart>, pMutex=0xfeaf60
->>> <(anonymous namespace)::m_TaskMutex>) at
->>> ../../alib/src/alib/posix/conditionvar.c:66
->>> #2  0x000000000040a620 in HIPASE::Posix::CAlib_ConditionVariable::wait
->>> (this=0xfeafe0 <(anonymous namespace)::m_DispatcherTaskStart>,
->>> lock=...) at ../../alib/include/alib/alib_conditionvar_posix.h:67
->>> (More stack frames follow...)
->>>
->>>
->>>
->>> [1] -
->>> https://hes32-ctp.trendmicro.com:443/wis/clicktime/v1/query?url=https%
->>>
->> 3a%2f%2fxenomai.org%2fpipermail%2fxenomai%2f2020%2dJanuary%2f0422
->> 99.ht
->>> ml&umid=b5b10a96-6e6b-4df0-80fd-
->> ef11bb4216f1&auth=144056baf7302d777aca
->>> d187aac74d4b9ba425e1-4c122b5928aeea18f0ff04626f26fdeeeb97cfa3
->>>
->>>
->>> Mit besten Grüßen / Kind regards
->>>
->>> NORBERT LANGE
->>>
->>> AT-RD3
->>>
->>> ANDRITZ HYDRO GmbH
->>> Eibesbrunnergasse 20
->>> 1120 Vienna / AUSTRIA
->>> p: +43 50805 56684
->>> norbert.lange@andritz.com
->>> andritz.com
->>>
->>> ________________________________
->>>
->>> This message and any attachments are solely for the use of the intended
->> recipients. They may contain privileged and/or confidential information or
->> other information protected from disclosure. If you are not an intended
->> recipient, you are hereby notified that you received this email in error and
->> that any review, dissemination, distribution or copying of this email and any
->> attachment is strictly prohibited. If you have received this email in error,
->> please contact the sender and delete the message and any attachment from
->> your system.
->>>
->>> ANDRITZ HYDRO GmbH
->>>
->>>
->>> Rechtsform/ Legal form: Gesellschaft mit beschränkter Haftung /
->>> Corporation
->>>
->>> Firmensitz/ Registered seat: Wien
->>>
->>> Firmenbuchgericht/ Court of registry: Handelsgericht Wien
->>>
->>> Firmenbuchnummer/ Company registration: FN 61833 g
->>>
->>> DVR: 0605077
->>>
->>> UID-Nr.: ATU14756806
->>>
->>>
->>> Thank You
->>> ________________________________
->>>
->>
->> --
->> Siemens AG, Corporate Technology, CT RDA IOT SES-DE Corporate
->> Competence Center Embedded Linux
-> 
-> Norbert Lange
-> 
-> ________________________________
-> 
-> This message and any attachments are solely for the use of the intended recipients. They may contain privileged and/or confidential information or other information protected from disclosure. If you are not an intended recipient, you are hereby notified that you received this email in error and that any review, dissemination, distribution or copying of this email and any attachment is strictly prohibited. If you have received this email in error, please contact the sender and delete the message and any attachment from your system.
-> 
-> ANDRITZ HYDRO GmbH
-> 
-> 
-> Rechtsform/ Legal form: Gesellschaft mit beschränkter Haftung / Corporation
-> 
-> Firmensitz/ Registered seat: Wien
-> 
-> Firmenbuchgericht/ Court of registry: Handelsgericht Wien
-> 
-> Firmenbuchnummer/ Company registration: FN 61833 g
-> 
-> DVR: 0605077
-> 
-> UID-Nr.: ATU14756806
-> 
-> 
-> Thank You
-> ________________________________
-> 
-
--- 
-Siemens AG, Corporate Technology, CT RDA IOT SES-DE
-Corporate Competence Center Embedded Linux
+PlNlbnQ6IFNhdHVyZGF5LCBKdWx5IDExLCAyMDIwIDEwOjI2IFBNDQo+DQo+SGkgYWxsIQ0KPg0K
+PkkgYW0gdXNpbmcgWGVub21haSAzLjEgd2l0aCA0LjE5LjEyNCBJLXBpcGUgcGF0Y2hvbiBhIHNt
+cCBtb3RoZXJib2FyZC4gRm9yIG15IFJUIHRhc2sgSSBhbGxvY2F0ZSBmZXcgQ1BVIGNvcmVzIHdp
+dGgNCj5pc29sY3B1cyBvcHRpb24uIEhvd2V2ZXIsIGxhcmdlIGxhdGVuY3kgc3Bpa2VzIGFyZSBu
+b3RpY2VkIGR1ZSB0byBpZ2Igd2F0Y2hkb2cgYWN0aXZpdGllcyAoSSBhbSB1c2luZyBjb21tb24g
+aWdiIGRyaXZlciwgbm90DQo+cnRfaWdiKS4NCj4NCj5Mb29raW5nIGludG8gaWdiIHNvdXJjZXMs
+IGl0IHdhcyB1bmRlcnN0b29kIHRoYXQgd29ya3F1ZXVlIGlzIHVzZWQgZm9yIHNvbWUgdGFza3Mg
+KGFmYWl1LCBpdCBpcyB1c2VkIHRvIGxpbmsgc3RhdHVzDQo+bW9uaXRvcmluZykNCj4NCj5mcm9t
+IGlnYl9tYWluLmMNCj4uLi4NCj4gwqAgSU5JVF9XT1JLKCZhZGFwdGVyLT5yZXNldF90YXNrLCBp
+Z2JfcmVzZXRfdGFzayk7DQo+IMKgIElOSVRfV09SSygmYWRhcHRlci0+d2F0Y2hkb2dfdGFzaywg
+aWdiX3dhdGNoZG9nX3Rhc2spOyAuLi4NCj4NCj5UaGUgTGludXgga2VybmVsIHNjaGVkdWxlciBy
+dW5zIHRoaXMgaWdiIGFjdGl2aXRpZXMgb24gaXNvbGF0ZWQgQ1BVcyBkaXNyZWdhcmRpbmcgaXNv
+bGNwdXMgb3B0aW9uLCBydWluaW5nIHJlYWwtdGltZSBzeXN0ZW0NCj5iZWhhdmlvci4NCj4NCj5T
+byB0aGUgcXVlc3Rpb24sIGlzIGl0IGEgY29ycmVjdCB3YXkgdG8gdXNlIG5vcm1hbCBpZ2Igb24g
+WGVub21haSBhdCBhbGwgb3IgaXQgaXMgbm90IHJlY29tbWVuZGVkPyBXaGF0IGNhbiBiZSBkb25l
+IHRvDQo+cHJvaGliaXQgTGludXggc2NoZWR1bGVyIHRvIGFsbG9jYXRlIHRob3NlIHRhc2tzIG9u
+IGlzb2xhdGVkIGNvcmVzPw0KDQpIaSBBbGV4LA0KDQpPbiB0aGlzIG1vdGhlcmJvYXJkLCBpcyB0
+aGUgYmFzaWMgbGF0ZW5jeSB0ZXN0IE9LIHdpdGhvdXQgaWdiIGFjdGl2aXRpZXM/ICBUaGUgc3Bp
+a2UgbWF5YmUgbm90IGR1ZSB0byBpZ2IgZHJpdmVyLg0KSW4gb3VyIGV4cGVyaWVuY2UsIGlmIHRo
+ZSBtb3RoZXJib2FyZCdzIEJJT1MgaXMgbm90IGF3YXJlIG9mIHJlYWwtdGltZSBzeXN0ZW0sIHdo
+aWNoIG1lYW4gbWlzc2luZyBzb21lIGNyaXRpY2FsIHNldHRpbmdzIGl0ZW1zDQpDLVN0YXRlLCBI
+eXBlclRocmVhZGluZywgU0EgR1YgKHRoZSBwb3dlciBzYXZlIGZvciBidXMgbWF0cml4KS4uLg0K
+V2UgYXJlIHdvcmtpbmcgb24gZGUtY291cGxpbmcgQklPUyBzZXR0aW5nIGFuZCBSVCBwZXJmb3Jt
+YW5jZSwgbGV0IHRoZSBrZXJuZWwgdG8gY29udHJvbCBzeXN0ZW0gc3RhdHVzLCBidXQgbm90IGZp
+bmlzaGVkIHlldC4NCg0KQlIgLyBGaW5vICjlrZ/npaXlpKspDQpJbnRlbCDigJMgSU9URyBEZXZl
+bG9wZXIgRW5hYmxpbmcNCg0KPg0KPlRoYW5rIHlvdSENCj4NCj5CZXN0LA0KPiDCoMKgIEFsZXgN
+Cg0K
 
