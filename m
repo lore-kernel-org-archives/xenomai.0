@@ -1,26 +1,13 @@
-Subject: Re: [PATCH] kernel:cobalt:heap: replace kzalloc with kvzalloc
-References: <1596218699-15537-1-git-send-email-pintu@codeaurora.org>
- <7a76268b-84f6-0073-7830-54a317106c7d@siemens.com>
- <fc87600a-0797-849d-2d35-f2d32d1a7a90@siemens.com>
- <CAAvDm6a2VPs_0uqZZChXc=mhnx7c4Z1sPstbbMRNGceYKZg7_Q@mail.gmail.com>
- <65a89852-1f02-663a-3d08-6e0ad2716044@siemens.com>
- <CAAvDm6b8DoYYz47K0VDoAzedk9y3w5kv3UA-4TzLipHxkX=z2Q@mail.gmail.com>
- <CAOuPNLhPejZsUwCrjOWm=kT_JLJipcV7WXt6TgiAA6UDXpOmvg@mail.gmail.com>
- <108d1c6f-5ae5-788a-e8ce-5e649c9b3642@siemens.com>
- <CAOuPNLixxP7+RkW716PZ97mq1dNNdzsMMdX_LAZ4+_DYkmREUw@mail.gmail.com>
- <45246226-b3ca-a00a-5729-9a28e558dda5@siemens.com>
- <CAOuPNLjozRbNL_S8d8qNR9feSjcbiT+vbhLVM4K+AMAhrJy=TQ@mail.gmail.com>
- <9c3fb2c1-eabb-04a4-b162-3cd898129326@siemens.com>
- <CAOuPNLjMBjWEQ7KiZd=d6ySMJ=zz_OMWZZ6A2VoHRgcEvp=MnA@mail.gmail.com>
- <CAAvDm6aa51+DRYRW7XczhA_wNtGaaOPkajBiXVa3YWNWgJb5AA@mail.gmail.com>
-From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <71efe972-1be9-c3f9-e5b7-e8364d7f079f@siemens.com>
-Date: Fri, 14 Aug 2020 12:08:50 +0200
 MIME-Version: 1.0
-In-Reply-To: <CAAvDm6aa51+DRYRW7XczhA_wNtGaaOPkajBiXVa3YWNWgJb5AA@mail.gmail.com>
-Content-Type: text/plain; charset="utf-8"; format="flowed"
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+References: <MN2PR19MB396729DFBDCB6D5C5E72B494D5600@MN2PR19MB3967.namprd19.prod.outlook.com>
+In-Reply-To: <MN2PR19MB396729DFBDCB6D5C5E72B494D5600@MN2PR19MB3967.namprd19.prod.outlook.com>
+From: Greg Gallagher <greg@embeddedgreg.com>
+Date: Mon, 13 Jul 2020 18:43:35 -0400
+Message-ID: <CALLqZ8QGmES1-V7chCo8igEXW3hEKt7GZu7zR04NYLzFfKifTw@mail.gmail.com>
+Subject: Re: xeno-gpio-xilinx causes gpio-xilinx's IRQ
+ callback(xgpio_irqhandler)
+ to trigger rather than gpio-core's "gpio_pin_interrupt"
+Content-Type: text/plain; charset="UTF-8"
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -29,116 +16,87 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: =?UTF-8?B?5a2Z5LiW6b6ZIHN1bnNoaWxvbmc=?= <sunshilong369@gmail.com>, Pintu Agarwal <pintu.ping@gmail.com>
-Cc: Pintu Kumar <pintu@codeaurora.org>, xenomai <xenomai@xenomai.org>
+To: Josh Karch <jkarch@firstmode.com>
+Cc: "Xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On 14.08.20 11:54, 孙世龙 sunshilong wrote:
-> What about simulating the behavior of kvmalloc by vmalloc and kmalloc(
-> and simulating the behavior of kvfree by kfree and vfree)?
+Hi Josh,
 
-I would agree but I do not see the use case for that finer-grained 
-allocation. In that case, simpler is better.
 
-Jan
+On Mon., Jul. 13, 2020, 6:37 p.m. Josh Karch via Xenomai <
+xenomai@xenomai.org> wrote:
 
-> The said functions are available for Linux-4.x.
-> If there is something wrong, please let me know.
-> 
-> Something like this:
-> For simulating kvmalloc:
->   gfp_t kmalloc_flags = GFP_KERNEL | __GFP_ZERO | __GFP_NORETRY;
-> if (size > PAGE_SIZE) {
-> kmalloc_flags |= __GFP_NOWARN;
-> }
-> 
-> heap->pagemap = kmalloc(sizeof(struct xnheap_pgentry) * nrpages,
->                                  kmalloc_flags);
-> if (NULL == heap->pagemap)
-> {
-> ptr = __vmalloc(size, GFP_KERNEL | __GFP_ZERO, PAGE_KERNEL);
-> }
-> 
-> For kvfree:
-> if (is_vmalloc_addr(addr))
-> vfree(addr);
-> else
-> kfree(addr);
-> 
-> Best Regards
-> Sunshilong
-> 
-> 
-> On Fri, Aug 14, 2020 at 3:37 PM Pintu Agarwal <pintu.ping@gmail.com> wrote:
->>
->> On Fri, 14 Aug 2020 at 12:36, Jan Kiszka <jan.kiszka@siemens.com> wrote:
->>>
->>> On 13.08.20 19:49, Pintu Agarwal wrote:
->>>> On Thu, 13 Aug 2020 at 16:01, Jan Kiszka <jan.kiszka@siemens.com> wrote:
->>>>>
->>>>> On 13.08.20 04:26, Pintu Agarwal wrote:
->>>>>> On Wed, 12 Aug 2020 at 21:22, Jan Kiszka <jan.kiszka@siemens.com> wrote:
->>>>>>>
->>>>>>> On 11.08.20 13:44, Pintu Agarwal wrote:
->>>>>>>> Oh sorry about this.
->>>>>>>> I can send a new patch set with kvmalloc that can work on all kernel versions.
->>>>>>>>
->>>>>>>
->>>>>>> Yes, please do so to avoid that things become to messy when trying to
->>>>>>> create that manually.
->>>>>>>
->>>>>>
->>>>>> Thank you so much for your confirmation.
->>>>>> Yes I am preparing a patch-set v2 and will send it soon.
->>>>>> But is there a way to use both kvzalloc and kvmalloc depending on
->>>>>> kernel version ?
->>>>>> I see that checking using below is also not valid any more in higher
->>>>>> kernel version:
->>>>>> #if LINUX_VERSION_CODE >= KERNEL_VERSION(4, 9, 0)
->>>>>>
->>>>>
->>>>> This pattern still works, also in 5.x.
->>>>>
->>>> Yes, but it seems illegal to use in latest kernel version.
->>>> The checkpatch.pl script in kernel catches these and that is why I see
->>>> these pattern is no more used.
->>>> scripts/checkpatch.pl:4157:# avoid LINUX_VERSION_CODE
->>>> scripts/checkpatch.pl:4158:             if ($line =~ /\bLINUX_VERSION_CODE\b/) {
->>>> scripts/checkpatch.pl:4159:                     WARN("LINUX_VERSION_CODE",
->>>> scripts/checkpatch.pl:4160:
->>>> "LINUX_VERSION_CODE should be avoided, code should be for the version
->>>> to which it is merged\n" . $herecurr);
->>>>
->>>
->>> It's illegal for in-tree code because that is implicitly in sync with
->>> the kernel version, always. But Xenomai is out-of-tree, thus needs to
->>> account for different versions it may be built against.
->>>
->>>>
->>>> Can we just use vmalloc ?
->>>> I think this is just an init code and it should not cause much impact
->>>> with performance as in any case we are using GFP_KERNEL flag itself.
->>>> Yes, I know the over-head about page-table and all with vmalloc
->>>
->>> Yes, I also think we can go with vmalloc. A heap size smaller one page
->>> is rather unlikely, even more many of those heaps.
->>>
->>
->> Yes I think here vmalloc should be enough rather than maintaining
->> different version for different kernel.
->> And I found that even kvmalloc is not straight available <= kernel 4.9
->> I can see its implementation only here, which seems to be specific to
->> fs subsystem.
->> fs/f2fs/f2fs.h:2757:static inline void *kvmalloc(size_t size, gfp_t flags)
->>
->> So, we don't have any other option.
->>
->> I will create patch with vmalloc itself then....
->>
->>
->> Thanks,
->> Pintu
+> Hi,
+>
+> With the CAN bus issues resolved, I now have a situation where the
+> xeno-gpio-xilinx driver (gpio-core.c) causes a complete system lockup when
+> IRQs are enabled and a GPIO toggle triggers the IRQ event.
+>
+> Here's what I know:  I instrumented the NRT driver to see how deeply
+> entrenched and intertwined the real-time and non real-time drivers are:
+>
+> (1) xeno-gpio-xilinx calls gpio-core which piggybacks upon the Xilinx
+> "gpio-xilinx" driver.
+> (2)It uses the OF scan information to create /dev/rtdm/gpio@address/gpioxxx
+> driver pins.
+>
+> When enabling interrupts:
+> (1)It uses the  NRT "Xgpio-request" function to request a gpio pin and set
+> the pin to an input, though for some reason it calls the set gpio as input
+> function twice
+> (2) It then calls xgpio-toirq twice for some reason
+> (3) It sets the IRQ type.  Only the rising edge IRQ is supported with the
+> Xilinx Driver
+> (4) It uses the unmask function in the non RT driver to unmask the IRQ
+> (5) It then sets the gpio as input again. I think this is a side effect of
+> calling the IOCTL to enable IRQ and then to block file descriptors on
+> interrupt.
+> (6) Once the interrupt is triggered, on occasion the Non realtime
+> xgpio_irqhandler gets called rather than the gpio_pin_interrupt function.
+> This makes me think the NRT driver is not properly setting the interrupt up
+> to work with the Xenomai handler.  Once the non realtime xgpio_irqhandler
+> gets called the code gets stuck in an infinite loop and crashes.
+>
+> Sometimes the system freezes before using the handler, other times it runs
+> the handler but it's not possible to break.
+>
+> The following is a transcript of a time when the nrt handler is not
+> called.    Otherwise you'd see a message when IRQ is triggered that the
+> system continually is in a nrt IRQ handler loop.
+>
+> So the question is: why is the non-rt handler being called and not the
+> gpio-core rt_gpio "gpio-pin-interrupt"?
+>
+>
+> [  303.900487] requesting GPIO
+> [  303.903419] setting gpio 0 as input
+> [  303.907004] setting gpio 0 as input
+> [  303.910549] called xgpio to irq
+> [  303.913768] called xgpio to irq
+> [  303.916913] setting irq type 1
+> [  303.919990] unmasking IRQ
+> [  303.922600] setting gpio 0 as input
+> [  324.917162] rcu: INFO: rcu_sched detected stalls on CPUs/tasks:
+> [  324.923100] rcu:     0-...0: (1 ticks this GP)
+> idle=66e/1/0x4000000000000000
+> softirq=8388/8389 fqs=2247
+> [  324.932321] rcu:     (detected by 3, t=5252 jiffies, g=12713, q=188)
+> [  324.938411] Task dump for CPU 0:
+> [  324.941629] xeno_gpio_teste R  running task        0   433    388
+> 0x00000202
+> [  324.948682] Call trace:
+> [  324.951126]  __switch_to+0x94/0xf0
+> [  324.954522]  0xffffff8008dea658
+>
+> Best,
+>
+> Josh Karch
+>
 
--- 
-Siemens AG, Corporate Technology, CT RDA IOT SES-DE
-Corporate Competence Center Embedded Linux
+Do you have have the gic and the IRQ handlers in place for the xilinx-gpio
+xenomai driver?  The current implementation doesn't support interrupts.
 
+Thanks
+
+Greg
+
+>
