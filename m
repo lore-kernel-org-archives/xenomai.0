@@ -1,12 +1,12 @@
-Subject: Re: rt_pipe_write memory allocation bug - xenomai 3.x
-References: <5adc97a4-014f-3a50-9109-4e574662cf7b@numalliance.com>
- <7f4384d6-c318-2448-99d9-bbfa7061f78e@siemens.com>
- <fc40f71f-66fd-7a2c-440f-19cbd8da8b18@iit.it>
+Subject: Re: ARM: switchtest fails
+References: <25f3e78c-c294-1322-4206-204dfaa48b8a@rsi-elektrotechnik.de>
+ <CALLqZ8SW=nD8gp52C_1--Kgvcfi6k72iXVRjgmqRve=Nj=ysPQ@mail.gmail.com>
+ <be5b1549-897a-33f5-a80a-d3ae84e58cfe@rsi-elektrotechnik.de>
 From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <a14c5832-1996-15b6-5438-ac25a9e02476@siemens.com>
-Date: Thu, 30 Jul 2020 00:05:45 +0200
+Message-ID: <48cd664a-7b1a-edef-d78a-5008d34ad534@siemens.com>
+Date: Mon, 13 Jul 2020 19:08:41 +0200
 MIME-Version: 1.0
-In-Reply-To: <fc40f71f-66fd-7a2c-440f-19cbd8da8b18@iit.it>
+In-Reply-To: <be5b1549-897a-33f5-a80a-d3ae84e58cfe@rsi-elektrotechnik.de>
 Content-Type: text/plain; charset="utf-8"; format="flowed"
 Content-Language: en-US
 Content-Transfer-Encoding: 8bit
@@ -18,160 +18,184 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: alessio margan <alessio.margan@iit.it>, xenomai@xenomai.org
+To: Jan Leupold <leupold@rsi-elektrotechnik.de>, "Xenomai (xenomai@xenomai.org)" <xenomai@xenomai.org>
 
-On 28.07.20 11:17, alessio margan via Xenomai wrote:
-> Hi all,
+On 09.07.20 17:22, Jan Leupold via Xenomai wrote:
+> Hi Greg,
 > 
-> I got this , briefly
+> Am 02.07.20 um 14:07 schrieb Greg Gallagher:
+>>
+>>
+>> On Thu., Jul. 2, 2020, 6:16 a.m. Jan Leupold via Xenomai
+>> <xenomai@xenomai.org <mailto:xenomai@xenomai.org>> wrote:
+>>
+>>      Hi,
+>>
+>>      I have a problem with switchtest, executed on sama5d2,
+>>      ipipe-4.19.128-cip28, xenomai-3.1.
+>>
+>>      When started without arguments:
+>>      == Testing FPU check routines...
+>>      d0: 1 != 2
+>>      ... snip ...
+>>      d15: 1 != 2
+>>      == FPU check routines: OK.
+>>      == Threads: sleeper_ufps-0 rtk-1 rtk-2 rtk_fp-3 rtk_fp-4 rtk_fp_ufpp-5
+>>      rtk_fp_ufpp-6 rtup-7 rtup-8 rtup_ufpp-9 rtup_ufpp-10 rtus-11 rtus-12
+>>      rtus_ufps-13 rtus_ufps-14 rtuo-15 rtuo-16 rtuo_ufpp-17 rtuo_ufpp-18
+>>      rtuo_ufps-19 rtuo_ufps-20 rtuo_ufpp_ufps-21 rtuo_ufpp_ufps-22
+>>      RTT|  00:00:00
+>>      RTH|ctx switches|-------total
+>>      RTD|          25|          25
+>>
+>>      no more output, exit status = 1
+>>
+>>      When started as "switchtest -n":
+>>
+>>      == Threads: sleeper-0 rtk-1 rtk-2 rtup-3 rtup-4 rtus-5 rtus-6 rtuo-7 rtuo-8
+>>      RTT|  00:00:01
+>>      RTH|ctx switches|-------total
+>>      RTD|        4295|        4295
+>>      RTD|        4316|        8611
+>>      RTD|        4279|       12890
+>>      RTD|        4316|       17206
+>>      RTD|        4313|       21519
+>>      ^C
+>>      RTD|        1215|       22734
+>>
+>>      deliberately terminated by CTRL-C, exit status = 0
+>>
+>>      Any threadspec of rtus_ufps, rtup_ufpp or rtuo_ufpp will cause the effect.
+>>      When looking at the source code I would suspect "fp_regs_set()" to
+>>      cause it.
+>>      The kernel log reports messages like this one:
+>>      [Xenomai] rtup_ufpp-1[1599] called regular ioctl() on /dev/rtdm/switchtest
+>>
+>>      While I have no reason to think that floating point operations are not
+>>      OK on this target I would like to at least know why switchtest fails
+>>      when using floating point:
+>>      * VFP initialization with respect to register access?
+>>      * Number of floating point registers? (although NEON should have more than
+>>        the tested 16)
+>>      * Any ideas?
+>>
+>>      Regards,
+>>      Jan
+>>
+>>      Some more details:
+>>
+>>      CONFIG_VFP, CONFIG_VFPv3 and CONFIG_NEON are set.
+>>
+>>      trace-cmd record -e cobalt* -e sched* -e signal*
+>>      switchtest
+>>      trace-cmd report
+>>      ---> output (at least the portion that seems to me relevant):
+>>
+>>      ... switchtest threads are doing their work, and then comes rtup-ufpp-9 ...
+>>           rtup-8-1538  [000]   135.112086: cobalt_switch_context:
+>>      prev_name=rtup-8 prev_pid=1538 prev_prio=1 prev_state=0x48042 ==>
+>>      next_name=rtup_ufpp-9 next_pid=1539 next_prio=1
+>>           rtup_ufpp-9-1539  [000]   135.112129: cobalt_head_sysexit:  result=0
+>>           rtup_ufpp-9-1539  [000]   135.112154: cobalt_head_sysentry:
+>>      syscall=ioctl
+>>           rtup_ufpp-9-1539  [000]   135.112170: cobalt_fd_ioctl:
+>>      device=0xc0b7a988 fd=3 arg=0x9 pid=1539 comm=rtup_ufpp-9
+>>           rtup_ufpp-9-1539  [000]   135.112192: cobalt_fd_ioctl_status:
+>>      device=0xc0b7a988 fd=3 pid=1539 comm=rtup_ufpp-9
+>>           rtup_ufpp-9-1539  [000]   135.112207: cobalt_shadow_gorelax:
+>>      reason=syscall
+>>           rtup_ufpp-9-1539  [000]   135.112221: cobalt_lostage_request:
+>>      request=c090b004 pid=1539 comm=rtup_ufpp-9
+>>           rtup_ufpp-9-1539  [000]   135.112240: cobalt_thread_suspend: pid=1539
+>>      mask=0x80 timeout=0 timeout_mode=0 wchan=(nil)
+>>           rtup_ufpp-9-1539  [000]   135.112254: cobalt_schedule:
+>>      status=0x10000000
+>>           rtup_ufpp-9-1539  [000]   135.112262: cobalt_switch_context:
+>>      prev_name=rtup_ufpp-9 prev_pid=1539 prev_prio=1 prev_state=0x480c0 ==>
+>>      next_name=ROOT next_pid=0 next_prio=-1
+>>            switchtest-1530  [000]   135.112308: cobalt_lostage_wakeup: pid=1539
+>>      comm=rtup_ufpp-9
+>>            switchtest-1530  [000]   135.112329: sched_waking:
+>>      comm=rtup_ufpp-9 pid=1539 prio=98 target_cpu=000
+>>            switchtest-1530  [000]   135.112380: sched_wakeup:
+>>      rtup_ufpp-9:1539 [98] success=1 CPU:000
+>>            switchtest-1530  [000]   135.112450: sched_stat_runtime:
+>>      comm=switchtest pid=1530 runtime=3009028 [ns] vruntime=22563904956 [ns]
+>>            switchtest-1530  [000]   135.112489: sched_switch:
+>>      switchtest:1530 [120] R ==> rtup_ufpp-9:1539 [98]
+>>           rtup_ufpp-9-1539  [000]   135.112561: cobalt_shadow_relaxed:
+>>      state=0x480c0 info=0x0
+>>           rtup_ufpp-9-1539  [000]   135.112581: cobalt_fd_ioctl:
+>>      device=0xc0b7a988 fd=3 arg=0x9 pid=1539 comm=rtup_ufpp-9
+>>           rtup_ufpp-9-1539  [000]   135.112602: cobalt_fd_ioctl_status:
+>>      device=0xc0b7a988 fd=3 pid=1539 comm=rtup_ufpp-9
+>>           rtup_ufpp-9-1539  [000]   135.112614: cobalt_head_sysexit:  result=-38
+>>           rtup_ufpp-9-1539  [000]   135.112997: sched_waking:
+>>      comm=switchtest pid=1527 prio=120 target_cpu=000
+>>           rtup_ufpp-9-1539  [000]   135.113036: sched_wakeup:
+>>      switchtest:1527 [120] success=1 CPU:000
+>>           rtup_ufpp-9-1539  [000]   135.113055: signal_generate:      sig=15
+>>      errno=0 code=-6 comm=switchtest pid=1527 grp=0 res=0
+>>           rtup_ufpp-9-1539  [000]   135.113204: sched_switch:
+>>      rtup_ufpp-9:1539 [98] S ==> switchtest:1527 [120]
+>>            switchtest-1527  [000]   135.113621: sched_waking:
+>>      comm=switchtest pid=1530 prio=120 target_cpu=000
+>>            switchtest-1527  [000]   135.113656: sched_stat_runtime:
+>>      comm=switchtest pid=1527 runtime=492337 [ns] vruntime=22561734482 [ns]
+>>            switchtest-1527  [000]   135.113684: sched_wakeup:
+>>      switchtest:1530 [120] success=1 CPU:000
+>>            switchtest-1527  [000]   135.113697: signal_generate:      sig=32
+>>      errno=0 code=-6 comm=switchtest pid=1530 grp=0 res=0
+>>            switchtest-1527  [000]   135.113805: cobalt_thread_unblock: pid=1537
+>>      state=0x48042 info=0x0
+>>            switchtest-1527  [000]   135.113820: cobalt_thread_resume:
+>>      name=rtup-7 pid=1537 mask=0x2
+>>            switchtest-1527  [000]   135.113837: cobalt_synch_forget:
+>>      synch=0xd92e00e0
+>>            switchtest-1527  [000]   135.113872: cobalt_schedule_remote:
+>>      status=0x10000000
+>>            switchtest-1527  [000]   135.113880: cobalt_schedule:
+>>      status=0x10000000
+>>            switchtest-1527  [000]   135.113893: cobalt_switch_context:
+>>      prev_name=ROOT prev_pid=0 prev_prio=-1 prev_state=0x18008 ==>
+>>      next_name=rtup-7 next_pid=1537 next_prio=1
+>>                rtup-7-1537  [000]   135.113948: cobalt_fd_ioctl_status:
+>>      device=0xc0b7a988 fd=3 pid=1537 comm=rtup-7
+>>                rtup-7-1537  [000]   135.113972: cobalt_shadow_gorelax:
+>>      reason=signal
+>>                rtup-7-1537  [000]   135.113985: cobalt_lostage_request:
+>>      request=c090b004 pid=1537 comm=rtup-7
+>>                rtup-7-1537  [000]   135.113999: cobalt_thread_suspend: pid=1537
+>>      mask=0x80 timeout=0 timeout_mode=0 wchan=(nil)
+>>                rtup-7-1537  [000]   135.114013: cobalt_schedule:
+>>      status=0x10000000
+>>                rtup-7-1537  [000]   135.114021: cobalt_switch_context:
+>>      prev_name=rtup-7 prev_pid=1537 prev_prio=1 prev_state=0x480c0 ==>
+>>      next_name=ROOT next_pid=0 next_prio=-1
+>>
+>>
+>>      Mit freundlichen Grüßen
+>>
+>>      *Jan Leupold*
+>>      Entwicklung
+>>      Development
+>>      --
+>>
+>> I can take a look and see if I can reproduce on another arm platform. I'm
+>> not too familiar with this test but I'll run it and see if there's anything
+>> unusual on the ipipe side of things.
+>>
+>> -Greg
+>>
 > 
-> an UI_thread open 2 pipes : rd_xddp (block) wr_xddp (noblock)
-> 
-> an RT_thread (periodic producer)  open 2 pipes both noblock but write 
-> back to UI if something is read
-> 
-> at a period of 1 ms it works, at 500 us no
-> 
-> xeno-config --verbose
->          --core=cobalt
->          --version="3.1"
->          --cc="gcc"
->          --ccld="/usr/xenomai/bin/wrap-link.sh gcc"
->          --arch="x86"
->          --prefix="/usr/xenomai"
->          --library-dir="/usr/xenomai/lib"
-> 
-> [Xenomai] switching RT_thread to secondary mode after exception #14 in 
-> kernel-space at 0xffffffffad130635 (pid 1151)
-> [  280.564579] BUG: unable to handle kernel paging request at 
-> ffff9abb6ad9b326
-> [  280.564585] PGD 23c201067 P4D 23c201067 PUD 0
-> [  280.564589] Oops: 0000 [#1] SMP PTI
-> [  280.564593] CPU: 0 PID: 1151 Comm: RT_thread Not tainted 
-> 4.19.89-xeno-ipipe-3.1 #1
-> [  280.564597] Hardware name: Default string Default string/SKYBAY, BIOS 
-> 5.11 01/29/2016
-> [  280.564600] I-pipe domain: Linux
-> [  280.564607] RIP: 0010:xnheap_free+0xd5/0x290
-> [  280.564610] Code: 4d 89 e8 48 8b 13 41 83 e0 02 48 8b 75 c0 4c 8b 5b 
-> 18 48 29 d6 49 89 f1 49 c1 e9 09 49 63 c1 48 8d 3c 40 48 c1 e7 02 49 01 
-> fb <41> 0f b7 43 06 66 c1 e8 07 83 e0 3f 3c 02 44 0f b6 d0 0f 84 f8 00
-> [  280.564618] RSP: 0018:ffffb0f40275fb70 EFLAGS: 00010283
-> [  280.564621] RAX: ffffffff85ff7998 RBX: ffffffffae0f2fc0 RCX: 
-> ffffffffadb3b607
-> [  280.564624] RDX: ffffb0f4010cd000 RSI: 00004f0bfef33000 RDI: 
-> fffffffa47f9b320
-> [  280.564628] RBP: ffffb0f40275fbb0 R08: 0000000000000000 R09: 
-> 0000002785ff7998
-> [  280.564631] R10: 000000c5beb58919 R11: ffff9abb6ad9b320 R12: 
-> 000000000005f140
-> [  280.564635] R13: 0000000000000000 R14: ffffffffae0f3028 R15: 
-> 0000000000000000
-> [  280.564638] FS:  00007f6de79ef700(0000) GS:ffff9ac127400000(0000) 
-> knlGS:0000000000000000
-> [  280.564642] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-> [  280.564646] CR2: ffff9abb6ad9b326 CR3: 0000000264e12005 CR4: 
-> 00000000003606f0
-> [  280.564649] DR0: 0000000000000000 DR1: 0000000000000000 DR2: 
-> 0000000000000000
-> [  280.564653] DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 
-> 0000000000000400
-> [  280.564656] Call Trace:
-> [  280.564664]  __xddp_recvmsg+0x203/0x480
-> [  280.564669]  ? __switch_to_asm+0x41/0x70
-> [  280.564672]  ? __switch_to_asm+0x35/0x70
-> [  280.564675]  ? __switch_to_asm+0x41/0x70
-> [  280.564678]  ? __switch_to_asm+0x35/0x70
-> [  280.564681]  ? __switch_to_asm+0x41/0x70
-> [  280.564684]  ? __switch_to_asm+0x35/0x70
-> [  280.564687]  ? __switch_to_asm+0x41/0x70
-> [  280.564690]  ? __switch_to_asm+0x35/0x70
-> [  280.564693]  ? __switch_to_asm+0x41/0x70
-> [  280.564696]  ? __switch_to_asm+0x35/0x70
-> [  280.564699]  ? __switch_to_asm+0x41/0x70
-> [  280.564702]  ? __switch_to_asm+0x35/0x70
-> [  280.564705]  ? __switch_to_asm+0x41/0x70
-> [  280.564708]  ? __switch_to_asm+0x35/0x70
-> [  280.564711]  ? __switch_to_asm+0x41/0x70
-> [  280.564714]  xddp_recvmsg+0xc5/0x160
-> [  280.564718]  ? ___xnsched_run+0x27a/0x4a0
-> [  280.564721]  ? __switch_to_asm+0x41/0x70
-> [  280.564725]  ? xnthread_suspend+0x40a/0x570
-> [  280.564728]  ? __switch_to_asm+0x35/0x70
-> [  280.564731]  ? __switch_to_asm+0x41/0x70
-> [  280.564734]  ? __switch_to_asm+0x35/0x70
-> [  280.564737]  ? __switch_to_asm+0x41/0x70
-> [  280.564742]  ? __put_fd+0x262/0x2d0
-> [  280.564745]  ? ipipe_timer_set+0x5f/0x70
-> [  280.564748]  ? rtdm_fd_get+0x1bc/0x220
-> [  280.564752]  rtipc_recvmsg+0x11/0x20
-> [  280.564755]  rtdm_fd_recvmsg+0x6e/0xc0
-> [  280.564759]  CoBaLt_recvmsg+0x68/0xd0
-> [  280.564761]  ? CoBaLt_write+0x10/0x10
-> [  280.564767]  handle_head_syscall+0xe0/0x2f0
-> [  280.564770]  ipipe_fastcall_hook+0x13/0x20
-> [  280.564773]  ipipe_handle_syscall+0x4b/0xb0
-> [  280.564777]  do_syscall_64+0x2e/0x250
-> [  280.564780]  entry_SYSCALL_64_after_hwframe+0x44/0xa9
-> [  280.564783] RIP: 0033:0x7f6de79b2e71
-> [  280.564786] Code: 89 f5 53 89 fb bf 01 00 00 00 48 83 ec 10 48 8d 74 
-> 24 0c e8 01 b3 ff ff b9 53 00 00 10 48 63 fb 49 63 d4 48 89 ee 89 c8 0f 
-> 05 <8b> 7c 24 0c 31 f6 48 89 c3 e8 e1 b2 ff ff 48 83 c4 10 48 63 c3 5b
-> [  280.564794] RSP: 002b:00007f6de79eec30 EFLAGS: 00000206 ORIG_RAX: 
-> 0000000010000053
-> [  280.564798] RAX: ffffffffffffffda RBX: 0000000000000004 RCX: 
-> 00007f6de79b2e71
-> [  280.564801] RDX: 0000000000000040 RSI: 00007f6de79eec80 RDI: 
-> 0000000000000004
-> [  280.564805] RBP: 00007f6de79eec80 R08: 0000000000000000 R09: 
-> 0000000000000000
-> [  280.564808] R10: 00005587dae90c58 R11: 0000000000000206 R12: 
-> 0000000000000040
-> [  280.564812] R13: 0000000000000004 R14: 00007f6de79eed1c R15: 
-> 0000000000000004
-> [  280.564816] Modules linked in: ctr ccm rtpacket binfmt_misc arc4 
-> iwldvm mac80211 iwlwifi i915 i2c_algo_bit ftdi_sio drm_kms_helper 
-> usbserial cfbfillrect syscopyarea cfbimgblt sysfillrect sysimgblt 
-> fb_sys_fops cfbcopyarea rt_e1000e fb x86_pkg_temp_thermal 
-> intel_powerclamp font fbdev crc32c_intel rtnet drm cfg80211 
-> drm_panel_orientation_quirks intel_pch_thermal evdev video button btusb 
-> btrtl btbcm btintel bluetooth jitterentropy_rng hmac drbg ecdh_generic 
-> nfsd auth_rpcgss nfs_acl lockd grace loop sunrpc autofs4 ahci e1000e 
-> libahci ptp xhci_pci i2c_i801 pps_core xhci_hcd libata usbcore 
-> usb_common fan
-> [  280.564855] CR2: ffff9abb6ad9b326
-> [  280.564858] ---[ end trace 73a21e5dbd797a64 ]---
-> [  280.564863] RIP: 0010:xnheap_free+0xd5/0x290
-> [  280.564866] Code: 4d 89 e8 48 8b 13 41 83 e0 02 48 8b 75 c0 4c 8b 5b 
-> 18 48 29 d6 49 89 f1 49 c1 e9 09 49 63 c1 48 8d 3c 40 48 c1 e7 02 49 01 
-> fb <41> 0f b7 43 06 66 c1 e8 07 83 e0 3f 3c 02 44 0f b6 d0 0f 84 f8 00
-> [  280.564873] RSP: 0018:ffffb0f40275fb70 EFLAGS: 00010283
-> [  280.564877] RAX: ffffffff85ff7998 RBX: ffffffffae0f2fc0 RCX: 
-> ffffffffadb3b607
-> [  280.564880] RDX: ffffb0f4010cd000 RSI: 00004f0bfef33000 RDI: 
-> fffffffa47f9b320
-> [  280.564884] RBP: ffffb0f40275fbb0 R08: 0000000000000000 R09: 
-> 0000002785ff7998
-> [  280.564887] R10: 000000c5beb58919 R11: ffff9abb6ad9b320 R12: 
-> 000000000005f140
-> [  280.564891] R13: 0000000000000000 R14: ffffffffae0f3028 R15: 
-> 0000000000000000
-> [  280.564894] FS:  00007f6de79ef700(0000) GS:ffff9ac127400000(0000) 
-> knlGS:0000000000000000
-> [  280.564898] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-> [  280.564901] CR2: ffff9abb6ad9b326 CR3: 0000000264e12005 CR4: 
-> 00000000003606f0
-> [  280.564905] DR0: 0000000000000000 DR1: 0000000000000000 DR2: 
-> 0000000000000000
-> [  280.564908] DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 
-> 0000000000000400
-> 
+> Thanks for trying it out on other platforms! I think I found a way now
+> to get switchtest working:
+> When I use DEFAULTTUNE="cortexa5thf-neon-vfpv4" (in yocto) instead of
+> "cortexa5thf", it executes without any problems on my target.
 
-Can you refactor your reproduction case to compile and work stand-alone? 
-I would need something I can through into my debugging environment to 
-retrigger such a crash.
+I'm not an expert in the semantics of these tuning - do they make sense 
+as well, or are we still facing a not fully understood issue here?
 
-Thanks,
 Jan
 
 -- 
