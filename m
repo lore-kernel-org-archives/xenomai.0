@@ -1,16 +1,18 @@
-From: Lange Norbert <norbert.lange@andritz.com>
-Subject: RE: FW: Xenomai with isolcpus and workqueue task
-Date: Mon, 13 Jul 2020 10:48:38 +0000
-Message-ID: <VI1PR05MB5917E51B793D4A2F1ADECF41F6600@VI1PR05MB5917.eurprd05.prod.outlook.com>
-References: <c25a1993-e0e1-eebf-a4f8-a5c5f0d7604c@nicevt.ru>
- <VI1PR05MB5917C0D09456A2D0B2FF2CA1F6600@VI1PR05MB5917.eurprd05.prod.outlook.com>
- <VI1PR05MB5917D1573DCB81C9DA2CEAB3F6600@VI1PR05MB5917.eurprd05.prod.outlook.com>
- <941d830d-981c-3514-0776-9394ba34a3e1@nicevt.ru>
-In-Reply-To: <941d830d-981c-3514-0776-9394ba34a3e1@nicevt.ru>
+From: Josh Karch <jkarch@FirstMode.com>
+Subject: Re: xeno-gpio-xilinx causes gpio-xilinx's IRQ
+ callback(xgpio_irqhandler) to trigger rather than gpio-core's
+ "gpio_pin_interrupt"
+Date: Tue, 14 Jul 2020 13:37:42 +0000
+Message-ID: <MN2PR19MB396729C2504DF1A85A6D5402D5610@MN2PR19MB3967.namprd19.prod.outlook.com>
+References: <MN2PR19MB396729DFBDCB6D5C5E72B494D5600@MN2PR19MB3967.namprd19.prod.outlook.com>
+ <CALLqZ8QGmES1-V7chCo8igEXW3hEKt7GZu7zR04NYLzFfKifTw@mail.gmail.com>
+ <MN2PR19MB39672CE35203CC81FBEF95A6D5600@MN2PR19MB3967.namprd19.prod.outlook.com>,
+ <CALLqZ8To9o0hNzdgsu7Y-jJrZa57rhjnh9mmGnAMgGTq7cUD1A@mail.gmail.com>
+In-Reply-To: <CALLqZ8To9o0hNzdgsu7Y-jJrZa57rhjnh9mmGnAMgGTq7cUD1A@mail.gmail.com>
 Content-Language: en-US
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
 MIME-Version: 1.0
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -19,132 +21,245 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Alexander Frolov <frolov@nicevt.ru>, "Xenomai (xenomai@xenomai.org)" <xenomai@xenomai.org>
+To: Greg Gallagher <greg@embeddedgreg.com>
+Cc: "Xenomai@xenomai.org" <xenomai@xenomai.org>
 
-DQoNCj4gLS0tLS1PcmlnaW5hbCBNZXNzYWdlLS0tLS0NCj4gRnJvbTogWGVub21haSA8eGVub21h
-aS1ib3VuY2VzQHhlbm9tYWkub3JnPiBPbiBCZWhhbGYgT2YgQWxleGFuZGVyDQo+IEZyb2xvdiB2
-aWEgWGVub21haQ0KPiBTZW50OiBNb250YWcsIDEzLiBKdWxpIDIwMjAgMTI6MjcNCj4gVG86IHhl
-bm9tYWlAeGVub21haS5vcmcNCj4gU3ViamVjdDogUmU6IEZXOiBYZW5vbWFpIHdpdGggaXNvbGNw
-dXMgYW5kIHdvcmtxdWV1ZSB0YXNrDQo+DQo+IE5PTi1BTkRSSVRaIFNPVVJDRTogQkUgQ0FVVElP
-VVMgV0lUSCBDT05URU5ULCBMSU5LUyBPUg0KPiBBVFRBQ0hNRU5UUy4NCj4NCj4NCj4gLS0tLS1P
-cmlnaW5hbCBNZXNzYWdlLS0tLS0NCj4gPj4gRnJvbTogTGFuZ2UgTm9yYmVydA0KPiA+PiBTZW50
-OiBNb250YWcsIDEzLiBKdWxpIDIwMjAgMTA6MzQNCj4gPj4gVG86IEFsZXhhbmRlciBGcm9sb3Yg
-PGZyb2xvdkBuaWNldnQucnU+DQo+ID4+IFN1YmplY3Q6IFJFOiBYZW5vbWFpIHdpdGggaXNvbGNw
-dXMgYW5kIHdvcmtxdWV1ZSB0YXNrDQo+ID4+DQo+ID4+DQo+ID4+DQo+ID4+PiAtLS0tLU9yaWdp
-bmFsIE1lc3NhZ2UtLS0tLQ0KPiA+Pj4gRnJvbTogWGVub21haSA8eGVub21haS1ib3VuY2VzQHhl
-bm9tYWkub3JnPiBPbiBCZWhhbGYgT2YNCj4gQWxleGFuZGVyDQo+ID4+PiBGcm9sb3YgdmlhIFhl
-bm9tYWkNCj4gPj4+IFNlbnQ6IFNhbXN0YWcsIDExLiBKdWxpIDIwMjAgMTY6MjYNCj4gPj4+IFRv
-OiB4ZW5vbWFpQHhlbm9tYWkub3JnDQo+ID4+PiBTdWJqZWN0OiBYZW5vbWFpIHdpdGggaXNvbGNw
-dXMgYW5kIHdvcmtxdWV1ZSB0YXNrDQo+ID4+Pg0KPiA+Pj4gTk9OLUFORFJJVFogU09VUkNFOiBC
-RSBDQVVUSU9VUyBXSVRIIENPTlRFTlQsIExJTktTIE9SDQo+ID4+IEFUVEFDSE1FTlRTLg0KPiA+
-Pj4NCj4gPj4+IEhpIGFsbCENCj4gPj4+DQo+ID4+PiBJIGFtIHVzaW5nIFhlbm9tYWkgMy4xIHdp
-dGggNC4xOS4xMjQgSS1waXBlIHBhdGNob24gYSBzbXAgbW90aGVyYm9hcmQuDQo+ID4+PiBGb3Ig
-bXkgUlQgdGFzayBJIGFsbG9jYXRlIGZldyBDUFUgY29yZXMgd2l0aCBpc29sY3B1cyBvcHRpb24u
-DQo+ID4+PiBIb3dldmVyLCBsYXJnZSBsYXRlbmN5IHNwaWtlcyBhcmUgbm90aWNlZCBkdWUgdG8g
-aWdiIHdhdGNoZG9nDQo+ID4+PiBhY3Rpdml0aWVzIChJIGFtIHVzaW5nIGNvbW1vbiBpZ2IgZHJp
-dmVyLCBub3QgcnRfaWdiKS4NCj4gPj4+DQo+ID4+PiBMb29raW5nIGludG8gaWdiIHNvdXJjZXMs
-IGl0IHdhcyB1bmRlcnN0b29kIHRoYXQgd29ya3F1ZXVlIGlzIHVzZWQNCj4gPj4+IGZvciBzb21l
-IHRhc2tzIChhZmFpdSwgaXQgaXMgdXNlZCB0byBsaW5rIHN0YXR1cw0KPiA+Pj4gbW9uaXRvcmlu
-ZykNCj4gPj4+DQo+ID4+PiBmcm9tIGlnYl9tYWluLmMNCj4gPj4+IC4uLg0KPiA+Pj4gICAgIElO
-SVRfV09SSygmYWRhcHRlci0+cmVzZXRfdGFzaywgaWdiX3Jlc2V0X3Rhc2spOw0KPiA+Pj4gICAg
-IElOSVRfV09SSygmYWRhcHRlci0+d2F0Y2hkb2dfdGFzaywgaWdiX3dhdGNoZG9nX3Rhc2spOyAu
-Li4NCj4gPj4+DQo+ID4+PiBUaGUgTGludXgga2VybmVsIHNjaGVkdWxlciBydW5zIHRoaXMgaWdi
-IGFjdGl2aXRpZXMgb24gaXNvbGF0ZWQgQ1BVcw0KPiA+Pj4gZGlzcmVnYXJkaW5nIGlzb2xjcHVz
-IG9wdGlvbiwgcnVpbmluZyByZWFsLXRpbWUgc3lzdGVtIGJlaGF2aW9yLg0KPiA+PiBpc29sY3B1
-cyBkb2VzIG5vdCBtZWFuIHRoZSBDUFVzIGFyZW4ndCB1c2VkLCBpdCBtZWFucyB0aGV5IGFyZQ0K
-PiA+PiBleGNsdWRlZCBmcm9tIHRoZSBub3JtYWwgQ1BVIHNjaGVkdWxlci4gTm8gcHJvY2VzcyB3
-aWxsIGF1dG9tYXRpY2FsbHkNCj4gPj4gYmUgbW92ZWQgZnJvbS90byBpc29sYXRlZCBDUFVzLCBi
-dXQgeW91IHN0aWxsIG5lZWQgdG8gbWFrZSBzdXJlIHRvDQo+ID4+IGZyZWUgdGhlbSBvZiBhbnkg
-dGFza3MuDQo+ID4+IElycS1oYW5kbGVycyBzdGlsbCBydW4gYW55d2hlcmUsIGFuZCBwcm9jZXNz
-ZXMgc3RpbGwgY2FuIGFsbG93IHRob3NlDQo+ID4+IENQVXMgdG8gYmUgdXNlZC4NCj4gPj4NCj4g
-Pj4+IFNvIHRoZSBxdWVzdGlvbiwgaXMgaXQgYSBjb3JyZWN0IHdheSB0byB1c2Ugbm9ybWFsIGln
-YiBvbiBYZW5vbWFpIGF0DQo+ID4+PiBhbGwgb3IgaXQgaXMgbm90IHJlY29tbWVuZGVkPyBXaGF0
-IGNhbiBiZSBkb25lIHRvIHByb2hpYml0IExpbnV4DQo+ID4+PiBzY2hlZHVsZXIgdG8gYWxsb2Nh
-dGUgdGhvc2UgdGFza3Mgb24gaXNvbGF0ZWQgY29yZXM/DQo+ID4+IEkgdXNlIHRoZSBub3JtYWwg
-aWdiIGFuZCBydF9pZ2IgY29uY3VycmVudGx5LCBJIGRvdWJ0IGl0IGlzDQo+ID4+IHJlY29tbWVu
-ZGVkIGJ1dCBwb3NzaWJsZSA7KQ0KPiA+Pg0KPiA+PiBZb3Ugc2hvdWxkIGFkZCBpcnFhZmZpbml0
-eT0wIHRvIHRoZSBjbWRsaW5lIChDUFUwIGlzIGFwcGFyZW50bHkNCj4gPj4gYWx3YXlzIHVzZWQg
-Zm9yIGlycXMpLCB0aGVuIGNoZWNrICdjYXQgL3Byb2MvaXJxLyovc21wX2FmZmluaXR5Jy4NCj4g
-Pj4gVGhpcyBrZWVwcyB0aGUgb3RoZXIgQ1BVcyBmcmVlIGZyb20gbGludXggSVJRcy4NCj4gPj4g
-WW91IGNhbiB1c2Ugc29tZSBtZWFzdXJlcyB0byBiaW5kIExpbnV4IHRhc2tzIHRvIENQVTAgYXN3
-ZWxsLiBPbmUgb2Y6DQo+ID4+DQo+ID4+IC0gICBpc29sY3B1cyAoc2V0cyBkZWZhdWx0IGFmZmlu
-aXR5IG1hc2sgYXN3ZWxsKQ0KPiA+PiAtICAgc2V0IGFmZmluaXR5IGVhcmx5IChsaWtlIGluIFJh
-bWRpc2spDQo+ID4+IC0gICBVc2UgY2dyb3VwcyAoY3NldC1zaGllbGQpDQo+ID4+DQo+ID4+IE9u
-bHkgY2dyb3VwcyBhY3R1YWxseSBwcm9oaWJpdCBwcm9jZXNzZXMgaWdub3JpbmcgeW91ciBkZWZh
-dWx0cyBhbmQNCj4gPj4gdXNpbmcgb3RoZXIgQ1BVcywgSSBkaWQgbm90IGdldCBhcm91bmQgcGxh
-eWluZyB3aXRoIHRoaXMsIGFuZCBqdXN0IHVzZQ0KPiBpc29sY3B1cy4NCj4gPj4NCj4gPj4gQnV0
-IHRoZSBtb3N0IGltcG9ydGFudCBwYXJ0IGlzIHRvIGRvbnQgcnVuIFJUIG9uIGNvcmVzIGRlYWxp
-bmcgd2l0aA0KPiA+PiBMaW51eCBpbnRlcnJ1cHRzLCBzb21lIGhhbmRsZXJzL2RyaXZlcnMgZG9u
-4oCZdCBleHBlY3RzIGJlaW5nDQo+ID4+IHByZWVtcHRlZCwgaGFkIHRoZSBNTUMgZHJpdmVyIGJh
-aWwgYmVjYXVzZSBvZiBhIHRpbWVvdXQuDQo+ID4+DQo+ID4+IEkgaGF2ZW7igJl0IHNvbHZlZCBt
-b3ZpbmcgdGhlIHJ0bmV0LXN0YWNrLCBydG5ldC1ycGMgb2ZmIENQVTAsIGFuZCB0aGUNCj4gPj4g
-cnRfaWdiIElSUXMgd2lsbCB1c2UgYWxsIENQVXMuDQo+ID4+DQo+ID4+IE5vcmJlcnQNCj4gVGhh
-bmsgeW91ISBVc2luZyBhbiBJUlEgYWZmaW5pdHkgZmVhdHVyZSB0byBtb3ZlIGhhbmRsZXJzIHRv
-IHNwZWNpZmllZCBjb3Jlcw0KPiBpcyB2ZXJ5IHByYWN0aWNhbCwgYnV0IGluIHRoaXMgY2FzZSB3
-ZSBleHBlcmllbmNlIHByb2JsZW0gd2l0aCBhbm90aGVyDQo+IGFydGVmYWt0IG9mIGlnYi4NCj4N
-Cj4gSnVzdCBhcyBleGFtcGxlIG9mIGluZmx1ZW5jZSBvZiBpZ2IgYWN0aXZpdHkgKGlnYl93YXRj
-aGRvZ190YXNrKSBvbiBDUFU0DQo+ICh3aGljaCBpcyBhbiBpc29sYXRlZCBvbmUpLg0KDQpIbW0s
-IEkgZG9udCBoYXZlIHRoYXQgdGFzay4NCllvdSBjYW4gdXNlIHRhc2tzZXQgLXAgMCA8cGlkb2Yg
-aWdiX3dhdGNoZG9nX3Rhc2s+IHRvIGNoYW5nZSBhZmZpbml0eSwNCklmIG5vdCBwcmV0dHkgYnV0
-IHNob3VsZCB3b3JrLg0KDQooaXNvbGNwdXMgZG9lc27igJl0IHdvcmsgdGhlIHdheSB5b3UgdGhp
-bmssIGl0IG9ubHkgYWZmZWN0cyBDUFUgbWlncmF0aW9uKQ0KDQo+DQo+ICMgY2F0IC9wcm9jL2lw
-aXBlL3RyYWNlL2Zyb3plbiB8IGdyZXAgJ1whJw0KPiAuLi4NCj4gOiAgK2Z1bmMgICAgICAgICAg
-ICAgICAtMTIzMSEgIDUyLjM3OSAgaWdiX3JkMzIrMHgwIFtpZ2JdDQo+IChpZ2JfdXBkYXRlX3N0
-YXRzKzB4NTIwIFtpZ2JdKQ0KPiA6ICArZnVuYyAgICAgICAgICAgICAgIC0xMTQ1ISAgNDUuODY0
-ICBpZ2JfcmQzMisweDAgW2lnYl0NCj4gKGlnYl91cGRhdGVfc3RhdHMrMHg1MzYgW2lnYl0pDQo+
-IDogICtmdW5jICAgICAgICAgICAgICAgLTEwOTkhICA1MS45MTcgIGlnYl9yZDMyKzB4MCBbaWdi
-XQ0KPiAoaWdiX3VwZGF0ZV9zdGF0cysweDc1YSBbaWdiXSkNCj4gOiAgK2Z1bmMgICAgICAgICAg
-ICAgICAtMTA0NyEgIDUxLjUxNyAgaWdiX3JkMzIrMHgwIFtpZ2JdDQo+IChpZ2JfdXBkYXRlX3N0
-YXRzKzB4NzgyIFtpZ2JdKQ0KPiA6ICArZnVuYyAgICAgICAgICAgICAgICAtOTk2ISAgNTEuOTg4
-ICBpZ2JfcmQzMisweDAgW2lnYl0NCj4gKGlnYl91cGRhdGVfc3RhdHMrMHg1NGUgW2lnYl0pDQo+
-IDogICtmdW5jICAgICAgICAgICAgICAgIC05NDQhICA1MS40MzYgIGlnYl9yZDMyKzB4MCBbaWdi
-XQ0KPiAoaWdiX3VwZGF0ZV9zdGF0cysweDU2NCBbaWdiXSkNCj4gOiAgK2Z1bmMgICAgICAgICAg
-ICAgICAgLTg5MyEgIDUyLjU2OSAgaWdiX3JkMzIrMHgwIFtpZ2JdDQo+IChpZ2JfdXBkYXRlX3N0
-YXRzKzB4NTdhIFtpZ2JdKQ0KPiA6ICArZnVuYyAgICAgICAgICAgICAgICAtODQwISAgNTIuNTI5
-ICBpZ2JfcmQzMisweDAgW2lnYl0NCj4gKGlnYl91cGRhdGVfc3RhdHMrMHg1OTAgW2lnYl0pDQo+
-IDogICtmdW5jICAgICAgICAgICAgICAgIC03ODchICA1Mi4wMTggIGlnYl9yZDMyKzB4MCBbaWdi
-XQ0KPiAoaWdiX3VwZGF0ZV9zdGF0cysweDVhNiBbaWdiXSkNCj4gOiAgK2Z1bmMgICAgICAgICAg
-ICAgICAgLTczNSEgIDUyLjA1OCAgaWdiX3JkMzIrMHgwIFtpZ2JdDQo+IChpZ2JfdXBkYXRlX3N0
-YXRzKzB4NWJjIFtpZ2JdKQ0KPiA6ICArZnVuYyAgICAgICAgICAgICAgICAtNjgzISAgNTEuNDk3
-ICBpZ2JfcmQzMisweDAgW2lnYl0NCj4gKGlnYl91cGRhdGVfc3RhdHMrMHg1ZDIgW2lnYl0pDQo+
-IDogICtmdW5jICAgICAgICAgICAgICAgIC02MzIhICA1MS40MzYgIGlnYl9yZDMyKzB4MCBbaWdi
-XQ0KPiAoaWdiX3VwZGF0ZV9zdGF0cysweDVlOCBbaWdiXSkNCj4gOiAgK2Z1bmMgICAgICAgICAg
-ICAgICAgLTU4MCEgIDUxLjQxNiAgaWdiX3JkMzIrMHgwIFtpZ2JdDQo+IChpZ2JfdXBkYXRlX3N0
-YXRzKzB4NWZlIFtpZ2JdKQ0KPiA6ICArZnVuYyAgICAgICAgICAgICAgICAtNTI5ISAgNTIuMDM4
-ICBpZ2JfcmQzMisweDAgW2lnYl0NCj4gKGlnYl91cGRhdGVfc3RhdHMrMHg2MTQgW2lnYl0pDQo+
-IDogICtmdW5jICAgICAgICAgICAgICAgIC00NzchICA1Mi4wNTggIGlnYl9yZDMyKzB4MCBbaWdi
-XQ0KPiAoaWdiX3VwZGF0ZV9zdGF0cysweDYyYSBbaWdiXSkNCj4gOiAgK2Z1bmMgICAgICAgICAg
-ICAgICAgLTQyNSEgIDUxLjQzNiAgaWdiX3JkMzIrMHgwIFtpZ2JdDQo+IChpZ2JfdXBkYXRlX3N0
-YXRzKzB4NmY0IFtpZ2JdKQ0KPiA6ICArZnVuYyAgICAgICAgICAgICAgICAtMzczISAgNTEuNDE2
-ICBpZ2JfcmQzMisweDAgW2lnYl0NCj4gKGlnYl91cGRhdGVfc3RhdHMrMHg3MGEgW2lnYl0pDQo+
-IDogICtmdW5jICAgICAgICAgICAgICAgIC0zMjIhICA1MS41MTcgIGlnYl9yZDMyKzB4MCBbaWdi
-XQ0KPiAoaWdiX3VwZGF0ZV9zdGF0cysweDcyMCBbaWdiXSkNCj4gOiAgK2Z1bmMgICAgICAgICAg
-ICAgICAgLTI3MSEgIDUxLjg0NyAgaWdiX3JkMzIrMHgwIFtpZ2JdDQo+IChpZ2JfdXBkYXRlX3N0
-YXRzKzB4NzM2IFtpZ2JdKQ0KPiA6ICArZnVuYyAgICAgICAgICAgICAgICAtMTg5ISAgNDcuMjQ3
-ICBpZ2JfcmQzMisweDAgW2lnYl0NCj4gKGlnYl9wdHBfcnhfaGFuZysweDFlIFtpZ2JdKQ0KPiA6
-ICArZnVuYyAgICAgICAgICAgICAgICAtMTAzISAgNzIuNzM1ICBpZ2JfcmQzMisweDAgW2lnYl0N
-Cj4gKGlnYl93YXRjaGRvZ190YXNrKzB4NjZhIFtpZ2JdKQ0KPg0KPg0KPiAgRnJvbSB0aGUgb3Ro
-ZXIgc2lkZSwgcnQga2VybmVscyBkbyBub3QgaGF2ZSB0aGlzIGlzc3VlLCBwcm9iYWJseSBiZWNh
-dXNlIG9mDQo+IG1vZGlmaWVkIHdvcmtxdWV1ZSBzdWJzeXN0ZW0uDQo+DQo+IEFueSBpZGVhcyBo
-b3cgdG8ga2VlcCB0aGlzIHdvcmsgb3V0IG9mIGNyaXRpY2FsIGNvZGU/DQoNCklzIHRoaXMgdGFz
-ayBibG9ja2luZyBSVCBmcm9tIHJ1bm5pbmc/IEkgbWVhbiBpdCdzIGJldHRlciB0byBydW4gaXQg
-YXQgYW5vdGhlciBjb3JlLA0KcGFydGljdWxhcmx5IGJlY2F1c2UgcmVnaXN0ZXIgYWNjZXNzZXMg
-YXJlIHBhaW5mdWxseSBzbG93IG9uIHRoYXQgaGFyZHdhcmUuDQpCdXQgSSBkb27igJl0IHNlZSB3
-aHkgaXQgc2hvdWxkIG1ha2UgYSBiaWcgaW1wYWN0Lg0KDQpOb3JiZXJ0DQoNCl9fX19fX19fX19f
-X19fX19fX19fX19fX19fX19fX19fDQoNClRoaXMgbWVzc2FnZSBhbmQgYW55IGF0dGFjaG1lbnRz
-IGFyZSBzb2xlbHkgZm9yIHRoZSB1c2Ugb2YgdGhlIGludGVuZGVkIHJlY2lwaWVudHMuIFRoZXkg
-bWF5IGNvbnRhaW4gcHJpdmlsZWdlZCBhbmQvb3IgY29uZmlkZW50aWFsIGluZm9ybWF0aW9uIG9y
-IG90aGVyIGluZm9ybWF0aW9uIHByb3RlY3RlZCBmcm9tIGRpc2Nsb3N1cmUuIElmIHlvdSBhcmUg
-bm90IGFuIGludGVuZGVkIHJlY2lwaWVudCwgeW91IGFyZSBoZXJlYnkgbm90aWZpZWQgdGhhdCB5
-b3UgcmVjZWl2ZWQgdGhpcyBlbWFpbCBpbiBlcnJvciBhbmQgdGhhdCBhbnkgcmV2aWV3LCBkaXNz
-ZW1pbmF0aW9uLCBkaXN0cmlidXRpb24gb3IgY29weWluZyBvZiB0aGlzIGVtYWlsIGFuZCBhbnkg
-YXR0YWNobWVudCBpcyBzdHJpY3RseSBwcm9oaWJpdGVkLiBJZiB5b3UgaGF2ZSByZWNlaXZlZCB0
-aGlzIGVtYWlsIGluIGVycm9yLCBwbGVhc2UgY29udGFjdCB0aGUgc2VuZGVyIGFuZCBkZWxldGUg
-dGhlIG1lc3NhZ2UgYW5kIGFueSBhdHRhY2htZW50IGZyb20geW91ciBzeXN0ZW0uDQoNCkFORFJJ
-VFogSFlEUk8gR21iSA0KDQoNClJlY2h0c2Zvcm0vIExlZ2FsIGZvcm06IEdlc2VsbHNjaGFmdCBt
-aXQgYmVzY2hyw6Rua3RlciBIYWZ0dW5nIC8gQ29ycG9yYXRpb24NCg0KRmlybWVuc2l0ei8gUmVn
-aXN0ZXJlZCBzZWF0OiBXaWVuDQoNCkZpcm1lbmJ1Y2hnZXJpY2h0LyBDb3VydCBvZiByZWdpc3Ry
-eTogSGFuZGVsc2dlcmljaHQgV2llbg0KDQpGaXJtZW5idWNobnVtbWVyLyBDb21wYW55IHJlZ2lz
-dHJhdGlvbjogRk4gNjE4MzMgZw0KDQpEVlI6IDA2MDUwNzcNCg0KVUlELU5yLjogQVRVMTQ3NTY4
-MDYNCg0KDQpUaGFuayBZb3UNCl9fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fDQo=
+
+
+________________________________
+From: Greg Gallagher <greg@embeddedgreg.com>
+Sent: Monday, July 13, 2020 9:14 PM
+To: Josh Karch <jkarch@FirstMode.com>
+Cc: Xenomai@xenomai.org <xenomai@xenomai.org>
+Subject: Re: xeno-gpio-xilinx causes gpio-xilinx's IRQ callback(xgpio_irqha=
+ndler) to trigger rather than gpio-core's "gpio_pin_interrupt"
+
+HI,
+
+On Mon, Jul 13, 2020 at 6:54 PM Josh Karch <jkarch@firstmode.com<mailto:jka=
+rch@firstmode.com>> wrote:
+
+
+________________________________
+From: Greg Gallagher <greg@embeddedgreg.com<mailto:greg@embeddedgreg.com>>
+Sent: Monday, July 13, 2020 3:43 PM
+To: Josh Karch <jkarch@FirstMode.com>
+Cc: Xenomai@xenomai.org<mailto:Xenomai@xenomai.org> <xenomai@xenomai.org<ma=
+ilto:xenomai@xenomai.org>>
+Subject: Re: xeno-gpio-xilinx causes gpio-xilinx's IRQ callback(xgpio_irqha=
+ndler) to trigger rather than gpio-core's "gpio_pin_interrupt"
+
+Hi Josh,
+
+
+On Mon., Jul. 13, 2020, 6:37 p.m. Josh Karch via Xenomai <xenomai@xenomai.o=
+rg<mailto:xenomai@xenomai.org>> wrote:
+Hi,
+
+With the CAN bus issues resolved, I now have a situation where the xeno-gpi=
+o-xilinx driver (gpio-core.c) causes a complete system lockup when IRQs are=
+ enabled and a GPIO toggle triggers the IRQ event.
+
+Here's what I know:  I instrumented the NRT driver to see how deeply entren=
+ched and intertwined the real-time and non real-time drivers are:
+
+(1) xeno-gpio-xilinx calls gpio-core which piggybacks upon the Xilinx "gpio=
+-xilinx" driver.
+(2)It uses the OF scan information to create /dev/rtdm/gpio@address/gpioxxx=
+ driver pins.
+
+When enabling interrupts:
+(1)It uses the  NRT "Xgpio-request" function to request a gpio pin and set =
+the pin to an input, though for some reason it calls the set gpio as input =
+function twice
+(2) It then calls xgpio-toirq twice for some reason
+(3) It sets the IRQ type.  Only the rising edge IRQ is supported with the X=
+ilinx Driver
+(4) It uses the unmask function in the non RT driver to unmask the IRQ
+(5) It then sets the gpio as input again. I think this is a side effect of =
+calling the IOCTL to enable IRQ and then to block file descriptors on inter=
+rupt.
+(6) Once the interrupt is triggered, on occasion the Non realtime xgpio_irq=
+handler gets called rather than the gpio_pin_interrupt function.  This make=
+s me think the NRT driver is not properly setting the interrupt up to work =
+with the Xenomai handler.  Once the non realtime xgpio_irqhandler gets call=
+ed the code gets stuck in an infinite loop and crashes.
+
+Sometimes the system freezes before using the handler, other times it runs =
+the handler but it's not possible to break.
+
+The following is a transcript of a time when the nrt handler is not called.=
+    Otherwise you'd see a message when IRQ is triggered that the system con=
+tinually is in a nrt IRQ handler loop.
+
+So the question is: why is the non-rt handler being called and not the gpio=
+-core rt_gpio "gpio-pin-interrupt"?
+
+
+[  303.900487] requesting GPIO
+[  303.903419] setting gpio 0 as input
+[  303.907004] setting gpio 0 as input
+[  303.910549] called xgpio to irq
+[  303.913768] called xgpio to irq
+[  303.916913] setting irq type 1
+[  303.919990] unmasking IRQ
+[  303.922600] setting gpio 0 as input
+[  324.917162] rcu: INFO: rcu_sched detected stalls on CPUs/tasks:
+[  324.923100] rcu:     0-...0: (1 ticks this GP) idle=3D66e/1/0x4000000000=
+000000
+softirq=3D8388/8389 fqs=3D2247
+[  324.932321] rcu:     (detected by 3, t=3D5252 jiffies, g=3D12713, q=3D18=
+8)
+[  324.938411] Task dump for CPU 0:
+[  324.941629] xeno_gpio_teste R  running task        0   433    388 0x0000=
+0202
+[  324.948682] Call trace:
+[  324.951126]  __switch_to+0x94/0xf0
+[  324.954522]  0xffffff8008dea658
+
+Best,
+
+Josh Karch
+
+Do you have have the gic and the IRQ handlers in place for the xilinx-gpio =
+xenomai driver?  The current implementation doesn't support interrupts.
+
+Thanks
+
+Greg
+
+
+Hi Greg, so the only changes between the "gpio-core.c"  from stock Xenomai =
+and the driver I'm working with is the section of code which adds dual-chan=
+nel functionality to the Xilinx driver in "rtdm_gpiochip_scan_of."
+These are the functions in gpio-core.  It seems there are a lot of function=
+s in gpio-core dealing with interrupts.  The Xilinx stock driver provided b=
+y Xilinx has interrupt functions in there.  What else is missing?
+
+Did you add the pieces to the gpio-xilinx driver to make it pipeline aware?=
+  Right now the current xeno-gpio-xilinx driver is meant to work with the m=
+ainline kernel which doesn't have the axi gpios as an interrupt source.
+
+thanks
+
+Greg
+
+Hi Greg, so here are the things that I did with the gpio-xilinx driver:
+
+#include <linux/ipipe.h>
+
+spin_lock_irqsave(&chip->gpio_lock, flags) was replaced by raw_spin_lock_ir=
+qsave(&xilinx_gpio_lock, flags);
+
+Same thing for the irqrestore function:
+
+I also added the following
+static IPIPE_DEFINE_RAW_SPINLOCK(xilinx_gpio_lock);
+
+I did not edit the
+static int xgpio_irq_setup(struct device_node *np, struct xgpio_instance *c=
+hip).
+
+I also set xgpio_irqchip struct with
+".flags =3D IRQCHIP_PIPELINE_SAFE,"
+
+With IRQ_Mask function I did the following:
+raw_spin_lock_irqsave(&xilinx_gpio_lock, flags);
+ipipe_lock_irq(irq_data->irq);
+
+and in the IRQ unmask function I did:
+ipipe_unlock_irq(irq_data->irq);
+raw_spin_unlock_irqrestore(&xilinx_gpio_lock, flags);
+
+Anything else I am missing?
+
+Best,
+Josh
+
+
+Best,
+
+Josh
+
+static int gpio_pin_interrupt(rtdm_irq_t *irqh)
+{
+struct rtdm_gpio_pin *pin;
+pin =3D rtdm_irq_get_arg(irqh, struct rtdm_gpio_pin);
+pin->timestamp =3D rtdm_clock_read_monotonic();
+rtdm_event_signal(&pin->event);
+return RTDM_IRQ_HANDLED;
+}
+static int request_gpio_irq(unsigned int gpio, struct rtdm_gpio_pin *pin,
+struct rtdm_gpio_chan *chan,
+int trigger)
+{
+int ret, irq_trigger, irq;
+if (trigger & ~GPIO_TRIGGER_MASK)
+return -EINVAL;
+if (!chan->requested) {
+ret =3D gpio_request(gpio, pin->name);
+if (ret) {
+if (ret !=3D -EPROBE_DEFER)
+printk(XENO_ERR
+"can not request GPIO%d\n", gpio);
+return ret;
+}
+chan->requested =3D true;
+}
+ret =3D gpio_direction_input(gpio);
+if (ret) {
+printk(XENO_ERR "cannot set GPIO%d as input\n", gpio);
+goto fail;
+}
+chan->has_direction =3D true;
+gpio_export(gpio, true);
+rtdm_event_clear(&pin->event);
+/*
+* Attempt to hook the interrupt associated to that pin. We
+* might fail getting a valid IRQ number, in case the GPIO
+* chip did not define any mapping handler (->to_irq). If so,
+* just assume that either we have no IRQ indeed, or interrupt
+* handling may be open coded elsewhere.
+*/
+irq =3D gpio_to_irq(gpio);
+if (irq < 0)
+goto done;
+irq_trigger =3D 0;
+if (trigger & GPIO_TRIGGER_EDGE_RISING)
+irq_trigger |=3D IRQ_TYPE_EDGE_RISING;
+if (trigger & GPIO_TRIGGER_EDGE_FALLING)
+irq_trigger |=3D IRQ_TYPE_EDGE_FALLING;
+if (trigger & GPIO_TRIGGER_LEVEL_HIGH)
+irq_trigger |=3D IRQ_TYPE_LEVEL_HIGH;
+if (trigger & GPIO_TRIGGER_LEVEL_LOW)
+irq_trigger |=3D IRQ_TYPE_LEVEL_LOW;
+if (irq_trigger)
+irq_set_irq_type(irq, irq_trigger);
+ret =3D rtdm_irq_request(&pin->irqh, irq, gpio_pin_interrupt,
+0, pin->name, pin);
+if (ret) {
+printk(XENO_ERR "cannot request GPIO%d interrupt\n", gpio);
+goto fail;
+}
+rtdm_irq_enable(&pin->irqh);
+done:
+chan->is_interrupt =3D true;
+return 0;
+fail:
+gpio_free(gpio);
+chan->requested =3D false;
+return ret;
+}
+
+
+
+
+
+
+
+
+
+
+
+
 
