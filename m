@@ -2,8 +2,8 @@ From: Josh Karch <jkarch@FirstMode.com>
 Subject: Re: xeno-gpio-xilinx causes gpio-xilinx's IRQ
  callback(xgpio_irqhandler) to trigger rather than gpio-core's
  "gpio_pin_interrupt"
-Date: Tue, 14 Jul 2020 13:37:42 +0000
-Message-ID: <MN2PR19MB396729C2504DF1A85A6D5402D5610@MN2PR19MB3967.namprd19.prod.outlook.com>
+Date: Tue, 14 Jul 2020 13:41:47 +0000
+Message-ID: <MN2PR19MB39678ADF1C39F1B65E8BAA62D5610@MN2PR19MB3967.namprd19.prod.outlook.com>
 References: <MN2PR19MB396729DFBDCB6D5C5E72B494D5600@MN2PR19MB3967.namprd19.prod.outlook.com>
  <CALLqZ8QGmES1-V7chCo8igEXW3hEKt7GZu7zR04NYLzFfKifTw@mail.gmail.com>
  <MN2PR19MB39672CE35203CC81FBEF95A6D5600@MN2PR19MB3967.namprd19.prod.outlook.com>,
@@ -144,38 +144,13 @@ thanks
 
 Greg
 
-Hi Greg, so here are the things that I did with the gpio-xilinx driver:
-
-#include <linux/ipipe.h>
-
-spin_lock_irqsave(&chip->gpio_lock, flags) was replaced by raw_spin_lock_ir=
-qsave(&xilinx_gpio_lock, flags);
-
-Same thing for the irqrestore function:
-
-I also added the following
-static IPIPE_DEFINE_RAW_SPINLOCK(xilinx_gpio_lock);
-
-I did not edit the
-static int xgpio_irq_setup(struct device_node *np, struct xgpio_instance *c=
-hip).
-
-I also set xgpio_irqchip struct with
-".flags =3D IRQCHIP_PIPELINE_SAFE,"
-
-With IRQ_Mask function I did the following:
-raw_spin_lock_irqsave(&xilinx_gpio_lock, flags);
-ipipe_lock_irq(irq_data->irq);
-
-and in the IRQ unmask function I did:
-ipipe_unlock_irq(irq_data->irq);
-raw_spin_unlock_irqrestore(&xilinx_gpio_lock, flags);
-
-Anything else I am missing?
-
-Best,
-Josh
-
+>>Hi Greg,
+also please note  this is the starting source code for the gpio-xilinx.c dr=
+iver, it comes directly from the folks at Xilinx but has not made it into t=
+he mainline kernel.
+https://github.com/Xilinx/linux-xlnx/blob/master/drivers/gpio/gpio-xilinx.c
+The mods I did applied regarding raw_spin_lock_irqsave, restore, ipipe_lock=
+_irq, and ipipe_unlock_irq were applied to this driver.
 
 Best,
 
