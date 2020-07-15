@@ -2,8 +2,8 @@ From: Josh Karch <jkarch@FirstMode.com>
 Subject: Re: xeno-gpio-xilinx causes gpio-xilinx's IRQ
  callback(xgpio_irqhandler) to trigger rather than gpio-core's
  "gpio_pin_interrupt"
-Date: Wed, 15 Jul 2020 15:07:57 +0000
-Message-ID: <MN2PR19MB3967183D4980C26770F7D507D57E0@MN2PR19MB3967.namprd19.prod.outlook.com>
+Date: Wed, 15 Jul 2020 15:12:18 +0000
+Message-ID: <MN2PR19MB3967053F810326CDC63E6B4FD57E0@MN2PR19MB3967.namprd19.prod.outlook.com>
 References: <MN2PR19MB396729DFBDCB6D5C5E72B494D5600@MN2PR19MB3967.namprd19.prod.outlook.com>
  <CALLqZ8QGmES1-V7chCo8igEXW3hEKt7GZu7zR04NYLzFfKifTw@mail.gmail.com>
  <MN2PR19MB39672CE35203CC81FBEF95A6D5600@MN2PR19MB3967.namprd19.prod.outlook.com>
@@ -265,10 +265,7 @@ your module.
 
 -Greg
 
-Hi Greg,
-
-it does not appear that ipipe_handle_demuxed_irq is available in core.c. Is=
- there an alternate named function to this?  It's probably listed in ipipe.=
-h but not in core.c
-
-Best, Josh
+On Second inspection, __ipipe_dispatch_irq  is indeed defined in core.c.  S=
+trange.
+Best,
+JOsh
