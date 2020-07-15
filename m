@@ -1,19 +1,21 @@
-MIME-Version: 1.0
+From: Josh Karch <jkarch@FirstMode.com>
+Subject: Re: xeno-gpio-xilinx causes gpio-xilinx's IRQ
+ callback(xgpio_irqhandler) to trigger rather than gpio-core's
+ "gpio_pin_interrupt"
+Date: Wed, 15 Jul 2020 15:07:57 +0000
+Message-ID: <MN2PR19MB3967183D4980C26770F7D507D57E0@MN2PR19MB3967.namprd19.prod.outlook.com>
 References: <MN2PR19MB396729DFBDCB6D5C5E72B494D5600@MN2PR19MB3967.namprd19.prod.outlook.com>
  <CALLqZ8QGmES1-V7chCo8igEXW3hEKt7GZu7zR04NYLzFfKifTw@mail.gmail.com>
  <MN2PR19MB39672CE35203CC81FBEF95A6D5600@MN2PR19MB3967.namprd19.prod.outlook.com>
  <CALLqZ8To9o0hNzdgsu7Y-jJrZa57rhjnh9mmGnAMgGTq7cUD1A@mail.gmail.com>
  <MN2PR19MB396729C2504DF1A85A6D5402D5610@MN2PR19MB3967.namprd19.prod.outlook.com>
  <CALLqZ8RLdVDWPeoJJO9jvEPyHQxXk81wcRcdAT4Wvb=Qbs6Mgg@mail.gmail.com>
- <MN2PR19MB3967E78B93B7125847B8E7B1D5610@MN2PR19MB3967.namprd19.prod.outlook.com>
-In-Reply-To: <MN2PR19MB3967E78B93B7125847B8E7B1D5610@MN2PR19MB3967.namprd19.prod.outlook.com>
-From: Greg Gallagher <greg@embeddedgreg.com>
-Date: Wed, 15 Jul 2020 10:13:52 -0400
-Message-ID: <CALLqZ8QtVRf0RWbL-4Y+FgjgQVc1ceOCOS78ZdiCA8zqY6mFtQ@mail.gmail.com>
-Subject: Re: xeno-gpio-xilinx causes gpio-xilinx's IRQ
- callback(xgpio_irqhandler)
- to trigger rather than gpio-core's "gpio_pin_interrupt"
-Content-Type: text/plain; charset="UTF-8"
+ <MN2PR19MB3967E78B93B7125847B8E7B1D5610@MN2PR19MB3967.namprd19.prod.outlook.com>,
+ <CALLqZ8QtVRf0RWbL-4Y+FgjgQVc1ceOCOS78ZdiCA8zqY6mFtQ@mail.gmail.com>
+In-Reply-To: <CALLqZ8QtVRf0RWbL-4Y+FgjgQVc1ceOCOS78ZdiCA8zqY6mFtQ@mail.gmail.com>
+Content-Language: en-US
+MIME-Version: 1.0
+Content-Type: text/plain; charset="iso-8859-1"
 Content-Transfer-Encoding: quoted-printable
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
@@ -23,8 +25,18 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Josh Karch <jkarch@firstmode.com>
+To: Greg Gallagher <greg@embeddedgreg.com>
 Cc: "Xenomai@xenomai.org" <xenomai@xenomai.org>
+
+
+
+________________________________
+From: Greg Gallagher <greg@embeddedgreg.com>
+Sent: Wednesday, July 15, 2020 7:13 AM
+To: Josh Karch <jkarch@FirstMode.com>
+Cc: Xenomai@xenomai.org <xenomai@xenomai.org>
+Subject: Re: xeno-gpio-xilinx causes gpio-xilinx's IRQ callback(xgpio_irqha=
+ndler) to trigger rather than gpio-core's "gpio_pin_interrupt"
 
 On Tue, Jul 14, 2020 at 5:45 PM Josh Karch <jkarch@firstmode.com> wrote:
 >
@@ -253,3 +265,10 @@ your module.
 
 -Greg
 
+Hi Greg,
+
+it does not appear that ipipe_handle_demuxed_irq is available in core.c. Is=
+ there an alternate named function to this?  It's probably listed in ipipe.=
+h but not in core.c
+
+Best, Josh
