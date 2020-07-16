@@ -1,16 +1,12 @@
-Subject: Re: FW: Xenomai with isolcpus and workqueue task
-References: <c25a1993-e0e1-eebf-a4f8-a5c5f0d7604c@nicevt.ru>
- <VI1PR05MB5917C0D09456A2D0B2FF2CA1F6600@VI1PR05MB5917.eurprd05.prod.outlook.com>
- <VI1PR05MB5917D1573DCB81C9DA2CEAB3F6600@VI1PR05MB5917.eurprd05.prod.outlook.com>
- <941d830d-981c-3514-0776-9394ba34a3e1@nicevt.ru>
- <VI1PR05MB5917E51B793D4A2F1ADECF41F6600@VI1PR05MB5917.eurprd05.prod.outlook.com>
-From: Alexander Frolov <frolov@nicevt.ru>
-Message-ID: <95137112-f581-d8f6-5988-cf6fb73040f6@nicevt.ru>
-Date: Mon, 13 Jul 2020 14:08:54 +0300
 MIME-Version: 1.0
-In-Reply-To: <VI1PR05MB5917E51B793D4A2F1ADECF41F6600@VI1PR05MB5917.eurprd05.prod.outlook.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
+References: <CAAvDm6bRTpGEExXsU_aivN4PPB2z=-FXjrVjTkvegn47AritqQ@mail.gmail.com>
+ <77d20356-98c9-4f0c-7d7d-3169660759a4@siemens.com>
+In-Reply-To: <77d20356-98c9-4f0c-7d7d-3169660759a4@siemens.com>
+From: =?UTF-8?B?5a2Z5LiW6b6ZIHN1bnNoaWxvbmc=?= <sunshilong369@gmail.com>
+Date: Thu, 16 Jul 2020 12:48:36 +0800
+Message-ID: <CAAvDm6Y3XEo97ab=ZwBBx5d0RVaX6uUHW5NMzt+4RUZ-E23rUQ@mail.gmail.com>
+Subject: Re: Xenomai-v3.1 Watchdog detected hard lockup
+Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
@@ -20,211 +16,271 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Lange Norbert <norbert.lange@andritz.com>, "Xenomai (xenomai@xenomai.org)" <xenomai@xenomai.org>
+To: Jan Kiszka <jan.kiszka@siemens.com>
+Cc: xenomai <xenomai@xenomai.org>
+
+Thank you for taking the time to respond to me.
+
+>In this case, we are talking about a server thread, but its wakeup
+>frequency is application controlled. So that would be the first thing to
+>check.
+  I will check it first right now and do a test while removing the
+majority of the calculations.
+
+>> What surprised me is that the log (
+>> [Xenomai] watchdog triggered on CPU #1 -- runaway thread
+>> 'timer-internal' signaled, full log is seen at the footnote) indicates
+>> that the timer-internal thread, which is created by the Xenomai
+>> copperplate layer, is killed by the Xenomai watchdog when the lockup
+>> occurs.
+>Could it be that the time is accidentally
+>programmed to way higher rate, thus firing all the time?
+As said above, I will check it right away.
+As I checked the related parameters, the Xenomai watchdog fires when
+there is a Xenomai thread that has been dominating a CPU core for **4s**
+whereas NMI watchdog fires every **10s**.
+What confuses me is that they both fired at the same time(i.e. :
+[72873.713376] NMI watchdog: Watchdog detected hard LOCKUP on cpu 0
+[72873.713597] [Xenomai] watchdog triggered on CPU #1 -- runaway thread
+'timer-internal' signaled).
+
+In addition, after killing the timer-internal thread, the system still
+didn't respond
+to any keyboard key and ssh couldn't be reconnected any more.
+
+Thank you for your attention to this matter.
+Looking forward to hearing from you.
 
 
-
-On 7/13/20 1:48 PM, Lange Norbert wrote:
+On Wed, Jul 15, 2020 at 7:52 PM Jan Kiszka <jan.kiszka@siemens.com> wrote:
 >
->> -----Original Message-----
->> From: Xenomai <xenomai-bounces@xenomai.org> On Behalf Of Alexander
->> Frolov via Xenomai
->> Sent: Montag, 13. Juli 2020 12:27
->> To: xenomai@xenomai.org
->> Subject: Re: FW: Xenomai with isolcpus and workqueue task
->>
->> NON-ANDRITZ SOURCE: BE CAUTIOUS WITH CONTENT, LINKS OR
->> ATTACHMENTS.
->>
->>
->> -----Original Message-----
->>>> From: Lange Norbert
->>>> Sent: Montag, 13. Juli 2020 10:34
->>>> To: Alexander Frolov <frolov@nicevt.ru>
->>>> Subject: RE: Xenomai with isolcpus and workqueue task
->>>>
->>>>
->>>>
->>>>> -----Original Message-----
->>>>> From: Xenomai <xenomai-bounces@xenomai.org> On Behalf Of
->> Alexander
->>>>> Frolov via Xenomai
->>>>> Sent: Samstag, 11. Juli 2020 16:26
->>>>> To: xenomai@xenomai.org
->>>>> Subject: Xenomai with isolcpus and workqueue task
->>>>>
->>>>> NON-ANDRITZ SOURCE: BE CAUTIOUS WITH CONTENT, LINKS OR
->>>> ATTACHMENTS.
->>>>> Hi all!
->>>>>
->>>>> I am using Xenomai 3.1 with 4.19.124 I-pipe patchon a smp motherboa=
-rd.
->>>>> For my RT task I allocate few CPU cores with isolcpus option.
->>>>> However, large latency spikes are noticed due to igb watchdog
->>>>> activities (I am using common igb driver, not rt_igb).
->>>>>
->>>>> Looking into igb sources, it was understood that workqueue is used
->>>>> for some tasks (afaiu, it is used to link status
->>>>> monitoring)
->>>>>
->>>>> from igb_main.c
->>>>> ...
->>>>>      INIT_WORK(&adapter->reset_task, igb_reset_task);
->>>>>      INIT_WORK(&adapter->watchdog_task, igb_watchdog_task); ...
->>>>>
->>>>> The Linux kernel scheduler runs this igb activities on isolated CPU=
-s
->>>>> disregarding isolcpus option, ruining real-time system behavior.
->>>> isolcpus does not mean the CPUs aren't used, it means they are
->>>> excluded from the normal CPU scheduler. No process will automaticall=
-y
->>>> be moved from/to isolated CPUs, but you still need to make sure to
->>>> free them of any tasks.
->>>> Irq-handlers still run anywhere, and processes still can allow those
->>>> CPUs to be used.
->>>>
->>>>> So the question, is it a correct way to use normal igb on Xenomai a=
-t
->>>>> all or it is not recommended? What can be done to prohibit Linux
->>>>> scheduler to allocate those tasks on isolated cores?
->>>> I use the normal igb and rt_igb concurrently, I doubt it is
->>>> recommended but possible ;)
->>>>
->>>> You should add irqaffinity=3D0 to the cmdline (CPU0 is apparently
->>>> always used for irqs), then check 'cat /proc/irq/*/smp_affinity'.
->>>> This keeps the other CPUs free from linux IRQs.
->>>> You can use some measures to bind Linux tasks to CPU0 aswell. One of=
-:
->>>>
->>>> -   isolcpus (sets default affinity mask aswell)
->>>> -   set affinity early (like in Ramdisk)
->>>> -   Use cgroups (cset-shield)
->>>>
->>>> Only cgroups actually prohibit processes ignoring your defaults and
->>>> using other CPUs, I did not get around playing with this, and just u=
-se
->> isolcpus.
->>>> But the most important part is to dont run RT on cores dealing with
->>>> Linux interrupts, some handlers/drivers don=E2=80=99t expects being
->>>> preempted, had the MMC driver bail because of a timeout.
->>>>
->>>> I haven=E2=80=99t solved moving the rtnet-stack, rtnet-rpc off CPU0,=
- and the
->>>> rt_igb IRQs will use all CPUs.
->>>>
->>>> Norbert
->> Thank you! Using an IRQ affinity feature to move handlers to specified=
- cores
->> is very practical, but in this case we experience problem with another
->> artefakt of igb.
->>
->> Just as example of influence of igb activity (igb_watchdog_task) on CP=
-U4
->> (which is an isolated one).
-> Hmm, I dont have that task.
-> You can use taskset -p 0 <pidof igb_watchdog_task> to change affinity,
-> If not pretty but should work.
+> On 15.07.20 08:51, =E5=AD=99=E4=B8=96=E9=BE=99 sunshilong via Xenomai wro=
+te:
+> > Hi, list
+> >
+> > A hard lockup reproducibly occurs on a PC with software
+> > configuration:
+> > --ipipe-core-4.19.84-x86-8.patch
+> > --Xenomai-V3.1
+> > --kernel 4.19.82
+> > The patch of Ipipe applied cleanly and there were no build errors.
+> >
+> > The ssh connections are lost and the keyboard doesn't respond when the =
+hard
+> > lockup occurs.
+> >
+> > I developed a realtime application to receive and send data through
+> > RT-CAN. And the procedure of sending data is triggered by the Xenomai
+> > timer every 10ms.
+> > What surprised me is that the log (
+> > [Xenomai] watchdog triggered on CPU #1 -- runaway thread
+> > 'timer-internal' signaled, full log is seen at the footnote) indicates
+> > that the timer-internal thread, which is created by the Xenomai
+> > copperplate layer, is killed by the Xenomai watchdog when the lockup
+> > occurs.
 >
-> (isolcpus doesn=E2=80=99t work the way you think, it only affects CPU m=
-igration)
-
-  Not sure, that I can find out <pidof igb_watchdog_task>, cause it can b=
-e kworker
-  thread which takes this task to execution. I can try to move all kworke=
-rs to general-
-  purposed cores, which looks a bit crazy.
-
+> Wild guess from the hips: Could it be that the time is accidentally
+> programmed to way higher rate, thus firing all the time?
 >
->> # cat /proc/ipipe/trace/frozen | grep '\!'
->> ...
->> :  +func               -1231!  52.379  igb_rd32+0x0 [igb]
->> (igb_update_stats+0x520 [igb])
->> :  +func               -1145!  45.864  igb_rd32+0x0 [igb]
->> (igb_update_stats+0x536 [igb])
->> :  +func               -1099!  51.917  igb_rd32+0x0 [igb]
->> (igb_update_stats+0x75a [igb])
->> :  +func               -1047!  51.517  igb_rd32+0x0 [igb]
->> (igb_update_stats+0x782 [igb])
->> :  +func                -996!  51.988  igb_rd32+0x0 [igb]
->> (igb_update_stats+0x54e [igb])
->> :  +func                -944!  51.436  igb_rd32+0x0 [igb]
->> (igb_update_stats+0x564 [igb])
->> :  +func                -893!  52.569  igb_rd32+0x0 [igb]
->> (igb_update_stats+0x57a [igb])
->> :  +func                -840!  52.529  igb_rd32+0x0 [igb]
->> (igb_update_stats+0x590 [igb])
->> :  +func                -787!  52.018  igb_rd32+0x0 [igb]
->> (igb_update_stats+0x5a6 [igb])
->> :  +func                -735!  52.058  igb_rd32+0x0 [igb]
->> (igb_update_stats+0x5bc [igb])
->> :  +func                -683!  51.497  igb_rd32+0x0 [igb]
->> (igb_update_stats+0x5d2 [igb])
->> :  +func                -632!  51.436  igb_rd32+0x0 [igb]
->> (igb_update_stats+0x5e8 [igb])
->> :  +func                -580!  51.416  igb_rd32+0x0 [igb]
->> (igb_update_stats+0x5fe [igb])
->> :  +func                -529!  52.038  igb_rd32+0x0 [igb]
->> (igb_update_stats+0x614 [igb])
->> :  +func                -477!  52.058  igb_rd32+0x0 [igb]
->> (igb_update_stats+0x62a [igb])
->> :  +func                -425!  51.436  igb_rd32+0x0 [igb]
->> (igb_update_stats+0x6f4 [igb])
->> :  +func                -373!  51.416  igb_rd32+0x0 [igb]
->> (igb_update_stats+0x70a [igb])
->> :  +func                -322!  51.517  igb_rd32+0x0 [igb]
->> (igb_update_stats+0x720 [igb])
->> :  +func                -271!  51.847  igb_rd32+0x0 [igb]
->> (igb_update_stats+0x736 [igb])
->> :  +func                -189!  47.247  igb_rd32+0x0 [igb]
->> (igb_ptp_rx_hang+0x1e [igb])
->> :  +func                -103!  72.735  igb_rd32+0x0 [igb]
->> (igb_watchdog_task+0x66a [igb])
->>
->>
->>   From the other side, rt kernels do not have this issue, probably bec=
-ause of
->> modified workqueue subsystem.
->>
->> Any ideas how to keep this work out of critical code?
-> Is this task blocking RT from running? I mean it's better to run it at =
-another core,
-> particularly because register accesses are painfully slow on that hardw=
-are.
-> But I don=E2=80=99t see why it should make a big impact.
-Yes, that what it does. I think igb_rd32 is too slow, do not know why,=20
-however.
+> The Xenomai watchdog jumps in when there are Xenomai threads dominating
+> a CPU core. In theory, the watchdog could it the wrong task, one that is
+> only triggered from time to time by the one that is actually causing the
+> endless loop. But generally the situation is simpler and clearer.
 >
-> Norbert
+> In this case, we are talking about a server thread, but its wakeup
+> frequency is application controlled. So that would be the first thing to
+> check.
 >
-> ________________________________
+> Jan
 >
-> This message and any attachments are solely for the use of the intended=
- recipients. They may contain privileged and/or confidential information =
-or other information protected from disclosure. If you are not an intende=
-d recipient, you are hereby notified that you received this email in erro=
-r and that any review, dissemination, distribution or copying of this ema=
-il and any attachment is strictly prohibited. If you have received this e=
-mail in error, please contact the sender and delete the message and any a=
-ttachment from your system.
+> > Do you think the hard lockup have some direct or indirect relations
+> > with killing the timer-internal thread?
+> >
+> > If I don't run the said realtime application, no "hard lockup" message
+> > has been seen no matter how long the platform runs.
+> > But if the aforementioned application has been started,  the hard locku=
+p
+> > occurs every half an hour to three hours.
+> >
+> > Could you please shed some light on this problem?
+> > Any advice on how to proceed?
+> >
+> > Thank you for your attention to this matter.
+> >
+> > Here is the full log:
+> > Jul  7 14:50:47 bzk-CM8CCB4R kernel: [72873.713376] NMI watchdog:
+> > Watchdog detected hard LOCKUP on cpu 0
+> > Jul  7 14:50:47 bzk-CM8CCB4R kernel: [72873.713380] Modules linked in:
+> > xeno_can_xilinx(OE) xeno_can(E) xeno_fpga_axi(OE) rfcomm bnep smsc95xx
+> > usbnet mii snd_soc_skl snd_soc_skl_ipc snd_soc_sst_ipc snd_soc_sst_dsp
+> > snd_hda_ext_core snd_soc_acpi_intel_match snd_soc_acpi nls_iso8859_1
+> > snd_soc_core snd_compress ac97_bus 8250_dw snd_hda_codec_hdmi
+> > snd_pcm_dmaengine snd_hda_intel snd_hda_codec snd_hda_core snd_hwdep
+> > snd_pcm snd_seq_midi snd_seq_midi_event snd_rawmidi intel_rapl
+> > x86_pkg_temp_thermal intel_powerclamp coretemp kvm_intel snd_seq
+> > crct10dif_pclmul crc32_pclmul ghash_clmulni_intel pcbc snd_seq_device
+> > snd_timer btusb btrtl btbcm btintel snd bluetooth ecdh_generic
+> > aesni_intel aes_x86_64 crypto_simd cryptd soundcore glue_helper
+> > intel_cstate wmi_bmof intel_rapl_perf arc4 iwlmvm mac80211 iwlwifi
+> > idma64 virt_dma cfg80211 mei_me mei intel_lpss_pci
+> > Jul  7 14:50:47 bzk-CM8CCB4R kernel: [72873.713429]  mac_hid
+> > intel_lpss intel_pch_thermal parport_pc ppdev lp parport autofs4
+> > mmc_block e1000e ahci libahci sdhci_pci cqhci sdhci i915 kvmgt
+> > vfio_mdev mdev vfio_iommu_type1 vfio kvm irqbypass video i2c_algo_bit
+> > drm_kms_helper syscopyarea sysfillrect sysimgblt wmi fb_sys_fops drm
+> > [last unloaded: xeno_can]
+> > Jul  7 14:50:47 bzk-CM8CCB4R kernel: [72873.713460] CPU: 0 PID: 0
+> > Comm: swapper/0 Tainted: G        W  OE     4.19.84-x86-20200528 #2
+> > Jul  7 14:50:47 bzk-CM8CCB4R kernel: [72873.713461] Hardware name:
+> > Intel(R) Client Systems CM8CCB4R/CM8CCB4R, BIOS
+> > CBWHL357.0058.2020.0107.1849 01/07/2020
+> > Jul  7 14:50:47 bzk-CM8CCB4R kernel: [72873.713462] I-pipe domain: Xeno=
+mai
+> > Jul  7 14:50:47 bzk-CM8CCB4R kernel: [72873.713462] RIP:
+> > 0010:load_new_mm_cr3+0x41/0xf0
+> > Jul  7 14:50:47 bzk-CM8CCB4R kernel: [72873.713463] Code: 1a 01 48 01
+> > fa 73 25 48 bf 00 00 00 00 00 00 00 80 48 0b 3d 01 20 1d 01 83 c6 01
+> > 0f b7 f6 48 01 d0 48 09 f7 48 09 c7 0f 22 df <5d> c3 48 c7 c0 00 00 00
+> > 80 48 2b 05 3f a1 10 01 eb cb 0f 1f 44 00
+> > Jul  7 14:50:47 bzk-CM8CCB4R kernel: [72873.713464] RSP:
+> > 0018:ffff964630c03e08 EFLAGS: 00000082
+> > Jul  7 14:50:47 bzk-CM8CCB4R kernel: [72873.713466] RAX:
+> > 000000016672e000 RBX: ffff9645e2502800 RCX: 00000000000019f2
+> > Jul  7 14:50:47 bzk-CM8CCB4R kernel: [72873.713467] RDX:
+> > ffff9646a672e000 RSI: 0000000000000002 RDI: 800000016672e002
+> > Jul  7 14:50:47 bzk-CM8CCB4R kernel: [72873.713468] RBP:
+> > ffff964630c03e08 R08: ffff964627bebd00 R09: ffff964630c3e4f0
+> > Jul  7 14:50:47 bzk-CM8CCB4R kernel: [72873.713468] R10:
+> > ffff964630c03e78 R11: 0000000000000040 R12: ffffffff86288260
+> > Jul  7 14:50:47 bzk-CM8CCB4R kernel: [72873.713469] R13:
+> > 0000000000000001 R14: ffff96462672e960 R15: 0000000000000001
+> > Jul  7 14:50:47 bzk-CM8CCB4R kernel: [72873.713470] FS:
+> > 0000000000000000(0000) GS:ffff964630c00000(0000)
+> > knlGS:0000000000000000
+> > Jul  7 14:50:47 bzk-CM8CCB4R kernel: [72873.713471] CS:  0010 DS: 0000
+> > ES: 0000 CR0: 0000000080050033
+> > Jul  7 14:50:47 bzk-CM8CCB4R kernel: [72873.713472] CR2:
+> > 00007f1037c6f020 CR3: 000000016672e002 CR4: 00000000003606f0
+> > Jul  7 14:50:47 bzk-CM8CCB4R kernel: [72873.713472] Call Trace:
+> > Jul  7 14:50:47 bzk-CM8CCB4R kernel: [72873.713473]  <IRQ>
+> > Jul  7 14:50:47 bzk-CM8CCB4R kernel: [72873.713474]
+> > switch_mm_irqs_off+0x31b/0x4e0
+> > Jul  7 14:50:47 bzk-CM8CCB4R kernel: [72873.713475]  xnarch_switch_to+0=
+x2f/0x80
+> > Jul  7 14:50:47 bzk-CM8CCB4R kernel: [72873.713476]
+> > ___xnsched_run.part.74+0x154/0x480
+> > Jul  7 14:50:47 bzk-CM8CCB4R kernel: [72873.713476]  ___xnsched_run+0x3=
+5/0x50
+> > Jul  7 14:50:47 bzk-CM8CCB4R kernel: [72873.713477]
+> > xnintr_irq_handler+0x346/0x4c0
+> > Jul  7 14:50:47 bzk-CM8CCB4R kernel: [72873.713478]  ?
+> > xnintr_core_clock_handler+0x1b6/0x360
+> > Jul  7 14:50:47 bzk-CM8CCB4R kernel: [72873.713479]
+> > dispatch_irq_head+0x8e/0x110
+> > Jul  7 14:50:47 bzk-CM8CCB4R kernel: [72873.713479]  ?
+> > xnintr_irq_handler+0x5/0x4c0
+> > Jul  7 14:50:47 bzk-CM8CCB4R kernel: [72873.713481]  ?
+> > dispatch_irq_head+0x8e/0x110
+> > Jul  7 14:50:47 bzk-CM8CCB4R kernel: [72873.713482]
+> > __ipipe_dispatch_irq+0xd9/0x1c0
+> > Jul  7 14:50:47 bzk-CM8CCB4R kernel: [72873.713483]
+> > __ipipe_handle_irq+0x86/0x1e0
+> > Jul  7 14:50:47 bzk-CM8CCB4R kernel: [72873.713483]  common_interrupt+0=
+xf/0x2c
+> > Jul  7 14:50:47 bzk-CM8CCB4R kernel: [72873.713484]  </IRQ>
+> > Jul  7 14:50:47 bzk-CM8CCB4R kernel: [72873.713485] RIP:
+> > 0010:timekeeping_max_deferment+0x2b/0x30
+> > Jul  7 14:50:47 bzk-CM8CCB4R kernel: [72873.713486] Code: bb d5 8f 00
+> > 55 48 89 e5 8b 15 11 c0 52 01 f6 c2 01 75 15 48 8b 05 0d c0 52 01 48
+> > 8b 40 18 39 15 fb bf 52 01 75 e2 5d c3 f3 90 <eb> dc 0f 1f 00 e8 8b d5
+> > 8f 00 55 48 c7 07 00 00 00 00 48 c7 47 08
+> > Jul  7 14:50:47 bzk-CM8CCB4R kernel: [72873.713487] RSP:
+> > 0018:ffffffff86203dd8 EFLAGS: 00000202 ORIG_RAX: ffffffffffffffdc
+> > Jul  7 14:50:47 bzk-CM8CCB4R kernel: [72873.713489] RAX:
+> > 0000000e1cc1b900 RBX: 000042464e21d06b RCX: 0000000000000202
+> > Jul  7 14:50:47 bzk-CM8CCB4R kernel: [72873.713489] RDX:
+> > 0000000000ee83ed RSI: 0000000000000000 RDI: 0000000000000001
+> > Jul  7 14:50:47 bzk-CM8CCB4R kernel: [72873.713490] RBP:
+> > ffffffff86203dd8 R08: 0000000000000246 R09: 000042546ae3896b
+> > Jul  7 14:50:47 bzk-CM8CCB4R kernel: [72873.713491] R10:
+> > 00000000000002ca R11: 0000000000000020 R12: 000042546ae3896b
+> > Jul  7 14:50:47 bzk-CM8CCB4R kernel: [72873.713492] R13:
+> > ffff964630c1c280 R14: 0000000000000000 R15: 0000000000000000
+> > Jul  7 14:50:47 bzk-CM8CCB4R kernel: [72873.713493]
+> > tick_nohz_next_event+0x99/0x180
+> > Jul  7 14:50:47 bzk-CM8CCB4R kernel: [72873.713493]
+> > tick_nohz_idle_stop_tick+0x15c/0x290
+> > Jul  7 14:50:47 bzk-CM8CCB4R kernel: [72873.713494]  ? mwait_idle+0x6e/=
+0x1e0
+> > Jul  7 14:50:47 bzk-CM8CCB4R kernel: [72873.713495]  ?
+> > tsc_verify_tsc_adjust+0x3b/0xf0
+> > Jul  7 14:50:47 bzk-CM8CCB4R kernel: [72873.713496]  do_idle+0xa7/0x160
+> > Jul  7 14:50:47 bzk-CM8CCB4R kernel: [72873.713497]  cpu_startup_entry+=
+0x73/0x80
+> > Jul  7 14:50:47 bzk-CM8CCB4R kernel: [72873.713497]  rest_init+0xa7/0xb=
+0
+> > Jul  7 14:50:47 bzk-CM8CCB4R kernel: [72873.713498]  start_kernel+0x53f=
+/0x560
+> > Jul  7 14:50:47 bzk-CM8CCB4R kernel: [72873.713499]
+> > x86_64_start_reservations+0x24/0x26
+> > Jul  7 14:50:47 bzk-CM8CCB4R kernel: [72873.713500]
+> > x86_64_start_kernel+0x74/0x77
+> > Jul  7 14:50:47 bzk-CM8CCB4R kernel: [72873.713500]
+> > secondary_startup_64+0xa4/0xb0
+> > Jul  7 14:50:47 bzk-CM8CCB4R kernel: [72873.713518] NMI watchdog:
+> > Watchdog detected hard LOCKUP on cpu 1
+> > Jul  7 14:50:47 bzk-CM8CCB4R kernel: [72873.713519] Modules linked in:
+> > xeno_can_xilinx(OE) xeno_can(E) xeno_fpga_axi(OE) rfcomm bnep smsc95xx
+> > usbnet mii snd_soc_skl snd_soc_skl_ipc snd_soc_sst_ipc snd_soc_sst_dsp
+> > snd_hda_ext_core snd_soc_acpi_intel_match snd_soc_acpi nls_iso8859_1
+> > snd_soc_core snd_compress ac97_bus 8250_dw snd_hda_codec_hdmi
+> > snd_pcm_dmaengine snd_hda_intel snd_hda_codec snd_hda_core snd_hwdep
+> > snd_pcm snd_seq_midi snd_seq_midi_event snd_rawmidi intel_rapl
+> > x86_pkg_temp_thermal intel_powerclamp coretemp kvm_intel snd_seq
+> > crct10dif_pclmul crc32_pclmul ghash_clmulni_intel pcbc snd_seq_device
+> > snd_timer btusb btrtl btbcm btintel snd bluetooth ecdh_generic
+> > aesni_intel aes_x86_64 crypto_simd cryptd soundcore glue_helper
+> > intel_cstate wmi_bmof intel_rapl_perf arc4 iwlmvm mac80211 iwlwifi
+> > idma64 virt_dma cfg80211 mei_me mei intel_lpss_pci
+> > Jul  7 14:50:47 bzk-CM8CCB4R kernel: [72873.713564]  mac_hid
+> > intel_lpss intel_pch_thermal parport_pc ppdev lp parport autofs4
+> > mmc_block e1000e ahci libahci sdhci_pci cqhci sdhci i915 kvmgt
+> > vfio_mdev mdev vfio_iommu_type1 vfio kvm irqbypass video i2c_algo_bit
+> > drm_kms_helper syscopyarea sysfillrect sysimgblt wmi fb_sys_fops drm
+> > [last unloaded: xeno_can]
+> > Jul  7 14:50:47 bzk-CM8CCB4R kernel: [72873.713586] CPU: 1 PID: 4631
+> > Comm: timer-internal Tainted: G        W  OE     4.19.84-x86-20200528
+> > #2
+> > Jul  7 14:50:47 bzk-CM8CCB4R kernel: [72873.713587] Hardware name:
+> > Intel(R) Client Systems CM8CCB4R/CM8CCB4R, BIOS
+> > CBWHL357.0058.2020.0107.1849 01/07/2020
+> > Jul  7 14:50:47 bzk-CM8CCB4R kernel: [72873.713588] I-pipe domain: Xeno=
+mai
+> > Jul  7 14:50:47 bzk-CM8CCB4R kernel: [72873.713588] RIP: 0033:0x7ffe88f=
+86adf
+> > Jul  7 14:50:47 bzk-CM8CCB4R kernel: [72873.713590] Code: 32 48 29 d0
+> > 48 23 05 d0 c5 ff ff 8b 15 d2 c5 ff ff 48 0f af c2 e9 d0 fe ff ff 31
+> > d2 e9 fd fe ff ff f3 90 e9 30 fe ff ff f3 90 <e9> 0f ff ff ff 31 c0 eb
+> > a3 31 c0 eb cd 0f 1f 40 00 55 48 85 ff 48
+> > Jul  7 14:50:47 bzk-CM8CCB4R kernel: [72873.713590] RSP:
+> > 002b:00007fd87c44bab0 EFLAGS: 00000202
+> > Jul  7 14:50:47 bzk-CM8CCB4R kernel: [72873.713592] RAX:
+> > 00007ffe88f868f0 RBX: 0000000000000000 RCX: 00007fd87bbf62c0
+> > Jul  7 14:50:47 bzk-CM8CCB4R kernel: [72873.713593] RDX:
+> > 0000000000000000 RSI: 00007fd87c44bae0 RDI: 0000000000000000
+> > Jul  7 14:50:47 bzk-CM8CCB4R kernel: [72873.713594] RBP:
+> > 00007fd87c44bab0 R08: 0000000000ee83ed R09: 00007fd87c44c700
+> > Jul  7 14:50:47 bzk-CM8CCB4R kernel: [72873.713595] R10:
+> > 0000000000000001 R11: 0000000000000206 R12: 00007fd87c44bcb0
+> > Jul  7 14:50:47 bzk-CM8CCB4R kernel: [72873.713595] R13:
+> > 00007fd87c44bcc0 R14: 00007fd879d15fd8 R15: 00007fd879d15ed8
+> > Jul  7 14:50:47 bzk-CM8CCB4R kernel: [72873.713596] FS:
+> > 00007fd87c44c700 GS:  0000000000000000
+> > Jul  7 14:50:47 bzk-CM8CCB4R kernel: [72873.713597] [Xenomai] watchdog
+> > triggered on CPU #1 -- runaway thread 'timer-internal' signaled
+> >
 >
-> ANDRITZ HYDRO GmbH
->
->
-> Rechtsform/ Legal form: Gesellschaft mit beschr=C3=A4nkter Haftung / Co=
-rporation
->
-> Firmensitz/ Registered seat: Wien
->
-> Firmenbuchgericht/ Court of registry: Handelsgericht Wien
->
-> Firmenbuchnummer/ Company registration: FN 61833 g
->
-> DVR: 0605077
->
-> UID-Nr.: ATU14756806
->
->
-> Thank You
-> ________________________________
-
+> --
+> Siemens AG, Corporate Technology, CT RDA IOT SES-DE
+> Corporate Competence Center Embedded Linux
 
