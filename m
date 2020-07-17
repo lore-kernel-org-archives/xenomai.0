@@ -1,14 +1,14 @@
-From: "Meng, Fino" <fino.meng@intel.com>
-Subject: RE: Are there some methods that could limit how much CPU resources
- could be a single Xenomai process or thread?
-Date: Fri, 17 Jul 2020 00:55:50 +0000
-Message-ID: <BYAPR11MB37657E4273FDDA050513C12CEE7C0@BYAPR11MB3765.namprd11.prod.outlook.com>
-References: <CAAvDm6bKV3jueSVTj9c5yfrxTKVd-oMj1ETX4Z2xtiV+-nGKxQ@mail.gmail.com>
-In-Reply-To: <CAAvDm6bKV3jueSVTj9c5yfrxTKVd-oMj1ETX4Z2xtiV+-nGKxQ@mail.gmail.com>
-Content-Language: en-US
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
 MIME-Version: 1.0
+References: <CAAvDm6bKV3jueSVTj9c5yfrxTKVd-oMj1ETX4Z2xtiV+-nGKxQ@mail.gmail.com>
+ <BYAPR11MB37657E4273FDDA050513C12CEE7C0@BYAPR11MB3765.namprd11.prod.outlook.com>
+In-Reply-To: <BYAPR11MB37657E4273FDDA050513C12CEE7C0@BYAPR11MB3765.namprd11.prod.outlook.com>
+From: =?UTF-8?B?5a2Z5LiW6b6ZIHN1bnNoaWxvbmc=?= <sunshilong369@gmail.com>
+Date: Fri, 17 Jul 2020 18:18:21 +0800
+Message-ID: <CAAvDm6btHLntQSPLktP_ffRepTE=_Dm8=H8EgbSpe1CnV1qt1Q@mail.gmail.com>
+Subject: Re: Are there some methods that could limit how much CPU resources
+ could be a single Xenomai process or thread?
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,26 +17,58 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: =?utf-8?B?5a2Z5LiW6b6ZIHN1bnNoaWxvbmc=?= <sunshilong369@gmail.com>
+To: "Meng, Fino" <fino.meng@intel.com>
 Cc: "Xenomai (xenomai@xenomai.org)" <xenomai@xenomai.org>
 
-SW4gbXkgdW5kZXJzdGFuZGluZyBjZ3JvdXAncyBkZXNpZ24gaXMgZXhjbHVzaW9uYXJ5IHdpdGgg
-cmVhbC10aW1lL2RldGVybWluaXN0aWMvdGltZSBjb29yZGluYXRlIGRlc2lnbiwNClRoZSBsYXRl
-bmN5L2ppdHRlciBpcyBhbHJlYWR5IGRvd24gdG8gMjB1cyBsZXZlbCwgIGhvdyBpdCBjYW4gZW5k
-dXJlIGNncm91cCdzIHZvbGF0aWxpdHksIA0KRG8gdSByZWFsbHkgaGF2ZSBzdHJvbmcgcmVxdWly
-ZW1lbnQgZm9yIHRoaXMgc2NlbmFyaW8/IG1heWJlIGl0IHdpbGwgd29yayBvbiBhIGhpZ2hseSBm
-aW5lLXR1bmVkIGVudmlyb25tZW50LiANCg0KQlIgLyBGaW5vICjlrZ/npaXlpKspDQpJbnRlbCDi
-gJMgSU9URyBEZXZlbG9wZXIgRW5hYmxpbmcNCg0KPlNlbnQ6IFRodXJzZGF5LCBKdWx5IDE2LCAy
-MDIwIDg6MDEgUE0NCj4NCj5IaSwgbGlzdA0KPg0KPkFyZSB0aGVyZSBzb21lIG1ldGhvZHMgdGhh
-dCBjb3VsZCBsaW1pdCBob3cgbXVjaCBDUFUgcmVzb3VyY2VzIGNvdWxkIGJlIG1heGltYWxseSB1
-c2VkIGJ5IGEgc2luZ2xlIFhlbm9tYWkgcHJvY2VzcyBvcg0KPnRocmVhZD8NCj5Eb2VzIHRoZSBM
-aW51eCBrZXJuZWwncyBjZ3JvdXAgaW50ZXJmYWNlIHdvcmsgZm9yIHRoZSBYZW5vbWFpPw0KPg0K
-PlRoZSBkZXNjcmlwdGlvbiBhYm91dCBjZ3JvdXAgcXVvdGVkIGZyb20gdGhlIExpbnV4IHByb2dy
-YW0gbWFudWFsOg0KPlRoZSBrZXJuZWwncyBjZ3JvdXAgaW50ZXJmYWNlIGlzIHByb3ZpZGVkIHRo
-cm91Z2ggYSBwc2V1ZG8tZmlsZXN5c3RlbSBjYWxsZWQgY2dyb3VwZnMuDQo+R3JvdXBpbmcgaXMg
-aW1wbGVtZW50ZWQgaW4gdGhlIGNvcmUgY2dyb3VwIGtlcm5lbCBjb2RlLCB3aGlsZSByZXNvdXJj
-ZSB0cmFja2luZyBhbmQgbGltaXRzIGFyZSBpbXBsZW1lbnRlZCBpbiBhIHNldCBvZiBwZXItDQo+
-cmVzb3VyY2UtdHlwZSBzdWJzeXN0ZW1zIChtZW1vcnksIENQVSwgYW5kIHNvIG9uKS4NCj4NCj5U
-aGFuayB5b3UgZm9yIHlvdXIgYXR0ZW50aW9uIHRvIHRoaXMgbWF0dGVyLg0KPkxvb2tpbmcgZm9y
-d2FyZCB0byBoZWFyaW5nIGZyb20geW91Lg0KPkJlc3QgUmVnYXJkcy4NCg0K
+Hi, =E5=AD=9F=E7=A5=A5=E5=A4=AB
+Thank you for taking the time to respond to my question.
+
+>In my understanding cgroup's design is exclusionary with real-time/determi=
+nistic/time coordinate design.
+>The latency/jitter is already down to 20us level,  how it can endure cgrou=
+p's volatility.
+I don't hold much hope, either. But I am not sure whether it's
+impossible to achieve this goal or not.
+
+>Do u really have strong requirement for this scenario?
+It's a strong requirement, but not necessary.
+
+>Maybe it will work on a highly fine-tuned environment.
+Any advice on how to proceed?
+
+Best Regards.
+sunshilong(=E5=AD=99=E4=B8=96=E9=BE=99)
+
+On Fri, Jul 17, 2020 at 8:55 AM Meng, Fino <fino.meng@intel.com> wrote:
+>
+> In my understanding cgroup's design is exclusionary with real-time/determ=
+inistic/time coordinate design,
+> The latency/jitter is already down to 20us level,  how it can endure cgro=
+up's volatility,
+> Do u really have strong requirement for this scenario? maybe it will work=
+ on a highly fine-tuned environment.
+>
+> BR / Fino (=E5=AD=9F=E7=A5=A5=E5=A4=AB)
+> Intel =E2=80=93 IOTG Developer Enabling
+>
+> >Sent: Thursday, July 16, 2020 8:01 PM
+> >
+> >Hi, list
+> >
+> >Are there some methods that could limit how much CPU resources could be =
+maximally used by a single Xenomai process or
+> >thread?
+> >Does the Linux kernel's cgroup interface work for the Xenomai?
+> >
+> >The description about cgroup quoted from the Linux program manual:
+> >The kernel's cgroup interface is provided through a pseudo-filesystem ca=
+lled cgroupfs.
+> >Grouping is implemented in the core cgroup kernel code, while resource t=
+racking and limits are implemented in a set of per-
+> >resource-type subsystems (memory, CPU, and so on).
+> >
+> >Thank you for your attention to this matter.
+> >Looking forward to hearing from you.
+> >Best Regards.
+>
 
