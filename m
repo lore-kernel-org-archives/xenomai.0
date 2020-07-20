@@ -1,18 +1,11 @@
-From: Lange Norbert <norbert.lange@andritz.com>
-Subject: RE: FW: Xenomai with isolcpus and workqueue task
-Date: Mon, 13 Jul 2020 11:27:51 +0000
-Message-ID: <VI1PR05MB5917AC6D29F86345CC95641BF6600@VI1PR05MB5917.eurprd05.prod.outlook.com>
-References: <c25a1993-e0e1-eebf-a4f8-a5c5f0d7604c@nicevt.ru>
- <VI1PR05MB5917C0D09456A2D0B2FF2CA1F6600@VI1PR05MB5917.eurprd05.prod.outlook.com>
- <VI1PR05MB5917D1573DCB81C9DA2CEAB3F6600@VI1PR05MB5917.eurprd05.prod.outlook.com>
- <941d830d-981c-3514-0776-9394ba34a3e1@nicevt.ru>
- <VI1PR05MB5917E51B793D4A2F1ADECF41F6600@VI1PR05MB5917.eurprd05.prod.outlook.com>
- <95137112-f581-d8f6-5988-cf6fb73040f6@nicevt.ru>
-In-Reply-To: <95137112-f581-d8f6-5988-cf6fb73040f6@nicevt.ru>
-Content-Language: en-US
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+From: Philippe Gerum <rpm@xenomai.org>
+Subject: Dovetail <-> PREEMPT_RT hybridization
+Message-ID: <2c2da877-f9e7-9be7-d659-c51235738bc0@xenomai.org>
+Date: Mon, 20 Jul 2020 22:47:29 +0200
 MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -21,162 +14,146 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Alexander Frolov <frolov@nicevt.ru>, "Xenomai (xenomai@xenomai.org)" <xenomai@xenomai.org>
+To: Evl <evl@evlproject.org>
+Cc: "Xenomai@xenomai.org" <Xenomai@xenomai.org>
 
-DQoNCj4gLS0tLS1PcmlnaW5hbCBNZXNzYWdlLS0tLS0NCj4gRnJvbTogQWxleGFuZGVyIEZyb2xv
-diA8ZnJvbG92QG5pY2V2dC5ydT4NCj4gU2VudDogTW9udGFnLCAxMy4gSnVsaSAyMDIwIDEzOjA5
-DQo+IFRvOiBMYW5nZSBOb3JiZXJ0IDxub3JiZXJ0LmxhbmdlQGFuZHJpdHouY29tPjsgWGVub21h
-aQ0KPiAoeGVub21haUB4ZW5vbWFpLm9yZykgPHhlbm9tYWlAeGVub21haS5vcmc+DQo+IFN1Ympl
-Y3Q6IFJlOiBGVzogWGVub21haSB3aXRoIGlzb2xjcHVzIGFuZCB3b3JrcXVldWUgdGFzaw0KPg0K
-PiBOT04tQU5EUklUWiBTT1VSQ0U6IEJFIENBVVRJT1VTIFdJVEggQ09OVEVOVCwgTElOS1MgT1IN
-Cj4gQVRUQUNITUVOVFMuDQo+DQo+DQo+IE9uIDcvMTMvMjAgMTo0OCBQTSwgTGFuZ2UgTm9yYmVy
-dCB3cm90ZToNCj4gPg0KPiA+PiAtLS0tLU9yaWdpbmFsIE1lc3NhZ2UtLS0tLQ0KPiA+PiBGcm9t
-OiBYZW5vbWFpIDx4ZW5vbWFpLWJvdW5jZXNAeGVub21haS5vcmc+IE9uIEJlaGFsZiBPZg0KPiBB
-bGV4YW5kZXINCj4gPj4gRnJvbG92IHZpYSBYZW5vbWFpDQo+ID4+IFNlbnQ6IE1vbnRhZywgMTMu
-IEp1bGkgMjAyMCAxMjoyNw0KPiA+PiBUbzogeGVub21haUB4ZW5vbWFpLm9yZw0KPiA+PiBTdWJq
-ZWN0OiBSZTogRlc6IFhlbm9tYWkgd2l0aCBpc29sY3B1cyBhbmQgd29ya3F1ZXVlIHRhc2sNCj4g
-Pj4NCj4gPj4gTk9OLUFORFJJVFogU09VUkNFOiBCRSBDQVVUSU9VUyBXSVRIIENPTlRFTlQsIExJ
-TktTIE9SDQo+IEFUVEFDSE1FTlRTLg0KPiA+Pg0KPiA+Pg0KPiA+PiAtLS0tLU9yaWdpbmFsIE1l
-c3NhZ2UtLS0tLQ0KPiA+Pj4+IEZyb206IExhbmdlIE5vcmJlcnQNCj4gPj4+PiBTZW50OiBNb250
-YWcsIDEzLiBKdWxpIDIwMjAgMTA6MzQNCj4gPj4+PiBUbzogQWxleGFuZGVyIEZyb2xvdiA8ZnJv
-bG92QG5pY2V2dC5ydT4NCj4gPj4+PiBTdWJqZWN0OiBSRTogWGVub21haSB3aXRoIGlzb2xjcHVz
-IGFuZCB3b3JrcXVldWUgdGFzaw0KPiA+Pj4+DQo+ID4+Pj4NCj4gPj4+Pg0KPiA+Pj4+PiAtLS0t
-LU9yaWdpbmFsIE1lc3NhZ2UtLS0tLQ0KPiA+Pj4+PiBGcm9tOiBYZW5vbWFpIDx4ZW5vbWFpLWJv
-dW5jZXNAeGVub21haS5vcmc+IE9uIEJlaGFsZiBPZg0KPiA+PiBBbGV4YW5kZXINCj4gPj4+Pj4g
-RnJvbG92IHZpYSBYZW5vbWFpDQo+ID4+Pj4+IFNlbnQ6IFNhbXN0YWcsIDExLiBKdWxpIDIwMjAg
-MTY6MjYNCj4gPj4+Pj4gVG86IHhlbm9tYWlAeGVub21haS5vcmcNCj4gPj4+Pj4gU3ViamVjdDog
-WGVub21haSB3aXRoIGlzb2xjcHVzIGFuZCB3b3JrcXVldWUgdGFzaw0KPiA+Pj4+Pg0KPiA+Pj4+
-PiBOT04tQU5EUklUWiBTT1VSQ0U6IEJFIENBVVRJT1VTIFdJVEggQ09OVEVOVCwgTElOS1MgT1IN
-Cj4gPj4+PiBBVFRBQ0hNRU5UUy4NCj4gPj4+Pj4gSGkgYWxsIQ0KPiA+Pj4+Pg0KPiA+Pj4+PiBJ
-IGFtIHVzaW5nIFhlbm9tYWkgMy4xIHdpdGggNC4xOS4xMjQgSS1waXBlIHBhdGNob24gYSBzbXAN
-Cj4gbW90aGVyYm9hcmQuDQo+ID4+Pj4+IEZvciBteSBSVCB0YXNrIEkgYWxsb2NhdGUgZmV3IENQ
-VSBjb3JlcyB3aXRoIGlzb2xjcHVzIG9wdGlvbi4NCj4gPj4+Pj4gSG93ZXZlciwgbGFyZ2UgbGF0
-ZW5jeSBzcGlrZXMgYXJlIG5vdGljZWQgZHVlIHRvIGlnYiB3YXRjaGRvZw0KPiA+Pj4+PiBhY3Rp
-dml0aWVzIChJIGFtIHVzaW5nIGNvbW1vbiBpZ2IgZHJpdmVyLCBub3QgcnRfaWdiKS4NCj4gPj4+
-Pj4NCj4gPj4+Pj4gTG9va2luZyBpbnRvIGlnYiBzb3VyY2VzLCBpdCB3YXMgdW5kZXJzdG9vZCB0
-aGF0IHdvcmtxdWV1ZSBpcyB1c2VkDQo+ID4+Pj4+IGZvciBzb21lIHRhc2tzIChhZmFpdSwgaXQg
-aXMgdXNlZCB0byBsaW5rIHN0YXR1cw0KPiA+Pj4+PiBtb25pdG9yaW5nKQ0KPiA+Pj4+Pg0KPiA+
-Pj4+PiBmcm9tIGlnYl9tYWluLmMNCj4gPj4+Pj4gLi4uDQo+ID4+Pj4+ICAgICAgSU5JVF9XT1JL
-KCZhZGFwdGVyLT5yZXNldF90YXNrLCBpZ2JfcmVzZXRfdGFzayk7DQo+ID4+Pj4+ICAgICAgSU5J
-VF9XT1JLKCZhZGFwdGVyLT53YXRjaGRvZ190YXNrLCBpZ2Jfd2F0Y2hkb2dfdGFzayk7IC4uLg0K
-PiA+Pj4+Pg0KPiA+Pj4+PiBUaGUgTGludXgga2VybmVsIHNjaGVkdWxlciBydW5zIHRoaXMgaWdi
-IGFjdGl2aXRpZXMgb24gaXNvbGF0ZWQgQ1BVcw0KPiA+Pj4+PiBkaXNyZWdhcmRpbmcgaXNvbGNw
-dXMgb3B0aW9uLCBydWluaW5nIHJlYWwtdGltZSBzeXN0ZW0gYmVoYXZpb3IuDQo+ID4+Pj4gaXNv
-bGNwdXMgZG9lcyBub3QgbWVhbiB0aGUgQ1BVcyBhcmVuJ3QgdXNlZCwgaXQgbWVhbnMgdGhleSBh
-cmUNCj4gPj4+PiBleGNsdWRlZCBmcm9tIHRoZSBub3JtYWwgQ1BVIHNjaGVkdWxlci4gTm8gcHJv
-Y2VzcyB3aWxsIGF1dG9tYXRpY2FsbHkNCj4gPj4+PiBiZSBtb3ZlZCBmcm9tL3RvIGlzb2xhdGVk
-IENQVXMsIGJ1dCB5b3Ugc3RpbGwgbmVlZCB0byBtYWtlIHN1cmUgdG8NCj4gPj4+PiBmcmVlIHRo
-ZW0gb2YgYW55IHRhc2tzLg0KPiA+Pj4+IElycS1oYW5kbGVycyBzdGlsbCBydW4gYW55d2hlcmUs
-IGFuZCBwcm9jZXNzZXMgc3RpbGwgY2FuIGFsbG93IHRob3NlDQo+ID4+Pj4gQ1BVcyB0byBiZSB1
-c2VkLg0KPiA+Pj4+DQo+ID4+Pj4+IFNvIHRoZSBxdWVzdGlvbiwgaXMgaXQgYSBjb3JyZWN0IHdh
-eSB0byB1c2Ugbm9ybWFsIGlnYiBvbiBYZW5vbWFpIGF0DQo+ID4+Pj4+IGFsbCBvciBpdCBpcyBu
-b3QgcmVjb21tZW5kZWQ/IFdoYXQgY2FuIGJlIGRvbmUgdG8gcHJvaGliaXQgTGludXgNCj4gPj4+
-Pj4gc2NoZWR1bGVyIHRvIGFsbG9jYXRlIHRob3NlIHRhc2tzIG9uIGlzb2xhdGVkIGNvcmVzPw0K
-PiA+Pj4+IEkgdXNlIHRoZSBub3JtYWwgaWdiIGFuZCBydF9pZ2IgY29uY3VycmVudGx5LCBJIGRv
-dWJ0IGl0IGlzDQo+ID4+Pj4gcmVjb21tZW5kZWQgYnV0IHBvc3NpYmxlIDspDQo+ID4+Pj4NCj4g
-Pj4+PiBZb3Ugc2hvdWxkIGFkZCBpcnFhZmZpbml0eT0wIHRvIHRoZSBjbWRsaW5lIChDUFUwIGlz
-IGFwcGFyZW50bHkNCj4gPj4+PiBhbHdheXMgdXNlZCBmb3IgaXJxcyksIHRoZW4gY2hlY2sgJ2Nh
-dCAvcHJvYy9pcnEvKi9zbXBfYWZmaW5pdHknLg0KPiA+Pj4+IFRoaXMga2VlcHMgdGhlIG90aGVy
-IENQVXMgZnJlZSBmcm9tIGxpbnV4IElSUXMuDQo+ID4+Pj4gWW91IGNhbiB1c2Ugc29tZSBtZWFz
-dXJlcyB0byBiaW5kIExpbnV4IHRhc2tzIHRvIENQVTAgYXN3ZWxsLiBPbmUgb2Y6DQo+ID4+Pj4N
-Cj4gPj4+PiAtICAgaXNvbGNwdXMgKHNldHMgZGVmYXVsdCBhZmZpbml0eSBtYXNrIGFzd2VsbCkN
-Cj4gPj4+PiAtICAgc2V0IGFmZmluaXR5IGVhcmx5IChsaWtlIGluIFJhbWRpc2spDQo+ID4+Pj4g
-LSAgIFVzZSBjZ3JvdXBzIChjc2V0LXNoaWVsZCkNCj4gPj4+Pg0KPiA+Pj4+IE9ubHkgY2dyb3Vw
-cyBhY3R1YWxseSBwcm9oaWJpdCBwcm9jZXNzZXMgaWdub3JpbmcgeW91ciBkZWZhdWx0cyBhbmQN
-Cj4gPj4+PiB1c2luZyBvdGhlciBDUFVzLCBJIGRpZCBub3QgZ2V0IGFyb3VuZCBwbGF5aW5nIHdp
-dGggdGhpcywgYW5kIGp1c3QgdXNlDQo+ID4+IGlzb2xjcHVzLg0KPiA+Pj4+IEJ1dCB0aGUgbW9z
-dCBpbXBvcnRhbnQgcGFydCBpcyB0byBkb250IHJ1biBSVCBvbiBjb3JlcyBkZWFsaW5nIHdpdGgN
-Cj4gPj4+PiBMaW51eCBpbnRlcnJ1cHRzLCBzb21lIGhhbmRsZXJzL2RyaXZlcnMgZG9u4oCZdCBl
-eHBlY3RzIGJlaW5nDQo+ID4+Pj4gcHJlZW1wdGVkLCBoYWQgdGhlIE1NQyBkcml2ZXIgYmFpbCBi
-ZWNhdXNlIG9mIGEgdGltZW91dC4NCj4gPj4+Pg0KPiA+Pj4+IEkgaGF2ZW7igJl0IHNvbHZlZCBt
-b3ZpbmcgdGhlIHJ0bmV0LXN0YWNrLCBydG5ldC1ycGMgb2ZmIENQVTAsIGFuZCB0aGUNCj4gPj4+
-PiBydF9pZ2IgSVJRcyB3aWxsIHVzZSBhbGwgQ1BVcy4NCj4gPj4+Pg0KPiA+Pj4+IE5vcmJlcnQN
-Cj4gPj4gVGhhbmsgeW91ISBVc2luZyBhbiBJUlEgYWZmaW5pdHkgZmVhdHVyZSB0byBtb3ZlIGhh
-bmRsZXJzIHRvIHNwZWNpZmllZA0KPiBjb3Jlcw0KPiA+PiBpcyB2ZXJ5IHByYWN0aWNhbCwgYnV0
-IGluIHRoaXMgY2FzZSB3ZSBleHBlcmllbmNlIHByb2JsZW0gd2l0aCBhbm90aGVyDQo+ID4+IGFy
-dGVmYWt0IG9mIGlnYi4NCj4gPj4NCj4gPj4gSnVzdCBhcyBleGFtcGxlIG9mIGluZmx1ZW5jZSBv
-ZiBpZ2IgYWN0aXZpdHkgKGlnYl93YXRjaGRvZ190YXNrKSBvbiBDUFU0DQo+ID4+ICh3aGljaCBp
-cyBhbiBpc29sYXRlZCBvbmUpLg0KPiA+IEhtbSwgSSBkb250IGhhdmUgdGhhdCB0YXNrLg0KPiA+
-IFlvdSBjYW4gdXNlIHRhc2tzZXQgLXAgMCA8cGlkb2YgaWdiX3dhdGNoZG9nX3Rhc2s+IHRvIGNo
-YW5nZSBhZmZpbml0eSwNCj4gPiBJZiBub3QgcHJldHR5IGJ1dCBzaG91bGQgd29yay4NCj4gPg0K
-PiA+IChpc29sY3B1cyBkb2VzbuKAmXQgd29yayB0aGUgd2F5IHlvdSB0aGluaywgaXQgb25seSBh
-ZmZlY3RzIENQVSBtaWdyYXRpb24pDQo+DQo+ICAgTm90IHN1cmUsIHRoYXQgSSBjYW4gZmluZCBv
-dXQgPHBpZG9mIGlnYl93YXRjaGRvZ190YXNrPiwgY2F1c2UgaXQgY2FuIGJlDQo+IGt3b3JrZXIN
-Cj4gICB0aHJlYWQgd2hpY2ggdGFrZXMgdGhpcyB0YXNrIHRvIGV4ZWN1dGlvbi4gSSBjYW4gdHJ5
-IHRvIG1vdmUgYWxsIGt3b3JrZXJzIHRvDQo+IGdlbmVyYWwtDQo+ICAgcHVycG9zZWQgY29yZXMs
-IHdoaWNoIGxvb2tzIGEgYml0IGNyYXp5Lg0KDQpPaywgbWlzc2VkIHRoZSBnZW5lcmFsIHdvcmtx
-dWV1ZSBwYXJ0LiBObywgbW92aW5nIGt3b3JrZXJzIGlzIGxpa2VseSBkYW5nZXJvdXMuDQpTdGls
-bCBJIHdvbmRlciB3aHkgaXRzIHBpY2tpbmcgY29yZSA0LCBtYXliZSBiaW5kaW5nIGlycXMgdG8g
-Y29yZSAjMCB3aWxsDQpJbmRpcmVjdGx5IGFmZmVjdCB0aGF0Lg0KDQo+DQo+ID4NCj4gPj4gIyBj
-YXQgL3Byb2MvaXBpcGUvdHJhY2UvZnJvemVuIHwgZ3JlcCAnXCEnDQo+ID4+IC4uLg0KPiA+PiA6
-ICArZnVuYyAgICAgICAgICAgICAgIC0xMjMxISAgNTIuMzc5ICBpZ2JfcmQzMisweDAgW2lnYl0N
-Cj4gPj4gKGlnYl91cGRhdGVfc3RhdHMrMHg1MjAgW2lnYl0pDQo+ID4+IDogICtmdW5jICAgICAg
-ICAgICAgICAgLTExNDUhICA0NS44NjQgIGlnYl9yZDMyKzB4MCBbaWdiXQ0KPiA+PiAoaWdiX3Vw
-ZGF0ZV9zdGF0cysweDUzNiBbaWdiXSkNCj4gPj4gOiAgK2Z1bmMgICAgICAgICAgICAgICAtMTA5
-OSEgIDUxLjkxNyAgaWdiX3JkMzIrMHgwIFtpZ2JdDQo+ID4+IChpZ2JfdXBkYXRlX3N0YXRzKzB4
-NzVhIFtpZ2JdKQ0KPiA+PiA6ICArZnVuYyAgICAgICAgICAgICAgIC0xMDQ3ISAgNTEuNTE3ICBp
-Z2JfcmQzMisweDAgW2lnYl0NCj4gPj4gKGlnYl91cGRhdGVfc3RhdHMrMHg3ODIgW2lnYl0pDQo+
-ID4+IDogICtmdW5jICAgICAgICAgICAgICAgIC05OTYhICA1MS45ODggIGlnYl9yZDMyKzB4MCBb
-aWdiXQ0KPiA+PiAoaWdiX3VwZGF0ZV9zdGF0cysweDU0ZSBbaWdiXSkNCj4gPj4gOiAgK2Z1bmMg
-ICAgICAgICAgICAgICAgLTk0NCEgIDUxLjQzNiAgaWdiX3JkMzIrMHgwIFtpZ2JdDQo+ID4+IChp
-Z2JfdXBkYXRlX3N0YXRzKzB4NTY0IFtpZ2JdKQ0KPiA+PiA6ICArZnVuYyAgICAgICAgICAgICAg
-ICAtODkzISAgNTIuNTY5ICBpZ2JfcmQzMisweDAgW2lnYl0NCj4gPj4gKGlnYl91cGRhdGVfc3Rh
-dHMrMHg1N2EgW2lnYl0pDQo+ID4+IDogICtmdW5jICAgICAgICAgICAgICAgIC04NDAhICA1Mi41
-MjkgIGlnYl9yZDMyKzB4MCBbaWdiXQ0KPiA+PiAoaWdiX3VwZGF0ZV9zdGF0cysweDU5MCBbaWdi
-XSkNCj4gPj4gOiAgK2Z1bmMgICAgICAgICAgICAgICAgLTc4NyEgIDUyLjAxOCAgaWdiX3JkMzIr
-MHgwIFtpZ2JdDQo+ID4+IChpZ2JfdXBkYXRlX3N0YXRzKzB4NWE2IFtpZ2JdKQ0KPiA+PiA6ICAr
-ZnVuYyAgICAgICAgICAgICAgICAtNzM1ISAgNTIuMDU4ICBpZ2JfcmQzMisweDAgW2lnYl0NCj4g
-Pj4gKGlnYl91cGRhdGVfc3RhdHMrMHg1YmMgW2lnYl0pDQo+ID4+IDogICtmdW5jICAgICAgICAg
-ICAgICAgIC02ODMhICA1MS40OTcgIGlnYl9yZDMyKzB4MCBbaWdiXQ0KPiA+PiAoaWdiX3VwZGF0
-ZV9zdGF0cysweDVkMiBbaWdiXSkNCj4gPj4gOiAgK2Z1bmMgICAgICAgICAgICAgICAgLTYzMiEg
-IDUxLjQzNiAgaWdiX3JkMzIrMHgwIFtpZ2JdDQo+ID4+IChpZ2JfdXBkYXRlX3N0YXRzKzB4NWU4
-IFtpZ2JdKQ0KPiA+PiA6ICArZnVuYyAgICAgICAgICAgICAgICAtNTgwISAgNTEuNDE2ICBpZ2Jf
-cmQzMisweDAgW2lnYl0NCj4gPj4gKGlnYl91cGRhdGVfc3RhdHMrMHg1ZmUgW2lnYl0pDQo+ID4+
-IDogICtmdW5jICAgICAgICAgICAgICAgIC01MjkhICA1Mi4wMzggIGlnYl9yZDMyKzB4MCBbaWdi
-XQ0KPiA+PiAoaWdiX3VwZGF0ZV9zdGF0cysweDYxNCBbaWdiXSkNCj4gPj4gOiAgK2Z1bmMgICAg
-ICAgICAgICAgICAgLTQ3NyEgIDUyLjA1OCAgaWdiX3JkMzIrMHgwIFtpZ2JdDQo+ID4+IChpZ2Jf
-dXBkYXRlX3N0YXRzKzB4NjJhIFtpZ2JdKQ0KPiA+PiA6ICArZnVuYyAgICAgICAgICAgICAgICAt
-NDI1ISAgNTEuNDM2ICBpZ2JfcmQzMisweDAgW2lnYl0NCj4gPj4gKGlnYl91cGRhdGVfc3RhdHMr
-MHg2ZjQgW2lnYl0pDQo+ID4+IDogICtmdW5jICAgICAgICAgICAgICAgIC0zNzMhICA1MS40MTYg
-IGlnYl9yZDMyKzB4MCBbaWdiXQ0KPiA+PiAoaWdiX3VwZGF0ZV9zdGF0cysweDcwYSBbaWdiXSkN
-Cj4gPj4gOiAgK2Z1bmMgICAgICAgICAgICAgICAgLTMyMiEgIDUxLjUxNyAgaWdiX3JkMzIrMHgw
-IFtpZ2JdDQo+ID4+IChpZ2JfdXBkYXRlX3N0YXRzKzB4NzIwIFtpZ2JdKQ0KPiA+PiA6ICArZnVu
-YyAgICAgICAgICAgICAgICAtMjcxISAgNTEuODQ3ICBpZ2JfcmQzMisweDAgW2lnYl0NCj4gPj4g
-KGlnYl91cGRhdGVfc3RhdHMrMHg3MzYgW2lnYl0pDQo+ID4+IDogICtmdW5jICAgICAgICAgICAg
-ICAgIC0xODkhICA0Ny4yNDcgIGlnYl9yZDMyKzB4MCBbaWdiXQ0KPiA+PiAoaWdiX3B0cF9yeF9o
-YW5nKzB4MWUgW2lnYl0pDQo+ID4+IDogICtmdW5jICAgICAgICAgICAgICAgIC0xMDMhICA3Mi43
-MzUgIGlnYl9yZDMyKzB4MCBbaWdiXQ0KPiA+PiAoaWdiX3dhdGNoZG9nX3Rhc2srMHg2NmEgW2ln
-Yl0pDQo+ID4+DQo+ID4+DQo+ID4+ICAgRnJvbSB0aGUgb3RoZXIgc2lkZSwgcnQga2VybmVscyBk
-byBub3QgaGF2ZSB0aGlzIGlzc3VlLCBwcm9iYWJseSBiZWNhdXNlDQo+IG9mDQo+ID4+IG1vZGlm
-aWVkIHdvcmtxdWV1ZSBzdWJzeXN0ZW0uDQo+ID4+DQo+ID4+IEFueSBpZGVhcyBob3cgdG8ga2Vl
-cCB0aGlzIHdvcmsgb3V0IG9mIGNyaXRpY2FsIGNvZGU/DQo+ID4gSXMgdGhpcyB0YXNrIGJsb2Nr
-aW5nIFJUIGZyb20gcnVubmluZz8gSSBtZWFuIGl0J3MgYmV0dGVyIHRvIHJ1biBpdCBhdCBhbm90
-aGVyDQo+IGNvcmUsDQo+ID4gcGFydGljdWxhcmx5IGJlY2F1c2UgcmVnaXN0ZXIgYWNjZXNzZXMg
-YXJlIHBhaW5mdWxseSBzbG93IG9uIHRoYXQgaGFyZHdhcmUuDQo+ID4gQnV0IEkgZG9u4oCZdCBz
-ZWUgd2h5IGl0IHNob3VsZCBtYWtlIGEgYmlnIGltcGFjdC4NCj4gWWVzLCB0aGF0IHdoYXQgaXQg
-ZG9lcy4gSSB0aGluayBpZ2JfcmQzMiBpcyB0b28gc2xvdywgZG8gbm90IGtub3cgd2h5LA0KPiBo
-b3dldmVyLg0KDQpJdCBkb2VzIHNvbWUgd2VpcmQgc3R1ZmYsIGhhbmRsaW5nIFBDSSByZWFkIGVy
-cm9yIEFGQUlVLiBGb3IgdGhlIHJ0X2lncCBwYXJ0LA0KSSBoYXZlIHRoaXMgZGlzYWJsZWQgKG5v
-dCBzdXJlIGlmIGl0cyB1cHN0cmVhbSk6DQoNCiNkZWZpbmUgcmQzMihfX3JlZylyZWFkbChody0+
-aHdfYWRkciArIChfX3JlZykpDQoNCldoYXQga2luZGEgc3Bpa2VzIGFyZSB3ZSB0YWxraW5nIGFi
-b3V0IGJ0dy4gKGllLiBub3JtYWwgbGF0ZW5jeSBhbmQgb3V0bGllcnMpPw0KDQpJIGRvbuKAmXQg
-dGhpbmsgdGhlIHdvcmtxdWV1ZSBzaG91bGQgYmxvY2sgWGVub21haSwgc28gdGhvc2UgcmVhZHMg
-YWxvbmUgc2hvdWxkIG5vdA0KQWZmZWN0IGxhdGVuY3kgYnkgbW9yZSB0aGFuIH4yMG11c2VjIChh
-dGxlYXN0IG9uIG15IGhhcmR3YXJlKS4NCg0KDQpOb3JiZXJ0DQoNCl9fX19fX19fX19fX19fX19f
-X19fX19fX19fX19fX19fDQoNClRoaXMgbWVzc2FnZSBhbmQgYW55IGF0dGFjaG1lbnRzIGFyZSBz
-b2xlbHkgZm9yIHRoZSB1c2Ugb2YgdGhlIGludGVuZGVkIHJlY2lwaWVudHMuIFRoZXkgbWF5IGNv
-bnRhaW4gcHJpdmlsZWdlZCBhbmQvb3IgY29uZmlkZW50aWFsIGluZm9ybWF0aW9uIG9yIG90aGVy
-IGluZm9ybWF0aW9uIHByb3RlY3RlZCBmcm9tIGRpc2Nsb3N1cmUuIElmIHlvdSBhcmUgbm90IGFu
-IGludGVuZGVkIHJlY2lwaWVudCwgeW91IGFyZSBoZXJlYnkgbm90aWZpZWQgdGhhdCB5b3UgcmVj
-ZWl2ZWQgdGhpcyBlbWFpbCBpbiBlcnJvciBhbmQgdGhhdCBhbnkgcmV2aWV3LCBkaXNzZW1pbmF0
-aW9uLCBkaXN0cmlidXRpb24gb3IgY29weWluZyBvZiB0aGlzIGVtYWlsIGFuZCBhbnkgYXR0YWNo
-bWVudCBpcyBzdHJpY3RseSBwcm9oaWJpdGVkLiBJZiB5b3UgaGF2ZSByZWNlaXZlZCB0aGlzIGVt
-YWlsIGluIGVycm9yLCBwbGVhc2UgY29udGFjdCB0aGUgc2VuZGVyIGFuZCBkZWxldGUgdGhlIG1l
-c3NhZ2UgYW5kIGFueSBhdHRhY2htZW50IGZyb20geW91ciBzeXN0ZW0uDQoNCkFORFJJVFogSFlE
-Uk8gR21iSA0KDQoNClJlY2h0c2Zvcm0vIExlZ2FsIGZvcm06IEdlc2VsbHNjaGFmdCBtaXQgYmVz
-Y2hyw6Rua3RlciBIYWZ0dW5nIC8gQ29ycG9yYXRpb24NCg0KRmlybWVuc2l0ei8gUmVnaXN0ZXJl
-ZCBzZWF0OiBXaWVuDQoNCkZpcm1lbmJ1Y2hnZXJpY2h0LyBDb3VydCBvZiByZWdpc3RyeTogSGFu
-ZGVsc2dlcmljaHQgV2llbg0KDQpGaXJtZW5idWNobnVtbWVyLyBDb21wYW55IHJlZ2lzdHJhdGlv
-bjogRk4gNjE4MzMgZw0KDQpEVlI6IDA2MDUwNzcNCg0KVUlELU5yLjogQVRVMTQ3NTY4MDYNCg0K
-DQpUaGFuayBZb3UNCl9fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fDQo=
+
+FWIW, I'm investigating the opportunity for rebasing Dovetail - and therefore
+the EVL core - on the PREEMPT_RT code base, ahead of the final integration of
+the latter into the mainline kernel tree. In the same move, the goal would be
+to leverage the improvements brought by native preemption with respect to
+fine-grained interrupt protection, while keeping the alternate scheduling [1]
+feature, which still exhibits significantly shorter preemption times and much
+cleaner jitter compared to what is - at least currently - achievable with a
+plain PREEMPT_RT kernel under meaningful stress.
+
+With such hybridization, the Dovetail implementation should be even simpler.
+Companion cores based on it could run on the out-of-band execution stage
+unimpeded by other forms of preemption disabling in the in-band kernel (e.g.
+locks). This would preserve the most significant advantage of the pipelining
+model when it comes to reliable response times for applications at a modest
+processing cost by a lightweight real-time infrastructure.
+
+This work entails porting the latest Dovetail code base I have been working on
+lately from 5.8 back to 5.6-rt, since this is the most recent public release
+of PREEMPT_RT so far. In addition, interrupt-free sections which are deemed
+too long for the companion core on top to cope with, need to be identified in
+the target PREEMPT_RT release so that they could be mitigated (see below for
+an explanation about how it could be done). In the future, a way to automate
+such research should be looked for, since finding these spots is likely going
+to be the boring task to carry out each time this new Dovetail implementation
+is ported to the next PREEMPT_RT release. Plus, the truckload of other tricky
+issues I may have overlooked.
+
+If anyone is interested in participating in this work, let me know. I cannot
+guarantee success, but the data I have collected over time with both the dual
+kernel and native preemption models leaves me optimistic about the outcome if
+they are combined the right way.
+
+-- Nitty-gritty details about why and how to do this
+
+Those acquainted with the interrupt pipelining technique Dovetail implements
+[2] may already know that decoupling the interrupt mask flag as perceived by
+the CPU from the one perceived by the kernel induces a number of tricky
+issues. We want interrupts to be unmasked in the CPU as long as possible while
+the kernel runs; to this end local_irq_*() helpers are switched to a
+software-based implementation which virtualizes the interrupt mask as
+perceived by the kernel, while leaving interrupts enabled in the CPU,
+postponing the delivery of IRQs blocked by the virtual masking until they are
+accepted again by the kernel (aka "stall bit"). This is a plain simple
+log-if-blocked-then-replay-when-unblocked game [3].
+
+However, we also have to synchronize the hardware and software interrupt masks
+in some specific places of the kernel in order to keep some hardware and
+software logic happy. Two examples come to mind, there are more of them:
+
+- hardware-wise, we want updates to some registers to remain fully atomic
+despite the fact interrupt pipelining is in effect. For arm64, we have to
+ensure that updates to the translation table registers (TTBRs) cannot be
+preempted, likewise for updates to the CR4 register on x86 which is notably
+used during TLB management.  In both cases, we have to locally revert/override
+the changes Dovetail implicitly did by re-introducing CPU-based forms of
+interrupt disabling, instead of the software-based one.
+
+- software-wise, maintaining the LOCKDEP logic usable in a pipelined system
+requires fixing up the virtual interrupt mask on kernel boundaries between
+kernel and user mode, so that it properly reflects what the locking validation
+engine expects at all times. This has been the most time-consuming work in a
+number of Dovetail upgrades to recent kernel releases, 5.8-rc included.
+Besides, I'm still not happy with the way this is done, which looks like
+playing whack-a-mole to some extent.
+
+Many of these issues are hard to identify, some may not be trivial to address
+(LOCKDEP support can become really ugly in this respect). Several other
+sub-systems like CPU idleness and power management have similar requirements
+for particular code paths.
+
+Now, we may have another option for gaining fine-grained interrupt protection,
+which would build on the relentless work the PREEMPT_RT folks did about
+shrinking the interrupt-free sections in the kernel code to the bare minimum
+which is acceptable for native preemption, by threading IRQs and introducing
+sleeping locks mainly.
+
+Instead of systematizing the virtualization of the local_irq_*() helpers, we
+could switch them back to their original - hardware-based - behavior, adding
+controlled mask-breaking statements manually to any remaining problematic code
+path. Such statement would enable interrupts in the CPU while blocking them
+for the in-band kernel, using a local, non-pervasive variant of the current
+interrupt pipeline.
+
+Within those long interrupt-free sections created by the in-band code, the
+companion core would nevertheless be allowed to process pending interrupts
+immediately while maintaining the interrupt protection for the in-band kernel.
+Identifying these sections for enabling the out-of-band code to preempt
+locally should be a matter of properly using the irqsoff tracer, provided the
+trace_hardirqs* instrumentation is correct.
+
+e.g. roughly sketching a possible use case:
+
+__schedule()
+lock(rq) /* hard irqs off */
+...
+context_switch()
+	switch_mm
+	switch_to
+...
+unlock(rq) /* hard irqs on */
+
+The interrupt-free section above could amount to tenths of microseconds on
+armv7 under significant pressure (especially with a sluggish L2 outer cache)
+and would prevent the out-of-band (companion) core to preempt in the meantime.
+To address this, switching the virtual interrupt state could be done manually
+by some dedicated service, say, "oob_synchronize()", which would first stall
+the in-band stage to keep the code interrupt-free in-band wise, then allow any
+pending hard IRQ to be taken by toggling the CPU mask flag, possibly some of
+which the companion core would handle. Other IRQs to be handled by the in-band
+code would have to wait into a deferred interrupt log until hard IRQs are
+generally re-enabled later on, which is what happens today with the common
+pipelining technique on a broader scope.
+
+__schedule()
+lock(rq) /* hard irqs off */
+...
+context_switch()
+	switch_mm
+	cond_sync_oob(); /* pending IRQs are synchronized for oob only */
+	switch_to
+...
+unlock(rq) /* hard irqs on */
+
+Ideally, switch_mm() should allow out-of-band IRQs to flow normally while
+changing the memory context for in-band tasks - we once had that for armv4/5
+in the early days of the I-pipe, but this would require non-trivial magic to
+do this properly in current kernels. So maybe next when all the rest is
+functional.
+
+Congrats if you read up to there. Comments welcome as usual.
+
+[1] https://evlproject.org/dovetail/altsched/
+[2]
+https://www.usenix.org/legacy/publications/library/proceedings/micro93/full_papers/stodolsky.txt
+[3] https://evlproject.org/dovetail/pipeline/#virtual-i-flag
+
+-- 
+Philippe.
 
