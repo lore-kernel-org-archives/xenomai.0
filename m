@@ -1,11 +1,16 @@
+From: "Meng, Fino" <fino.meng@intel.com>
+Subject: RE: Are there some methods that could limit how much CPU resources
+ could be a single Xenomai process or thread?
+Date: Mon, 20 Jul 2020 00:39:26 +0000
+Message-ID: <BYAPR11MB37654FC58366549CC21C0A09EE7B0@BYAPR11MB3765.namprd11.prod.outlook.com>
+References: <CAAvDm6bKV3jueSVTj9c5yfrxTKVd-oMj1ETX4Z2xtiV+-nGKxQ@mail.gmail.com>
+ <BYAPR11MB37657E4273FDDA050513C12CEE7C0@BYAPR11MB3765.namprd11.prod.outlook.com>
+ <CAAvDm6btHLntQSPLktP_ffRepTE=_Dm8=H8EgbSpe1CnV1qt1Q@mail.gmail.com>
+In-Reply-To: <CAAvDm6btHLntQSPLktP_ffRepTE=_Dm8=H8EgbSpe1CnV1qt1Q@mail.gmail.com>
+Content-Language: en-US
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-From: =?UTF-8?B?5a2Z5LiW6b6ZIHN1bnNoaWxvbmc=?= <sunshilong369@gmail.com>
-Date: Sun, 19 Jul 2020 14:26:35 +0800
-Message-ID: <CAAvDm6Z_Rg2PngfPPowwj_kew7J7scUt1Ps8sq9-omzROVysGg@mail.gmail.com>
-Subject: Two platforms use the some kernel Deb, one works all for half a
- month, the other one can't boot up at all with the error meassage: init
- failed, -19.
-Content-Type: text/plain; charset="UTF-8"
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -14,16 +19,45 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai <xenomai@xenomai.org>
+To: =?utf-8?B?5a2Z5LiW6b6ZIHN1bnNoaWxvbmc=?= <sunshilong369@gmail.com>
+Cc: "Xenomai (xenomai@xenomai.org)" <xenomai@xenomai.org>
 
-Hi, list
-
-I build a kernel Deb with Xenomai-v3.1 and Linux-v4.19.84.
-But what confuses is that it works well on one platform whereas it
-causes the kernel failing to boot up(the error message: init failed:
--19).
-Could you please shed some light on this matter?
-
-Thank you for your attention to this matter.
-sunshilong
+DQoNCj5TZW50OiBGcmlkYXksIEp1bHkgMTcsIDIwMjAgNjoxOCBQTQ0KPg0KPkhpLCDlrZ/npaXl
+pKsNCj5UaGFuayB5b3UgZm9yIHRha2luZyB0aGUgdGltZSB0byByZXNwb25kIHRvIG15IHF1ZXN0
+aW9uLg0KPg0KPj5JbiBteSB1bmRlcnN0YW5kaW5nIGNncm91cCdzIGRlc2lnbiBpcyBleGNsdXNp
+b25hcnkgd2l0aCByZWFsLXRpbWUvZGV0ZXJtaW5pc3RpYy90aW1lIGNvb3JkaW5hdGUgZGVzaWdu
+Lg0KPj5UaGUgbGF0ZW5jeS9qaXR0ZXIgaXMgYWxyZWFkeSBkb3duIHRvIDIwdXMgbGV2ZWwsICBo
+b3cgaXQgY2FuIGVuZHVyZSBjZ3JvdXAncyB2b2xhdGlsaXR5Lg0KPkkgZG9uJ3QgaG9sZCBtdWNo
+IGhvcGUsIGVpdGhlci4gQnV0IEkgYW0gbm90IHN1cmUgd2hldGhlciBpdCdzIGltcG9zc2libGUg
+dG8gYWNoaWV2ZSB0aGlzIGdvYWwgb3Igbm90Lg0KPg0KPj5EbyB1IHJlYWxseSBoYXZlIHN0cm9u
+ZyByZXF1aXJlbWVudCBmb3IgdGhpcyBzY2VuYXJpbz8NCj5JdCdzIGEgc3Ryb25nIHJlcXVpcmVt
+ZW50LCBidXQgbm90IG5lY2Vzc2FyeS4NCj4NCj4+TWF5YmUgaXQgd2lsbCB3b3JrIG9uIGEgaGln
+aGx5IGZpbmUtdHVuZWQgZW52aXJvbm1lbnQuDQo+QW55IGFkdmljZSBvbiBob3cgdG8gcHJvY2Vl
+ZD8NCg0KSGkgU2hpbG9uZywNCg0KV2hhdCBJIGFtIHRoaW5raW5nLCBpbnN0ZWFkIG9mIHVzZSBw
+YXNzaXZlIG1lY2hhbmlzbShjZ3JvdXAsIHNjaGRfdHAuLi4pLCAgDQpob3cgYWJvdXQgbGV0IFJU
+IHRocmVhZCBmaW5pc2ggd29ya2xvYWQgaW4gdGltZSBhbmQgdm9sdW50YXJ5IGdpdmUgb3V0IENQ
+VT8NCk1vcmUgY29tcGxleCBkZXNpZ24gd2lsbCBpbmR1Y2UgbW9yZSBpc3N1ZSB1bnRpbCBvdXQg
+b2YgY29udHJvbCwgDQoNCkJSL0Zpbm8NCg0KPg0KPkJlc3QgUmVnYXJkcy4NCj5zdW5zaGlsb25n
+KOWtmeS4lum+mSkNCj4NCj5PbiBGcmksIEp1bCAxNywgMjAyMCBhdCA4OjU1IEFNIE1lbmcsIEZp
+bm8gPGZpbm8ubWVuZ0BpbnRlbC5jb20+IHdyb3RlOg0KPj4NCj4+IEluIG15IHVuZGVyc3RhbmRp
+bmcgY2dyb3VwJ3MgZGVzaWduIGlzIGV4Y2x1c2lvbmFyeSB3aXRoDQo+PiByZWFsLXRpbWUvZGV0
+ZXJtaW5pc3RpYy90aW1lIGNvb3JkaW5hdGUgZGVzaWduLCBUaGUgbGF0ZW5jeS9qaXR0ZXIgaXMN
+Cj4+IGFscmVhZHkgZG93biB0byAyMHVzIGxldmVsLCAgaG93IGl0IGNhbiBlbmR1cmUgY2dyb3Vw
+J3Mgdm9sYXRpbGl0eSwgRG8gdSByZWFsbHkgaGF2ZSBzdHJvbmcgcmVxdWlyZW1lbnQgZm9yIHRo
+aXMgc2NlbmFyaW8/DQo+bWF5YmUgaXQgd2lsbCB3b3JrIG9uIGEgaGlnaGx5IGZpbmUtdHVuZWQg
+ZW52aXJvbm1lbnQuDQo+Pg0KPj4gQlIgLyBGaW5vICjlrZ/npaXlpKspDQo+PiBJbnRlbCDigJMg
+SU9URyBEZXZlbG9wZXIgRW5hYmxpbmcNCj4+DQo+PiA+U2VudDogVGh1cnNkYXksIEp1bHkgMTYs
+IDIwMjAgODowMSBQTQ0KPj4gPg0KPj4gPkhpLCBsaXN0DQo+PiA+DQo+PiA+QXJlIHRoZXJlIHNv
+bWUgbWV0aG9kcyB0aGF0IGNvdWxkIGxpbWl0IGhvdyBtdWNoIENQVSByZXNvdXJjZXMgY291bGQN
+Cj4+ID5iZSBtYXhpbWFsbHkgdXNlZCBieSBhIHNpbmdsZSBYZW5vbWFpIHByb2Nlc3Mgb3IgdGhy
+ZWFkPw0KPj4gPkRvZXMgdGhlIExpbnV4IGtlcm5lbCdzIGNncm91cCBpbnRlcmZhY2Ugd29yayBm
+b3IgdGhlIFhlbm9tYWk/DQo+PiA+DQo+PiA+VGhlIGRlc2NyaXB0aW9uIGFib3V0IGNncm91cCBx
+dW90ZWQgZnJvbSB0aGUgTGludXggcHJvZ3JhbSBtYW51YWw6DQo+PiA+VGhlIGtlcm5lbCdzIGNn
+cm91cCBpbnRlcmZhY2UgaXMgcHJvdmlkZWQgdGhyb3VnaCBhIHBzZXVkby1maWxlc3lzdGVtIGNh
+bGxlZCBjZ3JvdXBmcy4NCj4+ID5Hcm91cGluZyBpcyBpbXBsZW1lbnRlZCBpbiB0aGUgY29yZSBj
+Z3JvdXAga2VybmVsIGNvZGUsIHdoaWxlDQo+PiA+cmVzb3VyY2UgdHJhY2tpbmcgYW5kIGxpbWl0
+cyBhcmUgaW1wbGVtZW50ZWQgaW4gYSBzZXQgb2YgcGVyLSByZXNvdXJjZS10eXBlIHN1YnN5c3Rl
+bXMgKG1lbW9yeSwgQ1BVLCBhbmQgc28gb24pLg0KPj4gPg0KPj4gPlRoYW5rIHlvdSBmb3IgeW91
+ciBhdHRlbnRpb24gdG8gdGhpcyBtYXR0ZXIuDQo+PiA+TG9va2luZyBmb3J3YXJkIHRvIGhlYXJp
+bmcgZnJvbSB5b3UuDQo+PiA+QmVzdCBSZWdhcmRzLg0KPj4NCg==
 
