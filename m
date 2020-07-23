@@ -1,14 +1,13 @@
-From: "Meng, Fino" <fino.meng@intel.com>
-Subject: RE: Dovetail <-> PREEMPT_RT hybridization
-Date: Wed, 22 Jul 2020 12:26:57 +0000
-Message-ID: <BYAPR11MB37650CF1082B09409D31AAB2EE790@BYAPR11MB3765.namprd11.prod.outlook.com>
+From: Steven Seeger <steven.seeger@flightsystems.net>
+Subject: Re: Dovetail <-> PREEMPT_RT hybridization
+Date: Thu, 23 Jul 2020 09:09:31 -0400
+Message-ID: <4555996.GXAFRqVoOG@omoikane>
+In-Reply-To: <b4c53b27-3de9-3264-0a3f-0563f95321ec@xenomai.org>
 References: <2c2da877-f9e7-9be7-d659-c51235738bc0@xenomai.org>
  <BYAPR11MB3765087193BDF5EB45094A5DEE780@BYAPR11MB3765.namprd11.prod.outlook.com>
  <b4c53b27-3de9-3264-0a3f-0563f95321ec@xenomai.org>
-In-Reply-To: <b4c53b27-3de9-3264-0a3f-0563f95321ec@xenomai.org>
-Content-Language: en-US
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+Content-Transfer-Encoding: 7Bit
+Content-Type: text/plain; charset="us-ascii"
 MIME-Version: 1.0
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
@@ -18,86 +17,38 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Philippe Gerum <rpm@xenomai.org>, Evl <evl@evlproject.org>
-Cc: "Xenomai (xenomai@xenomai.org)" <xenomai@xenomai.org>
+To: "Meng, Fino" <fino.meng@intel.com>, Evl <evl@evlproject.org>, xenomai@xenomai.org
+Cc: Philippe Gerum <rpm@xenomai.org>
 
-DQo+T24gNy8yMS8yMCA3OjI2IEFNLCBNZW5nLCBGaW5vIHdyb3RlOg0KPj4NCj4+PiBTZW50OiBU
-dWVzZGF5LCBKdWx5IDIxLCAyMDIwIDQ6NDcgQU0NCj4+Pg0KPj4+IEZXSVcsIEknbSBpbnZlc3Rp
-Z2F0aW5nIHRoZSBvcHBvcnR1bml0eSBmb3IgcmViYXNpbmcgRG92ZXRhaWwgLSBhbmQNCj4+PiB0
-aGVyZWZvcmUgdGhlIEVWTCBjb3JlIC0gb24gdGhlIFBSRUVNUFRfUlQgY29kZSBiYXNlLCBhaGVh
-ZCBvZiB0aGUNCj4+PiBmaW5hbCBpbnRlZ3JhdGlvbiBvZiB0aGUgbGF0dGVyIGludG8gdGhlIG1h
-aW5saW5lIGtlcm5lbCB0cmVlLiBJbiB0aGUNCj4+PiBzYW1lIG1vdmUsIHRoZSBnb2FsIHdvdWxk
-IGJlIHRvIGxldmVyYWdlIHRoZSBpbXByb3ZlbWVudHMgYnJvdWdodCBieQ0KPj4+IG5hdGl2ZSBw
-cmVlbXB0aW9uIHdpdGggcmVzcGVjdCB0byBmaW5lLWdyYWluZWQgaW50ZXJydXB0IHByb3RlY3Rp
-b24sIHdoaWxlIGtlZXBpbmcgdGhlIGFsdGVybmF0ZSBzY2hlZHVsaW5nIFsxXSBmZWF0dXJlLA0K
-PndoaWNoIHN0aWxsIGV4aGliaXRzIHNpZ25pZmljYW50bHkgc2hvcnRlciBwcmVlbXB0aW9uIHRp
-bWVzIGFuZCBtdWNoIGNsZWFuZXIgaml0dGVyIGNvbXBhcmVkIHRvIHdoYXQgaXMgLSBhdCBsZWFz
-dCBjdXJyZW50bHkgLQ0KPmFjaGlldmFibGUgd2l0aCBhIHBsYWluIFBSRUVNUFRfUlQga2VybmVs
-IHVuZGVyIG1lYW5pbmdmdWwgc3RyZXNzLg0KPj4+DQo+Pj4gV2l0aCBzdWNoIGh5YnJpZGl6YXRp
-b24sIHRoZSBEb3ZldGFpbCBpbXBsZW1lbnRhdGlvbiBzaG91bGQgYmUgZXZlbiBzaW1wbGVyLg0K
-Pj4+IENvbXBhbmlvbiBjb3JlcyBiYXNlZCBvbiBpdCBjb3VsZCBydW4gb24gdGhlIG91dC1vZi1i
-YW5kIGV4ZWN1dGlvbg0KPj4+IHN0YWdlIHVuaW1wZWRlZCBieSBvdGhlciBmb3JtcyBvZiBwcmVl
-bXB0aW9uIGRpc2FibGluZyBpbiB0aGUgaW4tYmFuZCBrZXJuZWwgKGUuZy4NCj4+PiBsb2Nrcyku
-IFRoaXMgd291bGQgcHJlc2VydmUgdGhlIG1vc3Qgc2lnbmlmaWNhbnQgYWR2YW50YWdlIG9mIHRo
-ZQ0KPj4+IHBpcGVsaW5pbmcgbW9kZWwgd2hlbiBpdCBjb21lcyB0byByZWxpYWJsZSByZXNwb25z
-ZSB0aW1lcyBmb3IgYXBwbGljYXRpb25zIGF0IGEgbW9kZXN0IHByb2Nlc3NpbmcgY29zdCBieSBh
-IGxpZ2h0d2VpZ2h0DQo+cmVhbC10aW1lIGluZnJhc3RydWN0dXJlLg0KPj4+DQo+Pj4gVGhpcyB3
-b3JrIGVudGFpbHMgcG9ydGluZyB0aGUgbGF0ZXN0IERvdmV0YWlsIGNvZGUgYmFzZSBJIGhhdmUg
-YmVlbg0KPj4+IHdvcmtpbmcgb24gbGF0ZWx5IGZyb20gNS44IGJhY2sgdG8gNS42LXJ0LCBzaW5j
-ZSB0aGlzIGlzIHRoZSBtb3N0DQo+Pj4gcmVjZW50IHB1YmxpYyByZWxlYXNlIG9mIFBSRUVNUFRf
-UlQgc28gZmFyLiBJbiBhZGRpdGlvbiwNCj4+PiBpbnRlcnJ1cHQtZnJlZSBzZWN0aW9ucyB3aGlj
-aCBhcmUgZGVlbWVkIHRvbyBsb25nIGZvciB0aGUgY29tcGFuaW9uDQo+Pj4gY29yZSBvbiB0b3Ag
-dG8gY29wZSB3aXRoLCBuZWVkIHRvIGJlIGlkZW50aWZpZWQgaW4gdGhlIHRhcmdldA0KPj4+IFBS
-RUVNUFRfUlQgcmVsZWFzZSBzbyB0aGF0IHRoZXkgY291bGQgYmUgbWl0aWdhdGVkIChzZWUgYmVs
-b3cgZm9yIGFuIGV4cGxhbmF0aW9uIGFib3V0IGhvdyBpdCBjb3VsZCBiZSBkb25lKS4gSW4gdGhl
-DQo+ZnV0dXJlLCBhIHdheSB0byBhdXRvbWF0ZSBzdWNoIHJlc2VhcmNoIHNob3VsZCBiZSBsb29r
-ZWQgZm9yLCBzaW5jZSBmaW5kaW5nIHRoZXNlIHNwb3RzIGlzIGxpa2VseSBnb2luZyB0byBiZSB0
-aGUgYm9yaW5nIHRhc2sNCj50byBjYXJyeSBvdXQgZWFjaCB0aW1lIHRoaXMgbmV3IERvdmV0YWls
-IGltcGxlbWVudGF0aW9uIGlzIHBvcnRlZCB0byB0aGUgbmV4dCBQUkVFTVBUX1JUIHJlbGVhc2Uu
-IFBsdXMsIHRoZSB0cnVja2xvYWQgb2YNCj5vdGhlciB0cmlja3kgaXNzdWVzIEkgbWF5IGhhdmUg
-b3Zlcmxvb2tlZC4NCj4+Pg0KPj4+IElmIGFueW9uZSBpcyBpbnRlcmVzdGVkIGluIHBhcnRpY2lw
-YXRpbmcgaW4gdGhpcyB3b3JrLCBsZXQgbWUga25vdy4gSQ0KPj4+IGNhbm5vdCBndWFyYW50ZWUg
-c3VjY2VzcywgYnV0IHRoZSBkYXRhIEkgaGF2ZSBjb2xsZWN0ZWQgb3ZlciB0aW1lDQo+Pj4gd2l0
-aCBib3RoIHRoZSBkdWFsIGtlcm5lbCBhbmQgbmF0aXZlIHByZWVtcHRpb24gbW9kZWxzIGxlYXZl
-cyBtZSBvcHRpbWlzdGljIGFib3V0IHRoZSBvdXRjb21lIGlmIHRoZXkgYXJlIGNvbWJpbmVkDQo+
-dGhlIHJpZ2h0IHdheS4NCj4+DQo+PiBIaSBQaGlsaXBwZSwNCj4+DQo+PiBJIHdvdWxkIGxpa2Ug
-dG8gcGFydGljaXBhdGUuIE9uZSB0aGUgb2YgbW90aXZhdGlvbiBpcyB0aGUgVFNOIHN0YWNrIGlz
-IG5vdyB3aXRoaW4gUHJlZW1wdC1SVCBMaW51eC4NCj4+IFNvbWUgdGltZSBhZ28gd2UgaGF2ZSBk
-aXNjdXNzZWQgd2l0aCBKYW4gYWJvdXQgc2ltaWxhciBpZGVhLCBwYXRjaA0KPj4gSXBpcGUvWGVu
-b21haSBvbnRvIFByZWVtcHQtUlQga2VybmVsIGJ1dCBub3QgdmFuaWxsYSBrZXJuZWwsIHRoZW4g
-c2VwYXJhdGUgQ29iYWx0IHRocmVhZCBhbmQgUHJlZW1wdC1SVCdzIFJUIHRocmVhZCB0bw0KPmRp
-ZmZlcmVudCBjb3Jlcy4NCj4+DQo+DQo+T2suIEFzIGZhciBhcyBJJ20gY29uY2VybmVkLCBJJ20g
-b25seSBzY3JhdGNoaW5nIGFuIGl0Y2gsIEkgZmluZCBzb21lIGludGVyZXN0IGluIGxvb2tpbmcg
-Zm9yIHdheXMgdG8gZG93bnNpemUgdGhlIGhhcmR3YXJlDQo+Zm9yIHJ1bm5pbmcgYXBwbGljYXRp
-b25zIHdpdGggZGVtYW5kaW5nIHJlc3BvbnNlIHRpbWUgcmVxdWlyZW1lbnRzLCB3aXRob3V0IG5l
-Y2Vzc2FyaWx5IHJlc29ydGluZyB0byBhIHBsYWluIHJ0b3MuDQo+DQo+QmFjayB0byB0aGUgaW5p
-dGlhbCBwb2ludCwgdGhpcyB3b3JrIHNob3VsZCBpbnZvbHZlLCByb3VnaGx5Og0KPg0KPi0gaW1w
-bGVtZW50aW5nIGEgRG92ZXRhaWwgdmFyaWFudCBpbiB0aGUgbmF0aXZlIHByZWVtcHRpb24ga2Vy
-bmVsLiBUaGlzIGlzIGFjdHVhbGx5IG5vdCBhIGRpcmVjdCBwb3J0LCB0aGUgbmV3IGltcGxlbWVu
-dGF0aW9uDQo+d291bGQgZGVwYXJ0IGZyb20gdGhlIGN1cnJlbnQgRG92ZXRhaWwgY29kZSBpbiBz
-aWduaWZpY2FudCB3YXlzLCBhbHRob3VnaCB0aGUgYmFzaWNzIHdvdWxkIGJlIHRoZSBzYW1lLCBv
-bmx5IHVzZWQNCj5kaWZmZXJlbnRseS4gSSBwbGFuIHRvIHdvcmsgb24gdGhpcywgYWx0aG91Z2gg
-aXQgd291bGQgYmUgbXVjaCBiZXR0ZXIgaWYgb3RoZXIgZm9sa3Mgd291bGQgam9pbiBtZSBpbiB0
-aGUgaW1wbGVtZW50YXRpb24gb25jZQ0KPnRoZSB0aGluZyBpcyBib290c3RyYXBwZWQuDQo+DQo+
-LSBpZGVudGlmeWluZyBhbmQgcXVhbnRpZnlpbmcgdGhlIGxvbmdlc3QgaW50ZXJydXB0LWZyZWUg
-c2VjdGlvbnMgaW4gdGhlIHRhcmdldCBwcmVlbXB0LXJ0IGtlcm5lbCB1bmRlciBtZWFuaW5nZnVs
-IHN0cmVzcyBsb2FkLA0KPndpdGggdGhlIGlycW9mZiB0cmFjZXIuDQo+SSB3cm90ZSBkb3duIHNv
-bWUgaW5mb3JtYXRpb24gWzFdIGFib3V0IHRoZSBzdHJlc3Mgd29ya2xvYWRzIHdoaWNoIGFjdHVh
-bGx5IG1ha2UgYSBkaWZmZXJlbmNlIHdoZW4gYmVuY2htYXJraW5nIGFzIGZhcg0KPmFzIEkgY2Fu
-IHRlbGwuIEF0IGFueSByYXRlLCB0aGUgcmVzdWx0cyB3ZSB3b3VsZCBnZXQgdGhlcmUgd291bGQg
-YmUgY3J1Y2lhbCBpbiBvcmRlciB0byBmaWd1cmUgb3V0IHdoZXJlIHRvIGFkZCB0aGUgb3V0LW9m
-LWJhbmQNCj5zeW5jaHJvbml6YXRpb24gcG9pbnRzLCBhbmQgbGlrZWx5IG9mIHNvbWUgaW50ZXJl
-c3QgdXBzdHJlYW0gdG9vLiBJJ20gcHJpbWFyaWx5IHRhcmdldGluZyBhcm12NyBhbmQgYXJtdjgs
-IGl0IHdvdWxkIGJlIGdyZWF0DQo+aWYgeW91IGNvdWxkIGhlbHAgd2l0aCB4ODYuDQo+DQo+LSB0
-aGUgdHdvIHByZXZpb3VzIHBvaW50cyBhcmUgb2J2aW91c2x5IHBhcnQgb2YgYW4gaXRlcmF0aXZl
-IHByb2Nlc3MgY2VudGVyZWQgb24gdGVzdGluZyB0aGUgaW1wbGVtZW50YXRpb24gd2l0aCBhIHJl
-YWwtdGltZQ0KPmNvcmUuIEknbSBnb2luZyB0byB1c2UgdGhlIEVWTCBjb3JlIGZvciB0aGlzLCBz
-aW5jZSBpdCBpcyBzaXR0aW5nIG9uIERvdmV0YWlsIGFscmVhZHkuDQo+DQo+WzFdIGh0dHBzOi8v
-ZXZscHJvamVjdC5vcmcvY29yZS9iZW5jaG1hcmtzLyNzdHJlc3MtbG9hZA0KDQo+DQoNCkkgd2ls
-bCB1c2UgVVAgWHRyZW1lIChXSEw4NTY1VSkgZm9yIHRlc3QsIHNpbmNlIGl0IGlzIGVhc3kgdG8g
-YnV5IGZvciBnbG9iYWwgZGV2ZWxvcGVycy4NCmh0dHBzOi8vdXAtc2hvcC5vcmcvdXAteHRyZW1l
-LXNlcmllcy5odG1sDQoNCkludGVsIElPVEcga2VybmVsIHRlYW0gbWFpbnRhaW5zIGEgUHJlZW1w
-dC1SVCBrZXJuZWwsIHdlbGwgdGVzdGVkIGZvciB4ODYsIGJ1dCB1cCB0byA1LjQNCmh0dHBzOi8v
-Z2l0aHViLmNvbS9pbnRlbC9saW51eC1pbnRlbC1sdHMvdHJlZS81LjQvcHJlZW1wdC1ydA0KZG9u
-J3Qga25vdyBpZiB3b3VsZCBoZWxwIGluIHRoaXMgY2FzZS4NCg0KQlIgLyBGaW5vDQoNCg==
+On Tuesday, July 21, 2020 1:18:21 PM EDT Philippe Gerum wrote:
+> 
+> - identifying and quantifying the longest interrupt-free sections in the
+> target preempt-rt kernel under meaningful stress load, with the irqoff
+> tracer. I wrote down some information [1] about the stress workloads which
+> actually make a difference when benchmarking as far as I can tell. At any
+> rate, the results we would get there would be crucial in order to figure
+> out where to add the out-of-band synchronization points, and likely of some
+> interest upstream too. I'm primarily targeting armv7 and armv8, it would be
+> great if you could help with x86.
+
+So from my perspective, one of the beauties of Xenomai with traditional IPIPE 
+is you can analyze the fast interrupt path and see that by design you have an 
+upper bound on latency. You can even calculate it. It's based on the number of 
+cpu cycles at irq entry multiplied by the total numbers of IRQs that could 
+happen at the same time. Depending on your hardware, maybe you know the 
+priority of handling the interrupt in question.
+
+The point was the system was analyzable by design.
+
+When you start talking about looking for long critical sections and adding 
+sync points in it, I think you take away the by-design guarantees for latency. 
+This might make it less-suitable for hard realtime systems.
+
+IMHO this is not any better than Preempt-RT. But maybe I am missing something. 
+:)
+
+Steven
+
+
+
 
