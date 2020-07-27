@@ -1,9 +1,13 @@
-Message-ID: <trinity-a5d2dc06-bdcf-4614-ad99-60c9ba7451fa-1595221515686@3c-app-gmx-bap35>
-From: Jan Holtz <jan5697@gmx.net>
-Subject: malloc and stl container
-Date: Mon, 20 Jul 2020 07:05:15 +0200
+From: Lange Norbert <norbert.lange@andritz.com>
+Subject: RE: malloc and stl container
+Date: Mon, 27 Jul 2020 08:52:02 +0000
+Message-ID: <VI1PR05MB5917396B1E5EE4D494C08976F6720@VI1PR05MB5917.eurprd05.prod.outlook.com>
+References: <trinity-a5d2dc06-bdcf-4614-ad99-60c9ba7451fa-1595221515686@3c-app-gmx-bap35>
+In-Reply-To: <trinity-a5d2dc06-bdcf-4614-ad99-60c9ba7451fa-1595221515686@3c-app-gmx-bap35>
+Content-Language: en-US
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -12,20 +16,51 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
+To: Jan Holtz <jan5697@gmx.net>, "Xenomai (xenomai@xenomai.org)" <xenomai@xenomai.org>
 
-   Hello,
-   i am using xenomai 3.0 on a cobalt x64 smp system with the alchemy
-   skin.
-   As far i know dynamic memory allocation can cause a context switch,
-   which should be preventet.
-   If i am right,malloc should not cause a CSW anymore at this xenomai
-   version.
-   If malloc don't cause a CSW,  in which case the alchemy heap management
-   services is suggested to use instead for dynamic memory allocation?
-   I like to use stl containers like vector, etc.
-   Is there a way to use this containers wthout adding values to
-   containers seems to cause a CSW.
-   Can it work/wrapped with heap management services ?
-   Hope you can help me to understand.
-   Regards Jan
+DQoNCj4gLS0tLS1PcmlnaW5hbCBNZXNzYWdlLS0tLS0NCj4gRnJvbTogWGVub21haSA8eGVub21h
+aS1ib3VuY2VzQHhlbm9tYWkub3JnPiBPbiBCZWhhbGYgT2YgSmFuIEhvbHR6IHZpYQ0KPiBYZW5v
+bWFpDQo+IFNlbnQ6IE1vbnRhZywgMjAuIEp1bGkgMjAyMCAwNzowNQ0KPiBUbzogeGVub21haUB4
+ZW5vbWFpLm9yZw0KPiBTdWJqZWN0OiBtYWxsb2MgYW5kIHN0bCBjb250YWluZXINCj4NCj4gTk9O
+LUFORFJJVFogU09VUkNFOiBCRSBDQVVUSU9VUyBXSVRIIENPTlRFTlQsIExJTktTIE9SDQo+IEFU
+VEFDSE1FTlRTLg0KPg0KPg0KPiAgICBIZWxsbywNCj4gICAgaSBhbSB1c2luZyB4ZW5vbWFpIDMu
+MCBvbiBhIGNvYmFsdCB4NjQgc21wIHN5c3RlbSB3aXRoIHRoZSBhbGNoZW15DQo+ICAgIHNraW4u
+DQo+ICAgIEFzIGZhciBpIGtub3cgZHluYW1pYyBtZW1vcnkgYWxsb2NhdGlvbiBjYW4gY2F1c2Ug
+YSBjb250ZXh0IHN3aXRjaCwNCj4gICAgd2hpY2ggc2hvdWxkIGJlIHByZXZlbnRldC4NCj4gICAg
+SWYgaSBhbSByaWdodCxtYWxsb2Mgc2hvdWxkIG5vdCBjYXVzZSBhIENTVyBhbnltb3JlIGF0IHRo
+aXMgeGVub21haQ0KPiAgICB2ZXJzaW9uLg0KDQpEb24ndCBzZWUgd2hlcmUgeW91IGdldCB0aGlz
+IGZyb20uIG1hbGxvYyBtaWdodCBub3QgY2F1c2UgYSBDU1cgZXZlcnkgdGltZSwNCmJ1dCBpdCBo
+YXMgdGhlIHBvdGVudGlhbCB0byBkbyBzbyBhdCAqYW55KiB0aW1lLg0KDQo+ICAgIElmIG1hbGxv
+YyBkb24ndCBjYXVzZSBhIENTVywgIGluIHdoaWNoIGNhc2UgdGhlIGFsY2hlbXkgaGVhcCBtYW5h
+Z2VtZW50DQo+ICAgIHNlcnZpY2VzIGlzIHN1Z2dlc3RlZCB0byB1c2UgaW5zdGVhZCBmb3IgZHlu
+YW1pYyBtZW1vcnkgYWxsb2NhdGlvbj8NCj4gICAgSSBsaWtlIHRvIHVzZSBzdGwgY29udGFpbmVy
+cyBsaWtlIHZlY3RvciwgZXRjLg0KPiAgICBJcyB0aGVyZSBhIHdheSB0byB1c2UgdGhpcyBjb250
+YWluZXJzIHd0aG91dCBhZGRpbmcgdmFsdWVzIHRvDQo+ICAgIGNvbnRhaW5lcnMgc2VlbXMgdG8g
+Y2F1c2UgYSBDU1cuDQoNCkEgZ2VuZXJpYyBtYWxsb2Mgd2lsbCBhbHdheXMgaGF2ZSBwcm9wZXJ0
+aWVzIHRoYXQgYXJlIHVud2FudGVkIGZvcg0KcmVhbHRpbWUuIFdoZW4gZG8geW91IG5lZWQgdG8g
+cmVzaXplIHZlY3RvcnM/DQpJZiB5b3UgaGF2ZSBhIHBhcnQgb2YgeW91ciBzeXN0ZW0gbm90IHJ1
+bm5pbmcgaW4gUlQgeW91IGNhbiByZXNpemUgeW91ciB2ZWN0b3JzIHRoZXJlLA0Kb3IgeW91IHBy
+ZS1hbGxvY2F0ZSB0aGVtIHRvIGJlIGJpZyBlbm91Z2ggc28gdGhleSB3b24ndCBldmVyIGNhbGwg
+bWFsbG9jLg0KDQo+ICAgIENhbiBpdCB3b3JrL3dyYXBwZWQgd2l0aCBoZWFwIG1hbmFnZW1lbnQg
+c2VydmljZXMgPw0KDQpUaGUgU1RMPyBTdXJlLCB5b3UgY2FuIHVzZSB5b3VyIG93biBhbGxvY2F0
+b3JzIChnb29nbGU6IHBvb2wgYWxsb2NhdG9yKSwgb3Igc29tZXRoaW5nIGxpa2UgYm9vc3Q6OnN0
+YXRpY192ZWN0b3IuDQpZb3Ugc3RpbGwgbmVlZCB0byBtYWtlIHN1cmUgeW91IGRvbuKAmXQgY2F1
+c2UgYWxsb2NhdGlvbnMgd2hlbiBpbiBSVC4NCg0KTm9yYmVydA0KDQo+ICAgIEhvcGUgeW91IGNh
+biBoZWxwIG1lIHRvIHVuZGVyc3RhbmQuDQo+ICAgIFJlZ2FyZHMgSmFuDQpfX19fX19fX19fX19f
+X19fX19fX19fX19fX19fX19fXw0KDQpUaGlzIG1lc3NhZ2UgYW5kIGFueSBhdHRhY2htZW50cyBh
+cmUgc29sZWx5IGZvciB0aGUgdXNlIG9mIHRoZSBpbnRlbmRlZCByZWNpcGllbnRzLiBUaGV5IG1h
+eSBjb250YWluIHByaXZpbGVnZWQgYW5kL29yIGNvbmZpZGVudGlhbCBpbmZvcm1hdGlvbiBvciBv
+dGhlciBpbmZvcm1hdGlvbiBwcm90ZWN0ZWQgZnJvbSBkaXNjbG9zdXJlLiBJZiB5b3UgYXJlIG5v
+dCBhbiBpbnRlbmRlZCByZWNpcGllbnQsIHlvdSBhcmUgaGVyZWJ5IG5vdGlmaWVkIHRoYXQgeW91
+IHJlY2VpdmVkIHRoaXMgZW1haWwgaW4gZXJyb3IgYW5kIHRoYXQgYW55IHJldmlldywgZGlzc2Vt
+aW5hdGlvbiwgZGlzdHJpYnV0aW9uIG9yIGNvcHlpbmcgb2YgdGhpcyBlbWFpbCBhbmQgYW55IGF0
+dGFjaG1lbnQgaXMgc3RyaWN0bHkgcHJvaGliaXRlZC4gSWYgeW91IGhhdmUgcmVjZWl2ZWQgdGhp
+cyBlbWFpbCBpbiBlcnJvciwgcGxlYXNlIGNvbnRhY3QgdGhlIHNlbmRlciBhbmQgZGVsZXRlIHRo
+ZSBtZXNzYWdlIGFuZCBhbnkgYXR0YWNobWVudCBmcm9tIHlvdXIgc3lzdGVtLg0KDQpBTkRSSVRa
+IEhZRFJPIEdtYkgNCg0KDQpSZWNodHNmb3JtLyBMZWdhbCBmb3JtOiBHZXNlbGxzY2hhZnQgbWl0
+IGJlc2NocsOkbmt0ZXIgSGFmdHVuZyAvIENvcnBvcmF0aW9uDQoNCkZpcm1lbnNpdHovIFJlZ2lz
+dGVyZWQgc2VhdDogV2llbg0KDQpGaXJtZW5idWNoZ2VyaWNodC8gQ291cnQgb2YgcmVnaXN0cnk6
+IEhhbmRlbHNnZXJpY2h0IFdpZW4NCg0KRmlybWVuYnVjaG51bW1lci8gQ29tcGFueSByZWdpc3Ry
+YXRpb246IEZOIDYxODMzIGcNCg0KRFZSOiAwNjA1MDc3DQoNClVJRC1Oci46IEFUVTE0NzU2ODA2
+DQoNCg0KVGhhbmsgWW91DQpfX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fXw0K
+
