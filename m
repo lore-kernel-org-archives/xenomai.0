@@ -1,10 +1,12 @@
-From: =?UTF-8?Q?St=c3=a9phane_Ancelot?= <sancelot@numalliance.com>
-Subject: rt_pipe_write memory allocation bug - xenomai 3.x
-Message-ID: <5adc97a4-014f-3a50-9109-4e574662cf7b@numalliance.com>
-Date: Mon, 27 Jul 2020 14:44:01 +0200
+Subject: Re: rt_pipe_write memory allocation bug - xenomai 3.x
+References: <5adc97a4-014f-3a50-9109-4e574662cf7b@numalliance.com>
+From: Jan Kiszka <jan.kiszka@siemens.com>
+Message-ID: <7f4384d6-c318-2448-99d9-bbfa7061f78e@siemens.com>
+Date: Mon, 27 Jul 2020 15:17:20 +0200
 MIME-Version: 1.0
-Content-Language: fr
+In-Reply-To: <5adc97a4-014f-3a50-9109-4e574662cf7b@numalliance.com>
 Content-Type: text/plain; charset="utf-8"; format="flowed"
+Content-Language: en-US
 Content-Transfer-Encoding: 8bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
@@ -14,28 +16,40 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "xenomai@xenomai.org" <xenomai@xenomai.org>, Bastien COUNILH <bcounilh@numalliance.com>
+To: =?UTF-8?Q?St=c3=a9phane_Ancelot?= <sancelot@numalliance.com>, "xenomai@xenomai.org" <xenomai@xenomai.org>, Bastien COUNILH <bcounilh@numalliance.com>
 
-Hi,
+On 27.07.20 14:44, Stéphane Ancelot via Xenomai wrote:
+> Hi,
+> 
+> Using pipe created with poolsize = 0, meaning all message allocations 
+> for this pipe are performed on the Cobalt core heap.
+> 
+> Unfortunately,  using rt_pipe_write(), when no user task is consuming 
+> it, we discovered after almost many rt_pipe_write() cycles (700000 at 
+> least in our process)  , that the cobalt heap and system heap seem being 
+> corrupted.
+> 
+> Leading to system issues like unattended task crashes .....
+> 
 
-Using pipe created with poolsize = 0, meaning all message allocations 
-for this pipe are performed on the Cobalt core heap.
+"3.x" implies both 3.1 and 3.0 are affected?
 
-Unfortunately,  using rt_pipe_write(), when no user task is consuming 
-it, we discovered after almost many rt_pipe_write() cycles (700000 at 
-least in our process)  , that the cobalt heap and system heap seem being 
-corrupted.
+Do you see a constantly growing use of system heap (leak)? If that is 
+not the case, we might have some wrap-around issue somewhere.
 
-Leading to system issues like unattended task crashes .....
+Reproduction case would be nice.
 
+> 
+> Are there any way to bypass this problem, like knowing if pipe has been 
+> opened before writing it ?
+> 
+Regarding signalling of a non-RT client is connected: There is no 
+mechanism for that so far. Could be added. Needs a proposal for a useful 
+API.
 
-Are there any way to bypass this problem, like knowing if pipe has been 
-opened before writing it ?
+Jan
 
-
-Regards,
-
-S.Ancelot
-
-
+-- 
+Siemens AG, Corporate Technology, CT RDA IOT SES-DE
+Corporate Competence Center Embedded Linux
 
