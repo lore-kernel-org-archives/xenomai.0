@@ -1,14 +1,11 @@
-Subject: Re: rt_pipe_write memory allocation bug - xenomai 3.x
-References: <5adc97a4-014f-3a50-9109-4e574662cf7b@numalliance.com>
- <7f4384d6-c318-2448-99d9-bbfa7061f78e@siemens.com>
-From: =?UTF-8?Q?St=c3=a9phane_Ancelot?= <sancelot@numalliance.com>
-Message-ID: <fc73b728-50c8-119b-4029-e4c1953a2ed0@numalliance.com>
-Date: Tue, 28 Jul 2020 15:28:05 +0200
+From: Jan Kiszka <jan.kiszka@siemens.com>
+Subject: [PATCH][4.19] x86: ipipe: Harden racy path in __fpu__restore_sig
+Message-ID: <5d66a318-89d9-1866-95d6-c0aafb7a4481@siemens.com>
+Date: Tue, 28 Jul 2020 17:53:10 +0200
 MIME-Version: 1.0
-In-Reply-To: <7f4384d6-c318-2448-99d9-bbfa7061f78e@siemens.com>
-Content-Language: fr
-Content-Transfer-Encoding: base64
-Content-Type: text/plain; charset="utf-8"; Format="flowed"
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,83 +14,49 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jan Kiszka <jan.kiszka@siemens.com>, "xenomai@xenomai.org" <xenomai@xenomai.org>, Bastien COUNILH <bcounilh@numalliance.com>
+To: Xenomai <xenomai@xenomai.org>
 
-CkxlIDI3LzA3LzIwMjAgw6AgMTU6MTcsIEphbiBLaXN6a2EgYSDDqWNyaXTCoDoKPiBPbiAyNy4w
-Ny4yMCAxNDo0NCwgU3TDqXBoYW5lIEFuY2Vsb3QgdmlhIFhlbm9tYWkgd3JvdGU6Cj4+IEhpLAo+
-Pgo+PiBVc2luZyBwaXBlIGNyZWF0ZWQgd2l0aCBwb29sc2l6ZSA9IDAsIG1lYW5pbmcgYWxsIG1l
-c3NhZ2UgYWxsb2NhdGlvbnMgCj4+IGZvciB0aGlzIHBpcGUgYXJlIHBlcmZvcm1lZCBvbiB0aGUg
-Q29iYWx0IGNvcmUgaGVhcC4KPj4KPj4gVW5mb3J0dW5hdGVseSzCoCB1c2luZyBydF9waXBlX3dy
-aXRlKCksIHdoZW4gbm8gdXNlciB0YXNrIGlzIGNvbnN1bWluZyAKPj4gaXQsIHdlIGRpc2NvdmVy
-ZWQgYWZ0ZXIgYWxtb3N0IG1hbnkgcnRfcGlwZV93cml0ZSgpIGN5Y2xlcyAoNzAwMDAwIGF0IAo+
-PiBsZWFzdCBpbiBvdXIgcHJvY2VzcynCoCAsIHRoYXQgdGhlIGNvYmFsdCBoZWFwIGFuZCBzeXN0
-ZW0gaGVhcCBzZWVtIAo+PiBiZWluZyBjb3JydXB0ZWQuCj4+Cj4+IExlYWRpbmcgdG8gc3lzdGVt
-IGlzc3VlcyBsaWtlIHVuYXR0ZW5kZWQgdGFzayBjcmFzaGVzIC4uLi4uCj4+Cj4KPiAiMy54IiBp
-bXBsaWVzIGJvdGggMy4xIGFuZCAzLjAgYXJlIGFmZmVjdGVkPwo+Cj4gRG8geW91IHNlZSBhIGNv
-bnN0YW50bHkgZ3Jvd2luZyB1c2Ugb2Ygc3lzdGVtIGhlYXAgKGxlYWspPyBJZiB0aGF0IGlzIAo+
-IG5vdCB0aGUgY2FzZSwgd2UgbWlnaHQgaGF2ZSBzb21lIHdyYXAtYXJvdW5kIGlzc3VlIHNvbWV3
-aGVyZS4KPgpUaGUgdmVyc2lvbiB3ZSBhcmUgdXNpbmcgaXPCoCBiYXNlZCBvbiByZWxlYXNlIGIz
-ZTE4YjZkwqAgb2YgbWFzdGVyIGJyYW5jaC4KCldlIGRvbid0IHNlYSBzeXN0ZW0gbWVtb3J5IGlu
-Y3JlYXNpbmcgKHVzaW5nIHRvcCkuCgpDb21wYXJpbmcgaXQgdG8gdGhlIGxhdGVzdCByZWxlYXNl
-cywgd2UgaGF2ZSBub3QgZm91bmQgYW55IGJpZyAKZGlmZmVyZW5jZXMgaW4geGRkcCBjb2RlIC4K
-ClVzaW5nIG90aGVyIHJlbGVhc2VzICwgYXBwbGljYXRpb25zIGFuZCBjb21waWxlZCBrZXJuZWwg
-ZG9lcyBub3QgCndhcnJhbnR5wqAgdG8gaWRlbnRpZnkgaXQgaGFzIGJlZW4gc29sdmVkICwgc2lu
-Y2UgdGhlIG1lbW9yeSBtYXBwaW5nIHRvIApyZXByb2R1Y2UgaXQgLCBjaGFuZ2VzLgoKRm9yIGNl
-cnRpZmljYXRpb25zIHJlYXNvbnMsIHdlIGNhbid0IHZhbGlkYXRlIHRoZSBsYXRlc3Qgc291cmNl
-IGNvZGUsIApidXQgb25seSBjaGVycnkgcGljayBhIGxvY2FsaXNlZCBob3RmaXggaW4gdGhlIHhl
-bm9tYWkgY29kZS4KCgo+IFJlcHJvZHVjdGlvbiBjYXNlIHdvdWxkIGJlIG5pY2UuCj4KSXQgaXMg
-bm90IGVhc3ksIHRoZSBpbml0aWFsIHByb2JsZW0gd2FzIHJlcG9ydGVkIGJ5IG9uZSBvZiBvdXIg
-dXNlcnMgLCAKd2Ugc3BlbnQgbG90IG9mIHRpbWUgdG8gYWNoaWV2ZSB0byByZXByb2R1Y2UgaXQg
-aW4gb3VyIGNvbnRleHQuCgpTb21lIGdyYXBoaWNzIHVzZXIgdGFza3Mgd2VyZSBsb2NraW5nIG9y
-IGNyYXNoaW5nIGFmdGVyIHNvbWUgZGF5cyB1c2FnZSAKYW5kIHByb2R1Y3Rpb24gLgoKQXQgZmly
-c3QswqAgd2Ugd2VudCBpbiB3cm9uZyBkaXJlY3Rpb25zIGluIG9yZGVyIHRvIGlkZW50aWZ5IGZy
-b20gd2hlcmUgCml0IGNvdWxkIGhhcHBlbi4KCkluIG91ciBzeXN0ZW0sIHdlIGhhZCB0byB0ZXN0
-IGVhY2ggY29kZSBjb21taXRzIGJhY2suLi4uaW4gb3JkZXIgdG8gCmlzb2xhdGUgdGhlIHByb2Js
-ZW0sIGFuZCB1bmRlcnN0YW5kIHRoYXQgaXQgd2FzIHZpc2libGUgYWZ0ZXIgYWxtb3N0IAo3MDAw
-MDAgcnRfcGlwZV93cml0ZSBjYWxscyBpbiBvdXIgY2FzZS4KCgpBcyBhIHVuaXR0ZXN0LCB3ZSBj
-YW4gcHJvdmlkZSB0aGUgZW5jbG9zZWQgc25pcHBldC5UaGF0IGlzIHRoZSBleHRyYWN0ZWQgCmNv
-ZGUgdGhhdCB3b3VsZCBjYXVzZSBwcm9ibGVtLgoKCj4+Cj4+IEFyZSB0aGVyZSBhbnkgd2F5IHRv
-IGJ5cGFzcyB0aGlzIHByb2JsZW0sIGxpa2Uga25vd2luZyBpZiBwaXBlIGhhcyAKPj4gYmVlbiBv
-cGVuZWQgYmVmb3JlIHdyaXRpbmcgaXQgPwo+Pgo+IFJlZ2FyZGluZyBzaWduYWxsaW5nIG9mIGEg
-bm9uLVJUIGNsaWVudCBpcyBjb25uZWN0ZWQ6IFRoZXJlIGlzIG5vIAo+IG1lY2hhbmlzbSBmb3Ig
-dGhhdCBzbyBmYXIuIENvdWxkIGJlIGFkZGVkLiBOZWVkcyBhIHByb3Bvc2FsIGZvciBhIAo+IHVz
-ZWZ1bCBBUEkuCj4KPiBKYW4KPgpTdMOpcGhhbmUgQU5DRUxPVAotLS0tLS0tLS0tLS0tLSBuZXh0
-IHBhcnQgLS0tLS0tLS0tLS0tLS0KI2luY2x1ZGUgPHN5cy9tbWFuLmg+CiNpbmNsdWRlIDxzdGRs
-aWIuaD4KI2luY2x1ZGUgPGFsY2hlbXkvdGFzay5oPgojaW5jbHVkZSA8YWxjaGVteS9oZWFwLmg+
-CiNpbmNsdWRlIDxhbGNoZW15L3BpcGUuaD4KCiNpbmNsdWRlIDx4ZW5vbWFpL2luaXQuaD4KI2lu
-Y2x1ZGUgPHhlbm9tYWkvdHVuYWJsZXMuaD4KCiNpbmNsdWRlIDx1bmlzdGQuaD4KCgojaW5jbHVk
-ZSA8c3RkaW8uaD4KCgpSVF9UQVNLIFRBU0tfQVVUT01BVDsgICAKUlRfUElQRSAgcGlwZV9mb3Vl
-dHRlbWVudDsgCgoKCnN0YXRpYyBpbnQgZm9vX3R1bmUodm9pZCkKewogICAgICAgIHNldF9jb25m
-aWdfdHVuYWJsZShzZXNzaW9uX2xhYmVsLCAibnVtYWxsaWFuY2UvYXV0b21hdCIpOwogICAgICAg
-IHNldF9jb25maWdfdHVuYWJsZShtZW1fcG9vbF9zaXplLDgwMDAwMDApOwogICAgICAgIHByaW50
-ZigibWVtIHBvb2wgc2l6ZT0lbGRcbiIsIGdldF9jb25maWdfdHVuYWJsZShtZW1fcG9vbF9zaXpl
-KSk7CiAgICAgICAgcmV0dXJuIDA7IC8qIFN1Y2Nlc3MsIG90aGVyd2lzZSAtZXJybm8gKi8KfQoK
-LyoKICogQ0FVVElPTjogd2UgYXNzdW1lIHRoYXQgYWxsIG9taXR0ZWQgaGFuZGxlcnMgYXJlIHpl
-cm9lZAogKiBkdWUgdG8gdGhlIHN0YXRpYyBzdG9yYWdlIGNsYXNzLiBNYWtlIHN1cmUgdG8gaW5p
-dGlhbGl6ZSB0aGVtCiAqIGV4cGxpY2l0bHkgdG8gTlVMTCBpZiB0aGUgZGVzY3JpcHRvciBiZWxv
-bmdzIHRvIHRoZSAuZGF0YQogKiBzZWN0aW9uIGluc3RlYWQuCiAqLwpzdGF0aWMgc3RydWN0IHNl
-dHVwX2Rlc2NyaXB0b3IgZm9vX3NldHVwID0gewogICAgICAgIC5uYW1lID0gImZvbyIsCiAgICAg
-ICAgLnR1bmUgPSBmb29fdHVuZSwKICAgICAgICAucGFyc2Vfb3B0aW9uID0gTlVMTCwKICAgICAg
-ICAuaGVscCA9IE5VTEwsCiAgICAgICAgLmluaXQgPSBOVUxMLAogICAgICAgIC5vcHRpb25zID0g
-TlVMTCwKfTsKCi8qIFJlZ2lzdGVyIHRoZSBzZXR1cCBkZXNjcmlwdG9yLiAqLwp1c2VyX3NldHVw
-X2NhbGwoZm9vX3NldHVwKTsKCgp2b2lkIGF1dG9tYXRlKHZvaWQgKmNvb2tpZSkKewpzdGF0aWMg
-bG9uZyAgY291bnQgPSAwOwogcHJpbnRmKCJydCB0YXNrIHJ1bm5pbmdcbiIpOwoJd2hpbGUgKDEg
-PT0gMSkKCXsKCSAgcnRfdGFza19zbGVlcCgxMDAwMDAwKTsKICAJICBjaGFyIGNhciA9ICdwJzsg
-CgkgIGludCByZXQgPSBydF9waXBlX3dyaXRlKCZwaXBlX2ZvdWV0dGVtZW50LCAmY2FyLCBzaXpl
-b2YoY2FyKSxQX05PUk1BTCApOwoJICBjb3VudCsrOwoKCSAgICAgCgkgIGlmIChjb3VudCAlIDEw
-MDAwID09IDApCgkgICAgewoJICAgICAgcHJpbnRmKCJjb3VudCAlbGRcbiIsY291bnQpOwoJICAg
-ICAgZmZsdXNoKE5VTEwpOwoJICAgIH0KCX0KfQoKaW50IG1haW4oaW50IGFyZ2MsY2hhciAqKmFy
-Z3YpCnsKCmludCByZXQ7CiAgICBtbG9ja2FsbChNQ0xfQ1VSUkVOVCB8IE1DTF9GVVRVUkUpOwog
-ICAgaWYgKChyZXQ9cnRfcGlwZV9jcmVhdGUoJnBpcGVfZm91ZXR0ZW1lbnQsIkZJRk9fZm91ZXR0
-ZW1hbnQiLDEwLDApKSA8IDApCiAgICB7CiAgICAgICAgcHJpbnRmKCJ1bmFibGUgdG8gY3JlYXRl
-IHBpcGVfZm91ZXR0ZW1hbnRcblslc11cbiIsc3RyZXJyb3IoLXJldCkpOwoJZXhpdCgxKTsKICAg
-IH0KICAgIGVsc2UgewogICAgICBwcmludGYoInBpcGUgY3JlYXRlZFxuIik7CiAgICB9CiAgIHJl
-dCA9IHJ0X3Rhc2tfY3JlYXRlKCZUQVNLX0FVVE9NQVQsIk51dG9tYXQiLAoJCQkxMDAwMDAsIC8q
-IFRBU0tfU1RLU1ogOiAwID0gZGVmYXVsdCAqLwoJCQk5NywvKiBUQVNLX1BSSU8gICovCgkJCTAp
-OyAvKiBUQVNLX01PREUgMCA9bm8gZmxhZ3MgKi8KCWlmIChyZXQgIT0gMCkKCQl7CgkJICBwcmlu
-dGYoIiVzOiVkIFRhc2sgQXV0b21hdCBjcmVhdGlvbiBmYWlsZWQgLi4uXG4iLF9fRklMRV9fLF9f
-TElORV9fKTsKCQkgIGV4aXQoMSk7CgkJfQoKCWVsc2UgewoJICBwcmludGYoInRhc2sgQXV0b21h
-dCBjcmVhdGVkIFxuIik7Cgl9CglyZXQgPSBydF90YXNrX3N0YXJ0KCZUQVNLX0FVVE9NQVQsJmF1
-dG9tYXRlLE5VTEwpOwoJaWYgKHJldCAhPSAwKQoJewoJCXByaW50ZigiVGFzayBzdGFydCBmYWls
-ZWQgLi4uXG4iKTsKCQlleGl0KDEpOwoJfQoJZWxzZSBwcmludGYoInRhc2sgY3JlYXRlZFxuIik7
-CgkKCglmZmx1c2goTlVMTCk7CglwYXVzZSgpOwpyZXR1cm4gMDsKfQo=
+From: Jan Kiszka <jan.kiszka@siemens.com>
+
+This is needed because I-pipe can interrupt at a point where
+fpu->initialized is already set but the (internally hardened)
+fpu__restore() was not run yet. As the context switch uses
+'initialized' to decide whether to activate the FPU for the target
+thread, we may prematurely activate it.
+
+Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
+---
+
+I'm still struggling to find out what all could go wrong for us. The 
+patch originates from 4.4 where this missing protection triggers a 
+warning, and more was missing (https://lkml.org/lkml/2020/7/24/932).
+
+ arch/x86/kernel/fpu/signal.c | 3 +++
+ 1 file changed, 3 insertions(+)
+
+diff --git a/arch/x86/kernel/fpu/signal.c b/arch/x86/kernel/fpu/signal.c
+index d99a8ee9e185..ea846a28300a 100644
+--- a/arch/x86/kernel/fpu/signal.c
++++ b/arch/x86/kernel/fpu/signal.c
+@@ -315,6 +315,7 @@ static int __fpu__restore_sig(void __user *buf, void __user *buf_fx, int size)
+ 		 * header. Validate and sanitize the copied state.
+ 		 */
+ 		struct user_i387_ia32_struct env;
++		unsigned long flags;
+ 		int err = 0;
+ 
+ 		/*
+@@ -345,8 +346,10 @@ static int __fpu__restore_sig(void __user *buf, void __user *buf_fx, int size)
+ 		}
+ 
+ 		local_bh_disable();
++		flags = hard_cond_local_irq_save();
+ 		fpu->initialized = 1;
+ 		fpu__restore(fpu);
++		hard_cond_local_irq_restore(flags);
+ 		local_bh_enable();
+ 
+ 		return err;
+-- 
+2.26.2
+
