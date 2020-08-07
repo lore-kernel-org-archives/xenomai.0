@@ -1,9 +1,14 @@
+Sender: pintu=codeaurora.org@mg.codeaurora.org
 MIME-Version: 1.0
-From: =?UTF-8?B?5a2Z5LiW6b6ZIHN1bnNoaWxvbmc=?= <sunshilong369@gmail.com>
-Date: Thu, 6 Aug 2020 20:27:52 +0800
-Message-ID: <CAAvDm6YF-PcERwDrV2C6NVHqKLE9+_z6R6tQq29uyHff=Oyj3A@mail.gmail.com>
-Subject: Question about round-robin scheduling.
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=US-ASCII;
+ format=flowed
+Content-Transfer-Encoding: 7bit
+Date: Fri, 07 Aug 2020 10:26:35 +0530
+From: pintu@codeaurora.org
+Subject: Re: [PATCH] kernel:cobalt:heap: replace kzalloc with kvzalloc
+In-Reply-To: <1596218699-15537-1-git-send-email-pintu@codeaurora.org>
+References: <1596218699-15537-1-git-send-email-pintu@codeaurora.org>
+Message-ID: <006bb9052420d5d99b32facef2d546ba@codeaurora.org>
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -12,24 +17,62 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai <xenomai@xenomai.org>
+To: xenomai@xenomai.org, rpm@xenomai.org, sunshilong369@gmail.com, pintu@codeaurora.org
+Cc: pintu.ping@gmail.com
 
-Hi, list
+On 2020-07-31 23:34, Pintu Kumar wrote:
+> With CONFIG_XENO_OPT_PRIVATE_HEAPSZ, user that request any heap size
+> based on their needs. For some application needs, this can grow as 
+> large
+> as 4MB that is, 2^10 order pages, which is unlikely to succeed with
+> kzalloc.
+> Even the default (256KB) may fail on highly fragmented system.
+> Further without COMPACTION enabled, the situation can be worse.
+> 
+> Moreover, for this heap allocation, we don't need physical contiguous
+> memory. Thus vmalloc may be sufficient here.
+> But for performance benefit we may like to stick to kmalloc.
+> 
+> Thus, it is better to replace kzalloc with kvzalloc which will first 
+> try
+> to use kmalloc and if fails, fallback to vmalloc.
+> 
+> Signed-off-by: Pintu Kumar <pintu@codeaurora.org>
+> Signed-off-by: sunshilong <sunshilong369@gmail.com>
+> Tested-by: sunshilong <sunshilong369@gmail.com>
+> ---
+>  kernel/cobalt/heap.c | 4 ++--
+>  1 file changed, 2 insertions(+), 2 deletions(-)
+> 
+> diff --git a/kernel/cobalt/heap.c b/kernel/cobalt/heap.c
+> index d01a2e0..312b41f 100644
+> --- a/kernel/cobalt/heap.c
+> +++ b/kernel/cobalt/heap.c
+> @@ -749,7 +749,7 @@ int xnheap_init(struct xnheap *heap, void
+> *membase, size_t size)
+>  	xnlock_init(&heap->lock);
+> 
+>  	nrpages = size >> XNHEAP_PAGE_SHIFT;
+> -	heap->pagemap = kzalloc(sizeof(struct xnheap_pgentry) * nrpages,
+> +	heap->pagemap = kvzalloc(sizeof(struct xnheap_pgentry) * nrpages,
+>  				GFP_KERNEL);
+>  	if (heap->pagemap == NULL)
+>  		return -ENOMEM;
+> @@ -804,7 +804,7 @@ void xnheap_destroy(struct xnheap *heap)
+>  	nrheaps--;
+>  	xnvfile_touch_tag(&vfile_tag);
+>  	xnlock_put_irqrestore(&nklock, s);
+> -	kfree(heap->pagemap);
+> +	kvfree(heap->pagemap);
+>  }
+>  EXPORT_SYMBOL_GPL(xnheap_destroy);
 
-As per the Kconfig(
-https://gitlab.denx.de/Xenomai/xenomai/-/blob/5714ceede70ccd39b1bf6c41a72cfa94f98e169a/kernel/cobalt/Kconfig
-),
-which says [emphasise mine]:
-Cobalt has a built-in real-time class, which supports both
-preemptive fixed-priority FIFO, and **round-robin scheduling**.
-Cobalt supports  round-robin scheduling whereas
-rt_task_create function only supports SCHED_FIFO and SCHED
-(
-https://xenomai.org/documentation/xenomai-3/html/xeno3prm/group__alchemy__task.html#ga03387550693c21d0223f739570ccd992
-).
 
-So, I wonder how to set a real-time task to use round-robin scheduling.
-Or, am I missing something?
+Hi,
 
-Thank you for your attention to this matter.
-Sunshilong
+Is there any feedback or comments on the above patch ?
+
+
+Thanks,
+Pintu
+
