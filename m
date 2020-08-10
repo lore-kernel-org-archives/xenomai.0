@@ -1,14 +1,15 @@
-Subject: Re: Posix periodic time first tick
-References: <20200807171220.E090CB18@centrum.cz>
- <166391923.711496.1597041953464.JavaMail.zimbra@wolfram.com>
-From: =?UTF-8?Q?Petr_=c4=8cervenka?= <grugh@centrum.cz>
-Message-ID: <4baa56a0-13dc-08d7-79d4-00f63f85c2b0@centrum.cz>
-Date: Mon, 10 Aug 2020 09:52:34 +0200
+Subject: Re: [PATCH] kernel:cobalt:heap: replace kzalloc with kvzalloc
+References: <1596218699-15537-1-git-send-email-pintu@codeaurora.org>
+ <006bb9052420d5d99b32facef2d546ba@codeaurora.org>
+ <56cf70d548b791139c5c68ad41d47147@codeaurora.org>
+From: Philippe Gerum <rpm@xenomai.org>
+Message-ID: <5e3affa9-84c5-2b0e-3524-722b6aa8cad4@xenomai.org>
+Date: Mon, 10 Aug 2020 10:41:27 +0200
 MIME-Version: 1.0
-In-Reply-To: <166391923.711496.1597041953464.JavaMail.zimbra@wolfram.com>
-Content-Type: text/plain; charset="utf-8"; format="flowed"
+In-Reply-To: <56cf70d548b791139c5c68ad41d47147@codeaurora.org>
+Content-Type: text/plain; charset="utf-8"
+Content-Language: en-US
 Content-Transfer-Encoding: 8bit
-Content-Language: cs
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,60 +18,76 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Per Oberg <pero@wolfram.com>, xenomai <xenomai@xenomai.org>
+To: pintu@codeaurora.org, xenomai@xenomai.org, sunshilong369@gmail.com
+Cc: pintu.ping@gmail.com, jan.kiszka@siemens.com
 
-Hello.
+On 8/10/20 9:09 AM, pintu@codeaurora.org wrote:
+> On 2020-08-07 10:26, pintu@codeaurora.org wrote:
+>> On 2020-07-31 23:34, Pintu Kumar wrote:
+>>> With CONFIG_XENO_OPT_PRIVATE_HEAPSZ, user that request any heap size
+>>> based on their needs. For some application needs, this can grow as large
+>>> as 4MB that is, 2^10 order pages, which is unlikely to succeed with
+>>> kzalloc.
+>>> Even the default (256KB) may fail on highly fragmented system.
+>>> Further without COMPACTION enabled, the situation can be worse.
+>>>
+>>> Moreover, for this heap allocation, we don't need physical contiguous
+>>> memory. Thus vmalloc may be sufficient here.
+>>> But for performance benefit we may like to stick to kmalloc.
+>>>
+>>> Thus, it is better to replace kzalloc with kvzalloc which will first try
+>>> to use kmalloc and if fails, fallback to vmalloc.
+>>>
+>>> Signed-off-by: Pintu Kumar <pintu@codeaurora.org>
+>>> Signed-off-by: sunshilong <sunshilong369@gmail.com>
+>>> Tested-by: sunshilong <sunshilong369@gmail.com>
+>>> ---
+>>>  kernel/cobalt/heap.c | 4 ++--
+>>>  1 file changed, 2 insertions(+), 2 deletions(-)
+>>>
+>>> diff --git a/kernel/cobalt/heap.c b/kernel/cobalt/heap.c
+>>> index d01a2e0..312b41f 100644
+>>> --- a/kernel/cobalt/heap.c
+>>> +++ b/kernel/cobalt/heap.c
+>>> @@ -749,7 +749,7 @@ int xnheap_init(struct xnheap *heap, void
+>>> *membase, size_t size)
+>>>      xnlock_init(&heap->lock);
+>>>
+>>>      nrpages = size >> XNHEAP_PAGE_SHIFT;
+>>> -    heap->pagemap = kzalloc(sizeof(struct xnheap_pgentry) * nrpages,
+>>> +    heap->pagemap = kvzalloc(sizeof(struct xnheap_pgentry) * nrpages,
+>>>                  GFP_KERNEL);
+>>>      if (heap->pagemap == NULL)
+>>>          return -ENOMEM;
+>>> @@ -804,7 +804,7 @@ void xnheap_destroy(struct xnheap *heap)
+>>>      nrheaps--;
+>>>      xnvfile_touch_tag(&vfile_tag);
+>>>      xnlock_put_irqrestore(&nklock, s);
+>>> -    kfree(heap->pagemap);
+>>> +    kvfree(heap->pagemap);
+>>>  }
+>>>  EXPORT_SYMBOL_GPL(xnheap_destroy);
+>>
+>>
+>> Hi,
+>>
+>> Is there any feedback or comments on the above patch ?
+>>
+>>
+>> Thanks,
+>> Pintu
+> 
+> Hi,
+> 
+> Is there any further update of this ?
+> Just a reminder to check....
+> 
 
-The problem is only when I use Xenomai linking flags and only with 
-thestart time. Period is OK.
+This patch makes sense to me. I'll leave it to the current maintainer to
+decide whether it should be merged.
 
-That aprox. 16s time delay can be "compensated" by substracting of any 
-number of seconds from the start time.
+Thanks,
 
-     // Create timer
-     timer_fd = timerfd_create(CLOCK_MONOTONIC, 0);
-
-     // Get current time
-     struct timespec start;
-     clock_gettime(CLOCK_MONOTONIC, &start);
-
-     // Set periodic
-     struct itimerspec timer_conf;
-     memset(&timer_conf, 0, sizeof (timer_conf));
-     timer_conf.it_value = timespec_add(start, -15 * NANOSEC_PER_SEC); 
-// compensation of the delay
-     ...
-     timerfd_settime(timer_fd, TFD_TIMER_ABSTIME, &timer_conf, NULL);
-
-There is strange unexpected difference/time shift between product of 
-clock_gettime and timerfd_settime. Only with Xenomai posix wrappers.
-
-Best regards
-
-Petr Cervenka
-
-
-Dne 10.08.2020 v 8:45 Per Oberg napsal(a):
-> ----- Den 7 aug 2020, på kl 17:12, xenomai xenomai@xenomai.org skrev:
->
->> Hello.
->> I have created small example of periodic task in posix.
->> If I compile it without xenomai it works fine.
->> When I add Xenomai linking flags, the first tick of periodic task take around
->> 16s. After that it continues as it should.
->> Used clock type for timer_fd is CLOCK_MONOTONIC. The example should in
->> attachment.
->> Do you have any suggestions?
-> Just had a extremely quick look at it. Are you sure you don't get any rounding errors when doing your period arithmetics ?
->
->> Best regards
->> -------------- next part --------------
->> A non-text attachment was scrubbed...
->> Name: timer_test.cpp
->> Type: text/x-c++src
->> Size: 4351 bytes
->> Desc: timer_test.cpp
->> URL:
->> <http://xenomai.org/pipermail/xenomai/attachments/20200807/d4203f59/attachment.cpp>
-> Per Öberg
+-- 
+Philippe.
 
