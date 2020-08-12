@@ -1,13 +1,17 @@
-Subject: Re: [BUG] copperlate/eventobj.c ->>> eventobj_inquire(), don't work
-References: <e371ebd5-519a-cf6e-998e-b2591d4f1c48@163.com>
- <d926b5a5-da09-c2f1-0b81-544cae7cc9d9@xenomai.org>
- <4bfa01f9-d2c0-de99-ec25-458578c23e3e@siemens.com>
-From: Philippe Gerum <rpm@xenomai.org>
-Message-ID: <e4362081-b1e8-32a1-98a6-6f25840cadf0@xenomai.org>
-Date: Mon, 13 Jul 2020 20:27:15 +0200
+Subject: Re: [PATCH] kernel:cobalt:heap: replace kzalloc with kvzalloc
+References: <1596218699-15537-1-git-send-email-pintu@codeaurora.org>
+ <7a76268b-84f6-0073-7830-54a317106c7d@siemens.com>
+ <fc87600a-0797-849d-2d35-f2d32d1a7a90@siemens.com>
+ <CAAvDm6a2VPs_0uqZZChXc=mhnx7c4Z1sPstbbMRNGceYKZg7_Q@mail.gmail.com>
+ <65a89852-1f02-663a-3d08-6e0ad2716044@siemens.com>
+ <CAAvDm6b8DoYYz47K0VDoAzedk9y3w5kv3UA-4TzLipHxkX=z2Q@mail.gmail.com>
+ <CAOuPNLhPejZsUwCrjOWm=kT_JLJipcV7WXt6TgiAA6UDXpOmvg@mail.gmail.com>
+From: Jan Kiszka <jan.kiszka@siemens.com>
+Message-ID: <108d1c6f-5ae5-788a-e8ce-5e649c9b3642@siemens.com>
+Date: Wed, 12 Aug 2020 17:51:57 +0200
 MIME-Version: 1.0
-In-Reply-To: <4bfa01f9-d2c0-de99-ec25-458578c23e3e@siemens.com>
-Content-Type: text/plain; charset="utf-8"
+In-Reply-To: <CAOuPNLhPejZsUwCrjOWm=kT_JLJipcV7WXt6TgiAA6UDXpOmvg@mail.gmail.com>
+Content-Type: text/plain; charset="utf-8"; format="flowed"
 Content-Language: en-US
 Content-Transfer-Encoding: 8bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
@@ -18,73 +22,132 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jan Kiszka <jan.kiszka@siemens.com>, Caffreyfans <Caffreyfans@163.com>, xenomai@xenomai.org
+To: Pintu Agarwal <pintu.ping@gmail.com>, =?UTF-8?B?5a2Z5LiW6b6ZIHN1bnNoaWxvbmc=?= <sunshilong369@gmail.com>
+Cc: Pintu Kumar <pintu@codeaurora.org>, xenomai <xenomai@xenomai.org>
 
-On 7/13/20 7:59 PM, Jan Kiszka wrote:
-> On 10.07.20 10:38, Philippe Gerum via Xenomai wrote:
->> On 7/10/20 8:04 AM, Caffreyfans via Xenomai wrote:
->>> Hi sir,
->>>
->>>      I'm trying to make another skin for xenomai.  When I do something about
->>> "event". I use `eventobj_inquire()` to get event flags. But no matter what
->>> value I post, I always get 0.
->>>
->>>      I find that eventobj_inquire() is not working. I know `alchemy/event`
->>> also
->>> use `eventobj`. So I write a test code by using alchemy skin. I am curious
->>> whether it is my own problem or there is an error in xenomai.
->>>
->>
->> Most likely a bug in Xenomai. In addition, looking at cobalt_event_post(),
->> there is a blatant race condition between the signal <-> wait operations. The
->> in-kernel wait() operation serializes on the ugly big lock which is not going
->> to help much against racing with the userland counterpart in
->> cobalt_event_post(), which does this:
->>
->>     __sync_or_and_fetch(&state->value, bits); /* full barrier. */
->>
->>     if ((state->flags & COBALT_EVENT_PENDED) == 0)
->>         return 0;
->>
->> The somebody-is-waiting bit tested above should be part of some atomic
->> operation shared with the wait-side or covered by the ugly big lock, but the
->> way it is implemented today can lead to spurious waits.
->>
->> The event code was fixed months ago for another bad issue, the whole thing
->> looks fragile. You may want to review all of it.
->>
-> 
-> The issue Caffreyfrans is describing seems more like a synchronous one. Didn't
-> reproduce or analyzed yet, but it looks more "friendly" to me.
+On 11.08.20 13:44, Pintu Agarwal wrote:
+> Oh sorry about this.
+> I can send a new patch set with kvmalloc that can work on all kernel versions.
 > 
 
-The issue in cobalt_event_post() is very unlikely related to the problem with
-the inquiry service, for sure. The serialization issue poked my eyes as I was
-tracking the updates to the event value for the inquiry problem.
+Yes, please do so to avoid that things become to messy when trying to 
+create that manually.
 
-> The one that you bring up would be nasty. But why should that happen? Do we
-> miss to recheck a condition inside the syscall and therefore starve?
+Thanks,
+Jan
+
+> Thanks,
+> Pintu
 > 
-
-event_wait(kernel)		event_post(user)
-------------------		----------------
-
-lock(&nklock)			update event->value
-bits not in event->value:	
-				!EVENT_PENDED
-	raise EVENT_PENDED
-	xnsynch_sleep_on	
-				=> no kernel entry
-(waits indefinitely)		(event_sync is missed)
-
-And SMP is not even required to break it. So either the EVENT_PENDED
-information is folded into the event value so that both can be checked
-atomically as one like mutexes do, or the broken optimization in userland is
-replaced by a direct call to some kernel-based event_post service (tbd).
-Obviously, option #1 would consume a bit in order to encode EVENT_PENDED,
-limiting the effective event map to 31 bits, which would be a problem ABI- and
-API-wise.
+> On Tue, 11 Aug 2020 at 14:47, 孙世龙 sunshilong <sunshilong369@gmail.com> wrote:
+>>
+>> Hi, Jan Kiszka, Pintu Kunmar
+>>
+>> With CONFIG_XENO_OPT_PRIVATE_HEAPSZ, users that request any heap size
+>> based on their needs. For some application needs, this can grow as large
+>> as 4MB that is, 2^10 order pages, which is unlikely to succeed with
+>> kzalloc.
+>> Even the default (256KB) may fail on a highly fragmented system.
+>> Further without COMPACTION enabled, the situation can be worse.
+>>
+>> Moreover, for this heap allocation, we don't need physical contiguous
+>> memory. Thus vmalloc may be sufficient here.
+>> But for performance benefit, we may like to stick to malloc.
+>>
+>> Thus, it is better to replace kzalloc with kvmalloc which will first try
+>> to use kmalloc and if fails, fallback to vmalloc.
+>>
+>> TIPS: Since kvzalloc is not available on Linux-4.4, it's better to use kvmalloc
+>> to initialize the memory instead of kvzmalloc.
+>>
+>> For a more detailed explanation of the problem and consequence involved in
+>> the original code snippet, see
+>> https://xenomai.org/pipermail/xenomai/2020-July/043137.html
+>>
+>> Signed-off-by: sunshilong <sunshilong369@gmail.com> Pintu Kumar
+>> <pintu@codeaurora.org>
+>> Tested-by: sunshilong <sunshilong369@gmail.com>
+>>
+>> ---
+>>   kernel/cobalt/heap.c | 6 +++---
+>>   1 file changed, 3 insertions(+), 3 deletions(-)
+>>
+>> diff --git a/kernel/cobalt/heap.c b/kernel/cobalt/heap.c
+>> index d01a2e0..f9d9a05 100644
+>> --- a/kernel/cobalt/heap.c
+>> +++ b/kernel/cobalt/heap.c
+>> @@ -749,8 +749,8 @@ int xnheap_init(struct xnheap *heap, void *membase,
+>> size_t size)
+>>          xnlock_init(&heap->lock);
+>>
+>>          nrpages = size >> XNHEAP_PAGE_SHIFT;
+>> -       heap->pagemap = kzalloc(sizeof(struct xnheap_pgentry) * nrpages,
+>> -                               GFP_KERNEL);
+>> +       heap->pagemap = kvmalloc(sizeof(struct xnheap_pgentry) * nrpages,
+>> +                               GFP_KERNEL | __GFP_ZERO);
+>>          if (heap->pagemap == NULL)
+>>                  return -ENOMEM;
+>>
+>> @@ -804,7 +804,7 @@ void xnheap_destroy(struct xnheap *heap)
+>>          nrheaps--;
+>>          xnvfile_touch_tag(&vfile_tag);
+>>          xnlock_put_irqrestore(&nklock, s);
+>> -       kfree(heap->pagemap);
+>> +       kvfree(heap->pagemap);
+>>   }
+>>   EXPORT_SYMBOL_GPL(xnheap_destroy);
+>>
+>> On Tue, Aug 11, 2020 at 4:51 PM Jan Kiszka <jan.kiszka@siemens.com> wrote:
+>>>
+>>> On 11.08.20 10:48, 孙世龙 sunshilong wrote:
+>>>> Hi, Jan Kiszka, Pintu Kunmar
+>>>>
+>>>>> Breaks 4.4 kernels. Please have a look:
+>>>>> https://travis-ci.com/github/xenomai-ci/xenomai/builds/179223968
+>>>> Sorry, I forgot.
+>>>> It seems that kvzalloc is not available for linux-4.4.
+>>>> So, this patch
+>>>> (see https://xenomai.org/pipermail/xenomai/2020-July/043137.html) may be better.
+>>>>
+>>>> For your convenience, here is the patch:
+>>>> diff --git a/kernel/cobalt/heap.c b/kernel/cobalt/heap.c
+>>>> index d01a2e0..f9d9a05 100644
+>>>> --- a/kernel/cobalt/heap.c
+>>>> +++ b/kernel/cobalt/heap.c
+>>>> @@ -749,8 +749,8 @@ int xnheap_init(struct xnheap *heap, void
+>>>> *membase, size_t size)
+>>>>          xnlock_init(&heap->lock);
+>>>>
+>>>>          nrpages = size >> XNHEAP_PAGE_SHIFT;
+>>>> -       heap->pagemap = kzalloc(sizeof(struct xnheap_pgentry) * nrpages,
+>>>> -                               GFP_KERNEL);
+>>>> +       heap->pagemap = kvmalloc(sizeof(struct xnheap_pgentry) * nrpages,
+>>>> +                               GFP_KERNEL | __GFP_ZERO);
+>>>>          if (heap->pagemap == NULL)
+>>>>                  return -ENOMEM;
+>>>>
+>>>> @@ -804,7 +804,7 @@ void xnheap_destroy(struct xnheap *heap)
+>>>>          nrheaps--;
+>>>>          xnvfile_touch_tag(&vfile_tag);
+>>>>          xnlock_put_irqrestore(&nklock, s);
+>>>> -       kfree(heap->pagemap);
+>>>> +       kvfree(heap->pagemap);
+>>>>   }
+>>>>   EXPORT_SYMBOL_GPL(xnheap_destroy);
+>>>>
+>>>>
+>>>
+>>> Could you send a v2 of this patch with the more exhaustive description
+>>> you had in v1?
+>>>
+>>> Thanks,
+>>> Jan
+>>>
+>>> --
+>>> Siemens AG, Corporate Technology, CT RDA IOT SES-DE
+>>> Corporate Competence Center Embedded Linux
 
 -- 
-Philippe.
+Siemens AG, Corporate Technology, CT RDA IOT SES-DE
+Corporate Competence Center Embedded Linux
 
