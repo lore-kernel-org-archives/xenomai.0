@@ -1,16 +1,10 @@
-Subject: Re: [PATCH] kernel:cobalt:heap: replace kzalloc with kvzalloc
-References: <1596218699-15537-1-git-send-email-pintu@codeaurora.org>
- <7a76268b-84f6-0073-7830-54a317106c7d@siemens.com>
- <fc87600a-0797-849d-2d35-f2d32d1a7a90@siemens.com>
- <CAAvDm6a2VPs_0uqZZChXc=mhnx7c4Z1sPstbbMRNGceYKZg7_Q@mail.gmail.com>
- <65a89852-1f02-663a-3d08-6e0ad2716044@siemens.com>
- <CAAvDm6b8DoYYz47K0VDoAzedk9y3w5kv3UA-4TzLipHxkX=z2Q@mail.gmail.com>
- <CAOuPNLhPejZsUwCrjOWm=kT_JLJipcV7WXt6TgiAA6UDXpOmvg@mail.gmail.com>
+Subject: Re: Question about round-robin scheduling.
+References: <CAAvDm6YF-PcERwDrV2C6NVHqKLE9+_z6R6tQq29uyHff=Oyj3A@mail.gmail.com>
 From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <108d1c6f-5ae5-788a-e8ce-5e649c9b3642@siemens.com>
-Date: Wed, 12 Aug 2020 17:51:57 +0200
+Message-ID: <846f8be9-c102-ef57-36f9-1c9b769805ab@siemens.com>
+Date: Wed, 12 Aug 2020 18:00:54 +0200
 MIME-Version: 1.0
-In-Reply-To: <CAOuPNLhPejZsUwCrjOWm=kT_JLJipcV7WXt6TgiAA6UDXpOmvg@mail.gmail.com>
+In-Reply-To: <CAAvDm6YF-PcERwDrV2C6NVHqKLE9+_z6R6tQq29uyHff=Oyj3A@mail.gmail.com>
 Content-Type: text/plain; charset="utf-8"; format="flowed"
 Content-Language: en-US
 Content-Transfer-Encoding: 8bit
@@ -22,130 +16,31 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Pintu Agarwal <pintu.ping@gmail.com>, =?UTF-8?B?5a2Z5LiW6b6ZIHN1bnNoaWxvbmc=?= <sunshilong369@gmail.com>
-Cc: Pintu Kumar <pintu@codeaurora.org>, xenomai <xenomai@xenomai.org>
+To: =?UTF-8?B?5a2Z5LiW6b6ZIHN1bnNoaWxvbmc=?= <sunshilong369@gmail.com>, xenomai <xenomai@xenomai.org>
 
-On 11.08.20 13:44, Pintu Agarwal wrote:
-> Oh sorry about this.
-> I can send a new patch set with kvmalloc that can work on all kernel versions.
+On 06.08.20 14:27, 孙世龙 sunshilong via Xenomai wrote:
+> Hi, list
+> 
+> As per the Kconfig(
+> https://gitlab.denx.de/Xenomai/xenomai/-/blob/5714ceede70ccd39b1bf6c41a72cfa94f98e169a/kernel/cobalt/Kconfig
+> ),
+> which says [emphasise mine]:
+> Cobalt has a built-in real-time class, which supports both
+> preemptive fixed-priority FIFO, and **round-robin scheduling**.
+> Cobalt supports  round-robin scheduling whereas
+> rt_task_create function only supports SCHED_FIFO and SCHED
+> (
+> https://xenomai.org/documentation/xenomai-3/html/xeno3prm/group__alchemy__task.html#ga03387550693c21d0223f739570ccd992
+> ).
+> 
+> So, I wonder how to set a real-time task to use round-robin scheduling.
+> Or, am I missing something?
 > 
 
-Yes, please do so to avoid that things become to messy when trying to 
-create that manually.
+Look how SCHED_RR is commonly configured, nothing special in Xenomai. 
+The only specialty is CONFIG_XENO_OPT_RR_QUANTUM.
 
-Thanks,
 Jan
-
-> Thanks,
-> Pintu
-> 
-> On Tue, 11 Aug 2020 at 14:47, 孙世龙 sunshilong <sunshilong369@gmail.com> wrote:
->>
->> Hi, Jan Kiszka, Pintu Kunmar
->>
->> With CONFIG_XENO_OPT_PRIVATE_HEAPSZ, users that request any heap size
->> based on their needs. For some application needs, this can grow as large
->> as 4MB that is, 2^10 order pages, which is unlikely to succeed with
->> kzalloc.
->> Even the default (256KB) may fail on a highly fragmented system.
->> Further without COMPACTION enabled, the situation can be worse.
->>
->> Moreover, for this heap allocation, we don't need physical contiguous
->> memory. Thus vmalloc may be sufficient here.
->> But for performance benefit, we may like to stick to malloc.
->>
->> Thus, it is better to replace kzalloc with kvmalloc which will first try
->> to use kmalloc and if fails, fallback to vmalloc.
->>
->> TIPS: Since kvzalloc is not available on Linux-4.4, it's better to use kvmalloc
->> to initialize the memory instead of kvzmalloc.
->>
->> For a more detailed explanation of the problem and consequence involved in
->> the original code snippet, see
->> https://xenomai.org/pipermail/xenomai/2020-July/043137.html
->>
->> Signed-off-by: sunshilong <sunshilong369@gmail.com> Pintu Kumar
->> <pintu@codeaurora.org>
->> Tested-by: sunshilong <sunshilong369@gmail.com>
->>
->> ---
->>   kernel/cobalt/heap.c | 6 +++---
->>   1 file changed, 3 insertions(+), 3 deletions(-)
->>
->> diff --git a/kernel/cobalt/heap.c b/kernel/cobalt/heap.c
->> index d01a2e0..f9d9a05 100644
->> --- a/kernel/cobalt/heap.c
->> +++ b/kernel/cobalt/heap.c
->> @@ -749,8 +749,8 @@ int xnheap_init(struct xnheap *heap, void *membase,
->> size_t size)
->>          xnlock_init(&heap->lock);
->>
->>          nrpages = size >> XNHEAP_PAGE_SHIFT;
->> -       heap->pagemap = kzalloc(sizeof(struct xnheap_pgentry) * nrpages,
->> -                               GFP_KERNEL);
->> +       heap->pagemap = kvmalloc(sizeof(struct xnheap_pgentry) * nrpages,
->> +                               GFP_KERNEL | __GFP_ZERO);
->>          if (heap->pagemap == NULL)
->>                  return -ENOMEM;
->>
->> @@ -804,7 +804,7 @@ void xnheap_destroy(struct xnheap *heap)
->>          nrheaps--;
->>          xnvfile_touch_tag(&vfile_tag);
->>          xnlock_put_irqrestore(&nklock, s);
->> -       kfree(heap->pagemap);
->> +       kvfree(heap->pagemap);
->>   }
->>   EXPORT_SYMBOL_GPL(xnheap_destroy);
->>
->> On Tue, Aug 11, 2020 at 4:51 PM Jan Kiszka <jan.kiszka@siemens.com> wrote:
->>>
->>> On 11.08.20 10:48, 孙世龙 sunshilong wrote:
->>>> Hi, Jan Kiszka, Pintu Kunmar
->>>>
->>>>> Breaks 4.4 kernels. Please have a look:
->>>>> https://travis-ci.com/github/xenomai-ci/xenomai/builds/179223968
->>>> Sorry, I forgot.
->>>> It seems that kvzalloc is not available for linux-4.4.
->>>> So, this patch
->>>> (see https://xenomai.org/pipermail/xenomai/2020-July/043137.html) may be better.
->>>>
->>>> For your convenience, here is the patch:
->>>> diff --git a/kernel/cobalt/heap.c b/kernel/cobalt/heap.c
->>>> index d01a2e0..f9d9a05 100644
->>>> --- a/kernel/cobalt/heap.c
->>>> +++ b/kernel/cobalt/heap.c
->>>> @@ -749,8 +749,8 @@ int xnheap_init(struct xnheap *heap, void
->>>> *membase, size_t size)
->>>>          xnlock_init(&heap->lock);
->>>>
->>>>          nrpages = size >> XNHEAP_PAGE_SHIFT;
->>>> -       heap->pagemap = kzalloc(sizeof(struct xnheap_pgentry) * nrpages,
->>>> -                               GFP_KERNEL);
->>>> +       heap->pagemap = kvmalloc(sizeof(struct xnheap_pgentry) * nrpages,
->>>> +                               GFP_KERNEL | __GFP_ZERO);
->>>>          if (heap->pagemap == NULL)
->>>>                  return -ENOMEM;
->>>>
->>>> @@ -804,7 +804,7 @@ void xnheap_destroy(struct xnheap *heap)
->>>>          nrheaps--;
->>>>          xnvfile_touch_tag(&vfile_tag);
->>>>          xnlock_put_irqrestore(&nklock, s);
->>>> -       kfree(heap->pagemap);
->>>> +       kvfree(heap->pagemap);
->>>>   }
->>>>   EXPORT_SYMBOL_GPL(xnheap_destroy);
->>>>
->>>>
->>>
->>> Could you send a v2 of this patch with the more exhaustive description
->>> you had in v1?
->>>
->>> Thanks,
->>> Jan
->>>
->>> --
->>> Siemens AG, Corporate Technology, CT RDA IOT SES-DE
->>> Corporate Competence Center Embedded Linux
 
 -- 
 Siemens AG, Corporate Technology, CT RDA IOT SES-DE
