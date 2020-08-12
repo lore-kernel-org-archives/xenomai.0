@@ -1,13 +1,18 @@
-Subject: Re: Is the main memory pool same with the private heap?
-References: <CAAvDm6aVOcgRkCk8dDYHrGs2Rfe=QcacuJp4=b30rFPjWj4RMQ@mail.gmail.com>
-From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <425d77d5-93cd-fb73-5f19-aaf83f927ca0@siemens.com>
-Date: Wed, 12 Aug 2020 18:03:39 +0200
 MIME-Version: 1.0
-In-Reply-To: <CAAvDm6aVOcgRkCk8dDYHrGs2Rfe=QcacuJp4=b30rFPjWj4RMQ@mail.gmail.com>
-Content-Type: text/plain; charset="utf-8"; format="flowed"
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+References: <1596434678-27832-1-git-send-email-chensong@tj.kylinos.cn>
+ <310ffe2c-04cb-6583-bbc8-d64852fed69c@siemens.com>
+ <CALLqZ8Q8TGvMq3-MzRsHGTew9jkNbo1NHh+FxS+ELGLPqywhFw@mail.gmail.com>
+ <CALLqZ8R-k+C0RqvKBtGQpm69w4WcARUKAdh8vRk76AmLdg7Exw@mail.gmail.com>
+ <4576e489-ee96-0a0b-597b-21ac393a827b@siemens.com>
+ <7e84feef-9b11-0c4b-7f32-b32344682cf5@siemens.com>
+ <d9c96e5e-57f8-25ce-4e5c-8f2585788f5e@siemens.com>
+In-Reply-To: <d9c96e5e-57f8-25ce-4e5c-8f2585788f5e@siemens.com>
+From: Greg Gallagher <greg@embeddedgreg.com>
+Date: Wed, 12 Aug 2020 12:10:55 -0400
+Message-ID: <CALLqZ8TJpE2pmrRh6c-v7pRDbdToxveJAggu=gj=Ave67Jag=A@mail.gmail.com>
+Subject: Re: [PATCH v3] testsuite: App of gpio loopback/react benchmark
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,22 +21,969 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: =?UTF-8?B?5a2Z5LiW6b6ZIHN1bnNoaWxvbmc=?= <sunshilong369@gmail.com>, xenomai <xenomai@xenomai.org>
+To: Jan Kiszka <jan.kiszka@siemens.com>
+Cc: chensong <chensong@tj.kylinos.cn>, "Xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On 06.08.20 10:01, 孙世龙 sunshilong via Xenomai wrote:
-> Hi,
-> As the subject, are they the same thing:
-> * main memory pool, whose size can be set explicitly using --mem-pool-size,
-> 1Mb by default
-> * private heap, whose size can be set explicitly using
-> CONFIG_XENO_OPT_PRIVATE_HEAPSZ.
+On Wed, Aug 12, 2020 at 11:43 AM Jan Kiszka <jan.kiszka@siemens.com> wrote:
+>
+> On 12.08.20 17:28, Jan Kiszka wrote:
+> > On 12.08.20 16:55, Jan Kiszka wrote:
+> >> On 12.08.20 05:36, Greg Gallagher wrote:
+> >>> On Tue, Aug 11, 2020 at 11:36 AM Greg Gallagher
+> >>> <greg@embeddedgreg.com> wrote:
+> >>>>
+> >>>> On Tue, Aug 11, 2020 at 3:15 AM Jan Kiszka <jan.kiszka@siemens.com>
+> >>>> wrote:
+> >>>>>
+> >>>>> On 03.08.20 08:04, chensong wrote:
+> >>>>>> This a tool to benchmark the latency of GPIO driver,
+> >>>>>> it's able to run 2 kinds of benchmark test:
+> >>>>>>
+> >>>>>> 1, loopback mode
+> >>>>>> 1) apply 2 gpio pins by calling service in gpio RTDM driver
+> >>>>>>     like gpio-bcm2835 and gpio-core.c, one is as output,
+> >>>>>>     the other is as interrupt
+> >>>>>> 2) call write_rt to send a pulse from output
+> >>>>>> 3) call read_rt to get timestamps recorded in driver (inner loop)
+> >>>>>> 4) also record timespace in user space(outer_loop)
+> >>>>>>     outer_loop is inner_loop plus overhead of event wakeup
+> >>>>>> 5) ftrace enable/disable
+> >>>>>>
+> >>>>>> 2, react mode
+> >>>>>> 1) apply 2 gpio pins by calling service in gpio RTDM driver
+> >>>>>>     like gpio-bcm2835 and gpio-core.c, one is as ourput,
+> >>>>>>     the other is as interrupt
+> >>>>>> 2) call read_rt to wait for a pulse from latency box
+> >>>>>> 3) call write_rt to send a signal back to latency box
+> >>>>>>     as a reaction
+> >>>>>> 4) latency box calculates the diff and makes the histogram
+> >>>>>>
+> >>>>>> e.g.:
+> >>>>>> 1) react mode:
+> >>>>>>     gpiobench -o 20 -i 21 -c pinctrl-bcm2835 -m 1 -l 1000
+> >>>>>> 2) loopback mode:
+> >>>>>>     gpiobench -o 20 -i 21 -c pinctrl-bcm2835 -m 0 -l 1000 -h 100
+> >>>>>> -b 50
+> >>>>>>
+> >>>>>> CC: Jan Kiszka <jan.kiszka@siemens.com>
+> >>>>>> CC: Greg Gallagher <greg@embeddedgreg.com>
+> >>>>>>
+> >>>>>> Signed-off-by: chensong <chensong@tj.kylinos.cn>
+> >>>>>> ---
+> >>>>>>   configure.ac                     |   1 +
+> >>>>>>   doc/asciidoc/man1/gpiobench.adoc |  70 +++++
+> >>>>>>   testsuite/Makefile.am            |   3 +-
+> >>>>>>   testsuite/gpiobench/Makefile.am  |  18 ++
+> >>>>>>   testsuite/gpiobench/gpiobench.c  | 654
+> >>>>>> +++++++++++++++++++++++++++++++++++++++
+> >>>>>>   5 files changed, 745 insertions(+), 1 deletion(-)
+> >>>>>>   create mode 100644 doc/asciidoc/man1/gpiobench.adoc
+> >>>>>>   create mode 100644 testsuite/gpiobench/Makefile.am
+> >>>>>>   create mode 100644 testsuite/gpiobench/gpiobench.c
+> >>>>>>
+> >>>>>> diff --git a/configure.ac b/configure.ac
+> >>>>>> index 29fefab..164c449 100644
+> >>>>>> --- a/configure.ac
+> >>>>>> +++ b/configure.ac
+> >>>>>> @@ -939,6 +939,7 @@ AC_CONFIG_FILES([ \
+> >>>>>>        testsuite/latency/Makefile \
+> >>>>>>        testsuite/switchtest/Makefile \
+> >>>>>>        testsuite/gpiotest/Makefile \
+> >>>>>> +     testsuite/gpiobench/Makefile \
+> >>>>>>        testsuite/spitest/Makefile \
+> >>>>>>        testsuite/smokey/Makefile \
+> >>>>>>        testsuite/smokey/arith/Makefile \
+> >>>>>> diff --git a/doc/asciidoc/man1/gpiobench.adoc
+> >>>>>> b/doc/asciidoc/man1/gpiobench.adoc
+> >>>>>> new file mode 100644
+> >>>>>> index 0000000..bd32ea8
+> >>>>>> --- /dev/null
+> >>>>>> +++ b/doc/asciidoc/man1/gpiobench.adoc
+> >>>>>> @@ -0,0 +1,70 @@
+> >>>>>> +// ** The above line should force tbl to be a preprocessor **
+> >>>>>> +// Man page for gpiobench
+> >>>>>> +//
+> >>>>>> +// Copyright (C) 2020 song chen <chensong@tj.kylinos.cn>
+> >>>>>> +//
+> >>>>>> +// You may distribute under the terms of the GNU General Public
+> >>>>>> +// License as specified in the file COPYING that comes with the
+> >>>>>> +// Xenomai distribution.
+> >>>>>> +//
+> >>>>>> +//
+> >>>>>> +GPIOBENCH(1)
+> >>>>>> +=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+> >>>>>> +:doctype: manpage
+> >>>>>> +:revdate: 2020/08/03
+> >>>>>> +:man source: Xenomai
+> >>>>>> +:man version: {xenover}
+> >>>>>> +:man manual: Xenomai Manual
+> >>>>>> +
+> >>>>>> +NAME
+> >>>>>> +-----
+> >>>>>> +gpiobench - Xenomai gpio latency benchmark
+> >>>>>> +
+> >>>>>> +SYNOPSIS
+> >>>>>> +---------
+> >>>>>> +// The general command line
+> >>>>>> +*gpiobench* [ options ]
+> >>>>>> +
+> >>>>>> +DESCRIPTION
+> >>>>>> +------------
+> >>>>>> +*gpiobench* is part of the Xenomai test suite. It is a gpio laten=
+cy
+> >>>>>> +benchmark program.  The system must run a suitable Xenomai
+> >>>>>> enabled kernel with
+> >>>>>> +the respective module (xeno_timerbench).
+> >>>>>> +
+> >>>>>> +OPTIONS
+> >>>>>> +--------
+> >>>>>> +*gpiobench* accepts the following options:
+> >>>>>> +
+> >>>>>> +*-h <histogram-size>*::
+> >>>>>> +default =3D 100, increase if your last bucket is full
+> >>>>>> +
+> >>>>>> +*-l <num-of-loops>*::
+> >>>>>> +default=3D1000, number of loops to run the test
+> >>>>>> +
+> >>>>>> +*-q <quiet>*::
+> >>>>>> +print only a summary on exit
+> >>>>>> +
+> >>>>>> +*-m <test-mode>*::
+> >>>>>> +0 =3D loopback (default), 1 =3D react
+> >>>>>> +
+> >>>>>> +*-c <pin-controller>*::
+> >>>>>> +name of pin controller
+> >>>>
+> >>>> Consider changing this to from pin controller to something a little
+> >>>> more generic.  On the bcm2835 the gpios are
+> >>>>>> +
+> >>>>>> +*-o <output-pin>*::
+> >>>>>> +number of gpio pin as output
+> >>>>>> +
+> >>>>>> +*-i <interrupt-pin>*::
+> >>>>>> +number of gpin pin as interrupt
+> >>>>>> +
+> >>>>>> +*-p <priority>*::
+> >>>>>> +default =3D 99, task priority
+> >>>>>> +
+> >>>>>> +*-b <bracktrace>*::
+> >>>>>> +default =3D 1000, send break trace command when latency > breaktr=
+ace
+> >>>>>> +
+> >>>>>> +
+> >>>>>> +
+> >>>>>> +AUTHOR
+> >>>>>> +-------
+> >>>>>> +*gpiobench* was written by song chen. This man page
+> >>>>>> +was written by song chen.
+> >>>>>> diff --git a/testsuite/Makefile.am b/testsuite/Makefile.am
+> >>>>>> index 76d108e..4932f6d 100644
+> >>>>>> --- a/testsuite/Makefile.am
+> >>>>>> +++ b/testsuite/Makefile.am
+> >>>>>> @@ -1,5 +1,5 @@
+> >>>>>>
+> >>>>>> -SUBDIRS =3D latency smokey
+> >>>>>> +SUBDIRS =3D latency smokey gpiobench
+> >>>>>>
+> >>>>>>   if XENO_COBALT
+> >>>>>>   SUBDIRS +=3D           \
+> >>>>>> @@ -13,6 +13,7 @@ endif
+> >>>>>>   DIST_SUBDIRS =3D               \
+> >>>>>>        clocktest       \
+> >>>>>>        gpiotest        \
+> >>>>>> +     gpiobench   \
+> >>>>>>        latency         \
+> >>>>>>        smokey          \
+> >>>>>>        spitest         \
+> >>>>>> diff --git a/testsuite/gpiobench/Makefile.am
+> >>>>>> b/testsuite/gpiobench/Makefile.am
+> >>>>>> new file mode 100644
+> >>>>>> index 0000000..cca3395
+> >>>>>> --- /dev/null
+> >>>>>> +++ b/testsuite/gpiobench/Makefile.am
+> >>>>>> @@ -0,0 +1,18 @@
+> >>>>>> +testdir =3D @XENO_TEST_DIR@
+> >>>>>> +
+> >>>>>> +CCLD =3D $(top_srcdir)/scripts/wrap-link.sh $(CC)
+> >>>>>> +
+> >>>>>> +test_PROGRAMS =3D gpiobench
+> >>>>>> +
+> >>>>>> +gpiobench_SOURCES =3D gpiobench.c
+> >>>>>> +
+> >>>>>> +gpiobench_CPPFLAGS =3D                 \
+> >>>>>> +     $(XENO_USER_CFLAGS)     \
+> >>>>>> +     -I$(top_srcdir)/include
+> >>>>>> +
+> >>>>>> +gpiobench_LDFLAGS =3D @XENO_AUTOINIT_LDFLAGS@ $(XENO_POSIX_WRAPPE=
+RS)
+> >>>>>> +
+> >>>>>> +gpiobench_LDADD =3D                    \
+> >>>>>> +     @XENO_CORE_LDADD@       \
+> >>>>>> +     @XENO_USER_LDADD@       \
+> >>>>>> +     -lpthread -lrt -lm
+> >>>>>> diff --git a/testsuite/gpiobench/gpiobench.c
+> >>>>>> b/testsuite/gpiobench/gpiobench.c
+> >>>>>> new file mode 100644
+> >>>>>> index 0000000..7f19837
+> >>>>>> --- /dev/null
+> >>>>>> +++ b/testsuite/gpiobench/gpiobench.c
+> >>>>>> @@ -0,0 +1,654 @@
+> >>>>>> +/*
+> >>>>>> + * Copyright (C) 2020 Song Chen <chensong@tj.kylinos.cn>
+> >>>>>> + *
+> >>>>>> + * Permission is hereby granted, free of charge, to any person
+> >>>>>> obtaining
+> >>>>>> + * a copy of this software and associated documentation files (th=
+e
+> >>>>>> + * "Software"), to deal in the Software without restriction,
+> >>>>>> including
+> >>>>>> + * without limitation the rights to use, copy, modify, merge,
+> >>>>>> publish,
+> >>>>>> + * distribute, sublicense, and/or sell copies of the Software,
+> >>>>>> and to
+> >>>>>> + * permit persons to whom the Software is furnished to do so,
+> >>>>>> subject to
+> >>>>>> + * the following conditions:
+> >>>>>> + *
+> >>>>>> + * The above copyright notice and this permission notice shall be
+> >>>>>> included
+> >>>>>> + * in all copies or substantial portions of the Software.
+> >>>>>> + *
+> >>>>>> + * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND=
+,
+> >>>>>> + * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
+> >>>>>> WARRANTIES OF
+> >>>>>> + * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+> >>>>>> NONINFRINGEMENT.
+> >>>>>> + * IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE
+> >>>>>> FOR ANY
+> >>>>>> + * CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF
+> >>>>>> CONTRACT,
+> >>>>>> + * TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH =
+THE
+> >>>>>> + * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+> >>>>>> + */
+> >>>>>> +#include <stdlib.h>
+> >>>>>> +#include <math.h>
+> >>>>>> +#include <stdio.h>
+> >>>>>> +#include <string.h>
+> >>>>>> +#include <errno.h>
+> >>>>>> +#include <error.h>
+> >>>>>> +#include <signal.h>
+> >>>>>> +#include <sched.h>
+> >>>>>> +#include <time.h>
+> >>>>>> +#include <sys/time.h>
+> >>>>>> +#include <unistd.h>
+> >>>>>> +#include <pthread.h>
+> >>>>>> +#include <semaphore.h>
+> >>>>>> +#include <sys/timerfd.h>
+> >>>>>> +#include <xeno_config.h>
+> >>>>>> +#include <rtdm/testing.h>
+> >>>>>> +#include <rtdm/gpio.h>
+> >>>>>> +#include <boilerplate/trace.h>
+> >>>>>> +#include <xenomai/init.h>
+> >>>>>> +#include <sys/mman.h>
+> >>>>>> +#include <getopt.h>
+> >>>>>> +
+> >>>>>> +#define NS_PER_MS (1000000)
+> >>>>>> +#define NS_PER_S (1000000000)
+> >>>>>> +
+> >>>>>> +#define DEFAULT_PRIO 99
+> >>>>>> +#define VERSION_STRING "0.1"
+> >>>>>> +#define GPIO_HIGH 1
+> >>>>>> +#define GPIO_LOW  0
+> >>>>>> +#define MAX_HIST             100
+> >>>>>> +#define MAX_CYCLES 1000000
+> >>>>>> +#define DEFAULT_LIMIT 1000
+> >>>>>> +#define DEV_PATH    "/dev/rtdm/"
+> >>>>>> +#define TRACING_ON  "/sys/kernel/debug/tracing/tracing_on"
+> >>>>>> +#define TRACING_EVENTS  "/sys/kernel/debug/tracing/events/enable"
+> >>>>>> +#define TRACE_MARKER  "/sys/kernel/debug/tracing/trace_marker"
+> >>>>>> +#define ON  "1"
+> >>>>>> +#define OFF "0"
+> >>>>>> +
+> >>>>>> +enum {
+> >>>>>> +     MODE_LOOPBACK,
+> >>>>>> +     MODE_REACT,
+> >>>>>> +     MODE_ALL
+> >>>>>> +};
+> >>>>>> +
+> >>>>>> +/* Struct for statistics */
+> >>>>>> +struct test_stat {
+> >>>>>> +     long inner_min;
+> >>>>>> +     long inner_max;
+> >>>>>> +     double inner_avg;
+> >>>>>> +     long *inner_hist_array;
+> >>>>>> +     long inner_hist_overflow;
+> >>>>>> +     long outer_min;
+> >>>>>> +     long outer_max;
+> >>>>>> +     double outer_avg;
+> >>>>>> +     long *outer_hist_array;
+> >>>>>> +     long outer_hist_overflow;
+> >>>>>> +};
+> >>>>>> +
+> >>>>>> +/* Struct for information */
+> >>>>>> +struct test_info {
+> >>>>>> +     unsigned long max_cycles;
+> >>>>>> +     unsigned long total_cycles;
+> >>>>>> +     unsigned long max_histogram;
+> >>>>>> +     int mode;
+> >>>>>> +     int prio;
+> >>>>>> +     int quiet;
+> >>>>>> +     int tracelimit;
+> >>>>>> +     int fd_dev_intr;
+> >>>>>> +     int fd_dev_out;
+> >>>>>> +     char pin_controller[32];
+> >>>>>> +     pthread_t gpio_task;
+> >>>>>> +     int gpio_intr;
+> >>>>>> +     int gpio_out;
+> >>>>>> +     struct test_stat ts;
+> >>>>>> +};
+> >>>>>> +
+> >>>>>> +struct test_info ti;
+> >>>>>> +/* Print usage information */
+> >>>>>> +static void display_help(void)
+> >>>>>> +{
+> >>>>>> +     printf("gpiobench V %s\n", VERSION_STRING);
+> >>>>>> +     printf("Usage:\n"
+> >>>>>> +            "gpiobench <options>\n\n"
+> >>>>>> +
+> >>>>>> +            "-b       --breaktrace=3DUSEC  send break trace comma=
+nd
+> >>>>>> when latency > USEC\n"
+> >>>>>> +            "                            default=3D1000\n"
+> >>>>>> +            "-h       --histogram=3DUS     dump a latency histogr=
+am
+> >>>>>> to stdout after the run\n"
+> >>>>>> +            "                            US is the max time to be
+> >>>>>> tracked in microseconds,\n"
+> >>>>>> +            "                            default=3D100\n"
+> >>>>>> +            "-l       --loops            number of loops,
+> >>>>>> default=3D1000\n"
+> >>>>>> +            "-p       --prio             priority of highest prio
+> >>>>>> thread, defaults=3D99\n"
+> >>>>>> +            "-q       --quiet            print only a summary on
+> >>>>>> exit\n"
+> >>>>>> +            "-o       --output           gpio port number for
+> >>>>>> output, no default value,\n"
+> >>>>>> +            "                            must be specified\n"
+> >>>>>> +            "-i       --intr             gpio port number as an
+> >>>>>> interrupt, no default value,\n"
+> >>>>>> +            "                            must be specified\n"
+> >>>>>> +            "-c       --pinctrl          gpio pin controller's
+> >>>>>> name, no default value,\n"
+> >>>>>> +            "                            must be specified\n"
+> >>>>>> +            "-m       --testmode         0 is loopback mode\n"
+> >>>>>> +            "                            1 is react mode which
+> >>>>>> works with a latency box,\n"
+> >>>>>> +            "                            default=3D0\n\n"
+> >>>>>> +
+> >>>>>> +            "e.g.     gpiobench -o 20 -i 21 -c pinctrl-bcm2835\n"
+> >>>>>> +             );
+> >>>>>> +}
+> >>>>>> +
+> >>>>>> +static void process_options(int argc, char *argv[])
+> >>>>>> +{
+> >>>>>> +     int c =3D 0;
+> >>>>>> +     static const char optstring[] =3D "h:p:m:l:c:b:i:o:q";
+> >>>>>> +
+> >>>>>> +     struct option long_options[] =3D {
+> >>>>>> +             { "bracetrace", required_argument, 0, 'b'},
+> >>>>>> +             { "histogram", required_argument, 0, 'h'},
+> >>>>>> +             { "loops", required_argument, 0, 'l'},
+> >>>>>> +             { "prio", required_argument, 0, 'p'},
+> >>>>>> +             { "quiet", no_argument, 0, 'q'},
+> >>>>>> +             { "output", required_argument, 0, 'o'},
+> >>>>>> +             { "intr", required_argument, 0, 'i'},
+> >>>>>> +             { "pinctrl", required_argument, 0, 'c'},
+> >>>>>> +             { "testmode", required_argument, 0, 'm'},
+> >>>>>> +             { 0, 0, 0, 0},
+> >>>>>> +     };
+> >>>>>> +
+> >>>>>> +     while ((c =3D getopt_long(argc, argv, optstring, long_option=
+s,
+> >>>>>> +                                             NULL)) !=3D -1) {
+> >>>>>> +             switch (c) {
+> >>>>>> +             case 'h':
+> >>>>>> +                     ti.max_histogram =3D atoi(optarg);
+> >>>>>> +                     break;
+> >>>>>> +
+> >>>>>> +             case 'p':
+> >>>>>> +                     ti.prio =3D atoi(optarg);
+> >>>>>> +                     break;
+> >>>>>> +
+> >>>>>> +             case 'l':
+> >>>>>> +                     ti.max_cycles =3D atoi(optarg);
+> >>>>>> +                     break;
+> >>>>>> +
+> >>>>>> +             case 'q':
+> >>>>>> +                     ti.quiet =3D 1;
+> >>>>>> +                     break;
+> >>>>>> +
+> >>>>>> +             case 'b':
+> >>>>>> +                     ti.tracelimit =3D atoi(optarg);
+> >>>>>> +                     break;
+> >>>>>> +
+> >>>>>> +             case 'i':
+> >>>>>> +                     ti.gpio_intr =3D atoi(optarg);
+> >>>>>> +                     break;
+> >>>>>> +
+> >>>>>> +             case 'o':
+> >>>>>> +                     ti.gpio_out =3D atoi(optarg);
+> >>>>>> +                     break;
+> >>>>>> +
+> >>>>>> +             case 'c':
+> >>>>>> +                     strcpy(ti.pin_controller, optarg);
+> >>>>>> +                     break;
+> >>>>>> +
+> >>>>>> +             case 'm':
+> >>>>>> +                     ti.mode =3D atoi(optarg) >=3D
+> >>>>>> +                             MODE_REACT ? MODE_REACT :
+> >>>>>> MODE_LOOPBACK;
+> >>>>>> +                     break;
+> >>>>>> +
+> >>>>>> +             default:
+> >>>>>> +                     display_help();
+> >>>>>> +                     exit(2);
+> >>>>>> +             }
+> >>>>>> +     }
+> >>>>>> +
+> >>>>>> +     if ((ti.gpio_out =3D=3D -1) || (ti.gpio_intr =3D=3D -1)
+> >>>>>> +                             || (strlen(ti.pin_controller) =3D=3D=
+ 0)) {
+> >>>>>> +             display_help();
+> >>>>>> +             exit(2);
+> >>>>>> +     }
+> >>>>>> +
+> >>>>>> +     ti.prio =3D ti.prio > DEFAULT_PRIO ? DEFAULT_PRIO : ti.prio;
+> >>>>>> +     ti.max_cycles =3D ti.max_cycles > MAX_CYCLES ? MAX_CYCLES :
+> >>>>>> ti.max_cycles;
+> >>>>>> +
+> >>>>>> +     ti.max_histogram =3D ti.max_histogram > MAX_HIST ?
+> >>>>>> +             MAX_HIST : ti.max_histogram;
+> >>>>>> +     ti.ts.inner_hist_array =3D calloc(ti.max_histogram,
+> >>>>>> sizeof(long));
+> >>>>>> +     ti.ts.outer_hist_array =3D calloc(ti.max_histogram,
+> >>>>>> sizeof(long));
+> >>>>>> +}
+> >>>>>> +
+> >>>>>> +static int thread_msleep(unsigned int ms)
+> >>>>>> +{
+> >>>>>> +     struct timespec ts =3D {
+> >>>>>> +             .tv_sec =3D (ms * NS_PER_MS) / NS_PER_S,
+> >>>>>> +             .tv_nsec =3D (ms * NS_PER_MS) % NS_PER_S,
+> >>>>>> +     };
+> >>>>>> +
+> >>>>>> +     return -nanosleep(&ts, NULL);
+> >>>>>> +}
+> >>>>>> +
+> >>>>>> +static inline int64_t calc_us(struct timespec t)
+> >>>>>> +{
+> >>>>>> +     return (t.tv_sec * NS_PER_S + t.tv_nsec);
+> >>>>>> +}
+> >>>>>> +
+> >>>>>> +static int setevent(char *event, char *val)
+> >>>>>> +{
+> >>>>>> +     int fd;
+> >>>>>> +     int ret;
+> >>>>>> +
+> >>>>>> +     fd =3D open(event, O_WRONLY);
+> >>>>>> +     if (fd < 0) {
+> >>>>>> +             printf("unable to open %s\n", event);
+> >>>>>> +             return -1;
+> >>>>>> +     }
+> >>>>>> +
+> >>>>>> +     ret =3D write(fd, val, strlen(val));
+> >>>>>> +     if (ret < 0) {
+> >>>>>> +             printf("unable to write %s to %s\n", val, event);
+> >>>>>> +             close(fd);
+> >>>>>> +             return -1;
+> >>>>>> +     }
+> >>>>>> +
+> >>>>>> +     close(fd);
+> >>>>>> +     return 0;
+> >>>>>> +}
+> >>>>>> +
+> >>>>>> +static void tracing(char *enable)
+> >>>>>> +{
+> >>>>>> +     setevent(TRACING_EVENTS, enable);
+> >>>>>> +     setevent(TRACING_ON, enable);
+> >>>>>> +}
+> >>>>>> +
+> >>>>>> +#define write_check(__fd, __buf, __len)                      \
+> >>>>>> +     do {                                            \
+> >>>>>> +             int __ret =3D write(__fd, __buf, __len);  \
+> >>>>>> +             (void)__ret;                            \
+> >>>>>> +     } while (0)
+> >>>>>> +
+> >>>>>> +#define TRACEBUFSIZ 1024
+> >>>>>> +static __thread char tracebuf[TRACEBUFSIZ];
+> >>>>>> +
+> >>>>>> +static void tracemark(char *fmt, ...)
+> >>>>>> __attribute__((format(printf, 1, 2)));
+> >>>>>> +static void tracemark(char *fmt, ...)
+> >>>>>> +{
+> >>>>>> +     va_list ap;
+> >>>>>> +     int len;
+> >>>>>> +     int tracemark_fd;
+> >>>>>> +
+> >>>>>> +     tracemark_fd =3D open(TRACE_MARKER, O_WRONLY);
+> >>>>>> +     if (tracemark_fd =3D=3D -1) {
+> >>>>>> +             printf("unable to open trace_marker file: %s\n",
+> >>>>>> TRACE_MARKER);
+> >>>>>> +             return;
+> >>>>>> +     }
+> >>>>>> +
+> >>>>>> +     /* bail out if we're not tracing */
+> >>>>>> +     /* or if the kernel doesn't support trace_mark */
+> >>>>>> +     if (tracemark_fd < 0)
+> >>>>>> +             return;
+> >>>>>> +
+> >>>>>> +     va_start(ap, fmt);
+> >>>>>> +     len =3D vsnprintf(tracebuf, TRACEBUFSIZ, fmt, ap);
+> >>>>>> +     va_end(ap);
+> >>>>>> +     write_check(tracemark_fd, tracebuf, len);
+> >>>>>> +
+> >>>>>> +     close(tracemark_fd);
+> >>>>>> +}
+> >>>>>> +
+> >>>>>> +static int rw_gpio(int value, int index)
+> >>>>>> +{
+> >>>>>> +     int ret;
+> >>>>>> +     struct timespec timestamp;
+> >>>>>> +     struct rtdm_gpio_readout rdo;
+> >>>>>> +     uint64_t gpio_write, gpio_read, inner_diff, outer_diff;
+> >>>>>> +
+> >>>>>> +     clock_gettime(CLOCK_MONOTONIC, &timestamp);
+> >>>>>> +     gpio_write =3D calc_us(timestamp);
+> >>>>>> +
+> >>>>>> +     ret =3D write(ti.fd_dev_out, &value, sizeof(value));
+> >>>>>> +     if (ret < 0) {
+> >>>>>> +             printf("write GPIO, failed\n");
+> >>>>>> +             return ret;
+> >>>>>> +     }
+> >>>>>> +
+> >>>>>> +     ret =3D read(ti.fd_dev_intr, &rdo, sizeof(struct
+> >>>>>> rtdm_gpio_readout));
+> >>>>>> +     if (ret < 0) {
+> >>>>>> +             printf("read GPIO, failed\n");
+> >>>>>> +             return ret;
+> >>>>>> +     }
+> >>>>>> +
+> >>>>>> +     clock_gettime(CLOCK_MONOTONIC, &timestamp);
+> >>>>>> +     gpio_read =3D calc_us(timestamp);
+> >>>>>> +
+> >>>>>> +     inner_diff =3D (rdo.timestamp - gpio_write) / 1000;
+> >>>>>> +     outer_diff =3D (gpio_read - gpio_write) / 1000;
+> >>>>>> +
+> >>>>>> +     if (inner_diff < ti.ts.inner_min)
+> >>>>>> +             ti.ts.inner_min =3D inner_diff;
+> >>>>>> +     if (inner_diff > ti.ts.inner_max)
+> >>>>>> +             ti.ts.inner_max =3D inner_diff;
+> >>>>>> +     ti.ts.inner_avg +=3D (double) inner_diff;
+> >>>>>> +     if (inner_diff >=3D ti.max_histogram)
+> >>>>>> +             ti.ts.inner_hist_overflow++;
+> >>>>>> +     else
+> >>>>>> +             ti.ts.inner_hist_array[inner_diff]++;
+> >>>>>> +
+> >>>>>> +     if (outer_diff < ti.ts.outer_min)
+> >>>>>> +             ti.ts.outer_min =3D outer_diff;
+> >>>>>> +     if (inner_diff > ti.ts.outer_max)
+> >>>>>> +             ti.ts.outer_max =3D outer_diff;
+> >>>>>> +     ti.ts.outer_avg +=3D (double) outer_diff;
+> >>>>>> +     if (outer_diff >=3D ti.max_histogram)
+> >>>>>> +             ti.ts.outer_hist_overflow++;
+> >>>>>> +     else
+> >>>>>> +             ti.ts.outer_hist_array[outer_diff]++;
+> >>>>>> +
+> >>>>>> +     if (ti.quiet =3D=3D 0)
+> >>>>>> +             printf("index: %d, inner_diff: %8ld, outer_diff:
+> >>>>>> %8ld\n",
+> >>>>>> +                                     index, inner_diff, outer_dif=
+f);
+> >>>>>> +
+> >>>>>> +     return outer_diff;
+> >>>>>> +}
+> >>>>>> +
+> >>>>>> +static void *run_gpiobench_loop(void *cookie)
+> >>>>>> +{
+> >>>>>> +     int i, ret;
+> >>>>>> +
+> >>>>>> +     printf("----rt task, gpio loop, test run----\n");
+> >>>>>> +
+> >>>>>> +     for (i =3D 0; i < ti.max_cycles; i++) {
+> >>>>>> +             ti.total_cycles =3D i;
+> >>>>>> +             /* send a high level pulse from gpio output pin and
+> >>>>>> +              * receive an interrupt from the other gpio pin,
+> >>>>>> +              * measuring the time elapsed between the two events
+> >>>>>> +              */
+> >>>>>> +             ret =3D rw_gpio(GPIO_HIGH, i);
+> >>>>>> +             if (ret < 0) {
+> >>>>>> +                     printf("RW GPIO, failed\n");
+> >>>>>> +                     break;
+> >>>>>> +             } else if (ret > ti.tracelimit) {
+> >>>>>> +                     tracemark("hit latency threshold (%d > %d),
+> >>>>>> index: %d",
+> >>>>>> +                                             ret, ti.tracelimit, =
+i);
+> >>>>>> +                     break;
+> >>>>>> +             }
+> >>>>>> +
+> >>>>>> +             /*take a break, nanosleep here will not jeopardize
+> >>>>>> the latency*/
+> >>>>>> +             thread_msleep(10);
+> >>>>>> +
+> >>>>>> +             ret =3D rw_gpio(GPIO_LOW, i);
+> >>>>>> +             /* send a low level pulse from gpio output pin and
+> >>>>>> +              * receive an interrupt from the other gpio pin,
+> >>>>>> +              * measuring the time elapsed between the two events
+> >>>>>> +              */
+> >>>>>> +             if (ret < 0) {
+> >>>>>> +                     printf("RW GPIO, failed\n");
+> >>>>>> +                     break;
+> >>>>>> +             } else if (ti.tracelimit && ret > ti.tracelimit) {
+> >>>>>> +                     tracemark("hit latency threshold (%d > %d),
+> >>>>>> index: %d",
+> >>>>>> +                                             ret, ti.tracelimit, =
+i);
+> >>>>>> +                     break;
+> >>>>>> +             }
+> >>>>>> +
+> >>>>>> +             /*take a break, nanosleep here will not jeopardize
+> >>>>>> the latency*/
+> >>>>>> +             thread_msleep(10);
+> >>>>>> +     }
+> >>>>>> +
+> >>>>>> +     ti.ts.inner_avg /=3D (ti.total_cycles * 2);
+> >>>>>> +     ti.ts.outer_avg /=3D (ti.total_cycles * 2);
+> >>>>>> +
+> >>>>>> +     return NULL;
+> >>>>>> +}
+> >>>>>> +
+> >>>>>> +static void *run_gpiobench_react(void *cookie)
+> >>>>>> +{
+> >>>>>> +     int value, ret, i;
+> >>>>>> +     struct rtdm_gpio_readout rdo;
+> >>>>>> +
+> >>>>>> +     printf("----rt task, gpio react, test run----\n");
+> >>>>>> +
+> >>>>>> +     for (i =3D 0; i < ti.max_cycles; i++) {
+> >>>>>> +             /* received a pulse from latency box from one of
+> >>>>>> +              * the gpio pin pair
+> >>>>>> +              */
+> >>>>>> +             ret =3D read(ti.fd_dev_intr, &rdo, sizeof(rdo));
+> >>>>>> +             if (ret < 0) {
+> >>>>>> +                     printf("RW GPIO read, failed\n");
+> >>>>>> +                     break;
+> >>>>>> +             }
+> >>>>>> +
+> >>>>>> +             if (ti.quiet =3D=3D 0)
+> >>>>>> +                     printf("idx: %d, received signal from
+> >>>>>> latency box\n",
+> >>>>>> +                                 i);
+> >>>>>> +
+> >>>>>> +             /* send a signal back from the other gpio pin
+> >>>>>> +              * to latency box as the acknowledge,
+> >>>>>> +              * latency box will measure the time elapsed
+> >>>>>> +              * between the two events
+> >>>>>> +              */
+> >>>>>> +             value =3D GPIO_HIGH;
+> >>>>>> +             ret =3D write(ti.fd_dev_out, &value, sizeof(value));
+> >>>>>> +             if (ret < 0) {
+> >>>>>> +                     printf("RW GPIO write, failed\n");
+> >>>>>> +                     break;
+> >>>>>> +             }
+> >>>>>> +
+> >>>>>> +             if (ti.quiet =3D=3D 0)
+> >>>>>> +                     printf("idx: %d, sent reaction to latency
+> >>>>>> box\n", i);
+> >>>>>> +     }
+> >>>>>> +
+> >>>>>> +     return NULL;
+> >>>>>> +}
+> >>>>>> +
+> >>>>>> +static void setup_sched_parameters(pthread_attr_t *attr, int prio=
+)
+> >>>>>> +{
+> >>>>>> +     struct sched_param p;
+> >>>>>> +     int ret;
+> >>>>>> +
+> >>>>>> +     ret =3D pthread_attr_init(attr);
+> >>>>>> +     if (ret) {
+> >>>>>> +             printf("pthread_attr_init(), failed\n");
+> >>>>>> +             return;
+> >>>>>> +     }
+> >>>>>> +
+> >>>>>> +     ret =3D pthread_attr_setinheritsched(attr,
+> >>>>>> PTHREAD_EXPLICIT_SCHED);
+> >>>>>> +     if (ret) {
+> >>>>>> +             printf("pthread_attr_setinheritsched(), failed\n");
+> >>>>>> +             return;
+> >>>>>> +     }
+> >>>>>> +
+> >>>>>> +     ret =3D pthread_attr_setschedpolicy(attr,
+> >>>>>> +                             prio ? SCHED_FIFO : SCHED_OTHER);
+> >>>>>> +     if (ret) {
+> >>>>>> +             printf("pthread_attr_setschedpolicy(), failed\n");
+> >>>>>> +             return;
+> >>>>>> +     }
+> >>>>>> +
+> >>>>>> +     p.sched_priority =3D prio;
+> >>>>>> +     ret =3D pthread_attr_setschedparam(attr, &p);
+> >>>>>> +     if (ret) {
+> >>>>>> +             printf("pthread_attr_setschedparam(), failed\n");
+> >>>>>> +             return;
+> >>>>>> +     }
+> >>>>>> +}
+> >>>>>> +
+> >>>>>> +static void init_ti(void)
+> >>>>>> +{
+> >>>>>> +     memset(&ti, 0, sizeof(struct test_info));
+> >>>>>> +     ti.prio =3D DEFAULT_PRIO;
+> >>>>>> +     ti.max_cycles =3D MAX_CYCLES;
+> >>>>>> +     ti.total_cycles =3D MAX_CYCLES;
+> >>>>>> +     ti.max_histogram =3D MAX_HIST;
+> >>>>>> +     ti.tracelimit =3D DEFAULT_LIMIT;
+> >>>>>> +     ti.quiet =3D 0;
+> >>>>>> +     ti.gpio_out =3D -1;
+> >>>>>> +     ti.gpio_intr =3D -1;
+> >>>>>> +     ti.mode =3D MODE_LOOPBACK;
+> >>>>>> +
+> >>>>>> +     ti.ts.inner_min =3D ti.ts.outer_min =3D DEFAULT_LIMIT;
+> >>>>>> +     ti.ts.inner_max =3D ti.ts.outer_max =3D 0;
+> >>>>>> +     ti.ts.inner_avg =3D ti.ts.outer_avg =3D 0.0;
+> >>>>>> +}
+> >>>>>> +
+> >>>>>> +static void print_hist(void)
+> >>>>>> +{
+> >>>>>> +     int i;
+> >>>>>> +
+> >>>>>> +     printf("\n");
+> >>>>>> +     printf("# Inner Loop Histogram\n");
+> >>>>>> +     printf("# Inner Loop latency is the latency in kernel space\=
+n"
+> >>>>>> +                "# between gpio_set_value and irq handler\n");
+> >>>>>> +
+> >>>>>> +     for (i =3D 0; i < ti.max_histogram; i++) {
+> >>>>>> +             unsigned long curr_latency =3D ti.ts.inner_hist_arra=
+y[i];
+> >>>>>> +
+> >>>>>> +             printf("%06d ", i);
+> >>>>>> +             printf("%06lu\n", curr_latency);
+> >>>>>> +     }
+> >>>>>> +
+> >>>>>> +     printf("# Total:");
+> >>>>>> +     printf(" %09lu", ti.total_cycles);
+> >>>>>> +     printf("\n");
+> >>>>>> +
+> >>>>>> +     printf("# Min Latencies:");
+> >>>>>> +     printf(" %05lu", ti.ts.inner_min);
+> >>>>>> +     printf("\n");
+> >>>>>> +     printf("# Avg Latencies:");
+> >>>>>> +     printf(" %05lf", ti.ts.inner_avg);
+> >>>>>> +     printf("\n");
+> >>>>>> +     printf("# Max Latencies:");
+> >>>>>> +     printf(" %05lu", ti.ts.inner_max);
+> >>>>>> +     printf("\n");
+> >>>>>> +
+> >>>>>> +     printf("\n");
+> >>>>>> +     printf("\n");
+> >>>>>> +
+> >>>>>> +     printf("# Outer Loop Histogram\n");
+> >>>>>> +     printf("# Outer Loop latency is the latency in user space\n"
+> >>>>>> +                "# between write and read\n"
+> >>>>>> +                "# Technically, outer loop latency is inner loop
+> >>>>>> latercy\n"
+> >>>>>> +                "# plus overhead of event wakeup\n");
+> >>>>>> +
+> >>>>>> +     for (i =3D 0; i < ti.max_histogram; i++) {
+> >>>>>> +             unsigned long curr_latency =3D ti.ts.outer_hist_arra=
+y[i];
+> >>>>>> +
+> >>>>>> +             printf("%06d ", i);
+> >>>>>> +             printf("%06lu\n", curr_latency);
+> >>>>>> +     }
+> >>>>>> +
+> >>>>>> +     printf("# Total:");
+> >>>>>> +     printf(" %09lu", ti.total_cycles);
+> >>>>>> +     printf("\n");
+> >>>>>> +
+> >>>>>> +     printf("# Min Latencies:");
+> >>>>>> +     printf(" %05lu", ti.ts.outer_min);
+> >>>>>> +     printf("\n");
+> >>>>>> +     printf("# Avg Latencies:");
+> >>>>>> +     printf(" %05lf", ti.ts.outer_avg);
+> >>>>>> +     printf("\n");
+> >>>>>> +     printf("# Max Latencies:");
+> >>>>>> +     printf(" %05lu", ti.ts.outer_max);
+> >>>>>> +     printf("\n");
+> >>>>>> +}
+> >>>>>> +
+> >>>>>> +static void cleanup(void)
+> >>>>>> +{
+> >>>>>> +     int ret;
+> >>>>>> +
+> >>>>>> +     if (ti.tracelimit < DEFAULT_LIMIT)
+> >>>>>> +             tracing(OFF);
+> >>>>>> +
+> >>>>>> +     ret =3D close(ti.fd_dev_out);
+> >>>>>> +     if (ret < 0)
+> >>>>>> +             printf("can't close gpio_out device\n");
+> >>>>>> +
+> >>>>>> +     ret =3D close(ti.fd_dev_intr);
+> >>>>>> +     if (ret < 0)
+> >>>>>> +             printf("can't close gpio_intr device\n");
+> >>>>>> +
+> >>>>>> +     if (ti.mode =3D=3D MODE_LOOPBACK)
+> >>>>>> +             print_hist();
+> >>>>>> +
+> >>>>>> +}
+> >>>>>> +
+> >>>>>> +static void cleanup_and_exit(int sig)
+> >>>>>> +{
+> >>>>>> +     printf("Signal %d received\n", sig);
+> >>>>>> +     cleanup();
+> >>>>>> +     exit(0);
+> >>>>>> +}
+> >>>>>> +
+> >>>>>> +int main(int argc, char **argv)
+> >>>>>> +{
+> >>>>>> +     struct sigaction sa __attribute__((unused));
+> >>>>>> +     int ret =3D 0;
+> >>>>>> +     pthread_attr_t tattr;
+> >>>>>> +     int trigger, value;
+> >>>>>> +     char dev_name[64];
+> >>>>>> +
+> >>>>>> +     init_ti();
+> >>>>>> +
+> >>>>>> +     process_options(argc, argv);
+> >>>>>> +
+> >>>>>> +     ret =3D mlockall(MCL_CURRENT|MCL_FUTURE);
+> >>>>>> +     if (ret) {
+> >>>>>> +             printf("mlockall failed\n");
+> >>>>>> +             goto out;
+> >>>>>> +     }
+> >>>>>> +
+> >>>>>> +     sprintf(dev_name, "%s%s/gpio%d",
+> >>>>>> +                 DEV_PATH, ti.pin_controller, ti.gpio_out);
+> >>>>>> +     ti.fd_dev_out =3D open(dev_name, O_RDWR);
+> >>>>>> +     if (ti.fd_dev_out < 0) {
+> >>>>>> +             printf("can't open %s\n", dev_name);
+> >>>>>> +             goto out;
+> >>>>>> +     }
+> >>>>>> +
+> >>>>>> +     if (ti.gpio_out) {
+> >>>>>> +             value =3D 0;
+> >>>>>> +             ret =3D ioctl(ti.fd_dev_out, GPIO_RTIOC_DIR_OUT, &va=
+lue);
+> >>>>>> +             if (ret) {
+> >>>>>> +                     printf("ioctl gpio port output, failed\n");
+> >>>>>> +                     goto out;
+> >>>>>> +             }
+> >>>>>> +     }
+> >>>>>> +
+> >>>>>> +     sprintf(dev_name, "%s%s/gpio%d",
+> >>>>>> +                 DEV_PATH, ti.pin_controller, ti.gpio_intr);
+> >>>>>> +     ti.fd_dev_intr =3D open(dev_name, O_RDWR);
+> >>>>>> +     if (ti.fd_dev_intr < 0) {
+> >>>>>> +             printf("can't open %s\n", dev_name);
+> >>>>>> +             goto out;
+> >>>>>> +     }
+> >>>>>> +
+> >>>>>> +     if (ti.gpio_intr) {
+> >>>>>> +             trigger =3D
+> >>>>>> GPIO_TRIGGER_EDGE_FALLING|GPIO_TRIGGER_EDGE_RISING;
+> >>>>>> +             value =3D 1;
+> >>>>>> +
+> >>>>>> +             ret =3D ioctl(ti.fd_dev_intr, GPIO_RTIOC_IRQEN,
+> >>>>>> &trigger);
+> >>>>>> +             if (ret) {
+> >>>>>> +                     printf("ioctl gpio port interrupt, failed\n"=
+);
+> >>>>>> +                     goto out;
+> >>>>>> +             }
+> >>>>>> +
+> >>>>>> +  =EF=BF=BD=EF=BF=BD          ret =3D ioctl(ti.fd_dev_intr, GPIO_=
+RTIOC_TS, &value);
+> >>>>>> +             if (ret) {
+> >>>>>> +                     printf("ioctl gpio port ts, failed\n");
+> >>>>>> +                     goto out;
+> >>>>>> +             }
+> >>>>>> +     }
+> >>>>>> +
+> >>>>>> +     if (ti.tracelimit < DEFAULT_LIMIT)
+> >>>>>> +             tracing(ON);
+> >>>>>> +
+> >>>>>> +     signal(SIGTERM, cleanup_and_exit);
+> >>>>>> +     signal(SIGINT, cleanup_and_exit);
+> >>>>>> +     setup_sched_parameters(&tattr, ti.prio);
+> >>>>>> +
+> >>>>>> +     if (ti.mode =3D=3D MODE_LOOPBACK)
+> >>>>>> +             ret =3D pthread_create(&ti.gpio_task, &tattr,
+> >>>>>> +                                     run_gpiobench_loop, NULL);
+> >>>>>> +     else
+> >>>>>> +             ret =3D pthread_create(&ti.gpio_task, &tattr,
+> >>>>>> +                                     run_gpiobench_react, NULL);
+> >>>>>> +
+> >>>>>> +     if (ret) {
+> >>>>>> +             printf("pthread_create(gpiotask), failed\n");
+> >>>>>> +             goto out;
+> >>>>>> +     }
+> >>>>>> +
+> >>>>>> +     pthread_join(ti.gpio_task, NULL);
+> >>>>>> +     pthread_attr_destroy(&tattr);
+> >>>>>> +
+> >>>>>> +out:
+> >>>>>> +     cleanup();
+> >>>>>> +     return 0;
+> >>>>>> +}
+> >>>>>>
+> >>>>>
+> >>>>> Looks good to me. Greg, any comments from your side?
+> >>>>>
+> >>>>> Jan
+> >>>>>
+> >>>>> --
+> >>>>> Siemens AG, Corporate Technology, CT RDA IOT SES-DE
+> >>>>> Corporate Competence Center Embedded Linux
+> >>>>
+> >>>> Hi,
+> >>>>    I'll run this on the zynq platform for testing tonight.  It looks
+> >>>> good, my only concern is the 'ti.pin_controller' name may be a littl=
+e
+> >>>> bit misleading, but I want to confirm that assumption tonight.
+> >>>>
+> >>>> Thanks
+> >>>>
+> >>>> Greg
+> >>>
+> >>> Tested well on zynq.  After looking at gpio-core again, the name
+> >>> pinctrl makes sense.  Looks good to me :)
+> >>>
+> >>
+> >> Perfect - applied to next.
+> >>
+> >
+> > Had to fix
+> > https://travis-ci.com/github/xenomai-ci/xenomai/jobs/371291149. Was
+> > trivial enough to force-push a new version.
+> >
+>
+> ...but it wasn't trivial. I migrated from uint64_t to long long, please
+> have a look at the result in next. Should be tested again on both 64 and
+> 32-bit targets.
+>
+> Jan
+>
+> --
+> Siemens AG, Corporate Technology, CT RDA IOT SES-DE
+> Corporate Competence Center Embedded Linux
 
-The former defines a per-process userspace memory pool. The latter is an 
-in-kernel resource settings. So they are not the same.
+Don't know why i didn't hit it in my testing, I can run it again on
+ARM64/ARM platforms. I need to do an ipipe release on both soon
+anyway.
 
-Jan
+Thanks
 
--- 
-Siemens AG, Corporate Technology, CT RDA IOT SES-DE
-Corporate Competence Center Embedded Linux
+Greg
 
