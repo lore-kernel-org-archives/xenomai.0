@@ -1,12 +1,24 @@
-From: Josh Karch <jkarch@FirstMode.com>
-Subject: xeno-gpio-xilinx causes gpio-xilinx's IRQ callback(xgpio_irqhandler)
- to trigger rather than gpio-core's "gpio_pin_interrupt"
-Date: Mon, 13 Jul 2020 22:36:26 +0000
-Message-ID: <MN2PR19MB396729DFBDCB6D5C5E72B494D5600@MN2PR19MB3967.namprd19.prod.outlook.com>
-Content-Language: en-US
+Subject: Re: [PATCH v3] testsuite: App of gpio loopback/react benchmark
+References: <1596434678-27832-1-git-send-email-chensong@tj.kylinos.cn>
+ <310ffe2c-04cb-6583-bbc8-d64852fed69c@siemens.com>
+ <CALLqZ8Q8TGvMq3-MzRsHGTew9jkNbo1NHh+FxS+ELGLPqywhFw@mail.gmail.com>
+ <CALLqZ8R-k+C0RqvKBtGQpm69w4WcARUKAdh8vRk76AmLdg7Exw@mail.gmail.com>
+ <4576e489-ee96-0a0b-597b-21ac393a827b@siemens.com>
+ <7e84feef-9b11-0c4b-7f32-b32344682cf5@siemens.com>
+ <d9c96e5e-57f8-25ce-4e5c-8f2585788f5e@siemens.com>
+ <CALLqZ8TJpE2pmrRh6c-v7pRDbdToxveJAggu=gj=Ave67Jag=A@mail.gmail.com>
+ <a8fa5bfa-fe05-18b1-2fbd-2e9492ae6de9@siemens.com>
+ <5F349E22.3020900@tj.kylinos.cn>
+ <13e02bb6-85c0-a723-9e7c-0820b5099465@siemens.com>
+ <5F3510AF.4040600@tj.kylinos.cn>
+ <b3f4a39b-01a0-5ec4-61b9-bf237f239b0e@siemens.com>
+From: chensong <chensong@tj.kylinos.cn>
+Message-ID: <5F3518DA.1010008@tj.kylinos.cn>+3363110EDF08CF72
+Date: Thu, 13 Aug 2020 18:41:30 +0800
 MIME-Version: 1.0
-Content-Type: text/plain; charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
+In-Reply-To: <b3f4a39b-01a0-5ec4-61b9-bf237f239b0e@siemens.com>
+Content-Type: text/plain; charset="utf-8"; format="flowed"
+Content-Transfer-Encoding: 8bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,73 +27,53 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "xenomai@xenomai.org" <xenomai@xenomai.org>
-
-Hi,
-
-With the CAN bus issues resolved, I now have a situation where the xeno-gpi=
-o-xilinx driver (gpio-core.c) causes a complete system lockup when IRQs are=
- enabled and a GPIO toggle triggers the IRQ event.
-
-Here's what I know:  I instrumented the NRT driver to see how deeply entren=
-ched and intertwined the real-time and non real-time drivers are:
-
-(1) xeno-gpio-xilinx calls gpio-core which piggybacks upon the Xilinx "gpio=
--xilinx" driver.
-(2)It uses the OF scan information to create /dev/rtdm/gpio@address/gpioxxx=
- driver pins.
-
-When enabling interrupts:
-(1)It uses the  NRT "Xgpio-request" function to request a gpio pin and set =
-the pin to an input, though for some reason it calls the set gpio as input =
-function twice
-(2) It then calls xgpio-toirq twice for some reason
-(3) It sets the IRQ type.  Only the rising edge IRQ is supported with the X=
-ilinx Driver
-(4) It uses the unmask function in the non RT driver to unmask the IRQ
-(5) It then sets the gpio as input again. I think this is a side effect of =
-calling the IOCTL to enable IRQ and then to block file descriptors on inter=
-rupt.
-(6) Once the interrupt is triggered, on occasion the Non realtime xgpio_irq=
-handler gets called rather than the gpio_pin_interrupt function.  This make=
-s me think the NRT driver is not properly setting the interrupt up to work =
-with the Xenomai handler.  Once the non realtime xgpio_irqhandler gets call=
-ed the code gets stuck in an infinite loop and crashes.
-
-Sometimes the system freezes before using the handler, other times it runs =
-the handler but it's not possible to break.
-
-The following is a transcript of a time when the nrt handler is not called.=
-    Otherwise you'd see a message when IRQ is triggered that the system con=
-tinually is in a nrt IRQ handler loop.
-
-So the question is: why is the non-rt handler being called and not the gpio=
--core rt_gpio "gpio-pin-interrupt"?
+To: Jan Kiszka <jan.kiszka@siemens.com>, Greg Gallagher <greg@embeddedgreg.com>
+Cc: "Xenomai@xenomai.org" <xenomai@xenomai.org>
 
 
-[  303.900487] requesting GPIO
-[  303.903419] setting gpio 0 as input
-[  303.907004] setting gpio 0 as input
-[  303.910549] called xgpio to irq
-[  303.913768] called xgpio to irq
-[  303.916913] setting irq type 1
-[  303.919990] unmasking IRQ
-[  303.922600] setting gpio 0 as input
-[  324.917162] rcu: INFO: rcu_sched detected stalls on CPUs/tasks:
-[  324.923100] rcu:     0-...0: (1 ticks this GP) idle=3D66e/1/0x4000000000=
-000000
-softirq=3D8388/8389 fqs=3D2247
-[  324.932321] rcu:     (detected by 3, t=3D5252 jiffies, g=3D12713, q=3D18=
-8)
-[  324.938411] Task dump for CPU 0:
-[  324.941629] xeno_gpio_teste R  running task        0   433    388 0x0000=
-0202
-[  324.948682] Call trace:
-[  324.951126]  __switch_to+0x94/0xf0
-[  324.954522]  0xffffff8008dea658
 
-Best,
+On 2020年08月13日 18:27, Jan Kiszka wrote:
+> On 13.08.20 12:06, chensong wrote:
+>>
+>>
+>> On 2020年08月13日 16:54, Jan Kiszka wrote:
+>>> On 13.08.20 03:57, chensong wrote:
+>>>> I read the code in cyclictest, looks like
+>>>>
+>>>> printf("index: %d, inner_diff: %llu, outer_diff: %llu\n", index,
+>>>>                      (unsigned long long)inner_diff,
+>>>>                      (unsigned long long)outer_diff);
+>>>
+>>> I even wonder if this is strictly correct as it ignores negative diffs.
+>>>
+>>>>
+>>>> can fix the error reported in
+>>>> https://travis-ci.com/github/xenomai-ci/xenomai/jobs/371291149.
+>>>>
+>>>> Do i need to apply a new version?
+>>>
+>>> No, I've converted your patch to long long types already. Please
+>>> cross-check what is in next branch.
+>> i'm a little confused here, cross-check what? negative diffs? in
+>> theory, it should be always positive, do you mean i keep checking if
+>> there is a negative diff?
+>>
+>> and what's next branch? what can i do about it?
+>
+> I've modified your patch in
+> https://gitlab.denx.de/Xenomai/xenomai/-/commits/next. Please have a
+> look if
+> https://gitlab.denx.de/Xenomai/xenomai/-/commit/0bcfce8fdc8dee48fa7d85dcd3db0d0ecc6bed1a
+> is fine for you as well.
 
-Josh Karch
+i'm fine with that, it's thoughtful, thanks a lot.
+
+chensong
+
+>
+> Thanks,
+> Jan
+>
+
 
 
