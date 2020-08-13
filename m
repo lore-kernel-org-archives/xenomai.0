@@ -9,13 +9,13 @@ References: <1596434678-27832-1-git-send-email-chensong@tj.kylinos.cn>
  <CALLqZ8TJpE2pmrRh6c-v7pRDbdToxveJAggu=gj=Ave67Jag=A@mail.gmail.com>
  <a8fa5bfa-fe05-18b1-2fbd-2e9492ae6de9@siemens.com>
  <5F349E22.3020900@tj.kylinos.cn>
-From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <13e02bb6-85c0-a723-9e7c-0820b5099465@siemens.com>
-Date: Thu, 13 Aug 2020 10:54:55 +0200
+ <13e02bb6-85c0-a723-9e7c-0820b5099465@siemens.com>
+From: chensong <chensong@tj.kylinos.cn>
+Message-ID: <5F3510AF.4040600@tj.kylinos.cn>+707BC5D1DB2335E8
+Date: Thu, 13 Aug 2020 18:06:39 +0800
 MIME-Version: 1.0
-In-Reply-To: <5F349E22.3020900@tj.kylinos.cn>
+In-Reply-To: <13e02bb6-85c0-a723-9e7c-0820b5099465@siemens.com>
 Content-Type: text/plain; charset="utf-8"; format="flowed"
-Content-Language: en-US
 Content-Transfer-Encoding: 8bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
@@ -25,30 +25,38 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: chensong <chensong@tj.kylinos.cn>, Greg Gallagher <greg@embeddedgreg.com>
+To: Jan Kiszka <jan.kiszka@siemens.com>, Greg Gallagher <greg@embeddedgreg.com>
 Cc: "Xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On 13.08.20 03:57, chensong wrote:
-> I read the code in cyclictest, looks like
-> 
-> printf("index: %d, inner_diff: %llu, outer_diff: %llu\n", index,
->                      (unsigned long long)inner_diff,
->                      (unsigned long long)outer_diff);
 
-I even wonder if this is strictly correct as it ignores negative diffs.
 
-> 
-> can fix the error reported in 
-> https://travis-ci.com/github/xenomai-ci/xenomai/jobs/371291149.
-> 
-> Do i need to apply a new version?
+On 2020年08月13日 16:54, Jan Kiszka wrote:
+> On 13.08.20 03:57, chensong wrote:
+>> I read the code in cyclictest, looks like
+>>
+>> printf("index: %d, inner_diff: %llu, outer_diff: %llu\n", index,
+>>                      (unsigned long long)inner_diff,
+>>                      (unsigned long long)outer_diff);
+>
+> I even wonder if this is strictly correct as it ignores negative diffs.
+>
+>>
+>> can fix the error reported in
+>> https://travis-ci.com/github/xenomai-ci/xenomai/jobs/371291149.
+>>
+>> Do i need to apply a new version?
+>
+> No, I've converted your patch to long long types already. Please
+> cross-check what is in next branch.
+i'm a little confused here, cross-check what? negative diffs? in theory, 
+it should be always positive, do you mean i keep checking if there is a 
+negative diff?
 
-No, I've converted your patch to long long types already. Please 
-cross-check what is in next branch.
+and what's next branch? what can i do about it?
 
-Jan
+>
+> Jan
+>
 
--- 
-Siemens AG, Corporate Technology, CT RDA IOT SES-DE
-Corporate Competence Center Embedded Linux
+
 
