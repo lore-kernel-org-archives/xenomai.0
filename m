@@ -1,13 +1,22 @@
+Subject: Re: [PATCH v3] testsuite: App of gpio loopback/react benchmark
+References: <1596434678-27832-1-git-send-email-chensong@tj.kylinos.cn>
+ <310ffe2c-04cb-6583-bbc8-d64852fed69c@siemens.com>
+ <CALLqZ8Q8TGvMq3-MzRsHGTew9jkNbo1NHh+FxS+ELGLPqywhFw@mail.gmail.com>
+ <CALLqZ8R-k+C0RqvKBtGQpm69w4WcARUKAdh8vRk76AmLdg7Exw@mail.gmail.com>
+ <4576e489-ee96-0a0b-597b-21ac393a827b@siemens.com>
+ <7e84feef-9b11-0c4b-7f32-b32344682cf5@siemens.com>
+ <d9c96e5e-57f8-25ce-4e5c-8f2585788f5e@siemens.com>
+ <CALLqZ8TJpE2pmrRh6c-v7pRDbdToxveJAggu=gj=Ave67Jag=A@mail.gmail.com>
+ <a8fa5bfa-fe05-18b1-2fbd-2e9492ae6de9@siemens.com>
+ <5F349E22.3020900@tj.kylinos.cn>
+From: Jan Kiszka <jan.kiszka@siemens.com>
+Message-ID: <13e02bb6-85c0-a723-9e7c-0820b5099465@siemens.com>
+Date: Thu, 13 Aug 2020 10:54:55 +0200
 MIME-Version: 1.0
-References: <CAAvDm6YF-PcERwDrV2C6NVHqKLE9+_z6R6tQq29uyHff=Oyj3A@mail.gmail.com>
- <846f8be9-c102-ef57-36f9-1c9b769805ab@siemens.com>
-In-Reply-To: <846f8be9-c102-ef57-36f9-1c9b769805ab@siemens.com>
-From: =?UTF-8?B?5a2Z5LiW6b6ZIHN1bnNoaWxvbmc=?= <sunshilong369@gmail.com>
-Date: Thu, 13 Aug 2020 15:46:57 +0800
-Message-ID: <CAAvDm6Y+EeaEu6+=D+3BPV6OvdwzLShgJ_HuUu4n_r67oz24iw@mail.gmail.com>
-Subject: Re: Question about round-robin scheduling.
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+In-Reply-To: <5F349E22.3020900@tj.kylinos.cn>
+Content-Type: text/plain; charset="utf-8"; format="flowed"
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,57 +25,30 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jan Kiszka <jan.kiszka@siemens.com>
-Cc: xenomai <xenomai@xenomai.org>
+To: chensong <chensong@tj.kylinos.cn>, Greg Gallagher <greg@embeddedgreg.com>
+Cc: "Xenomai@xenomai.org" <xenomai@xenomai.org>
 
-Hi, Jan
+On 13.08.20 03:57, chensong wrote:
+> I read the code in cyclictest, looks like
+> 
+> printf("index: %d, inner_diff: %llu, outer_diff: %llu\n", index,
+>                      (unsigned long long)inner_diff,
+>                      (unsigned long long)outer_diff);
 
-Thank you for your reply.
+I even wonder if this is strictly correct as it ignores negative diffs.
 
->Look how SCHED_RR is commonly configured, nothing special in Xenomai.
->The only specialty is CONFIG_XENO_OPT_RR_QUANTUM.
-As per the documentation(
-https://xenomai.org/documentation/xenomai-3/html/xeno3prm/group__alchemy__t=
-ask.html#ga03387550693c21d0223f739570ccd992),
-what confuses me is that it only explicitly states that the
-rt_task_create() function supports
-SCHED_FIFO (other than supporting both SCHED_FIFO and SCHED_RR).
+> 
+> can fix the error reported in 
+> https://travis-ci.com/github/xenomai-ci/xenomai/jobs/371291149.
+> 
+> Do i need to apply a new version?
 
-Then, how can I configure the scheduling policy of SCHED_RR?
+No, I've converted your patch to long long types already. Please 
+cross-check what is in next branch.
 
-Thank you for your attention to this matter.
+Jan
 
-
-On Thu, Aug 13, 2020 at 12:00 AM Jan Kiszka <jan.kiszka@siemens.com> wrote:
->
-> On 06.08.20 14:27, =E5=AD=99=E4=B8=96=E9=BE=99 sunshilong via Xenomai wro=
-te:
-> > Hi, list
-> >
-> > As per the Kconfig(
-> > https://gitlab.denx.de/Xenomai/xenomai/-/blob/5714ceede70ccd39b1bf6c41a=
-72cfa94f98e169a/kernel/cobalt/Kconfig
-> > ),
-> > which says [emphasise mine]:
-> > Cobalt has a built-in real-time class, which supports both
-> > preemptive fixed-priority FIFO, and **round-robin scheduling**.
-> > Cobalt supports  round-robin scheduling whereas
-> > rt_task_create function only supports SCHED_FIFO and SCHED
-> > (
-> > https://xenomai.org/documentation/xenomai-3/html/xeno3prm/group__alchem=
-y__task.html#ga03387550693c21d0223f739570ccd992
-> > ).
-> >
-> > So, I wonder how to set a real-time task to use round-robin scheduling.
-> > Or, am I missing something?
-> >
->
-> Look how SCHED_RR is commonly configured, nothing special in Xenomai.
-> The only specialty is CONFIG_XENO_OPT_RR_QUANTUM.
->
-> Jan
->
-> --
-> Siemens AG, Corporate Technology, CT RDA IOT SES-DE
-> Corporate Competence Center Embedded Linux
+-- 
+Siemens AG, Corporate Technology, CT RDA IOT SES-DE
+Corporate Competence Center Embedded Linux
 
