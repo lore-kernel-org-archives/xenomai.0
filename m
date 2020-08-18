@@ -1,15 +1,12 @@
-Subject: =?utf-8?q?Re=3A_Posix_periodic_time_first_tick?=
-Date: Tue, 18 Aug 2020 17:21:55 +0200
-From: =?utf-8?q?Petr_=c4=8cervenka?= <grugh@centrum.cz>
-References: <20200807171220.E090CB18@centrum.cz>,
- <166391923.711496.1597041953464.JavaMail.zimbra@wolfram.com>,
- <4baa56a0-13dc-08d7-79d4-00f63f85c2b0@centrum.cz>
- <8f666cae-3e7d-fc9c-98a5-a6f5bb3a11cc@xenomai.org>
-In-Reply-To: <8f666cae-3e7d-fc9c-98a5-a6f5bb3a11cc@xenomai.org>
-MIME-Version: 1.0
-Message-Id: <20200818172155.532FF4F0@centrum.cz>
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Sender: pintu=codeaurora.org@mg.codeaurora.org
+From: Pintu Kumar <pintu@codeaurora.org>
+Subject: [PATCH v3] kernel:cobalt:heap: replace kzalloc with vzalloc
+Date: Tue, 18 Aug 2020 23:26:31 +0530
+Message-Id: <1597773391-10105-1-git-send-email-pintu@codeaurora.org>
+In-Reply-To: <1597487369-20838-1-git-send-email-pintu@codeaurora.org>
+References: <1597487369-20838-1-git-send-email-pintu@codeaurora.org>
+In-Reply-To: <1597487369-20838-1-git-send-email-pintu@codeaurora.org>
+References: <1597487369-20838-1-git-send-email-pintu@codeaurora.org>
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -18,13 +15,53 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: =?utf-8?q?Philippe_Gerum?= <rpm@xenomai.org>, =?utf-8?q?Per_Oberg?= <pero@wolfram.com>, Xenomai <xenomai@xenomai.org>
+To: xenomai@xenomai.org, rpm@xenomai.org, sunshilong369@gmail.com, pintu@codeaurora.org, jan.kiszka@siemens.com
+Cc: pintu.ping@gmail.com
 
-Hello.
-Sorry for late answer, I was on vacations.
-I originally thought that the issue was present on Xenomai 2.6.3 and Xenomai 3.1.
-Now I can confirm, that Xenomai 2.6.3 has that issue, but I can't reproduce it on Xenomai 3.1 anymore. So it could be only my imagination.
-So ignore most of my comments and thank you for your support.
-Best regards
-Petr C.
+With CONFIG_XENO_OPT_PRIVATE_HEAPSZ, user can request any heap size
+based on their needs. For some application needs, this can grow as large
+as 4MB that is, 2^10 order pages, which is unlikely to succeed with
+kzalloc. Even the default (256KB) may fail on highly fragmented system.
+
+Moreover, for this heap allocation, we don't need physical contiguous
+memory. Thus vmalloc/vzalloc may be sufficient here.
+
+Note, we may also use kvzalloc/kvmalloc, but unfortunately these are not
+available in all kernel versions. Thus for backward compatibility we stick
+to vmalloc at least till we support 4.x kernel.
+
+Signed-off-by: Pintu Kumar <pintu@codeaurora.org>
+Signed-off-by: sunshilong <sunshilong369@gmail.com>
+Tested-by: sunshilong <sunshilong369@gmail.com>
+---
+ kernel/cobalt/heap.c | 5 ++---
+ 1 file changed, 2 insertions(+), 3 deletions(-)
+
+diff --git a/kernel/cobalt/heap.c b/kernel/cobalt/heap.c
+index d01a2e0..5d14a47 100644
+--- a/kernel/cobalt/heap.c
++++ b/kernel/cobalt/heap.c
+@@ -749,8 +749,7 @@ int xnheap_init(struct xnheap *heap, void *membase, size_t size)
+ 	xnlock_init(&heap->lock);
+ 
+ 	nrpages = size >> XNHEAP_PAGE_SHIFT;
+-	heap->pagemap = kzalloc(sizeof(struct xnheap_pgentry) * nrpages,
+-				GFP_KERNEL);
++	heap->pagemap = vzalloc(sizeof(struct xnheap_pgentry) * nrpages);
+ 	if (heap->pagemap == NULL)
+ 		return -ENOMEM;
+ 
+@@ -804,7 +803,7 @@ void xnheap_destroy(struct xnheap *heap)
+ 	nrheaps--;
+ 	xnvfile_touch_tag(&vfile_tag);
+ 	xnlock_put_irqrestore(&nklock, s);
+-	kfree(heap->pagemap);
++	vfree(heap->pagemap);
+ }
+ EXPORT_SYMBOL_GPL(xnheap_destroy);
+ 
+-- 
+Qualcomm India Private Limited, on behalf of Qualcomm Innovation Center, Inc.,
+is a member of Code Aurora Forum, a Linux Foundation Collaborative Project.
+
 
