@@ -1,14 +1,14 @@
-Subject: Re: Strange switching [threadname] to secondary mode after exception
- #0 in kernel-space at 0x80272444
-References: <1174-5f438c00-25-37e14c00@201457175>
+Subject: Re: [xenomai-images][ PATCH v2 0/4] ci: Add configuration to run on
+ gitlab.com
+References: <20200824112527.4616-1-Quirin.Gylstorff@siemens.com>
 From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <9ab37fa2-25df-dc60-453b-83b36cb7f1f4@siemens.com>
-Date: Mon, 24 Aug 2020 13:28:51 +0200
+Message-ID: <a292b9e6-c9f5-af0d-3032-44c2d6ed4b1c@siemens.com>
+Date: Mon, 24 Aug 2020 13:30:34 +0200
 MIME-Version: 1.0
-In-Reply-To: <1174-5f438c00-25-37e14c00@201457175>
-Content-Type: text/plain; charset="utf-8"
+In-Reply-To: <20200824112527.4616-1-Quirin.Gylstorff@siemens.com>
+Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,42 +17,66 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: =?UTF-8?Q?Fran=c3=a7ois_Legal?= <devel@thom.fr.eu.org>
-Cc: xenomai@xenomai.org, Greg Gallagher <greg@embeddedgreg.com>
+To: "Q. Gylstorff" <Quirin.Gylstorff@siemens.com>, xenomai@xenomai.org
 
-On 24.08.20 11:44, François Legal wrote:
-> Le Vendredi, Août 21, 2020 20:04 CEST, Jan Kiszka <jan.kiszka@siemens.com> a écrit: 
->  
->> On 20.08.20 15:46, François Legal via Xenomai wrote:
->>> Using RTNet with multiple interfaces, xenomai 3.1 with linux 4.4
->>> Whenever a posix RT thread calls recvmsg (), I get this error.
->>>
->>> I could track this down to line 422 in udp.c :     msg = rtnet_get_arg(fd, &_msg, u_msg, sizeof(_msg));
->>>
->>> If I disassemble the kernel, the failing instruction (at 0x80272444) is a nop in arm_copy_from_user
->>> Am I doing anything wrong ?
->>
->> Maybe you are passing an invalid pointer to recvmsg, directly or in its
->> message structures. That would cause an exception which is fixed up but
->> also reported. Do you get an error in return?
->>
+On 24.08.20 13:25, Q. Gylstorff wrote:
+> From: Quirin Gylstorff <quirin.gylstorff@siemens.com>
 > 
-> So, I checked, and the same happens on calls to sendto ().
-> I doubt the pointer passed is invalid, as I don't get that kind of problems with 3.0.9.
-> Upon return from recvmsg or sendto, I get -1 with errno set to 14.
-
-14 is EFAULT. That at least is as expected.
-
-> Also, I checked in ipipe_base.h, exception #0 seem to be an instruction/data access exception, which seems very weird to me for a NOP instruction that does not appear to be on a line/page boundary.
 > 
+> Add the configration to run the ci builds on gitlab.com or on-premise setups with
+> gitlab artifacts enabled. Each completed pipeline creates around 1.5 GB aritfacts.
 
-Can you reproduce the issue with a simple test case? Is it
-board-dependent, or does it even trigger in a qemu-arm environment like
-xenomai-images builds?
-
-Greg, any idea?
+Are those artifacts pushed around, to/from the gitlab instance? Our
+on-premise won't support that, others may not like it either.
 
 Jan
+
+> An active pipeline can be seen at https://gitlab.com/Quirin.Gy/xenomai-images-test/pipelines.
+> 
+> 
+> Changes V2:
+> - Rename siemens-ci.yml to .gitlab-no-artifacts.yml
+> - Rename .ci to ci
+> - Rename ci/gitlab-com.yml to ci/artifacts.yml
+> - Renamae ci/siemens-ci.yml to ci/no-artifacts.yml
+> 
+> Quirin Gylstorff (4):
+>   ci: Build and test from gitlab.com
+>   ci: Add option to compress ext4-images.
+>   test/README: Update
+>   scripts/run-lava-tests: Add LAVA_MASTER_URL
+> 
+>  .gitlab-ci-no-artifacts.yml                   |  12 ++
+>  .gitlab-ci.yml                                | 145 +---------------
+>  ci/artifacts.yml                              |  26 +++
+>  ci/gitlab-ci-base.yml                         | 156 ++++++++++++++++++
+>  ci/no-artifacts.yml                           |  22 +++
+>  .../0001-classes-ext4.img-Compress.patch      |  31 ++++
+>  opt-ext4-gz.yml                               |  24 +++
+>  scripts/deploy_for_testing.sh                 |   4 +-
+>  scripts/get-build-id.sh                       |  29 ++++
+>  scripts/install-lavacli.sh                    |   5 +-
+>  scripts/run-lava-tests.sh                     |  10 +-
+>  tests/README.md                               |  60 +++++--
+>  ...bone.yml => xenomai-beagle-bone-black.yml} |   4 +-
+>  tests/jobs/xenomai-hikey.yml                  |   4 +-
+>  tests/jobs/xenomai-ipc227e.yml                |   6 +-
+>  tests/jobs/xenomai-minnow.yml                 |   6 +-
+>  tests/jobs/xenomai-qemu-amd64.yml             |   6 +-
+>  tests/jobs/xenomai-qemu-arm64.yml             |   6 +-
+>  tests/jobs/xenomai-qemu-armhf.yml             |   6 +-
+>  ...omai-x86-64.yml => xenomai-x86-64-efi.yml} |   6 +-
+>  20 files changed, 381 insertions(+), 187 deletions(-)
+>  create mode 100644 .gitlab-ci-no-artifacts.yml
+>  create mode 100644 ci/artifacts.yml
+>  create mode 100644 ci/gitlab-ci-base.yml
+>  create mode 100644 ci/no-artifacts.yml
+>  create mode 100644 isar-patches/0001-classes-ext4.img-Compress.patch
+>  create mode 100644 opt-ext4-gz.yml
+>  create mode 100755 scripts/get-build-id.sh
+>  rename tests/jobs/{xenomai-beaglebone.yml => xenomai-beagle-bone-black.yml} (91%)
+>  rename tests/jobs/{xenomai-x86-64.yml => xenomai-x86-64-efi.yml} (86%)
+> 
 
 -- 
 Siemens AG, Corporate Technology, CT RDA IOT SES-DE
