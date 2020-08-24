@@ -1,13 +1,12 @@
-Subject: Re: initial porting of IPIPE x86_64 patches onto Linux stable 5.4.52
-References: <MWHPR11MB1918BC3591D43C7A139375A0EE560@MWHPR11MB1918.namprd11.prod.outlook.com>
-From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <38d73dec-3163-cfbc-609e-60b9d65d6246@siemens.com>
-Date: Mon, 24 Aug 2020 08:09:39 +0200
+From: =?utf-8?q?Fran=C3=A7ois_Legal?= <devel@thom.fr.eu.org>
+In-Reply-To: <7a487933-dd50-6ee9-cd5f-6d99bc5b3c76@siemens.com>
+Content-Type: text/plain; charset="utf-8"
+Date: Mon, 24 Aug 2020 11:44:39 +0200
 MIME-Version: 1.0
-In-Reply-To: <MWHPR11MB1918BC3591D43C7A139375A0EE560@MWHPR11MB1918.namprd11.prod.outlook.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Message-ID: <1174-5f438c00-25-37e14c00@201457175>
+Subject: =?utf-8?q?Re=3A?= Strange switching =?utf-8?q?=5Bthreadname=5D?= to 
+ secondary mode after exception #0 in kernel-space at 0x80272444
+Content-Transfer-Encoding: quoted-printable
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,44 +15,44 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "Meng, Fino" <fino.meng@intel.com>, "Xenomai (xenomai@xenomai.org)" <xenomai@xenomai.org>, Greg Gallagher <greg@embeddedgreg.com>, Steven Seeger <steven.seeger@flightsystems.net>
-Cc: "Wang, Rick Y" <rick.y.wang@intel.com>, "Pirou, Florent" <florent.pirou@intel.com>, "Hu, Mingliang" <mingliang.hu@intel.com>, Henning Schild <henning.schild@siemens.com>
+To: Jan Kiszka <jan.kiszka@siemens.com>
+Cc: xenomai@xenomai.org
 
-On 24.08.20 02:48, Meng, Fino wrote:
-> Dear all, 
+Le Vendredi, Ao=C3=BBt 21, 2020 20:04 CEST, Jan Kiszka <jan.kiszka@siem=
+ens.com> a =C3=A9crit: 
+ 
+> On 20.08.20 15:46, Fran=C3=A7ois Legal via Xenomai wrote:
+> > Using RTNet with multiple interfaces, xenomai 3.1 with linux 4.4
+> > Whenever a posix RT thread calls recvmsg (), I get this error.
+> > 
+> > I could track this down to line 422 in udp.c :     msg =3D rtnet=5F=
+get=5Farg(fd, &=5Fmsg, u=5Fmsg, sizeof(=5Fmsg));
+> > 
+> > If I disassemble the kernel, the failing instruction (at 0x80272444=
+) is a nop in arm=5Fcopy=5Ffrom=5Fuser
+> > Am I doing anything wrong ?
 > 
-> We ported IPIPE patch from 4.19.89-x86-9 to Linux stable 5.4.52,  temporarily uploaded to github for review: 
-> 
-> https://github.com/intel/linux-stable-xenomai/tree/review/5.4.52/stable/ipipe/xenomai-3.1
-> 
-> pls help to review and check mistakes.  I didn't build it yet, due to I am not confidence on make a perfect kernel config
-> 
-> plan of this week:
->   Make a good kernel config, build, fix bugs and patch format.
->   Check and pick some CIP branch' patches.
+> Maybe you are passing an invalid pointer to recvmsg, directly or in i=
+ts
+> message structures. That would cause an exception which is fixed up b=
+ut
+> also reported. Do you get an error in return?
 > 
 
-Thanks a lot for your effort already!
+So, I checked, and the same happens on calls to sendto ().
+I doubt the pointer passed is invalid, as I don't get that kind of prob=
+lems with 3.0.9.
+Upon return from recvmsg or sendto, I get -1 with errno set to 14.
+Also, I checked in ipipe=5Fbase.h, exception #0 seem to be an instructi=
+on/data access exception, which seems very weird to me for a NOP instru=
+ction that does not appear to be on a line/page boundary.
 
-> @Jan,  I didn't fully catch about the ARCH/NON ARCH separation discussed on last meeting,
-> What I should do about it? 
+Fran=C3=A7ois
 
-All non-x86 I-pipe commit should be at the beginning of the queue so
-that I can split them off into ipipe-noarch. On first glance, this
-already seems to be the case.
+> Jan
+> 
+> -- 
+> Siemens AG, Corporate Technology, CT RDA IOT SES-DE
+> Corporate Competence Center Embedded Linux
 
-Greg, with this baseline available, porting ARM/ARM64 to 5.4 should
-become possible. Thought I would wait until we have basic confidence on
-x86 into the generic pieces. Steven, same for powerpc.
-
-For 5.<next-lts> (5.10 likely), the plan remains going for dovetail.
-However, that may requires a xenomai-3.2, thus this can give us some
-time for the existing 3.1 series, and also for converting to 64-bit time_t.
-
-Thanks,
-Jan
-
--- 
-Siemens AG, Corporate Technology, CT RDA IOT SES-DE
-Corporate Competence Center Embedded Linux
 
