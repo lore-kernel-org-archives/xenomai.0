@@ -1,8 +1,9 @@
 From: "Q. Gylstorff" <Quirin.Gylstorff@siemens.com>
-Subject: [xenomai-images][ PATCH v2 0/4] ci: Add configuration to run on
- gitlab.com 
-Date: Mon, 24 Aug 2020 13:25:23 +0200
-Message-Id: <20200824112527.4616-1-Quirin.Gylstorff@siemens.com>
+Subject: [xenomai-images][ PATCH v2 3/4] test/README: Update
+Date: Mon, 24 Aug 2020 13:25:26 +0200
+Message-Id: <20200824112527.4616-4-Quirin.Gylstorff@siemens.com>
+In-Reply-To: <20200824112527.4616-1-Quirin.Gylstorff@siemens.com>
+References: <20200824112527.4616-1-Quirin.Gylstorff@siemens.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
@@ -17,55 +18,92 @@ To: xenomai@xenomai.org, Jan.Kiszka@siemens.com
 
 From: Quirin Gylstorff <quirin.gylstorff@siemens.com>
 
+Add missing targets and update CI variable description.
 
-Add the configration to run the ci builds on gitlab.com or on-premise setups with
-gitlab artifacts enabled. Each completed pipeline creates around 1.5 GB aritfacts.
-An active pipeline can be seen at https://gitlab.com/Quirin.Gy/xenomai-images-test/pipelines.
+Signed-off-by: Quirin Gylstorff <quirin.gylstorff@siemens.com>
+---
+ tests/README.md | 59 ++++++++++++++++++++++++++++++++++++-------------
+ 1 file changed, 44 insertions(+), 15 deletions(-)
 
-
-Changes V2:
-- Rename siemens-ci.yml to .gitlab-no-artifacts.yml
-- Rename .ci to ci
-- Rename ci/gitlab-com.yml to ci/artifacts.yml
-- Renamae ci/siemens-ci.yml to ci/no-artifacts.yml
-
-Quirin Gylstorff (4):
-  ci: Build and test from gitlab.com
-  ci: Add option to compress ext4-images.
-  test/README: Update
-  scripts/run-lava-tests: Add LAVA_MASTER_URL
-
- .gitlab-ci-no-artifacts.yml                   |  12 ++
- .gitlab-ci.yml                                | 145 +---------------
- ci/artifacts.yml                              |  26 +++
- ci/gitlab-ci-base.yml                         | 156 ++++++++++++++++++
- ci/no-artifacts.yml                           |  22 +++
- .../0001-classes-ext4.img-Compress.patch      |  31 ++++
- opt-ext4-gz.yml                               |  24 +++
- scripts/deploy_for_testing.sh                 |   4 +-
- scripts/get-build-id.sh                       |  29 ++++
- scripts/install-lavacli.sh                    |   5 +-
- scripts/run-lava-tests.sh                     |  10 +-
- tests/README.md                               |  60 +++++--
- ...bone.yml => xenomai-beagle-bone-black.yml} |   4 +-
- tests/jobs/xenomai-hikey.yml                  |   4 +-
- tests/jobs/xenomai-ipc227e.yml                |   6 +-
- tests/jobs/xenomai-minnow.yml                 |   6 +-
- tests/jobs/xenomai-qemu-amd64.yml             |   6 +-
- tests/jobs/xenomai-qemu-arm64.yml             |   6 +-
- tests/jobs/xenomai-qemu-armhf.yml             |   6 +-
- ...omai-x86-64.yml => xenomai-x86-64-efi.yml} |   6 +-
- 20 files changed, 381 insertions(+), 187 deletions(-)
- create mode 100644 .gitlab-ci-no-artifacts.yml
- create mode 100644 ci/artifacts.yml
- create mode 100644 ci/gitlab-ci-base.yml
- create mode 100644 ci/no-artifacts.yml
- create mode 100644 isar-patches/0001-classes-ext4.img-Compress.patch
- create mode 100644 opt-ext4-gz.yml
- create mode 100755 scripts/get-build-id.sh
- rename tests/jobs/{xenomai-beaglebone.yml => xenomai-beagle-bone-black.yml} (91%)
- rename tests/jobs/{xenomai-x86-64.yml => xenomai-x86-64-efi.yml} (86%)
-
+diff --git a/tests/README.md b/tests/README.md
+index 01b956e..8bf97a5 100644
+--- a/tests/README.md
++++ b/tests/README.md
+@@ -8,9 +8,11 @@ sends them to the lava testlab.
+ ## Test targets
+ 
+ following images are test:
++- qemu-armhf
+ - qemu-arm64
+ - qemu-amd64
+ - x86-64-efi
++- hikey
+ - beagle-bone-black
+ 
+ ## Deploy test
+@@ -85,20 +87,47 @@ Setup a lava environment by following the
+ [installation guide](https://docs.lavasoftware.org/lava/first-installation.html)
+ or use [lava-docker](https://github.com/kernelci/lava-docker).
+ 
+-# CI Variables
++# CI Files
++
++To support different ci setups all ci files are stored in `.ci`. `.gitlab-ci.yml` in
++the repository root use the settings to build on gitlab.com. To use another setup adapt
++the [Custom CI configuration path](https://code.siemens.com/help/ci/pipelines/settings#custom-ci-configuration-path)
++
++
++## CI Variables
+ 
+ The following variables are used and set by the ci system:
+-- `HTTP_PROXY`    : proxy settings
+-- `HTTPS_PROXY`   : proxy settings
+-- `FTP_PROXY`     : proxy settings
+-- `NO_PROXY`      : proxy settings
+-- `LAVA_SSH_USER` : ssh user to connect to the LAVA master
+-- `LAVA_SSH_HOST` : ssh host name to connect to the LAVA master
+-- `LAVA_SSH_PORT` : ssh port used for the ssh tunnel
+-- `LAVA_SSH_UPLOAD_KEY`  :  private ssh key to connect to the LAVA master
+-- `LAVA_SSH_KNOWN_HOSTS` : Known hosts to connect via ssh to the host given by `LAVA_SSH_HOST`
+-- `LAVA_MASTER_ACCOUNT`  : lava master account name to register lavacli for test execution
+-- `LAVA_MASTER_TOKEN`    : token to connect with the lava master
+-- `LAVA_DEPLOY_DIR`    : optional variable to define directory to store the build artifacts
+-- `LAVA_ARTIFACTS_URL` : optional variable where to get the artifacts for testing
+-- `BUILD_OPTIONS` : optional parameter. Used for triggers. Overwrite to build the newest ipipe together with xenomai or other combinations.
++- proxy settings:
++  - `HTTP_PROXY`    : http proxy
++  - `HTTPS_PROXY`   : https proxy
++  - `FTP_PROXY`     : ftp proxy
++  - `NO_PROXY`      : no proxy
++
++- SSH settings:
++  - `LAVA_SSH_USER` : ssh user to connect to the LAVA master
++  - `LAVA_SSH_HOST` : ssh host name to connect to the LAVA master
++  - `LAVA_SSH_PORT` : ssh port used for the ssh tunnel
++  - `LAVA_SSH_UPLOAD_KEY`  :  private ssh key to connect to the LAVA master
++  - `LAVA_SSH_KNOWN_HOSTS` : Known hosts to connect via ssh to the host given by `LAVA_SSH_HOST`
++
++- LAVA settings:
++  - `LAVA_MASTER_ACCOUNT`  : lava master account name to register lavacli for test execution
++  - `LAVA_MASTER_TOKEN`    : token to connect with the lava master
++  - `LAVA_DEPLOY_DIR`    : optional variable to define directory to store the build artifacts
++  - `LAVA_ARTIFACTS_URL` : optional variable where to get the artifacts for testing
++  - `LAVA_DEPLOY_DIR`: Directory to deploy the Artifacts in a build. Default /var/lib/lava/artifacts
++  - `LAVA_MASTER_PORT`: PORT to access the LAVA Master
++
++- General build settings
++  - `BUILD_OPTIONS` : optional parameter. Used for triggers. Overwrite to build the newest ipipe together with xenomai or other combinations.
++  - `DEPLOY_DIR_EXTENSION`: Extension path to store artifacts for the same target
++  - `USE_GITLAB_ARTIFACTS`: If set this changes the deploy url to a gitlab api URL
++  - `JOB_TEMPLATE_PATH`: Path to the test templates - Default tests/jobs/xenomai
++  - `TARGET_EXTENSION`: Extension of the build job name
++## LAVA Template variable
++
++- `TARGET`: Name of the target in the LAVA Lab
++- `BUILD_ARCH`: Architecture of the Target
++- `DEPLOY_DIR`: Path to the test components will be generate by the script `scripts/run-lava-tests.sh`
++- `ISAR_IMAGE`: Name of the ISAR image (e.g. demo-image)
++- `ISAR_DISTRIBUTION`: Name of the ISAR DISTRIBUTION (e.g. xenomai-demo)
 -- 
 2.20.1
 
