@@ -1,16 +1,12 @@
-From: Josh Karch <jkarch@FirstMode.com>
-Subject: Re: xeno-gpio-xilinx causes gpio-xilinx's IRQ
- callback(xgpio_irqhandler) to trigger rather than gpio-core's
- "gpio_pin_interrupt"
-Date: Mon, 13 Jul 2020 22:54:53 +0000
-Message-ID: <MN2PR19MB39672CE35203CC81FBEF95A6D5600@MN2PR19MB3967.namprd19.prod.outlook.com>
-References: <MN2PR19MB396729DFBDCB6D5C5E72B494D5600@MN2PR19MB3967.namprd19.prod.outlook.com>,
- <CALLqZ8QGmES1-V7chCo8igEXW3hEKt7GZu7zR04NYLzFfKifTw@mail.gmail.com>
-In-Reply-To: <CALLqZ8QGmES1-V7chCo8igEXW3hEKt7GZu7zR04NYLzFfKifTw@mail.gmail.com>
-Content-Language: en-US
+From: "Q. Gylstorff" <Quirin.Gylstorff@siemens.com>
+Subject: [xenomai-images][ PATCH v2 2/4] ci: Add option to compress
+ ext4-images.
+Date: Mon, 24 Aug 2020 13:25:25 +0200
+Message-Id: <20200824112527.4616-3-Quirin.Gylstorff@siemens.com>
+In-Reply-To: <20200824112527.4616-1-Quirin.Gylstorff@siemens.com>
+References: <20200824112527.4616-1-Quirin.Gylstorff@siemens.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -19,189 +15,119 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Greg Gallagher <greg@embeddedgreg.com>
-Cc: "Xenomai@xenomai.org" <xenomai@xenomai.org>
+To: xenomai@xenomai.org, Jan.Kiszka@siemens.com
 
+From: Quirin Gylstorff <quirin.gylstorff@siemens.com>
 
+The qemu test targets create uncompressed ext4-img around 1GB. This
+increases the time to uplaod and test a image with qemu. Reduce the
+time by adding a compress option to ext4-img.bbclass.
 
-________________________________
-From: Greg Gallagher <greg@embeddedgreg.com>
-Sent: Monday, July 13, 2020 3:43 PM
-To: Josh Karch <jkarch@FirstMode.com>
-Cc: Xenomai@xenomai.org <xenomai@xenomai.org>
-Subject: Re: xeno-gpio-xilinx causes gpio-xilinx's IRQ callback(xgpio_irqha=
-ndler) to trigger rather than gpio-core's "gpio_pin_interrupt"
+Signed-off-by: Quirin Gylstorff <quirin.gylstorff@siemens.com>
+---
+ ci/gitlab-ci-base.yml                         |  3 ++
+ .../0001-classes-ext4.img-Compress.patch      | 31 +++++++++++++++++++
+ opt-ext4-gz.yml                               | 24 ++++++++++++++
+ 3 files changed, 58 insertions(+)
+ create mode 100644 isar-patches/0001-classes-ext4.img-Compress.patch
+ create mode 100644 opt-ext4-gz.yml
 
-Hi Josh,
-
-
-On Mon., Jul. 13, 2020, 6:37 p.m. Josh Karch via Xenomai <xenomai@xenomai.o=
-rg<mailto:xenomai@xenomai.org>> wrote:
-Hi,
-
-With the CAN bus issues resolved, I now have a situation where the xeno-gpi=
-o-xilinx driver (gpio-core.c) causes a complete system lockup when IRQs are=
- enabled and a GPIO toggle triggers the IRQ event.
-
-Here's what I know:  I instrumented the NRT driver to see how deeply entren=
-ched and intertwined the real-time and non real-time drivers are:
-
-(1) xeno-gpio-xilinx calls gpio-core which piggybacks upon the Xilinx "gpio=
--xilinx" driver.
-(2)It uses the OF scan information to create /dev/rtdm/gpio@address/gpioxxx=
- driver pins.
-
-When enabling interrupts:
-(1)It uses the  NRT "Xgpio-request" function to request a gpio pin and set =
-the pin to an input, though for some reason it calls the set gpio as input =
-function twice
-(2) It then calls xgpio-toirq twice for some reason
-(3) It sets the IRQ type.  Only the rising edge IRQ is supported with the X=
-ilinx Driver
-(4) It uses the unmask function in the non RT driver to unmask the IRQ
-(5) It then sets the gpio as input again. I think this is a side effect of =
-calling the IOCTL to enable IRQ and then to block file descriptors on inter=
-rupt.
-(6) Once the interrupt is triggered, on occasion the Non realtime xgpio_irq=
-handler gets called rather than the gpio_pin_interrupt function.  This make=
-s me think the NRT driver is not properly setting the interrupt up to work =
-with the Xenomai handler.  Once the non realtime xgpio_irqhandler gets call=
-ed the code gets stuck in an infinite loop and crashes.
-
-Sometimes the system freezes before using the handler, other times it runs =
-the handler but it's not possible to break.
-
-The following is a transcript of a time when the nrt handler is not called.=
-    Otherwise you'd see a message when IRQ is triggered that the system con=
-tinually is in a nrt IRQ handler loop.
-
-So the question is: why is the non-rt handler being called and not the gpio=
--core rt_gpio "gpio-pin-interrupt"?
-
-
-[  303.900487] requesting GPIO
-[  303.903419] setting gpio 0 as input
-[  303.907004] setting gpio 0 as input
-[  303.910549] called xgpio to irq
-[  303.913768] called xgpio to irq
-[  303.916913] setting irq type 1
-[  303.919990] unmasking IRQ
-[  303.922600] setting gpio 0 as input
-[  324.917162] rcu: INFO: rcu_sched detected stalls on CPUs/tasks:
-[  324.923100] rcu:     0-...0: (1 ticks this GP) idle=3D66e/1/0x4000000000=
-000000
-softirq=3D8388/8389 fqs=3D2247
-[  324.932321] rcu:     (detected by 3, t=3D5252 jiffies, g=3D12713, q=3D18=
-8)
-[  324.938411] Task dump for CPU 0:
-[  324.941629] xeno_gpio_teste R  running task        0   433    388 0x0000=
-0202
-[  324.948682] Call trace:
-[  324.951126]  __switch_to+0x94/0xf0
-[  324.954522]  0xffffff8008dea658
-
-Best,
-
-Josh Karch
-
-Do you have have the gic and the IRQ handlers in place for the xilinx-gpio =
-xenomai driver?  The current implementation doesn't support interrupts.
-
-Thanks
-
-Greg
-
-
-Hi Greg, so the only changes between the "gpio-core.c"  from stock Xenomai =
-and the driver I'm working with is the section of code which adds dual-chan=
-nel functionality to the Xilinx driver in "rtdm_gpiochip_scan_of."  These a=
-re the functions in gpio-core.  It seems there are a lot of functions in gp=
-io-core dealing with interrupts.  The Xilinx stock driver provided by Xilin=
-x has interrupt functions in there.  What else is missing?
-
-Best,
-
-Josh
-
-static int gpio_pin_interrupt(rtdm_irq_t *irqh)
-{
-struct rtdm_gpio_pin *pin;
-pin =3D rtdm_irq_get_arg(irqh, struct rtdm_gpio_pin);
-pin->timestamp =3D rtdm_clock_read_monotonic();
-rtdm_event_signal(&pin->event);
-return RTDM_IRQ_HANDLED;
-}
-static int request_gpio_irq(unsigned int gpio, struct rtdm_gpio_pin *pin,
-struct rtdm_gpio_chan *chan,
-int trigger)
-{
-int ret, irq_trigger, irq;
-if (trigger & ~GPIO_TRIGGER_MASK)
-return -EINVAL;
-if (!chan->requested) {
-ret =3D gpio_request(gpio, pin->name);
-if (ret) {
-if (ret !=3D -EPROBE_DEFER)
-printk(XENO_ERR
-"can not request GPIO%d\n", gpio);
-return ret;
-}
-chan->requested =3D true;
-}
-ret =3D gpio_direction_input(gpio);
-if (ret) {
-printk(XENO_ERR "cannot set GPIO%d as input\n", gpio);
-goto fail;
-}
-chan->has_direction =3D true;
-gpio_export(gpio, true);
-rtdm_event_clear(&pin->event);
-/*
-* Attempt to hook the interrupt associated to that pin. We
-* might fail getting a valid IRQ number, in case the GPIO
-* chip did not define any mapping handler (->to_irq). If so,
-* just assume that either we have no IRQ indeed, or interrupt
-* handling may be open coded elsewhere.
-*/
-irq =3D gpio_to_irq(gpio);
-if (irq < 0)
-goto done;
-irq_trigger =3D 0;
-if (trigger & GPIO_TRIGGER_EDGE_RISING)
-irq_trigger |=3D IRQ_TYPE_EDGE_RISING;
-if (trigger & GPIO_TRIGGER_EDGE_FALLING)
-irq_trigger |=3D IRQ_TYPE_EDGE_FALLING;
-if (trigger & GPIO_TRIGGER_LEVEL_HIGH)
-irq_trigger |=3D IRQ_TYPE_LEVEL_HIGH;
-if (trigger & GPIO_TRIGGER_LEVEL_LOW)
-irq_trigger |=3D IRQ_TYPE_LEVEL_LOW;
-if (irq_trigger)
-irq_set_irq_type(irq, irq_trigger);
-ret =3D rtdm_irq_request(&pin->irqh, irq, gpio_pin_interrupt,
-0, pin->name, pin);
-if (ret) {
-printk(XENO_ERR "cannot request GPIO%d interrupt\n", gpio);
-goto fail;
-}
-rtdm_irq_enable(&pin->irqh);
-done:
-chan->is_interrupt =3D true;
-return 0;
-fail:
-gpio_free(gpio);
-chan->requested =3D false;
-return ret;
-}
-
-
-
-
-
-
-
-
-
-
-
+diff --git a/ci/gitlab-ci-base.yml b/ci/gitlab-ci-base.yml
+index e8d259f..6978ae9 100644
+--- a/ci/gitlab-ci-base.yml
++++ b/ci/gitlab-ci-base.yml
+@@ -53,6 +53,7 @@ build:board-qemu-amd64:
+   extends: .build
+   variables:
+     TARGET: qemu-amd64
++    BUILD_OPTIONS: ":opt-ext4-gz.yml"
+ 
+ lava-test:qemu-amd64:
+   needs: [ "build:board-qemu-amd64" ]
+@@ -65,6 +66,7 @@ build:board-qemu-armhf:
+   extends: .build
+   variables:
+     TARGET: qemu-armhf
++    BUILD_OPTIONS: ":opt-ext4-gz.yml"
+ 
+ lava-test:qemu-armhf:
+   needs: [ "build:board-qemu-armhf" ]
+@@ -76,6 +78,7 @@ build:board-qemu-arm64:
+   extends: .build
+   variables:
+     TARGET: qemu-arm64
++    BUILD_OPTIONS: ":opt-ext4-gz.yml"
+ 
+ lava-test:qemu-arm64:
+   needs: [ "build:board-qemu-arm64" ]
+diff --git a/isar-patches/0001-classes-ext4.img-Compress.patch b/isar-patches/0001-classes-ext4.img-Compress.patch
+new file mode 100644
+index 0000000..6b67295
+--- /dev/null
++++ b/isar-patches/0001-classes-ext4.img-Compress.patch
+@@ -0,0 +1,31 @@
++From 915eec01cf660b160b1eab551c60fba4aac13b4b Mon Sep 17 00:00:00 2001
++From: Quirin Gylstorff <quirin.gylstorff@siemens.com>
++Date: Fri, 17 Apr 2020 11:32:39 +0200
++Subject: [PATCH] classes/ext4.img: Compress
++
++change owner and add compress option
++
++Signed-off-by: Quirin Gylstorff <quirin.gylstorff@siemens.com>
++---
++ meta/classes/ext4-img.bbclass | 5 +++++
++ 1 file changed, 5 insertions(+)
++
++diff --git a/meta/classes/ext4-img.bbclass b/meta/classes/ext4-img.bbclass
++index 334dc64..dc091d9 100644
++--- a/meta/classes/ext4-img.bbclass
+++++ b/meta/classes/ext4-img.bbclass
++@@ -17,6 +17,11 @@ do_ext4_image() {
++ 
++     sudo chroot ${BUILDCHROOT_DIR} /sbin/mke2fs ${MKE2FS_ARGS} \
++                 -F -d '${PP_ROOTFS}' '${PP_DEPLOY}/${EXT4_IMAGE_FILE}'
+++    sudo chown $(id -u):$(id -g) ${DEPLOY_DIR_IMAGE}/${EXT4_IMAGE_FILE}
+++
+++    if [ "${COMPRESS}" = "gz" ]; then
+++        gzip ${DEPLOY_DIR_IMAGE}/${EXT4_IMAGE_FILE}
+++    fi
++ }
++ 
++ addtask ext4_image before do_image after do_image_tools
++-- 
++2.20.1
++
+diff --git a/opt-ext4-gz.yml b/opt-ext4-gz.yml
+new file mode 100644
+index 0000000..1a6502f
+--- /dev/null
++++ b/opt-ext4-gz.yml
+@@ -0,0 +1,24 @@
++#
++# Xenomai Real-Time System
++#
++# Copyright (c) Siemens AG, 2018
++#
++# Authors:
++#  Quirin Gylstorff <quirin.gylstorff@siemens.com>
++#
++# SPDX-License-Identifier: MIT
++#
++
++header:
++  version: 8
++
++repos:
++  isar:
++    patches:
++      01-compress-ext4:
++        path: isar-patches/0001-classes-ext4.img-Compress.patch
++        repo: xenomai
++
++local_conf_header:
++  compress: |
++    COMPRESS = "gz"
+-- 
+2.20.1
 
 
