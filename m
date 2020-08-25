@@ -1,16 +1,15 @@
-Subject: Re: [xenomai-images][ PATCH v2 0/4] ci: Add configuration to run on
- gitlab.com
-References: <20200824112527.4616-1-Quirin.Gylstorff@siemens.com>
- <a292b9e6-c9f5-af0d-3032-44c2d6ed4b1c@siemens.com>
- <979d4c5d-7733-3e83-7770-d2d7f6662685@siemens.com>
-From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <2919eb70-6026-ac4c-4308-30c903510504@siemens.com>
-Date: Tue, 25 Aug 2020 07:28:37 +0200
+Date: Tue, 25 Aug 2020 09:25:00 -0400
+Subject: Re: initial porting of IPIPE x86_64 patches onto Linux stable 5.4.52
+Message-ID: <20200825132500.4c5z6a3yesfe2wbe@csclub.uwaterloo.ca>
+References: <MWHPR11MB1918BC3591D43C7A139375A0EE560@MWHPR11MB1918.namprd11.prod.outlook.com>
+ <38d73dec-3163-cfbc-609e-60b9d65d6246@siemens.com>
+ <CALLqZ8R2mJBHe9Rd35q_n7Rf9s7=ht7C=E13vjWkwy5wNGqCHA@mail.gmail.com>
+ <5621687.alqRGMn8q6@omoikane>
 MIME-Version: 1.0
-In-Reply-To: <979d4c5d-7733-3e83-7770-d2d7f6662685@siemens.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <5621687.alqRGMn8q6@omoikane>
+From: lsorense@csclub.uwaterloo.ca (Lennart Sorensen)
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -19,37 +18,28 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Gylstorff Quirin <quirin.gylstorff@siemens.com>, xenomai@xenomai.org
+To: Steven Seeger <steven.seeger@flightsystems.net>
+Cc: Jan Kiszka <jan.kiszka@siemens.com>, Greg Gallagher <greg@embeddedgreg.com>, "Pirou, Florent" <florent.pirou@intel.com>, "Wang, Rick Y" <rick.y.wang@intel.com>, "Hu, Mingliang" <mingliang.hu@intel.com>, "Xenomai (xenomai@xenomai.org)" <xenomai@xenomai.org>
 
-On 24.08.20 18:15, Gylstorff Quirin wrote:
-> 
-> 
-> On 8/24/20 1:30 PM, Jan Kiszka wrote:
->> On 24.08.20 13:25, Q. Gylstorff wrote:
->>> From: Quirin Gylstorff <quirin.gylstorff@siemens.com>
->>>
->>>
->>> Add the configration to run the ci builds on gitlab.com or on-premise
->>> setups with
->>> gitlab artifacts enabled. Each completed pipeline creates around 1.5
->>> GB aritfacts.
->>
->> Are those artifacts pushed around, to/from the gitlab instance? Our
->> on-premise won't support that, others may not like it either.
-> The build uses the artifacts command to push them to the gitlab instance.
-> It is possible to use .gitlab-ci-no-artifacts.yml to avoid pushing
-> around the artifacts. This is the behaviour for our on-premise builds.
-> 
-> If most people don't want to use the artifacts I can switch the default
-> to the old behavior.
+On Mon, Aug 24, 2020 at 11:05:55AM -0400, Steven Seeger via Xenomai wrote:
+> I'm definitely interested in doing this for PPC e500 32-bit. I now have my hands on a 64-bit 
+> e500 based board (PPC 5020) but it's a loaner COTS board from an industry partner. I 
+> probably won't be able to do Xenomai on that without a funding source, because of my 
+> other obligations. But I am reasonably sure that moving to 5.4 for e500 32-bit is something 
+> my partners would support. I get emails occasionally for more modern kernels.
 
-Given the size, I'm inclined to make gitlab-native artifacts an opt-in
-and rather look for providing a pattern that allows storing them in S3,
-e.g., in case you have a cloud runner.
+A 5020 is an e5500, which is nothing like an e500.  The e500 is PowerpC
+SPE, while the e5500 (and the e300, e500mc and e6500) are "real" PowerPC
+instead with a somewhat different instruction set.
 
-Jan
+GCC 9 even dropped support for the PPC SPE, while PPC is fully supported.
+
+The e500's existence offends me since it fragments the powerpc
+architecture.  Yuck. :)
+
+> If this follows the old noarch pattern for the baseline stuff, then that should make it ideal 
+> for bringing the rest of it up to date.
 
 -- 
-Siemens AG, Corporate Technology, CT RDA IOT SES-DE
-Corporate Competence Center Embedded Linux
+Len Sorensen
 
