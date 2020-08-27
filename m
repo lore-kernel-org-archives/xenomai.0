@@ -1,14 +1,9 @@
-From: Steven Seeger <steven.seeger@flightsystems.net>
-Subject: Re: initial porting of IPIPE x86_64 patches onto Linux stable 5.4.52
-Date: Tue, 25 Aug 2020 10:40:13 -0400
-Message-ID: <1797573.eGJsNajkDb@omoikane>
-In-Reply-To: <20200825132500.4c5z6a3yesfe2wbe@csclub.uwaterloo.ca>
-References: <MWHPR11MB1918BC3591D43C7A139375A0EE560@MWHPR11MB1918.namprd11.prod.outlook.com>
- <5621687.alqRGMn8q6@omoikane>
- <20200825132500.4c5z6a3yesfe2wbe@csclub.uwaterloo.ca>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7Bit
+From: =?UTF-8?B?5a2Z5LiW6b6ZIHN1bnNoaWxvbmc=?= <sunshilong369@gmail.com>
+Date: Thu, 27 Aug 2020 11:00:38 +0800
+Message-ID: <CAAvDm6aw3mLyhsJsXmd0G+EbYddR-GC+bWTunCzsRgfOY2ws4w@mail.gmail.com>
+Subject: About the priority that is seen by /proc/xenomai/sched/threads
+Content-Type: text/plain; charset="UTF-8"
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,36 +12,27 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Lennart Sorensen <lsorense@csclub.uwaterloo.ca>
-Cc: Jan Kiszka <jan.kiszka@siemens.com>, Greg Gallagher <greg@embeddedgreg.com>, "Pirou, Florent" <florent.pirou@intel.com>, "Wang,
- Rick Y" <rick.y.wang@intel.com>, "Hu, Mingliang" <mingliang.hu@intel.com>, "Xenomai (xenomai@xenomai.org)" <xenomai@xenomai.org>
+To: xenomai <xenomai@xenomai.org>
 
-On Tuesday, August 25, 2020 9:25:00 AM EDT Lennart Sorensen wrote:
-> A 5020 is an e5500, which is nothing like an e500.  The e500 is PowerpC
-> SPE, while the e5500 (and the e300, e500mc and e6500) are "real" PowerPC
-> instead with a somewhat different instruction set.
+Hi, list
 
-Sorry e500 was a typo in that case.
+Which one has a higher priority, the thread named by "main" that is
+created by rt_task_create or the
+one named by "timer-internal" that is created internally?
 
-> GCC 9 even dropped support for the PPC SPE, while PPC is fully supported.
-> 
+As far as I know, the priority of the thread created by rt_task_create
+is between 0 to 99. It could not
+be greater than 99.
 
-Yeah there are e500 boards being made for military, aerospace, and LEO (low earth orbit) 
-uses. There is concern that gcc 9 dropped SPE support, but it's up to vendors to support 
-maintenance of it.
-
-> 
-> The e500's existence offends me since it fragments the powerpc
-> architecture.  Yuck. :)
-
-Well I won't say anything good or bad about it, but it's the one I know the most since it's 
-what I work with all the time. ;)
-
-The worst thing I ever had to deal with was making changes to a 603 instruction set 
-simulator to make it be a 601. The subtle differences between POWER and PowerPC ISAs 
-were quite a pain to find at the time. This was years ago.
-
-But yeah all my work (and tested support with xenomai) have been on a e500v2. (8548)
-
-Steven
+$cat /proc/xenomai/sched/threads
+CPU  PID    CLASS  TYPE      PRI   TIMEOUT       STAT       NAME
+  0  0      idle   core       -1   -             R          [ROOT/0]
+  1  0      idle   core       -1   -             R          [ROOT/1]
+  2  0      idle   core       -1   -             R          [ROOT/2]
+  0  630    rt     core       98   -             W          [rtnet-stack]
+  0  631    rt     core        0   -             W          [rtnet-rtpc]
+  1  5414   rt     cobalt     50   1ms887us      D          main
+  1  5416   rt     cobalt    259   -                        timer-internal
+  2  6708   rt     cobalt     50   1ms994us      D          main
+  2  6710   rt     cobalt    259   -             W          timer-internal
 
