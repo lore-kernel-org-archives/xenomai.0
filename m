@@ -1,14 +1,8 @@
-Subject: Re: About the priority that is seen by /proc/xenomai/sched/threads
-References: <CAAvDm6aw3mLyhsJsXmd0G+EbYddR-GC+bWTunCzsRgfOY2ws4w@mail.gmail.com>
- <6ecdedda-a2eb-c940-a3e8-70488a8c8cb8@siemens.com>
- <CAAvDm6Zkj-2R9nXWyCYnPjXGGNsQaE846gx=RGxVvKSL4vBSNA@mail.gmail.com>
-From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <05f1c1bf-a29c-60d4-ef01-263c600f4f30@siemens.com>
-Date: Thu, 27 Aug 2020 10:31:49 +0200
+From: "Q. Gylstorff" <Quirin.Gylstorff@siemens.com>
+Subject: [xenomai-images][PATCH] ci: set default to no-artifacts
+Date: Thu, 27 Aug 2020 16:24:30 +0200
+Message-Id: <20200827142430.24355-1-Quirin.Gylstorff@siemens.com>
 MIME-Version: 1.0
-In-Reply-To: <CAAvDm6Zkj-2R9nXWyCYnPjXGGNsQaE846gx=RGxVvKSL4vBSNA@mail.gmail.com>
-Content-Type: text/plain; charset="utf-8"
-Content-Language: en-US
 Content-Transfer-Encoding: 8bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
@@ -18,70 +12,83 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: =?UTF-8?B?5a2Z5LiW6b6ZIHN1bnNoaWxvbmc=?= <sunshilong369@gmail.com>
-Cc: xenomai <xenomai@xenomai.org>
+To: xenomai@xenomai.org, jan.kiszka@siemens.com
 
-On 27.08.20 09:55, 孙世龙 sunshilong wrote:
-> Thank you for your attention to my question.
-> 
->>> Which one has a higher priority, the thread named by "main" that is
->>> created by rt_task_create or the
->>> one named by "timer-internal" that is created internally?
->>>
->>> As far as I know, the priority of the thread created by rt_task_create
->>> is between 0 to 99. It could not
->>> be greater than 99.
-> 
->> It's timer-internal. The Xenomai core has an extended priority range
->> (0..259).
-> 
-> What are relations between the priority set by rt_task_create and the
-> extended priority used by the Xenomai core?
-> Is there a one to one correspondence?
-> How to know which one has a higher priority?
+From: Quirin Gylstorff <quirin.gylstorff@siemens.com>
 
-The alchemy skin uses T_LOPRIO..T_HIPRIO (0..99). Thus, skins using the
-extended range can create task with even higher prio.
+If the ci system with artifacts is execute on a system without
+the necessary infrastructure the gitlab-ci.yml is invalid.
+Fix this by setting the default build to ci/no-artifacts.yml
+and remove the dependency to USE_GITLAB_ARTIFACTS.
 
-Jan
+Add option to build with artifacts
 
-> 
-> On Thu, Aug 27, 2020 at 2:08 PM Jan Kiszka <jan.kiszka@siemens.com> wrote:
->>
->> On 27.08.20 05:00, 孙世龙 sunshilong via Xenomai wrote:
->>> Hi, list
->>>
->>> Which one has a higher priority, the thread named by "main" that is
->>> created by rt_task_create or the
->>> one named by "timer-internal" that is created internally?
->>>
->>> As far as I know, the priority of the thread created by rt_task_create
->>> is between 0 to 99. It could not
->>> be greater than 99.
->>>
->>> $cat /proc/xenomai/sched/threads
->>> CPU  PID    CLASS  TYPE      PRI   TIMEOUT       STAT       NAME
->>>   0  0      idle   core       -1   -             R          [ROOT/0]
->>>   1  0      idle   core       -1   -             R          [ROOT/1]
->>>   2  0      idle   core       -1   -             R          [ROOT/2]
->>>   0  630    rt     core       98   -             W          [rtnet-stack]
->>>   0  631    rt     core        0   -             W          [rtnet-rtpc]
->>>   1  5414   rt     cobalt     50   1ms887us      D          main
->>>   1  5416   rt     cobalt    259   -                        timer-internal
->>>   2  6708   rt     cobalt     50   1ms994us      D          main
->>>   2  6710   rt     cobalt    259   -             W          timer-internal
->>>
->>
->> It's timer-internal. The Xenomai core has an extended priority range
->> (0..259).
->>
->> Jan
->>
->> --
->> Siemens AG, Corporate Technology, CT RDA IOT SES-DE
->> Corporate Competence Center Embedded Linux
+Signed-off-by: Quirin Gylstorff <quirin.gylstorff@siemens.com>
+---
+ .gitlab-ci-artifacts.yml | 12 ++++++++++++
+ .gitlab-ci.yml           |  2 +-
+ ci/artifacts.yml         |  3 ---
+ tests/README.md          |  2 +-
+ 4 files changed, 14 insertions(+), 5 deletions(-)
+ create mode 100644 .gitlab-ci-artifacts.yml
 
+diff --git a/.gitlab-ci-artifacts.yml b/.gitlab-ci-artifacts.yml
+new file mode 100644
+index 0000000..e6576dc
+--- /dev/null
++++ b/.gitlab-ci-artifacts.yml
+@@ -0,0 +1,12 @@
++#
++# Xenomai Real-Time System
++#
++# Copyright (c) Siemens AG, 2019 - 2020
++#
++# Authors:
++#  Quirin Gylstorff <quirin.gylstorff@siemens.com>
++#
++# SPDX-License-Identifier: MIT
++#
++include:
++  - local: '/ci/artifacts.yml'
+diff --git a/.gitlab-ci.yml b/.gitlab-ci.yml
+index e6576dc..0e547f0 100644
+--- a/.gitlab-ci.yml
++++ b/.gitlab-ci.yml
+@@ -9,4 +9,4 @@
+ # SPDX-License-Identifier: MIT
+ #
+ include:
+-  - local: '/ci/artifacts.yml'
++  - local: '/ci/no-artifacts.yml'
+diff --git a/ci/artifacts.yml b/ci/artifacts.yml
+index 3d20323..510f903 100644
+--- a/ci/artifacts.yml
++++ b/ci/artifacts.yml
+@@ -17,8 +17,5 @@
+     paths:
+     - build/tmp/deploy/images/${TARGET}/
+     expire_in: 1 week
+-  only:
+-    variables:
+-      - $USE_GITLAB_ARTIFACTS
+ include:
+   - local: '/ci/gitlab-ci-base.yml'
+diff --git a/tests/README.md b/tests/README.md
+index 119f90f..e0d50a9 100644
+--- a/tests/README.md
++++ b/tests/README.md
+@@ -122,9 +122,9 @@ The following variables are used and set by the ci system:
+ - General build settings
+   - `BUILD_OPTIONS` : optional parameter. Used for triggers. Overwrite to build the newest ipipe together with xenomai or other combinations.
+   - `DEPLOY_DIR_EXTENSION`: Extension path to store artifacts for the same target
+-  - `USE_GITLAB_ARTIFACTS`: If set this changes the deploy url to a gitlab api URL
+   - `JOB_TEMPLATE_PATH`: Path to the test templates - Default tests/jobs/xenomai
+   - `TARGET_EXTENSION`: Extension of the build job name
++
+ ## LAVA Template variable
+ 
+ - `TARGET`: Name of the target in the LAVA Lab
 -- 
-Siemens AG, Corporate Technology, CT RDA IOT SES-DE
-Corporate Competence Center Embedded Linux
+2.20.1
+
 
