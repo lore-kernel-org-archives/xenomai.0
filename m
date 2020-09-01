@@ -1,10 +1,11 @@
+From: "Meng, Fino" <fino.meng@intel.com>
+Subject: xenomai on kernel 5.4 update
+Date: Tue, 1 Sep 2020 09:37:07 +0000
+Message-ID: <MWHPR11MB1918B0733FE56F68A11840B5EE2E0@MWHPR11MB1918.namprd11.prod.outlook.com>
+Content-Language: en-US
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-From: =?UTF-8?B?5a2Z5LiW6b6ZIHN1bnNoaWxvbmc=?= <sunshilong369@gmail.com>
-Date: Tue, 1 Sep 2020 17:11:43 +0800
-Message-ID: <CAAvDm6YkY012JKwbWErAe2CYpcDzyT+31P1n+nTaogx0tA1L8g@mail.gmail.com>
-Subject: About the reasons for setting the timer-internal thread with the
- THREADOBJ_IRQCONTEXT flag.
-Content-Type: text/plain; charset="UTF-8"
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -13,31 +14,16 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai <xenomai@xenomai.org>
+To: "Xenomai (xenomai@xenomai.org)" <xenomai@xenomai.org>
 
-Hi,
-
-I found that the timer-internal thread is set with the
-THREADOBJ_IRQCONTEXT flag.
-Here is the related code snippet:
-static int server_prologue(void *arg)
-{
-   svpid = get_thread_pid();
-   copperplate_set_current_name("timer-internal");
-   timersv_init_corespec();
-   threadobj_set_current(THREADOBJ_IRQCONTEXT);
-
-   return 0;
-}
-
-Could you please tell me the reasons for setting the timer-internal
-thread with the THREADOBJ_IRQCONTEXT flag.
-
-What are the potential problems if not setting this flag?
-(I want to make it possible to call rt_task_sleep in the callback
-function of the timer which is created by rt_alarm_create.)
-
-Thank you for your attention to this matter.
-Best regards
-Sunshilong
+SGkgYWxsLA0KDQpUb2RheSBJIHVwbG9hZGVkIGEgbmV3IHZlcnNpb24gdGhhdCBjYW4gYnVpbGQg
+YW5kIHJ1biwgDQoNCmh0dHBzOi8vZ2l0aHViLmNvbS9pbnRlbC9saW51eC1zdGFibGUteGVub21h
+aS9jb21taXRzL3Jldmlldy81LjQuNTgvc3RhYmxlL2lwaXBlL3hlbm9tYWktMy4xDQoNCnN0ZXAg
+dG8gYnVpbGQgYWZ0ZXIgY2xvbmU6IA0KDQpjcCBrZXJuZWxfY29uZmlnX3hlbm9tYWkgIC5jb25m
+aWcNCm1ha2Ugb2xkZGVmY29uZmlnDQptYWtlIGJpbmRlYi1wa2cgLWoxNg0KDQppZiBidWlsZCBP
+SywgdSBjYW4gaW5zdGFsbCBsaW51eC1pbWFnZV8qLmRlYiB3aXRoIERlYmlhbiAxMCwNCkkgdGVz
+dGVkICBYZW5vbWFpIDMuMSdzIGxhdGVuY3kgb24gRGViaWFuIDEwLCBydW5zIGdvb2QuDQpVYnVu
+dHUgc2hvdWxkIGFsc28gd29yayBidXQgSSBkaWRuJ3QgdGVzdCB5ZXQuDQpOZXh0IHN0ZXAgaXMg
+ZG8gbW9yZSB0ZXN0IGFuZCByZWZpbmUgdGhlIHBhdGNoZXMuDQoNCg0KQlIgLyBGaW5vICjlrZ/n
+paXlpKspDQpJbnRlbCDigJMgSU9URyBEZXZlbG9wZXIgRW5hYmxpbmcNCg0K
 
