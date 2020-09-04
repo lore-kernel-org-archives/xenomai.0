@@ -1,12 +1,10 @@
-From: =?utf-8?q?Fran=C3=A7ois_Legal?= <devel@thom.fr.eu.org>
-In-Reply-To: <7a487933-dd50-6ee9-cd5f-6d99bc5b3c76@siemens.com>
-Date: Fri, 25 Sep 2020 18:11:55 +0200
+From: chensong <chensong@tj.kylinos.cn>
+Subject: y2038 breakdown
+Message-ID: <5F520B21.7050401@tj.kylinos.cn>+15DD063043906F91
+Date: Fri, 4 Sep 2020 17:38:41 +0800
 MIME-Version: 1.0
-Message-ID: <1174-5f6e1700-39-37e14c00@201457241>
-Subject: =?utf-8?q?Re=3A?= Strange switching =?utf-8?q?=5Bthreadname=5D?= to 
- secondary mode after exception #0 in kernel-space at 0x80272444
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 7bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,29 +13,52 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jan Kiszka <jan.kiszka@siemens.com>
-Cc: xenomai@xenomai.org
+To: Henning Schild <henning.schild@siemens.com>, "Xenomai@xenomai.org" <xenomai@xenomai.org>
 
-U29ycnkgdG8gY29tZSBiYWNrIHNvIGxhdGUgb24gdGhhdCB0b3BpYy4KSSB0b29rIHNvbWUgdGlt
-ZSB0byB3cml0ZSBhIHNpbXBsZSB0ZXN0IHByb2dyYW0sIHdoaWNoIGlzIGF0dGFjaGVkLgoKQ29u
-ZmlnIGlzIGFzIGZvbGxvd3MgOgp4ZW5vbWFpLTMuMQpsaW51eC00LjQuMjI3CgpGcmFuw6dvaXMK
-CkxlIFZlbmRyZWRpLCBBb8O7dCAyMSwgMjAyMCAyMDowNCBDRVNULCBKYW4gS2lzemthIDxqYW4u
-a2lzemthQHNpZW1lbnMuY29tPiBhIMOpY3JpdDogCiAKPiBPbiAyMC4wOC4yMCAxNTo0NiwgRnJh
-bsOnb2lzIExlZ2FsIHZpYSBYZW5vbWFpIHdyb3RlOgo+ID4gVXNpbmcgUlROZXQgd2l0aCBtdWx0
-aXBsZSBpbnRlcmZhY2VzLCB4ZW5vbWFpIDMuMSB3aXRoIGxpbnV4IDQuNAo+ID4gV2hlbmV2ZXIg
-YSBwb3NpeCBSVCB0aHJlYWQgY2FsbHMgcmVjdm1zZyAoKSwgSSBnZXQgdGhpcyBlcnJvci4KPiA+
-IAo+ID4gSSBjb3VsZCB0cmFjayB0aGlzIGRvd24gdG8gbGluZSA0MjIgaW4gdWRwLmMgOiAgICAg
-bXNnID0gcnRuZXRfZ2V0X2FyZyhmZCwgJl9tc2csIHVfbXNnLCBzaXplb2YoX21zZykpOwo+ID4g
-Cj4gPiBJZiBJIGRpc2Fzc2VtYmxlIHRoZSBrZXJuZWwsIHRoZSBmYWlsaW5nIGluc3RydWN0aW9u
-IChhdCAweDgwMjcyNDQ0KSBpcyBhIG5vcCBpbiBhcm1fY29weV9mcm9tX3VzZXIKPiA+IEFtIEkg
-ZG9pbmcgYW55dGhpbmcgd3JvbmcgPwo+IAo+IE1heWJlIHlvdSBhcmUgcGFzc2luZyBhbiBpbnZh
-bGlkIHBvaW50ZXIgdG8gcmVjdm1zZywgZGlyZWN0bHkgb3IgaW4gaXRzCj4gbWVzc2FnZSBzdHJ1
-Y3R1cmVzLiBUaGF0IHdvdWxkIGNhdXNlIGFuIGV4Y2VwdGlvbiB3aGljaCBpcyBmaXhlZCB1cCBi
-dXQKPiBhbHNvIHJlcG9ydGVkLiBEbyB5b3UgZ2V0IGFuIGVycm9yIGluIHJldHVybj8KPiAKPiBK
-YW4KPiAKPiAtLSAKPiBTaWVtZW5zIEFHLCBDb3Jwb3JhdGUgVGVjaG5vbG9neSwgQ1QgUkRBIElP
-VCBTRVMtREUKPiBDb3Jwb3JhdGUgQ29tcGV0ZW5jZSBDZW50ZXIgRW1iZWRkZWQgTGludXgKLS0t
-LS0tLS0tLS0tLS0gbmV4dCBwYXJ0IC0tLS0tLS0tLS0tLS0tCkEgbm9uLXRleHQgYXR0YWNobWVu
-dCB3YXMgc2NydWJiZWQuLi4KTmFtZTogdGVzdC1uZXQuYwpUeXBlOiBhcHBsaWNhdGlvbi9vY3Rl
-dC1zdHJlYW0KU2l6ZTogNjE0MSBieXRlcwpEZXNjOiBub3QgYXZhaWxhYmxlClVSTDogPGh0dHA6
-Ly94ZW5vbWFpLm9yZy9waXBlcm1haWwveGVub21haS9hdHRhY2htZW50cy8yMDIwMDkyNS9mNzQ1
-ZTMyZi9hdHRhY2htZW50Lm9iaj4K
+hi Henning,
+
+I collected some discussions about y2038 from upstream and made a
+rough list for xenomai:
+
+1, 64bit-xenomai y2038-safe
+2, 32bit-xenomai y2038-safe
+3, 64bit-ipipe y2038-safe (arm64, x86_64)
+4, 32bit-ipipe y2038-safe (arm, x86)
+5, syscall (posix and all other skins)
+6, libc
+7, 32 bit app y2038-safe
+8, 64 bit app y2038-sage
+
+For #1 ~ #4 above , we take care of In-kernel correctness, all the
+data structures time is relevant to are going to be changed to long
+long.or any old time data structures used in either xenomai or 
+ipipe(probably timespec to timespec64).
+
+For #5, we need to keep the old syscalls for compatibility and
+introduce new 64 bit syscalls.More specificlly, to create new 64bit
+time_t/timespec/timeval/etc variants for syscalls, while
+preserving existing interfaces(posix and all other skins).
+
+#6, do we need to care about it or we can benefit from upstream?
+
+#7, we need to cooperate with app developers and #8 seems to be safe
+already.
+
+
+other communities info :
+NetBSD preserved compatibility with 2038 unsafe applications
+OpenBSD did not (seeing the certainty of excluding unsafe
+applications as a feature over compatibility)
+
+
+http://lkml.iu.edu/hypermail/linux/kernel/1408.1/02587.html
+
+I will continue to work on the test case and start figuring out 32bit
+time data structures in xenomai, how does it sound to you.
+
+BR
+
+chensong
+
+
+
