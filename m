@@ -1,9 +1,13 @@
-From: Fino Meng <fino.meng@linux.intel.com>
-Subject: [PATCH 2/4] cobalt/kernel: adapt adjtime syscall with upstream kernel
-Date: Fri, 18 Sep 2020 14:32:16 +0800
-Message-Id: <20200918063216.8509-1-fino.meng@linux.intel.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <CAAvDm6Zx4oWB13b9g5_B-3M=AMCoPmcOu0FGrSOK_NPqtXjPUw@mail.gmail.com>
+ <dc509fef-852f-55bb-94c6-890bdf704fc9@siemens.com>
+In-Reply-To: <dc509fef-852f-55bb-94c6-890bdf704fc9@siemens.com>
+From: =?UTF-8?B?5a2Z5LiW6b6ZIHN1bnNoaWxvbmc=?= <sunshilong369@gmail.com>
+Date: Fri, 4 Sep 2020 09:26:50 +0800
+Message-ID: <CAAvDm6Z=2kepq3hpeCXFuR+ui9bZtEqZ9QcVT42nRmAwOKQ1Rw@mail.gmail.com>
+Subject: Re: Adivces on Xenomai-3.0.9 support linux-4.19.
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -12,85 +16,79 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org, jan.kiszka@siemens.com, fino.meng@intel.com
+To: Jan Kiszka <jan.kiszka@siemens.com>
+Cc: xenomai <xenomai@xenomai.org>
 
-compat_timex related definitions moved from compat code into normal timekeeping code.
-see 4d5f007e in upstream Linux kernel.
+>> We want to make Xenomai-3.0.9 work on Linux-4.19
+>> (as far as I know, the latest version that it supports is Linux-4.14 and
+>> Xenomai-3.1 supports Linux-4.19).
+>>
+>> Is it possible?
+>> Could you give me some advice on how to make Xenomai-3.0.9 work on Linux=
+-4.19?
 
-Signed-off-by: Fino Meng <fino.meng@linux.intel.com>
-Signed-off-by: Mingliang Hu <mingliang.hu@intel.com>
----
- include/cobalt/kernel/compat.h  | 4 ++--
- kernel/cobalt/posix/compat.c    | 4 ++--
- kernel/cobalt/posix/syscall32.c | 2 +-
- kernel/cobalt/posix/syscall32.h | 2 +-
- 4 files changed, 6 insertions(+), 6 deletions(-)
+>It's doable with reasonable effort if you do not need RTnet drivers.
 
-diff --git a/include/cobalt/kernel/compat.h b/include/cobalt/kernel/compat.h
-index 05754cba8..c9cb84f72 100644
---- a/include/cobalt/kernel/compat.h
-+++ b/include/cobalt/kernel/compat.h
-@@ -105,9 +105,9 @@ int sys32_put_timeval(struct compat_timeval __user *ctv,
- 		      const struct timeval *tv);
- 
- int sys32_get_timex(struct timex *tx,
--		    const struct compat_timex __user *ctx);
-+		    const struct old_timex32 __user *ctx);
- 
--int sys32_put_timex(struct compat_timex __user *ctx,
-+int sys32_put_timex(struct old_timex32 __user *ctx,
- 		    const struct timex *tx);
- 
- ssize_t sys32_get_fdset(fd_set *fds, const compat_fd_set __user *cfds,
-diff --git a/kernel/cobalt/posix/compat.c b/kernel/cobalt/posix/compat.c
-index 17968bff1..a31ec0457 100644
---- a/kernel/cobalt/posix/compat.c
-+++ b/kernel/cobalt/posix/compat.c
-@@ -81,7 +81,7 @@ int sys32_put_timeval(struct compat_timeval __user *ctv,
- EXPORT_SYMBOL_GPL(sys32_put_timeval);
- 
- int sys32_get_timex(struct timex *tx,
--		    const struct compat_timex __user *ctx)
-+		    const struct old_timex32 __user *ctx)
- {
- 	memset(tx, 0, sizeof(*tx));
- 
-@@ -112,7 +112,7 @@ int sys32_get_timex(struct timex *tx,
- }
- EXPORT_SYMBOL_GPL(sys32_get_timex);
- 
--int sys32_put_timex(struct compat_timex __user *ctx,
-+int sys32_put_timex(struct old_timex32 __user *ctx,
- 		    const struct timex *tx)
- {
- 	if (!access_wok(ctx, sizeof(*ctx)) ||
-diff --git a/kernel/cobalt/posix/syscall32.c b/kernel/cobalt/posix/syscall32.c
-index faa7ef53a..c2fd6a1e0 100644
---- a/kernel/cobalt/posix/syscall32.c
-+++ b/kernel/cobalt/posix/syscall32.c
-@@ -172,7 +172,7 @@ COBALT_SYSCALL32emu(clock_settime, current,
- }
- 
- COBALT_SYSCALL32emu(clock_adjtime, current,
--		    (clockid_t clock_id, struct compat_timex __user *u_tx))
-+		    (clockid_t clock_id, struct old_timex32 __user *u_tx))
- {
- 	struct timex tx;
- 	int ret;
-diff --git a/kernel/cobalt/posix/syscall32.h b/kernel/cobalt/posix/syscall32.h
-index 34904f96b..eb3e4bd30 100644
---- a/kernel/cobalt/posix/syscall32.h
-+++ b/kernel/cobalt/posix/syscall32.h
-@@ -65,7 +65,7 @@ COBALT_SYSCALL32emu_DECL(clock_settime,
- 
- COBALT_SYSCALL32emu_DECL(clock_adjtime,
- 			 (clockid_t clock_id,
--			  struct compat_timex __user *u_tx));
-+			  struct old_timex32 __user *u_tx));
- 
- COBALT_SYSCALL32emu_DECL(clock_nanosleep,
- 			 (clockid_t clock_id, int flags,
--- 
-2.20.1
+Thank you for your reply.
+Could you please tell me the reasons why RTnet drivers can't work well
+under such a condition?
 
+Thank you for your attention to this matter.
+
+Best regards
+Sunshilong
+
+On Mon, Aug 31, 2020 at 5:31 PM Jan Kiszka <jan.kiszka@siemens.com> wrote:
+>
+> On 31.08.20 11:17, =E5=AD=99=E4=B8=96=E9=BE=99 sunshilong via Xenomai wro=
+te:
+> > Hi, list
+> >
+> > Our project depends on Xenomai-3.0.9. And we can't upgrade it to
+> > Xenomai-3.1 indeed.
+> >
+> > We want to make Xenomai-3.0.9 work on Linux-4.19
+> > (as far as I know, the latest version that it supports is Linux-4.14 an=
+d
+> > Xenomai-3.1 supports Linux-4.19).
+> >
+> > Is it possible?
+> > Could you give me some advice on how to make Xenomai-3.0.9 work on Linu=
+x-4.19?
+> >
+>
+> It's doable with reasonable effort if you do not need RTnet drivers.
+> Pick these from 3.1 (bottom first)
+>
+> Replace sigset_to/from_compat with post 4.14 versions
+> kernel: cobalt: trace: replace dummy array with field
+> kernel: cobalt: forward SRCARCH from the scripts/prepare-kernel.sh
+> kernel: cobalt: use printk instead of print_symbol on v4.16 and later
+> kernel: cobalt: replace ACCESS_ONCE with READ_ONCE
+>
+> and additionally patch
+>
+> diff --git a/kernel/cobalt/thread.c b/kernel/cobalt/thread.c
+> index 5bba5bc703..5710c13f1c 100644
+> --- a/kernel/cobalt/thread.c
+> +++ b/kernel/cobalt/thread.c
+> @@ -2121,7 +2121,7 @@ void xnthread_relax(int notify, int reason)
+>                 suspension |=3D XNDBGSTOP;
+>         }
+>
+> -       set_task_state(p, p->state & ~TASK_NOWAKEUP);
+> +       set_current_state(p->state & ~TASK_NOWAKEUP);
+>         xnthread_run_handler_stack(thread, relax_thread);
+>         xnthread_suspend(thread, suspension, XN_INFINITE, XN_RELATIVE, NU=
+LL);
+>         splnone();
+>
+> I'm using this in local version as well. If things do not build, I might
+> have missed some commit. Report the error then.
+>
+> Jan
+>
+> --
+> Siemens AG, Corporate Technology, CT RDA IOT SES-DE
+> Corporate Competence Center Embedded Linux
 
