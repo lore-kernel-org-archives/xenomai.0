@@ -1,7 +1,7 @@
 From: Philippe  Gerum <rpm@xenomai.org>
-Subject: [PATCH 4/6] ipipe: pinctrl: enable basic pipeline support
-Date: Mon,  7 Sep 2020 15:09:36 +0200
-Message-Id: <20200907130938.416831-4-rpm@xenomai.org>
+Subject: [PATCH 5/6] x86/ipipe: fix build with CONFIG_X86_UV enabled
+Date: Mon,  7 Sep 2020 15:09:37 +0200
+Message-Id: <20200907130938.416831-5-rpm@xenomai.org>
 In-Reply-To: <20200907130938.416831-1-rpm@xenomai.org>
 References: <20200907130938.416831-1-rpm@xenomai.org>
 MIME-Version: 1.0
@@ -18,46 +18,23 @@ To: xenomai@xenomai.org
 
 From: Philippe Gerum <rpm@xenomai.org>
 
-This patch enables the Intel pinctrl/GPIO core driver to operate in a
-pipelined interrupt system. However, it does not allow chained GPIO
-IRQs to be handled from the head stage of such pipeline yet. In other
-words, the chained GPIO interrupts can safely be handled from the
-in-band stage when CONFIG_IPIPE is turned on, but cannot be routed to
-a real-time application.
-
-Enabling full support will require the I-pipe core to handle IRQs
-chained from a shared parent interrupt natively, which it is not
-implemented at the moment.
-
 Signed-off-by: Philippe Gerum <rpm@xenomai.org>
 ---
- drivers/pinctrl/intel/pinctrl-intel.c | 6 ++++--
- 1 file changed, 4 insertions(+), 2 deletions(-)
+ arch/x86/kernel/ipipe.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/pinctrl/intel/pinctrl-intel.c b/drivers/pinctrl/intel/pinctrl-intel.c
-index 89ff2795a8b5..927c3dcee378 100644
---- a/drivers/pinctrl/intel/pinctrl-intel.c
-+++ b/drivers/pinctrl/intel/pinctrl-intel.c
-@@ -1094,7 +1094,9 @@ static irqreturn_t intel_gpio_community_irq_handler(struct intel_pinctrl *pctrl,
+diff --git a/arch/x86/kernel/ipipe.c b/arch/x86/kernel/ipipe.c
+index 3f3afcecc1b9..c5ebfdf2dfb3 100644
+--- a/arch/x86/kernel/ipipe.c
++++ b/arch/x86/kernel/ipipe.c
+@@ -72,6 +72,7 @@ void smp_irq_move_cleanup_interrupt(struct pt_regs *regs);
+ void smp_reboot_interrupt(void);
+ void smp_thermal_interrupt(struct pt_regs *regs);
+ void smp_threshold_interrupt(struct pt_regs *regs);
++void uv_bau_message_interrupt(struct pt_regs *regs);
  
- 			irq = irq_find_mapping(gc->irq.domain,
- 					       padgrp->gpio_base + gpp_offset);
--			generic_handle_irq(irq);
-+			hard_cond_local_irq_disable();
-+			ipipe_handle_demuxed_irq(irq);
-+			hard_cond_local_irq_enable();
+ void __ipipe_do_IRQ(unsigned int irq, void *cookie);
  
- 			ret |= IRQ_HANDLED;
- 		}
-@@ -1127,7 +1129,7 @@ static struct irq_chip intel_gpio_irqchip = {
- 	.irq_unmask = intel_gpio_irq_unmask,
- 	.irq_set_type = intel_gpio_irq_type,
- 	.irq_set_wake = intel_gpio_irq_wake,
--	.flags = IRQCHIP_MASK_ON_SUSPEND,
-+	.flags = IRQCHIP_MASK_ON_SUSPEND|IRQCHIP_PIPELINE_SAFE,
- };
- 
- static int intel_gpio_add_pin_ranges(struct intel_pinctrl *pctrl,
 -- 
 2.26.2
 
