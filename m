@@ -1,12 +1,14 @@
-From: Philippe  Gerum <rpm@xenomai.org>
-Subject: [PATCH 6/6] ipipe: rename __fixup_irq_handler() to
- __ipipe_setup_irq_desc()
-Date: Mon,  7 Sep 2020 15:09:38 +0200
-Message-Id: <20200907130938.416831-6-rpm@xenomai.org>
-In-Reply-To: <20200907130938.416831-1-rpm@xenomai.org>
+Subject: Re: [PATCH 3/6] x86/ipipe: fix chained irq handling
 References: <20200907130938.416831-1-rpm@xenomai.org>
+ <20200907130938.416831-3-rpm@xenomai.org>
+From: Jan Kiszka <jan.kiszka@siemens.com>
+Message-ID: <5c8d2e6e-697f-0759-fb88-37e89cbf43a9@siemens.com>
+Date: Mon, 7 Sep 2020 16:45:13 +0200
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+In-Reply-To: <20200907130938.416831-3-rpm@xenomai.org>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,93 +17,108 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
+To: Philippe Gerum <rpm@xenomai.org>, xenomai@xenomai.org
 
-From: Philippe Gerum <rpm@xenomai.org>
+On 07.09.20 15:09, Philippe Gerum wrote:
+> From: Philippe Gerum <rpm@xenomai.org>
+> 
+> IRQs chained from a parent interrupt (e.g. cascaded interrupts from
+> chained GPIO irqchips) do not have any assigned vector. Therefore, we
+> cannot expect __ipipe_get_ioapic_irq_vector() to return anything
+> sensible for those chained IRQs.
+> 
+> As a result, the interrupt trampoline (__ipipe_do_IRQ()) for the root
+> stage cannot fix up regs->orig_ax with the proper vector number which
+> do_IRQ() would use in turn to fetch the corresponding interrupt
+> descriptor.
+> 
+> Since we already know the IRQ number on entry to __ipipe_do_IRQ(),
+> rewrite the latter as a variant of do_IRQ() which either retrieves the
+> descriptor using irq_to_desc() for all device interrupts in order to
+> fetch the flow handler, or invokes the naked handler of special APIC
+> vectors directly.
+> 
+> Signed-off-by: Philippe Gerum <rpm@xenomai.org>
+> ---
+>  arch/x86/kernel/ipipe.c  | 13 ++-----------
+>  arch/x86/kernel/irq_64.c | 29 +++++++++++++++++++++++++++++
+>  2 files changed, 31 insertions(+), 11 deletions(-)
+> 
+> diff --git a/arch/x86/kernel/ipipe.c b/arch/x86/kernel/ipipe.c
+> index 4b0955c3ff49..3f3afcecc1b9 100644
+> --- a/arch/x86/kernel/ipipe.c
+> +++ b/arch/x86/kernel/ipipe.c
+> @@ -73,6 +73,8 @@ void smp_reboot_interrupt(void);
+>  void smp_thermal_interrupt(struct pt_regs *regs);
+>  void smp_threshold_interrupt(struct pt_regs *regs);
+>  
+> +void __ipipe_do_IRQ(unsigned int irq, void *cookie);
+> +
+>  DEFINE_PER_CPU(unsigned long, __ipipe_cr2);
+>  EXPORT_PER_CPU_SYMBOL_GPL(__ipipe_cr2);
+>  
+> @@ -88,17 +90,6 @@ int ipipe_get_sysinfo(struct ipipe_sysinfo *info)
+>  }
+>  EXPORT_SYMBOL_GPL(ipipe_get_sysinfo);
+>  
+> -static void __ipipe_do_IRQ(unsigned int irq, void *cookie)
+> -{
+> -	void (*handler)(struct pt_regs *regs);
+> -	struct pt_regs *regs;
+> -
+> -	regs = raw_cpu_ptr(&ipipe_percpu.tick_regs);
+> -	regs->orig_ax = ~__ipipe_get_irq_vector(irq);
+> -	handler = (typeof(handler))cookie;
+> -	handler(regs);
+> -}
+> -
+>  #ifdef CONFIG_X86_LOCAL_APIC
+>  
+>  static void __ipipe_noack_apic(struct irq_desc *desc)
+> diff --git a/arch/x86/kernel/irq_64.c b/arch/x86/kernel/irq_64.c
+> index b2b2a3f41daf..7fc8ad19940c 100644
+> --- a/arch/x86/kernel/irq_64.c
+> +++ b/arch/x86/kernel/irq_64.c
+> @@ -89,3 +89,32 @@ bool handle_irq(struct irq_desc *desc, struct pt_regs *regs)
+>  	generic_handle_irq_desc(desc);
+>  	return true;
+>  }
+> +
+> +#ifdef CONFIG_IPIPE
+> +
+> +void __ipipe_do_IRQ(unsigned int irq, void *cookie)
+> +{
+> +	struct pt_regs *regs = raw_cpu_ptr(&ipipe_percpu.tick_regs);
+> +	struct pt_regs *old_regs = set_irq_regs(regs);
+> +	unsigned int (*handler)(struct pt_regs *regs);
+> +	struct irq_desc *desc;
+> +
+> +	handler = (typeof(handler))cookie;
+> +
+> +	entering_irq();
+> +
+> +	stack_overflow_check(regs);
+> +
+> +	if (handler == do_IRQ) {
+> +		desc = irq_to_desc(irq);
+> +		generic_handle_irq_desc(desc);
+> +	} else {
+> +		handler(regs);
+> +	}
+> +
+> +	exiting_irq();
+> +
+> +	set_irq_regs(old_regs);
+> +}
+> +
+> +#endif
+> 
 
-To clarify naming and purpose: this is a pipeline-specific routine,
-which further prepares an interrupt descriptor for receiving events
-for the most part, swapping the interrupt flow handler specifically
-for chained IRQs (not the interrupt handler per se).
+This practically only affected us with GPIOs so far, right?
 
-Signed-off-by: Philippe Gerum <rpm@xenomai.org>
----
- include/linux/irqdesc.h | 8 ++++----
- kernel/irq/chip.c       | 8 ++++----
- 2 files changed, 8 insertions(+), 8 deletions(-)
+Jan
 
-diff --git a/include/linux/irqdesc.h b/include/linux/irqdesc.h
-index 3852c59798d6..121ad0f9c5ea 100644
---- a/include/linux/irqdesc.h
-+++ b/include/linux/irqdesc.h
-@@ -185,8 +185,8 @@ static inline int irq_desc_has_action(struct irq_desc *desc)
- }
- 
- irq_flow_handler_t
--__fixup_irq_handler(struct irq_desc *desc, irq_flow_handler_t handle,
--		    int is_chained);
-+__ipipe_setup_irq_desc(struct irq_desc *desc, irq_flow_handler_t handle,
-+		int is_chained);
- 
- static inline int irq_has_action(unsigned int irq)
- {
-@@ -208,7 +208,7 @@ static inline void irq_set_handler_locked(struct irq_data *data,
- {
- 	struct irq_desc *desc = irq_data_to_desc(data);
- 
--	desc->handle_irq = __fixup_irq_handler(desc, handler, 0);
-+	desc->handle_irq = __ipipe_setup_irq_desc(desc, handler, 0);
- }
- 
- /**
-@@ -229,7 +229,7 @@ irq_set_chip_handler_name_locked(struct irq_data *data, struct irq_chip *chip,
- {
- 	struct irq_desc *desc = irq_data_to_desc(data);
- 
--	desc->handle_irq = __fixup_irq_handler(desc, handler, 0);
-+	desc->handle_irq = __ipipe_setup_irq_desc(desc, handler, 0);
- 	desc->name = name;
- 	data->chip = chip;
- }
-diff --git a/kernel/irq/chip.c b/kernel/irq/chip.c
-index 7c03e2931189..8d56c2fb2f10 100644
---- a/kernel/irq/chip.c
-+++ b/kernel/irq/chip.c
-@@ -1034,7 +1034,7 @@ static void __ipipe_ack_bad_irq(struct irq_desc *desc)
- }
- 
- irq_flow_handler_t
--__fixup_irq_handler(struct irq_desc *desc, irq_flow_handler_t handle, int is_chained)
-+__ipipe_setup_irq_desc(struct irq_desc *desc, irq_flow_handler_t handle, int is_chained)
- {
- 	if (unlikely(handle == NULL)) {
- 		desc->ipipe_ack = __ipipe_ack_bad_irq;
-@@ -1134,13 +1134,13 @@ EXPORT_SYMBOL_GPL(ipipe_enable_irq);
- #else /* !CONFIG_IPIPE */
- 
- irq_flow_handler_t
--__fixup_irq_handler(struct irq_desc *desc, irq_flow_handler_t handle, int is_chained)
-+__ipipe_setup_irq_desc(struct irq_desc *desc, irq_flow_handler_t handle, int is_chained)
- {
- 	return handle;
- }
- 
- #endif /* !CONFIG_IPIPE */
--EXPORT_SYMBOL_GPL(__fixup_irq_handler);
-+EXPORT_SYMBOL_GPL(__ipipe_setup_irq_desc);
- 
- static void
- __irq_do_set_handler(struct irq_desc *desc, irq_flow_handler_t handle,
-@@ -1176,7 +1176,7 @@ __irq_do_set_handler(struct irq_desc *desc, irq_flow_handler_t handle,
- 			return;
- 	}
- 
--	handle = __fixup_irq_handler(desc, handle, is_chained);
-+	handle = __ipipe_setup_irq_desc(desc, handle, is_chained);
- 
- 	/* Uninstall? */
- 	if (handle == handle_bad_irq) {
 -- 
-2.26.2
-
+Siemens AG, Corporate Technology, CT RDA IOT SES-DE
+Corporate Competence Center Embedded Linux
 
