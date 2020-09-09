@@ -1,14 +1,12 @@
-Subject: Re: [PATCH v2 0/1] Add gitlab-ci to Xenomai
-References: <20200904103248.31899-1-Quirin.Gylstorff@siemens.com>
- <4f7b2d8f-70e1-9a56-3dae-c84fa433c478@siemens.com>
-From: Gylstorff Quirin <quirin.gylstorff@siemens.com>
-Message-ID: <9e2264eb-88d5-e5b7-ff2b-d4d6567c19fb@siemens.com>
-Date: Wed, 9 Sep 2020 12:00:34 +0200
 MIME-Version: 1.0
-In-Reply-To: <4f7b2d8f-70e1-9a56-3dae-c84fa433c478@siemens.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+References: <CAF_6MazWZnuJ3v4XjLLfAWMxrgSKsE2qt_60LLp0ifkC=fqoAQ@mail.gmail.com>
+ <5a43908e-817b-bcbc-867d-7284fa07e9fc@siemens.com>
+In-Reply-To: <5a43908e-817b-bcbc-867d-7284fa07e9fc@siemens.com>
+From: gopi ratnakaram <gopi.ratnakaram@svayarobotics.com>
+Date: Wed, 9 Sep 2020 15:50:14 +0530
+Message-ID: <CAF_6MazHN=cvjh+J_oQbpxp1dfcGcxwST=r2uQF9MtJ0Pw3oFA@mail.gmail.com>
+Subject: Re: Regarding SMBus
+Content-Type: text/plain; charset="UTF-8"
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,42 +15,83 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jan Kiszka <jan.kiszka@siemens.com>, xenomai@xenomai.org
+To: Jan Kiszka <jan.kiszka@siemens.com>
+Cc: "Xenomai@xenomai.org" <xenomai@xenomai.org>
+
+Yes, the motherboard manufacturer has shared the bus with other devices
+too. I didn't change any kernel configuration with respect to xenomai, but
+the issue was not there in 4.15.0 which is not RT patched where I am not
+getting this kind of issue. But, this only happened in 4.19.59 xenomai
+patched kernel. Is there any interrupt related configuration change in
+kernel configuration can resolve this issue, please let me know.
+
+--best regards,
+R Gopi Krishna,
+Svaya Robotics Pvt., Ltd.,
+Hyderabad, India.
+T: +91 40 2354 6019
+F: +91 40 2354 7901
 
 
+*DISCLAIMER  :This e-mail and any files transmitted with it may contain
+privileged, undisclosed, or otherwise confidential information of Svaya
+Robotics Pvt. Ltd., and are intended solely for the use of the individual
+or entity to whom they are addressed, shall be maintained in confidence and
+not disclosed to third parties without the written consent of the sender.
+If you have received this E-mail in error, you are hereby notified that any
+review, copying, printing or distribution of it is strictly prohibited.
+Please immediately notify the sender by return e-mail  and destroy the
+original transmittal. Thank you for your cooperation.*
 
-On 9/4/20 12:37 PM, Jan Kiszka wrote:
-> On 04.09.20 12:32, Q. Gylstorff wrote:
->> From: Quirin Gylstorff <quirin.gylstorff@siemens.com>
->>
->>
->> This patch adds a gitlab-ci.yml to support ci builds on gitlab. The
->> build is derived from .travis.yml.
->>
->> An executed pipeline can be found at [1].
->>
->> Changes V2:
->>   - adapt git remote ls syntax to git version 2.20 from 2.17
->>
->> I also look into using the same base for .travis-ci.yml and gitlab-ci.yml.
->> What we can do is moving the script and before_script parts into a
->> shell script or something similar. The job description syntax is
->> not compatible (env instead variables, jobs are under the element
->> jobs/matrix instead of root). IMHO we need some generator to
->> use the same job description for Travis and gitlab-ci.
->>
->> [1]: https://gitlab.com/Quirin.Gy/xenomai/-/pipelines/185711450
->>
-> 
-> Then go for plan B: Test gitlab-ci for a while, and if it works, drop
-> travis.
-> 
-> Is this job also compatible with the free runners on gitlab.com?
 
-Yeah the Job is compatible the link I sent was executed on the free
-runners.
-Quirin
-> 
+On Wed, Sep 9, 2020 at 1:32 PM Jan Kiszka <jan.kiszka@siemens.com> wrote:
+
+> On 09.09.20 07:23, gopi ratnakaram via Xenomai wrote:
+> > Team,
+> >
+> > I am working with xenomai patched with kernel 4.19.59 on an Industrial
+> > motherboard which has an SMBus. After patching during my testing it was
+> > observed that the SMbus got some issues and the bus is locking
+> immediately
+> > after running my application and the error log is as follows. But, when I
+> > run my SMbus based application in the kernel 4.15.0 without RT patching
+> it
+> > was working fine. Is there any configuration setting while patching
+> xenomai
+> > is causing this issue?
+> >
+> > --best regards,
+> > R Gopi Krishna,
+> > Svaya Robotics Pvt., Ltd.,
+> > Hyderabad, India.
+> > T: +91 40 2354 6019
+> > F: +91 40 2354 7901
+> >
+> >
+> > *DISCLAIMER  :This e-mail and any files transmitted with it may contain
+> > privileged, undisclosed, or otherwise confidential information of Svaya
+> > Robotics Pvt. Ltd., and are intended solely for the use of the individual
+> > or entity to whom they are addressed, shall be maintained in confidence
+> and
+> > not disclosed to third parties without the written consent of the sender.
+> > If you have received this E-mail in error, you are hereby notified that
+> any
+> > review, copying, printing or distribution of it is strictly prohibited.
+> > Please immediately notify the sender by return e-mail  and destroy the
+> > original transmittal. Thank you for your cooperation.*
+> > -------------- next part --------------
+> > [    1.291726] i801_smbus 0000:00:1f.4: SPD Write Disable is set
+> > [    1.291801] i801_smbus 0000:00:1f.4: SMBus using PCI interrupt
+> > [  366.625686] i801_smbus 0000:00:1f.4: Timeout waiting for interrupt!
+>
+> The Linux interrupt is not making it through. Is it shared with another
+> device that happens to be managed by an RTDM driver? Does the issue
+> disappear when keeping the kernel version, just turning of Xenomai and
+> I-pipe in the kernel configuration?
+>
 > Jan
-> 
-
+>
+> --
+> Siemens AG, Corporate Technology, CT RDA IOT SES-DE
+> Corporate Competence Center Embedded Linux
+>
