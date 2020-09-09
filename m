@@ -1,10 +1,11 @@
 MIME-Version: 1.0
-From: gopi ratnakaram <gopi.ratnakaram@svayarobotics.com>
-Date: Wed, 9 Sep 2020 10:53:03 +0530
-Message-ID: <CAF_6MazWZnuJ3v4XjLLfAWMxrgSKsE2qt_60LLp0ifkC=fqoAQ@mail.gmail.com>
-Subject: Regarding SMBus
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+References: <CAF_6MazWZnuJ3v4XjLLfAWMxrgSKsE2qt_60LLp0ifkC=fqoAQ@mail.gmail.com>
+In-Reply-To: <CAF_6MazWZnuJ3v4XjLLfAWMxrgSKsE2qt_60LLp0ifkC=fqoAQ@mail.gmail.com>
+From: Greg Gallagher <greg@embeddedgreg.com>
+Date: Wed, 9 Sep 2020 01:27:15 -0400
+Message-ID: <CALLqZ8T7fm4-oFhw7NsxGkDiDi=F3CiJeHWaFfJDfcMsLNNhUw@mail.gmail.com>
+Subject: Re: Regarding SMBus
+Content-Type: text/plain; charset="UTF-8"
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -13,321 +14,288 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
+To: gopi ratnakaram <gopi.ratnakaram@svayarobotics.com>
+Cc: "Xenomai@xenomai.org" <xenomai@xenomai.org>
 
-VGVhbSwKCkkgYW0gd29ya2luZyB3aXRoIHhlbm9tYWkgcGF0Y2hlZCB3aXRoIGtlcm5lbCA0LjE5
-LjU5IG9uIGFuIEluZHVzdHJpYWwKbW90aGVyYm9hcmQgd2hpY2ggaGFzIGFuIFNNQnVzLiBBZnRl
-ciBwYXRjaGluZyBkdXJpbmcgbXkgdGVzdGluZyBpdCB3YXMKb2JzZXJ2ZWQgdGhhdCB0aGUgU01i
-dXMgZ290IHNvbWUgaXNzdWVzIGFuZCB0aGUgYnVzIGlzIGxvY2tpbmcgaW1tZWRpYXRlbHkKYWZ0
-ZXIgcnVubmluZyBteSBhcHBsaWNhdGlvbiBhbmQgdGhlIGVycm9yIGxvZyBpcyBhcyBmb2xsb3dz
-LiBCdXQsIHdoZW4gSQpydW4gbXkgU01idXMgYmFzZWQgYXBwbGljYXRpb24gaW4gdGhlIGtlcm5l
-bCA0LjE1LjAgd2l0aG91dCBSVCBwYXRjaGluZyBpdAp3YXMgd29ya2luZyBmaW5lLiBJcyB0aGVy
-ZSBhbnkgY29uZmlndXJhdGlvbiBzZXR0aW5nIHdoaWxlIHBhdGNoaW5nIHhlbm9tYWkKaXMgY2F1
-c2luZyB0aGlzIGlzc3VlPwoKLS1iZXN0IHJlZ2FyZHMsClIgR29waSBLcmlzaG5hLApTdmF5YSBS
-b2JvdGljcyBQdnQuLCBMdGQuLApIeWRlcmFiYWQsIEluZGlhLgpUOiArOTEgNDAgMjM1NCA2MDE5
-CkY6ICs5MSA0MCAyMzU0IDc5MDEKCgoqRElTQ0xBSU1FUiAgOlRoaXMgZS1tYWlsIGFuZCBhbnkg
-ZmlsZXMgdHJhbnNtaXR0ZWQgd2l0aCBpdCBtYXkgY29udGFpbgpwcml2aWxlZ2VkLCB1bmRpc2Ns
-b3NlZCwgb3Igb3RoZXJ3aXNlIGNvbmZpZGVudGlhbCBpbmZvcm1hdGlvbiBvZiBTdmF5YQpSb2Jv
-dGljcyBQdnQuIEx0ZC4sIGFuZCBhcmUgaW50ZW5kZWQgc29sZWx5IGZvciB0aGUgdXNlIG9mIHRo
-ZSBpbmRpdmlkdWFsCm9yIGVudGl0eSB0byB3aG9tIHRoZXkgYXJlIGFkZHJlc3NlZCwgc2hhbGwg
-YmUgbWFpbnRhaW5lZCBpbiBjb25maWRlbmNlIGFuZApub3QgZGlzY2xvc2VkIHRvIHRoaXJkIHBh
-cnRpZXMgd2l0aG91dCB0aGUgd3JpdHRlbiBjb25zZW50IG9mIHRoZSBzZW5kZXIuCklmIHlvdSBo
-YXZlIHJlY2VpdmVkIHRoaXMgRS1tYWlsIGluIGVycm9yLCB5b3UgYXJlIGhlcmVieSBub3RpZmll
-ZCB0aGF0IGFueQpyZXZpZXcsIGNvcHlpbmcsIHByaW50aW5nIG9yIGRpc3RyaWJ1dGlvbiBvZiBp
-dCBpcyBzdHJpY3RseSBwcm9oaWJpdGVkLgpQbGVhc2UgaW1tZWRpYXRlbHkgbm90aWZ5IHRoZSBz
-ZW5kZXIgYnkgcmV0dXJuIGUtbWFpbCAgYW5kIGRlc3Ryb3kgdGhlCm9yaWdpbmFsIHRyYW5zbWl0
-dGFsLiBUaGFuayB5b3UgZm9yIHlvdXIgY29vcGVyYXRpb24uKgotLS0tLS0tLS0tLS0tLSBuZXh0
-IHBhcnQgLS0tLS0tLS0tLS0tLS0KWyAgICAxLjI5MTcyNl0gaTgwMV9zbWJ1cyAwMDAwOjAwOjFm
-LjQ6IFNQRCBXcml0ZSBEaXNhYmxlIGlzIHNldApbICAgIDEuMjkxODAxXSBpODAxX3NtYnVzIDAw
-MDA6MDA6MWYuNDogU01CdXMgdXNpbmcgUENJIGludGVycnVwdApbICAzNjYuNjI1Njg2XSBpODAx
-X3NtYnVzIDAwMDA6MDA6MWYuNDogVGltZW91dCB3YWl0aW5nIGZvciBpbnRlcnJ1cHQhClsgIDM2
-Ni42MjU2ODhdIGk4MDFfc21idXMgMDAwMDowMDoxZi40OiBUcmFuc2FjdGlvbiB0aW1lb3V0Clsg
-IDM2Ni44MzI2OTJdIGk4MDFfc21idXMgMDAwMDowMDoxZi40OiBUaW1lb3V0IHdhaXRpbmcgZm9y
-IGludGVycnVwdCEKWyAgMzY2LjgzMjY5NF0gaTgwMV9zbWJ1cyAwMDAwOjAwOjFmLjQ6IFRyYW5z
-YWN0aW9uIHRpbWVvdXQKWyAgMzY3LjA0MDcwMF0gaTgwMV9zbWJ1cyAwMDAwOjAwOjFmLjQ6IFRp
-bWVvdXQgd2FpdGluZyBmb3IgaW50ZXJydXB0IQpbICAzNjcuMDQwNzAyXSBpODAxX3NtYnVzIDAw
-MDA6MDA6MWYuNDogVHJhbnNhY3Rpb24gdGltZW91dApbICAzNjcuMDUwODYxXSBpODAxX3NtYnVz
-IDAwMDA6MDA6MWYuNDogU01CdXMgaXMgYnVzeSwgY2FuJ3QgdXNlIGl0IQpbICAzNjcuMDUwOTEx
-XSBpODAxX3NtYnVzIDAwMDA6MDA6MWYuNDogU01CdXMgaXMgYnVzeSwgY2FuJ3QgdXNlIGl0IQpb
-ICAzNjcuMDUwOTU3XSBpODAxX3NtYnVzIDAwMDA6MDA6MWYuNDogU01CdXMgaXMgYnVzeSwgY2Fu
-J3QgdXNlIGl0IQpbICAzNjcuMDUxMDAwXSBpODAxX3NtYnVzIDAwMDA6MDA6MWYuNDogU01CdXMg
-aXMgYnVzeSwgY2FuJ3QgdXNlIGl0IQpbICAzNjcuMDUxMDQ3XSBpODAxX3NtYnVzIDAwMDA6MDA6
-MWYuNDogU01CdXMgaXMgYnVzeSwgY2FuJ3QgdXNlIGl0IQpbICAzNjcuMjY0NzEwXSBpODAxX3Nt
-YnVzIDAwMDA6MDA6MWYuNDogVGltZW91dCB3YWl0aW5nIGZvciBpbnRlcnJ1cHQhClsgIDM2Ny4y
-NjQ3MTJdIGk4MDFfc21idXMgMDAwMDowMDoxZi40OiBUcmFuc2FjdGlvbiB0aW1lb3V0ClsgIDM2
-OS40ODE3OTRdIGk4MDFfc21idXMgMDAwMDowMDoxZi40OiBUaW1lb3V0IHdhaXRpbmcgZm9yIGlu
-dGVycnVwdCEKWyAgMzY5LjQ4MTc5Nl0gaTgwMV9zbWJ1cyAwMDAwOjAwOjFmLjQ6IFRyYW5zYWN0
-aW9uIHRpbWVvdXQKWyAgMzY5LjQ4MzgyN10gaTgwMV9zbWJ1cyAwMDAwOjAwOjFmLjQ6IEZhaWxl
-ZCB0ZXJtaW5hdGluZyB0aGUgdHJhbnNhY3Rpb24KWyAgMzY5LjQ4MzkwMF0gaTgwMV9zbWJ1cyAw
-MDAwOjAwOjFmLjQ6IFNNQnVzIGlzIGJ1c3ksIGNhbid0IHVzZSBpdCEKWyAgMzY5LjQ4Mzk0N10g
-aTgwMV9zbWJ1cyAwMDAwOjAwOjFmLjQ6IFNNQnVzIGlzIGJ1c3ksIGNhbid0IHVzZSBpdCEKWyAg
-MzY5LjQ4Mzk5Nl0gaTgwMV9zbWJ1cyAwMDAwOjAwOjFmLjQ6IFNNQnVzIGlzIGJ1c3ksIGNhbid0
-IHVzZSBpdCEKWyAgMzY5LjQ4NDA0M10gaTgwMV9zbWJ1cyAwMDAwOjAwOjFmLjQ6IFNNQnVzIGlz
-IGJ1c3ksIGNhbid0IHVzZSBpdCEKWyAgMzY5LjQ4NDA4Nl0gaTgwMV9zbWJ1cyAwMDAwOjAwOjFm
-LjQ6IFNNQnVzIGlzIGJ1c3ksIGNhbid0IHVzZSBpdCEKWyAgMzY5LjQ4NDEzM10gaTgwMV9zbWJ1
-cyAwMDAwOjAwOjFmLjQ6IFNNQnVzIGlzIGJ1c3ksIGNhbid0IHVzZSBpdCEKWyAgMzY5LjQ4NDE4
-MF0gaTgwMV9zbWJ1cyAwMDAwOjAwOjFmLjQ6IFNNQnVzIGlzIGJ1c3ksIGNhbid0IHVzZSBpdCEK
-WyAgMzY5LjY4ODgwMV0gaTgwMV9zbWJ1cyAwMDAwOjAwOjFmLjQ6IFRpbWVvdXQgd2FpdGluZyBm
-b3IgaW50ZXJydXB0IQpbICAzNjkuNjg4ODAzXSBpODAxX3NtYnVzIDAwMDA6MDA6MWYuNDogVHJh
-bnNhY3Rpb24gdGltZW91dApbICAzNjkuNjkwODI5XSBpODAxX3NtYnVzIDAwMDA6MDA6MWYuNDog
-RmFpbGVkIHRlcm1pbmF0aW5nIHRoZSB0cmFuc2FjdGlvbgpbICAzNjkuNjkwOTAzXSBpODAxX3Nt
-YnVzIDAwMDA6MDA6MWYuNDogU01CdXMgaXMgYnVzeSwgY2FuJ3QgdXNlIGl0IQpbICAzNjkuNjkw
-OTUxXSBpODAxX3NtYnVzIDAwMDA6MDA6MWYuNDogU01CdXMgaXMgYnVzeSwgY2FuJ3QgdXNlIGl0
-IQpbICAzNjkuNjkwOTk4XSBpODAxX3NtYnVzIDAwMDA6MDA6MWYuNDogU01CdXMgaXMgYnVzeSwg
-Y2FuJ3QgdXNlIGl0IQpbICAzNjkuNjkxMDQ0XSBpODAxX3NtYnVzIDAwMDA6MDA6MWYuNDogU01C
-dXMgaXMgYnVzeSwgY2FuJ3QgdXNlIGl0IQpbICAzNjkuNjkxMDkwXSBpODAxX3NtYnVzIDAwMDA6
-MDA6MWYuNDogU01CdXMgaXMgYnVzeSwgY2FuJ3QgdXNlIGl0IQpbICAzNjkuNjkxMTM0XSBpODAx
-X3NtYnVzIDAwMDA6MDA6MWYuNDogU01CdXMgaXMgYnVzeSwgY2FuJ3QgdXNlIGl0IQpbICAzNjku
-NjkxMTgxXSBpODAxX3NtYnVzIDAwMDA6MDA6MWYuNDogU01CdXMgaXMgYnVzeSwgY2FuJ3QgdXNl
-IGl0IQpbICAzNjkuNjkxMjI3XSBpODAxX3NtYnVzIDAwMDA6MDA6MWYuNDogU01CdXMgaXMgYnVz
-eSwgY2FuJ3QgdXNlIGl0IQpbICAzNjkuNjkxMjc0XSBpODAxX3NtYnVzIDAwMDA6MDA6MWYuNDog
-U01CdXMgaXMgYnVzeSwgY2FuJ3QgdXNlIGl0IQpbICAzNjkuNjkxMzIwXSBpODAxX3NtYnVzIDAw
-MDA6MDA6MWYuNDogU01CdXMgaXMgYnVzeSwgY2FuJ3QgdXNlIGl0IQpbICAzNjkuNjkxMzY0XSBp
-ODAxX3NtYnVzIDAwMDA6MDA6MWYuNDogU01CdXMgaXMgYnVzeSwgY2FuJ3QgdXNlIGl0IQpbICAz
-NjkuNjkxNDEwXSBpODAxX3NtYnVzIDAwMDA6MDA6MWYuNDogU01CdXMgaXMgYnVzeSwgY2FuJ3Qg
-dXNlIGl0IQpbICAzNjkuNjkxNDU3XSBpODAxX3NtYnVzIDAwMDA6MDA6MWYuNDogU01CdXMgaXMg
-YnVzeSwgY2FuJ3QgdXNlIGl0IQpbICAzNjkuNjkxNTA0XSBpODAxX3NtYnVzIDAwMDA6MDA6MWYu
-NDogU01CdXMgaXMgYnVzeSwgY2FuJ3QgdXNlIGl0IQpbICAzNjkuNjkxNTQ5XSBpODAxX3NtYnVz
-IDAwMDA6MDA6MWYuNDogU01CdXMgaXMgYnVzeSwgY2FuJ3QgdXNlIGl0IQpbICAzNjkuNjkxNTkz
-XSBpODAxX3NtYnVzIDAwMDA6MDA6MWYuNDogU01CdXMgaXMgYnVzeSwgY2FuJ3QgdXNlIGl0IQpb
-ICAzNjkuNjkxNjM5XSBpODAxX3NtYnVzIDAwMDA6MDA6MWYuNDogU01CdXMgaXMgYnVzeSwgY2Fu
-J3QgdXNlIGl0IQpbICAzNjkuNjkxNjg2XSBpODAxX3NtYnVzIDAwMDA6MDA6MWYuNDogU01CdXMg
-aXMgYnVzeSwgY2FuJ3QgdXNlIGl0IQpbICAzNjkuNjkxNzMzXSBpODAxX3NtYnVzIDAwMDA6MDA6
-MWYuNDogU01CdXMgaXMgYnVzeSwgY2FuJ3QgdXNlIGl0IQpbICAzNjkuNjkxNzc4XSBpODAxX3Nt
-YnVzIDAwMDA6MDA6MWYuNDogU01CdXMgaXMgYnVzeSwgY2FuJ3QgdXNlIGl0IQpbICAzNjkuNjkx
-ODI5XSBpODAxX3NtYnVzIDAwMDA6MDA6MWYuNDogU01CdXMgaXMgYnVzeSwgY2FuJ3QgdXNlIGl0
-IQpbICAzNjkuNjkxODc4XSBpODAxX3NtYnVzIDAwMDA6MDA6MWYuNDogU01CdXMgaXMgYnVzeSwg
-Y2FuJ3QgdXNlIGl0IQpbICAzNjkuNjkxOTI0XSBpODAxX3NtYnVzIDAwMDA6MDA6MWYuNDogU01C
-dXMgaXMgYnVzeSwgY2FuJ3QgdXNlIGl0IQpbICAzNjkuNjkxOTcxXSBpODAxX3NtYnVzIDAwMDA6
-MDA6MWYuNDogU01CdXMgaXMgYnVzeSwgY2FuJ3QgdXNlIGl0IQpbICAzNjkuNjkyMDE4XSBpODAx
-X3NtYnVzIDAwMDA6MDA6MWYuNDogU01CdXMgaXMgYnVzeSwgY2FuJ3QgdXNlIGl0IQpbICAzNjku
-NjkyMDY0XSBpODAxX3NtYnVzIDAwMDA6MDA6MWYuNDogU01CdXMgaXMgYnVzeSwgY2FuJ3QgdXNl
-IGl0IQpbICAzNjkuNjkyMTA4XSBpODAxX3NtYnVzIDAwMDA6MDA6MWYuNDogU01CdXMgaXMgYnVz
-eSwgY2FuJ3QgdXNlIGl0IQpbICAzNjkuNjkyMTU1XSBpODAxX3NtYnVzIDAwMDA6MDA6MWYuNDog
-U01CdXMgaXMgYnVzeSwgY2FuJ3QgdXNlIGl0IQpbICAzNjkuNjkyMjAxXSBpODAxX3NtYnVzIDAw
-MDA6MDA6MWYuNDogU01CdXMgaXMgYnVzeSwgY2FuJ3QgdXNlIGl0IQpbICAzNjkuNjkyMjQ4XSBp
-ODAxX3NtYnVzIDAwMDA6MDA6MWYuNDogU01CdXMgaXMgYnVzeSwgY2FuJ3QgdXNlIGl0IQpbICAz
-NjkuNjkyMjk0XSBpODAxX3NtYnVzIDAwMDA6MDA6MWYuNDogU01CdXMgaXMgYnVzeSwgY2FuJ3Qg
-dXNlIGl0IQpbICAzNjkuNjkyMzM4XSBpODAxX3NtYnVzIDAwMDA6MDA6MWYuNDogU01CdXMgaXMg
-YnVzeSwgY2FuJ3QgdXNlIGl0IQpbICAzNjkuNjkyMzg1XSBpODAxX3NtYnVzIDAwMDA6MDA6MWYu
-NDogU01CdXMgaXMgYnVzeSwgY2FuJ3QgdXNlIGl0IQpbICAzNjkuNjkyNDMyXSBpODAxX3NtYnVz
-IDAwMDA6MDA6MWYuNDogU01CdXMgaXMgYnVzeSwgY2FuJ3QgdXNlIGl0IQpbICAzNjkuNjkyNDc5
-XSBpODAxX3NtYnVzIDAwMDA6MDA6MWYuNDogU01CdXMgaXMgYnVzeSwgY2FuJ3QgdXNlIGl0IQpb
-ICAzNjkuNjkyNTI1XSBpODAxX3NtYnVzIDAwMDA6MDA6MWYuNDogU01CdXMgaXMgYnVzeSwgY2Fu
-J3QgdXNlIGl0IQpbICAzNjkuNjkyNTY4XSBpODAxX3NtYnVzIDAwMDA6MDA6MWYuNDogU01CdXMg
-aXMgYnVzeSwgY2FuJ3QgdXNlIGl0IQpbICAzNjkuNjkyNjE1XSBpODAxX3NtYnVzIDAwMDA6MDA6
-MWYuNDogU01CdXMgaXMgYnVzeSwgY2FuJ3QgdXNlIGl0IQpbICAzNjkuNjkyNjYyXSBpODAxX3Nt
-YnVzIDAwMDA6MDA6MWYuNDogU01CdXMgaXMgYnVzeSwgY2FuJ3QgdXNlIGl0IQpbICAzNjkuNjky
-NzA5XSBpODAxX3NtYnVzIDAwMDA6MDA6MWYuNDogU01CdXMgaXMgYnVzeSwgY2FuJ3QgdXNlIGl0
-IQpbICAzNjkuNjkyNzU2XSBpODAxX3NtYnVzIDAwMDA6MDA6MWYuNDogU01CdXMgaXMgYnVzeSwg
-Y2FuJ3QgdXNlIGl0IQpbICAzNjkuNjkyODQ2XSBpODAxX3NtYnVzIDAwMDA6MDA6MWYuNDogU01C
-dXMgaXMgYnVzeSwgY2FuJ3QgdXNlIGl0IQpbICAzNjkuNjkyODk2XSBpODAxX3NtYnVzIDAwMDA6
-MDA6MWYuNDogU01CdXMgaXMgYnVzeSwgY2FuJ3QgdXNlIGl0IQpbICAzNjkuNjkyOTQzXSBpODAx
-X3NtYnVzIDAwMDA6MDA6MWYuNDogU01CdXMgaXMgYnVzeSwgY2FuJ3QgdXNlIGl0IQpbICAzNjku
-NjkyOTg5XSBpODAxX3NtYnVzIDAwMDA6MDA6MWYuNDogU01CdXMgaXMgYnVzeSwgY2FuJ3QgdXNl
-IGl0IQpbICAzNjkuNjkzMDMyXSBpODAxX3NtYnVzIDAwMDA6MDA6MWYuNDogU01CdXMgaXMgYnVz
-eSwgY2FuJ3QgdXNlIGl0IQpbICAzNjkuNjkzMDc5XSBpODAxX3NtYnVzIDAwMDA6MDA6MWYuNDog
-U01CdXMgaXMgYnVzeSwgY2FuJ3QgdXNlIGl0IQpbICAzNjkuNjkzMTI2XSBpODAxX3NtYnVzIDAw
-MDA6MDA6MWYuNDogU01CdXMgaXMgYnVzeSwgY2FuJ3QgdXNlIGl0IQpbICAzNjkuNjkzMTczXSBp
-ODAxX3NtYnVzIDAwMDA6MDA6MWYuNDogU01CdXMgaXMgYnVzeSwgY2FuJ3QgdXNlIGl0IQpbICAz
-NjkuNjkzMjE5XSBpODAxX3NtYnVzIDAwMDA6MDA6MWYuNDogU01CdXMgaXMgYnVzeSwgY2FuJ3Qg
-dXNlIGl0IQpbICAzNjkuNjkzMjYzXSBpODAxX3NtYnVzIDAwMDA6MDA6MWYuNDogU01CdXMgaXMg
-YnVzeSwgY2FuJ3QgdXNlIGl0IQpbICAzNjkuNjkzMzEwXSBpODAxX3NtYnVzIDAwMDA6MDA6MWYu
-NDogU01CdXMgaXMgYnVzeSwgY2FuJ3QgdXNlIGl0IQpbICAzNjkuNjkzMzU3XSBpODAxX3NtYnVz
-IDAwMDA6MDA6MWYuNDogU01CdXMgaXMgYnVzeSwgY2FuJ3QgdXNlIGl0IQpbICAzNjkuNjkzNDA0
-XSBpODAxX3NtYnVzIDAwMDA6MDA6MWYuNDogU01CdXMgaXMgYnVzeSwgY2FuJ3QgdXNlIGl0IQpb
-ICAzNjkuNjkzNDUwXSBpODAxX3NtYnVzIDAwMDA6MDA6MWYuNDogU01CdXMgaXMgYnVzeSwgY2Fu
-J3QgdXNlIGl0IQpbICAzNjkuNjkzNDkzXSBpODAxX3NtYnVzIDAwMDA6MDA6MWYuNDogU01CdXMg
-aXMgYnVzeSwgY2FuJ3QgdXNlIGl0IQpbICAzNjkuNjkzNTQwXSBpODAxX3NtYnVzIDAwMDA6MDA6
-MWYuNDogU01CdXMgaXMgYnVzeSwgY2FuJ3QgdXNlIGl0IQpbICAzNjkuNjkzNTg3XSBpODAxX3Nt
-YnVzIDAwMDA6MDA6MWYuNDogU01CdXMgaXMgYnVzeSwgY2FuJ3QgdXNlIGl0IQpbICAzNjkuNjkz
-NjM0XSBpODAxX3NtYnVzIDAwMDA6MDA6MWYuNDogU01CdXMgaXMgYnVzeSwgY2FuJ3QgdXNlIGl0
-IQpbICAzNjkuNjkzNjgwXSBpODAxX3NtYnVzIDAwMDA6MDA6MWYuNDogU01CdXMgaXMgYnVzeSwg
-Y2FuJ3QgdXNlIGl0IQpbICAzNjkuNjkzNzIzXSBpODAxX3NtYnVzIDAwMDA6MDA6MWYuNDogU01C
-dXMgaXMgYnVzeSwgY2FuJ3QgdXNlIGl0IQpbICAzNjkuNjkzNzcwXSBpODAxX3NtYnVzIDAwMDA6
-MDA6MWYuNDogU01CdXMgaXMgYnVzeSwgY2FuJ3QgdXNlIGl0IQpbICAzNjkuNjkzODQ5XSBpODAx
-X3NtYnVzIDAwMDA6MDA6MWYuNDogU01CdXMgaXMgYnVzeSwgY2FuJ3QgdXNlIGl0IQpbICAzNjku
-NjkzODk1XSBpODAxX3NtYnVzIDAwMDA6MDA6MWYuNDogU01CdXMgaXMgYnVzeSwgY2FuJ3QgdXNl
-IGl0IQpbICAzNjkuNjkzOTQyXSBpODAxX3NtYnVzIDAwMDA6MDA6MWYuNDogU01CdXMgaXMgYnVz
-eSwgY2FuJ3QgdXNlIGl0IQpbICAzNjkuNjkzOTg4XSBpODAxX3NtYnVzIDAwMDA6MDA6MWYuNDog
-U01CdXMgaXMgYnVzeSwgY2FuJ3QgdXNlIGl0IQpbICAzNjkuNjk0MDM1XSBpODAxX3NtYnVzIDAw
-MDA6MDA6MWYuNDogU01CdXMgaXMgYnVzeSwgY2FuJ3QgdXNlIGl0IQpbICAzNjkuNjk0MDgyXSBp
-ODAxX3NtYnVzIDAwMDA6MDA6MWYuNDogU01CdXMgaXMgYnVzeSwgY2FuJ3QgdXNlIGl0IQpbICAz
-NjkuNjk0MTI2XSBpODAxX3NtYnVzIDAwMDA6MDA6MWYuNDogU01CdXMgaXMgYnVzeSwgY2FuJ3Qg
-dXNlIGl0IQpbICAzNjkuNjk0MTczXSBpODAxX3NtYnVzIDAwMDA6MDA6MWYuNDogU01CdXMgaXMg
-YnVzeSwgY2FuJ3QgdXNlIGl0IQpbICAzNjkuNjk0MjE5XSBpODAxX3NtYnVzIDAwMDA6MDA6MWYu
-NDogU01CdXMgaXMgYnVzeSwgY2FuJ3QgdXNlIGl0IQpbICAzNjkuNjk0MjY2XSBpODAxX3NtYnVz
-IDAwMDA6MDA6MWYuNDogU01CdXMgaXMgYnVzeSwgY2FuJ3QgdXNlIGl0IQpbICAzNjkuNjk0MzEy
-XSBpODAxX3NtYnVzIDAwMDA6MDA6MWYuNDogU01CdXMgaXMgYnVzeSwgY2FuJ3QgdXNlIGl0IQpb
-ICAzNjkuNjk0MzU2XSBpODAxX3NtYnVzIDAwMDA6MDA6MWYuNDogU01CdXMgaXMgYnVzeSwgY2Fu
-J3QgdXNlIGl0IQpbICAzNjkuNjk0NDA0XSBpODAxX3NtYnVzIDAwMDA6MDA6MWYuNDogU01CdXMg
-aXMgYnVzeSwgY2FuJ3QgdXNlIGl0IQpbICAzNjkuNjk0NDUxXSBpODAxX3NtYnVzIDAwMDA6MDA6
-MWYuNDogU01CdXMgaXMgYnVzeSwgY2FuJ3QgdXNlIGl0IQpbICAzNjkuNjk0NDk4XSBpODAxX3Nt
-YnVzIDAwMDA6MDA6MWYuNDogU01CdXMgaXMgYnVzeSwgY2FuJ3QgdXNlIGl0IQpbICAzNjkuNjk0
-NTQ0XSBpODAxX3NtYnVzIDAwMDA6MDA6MWYuNDogU01CdXMgaXMgYnVzeSwgY2FuJ3QgdXNlIGl0
-IQpbICAzNjkuNjk0NTg3XSBpODAxX3NtYnVzIDAwMDA6MDA6MWYuNDogU01CdXMgaXMgYnVzeSwg
-Y2FuJ3QgdXNlIGl0IQpbICAzNjkuNjk0NjM0XSBpODAxX3NtYnVzIDAwMDA6MDA6MWYuNDogU01C
-dXMgaXMgYnVzeSwgY2FuJ3QgdXNlIGl0IQpbICAzNjkuNjk0NjgxXSBpODAxX3NtYnVzIDAwMDA6
-MDA6MWYuNDogU01CdXMgaXMgYnVzeSwgY2FuJ3QgdXNlIGl0IQpbICAzNjkuNjk0NzI4XSBpODAx
-X3NtYnVzIDAwMDA6MDA6MWYuNDogU01CdXMgaXMgYnVzeSwgY2FuJ3QgdXNlIGl0IQpbICAzNjku
-Njk0Nzc0XSBpODAxX3NtYnVzIDAwMDA6MDA6MWYuNDogU01CdXMgaXMgYnVzeSwgY2FuJ3QgdXNl
-IGl0IQpbICAzNjkuNjk0ODUzXSBpODAxX3NtYnVzIDAwMDA6MDA6MWYuNDogU01CdXMgaXMgYnVz
-eSwgY2FuJ3QgdXNlIGl0IQpbICAzNjkuNjk0OTAzXSBpODAxX3NtYnVzIDAwMDA6MDA6MWYuNDog
-U01CdXMgaXMgYnVzeSwgY2FuJ3QgdXNlIGl0IQpbICAzNjkuNjk0OTQ5XSBpODAxX3NtYnVzIDAw
-MDA6MDA6MWYuNDogU01CdXMgaXMgYnVzeSwgY2FuJ3QgdXNlIGl0IQpbICAzNjkuNjk0OTkzXSBp
-ODAxX3NtYnVzIDAwMDA6MDA6MWYuNDogU01CdXMgaXMgYnVzeSwgY2FuJ3QgdXNlIGl0IQpbICAz
-NjkuNjk1MDQwXSBpODAxX3NtYnVzIDAwMDA6MDA6MWYuNDogU01CdXMgaXMgYnVzeSwgY2FuJ3Qg
-dXNlIGl0IQpbICAzNjkuNjk1MDg3XSBpODAxX3NtYnVzIDAwMDA6MDA6MWYuNDogU01CdXMgaXMg
-YnVzeSwgY2FuJ3QgdXNlIGl0IQpbICAzNjkuNjk1MTM0XSBpODAxX3NtYnVzIDAwMDA6MDA6MWYu
-NDogU01CdXMgaXMgYnVzeSwgY2FuJ3QgdXNlIGl0IQpbICAzNjkuNjk1MTgxXSBpODAxX3NtYnVz
-IDAwMDA6MDA6MWYuNDogU01CdXMgaXMgYnVzeSwgY2FuJ3QgdXNlIGl0IQpbICAzNjkuNjk1MjI1
-XSBpODAxX3NtYnVzIDAwMDA6MDA6MWYuNDogU01CdXMgaXMgYnVzeSwgY2FuJ3QgdXNlIGl0IQpb
-ICAzNjkuNjk1MjcyXSBpODAxX3NtYnVzIDAwMDA6MDA6MWYuNDogU01CdXMgaXMgYnVzeSwgY2Fu
-J3QgdXNlIGl0IQpbICAzNjkuNjk1MzE5XSBpODAxX3NtYnVzIDAwMDA6MDA6MWYuNDogU01CdXMg
-aXMgYnVzeSwgY2FuJ3QgdXNlIGl0IQpbICAzNjkuNjk1MzY1XSBpODAxX3NtYnVzIDAwMDA6MDA6
-MWYuNDogU01CdXMgaXMgYnVzeSwgY2FuJ3QgdXNlIGl0IQpbICAzNjkuNjk1NDExXSBpODAxX3Nt
-YnVzIDAwMDA6MDA6MWYuNDogU01CdXMgaXMgYnVzeSwgY2FuJ3QgdXNlIGl0IQpbICAzNjkuNjk1
-NDU1XSBpODAxX3NtYnVzIDAwMDA6MDA6MWYuNDogU01CdXMgaXMgYnVzeSwgY2FuJ3QgdXNlIGl0
-IQpbICAzNjkuNjk1NTAxXSBpODAxX3NtYnVzIDAwMDA6MDA6MWYuNDogU01CdXMgaXMgYnVzeSwg
-Y2FuJ3QgdXNlIGl0IQpbICAzNzEuNzAzMTk5XSBpODAxX3NtYnVzIDAwMDA6MDA6MWYuNDogU01C
-dXMgaXMgYnVzeSwgY2FuJ3QgdXNlIGl0IQpbICAzNzEuNzAzMjU4XSBpODAxX3NtYnVzIDAwMDA6
-MDA6MWYuNDogU01CdXMgaXMgYnVzeSwgY2FuJ3QgdXNlIGl0IQpbICAzNzEuNzAzMzA2XSBpODAx
-X3NtYnVzIDAwMDA6MDA6MWYuNDogU01CdXMgaXMgYnVzeSwgY2FuJ3QgdXNlIGl0IQpbICAzNzEu
-NzAzMzUyXSBpODAxX3NtYnVzIDAwMDA6MDA6MWYuNDogU01CdXMgaXMgYnVzeSwgY2FuJ3QgdXNl
-IGl0IQpbICAzNzEuNzAzMzk1XSBpODAxX3NtYnVzIDAwMDA6MDA6MWYuNDogU01CdXMgaXMgYnVz
-eSwgY2FuJ3QgdXNlIGl0IQpbICAzNzEuNzAzNDQyXSBpODAxX3NtYnVzIDAwMDA6MDA6MWYuNDog
-U01CdXMgaXMgYnVzeSwgY2FuJ3QgdXNlIGl0IQpbICAzNzEuNzAzNDg5XSBpODAxX3NtYnVzIDAw
-MDA6MDA6MWYuNDogU01CdXMgaXMgYnVzeSwgY2FuJ3QgdXNlIGl0IQpbICAzNzEuNzAzNTM1XSBp
-ODAxX3NtYnVzIDAwMDA6MDA6MWYuNDogU01CdXMgaXMgYnVzeSwgY2FuJ3QgdXNlIGl0IQpbICAz
-NzEuNzAzNTgxXSBpODAxX3NtYnVzIDAwMDA6MDA6MWYuNDogU01CdXMgaXMgYnVzeSwgY2FuJ3Qg
-dXNlIGl0IQpbICAzNzEuNzAzNjI1XSBpODAxX3NtYnVzIDAwMDA6MDA6MWYuNDogU01CdXMgaXMg
-YnVzeSwgY2FuJ3QgdXNlIGl0IQpbICAzNzEuNzAzNjcyXSBpODAxX3NtYnVzIDAwMDA6MDA6MWYu
-NDogU01CdXMgaXMgYnVzeSwgY2FuJ3QgdXNlIGl0IQpbICAzNzEuNzAzNzE4XSBpODAxX3NtYnVz
-IDAwMDA6MDA6MWYuNDogU01CdXMgaXMgYnVzeSwgY2FuJ3QgdXNlIGl0IQpbICAzNzEuNzAzNzY1
-XSBpODAxX3NtYnVzIDAwMDA6MDA6MWYuNDogU01CdXMgaXMgYnVzeSwgY2FuJ3QgdXNlIGl0IQpb
-ICAzNzEuNzAzODEzXSBpODAxX3NtYnVzIDAwMDA6MDA6MWYuNDogU01CdXMgaXMgYnVzeSwgY2Fu
-J3QgdXNlIGl0IQpbICAzNzEuNzAzODU3XSBpODAxX3NtYnVzIDAwMDA6MDA6MWYuNDogU01CdXMg
-aXMgYnVzeSwgY2FuJ3QgdXNlIGl0IQpbICAzNzEuNzAzOTEzXSBpODAxX3NtYnVzIDAwMDA6MDA6
-MWYuNDogU01CdXMgaXMgYnVzeSwgY2FuJ3QgdXNlIGl0IQpbICAzNzEuNzAzOTYzXSBpODAxX3Nt
-YnVzIDAwMDA6MDA6MWYuNDogU01CdXMgaXMgYnVzeSwgY2FuJ3QgdXNlIGl0IQpbICAzNzEuNzA0
-MDA5XSBpODAxX3NtYnVzIDAwMDA6MDA6MWYuNDogU01CdXMgaXMgYnVzeSwgY2FuJ3QgdXNlIGl0
-IQpbICAzNzEuNzA0MDU1XSBpODAxX3NtYnVzIDAwMDA6MDA6MWYuNDogU01CdXMgaXMgYnVzeSwg
-Y2FuJ3QgdXNlIGl0IQpbICAzNzEuNzA0MTAxXSBpODAxX3NtYnVzIDAwMDA6MDA6MWYuNDogU01C
-dXMgaXMgYnVzeSwgY2FuJ3QgdXNlIGl0IQpbICAzNzEuNzA0MTQ1XSBpODAxX3NtYnVzIDAwMDA6
-MDA6MWYuNDogU01CdXMgaXMgYnVzeSwgY2FuJ3QgdXNlIGl0IQpbICAzNzEuNzA0MTkxXSBpODAx
-X3NtYnVzIDAwMDA6MDA6MWYuNDogU01CdXMgaXMgYnVzeSwgY2FuJ3QgdXNlIGl0IQpbICAzNzEu
-NzA0MjM3XSBpODAxX3NtYnVzIDAwMDA6MDA6MWYuNDogU01CdXMgaXMgYnVzeSwgY2FuJ3QgdXNl
-IGl0IQpbICAzNzEuNzA0Mjg0XSBpODAxX3NtYnVzIDAwMDA6MDA6MWYuNDogU01CdXMgaXMgYnVz
-eSwgY2FuJ3QgdXNlIGl0IQpbICAzNzEuNzA0MzI5XSBpODAxX3NtYnVzIDAwMDA6MDA6MWYuNDog
-U01CdXMgaXMgYnVzeSwgY2FuJ3QgdXNlIGl0IQpbICAzNzEuNzA0MzczXSBpODAxX3NtYnVzIDAw
-MDA6MDA6MWYuNDogU01CdXMgaXMgYnVzeSwgY2FuJ3QgdXNlIGl0IQpbICAzNzEuNzA0NDE5XSBp
-ODAxX3NtYnVzIDAwMDA6MDA6MWYuNDogU01CdXMgaXMgYnVzeSwgY2FuJ3QgdXNlIGl0IQpbICAz
-NzEuNzA0NDY2XSBpODAxX3NtYnVzIDAwMDA6MDA6MWYuNDogU01CdXMgaXMgYnVzeSwgY2FuJ3Qg
-dXNlIGl0IQpbICAzNzEuNzA0NTEyXSBpODAxX3NtYnVzIDAwMDA6MDA6MWYuNDogU01CdXMgaXMg
-YnVzeSwgY2FuJ3QgdXNlIGl0IQpbICAzNzEuNzA0NTU4XSBpODAxX3NtYnVzIDAwMDA6MDA6MWYu
-NDogU01CdXMgaXMgYnVzeSwgY2FuJ3QgdXNlIGl0IQpbICAzNzEuNzA0NjAyXSBpODAxX3NtYnVz
-IDAwMDA6MDA6MWYuNDogU01CdXMgaXMgYnVzeSwgY2FuJ3QgdXNlIGl0IQpbICAzNzEuNzA0NjQ4
-XSBpODAxX3NtYnVzIDAwMDA6MDA6MWYuNDogU01CdXMgaXMgYnVzeSwgY2FuJ3QgdXNlIGl0IQpb
-ICAzNzEuNzA0Njk0XSBpODAxX3NtYnVzIDAwMDA6MDA6MWYuNDogU01CdXMgaXMgYnVzeSwgY2Fu
-J3QgdXNlIGl0IQpbICAzNzEuNzA0NzQwXSBpODAxX3NtYnVzIDAwMDA6MDA6MWYuNDogU01CdXMg
-aXMgYnVzeSwgY2FuJ3QgdXNlIGl0IQpbICAzNzEuNzA0Nzg2XSBpODAxX3NtYnVzIDAwMDA6MDA6
-MWYuNDogU01CdXMgaXMgYnVzeSwgY2FuJ3QgdXNlIGl0IQpbICAzNzEuNzA0ODMwXSBpODAxX3Nt
-YnVzIDAwMDA6MDA6MWYuNDogU01CdXMgaXMgYnVzeSwgY2FuJ3QgdXNlIGl0IQpbICAzNzEuNzA0
-ODgzXSBpODAxX3NtYnVzIDAwMDA6MDA6MWYuNDogU01CdXMgaXMgYnVzeSwgY2FuJ3QgdXNlIGl0
-IQpbICAzNzEuNzA0OTMxXSBpODAxX3NtYnVzIDAwMDA6MDA6MWYuNDogU01CdXMgaXMgYnVzeSwg
-Y2FuJ3QgdXNlIGl0IQpbICAzNzEuNzA0OTc3XSBpODAxX3NtYnVzIDAwMDA6MDA6MWYuNDogU01C
-dXMgaXMgYnVzeSwgY2FuJ3QgdXNlIGl0IQpbICAzNzEuNzA1MDIzXSBpODAxX3NtYnVzIDAwMDA6
-MDA6MWYuNDogU01CdXMgaXMgYnVzeSwgY2FuJ3QgdXNlIGl0IQpbICAzNzEuNzA1MDY5XSBpODAx
-X3NtYnVzIDAwMDA6MDA6MWYuNDogU01CdXMgaXMgYnVzeSwgY2FuJ3QgdXNlIGl0IQpbICAzNzEu
-NzA1MTEzXSBpODAxX3NtYnVzIDAwMDA6MDA6MWYuNDogU01CdXMgaXMgYnVzeSwgY2FuJ3QgdXNl
-IGl0IQpbICAzNzEuNzA1MTU5XSBpODAxX3NtYnVzIDAwMDA6MDA6MWYuNDogU01CdXMgaXMgYnVz
-eSwgY2FuJ3QgdXNlIGl0IQpbICAzNzEuNzA1MjA1XSBpODAxX3NtYnVzIDAwMDA6MDA6MWYuNDog
-U01CdXMgaXMgYnVzeSwgY2FuJ3QgdXNlIGl0IQpbICAzNzEuNzA1MjUyXSBpODAxX3NtYnVzIDAw
-MDA6MDA6MWYuNDogU01CdXMgaXMgYnVzeSwgY2FuJ3QgdXNlIGl0IQpbICAzNzEuNzA1Mjk3XSBp
-ODAxX3NtYnVzIDAwMDA6MDA6MWYuNDogU01CdXMgaXMgYnVzeSwgY2FuJ3QgdXNlIGl0IQpbICAz
-NzEuNzA1MzQxXSBpODAxX3NtYnVzIDAwMDA6MDA6MWYuNDogU01CdXMgaXMgYnVzeSwgY2FuJ3Qg
-dXNlIGl0IQpbICAzNzEuNzA1Mzg4XSBpODAxX3NtYnVzIDAwMDA6MDA6MWYuNDogU01CdXMgaXMg
-YnVzeSwgY2FuJ3QgdXNlIGl0IQpbICAzNzEuNzA1NDM0XSBpODAxX3NtYnVzIDAwMDA6MDA6MWYu
-NDogU01CdXMgaXMgYnVzeSwgY2FuJ3QgdXNlIGl0IQpbICAzNzEuNzA1NDgwXSBpODAxX3NtYnVz
-IDAwMDA6MDA6MWYuNDogU01CdXMgaXMgYnVzeSwgY2FuJ3QgdXNlIGl0IQpbICAzNzEuNzA1NTI1
-XSBpODAxX3NtYnVzIDAwMDA6MDA6MWYuNDogU01CdXMgaXMgYnVzeSwgY2FuJ3QgdXNlIGl0IQpb
-ICAzNzEuNzA1NTY5XSBpODAxX3NtYnVzIDAwMDA6MDA6MWYuNDogU01CdXMgaXMgYnVzeSwgY2Fu
-J3QgdXNlIGl0IQpbICAzNzEuNzA1NjE2XSBpODAxX3NtYnVzIDAwMDA6MDA6MWYuNDogU01CdXMg
-aXMgYnVzeSwgY2FuJ3QgdXNlIGl0IQpbICAzNzEuNzA1NjYyXSBpODAxX3NtYnVzIDAwMDA6MDA6
-MWYuNDogU01CdXMgaXMgYnVzeSwgY2FuJ3QgdXNlIGl0IQpbICAzNzEuNzA1NzA4XSBpODAxX3Nt
-YnVzIDAwMDA6MDA6MWYuNDogU01CdXMgaXMgYnVzeSwgY2FuJ3QgdXNlIGl0IQpbICAzNzEuNzA1
-NzU0XSBpODAxX3NtYnVzIDAwMDA6MDA6MWYuNDogU01CdXMgaXMgYnVzeSwgY2FuJ3QgdXNlIGl0
-IQpbICAzNzEuNzA1Nzk4XSBpODAxX3NtYnVzIDAwMDA6MDA6MWYuNDogU01CdXMgaXMgYnVzeSwg
-Y2FuJ3QgdXNlIGl0IQpbICAzNzEuNzA1ODQ0XSBpODAxX3NtYnVzIDAwMDA6MDA6MWYuNDogU01C
-dXMgaXMgYnVzeSwgY2FuJ3QgdXNlIGl0IQpbICAzNzEuNzA1ODkxXSBpODAxX3NtYnVzIDAwMDA6
-MDA6MWYuNDogU01CdXMgaXMgYnVzeSwgY2FuJ3QgdXNlIGl0IQpbICAzNzEuNzA1OTM4XSBpODAx
-X3NtYnVzIDAwMDA6MDA6MWYuNDogU01CdXMgaXMgYnVzeSwgY2FuJ3QgdXNlIGl0IQpbICAzNzEu
-NzA1OTg0XSBpODAxX3NtYnVzIDAwMDA6MDA6MWYuNDogU01CdXMgaXMgYnVzeSwgY2FuJ3QgdXNl
-IGl0IQpbICAzNzEuNzA2MDI4XSBpODAxX3NtYnVzIDAwMDA6MDA6MWYuNDogU01CdXMgaXMgYnVz
-eSwgY2FuJ3QgdXNlIGl0IQpbICAzNzEuNzA2MDc0XSBpODAxX3NtYnVzIDAwMDA6MDA6MWYuNDog
-U01CdXMgaXMgYnVzeSwgY2FuJ3QgdXNlIGl0IQpbICAzNzEuNzA2MTIwXSBpODAxX3NtYnVzIDAw
-MDA6MDA6MWYuNDogU01CdXMgaXMgYnVzeSwgY2FuJ3QgdXNlIGl0IQpbICAzNzEuNzA2MTY3XSBp
-ODAxX3NtYnVzIDAwMDA6MDA6MWYuNDogU01CdXMgaXMgYnVzeSwgY2FuJ3QgdXNlIGl0IQpbICAz
-NzEuNzA2MjEyXSBpODAxX3NtYnVzIDAwMDA6MDA6MWYuNDogU01CdXMgaXMgYnVzeSwgY2FuJ3Qg
-dXNlIGl0IQpbICAzNzEuNzA2MjU2XSBpODAxX3NtYnVzIDAwMDA6MDA6MWYuNDogU01CdXMgaXMg
-YnVzeSwgY2FuJ3QgdXNlIGl0IQpbICAzNzEuNzA2MzAzXSBpODAxX3NtYnVzIDAwMDA6MDA6MWYu
-NDogU01CdXMgaXMgYnVzeSwgY2FuJ3QgdXNlIGl0IQpbICAzNzEuNzA2MzQ5XSBpODAxX3NtYnVz
-IDAwMDA6MDA6MWYuNDogU01CdXMgaXMgYnVzeSwgY2FuJ3QgdXNlIGl0IQpbICAzNzEuNzA2Mzk1
-XSBpODAxX3NtYnVzIDAwMDA6MDA6MWYuNDogU01CdXMgaXMgYnVzeSwgY2FuJ3QgdXNlIGl0IQpb
-ICAzNzEuNzA2NDQxXSBpODAxX3NtYnVzIDAwMDA6MDA6MWYuNDogU01CdXMgaXMgYnVzeSwgY2Fu
-J3QgdXNlIGl0IQpbICAzNzEuNzA2NDg1XSBpODAxX3NtYnVzIDAwMDA6MDA6MWYuNDogU01CdXMg
-aXMgYnVzeSwgY2FuJ3QgdXNlIGl0IQpbICAzNzEuNzA2NTMxXSBpODAxX3NtYnVzIDAwMDA6MDA6
-MWYuNDogU01CdXMgaXMgYnVzeSwgY2FuJ3QgdXNlIGl0IQpbICAzNzEuNzA2NTc3XSBpODAxX3Nt
-YnVzIDAwMDA6MDA6MWYuNDogU01CdXMgaXMgYnVzeSwgY2FuJ3QgdXNlIGl0IQpbICAzNzEuNzA2
-NjIzXSBpODAxX3NtYnVzIDAwMDA6MDA6MWYuNDogU01CdXMgaXMgYnVzeSwgY2FuJ3QgdXNlIGl0
-IQpbICAzNzEuNzA2NjY5XSBpODAxX3NtYnVzIDAwMDA6MDA6MWYuNDogU01CdXMgaXMgYnVzeSwg
-Y2FuJ3QgdXNlIGl0IQpbICAzNzEuNzA2NzEzXSBpODAxX3NtYnVzIDAwMDA6MDA6MWYuNDogU01C
-dXMgaXMgYnVzeSwgY2FuJ3QgdXNlIGl0IQpbICAzNzEuNzA2NzU5XSBpODAxX3NtYnVzIDAwMDA6
-MDA6MWYuNDogU01CdXMgaXMgYnVzeSwgY2FuJ3QgdXNlIGl0IQpbICAzNzEuNzA2ODA1XSBpODAx
-X3NtYnVzIDAwMDA6MDA6MWYuNDogU01CdXMgaXMgYnVzeSwgY2FuJ3QgdXNlIGl0IQpbICAzNzEu
-NzA2ODUyXSBpODAxX3NtYnVzIDAwMDA6MDA6MWYuNDogU01CdXMgaXMgYnVzeSwgY2FuJ3QgdXNl
-IGl0IQpbICAzNzEuNzA2OTAwXSBpODAxX3NtYnVzIDAwMDA6MDA6MWYuNDogU01CdXMgaXMgYnVz
-eSwgY2FuJ3QgdXNlIGl0IQpbICAzNzEuNzA2OTQzXSBpODAxX3NtYnVzIDAwMDA6MDA6MWYuNDog
-U01CdXMgaXMgYnVzeSwgY2FuJ3QgdXNlIGl0IQpbICAzNzEuNzA2OTg5XSBpODAxX3NtYnVzIDAw
-MDA6MDA6MWYuNDogU01CdXMgaXMgYnVzeSwgY2FuJ3QgdXNlIGl0IQpbICAzNzEuNzA3MDM2XSBp
-ODAxX3NtYnVzIDAwMDA6MDA6MWYuNDogU01CdXMgaXMgYnVzeSwgY2FuJ3QgdXNlIGl0IQpbICAz
-NzEuNzA3MDgyXSBpODAxX3NtYnVzIDAwMDA6MDA6MWYuNDogU01CdXMgaXMgYnVzeSwgY2FuJ3Qg
-dXNlIGl0IQpbICAzNzEuNzA3MTI3XSBpODAxX3NtYnVzIDAwMDA6MDA6MWYuNDogU01CdXMgaXMg
-YnVzeSwgY2FuJ3QgdXNlIGl0IQpbICAzNzEuNzA3MTcyXSBpODAxX3NtYnVzIDAwMDA6MDA6MWYu
-NDogU01CdXMgaXMgYnVzeSwgY2FuJ3QgdXNlIGl0IQpbICAzNzEuNzA3MjE4XSBpODAxX3NtYnVz
-IDAwMDA6MDA6MWYuNDogU01CdXMgaXMgYnVzeSwgY2FuJ3QgdXNlIGl0IQpbICAzNzEuNzA3MjY0
-XSBpODAxX3NtYnVzIDAwMDA6MDA6MWYuNDogU01CdXMgaXMgYnVzeSwgY2FuJ3QgdXNlIGl0IQpb
-ICAzNzEuNzA3MzExXSBpODAxX3NtYnVzIDAwMDA6MDA6MWYuNDogU01CdXMgaXMgYnVzeSwgY2Fu
-J3QgdXNlIGl0IQpbICAzNzEuNzA3MzU2XSBpODAxX3NtYnVzIDAwMDA6MDA6MWYuNDogU01CdXMg
-aXMgYnVzeSwgY2FuJ3QgdXNlIGl0IQpbICAzNzEuNzA3NDAwXSBpODAxX3NtYnVzIDAwMDA6MDA6
-MWYuNDogU01CdXMgaXMgYnVzeSwgY2FuJ3QgdXNlIGl0IQpbICAzNzEuNzA3NDQ3XSBpODAxX3Nt
-YnVzIDAwMDA6MDA6MWYuNDogU01CdXMgaXMgYnVzeSwgY2FuJ3QgdXNlIGl0IQpbICAzNzEuNzA3
-NDkzXSBpODAxX3NtYnVzIDAwMDA6MDA6MWYuNDogU01CdXMgaXMgYnVzeSwgY2FuJ3QgdXNlIGl0
-IQpbICAzNzEuNzA3NTQwXSBpODAxX3NtYnVzIDAwMDA6MDA6MWYuNDogU01CdXMgaXMgYnVzeSwg
-Y2FuJ3QgdXNlIGl0IQpbICAzNzEuNzA3NTg1XSBpODAxX3NtYnVzIDAwMDA6MDA6MWYuNDogU01C
-dXMgaXMgYnVzeSwgY2FuJ3QgdXNlIGl0IQpbICAzNzEuNzA3NjI5XSBpODAxX3NtYnVzIDAwMDA6
-MDA6MWYuNDogU01CdXMgaXMgYnVzeSwgY2FuJ3QgdXNlIGl0IQpbICAzNzEuNzA3Njc2XSBpODAx
-X3NtYnVzIDAwMDA6MDA6MWYuNDogU01CdXMgaXMgYnVzeSwgY2FuJ3QgdXNlIGl0IQpbICAzNzEu
-NzA3NzIyXSBpODAxX3NtYnVzIDAwMDA6MDA6MWYuNDogU01CdXMgaXMgYnVzeSwgY2FuJ3QgdXNl
-IGl0IQpbICAzNzEuNzA3NzY4XSBpODAxX3NtYnVzIDAwMDA6MDA6MWYuNDogU01CdXMgaXMgYnVz
-eSwgY2FuJ3QgdXNlIGl0IQpbICAzNzEuNzA3ODE0XSBpODAxX3NtYnVzIDAwMDA6MDA6MWYuNDog
-U01CdXMgaXMgYnVzeSwgY2FuJ3QgdXNlIGl0IQpbICAzNzEuNzA3ODU4XSBpODAxX3NtYnVzIDAw
-MDA6MDA6MWYuNDogU01CdXMgaXMgYnVzeSwgY2FuJ3QgdXNlIGl0IQpbICAzNzEuNzA3OTE0XSBp
-ODAxX3NtYnVzIDAwMDA6MDA6MWYuNDogU01CdXMgaXMgYnVzeSwgY2FuJ3QgdXNlIGl0IQpbICAz
-NzEuNzA3OTYxXSBpODAxX3NtYnVzIDAwMDA6MDA6MWYuNDogU01CdXMgaXMgYnVzeSwgY2FuJ3Qg
-dXNlIGl0IQpbICAzNzEuNzA4MDA3XSBpODAxX3NtYnVzIDAwMDA6MDA6MWYuNDogU01CdXMgaXMg
-YnVzeSwgY2FuJ3QgdXNlIGl0IQpbICAzNzEuNzA4MDU0XSBpODAxX3NtYnVzIDAwMDA6MDA6MWYu
-NDogU01CdXMgaXMgYnVzeSwgY2FuJ3QgdXNlIGl0IQpbICAzNzEuNzA4MDk5XSBpODAxX3NtYnVz
-IDAwMDA6MDA6MWYuNDogU01CdXMgaXMgYnVzeSwgY2FuJ3QgdXNlIGl0IQpbICAzNzEuNzA4MTQz
-XSBpODAxX3NtYnVzIDAwMDA6MDA6MWYuNDogU01CdXMgaXMgYnVzeSwgY2FuJ3QgdXNlIGl0IQpb
-ICAzNzEuNzA4MTg5XSBpODAxX3NtYnVzIDAwMDA6MDA6MWYuNDogU01CdXMgaXMgYnVzeSwgY2Fu
-J3QgdXNlIGl0IQpbICAzNzEuNzA4MjM1XSBpODAxX3NtYnVzIDAwMDA6MDA6MWYuNDogU01CdXMg
-aXMgYnVzeSwgY2FuJ3QgdXNlIGl0IQpbICAzNzEuNzA4MjgyXSBpODAxX3NtYnVzIDAwMDA6MDA6
-MWYuNDogU01CdXMgaXMgYnVzeSwgY2FuJ3QgdXNlIGl0IQpbICAzNzEuNzA4MzI3XSBpODAxX3Nt
-YnVzIDAwMDA6MDA6MWYuNDogU01CdXMgaXMgYnVzeSwgY2FuJ3QgdXNlIGl0IQpbICAzNzEuNzA4
-MzcxXSBpODAxX3NtYnVzIDAwMDA6MDA6MWYuNDogU01CdXMgaXMgYnVzeSwgY2FuJ3QgdXNlIGl0
-IQpbICAzNzEuNzA4NDE4XSBpODAxX3NtYnVzIDAwMDA6MDA6MWYuNDogU01CdXMgaXMgYnVzeSwg
-Y2FuJ3QgdXNlIGl0IQpbICAzNzEuNzA4NDY0XSBpODAxX3NtYnVzIDAwMDA6MDA6MWYuNDogU01C
-dXMgaXMgYnVzeSwgY2FuJ3QgdXNlIGl0IQpbICAzNzEuNzA4NTEwXSBpODAxX3NtYnVzIDAwMDA6
-MDA6MWYuNDogU01CdXMgaXMgYnVzeSwgY2FuJ3QgdXNlIGl0IQpbICAzNzEuNzA4NTU2XSBpODAx
-X3NtYnVzIDAwMDA6MDA6MWYuNDogU01CdXMgaXMgYnVzeSwgY2FuJ3QgdXNlIGl0IQo=
+On Wed., Sep. 9, 2020, 1:23 a.m. gopi ratnakaram via Xenomai <
+xenomai@xenomai.org> wrote:
+
+> Team,
+>
+> I am working with xenomai patched with kernel 4.19.59 on an Industrial
+> motherboard which has an SMBus. After patching during my testing it was
+> observed that the SMbus got some issues and the bus is locking immediately
+> after running my application and the error log is as follows. But, when I
+> run my SMbus based application in the kernel 4.15.0 without RT patching it
+> was working fine. Is there any configuration setting while patching xenomai
+> is causing this issue?
+>
+> --best regards,
+> R Gopi Krishna,
+> Svaya Robotics Pvt., Ltd.,
+> Hyderabad, India.
+> T: +91 40 2354 6019
+> F: +91 40 2354 7901
+>
+>
+> *DISCLAIMER  :This e-mail and any files transmitted with it may contain
+> privileged, undisclosed, or otherwise confidential information of Svaya
+> Robotics Pvt. Ltd., and are intended solely for the use of the individual
+> or entity to whom they are addressed, shall be maintained in confidence and
+> not disclosed to third parties without the written consent of the sender.
+> If you have received this E-mail in error, you are hereby notified that any
+> review, copying, printing or distribution of it is strictly prohibited.
+> Please immediately notify the sender by return e-mail  and destroy the
+> original transmittal. Thank you for your cooperation.*
+> -------------- next part --------------
+> [    1.291726] i801_smbus 0000:00:1f.4: SPD Write Disable is set
+> [    1.291801] i801_smbus 0000:00:1f.4: SMBus using PCI interrupt
+> [  366.625686] i801_smbus 0000:00:1f.4: Timeout waiting for interrupt!
+> [  366.625688] i801_smbus 0000:00:1f.4: Transaction timeout
+> [  366.832692] i801_smbus 0000:00:1f.4: Timeout waiting for interrupt!
+> [  366.832694] i801_smbus 0000:00:1f.4: Transaction timeout
+> [  367.040700] i801_smbus 0000:00:1f.4: Timeout waiting for interrupt!
+> [  367.040702] i801_smbus 0000:00:1f.4: Transaction timeout
+> [  367.050861] i801_smbus 0000:00:1f.4: SMBus is busy, can't use it!
+> [  367.050911] i801_smbus 0000:00:1f.4: SMBus is busy, can't use it!
+> [  367.050957] i801_smbus 0000:00:1f.4: SMBus is busy, can't use it!
+> [  367.051000] i801_smbus 0000:00:1f.4: SMBus is busy, can't use it!
+> [  367.051047] i801_smbus 0000:00:1f.4: SMBus is busy, can't use it!
+> [  367.264710] i801_smbus 0000:00:1f.4: Timeout waiting for interrupt!
+> [  367.264712] i801_smbus 0000:00:1f.4: Transaction timeout
+> [  369.481794] i801_smbus 0000:00:1f.4: Timeout waiting for interrupt!
+> [  369.481796] i801_smbus 0000:00:1f.4: Transaction timeout
+> [  369.483827] i801_smbus 0000:00:1f.4: Failed terminating the transaction
+> [  369.483900] i801_smbus 0000:00:1f.4: SMBus is busy, can't use it!
+> [  369.483947] i801_smbus 0000:00:1f.4: SMBus is busy, can't use it!
+> [  369.483996] i801_smbus 0000:00:1f.4: SMBus is busy, can't use it!
+> [  369.484043] i801_smbus 0000:00:1f.4: SMBus is busy, can't use it!
+> [  369.484086] i801_smbus 0000:00:1f.4: SMBus is busy, can't use it!
+> [  369.484133] i801_smbus 0000:00:1f.4: SMBus is busy, can't use it!
+> [  369.484180] i801_smbus 0000:00:1f.4: SMBus is busy, can't use it!
+> [  369.688801] i801_smbus 0000:00:1f.4: Timeout waiting for interrupt!
+> [  369.688803] i801_smbus 0000:00:1f.4: Transaction timeout
+> [  369.690829] i801_smbus 0000:00:1f.4: Failed terminating the transaction
+> [  369.690903] i801_smbus 0000:00:1f.4: SMBus is busy, can't use it!
+> [  369.690951] i801_smbus 0000:00:1f.4: SMBus is busy, can't use it!
+> [  369.690998] i801_smbus 0000:00:1f.4: SMBus is busy, can't use it!
+> [  369.691044] i801_smbus 0000:00:1f.4: SMBus is busy, can't use it!
+> [  369.691090] i801_smbus 0000:00:1f.4: SMBus is busy, can't use it!
+> [  369.691134] i801_smbus 0000:00:1f.4: SMBus is busy, can't use it!
+> [  369.691181] i801_smbus 0000:00:1f.4: SMBus is busy, can't use it!
+> [  369.691227] i801_smbus 0000:00:1f.4: SMBus is busy, can't use it!
+> [  369.691274] i801_smbus 0000:00:1f.4: SMBus is busy, can't use it!
+> [  369.691320] i801_smbus 0000:00:1f.4: SMBus is busy, can't use it!
+> [  369.691364] i801_smbus 0000:00:1f.4: SMBus is busy, can't use it!
+> [  369.691410] i801_smbus 0000:00:1f.4: SMBus is busy, can't use it!
+> [  369.691457] i801_smbus 0000:00:1f.4: SMBus is busy, can't use it!
+> [  369.691504] i801_smbus 0000:00:1f.4: SMBus is busy, can't use it!
+> [  369.691549] i801_smbus 0000:00:1f.4: SMBus is busy, can't use it!
+> [  369.691593] i801_smbus 0000:00:1f.4: SMBus is busy, can't use it!
+> [  369.691639] i801_smbus 0000:00:1f.4: SMBus is busy, can't use it!
+> [  369.691686] i801_smbus 0000:00:1f.4: SMBus is busy, can't use it!
+> [  369.691733] i801_smbus 0000:00:1f.4: SMBus is busy, can't use it!
+> [  369.691778] i801_smbus 0000:00:1f.4: SMBus is busy, can't use it!
+> [  369.691829] i801_smbus 0000:00:1f.4: SMBus is busy, can't use it!
+> [  369.691878] i801_smbus 0000:00:1f.4: SMBus is busy, can't use it!
+> [  369.691924] i801_smbus 0000:00:1f.4: SMBus is busy, can't use it!
+> [  369.691971] i801_smbus 0000:00:1f.4: SMBus is busy, can't use it!
+> [  369.692018] i801_smbus 0000:00:1f.4: SMBus is busy, can't use it!
+> [  369.692064] i801_smbus 0000:00:1f.4: SMBus is busy, can't use it!
+> [  369.692108] i801_smbus 0000:00:1f.4: SMBus is busy, can't use it!
+> [  369.692155] i801_smbus 0000:00:1f.4: SMBus is busy, can't use it!
+> [  369.692201] i801_smbus 0000:00:1f.4: SMBus is busy, can't use it!
+> [  369.692248] i801_smbus 0000:00:1f.4: SMBus is busy, can't use it!
+> [  369.692294] i801_smbus 0000:00:1f.4: SMBus is busy, can't use it!
+> [  369.692338] i801_smbus 0000:00:1f.4: SMBus is busy, can't use it!
+> [  369.692385] i801_smbus 0000:00:1f.4: SMBus is busy, can't use it!
+> [  369.692432] i801_smbus 0000:00:1f.4: SMBus is busy, can't use it!
+> [  369.692479] i801_smbus 0000:00:1f.4: SMBus is busy, can't use it!
+> [  369.692525] i801_smbus 0000:00:1f.4: SMBus is busy, can't use it!
+> [  369.692568] i801_smbus 0000:00:1f.4: SMBus is busy, can't use it!
+> [  369.692615] i801_smbus 0000:00:1f.4: SMBus is busy, can't use it!
+> [  369.692662] i801_smbus 0000:00:1f.4: SMBus is busy, can't use it!
+> [  369.692709] i801_smbus 0000:00:1f.4: SMBus is busy, can't use it!
+> [  369.692756] i801_smbus 0000:00:1f.4: SMBus is busy, can't use it!
+> [  369.692846] i801_smbus 0000:00:1f.4: SMBus is busy, can't use it!
+> [  369.692896] i801_smbus 0000:00:1f.4: SMBus is busy, can't use it!
+> [  369.692943] i801_smbus 0000:00:1f.4: SMBus is busy, can't use it!
+> [  369.692989] i801_smbus 0000:00:1f.4: SMBus is busy, can't use it!
+> [  369.693032] i801_smbus 0000:00:1f.4: SMBus is busy, can't use it!
+> [  369.693079] i801_smbus 0000:00:1f.4: SMBus is busy, can't use it!
+> [  369.693126] i801_smbus 0000:00:1f.4: SMBus is busy, can't use it!
+> [  369.693173] i801_smbus 0000:00:1f.4: SMBus is busy, can't use it!
+> [  369.693219] i801_smbus 0000:00:1f.4: SMBus is busy, can't use it!
+> [  369.693263] i801_smbus 0000:00:1f.4: SMBus is busy, can't use it!
+> [  369.693310] i801_smbus 0000:00:1f.4: SMBus is busy, can't use it!
+> [  369.693357] i801_smbus 0000:00:1f.4: SMBus is busy, can't use it!
+> [  369.693404] i801_smbus 0000:00:1f.4: SMBus is busy, can't use it!
+> [  369.693450] i801_smbus 0000:00:1f.4: SMBus is busy, can't use it!
+> [  369.693493] i801_smbus 0000:00:1f.4: SMBus is busy, can't use it!
+> [  369.693540] i801_smbus 0000:00:1f.4: SMBus is busy, can't use it!
+> [  369.693587] i801_smbus 0000:00:1f.4: SMBus is busy, can't use it!
+> [  369.693634] i801_smbus 0000:00:1f.4: SMBus is busy, can't use it!
+> [  369.693680] i801_smbus 0000:00:1f.4: SMBus is busy, can't use it!
+> [  369.693723] i801_smbus 0000:00:1f.4: SMBus is busy, can't use it!
+> [  369.693770] i801_smbus 0000:00:1f.4: SMBus is busy, can't use it!
+> [  369.693849] i801_smbus 0000:00:1f.4: SMBus is busy, can't use it!
+> [  369.693895] i801_smbus 0000:00:1f.4: SMBus is busy, can't use it!
+> [  369.693942] i801_smbus 0000:00:1f.4: SMBus is busy, can't use it!
+> [  369.693988] i801_smbus 0000:00:1f.4: SMBus is busy, can't use it!
+> [  369.694035] i801_smbus 0000:00:1f.4: SMBus is busy, can't use it!
+> [  369.694082] i801_smbus 0000:00:1f.4: SMBus is busy, can't use it!
+> [  369.694126] i801_smbus 0000:00:1f.4: SMBus is busy, can't use it!
+> [  369.694173] i801_smbus 0000:00:1f.4: SMBus is busy, can't use it!
+> [  369.694219] i801_smbus 0000:00:1f.4: SMBus is busy, can't use it!
+> [  369.694266] i801_smbus 0000:00:1f.4: SMBus is busy, can't use it!
+> [  369.694312] i801_smbus 0000:00:1f.4: SMBus is busy, can't use it!
+> [  369.694356] i801_smbus 0000:00:1f.4: SMBus is busy, can't use it!
+> [  369.694404] i801_smbus 0000:00:1f.4: SMBus is busy, can't use it!
+> [  369.694451] i801_smbus 0000:00:1f.4: SMBus is busy, can't use it!
+> [  369.694498] i801_smbus 0000:00:1f.4: SMBus is busy, can't use it!
+> [  369.694544] i801_smbus 0000:00:1f.4: SMBus is busy, can't use it!
+> [  369.694587] i801_smbus 0000:00:1f.4: SMBus is busy, can't use it!
+> [  369.694634] i801_smbus 0000:00:1f.4: SMBus is busy, can't use it!
+> [  369.694681] i801_smbus 0000:00:1f.4: SMBus is busy, can't use it!
+> [  369.694728] i801_smbus 0000:00:1f.4: SMBus is busy, can't use it!
+> [  369.694774] i801_smbus 0000:00:1f.4: SMBus is busy, can't use it!
+> [  369.694853] i801_smbus 0000:00:1f.4: SMBus is busy, can't use it!
+> [  369.694903] i801_smbus 0000:00:1f.4: SMBus is busy, can't use it!
+> [  369.694949] i801_smbus 0000:00:1f.4: SMBus is busy, can't use it!
+> [  369.694993] i801_smbus 0000:00:1f.4: SMBus is busy, can't use it!
+> [  369.695040] i801_smbus 0000:00:1f.4: SMBus is busy, can't use it!
+> [  369.695087] i801_smbus 0000:00:1f.4: SMBus is busy, can't use it!
+> [  369.695134] i801_smbus 0000:00:1f.4: SMBus is busy, can't use it!
+> [  369.695181] i801_smbus 0000:00:1f.4: SMBus is busy, can't use it!
+> [  369.695225] i801_smbus 0000:00:1f.4: SMBus is busy, can't use it!
+> [  369.695272] i801_smbus 0000:00:1f.4: SMBus is busy, can't use it!
+> [  369.695319] i801_smbus 0000:00:1f.4: SMBus is busy, can't use it!
+> [  369.695365] i801_smbus 0000:00:1f.4: SMBus is busy, can't use it!
+> [  369.695411] i801_smbus 0000:00:1f.4: SMBus is busy, can't use it!
+> [  369.695455] i801_smbus 0000:00:1f.4: SMBus is busy, can't use it!
+> [  369.695501] i801_smbus 0000:00:1f.4: SMBus is busy, can't use it!
+> [  371.703199] i801_smbus 0000:00:1f.4: SMBus is busy, can't use it!
+> [  371.703258] i801_smbus 0000:00:1f.4: SMBus is busy, can't use it!
+> [  371.703306] i801_smbus 0000:00:1f.4: SMBus is busy, can't use it!
+> [  371.703352] i801_smbus 0000:00:1f.4: SMBus is busy, can't use it!
+> [  371.703395] i801_smbus 0000:00:1f.4: SMBus is busy, can't use it!
+> [  371.703442] i801_smbus 0000:00:1f.4: SMBus is busy, can't use it!
+> [  371.703489] i801_smbus 0000:00:1f.4: SMBus is busy, can't use it!
+> [  371.703535] i801_smbus 0000:00:1f.4: SMBus is busy, can't use it!
+> [  371.703581] i801_smbus 0000:00:1f.4: SMBus is busy, can't use it!
+> [  371.703625] i801_smbus 0000:00:1f.4: SMBus is busy, can't use it!
+> [  371.703672] i801_smbus 0000:00:1f.4: SMBus is busy, can't use it!
+> [  371.703718] i801_smbus 0000:00:1f.4: SMBus is busy, can't use it!
+> [  371.703765] i801_smbus 0000:00:1f.4: SMBus is busy, can't use it!
+> [  371.703813] i801_smbus 0000:00:1f.4: SMBus is busy, can't use it!
+> [  371.703857] i801_smbus 0000:00:1f.4: SMBus is busy, can't use it!
+> [  371.703913] i801_smbus 0000:00:1f.4: SMBus is busy, can't use it!
+> [  371.703963] i801_smbus 0000:00:1f.4: SMBus is busy, can't use it!
+> [  371.704009] i801_smbus 0000:00:1f.4: SMBus is busy, can't use it!
+> [  371.704055] i801_smbus 0000:00:1f.4: SMBus is busy, can't use it!
+> [  371.704101] i801_smbus 0000:00:1f.4: SMBus is busy, can't use it!
+> [  371.704145] i801_smbus 0000:00:1f.4: SMBus is busy, can't use it!
+> [  371.704191] i801_smbus 0000:00:1f.4: SMBus is busy, can't use it!
+> [  371.704237] i801_smbus 0000:00:1f.4: SMBus is busy, can't use it!
+> [  371.704284] i801_smbus 0000:00:1f.4: SMBus is busy, can't use it!
+> [  371.704329] i801_smbus 0000:00:1f.4: SMBus is busy, can't use it!
+> [  371.704373] i801_smbus 0000:00:1f.4: SMBus is busy, can't use it!
+> [  371.704419] i801_smbus 0000:00:1f.4: SMBus is busy, can't use it!
+> [  371.704466] i801_smbus 0000:00:1f.4: SMBus is busy, can't use it!
+> [  371.704512] i801_smbus 0000:00:1f.4: SMBus is busy, can't use it!
+> [  371.704558] i801_smbus 0000:00:1f.4: SMBus is busy, can't use it!
+> [  371.704602] i801_smbus 0000:00:1f.4: SMBus is busy, can't use it!
+> [  371.704648] i801_smbus 0000:00:1f.4: SMBus is busy, can't use it!
+> [  371.704694] i801_smbus 0000:00:1f.4: SMBus is busy, can't use it!
+> [  371.704740] i801_smbus 0000:00:1f.4: SMBus is busy, can't use it!
+> [  371.704786] i801_smbus 0000:00:1f.4: SMBus is busy, can't use it!
+> [  371.704830] i801_smbus 0000:00:1f.4: SMBus is busy, can't use it!
+> [  371.704883] i801_smbus 0000:00:1f.4: SMBus is busy, can't use it!
+> [  371.704931] i801_smbus 0000:00:1f.4: SMBus is busy, can't use it!
+> [  371.704977] i801_smbus 0000:00:1f.4: SMBus is busy, can't use it!
+> [  371.705023] i801_smbus 0000:00:1f.4: SMBus is busy, can't use it!
+> [  371.705069] i801_smbus 0000:00:1f.4: SMBus is busy, can't use it!
+> [  371.705113] i801_smbus 0000:00:1f.4: SMBus is busy, can't use it!
+> [  371.705159] i801_smbus 0000:00:1f.4: SMBus is busy, can't use it!
+> [  371.705205] i801_smbus 0000:00:1f.4: SMBus is busy, can't use it!
+> [  371.705252] i801_smbus 0000:00:1f.4: SMBus is busy, can't use it!
+> [  371.705297] i801_smbus 0000:00:1f.4: SMBus is busy, can't use it!
+> [  371.705341] i801_smbus 0000:00:1f.4: SMBus is busy, can't use it!
+> [  371.705388] i801_smbus 0000:00:1f.4: SMBus is busy, can't use it!
+> [  371.705434] i801_smbus 0000:00:1f.4: SMBus is busy, can't use it!
+> [  371.705480] i801_smbus 0000:00:1f.4: SMBus is busy, can't use it!
+> [  371.705525] i801_smbus 0000:00:1f.4: SMBus is busy, can't use it!
+> [  371.705569] i801_smbus 0000:00:1f.4: SMBus is busy, can't use it!
+> [  371.705616] i801_smbus 0000:00:1f.4: SMBus is busy, can't use it!
+> [  371.705662] i801_smbus 0000:00:1f.4: SMBus is busy, can't use it!
+> [  371.705708] i801_smbus 0000:00:1f.4: SMBus is busy, can't use it!
+> [  371.705754] i801_smbus 0000:00:1f.4: SMBus is busy, can't use it!
+> [  371.705798] i801_smbus 0000:00:1f.4: SMBus is busy, can't use it!
+> [  371.705844] i801_smbus 0000:00:1f.4: SMBus is busy, can't use it!
+> [  371.705891] i801_smbus 0000:00:1f.4: SMBus is busy, can't use it!
+> [  371.705938] i801_smbus 0000:00:1f.4: SMBus is busy, can't use it!
+> [  371.705984] i801_smbus 0000:00:1f.4: SMBus is busy, can't use it!
+> [  371.706028] i801_smbus 0000:00:1f.4: SMBus is busy, can't use it!
+> [  371.706074] i801_smbus 0000:00:1f.4: SMBus is busy, can't use it!
+> [  371.706120] i801_smbus 0000:00:1f.4: SMBus is busy, can't use it!
+> [  371.706167] i801_smbus 0000:00:1f.4: SMBus is busy, can't use it!
+> [  371.706212] i801_smbus 0000:00:1f.4: SMBus is busy, can't use it!
+> [  371.706256] i801_smbus 0000:00:1f.4: SMBus is busy, can't use it!
+> [  371.706303] i801_smbus 0000:00:1f.4: SMBus is busy, can't use it!
+> [  371.706349] i801_smbus 0000:00:1f.4: SMBus is busy, can't use it!
+> [  371.706395] i801_smbus 0000:00:1f.4: SMBus is busy, can't use it!
+> [  371.706441] i801_smbus 0000:00:1f.4: SMBus is busy, can't use it!
+> [  371.706485] i801_smbus 0000:00:1f.4: SMBus is busy, can't use it!
+> [  371.706531] i801_smbus 0000:00:1f.4: SMBus is busy, can't use it!
+> [  371.706577] i801_smbus 0000:00:1f.4: SMBus is busy, can't use it!
+> [  371.706623] i801_smbus 0000:00:1f.4: SMBus is busy, can't use it!
+> [  371.706669] i801_smbus 0000:00:1f.4: SMBus is busy, can't use it!
+> [  371.706713] i801_smbus 0000:00:1f.4: SMBus is busy, can't use it!
+> [  371.706759] i801_smbus 0000:00:1f.4: SMBus is busy, can't use it!
+> [  371.706805] i801_smbus 0000:00:1f.4: SMBus is busy, can't use it!
+> [  371.706852] i801_smbus 0000:00:1f.4: SMBus is busy, can't use it!
+> [  371.706900] i801_smbus 0000:00:1f.4: SMBus is busy, can't use it!
+> [  371.706943] i801_smbus 0000:00:1f.4: SMBus is busy, can't use it!
+> [  371.706989] i801_smbus 0000:00:1f.4: SMBus is busy, can't use it!
+> [  371.707036] i801_smbus 0000:00:1f.4: SMBus is busy, can't use it!
+> [  371.707082] i801_smbus 0000:00:1f.4: SMBus is busy, can't use it!
+> [  371.707127] i801_smbus 0000:00:1f.4: SMBus is busy, can't use it!
+> [  371.707172] i801_smbus 0000:00:1f.4: SMBus is busy, can't use it!
+> [  371.707218] i801_smbus 0000:00:1f.4: SMBus is busy, can't use it!
+> [  371.707264] i801_smbus 0000:00:1f.4: SMBus is busy, can't use it!
+> [  371.707311] i801_smbus 0000:00:1f.4: SMBus is busy, can't use it!
+> [  371.707356] i801_smbus 0000:00:1f.4: SMBus is busy, can't use it!
+> [  371.707400] i801_smbus 0000:00:1f.4: SMBus is busy, can't use it!
+> [  371.707447] i801_smbus 0000:00:1f.4: SMBus is busy, can't use it!
+> [  371.707493] i801_smbus 0000:00:1f.4: SMBus is busy, can't use it!
+> [  371.707540] i801_smbus 0000:00:1f.4: SMBus is busy, can't use it!
+> [  371.707585] i801_smbus 0000:00:1f.4: SMBus is busy, can't use it!
+> [  371.707629] i801_smbus 0000:00:1f.4: SMBus is busy, can't use it!
+> [  371.707676] i801_smbus 0000:00:1f.4: SMBus is busy, can't use it!
+> [  371.707722] i801_smbus 0000:00:1f.4: SMBus is busy, can't use it!
+> [  371.707768] i801_smbus 0000:00:1f.4: SMBus is busy, can't use it!
+> [  371.707814] i801_smbus 0000:00:1f.4: SMBus is busy, can't use it!
+> [  371.707858] i801_smbus 0000:00:1f.4: SMBus is busy, can't use it!
+> [  371.707914] i801_smbus 0000:00:1f.4: SMBus is busy, can't use it!
+> [  371.707961] i801_smbus 0000:00:1f.4: SMBus is busy, can't use it!
+> [  371.708007] i801_smbus 0000:00:1f.4: SMBus is busy, can't use it!
+> [  371.708054] i801_smbus 0000:00:1f.4: SMBus is busy, can't use it!
+> [  371.708099] i801_smbus 0000:00:1f.4: SMBus is busy, can't use it!
+> [  371.708143] i801_smbus 0000:00:1f.4: SMBus is busy, can't use it!
+> [  371.708189] i801_smbus 0000:00:1f.4: SMBus is busy, can't use it!
+> [  371.708235] i801_smbus 0000:00:1f.4: SMBus is busy, can't use it!
+> [  371.708282] i801_smbus 0000:00:1f.4: SMBus is busy, can't use it!
+> [  371.708327] i801_smbus 0000:00:1f.4: SMBus is busy, can't use it!
+> [  371.708371] i801_smbus 0000:00:1f.4: SMBus is busy, can't use it!
+> [  371.708418] i801_smbus 0000:00:1f.4: SMBus is busy, can't use it!
+> [  371.708464] i801_smbus 0000:00:1f.4: SMBus is busy, can't use it!
+> [  371.708510] i801_smbus 0000:00:1f.4: SMBus is busy, can't use it!
+> [  371.708556] i801_smbus 0000:00:1f.4: SMBus is busy, can't use it!
+>
+What platform are you using? Please provide platform and build info.
+
+Thanks
+
+Greg
+
+>
