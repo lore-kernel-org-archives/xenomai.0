@@ -1,13 +1,15 @@
-Subject: Re: Multi-slot TDMA Configuration in RTnet
-References: <CAJCHRmGD3BRzEQrHBWqc8ZGg2rwuxY-ywBCidRJ651mUXBepnA@mail.gmail.com>
-From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <44233df8-eb85-d4c2-b0e5-77ba01149fb8@siemens.com>
-Date: Wed, 2 Sep 2020 09:03:15 +0200
+Subject: Re: [PATCH] lib/cobalt: Wrap __open_2() to support _FORTIFY_SOURCE on
+ open()
+References: <20200910134819.6847-1-leupold@rsi-elektrotechnik.de>
+ <505c1398-2a36-dda7-c3da-c9fac4e01e1e@siemens.com>
+From: Jan Leupold <leupold@rsi-elektrotechnik.de>
+Message-ID: <78cc1265-393c-7195-220a-5be57b64d721@rsi-elektrotechnik.de>
+Date: Thu, 10 Sep 2020 16:32:48 +0200
 MIME-Version: 1.0
-In-Reply-To: <CAJCHRmGD3BRzEQrHBWqc8ZGg2rwuxY-ywBCidRJ651mUXBepnA@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+In-Reply-To: <505c1398-2a36-dda7-c3da-c9fac4e01e1e@siemens.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Language: de-DE
+Content-Transfer-Encoding: 8bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,46 +18,133 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Lakshmi Dhanaraj <lakshmi.d@teclever.com>, sunshilong <sunshilong369@gmail.com>, =?UTF-8?B?OiDlrZnkuJbpvpkgc3Vuc2hpbG9uZyB2aWEgWGVub21haQ==?= <xenomai@xenomai.org>
+To: "Xenomai (xenomai@xenomai.org)" <xenomai@xenomai.org>
 
-On 01.09.20 19:08, Lakshmi Dhanaraj via Xenomai wrote:
-> Hi,
+Am 10.09.20 um 16:19 schrieb Jan Kiszka:
+> On 10.09.20 15:48, Jan Leupold via Xenomai wrote:
+>> __open_2() from glibc adds a runtime precondition test for the 'oflag'
+>> parameter to the functionality of open(). It may be used when the macro
+>> _FORTIFY_SOURCE is defined when compiling the application code. Added this
+>> wrapper to cover that case.
+>>
+>> Signed-off-by: Jan Leupold <leupold@rsi-elektrotechnik.de>
+>> ---
+>>  include/cobalt/fcntl.h     |  2 ++
+>>  lib/cobalt/cobalt.wrappers |  1 +
+>>  lib/cobalt/rtdm.c          | 18 ++++++++++++++++++
+>>  lib/cobalt/wrappers.c      |  6 ++++++
+>>  4 files changed, 27 insertions(+)
+>>
+>> diff --git a/include/cobalt/fcntl.h b/include/cobalt/fcntl.h
+>> index d54989389..30e9bf9c8 100644
+>> --- a/include/cobalt/fcntl.h
+>> +++ b/include/cobalt/fcntl.h
+>> @@ -31,6 +31,8 @@ COBALT_DECL(int, open(const char *path, int oflag, ...));
+>>  
+>>  COBALT_DECL(int, open64(const char *path, int oflag, ...));
+>>  
+>> +COBALT_DECL(int, __open_2(const char *path, int oflag));
+>> +
+>>  COBALT_DECL(int, fcntl(int fd, int cmd, ...));
+>>  
+>>  #ifdef __cplusplus
+>> diff --git a/lib/cobalt/cobalt.wrappers b/lib/cobalt/cobalt.wrappers
+>> index f63a170f8..b1a4170fb 100644
+>> --- a/lib/cobalt/cobalt.wrappers
+>> +++ b/lib/cobalt/cobalt.wrappers
+>> @@ -54,6 +54,7 @@
+>>  --wrap mq_notify
+>>  --wrap open
+>>  --wrap open64
+>> +--wrap __open_2
+>>  --wrap socket
+>>  --wrap close
+>>  --wrap ioctl
+>> diff --git a/lib/cobalt/rtdm.c b/lib/cobalt/rtdm.c
+>> index 9f3dcd25f..c2b7e11f3 100644
+>> --- a/lib/cobalt/rtdm.c
+>> +++ b/lib/cobalt/rtdm.c
+>> @@ -23,6 +23,7 @@
+>>  #include <pthread.h>
+>>  #include <fcntl.h>
+>>  #include <unistd.h>
+>> +#include <stdlib.h>
+>>  #include <sys/socket.h>
+>>  #include <sys/mman.h>
+>>  #include <rtdm/rtdm.h>
+>> @@ -94,6 +95,23 @@ COBALT_IMPL(int, open64, (const char *path, int oflag, ...))
+>>  	return do_open(path, oflag | O_LARGEFILE, mode);
+>>  }
+>>  
+>> +COBALT_IMPL(int, __open_2, (const char *path, int oflag))
+>> +{
+>> +    /* __open_2() from glibc adds a runtime precondition test for the 'oflag'
+>> +     * parameter to the functionality of open(). It may be used when the macro
+>> +     * _FORTIFY_SOURCE is defined when compiling the application code.
+>> +     */
+>> +    if (__OPEN_NEEDS_MODE(oflag)) {
+>> +        const char* msg =
+>> +            "invalid open call: O_CREAT or O_TMPFILE without mode\n";
+>> +        ssize_t n = write(STDERR_FILENO, msg, strlen(msg));
+>> +        (void) n;
+>> +        abort();
+>> +    }
+>> +
+>> +	return do_open(path, oflag, 0);
+>> +}
+>> +
+>>  COBALT_IMPL(int, socket, (int protocol_family, int socket_type, int protocol))
+>>  {
+>>  	int s;
+>> diff --git a/lib/cobalt/wrappers.c b/lib/cobalt/wrappers.c
+>> index ed8fbaf16..03ba724d2 100644
+>> --- a/lib/cobalt/wrappers.c
+>> +++ b/lib/cobalt/wrappers.c
+>> @@ -205,6 +205,12 @@ int __real_open64(const char *path, int oflag, ...)
+>>  }
+>>  #endif
+>>  
+>> +__weak
+>> +int __real___open_2(const char *path, int oflag)
+>> +{
+>> +    return __open_2(path, oflag);
+>> +}
+>> +
+>>  __weak
+>>  int __real_socket(int protocol_family, int socket_type, int protocol)
+>>  {
+>>
 > 
-> My System is configured with Xenomai-3.0.5 on Linux-4.9.38 kernel under
-> Ubuntu 18.04.1 LTS. I am using I210 Ethernet Controller with the capability
-> of 1Gbps.
+> Is that enough? My bits/fcntl2.h maps open() on __open_alias for the
+> other (valid) cases.
+
+__open_alias is a __REDIRECT() to open, if my interpretation of the comment
+in sys/cdefs.h is correct. My application runs fine with the patch.
+
 > 
-> Configured Master and Slave TDMA slot 0 with offset 0 and 400 respectively
-> along with a cycle period of 1000 us. For Single-slot(Slot-0), it is
-> working fine.
+> Also, we need the same for open64.
+
+OK, you're right ...
+
 > 
-> To configure multiple slots at the slave side, set the offsets 200,400 and
-> 600 for rteth0 for slot-0,1 and 2. Monitored the data transmission at
-> Wireshark, the packet is transferred once in each cycle period with size of
-> 1470 bytes.
-> 
-> In the calibration request frame, only slot 0 is shown. Does it seem only
-> the data transmission occurs from slot-0 only at every cycle period?.How to
-> check about slot information in the data packets? How to configure multiple
-> slots between a master and a slave?
-> 
-> 
-> Waiting for the reply at earliest.
+> Jan
 > 
 
-Did you see
-https://gitlab.denx.de/Xenomai/xenomai/-/blob/master/kernel/drivers/net/doc/README.rtmac
-already?
 
-One thing I had to read up myself again (wrote that 15 years or so
-ago...) is how you can address a specific slot with a transmission from
-an application. That works via setting RTNET_RTIOC_XMITPARAMS and
-SOCK_XMIT_PARAMS, see also
-https://gitlab.denx.de/Xenomai/xenomai/-/blob/master/include/rtdm/uapi/net.h.
 
-Jan
 
 -- 
-Siemens AG, Corporate Technology, CT RDA IOT SES-DE
-Corporate Competence Center Embedded Linux
+_____________________________________________________________
+R-S-I Elektrotechnik GmbH & Co. KG
+Woelkestrasse 11
+D-85301 Schweitenkirchen
+Fon: +49 8444 9204-0
+Fax: +49 8444 9204-50
+www.rsi-elektrotechnik.de
+
+_____________________________________________________________
+Amtsgericht Ingolstadt - GmbH: HRB 191328 - KG: HRA 170363
+Geschäftsführer: Dr.-Ing. Michael Sorg, Dipl.-Ing. Franz Sorg
+USt-IdNr.: DE 128592548
+
 
