@@ -1,15 +1,14 @@
-From: "Meng, Fino" <fino.meng@intel.com>
-Subject: RE: Regarding SMBus
-Date: Thu, 10 Sep 2020 05:49:03 +0000
-Message-ID: <MWHPR11MB191871C53075347DAB3E78B4EE270@MWHPR11MB1918.namprd11.prod.outlook.com>
-References: <CAF_6MazWZnuJ3v4XjLLfAWMxrgSKsE2qt_60LLp0ifkC=fqoAQ@mail.gmail.com>
- <5a43908e-817b-bcbc-867d-7284fa07e9fc@siemens.com>
- <CAF_6MazHN=cvjh+J_oQbpxp1dfcGcxwST=r2uQF9MtJ0Pw3oFA@mail.gmail.com>
-In-Reply-To: <CAF_6MazHN=cvjh+J_oQbpxp1dfcGcxwST=r2uQF9MtJ0Pw3oFA@mail.gmail.com>
+From: Peter Wong <tsnuser@outlook.com>
+Subject: Re: RTnet plan to support qdisc, zero copy, XDP?
+Date: Thu, 10 Sep 2020 06:34:43 +0000
+Message-ID: <SG2PR04MB325373993B097ED04B72B88AA4270@SG2PR04MB3253.apcprd04.prod.outlook.com>
+References: <SG2PR04MB3253490EE02C550FC8CE8C9BA4280@SG2PR04MB3253.apcprd04.prod.outlook.com>,
+ <8eeca6c3-2378-f4a8-ac22-dc63014d7e85@siemens.com>
+In-Reply-To: <8eeca6c3-2378-f4a8-ac22-dc63014d7e85@siemens.com>
 Content-Language: en-US
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
 MIME-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -18,79 +17,31 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: gopi ratnakaram <gopi.ratnakaram@svayarobotics.com>
-Cc: "Xenomai (xenomai@xenomai.org)" <xenomai@xenomai.org>
+To: Jan Kiszka <jan.kiszka@siemens.com>, "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-DQo+U2VudDogV2VkbmVzZGF5LCBTZXB0ZW1iZXIgOSwgMjAyMCA2OjIwIFBNDQo+DQo+WWVzLCB0
-aGUgbW90aGVyYm9hcmQgbWFudWZhY3R1cmVyIGhhcyBzaGFyZWQgdGhlIGJ1cyB3aXRoIG90aGVy
-IGRldmljZXMgdG9vLiBJIGRpZG4ndCBjaGFuZ2UgYW55IGtlcm5lbCBjb25maWd1cmF0aW9uIHdp
-dGgNCj5yZXNwZWN0IHRvIHhlbm9tYWksIGJ1dCB0aGUgaXNzdWUgd2FzIG5vdCB0aGVyZSBpbiA0
-LjE1LjAgd2hpY2ggaXMgbm90IFJUIHBhdGNoZWQgd2hlcmUgSSBhbSBub3QgZ2V0dGluZyB0aGlz
-IGtpbmQgb2YgaXNzdWUuDQo+QnV0LCB0aGlzIG9ubHkgaGFwcGVuZWQgaW4gNC4xOS41OSB4ZW5v
-bWFpIHBhdGNoZWQga2VybmVsLiBJcyB0aGVyZSBhbnkgaW50ZXJydXB0IHJlbGF0ZWQgY29uZmln
-dXJhdGlvbiBjaGFuZ2UgaW4ga2VybmVsDQo+Y29uZmlndXJhdGlvbiBjYW4gcmVzb2x2ZSB0aGlz
-IGlzc3VlLCBwbGVhc2UgbGV0IG1lIGtub3cuDQoNCklmIHUgYXJlIHVzaW5nIHRoaXMga2VybmVs
-LCBhIHF1aWNrIHRyeSBpcyB1c2UgYWNybl9kZWZjb25maWcgaW5zdGVhZCBvZiB4ZW5vbWFpX3Rl
-c3RfZGVmY29uZmlnLg0KSXQgaXMgdGhlIGRlZmNvbmZpZyB1c2luZyBieSBBQ1JOIHRlYW06DQpo
-dHRwczovL2dpdGh1Yi5jb20vaW50ZWwvbGludXgtc3RhYmxlLXhlbm9tYWkvYmxvYi9GLzQuMTku
-NTkvYmFzZS9pcGlwZS94ZW5vbWFpXzMuMS9hcmNoL3g4Ni9jb25maWdzL2Fjcm5fZGVmY29uZmln
-DQoNCnhlbm9tYWlfdGVzdF9kZWZjb25maWcgd2FzIG9yaWdpbmFsbHkgZnJvbSBZb2N0bywgbm90
-IG9wdGltaXplZCBmb3IgUEMuIA0KV2UgYXJlIHN0cnVnZ2xpbmcgZm9yIGEgZ29vZCB3YXkgdG8g
-bWFrZSBwcm9wZXIgZGVmY29uZmlnLCANCmJ1dCBpdCdzIHJlYWxseSBoYXJkIHdvcmsgZHVlIHRv
-IGtlcm5lbCBjb25maWcgYXJlIG1vcmUgdGhhbiA4MDAwIGxpbmVzIGFscmVhZHkuDQoNCg0KQlIg
-LyBGaW5vICjlrZ/npaXlpKspDQpJbnRlbCDigJMgSU9URyBEZXZlbG9wZXIgRW5hYmxpbmcNCg0K
-DQo+DQo+LS1iZXN0IHJlZ2FyZHMsDQo+UiBHb3BpIEtyaXNobmEsDQo+U3ZheWEgUm9ib3RpY3Mg
-UHZ0LiwgTHRkLiwNCj5IeWRlcmFiYWQsIEluZGlhLg0KPlQ6ICs5MSA0MCAyMzU0IDYwMTkNCj5G
-OiArOTEgNDAgMjM1NCA3OTAxDQo+DQo+DQo+KkRJU0NMQUlNRVIgIDpUaGlzIGUtbWFpbCBhbmQg
-YW55IGZpbGVzIHRyYW5zbWl0dGVkIHdpdGggaXQgbWF5IGNvbnRhaW4gcHJpdmlsZWdlZCwgdW5k
-aXNjbG9zZWQsIG9yIG90aGVyd2lzZSBjb25maWRlbnRpYWwNCj5pbmZvcm1hdGlvbiBvZiBTdmF5
-YSBSb2JvdGljcyBQdnQuIEx0ZC4sIGFuZCBhcmUgaW50ZW5kZWQgc29sZWx5IGZvciB0aGUgdXNl
-IG9mIHRoZSBpbmRpdmlkdWFsIG9yIGVudGl0eSB0byB3aG9tIHRoZXkgYXJlDQo+YWRkcmVzc2Vk
-LCBzaGFsbCBiZSBtYWludGFpbmVkIGluIGNvbmZpZGVuY2UgYW5kIG5vdCBkaXNjbG9zZWQgdG8g
-dGhpcmQgcGFydGllcyB3aXRob3V0IHRoZSB3cml0dGVuIGNvbnNlbnQgb2YgdGhlIHNlbmRlci4N
-Cj5JZiB5b3UgaGF2ZSByZWNlaXZlZCB0aGlzIEUtbWFpbCBpbiBlcnJvciwgeW91IGFyZSBoZXJl
-Ynkgbm90aWZpZWQgdGhhdCBhbnkgcmV2aWV3LCBjb3B5aW5nLCBwcmludGluZyBvciBkaXN0cmli
-dXRpb24gb2YgaXQgaXMNCj5zdHJpY3RseSBwcm9oaWJpdGVkLg0KPlBsZWFzZSBpbW1lZGlhdGVs
-eSBub3RpZnkgdGhlIHNlbmRlciBieSByZXR1cm4gZS1tYWlsICBhbmQgZGVzdHJveSB0aGUgb3Jp
-Z2luYWwgdHJhbnNtaXR0YWwuIFRoYW5rIHlvdSBmb3IgeW91cg0KPmNvb3BlcmF0aW9uLioNCj4N
-Cj4NCj5PbiBXZWQsIFNlcCA5LCAyMDIwIGF0IDE6MzIgUE0gSmFuIEtpc3prYSA8amFuLmtpc3pr
-YUBzaWVtZW5zLmNvbT4gd3JvdGU6DQo+DQo+PiBPbiAwOS4wOS4yMCAwNzoyMywgZ29waSByYXRu
-YWthcmFtIHZpYSBYZW5vbWFpIHdyb3RlOg0KPj4gPiBUZWFtLA0KPj4gPg0KPj4gPiBJIGFtIHdv
-cmtpbmcgd2l0aCB4ZW5vbWFpIHBhdGNoZWQgd2l0aCBrZXJuZWwgNC4xOS41OSBvbiBhbg0KPj4g
-PiBJbmR1c3RyaWFsIG1vdGhlcmJvYXJkIHdoaWNoIGhhcyBhbiBTTUJ1cy4gQWZ0ZXIgcGF0Y2hp
-bmcgZHVyaW5nIG15DQo+PiA+IHRlc3RpbmcgaXQgd2FzIG9ic2VydmVkIHRoYXQgdGhlIFNNYnVz
-IGdvdCBzb21lIGlzc3VlcyBhbmQgdGhlIGJ1cw0KPj4gPiBpcyBsb2NraW5nDQo+PiBpbW1lZGlh
-dGVseQ0KPj4gPiBhZnRlciBydW5uaW5nIG15IGFwcGxpY2F0aW9uIGFuZCB0aGUgZXJyb3IgbG9n
-IGlzIGFzIGZvbGxvd3MuIEJ1dCwNCj4+ID4gd2hlbiBJIHJ1biBteSBTTWJ1cyBiYXNlZCBhcHBs
-aWNhdGlvbiBpbiB0aGUga2VybmVsIDQuMTUuMCB3aXRob3V0DQo+PiA+IFJUIHBhdGNoaW5nDQo+
-PiBpdA0KPj4gPiB3YXMgd29ya2luZyBmaW5lLiBJcyB0aGVyZSBhbnkgY29uZmlndXJhdGlvbiBz
-ZXR0aW5nIHdoaWxlIHBhdGNoaW5nDQo+PiB4ZW5vbWFpDQo+PiA+IGlzIGNhdXNpbmcgdGhpcyBp
-c3N1ZT8NCj4+ID4NCj4+ID4gLS1iZXN0IHJlZ2FyZHMsDQo+PiA+IFIgR29waSBLcmlzaG5hLA0K
-Pj4gPiBTdmF5YSBSb2JvdGljcyBQdnQuLCBMdGQuLA0KPj4gPiBIeWRlcmFiYWQsIEluZGlhLg0K
-Pj4gPiBUOiArOTEgNDAgMjM1NCA2MDE5DQo+PiA+IEY6ICs5MSA0MCAyMzU0IDc5MDENCj4+ID4N
-Cj4+ID4NCj4+ID4gKkRJU0NMQUlNRVIgIDpUaGlzIGUtbWFpbCBhbmQgYW55IGZpbGVzIHRyYW5z
-bWl0dGVkIHdpdGggaXQgbWF5DQo+PiA+IGNvbnRhaW4gcHJpdmlsZWdlZCwgdW5kaXNjbG9zZWQs
-IG9yIG90aGVyd2lzZSBjb25maWRlbnRpYWwNCj4+ID4gaW5mb3JtYXRpb24gb2YgU3ZheWEgUm9i
-b3RpY3MgUHZ0LiBMdGQuLCBhbmQgYXJlIGludGVuZGVkIHNvbGVseSBmb3INCj4+ID4gdGhlIHVz
-ZSBvZiB0aGUgaW5kaXZpZHVhbCBvciBlbnRpdHkgdG8gd2hvbSB0aGV5IGFyZSBhZGRyZXNzZWQs
-DQo+PiA+IHNoYWxsIGJlIG1haW50YWluZWQgaW4gY29uZmlkZW5jZQ0KPj4gYW5kDQo+PiA+IG5v
-dCBkaXNjbG9zZWQgdG8gdGhpcmQgcGFydGllcyB3aXRob3V0IHRoZSB3cml0dGVuIGNvbnNlbnQg
-b2YgdGhlIHNlbmRlci4NCj4+ID4gSWYgeW91IGhhdmUgcmVjZWl2ZWQgdGhpcyBFLW1haWwgaW4g
-ZXJyb3IsIHlvdSBhcmUgaGVyZWJ5IG5vdGlmaWVkDQo+PiA+IHRoYXQNCj4+IGFueQ0KPj4gPiBy
-ZXZpZXcsIGNvcHlpbmcsIHByaW50aW5nIG9yIGRpc3RyaWJ1dGlvbiBvZiBpdCBpcyBzdHJpY3Rs
-eSBwcm9oaWJpdGVkLg0KPj4gPiBQbGVhc2UgaW1tZWRpYXRlbHkgbm90aWZ5IHRoZSBzZW5kZXIg
-YnkgcmV0dXJuIGUtbWFpbCAgYW5kIGRlc3Ryb3kNCj4+ID4gdGhlIG9yaWdpbmFsIHRyYW5zbWl0
-dGFsLiBUaGFuayB5b3UgZm9yIHlvdXIgY29vcGVyYXRpb24uKg0KPj4gPiAtLS0tLS0tLS0tLS0t
-LSBuZXh0IHBhcnQgLS0tLS0tLS0tLS0tLS0NCj4+ID4gWyAgICAxLjI5MTcyNl0gaTgwMV9zbWJ1
-cyAwMDAwOjAwOjFmLjQ6IFNQRCBXcml0ZSBEaXNhYmxlIGlzIHNldA0KPj4gPiBbICAgIDEuMjkx
-ODAxXSBpODAxX3NtYnVzIDAwMDA6MDA6MWYuNDogU01CdXMgdXNpbmcgUENJIGludGVycnVwdA0K
-Pj4gPiBbICAzNjYuNjI1Njg2XSBpODAxX3NtYnVzIDAwMDA6MDA6MWYuNDogVGltZW91dCB3YWl0
-aW5nIGZvciBpbnRlcnJ1cHQhDQo+Pg0KPj4gVGhlIExpbnV4IGludGVycnVwdCBpcyBub3QgbWFr
-aW5nIGl0IHRocm91Z2guIElzIGl0IHNoYXJlZCB3aXRoDQo+PiBhbm90aGVyIGRldmljZSB0aGF0
-IGhhcHBlbnMgdG8gYmUgbWFuYWdlZCBieSBhbiBSVERNIGRyaXZlcj8gRG9lcyB0aGUNCj4+IGlz
-c3VlIGRpc2FwcGVhciB3aGVuIGtlZXBpbmcgdGhlIGtlcm5lbCB2ZXJzaW9uLCBqdXN0IHR1cm5p
-bmcgb2YNCj4+IFhlbm9tYWkgYW5kIEktcGlwZSBpbiB0aGUga2VybmVsIGNvbmZpZ3VyYXRpb24/
-DQo+Pg0KPj4gSmFuDQo+Pg0KPj4gLS0NCj4+IFNpZW1lbnMgQUcsIENvcnBvcmF0ZSBUZWNobm9s
-b2d5LCBDVCBSREEgSU9UIFNFUy1ERSBDb3Jwb3JhdGUNCj4+IENvbXBldGVuY2UgQ2VudGVyIEVt
-YmVkZGVkIExpbnV4DQo+Pg0K
+The plan is to have new xenomai socket API for send RT traffic to xenomai c=
+ore network stack -> then to linux driver?
 
+There is switching overhead between cobalt and linux ?
+________________________________
+From: Jan Kiszka <jan.kiszka@siemens.com>
+Sent: Wednesday, September 9, 2020 4:05 PM
+To: Peter Wong <tsnuser@outlook.com>; xenomai@xenomai.org <xenomai@xenomai.=
+org>
+Subject: Re: RTnet plan to support qdisc, zero copy, XDP?
+
+On 07.09.20 03:45, Peter Wong via Xenomai wrote:
+> Is there any plan for support qdisc, zero copy, XDP in RTnet?
+>
+
+Plans aren't concrete yet, but renovation (or replacement) of RTnet is
+needed, specifically to support TSN. Ideally, we do that with maximum
+reuse of kernel infrastructure, "just" adding the fast-path access from
+an RT application. Or we look into reusing DPDK which is gaining TSN
+support as well and has a Linux-free data path already.
+
+Jan
+
+--
+Siemens AG, Corporate Technology, CT RDA IOT SES-DE
+Corporate Competence Center Embedded Linux
