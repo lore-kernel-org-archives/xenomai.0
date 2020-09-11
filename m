@@ -1,8 +1,8 @@
 From: Jan Leupold <leupold@rsi-elektrotechnik.de>
 Subject: [PATCH v3] lib/cobalt: Wrap __open_2/__open64_2 to support
  _FORTIFY_SOURCE
-Date: Fri, 11 Sep 2020 09:40:21 +0000
-Message-Id: <20200911094021.19647-1-leupold@rsi-elektrotechnik.de>
+Date: Fri, 11 Sep 2020 09:42:46 +0000
+Message-Id: <20200911094246.19895-1-leupold@rsi-elektrotechnik.de>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
