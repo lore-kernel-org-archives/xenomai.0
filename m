@@ -1,16 +1,10 @@
-Subject: Re: [PATCH 5/6] x86/ipipe: fix build with CONFIG_X86_UV enabled
-References: <20200907130938.416831-1-rpm@xenomai.org>
- <20200907130938.416831-5-rpm@xenomai.org>
- <e9de4ff9-49e6-6e3b-e578-0c3a17008b75@siemens.com>
- <87o8mhaagh.fsf@xenomai.org> <87imcpaa3l.fsf@xenomai.org>
-From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <3c8a81d7-2bf2-727c-95b6-e16889e270ea@siemens.com>
-Date: Fri, 11 Sep 2020 11:29:20 +0200
+From: Jan Leupold <leupold@rsi-elektrotechnik.de>
+Subject: [PATCH v3] lib/cobalt: Wrap __open_2/__open64_2 to support
+ _FORTIFY_SOURCE
+Date: Fri, 11 Sep 2020 09:40:21 +0000
+Message-Id: <20200911094021.19647-1-leupold@rsi-elektrotechnik.de>
 MIME-Version: 1.0
-In-Reply-To: <87imcpaa3l.fsf@xenomai.org>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -19,59 +13,143 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Philippe Gerum <rpm@xenomai.org>
-Cc: xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-On 07.09.20 17:18, Philippe Gerum wrote:
-> 
-> Philippe Gerum <rpm@xenomai.org> writes:
-> 
->> Jan Kiszka <jan.kiszka@siemens.com> writes:
->>
->>> On 07.09.20 15:09, Philippe Gerum wrote:
->>>> From: Philippe Gerum <rpm@xenomai.org>
->>>>
->>>> Signed-off-by: Philippe Gerum <rpm@xenomai.org>
->>>> ---
->>>>  arch/x86/kernel/ipipe.c | 1 +
->>>>  1 file changed, 1 insertion(+)
->>>>
->>>> diff --git a/arch/x86/kernel/ipipe.c b/arch/x86/kernel/ipipe.c
->>>> index 3f3afcecc1b9..c5ebfdf2dfb3 100644
->>>> --- a/arch/x86/kernel/ipipe.c
->>>> +++ b/arch/x86/kernel/ipipe.c
->>>> @@ -72,6 +72,7 @@ void smp_irq_move_cleanup_interrupt(struct pt_regs *regs);
->>>>  void smp_reboot_interrupt(void);
->>>>  void smp_thermal_interrupt(struct pt_regs *regs);
->>>>  void smp_threshold_interrupt(struct pt_regs *regs);
->>>> +void uv_bau_message_interrupt(struct pt_regs *regs);
->>>>  
->>>>  void __ipipe_do_IRQ(unsigned int irq, void *cookie);
->>>>  
->>>>
->>>
->>> IIRC, I broke that intentionally. There is more needed, and no one
->>> should get something building but subtly not working. But we may better do
->>>
->>>     depends on !IPIPE
->>>
->>
->> Indeed, otherwise plain build tests with e.g. allyesconfig fail miserably.
-> 
-> I meant "allnoconfig" of course, but you get the point.
-> 
+__open_2() and __open64_2() from glibc add runtime precondition tests for the
+'oflag' parameter to the functionality of open()/open64(). They may be used when
+the macro _FORTIFY_SOURCE is defined when compiling the application code. Added
+these wrappers to cover those cases.
 
-I've added
-https://gitlab.denx.de/Xenomai/ipipe-x86/-/commit/fe5928a3ea7d24eaad0e4a293e25bd1463312c17
-instead to 4.19-x86
+If Xenomai itself is not compiled with FORTIFY_SOURCE then the function
+declarations for __open_2() and __open64_2() are not available.
+__STD(__open_2(...)) will not link in this case (would be a very special
+use case anyway?).
 
-All other patches merged (and now part of
-ipipe-core-4.19.140-cip33-x86-14), the generic ones also the ipipe-noarch.
+Signed-off-by: Jan Leupold <leupold@rsi-elektrotechnik.de>
+---
+ include/cobalt/fcntl.h     |  4 ++++
+ lib/cobalt/cobalt.wrappers |  2 ++
+ lib/cobalt/rtdm.c          | 32 ++++++++++++++++++++++++++++++++
+ lib/cobalt/wrappers.c      | 12 ++++++++++++
+ 4 files changed, 50 insertions(+)
 
-Thanks,
-Jan
+diff --git a/include/cobalt/fcntl.h b/include/cobalt/fcntl.h
+index d54989389..f1052c28d 100644
+--- a/include/cobalt/fcntl.h
++++ b/include/cobalt/fcntl.h
+@@ -31,6 +31,10 @@ COBALT_DECL(int, open(const char *path, int oflag, ...));
+ 
+ COBALT_DECL(int, open64(const char *path, int oflag, ...));
+ 
++COBALT_DECL(int, __open_2(const char *path, int oflag));
++
++COBALT_DECL(int, __open64_2(const char *path, int oflag));
++
+ COBALT_DECL(int, fcntl(int fd, int cmd, ...));
+ 
+ #ifdef __cplusplus
+diff --git a/lib/cobalt/cobalt.wrappers b/lib/cobalt/cobalt.wrappers
+index f63a170f8..0e954764d 100644
+--- a/lib/cobalt/cobalt.wrappers
++++ b/lib/cobalt/cobalt.wrappers
+@@ -54,6 +54,8 @@
+ --wrap mq_notify
+ --wrap open
+ --wrap open64
++--wrap __open_2
++--wrap __open64_2
+ --wrap socket
+ --wrap close
+ --wrap ioctl
+diff --git a/lib/cobalt/rtdm.c b/lib/cobalt/rtdm.c
+index 9f3dcd25f..83cc699ed 100644
+--- a/lib/cobalt/rtdm.c
++++ b/lib/cobalt/rtdm.c
+@@ -23,6 +23,7 @@
+ #include <pthread.h>
+ #include <fcntl.h>
+ #include <unistd.h>
++#include <stdlib.h>
+ #include <sys/socket.h>
+ #include <sys/mman.h>
+ #include <rtdm/rtdm.h>
+@@ -94,6 +95,37 @@ COBALT_IMPL(int, open64, (const char *path, int oflag, ...))
+ 	return do_open(path, oflag | O_LARGEFILE, mode);
+ }
+ 
++COBALT_IMPL(int, __open_2, (const char *path, int oflag))
++{
++	/* __open_2() from glibc adds a runtime precondition test for the 'oflag'
++	 * parameter to the functionality of open(). It may be used when the macro
++	 * _FORTIFY_SOURCE is defined when compiling the application code.
++	 */
++	if (__OPEN_NEEDS_MODE(oflag)) {
++		const char *msg =
++			"invalid open call: O_CREAT or O_TMPFILE without mode\n";
++		ssize_t n = __STD(write(STDERR_FILENO, msg, strlen(msg)));
++		(void)n;
++		abort();
++	}
++
++	return do_open(path, oflag, 0);
++}
++
++COBALT_IMPL(int, __open64_2, (const char *path, int oflag))
++{
++	/* just like __open_2() and open64() */
++	if (__OPEN_NEEDS_MODE(oflag)) {
++		const char *msg =
++			"invalid open64 call: O_CREAT or O_TMPFILE without mode\n";
++		ssize_t n = write(STDERR_FILENO, msg, strlen(msg));
++		(void)n;
++		abort();
++	}
++
++	return do_open(path, oflag | O_LARGEFILE, 0);
++}
++
+ COBALT_IMPL(int, socket, (int protocol_family, int socket_type, int protocol))
+ {
+ 	int s;
+diff --git a/lib/cobalt/wrappers.c b/lib/cobalt/wrappers.c
+index ed8fbaf16..860b26020 100644
+--- a/lib/cobalt/wrappers.c
++++ b/lib/cobalt/wrappers.c
+@@ -205,6 +205,18 @@ int __real_open64(const char *path, int oflag, ...)
+ }
+ #endif
+ 
++#if __USE_FORTIFY_LEVEL > 0
++__weak int __real___open_2(const char *path, int oflag)
++{
++	return __open_2(path, oflag);
++}
++
++__weak int __real___open64_2(const char *path, int oflag)
++{
++	return __open64_2(path, oflag);
++}
++#endif // __USE_FORTIFY_LEVEL > 0
++
+ __weak
+ int __real_socket(int protocol_family, int socket_type, int protocol)
+ {
+-- 
+2.20.1
+
 
 -- 
-Siemens AG, Corporate Technology, CT RDA IOT SES-DE
-Corporate Competence Center Embedded Linux
+_____________________________________________________________
+R-S-I Elektrotechnik GmbH & Co. KG
+Woelkestrasse 11
+D-85301 Schweitenkirchen
+Fon: +49 8444 9204-0
+Fax: +49 8444 9204-50
+www.rsi-elektrotechnik.de
+
+_____________________________________________________________
+Amtsgericht Ingolstadt - GmbH: HRB 191328 - KG: HRA 170363
+Gesch���ftsf���hrer: Dr.-Ing. Michael Sorg, Dipl.-Ing. Franz Sorg
+USt-IdNr.: DE 128592548
+
 
