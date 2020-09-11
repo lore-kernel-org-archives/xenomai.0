@@ -1,8 +1,8 @@
 From: Jan Leupold <leupold@rsi-elektrotechnik.de>
-Subject: [PATCH v3] lib/cobalt: Wrap __open_2/__open64_2 to support
+Subject: [PATCH v4] lib/cobalt: Wrap __open_2/__open64_2 to support
  _FORTIFY_SOURCE
-Date: Fri, 11 Sep 2020 09:42:46 +0000
-Message-Id: <20200911094246.19895-1-leupold@rsi-elektrotechnik.de>
+Date: Fri, 11 Sep 2020 09:43:26 +0000
+Message-Id: <20200911094326.19942-1-leupold@rsi-elektrotechnik.de>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
@@ -62,7 +62,7 @@ index f63a170f8..0e954764d 100644
  --wrap close
  --wrap ioctl
 diff --git a/lib/cobalt/rtdm.c b/lib/cobalt/rtdm.c
-index 9f3dcd25f..83cc699ed 100644
+index 9f3dcd25f..f3fb5d411 100644
 --- a/lib/cobalt/rtdm.c
 +++ b/lib/cobalt/rtdm.c
 @@ -23,6 +23,7 @@
@@ -100,7 +100,7 @@ index 9f3dcd25f..83cc699ed 100644
 +	if (__OPEN_NEEDS_MODE(oflag)) {
 +		const char *msg =
 +			"invalid open64 call: O_CREAT or O_TMPFILE without mode\n";
-+		ssize_t n = write(STDERR_FILENO, msg, strlen(msg));
++		ssize_t n = __STD(write(STDERR_FILENO, msg, strlen(msg)));
 +		(void)n;
 +		abort();
 +	}
