@@ -1,7 +1,11 @@
-From: xenomai@xenomai.org
-Subject: [I-PIPE] ipipe-core-4.19.144-arm-10 released
-Message-Id: <E1kHols-0003YA-NO@xenomai.org>
-Date: Mon, 14 Sep 2020 15:43:52 +0200
+From: "Meng, Fino" <fino.meng@intel.com>
+Subject: patchset update for Xenomai/IPIPE's kernel 5.4 porting
+Date: Mon, 14 Sep 2020 15:40:43 +0000
+Message-ID: <MWHPR11MB19189E6207803066525EEBA2EE230@MWHPR11MB1918.namprd11.prod.outlook.com>
+Content-Language: en-US
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+MIME-Version: 1.0
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -10,10 +14,28 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
+To: "Xenomai (xenomai@xenomai.org)" <xenomai@xenomai.org>
+Cc: "Hu, Mingliang" <mingliang.hu@intel.com>, "Zhang, Wei E" <wei.e.zhang@intel.com>
 
-Download URL: https://xenomai.org/downloads/ipipe/v4.x/arm/ipipe-core-4.19.144-arm-10.patch
-
-Repository: https://git.xenomai.org/ipipe-arm
-Release tag: ipipe-core-4.19.144-arm-10
+SGkgYWxsLA0KDQpBIHVwZGF0ZWQgcGF0Y2hzZXQgd2FzIHVwZGF0ZWQgdG8gdGhpcyBicmFuY2g6
+IA0KaHR0cHM6Ly9naXRodWIuY29tL2ludGVsL2xpbnV4LXN0YWJsZS14ZW5vbWFpL3RyZWUvcmV2
+aWV3LzUuNC41OS9zdGFibGUvaXBpcGUveGVub21haS0zLjENCnRoaXMgdmVyc2lvbiBpcyBtb3Jl
+IGNsZWFuIHRoYW4gcHJldmlvdXMsIG9ubHkgb25lIG1vcmUgcGF0Y2ggZm9yIElQSVBFIHBhcnQs
+IA0KYW5kIG9uZSBtb3JlIHBhdGNoIGZvciBYZW5vbWFpIDMuMSBwYXJ0Lg0KDQouLi4uDQowMTUw
+LXg4Ni1pcGlwZS1IYXJkZW4tX19zcGVjdWxhdGlvbl9jdHJsX3VwZGF0ZS1mb3Itc2hhcmUucGF0
+Y2gNCjAxNTEteDg2LWlwaXBlLUxldC1IQVZFX0FSQ0hfSlVNUF9MQUJFTC1kZXBlbmQtb24tSVBJ
+UEUucGF0Y2gNCjAxNTItZHJtLWk5MTUtZ3QtcmVuYW1lLXNldHVwX2lycS10by1hdm9pZC1jb21w
+aWxlLWNvbmZsaS5wYXRjaA0KMDE1My14ZW5vbWFpLXBhdGNoLXhlbm9tYWktMy4xLWRpcmVjdGx5
+LnBhdGNoDQowMTU0LVdJUC14ZW5vbWFpLWZpeC14ZW5vbWFpLWtlcm5lbC1wYXJ0LWZvci1rZXJu
+ZWwtNS40LnkucGF0Y2gNCjAxNTUtdGVzdC1rZXJuZWwtY29uZmlnLWZvci14ZW5vbWFpLnBhdGNo
+DQoNCk9uIG15IHRlc3QgZGV2aWNlLCBib290IE9LIGFuZCBYZW5vbWFpJ3MgbGF0ZW5jeSBjYW4g
+cnVuLCBvdGhlciBzbW9rZXkgdGVzdCBtYXkgZmFpbC4gDQoNCkEgcXVpY2sgZ3VpZGU6IA0KDQog
+ICAgdXNhZ2U6DQogICAgJGNwIGtlcm5lbF9jb25maWdfeGVub21haSAuY29uZmlnDQogICAgJG1h
+a2Ugb2xkZGVmY29uZmlnDQogICAgJG1ha2UgYmluZGViLXBrZyAtajE2IDI+JjEgfCB0ZWUgYnVp
+bGQubG9nDQogICAgaWYgYnVpbGQgb2ssIGluc3RhbGwgaXQgb3ZlciBhIERlYmlhbiBvciBVYnVu
+dHUgb24gdGVzdCBib2FyZCwgDQogICAgI2Rwa2cgLWkgIGxpbnV4LWltYWdlLSouZGViDQogICAg
+I3JlYm9vdA0KDQogICAgdG8gY2xlYW4gdXA6DQogICAgJG1ha2UgZGlzdGNsZWFuDQoNCiAgICBi
+dWc6DQogICAgb3V0IG9mIHRyZWUgYnVpbGQgd2lsbCBmYWlsIGZvciBrZXJuZWwgNS40LCBuZWVk
+IGZpeC4NCg0KQlIgLyBGaW5vICjlrZ/npaXlpKspDQpJbnRlbCDigJMgSU9URyBEZXZlbG9wZXIg
+RW5hYmxpbmcNCg0K
 
