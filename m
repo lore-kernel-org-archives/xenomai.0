@@ -1,13 +1,14 @@
-Subject: Re: patchset update for Xenomai/IPIPE's kernel 5.4 porting
+From: "Meng, Fino" <fino.meng@intel.com>
+Subject: RE: patchset update for Xenomai/IPIPE's kernel 5.4 porting
+Date: Mon, 14 Sep 2020 16:23:39 +0000
+Message-ID: <MWHPR11MB191862A095C80C1FD090C598EE230@MWHPR11MB1918.namprd11.prod.outlook.com>
 References: <MWHPR11MB19189E6207803066525EEBA2EE230@MWHPR11MB1918.namprd11.prod.outlook.com>
-From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <ede09276-e50f-21b9-44b0-7c707c4edd8b@siemens.com>
-Date: Mon, 14 Sep 2020 17:51:01 +0200
-MIME-Version: 1.0
-In-Reply-To: <MWHPR11MB19189E6207803066525EEBA2EE230@MWHPR11MB1918.namprd11.prod.outlook.com>
-Content-Type: text/plain; charset="utf-8"; format="flowed"
+ <ede09276-e50f-21b9-44b0-7c707c4edd8b@siemens.com>
+In-Reply-To: <ede09276-e50f-21b9-44b0-7c707c4edd8b@siemens.com>
 Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+MIME-Version: 1.0
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,63 +17,89 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "Meng, Fino" <fino.meng@intel.com>, "Xenomai (xenomai@xenomai.org)" <xenomai@xenomai.org>
+To: Jan Kiszka <jan.kiszka@siemens.com>, "Xenomai (xenomai@xenomai.org)" <xenomai@xenomai.org>
 Cc: "Zhang, Wei E" <wei.e.zhang@intel.com>, "Hu, Mingliang" <mingliang.hu@intel.com>
 
-On 14.09.20 17:40, Meng, Fino via Xenomai wrote:
-> Hi all,
-> 
-> A updated patchset was updated to this branch:
-> https://github.com/intel/linux-stable-xenomai/tree/review/5.4.59/stable/ipipe/xenomai-3.1
-> this version is more clean than previous, only one more patch for IPIPE part,
-> and one more patch for Xenomai 3.1 part.
-> 
-> ....
-> 0150-x86-ipipe-Harden-__speculation_ctrl_update-for-share.patch
-> 0151-x86-ipipe-Let-HAVE_ARCH_JUMP_LABEL-depend-on-IPIPE.patch
-> 0152-drm-i915-gt-rename-setup_irq-to-avoid-compile-confli.patch
-> 0153-xenomai-patch-xenomai-3.1-directly.patch
-> 0154-WIP-xenomai-fix-xenomai-kernel-part-for-kernel-5.4.y.patch
-
-Please make this one ready for upstream, possibly breaking it up into 
-logical chunks. Will help to keep your queue cleanly focused on I-pipe.
-
-BTW, commenting out fpu__initialize() is likely problematic. Better make 
-that function available again with the I-pipe patch.
-
-> 0155-test-kernel-config-for-xenomai.patch
-> 
-> On my test device, boot OK and Xenomai's latency can run, other smokey test may fail.
-> 
-
-Does the switchtest explode? That's the first one to expose FPU issues, 
-see above.
-
-> A quick guide:
-> 
->      usage:
->      $cp kernel_config_xenomai .config
->      $make olddefconfig
->      $make bindeb-pkg -j16 2>&1 | tee build.log
->      if build ok, install it over a Debian or Ubuntu on test board,
->      #dpkg -i  linux-image-*.deb
->      #reboot
-> 
->      to clean up:
->      $make distclean
-> 
->      bug:
->      out of tree build will fail for kernel 5.4, need fix.
-> 
-> BR / Fino (孟祥夫)
-> Intel – IOTG Developer Enabling
-> 
-
-In any case: great progress!
-
-Jan
-
--- 
-Siemens AG, Corporate Technology, CT RDA IOT SES-DE
-Corporate Competence Center Embedded Linux
+DQoNCj5TZW50OiBNb25kYXksIFNlcHRlbWJlciAxNCwgMjAyMCAxMTo1MSBQTQ0KPg0KPk9uIDE0
+LjA5LjIwIDE3OjQwLCBNZW5nLCBGaW5vIHZpYSBYZW5vbWFpIHdyb3RlOg0KPj4gSGkgYWxsLA0K
+Pj4NCj4+IEEgdXBkYXRlZCBwYXRjaHNldCB3YXMgdXBkYXRlZCB0byB0aGlzIGJyYW5jaDoNCj4+
+IGh0dHBzOi8vZ2l0aHViLmNvbS9pbnRlbC9saW51eC1zdGFibGUteGVub21haS90cmVlL3Jldmll
+dy81LjQuNTkvc3RhYmwNCj4+IGUvaXBpcGUveGVub21haS0zLjEgdGhpcyB2ZXJzaW9uIGlzIG1v
+cmUgY2xlYW4gdGhhbiBwcmV2aW91cywgb25seSBvbmUNCj4+IG1vcmUgcGF0Y2ggZm9yIElQSVBF
+IHBhcnQsIGFuZCBvbmUgbW9yZSBwYXRjaCBmb3IgWGVub21haSAzLjEgcGFydC4NCj4+DQo+PiAu
+Li4uDQo+PiAwMTUwLXg4Ni1pcGlwZS1IYXJkZW4tX19zcGVjdWxhdGlvbl9jdHJsX3VwZGF0ZS1m
+b3Itc2hhcmUucGF0Y2gNCj4+IDAxNTEteDg2LWlwaXBlLUxldC1IQVZFX0FSQ0hfSlVNUF9MQUJF
+TC1kZXBlbmQtb24tSVBJUEUucGF0Y2gNCj4+IDAxNTItZHJtLWk5MTUtZ3QtcmVuYW1lLXNldHVw
+X2lycS10by1hdm9pZC1jb21waWxlLWNvbmZsaS5wYXRjaA0KPj4gMDE1My14ZW5vbWFpLXBhdGNo
+LXhlbm9tYWktMy4xLWRpcmVjdGx5LnBhdGNoDQo+PiAwMTU0LVdJUC14ZW5vbWFpLWZpeC14ZW5v
+bWFpLWtlcm5lbC1wYXJ0LWZvci1rZXJuZWwtNS40LnkucGF0Y2gNCj4NCj5QbGVhc2UgbWFrZSB0
+aGlzIG9uZSByZWFkeSBmb3IgdXBzdHJlYW0sIHBvc3NpYmx5IGJyZWFraW5nIGl0IHVwIGludG8g
+bG9naWNhbCBjaHVua3MuIFdpbGwgaGVscCB0byBrZWVwIHlvdXIgcXVldWUgY2xlYW5seQ0KPmZv
+Y3VzZWQgb24gSS1waXBlLg0KPg0KPkJUVywgY29tbWVudGluZyBvdXQgZnB1X19pbml0aWFsaXpl
+KCkgaXMgbGlrZWx5IHByb2JsZW1hdGljLiBCZXR0ZXIgbWFrZSB0aGF0IGZ1bmN0aW9uIGF2YWls
+YWJsZSBhZ2FpbiB3aXRoIHRoZSBJLXBpcGUgcGF0Y2guDQoNClRoYW5rcywgZGlkbid0IG5vdGlj
+ZSBpdCB5ZXR+IA0KDQo+DQo+PiAwMTU1LXRlc3Qta2VybmVsLWNvbmZpZy1mb3IteGVub21haS5w
+YXRjaA0KPj4NCj4+IE9uIG15IHRlc3QgZGV2aWNlLCBib290IE9LIGFuZCBYZW5vbWFpJ3MgbGF0
+ZW5jeSBjYW4gcnVuLCBvdGhlciBzbW9rZXkgdGVzdCBtYXkgZmFpbC4NCj4+DQo+DQo+RG9lcyB0
+aGUgc3dpdGNodGVzdCBleHBsb2RlPyBUaGF0J3MgdGhlIGZpcnN0IG9uZSB0byBleHBvc2UgRlBV
+IGlzc3Vlcywgc2VlIGFib3ZlLg0KDQpJdCByZXBvcnRzIGVycm9yLCBqdXN0IGNhcHR1cmVkIGEg
+bG9nOiANCg0Kcm9vdEBteGYwNzovb3B0L3hlbm9tYWktMy4xL2JpbiMgLi9zd2l0Y2h0ZXN0IC0t
+dmVyYm9zZT0xDQo9PSBUZXN0aW5nIEZQVSBjaGVjayByb3V0aW5lcy4uLg0KcjA6IDEgIT0gMg0K
+cjE6IDEgIT0gMg0KcjI6IDEgIT0gMg0KcjM6IDEgIT0gMg0KcjQ6IDEgIT0gMg0KcjU6IDEgIT0g
+Mg0KcjY6IDEgIT0gMg0Kcjc6IDEgIT0gMg0KeW1tMDogMS8xICE9IDIvMg0KeW1tMTogMS8xICE9
+IDIvMg0KeW1tMjogMS8xICE9IDIvMg0KeW1tMzogMS8xICE9IDIvMg0KeW1tNDogMS8xICE9IDIv
+Mg0KeW1tNTogMS8xICE9IDIvMg0KeW1tNjogMS8xICE9IDIvMg0KeW1tNzogMS8xICE9IDIvMg0K
+PT0gRlBVIGNoZWNrIHJvdXRpbmVzOiBPSy4NCj09IFRocmVhZHM6IHNsZWVwZXJfdWZwczAtMCBy
+dGswLTEgcnRrMC0yIHJ0a19mcDAtMyBydGtfZnAwLTQgcnRrX2ZwX3VmcHAwLTUgcnRrX2ZwX3Vm
+cHAwLTYgcnR1cDAtNyBydHVwMC04IHJ0dXBfdWZwcDAtOSBydHVwX3VmcHAwLTEwIHJ0dXMwLTEx
+IHJ0dXMwLTEyIHJ0dXNfdWZwczAtMTMgcnR1c191ZnBzMC0xNCBydHVvMC0xNSBydHVvMC0xNiBy
+dHVvX3VmcHAwLTE3IHJ0dW9fdWZwcDAtMTggcnR1b191ZnBzMC0xOSBydHVvX3VmcHMwLTIwIHJ0
+dW9fdWZwcF91ZnBzMC0yMSBydHVvX3VmcHBfdWZwczAtMjIgc2xlZXBlcl91ZnBzMS0wIHJ0azEt
+MSBydGsxLTIgcnRrX2ZwMS0zIHJ0a19mcDEtNCBydGtfZnBfdWZwcDEtNSBydGtfZnBfdWZwcDEt
+NiBydHVwMS03IHJ0dXAxLTggcnR1cF91ZnBwMS05IHJ0dXBfdWZwcDEtMTAgcnR1czEtMTEgcnR1
+czEtMTIgcnR1c191ZnBzMS0xMyBydHVzX3VmcHMxLTE0IHJ0dW8xLTE1IHJ0dW8xLTE2IHJ0dW9f
+dWZwcDEtMTcgcnR1b191ZnBwMS0xOCBydHVvX3VmcHMxLTE5IHJ0dW9fdWZwczEtMjAgcnR1b191
+ZnBwX3VmcHMxLTIxIHJ0dW9fdWZwcF91ZnBzMS0yMiBzbGVlcGVyX3VmcHMyLTAgcnRrMi0xIHJ0
+azItMiBydGtfZnAyLTMgcnRrX2ZwMi00IHJ0a19mcF91ZnBwMi01IHJ0a19mcF91ZnBwMi02IHJ0
+dXAyLTcgcnR1cDItOCBydHVwX3VmcHAyLTkgcnR1cF91ZnBwMi0xMCBydHVzMi0xMSBydHVzMi0x
+MiBydHVzX3VmcHMyLTEzIHJ0dXNfdWZwczItMTQgcnR1bzItMTUgcnR1bzItMTYgcnR1b191ZnBw
+Mi0xNyBydHVvX3VmcHAyLTE4IHJ0dW9fdWZwczItMTkgcnR1b191ZnBzMi0yMCBydHVvX3VmcHBf
+dWZwczItMjEgcnR1b191ZnBwX3VmcHMyLTIyIHNsZWVwZXJfdWZwczMtMCBydGszLTEgcnRrMy0y
+IHJ0a19mcDMtMyBydGtfZnAzLTQgcnRrX2ZwX3VmcHAzLTUgcnRrX2ZwX3VmcHAzLTYgcnR1cDMt
+NyBydHVwMy04IHJ0dXBfdWZwcDMtOSBydHVwX3VmcHAzLTEwIHJ0dXMzLTExIHJ0dXMzLTEyIHJ0
+dXNfdWZwczMtMTMgcnR1c191ZnBzMy0xNCBydHVvMy0xNSBydHVvMy0xNiBydHVvX3VmcHAzLTE3
+IHJ0dW9fdWZwcDMtMTggcnR1b191ZnBzMy0xOSBydHVvX3VmcHMzLTIwIHJ0dW9fdWZwcF91ZnBz
+My0yMSBydHVvX3VmcHBfdWZwczMtMjINCkVycm9yIGFmdGVyIGNvbnRleHQgc3dpdGNoIGZyb20g
+dGFzayA0KHJ0a19mcDItNCkgRXJyb3IgYWZ0ZXIgY29udGV4dCBzd2l0Y2ggZnJvbSB0YXNrIDQo
+cnRrX2ZwMS00KSB0byB0YXNrIDUocnRrX2ZwX3VmcHAxLTUpLA0KRlBVIHJlZ2lzdGVycyB3ZXJl
+IHNldCB0byAyMTQ3NDgzNjQ4ICh1bmlkZW50aWZpZWQgdGFzaykNClJUVHwgIDAwOjAwOjAwDQpS
+VEh8LS0tLS0tLS0tY3B1fGN0eCBzd2l0Y2hlc3wtLS0tLS0tdG90YWwNClJURHwgICAgICAgICAg
+IDB8ICAgICAgICAgIDE1fCAgICAgICAgICAxNQ0KUlREfCAgICAgICAgICAgMXwgICAgICAgICAg
+MTV8ICAgICAgICAgIDE1DQpSVER8ICAgICAgICAgICAyfCAgICAgICAgICAxNXwgICAgICAgICAg
+MTUNClJURHwgICAgICAgICAgIDN8ICAgICAgICAgIDE1fCAgICAgICAgICAxNQ0KDQpkbWVzZydz
+IHByaW50OiANCg0KWyAgMzc0Ljg5MDk0NF0gYXJjaC94ODYveGVub21haS9pbmNsdWRlL2FzbS94
+ZW5vbWFpL2ZwdGVzdC5oOjQzOiBXYXJuaW5nOiBMaW51eCBpcyBjb21waWxlZCB0byB1c2UgRlBV
+IGluIGtlcm5lbC1zcGFjZS4NCiAgICAgICAgICAgICAgIEZvciB0aGlzIHJlYXNvbiwgc3dpdGNo
+dGVzdCBjYW4gbm90IHRlc3QgdXNpbmcgRlBVIGluIExpbnV4IGtlcm5lbC1zcGFjZS4NClsgIDM3
+NC44OTA5NTRdIHIwOiAyMTQ3NDgzNjQ4ICE9IDUNClsgIDM3NC44OTI4NTVdIHIxOiAyMTQ3NDgz
+NjQ4ICE9IDUNClsgIDM3NC44OTMyNjldIHIyOiAyMTQ3NDgzNjQ4ICE9IDUNClsgIDM3NC44OTM2
+ODRdIHIzOiAyMTQ3NDgzNjQ4ICE9IDUNClsgIDM3NC44OTQwOThdIHI0OiAyMTQ3NDgzNjQ4ICE9
+IDUNClsgIDM3NC44OTQ1MjNdIHI1OiAyMTQ3NDgzNjQ4ICE9IDUNClsgIDM3NC44OTQ5MzhdIHI2
+OiAyMTQ3NDgzNjQ4ICE9IDUNClsgIDM3NC44OTUzNTNdIHI3OiAyMTQ3NDgzNjQ4ICE9IDUNClsg
+IDM3NC44OTU3NjddIHIwOiAyMTQ3NDgzNjQ4ICE9IDUNClsgIDM3NC44OTYxODFdIHIxOiAyMTQ3
+NDgzNjQ4ICE9IDUNClsgIDM3NC44OTY1OTZdIHIyOiAyMTQ3NDgzNjQ4ICE9IDUNClsgIDM3NC44
+OTcwMTBdIHIzOiAyMTQ3NDgzNjQ4ICE9IDUNClsgIDM3NC44OTc0MjVdIHI0OiAyMTQ3NDgzNjQ4
+ICE9IDUNClsgIDM3NC44OTc4MzldIHI1OiAyMTQ3NDgzNjQ4ICE9IDUNClsgIDM3NC44OTgyNTRd
+IHI2OiAyMTQ3NDgzNjQ4ICE9IDUNCi4uLg0KDQo+DQo+PiBBIHF1aWNrIGd1aWRlOg0KPj4NCj4+
+ICAgICAgdXNhZ2U6DQo+PiAgICAgICRjcCBrZXJuZWxfY29uZmlnX3hlbm9tYWkgLmNvbmZpZw0K
+Pj4gICAgICAkbWFrZSBvbGRkZWZjb25maWcNCj4+ICAgICAgJG1ha2UgYmluZGViLXBrZyAtajE2
+IDI+JjEgfCB0ZWUgYnVpbGQubG9nDQo+PiAgICAgIGlmIGJ1aWxkIG9rLCBpbnN0YWxsIGl0IG92
+ZXIgYSBEZWJpYW4gb3IgVWJ1bnR1IG9uIHRlc3QgYm9hcmQsDQo+PiAgICAgICNkcGtnIC1pICBs
+aW51eC1pbWFnZS0qLmRlYg0KPj4gICAgICAjcmVib290DQo+Pg0KPj4gICAgICB0byBjbGVhbiB1
+cDoNCj4+ICAgICAgJG1ha2UgZGlzdGNsZWFuDQo+Pg0KPj4gICAgICBidWc6DQo+PiAgICAgIG91
+dCBvZiB0cmVlIGJ1aWxkIHdpbGwgZmFpbCBmb3Iga2VybmVsIDUuNCwgbmVlZCBmaXguDQo+Pg0K
+Pj4gQlIgLyBGaW5vICjlrZ/npaXlpKspDQo+PiBJbnRlbCDigJMgSU9URyBEZXZlbG9wZXIgRW5h
+YmxpbmcNCj4+DQo+DQo+SW4gYW55IGNhc2U6IGdyZWF0IHByb2dyZXNzIQ0KPg0KPkphbg0KPg0K
+Pi0tDQo+U2llbWVucyBBRywgQ29ycG9yYXRlIFRlY2hub2xvZ3ksIENUIFJEQSBJT1QgU0VTLURF
+IENvcnBvcmF0ZSBDb21wZXRlbmNlIENlbnRlciBFbWJlZGRlZCBMaW51eA0K
 
