@@ -1,11 +1,12 @@
-Subject: Re: y2038 breakdown
-References: <5F520B21.7050401@tj.kylinos.cn>
- <f4c5a830-7d80-aecb-f844-4de8a1aa9f29@tj.kylinos.cn>
+Subject: Re: Installing Xenomai Cobalt and Mercury in the same system
+References: <20200914182002.cw6tdq2n7sjlbnqm@altlinux.org>
+ <1096405435.3387889.1600110400342.JavaMail.zimbra@wolfram.com>
+ <20200914212942.wtrp57bjh6jmosbl@altlinux.org> <87zh5ra67n.fsf@xenomai.org>
 From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <b3966e4c-6a05-6197-3fd4-7eb1ae719b06@siemens.com>
-Date: Tue, 15 Sep 2020 13:26:01 +0200
+Message-ID: <66cac805-e9d3-b7b1-0979-f8eaba6689ba@siemens.com>
+Date: Tue, 15 Sep 2020 13:27:37 +0200
 MIME-Version: 1.0
-In-Reply-To: <f4c5a830-7d80-aecb-f844-4de8a1aa9f29@tj.kylinos.cn>
+In-Reply-To: <87zh5ra67n.fsf@xenomai.org>
 Content-Type: text/plain; charset="utf-8"; format="flowed"
 Content-Language: en-US
 Content-Transfer-Encoding: 8bit
@@ -17,125 +18,57 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: song <chensong@tj.kylinos.cn>, "Xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Philippe Gerum <rpm@xenomai.org>, Vitaly Chikunov <vt@altlinux.org>
+Cc: xenomai@xenomai.org
 
-On 15.09.20 09:05, song wrote:
-> Hi guys,
+On 15.09.20 08:45, Philippe Gerum via Xenomai wrote:
 > 
-> After going through Arnd Bergmann's patch 
-> list(https://git.kernel.org/pub/scm/linux/kernel/git/arnd/playground.git/log/?h=y2038-syscalls), 
-> i'm going to get started at 64bit-xenomai y2038-safe(#1 in below list).
+> Vitaly Chikunov via Xenomai <xenomai@xenomai.org> writes:
 > 
-> 1, timespec to __kernel_timespec in syscalls
->     timespec to timespec64
-> 2, timex to __kernel_timex
-> 3, syscalls, probably make a new one for 64bits and keep the old one for 
-> compatibility (like clock_gettime, nanosleep...)
-> 4, 2038-unsafe points in scheduler if there is (like sched time 
-> interval..., i found xntimer is 64bit, which means it's 2038-safe)
-
-Yeah, I don't think we have internal issues, "just" on the interfaces.
-
-> 5, get_timespec to get_timespec64
->     timespec_valid to timespec64_valid
-> 6, ktime_get_real to ktime_get_real_ts64
+>> On Mon, Sep 14, 2020 at 02:06:40PM -0500, Per Oberg via Xenomai wrote:
+>>> ----- Den 14 sep 2020, på kl 20:20, xenomai xenomai@xenomai.org skrev:
+>>>
+>>>> I wish to create two sets of packages for ALT Linux for libxenomai one
+>>>> for Cobalt and another for Mercury core.
+>>>
+>>>> But, it seems this is hard to achieve, because sonames would be the same.
+>>>
+>>>> Is there any suggestions how to achieve this properly?
+>>>
+>>> Wow, this takes me back.
+>>> Back when I was a student our sysadmins would use cmod so that they could have all versions of all possible software installed at the same time. This way different departments could tune what versions were available to their students and they could install new versions without anyone getting angry about breakage. (And if something broke because they changed the default one could easily go back by making a different pick )
+>>>
+>>> The last contribution is well over 17 years old. Those were the days...
+>>>
+>>> https://git.lysator.liu.se/cmod/cmod
+>>
+>> Thanks for the suggestion. But, sysadmin level solutions does not solve
+>> repository level problems for distributions. We only can create (RPM)
+>> packages which any users should be able to install in usual way.
+>> Otherwise, they could just use configure & make install for the
+>> downloaded source code.
+>>
+>> One suggestion I got is to actually rename all xenomai sonames, for
+>> example, to add core suffix to all library names. (Such as,
+>> libcopperplate.so -> libcopperplate-mercury.so).
+>>
+>> Jan, Philippe, what do you think if we extend auto-scripts with a
+>> possibility to specify soname suffix (via configure)? Thus, both
+>> versions of the libs could be properly installed or used correctly.
+>>
 > 
-> There would be more, i haven't figured out the whole pictures yet, and i 
-> even haven't figured out how to make 32bit app 2038-safe either in 64bit 
-> kernel or 32bit kernel, as far as my test, time goes back to 1901 when 
-> sec is wrapped around in GPOS(5.4.40).
-
-Existing apps using 32-bit types can't be made 2038-safe. It takes at 
-least a recompilation so that they start using the new syscalls and also 
-the new, widened data structures.
-
-> 
-> 1) root@kylin-Lenovo:/home/kylin/workspace/test-2038# ./test2038-gcc-32bit
-> 1, Local time is: Tue Jan 19 11:13:40 2038
-> 2, Local time is: Tue Jan 19 11:13:50 2038
-> diff 10, sec 0x7fffffee
-> 
-> 1, Local time is: Tue Jan 19 11:13:50 2038
-> 2, Local time is: Tue Jan 19 11:14:00 2038
-> diff 10, sec 0x7ffffff8
-> 
-> 1, Local time is: Tue Jan 19 11:14:00 2038
-> 2, Local time is: Sat Dec 14 04:45:54 1901
-> diff 10, sec 0x80000002
-> 
-> 
-> But things are getting clearer, if you have no problem with that, i will 
-> start some small patches for review.
+> This would make sense to me.
 > 
 
-That would be great! Make some basic test case one of the first patches 
-so that we keep an eye on the effect, in all variants.
+Ack.
 
-I've CC'ed you also in the dovetail thread, just to make you aware of 
-Philippe's comments related to y2038 there.
+We could also think of setting defaults for upcoming major releases so 
+that the suffix does not needlessly become distro-specific. I have no 
+feeling how many users we have on the mercury side, but I'm somehow 
+leaning towards setting a suffix there while keeping the naming scheme 
+on the cobalt side.
 
-Thanks,
 Jan
-
-> Let me know your thought about it, many thanks.
-> 
-> BR
-> 
-> chensong
-> 
-> 
-> 
-> On 2020/9/4 下午5:38, chensong via Xenomai wrote:
->> hi Henning,
->>
->> I collected some discussions about y2038 from upstream and made a
->> rough list for xenomai:
->>
->> 1, 64bit-xenomai y2038-safe
->> 2, 32bit-xenomai y2038-safe
->> 3, 64bit-ipipe y2038-safe (arm64, x86_64)
->> 4, 32bit-ipipe y2038-safe (arm, x86)
->> 5, syscall (posix and all other skins)
->> 6, libc
->> 7, 32 bit app y2038-safe
->> 8, 64 bit app y2038-sage
->>
->> For #1 ~ #4 above , we take care of In-kernel correctness, all the
->> data structures time is relevant to are going to be changed to long
->> long.or any old time data structures used in either xenomai or 
->> ipipe(probably timespec to timespec64).
->>
->> For #5, we need to keep the old syscalls for compatibility and
->> introduce new 64 bit syscalls.More specificlly, to create new 64bit
->> time_t/timespec/timeval/etc variants for syscalls, while
->> preserving existing interfaces(posix and all other skins).
->>
->> #6, do we need to care about it or we can benefit from upstream?
->>
->> #7, we need to cooperate with app developers and #8 seems to be safe
->> already.
->>
->>
->> other communities info :
->> NetBSD preserved compatibility with 2038 unsafe applications
->> OpenBSD did not (seeing the certainty of excluding unsafe
->> applications as a feature over compatibility)
->>
->>
->> http://lkml.iu.edu/hypermail/linux/kernel/1408.1/02587.html
->>
->> I will continue to work on the test case and start figuring out 32bit
->> time data structures in xenomai, how does it sound to you.
->>
->> BR
->>
->> chensong
->>
->>
->>
->>
-> 
-> 
 
 -- 
 Siemens AG, Corporate Technology, CT RDA IOT SES-DE
