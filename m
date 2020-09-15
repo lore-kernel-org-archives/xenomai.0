@@ -1,15 +1,15 @@
-Subject: Re: Installing Xenomai Cobalt and Mercury in the same system
-References: <20200914182002.cw6tdq2n7sjlbnqm@altlinux.org>
- <1096405435.3387889.1600110400342.JavaMail.zimbra@wolfram.com>
- <20200914212942.wtrp57bjh6jmosbl@altlinux.org> <87zh5ra67n.fsf@xenomai.org>
-From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <66cac805-e9d3-b7b1-0979-f8eaba6689ba@siemens.com>
-Date: Tue, 15 Sep 2020 13:27:37 +0200
-MIME-Version: 1.0
-In-Reply-To: <87zh5ra67n.fsf@xenomai.org>
-Content-Type: text/plain; charset="utf-8"; format="flowed"
+From: Lange Norbert <norbert.lange@andritz.com>
+Subject: RE: [PATCH] libs: Add linking dependencies to libcopperplate and
+ libsmokey
+Date: Tue, 15 Sep 2020 12:19:19 +0000
+Message-ID: <VI1PR05MB59172E5AFB9A66BEE4D49A90F6200@VI1PR05MB5917.eurprd05.prod.outlook.com>
+References: <20200914215233.10877-1-vt@altlinux.org>
+ <e005d8e1-3e59-5c67-ba2f-74c648fd7dd4@siemens.com>
+In-Reply-To: <e005d8e1-3e59-5c67-ba2f-74c648fd7dd4@siemens.com>
 Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+MIME-Version: 1.0
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -18,59 +18,63 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Philippe Gerum <rpm@xenomai.org>, Vitaly Chikunov <vt@altlinux.org>
-Cc: xenomai@xenomai.org
+To: Jan Kiszka <jan.kiszka@siemens.com>, Vitaly Chikunov <vt@altlinux.org>, "Xenomai (xenomai@xenomai.org)" <xenomai@xenomai.org>
 
-On 15.09.20 08:45, Philippe Gerum via Xenomai wrote:
-> 
-> Vitaly Chikunov via Xenomai <xenomai@xenomai.org> writes:
-> 
->> On Mon, Sep 14, 2020 at 02:06:40PM -0500, Per Oberg via Xenomai wrote:
->>> ----- Den 14 sep 2020, på kl 20:20, xenomai xenomai@xenomai.org skrev:
->>>
->>>> I wish to create two sets of packages for ALT Linux for libxenomai one
->>>> for Cobalt and another for Mercury core.
->>>
->>>> But, it seems this is hard to achieve, because sonames would be the same.
->>>
->>>> Is there any suggestions how to achieve this properly?
->>>
->>> Wow, this takes me back.
->>> Back when I was a student our sysadmins would use cmod so that they could have all versions of all possible software installed at the same time. This way different departments could tune what versions were available to their students and they could install new versions without anyone getting angry about breakage. (And if something broke because they changed the default one could easily go back by making a different pick )
->>>
->>> The last contribution is well over 17 years old. Those were the days...
->>>
->>> https://git.lysator.liu.se/cmod/cmod
->>
->> Thanks for the suggestion. But, sysadmin level solutions does not solve
->> repository level problems for distributions. We only can create (RPM)
->> packages which any users should be able to install in usual way.
->> Otherwise, they could just use configure & make install for the
->> downloaded source code.
->>
->> One suggestion I got is to actually rename all xenomai sonames, for
->> example, to add core suffix to all library names. (Such as,
->> libcopperplate.so -> libcopperplate-mercury.so).
->>
->> Jan, Philippe, what do you think if we extend auto-scripts with a
->> possibility to specify soname suffix (via configure)? Thus, both
->> versions of the libs could be properly installed or used correctly.
->>
-> 
-> This would make sense to me.
-> 
-
-Ack.
-
-We could also think of setting defaults for upcoming major releases so 
-that the suffix does not needlessly become distro-specific. I have no 
-feeling how many users we have on the mercury side, but I'm somehow 
-leaning towards setting a suffix there while keeping the naming scheme 
-on the cobalt side.
-
-Jan
-
--- 
-Siemens AG, Corporate Technology, CT RDA IOT SES-DE
-Corporate Competence Center Embedded Linux
+T24gZGViaWFuLCBkaF9zaGxpYmRlcHMgKGRwa2ctc2hsaWJkZXBzKSBzaG91bGQgYmUgYWJsZSB0
+byBkaWFnbm9zZSB0aGlzIGFzd2VsbC4NCg0KTm9yYmVydA0KDQo+IC0tLS0tT3JpZ2luYWwgTWVz
+c2FnZS0tLS0tDQo+IEZyb206IFhlbm9tYWkgPHhlbm9tYWktYm91bmNlc0B4ZW5vbWFpLm9yZz4g
+T24gQmVoYWxmIE9mIEphbiBLaXN6a2ENCj4gdmlhIFhlbm9tYWkNCj4gU2VudDogRGllbnN0YWcs
+IDE1LiBTZXB0ZW1iZXIgMjAyMCAxMjozOQ0KPiBUbzogVml0YWx5IENoaWt1bm92IDx2dEBhbHRs
+aW51eC5vcmc+OyBYZW5vbWFpIDx4ZW5vbWFpQHhlbm9tYWkub3JnPg0KPiBTdWJqZWN0OiBSZTog
+W1BBVENIXSBsaWJzOiBBZGQgbGlua2luZyBkZXBlbmRlbmNpZXMgdG8gbGliY29wcGVycGxhdGUg
+YW5kDQo+IGxpYnNtb2tleQ0KPg0KPiBOT04tQU5EUklUWiBTT1VSQ0U6IEJFIENBVVRJT1VTIFdJ
+VEggQ09OVEVOVCwgTElOS1MgT1INCj4gQVRUQUNITUVOVFMuDQo+DQo+DQo+IE9uIDE0LjA5LjIw
+IDIzOjUyLCBWaXRhbHkgQ2hpa3Vub3Ygd3JvdGU6DQo+ID4gQUxUIHJwbWJ1aWxkIFFBIHNjcmlw
+dCBkZXRlY3RzIHRoYXQgbGlic21va2V5IGFuZCBsaWJjb3BwZXJwbGF0ZSBpcw0KPiA+IGltcHJv
+cGVybHkgbGlua2VkICh3aGVuIGJ1aWx0IGZvciBNZXJjdXJ5IGNvcmUpLg0KPiA+DQo+ID4gRXhj
+ZXJwdCBmcm9tIHRoZSBlcnJvciBtZXNzYWdlOg0KPiA+ICAgIHZlcmlmeS1lbGY6IEVSUk9SOiAu
+L3Vzci9saWI2NC9saWJzbW9rZXkuc28uMC4wLjA6IHVuZGVmaW5lZCBzeW1ib2w6DQo+IGdldF9t
+ZW1fc2l6ZQ0KPiA+ICAgIHZlcmlmeS1lbGY6IEVSUk9SOiAuL3Vzci9saWI2NC9saWJjb3BwZXJw
+bGF0ZS5zby4wLjAuMDogdW5kZWZpbmVkDQo+ID4gc3ltYm9sOiBnZXRfbWVtX3NpemUNCj4gPg0K
+Pg0KPiBDb3VsZCBzdWNoIGEgdGVzdCBiZSBhZGRlZCB0byBvdXIgcmVndWxhciBidWlsZCwgb3Ig
+aXMgaXQgZGVwZW5kaW5nIG9uIHJwbSBvcg0KPiBhbHRsaW51eD8NCj4NCj4gPiBTaWduZWQtb2Zm
+LWJ5OiBWaXRhbHkgQ2hpa3Vub3YgPHZ0QGFsdGxpbnV4Lm9yZz4NCj4gPiAtLS0NCj4gPiAgIGxp
+Yi9jb3BwZXJwbGF0ZS9NYWtlZmlsZS5hbSB8IDMgKystDQo+ID4gICBsaWIvc21va2V5L01ha2Vm
+aWxlLmFtICAgICAgfCAxICsNCj4gPiAgIDIgZmlsZXMgY2hhbmdlZCwgMyBpbnNlcnRpb25zKCsp
+LCAxIGRlbGV0aW9uKC0pDQo+ID4NCj4gPiBkaWZmIC0tZ2l0IGEvbGliL2NvcHBlcnBsYXRlL01h
+a2VmaWxlLmFtIGIvbGliL2NvcHBlcnBsYXRlL01ha2VmaWxlLmFtDQo+ID4gaW5kZXggZjgzMmQx
+Yzg5Li5jNzEwNGViMDIgMTAwNjQ0DQo+ID4gLS0tIGEvbGliL2NvcHBlcnBsYXRlL01ha2VmaWxl
+LmFtDQo+ID4gKysrIGIvbGliL2NvcHBlcnBsYXRlL01ha2VmaWxlLmFtDQo+ID4gQEAgLTIsNyAr
+Miw4IEBADQo+ID4gICBsaWJfTFRMSUJSQVJJRVMgPSBsaWJjb3BwZXJwbGF0ZS5sYQ0KPiA+DQo+
+ID4gICBsaWJjb3BwZXJwbGF0ZV9sYV9MREZMQUdTID0gQFhFTk9fTElCX0xERkxBR1NAIC1scHRo
+cmVhZCAtbHJ0DQo+ID4gLXZlcnNpb24taW5mbyAwOjA6MCAtbGliY29wcGVycGxhdGVfbGFfTElC
+QUREID0NCj4gPiArbGliY29wcGVycGxhdGVfbGFfTElCQUREID0gQFhFTk9fQ09SRV9MREFEREAN
+Cj4gPiArDQo+ID4gICBub2luc3RfTFRMSUJSQVJJRVMgPQ0KPiA+DQo+ID4gICBsaWJjb3BwZXJw
+bGF0ZV9sYV9TT1VSQ0VTID0gXA0KPiA+IGRpZmYgLS1naXQgYS9saWIvc21va2V5L01ha2VmaWxl
+LmFtIGIvbGliL3Ntb2tleS9NYWtlZmlsZS5hbSBpbmRleA0KPiA+IDUzYzc3NWM2OC4uNGVjYWUx
+ZjE2IDEwMDY0NA0KPiA+IC0tLSBhL2xpYi9zbW9rZXkvTWFrZWZpbGUuYW0NCj4gPiArKysgYi9s
+aWIvc21va2V5L01ha2VmaWxlLmFtDQo+ID4gQEAgLTEsNiArMSw3IEBADQo+ID4gICBsaWJfTFRM
+SUJSQVJJRVMgPSBsaWJzbW9rZXkubGENCj4gPg0KPiA+ICAgbGlic21va2V5X2xhX0xERkxBR1Mg
+PSBAWEVOT19MSUJfTERGTEFHU0AgLXZlcnNpb24taW5mbyAwOjA6MA0KPiA+ICtsaWJzbW9rZXlf
+bGFfTElCQUREID0gQFhFTk9fQ09SRV9MREFEREANCj4gPg0KPiA+ICAgbGlic21va2V5X2xhX1NP
+VVJDRVMgPSAgICAgIFwNCj4gPiAgICAgICBoZWxwZXJzLmMgICAgICAgXA0KPiA+DQo+DQo+IFRo
+YW5rcywgYXBwbGllZCB0byBuZXh0Lg0KPg0KPiBKYW4NCj4NCj4gLS0NCj4gU2llbWVucyBBRywg
+Q29ycG9yYXRlIFRlY2hub2xvZ3ksIENUIFJEQSBJT1QgU0VTLURFIENvcnBvcmF0ZQ0KPiBDb21w
+ZXRlbmNlIENlbnRlciBFbWJlZGRlZCBMaW51eA0KDQpfX19fX19fX19fX19fX19fX19fX19fX19f
+X19fX19fXw0KDQpUaGlzIG1lc3NhZ2UgYW5kIGFueSBhdHRhY2htZW50cyBhcmUgc29sZWx5IGZv
+ciB0aGUgdXNlIG9mIHRoZSBpbnRlbmRlZCByZWNpcGllbnRzLiBUaGV5IG1heSBjb250YWluIHBy
+aXZpbGVnZWQgYW5kL29yIGNvbmZpZGVudGlhbCBpbmZvcm1hdGlvbiBvciBvdGhlciBpbmZvcm1h
+dGlvbiBwcm90ZWN0ZWQgZnJvbSBkaXNjbG9zdXJlLiBJZiB5b3UgYXJlIG5vdCBhbiBpbnRlbmRl
+ZCByZWNpcGllbnQsIHlvdSBhcmUgaGVyZWJ5IG5vdGlmaWVkIHRoYXQgeW91IHJlY2VpdmVkIHRo
+aXMgZW1haWwgaW4gZXJyb3IgYW5kIHRoYXQgYW55IHJldmlldywgZGlzc2VtaW5hdGlvbiwgZGlz
+dHJpYnV0aW9uIG9yIGNvcHlpbmcgb2YgdGhpcyBlbWFpbCBhbmQgYW55IGF0dGFjaG1lbnQgaXMg
+c3RyaWN0bHkgcHJvaGliaXRlZC4gSWYgeW91IGhhdmUgcmVjZWl2ZWQgdGhpcyBlbWFpbCBpbiBl
+cnJvciwgcGxlYXNlIGNvbnRhY3QgdGhlIHNlbmRlciBhbmQgZGVsZXRlIHRoZSBtZXNzYWdlIGFu
+ZCBhbnkgYXR0YWNobWVudCBmcm9tIHlvdXIgc3lzdGVtLg0KDQpBTkRSSVRaIEhZRFJPIEdtYkgN
+Cg0KDQpSZWNodHNmb3JtLyBMZWdhbCBmb3JtOiBHZXNlbGxzY2hhZnQgbWl0IGJlc2NocsOkbmt0
+ZXIgSGFmdHVuZyAvIENvcnBvcmF0aW9uDQoNCkZpcm1lbnNpdHovIFJlZ2lzdGVyZWQgc2VhdDog
+V2llbg0KDQpGaXJtZW5idWNoZ2VyaWNodC8gQ291cnQgb2YgcmVnaXN0cnk6IEhhbmRlbHNnZXJp
+Y2h0IFdpZW4NCg0KRmlybWVuYnVjaG51bW1lci8gQ29tcGFueSByZWdpc3RyYXRpb246IEZOIDYx
+ODMzIGcNCg0KRFZSOiAwNjA1MDc3DQoNClVJRC1Oci46IEFUVTE0NzU2ODA2DQoNCg0KVGhhbmsg
+WW91DQpfX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fXw0K
 
