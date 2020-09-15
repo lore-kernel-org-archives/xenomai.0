@@ -1,9 +1,14 @@
-From: Vitaly Chikunov <vt@altlinux.org>
-Subject: [PATCH] libs: Add linking dependencies to libcopperplate and libsmokey
-Date: Tue, 15 Sep 2020 00:52:33 +0300
-Message-Id: <20200914215233.10877-1-vt@altlinux.org>
+References: <20200914182002.cw6tdq2n7sjlbnqm@altlinux.org>
+ <1096405435.3387889.1600110400342.JavaMail.zimbra@wolfram.com>
+ <20200914212942.wtrp57bjh6jmosbl@altlinux.org>
+From: Philippe Gerum <rpm@xenomai.org>
+Subject: Re: Installing Xenomai Cobalt and Mercury in the same system
+In-reply-to: <20200914212942.wtrp57bjh6jmosbl@altlinux.org>
+Date: Tue, 15 Sep 2020 08:45:32 +0200
+Message-ID: <87zh5ra67n.fsf@xenomai.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -12,48 +17,54 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jan Kiszka <jan.kiszka@siemens.com>, Xenomai <xenomai@xenomai.org>
+To: Vitaly Chikunov <vt@altlinux.org>
+Cc: xenomai@xenomai.org
 
-ALT rpmbuild QA script detects that libsmokey and libcopperplate is improperly
-linked (when built for Mercury core).
 
-Excerpt from the error message:
-  verify-elf: ERROR: ./usr/lib64/libsmokey.so.0.0.0: undefined symbol: get_mem_size
-  verify-elf: ERROR: ./usr/lib64/libcopperplate.so.0.0.0: undefined symbol: get_mem_size
+Vitaly Chikunov via Xenomai <xenomai@xenomai.org> writes:
 
-Signed-off-by: Vitaly Chikunov <vt@altlinux.org>
----
- lib/copperplate/Makefile.am | 3 ++-
- lib/smokey/Makefile.am      | 1 +
- 2 files changed, 3 insertions(+), 1 deletion(-)
+> On Mon, Sep 14, 2020 at 02:06:40PM -0500, Per Oberg via Xenomai wrote:
+>> ----- Den 14 sep 2020, p=C3=A5 kl 20:20, xenomai xenomai@xenomai.org skr=
+ev:
+>>=20
+>> > I wish to create two sets of packages for ALT Linux for libxenomai one
+>> > for Cobalt and another for Mercury core.
+>>=20
+>> > But, it seems this is hard to achieve, because sonames would be the sa=
+me.
+>>=20
+>> > Is there any suggestions how to achieve this properly?
+>>=20
+>> Wow, this takes me back.=20
+>> Back when I was a student our sysadmins would use cmod so that they coul=
+d have all versions of all possible software installed at the same time. Th=
+is way different departments could tune what versions were available to the=
+ir students and they could install new versions without anyone getting angr=
+y about breakage. (And if something broke because they changed the default =
+one could easily go back by making a different pick )
+>>=20
+>> The last contribution is well over 17 years old. Those were the days...=
+=20
+>>=20
+>> https://git.lysator.liu.se/cmod/cmod
+>
+> Thanks for the suggestion. But, sysadmin level solutions does not solve
+> repository level problems for distributions. We only can create (RPM)
+> packages which any users should be able to install in usual way.
+> Otherwise, they could just use configure & make install for the
+> downloaded source code.
+>
+> One suggestion I got is to actually rename all xenomai sonames, for
+> example, to add core suffix to all library names. (Such as,
+> libcopperplate.so -> libcopperplate-mercury.so).
+>
+> Jan, Philippe, what do you think if we extend auto-scripts with a
+> possibility to specify soname suffix (via configure)? Thus, both
+> versions of the libs could be properly installed or used correctly.
+>
 
-diff --git a/lib/copperplate/Makefile.am b/lib/copperplate/Makefile.am
-index f832d1c89..c7104eb02 100644
---- a/lib/copperplate/Makefile.am
-+++ b/lib/copperplate/Makefile.am
-@@ -2,7 +2,8 @@
- lib_LTLIBRARIES = libcopperplate.la
- 
- libcopperplate_la_LDFLAGS = @XENO_LIB_LDFLAGS@ -lpthread -lrt -version-info 0:0:0
--libcopperplate_la_LIBADD =
-+libcopperplate_la_LIBADD = @XENO_CORE_LDADD@
-+
- noinst_LTLIBRARIES =
- 
- libcopperplate_la_SOURCES =	\
-diff --git a/lib/smokey/Makefile.am b/lib/smokey/Makefile.am
-index 53c775c68..4ecae1f16 100644
---- a/lib/smokey/Makefile.am
-+++ b/lib/smokey/Makefile.am
-@@ -1,6 +1,7 @@
- lib_LTLIBRARIES = libsmokey.la
- 
- libsmokey_la_LDFLAGS = @XENO_LIB_LDFLAGS@ -version-info 0:0:0
-+libsmokey_la_LIBADD = @XENO_CORE_LDADD@
- 
- libsmokey_la_SOURCES =	\
- 	helpers.c	\
--- 
-2.21.0
+This would make sense to me.
 
+--=20
+Philippe.
 
