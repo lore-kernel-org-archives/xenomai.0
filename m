@@ -1,11 +1,10 @@
-From: "Meng, Fino" <fino.meng@intel.com>
-Subject: patches for review,  Xenomai core porting for kernel 5.4.y
-Date: Fri, 18 Sep 2020 07:29:32 +0000
-Message-ID: <MWHPR11MB19189743B3E26B05B4B4D48AEE3F0@MWHPR11MB1918.namprd11.prod.outlook.com>
-Content-Language: en-US
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+Date: Fri, 18 Sep 2020 00:53:29 +0800
+From: Fino Meng <fino.meng@linux.intel.com>
+Subject: [PATCH 1/4] cobalt/x86: adapt fpu code with Linux kernel upstream
+Message-ID: <20200917165326.GA6186@linux.intel.com>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -14,16 +13,39 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "xenomai@xenomai.org" <xenomai@xenomai.org>, "jan.kiszka@siemens.com" <jan.kiszka@siemens.com>
-Cc: "Pirou, Florent" <florent.pirou@intel.com>, "Wang, Rick Y" <rick.y.wang@intel.com>
+To: xenomai@xenomai.org
 
-SGkgYWxsICYgSmFuLA0KDQpJIGp1c3Qgc2VudCBvdXQgdGhlIDQgcGF0Y2hlcyBhZ2FpbiBieSBn
-aXQgc2VuZC1lbWFpbCwgSSBhcHBsaWVkIHRoZW0gb24gYnJhbmNoIDogbmV4dCANCg0KQW5kIHRo
-ZSBJUElQRSBwYXJ0IGlzIGhvc3RpbmcgaGVyZSBmb3IgcmV2aWV3OiANCmh0dHBzOi8vZ2l0aHVi
-LmNvbS9pbnRlbC9saW51eC1zdGFibGUteGVub21haS90cmVlL3Jldmlldy81LjQuNTkvc3RhYmxl
-L2lwaXBlLXg4Ng0KDQpjb21iaW5lIHRoZXNlIDIgcGFydHMsICBidWlsZCBhbmQgYm9vdCBpcyBP
-SywgbGF0ZW5jeSBydW4gT0suIA0Kc3dpdGNodGVzdCBzaG93IGVycm9yLCAgc29tZSBvdGhlciBz
-bW9rZXkgdGVzdCBtYXkgYWxzbyBmYWlsLCBhbmQgSSBob3BlIGNhbiBmaXggdGhlbSBBU0FQLg0K
-DQoNCkJSIC8gRmlubyAo5a2f56Wl5aSrKQ0KSW50ZWwg4oCTIElPVEcgRGV2ZWxvcGVyIEVuYWJs
-aW5nDQoNCg==
+Signed-off-by: Fino Meng <fino.meng@linux.intel.com>
+Signed-off-by: Mingliang Hu <mingliang.hu@intel.com>
+---
+ kernel/cobalt/arch/x86/thread.c | 6 +++++-
+ 1 file changed, 5 insertions(+), 1 deletion(-)
+
+diff --git a/kernel/cobalt/arch/x86/thread.c b/kernel/cobalt/arch/x86/thread.c
+index ba807ac1e..c33ad832f 100644
+--- a/kernel/cobalt/arch/x86/thread.c
++++ b/kernel/cobalt/arch/x86/thread.c
+@@ -26,6 +26,10 @@
+ #include <asm/mmu_context.h>
+ #include <asm/processor.h>
+ 
++#ifdef IPIPE_X86_FPU_EAGER
++extern void fpu__initialize(struct fpu *fpu);
++#endif
++
+ static struct kmem_cache *xstate_cache;
+ 
+ #ifdef IPIPE_X86_FPU_EAGER
+@@ -472,7 +476,7 @@ void xnarch_leave_root(struct xnthread *root)
+ #if LINUX_VERSION_CODE >= KERNEL_VERSION(4,14,0)
+ 	/* restore current's fpregs */
+ 	__cpu_invalidate_fpregs_state();
+-	switch_fpu_finish(&current->thread.fpu, smp_processor_id());
++	switch_fpu_finish(&current->thread.fpu);
+ #else
+ 	/* mark current thread as not owning the FPU anymore */
+ 	if (fpregs_active())
+-- 
+2.20.1
+
 
