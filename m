@@ -1,13 +1,14 @@
-From: "Meng, Fino" <fino.meng@intel.com>
-Subject: RE: [PATCH 1/4] cobalt/x86: adapt fpu code with Linux kernel upstream
-Date: Thu, 17 Sep 2020 17:11:29 +0000
-Message-ID: <MWHPR11MB1918305CDA40AB3754C334FDEE3E0@MWHPR11MB1918.namprd11.prod.outlook.com>
-References: <20200917165326.GA6186@linux.intel.com>
-In-Reply-To: <20200917165326.GA6186@linux.intel.com>
-Content-Language: en-US
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+References: <777d8ed5-7f6a-4e56-7f65-7677f089527e@cs.ru.nl>
+ <916ef19a754d4e42b0eaefa8a1a26060@EXPRD08.hosting.ru.nl>
+ <5faff965-afc6-f70a-8d10-8f55c570fbf6@cs.ru.nl>
+ <b60f35a8-c6ea-20c2-57b6-8d1f667ee14b@siemens.com>
+From: Philippe Gerum <rpm@xenomai.org>
+Subject: Re: rt_task_set_priority does not increase priority of other task
+In-reply-to: <b60f35a8-c6ea-20c2-57b6-8d1f667ee14b@siemens.com>
+Date: Thu, 17 Sep 2020 19:49:22 +0200
+Message-ID: <87imccz42l.fsf@xenomai.org>
 MIME-Version: 1.0
+Content-Type: text/plain
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,33 +17,116 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Fino Meng <fino.meng@linux.intel.com>, "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Jan Kiszka <jan.kiszka@siemens.com>
+Cc: Harco Kuppens <h.kuppens@cs.ru.nl>, "Xenomai@xenomai.org" <xenomai@xenomai.org>, Greg Gallagher <greg@embeddedgreg.com>
 
-DQo+U2VudDogRnJpZGF5LCBTZXB0ZW1iZXIgMTgsIDIwMjAgMTI6NTMgQU0NCj4NCj5TaWduZWQt
-b2ZmLWJ5OiBGaW5vIE1lbmcgPGZpbm8ubWVuZ0BsaW51eC5pbnRlbC5jb20+DQo+U2lnbmVkLW9m
-Zi1ieTogTWluZ2xpYW5nIEh1IDxtaW5nbGlhbmcuaHVAaW50ZWwuY29tPg0KPi0tLQ0KPiBrZXJu
-ZWwvY29iYWx0L2FyY2gveDg2L3RocmVhZC5jIHwgNiArKysrKy0NCj4gMSBmaWxlIGNoYW5nZWQs
-IDUgaW5zZXJ0aW9ucygrKSwgMSBkZWxldGlvbigtKQ0KPg0KPmRpZmYgLS1naXQgYS9rZXJuZWwv
-Y29iYWx0L2FyY2gveDg2L3RocmVhZC5jIGIva2VybmVsL2NvYmFsdC9hcmNoL3g4Ni90aHJlYWQu
-YyBpbmRleCBiYTgwN2FjMWUuLmMzM2FkODMyZiAxMDA2NDQNCj4tLS0gYS9rZXJuZWwvY29iYWx0
-L2FyY2gveDg2L3RocmVhZC5jDQo+KysrIGIva2VybmVsL2NvYmFsdC9hcmNoL3g4Ni90aHJlYWQu
-Yw0KPkBAIC0yNiw2ICsyNiwxMCBAQA0KPiAjaW5jbHVkZSA8YXNtL21tdV9jb250ZXh0Lmg+DQo+
-ICNpbmNsdWRlIDxhc20vcHJvY2Vzc29yLmg+DQo+DQo+KyNpZmRlZiBJUElQRV9YODZfRlBVX0VB
-R0VSDQo+K2V4dGVybiB2b2lkIGZwdV9faW5pdGlhbGl6ZShzdHJ1Y3QgZnB1ICpmcHUpOyAjZW5k
-aWYNCj4rDQoNCkkgc2VudCB0aGUgcGF0Y2ggYnkgICJtdXR0IC1IIDAwMDEtY29iYWx0LXg4Ni1h
-ZGFwdC1mcHUtY29kZS13aXRoLUxpbnV4LWtlcm5lbC11cHN0cmVhbS5wYXRjaCIsIGJ1dCBzZWVt
-cyB0aGUgcmVjZWl2ZWQNCmNvbnRlbnQgaXMgbm90IG1hdGNoIHdpdGggbXkgbG9jYWwgcGF0Y2g6
-IA0KDQorI2lmZGVmIElQSVBFX1g4Nl9GUFVfRUFHRVINCitleHRlcm4gdm9pZCBmcHVfX2luaXRp
-YWxpemUoc3RydWN0IGZwdSAqZnB1KTsNCisjZW5kaWYNCisNCg0KSG93ZXZlciBJIGZhaWxlZCB0
-byBjb25maWcgZ2l0IHNlbmQtZW1haWwsIHdpbGwgY29udGludWUgdG8gdHJ5IHRvbW9ycm93Lg0K
-dGhlIDQgcGF0Y2hlcyBhcmUgZm9yIHRoZSBYZW5vbWFpIGNvcmUgcGFydCBvZiBrZXJuZWwgNS40
-J3MgcG9ydGluZy4gDQoNCj4gc3RhdGljIHN0cnVjdCBrbWVtX2NhY2hlICp4c3RhdGVfY2FjaGU7
-DQo+DQo+ICNpZmRlZiBJUElQRV9YODZfRlBVX0VBR0VSDQo+QEAgLTQ3Miw3ICs0NzYsNyBAQCB2
-b2lkIHhuYXJjaF9sZWF2ZV9yb290KHN0cnVjdCB4bnRocmVhZCAqcm9vdCkgICNpZiBMSU5VWF9W
-RVJTSU9OX0NPREUgPj0NCj5LRVJORUxfVkVSU0lPTig0LDE0LDApDQo+IAkvKiByZXN0b3JlIGN1
-cnJlbnQncyBmcHJlZ3MgKi8NCj4gCV9fY3B1X2ludmFsaWRhdGVfZnByZWdzX3N0YXRlKCk7DQo+
-LQlzd2l0Y2hfZnB1X2ZpbmlzaCgmY3VycmVudC0+dGhyZWFkLmZwdSwgc21wX3Byb2Nlc3Nvcl9p
-ZCgpKTsNCj4rCXN3aXRjaF9mcHVfZmluaXNoKCZjdXJyZW50LT50aHJlYWQuZnB1KTsNCj4gI2Vs
-c2UNCj4gCS8qIG1hcmsgY3VycmVudCB0aHJlYWQgYXMgbm90IG93bmluZyB0aGUgRlBVIGFueW1v
-cmUgKi8NCj4gCWlmIChmcHJlZ3NfYWN0aXZlKCkpDQo+LS0NCj4yLjIwLjENCg0K
+
+Jan Kiszka <jan.kiszka@siemens.com> writes:
+
+> On 17.09.20 14:01, Harco Kuppens wrote:
+>> 
+>> On 17/09/2020 13:51, Jan Kiszka wrote:
+>>> On 16.09.20 20:12, Harco Kuppens via Xenomai wrote:
+>>>> Hi,
+>>>>
+>>>> I found a problem with rt_task_set_priority function which does not
+>>>> increase priority of another task.
+>>>> However it works fine if you increase the priority of another task.
+>>>>
+>>>> Below is an en example program and its output, and we run this program
+>>>> on xenomai 3.08.
+>>>> The problem appears if we run the program on our xenomai image for the
+>>>> raspberry pi 3,
+>>>> and is also appears in our virtual box image.
+>>>> Both images can be found at :
+>>>>
+>>>>    * http://www.cs.ru.nl/lab/xenomai/raspberrypi.html
+>>>>    * http://www.cs.ru.nl/lab/xenomai/virtualbox.html
+>>>>
+>>>> The easiest way is to run the virtualbox image.
+>>>>
+>>>> The final question I have: is there an wrong usage of xenomai API in the
+>>>> example program,
+>>>> or is this a bug in xenomai?
+>>>>
+>>> Something is inconsistent here. Did you also check via
+>>> /proc/xenomai/sched/threads if that view is consistent with the result
+>>> of inquire?
+>> yes, and they also said the priority was not increased.
+>> You can repeat the experiment in the virtualbox image.
+>> Note: we use virtualbox so that students can do some exercise at
+>> home. The exerecises on hardware they must do on raspberry pi 3 in
+>> the lab.
+>> Normally a rt os on virtualbox would make no sense.
+>
+> I'm doing most of Xenomai development in KVM, including kernel
+> debugging - no need to explain ;).
+>
+>>> I vaguely recall issues of the latter but I also do not
+>>> recall any fix to 3.1, not to speak of anything that was not backported.
+>> 
+>>> BTW, tried 3.1 as well?
+>> no, because I don't have it  installed. Could someone who has it
+>> running try this example on it, and check whether this   problem
+>> also occurs there?
+>> 
+>
+> There is something unexpected with master and also with
+> --enable-lazy-setsched. It's important to note that without that 
+> feature, include for 3.0 which lacked that, the setprio call will
+> switch the caller into secondary mode. Still, that alone does not
+> explain the result to me yet. Thanks in advanced to Philippe to
+> picking this up!
+
+Tricky.
+
+In absence of --enable-lazy-setsched, we know that t2 switches to
+secondary mode as a result of calling rt_task_set_priority(), for the
+purpose of eagerly propagating the priority update first to the main
+(kernel) scheduler, _before_ telling Cobalt about it.
+
+t1 then t0 - which are still controlled by the Cobalt scheduler - may
+preempt t2, which runs code somewhere between
+__STD(pthread_setschedparam()) and
+XENOMAI_SYSCALL(sc_cobalt_thread_setschedparam_ex) in
+pthread_setschedparam_ex(), as they wake up from rt_timer_spin().
+
+The printf() output may be confusing, because as we see the "change prio
+task X to Y" message, we still cannot assume the operation was completed
+just yet. As mentioned earlier, t2 is crawling on the root stage at this
+point (low priority stage of the pipeline).
+
+As t1 then t0 grab the CPU which t2 just yielded, they manage to run
+their respective loop entirely before t2 has a chance to leave the
+(low-priority) secondary mode, displaying the old priority value
+Cobalt-wise, which is still pending update.
+
+In short, building with --enable-lazy-setsched may mitigate the issue in
+most cases, but there is no way to strictly synchronize the main and
+Cobalt schedulers when it comes to updating thread priorities only using
+the plain rt_task_set_priority()/pthread_setschedparam_ex() calls. There
+will always be a delay between the two updates, you only get to chose
+whether you want the main (linux) scheduler to be updated first at the
+expense of a mode switch, or Cobalt should be told first about the
+change (sparing a transition to secondary mode in the process), and the
+main kernel would be notified next.
+
+In the latter case, there is another gotcha involving glibc's caching of
+a pthread priority value: with --enable-lazy-setsched, that cached value
+won't be updated with the new value passed to rt_task_set_priority(), so
+__STD(pthread_getschedparam()) may return the old priority. Some
+comments in pthread_getschedparam_ex() give details.
+
+>
+>> Anyway it was pretty difficult to get xenomai 3.08 with gpio support
+>> to work on the raspberry pi 3.
+>
+> Not sure ATM where we stand with that platform and the GPIO
+> enabling. Greg, Philippe?
+
+The common bcm2835-gpio chip is supported by the real-time GPIO
+framework. The RPI-specific GPIO expander is not though.
+
+-- 
+Philippe.
 
