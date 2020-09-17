@@ -1,11 +1,13 @@
-From: Jan Kiszka <jan.kiszka@siemens.com>
-Subject: [PATCH] cobalt/posix/sem: Fix invalid parameter in tracepoint
-Message-ID: <b3b66012-7db1-cfd6-88c4-c0dacb943a61@siemens.com>
-Date: Thu, 17 Sep 2020 17:55:01 +0200
-MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8; format=flowed
+From: "Meng, Fino" <fino.meng@intel.com>
+Subject: RE: [PATCH 1/4] cobalt/x86: adapt fpu code with Linux kernel upstream
+Date: Thu, 17 Sep 2020 17:11:29 +0000
+Message-ID: <MWHPR11MB1918305CDA40AB3754C334FDEE3E0@MWHPR11MB1918.namprd11.prod.outlook.com>
+References: <20200917165326.GA6186@linux.intel.com>
+In-Reply-To: <20200917165326.GA6186@linux.intel.com>
 Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+MIME-Version: 1.0
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -14,31 +16,33 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Xenomai <xenomai@xenomai.org>
+To: Fino Meng <fino.meng@linux.intel.com>, "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-From: Jan Kiszka <jan.kiszka@siemens.com>
-
-This not just traces garbage, it usually crashes the system one the
-tracepoint is enabled.
-
-Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
----
-  kernel/cobalt/posix/sem.c | 2 +-
-  1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/kernel/cobalt/posix/sem.c b/kernel/cobalt/posix/sem.c
-index b02667e5f0..05a861dfe3 100644
---- a/kernel/cobalt/posix/sem.c
-+++ b/kernel/cobalt/posix/sem.c
-@@ -502,7 +502,7 @@ COBALT_SYSCALL(sem_broadcast_np, current,
-  	int ret;
-
-  	handle = cobalt_get_handle_from_user(&u_sem->handle);
--	trace_cobalt_psem_broadcast(u_sem->handle);
-+	trace_cobalt_psem_broadcast(handle);
-
-  	xnlock_get_irqsave(&nklock, s);
-
--- 
-2.26.2
+DQo+U2VudDogRnJpZGF5LCBTZXB0ZW1iZXIgMTgsIDIwMjAgMTI6NTMgQU0NCj4NCj5TaWduZWQt
+b2ZmLWJ5OiBGaW5vIE1lbmcgPGZpbm8ubWVuZ0BsaW51eC5pbnRlbC5jb20+DQo+U2lnbmVkLW9m
+Zi1ieTogTWluZ2xpYW5nIEh1IDxtaW5nbGlhbmcuaHVAaW50ZWwuY29tPg0KPi0tLQ0KPiBrZXJu
+ZWwvY29iYWx0L2FyY2gveDg2L3RocmVhZC5jIHwgNiArKysrKy0NCj4gMSBmaWxlIGNoYW5nZWQs
+IDUgaW5zZXJ0aW9ucygrKSwgMSBkZWxldGlvbigtKQ0KPg0KPmRpZmYgLS1naXQgYS9rZXJuZWwv
+Y29iYWx0L2FyY2gveDg2L3RocmVhZC5jIGIva2VybmVsL2NvYmFsdC9hcmNoL3g4Ni90aHJlYWQu
+YyBpbmRleCBiYTgwN2FjMWUuLmMzM2FkODMyZiAxMDA2NDQNCj4tLS0gYS9rZXJuZWwvY29iYWx0
+L2FyY2gveDg2L3RocmVhZC5jDQo+KysrIGIva2VybmVsL2NvYmFsdC9hcmNoL3g4Ni90aHJlYWQu
+Yw0KPkBAIC0yNiw2ICsyNiwxMCBAQA0KPiAjaW5jbHVkZSA8YXNtL21tdV9jb250ZXh0Lmg+DQo+
+ICNpbmNsdWRlIDxhc20vcHJvY2Vzc29yLmg+DQo+DQo+KyNpZmRlZiBJUElQRV9YODZfRlBVX0VB
+R0VSDQo+K2V4dGVybiB2b2lkIGZwdV9faW5pdGlhbGl6ZShzdHJ1Y3QgZnB1ICpmcHUpOyAjZW5k
+aWYNCj4rDQoNCkkgc2VudCB0aGUgcGF0Y2ggYnkgICJtdXR0IC1IIDAwMDEtY29iYWx0LXg4Ni1h
+ZGFwdC1mcHUtY29kZS13aXRoLUxpbnV4LWtlcm5lbC11cHN0cmVhbS5wYXRjaCIsIGJ1dCBzZWVt
+cyB0aGUgcmVjZWl2ZWQNCmNvbnRlbnQgaXMgbm90IG1hdGNoIHdpdGggbXkgbG9jYWwgcGF0Y2g6
+IA0KDQorI2lmZGVmIElQSVBFX1g4Nl9GUFVfRUFHRVINCitleHRlcm4gdm9pZCBmcHVfX2luaXRp
+YWxpemUoc3RydWN0IGZwdSAqZnB1KTsNCisjZW5kaWYNCisNCg0KSG93ZXZlciBJIGZhaWxlZCB0
+byBjb25maWcgZ2l0IHNlbmQtZW1haWwsIHdpbGwgY29udGludWUgdG8gdHJ5IHRvbW9ycm93Lg0K
+dGhlIDQgcGF0Y2hlcyBhcmUgZm9yIHRoZSBYZW5vbWFpIGNvcmUgcGFydCBvZiBrZXJuZWwgNS40
+J3MgcG9ydGluZy4gDQoNCj4gc3RhdGljIHN0cnVjdCBrbWVtX2NhY2hlICp4c3RhdGVfY2FjaGU7
+DQo+DQo+ICNpZmRlZiBJUElQRV9YODZfRlBVX0VBR0VSDQo+QEAgLTQ3Miw3ICs0NzYsNyBAQCB2
+b2lkIHhuYXJjaF9sZWF2ZV9yb290KHN0cnVjdCB4bnRocmVhZCAqcm9vdCkgICNpZiBMSU5VWF9W
+RVJTSU9OX0NPREUgPj0NCj5LRVJORUxfVkVSU0lPTig0LDE0LDApDQo+IAkvKiByZXN0b3JlIGN1
+cnJlbnQncyBmcHJlZ3MgKi8NCj4gCV9fY3B1X2ludmFsaWRhdGVfZnByZWdzX3N0YXRlKCk7DQo+
+LQlzd2l0Y2hfZnB1X2ZpbmlzaCgmY3VycmVudC0+dGhyZWFkLmZwdSwgc21wX3Byb2Nlc3Nvcl9p
+ZCgpKTsNCj4rCXN3aXRjaF9mcHVfZmluaXNoKCZjdXJyZW50LT50aHJlYWQuZnB1KTsNCj4gI2Vs
+c2UNCj4gCS8qIG1hcmsgY3VycmVudCB0aHJlYWQgYXMgbm90IG93bmluZyB0aGUgRlBVIGFueW1v
+cmUgKi8NCj4gCWlmIChmcHJlZ3NfYWN0aXZlKCkpDQo+LS0NCj4yLjIwLjENCg0K
 
