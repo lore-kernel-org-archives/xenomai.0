@@ -1,7 +1,7 @@
 From: Fino Meng <fino.meng@linux.intel.com>
-Subject: [PATCH 1/4] cobalt/x86: adapt fpu code with Linux kernel upstream
-Date: Fri, 18 Sep 2020 14:31:49 +0800
-Message-Id: <20200918063149.8461-1-fino.meng@linux.intel.com>
+Subject: [PATCH 2/4] cobalt/kernel: adapt adjtime syscall with upstream kernel
+Date: Fri, 18 Sep 2020 14:32:16 +0800
+Message-Id: <20200918063216.8509-1-fino.meng@linux.intel.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
@@ -14,36 +14,82 @@ List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: xenomai@xenomai.org, jan.kiszka@siemens.com, fino.meng@intel.com
 
+compat_timex related definitions moved from compat code into normal timekeeping code.
+see 4d5f007e in upstream Linux kernel.
+
 Signed-off-by: Fino Meng <fino.meng@linux.intel.com>
 Signed-off-by: Mingliang Hu <mingliang.hu@intel.com>
 ---
- kernel/cobalt/arch/x86/thread.c | 6 +++++-
- 1 file changed, 5 insertions(+), 1 deletion(-)
+ include/cobalt/kernel/compat.h  | 4 ++--
+ kernel/cobalt/posix/compat.c    | 4 ++--
+ kernel/cobalt/posix/syscall32.c | 2 +-
+ kernel/cobalt/posix/syscall32.h | 2 +-
+ 4 files changed, 6 insertions(+), 6 deletions(-)
 
-diff --git a/kernel/cobalt/arch/x86/thread.c b/kernel/cobalt/arch/x86/thread.c
-index ba807ac1e..c33ad832f 100644
---- a/kernel/cobalt/arch/x86/thread.c
-+++ b/kernel/cobalt/arch/x86/thread.c
-@@ -26,6 +26,10 @@
- #include <asm/mmu_context.h>
- #include <asm/processor.h>
+diff --git a/include/cobalt/kernel/compat.h b/include/cobalt/kernel/compat.h
+index 05754cba8..c9cb84f72 100644
+--- a/include/cobalt/kernel/compat.h
++++ b/include/cobalt/kernel/compat.h
+@@ -105,9 +105,9 @@ int sys32_put_timeval(struct compat_timeval __user *ctv,
+ 		      const struct timeval *tv);
  
-+#ifdef IPIPE_X86_FPU_EAGER
-+extern void fpu__initialize(struct fpu *fpu);
-+#endif
-+
- static struct kmem_cache *xstate_cache;
+ int sys32_get_timex(struct timex *tx,
+-		    const struct compat_timex __user *ctx);
++		    const struct old_timex32 __user *ctx);
  
- #ifdef IPIPE_X86_FPU_EAGER
-@@ -472,7 +476,7 @@ void xnarch_leave_root(struct xnthread *root)
- #if LINUX_VERSION_CODE >= KERNEL_VERSION(4,14,0)
- 	/* restore current's fpregs */
- 	__cpu_invalidate_fpregs_state();
--	switch_fpu_finish(&current->thread.fpu, smp_processor_id());
-+	switch_fpu_finish(&current->thread.fpu);
- #else
- 	/* mark current thread as not owning the FPU anymore */
- 	if (fpregs_active())
+-int sys32_put_timex(struct compat_timex __user *ctx,
++int sys32_put_timex(struct old_timex32 __user *ctx,
+ 		    const struct timex *tx);
+ 
+ ssize_t sys32_get_fdset(fd_set *fds, const compat_fd_set __user *cfds,
+diff --git a/kernel/cobalt/posix/compat.c b/kernel/cobalt/posix/compat.c
+index 17968bff1..a31ec0457 100644
+--- a/kernel/cobalt/posix/compat.c
++++ b/kernel/cobalt/posix/compat.c
+@@ -81,7 +81,7 @@ int sys32_put_timeval(struct compat_timeval __user *ctv,
+ EXPORT_SYMBOL_GPL(sys32_put_timeval);
+ 
+ int sys32_get_timex(struct timex *tx,
+-		    const struct compat_timex __user *ctx)
++		    const struct old_timex32 __user *ctx)
+ {
+ 	memset(tx, 0, sizeof(*tx));
+ 
+@@ -112,7 +112,7 @@ int sys32_get_timex(struct timex *tx,
+ }
+ EXPORT_SYMBOL_GPL(sys32_get_timex);
+ 
+-int sys32_put_timex(struct compat_timex __user *ctx,
++int sys32_put_timex(struct old_timex32 __user *ctx,
+ 		    const struct timex *tx)
+ {
+ 	if (!access_wok(ctx, sizeof(*ctx)) ||
+diff --git a/kernel/cobalt/posix/syscall32.c b/kernel/cobalt/posix/syscall32.c
+index faa7ef53a..c2fd6a1e0 100644
+--- a/kernel/cobalt/posix/syscall32.c
++++ b/kernel/cobalt/posix/syscall32.c
+@@ -172,7 +172,7 @@ COBALT_SYSCALL32emu(clock_settime, current,
+ }
+ 
+ COBALT_SYSCALL32emu(clock_adjtime, current,
+-		    (clockid_t clock_id, struct compat_timex __user *u_tx))
++		    (clockid_t clock_id, struct old_timex32 __user *u_tx))
+ {
+ 	struct timex tx;
+ 	int ret;
+diff --git a/kernel/cobalt/posix/syscall32.h b/kernel/cobalt/posix/syscall32.h
+index 34904f96b..eb3e4bd30 100644
+--- a/kernel/cobalt/posix/syscall32.h
++++ b/kernel/cobalt/posix/syscall32.h
+@@ -65,7 +65,7 @@ COBALT_SYSCALL32emu_DECL(clock_settime,
+ 
+ COBALT_SYSCALL32emu_DECL(clock_adjtime,
+ 			 (clockid_t clock_id,
+-			  struct compat_timex __user *u_tx));
++			  struct old_timex32 __user *u_tx));
+ 
+ COBALT_SYSCALL32emu_DECL(clock_nanosleep,
+ 			 (clockid_t clock_id, int flags,
 -- 
 2.20.1
 
