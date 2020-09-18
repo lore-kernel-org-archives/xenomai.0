@@ -1,10 +1,11 @@
-Subject: Re: [PATCH 1/4] cobalt/x86: adapt fpu code with Linux kernel upstream
-References: <20200918062935.8410-1-fino.meng@linux.intel.com>
+Subject: Re: [PATCH 3/4] cobalt/kernel: fix compile error for incompatible
+ pointer type
+References: <20200918063234.8557-1-fino.meng@linux.intel.com>
 From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <f768e3fb-b9d1-8229-a8d8-767186d8f493@siemens.com>
-Date: Fri, 18 Sep 2020 15:04:06 +0200
+Message-ID: <96436f26-007a-41ee-17c6-247a17faa8c0@siemens.com>
+Date: Fri, 18 Sep 2020 15:05:28 +0200
 MIME-Version: 1.0
-In-Reply-To: <20200918062935.8410-1-fino.meng@linux.intel.com>
+In-Reply-To: <20200918063234.8557-1-fino.meng@linux.intel.com>
 Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -16,54 +17,38 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Fino Meng <fino.meng@linux.intel.com>, xenomai@xenomai.org
+To: Fino Meng <fino.meng@linux.intel.com>, xenomai@xenomai.org, fino.meng@intel.com
 
 <no commit message>
 
-When I'm asking questions on the code, there was a need for a commit 
-message.
-
-On 18.09.20 08:29, Fino Meng wrote:
+On 18.09.20 08:32, Fino Meng wrote:
 > Signed-off-by: Fino Meng <fino.meng@linux.intel.com>
 > Signed-off-by: Mingliang Hu <mingliang.hu@intel.com>
 > ---
->   kernel/cobalt/arch/x86/thread.c | 6 +++++-
->   1 file changed, 5 insertions(+), 1 deletion(-)
+>   include/cobalt/kernel/stat.h | 2 +-
+>   1 file changed, 1 insertion(+), 1 deletion(-)
 > 
-> diff --git a/kernel/cobalt/arch/x86/thread.c b/kernel/cobalt/arch/x86/thread.c
-> index ba807ac1e..c33ad832f 100644
-> --- a/kernel/cobalt/arch/x86/thread.c
-> +++ b/kernel/cobalt/arch/x86/thread.c
-> @@ -26,6 +26,10 @@
->   #include <asm/mmu_context.h>
->   #include <asm/processor.h>
->   
-> +#ifdef IPIPE_X86_FPU_EAGER
-> +extern void fpu__initialize(struct fpu *fpu);
+> diff --git a/include/cobalt/kernel/stat.h b/include/cobalt/kernel/stat.h
+> index b857cd19f..be529ad72 100644
+> --- a/include/cobalt/kernel/stat.h
+> +++ b/include/cobalt/kernel/stat.h
+> @@ -58,7 +58,7 @@ do { \
+>   #define xnstat_exectime_set_current(sched, new_account) \
+>   ({ \
+>   	xnstat_exectime_t *__prev; \
+> -	__prev = (xnstat_exectime_t *)atomic_long_xchg(&(sched)->current_account, (long)(new_account)); \
+> +	__prev = (xnstat_exectime_t *)atomic_long_xchg((atomic_long_t *)&(sched)->current_account, (long)(new_account)); \
 
-This will go along with ipipe for 5.4 patching that function to be 
-non-static again, right?
-
-> +#endif
-> +
->   static struct kmem_cache *xstate_cache;
->   
->   #ifdef IPIPE_X86_FPU_EAGER
-> @@ -472,7 +476,7 @@ void xnarch_leave_root(struct xnthread *root)
->   #if LINUX_VERSION_CODE >= KERNEL_VERSION(4,14,0)
->   	/* restore current's fpregs */
->   	__cpu_invalidate_fpregs_state();
-> -	switch_fpu_finish(&current->thread.fpu, smp_processor_id());
-> +	switch_fpu_finish(&current->thread.fpu);
-
-That is not correct for < 5.2 (5f409e20b794).
-
->   #else
->   	/* mark current thread as not owning the FPU anymore */
->   	if (fpregs_active())
-> 
+Which upstream change made this necessary? Was the issue hidden behind 
+too relaxed compiler warnings, or was there a real type change? If the 
+latter, why is that cast OK?
 
 Jan
+
+>   	__prev; \
+>   })
+>   
+> 
 
 -- 
 Siemens AG, Corporate Technology, CT RDA IOT SES-DE
