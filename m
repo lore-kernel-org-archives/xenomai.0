@@ -1,7 +1,7 @@
 From: Fino Meng <fino.meng@linux.intel.com>
 Subject: [PATCH 1/4] cobalt/x86: adapt fpu code with Linux kernel upstream
-Date: Fri, 18 Sep 2020 14:29:35 +0800
-Message-Id: <20200918062935.8410-1-fino.meng@linux.intel.com>
+Date: Fri, 18 Sep 2020 14:31:49 +0800
+Message-Id: <20200918063149.8461-1-fino.meng@linux.intel.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
@@ -12,7 +12,7 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org, jan.kiszka@siemens.com
+To: xenomai@xenomai.org, jan.kiszka@siemens.com, fino.meng@intel.com
 
 Signed-off-by: Fino Meng <fino.meng@linux.intel.com>
 Signed-off-by: Mingliang Hu <mingliang.hu@intel.com>
