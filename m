@@ -1,7 +1,14 @@
-From: hongzha1 <hongzhan.chen@intel.com>
-Subject: [PATCH] cobalt/select: replace APC with irq_work
-Date: Mon, 21 Sep 2020 03:15:12 -0400
-Message-Id: <20200921071512.18306-1-hongzhan.chen@intel.com>
+Date: Mon, 21 Sep 2020 19:32:00 +0800
+From: "Meng, Fino" <fino.meng@linux.intel.com>
+Subject: Re: [PATCH 3/4] cobalt/kernel: fix compile error for incompatible
+ pointer type
+Message-ID: <20200921113200.GA18970@linux.intel.com>
+References: <20200918063234.8557-1-fino.meng@linux.intel.com>
+ <96436f26-007a-41ee-17c6-247a17faa8c0@siemens.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <96436f26-007a-41ee-17c6-247a17faa8c0@siemens.com>
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -10,100 +17,79 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org, jan.kiszka@siemens.com
+To: Jan Kiszka <jan.kiszka@siemens.com>
+Cc: xenomai@xenomai.org
 
-schedule irq_work to execute xnselector_destroy_loop instead of
-calling __xenapc_schedule, which is to replace APC
+On Fri, Sep 18, 2020 at 03:05:28PM +0200, Jan Kiszka wrote:
+> <no commit message>
+> 
+> On 18.09.20 08:32, Fino Meng wrote:
+> > Signed-off-by: Fino Meng <fino.meng@linux.intel.com>
+> > Signed-off-by: Mingliang Hu <mingliang.hu@intel.com>
+> > ---
+> >   include/cobalt/kernel/stat.h | 2 +-
+> >   1 file changed, 1 insertion(+), 1 deletion(-)
+> > 
+> > diff --git a/include/cobalt/kernel/stat.h b/include/cobalt/kernel/stat.h
+> > index b857cd19f..be529ad72 100644
+> > --- a/include/cobalt/kernel/stat.h
+> > +++ b/include/cobalt/kernel/stat.h
+> > @@ -58,7 +58,7 @@ do { \
+> >   #define xnstat_exectime_set_current(sched, new_account) \
+> >   ({ \
+> >   	xnstat_exectime_t *__prev; \
+> > -	__prev = (xnstat_exectime_t *)atomic_long_xchg(&(sched)->current_account, (long)(new_account)); \
+> > +	__prev = (xnstat_exectime_t *)atomic_long_xchg((atomic_long_t *)&(sched)->current_account, (long)(new_account)); \
+> 
+> Which upstream change made this necessary? Was the issue hidden behind too
+> relaxed compiler warnings, or was there a real type change? If the latter,
+> why is that cast OK?
+> 
+> Jan
 
----
-this patch is for wip/dovetail branch
+due to this commit, atomic_long_xchg lost the force type conversion in
+macro:
 
-Signed-off-by: hongzha1 <hongzhan.chen@intel.com>
+commit b5d47ef9ea5c5fe31d7eabeb79f697629bd9e2cb
+Refs: v4.19-rc6-94-gb5d47ef9ea5c
+Author:     Mark Rutland <mark.rutland@arm.com>
+AuthorDate: Tue Sep 4 11:48:27 2018 +0100
+Commit:     Ingo Molnar <mingo@kernel.org>
+CommitDate: Thu Nov 1 11:00:55 2018 +0100
 
-diff --git a/kernel/cobalt/select.c b/kernel/cobalt/select.c
-index c3a3d34b7..c1eee722d 100644
---- a/kernel/cobalt/select.c
-+++ b/kernel/cobalt/select.c
-@@ -23,7 +23,38 @@
- #include <cobalt/kernel/sched.h>
- #include <cobalt/kernel/synch.h>
- #include <cobalt/kernel/select.h>
--#include <cobalt/kernel/apc.h>
-+#include <linux/irq_work.h>
-+
-+static bool cobalt_select_isinit;
-+
-+typedef void (*cobalt_select_destroy_t)(void *cookie);
-+
-+struct cobalt_select_work {
-+	cobalt_select_destroy_t handler;
-+	void *arg;
-+	struct irq_work irq_work;
-+};
-+
-+typedef struct cobalt_select_work cobalt_select_work_t;
-+
-+cobalt_select_work_t xndeletion_work;
-+
-+static void cobalt_select_execute(struct irq_work *work)
-+{
-+	cobalt_select_work_t *xnselect =
-+		container_of(work, cobalt_select_work_t, irq_work);
-+	xnselect->handler(xnselect->arg);
-+}
-+
-+int cobalt_select_init(cobalt_select_work_t *xnselect,
-+		cobalt_select_destroy_t handler, void *arg)
-+{
-+	xnselect->handler = handler;
-+	xnselect->arg = arg;
-+	init_irq_work(&xnselect->irq_work, cobalt_select_execute);
-+	return 0;
-+}
-+
- 
- /**
-  * @ingroup cobalt_core
-@@ -399,8 +430,8 @@ void xnselector_destroy(struct xnselector *selector)
- 
- 	xnlock_get_irqsave(&nklock, s);
- 	list_add_tail(&selector->destroy_link, &selector_list);
--#warning TODO: irq_work
--	//__xnapc_schedule(deletion_apc);
-+	if (cobalt_select_isinit == true)
-+		irq_work_queue(&xndeletion_work.irq_work);
- 	xnlock_put_irqrestore(&nklock, s);
- }
- EXPORT_SYMBOL_GPL(xnselector_destroy);
-@@ -444,18 +475,20 @@ out:
- 
- int xnselect_mount(void)
- {
--#warning TODO: use irq_work
--	/*deletion_apc = xnapc_alloc("selector_list_destroy",
--				   xnselector_destroy_loop, NULL);
--	if (deletion_apc < 0)
--		return deletion_apc;*/
-+	int ret;
- 
--	return 0;
-+	cobalt_select_isinit = false;
-+
-+	ret = cobalt_select_init(&xndeletion_work, xnselector_destroy_loop, NULL);
-+	if (!ret)
-+		cobalt_select_isinit = true;
-+	return ret;
- }
- 
- int xnselect_umount(void)
- {
--	//xnapc_free(deletion_apc);
-+	cobalt_select_isinit = false;
-+
- 	return 0;
- }
- 
--- 
-2.17.1
+    locking/atomics: Switch to generated atomic-long
 
+    As a step towards ensuring the atomic* APIs are consistent, let's switch
+    to wrappers generated by gen-atomic-long.h, using the same table that
+    gen-atomic-fallbacks.h uses to fill in gaps in the atomic_* and
+    atomic64_* APIs.
+    ...
+
+include/asm-generic/atomic-long.h
+
+in 4.19 kernel:
+
+#define atomic_long_xchg(v, new) \
+        (ATOMIC_LONG_PFX(_xchg)((ATOMIC_LONG_PFX(_t) *)(v), (new)))
+
+#define ATOMIC_LONG_PFX(x)      atomic ## x
+
+in 5.4 kernel:
+
+static inline long
+atomic_long_xchg(atomic_long_t *v, long i)
+{
+        return atomic_xchg(v, i);
+}
+
+BR fino
+
+> 
+> >   	__prev; \
+> >   })
+> > 
+> 
+> -- 
+> Siemens AG, Corporate Technology, CT RDA IOT SES-DE
+> Corporate Competence Center Embedded Linux
 
