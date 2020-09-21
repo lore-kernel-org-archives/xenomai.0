@@ -1,7 +1,10 @@
-From: chensong <chensong@tj.kylinos.cn>
-Subject: [PATCH] y2038: replace timespec with timespec64 in clock_settime
-Date: Mon, 21 Sep 2020 20:32:57 +0800
-Message-Id: <1600691577-12011-1-git-send-email-chensong@tj.kylinos.cn>
+From: Martin Haag <haag@aim-online.com>
+Subject: RTDM read/write callback with parameters
+Message-ID: <ab28815f-96f0-606f-bb0d-c812678ef97b@aim-online.com>
+Date: Mon, 21 Sep 2020 15:49:12 +0200
+Content-Type: text/plain;
+	charset="utf-8"
+Content-Transfer-Encoding: quoted-printable
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -12,251 +15,56 @@ List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: xenomai@xenomai.org
 
-Upstream has used timespec64 to replace timespec inside kernel and
-used __kernel_timespec to replace timespect in syscalls, therefore
-we must keep aligned with upstream.
+Dear list members=2C
 
-clock_settime is a point to get started at, it involves 2 parts:
-1, syscall in ./include/trace/events/cobalt-posix.h for 64bits
-2, compat syscall in kernel/cobalt/posix/syscall32.c for 32bits
+I am porting a Linux PCI character device driver to Xenomai 2=2E6=2E5=2E
 
-some new functions are implemented to keep the compatibility with
-other syscalls which haven't been handled yet and will be removed
-in the end of the work.
+I can not find a RTDM expression for the =22parameters=22 argument of the=
+=20
+struct file=5Foperations read callback=2E
 
-Signed-off-by: chensong <chensong@tj.kylinos.cn>
----
- include/cobalt/kernel/clock.h      |  6 +++---
- include/cobalt/kernel/compat.h     |  3 +++
- kernel/cobalt/posix/clock.c        | 28 ++++++++++++++++++++++------
- kernel/cobalt/posix/clock.h        | 12 +++++++++++-
- kernel/cobalt/posix/compat.c       | 11 +++++++++++
- kernel/cobalt/posix/syscall32.c    |  6 +++---
- kernel/cobalt/trace/cobalt-posix.h | 24 ++++++++++++++++++++++--
- 7 files changed, 75 insertions(+), 15 deletions(-)
+struct file=5Foperations=3A
+ssize=5Ft aim=5Fread=28struct file* file=2C char =5F=5Fuser *parameters=2C=
+ size=5Ft=20
+parameterSize=2C loff=5Ft* offset=29=3B
 
-diff --git a/include/cobalt/kernel/clock.h b/include/cobalt/kernel/clock.h
-index c26776a..cf9d5ec 100644
---- a/include/cobalt/kernel/clock.h
-+++ b/include/cobalt/kernel/clock.h
-@@ -52,7 +52,7 @@ struct xnclock {
- 		xnticks_t (*read_raw)(struct xnclock *clock);
- 		xnticks_t (*read_monotonic)(struct xnclock *clock);
- 		int (*set_time)(struct xnclock *clock,
--				const struct timespec *ts);
-+				const struct timespec64 *ts);
- 		xnsticks_t (*ns_to_ticks)(struct xnclock *clock,
- 					  xnsticks_t ns);
- 		xnsticks_t (*ticks_to_ns)(struct xnclock *clock,
-@@ -213,7 +213,7 @@ static inline xnticks_t xnclock_read_monotonic(struct xnclock *clock)
- }
- 
- static inline int xnclock_set_time(struct xnclock *clock,
--				   const struct timespec *ts)
-+				   const struct timespec64 *ts)
- {
- 	if (likely(clock == &nkclock))
- 		return -EINVAL;
-@@ -266,7 +266,7 @@ static inline xnticks_t xnclock_read_monotonic(struct xnclock *clock)
- }
- 
- static inline int xnclock_set_time(struct xnclock *clock,
--				   const struct timespec *ts)
-+				   const struct timespec64 *ts)
- {
- 	/*
- 	 * There is no way to change the core clock's idea of time.
-diff --git a/include/cobalt/kernel/compat.h b/include/cobalt/kernel/compat.h
-index 05754cb..70e2c03 100644
---- a/include/cobalt/kernel/compat.h
-+++ b/include/cobalt/kernel/compat.h
-@@ -89,6 +89,9 @@ struct compat_rtdm_mmap_request {
- int sys32_get_timespec(struct timespec *ts,
- 		       const struct compat_timespec __user *cts);
- 
-+int sys64_get_timespec(struct timespec64 *ts,
-+		       const struct compat_timespec __user *cts);
-+
- int sys32_put_timespec(struct compat_timespec __user *cts,
- 		       const struct timespec *ts);
- 
-diff --git a/kernel/cobalt/posix/clock.c b/kernel/cobalt/posix/clock.c
-index 561358e..c960d7b 100644
---- a/kernel/cobalt/posix/clock.c
-+++ b/kernel/cobalt/posix/clock.c
-@@ -194,7 +194,7 @@ COBALT_SYSCALL(clock_gettime, current,
- 	return 0;
- }
- 
--int __cobalt_clock_settime(clockid_t clock_id, const struct timespec *ts)
-+int __cobalt_clock_settime(clockid_t clock_id, const struct timespec64 *ts)
- {
- 	int _ret, ret = 0;
- 	xnticks_t now;
-@@ -207,7 +207,7 @@ int __cobalt_clock_settime(clockid_t clock_id, const struct timespec *ts)
- 	case CLOCK_REALTIME:
- 		xnlock_get_irqsave(&nklock, s);
- 		now = xnclock_read_realtime(&nkclock);
--		xnclock_adjust(&nkclock, (xnsticks_t) (ts2ns(ts) - now));
-+		xnclock_adjust(&nkclock, (xnsticks_t) (ts2ns64(ts) - now));
- 		xnlock_put_irqrestore(&nklock, s);
- 		break;
- 	default:
-@@ -242,15 +242,31 @@ int __cobalt_clock_adjtime(clockid_t clock_id, struct timex *tx)
- 	return 0;
- }
- 
-+static int __cobalt_get_timespec64(struct timespec64 *ts,
-+			 const struct __kernel_timespec __user *uts)
-+{
-+	struct __kernel_timespec kts;
-+	int ret;
-+
-+	ret = cobalt_copy_from_user(&kts, uts, sizeof(kts));
-+	if (ret)
-+		return -EFAULT;
-+
-+	ts->tv_sec  = kts.tv_sec;
-+	ts->tv_nsec = kts.tv_nsec;
-+
-+	return 0;
-+
-+}
- COBALT_SYSCALL(clock_settime, current,
--	       (clockid_t clock_id, const struct timespec __user *u_ts))
-+	(clockid_t clock_id, const struct __kernel_timespec __user *u_ts))
- {
--	struct timespec ts;
-+	struct timespec64 new_ts;
- 
--	if (cobalt_copy_from_user(&ts, u_ts, sizeof(ts)))
-+	if (__cobalt_get_timespec64(&new_ts, u_ts))
- 		return -EFAULT;
- 
--	return __cobalt_clock_settime(clock_id, &ts);
-+	return __cobalt_clock_settime(clock_id, &new_ts);
- }
- 
- COBALT_SYSCALL(clock_adjtime, current,
-diff --git a/kernel/cobalt/posix/clock.h b/kernel/cobalt/posix/clock.h
-index 0b06b93..3b0f910 100644
---- a/kernel/cobalt/posix/clock.h
-+++ b/kernel/cobalt/posix/clock.h
-@@ -43,6 +43,16 @@ static inline xnticks_t ts2ns(const struct timespec *ts)
- 	return nsecs;
- }
- 
-+static inline xnticks_t ts2ns64(const struct timespec64 *ts)
-+{
-+	xnticks_t nsecs = ts->tv_nsec;
-+
-+	if (ts->tv_sec)
-+		nsecs += (xnticks_t)ts->tv_sec * ONE_BILLION;
-+
-+	return nsecs;
-+}
-+
- static inline xnticks_t tv2ns(const struct timeval *tv)
- {
- 	xnticks_t nsecs = tv->tv_usec * 1000;
-@@ -86,7 +96,7 @@ int __cobalt_clock_gettime(clockid_t clock_id,
- 			   struct timespec *ts);
- 
- int __cobalt_clock_settime(clockid_t clock_id,
--			   const struct timespec *ts);
-+			   const struct timespec64 *ts);
- 
- int __cobalt_clock_adjtime(clockid_t clock_id,
- 			   struct timex *tx);
-diff --git a/kernel/cobalt/posix/compat.c b/kernel/cobalt/posix/compat.c
-index 17968bf..08aedcf 100644
---- a/kernel/cobalt/posix/compat.c
-+++ b/kernel/cobalt/posix/compat.c
-@@ -32,6 +32,17 @@ int sys32_get_timespec(struct timespec *ts,
- }
- EXPORT_SYMBOL_GPL(sys32_get_timespec);
- 
-+int sys64_get_timespec(struct timespec64 *ts,
-+		       const struct compat_timespec __user *cts)
-+{
-+	return (cts == NULL ||
-+		!access_rok(cts, sizeof(*cts)) ||
-+		__xn_get_user(ts->tv_sec, &cts->tv_sec) ||
-+		__xn_get_user(ts->tv_nsec, &cts->tv_nsec)) ? -EFAULT : 0;
-+}
-+EXPORT_SYMBOL_GPL(sys64_get_timespec);
-+
-+
- int sys32_put_timespec(struct compat_timespec __user *cts,
- 		       const struct timespec *ts)
- {
-diff --git a/kernel/cobalt/posix/syscall32.c b/kernel/cobalt/posix/syscall32.c
-index faa7ef5..4b1dfcc 100644
---- a/kernel/cobalt/posix/syscall32.c
-+++ b/kernel/cobalt/posix/syscall32.c
-@@ -161,14 +161,14 @@ COBALT_SYSCALL32emu(clock_settime, current,
- 		    (clockid_t clock_id,
- 		     const struct compat_timespec __user *u_ts))
- {
--	struct timespec ts;
-+	struct timespec64 new_ts;
- 	int ret;
- 
--	ret = sys32_get_timespec(&ts, u_ts);
-+	ret = sys64_get_timespec(&new_ts, u_ts);
- 	if (ret)
- 		return ret;
- 
--	return __cobalt_clock_settime(clock_id, &ts);
-+	return __cobalt_clock_settime(clock_id, &new_ts);
- }
- 
- COBALT_SYSCALL32emu(clock_adjtime, current,
-diff --git a/kernel/cobalt/trace/cobalt-posix.h b/kernel/cobalt/trace/cobalt-posix.h
-index aa78efb..f764872 100644
---- a/kernel/cobalt/trace/cobalt-posix.h
-+++ b/kernel/cobalt/trace/cobalt-posix.h
-@@ -748,6 +748,26 @@ DECLARE_EVENT_CLASS(cobalt_clock_timespec,
- 	)
- );
- 
-+DECLARE_EVENT_CLASS(cobalt_clock_timespec64,
-+	TP_PROTO(clockid_t clk_id, const struct timespec64 *val),
-+	TP_ARGS(clk_id, val),
-+
-+	TP_STRUCT__entry(
-+		__field(clockid_t, clk_id)
-+		__timespec_fields(val)
-+	),
-+
-+	TP_fast_assign(
-+		__entry->clk_id = clk_id;
-+		__assign_timespec(val, val);
-+	),
-+
-+	TP_printk("clock_id=%d timeval=(%ld.%09ld)",
-+		  __entry->clk_id,
-+		  __timespec_args(val)
-+	)
-+);
-+
- DEFINE_EVENT(cobalt_clock_timespec, cobalt_clock_getres,
- 	TP_PROTO(clockid_t clk_id, const struct timespec *res),
- 	TP_ARGS(clk_id, res)
-@@ -758,8 +778,8 @@ DEFINE_EVENT(cobalt_clock_timespec, cobalt_clock_gettime,
- 	TP_ARGS(clk_id, time)
- );
- 
--DEFINE_EVENT(cobalt_clock_timespec, cobalt_clock_settime,
--	TP_PROTO(clockid_t clk_id, const struct timespec *time),
-+DEFINE_EVENT(cobalt_clock_timespec64, cobalt_clock_settime,
-+	TP_PROTO(clockid_t clk_id, const struct timespec64 *time),
- 	TP_ARGS(clk_id, time)
- );
- 
--- 
-2.7.4
+struct rtdm=5Foperations=3A
+ssize=5Ft aim=5Frtdm=5Fread=28struct rtdm=5Fdev=5Fcontext *context=2C rtdm=
+=5Fuser=5Finfo=5Ft=20
+*user=5Finfo=2C void *buf=2C size=5Ft nbyte=29
 
 
+Should I use IOCTL to implement read/write with parameters or is there a=20=
+
+different way to get to this information=2E
+
+
+Please let me know if I forgot to mention important details about my setup=
+=2E
+
+
+Thanks=2C
+Martin
+
+
+
+
+AIM - Gesellschaft f=C3=BCr angewandte Informatik und Mikroelektronik m=2Eb=
+=2EH
+Registered Office=3A Freiburg
+District Court of Freiburg HRB 3520
+Managing Directors=3A Hansj=C3=B6rg Frey=2C Joachim Schuler
+
+This E-mail and any attachment=28s=29 to it are for the addressee=27s use o=
+nly=2E
+It is strictly confidential and may contain legally privileged information=
+=2E=20
+No confidentiality or privilege is waived or lost by any mistransmission=2E=
+
+If you are not the intended addressee=2C then please delete it from your sy=
+stem and notify the sender immediately=2E=20
+You are hereby notified that any use=2C disclosure=2C copying or any action=
+ taken in reliance on it is strictly prohibited and may be unlawful=2E
+ - Thank you=2E
 
 
