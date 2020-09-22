@@ -1,7 +1,7 @@
 From: hongzha1 <hongzhan.chen@intel.com>
-Subject: [PATCH] cobalt/select: replace APC with irq_work
-Date: Mon, 21 Sep 2020 21:49:09 -0400
-Message-Id: <20200922014909.8900-1-hongzhan.chen@intel.com>
+Subject: [PATCH v2] cobalt/select: replace APC with irq_work
+Date: Tue, 22 Sep 2020 00:17:46 -0400
+Message-Id: <20200922041746.10691-1-hongzhan.chen@intel.com>
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,10 +15,10 @@ To: xenomai@xenomai.org, jan.kiszka@siemens.com
 schedule irq_work to execute xnselector_destroy_loop instead of
 calling __xnapc_schedule, which is to replace APC
 
----
-this patch is for wip/dovetail branch
-
 Signed-off-by: hongzha1 <hongzhan.chen@intel.com>
+
+---
+this patch is for wip/dovetail branch.
 
 diff --git a/kernel/cobalt/select.c b/kernel/cobalt/select.c
 index c3a3d34b7..a78d3220e 100644
