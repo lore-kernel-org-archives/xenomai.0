@@ -1,13 +1,17 @@
-Subject: Re: RTDM read/write callback with parameters
-References: <ab28815f-96f0-606f-bb0d-c812678ef97b@aim-online.com>
- <ec089a4c-25df-2d75-c996-1b96a200398b@siemens.com>
-From: Martin Haag <haag@aim-online.com>
-Message-ID: <bae46ee6-4cc3-bf74-5eae-4e09eb87ba1e@aim-online.com>
-Date: Wed, 23 Sep 2020 10:00:54 +0200
-In-Reply-To: <ec089a4c-25df-2d75-c996-1b96a200398b@siemens.com>
-Content-Type: text/plain;
-	charset="utf-8"
-Content-Transfer-Encoding: quoted-printable
+Subject: Re: rt_task_set_priority does not increase priority of other task
+References: <777d8ed5-7f6a-4e56-7f65-7677f089527e@cs.ru.nl>
+ <916ef19a754d4e42b0eaefa8a1a26060@EXPRD08.hosting.ru.nl>
+ <5faff965-afc6-f70a-8d10-8f55c570fbf6@cs.ru.nl>
+ <b60f35a8-c6ea-20c2-57b6-8d1f667ee14b@siemens.com>
+ <0efdb308f2414013882d20061d07a2d7@EXPRD08.hosting.ru.nl>
+From: Harco Kuppens <h.kuppens@cs.ru.nl>
+Message-ID: <2ac93f8d-770a-52a4-ba63-e6c9252b7b23@cs.ru.nl>
+Date: Wed, 23 Sep 2020 14:58:10 +0200
+MIME-Version: 1.0
+In-Reply-To: <0efdb308f2414013882d20061d07a2d7@EXPRD08.hosting.ru.nl>
+Content-Language: nl
+Content-Type: text/plain; charset="utf-8"; format="flowed"
+Content-Transfer-Encoding: 8bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,86 +20,122 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jan Kiszka <jan.kiszka@siemens.com>, xenomai@xenomai.org
-
-
-Am 22=2E09=2E2020 um 17=3A18 schrieb Jan Kiszka=3A
-=3E On 21=2E09=2E20 15=3A49=2C Martin Haag via Xenomai wrote=3A
-=3E=3E Dear list members=2C
-=3E=3E
-=3E=3E I am porting a Linux PCI character device driver to Xenomai 2=2E6=2E=
-5=2E
-=3E=3E
-=3E=3E I can not find a RTDM expression for the =22parameters=22 argument o=
-f the
-=3E=3E struct file=5Foperations read callback=2E
-=3E=3E
-=3E=3E struct file=5Foperations=3A
-=3E=3E ssize=5Ft aim=5Fread=28struct file* file=2C char =5F=5Fuser *paramet=
-ers=2C size=5Ft
-=3E=3E parameterSize=2C loff=5Ft* offset=29=3B
-=3E=3E
-=3E=3E struct rtdm=5Foperations=3A
-=3E=3E ssize=5Ft aim=5Frtdm=5Fread=28struct rtdm=5Fdev=5Fcontext *context=
-=2C rtdm=5Fuser=5Finfo=5Ft
-=3E=3E *user=5Finfo=2C void *buf=2C size=5Ft nbyte=29
-=3E=3E
-=3E
-=3E buf would map to parameter in the kernel interface=2C and there is no=
-=20
-=3E equivalent of offset=2E
-=3E
-=3E HTH=2C
-=3E Jan
-=3E
-Thanks for the confirmation=2E This is what I found out when I tried to=20=
-
-use =22buf=22 as input yesterday=2E I guess what confused me was the =22buf=
-=22=20
-parameter being documented as =22=5Bout=5D=22 for the read callback=2E
-
-
-=3E typedef ssize=5Ft=28* rtdm=5Fread=5Fhandler=5Ft=29=28struct rtdm=5Fdev=
-=5Fcontext=20
-=3E *context=2C rtdm=5Fuser=5Finfo=5Ft *user=5Finfo=2C void *buf=2C size=5F=
-t nbyte=29
-=3E Read handler=2E
-=3E
-=3E Parameters
-=3E =5Bin=5D=C2=A0=C2=A0 =C2=A0context=C2=A0=C2=A0 =C2=A0Context structure=
- associated with opened device=20
-=3E instance
-=3E =5Bin=5D=C2=A0=C2=A0 =C2=A0user=5Finfo=C2=A0=C2=A0 =C2=A0Opaque pointer=
- to information about user mode=20
-=3E caller=2C NULL if kernel mode call
-=3E =5Bout=5D=C2=A0=C2=A0 =C2=A0buf=C2=A0=C2=A0 =C2=A0Input buffer as passe=
-d by the user
-=3E =5Bin=5D=C2=A0=C2=A0 =C2=A0nbyte=C2=A0=C2=A0 =C2=A0Number of bytes the=
- user requests to read
-
-
-Best Regards=2C
-Martin
+To: Philippe Gerum <rpm@xenomai.org>, Jan Kiszka <jan.kiszka@siemens.com>
+Cc: "Xenomai@xenomai.org" <xenomai@xenomai.org>, Greg Gallagher <greg@embeddedgreg.com>, "Hooman, J.J.M. (Jozef)" <jozef.hooman@tno.nl>
 
 
 
+On 17/09/2020 19:49, Philippe Gerum wrote:
+> Jan Kiszka <jan.kiszka@siemens.com> writes:
+>
+>> On 17.09.20 14:01, Harco Kuppens wrote:
+>>> On 17/09/2020 13:51, Jan Kiszka wrote:
+>>>> On 16.09.20 20:12, Harco Kuppens via Xenomai wrote:
+>>>>> Hi,
+>>>>>
+>>>>> I found a problem with rt_task_set_priority function which does not
+>>>>> increase priority of another task.
+>>>>> However it works fine if you increase the priority of another task.
+>>>>>
+>>>>> Below is an en example program and its output, and we run this program
+>>>>> on xenomai 3.08.
+>>>>> The problem appears if we run the program on our xenomai image for the
+>>>>> raspberry pi 3,
+>>>>> and is also appears in our virtual box image.
+>>>>> Both images can be found at :
+>>>>>
+>>>>>     * http://www.cs.ru.nl/lab/xenomai/raspberrypi.html
+>>>>>     * http://www.cs.ru.nl/lab/xenomai/virtualbox.html
+>>>>>
+>>>>> The easiest way is to run the virtualbox image.
+>>>>>
+>>>>> The final question I have: is there an wrong usage of xenomai API in the
+>>>>> example program,
+>>>>> or is this a bug in xenomai?
+>>>>>
+>>>> Something is inconsistent here. Did you also check via
+>>>> /proc/xenomai/sched/threads if that view is consistent with the result
+>>>> of inquire?
+>>> yes, and they also said the priority was not increased.
+>>> You can repeat the experiment in the virtualbox image.
+>>> Note: we use virtualbox so that students can do some exercise at
+>>> home. The exerecises on hardware they must do on raspberry pi 3 in
+>>> the lab.
+>>> Normally a rt os on virtualbox would make no sense.
+>> I'm doing most of Xenomai development in KVM, including kernel
+>> debugging - no need to explain ;).
+>>
+>>>> I vaguely recall issues of the latter but I also do not
+>>>> recall any fix to 3.1, not to speak of anything that was not backported.
+>>>> BTW, tried 3.1 as well?
+>>> no, because I don't have it  installed. Could someone who has it
+>>> running try this example on it, and check whether this   problem
+>>> also occurs there?
+>>>
+>> There is something unexpected with master and also with
+>> --enable-lazy-setsched. It's important to note that without that
+>> feature, include for 3.0 which lacked that, the setprio call will
+>> switch the caller into secondary mode. Still, that alone does not
+>> explain the result to me yet. Thanks in advanced to Philippe to
+>> picking this up!
+> Tricky.
+>
+> In absence of --enable-lazy-setsched, we know that t2 switches to
+> secondary mode as a result of calling rt_task_set_priority(), for the
+> purpose of eagerly propagating the priority update first to the main
+> (kernel) scheduler, _before_ telling Cobalt about it.
+>
+> t1 then t0 - which are still controlled by the Cobalt scheduler - may
+> preempt t2, which runs code somewhere between
+> __STD(pthread_setschedparam()) and
+> XENOMAI_SYSCALL(sc_cobalt_thread_setschedparam_ex) in
+> pthread_setschedparam_ex(), as they wake up from rt_timer_spin().
+>
+> The printf() output may be confusing, because as we see the "change prio
+> task X to Y" message, we still cannot assume the operation was completed
+> just yet. As mentioned earlier, t2 is crawling on the root stage at this
+> point (low priority stage of the pipeline).
+>
+> As t1 then t0 grab the CPU which t2 just yielded, they manage to run
+> their respective loop entirely before t2 has a chance to leave the
+> (low-priority) secondary mode, displaying the old priority value
+> Cobalt-wise, which is still pending update.
+>
+> In short, building with --enable-lazy-setsched may mitigate the issue in
+> most cases, but there is no way to strictly synchronize the main and
+> Cobalt schedulers when it comes to updating thread priorities only using
+> the plain rt_task_set_priority()/pthread_setschedparam_ex() calls. There
+> will always be a delay between the two updates, you only get to chose
+> whether you want the main (linux) scheduler to be updated first at the
+> expense of a mode switch, or Cobalt should be told first about the
+> change (sparing a transition to secondary mode in the process), and the
+> main kernel would be notified next.
+>
+> In the latter case, there is another gotcha involving glibc's caching of
+> a pthread priority value: with --enable-lazy-setsched, that cached value
+> won't be updated with the new value passed to rt_task_set_priority(), so
+> __STD(pthread_getschedparam()) may return the old priority. Some
+> comments in pthread_getschedparam_ex() give details.
 
-AIM - Gesellschaft f=C3=BCr angewandte Informatik und Mikroelektronik m=2Eb=
-=2EH
-Registered Office=3A Freiburg
-District Court of Freiburg HRB 3520
-Managing Directors=3A Hansj=C3=B6rg Frey=2C Joachim Schuler
+I found a mistake in original problem statement
 
-This E-mail and any attachment=28s=29 to it are for the addressee=27s use o=
-nly=2E
-It is strictly confidential and may contain legally privileged information=
-=2E=20
-No confidentiality or privilege is waived or lost by any mistransmission=2E=
+   I found a problem with rt_task_set_priority function which does not
+   increase priority of another task.
+   However it works fine if you increase the priority of another task.
 
-If you are not the intended addressee=2C then please delete it from your sy=
-stem and notify the sender immediately=2E=20
-You are hereby notified that any use=2C disclosure=2C copying or any action=
- taken in reliance on it is strictly prohibited and may be unlawful=2E
- - Thank you=2E
+The second line should have been:
+
+  However it works fine if you increase the priority of the current task from the task itself.
+
+I didn't completely understand the responses I got,
+but can I conclude that  setting the priority of another task with the
+rt_task_set_priority function just doesn't work?
+Should that be fixed? Or must that be pointed out in the documentation?
+
+Best regards,
+Harco Kuppens
+
+
+
 
 
