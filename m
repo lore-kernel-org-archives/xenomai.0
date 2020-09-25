@@ -1,10 +1,12 @@
-From: Vitaly Chikunov <vt@altlinux.org>
-Subject: [PATCH] Fix building eth_p_all demo with Mercury core
-Date: Thu, 24 Sep 2020 05:58:28 +0300
-Message-Id: <20200924025828.21815-1-vt@altlinux.org>
+From: =?utf-8?q?Fran=C3=A7ois_Legal?= <devel@thom.fr.eu.org>
+In-Reply-To: <7a487933-dd50-6ee9-cd5f-6d99bc5b3c76@siemens.com>
+Date: Fri, 25 Sep 2020 18:11:55 +0200
 MIME-Version: 1.0
+Message-ID: <1174-5f6e1700-39-37e14c00@201457241>
+Subject: =?utf-8?q?Re=3A?= Strange switching =?utf-8?q?=5Bthreadname=5D?= to 
+ secondary mode after exception #0 in kernel-space at 0x80272444
 Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: base64
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -13,39 +15,29 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jan Kiszka <jan.kiszka@siemens.com>, Xenomai <xenomai@xenomai.org>
+To: Jan Kiszka <jan.kiszka@siemens.com>
+Cc: xenomai@xenomai.org
 
-Error message:
-
-In file included from eth_p_all.c:43:
-/usr/include/xenomai/boilerplate/ancillaries.h:56:17: error: expected ‘=’, ‘,’, ‘;’, ‘asm’ or ‘__attribute__’ before ‘__early_panic’
-   56 | void __noreturn __early_panic(const char *fn,
-      |                 ^~~~~~~~~~~~~
-/usr/include/xenomai/boilerplate/ancillaries.h:59:17: error: expected ‘=’, ‘,’, ‘;’, ‘asm’ or ‘__attribute__’ before ‘___panic’
-   59 | void __noreturn ___panic(const char *fn,
-      |                 ^~~~~~~~
-/usr/include/xenomai/boilerplate/ancillaries.h:63:17: error: expected ‘=’, ‘,’, ‘;’, ‘asm’ or ‘__attribute__’ before ‘__panic’
-   63 | void __noreturn __panic(const char *fn,
-      |                 ^~~~~~~
-
-Signed-off-by: Vitaly Chikunov <vt@altlinux.org>
----
- demo/posix/cobalt/eth_p_all.c | 1 +
- 1 file changed, 1 insertion(+)
-
-diff --git a/demo/posix/cobalt/eth_p_all.c b/demo/posix/cobalt/eth_p_all.c
-index 91aef9fbd..ad4c54878 100644
---- a/demo/posix/cobalt/eth_p_all.c
-+++ b/demo/posix/cobalt/eth_p_all.c
-@@ -40,6 +40,7 @@
- #include <net/if.h>
- #include <arpa/inet.h>
- #include <netinet/ether.h>
-+#include <boilerplate/compiler.h>
- #include <boilerplate/ancillaries.h>
- 
- char buffer[10*1024];
--- 
-2.21.0
-
-
+U29ycnkgdG8gY29tZSBiYWNrIHNvIGxhdGUgb24gdGhhdCB0b3BpYy4KSSB0b29rIHNvbWUgdGlt
+ZSB0byB3cml0ZSBhIHNpbXBsZSB0ZXN0IHByb2dyYW0sIHdoaWNoIGlzIGF0dGFjaGVkLgoKQ29u
+ZmlnIGlzIGFzIGZvbGxvd3MgOgp4ZW5vbWFpLTMuMQpsaW51eC00LjQuMjI3CgpGcmFuw6dvaXMK
+CkxlIFZlbmRyZWRpLCBBb8O7dCAyMSwgMjAyMCAyMDowNCBDRVNULCBKYW4gS2lzemthIDxqYW4u
+a2lzemthQHNpZW1lbnMuY29tPiBhIMOpY3JpdDogCiAKPiBPbiAyMC4wOC4yMCAxNTo0NiwgRnJh
+bsOnb2lzIExlZ2FsIHZpYSBYZW5vbWFpIHdyb3RlOgo+ID4gVXNpbmcgUlROZXQgd2l0aCBtdWx0
+aXBsZSBpbnRlcmZhY2VzLCB4ZW5vbWFpIDMuMSB3aXRoIGxpbnV4IDQuNAo+ID4gV2hlbmV2ZXIg
+YSBwb3NpeCBSVCB0aHJlYWQgY2FsbHMgcmVjdm1zZyAoKSwgSSBnZXQgdGhpcyBlcnJvci4KPiA+
+IAo+ID4gSSBjb3VsZCB0cmFjayB0aGlzIGRvd24gdG8gbGluZSA0MjIgaW4gdWRwLmMgOiAgICAg
+bXNnID0gcnRuZXRfZ2V0X2FyZyhmZCwgJl9tc2csIHVfbXNnLCBzaXplb2YoX21zZykpOwo+ID4g
+Cj4gPiBJZiBJIGRpc2Fzc2VtYmxlIHRoZSBrZXJuZWwsIHRoZSBmYWlsaW5nIGluc3RydWN0aW9u
+IChhdCAweDgwMjcyNDQ0KSBpcyBhIG5vcCBpbiBhcm1fY29weV9mcm9tX3VzZXIKPiA+IEFtIEkg
+ZG9pbmcgYW55dGhpbmcgd3JvbmcgPwo+IAo+IE1heWJlIHlvdSBhcmUgcGFzc2luZyBhbiBpbnZh
+bGlkIHBvaW50ZXIgdG8gcmVjdm1zZywgZGlyZWN0bHkgb3IgaW4gaXRzCj4gbWVzc2FnZSBzdHJ1
+Y3R1cmVzLiBUaGF0IHdvdWxkIGNhdXNlIGFuIGV4Y2VwdGlvbiB3aGljaCBpcyBmaXhlZCB1cCBi
+dXQKPiBhbHNvIHJlcG9ydGVkLiBEbyB5b3UgZ2V0IGFuIGVycm9yIGluIHJldHVybj8KPiAKPiBK
+YW4KPiAKPiAtLSAKPiBTaWVtZW5zIEFHLCBDb3Jwb3JhdGUgVGVjaG5vbG9neSwgQ1QgUkRBIElP
+VCBTRVMtREUKPiBDb3Jwb3JhdGUgQ29tcGV0ZW5jZSBDZW50ZXIgRW1iZWRkZWQgTGludXgKLS0t
+LS0tLS0tLS0tLS0gbmV4dCBwYXJ0IC0tLS0tLS0tLS0tLS0tCkEgbm9uLXRleHQgYXR0YWNobWVu
+dCB3YXMgc2NydWJiZWQuLi4KTmFtZTogdGVzdC1uZXQuYwpUeXBlOiBhcHBsaWNhdGlvbi9vY3Rl
+dC1zdHJlYW0KU2l6ZTogNjE0MSBieXRlcwpEZXNjOiBub3QgYXZhaWxhYmxlClVSTDogPGh0dHA6
+Ly94ZW5vbWFpLm9yZy9waXBlcm1haWwveGVub21haS9hdHRhY2htZW50cy8yMDIwMDkyNS9mNzQ1
+ZTMyZi9hdHRhY2htZW50Lm9iaj4K
