@@ -1,9 +1,11 @@
+Subject: Re: Compiling demo/alchemy/altency.c for Cobalt core
+References: <20200925205728.rg7flyazoxyf7xz5@altlinux.org>
 From: Jan Kiszka <jan.kiszka@siemens.com>
-Subject: [PATCH] demo/posix/cobalt: Avoid ancillaries header
-Message-ID: <7f113f55-83df-8524-bec0-058fb4194932@siemens.com>
-Date: Mon, 28 Sep 2020 19:16:17 +0200
+Message-ID: <f1565bca-7037-dc94-6a0d-77520616a5d0@siemens.com>
+Date: Mon, 28 Sep 2020 19:25:51 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+In-Reply-To: <20200925205728.rg7flyazoxyf7xz5@altlinux.org>
+Content-Type: text/plain; charset=koi8-r
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
@@ -14,38 +16,55 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Xenomai <xenomai@xenomai.org>
+To: Vitaly Chikunov <vt@altlinux.org>, Xenomai <xenomai@xenomai.org>
 
-From: Jan Kiszka <jan.kiszka@siemens.com>
+On 25.09.20 22:57, Vitaly Chikunov via Xenomai wrote:
+> Hi,
+> 
+> While making Xenomai packages for ALT Linux I try to test various use
+> cases, but found some troubles:
+> 
+> There is `demo/alchemy/altency.c` source. It compiles OK for Mercury,
+> but fails for Cobalt.
+> 
+> Page
+> 
+>     https://gitlab.denx.de/Xenomai/xenomai/-/wikis/Building_Applications_For_Xenomai_3
+> 
+> implies that it's enough to pass xeno-config output as gcc args. So, I try:
+> 
+>   demo/alchemy# gcc altency.c `/usr/lib/xenomai/cobalt/bin/xeno-config --posix --alchemy --cflags --ldflags` -lpthread -lrt -lm
+>   altency.c:447:10: fatal error: cobalt/uapi/syscall.h: No such file or directory
+>     447 | #include <cobalt/uapi/syscall.h>
+> 	|          ^~~~~~~~~~~~~~~~~~~~~~~
+>   compilation terminated.
+> 
+> `cobalt/uapi/syscall.h` looks like it belongs kernel headers. But, I
+> don't find anywhere that kernel headers should be used for cobalt
+> applications. (If I add to the gcc:
+> 
+>   -I/usr/src/linux-4.19.140-xenomai-alt1.cip33.14/include/xenomai
+> 
+> the demo compiles OK.)
+> 
+> If kernel headers they are required - shouldn't xeno-config pass them?
+> Or this is documented somewhere I missed?
+> 
+> Thanks,
+> 
+> 
 
-Makes the demo more portable.
+Good catch. That happens when you do not build code in the actually
+envisioned environment, the one you described above, but inside the safe
+Xenomai world.
 
-Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
----
- demo/posix/cobalt/eth_p_all.c | 3 +--
- 1 file changed, 1 insertion(+), 2 deletions(-)
+Solution is simple, though: That include is obsolete, you can build the
+demo without it. I'll send a patch (which will likely clean up out build
+system as well).
 
-diff --git a/demo/posix/cobalt/eth_p_all.c b/demo/posix/cobalt/eth_p_all.c
-index 91aef9fbdb..c4cf0d696f 100644
---- a/demo/posix/cobalt/eth_p_all.c
-+++ b/demo/posix/cobalt/eth_p_all.c
-@@ -40,7 +40,6 @@
- #include <net/if.h>
- #include <arpa/inet.h>
- #include <netinet/ether.h>
--#include <boilerplate/ancillaries.h>
- 
- char buffer[10*1024];
- int sock;
-@@ -73,7 +72,7 @@ int main(int argc, char *argv[])
- 	if (argc > 1) {
- 		struct ifreq ifr;
- 
--		namecpy(ifr.ifr_name, argv[1]);
-+		snprintf(ifr.ifr_name, IFNAMSIZ, "%s", argv[1]);
- 		if (ioctl(sock, SIOCGIFINDEX, &ifr) < 0) {
- 			perror("cannot get interface index");
- 			close(sock);
+Jan
+
 -- 
-2.26.2
+Siemens AG, Corporate Technology, CT RDA IOT SES-DE
+Corporate Competence Center Embedded Linux
 
