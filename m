@@ -1,11 +1,9 @@
-Subject: Re: Compiling demo/alchemy/altency.c for Cobalt core
-References: <20200925205728.rg7flyazoxyf7xz5@altlinux.org>
 From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <f1565bca-7037-dc94-6a0d-77520616a5d0@siemens.com>
-Date: Mon, 28 Sep 2020 19:25:51 +0200
+Subject: [PATCH] demo: Remove obsolete includes
+Message-ID: <69ad4bd5-97a8-a693-d4e8-e906322fc4ef@siemens.com>
+Date: Mon, 28 Sep 2020 19:34:01 +0200
 MIME-Version: 1.0
-In-Reply-To: <20200925205728.rg7flyazoxyf7xz5@altlinux.org>
-Content-Type: text/plain; charset=koi8-r
+Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
@@ -16,55 +14,43 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Vitaly Chikunov <vt@altlinux.org>, Xenomai <xenomai@xenomai.org>
+To: Xenomai <xenomai@xenomai.org>
 
-On 25.09.20 22:57, Vitaly Chikunov via Xenomai wrote:
-> Hi,
-> 
-> While making Xenomai packages for ALT Linux I try to test various use
-> cases, but found some troubles:
-> 
-> There is `demo/alchemy/altency.c` source. It compiles OK for Mercury,
-> but fails for Cobalt.
-> 
-> Page
-> 
->     https://gitlab.denx.de/Xenomai/xenomai/-/wikis/Building_Applications_For_Xenomai_3
-> 
-> implies that it's enough to pass xeno-config output as gcc args. So, I try:
-> 
->   demo/alchemy# gcc altency.c `/usr/lib/xenomai/cobalt/bin/xeno-config --posix --alchemy --cflags --ldflags` -lpthread -lrt -lm
->   altency.c:447:10: fatal error: cobalt/uapi/syscall.h: No such file or directory
->     447 | #include <cobalt/uapi/syscall.h>
-> 	|          ^~~~~~~~~~~~~~~~~~~~~~~
->   compilation terminated.
-> 
-> `cobalt/uapi/syscall.h` looks like it belongs kernel headers. But, I
-> don't find anywhere that kernel headers should be used for cobalt
-> applications. (If I add to the gcc:
-> 
->   -I/usr/src/linux-4.19.140-xenomai-alt1.cip33.14/include/xenomai
-> 
-> the demo compiles OK.)
-> 
-> If kernel headers they are required - shouldn't xeno-config pass them?
-> Or this is documented somewhere I missed?
-> 
-> Thanks,
-> 
-> 
+From: Jan Kiszka <jan.kiszka@siemens.com>
 
-Good catch. That happens when you do not build code in the actually
-envisioned environment, the one you described above, but inside the safe
-Xenomai world.
+They only break building outside of the tree.
 
-Solution is simple, though: That include is obsolete, you can build the
-demo without it. I'll send a patch (which will likely clean up out build
-system as well).
+Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
+---
+ demo/alchemy/altency.c             | 2 --
+ demo/posix/cyclictest/cyclictest.c | 1 -
+ 2 files changed, 3 deletions(-)
 
-Jan
-
+diff --git a/demo/alchemy/altency.c b/demo/alchemy/altency.c
+index 4b49755eda..e7c31d7c17 100644
+--- a/demo/alchemy/altency.c
++++ b/demo/alchemy/altency.c
+@@ -444,8 +444,6 @@ static void faulthand(int sig)
+ 
+ #ifdef CONFIG_XENO_COBALT
+ 
+-#include <cobalt/uapi/syscall.h>
+-
+ static const char *reason_str[] = {
+ 	[SIGDEBUG_UNDEFINED] = "received SIGDEBUG for unknown reason",
+ 	[SIGDEBUG_MIGRATE_SIGNAL] = "received signal",
+diff --git a/demo/posix/cyclictest/cyclictest.c b/demo/posix/cyclictest/cyclictest.c
+index cddc8dda87..b92596c25b 100644
+--- a/demo/posix/cyclictest/cyclictest.c
++++ b/demo/posix/cyclictest/cyclictest.c
+@@ -1817,7 +1817,6 @@ void *fifothread(void *param)
+ }
+ 
+ #ifdef CONFIG_XENO_COBALT
+-#include <cobalt/uapi/syscall.h>
+ 
+ static const char *reason_str[] = {
+ 	[SIGDEBUG_UNDEFINED] = "received SIGDEBUG for unknown reason",
 -- 
-Siemens AG, Corporate Technology, CT RDA IOT SES-DE
-Corporate Competence Center Embedded Linux
+2.26.2
 
