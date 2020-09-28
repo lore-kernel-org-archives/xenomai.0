@@ -1,9 +1,11 @@
-From: "Q. Gylstorff" <Quirin.Gylstorff@siemens.com>
-Subject: [PATCH v2 0/1] Add gitlab-ci to Xenomai
-Date: Fri,  4 Sep 2020 12:32:47 +0200
-Message-Id: <20200904103248.31899-1-Quirin.Gylstorff@siemens.com>
+From: Jan Kiszka <jan.kiszka@siemens.com>
+Subject: [PATCH] demo/posix/cobalt: Avoid ancillaries header
+Message-ID: <7f113f55-83df-8524-bec0-058fb4194932@siemens.com>
+Date: Mon, 28 Sep 2020 19:16:17 +0200
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -12,36 +14,38 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org, jan.kiszka@siemens.com
+To: Xenomai <xenomai@xenomai.org>
 
-From: Quirin Gylstorff <quirin.gylstorff@siemens.com>
+From: Jan Kiszka <jan.kiszka@siemens.com>
 
+Makes the demo more portable.
 
-This patch adds a gitlab-ci.yml to support ci builds on gitlab. The
-build is derived from .travis.yml.
+Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
+---
+ demo/posix/cobalt/eth_p_all.c | 3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
 
-An executed pipeline can be found at [1].
-
-Changes V2:
- - adapt git remote ls syntax to git version 2.20 from 2.17
-
-I also look into using the same base for .travis-ci.yml and gitlab-ci.yml.
-What we can do is moving the script and before_script parts into a
-shell script or something similar. The job description syntax is
-not compatible (env instead variables, jobs are under the element
-jobs/matrix instead of root). IMHO we need some generator to
-use the same job description for Travis and gitlab-ci.
-
-[1]: https://gitlab.com/Quirin.Gy/xenomai/-/pipelines/185711450
-
-Quirin Gylstorff (1):
-  ci: Add gitlab-ci.yml
-
- .gitlab-ci.yml | 253 +++++++++++++++++++++++++++++++++++++++++++++++++
- 1 file changed, 253 insertions(+)
- create mode 100644 .gitlab-ci.yml
-
+diff --git a/demo/posix/cobalt/eth_p_all.c b/demo/posix/cobalt/eth_p_all.c
+index 91aef9fbdb..c4cf0d696f 100644
+--- a/demo/posix/cobalt/eth_p_all.c
++++ b/demo/posix/cobalt/eth_p_all.c
+@@ -40,7 +40,6 @@
+ #include <net/if.h>
+ #include <arpa/inet.h>
+ #include <netinet/ether.h>
+-#include <boilerplate/ancillaries.h>
+ 
+ char buffer[10*1024];
+ int sock;
+@@ -73,7 +72,7 @@ int main(int argc, char *argv[])
+ 	if (argc > 1) {
+ 		struct ifreq ifr;
+ 
+-		namecpy(ifr.ifr_name, argv[1]);
++		snprintf(ifr.ifr_name, IFNAMSIZ, "%s", argv[1]);
+ 		if (ioctl(sock, SIOCGIFINDEX, &ifr) < 0) {
+ 			perror("cannot get interface index");
+ 			close(sock);
 -- 
-2.20.1
-
+2.26.2
 
