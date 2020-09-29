@@ -1,14 +1,15 @@
-From: "Chen, Hongzhan" <hongzhan.chen@intel.com>
-Subject: RE: [PATCH] cobalt/select: replace APC with irq_work
-Date: Tue, 29 Sep 2020 02:19:05 +0000
-Message-ID: <MWHPR11MB17102A26E2A827A2FD7472C3F2320@MWHPR11MB1710.namprd11.prod.outlook.com>
-References: <20200924065448.14471-1-hongzhan.chen@intel.com>
- <146482da-10d2-f2cf-f87b-9e1dfa780e11@siemens.com>
-In-Reply-To: <146482da-10d2-f2cf-f87b-9e1dfa780e11@siemens.com>
-Content-Language: en-US
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+Subject: Re: [PATCH] y2038: replace timespec with timespec64 in clock_settime
+References: <1600691577-12011-1-git-send-email-chensong@tj.kylinos.cn>
+ <01014f7c-76ed-46ea-0c7c-920f6eb63b0e@siemens.com>
+ <27465fc4-ab13-ffb7-eec4-21160fbeec8a@tj.kylinos.cn>
+ <7e00b8e7-4029-00f0-38dc-6d9452b552e7@siemens.com>
+From: chensong <chensong@tj.kylinos.cn>
+Message-ID: <5F72D3CF.7070200@tj.kylinos.cn>+93A6C5C2054296B4
+Date: Tue, 29 Sep 2020 14:27:27 +0800
 MIME-Version: 1.0
+In-Reply-To: <7e00b8e7-4029-00f0-38dc-6d9452b552e7@siemens.com>
+Content-Type: text/plain; charset="utf-8"; format="flowed"
+Content-Transfer-Encoding: 8bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,98 +18,327 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jan Kiszka <jan.kiszka@siemens.com>, Xenomai <xenomai@xenomai.org>
+To: Jan Kiszka <jan.kiszka@siemens.com>, xenomai@xenomai.org
 
-Pk9uIDI0LjA5LjIwIDA4OjU0LCBob25nemhhMSB3cm90ZToNCj4+IHNjaGVkdWxlIGlycV93b3Jr
-IHdoaWNoIGlzIHRvIHNjaGVkdWxlIHdvcmsgdG8gZXhlY3V0ZSBoZWF2eQ0KPj4geG5zZWxlY3Rv
-cl9kZXN0cm95X2xvb3AgaW5zdGVhZCBvZiBjYWxsaW5nIF9feG5hcGNfc2NoZWR1bGUuDQo+PiAN
-Cj4+IFNpZ25lZC1vZmYtYnk6IGhvbmd6aGExIDxob25nemhhbi5jaGVuQGludGVsLmNvbT4NCj4+
-IA0KPj4gLS0tDQo+PiB0aGlzIHBhdGNoIGlzIGZvciB3aXAvZG92ZXRhaWwuIFRoaXMgaXMgbmV3
-IHZlcnNpb24uIEl0IHdvdWxkDQo+PiBzY2hlZHVsZSBpcnFfd29yayB3aGljaCBpcyB0byBzY2hl
-ZHVsZSB3b3JrIHRvIGV4ZWN1dGUgaGVhdnkNCj4+IHhuc2VsZWN0b3JfZGVzdHJveV9sb29wIGJ1
-dCBub3QgZXhlY3V0ZSBpdCBpbiBpcnFfd29yayBkaXJlY3RseQ0KPj4gaW5zdGVhZCBvZiBjYWxs
-aW5nIF9feG5hcGNfc2NoZWR1bGUuIA0KPj4NCj5XaGF0IGlzIHRoZSBiZW5lZml0IG9mIHRoaXMg
-aW5kaXJlY3Rpb24gdG8gYSB3b3JrcXVldWU/IGlycV93b3JrIC0gYXMNCj5oYXJkZW5lZCBieSBk
-b3ZldGFpbCBmb3IgdHJpZ2dlcmluZyBmcm9tIG9vYiAvIHhlbm9tYWkgY29udGV4dCAtIHN0aWxs
-DQo+cnVuIHRoZSB3b3JrIGluIGluLWJhbmQgLyBMaW51eCBjb250ZXh0LCBqdXN0IGluIGFuIGlu
-dGVycnVwdC4gSUlSQywNCj50aGF0IGlzIHRoZSBzYW1lIHdpdGggdGhlIHByZXZpb3VzIEFQQyBt
-ZWNoYW5pc20sIHNvIGEgMToxIG1hdGNoLg0KPg0KSGkgSmFuLA0KDQpNeSBwdXJwb3NlIGlzIHRv
-IGtlZXAgcnVubmluZyBzaG9ydCBpbiBpbnRlcnJ1cHQgY29udGV4dCBhbmQgZG8gdGhlDQptYWlu
-IHdvcmsgbGF0ZXIgaW4gd29yayB0aHJlYWQgaW4gbGludXguIEluIHRoaXMgY2FzZSwgIHNjaGVk
-dWxlX3dvcmsgcnVubmluZyANCmluIGlycV93b3JrIHdvdWxkIGJlIHZlcnkgc2hvcnQgYnV0IGF0
-IGxlYXN0IHNob3J0ZXIgdGhhbiBydW5uaW5nIA0KeG5zZWxlY3Rvcl9kZXN0cm95X2xvb3AgZGly
-ZWN0bHkuIEluIGFkZGl0aW9uLCB4bnNlbGVjdG9yX2Rlc3Ryb3lfbG9vcA0Kc2VlbXMgZG9pbmcg
-bG90cyBvZiB0aGluZ3MgaW5jbHVkaW5nIHhuc3luY2hfZGVzdHJveSBhbmQgeG5mcmVlIGludm9s
-dmluZw0KcGFnZSByZW1vdmUgYW5kIHhuc2NoZWRfcnVuIGluIGEgbG9vcC4gVGhhdCBpcyB3aHkg
-SSB0cnkgdG8gbWFrZSBpdCBydW4NCmluIHdvcmsgdGhyZWFkLg0KDQo+PiANCj4+IGRpZmYgLS1n
-aXQgYS9rZXJuZWwvY29iYWx0L3NlbGVjdC5jIGIva2VybmVsL2NvYmFsdC9zZWxlY3QuYw0KPj4g
-aW5kZXggYzNhM2QzNGI3Li42OWVlZDYyNmUgMTAwNjQ0DQo+PiAtLS0gYS9rZXJuZWwvY29iYWx0
-L3NlbGVjdC5jDQo+PiArKysgYi9rZXJuZWwvY29iYWx0L3NlbGVjdC5jDQo+PiBAQCAtMjMsNyAr
-MjMsNzUgQEANCj4+ICAjaW5jbHVkZSA8Y29iYWx0L2tlcm5lbC9zY2hlZC5oPg0KPj4gICNpbmNs
-dWRlIDxjb2JhbHQva2VybmVsL3N5bmNoLmg+DQo+PiAgI2luY2x1ZGUgPGNvYmFsdC9rZXJuZWwv
-c2VsZWN0Lmg+DQo+PiAtI2luY2x1ZGUgPGNvYmFsdC9rZXJuZWwvYXBjLmg+DQo+PiArI2luY2x1
-ZGUgPGxpbnV4L2lycV93b3JrLmg+DQo+PiArDQo+PiArc3RhdGljIGJvb2wgY29iYWx0X3NlbGVj
-dF9pc2luaXQ7DQo+PiArc3RhdGljIExJU1RfSEVBRCh4bnNlbGVjdF93b3JrX3F1ZXVlKTsNCj4+
-ICsNCj4+ICt0eXBlZGVmIHZvaWQgKCpjb2JhbHRfc2VsZWN0X2Rlc3Ryb3lfdCkgKHZvaWQgKmNv
-b2tpZSk7DQo+PiArDQo+PiArc3RydWN0IGNvYmFsdF9zZWxlY3Rfd29yayB7DQo+PiArCWNvYmFs
-dF9zZWxlY3RfZGVzdHJveV90IGhhbmRsZXI7DQo+PiArCXZvaWQgKmFyZzsNCj4+ICsJc3RydWN0
-IHdvcmtfc3RydWN0IGRlc3Ryb3lfdGFzazsNCj4+ICt9Ow0KPj4gKw0KPj4gK3R5cGVkZWYgc3Ry
-dWN0IGNvYmFsdF9zZWxlY3Rfd29yayBjb2JhbHRfc2VsZWN0X3dvcmtfdDsNCj4+ICsNCj4+ICtz
-dGF0aWMgY29iYWx0X3NlbGVjdF93b3JrX3QgeG5kZWxldGlvbl93b3JrOw0KPj4gKw0KPj4gK3N0
-YXRpYyB2b2lkIGRvX3huc2VsZWN0X3dvcmsoc3RydWN0IGlycV93b3JrICp3b3JrKQ0KPj4gK3sN
-Cj4+ICsJc3RydWN0IHdvcmtfc3RydWN0ICp4bnNlbGVjdF93b3JrOw0KPj4gKwlzcGxfdCBzOw0K
-Pj4gKw0KPj4gKwl4bmxvY2tfZ2V0X2lycXNhdmUoJm5rbG9jaywgcyk7DQo+PiArCXdoaWxlICgh
-bGlzdF9lbXB0eSgmeG5zZWxlY3Rfd29ya19xdWV1ZSkpIHsNCj4+ICsJCXhuc2VsZWN0X3dvcmsg
-PSBsaXN0X2ZpcnN0X2VudHJ5KCZ4bnNlbGVjdF93b3JrX3F1ZXVlLA0KPj4gKwkJCQkJCXN0cnVj
-dCB3b3JrX3N0cnVjdCwgZW50cnkpOw0KPj4gKwkJbGlzdF9kZWxfaW5pdCgmeG5zZWxlY3Rfd29y
-ay0+ZW50cnkpOw0KPj4gKwkJeG5sb2NrX3B1dF9pcnFyZXN0b3JlKCZua2xvY2ssIHMpOw0KPj4g
-KwkJDQo+PiArCQlzY2hlZHVsZV93b3JrKHhuc2VsZWN0X3dvcmspOw0KPj4gKw0KPj4gKwkJeG5s
-b2NrX2dldF9pcnFzYXZlKCZua2xvY2ssIHMpOw0KPj4gKw0KPj4gKwl9DQo+PiArCXhubG9ja19w
-dXRfaXJxcmVzdG9yZSgmbmtsb2NrLCBzKTsNCj4+ICsNCj4+ICt9DQo+PiArDQo+PiArc3RhdGlj
-IERFRklORV9JUlFfV09SSyh4bnNlbGVjdF9pcnFfd29yaywgZG9feG5zZWxlY3Rfd29yayk7DQo+
-PiArDQo+PiArdHlwZWRlZiB2b2lkICgqY29iYWx0X3NlbGVjdF9kZXN0cm95X3QpKHZvaWQgKmNv
-b2tpZSk7DQo+PiArDQo+PiArdm9pZCB4bnNlbGVjdF9zY2hlZHVsZV93b3JrKHN0cnVjdCB3b3Jr
-X3N0cnVjdCAqZGVzdHJveV93b3JrKQ0KPj4gK3sNCj4+ICsJc3BsX3QgczsNCj4+ICsNCj4+ICsJ
-eG5sb2NrX2dldF9pcnFzYXZlKCZua2xvY2ssIHMpOw0KPj4gKwlsaXN0X2FkZF90YWlsKCZ4bnNl
-bGVjdF93b3JrX3F1ZXVlLCAmZGVzdHJveV93b3JrLT5lbnRyeSk7DQo+PiArCXhubG9ja19wdXRf
-aXJxcmVzdG9yZSgmbmtsb2NrLCBzKTsNCj4+ICsNCj4+ICsJaXJxX3dvcmtfcXVldWUoJnhuc2Vs
-ZWN0X2lycV93b3JrKTsNCj4+ICt9DQo+PiArDQo+PiArc3RhdGljIHZvaWQgY29iYWx0X3NlbGVj
-dF9leGVjdXRlKHN0cnVjdCB3b3JrX3N0cnVjdCAqd29yaykNCj4+ICt7DQo+PiArCWNvYmFsdF9z
-ZWxlY3Rfd29ya190ICp4bnNlbGVjdCA9DQo+PiArCQljb250YWluZXJfb2Yod29yaywgY29iYWx0
-X3NlbGVjdF93b3JrX3QsIGRlc3Ryb3lfdGFzayk7DQo+PiArCXhuc2VsZWN0LT5oYW5kbGVyKHhu
-c2VsZWN0LT5hcmcpOw0KPj4gK30NCj4+ICsNCj4+ICtpbnQgY29iYWx0X3NlbGVjdF9pbml0KGNv
-YmFsdF9zZWxlY3Rfd29ya190ICp4bnNlbGVjdCwNCj4+ICsJCWNvYmFsdF9zZWxlY3RfZGVzdHJv
-eV90IGhhbmRsZXIsIHZvaWQgKmFyZykNCj4+ICt7DQo+PiArCXhuc2VsZWN0LT5oYW5kbGVyID0g
-aGFuZGxlcjsNCj4+ICsJeG5zZWxlY3QtPmFyZyA9IGFyZzsNCj4+ICsJSU5JVF9XT1JLKCZ4bnNl
-bGVjdC0+ZGVzdHJveV90YXNrLCBjb2JhbHRfc2VsZWN0X2V4ZWN1dGUpOw0KPj4gKwlyZXR1cm4g
-MDsNCj4+ICt9DQo+PiArDQo+PiAgDQo+PiAgLyoqDQo+PiAgICogQGluZ3JvdXAgY29iYWx0X2Nv
-cmUNCj4gQEAgLTQ5LDcgKzExNyw2IEBADQo+PiAgICovDQo+PiAgDQo+PiAgc3RhdGljIExJU1Rf
-SEVBRChzZWxlY3Rvcl9saXN0KTsNCj4+IC1zdGF0aWMgaW50IGRlbGV0aW9uX2FwYzsNCj4+ICAN
-Cj4+ICAvKioNCj4+ICAgKiBJbml0aWFsaXplIGEgQGEgc3RydWN0IEBhIHhuc2VsZWN0IHN0cnVj
-dHVyZS4NCj4+IEBAIC0zOTksOSArNDY2LDEwIEBAIHZvaWQgeG5zZWxlY3Rvcl9kZXN0cm95KHN0
-cnVjdCB4bnNlbGVjdG9yICpzZWxlY3RvcikNCj4+ICANCj4+ICAJeG5sb2NrX2dldF9pcnFzYXZl
-KCZua2xvY2ssIHMpOw0KPj4gIAlsaXN0X2FkZF90YWlsKCZzZWxlY3Rvci0+ZGVzdHJveV9saW5r
-LCAmc2VsZWN0b3JfbGlzdCk7DQo+PiAtI3dhcm5pbmcgVE9ETzogaXJxX3dvcmsNCj4+IC0JLy9f
-X3huYXBjX3NjaGVkdWxlKGRlbGV0aW9uX2FwYyk7DQo+PiAgCXhubG9ja19wdXRfaXJxcmVzdG9y
-ZSgmbmtsb2NrLCBzKTsNCj4+ICsJaWYgKGNvYmFsdF9zZWxlY3RfaXNpbml0ID09IHRydWUpDQo+
-PiArCQl4bnNlbGVjdF9zY2hlZHVsZV93b3JrKCZ4bmRlbGV0aW9uX3dvcmsuZGVzdHJveV90YXNr
-KTsNCj4+ICsNCj4+ICB9DQo+PiAgRVhQT1JUX1NZTUJPTF9HUEwoeG5zZWxlY3Rvcl9kZXN0cm95
-KTsNCj4+ICANCj4+IEBAIC00NDQsMTggKzUxMiwyMCBAQCBvdXQ6DQo+PiAgDQo+PiAgaW50IHhu
-c2VsZWN0X21vdW50KHZvaWQpDQo+PiAgew0KPj4gLSN3YXJuaW5nIFRPRE86IHVzZSBpcnFfd29y
-aw0KPj4gLQkvKmRlbGV0aW9uX2FwYyA9IHhuYXBjX2FsbG9jKCJzZWxlY3Rvcl9saXN0X2Rlc3Ry
-b3kiLA0KPj4gLQkJCQkgICB4bnNlbGVjdG9yX2Rlc3Ryb3lfbG9vcCwgTlVMTCk7DQo+PiAtCWlm
-IChkZWxldGlvbl9hcGMgPCAwKQ0KPj4gLQkJcmV0dXJuIGRlbGV0aW9uX2FwYzsqLw0KPj4gKwlp
-bnQgcmV0Ow0KPj4gIA0KPj4gLQlyZXR1cm4gMDsNCj4+ICsJY29iYWx0X3NlbGVjdF9pc2luaXQg
-PSBmYWxzZTsNCj4+ICsNCj4+ICsJcmV0ID0gY29iYWx0X3NlbGVjdF9pbml0KCZ4bmRlbGV0aW9u
-X3dvcmssIHhuc2VsZWN0b3JfZGVzdHJveV9sb29wLCBOVUxMKTsNCj4+ICsJaWYgKCFyZXQpDQo+
-PiArCQljb2JhbHRfc2VsZWN0X2lzaW5pdCA9IHRydWU7DQo+PiArCXJldHVybiByZXQ7DQo+PiAg
-fQ0KPj4gIA0KPj4gIGludCB4bnNlbGVjdF91bW91bnQodm9pZCkNCj4+ICB7DQo+PiAtCS8veG5h
-cGNfZnJlZShkZWxldGlvbl9hcGMpOw0KPj4gKwljb2JhbHRfc2VsZWN0X2lzaW5pdCA9IGZhbHNl
-Ow0KPj4gKwljYW5jZWxfd29ya19zeW5jKCZ4bmRlbGV0aW9uX3dvcmsuZGVzdHJveV90YXNrKTsN
-Cj4+ICAJcmV0dXJuIDA7DQo+PiAgfQ0KPj4gIA0KPj4gDQo+DQo+T0ssIHNvIHRoaXMgcmVwbGFj
-ZWQgdjIgc2VudCB0byB0aGUgbGlzdD8NCj4NCj5QbGVhc2Ugc3RheSBvbiB0aGUgbGlzdCB3aXRo
-IHRoZSBwYXRjaGVzLCBtYXliZSBqdXN0IG1hcmsgdGhlbQ0KPmFkZGl0aW9uYWxseSB3aXRoICJb
-ZG92ZXRhaWxdIiBvciBzby4NCg0KT0suIFNvcnJ5IGZvciB0aGUgaW5jb252ZW5pZW5jZS4NCg0K
-Pkphbg0KPg0KPlBTOiBTb3JyeSwgSSdtIGxhdGUgd2l0aCByZXBseWluZy4NCj4NCj4tLSANCg0K
-UmVnYXJkcw0KDQpIb25nemhhbiBDaGVuDQo=
+
+
+On 2020年09月29日 00:52, Jan Kiszka wrote:
+> On 23.09.20 03:40, song wrote:
+>>
+>>
+>> On 2020/9/22 下午11:16, Jan Kiszka wrote:
+>>> On 21.09.20 14:32, chensong wrote:
+>>>> Upstream has used timespec64 to replace timespec inside kernel and
+>>>> used __kernel_timespec to replace timespect in syscalls, therefore
+>>>> we must keep aligned with upstream.
+>>>>
+>>>> clock_settime is a point to get started at, it involves 2 parts:
+>>>> 1, syscall in ./include/trace/events/cobalt-posix.h for 64bits
+>>>> 2, compat syscall in kernel/cobalt/posix/syscall32.c for 32bits
+>>>>
+>>>> some new functions are implemented to keep the compatibility with
+>>>> other syscalls which haven't been handled yet and will be removed
+>>>> in the end of the work.
+>>>
+>>> So, this switches also existing syscalls to 64-bit types, breaking the
+>>> current ABI, no? How much effort would it be to keep the old ABI,
+>>> adding a 64-bit one aside of it?
+>>
+>> Not breaking current ABI, i didn't add any new ABIs specific for 64bits,
+>> i added some new static functions, like ts2ns and ts2ns64,
+>> sys32_put_timespec and sys64_put_timespec, specific for clock_settime.
+>>
+>
+> clock_settime accepts struct timespec so far, you are changing that to
+> struct __kernel_timespec. If I look at its definition in the kernel, it
+> uses __kernel_time64_t as tv_sec type. But our current 32-bit users
+> still expects a 32-bit type here, no? Would that change already require
+> a new clock_settime64 syscall if we wanted to stay binary compatible?
+
+32 bit user space processes go to 
+COBALT_SYSCALL32emu(clock_settime,current,(clockid_t clock_id,const 
+struct compat_timespec __user *u_ts)) defined in 
+./kernel/cobalt/posix/syscall32.c. It uses compat_timespec which 32it is 
+compatible with.
+
+I tested 32bit application and 64bit application on 64bit system 
+respeactively
+32bit process -- clock_settime -- COBALT_SYSCALL32emu(clock_settime
+64bit process -- clock_settime -- COBALT_SYSCALL(clock_settime)
+
+>
+>>
+>> When all the syscalls has been finished, every one uses timespec64,
+>> those new static functions can be removed.
+>>
+>> e.g
+>> clock_settime is the ABI i'm working on, it calls ts2ns, but ts2ns only
+>> accepts timespec, clock_gettime uses ts2ns as well, therefore, i
+>> couldn't make them both work, i have to add a new ts2ns64(timespec64),
+>> after i finish clock_gettime and nobody else uses ts2ns, i can remove
+>> ts2ns64 and switch back to ts2ns(timespec64 as its parameter)
+>>
+>> Arnd Bergmann followed the similar process. He also added some ABIs
+>> which 32bit is not compatible of, but not this one.
+>>
+>> Effort, as far as i can tell, not too much, around 10 fucntions as my
+>> estimation.
+>>
+>>>
+>>>>
+>>>> Signed-off-by: chensong <chensong@tj.kylinos.cn>
+>>>> ---
+>>>>    include/cobalt/kernel/clock.h      |  6 +++---
+>>>>    include/cobalt/kernel/compat.h     |  3 +++
+>>>>    kernel/cobalt/posix/clock.c        | 28 ++++++++++++++++++++++------
+>>>>    kernel/cobalt/posix/clock.h        | 12 +++++++++++-
+>>>>    kernel/cobalt/posix/compat.c       | 11 +++++++++++
+>>>>    kernel/cobalt/posix/syscall32.c    |  6 +++---
+>>>>    kernel/cobalt/trace/cobalt-posix.h | 24 ++++++++++++++++++++++--
+>>>>    7 files changed, 75 insertions(+), 15 deletions(-)
+>>>>
+>>>> diff --git a/include/cobalt/kernel/clock.h
+>>>> b/include/cobalt/kernel/clock.h
+>>>> index c26776a..cf9d5ec 100644
+>>>> --- a/include/cobalt/kernel/clock.h
+>>>> +++ b/include/cobalt/kernel/clock.h
+>>>> @@ -52,7 +52,7 @@ struct xnclock {
+>>>>            xnticks_t (*read_raw)(struct xnclock *clock);
+>>>>            xnticks_t (*read_monotonic)(struct xnclock *clock);
+>>>>            int (*set_time)(struct xnclock *clock,
+>>>> -                const struct timespec *ts);
+>>>> +                const struct timespec64 *ts);
+>>>>            xnsticks_t (*ns_to_ticks)(struct xnclock *clock,
+>>>>                          xnsticks_t ns);
+>>>>            xnsticks_t (*ticks_to_ns)(struct xnclock *clock,
+>>>> @@ -213,7 +213,7 @@ static inline xnticks_t
+>>>> xnclock_read_monotonic(struct xnclock *clock)
+>>>>    }
+>>>>    static inline int xnclock_set_time(struct xnclock *clock,
+>>>> -                   const struct timespec *ts)
+>>>> +                   const struct timespec64 *ts)
+>>>>    {
+>>>>        if (likely(clock == &nkclock))
+>>>>            return -EINVAL;
+>>>> @@ -266,7 +266,7 @@ static inline xnticks_t
+>>>> xnclock_read_monotonic(struct xnclock *clock)
+>>>>    }
+>>>>    static inline int xnclock_set_time(struct xnclock *clock,
+>>>> -                   const struct timespec *ts)
+>>>> +                   const struct timespec64 *ts)
+>>>>    {
+>>>>        /*
+>>>>         * There is no way to change the core clock's idea of time.
+>>>> diff --git a/include/cobalt/kernel/compat.h
+>>>> b/include/cobalt/kernel/compat.h
+>>>> index 05754cb..70e2c03 100644
+>>>> --- a/include/cobalt/kernel/compat.h
+>>>> +++ b/include/cobalt/kernel/compat.h
+>>>> @@ -89,6 +89,9 @@ struct compat_rtdm_mmap_request {
+>>>>    int sys32_get_timespec(struct timespec *ts,
+>>>>                   const struct compat_timespec __user *cts);
+>>>> +int sys64_get_timespec(struct timespec64 *ts,
+>>>> +               const struct compat_timespec __user *cts);
+>>>> +
+>>>>    int sys32_put_timespec(struct compat_timespec __user *cts,
+>>>>                   const struct timespec *ts);
+>>>> diff --git a/kernel/cobalt/posix/clock.c b/kernel/cobalt/posix/clock.c
+>>>> index 561358e..c960d7b 100644
+>>>> --- a/kernel/cobalt/posix/clock.c
+>>>> +++ b/kernel/cobalt/posix/clock.c
+>>>> @@ -194,7 +194,7 @@ COBALT_SYSCALL(clock_gettime, current,
+>>>>        return 0;
+>>>>    }
+>>>> -int __cobalt_clock_settime(clockid_t clock_id, const struct timespec
+>>>> *ts)
+>>>> +int __cobalt_clock_settime(clockid_t clock_id, const struct
+>>>> timespec64 *ts)
+>>>>    {
+>>>>        int _ret, ret = 0;
+>>>>        xnticks_t now;
+>>>> @@ -207,7 +207,7 @@ int __cobalt_clock_settime(clockid_t clock_id,
+>>>> const struct timespec *ts)
+>>>>        case CLOCK_REALTIME:
+>>>>            xnlock_get_irqsave(&nklock, s);
+>>>>            now = xnclock_read_realtime(&nkclock);
+>>>> -        xnclock_adjust(&nkclock, (xnsticks_t) (ts2ns(ts) - now));
+>>>> +        xnclock_adjust(&nkclock, (xnsticks_t) (ts2ns64(ts) - now));
+>>>>            xnlock_put_irqrestore(&nklock, s);
+>>>>            break;
+>>>>        default:
+>>>> @@ -242,15 +242,31 @@ int __cobalt_clock_adjtime(clockid_t clock_id,
+>>>> struct timex *tx)
+>>>>        return 0;
+>>>>    }
+>>>> +static int __cobalt_get_timespec64(struct timespec64 *ts,
+>>>> +             const struct __kernel_timespec __user *uts)
+>>>> +{
+>>>> +    struct __kernel_timespec kts;
+>>>> +    int ret;
+>>>> +
+>>>> +    ret = cobalt_copy_from_user(&kts, uts, sizeof(kts));
+>>>> +    if (ret)
+>>>> +        return -EFAULT;
+>>>> +
+>>>> +    ts->tv_sec  = kts.tv_sec;
+>>>> +    ts->tv_nsec = kts.tv_nsec;
+>>>> +
+>>>> +    return 0;
+>>>> +
+>>>> +}
+>>>>    COBALT_SYSCALL(clock_settime, current,
+>>>> -           (clockid_t clock_id, const struct timespec __user *u_ts))
+>>>> +    (clockid_t clock_id, const struct __kernel_timespec __user *u_ts))
+>>>>    {
+>>>> -    struct timespec ts;
+>>>> +    struct timespec64 new_ts;
+>>>> -    if (cobalt_copy_from_user(&ts, u_ts, sizeof(ts)))
+>>>> +    if (__cobalt_get_timespec64(&new_ts, u_ts))
+>>>>            return -EFAULT;
+>>>> -    return __cobalt_clock_settime(clock_id, &ts);
+>>>> +    return __cobalt_clock_settime(clock_id, &new_ts);
+>>>>    }
+>>>>    COBALT_SYSCALL(clock_adjtime, current,
+>>>> diff --git a/kernel/cobalt/posix/clock.h b/kernel/cobalt/posix/clock.h
+>>>> index 0b06b93..3b0f910 100644
+>>>> --- a/kernel/cobalt/posix/clock.h
+>>>> +++ b/kernel/cobalt/posix/clock.h
+>>>> @@ -43,6 +43,16 @@ static inline xnticks_t ts2ns(const struct
+>>>> timespec *ts)
+>>>>        return nsecs;
+>>>>    }
+>>>> +static inline xnticks_t ts2ns64(const struct timespec64 *ts)
+>>>> +{
+>>>> +    xnticks_t nsecs = ts->tv_nsec;
+>>>> +
+>>>> +    if (ts->tv_sec)
+>>>> +        nsecs += (xnticks_t)ts->tv_sec * ONE_BILLION;
+>>>> +
+>>>> +    return nsecs;
+>>>> +}
+>>>> +
+>>>>    static inline xnticks_t tv2ns(const struct timeval *tv)
+>>>>    {
+>>>>        xnticks_t nsecs = tv->tv_usec * 1000;
+>>>> @@ -86,7 +96,7 @@ int __cobalt_clock_gettime(clockid_t clock_id,
+>>>>                   struct timespec *ts);
+>>>>    int __cobalt_clock_settime(clockid_t clock_id,
+>>>> -               const struct timespec *ts);
+>>>> +               const struct timespec64 *ts);
+>>>>    int __cobalt_clock_adjtime(clockid_t clock_id,
+>>>>                   struct timex *tx);
+>>>> diff --git a/kernel/cobalt/posix/compat.c b/kernel/cobalt/posix/compat.c
+>>>> index 17968bf..08aedcf 100644
+>>>> --- a/kernel/cobalt/posix/compat.c
+>>>> +++ b/kernel/cobalt/posix/compat.c
+>>>> @@ -32,6 +32,17 @@ int sys32_get_timespec(struct timespec *ts,
+>>>>    }
+>>>>    EXPORT_SYMBOL_GPL(sys32_get_timespec);
+>>>> +int sys64_get_timespec(struct timespec64 *ts,
+>>>> +               const struct compat_timespec __user *cts)
+>>>> +{
+>>>> +    return (cts == NULL ||
+>>>> +        !access_rok(cts, sizeof(*cts)) ||
+>>>> +        __xn_get_user(ts->tv_sec, &cts->tv_sec) ||
+>>>> +        __xn_get_user(ts->tv_nsec, &cts->tv_nsec)) ? -EFAULT : 0;
+>>>> +}
+>>>> +EXPORT_SYMBOL_GPL(sys64_get_timespec);
+>>>> +
+>>>> +
+>>>>    int sys32_put_timespec(struct compat_timespec __user *cts,
+>>>>                   const struct timespec *ts)
+>>>>    {
+>>>> diff --git a/kernel/cobalt/posix/syscall32.c
+>>>> b/kernel/cobalt/posix/syscall32.c
+>>>> index faa7ef5..4b1dfcc 100644
+>>>> --- a/kernel/cobalt/posix/syscall32.c
+>>>> +++ b/kernel/cobalt/posix/syscall32.c
+>>>> @@ -161,14 +161,14 @@ COBALT_SYSCALL32emu(clock_settime, current,
+>>>>                (clockid_t clock_id,
+>>>>                 const struct compat_timespec __user *u_ts))
+>>>>    {
+>>>> -    struct timespec ts;
+>>>> +    struct timespec64 new_ts;
+>>>>        int ret;
+>>>> -    ret = sys32_get_timespec(&ts, u_ts);
+>>>> +    ret = sys64_get_timespec(&new_ts, u_ts);
+>>>>        if (ret)
+>>>>            return ret;
+>>>> -    return __cobalt_clock_settime(clock_id, &ts);
+>>>> +    return __cobalt_clock_settime(clock_id, &new_ts);
+>>>>    }
+>>>>    COBALT_SYSCALL32emu(clock_adjtime, current,
+>>>> diff --git a/kernel/cobalt/trace/cobalt-posix.h
+>>>> b/kernel/cobalt/trace/cobalt-posix.h
+>>>> index aa78efb..f764872 100644
+>>>> --- a/kernel/cobalt/trace/cobalt-posix.h
+>>>> +++ b/kernel/cobalt/trace/cobalt-posix.h
+>>>> @@ -748,6 +748,26 @@ DECLARE_EVENT_CLASS(cobalt_clock_timespec,
+>>>>        )
+>>>>    );
+>>>> +DECLARE_EVENT_CLASS(cobalt_clock_timespec64,
+>>>> +    TP_PROTO(clockid_t clk_id, const struct timespec64 *val),
+>>>> +    TP_ARGS(clk_id, val),
+>>>> +
+>>>> +    TP_STRUCT__entry(
+>>>> +        __field(clockid_t, clk_id)
+>>>> +        __timespec_fields(val)
+>>>> +    ),
+>>>> +
+>>>> +    TP_fast_assign(
+>>>> +        __entry->clk_id = clk_id;
+>>>> +        __assign_timespec(val, val);
+>>>> +    ),
+>>>> +
+>>>> +    TP_printk("clock_id=%d timeval=(%ld.%09ld)",
+>>>> +          __entry->clk_id,
+>>>> +          __timespec_args(val)
+>>>> +    )
+>>>> +);
+>>>> +
+>>>>    DEFINE_EVENT(cobalt_clock_timespec, cobalt_clock_getres,
+>>>>        TP_PROTO(clockid_t clk_id, const struct timespec *res),
+>>>>        TP_ARGS(clk_id, res)
+>>>> @@ -758,8 +778,8 @@ DEFINE_EVENT(cobalt_clock_timespec,
+>>>> cobalt_clock_gettime,
+>>>>        TP_ARGS(clk_id, time)
+>>>>    );
+>>>> -DEFINE_EVENT(cobalt_clock_timespec, cobalt_clock_settime,
+>>>> -    TP_PROTO(clockid_t clk_id, const struct timespec *time),
+>>>> +DEFINE_EVENT(cobalt_clock_timespec64, cobalt_clock_settime,
+>>>> +    TP_PROTO(clockid_t clk_id, const struct timespec64 *time),
+>>>>        TP_ARGS(clk_id, time)
+>>>>    );
+>>>>
+>>>
+>>> Thanks for this first step! Did you also test that it works with older
+>>> kernels? I see no wrappers, so I suspect breakages.
+>> I only have 64bit system, both 32bit process and 64bit process are
+>> working fine with clock_settime.
+>
+> I meant: Please also try building your changes against kernel 4.4. If
+> that breaks because of some later introduced type, identify the kernel
+> version that did it and add that conditionally for older versions to
+> kernel/cobalt/include/asm-generic/xenomai/wrappers.h.
+>
+
+good point, i tested and found __kernel_timespect was not introduced 
+until 4.18, as a result, 4.4 was failed to build.
+
+i will submit a new patch with the definition in wrappers.h.
+
+>> 32bit process could still break unless it's recompiled as you said in
+>> last email. But in theory, it could be 2038safe after recompiled because
+>> process and system are both use 64bit sec. I will work on it when i
+>> start clock_gettime.
+>>
+>> I tried to use timespec64 explicitly in my userspace, but i got this
+>> "storage size of ts isn't know"
+>
+> timespec64 is not userspace-exposed type, is it? It's kernel internal.
+>
+> Jan
+>
+
+
 
