@@ -1,9 +1,14 @@
-From: Vitaly Chikunov <vt@altlinux.org>
-Subject: [PATCH v2] Multi-library support with core suffix in soname
-Date: Tue, 29 Sep 2020 01:27:30 +0300
-Message-Id: <20200928222730.3027-1-vt@altlinux.org>
+From: "Chen, Hongzhan" <hongzhan.chen@intel.com>
+Subject: RE: [PATCH] cobalt/select: replace APC with irq_work
+Date: Tue, 29 Sep 2020 02:19:05 +0000
+Message-ID: <MWHPR11MB17102A26E2A827A2FD7472C3F2320@MWHPR11MB1710.namprd11.prod.outlook.com>
+References: <20200924065448.14471-1-hongzhan.chen@intel.com>
+ <146482da-10d2-f2cf-f87b-9e1dfa780e11@siemens.com>
+In-Reply-To: <146482da-10d2-f2cf-f87b-9e1dfa780e11@siemens.com>
+Content-Language: en-US
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -14,548 +19,96 @@ List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: Jan Kiszka <jan.kiszka@siemens.com>, Xenomai <xenomai@xenomai.org>
 
-Enable soname suffix with --enable-so-suffix configure option (Mercury
-core only).
-
-This will allow (for users) installing both versions of libs into the
-same system and (for distributions) having them without conflicts in
-the same repository.
-
-Such script is used to change Makefile.am-s:
-
-  for lib in copperplate alchemy psos smokey trank vxworks
-  do
-    find -name Makefile.am \
-    | xargs -r \
-      sed -i -e "s/lib${lib}\.la/lib${lib}@CORE@\.la/g" \
-             -e "s/lib${lib}\_la/lib${lib}@CORE@\_la/g"
-  done
----
- configure.ac                        | 17 +++++++++++++++++
- demo/alchemy/Makefile.am            |  4 ++--
- demo/alchemy/cobalt/Makefile.am     |  4 ++--
- lib/alchemy/Makefile.am             | 16 ++++++++--------
- lib/copperplate/Makefile.am         | 24 ++++++++++++------------
- lib/copperplate/regd/Makefile.am    |  2 +-
- lib/psos/Makefile.am                | 14 +++++++-------
- lib/smokey/Makefile.am              | 10 +++++-----
- lib/trank/Makefile.am               | 12 ++++++------
- lib/vxworks/Makefile.am             | 14 +++++++-------
- scripts/xeno-config-cobalt.in       |  5 +++--
- scripts/xeno-config-mercury.in      |  5 +++--
- testsuite/gpiotest/Makefile.am      |  2 +-
- testsuite/smokey/Makefile.am        |  4 ++--
- testsuite/smokey/dlopen/Makefile.am |  6 +++---
- testsuite/spitest/Makefile.am       |  2 +-
- utils/analogy/Makefile.am           |  8 ++++----
- utils/can/Makefile.am               |  8 ++++----
- utils/hdb/Makefile.am               |  2 +-
- 19 files changed, 89 insertions(+), 70 deletions(-)
-
-diff --git a/configure.ac b/configure.ac
-index 164c44936..abe538dbd 100644
---- a/configure.ac
-+++ b/configure.ac
-@@ -859,6 +859,22 @@ dnl in-tree executables which require POSIX symbol wrapping.
-    AC_SUBST([CONFIG_STATUS_DEPENDENCIES], ["$modechk_wrappers $cobalt_wrappers"])
- fi
- 
-+dnl Multi-library support.
-+AC_MSG_CHECKING([whether to enable soname suffix for libraries])
-+AC_ARG_ENABLE([so-suffix],
-+   [AS_HELP_STRING([--enable-so-suffix],
-+      [enable soname suffix (for Mercury only)])],
-+   [enable_so_suffix=$enableval],
-+   [enable_so_suffix="no"])
-+AC_MSG_RESULT(${enable_so_suffix})
-+if test "$enable_so_suffix" = "yes"; then
-+   if test "$rtcore_type" != mercury; then
-+      AC_MSG_ERROR([soname suffix is only allowed for Mercury core])
-+   else
-+      CORE="_$rtcore_type"
-+   fi
-+fi
-+
- dnl
- dnl Build the Makefiles
- dnl
-@@ -898,6 +914,7 @@ AC_SUBST(XENO_TEST_DIR)
- AC_SUBST(XENO_DEMO_DIR)
- AC_SUBST(XENO_BUILD_COMPILER)
- AC_SUBST(XENO_BUILD_ARGS)
-+AC_SUBST(CORE)
- 
- AC_CONFIG_FILES([ \
- 	Makefile \
-diff --git a/demo/alchemy/Makefile.am b/demo/alchemy/Makefile.am
-index 80def4fac..fed5c1c83 100644
---- a/demo/alchemy/Makefile.am
-+++ b/demo/alchemy/Makefile.am
-@@ -11,8 +11,8 @@ cppflags = 				\
- 	-I$(top_srcdir)/include
- 
- ldadd = 					\
--	../../lib/alchemy/libalchemy.la		\
--	../../lib/copperplate/libcopperplate.la	\
-+	../../lib/alchemy/libalchemy@CORE@.la		\
-+	../../lib/copperplate/libcopperplate@CORE@.la	\
- 	@XENO_CORE_LDADD@ 			\
- 	@XENO_USER_LDADD@			\
- 	-lpthread -lrt -lm
-diff --git a/demo/alchemy/cobalt/Makefile.am b/demo/alchemy/cobalt/Makefile.am
-index 98d234515..ae2edd71c 100644
---- a/demo/alchemy/cobalt/Makefile.am
-+++ b/demo/alchemy/cobalt/Makefile.am
-@@ -11,8 +11,8 @@ cppflags = 			\
- ldadd = 					\
- 	@XENO_AUTOINIT_LDFLAGS@			\
- 	$(XENO_POSIX_WRAPPERS)			\
--	../../../lib/alchemy/libalchemy.la 	\
--	../../../lib/copperplate/libcopperplate.la \
-+	../../../lib/alchemy/libalchemy@CORE@.la 	\
-+	../../../lib/copperplate/libcopperplate@CORE@.la \
- 	@XENO_CORE_LDADD@			\
- 	@XENO_USER_LDADD@			\
- 	-lrt -lpthread -lm
-diff --git a/lib/alchemy/Makefile.am b/lib/alchemy/Makefile.am
-index f97bd69bf..d350912ff 100644
---- a/lib/alchemy/Makefile.am
-+++ b/lib/alchemy/Makefile.am
-@@ -1,12 +1,12 @@
--lib_LTLIBRARIES = libalchemy.la
-+lib_LTLIBRARIES = libalchemy@CORE@.la
- 
--libalchemy_la_LDFLAGS = @XENO_LIB_LDFLAGS@ -version-info 0:0:0
-+libalchemy@CORE@_la_LDFLAGS = @XENO_LIB_LDFLAGS@ -version-info 0:0:0
- 
--libalchemy_la_LIBADD =						\
-+libalchemy@CORE@_la_LIBADD =						\
- 	@XENO_CORE_LDADD@					\
--	$(top_builddir)/lib/copperplate/libcopperplate.la
-+	$(top_builddir)/lib/copperplate/libcopperplate@CORE@.la
- 
--libalchemy_la_SOURCES =	\
-+libalchemy@CORE@_la_SOURCES =	\
- 	init.c		\
- 	internal.c	\
- 	internal.h	\
-@@ -33,12 +33,12 @@ libalchemy_la_SOURCES =	\
- 	timer.h
- 
- if XENO_COBALT
--libalchemy_la_SOURCES +=	\
-+libalchemy@CORE@_la_SOURCES +=	\
- 	pipe.c			\
- 	pipe.h
- endif
- 
--libalchemy_la_CPPFLAGS =				\
-+libalchemy@CORE@_la_CPPFLAGS =				\
- 	@XENO_USER_CFLAGS@				\
- 	-I$(top_srcdir)/include				\
- 	-I$(top_srcdir)/lib
-@@ -48,6 +48,6 @@ EXTRA_DIST = testsuite
- SPARSE = sparse
- 
- sparse:
--	@for i in $(libalchemy_la_SOURCES); do \
-+	@for i in $(libalchemy@CORE@_la_SOURCES); do \
- 		$(SPARSE) $(CHECKFLAGS) $(srcdir)/$$i; \
- 	done
-diff --git a/lib/copperplate/Makefile.am b/lib/copperplate/Makefile.am
-index c7104eb02..671e87d79 100644
---- a/lib/copperplate/Makefile.am
-+++ b/lib/copperplate/Makefile.am
-@@ -1,12 +1,12 @@
- 
--lib_LTLIBRARIES = libcopperplate.la
-+lib_LTLIBRARIES = libcopperplate@CORE@.la
- 
--libcopperplate_la_LDFLAGS = @XENO_LIB_LDFLAGS@ -lpthread -lrt -version-info 0:0:0
--libcopperplate_la_LIBADD = @XENO_CORE_LDADD@
-+libcopperplate@CORE@_la_LDFLAGS = @XENO_LIB_LDFLAGS@ -lpthread -lrt -version-info 0:0:0
-+libcopperplate@CORE@_la_LIBADD = @XENO_CORE_LDADD@
- 
- noinst_LTLIBRARIES =
- 
--libcopperplate_la_SOURCES =	\
-+libcopperplate@CORE@_la_SOURCES =	\
- 	clockobj.c	\
- 	cluster.c	\
- 	eventobj.c 	\
-@@ -19,35 +19,35 @@ libcopperplate_la_SOURCES =	\
- 	timerobj.c	\
- 	traceobj.c
- 
--libcopperplate_la_CPPFLAGS =		\
-+libcopperplate@CORE@_la_CPPFLAGS =		\
- 	@XENO_USER_CFLAGS@		\
- 	-I$(top_srcdir)			\
- 	-I$(top_srcdir)/include		\
- 	-I$(top_srcdir)/lib
- 
- if XENO_REGISTRY
--libcopperplate_la_LIBADD += libregistry.la
-+libcopperplate@CORE@_la_LIBADD += libregistry.la
- noinst_LTLIBRARIES += libregistry.la
- 
- libregistry_la_SOURCES = registry.c
- 
- libregistry_la_CPPFLAGS =		\
--	$(libcopperplate_la_CPPFLAGS)	\
-+	$(libcopperplate@CORE@_la_CPPFLAGS)	\
- 	@XENO_FUSE_CFLAGS@
- endif
- 
- if XENO_PSHARED
- # The process shareable heap has real-time properties, therefore it
- # fits both the cobalt and mercury cores equally. Yummie.
--libcopperplate_la_SOURCES += heapobj-pshared.c reference.c
-+libcopperplate@CORE@_la_SOURCES += heapobj-pshared.c reference.c
- endif
- if XENO_TLSF
--libcopperplate_la_SOURCES += heapobj-tlsf.c
-+libcopperplate@CORE@_la_SOURCES += heapobj-tlsf.c
- else
- if XENO_HEAPMEM
--libcopperplate_la_SOURCES += heapobj-heapmem.c
-+libcopperplate@CORE@_la_SOURCES += heapobj-heapmem.c
- else
--libcopperplate_la_SOURCES += heapobj-malloc.c
-+libcopperplate@CORE@_la_SOURCES += heapobj-malloc.c
- endif
- endif
- 
-@@ -62,6 +62,6 @@ DIST_SUBDIRS = regd
- SPARSE = sparse
- 
- sparse:
--	@for i in $(libcopperplate_la_SOURCES) ; do \
-+	@for i in $(libcopperplate@CORE@_la_SOURCES) ; do \
- 		$(SPARSE) $(CHECKFLAGS) $(srcdir)/$$i; \
- 	done
-diff --git a/lib/copperplate/regd/Makefile.am b/lib/copperplate/regd/Makefile.am
-index c1893c105..3b14e9863 100644
---- a/lib/copperplate/regd/Makefile.am
-+++ b/lib/copperplate/regd/Makefile.am
-@@ -9,7 +9,7 @@ CPPFLAGS = 			\
- LDFLAGS = $(XENO_POSIX_WRAPPERS)
- 
- LDADD = 			\
--	../libcopperplate.la	\
-+	../libcopperplate@CORE@.la	\
- 	@XENO_CORE_LDADD@	\
- 	@XENO_USER_LDADD@	\
- 	-lpthread -lrt
-diff --git a/lib/psos/Makefile.am b/lib/psos/Makefile.am
-index 6fe50881c..f54b26001 100644
---- a/lib/psos/Makefile.am
-+++ b/lib/psos/Makefile.am
-@@ -1,12 +1,12 @@
--lib_LTLIBRARIES = libpsos.la
-+lib_LTLIBRARIES = libpsos@CORE@.la
- 
--libpsos_la_LDFLAGS = @XENO_LIB_LDFLAGS@ -version-info 0:0:0
-+libpsos@CORE@_la_LDFLAGS = @XENO_LIB_LDFLAGS@ -version-info 0:0:0
- 
--libpsos_la_LIBADD =						\
-+libpsos@CORE@_la_LIBADD =						\
- 	@XENO_CORE_LDADD@					\
--	$(top_builddir)/lib/copperplate/libcopperplate.la
-+	$(top_builddir)/lib/copperplate/libcopperplate@CORE@.la
- 
--libpsos_la_SOURCES =	\
-+libpsos@CORE@_la_SOURCES =	\
- 	init.c		\
- 	internal.h	\
- 	pt.c		\
-@@ -23,7 +23,7 @@ libpsos_la_SOURCES =	\
- 	tm.h		\
- 	reference.h
- 
--libpsos_la_CPPFLAGS =					\
-+libpsos@CORE@_la_CPPFLAGS =					\
- 	@XENO_USER_CFLAGS@				\
- 	-I$(top_srcdir)/include				\
- 	-I$(top_srcdir)/lib
-@@ -33,6 +33,6 @@ EXTRA_DIST = testsuite
- SPARSE = sparse
- 
- sparse:
--	@for i in $(libpsos_la_SOURCES); do \
-+	@for i in $(libpsos@CORE@_la_SOURCES); do \
- 		$(SPARSE) $(CHECKFLAGS) $(srcdir)/$$i; \
- 	done
-diff --git a/lib/smokey/Makefile.am b/lib/smokey/Makefile.am
-index 4ecae1f16..2674e3287 100644
---- a/lib/smokey/Makefile.am
-+++ b/lib/smokey/Makefile.am
-@@ -1,13 +1,13 @@
--lib_LTLIBRARIES = libsmokey.la
-+lib_LTLIBRARIES = libsmokey@CORE@.la
- 
--libsmokey_la_LDFLAGS = @XENO_LIB_LDFLAGS@ -version-info 0:0:0
--libsmokey_la_LIBADD = @XENO_CORE_LDADD@
-+libsmokey@CORE@_la_LDFLAGS = @XENO_LIB_LDFLAGS@ -version-info 0:0:0
-+libsmokey@CORE@_la_LIBADD = @XENO_CORE_LDADD@
- 
--libsmokey_la_SOURCES =	\
-+libsmokey@CORE@_la_SOURCES =	\
- 	helpers.c	\
- 	init.c
- 
--libsmokey_la_CPPFLAGS =			\
-+libsmokey@CORE@_la_CPPFLAGS =			\
- 	@XENO_USER_CFLAGS@		\
- 	-I$(top_srcdir)/include		\
- 	-I$(top_srcdir)/lib
-diff --git a/lib/trank/Makefile.am b/lib/trank/Makefile.am
-index ee353c6f2..ec15367d3 100644
---- a/lib/trank/Makefile.am
-+++ b/lib/trank/Makefile.am
-@@ -1,20 +1,20 @@
- 
--lib_LTLIBRARIES = libtrank.la
-+lib_LTLIBRARIES = libtrank@CORE@.la
- 
--libtrank_la_LDFLAGS = @XENO_LIB_LDFLAGS@ -version-info 0:0:0
-+libtrank@CORE@_la_LDFLAGS = @XENO_LIB_LDFLAGS@ -version-info 0:0:0
- 
--libtrank_la_LIBADD =						\
-+libtrank@CORE@_la_LIBADD =						\
- 	@XENO_CORE_LDADD@					\
--	$(top_builddir)/lib/alchemy/libalchemy.la
-+	$(top_builddir)/lib/alchemy/libalchemy@CORE@.la
- 
--libtrank_la_SOURCES =	\
-+libtrank@CORE@_la_SOURCES =	\
- 	init.c		\
- 	internal.c	\
- 	internal.h	\
- 	posix.c		\
- 	native.c
- 
--libtrank_la_CPPFLAGS =		\
-+libtrank@CORE@_la_CPPFLAGS =		\
- 	@XENO_USER_CFLAGS@	\
- 	-D__XENO_COMPAT__	\
- 	-I$(top_srcdir)/include	\
-diff --git a/lib/vxworks/Makefile.am b/lib/vxworks/Makefile.am
-index 4217a994b..37b8caf7b 100644
---- a/lib/vxworks/Makefile.am
-+++ b/lib/vxworks/Makefile.am
-@@ -1,12 +1,12 @@
--lib_LTLIBRARIES = libvxworks.la
-+lib_LTLIBRARIES = libvxworks@CORE@.la
- 
--libvxworks_la_LDFLAGS = @XENO_LIB_LDFLAGS@ -version-info 0:0:0
-+libvxworks@CORE@_la_LDFLAGS = @XENO_LIB_LDFLAGS@ -version-info 0:0:0
- 
--libvxworks_la_LIBADD =						\
-+libvxworks@CORE@_la_LIBADD =						\
- 	@XENO_CORE_LDADD@					\
--	$(top_builddir)/lib/copperplate/libcopperplate.la
-+	$(top_builddir)/lib/copperplate/libcopperplate@CORE@.la
- 
--libvxworks_la_SOURCES = \
-+libvxworks@CORE@_la_SOURCES = \
- 	init.c		\
- 	errnoLib.c	\
- 	intLib.c	\
-@@ -32,7 +32,7 @@ libvxworks_la_SOURCES = \
- 	sysLib.c	\
- 	reference.h
- 
--libvxworks_la_CPPFLAGS =				\
-+libvxworks@CORE@_la_CPPFLAGS =				\
- 	@XENO_USER_CFLAGS@				\
- 	-I$(top_srcdir)/include				\
- 	-I$(top_srcdir)/lib
-@@ -42,6 +42,6 @@ EXTRA_DIST = testsuite
- SPARSE = sparse
- 
- sparse:
--	@for i in $(libvxworks_la_SOURCES); do \
-+	@for i in $(libvxworks@CORE@_la_SOURCES); do \
- 		$(SPARSE) $(CHECKFLAGS) $(srcdir)/$$i; \
- 	done
-diff --git a/scripts/xeno-config-cobalt.in b/scripts/xeno-config-cobalt.in
-index 87d54fbf8..cd55ad82c 100644
---- a/scripts/xeno-config-cobalt.in
-+++ b/scripts/xeno-config-cobalt.in
-@@ -8,6 +8,7 @@ datarootdir="@datarootdir@"
- datadir="@datadir@"
- pkgdatadir="${datadir}/@PACKAGE@"
- includedir="@includedir@"
-+core="@CORE@"
- 
- XENO_VERSION="@PACKAGE_VERSION@"
- XENO_PREFIX="${staging}${prefix}"
-@@ -264,8 +265,8 @@ if test x$do_ldflags = xy; then
- 		# --[no-]mode-check does.
- 		;;
- 	    vxworks|psos|alchemy|smokey)
--		copperplate="-lcopperplate"
--		ldflags="$ldflags -l$skin"
-+		copperplate="-lcopperplate$core"
-+		ldflags="$ldflags -l$skin$core"
- 		if [ -r ${XENO_LIBRARY_DIR}/${skin}.wrappers ]; then
- 		    ldflags=" `dump_wrappers ${skin}.wrappers` $ldflags"
- 		fi
-diff --git a/scripts/xeno-config-mercury.in b/scripts/xeno-config-mercury.in
-index 2d2842f30..42b0de28a 100644
---- a/scripts/xeno-config-mercury.in
-+++ b/scripts/xeno-config-mercury.in
-@@ -8,6 +8,7 @@ datarootdir="@datarootdir@"
- datadir="@datadir@"
- pkgdatadir="${datadir}/@PACKAGE@"
- includedir="@includedir@"
-+core="@CORE@"
- 
- XENO_VERSION="@PACKAGE_VERSION@"
- XENO_PREFIX="${staging}${prefix}"
-@@ -195,8 +196,8 @@ if test x$do_ldflags = xy; then
- 	    posix|rtdm)
- 		;;
- 	    vxworks|psos|alchemy|smokey)
--		copperplate="-lcopperplate"
--		ldflags="-l$skin $ldflags"
-+		copperplate="-lcopperplate$core"
-+		ldflags="-l$skin$core $ldflags"
- 		;;
- 	    *)
- 		echo "unknown API: $skin" 1>&2
-diff --git a/testsuite/gpiotest/Makefile.am b/testsuite/gpiotest/Makefile.am
-index 7615439cf..6f6ec6d71 100644
---- a/testsuite/gpiotest/Makefile.am
-+++ b/testsuite/gpiotest/Makefile.am
-@@ -13,7 +13,7 @@ gpiotest_CPPFLAGS = 		\
- gpiotest_LDFLAGS = @XENO_AUTOINIT_LDFLAGS@ $(XENO_POSIX_WRAPPERS)
- 
- gpiotest_LDADD =			\
--	../../lib/smokey/libsmokey.la	\
-+	../../lib/smokey/libsmokey@CORE@.la	\
- 	@XENO_CORE_LDADD@		\
- 	@XENO_USER_LDADD@		\
- 	-lpthread -lrt
-diff --git a/testsuite/smokey/Makefile.am b/testsuite/smokey/Makefile.am
-index 81d0941c4..02613c7dc 100644
---- a/testsuite/smokey/Makefile.am
-+++ b/testsuite/smokey/Makefile.am
-@@ -110,8 +110,8 @@ smokey_LDFLAGS=$(wrappers) @XENO_AUTOINIT_LDFLAGS@ $(undef_list)
- 
- smokey_LDADD = 					\
- 	$(plugin_list)				\
--	../../lib/smokey/libsmokey.la		\
--	../../lib/copperplate/libcopperplate.la	\
-+	../../lib/smokey/libsmokey@CORE@.la		\
-+	../../lib/copperplate/libcopperplate@CORE@.la	\
- 	@XENO_CORE_LDADD@			\
- 	 @XENO_USER_LDADD@			\
- 	-lpthread -lrt
-diff --git a/testsuite/smokey/dlopen/Makefile.am b/testsuite/smokey/dlopen/Makefile.am
-index db5a521d8..4f79ffb5a 100644
---- a/testsuite/smokey/dlopen/Makefile.am
-+++ b/testsuite/smokey/dlopen/Makefile.am
-@@ -11,8 +11,8 @@ libalchemy_test_la_LIBADD =					\
- 	@XENO_CORE_LDADD@					\
- 	@XENO_USER_LDADD@					\
- 	../../../lib/boilerplate/init/libbootstrap-pic.la	\
--	../../../lib/alchemy/libalchemy.la			\
--	../../../lib/copperplate/libcopperplate.la
-+	../../../lib/alchemy/libalchemy@CORE@.la			\
-+	../../../lib/copperplate/libcopperplate@CORE@.la
- 
- libalchemy_test_la_SOURCES = libalchemy-test.c
- 
-@@ -29,7 +29,7 @@ libposix_test_la_LIBADD =					\
- 	@XENO_CORE_LDADD@					\
- 	@XENO_USER_LDADD@					\
- 	../../../lib/boilerplate/init/libbootstrap-pic.la	\
--	../../../lib/copperplate/libcopperplate.la
-+	../../../lib/copperplate/libcopperplate@CORE@.la
- 
- libposix_test_la_SOURCES = libposix-test.c
- 
-diff --git a/testsuite/spitest/Makefile.am b/testsuite/spitest/Makefile.am
-index f5c3091d8..55b57fc2f 100644
---- a/testsuite/spitest/Makefile.am
-+++ b/testsuite/spitest/Makefile.am
-@@ -13,7 +13,7 @@ spitest_CPPFLAGS = 		\
- spitest_LDFLAGS = @XENO_AUTOINIT_LDFLAGS@ $(XENO_POSIX_WRAPPERS)
- 
- spitest_LDADD =			\
--	../../lib/smokey/libsmokey.la	\
-+	../../lib/smokey/libsmokey@CORE@.la	\
- 	@XENO_CORE_LDADD@		\
- 	@XENO_USER_LDADD@		\
- 	-lpthread -lrt
-diff --git a/utils/analogy/Makefile.am b/utils/analogy/Makefile.am
-index 31da2e0b9..f8a304b60 100644
---- a/utils/analogy/Makefile.am
-+++ b/utils/analogy/Makefile.am
-@@ -42,8 +42,8 @@ cmd_read_SOURCES = cmd_read.c
- cmd_read_LDADD = \
- 	@XENO_AUTOINIT_LDFLAGS@		\
- 	../../lib/analogy/libanalogy.la \
--	../../lib/alchemy/libalchemy.la \
--	../../lib/copperplate/libcopperplate.la \
-+	../../lib/alchemy/libalchemy@CORE@.la \
-+	../../lib/copperplate/libcopperplate@CORE@.la \
- 	@XENO_CORE_LDADD@		\
- 	@XENO_USER_LDADD@		\
- 	-lrt -lpthread -lm
-@@ -52,8 +52,8 @@ cmd_write_SOURCES = cmd_write.c
- cmd_write_LDADD = \
- 	@XENO_AUTOINIT_LDFLAGS@		\
- 	../../lib/analogy/libanalogy.la \
--	../../lib/alchemy/libalchemy.la \
--	../../lib/copperplate/libcopperplate.la \
-+	../../lib/alchemy/libalchemy@CORE@.la \
-+	../../lib/copperplate/libcopperplate@CORE@.la \
- 	@XENO_CORE_LDADD@		\
- 	@XENO_USER_LDADD@		\
- 	-lrt -lpthread -lm
-diff --git a/utils/can/Makefile.am b/utils/can/Makefile.am
-index 561dc7147..e41d266b9 100644
---- a/utils/can/Makefile.am
-+++ b/utils/can/Makefile.am
-@@ -20,8 +20,8 @@ rtcanconfig_LDADD = \
- rtcanrecv_SOURCES = rtcanrecv.c
- 
- rtcanrecv_LDADD = \
--	../../lib/alchemy/libalchemy.la \
--	../../lib/copperplate/libcopperplate.la \
-+	../../lib/alchemy/libalchemy@CORE@.la \
-+	../../lib/copperplate/libcopperplate@CORE@.la \
- 	@XENO_CORE_LDADD@		\
- 	@XENO_USER_LDADD@		\
- 	-lpthread -lrt
-@@ -29,8 +29,8 @@ rtcanrecv_LDADD = \
- rtcansend_SOURCES = rtcansend.c
- 
- rtcansend_LDADD = \
--	../../lib/alchemy/libalchemy.la \
--	../../lib/copperplate/libcopperplate.la \
-+	../../lib/alchemy/libalchemy@CORE@.la \
-+	../../lib/copperplate/libcopperplate@CORE@.la \
- 	@XENO_CORE_LDADD@		\
- 	@XENO_USER_LDADD@		\
- 	-lpthread -lrt
-diff --git a/utils/hdb/Makefile.am b/utils/hdb/Makefile.am
-index 5eb3d3ddc..f78f3c2e6 100644
---- a/utils/hdb/Makefile.am
-+++ b/utils/hdb/Makefile.am
-@@ -9,7 +9,7 @@ hdb_CPPFLAGS = 			\
- hdb_LDFLAGS = @XENO_AUTOINIT_LDFLAGS@
- 
- hdb_LDADD =					\
--	../../lib/copperplate/libcopperplate.la	\
-+	../../lib/copperplate/libcopperplate@CORE@.la	\
- 	@XENO_CORE_LDADD@			\
- 	@XENO_USER_LDADD@			\
- 	-lpthread -lrt
--- 
-2.21.0
-
+Pk9uIDI0LjA5LjIwIDA4OjU0LCBob25nemhhMSB3cm90ZToNCj4+IHNjaGVkdWxlIGlycV93b3Jr
+IHdoaWNoIGlzIHRvIHNjaGVkdWxlIHdvcmsgdG8gZXhlY3V0ZSBoZWF2eQ0KPj4geG5zZWxlY3Rv
+cl9kZXN0cm95X2xvb3AgaW5zdGVhZCBvZiBjYWxsaW5nIF9feG5hcGNfc2NoZWR1bGUuDQo+PiAN
+Cj4+IFNpZ25lZC1vZmYtYnk6IGhvbmd6aGExIDxob25nemhhbi5jaGVuQGludGVsLmNvbT4NCj4+
+IA0KPj4gLS0tDQo+PiB0aGlzIHBhdGNoIGlzIGZvciB3aXAvZG92ZXRhaWwuIFRoaXMgaXMgbmV3
+IHZlcnNpb24uIEl0IHdvdWxkDQo+PiBzY2hlZHVsZSBpcnFfd29yayB3aGljaCBpcyB0byBzY2hl
+ZHVsZSB3b3JrIHRvIGV4ZWN1dGUgaGVhdnkNCj4+IHhuc2VsZWN0b3JfZGVzdHJveV9sb29wIGJ1
+dCBub3QgZXhlY3V0ZSBpdCBpbiBpcnFfd29yayBkaXJlY3RseQ0KPj4gaW5zdGVhZCBvZiBjYWxs
+aW5nIF9feG5hcGNfc2NoZWR1bGUuIA0KPj4NCj5XaGF0IGlzIHRoZSBiZW5lZml0IG9mIHRoaXMg
+aW5kaXJlY3Rpb24gdG8gYSB3b3JrcXVldWU/IGlycV93b3JrIC0gYXMNCj5oYXJkZW5lZCBieSBk
+b3ZldGFpbCBmb3IgdHJpZ2dlcmluZyBmcm9tIG9vYiAvIHhlbm9tYWkgY29udGV4dCAtIHN0aWxs
+DQo+cnVuIHRoZSB3b3JrIGluIGluLWJhbmQgLyBMaW51eCBjb250ZXh0LCBqdXN0IGluIGFuIGlu
+dGVycnVwdC4gSUlSQywNCj50aGF0IGlzIHRoZSBzYW1lIHdpdGggdGhlIHByZXZpb3VzIEFQQyBt
+ZWNoYW5pc20sIHNvIGEgMToxIG1hdGNoLg0KPg0KSGkgSmFuLA0KDQpNeSBwdXJwb3NlIGlzIHRv
+IGtlZXAgcnVubmluZyBzaG9ydCBpbiBpbnRlcnJ1cHQgY29udGV4dCBhbmQgZG8gdGhlDQptYWlu
+IHdvcmsgbGF0ZXIgaW4gd29yayB0aHJlYWQgaW4gbGludXguIEluIHRoaXMgY2FzZSwgIHNjaGVk
+dWxlX3dvcmsgcnVubmluZyANCmluIGlycV93b3JrIHdvdWxkIGJlIHZlcnkgc2hvcnQgYnV0IGF0
+IGxlYXN0IHNob3J0ZXIgdGhhbiBydW5uaW5nIA0KeG5zZWxlY3Rvcl9kZXN0cm95X2xvb3AgZGly
+ZWN0bHkuIEluIGFkZGl0aW9uLCB4bnNlbGVjdG9yX2Rlc3Ryb3lfbG9vcA0Kc2VlbXMgZG9pbmcg
+bG90cyBvZiB0aGluZ3MgaW5jbHVkaW5nIHhuc3luY2hfZGVzdHJveSBhbmQgeG5mcmVlIGludm9s
+dmluZw0KcGFnZSByZW1vdmUgYW5kIHhuc2NoZWRfcnVuIGluIGEgbG9vcC4gVGhhdCBpcyB3aHkg
+SSB0cnkgdG8gbWFrZSBpdCBydW4NCmluIHdvcmsgdGhyZWFkLg0KDQo+PiANCj4+IGRpZmYgLS1n
+aXQgYS9rZXJuZWwvY29iYWx0L3NlbGVjdC5jIGIva2VybmVsL2NvYmFsdC9zZWxlY3QuYw0KPj4g
+aW5kZXggYzNhM2QzNGI3Li42OWVlZDYyNmUgMTAwNjQ0DQo+PiAtLS0gYS9rZXJuZWwvY29iYWx0
+L3NlbGVjdC5jDQo+PiArKysgYi9rZXJuZWwvY29iYWx0L3NlbGVjdC5jDQo+PiBAQCAtMjMsNyAr
+MjMsNzUgQEANCj4+ICAjaW5jbHVkZSA8Y29iYWx0L2tlcm5lbC9zY2hlZC5oPg0KPj4gICNpbmNs
+dWRlIDxjb2JhbHQva2VybmVsL3N5bmNoLmg+DQo+PiAgI2luY2x1ZGUgPGNvYmFsdC9rZXJuZWwv
+c2VsZWN0Lmg+DQo+PiAtI2luY2x1ZGUgPGNvYmFsdC9rZXJuZWwvYXBjLmg+DQo+PiArI2luY2x1
+ZGUgPGxpbnV4L2lycV93b3JrLmg+DQo+PiArDQo+PiArc3RhdGljIGJvb2wgY29iYWx0X3NlbGVj
+dF9pc2luaXQ7DQo+PiArc3RhdGljIExJU1RfSEVBRCh4bnNlbGVjdF93b3JrX3F1ZXVlKTsNCj4+
+ICsNCj4+ICt0eXBlZGVmIHZvaWQgKCpjb2JhbHRfc2VsZWN0X2Rlc3Ryb3lfdCkgKHZvaWQgKmNv
+b2tpZSk7DQo+PiArDQo+PiArc3RydWN0IGNvYmFsdF9zZWxlY3Rfd29yayB7DQo+PiArCWNvYmFs
+dF9zZWxlY3RfZGVzdHJveV90IGhhbmRsZXI7DQo+PiArCXZvaWQgKmFyZzsNCj4+ICsJc3RydWN0
+IHdvcmtfc3RydWN0IGRlc3Ryb3lfdGFzazsNCj4+ICt9Ow0KPj4gKw0KPj4gK3R5cGVkZWYgc3Ry
+dWN0IGNvYmFsdF9zZWxlY3Rfd29yayBjb2JhbHRfc2VsZWN0X3dvcmtfdDsNCj4+ICsNCj4+ICtz
+dGF0aWMgY29iYWx0X3NlbGVjdF93b3JrX3QgeG5kZWxldGlvbl93b3JrOw0KPj4gKw0KPj4gK3N0
+YXRpYyB2b2lkIGRvX3huc2VsZWN0X3dvcmsoc3RydWN0IGlycV93b3JrICp3b3JrKQ0KPj4gK3sN
+Cj4+ICsJc3RydWN0IHdvcmtfc3RydWN0ICp4bnNlbGVjdF93b3JrOw0KPj4gKwlzcGxfdCBzOw0K
+Pj4gKw0KPj4gKwl4bmxvY2tfZ2V0X2lycXNhdmUoJm5rbG9jaywgcyk7DQo+PiArCXdoaWxlICgh
+bGlzdF9lbXB0eSgmeG5zZWxlY3Rfd29ya19xdWV1ZSkpIHsNCj4+ICsJCXhuc2VsZWN0X3dvcmsg
+PSBsaXN0X2ZpcnN0X2VudHJ5KCZ4bnNlbGVjdF93b3JrX3F1ZXVlLA0KPj4gKwkJCQkJCXN0cnVj
+dCB3b3JrX3N0cnVjdCwgZW50cnkpOw0KPj4gKwkJbGlzdF9kZWxfaW5pdCgmeG5zZWxlY3Rfd29y
+ay0+ZW50cnkpOw0KPj4gKwkJeG5sb2NrX3B1dF9pcnFyZXN0b3JlKCZua2xvY2ssIHMpOw0KPj4g
+KwkJDQo+PiArCQlzY2hlZHVsZV93b3JrKHhuc2VsZWN0X3dvcmspOw0KPj4gKw0KPj4gKwkJeG5s
+b2NrX2dldF9pcnFzYXZlKCZua2xvY2ssIHMpOw0KPj4gKw0KPj4gKwl9DQo+PiArCXhubG9ja19w
+dXRfaXJxcmVzdG9yZSgmbmtsb2NrLCBzKTsNCj4+ICsNCj4+ICt9DQo+PiArDQo+PiArc3RhdGlj
+IERFRklORV9JUlFfV09SSyh4bnNlbGVjdF9pcnFfd29yaywgZG9feG5zZWxlY3Rfd29yayk7DQo+
+PiArDQo+PiArdHlwZWRlZiB2b2lkICgqY29iYWx0X3NlbGVjdF9kZXN0cm95X3QpKHZvaWQgKmNv
+b2tpZSk7DQo+PiArDQo+PiArdm9pZCB4bnNlbGVjdF9zY2hlZHVsZV93b3JrKHN0cnVjdCB3b3Jr
+X3N0cnVjdCAqZGVzdHJveV93b3JrKQ0KPj4gK3sNCj4+ICsJc3BsX3QgczsNCj4+ICsNCj4+ICsJ
+eG5sb2NrX2dldF9pcnFzYXZlKCZua2xvY2ssIHMpOw0KPj4gKwlsaXN0X2FkZF90YWlsKCZ4bnNl
+bGVjdF93b3JrX3F1ZXVlLCAmZGVzdHJveV93b3JrLT5lbnRyeSk7DQo+PiArCXhubG9ja19wdXRf
+aXJxcmVzdG9yZSgmbmtsb2NrLCBzKTsNCj4+ICsNCj4+ICsJaXJxX3dvcmtfcXVldWUoJnhuc2Vs
+ZWN0X2lycV93b3JrKTsNCj4+ICt9DQo+PiArDQo+PiArc3RhdGljIHZvaWQgY29iYWx0X3NlbGVj
+dF9leGVjdXRlKHN0cnVjdCB3b3JrX3N0cnVjdCAqd29yaykNCj4+ICt7DQo+PiArCWNvYmFsdF9z
+ZWxlY3Rfd29ya190ICp4bnNlbGVjdCA9DQo+PiArCQljb250YWluZXJfb2Yod29yaywgY29iYWx0
+X3NlbGVjdF93b3JrX3QsIGRlc3Ryb3lfdGFzayk7DQo+PiArCXhuc2VsZWN0LT5oYW5kbGVyKHhu
+c2VsZWN0LT5hcmcpOw0KPj4gK30NCj4+ICsNCj4+ICtpbnQgY29iYWx0X3NlbGVjdF9pbml0KGNv
+YmFsdF9zZWxlY3Rfd29ya190ICp4bnNlbGVjdCwNCj4+ICsJCWNvYmFsdF9zZWxlY3RfZGVzdHJv
+eV90IGhhbmRsZXIsIHZvaWQgKmFyZykNCj4+ICt7DQo+PiArCXhuc2VsZWN0LT5oYW5kbGVyID0g
+aGFuZGxlcjsNCj4+ICsJeG5zZWxlY3QtPmFyZyA9IGFyZzsNCj4+ICsJSU5JVF9XT1JLKCZ4bnNl
+bGVjdC0+ZGVzdHJveV90YXNrLCBjb2JhbHRfc2VsZWN0X2V4ZWN1dGUpOw0KPj4gKwlyZXR1cm4g
+MDsNCj4+ICt9DQo+PiArDQo+PiAgDQo+PiAgLyoqDQo+PiAgICogQGluZ3JvdXAgY29iYWx0X2Nv
+cmUNCj4gQEAgLTQ5LDcgKzExNyw2IEBADQo+PiAgICovDQo+PiAgDQo+PiAgc3RhdGljIExJU1Rf
+SEVBRChzZWxlY3Rvcl9saXN0KTsNCj4+IC1zdGF0aWMgaW50IGRlbGV0aW9uX2FwYzsNCj4+ICAN
+Cj4+ICAvKioNCj4+ICAgKiBJbml0aWFsaXplIGEgQGEgc3RydWN0IEBhIHhuc2VsZWN0IHN0cnVj
+dHVyZS4NCj4+IEBAIC0zOTksOSArNDY2LDEwIEBAIHZvaWQgeG5zZWxlY3Rvcl9kZXN0cm95KHN0
+cnVjdCB4bnNlbGVjdG9yICpzZWxlY3RvcikNCj4+ICANCj4+ICAJeG5sb2NrX2dldF9pcnFzYXZl
+KCZua2xvY2ssIHMpOw0KPj4gIAlsaXN0X2FkZF90YWlsKCZzZWxlY3Rvci0+ZGVzdHJveV9saW5r
+LCAmc2VsZWN0b3JfbGlzdCk7DQo+PiAtI3dhcm5pbmcgVE9ETzogaXJxX3dvcmsNCj4+IC0JLy9f
+X3huYXBjX3NjaGVkdWxlKGRlbGV0aW9uX2FwYyk7DQo+PiAgCXhubG9ja19wdXRfaXJxcmVzdG9y
+ZSgmbmtsb2NrLCBzKTsNCj4+ICsJaWYgKGNvYmFsdF9zZWxlY3RfaXNpbml0ID09IHRydWUpDQo+
+PiArCQl4bnNlbGVjdF9zY2hlZHVsZV93b3JrKCZ4bmRlbGV0aW9uX3dvcmsuZGVzdHJveV90YXNr
+KTsNCj4+ICsNCj4+ICB9DQo+PiAgRVhQT1JUX1NZTUJPTF9HUEwoeG5zZWxlY3Rvcl9kZXN0cm95
+KTsNCj4+ICANCj4+IEBAIC00NDQsMTggKzUxMiwyMCBAQCBvdXQ6DQo+PiAgDQo+PiAgaW50IHhu
+c2VsZWN0X21vdW50KHZvaWQpDQo+PiAgew0KPj4gLSN3YXJuaW5nIFRPRE86IHVzZSBpcnFfd29y
+aw0KPj4gLQkvKmRlbGV0aW9uX2FwYyA9IHhuYXBjX2FsbG9jKCJzZWxlY3Rvcl9saXN0X2Rlc3Ry
+b3kiLA0KPj4gLQkJCQkgICB4bnNlbGVjdG9yX2Rlc3Ryb3lfbG9vcCwgTlVMTCk7DQo+PiAtCWlm
+IChkZWxldGlvbl9hcGMgPCAwKQ0KPj4gLQkJcmV0dXJuIGRlbGV0aW9uX2FwYzsqLw0KPj4gKwlp
+bnQgcmV0Ow0KPj4gIA0KPj4gLQlyZXR1cm4gMDsNCj4+ICsJY29iYWx0X3NlbGVjdF9pc2luaXQg
+PSBmYWxzZTsNCj4+ICsNCj4+ICsJcmV0ID0gY29iYWx0X3NlbGVjdF9pbml0KCZ4bmRlbGV0aW9u
+X3dvcmssIHhuc2VsZWN0b3JfZGVzdHJveV9sb29wLCBOVUxMKTsNCj4+ICsJaWYgKCFyZXQpDQo+
+PiArCQljb2JhbHRfc2VsZWN0X2lzaW5pdCA9IHRydWU7DQo+PiArCXJldHVybiByZXQ7DQo+PiAg
+fQ0KPj4gIA0KPj4gIGludCB4bnNlbGVjdF91bW91bnQodm9pZCkNCj4+ICB7DQo+PiAtCS8veG5h
+cGNfZnJlZShkZWxldGlvbl9hcGMpOw0KPj4gKwljb2JhbHRfc2VsZWN0X2lzaW5pdCA9IGZhbHNl
+Ow0KPj4gKwljYW5jZWxfd29ya19zeW5jKCZ4bmRlbGV0aW9uX3dvcmsuZGVzdHJveV90YXNrKTsN
+Cj4+ICAJcmV0dXJuIDA7DQo+PiAgfQ0KPj4gIA0KPj4gDQo+DQo+T0ssIHNvIHRoaXMgcmVwbGFj
+ZWQgdjIgc2VudCB0byB0aGUgbGlzdD8NCj4NCj5QbGVhc2Ugc3RheSBvbiB0aGUgbGlzdCB3aXRo
+IHRoZSBwYXRjaGVzLCBtYXliZSBqdXN0IG1hcmsgdGhlbQ0KPmFkZGl0aW9uYWxseSB3aXRoICJb
+ZG92ZXRhaWxdIiBvciBzby4NCg0KT0suIFNvcnJ5IGZvciB0aGUgaW5jb252ZW5pZW5jZS4NCg0K
+Pkphbg0KPg0KPlBTOiBTb3JyeSwgSSdtIGxhdGUgd2l0aCByZXBseWluZy4NCj4NCj4tLSANCg0K
+UmVnYXJkcw0KDQpIb25nemhhbiBDaGVuDQo=
 
