@@ -1,9 +1,12 @@
-From: hongzha1 <hongzhan.chen@intel.com>
-Subject: [PATCH v2] [wip/dovetail] cobalt/select: replace APC with irq_work
-Date: Tue, 29 Sep 2020 23:00:43 -0400
-Message-Id: <20200930030043.5882-1-hongzhan.chen@intel.com>
-In-Reply-To: <146482da-10d2-f2cf-f87b-9e1dfa780e11@siemens.com>
-References: <146482da-10d2-f2cf-f87b-9e1dfa780e11@siemens.com>
+From: =?utf-8?q?Fran=C3=A7ois_Legal?= <devel@thom.fr.eu.org>
+In-Reply-To: <1175-5f742900-ab-25a5a500@198940470>
+Content-Type: text/plain; charset="utf-8"
+Date: Wed, 30 Sep 2020 10:48:39 +0200
+MIME-Version: 1.0
+Message-ID: <1174-5f744680-45-37e14c00@201458627>
+Subject: =?utf-8?q?Re=3A?= Strange switching =?utf-8?q?=5Bthreadname=5D?= to 
+ secondary mode after exception #0 in kernel-space at 0x80272444
+Content-Transfer-Encoding: quoted-printable
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -12,79 +15,79 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org, jan.kiszka@siemens.com
+Cc: Jan Kiszka <jan.kiszka@siemens.com>, xenomai@xenomai.org
 
-schedule irq_work to execute xnselector_destroy_loop instead of
-calling __xnapc_schedule, which is to replace APC
+I might have found what is causing this problem : CONFIG=5FCPU=5FSPECTR=
+E
 
-Signed-off-by: hongzha1 <hongzhan.chen@intel.com>
+It was the noticeable difference between my last (4.4.189) kernel relea=
+se not showing this problem, and the next I tried (4.4.227).
+If I modify the Kconfig to disable CPU=5FSPECTRE, the problem does not =
+show up anymore.
 
-diff --git a/kernel/cobalt/select.c b/kernel/cobalt/select.c
-index c3a3d34b7..3cde6e163 100644
---- a/kernel/cobalt/select.c
-+++ b/kernel/cobalt/select.c
-@@ -23,7 +23,12 @@
- #include <cobalt/kernel/sched.h>
- #include <cobalt/kernel/synch.h>
- #include <cobalt/kernel/select.h>
--#include <cobalt/kernel/apc.h>
-+#include <linux/irq_work.h>
-+
-+
-+static void cobalt_select_execute(struct irq_work *work);
-+
-+static DEFINE_IRQ_WORK(xnselect_irq_work, cobalt_select_execute);
+I'll dig a little deeper into that now.
+
+Fran=C3=A7ois
+
+Le Mercredi, Septembre 30, 2020 08:42 CEST, Fran=C3=A7ois Legal <franco=
+is.legal@thom.fr.eu.org> a =C3=A9crit: 
  
- /**
-  * @ingroup cobalt_core
-@@ -49,7 +54,6 @@
-  */
- 
- static LIST_HEAD(selector_list);
--static int deletion_apc;
- 
- /**
-  * Initialize a @a struct @a xnselect structure.
-@@ -399,9 +403,9 @@ void xnselector_destroy(struct xnselector *selector)
- 
- 	xnlock_get_irqsave(&nklock, s);
- 	list_add_tail(&selector->destroy_link, &selector_list);
--#warning TODO: irq_work
--	//__xnapc_schedule(deletion_apc);
- 	xnlock_put_irqrestore(&nklock, s);
-+
-+	irq_work_queue(&xnselect_irq_work);
- }
- EXPORT_SYMBOL_GPL(xnselector_destroy);
- 
-@@ -442,20 +446,19 @@ out:
- 	xnlock_put_irqrestore(&nklock, s);
- }
- 
--int xnselect_mount(void)
-+static void cobalt_select_execute(struct irq_work *work)
- {
--#warning TODO: use irq_work
--	/*deletion_apc = xnapc_alloc("selector_list_destroy",
--				   xnselector_destroy_loop, NULL);
--	if (deletion_apc < 0)
--		return deletion_apc;*/
-+	xnselector_destroy_loop(NULL);
-+}
-+
- 
-+int xnselect_mount(void)
-+{
- 	return 0;
- }
- 
- int xnselect_umount(void)
- {
--	//xnapc_free(deletion_apc);
- 	return 0;
- }
- 
--- 
-2.17.1
+> So I decided to dig a little deeper in this problem, and found out th=
+at it is not xenomai3.1 specific.
+> I tried with xenomai-3.0.9 and linux 4.4.227 -> same problem.
+> I thought it might be a matter of ipipe patch not quite fit to 4.4.22=
+7, so I decided to try with latest ipipe-4.4.y-cip from git and xenomai=
+ 3.0.9, but the same problem happens.
+> 
+> Fran=C3=A7ois
+> 
+> Le Vendredi, Septembre 25, 2020 18:11 CEST, Fran=C3=A7ois Legal via X=
+enomai <xenomai@xenomai.org> a =C3=A9crit: 
+>  
+> > Sorry to come back so late on that topic.
+> > I took some time to write a simple test program, which is attached.=
+
+> > 
+> > Config is as follows :
+> > xenomai-3.1
+> > linux-4.4.227
+> > 
+> > Fran=C3=A7ois
+> > 
+> > Le Vendredi, Ao=C3=BBt 21, 2020 20:04 CEST, Jan Kiszka <jan.kiszka@=
+siemens.com> a =C3=A9crit: 
+> >  
+> > > On 20.08.20 15:46, Fran=C3=A7ois Legal via Xenomai wrote:
+> > > > Using RTNet with multiple interfaces, xenomai 3.1 with linux 4.=
+4
+> > > > Whenever a posix RT thread calls recvmsg (), I get this error.
+> > > > 
+> > > > I could track this down to line 422 in udp.c :     msg =3D rtne=
+t=5Fget=5Farg(fd, &=5Fmsg, u=5Fmsg, sizeof(=5Fmsg));
+> > > > 
+> > > > If I disassemble the kernel, the failing instruction (at 0x8027=
+2444) is a nop in arm=5Fcopy=5Ffrom=5Fuser
+> > > > Am I doing anything wrong ?
+> > > 
+> > > Maybe you are passing an invalid pointer to recvmsg, directly or =
+in its
+> > > message structures. That would cause an exception which is fixed =
+up but
+> > > also reported. Do you get an error in return?
+> > > 
+> > > Jan
+> > > 
+> > > -- 
+> > > Siemens AG, Corporate Technology, CT RDA IOT SES-DE
+> > > Corporate Competence Center Embedded Linux
+> > -------------- next part --------------
+> > A non-text attachment was scrubbed...
+> > Name: test-net.c
+> > Type: application/octet-stream
+> > Size: 6141 bytes
+> > Desc: not available
+> > URL: <http://xenomai.org/pipermail/xenomai/attachments/20200925/f74=
+5e32f/attachment.obj>
+>
 
 
