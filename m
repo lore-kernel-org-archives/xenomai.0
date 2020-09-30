@@ -1,12 +1,11 @@
-From: =?utf-8?q?Fran=C3=A7ois_Legal?= <devel@thom.fr.eu.org>
-In-Reply-To: <1174-5f744680-45-37e14c00@201458627>
-Content-Type: text/plain; charset="utf-8"
-Date: Wed, 30 Sep 2020 17:14:06 +0200
+References: <20200928123359.29826-1-richard@nod.at>
+From: Philippe Gerum <rpm@xenomai.org>
+Subject: Re: [PATCH] drvlib: Explain why we need cobalt_machine.prefault
+In-reply-to: <20200928123359.29826-1-richard@nod.at>
+Date: Wed, 30 Sep 2020 18:10:19 +0200
+Message-ID: <87zh571c0k.fsf@xenomai.org>
 MIME-Version: 1.0
-Message-ID: <1174-5f74a080-4b-37e14c00@201458726>
-Subject: =?utf-8?q?Re=3A?= Strange switching =?utf-8?q?=5Bthreadname=5D?= to 
- secondary mode after exception #0 in kernel-space at 0x80272444
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,103 +14,102 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
+To: Richard Weinberger <richard@nod.at>
+Cc: xenomai@xenomai.org
 
-So the problem here lies in the calls to rtnet=5Fget=5Farg(fd, &=5Fmsg,=
- msg, sizeof(*msg)); in af=5Fpacket.c sendmasg/recvmsg
 
-The only explanation I could find was that, for my architecture (32bit =
-ARMv7), syscall use the COBALT=5FSYSCALL32emu variants for sendmsg/recv=
-msg calls, which in turn allocate a struct user=5Fmsghdr on the SVC sta=
-ck, then calls rt=5Fpacket=5Fsendmsg/rt=5Fpacket=5Frecvmsg with the add=
-ress of that struct.
+Richard Weinberger via Xenomai <xenomai@xenomai.org> writes:
 
-Then, rtnet=5Fget=5Farg would invoke arm=5Fcopy=5Ffrom=5Fuser, which, w=
-ith SPECTRE mitigation turned on (you normally can't disable this by co=
-nfiguration), would check that the source pointer is in the userland me=
-mory area, and hence fail in my case.
-
-Going from there, except disabling SPECTRE mitigation, I'm not sure how=
- I can fix this.
-
-Fran=C3=A7ois
-
-Le Mercredi, Septembre 30, 2020 10:48 CEST, Fran=C3=A7ois Legal via Xen=
-omai <xenomai@xenomai.org> a =C3=A9crit: 
- 
-> I might have found what is causing this problem : CONFIG=5FCPU=5FSPEC=
-TRE
-> 
-> It was the noticeable difference between my last (4.4.189) kernel rel=
-ease not showing this problem, and the next I tried (4.4.227).
-> If I modify the Kconfig to disable CPU=5FSPECTRE, the problem does no=
-t show up anymore.
-> 
-> I'll dig a little deeper into that now.
-> 
-> Fran=C3=A7ois
-> 
-> Le Mercredi, Septembre 30, 2020 08:42 CEST, Fran=C3=A7ois Legal <fran=
-cois.legal@thom.fr.eu.org> a =C3=A9crit: 
->  
-> > So I decided to dig a little deeper in this problem, and found out =
-that it is not xenomai3.1 specific.
-> > I tried with xenomai-3.0.9 and linux 4.4.227 -> same problem.
-> > I thought it might be a matter of ipipe patch not quite fit to 4.4.=
-227, so I decided to try with latest ipipe-4.4.y-cip from git and xenom=
-ai 3.0.9, but the same problem happens.
-> > 
-> > Fran=C3=A7ois
-> > 
-> > Le Vendredi, Septembre 25, 2020 18:11 CEST, Fran=C3=A7ois Legal via=
- Xenomai <xenomai@xenomai.org> a =C3=A9crit: 
-> >  
-> > > Sorry to come back so late on that topic.
-> > > I took some time to write a simple test program, which is attache=
-d.> > 
-> > > Config is as follows :
-> > > xenomai-3.1
-> > > linux-4.4.227
-> > > 
-> > > Fran=C3=A7ois
-> > > 
-> > > Le Vendredi, Ao=C3=BBt 21, 2020 20:04 CEST, Jan Kiszka <jan.kiszk=
-a@siemens.com> a =C3=A9crit: 
-> > >  
-> > > > On 20.08.20 15:46, Fran=C3=A7ois Legal via Xenomai wrote:
-> > > > > Using RTNet with multiple interfaces, xenomai 3.1 with linux =
-4.4
-> > > > > Whenever a posix RT thread calls recvmsg (), I get this error=
-.
-> > > > > 
-> > > > > I could track this down to line 422 in udp.c :     msg =3D rt=
-net=5Fget=5Farg(fd, &=5Fmsg, u=5Fmsg, sizeof(=5Fmsg));
-> > > > > 
-> > > > > If I disassemble the kernel, the failing instruction (at 0x80=
-272444) is a nop in arm=5Fcopy=5Ffrom=5Fuser
-> > > > > Am I doing anything wrong ?
-> > > > 
-> > > > Maybe you are passing an invalid pointer to recvmsg, directly o=
-r in its
-> > > > message structures. That would cause an exception which is fixe=
-d up but
-> > > > also reported. Do you get an error in return?
-> > > > 
-> > > > Jan
-> > > > 
-> > > > -- 
-> > > > Siemens AG, Corporate Technology, CT RDA IOT SES-DE
-> > > > Corporate Competence Center Embedded Linux
-> > > -------------- next part --------------
-> > > A non-text attachment was scrubbed...
-> > > Name: test-net.c
-> > > Type: application/octet-stream
-> > > Size: 6141 bytes
-> > > Desc: not available
-> > > URL: <http://xenomai.org/pipermail/xenomai/attachments/20200925/f=
-745e32f/attachment.obj>
-> >
-> 
+> It is not obvious why cobalt_machine.prefault is needed
+> and why only for ARM.
+> One would expect that mlockall() would do it too.
 >
+> Signed-off-by: Richard Weinberger <richard@nod.at>
+> ---
+> Note: I think we can make mach_arm_prefault() a no-op on arm64
+> if cpu_has_hw_af() returns true.
+> But I need to test it first. B-)
+> ---
+>  kernel/cobalt/arch/arm/machine.c   |  5 +++++
+>  kernel/cobalt/arch/arm64/machine.c |  5 +++++
+>  kernel/cobalt/rtdm/drvlib.c        | 13 +++++++++++++
+>  3 files changed, 23 insertions(+)
+>
+> diff --git a/kernel/cobalt/arch/arm/machine.c b/kernel/cobalt/arch/arm/machine.c
+> index 721567182f49..be56b2b84e2e 100644
+> --- a/kernel/cobalt/arch/arm/machine.c
+> +++ b/kernel/cobalt/arch/arm/machine.c
+> @@ -35,6 +35,11 @@ static void mach_arm_prefault(struct vm_area_struct *vma)
+>  		flags = (vma->vm_flags & VM_MAYWRITE) ? FAULT_FLAG_WRITE : 0;
+>  		for (addr = vma->vm_start;
+>  		     addr != vma->vm_end; addr += PAGE_SIZE)
+> +			/*
+> +			 * Explicitly mark pages dirty such that future writes
+> +			 * won't trigger a page fault due to PTE dirty bit
+> +			 * emulation.
+> +			 */
+>  #if LINUX_VERSION_CODE < KERNEL_VERSION(4,8,0)
+>  			handle_mm_fault(vma->vm_mm, vma, addr, flags);
+>  #else
+> diff --git a/kernel/cobalt/arch/arm64/machine.c b/kernel/cobalt/arch/arm64/machine.c
+> index cb2867492360..f820e63624ec 100644
+> --- a/kernel/cobalt/arch/arm64/machine.c
+> +++ b/kernel/cobalt/arch/arm64/machine.c
+> @@ -35,6 +35,11 @@ static void mach_arm_prefault(struct vm_area_struct *vma)
+>  		flags = (vma->vm_flags & VM_MAYWRITE) ? FAULT_FLAG_WRITE : 0;
+>  		for (addr = vma->vm_start;
+>  		     addr != vma->vm_end; addr += PAGE_SIZE)
+> +			/*
+> +			 * Explicitly mark pages dirty such that future writes
+> +			 * won't trigger a page fault due to PTE dirty bit
+> +			 * emulation.
+> +			 */
+>  #if LINUX_VERSION_CODE < KERNEL_VERSION(4,8,0)
+>  			handle_mm_fault(vma->vm_mm, vma, addr, flags);
+>  #else
+> diff --git a/kernel/cobalt/rtdm/drvlib.c b/kernel/cobalt/rtdm/drvlib.c
+> index 5778ad559ced..674292d89b71 100644
+> --- a/kernel/cobalt/rtdm/drvlib.c
+> +++ b/kernel/cobalt/rtdm/drvlib.c
+> @@ -1695,6 +1695,19 @@ static int mmap_kmem_helper(struct vm_area_struct *vma, void *va)
+>  		}
+>  	}
+>  
+> +	/*
+> +	 * Extra prefaulting is needed for two reasons on ARMv8 (and older):
+> +	 *
 
+nitpicking: pre-armv8.1-A to be precise? AFAIR, armv8.1-A introduced
+hardware support for dirty bit management in PTEs.
+
+> +	 * 1. ARM does not have a dirty PTE flag in hardware, upon first write
+> +	 * a page fault exception happens and Linux marks the page as dirty.
+> +	 * On x86 this is not the case and therefore the prefault handler can
+> +	 * be NULL.
+> +	 *
+
+Maybe refer the reader to arch/arm/include/asm/pgtable-2level.h for
+details?
+
+> +	 * 2. __mm_populate() (via mlock/all()) does not dirty MAP_SHARED
+> +	 * memory mappings, this would trigger a lot of IO due to write back.
+> +	 * As of today, __mm_populate() cannot distinguish between MAP_SHARED
+> +	 * with and without possible write back.
+
+Another way to say this would be that shared mappings are not touched by
+populate_vma_page_range() <- __mm_populate() because their pages cannot
+be subject to COW by definition, so there would be no point for the main
+kernel in dirtying them uselessly on mlock. However, Cobalt wants to
+make sure the page table is always fixed up for those pages in advance
+when installing a new shared mapping via RTDM regardless, to spare the
+user from increased latency due to receiving a minor fault on first
+access.
+
+> +	 */
+>  	if (cobalt_machine.prefault)
+>  		cobalt_machine.prefault(vma);
+>  #endif
+
+-- 
+Philippe.
 
