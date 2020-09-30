@@ -1,16 +1,11 @@
-Subject: Re: [PATCH] y2038: replace timespec with timespec64 in clock_settime
-References: <1600691577-12011-1-git-send-email-chensong@tj.kylinos.cn>
- <01014f7c-76ed-46ea-0c7c-920f6eb63b0e@siemens.com>
- <27465fc4-ab13-ffb7-eec4-21160fbeec8a@tj.kylinos.cn>
- <7e00b8e7-4029-00f0-38dc-6d9452b552e7@siemens.com>
- <5F72D3CF.7070200@tj.kylinos.cn>
-From: Jan Kiszka <jan.kiszka@web.de>
-Message-ID: <8ab3d084-e9bc-de32-1095-403ac6e1a2c9@web.de>
-Date: Wed, 30 Sep 2020 21:19:58 +0200
+From: =?utf-8?q?Fran=C3=A7ois_Legal?= <francois.legal@thom.fr.eu.org>
+In-Reply-To: <1174-5f6e1700-39-37e14c00@201457241>
+Content-Type: text/plain; charset="utf-8"
+Date: Wed, 30 Sep 2020 08:42:33 +0200
 MIME-Version: 1.0
-In-Reply-To: <5F72D3CF.7070200@tj.kylinos.cn>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
+Message-ID: <1175-5f742900-ab-25a5a500@198940470>
+Subject: =?utf-8?q?Re=3A?= Strange switching =?utf-8?q?=5Bthreadname=5D?= to 
+ secondary mode after exception #0 in kernel-space at 0x80272444
 Content-Transfer-Encoding: quoted-printable
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
@@ -20,61 +15,62 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: chensong <chensong@tj.kylinos.cn>, xenomai@xenomai.org
+To: =?utf-8?q?Fran=C3=A7ois_Legal?= <devel@thom.fr.eu.org>
+Cc: Jan Kiszka <jan.kiszka@siemens.com>, xenomai@xenomai.org
 
-On 29.09.20 08:27, chensong wrote:
->
->
-> On 2020=E5=B9=B409=E6=9C=8829=E6=97=A5 00:52, Jan Kiszka wrote:
->> On 23.09.20 03:40, song wrote:
->>>
->>>
->>> On 2020/9/22 =E4=B8=8B=E5=8D=8811:16, Jan Kiszka wrote:
->>>> On 21.09.20 14:32, chensong wrote:
->>>>> Upstream has used timespec64 to replace timespec inside kernel and
->>>>> used __kernel_timespec to replace timespect in syscalls, therefore
->>>>> we must keep aligned with upstream.
->>>>>
->>>>> clock_settime is a point to get started at, it involves 2 parts:
->>>>> 1, syscall in ./include/trace/events/cobalt-posix.h for 64bits
->>>>> 2, compat syscall in kernel/cobalt/posix/syscall32.c for 32bits
->>>>>
->>>>> some new functions are implemented to keep the compatibility with
->>>>> other syscalls which haven't been handled yet and will be removed
->>>>> in the end of the work.
->>>>
->>>> So, this switches also existing syscalls to 64-bit types, breaking th=
-e
->>>> current ABI, no? How much effort would it be to keep the old ABI,
->>>> adding a 64-bit one aside of it?
->>>
->>> Not breaking current ABI, i didn't add any new ABIs specific for 64bit=
-s,
->>> i added some new static functions, like ts2ns and ts2ns64,
->>> sys32_put_timespec and sys64_put_timespec, specific for clock_settime.
->>>
->>
->> clock_settime accepts struct timespec so far, you are changing that to
->> struct __kernel_timespec. If I look at its definition in the kernel, it
->> uses __kernel_time64_t as tv_sec type. But our current 32-bit users
->> still expects a 32-bit type here, no? Would that change already require
->> a new clock_settime64 syscall if we wanted to stay binary compatible?
->
-> 32 bit user space processes go to
-> COBALT_SYSCALL32emu(clock_settime,current,(clockid_t clock_id,const
-> struct compat_timespec __user *u_ts)) defined in
-> ./kernel/cobalt/posix/syscall32.c. It uses compat_timespec which 32it is
-> compatible with.
->
-> I tested 32bit application and 64bit application on 64bit system
-> respeactively
-> 32bit process -- clock_settime -- COBALT_SYSCALL32emu(clock_settime
-> 64bit process -- clock_settime -- COBALT_SYSCALL(clock_settime)
->
+So I decided to dig a little deeper in this problem, and found out that=
+ it is not xenomai3.1 specific.
+I tried with xenomai-3.0.9 and linux 4.4.227 -> same problem.
+I thought it might be a matter of ipipe patch not quite fit to 4.4.227,=
+ so I decided to try with latest ipipe-4.4.y-cip from git and xenomai 3=
+.0.9, but the same problem happens.
 
-You also need to consider 32-bit kernels, not on x86 anymore (i386 is
-practically dead), but e.g. ARMv7. There we would have a breakage now,
-don't we?
+Fran=C3=A7ois
 
-Jan
+Le Vendredi, Septembre 25, 2020 18:11 CEST, Fran=C3=A7ois Legal via Xen=
+omai <xenomai@xenomai.org> a =C3=A9crit: 
+ 
+> Sorry to come back so late on that topic.
+> I took some time to write a simple test program, which is attached.
+> 
+> Config is as follows :
+> xenomai-3.1
+> linux-4.4.227
+> 
+> Fran=C3=A7ois
+> 
+> Le Vendredi, Ao=C3=BBt 21, 2020 20:04 CEST, Jan Kiszka <jan.kiszka@si=
+emens.com> a =C3=A9crit: 
+>  
+> > On 20.08.20 15:46, Fran=C3=A7ois Legal via Xenomai wrote:
+> > > Using RTNet with multiple interfaces, xenomai 3.1 with linux 4.4
+> > > Whenever a posix RT thread calls recvmsg (), I get this error.
+> > > 
+> > > I could track this down to line 422 in udp.c :     msg =3D rtnet=5F=
+get=5Farg(fd, &=5Fmsg, u=5Fmsg, sizeof(=5Fmsg));
+> > > 
+> > > If I disassemble the kernel, the failing instruction (at 0x802724=
+44) is a nop in arm=5Fcopy=5Ffrom=5Fuser
+> > > Am I doing anything wrong ?
+> > 
+> > Maybe you are passing an invalid pointer to recvmsg, directly or in=
+ its
+> > message structures. That would cause an exception which is fixed up=
+ but
+> > also reported. Do you get an error in return?
+> > 
+> > Jan
+> > 
+> > -- 
+> > Siemens AG, Corporate Technology, CT RDA IOT SES-DE
+> > Corporate Competence Center Embedded Linux
+> -------------- next part --------------
+> A non-text attachment was scrubbed...
+> Name: test-net.c
+> Type: application/octet-stream
+> Size: 6141 bytes
+> Desc: not available
+> URL: <http://xenomai.org/pipermail/xenomai/attachments/20200925/f745e=
+32f/attachment.obj>
+
 
