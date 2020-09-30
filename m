@@ -1,12 +1,9 @@
-From: =?utf-8?q?Fran=C3=A7ois_Legal?= <devel@thom.fr.eu.org>
-In-Reply-To: <1175-5f742900-ab-25a5a500@198940470>
-Content-Type: text/plain; charset="utf-8"
-Date: Wed, 30 Sep 2020 10:48:39 +0200
+From: "Q. Gylstorff" <Quirin.Gylstorff@siemens.com>
+Subject: [PATCH 1/1] gitlab-ci: add cache to decrease build times
+Date: Wed, 30 Sep 2020 12:51:46 +0200
+Message-Id: <20200930105146.19902-1-Quirin.Gylstorff@siemens.com>
 MIME-Version: 1.0
-Message-ID: <1174-5f744680-45-37e14c00@201458627>
-Subject: =?utf-8?q?Re=3A?= Strange switching =?utf-8?q?=5Bthreadname=5D?= to 
- secondary mode after exception #0 in kernel-space at 0x80272444
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,79 +12,45 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-Cc: Jan Kiszka <jan.kiszka@siemens.com>, xenomai@xenomai.org
+To: Jan.kiszka@siemens.com, xenomai@xenomai.org
 
-I might have found what is causing this problem : CONFIG=5FCPU=5FSPECTR=
-E
+From: Quirin Gylstorff <quirin.gylstorff@siemens.com>
 
-It was the noticeable difference between my last (4.4.189) kernel relea=
-se not showing this problem, and the next I tried (4.4.227).
-If I modify the Kconfig to disable CPU=5FSPECTRE, the problem does not =
-show up anymore.
+Add the variable CCACHE_DIR to the build to move the ccache from ~/.ccache
+to the current directory and upload the cache from each build.
 
-I'll dig a little deeper into that now.
+Each job uses a separate cache.
 
-Fran=C3=A7ois
+Signed-off-by: Quirin Gylstorff <quirin.gylstorff@siemens.com>
+---
+ .gitlab-ci.yml | 6 +++++-
+ 1 file changed, 5 insertions(+), 1 deletion(-)
 
-Le Mercredi, Septembre 30, 2020 08:42 CEST, Fran=C3=A7ois Legal <franco=
-is.legal@thom.fr.eu.org> a =C3=A9crit: 
+diff --git a/.gitlab-ci.yml b/.gitlab-ci.yml
+index 59bd1d355..fa0795acd 100644
+--- a/.gitlab-ci.yml
++++ b/.gitlab-ci.yml
+@@ -18,6 +18,7 @@ variables:
+   GIT_STRATEGY: clone
+   KDIR: "/tmp/kernel"
+   USE_CCACHE: "1"
++  CCACHE_DIR: "./.ccache"
+   CCACHE_MAXSIZE: "400M"
+   IPIPE_MIRROR_URL: "https://gitlab.denx.de/Xenomai"
+   PACKAGES: "gcc-8 gcc-8-aarch64-linux-gnu libc6-dev-arm64-cross \
+@@ -162,7 +163,10 @@ variables:
+     - ./configure --enable-smp ${CONFIGURE_OPTS}
+     - make -j $(nproc)
+     - ccache -s
+-
++  cache:
++    key: "$CI_JOB_NAME-$CI_COMMIT_REF_SLUG"
++    paths:
++      - $CCACHE_DIR
  
-> So I decided to dig a little deeper in this problem, and found out th=
-at it is not xenomai3.1 specific.
-> I tried with xenomai-3.0.9 and linux 4.4.227 -> same problem.
-> I thought it might be a matter of ipipe patch not quite fit to 4.4.22=
-7, so I decided to try with latest ipipe-4.4.y-cip from git and xenomai=
- 3.0.9, but the same problem happens.
-> 
-> Fran=C3=A7ois
-> 
-> Le Vendredi, Septembre 25, 2020 18:11 CEST, Fran=C3=A7ois Legal via X=
-enomai <xenomai@xenomai.org> a =C3=A9crit: 
->  
-> > Sorry to come back so late on that topic.
-> > I took some time to write a simple test program, which is attached.=
-
-> > 
-> > Config is as follows :
-> > xenomai-3.1
-> > linux-4.4.227
-> > 
-> > Fran=C3=A7ois
-> > 
-> > Le Vendredi, Ao=C3=BBt 21, 2020 20:04 CEST, Jan Kiszka <jan.kiszka@=
-siemens.com> a =C3=A9crit: 
-> >  
-> > > On 20.08.20 15:46, Fran=C3=A7ois Legal via Xenomai wrote:
-> > > > Using RTNet with multiple interfaces, xenomai 3.1 with linux 4.=
-4
-> > > > Whenever a posix RT thread calls recvmsg (), I get this error.
-> > > > 
-> > > > I could track this down to line 422 in udp.c :     msg =3D rtne=
-t=5Fget=5Farg(fd, &=5Fmsg, u=5Fmsg, sizeof(=5Fmsg));
-> > > > 
-> > > > If I disassemble the kernel, the failing instruction (at 0x8027=
-2444) is a nop in arm=5Fcopy=5Ffrom=5Fuser
-> > > > Am I doing anything wrong ?
-> > > 
-> > > Maybe you are passing an invalid pointer to recvmsg, directly or =
-in its
-> > > message structures. That would cause an exception which is fixed =
-up but
-> > > also reported. Do you get an error in return?
-> > > 
-> > > Jan
-> > > 
-> > > -- 
-> > > Siemens AG, Corporate Technology, CT RDA IOT SES-DE
-> > > Corporate Competence Center Embedded Linux
-> > -------------- next part --------------
-> > A non-text attachment was scrubbed...
-> > Name: test-net.c
-> > Type: application/octet-stream
-> > Size: 6141 bytes
-> > Desc: not available
-> > URL: <http://xenomai.org/pipermail/xenomai/attachments/20200925/f74=
-5e32f/attachment.obj>
->
+ arm-4.19-release:
+   extends: .build
+-- 
+2.20.1
 
 
