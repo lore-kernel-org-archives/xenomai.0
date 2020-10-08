@@ -1,12 +1,11 @@
-Date: Thu, 29 Oct 2020 10:44:51 +0800
-From: Fino Meng <fino.meng@linux.intel.com>
-Subject: Re: Xenomai (master/next) unable to use orocos-corba
-Message-ID: <20201029024451.GA29721@linux.intel.com>
-References: <CAMjL99JLBO7m5Qr71QQm9eMWtLX3rm415UEcLWcB=CSdnz+ywA@mail.gmail.com>
+From: Paolo Minazzi <Paolo.Minazzi@mitrol.it>
+Subject: Question about gdb and timeout
+Message-ID: <6c79c68d-fa03-28cd-71e5-d02f1be7d6a2@mitrol.it>
+Date: Thu, 8 Oct 2020 14:47:27 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAMjL99JLBO7m5Qr71QQm9eMWtLX3rm415UEcLWcB=CSdnz+ywA@mail.gmail.com>
+Content-Type: text/plain; charset="iso-8859-15"; format="flowed"
+Content-Transfer-Encoding: quoted-printable
+Content-Language: en-US
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,31 +14,95 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: John Ho <johnho26@gmail.com>
-Cc: xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-On Wed, Oct 28, 2020 at 09:41:28PM +0100, John Ho via Xenomai wrote:
-> Hi all, I apologise for posting this again, but i was testing some stuff
-> with xenomai and orocos, and i am not sure if i have encountered a wall
-> with my progress. With special thanks to Gino, I was able to get the i219v
-> drivers patched and rtnet running. As such I was able to get information
-> from my Ethercat slaves on my university's robot.  I installed orocos 2.9
-> with a custom branch of rtt from rtt-lwr. Although I was successful in
-> compilation, and was able to use deployer-xenomai, I encountered an issue
-> with deployer-corba / deployer-corba-xenomai. It only displays the memory
-> available and nothing else.
-> 
-> After changing the branch of xenomai to stable-v 3.0.x or even v3.0.10, I
-> was able to start deployer-corba-xenomai/ deployer-corba again. I am not
-> sure if it is something to do with my kernel configuration that is causing
-> this issue or something else.
-> 
-> I will greatly appreciate any help I can get with this regard.
+Hi to all,
+I have an ARM board (iMX6SX).
+- kernel 4.9.88
+- xenomai 3.0.9
+- ipipe-core-4.9.51-arm-4
 
-Hi John,
+I have run a simple xenomai alchemy test :
+- a task that wait an event (timeout 10 secs)
+- a task=A0 that signal the event (every 100 msecs)
+All works correctly.
 
-I am not familiar with orocos, if it is in ROS releated stack, does it
-already using Preempt-RT Linux kernel as realtime solution? 
+When I use the example with gdb:
+b 56 (at usleep(10000) in the main)
+r
+c
+c
+...
+If I stay stopped in gdb for more that 10 seconds (that is the timeout=20
+of the rt_event_wait), I get -110 (=3D -ETIMEDOUT).
+This because I think the timer counts also when tasks are stopped in gdb.
+Is there a way to avoid this behavior ? When I'm stopped in gdb, the=20
+real-time"world" should be stopped.
+Thanks for your support,
+Best regards,
+Paolo
 
-BR fino
+#include <stdlib.h>
+#include <stdio.h>
+#include <alchemy/task.h>
+#include <alchemy/event.h>
+
+RT_TASK rt_task_wait,
+ =A0=A0=A0=A0=A0=A0=A0 rt_task_signal;
+volatile unsigned int cnt;
+
+#define=A0 EVENT_WAIT_MASK 1
+
+RT_EVENT ev;
+
+#define MSEC(x) (RTIME)((x) * 1000ULL * 1000ULL)
+#define SEC(x)=A0 (RTIME)(MSEC(x) * 1000ULL)
+
+void xeno_task_wait(void *dummy)
+{
+ =A0=A0=A0 unsigned int mask_ret;
+ =A0=A0=A0 rt_event_create(&ev, "ev", 0, 0);
+ =A0=A0=A0 RTIME timeout =3D SEC(10);
+ =A0=A0=A0 while(1)
+ =A0=A0=A0 {
+ =A0=A0=A0 =A0=A0=A0 cnt++;
+ =A0=A0=A0 =A0=A0=A0 int res;
+ =A0=A0=A0 =A0=A0=A0 res =3D rt_event_wait(&ev, EVENT_WAIT_MASK, &mask_ret,=
+ EV_ANY,=20
+timeout);
+ =A0=A0=A0 =A0=A0=A0 if (res)
+ =A0=A0=A0 =A0=A0=A0 {
+ =A0=A0=A0 =A0=A0=A0 =A0=A0=A0 printf(">>> res =3D %d\n", res);
+ =A0=A0=A0 =A0=A0=A0 =A0=A0=A0 exit(0);
+ =A0=A0=A0 =A0=A0=A0 }
+ =A0=A0=A0 =A0=A0=A0 rt_event_clear(&ev, EVENT_WAIT_MASK, &mask_ret);
+ =A0=A0=A0 }
+}
+
+void xeno_task_signal(void *dummy)
+{
+ =A0=A0=A0 while(1)
+ =A0=A0=A0 {
+ =A0=A0=A0 =A0=A0=A0 rt_task_sleep( MSEC(100) );
+ =A0=A0=A0 =A0=A0=A0 rt_event_signal(&ev, EVENT_WAIT_MASK);
+ =A0=A0=A0 }
+}
+
+
+int main(int argc, char *const *argv)
+{
+ =A0=A0=A0 rt_task_create(&rt_task_wait,=A0=A0 "wait",=A0=A0 0, 98, 0);
+ =A0=A0=A0 rt_task_start (&rt_task_wait, &xeno_task_wait,=A0=A0 NULL);
+
+ =A0=A0=A0 rt_task_create(&rt_task_signal, "signal", 0, 99, 0);
+ =A0=A0=A0 rt_task_start (&rt_task_signal, &xeno_task_signal, NULL);
+
+ =A0=A0=A0 while(1)
+ =A0=A0=A0 {
+ =A0 =A0 =A0 =A0 usleep(10000);=A0=A0=A0=A0=A0=A0=A0=A0 // <<<=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D BREAKPOINT
+ =A0=A0=A0 =A0=A0=A0 printf("%d\n", cnt);
+ =A0=A0=A0 }
+}
+
 
