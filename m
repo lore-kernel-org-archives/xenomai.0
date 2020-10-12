@@ -1,9 +1,11 @@
+From: =?utf-8?q?Fran=C3=A7ois_Legal?= <devel@thom.fr.eu.org>
+In-Reply-To: <CAMjL99KnZH8craO14kmUA6Drg8sLqgUmEikUptNczkJWLBK1MA@mail.gmail.com>
+Date: Mon, 12 Oct 2020 17:31:51 +0200
 MIME-Version: 1.0
-From: John Ho <johnho26@gmail.com>
-Date: Mon, 12 Oct 2020 17:04:53 +0200
-Message-ID: <CAMjL99KnZH8craO14kmUA6Drg8sLqgUmEikUptNczkJWLBK1MA@mail.gmail.com>
-Subject: SOEM for Xenomai 3
-Content-Type: text/plain; charset="UTF-8"
+Message-ID: <1174-5f847700-53-37e14c00@74917922>
+Subject: =?utf-8?q?Re=3A?= SOEM for Xenomai 3
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -12,12 +14,29 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
+To: John Ho <johnho26@gmail.com>
+Cc: xenomai@xenomai.org
 
-Hi there, I am writing here to ask if anyone can help me with SOEM
-compilation for Xenomai 3. I am currently trying to use RTNet to
-communicate with my Universities Robot and run experiments, however the
-SOEM's xenomai cmake is requesting for some libraries:
-Xenomai_Native_Libraries,posix ,pthread, rtdm.it is looking for files from
-rtnet for example rtnet.h. Will appreciate the help i can get with regards
-to this matter!
+TGUgTHVuZGksIE9jdG9icmUgMTIsIDIwMjAgMTc6MDQgQ0VTVCwgSm9obiBIbyB2aWEgWGVub21h
+aSA8eGVub21haUB4ZW5vbWFpLm9yZz4gYSDDqWNyaXQ6IAogCj4gSGkgdGhlcmUsIEkgYW0gd3Jp
+dGluZyBoZXJlIHRvIGFzayBpZiBhbnlvbmUgY2FuIGhlbHAgbWUgd2l0aCBTT0VNCj4gY29tcGls
+YXRpb24gZm9yIFhlbm9tYWkgMy4gSSBhbSBjdXJyZW50bHkgdHJ5aW5nIHRvIHVzZSBSVE5ldCB0
+bwo+IGNvbW11bmljYXRlIHdpdGggbXkgVW5pdmVyc2l0aWVzIFJvYm90IGFuZCBydW4gZXhwZXJp
+bWVudHMsIGhvd2V2ZXIgdGhlCj4gU09FTSdzIHhlbm9tYWkgY21ha2UgaXMgcmVxdWVzdGluZyBm
+b3Igc29tZSBsaWJyYXJpZXM6Cj4gWGVub21haV9OYXRpdmVfTGlicmFyaWVzLHBvc2l4ICxwdGhy
+ZWFkLCBydGRtLml0IGlzIGxvb2tpbmcgZm9yIGZpbGVzIGZyb20KPiBydG5ldCBmb3IgZXhhbXBs
+ZSBydG5ldC5oLiBXaWxsIGFwcHJlY2lhdGUgdGhlIGhlbHAgaSBjYW4gZ2V0IHdpdGggcmVnYXJk
+cwo+IHRvIHRoaXMgbWF0dGVyIQogCkhlbGxvLgoKSSBtYWRlIGl0IHNvbWUgdGltZSBhZ28uCkhl
+cmUgYXJlIHRoZSBtYWtlZmlsZS9zZXR1cC5zaCBmb3IgbXkgcGxhdGZvcm0gKFhpbGlueCBaeW5x
+NzAwMCkgdGhhdCB5b3UgY2FuIGFkYXB0IGZvciB5b3Vycy4KQWxzbywgSSBtYWRlIGEgc2xpZ2h0
+IG1vZGlmaWNhdGlvbiBpbiBuaWNkcnYuYyB0byB1c2UgdGhlIHByb3BlciBSVE5FVCBpb2N0bCBm
+b3IgcmVjZWl2ZSB0aW1lb3V0IChSVE5FVF9SVElPQ19USU1FT1VUKS4KCkZyYW7Dp29pcwotLS0t
+LS0tLS0tLS0tLSBuZXh0IHBhcnQgLS0tLS0tLS0tLS0tLS0KQSBub24tdGV4dCBhdHRhY2htZW50
+IHdhcyBzY3J1YmJlZC4uLgpOYW1lOiBzZXR1cC5zaApUeXBlOiB0ZXh0L3gtc2gKU2l6ZTogMjMy
+MSBieXRlcwpEZXNjOiBub3QgYXZhaWxhYmxlClVSTDogPGh0dHA6Ly94ZW5vbWFpLm9yZy9waXBl
+cm1haWwveGVub21haS9hdHRhY2htZW50cy8yMDIwMTAxMi8wMWFmOTUzMC9hdHRhY2htZW50LnNo
+PgotLS0tLS0tLS0tLS0tLSBuZXh0IHBhcnQgLS0tLS0tLS0tLS0tLS0KQSBub24tdGV4dCBhdHRh
+Y2htZW50IHdhcyBzY3J1YmJlZC4uLgpOYW1lOiBhcm0tenlucXJ0LWdjYy5tawpUeXBlOiBhcHBs
+aWNhdGlvbi9vY3RldC1zdHJlYW0KU2l6ZTogMTU3NCBieXRlcwpEZXNjOiBub3QgYXZhaWxhYmxl
+ClVSTDogPGh0dHA6Ly94ZW5vbWFpLm9yZy9waXBlcm1haWwveGVub21haS9hdHRhY2htZW50cy8y
+MDIwMTAxMi8wMWFmOTUzMC9hdHRhY2htZW50Lm9iaj4K
