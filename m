@@ -1,17 +1,8 @@
-From: =?utf-8?Q?Deniz_U=C4=9Fur?= <deniz343@gmail.com>
-Message-Id: <B6F97522-9F76-4D2F-83B5-F992853C6236@gmail.com>
-Mime-Version: 1.0 (Mac OS X Mail 12.4 \(3445.104.17\))
-Subject: Re: RTnet on Raspberry Pi 3B+
-Date: Mon, 12 Oct 2020 02:18:11 +0300
-In-Reply-To: <01d38a9b-da56-6877-5508-9444bff5829d@qmul.ac.uk>
-References: <DDED34AC-1834-4932-B053-AD8EEF810205@gmail.com>
- <CAFc1U0uqCWknFJj1FFMk2Ge7XEH1nRUwXek2Ay7nvmBXh03nqg@mail.gmail.com>
- <DD8FF5D6-AF88-4EAB-9E9D-3BA4B9B57CEA@gmail.com>
- <c137965c-cb45-2b9a-2795-3b1343f0e55a@qmul.ac.uk>
- <01d38a9b-da56-6877-5508-9444bff5829d@qmul.ac.uk>
-Content-Type: text/plain;
-	charset=utf-8
-Content-Transfer-Encoding: quoted-printable
+From: hongzha1 <hongzhan.chen@intel.com>
+Subject: [PATCH][dovetail/wip] cobalt/init: init escalate irq with dovetail
+ synthetic_irq_domain
+Date: Sun, 11 Oct 2020 23:06:51 -0400
+Message-Id: <20201012030651.8157-1-hongzhan.chen@intel.com>
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -20,101 +11,105 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Giulio Moro <g.moro@qmul.ac.uk>
-Cc: Pierre FICHEUX <pierre.ficheux@smile.fr>, xenomai <xenomai@xenomai.org>
+To: xenomai@xenomai.org, jan.kiszka@siemens.com
 
-Hi Giulio,
+alloc escalate irq with dovetail synthetic_irq_domain and init and
+raise it with irq_post_oob
 
-Thanks for your detailed response. I=E2=80=99ve checked all of the links =
-you sent. They helped me a lot.
+Signed-off-by: hongzha1 <hongzhan.chen@intel.com>
 
-Do you know if xenomai-images pulls master head?
-I believe CONFIG_XENO_DRIVERS_SPI_OMAP2_MCSPI_RT is just added on =
-January. So I couldn=E2=80=99t be sure if it builds the kernel =
-containing this commit.
+diff --git a/kernel/cobalt/arch/x86/include/asm/xenomai/thread.h b/kernel/cobalt/arch/x86/include/asm/xenomai/thread.h
+index 721d19537..af3433e8e 100644
+--- a/kernel/cobalt/arch/x86/include/asm/xenomai/thread.h
++++ b/kernel/cobalt/arch/x86/include/asm/xenomai/thread.h
+@@ -88,6 +88,11 @@ static inline void xnarch_enter_root(struct xnthread *root) { }
+ 
+ static inline int xnarch_escalate(void)
+ {
++	if (running_inband()) {
++		/* orginal xenomai domain equals oob stage */
++		irq_post_oob(cobalt_pipeline.escalate_virq);
++		return 1;
++	}
+ /*	if (ipipe_root_p) {
+ 		ipipe_raise_irq(cobalt_pipeline.escalate_virq);
+ 		return 1;
+diff --git a/kernel/cobalt/init.c b/kernel/cobalt/init.c
+index ac3f45f67..bdf37f34a 100644
+--- a/kernel/cobalt/init.c
++++ b/kernel/cobalt/init.c
+@@ -30,11 +30,15 @@
+ #include <cobalt/kernel/pipe.h>
+ #include <cobalt/kernel/select.h>
+ #include <cobalt/kernel/vdso.h>
++#include <linux/irqdomain.h>
++#include <linux/irq_pipeline.h>
+ #include <rtdm/fd.h>
+ #include "rtdm/internal.h"
+ #include "posix/internal.h"
+ #include "procfs.h"
+ 
++
++static DEFINE_PER_CPU(int, cobalt_escalate_devid);
+ /**
+  * @defgroup cobalt Cobalt
+  *
+@@ -134,10 +138,17 @@ static void sys_shutdown(void)
+ 	xnheap_vfree(membase);
+ }
+ 
++static irqreturn_t cobalt_escalate_irq_handler(int sirq, void *dev_id)
++{
++	__xnsched_run_handler();
++
++	return IRQ_HANDLED;
++}
++
+ static int __init mach_setup(void)
+ {
+ //	struct ipipe_sysinfo sysinfo;
+-	int ret/*, virq*/;
++	int ret, virq;
+ 
+ /*	ret = ipipe_select_timers(&xnsched_realtime_cpus);
+ 	if (ret < 0)
+@@ -170,6 +181,25 @@ static int __init mach_setup(void)
+ 	}*/
+ 
+ #warning TODO: irq init
++	/* init escalate irq */
++	ret = -EAGAIN;
++	virq = irq_create_direct_mapping(synthetic_irq_domain);
++	if (WARN_ON(virq == 0))
++		return ret;
++
++	ret = __request_percpu_irq(virq,
++			cobalt_escalate_irq_handler,
++			IRQF_OOB,
++			"cobalt escalate",
++			&cobalt_escalate_devid);
++	if (WARN_ON(ret)) {
++		irq_dispose_mapping(virq);
++		return ret;
++	}
++
++	cobalt_pipeline.escalate_virq = virq;
++
++
+ /*	ipipe_register_head(&xnsched_realtime_domain, "Xenomai");
+ 
+ 	ret = -EBUSY;
+@@ -203,6 +233,9 @@ static int __init mach_setup(void)
+ 	return 0;
+ 
+ fail_clock:
++	free_percpu_irq(cobalt_pipeline.escalate_virq,
++			&cobalt_escalate_devid);
++	irq_dispose_mapping(cobalt_pipeline.escalate_virq);
+ /*	ipipe_free_irq(&xnsched_realtime_domain,
+ 		       cobalt_pipeline.escalate_virq);
+ 	ipipe_free_virq(cobalt_pipeline.escalate_virq);
+-- 
+2.17.1
 
-Thank you.
-Deniz.
-
-> On 12 Oct 2020, at 01:03, Giulio Moro <g.moro@qmul.ac.uk> wrote:
->=20
-> I should have mentioned that you can also build an Isar image for the =
-BBB with Xenomai from here https://gitlab.denx.de/Xenomai/xenomai-images
->=20
-> Giulio Moro wrote:
->> You can download a working Debian image with Xenomai that runs on BB =
-here https://github.com/BelaPlatform/bela-image-builder/releases
->> This contains Linux 4.14.108-ti-xenomai-r135 with Xenomai 3.0.10
->> The kernel is built from this branch =
-https://github.com/RobertCNelson/ti-linux-kernel-dev/tree/ti-linux-xenomai=
--4.14.y
->> I haven't tried RTDM SPI, but there seems to be a driver for it: =
-https://gitlab.denx.de/Xenomai/xenomai/-/blob/master/kernel/drivers/spi/sp=
-i-omap2-mcspi-rt.c
->> Deniz U=C4=9Fur via Xenomai wrote:
->>> Hi Pierre,
->>>=20
->>> I=E2=80=99ve just checked out BeagleBone Black and it seems =
-applicable for me. If you don=E2=80=99t mind I have some follow-up =
-questions.
->>>=20
->>> Do you know if RTDM SPI works on BB?
->>> Which ipipe, xenomai, and linux version combination is working on =
-the BB right now?
->>> Are there any recent guides for Xenomai 3 on BB?
->>>=20
->>> Thanks.
->>> Deniz.
->>>=20
->>>> On 11 Oct 2020, at 20:39, Pierre FICHEUX <pierre.ficheux@smile.fr> =
-wrote:
->>>>=20
->>>> Hi,
->>>>=20
->>>> Pi Ethernet controller is based on USB, not that good for realtime =
-(AMHA)...
->>>>=20
->>>> May you could switch to BeagleBone Black ?
->>>>=20
->>>> regards
->>>>=20
->>>> Le sam. 10 oct. 2020 =C3=A0 10:21, Deniz U=C4=9Fur via Xenomai =
-<xenomai@xenomai.org <mailto:xenomai@xenomai.org>> a =C3=A9crit :
->>>> Hello all,
->>>>=20
->>>> I=E2=80=99m currently researching for a real-time sensor data =
-acquisition system and I was thinking about using Raspberry Pi 3B+. =
-Along with my move to making everything real-time, I also want to =
-experiment with RTnet. Although from what I can understand, RPi=E2=80=99s =
-ethernet module is not supported in RTnet.
->>>>=20
->>>> Is RPi not supported in RTnet? If not, is there anything I can do =
-to bring this feature?
->>>> Do I have any alternative for making TCP socket connection =
-real-time using Xenomai on RPi?
->>>> Lastly, If RPi is an impossible target for RTnet, do we have any =
-alternative embedded system that works with RTnet?
->>>>=20
->>>> Thanks in advance.
->>>> Deniz.
->>>>=20
->>>> Some important details:
->>>> ARCH: ARM
->>>> SoC: BCM2835
->>>> Linux: 4.14.36
->>>> Xenomai: 3.0.7
->>>> I-Pipe: 4.14.36-arm-1
->>>>=20
->>>>=20
->>>> --=20
->>>> Pierre FICHEUX -/- CTO Smile ECS, France -\- =
-pierre.ficheux@smile.fr <mailto:pierre.ficheux@smile.fr>
->>>>                               http://www.smile.fr/ =
-<http://www.smile.fr/>
->>>>                               =
-https://smile.eu/fr/offres/embarque-iot =
-<https://smile.eu/fr/offres/embarque-iot>
->>>> I would love to change the world, but they won't give me the source =
-code
->>>=20
 
