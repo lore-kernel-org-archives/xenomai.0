@@ -1,15 +1,11 @@
-Subject: Re: RTnet on Raspberry Pi 3B+
-References: <DDED34AC-1834-4932-B053-AD8EEF810205@gmail.com>
- <CAFc1U0uqCWknFJj1FFMk2Ge7XEH1nRUwXek2Ay7nvmBXh03nqg@mail.gmail.com>
- <DD8FF5D6-AF88-4EAB-9E9D-3BA4B9B57CEA@gmail.com>
- <c137965c-cb45-2b9a-2795-3b1343f0e55a@qmul.ac.uk>
- <01d38a9b-da56-6877-5508-9444bff5829d@qmul.ac.uk>
- <B6F97522-9F76-4D2F-83B5-F992853C6236@gmail.com>
+Subject: Re: Question about gdb and timeout
+References: <6c79c68d-fa03-28cd-71e5-d02f1be7d6a2@mitrol.it>
+ <1908941175.1265140.1602174703558.JavaMail.zimbra@wolfram.com>
 From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <751ccaf8-b483-0e31-1620-e77447d35380@siemens.com>
-Date: Mon, 12 Oct 2020 12:36:36 +0200
+Message-ID: <1e3763d4-2355-af63-dc19-8be1edb07b13@siemens.com>
+Date: Mon, 12 Oct 2020 12:36:40 +0200
 MIME-Version: 1.0
-In-Reply-To: <B6F97522-9F76-4D2F-83B5-F992853C6236@gmail.com>
+In-Reply-To: <1908941175.1265140.1602174703558.JavaMail.zimbra@wolfram.com>
 Content-Type: text/plain; charset="utf-8"
 Content-Language: en-US
 Content-Transfer-Encoding: 8bit
@@ -21,83 +17,124 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: =?UTF-8?Q?Deniz_U=c4=9fur?= <deniz343@gmail.com>, Giulio Moro <g.moro@qmul.ac.uk>
+To: Per Oberg <pero@wolfram.com>, Paolo Minazzi <Paolo.Minazzi@mitrol.it>
 Cc: xenomai <xenomai@xenomai.org>
 
-On 12.10.20 01:18, Deniz Uğur via Xenomai wrote:
-> Hi Giulio,
+On 08.10.20 18:31, Per Oberg via Xenomai wrote:
 > 
-> Thanks for your detailed response. I’ve checked all of the links you sent. They helped me a lot.
 > 
-> Do you know if xenomai-images pulls master head?
-> I believe CONFIG_XENO_DRIVERS_SPI_OMAP2_MCSPI_RT is just added on January. So I couldn’t be sure if it builds the kernel containing this commit.
+> ----- Den 8 okt 2020, på kl 14:47, xenomai xenomai@xenomai.org skrev:
+> 
+>> Hi to all,
+>> I have an ARM board (iMX6SX).
+>> - kernel 4.9.88
+>> - xenomai 3.0.9
+>> - ipipe-core-4.9.51-arm-4
+> 
+>> I have run a simple xenomai alchemy test :
+>> - a task that wait an event (timeout 10 secs)
+>> - a task that signal the event (every 100 msecs)
+>> All works correctly.
+> 
+>> When I use the example with gdb:
+>> b 56 (at usleep(10000) in the main)
+>> r
+>> c
+>> c
+>> ...
+>> If I stay stopped in gdb for more that 10 seconds (that is the timeout
+>> of the rt_event_wait), I get -110 (= -ETIMEDOUT).
+>> This because I think the timer counts also when tasks are stopped in gdb.
+>> Is there a way to avoid this behavior ? When I'm stopped in gdb, the
+>> real-time"world" should be stopped.
+> 
+> This is not exactly my home arena, but I'm waiting for a kernel compile so I'll give you my two cents...
+> 
+> Not easily, or plainly just no. At least not without rewriting your timeout code. I'm not sure what alchemy uses as base clock for it's timers, but for the posix skin you have the option of CLOCK_HOST and CLOCK_HOST_REALTIME, CLOCK_MONOTONIC and CLOCK_REALTIME (and maybe others) that represents the Linux kernel time and the Xenomai kernel time. Gdb just stops your application while the kernel timers will keep running.
 > 
 
-If you append ":opt-xenomai-next.yml", Xenomai will be built from the
-next branch. By default, the last release is used.
+Right. We used to stop system timers, but that's not straightforward
+either, e.g. when there are multiple applications on the system which
+would then be affected as well. In addition, this stopping doesn't help
+with the real world continuing to run.
+
+We are internally experimenting with debug callbacks that an application
+can register and which are run prior to the stop and right before the
+application resumes. Those may help with "cleaning up" (resynchronizing)
+the application with the rest of the system after a breakpoint stop.
+
+A simpler alternative is making the application robust against timeouts,
+at least in some debug mode.
 
 Jan
 
-> Thank you.
-> Deniz.
+> However, If you base a timer on the linux CLOCK_REALTIME and reset the linux host time before your timer times out you could be able to trick it. The difference between CLOCK_MONOTONIC and CLOCK_REALTIME is that CLOCK_REALTIME can jump backwards, e.g. when a NTP client resets it, although I am not sure what this does to different timers.
 > 
->> On 12 Oct 2020, at 01:03, Giulio Moro <g.moro@qmul.ac.uk> wrote:
->>
->> I should have mentioned that you can also build an Isar image for the BBB with Xenomai from here https://gitlab.denx.de/Xenomai/xenomai-images
->>
->> Giulio Moro wrote:
->>> You can download a working Debian image with Xenomai that runs on BB here https://github.com/BelaPlatform/bela-image-builder/releases
->>> This contains Linux 4.14.108-ti-xenomai-r135 with Xenomai 3.0.10
->>> The kernel is built from this branch https://github.com/RobertCNelson/ti-linux-kernel-dev/tree/ti-linux-xenomai-4.14.y
->>> I haven't tried RTDM SPI, but there seems to be a driver for it: https://gitlab.denx.de/Xenomai/xenomai/-/blob/master/kernel/drivers/spi/spi-omap2-mcspi-rt.c
->>> Deniz Uğur via Xenomai wrote:
->>>> Hi Pierre,
->>>>
->>>> I’ve just checked out BeagleBone Black and it seems applicable for me. If you don’t mind I have some follow-up questions.
->>>>
->>>> Do you know if RTDM SPI works on BB?
->>>> Which ipipe, xenomai, and linux version combination is working on the BB right now?
->>>> Are there any recent guides for Xenomai 3 on BB?
->>>>
->>>> Thanks.
->>>> Deniz.
->>>>
->>>>> On 11 Oct 2020, at 20:39, Pierre FICHEUX <pierre.ficheux@smile.fr> wrote:
->>>>>
->>>>> Hi,
->>>>>
->>>>> Pi Ethernet controller is based on USB, not that good for realtime (AMHA)...
->>>>>
->>>>> May you could switch to BeagleBone Black ?
->>>>>
->>>>> regards
->>>>>
->>>>> Le sam. 10 oct. 2020 à 10:21, Deniz Uğur via Xenomai <xenomai@xenomai.org <mailto:xenomai@xenomai.org>> a écrit :
->>>>> Hello all,
->>>>>
->>>>> I’m currently researching for a real-time sensor data acquisition system and I was thinking about using Raspberry Pi 3B+. Along with my move to making everything real-time, I also want to experiment with RTnet. Although from what I can understand, RPi’s ethernet module is not supported in RTnet.
->>>>>
->>>>> Is RPi not supported in RTnet? If not, is there anything I can do to bring this feature?
->>>>> Do I have any alternative for making TCP socket connection real-time using Xenomai on RPi?
->>>>> Lastly, If RPi is an impossible target for RTnet, do we have any alternative embedded system that works with RTnet?
->>>>>
->>>>> Thanks in advance.
->>>>> Deniz.
->>>>>
->>>>> Some important details:
->>>>> ARCH: ARM
->>>>> SoC: BCM2835
->>>>> Linux: 4.14.36
->>>>> Xenomai: 3.0.7
->>>>> I-Pipe: 4.14.36-arm-1
->>>>>
->>>>>
->>>>> -- 
->>>>> Pierre FICHEUX -/- CTO Smile ECS, France -\- pierre.ficheux@smile.fr <mailto:pierre.ficheux@smile.fr>
->>>>>                               http://www.smile.fr/ <http://www.smile.fr/>
->>>>>                               https://smile.eu/fr/offres/embarque-iot <https://smile.eu/fr/offres/embarque-iot>
->>>>> I would love to change the world, but they won't give me the source code
->>>>
+> Per Öberg 
+> 
+>> Thanks for your support,
+>> Best regards,
+>> Paolo
+> 
+>> #include <stdlib.h>
+>> #include <stdio.h>
+>> #include <alchemy/task.h>
+>> #include <alchemy/event.h>
+> 
+>> RT_TASK rt_task_wait,
+>> rt_task_signal;
+>> volatile unsigned int cnt;
+> 
+>> #define EVENT_WAIT_MASK 1
+> 
+>> RT_EVENT ev;
+> 
+>> #define MSEC(x) (RTIME)((x) * 1000ULL * 1000ULL)
+>> #define SEC(x) (RTIME)(MSEC(x) * 1000ULL)
+> 
+>> void xeno_task_wait(void *dummy)
+>> {
+>> unsigned int mask_ret;
+>> rt_event_create(&ev, "ev", 0, 0);
+>> RTIME timeout = SEC(10);
+>> while(1)
+>> {
+>> cnt++;
+>> int res;
+>> res = rt_event_wait(&ev, EVENT_WAIT_MASK, &mask_ret, EV_ANY,
+>> timeout);
+>> if (res)
+>> {
+>> printf(">>> res = %d\n", res);
+>> exit(0);
+>> }
+>> rt_event_clear(&ev, EVENT_WAIT_MASK, &mask_ret);
+>> }
+>> }
+> 
+>> void xeno_task_signal(void *dummy)
+>> {
+>> while(1)
+>> {
+>> rt_task_sleep( MSEC(100) );
+>> rt_event_signal(&ev, EVENT_WAIT_MASK);
+>> }
+>> }
+> 
+>> int main(int argc, char *const *argv)
+>> {
+>> rt_task_create(&rt_task_wait, "wait", 0, 98, 0);
+>> rt_task_start (&rt_task_wait, &xeno_task_wait, NULL);
+> 
+>> rt_task_create(&rt_task_signal, "signal", 0, 99, 0);
+>> rt_task_start (&rt_task_signal, &xeno_task_signal, NULL);
+> 
+>> while(1)
+>> {
+>> usleep(10000); // <<<============ BREAKPOINT
+>> printf("%d\n", cnt);
+>> }
+>> }
 > 
 
 -- 
