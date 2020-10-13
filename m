@@ -1,10 +1,11 @@
-Subject: Re: [PATCH v2] Multi-library support with core suffix in soname
-References: <20200928222730.3027-1-vt@altlinux.org>
+Subject: Re: [PATCH] cobalt/kernel: vfile_snapshot: fix seq_file leakage on
+ race detection
+References: <20200929132504.448462-1-rpm@xenomai.org>
 From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <dbc9103b-e3be-1371-f7f6-8dcee96d8662@siemens.com>
-Date: Tue, 13 Oct 2020 15:31:09 +0200
+Message-ID: <861d74da-4e59-3865-a609-b5b435180b67@siemens.com>
+Date: Tue, 13 Oct 2020 15:34:16 +0200
 MIME-Version: 1.0
-In-Reply-To: <20200928222730.3027-1-vt@altlinux.org>
+In-Reply-To: <20200929132504.448462-1-rpm@xenomai.org>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -16,553 +17,166 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Vitaly Chikunov <vt@altlinux.org>, Xenomai <xenomai@xenomai.org>
+To: Philippe Gerum <rpm@xenomai.org>, xenomai@xenomai.org
 
-On 29.09.20 00:27, Vitaly Chikunov wrote:
-> Enable soname suffix with --enable-so-suffix configure option (Mercury
-> core only).
+On 29.09.20 15:25, Philippe Gerum via Xenomai wrote:
+> From: Philippe Gerum <rpm@xenomai.org>
 > 
-> This will allow (for users) installing both versions of libs into the
-> same system and (for distributions) having them without conflicts in
-> the same repository.
+> vfile_snapshot_open() may re-run the data collection loop in case we
+> detected a race by checking the revision tag of the data
+> set. Unfortunately, the seq_file is already open at this point,
+> causing a leakage as seq_open() will be called again.
 > 
-> Such script is used to change Makefile.am-s:
+> The bug triggers after a while running the following commands
+> concurrently:
 > 
->   for lib in copperplate alchemy psos smokey trank vxworks
->   do
->     find -name Makefile.am \
->     | xargs -r \
->       sed -i -e "s/lib${lib}\.la/lib${lib}@CORE@\.la/g" \
->              -e "s/lib${lib}\_la/lib${lib}@CORE@\_la/g"
->   done
+> $ while : ; do cat /proc/xenomai/sched/stat > /dev/null; done &
+> $ while : ; do switchtest -T 5; done
+> 
+> As the private_data field of the backing file is not NULL once
+> seq_open() has run, this bug triggers the following warning splat when
+> calling it anew for the same file:
+> 
+> [   32.660548] WARNING: CPU: 0 PID: 446 at fs/seq_file.c:55 seq_open.cold+0xc/0x1a
+> [   32.670934] CPU: 0 PID: 446 Comm: cat Not tainted 4.19.89+ #16
+> [   32.686078] I-pipe domain: Linux
+> [   32.689312] RIP: 0010:seq_open.cold+0xc/0x1a
+> [   32.693592] Code: 48 8b 74 24 08 e8 1e 5e f9 ff 48 8b 5d 18 48 8b 55 08 4c 01 f3 48 89 5d 18 e9 25 fe ff ff 48 c7 c7 00 99 2b 82 e8 32 71 de ff <0f> 0b e9 d3 db ff ff 90 90 90 90 90 90 90 41 57 41 56 41 55 41 54
+> [   32.712354] RSP: 0018:ffff88815476f9b0 EFLAGS: 00010246
+> [   32.717588] RAX: 0000000000000024 RBX: ffff888153ec7400 RCX: 0000000000000000
+> [   32.724728] RDX: 1ffff1102b944a01 RSI: 0000000000000008 RDI: ffffed102a8edf2d
+> [   32.731873] RBP: ffffffff828c5560 R08: 0000000000000024 R09: ffffffff815d0644
+> [   32.739016] R10: ffffed102b946f1c R11: ffff88815ca378e7 R12: ffff888153ec74c8
+> [   32.746156] R13: ffffffff828c75a0 R14: ffff8881544ebb80 R15: ffff888155a2d9c8
+> [   32.753299] FS:  00007ff225dc3740(0000) GS:ffff88815ca00000(0000) knlGS:0000000000000000
+> [   32.761395] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+> [   32.767152] CR2: 00007ff225eb8120 CR3: 0000000153d8c000 CR4: 00000000003406f0
+> [   32.774289] Call Trace:
+> [   32.776746]  vfile_snapshot_open+0x2a8/0x560
+> [   32.781022]  proc_reg_open+0x124/0x270
+> [   32.784782]  ? proc_i_callback+0x20/0x20
+> [   32.788713]  do_dentry_open+0x2ac/0x750
+> [   32.792558]  ? proc_i_callback+0x20/0x20
+> [   32.796492]  ? __x64_sys_fchmod+0x70/0x70
+> [   32.800507]  ? inode_permission.part.0+0x4f/0x180
+> [   32.805219]  ? security_inode_permission+0x13/0x60
+> [   32.810015]  path_openat+0x456/0x1b80
+> [   32.813681]  ? kmem_cache_alloc+0xd2/0x1c0
+> [   32.817783]  ? getname_flags+0x35/0x240
+> [   32.821624]  ? do_syscall_64+0x8a/0x240
+> [   32.825466]  ? __rcu_read_unlock+0x66/0x80
+> [   32.829572]  ? path_lookupat+0x430/0x430
+> [   32.833497]  ? find_get_pages_range_tag+0x3a0/0x3a0
+> [   32.838381]  ? finish_mkwrite_fault+0x1f0/0x1f0
+> [   32.842916]  do_filp_open+0x103/0x210
+> [   32.846586]  ? may_open_dev+0x50/0x50
+> [   32.850253]  ? __fdget+0xe0/0xe0
+> [   32.853491]  ? __virt_addr_valid+0xa6/0x100
+> [   32.857677]  ? check_stack_object+0x1f/0x60
+> [   32.861864]  ? __check_object_size+0x10c/0x1ce
+> [   32.866316]  ? _raw_spin_unlock+0x9/0x30
+> [   32.870245]  ? __alloc_fd+0x115/0x220
+> [   32.873910]  do_sys_open+0x1c3/0x290
+> [   32.877489]  ? __do_page_fault+0x494/0x7b0
+> [   32.881588]  ? file_open_name+0x180/0x180
+> [   32.885604]  do_syscall_64+0x8a/0x240
+> [   32.889270]  entry_SYSCALL_64_after_hwframe+0x44/0xa9
+> 
+> Fix this by deferring the call to seq_open() until after the data is
+> fully collected without race, which prevents any seq_file leakage on
+> race by design.
+> 
+> Signed-off-by: Philippe Gerum <rpm@xenomai.org>
 > ---
->  configure.ac                        | 17 +++++++++++++++++
->  demo/alchemy/Makefile.am            |  4 ++--
->  demo/alchemy/cobalt/Makefile.am     |  4 ++--
->  lib/alchemy/Makefile.am             | 16 ++++++++--------
->  lib/copperplate/Makefile.am         | 24 ++++++++++++------------
->  lib/copperplate/regd/Makefile.am    |  2 +-
->  lib/psos/Makefile.am                | 14 +++++++-------
->  lib/smokey/Makefile.am              | 10 +++++-----
->  lib/trank/Makefile.am               | 12 ++++++------
->  lib/vxworks/Makefile.am             | 14 +++++++-------
->  scripts/xeno-config-cobalt.in       |  5 +++--
->  scripts/xeno-config-mercury.in      |  5 +++--
->  testsuite/gpiotest/Makefile.am      |  2 +-
->  testsuite/smokey/Makefile.am        |  4 ++--
->  testsuite/smokey/dlopen/Makefile.am |  6 +++---
->  testsuite/spitest/Makefile.am       |  2 +-
->  utils/analogy/Makefile.am           |  8 ++++----
->  utils/can/Makefile.am               |  8 ++++----
->  utils/hdb/Makefile.am               |  2 +-
->  19 files changed, 89 insertions(+), 70 deletions(-)
+>  kernel/cobalt/vfile.c | 34 ++++++++++++++++++----------------
+>  1 file changed, 18 insertions(+), 16 deletions(-)
 > 
-> diff --git a/configure.ac b/configure.ac
-> index 164c44936..abe538dbd 100644
-> --- a/configure.ac
-> +++ b/configure.ac
-> @@ -859,6 +859,22 @@ dnl in-tree executables which require POSIX symbol wrapping.
->     AC_SUBST([CONFIG_STATUS_DEPENDENCIES], ["$modechk_wrappers $cobalt_wrappers"])
->  fi
+> diff --git a/kernel/cobalt/vfile.c b/kernel/cobalt/vfile.c
+> index dc311f9ce..f65d46ddf 100644
+> --- a/kernel/cobalt/vfile.c
+> +++ b/kernel/cobalt/vfile.c
+> @@ -153,6 +153,8 @@ static int vfile_snapshot_open(struct inode *inode, struct file *file)
+>  	struct seq_file *seq;
+>  	caddr_t data;
 >  
-> +dnl Multi-library support.
-> +AC_MSG_CHECKING([whether to enable soname suffix for libraries])
-> +AC_ARG_ENABLE([so-suffix],
-> +   [AS_HELP_STRING([--enable-so-suffix],
-> +      [enable soname suffix (for Mercury only)])],
-> +   [enable_so_suffix=$enableval],
-> +   [enable_so_suffix="no"])
-> +AC_MSG_RESULT(${enable_so_suffix})
-> +if test "$enable_so_suffix" = "yes"; then
-> +   if test "$rtcore_type" != mercury; then
-> +      AC_MSG_ERROR([soname suffix is only allowed for Mercury core])
-> +   else
-> +      CORE="_$rtcore_type"
-> +   fi
-> +fi
+> +	WARN_ON_ONCE(file->private_data != NULL);
 > +
->  dnl
->  dnl Build the Makefiles
->  dnl
-> @@ -898,6 +914,7 @@ AC_SUBST(XENO_TEST_DIR)
->  AC_SUBST(XENO_DEMO_DIR)
->  AC_SUBST(XENO_BUILD_COMPILER)
->  AC_SUBST(XENO_BUILD_ARGS)
-> +AC_SUBST(CORE)
+>  	if ((file->f_mode & FMODE_WRITE) != 0 && ops->store == NULL)
+>  		return -EACCES;
 >  
->  AC_CONFIG_FILES([ \
->  	Makefile \
-> diff --git a/demo/alchemy/Makefile.am b/demo/alchemy/Makefile.am
-> index 80def4fac..fed5c1c83 100644
-> --- a/demo/alchemy/Makefile.am
-> +++ b/demo/alchemy/Makefile.am
-> @@ -11,8 +11,8 @@ cppflags = 				\
->  	-I$(top_srcdir)/include
+> @@ -244,14 +246,10 @@ redo:
+>  		it->endfn = vfile_snapshot_free;
+>  	}
 >  
->  ldadd = 					\
-> -	../../lib/alchemy/libalchemy.la		\
-> -	../../lib/copperplate/libcopperplate.la	\
-> +	../../lib/alchemy/libalchemy@CORE@.la		\
-> +	../../lib/copperplate/libcopperplate@CORE@.la	\
->  	@XENO_CORE_LDADD@ 			\
->  	@XENO_USER_LDADD@			\
->  	-lpthread -lrt -lm
-> diff --git a/demo/alchemy/cobalt/Makefile.am b/demo/alchemy/cobalt/Makefile.am
-> index 98d234515..ae2edd71c 100644
-> --- a/demo/alchemy/cobalt/Makefile.am
-> +++ b/demo/alchemy/cobalt/Makefile.am
-> @@ -11,8 +11,8 @@ cppflags = 			\
->  ldadd = 					\
->  	@XENO_AUTOINIT_LDFLAGS@			\
->  	$(XENO_POSIX_WRAPPERS)			\
-> -	../../../lib/alchemy/libalchemy.la 	\
-> -	../../../lib/copperplate/libcopperplate.la \
-> +	../../../lib/alchemy/libalchemy@CORE@.la 	\
-> +	../../../lib/copperplate/libcopperplate@CORE@.la \
->  	@XENO_CORE_LDADD@			\
->  	@XENO_USER_LDADD@			\
->  	-lrt -lpthread -lm
-> diff --git a/lib/alchemy/Makefile.am b/lib/alchemy/Makefile.am
-> index f97bd69bf..d350912ff 100644
-> --- a/lib/alchemy/Makefile.am
-> +++ b/lib/alchemy/Makefile.am
-> @@ -1,12 +1,12 @@
-> -lib_LTLIBRARIES = libalchemy.la
-> +lib_LTLIBRARIES = libalchemy@CORE@.la
+> -	ret = seq_open(file, &vfile_snapshot_ops);
+> -	if (ret)
+> -		goto fail;
+> -
+>  	it->nrdata = 0;
+>  	data = it->databuf;
+>  	if (data == NULL)
+> -		goto finish;
+> +		goto done;
 >  
-> -libalchemy_la_LDFLAGS = @XENO_LIB_LDFLAGS@ -version-info 0:0:0
-> +libalchemy@CORE@_la_LDFLAGS = @XENO_LIB_LDFLAGS@ -version-info 0:0:0
+>  	/*
+>  	 * Take a snapshot of the vfile contents, redo if the revision
+> @@ -260,12 +258,14 @@ redo:
+>  	for (;;) {
+>  		ret = vfile->entry.lockops->get(&vfile->entry);
+>  		if (ret)
+> -			break;
+> +			goto fail;
+>  		if (vfile->tag->rev != revtag)
+>  			goto redo;
+>  		ret = ops->next(it, data);
+>  		vfile->entry.lockops->put(&vfile->entry);
+> -		if (ret <= 0)
+> +		if (ret < 0)
+> +			goto fail;
+> +		if (ret == 0)
+>  			break;
+>  		if (ret != VFILE_SEQ_SKIP) {
+>  			data += vfile->datasz;
+> @@ -273,22 +273,24 @@ redo:
+>  		}
+>  	}
 >  
-> -libalchemy_la_LIBADD =						\
-> +libalchemy@CORE@_la_LIBADD =						\
->  	@XENO_CORE_LDADD@					\
-> -	$(top_builddir)/lib/copperplate/libcopperplate.la
-> +	$(top_builddir)/lib/copperplate/libcopperplate@CORE@.la
+> -	if (ret < 0) {
+> -		seq_release(inode, file);
+> -	fail:
+> -		if (it->databuf)
+> -			it->endfn(it, it->databuf);
+> -		kfree(it);
+> -		return ret;
+> -	}
+> +done:
+> +	ret = seq_open(file, &vfile_snapshot_ops);
+> +	if (ret)
+> +		goto fail;
 >  
-> -libalchemy_la_SOURCES =	\
-> +libalchemy@CORE@_la_SOURCES =	\
->  	init.c		\
->  	internal.c	\
->  	internal.h	\
-> @@ -33,12 +33,12 @@ libalchemy_la_SOURCES =	\
->  	timer.h
+> -finish:
+>  	seq = file->private_data;
+>  	it->seq = seq;
+>  	seq->private = it;
+>  	xnvfile_nref(vfile)++;
 >  
->  if XENO_COBALT
-> -libalchemy_la_SOURCES +=	\
-> +libalchemy@CORE@_la_SOURCES +=	\
->  	pipe.c			\
->  	pipe.h
->  endif
+>  	return 0;
+> +
+> +fail:
+> +	if (it->databuf)
+> +		it->endfn(it, it->databuf);
+> +	kfree(it);
+> +
+> +	return ret;
+>  }
 >  
-> -libalchemy_la_CPPFLAGS =				\
-> +libalchemy@CORE@_la_CPPFLAGS =				\
->  	@XENO_USER_CFLAGS@				\
->  	-I$(top_srcdir)/include				\
->  	-I$(top_srcdir)/lib
-> @@ -48,6 +48,6 @@ EXTRA_DIST = testsuite
->  SPARSE = sparse
->  
->  sparse:
-> -	@for i in $(libalchemy_la_SOURCES); do \
-> +	@for i in $(libalchemy@CORE@_la_SOURCES); do \
->  		$(SPARSE) $(CHECKFLAGS) $(srcdir)/$$i; \
->  	done
-> diff --git a/lib/copperplate/Makefile.am b/lib/copperplate/Makefile.am
-> index c7104eb02..671e87d79 100644
-> --- a/lib/copperplate/Makefile.am
-> +++ b/lib/copperplate/Makefile.am
-> @@ -1,12 +1,12 @@
->  
-> -lib_LTLIBRARIES = libcopperplate.la
-> +lib_LTLIBRARIES = libcopperplate@CORE@.la
->  
-> -libcopperplate_la_LDFLAGS = @XENO_LIB_LDFLAGS@ -lpthread -lrt -version-info 0:0:0
-> -libcopperplate_la_LIBADD = @XENO_CORE_LDADD@
-> +libcopperplate@CORE@_la_LDFLAGS = @XENO_LIB_LDFLAGS@ -lpthread -lrt -version-info 0:0:0
-> +libcopperplate@CORE@_la_LIBADD = @XENO_CORE_LDADD@
->  
->  noinst_LTLIBRARIES =
->  
-> -libcopperplate_la_SOURCES =	\
-> +libcopperplate@CORE@_la_SOURCES =	\
->  	clockobj.c	\
->  	cluster.c	\
->  	eventobj.c 	\
-> @@ -19,35 +19,35 @@ libcopperplate_la_SOURCES =	\
->  	timerobj.c	\
->  	traceobj.c
->  
-> -libcopperplate_la_CPPFLAGS =		\
-> +libcopperplate@CORE@_la_CPPFLAGS =		\
->  	@XENO_USER_CFLAGS@		\
->  	-I$(top_srcdir)			\
->  	-I$(top_srcdir)/include		\
->  	-I$(top_srcdir)/lib
->  
->  if XENO_REGISTRY
-> -libcopperplate_la_LIBADD += libregistry.la
-> +libcopperplate@CORE@_la_LIBADD += libregistry.la
->  noinst_LTLIBRARIES += libregistry.la
->  
->  libregistry_la_SOURCES = registry.c
->  
->  libregistry_la_CPPFLAGS =		\
-> -	$(libcopperplate_la_CPPFLAGS)	\
-> +	$(libcopperplate@CORE@_la_CPPFLAGS)	\
->  	@XENO_FUSE_CFLAGS@
->  endif
->  
->  if XENO_PSHARED
->  # The process shareable heap has real-time properties, therefore it
->  # fits both the cobalt and mercury cores equally. Yummie.
-> -libcopperplate_la_SOURCES += heapobj-pshared.c reference.c
-> +libcopperplate@CORE@_la_SOURCES += heapobj-pshared.c reference.c
->  endif
->  if XENO_TLSF
-> -libcopperplate_la_SOURCES += heapobj-tlsf.c
-> +libcopperplate@CORE@_la_SOURCES += heapobj-tlsf.c
->  else
->  if XENO_HEAPMEM
-> -libcopperplate_la_SOURCES += heapobj-heapmem.c
-> +libcopperplate@CORE@_la_SOURCES += heapobj-heapmem.c
->  else
-> -libcopperplate_la_SOURCES += heapobj-malloc.c
-> +libcopperplate@CORE@_la_SOURCES += heapobj-malloc.c
->  endif
->  endif
->  
-> @@ -62,6 +62,6 @@ DIST_SUBDIRS = regd
->  SPARSE = sparse
->  
->  sparse:
-> -	@for i in $(libcopperplate_la_SOURCES) ; do \
-> +	@for i in $(libcopperplate@CORE@_la_SOURCES) ; do \
->  		$(SPARSE) $(CHECKFLAGS) $(srcdir)/$$i; \
->  	done
-> diff --git a/lib/copperplate/regd/Makefile.am b/lib/copperplate/regd/Makefile.am
-> index c1893c105..3b14e9863 100644
-> --- a/lib/copperplate/regd/Makefile.am
-> +++ b/lib/copperplate/regd/Makefile.am
-> @@ -9,7 +9,7 @@ CPPFLAGS = 			\
->  LDFLAGS = $(XENO_POSIX_WRAPPERS)
->  
->  LDADD = 			\
-> -	../libcopperplate.la	\
-> +	../libcopperplate@CORE@.la	\
->  	@XENO_CORE_LDADD@	\
->  	@XENO_USER_LDADD@	\
->  	-lpthread -lrt
-> diff --git a/lib/psos/Makefile.am b/lib/psos/Makefile.am
-> index 6fe50881c..f54b26001 100644
-> --- a/lib/psos/Makefile.am
-> +++ b/lib/psos/Makefile.am
-> @@ -1,12 +1,12 @@
-> -lib_LTLIBRARIES = libpsos.la
-> +lib_LTLIBRARIES = libpsos@CORE@.la
->  
-> -libpsos_la_LDFLAGS = @XENO_LIB_LDFLAGS@ -version-info 0:0:0
-> +libpsos@CORE@_la_LDFLAGS = @XENO_LIB_LDFLAGS@ -version-info 0:0:0
->  
-> -libpsos_la_LIBADD =						\
-> +libpsos@CORE@_la_LIBADD =						\
->  	@XENO_CORE_LDADD@					\
-> -	$(top_builddir)/lib/copperplate/libcopperplate.la
-> +	$(top_builddir)/lib/copperplate/libcopperplate@CORE@.la
->  
-> -libpsos_la_SOURCES =	\
-> +libpsos@CORE@_la_SOURCES =	\
->  	init.c		\
->  	internal.h	\
->  	pt.c		\
-> @@ -23,7 +23,7 @@ libpsos_la_SOURCES =	\
->  	tm.h		\
->  	reference.h
->  
-> -libpsos_la_CPPFLAGS =					\
-> +libpsos@CORE@_la_CPPFLAGS =					\
->  	@XENO_USER_CFLAGS@				\
->  	-I$(top_srcdir)/include				\
->  	-I$(top_srcdir)/lib
-> @@ -33,6 +33,6 @@ EXTRA_DIST = testsuite
->  SPARSE = sparse
->  
->  sparse:
-> -	@for i in $(libpsos_la_SOURCES); do \
-> +	@for i in $(libpsos@CORE@_la_SOURCES); do \
->  		$(SPARSE) $(CHECKFLAGS) $(srcdir)/$$i; \
->  	done
-> diff --git a/lib/smokey/Makefile.am b/lib/smokey/Makefile.am
-> index 4ecae1f16..2674e3287 100644
-> --- a/lib/smokey/Makefile.am
-> +++ b/lib/smokey/Makefile.am
-> @@ -1,13 +1,13 @@
-> -lib_LTLIBRARIES = libsmokey.la
-> +lib_LTLIBRARIES = libsmokey@CORE@.la
->  
-> -libsmokey_la_LDFLAGS = @XENO_LIB_LDFLAGS@ -version-info 0:0:0
-> -libsmokey_la_LIBADD = @XENO_CORE_LDADD@
-> +libsmokey@CORE@_la_LDFLAGS = @XENO_LIB_LDFLAGS@ -version-info 0:0:0
-> +libsmokey@CORE@_la_LIBADD = @XENO_CORE_LDADD@
->  
-> -libsmokey_la_SOURCES =	\
-> +libsmokey@CORE@_la_SOURCES =	\
->  	helpers.c	\
->  	init.c
->  
-> -libsmokey_la_CPPFLAGS =			\
-> +libsmokey@CORE@_la_CPPFLAGS =			\
->  	@XENO_USER_CFLAGS@		\
->  	-I$(top_srcdir)/include		\
->  	-I$(top_srcdir)/lib
-> diff --git a/lib/trank/Makefile.am b/lib/trank/Makefile.am
-> index ee353c6f2..ec15367d3 100644
-> --- a/lib/trank/Makefile.am
-> +++ b/lib/trank/Makefile.am
-> @@ -1,20 +1,20 @@
->  
-> -lib_LTLIBRARIES = libtrank.la
-> +lib_LTLIBRARIES = libtrank@CORE@.la
->  
-> -libtrank_la_LDFLAGS = @XENO_LIB_LDFLAGS@ -version-info 0:0:0
-> +libtrank@CORE@_la_LDFLAGS = @XENO_LIB_LDFLAGS@ -version-info 0:0:0
->  
-> -libtrank_la_LIBADD =						\
-> +libtrank@CORE@_la_LIBADD =						\
->  	@XENO_CORE_LDADD@					\
-> -	$(top_builddir)/lib/alchemy/libalchemy.la
-> +	$(top_builddir)/lib/alchemy/libalchemy@CORE@.la
->  
-> -libtrank_la_SOURCES =	\
-> +libtrank@CORE@_la_SOURCES =	\
->  	init.c		\
->  	internal.c	\
->  	internal.h	\
->  	posix.c		\
->  	native.c
->  
-> -libtrank_la_CPPFLAGS =		\
-> +libtrank@CORE@_la_CPPFLAGS =		\
->  	@XENO_USER_CFLAGS@	\
->  	-D__XENO_COMPAT__	\
->  	-I$(top_srcdir)/include	\
-> diff --git a/lib/vxworks/Makefile.am b/lib/vxworks/Makefile.am
-> index 4217a994b..37b8caf7b 100644
-> --- a/lib/vxworks/Makefile.am
-> +++ b/lib/vxworks/Makefile.am
-> @@ -1,12 +1,12 @@
-> -lib_LTLIBRARIES = libvxworks.la
-> +lib_LTLIBRARIES = libvxworks@CORE@.la
->  
-> -libvxworks_la_LDFLAGS = @XENO_LIB_LDFLAGS@ -version-info 0:0:0
-> +libvxworks@CORE@_la_LDFLAGS = @XENO_LIB_LDFLAGS@ -version-info 0:0:0
->  
-> -libvxworks_la_LIBADD =						\
-> +libvxworks@CORE@_la_LIBADD =						\
->  	@XENO_CORE_LDADD@					\
-> -	$(top_builddir)/lib/copperplate/libcopperplate.la
-> +	$(top_builddir)/lib/copperplate/libcopperplate@CORE@.la
->  
-> -libvxworks_la_SOURCES = \
-> +libvxworks@CORE@_la_SOURCES = \
->  	init.c		\
->  	errnoLib.c	\
->  	intLib.c	\
-> @@ -32,7 +32,7 @@ libvxworks_la_SOURCES = \
->  	sysLib.c	\
->  	reference.h
->  
-> -libvxworks_la_CPPFLAGS =				\
-> +libvxworks@CORE@_la_CPPFLAGS =				\
->  	@XENO_USER_CFLAGS@				\
->  	-I$(top_srcdir)/include				\
->  	-I$(top_srcdir)/lib
-> @@ -42,6 +42,6 @@ EXTRA_DIST = testsuite
->  SPARSE = sparse
->  
->  sparse:
-> -	@for i in $(libvxworks_la_SOURCES); do \
-> +	@for i in $(libvxworks@CORE@_la_SOURCES); do \
->  		$(SPARSE) $(CHECKFLAGS) $(srcdir)/$$i; \
->  	done
-> diff --git a/scripts/xeno-config-cobalt.in b/scripts/xeno-config-cobalt.in
-> index 87d54fbf8..cd55ad82c 100644
-> --- a/scripts/xeno-config-cobalt.in
-> +++ b/scripts/xeno-config-cobalt.in
-> @@ -8,6 +8,7 @@ datarootdir="@datarootdir@"
->  datadir="@datadir@"
->  pkgdatadir="${datadir}/@PACKAGE@"
->  includedir="@includedir@"
-> +core="@CORE@"
->  
->  XENO_VERSION="@PACKAGE_VERSION@"
->  XENO_PREFIX="${staging}${prefix}"
-> @@ -264,8 +265,8 @@ if test x$do_ldflags = xy; then
->  		# --[no-]mode-check does.
->  		;;
->  	    vxworks|psos|alchemy|smokey)
-> -		copperplate="-lcopperplate"
-> -		ldflags="$ldflags -l$skin"
-> +		copperplate="-lcopperplate$core"
-> +		ldflags="$ldflags -l$skin$core"
->  		if [ -r ${XENO_LIBRARY_DIR}/${skin}.wrappers ]; then
->  		    ldflags=" `dump_wrappers ${skin}.wrappers` $ldflags"
->  		fi
-> diff --git a/scripts/xeno-config-mercury.in b/scripts/xeno-config-mercury.in
-> index 2d2842f30..42b0de28a 100644
-> --- a/scripts/xeno-config-mercury.in
-> +++ b/scripts/xeno-config-mercury.in
-> @@ -8,6 +8,7 @@ datarootdir="@datarootdir@"
->  datadir="@datadir@"
->  pkgdatadir="${datadir}/@PACKAGE@"
->  includedir="@includedir@"
-> +core="@CORE@"
->  
->  XENO_VERSION="@PACKAGE_VERSION@"
->  XENO_PREFIX="${staging}${prefix}"
-> @@ -195,8 +196,8 @@ if test x$do_ldflags = xy; then
->  	    posix|rtdm)
->  		;;
->  	    vxworks|psos|alchemy|smokey)
-> -		copperplate="-lcopperplate"
-> -		ldflags="-l$skin $ldflags"
-> +		copperplate="-lcopperplate$core"
-> +		ldflags="-l$skin$core $ldflags"
->  		;;
->  	    *)
->  		echo "unknown API: $skin" 1>&2
-> diff --git a/testsuite/gpiotest/Makefile.am b/testsuite/gpiotest/Makefile.am
-> index 7615439cf..6f6ec6d71 100644
-> --- a/testsuite/gpiotest/Makefile.am
-> +++ b/testsuite/gpiotest/Makefile.am
-> @@ -13,7 +13,7 @@ gpiotest_CPPFLAGS = 		\
->  gpiotest_LDFLAGS = @XENO_AUTOINIT_LDFLAGS@ $(XENO_POSIX_WRAPPERS)
->  
->  gpiotest_LDADD =			\
-> -	../../lib/smokey/libsmokey.la	\
-> +	../../lib/smokey/libsmokey@CORE@.la	\
->  	@XENO_CORE_LDADD@		\
->  	@XENO_USER_LDADD@		\
->  	-lpthread -lrt
-> diff --git a/testsuite/smokey/Makefile.am b/testsuite/smokey/Makefile.am
-> index 81d0941c4..02613c7dc 100644
-> --- a/testsuite/smokey/Makefile.am
-> +++ b/testsuite/smokey/Makefile.am
-> @@ -110,8 +110,8 @@ smokey_LDFLAGS=$(wrappers) @XENO_AUTOINIT_LDFLAGS@ $(undef_list)
->  
->  smokey_LDADD = 					\
->  	$(plugin_list)				\
-> -	../../lib/smokey/libsmokey.la		\
-> -	../../lib/copperplate/libcopperplate.la	\
-> +	../../lib/smokey/libsmokey@CORE@.la		\
-> +	../../lib/copperplate/libcopperplate@CORE@.la	\
->  	@XENO_CORE_LDADD@			\
->  	 @XENO_USER_LDADD@			\
->  	-lpthread -lrt
-> diff --git a/testsuite/smokey/dlopen/Makefile.am b/testsuite/smokey/dlopen/Makefile.am
-> index db5a521d8..4f79ffb5a 100644
-> --- a/testsuite/smokey/dlopen/Makefile.am
-> +++ b/testsuite/smokey/dlopen/Makefile.am
-> @@ -11,8 +11,8 @@ libalchemy_test_la_LIBADD =					\
->  	@XENO_CORE_LDADD@					\
->  	@XENO_USER_LDADD@					\
->  	../../../lib/boilerplate/init/libbootstrap-pic.la	\
-> -	../../../lib/alchemy/libalchemy.la			\
-> -	../../../lib/copperplate/libcopperplate.la
-> +	../../../lib/alchemy/libalchemy@CORE@.la			\
-> +	../../../lib/copperplate/libcopperplate@CORE@.la
->  
->  libalchemy_test_la_SOURCES = libalchemy-test.c
->  
-> @@ -29,7 +29,7 @@ libposix_test_la_LIBADD =					\
->  	@XENO_CORE_LDADD@					\
->  	@XENO_USER_LDADD@					\
->  	../../../lib/boilerplate/init/libbootstrap-pic.la	\
-> -	../../../lib/copperplate/libcopperplate.la
-> +	../../../lib/copperplate/libcopperplate@CORE@.la
->  
->  libposix_test_la_SOURCES = libposix-test.c
->  
-> diff --git a/testsuite/spitest/Makefile.am b/testsuite/spitest/Makefile.am
-> index f5c3091d8..55b57fc2f 100644
-> --- a/testsuite/spitest/Makefile.am
-> +++ b/testsuite/spitest/Makefile.am
-> @@ -13,7 +13,7 @@ spitest_CPPFLAGS = 		\
->  spitest_LDFLAGS = @XENO_AUTOINIT_LDFLAGS@ $(XENO_POSIX_WRAPPERS)
->  
->  spitest_LDADD =			\
-> -	../../lib/smokey/libsmokey.la	\
-> +	../../lib/smokey/libsmokey@CORE@.la	\
->  	@XENO_CORE_LDADD@		\
->  	@XENO_USER_LDADD@		\
->  	-lpthread -lrt
-> diff --git a/utils/analogy/Makefile.am b/utils/analogy/Makefile.am
-> index 31da2e0b9..f8a304b60 100644
-> --- a/utils/analogy/Makefile.am
-> +++ b/utils/analogy/Makefile.am
-> @@ -42,8 +42,8 @@ cmd_read_SOURCES = cmd_read.c
->  cmd_read_LDADD = \
->  	@XENO_AUTOINIT_LDFLAGS@		\
->  	../../lib/analogy/libanalogy.la \
-> -	../../lib/alchemy/libalchemy.la \
-> -	../../lib/copperplate/libcopperplate.la \
-> +	../../lib/alchemy/libalchemy@CORE@.la \
-> +	../../lib/copperplate/libcopperplate@CORE@.la \
->  	@XENO_CORE_LDADD@		\
->  	@XENO_USER_LDADD@		\
->  	-lrt -lpthread -lm
-> @@ -52,8 +52,8 @@ cmd_write_SOURCES = cmd_write.c
->  cmd_write_LDADD = \
->  	@XENO_AUTOINIT_LDFLAGS@		\
->  	../../lib/analogy/libanalogy.la \
-> -	../../lib/alchemy/libalchemy.la \
-> -	../../lib/copperplate/libcopperplate.la \
-> +	../../lib/alchemy/libalchemy@CORE@.la \
-> +	../../lib/copperplate/libcopperplate@CORE@.la \
->  	@XENO_CORE_LDADD@		\
->  	@XENO_USER_LDADD@		\
->  	-lrt -lpthread -lm
-> diff --git a/utils/can/Makefile.am b/utils/can/Makefile.am
-> index 561dc7147..e41d266b9 100644
-> --- a/utils/can/Makefile.am
-> +++ b/utils/can/Makefile.am
-> @@ -20,8 +20,8 @@ rtcanconfig_LDADD = \
->  rtcanrecv_SOURCES = rtcanrecv.c
->  
->  rtcanrecv_LDADD = \
-> -	../../lib/alchemy/libalchemy.la \
-> -	../../lib/copperplate/libcopperplate.la \
-> +	../../lib/alchemy/libalchemy@CORE@.la \
-> +	../../lib/copperplate/libcopperplate@CORE@.la \
->  	@XENO_CORE_LDADD@		\
->  	@XENO_USER_LDADD@		\
->  	-lpthread -lrt
-> @@ -29,8 +29,8 @@ rtcanrecv_LDADD = \
->  rtcansend_SOURCES = rtcansend.c
->  
->  rtcansend_LDADD = \
-> -	../../lib/alchemy/libalchemy.la \
-> -	../../lib/copperplate/libcopperplate.la \
-> +	../../lib/alchemy/libalchemy@CORE@.la \
-> +	../../lib/copperplate/libcopperplate@CORE@.la \
->  	@XENO_CORE_LDADD@		\
->  	@XENO_USER_LDADD@		\
->  	-lpthread -lrt
-> diff --git a/utils/hdb/Makefile.am b/utils/hdb/Makefile.am
-> index 5eb3d3ddc..f78f3c2e6 100644
-> --- a/utils/hdb/Makefile.am
-> +++ b/utils/hdb/Makefile.am
-> @@ -9,7 +9,7 @@ hdb_CPPFLAGS = 			\
->  hdb_LDFLAGS = @XENO_AUTOINIT_LDFLAGS@
->  
->  hdb_LDADD =					\
-> -	../../lib/copperplate/libcopperplate.la	\
-> +	../../lib/copperplate/libcopperplate@CORE@.la	\
->  	@XENO_CORE_LDADD@			\
->  	@XENO_USER_LDADD@			\
->  	-lpthread -lrt
+>  static int vfile_snapshot_release(struct inode *inode, struct file *file)
 > 
 
-Thanks, applied to next.
+Thanks, applied.
+
+I suspect this affects 3.0 as well. Will check if we can pick it up
+there as well.
 
 Jan
 
