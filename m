@@ -1,7 +1,8 @@
 From: hongzha1 <hongzhan.chen@intel.com>
-Subject: [PATCH][dovetail/wip] cobalt/init: enable Xenomai oob stage
-Date: Tue, 13 Oct 2020 03:38:11 -0400
-Message-Id: <20201013073811.4288-1-hongzhan.chen@intel.com>
+Subject: [PATCH] cobalt/x86: raise escalate virq with irq_inject_pipeline
+ instead of irq_post_oob
+Date: Tue, 13 Oct 2020 03:45:59 -0400
+Message-Id: <20201013074559.4535-1-hongzhan.chen@intel.com>
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -12,22 +13,32 @@ List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: xenomai@xenomai.org, jan.kiszka@siemens.com
 
-enable xenomai oob stage during init
+Before calling irq_post_oob, interrupts must be hard disabled
+in the cpu. But irq_inject_pipeline would handle it internally.
 
 Signed-off-by: hongzha1 <hongzhan.chen@intel.com>
 
-diff --git a/kernel/cobalt/init.c b/kernel/cobalt/init.c
-index bdf37f34a..9b1651528 100644
---- a/kernel/cobalt/init.c
-+++ b/kernel/cobalt/init.c
-@@ -225,6 +225,7 @@ static int __init mach_setup(void)
- 			  (ipipe_irq_handler_t)__xnsched_run_handler,
- 			  NULL, NULL);*/
- #warning TODO: Dovetail init
-+	enable_oob_stage("Xenomai");
+diff --git a/kernel/cobalt/arch/x86/include/asm/xenomai/thread.h b/kernel/cobalt/arch/x86/include/asm/xenomai/thread.h
+index af3433e8e..46294036b 100644
+--- a/kernel/cobalt/arch/x86/include/asm/xenomai/thread.h
++++ b/kernel/cobalt/arch/x86/include/asm/xenomai/thread.h
+@@ -23,6 +23,7 @@
+ #include <asm-generic/xenomai/thread.h>
+ #include <asm/xenomai/wrappers.h>
+ #include <asm/traps.h>
++#include <linux/irq_pipeline.h>
  
- 	ret = xnclock_init(cobalt_pipeline.clock_freq);
- 	if (ret)
+ #ifndef IPIPE_X86_FPU_EAGER
+ #if LINUX_VERSION_CODE < KERNEL_VERSION(4,4,0)
+@@ -90,7 +91,7 @@ static inline int xnarch_escalate(void)
+ {
+ 	if (running_inband()) {
+ 		/* orginal xenomai domain equals oob stage */
+-		irq_post_oob(cobalt_pipeline.escalate_virq);
++		irq_inject_pipeline(cobalt_pipeline.escalate_virq);
+ 		return 1;
+ 	}
+ /*	if (ipipe_root_p) {
 -- 
 2.17.1
 
