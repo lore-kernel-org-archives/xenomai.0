@@ -1,17 +1,12 @@
-Subject: Re: [PATCH 1/1] gitlab-ci: add cache to decrease build times
-References: <20200930105146.19902-1-Quirin.Gylstorff@siemens.com>
- <8108a4a6-674b-6813-4342-e81b30ffbb51@siemens.com>
- <2fa58248-e1a0-1a23-3147-a49e1a5b0a00@siemens.com>
- <94100773-8d7e-6467-38b6-1ece06290139@siemens.com>
- <ae4827fe-5cb1-df3c-21bc-64fae2ff025b@siemens.com>
-From: Gylstorff Quirin <quirin.gylstorff@siemens.com>
-Message-ID: <4221a5ae-e01e-97cc-7307-124056117422@siemens.com>
-Date: Wed, 14 Oct 2020 10:35:36 +0200
+From: =?utf-8?q?Fran=C3=A7ois_Legal?= <devel@thom.fr.eu.org>
+In-Reply-To: <1174-5f74a080-4b-37e14c00@201458726>
+Content-Type: text/plain; charset="utf-8"
+Date: Wed, 14 Oct 2020 10:43:38 +0200
 MIME-Version: 1.0
-In-Reply-To: <ae4827fe-5cb1-df3c-21bc-64fae2ff025b@siemens.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Message-ID: <1175-5f86ba00-b9-25a5a500@198941922>
+Subject: =?utf-8?q?Re=3A?= Strange switching =?utf-8?q?=5Bthreadname=5D?= to 
+ secondary mode after exception #0 in kernel-space at 0x80272444
+Content-Transfer-Encoding: quoted-printable
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -20,45 +15,112 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jan Kiszka <jan.kiszka@siemens.com>, xenomai@xenomai.org
+To: xenomai@xenomai.org
 
+Anybody can help on this ?
 
+Fran=C3=A7ois
 
-On 10/13/20 3:03 PM, Jan Kiszka wrote:
-> On 13.10.20 11:35, Gylstorff Quirin wrote:
->>
->>
->> On 10/12/20 12:36 PM, Jan Kiszka wrote:
->>> On 07.10.20 10:10, Gylstorff Quirin wrote:
->>>> Hi,
->>>>
->>>> Here is some data to the caching.
->>>>
->>>> during my test it reduced the build times from around 45min to around
->>>> 25min.
->>>
->>> In travis, a warm rebuild was ~10 min. in the endGood to know. I will
->>> look into the runner config.
->>
->>>
->>>> The size of the cache is for each build is around 500k.
->>>
->>> 500K? It used to be 200-300 MB in travis. Sounds a bit inconsistent.
->>
->> Here is a log from ccache
->>
->> https://gitlab.com/Quirin.Gy/xenomai/-/jobs/765078542.
->>
->> Config change due to the switch to Debian.
+Le Mercredi, Septembre 30, 2020 17:14 CEST, Fran=C3=A7ois Legal via Xen=
+omai <xenomai@xenomai.org> a =C3=A9crit: 
+ 
+> So the problem here lies in the calls to rtnet=5Fget=5Farg(fd, &=5Fms=
+g, msg, sizeof(*msg)); in af=5Fpacket.c sendmasg/recvmsg
 > 
-> But 500K really means we are not caching. Well, we are caching the
-> userspace build but not the more interesting kernel build.
-
-OK I will look into it and see where I lost the settings for the kernel 
-build.
+> The only explanation I could find was that, for my architecture (32bi=
+t ARMv7), syscall use the COBALT=5FSYSCALL32emu variants for sendmsg/re=
+cvmsg calls, which in turn allocate a struct user=5Fmsghdr on the SVC s=
+tack, then calls rt=5Fpacket=5Fsendmsg/rt=5Fpacket=5Frecvmsg with the a=
+ddress of that struct.
 > 
-> Jan
+> Then, rtnet=5Fget=5Farg would invoke arm=5Fcopy=5Ffrom=5Fuser, which,=
+ with SPECTRE mitigation turned on (you normally can't disable this by =
+configuration), would check that the source pointer is in the userland =
+memory area, and hence fail in my case.
 > 
-
+> Going from there, except disabling SPECTRE mitigation, I'm not sure h=
+ow I can fix this.
+> 
+> Fran=C3=A7ois
+> 
+> Le Mercredi, Septembre 30, 2020 10:48 CEST, Fran=C3=A7ois Legal via X=
+enomai <xenomai@xenomai.org> a =C3=A9crit: 
+>  
+> > I might have found what is causing this problem : CONFIG=5FCPU=5FSP=
+ECTRE
+> > 
+> > It was the noticeable difference between my last (4.4.189) kernel r=
+elease not showing this problem, and the next I tried (4.4.227).
+> > If I modify the Kconfig to disable CPU=5FSPECTRE, the problem does =
+not show up anymore.
+> > 
+> > I'll dig a little deeper into that now.
+> > 
+> > Fran=C3=A7ois
+> > 
+> > Le Mercredi, Septembre 30, 2020 08:42 CEST, Fran=C3=A7ois Legal <fr=
+ancois.legal@thom.fr.eu.org> a =C3=A9crit: 
+> >  
+> > > So I decided to dig a little deeper in this problem, and found ou=
+t that it is not xenomai3.1 specific.
+> > > I tried with xenomai-3.0.9 and linux 4.4.227 -> same problem.
+> > > I thought it might be a matter of ipipe patch not quite fit to 4.=
+4.227, so I decided to try with latest ipipe-4.4.y-cip from git and xen=
+omai 3.0.9, but the same problem happens.
+> > > 
+> > > Fran=C3=A7ois
+> > > 
+> > > Le Vendredi, Septembre 25, 2020 18:11 CEST, Fran=C3=A7ois Legal v=
+ia Xenomai <xenomai@xenomai.org> a =C3=A9crit: 
+> > >  
+> > > > Sorry to come back so late on that topic.
+> > > > I took some time to write a simple test program, which is attac=
+hed.> > 
+> > > > Config is as follows :
+> > > > xenomai-3.1
+> > > > linux-4.4.227
+> > > > 
+> > > > Fran=C3=A7ois
+> > > > 
+> > > > Le Vendredi, Ao=C3=BBt 21, 2020 20:04 CEST, Jan Kiszka <jan.kis=
+zka@siemens.com> a =C3=A9crit: 
+> > > >  
+> > > > > On 20.08.20 15:46, Fran=C3=A7ois Legal via Xenomai wrote:
+> > > > > > Using RTNet with multiple interfaces, xenomai 3.1 with linu=
+x 4.4
+> > > > > > Whenever a posix RT thread calls recvmsg (), I get this err=
+or.
+> > > > > > 
+> > > > > > I could track this down to line 422 in udp.c :     msg =3D =
+rtnet=5Fget=5Farg(fd, &=5Fmsg, u=5Fmsg, sizeof(=5Fmsg));
+> > > > > > 
+> > > > > > If I disassemble the kernel, the failing instruction (at 0x=
+80272444) is a nop in arm=5Fcopy=5Ffrom=5Fuser
+> > > > > > Am I doing anything wrong ?
+> > > > > 
+> > > > > Maybe you are passing an invalid pointer to recvmsg, directly=
+ or in its
+> > > > > message structures. That would cause an exception which is fi=
+xed up but
+> > > > > also reported. Do you get an error in return?
+> > > > > 
+> > > > > Jan
+> > > > > 
+> > > > > -- 
+> > > > > Siemens AG, Corporate Technology, CT RDA IOT SES-DE
+> > > > > Corporate Competence Center Embedded Linux
+> > > > -------------- next part --------------
+> > > > A non-text attachment was scrubbed...
+> > > > Name: test-net.c
+> > > > Type: application/octet-stream
+> > > > Size: 6141 bytes
+> > > > Desc: not available
+> > > > URL: <http://xenomai.org/pipermail/xenomai/attachments/20200925=
+/f745e32f/attachment.obj>
+> > >
+> > 
+> >
+> 
+>
 
 
