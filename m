@@ -1,10 +1,14 @@
-Date: Wed, 14 Oct 2020 21:25:00 +0800
-From: Fino Meng <fino.meng@linux.intel.com>
-Subject: build scripts for the WIP xenomai porting to kernel 5.4
-Message-ID: <20201014132459.GB24671@linux.intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+References: <1175-5f86ba00-b9-25a5a500@198941922>
+ <f64b59e3-b141-4309-7779-a8a99e16eb98@siemens.com>
+In-Reply-To: <f64b59e3-b141-4309-7779-a8a99e16eb98@siemens.com>
+From: Greg Gallagher <greg@embeddedgreg.com>
+Date: Wed, 14 Oct 2020 10:16:49 -0400
+Message-ID: <CALLqZ8RMbYDFnQy5gV7-vSi_v9rUPx9i3XJ4ym7JQ-+x64q+3Q@mail.gmail.com>
+Subject: Re: Strange switching [threadname] to secondary mode after exception
+ #0 in kernel-space at 0x80272444
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -13,62 +17,23 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
-Cc: fino.meng@intel.com, jan.kiszka@siemens.com, quirin.gylstorff@siemens.com, henning.schild@siemens.com, florent.pirou@intel.com, rick.y.wang@intel.com, hongzhan.chen@intel.com
+To: Jan Kiszka <jan.kiszka@siemens.com>
+Cc: =?UTF-8?Q?Fran=C3=A7ois_Legal?= <devel@thom.fr.eu.org>, "Xenomai@xenomai.org" <xenomai@xenomai.org>, Philippe Gerum <rpm@xenomai.org>
 
-hi team,
+On Wed, Oct 14, 2020 at 5:37 AM Jan Kiszka <jan.kiszka@siemens.com> wrote:
+>
+> On 14.10.20 10:43, Fran=C3=A7ois Legal via Xenomai wrote:
+> > Anybody can help on this ?
+> >
+>
+> I'm unfortunately not familiar with the armv7 details of copy-from-user,
+> not too speak of how spectre contributed to it. Greg, Philippe, did you
+> come across this already?
+>
+> Jan
+>
+I'll take a look tonight but I haven't hit this in my testing.  This
+was found on 4.4? Have you tried the 4.19 kernels?
 
-I just updated the scripts to build the WIP version xenomai porting to
-kernel 5.4, just follow the steps:
-
-git clone https://github.com/finomeng/xenomai-mirror.git /tmp/xenomai-mirror.next-5.4
-cd /tmp/xenomai-mirror.next-5.4
-git checkout -t origin/wip/next-5.4-porting
-
-git clone https://github.com/intel/linux-stable-xenomai /tmp/kernel
-cd /tmp/kernel
-git checkout -t review/5.4.59/stable/ipipe-x86
-
-./patching-xenomai2kernel.sh
-
-cp config_xenomai.kernel_debug .config
-make olddefconfig
-./build-debpkg.sh
-
-
-I didn't put it togethter with ISAR/Debian yet. I test it with a PC with Debian 10 installed.
-
-if no error, linux-image-*.deb and linux-headers-*.deb should generated outside kernel folder,
-copy them to your target test device with already installed a Debian/Ubuntu,
-install the deb with "dpkg -i", update-grub should be called during install linux-image-*.deb
-reboot and select to boot the new kernel in grub's menu
-
-the build steps also written in patching-xenomai2kernel.sh and build-debpkg.sh
-
-switchtest will fail in current version, for example: "./switchtest rtk_fp_ufpp0"
-will print:
-
-r0: 2147483648 != 1000
-r1: 2147483648 != 1000
-r2: 2147483648 != 1000
-r3: 2147483648 != 1000
-r4: 2147483648 != 1000
-r5: 2147483648 != 1000
-r6: 2147483648 != 1000
-r7: 2147483648 != 1000
-ymm0: 2676586395008836901/0 != 1000/1000
-ymm1: 71776119061217280/0 != 1000/1000
-ymm2: 0/0 != 1000/1000
-ymm3: 1000/0 != 1000/1000
-ymm4: 1000/0 != 1000/1000
-ymm5: 1000/0 != 1000/1000
-ymm6: 1000/0 != 1000/1000
-ymm7: 1000/0 != 1000/1000
-Error after context switch from task 1(rtk_fp_ufpp0-1) to task 0(sleeper_ufps0-0),
-FPU registers were set to 0 (maybe task sleeper_ufps0-0)
-
-if meet more questions just write to me, thanks!
-
-BR fino
-
+-Greg
 
