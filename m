@@ -1,8 +1,11 @@
-From: hongzha1 <hongzhan.chen@intel.com>
-Subject: [PATCH][wip/dovetail] cobalt/sched: init RESCHEDULE_OOB_IPI and
- register interrupt handler
-Date: Thu, 15 Oct 2020 01:02:11 -0400
-Message-Id: <20201015050211.11342-1-hongzhan.chen@intel.com>
+From: Edward Liao <edward.liao@adlinktech.com>
+Subject: PEAK RTCAN on Xenomai conflict with VT-d configuration
+Date: Thu, 15 Oct 2020 06:02:53 +0000
+Message-ID: <CY4PR05MB330496E52094CEEC40D8A67C8E020@CY4PR05MB3304.namprd05.prod.outlook.com>
+Content-Language: zh-TW
+MIME-Version: 1.0
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -11,88 +14,48 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org, jan.kiszka@siemens.com
+To: "xenomai@xenomai.org" <xenomai@xenomai.org>
+Cc: Victor Fu <victor.fu@adlinktech.com>, William Liang <william.liang@adlinktech.com>
 
-create and register RESCHEDULE_OOB_IPI interrupt handler
-
-Signed-off-by: hongzha1 <hongzhan.chen@intel.com>
-
-diff --git a/kernel/cobalt/sched.c b/kernel/cobalt/sched.c
-index f39becb90..1d40925b6 100644
---- a/kernel/cobalt/sched.c
-+++ b/kernel/cobalt/sched.c
-@@ -30,6 +30,13 @@
- #define CREATE_TRACE_POINTS
- #include <trace/events/cobalt-core.h>
- 
-+struct xn_machine_cpudata {
-+};
-+
-+DEFINE_PER_CPU(struct xn_machine_cpudata, xn_machine_cpudata);
-+
-+static void xnsched_destroy(struct xnsched *sched);
-+
- /**
-  * @ingroup cobalt_core
-  * @defgroup cobalt_core_sched Thread scheduling control
-@@ -224,10 +231,18 @@ static void xnsched_init(struct xnsched *sched, int cpu)
- #endif /* CONFIG_XENO_OPT_WATCHDOG */
- }
- 
-+static irqreturn_t reschedule_interrupt(int irq, void *dev_id)
-+{
-+	__xnsched_run_handler();
-+
-+	return IRQ_HANDLED;
-+}
-+
- void xnsched_init_all(void)
- {
- 	struct xnsched *sched;
- 	int cpu;
-+	int ret;
- 
- 	for_each_online_cpu(cpu) {
- 		sched = &per_cpu(nksched, cpu);
-@@ -235,12 +250,28 @@ void xnsched_init_all(void)
- 	}
- 
- #ifdef CONFIG_SMP
--#warning TODO
- /*	ipipe_request_irq(&xnsched_realtime_domain,
- 			  IPIPE_RESCHEDULE_IPI,
- 			  (ipipe_irq_handler_t)__xnsched_run_handler,
- 			  NULL, NULL);*/
-+	ret = __request_percpu_irq(RESCHEDULE_OOB_IPI,
-+			reschedule_interrupt,
-+			IRQF_OOB,
-+			"Xenomai reschedule",
-+			&xn_machine_cpudata);
-+	if (ret)
-+		goto cleanup_sched;
- #endif
-+	return;
-+
-+cleanup_sched:
-+	for_each_online_cpu(cpu) {
-+		sched = xnsched_struct(cpu);
-+		xnsched_destroy(sched);
-+	}
-+
-+	return;
-+
- }
- 
- static void xnsched_destroy(struct xnsched *sched)
-@@ -264,6 +295,7 @@ void xnsched_destroy_all(void)
- #ifdef CONFIG_SMP
- #warning TODO
- //	ipipe_free_irq(&xnsched_realtime_domain, IPIPE_RESCHEDULE_IPI);
-+	free_percpu_irq(RESCHEDULE_OOB_IPI, &xn_machine_cpudata);
- #endif
- 
- 	xnlock_get_irqsave(&nklock, s);
--- 
-2.17.1
-
-
+SGksIFhlbm9tYWkgVGVhbToKCldlIGhhdmUgYSBwcm9ibGVtIHdoZW4gdXNpbmcgUEVBSyByZWFs
+LXRpbWUgQ0FOIGRlcGxveSB3aXRoIGEgdmlydHVhbGl6YXRpb24gcHJvamVjdCBjYWxsZWQgQUNS
+Tiwgd2hpY2ggaXMgYW4gb3BlbiBzb3VyY2UgcHJvamVjdCwgdGhlIHByaW1hcnkgY29udHJpYnV0
+b3IgYXJlIEludGVsIFRlYW0uCgogIGh0dHBzOi8vcHJvamVjdGFjcm4uZ2l0aHViLmlvL2xhdGVz
+dC9pbnRyb2R1Y3Rpb24vaW5kZXguaHRtbAoKVGhlIG1haW4gcHVycG9zZSBpbiBvdXIgcHJvamVj
+dCBpcyBhcHBseSBQRUFLIFJUQ0FOIHdpdGggWGVub21haSBydW4gaW4gQUNSTiByZWFsLXRpbWUg
+Vk0uIFRoZSBJbnRlbCBDUFUgZW5oYW5jZW1lbnQgdGVjaG5pcXVlcyBmb3IgdmlydHVhbGl6YXRp
+b24gVlQtZCBjb25maWd1cmF0aW9uIGluIEJJT1Mgd2hpY2ggaXMgY29uZmxpY3Qgd2l0aCBYZW5v
+bWFpIFBFQUsgUlRDQU4uCkhlcmUgaXMgb3VyIGhhcmR3YXJlIHJlc291cmNlIGFuZCBrZXJuZWwg
+dmVyc2lvbjoKCiAgQ1BVOiBJbnRlbCBpNy05ODUwSEUKICBPUzogVWJ1bnR1IDE4LjA0IHg4Nl82
+NAogIEtlcm5lbDogNC4xOS41OQogIFhlbm9tYWk6IDMuMQogIFBFQUsgQ0FOIG1vZGVsOiBQRUFL
+IFBDQU4tbWluaVBDSWUgKElQRUgtMDAzMDQ4KQogIGh0dHBzOi8vd3d3LnBlYWstc3lzdGVtLmNv
+bS9QQ0FOLW1pbmlQQ0llLjI4NS4wLmh0bWw/Jkw9MQoKVGhlIGZvbGxvd2luZyBQRUFLJ3Mgb2Zm
+aWNpYWwgZm9ydW0gZGlzY3Vzc2lvbiBsaW5rIHdobyBhbHNvIGhhdmUgdGhlIHNhbWUgaXNzdWUg
+d2l0aCBQRUFLIFJUQ0FOIG9uIFhlbm9tYWksIGJ1dCB0aGUgdXNlciBkbyBub3QgbmVlZCBhIHNj
+ZW5hcmlvIHJ1biB3aXRoIHZpcnR1YWwgbWFjaGluZS4gU28sIHRoZSB1c2VyIGRpc2FibGUgVlQt
+ZCBzZXR0aW5nIGFuZCB0aGUgcHJvYmxlbSBzb2x2ZWQuIEluIHRoaXMgdGltZSB3ZSBoYXZlIHRv
+IHJ1biBQRUFLIFJUQ0FOIHdpdGhpbiBhIHJlYWwtdGltZSBWTSwgdGhlbiBjYW5ub3QganVzdCBk
+aXNhYmxlIFZULWQgc2V0dGluZyB0byBhdm9pZCB0aGUgY29uZmxpY3QuIEhvcGUgWGVub21haSBU
+ZWFtIGNhbiBoZWxwIHVzIHRvIHNvbHZlIHRoZSBwcm9ibGVtLgoKICBodHRwczovL2ZvcnVtLnBl
+YWstc3lzdGVtLmNvbS92aWV3dG9waWMucGhwP2Y9NTkmdD01NzIwCgpQbGVhc2UgYWxzbyBoYXZl
+IGEgbG9vayB0aGUgQUNSTiBQcm9qZWN0IHJ1biB3aXRoIFhlbm9tYWkgb24gZ3Vlc3QgT1MuCgog
+IGh0dHBzOi8vcHJvamVjdGFjcm4uZ2l0aHViLmlvL2xhdGVzdC90dXRvcmlhbHMvdXNpbmdfeGVu
+b21haV9hc191b3MuaHRtbAoKICBodHRwczovL2dpdGh1Yi5jb20vaW50ZWwvbGludXgtc3RhYmxl
+LXhlbm9tYWkKClRoZSBiYXNpYyBzdGVwcyB0byByZXByb2R1Y2UgdGhlIGNvbmZsaWN0IGlzIGVu
+YWJsZSBWVC1kIGluIEJJT1MgaWYgaXMgc3VwcG9ydGVkLiBSdW4gUEVBSyBSVENBTiBkZW1vIHdp
+dGggWGVub21haSBDb2JhbHQgQ29yZSwgdGhlbiBjYW4gcmVwcm9kdWNlIGp1c3QgbGlrZSB0aGUg
+Zm9ydW0gdG9waWMoUEVBSy1DQU4gbWluaVBDSWUgZGV2aWNlcyBmYWlsZWQgb24gWGVub21haSAz
+LjAuNSkgc2FpZC4gSXQgaXMgbm90IG5lY2Vzc2FyeSB0byBwcmVwYXJlIEFDUk4gUHJvamVjdCBp
+biBzeXN0ZW0gYW55d2F5LgoKVG8gY2hlY2sgdGhlIENQVSB4ODYgdmlydHVhbGl6YXRpb24gdGVj
+aG5pYyBpZiBpcyBzdXBwb3J0ZWQ6CiAgY2F0IC9wcm9jL2NwdWluZm8gfCBncmVwIHZteAoKUGxl
+YXNlIGZlZWwgZnJlZSB0byBjb250YWN0IHVzIGlmIHlvdSBuZWVkIGFueSBmdXJ0aGVyIGluZm9y
+bWF0aW9uLgoKVGhhbmsgeW91IGZvciB0YWtpbmcgdGhlIHRpbWUgdG8gcmVhZCB0aGlzIGUtbWFp
+bC4KCkJlc3QgUmVnYXJkcywKRWR3YXJkIExpYW8KU0VDLVN5c3RlbSBQbGF0Zm9ybSBEZXB0LiBT
+ZWN0aW9uIFYKQURMSU5LIFRlY2hub2xvZ3kgSW5jLgpURUw6ICs4ODYtMi04MjI2NTg3NyBFeHQ6
+IDg4MDMKU2t5cGU6IGpheTE2ODE0CkVtYWlsIDogZWR3YXJkLmxpYW9AYWRsaW5rdGVjaC5jb208
+bWFpbHRvOmVkd2FyZC5saWFvQGFkbGlua3RlY2guY29tPgpbY2lkOmltYWdlMDAxLnBuZ0AwMUQz
+RTNCRS5BNzQ2RTkxMF0KCi0tLS0tLS0tLS0tLS0tIG5leHQgcGFydCAtLS0tLS0tLS0tLS0tLQpB
+IG5vbi10ZXh0IGF0dGFjaG1lbnQgd2FzIHNjcnViYmVkLi4uCk5hbWU6IGltYWdlMDAzLmpwZwpU
+eXBlOiBpbWFnZS9qcGVnClNpemU6IDI1NzIgYnl0ZXMKRGVzYzogaW1hZ2UwMDMuanBnClVSTDog
+PGh0dHA6Ly94ZW5vbWFpLm9yZy9waXBlcm1haWwveGVub21haS9hdHRhY2htZW50cy8yMDIwMTAx
+NS8xYjVhNDU1Mi9hdHRhY2htZW50LmpwZz4K
