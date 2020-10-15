@@ -1,13 +1,12 @@
+Date: Thu, 15 Oct 2020 16:15:09 +0800
+From: Fino Meng <fino.meng@linux.intel.com>
 Subject: Re: PEAK RTCAN on Xenomai conflict with VT-d configuration
+Message-ID: <20201015081508.GA30792@linux.intel.com>
 References: <CY4PR05MB330496E52094CEEC40D8A67C8E020@CY4PR05MB3304.namprd05.prod.outlook.com>
-From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <5a31fcc4-0236-8e2d-8ab1-c20809c6e01a@siemens.com>
-Date: Thu, 15 Oct 2020 10:11:01 +0200
 MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 In-Reply-To: <CY4PR05MB330496E52094CEEC40D8A67C8E020@CY4PR05MB3304.namprd05.prod.outlook.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,10 +15,10 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Edward Liao <edward.liao@adlinktech.com>, "xenomai@xenomai.org" <xenomai@xenomai.org>
-Cc: Victor Fu <victor.fu@adlinktech.com>, William Liang <william.liang@adlinktech.com>
+To: Edward Liao <edward.liao@adlinktech.com>
+Cc: xenomai@xenomai.org
 
-On 15.10.20 08:02, Edward Liao via Xenomai wrote:
+On Thu, Oct 15, 2020 at 06:02:53AM +0000, Edward Liao via Xenomai wrote:
 > Hi, Xenomai Team:
 > 
 > We have a problem when using PEAK real-time CAN deploy with a virtualization project called ACRN, which is an open source project, the primary contributor are Intel Team.
@@ -48,26 +47,35 @@ On 15.10.20 08:02, Edward Liao via Xenomai wrote:
 > 
 > The basic steps to reproduce the conflict is enable VT-d in BIOS if is supported. Run PEAK RTCAN demo with Xenomai Cobalt Core, then can reproduce just like the forum topic(PEAK-CAN miniPCIe devices failed on Xenomai 3.0.5) said. It is not necessary to prepare ACRN Project in system anyway.
 
-Conceptually, VT-d can be transparent to the guest. Means, even if you
-program the guest driver (in this case the Xenomai CAN driver) in a way
-as if there is no virtualization, things will "just work". This is how
-KVM/QEMU works, and also how we address this in Jailhouse (a hypervisor
-very similar to ACRN).
+Did u config this card as pass-through to the RTVM (Xenomai in this case)? 
+If your team don't familar how to config ACRN yet, maybe the fast way is
+post one card to our office, then we can reproduce the issue in our lab
+and debug it,
 
-If you want to rule out the ACRN hypervisor as the source of problems,
-cross-check by putting your Xenomai guest into a KVM machine and pass
-the CAN PCI adapter through (via vfio). If the problem persists, the
-hardware is very likely the issue. If not, you should talk to the ARCN
-developers.
+BR fino
 
-Is the problem in your case also that interrupts do not get through, and
-maybe the hypervisor reports that some blocking of "compatible
-interrupts"? Are we talking about MSI, MSI-X or INTx interrupts for this
-card?
-
-Jan
-
--- 
-Siemens AG, T RDA IOT
-Corporate Competence Center Embedded Linux
+> 
+> To check the CPU x86 virtualization technic if is supported:
+>   cat /proc/cpuinfo | grep vmx
+> 
+> Please feel free to contact us if you need any further information.
+> 
+> Thank you for taking the time to read this e-mail.
+> 
+> Best Regards,
+> Edward Liao
+> SEC-System Platform Dept. Section V
+> ADLINK Technology Inc.
+> TEL: +886-2-82265877 Ext: 8803
+> Skype: jay16814
+> Email : edward.liao@adlinktech.com<mailto:edward.liao@adlinktech.com>
+> [cid:image001.png@01D3E3BE.A746E910]
+> 
+> -------------- next part --------------
+> A non-text attachment was scrubbed...
+> Name: image003.jpg
+> Type: image/jpeg
+> Size: 2572 bytes
+> Desc: image003.jpg
+> URL: <http://xenomai.org/pipermail/xenomai/attachments/20201015/1b5a4552/attachment.jpg>
 
