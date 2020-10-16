@@ -1,14 +1,13 @@
-From: "Chen, Hongzhan" <hongzhan.chen@intel.com>
-Subject: RE: [PATCH][wip/dovetail] cobalt/sched: init RESCHEDULE_OOB_IPI and
- register interrupt handler
-Date: Fri, 16 Oct 2020 01:32:30 +0000
-Message-ID: <MWHPR11MB1710CF404739924318484E91F2030@MWHPR11MB1710.namprd11.prod.outlook.com>
-References: <20201015050211.11342-1-hongzhan.chen@intel.com>
- <a4448acd-70ba-1d4a-4d5a-acd7bb903799@siemens.com>
-In-Reply-To: <a4448acd-70ba-1d4a-4d5a-acd7bb903799@siemens.com>
-Content-Language: en-US
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+From: Edward Liao <edward.liao@adlinktech.com>
+Subject: RE: PEAK RTCAN on Xenomai conflict with VT-d configuration
+Date: Fri, 16 Oct 2020 02:46:59 +0000
+Message-ID: <CY4PR05MB3304144F9911BFA9D34555778E030@CY4PR05MB3304.namprd05.prod.outlook.com>
+References: <CY4PR05MB330496E52094CEEC40D8A67C8E020@CY4PR05MB3304.namprd05.prod.outlook.com>
+ <20201015081508.GA30792@linux.intel.com>
+In-Reply-To: <20201015081508.GA30792@linux.intel.com>
+Content-Language: zh-TW
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
@@ -18,58 +17,147 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jan Kiszka <jan.kiszka@siemens.com>, "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: "jan.kiszka@siemens.com" <jan.kiszka@siemens.com>, "fino.meng@linux.intel.com" <fino.meng@linux.intel.com>
+Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>, Victor Fu <victor.fu@adlinktech.com>, William Liang <william.liang@adlinktech.com>
 
-DQoNCj4+IGNyZWF0ZSBhbmQgcmVnaXN0ZXIgUkVTQ0hFRFVMRV9PT0JfSVBJIGludGVycnVwdCBo
-YW5kbGVyDQo+PiANCj4+IFNpZ25lZC1vZmYtYnk6IGhvbmd6aGExIDxob25nemhhbi5jaGVuQGlu
-dGVsLmNvbT4NCj4+IA0KPj4gZGlmZiAtLWdpdCBhL2tlcm5lbC9jb2JhbHQvc2NoZWQuYyBiL2tl
-cm5lbC9jb2JhbHQvc2NoZWQuYw0KPj4gaW5kZXggZjM5YmVjYjkwLi4xZDQwOTI1YjYgMTAwNjQ0
-DQo+PiAtLS0gYS9rZXJuZWwvY29iYWx0L3NjaGVkLmMNCj4+ICsrKyBiL2tlcm5lbC9jb2JhbHQv
-c2NoZWQuYw0KPj4gQEAgLTMwLDYgKzMwLDEzIEBADQo+PiAgI2RlZmluZSBDUkVBVEVfVFJBQ0Vf
-UE9JTlRTDQo+PiAgI2luY2x1ZGUgPHRyYWNlL2V2ZW50cy9jb2JhbHQtY29yZS5oPg0KPj4gIA0K
-Pj4gK3N0cnVjdCB4bl9tYWNoaW5lX2NwdWRhdGEgew0KPj4gK307DQo+PiArDQo+PiArREVGSU5F
-X1BFUl9DUFUoc3RydWN0IHhuX21hY2hpbmVfY3B1ZGF0YSwgeG5fbWFjaGluZV9jcHVkYXRhKTsN
-Cj4+ICsNCj4+ICtzdGF0aWMgdm9pZCB4bnNjaGVkX2Rlc3Ryb3koc3RydWN0IHhuc2NoZWQgKnNj
-aGVkKTsNCj4+ICsNCj4+ICAvKioNCj4+ICAgKiBAaW5ncm91cCBjb2JhbHRfY29yZQ0KPj4gICAq
-IEBkZWZncm91cCBjb2JhbHRfY29yZV9zY2hlZCBUaHJlYWQgc2NoZWR1bGluZyBjb250cm9sDQo+
-PiBAQCAtMjI0LDEwICsyMzEsMTggQEAgc3RhdGljIHZvaWQgeG5zY2hlZF9pbml0KHN0cnVjdCB4
-bnNjaGVkICpzY2hlZCwgaW50IGNwdSkNCj4+ICAjZW5kaWYgLyogQ09ORklHX1hFTk9fT1BUX1dB
-VENIRE9HICovDQo+PiAgfQ0KPj4gIA0KPj4gK3N0YXRpYyBpcnFyZXR1cm5fdCByZXNjaGVkdWxl
-X2ludGVycnVwdChpbnQgaXJxLCB2b2lkICpkZXZfaWQpDQo+PiArew0KPj4gKwlfX3huc2NoZWRf
-cnVuX2hhbmRsZXIoKTsNCj4+ICsNCj4+ICsJcmV0dXJuIElSUV9IQU5ETEVEOw0KPj4gK30NCj4+
-ICsNCj4+ICB2b2lkIHhuc2NoZWRfaW5pdF9hbGwodm9pZCkNCj4+ICB7DQo+PiAgCXN0cnVjdCB4
-bnNjaGVkICpzY2hlZDsNCj4+ICAJaW50IGNwdTsNCj4+ICsJaW50IHJldDsNCj4+ICANCj4+ICAJ
-Zm9yX2VhY2hfb25saW5lX2NwdShjcHUpIHsNCj4+ICAJCXNjaGVkID0gJnBlcl9jcHUobmtzY2hl
-ZCwgY3B1KTsNCg0KU3RlcCAxOiAgdGhlc2UgY29kZSBpcyB0byBkbyBpbml0aWFsaXphdGlvbi4N
-Cg0KPj4gQEAgLTIzNSwxMiArMjUwLDI4IEBAIHZvaWQgeG5zY2hlZF9pbml0X2FsbCh2b2lkKQ0K
-Pj4gIAl9DQo+PiAgDQo+PiAgI2lmZGVmIENPTkZJR19TTVANCj4+IC0jd2FybmluZyBUT0RPDQo+
-PiAgLyoJaXBpcGVfcmVxdWVzdF9pcnEoJnhuc2NoZWRfcmVhbHRpbWVfZG9tYWluLA0KPj4gIAkJ
-CSAgSVBJUEVfUkVTQ0hFRFVMRV9JUEksDQo+PiAgCQkJICAoaXBpcGVfaXJxX2hhbmRsZXJfdClf
-X3huc2NoZWRfcnVuX2hhbmRsZXIsDQo+PiAgCQkJICBOVUxMLCBOVUxMKTsqLw0KPj4gKwlyZXQg
-PSBfX3JlcXVlc3RfcGVyY3B1X2lycShSRVNDSEVEVUxFX09PQl9JUEksDQo+PiArCQkJcmVzY2hl
-ZHVsZV9pbnRlcnJ1cHQsDQo+PiArCQkJSVJRRl9PT0IsDQo+PiArCQkJIlhlbm9tYWkgcmVzY2hl
-ZHVsZSIsDQo+PiArCQkJJnhuX21hY2hpbmVfY3B1ZGF0YSk7DQo+PiArCWlmIChyZXQpDQo+PiAr
-CQlnb3RvIGNsZWFudXBfc2NoZWQ7DQo+PiAgI2VuZGlmDQo+PiArCXJldHVybjsNCj4+ICsNCj4+
-ICtjbGVhbnVwX3NjaGVkOg0KPj4gKwlmb3JfZWFjaF9vbmxpbmVfY3B1KGNwdSkgew0KPj4gKwkJ
-c2NoZWQgPSB4bnNjaGVkX3N0cnVjdChjcHUpOw0KPj4gKwkJeG5zY2hlZF9kZXN0cm95KHNjaGVk
-KTsNCj4gDQo+VFRoYXQgd2lsbCBydW4gZm9yIGFsbCBjcHVzLCBhbHNvIGZvciB0aG9zZSBwb3Nz
-aWJseSBub3QgeWV0IGluaXRpYWxpemVkDQo+YWF0IHRoaXMgc3RhZ2UuIERpZCB5b3UgY2hlY2sg
-aWYgdGhhdCBpcyBvaz8NCj4gDQpIaSBZYW4sDQoNClRoYW5rcyBmb3IgeW91ciBjb21tZW50cy4g
-IFllcyAsIGl0IHdhcyBhbHJlYWR5ICBpbml0aWFsaXplZCBmcm9tIHRoZSBzdGFydCBvZiBjdXJy
-ZW50IGZ1bmN0aW9uLCAgcGxlYXNlIGNoZWNrIGNvZGUgd2hlcmUgSSBjb21tZW50ICBhdCAgc3Rl
-cCAxIGluIG9yaWdpbmFsIGNvZGUuIA0KY2xlYW51cF9zY2hlZCBpcyB0byByZWNhbGwgdGhlIGlu
-aXRpYWxpemF0aW9uIGlmIGZhaWwgdG8gcmVxdWVzdCBpcnEgYmVmb3JlIHJldHVybiBjdXJyZW50
-IGZ1bmN0aW9uLg0KDQo+Pj4gKwl9DQo+Pj4gKw0KPj4+ICsJcmV0dXJuOw0KPiANCj5VVW5uZWVk
-ZWQgInJldHVybiIgc3RhdGVtZW50Lg0KPiANCj4+PiArDQo+Pj4gIH0NCj4+PiAgDQo+Pj4gIHN0
-YXRpYyB2b2lkIHhuc2NoZWRfZGVzdHJveShzdHJ1Y3QgeG5zY2hlZCAqc2NoZWQpDQo+Pj4gQEAg
-LTI2NCw2ICsyOTUsNyBAQCB2b2lkIHhuc2NoZWRfZGVzdHJveV9hbGwodm9pZCkNCj4+PiAgI2lm
-ZGVmIENPTkZJR19TTVANCj4+PiAgI3dhcm5pbmcgVE9ETw0KPj4+ICAvLwlpcGlwZV9mcmVlX2ly
-cSgmeG5zY2hlZF9yZWFsdGltZV9kb21haW4sIElQSVBFX1JFU0NIRURVTEVfSVBJKTsNCj4+PiAr
-CWZyZWVfcGVyY3B1X2lycShSRVNDSEVEVUxFX09PQl9JUEksICZ4bl9tYWNoaW5lX2NwdWRhdGEp
-Ow0KPj4+ICAjZW5kaWYNCj4+PiAgDQo+Pj4gIAl4bmxvY2tfZ2V0X2lycXNhdmUoJm5rbG9jaywg
-cyk7DQo+Pj4gDQo+DQo+TG9va3MgZ29vZCBvdGhlcndpc2UuIEFub3RoZXIgc3RlcCBmb3J3YXJk
-Lg0KPg0KPlRoYW5rcywNCj5KYW4NCj4NCj4tLSANCj5TaWVtZW5zIEFHLCBUIFJEQSBJT1QNCj5D
-b3Jwb3JhdGUgQ29tcGV0ZW5jZSBDZW50ZXIgRW1iZWRkZWQgTGludXgNCg0KUmVnYXJkcw0KDQpI
-b25nemhhbiBDaGVuDQoNCg0KDQoNCg0KDQoNCg0KDQoNCg0KDQoNCg0KDQoNCg0KDQoNCg0KDQoN
-Cg0KDQoNCg0KDQoNCg0KDQoNCg0KDQoNCg0KDQoNCg0KDQoNCg0KDQoNCg0KDQoNCg0KDQoNCg0K
+Hi, Jan and Fino:
+
+> Conceptually, VT-d can be transparent to the guest. Means, even if you pr=
+ogram the guest driver (in this case the Xenomai CAN driver) in a way as if=
+ there is no virtualization, things will "just work". This is how KVM/QEMU =
+works, and also how we address this in Jailhouse (a hypervisor very similar=
+ to ACRN).
+>
+> If you want to rule out the ACRN hypervisor as the source of problems, cr=
+oss-check by putting your Xenomai guest into a KVM machine and pass the CAN=
+ PCI adapter through (via vfio). If the problem persists, the hardware is v=
+ery likely the issue. If not, you should talk to the ARCN developers.
+>
+> Is the problem in your case also that interrupts do not get through, and =
+maybe the hypervisor reports that some blocking of "compatible interrupts"?=
+ Are we talking about MSI, MSI-X or INTx interrupts for this card?
+
+We reproduce the same problem just like the PEAK forum discussion the user =
+said:
+"data seems to send sucessfully, but for the second call of 'rtcansend', th=
+e program are stuck in the send function."
+That means you can only send data once, then stuck in the socket send() fun=
+ction. If you want to send another data, you have to run ./rtcanconfig agai=
+n, send(./rtcansend) another data, then stuck again. On the other hand, the=
+ ./rtcanrecv never receive any data, no matter how to configure it.
+
+    https://forum.peak-system.com/viewtopic.php?f=3D59&t=3D5720&start=3D10
+
+In the above test scenario, we have not yet integrated with ACRN. The PEAK =
+RTCAN will have the problem, only if active the Intel VT for Directed I/O t=
+echnology(VT-d) in BIOS. If deactivate it, the problem solved. But ACRN nee=
+d VT-d support, so we cannot just disable it.
+
+> Did u config this card as pass-through to the RTVM (Xenomai in this case)=
+?=20
+> If your team don't familar how to config ACRN yet, maybe the fast way is =
+post one card to our office, then we can reproduce the issue in our lab and=
+ debug it,
+
+We available pass-through PCIe device from Service OS to RTVM after followe=
+d the ACRN instructions, it is definitely can show PEAK PCIe device in the =
+list on RTVM with command lspci. The situation in RTVM the same as above te=
+st scenario, no matter run with or without ACRN, the RTCAN will stuck at so=
+cket send() function after one send when VT-d configuration is enabled.
+
+Just like Fino said, one of the fast way is post the card to the office, an=
+d help to solve the problem. Fino, could you send me the office address and=
+ the recipient info in private way(another e-mail)? We're now acquiring the=
+ approval in our business unit for lending the device.
+
+Thanks for Xenomai Team help.
+
+Best Regards,
+Edward Liao
+
+
+
+
+-----Original Message-----
+From: Fino Meng <fino.meng@linux.intel.com>=20
+Sent: Thursday, October 15, 2020 4:15 PM
+To: Edward Liao <edward.liao@adlinktech.com>
+Cc: xenomai@xenomai.org
+Subject: Re: PEAK RTCAN on Xenomai conflict with VT-d configuration
+
+On Thu, Oct 15, 2020 at 06:02:53AM +0000, Edward Liao via Xenomai wrote:
+> Hi, Xenomai Team:
+>=20
+> We have a problem when using PEAK real-time CAN deploy with a virtualizat=
+ion project called ACRN, which is an open source project, the primary contr=
+ibutor are Intel Team.
+>=20
+>   https://projectacrn.github.io/latest/introduction/index.html
+>=20
+> The main purpose in our project is apply PEAK RTCAN with Xenomai run in A=
+CRN real-time VM. The Intel CPU enhancement techniques for virtualization V=
+T-d configuration in BIOS which is conflict with Xenomai PEAK RTCAN.
+> Here is our hardware resource and kernel version:
+>=20
+>   CPU: Intel i7-9850HE
+>   OS: Ubuntu 18.04 x86_64
+>   Kernel: 4.19.59
+>   Xenomai: 3.1
+>   PEAK CAN model: PEAK PCAN-miniPCIe (IPEH-003048)
+>   https://www.peak-system.com/PCAN-miniPCIe.285.0.html?&L=3D1
+>=20
+> The following PEAK's official forum discussion link who also have the sam=
+e issue with PEAK RTCAN on Xenomai, but the user do not need a scenario run=
+ with virtual machine. So, the user disable VT-d setting and the problem so=
+lved. In this time we have to run PEAK RTCAN within a real-time VM, then ca=
+nnot just disable VT-d setting to avoid the conflict. Hope Xenomai Team can=
+ help us to solve the problem.
+>=20
+>   https://forum.peak-system.com/viewtopic.php?f=3D59&t=3D5720
+>=20
+> Please also have a look the ACRN Project run with Xenomai on guest OS.
+>=20
+>  =20
+> https://projectacrn.github.io/latest/tutorials/using_xenomai_as_uos.ht
+> ml
+>=20
+>   https://github.com/intel/linux-stable-xenomai
+>=20
+> The basic steps to reproduce the conflict is enable VT-d in BIOS if is su=
+pported. Run PEAK RTCAN demo with Xenomai Cobalt Core, then can reproduce j=
+ust like the forum topic(PEAK-CAN miniPCIe devices failed on Xenomai 3.0.5)=
+ said. It is not necessary to prepare ACRN Project in system anyway.
+
+Did u config this card as pass-through to the RTVM (Xenomai in this case)?=
+=20
+If your team don't familar how to config ACRN yet, maybe the fast way is po=
+st one card to our office, then we can reproduce the issue in our lab and d=
+ebug it,
+
+BR fino
+
+>=20
+> To check the CPU x86 virtualization technic if is supported:
+>   cat /proc/cpuinfo | grep vmx
+>=20
+> Please feel free to contact us if you need any further information.
+>=20
+> Thank you for taking the time to read this e-mail.
+>=20
+> Best Regards,
+> Edward Liao
+> SEC-System Platform Dept. Section V
+> ADLINK Technology Inc.
+> TEL: +886-2-82265877 Ext: 8803
+> Email : edward.liao@adlinktech.com<mailto:edward.liao@adlinktech.com>
+> [cid:image001.png@01D3E3BE.A746E910]
+>=20
+> -------------- next part -------------- A non-text attachment was=20
+> scrubbed...
+> Name: image003.jpg
+> Type: image/jpeg
+> Size: 2572 bytes
+> Desc: image003.jpg
+> URL: <http://xenomai.org/pipermail/xenomai/attachments/20201015/1b5a4552/=
+attachment.jpg>
 
