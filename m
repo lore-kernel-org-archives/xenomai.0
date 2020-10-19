@@ -1,15 +1,12 @@
-Subject: Re: build scripts for the WIP xenomai porting to kernel 5.4
-References: <20201014132459.GB24671@linux.intel.com>
- <8e59bc35-84ae-78be-8296-4f2367e8e844@siemens.com>
- <20201016033638.GB5581@linux.intel.com>
-From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <0ba45dfa-4755-c627-e1fd-9f2c32ea8b8a@siemens.com>
-Date: Sun, 18 Oct 2020 23:41:14 +0200
-MIME-Version: 1.0
-In-Reply-To: <20201016033638.GB5581@linux.intel.com>
-Content-Type: text/plain; charset=utf-8
+From: "Chen, Hongzhan" <hongzhan.chen@intel.com>
+Subject: [PATCH v2][wip/dovetail] cobalt/sched: init RESCHEDULE_OOB_IPI and
+ register interrupt handler
+Date: Mon, 19 Oct 2020 01:14:41 +0000
+Message-ID: <MWHPR11MB17100BC060C1287A9A6CC7DAF21E0@MWHPR11MB1710.namprd11.prod.outlook.com>
 Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+MIME-Version: 1.0
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -18,93 +15,41 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Fino Meng <fino.meng@linux.intel.com>
-Cc: xenomai@xenomai.org
+To: Jan Kiszka <jan.kiszka@siemens.com>
+Cc: "Xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On 16.10.20 05:36, Fino Meng wrote:
-> On Thu, Oct 15, 2020 at 04:20:11PM +0200, Jan Kiszka wrote:
->> On 14.10.20 15:25, Fino Meng wrote:
->>> hi team,
->>>
->>> I just updated the scripts to build the WIP version xenomai porting to
->>> kernel 5.4, just follow the steps:
->>>
->>> git clone https://github.com/finomeng/xenomai-mirror.git /tmp/xenomai-mirror.next-5.4
->>> cd /tmp/xenomai-mirror.next-5.4
->>> git checkout -t origin/wip/next-5.4-porting
->>>
->>> git clone https://github.com/intel/linux-stable-xenomai /tmp/kernel
->>> cd /tmp/kernel
->>> git checkout -t review/5.4.59/stable/ipipe-x86
->>>
->>> ./patching-xenomai2kernel.sh
->>>
->>> cp config_xenomai.kernel_debug .config
->>> make olddefconfig
->>> ./build-debpkg.sh
->>>
->>>
->>> I didn't put it togethter with ISAR/Debian yet. I test it with a PC with Debian 10 installed.
->>>
->>> if no error, linux-image-*.deb and linux-headers-*.deb should generated outside kernel folder,
->>> copy them to your target test device with already installed a Debian/Ubuntu,
->>> install the deb with "dpkg -i", update-grub should be called during install linux-image-*.deb
->>> reboot and select to boot the new kernel in grub's menu
->>>
->>> the build steps also written in patching-xenomai2kernel.sh and build-debpkg.sh
->>>
->>> switchtest will fail in current version, for example: "./switchtest rtk_fp_ufpp0"
->>> will print:
->>>
->>> r0: 2147483648 != 1000
->>> r1: 2147483648 != 1000
->>> r2: 2147483648 != 1000
->>> r3: 2147483648 != 1000
->>> r4: 2147483648 != 1000
->>> r5: 2147483648 != 1000
->>> r6: 2147483648 != 1000
->>> r7: 2147483648 != 1000
->>> ymm0: 2676586395008836901/0 != 1000/1000
->>> ymm1: 71776119061217280/0 != 1000/1000
->>> ymm2: 0/0 != 1000/1000
->>> ymm3: 1000/0 != 1000/1000
->>> ymm4: 1000/0 != 1000/1000
->>> ymm5: 1000/0 != 1000/1000
->>> ymm6: 1000/0 != 1000/1000
->>> ymm7: 1000/0 != 1000/1000
->>> Error after context switch from task 1(rtk_fp_ufpp0-1) to task 0(sleeper_ufps0-0),
->>> FPU registers were set to 0 (maybe task sleeper_ufps0-0)
->>>
->>> if meet more questions just write to me, thanks!
->>>
->>> BR fino
->>>
->>
->> I can reproduce in KVM and poked around a bit, though without finding
->> the needle yet. Likely, there are multiple aspects. The change in
->> upstream to FPU switching on user-return is a hot lead, but it takes a
->> bit to fully grasp that and map it on our scenarios with Xenomai.
->>
->> Jan
-> 
-> it seems that, switch_fpu_prepare() and switch_fpu_finish() are
-> for kernel thread context switch (in __switch_to() )and switch_fpu_return() is needed
-> before return to userspace( in prepare_exit_to_usermode()).
-> 
-
-Yes, we need explicit switch_fpu_return() (likely open-coded, to skip
-the PF_KTHREAD check) at the end of xnarch_switch_to, at least as long
-as we do not add that to all fast (primary-mode) return-to-user paths.
-
-But it's more complex. The removal of fpu_initialized changed the
-condition under which __switch_to() does FPU saving and restoring: All
-kernel threads, also ours, are excluded. That needs to be compensated.
-
-But I'm still facing corruptions - continuing to debug.
-
-Jan
-
--- 
-Siemens AG, T RDA IOT
-Corporate Competence Center Embedded Linux
+Y3JlYXRlIGFuZCByZWdpc3RlciBSRVNDSEVEVUxFX09PQl9JUEkgaW50ZXJydXB0IGhhbmRsZXIN
+Cg0KU2lnbmVkLW9mZi1ieTogaG9uZ3poYTEgPGhvbmd6aGFuLmNoZW5AaW50ZWwuY29tPg0KDQpk
+aWZmIC0tZ2l0IGEva2VybmVsL2NvYmFsdC9zY2hlZC5jIGIva2VybmVsL2NvYmFsdC9zY2hlZC5j
+DQppbmRleCBmMzliZWNiOTAuLjgyYTUxY2U5MyAxMDA2NDQNCi0tLSBhL2tlcm5lbC9jb2JhbHQv
+c2NoZWQuYw0KKysrIGIva2VybmVsL2NvYmFsdC9zY2hlZC5jDQpAQCAtMzAsNiArMzAsMTMgQEAN
+CiAjZGVmaW5lIENSRUFURV9UUkFDRV9QT0lOVFMNCiAjaW5jbHVkZSA8dHJhY2UvZXZlbnRzL2Nv
+YmFsdC1jb3JlLmg+DQogDQorc3RydWN0IHhuX21hY2hpbmVfY3B1ZGF0YSB7DQorfTsNCisNCitE
+RUZJTkVfUEVSX0NQVShzdHJ1Y3QgeG5fbWFjaGluZV9jcHVkYXRhLCB4bl9tYWNoaW5lX2NwdWRh
+dGEpOw0KKw0KK3N0YXRpYyB2b2lkIHhuc2NoZWRfZGVzdHJveShzdHJ1Y3QgeG5zY2hlZCAqc2No
+ZWQpOw0KKw0KIC8qKg0KICAqIEBpbmdyb3VwIGNvYmFsdF9jb3JlDQogICogQGRlZmdyb3VwIGNv
+YmFsdF9jb3JlX3NjaGVkIFRocmVhZCBzY2hlZHVsaW5nIGNvbnRyb2wNCkBAIC0yMjQsMTAgKzIz
+MSwxOCBAQCBzdGF0aWMgdm9pZCB4bnNjaGVkX2luaXQoc3RydWN0IHhuc2NoZWQgKnNjaGVkLCBp
+bnQgY3B1KQ0KICNlbmRpZiAvKiBDT05GSUdfWEVOT19PUFRfV0FUQ0hET0cgKi8NCiB9DQogDQor
+c3RhdGljIGlycXJldHVybl90IHJlc2NoZWR1bGVfaW50ZXJydXB0KGludCBpcnEsIHZvaWQgKmRl
+dl9pZCkNCit7DQorCV9feG5zY2hlZF9ydW5faGFuZGxlcigpOw0KKw0KKwlyZXR1cm4gSVJRX0hB
+TkRMRUQ7DQorfQ0KKw0KIHZvaWQgeG5zY2hlZF9pbml0X2FsbCh2b2lkKQ0KIHsNCiAJc3RydWN0
+IHhuc2NoZWQgKnNjaGVkOw0KIAlpbnQgY3B1Ow0KKwlpbnQgcmV0Ow0KIA0KIAlmb3JfZWFjaF9v
+bmxpbmVfY3B1KGNwdSkgew0KIAkJc2NoZWQgPSAmcGVyX2NwdShua3NjaGVkLCBjcHUpOw0KQEAg
+LTIzNSwxMiArMjUwLDI2IEBAIHZvaWQgeG5zY2hlZF9pbml0X2FsbCh2b2lkKQ0KIAl9DQogDQog
+I2lmZGVmIENPTkZJR19TTVANCi0jd2FybmluZyBUT0RPDQogLyoJaXBpcGVfcmVxdWVzdF9pcnEo
+Jnhuc2NoZWRfcmVhbHRpbWVfZG9tYWluLA0KIAkJCSAgSVBJUEVfUkVTQ0hFRFVMRV9JUEksDQog
+CQkJICAoaXBpcGVfaXJxX2hhbmRsZXJfdClfX3huc2NoZWRfcnVuX2hhbmRsZXIsDQogCQkJICBO
+VUxMLCBOVUxMKTsqLw0KKwlyZXQgPSBfX3JlcXVlc3RfcGVyY3B1X2lycShSRVNDSEVEVUxFX09P
+Ql9JUEksDQorCQkJcmVzY2hlZHVsZV9pbnRlcnJ1cHQsDQorCQkJSVJRRl9PT0IsDQorCQkJIlhl
+bm9tYWkgcmVzY2hlZHVsZSIsDQorCQkJJnhuX21hY2hpbmVfY3B1ZGF0YSk7DQorCWlmIChyZXQp
+DQorCQlnb3RvIGNsZWFudXBfc2NoZWQ7DQogI2VuZGlmDQorCXJldHVybjsNCisNCitjbGVhbnVw
+X3NjaGVkOg0KKwlmb3JfZWFjaF9vbmxpbmVfY3B1KGNwdSkgew0KKwkJc2NoZWQgPSB4bnNjaGVk
+X3N0cnVjdChjcHUpOw0KKwkJeG5zY2hlZF9kZXN0cm95KHNjaGVkKTsNCisJfQ0KKw0KIH0NCiAN
+CiBzdGF0aWMgdm9pZCB4bnNjaGVkX2Rlc3Ryb3koc3RydWN0IHhuc2NoZWQgKnNjaGVkKQ0KQEAg
+LTI2NCw2ICsyOTMsNyBAQCB2b2lkIHhuc2NoZWRfZGVzdHJveV9hbGwodm9pZCkNCiAjaWZkZWYg
+Q09ORklHX1NNUA0KICN3YXJuaW5nIFRPRE8NCiAvLwlpcGlwZV9mcmVlX2lycSgmeG5zY2hlZF9y
+ZWFsdGltZV9kb21haW4sIElQSVBFX1JFU0NIRURVTEVfSVBJKTsNCisJZnJlZV9wZXJjcHVfaXJx
+KFJFU0NIRURVTEVfT09CX0lQSSwgJnhuX21hY2hpbmVfY3B1ZGF0YSk7DQogI2VuZGlmDQogDQog
+CXhubG9ja19nZXRfaXJxc2F2ZSgmbmtsb2NrLCBzKTsNCi0tIA0KMi4xNy4xDQo=
 
