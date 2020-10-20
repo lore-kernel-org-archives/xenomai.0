@@ -1,8 +1,18 @@
-From: hongzha1 <hongzhan.chen@intel.com>
-Subject: [PATCH 4/4][wip/dovetail] cobalt/timer: make use of tick-proxy
- instead of original host tick
-Date: Tue, 20 Oct 2020 03:15:35 -0400
-Message-Id: <20201020071535.23009-1-hongzhan.chen@intel.com>
+Subject: Re: [PATCH] y2038: replace timespec with timespec64 in clock_settime
+References: <1600691577-12011-1-git-send-email-chensong@tj.kylinos.cn>
+ <01014f7c-76ed-46ea-0c7c-920f6eb63b0e@siemens.com>
+ <27465fc4-ab13-ffb7-eec4-21160fbeec8a@tj.kylinos.cn>
+ <7e00b8e7-4029-00f0-38dc-6d9452b552e7@siemens.com>
+ <5F72D3CF.7070200@tj.kylinos.cn>
+ <8ab3d084-e9bc-de32-1095-403ac6e1a2c9@web.de>
+ <5F8425BD.7090208@tj.kylinos.cn>
+From: chensong <chensong@tj.kylinos.cn>
+Message-ID: <5F8E9B65.2050202@tj.kylinos.cn>+F7E1B226D6718E94
+Date: Tue, 20 Oct 2020 16:10:13 +0800
+MIME-Version: 1.0
+In-Reply-To: <5F8425BD.7090208@tj.kylinos.cn>
+Content-Type: text/plain; charset="utf-8"; format="flowed"
+Content-Transfer-Encoding: 8bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -11,158 +21,107 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org, jan.kiszka@siemens.com
+To: Jan Kiszka <jan.kiszka@web.de>, xenomai@xenomai.org
 
-make use of tick-proxy which is base infastructure of pipeline to
-replace host tick of ipipeline.
+Hi Jan;
 
-Signed-off-by: hongzha1 <hongzhan.chen@intel.com>
+i talked to arnd Bergmann about how to build a 32bit 2038-safe process, 
+he told me that neither gcc nor glibc can fully support 64bit timespec 
+yet, he suggested me to use musl(https://wiki.musl-libc.org/), and he 
+also suggested me to use kernel5.4.
 
-diff --git a/include/cobalt/kernel/sched.h b/include/cobalt/kernel/sched.h
-index d4f449e4a..7faabdcae 100644
---- a/include/cobalt/kernel/sched.h
-+++ b/include/cobalt/kernel/sched.h
-@@ -53,6 +53,12 @@ DECLARE_PER_CPU(struct xn_machine_cpudata, xn_machine_cpudata);
- #define XNINIRQ		0x00004000	/* In IRQ handling context */
- #define XNHDEFER	0x00002000	/* Host tick deferred */
- 
-+/*
-+ * Hardware timer is stopped.
-+ */
-+
-+#define XNTSTOP		0x00008000
-+
- struct xnsched_rt {
- 	xnsched_queue_t runnable;	/*!< Runnable thread queue. */
- };
-diff --git a/kernel/cobalt/timer.c b/kernel/cobalt/timer.c
-index 3a1f8e545..67d6d2a33 100644
---- a/kernel/cobalt/timer.c
-+++ b/kernel/cobalt/timer.c
-@@ -20,6 +20,8 @@
- //#include <linux/ipipe.h>
- //#include <linux/ipipe_tickdev.h>
- #include <linux/sched.h>
-+#include <linux/tick.h>
-+#include <linux/clockchips.h>
- #include <cobalt/kernel/sched.h>
- #include <cobalt/kernel/thread.h>
- #include <cobalt/kernel/timer.h>
-@@ -29,6 +31,8 @@
- #include <cobalt/kernel/arith.h>
- #include <trace/events/cobalt-core.h>
- 
-+static DEFINE_PER_CPU(struct clock_proxy_device *, proxy_device);
-+
- /**
-  * @ingroup cobalt_core
-  * @defgroup cobalt_core_timer Timer services
-@@ -856,6 +860,83 @@ static int grab_hardware_timer(int cpu)
- 	return -ENODEV;
- }
- 
-+void xn_core_tick(struct clock_event_device *dummy) /* hard irqs off */
-+{
-+	xnintr_core_clock_handler();
-+}
-+
-+static int proxy_set_oneshot_stopped(struct clock_event_device *proxy_dev)
-+{
-+	struct clock_event_device *real_dev;
-+	struct clock_proxy_device *dev;
-+	unsigned long flags;
-+	struct xnsched *sched;
-+
-+	dev = container_of(proxy_dev, struct clock_proxy_device, proxy_device);
-+
-+	/*
-+	 * In-band wants to disable the clock hardware on entering a
-+	 * tickless state, so we have to stop our in-band tick
-+	 * emulation. Propagate the request for shutting down the
-+	 * hardware to the real device only if we have no outstanding
-+	 * OOB timers. CAUTION: the in-band timer is counted when
-+	 * assessing the RQ_IDLE condition, so we need to stop it
-+	 * prior to testing the latter.
-+	 */
-+	flags = hard_local_irq_save();
-+
-+	sched = xnsched_current();
-+	xntimer_stop(&sched->htimer);
-+	sched->lflags |= XNTSTOP;
-+
-+	if (sched->lflags & XNIDLE) {
-+		real_dev = dev->real_device;
-+		real_dev->set_state_oneshot_stopped(real_dev);
-+	}
-+
-+	hard_local_irq_restore(flags);
-+
-+	return 0;
-+}
-+
-+/* refer to program_htick_shot  */
-+
-+static int proxy_set_next_ktime(ktime_t expires,
-+				struct clock_event_device *proxy_dev)
-+{
-+	struct xnsched *sched;
-+	unsigned long flags;
-+	ktime_t delta;
-+	int ret;
-+
-+	/*
-+	 * Negative delta have been observed. evl_start_timer()
-+	 * will trigger an immediate shot in such an event.
-+	 */
-+	delta = ktime_sub(expires, ktime_get());
-+
-+	flags = hard_local_irq_save(); /* Prevent CPU migration. */
-+	sched = xnsched_current();
-+	ret = xntimer_start(&sched->htimer, delta, XN_INFINITE, XN_RELATIVE);
-+	hard_local_irq_restore(flags);
-+
-+	return ret ? -ETIME : 0;
-+}
-+
-+
-+static void setup_proxy(struct clock_proxy_device *dev)
-+{
-+	struct clock_event_device *proxy_dev = &dev->proxy_device;
-+
-+	dev->handle_oob_event = xn_core_tick;
-+	proxy_dev->features |= CLOCK_EVT_FEAT_KTIME;
-+	proxy_dev->set_next_ktime = proxy_set_next_ktime;
-+	if (proxy_dev->set_state_oneshot_stopped)
-+		proxy_dev->set_state_oneshot_stopped = proxy_set_oneshot_stopped;
-+
-+	__this_cpu_write(proxy_device, dev);
-+}
-+
- int xntimer_grab_hardware(void)
- {
- 	struct xnsched *sched;
-@@ -878,6 +959,10 @@ int xntimer_grab_hardware(void)
- 	if (ret)
- 		return ret;
- 
-+	ret = tick_install_proxy(setup_proxy, &xnsched_realtime_cpus);
-+	if (ret)
-+		goto fail_proxy;
-+
- 	for_each_realtime_cpu(cpu) {
- 		ret = grab_hardware_timer(cpu);
- 		if (ret < 0)
-@@ -921,6 +1006,9 @@ int xntimer_grab_hardware(void)
- 
- 	return 0;
- fail:
-+	tick_uninstall_proxy(&xnsched_realtime_cpus);
-+
-+fail_proxy:
- 	for_each_realtime_cpu(_cpu) {
- 		if (_cpu == cpu)
- 			break;
--- 
-2.17.1
+I followed his suggestion, built a 32bit process with musl-gcc and ran 
+it in a armv7l device, and it's working fine, safe.
+
+Then i turned to xenomai, it took a lot time to build libcobalt with 
+musl's toolchain(https://musl.cc/), it worked anyway, but i found it 
+called linux's clock_settime(kernel/time/posix-timers.c) instead of 
+cobalt's clock_settime, i'm stuck here.
+
+what's more, to enable 64bit __kernel_timespec should enable 
+CONFIG_64BIT_TIME, it's off by default, i turned it on but system can't 
+bootup.
+
+Ideally, if we could verify a 32bit process 2038-safe in both 32bit 
+system and 64bit system, we could continue to work on other syscalls, 
+but now, what can we do? shall we create a new branch specific for y2038 
+which we can apply out patches on and mainline them after gcc/glibs is 
+ready for verification?
+
+Let me know your opinion about this case, many thanks.
+
+BR
+
+chensong
+
+On 2020年10月12日 17:45, chensong wrote:
+>
+>
+> On 2020年10月01日 03:19, Jan Kiszka wrote:
+>> On 29.09.20 08:27, chensong wrote:
+>>>
+>>>
+>>> On 2020年09月29日 00:52, Jan Kiszka wrote:
+>>>> On 23.09.20 03:40, song wrote:
+>>>>>
+>>>>>
+>>>>> On 2020/9/22 下午11:16, Jan Kiszka wrote:
+>>>>>> On 21.09.20 14:32, chensong wrote:
+>>>>>>> Upstream has used timespec64 to replace timespec inside kernel and
+>>>>>>> used __kernel_timespec to replace timespect in syscalls, therefore
+>>>>>>> we must keep aligned with upstream.
+>>>>>>>
+>>>>>>> clock_settime is a point to get started at, it involves 2 parts:
+>>>>>>> 1, syscall in ./include/trace/events/cobalt-posix.h for 64bits
+>>>>>>> 2, compat syscall in kernel/cobalt/posix/syscall32.c for 32bits
+>>>>>>>
+>>>>>>> some new functions are implemented to keep the compatibility with
+>>>>>>> other syscalls which haven't been handled yet and will be removed
+>>>>>>> in the end of the work.
+>>>>>>
+>>>>>> So, this switches also existing syscalls to 64-bit types, breaking
+>>>>>> the
+>>>>>> current ABI, no? How much effort would it be to keep the old ABI,
+>>>>>> adding a 64-bit one aside of it?
+>>>>>
+>>>>> Not breaking current ABI, i didn't add any new ABIs specific for
+>>>>> 64bits,
+>>>>> i added some new static functions, like ts2ns and ts2ns64,
+>>>>> sys32_put_timespec and sys64_put_timespec, specific for clock_settime.
+>>>>>
+>>>>
+>>>> clock_settime accepts struct timespec so far, you are changing that to
+>>>> struct __kernel_timespec. If I look at its definition in the kernel, it
+>>>> uses __kernel_time64_t as tv_sec type. But our current 32-bit users
+>>>> still expects a 32-bit type here, no? Would that change already require
+>>>> a new clock_settime64 syscall if we wanted to stay binary compatible?
+>>>
+>>> 32 bit user space processes go to
+>>> COBALT_SYSCALL32emu(clock_settime,current,(clockid_t clock_id,const
+>>> struct compat_timespec __user *u_ts)) defined in
+>>> ./kernel/cobalt/posix/syscall32.c. It uses compat_timespec which 32it is
+>>> compatible with.
+>>>
+>>> I tested 32bit application and 64bit application on 64bit system
+>>> respeactively
+>>> 32bit process -- clock_settime -- COBALT_SYSCALL32emu(clock_settime
+>>> 64bit process -- clock_settime -- COBALT_SYSCALL(clock_settime)
+>>>
+>>
+>> You also need to consider 32-bit kernels, not on x86 anymore (i386 is
+>> practically dead), but e.g. ARMv7. There we would have a breakage now,
+>> don't we?
+>>
+> i tested 32bit process on a 32bit kernel (raspberry 2, armv7), it seems
+> timespec64 is working fine.
+>
+> If this patch is acceptable for you, i will start clock_gettime.
+> meanwhile, i will email Arnd Bergmann <arnd@arndb.de> to see how to
+> enable 64bit timespec in userspace to see if 32bit process is 2038-safe
+> in both 32bit kernel and 64bit kernel.
+>
+>> Jan
+>>
+
 
 
