@@ -1,19 +1,16 @@
-Subject: Re: [PATCH] y2038: replace timespec with timespec64 in clock_settime
-References: <1600691577-12011-1-git-send-email-chensong@tj.kylinos.cn>
- <01014f7c-76ed-46ea-0c7c-920f6eb63b0e@siemens.com>
- <27465fc4-ab13-ffb7-eec4-21160fbeec8a@tj.kylinos.cn>
- <7e00b8e7-4029-00f0-38dc-6d9452b552e7@siemens.com>
- <5F72D3CF.7070200@tj.kylinos.cn>
- <8ab3d084-e9bc-de32-1095-403ac6e1a2c9@web.de>
- <5F8425BD.7090208@tj.kylinos.cn> <5F8E9B65.2050202@tj.kylinos.cn>
-From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <41f5641a-bc12-f5d3-6d87-7d5ce6c693a5@siemens.com>
-Date: Wed, 21 Oct 2020 08:43:02 +0200
+Date: Wed, 21 Oct 2020 19:43:30 +0800
+From: Fino Meng <fino.meng@linux.intel.com>
+Subject: Re: build scripts for the WIP xenomai porting to kernel 5.4
+Message-ID: <20201021114329.GA4344@linux.intel.com>
+References: <20201014132459.GB24671@linux.intel.com>
+ <8e59bc35-84ae-78be-8296-4f2367e8e844@siemens.com>
+ <20201016033638.GB5581@linux.intel.com>
+ <0ba45dfa-4755-c627-e1fd-9f2c32ea8b8a@siemens.com>
+ <9153481d-6df6-314f-c2c0-f413a34fb815@siemens.com>
 MIME-Version: 1.0
-In-Reply-To: <5F8E9B65.2050202@tj.kylinos.cn>
-Content-Type: text/plain; charset="utf-8"; format="flowed"
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <9153481d-6df6-314f-c2c0-f413a34fb815@siemens.com>
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -22,123 +19,193 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: chensong <chensong@tj.kylinos.cn>, xenomai@xenomai.org
+To: Jan Kiszka <jan.kiszka@siemens.com>
+Cc: xenomai@xenomai.org
 
-On 20.10.20 10:10, chensong wrote:
-> Hi Jan;
+On Wed, Oct 21, 2020 at 08:36:04AM +0200, Jan Kiszka wrote:
+> On 18.10.20 23:41, Jan Kiszka via Xenomai wrote:
+> > On 16.10.20 05:36, Fino Meng wrote:
+> >> On Thu, Oct 15, 2020 at 04:20:11PM +0200, Jan Kiszka wrote:
+> >>> On 14.10.20 15:25, Fino Meng wrote:
+> >>>> hi team,
+> >>>>
+> >>>> I just updated the scripts to build the WIP version xenomai porting to
+> >>>> kernel 5.4, just follow the steps:
+> >>>>
+> >>>> git clone https://github.com/finomeng/xenomai-mirror.git /tmp/xenomai-mirror.next-5.4
+> >>>> cd /tmp/xenomai-mirror.next-5.4
+> >>>> git checkout -t origin/wip/next-5.4-porting
+> >>>>
+> >>>> git clone https://github.com/intel/linux-stable-xenomai /tmp/kernel
+> >>>> cd /tmp/kernel
+> >>>> git checkout -t review/5.4.59/stable/ipipe-x86
+> >>>>
+> >>>> ./patching-xenomai2kernel.sh
+> >>>>
+> >>>> cp config_xenomai.kernel_debug .config
+> >>>> make olddefconfig
+> >>>> ./build-debpkg.sh
+> >>>>
+> >>>>
+> >>>> I didn't put it togethter with ISAR/Debian yet. I test it with a PC with Debian 10 installed.
+> >>>>
+> >>>> if no error, linux-image-*.deb and linux-headers-*.deb should generated outside kernel folder,
+> >>>> copy them to your target test device with already installed a Debian/Ubuntu,
+> >>>> install the deb with "dpkg -i", update-grub should be called during install linux-image-*.deb
+> >>>> reboot and select to boot the new kernel in grub's menu
+> >>>>
+> >>>> the build steps also written in patching-xenomai2kernel.sh and build-debpkg.sh
+> >>>>
+> >>>> switchtest will fail in current version, for example: "./switchtest rtk_fp_ufpp0"
+> >>>> will print:
+> >>>>
+> >>>> r0: 2147483648 != 1000
+> >>>> r1: 2147483648 != 1000
+> >>>> r2: 2147483648 != 1000
+> >>>> r3: 2147483648 != 1000
+> >>>> r4: 2147483648 != 1000
+> >>>> r5: 2147483648 != 1000
+> >>>> r6: 2147483648 != 1000
+> >>>> r7: 2147483648 != 1000
+> >>>> ymm0: 2676586395008836901/0 != 1000/1000
+> >>>> ymm1: 71776119061217280/0 != 1000/1000
+> >>>> ymm2: 0/0 != 1000/1000
+> >>>> ymm3: 1000/0 != 1000/1000
+> >>>> ymm4: 1000/0 != 1000/1000
+> >>>> ymm5: 1000/0 != 1000/1000
+> >>>> ymm6: 1000/0 != 1000/1000
+> >>>> ymm7: 1000/0 != 1000/1000
+> >>>> Error after context switch from task 1(rtk_fp_ufpp0-1) to task 0(sleeper_ufps0-0),
+> >>>> FPU registers were set to 0 (maybe task sleeper_ufps0-0)
+> >>>>
+> >>>> if meet more questions just write to me, thanks!
+> >>>>
+> >>>> BR fino
+> >>>>
+> >>>
+> >>> I can reproduce in KVM and poked around a bit, though without finding
+> >>> the needle yet. Likely, there are multiple aspects. The change in
+> >>> upstream to FPU switching on user-return is a hot lead, but it takes a
+> >>> bit to fully grasp that and map it on our scenarios with Xenomai.
+> >>>
+> >>> Jan
+> >>
+> >> it seems that, switch_fpu_prepare() and switch_fpu_finish() are
+> >> for kernel thread context switch (in __switch_to() )and switch_fpu_return() is needed
+> >> before return to userspace( in prepare_exit_to_usermode()).
+> >>
+> > 
+> > Yes, we need explicit switch_fpu_return() (likely open-coded, to skip
+> > the PF_KTHREAD check) at the end of xnarch_switch_to, at least as long
+> > as we do not add that to all fast (primary-mode) return-to-user paths.
+> > 
+> > But it's more complex. The removal of fpu_initialized changed the
+> > condition under which __switch_to() does FPU saving and restoring: All
+> > kernel threads, also ours, are excluded. That needs to be compensated.
+> > 
+> > But I'm still facing corruptions - continuing to debug.
+> > 
 > 
-> i talked to arnd Bergmann about how to build a 32bit 2038-safe process, 
-> he told me that neither gcc nor glibc can fully support 64bit timespec 
-> yet, he suggested me to use musl(https://wiki.musl-libc.org/), and he 
-> also suggested me to use kernel5.4.
+> Quick update:
 > 
-> I followed his suggestion, built a 32bit process with musl-gcc and ran 
-> it in a armv7l device, and it's working fine, safe.
+> I made some progress with changes like below, but I'm still facing 
+> issues, not with weird AVX register corruptions. They confuse me because 
+> classic FPU registers are updated and saved/restored the same way, but 
+> they are currently unaffected.
 > 
-> Then i turned to xenomai, it took a lot time to build libcobalt with 
-> musl's toolchain(https://musl.cc/), it worked anyway, but i found it 
-> called linux's clock_settime(kernel/time/posix-timers.c) instead of 
-> cobalt's clock_settime, i'm stuck here.
-> 
-> what's more, to enable 64bit __kernel_timespec should enable 
-> CONFIG_64BIT_TIME, it's off by default, i turned it on but system can't 
-> bootup.
-> 
-> Ideally, if we could verify a 32bit process 2038-safe in both 32bit 
-> system and 64bit system, we could continue to work on other syscalls, 
-> but now, what can we do? shall we create a new branch specific for y2038 
-> which we can apply out patches on and mainline them after gcc/glibs is 
-> ready for verification?
-> 
-> Let me know your opinion about this case, many thanks.
-> 
+> Jan
 
-I'll try to have a look soon - currently deep into FPU debugging for 5.4 
-(interrupts by other stuff, which doesn't make that easier).
+in my current understand, 
+a userspace Xenomai/Cobalt process's context switch always need FPU
+state save/restore; but how about the other case?
 
-Jan
+in vanilla kernel, I see if a pure kernel thread want to use FPU, need
+manually call kernel_fpu_begin() and kernel_fpu_end(), like a critical
+area.
 
-> BR
-> 
-> chensong
-> 
-> On 2020年10月12日 17:45, chensong wrote:
->>
->>
->> On 2020年10月01日 03:19, Jan Kiszka wrote:
->>> On 29.09.20 08:27, chensong wrote:
->>>>
->>>>
->>>> On 2020年09月29日 00:52, Jan Kiszka wrote:
->>>>> On 23.09.20 03:40, song wrote:
->>>>>>
->>>>>>
->>>>>> On 2020/9/22 下午11:16, Jan Kiszka wrote:
->>>>>>> On 21.09.20 14:32, chensong wrote:
->>>>>>>> Upstream has used timespec64 to replace timespec inside kernel and
->>>>>>>> used __kernel_timespec to replace timespect in syscalls, therefore
->>>>>>>> we must keep aligned with upstream.
->>>>>>>>
->>>>>>>> clock_settime is a point to get started at, it involves 2 parts:
->>>>>>>> 1, syscall in ./include/trace/events/cobalt-posix.h for 64bits
->>>>>>>> 2, compat syscall in kernel/cobalt/posix/syscall32.c for 32bits
->>>>>>>>
->>>>>>>> some new functions are implemented to keep the compatibility with
->>>>>>>> other syscalls which haven't been handled yet and will be removed
->>>>>>>> in the end of the work.
->>>>>>>
->>>>>>> So, this switches also existing syscalls to 64-bit types, breaking
->>>>>>> the
->>>>>>> current ABI, no? How much effort would it be to keep the old ABI,
->>>>>>> adding a 64-bit one aside of it?
->>>>>>
->>>>>> Not breaking current ABI, i didn't add any new ABIs specific for
->>>>>> 64bits,
->>>>>> i added some new static functions, like ts2ns and ts2ns64,
->>>>>> sys32_put_timespec and sys64_put_timespec, specific for 
->>>>>> clock_settime.
->>>>>>
->>>>>
->>>>> clock_settime accepts struct timespec so far, you are changing that to
->>>>> struct __kernel_timespec. If I look at its definition in the 
->>>>> kernel, it
->>>>> uses __kernel_time64_t as tv_sec type. But our current 32-bit users
->>>>> still expects a 32-bit type here, no? Would that change already 
->>>>> require
->>>>> a new clock_settime64 syscall if we wanted to stay binary compatible?
->>>>
->>>> 32 bit user space processes go to
->>>> COBALT_SYSCALL32emu(clock_settime,current,(clockid_t clock_id,const
->>>> struct compat_timespec __user *u_ts)) defined in
->>>> ./kernel/cobalt/posix/syscall32.c. It uses compat_timespec which 
->>>> 32it is
->>>> compatible with.
->>>>
->>>> I tested 32bit application and 64bit application on 64bit system
->>>> respeactively
->>>> 32bit process -- clock_settime -- COBALT_SYSCALL32emu(clock_settime
->>>> 64bit process -- clock_settime -- COBALT_SYSCALL(clock_settime)
->>>>
->>>
->>> You also need to consider 32-bit kernels, not on x86 anymore (i386 is
->>> practically dead), but e.g. ARMv7. There we would have a breakage now,
->>> don't we?
->>>
->> i tested 32bit process on a 32bit kernel (raspberry 2, armv7), it seems
->> timespec64 is working fine.
->>
->> If this patch is acceptable for you, i will start clock_gettime.
->> meanwhile, i will email Arnd Bergmann <arnd@arndb.de> to see how to
->> enable 64bit timespec in userspace to see if 32bit process is 2038-safe
->> in both 32bit kernel and 64bit kernel.
->>
->>> Jan
->>>
-> 
-> 
+BR fino
 
-
--- 
-Siemens AG, T RDA IOT
-Corporate Competence Center Embedded Linux
+> 
+> diff --git a/kernel/cobalt/arch/x86/thread.c b/kernel/cobalt/arch/x86/thread.c
+> index aa7b5d19d8..59fcd1995e 100644
+> --- a/kernel/cobalt/arch/x86/thread.c
+> +++ b/kernel/cobalt/arch/x86/thread.c
+> @@ -200,6 +200,8 @@ static inline void do_switch_threads(struct xnarchtcb *out_tcb,
+>  
+>  #endif /* LINUX_VERSION_CODE >= 4.8 */
+>  
+> +#define tcb_used_kfpu(t) ((t)->root_kfpu)
+> +
+>  void xnarch_switch_to(struct xnthread *out, struct xnthread *in)
+>  {
+>  	struct xnarchtcb *out_tcb = &out->tcb, *in_tcb = &in->tcb;
+> @@ -215,6 +217,15 @@ void xnarch_switch_to(struct xnthread *out, struct xnthread *in)
+>  		 */
+>  		clts();
+>  #endif /* ! IPIPE_X86_FPU_EAGER */
+> +	if (!xnthread_test_state(out, XNROOT | XNUSER) &&
+> +	    !test_thread_flag(TIF_NEED_FPU_LOAD)) {
+> +		struct fpu *prev_fpu = &prev->thread.fpu;
+> +
+> +		if (!copy_fpregs_to_fpstate(prev_fpu))
+> +			prev_fpu->last_cpu = -1;
+> +		else
+> +			prev_fpu->last_cpu = smp_processor_id();
+> +	}
+>  
+>  	next = in_tcb->core.host_task;
+>  #ifndef IPIPE_X86_FPU_EAGER
+> @@ -260,6 +271,19 @@ void xnarch_switch_to(struct xnthread *out, struct xnthread *in)
+>  #ifndef IPIPE_X86_FPU_EAGER
+>  	stts();
+>  #endif /* ! IPIPE_X86_FPU_EAGER */
+> +	if (xnthread_current() &&
+> +	    !xnthread_test_state(xnthread_current(), XNROOT) &&
+> +	    test_thread_flag(TIF_NEED_FPU_LOAD)) {
+> +		struct fpu *fpu = &current->thread.fpu;
+> +		int cpu = smp_processor_id();
+> +
+> +		if (!fpregs_state_valid(fpu, cpu)) {
+> +			copy_kernel_to_fpregs(&fpu->state);
+> +			fpregs_activate(fpu);
+> +			fpu->last_cpu = cpu;
+> +		}
+> +		clear_thread_flag(TIF_NEED_FPU_LOAD);
+> +	}
+>  }
+>  
+>  #ifndef IPIPE_X86_FPU_EAGER
+> @@ -387,8 +413,6 @@ int xnarch_handle_fpu_fault(struct xnthread *from,
+>  
+>  #define current_task_used_kfpu() kernel_fpu_disabled()
+>  
+> -#define tcb_used_kfpu(t) ((t)->root_kfpu)
+> -
+>  #ifndef IPIPE_X86_FPU_EAGER
+>  void xnarch_leave_root(struct xnthread *root)
+>  {
+> @@ -488,6 +509,8 @@ void xnarch_switch_fpu(struct xnthread *from, struct xnthread *to)
+>  		return;
+>  
+>  	copy_kernel_to_fpregs(&to_tcb->kfpu->state);
+> +	__cpu_invalidate_fpregs_state();
+> +	clear_thread_flag(TIF_NEED_FPU_LOAD);
+>  	kernel_fpu_disable();
+>  }
+>  #endif /* ! IPIPE_X86_FPU_EAGER */
+> @@ -541,7 +569,8 @@ void xnarch_init_shadow_tcb(struct xnthread *thread)
+>  #if LINUX_VERSION_CODE < KERNEL_VERSION(4,14,0)
+>  	fpu__activate_fpstate_read(&p->thread.fpu);
+>  #else
+> -	fpu__clear(&p->thread.fpu);
+> +	set_thread_flag(TIF_NEED_FPU_LOAD);
+> +	fpstate_init(&p->thread.fpu.state);
+>  #endif
+>  #endif /* ! IPIPE_X86_FPU_EAGER */
+>  }
+> 
+> 
+> -- 
+> Siemens AG, T RDA IOT
+> Corporate Competence Center Embedded Linux
 
