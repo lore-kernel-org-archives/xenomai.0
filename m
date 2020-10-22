@@ -1,21 +1,12 @@
-Subject: Re: build scripts for the WIP xenomai porting to kernel 5.4
-References: <20201014132459.GB24671@linux.intel.com>
- <8e59bc35-84ae-78be-8296-4f2367e8e844@siemens.com>
- <20201016033638.GB5581@linux.intel.com>
- <0ba45dfa-4755-c627-e1fd-9f2c32ea8b8a@siemens.com>
- <9153481d-6df6-314f-c2c0-f413a34fb815@siemens.com>
- <20201021114329.GA4344@linux.intel.com>
- <88232cd0-0713-4e45-bad2-e22acdeb7632@siemens.com>
- <3a85c6c8-6792-40d1-5ef2-6ee634fc3c91@siemens.com>
- <20201022114938.GA8098@linux.intel.com>
-From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <39ccbc86-3f64-0941-241b-30e2431468cf@siemens.com>
-Date: Thu, 22 Oct 2020 14:15:23 +0200
+From: =?utf-8?q?Fran=C3=A7ois_Legal?= <devel@thom.fr.eu.org>
+In-Reply-To: <878sc687h6.fsf@xenomai.org>
+Content-Type: text/plain; charset="utf-8"
+Date: Thu, 22 Oct 2020 14:22:17 +0200
 MIME-Version: 1.0
-In-Reply-To: <20201022114938.GA8098@linux.intel.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Message-ID: <1176-5f917980-13f-12dbaa60@116769483>
+Subject: =?utf-8?q?Re=3A?= Strange switching =?utf-8?q?=5Bthreadname=5D?= to 
+ secondary mode after exception #0 in kernel-space at 0x80272444
+Content-Transfer-Encoding: quoted-printable
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -24,265 +15,188 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Fino Meng <fino.meng@linux.intel.com>
-Cc: xenomai@xenomai.org
+To: Philippe Gerum <rpm@xenomai.org>
+Cc: Greg Gallagher <greg@embeddedgreg.com>, Jan Kiszka <jan.kiszka@siemens.com>, =?utf-8?q?Xenomai=40xenomai=2Eorg?= <xenomai@xenomai.org>
 
-On 22.10.20 13:49, Fino Meng wrote:
-> On Thu, Oct 22, 2020 at 09:26:59AM +0200, Jan Kiszka wrote:
->> On 22.10.20 08:27, Jan Kiszka via Xenomai wrote:
->>> On 21.10.20 13:43, Fino Meng wrote:
->>>> On Wed, Oct 21, 2020 at 08:36:04AM +0200, Jan Kiszka wrote:
->>>>> On 18.10.20 23:41, Jan Kiszka via Xenomai wrote:
->>>>>> On 16.10.20 05:36, Fino Meng wrote:
->>>>>>> On Thu, Oct 15, 2020 at 04:20:11PM +0200, Jan Kiszka wrote:
->>>>>>>> On 14.10.20 15:25, Fino Meng wrote:
->>>>>>>>> hi team,
->>>>>>>>>
->>>>>>>>> I just updated the scripts to build the WIP version xenomai porting to
->>>>>>>>> kernel 5.4, just follow the steps:
->>>>>>>>>
->>>>>>>>> git clone https://github.com/finomeng/xenomai-mirror.git /tmp/xenomai-mirror.next-5.4
->>>>>>>>> cd /tmp/xenomai-mirror.next-5.4
->>>>>>>>> git checkout -t origin/wip/next-5.4-porting
->>>>>>>>>
->>>>>>>>> git clone https://github.com/intel/linux-stable-xenomai /tmp/kernel
->>>>>>>>> cd /tmp/kernel
->>>>>>>>> git checkout -t review/5.4.59/stable/ipipe-x86
->>>>>>>>>
->>>>>>>>> ./patching-xenomai2kernel.sh
->>>>>>>>>
->>>>>>>>> cp config_xenomai.kernel_debug .config
->>>>>>>>> make olddefconfig
->>>>>>>>> ./build-debpkg.sh
->>>>>>>>>
->>>>>>>>>
->>>>>>>>> I didn't put it togethter with ISAR/Debian yet. I test it with a PC with Debian 10 installed.
->>>>>>>>>
->>>>>>>>> if no error, linux-image-*.deb and linux-headers-*.deb should generated outside kernel folder,
->>>>>>>>> copy them to your target test device with already installed a Debian/Ubuntu,
->>>>>>>>> install the deb with "dpkg -i", update-grub should be called during install linux-image-*.deb
->>>>>>>>> reboot and select to boot the new kernel in grub's menu
->>>>>>>>>
->>>>>>>>> the build steps also written in patching-xenomai2kernel.sh and build-debpkg.sh
->>>>>>>>>
->>>>>>>>> switchtest will fail in current version, for example: "./switchtest rtk_fp_ufpp0"
->>>>>>>>> will print:
->>>>>>>>>
->>>>>>>>> r0: 2147483648 != 1000
->>>>>>>>> r1: 2147483648 != 1000
->>>>>>>>> r2: 2147483648 != 1000
->>>>>>>>> r3: 2147483648 != 1000
->>>>>>>>> r4: 2147483648 != 1000
->>>>>>>>> r5: 2147483648 != 1000
->>>>>>>>> r6: 2147483648 != 1000
->>>>>>>>> r7: 2147483648 != 1000
->>>>>>>>> ymm0: 2676586395008836901/0 != 1000/1000
->>>>>>>>> ymm1: 71776119061217280/0 != 1000/1000
->>>>>>>>> ymm2: 0/0 != 1000/1000
->>>>>>>>> ymm3: 1000/0 != 1000/1000
->>>>>>>>> ymm4: 1000/0 != 1000/1000
->>>>>>>>> ymm5: 1000/0 != 1000/1000
->>>>>>>>> ymm6: 1000/0 != 1000/1000
->>>>>>>>> ymm7: 1000/0 != 1000/1000
->>>>>>>>> Error after context switch from task 1(rtk_fp_ufpp0-1) to task 0(sleeper_ufps0-0),
->>>>>>>>> FPU registers were set to 0 (maybe task sleeper_ufps0-0)
->>>>>>>>>
->>>>>>>>> if meet more questions just write to me, thanks!
->>>>>>>>>
->>>>>>>>> BR fino
->>>>>>>>>
->>>>>>>>
->>>>>>>> I can reproduce in KVM and poked around a bit, though without finding
->>>>>>>> the needle yet. Likely, there are multiple aspects. The change in
->>>>>>>> upstream to FPU switching on user-return is a hot lead, but it takes a
->>>>>>>> bit to fully grasp that and map it on our scenarios with Xenomai.
->>>>>>>>
->>>>>>>> Jan
->>>>>>>
->>>>>>> it seems that, switch_fpu_prepare() and switch_fpu_finish() are
->>>>>>> for kernel thread context switch (in __switch_to() )and switch_fpu_return() is needed
->>>>>>> before return to userspace( in prepare_exit_to_usermode()).
->>>>>>>
->>>>>>
->>>>>> Yes, we need explicit switch_fpu_return() (likely open-coded, to skip
->>>>>> the PF_KTHREAD check) at the end of xnarch_switch_to, at least as long
->>>>>> as we do not add that to all fast (primary-mode) return-to-user paths.
->>>>>>
->>>>>> But it's more complex. The removal of fpu_initialized changed the
->>>>>> condition under which __switch_to() does FPU saving and restoring: All
->>>>>> kernel threads, also ours, are excluded. That needs to be compensated.
->>>>>>
->>>>>> But I'm still facing corruptions - continuing to debug.
->>>>>>
->>>>>
->>>>> Quick update:
->>>>>
->>>>> I made some progress with changes like below, but I'm still facing 
->>>>> issues, not with weird AVX register corruptions. They confuse me because 
->>>>> classic FPU registers are updated and saved/restored the same way, but 
->>>>> they are currently unaffected.
->>>>>
->>>>> Jan
->>>>
->>>> in my current understand, 
->>>> a userspace Xenomai/Cobalt process's context switch always need FPU
->>>> state save/restore; but how about the other case?
->>>>
->>>> in vanilla kernel, I see if a pure kernel thread want to use FPU, need
->>>> manually call kernel_fpu_begin() and kernel_fpu_end(), like a critical
->>>> area.
->>>
->>> Xenomai kernel threads can use the FPU, and that without
->>> kernel_fpu_begin/end. That this works is also tested by switchtest, and
->>> there were several issues, possibly there are still more.
->>>
->>> One step further: My weird avx register corruption is understand. It was
->>> the local instrumentation. xnftrace_printf likely uses xmm regs
->>> internally, and I had such an output after setting up the test pattern.
->>> Fixing that, I still have a corruption, but not a "normal one" again,
->>> ie. of the legacy FPU regs.
->>>
->>> Jan
->>>
->>
->> Got it working:
->>
->> diff --git a/kernel/cobalt/arch/x86/thread.c b/kernel/cobalt/arch/x86/thread.c
->> index aa7b5d19d8..9a014818ef 100644
->> --- a/kernel/cobalt/arch/x86/thread.c
->> +++ b/kernel/cobalt/arch/x86/thread.c
->> @@ -215,6 +215,15 @@ void xnarch_switch_to(struct xnthread *out, struct xnthread *in)
->>  		 */
->>  		clts();
->>  #endif /* ! IPIPE_X86_FPU_EAGER */
->> +	if (!xnthread_test_state(out, XNROOT | XNUSER) &&
->> +	    !test_thread_flag(TIF_NEED_FPU_LOAD)) {
->> +		struct fpu *prev_fpu = &prev->thread.fpu;
->> +
->> +		if (!copy_fpregs_to_fpstate(prev_fpu))
->> +			prev_fpu->last_cpu = -1;
->> +		else
->> +			prev_fpu->last_cpu = smp_processor_id();
->> +	}
->>  
->>  	next = in_tcb->core.host_task;
->>  #ifndef IPIPE_X86_FPU_EAGER
->> @@ -260,6 +269,19 @@ void xnarch_switch_to(struct xnthread *out, struct xnthread *in)
->>  #ifndef IPIPE_X86_FPU_EAGER
->>  	stts();
->>  #endif /* ! IPIPE_X86_FPU_EAGER */
->> +	if (xnthread_current() &&
->> +	    !xnthread_test_state(xnthread_current(), XNROOT) &&
->> +	    test_thread_flag(TIF_NEED_FPU_LOAD)) {
->> +		struct fpu *fpu = &current->thread.fpu;
->> +		int cpu = smp_processor_id();
->> +
->> +		if (!fpregs_state_valid(fpu, cpu)) {
->> +			copy_kernel_to_fpregs(&fpu->state);
->> +			fpregs_activate(fpu);
->> +			fpu->last_cpu = cpu;
->> +		}
->> +		clear_thread_flag(TIF_NEED_FPU_LOAD);
->> +	}
->>  }
->>  
->>  #ifndef IPIPE_X86_FPU_EAGER
->> @@ -488,6 +510,7 @@ void xnarch_switch_fpu(struct xnthread *from, struct xnthread *to)
->>  		return;
->>  
->>  	copy_kernel_to_fpregs(&to_tcb->kfpu->state);
->> +	__cpu_invalidate_fpregs_state();
->>  	kernel_fpu_disable();
->>  }
->>  #endif /* ! IPIPE_X86_FPU_EAGER */
->> @@ -541,7 +564,8 @@ void xnarch_init_shadow_tcb(struct xnthread *thread)
->>  #if LINUX_VERSION_CODE < KERNEL_VERSION(4,14,0)
->>  	fpu__activate_fpstate_read(&p->thread.fpu);
->>  #else
->> -	fpu__clear(&p->thread.fpu);
->> +	set_thread_flag(TIF_NEED_FPU_LOAD);
->> +	fpstate_init(&p->thread.fpu.state);
->>  #endif
->>  #endif /* ! IPIPE_X86_FPU_EAGER */
->>  }
->>
->>
->> This still requires proper wrapping for the different kernel versions 
->> and some comments. But maybe you can continue testing from there.
->>
->>
->> BTW, there are more to-dos:
->>
->> [    0.182466] Freeing SMP alternatives memory: 44K
->> [    0.182656] ------------[ cut here ]------------
->> [    0.183038] WARNING: CPU: 0 PID: 0 at ../kernel/ipipe/core.c:1968 __ipipe_spin_unlock_debug+0x14/0x20
->> [    0.183600] Modules linked in:
->> [    0.183600] CPU: 0 PID: 0 Comm: swapper/0 Not tainted 5.4.59-xenomai+ #64
->> [    0.183600] Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS rel-1.14.0-0-g155821a1990b-prebuilt.qemu.org 04/01/2014
->> [    0.183600] I-pipe domain: Linux
->> [    0.183600] RIP: 0010:__ipipe_spin_unlock_debug+0x14/0x20
->> [    0.183600] Code: 8b 07 5b e9 0e d5 c7 00 5b c3 66 66 2e 0f 1f 84 00 00 00 00 00 90 e8 bb de a7 00 f7 c7 00 02 00 00 74 09 9c 58 f6 c4 02 75 02 <0f> 0b c3 66 0f 1f 84 00 00 00 00 00 e8 9b de a7 00 41 54 55 53 9c
->> [    0.183600] RSP: 0000:ffffffff82403d68 EFLAGS: 00010046
->> [    0.183600] RAX: 0000000000000006 RBX: b74e512d1320154d RCX: ffff88803e6f2cc0
->> [    0.183600] RDX: 0000000000000001 RSI: ffffffff810c1c9e RDI: 0000000000000200
->> [    0.183600] RBP: ffff88803ea3afe4 R08: 0000000000000000 R09: ffff88803dd0e540
->> [    0.183600] R10: 0000000000000002 R11: 0000000000000001 R12: 0000000000000200
->> [    0.183600] R13: ffff88803dd0da00 R14: ffffffff82403eb0 R15: 0000000000000000
->> [    0.183600] FS:  0000000000000000(0000) GS:ffff88803ea00000(0000) knlGS:0000000000000000
->> [    0.183600] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
->> [    0.183600] CR2: ffff888003201000 CR3: 000000000240a001 CR4: 0000000000360ef0
->> [    0.183600] DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
->> [    0.183600] DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
->> [    0.183600] Call Trace:
->> [    0.183600]  get_random_u64+0x68/0x80
->> [    0.183600]  copy_process+0x37e/0x1ae0
->> [    0.183600]  _do_fork+0x92/0x340
->> [    0.183600]  ? acpi_hw_register_read+0x93/0x123
->> [    0.183600]  kernel_thread+0x55/0x70
->> [    0.183600]  ? rest_init+0xc0/0xc0
->> [    0.183600]  rest_init+0x1e/0xc0
->> [    0.183600]  start_kernel+0x4d4/0x4f9
->> [    0.183600]  secondary_startup_64+0xa4/0xb0
->> [    0.183600] ---[ end trace 9d5e39ac2de18173 ]---
->>
->> This is with I-pipe debugging enabled. Could you have a look?
->>
+Le Vendredi, Octobre 16, 2020 18:24 CEST, Philippe Gerum <rpm@xenomai.o=
+rg> a =C3=A9crit: 
+ 
 > 
-> I cannot reproduce it,
+> Fran=C3=A7ois Legal <devel@thom.fr.eu.org> writes:
 > 
-> I use this config with IPIPE_DEBUG
-> https://github.com/intel/linux-stable-xenomai/blob/review/5.4.59/stable/ipipe-x86/config_xenomai.xeno_debug
+> > Le Vendredi, Octobre 16, 2020 14:03 CEST, Philippe Gerum <rpm@xenom=
+ai.org> a =C3=A9crit: 
+> >  
+> >> 
+> >> Fran=C3=A7ois Legal <devel@thom.fr.eu.org> writes:
+> >> 
+> >> > Le Vendredi, Octobre 16, 2020 10:59 CEST, Philippe Gerum <rpm@xe=
+nomai.org> a =C3=A9crit: 
+> >> >  
+> >> >> 
+> >> >> Fran=C3=A7ois Legal <devel@thom.fr.eu.org> writes:
+> >> >> 
+> >> >> > Le Mercredi, Octobre 14, 2020 16:16 CEST, Greg Gallagher <gre=
+g@embeddedgreg.com> a =C3=A9crit: 
+> >> >> >  
+> >> >> >> On Wed, Oct 14, 2020 at 5:37 AM Jan Kiszka <jan.kiszka@sieme=
+ns.com> wrote:
+> >> >> >> >
+> >> >> >> > On 14.10.20 10:43, Fran=C3=A7ois Legal via Xenomai wrote:
+> >> >> >> > > Anybody can help on this ?
+> >> >> >> > >
+> > >> >> >
+> >> >> >> > I'm unfortunately not familiar with the armv7 details of c=
+opy-from-user,
+> >> >> >> > not too speak of how spectre contributed to it. Greg, Phil=
+ippe, did you
+> >> >> >> > come across this already?
+> >> >> >> >
+> >> >> >> > Jan
+> >> >> >> >
+> >> >> >> I'll take a look tonight but I haven't hit this in my testin=
+g.  This
+> >> >> >> was found on 4.4? Have you tried the 4.19 kernels?
+> >> >> >> 
+> >> >> >> -Greg
+> >> >> >  
+> >> >> > So I tried the same case on 4.19.121, with the same result, a=
+nd I guess for the same reason.
+> >> >> > Could anybody explain why, on ARMv7, we need to copy the mess=
+age header at the syscall entry, and not let the xxxmsg routine do it o=
+n its own ?
+> >> >> > Also, I could not find how those COBALT=5FSYSCALL32emu logic =
+work.
+> >> >> 
+> >> >> There is no way an armv7 system would run the sys32emu code in
+> >> >> Cobalt. This code path is specific to architectures which suppo=
+rt mixed
+> >> >> ABI models. Only Cobalt/x86 supports this so far, issuing x86=5F=
+32
+> >> >> syscalls to an x86=5F64 kernel. You may want to check
+> >> >> CONFIG=5FXENO=5FARCH=5FSYS3264, it is set to "def=5Fbool n" in =
+the Kconfig
+> >> >> stuff.
+> >> >> 
+> >> >
+> >> > Maybe I don't use the right terms here, but what I can see from =
+the code is (in linux tree kernel/xenomai/posix/syscall32.c)
+> >> > COBALT=5FSYSCALL32emu(sendmsg, handover,
+> >> > 		    (int fd, struct compat=5Fmsghdr =5F=5Fuser *umsg, int flag=
+s))
+> >> > {
+> >> > 	struct user=5Fmsghdr m;
+> >> > 	int ret;
+> >> >
+> >> > 	ret =3D sys32=5Fget=5Fmsghdr(&m, umsg);
+> >> >
+> >> > 	return ret ?: rtdm=5Ffd=5Fsendmsg(fd, &m, flags);
+> >> > }
+> >> >
+> >> > And the problem regarding SPECTRE mitigation is with the "ret =3D=
+
+> >> > sys32=5Fget=5Fmsghdr(&m, umsg);" line, as af=5Fpacket (in my cas=
+e, but I
+> >> > believe the other handlers should do the same) will also call
+> >> > copy=5Ffrom=5Fuser on the "msghdr" argument, and the SPECTRE mit=
+igation
+> >> > will check that this pointer is in the userland MM area.
+> >> 
+> >> There is indeed a problem with this code passing the kernel memory=
+
+> >> address of a bounce buffer to RTDM handlers which would expect =5F=
+=5Fuser
+> >> tagged memory instead. This ends up confusing any low-level
+> >> copy=5Fto/from=5Fuser routine which includes attack
+> >> mitigation. rtnet=5Fget=5Farg() does call such routine under the h=
+ood. This
+> >> is something some Xenomai contributor may want to address.
+> >> 
+> >> But, again, this sys32emu code cannot run for armv7 under the curr=
+ent
+> >> stock implementation. So what we are discussing is purely hypothet=
+ical
+> >> at this stage for this architecture, and should definitely never h=
+appen
+> >> by construction if you are running armv7 (which does not make the
+> >> original issue go away, that is granted).
+> >> 
+> >
+> > I'm not sure I quite understand that point. The code reproduced abo=
+ve is well built in the kernel. Are you saying this code is not called =
+whenever userland calls sendmsg on an rt socket ? Am I looking in the w=
+rong direction ? In that case, where should I be looking ? I mean, I tr=
+acked the whole thing with a JTAG debugger, and it seemed to me that th=
+is was what was really happening, with the SPECTRE code setting the poi=
+nter to 0 which was later being caught by arm=5Fcopy=5Ffrom=5Fuser.
+> >
 > 
-> test on a real WHL-U board (UP Xtreme), kernel boot OK and swtichtest
-> runs continously without error.
+> How could syscall32.c and compat.c be built into the kernel with
+> CONFIG=5FXENO=5FARCH=5FSYS3264 forcibly unset in the Kconfig, which i=
+s always
+> the case when building for anything else than x86?
 > 
-> another config also have no error:
-> https://github.com/intel/linux-stable-xenomai/blob/review/5.4.59/stable/ipipe-x86/config_xenomai.kernel_debug
+> Checking kernel/cobalt/posix/Makefile may help in understanding why i=
+t
+> is simply not possible. arm=5Fcopy=5Ffrom=5Fuser is built in, no ques=
+tion,
+> and your analysis regarding SVC context memory being spuriously fed i=
+nto
+> arm=5Fcopy=5Ffrom=5Fuser is likely right.
 > 
-> am I missing something? need to test the image inside QEMU/KVM? and this issue happens
-> during boot or after launch the switchtest? 
+> But the sys32 wrappers are neither for armv7, armv8 nor ppc32. So yes=
+,
+> you are certainly following the wrong path when looking at
+> kernel/cobalt/posix/syscall32.c. This 32-to-64bit syscall support is =
+NOT
+> built into a kernel targeting armv7, at least when it comes to the
+> vanilla Xenomai code.
+> 
+> You may want to double-check which call site actually invokes
+> arm=5Fcopy=5Ffrom=5Fuser.
+> 
+> -- 
+> Philippe.
+ 
+Just to follow up on that. I tried to modify cobalt system calls (sendm=
+sg/recvmsg) to remove the copy=5Ffrom=5Fuser as follows and run with SP=
+ECTRE mitigation built in :
 
-This comes once during boot (in QEMU/KVM, but that should not matter -
-famous last words). I have this set here:
+ COBALT=5FSYSCALL(recvmsg, handover,
+	       (int fd, struct user=5Fmsghdr =5F=5Fuser *umsg, int flags))
+{
+//	struct user=5Fmsghdr m;
+	ssize=5Ft ret;
+//
+//	ret =3D cobalt=5Fcopy=5Ffrom=5Fuser(&m, umsg, sizeof(m));
+//	if (ret)
+//		return ret;
+//
+//    ret =3D rtdm=5Ffd=5Frecvmsg(fd, &m, flags);
+    ret =3D rtdm=5Ffd=5Frecvmsg(fd, umsg, flags);
+//	if (ret < 0)
+		return ret;
 
-CONFIG_IPIPE_DEBUG=y
-CONFIG_IPIPE_DEBUG_CONTEXT=y
-CONFIG_IPIPE_DEBUG_INTERNAL=y
-CONFIG_HAVE_IPIPE_TRACER_SUPPORT=y
-CONFIG_IPIPE_TRACE=y
-# CONFIG_IPIPE_TRACE_ENABLE is not set
-CONFIG_IPIPE_TRACE_MCOUNT=y
-# CONFIG_IPIPE_TRACE_IRQSOFF is not set
-CONFIG_IPIPE_TRACE_SHIFT=14
-CONFIG_IPIPE_TRACE_VMALLOC=y
-CONFIG_IPIPE_TRACE_PANIC=y
+//	return cobalt=5Fcopy=5Fto=5Fuser(umsg, &m, sizeof(*umsg)) ?: ret;
+}
 
-If you look at the source of the warning, you can see that
-CONFIG_IPIPE_DEBUG_INTERNAL=y makes the difference.
+COBALT=5FSYSCALL(sendmsg, handover,
+	       (int fd, struct user=5Fmsghdr =5F=5Fuser *umsg, int flags))
+{
+//	struct user=5Fmsghdr m;
+//	int ret;
+//
+//	ret =3D cobalt=5Fcopy=5Ffrom=5Fuser(&m, umsg, sizeof(m));
+//
+//  return ret ?: rtdm=5Ffd=5Fsendmsg(fd, &m, flags);
+  return rtdm=5Ffd=5Fsendmsg(fd, umsg, flags);
+}
 
-Jan
+I don't get no more exceptions, and still the RTNET network seems funct=
+ionnal.
+So now, I wonder why these copy=5Ffrom/to=5Fuser calls need to be there=
+ at the syscall entry ?
 
--- 
-Siemens AG, T RDA IOT
-Corporate Competence Center Embedded Linux
+Fran=C3=A7ois
+
 
