@@ -1,7 +1,7 @@
-Date: Thu, 22 Oct 2020 15:38:29 +0800
+Date: Thu, 22 Oct 2020 19:49:39 +0800
 From: Fino Meng <fino.meng@linux.intel.com>
 Subject: Re: build scripts for the WIP xenomai porting to kernel 5.4
-Message-ID: <20201022073828.GA24456@linux.intel.com>
+Message-ID: <20201022114938.GA8098@linux.intel.com>
 References: <20201014132459.GB24671@linux.intel.com>
  <8e59bc35-84ae-78be-8296-4f2367e8e844@siemens.com>
  <20201016033638.GB5581@linux.intel.com>
@@ -25,7 +25,7 @@ List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
 To: Jan Kiszka <jan.kiszka@siemens.com>
 Cc: xenomai@xenomai.org
 
-O Thu, Oct 22, 2020 at 09:26:59AM +0200, Jan Kiszka wrote:
+On Thu, Oct 22, 2020 at 09:26:59AM +0200, Jan Kiszka wrote:
 > On 22.10.20 08:27, Jan Kiszka via Xenomai wrote:
 > > On 21.10.20 13:43, Fino Meng wrote:
 > >> On Wed, Oct 21, 2020 at 08:36:04AM +0200, Jan Kiszka wrote:
@@ -244,13 +244,25 @@ O Thu, Oct 22, 2020 at 09:26:59AM +0200, Jan Kiszka wrote:
 > 
 > This is with I-pipe debugging enabled. Could you have a look?
 > 
+
+I cannot reproduce it,
+
+I use this config with IPIPE_DEBUG
+https://github.com/intel/linux-stable-xenomai/blob/review/5.4.59/stable/ipipe-x86/config_xenomai.xeno_debug
+
+test on a real WHL-U board (UP Xtreme), kernel boot OK and swtichtest
+runs continously without error.
+
+another config also have no error:
+https://github.com/intel/linux-stable-xenomai/blob/review/5.4.59/stable/ipipe-x86/config_xenomai.kernel_debug
+
+am I missing something? need to test the image inside QEMU/KVM? and this issue happens
+during boot or after launch the switchtest? 
+
+BR fino
+
+
 > Jan
-
-great! thanks~ 
-
-sure I will test it, try to reproduce it first.
-
-BR Fino
 > 
 > -- 
 > Siemens AG, T RDA IOT
