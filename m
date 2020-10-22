@@ -1,16 +1,8 @@
-Date: Wed, 21 Oct 2020 19:43:30 +0800
-From: Fino Meng <fino.meng@linux.intel.com>
-Subject: Re: build scripts for the WIP xenomai porting to kernel 5.4
-Message-ID: <20201021114329.GA4344@linux.intel.com>
-References: <20201014132459.GB24671@linux.intel.com>
- <8e59bc35-84ae-78be-8296-4f2367e8e844@siemens.com>
- <20201016033638.GB5581@linux.intel.com>
- <0ba45dfa-4755-c627-e1fd-9f2c32ea8b8a@siemens.com>
- <9153481d-6df6-314f-c2c0-f413a34fb815@siemens.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <9153481d-6df6-314f-c2c0-f413a34fb815@siemens.com>
+From: hongzha1 <hongzhan.chen@intel.com>
+Subject: [PATCH][wip/dovetail] cobalt/timer: implement xnproxy_timer_set to
+ substitute ipipe
+Date: Thu, 22 Oct 2020 02:04:21 -0400
+Message-Id: <20201022060421.20616-1-hongzhan.chen@intel.com>
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -19,193 +11,86 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jan Kiszka <jan.kiszka@siemens.com>
-Cc: xenomai@xenomai.org
+To: xenomai@xenomai.org, jan.kiszka@siemens.com
 
-On Wed, Oct 21, 2020 at 08:36:04AM +0200, Jan Kiszka wrote:
-> On 18.10.20 23:41, Jan Kiszka via Xenomai wrote:
-> > On 16.10.20 05:36, Fino Meng wrote:
-> >> On Thu, Oct 15, 2020 at 04:20:11PM +0200, Jan Kiszka wrote:
-> >>> On 14.10.20 15:25, Fino Meng wrote:
-> >>>> hi team,
-> >>>>
-> >>>> I just updated the scripts to build the WIP version xenomai porting to
-> >>>> kernel 5.4, just follow the steps:
-> >>>>
-> >>>> git clone https://github.com/finomeng/xenomai-mirror.git /tmp/xenomai-mirror.next-5.4
-> >>>> cd /tmp/xenomai-mirror.next-5.4
-> >>>> git checkout -t origin/wip/next-5.4-porting
-> >>>>
-> >>>> git clone https://github.com/intel/linux-stable-xenomai /tmp/kernel
-> >>>> cd /tmp/kernel
-> >>>> git checkout -t review/5.4.59/stable/ipipe-x86
-> >>>>
-> >>>> ./patching-xenomai2kernel.sh
-> >>>>
-> >>>> cp config_xenomai.kernel_debug .config
-> >>>> make olddefconfig
-> >>>> ./build-debpkg.sh
-> >>>>
-> >>>>
-> >>>> I didn't put it togethter with ISAR/Debian yet. I test it with a PC with Debian 10 installed.
-> >>>>
-> >>>> if no error, linux-image-*.deb and linux-headers-*.deb should generated outside kernel folder,
-> >>>> copy them to your target test device with already installed a Debian/Ubuntu,
-> >>>> install the deb with "dpkg -i", update-grub should be called during install linux-image-*.deb
-> >>>> reboot and select to boot the new kernel in grub's menu
-> >>>>
-> >>>> the build steps also written in patching-xenomai2kernel.sh and build-debpkg.sh
-> >>>>
-> >>>> switchtest will fail in current version, for example: "./switchtest rtk_fp_ufpp0"
-> >>>> will print:
-> >>>>
-> >>>> r0: 2147483648 != 1000
-> >>>> r1: 2147483648 != 1000
-> >>>> r2: 2147483648 != 1000
-> >>>> r3: 2147483648 != 1000
-> >>>> r4: 2147483648 != 1000
-> >>>> r5: 2147483648 != 1000
-> >>>> r6: 2147483648 != 1000
-> >>>> r7: 2147483648 != 1000
-> >>>> ymm0: 2676586395008836901/0 != 1000/1000
-> >>>> ymm1: 71776119061217280/0 != 1000/1000
-> >>>> ymm2: 0/0 != 1000/1000
-> >>>> ymm3: 1000/0 != 1000/1000
-> >>>> ymm4: 1000/0 != 1000/1000
-> >>>> ymm5: 1000/0 != 1000/1000
-> >>>> ymm6: 1000/0 != 1000/1000
-> >>>> ymm7: 1000/0 != 1000/1000
-> >>>> Error after context switch from task 1(rtk_fp_ufpp0-1) to task 0(sleeper_ufps0-0),
-> >>>> FPU registers were set to 0 (maybe task sleeper_ufps0-0)
-> >>>>
-> >>>> if meet more questions just write to me, thanks!
-> >>>>
-> >>>> BR fino
-> >>>>
-> >>>
-> >>> I can reproduce in KVM and poked around a bit, though without finding
-> >>> the needle yet. Likely, there are multiple aspects. The change in
-> >>> upstream to FPU switching on user-return is a hot lead, but it takes a
-> >>> bit to fully grasp that and map it on our scenarios with Xenomai.
-> >>>
-> >>> Jan
-> >>
-> >> it seems that, switch_fpu_prepare() and switch_fpu_finish() are
-> >> for kernel thread context switch (in __switch_to() )and switch_fpu_return() is needed
-> >> before return to userspace( in prepare_exit_to_usermode()).
-> >>
-> > 
-> > Yes, we need explicit switch_fpu_return() (likely open-coded, to skip
-> > the PF_KTHREAD check) at the end of xnarch_switch_to, at least as long
-> > as we do not add that to all fast (primary-mode) return-to-user paths.
-> > 
-> > But it's more complex. The removal of fpu_initialized changed the
-> > condition under which __switch_to() does FPU saving and restoring: All
-> > kernel threads, also ours, are excluded. That needs to be compensated.
-> > 
-> > But I'm still facing corruptions - continuing to debug.
-> > 
-> 
-> Quick update:
-> 
-> I made some progress with changes like below, but I'm still facing 
-> issues, not with weird AVX register corruptions. They confuse me because 
-> classic FPU registers are updated and saved/restored the same way, but 
-> they are currently unaffected.
-> 
-> Jan
+implement xnproxy_timer_set to substitute ipipe_timer_set to set
+next timer event via real_dev
 
-in my current understand, 
-a userspace Xenomai/Cobalt process's context switch always need FPU
-state save/restore; but how about the other case?
+Signed-off-by: hongzha1 <hongzhan.chen@intel.com>
 
-in vanilla kernel, I see if a pure kernel thread want to use FPU, need
-manually call kernel_fpu_begin() and kernel_fpu_end(), like a critical
-area.
+diff --git a/include/cobalt/kernel/timer.h b/include/cobalt/kernel/timer.h
+index 711388188..f00c490a9 100644
+--- a/include/cobalt/kernel/timer.h
++++ b/include/cobalt/kernel/timer.h
+@@ -370,6 +370,8 @@ void __xntimer_init(struct xntimer *timer,
+ 		    struct xnsched *sched,
+ 		    int flags);
+ 
++void xnproxy_timer_set(unsigned long delta, ktime_t tdata);
++
+ void xntimer_set_gravity(struct xntimer *timer,
+ 			 int gravity);
+ 
+diff --git a/kernel/cobalt/clock.c b/kernel/cobalt/clock.c
+index 1ab29e9e7..f48b4985d 100644
+--- a/kernel/cobalt/clock.c
++++ b/kernel/cobalt/clock.c
+@@ -18,6 +18,7 @@
+  */
+ #include <linux/percpu.h>
+ #include <linux/errno.h>
++#include <linux/irq_pipeline.h>
+ //#include <linux/ipipe_tickdev.h>
+ #include <cobalt/kernel/sched.h>
+ #include <cobalt/kernel/timer.h>
+@@ -226,6 +227,7 @@ void xnclock_core_local_shot(struct xnsched *sched)
+ 	ipipe_timer_set(delay);
+ #else
+ #warning TODO
++	xnproxy_timer_set(delay, xntimerh_date(&timer->aplink));
+ #endif
+ }
+ 
+diff --git a/kernel/cobalt/timer.c b/kernel/cobalt/timer.c
+index 67d6d2a33..56cf47ee6 100644
+--- a/kernel/cobalt/timer.c
++++ b/kernel/cobalt/timer.c
+@@ -373,6 +373,34 @@ void __xntimer_init(struct xntimer *timer,
+ }
+ EXPORT_SYMBOL_GPL(__xntimer_init);
+ 
++void xnproxy_timer_set(unsigned long delta, ktime_t tdata)
++{
++	struct clock_proxy_device *dev = __this_cpu_read(proxy_device);
++	struct clock_event_device *real_dev = dev->real_device;
++	int ret;
++	u64 cycles;
++	/* these code are ported from evl_program_proxy_tick */
++	if (real_dev->features & CLOCK_EVT_FEAT_KTIME) {
++		real_dev->set_next_ktime(tdata, real_dev);
++	} else {
++		if (delta <= 0)
++			delta = real_dev->min_delta_ns;
++		else {
++			delta = min_t(int64_t, delta,
++					(int64_t)real_dev->max_delta_ns);
++			delta = max_t(int64_t, delta,
++					(int64_t)real_dev->min_delta_ns);
++		}
++		cycles = ((u64)delta * real_dev->mult) >> real_dev->shift;
++		ret = real_dev->set_next_event(cycles, real_dev);
++		if (ret) {
++			real_dev->set_next_event(real_dev->min_delta_ticks,
++					real_dev);
++		}
++	}
++}
++EXPORT_SYMBOL_GPL(xnproxy_timer_set);
++
+ void xntimer_set_gravity(struct xntimer *timer, int gravity)
+ {
+ 	spl_t s;
+-- 
+2.17.1
 
-BR fino
-
-> 
-> diff --git a/kernel/cobalt/arch/x86/thread.c b/kernel/cobalt/arch/x86/thread.c
-> index aa7b5d19d8..59fcd1995e 100644
-> --- a/kernel/cobalt/arch/x86/thread.c
-> +++ b/kernel/cobalt/arch/x86/thread.c
-> @@ -200,6 +200,8 @@ static inline void do_switch_threads(struct xnarchtcb *out_tcb,
->  
->  #endif /* LINUX_VERSION_CODE >= 4.8 */
->  
-> +#define tcb_used_kfpu(t) ((t)->root_kfpu)
-> +
->  void xnarch_switch_to(struct xnthread *out, struct xnthread *in)
->  {
->  	struct xnarchtcb *out_tcb = &out->tcb, *in_tcb = &in->tcb;
-> @@ -215,6 +217,15 @@ void xnarch_switch_to(struct xnthread *out, struct xnthread *in)
->  		 */
->  		clts();
->  #endif /* ! IPIPE_X86_FPU_EAGER */
-> +	if (!xnthread_test_state(out, XNROOT | XNUSER) &&
-> +	    !test_thread_flag(TIF_NEED_FPU_LOAD)) {
-> +		struct fpu *prev_fpu = &prev->thread.fpu;
-> +
-> +		if (!copy_fpregs_to_fpstate(prev_fpu))
-> +			prev_fpu->last_cpu = -1;
-> +		else
-> +			prev_fpu->last_cpu = smp_processor_id();
-> +	}
->  
->  	next = in_tcb->core.host_task;
->  #ifndef IPIPE_X86_FPU_EAGER
-> @@ -260,6 +271,19 @@ void xnarch_switch_to(struct xnthread *out, struct xnthread *in)
->  #ifndef IPIPE_X86_FPU_EAGER
->  	stts();
->  #endif /* ! IPIPE_X86_FPU_EAGER */
-> +	if (xnthread_current() &&
-> +	    !xnthread_test_state(xnthread_current(), XNROOT) &&
-> +	    test_thread_flag(TIF_NEED_FPU_LOAD)) {
-> +		struct fpu *fpu = &current->thread.fpu;
-> +		int cpu = smp_processor_id();
-> +
-> +		if (!fpregs_state_valid(fpu, cpu)) {
-> +			copy_kernel_to_fpregs(&fpu->state);
-> +			fpregs_activate(fpu);
-> +			fpu->last_cpu = cpu;
-> +		}
-> +		clear_thread_flag(TIF_NEED_FPU_LOAD);
-> +	}
->  }
->  
->  #ifndef IPIPE_X86_FPU_EAGER
-> @@ -387,8 +413,6 @@ int xnarch_handle_fpu_fault(struct xnthread *from,
->  
->  #define current_task_used_kfpu() kernel_fpu_disabled()
->  
-> -#define tcb_used_kfpu(t) ((t)->root_kfpu)
-> -
->  #ifndef IPIPE_X86_FPU_EAGER
->  void xnarch_leave_root(struct xnthread *root)
->  {
-> @@ -488,6 +509,8 @@ void xnarch_switch_fpu(struct xnthread *from, struct xnthread *to)
->  		return;
->  
->  	copy_kernel_to_fpregs(&to_tcb->kfpu->state);
-> +	__cpu_invalidate_fpregs_state();
-> +	clear_thread_flag(TIF_NEED_FPU_LOAD);
->  	kernel_fpu_disable();
->  }
->  #endif /* ! IPIPE_X86_FPU_EAGER */
-> @@ -541,7 +569,8 @@ void xnarch_init_shadow_tcb(struct xnthread *thread)
->  #if LINUX_VERSION_CODE < KERNEL_VERSION(4,14,0)
->  	fpu__activate_fpstate_read(&p->thread.fpu);
->  #else
-> -	fpu__clear(&p->thread.fpu);
-> +	set_thread_flag(TIF_NEED_FPU_LOAD);
-> +	fpstate_init(&p->thread.fpu.state);
->  #endif
->  #endif /* ! IPIPE_X86_FPU_EAGER */
->  }
-> 
-> 
-> -- 
-> Siemens AG, T RDA IOT
-> Corporate Competence Center Embedded Linux
 
