@@ -1,7 +1,7 @@
 From: Jan Kiszka <jan.kiszka@siemens.com>
-Subject: [PATCH 08/11] drivers/e1000: Fix unintended fallthrough
-Date: Mon, 26 Oct 2020 12:04:54 +0100
-Message-Id: <00e5e0309f255f48dc8672078e14e5812451f346.1603710297.git.jan.kiszka@siemens.com>
+Subject: [PATCH 06/11] wrappers: Add mmiowb stub for kernels >= 5.2
+Date: Mon, 26 Oct 2020 12:04:52 +0100
+Message-Id: <b9bd8a0dc930d995d6f7bc70028c28f1fdbe36ee.1603710297.git.jan.kiszka@siemens.com>
 In-Reply-To: <cover.1603710297.git.jan.kiszka@siemens.com>
 References: <cover.1603710297.git.jan.kiszka@siemens.com>
 MIME-Version: 1.0
@@ -19,25 +19,27 @@ Cc: Fino Meng <fino.meng@linux.intel.com>, Mingliang Hu <mingliang.hu@intel.com>
 
 From: Jan Kiszka <jan.kiszka@siemens.com>
 
-Not desired here according ancient git logs.
+This was folded into spin_unlock, thus obsoleted. Keep it for older
+kernels.
 
 Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
 ---
- kernel/drivers/net/drivers/e1000/e1000_main.c | 1 +
- 1 file changed, 1 insertion(+)
+ kernel/cobalt/include/asm-generic/xenomai/wrappers.h | 4 ++++
+ 1 file changed, 4 insertions(+)
 
-diff --git a/kernel/drivers/net/drivers/e1000/e1000_main.c b/kernel/drivers/net/drivers/e1000/e1000_main.c
-index 329c69c7b8..3df35e033c 100644
---- a/kernel/drivers/net/drivers/e1000/e1000_main.c
-+++ b/kernel/drivers/net/drivers/e1000/e1000_main.c
-@@ -396,6 +396,7 @@ e1000_release_hw_control(struct e1000_adapter *adapter)
- 		swsm = E1000_READ_REG(&adapter->hw, SWSM);
- 		E1000_WRITE_REG(&adapter->hw, SWSM,
- 				swsm & ~E1000_SWSM_DRV_LOAD);
-+		break;
- 	case e1000_ich8lan:
- 		extcnf = E1000_READ_REG(&adapter->hw, CTRL_EXT);
- 		E1000_WRITE_REG(&adapter->hw, CTRL_EXT,
+diff --git a/kernel/cobalt/include/asm-generic/xenomai/wrappers.h b/kernel/cobalt/include/asm-generic/xenomai/wrappers.h
+index b910138395..e266d5acf8 100644
+--- a/kernel/cobalt/include/asm-generic/xenomai/wrappers.h
++++ b/kernel/cobalt/include/asm-generic/xenomai/wrappers.h
+@@ -162,4 +162,8 @@ devm_hwmon_device_register_with_groups(struct device *dev, const char *name,
+ #define SO_SNDTIMEO_OLD		SO_SNDTIMEO
+ #endif
+ 
++#if LINUX_VERSION_CODE >= KERNEL_VERSION(5,2,0)
++#define mmiowb()		do { } while (0)
++#endif
++
+ #endif /* _COBALT_ASM_GENERIC_WRAPPERS_H */
 -- 
 2.26.2
 
