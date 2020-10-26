@@ -1,14 +1,11 @@
-Subject: Re: [PATCH v2] gitlab-ci: add cache to decrease build times
-References: <20201026092106.18119-1-Quirin.Gylstorff@siemens.com>
- <87fdf1fa-85c1-08c5-ca35-2f07ef448fd6@siemens.com>
 From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <0ffdac36-7002-4b6d-d183-caf7d543cb86@siemens.com>
-Date: Mon, 26 Oct 2020 11:45:12 +0100
+Subject: [PATCH 05/11] driver/net: Update to kernel 5.4
+Date: Mon, 26 Oct 2020 12:04:51 +0100
+Message-Id: <97270814930fb623c1922b9ab81b6283523ca575.1603710297.git.jan.kiszka@siemens.com>
+In-Reply-To: <cover.1603710297.git.jan.kiszka@siemens.com>
+References: <cover.1603710297.git.jan.kiszka@siemens.com>
 MIME-Version: 1.0
-In-Reply-To: <87fdf1fa-85c1-08c5-ca35-2f07ef448fd6@siemens.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,80 +14,102 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "Q. Gylstorff" <Quirin.Gylstorff@siemens.com>, xenomai@xenomai.org
+To: xenomai@xenomai.org
+Cc: Fino Meng <fino.meng@linux.intel.com>, Mingliang Hu <mingliang.hu@intel.com>
 
-On 26.10.20 10:22, Jan Kiszka via Xenomai wrote:
-> On 26.10.20 10:21, Q. Gylstorff wrote:
->> From: Quirin Gylstorff <quirin.gylstorff@siemens.com>
->>
->> Add the variable CCACHE_DIR to the build to move the ccache from ~/.ccache
->> to the current directory and upload the cache from each build.
->>
->> Each job uses a separate cache.
->>
->> Signed-off-by: Quirin Gylstorff <quirin.gylstorff@siemens.com>
->> ---
->>
->> You can find an example build at:
->> https://gitlab.com/Quirin.Gy/xenomai/-/pipelines/207559342/builds
->> On this setup the build time is decrease from 2h to 20min.
->> Each build has 0.5 cores available.
->>
->> Changes V2:
->>  - Move ccache dir to $(pwd)/.ccache instead of .ccache in each build dir.
->>
->>  .gitlab-ci.yml | 13 +++++++------
->>  1 file changed, 7 insertions(+), 6 deletions(-)
->>
->> diff --git a/.gitlab-ci.yml b/.gitlab-ci.yml
->> index 59bd1d355..d76c9e25e 100644
->> --- a/.gitlab-ci.yml
->> +++ b/.gitlab-ci.yml
->> @@ -56,14 +56,12 @@ variables:
->>        export CONFIGURE_OPTS="--enable-dlopen-libs --enable-lazy-setsched"
->>        ;;
->>        esac
->> -    - mkdir ~/ccache
->> -    - ln -s /usr/bin/ccache ~/ccache/aarch64-linux-gnu-gcc
->> -    - ln -s /usr/bin/ccache ~/ccache/arm-linux-gnueabihf-gcc
->> -    - ln -s /usr/bin/ccache ~/ccache/powerpc-linux-gnu-gcc
->> -    - export PATH=~/ccache:$PATH
->> +    - ln -s /usr/lib/ccache/${CROSS_COMPILE}gcc-8 /usr/lib/ccache/${CROSS_COMPILE}gcc
->> +    - export PATH=/usr/lib/ccache:$PATH
->>      - ${CROSS_COMPILE}gcc --version
->>  
->>    script:
->> +    - export CCACHE_DIR=$(pwd)/.ccache
->>      - pushd ${KDIR}
->>      - make -j $(nproc) ${KERNEL_DEFCONFIG}
->>      # Generic settings
->> @@ -162,7 +160,10 @@ variables:
->>      - ./configure --enable-smp ${CONFIGURE_OPTS}
->>      - make -j $(nproc)
->>      - ccache -s
->> -
->> +  cache:
->> +    key: "$CI_JOB_NAME-$CI_COMMIT_REF_SLUG"
->> +    paths:
->> +      - .ccache
->>  
->>  arm-4.19-release:
->>    extends: .build
->>
-> 
-> Does this still apply to master? I merged your previous change this
-> morning by accident. If not, please rebase.
-> 
-> Thanks,
-> Jan
-> 
+From: Jan Kiszka <jan.kiszka@siemens.com>
 
-Applies fine, taken to next.
+linux/pci-aspm.h has been folded into linux/pci.h in that version.
+Account for that in drivers that actually need it.
 
-Thanks,
-Jan
+Furthermore, our implementation of SO_SNDTIMEO is now SO_SNDTIMEO_OLD
+until 2038 has been addressed.
 
+Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
+---
+ kernel/drivers/net/drivers/e1000e/e1000.h  | 1 -
+ kernel/drivers/net/drivers/e1000e/netdev.c | 4 ++++
+ kernel/drivers/net/drivers/igb/igb_main.c  | 1 -
+ kernel/drivers/net/drivers/r8169.c         | 5 ++++-
+ kernel/drivers/net/stack/ipv4/tcp/tcp.c    | 2 +-
+ 5 files changed, 9 insertions(+), 4 deletions(-)
+
+diff --git a/kernel/drivers/net/drivers/e1000e/e1000.h b/kernel/drivers/net/drivers/e1000e/e1000.h
+index 2de681422f..7454c6350a 100644
+--- a/kernel/drivers/net/drivers/e1000e/e1000.h
++++ b/kernel/drivers/net/drivers/e1000e/e1000.h
+@@ -38,7 +38,6 @@
+ #include <linux/io.h>
+ #include <linux/netdevice.h>
+ #include <linux/pci.h>
+-#include <linux/pci-aspm.h>
+ #include <linux/crc32.h>
+ #include <linux/if_vlan.h>
+ 
+diff --git a/kernel/drivers/net/drivers/e1000e/netdev.c b/kernel/drivers/net/drivers/e1000e/netdev.c
+index baeb6aa09d..5beaf2b552 100644
+--- a/kernel/drivers/net/drivers/e1000e/netdev.c
++++ b/kernel/drivers/net/drivers/e1000e/netdev.c
+@@ -53,6 +53,10 @@
+ #include <linux/aer.h>
+ #include <linux/prefetch.h>
+ 
++#if LINUX_VERSION_CODE < KERNEL_VERSION(5,4,0)
++#include <linux/pci-aspm.h>
++#endif
++
+ #include "e1000.h"
+ 
+ #define RT_E1000E_NUM_RXD	64
+diff --git a/kernel/drivers/net/drivers/igb/igb_main.c b/kernel/drivers/net/drivers/igb/igb_main.c
+index 2c9d51e7f2..37d891a620 100644
+--- a/kernel/drivers/net/drivers/igb/igb_main.c
++++ b/kernel/drivers/net/drivers/igb/igb_main.c
+@@ -42,7 +42,6 @@
+ #include <linux/if.h>
+ #include <linux/if_vlan.h>
+ #include <linux/pci.h>
+-#include <linux/pci-aspm.h>
+ #include <linux/delay.h>
+ #include <linux/interrupt.h>
+ #include <linux/ip.h>
+diff --git a/kernel/drivers/net/drivers/r8169.c b/kernel/drivers/net/drivers/r8169.c
+index 619ecc0434..6255fcb3f2 100644
+--- a/kernel/drivers/net/drivers/r8169.c
++++ b/kernel/drivers/net/drivers/r8169.c
+@@ -69,7 +69,6 @@ RTL8169_VERSION "2.2"	<2004/08/09>
+  */
+ 
+ #include <linux/module.h>
+-#include <linux/pci-aspm.h>
+ #include <linux/pci.h>
+ #include <linux/netdevice.h>
+ #include <linux/etherdevice.h>
+@@ -79,6 +78,10 @@ RTL8169_VERSION "2.2"	<2004/08/09>
+ #include <linux/timer.h>
+ #include <linux/init.h>
+ 
++#if LINUX_VERSION_CODE < KERNEL_VERSION(5,4,0)
++#include <linux/pci-aspm.h>
++#endif
++
+ #include <rtnet_port.h>	/*** RTnet ***/
+ 
+ #define RTL8169_VERSION "2.2-04"
+diff --git a/kernel/drivers/net/stack/ipv4/tcp/tcp.c b/kernel/drivers/net/stack/ipv4/tcp/tcp.c
+index b8263e5d23..8fef3ae5b5 100644
+--- a/kernel/drivers/net/stack/ipv4/tcp/tcp.c
++++ b/kernel/drivers/net/stack/ipv4/tcp/tcp.c
+@@ -1762,7 +1762,7 @@ static int rt_tcp_setsockopt(struct rtdm_fd *fd, struct tcp_socket *ts,
+ 	    */
+ 		return 0;
+ 
+-	case SO_SNDTIMEO:
++	case SO_SNDTIMEO_OLD:
+ 		if (optlen < sizeof(tv))
+ 			return -EINVAL;
+ 		if (rtdm_copy_from_user(fd, &tv, optval, sizeof(tv)))
 -- 
-Siemens AG, T RDA IOT
-Corporate Competence Center Embedded Linux
+2.26.2
+
 
