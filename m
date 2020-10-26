@@ -1,11 +1,12 @@
-From: Jan Kiszka <jan.kiszka@siemens.com>
-Subject: [xenomai-images][PATCH] linux-xenomai: Move latest x86 to 5.4
-Message-ID: <d6136f8d-55f5-161f-9e5c-71b82e5b2900@siemens.com>
-Date: Mon, 26 Oct 2020 13:35:10 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+References: <d0dbd921-5127-0acc-a1df-ab5b173b7b00@siemens.com>
+ <20201026082352.GB17437@linux.intel.com>
+In-Reply-To: <20201026082352.GB17437@linux.intel.com>
+From: Greg Gallagher <greg@embeddedgreg.com>
+Date: Mon, 26 Oct 2020 09:45:07 -0400
+Message-ID: <CALLqZ8RptPrOTccwKSU-L2ee0dYeuyJfZYaTRLTgbAdXM5W8vQ@mail.gmail.com>
+Subject: Re: Kernel 5.4 status
+Content-Type: text/plain; charset="UTF-8"
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -14,32 +15,62 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Xenomai <xenomai@xenomai.org>, Quirin Gylstorff <quirin.gylstorff@siemens.com>
+To: Fino Meng <fino.meng@linux.intel.com>
+Cc: Jan Kiszka <jan.kiszka@siemens.com>, "Xenomai@xenomai.org" <xenomai@xenomai.org>
 
-From: Jan Kiszka <jan.kiszka@siemens.com>
+On Mon, Oct 26, 2020 at 4:25 AM Fino Meng via Xenomai
+<xenomai@xenomai.org> wrote:
+>
+> On Mon, Oct 26, 2020 at 08:54:54AM +0100, Jan Kiszka via Xenomai wrote:
+> > Hi all,
+> >
+> > a brief update on the porting status to 5.4:
+> >
+> > - new noarch ipipe/master is ready:
+> >
+> >   https://gitlab.denx.de/Xenomai/ipipe-noarch/-/commits/ipipe/master
+> >
+> >   I've regenerated the queue from Fino's work, reviewing conflict
+> >   resolutions once again. No issues found, well done! I've only done a
+> >   few cleanups and added missing patches from the latest 4.19-noarch.
+> >
+> >   This should now be a reasonable baseline for porting other archs.
+> >
+> > - x86 5.4 branch is also ready:
+> >
+> >   https://gitlab.denx.de/Xenomai/ipipe-x86/-/commits/ipipe-x86-5.4.y
+> >
+> >   Here I added the FPU changes, fixing the hard-irqs mask leak and
+> >   hardening an additionally needed path (fpu__clear). I've also done a
+> >   full merge conflict review, and I think I found and fixed issues in
+> >   the kvm code. Still untested, though. I've cleaned up the GTOD update.
+> >   I furthermore fixed missing hard-irqs reenabling in some page-fault
+> >   paths. And added latest x86 patches from 4.19.
+> >
+> > - Xenomai next is almost ready:
+> >
+> >   https://gitlab.denx.de/Xenomai/xenomai/-/commits/next
+> >
+> >   RTnet and Analogy are not building ATM. That still breaks CI. But the
+> >   result is otherwise working fine, at least in QEMU/KVM. More tests
+> >   welcome!
+> >
+> > Jan
+> >
+>
+> Thanks Jan, and great team work! We really need Xenomai on newest Linux
+> kenrel, not only used as bare metal, also working as RTVM in ACRN. We
+> will contribute more on Xenomai and Dovetail.
+>
+> BR fino
+>
+> > --
+> > Siemens AG, T RDA IOT
+> > Corporate Competence Center Embedded Linux
+> >
+>
 
-Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
----
+Great work, I'll start getting braches up for arm and arm64 development ready.
 
-Quirin, I wonder if we could afford testing 4.19 head as well. And how 
-to model that best.
-
- recipes-kernel/linux/linux-xenomai_latest.bb | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/recipes-kernel/linux/linux-xenomai_latest.bb b/recipes-kernel/linux/linux-xenomai_latest.bb
-index 9ad8e56..9fc6a63 100644
---- a/recipes-kernel/linux/linux-xenomai_latest.bb
-+++ b/recipes-kernel/linux/linux-xenomai_latest.bb
-@@ -19,7 +19,7 @@ def is_xeno_3_0(d):
-     return xeno_ver.startswith('3.0') or xeno_ver == 'stable-3.0.x'
- 
- GIT_REPO_amd64 = "${@'ipipe.git' if is_xeno_3_0(d) else 'ipipe-x86.git'}"
--GIT_BRANCH_amd64 = "${@'ipipe-4.4.y-cip' if is_xeno_3_0(d) else 'ipipe-x86-4.19.y-cip'}"
-+GIT_BRANCH_amd64 = "${@'ipipe-4.4.y-cip' if is_xeno_3_0(d) else 'ipipe-x86-5.4.y'}"
- 
- GIT_REPO_armhf = "${@'ipipe.git' if is_xeno_3_0(d) else 'ipipe-arm.git'}"
- GIT_BRANCH_armhf = "${@'ipipe-4.4.y-cip' if is_xeno_3_0(d) else 'ipipe/master'}"
--- 
-2.26.2
+-Greg
 
