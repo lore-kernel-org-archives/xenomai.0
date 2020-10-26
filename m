@@ -1,8 +1,7 @@
 From: Jan Kiszka <jan.kiszka@siemens.com>
-Subject: [PATCH 02/11] cobalt/kernel: fix compile error for incompatible
- pointer type
-Date: Mon, 26 Oct 2020 12:04:48 +0100
-Message-Id: <18ab00b7b0c2c2d0ed1f560cf4fb4161f6e9bde6.1603710297.git.jan.kiszka@siemens.com>
+Subject: [PATCH 08/11] drivers/e1000: Fix unintended fallthrough
+Date: Mon, 26 Oct 2020 12:04:54 +0100
+Message-Id: <00e5e0309f255f48dc8672078e14e5812451f346.1603710297.git.jan.kiszka@siemens.com>
 In-Reply-To: <cover.1603710297.git.jan.kiszka@siemens.com>
 References: <cover.1603710297.git.jan.kiszka@siemens.com>
 MIME-Version: 1.0
@@ -18,31 +17,27 @@ List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
 To: xenomai@xenomai.org
 Cc: Fino Meng <fino.meng@linux.intel.com>, Mingliang Hu <mingliang.hu@intel.com>
 
-From: Fino Meng <fino.meng@linux.intel.com>
+From: Jan Kiszka <jan.kiszka@siemens.com>
 
-Signed-off-by: Fino Meng <fino.meng@linux.intel.com>
-Signed-off-by: Mingliang Hu <mingliang.hu@intel.com>
-[Jan: reformat]
+Not desired here according ancient git logs.
+
 Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
 ---
- include/cobalt/kernel/stat.h | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+ kernel/drivers/net/drivers/e1000/e1000_main.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/include/cobalt/kernel/stat.h b/include/cobalt/kernel/stat.h
-index b857cd19f3..d252e1429f 100644
---- a/include/cobalt/kernel/stat.h
-+++ b/include/cobalt/kernel/stat.h
-@@ -58,7 +58,9 @@ do { \
- #define xnstat_exectime_set_current(sched, new_account) \
- ({ \
- 	xnstat_exectime_t *__prev; \
--	__prev = (xnstat_exectime_t *)atomic_long_xchg(&(sched)->current_account, (long)(new_account)); \
-+	__prev = (xnstat_exectime_t *) \
-+		atomic_long_xchg((atomic_long_t *)&(sched)->current_account, \
-+				 (long)(new_account)); \
- 	__prev; \
- })
- 
+diff --git a/kernel/drivers/net/drivers/e1000/e1000_main.c b/kernel/drivers/net/drivers/e1000/e1000_main.c
+index 329c69c7b8..3df35e033c 100644
+--- a/kernel/drivers/net/drivers/e1000/e1000_main.c
++++ b/kernel/drivers/net/drivers/e1000/e1000_main.c
+@@ -396,6 +396,7 @@ e1000_release_hw_control(struct e1000_adapter *adapter)
+ 		swsm = E1000_READ_REG(&adapter->hw, SWSM);
+ 		E1000_WRITE_REG(&adapter->hw, SWSM,
+ 				swsm & ~E1000_SWSM_DRV_LOAD);
++		break;
+ 	case e1000_ich8lan:
+ 		extcnf = E1000_READ_REG(&adapter->hw, CTRL_EXT);
+ 		E1000_WRITE_REG(&adapter->hw, CTRL_EXT,
 -- 
 2.26.2
 
