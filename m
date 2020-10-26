@@ -1,20 +1,8 @@
-Subject: Re: build scripts for the WIP xenomai porting to kernel 5.4
-References: <20201016033638.GB5581@linux.intel.com>
- <0ba45dfa-4755-c627-e1fd-9f2c32ea8b8a@siemens.com>
- <9153481d-6df6-314f-c2c0-f413a34fb815@siemens.com>
- <20201021114329.GA4344@linux.intel.com>
- <88232cd0-0713-4e45-bad2-e22acdeb7632@siemens.com>
- <3a85c6c8-6792-40d1-5ef2-6ee634fc3c91@siemens.com>
- <20201022114938.GA8098@linux.intel.com>
- <39ccbc86-3f64-0941-241b-30e2431468cf@siemens.com>
- <20201022132522.GA9776@linux.intel.com>
- <ae889a3f-40c1-d22e-c97b-807fe2ab7b5f@siemens.com>
- <20201023090407.GA16088@linux.intel.com>
 From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <6ca34337-dd2f-3727-a014-f76d6721a647@siemens.com>
-Date: Mon, 26 Oct 2020 08:35:10 +0100
+Subject: Kernel 5.4 status
+Message-ID: <d0dbd921-5127-0acc-a1df-ab5b173b7b00@siemens.com>
+Date: Mon, 26 Oct 2020 08:54:54 +0100
 MIME-Version: 1.0
-In-Reply-To: <20201023090407.GA16088@linux.intel.com>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -26,15 +14,41 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Fino Meng <fino.meng@linux.intel.com>
-Cc: xenomai@xenomai.org
+To: Xenomai <xenomai@xenomai.org>, "Meng, Fino" <fino.meng@intel.com>
+Cc: "Pirou, Florent" <florent.pirou@intel.com>, "Wang, Rick Y" <rick.y.wang@intel.com>, "Chen, Hongzhan" <hongzhan.chen@intel.com>, Greg Gallagher <greg@embeddedgreg.com>, chensong <chensong@tj.kylinos.cn>
 
-On 23.10.20 11:04, Fino Meng wrote:
-> be aware of RTNET and RTIPC part still have compile error, I didn't
-> enable them in .config yet. hope can fix them next week.
+Hi all,
 
-Do you have patches for RTnet and Analogy already? RTIPC is fixed in
-next. I'm currently trying to get CI fully running.
+a brief update on the porting status to 5.4:
+
+- new noarch ipipe/master is ready:
+
+  https://gitlab.denx.de/Xenomai/ipipe-noarch/-/commits/ipipe/master
+
+  I've regenerated the queue from Fino's work, reviewing conflict
+  resolutions once again. No issues found, well done! I've only done a
+  few cleanups and added missing patches from the latest 4.19-noarch.
+
+  This should now be a reasonable baseline for porting other archs.
+
+- x86 5.4 branch is also ready:
+
+  https://gitlab.denx.de/Xenomai/ipipe-x86/-/commits/ipipe-x86-5.4.y
+
+  Here I added the FPU changes, fixing the hard-irqs mask leak and
+  hardening an additionally needed path (fpu__clear). I've also done a
+  full merge conflict review, and I think I found and fixed issues in
+  the kvm code. Still untested, though. I've cleaned up the GTOD update.
+  I furthermore fixed missing hard-irqs reenabling in some page-fault
+  paths. And added latest x86 patches from 4.19.
+
+- Xenomai next is almost ready:
+
+  https://gitlab.denx.de/Xenomai/xenomai/-/commits/next
+
+  RTnet and Analogy are not building ATM. That still breaks CI. But the
+  result is otherwise working fine, at least in QEMU/KVM. More tests
+  welcome!
 
 Jan
 
