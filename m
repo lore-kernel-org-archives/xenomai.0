@@ -1,12 +1,24 @@
-Date: Mon, 26 Oct 2020 16:23:52 +0800
-From: Fino Meng <fino.meng@linux.intel.com>
-Subject: Re: Kernel 5.4 status
-Message-ID: <20201026082352.GB17437@linux.intel.com>
-References: <d0dbd921-5127-0acc-a1df-ab5b173b7b00@siemens.com>
+Subject: Re: build scripts for the WIP xenomai porting to kernel 5.4
+References: <9153481d-6df6-314f-c2c0-f413a34fb815@siemens.com>
+ <20201021114329.GA4344@linux.intel.com>
+ <88232cd0-0713-4e45-bad2-e22acdeb7632@siemens.com>
+ <3a85c6c8-6792-40d1-5ef2-6ee634fc3c91@siemens.com>
+ <20201022114938.GA8098@linux.intel.com>
+ <39ccbc86-3f64-0941-241b-30e2431468cf@siemens.com>
+ <20201022132522.GA9776@linux.intel.com>
+ <ae889a3f-40c1-d22e-c97b-807fe2ab7b5f@siemens.com>
+ <20201023090407.GA16088@linux.intel.com>
+ <6ca34337-dd2f-3727-a014-f76d6721a647@siemens.com>
+ <20201026081238.GA17437@linux.intel.com>
+ <1b80d6cf-cf5a-dbb7-4e82-1958cd82b212@siemens.com>
+From: Jan Kiszka <jan.kiszka@siemens.com>
+Message-ID: <c02274b5-2548-fb89-329c-6b45eeb09f1b@siemens.com>
+Date: Mon, 26 Oct 2020 09:25:56 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <d0dbd921-5127-0acc-a1df-ab5b173b7b00@siemens.com>
+In-Reply-To: <1b80d6cf-cf5a-dbb7-4e82-1958cd82b212@siemens.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,54 +27,32 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jan Kiszka <jan.kiszka@siemens.com>
+To: Fino Meng <fino.meng@linux.intel.com>
 Cc: xenomai@xenomai.org
 
-On Mon, Oct 26, 2020 at 08:54:54AM +0100, Jan Kiszka via Xenomai wrote:
-> Hi all,
+On 26.10.20 09:20, Jan Kiszka via Xenomai wrote:
+> On 26.10.20 09:12, Fino Meng wrote:
+>> On Mon, Oct 26, 2020 at 08:35:10AM +0100, Jan Kiszka wrote:
+>>> On 23.10.20 11:04, Fino Meng wrote:
+>>>> be aware of RTNET and RTIPC part still have compile error, I didn't
+>>>> enable them in .config yet. hope can fix them next week.
+>>>
+>>> Do you have patches for RTnet and Analogy already? RTIPC is fixed in
+>>> next. I'm currently trying to get CI fully running.
+>>>
+>>> Jan
+>>
+>> this morning, I didn't meet error when compile RTnet as module, strange.
 > 
-> a brief update on the porting status to 5.4:
+> Just fixing that, linux/pci-aspm.h
 > 
-> - new noarch ipipe/master is ready:
-> 
->   https://gitlab.denx.de/Xenomai/ipipe-noarch/-/commits/ipipe/master
-> 
->   I've regenerated the queue from Fino's work, reviewing conflict
->   resolutions once again. No issues found, well done! I've only done a
->   few cleanups and added missing patches from the latest 4.19-noarch.
-> 
->   This should now be a reasonable baseline for porting other archs.
-> 
-> - x86 5.4 branch is also ready:
-> 
->   https://gitlab.denx.de/Xenomai/ipipe-x86/-/commits/ipipe-x86-5.4.y
-> 
->   Here I added the FPU changes, fixing the hard-irqs mask leak and
->   hardening an additionally needed path (fpu__clear). I've also done a
->   full merge conflict review, and I think I found and fixed issues in
->   the kvm code. Still untested, though. I've cleaned up the GTOD update.
->   I furthermore fixed missing hard-irqs reenabling in some page-fault
->   paths. And added latest x86 patches from 4.19.
-> 
-> - Xenomai next is almost ready:
-> 
->   https://gitlab.denx.de/Xenomai/xenomai/-/commits/next
-> 
->   RTnet and Analogy are not building ATM. That still breaks CI. But the
->   result is otherwise working fine, at least in QEMU/KVM. More tests
->   welcome!
-> 
-> Jan
->
 
-Thanks Jan, and great team work! We really need Xenomai on newest Linux
-kenrel, not only used as bare metal, also working as RTVM in ACRN. We
-will contribute more on Xenomai and Dovetail.
+and mmiowb removal. That actually affected both RTnet and analogy.
+Builds now.
 
-BR fino
+Jan
 
-> -- 
-> Siemens AG, T RDA IOT
-> Corporate Competence Center Embedded Linux
-> 
+-- 
+Siemens AG, T RDA IOT
+Corporate Competence Center Embedded Linux
 
