@@ -1,7 +1,8 @@
 From: Jan Kiszka <jan.kiszka@siemens.com>
-Subject: [PATCH 05/11] driver/net: Update to kernel 5.4
-Date: Mon, 26 Oct 2020 12:04:51 +0100
-Message-Id: <97270814930fb623c1922b9ab81b6283523ca575.1603710297.git.jan.kiszka@siemens.com>
+Subject: [PATCH 04/11] drivers/ipc: Account for renaming of
+ SO_RCVTIMEO/SO_SNDTIMEO
+Date: Mon, 26 Oct 2020 12:04:50 +0100
+Message-Id: <6c3c9702861f15476c6e41cb89e08c79e04d90ab.1603710297.git.jan.kiszka@siemens.com>
 In-Reply-To: <cover.1603710297.git.jan.kiszka@siemens.com>
 References: <cover.1603710297.git.jan.kiszka@siemens.com>
 MIME-Version: 1.0
@@ -19,96 +20,127 @@ Cc: Fino Meng <fino.meng@linux.intel.com>, Mingliang Hu <mingliang.hu@intel.com>
 
 From: Jan Kiszka <jan.kiszka@siemens.com>
 
-linux/pci-aspm.h has been folded into linux/pci.h in that version.
-Account for that in drivers that actually need it.
-
-Furthermore, our implementation of SO_SNDTIMEO is now SO_SNDTIMEO_OLD
-until 2038 has been addressed.
+Use the *_OLD defines for the 2038-wise unconverted socket options.
 
 Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
 ---
- kernel/drivers/net/drivers/e1000e/e1000.h  | 1 -
- kernel/drivers/net/drivers/e1000e/netdev.c | 4 ++++
- kernel/drivers/net/drivers/igb/igb_main.c  | 1 -
- kernel/drivers/net/drivers/r8169.c         | 5 ++++-
- kernel/drivers/net/stack/ipv4/tcp/tcp.c    | 2 +-
- 5 files changed, 9 insertions(+), 4 deletions(-)
+ kernel/cobalt/include/asm-generic/xenomai/wrappers.h | 2 ++
+ kernel/drivers/ipc/bufp.c                            | 8 ++++----
+ kernel/drivers/ipc/iddp.c                            | 8 ++++----
+ kernel/drivers/ipc/xddp.c                            | 4 ++--
+ 4 files changed, 12 insertions(+), 10 deletions(-)
 
-diff --git a/kernel/drivers/net/drivers/e1000e/e1000.h b/kernel/drivers/net/drivers/e1000e/e1000.h
-index 2de681422f..7454c6350a 100644
---- a/kernel/drivers/net/drivers/e1000e/e1000.h
-+++ b/kernel/drivers/net/drivers/e1000e/e1000.h
-@@ -38,7 +38,6 @@
- #include <linux/io.h>
- #include <linux/netdevice.h>
- #include <linux/pci.h>
--#include <linux/pci-aspm.h>
- #include <linux/crc32.h>
- #include <linux/if_vlan.h>
+diff --git a/kernel/cobalt/include/asm-generic/xenomai/wrappers.h b/kernel/cobalt/include/asm-generic/xenomai/wrappers.h
+index de5a992850..b910138395 100644
+--- a/kernel/cobalt/include/asm-generic/xenomai/wrappers.h
++++ b/kernel/cobalt/include/asm-generic/xenomai/wrappers.h
+@@ -158,6 +158,8 @@ devm_hwmon_device_register_with_groups(struct device *dev, const char *name,
  
-diff --git a/kernel/drivers/net/drivers/e1000e/netdev.c b/kernel/drivers/net/drivers/e1000e/netdev.c
-index baeb6aa09d..5beaf2b552 100644
---- a/kernel/drivers/net/drivers/e1000e/netdev.c
-+++ b/kernel/drivers/net/drivers/e1000e/netdev.c
-@@ -53,6 +53,10 @@
- #include <linux/aer.h>
- #include <linux/prefetch.h>
+ #if LINUX_VERSION_CODE < KERNEL_VERSION(5,1,0)
+ #define old_timex32		compat_timex
++#define SO_RCVTIMEO_OLD		SO_RCVTIMEO
++#define SO_SNDTIMEO_OLD		SO_SNDTIMEO
+ #endif
  
-+#if LINUX_VERSION_CODE < KERNEL_VERSION(5,4,0)
-+#include <linux/pci-aspm.h>
-+#endif
-+
- #include "e1000.h"
+ #endif /* _COBALT_ASM_GENERIC_WRAPPERS_H */
+diff --git a/kernel/drivers/ipc/bufp.c b/kernel/drivers/ipc/bufp.c
+index 45c917eb07..9410973f2c 100644
+--- a/kernel/drivers/ipc/bufp.c
++++ b/kernel/drivers/ipc/bufp.c
+@@ -830,14 +830,14 @@ static int __bufp_setsockopt(struct bufp_socket *sk,
+ 	if (sopt.level == SOL_SOCKET) {
+ 		switch (sopt.optname) {
  
- #define RT_E1000E_NUM_RXD	64
-diff --git a/kernel/drivers/net/drivers/igb/igb_main.c b/kernel/drivers/net/drivers/igb/igb_main.c
-index 2c9d51e7f2..37d891a620 100644
---- a/kernel/drivers/net/drivers/igb/igb_main.c
-+++ b/kernel/drivers/net/drivers/igb/igb_main.c
-@@ -42,7 +42,6 @@
- #include <linux/if.h>
- #include <linux/if_vlan.h>
- #include <linux/pci.h>
--#include <linux/pci-aspm.h>
- #include <linux/delay.h>
- #include <linux/interrupt.h>
- #include <linux/ip.h>
-diff --git a/kernel/drivers/net/drivers/r8169.c b/kernel/drivers/net/drivers/r8169.c
-index 619ecc0434..6255fcb3f2 100644
---- a/kernel/drivers/net/drivers/r8169.c
-+++ b/kernel/drivers/net/drivers/r8169.c
-@@ -69,7 +69,6 @@ RTL8169_VERSION "2.2"	<2004/08/09>
-  */
+-		case SO_RCVTIMEO:
++		case SO_RCVTIMEO_OLD:
+ 			ret = rtipc_get_timeval(fd, &tv, sopt.optval, sopt.optlen);
+ 			if (ret)
+ 				return ret;
+ 			sk->rx_timeout = rtipc_timeval_to_ns(&tv);
+ 			break;
  
- #include <linux/module.h>
--#include <linux/pci-aspm.h>
- #include <linux/pci.h>
- #include <linux/netdevice.h>
- #include <linux/etherdevice.h>
-@@ -79,6 +78,10 @@ RTL8169_VERSION "2.2"	<2004/08/09>
- #include <linux/timer.h>
- #include <linux/init.h>
+-		case SO_SNDTIMEO:
++		case SO_SNDTIMEO_OLD:
+ 			ret = rtipc_get_timeval(fd, &tv, sopt.optval, sopt.optlen);
+ 			if (ret)
+ 				return ret;
+@@ -922,14 +922,14 @@ static int __bufp_getsockopt(struct bufp_socket *sk,
+ 	if (sopt.level == SOL_SOCKET) {
+ 		switch (sopt.optname) {
  
-+#if LINUX_VERSION_CODE < KERNEL_VERSION(5,4,0)
-+#include <linux/pci-aspm.h>
-+#endif
-+
- #include <rtnet_port.h>	/*** RTnet ***/
+-		case SO_RCVTIMEO:
++		case SO_RCVTIMEO_OLD:
+ 			rtipc_ns_to_timeval(&tv, sk->rx_timeout);
+ 			ret = rtipc_put_timeval(fd, sopt.optval, &tv, len);
+ 			if (ret)
+ 				return ret;
+ 			break;
  
- #define RTL8169_VERSION "2.2-04"
-diff --git a/kernel/drivers/net/stack/ipv4/tcp/tcp.c b/kernel/drivers/net/stack/ipv4/tcp/tcp.c
-index b8263e5d23..8fef3ae5b5 100644
---- a/kernel/drivers/net/stack/ipv4/tcp/tcp.c
-+++ b/kernel/drivers/net/stack/ipv4/tcp/tcp.c
-@@ -1762,7 +1762,7 @@ static int rt_tcp_setsockopt(struct rtdm_fd *fd, struct tcp_socket *ts,
- 	    */
- 		return 0;
+-		case SO_SNDTIMEO:
++		case SO_SNDTIMEO_OLD:
+ 			rtipc_ns_to_timeval(&tv, sk->tx_timeout);
+ 			ret = rtipc_put_timeval(fd, sopt.optval, &tv, len);
+ 			if (ret)
+diff --git a/kernel/drivers/ipc/iddp.c b/kernel/drivers/ipc/iddp.c
+index 2a80eba65a..5bb2b85337 100644
+--- a/kernel/drivers/ipc/iddp.c
++++ b/kernel/drivers/ipc/iddp.c
+@@ -712,14 +712,14 @@ static int __iddp_setsockopt(struct iddp_socket *sk,
+ 	if (sopt.level == SOL_SOCKET) {
+ 		switch (sopt.optname) {
  
--	case SO_SNDTIMEO:
-+	case SO_SNDTIMEO_OLD:
- 		if (optlen < sizeof(tv))
- 			return -EINVAL;
- 		if (rtdm_copy_from_user(fd, &tv, optval, sizeof(tv)))
+-		case SO_RCVTIMEO:
++		case SO_RCVTIMEO_OLD:
+ 			ret = rtipc_get_timeval(fd, &tv, sopt.optval, sopt.optlen);
+ 			if (ret)
+ 				return ret;
+ 			sk->rx_timeout = rtipc_timeval_to_ns(&tv);
+ 			break;
+ 
+-		case SO_SNDTIMEO:
++		case SO_SNDTIMEO_OLD:
+ 			ret = rtipc_get_timeval(fd, &tv, sopt.optval, sopt.optlen);
+ 			if (ret)
+ 				return ret;
+@@ -805,14 +805,14 @@ static int __iddp_getsockopt(struct iddp_socket *sk,
+ 	if (sopt.level == SOL_SOCKET) {
+ 		switch (sopt.optname) {
+ 
+-		case SO_RCVTIMEO:
++		case SO_RCVTIMEO_OLD:
+ 			rtipc_ns_to_timeval(&tv, sk->rx_timeout);
+ 			ret = rtipc_put_timeval(fd, sopt.optval, &tv, len);
+ 			if (ret)
+ 				return ret;
+ 			break;
+ 
+-		case SO_SNDTIMEO:
++		case SO_SNDTIMEO_OLD:
+ 			rtipc_ns_to_timeval(&tv, sk->tx_timeout);
+ 			ret = rtipc_put_timeval(fd, sopt.optval, &tv, len);
+ 			if (ret)
+diff --git a/kernel/drivers/ipc/xddp.c b/kernel/drivers/ipc/xddp.c
+index 57275d0c60..2bf26fcaa8 100644
+--- a/kernel/drivers/ipc/xddp.c
++++ b/kernel/drivers/ipc/xddp.c
+@@ -867,7 +867,7 @@ static int __xddp_setsockopt(struct xddp_socket *sk,
+ 	if (sopt.level == SOL_SOCKET) {
+ 		switch (sopt.optname) {
+ 
+-		case SO_RCVTIMEO:
++		case SO_RCVTIMEO_OLD:
+ 			ret = rtipc_get_timeval(fd, &tv, sopt.optval, sopt.optlen);
+ 			if (ret)
+ 				return ret;
+@@ -976,7 +976,7 @@ static int __xddp_getsockopt(struct xddp_socket *sk,
+ 	if (sopt.level == SOL_SOCKET) {
+ 		switch (sopt.optname) {
+ 
+-		case SO_RCVTIMEO:
++		case SO_RCVTIMEO_OLD:
+ 			rtipc_ns_to_timeval(&tv, sk->timeout);
+ 			ret = rtipc_put_timeval(fd, sopt.optval, &tv, len);
+ 			if (ret)
 -- 
 2.26.2
 
