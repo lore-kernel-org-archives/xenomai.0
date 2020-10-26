@@ -1,7 +1,7 @@
 From: Jan Kiszka <jan.kiszka@siemens.com>
-Subject: [PATCH 07/11] drivers/analogy: Fix unintended fallthrough
-Date: Mon, 26 Oct 2020 12:04:53 +0100
-Message-Id: <b6db45b61f1def8e4ca39f388f90802f75f1d0a8.1603710297.git.jan.kiszka@siemens.com>
+Subject: [PATCH 10/11] testsuite/switchtest: Fix help output
+Date: Mon, 26 Oct 2020 12:04:56 +0100
+Message-Id: <6e44b64889bd4922178276ee3aa13379fbfde1db.1603710297.git.jan.kiszka@siemens.com>
 In-Reply-To: <cover.1603710297.git.jan.kiszka@siemens.com>
 References: <cover.1603710297.git.jan.kiszka@siemens.com>
 MIME-Version: 1.0
@@ -19,25 +19,34 @@ Cc: Fino Meng <fino.meng@linux.intel.com>, Mingliang Hu <mingliang.hu@intel.com>
 
 From: Jan Kiszka <jan.kiszka@siemens.com>
 
-Apparently not desired but likely harmless.
+As the Xenomai libs hook into the option parser and hijack --help, we
+need to provide application_usage() in order to get the full help
+printed.
+
+Needs eventually a better fix, i.e. the removal of the implicit parser
+hook.
 
 Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
 ---
- kernel/drivers/analogy/national_instruments/tio_common.c | 1 +
- 1 file changed, 1 insertion(+)
+ testsuite/switchtest/switchtest.c | 5 +++++
+ 1 file changed, 5 insertions(+)
 
-diff --git a/kernel/drivers/analogy/national_instruments/tio_common.c b/kernel/drivers/analogy/national_instruments/tio_common.c
-index feb6f41ca6..bcce728eb5 100644
---- a/kernel/drivers/analogy/national_instruments/tio_common.c
-+++ b/kernel/drivers/analogy/national_instruments/tio_common.c
-@@ -1666,6 +1666,7 @@ static int ni_tio_input_cmd(struct ni_gpct *counter, struct a4l_cmd_desc *cmd)
- 	case TRIG_EXT:
- 		a4l_mite_dma_arm(counter->mite_chan);
- 		retval = ni_tio_arm(counter, 1, cmd->start_arg);
-+		break;
- 	case TRIG_OTHER:
- 		a4l_mite_dma_arm(counter->mite_chan);
- 		break;
+diff --git a/testsuite/switchtest/switchtest.c b/testsuite/switchtest/switchtest.c
+index 015bde653a..f2a5c1601a 100644
+--- a/testsuite/switchtest/switchtest.c
++++ b/testsuite/switchtest/switchtest.c
+@@ -1062,6 +1062,11 @@ static void usage(FILE *fd, const char *progname)
+ 	fprintf(fd, "\n\n");
+ }
+ 
++void application_usage(void)
++{
++	usage(stdout, get_program_name());
++}
++
+ static sigjmp_buf jump;
+ 
+ static void illegal_instruction(int sig)
 -- 
 2.26.2
 
