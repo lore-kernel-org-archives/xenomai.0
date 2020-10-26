@@ -1,7 +1,9 @@
 From: Jan Kiszka <jan.kiszka@siemens.com>
-Subject: [PATCH 00/11] Enable kernel 5.4
-Date: Mon, 26 Oct 2020 12:04:46 +0100
-Message-Id: <cover.1603710297.git.jan.kiszka@siemens.com>
+Subject: [PATCH 03/11] cobalt/x86: Account for FPU changes in kernel 5.2
+Date: Mon, 26 Oct 2020 12:04:49 +0100
+Message-Id: <608c23297c4d35a6f782c5f5ee3b0aca2e05c2fc.1603710297.git.jan.kiszka@siemens.com>
+In-Reply-To: <cover.1603710297.git.jan.kiszka@siemens.com>
+References: <cover.1603710297.git.jan.kiszka@siemens.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
@@ -15,61 +17,103 @@ List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
 To: xenomai@xenomai.org
 Cc: Fino Meng <fino.meng@linux.intel.com>, Mingliang Hu <mingliang.hu@intel.com>
 
-This contains the changes needed to build and run most of Xenomai
-against kernel 5.4 on x86. Other archs still need porting. Furthermore,
-we still need to adjust RTnet and Analogy to some kernel changes.
+From: Jan Kiszka <jan.kiszka@siemens.com>
 
-Jan
+Since that version, the FPU is only updated when returning to userspace.
+This breaks the thread switching expectations of Xenomai because there
+is no update happening when returning to a thread in primary mode or
+when switching in a primary-mode kernel thread.
 
+Account for that by
+ - saving the context when switching out an in-kernel Xenomai thread
+ - restoring the context after switching in a Xenomai thread
+ - invalidate the FPU state variables after returning to a preempted
+   Linux kernel thread that uses the FPU
 
-CC: Fino Meng <fino.meng@linux.intel.com>
+Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
+---
+ kernel/cobalt/arch/x86/thread.c | 46 +++++++++++++++++++++++++++++++++
+ 1 file changed, 46 insertions(+)
 
-Fino Meng (2):
-  cobalt/kernel: adapt adjtime syscall with upstream kernel
-  cobalt/kernel: fix compile error for incompatible pointer type
-
-Jan Kiszka (9):
-  cobalt/x86: Account for FPU changes in kernel 5.2
-  drivers/ipc: Account for renaming of SO_RCVTIMEO/SO_SNDTIMEO
-  driver/net: Update to kernel 5.4
-  wrappers: Add mmiowb stub for kernels >= 5.2
-  drivers/analogy: Fix unintended fallthrough
-  drivers/e1000: Fix unintended fallthrough
-  cobalt/posix: Address -Wimplicit-fallthrough
-  testsuite/switchtest: Fix help output
-  ci: Add x86 5.4 kernel to CI
-
- .gitlab-ci.yml                                |  8 ++++
- include/cobalt/kernel/compat.h                |  4 +-
- include/cobalt/kernel/stat.h                  |  4 +-
- kernel/cobalt/arch/x86/thread.c               | 46 +++++++++++++++++++
- .../include/asm-generic/xenomai/wrappers.h    | 10 ++++
- kernel/cobalt/posix/compat.c                  |  6 +--
- kernel/cobalt/posix/sched.c                   |  5 +-
- kernel/cobalt/posix/signal.c                  |  2 +-
- kernel/cobalt/posix/signal.h                  |  2 +-
- kernel/cobalt/posix/syscall32.c               |  2 +-
- kernel/cobalt/posix/syscall32.h               |  2 +-
- .../analogy/national_instruments/tio_common.c |  1 +
- kernel/drivers/can/rtcan_raw_dev.c            |  2 +-
- kernel/drivers/can/sja1000/rtcan_peak_pci.c   |  5 ++
- kernel/drivers/ipc/bufp.c                     |  9 ++--
- kernel/drivers/ipc/iddp.c                     |  9 ++--
- kernel/drivers/ipc/xddp.c                     |  5 +-
- kernel/drivers/net/drivers/e1000/e1000_hw.c   |  4 +-
- kernel/drivers/net/drivers/e1000/e1000_main.c |  1 +
- kernel/drivers/net/drivers/e1000e/e1000.h     |  1 -
- kernel/drivers/net/drivers/e1000e/netdev.c    |  4 ++
- kernel/drivers/net/drivers/igb/e1000_82575.c  |  4 +-
- kernel/drivers/net/drivers/igb/e1000_phy.c    |  1 +
- kernel/drivers/net/drivers/igb/igb_main.c     |  2 +-
- kernel/drivers/net/drivers/r8169.c            |  5 +-
- kernel/drivers/net/stack/ipv4/tcp/tcp.c       |  2 +-
- kernel/drivers/net/stack/ipv4/udp/udp.c       |  1 +
- kernel/drivers/net/stack/packet/af_packet.c   |  1 +
- testsuite/switchtest/switchtest.c             |  5 ++
- 29 files changed, 124 insertions(+), 29 deletions(-)
-
+diff --git a/kernel/cobalt/arch/x86/thread.c b/kernel/cobalt/arch/x86/thread.c
+index ba807ac1ed..1ed6acb46b 100644
+--- a/kernel/cobalt/arch/x86/thread.c
++++ b/kernel/cobalt/arch/x86/thread.c
+@@ -215,6 +215,21 @@ void xnarch_switch_to(struct xnthread *out, struct xnthread *in)
+ 		 */
+ 		clts();
+ #endif /* ! IPIPE_X86_FPU_EAGER */
++#if LINUX_VERSION_CODE >= KERNEL_VERSION(5,2,0)
++	if (!xnthread_test_state(out, XNROOT | XNUSER) &&
++	    !test_thread_flag(TIF_NEED_FPU_LOAD)) {
++		/*
++		 * This compensates that switch_fpu_prepare ignores kernel
++		 * threads.
++		 */
++		struct fpu *prev_fpu = &prev->thread.fpu;
++
++		if (!copy_fpregs_to_fpstate(prev_fpu))
++			prev_fpu->last_cpu = -1;
++		else
++			prev_fpu->last_cpu = smp_processor_id();
++	}
++#endif
+ 
+ 	next = in_tcb->core.host_task;
+ #ifndef IPIPE_X86_FPU_EAGER
+@@ -260,6 +275,29 @@ void xnarch_switch_to(struct xnthread *out, struct xnthread *in)
+ #ifndef IPIPE_X86_FPU_EAGER
+ 	stts();
+ #endif /* ! IPIPE_X86_FPU_EAGER */
++#if LINUX_VERSION_CODE >= KERNEL_VERSION(5,2,0)
++	/* 
++	 * Refresh 'in', we switch the stacks. However, there might be no
++	 * current thread at this point.
++	 */
++	in = xnthread_current();
++	if (in && !xnthread_test_state(in, XNROOT) &&
++	    test_thread_flag(TIF_NEED_FPU_LOAD)) {
++		/*
++		 * This is open-coded switch_fpu_return but without a test for
++		 * PF_KTHREAD, i.e including kernel threads.
++		 */
++		struct fpu *fpu = &current->thread.fpu;
++		int cpu = smp_processor_id();
++
++		if (!fpregs_state_valid(fpu, cpu)) {
++			copy_kernel_to_fpregs(&fpu->state);
++			fpregs_activate(fpu);
++			fpu->last_cpu = cpu;
++		}
++		clear_thread_flag(TIF_NEED_FPU_LOAD);
++	}
++#endif
+ }
+ 
+ #ifndef IPIPE_X86_FPU_EAGER
+@@ -472,7 +510,11 @@ void xnarch_leave_root(struct xnthread *root)
+ #if LINUX_VERSION_CODE >= KERNEL_VERSION(4,14,0)
+ 	/* restore current's fpregs */
+ 	__cpu_invalidate_fpregs_state();
++#if LINUX_VERSION_CODE >= KERNEL_VERSION(5,2,0)
++	switch_fpu_finish(&current->thread.fpu);
++#else
+ 	switch_fpu_finish(&current->thread.fpu, smp_processor_id());
++#endif
+ #else
+ 	/* mark current thread as not owning the FPU anymore */
+ 	if (fpregs_active())
+@@ -488,6 +530,10 @@ void xnarch_switch_fpu(struct xnthread *from, struct xnthread *to)
+ 		return;
+ 
+ 	copy_kernel_to_fpregs(&to_tcb->kfpu->state);
++#if LINUX_VERSION_CODE >= KERNEL_VERSION(5,2,0)
++	/* redo the invalidation done by kernel_fpu_begin */
++	__cpu_invalidate_fpregs_state();
++#endif
+ 	kernel_fpu_disable();
+ }
+ #endif /* ! IPIPE_X86_FPU_EAGER */
 -- 
 2.26.2
 
