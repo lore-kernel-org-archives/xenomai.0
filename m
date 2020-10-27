@@ -1,11 +1,23 @@
-From: Steffen Diehl <Steffen.Diehl@itk-engineering.de>
-Subject: Cycle duration peaks due to non-real-time processes
-Date: Wed, 7 Oct 2020 13:24:35 +0000
-Message-ID: <774839f147524c299dd2d207b9e3942f@itk-engineering.de>
-Content-Language: de-DE
+Subject: Re: build scripts for the WIP xenomai porting to kernel 5.4
+References: <20201022132522.GA9776@linux.intel.com>
+ <ae889a3f-40c1-d22e-c97b-807fe2ab7b5f@siemens.com>
+ <20201023090407.GA16088@linux.intel.com>
+ <6ca34337-dd2f-3727-a014-f76d6721a647@siemens.com>
+ <20201026081238.GA17437@linux.intel.com>
+ <1b80d6cf-cf5a-dbb7-4e82-1958cd82b212@siemens.com>
+ <20201026082656.GC17437@linux.intel.com>
+ <d1e7422a-2bb9-b9d2-7b57-7a1965721f34@siemens.com>
+ <20201026091520.GA17573@linux.intel.com>
+ <55d22ab5-5c97-5fdb-b3eb-8dc19a7edb45@siemens.com>
+ <20201027052334.GA26663@linux.intel.com>
+From: Jan Kiszka <jan.kiszka@siemens.com>
+Message-ID: <c4d61fbd-b888-c9ea-78bd-5a5617af7a1e@siemens.com>
+Date: Tue, 27 Oct 2020 07:01:34 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
+In-Reply-To: <20201027052334.GA26663@linux.intel.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -14,88 +26,124 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "xenomai@xenomai.org" <xenomai@xenomai.org>
-Cc: Tobias Gassner <Tobias.Gassner@itk-engineering.de>, Tobias Luksch <Tobias.Luksch@itk-engineering.de>, Ricardo Tauro <Ricardo.Tauro@itk-engineering.de>
+To: Fino Meng <fino.meng@linux.intel.com>
+Cc: xenomai@xenomai.org
 
-Dear all,
+On 27.10.20 06:23, Fino Meng wrote:
+>>>>>>> I also tested hackbench:
+>>>>>>>
+>>>>>>> while true ; do sudo taskset -c 1 hackbench -s 512 -l 200 -g 20 -f 50 -P ; done
+>>>>>>>
+>>>>>>> it output errors, but the board is still alive. 
+>>>>>>>
+>>>>>>
+>>>>>> Will check. Was that with my FPU fixes in place already?
+>>>>>>
+>>>>>> Jan
+>>>>>
+>>>>> yes, without the FPU fixes, the board will hang after trigger
+>>>>> hackbench.
+>>>>
+>>>> How long did it run to trigger? Anything happening in parallel? How do
+>>>> the errors look like? Currently running, nothing happened so far.
+>>>>
+>>>> Maybe you can also retry with ipipe-x86-5.4.y.
+>>>>
+>>>> Jan
+>>>>
+>>>
+>>> sounds good, will pull latest code. my board's error print like this,
+>>> nothing parallel, only run a hackbench.
+>>>
+>>> [ 3711.348060] RIP: 0033:0x7f4a7edc9471
+>>> [ 3711.354108] Code: 00 00 75 05 48 83 c4 58 c3 e8 0b 4d ff ff 66 2e 0f 1f 84 00 00 00 00 00 90 8b 05 da ef 00 00 85 c0 75 16 b8 01 00 00 00 0f 05 <48> 3d 00 f0 ff ff 77 57 c3 66 0f 1f 44 00 00 41 54 49 89 d4 55 48
+>>> [ 3711.377358] RSP: 002b:00007ffe59265888 EFLAGS: 00000246 ORIG_RAX: 0000000000000001
+>>> [ 3711.388126] RAX: ffffffffffffffda RBX: 0000000000000200 RCX: 00007f4a7edc9471
+>>> [ 3711.398415] RDX: 0000000000000200 RSI: 00007ffe59265890 RDI: 0000000000000014
+>>> [ 3711.408711] RBP: 00007ffe59265ae0 R08: 00007ffe592657e0 R09: 00007f4a7edd42f0
+>>> [ 3711.419019] R10: fffffffffffff8d7 R11: 0000000000000246 R12: 00007ffe59265890
+>>> [ 3711.429338] R13: 000000000000000c R14: 00005644c8742a20 R15: 0000000000000000
+>>> [ 3711.439678] hackbench       R  running task        0  2381    627 0x00000000
+>>> [ 3711.449928] Call Trace:
+>>> [ 3711.455031]  __schedule+0x34d/0x790
+>>> [ 3711.461305]  ? try_to_wake_up+0x8b/0x6b0
+>>> [ 3711.468067]  ? ___preempt_schedule+0x16/0x20
+>>> [ 3711.475219]  preempt_schedule_common+0x74/0x80
+>>> [ 3711.482568]  ___preempt_schedule+0x16/0x20
+>>> [ 3711.489531]  _raw_spin_unlock_irqrestore+0x36/0x40
+>>> [ 3711.497268]  __wake_up_common_lock+0x92/0xc0
+>>> [ 3711.504295]  sock_def_readable+0x41/0x80
+>>> [ 3711.510830]  unix_stream_sendmsg+0x231/0x3c0
+>>> [ 3711.517743]  sock_sendmsg+0x5b/0x60
+>>> [ 3711.523763]  sock_write_iter+0x97/0x100
+>>> [ 3711.530167]  new_sync_write+0x11b/0x1b0
+>>> [ 3711.536554]  vfs_write+0xa5/0x1a0
+>>> [ 3711.542337]  ksys_write+0x59/0xd0
+>>> [ 3711.548100]  do_syscall_64+0x66/0x180
+>>> [ 3711.554232]  entry_SYSCALL_64_after_hwframe+0x44/0xa9
+>>> [ 3711.561932] RIP: 0033:0x7f4a7edc9471
+>>> [ 3711.567977] Code: 00 00 75 05 48 83 c4 58 c3 e8 0b 4d ff ff 66 2e 0f 1f 84 00 00 00 00 00 90 8b 05 da ef 00 00 85 c0 75 16 b8 01 00 00 00 0f 05 <48> 3d 00 f0 ff ff 77 57 c3 66 0f 1f 44 00 00 41 54 49 89 d4 55 48
+>>> [ 3711.591216] RSP: 002b:00007ffe59265888 EFLAGS: 00000246 ORIG_RAX: 0000000000000001
+>>> [ 3711.601984] RAX: ffffffffffffffda RBX: 0000000000000200 RCX: 00007f4a7edc9471
+>>> [ 3711.612276] RDX: 0000000000000200 RSI: 00007ffe59265890 RDI: 000000000000001a
+>>> [ 3711.622577] RBP: 00007ffe59265ae0 R08: 00007ffe592657e0 R09: 00007f4a7edd42f0
+>>> [ 3711.632885] R10: fffffffffffff8d7 R11: 0000000000000246 R12: 00007ffe59265890
+>>> [ 3711.643206] R13: 0000000000000012 R14: 00005644c8742a20 R15: 0000000000000000
+>>> [ 3711.653541] hackbench       R  running task        0  2382    627 0x00000000
+>>> [ 3711.663797] Call Trace:
+>>> [ 3711.668897]  __schedule+0x34d/0x790
+>>> [ 3711.675165]  ? try_to_wake_up+0x8b/0x6b0
+>>> [ 3711.681924]  ? ___preempt_schedule+0x16/0x20
+>>> [ 3711.689085]  preempt_schedule_common+0x74/0x80
+>>> [ 3711.696427]  ___preempt_schedule+0x16/0x20
+>>> [ 3711.703377]  _raw_spin_unlock_irqrestore+0x36/0x40
+>>> [ 3711.710985]  __wake_up_common_lock+0x92/0xc0
+>>> [ 3711.717901]  sock_def_readable+0x41/0x80
+>>> [ 3711.724414]  unix_stream_sendmsg+0x231/0x3c0
+>>> [ 3711.731306]  sock_sendmsg+0x5b/0x60
+>>> [ 3711.737311]  sock_write_iter+0x97/0x100
+>>> [ 3711.743693]  new_sync_write+0x11b/0x1b0
+>>> [ 3711.750061]  vfs_write+0xa5/0x1a0
+>>> [ 3711.755829]  ksys_write+0x59/0xd0
+>>> [ 3711.761574]  do_syscall_64+0x66/0x180
+>>> [ 3711.767709]  entry_SYSCALL_64_after_hwframe+0x44/0xa9
+>>> [ 3711.775409] RIP: 0033:0x7f4a7edc9471
+>>>
+>>>
+>>
+>> Could you send me your config if the issue persists with the latest version?
+>>
+>> TIA,
+>> Jan
+>>
+> 
+> latest ipipe-x86 + xenomai-next behaves much better than my previous
+> build, but still print similar error.
+> 
+> "hackbench -s 512 -l 200 -g 20 -f 50 -P" don't give error, which just
+> run once.
+> 
+> "while true; do taskset -c 1 hackbench -s 512 -l 200 -g 20 -f 50 -P;
+> done" will give error, it will keep folking and system pressure will bigger
+> and bigger; the way to stop it is keep pressing Ctrl-C. We use this
+> script as a torture method. 
+> 
+> the error appears in dmesg, after the script run for sometime. Test hardware
+> is UP Xtreme board (WHL8365UE).
+> 
+> I tested this script on Debian 10's original 4.19 kernel, no such error
+> appears in dmesg.
 
-for a medical device we have a real time application which runs at cpu core=
-s 1,2,3 (they are isolated and used only by the application as shown in Dyn=
-amic Boot Parameters).
-A cyclic and high prioritized xenomai thread of the application runs at cpu=
- core 1. The cycle duration of the thread is monitored by the SW itself and=
- can be saved to disk for later analysis.
+I'm also getting this, but first an OOM. I gave 4G to that machine, do
+you have more?
 
-If there is no extra load, the cycle duration is about 0.55...0.6 ms, but i=
-f a ssh login, a scp from/to the system is executed or a file copy on disk =
-(e.g. via dd) happens, the cycle duration increases sharply, as shown in th=
-e figure bellow.
-A high cpu load like "sha1sum /dev/zero" produces no peak of the cycle dura=
-tion.
+Does the issue also happen with the same kernel when I-pipe is off?
 
-[cid:image002.jpg@01D69CBD.F5939450]
+Turning on debugging knobs now.
 
-Do you know the reasons for these strong increases in cycle duration? Is th=
-ere a way to limit the influence of these non-real-time processes on our re=
-al-time application?
+Jan
 
-System configuration:
+-- 
+Siemens AG, T RDA IOT
+Corporate Competence Center Embedded Linux
 
-  *   Main Processor architekture:
-     *   Linux 4.14.89-xenomai-3.0.8-cobalt #1 SMP PREEMPT x86_64 x86_64 x8=
-6_64 GNU/Linux
-  *   Kernel:
-     *   4.14.89-xenomai-3.0.8-cobalt
-  *   Config knobs:
-     *   Build args: --prefix=3D/usr/xenomai-3.0.8-cobalt --with-core=3Dcob=
-alt --enable-pshared --enable-smp
-  *   I-pipe core release number:
-     *   2
-  *   OS:
-     *   Ubuntu 18.04 LTS bionic
-  *   CPU:
-     *   CPU Intel(R) Core(TM) i7-6820EQ CPU @ 2.80GHz (4 physical cores, h=
-yper threading deactivated)
-  *   Dynamic Boot Parameters:
-     *   BOOT_IMAGE=3D/boot/vmlinuz-4.14.89-xenomai-3.0.8-cobalt root=3DUUI=
-D=3De50978cf-72c7-11e8-ba28-000babbcd619 ro xenomai.allowed_group=3D1005 is=
-olcpus=3D1,2,3 xenomai.sysheap_size=3D1024
-
-Best regards and thank you very much for your help,
-
-Steffen Diehl
-
---
-Steffen Diehl, M.Sc.
-Medical Systems Engineering
-
-ITK Engineering GmbH
-Im Speyerer Tal 6
-76761 R=FClzheim
-
-Tel.: +49 7272 7703-764
-Fax: +49 7272 7703-100
-
-mailto:steffen.diehl@itk-engineering.de
-_____________________________________________________________
-ITK Engineering GmbH  Im Speyerer Tal 6  76761 R=FClzheim
-Tel.: +49 7272 7703-0   Fax: +49 7272 7703-100
-mailto:info@itk-engineering.de   http://www.itk-engineering.de<http://www.i=
-tk-engineering.de/>
-
-Vorsitzender des Aufsichtsrats/Chairman of the Supervisory Board:
-Dr. Rudolf Maier
-Gesch=E4ftsf=FChrung/Executive Board:
-Michael Englert (Vorsitzender/Chairman), Bernd Gohlicke
-Sitz der Gesellschaft/Registered Office: 76761 R=FClzheim
-Registergericht/Registered Court: Amtsgericht Landau, HRB 32046
-USt.-ID-Nr./VAT-ID-No. DE 813165046
-
--------------- next part --------------
-A non-text attachment was scrubbed...
-Name: image002.jpg
-Type: image/jpeg
-Size: 46487 bytes
-Desc: image002.jpg
-URL: <http://xenomai.org/pipermail/xenomai/attachments/20201007/7ee92a21/at=
-tachment.jpg>
