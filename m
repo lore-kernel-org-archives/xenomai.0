@@ -1,12 +1,14 @@
+Subject: Re: [PATCH 01/11] cobalt/kernel: adapt adjtime syscall with upstream
+ kernel
+References: <cover.1603710297.git.jan.kiszka@siemens.com>
+ <844c57389ef1795bac7ef2e00fbf6370b5ac42a7.1603710297.git.jan.kiszka@siemens.com>
+From: chensong <chensong@tj.kylinos.cn>
+Message-ID: <5F9774FC.1000505@tj.kylinos.cn>+3791F346D2657039
+Date: Tue, 27 Oct 2020 09:16:44 +0800
 MIME-Version: 1.0
-References: <d0dbd921-5127-0acc-a1df-ab5b173b7b00@siemens.com>
- <20201026082352.GB17437@linux.intel.com>
-In-Reply-To: <20201026082352.GB17437@linux.intel.com>
-From: Greg Gallagher <greg@embeddedgreg.com>
-Date: Mon, 26 Oct 2020 09:45:07 -0400
-Message-ID: <CALLqZ8RptPrOTccwKSU-L2ee0dYeuyJfZYaTRLTgbAdXM5W8vQ@mail.gmail.com>
-Subject: Re: Kernel 5.4 status
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <844c57389ef1795bac7ef2e00fbf6370b5ac42a7.1603710297.git.jan.kiszka@siemens.com>
+Content-Type: text/plain; charset="utf-8"; format="flowed"
+Content-Transfer-Encoding: 8bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,62 +17,112 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Fino Meng <fino.meng@linux.intel.com>
-Cc: Jan Kiszka <jan.kiszka@siemens.com>, "Xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Jan Kiszka <jan.kiszka@siemens.com>, xenomai@xenomai.org
+Cc: Mingliang Hu <mingliang.hu@intel.com>
 
-On Mon, Oct 26, 2020 at 4:25 AM Fino Meng via Xenomai
-<xenomai@xenomai.org> wrote:
+
+
+On 2020年10月26日 19:04, Jan Kiszka via Xenomai wrote:
+> From: Fino Meng <fino.meng@linux.intel.com>
 >
-> On Mon, Oct 26, 2020 at 08:54:54AM +0100, Jan Kiszka via Xenomai wrote:
-> > Hi all,
-> >
-> > a brief update on the porting status to 5.4:
-> >
-> > - new noarch ipipe/master is ready:
-> >
-> >   https://gitlab.denx.de/Xenomai/ipipe-noarch/-/commits/ipipe/master
-> >
-> >   I've regenerated the queue from Fino's work, reviewing conflict
-> >   resolutions once again. No issues found, well done! I've only done a
-> >   few cleanups and added missing patches from the latest 4.19-noarch.
-> >
-> >   This should now be a reasonable baseline for porting other archs.
-> >
-> > - x86 5.4 branch is also ready:
-> >
-> >   https://gitlab.denx.de/Xenomai/ipipe-x86/-/commits/ipipe-x86-5.4.y
-> >
-> >   Here I added the FPU changes, fixing the hard-irqs mask leak and
-> >   hardening an additionally needed path (fpu__clear). I've also done a
-> >   full merge conflict review, and I think I found and fixed issues in
-> >   the kvm code. Still untested, though. I've cleaned up the GTOD update.
-> >   I furthermore fixed missing hard-irqs reenabling in some page-fault
-> >   paths. And added latest x86 patches from 4.19.
-> >
-> > - Xenomai next is almost ready:
-> >
-> >   https://gitlab.denx.de/Xenomai/xenomai/-/commits/next
-> >
-> >   RTnet and Analogy are not building ATM. That still breaks CI. But the
-> >   result is otherwise working fine, at least in QEMU/KVM. More tests
-> >   welcome!
-> >
-> > Jan
-> >
+> compat_timex related definitions moved from compat code into normal timekeeping code.
+> see 4d5f007e in upstream Linux kernel.
 >
-> Thanks Jan, and great team work! We really need Xenomai on newest Linux
-> kenrel, not only used as bare metal, also working as RTVM in ACRN. We
-> will contribute more on Xenomai and Dovetail.
+> Signed-off-by: Fino Meng <fino.meng@linux.intel.com>
+> Signed-off-by: Mingliang Hu <mingliang.hu@intel.com>
+> [Jan: account for older kernel versions]
+> Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
+> ---
+>   include/cobalt/kernel/compat.h                       | 4 ++--
+>   kernel/cobalt/include/asm-generic/xenomai/wrappers.h | 4 ++++
+>   kernel/cobalt/posix/compat.c                         | 4 ++--
+>   kernel/cobalt/posix/syscall32.c                      | 2 +-
+>   kernel/cobalt/posix/syscall32.h                      | 2 +-
+>   5 files changed, 10 insertions(+), 6 deletions(-)
 >
-> BR fino
+> diff --git a/include/cobalt/kernel/compat.h b/include/cobalt/kernel/compat.h
+> index 05754cba89..c9cb84f721 100644
+> --- a/include/cobalt/kernel/compat.h
+> +++ b/include/cobalt/kernel/compat.h
+> @@ -105,9 +105,9 @@ int sys32_put_timeval(struct compat_timeval __user *ctv,
+>   		      const struct timeval *tv);
 >
-> > --
-> > Siemens AG, T RDA IOT
-> > Corporate Competence Center Embedded Linux
-> >
+>   int sys32_get_timex(struct timex *tx,
+> -		    const struct compat_timex __user *ctx);
+> +		    const struct old_timex32 __user *ctx);
+>
+> -int sys32_put_timex(struct compat_timex __user *ctx,
+> +int sys32_put_timex(struct old_timex32 __user *ctx,
+>   		    const struct timex *tx);
+>
+>   ssize_t sys32_get_fdset(fd_set *fds, const compat_fd_set __user *cfds,
+> diff --git a/kernel/cobalt/include/asm-generic/xenomai/wrappers.h b/kernel/cobalt/include/asm-generic/xenomai/wrappers.h
+> index 23993dcc15..de5a992850 100644
+> --- a/kernel/cobalt/include/asm-generic/xenomai/wrappers.h
+> +++ b/kernel/cobalt/include/asm-generic/xenomai/wrappers.h
+> @@ -156,4 +156,8 @@ devm_hwmon_device_register_with_groups(struct device *dev, const char *name,
+>   #error "Xenomai/cobalt requires Linux kernel 3.10 or above"
+>   #endif /* < 3.10 */
+>
+> +#if LINUX_VERSION_CODE < KERNEL_VERSION(5,1,0)
+> +#define old_timex32		compat_timex
+> +#endif
+> +
+>   #endif /* _COBALT_ASM_GENERIC_WRAPPERS_H */
+> diff --git a/kernel/cobalt/posix/compat.c b/kernel/cobalt/posix/compat.c
+> index 17968bff1d..a31ec04578 100644
+> --- a/kernel/cobalt/posix/compat.c
+> +++ b/kernel/cobalt/posix/compat.c
+> @@ -81,7 +81,7 @@ int sys32_put_timeval(struct compat_timeval __user *ctv,
+>   EXPORT_SYMBOL_GPL(sys32_put_timeval);
+>
+>   int sys32_get_timex(struct timex *tx,
+> -		    const struct compat_timex __user *ctx)
+> +		    const struct old_timex32 __user *ctx)
+>   {
+>   	memset(tx, 0, sizeof(*tx));
+>
+> @@ -112,7 +112,7 @@ int sys32_get_timex(struct timex *tx,
+>   }
+>   EXPORT_SYMBOL_GPL(sys32_get_timex);
+>
+> -int sys32_put_timex(struct compat_timex __user *ctx,
+> +int sys32_put_timex(struct old_timex32 __user *ctx,
+>   		    const struct timex *tx)
+>   {
+>   	if (!access_wok(ctx, sizeof(*ctx)) ||
+> diff --git a/kernel/cobalt/posix/syscall32.c b/kernel/cobalt/posix/syscall32.c
+> index faa7ef53a6..c2fd6a1e05 100644
+> --- a/kernel/cobalt/posix/syscall32.c
+> +++ b/kernel/cobalt/posix/syscall32.c
+> @@ -172,7 +172,7 @@ COBALT_SYSCALL32emu(clock_settime, current,
+>   }
+>
+>   COBALT_SYSCALL32emu(clock_adjtime, current,
+> -		    (clockid_t clock_id, struct compat_timex __user *u_tx))
+> +		    (clockid_t clock_id, struct old_timex32 __user *u_tx))
+>   {
+>   	struct timex tx;
+>   	int ret;
+> diff --git a/kernel/cobalt/posix/syscall32.h b/kernel/cobalt/posix/syscall32.h
+> index 34904f96bd..eb3e4bd300 100644
+> --- a/kernel/cobalt/posix/syscall32.h
+> +++ b/kernel/cobalt/posix/syscall32.h
+> @@ -65,7 +65,7 @@ COBALT_SYSCALL32emu_DECL(clock_settime,
+>
+>   COBALT_SYSCALL32emu_DECL(clock_adjtime,
+>   			 (clockid_t clock_id,
+> -			  struct compat_timex __user *u_tx));
+> +			  struct old_timex32 __user *u_tx));
+>
+>   COBALT_SYSCALL32emu_DECL(clock_nanosleep,
+>   			 (clockid_t clock_id, int flags,
 >
 
-Great work, I'll start getting braches up for arm and arm64 development ready.
+After 5.4 is ready, i will try to verify it on arm, meanwhile, i also 
+need to have a look how musl works for xenomai.
 
--Greg
+chensong
+
+
 
