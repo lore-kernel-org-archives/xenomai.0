@@ -1,12 +1,14 @@
-From: "Chen, Hongzhan" <hongzhan.chen@intel.com>
-Subject: [PATCH v3][wip/dovetail] cobalt/sched: init RESCHEDULE_OOB_IPI and
- register interrupt handler
-Date: Wed, 28 Oct 2020 08:07:45 +0000
-Message-ID: <MWHPR11MB17109943F4C74CFDF7F1B009F2170@MWHPR11MB1710.namprd11.prod.outlook.com>
-Content-Language: en-US
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+Subject: Re: [PATCH v3][wip/dovetail] cobalt/sched: init RESCHEDULE_OOB_IPI
+ and register interrupt handler
+References: <MWHPR11MB17109943F4C74CFDF7F1B009F2170@MWHPR11MB1710.namprd11.prod.outlook.com>
+From: Jan Kiszka <jan.kiszka@siemens.com>
+Message-ID: <4393f449-8ccb-4ee8-816e-5a17981bbc34@siemens.com>
+Date: Wed, 28 Oct 2020 09:22:19 +0100
 MIME-Version: 1.0
+In-Reply-To: <MWHPR11MB17109943F4C74CFDF7F1B009F2170@MWHPR11MB1710.namprd11.prod.outlook.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,41 +17,97 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jan Kiszka <jan.kiszka@siemens.com>, "Xenomai@xenomai.org" <xenomai@xenomai.org>
+To: "Chen, Hongzhan" <hongzhan.chen@intel.com>, "Xenomai@xenomai.org" <xenomai@xenomai.org>
 
-Y3JlYXRlIGFuZCByZWdpc3RlciBSRVNDSEVEVUxFX09PQl9JUEkgaW50ZXJydXB0IGhhbmRsZXIN
-Cg0KU2lnbmVkLW9mZi1ieTogaG9uZ3poYTEgPGhvbmd6aGFuLmNoZW5AaW50ZWwuY29tPg0KDQpk
-aWZmIC0tZ2l0IGEva2VybmVsL2NvYmFsdC9zY2hlZC5jIGIva2VybmVsL2NvYmFsdC9zY2hlZC5j
-DQppbmRleCBmMzliZWNiOTAuLjM2ZWZmMDlkNCAxMDA2NDQNCi0tLSBhL2tlcm5lbC9jb2JhbHQv
-c2NoZWQuYw0KKysrIGIva2VybmVsL2NvYmFsdC9zY2hlZC5jDQpAQCAtMzAsNiArMzAsMTMgQEAN
-CiAjZGVmaW5lIENSRUFURV9UUkFDRV9QT0lOVFMNCiAjaW5jbHVkZSA8dHJhY2UvZXZlbnRzL2Nv
-YmFsdC1jb3JlLmg+DQogDQorc3RydWN0IHhuX21hY2hpbmVfY3B1ZGF0YSB7DQorfTsNCisNCitE
-RUZJTkVfUEVSX0NQVShzdHJ1Y3QgeG5fbWFjaGluZV9jcHVkYXRhLCB4bl9tYWNoaW5lX2NwdWRh
-dGEpOw0KKw0KK3N0YXRpYyB2b2lkIHhuc2NoZWRfZGVzdHJveShzdHJ1Y3QgeG5zY2hlZCAqc2No
-ZWQpOw0KKw0KIC8qKg0KICAqIEBpbmdyb3VwIGNvYmFsdF9jb3JlDQogICogQGRlZmdyb3VwIGNv
-YmFsdF9jb3JlX3NjaGVkIFRocmVhZCBzY2hlZHVsaW5nIGNvbnRyb2wNCkBAIC0yMjQsMTAgKzIz
-MSwxOCBAQCBzdGF0aWMgdm9pZCB4bnNjaGVkX2luaXQoc3RydWN0IHhuc2NoZWQgKnNjaGVkLCBp
-bnQgY3B1KQ0KICNlbmRpZiAvKiBDT05GSUdfWEVOT19PUFRfV0FUQ0hET0cgKi8NCiB9DQogDQor
-c3RhdGljIGlycXJldHVybl90IHJlc2NoZWR1bGVfaW50ZXJydXB0KGludCBpcnEsIHZvaWQgKmRl
-dl9pZCkNCit7DQorCV9feG5zY2hlZF9ydW5faGFuZGxlcigpOw0KKw0KKwlyZXR1cm4gSVJRX0hB
-TkRMRUQ7DQorfQ0KKw0KIHZvaWQgeG5zY2hlZF9pbml0X2FsbCh2b2lkKQ0KIHsNCiAJc3RydWN0
-IHhuc2NoZWQgKnNjaGVkOw0KIAlpbnQgY3B1Ow0KKwlpbnQgcmV0Ow0KIA0KIAlmb3JfZWFjaF9v
-bmxpbmVfY3B1KGNwdSkgew0KIAkJc2NoZWQgPSAmcGVyX2NwdShua3NjaGVkLCBjcHUpOw0KQEAg
-LTIzNSwxMiArMjUwLDIyIEBAIHZvaWQgeG5zY2hlZF9pbml0X2FsbCh2b2lkKQ0KIAl9DQogDQog
-I2lmZGVmIENPTkZJR19TTVANCi0jd2FybmluZyBUT0RPDQotLyoJaXBpcGVfcmVxdWVzdF9pcnEo
-Jnhuc2NoZWRfcmVhbHRpbWVfZG9tYWluLA0KLQkJCSAgSVBJUEVfUkVTQ0hFRFVMRV9JUEksDQot
-CQkJICAoaXBpcGVfaXJxX2hhbmRsZXJfdClfX3huc2NoZWRfcnVuX2hhbmRsZXIsDQotCQkJICBO
-VUxMLCBOVUxMKTsqLw0KKwlyZXQgPSBfX3JlcXVlc3RfcGVyY3B1X2lycShSRVNDSEVEVUxFX09P
-Ql9JUEksDQorCQkJcmVzY2hlZHVsZV9pbnRlcnJ1cHQsDQorCQkJSVJRRl9PT0IsDQorCQkJIlhl
-bm9tYWkgcmVzY2hlZHVsZSIsDQorCQkJJnhuX21hY2hpbmVfY3B1ZGF0YSk7DQorCWlmIChyZXQp
-DQorCQlnb3RvIGNsZWFudXBfc2NoZWQ7DQogI2VuZGlmDQorCXJldHVybjsNCisNCitjbGVhbnVw
-X3NjaGVkOg0KKwlmb3JfZWFjaF9vbmxpbmVfY3B1KGNwdSkgew0KKwkJc2NoZWQgPSB4bnNjaGVk
-X3N0cnVjdChjcHUpOw0KKwkJeG5zY2hlZF9kZXN0cm95KHNjaGVkKTsNCisJfQ0KKw0KIH0NCiAN
-CiBzdGF0aWMgdm9pZCB4bnNjaGVkX2Rlc3Ryb3koc3RydWN0IHhuc2NoZWQgKnNjaGVkKQ0KQEAg
-LTI2Miw4ICsyODcsNyBAQCB2b2lkIHhuc2NoZWRfZGVzdHJveV9hbGwodm9pZCkNCiAJc3BsX3Qg
-czsNCiANCiAjaWZkZWYgQ09ORklHX1NNUA0KLSN3YXJuaW5nIFRPRE8NCi0vLwlpcGlwZV9mcmVl
-X2lycSgmeG5zY2hlZF9yZWFsdGltZV9kb21haW4sIElQSVBFX1JFU0NIRURVTEVfSVBJKTsNCisJ
-ZnJlZV9wZXJjcHVfaXJxKFJFU0NIRURVTEVfT09CX0lQSSwgJnhuX21hY2hpbmVfY3B1ZGF0YSk7
-DQogI2VuZGlmDQogDQogCXhubG9ja19nZXRfaXJxc2F2ZSgmbmtsb2NrLCBzKTsNCi0tIA0KMi4x
-Ny4xDQoNCg==
+On 28.10.20 09:07, Chen, Hongzhan wrote:
+> create and register RESCHEDULE_OOB_IPI interrupt handler
+> 
+> Signed-off-by: hongzha1 <hongzhan.chen@intel.com>
+> 
+> diff --git a/kernel/cobalt/sched.c b/kernel/cobalt/sched.c
+> index f39becb90..36eff09d4 100644
+> --- a/kernel/cobalt/sched.c
+> +++ b/kernel/cobalt/sched.c
+> @@ -30,6 +30,13 @@
+>  #define CREATE_TRACE_POINTS
+>  #include <trace/events/cobalt-core.h>
+>  
+> +struct xn_machine_cpudata {
+> +};
+> +
+> +DEFINE_PER_CPU(struct xn_machine_cpudata, xn_machine_cpudata);
+> +
+> +static void xnsched_destroy(struct xnsched *sched);
+> +
+>  /**
+>   * @ingroup cobalt_core
+>   * @defgroup cobalt_core_sched Thread scheduling control
+> @@ -224,10 +231,18 @@ static void xnsched_init(struct xnsched *sched, int cpu)
+>  #endif /* CONFIG_XENO_OPT_WATCHDOG */
+>  }
+>  
+> +static irqreturn_t reschedule_interrupt(int irq, void *dev_id)
+> +{
+> +	__xnsched_run_handler();
+> +
+> +	return IRQ_HANDLED;
+> +}
+> +
+>  void xnsched_init_all(void)
+>  {
+>  	struct xnsched *sched;
+>  	int cpu;
+> +	int ret;
+>  
+>  	for_each_online_cpu(cpu) {
+>  		sched = &per_cpu(nksched, cpu);
+> @@ -235,12 +250,22 @@ void xnsched_init_all(void)
+>  	}
+>  
+>  #ifdef CONFIG_SMP
+> -#warning TODO
+> -/*	ipipe_request_irq(&xnsched_realtime_domain,
+> -			  IPIPE_RESCHEDULE_IPI,
+> -			  (ipipe_irq_handler_t)__xnsched_run_handler,
+> -			  NULL, NULL);*/
+> +	ret = __request_percpu_irq(RESCHEDULE_OOB_IPI,
+> +			reschedule_interrupt,
+> +			IRQF_OOB,
+> +			"Xenomai reschedule",
+> +			&xn_machine_cpudata);
+> +	if (ret)
+> +		goto cleanup_sched;
+>  #endif
+> +	return;
+> +
+> +cleanup_sched:
+> +	for_each_online_cpu(cpu) {
+> +		sched = xnsched_struct(cpu);
+> +		xnsched_destroy(sched);
+> +	}
+> +
+>  }
+>  
+>  static void xnsched_destroy(struct xnsched *sched)
+> @@ -262,8 +287,7 @@ void xnsched_destroy_all(void)
+>  	spl_t s;
+>  
+>  #ifdef CONFIG_SMP
+> -#warning TODO
+> -//	ipipe_free_irq(&xnsched_realtime_domain, IPIPE_RESCHEDULE_IPI);
+> +	free_percpu_irq(RESCHEDULE_OOB_IPI, &xn_machine_cpudata);
+>  #endif
+>  
+>  	xnlock_get_irqsave(&nklock, s);
+> 
+
+Please update all your pending patches accordingly and send them in one
+series.
+
+Thanks,
+Jan
+
+-- 
+Siemens AG, T RDA IOT
+Corporate Competence Center Embedded Linux
 
