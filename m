@@ -1,9 +1,12 @@
+From: "Chen, Hongzhan" <hongzhan.chen@intel.com>
+Subject: [PATCH v3][wip/dovetail] cobalt/sched: init RESCHEDULE_OOB_IPI and
+ register interrupt handler
+Date: Wed, 28 Oct 2020 08:07:45 +0000
+Message-ID: <MWHPR11MB17109943F4C74CFDF7F1B009F2170@MWHPR11MB1710.namprd11.prod.outlook.com>
+Content-Language: en-US
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-From: John Ho <johnho26@gmail.com>
-Date: Tue, 27 Oct 2020 18:26:22 +0100
-Message-ID: <CAMjL99JY9ZYCdgZnMLhfaiSsvJ_m5uESZYw67UAWMKxRX_04gA@mail.gmail.com>
-Subject: Issue to start orocos on Xenomai
-Content-Type: text/plain; charset="UTF-8"
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -12,39 +15,41 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
+To: Jan Kiszka <jan.kiszka@siemens.com>, "Xenomai@xenomai.org" <xenomai@xenomai.org>
 
-Hi all, I wish to ask for some help with orocos that is patched with
-xenomai. I was able to compile Orocos with xenomai integration, however, I
-face an issue whenever I start deployer-corba-xenomai. When i start
-deployer-xenomai, it works like default deployer, whereby i am allowed to
-input commands in. However when i start deployer-corba-xenomai, I encounter
-this issue where it only shows : Real-time memory: ******* bytes free of
-******** allocated. Nothing else will show after that part. I am unsure
-where i could have gone wrong with the installation since i did not get any
-error message from catkin build.
+Y3JlYXRlIGFuZCByZWdpc3RlciBSRVNDSEVEVUxFX09PQl9JUEkgaW50ZXJydXB0IGhhbmRsZXIN
+Cg0KU2lnbmVkLW9mZi1ieTogaG9uZ3poYTEgPGhvbmd6aGFuLmNoZW5AaW50ZWwuY29tPg0KDQpk
+aWZmIC0tZ2l0IGEva2VybmVsL2NvYmFsdC9zY2hlZC5jIGIva2VybmVsL2NvYmFsdC9zY2hlZC5j
+DQppbmRleCBmMzliZWNiOTAuLjM2ZWZmMDlkNCAxMDA2NDQNCi0tLSBhL2tlcm5lbC9jb2JhbHQv
+c2NoZWQuYw0KKysrIGIva2VybmVsL2NvYmFsdC9zY2hlZC5jDQpAQCAtMzAsNiArMzAsMTMgQEAN
+CiAjZGVmaW5lIENSRUFURV9UUkFDRV9QT0lOVFMNCiAjaW5jbHVkZSA8dHJhY2UvZXZlbnRzL2Nv
+YmFsdC1jb3JlLmg+DQogDQorc3RydWN0IHhuX21hY2hpbmVfY3B1ZGF0YSB7DQorfTsNCisNCitE
+RUZJTkVfUEVSX0NQVShzdHJ1Y3QgeG5fbWFjaGluZV9jcHVkYXRhLCB4bl9tYWNoaW5lX2NwdWRh
+dGEpOw0KKw0KK3N0YXRpYyB2b2lkIHhuc2NoZWRfZGVzdHJveShzdHJ1Y3QgeG5zY2hlZCAqc2No
+ZWQpOw0KKw0KIC8qKg0KICAqIEBpbmdyb3VwIGNvYmFsdF9jb3JlDQogICogQGRlZmdyb3VwIGNv
+YmFsdF9jb3JlX3NjaGVkIFRocmVhZCBzY2hlZHVsaW5nIGNvbnRyb2wNCkBAIC0yMjQsMTAgKzIz
+MSwxOCBAQCBzdGF0aWMgdm9pZCB4bnNjaGVkX2luaXQoc3RydWN0IHhuc2NoZWQgKnNjaGVkLCBp
+bnQgY3B1KQ0KICNlbmRpZiAvKiBDT05GSUdfWEVOT19PUFRfV0FUQ0hET0cgKi8NCiB9DQogDQor
+c3RhdGljIGlycXJldHVybl90IHJlc2NoZWR1bGVfaW50ZXJydXB0KGludCBpcnEsIHZvaWQgKmRl
+dl9pZCkNCit7DQorCV9feG5zY2hlZF9ydW5faGFuZGxlcigpOw0KKw0KKwlyZXR1cm4gSVJRX0hB
+TkRMRUQ7DQorfQ0KKw0KIHZvaWQgeG5zY2hlZF9pbml0X2FsbCh2b2lkKQ0KIHsNCiAJc3RydWN0
+IHhuc2NoZWQgKnNjaGVkOw0KIAlpbnQgY3B1Ow0KKwlpbnQgcmV0Ow0KIA0KIAlmb3JfZWFjaF9v
+bmxpbmVfY3B1KGNwdSkgew0KIAkJc2NoZWQgPSAmcGVyX2NwdShua3NjaGVkLCBjcHUpOw0KQEAg
+LTIzNSwxMiArMjUwLDIyIEBAIHZvaWQgeG5zY2hlZF9pbml0X2FsbCh2b2lkKQ0KIAl9DQogDQog
+I2lmZGVmIENPTkZJR19TTVANCi0jd2FybmluZyBUT0RPDQotLyoJaXBpcGVfcmVxdWVzdF9pcnEo
+Jnhuc2NoZWRfcmVhbHRpbWVfZG9tYWluLA0KLQkJCSAgSVBJUEVfUkVTQ0hFRFVMRV9JUEksDQot
+CQkJICAoaXBpcGVfaXJxX2hhbmRsZXJfdClfX3huc2NoZWRfcnVuX2hhbmRsZXIsDQotCQkJICBO
+VUxMLCBOVUxMKTsqLw0KKwlyZXQgPSBfX3JlcXVlc3RfcGVyY3B1X2lycShSRVNDSEVEVUxFX09P
+Ql9JUEksDQorCQkJcmVzY2hlZHVsZV9pbnRlcnJ1cHQsDQorCQkJSVJRRl9PT0IsDQorCQkJIlhl
+bm9tYWkgcmVzY2hlZHVsZSIsDQorCQkJJnhuX21hY2hpbmVfY3B1ZGF0YSk7DQorCWlmIChyZXQp
+DQorCQlnb3RvIGNsZWFudXBfc2NoZWQ7DQogI2VuZGlmDQorCXJldHVybjsNCisNCitjbGVhbnVw
+X3NjaGVkOg0KKwlmb3JfZWFjaF9vbmxpbmVfY3B1KGNwdSkgew0KKwkJc2NoZWQgPSB4bnNjaGVk
+X3N0cnVjdChjcHUpOw0KKwkJeG5zY2hlZF9kZXN0cm95KHNjaGVkKTsNCisJfQ0KKw0KIH0NCiAN
+CiBzdGF0aWMgdm9pZCB4bnNjaGVkX2Rlc3Ryb3koc3RydWN0IHhuc2NoZWQgKnNjaGVkKQ0KQEAg
+LTI2Miw4ICsyODcsNyBAQCB2b2lkIHhuc2NoZWRfZGVzdHJveV9hbGwodm9pZCkNCiAJc3BsX3Qg
+czsNCiANCiAjaWZkZWYgQ09ORklHX1NNUA0KLSN3YXJuaW5nIFRPRE8NCi0vLwlpcGlwZV9mcmVl
+X2lycSgmeG5zY2hlZF9yZWFsdGltZV9kb21haW4sIElQSVBFX1JFU0NIRURVTEVfSVBJKTsNCisJ
+ZnJlZV9wZXJjcHVfaXJxKFJFU0NIRURVTEVfT09CX0lQSSwgJnhuX21hY2hpbmVfY3B1ZGF0YSk7
+DQogI2VuZGlmDQogDQogCXhubG9ja19nZXRfaXJxc2F2ZSgmbmtsb2NrLCBzKTsNCi0tIA0KMi4x
+Ny4xDQoNCg==
 
-this is the exact steps that i took:
-
-export OROCOS_TARGET=xenomai
-
-mkdir -p ~/john/orocos-2.9_ws/srccd ~/john/orocos-2.9_ws/src# Get all
-the packages
-wstool init
-wstool merge https://raw.githubusercontent.com/kuka-isir/rtt_lwr/rtt_lwr-2.0/lwr_utils/config/orocos_toolchain-2.9.rosinstall
-wstool update -j2# Get the latest updates (OPTIONAL)cd orocos_toolchain
-git submodule foreach git checkout toolchain-2.9
-git submodule foreach git pull
-cd ~/john/orocos-2.9_ws/
-cd src/orocos_toolchain/rtt
-rm -rf rtt
-git clone https://github.com/ahoarau/rtt.git
-git checkout xenomai3-support-v3
-cd ~/john/orocos-2.9_ws/# Install dependenciessource /opt/ros/melodic/setup.bash
-rosdep install --from-paths ~/john/orocos-2.9_ws/src --ignore-src
---rosdistro melodic -y -r# Configure the build in Release
-(recommended), and enable extra transport methods (optional)
-catkin config --init --install --extend /opt/ros/melodic/ --cmake-args
--DCMAKE_BUILD_TYPE=Release -DENABLE_MQ=ON -DENABLE_CORBA=ON
--DCORBA_IMPLEMENTATION=OMNIORB# Build
-catkin build
