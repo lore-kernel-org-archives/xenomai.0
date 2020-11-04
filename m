@@ -1,7 +1,7 @@
 From: "Q. Gylstorff" <Quirin.Gylstorff@siemens.com>
-Subject: [xenomai-images][PATCH 1/4] linux-xenomai: update ipipe versions
-Date: Wed,  4 Nov 2020 17:11:51 +0100
-Message-Id: <20201104161154.32366-2-Quirin.Gylstorff@siemens.com>
+Subject: [xenomai-images][PATCH 4/4] tests: increase timeouts
+Date: Wed,  4 Nov 2020 17:11:54 +0100
+Message-Id: <20201104161154.32366-5-Quirin.Gylstorff@siemens.com>
 In-Reply-To: <20201104161154.32366-1-Quirin.Gylstorff@siemens.com>
 References: <20201104161154.32366-1-Quirin.Gylstorff@siemens.com>
 MIME-Version: 1.0
@@ -18,60 +18,236 @@ To: xenomai@xenomai.org, jan.kiszka@siemens.com
 
 From: Quirin Gylstorff <quirin.gylstorff@siemens.com>
 
-Update linux-xenomai 4.19 and 4.4 to latest release tag.
+Increase the LAVA test timeouts to avoid test aborts due to slow
+connections
 
 Signed-off-by: Quirin Gylstorff <quirin.gylstorff@siemens.com>
 ---
- recipes-kernel/linux/linux-xenomai_4.19.bb | 12 ++++++------
- recipes-kernel/linux/linux-xenomai_4.4.bb  |  8 +++++---
- 2 files changed, 11 insertions(+), 9 deletions(-)
+ tests/jobs/xenomai-beagle-bone-black.yml | 8 ++++----
+ tests/jobs/xenomai-hikey.yml             | 6 +++---
+ tests/jobs/xenomai-ipc227e.yml           | 8 ++++----
+ tests/jobs/xenomai-minnow.yml            | 8 ++++----
+ tests/jobs/xenomai-qemu-amd64.yml        | 8 ++++----
+ tests/jobs/xenomai-qemu-arm64.yml        | 8 ++++----
+ tests/jobs/xenomai-qemu-armhf.yml        | 8 ++++----
+ tests/jobs/xenomai-x86-64-efi.yml        | 8 ++++----
+ 8 files changed, 31 insertions(+), 31 deletions(-)
 
-diff --git a/recipes-kernel/linux/linux-xenomai_4.19.bb b/recipes-kernel/linux/linux-xenomai_4.19.bb
-index 29e9f05..12e2199 100644
---- a/recipes-kernel/linux/linux-xenomai_4.19.bb
-+++ b/recipes-kernel/linux/linux-xenomai_4.19.bb
-@@ -12,15 +12,15 @@
- require recipes-kernel/linux/linux-xenomai.inc
+diff --git a/tests/jobs/xenomai-beagle-bone-black.yml b/tests/jobs/xenomai-beagle-bone-black.yml
+index 91cb138..034ac99 100644
+--- a/tests/jobs/xenomai-beagle-bone-black.yml
++++ b/tests/jobs/xenomai-beagle-bone-black.yml
+@@ -13,11 +13,11 @@ device_type: beaglebone-black
  
- SRC_URI_append_amd64 = " git://github.com/xenomai-ci/ipipe-x86.git;protocol=https;nobranch=1"
--SRCREV_amd64 ?= "ipipe-core-4.19.94-cip18-x86-10"
--PV_amd64 ?= "4.19.94+"
-+SRCREV_amd64 ?= "ipipe-core-4.19.140-cip33-x86-14"
-+PV_amd64 ?= "4.19.140+"
+ timeouts:
+   job:
+-    minutes: 30
++    minutes: 90
+   action:
+-    minutes: 20
++    minutes: 65
+   connection:
+-    minutes: 2
++    minutes: 5
+ priority: medium
+ visibility: public
  
- SRC_URI_append_arm64 = " git://github.com/xenomai-ci/ipipe-arm64.git;protocol=https;nobranch=1"
--SRCREV_arm64 ?= "ipipe-core-4.19.55-arm64-4"
--PV_arm64 ?= "4.19.55+"
-+SRCREV_arm64 ?= "ipipe-core-4.19.144-cip34-arm64-08"
-+PV_arm64 ?= "4.19.144+"
+@@ -29,7 +29,7 @@ metadata:
+ actions:
+ - deploy:
+     timeout:
+-      minutes: 5
++      minutes: 15
+     to: tftp
+     kernel:
+       url: ${DEPLOY_URL}/${ISAR_IMAGE}-${ISAR_DISTRIBUTION}-${TARGET}-vmlinuz
+diff --git a/tests/jobs/xenomai-hikey.yml b/tests/jobs/xenomai-hikey.yml
+index b33cef6..f6eb4a4 100644
+--- a/tests/jobs/xenomai-hikey.yml
++++ b/tests/jobs/xenomai-hikey.yml
+@@ -13,11 +13,11 @@ device_type: hikey
  
- SRC_URI_append_armhf = " git://github.com/xenomai-ci/ipipe-arm.git;protocol=https;nobranch=1"
--SRCREV_armhf ?= "ipipe-core-4.19.55-arm-5"
--PV_armhf ?= "4.19.55+"
-+SRCREV_armhf ?= "ipipe-core-4.19.140-cip33-arm-11"
-+PV_armhf ?= "4.19.140+"
+ timeouts:
+   job:
+-    minutes: 30
++    minutes: 90
+   action:
+-    minutes: 20
++    minutes: 65
+   connection:
+-    minutes: 2
++    minutes: 5
+ priority: medium
+ visibility: public
  
- S = "${WORKDIR}/git"
-diff --git a/recipes-kernel/linux/linux-xenomai_4.4.bb b/recipes-kernel/linux/linux-xenomai_4.4.bb
-index 1c8c80f..c141914 100644
---- a/recipes-kernel/linux/linux-xenomai_4.4.bb
-+++ b/recipes-kernel/linux/linux-xenomai_4.4.bb
-@@ -11,10 +11,12 @@
+diff --git a/tests/jobs/xenomai-ipc227e.yml b/tests/jobs/xenomai-ipc227e.yml
+index d283c00..a5a181c 100644
+--- a/tests/jobs/xenomai-ipc227e.yml
++++ b/tests/jobs/xenomai-ipc227e.yml
+@@ -13,11 +13,11 @@ device_type: ipc227e
  
- require recipes-kernel/linux/linux-xenomai.inc
+ timeouts:
+   job:
+-    minutes: 30
++    minutes: 90
+   action:
+-    minutes: 20
++    minutes: 65
+   connection:
+-    minutes: 2
++    minutes: 5
+ priority: medium
+ visibility: public
  
--SRC_URI_append_amd64 = " git://github.com/xenomai-ci/ipipe.git;protocol=https;nobranch=1;tag=ipipe-core-4.4.208-cip41-x86-21"
--PV_amd64 = "4.4.208+"
-+SRC_URI_append_amd64 = " git://github.com/xenomai-ci/ipipe.git;protocol=https;nobranch=1"
-+SRCREV_amd64 ?= "ipipe-core-4.4.235-cip49-x86-25"
-+PV_amd64 = "4.4.235+"
+@@ -29,7 +29,7 @@ metadata:
+ actions:
+ - deploy:
+     timeout:
+-      minutes: 5
++      minutes: 15
+     to: tftp
+     kernel:
+       url: ${DEPLOY_URL}/${ISAR_IMAGE}-${ISAR_DISTRIBUTION}-${TARGET}-vmlinuz
+diff --git a/tests/jobs/xenomai-minnow.yml b/tests/jobs/xenomai-minnow.yml
+index 82c1468..d5292ff 100644
+--- a/tests/jobs/xenomai-minnow.yml
++++ b/tests/jobs/xenomai-minnow.yml
+@@ -12,11 +12,11 @@ job_name: xenomai-test-suite
+ device_type: minnowboard-max-E3825
+ timeouts:
+   job:
+-    minutes: 30
++    minutes: 90
+   action:
+-    minutes: 20
++    minutes: 65
+   connection:
+-    minutes: 2
++    minutes: 5
+ priority: medium
+ visibility: public
  
--SRC_URI_append_armhf = " git://github.com/xenomai-ci/ipipe.git;protocol=https;nobranch=1;tag=ipipe-core-4.4.176-arm-10"
-+SRC_URI_append_armhf = " git://github.com/xenomai-ci/ipipe.git;protocol=https;nobranch=1"
-+SRCREV_armhf ?= "ipipe-core-4.4.176-arm-10"
- PV_armhf = "4.4.176+"
+@@ -28,7 +28,7 @@ metadata:
+ actions:
+ - deploy:
+     timeout:
+-      minutes: 5
++      minutes: 15
+     to: tftp
+     kernel:
+       url: ${DEPLOY_URL}/${ISAR_IMAGE}-${ISAR_DISTRIBUTION}-${TARGET}-vmlinuz
+diff --git a/tests/jobs/xenomai-qemu-amd64.yml b/tests/jobs/xenomai-qemu-amd64.yml
+index 68d849f..c335292 100644
+--- a/tests/jobs/xenomai-qemu-amd64.yml
++++ b/tests/jobs/xenomai-qemu-amd64.yml
+@@ -13,11 +13,11 @@ job_name: QEMU pipeline, xenomai-images-qemu-amd64
  
- S = "${WORKDIR}/git"
+ timeouts:
+   job:
+-    minutes: 45
++    minutes: 90
+   action:
+-    minutes: 5
++    minutes: 65
+   connection:
+-    minutes: 2
++    minutes: 5
+ priority: medium
+ visibility: public
+ 
+@@ -42,7 +42,7 @@ metadata:
+ actions:
+ - deploy:
+     timeout:
+-      minutes: 5
++      minutes: 15
+     to: tmpfs
+     images:
+       kernel:
+diff --git a/tests/jobs/xenomai-qemu-arm64.yml b/tests/jobs/xenomai-qemu-arm64.yml
+index cd0ca9f..88fb880 100644
+--- a/tests/jobs/xenomai-qemu-arm64.yml
++++ b/tests/jobs/xenomai-qemu-arm64.yml
+@@ -13,11 +13,11 @@ job_name: QEMU pipeline, xenomai-images-qemu-arm64
+ 
+ timeouts:
+   job:
+-    minutes: 45
++    minutes: 90
+   action:
+-    minutes: 5
++    minutes: 65
+   connection:
+-    minutes: 2
++    minutes: 5
+ priority: medium
+ visibility: public
+ 
+@@ -46,7 +46,7 @@ metadata:
+ actions:
+ - deploy:
+     timeout:
+-      minutes: 5
++      minutes: 15
+     to: tmpfs
+     images:
+       kernel:
+diff --git a/tests/jobs/xenomai-qemu-armhf.yml b/tests/jobs/xenomai-qemu-armhf.yml
+index 18e3bf8..3e3a8ab 100644
+--- a/tests/jobs/xenomai-qemu-armhf.yml
++++ b/tests/jobs/xenomai-qemu-armhf.yml
+@@ -13,11 +13,11 @@ job_name: QEMU pipeline, xenomai-images-qemu-armhf
+ 
+ timeouts:
+   job:
+-    minutes: 45
++    minutes: 90
+   action:
+-    minutes: 5
++    minutes: 65
+   connection:
+-    minutes: 2
++    minutes: 5
+ priority: medium
+ visibility: public
+ 
+@@ -42,7 +42,7 @@ metadata:
+ actions:
+ - deploy:
+     timeout:
+-      minutes: 5
++      minutes: 15
+     to: tmpfs
+     images:
+       kernel:
+diff --git a/tests/jobs/xenomai-x86-64-efi.yml b/tests/jobs/xenomai-x86-64-efi.yml
+index 2471cce..bc71b75 100644
+--- a/tests/jobs/xenomai-x86-64-efi.yml
++++ b/tests/jobs/xenomai-x86-64-efi.yml
+@@ -13,11 +13,11 @@ device_type: x86
+ 
+ timeouts:
+   job:
+-    minutes: 30
++    minutes: 90
+   action:
+-    minutes: 20
++    minutes: 65
+   connection:
+-    minutes: 2
++    minutes: 5
+ priority: medium
+ visibility: public
+ 
+@@ -29,7 +29,7 @@ metadata:
+ actions:
+ - deploy:
+     timeout:
+-      minutes: 5
++      minutes: 15
+     to: tftp
+     kernel:
+       url: ${DEPLOY_URL}/${ISAR_IMAGE}-${ISAR_DISTRIBUTION}-${TARGET}-vmlinuz
 -- 
 2.20.1
 
