@@ -1,16 +1,15 @@
-Subject: Re: [PATCH 2/5] cobalt/kernel: introduce old_timespec32 to
- clock_settime
-References: <1604372692-2850-1-git-send-email-chensong@tj.kylinos.cn>
- <670208b7-b221-e0fe-6aea-2d26c7564f76@siemens.com>
- <5FAB58BF.8060707@tj.kylinos.cn>
- <959a162b-047b-8418-f86a-a16f33608e9b@siemens.com>
-From: chensong <chensong@tj.kylinos.cn>
-Message-ID: <5FABB1D6.3070105@tj.kylinos.cn>+78D7FA00566BA031
-Date: Wed, 11 Nov 2020 17:41:42 +0800
+Subject: Re: [xenomai-images][PATCH 3/4] ci: Split build and add 5.4 builds
+References: <20201104161154.32366-1-Quirin.Gylstorff@siemens.com>
+ <20201104161154.32366-4-Quirin.Gylstorff@siemens.com>
+ <f2528f0d-e86f-1ad6-cbcd-c503b0d62460@siemens.com>
+From: Gylstorff Quirin <quirin.gylstorff@siemens.com>
+Message-ID: <a55a060a-1c13-9bce-3522-f9c0ef100cbe@siemens.com>
+Date: Thu, 5 Nov 2020 10:15:15 +0100
 MIME-Version: 1.0
-In-Reply-To: <959a162b-047b-8418-f86a-a16f33608e9b@siemens.com>
-Content-Type: text/plain; charset="utf-8"; format="flowed"
-Content-Transfer-Encoding: 8bit
+In-Reply-To: <f2528f0d-e86f-1ad6-cbcd-c503b0d62460@siemens.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -19,246 +18,505 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jan Kiszka <jan.kiszka@siemens.com>, xenomai@xenomai.org, henning.schild@siemens.com
+To: Jan Kiszka <jan.kiszka@siemens.com>, xenomai@xenomai.org
 
 
 
-On 2020年11月11日 15:23, Jan Kiszka wrote:
-> On 11.11.20 04:21, chensong wrote:
+On 11/4/20 5:22 PM, Jan Kiszka wrote:
+> On 04.11.20 17:11, Q. Gylstorff wrote:
+>> From: Quirin Gylstorff <quirin.gylstorff@siemens.com>
 >>
+>> Split the ci build description in 4.4(xenomai-3.0.x), 4.19 and 5.4.
+>> This allows the reuse of build descriptions and simplifies the adding
+>> of new builds.
 >>
->> On 2020年11月10日 18:14, Jan Kiszka wrote:
->>>
->>> On 03.11.20 04:04, chensong wrote:
->>>> Replace timespec with old_timespec32 as the parameter passed from
->>>> processes with 32bit timespec in clock_settime.
->>>>
->>>> Also, replace timespec with timespec64 inside clock_settime.
->>>>
->>>> Signed-off-by: chensong <chensong@tj.kylinos.cn>
->>>> ---
->>>>    include/cobalt/kernel/clock.h      |  6 +++---
->>>>    kernel/cobalt/posix/clock.c        | 14 +++++++++-----
->>>>    kernel/cobalt/posix/clock.h        | 15 +++++++++++++--
->>>>    kernel/cobalt/trace/cobalt-posix.h | 24 ++++++++++++++++++++++--
->>>>    4 files changed, 47 insertions(+), 12 deletions(-)
->>>>
->>>> diff --git a/include/cobalt/kernel/clock.h
->>>> b/include/cobalt/kernel/clock.h
->>>> index c26776a..cf9d5ec 100644
->>>> --- a/include/cobalt/kernel/clock.h
->>>> +++ b/include/cobalt/kernel/clock.h
->>>> @@ -52,7 +52,7 @@ struct xnclock {
->>>>            xnticks_t (*read_raw)(struct xnclock *clock);
->>>>            xnticks_t (*read_monotonic)(struct xnclock *clock);
->>>>            int (*set_time)(struct xnclock *clock,
->>>> -                const struct timespec *ts);
->>>> +                const struct timespec64 *ts);
->>>>            xnsticks_t (*ns_to_ticks)(struct xnclock *clock,
->>>>                          xnsticks_t ns);
->>>>            xnsticks_t (*ticks_to_ns)(struct xnclock *clock,
->>>> @@ -213,7 +213,7 @@ static inline xnticks_t
->>>> xnclock_read_monotonic(struct xnclock *clock)
->>>>    }
->>>>
->>>>    static inline int xnclock_set_time(struct xnclock *clock,
->>>> -                   const struct timespec *ts)
->>>> +                   const struct timespec64 *ts)
->>>>    {
->>>>        if (likely(clock == &nkclock))
->>>>            return -EINVAL;
->>>> @@ -266,7 +266,7 @@ static inline xnticks_t
->>>> xnclock_read_monotonic(struct xnclock *clock)
->>>>    }
->>>>
->>>>    static inline int xnclock_set_time(struct xnclock *clock,
->>>> -                   const struct timespec *ts)
->>>> +                   const struct timespec64 *ts)
->>>>    {
->>>>        /*
->>>>         * There is no way to change the core clock's idea of time.
->>>> diff --git a/kernel/cobalt/posix/clock.c b/kernel/cobalt/posix/clock.c
->>>> index 561358e..d169ffd 100644
->>>> --- a/kernel/cobalt/posix/clock.c
->>>> +++ b/kernel/cobalt/posix/clock.c
->>>> @@ -194,7 +194,7 @@ COBALT_SYSCALL(clock_gettime, current,
->>>>        return 0;
->>>>    }
->>>>
->>>> -int __cobalt_clock_settime(clockid_t clock_id, const struct timespec
->>>> *ts)
->>>> +int __cobalt_clock_settime(clockid_t clock_id, const struct
->>>> timespec64 *ts)
->>>>    {
->>>>        int _ret, ret = 0;
->>>>        xnticks_t now;
->>>> @@ -207,7 +207,7 @@ int __cobalt_clock_settime(clockid_t clock_id,
->>>> const struct timespec *ts)
->>>>        case CLOCK_REALTIME:
->>>>            xnlock_get_irqsave(&nklock, s);
->>>>            now = xnclock_read_realtime(&nkclock);
->>>> -        xnclock_adjust(&nkclock, (xnsticks_t) (ts2ns(ts) - now));
->>>> +        xnclock_adjust(&nkclock, (xnsticks_t) (ts2ns64(ts) - now));
->>>>            xnlock_put_irqrestore(&nklock, s);
->>>>            break;
->>>>        default:
->>>> @@ -243,14 +243,18 @@ int __cobalt_clock_adjtime(clockid_t clock_id,
->>>> struct timex *tx)
->>>>    }
->>>>
->>>>    COBALT_SYSCALL(clock_settime, current,
->>>> -           (clockid_t clock_id, const struct timespec __user *u_ts))
->>>> +           (clockid_t clock_id, const struct old_timespec32 __user
->>>> *u_ts))
->>>>    {
->>>> -    struct timespec ts;
->>>> +    struct old_timespec32 ts;
->>>> +    struct timespec64 ts64;
->>>>
->>>>        if (cobalt_copy_from_user(&ts, u_ts, sizeof(ts)))
->>>>            return -EFAULT;
->>>>
->>>> -    return __cobalt_clock_settime(clock_id, &ts);
->>>> +    ts64.tv_sec  = ts.tv_sec;
->>>> +    ts64.tv_nsec = ts.tv_nsec;
->>>> +
->>>> +    return __cobalt_clock_settime(clock_id, &ts64);
->>>>    }
->>>>
->>>>    COBALT_SYSCALL(clock_adjtime, current,
->>>> diff --git a/kernel/cobalt/posix/clock.h b/kernel/cobalt/posix/clock.h
->>>> index 0b06b93..bcc608e 100644
->>>> --- a/kernel/cobalt/posix/clock.h
->>>> +++ b/kernel/cobalt/posix/clock.h
->>>> @@ -43,6 +43,16 @@ static inline xnticks_t ts2ns(const struct
->>>> timespec *ts)
->>>>        return nsecs;
->>>>    }
->>>>
->>>> +static inline xnticks_t ts2ns64(const struct timespec64 *ts)
->>>> +{
->>>> +    xnticks_t nsecs = ts->tv_nsec;
->>>> +
->>>> +    if (ts->tv_sec)
->>>> +        nsecs += (xnticks_t)ts->tv_sec * ONE_BILLION;
->>>> +
->>>> +    return nsecs;
->>>> +}
->>>> +
->>>>    static inline xnticks_t tv2ns(const struct timeval *tv)
->>>>    {
->>>>        xnticks_t nsecs = tv->tv_usec * 1000;
->>>> @@ -86,7 +96,7 @@ int __cobalt_clock_gettime(clockid_t clock_id,
->>>>                   struct timespec *ts);
->>>>
->>>>    int __cobalt_clock_settime(clockid_t clock_id,
->>>> -               const struct timespec *ts);
->>>> +               const struct timespec64 *ts);
->>>>
->>>>    int __cobalt_clock_adjtime(clockid_t clock_id,
->>>>                   struct timex *tx);
->>>> @@ -102,7 +112,8 @@ COBALT_SYSCALL_DECL(clock_gettime,
->>>>                (clockid_t clock_id, struct timespec __user *u_ts));
->>>>
->>>>    COBALT_SYSCALL_DECL(clock_settime,
->>>> -            (clockid_t clock_id, const struct timespec __user *u_ts));
->>>> +            (clockid_t clock_id,
->>>> +             const struct old_timespec32 __user *u_ts));
->>>>
->>>>    COBALT_SYSCALL_DECL(clock_adjtime,
->>>>                (clockid_t clock_id, struct timex __user *u_tx));
->>>> diff --git a/kernel/cobalt/trace/cobalt-posix.h
->>>> b/kernel/cobalt/trace/cobalt-posix.h
->>>> index aa78efb..f764872 100644
->>>> --- a/kernel/cobalt/trace/cobalt-posix.h
->>>> +++ b/kernel/cobalt/trace/cobalt-posix.h
->>>> @@ -748,6 +748,26 @@ DECLARE_EVENT_CLASS(cobalt_clock_timespec,
->>>>        )
->>>>    );
->>>>
->>>> +DECLARE_EVENT_CLASS(cobalt_clock_timespec64,
->>>> +    TP_PROTO(clockid_t clk_id, const struct timespec64 *val),
->>>> +    TP_ARGS(clk_id, val),
->>>> +
->>>> +    TP_STRUCT__entry(
->>>> +        __field(clockid_t, clk_id)
->>>> +        __timespec_fields(val)
->>>> +    ),
->>>> +
->>>> +    TP_fast_assign(
->>>> +        __entry->clk_id = clk_id;
->>>> +        __assign_timespec(val, val);
->>>> +    ),
->>>> +
->>>> +    TP_printk("clock_id=%d timeval=(%ld.%09ld)",
->>>> +          __entry->clk_id,
->>>> +          __timespec_args(val)
->>>> +    )
->>>> +);
->>>> +
->>>>    DEFINE_EVENT(cobalt_clock_timespec, cobalt_clock_getres,
->>>>        TP_PROTO(clockid_t clk_id, const struct timespec *res),
->>>>        TP_ARGS(clk_id, res)
->>>> @@ -758,8 +778,8 @@ DEFINE_EVENT(cobalt_clock_timespec,
->>>> cobalt_clock_gettime,
->>>>        TP_ARGS(clk_id, time)
->>>>    );
->>>>
->>>> -DEFINE_EVENT(cobalt_clock_timespec, cobalt_clock_settime,
->>>> -    TP_PROTO(clockid_t clk_id, const struct timespec *time),
->>>> +DEFINE_EVENT(cobalt_clock_timespec64, cobalt_clock_settime,
->>>
->>> I don't think we need to rename this event. We just now ensure that it
->>> can now handle timespec64. If that came from a legacy 32-bit or a new
->>> 64-bit syscall will be traced via the cobalt syscall event.
->>>
->> I defined a new event class cobalt_clock_timespec64 specific for
->> timespec64, it will hit a compiling mistake without it, here is the
->> information:
+>> Signed-off-by: Quirin Gylstorff <quirin.gylstorff@siemens.com>
+>> ---
+>>   ci/4_19_builds.yml                           |  58 ++++++++++
+>>   ci/5_4_builds.yml                            |  30 +++++
+>>   ci/artifacts.yml                             |   4 +
+>>   ci/default-builds.yml                        |  76 +++++++++++++
+>>   ci/gitlab-ci-base.yml                        | 110 +------------------
+>>   ci/no-artifacts.yml                          |   4 +
+>>   ci/xenomai_3_0_x.yml                         |  36 ++++++
+>>   opt-linux-4.19.yml                           |  17 +++
+>>   opt-linux-latest.yml                         |   3 +
+>>   recipes-kernel/linux/linux-xenomai_latest.bb |   6 +-
+>>   scripts/get-build-id.sh                      |   2 +-
+>>   11 files changed, 237 insertions(+), 109 deletions(-)
+>>   create mode 100644 ci/4_19_builds.yml
+>>   create mode 100644 ci/5_4_builds.yml
+>>   create mode 100644 ci/default-builds.yml
+>>   create mode 100644 ci/xenomai_3_0_x.yml
+>>   create mode 100644 opt-linux-4.19.yml
 >>
->> kernel/xenomai/posix/clock.c:219:39: error: passing argument 2 of
->> ‘trace_cobalt_clock_settime’ from incompatible pointer type
->> [-Werror=incompatible-pointer-types]
->>    trace_cobalt_clock_settime(clock_id, ts);
+>> diff --git a/ci/4_19_builds.yml b/ci/4_19_builds.yml
+>> new file mode 100644
+>> index 0000000..25be0c5
+>> --- /dev/null
+>> +++ b/ci/4_19_builds.yml
+>> @@ -0,0 +1,58 @@
+>> +#
+>> +# Xenomai Real-Time System
+>> +#
+>> +# Copyright (c) Siemens AG, 2019 - 2020
+>> +#
+>> +# Authors:
+>> +#  Quirin Gylstorff <quirin.gylstorff@siemens.com>
+>> +#
+>> +# SPDX-License-Identifier: MIT
+>> +#
+>> +variables:
+>> +  LATEST_GIT_BRANCH: "4.19"
+>> +  DEPLOY_DIR_EXTENSION: "4.19"
+>> +  BUILD_IDENTIFIER: "4.19"
+>> +
+>> +build-4.19:board-qemu-amd64:
+>> +  extends: .build:board-qemu-amd64
+>> +
+>> +lava-test-4.19:qemu-amd64:
+>> +  needs: [ "build-4.19:board-qemu-amd64" ]
+>> +  extends: .lava-test:qemu-amd64
+>> +
+>> +build-4.19:board-qemu-armhf:
+>> +  extends: .build:board-qemu-armhf
+>> +
+>> +lava-test-4.19:qemu-armhf:
+>> +  needs: [ "build-4.19:board-qemu-armhf" ]
+>> +  extends: .lava-test:qemu-armhf
+>> +
+>> +build-4.19:board-qemu-arm64:
+>> +  extends: .build:board-qemu-arm64
+>> +
+>> +lava-test-4.19:qemu-arm64:
+>> +  needs: [ "build-4.19:board-qemu-arm64" ]
+>> +  extends: .lava-test:qemu-arm64
+>> +
+>> +build-4.19:board-hikey:
+>> +  extends: .build:board-hikey
+>> +
+>> +lava-test-4.19:board-hikey:
+>> +  needs: [ "build-4.19:board-hikey" ]
+>> +  extends: .lava-test:board-hikey
+>> +
+>> +build-4.19:board-beagle-bone-black:
+>> +  extends: .build:board-beagle-bone-black
+>> +
+>> +lava-test-4.19:board-beagle-bone-black:
+>> +  needs: [ "build-4.19:board-beagle-bone-black" ]
+>> +  extends: .lava-test:board-beagle-bone-black
+>> +
+>> +build-4.19:board-x86-64-efi:
+>> +  extends: .build:board-x86-64-efi
+>> +
+>> +lava-test-4.19:board-x86-64-efi:
+>> +  needs: [ "build-4.19:board-x86-64-efi" ]
+>> +  extends: .lava-test:board-x86-64-efi
+>> +
+>> +
+>> diff --git a/ci/5_4_builds.yml b/ci/5_4_builds.yml
+>> new file mode 100644
+>> index 0000000..b5cfdb9
+>> --- /dev/null
+>> +++ b/ci/5_4_builds.yml
+>> @@ -0,0 +1,30 @@
+>> +#
+>> +# Xenomai Real-Time System
+>> +#
+>> +# Copyright (c) Siemens AG, 2019 - 2020
+>> +#
+>> +# Authors:
+>> +#  Quirin Gylstorff <quirin.gylstorff@siemens.com>
+>> +#
+>> +# SPDX-License-Identifier: MIT
+>> +#
+>> +variables:
+>> +  LATEST_GIT_BRANCH: "5.4"
+>> +  DEPLOY_DIR_EXTENSION: "5.4"
+>> +  BUILD_IDENTIFIER: "5.4"
+>> +
+>> +build-5.4:board-qemu-amd64:
+>> +  extends: .build:board-qemu-amd64
+>> +
+>> +lava-test-5.4:qemu-amd64:
+>> +  needs: [ "build-5.4:board-qemu-amd64" ]
+>> +  extends: .lava-test:qemu-amd64
+>> +
+>> +build-5.4:board-x86-64-efi:
+>> +  extends: .build:board-x86-64-efi
+>> +
+>> +lava-test-5.4:board-x86-64-efi:
+>> +  needs: [ "build-5.4:board-x86-64-efi" ]
+>> +  extends: .lava-test:board-x86-64-efi
+>> +
+>> +
+>> diff --git a/ci/artifacts.yml b/ci/artifacts.yml
+>> index 510f903..cc42274 100644
+>> --- a/ci/artifacts.yml
+>> +++ b/ci/artifacts.yml
+>> @@ -19,3 +19,7 @@
+>>       expire_in: 1 week
+>>   include:
+>>     - local: '/ci/gitlab-ci-base.yml'
+>> +  - local: '/ci/default-builds.yml'
+>> +  - local: '/ci/4_19_builds.yml'
+>> +  - local: '/ci/5_4_builds.yml'
+>> +  - local: '/ci/xenomai_3_0_x.yml'
+>> diff --git a/ci/default-builds.yml b/ci/default-builds.yml
+>> new file mode 100644
+>> index 0000000..6979dd3
+>> --- /dev/null
+>> +++ b/ci/default-builds.yml
+>> @@ -0,0 +1,76 @@
+>> +#
+>> +# Xenomai Real-Time System
+>> +#
+>> +# Copyright (c) Siemens AG, 2019 - 2020
+>> +#
+>> +# Authors:
+>> +#  Quirin Gylstorff <quirin.gylstorff@siemens.com>
+>> +#
+>> +# SPDX-License-Identifier: MIT
+>> +#
+>> +.build:board-qemu-amd64:
+>> +  extends: .build
+>> +  variables:
+>> +    TARGET: qemu-amd64
+>> +    BUILD_OPTIONS: ":opt-ext4-gz.yml"
+>> +
+>> +.lava-test:qemu-amd64:
+>> +  extends: .test
+>> +  variables:
+>> +    TARGET: qemu-amd64
+>> +
+>> +.build:board-qemu-armhf:
+>> +  extends: .build
+>> +  variables:
+>> +    TARGET: qemu-armhf
+>> +    BUILD_OPTIONS: ":opt-ext4-gz.yml"
+>> +
+>> +.lava-test:qemu-armhf:
+>> +  extends: .test
+>> +  variables:
+>> +    TARGET: qemu-armhf
+>> +
+>> +.build:board-qemu-arm64:
+>> +  extends: .build
+>> +  variables:
+>> +    TARGET: qemu-arm64
+>> +    BUILD_OPTIONS: ":opt-ext4-gz.yml"
+>> +
+>> +.lava-test:qemu-arm64:
+>> +  extends: .test
+>> +  variables:
+>> +    TARGET: qemu-arm64
+>> +
+>> +.build:board-hikey:
+>> +  extends: .build
+>> +  variables:
+>> +    TARGET: hikey
+>> +    BUILD_OPTIONS: ":opt-lava-test.yml"
+>> +
+>> +.lava-test:board-hikey:
+>> +  extends: .test
+>> +  variables:
+>> +    TARGET: hikey
+>> +
+>> +.build:board-beagle-bone-black:
+>> +  extends: .build
+>> +  variables:
+>> +    TARGET: beagle-bone-black
+>> +    BUILD_OPTIONS: ":opt-lava-test.yml"
+>> +
+>> +.lava-test:board-beagle-bone-black:
+>> +  extends: .test
+>> +  variables:
+>> +    TARGET: beagle-bone-black
+>> +
+>> +.build:board-x86-64-efi:
+>> +  extends: .build
+>> +  variables:
+>> +    TARGET: x86-64-efi
+>> +    BUILD_OPTIONS: ":opt-lava-test.yml"
+>> +
+>> +.lava-test:board-x86-64-efi:
+>> +  extends: .test
+>> +  variables:
+>> +    TARGET: x86-64-efi
+>> +
+>> diff --git a/ci/gitlab-ci-base.yml b/ci/gitlab-ci-base.yml
+>> index 18419a8..a766a9e 100644
+>> --- a/ci/gitlab-ci-base.yml
+>> +++ b/ci/gitlab-ci-base.yml
+>> @@ -10,7 +10,7 @@
+>>   #
+>>   stages:
+>>     - build
+>> -  - lava-test
+>> +  - test
+>>   
+>>   variables:
+>>     GIT_STRATEGY: clone
+>> @@ -37,119 +37,15 @@ default:
+>>   
+>>   .test:
+>>     extends: .add-lava-ssh-config
+>> -  stage: lava-test
+>> +  stage: test
+>>     script:
+>>       - scripts/install-lavacli.sh
+>>       - export BUILD_JOB_ID=$(scripts/get-build-id.sh ${BUILD_JOB_NAME})
+>>       - scripts/run-lava-tests.sh ${TARGET}
+>>     variables:
+>> -    BUILD_JOB_NAME: "build:board-${TARGET}${TARGET_EXTENSION}"
+>> +    BUILD_JOB_NAME: "build-${BUILD_IDENTIFIER}:board-${TARGET}${TARGET_EXTENSION}"
+>>     only:
+>>       variables:
+>>         - $LAVA_SSH_USER
+>>   
+>>   
+>> -build:board-qemu-amd64:
+>> -  extends: .build
+>> -  variables:
+>> -    TARGET: qemu-amd64
+>> -    BUILD_OPTIONS: ":opt-ext4-gz.yml"
+>> -
+>> -lava-test:qemu-amd64:
+>> -  needs: [ "build:board-qemu-amd64" ]
+>> -  dependencies: [ "build:board-qemu-amd64" ]
+>> -  extends: .test
+>> -  variables:
+>> -    TARGET: qemu-amd64
+>> -
+>> -build:board-qemu-armhf:
+>> -  extends: .build
+>> -  variables:
+>> -    TARGET: qemu-armhf
+>> -    BUILD_OPTIONS: ":opt-ext4-gz.yml"
+>> -
+>> -lava-test:qemu-armhf:
+>> -  needs: [ "build:board-qemu-armhf" ]
+>> -  extends: .test
+>> -  variables:
+>> -    TARGET: qemu-armhf
+>> -
+>> -build:board-qemu-arm64:
+>> -  extends: .build
+>> -  variables:
+>> -    TARGET: qemu-arm64
+>> -    BUILD_OPTIONS: ":opt-ext4-gz.yml"
+>> -
+>> -lava-test:qemu-arm64:
+>> -  needs: [ "build:board-qemu-arm64" ]
+>> -  extends: .test
+>> -  variables:
+>> -    TARGET: qemu-arm64
+>> -
+>> -build:board-hikey:
+>> -  extends: .build
+>> -  variables:
+>> -    TARGET: hikey
+>> -    BUILD_OPTIONS: ":opt-lava-test.yml"
+>> -
+>> -lava-test:board-hikey:
+>> -  needs: [ "build:board-hikey" ]
+>> -  extends: .test
+>> -  variables:
+>> -    TARGET: hikey
+>> -
+>> -build:board-beagle-bone-black:
+>> -  extends: .build
+>> -  variables:
+>> -    TARGET: beagle-bone-black
+>> -    BUILD_OPTIONS: ":opt-lava-test.yml"
+>> -
+>> -lava-test:board-beagle-bone-black:
+>> -  needs: [ "build:board-beagle-bone-black" ]
+>> -  extends: .test
+>> -  variables:
+>> -    TARGET: beagle-bone-black
+>> -
+>> -build:board-x86-64-efi:
+>> -  extends: .build
+>> -  variables:
+>> -    TARGET: x86-64-efi
+>> -    BUILD_OPTIONS: ":opt-lava-test.yml"
+>> -
+>> -lava-test:board-x86-64-efi:
+>> -  needs: [ "build:board-x86-64-efi" ]
+>> -  extends: .test
+>> -  variables:
+>> -    TARGET: x86-64-efi
+>> -
+>> -build:board-beagle-bone-black:xenomai-3.0.x:
+>> -  extends: .build
+>> -  variables:
+>> -    TARGET: beagle-bone-black
+>> -    XENOMAI_BUILD_OPTION: ":opt-xenomai-3.0.x.yml"
+>> -    BUILD_OPTIONS: ":opt-lava-test.yml"
+>> -    DEPLOY_DIR_EXTENSION: "xenomai-3.0.x"
+>> -
+>> -lava-test:board-beagle-bone-black:xenomai-3.0.x:
+>> -  needs: [ "build:board-beagle-bone-black:xenomai-3.0.x" ]
+>> -  extends: .test
+>> -  variables:
+>> -    TARGET: beagle-bone-black
+>> -    DEPLOY_DIR_EXTENSION: "xenomai-3.0.x"
+>> -    TARGET_EXTENSION: ":xenomai-3.0.x"
+>> -
+>> -build:board-x86-64-efi:xenomai-3.0.x:
+>> -  extends: .build
+>> -  variables:
+>> -    TARGET: x86-64-efi
+>> -    XENOMAI_BUILD_OPTION: ":opt-xenomai-3.0.x.yml"
+>> -    BUILD_OPTIONS: ":opt-lava-test.yml"
+>> -    DEPLOY_DIR_EXTENSION: "xenomai-3.0.x"
+>> -
+>> -lava-test:board-x86-64-efi:xenomai-3.0.x:
+>> -  needs: [ "build:board-x86-64-efi:xenomai-3.0.x" ]
+>> -  extends: .test
+>> -  variables:
+>> -    TARGET: x86-64-efi
+>> -    DEPLOY_DIR_EXTENSION: "xenomai-3.0.x"
+>> -    TARGET_EXTENSION: ":xenomai-3.0.x"
+>> diff --git a/ci/no-artifacts.yml b/ci/no-artifacts.yml
+>> index 02457de..517446e 100644
+>> --- a/ci/no-artifacts.yml
+>> +++ b/ci/no-artifacts.yml
+>> @@ -19,3 +19,7 @@
+>>         - $USE_GITLAB_ARTIFACTS
+>>   include:
+>>     - local: '/ci/gitlab-ci-base.yml'
+>> +  - local: '/ci/default-builds.yml'
+>> +  - local: '/ci/4_19_builds.yml'
+>> +  - local: '/ci/5_4_builds.yml'
+>> +  - local: '/ci/xenomai_3_0_x.yml'
+>> diff --git a/ci/xenomai_3_0_x.yml b/ci/xenomai_3_0_x.yml
+>> new file mode 100644
+>> index 0000000..9dbd8d4
+>> --- /dev/null
+>> +++ b/ci/xenomai_3_0_x.yml
+>> @@ -0,0 +1,36 @@
+>> +#
+>> +# Xenomai Real-Time System
+>> +#
+>> +# Copyright (c) Siemens AG, 2019 - 2020
+>> +#
+>> +# Authors:
+>> +#  Quirin Gylstorff <quirin.gylstorff@siemens.com>
+>> +#
+>> +# SPDX-License-Identifier: MIT
+>> +#
+>> +
+>> +build-4.4:board-beagle-bone-black:
+>> +  extends: .build:board-beagle-bone-black
+>> +  variables:
+>> +    XENOMAI_BUILD_OPTION: ":opt-xenomai-3.0.x.yml"
+>> +    DEPLOY_DIR_EXTENSION: "xenomai-3.0.x"
+>> +
+>> +lava-test-4.4:board-beagle-bone-black:
+>> +  needs: [ "build-4.4:board-beagle-bone-black" ]
+>> +  extends: .lava-test:board-beagle-bone-black
+>> +  variables:
+>> +    DEPLOY_DIR_EXTENSION: "xenomai-3.0.x"
+>> +    BUILD_IDENTIFIER: "4.4"
+>> +
+>> +build-4.4:board-x86-64-efi:
+>> +  extends: .build:board-x86-64-efi
+>> +  variables:
+>> +    XENOMAI_BUILD_OPTION: ":opt-xenomai-3.0.x.yml"
+>> +    DEPLOY_DIR_EXTENSION: "xenomai-3.0.x"
+>> +
+>> +lava-test-4.4:board-x86-64-efi:
+>> +  needs: [ "build-4.4:board-x86-64-efi" ]
+>> +  extends: .lava-test:board-x86-64-efi
+>> +  variables:
+>> +    DEPLOY_DIR_EXTENSION: "xenomai-3.0.x"
+>> +    BUILD_IDENTIFIER: "4.4"
+>> diff --git a/opt-linux-4.19.yml b/opt-linux-4.19.yml
+>> new file mode 100644
+>> index 0000000..1613e1c
+>> --- /dev/null
+>> +++ b/opt-linux-4.19.yml
+>> @@ -0,0 +1,17 @@
+>> +#
+>> +# Xenomai Real-Time System
+>> +#
+>> +# Copyright (c) Siemens AG, 2020
+>> +#
+>> +# Authors:
+>> +#  Quirin Gylstorff <quirin.gylstorff@siemens.com>
+>> +#
+>> +# SPDX-License-Identifier: MIT
+>> +#
+>> +
+>> +header:
+>> +  version: 8
+>> +
+>> +local_conf_header:
+>> +  linux-xenomai-latest: |
+>> +    PREFERRED_VERSION_linux-xenomai = "4.19%"
+>> diff --git a/opt-linux-latest.yml b/opt-linux-latest.yml
+>> index 7cf291a..735c30e 100644
+>> --- a/opt-linux-latest.yml
+>> +++ b/opt-linux-latest.yml
+>> @@ -12,6 +12,9 @@
+>>   header:
+>>     version: 8
+>>   
+>> +env:
+>> +  LATEST_GIT_BRANCH: :LATEST_GIT_BRANCH
+>> +
+>>   local_conf_header:
+>>     linux-xenomai-latest: |
+>>       PREFERRED_VERSION_linux-xenomai = "9999-%"
+>> diff --git a/recipes-kernel/linux/linux-xenomai_latest.bb b/recipes-kernel/linux/linux-xenomai_latest.bb
+>> index 9fc6a63..b99a565 100644
+>> --- a/recipes-kernel/linux/linux-xenomai_latest.bb
+>> +++ b/recipes-kernel/linux/linux-xenomai_latest.bb
+>> @@ -18,8 +18,12 @@ def is_xeno_3_0(d):
+>>       xeno_ver = d.getVar('PREFERRED_VERSION_xenomai') or ''
+>>       return xeno_ver.startswith('3.0') or xeno_ver == 'stable-3.0.x'
+>>   
+>> +def is_5_4_branch(d):
+>> +    linux_ver = d.getVar('LATEST_GIT_BRANCH') or ''
+>> +    return linux_ver.startswith('5.4')
+>> +
+>>   GIT_REPO_amd64 = "${@'ipipe.git' if is_xeno_3_0(d) else 'ipipe-x86.git'}"
+>> -GIT_BRANCH_amd64 = "${@'ipipe-4.4.y-cip' if is_xeno_3_0(d) else 'ipipe-x86-5.4.y'}"
+>> +GIT_BRANCH_amd64 = "${@'ipipe-4.4.y-cip' if is_xeno_3_0(d) else 'ipipe-x86-5.4.y' if is_5_4_branch(d) else 'ipipe-x86-4.19.y'}"
+>>   
+>>   GIT_REPO_armhf = "${@'ipipe.git' if is_xeno_3_0(d) else 'ipipe-arm.git'}"
+>>   GIT_BRANCH_armhf = "${@'ipipe-4.4.y-cip' if is_xeno_3_0(d) else 'ipipe/master'}"
+>> diff --git a/scripts/get-build-id.sh b/scripts/get-build-id.sh
+>> index ace70c6..71f4413 100755
+>> --- a/scripts/get-build-id.sh
+>> +++ b/scripts/get-build-id.sh
+>> @@ -17,7 +17,7 @@ if [ -z "${name}" ]; then
+>>       fi
+>>   index=0
+>>   JSON=$(curl -s --header "PRIVATE-TOKEN: ${API_TOKEN}" "${CI_API_V4_URL}/projects/${CI_PROJECT_ID}/pipelines/${CI_PIPELINE_ID}/jobs?scope[]=success"  )
+>> -while  [ ${index} -le ${MAX_TEST:-16} ]
+>> +while  [ ${index} -le ${MAX_TEST:-26} ]
+> 
+> Where does MAX_TEST come from, BTW? CI env var?
+
+MAX TEST can be an CI variable.
+> 
+> Why do we need that limit at all? Seems we should rather detect if the
+> build_name extraction below starts to fail and terminate with an error then.
+> 
+
+I don't remember why i used the counting loop and will check if a check 
+against null is enough.
+
+>>   do
+>>       build_name=$(echo "${JSON}"  | tr '\r\n' ' ' | jq -r ".[${index}].name")
+>>       if [ "$build_name" = "${name}" ]; then
 >>
->> my idea is defining a new event class cobalt_clock_timespec64, and every
->> trace event(clock_settime, clock_gettime and clock_getres) goes to it
->> and the original event class,cobalt_clock_timespec, will be removed
->> eventually.
->>
->> if i understand you correctly(If that came from a legacy 32-bit or a new
->> 64-bit syscall will be traced via the cobalt syscall event), i just need
->> to remove trace_cobalt_clock_settime from __cobalt_clock_settime?
->>
->
-> I didn't look at the details yet, but the idea is having a common
-> settime64 path where also the trace event is issued. The 32-bit entry
-> path does a conversion first in order to use the common implementation.
-> And whether we were taking the 32 or the 64-bit path can be looked up in
-> the traces by checking the cobalt syscall entry event.
->
+> 
 > Jan
-
-32bit timespec is only used in interface level, internally, 
-clock_settime for 32bit also uses timespec64 as well as clock_settime64. 
-It works this way:
-
-ts64.tv_sec = ts.tv_sec
-ts64.tv_nsec = ts.tv_nsec
-
-as a result, trace_cobalt_clock_settime will accept timespec64 instead 
-of timespec.
-
-The code in cobalt-posix.h looks redundant only because of clock_gettime 
-and clock_getres. It will look clean as it used to be after i finish 
-"clock_gettime and clock_getres".
-
-There is no impact, what do you think?
-
-chensong
-
-
->
-
+> 
+Quirin
 
 
