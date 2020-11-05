@@ -1,20 +1,13 @@
-From: "Chen, Hongzhan" <hongzhan.chen@intel.com>
-Subject: RE: [Xenomai over dovetail] Kernel hang in rcu_barrier after
- xenomai_init
-Date: Thu, 19 Nov 2020 05:34:32 +0000
-Message-ID: <MWHPR11MB1710A24CFCD223D9DC4E955FF2E00@MWHPR11MB1710.namprd11.prod.outlook.com>
-References: <MWHPR11MB17100D1F48C3EF22B3C6A329F2E60@MWHPR11MB1710.namprd11.prod.outlook.com>
- <87lff5rtxl.fsf@xenomai.org>
- <CY4PR11MB170373477D42F1E0F39C1162F2E50@CY4PR11MB1703.namprd11.prod.outlook.com>
- <CY4PR11MB17031A0E3842869F923D353FF2E50@CY4PR11MB1703.namprd11.prod.outlook.com>
- <87tutrolj3.fsf@xenomai.org> <877dqkfgl2.fsf@xenomai.org>
- <MWHPR11MB171050871553AA646AE42130F2E20@MWHPR11MB1710.namprd11.prod.outlook.com>
- <87lfezetj9.fsf@xenomai.org>
-In-Reply-To: <87lfezetj9.fsf@xenomai.org>
-Content-Language: en-US
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
+References: <f049bc90-fc68-3fff-1d1f-b223fc6871a4@siemens.com>
+In-Reply-To: <f049bc90-fc68-3fff-1d1f-b223fc6871a4@siemens.com>
+From: Greg Gallagher <greg@embeddedgreg.com>
+Date: Thu, 5 Nov 2020 10:45:39 -0500
+Message-ID: <CALLqZ8T4ASfCtCu2UxHLFYZA+0u+75KyxEdg9DSSgV0j1xWBAg@mail.gmail.com>
+Subject: Re: [xenomai-images][PATCH] linux: arm: Enable Xenomai GPIO and SPI
+ driver for BBB
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -23,147 +16,54 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Philippe Gerum <rpm@xenomai.org>, "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Jan Kiszka <jan.kiszka@siemens.com>
+Cc: =?UTF-8?Q?Deniz_U=C4=9Fur?= <deniz343@gmail.com>, Xenomai <xenomai@xenomai.org>
 
+On Thu, Nov 5, 2020 at 6:22 AM Jan Kiszka via Xenomai <xenomai@xenomai.org>
+wrote:
 
-
------Original Message-----
-From: Philippe Gerum <rpm@xenomai.org>=20
-Sent>: Wednesday, November 18, 2020 2:19 AM
-To: >Chen, Hongzhan <hongzhan.chen@intel.com>
-Cc: >xenomai@xenomai.org
-Subj>ect: Re: [Xenomai over dovetail] Kernel hang in rcu_barrier after xeno=
-mai_init
-    >
-    >
-Chen>, Hongzhan <hongzhan.chen@intel.com> writes:
-    >
->>-->---Original Message-----
->>Fr>om: Philippe Gerum <rpm@xenomai.org>=20
->>Se>nt: Tuesday, November 17, 2020 6:01 PM
->>To>: Chen, Hongzhan <hongzhan.chen@intel.com>
->>Cc>: xenomai@xenomai.org
->>Su>bject: Re: [Xenomai over dovetail] Kernel hang in rcu_barrier after xe=
-nomai_init
->>  >
->>  >
->>Ph>ilippe Gerum <rpm@xenomai.org> writes:
->>  >
->>> >Chen, Hongzhan <hongzhan.chen@intel.com> writes:
->>> >
->>>>> I have some clues about this issue. After xenomai_init is called, it =
-seems that rcu_core
->>>>> is never called from unknow startpoint ever after call call_rcu, whic=
-h is supposed to be=20
->>>>> called by rcu softirq handler after we call call_rcu.
->>>>> I am trying to debug why rcu softirq is not triggerred after then.
->>> >
->>> >
->>> >You may want to make sure this is not offloaded to RCU kthreads,
->>> >typically in case you run with nocbs settings. This said, tracing
->>> >rcu_core() would match both.
->>> >
->>> >I did not reproduce the issue you observed with the EVL core, testing
->>> >v5.8, v5.9 and v5.10-rc3. I'm currently running an overnight test to
->>> >confirm this. This is why we need to be confident that an half-baked
->>> >port on top of Dovetail is not causing this.
->>  >
->>44> hours uninterrupted runtime on armv7, x86 and armv8, under stress: no
->>is>sue detected so far. This does not rule out a Dovetail bug yet, but
->>th>e possibility of a Cobalt issue is real.
->>  >
->>-->=20
->>Ph>ilippe.
+> From: Jan Kiszka <jan.kiszka@siemens.com>
 >
-> Thanks for your feedback.  I already found the root cause for the issue. =
-According to my
-> debug on evl, I found that actually after call tick_install_proxy , the o=
-riginal=20
-> hrtimer_interrupt would be called by proxy_irq_handler instead of   __sys=
-vec_apic_timer_interrupt
-> so that  rcu_sched_clock_irq still can be successfully called by  update_=
-process_times and
-> invoke_rcu_core would always be called and callback registerred by call_r=
-cu can be successfully handled.
-> But in my case, after call tick_install_proxy in xenomai, update_process_=
-times is never called and then
-> cause hang in rcu_barrier issue later. I would continue to check why fail=
- to replace timer irq in my case.
+> The GPIO driver still needs xenomai-next, though.
 >
->Did you try running Dovetail's boot time pipeline torture tests? Those
->would exercise the basic features, such as the tick proxy device,
->without any dependencies whatsoever. You may need to disable Cobalt to
->do so, in order to leave the out-of-band stage available to them at boot.
+> Suggested-by: Deniz U=C4=9Fur <deniz343@gmail.com>
+> Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
+> ---
+>   recipes-kernel/linux/files/armhf_defconfig | 2 ++
+>   1 file changed, 2 insertions(+)
 >
->CONFIG_IRQ_PIPELINE_TORTURE_TESTS=3Dy
->CONFIG_XENOMAI=3Dn
+> diff --git a/recipes-kernel/linux/files/armhf_defconfig
+> b/recipes-kernel/linux/files/armhf_defconfig
+> index 99fb0a8..567b61b 100644
+> --- a/recipes-kernel/linux/files/armhf_defconfig
+> +++ b/recipes-kernel/linux/files/armhf_defconfig
+> @@ -541,6 +541,7 @@ CONFIG_XENO_DRIVERS_GPIO_MXC=3Dm
+>   CONFIG_XENO_DRIVERS_GPIO_SUN8I_H3=3Dm
+>   CONFIG_XENO_DRIVERS_GPIO_ZYNQ7000=3Dm
+>   CONFIG_XENO_DRIVERS_GPIO_XILINX=3Dm
+> +CONFIG_XENO_DRIVERS_GPIO_OMAP=3Dm
+>   # CONFIG_XENO_DRIVERS_GPIO_DEBUG is not set
+>    #
+> @@ -554,6 +555,7 @@ CONFIG_XENO_DRIVERS_GPIOPWM=3Dm
+>   CONFIG_XENO_DRIVERS_SPI=3Dm
+>   CONFIG_XENO_DRIVERS_SPI_BCM2835=3Dm
+>   CONFIG_XENO_DRIVERS_SPI_SUN6I=3Dm
+> +CONFIG_XENO_DRIVERS_SPI_OMAP2_MCSPI_RT=3Dm
+>   # CONFIG_XENO_DRIVERS_SPI_DEBUG is not set
+>    #
+> --
+> 2.26.2
 >
->If successful, those tests on a quad-core CPU should yield that kind of
->traces in the kernel log:
 >
->[    4.413767] Starting IRQ pipeline tests...
->[    4.413772] IRQ pipeline: high-priority torture stage added.
->[    4.423571] irq_pipeline-torture: CPU2 initiates stop_machine()
->[    4.429527] irq_pipeline-torture: CPU3 responds to stop_machine()
->[    4.429534] irq_pipeline-torture: CPU1 responds to stop_machine()
->[    4.429538] irq_pipeline-torture: CPU0 responds to stop_machine()
->[    4.447945] CPU0: proxy tick device registered (199.20MHz)
->[    4.447948] CPU1: proxy tick device registered (199.20MHz)
->[    4.447954] CPU3: proxy tick device registered (199.20MHz)
->[    4.464448] CPU2: proxy tick device registered (199.20MHz)
->[    4.469985] irq_pipeline-torture: CPU2: irq_work handled
->[    4.475322] irq_pipeline-torture: CPU2: in-band->in-band irq_work trigg=
-er works
->[    4.482648] irq_pipeline-torture: CPU2: stage escalation request works
->[    4.482650] irq_pipeline-torture: CPU2: irq_work handled
->[    4.494523] irq_pipeline-torture: CPU2: oob->in-band irq_work trigger w=
-orks
->[    5.523585] CPU3: proxy tick device unregistered
->[    5.523590] CPU1: proxy tick device unregistered
->[    5.523592] CPU0: proxy tick device unregistered
->[    5.537459] CPU2: proxy tick device unregistered
->[    5.542113] IRQ pipeline: torture stage removed.
->[    5.546753] IRQ pipeline tests OK.
+> --
+> Siemens AG, T RDA IOT
+> Corporate Competence Center Embedded Linux
+
+
+Looks good to me
+
+Greg
+
 >
->Anything suspicious there instead would point to a Dovetail-related
->issue.
 >
->--=20
->Philippe.
-
-The pipeline tests OK after I enable CONFIG_IRQ_PIPELINE_TORTURE_TEST and
-disable xenomai as you suggested.=20
-
-When I try to debug this issue and add some printk info for functions=20
-such as clockevents_register_proxy in files like=20
-kernel/time/tick-proxy.c and kernel/time/clockevents.c, kernel hang in=20
-mark_readonly->rcu_barrier would suddenly dissappear, kernel
-can boot into nfsroot and debian after then. But system would still hang in=
-=20
-other ruc_barrier during systemd trying to boot up some services.
-I try to count interrupt in founction handle_apic_irq of arch/x86/kernel/ir=
-q_pipeline.c
-for each cpu and then print this irq number in rcu_barrier for debuging and=
-=20
-finally found that actually cpu0  stop counting from very early before hang=
- in
-mark_readonly->rcu_barrier of kernel. After further debug, I found that cpu=
-0=20
-stop counting after call tick_install_proxy when kernel hang in=20
-mark_readonly->rcu_barrier.=20
-
-For another hang case that system can boot into systemd but hang in other=20
-rcu_barrier, I found that actually other three cpus randomly stop producing=
-=20
-apic timer interrupt except cpu0 after call tick_install_proxy according to=
- my test.
-
-I do not know what may cause this issue. Do you have any suggestions about =
-it?
-
-Regards
-
-Hongzhan Chen
-
-
-
+>
