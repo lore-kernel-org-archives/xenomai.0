@@ -1,26 +1,12 @@
-References: <MWHPR11MB17100D1F48C3EF22B3C6A329F2E60@MWHPR11MB1710.namprd11.prod.outlook.com>
- <87lff5rtxl.fsf@xenomai.org>
- <CY4PR11MB170373477D42F1E0F39C1162F2E50@CY4PR11MB1703.namprd11.prod.outlook.com>
- <CY4PR11MB17031A0E3842869F923D353FF2E50@CY4PR11MB1703.namprd11.prod.outlook.com>
- <87tutrolj3.fsf@xenomai.org> <877dqkfgl2.fsf@xenomai.org>
- <MWHPR11MB171050871553AA646AE42130F2E20@MWHPR11MB1710.namprd11.prod.outlook.com>
- <87lfezetj9.fsf@xenomai.org>
- <MWHPR11MB1710A24CFCD223D9DC4E955FF2E00@MWHPR11MB1710.namprd11.prod.outlook.com>
- <MWHPR11MB17102B8431E8FB361CBA7637F2E00@MWHPR11MB1710.namprd11.prod.outlook.com>
- <72043f71-f89a-9167-b0cb-034493b966ee@siemens.com>
- <87k0uh4j7f.fsf@xenomai.org>
- <MWHPR11MB1710FF22D02B4C31494AA315F2FF0@MWHPR11MB1710.namprd11.prod.outlook.com>
- <877dqg2h0j.fsf@xenomai.org>
- <MWHPR11MB17104A3ABA4757E973ED5736F2F90@MWHPR11MB1710.namprd11.prod.outlook.com>
- <87wny591q6.fsf@xenomai.org>
-From: Philippe Gerum <rpm@xenomai.org>
-Subject: Re: [Xenomai over dovetail] Kernel hang in rcu_barrier after
- xenomai_init
-In-reply-to: <87wny591q6.fsf@xenomai.org>
-Date: Sat, 28 Nov 2020 12:33:24 +0100
-Message-ID: <87tut990mz.fsf@xenomai.org>
+From: "Q. Gylstorff" <Quirin.Gylstorff@siemens.com>
+Subject: [xenomai-images][PATCH v2 4/4] scripts/get-build-id.sh: replace
+ counter
+Date: Fri,  6 Nov 2020 15:56:32 +0100
+Message-Id: <20201106145632.2951-5-Quirin.Gylstorff@siemens.com>
+In-Reply-To: <20201106145632.2951-1-Quirin.Gylstorff@siemens.com>
+References: <20201106145632.2951-1-Quirin.Gylstorff@siemens.com>
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Transfer-Encoding: 8bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -29,17 +15,54 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Philippe Gerum <rpm@xenomai.org>
-Cc: "Chen, Hongzhan" <hongzhan.chen@intel.com>, xenomai@xenomai.org
+To: xenomai@xenomai.org, jan.kiszka@siemens.com
 
+From: Quirin Gylstorff <quirin.gylstorff@siemens.com>
 
-Philippe Gerum via Xenomai <xenomai@xenomai.org> writes:
-> Eventually, you may want to instrument/ftrace the idling code inside the
-> do_idle() loop (kernel/sched/idle.c) to make sure that in-band irqs are
-> enabled as expected (i.e. irqs_enabled() == true) every time
+The loop to get the build index for artifact api was using
+a counter to abort. This patch aborts the loop if the index
+is above a valid value without guessing the amount of builds.
 
-errr, well, this would make more sense: irqs_disabled() == false
+If no build was found the script returns an error as the
+following lava test cannot access artifacts.
 
+Signed-off-by: Quirin Gylstorff <quirin.gylstorff@siemens.com>
+---
+ scripts/get-build-id.sh | 15 ++++++++++-----
+ 1 file changed, 10 insertions(+), 5 deletions(-)
+
+diff --git a/scripts/get-build-id.sh b/scripts/get-build-id.sh
+index ace70c6..8581edf 100755
+--- a/scripts/get-build-id.sh
++++ b/scripts/get-build-id.sh
+@@ -14,16 +14,21 @@ name=$1
+ if [ -z "${name}" ]; then
+     echo "no build name was given"
+     exit -1
+-    fi
++fi
+ index=0
+ JSON=$(curl -s --header "PRIVATE-TOKEN: ${API_TOKEN}" "${CI_API_V4_URL}/projects/${CI_PROJECT_ID}/pipelines/${CI_PIPELINE_ID}/jobs?scope[]=success"  )
+-while  [ ${index} -le ${MAX_TEST:-16} ]
++while  build_name=$(echo "${JSON}"  | tr '\r\n' ' ' | jq -re ".[${index}].name")
+ do
+-    build_name=$(echo "${JSON}"  | tr '\r\n' ' ' | jq -r ".[${index}].name")
+-    if [ "$build_name" = "${name}" ]; then
++    if [ "${build_name}" = "${name}" ]; then
+         break
+     fi
+      index=$((index+1))
+ done
+ id=$(echo "${JSON}"  | tr '\r\n' ' ' | jq -r ".[${index}].id")
+-echo $id
++if [ "$id" = "null" ]; then
++    >&2 echo "ERROR: did not find build with name: $name"
++    return 1
++else
++    echo $id
++    return 0
++fi
 -- 
-Philippe.
+2.20.1
+
 
