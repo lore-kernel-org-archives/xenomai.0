@@ -1,19 +1,11 @@
+From: "Q. Gylstorff" <Quirin.Gylstorff@siemens.com>
+Subject: [xenomai-images][PATCH v2 3/4] ci: Add xenomai-version to build
+Date: Fri,  6 Nov 2020 15:56:31 +0100
+Message-Id: <20201106145632.2951-4-Quirin.Gylstorff@siemens.com>
+In-Reply-To: <20201106145632.2951-1-Quirin.Gylstorff@siemens.com>
+References: <20201106145632.2951-1-Quirin.Gylstorff@siemens.com>
 MIME-Version: 1.0
-References: <CAFZ-hKizgaCMi5=P-WifrfiBSLNdrOs_TAke++MVCi2j=xYfiQ@mail.gmail.com>
- <0b9b2349-1a10-db7d-5c4a-1f58add978b3@siemens.com>
- <CAFZ-hKjf2Bha=doOBcup+tAzCHmF1SYq6LT2mC3bkZ1hYu97+g@mail.gmail.com>
- <6ae59753-ac6a-2960-e76c-977226ece20e@siemens.com>
- <CAFZ-hKjYAmYYrmvCrFr-Vf=gmcn8n6hfAn1L6QygYC8sJp=87w@mail.gmail.com>
- <354ddd30-ca89-656c-8bf0-274e1c945e36@siemens.com>
- <CALLqZ8Sifa=CJhEV5YO6NOU2Wv34xY1tAMg4+Mcughiruwme1A@mail.gmail.com>
- <CAFZ-hKiRH7uXKQK_vnsTmFb2+ANqroB-x8nxPjUSsnZebhm+yA@mail.gmail.com>
-In-Reply-To: <CAFZ-hKiRH7uXKQK_vnsTmFb2+ANqroB-x8nxPjUSsnZebhm+yA@mail.gmail.com>
-From: Greg Gallagher <greg@embeddedgreg.com>
-Date: Thu, 19 Nov 2020 14:05:38 -0500
-Message-ID: <CALLqZ8RHvzaTFba=rVVO+9dmhuZ4JS=sCycKH6f4zsHuVETXbQ@mail.gmail.com>
-Subject: Re: socket: Address family not supported by protocol
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -22,115 +14,212 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Leandro Bucci <guestleandro11@gmail.com>
-Cc: Jan Kiszka <jan.kiszka@siemens.com>, xenomai@xenomai.org
+To: xenomai@xenomai.org, jan.kiszka@siemens.com
 
-On Thu, Nov 19, 2020 at 1:44 PM Leandro Bucci <guestleandro11@gmail.com>
-wrote:
+From: Quirin Gylstorff <quirin.gylstorff@siemens.com>
 
-> is there maybe a way to reinstall missing modules only?
->
-You can rebuild the kernel with the config options Jan mentioned.
+To identify the used xenomai version add the Version name to
+each build job.
 
-Greg
+e.g.:
+build-4.19:board-qemu-amd64:xenomai-next use kernel 4.19 and
+xenomai-next for testing.
 
->
-> Il gio 19 nov 2020, 15:18 Greg Gallagher <greg@embeddedgreg.com> ha
-> scritto:
->
->>
->>
->> On Thu, Nov 19, 2020 at 3:53 AM Jan Kiszka via Xenomai <
->> xenomai@xenomai.org> wrote:
->>
->>> On 19.11.20 09:47, Leandro Bucci wrote:
->>> > I understand so you advise me to forget the Raspberry  and try on a
->>> > normal PC?
->>> >
->>>
->>> You can start getting familiar with Xenomai by trying out
->>> https://gitlab.denx.de/Xenomai/xenomai-images, in a VM (KVM/QEMU) or on
->>> one of the already supported targets.
->>>
->>> Jan
->>>
->>> > Il gio 19 nov 2020, 09:41 Jan Kiszka <jan.kiszka@siemens.com
->>> > <mailto:jan.kiszka@siemens.com>> ha scritto:
->>> >
->>> >     On 19.11.20 09:24, Leandro Bucci wrote:
->>> >     > I don't know, because I used a guide that did everything
->>> automatically
->>> >     > (it was a script).  is this:
->>> >     >  https://github.com/thanhtam-h/rpi4-xeno3/tree/master/prebuilt
->>> >     <https://github.com/thanhtam-h/rpi4-xeno3/tree/master/prebuilt>
->>> >     > <https://github.com/thanhtam-h/rpi4-xeno3/tree/master/prebuilt
->>> >     <https://github.com/thanhtam-h/rpi4-xeno3/tree/master/prebuilt>>
->>> >     > in case how should I load those modules?
->>> >
->>> >     E.g. "modprobe xeno_rtipc-xddp". If that fails, you should talk t=
-o
->>> the
->>> >     folks doing that pre-integration.
->>> >
->>> >     Eventually, we may provide RPi4 preintegration via xenomai-images
->>> as
->>> >     well, but that requires the RPi mess to be upstream first. For
->>> >     Jailhouse, I'm maintaining an extra kernel for the RPi4, but thos=
-e
->>> >     patches are much less invasive than I-pipe/Dovetail are, and that
->>> is
->>> >     already quite some effort.
->>> >
->>> >     Jan
->>> >
->>> >     >
->>> >     > Il gio 19 nov 2020, 08:08 Jan Kiszka <jan.kiszka@siemens.com
->>> >     <mailto:jan.kiszka@siemens.com>
->>> >     > <mailto:jan.kiszka@siemens.com <mailto:jan.kiszka@siemens.com>>=
->
->>> >     ha scritto:
->>> >     >
->>> >     >     On 18.11.20 22:51, Leandro Bucci via Xenomai wrote:
->>> >     >     > Hello to all. I have installed xenomai 3.1 on the
->>> raspberry pi4.
->>> >     >     > The latency and cyclictest examples work great. But
->>> examples
->>> >     like
->>> >     >     > iddp-label and xddp-echo don't work.
->>> >     >     > I get this error:
->>> >     >     > socket: Address family not supported by protocol
->>> >     >     > how can i solve this problem? maybe i need to load the
->>> >     related kernel
->>> >     >     > modules? If yes, how do you do it? sorry but I'm a
->>> beginner.
->>> >     >     >
->>> >     >
->>> >     >     Did you configure these features into your kernel
->>> >     >     (CONFIG_XENO_DRIVERS_RTIPC_IDDP,
->>> >     CONFIG_XENO_DRIVERS_RTIPC_XDDP)? Did
->>> >     >     you load the related modules if they were configured as
->>> modules
->>> >     >     (xeno_rtipc-{xddp,iddp}.ko)?
->>> >     >
->>> >     >     Jan
->>> >     >
->>> >     >     --
->>> >     >     Siemens AG, T RDA IOT
->>> >     >     Corporate Competence Center Embedded Linux
->>> >     >
->>> >
->>> >     --
->>> >     Siemens AG, T RDA IOT
->>> >     Corporate Competence Center Embedded Linux
->>> >
->>>
->> I agree with Jan, it sounds like you are missing the modules, you=E2=80=
-=99ll need
->> to enable them during the kernel configuration stage.
->>   Raspberry Pi 3 has stable support in our ipipe tree, if you have one
->> you could try that first.
->>
->> Greg
->>
->>>
->>>
+Signed-off-by: Quirin Gylstorff <quirin.gylstorff@siemens.com>
+---
+ ci/4_19_builds.yml   | 42 ++++++++++++++++++++++++------------------
+ ci/5_4_builds.yml    | 14 ++++++++------
+ ci/xenomai_3_0_x.yml | 14 ++++++++------
+ 3 files changed, 40 insertions(+), 30 deletions(-)
+
+diff --git a/ci/4_19_builds.yml b/ci/4_19_builds.yml
+index f98edc4..80252af 100644
+--- a/ci/4_19_builds.yml
++++ b/ci/4_19_builds.yml
+@@ -9,74 +9,80 @@
+ # SPDX-License-Identifier: MIT
+ #
+ 
+-build-4.19:board-qemu-amd64:
++build-4.19:board-qemu-amd64:xenomai-next:
+   extends: .build:board-qemu-amd64
+   variables:
+     DEPLOY_DIR_EXTENSION: "4.19"
+ 
+-lava-test-4.19:qemu-amd64:
+-  needs: [ "build-4.19:board-qemu-amd64" ]
++lava-test-4.19:qemu-amd64:xenomai-next:
++  needs: [ "build-4.19:board-qemu-amd64:xenomai-next" ]
+   extends: .lava-test:qemu-amd64
+   variables:
+     DEPLOY_DIR_EXTENSION: "4.19"
+     BUILD_IDENTIFIER: "4.19"
++    TARGET_EXTENSION: ":xenomai-next"
+ 
+-build-4.19:board-qemu-armhf:
++build-4.19:board-qemu-armhf:xenomai-next:
+   extends: .build:board-qemu-armhf
+   variables:
+     DEPLOY_DIR_EXTENSION: "4.19"
+ 
+-lava-test-4.19:qemu-armhf:
+-  needs: [ "build-4.19:board-qemu-armhf" ]
++lava-test-4.19:qemu-armhf:xenomai-next:
++  needs: [ "build-4.19:board-qemu-armhf:xenomai-next" ]
+   extends: .lava-test:qemu-armhf
+   variables:
+     DEPLOY_DIR_EXTENSION: "4.19"
+     BUILD_IDENTIFIER: "4.19"
++    TARGET_EXTENSION: ":xenomai-next"
+ 
+-build-4.19:board-qemu-arm64:
++build-4.19:board-qemu-arm64:xenomai-next:
+   extends: .build:board-qemu-arm64
+   variables:
+     DEPLOY_DIR_EXTENSION: "4.19"
+ 
+-lava-test-4.19:qemu-arm64:
+-  needs: [ "build-4.19:board-qemu-arm64" ]
++lava-test-4.19:qemu-arm64:xenomai-next:
++  needs: [ "build-4.19:board-qemu-arm64:xenomai-next" ]
+   extends: .lava-test:qemu-arm64
+   variables:
+     DEPLOY_DIR_EXTENSION: "4.19"
+     BUILD_IDENTIFIER: "4.19"
++    TARGET_EXTENSION: ":xenomai-next"
+ 
+-build-4.19:board-hikey:
++build-4.19:board-hikey:xenomai-next:
+   extends: .build:board-hikey
+   variables:
+     DEPLOY_DIR_EXTENSION: "4.19"
+ 
+-lava-test-4.19:board-hikey:
+-  needs: [ "build-4.19:board-hikey" ]
++lava-test-4.19:board-hikey:xenomai-next:
++  needs: [ "build-4.19:board-hikey:xenomai-next" ]
+   extends: .lava-test:board-hikey
+   variables:
+     DEPLOY_DIR_EXTENSION: "4.19"
+     BUILD_IDENTIFIER: "4.19"
++    TARGET_EXTENSION: ":xenomai-next"
+ 
+-build-4.19:board-beagle-bone-black:
++build-4.19:board-beagle-bone-black:xenomai-next:
+   extends: .build:board-beagle-bone-black
+   variables:
+     DEPLOY_DIR_EXTENSION: "4.19"
+ 
+-lava-test-4.19:board-beagle-bone-black:
+-  needs: [ "build-4.19:board-beagle-bone-black" ]
++lava-test-4.19:board-beagle-bone-black:xenomai-next:
++  needs: [ "build-4.19:board-beagle-bone-black:xenomai-next" ]
+   extends: .lava-test:board-beagle-bone-black
+   variables:
+     DEPLOY_DIR_EXTENSION: "4.19"
+     BUILD_IDENTIFIER: "4.19"
++    TARGET_EXTENSION: ":xenomai-next"
+ 
+-build-4.19:board-x86-64-efi:
++build-4.19:board-x86-64-efi:xenomai-next:
+   extends: .build:board-x86-64-efi
+   variables:
+     DEPLOY_DIR_EXTENSION: "4.19"
+ 
+-lava-test-4.19:board-x86-64-efi:
+-  needs: [ "build-4.19:board-x86-64-efi" ]
++lava-test-4.19:board-x86-64-efi:xenomai-next:
++  needs: [ "build-4.19:board-x86-64-efi:xenomai-next" ]
+   extends: .lava-test:board-x86-64-efi
+   variables:
+     DEPLOY_DIR_EXTENSION: "4.19"
+     BUILD_IDENTIFIER: "4.19"
++    TARGET_EXTENSION: ":xenomai-next"
+diff --git a/ci/5_4_builds.yml b/ci/5_4_builds.yml
+index 4e8ea76..d7f10fa 100644
+--- a/ci/5_4_builds.yml
++++ b/ci/5_4_builds.yml
+@@ -9,30 +9,32 @@
+ # SPDX-License-Identifier: MIT
+ #
+ 
+-build-5.4:board-qemu-amd64:
++build-5.4:board-qemu-amd64:xenomai-next:
+   extends: .build:board-qemu-amd64
+   variables:
+     LINUX_BUILD_OPTION: ":opt-linux-latest-5.4.yml"
+     DEPLOY_DIR_EXTENSION: "5.4"
+ 
+-lava-test-5.4:qemu-amd64:
+-  needs: [ "build-5.4:board-qemu-amd64" ]
++lava-test-5.4:qemu-amd64:xenomai-next:
++  needs: [ "build-5.4:board-qemu-amd64:xenomai-next" ]
+   extends: .lava-test:qemu-amd64
+   variables:
+     DEPLOY_DIR_EXTENSION: "5.4"
+     BUILD_IDENTIFIER: "5.4"
++    TARGET_EXTENSION: ":xenomai-next"
+ 
+ 
+-build-5.4:board-x86-64-efi:
++build-5.4:board-x86-64-efi:xenomai-next:
+   extends: .build:board-x86-64-efi
+   variables:
+     LINUX_BUILD_OPTION: ":opt-linux-latest-5.4.yml"
+     DEPLOY_DIR_EXTENSION: "5.4"
+ 
+ 
+-lava-test-5.4:board-x86-64-efi:
+-  needs: [ "build-5.4:board-x86-64-efi" ]
++lava-test-5.4:board-x86-64-efi:xenomai-next:
++  needs: [ "build-5.4:board-x86-64-efi:xenomai-next" ]
+   extends: .lava-test:board-x86-64-efi
+   variables:
+     DEPLOY_DIR_EXTENSION: "5.4"
+     BUILD_IDENTIFIER: "5.4"
++    TARGET_EXTENSION: ":xenomai-next"
+diff --git a/ci/xenomai_3_0_x.yml b/ci/xenomai_3_0_x.yml
+index 9dbd8d4..6b868a9 100644
+--- a/ci/xenomai_3_0_x.yml
++++ b/ci/xenomai_3_0_x.yml
+@@ -9,28 +9,30 @@
+ # SPDX-License-Identifier: MIT
+ #
+ 
+-build-4.4:board-beagle-bone-black:
++build-4.4:board-beagle-bone-black:xenomai-3.0.x:
+   extends: .build:board-beagle-bone-black
+   variables:
+     XENOMAI_BUILD_OPTION: ":opt-xenomai-3.0.x.yml"
+     DEPLOY_DIR_EXTENSION: "xenomai-3.0.x"
+ 
+-lava-test-4.4:board-beagle-bone-black:
+-  needs: [ "build-4.4:board-beagle-bone-black" ]
++lava-test-4.4:board-beagle-bone-black:xenomai-3.0.x:
++  needs: [ "build-4.4:board-beagle-bone-black:xenomai-3.0.x" ]
+   extends: .lava-test:board-beagle-bone-black
+   variables:
+     DEPLOY_DIR_EXTENSION: "xenomai-3.0.x"
+     BUILD_IDENTIFIER: "4.4"
++    TARGET_EXTENSION: ":xenomai-3.0.x"
+ 
+-build-4.4:board-x86-64-efi:
++build-4.4:board-x86-64-efi:xenomai-3.0.x:
+   extends: .build:board-x86-64-efi
+   variables:
+     XENOMAI_BUILD_OPTION: ":opt-xenomai-3.0.x.yml"
+     DEPLOY_DIR_EXTENSION: "xenomai-3.0.x"
+ 
+-lava-test-4.4:board-x86-64-efi:
+-  needs: [ "build-4.4:board-x86-64-efi" ]
++lava-test-4.4:board-x86-64-efi:xenomai-3.0.x:
++  needs: [ "build-4.4:board-x86-64-efi:xenomai-3.0.x" ]
+   extends: .lava-test:board-x86-64-efi
+   variables:
+     DEPLOY_DIR_EXTENSION: "xenomai-3.0.x"
+     BUILD_IDENTIFIER: "4.4"
++    TARGET_EXTENSION: ":xenomai-3.0.x"
+-- 
+2.20.1
+
+
