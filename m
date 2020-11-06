@@ -1,14 +1,9 @@
-From: "florian.bezdeka@siemens.com" <florian.bezdeka@siemens.com>
-Subject: Re: [xenomai patch with kernel 5.4.77] Error building the kernel
-Date: Mon, 30 Nov 2020 11:00:20 +0000
-Message-ID: <7786a8bf14ab25145e468bba2b567da76e9fd048.camel@siemens.com>
-References: <CADx0-8DU+evLr-SduY9ru9zKBuhqjYOHPZ=5U4wFnMZAhE5irA@mail.gmail.com>
-In-Reply-To: <CADx0-8DU+evLr-SduY9ru9zKBuhqjYOHPZ=5U4wFnMZAhE5irA@mail.gmail.com>
-Content-Language: en-US
-Content-Type: text/plain; charset="utf-8"
-Content-ID: <D9166D3303AB8E45B1F049CB9B6224C3@EURPRD10.PROD.OUTLOOK.COM>
-Content-Transfer-Encoding: base64
 MIME-Version: 1.0
+From: Lakshmi Dhanaraj <lakshmi.d@teclever.com>
+Date: Fri, 6 Nov 2020 22:00:19 +0530
+Message-ID: <CAJCHRmFDvkPHi-dtJDJ3kLBsrxQKwVC5J5HnGT6KLO0OrtGe5A@mail.gmail.com>
+Subject: Periodic Scheduler in Kernel Space
+Content-Type: text/plain; charset="UTF-8"
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,47 +12,45 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "xenomai@xenomai.org" <xenomai@xenomai.org>, "m.mohamedirfanulla@gmail.com" <m.mohamedirfanulla@gmail.com>
+To: sunshilong <sunshilong369@gmail.com>, =?UTF-8?B?OiDlrZnkuJbpvpkgc3Vuc2hpbG9uZyB2aWEgWGVub21haQ==?= <xenomai@xenomai.org>
 
-DQoNCg0KT24gTW9uLCAyMDIwLTExLTMwIGF0IDExOjQ5ICswMTAwLCBNb2hhbWVkIElyZmFudWxs
-YSBNb2hhbWVkIEFiZHVsbGENCnZpYSBYZW5vbWFpIHdyb3RlOg0KPiBIZWxsbywNCj4gDQo+IEkg
-cGVyZm9ybWVkIHRoZSBpbnN0YWxsYXRpb24gb2YgeGVub21haSAzLjEgd2l0aCBrZXJuZWwgNS40
-Ljc3IGFuZA0KPiBpcGlwZS1jb3JlLTUuNC43Ny14ODYtMi5wYXRjaCBvbiBhIHVidW50dSAyMC4w
-NCBtYWNoaW5lLg0KPiANCj4gSSBlbmNvdW50ZXIgdGhpcyBlcnJvciBkdXJpbmcgdGhlIGJ1aWxk
-Lg0KPiANCj4gwqDCoEdFTiAgICAgdXNyL2luaXRyYW1mc19kYXRhLmNwaW8NCj4gwqDCoEFTICAg
-ICAgdXNyL2luaXRyYW1mc19kYXRhLm8NCj4gwqDCoEFSICAgICAgdXNyL2J1aWx0LWluLmENCj4g
-wqDCoENDICAgICAga2VybmVsL2Nncm91cC9jZ3JvdXAubw0KPiBhcmNoL3g4Ni94ZW5vbWFpL3Ro
-cmVhZC5jOiBJbiBmdW5jdGlvbiDigJh4bmFyY2hfbGVhdmVfcm9vdOKAmToNCj4gYXJjaC94ODYv
-eGVub21haS90aHJlYWQuYzo0NzU6MjogZXJyb3I6IHRvbyBtYW55IGFyZ3VtZW50cyB0byBmdW5j
-dGlvbg0KPiDigJhzd2l0Y2hfZnB1X2ZpbmlzaOKAmQ0KPiDCoMKgc3dpdGNoX2ZwdV9maW5pc2go
-JmN1cnJlbnQtPnRocmVhZC5mcHUsIHNtcF9wcm9jZXNzb3JfaWQoKSk7DQoNClRoZSBzaWduYXR1
-cmUgb2Ygc3dpdGNoX2ZwdV9maW5pc2ggY2hhbmdlZCBpbiA1LjIuIFRoZSBzZWNvbmQgcGFyYW1l
-dGVyDQpoYXMgYmVlbiByZW1vdmVkLiANCg0KUGxlYXNlIGNoZWNrIHRoYXQgeW91IGFyZSB1c2lu
-ZyB0aGUgcmlnaHQgYnJhbmNoLiBUaGUgY2FsbGluZyBjb2RlIGluDQphcmNoL3g4Ni94ZW5vbWFp
-L3RocmVhZC5jIGxvb2tzIGNvcnJlY3QgKGFuZCBpcyBsb2NhdGVkIGF0IGEgZGlmZmVyZW50DQps
-aW5lISk6DQogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIA0KI2lmIExJ
-TlVYX1ZFUlNJT05fQ09ERSA+PSBLRVJORUxfVkVSU0lPTig1LDIsMCkgICAgICAgICAgICAgICAg
-ICAgICAgIA0KICAgICAgICBzd2l0Y2hfZnB1X2ZpbmlzaCgmY3VycmVudC0+dGhyZWFkLmZwdSk7
-ICAgICAgICAgICAgICAgICAgICAgIA0KI2Vsc2UgICAgICAgICAgICAgICAgICAgICAgICAgICAg
-ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIA0KICAgICAgICBzd2l0Y2hfZnB1
-X2ZpbmlzaCgmY3VycmVudC0+dGhyZWFkLmZwdSwgc21wX3Byb2Nlc3Nvcl9pZCgpKTsgIA0KI2Vu
-ZGlmDQoNCj4gwqDCoF4NCj4gSW4gZmlsZSBpbmNsdWRlZCBmcm9tIGFyY2gveDg2L3hlbm9tYWkv
-aW5jbHVkZS9hc20veGVub21haS93cmFwcGVycy5oOjQ0OjAsDQo+IMKgwqDCoMKgwqDCoMKgwqDC
-oMKgwqDCoMKgwqDCoMKgwqBmcm9tIGluY2x1ZGUveGVub21haS9jb2JhbHQva2VybmVsL3RpbWVy
-Lmg6MjgsDQo+IMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqBmcm9tIGluY2x1ZGUv
-eGVub21haS9jb2JhbHQva2VybmVsL3RocmVhZC5oOjI3LA0KPiDCoMKgwqDCoMKgwqDCoMKgwqDC
-oMKgwqDCoMKgwqDCoMKgZnJvbSBhcmNoL3g4Ni94ZW5vbWFpL3RocmVhZC5jOjI1Og0KPiAuL2Fy
-Y2gveDg2L2luY2x1ZGUvYXNtL2ZwdS9pbnRlcm5hbC5oOjU5NDoyMDogbm90ZTogZGVjbGFyZWQg
-aGVyZQ0KPiDCoHN0YXRpYyBpbmxpbmUgdm9pZCBzd2l0Y2hfZnB1X2ZpbmlzaChzdHJ1Y3QgZnB1
-ICpuZXdfZnB1KQ0KPiDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgXg0K
-PiBzY3JpcHRzL01ha2VmaWxlLmJ1aWxkOjI2NTogcmVjaXBlIGZvciB0YXJnZXQgJ2FyY2gveDg2
-L3hlbm9tYWkvdGhyZWFkLm8nDQo+IGZhaWxlZA0KPiBtYWtlWzFdOiAqKiogW2FyY2gveDg2L3hl
-bm9tYWkvdGhyZWFkLm9dIEVycm9yIDENCj4gbWFrZVsxXTogKioqIFdhaXRpbmcgZm9yIHVuZmlu
-aXNoZWQgam9icy4uLi4NCj4gwqDCoENDICAgICAga2VybmVsL2Nncm91cC9yc3RhdC5vDQo+IE1h
-a2VmaWxlOjE3Mjk6IHJlY2lwZSBmb3IgdGFyZ2V0ICdhcmNoL3g4Ni94ZW5vbWFpJyBmYWlsZWQN
-Cj4gbWFrZTogKioqIFthcmNoL3g4Ni94ZW5vbWFpXSBFcnJvciAyDQo+IG1ha2U6ICoqKiBXYWl0
-aW5nIGZvciB1bmZpbmlzaGVkIGpvYnMuLi4uDQo+IMKgwqBDQyAgICAgIGluaXQvZG9fbW91bnRz
-X21kLm8NCj4gwqDCoENDICAgICAga2VybmVsL2RlYnVnL2tkYi9rZGJfaW8ubw0KPiANCj4gVGhh
-bmsgeW91IGZvciB5b3VyIHN1Z2dlc3Rpb25zIG9uIHRoZSBjb25maWcgYW5kIGZpeC4NCj4gDQo+
-IElyZmFuDQoNCg==
+Hi Sunshilong,
 
+I need to create a 12.5ms periodic scheduler in Xenomai(v3.0.5) Kernel
+Space on Linux Kernel 4.9.38 under Ubuntu 18.04.1 LTS.Inside my scheduler I
+have multiple semaphore down functions to wait for the response from
+multiple threads.
+
+1.I created a periodic task using rtdm_task_init() and
+rtdm_task_wait_period() with task priority of 90.It is working fine without
+any overruns for a while and my system is getting hanged if I tries to open
+system monitor Window.May I know why and I need to set any cpu affinity to
+the scheduler thread?But in the driver implementation,for CPU affinity is
+setted as CPU_MASK_ALL by default.
+
+2.Tried another way using kthread_create() along with hrtimer_create().In
+hrtimer callback function,I am not able to use semaphore down func since it
+acts like an interrupt.So I created a separate thread in which my sem_downs
+are added and waiting for another semaphore trigger from hrtimer callback()
+function.
+But here the semaphore trigger from the hrtimer exceeds 12.5 ms upto 18ms
+under load.
+
+The issue is that in my first case,the timings are ok but the system
+hangs,in my second case system not hanging but timing exceeds.
+
+I verified the timings of both the cases by increasing CPU Load using
+"taskset -c (0...7) yes" and stress.Is this the correct way to verify the
+stability of my scheduler in kernel space?
+
+I was struck with this problem for more than a week, please help me out to
+solve the issue as soon as possible.Awaiting for your reply.
+
+
+
+
+
+
+With Thanks & Regards,
+
+Lakshmi.D
