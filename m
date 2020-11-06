@@ -1,17 +1,17 @@
-Subject: Re: socket: Address family not supported by protocol
-References: <CAFZ-hKizgaCMi5=P-WifrfiBSLNdrOs_TAke++MVCi2j=xYfiQ@mail.gmail.com>
- <0b9b2349-1a10-db7d-5c4a-1f58add978b3@siemens.com>
- <CAFZ-hKjf2Bha=doOBcup+tAzCHmF1SYq6LT2mC3bkZ1hYu97+g@mail.gmail.com>
- <6ae59753-ac6a-2960-e76c-977226ece20e@siemens.com>
- <CAFZ-hKjYAmYYrmvCrFr-Vf=gmcn8n6hfAn1L6QygYC8sJp=87w@mail.gmail.com>
-From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <354ddd30-ca89-656c-8bf0-274e1c945e36@siemens.com>
-Date: Thu, 19 Nov 2020 09:52:20 +0100
+Subject: Re: [xenomai-images][PATCH 3/4] ci: Split build and add 5.4 builds
+References: <20201104161154.32366-1-Quirin.Gylstorff@siemens.com>
+ <20201104161154.32366-4-Quirin.Gylstorff@siemens.com>
+ <26554d28-7219-f8d9-8739-e474d30a3f5a@siemens.com>
+ <15c9438c-2488-efa7-4f17-e1f006c8b01e@siemens.com>
+ <fa36f3e1-b454-edaf-f843-6b7efc40eb13@siemens.com>
+From: Gylstorff Quirin <quirin.gylstorff@siemens.com>
+Message-ID: <9c705457-2198-5af7-ecdb-27a39a8bdb15@siemens.com>
+Date: Fri, 6 Nov 2020 14:39:42 +0100
 MIME-Version: 1.0
-In-Reply-To: <CAFZ-hKjYAmYYrmvCrFr-Vf=gmcn8n6hfAn1L6QygYC8sJp=87w@mail.gmail.com>
-Content-Type: text/plain; charset="utf-8"
+In-Reply-To: <fa36f3e1-b454-edaf-f843-6b7efc40eb13@siemens.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -20,75 +20,37 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Leandro Bucci <guestleandro11@gmail.com>, xenomai@xenomai.org
+To: Jan Kiszka <jan.kiszka@siemens.com>, xenomai@xenomai.org
 
-On 19.11.20 09:47, Leandro Bucci wrote:
-> I understand so you advise me to forget the Raspberry  and try on a
-> normal PC?
+
+
+On 11/5/20 10:39 AM, Jan Kiszka wrote:
+> On 05.11.20 10:30, Gylstorff Quirin wrote:
+>>
+>>
+>> On 11/4/20 7:28 PM, Jan Kiszka wrote:
+>>> Would be good the express that correlation between kernel version and 
+>>> Xenomai version somehow as well. Longer job names? Or is there some 
+>>> better way?
+>>
+>> We can use longer names or add tags.
+>>
+> 
+> If tags a well visible in the UI, I'm fine. Key point for me is that is 
+> clear by looking at the CI overviews what has been tested, conceptually 
+> (actual git IDs require a look into the log, I know).
+> 
+> Jan
 > 
 
-You can start getting familiar with Xenomai by trying out
-https://gitlab.denx.de/Xenomai/xenomai-images, in a VM (KVM/QEMU) or on
-one of the already supported targets.
+I tested tags and they are visible in the ui[1].
+But you need to add the tags to the runner as their purpose is to select 
+an specific runner.
 
-Jan
+I would go with longer names.
 
-> Il gio 19 nov 2020, 09:41 Jan Kiszka <jan.kiszka@siemens.com
-> <mailto:jan.kiszka@siemens.com>> ha scritto:
-> 
->     On 19.11.20 09:24, Leandro Bucci wrote:
->     > I don't know, because I used a guide that did everything automatically
->     > (it was a script).  is this: 
->     >  https://github.com/thanhtam-h/rpi4-xeno3/tree/master/prebuilt
->     <https://github.com/thanhtam-h/rpi4-xeno3/tree/master/prebuilt>
->     > <https://github.com/thanhtam-h/rpi4-xeno3/tree/master/prebuilt
->     <https://github.com/thanhtam-h/rpi4-xeno3/tree/master/prebuilt>>
->     > in case how should I load those modules?
-> 
->     E.g. "modprobe xeno_rtipc-xddp". If that fails, you should talk to the
->     folks doing that pre-integration.
-> 
->     Eventually, we may provide RPi4 preintegration via xenomai-images as
->     well, but that requires the RPi mess to be upstream first. For
->     Jailhouse, I'm maintaining an extra kernel for the RPi4, but those
->     patches are much less invasive than I-pipe/Dovetail are, and that is
->     already quite some effort.
-> 
->     Jan
-> 
->     >
->     > Il gio 19 nov 2020, 08:08 Jan Kiszka <jan.kiszka@siemens.com
->     <mailto:jan.kiszka@siemens.com>
->     > <mailto:jan.kiszka@siemens.com <mailto:jan.kiszka@siemens.com>>>
->     ha scritto:
->     >
->     >     On 18.11.20 22:51, Leandro Bucci via Xenomai wrote:
->     >     > Hello to all. I have installed xenomai 3.1 on the raspberry pi4.
->     >     > The latency and cyclictest examples work great. But examples
->     like
->     >     > iddp-label and xddp-echo don't work.
->     >     > I get this error:
->     >     > socket: Address family not supported by protocol
->     >     > how can i solve this problem? maybe i need to load the
->     related kernel
->     >     > modules? If yes, how do you do it? sorry but I'm a beginner.
->     >     >
->     >
->     >     Did you configure these features into your kernel
->     >     (CONFIG_XENO_DRIVERS_RTIPC_IDDP,
->     CONFIG_XENO_DRIVERS_RTIPC_XDDP)? Did
->     >     you load the related modules if they were configured as modules
->     >     (xeno_rtipc-{xddp,iddp}.ko)?
->     >
->     >     Jan
->     >
->     >     --
->     >     Siemens AG, T RDA IOT
->     >     Corporate Competence Center Embedded Linux
->     >
-> 
->     -- 
->     Siemens AG, T RDA IOT
->     Corporate Competence Center Embedded Linux
-> 
+[1]: 
+https://gitlab.com/Quirin.Gy/xenomai-images-test/-/pipelines/212770080/builds
+
+Quirin
 
