@@ -1,9 +1,8 @@
-From: Philippe  Gerum <rpm@xenomai.org>
-Subject: [PATCH] copperplate/timerobj: fix start/start, start/stop races
-Date: Fri,  4 Dec 2020 16:31:04 +0100
-Message-Id: <20201204153104.2522806-1-rpm@xenomai.org>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+From: hongzha1 <hongzhan.chen@intel.com>
+Subject: [PATCH 01/15] cobalt/sched: init RESCHEDULE_OOB_IPI and register
+ interrupt handler
+Date: Mon,  9 Nov 2020 02:50:13 -0500
+Message-Id: <20201109075027.14760-1-hongzhan.chen@intel.com>
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -12,114 +11,91 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
+To: jan.kiszka@siemens.com, xenomai@xenomai.org
 
-From: Philippe Gerum <rpm@xenomai.org>
+create and register RESCHEDULE_OOB_IPI interrupt handler
 
-Concurrent timer start vs start, or start vs stop operations may end
-up confusing the logic, like:
-
-- a periodic timer being reinserted into the dispatch queue while
-  disabled.
-
-- dirty reads of inconsistent ( date, interval, handler ) triplets by
-  the dispatch loop, as the timer properties are being updated
-  concurrently.
-
-Fix this by moving all updates to the timer properties under the
-protection of the dispatch lock (svlock), likewise for loads.
-
-Issue reported by Ronny Meeus, with a preliminary fix:
-https://xenomai.org/pipermail/xenomai/2020-December/043907.html
-
-Signed-off-by: Philippe Gerum <rpm@xenomai.org>
+Signed-off-by: hongzha1 <hongzhan.chen@intel.com>
 ---
- lib/copperplate/timerobj.c | 27 ++++++++++++++++++---------
- 1 file changed, 18 insertions(+), 9 deletions(-)
+ kernel/cobalt/sched.c | 38 +++++++++++++++++++++++++++++++-------
+ 1 file changed, 31 insertions(+), 7 deletions(-)
 
-diff --git a/lib/copperplate/timerobj.c b/lib/copperplate/timerobj.c
-index cbfcda566..08cc0d3b9 100644
---- a/lib/copperplate/timerobj.c
-+++ b/lib/copperplate/timerobj.c
-@@ -98,6 +98,7 @@ static int server_prologue(void *arg)
+diff --git a/kernel/cobalt/sched.c b/kernel/cobalt/sched.c
+index f39becb90..36eff09d4 100644
+--- a/kernel/cobalt/sched.c
++++ b/kernel/cobalt/sched.c
+@@ -30,6 +30,13 @@
+ #define CREATE_TRACE_POINTS
+ #include <trace/events/cobalt-core.h>
  
- static void *timerobj_server(void *arg)
- {
-+	void (*handler)(struct timerobj *tmobj);
- 	struct timespec now, value, interval;
- 	struct timerobj *tmobj, *tmp;
- 	sigset_t set;
-@@ -120,17 +121,18 @@ static void *timerobj_server(void *arg)
- 
- 		pvlist_for_each_entry_safe(tmobj, tmp, &svtimers, next) {
- 			value = tmobj->itspec.it_value;
-+			interval = tmobj->itspec.it_interval;
-+			handler = tmobj->handler;
- 			if (timespec_after(&value, &now))
- 				break;
- 			pvlist_remove_init(&tmobj->next);
--			interval = tmobj->itspec.it_interval;
- 			if (interval.tv_sec > 0 || interval.tv_nsec > 0) {
- 				timespec_add(&tmobj->itspec.it_value,
- 					     &value, &interval);
- 				timerobj_enqueue(tmobj);
- 			}
- 			write_unlock(&svlock);
--			tmobj->handler(tmobj);
-+			handler(tmobj);
- 			write_lock_nocancel(&svlock);
- 		}
- 
-@@ -218,8 +220,7 @@ int timerobj_start(struct timerobj *tmobj,
- 		   void (*handler)(struct timerobj *tmobj),
- 		   struct itimerspec *it) /* lock held, dropped */
- {
--	tmobj->handler = handler;
--	tmobj->itspec = *it;
-+	int ret = 0;
- 
- 	/*
- 	 * We hold the queue lock long enough to prevent the timer
-@@ -232,14 +233,23 @@ int timerobj_start(struct timerobj *tmobj,
- 	 */
- 	write_lock_nocancel(&svlock);
- 
--	if (__RT(timer_settime(tmobj->timer, TIMER_ABSTIME, it, NULL)))
--		return __bt(-errno);
-+       if (pvholder_linked(&tmobj->next))
-+               pvlist_remove_init(&tmobj->next);
++struct xn_machine_cpudata {
++};
 +
-+	tmobj->handler = handler;
-+	tmobj->itspec = *it;
++DEFINE_PER_CPU(struct xn_machine_cpudata, xn_machine_cpudata);
 +
-+	if (__RT(timer_settime(tmobj->timer, TIMER_ABSTIME, it, NULL))) {
-+		ret = __bt(-errno);
-+		goto fail;
-+	}
- 
- 	timerobj_enqueue(tmobj);
-+fail:
- 	write_unlock(&svlock);
- 	timerobj_unlock(tmobj);
- 
--	return 0;
-+	return ret;
++static void xnsched_destroy(struct xnsched *sched);
++
+ /**
+  * @ingroup cobalt_core
+  * @defgroup cobalt_core_sched Thread scheduling control
+@@ -224,10 +231,18 @@ static void xnsched_init(struct xnsched *sched, int cpu)
+ #endif /* CONFIG_XENO_OPT_WATCHDOG */
  }
  
- int timerobj_stop(struct timerobj *tmobj) /* lock held, dropped */
-@@ -251,10 +261,9 @@ int timerobj_stop(struct timerobj *tmobj) /* lock held, dropped */
- 	if (pvholder_linked(&tmobj->next))
- 		pvlist_remove_init(&tmobj->next);
++static irqreturn_t reschedule_interrupt(int irq, void *dev_id)
++{
++	__xnsched_run_handler();
++
++	return IRQ_HANDLED;
++}
++
+ void xnsched_init_all(void)
+ {
+ 	struct xnsched *sched;
+ 	int cpu;
++	int ret;
  
--	write_unlock(&svlock);
--
- 	__RT(timer_settime(tmobj->timer, 0, &itimer_stop, NULL));
- 	tmobj->handler = NULL;
-+	write_unlock(&svlock);
- 	timerobj_unlock(tmobj);
+ 	for_each_online_cpu(cpu) {
+ 		sched = &per_cpu(nksched, cpu);
+@@ -235,12 +250,22 @@ void xnsched_init_all(void)
+ 	}
  
- 	return 0;
+ #ifdef CONFIG_SMP
+-#warning TODO
+-/*	ipipe_request_irq(&xnsched_realtime_domain,
+-			  IPIPE_RESCHEDULE_IPI,
+-			  (ipipe_irq_handler_t)__xnsched_run_handler,
+-			  NULL, NULL);*/
++	ret = __request_percpu_irq(RESCHEDULE_OOB_IPI,
++			reschedule_interrupt,
++			IRQF_OOB,
++			"Xenomai reschedule",
++			&xn_machine_cpudata);
++	if (ret)
++		goto cleanup_sched;
+ #endif
++	return;
++
++cleanup_sched:
++	for_each_online_cpu(cpu) {
++		sched = xnsched_struct(cpu);
++		xnsched_destroy(sched);
++	}
++
+ }
+ 
+ static void xnsched_destroy(struct xnsched *sched)
+@@ -262,8 +287,7 @@ void xnsched_destroy_all(void)
+ 	spl_t s;
+ 
+ #ifdef CONFIG_SMP
+-#warning TODO
+-//	ipipe_free_irq(&xnsched_realtime_domain, IPIPE_RESCHEDULE_IPI);
++	free_percpu_irq(RESCHEDULE_OOB_IPI, &xn_machine_cpudata);
+ #endif
+ 
+ 	xnlock_get_irqsave(&nklock, s);
 -- 
-2.26.2
+2.17.1
 
 
