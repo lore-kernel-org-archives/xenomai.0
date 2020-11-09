@@ -1,7 +1,8 @@
 From: hongzha1 <hongzhan.chen@intel.com>
-Subject: [PATCH 03/15] cobalt/timer: create and register TIMER_OOB_IPI handler
-Date: Mon,  9 Nov 2020 02:50:15 -0500
-Message-Id: <20201109075027.14760-3-hongzhan.chen@intel.com>
+Subject: [PATCH 04/15] cobalt/clock: call irq_pipeline_send_remote to trigger
+ interrupt TIMER_OOB_IPI
+Date: Mon,  9 Nov 2020 02:50:16 -0500
+Message-Id: <20201109075027.14760-4-hongzhan.chen@intel.com>
 In-Reply-To: <20201109075027.14760-1-hongzhan.chen@intel.com>
 References: <20201109075027.14760-1-hongzhan.chen@intel.com>
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
@@ -14,101 +15,27 @@ List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: jan.kiszka@siemens.com, xenomai@xenomai.org
 
-1.create and register TIMER_OOB_IPI handler.
-2.declare global xn_machine_cpudata so that it can be shared with
-other irq request.
+call irq_pipeline_send_remote to trigger interrupt TIMER_OOB_IPI
 
 Signed-off-by: hongzha1 <hongzhan.chen@intel.com>
 ---
- include/cobalt/kernel/sched.h |  6 ++++++
- kernel/cobalt/init.c          |  2 ++
- kernel/cobalt/sched.c         |  5 -----
- kernel/cobalt/timer.c         | 20 +++++++++++++-------
- 4 files changed, 21 insertions(+), 12 deletions(-)
+ kernel/cobalt/clock.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/include/cobalt/kernel/sched.h b/include/cobalt/kernel/sched.h
-index 1f5714fe0..d4f449e4a 100644
---- a/include/cobalt/kernel/sched.h
-+++ b/include/cobalt/kernel/sched.h
-@@ -31,6 +31,12 @@
- #include <cobalt/kernel/assert.h>
- #include <asm/xenomai/machine.h>
- 
-+
-+struct xn_machine_cpudata {
-+};
-+
-+DECLARE_PER_CPU(struct xn_machine_cpudata, xn_machine_cpudata);
-+
- /**
-  * @addtogroup cobalt_core_sched
-  * @{
-diff --git a/kernel/cobalt/init.c b/kernel/cobalt/init.c
-index 9b1651528..563832738 100644
---- a/kernel/cobalt/init.c
-+++ b/kernel/cobalt/init.c
-@@ -37,6 +37,8 @@
- #include "posix/internal.h"
- #include "procfs.h"
- 
-+DEFINE_PER_CPU(struct xn_machine_cpudata, xn_machine_cpudata);
-+EXPORT_PER_CPU_SYMBOL_GPL(xn_machine_cpudata);
- 
- static DEFINE_PER_CPU(int, cobalt_escalate_devid);
- /**
-diff --git a/kernel/cobalt/sched.c b/kernel/cobalt/sched.c
-index 5f090ec79..f54c411a0 100644
---- a/kernel/cobalt/sched.c
-+++ b/kernel/cobalt/sched.c
-@@ -30,11 +30,6 @@
- #define CREATE_TRACE_POINTS
- #include <trace/events/cobalt-core.h>
- 
--struct xn_machine_cpudata {
--};
--
--DEFINE_PER_CPU(struct xn_machine_cpudata, xn_machine_cpudata);
--
- static void xnsched_destroy(struct xnsched *sched);
- 
- /**
-diff --git a/kernel/cobalt/timer.c b/kernel/cobalt/timer.c
-index bcfe832d1..9da2c6143 100644
---- a/kernel/cobalt/timer.c
-+++ b/kernel/cobalt/timer.c
-@@ -576,19 +576,25 @@ void __xntimer_set_affinity(struct xntimer *timer, struct xnsched *sched)
- }
- EXPORT_SYMBOL_GPL(__xntimer_set_affinity);
- 
-+static irqreturn_t clock_ipi_handler(int irq, void *dev_id)
-+{
-+	xnintr_core_clock_handler();
-+
-+	return IRQ_HANDLED;
-+}
-+
- int xntimer_setup_ipi(void)
- {
+diff --git a/kernel/cobalt/clock.c b/kernel/cobalt/clock.c
+index 9716a0391..ab9fa394d 100644
+--- a/kernel/cobalt/clock.c
++++ b/kernel/cobalt/clock.c
+@@ -235,7 +235,8 @@ void xnclock_core_remote_shot(struct xnsched *sched)
+ #ifdef CONFIG_IPIPE
+ 	ipipe_send_ipi(IPIPE_HRTIMER_IPI, *cpumask_of(xnsched_cpu(sched)));
+ #else
 -#warning TODO
--/*	return ipipe_request_irq(&xnsched_realtime_domain,
--				 IPIPE_HRTIMER_IPI,
--				 (ipipe_irq_handler_t)xnintr_core_clock_handler,
--				 NULL, NULL);*/
-+	return __request_percpu_irq(TIMER_OOB_IPI,
-+			clock_ipi_handler,
-+			IRQF_OOB, "Xenomai timer IPI",
-+			&xn_machine_cpudata);
++	irq_pipeline_send_remote(TIMER_OOB_IPI,
++			cpumask_of(xnsched_cpu(sched)));
+ #endif
  }
- 
- void xntimer_release_ipi(void)
- {
--#warning TODO
--	//ipipe_free_irq(&xnsched_realtime_domain, IPIPE_HRTIMER_IPI);
-+	free_percpu_irq(TIMER_OOB_IPI,
-+			&xn_machine_cpudata);
- }
- 
- #endif /* CONFIG_SMP */
+ #endif
 -- 
 2.17.1
 
