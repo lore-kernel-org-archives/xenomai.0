@@ -1,10 +1,10 @@
-Subject: Re: [xenomai-images][PATCH v2 0/4] ci: update for 5.4 testing
-References: <20201106145632.2951-1-Quirin.Gylstorff@siemens.com>
+Subject: Re: Periodic Scheduler in Kernel Space
+References: <CAJCHRmFDvkPHi-dtJDJ3kLBsrxQKwVC5J5HnGT6KLO0OrtGe5A@mail.gmail.com>
 From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <c51bd1d8-fa2c-90e0-0bbf-03bde46ae370@siemens.com>
-Date: Mon, 9 Nov 2020 17:38:09 +0100
+Message-ID: <acc59eac-bcf7-1153-e9a4-050885cb0442@siemens.com>
+Date: Mon, 9 Nov 2020 18:32:45 +0100
 MIME-Version: 1.0
-In-Reply-To: <20201106145632.2951-1-Quirin.Gylstorff@siemens.com>
+In-Reply-To: <CAJCHRmFDvkPHi-dtJDJ3kLBsrxQKwVC5J5HnGT6KLO0OrtGe5A@mail.gmail.com>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -16,67 +16,54 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "Q. Gylstorff" <Quirin.Gylstorff@siemens.com>, xenomai@xenomai.org
+To: Lakshmi Dhanaraj <lakshmi.d@teclever.com>, sunshilong <sunshilong369@gmail.com>, =?UTF-8?B?OiDlrZnkuJbpvpkgc3Vuc2hpbG9uZyB2aWEgWGVub21haQ==?= <xenomai@xenomai.org>
 
 
-On 06.11.20 15:56, Q. Gylstorff wrote:
-> From: Quirin Gylstorff <quirin.gylstorff@siemens.com>
+On 06.11.20 17:30, Lakshmi Dhanaraj via Xenomai wrote:
+> Hi Sunshilong,
 > 
-> Split the xenomai build into multiple files to decrease duplicated
-> code. Defaults-builds now contains the base definition for each
-> build and test. 4.19_builds, 5.4_builds and xenomai_3_0_x.yml use
-> this base-builds for the targets.
-> 
-> You can find the a pipeline at:
-> https://gitlab.com/Quirin.Gy/xenomai-images-test/-/pipelines/212790664
-> 
-> ---
-> 
-> Changes V2:
-> - replace counter variable from get-build-id.sh
-> - add new kas option file for 5.4 - opt-linux-latest.yml now builds 4.19 by
-> default.
-> - fix Variable assignment in opt-linux-latest.yml
-> - add xenomai version to build name
-> - use ipipe-x86-4.19.y-cip as base instead of ipipe-x86-4.19.y for linux-latest
-> 
-> Quirin Gylstorff (4):
->   ci: Split build and add 5.4 builds
->   tests: increase timeouts
->   ci: Add xenomai-version to build
->   scripts/get-build-id.sh: replace counter
-> 
->  ci/4_19_builds.yml                           |  88 ++++++++++++++
->  ci/5_4_builds.yml                            |  40 +++++++
->  ci/artifacts.yml                             |   1 +
->  ci/default-builds.yml                        |  76 ++++++++++++
->  ci/gitlab-ci-base.yml                        | 116 ++-----------------
->  ci/xenomai_3_0_x.yml                         |  38 ++++++
->  opt-linux-4.19.yml                           |  17 +++
->  opt-linux-latest-5.4.yml                     |  18 +++
->  opt-linux-latest.yml                         |   1 +
->  recipes-kernel/linux/linux-xenomai_latest.bb |   6 +-
->  scripts/get-build-id.sh                      |  15 ++-
->  tests/jobs/xenomai-beagle-bone-black.yml     |   8 +-
->  tests/jobs/xenomai-hikey.yml                 |   6 +-
->  tests/jobs/xenomai-ipc227e.yml               |   8 +-
->  tests/jobs/xenomai-minnow.yml                |   8 +-
->  tests/jobs/xenomai-qemu-amd64.yml            |   8 +-
->  tests/jobs/xenomai-qemu-arm64.yml            |   8 +-
->  tests/jobs/xenomai-qemu-armhf.yml            |   8 +-
->  tests/jobs/xenomai-x86-64-efi.yml            |   8 +-
->  19 files changed, 333 insertions(+), 145 deletions(-)
->  create mode 100644 ci/4_19_builds.yml
->  create mode 100644 ci/5_4_builds.yml
->  create mode 100644 ci/default-builds.yml
->  create mode 100644 ci/xenomai_3_0_x.yml
->  create mode 100644 opt-linux-4.19.yml
->  create mode 100644 opt-linux-latest-5.4.yml
-> 
+> I need to create a 12.5ms periodic scheduler in Xenomai(v3.0.5) Kernel
+> Space on Linux Kernel 4.9.38 under Ubuntu 18.04.1 LTS.Inside my scheduler I
+> have multiple semaphore down functions to wait for the response from
+> multiple threads.
 
-Thanks, applied to next, and things look good now!
+Why kernel space? It's easy to crash the system from there, you can't
+write proprietary code there, it's likely not the place you want to be.
 
 Jan
+
+> 
+> 1.I created a periodic task using rtdm_task_init() and
+> rtdm_task_wait_period() with task priority of 90.It is working fine without
+> any overruns for a while and my system is getting hanged if I tries to open
+> system monitor Window.May I know why and I need to set any cpu affinity to
+> the scheduler thread?But in the driver implementation,for CPU affinity is
+> setted as CPU_MASK_ALL by default.
+> 
+> 2.Tried another way using kthread_create() along with hrtimer_create().In
+> hrtimer callback function,I am not able to use semaphore down func since it
+> acts like an interrupt.So I created a separate thread in which my sem_downs
+> are added and waiting for another semaphore trigger from hrtimer callback()
+> function.
+> But here the semaphore trigger from the hrtimer exceeds 12.5 ms upto 18ms
+> under load.
+> 
+> The issue is that in my first case,the timings are ok but the system
+> hangs,in my second case system not hanging but timing exceeds.
+> 
+> I verified the timings of both the cases by increasing CPU Load using
+> "taskset -c (0...7) yes" and stress.Is this the correct way to verify the
+> stability of my scheduler in kernel space?
+> 
+> I was struck with this problem for more than a week, please help me out to
+> solve the issue as soon as possible.Awaiting for your reply.
+> 
+> 
+> With Thanks & Regards,
+> 
+> Lakshmi.D
+> 
+
 
 -- 
 Siemens AG, T RDA IOT
