@@ -1,15 +1,13 @@
-Date: Mon, 9 Nov 2020 09:28:43 -0600 (CST)
-From: Per Oberg <pero@wolfram.com>
-Message-ID: <162703384.737337.1604935723078.JavaMail.zimbra@wolfram.com>
-In-Reply-To: <CAAvDm6ZRxC76mwz_v75fmLzPEfzyJfpuPv01oxP5YasbpADPGw@mail.gmail.com>
-References: <CAAvDm6a_at2CeQy4RZvYNBeBUoPbryHLhVrDqSiyWWr0vkO68g@mail.gmail.com>
- <1390643975.688480.1604913731849.JavaMail.zimbra@wolfram.com>
- <CAAvDm6ZRxC76mwz_v75fmLzPEfzyJfpuPv01oxP5YasbpADPGw@mail.gmail.com>
-Subject: Re: Is it possible to enable rt Can devices and non-rt Can devices
- at the same time on the Linux+Xenomai platform?
+Subject: Re: [xenomai-images][PATCH v2 0/4] ci: update for 5.4 testing
+References: <20201106145632.2951-1-Quirin.Gylstorff@siemens.com>
+From: Jan Kiszka <jan.kiszka@siemens.com>
+Message-ID: <c51bd1d8-fa2c-90e0-0bbf-03bde46ae370@siemens.com>
+Date: Mon, 9 Nov 2020 17:38:09 +0100
 MIME-Version: 1.0
+In-Reply-To: <20201106145632.2951-1-Quirin.Gylstorff@siemens.com>
 Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -18,71 +16,69 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: =?utf-8?B?5a2Z5LiW6b6Z?= sunshilong <sunshilong369@gmail.com>
-Cc: xenomai <xenomai@xenomai.org>
-
------ Den 9 nov 2020, p=C3=A5 kl 12:46, =E5=AD=99=E4=B8=96=E9=BE=99 sunshil=
-ong sunshilong369@gmail.com skrev:
-
-> There are two user application programs on the Linux+Xenomai platform.
-> I want that one program uses a rt Can device and the other one uses a
-> non-rt Can device.
-
-Then it all comes down to the actual choice of hardware. For ethernet many =
-motherboards with dual ports come with different NICs for the different por=
-ts. This simplifies it a bit because you can easily choose what drivers to =
-load. For CAN i have only tried with different versions of PEAK hardware an=
-d that has worked well. In my case though I had USB devices for the non RT =
-part, and the RT driver completely ignores the USB hardware so it worked st=
-raight out of the box.
-
-> On Mon, Nov 9, 2020 at 5:22 PM Per Oberg via Xenomai
-> <xenomai@xenomai.org> wrote:
+To: "Q. Gylstorff" <Quirin.Gylstorff@siemens.com>, xenomai@xenomai.org
 
 
-> > ----- Den 9 nov 2020, p=C3=A5 kl 2:35, xenomai xenomai@xenomai.org skre=
-v:
+On 06.11.20 15:56, Q. Gylstorff wrote:
+> From: Quirin Gylstorff <quirin.gylstorff@siemens.com>
+> 
+> Split the xenomai build into multiple files to decrease duplicated
+> code. Defaults-builds now contains the base definition for each
+> build and test. 4.19_builds, 5.4_builds and xenomai_3_0_x.yml use
+> this base-builds for the targets.
+> 
+> You can find the a pipeline at:
+> https://gitlab.com/Quirin.Gy/xenomai-images-test/-/pipelines/212790664
+> 
+> ---
+> 
+> Changes V2:
+> - replace counter variable from get-build-id.sh
+> - add new kas option file for 5.4 - opt-linux-latest.yml now builds 4.19 by
+> default.
+> - fix Variable assignment in opt-linux-latest.yml
+> - add xenomai version to build name
+> - use ipipe-x86-4.19.y-cip as base instead of ipipe-x86-4.19.y for linux-latest
+> 
+> Quirin Gylstorff (4):
+>   ci: Split build and add 5.4 builds
+>   tests: increase timeouts
+>   ci: Add xenomai-version to build
+>   scripts/get-build-id.sh: replace counter
+> 
+>  ci/4_19_builds.yml                           |  88 ++++++++++++++
+>  ci/5_4_builds.yml                            |  40 +++++++
+>  ci/artifacts.yml                             |   1 +
+>  ci/default-builds.yml                        |  76 ++++++++++++
+>  ci/gitlab-ci-base.yml                        | 116 ++-----------------
+>  ci/xenomai_3_0_x.yml                         |  38 ++++++
+>  opt-linux-4.19.yml                           |  17 +++
+>  opt-linux-latest-5.4.yml                     |  18 +++
+>  opt-linux-latest.yml                         |   1 +
+>  recipes-kernel/linux/linux-xenomai_latest.bb |   6 +-
+>  scripts/get-build-id.sh                      |  15 ++-
+>  tests/jobs/xenomai-beagle-bone-black.yml     |   8 +-
+>  tests/jobs/xenomai-hikey.yml                 |   6 +-
+>  tests/jobs/xenomai-ipc227e.yml               |   8 +-
+>  tests/jobs/xenomai-minnow.yml                |   8 +-
+>  tests/jobs/xenomai-qemu-amd64.yml            |   8 +-
+>  tests/jobs/xenomai-qemu-arm64.yml            |   8 +-
+>  tests/jobs/xenomai-qemu-armhf.yml            |   8 +-
+>  tests/jobs/xenomai-x86-64-efi.yml            |   8 +-
+>  19 files changed, 333 insertions(+), 145 deletions(-)
+>  create mode 100644 ci/4_19_builds.yml
+>  create mode 100644 ci/5_4_builds.yml
+>  create mode 100644 ci/default-builds.yml
+>  create mode 100644 ci/xenomai_3_0_x.yml
+>  create mode 100644 opt-linux-4.19.yml
+>  create mode 100644 opt-linux-latest-5.4.yml
+> 
 
-> > > Hi, list
+Thanks, applied to next, and things look good now!
 
-> > > Is it possible to enable rt Can devices and non-rt Can devices at the
-> > > same time on the Linux+Xenomai platform?
+Jan
 
-> > > What about ethernet devices?
-
-> > I Can't see any reason why this shouldn't work, so YES!
-
->> If you are using the POSIX skin and you want to access both variants in =
-the same
->> code-base there may be some quirks you need to work around (i.e. picking=
- the
->> right one to open). And if you access them both in the same thread you w=
-ill
-> > break real time constraints but that hardly needs saying.
-
->> However, if you are using the same brand of devices for both cases you n=
-eed to
->> make sure the driver only initializes the hardware you want it to initia=
-lize.
->> E.g. if you load the regular linux igb ethernet driver it will initializ=
-e all
-> > igb compatible hardware to be non realtime.
-
->> For some drivers, you can pass options to make it only initialize some o=
-f the
->> devices. The modinfo command will give you a parameter list for each dri=
-ver. If
->> you need to play around with it you can blacklist the relevant drivers b=
-y
->> putting stuff in the modprobe.d directory. You can then load the drivers
-> > manually using the regular modprobe cmd.
-
-> > > Thank you for your attention to my question.
-> > > Best regards.
-> > > Sunshilong
-
-> > Per =C3=96berg
-
-Best regards
-Per =C3=96berg
+-- 
+Siemens AG, T RDA IOT
+Corporate Competence Center Embedded Linux
 
