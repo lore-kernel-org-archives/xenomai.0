@@ -1,8 +1,8 @@
 From: hongzha1 <hongzhan.chen@intel.com>
-Subject: [PATCH 06/15] cobalt/intr: post proxy tick irq instead of host tick
- irq
-Date: Mon,  9 Nov 2020 02:50:18 -0500
-Message-Id: <20201109075027.14760-6-hongzhan.chen@intel.com>
+Subject: [PATCH 08/15] cobalt/thread: call dovetail_leave_inband to replace
+ __ipipe_migrate_head
+Date: Mon,  9 Nov 2020 02:50:20 -0500
+Message-Id: <20201109075027.14760-8-hongzhan.chen@intel.com>
 In-Reply-To: <20201109075027.14760-1-hongzhan.chen@intel.com>
 References: <20201109075027.14760-1-hongzhan.chen@intel.com>
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
@@ -15,47 +15,28 @@ List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: jan.kiszka@siemens.com, xenomai@xenomai.org
 
-make use of dovetail proxy tick infastructure in place of host
-tick
+leave inband on dovetail
 
 Signed-off-by: hongzha1 <hongzhan.chen@intel.com>
 ---
- kernel/cobalt/intr.c | 8 ++++----
- 1 file changed, 4 insertions(+), 4 deletions(-)
+ kernel/cobalt/thread.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/kernel/cobalt/intr.c b/kernel/cobalt/intr.c
-index 8ffe7f2b6..36eb6c93c 100644
---- a/kernel/cobalt/intr.c
-+++ b/kernel/cobalt/intr.c
-@@ -21,6 +21,7 @@
- #include <linux/mutex.h>
- /*#include <linux/ipipe.h>
- #include <linux/ipipe_tickdev.h>*/
-+#include <linux/clockchips.h>
- #include <cobalt/kernel/sched.h>
- #include <cobalt/kernel/intr.h>
- #include <cobalt/kernel/stat.h>
-@@ -188,8 +189,8 @@ void xnintr_host_tick(struct xnsched *sched) /* Interrupts off. */
- {
- 	sched->lflags &= ~XNHTICK;
- #ifdef XNARCH_HOST_TICK_IRQ
--	//ipipe_post_irq_root(XNARCH_HOST_TICK_IRQ);
--#warning TODO
-+	/* use proxy tick to replace host tick */
-+	tick_notify_proxy();
- #endif
- }
+diff --git a/kernel/cobalt/thread.c b/kernel/cobalt/thread.c
+index 7a6139142..e2a215703 100644
+--- a/kernel/cobalt/thread.c
++++ b/kernel/cobalt/thread.c
+@@ -1950,8 +1950,8 @@ int xnthread_harden(void)
  
-@@ -205,8 +206,7 @@ void xnintr_core_clock_handler(void)
+ 	xnthread_clear_sync_window(thread, XNRELAX);
  
- 	if (!xnsched_supported_cpu(cpu)) {
- #ifdef XNARCH_HOST_TICK_IRQ
--		//ipipe_post_irq_root(XNARCH_HOST_TICK_IRQ);
 -#warning TODO
-+		tick_notify_proxy();
- #endif
- 		return;
- 	}
+-	ret = 0;//__ipipe_migrate_head();
++	/* Please refer to evl_switch_oob */
++	ret = dovetail_leave_inband();
+ 	if (ret) {
+ 		xnthread_test_cancel();
+ 		xnthread_set_sync_window(thread, XNRELAX);
 -- 
 2.17.1
 
