@@ -1,18 +1,9 @@
-From: Giulio Moro <g.moro@qmul.ac.uk>
-Subject: Re: Xenomai Images - Password
-Date: Wed, 4 Nov 2020 19:37:30 +0000
-Message-ID: <DBAPR07MB6600D50931CEBA9221BA59F0B5EF0@DBAPR07MB6600.eurprd07.prod.outlook.com>
-References: <AD19FEDC-0F4F-4749-9CE1-C5E38DC1B878@gmail.com>
- <be26f9ca-d3c8-c86d-d8aa-92aa53f65042@siemens.com>
- <4019C880-7DCD-43D9-A559-05570BD867EC@gmail.com>
- <1564cbf6-d4fa-1cdc-1996-20d71464af6c@siemens.com>
- <B845B431-F685-4DE2-93D0-AC823151C7E3@gmail.com>,
- <4AA60C97-3707-4AAB-BEEF-89DEC7B67D8F@gmail.com>
-In-Reply-To: <4AA60C97-3707-4AAB-BEEF-89DEC7B67D8F@gmail.com>
-Content-Language: en-GB
-MIME-Version: 1.0
-Content-Type: text/plain; charset="windows-1254"
-Content-Transfer-Encoding: quoted-printable
+From: hongzha1 <hongzhan.chen@intel.com>
+Subject: [PATCH 03/15] cobalt/timer: create and register TIMER_OOB_IPI handler
+Date: Mon,  9 Nov 2020 02:50:15 -0500
+Message-Id: <20201109075027.14760-3-hongzhan.chen@intel.com>
+In-Reply-To: <20201109075027.14760-1-hongzhan.chen@intel.com>
+References: <20201109075027.14760-1-hongzhan.chen@intel.com>
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -21,77 +12,104 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jan Kiszka <jan.kiszka@siemens.com>, =?windows-1254?Q?Deniz_U=F0ur?= <deniz343@gmail.com>
-Cc: Xenomai <xenomai@xenomai.org>
+To: jan.kiszka@siemens.com, xenomai@xenomai.org
 
-The easiest way is to boot without sd card, login, and then
+1.create and register TIMER_OOB_IPI handler.
+2.declare global xn_machine_cpudata so that it can be shared with
+other irq request.
 
-sudo su
-dd if=3D/dev/zero of=3D/dev/mmcblk1 bs=3D1024k count=3D100
+Signed-off-by: hongzha1 <hongzhan.chen@intel.com>
+---
+ include/cobalt/kernel/sched.h |  6 ++++++
+ kernel/cobalt/init.c          |  2 ++
+ kernel/cobalt/sched.c         |  5 -----
+ kernel/cobalt/timer.c         | 20 +++++++++++++-------
+ 4 files changed, 21 insertions(+), 12 deletions(-)
 
-This should make the eMMC unbootable and so boot from SD. Otherwise you can=
- give power while holding down the USER button every time.
-________________________________
-From: Xenomai <xenomai-bounces@xenomai.org> on behalf of Deniz U=F0ur via X=
-enomai <xenomai@xenomai.org>
-Sent: Wednesday, November 4, 2020 7:33:26 PM
-To: Jan Kiszka <jan.kiszka@siemens.com>
-Cc: Xenomai <xenomai@xenomai.org>
-Subject: Re: Xenomai Images - Password
-
-Okay it looks like BB did not boot from sd card at all and loaded the pre-l=
-oaded linux. If you happen to know how to change that, I would be really gl=
-ad. Otherwise we can close this thread.
-
-Thank you for your help.
-
-> On 4 Nov 2020, at 22:29, Deniz U=F0ur <deniz343@gmail.com> wrote:
->
-> It=92s possible to login via serial console. What can I do from here to e=
-nsure that ssh is possible?
->
->> On 4 Nov 2020, at 22:22, Jan Kiszka <jan.kiszka@siemens.com> wrote:
->>
->> [re-adding the list]
->>
->> On 04.11.20 20:07, Deniz U=F0ur wrote:
->>> The session seems to be established, only password is not accepted. Als=
-o no, I=92m not using serial console. I tried to add a new user to customiz=
-ations file but that did not worked.
->>
->> OK. I do not have a BeagleBone in reach, but I'm cross-checking via qemu=
--armhf ATM.
->>
->> Could you try logging in via the serial console? Would allow to check if=
- the password was set, extract log information, possibly also running sshd =
-with debug options on (sshd -ddd).
->>
->> Jan
->>
->>>> On 4 Nov 2020, at 22:02, Jan Kiszka <jan.kiszka@siemens.com> wrote:
->>>>
->>>> On 04.11.20 19:54, Deniz U=F0ur via Xenomai wrote:
->>>>> Hello all,
->>>>> I=92m successfully generating a BeagleBone Black image with optional =
-xenomai-next recipe. When I plug it to BBB it seems to be working. However,=
- the login for root/root does not work. I'm connecting on 192.168.7.2.
->>>>> Is the default password different from root?
->>>>
->>>> No... that is supposed to work. The password "root" is defined via con=
-f/distro/xenomai-demo.conf.
->>>>
->>>> You are logging in via ssh? Is the session establish, just the passwor=
-d not accepted? Or are you logging in via serial console?
->>>>
->>>> Jan
->>>>
->>>> --
->>>> Siemens AG, T RDA IOT
->>>> Corporate Competence Center Embedded Linux
->>
->> --
->> Siemens AG, T RDA IOT
->> Corporate Competence Center Embedded Linux
->
+diff --git a/include/cobalt/kernel/sched.h b/include/cobalt/kernel/sched.h
+index 1f5714fe0..d4f449e4a 100644
+--- a/include/cobalt/kernel/sched.h
++++ b/include/cobalt/kernel/sched.h
+@@ -31,6 +31,12 @@
+ #include <cobalt/kernel/assert.h>
+ #include <asm/xenomai/machine.h>
+ 
++
++struct xn_machine_cpudata {
++};
++
++DECLARE_PER_CPU(struct xn_machine_cpudata, xn_machine_cpudata);
++
+ /**
+  * @addtogroup cobalt_core_sched
+  * @{
+diff --git a/kernel/cobalt/init.c b/kernel/cobalt/init.c
+index 9b1651528..563832738 100644
+--- a/kernel/cobalt/init.c
++++ b/kernel/cobalt/init.c
+@@ -37,6 +37,8 @@
+ #include "posix/internal.h"
+ #include "procfs.h"
+ 
++DEFINE_PER_CPU(struct xn_machine_cpudata, xn_machine_cpudata);
++EXPORT_PER_CPU_SYMBOL_GPL(xn_machine_cpudata);
+ 
+ static DEFINE_PER_CPU(int, cobalt_escalate_devid);
+ /**
+diff --git a/kernel/cobalt/sched.c b/kernel/cobalt/sched.c
+index 5f090ec79..f54c411a0 100644
+--- a/kernel/cobalt/sched.c
++++ b/kernel/cobalt/sched.c
+@@ -30,11 +30,6 @@
+ #define CREATE_TRACE_POINTS
+ #include <trace/events/cobalt-core.h>
+ 
+-struct xn_machine_cpudata {
+-};
+-
+-DEFINE_PER_CPU(struct xn_machine_cpudata, xn_machine_cpudata);
+-
+ static void xnsched_destroy(struct xnsched *sched);
+ 
+ /**
+diff --git a/kernel/cobalt/timer.c b/kernel/cobalt/timer.c
+index bcfe832d1..9da2c6143 100644
+--- a/kernel/cobalt/timer.c
++++ b/kernel/cobalt/timer.c
+@@ -576,19 +576,25 @@ void __xntimer_set_affinity(struct xntimer *timer, struct xnsched *sched)
+ }
+ EXPORT_SYMBOL_GPL(__xntimer_set_affinity);
+ 
++static irqreturn_t clock_ipi_handler(int irq, void *dev_id)
++{
++	xnintr_core_clock_handler();
++
++	return IRQ_HANDLED;
++}
++
+ int xntimer_setup_ipi(void)
+ {
+-#warning TODO
+-/*	return ipipe_request_irq(&xnsched_realtime_domain,
+-				 IPIPE_HRTIMER_IPI,
+-				 (ipipe_irq_handler_t)xnintr_core_clock_handler,
+-				 NULL, NULL);*/
++	return __request_percpu_irq(TIMER_OOB_IPI,
++			clock_ipi_handler,
++			IRQF_OOB, "Xenomai timer IPI",
++			&xn_machine_cpudata);
+ }
+ 
+ void xntimer_release_ipi(void)
+ {
+-#warning TODO
+-	//ipipe_free_irq(&xnsched_realtime_domain, IPIPE_HRTIMER_IPI);
++	free_percpu_irq(TIMER_OOB_IPI,
++			&xn_machine_cpudata);
+ }
+ 
+ #endif /* CONFIG_SMP */
+-- 
+2.17.1
 
 
