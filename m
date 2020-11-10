@@ -1,11 +1,10 @@
-Subject: Re: [PATCH 4/5] kernel/cobalt/posix/syscall32:introduce
- old_timespec32 and __kernel_timespec to clock_settime of syscall32
-References: <1604372723-2941-1-git-send-email-chensong@tj.kylinos.cn>
+Subject: Re: [PATCH 5/5] lib/cobalt/clock.c:dispatch clock_settime
+References: <1604372743-2986-1-git-send-email-chensong@tj.kylinos.cn>
 From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <a071abb0-b4e3-582b-5493-20c479c39965@siemens.com>
-Date: Tue, 10 Nov 2020 11:17:58 +0100
+Message-ID: <0ca03935-6895-f31e-f9ad-c910e0e22e36@siemens.com>
+Date: Tue, 10 Nov 2020 11:24:03 +0100
 MIME-Version: 1.0
-In-Reply-To: <1604372723-2941-1-git-send-email-chensong@tj.kylinos.cn>
+In-Reply-To: <1604372743-2986-1-git-send-email-chensong@tj.kylinos.cn>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -21,123 +20,46 @@ To: chensong <chensong@tj.kylinos.cn>, xenomai@xenomai.org, henning.schild@sieme
 
 
 On 03.11.20 04:05, chensong wrote:
-> 1, introduce old_timespec32 for 32bit process with 32bit timespec
-> 2, implement clock_settime64 for 32bit process with 64bit timespec
+> Regarding sizeof time_t, dispatch 32bit timespec to clock_settime
+> and 64bit timespec to clock_settime64.
 > 
 > Signed-off-by: chensong <chensong@tj.kylinos.cn>
 > ---
->  include/cobalt/kernel/compat.h  |  6 ++++++
->  kernel/cobalt/posix/compat.c    | 20 ++++++++++++++++++++
->  kernel/cobalt/posix/syscall32.c | 20 +++++++++++++++++---
->  kernel/cobalt/posix/syscall32.h |  6 +++++-
->  4 files changed, 48 insertions(+), 4 deletions(-)
+>  lib/cobalt/clock.c | 6 +++++-
+>  1 file changed, 5 insertions(+), 1 deletion(-)
 > 
-> diff --git a/include/cobalt/kernel/compat.h b/include/cobalt/kernel/compat.h
-> index 05754cb..adf8bae 100644
-> --- a/include/cobalt/kernel/compat.h
-> +++ b/include/cobalt/kernel/compat.h
-> @@ -89,6 +89,12 @@ struct compat_rtdm_mmap_request {
->  int sys32_get_timespec(struct timespec *ts,
->  		       const struct compat_timespec __user *cts);
->  
-> +int sys32_get_timespec_old(struct timespec64 *ts,
-> +		       const struct old_timespec32 __user *cts);
-> +
-> +int sys32_get_timespec64(struct timespec64 *ts,
-> +		       const struct __kernel_timespec __user *cts);
-> +
->  int sys32_put_timespec(struct compat_timespec __user *cts,
->  		       const struct timespec *ts);
->  
-> diff --git a/kernel/cobalt/posix/compat.c b/kernel/cobalt/posix/compat.c
-> index 17968bf..3042dc0 100644
-> --- a/kernel/cobalt/posix/compat.c
-> +++ b/kernel/cobalt/posix/compat.c
-> @@ -32,6 +32,26 @@ int sys32_get_timespec(struct timespec *ts,
->  }
->  EXPORT_SYMBOL_GPL(sys32_get_timespec);
->  
-> +int sys32_get_timespec_old(struct timespec64 *ts,
-> +		       const struct old_timespec32 __user *cts)
-> +{
-> +	return (cts == NULL ||
-> +		!access_rok(cts, sizeof(*cts)) ||
-> +		__xn_get_user(ts->tv_sec, &cts->tv_sec) ||
-> +		__xn_get_user(ts->tv_nsec, &cts->tv_nsec)) ? -EFAULT : 0;
-> +}
-> +EXPORT_SYMBOL_GPL(sys32_get_timespec_old);
-> +
-> +int sys32_get_timespec64(struct timespec64 *ts,
-> +		       const struct __kernel_timespec __user *cts)
-> +{
-> +	return (cts == NULL ||
-> +		!access_rok(cts, sizeof(*cts)) ||
-> +		__xn_get_user(ts->tv_sec, &cts->tv_sec) ||
-> +		__xn_get_user(ts->tv_nsec, &cts->tv_nsec)) ? -EFAULT : 0;
-> +}
-> +EXPORT_SYMBOL_GPL(sys32_get_timespec64);
-> +
->  int sys32_put_timespec(struct compat_timespec __user *cts,
->  		       const struct timespec *ts)
+> diff --git a/lib/cobalt/clock.c b/lib/cobalt/clock.c
+> index 11fd1aa..44b2f3f 100644
+> --- a/lib/cobalt/clock.c
+> +++ b/lib/cobalt/clock.c
+> @@ -237,7 +237,11 @@ COBALT_IMPL(int, clock_settime, (clockid_t clock_id, const struct timespec *tp))
 >  {
-> diff --git a/kernel/cobalt/posix/syscall32.c b/kernel/cobalt/posix/syscall32.c
-> index faa7ef5..47a8ad3 100644
-> --- a/kernel/cobalt/posix/syscall32.c
-> +++ b/kernel/cobalt/posix/syscall32.c
-> @@ -159,12 +159,26 @@ COBALT_SYSCALL32emu(clock_gettime, current,
->  
->  COBALT_SYSCALL32emu(clock_settime, current,
->  		    (clockid_t clock_id,
-> -		     const struct compat_timespec __user *u_ts))
-> +		     const struct old_timespec32 __user *u_ts))
->  {
-> -	struct timespec ts;
-> +	struct timespec64 ts;
-> +	int ret;
-> +
-> +	ret = sys32_get_timespec_old(&ts, u_ts);
-> +	if (ret)
-> +		return ret;
-> +
-> +	return __cobalt_clock_settime(clock_id, &ts);
-> +}
-> +
-> +COBALT_SYSCALL32emu(clock_settime64, current,
-> +		    (clockid_t clock_id,
-> +		     const struct __kernel_timespec __user *u_ts))
-
-Hmm, do we need that as compat syscall? I would expect that the new
-settime64 ABI would work for both 32-bit and 64-bit applications, no?
-
-> +{
-> +	struct timespec64 ts;
 >  	int ret;
 >  
-> -	ret = sys32_get_timespec(&ts, u_ts);
-> +	ret = sys32_get_timespec64(&ts, u_ts);
->  	if (ret)
->  		return ret;
->  
-> diff --git a/kernel/cobalt/posix/syscall32.h b/kernel/cobalt/posix/syscall32.h
-> index 34904f9..32b87c4 100644
-> --- a/kernel/cobalt/posix/syscall32.h
-> +++ b/kernel/cobalt/posix/syscall32.h
-> @@ -57,7 +57,11 @@ COBALT_SYSCALL32emu_DECL(clock_getres,
->  
->  COBALT_SYSCALL32emu_DECL(clock_gettime,
->  			 (clockid_t clock_id,
-> -			  struct compat_timespec __user *u_ts));
-> +			  struct old_timespec32 __user *u_ts));
-> +
-> +COBALT_SYSCALL32emu_DECL(clock_settime64,
-> +			 (clockid_t clock_id,
-> +			  const struct __kernel_timespec __user *u_ts));
->  
->  COBALT_SYSCALL32emu_DECL(clock_settime,
->  			 (clockid_t clock_id,
-> 
+> -	ret = -XENOMAI_SYSCALL2(sc_cobalt_clock_settime, clock_id, tp);
+> +	if (sizeof(time_t) > 4)
+> +		ret = -XENOMAI_SYSCALL2(sc_cobalt_clock_settime64,
+> +					clock_id, tp);
+> +	else
+> +		ret = -XENOMAI_SYSCALL2(sc_cobalt_clock_settime, clock_id, tp);
+
+Maybe do a single
+
+XENOMAI_SYSCALL2(sizeof(time_t) > 4 ? sc_cobalt_clock_settime64
+                                    : sc_cobalt_clock_settime, ...)
+
+But we need ABI revision negotiation here. If a new lib is run on a
+kernel that does not have settime64, things will fail (the other way
+around is fine). We need to ensure that new userspace can check for this
+upfront while old userspace will happily run (hard requirement for
+making these patches part of 3.1.x).
 
 Jan
+
+>  	if (ret) {
+>  		errno = ret;
+>  		return -1;
+> 
 
 -- 
 Siemens AG, T RDA IOT
