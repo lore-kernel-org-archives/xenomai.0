@@ -1,17 +1,12 @@
-Subject: Re: [PATCH 5/5] lib/cobalt/clock.c:dispatch clock_settime
-References: <1604372743-2986-1-git-send-email-chensong@tj.kylinos.cn>
- <0ca03935-6895-f31e-f9ad-c910e0e22e36@siemens.com>
- <5FAB60C5.8030909@tj.kylinos.cn>
- <f4a2d38b-a851-55fb-d85b-f7816d91e87b@siemens.com>
- <5FABAD94.1030108@tj.kylinos.cn>
- <8478f418-2f69-94e5-cc96-87a606ab68b9@siemens.com>
-From: chensong <chensong@tj.kylinos.cn>
-Message-ID: <5FABB938.8080807@tj.kylinos.cn>+AD61BA6890A1A880
-Date: Wed, 11 Nov 2020 18:13:12 +0800
+From: "florian.bezdeka@siemens.com" <florian.bezdeka@siemens.com>
+Subject: [PATCH] lib/boilerplate: Allow building with GCC 10.2
+Date: Wed, 11 Nov 2020 14:59:40 +0000
+Message-ID: <20201111145926.104952-1-florian.bezdeka@siemens.com>
+Content-Language: en-US
+Content-Type: text/plain; charset="utf-8"
+Content-ID: <378EE28ABE126D4DBCD982E9EF891115@EURPRD10.PROD.OUTLOOK.COM>
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-In-Reply-To: <8478f418-2f69-94e5-cc96-87a606ab68b9@siemens.com>
-Content-Type: text/plain; charset="utf-8"; format="flowed"
-Content-Transfer-Encoding: 8bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -20,131 +15,69 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jan Kiszka <jan.kiszka@siemens.com>, xenomai@xenomai.org, henning.schild@siemens.com
+To: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-
-
-On 2020年11月11日 17:43, Jan Kiszka wrote:
-> On 11.11.20 10:23, chensong wrote:
->>
->>
->> On 2020年11月11日 15:29, Jan Kiszka wrote:
->>> On 11.11.20 04:55, chensong wrote:
->>>>
->>>>
->>>> On 2020年11月10日 18:24, Jan Kiszka wrote:
->>>>>
->>>>> On 03.11.20 04:05, chensong wrote:
->>>>>> Regarding sizeof time_t, dispatch 32bit timespec to clock_settime
->>>>>> and 64bit timespec to clock_settime64.
->>>>>>
->>>>>> Signed-off-by: chensong <chensong@tj.kylinos.cn>
->>>>>> ---
->>>>>>     lib/cobalt/clock.c | 6 +++++-
->>>>>>     1 file changed, 5 insertions(+), 1 deletion(-)
->>>>>>
->>>>>> diff --git a/lib/cobalt/clock.c b/lib/cobalt/clock.c
->>>>>> index 11fd1aa..44b2f3f 100644
->>>>>> --- a/lib/cobalt/clock.c
->>>>>> +++ b/lib/cobalt/clock.c
->>>>>> @@ -237,7 +237,11 @@ COBALT_IMPL(int, clock_settime, (clockid_t
->>>>>> clock_id, const struct timespec *tp))
->>>>>>     {
->>>>>>         int ret;
->>>>>>
->>>>>> -    ret = -XENOMAI_SYSCALL2(sc_cobalt_clock_settime, clock_id, tp);
->>>>>> +    if (sizeof(time_t) > 4)
->>>>>> +        ret = -XENOMAI_SYSCALL2(sc_cobalt_clock_settime64,
->>>>>> +                    clock_id, tp);
->>>>>> +    else
->>>>>> +        ret = -XENOMAI_SYSCALL2(sc_cobalt_clock_settime, clock_id,
->>>>>> tp);
->>>>>
->>>>> Maybe do a single
->>>>>
->>>>> XENOMAI_SYSCALL2(sizeof(time_t) > 4 ? sc_cobalt_clock_settime64
->>>>>                                        : sc_cobalt_clock_settime, ...)
->>>>>
->>>>> But we need ABI revision negotiation here. If a new lib is run on a
->>>>> kernel that does not have settime64, things will fail (the other way
->>>>> around is fine). We need to ensure that new userspace can check for
->>>>> this
->>>>> upfront while old userspace will happily run (hard requirement for
->>>>> making these patches part of 3.1.x).
->>>>>
->>>>> Jan
->>>>
->>>> As far as my understanding, ABI revision negotiation happens in low_init
->>>> already, it reminds userspace process that lib and kernel are not
->>>> compatible at the first place. Therefore, it addresses the scenario you
->>>> are talking about(new userspace, old kernel or the other way around).
->>>>
->>>
->>> Ah, right. Perfect. Then also update those revisions make detection work
->>> as required.
->>>
->> ok, will do.
->>
->> XENOMAI_ABI_REV is defined in those files:
->>
->> ./kernel/cobalt/arch/arm/include/asm/xenomai/uapi/features.h:25:#define
->> XENOMAI_ABI_REV   17UL
->> ./kernel/cobalt/arch/x86/include/asm/xenomai/uapi/features.h:22:#define
->> XENOMAI_ABI_REV   17UL
->> ./kernel/cobalt/arch/arm64/include/asm/xenomai/uapi/features.h:25:#define XENOMAI_ABI_REV
->>    1UL
->> ./kernel/cobalt/arch/powerpc/include/asm/xenomai/uapi/features.h:22:#define
->> XENOMAI_ABI_REV   17UL
->>
->>
->> increase them to 18UL?
->>
->> if you agree, i will submit a v2 for this one.
->
-> We need to increase, yes, but we need to keep previous revision userland
-> working.
-
-low_init will stop previous revision userland working once we increase it.
-
->
->>
->>>> what's more, do we or customers release lib without kernel. About y2038,
->>>> vanilla kernel, glibc, libcobalt, xenomai, too many scenarios to be
->>>> addressed, to complicated, we'd better simplify it if possible.
->>>
->>> Xenomai does not issue separate releases for the kernel part
->>> implementing the syscalls and for the xenomai libs using them.
->>>
->>> However, applications may have been bundled with libs from previous
->>> releases of *the same stable series*, and users can expect (bugs aside,
->>> new features excluded) that their xenomai lib from, say, 3.1 will still
->>> work with a core from 3.1.1.
-if XENOMAI_ABI_REV in lib is different with XENOMAI_ABI_REV in kernel, 
-low_init will stop it running at the first place.
-
-Even if it doesn't, old application, old lib, will go to clock_settime, 
-i can't see any impact here.
-
-chensong
-
->>>
->>> Jan
->>>
->>
->> In those cases, they will get "ABI mismatch, required xxx, provided
->> xxx", user will realize they need new kernel with new lib.
->>
->> My point is, ignore those too old things. arnd Bergmann dropped
->> something as well.
->>
->
-> We can't break the scenario described above. That's in fact in line with
-> what kernel and libc do, just that they also account for newer libc
-> running on older kernels (while we deny that).
->
-> Jan
->
-
-
-
+V2hlbiB0cnlpbmcgdG8gY29tcGlsZSB1c2luZyBHQ0MgMTAuMiB0aGUgZm9sbG93aW5nIHdhcm5p
+bmcgLyBlcnJvcg0KYXBwZWFyZWQ6DQoNCmluaXBhcnNlci9pbmlwYXJzZXIuYzogSW4gZnVuY3Rp
+b24g4oCYaW5pcGFyc2VyX2xvYWTigJk6DQppbmlwYXJzZXIvaW5pcGFyc2VyLmM6NjE2OjEzOiBl
+cnJvcjog4oCYc3ByaW50ZuKAmSBhcmd1bWVudHMgMywgNCBtYXkgb3ZlcmxhcCBkZXN0aW5hdGlv
+biBvYmplY3Qg4oCYYnVm4oCZIFstV2Vycm9yPXJlc3RyaWN0XQ0KICA2MTYgfCAgICAgICAgICAg
+ICBzcHJpbnRmKHRtcCwgIiVzOiVzIiwgc2VjdGlvbiwga2V5KTsNCiAgICAgIHwgICAgICAgICAg
+ICAgXn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn4NCg0KQWNjb3JkaW5nIHRvIFBP
+U0lYIGFuZCBDOTkgc3RhbmRhcmQgdXNpbmcgc3ByaW50ZigpIG9uIG92ZXJsYXBwaW5nDQpidWZm
+ZXJzIG1heSBsZWFkIHRvIHVuZGVmaW5lZCBiZWhhdmlvciwgc28gdXNpbmcgYSBkZWRpY2F0ZWQg
+YnVmZmVyIGZvcg0KdGhlIGRlc3RpbmF0aW9uIChmaXJzdCBhcmd1bWVudCB0byBzcHJpbnRmKSBp
+cyBuZWNlc3NhcnkuDQoNCldoaWxlIGF0IGl0Og0KIC0gRml4ZWQgc29tZSBpbmRlbnRhdGlvbnMN
+CiAtIEZpeGVkIHNvbWUgZXJyb3IgaGFuZGxpbmcgY29kZSBwYXRocw0KICAgU29tZSByZXNvdXJj
+ZXMgd2VyZSBub3QgcHJvcGVybHkgY2xlYW5lZCB1cCBpbiBlcnJvciBjb25kaXRpb25zDQogLSBG
+aXhlZCBidWZmZXIgaW5pdGlhbGl6YXRpb25zOiBUaGUgbGFzdCBieXRlcyB3ZXJlIG5ldmVyIHNl
+dCB0byB6ZXJvDQoNCkZpeGVzOiA2NzgwM2RjZTU0M2UgKCJsaWIvYm9pbGVycGxhdGU6IGFkZCBp
+bmlwYXJzZXIgdG8gYm9pbGVycGxhdGUiKQ0KU2lnbmVkLW9mZi1ieTogRmxvcmlhbiBCZXpkZWth
+IDxmbG9yaWFuLmJlemRla2FAc2llbWVucy5jb20+DQotLS0NCiBsaWIvYm9pbGVycGxhdGUvaW5p
+cGFyc2VyL2luaXBhcnNlci5jIHwgMzkgKysrKysrKysrKysrKysrKysrLS0tLS0tLS0tDQogMSBm
+aWxlIGNoYW5nZWQsIDI3IGluc2VydGlvbnMoKyksIDEyIGRlbGV0aW9ucygtKQ0KDQpkaWZmIC0t
+Z2l0IGEvbGliL2JvaWxlcnBsYXRlL2luaXBhcnNlci9pbmlwYXJzZXIuYyBiL2xpYi9ib2lsZXJw
+bGF0ZS9pbmlwYXJzZXIvaW5pcGFyc2VyLmMNCmluZGV4IDViMjA5NGEwMC4uYjc5Zjk2NWE2IDEw
+MDY0NA0KLS0tIGEvbGliL2JvaWxlcnBsYXRlL2luaXBhcnNlci9pbmlwYXJzZXIuYw0KKysrIGIv
+bGliL2JvaWxlcnBsYXRlL2luaXBhcnNlci9pbmlwYXJzZXIuYw0KQEAgLTU1MSwyNSArNTUxLDM3
+IEBAIGRpY3Rpb25hcnkgKiBpbmlwYXJzZXJfbG9hZChjb25zdCBjaGFyICogaW5pbmFtZSkNCiAg
+ICAgZGljdCA9IGRpY3Rpb25hcnlfbmV3KDApIDsNCiAgICAgaWYgKCFkaWN0KSB7DQogICAgICAg
+ICBmY2xvc2UoaW4pOw0KLQllcnJubyA9IEVOT01FTTsNCisgICAgICAgIGVycm5vID0gRU5PTUVN
+Ow0KICAgICAgICAgcmV0dXJuIE5VTEwgOw0KICAgICB9DQogDQotICAgIGJ1ZiA9IG1hbGxvYygo
+QVNDSUlMSU5FU1orMSkgKiA1KTsNCisgICAgYnVmID0gbWFsbG9jKChBU0NJSUxJTkVTWisxKSAq
+IDQpOw0KICAgICBpZiAoYnVmID09IE5VTEwpIHsNCi0JICAgIGVycm5vID0gLUVOT01FTTsNCi0J
+ICAgIHJldHVybiBOVUxMOw0KKyAgICAgICAgICAgIGRpY3Rpb25hcnlfZGVsKGRpY3QpOw0KKyAg
+ICAgICAgICAgIGZjbG9zZShpbik7DQorICAgICAgICAgICAgZXJybm8gPSBFTk9NRU07DQorICAg
+ICAgICAgICAgcmV0dXJuIE5VTEw7DQogICAgIH0NCisNCisgICAgdG1wID0gbWFsbG9jKEFTQ0lJ
+TElORVNaICsgMSk7DQorICAgIGlmICghdG1wKSB7DQorICAgICAgICAgICAgZnJlZShidWYpOw0K
+KyAgICAgICAgICAgIGRpY3Rpb25hcnlfZGVsKGRpY3QpOw0KKyAgICAgICAgICAgIGZjbG9zZShp
+bik7DQorICAgICAgICAgICAgZXJybm8gPSBFTk9NRU07DQorICAgICAgICAgICAgcmV0dXJuIE5V
+TEw7DQorICAgIH0NCisNCiAgICAgbGluZSA9IGJ1ZjsNCiAgICAgc2VjdGlvbiA9IGxpbmUgKyBB
+U0NJSUxJTkVTWiArIDE7DQogICAgIGtleSA9IHNlY3Rpb24gKyBBU0NJSUxJTkVTWiArIDE7DQot
+ICAgIHRtcCA9IGtleSArIEFTQ0lJTElORVNaICsgMTsNCi0gICAgdmFsID0gdG1wICsgQVNDSUlM
+SU5FU1ogKyAxOw0KKyAgICB2YWwgPSBrZXkgKyBBU0NJSUxJTkVTWiArIDE7DQogDQotICAgIG1l
+bXNldChsaW5lLCAgICAwLCBBU0NJSUxJTkVTWik7DQotICAgIG1lbXNldChzZWN0aW9uLCAwLCBB
+U0NJSUxJTkVTWik7DQotICAgIG1lbXNldChrZXksICAgICAwLCBBU0NJSUxJTkVTWik7DQotICAg
+IG1lbXNldCh2YWwsICAgICAwLCBBU0NJSUxJTkVTWik7DQorICAgIG1lbXNldChsaW5lLCAgICAw
+LCBBU0NJSUxJTkVTWiArIDEpOw0KKyAgICBtZW1zZXQoc2VjdGlvbiwgMCwgQVNDSUlMSU5FU1og
+KyAxKTsNCisgICAgbWVtc2V0KGtleSwgICAgIDAsIEFTQ0lJTElORVNaICsgMSk7DQorICAgIG1l
+bXNldCh2YWwsICAgICAwLCBBU0NJSUxJTkVTWiArIDEpOw0KKyAgICBtZW1zZXQodG1wLCAgICAg
+MCwgQVNDSUlMSU5FU1ogKyAxKTsNCiAgICAgbGFzdD0wIDsNCiANCiAgICAgd2hpbGUgKGZnZXRz
+KGxpbmUrbGFzdCwgQVNDSUlMSU5FU1otbGFzdCwgaW4pIT1OVUxMKSB7DQpAQCAtNTg1LDggKzU5
+Nyw5IEBAIGRpY3Rpb25hcnkgKiBpbmlwYXJzZXJfbG9hZChjb25zdCBjaGFyICogaW5pbmFtZSkN
+CiAjZW5kaWYNCiAgICAgICAgICAgICBkaWN0aW9uYXJ5X2RlbChkaWN0KTsNCiAgICAgICAgICAg
+ICBmY2xvc2UoaW4pOw0KLQkgICAgZnJlZShidWYpOw0KLQkgICAgZXJybm8gPSBFSU5WQUw7DQor
+ICAgICAgICAgICAgZnJlZShidWYpOw0KKyAgICAgICAgICAgIGZyZWUodG1wKTsNCisgICAgICAg
+ICAgICBlcnJubyA9IEVJTlZBTDsNCiAgICAgICAgICAgICByZXR1cm4gTlVMTCA7DQogICAgICAg
+ICB9DQogICAgICAgICAvKiBHZXQgcmlkIG9mIFxuIGFuZCBzcGFjZXMgYXQgZW5kIG9mIGxpbmUg
+Ki8NCkBAIC02MTMsNiArNjI2LDcgQEAgZGljdGlvbmFyeSAqIGluaXBhcnNlcl9sb2FkKGNvbnN0
+IGNoYXIgKiBpbmluYW1lKQ0KICAgICAgICAgICAgIGJyZWFrIDsNCiANCiAgICAgICAgICAgICBj
+YXNlIExJTkVfVkFMVUU6DQorICAgICAgICAgICAgLyogQWxyZWFkeSBjaGVja2VkIGZvciBvdmVy
+Zmxvd3MsIHNlZSBhYm92ZSAqLw0KICAgICAgICAgICAgIHNwcmludGYodG1wLCAiJXM6JXMiLCBz
+ZWN0aW9uLCBrZXkpOw0KICAgICAgICAgICAgIGVycnMgPSBkaWN0aW9uYXJ5X3NldChkaWN0LCB0
+bXAsIHZhbCkgOw0KICAgICAgICAgICAgIGJyZWFrIDsNCkBAIC02NDIsNiArNjU2LDcgQEAgZGlj
+dGlvbmFyeSAqIGluaXBhcnNlcl9sb2FkKGNvbnN0IGNoYXIgKiBpbmluYW1lKQ0KICAgICB9DQog
+ICAgIGZjbG9zZShpbik7DQogICAgIGZyZWUoYnVmKTsNCisgICAgZnJlZSh0bXApOw0KICAgICBp
+ZiAoZXJycykgew0KICAgICAgICAgZGljdGlvbmFyeV9kZWwoZGljdCk7DQogICAgICAgICBkaWN0
+ID0gTlVMTCA7DQotLSANCjIuMjYuMg0K
 
