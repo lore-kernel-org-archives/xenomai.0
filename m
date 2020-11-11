@@ -1,12 +1,11 @@
-From: "florian.bezdeka@siemens.com" <florian.bezdeka@siemens.com>
-Subject: [PATCH] lib/boilerplate: Allow building with GCC 10.2
-Date: Wed, 11 Nov 2020 14:59:40 +0000
-Message-ID: <20201111145926.104952-1-florian.bezdeka@siemens.com>
-Content-Language: en-US
-Content-Type: text/plain; charset="utf-8"
-Content-ID: <378EE28ABE126D4DBCD982E9EF891115@EURPRD10.PROD.OUTLOOK.COM>
-Content-Transfer-Encoding: base64
-MIME-Version: 1.0
+From: =?utf-8?Q?Deniz_U=C4=9Fur?= <deniz343@gmail.com>
+Content-Type: text/plain;
+	charset=us-ascii
+Content-Transfer-Encoding: quoted-printable
+Mime-Version: 1.0 (Mac OS X Mail 12.4 \(3445.104.17\))
+Subject: [xenomai-images][PATCH 0/1][REV 1] Enable RTDM SPI on BeagleBone Black
+Message-Id: <2D9558F9-78C0-4C72-AD8B-719B8E0BE205@gmail.com>
+Date: Wed, 11 Nov 2020 22:37:50 +0300
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,69 +14,43 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Xenomai <xenomai@xenomai.org>
 
-V2hlbiB0cnlpbmcgdG8gY29tcGlsZSB1c2luZyBHQ0MgMTAuMiB0aGUgZm9sbG93aW5nIHdhcm5p
-bmcgLyBlcnJvcg0KYXBwZWFyZWQ6DQoNCmluaXBhcnNlci9pbmlwYXJzZXIuYzogSW4gZnVuY3Rp
-b24g4oCYaW5pcGFyc2VyX2xvYWTigJk6DQppbmlwYXJzZXIvaW5pcGFyc2VyLmM6NjE2OjEzOiBl
-cnJvcjog4oCYc3ByaW50ZuKAmSBhcmd1bWVudHMgMywgNCBtYXkgb3ZlcmxhcCBkZXN0aW5hdGlv
-biBvYmplY3Qg4oCYYnVm4oCZIFstV2Vycm9yPXJlc3RyaWN0XQ0KICA2MTYgfCAgICAgICAgICAg
-ICBzcHJpbnRmKHRtcCwgIiVzOiVzIiwgc2VjdGlvbiwga2V5KTsNCiAgICAgIHwgICAgICAgICAg
-ICAgXn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn4NCg0KQWNjb3JkaW5nIHRvIFBP
-U0lYIGFuZCBDOTkgc3RhbmRhcmQgdXNpbmcgc3ByaW50ZigpIG9uIG92ZXJsYXBwaW5nDQpidWZm
-ZXJzIG1heSBsZWFkIHRvIHVuZGVmaW5lZCBiZWhhdmlvciwgc28gdXNpbmcgYSBkZWRpY2F0ZWQg
-YnVmZmVyIGZvcg0KdGhlIGRlc3RpbmF0aW9uIChmaXJzdCBhcmd1bWVudCB0byBzcHJpbnRmKSBp
-cyBuZWNlc3NhcnkuDQoNCldoaWxlIGF0IGl0Og0KIC0gRml4ZWQgc29tZSBpbmRlbnRhdGlvbnMN
-CiAtIEZpeGVkIHNvbWUgZXJyb3IgaGFuZGxpbmcgY29kZSBwYXRocw0KICAgU29tZSByZXNvdXJj
-ZXMgd2VyZSBub3QgcHJvcGVybHkgY2xlYW5lZCB1cCBpbiBlcnJvciBjb25kaXRpb25zDQogLSBG
-aXhlZCBidWZmZXIgaW5pdGlhbGl6YXRpb25zOiBUaGUgbGFzdCBieXRlcyB3ZXJlIG5ldmVyIHNl
-dCB0byB6ZXJvDQoNCkZpeGVzOiA2NzgwM2RjZTU0M2UgKCJsaWIvYm9pbGVycGxhdGU6IGFkZCBp
-bmlwYXJzZXIgdG8gYm9pbGVycGxhdGUiKQ0KU2lnbmVkLW9mZi1ieTogRmxvcmlhbiBCZXpkZWth
-IDxmbG9yaWFuLmJlemRla2FAc2llbWVucy5jb20+DQotLS0NCiBsaWIvYm9pbGVycGxhdGUvaW5p
-cGFyc2VyL2luaXBhcnNlci5jIHwgMzkgKysrKysrKysrKysrKysrKysrLS0tLS0tLS0tDQogMSBm
-aWxlIGNoYW5nZWQsIDI3IGluc2VydGlvbnMoKyksIDEyIGRlbGV0aW9ucygtKQ0KDQpkaWZmIC0t
-Z2l0IGEvbGliL2JvaWxlcnBsYXRlL2luaXBhcnNlci9pbmlwYXJzZXIuYyBiL2xpYi9ib2lsZXJw
-bGF0ZS9pbmlwYXJzZXIvaW5pcGFyc2VyLmMNCmluZGV4IDViMjA5NGEwMC4uYjc5Zjk2NWE2IDEw
-MDY0NA0KLS0tIGEvbGliL2JvaWxlcnBsYXRlL2luaXBhcnNlci9pbmlwYXJzZXIuYw0KKysrIGIv
-bGliL2JvaWxlcnBsYXRlL2luaXBhcnNlci9pbmlwYXJzZXIuYw0KQEAgLTU1MSwyNSArNTUxLDM3
-IEBAIGRpY3Rpb25hcnkgKiBpbmlwYXJzZXJfbG9hZChjb25zdCBjaGFyICogaW5pbmFtZSkNCiAg
-ICAgZGljdCA9IGRpY3Rpb25hcnlfbmV3KDApIDsNCiAgICAgaWYgKCFkaWN0KSB7DQogICAgICAg
-ICBmY2xvc2UoaW4pOw0KLQllcnJubyA9IEVOT01FTTsNCisgICAgICAgIGVycm5vID0gRU5PTUVN
-Ow0KICAgICAgICAgcmV0dXJuIE5VTEwgOw0KICAgICB9DQogDQotICAgIGJ1ZiA9IG1hbGxvYygo
-QVNDSUlMSU5FU1orMSkgKiA1KTsNCisgICAgYnVmID0gbWFsbG9jKChBU0NJSUxJTkVTWisxKSAq
-IDQpOw0KICAgICBpZiAoYnVmID09IE5VTEwpIHsNCi0JICAgIGVycm5vID0gLUVOT01FTTsNCi0J
-ICAgIHJldHVybiBOVUxMOw0KKyAgICAgICAgICAgIGRpY3Rpb25hcnlfZGVsKGRpY3QpOw0KKyAg
-ICAgICAgICAgIGZjbG9zZShpbik7DQorICAgICAgICAgICAgZXJybm8gPSBFTk9NRU07DQorICAg
-ICAgICAgICAgcmV0dXJuIE5VTEw7DQogICAgIH0NCisNCisgICAgdG1wID0gbWFsbG9jKEFTQ0lJ
-TElORVNaICsgMSk7DQorICAgIGlmICghdG1wKSB7DQorICAgICAgICAgICAgZnJlZShidWYpOw0K
-KyAgICAgICAgICAgIGRpY3Rpb25hcnlfZGVsKGRpY3QpOw0KKyAgICAgICAgICAgIGZjbG9zZShp
-bik7DQorICAgICAgICAgICAgZXJybm8gPSBFTk9NRU07DQorICAgICAgICAgICAgcmV0dXJuIE5V
-TEw7DQorICAgIH0NCisNCiAgICAgbGluZSA9IGJ1ZjsNCiAgICAgc2VjdGlvbiA9IGxpbmUgKyBB
-U0NJSUxJTkVTWiArIDE7DQogICAgIGtleSA9IHNlY3Rpb24gKyBBU0NJSUxJTkVTWiArIDE7DQot
-ICAgIHRtcCA9IGtleSArIEFTQ0lJTElORVNaICsgMTsNCi0gICAgdmFsID0gdG1wICsgQVNDSUlM
-SU5FU1ogKyAxOw0KKyAgICB2YWwgPSBrZXkgKyBBU0NJSUxJTkVTWiArIDE7DQogDQotICAgIG1l
-bXNldChsaW5lLCAgICAwLCBBU0NJSUxJTkVTWik7DQotICAgIG1lbXNldChzZWN0aW9uLCAwLCBB
-U0NJSUxJTkVTWik7DQotICAgIG1lbXNldChrZXksICAgICAwLCBBU0NJSUxJTkVTWik7DQotICAg
-IG1lbXNldCh2YWwsICAgICAwLCBBU0NJSUxJTkVTWik7DQorICAgIG1lbXNldChsaW5lLCAgICAw
-LCBBU0NJSUxJTkVTWiArIDEpOw0KKyAgICBtZW1zZXQoc2VjdGlvbiwgMCwgQVNDSUlMSU5FU1og
-KyAxKTsNCisgICAgbWVtc2V0KGtleSwgICAgIDAsIEFTQ0lJTElORVNaICsgMSk7DQorICAgIG1l
-bXNldCh2YWwsICAgICAwLCBBU0NJSUxJTkVTWiArIDEpOw0KKyAgICBtZW1zZXQodG1wLCAgICAg
-MCwgQVNDSUlMSU5FU1ogKyAxKTsNCiAgICAgbGFzdD0wIDsNCiANCiAgICAgd2hpbGUgKGZnZXRz
-KGxpbmUrbGFzdCwgQVNDSUlMSU5FU1otbGFzdCwgaW4pIT1OVUxMKSB7DQpAQCAtNTg1LDggKzU5
-Nyw5IEBAIGRpY3Rpb25hcnkgKiBpbmlwYXJzZXJfbG9hZChjb25zdCBjaGFyICogaW5pbmFtZSkN
-CiAjZW5kaWYNCiAgICAgICAgICAgICBkaWN0aW9uYXJ5X2RlbChkaWN0KTsNCiAgICAgICAgICAg
-ICBmY2xvc2UoaW4pOw0KLQkgICAgZnJlZShidWYpOw0KLQkgICAgZXJybm8gPSBFSU5WQUw7DQor
-ICAgICAgICAgICAgZnJlZShidWYpOw0KKyAgICAgICAgICAgIGZyZWUodG1wKTsNCisgICAgICAg
-ICAgICBlcnJubyA9IEVJTlZBTDsNCiAgICAgICAgICAgICByZXR1cm4gTlVMTCA7DQogICAgICAg
-ICB9DQogICAgICAgICAvKiBHZXQgcmlkIG9mIFxuIGFuZCBzcGFjZXMgYXQgZW5kIG9mIGxpbmUg
-Ki8NCkBAIC02MTMsNiArNjI2LDcgQEAgZGljdGlvbmFyeSAqIGluaXBhcnNlcl9sb2FkKGNvbnN0
-IGNoYXIgKiBpbmluYW1lKQ0KICAgICAgICAgICAgIGJyZWFrIDsNCiANCiAgICAgICAgICAgICBj
-YXNlIExJTkVfVkFMVUU6DQorICAgICAgICAgICAgLyogQWxyZWFkeSBjaGVja2VkIGZvciBvdmVy
-Zmxvd3MsIHNlZSBhYm92ZSAqLw0KICAgICAgICAgICAgIHNwcmludGYodG1wLCAiJXM6JXMiLCBz
-ZWN0aW9uLCBrZXkpOw0KICAgICAgICAgICAgIGVycnMgPSBkaWN0aW9uYXJ5X3NldChkaWN0LCB0
-bXAsIHZhbCkgOw0KICAgICAgICAgICAgIGJyZWFrIDsNCkBAIC02NDIsNiArNjU2LDcgQEAgZGlj
-dGlvbmFyeSAqIGluaXBhcnNlcl9sb2FkKGNvbnN0IGNoYXIgKiBpbmluYW1lKQ0KICAgICB9DQog
-ICAgIGZjbG9zZShpbik7DQogICAgIGZyZWUoYnVmKTsNCisgICAgZnJlZSh0bXApOw0KICAgICBp
-ZiAoZXJycykgew0KICAgICAgICAgZGljdGlvbmFyeV9kZWwoZGljdCk7DQogICAgICAgICBkaWN0
-ID0gTlVMTCA7DQotLSANCjIuMjYuMg0K
+=46rom dbc3add6bb3130d40602d3144d152acc0e0e3bd9 Mon Sep 17 00:00:00 2001
+From: Deniz Ugur <deniz343@gmail.com>
+Date: Wed, 11 Nov 2020 22:27:07 +0300
+Subject: [xenomai-images][PATCH 0/1][REV 1] Enable RTDM SPI on =
+BeagleBone Black
+To: xenomai@xenomai.org
+Cc: quirin.gylstorff@siemens.com
+
+Tested on the next branch but it possibly works on master as well.
+I've tried not to modify too many defconfig values but it wasn't
+possible to make it work without these modifications.
+
+Worst latency during spitest was around 100us. Although, I don't think
+that's related to this patch.
+
+On a final note, I'm not really sure if it's possible to assign
+spi0_cs1 but if that's possible then a second channel for SPI0 can be
+enabled.
+Any feedback on that would be appreciated.
+
+Deniz Ugur (1):
+  Enable RTDM SPI on BeagleBone Black
+
+ recipes-core/customizations/customizations.bb |   9 +-
+ recipes-core/customizations/files/post-bbb    |   5 +
+ ...01-BeagleBone-Black-RTDM-SPI-enabled.patch | 110 ++++++++++++++++++
+ recipes-kernel/linux/files/bbb.cfg            |  28 +++++
+ recipes-kernel/linux/linux-xenomai.inc        |   9 +-
+ 5 files changed, 159 insertions(+), 2 deletions(-)
+ create mode 100644 recipes-core/customizations/files/post-bbb
+ create mode 100644 =
+recipes-kernel/linux/files/0001-BeagleBone-Black-RTDM-SPI-enabled.patch
+ create mode 100644 recipes-kernel/linux/files/bbb.cfg
+
+--=20
+2.17.1
+
 
