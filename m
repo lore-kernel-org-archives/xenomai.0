@@ -1,12 +1,13 @@
-Subject: Re: [PATCH v2] lib/boilerplate/iniparser: Allow building with GCC
- 10.2 2020101
-References: <0481e0339de9eb16e4460bb2b97d4b2e2f0f1148.camel@siemens.com>
- <20201112114510.60332-1-florian.bezdeka@siemens.com>
 From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <0511e991-534e-8bef-2fb0-a7a94c506f32@siemens.com>
-Date: Thu, 12 Nov 2020 17:19:44 +0100
+Subject: Re: [xenomai-images][PATCH 1/1][REV 2] Enable RTDM SPI on BeagleBone
+ Black
+References: <30F08CB9-A6E9-4C78-B40F-D6454048E786@gmail.com>
+ <0403b386-7c15-b32d-f009-25c49d105dcc@siemens.com>
+ <C4D04183-55E9-482C-8BCB-93930CC36A53@gmail.com>
+Message-ID: <2c136fec-777c-5982-4055-87636429350c@siemens.com>
+Date: Thu, 12 Nov 2020 17:56:21 +0100
 MIME-Version: 1.0
-In-Reply-To: <20201112114510.60332-1-florian.bezdeka@siemens.com>
+In-Reply-To: <C4D04183-55E9-482C-8BCB-93930CC36A53@gmail.com>
 Content-Type: text/plain; charset="utf-8"
 Content-Language: en-US
 Content-Transfer-Encoding: 8bit
@@ -18,52 +19,42 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "Bezdeka, Florian (T RDA IOT SES-DE)" <florian.bezdeka@siemens.com>, "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: =?UTF-8?Q?Deniz_U=c4=9fur?= <deniz343@gmail.com>
+Cc: Xenomai <xenomai@xenomai.org>
 
-On 12.11.20 12:45, Bezdeka, Florian (T RDA IOT SES-DE) wrote:
-> From: Florian Bezdeka <florian.bezdeka@siemens.com>
+On 12.11.20 09:25, Deniz Uğur wrote:
+>> This is not place to put some kind or "versioning" info. It's rather the
+>> place to put your commit message, explaining *why* we want this change.
 > 
-> Updating to upstream revision f858275f7f307eecba84c2f5429483f9f28007f8.
+> I wish it was possible to delete the previous mail, otherwise I wouldn’t
+> write that.
 > 
-> The reason for updating was the following compiler error when trying
-> to compile with GCC 10.2 10.2.1 20201016. As it turned out the problem
-> was already addressed upstream:
+>> Why do we need to *enable* overlays first...
+>>
+>>> +echo "disable_uboot_overlay_video=1" >> /boot/uEnv.txt
+>>
+>> ...in order to disable a specific one?
 > 
-> iniparser/iniparser.c: In function ‘iniparser_load’:
-> iniparser/iniparser.c:616:13: error: ‘sprintf’ arguments 3, 4 may
-> overlap destination object ‘buf’ [-Werror=restrict]
->    616 |             sprintf(tmp, "%s:%s", section, key);
->        |             ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-> 
-> I reviewed especially the API changes. Most of them are cleanups only
-> but two things should be pointed out:
-> 
->   - The type of the size field of struct _dictionary_ changed from int
->     to ssize_t. The only user of this struct is
->     lib/analogy/calibration.c which uses this structure for internal
->     things only. It is never exposed to any public API so updating is
->     OK and fully backward compatible.
-> 
->   - dictionary_new changed its signature
->       from dictionary_new(int size)
->       to   dictionary_new(size_t size).
->     This function is not part of any public API. So updating does not
->     break backward compatibility.
-> 
-> Signed-off-by: Florian Bezdeka <florian.bezdeka@siemens.com>
-> ---
->  lib/boilerplate/iniparser/dictionary.c | 409 ++++++++++----------
->  lib/boilerplate/iniparser/dictionary.h |  43 ++-
->  lib/boilerplate/iniparser/iniparser.c  | 491 +++++++++++++++++--------
->  lib/boilerplate/iniparser/iniparser.h  | 131 +++++--
->  4 files changed, 646 insertions(+), 428 deletions(-)
+> I’ve tried every combination but without these, BBB doesn’t seem to be
+> booting.
 > 
 
-Thanks, applied to next (after sorting out our Siemens-local mail
-transfer problem...).
+I don't have the code around, but this is possibly *selecting* an
+overlay (rather than excluding one) that disables the otherwise enabled
+video function.
+
+>> How can non-matching drivers be in conflict? Most of those below do not
+>> match on any of the DT entries on the BBB.
+> 
+> I took the liberty of trying every combination again but just disabling
+> CONFIG_SPI_SPIDEV wasn’t enough. In every other case, driver wasn’t
+> loading and dumping stack trace to kernel logs.
+
+I would have suspected that CONFIG_SPI_OMAP24XX=n and
+CONFIG_SPI_SPIDEV=n is enough. Would likely be worth to look at the back
+traces eventually.
 
 Jan
-
 -- 
 Siemens AG, T RDA IOT
 Corporate Competence Center Embedded Linux
