@@ -1,15 +1,15 @@
-From: =?utf-8?Q?Deniz_U=C4=9Fur?= <deniz343@gmail.com>
-Message-Id: <C4D04183-55E9-482C-8BCB-93930CC36A53@gmail.com>
-Mime-Version: 1.0 (Mac OS X Mail 12.4 \(3445.104.17\))
-Subject: Re: [xenomai-images][PATCH 1/1][REV 2] Enable RTDM SPI on BeagleBone
- Black
-Date: Thu, 12 Nov 2020 11:25:20 +0300
-In-Reply-To: <0403b386-7c15-b32d-f009-25c49d105dcc@siemens.com>
-References: <30F08CB9-A6E9-4C78-B40F-D6454048E786@gmail.com>
- <0403b386-7c15-b32d-f009-25c49d105dcc@siemens.com>
-Content-Type: text/plain;
-	charset=utf-8
-Content-Transfer-Encoding: quoted-printable
+From: "florian.bezdeka@siemens.com" <florian.bezdeka@siemens.com>
+Subject: Re: [PATCH] lib/boilerplate: Allow building with GCC 10.2
+Date: Thu, 12 Nov 2020 08:49:48 +0000
+Message-ID: <0481e0339de9eb16e4460bb2b97d4b2e2f0f1148.camel@siemens.com>
+References: <20201111145926.104952-1-florian.bezdeka@siemens.com>
+ <159b4065-c996-8ee9-05da-c5095b314740@siemens.com>
+In-Reply-To: <159b4065-c996-8ee9-05da-c5095b314740@siemens.com>
+Content-Language: en-US
+Content-Type: text/plain; charset="utf-8"
+Content-ID: <0BFA51CDE6FB4B4EB33AF032568674FA@EURPRD10.PROD.OUTLOOK.COM>
+Content-Transfer-Encoding: base64
+MIME-Version: 1.0
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -18,329 +18,99 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jan Kiszka <jan.kiszka@siemens.com>
-Cc: Xenomai <xenomai@xenomai.org>
+To: "xenomai@xenomai.org" <xenomai@xenomai.org>, "jan.kiszka@siemens.com" <jan.kiszka@siemens.com>
 
-> This is not place to put some kind or "versioning" info. It's rather =
-the
-> place to put your commit message, explaining *why* we want this =
-change.
-
-I wish it was possible to delete the previous mail, otherwise I =
-wouldn=E2=80=99t write that.
-
-> Why do we need to *enable* overlays first...
->=20
->> +echo "disable_uboot_overlay_video=3D1" >> /boot/uEnv.txt
->=20
-> ...in order to disable a specific one?
-
-I=E2=80=99ve tried every combination but without these, BBB doesn=E2=80=99=
-t seem to be booting.
-
-> How can non-matching drivers be in conflict? Most of those below do =
-not
-> match on any of the DT entries on the BBB.
-
-I took the liberty of trying every combination again but just disabling =
-CONFIG_SPI_SPIDEV wasn=E2=80=99t enough. In every other case, driver =
-wasn=E2=80=99t loading and dumping stack trace to kernel logs.
-
-> Looks good otherwise. The smaller your patch becomes, the better it is
-> already ;).
-
-Thank you. I agree with you, most of my changes are cumbersome.
-
-> On 12 Nov 2020, at 10:09, Jan Kiszka <jan.kiszka@siemens.com> wrote:
->=20
-> On 11.11.20 20:47, Deniz U=C4=9Fur via Xenomai wrote:
->> =46rom dbc3add6bb3130d40602d3144d152acc0e0e3bd9 Mon Sep 17 00:00:00 =
-2001
->> From: Deniz Ugur <deniz343@gmail.com <mailto:deniz343@gmail.com>>
->> Date: Wed, 11 Nov 2020 22:23:03 +0300
->> Subject: [xenomai-images][PATCH 1/1][REV 2] Enable RTDM SPI on =
-BeagleBone Black
->> To: xenomai@xenomai.org <mailto:xenomai@xenomai.org>
->> Cc: quirin.gylstorff@siemens.com =
-<mailto:quirin.gylstorff@siemens.com>
->>=20
->> Indentation was messed up on previous post. This one fixes it.
->>=20
->=20
-> This is not place to put some kind or "versioning" info. It's rather =
-the
-> place to put your commit message, explaining *why* we want this =
-change.
->=20
-> Also missing: signed-off-by (DCO, https://developercertificate.org/ =
-<https://developercertificate.org/>).
->=20
->> ---
->> recipes-core/customizations/customizations.bb |   9 +-
->> recipes-core/customizations/files/post-bbb    |   5 +
->> ...01-BeagleBone-Black-RTDM-SPI-enabled.patch | 110 =
-++++++++++++++++++
->> recipes-kernel/linux/files/bbb.cfg            |  28 +++++
->> recipes-kernel/linux/linux-xenomai.inc        |   9 +-
->> 5 files changed, 159 insertions(+), 2 deletions(-)
->> create mode 100644 recipes-core/customizations/files/post-bbb
->> create mode 100644 =
-recipes-kernel/linux/files/0001-BeagleBone-Black-RTDM-SPI-enabled.patch
->> create mode 100644 recipes-kernel/linux/files/bbb.cfg
->>=20
->> diff --git a/recipes-core/customizations/customizations.bb =
-b/recipes-core/customizations/customizations.bb
->> index e35c0a5..ecfd1d0 100644
->> --- a/recipes-core/customizations/customizations.bb
->> +++ b/recipes-core/customizations/customizations.bb
->> @@ -13,10 +13,17 @@ inherit dpkg-raw
->>=20
->> DESCRIPTION =3D "demo image customizations"
->>=20
->> +def is_bbb(d):
->> +    bbb =3D d.getVar('MACHINE') or ''
->> +    if bbb =3D=3D 'beagle-bone-black':
->> +        return "file://post-bbb"
->> +    return ""
->> +
->> SRC_URI =3D " \
->>     file://postinst \
->>     file://ethernet \
->> -    file://99-silent-printk.conf"
->> +    file://99-silent-printk.conf \
->> +    ${@is_bbb(d)}"
->=20
-> bitbake override magic can be used here:
->=20
-> SRC_URI_append_beagle-bone-black =3D ...
->=20
->>=20
->> DEBIAN_DEPENDS =3D "passwd"
->>=20
->> diff --git a/recipes-core/customizations/files/post-bbb =
-b/recipes-core/customizations/files/post-bbb
->> new file mode 100644
->> index 0000000..9befbcf
->> --- /dev/null
->> +++ b/recipes-core/customizations/files/post-bbb
->> @@ -0,0 +1,5 @@
->> +#!/bin/sh
->> +
->> +# Disable HDMI in order to enable SPI1 on BeagleBone Black
->> +echo "enable_uboot_overlays=3D1" >> /boot/uEnv.txt
->=20
-> Why do we need to *enable* overlays first...
->=20
->> +echo "disable_uboot_overlay_video=3D1" >> /boot/uEnv.txt
->=20
-> ...in order to disable a specific one?
->=20
->> \ No newline at end of file
->> diff --git =
-a/recipes-kernel/linux/files/0001-BeagleBone-Black-RTDM-SPI-enabled.patch =
-b/recipes-kernel/linux/files/0001-BeagleBone-Black-RTDM-SPI-enabled.patch
->> new file mode 100644
->> index 0000000..3b8b542
->> --- /dev/null
->> +++ =
-b/recipes-kernel/linux/files/0001-BeagleBone-Black-RTDM-SPI-enabled.patch
->> @@ -0,0 +1,110 @@
->> +=46rom 1badee8e16340d063f8bff04c39c9fd3d6749a8f Mon Sep 17 00:00:00 =
-2001
->> +From: Deniz Ugur <deniz343@gmail.com>
->> +Date: Mon, 9 Nov 2020 20:19:49 +0300
->> +Subject: [PATCH] BeagleBone Black RTDM SPI enabled
->> +
->> +---
->> + arch/arm/boot/dts/am335x-bone-common.dtsi   |  2 +
->> + arch/arm/boot/dts/am335x-boneblack-spi.dtsi | 77 =
-+++++++++++++++++++++
->> + 2 files changed, 79 insertions(+)
->> + create mode 100644 arch/arm/boot/dts/am335x-boneblack-spi.dtsi
->> +
->> +diff --git a/arch/arm/boot/dts/am335x-bone-common.dtsi =
-b/arch/arm/boot/dts/am335x-bone-common.dtsi
->> +index 73b514ddd..91ccc0f4b 100644
->> +--- a/arch/arm/boot/dts/am335x-bone-common.dtsi
->> ++++ b/arch/arm/boot/dts/am335x-bone-common.dtsi
->> +@@ -6,6 +6,8 @@
->> +  * published by the Free Software Foundation.
->> +  */
->> +=20
->> ++#include "am335x-boneblack-spi.dtsi"
->> ++
->=20
-> I think we should rather patch that into am335x-boneblack.dts.
->=20
->> + / {
->> +   cpus {
->> +       cpu@0 {
->> +diff --git a/arch/arm/boot/dts/am335x-boneblack-spi.dtsi =
-b/arch/arm/boot/dts/am335x-boneblack-spi.dtsi
->> +new file mode 100644
->> +index 000000000..47485af64
->> +--- /dev/null
->> ++++ b/arch/arm/boot/dts/am335x-boneblack-spi.dtsi
->> +@@ -0,0 +1,77 @@
->> ++&am33xx_pinmux {
->> ++    spi0_pins: pinmux_spi0_pins {
->> ++        pinctrl-single,pins =3D <
->> ++            /* This output signal is also used as a re-timing =
-input. */
->> ++            0x150 0x30  /* P9_22 spi0_sclk, INPUT_PULLUP | MODE0 */
->> ++            0x154 0x30  /* P9_21 spi0_d0, INPUT_PULLUP | MODE0 */
->> ++            0x158 0x10  /* P9_18 spi0_d1, OUTPUT_PULLUP | MODE0 */
->> ++            0x15c 0x10  /* P9_17 spi0_cs0, OUTPUT_PULLUP | MODE0 */
->> ++        >;
->> ++    };
->> ++
->> ++    spi1_pins: pinmux_spi1_pins {
->> ++        pinctrl-single,pins =3D <
->> ++            /* This output signal is also used as a re-timing =
-input. */
->> ++            0x190 0x33  /* P9_31 spi1_sclk, INPUT_PULLUP | MODE3 */
->> ++            0x194 0x33  /* P9_29 spi1_d0, INPUT_PULLUP | MODE3 */
->> ++            0x198 0x13  /* P9_30 spi1_d1, OUTPUT_PULLUP | MODE3 */
->> ++            0x19c 0x13  /* P9_28 spi1_cs0, OUTPUT_PULLUP | MODE3 */
->> ++            0x164 0x12  /* P9_42 spi1_cs1 OUTPUT_PULLUP | MODE2 */
->> ++        >;
->> ++    };
->> ++};
->> ++
->> ++&spi0 {
->> ++    compatible =3D "ti,omap4-mcspi";
->> ++    #address-cells =3D <0x1>;
->> ++    #size-cells =3D <0x0>;
->> ++    reg =3D <0x48030000 0x400>;
->> ++    interrupts =3D <0x41>;
->> ++    ti,spi-num-cs =3D <0x2>;
->> ++    ti,hwmods =3D "spi0";
->> ++    dmas =3D <0x27 0x10 0x0 0x27 0x11 0x0 0x27 0x12 0x0 0x27 0x13 =
-0x0>;
->> ++    dma-names =3D "tx0", "rx0", "tx1", "rx1";
->> ++    status =3D "okay";
->> ++    pinctrl-names =3D "default";
->> ++    pinctrl-0 =3D <&spi0_pins>;
->> ++
->> ++    channel0@0 {
->> ++        #address-cells =3D <0x1>;
->> ++        #size-cells =3D <0x0>;
->> ++        compatible =3D "rtdm-spidev";
->> ++        reg =3D <0x0>;
->> ++        spi-max-frequency =3D <0x1312d00>;
->> ++    };
->> ++};
->> ++
->> ++&spi1 {
->> ++    compatible =3D "ti,omap4-mcspi";
->> ++    #address-cells =3D <0x1>;
->> ++    #size-cells =3D <0x0>;
->> ++    reg =3D <0x481a0000 0x400>;
->> ++    interrupts =3D <0x7d>;
->> ++    ti,spi-num-cs =3D <0x2>;
->> ++    ti,hwmods =3D "spi1";
->> ++    dmas =3D <0x27 0x2a 0x0 0x27 0x2b 0x0 0x27 0x2c 0x0 0x27 0x2d =
-0x0>;
->> ++    dma-names =3D "tx0", "rx0", "tx1", "rx1";
->> ++    status =3D "okay";
->> ++    pinctrl-names =3D "default";
->> ++    pinctrl-0 =3D <&spi1_pins>;
->> ++
->> ++    channel1@0 {
->> ++        #address-cells =3D <0x1>;
->> ++        #size-cells =3D <0x0>;
->> ++        compatible =3D "rtdm-spidev";
->> ++        reg =3D <0x0>;
->> ++        spi-max-frequency =3D <0x1312d00>;
->> ++    };
->> ++
->> ++    channel1@1 {
->> ++        #address-cells =3D <0x1>;
->> ++        #size-cells =3D <0x0>;
->> ++        compatible =3D "rtdm-spidev";
->> ++        reg =3D <0x1>;
->> ++        spi-max-frequency =3D <0x1312d00>;
->> ++    };
->> ++
->> ++};
->> +\ No newline at end of file
->> +--=20
->> +2.17.1
->> \ No newline at end of file
->> diff --git a/recipes-kernel/linux/files/bbb.cfg =
-b/recipes-kernel/linux/files/bbb.cfg
->> new file mode 100644
->> index 0000000..5e2a112
->> --- /dev/null
->> +++ b/recipes-kernel/linux/files/bbb.cfg
->> @@ -0,0 +1,28 @@
->> +# Disable conflicting drivers
->=20
-> How can non-matching drivers be in conflict? Most of those below do =
-not
-> match on any of the DT entries on the BBB.
->=20
->> +CONFIG_XENO_DRIVERS_SPI_BCM2835=3Dn
->> +CONFIG_XENO_DRIVERS_SPI_SUN6I=3Dn
->> +CONFIG_SPI_ATMEL=3Dn
->> +CONFIG_SPI_BCM2835=3Dn
->> +CONFIG_SPI_BCM2835AUX=3Dn
->> +CONFIG_SPI_BCM_QSPI=3Dn
->> +CONFIG_SPI_BITBANG=3Dn
->> +CONFIG_SPI_CADENCE=3Dn
->> +CONFIG_SPI_DAVINCI=3Dn
->> +CONFIG_SPI_GPIO=3Dn
->> +CONFIG_SPI_FSL_DSPI=3Dn
->> +CONFIG_SPI_OMAP24XX=3Dn
->> +CONFIG_SPI_ORION=3Dn
->> +CONFIG_SPI_PL022=3Dn
->> +CONFIG_SPI_ROCKCHIP=3Dn
->> +CONFIG_SPI_RSPI=3Dn
->> +CONFIG_SPI_S3C64XX=3Dn
->> +CONFIG_SPI_SH_MSIOF=3Dn
->> +CONFIG_SPI_SH_HSPI=3Dn
->> +CONFIG_SPI_SIRF=3Dn
->> +CONFIG_SPI_SUN4I=3Dn
->> +CONFIG_SPI_SUN6I=3Dn
->> +CONFIG_SPI_TEGRA114=3Dn
->> +CONFIG_SPI_TEGRA20_SFLASH=3Dn
->> +CONFIG_SPI_TEGRA20_SLINK=3Dn
->> +CONFIG_SPI_XILINX=3Dn
->> +CONFIG_SPI_SPIDEV=3Dn
->> \ No newline at end of file
->> diff --git a/recipes-kernel/linux/linux-xenomai.inc =
-b/recipes-kernel/linux/linux-xenomai.inc
->> index 185b60b..ddc698b 100644
->> --- a/recipes-kernel/linux/linux-xenomai.inc
->> +++ b/recipes-kernel/linux/linux-xenomai.inc
->> @@ -13,7 +13,14 @@ require recipes-kernel/linux/linux-custom.inc
->>=20
->> KERNEL_DEFCONFIG ?=3D "${DISTRO_ARCH}_defconfig"
->>=20
->> -SRC_URI +=3D "file://${KERNEL_DEFCONFIG}"
->> +def is_bbb(d):
->> +    bbb =3D d.getVar('MACHINE') or ''
->> +    if bbb =3D=3D 'beagle-bone-black':
->> +        return "file://0001-BeagleBone-Black-RTDM-SPI-enabled.patch =
-file://bbb.cfg"
->> +    return ""
->> +
->> +SRC_URI +=3D "file://${KERNEL_DEFCONFIG} \
->> +    ${@is_bbb(d)}"
->>=20
->=20
-> Same as above.
->=20
->> DEPENDS +=3D "xenomai-kernel-source"
->> KBUILD_DEPENDS +=3D "xenomai-kernel-source"
->>=20
->=20
-> Looks good otherwise. The smaller your patch becomes, the better it is
-> already ;).
->=20
-> Thanks,
-> Jan
-> --=20
-> Siemens AG, T RDA IOT
-> Corporate Competence Center Embedded Linux
+T24gVGh1LCAyMDIwLTExLTEyIGF0IDA3OjU4ICswMTAwLCBKYW4gS2lzemthIHdyb3RlOg0KPiBJ
+bnRlcmVzdGluZyBjb3JuZXIgb2Ygb3VyIGNvZGUgYmFzZS4uLg0KPiANCj4gT24gMTEuMTEuMjAg
+MTU6NTksIGZsb3JpYW4uYmV6ZGVrYS0tLSB2aWEgWGVub21haSB3cm90ZToNCj4gPiBXaGVuIHRy
+eWluZyB0byBjb21waWxlIHVzaW5nIEdDQyAxMC4yIHRoZSBmb2xsb3dpbmcgd2FybmluZyAvIGVy
+cm9yDQo+ID4gYXBwZWFyZWQ6DQo+ID4gDQo+ID4gaW5pcGFyc2VyL2luaXBhcnNlci5jOiBJbiBm
+dW5jdGlvbiDigJhpbmlwYXJzZXJfbG9hZOKAmToNCj4gPiBpbmlwYXJzZXIvaW5pcGFyc2VyLmM6
+NjE2OjEzOiBlcnJvcjog4oCYc3ByaW50ZuKAmSBhcmd1bWVudHMgMywgNCBtYXkNCj4gPiBvdmVy
+bGFwIGRlc3RpbmF0aW9uIG9iamVjdCDigJhidWbigJkgWy1XZXJyb3I9cmVzdHJpY3RdDQo+ID4g
+ICA2MTYgfCAgICAgICAgICAgICBzcHJpbnRmKHRtcCwgIiVzOiVzIiwgc2VjdGlvbiwga2V5KTsN
+Cj4gPiAgICAgICB8ICAgICAgICAgICAgIF5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+
+fn5+DQo+ID4gDQo+IA0KPiBTdHJhbmdlLCBjYW5ub3QgcmVwcm9kdWNlIHRoaXMgcmVwb3J0IGhl
+cmUgd2l0aA0KPiANCj4gZ2NjLTEwIChTVVNFIExpbnV4KSAxMC4yLjEgMjAyMDA4MjUgW3Jldmlz
+aW9uDQo+IGMwNzQ2YTFiZWIxYmEwNzNjNzk4MWViMDlmNTViM2Q5OTNiMzJlNWNdDQoNCkhlcmU6
+DQpnY2MgdmVyc2lvbiAxMC4yLjEgMjAyMDEwMTYgKFJlZCBIYXQgMTAuMi4xLTYpIChHQ0MpDQoN
+Cj4gDQo+IGV2ZW4gd2hlbiBleHBsaWNpdGx5IGFkZGluZyAtV3Jlc3RyaWN0Lg0KPiANCj4gPiBB
+Y2NvcmRpbmcgdG8gUE9TSVggYW5kIEM5OSBzdGFuZGFyZCB1c2luZyBzcHJpbnRmKCkgb24gb3Zl
+cmxhcHBpbmcNCj4gPiBidWZmZXJzIG1heSBsZWFkIHRvIHVuZGVmaW5lZCBiZWhhdmlvciwgc28g
+dXNpbmcgYSBkZWRpY2F0ZWQgYnVmZmVyDQo+ID4gZm9yDQo+ID4gdGhlIGRlc3RpbmF0aW9uIChm
+aXJzdCBhcmd1bWVudCB0byBzcHJpbnRmKSBpcyBuZWNlc3NhcnkuDQo+ID4gDQo+ID4gV2hpbGUg
+YXQgaXQ6DQo+ID4gIC0gRml4ZWQgc29tZSBpbmRlbnRhdGlvbnMNCj4gPiAgLSBGaXhlZCBzb21l
+IGVycm9yIGhhbmRsaW5nIGNvZGUgcGF0aHMNCj4gPiAgICBTb21lIHJlc291cmNlcyB3ZXJlIG5v
+dCBwcm9wZXJseSBjbGVhbmVkIHVwIGluIGVycm9yIGNvbmRpdGlvbnMNCj4gPiAgLSBGaXhlZCBi
+dWZmZXIgaW5pdGlhbGl6YXRpb25zOiBUaGUgbGFzdCBieXRlcyB3ZXJlIG5ldmVyIHNldCB0bw0K
+PiA+IHplcm8NCj4gPiANCj4gDQo+IFdlIGxpa2VseSBmaXJzdCBvZiBhbGwgd2FudCBhIHJlc3lu
+YyB3aXRoDQo+IGh0dHBzOi8vZ2l0aHViLmNvbS9uZGV2aWxsYS9pbmlwYXJzZXIuIElmIHRoZXJl
+IGlzIGFuIHVwc3RyZWFtIGlzc3VlLA0KPiBtYXliZSBmaXggdGhlcmUgZmlyc3QuDQoNCk9oLCBz
+b3JyeS4uLiBJIGRpZCBub3QgcmVjb2duaXplIHRoYXQgd2UgaGF2ZSBhbiB1cHN0cmVhbSBpbnZv
+bHZlZC4gSQ0Kd2lsbCByZXRyeSB3aXRoIGxhdGVzdCB1cHN0cmVhbSB2ZXJzaW9uLg0KDQo+IA0K
+PiA+IEZpeGVzOiA2NzgwM2RjZTU0M2UgKCJsaWIvYm9pbGVycGxhdGU6IGFkZCBpbmlwYXJzZXIg
+dG8NCj4gPiBib2lsZXJwbGF0ZSIpDQo+ID4gU2lnbmVkLW9mZi1ieTogRmxvcmlhbiBCZXpkZWth
+IDxmbG9yaWFuLmJlemRla2FAc2llbWVucy5jb20+DQo+ID4gLS0tDQo+ID4gIGxpYi9ib2lsZXJw
+bGF0ZS9pbmlwYXJzZXIvaW5pcGFyc2VyLmMgfCAzOSArKysrKysrKysrKysrKysrKystLS0tLQ0K
+PiA+IC0tLS0NCj4gPiAgMSBmaWxlIGNoYW5nZWQsIDI3IGluc2VydGlvbnMoKyksIDEyIGRlbGV0
+aW9ucygtKQ0KPiA+IA0KPiA+IGRpZmYgLS1naXQgYS9saWIvYm9pbGVycGxhdGUvaW5pcGFyc2Vy
+L2luaXBhcnNlci5jDQo+ID4gYi9saWIvYm9pbGVycGxhdGUvaW5pcGFyc2VyL2luaXBhcnNlci5j
+DQo+ID4gaW5kZXggNWIyMDk0YTAwLi5iNzlmOTY1YTYgMTAwNjQ0DQo+ID4gLS0tIGEvbGliL2Jv
+aWxlcnBsYXRlL2luaXBhcnNlci9pbmlwYXJzZXIuYw0KPiA+ICsrKyBiL2xpYi9ib2lsZXJwbGF0
+ZS9pbmlwYXJzZXIvaW5pcGFyc2VyLmMNCj4gPiBAQCAtNTUxLDI1ICs1NTEsMzcgQEAgZGljdGlv
+bmFyeSAqIGluaXBhcnNlcl9sb2FkKGNvbnN0IGNoYXIgKg0KPiA+IGluaW5hbWUpDQo+ID4gICAg
+ICBkaWN0ID0gZGljdGlvbmFyeV9uZXcoMCkgOw0KPiA+ICAgICAgaWYgKCFkaWN0KSB7DQo+ID4g
+ICAgICAgICAgZmNsb3NlKGluKTsNCj4gPiAtCWVycm5vID0gRU5PTUVNOw0KPiA+ICsgICAgICAg
+IGVycm5vID0gRU5PTUVNOw0KPiA+ICAgICAgICAgIHJldHVybiBOVUxMIDsNCj4gPiAgICAgIH0N
+Cj4gPiAgDQo+ID4gLSAgICBidWYgPSBtYWxsb2MoKEFTQ0lJTElORVNaKzEpICogNSk7DQo+ID4g
+KyAgICBidWYgPSBtYWxsb2MoKEFTQ0lJTElORVNaKzEpICogNCk7DQo+ID4gICAgICBpZiAoYnVm
+ID09IE5VTEwpIHsNCj4gPiAtCSAgICBlcnJubyA9IC1FTk9NRU07DQo+ID4gLQkgICAgcmV0dXJu
+IE5VTEw7DQo+ID4gKyAgICAgICAgICAgIGRpY3Rpb25hcnlfZGVsKGRpY3QpOw0KPiA+ICsgICAg
+ICAgICAgICBmY2xvc2UoaW4pOw0KPiA+ICsgICAgICAgICAgICBlcnJubyA9IEVOT01FTTsNCj4g
+PiArICAgICAgICAgICAgcmV0dXJuIE5VTEw7DQo+ID4gICAgICB9DQo+ID4gKw0KPiA+ICsgICAg
+dG1wID0gbWFsbG9jKEFTQ0lJTElORVNaICsgMSk7DQo+ID4gKyAgICBpZiAoIXRtcCkgew0KPiA+
+ICsgICAgICAgICAgICBmcmVlKGJ1Zik7DQo+ID4gKyAgICAgICAgICAgIGRpY3Rpb25hcnlfZGVs
+KGRpY3QpOw0KPiA+ICsgICAgICAgICAgICBmY2xvc2UoaW4pOw0KPiA+ICsgICAgICAgICAgICBl
+cnJubyA9IEVOT01FTTsNCj4gPiArICAgICAgICAgICAgcmV0dXJuIE5VTEw7DQo+ID4gKyAgICB9
+DQo+ID4gKw0KPiANCj4gVGhpcyBzcGxpdC11cCBpcyBqdXN0IHNpbGVuY2luZyB0aGUgY29tcGls
+ZXIsIHJpZ2h0PyBJdCBkb2VzIG5vIHRha2UNCj4gYXdheSB0aGUgcG9zc2liaWxpdHkgdGhhdCB3
+ZSBvdmVycnVuIHRoZSB0YXJnZXQgYnVmZmVyIGluIHNwcmludGYNCj4gKHNlY3Rpb24ra2V5ID4g
+QVNDSUlMSU5FU1opLiBVcHN0cmVhbSBzZWVtcyB0byBoYXZlIGFkZHJlc3NlZCB0aGF0Lg0KDQpT
+aWxlbmNpbmcgdGhlIGNvbXBpbGVyIGJ1dCBvdmVyZmxvdyBpcyBoYW5kbGVkIChzbyB0YWtlbiBj
+YXJlIG9mKSBpbg0KaW5pcGFyc2VyX2xpbmUuIFVwc3RyZWFtIHN3aXRjaGVkIHRvIGJ1ZmZlcnMg
+b24gdGhlIHN0YWNrIGluIHRoZQ0KbWVhbnRpbWUsIHNvIGVycm9yIGhhbmRsaW5nIGlzIHNpbXBs
+aWZpZWQgYSBiaXQuDQoNCj4gDQo+IEJ1dCBpdCBhbHNvIGRvZXMgbm90IHVzZSBzbnByaW50ZiB5
+ZXQuIExpa2VseSB3aXRoIHRoZSBhcmd1bWVudCB0aGF0DQo+IGJ1ZmZlciBzaXplcyBhcmUgdW5k
+ZXIgZnVsbCBjb250cm9sLg0KPiANCj4gPiAgICAgIGxpbmUgPSBidWY7DQo+ID4gICAgICBzZWN0
+aW9uID0gbGluZSArIEFTQ0lJTElORVNaICsgMTsNCj4gPiAgICAgIGtleSA9IHNlY3Rpb24gKyBB
+U0NJSUxJTkVTWiArIDE7DQo+ID4gLSAgICB0bXAgPSBrZXkgKyBBU0NJSUxJTkVTWiArIDE7DQo+
+ID4gLSAgICB2YWwgPSB0bXAgKyBBU0NJSUxJTkVTWiArIDE7DQo+ID4gKyAgICB2YWwgPSBrZXkg
+KyBBU0NJSUxJTkVTWiArIDE7DQo+ID4gIA0KPiA+IC0gICAgbWVtc2V0KGxpbmUsICAgIDAsIEFT
+Q0lJTElORVNaKTsNCj4gPiAtICAgIG1lbXNldChzZWN0aW9uLCAwLCBBU0NJSUxJTkVTWik7DQo+
+ID4gLSAgICBtZW1zZXQoa2V5LCAgICAgMCwgQVNDSUlMSU5FU1opOw0KPiA+IC0gICAgbWVtc2V0
+KHZhbCwgICAgIDAsIEFTQ0lJTElORVNaKTsNCj4gPiArICAgIG1lbXNldChsaW5lLCAgICAwLCBB
+U0NJSUxJTkVTWiArIDEpOw0KPiA+ICsgICAgbWVtc2V0KHNlY3Rpb24sIDAsIEFTQ0lJTElORVNa
+ICsgMSk7DQo+ID4gKyAgICBtZW1zZXQoa2V5LCAgICAgMCwgQVNDSUlMSU5FU1ogKyAxKTsNCj4g
+PiArICAgIG1lbXNldCh2YWwsICAgICAwLCBBU0NJSUxJTkVTWiArIDEpOw0KPiA+ICsgICAgbWVt
+c2V0KHRtcCwgICAgIDAsIEFTQ0lJTElORVNaICsgMSk7DQo+ID4gICAgICBsYXN0PTAgOw0KPiA+
+ICANCj4gPiAgICAgIHdoaWxlIChmZ2V0cyhsaW5lK2xhc3QsIEFTQ0lJTElORVNaLWxhc3QsIGlu
+KSE9TlVMTCkgew0KPiA+IEBAIC01ODUsOCArNTk3LDkgQEAgZGljdGlvbmFyeSAqIGluaXBhcnNl
+cl9sb2FkKGNvbnN0IGNoYXIgKg0KPiA+IGluaW5hbWUpDQo+ID4gICNlbmRpZg0KPiA+ICAgICAg
+ICAgICAgICBkaWN0aW9uYXJ5X2RlbChkaWN0KTsNCj4gPiAgICAgICAgICAgICAgZmNsb3NlKGlu
+KTsNCj4gPiAtCSAgICBmcmVlKGJ1Zik7DQo+ID4gLQkgICAgZXJybm8gPSBFSU5WQUw7DQo+ID4g
+KyAgICAgICAgICAgIGZyZWUoYnVmKTsNCj4gPiArICAgICAgICAgICAgZnJlZSh0bXApOw0KPiA+
+ICsgICAgICAgICAgICBlcnJubyA9IEVJTlZBTDsNCj4gPiAgICAgICAgICAgICAgcmV0dXJuIE5V
+TEwgOw0KPiA+ICAgICAgICAgIH0NCj4gPiAgICAgICAgICAvKiBHZXQgcmlkIG9mIFxuIGFuZCBz
+cGFjZXMgYXQgZW5kIG9mIGxpbmUgKi8NCj4gPiBAQCAtNjEzLDYgKzYyNiw3IEBAIGRpY3Rpb25h
+cnkgKiBpbmlwYXJzZXJfbG9hZChjb25zdCBjaGFyICoNCj4gPiBpbmluYW1lKQ0KPiA+ICAgICAg
+ICAgICAgICBicmVhayA7DQo+ID4gIA0KPiA+ICAgICAgICAgICAgICBjYXNlIExJTkVfVkFMVUU6
+DQo+ID4gKyAgICAgICAgICAgIC8qIEFscmVhZHkgY2hlY2tlZCBmb3Igb3ZlcmZsb3dzLCBzZWUg
+YWJvdmUgKi8NCj4gPiAgICAgICAgICAgICAgc3ByaW50Zih0bXAsICIlczolcyIsIHNlY3Rpb24s
+IGtleSk7DQo+ID4gICAgICAgICAgICAgIGVycnMgPSBkaWN0aW9uYXJ5X3NldChkaWN0LCB0bXAs
+IHZhbCkgOw0KPiA+ICAgICAgICAgICAgICBicmVhayA7DQo+ID4gQEAgLTY0Miw2ICs2NTYsNyBA
+QCBkaWN0aW9uYXJ5ICogaW5pcGFyc2VyX2xvYWQoY29uc3QgY2hhciAqDQo+ID4gaW5pbmFtZSkN
+Cj4gPiAgICAgIH0NCj4gPiAgICAgIGZjbG9zZShpbik7DQo+ID4gICAgICBmcmVlKGJ1Zik7DQo+
+ID4gKyAgICBmcmVlKHRtcCk7DQo+ID4gICAgICBpZiAoZXJycykgew0KPiA+ICAgICAgICAgIGRp
+Y3Rpb25hcnlfZGVsKGRpY3QpOw0KPiA+ICAgICAgICAgIGRpY3QgPSBOVUxMIDsNCj4gPiANCj4g
+DQo+IEphbg0K
 
