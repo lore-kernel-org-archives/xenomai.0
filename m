@@ -1,8 +1,8 @@
 From: "florian.bezdeka@siemens.com" <florian.bezdeka@siemens.com>
-Subject: [PATCH 1/3] cobalt uapi: Introducing new feature flag for settime64
- availability
-Date: Fri, 13 Nov 2020 12:00:05 +0000
-Message-ID: <20201113115932.276959-2-florian.bezdeka@siemens.com>
+Subject: [PATCH 2/3] lib/cobalt: Rename cobalt_check_features to
+ cobalt_arch_check_features
+Date: Fri, 13 Nov 2020 12:00:07 +0000
+Message-ID: <20201113115932.276959-3-florian.bezdeka@siemens.com>
 References: <1229be33-848d-ab5b-d6dd-1b7ae38d36f9@siemens.com>
  <20201113115932.276959-1-florian.bezdeka@siemens.com>
 In-Reply-To: <20201113115932.276959-1-florian.bezdeka@siemens.com>
@@ -22,48 +22,101 @@ To: "xenomai@xenomai.org" <xenomai@xenomai.org>, "chensong@tj.kylinos.cn" <chens
 
 From: Florian Bezdeka <florian.bezdeka@siemens.com>
 
-Adding a new feature flag to allow the library asking for settime64
-support. That will allow the library to use the new system call if it
-is available / supported by the kernel.
+cobalt_check_features is implemented for each platform. As further
+feature initialization will arrive the name of the function should
+clarify that.
 
 Signed-off-by: Florian Bezdeka <florian.bezdeka@siemens.com>
 ---
- include/cobalt/uapi/asm-generic/features.h | 6 +++++-
- 1 file changed, 5 insertions(+), 1 deletion(-)
+ lib/cobalt/arch/arm/features.c     | 2 +-
+ lib/cobalt/arch/arm64/features.c   | 2 +-
+ lib/cobalt/arch/powerpc/features.c | 2 +-
+ lib/cobalt/arch/x86/features.c     | 2 +-
+ lib/cobalt/init.c                  | 2 +-
+ lib/cobalt/internal.h              | 2 +-
+ 6 files changed, 6 insertions(+), 6 deletions(-)
 
-diff --git a/include/cobalt/uapi/asm-generic/features.h b/include/cobalt/ua=
-pi/asm-generic/features.h
-index 8a4927c49..93a96670a 100644
---- a/include/cobalt/uapi/asm-generic/features.h
-+++ b/include/cobalt/uapi/asm-generic/features.h
-@@ -51,6 +51,7 @@ struct cobalt_featinfo {
- #define __xn_feat_nofastsynch 0x10000000
- #define __xn_feat_control     0x08000000
- #define __xn_feat_prioceiling 0x04000000
-+#define __xn_feat_settime64   0x02000000
+diff --git a/lib/cobalt/arch/arm/features.c b/lib/cobalt/arch/arm/features.=
+c
+index edabcf25b..d7b50f73f 100644
+--- a/lib/cobalt/arch/arm/features.c
++++ b/lib/cobalt/arch/arm/features.c
+@@ -37,7 +37,7 @@ struct __xn_full_tscinfo __xn_tscinfo =3D {
+ 	},
+ };
 =20
- #ifdef CONFIG_SMP
- #define __xn_feat_smp_mask __xn_feat_smp
-@@ -70,7 +71,8 @@ struct cobalt_featinfo {
- #define __xn_feat_generic_mask			\
- 	(__xn_feat_smp_mask		|	\
- 	 __xn_feat_fastsynch_mask 	|	\
--	 __xn_feat_prioceiling)
-+	 __xn_feat_prioceiling		|	\
-+	 __xn_feat_settime64 )
+-void cobalt_check_features(struct cobalt_featinfo *finfo)
++void cobalt_arch_check_features(struct cobalt_featinfo *finfo)
+ {
+ 	unsigned long phys_addr;
+ 	unsigned page_size;
+diff --git a/lib/cobalt/arch/arm64/features.c b/lib/cobalt/arch/arm64/featu=
+res.c
+index 254c8aeae..8b85a27ea 100644
+--- a/lib/cobalt/arch/arm64/features.c
++++ b/lib/cobalt/arch/arm64/features.c
+@@ -37,7 +37,7 @@ struct __xn_full_tscinfo __xn_tscinfo =3D {
+ 	},
+ };
 =20
- /*
-  * List of features both sides have to agree on: If userland supports
-@@ -101,6 +103,8 @@ const char *get_generic_feature_label(unsigned int feat=
-ure)
- 		return "control";
- 	case __xn_feat_prioceiling:
- 		return "prioceiling";
-+	case __xn_feat_settime64:
-+		return "settime64";
- 	default:
- 		return 0;
- 	}
+-void cobalt_check_features(struct cobalt_featinfo *finfo)
++void cobalt_arch_check_features(struct cobalt_featinfo *finfo)
+ {
+ 	unsigned long phys_addr;
+ 	unsigned page_size;
+diff --git a/lib/cobalt/arch/powerpc/features.c b/lib/cobalt/arch/powerpc/f=
+eatures.c
+index 6fc7afa64..d795a198a 100644
+--- a/lib/cobalt/arch/powerpc/features.c
++++ b/lib/cobalt/arch/powerpc/features.c
+@@ -19,6 +19,6 @@
+ #include <asm/xenomai/syscall.h>
+ #include "internal.h"
+=20
+-void cobalt_check_features(struct cobalt_featinfo *finfo)
++void cobalt_arch_check_features(struct cobalt_featinfo *finfo)
+ {
+ }
+diff --git a/lib/cobalt/arch/x86/features.c b/lib/cobalt/arch/x86/features.=
+c
+index f8ba4ee2c..e7e62da39 100644
+--- a/lib/cobalt/arch/x86/features.c
++++ b/lib/cobalt/arch/x86/features.c
+@@ -25,7 +25,7 @@
+ #include <asm/xenomai/uapi/fptest.h>
+ #include "internal.h"
+=20
+-void cobalt_check_features(struct cobalt_featinfo *finfo)
++void cobalt_arch_check_features(struct cobalt_featinfo *finfo)
+ {
+ #if defined(__i386__) && defined(CONFIG_XENO_X86_VSYSCALL)
+ 	size_t n =3D confstr(_CS_GNU_LIBPTHREAD_VERSION, NULL, 0);
+diff --git a/lib/cobalt/init.c b/lib/cobalt/init.c
+index 9b506d872..6907ace36 100644
+--- a/lib/cobalt/init.c
++++ b/lib/cobalt/init.c
+@@ -177,7 +177,7 @@ static void low_init(void)
+ 		early_panic("mlockall: %s", strerror(errno));
+=20
+ 	trace_me("memory locked");
+-	cobalt_check_features(f);
++	cobalt_arch_check_features(f);
+ 	cobalt_init_umm(f->vdso_offset);
+ 	trace_me("memory heaps mapped");
+ 	cobalt_init_current_keys();
+diff --git a/lib/cobalt/internal.h b/lib/cobalt/internal.h
+index c45a54d9f..4ca99d927 100644
+--- a/lib/cobalt/internal.h
++++ b/lib/cobalt/internal.h
+@@ -88,7 +88,7 @@ int cobalt_init(void);
+=20
+ struct cobalt_featinfo;
+=20
+-void cobalt_check_features(struct cobalt_featinfo *finfo);
++void cobalt_arch_check_features(struct cobalt_featinfo *finfo);
+=20
+ extern struct sigaction __cobalt_orig_sigdebug;
+=20
 --=20
 2.26.2
 
