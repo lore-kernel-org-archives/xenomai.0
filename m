@@ -1,9 +1,11 @@
 From: "florian.bezdeka@siemens.com" <florian.bezdeka@siemens.com>
-Subject: [PATCH 0/3] Make offered kernel features accessible during
-Date: Fri, 13 Nov 2020 11:59:59 +0000
-Message-ID: <20201113115932.276959-1-florian.bezdeka@siemens.com>
+Subject: [PATCH 1/3] cobalt uapi: Introducing new feature flag for settime64
+ availability
+Date: Fri, 13 Nov 2020 12:00:05 +0000
+Message-ID: <20201113115932.276959-2-florian.bezdeka@siemens.com>
 References: <1229be33-848d-ab5b-d6dd-1b7ae38d36f9@siemens.com>
-In-Reply-To: <1229be33-848d-ab5b-d6dd-1b7ae38d36f9@siemens.com>
+ <20201113115932.276959-1-florian.bezdeka@siemens.com>
+In-Reply-To: <20201113115932.276959-1-florian.bezdeka@siemens.com>
 Content-Language: en-US
 Content-Type: text/plain; charset="iso-8859-1"
 Content-Transfer-Encoding: quoted-printable
@@ -20,33 +22,48 @@ To: "xenomai@xenomai.org" <xenomai@xenomai.org>, "chensong@tj.kylinos.cn" <chens
 
 From: Florian Bezdeka <florian.bezdeka@siemens.com>
 
-Hi all,
+Adding a new feature flag to allow the library asking for settime64
+support. That will allow the library to use the new system call if it
+is available / supported by the kernel.
 
-while reviewing the settime64 syscall patches I noticed that we do not
-have any infrastructure that allows us to check which features are
-offered by the currently running kernel.
+Signed-off-by: Florian Bezdeka <florian.bezdeka@siemens.com>
+---
+ include/cobalt/uapi/asm-generic/features.h | 6 +++++-
+ 1 file changed, 5 insertions(+), 1 deletion(-)
 
-With this patch series I try to fix this gap. Everything is compile
-time tested only so far. I'm currently trying to bring my test
-infrastructure up and running.
-
-Comments welcome...
-
-Florian Bezdeka (3):
-  cobalt uapi: Introducing new feature flag for settime64 availability
-  lib/cobalt: Rename cobalt_check_features to cobalt_arch_check_features
-  lib/cobalt: Introduce generic feature initialization and check API
-
- include/cobalt/uapi/asm-generic/features.h |  6 +++-
- lib/cobalt/arch/arm/features.c             |  2 +-
- lib/cobalt/arch/arm64/features.c           |  2 +-
- lib/cobalt/arch/powerpc/features.c         |  2 +-
- lib/cobalt/arch/x86/features.c             |  2 +-
- lib/cobalt/init.c                          |  2 +-
- lib/cobalt/internal.c                      | 10 ++++++
- lib/cobalt/internal.h                      | 39 +++++++++++++++++++---
- 8 files changed, 55 insertions(+), 10 deletions(-)
-
+diff --git a/include/cobalt/uapi/asm-generic/features.h b/include/cobalt/ua=
+pi/asm-generic/features.h
+index 8a4927c49..93a96670a 100644
+--- a/include/cobalt/uapi/asm-generic/features.h
++++ b/include/cobalt/uapi/asm-generic/features.h
+@@ -51,6 +51,7 @@ struct cobalt_featinfo {
+ #define __xn_feat_nofastsynch 0x10000000
+ #define __xn_feat_control     0x08000000
+ #define __xn_feat_prioceiling 0x04000000
++#define __xn_feat_settime64   0x02000000
+=20
+ #ifdef CONFIG_SMP
+ #define __xn_feat_smp_mask __xn_feat_smp
+@@ -70,7 +71,8 @@ struct cobalt_featinfo {
+ #define __xn_feat_generic_mask			\
+ 	(__xn_feat_smp_mask		|	\
+ 	 __xn_feat_fastsynch_mask 	|	\
+-	 __xn_feat_prioceiling)
++	 __xn_feat_prioceiling		|	\
++	 __xn_feat_settime64 )
+=20
+ /*
+  * List of features both sides have to agree on: If userland supports
+@@ -101,6 +103,8 @@ const char *get_generic_feature_label(unsigned int feat=
+ure)
+ 		return "control";
+ 	case __xn_feat_prioceiling:
+ 		return "prioceiling";
++	case __xn_feat_settime64:
++		return "settime64";
+ 	default:
+ 		return 0;
+ 	}
 --=20
 2.26.2
 
