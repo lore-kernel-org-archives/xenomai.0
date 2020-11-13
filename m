@@ -1,20 +1,13 @@
-Subject: Re: [PATCH 5/5] lib/cobalt/clock.c:dispatch clock_settime
-References: <1604372743-2986-1-git-send-email-chensong@tj.kylinos.cn>
- <0ca03935-6895-f31e-f9ad-c910e0e22e36@siemens.com>
- <5FAB60C5.8030909@tj.kylinos.cn>
- <f4a2d38b-a851-55fb-d85b-f7816d91e87b@siemens.com>
- <5FABAD94.1030108@tj.kylinos.cn>
- <8478f418-2f69-94e5-cc96-87a606ab68b9@siemens.com>
- <5FABB938.8080807@tj.kylinos.cn>
- <c745cfbd-ef39-fa61-190f-26826c4609ad@siemens.com>
-From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <1229be33-848d-ab5b-d6dd-1b7ae38d36f9@siemens.com>
-Date: Fri, 13 Nov 2020 12:56:37 +0100
-MIME-Version: 1.0
-In-Reply-To: <c745cfbd-ef39-fa61-190f-26826c4609ad@siemens.com>
-Content-Type: text/plain; charset="utf-8"
+From: "florian.bezdeka@siemens.com" <florian.bezdeka@siemens.com>
+Subject: [PATCH 0/3] Make offered kernel features accessible during
+Date: Fri, 13 Nov 2020 11:59:59 +0000
+Message-ID: <20201113115932.276959-1-florian.bezdeka@siemens.com>
+References: <1229be33-848d-ab5b-d6dd-1b7ae38d36f9@siemens.com>
+In-Reply-To: <1229be33-848d-ab5b-d6dd-1b7ae38d36f9@siemens.com>
 Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
+MIME-Version: 1.0
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -23,134 +16,37 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Florian Bezdeka <florian.bezdeka@siemens.com>, chensong <chensong@tj.kylinos.cn>, xenomai@xenomai.org, henning.schild@siemens.com
+To: "xenomai@xenomai.org" <xenomai@xenomai.org>, "chensong@tj.kylinos.cn" <chensong@tj.kylinos.cn>
 
-On 13.11.20 12:47, Florian Bezdeka wrote:
-> Hi all,
-> 
-> I reviewed all the timeset64 related patches.
-> Please note the comments below.
-> 
-> Did anyone look into testing yet? There are some combinations of kernel
-> and library versions we should look at and make sure they all behave as
-> expected. Maybe xenomai-images "project" could help here?
-> 
+From: Florian Bezdeka <florian.bezdeka@siemens.com>
 
-At least we need something in smokey that can be used - in different
-build configurations - to stress things. But as this is also about these
-different configurations (32/64-bit old/new apps on old/new kernels), a
-pre-integration via xenomai-image may help. There, we currently lack the
-compat case as target.
+Hi all,
 
-> On 11.11.20 11:13, chensong via Xenomai wrote:
->>
->>
->> On 2020年11月11日 17:43, Jan Kiszka wrote:
->>> On 11.11.20 10:23, chensong wrote:
->>>>
->>>>
->>>> On 2020年11月11日 15:29, Jan Kiszka wrote:
->>>>> On 11.11.20 04:55, chensong wrote:
->>>>>>
->>>>>>
->>>>>> On 2020年11月10日 18:24, Jan Kiszka wrote:
->>>>>>>
->>>>>>> On 03.11.20 04:05, chensong wrote:
->>>>>>>> Regarding sizeof time_t, dispatch 32bit timespec to clock_settime
->>>>>>>> and 64bit timespec to clock_settime64.
->>>>>>>>
->>>>>>>> Signed-off-by: chensong <chensong@tj.kylinos.cn>
->>>>>>>> ---
->>>>>>>>     lib/cobalt/clock.c | 6 +++++-
->>>>>>>>     1 file changed, 5 insertions(+), 1 deletion(-)
->>>>>>>>
->>>>>>>> diff --git a/lib/cobalt/clock.c b/lib/cobalt/clock.c
->>>>>>>> index 11fd1aa..44b2f3f 100644
->>>>>>>> --- a/lib/cobalt/clock.c
->>>>>>>> +++ b/lib/cobalt/clock.c
->>>>>>>> @@ -237,7 +237,11 @@ COBALT_IMPL(int, clock_settime, (clockid_t
->>>>>>>> clock_id, const struct timespec *tp))
->>>>>>>>     {
->>>>>>>>         int ret;
->>>>>>>>
->>>>>>>> -    ret = -XENOMAI_SYSCALL2(sc_cobalt_clock_settime, clock_id, tp);
->>>>>>>> +    if (sizeof(time_t) > 4)
->>>>>>>> +        ret = -XENOMAI_SYSCALL2(sc_cobalt_clock_settime64,
->>>>>>>> +                    clock_id, tp);
->>>>>>>> +    else
->>>>>>>> +        ret = -XENOMAI_SYSCALL2(sc_cobalt_clock_settime, clock_id,
->>>>>>>> tp);
->>>>>>>
->>>>>>> Maybe do a single
->>>>>>>
->>>>>>> XENOMAI_SYSCALL2(sizeof(time_t) > 4 ? sc_cobalt_clock_settime64
->>>>>>>                                        : sc_cobalt_clock_settime,
->>>>>>> ...)
->>>>>>>
->>>>>>> But we need ABI revision negotiation here. If a new lib is run on a
->>>>>>> kernel that does not have settime64, things will fail (the other way
->>>>>>> around is fine). We need to ensure that new userspace can check for
->>>>>>> this
->>>>>>> upfront while old userspace will happily run (hard requirement for
->>>>>>> making these patches part of 3.1.x).
->>>>>>>
->>>>>>> Jan
->>>>>>
->>>>>> As far as my understanding, ABI revision negotiation happens in
->>>>>> low_init
->>>>>> already, it reminds userspace process that lib and kernel are not
->>>>>> compatible at the first place. Therefore, it addresses the scenario
->>>>>> you
->>>>>> are talking about(new userspace, old kernel or the other way around).
->>>>>>
->>>>>
->>>>> Ah, right. Perfect. Then also update those revisions make detection
->>>>> work
->>>>> as required.
->>>>>
->>>> ok, will do.
->>>>
->>>> XENOMAI_ABI_REV is defined in those files:
->>>>
->>>> ./kernel/cobalt/arch/arm/include/asm/xenomai/uapi/features.h:25:#define
->>>> XENOMAI_ABI_REV   17UL
->>>> ./kernel/cobalt/arch/x86/include/asm/xenomai/uapi/features.h:22:#define
->>>> XENOMAI_ABI_REV   17UL
->>>> ./kernel/cobalt/arch/arm64/include/asm/xenomai/uapi/features.h:25:#define
->>>> XENOMAI_ABI_REV
->>>>    1UL
->>>> ./kernel/cobalt/arch/powerpc/include/asm/xenomai/uapi/features.h:22:#define
->>>>
->>>> XENOMAI_ABI_REV   17UL
->>>>
->>>>
->>>> increase them to 18UL?
->>>>
->>>> if you agree, i will submit a v2 for this one.
->>>
->>> We need to increase, yes, but we need to keep previous revision userland
->>> working.
-> 
-> Do we really need to increase the ABI revision?
-> My understanding is, that once the kernel has been updated applications
-> using an old library will be locked out. I guess this is not allowed
-> when bumping the xenomai minor revision only.
-> 
-> I will come up with a small patch set that allows some feature detection
-> during runtime. That should help with the identification which syscall
-> should be used.
-> 
-> Would be glad if you both could have a look at it.
-> 
+while reviewing the settime64 syscall patches I noticed that we do not
+have any infrastructure that allows us to check which features are
+offered by the currently running kernel.
 
-We could grant a new feature bit
-(include/cobalt/uapi/asm-generic/features.h) to the 64-bit time ABI,
-dropping it again on next ABI revision bump (as it will then become
-mandatory).
+With this patch series I try to fix this gap. Everything is compile
+time tested only so far. I'm currently trying to bring my test
+infrastructure up and running.
 
-Jan
--- 
-Siemens AG, T RDA IOT
-Corporate Competence Center Embedded Linux
+Comments welcome...
 
+Florian Bezdeka (3):
+  cobalt uapi: Introducing new feature flag for settime64 availability
+  lib/cobalt: Rename cobalt_check_features to cobalt_arch_check_features
+  lib/cobalt: Introduce generic feature initialization and check API
+
+ include/cobalt/uapi/asm-generic/features.h |  6 +++-
+ lib/cobalt/arch/arm/features.c             |  2 +-
+ lib/cobalt/arch/arm64/features.c           |  2 +-
+ lib/cobalt/arch/powerpc/features.c         |  2 +-
+ lib/cobalt/arch/x86/features.c             |  2 +-
+ lib/cobalt/init.c                          |  2 +-
+ lib/cobalt/internal.c                      | 10 ++++++
+ lib/cobalt/internal.h                      | 39 +++++++++++++++++++---
+ 8 files changed, 55 insertions(+), 10 deletions(-)
+
+--=20
+2.26.2
 
