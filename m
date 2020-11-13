@@ -1,16 +1,18 @@
+From: "florian.bezdeka@siemens.com" <florian.bezdeka@siemens.com>
 Subject: Re: [PATCH 3/3] lib/cobalt: Introduce generic feature initialization
  and check API
+Date: Fri, 13 Nov 2020 16:10:37 +0000
+Message-ID: <5ed4631ca57f9b9ea2d92ec9892ceb8ace1431ab.camel@siemens.com>
 References: <1229be33-848d-ab5b-d6dd-1b7ae38d36f9@siemens.com>
  <20201113115932.276959-1-florian.bezdeka@siemens.com>
  <20201113115932.276959-4-florian.bezdeka@siemens.com>
-From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <06f7264a-a5a2-b10b-4584-4e3a89104855@siemens.com>
-Date: Fri, 13 Nov 2020 14:25:40 +0100
-MIME-Version: 1.0
-In-Reply-To: <20201113115932.276959-4-florian.bezdeka@siemens.com>
-Content-Type: text/plain; charset=utf-8
+ <06f7264a-a5a2-b10b-4584-4e3a89104855@siemens.com>
+In-Reply-To: <06f7264a-a5a2-b10b-4584-4e3a89104855@siemens.com>
 Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="utf-8"
+Content-ID: <9CF512A8FEDDF64F811E7C83DF98BEE5@EURPRD10.PROD.OUTLOOK.COM>
+Content-Transfer-Encoding: base64
+MIME-Version: 1.0
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -19,128 +21,82 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "florian.bezdeka@siemens.com" <florian.bezdeka@siemens.com>, "xenomai@xenomai.org" <xenomai@xenomai.org>, "chensong@tj.kylinos.cn" <chensong@tj.kylinos.cn>
+To: "xenomai@xenomai.org" <xenomai@xenomai.org>, "jan.kiszka@siemens.com" <jan.kiszka@siemens.com>, "chensong@tj.kylinos.cn" <chensong@tj.kylinos.cn>
 
-On 13.11.20 13:00, florian.bezdeka--- via Xenomai wrote:
-> From: Florian Bezdeka <florian.bezdeka@siemens.com>
-> 
-> The feature initialization was arch specific up to now and the
-> available features (= features offered by the currently running kernel)
-> were no longer accessible once the bind syscall finished.
-> 
-> This patch introduces a simple API for fetching the offered features
-> during runtime.
-> 
-> Signed-off-by: Florian Bezdeka <florian.bezdeka@siemens.com>
-> ---
->  lib/cobalt/init.c     |  2 +-
->  lib/cobalt/internal.c | 10 ++++++++++
->  lib/cobalt/internal.h | 39 +++++++++++++++++++++++++++++++++++----
->  3 files changed, 46 insertions(+), 5 deletions(-)
-> 
-> diff --git a/lib/cobalt/init.c b/lib/cobalt/init.c
-> index 6907ace36..20e28ccb0 100644
-> --- a/lib/cobalt/init.c
-> +++ b/lib/cobalt/init.c
-> @@ -177,7 +177,7 @@ static void low_init(void)
->  		early_panic("mlockall: %s", strerror(errno));
->  
->  	trace_me("memory locked");
-> -	cobalt_arch_check_features(f);
-> +	cobalt_features_init(f);
->  	cobalt_init_umm(f->vdso_offset);
->  	trace_me("memory heaps mapped");
->  	cobalt_init_current_keys();
-> diff --git a/lib/cobalt/internal.c b/lib/cobalt/internal.c
-> index 43330060a..303d86f99 100644
-> --- a/lib/cobalt/internal.c
-> +++ b/lib/cobalt/internal.c
-> @@ -565,3 +565,13 @@ void cobalt_assert_nrt(void)
->  	if (cobalt_should_warn())
->  		pthread_kill(pthread_self(), SIGDEBUG);
->  }
-> +
-> +unsigned int cobalt_features;
-> +
-> +void cobalt_features_init(struct cobalt_featinfo *f)
-> +{
-> +	cobalt_features = f->feat_all;
-> +
-> +	/* Trigger arch specific feature initialization */
-> +	cobalt_arch_check_features(f);
-> +}
-> \ No newline at end of file
-> diff --git a/lib/cobalt/internal.h b/lib/cobalt/internal.h
-> index 4ca99d927..ac7ce24f3 100644
-> --- a/lib/cobalt/internal.h
-> +++ b/lib/cobalt/internal.h
-> @@ -86,10 +86,6 @@ int cobalt_xlate_schedparam(int policy,
->  			    struct sched_param *param);
->  int cobalt_init(void);
->  
-> -struct cobalt_featinfo;
-> -
-> -void cobalt_arch_check_features(struct cobalt_featinfo *finfo);
-> -
->  extern struct sigaction __cobalt_orig_sigdebug;
->  
->  extern int __cobalt_std_fifo_minpri,
-> @@ -98,4 +94,39 @@ extern int __cobalt_std_fifo_minpri,
->  extern int __cobalt_std_rr_minpri,
->  	   __cobalt_std_rr_maxpri;
->  
-> +extern unsigned int cobalt_features;
-> +
-> +struct cobalt_featinfo;
-> +
-> +/**
-> + * Arch specific feature initialization
-> + *
-> + * @param finfo
-> + */
-> +void cobalt_arch_check_features(struct cobalt_featinfo *finfo);
-> +
-> +/**
-> + * Initialize the feature handling.
-> + *
-> + * @param f Feature info that will be cached for future feature checks
-> + */
-> +void cobalt_features_init(struct cobalt_featinfo *f)
-> +	__attribute__((visibility("hidden")));
-
-What will "hidden" do here?
-
-> +
-> +/**
-> + * Check if a given set of features is available / provided by the kernel
-> + *
-> + * @param feat_mask A bit mask of features to check availability for. See
-> + * __xn_feat_* macros for a list of defined features
-> + *
-> + * @return 1 if all features are available, 0 otherwise
-> + */
-> +inline int cobalt_features_available(unsigned int feat_mask)
-
-Why not "static"?
-
-And "bool" would be a better return type.
-
-> +{
-> +	if ((cobalt_features & feat_mask) == feat_mask)
-> +		return 1;
-> +
-> +	return 0;
-
-return ((cobalt_features & feat_mask) == feat_mask);
-
-> +}
-> +
->  #endif /* _LIB_COBALT_INTERNAL_H */
-> 
-
-Jan
--- 
-Siemens AG, T RDA IOT
-Corporate Competence Center Embedded Linux
-
+T24gRnJpLCAyMDIwLTExLTEzIGF0IDE0OjI1ICswMTAwLCBKYW4gS2lzemthIHdyb3RlOg0KPiBP
+biAxMy4xMS4yMCAxMzowMCwgZmxvcmlhbi5iZXpkZWthLS0tIHZpYSBYZW5vbWFpIHdyb3RlOg0K
+PiA+IEZyb206IEZsb3JpYW4gQmV6ZGVrYSA8Zmxvcmlhbi5iZXpkZWthQHNpZW1lbnMuY29tPg0K
+PiA+IA0KPiA+IFRoZSBmZWF0dXJlIGluaXRpYWxpemF0aW9uIHdhcyBhcmNoIHNwZWNpZmljIHVw
+IHRvIG5vdyBhbmQgdGhlDQo+ID4gYXZhaWxhYmxlIGZlYXR1cmVzICg9IGZlYXR1cmVzIG9mZmVy
+ZWQgYnkgdGhlIGN1cnJlbnRseSBydW5uaW5nDQo+ID4ga2VybmVsKQ0KPiA+IHdlcmUgbm8gbG9u
+Z2VyIGFjY2Vzc2libGUgb25jZSB0aGUgYmluZCBzeXNjYWxsIGZpbmlzaGVkLg0KPiA+IA0KPiA+
+IFRoaXMgcGF0Y2ggaW50cm9kdWNlcyBhIHNpbXBsZSBBUEkgZm9yIGZldGNoaW5nIHRoZSBvZmZl
+cmVkDQo+ID4gZmVhdHVyZXMNCj4gPiBkdXJpbmcgcnVudGltZS4NCj4gPiANCj4gPiBTaWduZWQt
+b2ZmLWJ5OiBGbG9yaWFuIEJlemRla2EgPGZsb3JpYW4uYmV6ZGVrYUBzaWVtZW5zLmNvbT4NCj4g
+PiAtLS0NCj4gPiAgbGliL2NvYmFsdC9pbml0LmMgICAgIHwgIDIgKy0NCj4gPiAgbGliL2NvYmFs
+dC9pbnRlcm5hbC5jIHwgMTAgKysrKysrKysrKw0KPiA+ICBsaWIvY29iYWx0L2ludGVybmFsLmgg
+fCAzOSArKysrKysrKysrKysrKysrKysrKysrKysrKysrKysrKysrKy0tLS0NCj4gPiAgMyBmaWxl
+cyBjaGFuZ2VkLCA0NiBpbnNlcnRpb25zKCspLCA1IGRlbGV0aW9ucygtKQ0KPiA+IA0KPiA+IGRp
+ZmYgLS1naXQgYS9saWIvY29iYWx0L2luaXQuYyBiL2xpYi9jb2JhbHQvaW5pdC5jDQo+ID4gaW5k
+ZXggNjkwN2FjZTM2Li4yMGUyOGNjYjAgMTAwNjQ0DQo+ID4gLS0tIGEvbGliL2NvYmFsdC9pbml0
+LmMNCj4gPiArKysgYi9saWIvY29iYWx0L2luaXQuYw0KPiA+IEBAIC0xNzcsNyArMTc3LDcgQEAg
+c3RhdGljIHZvaWQgbG93X2luaXQodm9pZCkNCj4gPiAgCQllYXJseV9wYW5pYygibWxvY2thbGw6
+ICVzIiwgc3RyZXJyb3IoZXJybm8pKTsNCj4gPiAgDQo+ID4gIAl0cmFjZV9tZSgibWVtb3J5IGxv
+Y2tlZCIpOw0KPiA+IC0JY29iYWx0X2FyY2hfY2hlY2tfZmVhdHVyZXMoZik7DQo+ID4gKwljb2Jh
+bHRfZmVhdHVyZXNfaW5pdChmKTsNCj4gPiAgCWNvYmFsdF9pbml0X3VtbShmLT52ZHNvX29mZnNl
+dCk7DQo+ID4gIAl0cmFjZV9tZSgibWVtb3J5IGhlYXBzIG1hcHBlZCIpOw0KPiA+ICAJY29iYWx0
+X2luaXRfY3VycmVudF9rZXlzKCk7DQo+ID4gZGlmZiAtLWdpdCBhL2xpYi9jb2JhbHQvaW50ZXJu
+YWwuYyBiL2xpYi9jb2JhbHQvaW50ZXJuYWwuYw0KPiA+IGluZGV4IDQzMzMwMDYwYS4uMzAzZDg2
+Zjk5IDEwMDY0NA0KPiA+IC0tLSBhL2xpYi9jb2JhbHQvaW50ZXJuYWwuYw0KPiA+ICsrKyBiL2xp
+Yi9jb2JhbHQvaW50ZXJuYWwuYw0KPiA+IEBAIC01NjUsMyArNTY1LDEzIEBAIHZvaWQgY29iYWx0
+X2Fzc2VydF9ucnQodm9pZCkNCj4gPiAgCWlmIChjb2JhbHRfc2hvdWxkX3dhcm4oKSkNCj4gPiAg
+CQlwdGhyZWFkX2tpbGwocHRocmVhZF9zZWxmKCksIFNJR0RFQlVHKTsNCj4gPiAgfQ0KPiA+ICsN
+Cj4gPiArdW5zaWduZWQgaW50IGNvYmFsdF9mZWF0dXJlczsNCj4gPiArDQo+ID4gK3ZvaWQgY29i
+YWx0X2ZlYXR1cmVzX2luaXQoc3RydWN0IGNvYmFsdF9mZWF0aW5mbyAqZikNCj4gPiArew0KPiA+
+ICsJY29iYWx0X2ZlYXR1cmVzID0gZi0+ZmVhdF9hbGw7DQo+ID4gKw0KPiA+ICsJLyogVHJpZ2dl
+ciBhcmNoIHNwZWNpZmljIGZlYXR1cmUgaW5pdGlhbGl6YXRpb24gKi8NCj4gPiArCWNvYmFsdF9h
+cmNoX2NoZWNrX2ZlYXR1cmVzKGYpOw0KPiA+ICt9DQo+ID4gXCBObyBuZXdsaW5lIGF0IGVuZCBv
+ZiBmaWxlDQo+ID4gZGlmZiAtLWdpdCBhL2xpYi9jb2JhbHQvaW50ZXJuYWwuaCBiL2xpYi9jb2Jh
+bHQvaW50ZXJuYWwuaA0KPiA+IGluZGV4IDRjYTk5ZDkyNy4uYWM3Y2UyNGYzIDEwMDY0NA0KPiA+
+IC0tLSBhL2xpYi9jb2JhbHQvaW50ZXJuYWwuaA0KPiA+ICsrKyBiL2xpYi9jb2JhbHQvaW50ZXJu
+YWwuaA0KPiA+IEBAIC04NiwxMCArODYsNiBAQCBpbnQgY29iYWx0X3hsYXRlX3NjaGVkcGFyYW0o
+aW50IHBvbGljeSwNCj4gPiAgCQkJICAgIHN0cnVjdCBzY2hlZF9wYXJhbSAqcGFyYW0pOw0KPiA+
+ICBpbnQgY29iYWx0X2luaXQodm9pZCk7DQo+ID4gIA0KPiA+IC1zdHJ1Y3QgY29iYWx0X2ZlYXRp
+bmZvOw0KPiA+IC0NCj4gPiAtdm9pZCBjb2JhbHRfYXJjaF9jaGVja19mZWF0dXJlcyhzdHJ1Y3Qg
+Y29iYWx0X2ZlYXRpbmZvICpmaW5mbyk7DQo+ID4gLQ0KPiA+ICBleHRlcm4gc3RydWN0IHNpZ2Fj
+dGlvbiBfX2NvYmFsdF9vcmlnX3NpZ2RlYnVnOw0KPiA+ICANCj4gPiAgZXh0ZXJuIGludCBfX2Nv
+YmFsdF9zdGRfZmlmb19taW5wcmksDQo+ID4gQEAgLTk4LDQgKzk0LDM5IEBAIGV4dGVybiBpbnQg
+X19jb2JhbHRfc3RkX2ZpZm9fbWlucHJpLA0KPiA+ICBleHRlcm4gaW50IF9fY29iYWx0X3N0ZF9y
+cl9taW5wcmksDQo+ID4gIAkgICBfX2NvYmFsdF9zdGRfcnJfbWF4cHJpOw0KPiA+ICANCj4gPiAr
+ZXh0ZXJuIHVuc2lnbmVkIGludCBjb2JhbHRfZmVhdHVyZXM7DQo+ID4gKw0KPiA+ICtzdHJ1Y3Qg
+Y29iYWx0X2ZlYXRpbmZvOw0KPiA+ICsNCj4gPiArLyoqDQo+ID4gKyAqIEFyY2ggc3BlY2lmaWMg
+ZmVhdHVyZSBpbml0aWFsaXphdGlvbg0KPiA+ICsgKg0KPiA+ICsgKiBAcGFyYW0gZmluZm8NCj4g
+PiArICovDQo+ID4gK3ZvaWQgY29iYWx0X2FyY2hfY2hlY2tfZmVhdHVyZXMoc3RydWN0IGNvYmFs
+dF9mZWF0aW5mbyAqZmluZm8pOw0KPiA+ICsNCj4gPiArLyoqDQo+ID4gKyAqIEluaXRpYWxpemUg
+dGhlIGZlYXR1cmUgaGFuZGxpbmcuDQo+ID4gKyAqDQo+ID4gKyAqIEBwYXJhbSBmIEZlYXR1cmUg
+aW5mbyB0aGF0IHdpbGwgYmUgY2FjaGVkIGZvciBmdXR1cmUgZmVhdHVyZQ0KPiA+IGNoZWNrcw0K
+PiA+ICsgKi8NCj4gPiArdm9pZCBjb2JhbHRfZmVhdHVyZXNfaW5pdChzdHJ1Y3QgY29iYWx0X2Zl
+YXRpbmZvICpmKQ0KPiA+ICsJX19hdHRyaWJ1dGVfXygodmlzaWJpbGl0eSgiaGlkZGVuIikpKTsN
+Cj4gDQo+IFdoYXQgd2lsbCAiaGlkZGVuIiBkbyBoZXJlPw0KDQpJIHdpbGwgcmVtb3ZlIGl0LiBJ
+dCB3YXMgYWRkZWQgYnkgYWNjaWRlbnQuDQpJdCB3b3VsZCBwcmV2ZW50IHRoZSBmdW5jdGlvbiBm
+cm9tIGJlaW5nIGFkZGVkIHRvIHRoZSBsaW5raW5nDQppbnRlcmZhY2UuIEFzIGEgcmVzdWx0IGl0
+IHdvdWxkIG5vdCBiZSBwb3NzaWJsZSB0byB1c2UgdGhpcyBmdW5jdGlvbg0KZnJvbSBvdXRzaWRl
+IHRoZSBsaWJyYXJ5LiANCg0KUmVkdWNpbmcgdGhlIGV4cG9ydGVkIHN5bWJvbHMgaXMgYSBmb2xs
+b3cgdXAgdG9waWMgaWYgcmVsZXZhbnQgYXQgYWxsLg0KDQo+IA0KPiA+ICsNCj4gPiArLyoqDQo+
+ID4gKyAqIENoZWNrIGlmIGEgZ2l2ZW4gc2V0IG9mIGZlYXR1cmVzIGlzIGF2YWlsYWJsZSAvIHBy
+b3ZpZGVkIGJ5IHRoZQ0KPiA+IGtlcm5lbA0KPiA+ICsgKg0KPiA+ICsgKiBAcGFyYW0gZmVhdF9t
+YXNrIEEgYml0IG1hc2sgb2YgZmVhdHVyZXMgdG8gY2hlY2sgYXZhaWxhYmlsaXR5DQo+ID4gZm9y
+LiBTZWUNCj4gPiArICogX194bl9mZWF0XyogbWFjcm9zIGZvciBhIGxpc3Qgb2YgZGVmaW5lZCBm
+ZWF0dXJlcw0KPiA+ICsgKg0KPiA+ICsgKiBAcmV0dXJuIDEgaWYgYWxsIGZlYXR1cmVzIGFyZSBh
+dmFpbGFibGUsIDAgb3RoZXJ3aXNlDQo+ID4gKyAqLw0KPiA+ICtpbmxpbmUgaW50IGNvYmFsdF9m
+ZWF0dXJlc19hdmFpbGFibGUodW5zaWduZWQgaW50IGZlYXRfbWFzaykNCj4gDQo+IFdoeSBub3Qg
+InN0YXRpYyI/DQo+IA0KPiBBbmQgImJvb2wiIHdvdWxkIGJlIGEgYmV0dGVyIHJldHVybiB0eXBl
+Lg0KDQpSaWdodC4gVGhlIGZpcnN0IGltcGxlbWVudGF0aW9uIHdhcyBib29sLCBidXQgYm9vbCBz
+ZWVtcyB0byBiZSByYXJlbHkNCnVzZWQgaW4gdGhlIGNvZGViYXNlLiBXaWxsIHRha2UgdGhhdCBp
+bnRvIHYyIGFzIHdlbGwgYXMgdGhlIG1pc3NpbmcNCiJzdGF0aWMiLg0KDQo+IA0KPiA+ICt7DQo+
+ID4gKwlpZiAoKGNvYmFsdF9mZWF0dXJlcyAmIGZlYXRfbWFzaykgPT0gZmVhdF9tYXNrKQ0KPiA+
+ICsJCXJldHVybiAxOw0KPiA+ICsNCj4gPiArCXJldHVybiAwOw0KPiANCj4gcmV0dXJuICgoY29i
+YWx0X2ZlYXR1cmVzICYgZmVhdF9tYXNrKSA9PSBmZWF0X21hc2spOw0KPiANCj4gPiArfQ0KPiA+
+ICsNCj4gPiAgI2VuZGlmIC8qIF9MSUJfQ09CQUxUX0lOVEVSTkFMX0ggKi8NCj4gPiANCj4gDQo+
+IEphbg0K
 
