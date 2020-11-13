@@ -1,18 +1,12 @@
-From: "florian.bezdeka@siemens.com" <florian.bezdeka@siemens.com>
-Subject: Re: [PATCH 1/3] cobalt uapi: Introducing new feature flag for
- settime64 availability
-Date: Fri, 13 Nov 2020 16:18:58 +0000
-Message-ID: <0ea225343dac0d572f968955af1ebff988a210ef.camel@siemens.com>
-References: <1229be33-848d-ab5b-d6dd-1b7ae38d36f9@siemens.com>
- <20201113115932.276959-1-florian.bezdeka@siemens.com>
- <20201113115932.276959-2-florian.bezdeka@siemens.com>
- <a3b9965d-57d1-6d41-4cac-5e462379a66d@siemens.com>
-In-Reply-To: <a3b9965d-57d1-6d41-4cac-5e462379a66d@siemens.com>
-Content-Language: en-US
-Content-Type: text/plain; charset="utf-8"
-Content-ID: <71330D61C53FDE4ABBB0CAE092824551@EURPRD10.PROD.OUTLOOK.COM>
-Content-Transfer-Encoding: base64
+References: <MWHPR11MB17100D1F48C3EF22B3C6A329F2E60@MWHPR11MB1710.namprd11.prod.outlook.com>
+From: Philippe Gerum <rpm@xenomai.org>
+Subject: Re: [Xenomai over dovetail] Kernel hang in rcu_barrier after
+ xenomai_init
+In-reply-to: <MWHPR11MB17100D1F48C3EF22B3C6A329F2E60@MWHPR11MB1710.namprd11.prod.outlook.com>
+Date: Fri, 13 Nov 2020 19:30:14 +0100
+Message-ID: <87lff5rtxl.fsf@xenomai.org>
 MIME-Version: 1.0
+Content-Type: text/plain
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -21,47 +15,58 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "xenomai@xenomai.org" <xenomai@xenomai.org>, "jan.kiszka@siemens.com" <jan.kiszka@siemens.com>, "chensong@tj.kylinos.cn" <chensong@tj.kylinos.cn>
+To: "Chen, Hongzhan" <hongzhan.chen@intel.com>
+Cc: xenomai@xenomai.org
 
-T24gRnJpLCAyMDIwLTExLTEzIGF0IDE0OjI1ICswMTAwLCBKYW4gS2lzemthIHdyb3RlOg0KPiBP
-biAxMy4xMS4yMCAxMzowMCwgZmxvcmlhbi5iZXpkZWthLS0tIHZpYSBYZW5vbWFpIHdyb3RlOg0K
-PiA+IEZyb206IEZsb3JpYW4gQmV6ZGVrYSA8Zmxvcmlhbi5iZXpkZWthQHNpZW1lbnMuY29tPg0K
-PiA+IA0KPiA+IEFkZGluZyBhIG5ldyBmZWF0dXJlIGZsYWcgdG8gYWxsb3cgdGhlIGxpYnJhcnkg
-YXNraW5nIGZvciBzZXR0aW1lNjQNCj4gPiBzdXBwb3J0LiBUaGF0IHdpbGwgYWxsb3cgdGhlIGxp
-YnJhcnkgdG8gdXNlIHRoZSBuZXcgc3lzdGVtIGNhbGwgaWYNCj4gPiBpdA0KPiA+IGlzIGF2YWls
-YWJsZSAvIHN1cHBvcnRlZCBieSB0aGUga2VybmVsLg0KPiA+IA0KPiANCj4gQXMgcHJvcG9zZWQg
-aW4gdGhlIG90aGVyIHRocmVhZCwgd2Ugc2hvdWxkIHN0YXRlIHRoYXQgdGhpcyBmbGFnIGlzDQo+
-IHN1cHBvc2VkIHRvIGJlIGRyb3BwZWQgb24gdGhlIG5leHQgbWFqb3IgQUJJIHJldmlzaW9uIHVw
-ZGF0ZS4NCg0KSSBhZ3JlZS4gVGhlIEFCSSByZXZpc2lvbiBvZiBhbGwgc3VwcG9ydGVkIGFyY2hp
-dGVjdHVyZXMgaGFzIHRvIGJlDQppbmNyZW1lbnRlZCB3aGVuIHJlbW92aW5nIHRoaXMgZmxhZy4g
-DQoNCkhvdyBkbyB3ZSBtYWtlIHN1cmUgdGhhdCB0aGUgbmVjZXNzYXJ5IHN0ZXBzIGFyZSB0YWtl
-biBvbmNlIHRoZSBuZXh0DQptYWpvciByZWxlYXNlIHByb2Nlc3Mgc3RhcnRzPyBJcyB0aGVyZSBz
-b21lIGtpbmQgb2YgIm5leHQgbWFqb3IgYnJhbmNoIg0KYXZhaWxhYmxlIHdoZXJlIHdlIGNvdWxk
-IGFwcGx5IHBhdGNoZXMgdG8gYWZ0ZXIgc2V0dGltZTY0IHN0dWZmIHdhcw0KbWVyZ2VkIHRvICJu
-ZXh0Ij8NCg0KPiANCj4gPiBTaWduZWQtb2ZmLWJ5OiBGbG9yaWFuIEJlemRla2EgPGZsb3JpYW4u
-YmV6ZGVrYUBzaWVtZW5zLmNvbT4NCj4gPiAtLS0NCj4gPiAgaW5jbHVkZS9jb2JhbHQvdWFwaS9h
-c20tZ2VuZXJpYy9mZWF0dXJlcy5oIHwgNiArKysrKy0NCj4gPiAgMSBmaWxlIGNoYW5nZWQsIDUg
-aW5zZXJ0aW9ucygrKSwgMSBkZWxldGlvbigtKQ0KPiA+IA0KPiA+IGRpZmYgLS1naXQgYS9pbmNs
-dWRlL2NvYmFsdC91YXBpL2FzbS1nZW5lcmljL2ZlYXR1cmVzLmgNCj4gPiBiL2luY2x1ZGUvY29i
-YWx0L3VhcGkvYXNtLWdlbmVyaWMvZmVhdHVyZXMuaA0KPiA+IGluZGV4IDhhNDkyN2M0OS4uOTNh
-OTY2NzBhIDEwMDY0NA0KPiA+IC0tLSBhL2luY2x1ZGUvY29iYWx0L3VhcGkvYXNtLWdlbmVyaWMv
-ZmVhdHVyZXMuaA0KPiA+ICsrKyBiL2luY2x1ZGUvY29iYWx0L3VhcGkvYXNtLWdlbmVyaWMvZmVh
-dHVyZXMuaA0KPiA+IEBAIC01MSw2ICs1MSw3IEBAIHN0cnVjdCBjb2JhbHRfZmVhdGluZm8gew0K
-PiA+ICAjZGVmaW5lIF9feG5fZmVhdF9ub2Zhc3RzeW5jaCAweDEwMDAwMDAwDQo+ID4gICNkZWZp
-bmUgX194bl9mZWF0X2NvbnRyb2wgICAgIDB4MDgwMDAwMDANCj4gPiAgI2RlZmluZSBfX3huX2Zl
-YXRfcHJpb2NlaWxpbmcgMHgwNDAwMDAwMA0KPiA+ICsjZGVmaW5lIF9feG5fZmVhdF9zZXR0aW1l
-NjQgICAweDAyMDAwMDAwDQo+ID4gIA0KPiA+ICAjaWZkZWYgQ09ORklHX1NNUA0KPiA+ICAjZGVm
-aW5lIF9feG5fZmVhdF9zbXBfbWFzayBfX3huX2ZlYXRfc21wDQo+ID4gQEAgLTcwLDcgKzcxLDgg
-QEAgc3RydWN0IGNvYmFsdF9mZWF0aW5mbyB7DQo+ID4gICNkZWZpbmUgX194bl9mZWF0X2dlbmVy
-aWNfbWFzawkJCVwNCj4gPiAgCShfX3huX2ZlYXRfc21wX21hc2sJCXwJXA0KPiA+ICAJIF9feG5f
-ZmVhdF9mYXN0c3luY2hfbWFzayAJfAlcDQo+ID4gLQkgX194bl9mZWF0X3ByaW9jZWlsaW5nKQ0K
-PiA+ICsJIF9feG5fZmVhdF9wcmlvY2VpbGluZwkJfAlcDQo+ID4gKwkgX194bl9mZWF0X3NldHRp
-bWU2NCApDQo+ID4gIA0KPiA+ICAvKg0KPiA+ICAgKiBMaXN0IG9mIGZlYXR1cmVzIGJvdGggc2lk
-ZXMgaGF2ZSB0byBhZ3JlZSBvbjogSWYgdXNlcmxhbmQNCj4gPiBzdXBwb3J0cw0KPiA+IEBAIC0x
-MDEsNiArMTAzLDggQEAgY29uc3QgY2hhciAqZ2V0X2dlbmVyaWNfZmVhdHVyZV9sYWJlbCh1bnNp
-Z25lZA0KPiA+IGludCBmZWF0dXJlKQ0KPiA+ICAJCXJldHVybiAiY29udHJvbCI7DQo+ID4gIAlj
-YXNlIF9feG5fZmVhdF9wcmlvY2VpbGluZzoNCj4gPiAgCQlyZXR1cm4gInByaW9jZWlsaW5nIjsN
-Cj4gPiArCWNhc2UgX194bl9mZWF0X3NldHRpbWU2NDoNCj4gPiArCQlyZXR1cm4gInNldHRpbWU2
-NCI7DQo+ID4gIAlkZWZhdWx0Og0KPiA+ICAJCXJldHVybiAwOw0KPiA+ICAJfQ0KPiA+IA0KPiAN
-Cj4gSmFuDQo=
+
+Chen, Hongzhan via Xenomai <xenomai@xenomai.org> writes:
+
+> Recently I have been working on wip/dovetail branch to port xenomai over
+> dovetail. After fixed all TODOs for porting xenomai, kernel init now can
+> successfully finish xenomai init till hang in rcu_barrier. 
+> Its call path is like this start_kernel->arch_call_rest_init->rest_init->
+> kernel_thread(kernel_init, NULL, CLONE_FS)->kernel_init->mark_readonly
+> ->rcu_barrier when hang issue happen. 
+>
+> According to my debug , before call xenomai_init, all callback function 
+> registerred with call_rcu can be invoked successfully after a period of time.
+> The first problematic call_rcu which its callback never be invoked can be 
+> traced back to call xenomai_init  (actually I just found only one call_rcu 
+> called during xenomai_init) before call rcu_barrier. 
+>
+> In addition , after xenomai_init is completed , all following callbacks with 
+> registerred through call_rcus called by other driver init are also never 
+> invoked till call rcu_barrier.
+>
+> Is it not safe to call call_rcu with enabling xenomai over dovetail in this 
+> case?
+
+Such a restriction would not make any sense, making Dovetail pretty much
+unusable, right? So, no.
+
+> What I should do to fix this issue?  Please help comment.
+>
+> I have pushed all my patches onto my public branch 
+> https://github.com/hongzhanchen/xenomai/tree/hzchen/dovetail ,please feel 
+> free to check them. 
+>
+
+Unfortunately, the tree you mentioned does not even remotely builds,
+tons of code commented out triggering warning about a collection of
+pending TODOs, also with plain errors like:
+
+/work/git/worktrees/xenomai+dovetail-5.8/kernel/xenomai/intr.c:284:37: error: 'IPIPE_NR_IRQS' undeclared here (not in a function)
+/work/git/worktrees/xenomai+dovetail-5.8/kernel/xenomai/intr.c:472:6:
+error: implicit declaration of function '__ipipe_irq_handler'; did you
+mean 'xnintr_irq_handler'? [-Werror=implicit-function-declaration]
+
+I tried to build it on top of dovetail-v5.8 from [1], which is the
+reference version for that kernel. I would suggest to address the
+pending work - at least the obviously critical one - in the Cobalt core
+first, before going for any meaningful debug next.
+
+[1] https://git.evlproject.org/linux-evl.git/tag/?h=v5.8-dovetail
+
+-- 
+Philippe.
 
