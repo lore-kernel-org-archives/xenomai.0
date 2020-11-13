@@ -6,14 +6,15 @@ References: <1604372743-2986-1-git-send-email-chensong@tj.kylinos.cn>
  <5FABAD94.1030108@tj.kylinos.cn>
  <8478f418-2f69-94e5-cc96-87a606ab68b9@siemens.com>
  <5FABB938.8080807@tj.kylinos.cn>
-From: Florian Bezdeka <florian.bezdeka@siemens.com>
-Message-ID: <c745cfbd-ef39-fa61-190f-26826c4609ad@siemens.com>
-Date: Fri, 13 Nov 2020 12:47:32 +0100
-In-Reply-To: <5FABB938.8080807@tj.kylinos.cn>
+ <c745cfbd-ef39-fa61-190f-26826c4609ad@siemens.com>
+From: Jan Kiszka <jan.kiszka@siemens.com>
+Message-ID: <1229be33-848d-ab5b-d6dd-1b7ae38d36f9@siemens.com>
+Date: Fri, 13 Nov 2020 12:56:37 +0100
+MIME-Version: 1.0
+In-Reply-To: <c745cfbd-ef39-fa61-190f-26826c4609ad@siemens.com>
 Content-Type: text/plain; charset="utf-8"
 Content-Language: en-US
 Content-Transfer-Encoding: 8bit
-MIME-Version: 1.0
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -22,166 +23,134 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: chensong <chensong@tj.kylinos.cn>, Jan Kiszka <jan.kiszka@siemens.com>, xenomai@xenomai.org, henning.schild@siemens.com
+To: Florian Bezdeka <florian.bezdeka@siemens.com>, chensong <chensong@tj.kylinos.cn>, xenomai@xenomai.org, henning.schild@siemens.com
 
-Hi all,
-
-I reviewed all the timeset64 related patches.
-Please note the comments below.
-
-Did anyone look into testing yet? There are some combinations of kernel
-and library versions we should look at and make sure they all behave as
-expected. Maybe xenomai-images "project" could help here?
-
-On 11.11.20 11:13, chensong via Xenomai wrote:
+On 13.11.20 12:47, Florian Bezdeka wrote:
+> Hi all,
 > 
+> I reviewed all the timeset64 related patches.
+> Please note the comments below.
 > 
-> On 2020年11月11日 17:43, Jan Kiszka wrote:
->> On 11.11.20 10:23, chensong wrote:
->>>
->>>
->>> On 2020年11月11日 15:29, Jan Kiszka wrote:
->>>> On 11.11.20 04:55, chensong wrote:
->>>>>
->>>>>
->>>>> On 2020年11月10日 18:24, Jan Kiszka wrote:
+> Did anyone look into testing yet? There are some combinations of kernel
+> and library versions we should look at and make sure they all behave as
+> expected. Maybe xenomai-images "project" could help here?
+> 
+
+At least we need something in smokey that can be used - in different
+build configurations - to stress things. But as this is also about these
+different configurations (32/64-bit old/new apps on old/new kernels), a
+pre-integration via xenomai-image may help. There, we currently lack the
+compat case as target.
+
+> On 11.11.20 11:13, chensong via Xenomai wrote:
+>>
+>>
+>> On 2020年11月11日 17:43, Jan Kiszka wrote:
+>>> On 11.11.20 10:23, chensong wrote:
+>>>>
+>>>>
+>>>> On 2020年11月11日 15:29, Jan Kiszka wrote:
+>>>>> On 11.11.20 04:55, chensong wrote:
 >>>>>>
->>>>>> On 03.11.20 04:05, chensong wrote:
->>>>>>> Regarding sizeof time_t, dispatch 32bit timespec to clock_settime
->>>>>>> and 64bit timespec to clock_settime64.
+>>>>>>
+>>>>>> On 2020年11月10日 18:24, Jan Kiszka wrote:
 >>>>>>>
->>>>>>> Signed-off-by: chensong <chensong@tj.kylinos.cn>
->>>>>>> ---
->>>>>>>     lib/cobalt/clock.c | 6 +++++-
->>>>>>>     1 file changed, 5 insertions(+), 1 deletion(-)
+>>>>>>> On 03.11.20 04:05, chensong wrote:
+>>>>>>>> Regarding sizeof time_t, dispatch 32bit timespec to clock_settime
+>>>>>>>> and 64bit timespec to clock_settime64.
+>>>>>>>>
+>>>>>>>> Signed-off-by: chensong <chensong@tj.kylinos.cn>
+>>>>>>>> ---
+>>>>>>>>     lib/cobalt/clock.c | 6 +++++-
+>>>>>>>>     1 file changed, 5 insertions(+), 1 deletion(-)
+>>>>>>>>
+>>>>>>>> diff --git a/lib/cobalt/clock.c b/lib/cobalt/clock.c
+>>>>>>>> index 11fd1aa..44b2f3f 100644
+>>>>>>>> --- a/lib/cobalt/clock.c
+>>>>>>>> +++ b/lib/cobalt/clock.c
+>>>>>>>> @@ -237,7 +237,11 @@ COBALT_IMPL(int, clock_settime, (clockid_t
+>>>>>>>> clock_id, const struct timespec *tp))
+>>>>>>>>     {
+>>>>>>>>         int ret;
+>>>>>>>>
+>>>>>>>> -    ret = -XENOMAI_SYSCALL2(sc_cobalt_clock_settime, clock_id, tp);
+>>>>>>>> +    if (sizeof(time_t) > 4)
+>>>>>>>> +        ret = -XENOMAI_SYSCALL2(sc_cobalt_clock_settime64,
+>>>>>>>> +                    clock_id, tp);
+>>>>>>>> +    else
+>>>>>>>> +        ret = -XENOMAI_SYSCALL2(sc_cobalt_clock_settime, clock_id,
+>>>>>>>> tp);
 >>>>>>>
->>>>>>> diff --git a/lib/cobalt/clock.c b/lib/cobalt/clock.c
->>>>>>> index 11fd1aa..44b2f3f 100644
->>>>>>> --- a/lib/cobalt/clock.c
->>>>>>> +++ b/lib/cobalt/clock.c
->>>>>>> @@ -237,7 +237,11 @@ COBALT_IMPL(int, clock_settime, (clockid_t
->>>>>>> clock_id, const struct timespec *tp))
->>>>>>>     {
->>>>>>>         int ret;
+>>>>>>> Maybe do a single
 >>>>>>>
->>>>>>> -    ret = -XENOMAI_SYSCALL2(sc_cobalt_clock_settime, clock_id, tp);
->>>>>>> +    if (sizeof(time_t) > 4)
->>>>>>> +        ret = -XENOMAI_SYSCALL2(sc_cobalt_clock_settime64,
->>>>>>> +                    clock_id, tp);
->>>>>>> +    else
->>>>>>> +        ret = -XENOMAI_SYSCALL2(sc_cobalt_clock_settime, clock_id,
->>>>>>> tp);
+>>>>>>> XENOMAI_SYSCALL2(sizeof(time_t) > 4 ? sc_cobalt_clock_settime64
+>>>>>>>                                        : sc_cobalt_clock_settime,
+>>>>>>> ...)
+>>>>>>>
+>>>>>>> But we need ABI revision negotiation here. If a new lib is run on a
+>>>>>>> kernel that does not have settime64, things will fail (the other way
+>>>>>>> around is fine). We need to ensure that new userspace can check for
+>>>>>>> this
+>>>>>>> upfront while old userspace will happily run (hard requirement for
+>>>>>>> making these patches part of 3.1.x).
+>>>>>>>
+>>>>>>> Jan
 >>>>>>
->>>>>> Maybe do a single
+>>>>>> As far as my understanding, ABI revision negotiation happens in
+>>>>>> low_init
+>>>>>> already, it reminds userspace process that lib and kernel are not
+>>>>>> compatible at the first place. Therefore, it addresses the scenario
+>>>>>> you
+>>>>>> are talking about(new userspace, old kernel or the other way around).
 >>>>>>
->>>>>> XENOMAI_SYSCALL2(sizeof(time_t) > 4 ? sc_cobalt_clock_settime64
->>>>>>                                        : sc_cobalt_clock_settime,
->>>>>> ...)
->>>>>>
->>>>>> But we need ABI revision negotiation here. If a new lib is run on a
->>>>>> kernel that does not have settime64, things will fail (the other way
->>>>>> around is fine). We need to ensure that new userspace can check for
->>>>>> this
->>>>>> upfront while old userspace will happily run (hard requirement for
->>>>>> making these patches part of 3.1.x).
->>>>>>
->>>>>> Jan
 >>>>>
->>>>> As far as my understanding, ABI revision negotiation happens in
->>>>> low_init
->>>>> already, it reminds userspace process that lib and kernel are not
->>>>> compatible at the first place. Therefore, it addresses the scenario
->>>>> you
->>>>> are talking about(new userspace, old kernel or the other way around).
+>>>>> Ah, right. Perfect. Then also update those revisions make detection
+>>>>> work
+>>>>> as required.
 >>>>>
+>>>> ok, will do.
 >>>>
->>>> Ah, right. Perfect. Then also update those revisions make detection
->>>> work
->>>> as required.
+>>>> XENOMAI_ABI_REV is defined in those files:
 >>>>
->>> ok, will do.
->>>
->>> XENOMAI_ABI_REV is defined in those files:
->>>
->>> ./kernel/cobalt/arch/arm/include/asm/xenomai/uapi/features.h:25:#define
->>> XENOMAI_ABI_REV   17UL
->>> ./kernel/cobalt/arch/x86/include/asm/xenomai/uapi/features.h:22:#define
->>> XENOMAI_ABI_REV   17UL
->>> ./kernel/cobalt/arch/arm64/include/asm/xenomai/uapi/features.h:25:#define
->>> XENOMAI_ABI_REV
->>>    1UL
->>> ./kernel/cobalt/arch/powerpc/include/asm/xenomai/uapi/features.h:22:#define
->>>
->>> XENOMAI_ABI_REV   17UL
->>>
->>>
->>> increase them to 18UL?
->>>
->>> if you agree, i will submit a v2 for this one.
->>
->> We need to increase, yes, but we need to keep previous revision userland
->> working.
-
-Do we really need to increase the ABI revision?
-My understanding is, that once the kernel has been updated applications
-using an old library will be locked out. I guess this is not allowed
-when bumping the xenomai minor revision only.
-
-I will come up with a small patch set that allows some feature detection
-during runtime. That should help with the identification which syscall
-should be used.
-
-Would be glad if you both could have a look at it.
-
-> 
-> low_init will stop previous revision userland working once we increase it.
-> 
->>
->>>
->>>>> what's more, do we or customers release lib without kernel. About
->>>>> y2038,
->>>>> vanilla kernel, glibc, libcobalt, xenomai, too many scenarios to be
->>>>> addressed, to complicated, we'd better simplify it if possible.
+>>>> ./kernel/cobalt/arch/arm/include/asm/xenomai/uapi/features.h:25:#define
+>>>> XENOMAI_ABI_REV   17UL
+>>>> ./kernel/cobalt/arch/x86/include/asm/xenomai/uapi/features.h:22:#define
+>>>> XENOMAI_ABI_REV   17UL
+>>>> ./kernel/cobalt/arch/arm64/include/asm/xenomai/uapi/features.h:25:#define
+>>>> XENOMAI_ABI_REV
+>>>>    1UL
+>>>> ./kernel/cobalt/arch/powerpc/include/asm/xenomai/uapi/features.h:22:#define
 >>>>
->>>> Xenomai does not issue separate releases for the kernel part
->>>> implementing the syscalls and for the xenomai libs using them.
+>>>> XENOMAI_ABI_REV   17UL
 >>>>
->>>> However, applications may have been bundled with libs from previous
->>>> releases of *the same stable series*, and users can expect (bugs aside,
->>>> new features excluded) that their xenomai lib from, say, 3.1 will still
->>>> work with a core from 3.1.1.
-> if XENOMAI_ABI_REV in lib is different with XENOMAI_ABI_REV in kernel,
-> low_init will stop it running at the first place.
-> 
-> Even if it doesn't, old application, old lib, will go to clock_settime,
-> i can't see any impact here.
-> 
-> chensong
-> 
 >>>>
->>>> Jan
+>>>> increase them to 18UL?
 >>>>
+>>>> if you agree, i will submit a v2 for this one.
 >>>
->>> In those cases, they will get "ABI mismatch, required xxx, provided
->>> xxx", user will realize they need new kernel with new lib.
->>>
->>> My point is, ignore those too old things. arnd Bergmann dropped
->>> something as well.
->>>
->>
->> We can't break the scenario described above. That's in fact in line with
->> what kernel and libc do, just that they also account for newer libc
->> running on older kernels (while we deny that).
->>
->> Jan
->>
+>>> We need to increase, yes, but we need to keep previous revision userland
+>>> working.
 > 
+> Do we really need to increase the ABI revision?
+> My understanding is, that once the kernel has been updated applications
+> using an old library will be locked out. I guess this is not allowed
+> when bumping the xenomai minor revision only.
 > 
+> I will come up with a small patch set that allows some feature detection
+> during runtime. That should help with the identification which syscall
+> should be used.
 > 
+> Would be glad if you both could have a look at it.
 > 
 
+We could grant a new feature bit
+(include/cobalt/uapi/asm-generic/features.h) to the 64-bit time ABI,
+dropping it again on next ABI revision bump (as it will then become
+mandatory).
 
+Jan
 -- 
 Siemens AG, T RDA IOT
 Corporate Competence Center Embedded Linux
+
 
