@@ -1,16 +1,16 @@
-From: "Chen, Hongzhan" <hongzhan.chen@intel.com>
-Subject: RE: [Xenomai over dovetail] Kernel hang in rcu_barrier after
- xenomai_init
-Date: Sat, 14 Nov 2020 03:30:28 +0000
-Message-ID: <CY4PR11MB17031A0E3842869F923D353FF2E50@CY4PR11MB1703.namprd11.prod.outlook.com>
-References: <MWHPR11MB17100D1F48C3EF22B3C6A329F2E60@MWHPR11MB1710.namprd11.prod.outlook.com>
- <87lff5rtxl.fsf@xenomai.org>
- <CY4PR11MB170373477D42F1E0F39C1162F2E50@CY4PR11MB1703.namprd11.prod.outlook.com>
-In-Reply-To: <CY4PR11MB170373477D42F1E0F39C1162F2E50@CY4PR11MB1703.namprd11.prod.outlook.com>
-Content-Language: en-US
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+Subject: Re: [PATCH 1/3] cobalt uapi: Introducing new feature flag for
+ settime64 availability
+References: <1229be33-848d-ab5b-d6dd-1b7ae38d36f9@siemens.com>
+ <20201113115932.276959-1-florian.bezdeka@siemens.com>
+ <20201113115932.276959-2-florian.bezdeka@siemens.com>
+From: song <chensong@tj.kylinos.cn>
+Message-ID: <88ba257e-c9bd-02eb-741d-7d600f9ffdfa@tj.kylinos.cn>+D22CE431C0A85FD2
+Date: Sat, 14 Nov 2020 14:57:36 +0800
 MIME-Version: 1.0
+In-Reply-To: <20201113115932.276959-2-florian.bezdeka@siemens.com>
+Content-Type: text/plain; charset="utf-8"; format="flowed"
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -19,127 +19,60 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Philippe Gerum <rpm@xenomai.org>, "xenomai@xenomai.org" <xenomai@xenomai.org>
-
-I have some clues about this issue. After xenomai_init is called, it seems =
-that rcu_core
-is never called from unknow startpoint ever after call call_rcu, which is s=
-upposed to be=20
-called by rcu softirq handler after we call call_rcu.
-I am trying to debug why rcu softirq is not triggerred after then.
-
-Regards
-
-Hongzhan Chen
-
------Original Message-----
-From: Xenomai <xenomai-bounces@xenomai.org> On Behalf Of Chen, Hongzhan via=
- Xenomai
-Sent: Saturday, November 14, 2020 9:55 AM
-To: Philippe Gerum <rpm@xenomai.org>; xenomai@xenomai.org
-Subject: RE: [Xenomai over dovetail] Kernel hang in rcu_barrier after xenom=
-ai_init
+To: "florian.bezdeka@siemens.com" <florian.bezdeka@siemens.com>, "xenomai@xenomai.org" <xenomai@xenomai.org>
 
 
->-----Original Message-----
->From: Philippe Gerum <rpm@xenomai.org>=20
->Sent: Saturday, November 14, 2020 2:30 AM
->To: Chen, Hongzhan <hongzhan.chen@intel.com>
->Cc: xenomai@xenomai.org
->Subject: Re: [Xenomai over dovetail] Kernel hang in rcu_barrier after xeno=
-mai_init
->
->
->Chen, Hongzhan via Xenomai <xenomai@xenomai.org> writes:
->
->> Recently I have been working on wip/dovetail branch to port xenomai over
->> dovetail. After fixed all TODOs for porting xenomai, kernel init now can
->> successfully finish xenomai init till hang in rcu_barrier.=20
->> Its call path is like this start_kernel->arch_call_rest_init->rest_init-=
->
->> kernel_thread(kernel_init, NULL, CLONE_FS)->kernel_init->mark_readonly
->> ->rcu_barrier when hang issue happen.=20
->>
->> According to my debug , before call xenomai_init, all callback function=
-=20
->> registerred with call_rcu can be invoked successfully after a period of =
-time.
-> The first problematic call_rcu which its callback never be invoked can be=
-=20
-> traced back to call xenomai_init  (actually I just found only one call_rc=
-u=20
-> called during xenomai_init) before call rcu_barrier.=20
->
-> In addition , after xenomai_init is completed , all following callbacks w=
-ith=20
-> registerred through call_rcus called by other driver init are also never=
-=20
-> invoked till call rcu_barrier.
->
-> Is it not safe to call call_rcu with enabling xenomai over dovetail in th=
-is=20
-> case?
->
->Such a restriction would not make any sense, making Dovetail pretty much
->unusable, right? So, no.
->
->> What I should do to fix this issue?  Please help comment.
->>
->> I have pushed all my patches onto my public branch=20
->> https://github.com/hongzhanchen/xenomai/tree/hzchen/dovetail ,please fee=
-l=20
->> free to check them.=20
->>
->
->Unfortunately, the tree you mentioned does not even remotely builds,
->tons of code commented out triggering warning about a collection of
->pending TODOs, also with plain errors like:
->
->/work/git/worktrees/xenomai+dovetail-5.8/kernel/xenomai/intr.c:284:37: err=
-or: 'IPIPE_NR_IRQS' undeclared here (not in a function)
->/work/git/worktrees/xenomai+dovetail-5.8/kernel/xenomai/intr.c:472:6:
->error: implicit declaration of function '__ipipe_irq_handler'; did you
->mean 'xnintr_irq_handler'? [-Werror=3Dimplicit-function-declaration]
->
->I tried to build it on top of dovetail-v5.8 from [1], which is the
->reference version for that kernel. I would suggest to address the
->pending work - at least the obviously critical one - in the Cobalt core
->first, before going for any meaningful debug next.
->
->[1] https://git.evlproject.org/linux-evl.git/tag/?h=3Dv5.8-dovetail
->
->--=20
->Philippe.
-=20
-Thanks for your feedback. Sorry for the confusion because I forgot to=20
-point out the config which I am using to build kernel. =20
-Please use https://github.com/hongzhanchen/xenomai/blob/hzchen/dovetail/ATT=
-51154_IGB.config to build kernel.=20
-With using this config,the kernel would hang in igb driver at first,=20
-which issue Jan promised to help debug. Please disable IGB=20
-driver before you build and after then the kernel built is supposed=20
-to be reproducible for hang in icu_barrier issue.
-Yes, there is still some TODO warning like in intr.c. But as you mentioned =
-in
- https://xenomai.org/pipermail/xenomai/2020-February/042488.html,=20
-"kernel/cobalt/irq.c and related can go".=20
-Actually there is no kernel/cobalt/irq.c file but kernel/cobalt/intr.c.=20
-Per my understanding , only kernel/cobalt/intr.c
- involve irq management so that means most of TODOs mentioned in intr.c sho=
-uld be NA.=20
-Please correct me if I am wrong.  Actually before I debug kernel , I double=
- check if I have fixed all critical issues.
-After then , I encouraged myself to move forward. But I maybe miss somethin=
-g referring to
-critical issue because I  am newer to both Xenomai and dovetail. If you fou=
-nd that there is other=20
-critical issues I have not fixed or something wrong with my fixing, please =
-help point out. I would appreciate it.
-Thanks for your time and suggestions again.
 
-Regards
+On 2020/11/13 下午8:00, florian.bezdeka@siemens.com wrote:
+> From: Florian Bezdeka <florian.bezdeka@siemens.com>
+> 
+> Adding a new feature flag to allow the library asking for settime64
+> support. That will allow the library to use the new system call if it
+> is available / supported by the kernel.
+> 
+> Signed-off-by: Florian Bezdeka <florian.bezdeka@siemens.com>
+> ---
+>   include/cobalt/uapi/asm-generic/features.h | 6 +++++-
+>   1 file changed, 5 insertions(+), 1 deletion(-)
+> 
+> diff --git a/include/cobalt/uapi/asm-generic/features.h b/include/cobalt/uapi/asm-generic/features.h
+> index 8a4927c49..93a96670a 100644
+> --- a/include/cobalt/uapi/asm-generic/features.h
+> +++ b/include/cobalt/uapi/asm-generic/features.h
+> @@ -51,6 +51,7 @@ struct cobalt_featinfo {
+>   #define __xn_feat_nofastsynch 0x10000000
+>   #define __xn_feat_control     0x08000000
+>   #define __xn_feat_prioceiling 0x04000000
+> +#define __xn_feat_settime64   0x02000000
+>   
+>   #ifdef CONFIG_SMP
+>   #define __xn_feat_smp_mask __xn_feat_smp
+> @@ -70,7 +71,8 @@ struct cobalt_featinfo {
+>   #define __xn_feat_generic_mask			\
+>   	(__xn_feat_smp_mask		|	\
+>   	 __xn_feat_fastsynch_mask 	|	\
+> -	 __xn_feat_prioceiling)
+> +	 __xn_feat_prioceiling		|	\
+> +	 __xn_feat_settime64 )
+>   
+>   /*
+>    * List of features both sides have to agree on: If userland supports
+> @@ -101,6 +103,8 @@ const char *get_generic_feature_label(unsigned int feature)
+>   		return "control";
+>   	case __xn_feat_prioceiling:
+>   		return "prioceiling";
+> +	case __xn_feat_settime64:
+> +		return "settime64";
+>   	default:
+>   		return 0;
+>   	}
+> 
 
-Hongzhan Chen
+If i understand it correctly, we negotiate xn_feature instead of abi 
+revision? In lib/cobalt/clock.c?
 
+Another question is settime64 is the first step of y2038, clock_gettime 
+and others will come up, shall we have xn_feat_time64 for all of them?
 
+chensong
 
