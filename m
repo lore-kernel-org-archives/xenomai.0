@@ -1,11 +1,12 @@
 From: "Chen, Hongzhan" <hongzhan.chen@intel.com>
 Subject: RE: [Xenomai over dovetail] Kernel hang in rcu_barrier after
  xenomai_init
-Date: Sat, 14 Nov 2020 01:55:00 +0000
-Message-ID: <CY4PR11MB170373477D42F1E0F39C1162F2E50@CY4PR11MB1703.namprd11.prod.outlook.com>
+Date: Sat, 14 Nov 2020 03:30:28 +0000
+Message-ID: <CY4PR11MB17031A0E3842869F923D353FF2E50@CY4PR11MB1703.namprd11.prod.outlook.com>
 References: <MWHPR11MB17100D1F48C3EF22B3C6A329F2E60@MWHPR11MB1710.namprd11.prod.outlook.com>
  <87lff5rtxl.fsf@xenomai.org>
-In-Reply-To: <87lff5rtxl.fsf@xenomai.org>
+ <CY4PR11MB170373477D42F1E0F39C1162F2E50@CY4PR11MB1703.namprd11.prod.outlook.com>
+In-Reply-To: <CY4PR11MB170373477D42F1E0F39C1162F2E50@CY4PR11MB1703.namprd11.prod.outlook.com>
 Content-Language: en-US
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
@@ -19,6 +20,25 @@ List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: Philippe Gerum <rpm@xenomai.org>, "xenomai@xenomai.org" <xenomai@xenomai.org>
+
+I have some clues about this issue. After xenomai_init is called, it seems =
+that rcu_core
+is never called from unknow startpoint ever after call call_rcu, which is s=
+upposed to be=20
+called by rcu softirq handler after we call call_rcu.
+I am trying to debug why rcu softirq is not triggerred after then.
+
+Regards
+
+Hongzhan Chen
+
+-----Original Message-----
+From: Xenomai <xenomai-bounces@xenomai.org> On Behalf Of Chen, Hongzhan via=
+ Xenomai
+Sent: Saturday, November 14, 2020 9:55 AM
+To: Philippe Gerum <rpm@xenomai.org>; xenomai@xenomai.org
+Subject: RE: [Xenomai over dovetail] Kernel hang in rcu_barrier after xenom=
+ai_init
 
 
 >-----Original Message-----
@@ -120,5 +140,6 @@ Thanks for your time and suggestions again.
 Regards
 
 Hongzhan Chen
+
 
 
