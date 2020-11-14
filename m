@@ -1,18 +1,14 @@
-Subject: Re: [PATCH 1/3] cobalt uapi: Introducing new feature flag for
- settime64 availability
-References: <1229be33-848d-ab5b-d6dd-1b7ae38d36f9@siemens.com>
- <20201113115932.276959-1-florian.bezdeka@siemens.com>
- <20201113115932.276959-2-florian.bezdeka@siemens.com>
- <88ba257e-c9bd-02eb-741d-7d600f9ffdfa@tj.kylinos.cn>
- <61278b81-2502-6950-4647-5cafcbdb0d23@siemens.com>
-From: song <chensong@tj.kylinos.cn>
-Message-ID: <157dbba3-5d17-7f84-6319-9ea9eae35854@tj.kylinos.cn>+EDAFE494B95437A7
-Date: Sat, 14 Nov 2020 15:50:18 +0800
+References: <MWHPR11MB17100D1F48C3EF22B3C6A329F2E60@MWHPR11MB1710.namprd11.prod.outlook.com>
+ <87lff5rtxl.fsf@xenomai.org>
+ <CY4PR11MB170373477D42F1E0F39C1162F2E50@CY4PR11MB1703.namprd11.prod.outlook.com>
+From: Philippe Gerum <rpm@xenomai.org>
+Subject: Re: [Xenomai over dovetail] Kernel hang in rcu_barrier after
+ xenomai_init
+In-reply-to: <CY4PR11MB170373477D42F1E0F39C1162F2E50@CY4PR11MB1703.namprd11.prod.outlook.com>
+Date: Sat, 14 Nov 2020 11:28:25 +0100
+Message-ID: <87h7pss052.fsf@xenomai.org>
 MIME-Version: 1.0
-In-Reply-To: <61278b81-2502-6950-4647-5cafcbdb0d23@siemens.com>
-Content-Type: text/plain; charset="utf-8"; format="flowed"
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -21,81 +17,113 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jan Kiszka <jan.kiszka@siemens.com>, "florian.bezdeka@siemens.com" <florian.bezdeka@siemens.com>, "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: "Chen, Hongzhan" <hongzhan.chen@intel.com>
+Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
 
+Chen, Hongzhan <hongzhan.chen@intel.com> writes:
 
-On 2020/11/14 下午3:32, Jan Kiszka wrote:
-> On 14.11.20 07:57, song via Xenomai wrote:
+>>-----Original Message-----
+>>From: Philippe Gerum <rpm@xenomai.org> 
+>>Sent: Saturday, November 14, 2020 2:30 AM
+>>To: Chen, Hongzhan <hongzhan.chen@intel.com>
+>>Cc: xenomai@xenomai.org
+>>Subject: Re: [Xenomai over dovetail] Kernel hang in rcu_barrier after xenomai_init
 >>
 >>
->> On 2020/11/13 下午8:00, florian.bezdeka@siemens.com wrote:
->>> From: Florian Bezdeka <florian.bezdeka@siemens.com>
+>>Chen, Hongzhan via Xenomai <xenomai@xenomai.org> writes:
+>>
+>>> Recently I have been working on wip/dovetail branch to port xenomai over
+>>> dovetail. After fixed all TODOs for porting xenomai, kernel init now can
+>>> successfully finish xenomai init till hang in rcu_barrier. 
+>>> Its call path is like this start_kernel->arch_call_rest_init->rest_init->
+>>> kernel_thread(kernel_init, NULL, CLONE_FS)->kernel_init->mark_readonly
+>>> ->rcu_barrier when hang issue happen. 
 >>>
->>> Adding a new feature flag to allow the library asking for settime64
->>> support. That will allow the library to use the new system call if it
->>> is available / supported by the kernel.
+>>> According to my debug , before call xenomai_init, all callback function 
+>>> registerred with call_rcu can be invoked successfully after a period of time.
+>> The first problematic call_rcu which its callback never be invoked can be 
+>> traced back to call xenomai_init  (actually I just found only one call_rcu 
+>> called during xenomai_init) before call rcu_barrier. 
+>>
+>> In addition , after xenomai_init is completed , all following callbacks with 
+>> registerred through call_rcus called by other driver init are also never 
+>> invoked till call rcu_barrier.
+>>
+>> Is it not safe to call call_rcu with enabling xenomai over dovetail in this 
+>> case?
+>>
+>>Such a restriction would not make any sense, making Dovetail pretty much
+>>unusable, right? So, no.
+>>
+>>> What I should do to fix this issue?  Please help comment.
 >>>
->>> Signed-off-by: Florian Bezdeka <florian.bezdeka@siemens.com>
->>> ---
->>>    include/cobalt/uapi/asm-generic/features.h | 6 +++++-
->>>    1 file changed, 5 insertions(+), 1 deletion(-)
->>>
->>> diff --git a/include/cobalt/uapi/asm-generic/features.h
->>> b/include/cobalt/uapi/asm-generic/features.h
->>> index 8a4927c49..93a96670a 100644
->>> --- a/include/cobalt/uapi/asm-generic/features.h
->>> +++ b/include/cobalt/uapi/asm-generic/features.h
->>> @@ -51,6 +51,7 @@ struct cobalt_featinfo {
->>>    #define __xn_feat_nofastsynch 0x10000000
->>>    #define __xn_feat_control     0x08000000
->>>    #define __xn_feat_prioceiling 0x04000000
->>> +#define __xn_feat_settime64   0x02000000
->>>      #ifdef CONFIG_SMP
->>>    #define __xn_feat_smp_mask __xn_feat_smp
->>> @@ -70,7 +71,8 @@ struct cobalt_featinfo {
->>>    #define __xn_feat_generic_mask            \
->>>        (__xn_feat_smp_mask        |    \
->>>         __xn_feat_fastsynch_mask     |    \
->>> -     __xn_feat_prioceiling)
->>> +     __xn_feat_prioceiling        |    \
->>> +     __xn_feat_settime64 )
->>>      /*
->>>     * List of features both sides have to agree on: If userland supports
->>> @@ -101,6 +103,8 @@ const char *get_generic_feature_label(unsigned int
->>> feature)
->>>            return "control";
->>>        case __xn_feat_prioceiling:
->>>            return "prioceiling";
->>> +    case __xn_feat_settime64:
->>> +        return "settime64";
->>>        default:
->>>            return 0;
->>>        }
+>>> I have pushed all my patches onto my public branch 
+>>> https://github.com/hongzhanchen/xenomai/tree/hzchen/dovetail ,please feel 
+>>> free to check them. 
 >>>
 >>
->> If i understand it correctly, we negotiate xn_feature instead of abi
->> revision? In lib/cobalt/clock.c?
+>>Unfortunately, the tree you mentioned does not even remotely builds,
+>>tons of code commented out triggering warning about a collection of
+>>pending TODOs, also with plain errors like:
 >>
-> 
-> Yes. New userspace will mandate the feature, old will not require it.
-> Kernel can handle both cases, passively.
-Ok, i will submit a new patch in lib/cobalt/clock.c after this one is 
-accepted.
+>>/work/git/worktrees/xenomai+dovetail-5.8/kernel/xenomai/intr.c:284:37: error: 'IPIPE_NR_IRQS' undeclared here (not in a function)
+>>/work/git/worktrees/xenomai+dovetail-5.8/kernel/xenomai/intr.c:472:6:
+>>error: implicit declaration of function '__ipipe_irq_handler'; did you
+>>mean 'xnintr_irq_handler'? [-Werror=implicit-function-declaration]
+>>
+>>I tried to build it on top of dovetail-v5.8 from [1], which is the
+>>reference version for that kernel. I would suggest to address the
+>>pending work - at least the obviously critical one - in the Cobalt core
+>>first, before going for any meaningful debug next.
+>>
+>>[1] https://git.evlproject.org/linux-evl.git/tag/?h=v5.8-dovetail
+>>
+>>-- 
+>>Philippe.
+>  
+> Thanks for your feedback. Sorry for the confusion because I forgot to 
+> point out the config which I am using to build kernel.  
+> Please use https://github.com/hongzhanchen/xenomai/blob/hzchen/dovetail/ATT51154_IGB.config to build kernel. 
+> With using this config,the kernel would hang in igb driver at first, 
+> which issue Jan promised to help debug. Please disable IGB 
+> driver before you build and after then the kernel built is supposed 
+> to be reproducible for hang in icu_barrier issue.
+> Yes, there is still some TODO warning like in intr.c. But as you mentioned in
+>  https://xenomai.org/pipermail/xenomai/2020-February/042488.html, 
+> "kernel/cobalt/irq.c and related can go". 
+> Actually there is no kernel/cobalt/irq.c file but kernel/cobalt/intr.c. 
+> Per my understanding , only kernel/cobalt/intr.c
+>  involve irq management so that means most of TODOs mentioned in
+> intr.c should be NA.
+> Please correct me if I am wrong.  Actually before I debug kernel , I double check if I have fixed all critical issues.
+> After then , I encouraged myself to move forward. But I maybe miss something referring to
+> critical issue because I  am newer to both Xenomai and dovetail. If you found that there is other 
+> critical issues I have not fixed or something wrong with my fixing, please help point out. I would appreciate it.
+> Thanks for your time and suggestions again.
+>
 
-By the way, the other patches in my patch serial have no dependency on 
-this, can they be accepted? Or any other comments?
+FWIW, I would take a whole different approach to porting Xenomai over
+Dovetail than the one that took place so far: instead of substituting
+calls here and there mostly by looking for drop-in replacements between
+the I-pipe and Dovetail interfaces - which may or may not exist -
+playing whack-a-mole with build and runtime issues eventually, it may be
+better to abstract the pipeline-specific code the generic core needs in
+a dedicated layer first, eliminating the redundant interfaces in the
+process (e.g. xnintr, xnapc). Next, only the pipeline-specific code
+would need be ported to Dovetail.
 
-chensong
+As an illustration of this, I started working on such a port a year ago
+[1] but did not finish it (I concluded that Cobalt would require more
+than a simple port to Dovetail in order to fix basic design issues). The
+upside of going this way is that you can get a precise picture of the
+dependencies between the core and the pipeline code, using drop-in
+replacements only when applicable, even questioning some aspects of the
+generic core implementation when it comes to interfacing with the host
+kernel.
 
-> 
->> Another question is settime64 is the first step of y2038, clock_gettime
->> and others will come up, shall we have xn_feat_time64 for all of them?
-> 
-> Yes, good point.
-> 
-> Jan
-> 
+[1] https://lab.xenomai.org/xenomai-rpm.git/log/?h=wip/dovetail
 
-
+-- 
+Philippe.
 
