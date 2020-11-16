@@ -1,9 +1,11 @@
 From: "florian.bezdeka@siemens.com" <florian.bezdeka@siemens.com>
-Subject: [PATCH v2 0/3] Make offered kernel features accessible during
-Date: Mon, 16 Nov 2020 14:07:10 +0000
-Message-ID: <20201116140641.72027-1-florian.bezdeka@siemens.com>
+Subject: [PATCH v2 1/3] lib/cobalt: Rename cobalt_check_features to
+ cobalt_arch_check_features
+Date: Mon, 16 Nov 2020 14:07:16 +0000
+Message-ID: <20201116140641.72027-2-florian.bezdeka@siemens.com>
 References: <157dbba3-5d17-7f84-6319-9ea9eae35854@tj.kylinos.cn>+EDAFE494B95437A7>
-In-Reply-To: <157dbba3-5d17-7f84-6319-9ea9eae35854@tj.kylinos.cn>+EDAFE494B95437A7>
+ <20201116140641.72027-1-florian.bezdeka@siemens.com>
+In-Reply-To: <20201116140641.72027-1-florian.bezdeka@siemens.com>
 Content-Language: en-US
 Content-Type: text/plain; charset="iso-8859-1"
 Content-Transfer-Encoding: quoted-printable
@@ -20,51 +22,101 @@ To: "xenomai@xenomai.org" <xenomai@xenomai.org>, song <chensong@tj.kylinos.cn>
 
 From: Florian Bezdeka <florian.bezdeka@siemens.com>
 
-Hi all,                                                                    =
-        =20
-                                                                           =
-        =20
-while reviewing the settime64 syscall patches I noticed that we do not
-have any infrastructure that allows us to check which features are
-offered by the currently running kernel.
-                                                                           =
-        =20
-With this patch series I try to fix this gap. Everything is compile
-time tested only so far. I'm currently trying to bring my test
-infrastructure up and running.
+cobalt_check_features is implemented for each architecture. As
+further feature initialization will arrive the name of the function
+should clarify that.
 
-The first two patches are not related to the time64 topic, so they might be
-applied to 'next' already. The third patch should make its way into the=20
-time64 patch queue maintained by Chengson.
+Signed-off-by: Florian Bezdeka <florian.bezdeka@siemens.com>
+---
+ lib/cobalt/arch/arm/features.c     | 2 +-
+ lib/cobalt/arch/arm64/features.c   | 2 +-
+ lib/cobalt/arch/powerpc/features.c | 2 +-
+ lib/cobalt/arch/x86/features.c     | 2 +-
+ lib/cobalt/init.c                  | 2 +-
+ lib/cobalt/internal.h              | 2 +-
+ 6 files changed, 6 insertions(+), 6 deletions(-)
 
-Changes from v1:
- - reordered patches
- - cobalt_features_available is now returning a bool value instead of an
-   integer
- - cobalt_features_available is now marked as "inline static" instead of=20
-   inline only
- - Renamed feature flag from '__xn_feat_settime64' to '__xn_feat_time64'
- - The third patch now includes some "TODO"s that should remind us to
-   remove the feature flag when the next ABI revision dump is done
-
-Florian Bezdeka (3):
-  lib/cobalt: Rename cobalt_check_features to cobalt_arch_check_features
-  lib/cobalt: Introduce generic feature initialization and check API
-  cobalt uapi: Introducing new feature flag for time64 availability
-
- include/cobalt/uapi/asm-generic/features.h    |  6 ++-
- .../arm64/include/asm/xenomai/uapi/features.h |  1 +
- .../include/asm/xenomai/uapi/features.h       |  1 +
- .../x86/include/asm/xenomai/uapi/features.h   |  1 +
- lib/cobalt/arch/arm/features.c                |  2 +-
- lib/cobalt/arch/arm64/features.c              |  2 +-
- lib/cobalt/arch/powerpc/features.c            |  2 +-
- lib/cobalt/arch/x86/features.c                |  2 +-
- lib/cobalt/init.c                             |  2 +-
- lib/cobalt/internal.c                         | 10 +++++
- lib/cobalt/internal.h                         | 39 +++++++++++++++++--
- 11 files changed, 58 insertions(+), 10 deletions(-)
-
+diff --git a/lib/cobalt/arch/arm/features.c b/lib/cobalt/arch/arm/features.=
+c
+index edabcf25b..d7b50f73f 100644
+--- a/lib/cobalt/arch/arm/features.c
++++ b/lib/cobalt/arch/arm/features.c
+@@ -37,7 +37,7 @@ struct __xn_full_tscinfo __xn_tscinfo =3D {
+ 	},
+ };
+=20
+-void cobalt_check_features(struct cobalt_featinfo *finfo)
++void cobalt_arch_check_features(struct cobalt_featinfo *finfo)
+ {
+ 	unsigned long phys_addr;
+ 	unsigned page_size;
+diff --git a/lib/cobalt/arch/arm64/features.c b/lib/cobalt/arch/arm64/featu=
+res.c
+index 254c8aeae..8b85a27ea 100644
+--- a/lib/cobalt/arch/arm64/features.c
++++ b/lib/cobalt/arch/arm64/features.c
+@@ -37,7 +37,7 @@ struct __xn_full_tscinfo __xn_tscinfo =3D {
+ 	},
+ };
+=20
+-void cobalt_check_features(struct cobalt_featinfo *finfo)
++void cobalt_arch_check_features(struct cobalt_featinfo *finfo)
+ {
+ 	unsigned long phys_addr;
+ 	unsigned page_size;
+diff --git a/lib/cobalt/arch/powerpc/features.c b/lib/cobalt/arch/powerpc/f=
+eatures.c
+index 6fc7afa64..d795a198a 100644
+--- a/lib/cobalt/arch/powerpc/features.c
++++ b/lib/cobalt/arch/powerpc/features.c
+@@ -19,6 +19,6 @@
+ #include <asm/xenomai/syscall.h>
+ #include "internal.h"
+=20
+-void cobalt_check_features(struct cobalt_featinfo *finfo)
++void cobalt_arch_check_features(struct cobalt_featinfo *finfo)
+ {
+ }
+diff --git a/lib/cobalt/arch/x86/features.c b/lib/cobalt/arch/x86/features.=
+c
+index f8ba4ee2c..e7e62da39 100644
+--- a/lib/cobalt/arch/x86/features.c
++++ b/lib/cobalt/arch/x86/features.c
+@@ -25,7 +25,7 @@
+ #include <asm/xenomai/uapi/fptest.h>
+ #include "internal.h"
+=20
+-void cobalt_check_features(struct cobalt_featinfo *finfo)
++void cobalt_arch_check_features(struct cobalt_featinfo *finfo)
+ {
+ #if defined(__i386__) && defined(CONFIG_XENO_X86_VSYSCALL)
+ 	size_t n =3D confstr(_CS_GNU_LIBPTHREAD_VERSION, NULL, 0);
+diff --git a/lib/cobalt/init.c b/lib/cobalt/init.c
+index 9b506d872..6907ace36 100644
+--- a/lib/cobalt/init.c
++++ b/lib/cobalt/init.c
+@@ -177,7 +177,7 @@ static void low_init(void)
+ 		early_panic("mlockall: %s", strerror(errno));
+=20
+ 	trace_me("memory locked");
+-	cobalt_check_features(f);
++	cobalt_arch_check_features(f);
+ 	cobalt_init_umm(f->vdso_offset);
+ 	trace_me("memory heaps mapped");
+ 	cobalt_init_current_keys();
+diff --git a/lib/cobalt/internal.h b/lib/cobalt/internal.h
+index c45a54d9f..4ca99d927 100644
+--- a/lib/cobalt/internal.h
++++ b/lib/cobalt/internal.h
+@@ -88,7 +88,7 @@ int cobalt_init(void);
+=20
+ struct cobalt_featinfo;
+=20
+-void cobalt_check_features(struct cobalt_featinfo *finfo);
++void cobalt_arch_check_features(struct cobalt_featinfo *finfo);
+=20
+ extern struct sigaction __cobalt_orig_sigdebug;
+=20
 --=20
 2.26.2
 
