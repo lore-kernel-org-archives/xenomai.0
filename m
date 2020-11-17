@@ -1,12 +1,18 @@
-From: Jan Kiszka <jan.kiszka@siemens.com>
-Subject: [xenomai-images][PATCH] linux: arm: Enable Xenomai GPIO and SPI
- driver for BBB
-Message-ID: <f049bc90-fc68-3fff-1d1f-b223fc6871a4@siemens.com>
-Date: Thu, 5 Nov 2020 12:21:56 +0100
-MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"; format="flowed"
+From: "Chen, Hongzhan" <hongzhan.chen@intel.com>
+Subject: RE: [Xenomai over dovetail] Kernel hang in rcu_barrier after
+ xenomai_init
+Date: Tue, 17 Nov 2020 12:40:59 +0000
+Message-ID: <MWHPR11MB171050871553AA646AE42130F2E20@MWHPR11MB1710.namprd11.prod.outlook.com>
+References: <MWHPR11MB17100D1F48C3EF22B3C6A329F2E60@MWHPR11MB1710.namprd11.prod.outlook.com>
+ <87lff5rtxl.fsf@xenomai.org>
+ <CY4PR11MB170373477D42F1E0F39C1162F2E50@CY4PR11MB1703.namprd11.prod.outlook.com>
+ <CY4PR11MB17031A0E3842869F923D353FF2E50@CY4PR11MB1703.namprd11.prod.outlook.com>
+ <87tutrolj3.fsf@xenomai.org> <877dqkfgl2.fsf@xenomai.org>
+In-Reply-To: <877dqkfgl2.fsf@xenomai.org>
 Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+MIME-Version: 1.0
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,42 +21,64 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Xenomai <xenomai@xenomai.org>
-Cc: =?UTF-8?Q?Deniz_U=c4=9fur?= <deniz343@gmail.com>
-
-From: Jan Kiszka <jan.kiszka@siemens.com>
-
-The GPIO driver still needs xenomai-next, though.
-
-Suggested-by: Deniz Uğur <deniz343@gmail.com>
-Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
----
-  recipes-kernel/linux/files/armhf_defconfig | 2 ++
-  1 file changed, 2 insertions(+)
-
-diff --git a/recipes-kernel/linux/files/armhf_defconfig b/recipes-kernel/linux/files/armhf_defconfig
-index 99fb0a8..567b61b 100644
---- a/recipes-kernel/linux/files/armhf_defconfig
-+++ b/recipes-kernel/linux/files/armhf_defconfig
-@@ -541,6 +541,7 @@ CONFIG_XENO_DRIVERS_GPIO_MXC=m
-  CONFIG_XENO_DRIVERS_GPIO_SUN8I_H3=m
-  CONFIG_XENO_DRIVERS_GPIO_ZYNQ7000=m
-  CONFIG_XENO_DRIVERS_GPIO_XILINX=m
-+CONFIG_XENO_DRIVERS_GPIO_OMAP=m
-  # CONFIG_XENO_DRIVERS_GPIO_DEBUG is not set
-   #
-@@ -554,6 +555,7 @@ CONFIG_XENO_DRIVERS_GPIOPWM=m
-  CONFIG_XENO_DRIVERS_SPI=m
-  CONFIG_XENO_DRIVERS_SPI_BCM2835=m
-  CONFIG_XENO_DRIVERS_SPI_SUN6I=m
-+CONFIG_XENO_DRIVERS_SPI_OMAP2_MCSPI_RT=m
-  # CONFIG_XENO_DRIVERS_SPI_DEBUG is not set
-   #
--- 
-2.26.2
+To: Philippe Gerum <rpm@xenomai.org>, "xenomai@xenomai.org" <xenomai@xenomai.org>
 
 
--- 
-Siemens AG, T RDA IOT
-Corporate Competence Center Embedded Linux
+
+>-----Original Message-----
+>From: Philippe Gerum <rpm@xenomai.org>=20
+>Sent: Tuesday, November 17, 2020 6:01 PM
+>To: Chen, Hongzhan <hongzhan.chen@intel.com>
+>Cc: xenomai@xenomai.org
+>Subject: Re: [Xenomai over dovetail] Kernel hang in rcu_barrier after xeno=
+mai_init
+>
+>
+>Philippe Gerum <rpm@xenomai.org> writes:
+>
+>> Chen, Hongzhan <hongzhan.chen@intel.com> writes:
+>>
+>>> I have some clues about this issue. After xenomai_init is called, it se=
+ems that rcu_core
+>>> is never called from unknow startpoint ever after call call_rcu, which =
+is supposed to be=20
+>>> called by rcu softirq handler after we call call_rcu.
+>>> I am trying to debug why rcu softirq is not triggerred after then.
+>>
+>>
+>> You may want to make sure this is not offloaded to RCU kthreads,
+>> typically in case you run with nocbs settings. This said, tracing
+>> rcu_core() would match both.
+>>
+>> I did not reproduce the issue you observed with the EVL core, testing
+>> v5.8, v5.9 and v5.10-rc3. I'm currently running an overnight test to
+>> confirm this. This is why we need to be confident that an half-baked
+>> port on top of Dovetail is not causing this.
+>
+>44 hours uninterrupted runtime on armv7, x86 and armv8, under stress: no
+>issue detected so far. This does not rule out a Dovetail bug yet, but
+>the possibility of a Cobalt issue is real.
+>
+>--=20
+>Philippe.
+
+Thanks for your feedback.  I already found the root cause for the issue. Ac=
+cording to my
+debug on evl, I found that actually after call tick_install_proxy , the ori=
+ginal=20
+hrtimer_interrupt would be called by proxy_irq_handler instead of   __sysve=
+c_apic_timer_interrupt
+so that  rcu_sched_clock_irq still can be successfully called by  update_pr=
+ocess_times and
+invoke_rcu_core would always be called and callback registerred by call_rcu=
+ can be successfully handled.
+But in my case, after call tick_install_proxy in xenomai, update_process_ti=
+mes is never called and then
+cause hang in rcu_barrier issue later. I would continue to check why fail t=
+o replace timer irq in my case.
+
+Regards
+
+Hongzhan Chen
+
 
