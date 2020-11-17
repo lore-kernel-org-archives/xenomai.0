@@ -1,15 +1,16 @@
-From: "florian.bezdeka@siemens.com" <florian.bezdeka@siemens.com>
-Subject: [PATCH v2 3/3] cobalt uapi: Introducing new feature flag for time64
- availability
-Date: Mon, 16 Nov 2020 14:07:17 +0000
-Message-ID: <20201116140641.72027-4-florian.bezdeka@siemens.com>
-References: <157dbba3-5d17-7f84-6319-9ea9eae35854@tj.kylinos.cn>+EDAFE494B95437A7>
+Subject: Re: [PATCH v2 2/3] lib/cobalt: Introduce generic feature
+ initialization and check API
+References: <157dbba3-5d17-7f84-6319-9ea9eae35854@tj.kylinos.cn>
  <20201116140641.72027-1-florian.bezdeka@siemens.com>
-In-Reply-To: <20201116140641.72027-1-florian.bezdeka@siemens.com>
-Content-Language: en-US
-Content-Type: text/plain; charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
+ <20201116140641.72027-3-florian.bezdeka@siemens.com>
+From: song <chensong@tj.kylinos.cn>
+Message-ID: <65200237-e360-aeb5-e6bf-f3bb975e6b68@tj.kylinos.cn>+4E774A01473B0ED7
+Date: Tue, 17 Nov 2020 12:31:20 +0800
 MIME-Version: 1.0
+In-Reply-To: <20201116140641.72027-3-florian.bezdeka@siemens.com>
+Content-Type: text/plain; charset="utf-8"; format="flowed"
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -18,99 +19,128 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "xenomai@xenomai.org" <xenomai@xenomai.org>, song <chensong@tj.kylinos.cn>
+To: "florian.bezdeka@siemens.com" <florian.bezdeka@siemens.com>, "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-From: Florian Bezdeka <florian.bezdeka@siemens.com>
 
-Adding a new feature flag to allow the library asking for time64
-support. That will allow the library to use the new system calls when
-available / supported by the kernel.
 
-The feature flag should be removed during next ABI revision bump.
+On 2020/11/16 下午10:07, florian.bezdeka@siemens.com wrote:
+> From: Florian Bezdeka <florian.bezdeka@siemens.com>
+> 
+> The feature initialization was arch specific up to now and the
+> available features (= features offered by the currently running kernel)
+> were no longer accessible once the bind syscall finished.
+> 
+> This patch introduces a simple API for fetching the offered features
+> during runtime.
+> 
+> Signed-off-by: Florian Bezdeka <florian.bezdeka@siemens.com>
+> ---
+>   lib/cobalt/init.c     |  2 +-
+>   lib/cobalt/internal.c | 10 ++++++++++
+>   lib/cobalt/internal.h | 39 +++++++++++++++++++++++++++++++++++----
+>   3 files changed, 46 insertions(+), 5 deletions(-)
+> 
+> diff --git a/lib/cobalt/init.c b/lib/cobalt/init.c
+> index 6907ace36..20e28ccb0 100644
+> --- a/lib/cobalt/init.c
+> +++ b/lib/cobalt/init.c
+> @@ -177,7 +177,7 @@ static void low_init(void)
+>   		early_panic("mlockall: %s", strerror(errno));
+>   
+>   	trace_me("memory locked");
+> -	cobalt_arch_check_features(f);
+> +	cobalt_features_init(f);
+>   	cobalt_init_umm(f->vdso_offset);
+>   	trace_me("memory heaps mapped");
+>   	cobalt_init_current_keys();
+> diff --git a/lib/cobalt/internal.c b/lib/cobalt/internal.c
+> index 43330060a..303d86f99 100644
+> --- a/lib/cobalt/internal.c
+> +++ b/lib/cobalt/internal.c
+> @@ -565,3 +565,13 @@ void cobalt_assert_nrt(void)
+>   	if (cobalt_should_warn())
+>   		pthread_kill(pthread_self(), SIGDEBUG);
+>   }
+> +
+> +unsigned int cobalt_features;
+> +
+> +void cobalt_features_init(struct cobalt_featinfo *f)
+> +{
+> +	cobalt_features = f->feat_all;
+> +
+> +	/* Trigger arch specific feature initialization */
+> +	cobalt_arch_check_features(f);
+> +}
+> \ No newline at end of file
+> diff --git a/lib/cobalt/internal.h b/lib/cobalt/internal.h
+> index 4ca99d927..a0dff30cd 100644
+> --- a/lib/cobalt/internal.h
+> +++ b/lib/cobalt/internal.h
+> @@ -19,6 +19,7 @@
+>   #define _LIB_COBALT_INTERNAL_H
+>   
+>   #include <limits.h>
+> +#include <stdbool.h>
+>   #include <boilerplate/ancillaries.h>
+>   #include <cobalt/sys/cobalt.h>
+>   #include "current.h"
+> @@ -86,10 +87,6 @@ int cobalt_xlate_schedparam(int policy,
+>   			    struct sched_param *param);
+>   int cobalt_init(void);
+>   
+> -struct cobalt_featinfo;
+> -
+> -void cobalt_arch_check_features(struct cobalt_featinfo *finfo);
+> -
+>   extern struct sigaction __cobalt_orig_sigdebug;
+>   
+>   extern int __cobalt_std_fifo_minpri,
+> @@ -98,4 +95,38 @@ extern int __cobalt_std_fifo_minpri,
+>   extern int __cobalt_std_rr_minpri,
+>   	   __cobalt_std_rr_maxpri;
+>   
+> +extern unsigned int cobalt_features;
+> +
+> +struct cobalt_featinfo;
+> +
+> +/**
+> + * Arch specific feature initialization
+> + *
+> + * @param finfo
+> + */
+> +void cobalt_arch_check_features(struct cobalt_featinfo *finfo);
+> +
+> +/**
+> + * Initialize the feature handling.
+> + *
+> + * @param f Feature info that will be cached for future feature checks
+> + */
+> +void cobalt_features_init(struct cobalt_featinfo *f);
+> +
+> +/**
+> + * Check if a given set of features is available / provided by the kernel
+> + *
+> + * @param feat_mask A bit mask of features to check availability for. See
+> + * __xn_feat_* macros for a list of defined features
+> + *
+> + * @return true if all features are available, false otherwise
+> + */
+> +static inline bool cobalt_features_available(unsigned int feat_mask)
+> +{
+> +	if ((cobalt_features & feat_mask) == feat_mask)
+> +		return true;
+> +
+> +	return false;
+> +}
+> +
+Regarding the case of clock_settime(lib/cobalt/clock.c), we are going to 
+call cobalt_features_available(__xn_feat_time64) before
+"ret = -XENOMAI_SYSCALL2(sc_cobalt_clock_settime, clock_id, tp);"
 
-Signed-off-by: Florian Bezdeka <florian.bezdeka@siemens.com>
----
- include/cobalt/uapi/asm-generic/features.h                  | 6 +++++-
- .../cobalt/arch/arm64/include/asm/xenomai/uapi/features.h   | 1 +
- .../cobalt/arch/powerpc/include/asm/xenomai/uapi/features.h | 1 +
- kernel/cobalt/arch/x86/include/asm/xenomai/uapi/features.h  | 1 +
- 4 files changed, 8 insertions(+), 1 deletion(-)
+right?
 
-diff --git a/include/cobalt/uapi/asm-generic/features.h b/include/cobalt/ua=
-pi/asm-generic/features.h
-index 8a4927c49..705729aae 100644
---- a/include/cobalt/uapi/asm-generic/features.h
-+++ b/include/cobalt/uapi/asm-generic/features.h
-@@ -51,6 +51,7 @@ struct cobalt_featinfo {
- #define __xn_feat_nofastsynch 0x10000000
- #define __xn_feat_control     0x08000000
- #define __xn_feat_prioceiling 0x04000000
-+#define __xn_feat_time64      0x02000000
-=20
- #ifdef CONFIG_SMP
- #define __xn_feat_smp_mask __xn_feat_smp
-@@ -70,7 +71,8 @@ struct cobalt_featinfo {
- #define __xn_feat_generic_mask			\
- 	(__xn_feat_smp_mask		|	\
- 	 __xn_feat_fastsynch_mask 	|	\
--	 __xn_feat_prioceiling)
-+	 __xn_feat_prioceiling		|	\
-+	 __xn_feat_time64)
-=20
- /*
-  * List of features both sides have to agree on: If userland supports
-@@ -101,6 +103,8 @@ const char *get_generic_feature_label(unsigned int feat=
-ure)
- 		return "control";
- 	case __xn_feat_prioceiling:
- 		return "prioceiling";
-+	case __xn_feat_time64:
-+		return "time64";
- 	default:
- 		return 0;
- 	}
-diff --git a/kernel/cobalt/arch/arm64/include/asm/xenomai/uapi/features.h b=
-/kernel/cobalt/arch/arm64/include/asm/xenomai/uapi/features.h
-index 74423f68b..f03f483f6 100644
---- a/kernel/cobalt/arch/arm64/include/asm/xenomai/uapi/features.h
-+++ b/kernel/cobalt/arch/arm64/include/asm/xenomai/uapi/features.h
-@@ -22,6 +22,7 @@
- #define _COBALT_ARM64_ASM_UAPI_FEATURES_H
-=20
- /* The ABI revision level we use on this arch. */
-+// TODO: Reminder: Remove __xn_feat_time64 feature flag on next ABI_REV bu=
-mp
- #define XENOMAI_ABI_REV   1UL
-=20
- #define XENOMAI_FEAT_DEP (__xn_feat_generic_mask)
-diff --git a/kernel/cobalt/arch/powerpc/include/asm/xenomai/uapi/features.h=
- b/kernel/cobalt/arch/powerpc/include/asm/xenomai/uapi/features.h
-index f6e67d884..db6dbed24 100644
---- a/kernel/cobalt/arch/powerpc/include/asm/xenomai/uapi/features.h
-+++ b/kernel/cobalt/arch/powerpc/include/asm/xenomai/uapi/features.h
-@@ -19,6 +19,7 @@
- #define _COBALT_POWERPC_ASM_UAPI_FEATURES_H
-=20
- /* The ABI revision level we use on this arch. */
-+// TODO: Reminder: Remove __xn_feat_time64 feature flag on next ABI_REV bu=
-mp
- #define XENOMAI_ABI_REV   17UL
-=20
- #define XENOMAI_FEAT_DEP  __xn_feat_generic_mask
-diff --git a/kernel/cobalt/arch/x86/include/asm/xenomai/uapi/features.h b/k=
-ernel/cobalt/arch/x86/include/asm/xenomai/uapi/features.h
-index 67c7625f8..30539a5d1 100644
---- a/kernel/cobalt/arch/x86/include/asm/xenomai/uapi/features.h
-+++ b/kernel/cobalt/arch/x86/include/asm/xenomai/uapi/features.h
-@@ -19,6 +19,7 @@
- #define _COBALT_X86_ASM_UAPI_FEATURES_H
-=20
- /* The ABI revision level we use on this arch. */
-+// TODO: Reminder: Remove __xn_feat_time64 feature flag on next ABI_REV bu=
-mp
- #define XENOMAI_ABI_REV   17UL
-=20
- #define XENOMAI_FEAT_DEP  __xn_feat_generic_mask
---=20
-2.26.2
+>   #endif /* _LIB_COBALT_INTERNAL_H */
+> 
+
+
 
