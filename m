@@ -1,16 +1,14 @@
-References: <MWHPR11MB17100D1F48C3EF22B3C6A329F2E60@MWHPR11MB1710.namprd11.prod.outlook.com>
- <87lff5rtxl.fsf@xenomai.org>
- <CY4PR11MB170373477D42F1E0F39C1162F2E50@CY4PR11MB1703.namprd11.prod.outlook.com>
- <CY4PR11MB17031A0E3842869F923D353FF2E50@CY4PR11MB1703.namprd11.prod.outlook.com>
- <87tutrolj3.fsf@xenomai.org>
-From: Philippe Gerum <rpm@xenomai.org>
-Subject: Re: [Xenomai over dovetail] Kernel hang in rcu_barrier after
- xenomai_init
-In-reply-to: <87tutrolj3.fsf@xenomai.org>
-Date: Tue, 17 Nov 2020 11:00:41 +0100
-Message-ID: <877dqkfgl2.fsf@xenomai.org>
+Subject: Re: [xenomai-images][PATCH v2 1/4] ci: Split build and add 5.4 builds
+References: <20201106145632.2951-1-Quirin.Gylstorff@siemens.com>
+ <20201106145632.2951-2-Quirin.Gylstorff@siemens.com>
+From: Jan Kiszka <jan.kiszka@siemens.com>
+Message-ID: <40958a8a-1cf2-ba31-9a6d-8beb2e021ae7@siemens.com>
+Date: Tue, 17 Nov 2020 13:01:16 +0100
 MIME-Version: 1.0
-Content-Type: text/plain
+In-Reply-To: <20201106145632.2951-2-Quirin.Gylstorff@siemens.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -19,33 +17,71 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "Chen, Hongzhan" <hongzhan.chen@intel.com>
-Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: "Q. Gylstorff" <Quirin.Gylstorff@siemens.com>, xenomai@xenomai.org, "Bezdeka, Florian (DF FA PMA DH ERL-3)" <florian.bezdeka@siemens.com>
 
+On 06.11.20 15:56, Q. Gylstorff wrote:
+> From: Quirin Gylstorff <quirin.gylstorff@siemens.com>
+> 
+> Split the ci build description in 4.4(xenomai-3.0.x), 4.19 and 5.4.
+> This allows the reuse of build descriptions and simplifies the adding
+> of new builds.
+> 
+> Signed-off-by: Quirin Gylstorff <quirin.gylstorff@siemens.com>
+> ---
+>  ci/4_19_builds.yml                           |  82 +++++++++++++
+>  ci/5_4_builds.yml                            |  38 ++++++
+>  ci/artifacts.yml                             |   1 +
+>  ci/default-builds.yml                        |  76 ++++++++++++
+>  ci/gitlab-ci-base.yml                        | 116 ++-----------------
+>  ci/xenomai_3_0_x.yml                         |  36 ++++++
+>  opt-linux-4.19.yml                           |  17 +++
+>  opt-linux-latest-5.4.yml                     |  18 +++
+>  opt-linux-latest.yml                         |   1 +
+>  recipes-kernel/linux/linux-xenomai_latest.bb |   6 +-
+>  10 files changed, 282 insertions(+), 109 deletions(-)
+>  create mode 100644 ci/4_19_builds.yml
+>  create mode 100644 ci/5_4_builds.yml
+>  create mode 100644 ci/default-builds.yml
+>  create mode 100644 ci/xenomai_3_0_x.yml
+>  create mode 100644 opt-linux-4.19.yml
+>  create mode 100644 opt-linux-latest-5.4.yml
+> 
 
-Philippe Gerum <rpm@xenomai.org> writes:
+...
 
-> Chen, Hongzhan <hongzhan.chen@intel.com> writes:
->
->> I have some clues about this issue. After xenomai_init is called, it seems that rcu_core
->> is never called from unknow startpoint ever after call call_rcu, which is supposed to be 
->> called by rcu softirq handler after we call call_rcu.
->> I am trying to debug why rcu softirq is not triggerred after then.
->>
->
-> You may want to make sure this is not offloaded to RCU kthreads,
-> typically in case you run with nocbs settings. This said, tracing
-> rcu_core() would match both.
->
-> I did not reproduce the issue you observed with the EVL core, testing
-> v5.8, v5.9 and v5.10-rc3. I'm currently running an overnight test to
-> confirm this. This is why we need to be confident that an half-baked
-> port on top of Dovetail is not causing this.
+> diff --git a/opt-linux-latest-5.4.yml b/opt-linux-latest-5.4.yml
+> new file mode 100644
+> index 0000000..6ce3a3b
+> --- /dev/null
+> +++ b/opt-linux-latest-5.4.yml
+> @@ -0,0 +1,18 @@
+> +#
+> +# Xenomai Real-Time System
+> +#
+> +# Copyright (c) Siemens AG, 2019
+> +#
+> +# Authors:
+> +#  Quirin Gylstorff <quirin.gylstorff@siemens.com>
+> +#
+> +# SPDX-License-Identifier: MIT
+> +#
+> +
+> +header:
+> +  version: 8
+> +
+> +local_conf_header:
+> +  linux-xenomai-latest: |
+> +    PREFERRED_VERSION_linux-xenomai = "9999-%"
+> +    LATEST_GIT_BRANCH = "4.19"
 
-44 hours uninterrupted runtime on armv7, x86 and armv8, under stress: no
-issue detected so far. This does not rule out a Dovetail bug yet, but
-the possibility of a Cobalt issue is real.
+This should have been 5.4 as Florian found out. Fixed up in next.
+
+I also missed that unfortunately, and it actually papered over a bug in
+ipipe-core-5.4.77-x86-1. Debugging that next.
+
+Jan
 
 -- 
-Philippe.
+Siemens AG, T RDA IOT
+Corporate Competence Center Embedded Linux
 
