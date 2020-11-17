@@ -1,18 +1,16 @@
-Subject: Re: [PATCH v2 2/3] lib/cobalt: Introduce generic feature
- initialization and check API
-References: <157dbba3-5d17-7f84-6319-9ea9eae35854@tj.kylinos.cn>
- <20201116140641.72027-1-florian.bezdeka@siemens.com>
- <20201116140641.72027-3-florian.bezdeka@siemens.com>
- <65200237-e360-aeb5-e6bf-f3bb975e6b68@tj.kylinos.cn>
- <2b6d7354116eb926a1d6f4cfef0de81b31f6605d.camel@siemens.com>
-From: song <chensong@tj.kylinos.cn>
-Message-ID: <f0714acf-bae2-8769-13ca-dc7a0cb3a918@tj.kylinos.cn>+45F67765363CD246
-Date: Tue, 17 Nov 2020 16:43:06 +0800
+References: <MWHPR11MB17100D1F48C3EF22B3C6A329F2E60@MWHPR11MB1710.namprd11.prod.outlook.com>
+ <87lff5rtxl.fsf@xenomai.org>
+ <CY4PR11MB170373477D42F1E0F39C1162F2E50@CY4PR11MB1703.namprd11.prod.outlook.com>
+ <CY4PR11MB17031A0E3842869F923D353FF2E50@CY4PR11MB1703.namprd11.prod.outlook.com>
+ <87tutrolj3.fsf@xenomai.org>
+From: Philippe Gerum <rpm@xenomai.org>
+Subject: Re: [Xenomai over dovetail] Kernel hang in rcu_barrier after
+ xenomai_init
+In-reply-to: <87tutrolj3.fsf@xenomai.org>
+Date: Tue, 17 Nov 2020 11:00:41 +0100
+Message-ID: <877dqkfgl2.fsf@xenomai.org>
 MIME-Version: 1.0
-In-Reply-To: <2b6d7354116eb926a1d6f4cfef0de81b31f6605d.camel@siemens.com>
-Content-Type: text/plain; charset="utf-8"; format="flowed"
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -21,144 +19,33 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "florian.bezdeka@siemens.com" <florian.bezdeka@siemens.com>, "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: "Chen, Hongzhan" <hongzhan.chen@intel.com>
+Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
 
+Philippe Gerum <rpm@xenomai.org> writes:
 
-On 2020/11/17 下午4:29, florian.bezdeka@siemens.com wrote:
-> On Tue, 2020-11-17 at 12:31 +0800, song wrote:
+> Chen, Hongzhan <hongzhan.chen@intel.com> writes:
+>
+>> I have some clues about this issue. After xenomai_init is called, it seems that rcu_core
+>> is never called from unknow startpoint ever after call call_rcu, which is supposed to be 
+>> called by rcu softirq handler after we call call_rcu.
+>> I am trying to debug why rcu softirq is not triggerred after then.
 >>
->> On 2020/11/16 下午10:07, florian.bezdeka@siemens.com wrote:
->>> From: Florian Bezdeka <florian.bezdeka@siemens.com>
->>>
->>> The feature initialization was arch specific up to now and the
->>> available features (= features offered by the currently running kernel)
->>> were no longer accessible once the bind syscall finished.
->>>
->>> This patch introduces a simple API for fetching the offered features
->>> during runtime.
->>>
->>> Signed-off-by: Florian Bezdeka <florian.bezdeka@siemens.com>
->>> ---
->>>    lib/cobalt/init.c     |  2 +-
->>>    lib/cobalt/internal.c | 10 ++++++++++
->>>    lib/cobalt/internal.h | 39 +++++++++++++++++++++++++++++++++++----
->>>    3 files changed, 46 insertions(+), 5 deletions(-)
->>>
->>> diff --git a/lib/cobalt/init.c b/lib/cobalt/init.c
->>> index 6907ace36..20e28ccb0 100644
->>> --- a/lib/cobalt/init.c
->>> +++ b/lib/cobalt/init.c
->>> @@ -177,7 +177,7 @@ static void low_init(void)
->>>    		early_panic("mlockall: %s", strerror(errno));
->>>    
->>>    	trace_me("memory locked");
->>> -	cobalt_arch_check_features(f);
->>> +	cobalt_features_init(f);
->>>    	cobalt_init_umm(f->vdso_offset);
->>>    	trace_me("memory heaps mapped");
->>>    	cobalt_init_current_keys();
->>> diff --git a/lib/cobalt/internal.c b/lib/cobalt/internal.c
->>> index 43330060a..303d86f99 100644
->>> --- a/lib/cobalt/internal.c
->>> +++ b/lib/cobalt/internal.c
->>> @@ -565,3 +565,13 @@ void cobalt_assert_nrt(void)
->>>    	if (cobalt_should_warn())
->>>    		pthread_kill(pthread_self(), SIGDEBUG);
->>>    }
->>> +
->>> +unsigned int cobalt_features;
->>> +
->>> +void cobalt_features_init(struct cobalt_featinfo *f)
->>> +{
->>> +	cobalt_features = f->feat_all;
->>> +
->>> +	/* Trigger arch specific feature initialization */
->>> +	cobalt_arch_check_features(f);
->>> +}
->>> \ No newline at end of file
->>> diff --git a/lib/cobalt/internal.h b/lib/cobalt/internal.h
->>> index 4ca99d927..a0dff30cd 100644
->>> --- a/lib/cobalt/internal.h
->>> +++ b/lib/cobalt/internal.h
->>> @@ -19,6 +19,7 @@
->>>    #define _LIB_COBALT_INTERNAL_H
->>>    
->>>    #include <limits.h>
->>> +#include <stdbool.h>
->>>    #include <boilerplate/ancillaries.h>
->>>    #include <cobalt/sys/cobalt.h>
->>>    #include "current.h"
->>> @@ -86,10 +87,6 @@ int cobalt_xlate_schedparam(int policy,
->>>    			    struct sched_param *param);
->>>    int cobalt_init(void);
->>>    
->>> -struct cobalt_featinfo;
->>> -
->>> -void cobalt_arch_check_features(struct cobalt_featinfo *finfo);
->>> -
->>>    extern struct sigaction __cobalt_orig_sigdebug;
->>>    
->>>    extern int __cobalt_std_fifo_minpri,
->>> @@ -98,4 +95,38 @@ extern int __cobalt_std_fifo_minpri,
->>>    extern int __cobalt_std_rr_minpri,
->>>    	   __cobalt_std_rr_maxpri;
->>>    
->>> +extern unsigned int cobalt_features;
->>> +
->>> +struct cobalt_featinfo;
->>> +
->>> +/**
->>> + * Arch specific feature initialization
->>> + *
->>> + * @param finfo
->>> + */
->>> +void cobalt_arch_check_features(struct cobalt_featinfo *finfo);
->>> +
->>> +/**
->>> + * Initialize the feature handling.
->>> + *
->>> + * @param f Feature info that will be cached for future feature checks
->>> + */
->>> +void cobalt_features_init(struct cobalt_featinfo *f);
->>> +
->>> +/**
->>> + * Check if a given set of features is available / provided by the kernel
->>> + *
->>> + * @param feat_mask A bit mask of features to check availability for. See
->>> + * __xn_feat_* macros for a list of defined features
->>> + *
->>> + * @return true if all features are available, false otherwise
->>> + */
->>> +static inline bool cobalt_features_available(unsigned int feat_mask)
->>> +{
->>> +	if ((cobalt_features & feat_mask) == feat_mask)
->>> +		return true;
->>> +
->>> +	return false;
->>> +}
->>> +
->> Regarding the case of clock_settime(lib/cobalt/clock.c), we are going to
->> call cobalt_features_available(__xn_feat_time64) before
->> "ret = -XENOMAI_SYSCALL2(sc_cobalt_clock_settime, clock_id, tp);"
->>
->> right?
-> 
-> Right. The idea is to have something like
-> 
-> if (cobalt_features_available(__xn_feat_time64)
-> 	/* Use the new syscall */
-> 	ret = -XENOMAI_SYSCALL2(sc_cobalt_clock_settime64, ...);
-> else
-> 	/* Use the old syscall */
-> 	ret = -XENOMAI_SYSCALL2(sc_cobalt_clock_settime, ...);
+>
+> You may want to make sure this is not offloaded to RCU kthreads,
+> typically in case you run with nocbs settings. This said, tracing
+> rcu_core() would match both.
+>
+> I did not reproduce the issue you observed with the EVL core, testing
+> v5.8, v5.9 and v5.10-rc3. I'm currently running an overnight test to
+> confirm this. This is why we need to be confident that an half-baked
+> port on top of Dovetail is not causing this.
 
-great, i will submit a new one after this one is accepted.
->>
->>>    #endif /* _LIB_COBALT_INTERNAL_H */
->>>
->>
->>
+44 hours uninterrupted runtime on armv7, x86 and armv8, under stress: no
+issue detected so far. This does not rule out a Dovetail bug yet, but
+the possibility of a Cobalt issue is real.
 
-
+-- 
+Philippe.
 
