@@ -6,10 +6,11 @@ References: <CAFZ-hKizgaCMi5=P-WifrfiBSLNdrOs_TAke++MVCi2j=xYfiQ@mail.gmail.com>
  <CAFZ-hKjYAmYYrmvCrFr-Vf=gmcn8n6hfAn1L6QygYC8sJp=87w@mail.gmail.com>
  <354ddd30-ca89-656c-8bf0-274e1c945e36@siemens.com>
  <CALLqZ8Sifa=CJhEV5YO6NOU2Wv34xY1tAMg4+Mcughiruwme1A@mail.gmail.com>
-In-Reply-To: <CALLqZ8Sifa=CJhEV5YO6NOU2Wv34xY1tAMg4+Mcughiruwme1A@mail.gmail.com>
-From: Leandro Bucci <guestleandro11@gmail.com>
-Date: Thu, 19 Nov 2020 19:43:52 +0100
-Message-ID: <CAFZ-hKiRH7uXKQK_vnsTmFb2+ANqroB-x8nxPjUSsnZebhm+yA@mail.gmail.com>
+ <CAFZ-hKiRH7uXKQK_vnsTmFb2+ANqroB-x8nxPjUSsnZebhm+yA@mail.gmail.com>
+In-Reply-To: <CAFZ-hKiRH7uXKQK_vnsTmFb2+ANqroB-x8nxPjUSsnZebhm+yA@mail.gmail.com>
+From: Greg Gallagher <greg@embeddedgreg.com>
+Date: Thu, 19 Nov 2020 14:05:38 -0500
+Message-ID: <CALLqZ8RHvzaTFba=rVVO+9dmhuZ4JS=sCycKH6f4zsHuVETXbQ@mail.gmail.com>
 Subject: Re: socket: Address family not supported by protocol
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
@@ -21,105 +22,115 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Greg Gallagher <greg@embeddedgreg.com>, xenomai@xenomai.org, Jan Kiszka <jan.kiszka@siemens.com>
+To: Leandro Bucci <guestleandro11@gmail.com>
+Cc: Jan Kiszka <jan.kiszka@siemens.com>, xenomai@xenomai.org
 
-is there maybe a way to reinstall missing modules only?
+On Thu, Nov 19, 2020 at 1:44 PM Leandro Bucci <guestleandro11@gmail.com>
+wrote:
 
-Il gio 19 nov 2020, 15:18 Greg Gallagher <greg@embeddedgreg.com> ha scritto=
-:
+> is there maybe a way to reinstall missing modules only?
+>
+You can rebuild the kernel with the config options Jan mentioned.
+
+Greg
 
 >
+> Il gio 19 nov 2020, 15:18 Greg Gallagher <greg@embeddedgreg.com> ha
+> scritto:
 >
-> On Thu, Nov 19, 2020 at 3:53 AM Jan Kiszka via Xenomai <
-> xenomai@xenomai.org> wrote:
+>>
+>>
+>> On Thu, Nov 19, 2020 at 3:53 AM Jan Kiszka via Xenomai <
+>> xenomai@xenomai.org> wrote:
+>>
+>>> On 19.11.20 09:47, Leandro Bucci wrote:
+>>> > I understand so you advise me to forget the Raspberry  and try on a
+>>> > normal PC?
+>>> >
+>>>
+>>> You can start getting familiar with Xenomai by trying out
+>>> https://gitlab.denx.de/Xenomai/xenomai-images, in a VM (KVM/QEMU) or on
+>>> one of the already supported targets.
+>>>
+>>> Jan
+>>>
+>>> > Il gio 19 nov 2020, 09:41 Jan Kiszka <jan.kiszka@siemens.com
+>>> > <mailto:jan.kiszka@siemens.com>> ha scritto:
+>>> >
+>>> >     On 19.11.20 09:24, Leandro Bucci wrote:
+>>> >     > I don't know, because I used a guide that did everything
+>>> automatically
+>>> >     > (it was a script).  is this:
+>>> >     >  https://github.com/thanhtam-h/rpi4-xeno3/tree/master/prebuilt
+>>> >     <https://github.com/thanhtam-h/rpi4-xeno3/tree/master/prebuilt>
+>>> >     > <https://github.com/thanhtam-h/rpi4-xeno3/tree/master/prebuilt
+>>> >     <https://github.com/thanhtam-h/rpi4-xeno3/tree/master/prebuilt>>
+>>> >     > in case how should I load those modules?
+>>> >
+>>> >     E.g. "modprobe xeno_rtipc-xddp". If that fails, you should talk t=
+o
+>>> the
+>>> >     folks doing that pre-integration.
+>>> >
+>>> >     Eventually, we may provide RPi4 preintegration via xenomai-images
+>>> as
+>>> >     well, but that requires the RPi mess to be upstream first. For
+>>> >     Jailhouse, I'm maintaining an extra kernel for the RPi4, but thos=
+e
+>>> >     patches are much less invasive than I-pipe/Dovetail are, and that
+>>> is
+>>> >     already quite some effort.
+>>> >
+>>> >     Jan
+>>> >
+>>> >     >
+>>> >     > Il gio 19 nov 2020, 08:08 Jan Kiszka <jan.kiszka@siemens.com
+>>> >     <mailto:jan.kiszka@siemens.com>
+>>> >     > <mailto:jan.kiszka@siemens.com <mailto:jan.kiszka@siemens.com>>=
 >
->> On 19.11.20 09:47, Leandro Bucci wrote:
->> > I understand so you advise me to forget the Raspberry  and try on a
->> > normal PC?
->> >
->>
->> You can start getting familiar with Xenomai by trying out
->> https://gitlab.denx.de/Xenomai/xenomai-images, in a VM (KVM/QEMU) or on
->> one of the already supported targets.
->>
->> Jan
->>
->> > Il gio 19 nov 2020, 09:41 Jan Kiszka <jan.kiszka@siemens.com
->> > <mailto:jan.kiszka@siemens.com>> ha scritto:
->> >
->> >     On 19.11.20 09:24, Leandro Bucci wrote:
->> >     > I don't know, because I used a guide that did everything
->> automatically
->> >     > (it was a script).  is this:
->> >     >  https://github.com/thanhtam-h/rpi4-xeno3/tree/master/prebuilt
->> >     <https://github.com/thanhtam-h/rpi4-xeno3/tree/master/prebuilt>
->> >     > <https://github.com/thanhtam-h/rpi4-xeno3/tree/master/prebuilt
->> >     <https://github.com/thanhtam-h/rpi4-xeno3/tree/master/prebuilt>>
->> >     > in case how should I load those modules?
->> >
->> >     E.g. "modprobe xeno_rtipc-xddp". If that fails, you should talk to
->> the
->> >     folks doing that pre-integration.
->> >
->> >     Eventually, we may provide RPi4 preintegration via xenomai-images =
-as
->> >     well, but that requires the RPi mess to be upstream first. For
->> >     Jailhouse, I'm maintaining an extra kernel for the RPi4, but those
->> >     patches are much less invasive than I-pipe/Dovetail are, and that =
-is
->> >     already quite some effort.
->> >
->> >     Jan
->> >
->> >     >
->> >     > Il gio 19 nov 2020, 08:08 Jan Kiszka <jan.kiszka@siemens.com
->> >     <mailto:jan.kiszka@siemens.com>
->> >     > <mailto:jan.kiszka@siemens.com <mailto:jan.kiszka@siemens.com>>>
->> >     ha scritto:
->> >     >
->> >     >     On 18.11.20 22:51, Leandro Bucci via Xenomai wrote:
->> >     >     > Hello to all. I have installed xenomai 3.1 on the raspberr=
-y
->> pi4.
->> >     >     > The latency and cyclictest examples work great. But exampl=
-es
->> >     like
->> >     >     > iddp-label and xddp-echo don't work.
->> >     >     > I get this error:
->> >     >     > socket: Address family not supported by protocol
->> >     >     > how can i solve this problem? maybe i need to load the
->> >     related kernel
->> >     >     > modules? If yes, how do you do it? sorry but I'm a beginne=
-r.
->> >     >     >
->> >     >
->> >     >     Did you configure these features into your kernel
->> >     >     (CONFIG_XENO_DRIVERS_RTIPC_IDDP,
->> >     CONFIG_XENO_DRIVERS_RTIPC_XDDP)? Did
->> >     >     you load the related modules if they were configured as
->> modules
->> >     >     (xeno_rtipc-{xddp,iddp}.ko)?
->> >     >
->> >     >     Jan
->> >     >
->> >     >     --
->> >     >     Siemens AG, T RDA IOT
->> >     >     Corporate Competence Center Embedded Linux
->> >     >
->> >
->> >     --
->> >     Siemens AG, T RDA IOT
->> >     Corporate Competence Center Embedded Linux
->> >
->>
-> I agree with Jan, it sounds like you are missing the modules, you=E2=80=
+>>> >     ha scritto:
+>>> >     >
+>>> >     >     On 18.11.20 22:51, Leandro Bucci via Xenomai wrote:
+>>> >     >     > Hello to all. I have installed xenomai 3.1 on the
+>>> raspberry pi4.
+>>> >     >     > The latency and cyclictest examples work great. But
+>>> examples
+>>> >     like
+>>> >     >     > iddp-label and xddp-echo don't work.
+>>> >     >     > I get this error:
+>>> >     >     > socket: Address family not supported by protocol
+>>> >     >     > how can i solve this problem? maybe i need to load the
+>>> >     related kernel
+>>> >     >     > modules? If yes, how do you do it? sorry but I'm a
+>>> beginner.
+>>> >     >     >
+>>> >     >
+>>> >     >     Did you configure these features into your kernel
+>>> >     >     (CONFIG_XENO_DRIVERS_RTIPC_IDDP,
+>>> >     CONFIG_XENO_DRIVERS_RTIPC_XDDP)? Did
+>>> >     >     you load the related modules if they were configured as
+>>> modules
+>>> >     >     (xeno_rtipc-{xddp,iddp}.ko)?
+>>> >     >
+>>> >     >     Jan
+>>> >     >
+>>> >     >     --
+>>> >     >     Siemens AG, T RDA IOT
+>>> >     >     Corporate Competence Center Embedded Linux
+>>> >     >
+>>> >
+>>> >     --
+>>> >     Siemens AG, T RDA IOT
+>>> >     Corporate Competence Center Embedded Linux
+>>> >
+>>>
+>> I agree with Jan, it sounds like you are missing the modules, you=E2=80=
 =99ll need
-> to enable them during the kernel configuration stage.
->   Raspberry Pi 3 has stable support in our ipipe tree, if you have one yo=
-u
-> could try that first.
->
-> Greg
->
+>> to enable them during the kernel configuration stage.
+>>   Raspberry Pi 3 has stable support in our ipipe tree, if you have one
+>> you could try that first.
 >>
+>> Greg
 >>
+>>>
+>>>
