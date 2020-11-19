@@ -1,17 +1,21 @@
-Subject: Re: [xenomai-images][PATCH 3/4] ci: Split build and add 5.4 builds
-References: <20201104161154.32366-1-Quirin.Gylstorff@siemens.com>
- <20201104161154.32366-4-Quirin.Gylstorff@siemens.com>
- <26554d28-7219-f8d9-8739-e474d30a3f5a@siemens.com>
- <15c9438c-2488-efa7-4f17-e1f006c8b01e@siemens.com>
- <fa36f3e1-b454-edaf-f843-6b7efc40eb13@siemens.com>
-From: Gylstorff Quirin <quirin.gylstorff@siemens.com>
-Message-ID: <9c705457-2198-5af7-ecdb-27a39a8bdb15@siemens.com>
-Date: Fri, 6 Nov 2020 14:39:42 +0100
-MIME-Version: 1.0
-In-Reply-To: <fa36f3e1-b454-edaf-f843-6b7efc40eb13@siemens.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
+From: "Chen, Hongzhan" <hongzhan.chen@intel.com>
+Subject: RE: [Xenomai over dovetail] Kernel hang in rcu_barrier after
+ xenomai_init
+Date: Thu, 19 Nov 2020 11:40:59 +0000
+Message-ID: <MWHPR11MB17102B8431E8FB361CBA7637F2E00@MWHPR11MB1710.namprd11.prod.outlook.com>
+References: <MWHPR11MB17100D1F48C3EF22B3C6A329F2E60@MWHPR11MB1710.namprd11.prod.outlook.com>
+ <87lff5rtxl.fsf@xenomai.org>
+ <CY4PR11MB170373477D42F1E0F39C1162F2E50@CY4PR11MB1703.namprd11.prod.outlook.com>
+ <CY4PR11MB17031A0E3842869F923D353FF2E50@CY4PR11MB1703.namprd11.prod.outlook.com>
+ <87tutrolj3.fsf@xenomai.org> <877dqkfgl2.fsf@xenomai.org>
+ <MWHPR11MB171050871553AA646AE42130F2E20@MWHPR11MB1710.namprd11.prod.outlook.com>
+ <87lfezetj9.fsf@xenomai.org>
+ <MWHPR11MB1710A24CFCD223D9DC4E955FF2E00@MWHPR11MB1710.namprd11.prod.outlook.com>
+In-Reply-To: <MWHPR11MB1710A24CFCD223D9DC4E955FF2E00@MWHPR11MB1710.namprd11.prod.outlook.com>
 Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+MIME-Version: 1.0
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -20,37 +24,174 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jan Kiszka <jan.kiszka@siemens.com>, xenomai@xenomai.org
+To: Philippe Gerum <rpm@xenomai.org>, "xenomai@xenomai.org" <xenomai@xenomai.org>
 
 
-
-On 11/5/20 10:39 AM, Jan Kiszka wrote:
-> On 05.11.20 10:30, Gylstorff Quirin wrote:
+>>>-->---Original Message-----
+>>>Fr>om: Philippe Gerum <rpm@xenomai.org>=20
+>>>Se>nt: Tuesday, November 17, 2020 6:01 PM
+>>>To>: Chen, Hongzhan <hongzhan.chen@intel.com>
+>>>Cc>: xenomai@xenomai.org
+>>>Su>bject: Re: [Xenomai over dovetail] Kernel hang in rcu_barrier after x=
+enomai_init
+>>>  >
+>>>  >
+>>>Ph>ilippe Gerum <rpm@xenomai.org> writes:
+>>>  >
+>>>> >Chen, Hongzhan <hongzhan.chen@intel.com> writes:
+>>>> >
+>>>>>> I have some clues about this issue. After xenomai_init is called, it=
+ seems that rcu_core
+>>>>>> is never called from unknow startpoint ever after call call_rcu, whi=
+ch is supposed to be=20
+>>>>>> called by rcu softirq handler after we call call_rcu.
+>>>>>> I am trying to debug why rcu softirq is not triggerred after then.
+>>>> >
+>>>> >
+>>>> >You may want to make sure this is not offloaded to RCU kthreads,
+>>>> >typically in case you run with nocbs settings. This said, tracing
+>>>> >rcu_core() would match both.
+>>>> >
+>>>> >I did not reproduce the issue you observed with the EVL core, testing
+>>>> >v5.8, v5.9 and v5.10-rc3. I'm currently running an overnight test to
+>>>> >confirm this. This is why we need to be confident that an half-baked
+>>>> >port on top of Dovetail is not causing this.
+>>>  >
+>>>44> hours uninterrupted runtime on armv7, x86 and armv8, under stress: n=
+o
+>>>is>sue detected so far. This does not rule out a Dovetail bug yet, but
+>>>th>e possibility of a Cobalt issue is real.
+>>>  >
+>>>-->=20
+>>>Ph>ilippe.
 >>
+>> Thanks for your feedback.  I already found the root cause for the issue.=
+ According to my
+>> debug on evl, I found that actually after call tick_install_proxy , the =
+original=20
+>> hrtimer_interrupt would be called by proxy_irq_handler instead of   __sy=
+svec_apic_timer_interrupt
+>> so that  rcu_sched_clock_irq still can be successfully called by  update=
+_process_times and
+>> invoke_rcu_core would always be called and callback registerred by call_=
+rcu can be successfully handled.
+>> But in my case, after call tick_install_proxy in xenomai, update_process=
+_times is never called and then
+>> cause hang in rcu_barrier issue later. I would continue to check why fai=
+l to replace timer irq in my case.
 >>
->> On 11/4/20 7:28 PM, Jan Kiszka wrote:
->>> Would be good the express that correlation between kernel version and 
->>> Xenomai version somehow as well. Longer job names? Or is there some 
->>> better way?
+>>Did you try running Dovetail's boot time pipeline torture tests? Those
+>>would exercise the basic features, such as the tick proxy device,
+>>without any dependencies whatsoever. You may need to disable Cobalt to
+>>do so, in order to leave the out-of-band stage available to them at boot.
 >>
->> We can use longer names or add tags.
+>>CONFIG_IRQ_PIPELINE_TORTURE_TESTS=3Dy
+>>CONFIG_XENOMAI=3Dn
 >>
-> 
-> If tags a well visible in the UI, I'm fine. Key point for me is that is 
-> clear by looking at the CI overviews what has been tested, conceptually 
-> (actual git IDs require a look into the log, I know).
-> 
-> Jan
-> 
+>>If successful, those tests on a quad-core CPU should yield that kind of
+>>traces in the kernel log:
+>>
+>>[    4.413767] Starting IRQ pipeline tests...
+>>[    4.413772] IRQ pipeline: high-priority torture stage added.
+>>[    4.423571] irq_pipeline-torture: CPU2 initiates stop_machine()
+>>[    4.429527] irq_pipeline-torture: CPU3 responds to stop_machine()
+>>[    4.429534] irq_pipeline-torture: CPU1 responds to stop_machine()
+>>[    4.429538] irq_pipeline-torture: CPU0 responds to stop_machine()
+>>[    4.447945] CPU0: proxy tick device registered (199.20MHz)
+>>[    4.447948] CPU1: proxy tick device registered (199.20MHz)
+>>[    4.447954] CPU3: proxy tick device registered (199.20MHz)
+>>[    4.464448] CPU2: proxy tick device registered (199.20MHz)
+>>[    4.469985] irq_pipeline-torture: CPU2: irq_work handled
+>>[    4.475322] irq_pipeline-torture: CPU2: in-band->in-band irq_work trig=
+ger works
+>>[    4.482648] irq_pipeline-torture: CPU2: stage escalation request works
+>>[    4.482650] irq_pipeline-torture: CPU2: irq_work handled
+>>[    4.494523] irq_pipeline-torture: CPU2: oob->in-band irq_work trigger =
+works
+>>[    5.523585] CPU3: proxy tick device unregistered
+>>[    5.523590] CPU1: proxy tick device unregistered
+>>[    5.523592] CPU0: proxy tick device unregistered
+>>[    5.537459] CPU2: proxy tick device unregistered
+>>[    5.542113] IRQ pipeline: torture stage removed.
+>>[    5.546753] IRQ pipeline tests OK.
+>
+>Anything suspicious there instead would point to a Dovetail-related
+>issue.
+>
+>--=20
+>Philippe.
+>
+>The pipeline tests OK after I enable CONFIG_IRQ_PIPELINE_TORTURE_TEST and
+>disable xenomai as you suggested.=20
+>
+>When I try to debug this issue and add some printk info for functions=20
+>such as clockevents_register_proxy in files like=20
+>kernel/time/tick-proxy.c and kernel/time/clockevents.c, kernel hang in=20
+>mark_readonly->rcu_barrier would suddenly dissappear, kernel
+>can boot into nfsroot and debian after then. But system would still hang i=
+n=20
+>other ruc_barrier during systemd trying to boot up some services.
+>I try to count interrupt in founction handle_apic_irq of arch/x86/kernel/i=
+rq_pipeline.c
+>for each cpu and then print this irq number in rcu_barrier for debuging an=
+d=20
+>finally found that actually cpu0  stop counting from very early before han=
+g in
+>mark_readonly->rcu_barrier of kernel. After further debug, I found that cp=
+u0=20
+>stop counting after call tick_install_proxy when kernel hang in=20
+>mark_readonly->rcu_barrier.=20
+>
+>For another hang case that system can boot into systemd but hang in other=
+=20
+>rcu_barrier, I found that actually other three cpus randomly stop producin=
+g=20
+>apic timer interrupt except cpu0 after call tick_install_proxy according t=
+o my test.
+>
+>I do not know what may cause this issue. Do you have any suggestions about=
+ it?
+>
+>Regards
+>
+>Hongzhan Chen
 
-I tested tags and they are visible in the ui[1].
-But you need to add the tags to the runner as their purpose is to select 
-an specific runner.
+I reproduced following issue steadily today. I think this should be root ca=
+use for my
+hang issue. Till now I deeply understand what you suggested about porting..=
+..=20
+I want to say it is really genius design about pipeline + proxy tick for re=
+al time system
+on Linux kernel.
 
-I would go with longer names.
+[    8.032556] IRQ pipeline: some code running in oob context 'Xenomai'
+[    8.032557]               called an in-band only routine
+[    8.032558] CPU: 0 PID: 12 Comm: migration/0 Tainted: G     U           =
+ 5.8.0+ #30
+[    8.032558] Hardware name: Maxtang WL10/WL10, BIOS WL10T105 10/16/2019
+[    8.032559] IRQ stage: Xenomai
+[    8.032559] Call Trace:
+[    8.032560]  dump_stack+0x85/0xa6
+[    8.032561]  inband_irq_save+0x6/0x30
+[    8.032561]  ktime_get+0x24/0x140
+[    8.032562]  xnclock_tick+0x3b/0x2c0
+[    8.032563]  xnintr_core_clock_handler+0x76/0x140
+[    8.032563]  lapic_oob_handler+0x42/0x1e0
+[    8.032564]  do_oob_irq+0x69/0x620
+[    8.032564]  ? vsnprintf+0xfd/0x4d0
+[    8.032565]  handle_oob_irq+0x7d/0x190
+[    8.032566]  generic_pipeline_irq+0x1b4/0x3a0
+[    8.032566]  arch_pipeline_entry+0x113/0x150
+[    8.032567]  asm_sysvec_apic_timer_interrupt+0x12/0x20
 
-[1]: 
-https://gitlab.com/Quirin.Gy/xenomai-images-test/-/pipelines/212770080/builds
+Regards
 
-Quirin
+Hongzhan Chen
+
+
+
+
+
+
+
 
