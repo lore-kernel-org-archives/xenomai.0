@@ -1,7 +1,18 @@
+References: <MWHPR11MB17100D1F48C3EF22B3C6A329F2E60@MWHPR11MB1710.namprd11.prod.outlook.com>
+ <87lff5rtxl.fsf@xenomai.org>
+ <CY4PR11MB170373477D42F1E0F39C1162F2E50@CY4PR11MB1703.namprd11.prod.outlook.com>
+ <CY4PR11MB17031A0E3842869F923D353FF2E50@CY4PR11MB1703.namprd11.prod.outlook.com>
+ <87tutrolj3.fsf@xenomai.org> <877dqkfgl2.fsf@xenomai.org>
+ <MWHPR11MB171050871553AA646AE42130F2E20@MWHPR11MB1710.namprd11.prod.outlook.com>
+ <87lfezetj9.fsf@xenomai.org>
+ <MWHPR11MB1710A24CFCD223D9DC4E955FF2E00@MWHPR11MB1710.namprd11.prod.outlook.com>
+ <MWHPR11MB17102B8431E8FB361CBA7637F2E00@MWHPR11MB1710.namprd11.prod.outlook.com>
 From: Philippe Gerum <rpm@xenomai.org>
-Subject: Xenomai 3.x over Dovetail
-Date: Thu, 19 Nov 2020 13:25:18 +0100
-Message-ID: <87r1op4jpt.fsf@xenomai.org>
+Subject: Re: [Xenomai over dovetail] Kernel hang in rcu_barrier after
+ xenomai_init
+In-reply-to: <MWHPR11MB17102B8431E8FB361CBA7637F2E00@MWHPR11MB1710.namprd11.prod.outlook.com>
+Date: Thu, 19 Nov 2020 13:35:14 +0100
+Message-ID: <87mtzd4j99.fsf@xenomai.org>
 MIME-Version: 1.0
 Content-Type: text/plain
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
@@ -12,115 +23,151 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
+To: "Chen, Hongzhan" <hongzhan.chen@intel.com>
+Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
 
-All,
+Chen, Hongzhan <hongzhan.chen@intel.com> writes:
 
-After some recent discussion with Jan, I'm joining the fray in order to
-get Xenomai rebased on Dovetail, replacing the I-pipe, the in-kernel
-software layer which connects the real-time (Cobalt) core to the
-mainline Linux implementation. The main goal is to enable Xenomai 3.x
-for the most recent LTS kernel releases, such as the upcoming v5.10. A
-bit of context in the form of a Q&A:
+>>>>-->---Original Message-----
+>>>>Fr>om: Philippe Gerum <rpm@xenomai.org> 
+>>>>Se>nt: Tuesday, November 17, 2020 6:01 PM
+>>>>To>: Chen, Hongzhan <hongzhan.chen@intel.com>
+>>>>Cc>: xenomai@xenomai.org
+>>>>Su>bject: Re: [Xenomai over dovetail] Kernel hang in rcu_barrier after xenomai_init
+>>>>  >
+>>>>  >
+>>>>Ph>ilippe Gerum <rpm@xenomai.org> writes:
+>>>>  >
+>>>>> >Chen, Hongzhan <hongzhan.chen@intel.com> writes:
+>>>>> >
+>>>>>>> I have some clues about this issue. After xenomai_init is called, it seems that rcu_core
+>>>>>>> is never called from unknow startpoint ever after call call_rcu, which is supposed to be 
+>>>>>>> called by rcu softirq handler after we call call_rcu.
+>>>>>>> I am trying to debug why rcu softirq is not triggerred after then.
+>>>>> >
+>>>>> >
+>>>>> >You may want to make sure this is not offloaded to RCU kthreads,
+>>>>> >typically in case you run with nocbs settings. This said, tracing
+>>>>> >rcu_core() would match both.
+>>>>> >
+>>>>> >I did not reproduce the issue you observed with the EVL core, testing
+>>>>> >v5.8, v5.9 and v5.10-rc3. I'm currently running an overnight test to
+>>>>> >confirm this. This is why we need to be confident that an half-baked
+>>>>> >port on top of Dovetail is not causing this.
+>>>>  >
+>>>>44> hours uninterrupted runtime on armv7, x86 and armv8, under stress: no
+>>>>is>sue detected so far. This does not rule out a Dovetail bug yet, but
+>>>>th>e possibility of a Cobalt issue is real.
+>>>>  >
+>>>>--> 
+>>>>Ph>ilippe.
+>>>
+>>> Thanks for your feedback.  I already found the root cause for the issue. According to my
+>>> debug on evl, I found that actually after call tick_install_proxy , the original 
+>>> hrtimer_interrupt would be called by proxy_irq_handler instead of   __sysvec_apic_timer_interrupt
+>>> so that  rcu_sched_clock_irq still can be successfully called by  update_process_times and
+>>> invoke_rcu_core would always be called and callback registerred by call_rcu can be successfully handled.
+>>> But in my case, after call tick_install_proxy in xenomai, update_process_times is never called and then
+>>> cause hang in rcu_barrier issue later. I would continue to check why fail to replace timer irq in my case.
+>>>
+>>>Did you try running Dovetail's boot time pipeline torture tests? Those
+>>>would exercise the basic features, such as the tick proxy device,
+>>>without any dependencies whatsoever. You may need to disable Cobalt to
+>>>do so, in order to leave the out-of-band stage available to them at boot.
+>>>
+>>>CONFIG_IRQ_PIPELINE_TORTURE_TESTS=y
+>>>CONFIG_XENOMAI=n
+>>>
+>>>If successful, those tests on a quad-core CPU should yield that kind of
+>>>traces in the kernel log:
+>>>
+>>>[    4.413767] Starting IRQ pipeline tests...
+>>>[    4.413772] IRQ pipeline: high-priority torture stage added.
+>>>[    4.423571] irq_pipeline-torture: CPU2 initiates stop_machine()
+>>>[    4.429527] irq_pipeline-torture: CPU3 responds to stop_machine()
+>>>[    4.429534] irq_pipeline-torture: CPU1 responds to stop_machine()
+>>>[    4.429538] irq_pipeline-torture: CPU0 responds to stop_machine()
+>>>[    4.447945] CPU0: proxy tick device registered (199.20MHz)
+>>>[    4.447948] CPU1: proxy tick device registered (199.20MHz)
+>>>[    4.447954] CPU3: proxy tick device registered (199.20MHz)
+>>>[    4.464448] CPU2: proxy tick device registered (199.20MHz)
+>>>[    4.469985] irq_pipeline-torture: CPU2: irq_work handled
+>>>[    4.475322] irq_pipeline-torture: CPU2: in-band->in-band irq_work trigger works
+>>>[    4.482648] irq_pipeline-torture: CPU2: stage escalation request works
+>>>[    4.482650] irq_pipeline-torture: CPU2: irq_work handled
+>>>[    4.494523] irq_pipeline-torture: CPU2: oob->in-band irq_work trigger works
+>>>[    5.523585] CPU3: proxy tick device unregistered
+>>>[    5.523590] CPU1: proxy tick device unregistered
+>>>[    5.523592] CPU0: proxy tick device unregistered
+>>>[    5.537459] CPU2: proxy tick device unregistered
+>>>[    5.542113] IRQ pipeline: torture stage removed.
+>>>[    5.546753] IRQ pipeline tests OK.
+>>
+>>Anything suspicious there instead would point to a Dovetail-related
+>>issue.
+>>
+>>-- 
+>>Philippe.
+>>
+>>The pipeline tests OK after I enable CONFIG_IRQ_PIPELINE_TORTURE_TEST and
+>>disable xenomai as you suggested. 
+>>
+>>When I try to debug this issue and add some printk info for functions 
+>>such as clockevents_register_proxy in files like 
+>>kernel/time/tick-proxy.c and kernel/time/clockevents.c, kernel hang in 
+>>mark_readonly->rcu_barrier would suddenly dissappear, kernel
+>>can boot into nfsroot and debian after then. But system would still hang in 
+>>other ruc_barrier during systemd trying to boot up some services.
+>>I try to count interrupt in founction handle_apic_irq of arch/x86/kernel/irq_pipeline.c
+>>for each cpu and then print this irq number in rcu_barrier for debuging and 
+>>finally found that actually cpu0  stop counting from very early before hang in
+>>mark_readonly->rcu_barrier of kernel. After further debug, I found that cpu0 
+>>stop counting after call tick_install_proxy when kernel hang in 
+>>mark_readonly->rcu_barrier. 
+>>
+>>For another hang case that system can boot into systemd but hang in other 
+>>rcu_barrier, I found that actually other three cpus randomly stop producing 
+>>apic timer interrupt except cpu0 after call tick_install_proxy according to my test.
+>>
+>>I do not know what may cause this issue. Do you have any suggestions about it?
+>>
+>>Regards
+>>
+>>Hongzhan Chen
+>
+> I reproduced following issue steadily today. I think this should be root cause for my
+> hang issue. Till now I deeply understand what you suggested about porting.... 
+> I want to say it is really genius design about pipeline + proxy tick for real time system
+> on Linux kernel.
+>
 
-Q: Why do we need the I-pipe to be replaced in the first place?
-A: Because Dovetail - as the successor to the I-pipe - addresses
-   important implementation and maintenance issues of the latter.
-   Maintaining two interfaces with identical goals concurrently any
-   further would make no sense, and would keep on diluting the scarce
-   manpower resources we have.
+Genius is often what is left after all silly options have been tried and
+failed. Believe me, I followed quite a few of them over the years.
 
-Q: Why can't we just port the I-pipe to v5.10, etc.?
-A: Because the aging design of the I-pipe would make this a very
-   difficult task, especially when confronted to massive code churn,
-   like the one which took place in the v5.8 cycle for x86. Although I'm
-   not claiming the upgrade process has become trivial, Dovetail is
-   certainly simpler to port to newer kernel releases than doing so for
-   the I-pipe might ever be. Dovetail tracks the kernel development tip,
-   runs v5.10-rc4 at the moment.
+> [    8.032556] IRQ pipeline: some code running in oob context 'Xenomai'
+> [    8.032557]               called an in-band only routine
+> [    8.032558] CPU: 0 PID: 12 Comm: migration/0 Tainted: G     U            5.8.0+ #30
+> [    8.032558] Hardware name: Maxtang WL10/WL10, BIOS WL10T105 10/16/2019
+> [    8.032559] IRQ stage: Xenomai
+> [    8.032559] Call Trace:
+> [    8.032560]  dump_stack+0x85/0xa6
+> [    8.032561]  inband_irq_save+0x6/0x30
+> [    8.032561]  ktime_get+0x24/0x140
 
-Q: What kind of I-pipe issues does Dovetail fix?
-A: Basically, a better integration with the mainline kernel
-   implementation, which eases the work of rebasing it on top of newer
-   kernel releases. It also provides crucial built-in capabilities such
-   as time and clock source management, real-time context switching and
-   fpu handling shared with the common kernel implementation, which
-   the real-time core does not have to care about anymore.
+ktime_get_mono_fast_ns() would work here.
 
-Q: Will switching to Dovetail have an impact on applications?
-A: No, the nitty-gritty details should live into the kernel and libcobalt,
-   without affecting the APIs.
+> [    8.032562]  xnclock_tick+0x3b/0x2c0
+> [    8.032563]  xnintr_core_clock_handler+0x76/0x140
+> [    8.032563]  lapic_oob_handler+0x42/0x1e0
+> [    8.032564]  do_oob_irq+0x69/0x620
+> [    8.032564]  ? vsnprintf+0xfd/0x4d0
+> [    8.032565]  handle_oob_irq+0x7d/0x190
+> [    8.032566]  generic_pipeline_irq+0x1b4/0x3a0
+> [    8.032566]  arch_pipeline_entry+0x113/0x150
+> [    8.032567]  asm_sysvec_apic_timer_interrupt+0x12/0x20
+>
 
-Q: Will switching to Dovetail have an impact on the Xenomai ABI?
-A: Yes. Therefore the changes involved will be at core of Xenomai
-   3.2+. They won't be backported to Xenomai 3.1 or earlier.
-
-Q: Which CPU architectures does Dovetail support today?
-A: aarch64, aarch32 (armv7 essentially), x86_64.
-
-== Now, to the proposed broad plan for achieving this port:
-
-1- the ability to test the very same Cobalt code base on top of Dovetail
-   or the I-pipe alternatively may go a long way toward debugging the
-   port, particularly when it comes to spotting regressions. For
-   achieving this, we should insert some "interrupt pipeline"
-   abstraction layer into the Cobalt code. Depending on some build time
-   selector, the I-pipe or Dovetail interface would be used. Initially,
-   we could focus on having the I-pipe interface side working, which
-   should not be prone to regression since this task is basically about
-   moving code around, reorganizing the Cobalt code base.
-
-2- once the dust has settled on moving the code around, we need to
-   rework the timer management layer (xntimer) in order to switch the
-   internal date and delay representation from "clock ticks" (e.g. TSC
-   counts, or whatever unit some time hardware might use) to plain
-   nanoseconds, in order to align on the regular kernel representation
-   of time values (ktime_t, which Dovetail shares). Those changes will
-   impact libcobalt as well. Bonus: once this is done, applications may
-   safely get time stamps from primary mode using the fast vDSO
-   mechanism via clock_gettime() for instance. In addition, variation of
-   the CPU frequency (CPU_FREQ) will stop being a showstopper, since our
-   time stamps would not depend on the duration of a hardware tick
-   anymore.
-
-3- then, we may flesh out and test the Dovetail side of the abstraction
-   layer, comparing results to the I-pipe version, thanks to having #1
-   done.
-
-Both the I-pipe and Dovetail maintain a version targeting kernel v5.4
-LTS. We may use this common ground for comparing results, chasing
-regressions during the initial phase of the port. Once we are confident
-that the Dovetail side is in good shape, we may switch it to v5.10.
-
-== Where do we start from?
-
-In order to bootstrap this effort, I can resurrect the code I mentioned
-in some other thread [1], which contains some groundwork for abstracting
-the interrupt pipeline. Looking at the changes which have been pushed to
-the Xenomai master branch since then, pulling them into this initial
-work may be the more tractable option, in order to complete task #1.
-
-In terms of documentation about Dovetail, [2] is the place to look for.
-
----
-
-All the hard work which already took place on trying to get this port
-done is certainly not lost, as it helped getting more people diving into
-the innards of the dual kernel machinery. With more people sharing this
-knowledge, we should be able to achieve this port quicker, and most
-importantly, have a better chance keeping the pace with the Linux kernel
-development in the long run.
-
-I'm looking forward to discussing this proposal, other ideas, and
-sharing the effort with anyone willing to contribute. The plan is to
-start this work shortly, so please chime in early on if you intend to
-discuss, help with this.
-
-Thanks,
-
-[1] https://lab.xenomai.org/xenomai-rpm.git/log/?h=wip/dovetail
-[2] https://evlproject.org/dovetail/
 
 -- 
 Philippe.
