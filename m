@@ -1,15 +1,22 @@
-From: "florian.bezdeka@siemens.com" <florian.bezdeka@siemens.com>
-Subject: Re: [PATCH v2 1/3] [y2038]clock_settime:introduce old_timespec32 in
- clock_settime
-Date: Thu, 19 Nov 2020 12:11:01 +0000
-Message-ID: <82cca45bd82473a3bb7a207474722d48017f3c96.camel@siemens.com>
-References: <1605774986-4553-1-git-send-email-chensong@tj.kylinos.cn>
-In-Reply-To: <1605774986-4553-1-git-send-email-chensong@tj.kylinos.cn>
-Content-Language: en-US
-Content-Type: text/plain; charset="utf-8"
-Content-ID: <622DD187C6B78D498FADA325729158AF@EURPRD10.PROD.OUTLOOK.COM>
-Content-Transfer-Encoding: base64
+Subject: Re: [Xenomai over dovetail] Kernel hang in rcu_barrier after
+ xenomai_init
+References: <MWHPR11MB17100D1F48C3EF22B3C6A329F2E60@MWHPR11MB1710.namprd11.prod.outlook.com>
+ <87lff5rtxl.fsf@xenomai.org>
+ <CY4PR11MB170373477D42F1E0F39C1162F2E50@CY4PR11MB1703.namprd11.prod.outlook.com>
+ <CY4PR11MB17031A0E3842869F923D353FF2E50@CY4PR11MB1703.namprd11.prod.outlook.com>
+ <87tutrolj3.fsf@xenomai.org> <877dqkfgl2.fsf@xenomai.org>
+ <MWHPR11MB171050871553AA646AE42130F2E20@MWHPR11MB1710.namprd11.prod.outlook.com>
+ <87lfezetj9.fsf@xenomai.org>
+ <MWHPR11MB1710A24CFCD223D9DC4E955FF2E00@MWHPR11MB1710.namprd11.prod.outlook.com>
+ <MWHPR11MB17102B8431E8FB361CBA7637F2E00@MWHPR11MB1710.namprd11.prod.outlook.com>
+From: Jan Kiszka <jan.kiszka@siemens.com>
+Message-ID: <72043f71-f89a-9167-b0cb-034493b966ee@siemens.com>
+Date: Thu, 19 Nov 2020 13:24:00 +0100
 MIME-Version: 1.0
+In-Reply-To: <MWHPR11MB17102B8431E8FB361CBA7637F2E00@MWHPR11MB1710.namprd11.prod.outlook.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -18,175 +25,162 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "chensong@tj.kylinos.cn" <chensong@tj.kylinos.cn>
-Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>, "jan.kiszka@siemens.com" <jan.kiszka@siemens.com>
+To: "Chen, Hongzhan" <hongzhan.chen@intel.com>, Philippe Gerum <rpm@xenomai.org>, "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-T24gVGh1LCAyMDIwLTExLTE5IGF0IDE2OjM2ICswODAwLCBjaGVuc29uZyB3cm90ZToNCj4gb2xk
-X3RpbWVzcGVjMzIgd2FzIGludHJvZHVjZWQgaW4gdmFuaWxsYSBrZXJuZWwgYXQgdmVyc2lvbiA0
-LjE5DQo+IGZvciB5MjAzOCwgaXQgcmVwbGFjZXMgdGltZXNwZWMgaW4gc3lzY2FsbHMgdG8ga2Vl
-cCBjb21wYXRpYmlsaXR5DQo+IGZvciAzMmJpdCB0aW1lc3BlYy4NCj4gDQo+IEluIHRoaXMgcGF0
-Y2gsIGkgZm9sbG93IGl0J3MgaWRlYSwgcmVwbGFjZSB0aW1lc3BlYyB3aXRoDQo+IG9sZF90aW1l
-c3BlYzMyIGFzIHRoZSBhcmd1bWVudCBwYXNzZWQgdG8gY2xvY2tfc2V0dGltZSBmcm9tIHVzZXIN
-Cj4gc3BhY2UuIEluc2lkZSBjbG9ja19zZXR0aW1lLCB0aW1lc3BlYyBpcyByZXBsYWNlZCBieSB0
-aW1lc3BlYzY0Lg0KPiANCj4gVjI6DQo+IDEsIHJlbW92ZSB0cmFjZSBwb2ludCB0cmFjZV9jb2Jh
-bHRfY2xvY2tfZ2V0dGltZS4NCj4gDQo+IFNpZ25lZC1vZmYtYnk6IGNoZW5zb25nIDxjaGVuc29u
-Z0B0ai5reWxpbm9zLmNuPg0KPiAtLS0NCj4gIGluY2x1ZGUvY29iYWx0L2tlcm5lbC9jbG9jay5o
-ICAgICAgICAgICAgICAgICAgICAgICAgfCAgNiArKystLS0NCj4gIGluY2x1ZGUvY29iYWx0L2tl
-cm5lbC9jb21wYXQuaCAgICAgICAgICAgICAgICAgICAgICAgfCAgMyArKysNCj4gIGtlcm5lbC9j
-b2JhbHQvaW5jbHVkZS9hc20tZ2VuZXJpYy94ZW5vbWFpL3dyYXBwZXJzLmggfCAgOSArKysrKysr
-KysNCj4gIGtlcm5lbC9jb2JhbHQvcG9zaXgvY2xvY2suYyAgICAgICAgICAgICAgICAgICAgICAg
-ICAgfCAxNiArKysrKysrKystLS0tLS0tDQo+ICBrZXJuZWwvY29iYWx0L3Bvc2l4L2Nsb2NrLmgg
-ICAgICAgICAgICAgICAgICAgICAgICAgIHwgMTUgKysrKysrKysrKysrKy0tDQo+ICBrZXJuZWwv
-Y29iYWx0L3Bvc2l4L2NvbXBhdC5jICAgICAgICAgICAgICAgICAgICAgICAgIHwgMTAgKysrKysr
-KysrKw0KPiAga2VybmVsL2NvYmFsdC9wb3NpeC9zeXNjYWxsMzIuYyAgICAgICAgICAgICAgICAg
-ICAgICB8ICA2ICsrKy0tLQ0KPiAga2VybmVsL2NvYmFsdC9wb3NpeC9zeXNjYWxsMzIuaCAgICAg
-ICAgICAgICAgICAgICAgICB8ICAyICstDQo+ICA4IGZpbGVzIGNoYW5nZWQsIDUxIGluc2VydGlv
-bnMoKyksIDE2IGRlbGV0aW9ucygtKQ0KPiANCj4gZGlmZiAtLWdpdCBhL2luY2x1ZGUvY29iYWx0
-L2tlcm5lbC9jbG9jay5oIGIvaW5jbHVkZS9jb2JhbHQva2VybmVsL2Nsb2NrLmgNCj4gaW5kZXgg
-YzI2Nzc2YS4uY2Y5ZDVlYyAxMDA2NDQNCj4gLS0tIGEvaW5jbHVkZS9jb2JhbHQva2VybmVsL2Ns
-b2NrLmgNCj4gKysrIGIvaW5jbHVkZS9jb2JhbHQva2VybmVsL2Nsb2NrLmgNCj4gQEAgLTUyLDcg
-KzUyLDcgQEAgc3RydWN0IHhuY2xvY2sgew0KPiAgCQl4bnRpY2tzX3QgKCpyZWFkX3Jhdykoc3Ry
-dWN0IHhuY2xvY2sgKmNsb2NrKTsNCj4gIAkJeG50aWNrc190ICgqcmVhZF9tb25vdG9uaWMpKHN0
-cnVjdCB4bmNsb2NrICpjbG9jayk7DQo+ICAJCWludCAoKnNldF90aW1lKShzdHJ1Y3QgeG5jbG9j
-ayAqY2xvY2ssDQo+IC0JCQkJY29uc3Qgc3RydWN0IHRpbWVzcGVjICp0cyk7DQo+ICsJCQkJY29u
-c3Qgc3RydWN0IHRpbWVzcGVjNjQgKnRzKTsNCj4gIAkJeG5zdGlja3NfdCAoKm5zX3RvX3RpY2tz
-KShzdHJ1Y3QgeG5jbG9jayAqY2xvY2ssDQo+ICAJCQkJCSAgeG5zdGlja3NfdCBucyk7DQo+ICAJ
-CXhuc3RpY2tzX3QgKCp0aWNrc190b19ucykoc3RydWN0IHhuY2xvY2sgKmNsb2NrLA0KPiBAQCAt
-MjEzLDcgKzIxMyw3IEBAIHN0YXRpYyBpbmxpbmUgeG50aWNrc190IHhuY2xvY2tfcmVhZF9tb25v
-dG9uaWMoc3RydWN0IHhuY2xvY2sgKmNsb2NrKQ0KPiAgfQ0KPiAgDQo+ICBzdGF0aWMgaW5saW5l
-IGludCB4bmNsb2NrX3NldF90aW1lKHN0cnVjdCB4bmNsb2NrICpjbG9jaywNCj4gLQkJCQkgICBj
-b25zdCBzdHJ1Y3QgdGltZXNwZWMgKnRzKQ0KPiArCQkJCSAgIGNvbnN0IHN0cnVjdCB0aW1lc3Bl
-YzY0ICp0cykNCj4gIHsNCj4gIAlpZiAobGlrZWx5KGNsb2NrID09ICZua2Nsb2NrKSkNCj4gIAkJ
-cmV0dXJuIC1FSU5WQUw7DQo+IEBAIC0yNjYsNyArMjY2LDcgQEAgc3RhdGljIGlubGluZSB4bnRp
-Y2tzX3QgeG5jbG9ja19yZWFkX21vbm90b25pYyhzdHJ1Y3QgeG5jbG9jayAqY2xvY2spDQo+ICB9
-DQo+ICANCj4gIHN0YXRpYyBpbmxpbmUgaW50IHhuY2xvY2tfc2V0X3RpbWUoc3RydWN0IHhuY2xv
-Y2sgKmNsb2NrLA0KPiAtCQkJCSAgIGNvbnN0IHN0cnVjdCB0aW1lc3BlYyAqdHMpDQo+ICsJCQkJ
-ICAgY29uc3Qgc3RydWN0IHRpbWVzcGVjNjQgKnRzKQ0KPiAgew0KPiAgCS8qDQo+ICAJICogVGhl
-cmUgaXMgbm8gd2F5IHRvIGNoYW5nZSB0aGUgY29yZSBjbG9jaydzIGlkZWEgb2YgdGltZS4NCj4g
-ZGlmZiAtLWdpdCBhL2luY2x1ZGUvY29iYWx0L2tlcm5lbC9jb21wYXQuaCBiL2luY2x1ZGUvY29i
-YWx0L2tlcm5lbC9jb21wYXQuaA0KPiBpbmRleCAwNTc1NGNiLi5jM2E2YjRmIDEwMDY0NA0KPiAt
-LS0gYS9pbmNsdWRlL2NvYmFsdC9rZXJuZWwvY29tcGF0LmgNCj4gKysrIGIvaW5jbHVkZS9jb2Jh
-bHQva2VybmVsL2NvbXBhdC5oDQo+IEBAIC04OSw2ICs4OSw5IEBAIHN0cnVjdCBjb21wYXRfcnRk
-bV9tbWFwX3JlcXVlc3Qgew0KPiAgaW50IHN5czMyX2dldF90aW1lc3BlYyhzdHJ1Y3QgdGltZXNw
-ZWMgKnRzLA0KPiAgCQkgICAgICAgY29uc3Qgc3RydWN0IGNvbXBhdF90aW1lc3BlYyBfX3VzZXIg
-KmN0cyk7DQo+ICANCj4gK2ludCBzeXMzMl9nZXRfdGltZXNwZWNfb2xkKHN0cnVjdCB0aW1lc3Bl
-YzY0ICp0cywNCj4gKwkJICAgICAgIGNvbnN0IHN0cnVjdCBvbGRfdGltZXNwZWMzMiBfX3VzZXIg
-KmN0cyk7DQo+ICsNCj4gIGludCBzeXMzMl9wdXRfdGltZXNwZWMoc3RydWN0IGNvbXBhdF90aW1l
-c3BlYyBfX3VzZXIgKmN0cywNCj4gIAkJICAgICAgIGNvbnN0IHN0cnVjdCB0aW1lc3BlYyAqdHMp
-Ow0KPiAgDQo+IGRpZmYgLS1naXQgYS9rZXJuZWwvY29iYWx0L2luY2x1ZGUvYXNtLWdlbmVyaWMv
-eGVub21haS93cmFwcGVycy5oIGIva2VybmVsL2NvYmFsdC9pbmNsdWRlL2FzbS1nZW5lcmljL3hl
-bm9tYWkvd3JhcHBlcnMuaA0KPiBpbmRleCAyMzk5M2RjLi4wN2ZhYTI2IDEwMDY0NA0KPiAtLS0g
-YS9rZXJuZWwvY29iYWx0L2luY2x1ZGUvYXNtLWdlbmVyaWMveGVub21haS93cmFwcGVycy5oDQo+
-ICsrKyBiL2tlcm5lbC9jb2JhbHQvaW5jbHVkZS9hc20tZ2VuZXJpYy94ZW5vbWFpL3dyYXBwZXJz
-LmgNCj4gQEAgLTE1Niw0ICsxNTYsMTMgQEAgZGV2bV9od21vbl9kZXZpY2VfcmVnaXN0ZXJfd2l0
-aF9ncm91cHMoc3RydWN0IGRldmljZSAqZGV2LCBjb25zdCBjaGFyICpuYW1lLA0KPiAgI2Vycm9y
-ICJYZW5vbWFpL2NvYmFsdCByZXF1aXJlcyBMaW51eCBrZXJuZWwgMy4xMCBvciBhYm92ZSINCj4g
-ICNlbmRpZiAvKiA8IDMuMTAgKi8NCj4gIA0KPiArI2lmIExJTlVYX1ZFUlNJT05fQ09ERSA8IEtF
-Uk5FTF9WRVJTSU9OKDQsIDE5LCAwKQ0KPiArdHlwZWRlZiBzMzIJCW9sZF90aW1lMzJfdDsNCj4g
-Kw0KPiArc3RydWN0IG9sZF90aW1lc3BlYzMyIHsNCj4gKwlvbGRfdGltZTMyX3QJdHZfc2VjOw0K
-PiArCXMzMgkJdHZfbnNlYzsNCj4gK307DQo+ICsjZW5kaWYgLyogPCA0LjE5ICovDQo+ICsNCj4g
-ICNlbmRpZiAvKiBfQ09CQUxUX0FTTV9HRU5FUklDX1dSQVBQRVJTX0ggKi8NCj4gZGlmZiAtLWdp
-dCBhL2tlcm5lbC9jb2JhbHQvcG9zaXgvY2xvY2suYyBiL2tlcm5lbC9jb2JhbHQvcG9zaXgvY2xv
-Y2suYw0KPiBpbmRleCA1NjEzNThlLi41ZmJmYmZkIDEwMDY0NA0KPiAtLS0gYS9rZXJuZWwvY29i
-YWx0L3Bvc2l4L2Nsb2NrLmMNCj4gKysrIGIva2VybmVsL2NvYmFsdC9wb3NpeC9jbG9jay5jDQo+
-IEBAIC0xOTQsNyArMTk0LDcgQEAgQ09CQUxUX1NZU0NBTEwoY2xvY2tfZ2V0dGltZSwgY3VycmVu
-dCwNCj4gIAlyZXR1cm4gMDsNCj4gIH0NCj4gIA0KPiAtaW50IF9fY29iYWx0X2Nsb2NrX3NldHRp
-bWUoY2xvY2tpZF90IGNsb2NrX2lkLCBjb25zdCBzdHJ1Y3QgdGltZXNwZWMgKnRzKQ0KPiAraW50
-IF9fY29iYWx0X2Nsb2NrX3NldHRpbWUoY2xvY2tpZF90IGNsb2NrX2lkLCBjb25zdCBzdHJ1Y3Qg
-dGltZXNwZWM2NCAqdHMpDQo+ICB7DQo+ICAJaW50IF9yZXQsIHJldCA9IDA7DQo+ICAJeG50aWNr
-c190IG5vdzsNCj4gQEAgLTIwNyw3ICsyMDcsNyBAQCBpbnQgX19jb2JhbHRfY2xvY2tfc2V0dGlt
-ZShjbG9ja2lkX3QgY2xvY2tfaWQsIGNvbnN0IHN0cnVjdCB0aW1lc3BlYyAqdHMpDQo+ICAJY2Fz
-ZSBDTE9DS19SRUFMVElNRToNCj4gIAkJeG5sb2NrX2dldF9pcnFzYXZlKCZua2xvY2ssIHMpOw0K
-PiAgCQlub3cgPSB4bmNsb2NrX3JlYWRfcmVhbHRpbWUoJm5rY2xvY2spOw0KPiAtCQl4bmNsb2Nr
-X2FkanVzdCgmbmtjbG9jaywgKHhuc3RpY2tzX3QpICh0czJucyh0cykgLSBub3cpKTsNCj4gKwkJ
-eG5jbG9ja19hZGp1c3QoJm5rY2xvY2ssICh4bnN0aWNrc190KSAodHMybnM2NCh0cykgLSBub3cp
-KTsNCj4gIAkJeG5sb2NrX3B1dF9pcnFyZXN0b3JlKCZua2xvY2ssIHMpOw0KPiAgCQlicmVhazsN
-Cj4gIAlkZWZhdWx0Og0KPiBAQCAtMjE2LDggKzIxNiw2IEBAIGludCBfX2NvYmFsdF9jbG9ja19z
-ZXR0aW1lKGNsb2NraWRfdCBjbG9ja19pZCwgY29uc3Qgc3RydWN0IHRpbWVzcGVjICp0cykNCj4g
-IAkJCXJldHVybiBfcmV0ID86IHJldDsNCj4gIAl9DQo+ICANCj4gLQl0cmFjZV9jb2JhbHRfY2xv
-Y2tfc2V0dGltZShjbG9ja19pZCwgdHMpOw0KPiAtDQo+ICAJcmV0dXJuIDA7DQo+ICB9DQo+ICAN
-Cj4gQEAgLTI0MywxNCArMjQxLDE4IEBAIGludCBfX2NvYmFsdF9jbG9ja19hZGp0aW1lKGNsb2Nr
-aWRfdCBjbG9ja19pZCwgc3RydWN0IHRpbWV4ICp0eCkNCj4gIH0NCj4gIA0KPiAgQ09CQUxUX1NZ
-U0NBTEwoY2xvY2tfc2V0dGltZSwgY3VycmVudCwNCj4gLQkgICAgICAgKGNsb2NraWRfdCBjbG9j
-a19pZCwgY29uc3Qgc3RydWN0IHRpbWVzcGVjIF9fdXNlciAqdV90cykpDQo+ICsJICAgICAgIChj
-bG9ja2lkX3QgY2xvY2tfaWQsIGNvbnN0IHN0cnVjdCBvbGRfdGltZXNwZWMzMiBfX3VzZXIgKnVf
-dHMpKQ0KDQpTb3JyeSwgYnV0IHRoYXQncyB3cm9uZy4NCg0KQ29uc2lkZXIgYSA2NCBiaXQga2Vy
-bmVsICh3aGVyZSB0aGUgaW50ZXJuYWwgZGF0YSB0eXBlIHdhcyAibG9uZyIsIHNvDQo2NCBiaXQp
-OiBJdCBpcyBub3cgY2hhbmdlZCB0byBhIDMyIGJpdCBkYXRhIHR5cGUgKHMzMiksIHdoaWNoIGlz
-IHdyb25nLg0KDQpJIGd1ZXNzIHlvdSBhcmUgZm9sbG93aW5nIGEgcGF0dGVybiBmcm9tIEFybmQg
-QmVyZ21hbm4gd2hpY2ggY2Fubm90IGJlDQphcHBsaWVkIGhlcmUuIFRoZSBwYXRjaCBmcm9tIEFy
-bmQgbWF5IGxvb2sgYXMgaGUgd2FzIHVwZGF0aW5nIHRoZSAib2xkIg0Kc3lzY2FsbCBidXQgaGUg
-d2FzIGludHJvZHVjaW5nIGEgbmV3IG9uZSBpbnN0ZWFkLg0KDQpUaGUgaW50cm9kdWN0aW9uIG1h
-eSBiZSBoaWRkZW4gYmVjYXVzZSBoZSBkaWQgc29tZSBtYWdpYyBpbiB0aGUgc3lzY2FsbA0KdGFi
-bGUuIFRoZSBwb3NpdGlvbiAvIGluZGV4IG9mIHRoZSBzeXNjYWxsIGNoYW5nZWQuIFNvIGhlIHdh
-cyBub3QNCnVwZGF0aW5nIGFuIGV4aXN0aW5nIG9uZSBidXQgYWRkaW5nIGEgbmV3IG9uZS4uLiAN
-Cg0KQWxsICJvbGQiIHN5c2NhbGxzLCBzbyB0aGUgbmF0aXZlIG9uZXMgKHdoaWNoIHdlcmUgMzIg
-Zm9yIDMyIGJpdA0Kc3lzdGVtcykgaGF2ZSBhICIzMiIgc3VmZml4IG5vdywgc28gImNsb2NrX2dl
-dHRpbWUzMiIuDQoNCkluc3RlYWQgb2YgdXBhdGluZyBleGlzdGluZyBDb2JhbHQgc3lzY2FsbHMg
-d2UgaGF2ZSB0byBpbnRyb2R1Y2UgYSBuZXcNCnNldCBvZiBzeXNjYWxscy4NCj4gIHsNCj4gLQlz
-dHJ1Y3QgdGltZXNwZWMgdHM7DQo+ICsJc3RydWN0IG9sZF90aW1lc3BlYzMyIHRzOw0KPiArCXN0
-cnVjdCB0aW1lc3BlYzY0IHRzNjQ7DQo+ICANCj4gIAlpZiAoY29iYWx0X2NvcHlfZnJvbV91c2Vy
-KCZ0cywgdV90cywgc2l6ZW9mKHRzKSkpDQo+ICAJCXJldHVybiAtRUZBVUxUOw0KPiAgDQo+IC0J
-cmV0dXJuIF9fY29iYWx0X2Nsb2NrX3NldHRpbWUoY2xvY2tfaWQsICZ0cyk7DQo+ICsJdHM2NC50
-dl9zZWMgID0gdHMudHZfc2VjOw0KPiArCXRzNjQudHZfbnNlYyA9IHRzLnR2X25zZWM7DQo+ICsN
-Cj4gKwlyZXR1cm4gX19jb2JhbHRfY2xvY2tfc2V0dGltZShjbG9ja19pZCwgJnRzNjQpOw0KPiAg
-fQ0KPiAgDQo+ICBDT0JBTFRfU1lTQ0FMTChjbG9ja19hZGp0aW1lLCBjdXJyZW50LA0KPiBkaWZm
-IC0tZ2l0IGEva2VybmVsL2NvYmFsdC9wb3NpeC9jbG9jay5oIGIva2VybmVsL2NvYmFsdC9wb3Np
-eC9jbG9jay5oDQo+IGluZGV4IDBiMDZiOTMuLmJjYzYwOGUgMTAwNjQ0DQo+IC0tLSBhL2tlcm5l
-bC9jb2JhbHQvcG9zaXgvY2xvY2suaA0KPiArKysgYi9rZXJuZWwvY29iYWx0L3Bvc2l4L2Nsb2Nr
-LmgNCj4gQEAgLTQzLDYgKzQzLDE2IEBAIHN0YXRpYyBpbmxpbmUgeG50aWNrc190IHRzMm5zKGNv
-bnN0IHN0cnVjdCB0aW1lc3BlYyAqdHMpDQo+ICAJcmV0dXJuIG5zZWNzOw0KPiAgfQ0KPiAgDQo+
-ICtzdGF0aWMgaW5saW5lIHhudGlja3NfdCB0czJuczY0KGNvbnN0IHN0cnVjdCB0aW1lc3BlYzY0
-ICp0cykNCj4gK3sNCj4gKwl4bnRpY2tzX3QgbnNlY3MgPSB0cy0+dHZfbnNlYzsNCj4gKw0KPiAr
-CWlmICh0cy0+dHZfc2VjKQ0KPiArCQluc2VjcyArPSAoeG50aWNrc190KXRzLT50dl9zZWMgKiBP
-TkVfQklMTElPTjsNCj4gKw0KPiArCXJldHVybiBuc2VjczsNCj4gK30NCj4gKw0KPiAgc3RhdGlj
-IGlubGluZSB4bnRpY2tzX3QgdHYybnMoY29uc3Qgc3RydWN0IHRpbWV2YWwgKnR2KQ0KPiAgew0K
-PiAgCXhudGlja3NfdCBuc2VjcyA9IHR2LT50dl91c2VjICogMTAwMDsNCj4gQEAgLTg2LDcgKzk2
-LDcgQEAgaW50IF9fY29iYWx0X2Nsb2NrX2dldHRpbWUoY2xvY2tpZF90IGNsb2NrX2lkLA0KPiAg
-CQkJICAgc3RydWN0IHRpbWVzcGVjICp0cyk7DQo+ICANCj4gIGludCBfX2NvYmFsdF9jbG9ja19z
-ZXR0aW1lKGNsb2NraWRfdCBjbG9ja19pZCwNCj4gLQkJCSAgIGNvbnN0IHN0cnVjdCB0aW1lc3Bl
-YyAqdHMpOw0KPiArCQkJICAgY29uc3Qgc3RydWN0IHRpbWVzcGVjNjQgKnRzKTsNCj4gIA0KPiAg
-aW50IF9fY29iYWx0X2Nsb2NrX2FkanRpbWUoY2xvY2tpZF90IGNsb2NrX2lkLA0KPiAgCQkJICAg
-c3RydWN0IHRpbWV4ICp0eCk7DQo+IEBAIC0xMDIsNyArMTEyLDggQEAgQ09CQUxUX1NZU0NBTExf
-REVDTChjbG9ja19nZXR0aW1lLA0KPiAgCQkgICAgKGNsb2NraWRfdCBjbG9ja19pZCwgc3RydWN0
-IHRpbWVzcGVjIF9fdXNlciAqdV90cykpOw0KPiAgDQo+ICBDT0JBTFRfU1lTQ0FMTF9ERUNMKGNs
-b2NrX3NldHRpbWUsDQo+IC0JCSAgICAoY2xvY2tpZF90IGNsb2NrX2lkLCBjb25zdCBzdHJ1Y3Qg
-dGltZXNwZWMgX191c2VyICp1X3RzKSk7DQo+ICsJCSAgICAoY2xvY2tpZF90IGNsb2NrX2lkLA0K
-PiArCQkJIGNvbnN0IHN0cnVjdCBvbGRfdGltZXNwZWMzMiBfX3VzZXIgKnVfdHMpKTsNCj4gIA0K
-PiAgQ09CQUxUX1NZU0NBTExfREVDTChjbG9ja19hZGp0aW1lLA0KPiAgCQkgICAgKGNsb2NraWRf
-dCBjbG9ja19pZCwgc3RydWN0IHRpbWV4IF9fdXNlciAqdV90eCkpOw0KPiBkaWZmIC0tZ2l0IGEv
-a2VybmVsL2NvYmFsdC9wb3NpeC9jb21wYXQuYyBiL2tlcm5lbC9jb2JhbHQvcG9zaXgvY29tcGF0
-LmMNCj4gaW5kZXggMTc5NjhiZi4uNjNkZjNiMCAxMDA2NDQNCj4gLS0tIGEva2VybmVsL2NvYmFs
-dC9wb3NpeC9jb21wYXQuYw0KPiArKysgYi9rZXJuZWwvY29iYWx0L3Bvc2l4L2NvbXBhdC5jDQo+
-IEBAIC0zMiw2ICszMiwxNiBAQCBpbnQgc3lzMzJfZ2V0X3RpbWVzcGVjKHN0cnVjdCB0aW1lc3Bl
-YyAqdHMsDQo+ICB9DQo+ICBFWFBPUlRfU1lNQk9MX0dQTChzeXMzMl9nZXRfdGltZXNwZWMpOw0K
-PiAgDQo+ICtpbnQgc3lzMzJfZ2V0X3RpbWVzcGVjX29sZChzdHJ1Y3QgdGltZXNwZWM2NCAqdHMs
-DQo+ICsJCSAgICAgICBjb25zdCBzdHJ1Y3Qgb2xkX3RpbWVzcGVjMzIgX191c2VyICpjdHMpDQo+
-ICt7DQo+ICsJcmV0dXJuIChjdHMgPT0gTlVMTCB8fA0KPiArCQkhYWNjZXNzX3JvayhjdHMsIHNp
-emVvZigqY3RzKSkgfHwNCj4gKwkJX194bl9nZXRfdXNlcih0cy0+dHZfc2VjLCAmY3RzLT50dl9z
-ZWMpIHx8DQo+ICsJCV9feG5fZ2V0X3VzZXIodHMtPnR2X25zZWMsICZjdHMtPnR2X25zZWMpKSA/
-IC1FRkFVTFQgOiAwOw0KPiArfQ0KPiArRVhQT1JUX1NZTUJPTF9HUEwoc3lzMzJfZ2V0X3RpbWVz
-cGVjX29sZCk7DQo+ICsNCj4gIGludCBzeXMzMl9wdXRfdGltZXNwZWMoc3RydWN0IGNvbXBhdF90
-aW1lc3BlYyBfX3VzZXIgKmN0cywNCj4gIAkJICAgICAgIGNvbnN0IHN0cnVjdCB0aW1lc3BlYyAq
-dHMpDQo+ICB7DQo+IGRpZmYgLS1naXQgYS9rZXJuZWwvY29iYWx0L3Bvc2l4L3N5c2NhbGwzMi5j
-IGIva2VybmVsL2NvYmFsdC9wb3NpeC9zeXNjYWxsMzIuYw0KPiBpbmRleCBmYWE3ZWY1Li41YjMx
-N2Y4IDEwMDY0NA0KPiAtLS0gYS9rZXJuZWwvY29iYWx0L3Bvc2l4L3N5c2NhbGwzMi5jDQo+ICsr
-KyBiL2tlcm5lbC9jb2JhbHQvcG9zaXgvc3lzY2FsbDMyLmMNCj4gQEAgLTE1OSwxMiArMTU5LDEy
-IEBAIENPQkFMVF9TWVNDQUxMMzJlbXUoY2xvY2tfZ2V0dGltZSwgY3VycmVudCwNCj4gIA0KPiAg
-Q09CQUxUX1NZU0NBTEwzMmVtdShjbG9ja19zZXR0aW1lLCBjdXJyZW50LA0KPiAgCQkgICAgKGNs
-b2NraWRfdCBjbG9ja19pZCwNCj4gLQkJICAgICBjb25zdCBzdHJ1Y3QgY29tcGF0X3RpbWVzcGVj
-IF9fdXNlciAqdV90cykpDQo+ICsJCSAgICAgY29uc3Qgc3RydWN0IG9sZF90aW1lc3BlYzMyIF9f
-dXNlciAqdV90cykpDQo+ICB7DQo+IC0Jc3RydWN0IHRpbWVzcGVjIHRzOw0KPiArCXN0cnVjdCB0
-aW1lc3BlYzY0IHRzOw0KPiAgCWludCByZXQ7DQo+ICANCj4gLQlyZXQgPSBzeXMzMl9nZXRfdGlt
-ZXNwZWMoJnRzLCB1X3RzKTsNCj4gKwlyZXQgPSBzeXMzMl9nZXRfdGltZXNwZWNfb2xkKCZ0cywg
-dV90cyk7DQo+ICAJaWYgKHJldCkNCj4gIAkJcmV0dXJuIHJldDsNCj4gIA0KPiBkaWZmIC0tZ2l0
-IGEva2VybmVsL2NvYmFsdC9wb3NpeC9zeXNjYWxsMzIuaCBiL2tlcm5lbC9jb2JhbHQvcG9zaXgv
-c3lzY2FsbDMyLmgNCj4gaW5kZXggMzQ5MDRmOS4uYzI4MzRhZCAxMDA2NDQNCj4gLS0tIGEva2Vy
-bmVsL2NvYmFsdC9wb3NpeC9zeXNjYWxsMzIuaA0KPiArKysgYi9rZXJuZWwvY29iYWx0L3Bvc2l4
-L3N5c2NhbGwzMi5oDQo+IEBAIC02MSw3ICs2MSw3IEBAIENPQkFMVF9TWVNDQUxMMzJlbXVfREVD
-TChjbG9ja19nZXR0aW1lLA0KPiAgDQo+ICBDT0JBTFRfU1lTQ0FMTDMyZW11X0RFQ0woY2xvY2tf
-c2V0dGltZSwNCj4gIAkJCSAoY2xvY2tpZF90IGNsb2NrX2lkLA0KPiAtCQkJICBjb25zdCBzdHJ1
-Y3QgY29tcGF0X3RpbWVzcGVjIF9fdXNlciAqdV90cykpOw0KPiArCQkJICBjb25zdCBzdHJ1Y3Qg
-b2xkX3RpbWVzcGVjMzIgX191c2VyICp1X3RzKSk7DQo+ICANCj4gIENPQkFMVF9TWVNDQUxMMzJl
-bXVfREVDTChjbG9ja19hZGp0aW1lLA0KPiAgCQkJIChjbG9ja2lkX3QgY2xvY2tfaWQsDQo=
+On 19.11.20 12:40, Chen, Hongzhan via Xenomai wrote:
+> 
+>>>> -->---Original Message-----
+>>>> Fr>om: Philippe Gerum <rpm@xenomai.org> 
+>>>> Se>nt: Tuesday, November 17, 2020 6:01 PM
+>>>> To>: Chen, Hongzhan <hongzhan.chen@intel.com>
+>>>> Cc>: xenomai@xenomai.org
+>>>> Su>bject: Re: [Xenomai over dovetail] Kernel hang in rcu_barrier after xenomai_init
+>>>>  >
+>>>>  >
+>>>> Ph>ilippe Gerum <rpm@xenomai.org> writes:
+>>>>  >
+>>>>>> Chen, Hongzhan <hongzhan.chen@intel.com> writes:
+>>>>>>
+>>>>>>> I have some clues about this issue. After xenomai_init is called, it seems that rcu_core
+>>>>>>> is never called from unknow startpoint ever after call call_rcu, which is supposed to be 
+>>>>>>> called by rcu softirq handler after we call call_rcu.
+>>>>>>> I am trying to debug why rcu softirq is not triggerred after then.
+>>>>>>
+>>>>>>
+>>>>>> You may want to make sure this is not offloaded to RCU kthreads,
+>>>>>> typically in case you run with nocbs settings. This said, tracing
+>>>>>> rcu_core() would match both.
+>>>>>>
+>>>>>> I did not reproduce the issue you observed with the EVL core, testing
+>>>>>> v5.8, v5.9 and v5.10-rc3. I'm currently running an overnight test to
+>>>>>> confirm this. This is why we need to be confident that an half-baked
+>>>>>> port on top of Dovetail is not causing this.
+>>>>  >
+>>>> 44> hours uninterrupted runtime on armv7, x86 and armv8, under stress: no
+>>>> is>sue detected so far. This does not rule out a Dovetail bug yet, but
+>>>> th>e possibility of a Cobalt issue is real.
+>>>>  >
+>>>> --> 
+>>>> Ph>ilippe.
+>>>
+>>> Thanks for your feedback.  I already found the root cause for the issue. According to my
+>>> debug on evl, I found that actually after call tick_install_proxy , the original 
+>>> hrtimer_interrupt would be called by proxy_irq_handler instead of   __sysvec_apic_timer_interrupt
+>>> so that  rcu_sched_clock_irq still can be successfully called by  update_process_times and
+>>> invoke_rcu_core would always be called and callback registerred by call_rcu can be successfully handled.
+>>> But in my case, after call tick_install_proxy in xenomai, update_process_times is never called and then
+>>> cause hang in rcu_barrier issue later. I would continue to check why fail to replace timer irq in my case.
+>>>
+>>> Did you try running Dovetail's boot time pipeline torture tests? Those
+>>> would exercise the basic features, such as the tick proxy device,
+>>> without any dependencies whatsoever. You may need to disable Cobalt to
+>>> do so, in order to leave the out-of-band stage available to them at boot.
+>>>
+>>> CONFIG_IRQ_PIPELINE_TORTURE_TESTS=y
+>>> CONFIG_XENOMAI=n
+>>>
+>>> If successful, those tests on a quad-core CPU should yield that kind of
+>>> traces in the kernel log:
+>>>
+>>> [    4.413767] Starting IRQ pipeline tests...
+>>> [    4.413772] IRQ pipeline: high-priority torture stage added.
+>>> [    4.423571] irq_pipeline-torture: CPU2 initiates stop_machine()
+>>> [    4.429527] irq_pipeline-torture: CPU3 responds to stop_machine()
+>>> [    4.429534] irq_pipeline-torture: CPU1 responds to stop_machine()
+>>> [    4.429538] irq_pipeline-torture: CPU0 responds to stop_machine()
+>>> [    4.447945] CPU0: proxy tick device registered (199.20MHz)
+>>> [    4.447948] CPU1: proxy tick device registered (199.20MHz)
+>>> [    4.447954] CPU3: proxy tick device registered (199.20MHz)
+>>> [    4.464448] CPU2: proxy tick device registered (199.20MHz)
+>>> [    4.469985] irq_pipeline-torture: CPU2: irq_work handled
+>>> [    4.475322] irq_pipeline-torture: CPU2: in-band->in-band irq_work trigger works
+>>> [    4.482648] irq_pipeline-torture: CPU2: stage escalation request works
+>>> [    4.482650] irq_pipeline-torture: CPU2: irq_work handled
+>>> [    4.494523] irq_pipeline-torture: CPU2: oob->in-band irq_work trigger works
+>>> [    5.523585] CPU3: proxy tick device unregistered
+>>> [    5.523590] CPU1: proxy tick device unregistered
+>>> [    5.523592] CPU0: proxy tick device unregistered
+>>> [    5.537459] CPU2: proxy tick device unregistered
+>>> [    5.542113] IRQ pipeline: torture stage removed.
+>>> [    5.546753] IRQ pipeline tests OK.
+>>
+>> Anything suspicious there instead would point to a Dovetail-related
+>> issue.
+>>
+>> -- 
+>> Philippe.
+>>
+>> The pipeline tests OK after I enable CONFIG_IRQ_PIPELINE_TORTURE_TEST and
+>> disable xenomai as you suggested. 
+>>
+>> When I try to debug this issue and add some printk info for functions 
+>> such as clockevents_register_proxy in files like 
+>> kernel/time/tick-proxy.c and kernel/time/clockevents.c, kernel hang in 
+>> mark_readonly->rcu_barrier would suddenly dissappear, kernel
+>> can boot into nfsroot and debian after then. But system would still hang in 
+>> other ruc_barrier during systemd trying to boot up some services.
+>> I try to count interrupt in founction handle_apic_irq of arch/x86/kernel/irq_pipeline.c
+>> for each cpu and then print this irq number in rcu_barrier for debuging and 
+>> finally found that actually cpu0  stop counting from very early before hang in
+>> mark_readonly->rcu_barrier of kernel. After further debug, I found that cpu0 
+>> stop counting after call tick_install_proxy when kernel hang in 
+>> mark_readonly->rcu_barrier. 
+>>
+>> For another hang case that system can boot into systemd but hang in other 
+>> rcu_barrier, I found that actually other three cpus randomly stop producing 
+>> apic timer interrupt except cpu0 after call tick_install_proxy according to my test.
+>>
+>> I do not know what may cause this issue. Do you have any suggestions about it?
+>>
+>> Regards
+>>
+>> Hongzhan Chen
+> 
+> I reproduced following issue steadily today. I think this should be root cause for my
+> hang issue. Till now I deeply understand what you suggested about porting.... 
+> I want to say it is really genius design about pipeline + proxy tick for real time system
+> on Linux kernel.
+> 
+> [    8.032556] IRQ pipeline: some code running in oob context 'Xenomai'
+> [    8.032557]               called an in-band only routine
+> [    8.032558] CPU: 0 PID: 12 Comm: migration/0 Tainted: G     U            5.8.0+ #30
+> [    8.032558] Hardware name: Maxtang WL10/WL10, BIOS WL10T105 10/16/2019
+> [    8.032559] IRQ stage: Xenomai
+> [    8.032559] Call Trace:
+> [    8.032560]  dump_stack+0x85/0xa6
+> [    8.032561]  inband_irq_save+0x6/0x30
+> [    8.032561]  ktime_get+0x24/0x140
+
+Is calling that function OK in the EVL context? Does xnclock_tick() do
+this explicitly, or is there some wrapping happening that may have
+hidden an invalid call?
+
+Jan
+
+> [    8.032562]  xnclock_tick+0x3b/0x2c0
+> [    8.032563]  xnintr_core_clock_handler+0x76/0x140
+> [    8.032563]  lapic_oob_handler+0x42/0x1e0
+> [    8.032564]  do_oob_irq+0x69/0x620
+> [    8.032564]  ? vsnprintf+0xfd/0x4d0
+> [    8.032565]  handle_oob_irq+0x7d/0x190
+> [    8.032566]  generic_pipeline_irq+0x1b4/0x3a0
+> [    8.032566]  arch_pipeline_entry+0x113/0x150
+> [    8.032567]  asm_sysvec_apic_timer_interrupt+0x12/0x20
+> 
+> Regards
+> 
+> Hongzhan Chen
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+
+
+-- 
+Siemens AG, T RDA IOT
+Corporate Competence Center Embedded Linux
 
