@@ -1,19 +1,9 @@
-From: =?utf-8?Q?Deniz_U=C4=9Fur?= <deniz343@gmail.com>
-Message-Id: <CBBA0C8E-C9F6-4E37-A30A-EDED25513E7F@gmail.com>
-Mime-Version: 1.0 (Mac OS X Mail 12.4 \(3445.104.17\))
-Subject: Re: Xenomai Images - Password
-Date: Wed, 4 Nov 2020 22:41:31 +0300
-In-Reply-To: <DBAPR07MB6600D50931CEBA9221BA59F0B5EF0@DBAPR07MB6600.eurprd07.prod.outlook.com>
-References: <AD19FEDC-0F4F-4749-9CE1-C5E38DC1B878@gmail.com>
- <be26f9ca-d3c8-c86d-d8aa-92aa53f65042@siemens.com>
- <4019C880-7DCD-43D9-A559-05570BD867EC@gmail.com>
- <1564cbf6-d4fa-1cdc-1996-20d71464af6c@siemens.com>
- <B845B431-F685-4DE2-93D0-AC823151C7E3@gmail.com>
- <4AA60C97-3707-4AAB-BEEF-89DEC7B67D8F@gmail.com>
- <DBAPR07MB6600D50931CEBA9221BA59F0B5EF0@DBAPR07MB6600.eurprd07.prod.outlook.com>
-Content-Type: text/plain;
-	charset=utf-8
-Content-Transfer-Encoding: quoted-printable
+From: Philippe Gerum <rpm@xenomai.org>
+Subject: Xenomai 3.x over Dovetail
+Date: Thu, 19 Nov 2020 13:25:18 +0100
+Message-ID: <87r1op4jpt.fsf@xenomai.org>
+MIME-Version: 1.0
+Content-Type: text/plain
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -22,84 +12,116 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Giulio Moro <g.moro@qmul.ac.uk>
-Cc: Jan Kiszka <jan.kiszka@siemens.com>, Xenomai <xenomai@xenomai.org>
+To: xenomai@xenomai.org
 
-Thank you, Giulio. I=E2=80=99ll probably do that once everything works =
-as expected.
 
-> On 4 Nov 2020, at 22:37, Giulio Moro <g.moro@qmul.ac.uk> wrote:
->=20
-> The easiest way is to boot without sd card, login, and then
->=20
-> sudo su
-> dd if=3D/dev/zero of=3D/dev/mmcblk1 bs=3D1024k count=3D100
->=20
-> This should make the eMMC unbootable and so boot from SD. Otherwise =
-you can give power while holding down the USER button every time.
-> From: Xenomai <xenomai-bounces@xenomai.org> on behalf of Deniz U=C4=9Fur=
- via Xenomai <xenomai@xenomai.org>
-> Sent: Wednesday, November 4, 2020 7:33:26 PM
-> To: Jan Kiszka <jan.kiszka@siemens.com>
-> Cc: Xenomai <xenomai@xenomai.org>
-> Subject: Re: Xenomai Images - Password
-> =20
-> Okay it looks like BB did not boot from sd card at all and loaded the =
-pre-loaded linux. If you happen to know how to change that, I would be =
-really glad. Otherwise we can close this thread.
->=20
-> Thank you for your help.
->=20
-> > On 4 Nov 2020, at 22:29, Deniz U=C4=9Fur <deniz343@gmail.com> wrote:
-> >=20
-> > It=E2=80=99s possible to login via serial console. What can I do =
-from here to ensure that ssh is possible?
-> >=20
-> >> On 4 Nov 2020, at 22:22, Jan Kiszka <jan.kiszka@siemens.com> wrote:
-> >>=20
-> >> [re-adding the list]
-> >>=20
-> >> On 04.11.20 20:07, Deniz U=C4=9Fur wrote:
-> >>> The session seems to be established, only password is not =
-accepted. Also no, I=E2=80=99m not using serial console. I tried to add =
-a new user to customizations file but that did not worked.
-> >>=20
-> >> OK. I do not have a BeagleBone in reach, but I'm cross-checking via =
-qemu-armhf ATM.
-> >>=20
-> >> Could you try logging in via the serial console? Would allow to =
-check if the password was set, extract log information, possibly also =
-running sshd with debug options on (sshd -ddd).
-> >>=20
-> >> Jan
-> >>=20
-> >>>> On 4 Nov 2020, at 22:02, Jan Kiszka <jan.kiszka@siemens.com> =
-wrote:
-> >>>>=20
-> >>>> On 04.11.20 19:54, Deniz U=C4=9Fur via Xenomai wrote:
-> >>>>> Hello all,
-> >>>>> I=E2=80=99m successfully generating a BeagleBone Black image =
-with optional xenomai-next recipe. When I plug it to BBB it seems to be =
-working. However, the login for root/root does not work. I'm connecting =
-on 192.168.7.2.
-> >>>>> Is the default password different from root?
-> >>>>=20
-> >>>> No... that is supposed to work. The password "root" is defined =
-via conf/distro/xenomai-demo.conf.
-> >>>>=20
-> >>>> You are logging in via ssh? Is the session establish, just the =
-password not accepted? Or are you logging in via serial console?
-> >>>>=20
-> >>>> Jan
-> >>>>=20
-> >>>> --=20
-> >>>> Siemens AG, T RDA IOT
-> >>>> Corporate Competence Center Embedded Linux
-> >>=20
-> >> --=20
-> >> Siemens AG, T RDA IOT
-> >> Corporate Competence Center Embedded Linux
-> >=20
->=20
->=20
+All,
+
+After some recent discussion with Jan, I'm joining the fray in order to
+get Xenomai rebased on Dovetail, replacing the I-pipe, the in-kernel
+software layer which connects the real-time (Cobalt) core to the
+mainline Linux implementation. The main goal is to enable Xenomai 3.x
+for the most recent LTS kernel releases, such as the upcoming v5.10. A
+bit of context in the form of a Q&A:
+
+Q: Why do we need the I-pipe to be replaced in the first place?
+A: Because Dovetail - as the successor to the I-pipe - addresses
+   important implementation and maintenance issues of the latter.
+   Maintaining two interfaces with identical goals concurrently any
+   further would make no sense, and would keep on diluting the scarce
+   manpower resources we have.
+
+Q: Why can't we just port the I-pipe to v5.10, etc.?
+A: Because the aging design of the I-pipe would make this a very
+   difficult task, especially when confronted to massive code churn,
+   like the one which took place in the v5.8 cycle for x86. Although I'm
+   not claiming the upgrade process has become trivial, Dovetail is
+   certainly simpler to port to newer kernel releases than doing so for
+   the I-pipe might ever be. Dovetail tracks the kernel development tip,
+   runs v5.10-rc4 at the moment.
+
+Q: What kind of I-pipe issues does Dovetail fix?
+A: Basically, a better integration with the mainline kernel
+   implementation, which eases the work of rebasing it on top of newer
+   kernel releases. It also provides crucial built-in capabilities such
+   as time and clock source management, real-time context switching and
+   fpu handling shared with the common kernel implementation, which
+   the real-time core does not have to care about anymore.
+
+Q: Will switching to Dovetail have an impact on applications?
+A: No, the nitty-gritty details should live into the kernel and libcobalt,
+   without affecting the APIs.
+
+Q: Will switching to Dovetail have an impact on the Xenomai ABI?
+A: Yes. Therefore the changes involved will be at core of Xenomai
+   3.2+. They won't be backported to Xenomai 3.1 or earlier.
+
+Q: Which CPU architectures does Dovetail support today?
+A: aarch64, aarch32 (armv7 essentially), x86_64.
+
+== Now, to the proposed broad plan for achieving this port:
+
+1- the ability to test the very same Cobalt code base on top of Dovetail
+   or the I-pipe alternatively may go a long way toward debugging the
+   port, particularly when it comes to spotting regressions. For
+   achieving this, we should insert some "interrupt pipeline"
+   abstraction layer into the Cobalt code. Depending on some build time
+   selector, the I-pipe or Dovetail interface would be used. Initially,
+   we could focus on having the I-pipe interface side working, which
+   should not be prone to regression since this task is basically about
+   moving code around, reorganizing the Cobalt code base.
+
+2- once the dust has settled on moving the code around, we need to
+   rework the timer management layer (xntimer) in order to switch the
+   internal date and delay representation from "clock ticks" (e.g. TSC
+   counts, or whatever unit some time hardware might use) to plain
+   nanoseconds, in order to align on the regular kernel representation
+   of time values (ktime_t, which Dovetail shares). Those changes will
+   impact libcobalt as well. Bonus: once this is done, applications may
+   safely get time stamps from primary mode using the fast vDSO
+   mechanism via clock_gettime() for instance. In addition, variation of
+   the CPU frequency (CPU_FREQ) will stop being a showstopper, since our
+   time stamps would not depend on the duration of a hardware tick
+   anymore.
+
+3- then, we may flesh out and test the Dovetail side of the abstraction
+   layer, comparing results to the I-pipe version, thanks to having #1
+   done.
+
+Both the I-pipe and Dovetail maintain a version targeting kernel v5.4
+LTS. We may use this common ground for comparing results, chasing
+regressions during the initial phase of the port. Once we are confident
+that the Dovetail side is in good shape, we may switch it to v5.10.
+
+== Where do we start from?
+
+In order to bootstrap this effort, I can resurrect the code I mentioned
+in some other thread [1], which contains some groundwork for abstracting
+the interrupt pipeline. Looking at the changes which have been pushed to
+the Xenomai master branch since then, pulling them into this initial
+work may be the more tractable option, in order to complete task #1.
+
+In terms of documentation about Dovetail, [2] is the place to look for.
+
+---
+
+All the hard work which already took place on trying to get this port
+done is certainly not lost, as it helped getting more people diving into
+the innards of the dual kernel machinery. With more people sharing this
+knowledge, we should be able to achieve this port quicker, and most
+importantly, have a better chance keeping the pace with the Linux kernel
+development in the long run.
+
+I'm looking forward to discussing this proposal, other ideas, and
+sharing the effort with anyone willing to contribute. The plan is to
+start this work shortly, so please chime in early on if you intend to
+discuss, help with this.
+
+Thanks,
+
+[1] https://lab.xenomai.org/xenomai-rpm.git/log/?h=wip/dovetail
+[2] https://evlproject.org/dovetail/
+
+-- 
+Philippe.
 
