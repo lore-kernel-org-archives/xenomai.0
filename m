@@ -1,11 +1,11 @@
-From: "Q. Gylstorff" <Quirin.Gylstorff@siemens.com>
-Subject: [xenomai-images][PATCH v2 3/4] ci: Add xenomai-version to build
-Date: Fri,  6 Nov 2020 15:56:31 +0100
-Message-Id: <20201106145632.2951-4-Quirin.Gylstorff@siemens.com>
-In-Reply-To: <20201106145632.2951-1-Quirin.Gylstorff@siemens.com>
-References: <20201106145632.2951-1-Quirin.Gylstorff@siemens.com>
+From: Jan Kiszka <jan.kiszka@siemens.com>
+Subject: [PATCH] ci: Drop Travis CI
+Message-ID: <4c548ae9-0320-1744-143e-7a434adf746e@siemens.com>
+Date: Fri, 20 Nov 2020 09:56:39 +0100
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -14,212 +14,262 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org, jan.kiszka@siemens.com
+To: Xenomai <xenomai@xenomai.org>
 
-From: Quirin Gylstorff <quirin.gylstorff@siemens.com>
+From: Jan Kiszka <jan.kiszka@siemens.com>
 
-To identify the used xenomai version add the Version name to
-each build job.
+We migrated to gitlab-ci now, and the travis script will only bitrot
+over the time.
 
-e.g.:
-build-4.19:board-qemu-amd64:xenomai-next use kernel 4.19 and
-xenomai-next for testing.
-
-Signed-off-by: Quirin Gylstorff <quirin.gylstorff@siemens.com>
+Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
 ---
- ci/4_19_builds.yml   | 42 ++++++++++++++++++++++++------------------
- ci/5_4_builds.yml    | 14 ++++++++------
- ci/xenomai_3_0_x.yml | 14 ++++++++------
- 3 files changed, 40 insertions(+), 30 deletions(-)
+ .travis.yml | 232 ----------------------------------------------------
+ 1 file changed, 232 deletions(-)
+ delete mode 100644 .travis.yml
 
-diff --git a/ci/4_19_builds.yml b/ci/4_19_builds.yml
-index f98edc4..80252af 100644
---- a/ci/4_19_builds.yml
-+++ b/ci/4_19_builds.yml
-@@ -9,74 +9,80 @@
- # SPDX-License-Identifier: MIT
- #
- 
--build-4.19:board-qemu-amd64:
-+build-4.19:board-qemu-amd64:xenomai-next:
-   extends: .build:board-qemu-amd64
-   variables:
-     DEPLOY_DIR_EXTENSION: "4.19"
- 
--lava-test-4.19:qemu-amd64:
--  needs: [ "build-4.19:board-qemu-amd64" ]
-+lava-test-4.19:qemu-amd64:xenomai-next:
-+  needs: [ "build-4.19:board-qemu-amd64:xenomai-next" ]
-   extends: .lava-test:qemu-amd64
-   variables:
-     DEPLOY_DIR_EXTENSION: "4.19"
-     BUILD_IDENTIFIER: "4.19"
-+    TARGET_EXTENSION: ":xenomai-next"
- 
--build-4.19:board-qemu-armhf:
-+build-4.19:board-qemu-armhf:xenomai-next:
-   extends: .build:board-qemu-armhf
-   variables:
-     DEPLOY_DIR_EXTENSION: "4.19"
- 
--lava-test-4.19:qemu-armhf:
--  needs: [ "build-4.19:board-qemu-armhf" ]
-+lava-test-4.19:qemu-armhf:xenomai-next:
-+  needs: [ "build-4.19:board-qemu-armhf:xenomai-next" ]
-   extends: .lava-test:qemu-armhf
-   variables:
-     DEPLOY_DIR_EXTENSION: "4.19"
-     BUILD_IDENTIFIER: "4.19"
-+    TARGET_EXTENSION: ":xenomai-next"
- 
--build-4.19:board-qemu-arm64:
-+build-4.19:board-qemu-arm64:xenomai-next:
-   extends: .build:board-qemu-arm64
-   variables:
-     DEPLOY_DIR_EXTENSION: "4.19"
- 
--lava-test-4.19:qemu-arm64:
--  needs: [ "build-4.19:board-qemu-arm64" ]
-+lava-test-4.19:qemu-arm64:xenomai-next:
-+  needs: [ "build-4.19:board-qemu-arm64:xenomai-next" ]
-   extends: .lava-test:qemu-arm64
-   variables:
-     DEPLOY_DIR_EXTENSION: "4.19"
-     BUILD_IDENTIFIER: "4.19"
-+    TARGET_EXTENSION: ":xenomai-next"
- 
--build-4.19:board-hikey:
-+build-4.19:board-hikey:xenomai-next:
-   extends: .build:board-hikey
-   variables:
-     DEPLOY_DIR_EXTENSION: "4.19"
- 
--lava-test-4.19:board-hikey:
--  needs: [ "build-4.19:board-hikey" ]
-+lava-test-4.19:board-hikey:xenomai-next:
-+  needs: [ "build-4.19:board-hikey:xenomai-next" ]
-   extends: .lava-test:board-hikey
-   variables:
-     DEPLOY_DIR_EXTENSION: "4.19"
-     BUILD_IDENTIFIER: "4.19"
-+    TARGET_EXTENSION: ":xenomai-next"
- 
--build-4.19:board-beagle-bone-black:
-+build-4.19:board-beagle-bone-black:xenomai-next:
-   extends: .build:board-beagle-bone-black
-   variables:
-     DEPLOY_DIR_EXTENSION: "4.19"
- 
--lava-test-4.19:board-beagle-bone-black:
--  needs: [ "build-4.19:board-beagle-bone-black" ]
-+lava-test-4.19:board-beagle-bone-black:xenomai-next:
-+  needs: [ "build-4.19:board-beagle-bone-black:xenomai-next" ]
-   extends: .lava-test:board-beagle-bone-black
-   variables:
-     DEPLOY_DIR_EXTENSION: "4.19"
-     BUILD_IDENTIFIER: "4.19"
-+    TARGET_EXTENSION: ":xenomai-next"
- 
--build-4.19:board-x86-64-efi:
-+build-4.19:board-x86-64-efi:xenomai-next:
-   extends: .build:board-x86-64-efi
-   variables:
-     DEPLOY_DIR_EXTENSION: "4.19"
- 
--lava-test-4.19:board-x86-64-efi:
--  needs: [ "build-4.19:board-x86-64-efi" ]
-+lava-test-4.19:board-x86-64-efi:xenomai-next:
-+  needs: [ "build-4.19:board-x86-64-efi:xenomai-next" ]
-   extends: .lava-test:board-x86-64-efi
-   variables:
-     DEPLOY_DIR_EXTENSION: "4.19"
-     BUILD_IDENTIFIER: "4.19"
-+    TARGET_EXTENSION: ":xenomai-next"
-diff --git a/ci/5_4_builds.yml b/ci/5_4_builds.yml
-index 4e8ea76..d7f10fa 100644
---- a/ci/5_4_builds.yml
-+++ b/ci/5_4_builds.yml
-@@ -9,30 +9,32 @@
- # SPDX-License-Identifier: MIT
- #
- 
--build-5.4:board-qemu-amd64:
-+build-5.4:board-qemu-amd64:xenomai-next:
-   extends: .build:board-qemu-amd64
-   variables:
-     LINUX_BUILD_OPTION: ":opt-linux-latest-5.4.yml"
-     DEPLOY_DIR_EXTENSION: "5.4"
- 
--lava-test-5.4:qemu-amd64:
--  needs: [ "build-5.4:board-qemu-amd64" ]
-+lava-test-5.4:qemu-amd64:xenomai-next:
-+  needs: [ "build-5.4:board-qemu-amd64:xenomai-next" ]
-   extends: .lava-test:qemu-amd64
-   variables:
-     DEPLOY_DIR_EXTENSION: "5.4"
-     BUILD_IDENTIFIER: "5.4"
-+    TARGET_EXTENSION: ":xenomai-next"
- 
- 
--build-5.4:board-x86-64-efi:
-+build-5.4:board-x86-64-efi:xenomai-next:
-   extends: .build:board-x86-64-efi
-   variables:
-     LINUX_BUILD_OPTION: ":opt-linux-latest-5.4.yml"
-     DEPLOY_DIR_EXTENSION: "5.4"
- 
- 
--lava-test-5.4:board-x86-64-efi:
--  needs: [ "build-5.4:board-x86-64-efi" ]
-+lava-test-5.4:board-x86-64-efi:xenomai-next:
-+  needs: [ "build-5.4:board-x86-64-efi:xenomai-next" ]
-   extends: .lava-test:board-x86-64-efi
-   variables:
-     DEPLOY_DIR_EXTENSION: "5.4"
-     BUILD_IDENTIFIER: "5.4"
-+    TARGET_EXTENSION: ":xenomai-next"
-diff --git a/ci/xenomai_3_0_x.yml b/ci/xenomai_3_0_x.yml
-index 9dbd8d4..6b868a9 100644
---- a/ci/xenomai_3_0_x.yml
-+++ b/ci/xenomai_3_0_x.yml
-@@ -9,28 +9,30 @@
- # SPDX-License-Identifier: MIT
- #
- 
--build-4.4:board-beagle-bone-black:
-+build-4.4:board-beagle-bone-black:xenomai-3.0.x:
-   extends: .build:board-beagle-bone-black
-   variables:
-     XENOMAI_BUILD_OPTION: ":opt-xenomai-3.0.x.yml"
-     DEPLOY_DIR_EXTENSION: "xenomai-3.0.x"
- 
--lava-test-4.4:board-beagle-bone-black:
--  needs: [ "build-4.4:board-beagle-bone-black" ]
-+lava-test-4.4:board-beagle-bone-black:xenomai-3.0.x:
-+  needs: [ "build-4.4:board-beagle-bone-black:xenomai-3.0.x" ]
-   extends: .lava-test:board-beagle-bone-black
-   variables:
-     DEPLOY_DIR_EXTENSION: "xenomai-3.0.x"
-     BUILD_IDENTIFIER: "4.4"
-+    TARGET_EXTENSION: ":xenomai-3.0.x"
- 
--build-4.4:board-x86-64-efi:
-+build-4.4:board-x86-64-efi:xenomai-3.0.x:
-   extends: .build:board-x86-64-efi
-   variables:
-     XENOMAI_BUILD_OPTION: ":opt-xenomai-3.0.x.yml"
-     DEPLOY_DIR_EXTENSION: "xenomai-3.0.x"
- 
--lava-test-4.4:board-x86-64-efi:
--  needs: [ "build-4.4:board-x86-64-efi" ]
-+lava-test-4.4:board-x86-64-efi:xenomai-3.0.x:
-+  needs: [ "build-4.4:board-x86-64-efi:xenomai-3.0.x" ]
-   extends: .lava-test:board-x86-64-efi
-   variables:
-     DEPLOY_DIR_EXTENSION: "xenomai-3.0.x"
-     BUILD_IDENTIFIER: "4.4"
-+    TARGET_EXTENSION: ":xenomai-3.0.x"
+diff --git a/.travis.yml b/.travis.yml
+deleted file mode 100644
+index 30f7909bbe..0000000000
+--- a/.travis.yml
++++ /dev/null
+@@ -1,232 +0,0 @@
+-language: c
+-dist: bionic
+-cache: ccache
+-
+-addons:
+-  apt:
+-    packages:
+-      - gcc-8
+-      - gcc-8-aarch64-linux-gnu
+-      - libc6-dev-arm64-cross
+-      - gcc-8-arm-linux-gnueabihf
+-      - libc6-dev-armhf-cross
+-      - gcc-8-powerpc-linux-gnu
+-      - libc6-dev-powerpc-cross
+-      - u-boot-tools
+-
+-env:
+-  global:
+-    - KDIR=/tmp/kernel
+-    - USE_CCACHE=1
+-    - CCACHE_MAXSIZE=400M
+-
+-install:
+-  - sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-8 800
+-  - sudo update-alternatives --install /usr/bin/aarch64-linux-gnu-gcc aarch64-linux-gnu-gcc /usr/bin/aarch64-linux-gnu-gcc-8 800
+-  - sudo update-alternatives --install /usr/bin/arm-linux-gnueabihf-gcc arm-linux-gnueabihf-gcc /usr/bin/arm-linux-gnueabihf-gcc-8 800
+-  - sudo update-alternatives --install /usr/bin/powerpc-linux-gnu-gcc powerpc-linux-gnu-gcc /usr/bin/powerpc-linux-gnu-gcc-8 800
+-  - REV=$(git ls-remote --tags --refs ${IPIPE_KERNEL} | sed "s|.*[[:space:]]refs/tags/||" | grep "${IPIPE_REV}" | sort -r -n -t - -k 5 -k 6 | head -1)
+-  - test -n "${REV}" || REV="${IPIPE_REV}"
+-  - echo "Cloning branch/tag ${REV}"
+-  - git clone --depth 1 --branch ${REV} ${IPIPE_KERNEL} ${KDIR}
+-
+-before_script:
+-  - case "${ARCH}" in
+-      "arm64")
+-          export CROSS_COMPILE=aarch64-linux-gnu-
+-          export CONFIGURE_OPTS="--host=aarch64-linux-gnu --with-cc=aarch64-linux-gnu-gcc"
+-          ;;
+-      "arm")
+-          export CROSS_COMPILE=arm-linux-gnueabihf-
+-          export CONFIGURE_OPTS="--host=arm-linux-gnueabihf --with-cc=arm-linux-gnueabihf-gcc"
+-          ;;
+-      "powerpc")
+-          export CROSS_COMPILE=powerpc-linux-gnu-
+-          export CONFIGURE_OPTS="--host=powerpc-linux-gnu --with-cc=powerpc-linux-gnu-gcc"
+-          ;;
+-      "x86")
+-          export CROSS_COMPILE=
+-          export CONFIGURE_OPTS="--enable-dlopen-libs --enable-lazy-setsched"
+-          ;;
+-    esac
+-  - mkdir ~/ccache
+-  - ln -s /usr/bin/ccache ~/ccache/aarch64-linux-gnu-gcc
+-  - ln -s /usr/bin/ccache ~/ccache/arm-linux-gnueabihf-gcc
+-  - ln -s /usr/bin/ccache ~/ccache/powerpc-linux-gnu-gcc
+-  - export PATH=~/ccache:$PATH
+-  - ${CROSS_COMPILE}gcc --version
+-
+-  - pushd ${KDIR}
+-  - make -j $(nproc) ${KERNEL_DEFCONFIG}
+-
+-  # Generic settings
+-  - ./scripts/config -d DEBUG_INFO
+-
+-  # I-pipe and Xenomai settings
+-  - ./scripts/config -e IPIPE
+-  - ./scripts/config -e XENOMAI
+-  - ./scripts/config -e XENO_OPT_SCHED_CLASSES
+-  - ./scripts/config -e XENO_OPT_SCHED_WEAK
+-  - ./scripts/config -e XENO_OPT_SCHED_TP
+-  - ./scripts/config -e XENO_OPT_SCHED_SPORADIC
+-  - ./scripts/config -e XENO_OPT_SCHED_QUOTA
+-  - ./scripts/config -e XENO_OPT_SHIRQ
+-  - ./scripts/config -e XENO_OPT_SCALABLE_SCHED
+-  - ./scripts/config -e XENO_OPT_DEBUG
+-  - ./scripts/config -e XENO_OPT_DEBUG_COBALT
+-  - ./scripts/config -e XENO_OPT_DEBUG_MEMORY
+-  - ./scripts/config -e XENO_OPT_DEBUG_CONTEXT
+-  - ./scripts/config -e XENO_OPT_DEBUG_USER
+-  - ./scripts/config -e XENO_OPT_DEBUG_LEGACY
+-  - ./scripts/config -e XENO_OPT_DEBUG_TRACE_RELAX
+-  - ./scripts/config -e XENO_DRIVERS_16550A
+-  - ./scripts/config -e XENO_DRIVERS_16550A_ANY
+-  - ./scripts/config -e XENO_DRIVERS_16550A_PCI
+-  - ./scripts/config -e XENO_DRIVERS_16550A_PCI_MOXA
+-  - ./scripts/config -e XENO_DRIVERS_IMX_UART
+-  - ./scripts/config -e XENO_DRIVERS_RTDMTEST
+-  - ./scripts/config -e XENO_DRIVERS_CAN
+-  - ./scripts/config -e XENO_DRIVERS_CAN_LOOPBACK
+-  - ./scripts/config -e XENO_DRIVERS_CAN_VIRT
+-  - ./scripts/config -e XENO_DRIVERS_CAN_FLEXCAN
+-  - ./scripts/config -e XENO_DRIVERS_CAN_SJA1000
+-  - ./scripts/config -e XENO_DRIVERS_CAN_SJA1000_ISA
+-  - ./scripts/config -e XENO_DRIVERS_CAN_SJA1000_MEM
+-  - ./scripts/config -e XENO_DRIVERS_CAN_SJA1000_PEAK_PCI
+-  - ./scripts/config -e XENO_DRIVERS_CAN_SJA1000_IXXAT_PCI
+-  - ./scripts/config -e XENO_DRIVERS_CAN_SJA1000_ADV_PCI
+-  - ./scripts/config -e XENO_DRIVERS_CAN_SJA1000_PLX_PCI
+-  - ./scripts/config -e XENO_DRIVERS_CAN_SJA1000_EMS_PCI
+-  - ./scripts/config -e XENO_DRIVERS_CAN_SJA1000_ESD_PCI
+-  - ./scripts/config -e XENO_DRIVERS_CAN_SJA1000_PEAK_DNG
+-  - ./scripts/config -m XENO_DRIVERS_NET
+-  - ./scripts/config -e XENO_DRIVERS_RTNET_CHECKED
+-  - ./scripts/config -e XENO_DRIVERS_NET_ETH_P_ALL
+-  - ./scripts/config -e XENO_DRIVERS_NET_RTIPV4_NETROUTING
+-  - ./scripts/config -e XENO_DRIVERS_NET_RTIPV4_ROUTER
+-  - ./scripts/config -e XENO_DRIVERS_NET_RTIPV4_DEBUG
+-  - ./scripts/config -m XENO_DRIVERS_NET_RTIPV4_TCP
+-  - ./scripts/config -e XENO_DRIVERS_NET_RTIPV4_TCP_ERROR_INJECTION
+-  - ./scripts/config -m XENO_DRIVERS_NET_NOMAC
+-  - ./scripts/config -e XENO_DRIVERS_NET_RTCFG_DEBUG
+-  - ./scripts/config -m XENO_DRIVERS_NET_DRV_PCNET32
+-  - ./scripts/config -m XENO_DRIVERS_NET_DRV_TULIP
+-  - ./scripts/config -e XENO_DRIVERS_NET_DRV_EEPRO100_DBG
+-  - ./scripts/config -m XENO_DRIVERS_NET_DRV_E1000E
+-  - ./scripts/config -m XENO_DRIVERS_NET_DRV_NATSEMI
+-  - ./scripts/config -m XENO_DRIVERS_NET_DRV_VIA_RHINE
+-  - ./scripts/config -m XENO_DRIVERS_NET_DRV_IGB
+-  - ./scripts/config -m XENO_DRIVERS_NET_DRV_R8169
+-  - ./scripts/config -m XENO_DRIVERS_NET_DRV_SMC91111
+-  - ./scripts/config -e XENO_DRIVERS_NET_EXP_DRIVERS
+-  - ./scripts/config -m XENO_DRIVERS_NET_DRV_3C59X
+-  - ./scripts/config -m XENO_DRIVERS_NET_DRV_E1000_NEW
+-  - ./scripts/config -m XENO_DRIVERS_NET_DRV_RT2500
+-  - ./scripts/config -m XENO_DRIVERS_NET_ADDON_RTCAP
+-  - ./scripts/config -m XENO_DRIVERS_NET_ADDON_PROXY
+-  - ./scripts/config -e XENO_DRIVERS_NET_ADDON_PROXY_ARP
+-  - ./scripts/config -e XENO_DRIVERS_ANALOGY
+-  - ./scripts/config -e XENO_DRIVERS_ANALOGY_DEBUG
+-  - ./scripts/config -e XENO_DRIVERS_ANALOGY_DEBUG_FTRACE
+-  - ./scripts/config -e XENO_DRIVERS_ANALOGY_FAKE
+-  - ./scripts/config -e XENO_DRIVERS_ANALOGY_NI_PCIMIO
+-  - ./scripts/config -e XENO_DRIVERS_ANALOGY_S526
+-  - ./scripts/config -e XENO_DRIVERS_RTIPC
+-  - ./scripts/config -e XENO_DRIVERS_UDD
+-  - ./scripts/config -e XENO_DRIVERS_GPIO
+-  - ./scripts/config -e XENO_DRIVERS_GPIO_BCM2835
+-  - ./scripts/config -e XENO_DRIVERS_GPIO_MXC
+-  - ./scripts/config -e XENO_DRIVERS_GPIO_SUN8I_H3
+-  - ./scripts/config -e XENO_DRIVERS_GPIO_ZYNQ7000
+-  - ./scripts/config -e XENO_DRIVERS_GPIO_XILINX
+-  - ./scripts/config -e XENO_DRIVERS_GPIO_OMAP
+-  - ./scripts/config -e XENO_DRIVERS_GPIO_DEBUG
+-  - ./scripts/config -e XENO_DRIVERS_GPIOPWM
+-  - ./scripts/config -e XENO_DRIVERS_SPI_BCM2835
+-  - ./scripts/config -e XENO_DRIVERS_SPI_SUN6I
+-  - ./scripts/config -e XENO_DRIVERS_SPI_OMAP2_MCSPI_RT
+-  - ./scripts/config -e XENO_DRIVERS_SPI_DEBUG
+-
+-  - popd
+-
+-script:
+-  - scripts/prepare-kernel.sh --arch=${ARCH} --linux=${KDIR}
+-  - pushd ${KDIR}
+-  - make -j $(nproc) olddefconfig
+-  - make -j $(nproc) all
+-  - popd
+-
+-  - scripts/bootstrap
+-  - ./configure --enable-smp ${CONFIGURE_OPTS}
+-  - make -j $(nproc)
+-
+-  - ccache -s
+-
+-matrix:
+-  include:
+-    - name: "ARM 4.19 release"
+-      env:
+-      - ARCH: arm
+-        IPIPE_REV: ipipe-core-4.19..*-arm-.*
+-        IPIPE_KERNEL: https://gitlab.denx.de/Xenomai/ipipe-arm.git
+-        KERNEL_DEFCONFIG: multi_v7_defconfig
+-    - name: "ARM 4.14 release"
+-      env:
+-      - ARCH: arm
+-        IPIPE_REV: ipipe-core-4.14..*-arm-.*
+-        IPIPE_KERNEL: https://gitlab.denx.de/Xenomai/ipipe-arm.git
+-        KERNEL_DEFCONFIG: multi_v7_defconfig
+-    - name: "ARM 4.4-CIP head"
+-      env:
+-      - ARCH: arm
+-        IPIPE_REV: ipipe-4.4.y-cip
+-        IPIPE_KERNEL: https://gitlab.denx.de/Xenomai/ipipe.git
+-        KERNEL_DEFCONFIG: multi_v7_defconfig
+-    - name: "ARM64 4.19 release"
+-      env:
+-      - ARCH: arm64
+-        IPIPE_REV: ipipe-core-4.19..*-arm64-.*
+-        IPIPE_KERNEL: https://gitlab.denx.de/Xenomai/ipipe-arm64.git
+-        KERNEL_DEFCONFIG: defconfig
+-    - name: "ARM64 4.14 release"
+-      env:
+-      - ARCH: arm64
+-        IPIPE_REV: ipipe-core-4.14..*-arm64-.*
+-        IPIPE_KERNEL: https://gitlab.denx.de/Xenomai/ipipe-arm64.git
+-        KERNEL_DEFCONFIG: defconfig
+-    - name: "x86 4.19-CIP head"
+-      env:
+-      - ARCH: x86
+-        IPIPE_REV: ipipe-x86-4.19.y-cip
+-        IPIPE_KERNEL: https://gitlab.denx.de/Xenomai/ipipe-x86.git
+-        KERNEL_DEFCONFIG: x86_64_defconfig
+-    - name: "x86 4.19-CIP release"
+-      env:
+-      - ARCH: x86
+-        IPIPE_REV: ipipe-core-4.19..*cip.*-x86-.*
+-        IPIPE_KERNEL: https://gitlab.denx.de/Xenomai/ipipe-x86.git
+-        KERNEL_DEFCONFIG: x86_64_defconfig
+-    - name: "x86 4.14 release"
+-      env:
+-      - ARCH: x86
+-        IPIPE_REV: ipipe-core-4.14..*-x86-.*
+-        IPIPE_KERNEL: https://gitlab.denx.de/Xenomai/ipipe-x86.git
+-        KERNEL_DEFCONFIG: x86_64_defconfig
+-    - name: "x86 4.4-CIP head"
+-      env:
+-      - ARCH: x86
+-        IPIPE_REV: ipipe-4.4.y-cip
+-        IPIPE_KERNEL: https://gitlab.denx.de/Xenomai/ipipe.git
+-        KERNEL_DEFCONFIG: x86_64_defconfig
+-    - name: "x86 4.4-CIP release"
+-      env:
+-      - ARCH: x86
+-        IPIPE_REV: ipipe-core-4.4..*-cip.*-x86-.*
+-        IPIPE_KERNEL: https://gitlab.denx.de/Xenomai/ipipe.git
+-        KERNEL_DEFCONFIG: x86_64_defconfig
+-    - name: "PowerPC 4.19 release"
+-      env:
+-      - ARCH: powerpc
+-        IPIPE_REV: ipipe-core-4.19..*-ppc32-.*
+-        IPIPE_KERNEL: https://gitlab.denx.de/Xenomai/ipipe-ppc32.git
+-        KERNEL_DEFCONFIG: mpc5200_defconfig
 -- 
-2.20.1
+2.26.2
 
+
+-- 
+Siemens AG, T RDA IOT
+Corporate Competence Center Embedded Linux
 
