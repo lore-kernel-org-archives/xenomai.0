@@ -1,9 +1,15 @@
-From: "Q. Gylstorff" <Quirin.Gylstorff@siemens.com>
-Subject: [xenomai-images][PATCH v2 0/4] ci: update for 5.4 testing
-Date: Fri,  6 Nov 2020 15:56:28 +0100
-Message-Id: <20201106145632.2951-1-Quirin.Gylstorff@siemens.com>
+Subject: Re: [PATCH 2/2] demo/posix/cobalt: add missing __STD() annotation to
+ sigwait()
+References: <20201120171711.2784854-1-rpm@xenomai.org>
+ <20201120171711.2784854-2-rpm@xenomai.org>
+From: Jan Kiszka <jan.kiszka@siemens.com>
+Message-ID: <11eeb69a-773d-be2d-fcc5-249b7bc49be6@siemens.com>
+Date: Mon, 23 Nov 2020 10:08:53 +0100
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+In-Reply-To: <20201120171711.2784854-2-rpm@xenomai.org>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -12,62 +18,124 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org, jan.kiszka@siemens.com
+To: Philippe Gerum <rpm@xenomai.org>, xenomai@xenomai.org
 
-From: Quirin Gylstorff <quirin.gylstorff@siemens.com>
+On 20.11.20 18:17, Philippe Gerum via Xenomai wrote:
+> From: Philippe Gerum <rpm@xenomai.org>
+> 
+> We want to wait for ^C or any hangup condition received from the root
+> stage, make sure to annotate as __STD(sigwait()) to bypass symbol
+> wrapping.
+> 
+> Signed-off-by: Philippe Gerum <rpm@xenomai.org>
+> ---
+>  demo/posix/cobalt/bufp-label.c     | 2 +-
+>  demo/posix/cobalt/bufp-readwrite.c | 2 +-
+>  demo/posix/cobalt/iddp-label.c     | 2 +-
+>  demo/posix/cobalt/iddp-sendrecv.c  | 2 +-
+>  demo/posix/cobalt/xddp-echo.c      | 2 +-
+>  demo/posix/cobalt/xddp-label.c     | 2 +-
+>  demo/posix/cobalt/xddp-stream.c    | 2 +-
+>  7 files changed, 7 insertions(+), 7 deletions(-)
+> 
+> diff --git a/demo/posix/cobalt/bufp-label.c b/demo/posix/cobalt/bufp-label.c
+> index 0b766867a..1141c8913 100644
+> --- a/demo/posix/cobalt/bufp-label.c
+> +++ b/demo/posix/cobalt/bufp-label.c
+> @@ -211,7 +211,7 @@ int main(int argc, char **argv)
+>  	if (errno)
+>  		fail("pthread_create");
+>  
+> -	sigwait(&set, &sig);
+> +	__STD(sigwait(&set, &sig));
+>  	pthread_cancel(svtid);
+>  	pthread_cancel(cltid);
+>  	pthread_join(svtid, NULL);
+> diff --git a/demo/posix/cobalt/bufp-readwrite.c b/demo/posix/cobalt/bufp-readwrite.c
+> index 1796e3018..34d761aeb 100644
+> --- a/demo/posix/cobalt/bufp-readwrite.c
+> +++ b/demo/posix/cobalt/bufp-readwrite.c
+> @@ -176,7 +176,7 @@ int main(int argc, char **argv)
+>  	if (errno)
+>  		fail("pthread_create");
+>  
+> -	sigwait(&set, &sig);
+> +	__STD(sigwait(&set, &sig));
+>  	pthread_cancel(svtid);
+>  	pthread_cancel(cltid);
+>  	pthread_join(svtid, NULL);
+> diff --git a/demo/posix/cobalt/iddp-label.c b/demo/posix/cobalt/iddp-label.c
+> index f4718a442..06fc8814c 100644
+> --- a/demo/posix/cobalt/iddp-label.c
+> +++ b/demo/posix/cobalt/iddp-label.c
+> @@ -228,7 +228,7 @@ int main(int argc, char **argv)
+>  	if (errno)
+>  		fail("pthread_create");
+>  
+> -	sigwait(&set, &sig);
+> +	__STD(sigwait(&set, &sig));
+>  	pthread_cancel(svtid);
+>  	pthread_cancel(cltid);
+>  	pthread_join(svtid, NULL);
+> diff --git a/demo/posix/cobalt/iddp-sendrecv.c b/demo/posix/cobalt/iddp-sendrecv.c
+> index 734d47465..31ee10fde 100644
+> --- a/demo/posix/cobalt/iddp-sendrecv.c
+> +++ b/demo/posix/cobalt/iddp-sendrecv.c
+> @@ -184,7 +184,7 @@ int main(int argc, char **argv)
+>  	if (errno)
+>  		fail("pthread_create");
+>  
+> -	sigwait(&set, &sig);
+> +	__STD(sigwait(&set, &sig));
+>  	pthread_cancel(svtid);
+>  	pthread_cancel(cltid);
+>  	pthread_join(svtid, NULL);
+> diff --git a/demo/posix/cobalt/xddp-echo.c b/demo/posix/cobalt/xddp-echo.c
+> index 7e0af1265..ba8558266 100644
+> --- a/demo/posix/cobalt/xddp-echo.c
+> +++ b/demo/posix/cobalt/xddp-echo.c
+> @@ -238,7 +238,7 @@ int main(int argc, char **argv)
+>  	if (errno)
+>  		fail("pthread_create");
+>  
+> -	sigwait(&set, &sig);
+> +	__STD(sigwait(&set, &sig));
+>  	pthread_cancel(rt);
+>  	pthread_cancel(nrt);
+>  	pthread_join(rt, NULL);
+> diff --git a/demo/posix/cobalt/xddp-label.c b/demo/posix/cobalt/xddp-label.c
+> index fc227b232..9de31fdea 100644
+> --- a/demo/posix/cobalt/xddp-label.c
+> +++ b/demo/posix/cobalt/xddp-label.c
+> @@ -317,7 +317,7 @@ int main(int argc, char **argv)
+>  	if (errno)
+>  		fail("pthread_create");
+>  
+> -	sigwait(&set, &sig);
+> +	__STD(sigwait(&set, &sig));
+>  	pthread_cancel(rt1);
+>  	pthread_cancel(rt2);
+>  	pthread_cancel(nrt);
+> diff --git a/demo/posix/cobalt/xddp-stream.c b/demo/posix/cobalt/xddp-stream.c
+> index b61052a7f..e53729462 100644
+> --- a/demo/posix/cobalt/xddp-stream.c
+> +++ b/demo/posix/cobalt/xddp-stream.c
+> @@ -244,7 +244,7 @@ int main(int argc, char **argv)
+>  	if (errno)
+>  		fail("pthread_create");
+>  
+> -	sigwait(&set, &sig);
+> +	__STD(sigwait(&set, &sig));
+>  	pthread_cancel(rt);
+>  	pthread_cancel(nrt);
+>  	pthread_join(rt, NULL);
+> 
 
-Split the xenomai build into multiple files to decrease duplicated
-code. Defaults-builds now contains the base definition for each
-build and test. 4.19_builds, 5.4_builds and xenomai_3_0_x.yml use
-this base-builds for the targets.
+Thanks, both applied.
 
-You can find the a pipeline at:
-https://gitlab.com/Quirin.Gy/xenomai-images-test/-/pipelines/212790664
-
----
-
-Changes V2:
-- replace counter variable from get-build-id.sh
-- add new kas option file for 5.4 - opt-linux-latest.yml now builds 4.19 by
-default.
-- fix Variable assignment in opt-linux-latest.yml
-- add xenomai version to build name
-- use ipipe-x86-4.19.y-cip as base instead of ipipe-x86-4.19.y for linux-latest
-
-Quirin Gylstorff (4):
-  ci: Split build and add 5.4 builds
-  tests: increase timeouts
-  ci: Add xenomai-version to build
-  scripts/get-build-id.sh: replace counter
-
- ci/4_19_builds.yml                           |  88 ++++++++++++++
- ci/5_4_builds.yml                            |  40 +++++++
- ci/artifacts.yml                             |   1 +
- ci/default-builds.yml                        |  76 ++++++++++++
- ci/gitlab-ci-base.yml                        | 116 ++-----------------
- ci/xenomai_3_0_x.yml                         |  38 ++++++
- opt-linux-4.19.yml                           |  17 +++
- opt-linux-latest-5.4.yml                     |  18 +++
- opt-linux-latest.yml                         |   1 +
- recipes-kernel/linux/linux-xenomai_latest.bb |   6 +-
- scripts/get-build-id.sh                      |  15 ++-
- tests/jobs/xenomai-beagle-bone-black.yml     |   8 +-
- tests/jobs/xenomai-hikey.yml                 |   6 +-
- tests/jobs/xenomai-ipc227e.yml               |   8 +-
- tests/jobs/xenomai-minnow.yml                |   8 +-
- tests/jobs/xenomai-qemu-amd64.yml            |   8 +-
- tests/jobs/xenomai-qemu-arm64.yml            |   8 +-
- tests/jobs/xenomai-qemu-armhf.yml            |   8 +-
- tests/jobs/xenomai-x86-64-efi.yml            |   8 +-
- 19 files changed, 333 insertions(+), 145 deletions(-)
- create mode 100644 ci/4_19_builds.yml
- create mode 100644 ci/5_4_builds.yml
- create mode 100644 ci/default-builds.yml
- create mode 100644 ci/xenomai_3_0_x.yml
- create mode 100644 opt-linux-4.19.yml
- create mode 100644 opt-linux-latest-5.4.yml
+Jan
 
 -- 
-2.20.1
-
+Siemens AG, T RDA IOT
+Corporate Competence Center Embedded Linux
 
