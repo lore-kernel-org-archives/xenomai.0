@@ -1,10 +1,17 @@
-From: "Q. Gylstorff" <Quirin.Gylstorff@siemens.com>
-Subject: [xenomai-images][PATCH v2 2/4] tests: increase timeouts
-Date: Fri,  6 Nov 2020 15:56:30 +0100
-Message-Id: <20201106145632.2951-3-Quirin.Gylstorff@siemens.com>
-In-Reply-To: <20201106145632.2951-1-Quirin.Gylstorff@siemens.com>
-References: <20201106145632.2951-1-Quirin.Gylstorff@siemens.com>
+Subject: Re: [PATCH v2 1/3] [y2038]clock_settime:introduce old_timespec32 in
+ clock_settime
+References: <1605774986-4553-1-git-send-email-chensong@tj.kylinos.cn>
+ <82cca45bd82473a3bb7a207474722d48017f3c96.camel@siemens.com>
+ <5FBB970B.8040204@tj.kylinos.cn>
+ <1ceebc3f881ea41052b2060c62922ee4c723b58d.camel@siemens.com>
+ <5FBBAEC1.7070304@tj.kylinos.cn>
+ <d292fd6daee5932cfcb1f4105c89401004853522.camel@siemens.com>
+From: chensong <chensong@tj.kylinos.cn>
+Message-ID: <5FBC5573.6090807@tj.kylinos.cn>+486AEE84AF66EB6C
+Date: Tue, 24 Nov 2020 08:36:03 +0800
 MIME-Version: 1.0
+In-Reply-To: <d292fd6daee5932cfcb1f4105c89401004853522.camel@siemens.com>
+Content-Type: text/plain; charset="utf-8"; format="flowed"
 Content-Transfer-Encoding: 8bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
@@ -14,241 +21,123 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org, jan.kiszka@siemens.com
+To: "florian.bezdeka@siemens.com" <florian.bezdeka@siemens.com>
+Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>, "jan.kiszka@siemens.com" <jan.kiszka@siemens.com>
 
-From: Quirin Gylstorff <quirin.gylstorff@siemens.com>
 
-Increase the LAVA test timeouts to avoid test aborts due to slow
-connections
 
-Signed-off-by: Quirin Gylstorff <quirin.gylstorff@siemens.com>
----
- tests/jobs/xenomai-beagle-bone-black.yml | 8 ++++----
- tests/jobs/xenomai-hikey.yml             | 6 +++---
- tests/jobs/xenomai-ipc227e.yml           | 8 ++++----
- tests/jobs/xenomai-minnow.yml            | 8 ++++----
- tests/jobs/xenomai-qemu-amd64.yml        | 8 ++++----
- tests/jobs/xenomai-qemu-arm64.yml        | 8 ++++----
- tests/jobs/xenomai-qemu-armhf.yml        | 8 ++++----
- tests/jobs/xenomai-x86-64-efi.yml        | 8 ++++----
- 8 files changed, 31 insertions(+), 31 deletions(-)
+On 2020年11月23日 23:14, florian.bezdeka@siemens.com wrote:
+> Hi Song,
+>
+> On Mon, 2020-11-23 at 20:44 +0800, chensong wrote:
+>>
+>>>>>>
+>>>>>> @@ -243,14 +241,18 @@ int __cobalt_clock_adjtime(clockid_t clock_id, struct timex *tx)
+>>>>>>     }
+>>>>>>
+>>>>>>     COBALT_SYSCALL(clock_settime, current,
+>>>>>> -	       (clockid_t clock_id, const struct timespec __user *u_ts))
+>>>>>> +	       (clockid_t clock_id, const struct old_timespec32 __user *u_ts))
+>>>>>
+>>>>> Sorry, but that's wrong.
+>>>>>
+>>>>> Consider a 64 bit kernel (where the internal data type was "long", so
+>>>>> 64 bit): It is now changed to a 32 bit data type (s32), which is wrong.
+>>>>
+>>>> yes, it's correct.
+>>>> If i just leave the argument as timespec, like what you said "untouch",
+>>>> and implement clock_settime64 specific for timespec64, how does it sound
+>>>> to you?
+>>>>
+>>>>> I guess you are following a pattern from Arnd Bergmann which cannot be
+>>>>> applied here. The patch from Arnd may look as he was updating the "old"
+>>>>> syscall but he was introducing a new one instead.
+>>>>>
+>>>>
+>>>> Arnd Bergmann's solution is clear, one is for 32bit, the other is for
+>>>> 64bit.
+>>>> If we keep clock_settime(const struct timespec __user *u_ts) untouched,
+>>>> in 64bit kernel, timespect is 64bit, in 32bit, timespec is 32bit, it can
+>>>> handle both of them although it's a little blurry.
+>>>> If in 32bit kernel, a process with 64bit timespec, it must have been
+>>>> recompiled, which mean libcobalt is new and be able to redirect syscall
+>>>> to 64bit variant.
+>>>> Is it ok for you?
+>>>
+>>> My current idea is to leave all the existing syscalls as they are.
+>> The arguments from userspace can stay as timespec, but internal
+>> implementation, it should be timespec64, like glibc did.
+>
+> Are you talking about the libcobalt interfaces or the Cobalt / kernel
+> interfaces here?
+>
+cobalt / kernel interfaces.
 
-diff --git a/tests/jobs/xenomai-beagle-bone-black.yml b/tests/jobs/xenomai-beagle-bone-black.yml
-index 91cb138..034ac99 100644
---- a/tests/jobs/xenomai-beagle-bone-black.yml
-+++ b/tests/jobs/xenomai-beagle-bone-black.yml
-@@ -13,11 +13,11 @@ device_type: beaglebone-black
- 
- timeouts:
-   job:
--    minutes: 30
-+    minutes: 90
-   action:
--    minutes: 20
-+    minutes: 65
-   connection:
--    minutes: 2
-+    minutes: 5
- priority: medium
- visibility: public
- 
-@@ -29,7 +29,7 @@ metadata:
- actions:
- - deploy:
-     timeout:
--      minutes: 5
-+      minutes: 15
-     to: tftp
-     kernel:
-       url: ${DEPLOY_URL}/${ISAR_IMAGE}-${ISAR_DISTRIBUTION}-${TARGET}-vmlinuz
-diff --git a/tests/jobs/xenomai-hikey.yml b/tests/jobs/xenomai-hikey.yml
-index b33cef6..f6eb4a4 100644
---- a/tests/jobs/xenomai-hikey.yml
-+++ b/tests/jobs/xenomai-hikey.yml
-@@ -13,11 +13,11 @@ device_type: hikey
- 
- timeouts:
-   job:
--    minutes: 30
-+    minutes: 90
-   action:
--    minutes: 20
-+    minutes: 65
-   connection:
--    minutes: 2
-+    minutes: 5
- priority: medium
- visibility: public
- 
-diff --git a/tests/jobs/xenomai-ipc227e.yml b/tests/jobs/xenomai-ipc227e.yml
-index d283c00..a5a181c 100644
---- a/tests/jobs/xenomai-ipc227e.yml
-+++ b/tests/jobs/xenomai-ipc227e.yml
-@@ -13,11 +13,11 @@ device_type: ipc227e
- 
- timeouts:
-   job:
--    minutes: 30
-+    minutes: 90
-   action:
--    minutes: 20
-+    minutes: 65
-   connection:
--    minutes: 2
-+    minutes: 5
- priority: medium
- visibility: public
- 
-@@ -29,7 +29,7 @@ metadata:
- actions:
- - deploy:
-     timeout:
--      minutes: 5
-+      minutes: 15
-     to: tftp
-     kernel:
-       url: ${DEPLOY_URL}/${ISAR_IMAGE}-${ISAR_DISTRIBUTION}-${TARGET}-vmlinuz
-diff --git a/tests/jobs/xenomai-minnow.yml b/tests/jobs/xenomai-minnow.yml
-index 82c1468..d5292ff 100644
---- a/tests/jobs/xenomai-minnow.yml
-+++ b/tests/jobs/xenomai-minnow.yml
-@@ -12,11 +12,11 @@ job_name: xenomai-test-suite
- device_type: minnowboard-max-E3825
- timeouts:
-   job:
--    minutes: 30
-+    minutes: 90
-   action:
--    minutes: 20
-+    minutes: 65
-   connection:
--    minutes: 2
-+    minutes: 5
- priority: medium
- visibility: public
- 
-@@ -28,7 +28,7 @@ metadata:
- actions:
- - deploy:
-     timeout:
--      minutes: 5
-+      minutes: 15
-     to: tftp
-     kernel:
-       url: ${DEPLOY_URL}/${ISAR_IMAGE}-${ISAR_DISTRIBUTION}-${TARGET}-vmlinuz
-diff --git a/tests/jobs/xenomai-qemu-amd64.yml b/tests/jobs/xenomai-qemu-amd64.yml
-index 68d849f..c335292 100644
---- a/tests/jobs/xenomai-qemu-amd64.yml
-+++ b/tests/jobs/xenomai-qemu-amd64.yml
-@@ -13,11 +13,11 @@ job_name: QEMU pipeline, xenomai-images-qemu-amd64
- 
- timeouts:
-   job:
--    minutes: 45
-+    minutes: 90
-   action:
--    minutes: 5
-+    minutes: 65
-   connection:
--    minutes: 2
-+    minutes: 5
- priority: medium
- visibility: public
- 
-@@ -42,7 +42,7 @@ metadata:
- actions:
- - deploy:
-     timeout:
--      minutes: 5
-+      minutes: 15
-     to: tmpfs
-     images:
-       kernel:
-diff --git a/tests/jobs/xenomai-qemu-arm64.yml b/tests/jobs/xenomai-qemu-arm64.yml
-index cd0ca9f..88fb880 100644
---- a/tests/jobs/xenomai-qemu-arm64.yml
-+++ b/tests/jobs/xenomai-qemu-arm64.yml
-@@ -13,11 +13,11 @@ job_name: QEMU pipeline, xenomai-images-qemu-arm64
- 
- timeouts:
-   job:
--    minutes: 45
-+    minutes: 90
-   action:
--    minutes: 5
-+    minutes: 65
-   connection:
--    minutes: 2
-+    minutes: 5
- priority: medium
- visibility: public
- 
-@@ -46,7 +46,7 @@ metadata:
- actions:
- - deploy:
-     timeout:
--      minutes: 5
-+      minutes: 15
-     to: tmpfs
-     images:
-       kernel:
-diff --git a/tests/jobs/xenomai-qemu-armhf.yml b/tests/jobs/xenomai-qemu-armhf.yml
-index 18e3bf8..3e3a8ab 100644
---- a/tests/jobs/xenomai-qemu-armhf.yml
-+++ b/tests/jobs/xenomai-qemu-armhf.yml
-@@ -13,11 +13,11 @@ job_name: QEMU pipeline, xenomai-images-qemu-armhf
- 
- timeouts:
-   job:
--    minutes: 45
-+    minutes: 90
-   action:
--    minutes: 5
-+    minutes: 65
-   connection:
--    minutes: 2
-+    minutes: 5
- priority: medium
- visibility: public
- 
-@@ -42,7 +42,7 @@ metadata:
- actions:
- - deploy:
-     timeout:
--      minutes: 5
-+      minutes: 15
-     to: tmpfs
-     images:
-       kernel:
-diff --git a/tests/jobs/xenomai-x86-64-efi.yml b/tests/jobs/xenomai-x86-64-efi.yml
-index 2471cce..bc71b75 100644
---- a/tests/jobs/xenomai-x86-64-efi.yml
-+++ b/tests/jobs/xenomai-x86-64-efi.yml
-@@ -13,11 +13,11 @@ device_type: x86
- 
- timeouts:
-   job:
--    minutes: 30
-+    minutes: 90
-   action:
--    minutes: 20
-+    minutes: 65
-   connection:
--    minutes: 2
-+    minutes: 5
- priority: medium
- visibility: public
- 
-@@ -29,7 +29,7 @@ metadata:
- actions:
- - deploy:
-     timeout:
--      minutes: 5
-+      minutes: 15
-     to: tftp
-     kernel:
-       url: ${DEPLOY_URL}/${ISAR_IMAGE}-${ISAR_DISTRIBUTION}-${TARGET}-vmlinuz
--- 
-2.20.1
+> As we are heavily using function wrapping the libcobalt API has to be
+> identical to the interface provided by the standard library (glibc,
+> musl, ...).
+>
+> Switching to time64_t based structures internally sound OK at first
+> glance.
+>
+> The Cobalt API has to stay untouched because Cobalt is maintaining a
+> single syscall table for different entry points. We don't have
+> something like the compat interface provided by the Linux kernel
+> itself. I updated the Y2038 document and added an implementation hint
+> regarding this topic.
+>
+> I've split the Y2038 roadmap document into several sub documents to
+> make merging easier. The test scenarios are now organized as matrix.
+> Please review, I hope I got that right. So many combinations...
+>
+It looks much better, many thanks.
+
+>>
+>>    So
+>>> we are "only" missing the syscalls expecting time64_t on kernel side.
+>>> They have to be added.
+>> agree.
+>>
+>>> Before we start sending out patches we should summarize all the work
+>>> that has to be done in [1]. (I noticed that you already improved the
+>>> document, so I will start reviewing now...).
+>> agree, i'm still working on it, let me know when you think it's ready.
+>>
+>>> Yes, to enable time64_t (or 64 bit time_t) we will need to recompile
+>>> applications and update the kernel. That's fine. We just have to make
+>>> sure that applications that are not re-compiled (= old applications)
+>>> still work with an updated kernel. The combination of old libcobalt and
+>>> updated kernel will fail during feature negotiation. The old kernel
+>>> does not offer the time64 support feature flag.
+>>>
+>>> One interesting part I'm currently looking into is the decision inside
+>>> libcobalt on which syscall has to be used. That depends on the size of
+>>> time_t. I compared glibc and musl implementations so far and as it
+>>> turns out they solved the problem differently (names of defines
+>>> differs). All findings will make it into [1] as well.
+>> i had a couple of emails with Arnd Bergmann back and forth this weekend,
+>> quote from him
+>> "I believe both musl and glibc in their latest version try calling
+>> sys_clock_settime() first, but fall back to calling sys_clock_settime32()
+>> when running on an old kernel that does not have sys_clock_settime().
+>> "
+>>
+>> the implementation of clock_gettime in musl is checking sizeof(time_t)
+>>
+>>> [1] https://eur01.safelinks.protection.outlook.com/?url=https%3A%2F%2Fgitlab.com%2Ffbezdeka%2Fxenomai%2F-%2Fwikis%2FY2038_Roadmap&amp;data=04%7C01%7Cflorian.bezdeka%40siemens.com%7Cc372e435b8ec43a3426208d88fad8aa2%7C38ae3bcd95794fd4addab42e1495d55a%7C1%7C0%7C637417322819522447%7CUnknown%7CTWFpbGZsb3d8eyJWIjoiMC4wLjAwMDAiLCJQIjoiV2luMzIiLCJBTiI6Ik1haWwiLCJXVCI6Mn0%3D%7C1000&amp;sdata=fh7QQdbzir%2FiHCda4dgowEllxHfqnbtH66%2FWH9ukx48%3D&amp;reserved=0
+>>>>> The introduction may be hidden because he did some magic in the syscall
+>>>>> table. The position / index of the syscall changed. So he was not
+>>>>> updating an existing one but adding a new one...
+>>>>>
+>>>>> All "old" syscalls, so the native ones (which were 32 for 32 bit
+>>>>> systems) have a "32" suffix now, so "clock_gettime32".
+>>>>>
+>>>>> Instead of upating existing Cobalt syscalls we have to introduce a new
+>>>>> set of syscalls.
+>>>>>>     {
+>>>>>>
+>>
+>>
+
 
 
