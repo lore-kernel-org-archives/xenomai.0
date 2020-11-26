@@ -1,8 +1,8 @@
 From: "Chen, Hongzhan" <hongzhan.chen@intel.com>
 Subject: RE: [Xenomai over dovetail] Kernel hang in rcu_barrier after
  xenomai_init
-Date: Thu, 26 Nov 2020 03:57:11 +0000
-Message-ID: <MWHPR11MB17104A3ABA4757E973ED5736F2F90@MWHPR11MB1710.namprd11.prod.outlook.com>
+Date: Thu, 26 Nov 2020 06:37:38 +0000
+Message-ID: <MWHPR11MB1710CFA3029A3E365D4B2E7AF2F90@MWHPR11MB1710.namprd11.prod.outlook.com>
 References: <MWHPR11MB17100D1F48C3EF22B3C6A329F2E60@MWHPR11MB1710.namprd11.prod.outlook.com>
  <87lff5rtxl.fsf@xenomai.org>
  <CY4PR11MB170373477D42F1E0F39C1162F2E50@CY4PR11MB1703.namprd11.prod.outlook.com>
@@ -16,7 +16,8 @@ References: <MWHPR11MB17100D1F48C3EF22B3C6A329F2E60@MWHPR11MB1710.namprd11.prod.
  <87k0uh4j7f.fsf@xenomai.org>
  <MWHPR11MB1710FF22D02B4C31494AA315F2FF0@MWHPR11MB1710.namprd11.prod.outlook.com>
  <877dqg2h0j.fsf@xenomai.org>
-In-Reply-To: <877dqg2h0j.fsf@xenomai.org>
+ <MWHPR11MB17104A3ABA4757E973ED5736F2F90@MWHPR11MB1710.namprd11.prod.outlook.com>
+In-Reply-To: <MWHPR11MB17104A3ABA4757E973ED5736F2F90@MWHPR11MB1710.namprd11.prod.outlook.com>
 Content-Language: en-US
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
@@ -30,6 +31,7 @@ List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: Philippe Gerum <rpm@xenomai.org>, Jan Kiszka <jan.kiszka@siemens.com>, "xenomai@xenomai.org" <xenomai@xenomai.org>
+
 
 >-----Original Message-----
 >From: Philippe Gerum <rpm@xenomai.org>=20
@@ -391,6 +393,12 @@ according to tick count difference between cpu3 and (cpu2 or cpu1).
 What I am doing on disabling CONFIG_CPU_IDLE can isolate issue related to=20
 deep sleep mode?  =20
 
+According to log [4], it seems that cpu3 is idling at cpu_idle_poll. Sorry =
+, I am not familiar with
+this idle flow, and I have no idea about what is happening. It would take l=
+ong time for me to figure
+them out without your help.
+
 [3]:
 2020-11-26T10:25:16 [   11.432623] calling  tcp_congestion_default+0x0/0x13=
  @ 1
@@ -460,6 +468,38 @@ mory: 1176K
 ffd] [0x23cffd] [0x23cffd] [0x23cffd] [0x479ffa]
 2020-11-26T10:25:20 ^A6 cpu 3 [0x22ac9d] [0x22ac9c] [0x22ac9c] [0x0] [0x22a=
 c9d] [0x22ac9c] [0x22ac9d] [0x22ac9d] [0x455939]
+
+[4]
+2020-11-26T10:25:45 [   39.605425] run-init (149) used greatest stack depth=
+: 12296 bytes left
+2020-11-26T10:26:11 [   65.690968] rcu: INFO: rcu_sched detected stalls on =
+CPUs/tasks:
+2020-11-26T10:26:11 [   65.697453] rcu:         3-...!: (1192 GPs behind) i=
+dle=3D430/0/0x0 softirq=3D0/0 fqs=3D0  (false positive?)
+2020-11-26T10:26:11 [   65.707008]      (detected by 0, t=3D26002 jiffies, =
+g=3D3997, q=3D4)
+2020-11-26T10:26:11 [   65.713019] Sending NMI from CPU 0 to CPUs 3:
+2020-11-26T10:26:11 [   65.718795] NMI backtrace for cpu 3 skipped: idling =
+at cpu_idle_poll+0x35/0x1f0
+2020-11-26T10:26:11 [   65.718798] rcu: rcu_sched kthread starved for 26002=
+ jiffies! g3997 f0x0 RCU_GP_WAIT_FQS(5) ->state=3D0x402 ->cpu=3D0
+2020-11-26T10:26:11 [   65.738002] rcu:         Unless rcu_sched kthread ge=
+ts sufficient CPU time, OOM is now expected behavior.
+2020-11-26T10:26:11 [   65.747768] rcu: RCU grace-period kthread stack dump=
+:
+2020-11-26T10:26:11 [   65.753275] rcu_sched       I14920    11      2 0x00=
+004000
+2020-11-26T10:26:11 [   65.759278] Call Trace:
+2020-11-26T10:26:11 [   65.761963]  __schedule+0x40c/0x990
+2020-11-26T10:26:11 [   65.765802]  schedule+0x50/0xc0
+2020-11-26T10:26:11 [   65.769240]  schedule_timeout+0x16d/0x2e0
+2020-11-26T10:26:11 [   65.773618]  ? __next_timer_interrupt+0xc0/0xc0
+2020-11-26T10:26:11 [   65.778587]  rcu_gp_kthread+0x883/0x15f0
+2020-11-26T10:26:11 [   65.782899]  ? trace_hardirqs_on+0x37/0x110
+2020-11-26T10:26:11 [   65.787466]  ? rcu_core_si+0x10/0x10
+2020-11-26T10:26:11 [   65.791382]  kthread+0x134/0x150
+2020-11-26T10:26:11 [   65.794901]  ? kthread_park+0x80/0x80
+2020-11-26T10:26:11 [   65.798913]  ret_from_fork+0x1f/0x30
 
 Regards
 
