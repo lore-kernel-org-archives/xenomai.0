@@ -1,12 +1,9 @@
-From: "Q. Gylstorff" <Quirin.Gylstorff@siemens.com>
-Subject: [xenomai-images][PATCH v2 4/4] scripts/get-build-id.sh: replace
- counter
-Date: Fri,  6 Nov 2020 15:56:32 +0100
-Message-Id: <20201106145632.2951-5-Quirin.Gylstorff@siemens.com>
-In-Reply-To: <20201106145632.2951-1-Quirin.Gylstorff@siemens.com>
-References: <20201106145632.2951-1-Quirin.Gylstorff@siemens.com>
+From: Philippe Gerum <rpm@xenomai.org>
+Subject: Xenomai 4 and the Common Xenomai Platform
+Date: Sat, 28 Nov 2020 18:43:24 +0100
+Message-ID: <87r1od8jib.fsf@xenomai.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,54 +12,50 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org, jan.kiszka@siemens.com
+To: xenomai@xenomai.org
 
-From: Quirin Gylstorff <quirin.gylstorff@siemens.com>
 
-The loop to get the build index for artifact api was using
-a counter to abort. This patch aborts the loop if the index
-is above a valid value without guessing the amount of builds.
+All,
 
-If no build was found the script returns an error as the
-following lava test cannot access artifacts.
+In a recent series of discussions, the core Xenomai contributors
+agreed that time has come to start a common effort towards Xenomai 4,
+the next generation dual kernel system for Linux, based on the work of
+the EVL project [1].
 
-Signed-off-by: Quirin Gylstorff <quirin.gylstorff@siemens.com>
----
- scripts/get-build-id.sh | 15 ++++++++++-----
- 1 file changed, 10 insertions(+), 5 deletions(-)
+We also acknowledged the requirement for keeping Xenomai 3.x relevant
+for new application designs, with a well-marked upgrade path to
+Xenomai 4. We believe that we can achieve this by specifying a set of
+common features and interfaces the future Xenomai 3.x releases and
+Xenomai 4 would share.
 
-diff --git a/scripts/get-build-id.sh b/scripts/get-build-id.sh
-index ace70c6..8581edf 100755
---- a/scripts/get-build-id.sh
-+++ b/scripts/get-build-id.sh
-@@ -14,16 +14,21 @@ name=$1
- if [ -z "${name}" ]; then
-     echo "no build name was given"
-     exit -1
--    fi
-+fi
- index=0
- JSON=$(curl -s --header "PRIVATE-TOKEN: ${API_TOKEN}" "${CI_API_V4_URL}/projects/${CI_PROJECT_ID}/pipelines/${CI_PIPELINE_ID}/jobs?scope[]=success"  )
--while  [ ${index} -le ${MAX_TEST:-16} ]
-+while  build_name=$(echo "${JSON}"  | tr '\r\n' ' ' | jq -re ".[${index}].name")
- do
--    build_name=$(echo "${JSON}"  | tr '\r\n' ' ' | jq -r ".[${index}].name")
--    if [ "$build_name" = "${name}" ]; then
-+    if [ "${build_name}" = "${name}" ]; then
-         break
-     fi
-      index=$((index+1))
- done
- id=$(echo "${JSON}"  | tr '\r\n' ' ' | jq -r ".[${index}].id")
--echo $id
-+if [ "$id" = "null" ]; then
-+    >&2 echo "ERROR: did not find build with name: $name"
-+    return 1
-+else
-+    echo $id
-+    return 0
-+fi
+We are formally starting such specification process, codenamed the
+"Common Xenomai Platform" (CXP for short). Xenomai 3.3 and beyond will
+implement the common platform, so that application designers who
+follow the CXP guidelines may expect portability across these
+releases. Xenomai 3.2 is going to be a transitional step towards this
+common platform, switching from the I-pipe to Dovetail [2].
+
+Please see [3] for details about the motivations behind the CXP, and
+its goals. As we discuss the various topics within the scope of this
+work and converge to set the CXP guidelines, this document will be
+updated accordingly.
+  
+Anyone is welcome to participate in this specification effort, which
+will take place publicly on this mailing list. Stating what you need
+today, and what you might need tomorrow from a real-time
+infrastructure like Xenomai would be a good way to get involved.  For
+convenience, please make sure to mark related postings with the
+"[CXP]" tag in the "Subject:" line.
+
+March 31, 2021 is our deadline for completing the specification
+process. Please make sure to have your say in time.
+
+Thanks,
+
+[1] https://evlproject.org/
+[2] https://evlproject.org/dovetail/
+[3] https://xenomai.org/wiki/Common_Xenomai_Platform
+
 -- 
-2.20.1
-
+Philippe.
 
