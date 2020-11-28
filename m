@@ -12,12 +12,13 @@ References: <MWHPR11MB17100D1F48C3EF22B3C6A329F2E60@MWHPR11MB1710.namprd11.prod.
  <MWHPR11MB1710FF22D02B4C31494AA315F2FF0@MWHPR11MB1710.namprd11.prod.outlook.com>
  <877dqg2h0j.fsf@xenomai.org>
  <MWHPR11MB17104A3ABA4757E973ED5736F2F90@MWHPR11MB1710.namprd11.prod.outlook.com>
+ <87wny591q6.fsf@xenomai.org>
 From: Philippe Gerum <rpm@xenomai.org>
 Subject: Re: [Xenomai over dovetail] Kernel hang in rcu_barrier after
  xenomai_init
-In-reply-to: <MWHPR11MB17104A3ABA4757E973ED5736F2F90@MWHPR11MB1710.namprd11.prod.outlook.com>
-Date: Sat, 28 Nov 2020 12:09:53 +0100
-Message-ID: <87wny591q6.fsf@xenomai.org>
+In-reply-to: <87wny591q6.fsf@xenomai.org>
+Date: Sat, 28 Nov 2020 12:33:24 +0100
+Message-ID: <87tut990mz.fsf@xenomai.org>
 MIME-Version: 1.0
 Content-Type: text/plain
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
@@ -28,270 +29,16 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "Chen, Hongzhan" <hongzhan.chen@intel.com>
-Cc: Jan Kiszka <jan.kiszka@siemens.com>, "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Philippe Gerum <rpm@xenomai.org>
+Cc: "Chen, Hongzhan" <hongzhan.chen@intel.com>, xenomai@xenomai.org
 
 
-Chen, Hongzhan <hongzhan.chen@intel.com> writes:
+Philippe Gerum via Xenomai <xenomai@xenomai.org> writes:
+> Eventually, you may want to instrument/ftrace the idling code inside the
+> do_idle() loop (kernel/sched/idle.c) to make sure that in-band irqs are
+> enabled as expected (i.e. irqs_enabled() == true) every time
 
->>-----Original Message-----
->>From: Philippe Gerum <rpm@xenomai.org> 
->>Sent: Friday, November 20, 2020 11:19 PM
->>To: Chen, Hongzhan <hongzhan.chen@intel.com>
->>Cc: Jan Kiszka <jan.kiszka@siemens.com>; xenomai@xenomai.org
->>Subject: Re: [Xenomai over dovetail] Kernel hang in rcu_barrier after xenomai_init
->>
->>
->>Chen, Hongzhan <hongzhan.chen@intel.com> writes:
->>
->>>>-----Original Message-----                                                                                     
->>>>From: Philippe Gerum <rpm@xenomai.org>                                                                         
->>>>Sent: Thursday, November 19, 2020 8:36 PM                                                                      
->>>>To: Jan Kiszka <jan.kiszka@siemens.com>                                                                        
->>>>Cc: Chen, Hongzhan <hongzhan.chen@intel.com>; xenomai@xenomai.org                                              
->>>>Subject: Re: [Xenomai over dovetail] Kernel hang in rcu_barrier after xenomai_init                             
->>>>                                                                                                               
->>>>                                                                                                               
->>>>Jan Kiszka <jan.kiszka@siemens.com> writes:                                                                    
->>>>                                                                                                               
->>>>> On 19.11.20 12:40, Chen, Hongzhan via Xenomai wrote:                                                         
->>>>>>                                                                                                             
->>>>>>>>> -->---Original Message-----                                                                              
->>>>>>>>> Fr>om: Philippe Gerum <rpm@xenomai.org>                                                                  
->>>>>>>>> Se>nt: Tuesday, November 17, 2020 6:01 PM                                                                
->>>>>>>>> To>: Chen, Hongzhan <hongzhan.chen@intel.com>                                                            
->>>>>>>>> Cc>: xenomai@xenomai.org                                                                                 
->>>>>>>>> Su>bject: Re: [Xenomai over dovetail] Kernel hang in rcu_barrier after xenomai_init                      
->>>>>>>>>  >                                                                                                       
->>>>>>>>>  >                                                                                                       
->>>>>>>>> Ph>ilippe Gerum <rpm@xenomai.org> writes:                                                                
->>>>>>>>>  >                                                                                                       
->>>>>>>>>>> Chen, Hongzhan <hongzhan.chen@intel.com> writes:                                                       
->>>>>>>>>>>                                                                                                        
->>>>>>>>>>>> I have some clues about this issue. After xenomai_init is called, it seems that rcu_core              
->>>>>>>>>>>> is never called from unknow startpoint ever after call call_rcu, which is supposed to be              
->>>>>>>>>>>> called by rcu softirq handler after we call call_rcu.                                                 
->>>>>>>>>>>> I am trying to debug why rcu softirq is not triggerred after then.                                    
->>>>>>>>>>>                                                                                                        
->>>>>>>>>>>                                                                                                        
->>>>>>>>>>> You may want to make sure this is not offloaded to RCU kthreads,                                       
->>>>>>>>>>> typically in case you run with nocbs settings. This said, tracing                                      
->>>>>>>>>>> rcu_core() would match both.                                                                           
->>>>>>>>>>>                                                                                                        
->>>>>>>>>>> I did not reproduce the issue you observed with the EVL core, testing                                  
->>>>>>>>>>> v5.8, v5.9 and v5.10-rc3. I'm currently running an overnight test to                                   
->>>>>>>>>>> confirm this. This is why we need to be confident that an half-baked                                   
->>>>>>>>>>> port on top of Dovetail is not causing this.                                                           
->>>>>>>>>  >                                                                                                       
->>>>>>>>> 44> hours uninterrupted runtime on armv7, x86 and armv8, under stress: no                                
->>>>>>>>> is>sue detected so far. This does not rule out a Dovetail bug yet, but                                   
->>>>>>>>> th>e possibility of a Cobalt issue is real.                                                              
->>>>>>>>>  >                                                                                                       
->>>>>>>>> -->                                                                                                      
->>>>>>>>> Ph>ilippe.                                                                                               
->>>>>>>>                                                                                                           
->>>>>>>> Thanks for your feedback.  I already found the root cause for the issue. According to my                  
->>>>>>>> debug on evl, I found that actually after call tick_install_proxy , the original                          
->>>>>>>> hrtimer_interrupt would be called by proxy_irq_handler instead of   __sysvec_apic_timer_interrupt         
->>>>>>>> so that  rcu_sched_clock_irq still can be successfully called by  update_process_times and                
->>>>>>>> invoke_rcu_core would always be called and callback registerred by call_rcu can be successfully handled.  
->>>>>>>> But in my case, after call tick_install_proxy in xenomai, update_process_times is never called and then   
->>>>>>>> cause hang in rcu_barrier issue later. I would continue to check why fail to replace timer irq in my case.
->>>>>>>>                                                                                                           
->>>>>>>> Did you try running Dovetail's boot time pipeline torture tests? Those                                    
->>>>>>>> would exercise the basic features, such as the tick proxy device,                                         
->>>>>>>> without any dependencies whatsoever. You may need to disable Cobalt to                                    
->>>>>>>> do so, in order to leave the out-of-band stage available to them at boot.                                 
->>>>>>>>                                                                                                           
->>>>>>>> CONFIG_IRQ_PIPELINE_TORTURE_TESTS=y                                                                       
->>>>>>>> CONFIG_XENOMAI=n                                                                                          
->>>>>>>>                                                                                                           
->>>>>>>> If successful, those tests on a quad-core CPU should yield that kind of                                   
->>>>>>>> traces in the kernel log:                                                                                 
->>>>>>>>                                                                                                           
->>>>>>>> [    4.413767] Starting IRQ pipeline tests...                                                             
->>>>>>>> [    4.413772] IRQ pipeline: high-priority torture stage added.                                           
->>>>>>>> [    4.423571] irq_pipeline-torture: CPU2 initiates stop_machine()                                        
->>>>>>>> [    4.429527] irq_pipeline-torture: CPU3 responds to stop_machine()                                      
->>>>>>>> [    4.429534] irq_pipeline-torture: CPU1 responds to stop_machine()                                      
->>>>>>>> [    4.429538] irq_pipeline-torture: CPU0 responds to stop_machine()                                      
->>>>>>>> [    4.447945] CPU0: proxy tick device registered (199.20MHz)                                             
->>>>>>>> [    4.447948] CPU1: proxy tick device registered (199.20MHz)                                             
->>>>>>>> [    4.447954] CPU3: proxy tick device registered (199.20MHz)                                             
->>>>>>>> [    4.464448] CPU2: proxy tick device registered (199.20MHz)                                             
->>>>>>>> [    4.469985] irq_pipeline-torture: CPU2: irq_work handled                                               
->>>>>>>> [    4.475322] irq_pipeline-torture: CPU2: in-band->in-band irq_work trigger works                        
->>>>>>>> [    4.482648] irq_pipeline-torture: CPU2: stage escalation request works                                 
->>>>>>>> [    4.482650] irq_pipeline-torture: CPU2: irq_work handled                                               
->>>>>>>> [    4.494523] irq_pipeline-torture: CPU2: oob->in-band irq_work trigger works                            
->>>>>>>> [    5.523585] CPU3: proxy tick device unregistered                                                       
->>>>>>>> [    5.523590] CPU1: proxy tick device unregistered                                                       
->>>>>>>> [    5.523592] CPU0: proxy tick device unregistered                                                       
->>>>>>>> [    5.537459] CPU2: proxy tick device unregistered                                                       
->>>>>>>> [    5.542113] IRQ pipeline: torture stage removed.                                                       
->>>>>>>> [    5.546753] IRQ pipeline tests OK.                                                                     
->>>>>>>                                                                                                            
->>>>>>> Anything suspicious there instead would point to a Dovetail-related                                        
->>>>>>> issue.                                                                                                     
->>>>>>>                                                                                                            
->>>>>>> --                                                                                                         
->>>>>>> Philippe.                                                                                                  
->>>>>>>                                                                                                            
->>>>>>> The pipeline tests OK after I enable CONFIG_IRQ_PIPELINE_TORTURE_TEST and                                  
->>>>>>> disable xenomai as you suggested.                                                                          
->>>>>>>                                                                                                            
->>>>>>> When I try to debug this issue and add some printk info for functions                                      
->>>>>>> such as clockevents_register_proxy in files like                                                           
->>>>>>> kernel/time/tick-proxy.c and kernel/time/clockevents.c, kernel hang in                                     
->>>>>>> mark_readonly->rcu_barrier would suddenly dissappear, kernel                                               
->>>>>>> can boot into nfsroot and debian after then. But system would still hang in                                
->>>>>>> other ruc_barrier during systemd trying to boot up some services.                                          
->>>>>>> I try to count interrupt in founction handle_apic_irq of arch/x86/kernel/irq_pipeline.c                    
->>>>>>> for each cpu and then print this irq number in rcu_barrier for debuging and                                
->>>>>>> finally found that actually cpu0  stop counting from very early before hang in                             
->>>>>>> mark_readonly->rcu_barrier of kernel. After further debug, I found that cpu0                               
->>>>>>> stop counting after call tick_install_proxy when kernel hang in                                            
->>>>>>> mark_readonly->rcu_barrier.                                                                                
->>>>>>>                                                                                                            
->>>>>>> For another hang case that system can boot into systemd but hang in other                                  
->>>>>>> rcu_barrier, I found that actually other three cpus randomly stop producing                                
->>>>>>> apic timer interrupt except cpu0 after call tick_install_proxy according to my test.                       
->>>>>>>                                                                                                            
->>>>>>> I do not know what may cause this issue. Do you have any suggestions about it?                             
->>>>>>>                                                                                                            
->>>>>>> Regards                                                                                                    
->>>>>>>                                                                                                            
->>>>>>> Hongzhan Chen                                                                                              
->>>>>>                                                                                                             
->>>>>> I reproduced following issue steadily today. I think this should be root cause for my                       
->>>>>> hang issue. Till now I deeply understand what you suggested about porting....                               
->>>>>> I want to say it is really genius design about pipeline + proxy tick for real time system                   
->>>>>> on Linux kernel.                                                                                            
->>>>>>                                                                                                             
->>>>>> [    8.032556] IRQ pipeline: some code running in oob context 'Xenomai'                                     
->>>>> [    8.032557]               called an in-band only routine                                                 
->>>>> [    8.032558] CPU: 0 PID: 12 Comm: migration/0 Tainted: G     U            5.8.0+ #30                      
->>>>> [    8.032558] Hardware name: Maxtang WL10/WL10, BIOS WL10T105 10/16/2019                                   
->>>>> [    8.032559] IRQ stage: Xenomai                                                                           
->>>>> [    8.032559] Call Trace:                                                                                  
->>>>> [    8.032560]  dump_stack+0x85/0xa6                                                                        
->>>>> [    8.032561]  inband_irq_save+0x6/0x30                                                                    
->>>>> [    8.032561]  ktime_get+0x24/0x140                                                                        
->>>                                                                                                              
->>> Is calling that function OK in the EVL context? Does xnclock_tick() do                                       
->>>                                                                                                               
->>>Nope, calling ktime_get() would not be correct in the EVL context either.                                      
->>>                                                                                                               
->>>--                                                                                                             
->>>Philippe.   
->>>
->>> ktime_get_mono_fast_ns really works. After replace ktime_get , my debug kernel
->>> image which I added debug info in several files as I mentioned before
->>> now can successfully boot into debian system on our lava test environment with
->>> ramdisk and nfsrootfs image built from xenoami-isar. But it is still quite unstable because
->>> stall issue like in following log [1] still happen randomly on other three cpus 
->>> except cpu0 on my platform. If I remove all printk debug info, system always fail
->>> to boot into debian because of cpu stall issue like [1]. According to my debug, 
->>> cpu stall reported because these cpus stop producing apic timer interrupt after 
->>> call tick_install_proxy in xenomai_init earlier before. Do you have
->>> any ideas about it?
->>
->>Multiple causes might be involved:
->>
->>- ONESHOT_STOPPED mode not handled properly by the real-time core, when
->>  entered by the in-band kernel code. For reference, the EVL core does
->>  it the right way. The basic idea is that, whenever the proxy tick
->>  device enters the ONESHOT_STOPPED mode, the underlying (real) tick
->>  device is turned off as a result. After this transition has been
->>  detected, next time the in-band kernel tells the real-time core to arm
->>  a shot via the proxy, the core needs to force-program the timer
->>  hardware to wake it up, i.e. calling ->set_next_event(). If we don't
->>  do that, the real-time core might skip this step in case the next host
->>  tick is not the earliest event in line, leaving the real device turned
->>  off indefinitely. See program_timer() in the EVL core, tracking how
->>  RQ_TSTOPPED is used.
->
-> Thanks for your instruction. It works for the issue that 100% system hang
-> on cpu0.
->
->>- some issue related to entering a deep sleep mode, which ends up
->>  confusing the Cobalt timing logic, causing the tick proxy to stop
->>  relaying ticks to the in-band kernel. e.g. the CPU idling code
->>  determines that it might be time for the current CPU to enter some
->>  sleep state, but it should ask the real-time core to confirm this by
->>  calling irq_cpuidle_control(). If the core does not implement this
->>  call, then the transition is accepted by default. The EVL core
->>  implements this weak call to figure out whether it is actually
->>  acceptable to enter a sleep state wrt pending real-time duties: you
->>  may want to have a look at the underlying logic there.
->>
->
-> But system still randomly hang because tick proxy fail to relay tick
-> to the in-band kernel even after I disable CONFIG_CPU_IDLE in building kernel time. 
-> In my dozens of  reboot test , about 1/3 case would fail because of cpu stall.
->
-> Before issue happen, all cpu ticks work fine for first several seconds 
-> after xenomai init according to tick count log that I added  for each cpu,
-> but from unknow point , some cpus would randomly stop reacting to 
-> tick_notify_proxy after run successful several millions of ticks like
-> log [3].
-
-This would be typical of a problem happening in the wake of a CPU idling
-phase: if clock tick interrupts can still be observed, then this would
-rule out unexpected issue(s) with the clockevent chip entering the
-oneshot-stopped mode. On the other end, CPUs tend to be fairly busy
-during the boot sequence, until userland is eventually started
-(i.e. init is bootstrapped), at which point many/most of them may go
-idle.
-
-> In this case , issue happen on cpu3. I printed tick count in rcu_barrier ,
-> which start counting when first handle_oob_event of proxy tick callback registered 
-> is called. Actually , cpu3 stop counting a little bit earlier(about 300ms)  before  rcu_barrier
-> according to tick count difference between cpu3 and (cpu2 or cpu1).
->
-> What I am doing on disabling CONFIG_CPU_IDLE can isolate issue related to 
-> deep sleep mode?   
->
-
-This would disable cpuidle governors, not the entire idling logic. Let's
-assume there is a flaw in Dovetail's generic idling logic
-(i.e. kernel/sched/idle.c) which for some reason would leave the in-band
-stage spuriously stalled after wake up (i.e. irqs_disabled() ==
-true). In this case, proxy ticks would be piling up in the interrupt log
-of the in-band stage, but never played back by the pipeline engine.  I
-have no evidence of such Dovetail bug with the various tests I have been
-running on multiple archs so far, but it would make sense to start the
-investigations from the core layer in this case.
-
-First thing would be to change the runtime conditions by passing
-idle=poll on the kernel command line; that would enable a different set
-of code paths.
-
-Next, you may want to turn off the NO_HZ machinery in order to figure
-out whether it might be involved in this issue Dovetail-wise:
-
-CONFIG_TICK_ONESHOT=y
-CONFIG_HZ_PERIODIC=y
-# CONFIG_NO_HZ_IDLE is not set
-# CONFIG_NO_HZ_FULL is not set
-CONFIG_CONTEXT_TRACKING=y
-# CONFIG_CONTEXT_TRACKING_FORCE is not set
-# CONFIG_NO_HZ is not set
-CONFIG_HIGH_RES_TIMERS=y
-# end of Timers subsystem
-
-I just checked this configuration with the EVL core, and the pipeline
-torture tests did pass.
-
-Eventually, you may want to instrument/ftrace the idling code inside the
-do_idle() loop (kernel/sched/idle.c) to make sure that in-band irqs are
-enabled as expected (i.e. irqs_enabled() == true) every time
-arch_cpu_idle_exit() is reached.
-
-PS: you may also want to work on v5.9, not v5.8. The former is the
-current stable target along with v5.4.x for Dovetail. v5.10-rc is the
-current development series. Not all changes to v5.9+ have been
-backported to v5.8, which has been frozen weeks ago.
+errr, well, this would make more sense: irqs_disabled() == false
 
 -- 
 Philippe.
