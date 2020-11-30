@@ -1,10 +1,14 @@
+From: "florian.bezdeka@siemens.com" <florian.bezdeka@siemens.com>
+Subject: Re: [xenomai patch with kernel 5.4.77] Error building the kernel
+Date: Mon, 30 Nov 2020 11:00:20 +0000
+Message-ID: <7786a8bf14ab25145e468bba2b567da76e9fd048.camel@siemens.com>
+References: <CADx0-8DU+evLr-SduY9ru9zKBuhqjYOHPZ=5U4wFnMZAhE5irA@mail.gmail.com>
+In-Reply-To: <CADx0-8DU+evLr-SduY9ru9zKBuhqjYOHPZ=5U4wFnMZAhE5irA@mail.gmail.com>
+Content-Language: en-US
+Content-Type: text/plain; charset="utf-8"
+Content-ID: <D9166D3303AB8E45B1F049CB9B6224C3@EURPRD10.PROD.OUTLOOK.COM>
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-From: Mohamed Irfanulla Mohamed Abdulla <m.mohamedirfanulla@gmail.com>
-Date: Mon, 30 Nov 2020 11:49:47 +0100
-Message-ID: <CADx0-8DU+evLr-SduY9ru9zKBuhqjYOHPZ=5U4wFnMZAhE5irA@mail.gmail.com>
-Subject: RE:[xenomai patch with kernel 5.4.77] Error building the kernel
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -13,42 +17,47 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
+To: "xenomai@xenomai.org" <xenomai@xenomai.org>, "m.mohamedirfanulla@gmail.com" <m.mohamedirfanulla@gmail.com>
 
-Hello,
+DQoNCg0KT24gTW9uLCAyMDIwLTExLTMwIGF0IDExOjQ5ICswMTAwLCBNb2hhbWVkIElyZmFudWxs
+YSBNb2hhbWVkIEFiZHVsbGENCnZpYSBYZW5vbWFpIHdyb3RlOg0KPiBIZWxsbywNCj4gDQo+IEkg
+cGVyZm9ybWVkIHRoZSBpbnN0YWxsYXRpb24gb2YgeGVub21haSAzLjEgd2l0aCBrZXJuZWwgNS40
+Ljc3IGFuZA0KPiBpcGlwZS1jb3JlLTUuNC43Ny14ODYtMi5wYXRjaCBvbiBhIHVidW50dSAyMC4w
+NCBtYWNoaW5lLg0KPiANCj4gSSBlbmNvdW50ZXIgdGhpcyBlcnJvciBkdXJpbmcgdGhlIGJ1aWxk
+Lg0KPiANCj4gwqDCoEdFTiAgICAgdXNyL2luaXRyYW1mc19kYXRhLmNwaW8NCj4gwqDCoEFTICAg
+ICAgdXNyL2luaXRyYW1mc19kYXRhLm8NCj4gwqDCoEFSICAgICAgdXNyL2J1aWx0LWluLmENCj4g
+wqDCoENDICAgICAga2VybmVsL2Nncm91cC9jZ3JvdXAubw0KPiBhcmNoL3g4Ni94ZW5vbWFpL3Ro
+cmVhZC5jOiBJbiBmdW5jdGlvbiDigJh4bmFyY2hfbGVhdmVfcm9vdOKAmToNCj4gYXJjaC94ODYv
+eGVub21haS90aHJlYWQuYzo0NzU6MjogZXJyb3I6IHRvbyBtYW55IGFyZ3VtZW50cyB0byBmdW5j
+dGlvbg0KPiDigJhzd2l0Y2hfZnB1X2ZpbmlzaOKAmQ0KPiDCoMKgc3dpdGNoX2ZwdV9maW5pc2go
+JmN1cnJlbnQtPnRocmVhZC5mcHUsIHNtcF9wcm9jZXNzb3JfaWQoKSk7DQoNClRoZSBzaWduYXR1
+cmUgb2Ygc3dpdGNoX2ZwdV9maW5pc2ggY2hhbmdlZCBpbiA1LjIuIFRoZSBzZWNvbmQgcGFyYW1l
+dGVyDQpoYXMgYmVlbiByZW1vdmVkLiANCg0KUGxlYXNlIGNoZWNrIHRoYXQgeW91IGFyZSB1c2lu
+ZyB0aGUgcmlnaHQgYnJhbmNoLiBUaGUgY2FsbGluZyBjb2RlIGluDQphcmNoL3g4Ni94ZW5vbWFp
+L3RocmVhZC5jIGxvb2tzIGNvcnJlY3QgKGFuZCBpcyBsb2NhdGVkIGF0IGEgZGlmZmVyZW50DQps
+aW5lISk6DQogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIA0KI2lmIExJ
+TlVYX1ZFUlNJT05fQ09ERSA+PSBLRVJORUxfVkVSU0lPTig1LDIsMCkgICAgICAgICAgICAgICAg
+ICAgICAgIA0KICAgICAgICBzd2l0Y2hfZnB1X2ZpbmlzaCgmY3VycmVudC0+dGhyZWFkLmZwdSk7
+ICAgICAgICAgICAgICAgICAgICAgIA0KI2Vsc2UgICAgICAgICAgICAgICAgICAgICAgICAgICAg
+ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIA0KICAgICAgICBzd2l0Y2hfZnB1
+X2ZpbmlzaCgmY3VycmVudC0+dGhyZWFkLmZwdSwgc21wX3Byb2Nlc3Nvcl9pZCgpKTsgIA0KI2Vu
+ZGlmDQoNCj4gwqDCoF4NCj4gSW4gZmlsZSBpbmNsdWRlZCBmcm9tIGFyY2gveDg2L3hlbm9tYWkv
+aW5jbHVkZS9hc20veGVub21haS93cmFwcGVycy5oOjQ0OjAsDQo+IMKgwqDCoMKgwqDCoMKgwqDC
+oMKgwqDCoMKgwqDCoMKgwqBmcm9tIGluY2x1ZGUveGVub21haS9jb2JhbHQva2VybmVsL3RpbWVy
+Lmg6MjgsDQo+IMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqBmcm9tIGluY2x1ZGUv
+eGVub21haS9jb2JhbHQva2VybmVsL3RocmVhZC5oOjI3LA0KPiDCoMKgwqDCoMKgwqDCoMKgwqDC
+oMKgwqDCoMKgwqDCoMKgZnJvbSBhcmNoL3g4Ni94ZW5vbWFpL3RocmVhZC5jOjI1Og0KPiAuL2Fy
+Y2gveDg2L2luY2x1ZGUvYXNtL2ZwdS9pbnRlcm5hbC5oOjU5NDoyMDogbm90ZTogZGVjbGFyZWQg
+aGVyZQ0KPiDCoHN0YXRpYyBpbmxpbmUgdm9pZCBzd2l0Y2hfZnB1X2ZpbmlzaChzdHJ1Y3QgZnB1
+ICpuZXdfZnB1KQ0KPiDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgXg0K
+PiBzY3JpcHRzL01ha2VmaWxlLmJ1aWxkOjI2NTogcmVjaXBlIGZvciB0YXJnZXQgJ2FyY2gveDg2
+L3hlbm9tYWkvdGhyZWFkLm8nDQo+IGZhaWxlZA0KPiBtYWtlWzFdOiAqKiogW2FyY2gveDg2L3hl
+bm9tYWkvdGhyZWFkLm9dIEVycm9yIDENCj4gbWFrZVsxXTogKioqIFdhaXRpbmcgZm9yIHVuZmlu
+aXNoZWQgam9icy4uLi4NCj4gwqDCoENDICAgICAga2VybmVsL2Nncm91cC9yc3RhdC5vDQo+IE1h
+a2VmaWxlOjE3Mjk6IHJlY2lwZSBmb3IgdGFyZ2V0ICdhcmNoL3g4Ni94ZW5vbWFpJyBmYWlsZWQN
+Cj4gbWFrZTogKioqIFthcmNoL3g4Ni94ZW5vbWFpXSBFcnJvciAyDQo+IG1ha2U6ICoqKiBXYWl0
+aW5nIGZvciB1bmZpbmlzaGVkIGpvYnMuLi4uDQo+IMKgwqBDQyAgICAgIGluaXQvZG9fbW91bnRz
+X21kLm8NCj4gwqDCoENDICAgICAga2VybmVsL2RlYnVnL2tkYi9rZGJfaW8ubw0KPiANCj4gVGhh
+bmsgeW91IGZvciB5b3VyIHN1Z2dlc3Rpb25zIG9uIHRoZSBjb25maWcgYW5kIGZpeC4NCj4gDQo+
+IElyZmFuDQoNCg==
 
-I performed the installation of xenomai 3.1 with kernel 5.4.77 and
-ipipe-core-5.4.77-x86-2.patch on a ubuntu 20.04 machine.
-
-I encounter this error during the build.
-
-  GEN     usr/initramfs_data.cpio
-  AS      usr/initramfs_data.o
-  AR      usr/built-in.a
-  CC      kernel/cgroup/cgroup.o
-arch/x86/xenomai/thread.c: In function =E2=80=98xnarch_leave_root=E2=80=99:
-arch/x86/xenomai/thread.c:475:2: error: too many arguments to function
-=E2=80=98switch_fpu_finish=E2=80=99
-  switch_fpu_finish(&current->thread.fpu, smp_processor_id());
-  ^
-In file included from arch/x86/xenomai/include/asm/xenomai/wrappers.h:44:0,
-                 from include/xenomai/cobalt/kernel/timer.h:28,
-                 from include/xenomai/cobalt/kernel/thread.h:27,
-                 from arch/x86/xenomai/thread.c:25:
-./arch/x86/include/asm/fpu/internal.h:594:20: note: declared here
- static inline void switch_fpu_finish(struct fpu *new_fpu)
-                    ^
-scripts/Makefile.build:265: recipe for target 'arch/x86/xenomai/thread.o'
-failed
-make[1]: *** [arch/x86/xenomai/thread.o] Error 1
-make[1]: *** Waiting for unfinished jobs....
-  CC      kernel/cgroup/rstat.o
-Makefile:1729: recipe for target 'arch/x86/xenomai' failed
-make: *** [arch/x86/xenomai] Error 2
-make: *** Waiting for unfinished jobs....
-  CC      init/do_mounts_md.o
-  CC      kernel/debug/kdb/kdb_io.o
-
-Thank you for your suggestions on the config and fix.
-
-Irfan
