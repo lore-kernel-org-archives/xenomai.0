@@ -1,9 +1,16 @@
+From: "florian.bezdeka@siemens.com" <florian.bezdeka@siemens.com>
+Subject: Re: [xenomai patch with kernel 5.4.77] Error building the kernel
+Date: Mon, 30 Nov 2020 12:41:27 +0000
+Message-ID: <3afd98886487b064501e173f4e8d811f3f1a61f1.camel@siemens.com>
+References: <CADx0-8DU+evLr-SduY9ru9zKBuhqjYOHPZ=5U4wFnMZAhE5irA@mail.gmail.com>
+ <7786a8bf14ab25145e468bba2b567da76e9fd048.camel@siemens.com>
+ <CADx0-8C7CW4i+O7g4zAGE0uXtD+bnNr4oR8HF-_tNArpteSDmQ@mail.gmail.com>
+In-Reply-To: <CADx0-8C7CW4i+O7g4zAGE0uXtD+bnNr4oR8HF-_tNArpteSDmQ@mail.gmail.com>
+Content-Language: en-US
+Content-Type: text/plain; charset="utf-8"
+Content-ID: <93D97F900D64034A9B4B38E14203A594@EURPRD10.PROD.OUTLOOK.COM>
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-From: Lakshmi Dhanaraj <lakshmi.d@teclever.com>
-Date: Fri, 6 Nov 2020 22:00:19 +0530
-Message-ID: <CAJCHRmFDvkPHi-dtJDJ3kLBsrxQKwVC5J5HnGT6KLO0OrtGe5A@mail.gmail.com>
-Subject: Periodic Scheduler in Kernel Space
-Content-Type: text/plain; charset="UTF-8"
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -12,45 +19,65 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: sunshilong <sunshilong369@gmail.com>, =?UTF-8?B?OiDlrZnkuJbpvpkgc3Vuc2hpbG9uZyB2aWEgWGVub21haQ==?= <xenomai@xenomai.org>
+To: "m.mohamedirfanulla@gmail.com" <m.mohamedirfanulla@gmail.com>
+Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-Hi Sunshilong,
+T24gTW9uLCAyMDIwLTExLTMwIGF0IDEyOjE2ICswMTAwLCBNb2hhbWVkIElyZmFudWxsYSBNb2hh
+bWVkIEFiZHVsbGENCndyb3RlOg0KPiBUaGFuayB5b3UgZm9yIHlvdXIgcmVwbHkuwqANCj4gSSBm
+aW5kIHRoYXQgSSB1c2UgdGhlIHdyb25nIGJyYW5jaC4gQ291bGQgeW91IHBsZWFzZSBzdWdnZXN0
+IGEgZ29vZA0KPiBicmFuY2ggdGhhdCBJIGNhbiB1c2U/DQo+IA0KDQpJJ20gcXVpdGUgbmV3IHRv
+IHRoZSBYZW5vbWFpIHByb2plY3QsIHNvIGRvbid0IHRydXN0IG1lIDstKQ0KDQpUaGUgcHJvYmxl
+bSB5b3UgYXJlIGZhY2luZyB3YXMgImZpeGVkIiBpbiBjb21taXQgDQo2MDhjMjMyOTdjNGQgKCJj
+b2JhbHQveDg2OiBBY2NvdW50IGZvciBGUFUgY2hhbmdlcyBpbiBrZXJuZWwgNS4yIikgDQp3aGlj
+aCBpcyBwYXJ0IG9mIHRoZSAibmV4dCIgYnJhbmNoLg0KDQpJdCBsb29rcyBsaWtlIGtlcm5lbHMg
+Pj0gNS4yIGFyZSBub3Qgc3VwcG9ydGVkIGluIG9mZmljaWFsIHJlbGVhc2VzIC8NCmJyYW5jaGVz
+IHlldC4NCg0KPiBPbiBNb24sIE5vdiAzMCwgMjAyMCBhdCAxMjowMCBQTSBmbG9yaWFuLmJlemRl
+a2FAc2llbWVucy5jb20gPA0KPiBmbG9yaWFuLmJlemRla2FAc2llbWVucy5jb20+IHdyb3RlOg0K
+PiA+IA0KPiA+IA0KPiA+IA0KPiA+IE9uIE1vbiwgMjAyMC0xMS0zMCBhdCAxMTo0OSArMDEwMCwg
+TW9oYW1lZCBJcmZhbnVsbGEgTW9oYW1lZA0KPiA+IEFiZHVsbGENCj4gPiB2aWEgWGVub21haSB3
+cm90ZToNCj4gPiA+IEhlbGxvLA0KPiA+ID4gDQo+ID4gPiBJIHBlcmZvcm1lZCB0aGUgaW5zdGFs
+bGF0aW9uIG9mIHhlbm9tYWkgMy4xIHdpdGgga2VybmVsIDUuNC43Nw0KPiA+IGFuZA0KPiA+ID4g
+aXBpcGUtY29yZS01LjQuNzcteDg2LTIucGF0Y2ggb24gYSB1YnVudHUgMjAuMDQgbWFjaGluZS4N
+Cj4gPiA+IA0KPiA+ID4gSSBlbmNvdW50ZXIgdGhpcyBlcnJvciBkdXJpbmcgdGhlIGJ1aWxkLg0K
+PiA+ID4gDQo+ID4gPiDCoMKgR0VOwqAgwqAgwqB1c3IvaW5pdHJhbWZzX2RhdGEuY3Bpbw0KPiA+
+ID4gwqDCoEFTwqAgwqAgwqAgdXNyL2luaXRyYW1mc19kYXRhLm8NCj4gPiA+IMKgwqBBUsKgIMKg
+IMKgIHVzci9idWlsdC1pbi5hDQo+ID4gPiDCoMKgQ0PCoCDCoCDCoCBrZXJuZWwvY2dyb3VwL2Nn
+cm91cC5vDQo+ID4gPiBhcmNoL3g4Ni94ZW5vbWFpL3RocmVhZC5jOiBJbiBmdW5jdGlvbiDigJh4
+bmFyY2hfbGVhdmVfcm9vdOKAmToNCj4gPiA+IGFyY2gveDg2L3hlbm9tYWkvdGhyZWFkLmM6NDc1
+OjI6IGVycm9yOiB0b28gbWFueSBhcmd1bWVudHMgdG8NCj4gPiBmdW5jdGlvbg0KPiA+ID4g4oCY
+c3dpdGNoX2ZwdV9maW5pc2jigJkNCj4gPiA+IMKgwqBzd2l0Y2hfZnB1X2ZpbmlzaCgmY3VycmVu
+dC0+dGhyZWFkLmZwdSwgc21wX3Byb2Nlc3Nvcl9pZCgpKTsNCj4gPiANCj4gPiBUaGUgc2lnbmF0
+dXJlIG9mIHN3aXRjaF9mcHVfZmluaXNoIGNoYW5nZWQgaW4gNS4yLiBUaGUgc2Vjb25kDQo+ID4g
+cGFyYW1ldGVyDQo+ID4gaGFzIGJlZW4gcmVtb3ZlZC4gDQo+ID4gDQo+ID4gUGxlYXNlIGNoZWNr
+IHRoYXQgeW91IGFyZSB1c2luZyB0aGUgcmlnaHQgYnJhbmNoLiBUaGUgY2FsbGluZyBjb2RlDQo+
+ID4gaW4NCj4gPiBhcmNoL3g4Ni94ZW5vbWFpL3RocmVhZC5jIGxvb2tzIGNvcnJlY3QgKGFuZCBp
+cyBsb2NhdGVkIGF0IGENCj4gPiBkaWZmZXJlbnQNCj4gPiBsaW5lISk6DQo+ID4gDQo+ID4gI2lm
+IExJTlVYX1ZFUlNJT05fQ09ERSA+PSBLRVJORUxfVkVSU0lPTig1LDIsMCnCoCDCoCDCoCDCoCDC
+oCDCoCDCoCDCoCDCoCDCoA0KPiA+IMKgIMKgDQo+ID4gwqAgwqAgwqAgwqAgc3dpdGNoX2ZwdV9m
+aW5pc2goJmN1cnJlbnQtPnRocmVhZC5mcHUpO8KgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKg
+DQo+ID4gwqAgDQo+ID4gI2Vsc2XCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDC
+oCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoA0K
+PiA+IMKgIMKgDQo+ID4gwqAgwqAgwqAgwqAgc3dpdGNoX2ZwdV9maW5pc2goJmN1cnJlbnQtPnRo
+cmVhZC5mcHUsDQo+ID4gc21wX3Byb2Nlc3Nvcl9pZCgpKTvCoCANCj4gPiAjZW5kaWYNCj4gPiAN
+Cj4gPiA+IMKgwqBeDQo+ID4gPiBJbiBmaWxlIGluY2x1ZGVkIGZyb20NCj4gPiBhcmNoL3g4Ni94
+ZW5vbWFpL2luY2x1ZGUvYXNtL3hlbm9tYWkvd3JhcHBlcnMuaDo0NDowLA0KPiA+ID4gwqDCoMKg
+wqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoGZyb20gaW5jbHVkZS94ZW5vbWFpL2NvYmFsdC9r
+ZXJuZWwvdGltZXIuaDoyOCwNCj4gPiA+IMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKg
+wqBmcm9tIGluY2x1ZGUveGVub21haS9jb2JhbHQva2VybmVsL3RocmVhZC5oOjI3LA0KPiA+ID4g
+wqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoGZyb20gYXJjaC94ODYveGVub21haS90
+aHJlYWQuYzoyNToNCj4gPiA+IC4vYXJjaC94ODYvaW5jbHVkZS9hc20vZnB1L2ludGVybmFsLmg6
+NTk0OjIwOiBub3RlOiBkZWNsYXJlZCBoZXJlDQo+ID4gPiDCoHN0YXRpYyBpbmxpbmUgdm9pZCBz
+d2l0Y2hfZnB1X2ZpbmlzaChzdHJ1Y3QgZnB1ICpuZXdfZnB1KQ0KPiA+ID4gwqDCoMKgwqDCoMKg
+wqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoF4NCj4gPiA+IHNjcmlwdHMvTWFrZWZpbGUuYnVp
+bGQ6MjY1OiByZWNpcGUgZm9yIHRhcmdldA0KPiA+ICdhcmNoL3g4Ni94ZW5vbWFpL3RocmVhZC5v
+Jw0KPiA+ID4gZmFpbGVkDQo+ID4gPiBtYWtlWzFdOiAqKiogW2FyY2gveDg2L3hlbm9tYWkvdGhy
+ZWFkLm9dIEVycm9yIDENCj4gPiA+IG1ha2VbMV06ICoqKiBXYWl0aW5nIGZvciB1bmZpbmlzaGVk
+IGpvYnMuLi4uDQo+ID4gPiDCoMKgQ0PCoCDCoCDCoCBrZXJuZWwvY2dyb3VwL3JzdGF0Lm8NCj4g
+PiA+IE1ha2VmaWxlOjE3Mjk6IHJlY2lwZSBmb3IgdGFyZ2V0ICdhcmNoL3g4Ni94ZW5vbWFpJyBm
+YWlsZWQNCj4gPiA+IG1ha2U6ICoqKiBbYXJjaC94ODYveGVub21haV0gRXJyb3IgMg0KPiA+ID4g
+bWFrZTogKioqIFdhaXRpbmcgZm9yIHVuZmluaXNoZWQgam9icy4uLi4NCj4gPiA+IMKgwqBDQ8Kg
+IMKgIMKgIGluaXQvZG9fbW91bnRzX21kLm8NCj4gPiA+IMKgwqBDQ8KgIMKgIMKgIGtlcm5lbC9k
+ZWJ1Zy9rZGIva2RiX2lvLm8NCj4gPiA+IA0KPiA+ID4gVGhhbmsgeW91IGZvciB5b3VyIHN1Z2dl
+c3Rpb25zIG9uIHRoZSBjb25maWcgYW5kIGZpeC4NCj4gPiA+IA0KPiA+ID4gSXJmYW4NCj4gPiAN
+Cg0K
 
-I need to create a 12.5ms periodic scheduler in Xenomai(v3.0.5) Kernel
-Space on Linux Kernel 4.9.38 under Ubuntu 18.04.1 LTS.Inside my scheduler I
-have multiple semaphore down functions to wait for the response from
-multiple threads.
-
-1.I created a periodic task using rtdm_task_init() and
-rtdm_task_wait_period() with task priority of 90.It is working fine without
-any overruns for a while and my system is getting hanged if I tries to open
-system monitor Window.May I know why and I need to set any cpu affinity to
-the scheduler thread?But in the driver implementation,for CPU affinity is
-setted as CPU_MASK_ALL by default.
-
-2.Tried another way using kthread_create() along with hrtimer_create().In
-hrtimer callback function,I am not able to use semaphore down func since it
-acts like an interrupt.So I created a separate thread in which my sem_downs
-are added and waiting for another semaphore trigger from hrtimer callback()
-function.
-But here the semaphore trigger from the hrtimer exceeds 12.5 ms upto 18ms
-under load.
-
-The issue is that in my first case,the timings are ok but the system
-hangs,in my second case system not hanging but timing exceeds.
-
-I verified the timings of both the cases by increasing CPU Load using
-"taskset -c (0...7) yes" and stress.Is this the correct way to verify the
-stability of my scheduler in kernel space?
-
-I was struck with this problem for more than a week, please help me out to
-solve the issue as soon as possible.Awaiting for your reply.
-
-
-
-
-
-
-With Thanks & Regards,
-
-Lakshmi.D
