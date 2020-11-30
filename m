@@ -1,16 +1,11 @@
-Subject: Re: [xenomai patch with kernel 5.4.77] Error building the kernel
-References: <CADx0-8DU+evLr-SduY9ru9zKBuhqjYOHPZ=5U4wFnMZAhE5irA@mail.gmail.com>
- <7786a8bf14ab25145e468bba2b567da76e9fd048.camel@siemens.com>
- <CADx0-8C7CW4i+O7g4zAGE0uXtD+bnNr4oR8HF-_tNArpteSDmQ@mail.gmail.com>
- <3afd98886487b064501e173f4e8d811f3f1a61f1.camel@siemens.com>
-From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <abe234e7-b15d-d257-69bc-c9e1ccd6898a@siemens.com>
-Date: Mon, 30 Nov 2020 14:27:50 +0100
-MIME-Version: 1.0
-In-Reply-To: <3afd98886487b064501e173f4e8d811f3f1a61f1.camel@siemens.com>
-Content-Type: text/plain; charset="utf-8"
+From: Robert Faron <RobertF@Cmslaser.com>
+Subject: RTDM PCI information
+Date: Mon, 30 Nov 2020 19:12:22 +0000
+Message-ID: <BN8PR15MB2915F1ACC0DB693A4BF23B20DBF50@BN8PR15MB2915.namprd15.prod.outlook.com>
 Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+MIME-Version: 1.0
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -19,32 +14,121 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "florian.bezdeka@siemens.com" <florian.bezdeka@siemens.com>, "m.mohamedirfanulla@gmail.com" <m.mohamedirfanulla@gmail.com>
-Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: "Xenomai (xenomai@xenomai.org)" <xenomai@xenomai.org>
 
-On 30.11.20 13:41, florian.bezdeka--- via Xenomai wrote:
-> On Mon, 2020-11-30 at 12:16 +0100, Mohamed Irfanulla Mohamed Abdulla
-> wrote:
->> Thank you for your reply. 
->> I find that I use the wrong branch. Could you please suggest a good
->> branch that I can use?
->>
-> 
-> I'm quite new to the Xenomai project, so don't trust me ;-)
-> 
-> The problem you are facing was "fixed" in commit 
-> 608c23297c4d ("cobalt/x86: Account for FPU changes in kernel 5.2") 
-> which is part of the "next" branch.
-> 
-> It looks like kernels >= 5.2 are not supported in official releases /
-> branches yet.
+I have been struggling with creating a driver for my FPGA card.  My issue s=
+eems to be that I haven't been able to pass the pointer information for the=
+ pci_dev.  When registering the device there is no way, from my limited und=
+erstanding, to attach information to the device that is created, in my case=
+ /dev/rtdm/cms_fpga .
 
-Correct. Next 3.1.x release will include that. Until then you need a
-version from git.
+So while the pci_probe works fine and show me the address of BAR0 there is =
+no way to pass that data to my .open or .ioctl_rt.  I tried creating my stu=
+cture globally but that didn't seem to help. The following is a sample of t=
+he module as it currently is, any help would be greatly appreciated.
 
-Jan
 
--- 
-Siemens AG, T RDA IOT
-Corporate Competence Center Embedded Linux
+struct cms_fpga_struct
+ {
+   rtdm_lock_t lock;
+   struct pci_dev *pcidev;
+   resource_size_t mmio;
+   struct cms_fpga_context context;
 
+ };
+
+static struct cms_fpga_struct *fpga ;
+static struct pci_device_id pci_ids[] =3D
+{
+  {
+    PCI_DEVICE(0x1204, 0xec30),
+    //.driver_data =3D (unsigned long)&fpga
+  },
+  {}
+};
+static struct rtdm_driver CMS_Xenomai_Driver =3D
+{
+  .profile_info =3D RTDM_PROFILE_INFO(cms,
+                                    RTDM_CLASS_EXPERIMENTAL,
+                                    1,
+                                    1),
+  .device_flags =3D RTDM_NAMED_DEVICE|RTDM_EXCLUSIVE,
+  .device_count =3D 1,
+  .context_size =3D sizeof(struct cms_fpga_struct),
+  .ops =3D
+    {
+      .open     =3D cms_open,
+      .ioctl_rt =3D cms_ioctl,
+      .ioctl_nrt=3D cms_ioctl,
+      .write_rt =3D NULL , //pci_write,
+      .write_nrt=3D NULL ,
+      .read_rt  =3D NULL , //pci_read,
+      .read_nrt =3D NULL
+
+
+
+    }
+};
+
+
+static int pci_probe(struct pci_dev *pdev, const struct pci_device_id *id)
+{
+  int ret;
+  int err =3D 0 ;
+  static struct cms_fpga_struct *fpga;
+  rtdm_printk (KERN_DEBUG "Probe 1 %llx", fpga);
+  struct rtdm_device *dev;
+  dev =3D kmalloc(sizeof(struct rtdm_device) + RTDM_MAX_DEVNAME_LEN, GFP_KE=
+RNEL);
+  fpga =3D kmalloc(sizeof(struct cms_fpga_struct), GFP_KERNEL);
+  if(!dev) goto out; //cleanup;
+  dev->driver =3D &CMS_Xenomai_Driver;
+  dev->label =3D "cms_fpga";
+  dev->device_data=3D(unsigned long long *)fpga;
+  rtdm_printk(KERN_DEBUG "Probe 2 %llx", fpga);
+  ret =3D rtdm_dev_register(dev);
+//  if(!id->driver_data)
+//    {
+//      rtdm_printk(KERN_DEBUG "No id->driver_data");
+//      return -ENODEV;
+//    }
+//  fpga =3D id->driver_data;
+  rtdm_printk (KERN_DEBUG "Probe 3 %llx", fpga);
+  if(fpga =3D=3D NULL)
+    {
+      rtdm_printk(KERN_DEBUG "fpga =3D=3D NULL");
+      return -ENOMEM;
+    }
+
+  //memset(fpga, 0, sizeof(struct cms_fpga_struct));
+  rtdm_lock_init(&fpga->lock);
+  if (pci_enable_device(pdev) < 0)
+    {
+      rtdm_printk(KERN_ERR "FPGA PCI Not enableded");
+      goto out;
+    }
+  fpga->pcidev =3D pdev;
+  ret =3D pci_request_region(pdev, BAR_MEM, "CMS-FPGA");
+  if(ret < 0)
+    {
+      rtdm_printk(KERN_DEBUG "Request region failed @ %0x", fpga->mmio);
+    }
+  fpga->mmio=3Dpci_resource_start(pdev,BAR_MEM);
+  dev_info(&(pdev->dev), "MMIO starts at %llx", fpga->mmio);
+  rtdm_printk(KERN_DEBUG "Probe 4 %llx", dev->device_data);
+  return err;
+out:
+kfree(fpga);
+return -1;
+}
+
+
+
+NOTICE: This e-mail message and all attachments transmitted with it may con=
+tain trade secrets and confidential information intended solely for the use=
+ of the addressee. If the reader of this message is not the intended recipi=
+ent, you are hereby notified that any reading, dissemination, distribution,=
+ copying, or other use of this message or its attachments is strictly prohi=
+bited. If you have received this message in error, please notify the sender=
+ immediately by telephone at 407-679-9716, and delete this message and all =
+copies and backups thereof. Thank you
