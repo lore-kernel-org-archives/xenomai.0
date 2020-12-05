@@ -1,10 +1,9 @@
-From: hongzha1 <hongzhan.chen@intel.com>
-Subject: [PATCH 02/15] cobalt/sched: call irq_pipeline_send_remote to send
- RESCHEDULE_OOB_IPI
-Date: Mon,  9 Nov 2020 02:50:14 -0500
-Message-Id: <20201109075027.14760-2-hongzhan.chen@intel.com>
-In-Reply-To: <20201109075027.14760-1-hongzhan.chen@intel.com>
-References: <20201109075027.14760-1-hongzhan.chen@intel.com>
+From: Philippe  Gerum <rpm@xenomai.org>
+Subject: [PATCH 0/4] Dovetail prep work, cleanup series
+Date: Sat,  5 Dec 2020 13:00:10 +0100
+Message-Id: <20201205120014.2754097-1-rpm@xenomai.org>
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -13,32 +12,33 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: jan.kiszka@siemens.com, xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-call irq_pipeline_send_remote to send RESCHEDULE_OOB_IPI instead
-of ipipe_send_ipi
+From: Philippe Gerum <rpm@xenomai.org>
 
-Signed-off-by: hongzha1 <hongzhan.chen@intel.com>
----
- kernel/cobalt/sched.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+This series contains prep work to the addition of a pipeline
+abstraction layer towards Xenomai 3.2 supporting Dovetail, cleaning up
+obsolete code. Based on the -next branch.
 
-diff --git a/kernel/cobalt/sched.c b/kernel/cobalt/sched.c
-index 36eff09d4..5f090ec79 100644
---- a/kernel/cobalt/sched.c
-+++ b/kernel/cobalt/sched.c
-@@ -937,8 +937,8 @@ static inline int test_resched(struct xnsched *sched)
- 	/* Send resched IPI to remote CPU(s). */
- 	if (unlikely(!cpumask_empty(&sched->resched))) {
- 		smp_mb();
--#warning TODO
--		//ipipe_send_ipi(IPIPE_RESCHEDULE_IPI, sched->resched);
-+		irq_pipeline_send_remote(RESCHEDULE_OOB_IPI,
-+				&sched->resched);
- 		cpumask_clear(&sched->resched);
- 	}
- #endif
+Philippe Gerum (4):
+  cobalt/arm: disable unlocked context switching
+  cobalt/kernel: drop support for preemptible context switching
+  cobalt/syscall: use raw_printk() for serial debug output
+  cobalt/clock: drop xnclock_get_host_time()
+
+ include/cobalt/kernel/clock.h       |  2 -
+ include/cobalt/kernel/sched.h       | 34 ---------------
+ include/cobalt/kernel/thread.h      |  2 +-
+ include/cobalt/uapi/kernel/thread.h |  1 -
+ kernel/cobalt/arch/arm/Kconfig      | 22 ----------
+ kernel/cobalt/clock.c               |  6 ---
+ kernel/cobalt/posix/syscall.c       |  2 +-
+ kernel/cobalt/sched.c               | 66 ++---------------------------
+ kernel/cobalt/thread.c              | 23 +---------
+ kernel/cobalt/timer.c               |  2 +-
+ 10 files changed, 7 insertions(+), 153 deletions(-)
+
 -- 
-2.17.1
+2.26.2
 
 
