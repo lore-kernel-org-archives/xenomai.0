@@ -1,7 +1,7 @@
 From: Philippe  Gerum <rpm@xenomai.org>
-Subject: [PATCH 4/4] cobalt/clock: drop xnclock_get_host_time()
-Date: Sat,  5 Dec 2020 13:00:14 +0100
-Message-Id: <20201205120014.2754097-5-rpm@xenomai.org>
+Subject: [PATCH 1/4] cobalt/arm: disable unlocked context switching
+Date: Sat,  5 Dec 2020 13:00:11 +0100
+Message-Id: <20201205120014.2754097-2-rpm@xenomai.org>
 In-Reply-To: <20201205120014.2754097-1-rpm@xenomai.org>
 References: <20201205120014.2754097-1-rpm@xenomai.org>
 MIME-Version: 1.0
@@ -18,61 +18,57 @@ To: xenomai@xenomai.org
 
 From: Philippe Gerum <rpm@xenomai.org>
 
-No point in abstracting xnclock_get_host_time() and actually
-counter-intuitive since it refers to the host-managed wallclock time,
-not to any Xenomai-controlled clock device. Fix the single in-tree
-user and drop this call.
+Allowing the task context switching code to be preempted by local
+interrupts was an optimization targeted at low-end ARM armv4/5 cores
+with sluggish VIVT caches, at the expense of significant complexity in
+the IRQ pipeline and Cobalt scheduler. Support for armv4/5 is long
+gone for Xenomai, and maintaining such feature is not worth the burden
+with the VIPT caches exhibited by current micro-architectures such as
+armv7.
+
+Dovetail provides some form of preemptible context switching of
+in-band tasks specifically, which requires no support from Cobalt.
+
+So we may disable this Cobalt-specific feature entirely for ARM.
 
 Signed-off-by: Philippe Gerum <rpm@xenomai.org>
 ---
- include/cobalt/kernel/clock.h | 2 --
- kernel/cobalt/clock.c         | 6 ------
- kernel/cobalt/timer.c         | 2 +-
- 3 files changed, 1 insertion(+), 9 deletions(-)
+ kernel/cobalt/arch/arm/Kconfig | 22 ----------------------
+ 1 file changed, 22 deletions(-)
 
-diff --git a/include/cobalt/kernel/clock.h b/include/cobalt/kernel/clock.h
-index c26776a0b..94dfd2f99 100644
---- a/include/cobalt/kernel/clock.h
-+++ b/include/cobalt/kernel/clock.h
-@@ -330,8 +330,6 @@ static inline xnticks_t xnclock_read_realtime(struct xnclock *clock)
- unsigned long long xnclock_divrem_billion(unsigned long long value,
- 					  unsigned long *rem);
+diff --git a/kernel/cobalt/arch/arm/Kconfig b/kernel/cobalt/arch/arm/Kconfig
+index 0c4e0aa82..d81ff4c59 100644
+--- a/kernel/cobalt/arch/arm/Kconfig
++++ b/kernel/cobalt/arch/arm/Kconfig
+@@ -1,28 +1,6 @@
+ source "kernel/xenomai/Kconfig"
+ source "drivers/xenomai/Kconfig"
  
--xnticks_t xnclock_get_host_time(void);
+-menu "Machine/platform-specific options"
 -
- #ifdef CONFIG_XENO_OPT_VFILE
- 
- void xnclock_init_proc(void);
-diff --git a/kernel/cobalt/clock.c b/kernel/cobalt/clock.c
-index f8291b006..2a5b61760 100644
---- a/kernel/cobalt/clock.c
-+++ b/kernel/cobalt/clock.c
-@@ -348,12 +348,6 @@ void xnclock_adjust(struct xnclock *clock, xnsticks_t delta)
- }
- EXPORT_SYMBOL_GPL(xnclock_adjust);
- 
--xnticks_t xnclock_get_host_time(void)
--{
--	return ktime_to_ns(ktime_get_real());
--}
--EXPORT_SYMBOL_GPL(xnclock_get_host_time);
+-config XENO_ARCH_UNLOCKED_SWITCH
+-	bool "Unlocked context switch"
+-	default y
+-	help
+-	The Cobalt core may allow non-atomic execution of the
+-	machine-dependent context switching code, so that other CPUs
+-	and/or local interrupts may execute concurrently.
 -
- xnticks_t xnclock_core_read_monotonic(void)
- {
- 	return xnclock_core_ticks_to_ns(xnclock_core_read_raw());
-diff --git a/kernel/cobalt/timer.c b/kernel/cobalt/timer.c
-index b8b60c4e5..ccd3c3b70 100644
---- a/kernel/cobalt/timer.c
-+++ b/kernel/cobalt/timer.c
-@@ -853,7 +853,7 @@ int xntimer_grab_hardware(void)
- #endif /* CONFIG_XENO_OPT_STATS_IRQS */
+-	This option reduces interrupt latency when costly cache and
+-	TLB flushes are required to switch context.
+-
+-	You definitely want to enable that option on low-end ARM
+-	platforms.
+-endmenu
+-
+-config IPIPE_WANT_PREEMPTIBLE_SWITCH
+-	bool
+-	default y if XENO_ARCH_UNLOCKED_SWITCH
+-	default n if !XENO_ARCH_UNLOCKED_SWITCH
+-
+ config XENO_ARCH_FPU
+ 	def_bool VFP
  
- 	nkclock.wallclock_offset =
--		xnclock_get_host_time() - xnclock_read_monotonic(&nkclock);
-+		ktime_to_ns(ktime_get_real()) - xnclock_read_monotonic(&nkclock);
- 
- 	ret = xntimer_setup_ipi();
- 	if (ret)
 -- 
 2.26.2
 
