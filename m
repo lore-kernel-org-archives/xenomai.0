@@ -1,14 +1,13 @@
-References: <874kkjurgf.fsf@xenomai.org>
- <84f868cf-5713-c7cc-95bb-c03d3e89cd93@siemens.com>
- <874kkcvm8d.fsf@xenomai.org>
- <63816e8d-12b1-648e-0312-61d2f80b865f@siemens.com>
-From: Philippe Gerum <rpm@xenomai.org>
-Subject: Re: [CXP] Discussing the RTDM specification
-In-reply-to: <63816e8d-12b1-648e-0312-61d2f80b865f@siemens.com>
-Date: Sat, 09 Jan 2021 18:01:44 +0100
-Message-ID: <87wnwmjb7r.fsf@xenomai.org>
+From: Wolfgang Denk <wd@denx.de>
+Subject: Re: [CXP][RFC] pick POSIX/cobalt for the common user API
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-type: text/plain; charset=UTF-8
+Content-transfer-encoding: 8bit
+In-reply-to: <5FCD907C.6040309@tj.kylinos.cn>+BA6FC9DAC615AEA6
+References: <87mtyr1abi.fsf@xenomai.org>
+ <5FCD907C.6040309@tj.kylinos.cn>+BA6FC9DAC615AEA6
+Date: Mon, 07 Dec 2020 14:58:21 +0100
+Message-ID: <251767.1607349501@gemini.denx.de>
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,128 +16,40 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jan Kiszka <jan.kiszka@siemens.com>
-Cc: xenomai@xenomai.org
+To: chensong <chensong@tj.kylinos.cn>, chensong via Xenomai <xenomai@xenomai.org>
 
+Dear Chensong,
 
-Jan Kiszka <jan.kiszka@siemens.com> writes:
-
-> On 23.12.20 11:40, Philippe Gerum wrote:
->> 
->> Jan Kiszka <jan.kiszka@siemens.com> writes:
->> 
->>> On 18.12.20 15:19, Philippe Gerum via Xenomai wrote:
->>>>
->>>> This wiki page [1] contains a draft proposal about specifying which
->>>> services from the current RTDM interface should be part of the Common
->>>> Xenomai Platform. Some proposals for deprecation stand out:
->>>>
->>>> - I suspect that only very few RTDM drivers are actually handling
->>>>   requests from other kernel-based drivers in real world applications,
->>>>   at least not enough to justify RTDM codifying these rare cases into a
->>>>   common interface (rtdm_open, rtdm_read, rtdm_write etc).
->>>>
->>>>   In other words, although I would agree that a few particular drivers
->>>>   might want to export a couple of services to kernel-based clients in
->>>>   order to provide them some sort of backchannel, it seems wrong to
->>>>   require RTDM drivers to provide a kernel interface which would match
->>>>   their user interface in the same terms. For these specific cases, ad
->>>>   hoc code in these few drivers should be enough.
->>>>
->>>>   Besides, I believe that most kernel->kernel request paths implemented
->>>>   by in-tree RTDM drivers have never been tested for years, if ever.
->>>>   Meanwhile, this kernel->kernel API introduces a basic exception case
->>>>   into many RTDM and driver code paths, e.g. for differentiating kernel
->>>>   vs user buffers, for only very few use cases.
->>>>
->>>>   For these reasons, I would suggest to deprecate the kernel->kernel API
->>>>   from RTDM starting from 3.3, excluding it from the CXP in the same
->>>>   move.
->>>
->>> That's fine with me. The idea was once that something like bus drivers
->>> would appear, but that never happened.
->>>
->>>>
->>>> - RTDM_EXECUTE_ATOMICALLY() and related calls relying on the Cobalt big
->>>>   lock must go. For SMP scalability reasons, this big lock was
->>>>   eliminated from the EVL core, which means that all the attached
->>>>   semantics will not hold there. Serializing access to shared resources
->>>>   should be guaranteed by resource-specific locking, not by a giant
->>>>   traffic light like the big lock implements.
->>>
->>> This is more complicated: RTDM_EXECUTE_ATOMICALLY was in fact deprecated
->>> long ago, but users were migrated to cobalt_atomic_enter/leave which may
->>> now make it look like we no longer need this. Maybe this is already the
->>> case when using rtdm_waitqueue*, but let's convert everyone first.
->> 
->> Alternatively, In-tree v3 drivers could also keep relying
->> RTDM_EXECUTE_ATOMICALLY, the v4 implementation would be different for
->> them. Bottom line is to exclude from the CXP the whole idea that we may
->> schedule while holding a lock to protect against missed wake ups, in
->> general the very existence of any superlock which would cover everything
->> from top to bottom when serializing. I agree that having v3 converge
->> towards the CXP would be better though.
->> 
+In message <5FCD907C.6040309@tj.kylinos.cn>+BA6FC9DAC615AEA6 you wrote:
 >
-> I'm fine with migrating to a new pattern first, drop that old RTDM
-> pattern and declare the new one as migration path. Same for below.
->
->>>
->>>>
->>>> - rtdm_mutex_timedlock() has dubious semantics. Hitting a timeout
->>>>   condition on grabbing a mutex either means that:
->>>>
->>>
->>> I think you are missing the use cases:
->>>
->>> mutex-lock-timed
->>> ...
->>> wait-event-timed
->>> ...
->>> mutex-unlock
->>> (which goes long with timeout sequences)
->>>
->> 
->> There is a couple of issues with such use case: first we should never
->> ever sleep with a mutex held, this would trigger SIGDEBUG if done from
->> user ( a [binary] semaphore would at least prevent this problem), but
->> more importantly, how would this pattern allow the event to be signaled
->> given the waiter holds the lock the sender would need to acquire first?
->
-> Just look at the existing drivers for the use cases (which obviously
-> imply signalling without holding the mutex).
->
+> As far as i know, some vxworks customers like xenomai because they can 
+> move their RT processes from vxworks to linux without rewriting their 
+> code by the help of vxworks skin.
 
-Excluding RTDM_EXECUTE_ATOMICALLY() which has no in-tree user, what
-remains is solving the issue for users of the cobalt_atomic_{enter,
-leave} pattern, i.e.:
+I agree - we also had customers who used this - but that was may
+years ago, and I haven't seen any such request for at least 5 years,
+probably more.
 
-kernel/drivers/can/rtcan_raw.c
-kernel/drivers/can/rtcan_socket.c
-kernel/drivers/ipc/bufp.c
-kernel/drivers/ipc/iddp.c
-kernel/drivers/ipc/rtipc.c
-kernel/drivers/ipc/xddp.c
-kernel/drivers/net/stack/rtmac/tdma/tdma_dev.c
-kernel/drivers/testing/timerbench.c
-kernel/drivers/udd/udd.c
+> If we "Excluding the legacy RTOS emulators such as VxWorks", we will 
+> lose them. It could depend on the balance of the request and effort.
 
-For the call sites listed about, AFAICS we'd need to:
+I think we should move on and not get ourself stuck in "maybe
+someone still needs it" compatibility issues.  If such users still
+exist, they can speak up here, and offer to cover the needed efforts
+to add and maintain such a compatibility layer again.
 
-1. move any blocking call out of the locking scope, by rewriting these
-as wait loops rechecking the condition under lock if/when required. Only
-a few would need the latter in fact, as in many cases
-cobalt_atomic_leave() immediately follows the blocking call in the code
-flow.
+I would not hold my breath waiting for such volunteers, though...
 
-2. provide _nosched variants for signaling calls
-(e.g. rtdm_event_pulse_nosched()) and use them, invoking xnsched_run()
-out of lock as appropriate.
+Best regards,
 
-However, I cannot find any code exhibiting the issue with mutexes in
-these matches. Do you have an in-tree example of the problem you see to
-point me at?
+Wolfgang Denk
 
 -- 
-Philippe.
+DENX Software Engineering GmbH,      Managing Director: Wolfgang Denk
+HRB 165235 Munich, Office: Kirchenstr.5, D-82194 Groebenzell, Germany
+Phone: (+49)-8142-66989-10 Fax: (+49)-8142-66989-80 Email: wd@denx.de
+READ THIS BEFORE OPENING PACKAGE: According to Certain Suggested Ver-
+sions of the Grand Unified Theory, the Primary Particles Constituting
+this Product May Decay to Nothingness Within the  Next  Four  Hundred
+Million Years.
 
