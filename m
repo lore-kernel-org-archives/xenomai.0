@@ -1,13 +1,11 @@
-Subject: Re: [xenomai-images][PATCH 0/2] add xenomai 3.1.x to pipeline
-References: <20201218094945.6941-1-Quirin.Gylstorff@siemens.com>
-From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <ce1e808e-f9b4-4e74-12d2-e206d3ccec63@siemens.com>
-Date: Thu, 7 Jan 2021 18:46:44 +0100
+From: =?utf-8?q?Fran=C3=A7ois_Legal?= <francois.legal@thom.fr.eu.org>
 MIME-Version: 1.0
-In-Reply-To: <20201218094945.6941-1-Quirin.Gylstorff@siemens.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Date: Mon, 07 Dec 2020 12:01:59 +0100
+Subject: =?utf-8?q?=5BPatch?==?utf-8?q?_4=2F5=5D?= Problems with upstream
+ SPECTRE mitigation found in =?utf-8?q?sendmsg=2Frecvmsg?=  syscalls
+Message-ID: <1174-5fce0b80-77-37e14c00@74919671>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: quoted-printable
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,56 +14,61 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "Q. Gylstorff" <Quirin.Gylstorff@siemens.com>, xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-On 18.12.20 10:49, Q. Gylstorff wrote:
-> From: Quirin Gylstorff <quirin.gylstorff@siemens.com>
-> 
-> Add xenomai 3.1 to the build and test pipeline of xenomai-images.
-> 
-> Add parent_child pipelines[1] to have a better overview of the builds.
-> 
-> [1]: https://docs.gitlab.com/ee/ci/parent_child_pipelines.html
-> 
-> You can see an example build at:
-> https://gitlab.com/Quirin.Gy/xenomai-images-test/-/pipelines/231763266
-> 
-> Quirin Gylstorff (2):
->   ci: add xenomai 3.1 stable
->   ci: Introduce parent-child pipelines
-> 
->  .gitlab-ci-artifacts.yml                      |  6 +-
->  .gitlab-ci.yml                                |  3 +-
->  ci/artifacts.yml                              | 22 -----
->  ci/child_pipelines.yml                        | 34 +++++++
->  ci/default-builds.yml                         | 76 ---------------
->  ci/gitlab-ci-base.yml                         | 93 ++++++++++++++++++-
->  ...uilds.yml => kernel_4_19_xenomai_next.yml} | 42 ++++-----
->  ...builds.yml => kernel_5_4_xenomai_next.yml} | 16 ++--
->  ci/no-artifacts.yml                           | 21 -----
->  ci/xenomai_3_0_x.yml                          | 16 ++--
->  ci/xenomai_3_1_x.yml                          | 91 ++++++++++++++++++
->  ci/xenomai_next.yml                           | 14 +++
->  opt-xenomai-3.1.x.yml                         | 17 ++++
->  .../xenomai/xenomai_stable-3.1.x.bb           | 21 +++++
->  14 files changed, 304 insertions(+), 168 deletions(-)
->  delete mode 100644 ci/artifacts.yml
->  create mode 100644 ci/child_pipelines.yml
->  delete mode 100644 ci/default-builds.yml
->  rename ci/{4_19_builds.yml => kernel_4_19_xenomai_next.yml} (55%)
->  rename ci/{5_4_builds.yml => kernel_5_4_xenomai_next.yml} (64%)
->  delete mode 100644 ci/no-artifacts.yml
->  create mode 100644 ci/xenomai_3_1_x.yml
->  create mode 100644 ci/xenomai_next.yml
->  create mode 100644 opt-xenomai-3.1.x.yml
->  create mode 100644 recipes-xenomai/xenomai/xenomai_stable-3.1.x.bb
-> 
+From: Fran=C3=A7ois LEGAL <devel@thom.fr.eu.org>
 
-Thanks, applied. I just tuned the kas config version to 10.
+Add rtipc=5Fget=5Farg (copy=5Ffrom=5Fser) call on struct user=5Fmsghdr.=
 
-Jan
 
--- 
-Siemens AG, T RDA IOT
-Corporate Competence Center Embedded Linux
+Signed-off-by: Fran=C3=A7ois LEGAL <devel@thom.fr.eu.org>
+---
+ kernel/drivers/ipc/iddp.c         | 14 ++++++++++++--
+ 1 file changed, 12 insertions(+), 2 deletions(-)
+ 
+diff --git a/kernel/drivers/ipc/iddp.c b/kernel/drivers/ipc/iddp.c
+index 2a80eba..3eff24e 100644
+--- a/kernel/drivers/ipc/iddp.c
++++ b/kernel/drivers/ipc/iddp.c
+@@ -324,12 +324,17 @@ static ssize=5Ft =5F=5Fiddp=5Frecvmsg(struct rtdm=
+=5Ffd *fd,
+ }
+ 
+ static ssize=5Ft iddp=5Frecvmsg(struct rtdm=5Ffd *fd,
+-			    struct user=5Fmsghdr *msg, int flags)
++			    struct user=5Fmsghdr *u=5Fmsg, int flags)
+ {
+ 	struct iovec iov=5Ffast[RTDM=5FIOV=5FFASTMAX], *iov;
+ 	struct sockaddr=5Fipc saddr;
++	struct user=5Fmsghdr =5Fmsg, *msg =3D & =5Fmsg;
+ 	ssize=5Ft ret;
+ 
++	ret =3D rtipc=5Fget=5Farg(fd, &=5Fmsg, u=5Fmsg, sizeof(=5Fmsg));
++	if (ret)
++		return -ret;
++
+ 	if (flags & ~MSG=5FDONTWAIT)
+ 		return -EINVAL;
+ 
+@@ -467,14 +472,19 @@ fail:
+ }
+ 
+ static ssize=5Ft iddp=5Fsendmsg(struct rtdm=5Ffd *fd,
+-			    const struct user=5Fmsghdr *msg, int flags)
++			    const struct user=5Fmsghdr *u=5Fmsg, int flags)
+ {
+ 	struct rtipc=5Fprivate *priv =3D rtdm=5Ffd=5Fto=5Fprivate(fd);
+ 	struct iovec iov=5Ffast[RTDM=5FIOV=5FFASTMAX], *iov;
+ 	struct iddp=5Fsocket *sk =3D priv->state;
+ 	struct sockaddr=5Fipc daddr;
++	struct user=5Fmsghdr =5Fmsg, *msg =3D & =5Fmsg;
+ 	ssize=5Ft ret;
+ 
++	ret =3D rtipc=5Fget=5Farg(fd, &=5Fmsg, u=5Fmsg, sizeof(=5Fmsg));
++	if (ret)
++		return -ret;
++
+ 	if (flags & ~(MSG=5FOOB | MSG=5FDONTWAIT))
+ 		return -EINVAL;
+
 
