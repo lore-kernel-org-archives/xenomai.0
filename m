@@ -1,16 +1,14 @@
-Subject: Re: [PATCH 01/10] dovetail/sirq: implement sirq request and free and
- post
-References: <20210111064318.6154-1-hongzhan.chen@intel.com>
- <ce919978-d926-0965-8956-37602292e12c@siemens.com>
- <87lfczk4j0.fsf@xenomai.org>
-From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <436b19fe-14bc-b0f3-9343-a6f52897388a@siemens.com>
-Date: Mon, 11 Jan 2021 14:16:51 +0100
+From: =?utf-8?q?Fran=C3=A7ois_Legal?= <devel@thom.fr.eu.org>
+In-Reply-To: <87eek1vg2e.fsf@xenomai.org>
+Content-Type: text/plain; charset="utf-8"
+Date: Mon, 07 Dec 2020 16:40:44 +0100
 MIME-Version: 1.0
-In-Reply-To: <87lfczk4j0.fsf@xenomai.org>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Message-ID: <1174-5fce4d00-7d-37e14c00@74953892>
+Subject: =?utf-8?q?Re=3A?==?utf-8?q?_=5BPatch?==?utf-8?q?_3=2F5=5D?= Problems
+ with 
+ upstream SPECTRE mitigation found in =?utf-8?q?sendmsg=2Frecvmsg?=  
+ syscalls
+Content-Transfer-Encoding: quoted-printable
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -20,88 +18,82 @@ List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: Philippe Gerum <rpm@xenomai.org>
-Cc: hongzha1 <hongzhan.chen@intel.com>, xenomai@xenomai.org
+Cc: xenomai@xenomai.org
 
-On 11.01.21 14:05, Philippe Gerum wrote:
+Le Lundi, D=C3=A9cembre 07, 2020 15:36 CET, Philippe Gerum <rpm@xenomai=
+.org> a =C3=A9crit: 
+ 
 > 
-> Jan Kiszka via Xenomai <xenomai@xenomai.org> writes:
+> Fran=C3=A7ois Legal via Xenomai <xenomai@xenomai.org> writes:
 > 
->> On 11.01.21 07:43, hongzha1 via Xenomai wrote:
->>> inband sirq request through synthetic_irq_domain and free and post
->>> srq.
->>>
->>> Signed-off-by: hongzha1 <hongzhan.chen@intel.com>
->>> ---
->>>  .../cobalt/kernel/dovetail/pipeline/sirq.h    | 28 +++++++++++++++----
->>>  1 file changed, 23 insertions(+), 5 deletions(-)
->>>
->>> diff --git a/include/cobalt/kernel/dovetail/pipeline/sirq.h b/include/cobalt/kernel/dovetail/pipeline/sirq.h
->>> index be9dc587f..1da9d13b2 100644
->>> --- a/include/cobalt/kernel/dovetail/pipeline/sirq.h
->>> +++ b/include/cobalt/kernel/dovetail/pipeline/sirq.h
->>> @@ -23,9 +23,24 @@ int pipeline_create_inband_sirq(irqreturn_t (*handler)(int irq, void *dev_id))
->>>  	 * Allocate an IRQ from the synthetic interrupt domain then
->>>  	 * trap it to @handler, to be fired from the in-band stage.
->>>  	 */
->>> -	TODO();
->>> +	int sirq, ret;
->>>  
->>> -	return 0;
->>> +	sirq = irq_create_direct_mapping(synthetic_irq_domain);
->>> +	if (sirq == 0)
->>> +		return -EAGAIN;
->>> +
->>> +	ret = __request_percpu_irq(sirq,
->>> +			handler,
->>> +			IRQF_NO_THREAD,
->>> +			"Inband sirq",
->>> +			&cobalt_machine_cpudata);
->>> +
->>> +	if (ret) {
->>> +		irq_dispose_mapping(sirq);
->>> +		return ret;
->>> +	}
->>> +
->>> +	return sirq;
->>>  }
->>>  
->>>  static inline
->>> @@ -35,13 +50,16 @@ void pipeline_delete_inband_sirq(int sirq)
->>>  	 * Free the synthetic IRQ then deallocate it to its
->>>  	 * originating domain.
->>>  	 */
->>> -	TODO();
->>> +	free_percpu_irq(sirq,
->>> +		&cobalt_machine_cpudata);
->>> +
->>> +	irq_dispose_mapping(sirq);
->>>  }
->>>  
->>>  static inline void pipeline_post_sirq(int sirq)
->>>  {
->>>  	/* Trigger the synthetic IRQ */
->>> -	TODO();
->>> +	irq_post_inband(sirq);
->>>  }
->>>  
->>> -#endif /* !_COBALT_KERNEL_IPIPE_SIRQ_H */
->>> +#endif /* !_COBALT_KERNEL_DOVETAIL_SIRQ_H */
->>>
->>
->> Does this series merely target review / discussion?
->>
+> > From: Fran=C3=A7ois LEGAL <devel@thom.fr.eu.org>
+> >
+> > Add rtipc=5Fget=5Farg (copy=5Ffrom=5Fser) call on struct user=5Fmsg=
+hdr.
+> >
+> > Signed-off-by: Fran=C3=A7ois LEGAL <devel@thom.fr.eu.org>
+> > ---
+> >  kernel/drivers/ipc/bufp.c         | 14 ++++++++++++--
+> >  1 file changed, 12 insertions(+), 2 deletions(-)
+> >  
+> > diff --git a/kernel/drivers/ipc/bufp.c b/kernel/drivers/ipc/bufp.c
+> > index 45c917e..c09524c 100644
+> > --- a/kernel/drivers/ipc/bufp.c
+> > +++ b/kernel/drivers/ipc/bufp.c
+> > @@ -352,12 +352,17 @@ static ssize=5Ft =5F=5Fbufp=5Frecvmsg(struct =
+rtdm=5Ffd *fd,
+> >  }
+> >  
+> >  static ssize=5Ft bufp=5Frecvmsg(struct rtdm=5Ffd *fd,
+> > -			    struct user=5Fmsghdr *msg, int flags)
+> > +			    struct user=5Fmsghdr *u=5Fmsg, int flags)
+> >  {
+> >  	struct iovec iov=5Ffast[RTDM=5FIOV=5FFASTMAX], *iov;
+> >  	struct sockaddr=5Fipc saddr;
+> > +	struct user=5Fmsghdr =5Fmsg, *msg =3D & =5Fmsg;
+> >  	ssize=5Ft ret;
+> >  
+> > +	ret =3D rtipc=5Fget=5Farg(fd, &=5Fmsg, u=5Fmsg, sizeof(=5Fmsg));
+> > +	if (ret)
+> > +		return -ret;
 > 
-> It is always open for discussion particularly if something needs to be
-> clarified wrt the way Dovetail works. If not, then this should be
-> considered as a merge merge request.
+> rtipc=5Fget=5Farg() returns zero on sucess, or negated error codes al=
+ready
+> (-EFAULT typically).
 > 
 
-I read "TODO", and I thought of the markers we had in wip/dovetail. So
-this series is targeting next already?
+Correct. I missed this one. Thanks.
 
-Jan
+> > +
+> >  	if (flags & ~MSG=5FDONTWAIT)
+> >  		return -EINVAL;
+> >  
+> > @@ -598,14 +603,19 @@ fail:
+> >  }
+> >  
+> >  static ssize=5Ft bufp=5Fsendmsg(struct rtdm=5Ffd *fd,
+> > -			    const struct user=5Fmsghdr *msg, int flags)
+> > +			    const struct user=5Fmsghdr *u=5Fmsg, int flags)
+> >  {
+> >  	struct rtipc=5Fprivate *priv =3D rtdm=5Ffd=5Fto=5Fprivate(fd);
+> >  	struct iovec iov=5Ffast[RTDM=5FIOV=5FFASTMAX], *iov;
+> >  	struct bufp=5Fsocket *sk =3D priv->state;
+> >  	struct sockaddr=5Fipc daddr;
+> > +	struct user=5Fmsghdr =5Fmsg, *msg =3D & =5Fmsg;
+> >  	ssize=5Ft ret;
+> >  
+> > +	ret =3D rtipc=5Fget=5Farg(fd, &=5Fmsg, u=5Fmsg, sizeof(=5Fmsg));
+> > +	if (ret)
+> > +		return -ret;
+> > +
+> 
+> ditto.
+> 
+> >  	if (flags & ~MSG=5FDONTWAIT)
+> >  		return -EINVAL;
+> 
+> 
+> -- 
+> Philippe.
 
--- 
-Siemens AG, T RDA IOT
-Corporate Competence Center Embedded Linux
 
