@@ -1,12 +1,11 @@
-From: Philippe  Gerum <rpm@xenomai.org>
-Subject: [PATCH Dovetail 10/13] cobalt/wrappers: pipeline: abstract
- pipeline-related bits
-Date: Sat,  2 Jan 2021 10:33:50 +0100
-Message-Id: <20210102093353.3195090-11-rpm@xenomai.org>
-In-Reply-To: <20210102093353.3195090-1-rpm@xenomai.org>
-References: <20210102093353.3195090-1-rpm@xenomai.org>
+From: =?utf-8?q?Fran=C3=A7ois_Legal?= <devel@thom.fr.eu.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Date: Mon, 07 Dec 2020 11:52:17 +0100
+Subject: =?utf-8?q?=5BPatch?==?utf-8?q?_0=2F5=5D?= Problems with upstream
+ SPECTRE mitigation found in =?utf-8?q?sendmsg=2Frecvmsg?= syscalls
+Message-ID: <1176-5fce0980-155-12dbaa60@116771100>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: quoted-printable
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,108 +16,23 @@ List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: xenomai@xenomai.org
 
-From: Philippe Gerum <rpm@xenomai.org>
+From: Fran=C3=A7ois LEGAL <devel@thom.fr.eu.org>
 
-No functional change is introduced.
+The syscall entry code used to copy the struct user=5Fmsghdr on the sys=
+call stack, and some registered callbacks (notably in RTNet) were then =
+calling again copy=5Ffrom/to=5Fuser on that struct, which would trigger=
+ the SPECTRE mitigation protection.
 
-Signed-off-by: Philippe Gerum <rpm@xenomai.org>
----
- .../cobalt/kernel/ipipe/pipeline/wrappers.h   | 25 +++++++++++++++++++
- .../cobalt/include/linux/xenomai/wrappers.h   | 23 ++++-------------
- kernel/cobalt/posix/process.c                 |  2 +-
- 3 files changed, 31 insertions(+), 19 deletions(-)
- create mode 100644 include/cobalt/kernel/ipipe/pipeline/wrappers.h
+I ran the iddp/xddp/bufp-label tests which seems ok with the patch, and=
+ retested RTNet af=5Fpacket part
+I did not test the rtcan part as I have no hardware available.
 
-diff --git a/include/cobalt/kernel/ipipe/pipeline/wrappers.h b/include/cobalt/kernel/ipipe/pipeline/wrappers.h
-new file mode 100644
-index 000000000..ac940fb32
---- /dev/null
-+++ b/include/cobalt/kernel/ipipe/pipeline/wrappers.h
-@@ -0,0 +1,25 @@
-+/*
-+ * SPDX-License-Identifier: GPL-2.0
-+ */
-+#ifndef _COBALT_KERNEL_IPIPE_WRAPPERS_H
-+#define _COBALT_KERNEL_IPIPE_WRAPPERS_H
-+
-+#include <linux/ipipe.h>
-+
-+#if LINUX_VERSION_CODE < KERNEL_VERSION(4,11,0)
-+#define cobalt_set_task_state(tsk, state_value)	\
-+	set_task_state(tsk, state_value)
-+#else
-+/*
-+ * The co-kernel can still set the current task state safely if it
-+ * runs on the head stage.
-+ */
-+#define cobalt_set_task_state(tsk, state_value)	\
-+		smp_store_mb((tsk)->state, (state_value))
-+#endif
-+
-+#ifndef ipipe_root_nr_syscalls
-+#define ipipe_root_nr_syscalls(ti)	NR_syscalls
-+#endif
-+
-+#endif /* !_COBALT_KERNEL_IPIPE_WRAPPERS_H */
-diff --git a/kernel/cobalt/include/linux/xenomai/wrappers.h b/kernel/cobalt/include/linux/xenomai/wrappers.h
-index 847d68088..3e825e366 100644
---- a/kernel/cobalt/include/linux/xenomai/wrappers.h
-+++ b/kernel/cobalt/include/linux/xenomai/wrappers.h
-@@ -21,12 +21,13 @@
- 
- #include <linux/version.h>
- 
-+#if LINUX_VERSION_CODE < KERNEL_VERSION(4, 20, 0)
-+typedef siginfo_t kernel_siginfo_t;
-+#endif
-+
- #if LINUX_VERSION_CODE < KERNEL_VERSION(4,11,0)
- #include <linux/sched.h>
- #include <linux/sched/rt.h>
--
--#define cobalt_set_task_state(tsk, state_value)	\
--	set_task_state(tsk, state_value)
- #else
- #include <linux/sched.h>
- #include <linux/sched/signal.h>
-@@ -35,22 +36,8 @@
- #include <linux/sched/debug.h>
- #include <linux/sched/task_stack.h>
- #include <uapi/linux/sched/types.h>
--/*
-- * The co-kernel can still do this sanely for a thread which is
-- * currently active on the head stage.
-- */
--#define cobalt_set_task_state(tsk, state_value)	\
--		smp_store_mb((tsk)->state, (state_value))
- #endif
- 
--#include <linux/ipipe.h>
--
--#ifndef ipipe_root_nr_syscalls
--#define ipipe_root_nr_syscalls(ti)	NR_syscalls
--#endif
--
--#if LINUX_VERSION_CODE < KERNEL_VERSION(4, 20, 0)
--typedef siginfo_t kernel_siginfo_t;
--#endif
-+#include <pipeline/wrappers.h>
- 
- #endif /* !_COBALT_LINUX_WRAPPERS_H */
-diff --git a/kernel/cobalt/posix/process.c b/kernel/cobalt/posix/process.c
-index accd989ca..fcae7df06 100644
---- a/kernel/cobalt/posix/process.c
-+++ b/kernel/cobalt/posix/process.c
-@@ -640,7 +640,7 @@ int cobalt_map_user(struct xnthread *thread, __u32 __user *u_winoff)
- 	 * it.
- 	 */
- 	xnthread_run_handler(thread, map_thread);
--	pipeline_enable_kevents(current);
-+	pipeline_enable_kevents();
- 
- 	attr.mode = 0;
- 	attr.entry = NULL;
--- 
-2.26.2
+ kernel/cobalt/posix/io.c          | 20 ++------------------
+ kernel/drivers/can/rtcan=5Fraw.c    | 37 +++++++++++++++++++++++++++++=
+--------
+ kernel/drivers/ipc/bufp.c         | 14 ++++++++++++--
+ kernel/drivers/ipc/iddp.c         | 14 ++++++++++++--
+ kernel/drivers/ipc/xddp.c         | 14 ++++++++++++--
+ 5 files changed, 67 insertions(+), 32 deletions(-)
 
 
