@@ -1,14 +1,11 @@
-Subject: Re: [PATCH] pipe_base.h: use tsc_khz for tsc-to-nanoseconds
- calculations
-References: <CAB+DZ3mffahwSUD_9vADZMQQek0LdhdVuO9ZL29vk-7SoDEn2Q@mail.gmail.com>
-From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <4ab58cda-0f6b-eff6-a737-32f76d4d95b1@siemens.com>
-Date: Fri, 8 Jan 2021 13:14:13 +0100
+From: =?utf-8?q?Fran=C3=A7ois_Legal?= <francois.legal@thom.fr.eu.org>
 MIME-Version: 1.0
-In-Reply-To: <CAB+DZ3mffahwSUD_9vADZMQQek0LdhdVuO9ZL29vk-7SoDEn2Q@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Date: Mon, 07 Dec 2020 12:02:50 +0100
+Subject: =?utf-8?q?=5BPatch?==?utf-8?q?_5=2F5=5D?= Problems with upstream
+ SPECTRE mitigation found in =?utf-8?q?sendmsg=2Frecvmsg?=  syscalls
+Message-ID: <1174-5fce0c00-7b-37e14c00@74953859>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: quoted-printable
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,51 +14,61 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Bart Vissers <bvissers@e2mtechnologies.eu>, xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-On 21.12.20 10:49, Bart Vissers via Xenomai wrote:
-> This fixes a clock drift issue that is measurable with clocktest. The
-> change was suggested by Jan a while ago [0], I tested it again on 4.19.89.
-> 
-> [0] https://www.xenomai.org/pipermail/xenomai/2019-May/040929.html
-> 
+From: Fran=C3=A7ois LEGAL <devel@thom.fr.eu.org>
 
-Thanks for bringing this up again!
+Add rtipc=5Fget=5Farg (copy=5Ffrom=5Fser) call on struct user=5Fmsghdr.=
 
-> Signed-off-by: Bart Vissers <bvissers@e2mtechnologies.eu>
-> ---
->  arch/x86/include/asm/ipipe_base.h | 4 ++--
->  1 file changed, 2 insertions(+), 2 deletions(-)
-> 
-> diff --git a/arch/x86/include/asm/ipipe_base.h
-> b/arch/x86/include/asm/ipipe_base.h
-> index c09697b1f20c..ea2876aa62b9 100644
-> --- a/arch/x86/include/asm/ipipe_base.h
-> +++ b/arch/x86/include/asm/ipipe_base.h
-> @@ -58,14 +58,14 @@
-> 
->  #include <asm/apicdef.h>
-> 
-> -extern unsigned int cpu_khz;
-> +extern unsigned int tsc_khz;
-> 
->  static inline const char *ipipe_clock_name(void)
->  {
->      return "tsc";
->  }
-> 
-> -#define __ipipe_cpu_freq    ({ u64 __freq = 1000ULL * cpu_khz; __freq; })
-> +#define __ipipe_cpu_freq    ({ u64 __freq = 1000ULL * tsc_khz; __freq; })
->  #define __ipipe_hrclock_freq    __ipipe_cpu_freq
-> 
->  #ifdef CONFIG_X86_32
-> 
 
-Merged to ipipe-x86-4.19.y-cip, ipipe-x86-5.4.y and also ipipe-4.4.y-cip.
+Signed-off-by: Fran=C3=A7ois LEGAL <devel@thom.fr.eu.org>
+---
+ kernel/drivers/ipc/xddp.c         | 14 ++++++++++++--
+ 1 file changed, 12 insertions(+), 2 deletions(-)
+ 
+diff --git a/kernel/drivers/ipc/xddp.c b/kernel/drivers/ipc/xddp.c
+index 57275d0..8d52720 100644
+--- a/kernel/drivers/ipc/xddp.c
++++ b/kernel/drivers/ipc/xddp.c
+@@ -335,12 +335,17 @@ out:
+ }
+ 
+ static ssize=5Ft xddp=5Frecvmsg(struct rtdm=5Ffd *fd,
+-			    struct user=5Fmsghdr *msg, int flags)
++			    struct user=5Fmsghdr *u=5Fmsg, int flags)
+ {
+ 	struct iovec iov=5Ffast[RTDM=5FIOV=5FFASTMAX], *iov;
+ 	struct sockaddr=5Fipc saddr;
++	struct user=5Fmsghdr =5Fmsg, *msg =3D & =5Fmsg;
+ 	ssize=5Ft ret;
+ 
++	ret =3D rtipc=5Fget=5Farg(fd, &=5Fmsg, u=5Fmsg, sizeof(=5Fmsg));
++	if (ret)
++		return -ret;
++
+ 	if (flags & ~MSG=5FDONTWAIT)
+ 		return -EINVAL;
+ 
+@@ -590,14 +595,19 @@ done:
+ }
+ 
+ static ssize=5Ft xddp=5Fsendmsg(struct rtdm=5Ffd *fd,
+-			    const struct user=5Fmsghdr *msg, int flags)
++			    const struct user=5Fmsghdr *u=5Fmsg, int flags)
+ {
+ 	struct rtipc=5Fprivate *priv =3D rtdm=5Ffd=5Fto=5Fprivate(fd);
+ 	struct iovec iov=5Ffast[RTDM=5FIOV=5FFASTMAX], *iov;
+ 	struct xddp=5Fsocket *sk =3D priv->state;
+ 	struct sockaddr=5Fipc daddr;
++	struct user=5Fmsghdr =5Fmsg, *msg =3D & =5Fmsg;
+ 	ssize=5Ft ret;
+ 
++	ret =3D rtipc=5Fget=5Farg(fd, &=5Fmsg, u=5Fmsg, sizeof(=5Fmsg));
++	if (ret)
++		return -ret;
++
+ 	/*
+ 	 * We accept MSG=5FDONTWAIT, but do not care about it, since
+ 	 * writing to the real-time endpoint of a message pipe must be
 
-Jan
-
--- 
-Siemens AG, T RDA IOT
-Corporate Competence Center Embedded Linux
 
