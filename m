@@ -1,14 +1,12 @@
-From: "Chen, Hongzhan" <hongzhan.chen@intel.com>
-Subject: RE: [DOVETAIL] now tracking v5.10
-Date: Tue, 29 Dec 2020 03:06:13 +0000
-Message-ID: <MWHPR11MB171051333F4AA84264B750BAF2D80@MWHPR11MB1710.namprd11.prod.outlook.com>
-References: <87a6u8wxvh.fsf@xenomai.org>
- <5FEA8975.2090206@tj.kylinos.cn>+DBB08C56484FB96C
-In-Reply-To: <5FEA8975.2090206@tj.kylinos.cn>+DBB08C56484FB96C
-Content-Language: en-US
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+Subject: Re: [CXP][RFC] pick POSIX/cobalt for the common user API
+References: <87mtyr1abi.fsf@xenomai.org>
+From: chensong <chensong@tj.kylinos.cn>
+Message-ID: <5FCD907C.6040309@tj.kylinos.cn>+BA6FC9DAC615AEA6
+Date: Mon, 7 Dec 2020 10:16:28 +0800
 MIME-Version: 1.0
+In-Reply-To: <87mtyr1abi.fsf@xenomai.org>
+Content-Type: text/plain; charset="utf-8"; format="flowed"
+Content-Transfer-Encoding: 8bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,53 +15,63 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: chensong <chensong@tj.kylinos.cn>, Philippe Gerum <rpm@xenomai.org>, "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: xenomai@xenomai.org
 
-SGkgY2hlbnNvbmcNCg0KTGV0IHVzIHN3aXRjaCB0byBhbmQgZm9jdXMgb24gQ1hQLiBBY3R1YWxs
-eSAgaHR0cHM6Ly9naXRodWIuY29tL2hvbmd6aGFuY2hlbi94ZW5vbWFpLmdpdCBpcyANCm5vdCBi
-YXNlZCBvbiBodHRwczovL2xhYi54ZW5vbWFpLm9yZy94ZW5vbWFpLXJwbS5naXQvbG9nLz9oPWZv
-ci11cHN0cmVhbS9kb3ZldGFpbCB3aGljaCANCmlzIGJhc2Ugb2YgQ1hQIHBlciBteSB1bmRlcnN0
-YW5kaW5nLiBTbyBQbGVhc2UgZm9yZ2V0IGl0Lg0KDQpJZiB5b3Ugd2FudCB0byB3b3JrIG9uIENY
-UCBhbmQgc3RhcnQgcmVsYXRlZCBkZXZlbG9wbWVudCBhbmQgZXhwZXJpZW5jZSBwb3J0aW5nLCBt
-YXliZSANCmh0dHBzOi8vZ2l0aHViLmNvbS9ob25nemhhbmNoZW4veGVub21haS1ycG0vdHJlZS9k
-b3ZldGFpbC9jeHAgaXMgaW5pdGlhbCBvbmUuIEl0IGlzIG15IG93biB3b3JrDQpicmFuY2ggd2hp
-Y2ggSSBoYXZlIGludGVncmF0ZWQgYWxsIHBhdGNoZXMgZnJvbSBodHRwczovL2dpdGxhYi5kZW54
-LmRlL1hlbm9tYWkveGVub21haS8tL3RyZWUvd2lwL2RvdmV0YWlsDQppbmNsdWRpbmcgSmFuJ3Mg
-cGF0Y2hlcyBhbmQgbWluZSBidXQgaXQgaXMgc3RpbGwgdW5kZXIgZGV2ZWxvcG1lbnQuIA0KDQpZ
-b3UgY2FuIGZvbGxvdyBmb2xsb3dpbmcgc3RlcHMgdG8gYnVpbGQgaXQuIA0KDQoxLiBnaXQgY2xv
-bmUgLWIgZG92ZXRhaWwvbWFzdGVyIGdpdDovL2dpdC5ldmxwcm9qZWN0Lm9yZy9saW51eC5ldmwu
-Z2l0DQoyLiBnaXQgY2xvbmUgLWIgZG92ZXRhaWwvY3hwIGh0dHBzOi8vZ2l0aHViLmNvbS9ob25n
-emhhbmNoZW4veGVub21haS1ycG0uZ2l0DQozLiAuL3NjcmlwdHMvcHJlcGFyZS1rZXJuZWwuc2gg
-LS1saW51eD15b3VyX3BhdGggLS1hcmNoPXg4NiAtLWRvdmV0YWlsPTAwMDEtbnVsbC1wYXRjaC5w
-YXRjaA0KNC4gY3AgaGFuZy1pbi11c2xlZXBfcmFuZ2UuY29uZmlnIC5jb25mZw0KNS5tYWtlIGJ6
-SW1hZ2UgLWo4DQoNCkluIGFkZGl0aW9uICwgeW91IGNhbiBjcmVhdGUgeW91ciBvd24gMDAwMS1u
-dWxsLXBhdGNoLnBhdGNoIHRvIHdvcmsgYXJvdW5kIHNjcmlwdCAuIA0KRm9sbG93aW5nIGlzIG1p
-bmUuDQoNCmRpZmYgLS1naXQgYS9OVUxMLnR4dCBiL05VTEwudHh0DQpuZXcgZmlsZSBtb2RlIDEw
-MDY0NA0KaW5kZXggMDAwMDAwMDAwMDAwLi43OTUxZGVmZWMxOTINCi0tLSAvZGV2L251bGwNCisr
-KyBiL05VTEwudHh0DQpAQCAtMCwwICsxIEBADQorTlVMTA0KLS0NCjIuMTcuMQ0KDQpSZWdhcmRz
-DQoNCkhvbmd6aGFuIENoZW4NCg0KDQotLS0tLU9yaWdpbmFsIE1lc3NhZ2UtLS0tLQ0KRnJvbTog
-Y2hlbnNvbmcgPGNoZW5zb25nQHRqLmt5bGlub3MuY24+IA0KU2VudDogVHVlc2RheSwgRGVjZW1i
-ZXIgMjksIDIwMjAgOTo0MiBBTQ0KVG86IFBoaWxpcHBlIEdlcnVtIDxycG1AeGVub21haS5vcmc+
-OyB4ZW5vbWFpQHhlbm9tYWkub3JnOyBDaGVuLCBIb25nemhhbiA8aG9uZ3poYW4uY2hlbkBpbnRl
-bC5jb20+DQpTdWJqZWN0OiBSZTogW0RPVkVUQUlMXSBub3cgdHJhY2tpbmcgdjUuMTANCg0KRGVh
-ciBQaGlsaXBwZSAmIEhvbmd6aGFuLA0KDQpJIHdhcyB0cnlpbmcgdG8gYnVpbGQgeGVub21haTMu
-MiBhbmQgYm9vdCBpdCBpbiBteSBkZXNrdG9wLCBoZXJlIGlzIHdoYXQgDQppIGRpZDoNCg0KMSwg
-Z2l0IGNsb25lIC1iIGRvdmV0YWlsL21hc3RlciBnaXQ6Ly9naXQuZXZscHJvamVjdC5vcmcvbGlu
-dXguZXZsLmdpdA0KMiwgZ2l0IGNsb25lIC1iIGhvbmd6aGFuL2RvdmV0YWlsIA0KaHR0cHM6Ly9n
-aXRodWIuY29tL2hvbmd6aGFuY2hlbi94ZW5vbWFpLmdpdA0KMywgLi94ZW5vbWFpLWhvbmd6aGFu
-L3NjcmlwdHMvcHJlcGFyZS1rZXJuZWwuc2ggLS1saW51eD1saW51eC1ldmwgDQotLWFyY2g9eDg2
-XzY0DQo0LCBtYWtlDQoNCkkgZm91bmQgdGhlcmUgYXJlIGEgbG90IG9mIGlwaXBlX3h4eCBmdW5j
-dGlvbiBjYWxscyBpbiB4ZW5vbWFpIGNvZGUgbGlrZSANCmlwaXBlX3Bvc3RfaXJxX3Jvb3Qgb3Ig
-SVBJUEVfTlJfSVJRUywgd2hpY2ggY2F1c2UgYnVpbGRpbmcgZmFpbGVkLg0KDQpBcyBteSB1bmRl
-cnN0YW5kaW5nLCBkb3ZldGFpbCBpcyB0aGUgcmVwbGFjZW1lbnQgb2YgaXBpcGUsIGFzIGEgcmVz
-dWx0LCANCmlwaXBlIGZ1bmN0aW9uIGNhbGxzIHNob3VsZCBiZSByZXBsYWNlZCBieSBkb3ZldGFp
-bCBmdW5jdGlvbiBjYWxscy4gRGlkIA0KaSBtaXNzIHNvbWV0aGluZyBvciBkaWQgc29tZXRoaW5n
-IHdyb25nPw0KDQpCUg0KDQpjaGVuc29uZw0KDQpPbiAyMDIw5bm0MTLmnIgyMOaXpSAxODo1NCwg
-UGhpbGlwcGUgR2VydW0gdmlhIFhlbm9tYWkgd3JvdGU6DQo+DQo+IFRoaXMgaXMgYSBoZWFkcyB1
-cCBmb3IgcGVvcGxlIHdvcmtpbmcgb24gdGhlIFhlbm9tYWkgcG9ydCB0byBEb3ZldGFpbDoNCj4g
-ZG92ZXRhaWwvbWFzdGVyIGFuZCBldmwvbWFzdGVyIGFyZSBub3cgdHJhY2tpbmcgdjUuMTAuDQo+
-DQo+IFRoZSBmb3JtZXIgZG92ZXRhaWwvbWFzdGVyIHRpcCBiYXNlZCBvbiB2NS45IGlzIHRhZ2dl
-ZCBhcw0KPiAiZG92ZXRhaWwtdjUuOSIgaW4gdGhlIHJlcG9zaXRvcnkgWzFdLiBUaGUgZmluYWwg
-dGFnIGZvciB0aGUgRVZMIGNvcmUNCj4gYmFzZWQgb24gdjUuOSBpcyAidjUuOS1ldmw1Ii4NCj4N
-Cj4gWzFdIGdpdDovL2dpdC5ldmxwcm9qZWN0Lm9yZy9saW51eC1ldmwuZ2l0DQo+DQoNCg0K
+hi Philippe,
+
+As far as i know, some vxworks customers like xenomai because they can 
+move their RT processes from vxworks to linux without rewriting their 
+code by the help of vxworks skin.
+
+If we "Excluding the legacy RTOS emulators such as VxWorks", we will 
+lose them. It could depend on the balance of the request and effort.
+
+BR
+
+song
+
+On 2020年12月06日 18:46, Philippe Gerum via Xenomai wrote:
+>
+> The common Xenomai platform specification is about defining the
+> commonalities among future Xenomai releases starting from 3.3, including
+> the Xenomai 4 series based on a next generation (EVL) core. A common API
+> available to applications for issuing requests to the real-time core is
+> part of this specification.
+>
+> Implementing such interface would not preclude other APIs from
+> co-existing in particular releases. However, use of this common API
+> only would guarantee portability across releases.
+>
+> Excluding the legacy RTOS emulators such as VxWorks and pSOS, Xenomai
+> 3.x provides two main APIs, a POSIX-compliant one (libcobalt) and a
+> custom RTOS API aka Alchemy (libalchemy) on top of the Copperplate
+> interface.
+>
+> PROPOSAL: Pick libcobalt as the common API defined by the CXP.
+>
+> As a consequence, Xenomai 4 would provide two direct interfaces to the
+> underlying EVL core: via the libevl API [1] which is readily
+> available, and its own implementation of libcobalt as part of a CXP
+> compliance.
+>
+>                    applications
+>        ....................................
+>        libalchemy            libevl libcobalt
+>             |                  |      |
+>             |                  |      |
+>        libcopperplate          |      |
+>             |                  |      |
+>             |                  |      |
+>         libcobalt              |      |
+>             |                  |      |
+>             v                  v      v
+>       (Cobalt core)           (EVL core)
+>        -----------            ---------
+>        Xenomai 3.x            Xenomai 4
+>
+>
+> Thanks,
+>
+> [1] https://evlproject.org/core/user-api/
+>
 
