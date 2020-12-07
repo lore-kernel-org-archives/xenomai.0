@@ -1,15 +1,11 @@
-From: Sam Daniel <sam@FirstMode.com>
-Subject: Re: Cannot send/recv on labeled IDDP sockets
-Date: Fri, 1 Jan 2021 23:01:33 +0000
-Message-ID: <6D27D6E3-B2CC-4601-AC61-3BC7247AF087@firstmode.com>
-References: <5A0F5CEF-426F-42D8-87E1-28BB38FE315F@firstmode.com>
- <2C185347-AF71-497E-BA40-DCFB33624064@firstmode.com>
- <3C39F019-BA47-4AD9-B1C9-02F747729305@firstmode.com>
-In-Reply-To: <3C39F019-BA47-4AD9-B1C9-02F747729305@firstmode.com>
-Content-Language: en-US
+References: <87mtyr1abi.fsf@xenomai.org> <5FCD907C.6040309@tj.kylinos.cn>
+From: Philippe Gerum <rpm@xenomai.org>
+Subject: Re: [CXP][RFC] pick POSIX/cobalt for the common user API
+In-reply-to: <5FCD907C.6040309@tj.kylinos.cn>
+Date: Mon, 07 Dec 2020 11:12:30 +0100
+Message-ID: <87h7oxvsa9.fsf@xenomai.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+Content-Type: text/plain
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -18,27 +14,78 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: chensong <chensong@tj.kylinos.cn>
+Cc: xenomai@xenomai.org
 
-UmVzb2x2ZWQgbXkgaXNzdWUgYnkgcmVhZGluZyB0aGUgc291cmNlIOKAkyBzaG9ja2luZywgSSBr
-bm93IC9zIPCfmIMNCg0KSSB3YXMgZ2V0dGluZyBodW5nIHVwIGhlcmUgb24gbGluZSAyNDEtMjQy
-IGluIHRoZSBJRERQIGRyaXZlcjoNCiAgICAgICAgICAgICAgICBpZiAoIXRlc3RfYml0KF9JRERQ
-X0JPVU5ELCAmc2stPnN0YXR1cykpDQogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIHJl
-dHVybiAtRUFHQUlOOw0KDQpJIGludmVydGVkIHRoZSB3YXkgSSB3YXMgc2V0dGluZyB1cCBteSBz
-b2NrZXRzIGFuZCByZS1hcmNoaXRlY3RlZCBteSBwdWIvc3ViDQphbmQgbm93IEnigJltIG9mZiB0
-byB0aGUgcmFjZXMhDQoNClNvcnJ5IGZvciBzcGFtbWluZyB0aGUgbGlzdCENCg0KQ2hlZXJzISBI
-YXBweSBOZXcgWWVhciENCg0KX19fX19fX18NClNBTSBEQU5JRUwNClNvZnR3YXJlIEVuZ2luZWVy
-DQorMS41NzAuMzE3LjUyNTMgfCBzYW1AZmlyc3Rtb2RlLmNvbTxtYWlsdG86c2FtQGZpcnN0bW9k
-ZS5jb20+DQoNCkZJUlNUIE1PREUgfCBCdWlsZGluZyB0aGUgQmFyZWx5IFBvc3NpYmxlDQoyMjIw
-IFdlc3Rlcm4gQXZlbnVlLCBTZWF0dGxlLCBXQTx3ZWJleHRsaW5rOi8vMjIyMCUyMFdlc3Rlcm4l
-MjBBdmVudWUsJTIwU2VhdHRsZSwlMjBXQT4NCnd3dy5maXJzdG1vZGUuY29tPGh0dHA6Ly93d3cu
-Zmlyc3Rtb2RlLmNvbT4NCl9fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fDQpDT05GSURF
-TlRJQUxJVFkgQ0FVVElPTjogVGhpcyBlbWFpbCAoaW5jbHVkaW5nIGFueSBhdHRhY2htZW50cykg
-aXMgaW50ZW5kZWQgb25seSBmb3IgdGhlIHVzZSBvZiB0aGUgaW5kaXZpZHVhbCBvciBlbnRpdHkg
-dG8gd2hvbSBpdCBpcyBhZGRyZXNzZWQgYW5kIG1heSBjb250YWluIGNvbmZpZGVudGlhbCBpbmZv
-cm1hdGlvbiBvciB0cmFkZSBzZWNyZXRzIGFuZCBiZSBwcm90ZWN0ZWQgYnkgbGVnYWwgcHJpdmls
-ZWdlLiBQbGVhc2Ugbm90aWZ5IHVzIGltbWVkaWF0ZWx5IGJ5IHJldHVybiBlbWFpbCBpZiB5b3Ug
-aGF2ZSByZWNlaXZlZCB0aGlzIGVtYWlsIGluIGVycm9yIGFuZCBkZWxldGUgdGhpcyBlbWFpbCBh
-bmQgYW55IGF0dGFjaG1lbnRzLiBJZiB5b3UgYXJlIG5vdCB0aGUgaW50ZW5kZWQgcmVjaXBpZW50
-LCBkaXNzZW1pbmF0aW9uLCBkaXNjbG9zdXJlIGFuZCB1c2Ugb2YgYW55IGluZm9ybWF0aW9uIGhl
-cmVpbiBpcyBwcm9oaWJpdGVkLg0K
+
+Hi,
+
+chensong via Xenomai <xenomai@xenomai.org> writes:
+
+> hi Philippe,
+>
+> As far as i know, some vxworks customers like xenomai because they can
+> move their RT processes from vxworks to linux without rewriting their 
+> code by the help of vxworks skin.
+>
+> If we "Excluding the legacy RTOS emulators such as VxWorks", we will
+> lose them. It could depend on the balance of the request and effort.
+>
+
+There are two different aspects to consider. First, there is the CXP
+which should define a common ground between future Xenomai releases
+starting from 3.3, which is different from deciding on the feature set
+such releases would include in total eventually. We may want a given
+Xenomai release to support multiple APIs, which would definitely include
+the one specified by the CXP.
+
+In that sense, I'm only excluding the VxWorks API as a possible choice
+for the common API specified by the CXP since this would have no upside
+with respect to usability or portability from Xenomai 3.x to 4.x. I was
+not referring to the presence of the VxWorks API in future Xenomai 3.x
+releases, although the complete lack of feedback from users regarding
+the RTOS emulators may simply mean that most projects already moved away
+from these legacy APIs anyway.
+
+Next, there is the question of whether the VxWorks API, and generally
+speaking RTOS emulators should be present in Xenomai 4. I'm going to
+oppose to such inclusion. These are my reasons:
+
+- as I just hinted at, I believe that too few projects might still be
+  interested in moving from VxWorks to Linux based on API emulation
+  these days, at least not enough to justify the cost of maintaining
+  RTOS emulators. I reckon that most of the legacy apps which should
+  move to Linux already did so by now, many of them based on API
+  conversion instead (e.g. VxWorks -> POSIX). We need to keep in mind
+  that those emulators only cover the BSP-independent APIs, those which
+  can be easily converted to another dialect because there is no
+  hardware-related specifics, with their underlying semantics being very
+  similar (e.g. VxWorks mutex-typed sema4s and POSIX mutexes are quite
+  close in essence).
+
+- generally speaking, Xenomai 4 is going to be all about simplicity and
+  resource-efficiency, in order to address use cases, which I believe
+  are beyond native preemption's reach: meeting ultra-low latency
+  requirements reliably without having to play whack-a-mole with tricky
+  runtime settings, regardless of the ongoing system stress, down to
+  low-end hardware. We should be heading for a real-time sub-system
+  which just delivers out of the box once enabled in the kernel, nicely
+  integrated into the Linux environment, not on the edge of it. Basic
+  but usable, simple but efficient. Among other things, this should
+  involve a limited set of dedicated APIs, all with native support from
+  the real-time core, which is to say without requiring any mediating
+  layer like libcopperplate. As a matter of fact, libcopperplate was
+  designed as a set of common blocks for implementing non-native APIs
+  like RTOS emulators on top of a native interface.
+
+- the Xenomai project has always run on a very limited amount of human
+  resources, including for implementing and more importantly maintaining
+  APIs. Each additional API is one burden more for Xenomai contributors
+  to maintain, and users to comprehend.  I'd rather make sure that a
+  single API is shared and exercised by many users, properly maintained
+  and documented, compared to having many - potentially unused - APIs
+  diluting the maintenance effort.
+
+-- 
+Philippe.
+
