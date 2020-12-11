@@ -1,13 +1,14 @@
-Subject: Re: [PATCH] copperplate/timerobj: fix start/start, start/stop races
-References: <20201204153104.2522806-1-rpm@xenomai.org>
+Subject: Re: Fwd: [Patch 1/5] Problems with upstream SPECTRE mitigation found
+ in sendmsg/recvmsg syscalls
+References: <1174-5fce0a00-6b-37e14c00@74918186>
 From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <96512605-78d8-5326-cb60-fa6ae0a0dad5@siemens.com>
-Date: Fri, 11 Dec 2020 07:50:42 +0100
+Message-ID: <b2847e78-c7c9-056c-1c47-3404eaaad2aa@siemens.com>
+Date: Fri, 11 Dec 2020 07:55:22 +0100
 MIME-Version: 1.0
-In-Reply-To: <20201204153104.2522806-1-rpm@xenomai.org>
-Content-Type: text/plain; charset=utf-8
+In-Reply-To: <1174-5fce0a00-6b-37e14c00@74918186>
+Content-Type: text/plain; charset="utf-8"
 Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,119 +17,67 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Philippe Gerum <rpm@xenomai.org>, xenomai@xenomai.org
+To: =?UTF-8?Q?Fran=c3=a7ois_Legal?= <francois.legal@thom.fr.eu.org>, xenomai@xenomai.org
 
-On 04.12.20 16:31, Philippe Gerum wrote:
-> From: Philippe Gerum <rpm@xenomai.org>
+On 07.12.20 11:55, François Legal via Xenomai wrote:
+> From: François LEGAL <devel@thom.fr.eu.org>
 > 
-> Concurrent timer start vs start, or start vs stop operations may end
-> up confusing the logic, like:
-> 
-> - a periodic timer being reinserted into the dispatch queue while
->   disabled.
-> 
-> - dirty reads of inconsistent ( date, interval, handler ) triplets by
->   the dispatch loop, as the timer properties are being updated
->   concurrently.
-> 
-> Fix this by moving all updates to the timer properties under the
-> protection of the dispatch lock (svlock), likewise for loads.
-> 
-> Issue reported by Ronny Meeus, with a preliminary fix:
-> https://xenomai.org/pipermail/xenomai/2020-December/043907.html
-> 
-> Signed-off-by: Philippe Gerum <rpm@xenomai.org>
-> ---
->  lib/copperplate/timerobj.c | 27 ++++++++++++++++++---------
->  1 file changed, 18 insertions(+), 9 deletions(-)
-> 
-> diff --git a/lib/copperplate/timerobj.c b/lib/copperplate/timerobj.c
-> index cbfcda566..08cc0d3b9 100644
-> --- a/lib/copperplate/timerobj.c
-> +++ b/lib/copperplate/timerobj.c
-> @@ -98,6 +98,7 @@ static int server_prologue(void *arg)
->  
->  static void *timerobj_server(void *arg)
->  {
-> +	void (*handler)(struct timerobj *tmobj);
->  	struct timespec now, value, interval;
->  	struct timerobj *tmobj, *tmp;
->  	sigset_t set;
-> @@ -120,17 +121,18 @@ static void *timerobj_server(void *arg)
->  
->  		pvlist_for_each_entry_safe(tmobj, tmp, &svtimers, next) {
->  			value = tmobj->itspec.it_value;
-> +			interval = tmobj->itspec.it_interval;
-> +			handler = tmobj->handler;
->  			if (timespec_after(&value, &now))
->  				break;
->  			pvlist_remove_init(&tmobj->next);
-> -			interval = tmobj->itspec.it_interval;
->  			if (interval.tv_sec > 0 || interval.tv_nsec > 0) {
->  				timespec_add(&tmobj->itspec.it_value,
->  					     &value, &interval);
->  				timerobj_enqueue(tmobj);
->  			}
->  			write_unlock(&svlock);
-> -			tmobj->handler(tmobj);
-> +			handler(tmobj);
->  			write_lock_nocancel(&svlock);
->  		}
->  
-> @@ -218,8 +220,7 @@ int timerobj_start(struct timerobj *tmobj,
->  		   void (*handler)(struct timerobj *tmobj),
->  		   struct itimerspec *it) /* lock held, dropped */
->  {
-> -	tmobj->handler = handler;
-> -	tmobj->itspec = *it;
-> +	int ret = 0;
->  
->  	/*
->  	 * We hold the queue lock long enough to prevent the timer
-> @@ -232,14 +233,23 @@ int timerobj_start(struct timerobj *tmobj,
->  	 */
->  	write_lock_nocancel(&svlock);
->  
-> -	if (__RT(timer_settime(tmobj->timer, TIMER_ABSTIME, it, NULL)))
-> -		return __bt(-errno);
-> +       if (pvholder_linked(&tmobj->next))
-> +               pvlist_remove_init(&tmobj->next);
-> +
-> +	tmobj->handler = handler;
-> +	tmobj->itspec = *it;
-> +
-> +	if (__RT(timer_settime(tmobj->timer, TIMER_ABSTIME, it, NULL))) {
-> +		ret = __bt(-errno);
-> +		goto fail;
-> +	}
->  
->  	timerobj_enqueue(tmobj);
-> +fail:
->  	write_unlock(&svlock);
->  	timerobj_unlock(tmobj);
->  
-> -	return 0;
-> +	return ret;
->  }
->  
->  int timerobj_stop(struct timerobj *tmobj) /* lock held, dropped */
-> @@ -251,10 +261,9 @@ int timerobj_stop(struct timerobj *tmobj) /* lock held, dropped */
->  	if (pvholder_linked(&tmobj->next))
->  		pvlist_remove_init(&tmobj->next);
->  
-> -	write_unlock(&svlock);
-> -
->  	__RT(timer_settime(tmobj->timer, 0, &itimer_stop, NULL));
->  	tmobj->handler = NULL;
-> +	write_unlock(&svlock);
->  	timerobj_unlock(tmobj);
->  
->  	return 0;
+> Remove the copy of struct struct user_msghdr onto stack allocated buffer.
 > 
 
-Thanks, applied.
+Reasoning is missing here: The driver callbacks are supposed to do that
+copy-from-user.
+
+But the Question is: why? Is that local copy history left-over, or do
+only the drivers know how much to copy?
 
 Jan
+
+> Signed-off-by: François LEGAL <devel@thom.fr.eu.org>
+> ---
+>  kernel/cobalt/posix/io.c          | 20 ++------------------
+>  1 file changed, 2 insertions(+), 18 deletions(-)
+>  
+> diff --git a/kernel/cobalt/posix/io.c b/kernel/cobalt/posix/io.c
+> index f35aaf8..85272a5 100644
+> --- a/kernel/cobalt/posix/io.c
+> +++ b/kernel/cobalt/posix/io.c
+> @@ -79,18 +79,7 @@ COBALT_SYSCALL(write, handover,
+>  COBALT_SYSCALL(recvmsg, handover,
+>  	       (int fd, struct user_msghdr __user *umsg, int flags))
+>  {
+> -	struct user_msghdr m;
+> -	ssize_t ret;
+> -
+> -	ret = cobalt_copy_from_user(&m, umsg, sizeof(m));
+> -	if (ret)
+> -		return ret;
+> -
+> -	ret = rtdm_fd_recvmsg(fd, &m, flags);
+> -	if (ret < 0)
+> -		return ret;
+> -
+> -	return cobalt_copy_to_user(umsg, &m, sizeof(*umsg)) ?: ret;
+> +	return rtdm_fd_recvmsg(fd, umsg, flags);
+>  }
+>  
+>  static int get_timespec(struct timespec *ts,
+> @@ -123,12 +112,7 @@ COBALT_SYSCALL(recvmmsg, primary,
+>  COBALT_SYSCALL(sendmsg, handover,
+>  	       (int fd, struct user_msghdr __user *umsg, int flags))
+>  {
+> -	struct user_msghdr m;
+> -	int ret;
+> -
+> -	ret = cobalt_copy_from_user(&m, umsg, sizeof(m));
+> -
+> -	return ret ?: rtdm_fd_sendmsg(fd, &m, flags);
+> +	return rtdm_fd_sendmsg(fd, umsg, flags);
+>  }
+>  
+>  static int put_mmsglen(void __user **u_mmsg_p, const struct mmsghdr *mmsg)
+> 
+> 
 
 -- 
 Siemens AG, T RDA IOT
