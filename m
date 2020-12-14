@@ -1,10 +1,11 @@
-Subject: Re: [CXP][RFC] Pick RTDM for the common kernel interface
-References: <87pn3mzxeh.fsf@xenomai.org>
+Subject: Re: [PATCH 0/4] Dovetail prep work, cleanup series
+References: <20201205120014.2754097-1-rpm@xenomai.org>
+ <7b92cb97-ddf7-a2ff-1c8b-3244a6213ce0@siemens.com>
 From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <5700bc80-fb99-0420-a386-13c0cab91c6e@siemens.com>
-Date: Mon, 14 Dec 2020 13:44:49 +0100
+Message-ID: <914ba3e6-ae47-72e8-bd88-bade29e45d12@siemens.com>
+Date: Mon, 14 Dec 2020 16:47:18 +0100
 MIME-Version: 1.0
-In-Reply-To: <87pn3mzxeh.fsf@xenomai.org>
+In-Reply-To: <7b92cb97-ddf7-a2ff-1c8b-3244a6213ce0@siemens.com>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -18,86 +19,40 @@ List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: Philippe Gerum <rpm@xenomai.org>, xenomai@xenomai.org
 
-On 06.12.20 17:56, Philippe Gerum via Xenomai wrote:
+On 11.12.20 07:58, Jan Kiszka via Xenomai wrote:
+> On 05.12.20 13:00, Philippe Gerum wrote:
+>> From: Philippe Gerum <rpm@xenomai.org>
+>>
+>> This series contains prep work to the addition of a pipeline
+>> abstraction layer towards Xenomai 3.2 supporting Dovetail, cleaning up
+>> obsolete code. Based on the -next branch.
+>>
+>> Philippe Gerum (4):
+>>   cobalt/arm: disable unlocked context switching
+>>   cobalt/kernel: drop support for preemptible context switching
+>>   cobalt/syscall: use raw_printk() for serial debug output
+>>   cobalt/clock: drop xnclock_get_host_time()
+>>
+>>  include/cobalt/kernel/clock.h       |  2 -
+>>  include/cobalt/kernel/sched.h       | 34 ---------------
+>>  include/cobalt/kernel/thread.h      |  2 +-
+>>  include/cobalt/uapi/kernel/thread.h |  1 -
+>>  kernel/cobalt/arch/arm/Kconfig      | 22 ----------
+>>  kernel/cobalt/clock.c               |  6 ---
+>>  kernel/cobalt/posix/syscall.c       |  2 +-
+>>  kernel/cobalt/sched.c               | 66 ++---------------------------
+>>  kernel/cobalt/thread.c              | 23 +---------
+>>  kernel/cobalt/timer.c               |  2 +-
+>>  10 files changed, 7 insertions(+), 153 deletions(-)
+>>
 > 
-> The common Xenomai platform specification is about defining the
-> commonalities among future Xenomai releases starting from 3.3,
-> including the Xenomai 4 series based on a next generation (EVL)
-> core. A common kernel interface available for implementing
-> Xenomai-controlled drivers is part of this specification.
-> 
-> Xenomai 3.x and earlier have long promoted the RTDM interface for
-> implementing drivers, which encourages a separated driver model by
-> design. Instead, the EVL core which is going to be the cornerstone of
-> Xenomai 4 promotes an integrated approach to developing real-time
-> drivers when possible, by adding so-called "out of band" capabilities
-> directly to the implementation of existing mainline drivers [1][2]. A
-> custom EVL driver which has no counterpart in the mainline kernel tree
-> is still a regular character device driver, although it must use the
-> real-time services brought by the EVL core for its time-critical
-> operations [3].
-> 
-> The purpose of defining a common kernel interface as part of the CXP is
-> specifically about helping with portability of existing custom drivers
-> built for Xenomai 3.x towards Xenomai 4. Following the regular driver
-> model as promoted by EVL along with using the EVL core interface
-> directly would be the recommended way of developing drivers for Xenomai
-> 4.
-> 
-> However, some RTDM features/services cannot be ported to an EVL-based
-> system, due to major differences between the Cobalt and EVL locking
-> models (e.g. RTDM_EXECUTE_ATOMICALLY(), along with any call involving
-> Cobalt's single "superlock").
-> 
-> 
-> 
-> PROPOSAL: Adopt a large subset of the current RTDM specification as
-> the common kernel interface defined by the CXP. The exact set of RTDM
-> services which should be retained in the CXP implementation must be
-> discussed further.
-> 
-> As a consequence, Xenomai 4 would provide a RTDM layer based on the EVL
-> core interface internally, which would preserve the driver taxonomy
-> ("named" / "protocol") and registration model inherited from its Xenomai
-> 3.x counterpart.
-> 
->                   drivers
->       ....................................
->            |                  |      |
->            |                  |      |
->           RTDM               RTDM    |
->            |                  |      |
->            v                  v      v
->  (Cobalt core xn* API)   (EVL core evl_* API)
->  ---------------------   --------------------
->       Xenomai 3.x            Xenomai 4
-> 
-> Applications could issue I/O requests to RTDM-based drivers via the
-> dedicated services from the common libcobalt interface also available
-> in both environments [4].
-> 
-> 
-> Thanks,
-> 
-> [1] https://evlproject.org/core/oob-drivers/
-> [2] https://evlproject.org/core/oob-drivers/gpio/
-> [3] https://evlproject.org/core/kernel-api/
-> [4] https://xenomai.org/pipermail/xenomai/2020-December/043930.html
+> These changes are a good branching point for stable/v3.1.x. Preparing
+> that now...
 > 
 
-Ack regarding the commitment to RTDM compat support. How that RTDM
-version will eventually look like is not yet clear to me, though. It may
-not be 1:1 what we have today.
+All 4 pushed to next now.
 
-E.g., both EVL and RTDM have to provide separate (from the kernel)
-synchronization primitives. I would see a lot of benefit in aligning
-them, rather than having yet another new set with EVL. People should be
-able to do
-
-#define rtdm_mutex_lock evl_lock_kmutex
-
-or vice versa.
-
+Thanks
 Jan
 
 -- 
