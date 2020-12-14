@@ -1,14 +1,12 @@
-Subject: Re: [PATCH 0/4] Dovetail prep work, cleanup series
-References: <20201205120014.2754097-1-rpm@xenomai.org>
- <7b92cb97-ddf7-a2ff-1c8b-3244a6213ce0@siemens.com>
-From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <914ba3e6-ae47-72e8-bd88-bade29e45d12@siemens.com>
-Date: Mon, 14 Dec 2020 16:47:18 +0100
 MIME-Version: 1.0
-In-Reply-To: <7b92cb97-ddf7-a2ff-1c8b-3244a6213ce0@siemens.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+References: <87mtyr1abi.fsf@xenomai.org>
+ <3a59871e-0051-de96-6346-2f7af74c3e80@siemens.com>
+In-Reply-To: <3a59871e-0051-de96-6346-2f7af74c3e80@siemens.com>
+From: Greg Gallagher <greg@embeddedgreg.com>
+Date: Mon, 14 Dec 2020 11:00:24 -0500
+Message-ID: <CALLqZ8T0spXyi-iVB5bs5W+i6hdqSf7ZhK+CQiS3VxOs9_k9mQ@mail.gmail.com>
+Subject: Re: [CXP][RFC] pick POSIX/cobalt for the common user API
+Content-Type: text/plain; charset="UTF-8"
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,45 +15,73 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Philippe Gerum <rpm@xenomai.org>, xenomai@xenomai.org
+To: Jan Kiszka <jan.kiszka@siemens.com>
+Cc: Philippe Gerum <rpm@xenomai.org>, "Xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On 11.12.20 07:58, Jan Kiszka via Xenomai wrote:
-> On 05.12.20 13:00, Philippe Gerum wrote:
->> From: Philippe Gerum <rpm@xenomai.org>
->>
->> This series contains prep work to the addition of a pipeline
->> abstraction layer towards Xenomai 3.2 supporting Dovetail, cleaning up
->> obsolete code. Based on the -next branch.
->>
->> Philippe Gerum (4):
->>   cobalt/arm: disable unlocked context switching
->>   cobalt/kernel: drop support for preemptible context switching
->>   cobalt/syscall: use raw_printk() for serial debug output
->>   cobalt/clock: drop xnclock_get_host_time()
->>
->>  include/cobalt/kernel/clock.h       |  2 -
->>  include/cobalt/kernel/sched.h       | 34 ---------------
->>  include/cobalt/kernel/thread.h      |  2 +-
->>  include/cobalt/uapi/kernel/thread.h |  1 -
->>  kernel/cobalt/arch/arm/Kconfig      | 22 ----------
->>  kernel/cobalt/clock.c               |  6 ---
->>  kernel/cobalt/posix/syscall.c       |  2 +-
->>  kernel/cobalt/sched.c               | 66 ++---------------------------
->>  kernel/cobalt/thread.c              | 23 +---------
->>  kernel/cobalt/timer.c               |  2 +-
->>  10 files changed, 7 insertions(+), 153 deletions(-)
->>
-> 
-> These changes are a good branching point for stable/v3.1.x. Preparing
-> that now...
-> 
+On Mon, Dec 14, 2020 at 7:44 AM Jan Kiszka via Xenomai <xenomai@xenomai.org>
+wrote:
 
-All 4 pushed to next now.
+> On 06.12.20 11:46, Philippe Gerum via Xenomai wrote:
+> >
+> > The common Xenomai platform specification is about defining the
+> > commonalities among future Xenomai releases starting from 3.3, including
+> > the Xenomai 4 series based on a next generation (EVL) core. A common API
+> > available to applications for issuing requests to the real-time core is
+> > part of this specification.
+> >
+> > Implementing such interface would not preclude other APIs from
+> > co-existing in particular releases. However, use of this common API
+> > only would guarantee portability across releases.
+> >
+> > Excluding the legacy RTOS emulators such as VxWorks and pSOS, Xenomai
+> > 3.x provides two main APIs, a POSIX-compliant one (libcobalt) and a
+> > custom RTOS API aka Alchemy (libalchemy) on top of the Copperplate
+> > interface.
+> >
+> > PROPOSAL: Pick libcobalt as the common API defined by the CXP.
+> >
+> > As a consequence, Xenomai 4 would provide two direct interfaces to the
+> > underlying EVL core: via the libevl API [1] which is readily
+> > available, and its own implementation of libcobalt as part of a CXP
+> > compliance.
+> >
+> >                   applications
+> >       ....................................
+> >       libalchemy            libevl libcobalt
+> >            |                  |      |
+> >            |                  |      |
+> >       libcopperplate          |      |
+> >            |                  |      |
+> >            |                  |      |
+> >        libcobalt              |      |
+> >            |                  |      |
+> >            v                  v      v
+> >      (Cobalt core)           (EVL core)
+> >       -----------            ---------
+> >       Xenomai 3.x            Xenomai 4
+> >
+> >
+> > Thanks,
+> >
+> > [1] https://evlproject.org/core/user-api/
+> >
+>
+> Ack from my side.
+>
+> Besides using Xenomai 3.x as a stepping stone to migrate from legacy
+> RTOSes like Vxworks, there may also be the option to use the mercurial
+> version on top of Xenomai 4 at some point. In any case, it will first of
+> all take users to actively express their long-term needs regarding such
+> features - and contributions.
+>
+> Jan
+>
+> --
+> Siemens AG, T RDA IOT
+> Corporate Competence Center Embedded Linux
+>
+> ACK - looks good.  I think if someone would like to take on the
+maintenance of one or all the RTOS skins then it's something to look at,
+but for now it's out of scope.
 
-Thanks
-Jan
-
--- 
-Siemens AG, T RDA IOT
-Corporate Competence Center Embedded Linux
-
+-Greg
