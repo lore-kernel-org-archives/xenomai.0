@@ -1,10 +1,10 @@
-Subject: Re: [CXP][RFC] pick POSIX/cobalt for the common user API
-References: <87mtyr1abi.fsf@xenomai.org>
+Subject: Re: [CXP][RFC] Pick RTDM for the common kernel interface
+References: <87pn3mzxeh.fsf@xenomai.org>
 From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <3a59871e-0051-de96-6346-2f7af74c3e80@siemens.com>
-Date: Mon, 14 Dec 2020 13:44:15 +0100
+Message-ID: <5700bc80-fb99-0420-a386-13c0cab91c6e@siemens.com>
+Date: Mon, 14 Dec 2020 13:44:49 +0100
 MIME-Version: 1.0
-In-Reply-To: <87mtyr1abi.fsf@xenomai.org>
+In-Reply-To: <87pn3mzxeh.fsf@xenomai.org>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -18,58 +18,85 @@ List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: Philippe Gerum <rpm@xenomai.org>, xenomai@xenomai.org
 
-On 06.12.20 11:46, Philippe Gerum via Xenomai wrote:
+On 06.12.20 17:56, Philippe Gerum via Xenomai wrote:
 > 
 > The common Xenomai platform specification is about defining the
-> commonalities among future Xenomai releases starting from 3.3, including
-> the Xenomai 4 series based on a next generation (EVL) core. A common API
-> available to applications for issuing requests to the real-time core is
-> part of this specification.
+> commonalities among future Xenomai releases starting from 3.3,
+> including the Xenomai 4 series based on a next generation (EVL)
+> core. A common kernel interface available for implementing
+> Xenomai-controlled drivers is part of this specification.
 > 
-> Implementing such interface would not preclude other APIs from
-> co-existing in particular releases. However, use of this common API
-> only would guarantee portability across releases.
+> Xenomai 3.x and earlier have long promoted the RTDM interface for
+> implementing drivers, which encourages a separated driver model by
+> design. Instead, the EVL core which is going to be the cornerstone of
+> Xenomai 4 promotes an integrated approach to developing real-time
+> drivers when possible, by adding so-called "out of band" capabilities
+> directly to the implementation of existing mainline drivers [1][2]. A
+> custom EVL driver which has no counterpart in the mainline kernel tree
+> is still a regular character device driver, although it must use the
+> real-time services brought by the EVL core for its time-critical
+> operations [3].
 > 
-> Excluding the legacy RTOS emulators such as VxWorks and pSOS, Xenomai
-> 3.x provides two main APIs, a POSIX-compliant one (libcobalt) and a
-> custom RTOS API aka Alchemy (libalchemy) on top of the Copperplate
-> interface.
+> The purpose of defining a common kernel interface as part of the CXP is
+> specifically about helping with portability of existing custom drivers
+> built for Xenomai 3.x towards Xenomai 4. Following the regular driver
+> model as promoted by EVL along with using the EVL core interface
+> directly would be the recommended way of developing drivers for Xenomai
+> 4.
 > 
-> PROPOSAL: Pick libcobalt as the common API defined by the CXP.
+> However, some RTDM features/services cannot be ported to an EVL-based
+> system, due to major differences between the Cobalt and EVL locking
+> models (e.g. RTDM_EXECUTE_ATOMICALLY(), along with any call involving
+> Cobalt's single "superlock").
 > 
-> As a consequence, Xenomai 4 would provide two direct interfaces to the
-> underlying EVL core: via the libevl API [1] which is readily
-> available, and its own implementation of libcobalt as part of a CXP
-> compliance.
 > 
->                   applications
+> 
+> PROPOSAL: Adopt a large subset of the current RTDM specification as
+> the common kernel interface defined by the CXP. The exact set of RTDM
+> services which should be retained in the CXP implementation must be
+> discussed further.
+> 
+> As a consequence, Xenomai 4 would provide a RTDM layer based on the EVL
+> core interface internally, which would preserve the driver taxonomy
+> ("named" / "protocol") and registration model inherited from its Xenomai
+> 3.x counterpart.
+> 
+>                   drivers
 >       ....................................
->       libalchemy            libevl libcobalt
 >            |                  |      |
 >            |                  |      |
->       libcopperplate          |      |
->            |                  |      |
->            |                  |      |
->        libcobalt              |      |
+>           RTDM               RTDM    |
 >            |                  |      |
 >            v                  v      v
->      (Cobalt core)           (EVL core)
->       -----------            ---------
+>  (Cobalt core xn* API)   (EVL core evl_* API)
+>  ---------------------   --------------------
 >       Xenomai 3.x            Xenomai 4
+> 
+> Applications could issue I/O requests to RTDM-based drivers via the
+> dedicated services from the common libcobalt interface also available
+> in both environments [4].
 > 
 > 
 > Thanks,
 > 
-> [1] https://evlproject.org/core/user-api/
+> [1] https://evlproject.org/core/oob-drivers/
+> [2] https://evlproject.org/core/oob-drivers/gpio/
+> [3] https://evlproject.org/core/kernel-api/
+> [4] https://xenomai.org/pipermail/xenomai/2020-December/043930.html
 > 
 
-Ack from my side.
+Ack regarding the commitment to RTDM compat support. How that RTDM
+version will eventually look like is not yet clear to me, though. It may
+not be 1:1 what we have today.
 
-Besides using Xenomai 3.x as a stepping stone to migrate from legacy
-RTOSes like Vxworks, there may also be the option to use the mercurial
-version on top of Xenomai 4 at some point. In any case, it will first of
-all take users to actively express their long-term needs regarding such
-features - and contributions.
+E.g., both EVL and RTDM have to provide separate (from the kernel)
+synchronization primitives. I would see a lot of benefit in aligning
+them, rather than having yet another new set with EVL. People should be
+able to do
+
+#define rtdm_mutex_lock evl_lock_kmutex
+
+or vice versa.
 
 Jan
 
