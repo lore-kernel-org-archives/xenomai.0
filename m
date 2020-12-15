@@ -1,13 +1,14 @@
-Subject: Re: Xenomai scheduler
-References: <CAFZ-hKjNB5Le2qvXd609j+O2AxrMehohchqF3Qtr_pr-ULdQSA@mail.gmail.com>
-From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <8cdb390e-9a76-fc94-d052-66fa921dd791@siemens.com>
-Date: Mon, 7 Dec 2020 07:55:51 +0100
+From: Wolfgang Denk <wd@denx.de>
+Subject: Re: [CXP][RFC] Pick RTDM for the common kernel interface
 MIME-Version: 1.0
-In-Reply-To: <CAFZ-hKjNB5Le2qvXd609j+O2AxrMehohchqF3Qtr_pr-ULdQSA@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-type: text/plain; charset=UTF-8
+Content-transfer-encoding: 8bit
+In-reply-to: <CALLqZ8TdQLXAxAfDgFUZb9YhhkqZxxmrOOJ83gKYvAokJss9fg@mail.gmail.com>
+References: <87pn3mzxeh.fsf@xenomai.org>
+ <5700bc80-fb99-0420-a386-13c0cab91c6e@siemens.com>
+ <CALLqZ8TdQLXAxAfDgFUZb9YhhkqZxxmrOOJ83gKYvAokJss9fg@mail.gmail.com>
+Date: Tue, 15 Dec 2020 13:30:15 +0100
+Message-ID: <491348.1608035415@gemini.denx.de>
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,25 +17,29 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Leandro Bucci <guestleandro11@gmail.com>, xenomai@xenomai.org
+To: Greg Gallagher <greg@embeddedgreg.com>, Greg Gallagher via Xenomai <xenomai@xenomai.org>
 
-On 05.12.20 09:22, Leandro Bucci via Xenomai wrote:
-> hi, i have a doubt about the Xenomai scheduler.  When I create multiple
-> tasks, are they assigned to the various available system CPUs?  if I have
-> two tasks T1 and T2, where T1 has high priority and T2 low priority, and my
-> system has 4 CPUs, does Xenomai assign T1 and T2 to two different
-> processors (to optimize) or does it assign them to the same processor?
-> 
+Dear Greg,
 
-Xenomai does not implement any kind of load-balancing algorithm. It
-simply takes the CPU the Linux part of the thread was running on during
-creation. It furthermore accepts any explicit affinity assignments
-during runtime. So it's up to you to design the optimal RT thread
-placement for your system.
+In message <CALLqZ8TdQLXAxAfDgFUZb9YhhkqZxxmrOOJ83gKYvAokJss9fg@mail.gmail.com> you wrote:
+>
+> The compatibility with RTDM I think makes a lot of sense.  I think the goal
+> should be if someone as a current RTDM driver there would be minimal change
+> to move it to a new version of Xenomai 3.x or 4.  As we start on this work
+> it may be a great time for people to get involved and help maintain some of
+> the existing drivers.
 
-Jan
+...or obsolete them by providing the needed functionality in mainline
+drivers, ACK.
+
+Best regards,
+
+Wolfgang Denk
 
 -- 
-Siemens AG, T RDA IOT
-Corporate Competence Center Embedded Linux
+DENX Software Engineering GmbH,      Managing Director: Wolfgang Denk
+HRB 165235 Munich, Office: Kirchenstr.5, D-82194 Groebenzell, Germany
+Phone: (+49)-8142-66989-10 Fax: (+49)-8142-66989-80 Email: wd@denx.de
+If the facts don't fit the theory, change the facts.
+                                                   -- Albert Einstein
 
