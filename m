@@ -1,11 +1,14 @@
-From: =?utf-8?q?Fran=C3=A7ois_Legal?= <devel@thom.fr.eu.org>
+Subject: Re: [Patch 1/3] Problem with upstream SPECTRE mitigation found in
+ sendmsg/recvmsg syscalls
+References: <1176-5fd9c780-16b-12dbaa60@116805552>
+From: Jan Kiszka <jan.kiszka@siemens.com>
+Message-ID: <edd84af6-13ea-579b-069d-2ee3a0b1bcd2@siemens.com>
+Date: Wed, 16 Dec 2020 11:41:46 +0100
 MIME-Version: 1.0
-Date: Wed, 16 Dec 2020 09:45:29 +0100
-Subject: =?utf-8?q?=5BPatch?==?utf-8?q?_3=2F3=5D?= Problem with upstream
- SPECTRE mitigation found in =?utf-8?q?sendmsg=2Frecvmsg?= syscalls
-Message-ID: <1175-5fd9c900-12b-25a5a500@199049733>
+In-Reply-To: <1176-5fd9c780-16b-12dbaa60@116805552>
 Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -14,67 +17,101 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
+To: =?UTF-8?Q?Fran=c3=a7ois_Legal?= <francois.legal@thom.fr.eu.org>, xenomai@xenomai.org
 
-From: Fran=C3=A7ois LEGAL <devel@thom.fr.eu.org>
+On 16.12.20 09:38, François Legal via Xenomai wrote:
+> From: François LEGAL <devel@thom.fr.eu.org>
+> 
+> The RTNET sendmsg/recvmsg protocol handlers used to call copy_to/from_user on the struct user_msghdr argument. The syscall entry code already does this copy, so calling again the copy_to/from_user in handlers triggers SPECTRE mitigation protection. This patch removes the calls in the handlers
+> 
+> This patch has been tested with 4.4.x kernel
+> 
+> Signed-off-by: François LEGAL <devel@thom.fr.eu.org>
+> ---
+>  kernel/drivers/net/stack/packet/af_packet.c | 16 +++-------------
+>  1 file changed, 3 insertions(+), 13 deletions(-)
+> 
+> diff --git a/kernel/drivers/net/stack/packet/af_packet.c b/kernel/drivers/net/stack/packet/af_packet.c
+> index b8de8a0..cc74873 100644
+> --- a/kernel/drivers/net/stack/packet/af_packet.c
+> +++ b/kernel/drivers/net/stack/packet/af_packet.c
+> @@ -294,7 +294,7 @@ static int rt_packet_ioctl(struct rtdm_fd *fd, unsigned int request,
+>  /***
+>   *  rt_packet_recvmsg
+>   */
+> -static ssize_t rt_packet_recvmsg(struct rtdm_fd *fd, struct user_msghdr *u_msg,
+> +static ssize_t rt_packet_recvmsg(struct rtdm_fd *fd, struct user_msghdr *msg,
+>  				 int msg_flags)
+>  {
+>  	struct rtsocket *sock = rtdm_fd_to_private(fd);
+> @@ -304,14 +304,9 @@ static ssize_t rt_packet_recvmsg(struct rtdm_fd *fd, struct user_msghdr *u_msg,
+>  	struct sockaddr_ll sll;
+>  	int ret, flags;
+>  	nanosecs_rel_t timeout = sock->timeout;
+> -	struct user_msghdr _msg, *msg;
+>  	socklen_t namelen;
+>  	struct iovec iov_fast[RTDM_IOV_FASTMAX], *iov;
+>  
+> -	msg = rtnet_get_arg(fd, &_msg, u_msg, sizeof(_msg));
+> -	if (IS_ERR(msg))
+> -		return PTR_ERR(msg);
+> -
+>  	if (msg->msg_iovlen < 0)
+>  		return -EINVAL;
+>  
+> @@ -359,7 +354,7 @@ static ssize_t rt_packet_recvmsg(struct rtdm_fd *fd, struct user_msghdr *u_msg,
+>  			goto fail;
+>  
+>  		namelen = sizeof(sll);
+> -		ret = rtnet_put_arg(fd, &u_msg->msg_namelen, &namelen,
+> +		ret = rtnet_put_arg(fd, &msg->msg_namelen, &namelen,
+>  				    sizeof(namelen));
+>  		if (ret)
+>  			goto fail;
+> @@ -380,7 +375,7 @@ static ssize_t rt_packet_recvmsg(struct rtdm_fd *fd, struct user_msghdr *u_msg,
+>  	if (copy_len > len) {
+>  		copy_len = len;
+>  		flags = msg->msg_flags | MSG_TRUNC;
+> -		ret = rtnet_put_arg(fd, &u_msg->msg_flags, &flags,
+> +		ret = rtnet_put_arg(fd, &msg->msg_flags, &flags,
+>  				    sizeof(flags));
+>  		if (ret)
+>  			goto fail;
+> @@ -419,7 +414,6 @@ static ssize_t rt_packet_sendmsg(struct rtdm_fd *fd,
+>  	unsigned char *addr;
+>  	int ifindex;
+>  	ssize_t ret;
+> -	struct user_msghdr _msg;
+>  	struct iovec iov_fast[RTDM_IOV_FASTMAX], *iov;
+>  
+>  	if (msg_flags & MSG_OOB) /* Mirror BSD error message compatibility */
+> @@ -427,10 +421,6 @@ static ssize_t rt_packet_sendmsg(struct rtdm_fd *fd,
+>  	if (msg_flags & ~MSG_DONTWAIT)
+>  		return -EINVAL;
+>  
+> -	msg = rtnet_get_arg(fd, &_msg, msg, sizeof(*msg));
+> -	if (IS_ERR(msg))
+> -		return PTR_ERR(msg);
+> -
+>  	if (msg->msg_iovlen < 0)
+>  		return -EINVAL;
+> 
+> 
 
-The RTNET sendmsg/recvmsg protocol handlers used to call copy=5Fto/from=
-=5Fuser on the struct user=5Fmsghdr argument. The syscall entry code al=
-ready does this copy, so calling again the copy=5Fto/from=5Fuser in han=
-dlers triggers SPECTRE mitigation protection. This patch removes the ca=
-lls in the handlers
+Changes look good to me, and generally splitting up is also nice -
+provided there are specific commit messages as well. The subject should
+be something like "<subsystem>: Drop duplicate copy_to/from_user", and
+then the commit log should explain why (like it does already).
 
-This patch has not been tested
+Please also version your patch series ("[PATCH v2 1/3]") to make it
+easier finding out what is latest.
 
-Signed-off-by: Fran=C3=A7ois LEGAL <devel@thom.fr.eu.org>
----
- kernel/drivers/net/stack/ipv4/tcp/tcp.c     | 10 ----------
- 1 file changed, 0 insertions(+), 10 deletions(-)
+I'm fixing this up in this case while merging.
 
-diff --git a/kernel/drivers/net/stack/ipv4/tcp/tcp.c b/kernel/drivers/n=
-et/stack/ipv4/tcp/tcp.c
-index b8263e5..d8c189c 100644
---- a/kernel/drivers/net/stack/ipv4/tcp/tcp.c
-+++ b/kernel/drivers/net/stack/ipv4/tcp/tcp.c
-@@ -2137,7 +2137,6 @@ static ssize=5Ft rt=5Ftcp=5Frecvmsg(struct rtdm=5F=
-fd *fd, struct user=5Fmsghdr *msg,
- 			      int msg=5Fflags)
- {
- 	struct iovec iov=5Ffast[RTDM=5FIOV=5FFASTMAX], *iov;
--	struct user=5Fmsghdr =5Fmsg;
- 	ssize=5Ft ret;
- 	size=5Ft len;
- 	void *buf;
-@@ -2145,10 +2144,6 @@ static ssize=5Ft rt=5Ftcp=5Frecvmsg(struct rtdm=5F=
-fd *fd, struct user=5Fmsghdr *msg,
- 	if (msg=5Fflags)
- 		return -EOPNOTSUPP;
- 
--	msg =3D rtnet=5Fget=5Farg(fd, &=5Fmsg, msg, sizeof(*msg));
--	if (IS=5FERR(msg))
--		return PTR=5FERR(msg);
--
- 	/* loop over all vectors to be implemented */
- 	if (msg->msg=5Fiovlen !=3D 1)
- 		return -EOPNOTSUPP;
-@@ -2175,17 +2170,12 @@ static ssize=5Ft rt=5Ftcp=5Fsendmsg(struct rtdm=
-=5Ffd *fd, const struct user=5Fmsghdr *msg,
- 			      int msg=5Fflags)
- {
- 	struct iovec iov=5Ffast[RTDM=5FIOV=5FFASTMAX], *iov;
--	struct user=5Fmsghdr =5Fmsg;
- 	ssize=5Ft ret;
- 	size=5Ft len;
- 
- 	if (msg=5Fflags)
- 		return -EOPNOTSUPP;
- 
--	msg =3D rtnet=5Fget=5Farg(fd, &=5Fmsg, msg, sizeof(*msg));
--	if (IS=5FERR(msg))
--		return PTR=5FERR(msg);
--
- 	/* loop over all vectors to be implemented */
- 	if (msg->msg=5Fiovlen !=3D 1)
- 		return -EOPNOTSUPP;
+Thanks for debugging and solving this!
+Jan
 
+-- 
+Siemens AG, T RDA IOT
+Corporate Competence Center Embedded Linux
 
