@@ -1,14 +1,11 @@
-Subject: Re: [Patch 1/3] Problem with upstream SPECTRE mitigation found in
- sendmsg/recvmsg syscalls
-References: <1176-5fd9c780-16b-12dbaa60@116805552>
-From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <edd84af6-13ea-579b-069d-2ee3a0b1bcd2@siemens.com>
-Date: Wed, 16 Dec 2020 11:41:46 +0100
-MIME-Version: 1.0
-In-Reply-To: <1176-5fd9c780-16b-12dbaa60@116805552>
-Content-Type: text/plain; charset="utf-8"
+From: "Wang, Rick Y" <rick.y.wang@intel.com>
+Subject: Xenomai Community Call Minutes - December 16, 2020
+Date: Wed, 16 Dec 2020 15:39:37 +0000
+Message-ID: <BY5PR11MB4306415343378A8B7A622FBFBAC50@BY5PR11MB4306.namprd11.prod.outlook.com>
 Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+MIME-Version: 1.0
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,101 +14,94 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: =?UTF-8?Q?Fran=c3=a7ois_Legal?= <francois.legal@thom.fr.eu.org>, xenomai@xenomai.org
+To: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On 16.12.20 09:38, François Legal via Xenomai wrote:
-> From: François LEGAL <devel@thom.fr.eu.org>
-> 
-> The RTNET sendmsg/recvmsg protocol handlers used to call copy_to/from_user on the struct user_msghdr argument. The syscall entry code already does this copy, so calling again the copy_to/from_user in handlers triggers SPECTRE mitigation protection. This patch removes the calls in the handlers
-> 
-> This patch has been tested with 4.4.x kernel
-> 
-> Signed-off-by: François LEGAL <devel@thom.fr.eu.org>
-> ---
->  kernel/drivers/net/stack/packet/af_packet.c | 16 +++-------------
->  1 file changed, 3 insertions(+), 13 deletions(-)
-> 
-> diff --git a/kernel/drivers/net/stack/packet/af_packet.c b/kernel/drivers/net/stack/packet/af_packet.c
-> index b8de8a0..cc74873 100644
-> --- a/kernel/drivers/net/stack/packet/af_packet.c
-> +++ b/kernel/drivers/net/stack/packet/af_packet.c
-> @@ -294,7 +294,7 @@ static int rt_packet_ioctl(struct rtdm_fd *fd, unsigned int request,
->  /***
->   *  rt_packet_recvmsg
->   */
-> -static ssize_t rt_packet_recvmsg(struct rtdm_fd *fd, struct user_msghdr *u_msg,
-> +static ssize_t rt_packet_recvmsg(struct rtdm_fd *fd, struct user_msghdr *msg,
->  				 int msg_flags)
->  {
->  	struct rtsocket *sock = rtdm_fd_to_private(fd);
-> @@ -304,14 +304,9 @@ static ssize_t rt_packet_recvmsg(struct rtdm_fd *fd, struct user_msghdr *u_msg,
->  	struct sockaddr_ll sll;
->  	int ret, flags;
->  	nanosecs_rel_t timeout = sock->timeout;
-> -	struct user_msghdr _msg, *msg;
->  	socklen_t namelen;
->  	struct iovec iov_fast[RTDM_IOV_FASTMAX], *iov;
->  
-> -	msg = rtnet_get_arg(fd, &_msg, u_msg, sizeof(_msg));
-> -	if (IS_ERR(msg))
-> -		return PTR_ERR(msg);
-> -
->  	if (msg->msg_iovlen < 0)
->  		return -EINVAL;
->  
-> @@ -359,7 +354,7 @@ static ssize_t rt_packet_recvmsg(struct rtdm_fd *fd, struct user_msghdr *u_msg,
->  			goto fail;
->  
->  		namelen = sizeof(sll);
-> -		ret = rtnet_put_arg(fd, &u_msg->msg_namelen, &namelen,
-> +		ret = rtnet_put_arg(fd, &msg->msg_namelen, &namelen,
->  				    sizeof(namelen));
->  		if (ret)
->  			goto fail;
-> @@ -380,7 +375,7 @@ static ssize_t rt_packet_recvmsg(struct rtdm_fd *fd, struct user_msghdr *u_msg,
->  	if (copy_len > len) {
->  		copy_len = len;
->  		flags = msg->msg_flags | MSG_TRUNC;
-> -		ret = rtnet_put_arg(fd, &u_msg->msg_flags, &flags,
-> +		ret = rtnet_put_arg(fd, &msg->msg_flags, &flags,
->  				    sizeof(flags));
->  		if (ret)
->  			goto fail;
-> @@ -419,7 +414,6 @@ static ssize_t rt_packet_sendmsg(struct rtdm_fd *fd,
->  	unsigned char *addr;
->  	int ifindex;
->  	ssize_t ret;
-> -	struct user_msghdr _msg;
->  	struct iovec iov_fast[RTDM_IOV_FASTMAX], *iov;
->  
->  	if (msg_flags & MSG_OOB) /* Mirror BSD error message compatibility */
-> @@ -427,10 +421,6 @@ static ssize_t rt_packet_sendmsg(struct rtdm_fd *fd,
->  	if (msg_flags & ~MSG_DONTWAIT)
->  		return -EINVAL;
->  
-> -	msg = rtnet_get_arg(fd, &_msg, msg, sizeof(*msg));
-> -	if (IS_ERR(msg))
-> -		return PTR_ERR(msg);
-> -
->  	if (msg->msg_iovlen < 0)
->  		return -EINVAL;
-> 
-> 
+Attendees:
 
-Changes look good to me, and generally splitting up is also nice -
-provided there are specific commit messages as well. The subject should
-be something like "<subsystem>: Drop duplicate copy_to/from_user", and
-then the commit log should explain why (like it does already).
+Philippe Gerum, Jan Kiszka (Siemens), Florent Pirou (Intel),=20
+Hongzhan Chen (Intel), Fino Meng (Intel), Song Chen (kylin software),
+Antoine Hoarau (Fuzzy Logic Robotics), Florian Bezdeka (Siemens),=20
+Jeroen Van den Keybus (National Instruments), Yang Yao (Intel),
+Dao Zhang (Intel), Jianbo Cao (Intel), Yipeng (Intel), Lisa Li (Intel),
+Anderson Huang (Intel), Hongwei Wang (Intel), Hao Huang (Intel),
+Jacky Zhu (Intel), Rick Wang (Intel)
 
-Please also version your patch series ("[PATCH v2 1/3]") to make it
-easier finding out what is latest.
 
-I'm fixing this up in this case while merging.
+Agenda:
 
-Thanks for debugging and solving this!
-Jan
+*Welcome and agenda - Rick=20
+*Community update - Jan=20
+*Xenomai/EVL roadmap (3.2 to 4.0) - Jan/Philippe
+*Hot topics discussion - Hongzhan and developers
+*Attendees survey
+*Open
 
--- 
-Siemens AG, T RDA IOT
-Corporate Competence Center Embedded Linux
+
+Roadmap:
+
+3.1 - Current stable based on I-pipe
+3.2 - Xenomai over Dovetail (Target porting done by Feb 2021, stable by Q2 =
+2021)
+3.3 - Common Xenomai Platform (Specification done by Mar 2021)=20
+4.0 - EVL (TBD)
+
+*** Call to Action: Please feedback to the community ***
+Definition of next generation Xenomai needs input from users. Any feedback
+to Xenomai including but not limited to below topics are welcome.=20
+
+*How are you using Xenomai?=20
+*What's the usage scenario?=20
+*Which features are you using?
+*Which APIs are you using?
+*What's your performance expectation?
+*What's your project's maintenance cycle?
+
+Feedback to the community by end of Mar 2021 (CXP specification complete)
+is highly appreciated .
+
+
+Xenomai over Dovetail progress:
+
+Jan and Hongzhan Chen have been working on porting Xenomai over Dovetail=20
+in the past two months. The boot is successful with issues under debug.=20
+Philippe will guide Hongzhan to finish the porting for 3.2.=20
+Keep development with 5.9 kernel until we can decide a preferred=20
+kernel version for 3.2.
+
+
+Attendees response to the live polling regarding interested Xenomai topics:
+
+*Ethernet drivers
+*general real time system for industry control
+*Low-latency scheduling
+*RTOS on x86 platform
+*interrupt and scheduling, finding sources of latency...
+*Dual-kernel thread scheduling and IA64 interrupt pipelining, Linux debug &
+latency tracing,..
+*Dual-core RT IRQ pipeline and thread scheduling, Latency tracing, RTDM
+*RT tuning on X86, interrupt pipeline...
+*Linux, embedded systems, industry control
+*RTOS implementations
+
+
+Open
+
+Philippe and Jan answered questions from team on Xenomai + Preempt-rt, vani=
+lla=20
+kernel syscall for RT, RTNet evolution, TSN integration, etc.=20
+A lot of deep insight!
+Sorry for not able to capture all the details... Please feel free to commen=
+t.
+
+
+Thanks for attending the first xenomai community call! We'll have the next=
+=20
+community call after the new year on 13th of January 2021, 7:00-8:00 UTC.
+
+
+Happy holiday and stay safe!
+
+
+Thanks,
+Rick
 
