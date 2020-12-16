@@ -1,8 +1,7 @@
 From: Philippe  Gerum <rpm@xenomai.org>
-Subject: [PATCH 1/3] cobalt/kernel: substitute ipipe_processor_id() with
- raw_smp_processor_id()
-Date: Wed, 16 Dec 2020 17:44:53 +0100
-Message-Id: <20201216164455.158920-2-rpm@xenomai.org>
+Subject: [PATCH 2/3] cobalt/init: pipeline: abstract pipeline-specific inits
+Date: Wed, 16 Dec 2020 17:44:54 +0100
+Message-Id: <20201216164455.158920-3-rpm@xenomai.org>
 In-Reply-To: <20201216164455.158920-1-rpm@xenomai.org>
 References: <20201216164455.158920-1-rpm@xenomai.org>
 MIME-Version: 1.0
@@ -19,154 +18,528 @@ To: xenomai@xenomai.org
 
 From: Philippe Gerum <rpm@xenomai.org>
 
-raw_smp_processor_id() has been callable from any pipeline domain for
-many moons now, there is no point in using the legacy
-ipipe_processor_id() call anymore.
+This is the initial step to enabling Dovetail for the Cobalt core,
+which requires to introduce an abstraction layer between such core and
+the interrupt pipeline interface, either Dovetail or the legacy
+I-pipe.
+
+Eventually, the Cobalt implementation which has to interface to the
+underlying pipeline should branch off at the following points:
+
+- kernel/cobalt/{ipipe, dovetail}/arch, the arch-specific
+  implementation which overwhelmingly depends on the pipeline flavour.
+
+- kernel/cobalt/{ipipe, dovetail}, the generic Cobalt code calling
+  pipeline services.
+
+- kernel/cobalt/include/{ipipe, dovetail}, the client glue types and
+  definitions pulled into some basic kernel types by the pipeline
+  implementation (e.g. the thread_info extension structure).
+
+- include/cobalt/kernel/{ipipe, dovetail}, the generic Cobalt headers
+  depending on services and definitions the pipeline provides for.
+
+We start the process by abstracting the machine-level init code which
+depends on the pipeline flavour.
+
+No functional change is introduced.
 
 Signed-off-by: Philippe Gerum <rpm@xenomai.org>
 ---
- include/cobalt/kernel/assert.h    |  2 +-
- include/cobalt/kernel/lock.h      |  4 ++--
- kernel/cobalt/arch/arm/thread.c   | 10 +++++-----
- kernel/cobalt/arch/arm64/thread.c |  2 +-
- kernel/cobalt/arch/x86/thread.c   |  6 +++---
- kernel/cobalt/debug.c             |  2 +-
- 6 files changed, 13 insertions(+), 13 deletions(-)
+ .../cobalt/kernel/ipipe/pipeline/machine.h    |  71 ++++++++++
+ kernel/cobalt/Makefile                        |   2 +-
+ .../include/asm-generic/xenomai/machine.h     |  51 +-------
+ kernel/cobalt/init.c                          | 121 +-----------------
+ kernel/cobalt/ipipe/Makefile                  |   3 +
+ kernel/cobalt/ipipe/init.c                    | 116 +++++++++++++++++
+ scripts/prepare-kernel.sh                     |   2 +
+ 7 files changed, 199 insertions(+), 167 deletions(-)
+ create mode 100644 include/cobalt/kernel/ipipe/pipeline/machine.h
+ create mode 100644 kernel/cobalt/ipipe/Makefile
+ create mode 100644 kernel/cobalt/ipipe/init.c
 
-diff --git a/include/cobalt/kernel/assert.h b/include/cobalt/kernel/assert.h
-index 86d0a480f..7c93b7e5c 100644
---- a/include/cobalt/kernel/assert.h
-+++ b/include/cobalt/kernel/assert.h
-@@ -60,7 +60,7 @@
- #define primary_mode_only()	XENO_BUG_ON(CONTEXT, ipipe_root_p)
- #define secondary_mode_only()	XENO_BUG_ON(CONTEXT, !ipipe_root_p)
- #define interrupt_only()	XENO_BUG_ON(CONTEXT, !xnsched_interrupt_p())
--#define realtime_cpu_only()	XENO_BUG_ON(CONTEXT, !xnsched_supported_cpu(ipipe_processor_id()))
-+#define realtime_cpu_only()	XENO_BUG_ON(CONTEXT, !xnsched_supported_cpu(raw_smp_processor_id()))
- #define thread_only()		XENO_BUG_ON(CONTEXT, xnsched_interrupt_p())
- #define irqoff_only()		XENO_BUG_ON(CONTEXT, hard_irqs_disabled() == 0)
- #ifdef CONFIG_XENO_OPT_DEBUG_LOCKING
-diff --git a/include/cobalt/kernel/lock.h b/include/cobalt/kernel/lock.h
-index 4b1909f5a..bae047524 100644
---- a/include/cobalt/kernel/lock.h
-+++ b/include/cobalt/kernel/lock.h
-@@ -175,7 +175,7 @@ static inline void xnlock_init (struct xnlock *lock)
+diff --git a/include/cobalt/kernel/ipipe/pipeline/machine.h b/include/cobalt/kernel/ipipe/pipeline/machine.h
+new file mode 100644
+index 000000000..4a434bc4d
+--- /dev/null
++++ b/include/cobalt/kernel/ipipe/pipeline/machine.h
+@@ -0,0 +1,71 @@
++/*
++ * SPDX-License-Identifier: GPL-2.0
++ *
++ * Copyright (C) 2019 Philippe Gerum  <rpm@xenomai.org>
++ */
++
++#ifndef _COBALT_KERNEL_IPIPE_MACHINE_H
++#define _COBALT_KERNEL_IPIPE_MACHINE_H
++
++#include <linux/ipipe.h>
++#include <linux/percpu.h>
++
++#ifdef CONFIG_IPIPE_TRACE
++#define boot_lat_trace_notice "[LTRACE]"
++#else
++#define boot_lat_trace_notice ""
++#endif
++
++struct vm_area_struct;
++
++struct cobalt_machine {
++	const char *name;
++	int (*init)(void);
++	int (*late_init)(void);
++	void (*cleanup)(void);
++	void (*prefault)(struct vm_area_struct *vma);
++	unsigned long (*calibrate)(void);
++	const char *const *fault_labels;
++};
++
++extern struct cobalt_machine cobalt_machine;
++
++struct cobalt_machine_cpudata {
++	unsigned long apc_pending;
++	unsigned long apc_shots[BITS_PER_LONG];
++	unsigned int faults[IPIPE_NR_FAULTS];
++};
++
++DECLARE_PER_CPU(struct cobalt_machine_cpudata, cobalt_machine_cpudata);
++
++struct cobalt_pipeline {
++	struct ipipe_domain domain;
++	unsigned long timer_freq;
++	unsigned long clock_freq;
++	unsigned int apc_virq;
++	unsigned long apc_map;
++	unsigned int escalate_virq;
++	struct {
++		void (*handler)(void *cookie);
++		void *cookie;
++		const char *name;
++	} apc_table[BITS_PER_LONG];
++#ifdef CONFIG_SMP
++	cpumask_t supported_cpus;
++#endif
++};
++
++static inline unsigned long xnarch_timer_calibrate(void)
++{
++	return cobalt_machine.calibrate();
++}
++
++int pipeline_init(void);
++
++int pipeline_late_init(void);
++
++void pipeline_cleanup(void);
++
++extern struct cobalt_pipeline cobalt_pipeline;
++
++#endif /* !_COBALT_KERNEL_IPIPE_MACHINE_H */
+diff --git a/kernel/cobalt/Makefile b/kernel/cobalt/Makefile
+index 6e1cebefc..7dfcae084 100644
+--- a/kernel/cobalt/Makefile
++++ b/kernel/cobalt/Makefile
+@@ -1,4 +1,4 @@
+-obj-$(CONFIG_XENOMAI) += xenomai.o rtdm/ posix/
++obj-$(CONFIG_XENOMAI) += pipeline/ xenomai.o rtdm/ posix/
  
- static inline int ____xnlock_get(struct xnlock *lock /*, */ XNLOCK_DBG_CONTEXT_ARGS)
- {
--	int cpu = ipipe_processor_id();
-+	int cpu = raw_smp_processor_id();
- 	unsigned long long start;
+ xenomai-y :=	apc.o		\
+ 		arith.o 	\
+diff --git a/kernel/cobalt/include/asm-generic/xenomai/machine.h b/kernel/cobalt/include/asm-generic/xenomai/machine.h
+index 25764f989..f45e523df 100644
+--- a/kernel/cobalt/include/asm-generic/xenomai/machine.h
++++ b/kernel/cobalt/include/asm-generic/xenomai/machine.h
+@@ -19,56 +19,7 @@
+ #ifndef _COBALT_ASM_GENERIC_MACHINE_H
+ #define _COBALT_ASM_GENERIC_MACHINE_H
  
- 	if (lock->owner == cpu)
-@@ -242,7 +242,7 @@ static inline void __xnlock_put_irqrestore(struct xnlock *lock, spl_t flags
- static inline int xnlock_is_owner(struct xnlock *lock)
- {
- 	if (__locking_active__)
--		return lock->owner == ipipe_processor_id();
-+		return lock->owner == raw_smp_processor_id();
+-#include <linux/ipipe.h>
+-#include <linux/percpu.h>
+-#include <asm/byteorder.h>
+-#include <asm/xenomai/wrappers.h>
+-
+-struct vm_area_struct;
+-
+-struct cobalt_machine {
+-	const char *name;
+-	int (*init)(void);
+-	int (*late_init)(void);
+-	void (*cleanup)(void);
+-	void (*prefault)(struct vm_area_struct *vma);
+-	unsigned long (*calibrate)(void);
+-	const char *const *fault_labels;
+-};
+-
+-extern struct cobalt_machine cobalt_machine;
+-
+-struct cobalt_machine_cpudata {
+-	unsigned long apc_pending;
+-	unsigned long apc_shots[BITS_PER_LONG];
+-	unsigned int faults[IPIPE_NR_FAULTS];
+-};
+-
+-DECLARE_PER_CPU(struct cobalt_machine_cpudata, cobalt_machine_cpudata);
+-
+-struct cobalt_pipeline {
+-	struct ipipe_domain domain;
+-	unsigned long timer_freq;
+-	unsigned long clock_freq;
+-	unsigned int apc_virq;
+-	unsigned long apc_map;
+-	unsigned int escalate_virq;
+-	struct {
+-		void (*handler)(void *cookie);
+-		void *cookie;
+-		const char *name;
+-	} apc_table[BITS_PER_LONG];
+-#ifdef CONFIG_SMP
+-	cpumask_t supported_cpus;
+-#endif
+-};
+-
+-extern struct cobalt_pipeline cobalt_pipeline;
+-
+-static inline unsigned long xnarch_timer_calibrate(void)
+-{
+-	return cobalt_machine.calibrate();
+-}
++#include <pipeline/machine.h>
  
- 	return 1;
- }
-diff --git a/kernel/cobalt/arch/arm/thread.c b/kernel/cobalt/arch/arm/thread.c
-index d3c2fed83..c68b5e3f4 100644
---- a/kernel/cobalt/arch/arm/thread.c
-+++ b/kernel/cobalt/arch/arm/thread.c
-@@ -78,7 +78,7 @@ static inline union vfp_state *get_fpu_owner(void)
- 		return NULL;
+ #ifndef xnarch_cache_aliasing
+ #define xnarch_cache_aliasing()  0
+diff --git a/kernel/cobalt/init.c b/kernel/cobalt/init.c
+index dbe321c3b..94b653350 100644
+--- a/kernel/cobalt/init.c
++++ b/kernel/cobalt/init.c
+@@ -18,14 +18,12 @@
+  */
+ #include <linux/init.h>
+ #include <linux/module.h>
+-#include <linux/ipipe_tickdev.h>
+ #include <xenomai/version.h>
++#include <pipeline/machine.h>
+ #include <cobalt/kernel/sched.h>
+-#include <cobalt/kernel/clock.h>
+ #include <cobalt/kernel/timer.h>
+ #include <cobalt/kernel/heap.h>
+ #include <cobalt/kernel/intr.h>
+-#include <cobalt/kernel/apc.h>
+ #include <cobalt/kernel/ppd.h>
+ #include <cobalt/kernel/pipe.h>
+ #include <cobalt/kernel/select.h>
+@@ -47,12 +45,6 @@
+  * based on a set of generic RTOS building blocks.
+  */
+ 
+-static unsigned long timerfreq_arg;
+-module_param_named(timerfreq, timerfreq_arg, ulong, 0444);
+-
+-static unsigned long clockfreq_arg;
+-module_param_named(clockfreq, clockfreq_arg, ulong, 0444);
+-
+ #ifdef CONFIG_SMP
+ static unsigned long supported_cpus_arg = -1;
+ module_param_named(supported_cpus, supported_cpus_arg, ulong, 0444);
+@@ -86,12 +78,6 @@ EXPORT_SYMBOL_GPL(cobalt_kernel_ppd);
+ #define boot_debug_notice ""
  #endif
  
--	cpu = ipipe_processor_id();
-+	cpu = raw_smp_processor_id();
- 	vfp_owner = vfp_current_hw_state[cpu];
- 	if (!vfp_owner)
- 		return NULL;
-@@ -214,8 +214,8 @@ void xnarch_leave_root(struct xnthread *root)
- void xnarch_switch_fpu(struct xnthread *from, struct xnthread *to)
- {
- 	union vfp_state *const from_fpup = from ? from->tcb.fpup : NULL;
--	unsigned cpu = ipipe_processor_id();
+-#ifdef CONFIG_IPIPE_TRACE
+-#define boot_lat_trace_notice "[LTRACE]"
+-#else
+-#define boot_lat_trace_notice ""
+-#endif
+-
+ #ifdef CONFIG_ENABLE_DEFAULT_TRACERS
+ #define boot_evt_trace_notice "[ETRACE]"
+ #else
+@@ -134,103 +120,6 @@ static void sys_shutdown(void)
+ 	xnheap_vfree(membase);
+ }
+ 
+-static int __init mach_setup(void)
+-{
+-	struct ipipe_sysinfo sysinfo;
+-	int ret, virq;
+-
+-	ret = ipipe_select_timers(&xnsched_realtime_cpus);
+-	if (ret < 0)
+-		return ret;
+-
+-	ipipe_get_sysinfo(&sysinfo);
+-
+-	if (timerfreq_arg == 0)
+-		timerfreq_arg = sysinfo.sys_hrtimer_freq;
+-
+-	if (clockfreq_arg == 0)
+-		clockfreq_arg = sysinfo.sys_hrclock_freq;
+-
+-	if (clockfreq_arg == 0) {
+-		printk(XENO_ERR "null clock frequency? Aborting.\n");
+-		return -ENODEV;
+-	}
+-
+-	cobalt_pipeline.timer_freq = timerfreq_arg;
+-	cobalt_pipeline.clock_freq = clockfreq_arg;
+-
+-	if (cobalt_machine.init) {
+-		ret = cobalt_machine.init();
+-		if (ret)
+-			return ret;
+-	}
+-
+-	ipipe_register_head(&xnsched_realtime_domain, "Xenomai");
+-
+-	ret = -EBUSY;
+-	virq = ipipe_alloc_virq();
+-	if (virq == 0)
+-		goto fail_apc;
+-
+-	cobalt_pipeline.apc_virq = virq;
+-
+-	ipipe_request_irq(ipipe_root_domain,
+-			  cobalt_pipeline.apc_virq,
+-			  apc_dispatch,
+-			  NULL, NULL);
+-
+-	virq = ipipe_alloc_virq();
+-	if (virq == 0)
+-		goto fail_escalate;
+-
+-	cobalt_pipeline.escalate_virq = virq;
+-
+-	ipipe_request_irq(&xnsched_realtime_domain,
+-			  cobalt_pipeline.escalate_virq,
+-			  (ipipe_irq_handler_t)__xnsched_run_handler,
+-			  NULL, NULL);
+-
+-	ret = xnclock_init(cobalt_pipeline.clock_freq);
+-	if (ret)
+-		goto fail_clock;
+-
+-	return 0;
+-
+-fail_clock:
+-	ipipe_free_irq(&xnsched_realtime_domain,
+-		       cobalt_pipeline.escalate_virq);
+-	ipipe_free_virq(cobalt_pipeline.escalate_virq);
+-fail_escalate:
+-	ipipe_free_irq(ipipe_root_domain,
+-		       cobalt_pipeline.apc_virq);
+-	ipipe_free_virq(cobalt_pipeline.apc_virq);
+-fail_apc:
+-	ipipe_unregister_head(&xnsched_realtime_domain);
+-
+-	if (cobalt_machine.cleanup)
+-		cobalt_machine.cleanup();
+-
+-	return ret;
+-}
+-
+-static inline int __init mach_late_setup(void)
+-{
+-	if (cobalt_machine.late_init)
+-		return cobalt_machine.late_init();
+-
+-	return 0;
+-}
+-
+-static __init void mach_cleanup(void)
+-{
+-	ipipe_unregister_head(&xnsched_realtime_domain);
+-	ipipe_free_irq(&xnsched_realtime_domain,
+-		       cobalt_pipeline.escalate_virq);
+-	ipipe_free_virq(cobalt_pipeline.escalate_virq);
+-	ipipe_timers_release();
+-	xnclock_cleanup();
+-}
+-
+ static struct {
+ 	const char *label;
+ 	enum cobalt_run_states state;
+@@ -239,7 +128,7 @@ static struct {
+ 	{ "stopped", COBALT_STATE_STOPPED },
+ 	{ "enabled", COBALT_STATE_WARMUP },
+ };
 -	
-+	unsigned cpu = raw_smp_processor_id();
 +
- 	if (xnthread_test_state(to, XNROOT) == 0) {
- 		union vfp_state *const to_fpup = to->tcb.fpup;
- 		unsigned fpexc = do_enable_vfp();
-@@ -252,7 +252,7 @@ void xnarch_switch_fpu(struct xnthread *from, struct xnthread *to)
- 			do_vfp_fmxr(FPEXC, fpen & ~XNARCH_VFP_ANY_EXC);
- 			if (from_fpup == current_task_fpup)
- 				return;
--			
-+
- 			__asm_vfp_save(from_fpup, fpen);
- 			do_vfp_fmxr(FPEXC, fpdis);
- 		}
-@@ -260,7 +260,7 @@ void xnarch_switch_fpu(struct xnthread *from, struct xnthread *to)
- 	}
- }
- 
--int xnarch_handle_fpu_fault(struct xnthread *from, 
-+int xnarch_handle_fpu_fault(struct xnthread *from,
- 			struct xnthread *to, struct ipipe_trap_data *d)
+ static void __init setup_init_state(void)
  {
- 	if (xnthread_test_state(to, XNFPU))
-diff --git a/kernel/cobalt/arch/arm64/thread.c b/kernel/cobalt/arch/arm64/thread.c
-index 719c30a62..1068f80cc 100644
---- a/kernel/cobalt/arch/arm64/thread.c
-+++ b/kernel/cobalt/arch/arm64/thread.c
-@@ -90,7 +90,7 @@ void xnarch_switch_fpu(struct xnthread *from, struct xnthread *to)
- 	fpsimd_save_state(from_fpup);
+ 	static char warn_bad_state[] __initdata =
+@@ -321,7 +210,7 @@ static int __init xenomai_init(void)
+ 	if (ret)
+ 		goto fail;
  
- 	fpsimd_load_state(to_fpup);
--	to_fpup->cpu = ipipe_processor_id();
-+	to_fpup->cpu = raw_smp_processor_id();
- }
+-	ret = mach_setup();
++	ret = pipeline_init();
+ 	if (ret)
+ 		goto cleanup_proc;
  
- void xnarch_init_shadow_tcb(struct xnthread *thread)
-diff --git a/kernel/cobalt/arch/x86/thread.c b/kernel/cobalt/arch/x86/thread.c
-index 1ed6acb46..f1f81b750 100644
---- a/kernel/cobalt/arch/x86/thread.c
-+++ b/kernel/cobalt/arch/x86/thread.c
-@@ -227,7 +227,7 @@ void xnarch_switch_to(struct xnthread *out, struct xnthread *in)
- 		if (!copy_fpregs_to_fpstate(prev_fpu))
- 			prev_fpu->last_cpu = -1;
- 		else
--			prev_fpu->last_cpu = smp_processor_id();
-+			prev_fpu->last_cpu = raw_smp_processor_id();
- 	}
- #endif
+@@ -339,7 +228,7 @@ static int __init xenomai_init(void)
+ 	if (ret)
+ 		goto cleanup_select;
  
-@@ -288,7 +288,7 @@ void xnarch_switch_to(struct xnthread *out, struct xnthread *in)
- 		 * PF_KTHREAD, i.e including kernel threads.
- 		 */
- 		struct fpu *fpu = &current->thread.fpu;
--		int cpu = smp_processor_id();
-+		int cpu = raw_smp_processor_id();
+-	ret = mach_late_setup();
++	ret = pipeline_late_init();
+ 	if (ret)
+ 		goto cleanup_sys;
  
- 		if (!fpregs_state_valid(fpu, cpu)) {
- 			copy_kernel_to_fpregs(&fpu->state);
-@@ -513,7 +513,7 @@ void xnarch_leave_root(struct xnthread *root)
- #if LINUX_VERSION_CODE >= KERNEL_VERSION(5,2,0)
- 	switch_fpu_finish(&current->thread.fpu);
- #else
--	switch_fpu_finish(&current->thread.fpu, smp_processor_id());
-+	switch_fpu_finish(&current->thread.fpu, raw_smp_processor_id());
- #endif
- #else
- 	/* mark current thread as not owning the FPU anymore */
-diff --git a/kernel/cobalt/debug.c b/kernel/cobalt/debug.c
-index ddfecf813..12fc57289 100644
---- a/kernel/cobalt/debug.c
-+++ b/kernel/cobalt/debug.c
-@@ -577,7 +577,7 @@ int xnlock_dbg_release(struct xnlock *lock,
- 	int cpu;
- 
- 	lock_time = xnclock_read_raw(&nkclock) - lock->lock_date;
--	cpu = ipipe_processor_id();
-+	cpu = raw_smp_processor_id();
- 	stats = &per_cpu(xnlock_stats, cpu);
- 
- 	if (lock->file == NULL) {
+@@ -371,7 +260,7 @@ cleanup_select:
+ cleanup_pipe:
+ 	xnpipe_umount();
+ cleanup_mach:
+-	mach_cleanup();
++	pipeline_cleanup();
+ cleanup_proc:
+ 	xnprocfs_cleanup_tree();
+ fail:
+diff --git a/kernel/cobalt/ipipe/Makefile b/kernel/cobalt/ipipe/Makefile
+new file mode 100644
+index 000000000..a395923a1
+--- /dev/null
++++ b/kernel/cobalt/ipipe/Makefile
+@@ -0,0 +1,3 @@
++obj-y +=	pipeline.o
++
++pipeline-y :=	init.o
+diff --git a/kernel/cobalt/ipipe/init.c b/kernel/cobalt/ipipe/init.c
+new file mode 100644
+index 000000000..4d7ac04de
+--- /dev/null
++++ b/kernel/cobalt/ipipe/init.c
+@@ -0,0 +1,116 @@
++/*
++ * SPDX-License-Identifier: GPL-2.0
++ *
++ * Copyright (C) 2019 Philippe Gerum  <rpm@xenomai.org>
++ */
++
++#include <linux/init.h>
++#include <linux/module.h>
++#include <pipeline/machine.h>
++#include <linux/ipipe_tickdev.h>
++#include <cobalt/kernel/sched.h>
++#include <cobalt/kernel/clock.h>
++#include <cobalt/kernel/apc.h>
++
++static unsigned long timerfreq_arg;
++module_param_named(timerfreq, timerfreq_arg, ulong, 0444);
++
++static unsigned long clockfreq_arg;
++module_param_named(clockfreq, clockfreq_arg, ulong, 0444);
++
++int __init pipeline_init(void)
++{
++	struct ipipe_sysinfo sysinfo;
++	int ret, virq;
++
++	ret = ipipe_select_timers(&xnsched_realtime_cpus);
++	if (ret < 0)
++		return ret;
++
++	ipipe_get_sysinfo(&sysinfo);
++
++	if (timerfreq_arg == 0)
++		timerfreq_arg = sysinfo.sys_hrtimer_freq;
++
++	if (clockfreq_arg == 0)
++		clockfreq_arg = sysinfo.sys_hrclock_freq;
++
++	if (clockfreq_arg == 0) {
++		printk(XENO_ERR "null clock frequency? Aborting.\n");
++		return -ENODEV;
++	}
++
++	cobalt_pipeline.timer_freq = timerfreq_arg;
++	cobalt_pipeline.clock_freq = clockfreq_arg;
++
++	if (cobalt_machine.init) {
++		ret = cobalt_machine.init();
++		if (ret)
++			return ret;
++	}
++
++	ipipe_register_head(&xnsched_realtime_domain, "Xenomai");
++
++	ret = -EBUSY;
++	virq = ipipe_alloc_virq();
++	if (virq == 0)
++		goto fail_apc;
++
++	cobalt_pipeline.apc_virq = virq;
++
++	ipipe_request_irq(ipipe_root_domain,
++			  cobalt_pipeline.apc_virq,
++			  apc_dispatch,
++			  NULL, NULL);
++
++	virq = ipipe_alloc_virq();
++	if (virq == 0)
++		goto fail_escalate;
++
++	cobalt_pipeline.escalate_virq = virq;
++
++	ipipe_request_irq(&xnsched_realtime_domain,
++			  cobalt_pipeline.escalate_virq,
++			  (ipipe_irq_handler_t)__xnsched_run_handler,
++			  NULL, NULL);
++
++	ret = xnclock_init(cobalt_pipeline.clock_freq);
++	if (ret)
++		goto fail_clock;
++
++	return 0;
++
++fail_clock:
++	ipipe_free_irq(&xnsched_realtime_domain,
++		       cobalt_pipeline.escalate_virq);
++	ipipe_free_virq(cobalt_pipeline.escalate_virq);
++fail_escalate:
++	ipipe_free_irq(ipipe_root_domain,
++		       cobalt_pipeline.apc_virq);
++	ipipe_free_virq(cobalt_pipeline.apc_virq);
++fail_apc:
++	ipipe_unregister_head(&xnsched_realtime_domain);
++
++	if (cobalt_machine.cleanup)
++		cobalt_machine.cleanup();
++
++	return ret;
++}
++
++int __init pipeline_late_init(void)
++{
++	if (cobalt_machine.late_init)
++		return cobalt_machine.late_init();
++
++	return 0;
++}
++
++__init void pipeline_cleanup(void)
++{
++	ipipe_unregister_head(&xnsched_realtime_domain);
++	ipipe_free_irq(&xnsched_realtime_domain,
++		       cobalt_pipeline.escalate_virq);
++	ipipe_free_virq(cobalt_pipeline.escalate_virq);
++	ipipe_timers_release();
++	xnclock_cleanup();
++}
+diff --git a/scripts/prepare-kernel.sh b/scripts/prepare-kernel.sh
+index 3ff9433d2..1b5fb427d 100755
+--- a/scripts/prepare-kernel.sh
++++ b/scripts/prepare-kernel.sh
+@@ -425,9 +425,11 @@ patch_link r n kernel/cobalt/include/asm-generic/xenomai include/asm-generic/xen
+ patch_link r n kernel/cobalt/include/linux/xenomai include/linux/xenomai
+ patch_link n m kernel/cobalt/posix kernel/xenomai/posix
+ patch_link n m kernel/cobalt/rtdm kernel/xenomai/rtdm
++patch_link n m kernel/cobalt/ipipe kernel/xenomai/pipeline
+ patch_link r m kernel/drivers drivers/xenomai
+ patch_link n n include/cobalt/kernel include/xenomai/cobalt/kernel
+ patch_link r n include/cobalt/kernel/rtdm include/xenomai/rtdm
++patch_link r n include/cobalt/kernel/ipipe/pipeline include/xenomai/pipeline
+ patch_link r n include/cobalt/uapi include/xenomai/cobalt/uapi
+ patch_link r n include/rtdm/uapi include/xenomai/rtdm/uapi
+ patch_link n version.h include/xenomai include/xenomai
 -- 
 2.26.2
 
