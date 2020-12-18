@@ -1,9 +1,14 @@
-From: Philippe Gerum <rpm@xenomai.org>
-Subject: [CXP] Discussing the RTDM specification
-Date: Fri, 18 Dec 2020 15:19:44 +0100
-Message-ID: <874kkjurgf.fsf@xenomai.org>
+Subject: Re: [xenomai-images][PATCH 0/2] add xenomai 3.1.x to pipeline
+References: <20201218094945.6941-1-Quirin.Gylstorff@siemens.com>
+ <598760.1608297747@gemini.denx.de>
+From: Gylstorff Quirin <quirin.gylstorff@siemens.com>
+Message-ID: <2c1c5b9d-ebce-18e3-590e-2309d4306513@siemens.com>
+Date: Fri, 18 Dec 2020 15:48:13 +0100
 MIME-Version: 1.0
-Content-Type: text/plain
+In-Reply-To: <598760.1608297747@gemini.denx.de>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -12,62 +17,32 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
+To: Wolfgang Denk <wd@denx.de>, "Q. Gylstorff via Xenomai" <xenomai@xenomai.org>
 
 
-This wiki page [1] contains a draft proposal about specifying which
-services from the current RTDM interface should be part of the Common
-Xenomai Platform. Some proposals for deprecation stand out:
 
-- I suspect that only very few RTDM drivers are actually handling
-  requests from other kernel-based drivers in real world applications,
-  at least not enough to justify RTDM codifying these rare cases into a
-  common interface (rtdm_open, rtdm_read, rtdm_write etc).
+On 12/18/20 2:22 PM, Wolfgang Denk wrote:
+> Dear "Q. Gylstorff via Xenomai",
+> 
+> In message <20201218094945.6941-1-Quirin.Gylstorff@siemens.com> you wrote:
+>>
+>> Add xenomai 3.1 to the build and test pipeline of xenomai-images.
+> 
+> Is there a specific reason why all the new files come under a MIT
+> license, and not GPL ?
+> 
 
-  In other words, although I would agree that a few particular drivers
-  might want to export a couple of services to kernel-based clients in
-  order to provide them some sort of backchannel, it seems wrong to
-  require RTDM drivers to provide a kernel interface which would match
-  their user interface in the same terms. For these specific cases, ad
-  hoc code in these few drivers should be enough.
+I think you  mix the two repositories 'xenomai-images' with 'xenomai' up.
 
-  Besides, I believe that most kernel->kernel request paths implemented
-  by in-tree RTDM drivers have never been tested for years, if ever.
-  Meanwhile, this kernel->kernel API introduces a basic exception case
-  into many RTDM and driver code paths, e.g. for differentiating kernel
-  vs user buffers, for only very few use cases.
+The code in 'xenomai-images' was from the beginning MIT. The source code
+in the 'xenomai' repository is still GPL.
 
-  For these reasons, I would suggest to deprecate the kernel->kernel API
-  from RTDM starting from 3.3, excluding it from the CXP in the same
-  move.
 
-- RTDM_EXECUTE_ATOMICALLY() and related calls relying on the Cobalt big
-  lock must go. For SMP scalability reasons, this big lock was
-  eliminated from the EVL core, which means that all the attached
-  semantics will not hold there. Serializing access to shared resources
-  should be guaranteed by resource-specific locking, not by a giant
-  traffic light like the big lock implements.
+> Best regards,
+> 
+> Wolfgang Denk
+> 
 
-- rtdm_mutex_timedlock() has dubious semantics. Hitting a timeout
-  condition on grabbing a mutex either means that:
-
-  * the mutex was already locked on entry to the call if timeout ==
-    RTDM_TIMEOUT_NONE,
-
-  * the mutex was not released within the allotted time, which had to be
-    long enough to prevent early shots. This means that something is
-    most likely going really wrong in the software, since a mutex is
-    supposed to cover fairly short, hopefully simple sections of code,
-    exhibiting an obvious exit path.
-
-  In the first case, we would be better off providing
-  rtdm_trylock_mutex() which has clearer semantics, starting from 3.3,
-  adding it to the CXP. The ship is most likely wrecked already in the
-  second case, so using a timeout condition as a way towards recovery is
-  unlikely to succeed at this point anyway.
-
-[1] https://gitlab.denx.de/Xenomai/xenomai/-/wikis/CXP_RTDM
-
--- 
-Philippe.
+Best regards,
+Quirin
 
