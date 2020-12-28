@@ -1,13 +1,14 @@
+From: Sam Daniel <sam@FirstMode.com>
+Subject: Re: Cannot send/recv on labeled IDDP sockets
+Date: Mon, 28 Dec 2020 22:01:48 +0000
+Message-ID: <3C39F019-BA47-4AD9-B1C9-02F747729305@firstmode.com>
+References: <5A0F5CEF-426F-42D8-87E1-28BB38FE315F@firstmode.com>
+ <2C185347-AF71-497E-BA40-DCFB33624064@firstmode.com>
+In-Reply-To: <2C185347-AF71-497E-BA40-DCFB33624064@firstmode.com>
+Content-Language: en-US
 MIME-Version: 1.0
-References: <SN6PR08MB5661D75EA021452FEF5E8AB893D90@SN6PR08MB5661.namprd08.prod.outlook.com>
-In-Reply-To: <SN6PR08MB5661D75EA021452FEF5E8AB893D90@SN6PR08MB5661.namprd08.prod.outlook.com>
-From: Greg Gallagher <greg@embeddedgreg.com>
-Date: Mon, 28 Dec 2020 16:52:38 -0500
-Message-ID: <CALLqZ8QNtVNrAAAmHznhSdKXD2w+BWa0OPz+zBGhDixb4x3=3Q@mail.gmail.com>
-Subject: =?UTF-8?B?UmU6IFJlOiBSZTogUmU6IGVycm9yOiBpbXBsaWNpdCBkZWNsYXJhdGlvbiBvZiBmdW5jdA==?=
- =?UTF-8?B?aW9uIOKAmF9fT1BFTl9ORUVEU19NT0RF4oCZ?=
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,20 +17,24 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Gabriel Dinse <gabriel_dinse@hotmail.com>
-Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On Mon, Dec 28, 2020 at 4:46 PM Gabriel Dinse via Xenomai <
-xenomai@xenomai.org> wrote:
-
-> I am trying to use mainline Kernel. I think xenomai has a fork for RPI
-> kernel 4.1 but it is not up to date, right? Also, the right paper is
-> http://kth.diva-portal.org/smash/get/diva2:1251188/FULLTEXT01.pdf, not
-> the other one I sent. The author managed to use kernel 4.9.51 disabling
-> support for systems besides Broadcom BCM2835.
->
-> I=E2=80=99ve tested 4.19 and it works. I haven=E2=80=99t tested it on the=
- 2835 in a while
-but I=E2=80=99ll try to reproduce your issue tonight.
-
-Greg
+SSBzaG91bGQgYWRkIHNvbWUgY2xhcmlmeWluZyBkZXRhaWxzOg0KKiBJIGFtIHJ1bm5pbmcgWGVu
+b21haS9Db2JhbHQgMy4xLg0KKiBJIGludGVuZCBmb3IgdGhpcyBwdWIvc3ViIHRvIGJlIG9uZS10
+by1tYW55Og0KICAgICogT25seSBvbmUgcHVibGlzaGVyIG1hbnkgYmluZCB0byBhIGdpdmVuIHNv
+Y2tldC9jaGFubmVsLg0KICAgICogQnV0IG1hbnkgc3Vic2NyaWJlcnMgc2hvdWxkIGJlIGFibGUg
+dG8gY29ubmVjdA0KICAgICAgIHRvIGEgZ2l2ZW4gc29ja2V0L2NoYW5uZWwuDQoNCl9fX19fX19f
+DQpTQU0gREFOSUVMDQpTb2Z0d2FyZSBFbmdpbmVlcg0KKzEuNTcwLjMxNy41MjUzIHwgc2FtQGZp
+cnN0bW9kZS5jb208bWFpbHRvOnNhbUBmaXJzdG1vZGUuY29tPg0KDQpGSVJTVCBNT0RFIHwgQnVp
+bGRpbmcgdGhlIEJhcmVseSBQb3NzaWJsZQ0KMjIyMCBXZXN0ZXJuIEF2ZW51ZSwgU2VhdHRsZSwg
+V0E8d2ViZXh0bGluazovLzIyMjAlMjBXZXN0ZXJuJTIwQXZlbnVlLCUyMFNlYXR0bGUsJTIwV0E+
+DQp3d3cuZmlyc3Rtb2RlLmNvbTxodHRwOi8vd3d3LmZpcnN0bW9kZS5jb20+DQoNCl9fX19fX19f
+X19fX19fX19fX19fX19fX19fX19fX19fDQpDT05GSURFTlRJQUxJVFkgQ0FVVElPTjogVGhpcyBl
+bWFpbCAoaW5jbHVkaW5nIGFueSBhdHRhY2htZW50cykgaXMgaW50ZW5kZWQgb25seSBmb3IgdGhl
+IHVzZSBvZiB0aGUgaW5kaXZpZHVhbCBvciBlbnRpdHkgdG8gd2hvbSBpdCBpcyBhZGRyZXNzZWQg
+YW5kIG1heSBjb250YWluIGNvbmZpZGVudGlhbCBpbmZvcm1hdGlvbiBvciB0cmFkZSBzZWNyZXRz
+IGFuZCBiZSBwcm90ZWN0ZWQgYnkgbGVnYWwgcHJpdmlsZWdlLiBQbGVhc2Ugbm90aWZ5IHVzIGlt
+bWVkaWF0ZWx5IGJ5IHJldHVybiBlbWFpbCBpZiB5b3UgaGF2ZSByZWNlaXZlZCB0aGlzIGVtYWls
+IGluIGVycm9yIGFuZCBkZWxldGUgdGhpcyBlbWFpbCBhbmQgYW55IGF0dGFjaG1lbnRzLiBJZiB5
+b3UgYXJlIG5vdCB0aGUgaW50ZW5kZWQgcmVjaXBpZW50LCBkaXNzZW1pbmF0aW9uLCBkaXNjbG9z
+dXJlIGFuZCB1c2Ugb2YgYW55IGluZm9ybWF0aW9uIGhlcmVpbiBpcyBwcm9oaWJpdGVkLg0K
