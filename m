@@ -1,12 +1,15 @@
-From: Gabriel Dinse <gabriel_dinse@hotmail.com>
-Subject: =?Windows-1252?Q?error:_implicit_declaration_of_function_=91=5F=5FOPEN=5F?=
- =?Windows-1252?Q?NEEDS=5FMODE=92?=
-Date: Mon, 28 Dec 2020 15:37:22 +0000
-Message-ID: <SN6PR08MB5661723370520CE8725FE0D193D90@SN6PR08MB5661.namprd08.prod.outlook.com>
+From: "florian.bezdeka@siemens.com" <florian.bezdeka@siemens.com>
+Subject: =?utf-8?B?UmU6IGVycm9yOiBpbXBsaWNpdCBkZWNsYXJhdGlvbiBvZiBmdW5jdGlvbiA=?=
+ =?utf-8?B?4oCYX19PUEVOX05FRURTX01PREXigJk=?=
+Date: Mon, 28 Dec 2020 17:51:59 +0000
+Message-ID: <dc7a53e10e3694705c2ae5cc6a442eaff2be0712.camel@siemens.com>
+References: <SN6PR08MB5661723370520CE8725FE0D193D90@SN6PR08MB5661.namprd08.prod.outlook.com>
+In-Reply-To: <SN6PR08MB5661723370520CE8725FE0D193D90@SN6PR08MB5661.namprd08.prod.outlook.com>
 Content-Language: en-US
+Content-Type: text/plain; charset="utf-8"
+Content-ID: <3D6EB5740298CB49B968B315D87E1A69@EURPRD10.PROD.OUTLOOK.COM>
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-Content-Type: text/plain; charset="Windows-1252"
-Content-Transfer-Encoding: quoted-printable
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,30 +18,37 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: "xenomai@xenomai.org" <xenomai@xenomai.org>, "gabriel_dinse@hotmail.com" <gabriel_dinse@hotmail.com>
 
-Hello, I=92m getting the following error when doing:
-~/xenomai-3/build$ make install
+SGkgR2FicmllbCwNCg0KT24gTW9uLCAyMDIwLTEyLTI4IGF0IDE1OjM3ICswMDAwLCBHYWJyaWVs
+IERpbnNlIHZpYSBYZW5vbWFpIHdyb3RlOg0KPiBIZWxsbywgSeKAmW0gZ2V0dGluZyB0aGUgZm9s
+bG93aW5nIGVycm9yIHdoZW4gZG9pbmc6DQo+IH4veGVub21haS0zL2J1aWxkJCBtYWtlIGluc3Rh
+bGwNCj4gDQo+IFvigKYgTU9SRSBPVVRQVVQgLi4uXQ0KPiBtYWtlWzNdOiBFbnRlcmluZyBkaXJl
+Y3RvcnkgJy9ob21lL2dhYnJpZWwveGVub21haS0zL2J1aWxkL2xpYi9jb2JhbHQnDQo+IMKgwqBD
+QyAgICAgICBsaWJjb2JhbHRfbGEtcnRkbS5sbw0KPiAuLi8uLi8uLi9saWIvY29iYWx0L3J0ZG0u
+YzogSW4gZnVuY3Rpb24g4oCYX19jb2JhbHRfX19vcGVuXzLigJk6DQo+IC4uLy4uLy4uL2xpYi9j
+b2JhbHQvcnRkbS5jOjEwNDoyOiBlcnJvcjogaW1wbGljaXQgZGVjbGFyYXRpb24gb2YgZnVuY3Rp
+b24g4oCYX19PUEVOX05FRURTX01PREXigJkNCj4gWy1XZXJyb3I9aW1wbGljaXQtZnVuY3Rpb24t
+ZGVjbGFyYXRpb25dDQo+IMKgwqBpZiAoX19PUEVOX05FRURTX01PREUob2ZsYWcpKSB7DQoNCl9f
+T1BFTl9ORUVEU19NT0RFIHdhcyBpbnRyb2R1Y2VkIGluIGdsaWJjIHZlcnNpb24gMi4yMi4gTG9v
+a3MgeW91cg0KZ2xpYmMgdmVyc2lvbiBpcyBvbGRlci4gUmlnaHQ/DQoNCmdsaWJjIGNvbW1pdDoN
+CjY1ZjZmOTM4Y2Q1NiAoImxpbnV4OiBvcGVuIGFuZCBvcGVuYXQgaWdub3JlICdtb2RlJyB3aXRo
+IE9fVE1QRklMRSBpbiBmbGFncyIpDQoNClRoZSB4ZW5vbWFpIGNvbW1pdCB0aGF0IGludHJvZHVj
+ZWQgdGhlIGJyZWFrYWdlOg0KODlmMDBhMmU1NDU4ICgibGliL2NvYmFsdDogV3JhcCBfX29wZW5f
+Mi9fX29wZW42NF8yIHRvIHN1cHBvcnQgX0ZPUlRJRllfU09VUkNFIikNCg0KQWRkaW5nIEphbiBL
+aXN6a2EgKE1haW50YWluZXIpIGFuZCBKYW4gTGV1cG9sZCAoQXV0aG9yIG9mIGJhMDQ2NjlkMDFl
+OCkNCnRvIENDLg0KDQpJTUhPIHRoZSBkZXBlbmRlbmN5IHRvIGdsaWJjID49IDIuMjIgaXMgbm90
+IHByb3Blcmx5IGRvY3VtZW50ZWQgYW5kIEkNCmd1ZXNzIHN1cHBvcnRpbmcgb2xkZXIgZ2xpYmMg
+dmVyc2lvbnMgaXMgc3RpbGwgbmVjZXNzYXJ5LiBJIGd1ZXNzIHRoaXMNCndvdWxkIG5vdCBmbHkg
+Zm9yIG90aGVyIHN0YW5kYXJkIGxpYnJhcmllcyAobGlrZSBtdXNsKSBhcyB3ZWxsLg0KDQo+IMKg
+wqBeDQo+IGNjMTogYWxsIHdhcm5pbmdzIGJlaW5nIHRyZWF0ZWQgYXMgZXJyb3JzDQo+IG1ha2Vb
+M106ICoqKiBbTWFrZWZpbGU6NzIxOiBsaWJjb2JhbHRfbGEtcnRkbS5sb10gRXJyb3IgMQ0KPiBt
+YWtlWzNdOiBMZWF2aW5nIGRpcmVjdG9yeSAnL2hvbWUvZ2FicmllbC94ZW5vbWFpLTMvYnVpbGQv
+bGliL2NvYmFsdCcNCj4gbWFrZVsyXTogKioqIFtNYWtlZmlsZTo4Mzg6IGluc3RhbGwtcmVjdXJz
+aXZlXSBFcnJvciAxDQo+IG1ha2VbMl06IExlYXZpbmcgZGlyZWN0b3J5ICcvaG9tZS9nYWJyaWVs
+L3hlbm9tYWktMy9idWlsZC9saWIvY29iYWx0Jw0KPiBtYWtlWzFdOiAqKiogW01ha2VmaWxlOjQy
+ODogaW5zdGFsbC1yZWN1cnNpdmVdIEVycm9yIDENCj4gbWFrZVsxXTogTGVhdmluZyBkaXJlY3Rv
+cnkgJy9ob21lL2dhYnJpZWwveGVub21haS0zL2J1aWxkL2xpYicNCj4gbWFrZTogKioqIFtNYWtl
+ZmlsZTo0NjE6IGluc3RhbGwtcmVjdXJzaXZlXSBFcnJvciAxDQo+IA0KPiB+L3hlbm9tYWktMy9i
+dWlsZCQNCj4gDQo+IA0KPiBXaGF0IGNhbiBiZSBkb25lIGluIHRoaXMgY2FzZT8NCg0K
 
-[=85 MORE OUTPUT ...]
-make[3]: Entering directory '/home/gabriel/xenomai-3/build/lib/cobalt'
-  CC       libcobalt_la-rtdm.lo
-../../../lib/cobalt/rtdm.c: In function =91__cobalt___open_2=92:
-../../../lib/cobalt/rtdm.c:104:2: error: implicit declaration of function =
-=91__OPEN_NEEDS_MODE=92
-[-Werror=3Dimplicit-function-declaration]
-  if (__OPEN_NEEDS_MODE(oflag)) {
-  ^
-cc1: all warnings being treated as errors
-make[3]: *** [Makefile:721: libcobalt_la-rtdm.lo] Error 1
-make[3]: Leaving directory '/home/gabriel/xenomai-3/build/lib/cobalt'
-make[2]: *** [Makefile:838: install-recursive] Error 1
-make[2]: Leaving directory '/home/gabriel/xenomai-3/build/lib/cobalt'
-make[1]: *** [Makefile:428: install-recursive] Error 1
-make[1]: Leaving directory '/home/gabriel/xenomai-3/build/lib'
-make: *** [Makefile:461: install-recursive] Error 1
-
-~/xenomai-3/build$
-
-
-What can be done in this case?
