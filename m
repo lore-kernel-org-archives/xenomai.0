@@ -1,16 +1,13 @@
-From: "florian.bezdeka@siemens.com" <florian.bezdeka@siemens.com>
-Subject: =?utf-8?B?UmU6IFJlOiBSZTogUmU6IGVycm9yOiBpbXBsaWNpdCBkZWNsYXJhdGlvbiBv?=
+From: Gabriel Dinse <gabriel_dinse@hotmail.com>
+Subject: Re:
+ =?utf-8?B?UmU6IFJlOiBSZTogUmU6IGVycm9yOiBpbXBsaWNpdCBkZWNsYXJhdGlvbiBv?=
  =?utf-8?B?ZiBmdW5jdGlvbiDigJhfX09QRU5fTkVFRFNfTU9EReKAmQ==?=
-Date: Tue, 29 Dec 2020 08:28:22 +0000
-Message-ID: <88144743c1ed2cfd15ae31e37efb79f1f558dad1.camel@siemens.com>
-References: <SN6PR08MB5661D75EA021452FEF5E8AB893D90@SN6PR08MB5661.namprd08.prod.outlook.com>
- <CALLqZ8QNtVNrAAAmHznhSdKXD2w+BWa0OPz+zBGhDixb4x3=3Q@mail.gmail.com>
-In-Reply-To: <CALLqZ8QNtVNrAAAmHznhSdKXD2w+BWa0OPz+zBGhDixb4x3=3Q@mail.gmail.com>
+Date: Tue, 29 Dec 2020 10:19:53 +0000
+Message-ID: <SN6PR08MB5661EBFA5765809C30B3CBE493D80@SN6PR08MB5661.namprd08.prod.outlook.com>
 Content-Language: en-US
-Content-Type: text/plain; charset="utf-8"
-Content-ID: <2BD2F8D05DED95409F4D7E78FD473EFE@EURPRD10.PROD.OUTLOOK.COM>
-Content-Transfer-Encoding: base64
 MIME-Version: 1.0
+Content-Type: text/plain; charset="Windows-1252"
+Content-Transfer-Encoding: quoted-printable
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -19,40 +16,10 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "greg@embeddedgreg.com" <greg@embeddedgreg.com>, "gabriel_dinse@hotmail.com" <gabriel_dinse@hotmail.com>
-Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-T24gTW9uLCAyMDIwLTEyLTI4IGF0IDE2OjUyIC0wNTAwLCBHcmVnIEdhbGxhZ2hlciB2aWEgWGVu
-b21haSB3cm90ZToNCj4gT24gTW9uLCBEZWMgMjgsIDIwMjAgYXQgNDo0NiBQTSBHYWJyaWVsIERp
-bnNlIHZpYSBYZW5vbWFpIDwNCj4geGVub21haUB4ZW5vbWFpLm9yZz4gd3JvdGU6DQo+IA0KPiA+
-IEkgYW0gdHJ5aW5nIHRvIHVzZSBtYWlubGluZSBLZXJuZWwuIEkgdGhpbmsgeGVub21haSBoYXMg
-YSBmb3JrIGZvciBSUEkNCj4gPiBrZXJuZWwgNC4xIGJ1dCBpdCBpcyBub3QgdXAgdG8gZGF0ZSwg
-cmlnaHQ/IEFsc28sIHRoZSByaWdodCBwYXBlciBpcw0KPiA+IGh0dHBzOi8vZXVyMDEuc2FmZWxp
-bmtzLnByb3RlY3Rpb24ub3V0bG9vay5jb20vP3VybD1odHRwJTNBJTJGJTJGa3RoLmRpdmEtcG9y
-dGFsLm9yZyUyRnNtYXNoJTJGZ2V0JTJGZGl2YTIlM0ExMjUxMTg4JTJGRlVMTFRFWFQwMS5wZGYm
-YW1wO2RhdGE9MDQlN0MwMSU3Q2Zsb3JpYW4uYmV6ZGVrYSU0MHNpZW1lbnMuY29tJTdDZjM0YjNj
-NzE1YTEyNDA0MjkxYWEwOGQ4YWI3YWY3MjUlN0MzOGFlM2JjZDk1Nzk0ZmQ0YWRkYWI0MmUxNDk1
-ZDU1YSU3QzElN0MwJTdDNjM3NDQ3ODkxOTEwNTQwMzkzJTdDVW5rbm93biU3Q1RXRnBiR1pzYjNk
-OGV5SldJam9pTUM0d0xqQXdNREFpTENKUUlqb2lWMmx1TXpJaUxDSkJUaUk2SWsxaGFXd2lMQ0pY
-VkNJNk1uMCUzRCU3QzIwMDAmYW1wO3NkYXRhPWhxYkdzSUJBOXolMkZxaWQlMkI2QXpZV1BZeVJs
-amhWblFEcWVsUll5Z0pXalBvJTNEJmFtcDtyZXNlcnZlZD0wLCBub3QNCj4gPiB0aGUgb3RoZXIg
-b25lIEkgc2VudC4gVGhlIGF1dGhvciBtYW5hZ2VkIHRvIHVzZSBrZXJuZWwgNC45LjUxIGRpc2Fi
-bGluZw0KPiA+IHN1cHBvcnQgZm9yIHN5c3RlbXMgYmVzaWRlcyBCcm9hZGNvbSBCQ00yODM1Lg0K
-DQpCcmluZ2luZyBiYWNrIHRoZSBidWlsZCBlcnJvcjoNCg0KW+KApiBNT1JFIE9VVFBVVCAuLi5d
-DQptYWtlWzNdOiBFbnRlcmluZyBkaXJlY3RvcnkgJy9ob21lL2dhYnJpZWwveGVub21haS0zL2J1
-aWxkL2xpYi9jb2JhbHQnDQogIENDICAgICAgIGxpYmNvYmFsdF9sYS1ydGRtLmxvDQouLi8uLi8u
-Li9saWIvY29iYWx0L3J0ZG0uYzogSW4gZnVuY3Rpb24g4oCYX19jb2JhbHRfX19vcGVuXzLigJk6
-DQouLi8uLi8uLi9saWIvY29iYWx0L3J0ZG0uYzoxMDQ6MjogZXJyb3I6IGltcGxpY2l0IGRlY2xh
-cmF0aW9uIG9mIGZ1bmN0aW9uIOKAmF9fT1BFTl9ORUVEU19NT0RF4oCZDQpbLVdlcnJvcj1pbXBs
-aWNpdC1mdW5jdGlvbi1kZWNsYXJhdGlvbl0NCiAgaWYgKF9fT1BFTl9ORUVEU19NT0RFKG9mbGFn
-KSkgew0KICBeDQoNCllvdSBhcmUgdHJ5aW5nIHRvIGNvbXBpbGUgbGliY29iYWx0LCBzbyB0aGUg
-dXNlcnNwYWNlIHBhcnQgb2YgWGVub21haS4NClNvIEkgYXNzdW1lIHRoZSBrZXJuZWwgdmVyc2lv
-biBzaG91bGQgbm90IG1hdHRlciBoZXJlLiBDb3VsZCB5b3UgcGxlYXNlDQp0cnkgdG8gcHJvdmlk
-ZSB0aGUgZ2xpYmMgdmVyc2lvbiBvZiB5b3VyIGJ1aWxkIGVudmlyb25tZW50IGFnYWluPw0KDQpC
-dWlsZGluZyBmb3IgdGhlIFJQSSByZXF1aXJlcyBhIGNyb3NzLWNvbXBpbGVyIHRvb2xjaGFpbiwg
-c28gbWFrZSBzdXJlDQp5b3UgY2hlY2sgdGhlIGdsaWJjIHZlcnNpb24gb2YgeW91ciB0b29sY2hh
-aW4gYW5kIG5vdCB0aGUgbmF0aXZlIG9uZQ0KZnJvbSB5b3VyIGJ1aWxkIHN5c3RlbS4NCg0KPiA+
-IA0KPiA+IEnigJl2ZSB0ZXN0ZWQgNC4xOSBhbmQgaXQgd29ya3MuIEkgaGF2ZW7igJl0IHRlc3Rl
-ZCBpdCBvbiB0aGUgMjgzNSBpbiBhIHdoaWxlDQo+IGJ1dCBJ4oCZbGwgdHJ5IHRvIHJlcHJvZHVj
-ZSB5b3VyIGlzc3VlIHRvbmlnaHQuDQo+IA0KPiBHcmVnDQoNCg==
 
+Hello,
+You are right, I am using this one: https://github.com/raspberrypi/tools, b=
+ut I can=92t manage how to check its glibc version (arm-bcm2708/gcc-linaro-=
+arm-linux-gnueabihf-raspbian/)
