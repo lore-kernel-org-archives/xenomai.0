@@ -1,13 +1,16 @@
-Subject: Re: [DOVETAIL] now tracking v5.10
-References: <87a6u8wxvh.fsf@xenomai.org> <5FEA8975.2090206@tj.kylinos.cn>
- <MWHPR11MB171051333F4AA84264B750BAF2D80@MWHPR11MB1710.namprd11.prod.outlook.com>
-From: chensong <chensong@tj.kylinos.cn>
-Message-ID: <5FEAAAED.3080802@tj.kylinos.cn>+9DAAE038B3EA8121
-Date: Tue, 29 Dec 2020 12:05:01 +0800
+From: "florian.bezdeka@siemens.com" <florian.bezdeka@siemens.com>
+Subject: =?utf-8?B?UmU6IFJlOiBSZTogUmU6IGVycm9yOiBpbXBsaWNpdCBkZWNsYXJhdGlvbiBv?=
+ =?utf-8?B?ZiBmdW5jdGlvbiDigJhfX09QRU5fTkVFRFNfTU9EReKAmQ==?=
+Date: Tue, 29 Dec 2020 08:28:22 +0000
+Message-ID: <88144743c1ed2cfd15ae31e37efb79f1f558dad1.camel@siemens.com>
+References: <SN6PR08MB5661D75EA021452FEF5E8AB893D90@SN6PR08MB5661.namprd08.prod.outlook.com>
+ <CALLqZ8QNtVNrAAAmHznhSdKXD2w+BWa0OPz+zBGhDixb4x3=3Q@mail.gmail.com>
+In-Reply-To: <CALLqZ8QNtVNrAAAmHznhSdKXD2w+BWa0OPz+zBGhDixb4x3=3Q@mail.gmail.com>
+Content-Language: en-US
+Content-Type: text/plain; charset="utf-8"
+Content-ID: <2BD2F8D05DED95409F4D7E78FD473EFE@EURPRD10.PROD.OUTLOOK.COM>
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-In-Reply-To: <MWHPR11MB171051333F4AA84264B750BAF2D80@MWHPR11MB1710.namprd11.prod.outlook.com>
-Content-Type: text/plain; charset="utf-8"; format="flowed"
-Content-Transfer-Encoding: 8bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,97 +19,40 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "Chen, Hongzhan" <hongzhan.chen@intel.com>, Philippe Gerum <rpm@xenomai.org>, "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: "greg@embeddedgreg.com" <greg@embeddedgreg.com>, "gabriel_dinse@hotmail.com" <gabriel_dinse@hotmail.com>
+Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-Great, many thanks, i will give it a try.
-
-BR
-
-chensong
-
-On 2020年12月29日 11:06, Chen, Hongzhan wrote:
-> Hi chensong
->
-> Let us switch to and focus on CXP. Actually  https://github.com/hongzhanchen/xenomai.git is
-> not based on https://lab.xenomai.org/xenomai-rpm.git/log/?h=for-upstream/dovetail which
-> is base of CXP per my understanding. So Please forget it.
->
-> If you want to work on CXP and start related development and experience porting, maybe
-> https://github.com/hongzhanchen/xenomai-rpm/tree/dovetail/cxp is initial one. It is my own work
-> branch which I have integrated all patches from https://gitlab.denx.de/Xenomai/xenomai/-/tree/wip/dovetail
-> including Jan's patches and mine but it is still under development.
->
-> You can follow following steps to build it.
->
-> 1. git clone -b dovetail/master git://git.evlproject.org/linux.evl.git
-> 2. git clone -b dovetail/cxp https://github.com/hongzhanchen/xenomai-rpm.git
-> 3. ./scripts/prepare-kernel.sh --linux=your_path --arch=x86 --dovetail=0001-null-patch.patch
-> 4. cp hang-in-usleep_range.config .confg
-is hang-in-usleep_range.config available in 
-https://github.com/hongzhanchen/xenomai-rpm.git?
-
-> 5.make bzImage -j8
->
-> In addition , you can create your own 0001-null-patch.patch to work around script .
-> Following is mine.
->
-> diff --git a/NULL.txt b/NULL.txt
-> new file mode 100644
-> index 000000000000..7951defec192
-> --- /dev/null
-> +++ b/NULL.txt
-> @@ -0,0 +1 @@
-> +NULL
-> --
-> 2.17.1
->
-> Regards
->
-> Hongzhan Chen
->
->
-> -----Original Message-----
-> From: chensong <chensong@tj.kylinos.cn>
-> Sent: Tuesday, December 29, 2020 9:42 AM
-> To: Philippe Gerum <rpm@xenomai.org>; xenomai@xenomai.org; Chen, Hongzhan <hongzhan.chen@intel.com>
-> Subject: Re: [DOVETAIL] now tracking v5.10
->
-> Dear Philippe & Hongzhan,
->
-> I was trying to build xenomai3.2 and boot it in my desktop, here is what
-> i did:
->
-> 1, git clone -b dovetail/master git://git.evlproject.org/linux.evl.git
-> 2, git clone -b hongzhan/dovetail
-> https://github.com/hongzhanchen/xenomai.git
-> 3, ./xenomai-hongzhan/scripts/prepare-kernel.sh --linux=linux-evl
-> --arch=x86_64
-> 4, make
->
-> I found there are a lot of ipipe_xxx function calls in xenomai code like
-> ipipe_post_irq_root or IPIPE_NR_IRQS, which cause building failed.
->
-> As my understanding, dovetail is the replacement of ipipe, as a result,
-> ipipe function calls should be replaced by dovetail function calls. Did
-> i miss something or did something wrong?
->
-> BR
->
-> chensong
->
-> On 2020年12月20日 18:54, Philippe Gerum via Xenomai wrote:
->>
->> This is a heads up for people working on the Xenomai port to Dovetail:
->> dovetail/master and evl/master are now tracking v5.10.
->>
->> The former dovetail/master tip based on v5.9 is tagged as
->> "dovetail-v5.9" in the repository [1]. The final tag for the EVL core
->> based on v5.9 is "v5.9-evl5".
->>
->> [1] git://git.evlproject.org/linux-evl.git
->>
->
->
-
-
+T24gTW9uLCAyMDIwLTEyLTI4IGF0IDE2OjUyIC0wNTAwLCBHcmVnIEdhbGxhZ2hlciB2aWEgWGVu
+b21haSB3cm90ZToNCj4gT24gTW9uLCBEZWMgMjgsIDIwMjAgYXQgNDo0NiBQTSBHYWJyaWVsIERp
+bnNlIHZpYSBYZW5vbWFpIDwNCj4geGVub21haUB4ZW5vbWFpLm9yZz4gd3JvdGU6DQo+IA0KPiA+
+IEkgYW0gdHJ5aW5nIHRvIHVzZSBtYWlubGluZSBLZXJuZWwuIEkgdGhpbmsgeGVub21haSBoYXMg
+YSBmb3JrIGZvciBSUEkNCj4gPiBrZXJuZWwgNC4xIGJ1dCBpdCBpcyBub3QgdXAgdG8gZGF0ZSwg
+cmlnaHQ/IEFsc28sIHRoZSByaWdodCBwYXBlciBpcw0KPiA+IGh0dHBzOi8vZXVyMDEuc2FmZWxp
+bmtzLnByb3RlY3Rpb24ub3V0bG9vay5jb20vP3VybD1odHRwJTNBJTJGJTJGa3RoLmRpdmEtcG9y
+dGFsLm9yZyUyRnNtYXNoJTJGZ2V0JTJGZGl2YTIlM0ExMjUxMTg4JTJGRlVMTFRFWFQwMS5wZGYm
+YW1wO2RhdGE9MDQlN0MwMSU3Q2Zsb3JpYW4uYmV6ZGVrYSU0MHNpZW1lbnMuY29tJTdDZjM0YjNj
+NzE1YTEyNDA0MjkxYWEwOGQ4YWI3YWY3MjUlN0MzOGFlM2JjZDk1Nzk0ZmQ0YWRkYWI0MmUxNDk1
+ZDU1YSU3QzElN0MwJTdDNjM3NDQ3ODkxOTEwNTQwMzkzJTdDVW5rbm93biU3Q1RXRnBiR1pzYjNk
+OGV5SldJam9pTUM0d0xqQXdNREFpTENKUUlqb2lWMmx1TXpJaUxDSkJUaUk2SWsxaGFXd2lMQ0pY
+VkNJNk1uMCUzRCU3QzIwMDAmYW1wO3NkYXRhPWhxYkdzSUJBOXolMkZxaWQlMkI2QXpZV1BZeVJs
+amhWblFEcWVsUll5Z0pXalBvJTNEJmFtcDtyZXNlcnZlZD0wLCBub3QNCj4gPiB0aGUgb3RoZXIg
+b25lIEkgc2VudC4gVGhlIGF1dGhvciBtYW5hZ2VkIHRvIHVzZSBrZXJuZWwgNC45LjUxIGRpc2Fi
+bGluZw0KPiA+IHN1cHBvcnQgZm9yIHN5c3RlbXMgYmVzaWRlcyBCcm9hZGNvbSBCQ00yODM1Lg0K
+DQpCcmluZ2luZyBiYWNrIHRoZSBidWlsZCBlcnJvcjoNCg0KW+KApiBNT1JFIE9VVFBVVCAuLi5d
+DQptYWtlWzNdOiBFbnRlcmluZyBkaXJlY3RvcnkgJy9ob21lL2dhYnJpZWwveGVub21haS0zL2J1
+aWxkL2xpYi9jb2JhbHQnDQogIENDICAgICAgIGxpYmNvYmFsdF9sYS1ydGRtLmxvDQouLi8uLi8u
+Li9saWIvY29iYWx0L3J0ZG0uYzogSW4gZnVuY3Rpb24g4oCYX19jb2JhbHRfX19vcGVuXzLigJk6
+DQouLi8uLi8uLi9saWIvY29iYWx0L3J0ZG0uYzoxMDQ6MjogZXJyb3I6IGltcGxpY2l0IGRlY2xh
+cmF0aW9uIG9mIGZ1bmN0aW9uIOKAmF9fT1BFTl9ORUVEU19NT0RF4oCZDQpbLVdlcnJvcj1pbXBs
+aWNpdC1mdW5jdGlvbi1kZWNsYXJhdGlvbl0NCiAgaWYgKF9fT1BFTl9ORUVEU19NT0RFKG9mbGFn
+KSkgew0KICBeDQoNCllvdSBhcmUgdHJ5aW5nIHRvIGNvbXBpbGUgbGliY29iYWx0LCBzbyB0aGUg
+dXNlcnNwYWNlIHBhcnQgb2YgWGVub21haS4NClNvIEkgYXNzdW1lIHRoZSBrZXJuZWwgdmVyc2lv
+biBzaG91bGQgbm90IG1hdHRlciBoZXJlLiBDb3VsZCB5b3UgcGxlYXNlDQp0cnkgdG8gcHJvdmlk
+ZSB0aGUgZ2xpYmMgdmVyc2lvbiBvZiB5b3VyIGJ1aWxkIGVudmlyb25tZW50IGFnYWluPw0KDQpC
+dWlsZGluZyBmb3IgdGhlIFJQSSByZXF1aXJlcyBhIGNyb3NzLWNvbXBpbGVyIHRvb2xjaGFpbiwg
+c28gbWFrZSBzdXJlDQp5b3UgY2hlY2sgdGhlIGdsaWJjIHZlcnNpb24gb2YgeW91ciB0b29sY2hh
+aW4gYW5kIG5vdCB0aGUgbmF0aXZlIG9uZQ0KZnJvbSB5b3VyIGJ1aWxkIHN5c3RlbS4NCg0KPiA+
+IA0KPiA+IEnigJl2ZSB0ZXN0ZWQgNC4xOSBhbmQgaXQgd29ya3MuIEkgaGF2ZW7igJl0IHRlc3Rl
+ZCBpdCBvbiB0aGUgMjgzNSBpbiBhIHdoaWxlDQo+IGJ1dCBJ4oCZbGwgdHJ5IHRvIHJlcHJvZHVj
+ZSB5b3VyIGlzc3VlIHRvbmlnaHQuDQo+IA0KPiBHcmVnDQoNCg==
 
