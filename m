@@ -1,14 +1,12 @@
-From: Sam Daniel <sam@FirstMode.com>
-Subject: Re: Cannot send/recv on labeled IDDP sockets
-Date: Mon, 28 Dec 2020 22:01:48 +0000
-Message-ID: <3C39F019-BA47-4AD9-B1C9-02F747729305@firstmode.com>
-References: <5A0F5CEF-426F-42D8-87E1-28BB38FE315F@firstmode.com>
- <2C185347-AF71-497E-BA40-DCFB33624064@firstmode.com>
-In-Reply-To: <2C185347-AF71-497E-BA40-DCFB33624064@firstmode.com>
-Content-Language: en-US
+Subject: Re: [DOVETAIL] now tracking v5.10
+References: <87a6u8wxvh.fsf@xenomai.org>
+From: chensong <chensong@tj.kylinos.cn>
+Message-ID: <5FEA8975.2090206@tj.kylinos.cn>+DBB08C56484FB96C
+Date: Tue, 29 Dec 2020 09:42:13 +0800
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+In-Reply-To: <87a6u8wxvh.fsf@xenomai.org>
+Content-Type: text/plain; charset="utf-8"; format="flowed"
+Content-Transfer-Encoding: 8bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,24 +15,42 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Philippe Gerum <rpm@xenomai.org>, xenomai@xenomai.org, "Chen, Hongzhan" <hongzhan.chen@intel.com>
 
-SSBzaG91bGQgYWRkIHNvbWUgY2xhcmlmeWluZyBkZXRhaWxzOg0KKiBJIGFtIHJ1bm5pbmcgWGVu
-b21haS9Db2JhbHQgMy4xLg0KKiBJIGludGVuZCBmb3IgdGhpcyBwdWIvc3ViIHRvIGJlIG9uZS10
-by1tYW55Og0KICAgICogT25seSBvbmUgcHVibGlzaGVyIG1hbnkgYmluZCB0byBhIGdpdmVuIHNv
-Y2tldC9jaGFubmVsLg0KICAgICogQnV0IG1hbnkgc3Vic2NyaWJlcnMgc2hvdWxkIGJlIGFibGUg
-dG8gY29ubmVjdA0KICAgICAgIHRvIGEgZ2l2ZW4gc29ja2V0L2NoYW5uZWwuDQoNCl9fX19fX19f
-DQpTQU0gREFOSUVMDQpTb2Z0d2FyZSBFbmdpbmVlcg0KKzEuNTcwLjMxNy41MjUzIHwgc2FtQGZp
-cnN0bW9kZS5jb208bWFpbHRvOnNhbUBmaXJzdG1vZGUuY29tPg0KDQpGSVJTVCBNT0RFIHwgQnVp
-bGRpbmcgdGhlIEJhcmVseSBQb3NzaWJsZQ0KMjIyMCBXZXN0ZXJuIEF2ZW51ZSwgU2VhdHRsZSwg
-V0E8d2ViZXh0bGluazovLzIyMjAlMjBXZXN0ZXJuJTIwQXZlbnVlLCUyMFNlYXR0bGUsJTIwV0E+
-DQp3d3cuZmlyc3Rtb2RlLmNvbTxodHRwOi8vd3d3LmZpcnN0bW9kZS5jb20+DQoNCl9fX19fX19f
-X19fX19fX19fX19fX19fX19fX19fX19fDQpDT05GSURFTlRJQUxJVFkgQ0FVVElPTjogVGhpcyBl
-bWFpbCAoaW5jbHVkaW5nIGFueSBhdHRhY2htZW50cykgaXMgaW50ZW5kZWQgb25seSBmb3IgdGhl
-IHVzZSBvZiB0aGUgaW5kaXZpZHVhbCBvciBlbnRpdHkgdG8gd2hvbSBpdCBpcyBhZGRyZXNzZWQg
-YW5kIG1heSBjb250YWluIGNvbmZpZGVudGlhbCBpbmZvcm1hdGlvbiBvciB0cmFkZSBzZWNyZXRz
-IGFuZCBiZSBwcm90ZWN0ZWQgYnkgbGVnYWwgcHJpdmlsZWdlLiBQbGVhc2Ugbm90aWZ5IHVzIGlt
-bWVkaWF0ZWx5IGJ5IHJldHVybiBlbWFpbCBpZiB5b3UgaGF2ZSByZWNlaXZlZCB0aGlzIGVtYWls
-IGluIGVycm9yIGFuZCBkZWxldGUgdGhpcyBlbWFpbCBhbmQgYW55IGF0dGFjaG1lbnRzLiBJZiB5
-b3UgYXJlIG5vdCB0aGUgaW50ZW5kZWQgcmVjaXBpZW50LCBkaXNzZW1pbmF0aW9uLCBkaXNjbG9z
-dXJlIGFuZCB1c2Ugb2YgYW55IGluZm9ybWF0aW9uIGhlcmVpbiBpcyBwcm9oaWJpdGVkLg0K
+Dear Philippe & Hongzhan,
+
+I was trying to build xenomai3.2 and boot it in my desktop, here is what 
+i did:
+
+1, git clone -b dovetail/master git://git.evlproject.org/linux.evl.git
+2, git clone -b hongzhan/dovetail 
+https://github.com/hongzhanchen/xenomai.git
+3, ./xenomai-hongzhan/scripts/prepare-kernel.sh --linux=linux-evl 
+--arch=x86_64
+4, make
+
+I found there are a lot of ipipe_xxx function calls in xenomai code like 
+ipipe_post_irq_root or IPIPE_NR_IRQS, which cause building failed.
+
+As my understanding, dovetail is the replacement of ipipe, as a result, 
+ipipe function calls should be replaced by dovetail function calls. Did 
+i miss something or did something wrong?
+
+BR
+
+chensong
+
+On 2020年12月20日 18:54, Philippe Gerum via Xenomai wrote:
+>
+> This is a heads up for people working on the Xenomai port to Dovetail:
+> dovetail/master and evl/master are now tracking v5.10.
+>
+> The former dovetail/master tip based on v5.9 is tagged as
+> "dovetail-v5.9" in the repository [1]. The final tag for the EVL core
+> based on v5.9 is "v5.9-evl5".
+>
+> [1] git://git.evlproject.org/linux-evl.git
+>
+
+
+
