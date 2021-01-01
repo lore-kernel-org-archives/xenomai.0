@@ -1,19 +1,15 @@
-Date: Mon, 7 Dec 2020 16:16:51 +0800
-From: Fino Meng <fino.meng@linux.intel.com>
-Subject: Re: [xenomai patch with kernel 5.4.77] Error building the kernel
-Message-ID: <20201207081650.GA11889@linux.intel.com>
-References: <CADx0-8DU+evLr-SduY9ru9zKBuhqjYOHPZ=5U4wFnMZAhE5irA@mail.gmail.com>
- <7786a8bf14ab25145e468bba2b567da76e9fd048.camel@siemens.com>
- <CADx0-8C7CW4i+O7g4zAGE0uXtD+bnNr4oR8HF-_tNArpteSDmQ@mail.gmail.com>
- <3afd98886487b064501e173f4e8d811f3f1a61f1.camel@siemens.com>
- <abe234e7-b15d-d257-69bc-c9e1ccd6898a@siemens.com>
- <CADx0-8C=wk6yWgUt63AxSQ1zeFH6syGHV4MNPcstVxDFT6onkQ@mail.gmail.com>
- <6173aab3-3b0f-862b-9e5e-48989f5196b3@siemens.com>
+From: Sam Daniel <sam@FirstMode.com>
+Subject: Re: Cannot send/recv on labeled IDDP sockets
+Date: Fri, 1 Jan 2021 23:01:33 +0000
+Message-ID: <6D27D6E3-B2CC-4601-AC61-3BC7247AF087@firstmode.com>
+References: <5A0F5CEF-426F-42D8-87E1-28BB38FE315F@firstmode.com>
+ <2C185347-AF71-497E-BA40-DCFB33624064@firstmode.com>
+ <3C39F019-BA47-4AD9-B1C9-02F747729305@firstmode.com>
+In-Reply-To: <3C39F019-BA47-4AD9-B1C9-02F747729305@firstmode.com>
+Content-Language: en-US
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <6173aab3-3b0f-862b-9e5e-48989f5196b3@siemens.com>
+Content-Transfer-Encoding: base64
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -22,79 +18,27 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jan Kiszka via Xenomai <xenomai@xenomai.org>
-Cc: xenomai@xenomai.org
+To: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On Mon, Dec 07, 2020 at 07:52:45AM +0100, Jan Kiszka via Xenomai wrote:
-> On 04.12.20 16:13, Mohamed Irfanulla Mohamed Abdulla wrote:
-> > Hi,
-> > 
-> > Thank you for your reply. I encountered another error.
-> > 
-> > Kernel: arch/x86/boot/bzImage is ready  (#1)
-> > ERROR: "__ipipe_dispatch_irq" [drivers/pinctrl/intel/pinctrl-intel.ko]
-> > undefined!
-> > make[1]: *** [scripts/Makefile.modpost:94: __modpost] Error 1
-> > make: *** [Makefile:1319: modules] Error 2
-> > 
-> > Is it good to exclude CONFIG_PINCTRL?
-> 
-> Only if you do not need that. But there might be cases where this cannot
-> be off.
-> 
-> Fino, could you have a look?
-> 
-> Jan
-> 
-
-the error is compiler&&linker cannot find __ipipe_dispatch_irq when
-building pinctrl-intel.ko,
-change pinctrl-intel.ko to built-in but not module should solve the
-issue.
-
-a dirty fix is export this function:
-+EXPORT_SYMBOL_GPL(__ipipe_dispatch_irq);
-
-I will try if can give a clean fix of this issue.
-
-BR fino
-
-> > 
-> > Thanks,
-> > 
-> > On Mon, Nov 30, 2020 at 2:27 PM Jan Kiszka <jan.kiszka@siemens.com
-> > <mailto:jan.kiszka@siemens.com>> wrote:
-> > 
-> >     On 30.11.20 13:41, florian.bezdeka--- via Xenomai wrote:
-> >     > On Mon, 2020-11-30 at 12:16 +0100, Mohamed Irfanulla Mohamed Abdulla
-> >     > wrote:
-> >     >> Thank you for your reply. 
-> >     >> I find that I use the wrong branch. Could you please suggest a good
-> >     >> branch that I can use?
-> >     >>
-> >     >
-> >     > I'm quite new to the Xenomai project, so don't trust me ;-)
-> >     >
-> >     > The problem you are facing was "fixed" in commit
-> >     > 608c23297c4d ("cobalt/x86: Account for FPU changes in kernel 5.2")
-> >     > which is part of the "next" branch.
-> >     >
-> >     > It looks like kernels >= 5.2 are not supported in official releases /
-> >     > branches yet.
-> > 
-> >     Correct. Next 3.1.x release will include that. Until then you need a
-> >     version from git.
-> > 
-> >     Jan
-> > 
-> >     -- 
-> >     Siemens AG, T RDA IOT
-> >     Corporate Competence Center Embedded Linux
-> > 
-> 
-> 
-> -- 
-> Siemens AG, T RDA IOT
-> Corporate Competence Center Embedded Linux
-> 
-
+UmVzb2x2ZWQgbXkgaXNzdWUgYnkgcmVhZGluZyB0aGUgc291cmNlIOKAkyBzaG9ja2luZywgSSBr
+bm93IC9zIPCfmIMNCg0KSSB3YXMgZ2V0dGluZyBodW5nIHVwIGhlcmUgb24gbGluZSAyNDEtMjQy
+IGluIHRoZSBJRERQIGRyaXZlcjoNCiAgICAgICAgICAgICAgICBpZiAoIXRlc3RfYml0KF9JRERQ
+X0JPVU5ELCAmc2stPnN0YXR1cykpDQogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIHJl
+dHVybiAtRUFHQUlOOw0KDQpJIGludmVydGVkIHRoZSB3YXkgSSB3YXMgc2V0dGluZyB1cCBteSBz
+b2NrZXRzIGFuZCByZS1hcmNoaXRlY3RlZCBteSBwdWIvc3ViDQphbmQgbm93IEnigJltIG9mZiB0
+byB0aGUgcmFjZXMhDQoNClNvcnJ5IGZvciBzcGFtbWluZyB0aGUgbGlzdCENCg0KQ2hlZXJzISBI
+YXBweSBOZXcgWWVhciENCg0KX19fX19fX18NClNBTSBEQU5JRUwNClNvZnR3YXJlIEVuZ2luZWVy
+DQorMS41NzAuMzE3LjUyNTMgfCBzYW1AZmlyc3Rtb2RlLmNvbTxtYWlsdG86c2FtQGZpcnN0bW9k
+ZS5jb20+DQoNCkZJUlNUIE1PREUgfCBCdWlsZGluZyB0aGUgQmFyZWx5IFBvc3NpYmxlDQoyMjIw
+IFdlc3Rlcm4gQXZlbnVlLCBTZWF0dGxlLCBXQTx3ZWJleHRsaW5rOi8vMjIyMCUyMFdlc3Rlcm4l
+MjBBdmVudWUsJTIwU2VhdHRsZSwlMjBXQT4NCnd3dy5maXJzdG1vZGUuY29tPGh0dHA6Ly93d3cu
+Zmlyc3Rtb2RlLmNvbT4NCl9fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fDQpDT05GSURF
+TlRJQUxJVFkgQ0FVVElPTjogVGhpcyBlbWFpbCAoaW5jbHVkaW5nIGFueSBhdHRhY2htZW50cykg
+aXMgaW50ZW5kZWQgb25seSBmb3IgdGhlIHVzZSBvZiB0aGUgaW5kaXZpZHVhbCBvciBlbnRpdHkg
+dG8gd2hvbSBpdCBpcyBhZGRyZXNzZWQgYW5kIG1heSBjb250YWluIGNvbmZpZGVudGlhbCBpbmZv
+cm1hdGlvbiBvciB0cmFkZSBzZWNyZXRzIGFuZCBiZSBwcm90ZWN0ZWQgYnkgbGVnYWwgcHJpdmls
+ZWdlLiBQbGVhc2Ugbm90aWZ5IHVzIGltbWVkaWF0ZWx5IGJ5IHJldHVybiBlbWFpbCBpZiB5b3Ug
+aGF2ZSByZWNlaXZlZCB0aGlzIGVtYWlsIGluIGVycm9yIGFuZCBkZWxldGUgdGhpcyBlbWFpbCBh
+bmQgYW55IGF0dGFjaG1lbnRzLiBJZiB5b3UgYXJlIG5vdCB0aGUgaW50ZW5kZWQgcmVjaXBpZW50
+LCBkaXNzZW1pbmF0aW9uLCBkaXNjbG9zdXJlIGFuZCB1c2Ugb2YgYW55IGluZm9ybWF0aW9uIGhl
+cmVpbiBpcyBwcm9oaWJpdGVkLg0K
