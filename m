@@ -1,11 +1,9 @@
-References: <87mtyr1abi.fsf@xenomai.org> <5FCD907C.6040309@tj.kylinos.cn>
-From: Philippe Gerum <rpm@xenomai.org>
-Subject: Re: [CXP][RFC] pick POSIX/cobalt for the common user API
-In-reply-to: <5FCD907C.6040309@tj.kylinos.cn>
-Date: Mon, 07 Dec 2020 11:12:30 +0100
-Message-ID: <87h7oxvsa9.fsf@xenomai.org>
+From: Philippe  Gerum <rpm@xenomai.org>
+Subject: [PATCH Dovetail 00/13] Keep on abstracting the pipeline interface
+Date: Sat,  2 Jan 2021 10:33:40 +0100
+Message-Id: <20210102093353.3195090-1-rpm@xenomai.org>
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Transfer-Encoding: 8bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -14,78 +12,93 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: chensong <chensong@tj.kylinos.cn>
-Cc: xenomai@xenomai.org
+To: xenomai@xenomai.org
 
+From: Philippe Gerum <rpm@xenomai.org>
 
-Hi,
+Most importantly: Happy new year, and best wishes.
 
-chensong via Xenomai <xenomai@xenomai.org> writes:
+Sidenote: this is the next series of patches (out of 70+) which adds
+an abstraction layer to the Cobalt core, so that we can choose to
+interface it to the legacy I-pipe or Dovetail at build time. This is
+on top of the -next branch as usual.
 
-> hi Philippe,
->
-> As far as i know, some vxworks customers like xenomai because they can
-> move their RT processes from vxworks to linux without rewriting their 
-> code by the help of vxworks skin.
->
-> If we "Excluding the legacy RTOS emulators such as VxWorks", we will
-> lose them. It could depend on the balance of the request and effort.
->
+Philippe Gerum (13):
+  cobalt/thread: pipeline: abstract threadinfo accessor
+  cobalt/apc: pipeline: abstract interface for deferred routine calls
+  cobalt/trace: pipeline: abstract trace calls
+  cobalt/lock: pipeline: abstract hard lock API
+  cobalt/kernel: pipeline: abstract execution stage predicates
+  cobalt/sched, clock: pipeline: abstract IPI management
+  cobalt/clock: pipeline: make HOSTRT depend on IPIPE
+  cobalt/build: pipeline: select IPIPE layer only if present
+  cobalt/clock: pipeline: abstract clock, timer access services
+  cobalt/wrappers: pipeline: abstract pipeline-related bits
+  cobalt/timer: pipeline: abstract tick management
+  cobalt/debug: pipeline: abstract panic prep call
+  cobalt/syscall: pipeline: abstract syscall entry points
 
-There are two different aspects to consider. First, there is the CXP
-which should define a common ground between future Xenomai releases
-starting from 3.3, which is different from deciding on the feature set
-such releases would include in total eventually. We may want a given
-Xenomai release to support multiple APIs, which would definitely include
-the one specified by the CXP.
-
-In that sense, I'm only excluding the VxWorks API as a possible choice
-for the common API specified by the CXP since this would have no upside
-with respect to usability or portability from Xenomai 3.x to 4.x. I was
-not referring to the presence of the VxWorks API in future Xenomai 3.x
-releases, although the complete lack of feedback from users regarding
-the RTOS emulators may simply mean that most projects already moved away
-from these legacy APIs anyway.
-
-Next, there is the question of whether the VxWorks API, and generally
-speaking RTOS emulators should be present in Xenomai 4. I'm going to
-oppose to such inclusion. These are my reasons:
-
-- as I just hinted at, I believe that too few projects might still be
-  interested in moving from VxWorks to Linux based on API emulation
-  these days, at least not enough to justify the cost of maintaining
-  RTOS emulators. I reckon that most of the legacy apps which should
-  move to Linux already did so by now, many of them based on API
-  conversion instead (e.g. VxWorks -> POSIX). We need to keep in mind
-  that those emulators only cover the BSP-independent APIs, those which
-  can be easily converted to another dialect because there is no
-  hardware-related specifics, with their underlying semantics being very
-  similar (e.g. VxWorks mutex-typed sema4s and POSIX mutexes are quite
-  close in essence).
-
-- generally speaking, Xenomai 4 is going to be all about simplicity and
-  resource-efficiency, in order to address use cases, which I believe
-  are beyond native preemption's reach: meeting ultra-low latency
-  requirements reliably without having to play whack-a-mole with tricky
-  runtime settings, regardless of the ongoing system stress, down to
-  low-end hardware. We should be heading for a real-time sub-system
-  which just delivers out of the box once enabled in the kernel, nicely
-  integrated into the Linux environment, not on the edge of it. Basic
-  but usable, simple but efficient. Among other things, this should
-  involve a limited set of dedicated APIs, all with native support from
-  the real-time core, which is to say without requiring any mediating
-  layer like libcopperplate. As a matter of fact, libcopperplate was
-  designed as a set of common blocks for implementing non-native APIs
-  like RTOS emulators on top of a native interface.
-
-- the Xenomai project has always run on a very limited amount of human
-  resources, including for implementing and more importantly maintaining
-  APIs. Each additional API is one burden more for Xenomai contributors
-  to maintain, and users to comprehend.  I'd rather make sure that a
-  single API is shared and exercised by many users, properly maintained
-  and documented, compared to having many - potentially unused - APIs
-  diluting the maintenance effort.
+ include/cobalt/kernel/apc.h                   |  51 +---
+ include/cobalt/kernel/assert.h                |   5 +-
+ include/cobalt/kernel/clock.h                 |   8 +-
+ include/cobalt/kernel/intr.h                  |   1 -
+ include/cobalt/kernel/ipipe/pipeline/clock.h  |  32 ++
+ .../cobalt/kernel/ipipe/pipeline/kevents.h    |   3 +
+ include/cobalt/kernel/ipipe/pipeline/lock.h   |  21 ++
+ .../cobalt/kernel/ipipe/pipeline/pipeline.h   |  80 +++++
+ include/cobalt/kernel/ipipe/pipeline/thread.h |  26 ++
+ include/cobalt/kernel/ipipe/pipeline/tick.h   |  12 +
+ include/cobalt/kernel/ipipe/pipeline/trace.h  | 111 +++++++
+ .../cobalt/kernel/ipipe/pipeline/wrappers.h   |  25 ++
+ include/cobalt/kernel/lock.h                  |  44 +--
+ include/cobalt/kernel/rtdm/driver.h           |  11 +-
+ include/cobalt/kernel/sched.h                 |   2 -
+ include/cobalt/kernel/stat.h                  |   3 -
+ include/cobalt/kernel/thread.h                |   5 +-
+ include/cobalt/kernel/timer.h                 |   4 -
+ include/cobalt/kernel/trace.h                 | 101 +------
+ include/cobalt/kernel/vdso.h                  |  18 +-
+ kernel/cobalt/Kconfig                         |   4 -
+ kernel/cobalt/Makefile                        |   3 +-
+ kernel/cobalt/clock.c                         |   7 +-
+ kernel/cobalt/debug.c                         |   2 +-
+ .../include/asm-generic/xenomai/wrappers.h    |   4 -
+ .../cobalt/include/linux/xenomai/wrappers.h   |  23 +-
+ kernel/cobalt/init.c                          |   5 +-
+ kernel/cobalt/ipipe/Makefile                  |   2 +-
+ kernel/cobalt/{ => ipipe}/apc.c               |  42 +++
+ kernel/cobalt/ipipe/init.c                    |   2 +
+ kernel/cobalt/ipipe/intr.c                    |   2 +-
+ kernel/cobalt/ipipe/kevents.c                 |  20 +-
+ kernel/cobalt/ipipe/syscall.c                 |  29 ++
+ kernel/cobalt/ipipe/tick.c                    | 278 ++++++++++++++++++
+ kernel/cobalt/posix/clock.c                   |   4 +-
+ kernel/cobalt/posix/corectl.c                 |   8 +-
+ kernel/cobalt/posix/process.c                 |   6 +-
+ kernel/cobalt/posix/process.h                 |   8 +-
+ kernel/cobalt/posix/syscall.c                 |  32 +-
+ kernel/cobalt/posix/syscall.h                 |   7 +
+ kernel/cobalt/registry.c                      |   2 +-
+ kernel/cobalt/rtdm/drvlib.c                   |   2 +-
+ kernel/cobalt/rtdm/fd.c                       |  14 +-
+ kernel/cobalt/sched.c                         |  16 +-
+ kernel/cobalt/thread.c                        |   6 +-
+ kernel/cobalt/timer.c                         | 272 +----------------
+ kernel/drivers/testing/timerbench.c           |  12 +-
+ scripts/Kconfig.frag                          |   8 +-
+ 48 files changed, 776 insertions(+), 607 deletions(-)
+ create mode 100644 include/cobalt/kernel/ipipe/pipeline/clock.h
+ create mode 100644 include/cobalt/kernel/ipipe/pipeline/lock.h
+ create mode 100644 include/cobalt/kernel/ipipe/pipeline/pipeline.h
+ create mode 100644 include/cobalt/kernel/ipipe/pipeline/thread.h
+ create mode 100644 include/cobalt/kernel/ipipe/pipeline/tick.h
+ create mode 100644 include/cobalt/kernel/ipipe/pipeline/trace.h
+ create mode 100644 include/cobalt/kernel/ipipe/pipeline/wrappers.h
+ rename kernel/cobalt/{ => ipipe}/apc.c (80%)
+ create mode 100644 kernel/cobalt/ipipe/syscall.c
+ create mode 100644 kernel/cobalt/ipipe/tick.c
 
 -- 
-Philippe.
+2.26.2
+
 
