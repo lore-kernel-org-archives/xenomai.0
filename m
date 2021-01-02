@@ -1,7 +1,10 @@
 From: Philippe  Gerum <rpm@xenomai.org>
-Subject: [PATCH Dovetail 00/13] Keep on abstracting the pipeline interface
-Date: Sat,  2 Jan 2021 10:33:40 +0100
-Message-Id: <20210102093353.3195090-1-rpm@xenomai.org>
+Subject: [PATCH Dovetail 01/13] cobalt/thread: pipeline: abstract threadinfo
+ accessor
+Date: Sat,  2 Jan 2021 10:33:41 +0100
+Message-Id: <20210102093353.3195090-2-rpm@xenomai.org>
+In-Reply-To: <20210102093353.3195090-1-rpm@xenomai.org>
+References: <20210102093353.3195090-1-rpm@xenomai.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
@@ -16,88 +19,174 @@ To: xenomai@xenomai.org
 
 From: Philippe Gerum <rpm@xenomai.org>
 
-Most importantly: Happy new year, and best wishes.
+The I-pipe and Dovetail access the per-thread information block
+differently. Abstract this kernel interface.
 
-Sidenote: this is the next series of patches (out of 70+) which adds
-an abstraction layer to the Cobalt core, so that we can choose to
-interface it to the legacy I-pipe or Dovetail at build time. This is
-on top of the -next branch as usual.
+No functional change is introduced.
 
-Philippe Gerum (13):
-  cobalt/thread: pipeline: abstract threadinfo accessor
-  cobalt/apc: pipeline: abstract interface for deferred routine calls
-  cobalt/trace: pipeline: abstract trace calls
-  cobalt/lock: pipeline: abstract hard lock API
-  cobalt/kernel: pipeline: abstract execution stage predicates
-  cobalt/sched, clock: pipeline: abstract IPI management
-  cobalt/clock: pipeline: make HOSTRT depend on IPIPE
-  cobalt/build: pipeline: select IPIPE layer only if present
-  cobalt/clock: pipeline: abstract clock, timer access services
-  cobalt/wrappers: pipeline: abstract pipeline-related bits
-  cobalt/timer: pipeline: abstract tick management
-  cobalt/debug: pipeline: abstract panic prep call
-  cobalt/syscall: pipeline: abstract syscall entry points
-
- include/cobalt/kernel/apc.h                   |  51 +---
- include/cobalt/kernel/assert.h                |   5 +-
- include/cobalt/kernel/clock.h                 |   8 +-
- include/cobalt/kernel/intr.h                  |   1 -
- include/cobalt/kernel/ipipe/pipeline/clock.h  |  32 ++
- .../cobalt/kernel/ipipe/pipeline/kevents.h    |   3 +
- include/cobalt/kernel/ipipe/pipeline/lock.h   |  21 ++
- .../cobalt/kernel/ipipe/pipeline/pipeline.h   |  80 +++++
- include/cobalt/kernel/ipipe/pipeline/thread.h |  26 ++
- include/cobalt/kernel/ipipe/pipeline/tick.h   |  12 +
- include/cobalt/kernel/ipipe/pipeline/trace.h  | 111 +++++++
- .../cobalt/kernel/ipipe/pipeline/wrappers.h   |  25 ++
- include/cobalt/kernel/lock.h                  |  44 +--
- include/cobalt/kernel/rtdm/driver.h           |  11 +-
- include/cobalt/kernel/sched.h                 |   2 -
- include/cobalt/kernel/stat.h                  |   3 -
- include/cobalt/kernel/thread.h                |   5 +-
- include/cobalt/kernel/timer.h                 |   4 -
- include/cobalt/kernel/trace.h                 | 101 +------
- include/cobalt/kernel/vdso.h                  |  18 +-
- kernel/cobalt/Kconfig                         |   4 -
- kernel/cobalt/Makefile                        |   3 +-
- kernel/cobalt/clock.c                         |   7 +-
- kernel/cobalt/debug.c                         |   2 +-
- .../include/asm-generic/xenomai/wrappers.h    |   4 -
- .../cobalt/include/linux/xenomai/wrappers.h   |  23 +-
- kernel/cobalt/init.c                          |   5 +-
- kernel/cobalt/ipipe/Makefile                  |   2 +-
- kernel/cobalt/{ => ipipe}/apc.c               |  42 +++
- kernel/cobalt/ipipe/init.c                    |   2 +
- kernel/cobalt/ipipe/intr.c                    |   2 +-
- kernel/cobalt/ipipe/kevents.c                 |  20 +-
- kernel/cobalt/ipipe/syscall.c                 |  29 ++
- kernel/cobalt/ipipe/tick.c                    | 278 ++++++++++++++++++
- kernel/cobalt/posix/clock.c                   |   4 +-
- kernel/cobalt/posix/corectl.c                 |   8 +-
- kernel/cobalt/posix/process.c                 |   6 +-
- kernel/cobalt/posix/process.h                 |   8 +-
- kernel/cobalt/posix/syscall.c                 |  32 +-
- kernel/cobalt/posix/syscall.h                 |   7 +
- kernel/cobalt/registry.c                      |   2 +-
- kernel/cobalt/rtdm/drvlib.c                   |   2 +-
- kernel/cobalt/rtdm/fd.c                       |  14 +-
- kernel/cobalt/sched.c                         |  16 +-
- kernel/cobalt/thread.c                        |   6 +-
- kernel/cobalt/timer.c                         | 272 +----------------
- kernel/drivers/testing/timerbench.c           |  12 +-
- scripts/Kconfig.frag                          |   8 +-
- 48 files changed, 776 insertions(+), 607 deletions(-)
- create mode 100644 include/cobalt/kernel/ipipe/pipeline/clock.h
- create mode 100644 include/cobalt/kernel/ipipe/pipeline/lock.h
- create mode 100644 include/cobalt/kernel/ipipe/pipeline/pipeline.h
+Signed-off-by: Philippe Gerum <rpm@xenomai.org>
+---
+ include/cobalt/kernel/ipipe/pipeline/thread.h | 26 +++++++++++++++++++
+ include/cobalt/kernel/thread.h                |  5 ++--
+ kernel/cobalt/ipipe/kevents.c                 |  6 ++---
+ kernel/cobalt/posix/process.c                 |  4 +--
+ kernel/cobalt/posix/process.h                 |  5 ++--
+ kernel/cobalt/thread.c                        |  4 +--
+ 6 files changed, 39 insertions(+), 11 deletions(-)
  create mode 100644 include/cobalt/kernel/ipipe/pipeline/thread.h
- create mode 100644 include/cobalt/kernel/ipipe/pipeline/tick.h
- create mode 100644 include/cobalt/kernel/ipipe/pipeline/trace.h
- create mode 100644 include/cobalt/kernel/ipipe/pipeline/wrappers.h
- rename kernel/cobalt/{ => ipipe}/apc.c (80%)
- create mode 100644 kernel/cobalt/ipipe/syscall.c
- create mode 100644 kernel/cobalt/ipipe/tick.c
 
+diff --git a/include/cobalt/kernel/ipipe/pipeline/thread.h b/include/cobalt/kernel/ipipe/pipeline/thread.h
+new file mode 100644
+index 000000000..a62e622c4
+--- /dev/null
++++ b/include/cobalt/kernel/ipipe/pipeline/thread.h
+@@ -0,0 +1,26 @@
++/*
++ * SPDX-License-Identifier: GPL-2.0
++ *
++ * Copyright (C) 2019 Philippe Gerum  <rpm@xenomai.org>
++ */
++
++#ifndef _COBALT_KERNEL_IPIPE_THREAD_H
++#define _COBALT_KERNEL_IPIPE_THREAD_H
++
++#include <linux/ipipe.h>
++
++struct xnthread;
++
++#define cobalt_threadinfo ipipe_threadinfo
++
++static inline struct cobalt_threadinfo *pipeline_current(void)
++{
++	return ipipe_current_threadinfo();
++}
++
++static inline struct xnthread *pipeline_thread_from_task(struct task_struct *p)
++{
++	return ipipe_task_threadinfo(p)->thread;
++}
++
++#endif /* !_COBALT_KERNEL_IPIPE_THREAD_H */
+diff --git a/include/cobalt/kernel/thread.h b/include/cobalt/kernel/thread.h
+index 21a8603b4..2d57b8398 100644
+--- a/include/cobalt/kernel/thread.h
++++ b/include/cobalt/kernel/thread.h
+@@ -22,6 +22,7 @@
+ #include <linux/wait.h>
+ #include <linux/sched.h>
+ #include <linux/sched/rt.h>
++#include <pipeline/thread.h>
+ #include <cobalt/kernel/list.h>
+ #include <cobalt/kernel/stat.h>
+ #include <cobalt/kernel/timer.h>
+@@ -372,7 +373,7 @@ void __xnthread_discard(struct xnthread *thread);
+  */
+ static inline struct xnthread *xnthread_current(void)
+ {
+-	return ipipe_current_threadinfo()->thread;
++	return pipeline_current()->thread;
+ }
+ 
+ /**
+@@ -388,7 +389,7 @@ static inline struct xnthread *xnthread_current(void)
+  */
+ static inline struct xnthread *xnthread_from_task(struct task_struct *p)
+ {
+-	return ipipe_task_threadinfo(p)->thread;
++	return pipeline_thread_from_task(p);
+ }
+ 
+ /**
+diff --git a/kernel/cobalt/ipipe/kevents.c b/kernel/cobalt/ipipe/kevents.c
+index ba584677c..e0d4a1288 100644
+--- a/kernel/cobalt/ipipe/kevents.c
++++ b/kernel/cobalt/ipipe/kevents.c
+@@ -831,16 +831,16 @@ static inline int get_mayday_prot(void)
+ 
+ void pipeline_attach_current(struct xnthread *thread)
+ {
+-	struct ipipe_threadinfo *p;
++	struct cobalt_threadinfo *p;
+ 
+-	p = ipipe_current_threadinfo();
++	p = pipeline_current();
+ 	p->thread = thread;
+ 	p->process = cobalt_search_process(current->mm);
+ }
+ 
+ static void detach_current(void)
+ {
+-	struct ipipe_threadinfo *p = ipipe_current_threadinfo();
++	struct cobalt_threadinfo *p = pipeline_current();
+ 	p->thread = NULL;
+ 	p->process = NULL;
+ }
+diff --git a/kernel/cobalt/posix/process.c b/kernel/cobalt/posix/process.c
+index 9bc6082d0..accd989ca 100644
+--- a/kernel/cobalt/posix/process.c
++++ b/kernel/cobalt/posix/process.c
+@@ -463,7 +463,7 @@ EXPORT_SYMBOL_GPL(cobalt_unregister_personality);
+ struct xnthread_personality *
+ cobalt_push_personality(int xid)
+ {
+-	struct ipipe_threadinfo *p = ipipe_current_threadinfo();
++	struct cobalt_threadinfo *p = pipeline_current();
+ 	struct xnthread_personality *prev, *next;
+ 	struct xnthread *thread = p->thread;
+ 
+@@ -504,7 +504,7 @@ EXPORT_SYMBOL_GPL(cobalt_push_personality);
+  */
+ void cobalt_pop_personality(struct xnthread_personality *prev)
+ {
+-	struct ipipe_threadinfo *p = ipipe_current_threadinfo();
++	struct cobalt_threadinfo *p = pipeline_current();
+ 	struct xnthread *thread = p->thread;
+ 
+ 	secondary_mode_only();
+diff --git a/kernel/cobalt/posix/process.h b/kernel/cobalt/posix/process.h
+index 3a38ae639..a2f4ec591 100644
+--- a/kernel/cobalt/posix/process.h
++++ b/kernel/cobalt/posix/process.h
+@@ -20,6 +20,7 @@
+ 
+ #include <linux/list.h>
+ #include <linux/bitmap.h>
++#include <pipeline/thread.h>
+ #include <cobalt/kernel/ppd.h>
+ 
+ #define KEVENT_PROPAGATE   0
+@@ -94,13 +95,13 @@ extern struct cobalt_resources cobalt_global_resources;
+ 
+ static inline struct cobalt_process *cobalt_current_process(void)
+ {
+-	return ipipe_current_threadinfo()->process;
++	return pipeline_current()->process;
+ }
+ 
+ static inline struct cobalt_process *
+ cobalt_set_process(struct cobalt_process *process)
+ {
+-	struct ipipe_threadinfo *p = ipipe_current_threadinfo();
++	struct cobalt_threadinfo *p = pipeline_current();
+ 	struct cobalt_process *old;
+ 
+ 	old = p->process;
+diff --git a/kernel/cobalt/thread.c b/kernel/cobalt/thread.c
+index a882bcc45..b871e6069 100644
+--- a/kernel/cobalt/thread.c
++++ b/kernel/cobalt/thread.c
+@@ -2452,9 +2452,9 @@ static inline void wakeup_parent(struct completion *done)
+ 
+ static inline void init_kthread_info(struct xnthread *thread)
+ {
+-	struct ipipe_threadinfo *p;
++	struct cobalt_threadinfo *p;
+ 
+-	p = ipipe_current_threadinfo();
++	p = pipeline_current();
+ 	p->thread = thread;
+ 	p->process = NULL;
+ }
 -- 
 2.26.2
 
