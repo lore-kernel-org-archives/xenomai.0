@@ -1,8 +1,8 @@
 From: Philippe  Gerum <rpm@xenomai.org>
-Subject: [PATCH Dovetail 01/13] cobalt/thread: pipeline: abstract threadinfo
- accessor
-Date: Sat,  2 Jan 2021 10:33:41 +0100
-Message-Id: <20210102093353.3195090-2-rpm@xenomai.org>
+Subject: [PATCH Dovetail 02/13] cobalt/apc: pipeline: abstract interface for
+ deferred routine calls
+Date: Sat,  2 Jan 2021 10:33:42 +0100
+Message-Id: <20210102093353.3195090-3-rpm@xenomai.org>
 In-Reply-To: <20210102093353.3195090-1-rpm@xenomai.org>
 References: <20210102093353.3195090-1-rpm@xenomai.org>
 MIME-Version: 1.0
@@ -19,174 +19,188 @@ To: xenomai@xenomai.org
 
 From: Philippe Gerum <rpm@xenomai.org>
 
-The I-pipe and Dovetail access the per-thread information block
-differently. Abstract this kernel interface.
+Dovetail enables the regular irq_work() for submitting work from the
+out-of-band stage (primary mode) to the in-band one (secondary
+mode). We won't need APCs in the Dovetail case, let's move this code
+to the I-pipe section.
 
 No functional change is introduced.
 
 Signed-off-by: Philippe Gerum <rpm@xenomai.org>
 ---
- include/cobalt/kernel/ipipe/pipeline/thread.h | 26 +++++++++++++++++++
- include/cobalt/kernel/thread.h                |  5 ++--
- kernel/cobalt/ipipe/kevents.c                 |  6 ++---
- kernel/cobalt/posix/process.c                 |  4 +--
- kernel/cobalt/posix/process.h                 |  5 ++--
- kernel/cobalt/thread.c                        |  4 +--
- 6 files changed, 39 insertions(+), 11 deletions(-)
- create mode 100644 include/cobalt/kernel/ipipe/pipeline/thread.h
+ include/cobalt/kernel/apc.h     | 51 ++-------------------------------
+ kernel/cobalt/Makefile          |  3 +-
+ kernel/cobalt/ipipe/Makefile    |  2 +-
+ kernel/cobalt/{ => ipipe}/apc.c | 42 +++++++++++++++++++++++++++
+ kernel/cobalt/ipipe/init.c      |  2 ++
+ 5 files changed, 48 insertions(+), 52 deletions(-)
+ rename kernel/cobalt/{ => ipipe}/apc.c (80%)
 
-diff --git a/include/cobalt/kernel/ipipe/pipeline/thread.h b/include/cobalt/kernel/ipipe/pipeline/thread.h
-new file mode 100644
-index 000000000..a62e622c4
---- /dev/null
-+++ b/include/cobalt/kernel/ipipe/pipeline/thread.h
-@@ -0,0 +1,26 @@
-+/*
-+ * SPDX-License-Identifier: GPL-2.0
+diff --git a/include/cobalt/kernel/apc.h b/include/cobalt/kernel/apc.h
+index 7075ad07a..45d70b146 100644
+--- a/include/cobalt/kernel/apc.h
++++ b/include/cobalt/kernel/apc.h
+@@ -19,61 +19,14 @@
+ #ifndef _COBALT_KERNEL_APC_H
+ #define _COBALT_KERNEL_APC_H
+ 
+-#include <linux/ipipe.h>
+-#include <asm/xenomai/machine.h>
+-
+-/**
+- * @addtogroup cobalt_core_apc
+- * @{
+- */
+-
+ int xnapc_alloc(const char *name,
+ 		void (*handler)(void *cookie),
+ 		void *cookie);
+ 
+ void xnapc_free(int apc);
+ 
+-static inline void __xnapc_schedule(int apc)
+-{
+-	unsigned long *p = &raw_cpu_ptr(&cobalt_machine_cpudata)->apc_pending;
+-
+-	if (!__test_and_set_bit(apc, p))
+-		ipipe_post_irq_root(cobalt_pipeline.apc_virq);
+-}
+-
+-/**
+- * @fn static inline int xnapc_schedule(int apc)
+- *
+- * @brief Schedule an APC invocation.
+- *
+- * This service marks the APC as pending for the Linux domain, so that
+- * its handler will be called as soon as possible, when the Linux
+- * domain gets back in control.
+- *
+- * When posted from the Linux domain, the APC handler is fired as soon
+- * as the interrupt mask is explicitly cleared by some kernel
+- * code. When posted from the Xenomai domain, the APC handler is
+- * fired as soon as the Linux domain is resumed, i.e. after Xenomai has
+- * completed all its pending duties.
+- *
+- * @param apc The APC id. to schedule.
+- *
+- * This service can be called from:
+- *
+- * - Any domain context, albeit the usual calling place is from the
+- * Xenomai domain.
+- */
+-static inline void xnapc_schedule(int apc)
+-{
+-	unsigned long flags;
+-
+-	flags = ipipe_test_and_stall_head() & 1;
+-	__xnapc_schedule(apc);
+-	ipipe_restore_head(flags);
+-}
+-
+-void apc_dispatch(unsigned int virq, void *arg);
++void __xnapc_schedule(int apc);
+ 
+-/** @} */
++void xnapc_schedule(int apc);
+ 
+ #endif /* !_COBALT_KERNEL_APC_H */
+diff --git a/kernel/cobalt/Makefile b/kernel/cobalt/Makefile
+index de3ae1bfc..129005d8f 100644
+--- a/kernel/cobalt/Makefile
++++ b/kernel/cobalt/Makefile
+@@ -1,7 +1,6 @@
+ obj-$(CONFIG_XENOMAI) += pipeline/ xenomai.o rtdm/ posix/
+ 
+-xenomai-y :=	apc.o		\
+-		arith.o 	\
++xenomai-y :=	arith.o 	\
+ 		bufd.o		\
+ 		clock.o		\
+ 		heap.o		\
+diff --git a/kernel/cobalt/ipipe/Makefile b/kernel/cobalt/ipipe/Makefile
+index 5170bb32b..13186dc7f 100644
+--- a/kernel/cobalt/ipipe/Makefile
++++ b/kernel/cobalt/ipipe/Makefile
+@@ -2,4 +2,4 @@ ccflags-y += -Ikernel
+ 
+ obj-y +=	pipeline.o
+ 
+-pipeline-y :=	init.o intr.o kevents.o
++pipeline-y :=	init.o intr.o kevents.o apc.o
+diff --git a/kernel/cobalt/apc.c b/kernel/cobalt/ipipe/apc.c
+similarity index 80%
+rename from kernel/cobalt/apc.c
+rename to kernel/cobalt/ipipe/apc.c
+index 97edcfc4c..715997727 100644
+--- a/kernel/cobalt/apc.c
++++ b/kernel/cobalt/ipipe/apc.c
+@@ -18,6 +18,7 @@
+  */
+ #include <linux/spinlock.h>
+ #include <linux/ipipe.h>
++#include <asm/xenomai/machine.h>
+ #include <cobalt/kernel/apc.h>
+ 
+ /**
+@@ -157,4 +158,45 @@ void xnapc_free(int apc)
+ }
+ EXPORT_SYMBOL_GPL(xnapc_free);
+ 
++void __xnapc_schedule(int apc)
++{
++	unsigned long *p = &raw_cpu_ptr(&cobalt_machine_cpudata)->apc_pending;
++
++	if (!__test_and_set_bit(apc, p))
++		ipipe_post_irq_root(cobalt_pipeline.apc_virq);
++}
++EXPORT_SYMBOL_GPL(__xnapc_schedule);
++
++/**
++ * @fn static inline int xnapc_schedule(int apc)
 + *
-+ * Copyright (C) 2019 Philippe Gerum  <rpm@xenomai.org>
++ * @brief Schedule an APC invocation.
++ *
++ * This service marks the APC as pending for the Linux domain, so that
++ * its handler will be called as soon as possible, when the Linux
++ * domain gets back in control.
++ *
++ * When posted from the Linux domain, the APC handler is fired as soon
++ * as the interrupt mask is explicitly cleared by some kernel
++ * code. When posted from the Xenomai domain, the APC handler is
++ * fired as soon as the Linux domain is resumed, i.e. after Xenomai has
++ * completed all its pending duties.
++ *
++ * @param apc The APC id. to schedule.
++ *
++ * This service can be called from:
++ *
++ * - Any domain context, albeit the usual calling place is from the
++ * Xenomai domain.
 + */
-+
-+#ifndef _COBALT_KERNEL_IPIPE_THREAD_H
-+#define _COBALT_KERNEL_IPIPE_THREAD_H
-+
-+#include <linux/ipipe.h>
-+
-+struct xnthread;
-+
-+#define cobalt_threadinfo ipipe_threadinfo
-+
-+static inline struct cobalt_threadinfo *pipeline_current(void)
++void xnapc_schedule(int apc)
 +{
-+	return ipipe_current_threadinfo();
-+}
++	unsigned long flags;
 +
-+static inline struct xnthread *pipeline_thread_from_task(struct task_struct *p)
-+{
-+	return ipipe_task_threadinfo(p)->thread;
++	flags = ipipe_test_and_stall_head() & 1;
++	__xnapc_schedule(apc);
++	ipipe_restore_head(flags);
 +}
++EXPORT_SYMBOL_GPL(xnapc_schedule);
 +
-+#endif /* !_COBALT_KERNEL_IPIPE_THREAD_H */
-diff --git a/include/cobalt/kernel/thread.h b/include/cobalt/kernel/thread.h
-index 21a8603b4..2d57b8398 100644
---- a/include/cobalt/kernel/thread.h
-+++ b/include/cobalt/kernel/thread.h
-@@ -22,6 +22,7 @@
- #include <linux/wait.h>
- #include <linux/sched.h>
- #include <linux/sched/rt.h>
-+#include <pipeline/thread.h>
- #include <cobalt/kernel/list.h>
- #include <cobalt/kernel/stat.h>
- #include <cobalt/kernel/timer.h>
-@@ -372,7 +373,7 @@ void __xnthread_discard(struct xnthread *thread);
-  */
- static inline struct xnthread *xnthread_current(void)
+ /** @} */
+diff --git a/kernel/cobalt/ipipe/init.c b/kernel/cobalt/ipipe/init.c
+index 4d7ac04de..d901c417f 100644
+--- a/kernel/cobalt/ipipe/init.c
++++ b/kernel/cobalt/ipipe/init.c
+@@ -18,6 +18,8 @@ module_param_named(timerfreq, timerfreq_arg, ulong, 0444);
+ static unsigned long clockfreq_arg;
+ module_param_named(clockfreq, clockfreq_arg, ulong, 0444);
+ 
++void apc_dispatch(unsigned int virq, void *arg);
++
+ int __init pipeline_init(void)
  {
--	return ipipe_current_threadinfo()->thread;
-+	return pipeline_current()->thread;
- }
- 
- /**
-@@ -388,7 +389,7 @@ static inline struct xnthread *xnthread_current(void)
-  */
- static inline struct xnthread *xnthread_from_task(struct task_struct *p)
- {
--	return ipipe_task_threadinfo(p)->thread;
-+	return pipeline_thread_from_task(p);
- }
- 
- /**
-diff --git a/kernel/cobalt/ipipe/kevents.c b/kernel/cobalt/ipipe/kevents.c
-index ba584677c..e0d4a1288 100644
---- a/kernel/cobalt/ipipe/kevents.c
-+++ b/kernel/cobalt/ipipe/kevents.c
-@@ -831,16 +831,16 @@ static inline int get_mayday_prot(void)
- 
- void pipeline_attach_current(struct xnthread *thread)
- {
--	struct ipipe_threadinfo *p;
-+	struct cobalt_threadinfo *p;
- 
--	p = ipipe_current_threadinfo();
-+	p = pipeline_current();
- 	p->thread = thread;
- 	p->process = cobalt_search_process(current->mm);
- }
- 
- static void detach_current(void)
- {
--	struct ipipe_threadinfo *p = ipipe_current_threadinfo();
-+	struct cobalt_threadinfo *p = pipeline_current();
- 	p->thread = NULL;
- 	p->process = NULL;
- }
-diff --git a/kernel/cobalt/posix/process.c b/kernel/cobalt/posix/process.c
-index 9bc6082d0..accd989ca 100644
---- a/kernel/cobalt/posix/process.c
-+++ b/kernel/cobalt/posix/process.c
-@@ -463,7 +463,7 @@ EXPORT_SYMBOL_GPL(cobalt_unregister_personality);
- struct xnthread_personality *
- cobalt_push_personality(int xid)
- {
--	struct ipipe_threadinfo *p = ipipe_current_threadinfo();
-+	struct cobalt_threadinfo *p = pipeline_current();
- 	struct xnthread_personality *prev, *next;
- 	struct xnthread *thread = p->thread;
- 
-@@ -504,7 +504,7 @@ EXPORT_SYMBOL_GPL(cobalt_push_personality);
-  */
- void cobalt_pop_personality(struct xnthread_personality *prev)
- {
--	struct ipipe_threadinfo *p = ipipe_current_threadinfo();
-+	struct cobalt_threadinfo *p = pipeline_current();
- 	struct xnthread *thread = p->thread;
- 
- 	secondary_mode_only();
-diff --git a/kernel/cobalt/posix/process.h b/kernel/cobalt/posix/process.h
-index 3a38ae639..a2f4ec591 100644
---- a/kernel/cobalt/posix/process.h
-+++ b/kernel/cobalt/posix/process.h
-@@ -20,6 +20,7 @@
- 
- #include <linux/list.h>
- #include <linux/bitmap.h>
-+#include <pipeline/thread.h>
- #include <cobalt/kernel/ppd.h>
- 
- #define KEVENT_PROPAGATE   0
-@@ -94,13 +95,13 @@ extern struct cobalt_resources cobalt_global_resources;
- 
- static inline struct cobalt_process *cobalt_current_process(void)
- {
--	return ipipe_current_threadinfo()->process;
-+	return pipeline_current()->process;
- }
- 
- static inline struct cobalt_process *
- cobalt_set_process(struct cobalt_process *process)
- {
--	struct ipipe_threadinfo *p = ipipe_current_threadinfo();
-+	struct cobalt_threadinfo *p = pipeline_current();
- 	struct cobalt_process *old;
- 
- 	old = p->process;
-diff --git a/kernel/cobalt/thread.c b/kernel/cobalt/thread.c
-index a882bcc45..b871e6069 100644
---- a/kernel/cobalt/thread.c
-+++ b/kernel/cobalt/thread.c
-@@ -2452,9 +2452,9 @@ static inline void wakeup_parent(struct completion *done)
- 
- static inline void init_kthread_info(struct xnthread *thread)
- {
--	struct ipipe_threadinfo *p;
-+	struct cobalt_threadinfo *p;
- 
--	p = ipipe_current_threadinfo();
-+	p = pipeline_current();
- 	p->thread = thread;
- 	p->process = NULL;
- }
+ 	struct ipipe_sysinfo sysinfo;
 -- 
 2.26.2
 
