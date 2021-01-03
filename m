@@ -1,9 +1,13 @@
+Subject: Re: Mode Switch
+References: <CAFZ-hKiLthiDWtv8cuwRGMa0TAKv5ddWGt5XSsSJo1+UfBqgSg@mail.gmail.com>
+From: steve freyder <steve@freyder.net>
+Message-ID: <b31e1506-ef9d-e3de-3c54-b7286bc7a400@freyder.net>
+Date: Sun, 3 Jan 2021 16:00:21 -0600
 MIME-Version: 1.0
-From: Leandro Bucci <guestleandro11@gmail.com>
-Date: Sun, 3 Jan 2021 21:29:24 +0100
-Message-ID: <CAFZ-hKiLthiDWtv8cuwRGMa0TAKv5ddWGt5XSsSJo1+UfBqgSg@mail.gmail.com>
-Subject: Mode Switch
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <CAFZ-hKiLthiDWtv8cuwRGMa0TAKv5ddWGt5XSsSJo1+UfBqgSg@mail.gmail.com>
+Content-Language: en-US
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 7bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -12,48 +16,64 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
+To: Leandro Bucci <guestleandro11@gmail.com>, xenomai@xenomai.org
 
-Hi, I have a strange behavior regarding the "mode switch".
-In the attached code, the task should never switch to the Linux domain, but
-instead I have a value of MSW = 2.
-How is it possible?
-Even if I do a printf in the task I always get MSW = 2.
-I can't understand where the problem is.
+Each time I would do something like this:
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <unistd.h>
-#include <alchemy/task.h>
-#include <alchemy/timer.h>
 
-RT_TASK task;
-RT_TASK_INFO info;
+printf(...) ;
 
-void task_body(void *arg)
-{
-rt_task_inquire(NULL, &info);
-}
+fflush(stdout) ;
 
-int main()
-{
-int err;
+rt_task_sleep(1e9/5) ;
 
-err = rt_task_create(&task, "mytask", 0, 1, 0);
-if (err != 0){
-fprintf(stderr, "failed to create task\n");
-exit(EXIT_FAILURE);
-}
+rt_task_inquire(...) ;
 
-err = rt_task_start(&task, &task_body, NULL);
-if (err != 0){
-fprintf(stderr, "failed to start task\n");
-exit(EXIT_FAILURE);
-}
 
-sleep(5); //sleep for 5 seconds
+msw incremented by 1, csw would increment by 2.
 
-printf("mode switch = %d\n", (int)(info.stat.msw));
 
-exit(EXIT_SUCCESS);
-}
+On 1/3/2021 2:29 PM, Leandro Bucci via Xenomai wrote:
+> Hi, I have a strange behavior regarding the "mode switch".
+> In the attached code, the task should never switch to the Linux domain, but
+> instead I have a value of MSW = 2.
+> How is it possible?
+> Even if I do a printf in the task I always get MSW = 2.
+> I can't understand where the problem is.
+>
+> #include <stdio.h>
+> #include <stdlib.h>
+> #include <unistd.h>
+> #include <alchemy/task.h>
+> #include <alchemy/timer.h>
+>
+> RT_TASK task;
+> RT_TASK_INFO info;
+>
+> void task_body(void *arg)
+> {
+> rt_task_inquire(NULL, &info);
+> }
+>
+> int main()
+> {
+> int err;
+>
+> err = rt_task_create(&task, "mytask", 0, 1, 0);
+> if (err != 0){
+> fprintf(stderr, "failed to create task\n");
+> exit(EXIT_FAILURE);
+> }
+>
+> err = rt_task_start(&task, &task_body, NULL);
+> if (err != 0){
+> fprintf(stderr, "failed to start task\n");
+> exit(EXIT_FAILURE);
+> }
+>
+> sleep(5); //sleep for 5 seconds
+>
+> printf("mode switch = %d\n", (int)(info.stat.msw));
+>
+> exit(EXIT_SUCCESS);
+> }
