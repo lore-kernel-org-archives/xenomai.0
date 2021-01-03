@@ -1,15 +1,14 @@
-Subject: Re: Mode Switch
+MIME-Version: 1.0
 References: <CAFZ-hKiLthiDWtv8cuwRGMa0TAKv5ddWGt5XSsSJo1+UfBqgSg@mail.gmail.com>
  <b31e1506-ef9d-e3de-3c54-b7286bc7a400@freyder.net>
  <CAFZ-hKhSL90zbO9rGZRZGYkYz4ULHWAGOPowWe90r+fXvS9vmw@mail.gmail.com>
-From: steve freyder <steve@freyder.net>
-Message-ID: <5c401257-2712-2120-21b1-bcc51650d681@freyder.net>
-Date: Sun, 3 Jan 2021 16:16:06 -0600
-MIME-Version: 1.0
-In-Reply-To: <CAFZ-hKhSL90zbO9rGZRZGYkYz4ULHWAGOPowWe90r+fXvS9vmw@mail.gmail.com>
-Content-Language: en-US
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 7bit
+ <5c401257-2712-2120-21b1-bcc51650d681@freyder.net>
+In-Reply-To: <5c401257-2712-2120-21b1-bcc51650d681@freyder.net>
+From: Leandro Bucci <guestleandro11@gmail.com>
+Date: Sun, 3 Jan 2021 23:22:26 +0100
+Message-ID: <CAFZ-hKgCKiqoUAM3ooXgL=h1zsdn1j7UhnaPT9Sd+=t1iT_b3A@mail.gmail.com>
+Subject: Re: Mode Switch
+Content-Type: text/plain; charset="UTF-8"
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -18,79 +17,86 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Leandro Bucci <guestleandro11@gmail.com>, xenomai@xenomai.org
+To: steve freyder <steve@freyder.net>, xenomai@xenomai.org
 
-Might need some help from Philippe on this one but my thinking says that 
-thread creation happens in secondary mode, so there's gotta be at least 
-*one* mode switch on the way to becoming a cobalt thread running in 
-primary mode, perhaps the second one has to do with launching the 
-background printf() helper thread?
+I understand, but it's strange because if I do a printf inside the task I
+always have MSW = 2.  Yes maybe Philippe can help.  Thank you too
 
+Il dom 3 gen 2021, 23:16 steve freyder <steve@freyder.net> ha scritto:
 
-
-On 1/3/2021 4:08 PM, Leandro Bucci wrote:
+> Might need some help from Philippe on this one but my thinking says that
+> thread creation happens in secondary mode, so there's gotta be at least
+> *one* mode switch on the way to becoming a cobalt thread running in primary
+> mode, perhaps the second one has to do with launching the background
+> printf() helper thread?
+>
+>
+>
+> On 1/3/2021 4:08 PM, Leandro Bucci wrote:
+>
 > But in the task I don't do any printf, how is it possible that MSW = 2?
 >
-> Il dom 3 gen 2021, 23:00 steve freyder <steve@freyder.net 
-> <mailto:steve@freyder.net>> ha scritto:
+> Il dom 3 gen 2021, 23:00 steve freyder <steve@freyder.net> ha scritto:
 >
->     Each time I would do something like this:
->
->
->     printf(...) ;
->
->     fflush(stdout) ;
->
->     rt_task_sleep(1e9/5) ;
->
->     rt_task_inquire(...) ;
->
->
->     msw incremented by 1, csw would increment by 2.
->
->
->     On 1/3/2021 2:29 PM, Leandro Bucci via Xenomai wrote:
->>     Hi, I have a strange behavior regarding the "mode switch".
->>     In the attached code, the task should never switch to the Linux domain, but
->>     instead I have a value of MSW = 2.
->>     How is it possible?
->>     Even if I do a printf in the task I always get MSW = 2.
->>     I can't understand where the problem is.
+>> Each time I would do something like this:
 >>
->>     #include <stdio.h>
->>     #include <stdlib.h>
->>     #include <unistd.h>
->>     #include <alchemy/task.h>
->>     #include <alchemy/timer.h>
 >>
->>     RT_TASK task;
->>     RT_TASK_INFO info;
+>> printf(...) ;
 >>
->>     void task_body(void *arg)
->>     {
->>     rt_task_inquire(NULL, &info);
->>     }
+>> fflush(stdout) ;
 >>
->>     int main()
->>     {
->>     int err;
+>> rt_task_sleep(1e9/5) ;
 >>
->>     err = rt_task_create(&task, "mytask", 0, 1, 0);
->>     if (err != 0){
->>     fprintf(stderr, "failed to create task\n");
->>     exit(EXIT_FAILURE);
->>     }
+>> rt_task_inquire(...) ;
 >>
->>     err = rt_task_start(&task, &task_body, NULL);
->>     if (err != 0){
->>     fprintf(stderr, "failed to start task\n");
->>     exit(EXIT_FAILURE);
->>     }
 >>
->>     sleep(5); //sleep for 5 seconds
+>> msw incremented by 1, csw would increment by 2.
 >>
->>     printf("mode switch = %d\n", (int)(info.stat.msw));
 >>
->>     exit(EXIT_SUCCESS);
->>     }
->
+>> On 1/3/2021 2:29 PM, Leandro Bucci via Xenomai wrote:
+>>
+>> Hi, I have a strange behavior regarding the "mode switch".
+>> In the attached code, the task should never switch to the Linux domain, but
+>> instead I have a value of MSW = 2.
+>> How is it possible?
+>> Even if I do a printf in the task I always get MSW = 2.
+>> I can't understand where the problem is.
+>>
+>> #include <stdio.h>
+>> #include <stdlib.h>
+>> #include <unistd.h>
+>> #include <alchemy/task.h>
+>> #include <alchemy/timer.h>
+>>
+>> RT_TASK task;
+>> RT_TASK_INFO info;
+>>
+>> void task_body(void *arg)
+>> {
+>> rt_task_inquire(NULL, &info);
+>> }
+>>
+>> int main()
+>> {
+>> int err;
+>>
+>> err = rt_task_create(&task, "mytask", 0, 1, 0);
+>> if (err != 0){
+>> fprintf(stderr, "failed to create task\n");
+>> exit(EXIT_FAILURE);
+>> }
+>>
+>> err = rt_task_start(&task, &task_body, NULL);
+>> if (err != 0){
+>> fprintf(stderr, "failed to start task\n");
+>> exit(EXIT_FAILURE);
+>> }
+>>
+>> sleep(5); //sleep for 5 seconds
+>>
+>> printf("mode switch = %d\n", (int)(info.stat.msw));
+>>
+>> exit(EXIT_SUCCESS);
+>> }
+>>
+>>
