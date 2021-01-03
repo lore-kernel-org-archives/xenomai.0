@@ -1,13 +1,12 @@
-Subject: Re: Mode Switch
-References: <CAFZ-hKiLthiDWtv8cuwRGMa0TAKv5ddWGt5XSsSJo1+UfBqgSg@mail.gmail.com>
-From: steve freyder <steve@freyder.net>
-Message-ID: <b31e1506-ef9d-e3de-3c54-b7286bc7a400@freyder.net>
-Date: Sun, 3 Jan 2021 16:00:21 -0600
 MIME-Version: 1.0
-In-Reply-To: <CAFZ-hKiLthiDWtv8cuwRGMa0TAKv5ddWGt5XSsSJo1+UfBqgSg@mail.gmail.com>
-Content-Language: en-US
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 7bit
+References: <CAFZ-hKiLthiDWtv8cuwRGMa0TAKv5ddWGt5XSsSJo1+UfBqgSg@mail.gmail.com>
+ <b31e1506-ef9d-e3de-3c54-b7286bc7a400@freyder.net>
+In-Reply-To: <b31e1506-ef9d-e3de-3c54-b7286bc7a400@freyder.net>
+From: Leandro Bucci <guestleandro11@gmail.com>
+Date: Sun, 3 Jan 2021 23:08:41 +0100
+Message-ID: <CAFZ-hKhSL90zbO9rGZRZGYkYz4ULHWAGOPowWe90r+fXvS9vmw@mail.gmail.com>
+Subject: Re: Mode Switch
+Content-Type: text/plain; charset="UTF-8"
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,24 +15,29 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Leandro Bucci <guestleandro11@gmail.com>, xenomai@xenomai.org
+To: steve freyder <steve@freyder.net>, xenomai@xenomai.org
 
-Each time I would do something like this:
+But in the task I don't do any printf, how is it possible that MSW = 2?
 
+Il dom 3 gen 2021, 23:00 steve freyder <steve@freyder.net> ha scritto:
 
-printf(...) ;
-
-fflush(stdout) ;
-
-rt_task_sleep(1e9/5) ;
-
-rt_task_inquire(...) ;
-
-
-msw incremented by 1, csw would increment by 2.
-
-
-On 1/3/2021 2:29 PM, Leandro Bucci via Xenomai wrote:
+> Each time I would do something like this:
+>
+>
+> printf(...) ;
+>
+> fflush(stdout) ;
+>
+> rt_task_sleep(1e9/5) ;
+>
+> rt_task_inquire(...) ;
+>
+>
+> msw incremented by 1, csw would increment by 2.
+>
+>
+> On 1/3/2021 2:29 PM, Leandro Bucci via Xenomai wrote:
+>
 > Hi, I have a strange behavior regarding the "mode switch".
 > In the attached code, the task should never switch to the Linux domain, but
 > instead I have a value of MSW = 2.
@@ -77,3 +81,5 @@ On 1/3/2021 2:29 PM, Leandro Bucci via Xenomai wrote:
 >
 > exit(EXIT_SUCCESS);
 > }
+>
+>
