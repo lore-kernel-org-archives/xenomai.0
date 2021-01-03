@@ -1,11 +1,16 @@
-References: <ce09c464-b17f-a977-2638-c0fb1f3bcdf4@yeah.net>
-From: Philippe Gerum <rpm@xenomai.org>
-Subject: Re: [CXP] some questions about "Common Xenomai Platform"
-In-reply-to: <ce09c464-b17f-a977-2638-c0fb1f3bcdf4@yeah.net>
-Date: Sun, 03 Jan 2021 18:38:04 +0100
-Message-ID: <874kjxrkeb.fsf@xenomai.org>
 MIME-Version: 1.0
-Content-Type: text/plain
+References: <CAFZ-hKjeJZGD7s54hH_QURdY4z=ViUEz3_mrgQbwH4pX4weY+g@mail.gmail.com>
+ <fa5f0b2a-4f92-343c-b00d-0d75ee79a97e@freyder.net>
+ <87zh1qqpkp.fsf@xenomai.org>
+ <CAFZ-hKiOMOk9JZU6cyjV7yaen05VKke=Har-3Xyy_Qh4iEPerw@mail.gmail.com>
+ <87v9ceqnya.fsf@xenomai.org>
+ <CAFZ-hKjdSmjrFRNF2ugvDqKtTVae0XbLH4KvXhAas+k88PY4hw@mail.gmail.com>
+In-Reply-To: <CAFZ-hKjdSmjrFRNF2ugvDqKtTVae0XbLH4KvXhAas+k88PY4hw@mail.gmail.com>
+From: Leandro Bucci <guestleandro11@gmail.com>
+Date: Sun, 3 Jan 2021 19:24:17 +0100
+Message-ID: <CAFZ-hKgxxZ6LQ9uBhJH2Wba7wnh9gKgafAmTrdNL8KFfMtvLRg@mail.gmail.com>
+Subject: Re: domain switch
+Content-Type: text/plain; charset="UTF-8"
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -14,47 +19,113 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Hailongliu <hailongliiu@yeah.net>
-Cc: xenomai@xenomai.org
+To: Philippe Gerum <rpm@xenomai.org>, xenomai@xenomai.org, steve freyder <steve@freyder.net>
+
+Sorry for the inconvenience,
+I tried to write this code to report domain changes (or mode switch):
+
+##############################################################
+#include <stdio.h>
+#include <stdlib.h>
+#include <signal.h>
+#include <unistd.h>
+#include <alchemy/task.h>
+#include <alchemy/timer.h>
 
 
-Hailongliu via Xenomai <xenomai@xenomai.org> writes:
+RT_TASK task;
 
-> Hi,
+void task_body(void *arg)
+{
+
+RT_TASK_INFO info;
+
+printf("Hello\n");
+rt_printf("ByeBye\n");
+rt_task_inquire(NULL, &info);
+rt_printf("mode switch = %d\n", info.stat.msw);
+}
+
+int main()
+{
+int err;
+
+err = rt_task_create(&task, "mytask", 0, 1, 0);
+if (err != 0){
+fprintf(stderr, "failed to create task\n");
+exit(EXIT_FAILURE);
+}
+
+err = rt_task_start(&task, &task_body, NULL);
+if (err != 0){
+fprintf(stderr, "failed to start task\n");
+exit(EXIT_FAILURE);
+}
+
+pause();
+exit(EXIT_SUCCESS);
+}
+
+######################################################################
+
+but I get 0 as a result. How is this possible?
+
+Il giorno dom 3 gen 2021 alle ore 12:20 Leandro Bucci <
+guestleandro11@gmail.com> ha scritto:
+
+> perfect thank you so much for the explanation
 >
-> I learned the "Common Xenomai Platform" program from this mail-list and wiki
-> of project Xenomai. This is a very attractive plan, as it will port Xenomai for
-> recent LTS kernel(v5.10).
+> Il dom 3 gen 2021, 12:06 Philippe Gerum <rpm@xenomai.org> ha scritto:
 >
-> I noticed that  March 31, 2021 is the deadline for "CXP", dose that mean we
-> can expect the new features at Xenomai-3.3 ?
-
-Yes, that is the plan. Xenomai 3.3 is going to be the first release
-fully implementing the CXP. Xenomai 4 which is going to use a different
-real-time core will be developed in parallel to Xenomai 3.3, aiming at
-CXP-compliance too. It should be clear that March 31, 2021 is the date
-for completing the CXP specification, not that of any release
-implementing it, which can only happen later by definition.
-
-> I also concern about that how long Xenomai-3.3 will be live? And if there
-> will be a long term version with kernel-v5.10 for Xenomai?
+>>
+>> Leandro Bucci <guestleandro11@gmail.com> writes:
+>>
+>> > is it possible to have the same thing for tasks instead of threads?
+>> >
+>>
+>> task == thread
+>>
+>> > Il dom 3 gen 2021, 11:31 Philippe Gerum <rpm@xenomai.org> ha scritto:
+>> >
+>> >>
+>> >> steve freyder via Xenomai <xenomai@xenomai.org> writes:
+>> >>
+>> >> > Right.
+>> >> >
+>> >> >
+>> >> > AKA, "mode switch", a switch from "primary mode" to "secondary mode",
+>> >> > or vice versa.
+>> >> >
+>> >> > One place you can find that information is in:
+>> >> >
+>> >> > /proc/xenomai/sched/acct
+>> >> >
+>> >> > there are two fields MSW, and CSW which count mode/context switches
+>> >> > per-process. This requires an open, a read loop to locate the desired
+>> >> > pid and extract the desired information, then either rewind or
+>> >> > close/reopen to do it again - all of which will almost surely
+>> generate
+>> >> > more mode/context switching.
+>> >> >
+>> >>
+>> >> If that helps, there is also the option of getting the thread stats by
+>> >> program, using int cobalt_thread_stat(pid_t pid, struct
+>> >> cobalt_threadstat *stat), declared in sys/cobalt.h. pid refers to a
+>> >> thread identifier (as obtained from gettid(2) in the context of the
+>> >> target thread). It must refer to a Cobalt thread, otherwise the call
+>> >> would fail with -ESRCH.
+>> >>
+>> >> The mode switch count is present in the returned information block
+>> >> (->msw). cobalt_thread_stat() would not cause any mode switch. It can
+>> be
+>> >> called by any thread regardless of its type (i.e. regular or Cobalt).
+>> >>
+>> >> --
+>> >> Philippe.
+>> >>
+>>
+>>
+>> --
+>> Philippe.
+>>
 >
-
-Xenomai will run v5.10 LTS as soon as release 3.2, based on the ongoing
-port of the Cobalt core to Dovetail.
-
-How long a particular Xenomai release is maintained for a particular
-kernel version currently depends on a few individuals and companies
-having a specific requirement to keep such port alive, and contributing
-to this task directly (doing the work) or indirectly (funding someone
-else's work).
-
-Although there is a commitment to run Xenomai 3.x on top of kernel v5.10
-asap, I'm not aware of any formal commitment of any current contributor
-to maintain this port for a pre-defined period of time. One may only
-assume that by picking a LTS kernel like v5.10, we are likely going to
-maintain it "for some time".
-
--- 
-Philippe.
-
