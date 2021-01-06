@@ -1,15 +1,14 @@
-Subject: Re: [CXP] Discussing the RTDM specification
-References: <874kkjurgf.fsf@xenomai.org>
- <84f868cf-5713-c7cc-95bb-c03d3e89cd93@siemens.com>
- <874kkcvm8d.fsf@xenomai.org>
-From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <63816e8d-12b1-648e-0312-61d2f80b865f@siemens.com>
-Date: Tue, 5 Jan 2021 20:31:43 +0100
+Date: Wed, 6 Jan 2021 08:04:14 +0800
+From: Fino Meng <fino.meng@linux.intel.com>
+Subject: Re: Is it possible to implement a real-time API to read the files on
+ the disk?
+Message-ID: <20210106000413.GA28404@linux.intel.com>
+References: <CAAvDm6au1h8Mqwk5Dqevduk9iMJ8crvzb4pOhhZhO85EgRVCQg@mail.gmail.com>
 MIME-Version: 1.0
-In-Reply-To: <874kkcvm8d.fsf@xenomai.org>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="utf-8"
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <CAAvDm6au1h8Mqwk5Dqevduk9iMJ8crvzb4pOhhZhO85EgRVCQg@mail.gmail.com>
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -18,121 +17,30 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Philippe Gerum <rpm@xenomai.org>
+To: =?utf-8?B?5a2Z5LiW6b6Z?= sunshilong <sunshilong369@gmail.com>
 Cc: xenomai@xenomai.org
 
-On 23.12.20 11:40, Philippe Gerum wrote:
+On Mon, Jan 04, 2021 at 07:58:53PM +0800, 孙世龙 sunshilong via Xenomai wrote:
+> Is it possible to implement a real-time API to read the files on the disk?
 > 
-> Jan Kiszka <jan.kiszka@siemens.com> writes:
+> As far as I know, there is no such an interface now, but is it
+> possible to achieve this goal?
 > 
->> On 18.12.20 15:19, Philippe Gerum via Xenomai wrote:
->>>
->>> This wiki page [1] contains a draft proposal about specifying which
->>> services from the current RTDM interface should be part of the Common
->>> Xenomai Platform. Some proposals for deprecation stand out:
->>>
->>> - I suspect that only very few RTDM drivers are actually handling
->>>   requests from other kernel-based drivers in real world applications,
->>>   at least not enough to justify RTDM codifying these rare cases into a
->>>   common interface (rtdm_open, rtdm_read, rtdm_write etc).
->>>
->>>   In other words, although I would agree that a few particular drivers
->>>   might want to export a couple of services to kernel-based clients in
->>>   order to provide them some sort of backchannel, it seems wrong to
->>>   require RTDM drivers to provide a kernel interface which would match
->>>   their user interface in the same terms. For these specific cases, ad
->>>   hoc code in these few drivers should be enough.
->>>
->>>   Besides, I believe that most kernel->kernel request paths implemented
->>>   by in-tree RTDM drivers have never been tested for years, if ever.
->>>   Meanwhile, this kernel->kernel API introduces a basic exception case
->>>   into many RTDM and driver code paths, e.g. for differentiating kernel
->>>   vs user buffers, for only very few use cases.
->>>
->>>   For these reasons, I would suggest to deprecate the kernel->kernel API
->>>   from RTDM starting from 3.3, excluding it from the CXP in the same
->>>   move.
->>
->> That's fine with me. The idea was once that something like bus drivers
->> would appear, but that never happened.
->>
->>>
->>> - RTDM_EXECUTE_ATOMICALLY() and related calls relying on the Cobalt big
->>>   lock must go. For SMP scalability reasons, this big lock was
->>>   eliminated from the EVL core, which means that all the attached
->>>   semantics will not hold there. Serializing access to shared resources
->>>   should be guaranteed by resource-specific locking, not by a giant
->>>   traffic light like the big lock implements.
->>
->> This is more complicated: RTDM_EXECUTE_ATOMICALLY was in fact deprecated
->> long ago, but users were migrated to cobalt_atomic_enter/leave which may
->> now make it look like we no longer need this. Maybe this is already the
->> case when using rtdm_waitqueue*, but let's convert everyone first.
+> I would be grateful to have some help with this question.
 > 
-> Alternatively, In-tree v3 drivers could also keep relying
-> RTDM_EXECUTE_ATOMICALLY, the v4 implementation would be different for
-> them. Bottom line is to exclude from the CXP the whole idea that we may
-> schedule while holding a lock to protect against missed wake ups, in
-> general the very existence of any superlock which would cover everything
-> from top to bottom when serializing. I agree that having v3 converge
-> towards the CXP would be better though.
-> 
+> Best Regards
+> Sunshilong
+>
 
-I'm fine with migrating to a new pattern first, drop that old RTDM
-pattern and declare the new one as migration path. Same for below.
+my first thinking, disks are heavily shared resources in a general OS, if
+realtime API occupy it for a long time, non-realtime thread all have to
+wait.
 
->>
->>>
->>> - rtdm_mutex_timedlock() has dubious semantics. Hitting a timeout
->>>   condition on grabbing a mutex either means that:
->>>
->>
->> I think you are missing the use cases:
->>
->> mutex-lock-timed
->> ...
->> wait-event-timed
->> ...
->> mutex-unlock
->> (which goes long with timeout sequences)
->>
-> 
-> There is a couple of issues with such use case: first we should never
-> ever sleep with a mutex held, this would trigger SIGDEBUG if done from
-> user ( a [binary] semaphore would at least prevent this problem), but
-> more importantly, how would this pattern allow the event to be signaled
-> given the waiter holds the lock the sender would need to acquire first?
+read a file is too much slow compare a realtime thread's latency/jitter
+scope (< 20us)
 
-Just look at the existing drivers for the use cases (which obviously
-imply signalling without holding the mutex). The clash with user-level
-debugging was indeed always there and is another reason to provide users
-an alternative.
+depends on your use case, maybe possible to add a raw disk, only used by
+the time critical code?
 
-> 
->> In fact, all that could be replaced with
->>
->> mutex-lock
->> ...
->> atomic-entry
->> mutex-unlock
->> wait-event-timed
->> mutex-lock
->> atomic-leave
->> ...
->> mutex-lock
->>
->> but that is what we want to replace as well...
->>
-> 
-> Yep, that would work for v3, preventing wake ups to be missed the same way.
-> 
-
-So let's define something that serves both versions, thus is
-CXP-compatible. It makes no sense defining CXP while ignoring the use cases.
-
-Jan
-
--- 
-Siemens AG, T RDA IOT
-Corporate Competence Center Embedded Linux
+BR/fino 
 
