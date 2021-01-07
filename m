@@ -1,10 +1,12 @@
-Subject: Re: CPU affinity and scheduler
-References: <CAFZ-hKgU4jY1BVU+zL8VFJ1icouqzU-KUJmUs+_rLcX_5Wd_Pg@mail.gmail.com>
+Subject: Re: [PATCH Dovetail 07/13] cobalt/clock: pipeline: make HOSTRT depend
+ on IPIPE
+References: <20210102093353.3195090-1-rpm@xenomai.org>
+ <20210102093353.3195090-8-rpm@xenomai.org>
 From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <ea162f0f-3fec-207d-f91d-1d4d0e41ec65@siemens.com>
-Date: Thu, 7 Jan 2021 13:22:39 +0100
+Message-ID: <3100bc9c-4fee-eacd-8d62-d91a12e0906d@siemens.com>
+Date: Thu, 7 Jan 2021 14:52:29 +0100
 MIME-Version: 1.0
-In-Reply-To: <CAFZ-hKgU4jY1BVU+zL8VFJ1icouqzU-KUJmUs+_rLcX_5Wd_Pg@mail.gmail.com>
+In-Reply-To: <20210102093353.3195090-8-rpm@xenomai.org>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -16,35 +18,153 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Leandro Bucci <guestleandro11@gmail.com>, xenomai@xenomai.org
+To: Philippe Gerum <rpm@xenomai.org>, xenomai@xenomai.org
 
-On 02.01.21 11:38, Leandro Bucci via Xenomai wrote:
-> Hello and happy new year to all. I wanted to ask you in detail what this
-> line means:
+On 02.01.21 10:33, Philippe Gerum wrote:
+> From: Philippe Gerum <rpm@xenomai.org>
 > 
-> isolcpus=0,1 xenomai.supported_cpus=0x3
+> This interface is pointless with Dovetail whose applications directly
+> refer to the wallclock time exported through the common vDSO.
 > 
-> I understand that 2 CPUs are isolated. (I'm working on a Raspberry). But in
-> what sense are they isolated? does it mean that if a xenomai Task runs on
-> one of the two CPUs it will never migrate to another CPU? instead what does
-> "xenomai supported CPU" mean? that only that CPU supports Xenomai? but then
-> why is CPU 3 not isolated?
+> No functional change is introduced.
 > 
+> Signed-off-by: Philippe Gerum <rpm@xenomai.org>
+> ---
+>  include/cobalt/kernel/vdso.h  | 18 +++++++++++-------
+>  kernel/cobalt/Kconfig         |  4 ----
+>  kernel/cobalt/ipipe/kevents.c | 14 ++++++++------
+>  kernel/cobalt/posix/clock.c   |  4 ++--
+>  4 files changed, 21 insertions(+), 19 deletions(-)
+> 
+> diff --git a/include/cobalt/kernel/vdso.h b/include/cobalt/kernel/vdso.h
+> index f7140adc7..7da88a730 100644
+> --- a/include/cobalt/kernel/vdso.h
+> +++ b/include/cobalt/kernel/vdso.h
+> @@ -25,21 +25,25 @@
+>  #include <asm/processor.h>
+>  #include <cobalt/uapi/kernel/vdso.h>
+>  
+> +extern struct xnvdso *nkvdso;
+> +
+>  /*
+>   * Define the available feature set here. We have a single feature
+> - * defined for now.
+> + * defined for now, only in the I-pipe case.
+>   */
+> -#ifdef CONFIG_XENO_OPT_HOSTRT
+> -#define XNVDSO_FEATURES XNVDSO_FEAT_HOST_REALTIME
+> -#else
+> -#define XNVDSO_FEATURES 0
+> -#endif /* CONFIG_XENO_OPT_HOSTRT */
+> +#ifdef CONFIG_IPIPE_HAVE_HOSTRT
+>  
+> -extern struct xnvdso *nkvdso;
+> +#define XNVDSO_FEATURES XNVDSO_FEAT_HOST_REALTIME
+>  
+>  static inline struct xnvdso_hostrt_data *get_hostrt_data(void)
+>  {
+>  	return &nkvdso->hostrt_data;
+>  }
+>  
+> +#else
+> +
+> +#define XNVDSO_FEATURES 0
+> +
+> +#endif
+> +
+>  #endif /* _COBALT_KERNEL_VDSO_H */
+> diff --git a/kernel/cobalt/Kconfig b/kernel/cobalt/Kconfig
+> index 0d96913bd..ead4740c1 100644
+> --- a/kernel/cobalt/Kconfig
+> +++ b/kernel/cobalt/Kconfig
+> @@ -210,10 +210,6 @@ config XENO_OPT_TIMER_RBTREE
+>  
+>  endchoice
+>  
+> -config XENO_OPT_HOSTRT
+> -       depends on IPIPE_HAVE_HOSTRT
+> -       def_bool y
+> -
+>  config XENO_OPT_PIPE
+>  	bool
+>  
+> diff --git a/kernel/cobalt/ipipe/kevents.c b/kernel/cobalt/ipipe/kevents.c
+> index e0d4a1288..595faffd3 100644
+> --- a/kernel/cobalt/ipipe/kevents.c
+> +++ b/kernel/cobalt/ipipe/kevents.c
+> @@ -377,7 +377,7 @@ void ipipe_migration_hook(struct task_struct *p) /* hw IRQs off */
+>  	xnsched_run();
+>  }
+>  
+> -#ifdef CONFIG_XENO_OPT_HOSTRT
+> +#ifdef CONFIG_IPIPE_HAVE_HOSTRT
+>  
+>  static IPIPE_DEFINE_SPINLOCK(__hostrtlock);
+>  
+> @@ -417,7 +417,7 @@ static inline void init_hostrt(void)
+>  	nkvdso->hostrt_data.live = 0;
+>  }
+>  
+> -#else /* !CONFIG_XENO_OPT_HOSTRT */
+> +#else /* !CONFIG_IPIPE_HAVE_HOSTRT */
+>  
+>  struct ipipe_hostrt_data;
+>  
+> @@ -428,7 +428,7 @@ static inline int handle_hostrt_event(struct ipipe_hostrt_data *hostrt)
+>  
+>  static inline void init_hostrt(void) { }
+>  
+> -#endif /* !CONFIG_XENO_OPT_HOSTRT */
+> +#endif /* !CONFIG_IPIPE_HAVE_HOSTRT */
+>  
+>  static void __handle_taskexit_event(struct task_struct *p)
+>  {
+> @@ -756,12 +756,14 @@ int ipipe_kevent_hook(int kevent, void *data)
+>  	case IPIPE_KEVT_CLEANUP:
+>  		ret = handle_cleanup_event(data);
+>  		break;
+> -	case IPIPE_KEVT_HOSTRT:
+> -		ret = handle_hostrt_event(data);
+> -		break;
+>  	case IPIPE_KEVT_SETAFFINITY:
+>  		ret = handle_setaffinity_event(data);
+>  		break;
+> +#ifdef IPIPE_KEVT_HOSTRT
 
-isolcpus specifies the isolation for Linux tasks: Nothing is put on this
-CPUs by Linux unless explicitly requested (eg. via taskset or thread
-affinities) or strictly required (a few kernel threads). That helps to
-keep those core free for RT jobs.
+Wouldn't CONFIG_IPIPE_HAVE_HOSTRT be cleaner here?
 
-supported_cpus then tells Xenomai to only schedule on those cores and do
-not intercept Linux (except where technically needed) on the others.
-That parameter is specified as mask, thus core ID 0 and 1 are selected here.
-
-All that does not protect you from hardware related interference,
-though. Caches might be shared between the core groups, just like I/O paths.
-
-HTH,
 Jan
+
+> +	case IPIPE_KEVT_HOSTRT:
+> +		ret = handle_hostrt_event(data);
+> +		break;
+> +#endif
+>  #ifdef IPIPE_KEVT_CLOCKFREQ
+>  	case IPIPE_KEVT_CLOCKFREQ:
+>  		ret = handle_clockfreq_event(data);
+> diff --git a/kernel/cobalt/posix/clock.c b/kernel/cobalt/posix/clock.c
+> index 561358e74..40271f3ed 100644
+> --- a/kernel/cobalt/posix/clock.c
+> +++ b/kernel/cobalt/posix/clock.c
+> @@ -31,7 +31,7 @@ DECLARE_BITMAP(cobalt_clock_extids, COBALT_MAX_EXTCLOCKS);
+>  
+>  static int do_clock_host_realtime(struct timespec *tp)
+>  {
+> -#ifdef CONFIG_XENO_OPT_HOSTRT
+> +#ifdef CONFIG_IPIPE_HAVE_HOSTRT
+>  	struct xnvdso_hostrt_data *hostrt_data;
+>  	u64 now, base, mask, cycle_delta;
+>  	__u32 mult, shift;
+> @@ -78,7 +78,7 @@ static int do_clock_host_realtime(struct timespec *tp)
+>  	tp->tv_nsec = rem;
+>  
+>  	return 0;
+> -#else /* CONFIG_XENO_OPT_HOSTRT */
+> +#else
+>  	return -EINVAL;
+>  #endif
+>  }
+> 
 
 -- 
 Siemens AG, T RDA IOT
