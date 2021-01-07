@@ -1,15 +1,13 @@
-Subject: Re: [PATCH Dovetail 13/13] cobalt/syscall: pipeline: abstract syscall
- entry points
-References: <20210102093353.3195090-1-rpm@xenomai.org>
- <20210102093353.3195090-14-rpm@xenomai.org>
-From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <bacb5da0-9bca-c9c7-70b4-3490626426a4@siemens.com>
-Date: Thu, 7 Jan 2021 15:08:22 +0100
+Date: Thu, 7 Jan 2021 23:52:31 +0800 (CST)
+From: hailong  <hailongliiu@yeah.net>
+Subject: Re:Re: [CXP] some questions about "Common Xenomai Platform"
+In-Reply-To: <874kjxrkeb.fsf@xenomai.org>
+References: <ce09c464-b17f-a977-2638-c0fb1f3bcdf4@yeah.net>
+ <874kjxrkeb.fsf@xenomai.org>
 MIME-Version: 1.0
-In-Reply-To: <20210102093353.3195090-14-rpm@xenomai.org>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Message-ID: <2461fe05.185d.176dd8ca994.Coremail.hailongliiu@yeah.net>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: base64
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -18,242 +16,41 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Philippe Gerum <rpm@xenomai.org>, xenomai@xenomai.org
+To: Philippe Gerum <rpm@xenomai.org>
+Cc: xenomai@xenomai.org
 
-On 02.01.21 10:33, Philippe Gerum wrote:
-> From: Philippe Gerum <rpm@xenomai.org>
-> 
-> The I-pipe and Dovetail differ only marginally with respect to syscall
-> handling. Abstract only the few details we need to cope with both
-> interfaces.
-> 
-> No functional change is introduced.
-> 
-> Signed-off-by: Philippe Gerum <rpm@xenomai.org>
-> ---
->  .../cobalt/kernel/ipipe/pipeline/kevents.h    |  3 ++
->  .../cobalt/kernel/ipipe/pipeline/pipeline.h   |  2 ++
->  include/cobalt/kernel/sched.h                 |  2 --
->  kernel/cobalt/ipipe/Makefile                  |  2 +-
->  kernel/cobalt/ipipe/syscall.c                 | 29 +++++++++++++++++++
->  kernel/cobalt/posix/process.h                 |  3 --
->  kernel/cobalt/posix/syscall.c                 | 28 ++++--------------
->  kernel/cobalt/posix/syscall.h                 |  7 +++++
->  8 files changed, 47 insertions(+), 29 deletions(-)
->  create mode 100644 kernel/cobalt/ipipe/syscall.c
-> 
-> diff --git a/include/cobalt/kernel/ipipe/pipeline/kevents.h b/include/cobalt/kernel/ipipe/pipeline/kevents.h
-> index 30425a96b..2f186a57e 100644
-> --- a/include/cobalt/kernel/ipipe/pipeline/kevents.h
-> +++ b/include/cobalt/kernel/ipipe/pipeline/kevents.h
-> @@ -7,6 +7,9 @@
->  #ifndef _COBALT_KERNEL_IPIPE_KEVENTS_H
->  #define _COBALT_KERNEL_IPIPE_KEVENTS_H
->  
-> +#define KEVENT_PROPAGATE   0
-> +#define KEVENT_STOP        1
-> +
->  struct cobalt_process;
->  struct cobalt_thread;
->  
-> diff --git a/include/cobalt/kernel/ipipe/pipeline/pipeline.h b/include/cobalt/kernel/ipipe/pipeline/pipeline.h
-> index 0ffc9b00b..fb0465fb2 100644
-> --- a/include/cobalt/kernel/ipipe/pipeline/pipeline.h
-> +++ b/include/cobalt/kernel/ipipe/pipeline/pipeline.h
-> @@ -11,6 +11,8 @@
->  
->  #include <pipeline/machine.h>
->  
-> +#define xnsched_realtime_domain  cobalt_pipeline.domain
-> +
-
-Why not use the chance and call also this xnsched_primary_domain?
-
-Jan
-
->  #define PIPELINE_NR_IRQS  IPIPE_NR_IRQS
->  
->  typedef unsigned long spl_t;
-> diff --git a/include/cobalt/kernel/sched.h b/include/cobalt/kernel/sched.h
-> index 5d278838f..ad815b595 100644
-> --- a/include/cobalt/kernel/sched.h
-> +++ b/include/cobalt/kernel/sched.h
-> @@ -233,8 +233,6 @@ static inline void xnsched_set_self_resched(struct xnsched *sched)
->  	sched->status |= XNRESCHED;
->  }
->  
-> -#define xnsched_realtime_domain  cobalt_pipeline.domain
-> -
->  /* Set resched flag for the given scheduler. */
->  #ifdef CONFIG_SMP
->  
-> diff --git a/kernel/cobalt/ipipe/Makefile b/kernel/cobalt/ipipe/Makefile
-> index 0490f8800..3c0ad2098 100644
-> --- a/kernel/cobalt/ipipe/Makefile
-> +++ b/kernel/cobalt/ipipe/Makefile
-> @@ -2,4 +2,4 @@ ccflags-y += -Ikernel
->  
->  obj-y +=	pipeline.o
->  
-> -pipeline-y :=	init.o intr.o kevents.o apc.o tick.o
-> +pipeline-y :=	init.o intr.o kevents.o apc.o tick.o syscall.o
-> diff --git a/kernel/cobalt/ipipe/syscall.c b/kernel/cobalt/ipipe/syscall.c
-> new file mode 100644
-> index 000000000..18aa996bd
-> --- /dev/null
-> +++ b/kernel/cobalt/ipipe/syscall.c
-> @@ -0,0 +1,29 @@
-> +/*
-> + * SPDX-License-Identifier: GPL-2.0
-> + *
-> + * Copyright (C) 2005 Philippe Gerum <rpm@xenomai.org>
-> + * Copyright (C) 2005 Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-> + */
-> +
-> +#include <pipeline/pipeline.h>
-> +#include <pipeline/kevents.h>
-> +#include <cobalt/kernel/assert.h>
-> +#include <xenomai/posix/syscall.h>
-> +
-> +int ipipe_syscall_hook(struct ipipe_domain *ipd, struct pt_regs *regs)
-> +{
-> +	if (unlikely(is_secondary_domain()))
-> +		return handle_root_syscall(regs);
-> +
-> +	return handle_head_syscall(ipd != &xnsched_realtime_domain, regs);
-> +}
-> +
-> +int ipipe_fastcall_hook(struct pt_regs *regs)
-> +{
-> +	int ret;
-> +
-> +	ret = handle_head_syscall(false, regs);
-> +	XENO_BUG_ON(COBALT, ret == KEVENT_PROPAGATE);
-> +
-> +	return ret;
-> +}
-> diff --git a/kernel/cobalt/posix/process.h b/kernel/cobalt/posix/process.h
-> index a2f4ec591..22142ee03 100644
-> --- a/kernel/cobalt/posix/process.h
-> +++ b/kernel/cobalt/posix/process.h
-> @@ -23,9 +23,6 @@
->  #include <pipeline/thread.h>
->  #include <cobalt/kernel/ppd.h>
->  
-> -#define KEVENT_PROPAGATE   0
-> -#define KEVENT_STOP        1
-> -
->  #define NR_PERSONALITIES  4
->  #if BITS_PER_LONG < NR_PERSONALITIES
->  #error "NR_PERSONALITIES overflows internal bitmap"
-> diff --git a/kernel/cobalt/posix/syscall.c b/kernel/cobalt/posix/syscall.c
-> index 4d2331ddc..3b3eaee8e 100644
-> --- a/kernel/cobalt/posix/syscall.c
-> +++ b/kernel/cobalt/posix/syscall.c
-> @@ -18,7 +18,6 @@
->   */
->  #include <linux/types.h>
->  #include <linux/err.h>
-> -#include <linux/ipipe.h>
->  #include <linux/sched.h>
->  #include <linux/kconfig.h>
->  #include <linux/unistd.h>
-> @@ -26,6 +25,7 @@
->  #include <cobalt/kernel/tree.h>
->  #include <cobalt/kernel/vdso.h>
->  #include <cobalt/kernel/init.h>
-> +#include <pipeline/kevents.h>
->  #include <asm/syscall.h>
->  #include "internal.h"
->  #include "thread.h"
-> @@ -475,7 +475,7 @@ static inline int allowed_syscall(struct cobalt_process *process,
->  	return cap_raised(current_cap(), CAP_SYS_NICE);
->  }
->  
-> -static int handle_head_syscall(struct ipipe_domain *ipd, struct pt_regs *regs)
-> +int handle_head_syscall(bool caller_is_relaxed, struct pt_regs *regs)
->  {
->  	struct cobalt_process *process;
->  	int switched, sigs, sysflags;
-> @@ -553,7 +553,7 @@ restart:
->  		/*
->  		 * The syscall must run from the Linux domain.
->  		 */
-> -		if (ipd == &xnsched_realtime_domain) {
-> +		if (!caller_is_relaxed) {
->  			/*
->  			 * Request originates from the Xenomai domain:
->  			 * relax the caller then invoke the syscall
-> @@ -578,7 +578,7 @@ restart:
->  		 * hand it over to our secondary-mode dispatcher.
->  		 * Otherwise, invoke the syscall handler immediately.
->  		 */
-> -		if (ipd != &xnsched_realtime_domain)
-> +		if (caller_is_relaxed)
->  			return KEVENT_PROPAGATE;
->  	}
->  
-> @@ -667,7 +667,7 @@ bad_syscall:
->  	return KEVENT_STOP;
->  }
->  
-> -static int handle_root_syscall(struct ipipe_domain *ipd, struct pt_regs *regs)
-> +int handle_root_syscall(struct pt_regs *regs)
->  {
->  	int sysflags, switched, sigs;
->  	struct xnthread *thread;
-> @@ -777,24 +777,6 @@ ret_handled:
->  	return KEVENT_STOP;
->  }
->  
-> -int ipipe_syscall_hook(struct ipipe_domain *ipd, struct pt_regs *regs)
-> -{
-> -	if (unlikely(is_secondary_domain()))
-> -		return handle_root_syscall(ipd, regs);
-> -
-> -	return handle_head_syscall(ipd, regs);
-> -}
-> -
-> -int ipipe_fastcall_hook(struct pt_regs *regs)
-> -{
-> -	int ret;
-> -
-> -	ret = handle_head_syscall(&xnsched_realtime_domain, regs);
-> -	XENO_BUG_ON(COBALT, ret == KEVENT_PROPAGATE);
-> -
-> -	return ret;
-> -}
-> -
->  long cobalt_restart_syscall_placeholder(struct restart_block *param)
->  {
->  	return -EINVAL;
-> diff --git a/kernel/cobalt/posix/syscall.h b/kernel/cobalt/posix/syscall.h
-> index 690cb2263..3a4c98d7a 100644
-> --- a/kernel/cobalt/posix/syscall.h
-> +++ b/kernel/cobalt/posix/syscall.h
-> @@ -20,6 +20,8 @@
->  
->  #include <cobalt/uapi/syscall.h>
->  
-> +struct pt_regs;
-> +
->  /* Regular (native) syscall handler implementation. */
->  #define COBALT_SYSCALL(__name, __mode, __args)	\
->  	long CoBaLt_ ## __name __args
-> @@ -30,4 +32,9 @@
->  
->  #include <asm/xenomai/syscall32.h>
->  
-> +int handle_head_syscall(bool caller_is_relaxed,
-> +			struct pt_regs *regs);
-> +
-> +int handle_root_syscall(struct pt_regs *regs);
-> +
->  #endif /* !_COBALT_POSIX_SYSCALL_H */
-> 
-
-
--- 
-Siemens AG, T RDA IOT
-Corporate Competence Center Embedded Linux
-
+QXQgMjAyMS0wMS0wNCAwMTozODowNCwgIlBoaWxpcHBlIEdlcnVtIiA8cnBtQHhlbm9tYWkub3Jn
+PiB3cm90ZToKPgo+SGFpbG9uZ2xpdSB2aWEgWGVub21haSA8eGVub21haUB4ZW5vbWFpLm9yZz4g
+d3JpdGVzOgo+Cj4+IEhpLAo+Pgo+PiBJIGxlYXJuZWQgdGhlICJDb21tb24gWGVub21haSBQbGF0
+Zm9ybSIgcHJvZ3JhbSBmcm9tIHRoaXMgbWFpbC1saXN0IGFuZCB3aWtpCj4+IG9mIHByb2plY3Qg
+WGVub21haS4gVGhpcyBpcyBhIHZlcnkgYXR0cmFjdGl2ZSBwbGFuLCBhcyBpdCB3aWxsIHBvcnQg
+WGVub21haSBmb3IKPj4gcmVjZW50IExUUyBrZXJuZWwodjUuMTApLgo+Pgo+PiBJIG5vdGljZWQg
+dGhhdCAgTWFyY2ggMzEsIDIwMjEgaXMgdGhlIGRlYWRsaW5lIGZvciAiQ1hQIiwgZG9zZSB0aGF0
+IG1lYW4gd2UKPj4gY2FuIGV4cGVjdCB0aGUgbmV3IGZlYXR1cmVzIGF0IFhlbm9tYWktMy4zID8K
+Pgo+WWVzLCB0aGF0IGlzIHRoZSBwbGFuLiBYZW5vbWFpIDMuMyBpcyBnb2luZyB0byBiZSB0aGUg
+Zmlyc3QgcmVsZWFzZQo+ZnVsbHkgaW1wbGVtZW50aW5nIHRoZSBDWFAuIFhlbm9tYWkgNCB3aGlj
+aCBpcyBnb2luZyB0byB1c2UgYSBkaWZmZXJlbnQKPnJlYWwtdGltZSBjb3JlIHdpbGwgYmUgZGV2
+ZWxvcGVkIGluIHBhcmFsbGVsIHRvIFhlbm9tYWkgMy4zLCBhaW1pbmcgYXQKPkNYUC1jb21wbGlh
+bmNlIHRvby4gSXQgc2hvdWxkIGJlIGNsZWFyIHRoYXQgTWFyY2ggMzEsIDIwMjEgaXMgdGhlIGRh
+dGUKPmZvciBjb21wbGV0aW5nIHRoZSBDWFAgc3BlY2lmaWNhdGlvbiwgbm90IHRoYXQgb2YgYW55
+IHJlbGVhc2UKPmltcGxlbWVudGluZyBpdCwgd2hpY2ggY2FuIG9ubHkgaGFwcGVuIGxhdGVyIGJ5
+IGRlZmluaXRpb24uCj4KCldpbGwgdGhlIENYUCBvciBYZW5vbWFpIDQgY29tcGF0aWJsZSB3aXRo
+IFJULXBhdGNoIG92ZXIgdGltZT8KSW4gYWRkaXRpb24sICAgSSBsZWFybmVkIHRoYXQgdGhlIGxl
+Z2FjeSBSVE9TIGVtdWxhdG9ycyAoc3VjaCBhcyBWeFdvcmtzKQp3aWxsIGJlIGV4Y2x1ZGVkIGZy
+b20gWGVub21haSAzLnggLCBuZWl0aGVyIFhlbm9tYWkgND8KCj4+IEkgYWxzbyBjb25jZXJuIGFi
+b3V0IHRoYXQgaG93IGxvbmcgWGVub21haS0zLjMgd2lsbCBiZSBsaXZlPyBBbmQgaWYgdGhlcmUK
+Pj4gd2lsbCBiZSBhIGxvbmcgdGVybSB2ZXJzaW9uIHdpdGgga2VybmVsLXY1LjEwIGZvciBYZW5v
+bWFpPwo+Pgo+Cj5YZW5vbWFpIHdpbGwgcnVuIHY1LjEwIExUUyBhcyBzb29uIGFzIHJlbGVhc2Ug
+My4yLCBiYXNlZCBvbiB0aGUgb25nb2luZwo+cG9ydCBvZiB0aGUgQ29iYWx0IGNvcmUgdG8gRG92
+ZXRhaWwuCj4KPkhvdyBsb25nIGEgcGFydGljdWxhciBYZW5vbWFpIHJlbGVhc2UgaXMgbWFpbnRh
+aW5lZCBmb3IgYSBwYXJ0aWN1bGFyCj5rZXJuZWwgdmVyc2lvbiBjdXJyZW50bHkgZGVwZW5kcyBv
+biBhIGZldyBpbmRpdmlkdWFscyBhbmQgY29tcGFuaWVzCj5oYXZpbmcgYSBzcGVjaWZpYyByZXF1
+aXJlbWVudCB0byBrZWVwIHN1Y2ggcG9ydCBhbGl2ZSwgYW5kIGNvbnRyaWJ1dGluZwo+dG8gdGhp
+cyB0YXNrIGRpcmVjdGx5IChkb2luZyB0aGUgd29yaykgb3IgaW5kaXJlY3RseSAoZnVuZGluZyBz
+b21lb25lCj5lbHNlJ3Mgd29yaykuCj4KPkFsdGhvdWdoIHRoZXJlIGlzIGEgY29tbWl0bWVudCB0
+byBydW4gWGVub21haSAzLnggb24gdG9wIG9mIGtlcm5lbCB2NS4xMAo+YXNhcCwgSSdtIG5vdCBh
+d2FyZSBvZiBhbnkgZm9ybWFsIGNvbW1pdG1lbnQgb2YgYW55IGN1cnJlbnQgY29udHJpYnV0b3IK
+PnRvIG1haW50YWluIHRoaXMgcG9ydCBmb3IgYSBwcmUtZGVmaW5lZCBwZXJpb2Qgb2YgdGltZS4g
+T25lIG1heSBvbmx5Cj5hc3N1bWUgdGhhdCBieSBwaWNraW5nIGEgTFRTIGtlcm5lbCBsaWtlIHY1
+LjEwLCB3ZSBhcmUgbGlrZWx5IGdvaW5nIHRvCj5tYWludGFpbiBpdCAiZm9yIHNvbWUgdGltZSIu
+Cj4KClRoYW5rcy4=
