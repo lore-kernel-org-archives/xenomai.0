@@ -1,13 +1,13 @@
-Date: Thu, 7 Jan 2021 23:52:31 +0800 (CST)
-From: hailong  <hailongliiu@yeah.net>
-Subject: Re:Re: [CXP] some questions about "Common Xenomai Platform"
-In-Reply-To: <874kjxrkeb.fsf@xenomai.org>
+MIME-Version: 1.0
 References: <ce09c464-b17f-a977-2638-c0fb1f3bcdf4@yeah.net>
  <874kjxrkeb.fsf@xenomai.org>
-MIME-Version: 1.0
-Message-ID: <2461fe05.185d.176dd8ca994.Coremail.hailongliiu@yeah.net>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: base64
+ <2461fe05.185d.176dd8ca994.Coremail.hailongliiu@yeah.net>
+In-Reply-To: <2461fe05.185d.176dd8ca994.Coremail.hailongliiu@yeah.net>
+From: Greg Gallagher <greg@embeddedgreg.com>
+Date: Thu, 7 Jan 2021 10:59:22 -0500
+Message-ID: <CALLqZ8RPFrAFO=NCqGmyvWSWKTje3siXAOcLWp9y1uu2QBRupw@mail.gmail.com>
+Subject: Re: Re: [CXP] some questions about "Common Xenomai Platform"
+Content-Type: text/plain; charset="UTF-8"
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,41 +16,71 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Philippe Gerum <rpm@xenomai.org>
-Cc: xenomai@xenomai.org
+To: hailong <hailongliiu@yeah.net>
+Cc: Philippe Gerum <rpm@xenomai.org>, "Xenomai@xenomai.org" <xenomai@xenomai.org>
 
-QXQgMjAyMS0wMS0wNCAwMTozODowNCwgIlBoaWxpcHBlIEdlcnVtIiA8cnBtQHhlbm9tYWkub3Jn
-PiB3cm90ZToKPgo+SGFpbG9uZ2xpdSB2aWEgWGVub21haSA8eGVub21haUB4ZW5vbWFpLm9yZz4g
-d3JpdGVzOgo+Cj4+IEhpLAo+Pgo+PiBJIGxlYXJuZWQgdGhlICJDb21tb24gWGVub21haSBQbGF0
-Zm9ybSIgcHJvZ3JhbSBmcm9tIHRoaXMgbWFpbC1saXN0IGFuZCB3aWtpCj4+IG9mIHByb2plY3Qg
-WGVub21haS4gVGhpcyBpcyBhIHZlcnkgYXR0cmFjdGl2ZSBwbGFuLCBhcyBpdCB3aWxsIHBvcnQg
-WGVub21haSBmb3IKPj4gcmVjZW50IExUUyBrZXJuZWwodjUuMTApLgo+Pgo+PiBJIG5vdGljZWQg
-dGhhdCAgTWFyY2ggMzEsIDIwMjEgaXMgdGhlIGRlYWRsaW5lIGZvciAiQ1hQIiwgZG9zZSB0aGF0
-IG1lYW4gd2UKPj4gY2FuIGV4cGVjdCB0aGUgbmV3IGZlYXR1cmVzIGF0IFhlbm9tYWktMy4zID8K
-Pgo+WWVzLCB0aGF0IGlzIHRoZSBwbGFuLiBYZW5vbWFpIDMuMyBpcyBnb2luZyB0byBiZSB0aGUg
-Zmlyc3QgcmVsZWFzZQo+ZnVsbHkgaW1wbGVtZW50aW5nIHRoZSBDWFAuIFhlbm9tYWkgNCB3aGlj
-aCBpcyBnb2luZyB0byB1c2UgYSBkaWZmZXJlbnQKPnJlYWwtdGltZSBjb3JlIHdpbGwgYmUgZGV2
-ZWxvcGVkIGluIHBhcmFsbGVsIHRvIFhlbm9tYWkgMy4zLCBhaW1pbmcgYXQKPkNYUC1jb21wbGlh
-bmNlIHRvby4gSXQgc2hvdWxkIGJlIGNsZWFyIHRoYXQgTWFyY2ggMzEsIDIwMjEgaXMgdGhlIGRh
-dGUKPmZvciBjb21wbGV0aW5nIHRoZSBDWFAgc3BlY2lmaWNhdGlvbiwgbm90IHRoYXQgb2YgYW55
-IHJlbGVhc2UKPmltcGxlbWVudGluZyBpdCwgd2hpY2ggY2FuIG9ubHkgaGFwcGVuIGxhdGVyIGJ5
-IGRlZmluaXRpb24uCj4KCldpbGwgdGhlIENYUCBvciBYZW5vbWFpIDQgY29tcGF0aWJsZSB3aXRo
-IFJULXBhdGNoIG92ZXIgdGltZT8KSW4gYWRkaXRpb24sICAgSSBsZWFybmVkIHRoYXQgdGhlIGxl
-Z2FjeSBSVE9TIGVtdWxhdG9ycyAoc3VjaCBhcyBWeFdvcmtzKQp3aWxsIGJlIGV4Y2x1ZGVkIGZy
-b20gWGVub21haSAzLnggLCBuZWl0aGVyIFhlbm9tYWkgND8KCj4+IEkgYWxzbyBjb25jZXJuIGFi
-b3V0IHRoYXQgaG93IGxvbmcgWGVub21haS0zLjMgd2lsbCBiZSBsaXZlPyBBbmQgaWYgdGhlcmUK
-Pj4gd2lsbCBiZSBhIGxvbmcgdGVybSB2ZXJzaW9uIHdpdGgga2VybmVsLXY1LjEwIGZvciBYZW5v
-bWFpPwo+Pgo+Cj5YZW5vbWFpIHdpbGwgcnVuIHY1LjEwIExUUyBhcyBzb29uIGFzIHJlbGVhc2Ug
-My4yLCBiYXNlZCBvbiB0aGUgb25nb2luZwo+cG9ydCBvZiB0aGUgQ29iYWx0IGNvcmUgdG8gRG92
-ZXRhaWwuCj4KPkhvdyBsb25nIGEgcGFydGljdWxhciBYZW5vbWFpIHJlbGVhc2UgaXMgbWFpbnRh
-aW5lZCBmb3IgYSBwYXJ0aWN1bGFyCj5rZXJuZWwgdmVyc2lvbiBjdXJyZW50bHkgZGVwZW5kcyBv
-biBhIGZldyBpbmRpdmlkdWFscyBhbmQgY29tcGFuaWVzCj5oYXZpbmcgYSBzcGVjaWZpYyByZXF1
-aXJlbWVudCB0byBrZWVwIHN1Y2ggcG9ydCBhbGl2ZSwgYW5kIGNvbnRyaWJ1dGluZwo+dG8gdGhp
-cyB0YXNrIGRpcmVjdGx5IChkb2luZyB0aGUgd29yaykgb3IgaW5kaXJlY3RseSAoZnVuZGluZyBz
-b21lb25lCj5lbHNlJ3Mgd29yaykuCj4KPkFsdGhvdWdoIHRoZXJlIGlzIGEgY29tbWl0bWVudCB0
-byBydW4gWGVub21haSAzLnggb24gdG9wIG9mIGtlcm5lbCB2NS4xMAo+YXNhcCwgSSdtIG5vdCBh
-d2FyZSBvZiBhbnkgZm9ybWFsIGNvbW1pdG1lbnQgb2YgYW55IGN1cnJlbnQgY29udHJpYnV0b3IK
-PnRvIG1haW50YWluIHRoaXMgcG9ydCBmb3IgYSBwcmUtZGVmaW5lZCBwZXJpb2Qgb2YgdGltZS4g
-T25lIG1heSBvbmx5Cj5hc3N1bWUgdGhhdCBieSBwaWNraW5nIGEgTFRTIGtlcm5lbCBsaWtlIHY1
-LjEwLCB3ZSBhcmUgbGlrZWx5IGdvaW5nIHRvCj5tYWludGFpbiBpdCAiZm9yIHNvbWUgdGltZSIu
-Cj4KClRoYW5rcy4=
+On Thu, Jan 7, 2021 at 10:53 AM hailong via Xenomai <xenomai@xenomai.org>
+wrote:
+
+> At 2021-01-04 01:38:04, "Philippe Gerum" <rpm@xenomai.org> wrote:
+> >
+> >Hailongliu via Xenomai <xenomai@xenomai.org> writes:
+> >
+> >> Hi,
+> >>
+> >> I learned the "Common Xenomai Platform" program from this mail-list and
+> wiki
+> >> of project Xenomai. This is a very attractive plan, as it will port
+> Xenomai for
+> >> recent LTS kernel(v5.10).
+> >>
+> >> I noticed that  March 31, 2021 is the deadline for "CXP", dose that
+> mean we
+> >> can expect the new features at Xenomai-3.3 ?
+> >
+> >Yes, that is the plan. Xenomai 3.3 is going to be the first release
+> >fully implementing the CXP. Xenomai 4 which is going to use a different
+> >real-time core will be developed in parallel to Xenomai 3.3, aiming at
+> >CXP-compliance too. It should be clear that March 31, 2021 is the date
+> >for completing the CXP specification, not that of any release
+> >implementing it, which can only happen later by definition.
+> >
+>
+> Will the CXP or Xenomai 4 compatible with RT-patch over time?
+> In addition,   I learned that the legacy RTOS emulators (such as VxWorks)
+> will be excluded from Xenomai 3.x , neither Xenomai 4?
+>
+That is correct, we don't have the resources to continue to support the
+RTOS emulators.  I believe it was left open that if someone
+wants to take this on as a maintainer they could be included.
+
+
+
+
+> >> I also concern about that how long Xenomai-3.3 will be live? And if
+> there
+> >> will be a long term version with kernel-v5.10 for Xenomai?
+> >>
+> >
+> >Xenomai will run v5.10 LTS as soon as release 3.2, based on the ongoing
+> >port of the Cobalt core to Dovetail.
+> >
+> >How long a particular Xenomai release is maintained for a particular
+> >kernel version currently depends on a few individuals and companies
+> >having a specific requirement to keep such port alive, and contributing
+> >to this task directly (doing the work) or indirectly (funding someone
+> >else's work).
+> >
+> >Although there is a commitment to run Xenomai 3.x on top of kernel v5.10
+> >asap, I'm not aware of any formal commitment of any current contributor
+> >to maintain this port for a pre-defined period of time. One may only
+> >assume that by picking a LTS kernel like v5.10, we are likely going to
+> >maintain it "for some time".
+> >
+>
+> Thanks.
+
+
+Thanks
+
+Greg
