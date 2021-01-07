@@ -1,13 +1,13 @@
+Subject: Re: [xenomai-images][PATCH 0/2] add xenomai 3.1.x to pipeline
+References: <20201218094945.6941-1-Quirin.Gylstorff@siemens.com>
+From: Jan Kiszka <jan.kiszka@siemens.com>
+Message-ID: <ce1e808e-f9b4-4e74-12d2-e206d3ccec63@siemens.com>
+Date: Thu, 7 Jan 2021 18:46:44 +0100
 MIME-Version: 1.0
-References: <ce09c464-b17f-a977-2638-c0fb1f3bcdf4@yeah.net>
- <874kjxrkeb.fsf@xenomai.org>
- <2461fe05.185d.176dd8ca994.Coremail.hailongliiu@yeah.net>
-In-Reply-To: <2461fe05.185d.176dd8ca994.Coremail.hailongliiu@yeah.net>
-From: Greg Gallagher <greg@embeddedgreg.com>
-Date: Thu, 7 Jan 2021 10:59:22 -0500
-Message-ID: <CALLqZ8RPFrAFO=NCqGmyvWSWKTje3siXAOcLWp9y1uu2QBRupw@mail.gmail.com>
-Subject: Re: Re: [CXP] some questions about "Common Xenomai Platform"
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <20201218094945.6941-1-Quirin.Gylstorff@siemens.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,71 +16,56 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: hailong <hailongliiu@yeah.net>
-Cc: Philippe Gerum <rpm@xenomai.org>, "Xenomai@xenomai.org" <xenomai@xenomai.org>
+To: "Q. Gylstorff" <Quirin.Gylstorff@siemens.com>, xenomai@xenomai.org
 
-On Thu, Jan 7, 2021 at 10:53 AM hailong via Xenomai <xenomai@xenomai.org>
-wrote:
+On 18.12.20 10:49, Q. Gylstorff wrote:
+> From: Quirin Gylstorff <quirin.gylstorff@siemens.com>
+> 
+> Add xenomai 3.1 to the build and test pipeline of xenomai-images.
+> 
+> Add parent_child pipelines[1] to have a better overview of the builds.
+> 
+> [1]: https://docs.gitlab.com/ee/ci/parent_child_pipelines.html
+> 
+> You can see an example build at:
+> https://gitlab.com/Quirin.Gy/xenomai-images-test/-/pipelines/231763266
+> 
+> Quirin Gylstorff (2):
+>   ci: add xenomai 3.1 stable
+>   ci: Introduce parent-child pipelines
+> 
+>  .gitlab-ci-artifacts.yml                      |  6 +-
+>  .gitlab-ci.yml                                |  3 +-
+>  ci/artifacts.yml                              | 22 -----
+>  ci/child_pipelines.yml                        | 34 +++++++
+>  ci/default-builds.yml                         | 76 ---------------
+>  ci/gitlab-ci-base.yml                         | 93 ++++++++++++++++++-
+>  ...uilds.yml => kernel_4_19_xenomai_next.yml} | 42 ++++-----
+>  ...builds.yml => kernel_5_4_xenomai_next.yml} | 16 ++--
+>  ci/no-artifacts.yml                           | 21 -----
+>  ci/xenomai_3_0_x.yml                          | 16 ++--
+>  ci/xenomai_3_1_x.yml                          | 91 ++++++++++++++++++
+>  ci/xenomai_next.yml                           | 14 +++
+>  opt-xenomai-3.1.x.yml                         | 17 ++++
+>  .../xenomai/xenomai_stable-3.1.x.bb           | 21 +++++
+>  14 files changed, 304 insertions(+), 168 deletions(-)
+>  delete mode 100644 ci/artifacts.yml
+>  create mode 100644 ci/child_pipelines.yml
+>  delete mode 100644 ci/default-builds.yml
+>  rename ci/{4_19_builds.yml => kernel_4_19_xenomai_next.yml} (55%)
+>  rename ci/{5_4_builds.yml => kernel_5_4_xenomai_next.yml} (64%)
+>  delete mode 100644 ci/no-artifacts.yml
+>  create mode 100644 ci/xenomai_3_1_x.yml
+>  create mode 100644 ci/xenomai_next.yml
+>  create mode 100644 opt-xenomai-3.1.x.yml
+>  create mode 100644 recipes-xenomai/xenomai/xenomai_stable-3.1.x.bb
+> 
 
-> At 2021-01-04 01:38:04, "Philippe Gerum" <rpm@xenomai.org> wrote:
-> >
-> >Hailongliu via Xenomai <xenomai@xenomai.org> writes:
-> >
-> >> Hi,
-> >>
-> >> I learned the "Common Xenomai Platform" program from this mail-list and
-> wiki
-> >> of project Xenomai. This is a very attractive plan, as it will port
-> Xenomai for
-> >> recent LTS kernel(v5.10).
-> >>
-> >> I noticed that  March 31, 2021 is the deadline for "CXP", dose that
-> mean we
-> >> can expect the new features at Xenomai-3.3 ?
-> >
-> >Yes, that is the plan. Xenomai 3.3 is going to be the first release
-> >fully implementing the CXP. Xenomai 4 which is going to use a different
-> >real-time core will be developed in parallel to Xenomai 3.3, aiming at
-> >CXP-compliance too. It should be clear that March 31, 2021 is the date
-> >for completing the CXP specification, not that of any release
-> >implementing it, which can only happen later by definition.
-> >
->
-> Will the CXP or Xenomai 4 compatible with RT-patch over time?
-> In addition,   I learned that the legacy RTOS emulators (such as VxWorks)
-> will be excluded from Xenomai 3.x , neither Xenomai 4?
->
-That is correct, we don't have the resources to continue to support the
-RTOS emulators.  I believe it was left open that if someone
-wants to take this on as a maintainer they could be included.
+Thanks, applied. I just tuned the kas config version to 10.
 
+Jan
 
+-- 
+Siemens AG, T RDA IOT
+Corporate Competence Center Embedded Linux
 
-
-> >> I also concern about that how long Xenomai-3.3 will be live? And if
-> there
-> >> will be a long term version with kernel-v5.10 for Xenomai?
-> >>
-> >
-> >Xenomai will run v5.10 LTS as soon as release 3.2, based on the ongoing
-> >port of the Cobalt core to Dovetail.
-> >
-> >How long a particular Xenomai release is maintained for a particular
-> >kernel version currently depends on a few individuals and companies
-> >having a specific requirement to keep such port alive, and contributing
-> >to this task directly (doing the work) or indirectly (funding someone
-> >else's work).
-> >
-> >Although there is a commitment to run Xenomai 3.x on top of kernel v5.10
-> >asap, I'm not aware of any formal commitment of any current contributor
-> >to maintain this port for a pre-defined period of time. One may only
-> >assume that by picking a LTS kernel like v5.10, we are likely going to
-> >maintain it "for some time".
-> >
->
-> Thanks.
-
-
-Thanks
-
-Greg
