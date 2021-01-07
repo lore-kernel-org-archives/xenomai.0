@@ -1,12 +1,12 @@
-Subject: Re: [PATCH Dovetail 07/13] cobalt/clock: pipeline: make HOSTRT depend
- on IPIPE
+Subject: Re: [PATCH Dovetail 10/13] cobalt/wrappers: pipeline: abstract
+ pipeline-related bits
 References: <20210102093353.3195090-1-rpm@xenomai.org>
- <20210102093353.3195090-8-rpm@xenomai.org>
+ <20210102093353.3195090-11-rpm@xenomai.org>
 From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <3100bc9c-4fee-eacd-8d62-d91a12e0906d@siemens.com>
-Date: Thu, 7 Jan 2021 14:52:29 +0100
+Message-ID: <62dbf84e-41ec-29c9-21d4-ad3908f85e1b@siemens.com>
+Date: Thu, 7 Jan 2021 14:56:28 +0100
 MIME-Version: 1.0
-In-Reply-To: <20210102093353.3195090-8-rpm@xenomai.org>
+In-Reply-To: <20210102093353.3195090-11-rpm@xenomai.org>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -23,148 +23,112 @@ To: Philippe Gerum <rpm@xenomai.org>, xenomai@xenomai.org
 On 02.01.21 10:33, Philippe Gerum wrote:
 > From: Philippe Gerum <rpm@xenomai.org>
 > 
-> This interface is pointless with Dovetail whose applications directly
-> refer to the wallclock time exported through the common vDSO.
-> 
 > No functional change is introduced.
 > 
 > Signed-off-by: Philippe Gerum <rpm@xenomai.org>
 > ---
->  include/cobalt/kernel/vdso.h  | 18 +++++++++++-------
->  kernel/cobalt/Kconfig         |  4 ----
->  kernel/cobalt/ipipe/kevents.c | 14 ++++++++------
->  kernel/cobalt/posix/clock.c   |  4 ++--
->  4 files changed, 21 insertions(+), 19 deletions(-)
+>  .../cobalt/kernel/ipipe/pipeline/wrappers.h   | 25 +++++++++++++++++++
+>  .../cobalt/include/linux/xenomai/wrappers.h   | 23 ++++-------------
+>  kernel/cobalt/posix/process.c                 |  2 +-
+>  3 files changed, 31 insertions(+), 19 deletions(-)
+>  create mode 100644 include/cobalt/kernel/ipipe/pipeline/wrappers.h
 > 
-> diff --git a/include/cobalt/kernel/vdso.h b/include/cobalt/kernel/vdso.h
-> index f7140adc7..7da88a730 100644
-> --- a/include/cobalt/kernel/vdso.h
-> +++ b/include/cobalt/kernel/vdso.h
-> @@ -25,21 +25,25 @@
->  #include <asm/processor.h>
->  #include <cobalt/uapi/kernel/vdso.h>
->  
-> +extern struct xnvdso *nkvdso;
+> diff --git a/include/cobalt/kernel/ipipe/pipeline/wrappers.h b/include/cobalt/kernel/ipipe/pipeline/wrappers.h
+> new file mode 100644
+> index 000000000..ac940fb32
+> --- /dev/null
+> +++ b/include/cobalt/kernel/ipipe/pipeline/wrappers.h
+> @@ -0,0 +1,25 @@
+> +/*
+> + * SPDX-License-Identifier: GPL-2.0
+> + */
+> +#ifndef _COBALT_KERNEL_IPIPE_WRAPPERS_H
+> +#define _COBALT_KERNEL_IPIPE_WRAPPERS_H
 > +
->  /*
->   * Define the available feature set here. We have a single feature
-> - * defined for now.
-> + * defined for now, only in the I-pipe case.
->   */
-> -#ifdef CONFIG_XENO_OPT_HOSTRT
-> -#define XNVDSO_FEATURES XNVDSO_FEAT_HOST_REALTIME
-> -#else
-> -#define XNVDSO_FEATURES 0
-> -#endif /* CONFIG_XENO_OPT_HOSTRT */
-> +#ifdef CONFIG_IPIPE_HAVE_HOSTRT
->  
-> -extern struct xnvdso *nkvdso;
-> +#define XNVDSO_FEATURES XNVDSO_FEAT_HOST_REALTIME
->  
->  static inline struct xnvdso_hostrt_data *get_hostrt_data(void)
->  {
->  	return &nkvdso->hostrt_data;
->  }
->  
+> +#include <linux/ipipe.h>
+> +
+> +#if LINUX_VERSION_CODE < KERNEL_VERSION(4,11,0)
+> +#define cobalt_set_task_state(tsk, state_value)	\
+> +	set_task_state(tsk, state_value)
 > +#else
-> +
-> +#define XNVDSO_FEATURES 0
-> +
+> +/*
+> + * The co-kernel can still set the current task state safely if it
+> + * runs on the head stage.
+> + */
+> +#define cobalt_set_task_state(tsk, state_value)	\
+> +		smp_store_mb((tsk)->state, (state_value))
 > +#endif
 > +
->  #endif /* _COBALT_KERNEL_VDSO_H */
-> diff --git a/kernel/cobalt/Kconfig b/kernel/cobalt/Kconfig
-> index 0d96913bd..ead4740c1 100644
-> --- a/kernel/cobalt/Kconfig
-> +++ b/kernel/cobalt/Kconfig
-> @@ -210,10 +210,6 @@ config XENO_OPT_TIMER_RBTREE
+> +#ifndef ipipe_root_nr_syscalls
+> +#define ipipe_root_nr_syscalls(ti)	NR_syscalls
+> +#endif
+> +
+> +#endif /* !_COBALT_KERNEL_IPIPE_WRAPPERS_H */
+> diff --git a/kernel/cobalt/include/linux/xenomai/wrappers.h b/kernel/cobalt/include/linux/xenomai/wrappers.h
+> index 847d68088..3e825e366 100644
+> --- a/kernel/cobalt/include/linux/xenomai/wrappers.h
+> +++ b/kernel/cobalt/include/linux/xenomai/wrappers.h
+> @@ -21,12 +21,13 @@
 >  
->  endchoice
+>  #include <linux/version.h>
 >  
-> -config XENO_OPT_HOSTRT
-> -       depends on IPIPE_HAVE_HOSTRT
-> -       def_bool y
+> +#if LINUX_VERSION_CODE < KERNEL_VERSION(4, 20, 0)
+> +typedef siginfo_t kernel_siginfo_t;
+> +#endif
+> +
+>  #if LINUX_VERSION_CODE < KERNEL_VERSION(4,11,0)
+>  #include <linux/sched.h>
+>  #include <linux/sched/rt.h>
 > -
->  config XENO_OPT_PIPE
->  	bool
->  
-> diff --git a/kernel/cobalt/ipipe/kevents.c b/kernel/cobalt/ipipe/kevents.c
-> index e0d4a1288..595faffd3 100644
-> --- a/kernel/cobalt/ipipe/kevents.c
-> +++ b/kernel/cobalt/ipipe/kevents.c
-> @@ -377,7 +377,7 @@ void ipipe_migration_hook(struct task_struct *p) /* hw IRQs off */
->  	xnsched_run();
->  }
->  
-> -#ifdef CONFIG_XENO_OPT_HOSTRT
-> +#ifdef CONFIG_IPIPE_HAVE_HOSTRT
->  
->  static IPIPE_DEFINE_SPINLOCK(__hostrtlock);
->  
-> @@ -417,7 +417,7 @@ static inline void init_hostrt(void)
->  	nkvdso->hostrt_data.live = 0;
->  }
->  
-> -#else /* !CONFIG_XENO_OPT_HOSTRT */
-> +#else /* !CONFIG_IPIPE_HAVE_HOSTRT */
->  
->  struct ipipe_hostrt_data;
->  
-> @@ -428,7 +428,7 @@ static inline int handle_hostrt_event(struct ipipe_hostrt_data *hostrt)
->  
->  static inline void init_hostrt(void) { }
->  
-> -#endif /* !CONFIG_XENO_OPT_HOSTRT */
-> +#endif /* !CONFIG_IPIPE_HAVE_HOSTRT */
->  
->  static void __handle_taskexit_event(struct task_struct *p)
->  {
-> @@ -756,12 +756,14 @@ int ipipe_kevent_hook(int kevent, void *data)
->  	case IPIPE_KEVT_CLEANUP:
->  		ret = handle_cleanup_event(data);
->  		break;
-> -	case IPIPE_KEVT_HOSTRT:
-> -		ret = handle_hostrt_event(data);
-> -		break;
->  	case IPIPE_KEVT_SETAFFINITY:
->  		ret = handle_setaffinity_event(data);
->  		break;
-> +#ifdef IPIPE_KEVT_HOSTRT
+> -#define cobalt_set_task_state(tsk, state_value)	\
+> -	set_task_state(tsk, state_value)
+>  #else
+>  #include <linux/sched.h>
+>  #include <linux/sched/signal.h>
+> @@ -35,22 +36,8 @@
+>  #include <linux/sched/debug.h>
+>  #include <linux/sched/task_stack.h>
+>  #include <uapi/linux/sched/types.h>
+> -/*
+> - * The co-kernel can still do this sanely for a thread which is
+> - * currently active on the head stage.
+> - */
+> -#define cobalt_set_task_state(tsk, state_value)	\
+> -		smp_store_mb((tsk)->state, (state_value))
 
-Wouldn't CONFIG_IPIPE_HAVE_HOSTRT be cleaner here?
+Look over-indented - I can fix that up on merge.
 
 Jan
 
-> +	case IPIPE_KEVT_HOSTRT:
-> +		ret = handle_hostrt_event(data);
-> +		break;
-> +#endif
->  #ifdef IPIPE_KEVT_CLOCKFREQ
->  	case IPIPE_KEVT_CLOCKFREQ:
->  		ret = handle_clockfreq_event(data);
-> diff --git a/kernel/cobalt/posix/clock.c b/kernel/cobalt/posix/clock.c
-> index 561358e74..40271f3ed 100644
-> --- a/kernel/cobalt/posix/clock.c
-> +++ b/kernel/cobalt/posix/clock.c
-> @@ -31,7 +31,7 @@ DECLARE_BITMAP(cobalt_clock_extids, COBALT_MAX_EXTCLOCKS);
->  
->  static int do_clock_host_realtime(struct timespec *tp)
->  {
-> -#ifdef CONFIG_XENO_OPT_HOSTRT
-> +#ifdef CONFIG_IPIPE_HAVE_HOSTRT
->  	struct xnvdso_hostrt_data *hostrt_data;
->  	u64 now, base, mask, cycle_delta;
->  	__u32 mult, shift;
-> @@ -78,7 +78,7 @@ static int do_clock_host_realtime(struct timespec *tp)
->  	tp->tv_nsec = rem;
->  
->  	return 0;
-> -#else /* CONFIG_XENO_OPT_HOSTRT */
-> +#else
->  	return -EINVAL;
 >  #endif
->  }
+>  
+> -#include <linux/ipipe.h>
+> -
+> -#ifndef ipipe_root_nr_syscalls
+> -#define ipipe_root_nr_syscalls(ti)	NR_syscalls
+> -#endif
+> -
+> -#if LINUX_VERSION_CODE < KERNEL_VERSION(4, 20, 0)
+> -typedef siginfo_t kernel_siginfo_t;
+> -#endif
+> +#include <pipeline/wrappers.h>
+>  
+>  #endif /* !_COBALT_LINUX_WRAPPERS_H */
+> diff --git a/kernel/cobalt/posix/process.c b/kernel/cobalt/posix/process.c
+> index accd989ca..fcae7df06 100644
+> --- a/kernel/cobalt/posix/process.c
+> +++ b/kernel/cobalt/posix/process.c
+> @@ -640,7 +640,7 @@ int cobalt_map_user(struct xnthread *thread, __u32 __user *u_winoff)
+>  	 * it.
+>  	 */
+>  	xnthread_run_handler(thread, map_thread);
+> -	pipeline_enable_kevents(current);
+> +	pipeline_enable_kevents();
+>  
+>  	attr.mode = 0;
+>  	attr.entry = NULL;
 > 
+
 
 -- 
 Siemens AG, T RDA IOT
