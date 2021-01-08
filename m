@@ -1,15 +1,16 @@
-Subject: Re: [PATCH Dovetail 06/13] cobalt/sched, clock: pipeline: abstract
- IPI management
-References: <20210102093353.3195090-1-rpm@xenomai.org>
- <20210102093353.3195090-7-rpm@xenomai.org>
-From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <6c2e91b7-2cbe-7eb4-56c5-fd9994825af1@siemens.com>
-Date: Fri, 8 Jan 2021 10:40:55 +0100
+References: <20201217180246.48589-1-rpm@xenomai.org>
+ <8a3259f5-507d-0c8f-ae06-7ad5613e6f88@siemens.com>
+ <a1f5a95b-aed6-5bd8-c002-72d2646e4d2f@siemens.com>
+ <79fdf3b2-ad56-5f99-d825-1368cfb5edcd@siemens.com>
+ <787f49a3-8fb4-fb86-af5b-87016ee4b528@siemens.com>
+From: Philippe Gerum <rpm@xenomai.org>
+Subject: Re: [PATCH] cobalt/posix/process: pipeline: abstract kernel event
+ handlers
+In-reply-to: <787f49a3-8fb4-fb86-af5b-87016ee4b528@siemens.com>
+Date: Fri, 08 Jan 2021 10:49:03 +0100
+Message-ID: <87im87n4hc.fsf@xenomai.org>
 MIME-Version: 1.0
-In-Reply-To: <20210102093353.3195090-7-rpm@xenomai.org>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -18,193 +19,99 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Philippe Gerum <rpm@xenomai.org>, xenomai@xenomai.org
+To: Jan Kiszka <jan.kiszka@siemens.com>
+Cc: xenomai@xenomai.org
 
-On 02.01.21 10:33, Philippe Gerum wrote:
-> From: Philippe Gerum <rpm@xenomai.org>
-> 
-> The I-pipe and Dovetail share the very same concept of out-of-band,
-> high-priority IPI, but using a different interface. Let's abstract the
-> calls manipulating those IPIs to make them pipeline-specific.
-> 
-> No functional change is introduced.
-> 
-> Signed-off-by: Philippe Gerum <rpm@xenomai.org>
-> ---
->  .../cobalt/kernel/ipipe/pipeline/pipeline.h   | 50 ++++++++++++++++++-
->  kernel/cobalt/clock.c                         |  2 +-
->  .../include/asm-generic/xenomai/wrappers.h    |  4 --
->  kernel/cobalt/sched.c                         | 11 ++--
->  kernel/cobalt/timer.c                         |  7 +--
->  5 files changed, 56 insertions(+), 18 deletions(-)
-> 
-> diff --git a/include/cobalt/kernel/ipipe/pipeline/pipeline.h b/include/cobalt/kernel/ipipe/pipeline/pipeline.h
-> index 317fa62d7..6f6958402 100644
-> --- a/include/cobalt/kernel/ipipe/pipeline/pipeline.h
-> +++ b/include/cobalt/kernel/ipipe/pipeline/pipeline.h
-> @@ -5,7 +5,13 @@
->  #ifndef _COBALT_KERNEL_IPIPE_PIPELINE_H
->  #define _COBALT_KERNEL_IPIPE_PIPELINE_H
->  
-> -#include <linux/ipipe.h>
-> +#ifdef CONFIG_IPIPE_LEGACY
-> +#error "CONFIG_IPIPE_LEGACY must be switched off"
-> +#endif
-> +
-> +#include <pipeline/machine.h>
-> +
-> +#define PIPELINE_NR_IRQS  IPIPE_NR_IRQS
->  
->  typedef unsigned long spl_t;
->  
-> @@ -22,4 +28,46 @@ typedef unsigned long spl_t;
->  #define is_secondary_domain()	ipipe_root_p
->  #define is_primary_domain()	(!ipipe_root_p)
->  
-> +#ifdef CONFIG_SMP
-> +
-> +static inline int pipeline_request_resched_ipi(void (*handler)(void))
-> +{
-> +	return ipipe_request_irq(&cobalt_pipeline.domain,
-> +				IPIPE_RESCHEDULE_IPI,
-> +				(ipipe_irq_handler_t)handler,
-> +				NULL, NULL);
-> +}
-> +
-> +static inline void pipeline_free_resched_ipi(void)
-> +{
-> +	ipipe_free_irq(&cobalt_pipeline.domain,
-> +		IPIPE_RESCHEDULE_IPI);
-> +}
-> +
-> +static inline void pipeline_send_resched_ipi(const struct cpumask *dest)
-> +{
-> +	ipipe_send_ipi(IPIPE_RESCHEDULE_IPI, *dest);
-> +}
-> +
-> +static inline int pipeline_request_timer_ipi(void (*handler)(void))
-> +{
-> +	return ipipe_request_irq(&cobalt_pipeline.domain,
-> +				IPIPE_HRTIMER_IPI,
-> +				(ipipe_irq_handler_t)handler,
-> +				NULL, NULL);
-> +}
-> +
-> +static inline void pipeline_free_timer_ipi(void)
-> +{
-> +	return ipipe_free_irq(&cobalt_pipeline.domain,
-> +			IPIPE_HRTIMER_IPI);
-> +}
-> +
-> +static inline void pipeline_send_timer_ipi(const struct cpumask *dest)
-> +{
-> +	ipipe_send_ipi(IPIPE_HRTIMER_IPI, *dest);
-> +}
-> +
-> +#endif
-> +
->  #endif /* !_COBALT_KERNEL_IPIPE_PIPELINE_H */
-> diff --git a/kernel/cobalt/clock.c b/kernel/cobalt/clock.c
-> index 2a5b61760..d73ade3f9 100644
-> --- a/kernel/cobalt/clock.c
-> +++ b/kernel/cobalt/clock.c
-> @@ -228,7 +228,7 @@ void xnclock_core_local_shot(struct xnsched *sched)
->  #ifdef CONFIG_SMP
->  void xnclock_core_remote_shot(struct xnsched *sched)
->  {
-> -	ipipe_send_ipi(IPIPE_HRTIMER_IPI, *cpumask_of(xnsched_cpu(sched)));
-> +	pipeline_send_timer_ipi(cpumask_of(xnsched_cpu(sched)));
->  }
->  #endif
->  
-> diff --git a/kernel/cobalt/include/asm-generic/xenomai/wrappers.h b/kernel/cobalt/include/asm-generic/xenomai/wrappers.h
-> index e266d5acf..e093676e1 100644
-> --- a/kernel/cobalt/include/asm-generic/xenomai/wrappers.h
-> +++ b/kernel/cobalt/include/asm-generic/xenomai/wrappers.h
-> @@ -20,10 +20,6 @@
->  
->  #include <linux/xenomai/wrappers.h>
->  
-> -#ifdef CONFIG_IPIPE_LEGACY
-> -#error "CONFIG_IPIPE_LEGACY must be switched off"
-> -#endif
-> -
->  #define COBALT_BACKPORT(__sym) __cobalt_backport_ ##__sym
->  
->  /*
-> diff --git a/kernel/cobalt/sched.c b/kernel/cobalt/sched.c
-> index b16903bd8..a44109e78 100644
-> --- a/kernel/cobalt/sched.c
-> +++ b/kernel/cobalt/sched.c
-> @@ -235,10 +235,7 @@ void xnsched_init_all(void)
->  	}
->  
->  #ifdef CONFIG_SMP
-> -	ipipe_request_irq(&xnsched_realtime_domain,
-> -			  IPIPE_RESCHEDULE_IPI,
-> -			  (ipipe_irq_handler_t)__xnsched_run_handler,
-> -			  NULL, NULL);
-> +	pipeline_request_resched_ipi(__xnsched_run_handler);
->  #endif
->  }
->  
-> @@ -261,7 +258,7 @@ void xnsched_destroy_all(void)
->  	spl_t s;
->  
->  #ifdef CONFIG_SMP
-> -	ipipe_free_irq(&xnsched_realtime_domain, IPIPE_RESCHEDULE_IPI);
-> +	pipeline_free_resched_ipi();
->  #endif
->  
->  	xnlock_get_irqsave(&nklock, s);
-> @@ -860,7 +857,7 @@ static inline int test_resched(struct xnsched *sched)
->  	/* Send resched IPI to remote CPU(s). */
->  	if (unlikely(!cpumask_empty(&sched->resched))) {
->  		smp_mb();
-> -		ipipe_send_ipi(IPIPE_RESCHEDULE_IPI, sched->resched);
-> +		pipeline_send_resched_ipi(&sched->resched);
->  		cpumask_clear(&sched->resched);
->  	}
->  #endif
-> @@ -1280,7 +1277,7 @@ static int vfile_schedstat_next(struct xnvfile_snapshot_iterator *it,
->  
->  scan_irqs:
->  #ifdef CONFIG_XENO_OPT_STATS_IRQS
-> -	if (priv->irq >= IPIPE_NR_IRQS)
-> +	if (priv->irq >= PIPELINE_NR_IRQS)
->  		return 0;	/* All done. */
->  
->  	ret = xnintr_query_next(priv->irq, &priv->intr_it, p->name);
-> diff --git a/kernel/cobalt/timer.c b/kernel/cobalt/timer.c
-> index ccd3c3b70..b8c3f5a11 100644
-> --- a/kernel/cobalt/timer.c
-> +++ b/kernel/cobalt/timer.c
-> @@ -578,15 +578,12 @@ EXPORT_SYMBOL_GPL(__xntimer_set_affinity);
->  
->  int xntimer_setup_ipi(void)
->  {
-> -	return ipipe_request_irq(&xnsched_realtime_domain,
-> -				 IPIPE_HRTIMER_IPI,
-> -				 (ipipe_irq_handler_t)xnintr_core_clock_handler,
-> -				 NULL, NULL);
-> +	return pipeline_request_timer_ipi(xnintr_core_clock_handler);
->  }
->  
->  void xntimer_release_ipi(void)
->  {
-> -	ipipe_free_irq(&xnsched_realtime_domain, IPIPE_HRTIMER_IPI);
-> +	pipeline_free_timer_ipi();
->  }
->  
->  #endif /* CONFIG_SMP */
-> 
 
-Thanks, applied up to here (with the fixup of patch 1), just waiting for
-feedback on my comments on patch 7 and beyond.
+Jan Kiszka <jan.kiszka@siemens.com> writes:
 
-Jan
+> On 08.01.21 08:08, Jan Kiszka via Xenomai wrote:
+>> On 07.01.21 19:27, Jan Kiszka via Xenomai wrote:
+>>> On 07.01.21 18:56, Jan Kiszka via Xenomai wrote:
+>>>> On 17.12.20 19:02, Philippe Gerum wrote:
+>>>>> From: Philippe Gerum <rpm@xenomai.org>
+>>>>>
+>>>>> Although there are significant commonalities between the I-pipe and
+>>>>> Dovetail when it comes to dealing with synchronous kernel events,
+>>>>> there is no strict 1:1 mapping between the two kernel interfaces.
+>>>>>
+>>>>> As an initial step, move all the code handling the kernel events to
+>>>>> the I-pipe section. We may exploit commonalities between the I-pipe
+>>>>> and Dovetail in this area as we gradually merge support for the
+>>>>> latter.
+>>>>>
+>>>>> No functional change is introduced.
+>>>>>
+>>>>> Signed-off-by: Philippe Gerum <rpm@xenomai.org>
+>>>>> ---
+>>>>>  .../cobalt/kernel/ipipe/pipeline/kevents.h    |  31 +
+>>>>>  kernel/cobalt/ipipe/Makefile                  |   4 +-
+>>>>>  kernel/cobalt/ipipe/kevents.c                 | 860 ++++++++++++++++++
+>>>>>  kernel/cobalt/posix/process.c                 | 846 +----------------
+>>>>>  kernel/cobalt/posix/process.h                 |   4 +
+>>>>>  kernel/cobalt/posix/signal.c                  |   5 +
+>>>>>  kernel/cobalt/posix/signal.h                  |   2 +
+>>>>>  kernel/cobalt/thread.c                        |   4 +-
+>>>>>  kernel/cobalt/trace/cobalt-core.h             |  12 +-
+>>>>>  9 files changed, 930 insertions(+), 838 deletions(-)
+>>>>>  create mode 100644 include/cobalt/kernel/ipipe/pipeline/kevents.h
+>>>>>  create mode 100644 kernel/cobalt/ipipe/kevents.c
+>>>>>
+>>>>> diff --git a/include/cobalt/kernel/ipipe/pipeline/kevents.h b/include/cobalt/kernel/ipipe/pipeline/kevents.h
+>>>>> new file mode 100644
+>>>>> index 000000000..30425a96b
+>>>>> --- /dev/null
+>>>>> +++ b/include/cobalt/kernel/ipipe/pipeline/kevents.h
+>>>>> @@ -0,0 +1,31 @@
+>>>>> +/*
+>>>>> + * SPDX-License-Identifier: GPL-2.0
+>>>>> + *
+>>>>> + * Copyright (C) 2019 Philippe Gerum  <rpm@xenomai.org>
+>>>>> + */
+>>>>> +
+>>>>> +#ifndef _COBALT_KERNEL_IPIPE_KEVENTS_H
+>>>>> +#define _COBALT_KERNEL_IPIPE_KEVENTS_H
+>>>>> +
+>>>>> +struct cobalt_process;
+>>>>> +struct cobalt_thread;
+>>>>> +
+>>>>> +static inline
+>>>>> +int pipeline_attach_process(struct cobalt_process *process)
+>>>>> +{
+>>>>> +	return 0;
+>>>>> +}
+>>>>> +
+>>>>> +static inline
+>>>>> +void pipeline_detach_process(struct cobalt_process *process)
+>>>>> +{ }
+>>>>> +
+>>>>> +int pipeline_prepare_current(void);
+>>>>> +
+>>>>> +void pipeline_attach_current(struct xnthread *thread);
+>>>>> +
+>>>>> +int pipeline_trap_kevents(void);
+>>>>> +
+>>>>> +void pipeline_enable_kevents(void);
+>>>>> +
+>>>>> +#endif /* !_COBALT_KERNEL_IPIPE_KEVENTS_H */
+>>>>> diff --git a/kernel/cobalt/ipipe/Makefile b/kernel/cobalt/ipipe/Makefile
+>>>>> index 6021008fb..5170bb32b 100644
+>>>>> --- a/kernel/cobalt/ipipe/Makefile
+>>>>> +++ b/kernel/cobalt/ipipe/Makefile
+>>>>> @@ -1,3 +1,5 @@
+>>>>> +ccflags-y += -Ikernel
+>
+> "... -I$(srctree)/kernel" - or 5.4 and newer does not build. Also fixed
+> up now.
+>
+
+Please wait. You see way too many issues on merging this patch. Although
+I'm not building on 4.14 (only covering the two latest LTS, i.e. 5.10
+and 4.19), 4.19 does build here. So this may be an issue with options,
+and there might be several other annoying bugs ahead. It would be better
+for me to include 4.14 in my test list, using your .config(s), and
+re-submit from this patch and on.
 
 -- 
-Siemens AG, T RDA IOT
-Corporate Competence Center Embedded Linux
+Philippe.
 
