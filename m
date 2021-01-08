@@ -1,12 +1,14 @@
-Subject: Re: [PATCH Dovetail 01/13] cobalt/thread: pipeline: abstract
- threadinfo accessor
-References: <20210102093353.3195090-1-rpm@xenomai.org>
- <20210102093353.3195090-2-rpm@xenomai.org>
+Subject: Re: [PATCH] cobalt/posix/process: pipeline: abstract kernel event
+ handlers
+References: <20201217180246.48589-1-rpm@xenomai.org>
+ <8a3259f5-507d-0c8f-ae06-7ad5613e6f88@siemens.com>
+ <a1f5a95b-aed6-5bd8-c002-72d2646e4d2f@siemens.com>
+ <79fdf3b2-ad56-5f99-d825-1368cfb5edcd@siemens.com>
 From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <b4a996ff-c5d9-a08b-639f-191ac1ef8b35@siemens.com>
-Date: Fri, 8 Jan 2021 10:02:40 +0100
+Message-ID: <787f49a3-8fb4-fb86-af5b-87016ee4b528@siemens.com>
+Date: Fri, 8 Jan 2021 10:24:23 +0100
 MIME-Version: 1.0
-In-Reply-To: <20210102093353.3195090-2-rpm@xenomai.org>
+In-Reply-To: <79fdf3b2-ad56-5f99-d825-1368cfb5edcd@siemens.com>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -20,183 +22,262 @@ List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: Philippe Gerum <rpm@xenomai.org>, xenomai@xenomai.org
 
-On 02.01.21 10:33, Philippe Gerum wrote:
-> From: Philippe Gerum <rpm@xenomai.org>
-> 
-> The I-pipe and Dovetail access the per-thread information block
-> differently. Abstract this kernel interface.
-> 
-> No functional change is introduced.
-> 
-> Signed-off-by: Philippe Gerum <rpm@xenomai.org>
-> ---
->  include/cobalt/kernel/ipipe/pipeline/thread.h | 26 +++++++++++++++++++
->  include/cobalt/kernel/thread.h                |  5 ++--
->  kernel/cobalt/ipipe/kevents.c                 |  6 ++---
->  kernel/cobalt/posix/process.c                 |  4 +--
->  kernel/cobalt/posix/process.h                 |  5 ++--
->  kernel/cobalt/thread.c                        |  4 +--
->  6 files changed, 39 insertions(+), 11 deletions(-)
->  create mode 100644 include/cobalt/kernel/ipipe/pipeline/thread.h
-> 
-> diff --git a/include/cobalt/kernel/ipipe/pipeline/thread.h b/include/cobalt/kernel/ipipe/pipeline/thread.h
-> new file mode 100644
-> index 000000000..a62e622c4
-> --- /dev/null
-> +++ b/include/cobalt/kernel/ipipe/pipeline/thread.h
-> @@ -0,0 +1,26 @@
-> +/*
-> + * SPDX-License-Identifier: GPL-2.0
-> + *
-> + * Copyright (C) 2019 Philippe Gerum  <rpm@xenomai.org>
-> + */
-> +
-> +#ifndef _COBALT_KERNEL_IPIPE_THREAD_H
-> +#define _COBALT_KERNEL_IPIPE_THREAD_H
-> +
-> +#include <linux/ipipe.h>
+On 08.01.21 08:08, Jan Kiszka via Xenomai wrote:
+> On 07.01.21 19:27, Jan Kiszka via Xenomai wrote:
+>> On 07.01.21 18:56, Jan Kiszka via Xenomai wrote:
+>>> On 17.12.20 19:02, Philippe Gerum wrote:
+>>>> From: Philippe Gerum <rpm@xenomai.org>
+>>>>
+>>>> Although there are significant commonalities between the I-pipe and
+>>>> Dovetail when it comes to dealing with synchronous kernel events,
+>>>> there is no strict 1:1 mapping between the two kernel interfaces.
+>>>>
+>>>> As an initial step, move all the code handling the kernel events to
+>>>> the I-pipe section. We may exploit commonalities between the I-pipe
+>>>> and Dovetail in this area as we gradually merge support for the
+>>>> latter.
+>>>>
+>>>> No functional change is introduced.
+>>>>
+>>>> Signed-off-by: Philippe Gerum <rpm@xenomai.org>
+>>>> ---
+>>>>  .../cobalt/kernel/ipipe/pipeline/kevents.h    |  31 +
+>>>>  kernel/cobalt/ipipe/Makefile                  |   4 +-
+>>>>  kernel/cobalt/ipipe/kevents.c                 | 860 ++++++++++++++++++
+>>>>  kernel/cobalt/posix/process.c                 | 846 +----------------
+>>>>  kernel/cobalt/posix/process.h                 |   4 +
+>>>>  kernel/cobalt/posix/signal.c                  |   5 +
+>>>>  kernel/cobalt/posix/signal.h                  |   2 +
+>>>>  kernel/cobalt/thread.c                        |   4 +-
+>>>>  kernel/cobalt/trace/cobalt-core.h             |  12 +-
+>>>>  9 files changed, 930 insertions(+), 838 deletions(-)
+>>>>  create mode 100644 include/cobalt/kernel/ipipe/pipeline/kevents.h
+>>>>  create mode 100644 kernel/cobalt/ipipe/kevents.c
+>>>>
+>>>> diff --git a/include/cobalt/kernel/ipipe/pipeline/kevents.h b/include/cobalt/kernel/ipipe/pipeline/kevents.h
+>>>> new file mode 100644
+>>>> index 000000000..30425a96b
+>>>> --- /dev/null
+>>>> +++ b/include/cobalt/kernel/ipipe/pipeline/kevents.h
+>>>> @@ -0,0 +1,31 @@
+>>>> +/*
+>>>> + * SPDX-License-Identifier: GPL-2.0
+>>>> + *
+>>>> + * Copyright (C) 2019 Philippe Gerum  <rpm@xenomai.org>
+>>>> + */
+>>>> +
+>>>> +#ifndef _COBALT_KERNEL_IPIPE_KEVENTS_H
+>>>> +#define _COBALT_KERNEL_IPIPE_KEVENTS_H
+>>>> +
+>>>> +struct cobalt_process;
+>>>> +struct cobalt_thread;
+>>>> +
+>>>> +static inline
+>>>> +int pipeline_attach_process(struct cobalt_process *process)
+>>>> +{
+>>>> +	return 0;
+>>>> +}
+>>>> +
+>>>> +static inline
+>>>> +void pipeline_detach_process(struct cobalt_process *process)
+>>>> +{ }
+>>>> +
+>>>> +int pipeline_prepare_current(void);
+>>>> +
+>>>> +void pipeline_attach_current(struct xnthread *thread);
+>>>> +
+>>>> +int pipeline_trap_kevents(void);
+>>>> +
+>>>> +void pipeline_enable_kevents(void);
+>>>> +
+>>>> +#endif /* !_COBALT_KERNEL_IPIPE_KEVENTS_H */
+>>>> diff --git a/kernel/cobalt/ipipe/Makefile b/kernel/cobalt/ipipe/Makefile
+>>>> index 6021008fb..5170bb32b 100644
+>>>> --- a/kernel/cobalt/ipipe/Makefile
+>>>> +++ b/kernel/cobalt/ipipe/Makefile
+>>>> @@ -1,3 +1,5 @@
+>>>> +ccflags-y += -Ikernel
 
-We also need linux/sched.h for older kernels (<= 4.14). Fixing up on merge.
+"... -I$(srctree)/kernel" - or 5.4 and newer does not build. Also fixed
+up now.
 
 Jan
 
-> +
-> +struct xnthread;
-> +
-> +#define cobalt_threadinfo ipipe_threadinfo
-> +
-> +static inline struct cobalt_threadinfo *pipeline_current(void)
-> +{
-> +	return ipipe_current_threadinfo();
-> +}
-> +
-> +static inline struct xnthread *pipeline_thread_from_task(struct task_struct *p)
-> +{
-> +	return ipipe_task_threadinfo(p)->thread;
-> +}
-> +
-> +#endif /* !_COBALT_KERNEL_IPIPE_THREAD_H */
-> diff --git a/include/cobalt/kernel/thread.h b/include/cobalt/kernel/thread.h
-> index 21a8603b4..2d57b8398 100644
-> --- a/include/cobalt/kernel/thread.h
-> +++ b/include/cobalt/kernel/thread.h
-> @@ -22,6 +22,7 @@
->  #include <linux/wait.h>
->  #include <linux/sched.h>
->  #include <linux/sched/rt.h>
-> +#include <pipeline/thread.h>
->  #include <cobalt/kernel/list.h>
->  #include <cobalt/kernel/stat.h>
->  #include <cobalt/kernel/timer.h>
-> @@ -372,7 +373,7 @@ void __xnthread_discard(struct xnthread *thread);
->   */
->  static inline struct xnthread *xnthread_current(void)
->  {
-> -	return ipipe_current_threadinfo()->thread;
-> +	return pipeline_current()->thread;
->  }
->  
->  /**
-> @@ -388,7 +389,7 @@ static inline struct xnthread *xnthread_current(void)
->   */
->  static inline struct xnthread *xnthread_from_task(struct task_struct *p)
->  {
-> -	return ipipe_task_threadinfo(p)->thread;
-> +	return pipeline_thread_from_task(p);
->  }
->  
->  /**
-> diff --git a/kernel/cobalt/ipipe/kevents.c b/kernel/cobalt/ipipe/kevents.c
-> index ba584677c..e0d4a1288 100644
-> --- a/kernel/cobalt/ipipe/kevents.c
-> +++ b/kernel/cobalt/ipipe/kevents.c
-> @@ -831,16 +831,16 @@ static inline int get_mayday_prot(void)
->  
->  void pipeline_attach_current(struct xnthread *thread)
->  {
-> -	struct ipipe_threadinfo *p;
-> +	struct cobalt_threadinfo *p;
->  
-> -	p = ipipe_current_threadinfo();
-> +	p = pipeline_current();
->  	p->thread = thread;
->  	p->process = cobalt_search_process(current->mm);
->  }
->  
->  static void detach_current(void)
->  {
-> -	struct ipipe_threadinfo *p = ipipe_current_threadinfo();
-> +	struct cobalt_threadinfo *p = pipeline_current();
->  	p->thread = NULL;
->  	p->process = NULL;
->  }
-> diff --git a/kernel/cobalt/posix/process.c b/kernel/cobalt/posix/process.c
-> index 9bc6082d0..accd989ca 100644
-> --- a/kernel/cobalt/posix/process.c
-> +++ b/kernel/cobalt/posix/process.c
-> @@ -463,7 +463,7 @@ EXPORT_SYMBOL_GPL(cobalt_unregister_personality);
->  struct xnthread_personality *
->  cobalt_push_personality(int xid)
->  {
-> -	struct ipipe_threadinfo *p = ipipe_current_threadinfo();
-> +	struct cobalt_threadinfo *p = pipeline_current();
->  	struct xnthread_personality *prev, *next;
->  	struct xnthread *thread = p->thread;
->  
-> @@ -504,7 +504,7 @@ EXPORT_SYMBOL_GPL(cobalt_push_personality);
->   */
->  void cobalt_pop_personality(struct xnthread_personality *prev)
->  {
-> -	struct ipipe_threadinfo *p = ipipe_current_threadinfo();
-> +	struct cobalt_threadinfo *p = pipeline_current();
->  	struct xnthread *thread = p->thread;
->  
->  	secondary_mode_only();
-> diff --git a/kernel/cobalt/posix/process.h b/kernel/cobalt/posix/process.h
-> index 3a38ae639..a2f4ec591 100644
-> --- a/kernel/cobalt/posix/process.h
-> +++ b/kernel/cobalt/posix/process.h
-> @@ -20,6 +20,7 @@
->  
->  #include <linux/list.h>
->  #include <linux/bitmap.h>
-> +#include <pipeline/thread.h>
->  #include <cobalt/kernel/ppd.h>
->  
->  #define KEVENT_PROPAGATE   0
-> @@ -94,13 +95,13 @@ extern struct cobalt_resources cobalt_global_resources;
->  
->  static inline struct cobalt_process *cobalt_current_process(void)
->  {
-> -	return ipipe_current_threadinfo()->process;
-> +	return pipeline_current()->process;
->  }
->  
->  static inline struct cobalt_process *
->  cobalt_set_process(struct cobalt_process *process)
->  {
-> -	struct ipipe_threadinfo *p = ipipe_current_threadinfo();
-> +	struct cobalt_threadinfo *p = pipeline_current();
->  	struct cobalt_process *old;
->  
->  	old = p->process;
-> diff --git a/kernel/cobalt/thread.c b/kernel/cobalt/thread.c
-> index a882bcc45..b871e6069 100644
-> --- a/kernel/cobalt/thread.c
-> +++ b/kernel/cobalt/thread.c
-> @@ -2452,9 +2452,9 @@ static inline void wakeup_parent(struct completion *done)
->  
->  static inline void init_kthread_info(struct xnthread *thread)
->  {
-> -	struct ipipe_threadinfo *p;
-> +	struct cobalt_threadinfo *p;
->  
-> -	p = ipipe_current_threadinfo();
-> +	p = pipeline_current();
->  	p->thread = thread;
->  	p->process = NULL;
->  }
+>>>> +
+>>>>  obj-y +=	pipeline.o
+>>>>  
+>>>> -pipeline-y :=	init.o intr.o
+>>>> +pipeline-y :=	init.o intr.o kevents.o
+>>>> diff --git a/kernel/cobalt/ipipe/kevents.c b/kernel/cobalt/ipipe/kevents.c
+>>>> new file mode 100644
+>>>> index 000000000..ba584677c
+>>>> --- /dev/null
+>>>> +++ b/kernel/cobalt/ipipe/kevents.c
+>>>> @@ -0,0 +1,860 @@
+>>>> +/*
+>>>> + * SPDX-License-Identifier: GPL-2.0
+>>>> + *
+>>>> + * Copyright (C) 2001-2014 Philippe Gerum <rpm@xenomai.org>.
+>>>> + * Copyright (C) 2001-2014 The Xenomai project <http://www.xenomai.org>
+>>>> + * Copyright (C) 2006 Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+>>>> + *
+>>>> + * SMP support Copyright (C) 2004 The HYADES project <http://www.hyades-itea.org>
+>>>> + * RTAI/fusion Copyright (C) 2004 The RTAI project <http://www.rtai.org>
+>>>> + */
+>>>> +
+>>>> +#include <linux/ipipe.h>
+>>>> +#include <linux/ipipe_tickdev.h>
+>>>> +#include <linux/ptrace.h>
+>>>> +#include <pipeline/kevents.h>
+>>>> +#include <cobalt/kernel/sched.h>
+>>>> +#include <cobalt/kernel/thread.h>
+>>>> +#include <cobalt/kernel/vdso.h>
+>>>> +#include <rtdm/driver.h>
+>>>> +#include <trace/events/cobalt-core.h>
+>>>> +#include "../posix/process.h"
+>>>> +#include "../posix/thread.h"
+>>>> +#include "../posix/memory.h"
+>>>> +
+>>>> +static void detach_current(void);
+>>>> +
+>>>> +static inline struct cobalt_process *
+>>>> +process_from_thread(struct xnthread *thread)
+>>>> +{
+>>>> +	return container_of(thread, struct cobalt_thread, threadbase)->process;
+>>>> +}
+>>>> +
+>>>> +#ifdef IPIPE_KEVT_PTRESUME
+>>>> +
+>>>> +static void stop_debugged_process(struct xnthread *thread)
+>>>> +{
+>>>> +	struct cobalt_process *process = process_from_thread(thread);
+>>>> +	struct cobalt_thread *cth;
+>>>> +
+>>>> +	if (process->debugged_threads > 0)
+>>>> +		return;
+>>>> +
+>>>> +	list_for_each_entry(cth, &process->thread_list, next) {
+>>>> +		if (&cth->threadbase == thread)
+>>>> +			continue;
+>>>> +
+>>>> +		xnthread_suspend(&cth->threadbase, XNDBGSTOP, XN_INFINITE,
+>>>> +				 XN_RELATIVE, NULL);
+>>>> +	}
+>>>> +}
+>>>> +
+>>>> +static void resume_debugged_process(struct cobalt_process *process)
+>>>> +{
+>>>> +	struct cobalt_thread *cth;
+>>>> +
+>>>> +	xnsched_lock();
+>>>> +
+>>>> +	list_for_each_entry(cth, &process->thread_list, next)
+>>>> +		if (xnthread_test_state(&cth->threadbase, XNDBGSTOP))
+>>>> +			xnthread_resume(&cth->threadbase, XNDBGSTOP);
+>>>> +
+>>>> +	xnsched_unlock();
+>>>> +}
+>>>> +
+>>>> +#else /* !IPIPE_KEVT_PTRESUME */
+>>>> +
+>>>> +static inline void stop_debugged_process(struct xnthread *thread)
+>>>> +{
+>>>> +}
+>>>> +
+>>>> +static inline void resume_debugged_process(struct cobalt_process *process)
+>>>> +{
+>>>> +}
+>>>> +
+>>>> +#endif /* !IPIPE_KEVT_PTRESUME */
+>>>> +
+>>>> +/* called with nklock held */
+>>>> +static void register_debugged_thread(struct xnthread *thread)
+>>>> +{
+>>>> +	struct cobalt_process *process = process_from_thread(thread);
+>>>> +
+>>>> +	xnthread_set_state(thread, XNSSTEP);
+>>>> +
+>>>> +	stop_debugged_process(thread);
+>>>> +	process->debugged_threads++;
+>>>> +
+>>>> +	if (xnthread_test_state(thread, XNRELAX))
+>>>> +		xnthread_suspend(thread, XNDBGSTOP, XN_INFINITE, XN_RELATIVE,
+>>>> +				 NULL);
+>>>> +}
+>>>> +
+>>>> +/* called with nklock held */
+>>>> +static void unregister_debugged_thread(struct xnthread *thread)
+>>>> +{
+>>>> +	struct cobalt_process *process = process_from_thread(thread);
+>>>> +
+>>>> +	process->debugged_threads--;
+>>>> +	xnthread_clear_state(thread, XNSSTEP);
+>>>> +
+>>>> +	if (process->debugged_threads == 0)
+>>>> +		resume_debugged_process(process);
+>>>> +}
+>>>> +
+>>>> +static inline int handle_exception(struct ipipe_trap_data *d)
+>>>> +{
+>>>> +	struct xnthread *thread;
+>>>> +	struct xnsched *sched;
+>>>> +
+>>>> +	sched = xnsched_current();
+>>>> +	thread = sched->curr;
+>>>> +
+>>>> +	trace_cobalt_thread_fault(xnarch_fault_pc(d),
+>>>> +				  xnarch_fault_trap(d));
+>>>> +
+>>>> +	if (xnthread_test_state(thread, XNROOT))
+>>>> +		return 0;
+>>>> +
+>>>> +#ifdef IPIPE_KEVT_USERINTRET
+>>>> +	if (xnarch_fault_bp_p(d) && user_mode(d->regs)) {
+>>>> +		spl_t s;
+>>>> +
+>>>> +		XENO_WARN_ON(CORE, xnthread_test_state(thread, XNRELAX));
+>>>> +		xnlock_get_irqsave(&nklock, s);
+>>>> +		xnthread_set_info(thread, XNCONTHI);
+>>>> +		ipipe_enable_user_intret_notifier();
+>>>> +		stop_debugged_process(thread);
+>>>> +		xnlock_put_irqrestore(&nklock, s);
+>>>> +		xnsched_run();
+>>>> +	}
+>>>> +#endif
+>>>> +
+>>>> +	if (xnarch_fault_fpu_p(d)) {
+>>>> +#ifdef CONFIG_XENO_ARCH_FPU
+>>>> +		spl_t s;
+>>>> +
+>>>> +		/* FPU exception received in primary mode. */
+>>>> +		splhigh(s);
+>>>> +		if (xnarch_handle_fpu_fault(sched->fpuholder, thread, d)) {
+>>>> +			sched->fpuholder = thread;
+>>>> +			splexit(s);
+>>>> +			return 1;
+>>>> +		}
+>>>> +		splexit(s);
+>>>> +#endif /* CONFIG_XENO_ARCH_FPU */
+>>>> +#if LINUX_VERSION_CODE >= KERNEL_VERSION(4, 16, 0)
+>>
+>> Inverted logic? Build is broken for 4.14 and older.
+>>
 > 
+> Nope, the problem was missing include moving. Fixed that up as well,
+> result is in next.
+> 
+> Jan
+> 
+>> Jan
+>>
+>>>> +		printk("invalid use of FPU in Xenomai context at %pS\n",
+>>>> +		       (void *)xnarch_fault_pc(d));
+>>>> +#else
+>>>> +		print_symbol("invalid use of FPU in Xenomai context at %s\n",
+>>>> +			     xnarch_fault_pc(d));
+>>>> +#endif
+> 
+
 
 -- 
 Siemens AG, T RDA IOT
