@@ -1,16 +1,10 @@
-References: <20201217180246.48589-1-rpm@xenomai.org>
- <8a3259f5-507d-0c8f-ae06-7ad5613e6f88@siemens.com>
- <a1f5a95b-aed6-5bd8-c002-72d2646e4d2f@siemens.com>
- <79fdf3b2-ad56-5f99-d825-1368cfb5edcd@siemens.com>
- <787f49a3-8fb4-fb86-af5b-87016ee4b528@siemens.com>
-From: Philippe Gerum <rpm@xenomai.org>
-Subject: Re: [PATCH] cobalt/posix/process: pipeline: abstract kernel event
- handlers
-In-reply-to: <787f49a3-8fb4-fb86-af5b-87016ee4b528@siemens.com>
-Date: Fri, 08 Jan 2021 17:58:26 +0100
-Message-ID: <87r1mvl619.fsf@xenomai.org>
+From: =?utf-8?q?Fran=C3=A7ois_Legal?= <devel@thom.fr.eu.org>
 MIME-Version: 1.0
-Content-Type: text/plain
+Date: Fri, 08 Jan 2021 19:35:06 +0100
+Subject: Weird =?utf-8?q?semaphore=2Ftimeout?= behaviour with gdbserver
+Message-ID: <35a5-5ff8a600-5-48dc0d80@255670131>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: quoted-printable
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -19,96 +13,24 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jan Kiszka <jan.kiszka@siemens.com>
-Cc: xenomai@xenomai.org
+To: xenomai@xenomai.org
 
+Hello,
 
-Jan Kiszka <jan.kiszka@siemens.com> writes:
+Working on ARMv7 with linux 4.4 and xenomai 3.1, I get a strange behavi=
+our when using GDB.
+There seem to be troubles with threads pending on semaphores, which do =
+not wake up when sem is posted nor when the timedwait is over.
+It does not seem to make a problem with all the semaphores on the softw=
+are, but at program startup, the behaviour is pretty constant.
 
-> On 08.01.21 08:08, Jan Kiszka via Xenomai wrote:
->> On 07.01.21 19:27, Jan Kiszka via Xenomai wrote:
->>> On 07.01.21 18:56, Jan Kiszka via Xenomai wrote:
->>>> On 17.12.20 19:02, Philippe Gerum wrote:
->>>>> From: Philippe Gerum <rpm@xenomai.org>
->>>>>
->>>>> Although there are significant commonalities between the I-pipe and
->>>>> Dovetail when it comes to dealing with synchronous kernel events,
->>>>> there is no strict 1:1 mapping between the two kernel interfaces.
->>>>>
->>>>> As an initial step, move all the code handling the kernel events to
->>>>> the I-pipe section. We may exploit commonalities between the I-pipe
->>>>> and Dovetail in this area as we gradually merge support for the
->>>>> latter.
->>>>>
->>>>> No functional change is introduced.
->>>>>
->>>>> Signed-off-by: Philippe Gerum <rpm@xenomai.org>
->>>>> ---
->>>>>  .../cobalt/kernel/ipipe/pipeline/kevents.h    |  31 +
->>>>>  kernel/cobalt/ipipe/Makefile                  |   4 +-
->>>>>  kernel/cobalt/ipipe/kevents.c                 | 860 ++++++++++++++++++
->>>>>  kernel/cobalt/posix/process.c                 | 846 +----------------
->>>>>  kernel/cobalt/posix/process.h                 |   4 +
->>>>>  kernel/cobalt/posix/signal.c                  |   5 +
->>>>>  kernel/cobalt/posix/signal.h                  |   2 +
->>>>>  kernel/cobalt/thread.c                        |   4 +-
->>>>>  kernel/cobalt/trace/cobalt-core.h             |  12 +-
->>>>>  9 files changed, 930 insertions(+), 838 deletions(-)
->>>>>  create mode 100644 include/cobalt/kernel/ipipe/pipeline/kevents.h
->>>>>  create mode 100644 kernel/cobalt/ipipe/kevents.c
->>>>>
->>>>> diff --git a/include/cobalt/kernel/ipipe/pipeline/kevents.h b/include/cobalt/kernel/ipipe/pipeline/kevents.h
->>>>> new file mode 100644
->>>>> index 000000000..30425a96b
->>>>> --- /dev/null
->>>>> +++ b/include/cobalt/kernel/ipipe/pipeline/kevents.h
->>>>> @@ -0,0 +1,31 @@
->>>>> +/*
->>>>> + * SPDX-License-Identifier: GPL-2.0
->>>>> + *
->>>>> + * Copyright (C) 2019 Philippe Gerum  <rpm@xenomai.org>
->>>>> + */
->>>>> +
->>>>> +#ifndef _COBALT_KERNEL_IPIPE_KEVENTS_H
->>>>> +#define _COBALT_KERNEL_IPIPE_KEVENTS_H
->>>>> +
->>>>> +struct cobalt_process;
->>>>> +struct cobalt_thread;
->>>>> +
->>>>> +static inline
->>>>> +int pipeline_attach_process(struct cobalt_process *process)
->>>>> +{
->>>>> +	return 0;
->>>>> +}
->>>>> +
->>>>> +static inline
->>>>> +void pipeline_detach_process(struct cobalt_process *process)
->>>>> +{ }
->>>>> +
->>>>> +int pipeline_prepare_current(void);
->>>>> +
->>>>> +void pipeline_attach_current(struct xnthread *thread);
->>>>> +
->>>>> +int pipeline_trap_kevents(void);
->>>>> +
->>>>> +void pipeline_enable_kevents(void);
->>>>> +
->>>>> +#endif /* !_COBALT_KERNEL_IPIPE_KEVENTS_H */
->>>>> diff --git a/kernel/cobalt/ipipe/Makefile b/kernel/cobalt/ipipe/Makefile
->>>>> index 6021008fb..5170bb32b 100644
->>>>> --- a/kernel/cobalt/ipipe/Makefile
->>>>> +++ b/kernel/cobalt/ipipe/Makefile
->>>>> @@ -1,3 +1,5 @@
->>>>> +ccflags-y += -Ikernel
->
-> "... -I$(srctree)/kernel" - or 5.4 and newer does not build. Also fixed
-> up now.
->
+If I start the same program from shell, thread activation works flawles=
+sly.
 
-I did notice that on the Dovetail side on top of v5.10, which was fixed
-accordingly back then, but overlooked for the I-pipe as I was only
-building for 4.19 there so far.
+ANybody can give a hint on this ?
 
--- 
-Philippe.
+Thanks.
+
+Fran=C3=A7ois
+
 
