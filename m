@@ -1,7 +1,9 @@
 From: Philippe  Gerum <rpm@xenomai.org>
-Subject: [PATCH Dovetail 0/4] Get rid of the APC interface
-Date: Sat,  9 Jan 2021 17:02:29 +0100
-Message-Id: <20210109160233.921972-1-rpm@xenomai.org>
+Subject: [PATCH Dovetail 3/4] cobalt/select: drop dependency on APCs
+Date: Sat,  9 Jan 2021 17:02:32 +0100
+Message-Id: <20210109160233.921972-4-rpm@xenomai.org>
+In-Reply-To: <20210109160233.921972-1-rpm@xenomai.org>
+References: <20210109160233.921972-1-rpm@xenomai.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
@@ -16,36 +18,78 @@ To: xenomai@xenomai.org
 
 From: Philippe Gerum <rpm@xenomai.org>
 
-This patch starts a series aiming at dropping the (functionally
-redundant) APC interface entirely.
+Directly use a virtual/synthetic IRQ for kicking the deletion
+procedure for RTDM file descriptors, dropping the dependency on APCs.
 
-APCs are a relic from the Dark Ages, with no upside compared to open
-coded requests triggering virtual/synthetic IRQs to be handled by the
-root domain. As a matter of fact, an APC does run as a client handler
-of a synthetic IRQ under the hood. In other words, the APC
-encapsulation adds nothing but useless overhead.
+Signed-off-by: Philippe Gerum <rpm@xenomai.org>
+---
+ kernel/cobalt/select.c | 23 +++++++++++++----------
+ 1 file changed, 13 insertions(+), 10 deletions(-)
 
-Philippe Gerum (4):
-  cobalt/pipe: drop dependency on APCs
-  cobalt/registry: drop dependency on APCs
-  cobalt/select: drop dependency on APCs
-  cobalt/apc: drop obsolete APC mechanism
-
- include/cobalt/kernel/apc.h                   |  32 ---
- .../cobalt/kernel/ipipe/pipeline/machine.h    |   2 -
- include/cobalt/kernel/rtdm/driver.h           |   1 -
- kernel/cobalt/ipipe/Makefile                  |   2 +-
- kernel/cobalt/ipipe/apc.c                     | 202 ------------------
- kernel/cobalt/ipipe/init.c                    |  19 --
- kernel/cobalt/pipe.c                          |  26 ++-
- kernel/cobalt/procfs.c                        |  42 ----
- kernel/cobalt/registry.c                      |  30 +--
- kernel/cobalt/rtdm/core.c                     |   1 -
- kernel/cobalt/select.c                        |  23 +-
- 11 files changed, 49 insertions(+), 331 deletions(-)
- delete mode 100644 include/cobalt/kernel/apc.h
- delete mode 100644 kernel/cobalt/ipipe/apc.c
-
+diff --git a/kernel/cobalt/select.c b/kernel/cobalt/select.c
+index df3d960db..f45905112 100644
+--- a/kernel/cobalt/select.c
++++ b/kernel/cobalt/select.c
+@@ -23,7 +23,6 @@
+ #include <cobalt/kernel/sched.h>
+ #include <cobalt/kernel/synch.h>
+ #include <cobalt/kernel/select.h>
+-#include <cobalt/kernel/apc.h>
+ 
+ /**
+  * @ingroup cobalt_core
+@@ -49,7 +48,7 @@
+  */
+ 
+ static LIST_HEAD(selector_list);
+-static int deletion_apc;
++static int deletion_virq;
+ 
+ /**
+  * Initialize a @a struct @a xnselect structure.
+@@ -399,12 +398,12 @@ void xnselector_destroy(struct xnselector *selector)
+ 
+ 	xnlock_get_irqsave(&nklock, s);
+ 	list_add_tail(&selector->destroy_link, &selector_list);
+-	__xnapc_schedule(deletion_apc);
++	ipipe_post_irq_root(deletion_virq);
+ 	xnlock_put_irqrestore(&nklock, s);
+ }
+ EXPORT_SYMBOL_GPL(xnselector_destroy);
+ 
+-static void xnselector_destroy_loop(void *cookie)
++static void xnselector_destroy_loop(unsigned int virq, void *arg)
+ {
+ 	struct xnselect_binding *binding, *tmpb;
+ 	struct xnselector *selector, *tmps;
+@@ -443,17 +442,21 @@ out:
+ 
+ int xnselect_mount(void)
+ {
+-	deletion_apc = xnapc_alloc("selector_list_destroy",
+-				   xnselector_destroy_loop, NULL);
+-	if (deletion_apc < 0)
+-		return deletion_apc;
+-
++	deletion_virq = ipipe_alloc_virq();
++	if (deletion_virq == 0)
++		return -EBUSY;
++
++	ipipe_request_irq(ipipe_root_domain,
++			deletion_virq,
++			xnselector_destroy_loop,
++			NULL, NULL);
+ 	return 0;
+ }
+ 
+ int xnselect_umount(void)
+ {
+-	xnapc_free(deletion_apc);
++	ipipe_free_irq(ipipe_root_domain, deletion_virq);
++	ipipe_free_virq(deletion_virq);
+ 	return 0;
+ }
+ 
 -- 
 2.26.2
 
