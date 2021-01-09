@@ -1,7 +1,7 @@
 From: Philippe  Gerum <rpm@xenomai.org>
-Subject: [PATCH Dovetail 3/4] cobalt/select: drop dependency on APCs
-Date: Sat,  9 Jan 2021 17:02:32 +0100
-Message-Id: <20210109160233.921972-4-rpm@xenomai.org>
+Subject: [PATCH Dovetail 2/4] cobalt/registry: drop dependency on APCs
+Date: Sat,  9 Jan 2021 17:02:31 +0100
+Message-Id: <20210109160233.921972-3-rpm@xenomai.org>
 In-Reply-To: <20210109160233.921972-1-rpm@xenomai.org>
 References: <20210109160233.921972-1-rpm@xenomai.org>
 MIME-Version: 1.0
@@ -18,78 +18,112 @@ To: xenomai@xenomai.org
 
 From: Philippe Gerum <rpm@xenomai.org>
 
-Directly use a virtual/synthetic IRQ for kicking the deletion
-procedure for RTDM file descriptors, dropping the dependency on APCs.
+Directly use a virtual/synthetic IRQ for waking up the export/unexport
+procedure, dropping the dependency on APCs.
 
 Signed-off-by: Philippe Gerum <rpm@xenomai.org>
 ---
- kernel/cobalt/select.c | 23 +++++++++++++----------
- 1 file changed, 13 insertions(+), 10 deletions(-)
+ kernel/cobalt/registry.c | 30 +++++++++++++++++-------------
+ 1 file changed, 17 insertions(+), 13 deletions(-)
 
-diff --git a/kernel/cobalt/select.c b/kernel/cobalt/select.c
-index df3d960db..f45905112 100644
---- a/kernel/cobalt/select.c
-+++ b/kernel/cobalt/select.c
-@@ -23,7 +23,6 @@
- #include <cobalt/kernel/sched.h>
- #include <cobalt/kernel/synch.h>
- #include <cobalt/kernel/select.h>
+diff --git a/kernel/cobalt/registry.c b/kernel/cobalt/registry.c
+index dc1edd01a..7f7cb9eea 100644
+--- a/kernel/cobalt/registry.c
++++ b/kernel/cobalt/registry.c
+@@ -21,7 +21,6 @@
+ #include <cobalt/kernel/heap.h>
+ #include <cobalt/kernel/registry.h>
+ #include <cobalt/kernel/thread.h>
 -#include <cobalt/kernel/apc.h>
+ #include <cobalt/kernel/assert.h>
  
  /**
-  * @ingroup cobalt_core
-@@ -49,7 +48,7 @@
-  */
+@@ -62,13 +61,13 @@ static struct xnsynch register_synch;
  
- static LIST_HEAD(selector_list);
--static int deletion_apc;
-+static int deletion_virq;
+ static void proc_callback(struct work_struct *work);
  
- /**
-  * Initialize a @a struct @a xnselect structure.
-@@ -399,12 +398,12 @@ void xnselector_destroy(struct xnselector *selector)
+-static void registry_proc_schedule(void *cookie);
++static void registry_proc_schedule(unsigned int virq, void *arg);
  
- 	xnlock_get_irqsave(&nklock, s);
- 	list_add_tail(&selector->destroy_link, &selector_list);
--	__xnapc_schedule(deletion_apc);
-+	ipipe_post_irq_root(deletion_virq);
- 	xnlock_put_irqrestore(&nklock, s);
- }
- EXPORT_SYMBOL_GPL(xnselector_destroy);
+ static LIST_HEAD(proc_object_list);	/* Objects waiting for /proc handling. */
  
--static void xnselector_destroy_loop(void *cookie)
-+static void xnselector_destroy_loop(unsigned int virq, void *arg)
- {
- 	struct xnselect_binding *binding, *tmpb;
- 	struct xnselector *selector, *tmps;
-@@ -443,17 +442,21 @@ out:
+ static DECLARE_WORK(registry_proc_work, proc_callback);
  
- int xnselect_mount(void)
- {
--	deletion_apc = xnapc_alloc("selector_list_destroy",
--				   xnselector_destroy_loop, NULL);
--	if (deletion_apc < 0)
--		return deletion_apc;
+-static int proc_apc;
++static int proc_virq;
+ 
+ static struct xnvfile_directory registry_vfroot;
+ 
+@@ -124,14 +123,17 @@ int xnregistry_init(void)
+ 		return ret;
+ 	}
+ 
+-	proc_apc =
+-	    xnapc_alloc("registry_export", &registry_proc_schedule, NULL);
 -
-+	deletion_virq = ipipe_alloc_virq();
-+	if (deletion_virq == 0)
+-	if (proc_apc < 0) {
++	proc_virq = ipipe_alloc_virq();
++	if (proc_virq == 0) {
+ 		xnvfile_destroy_regular(&usage_vfile);
+ 		xnvfile_destroy_dir(&registry_vfroot);
+-		return proc_apc;
 +		return -EBUSY;
+ 	}
 +
 +	ipipe_request_irq(ipipe_root_domain,
-+			deletion_virq,
-+			xnselector_destroy_loop,
-+			NULL, NULL);
- 	return 0;
++			  proc_virq,
++			  registry_proc_schedule,
++			  NULL, NULL);
+ #endif /* CONFIG_XENO_OPT_VFILE */
+ 
+ 	next_object_stamp = 0;
+@@ -153,7 +155,8 @@ int xnregistry_init(void)
+ #ifdef CONFIG_XENO_OPT_VFILE
+ 		xnvfile_destroy_regular(&usage_vfile);
+ 		xnvfile_destroy_dir(&registry_vfroot);
+-		xnapc_free(proc_apc);
++		ipipe_free_irq(ipipe_root_domain, proc_virq);
++		ipipe_free_virq(proc_virq);
+ #endif /* CONFIG_XENO_OPT_VFILE */
+ 		return -ENOMEM;
+ 	}
+@@ -199,7 +202,8 @@ void xnregistry_cleanup(void)
+ 	xnsynch_destroy(&register_synch);
+ 
+ #ifdef CONFIG_XENO_OPT_VFILE
+-	xnapc_free(proc_apc);
++	ipipe_free_irq(ipipe_root_domain, proc_virq);
++	ipipe_free_virq(proc_virq);
+ 	flush_scheduled_work();
+ 	xnvfile_destroy_regular(&usage_vfile);
+ 	xnvfile_destroy_dir(&registry_vfroot);
+@@ -328,7 +332,7 @@ static void proc_callback(struct work_struct *work)
+ 	up(&export_mutex);
  }
  
- int xnselect_umount(void)
+-static void registry_proc_schedule(void *cookie)
++static void registry_proc_schedule(unsigned int virq, void *arg)
  {
--	xnapc_free(deletion_apc);
-+	ipipe_free_irq(ipipe_root_domain, deletion_virq);
-+	ipipe_free_virq(deletion_virq);
- 	return 0;
+ 	/*
+ 	 * schedule_work() will check for us if the work has already
+@@ -469,7 +473,7 @@ static inline void registry_export_pnode(struct xnobject *object,
+ 	object->pnode = pnode;
+ 	list_del(&object->link);
+ 	list_add_tail(&object->link, &proc_object_list);
+-	__xnapc_schedule(proc_apc);
++	ipipe_post_irq_root(proc_virq);
  }
  
+ static inline void registry_unexport_pnode(struct xnobject *object)
+@@ -485,7 +489,7 @@ static inline void registry_unexport_pnode(struct xnobject *object)
+ 			object->pnode->ops->touch(object);
+ 		list_del(&object->link);
+ 		list_add_tail(&object->link, &proc_object_list);
+-		__xnapc_schedule(proc_apc);
++		ipipe_post_irq_root(proc_virq);
+ 	} else {
+ 		/*
+ 		 * Unexporting before the lower stage has had a chance
 -- 
 2.26.2
 
