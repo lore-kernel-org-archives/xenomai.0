@@ -1,13 +1,12 @@
-References: <ce09c464-b17f-a977-2638-c0fb1f3bcdf4@yeah.net>
- <874kjxrkeb.fsf@xenomai.org>
- <2461fe05.185d.176dd8ca994.Coremail.hailongliiu@yeah.net>
- <CALLqZ8RPFrAFO=NCqGmyvWSWKTje3siXAOcLWp9y1uu2QBRupw@mail.gmail.com>
- <18a08b14-003e-aaab-f59f-d83a1913d5e7@yeah.net>
+References: <20210102093353.3195090-1-rpm@xenomai.org>
+ <20210102093353.3195090-8-rpm@xenomai.org>
+ <3100bc9c-4fee-eacd-8d62-d91a12e0906d@siemens.com>
 From: Philippe Gerum <rpm@xenomai.org>
-Subject: Re: [CXP] some questions about "Common Xenomai Platform"
-In-reply-to: <18a08b14-003e-aaab-f59f-d83a1913d5e7@yeah.net>
-Date: Sat, 09 Jan 2021 10:09:40 +0100
-Message-ID: <87o8hylbmz.fsf@xenomai.org>
+Subject: Re: [PATCH Dovetail 07/13] cobalt/clock: pipeline: make HOSTRT
+ depend on IPIPE
+In-reply-to: <3100bc9c-4fee-eacd-8d62-d91a12e0906d@siemens.com>
+Date: Sat, 09 Jan 2021 11:45:25 +0100
+Message-ID: <87lfd2l77e.fsf@xenomai.org>
 MIME-Version: 1.0
 Content-Type: text/plain
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
@@ -18,60 +17,128 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Hailongliu <hailongliiu@yeah.net>
-Cc: Greg Gallagher <greg@embeddedgreg.com>, "Xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Jan Kiszka <jan.kiszka@siemens.com>
+Cc: xenomai@xenomai.org
 
 
-Hailongliu <hailongliiu@yeah.net> writes:
+Jan Kiszka <jan.kiszka@siemens.com> writes:
 
-> On 1/7/21 11:59 PM, Greg Gallagher wrote:
+> On 02.01.21 10:33, Philippe Gerum wrote:
+>> From: Philippe Gerum <rpm@xenomai.org>
 >> 
+>> This interface is pointless with Dovetail whose applications directly
+>> refer to the wallclock time exported through the common vDSO.
 >> 
->> On Thu, Jan 7, 2021 at 10:53 AM hailong via Xenomai <xenomai@xenomai.org <mailto:xenomai@xenomai.org>> wrote:
+>> No functional change is introduced.
 >> 
->>     At 2021-01-04 01:38:04, "Philippe Gerum" <rpm@xenomai.org <mailto:rpm@xenomai.org>> wrote:
->>     >
->>     >Hailongliu via Xenomai <xenomai@xenomai.org <mailto:xenomai@xenomai.org>> writes:
->>     >
->>     >> Hi,
->>     >>
->>     >> I learned the "Common Xenomai Platform" program from this mail-list and wiki
->>     >> of project Xenomai. This is a very attractive plan, as it will port Xenomai for
->>     >> recent LTS kernel(v5.10).
->>     >>
->>     >> I noticed that  March 31, 2021 is the deadline for "CXP", dose that mean we
->>     >> can expect the new features at Xenomai-3.3 ?
->>     >
->>     >Yes, that is the plan. Xenomai 3.3 is going to be the first release
->>     >fully implementing the CXP. Xenomai 4 which is going to use a different
->>     >real-time core will be developed in parallel to Xenomai 3.3, aiming at
->>     >CXP-compliance too. It should be clear that March 31, 2021 is the date
->>     >for completing the CXP specification, not that of any release
->>     >implementing it, which can only happen later by definition.
->>     >
+>> Signed-off-by: Philippe Gerum <rpm@xenomai.org>
+>> ---
+>>  include/cobalt/kernel/vdso.h  | 18 +++++++++++-------
+>>  kernel/cobalt/Kconfig         |  4 ----
+>>  kernel/cobalt/ipipe/kevents.c | 14 ++++++++------
+>>  kernel/cobalt/posix/clock.c   |  4 ++--
+>>  4 files changed, 21 insertions(+), 19 deletions(-)
 >> 
->>     Will the CXP or Xenomai 4 compatible with RT-patch over time?
->>     In addition,   I learned that the legacy RTOS emulators (such as VxWorks)
->>     will be excluded from Xenomai 3.x , neither Xenomai 4?
->> 
->> That is correct, we don't have the resources to continue to support the RTOS emulators.  I believe it was left open that if someone
->> wants to take this on as a maintainer they could be included.
->> 
+>> diff --git a/include/cobalt/kernel/vdso.h b/include/cobalt/kernel/vdso.h
+>> index f7140adc7..7da88a730 100644
+>> --- a/include/cobalt/kernel/vdso.h
+>> +++ b/include/cobalt/kernel/vdso.h
+>> @@ -25,21 +25,25 @@
+>>  #include <asm/processor.h>
+>>  #include <cobalt/uapi/kernel/vdso.h>
+>>  
+>> +extern struct xnvdso *nkvdso;
+>> +
+>>  /*
+>>   * Define the available feature set here. We have a single feature
+>> - * defined for now.
+>> + * defined for now, only in the I-pipe case.
+>>   */
+>> -#ifdef CONFIG_XENO_OPT_HOSTRT
+>> -#define XNVDSO_FEATURES XNVDSO_FEAT_HOST_REALTIME
+>> -#else
+>> -#define XNVDSO_FEATURES 0
+>> -#endif /* CONFIG_XENO_OPT_HOSTRT */
+>> +#ifdef CONFIG_IPIPE_HAVE_HOSTRT
+>>  
+>> -extern struct xnvdso *nkvdso;
+>> +#define XNVDSO_FEATURES XNVDSO_FEAT_HOST_REALTIME
+>>  
+>>  static inline struct xnvdso_hostrt_data *get_hostrt_data(void)
+>>  {
+>>  	return &nkvdso->hostrt_data;
+>>  }
+>>  
+>> +#else
+>> +
+>> +#define XNVDSO_FEATURES 0
+>> +
+>> +#endif
+>> +
+>>  #endif /* _COBALT_KERNEL_VDSO_H */
+>> diff --git a/kernel/cobalt/Kconfig b/kernel/cobalt/Kconfig
+>> index 0d96913bd..ead4740c1 100644
+>> --- a/kernel/cobalt/Kconfig
+>> +++ b/kernel/cobalt/Kconfig
+>> @@ -210,10 +210,6 @@ config XENO_OPT_TIMER_RBTREE
+>>  
+>>  endchoice
+>>  
+>> -config XENO_OPT_HOSTRT
+>> -       depends on IPIPE_HAVE_HOSTRT
+>> -       def_bool y
+>> -
+>>  config XENO_OPT_PIPE
+>>  	bool
+>>  
+>> diff --git a/kernel/cobalt/ipipe/kevents.c b/kernel/cobalt/ipipe/kevents.c
+>> index e0d4a1288..595faffd3 100644
+>> --- a/kernel/cobalt/ipipe/kevents.c
+>> +++ b/kernel/cobalt/ipipe/kevents.c
+>> @@ -377,7 +377,7 @@ void ipipe_migration_hook(struct task_struct *p) /* hw IRQs off */
+>>  	xnsched_run();
+>>  }
+>>  
+>> -#ifdef CONFIG_XENO_OPT_HOSTRT
+>> +#ifdef CONFIG_IPIPE_HAVE_HOSTRT
+>>  
+>>  static IPIPE_DEFINE_SPINLOCK(__hostrtlock);
+>>  
+>> @@ -417,7 +417,7 @@ static inline void init_hostrt(void)
+>>  	nkvdso->hostrt_data.live = 0;
+>>  }
+>>  
+>> -#else /* !CONFIG_XENO_OPT_HOSTRT */
+>> +#else /* !CONFIG_IPIPE_HAVE_HOSTRT */
+>>  
+>>  struct ipipe_hostrt_data;
+>>  
+>> @@ -428,7 +428,7 @@ static inline int handle_hostrt_event(struct ipipe_hostrt_data *hostrt)
+>>  
+>>  static inline void init_hostrt(void) { }
+>>  
+>> -#endif /* !CONFIG_XENO_OPT_HOSTRT */
+>> +#endif /* !CONFIG_IPIPE_HAVE_HOSTRT */
+>>  
+>>  static void __handle_taskexit_event(struct task_struct *p)
+>>  {
+>> @@ -756,12 +756,14 @@ int ipipe_kevent_hook(int kevent, void *data)
+>>  	case IPIPE_KEVT_CLEANUP:
+>>  		ret = handle_cleanup_event(data);
+>>  		break;
+>> -	case IPIPE_KEVT_HOSTRT:
+>> -		ret = handle_hostrt_event(data);
+>> -		break;
+>>  	case IPIPE_KEVT_SETAFFINITY:
+>>  		ret = handle_setaffinity_event(data);
+>>  		break;
+>> +#ifdef IPIPE_KEVT_HOSTRT
 >
-> Thank you for your kind reply.
->
-> Our work team members now are hesitating about which kernel version to choose
-> as our development baseline for Xenomai between linux-5.10 and linux-5.4,
-> because we find that there is a evl branch based on linux-5.4 but not for
-> linux-5.10 currently.
-
-Yes there is, see evlproject.org. evl/master is based on v5.10 mainline.
-
->
-> And we also want to know the compatibility between the Xenomai4 and rt-patch.
+> Wouldn't CONFIG_IPIPE_HAVE_HOSTRT be cleaner here?
 >
 
-Compatible.
+Certainly. I squeezed that change into rev #2 of the current patch since
+rev #1 was not pushed to -next yet.
 
 -- 
 Philippe.
