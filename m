@@ -1,11 +1,12 @@
-Subject: Re: [PATCH 01/10] dovetail/sirq: implement sirq request and free and
- post
-References: <20210111064318.6154-1-hongzhan.chen@intel.com>
+Subject: Re: [PATCH Dovetail 10/13] cobalt/wrappers: pipeline: abstract
+ pipeline-related bits
+References: <20210102093353.3195090-1-rpm@xenomai.org>
+ <20210102093353.3195090-11-rpm@xenomai.org>
 From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <ce919978-d926-0965-8956-37602292e12c@siemens.com>
-Date: Mon, 11 Jan 2021 13:17:00 +0100
+Message-ID: <4ca7bca6-7e81-365f-edc5-f4d1fa301ccf@siemens.com>
+Date: Mon, 11 Jan 2021 13:59:10 +0100
 MIME-Version: 1.0
-In-Reply-To: <20210111064318.6154-1-hongzhan.chen@intel.com>
+In-Reply-To: <20210102093353.3195090-11-rpm@xenomai.org>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -17,73 +18,119 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: hongzha1 <hongzhan.chen@intel.com>, Xenomai@xenomai.org
+To: Philippe Gerum <rpm@xenomai.org>, xenomai@xenomai.org
 
-On 11.01.21 07:43, hongzha1 via Xenomai wrote:
-> inband sirq request through synthetic_irq_domain and free and post
-> srq.
+On 02.01.21 10:33, Philippe Gerum wrote:
+> From: Philippe Gerum <rpm@xenomai.org>
 > 
-> Signed-off-by: hongzha1 <hongzhan.chen@intel.com>
+> No functional change is introduced.
+> 
+> Signed-off-by: Philippe Gerum <rpm@xenomai.org>
 > ---
->  .../cobalt/kernel/dovetail/pipeline/sirq.h    | 28 +++++++++++++++----
->  1 file changed, 23 insertions(+), 5 deletions(-)
+>  .../cobalt/kernel/ipipe/pipeline/wrappers.h   | 25 +++++++++++++++++++
+>  .../cobalt/include/linux/xenomai/wrappers.h   | 23 ++++-------------
+>  kernel/cobalt/posix/process.c                 |  2 +-
+>  3 files changed, 31 insertions(+), 19 deletions(-)
+>  create mode 100644 include/cobalt/kernel/ipipe/pipeline/wrappers.h
 > 
-> diff --git a/include/cobalt/kernel/dovetail/pipeline/sirq.h b/include/cobalt/kernel/dovetail/pipeline/sirq.h
-> index be9dc587f..1da9d13b2 100644
-> --- a/include/cobalt/kernel/dovetail/pipeline/sirq.h
-> +++ b/include/cobalt/kernel/dovetail/pipeline/sirq.h
-> @@ -23,9 +23,24 @@ int pipeline_create_inband_sirq(irqreturn_t (*handler)(int irq, void *dev_id))
->  	 * Allocate an IRQ from the synthetic interrupt domain then
->  	 * trap it to @handler, to be fired from the in-band stage.
->  	 */
-> -	TODO();
-> +	int sirq, ret;
->  
-> -	return 0;
-> +	sirq = irq_create_direct_mapping(synthetic_irq_domain);
-> +	if (sirq == 0)
-> +		return -EAGAIN;
+> diff --git a/include/cobalt/kernel/ipipe/pipeline/wrappers.h b/include/cobalt/kernel/ipipe/pipeline/wrappers.h
+> new file mode 100644
+> index 000000000..ac940fb32
+> --- /dev/null
+> +++ b/include/cobalt/kernel/ipipe/pipeline/wrappers.h
+> @@ -0,0 +1,25 @@
+> +/*
+> + * SPDX-License-Identifier: GPL-2.0
+> + */
+> +#ifndef _COBALT_KERNEL_IPIPE_WRAPPERS_H
+> +#define _COBALT_KERNEL_IPIPE_WRAPPERS_H
 > +
-> +	ret = __request_percpu_irq(sirq,
-> +			handler,
-> +			IRQF_NO_THREAD,
-> +			"Inband sirq",
-> +			&cobalt_machine_cpudata);
+> +#include <linux/ipipe.h>
 > +
-> +	if (ret) {
-> +		irq_dispose_mapping(sirq);
-> +		return ret;
-> +	}
+> +#if LINUX_VERSION_CODE < KERNEL_VERSION(4,11,0)
+> +#define cobalt_set_task_state(tsk, state_value)	\
+> +	set_task_state(tsk, state_value)
+> +#else
+> +/*
+> + * The co-kernel can still set the current task state safely if it
+> + * runs on the head stage.
+> + */
+> +#define cobalt_set_task_state(tsk, state_value)	\
+> +		smp_store_mb((tsk)->state, (state_value))
+> +#endif
 > +
-> +	return sirq;
->  }
->  
->  static inline
-> @@ -35,13 +50,16 @@ void pipeline_delete_inband_sirq(int sirq)
->  	 * Free the synthetic IRQ then deallocate it to its
->  	 * originating domain.
->  	 */
-> -	TODO();
-> +	free_percpu_irq(sirq,
-> +		&cobalt_machine_cpudata);
+> +#ifndef ipipe_root_nr_syscalls
+> +#define ipipe_root_nr_syscalls(ti)	NR_syscalls
+> +#endif
 > +
-> +	irq_dispose_mapping(sirq);
->  }
+> +#endif /* !_COBALT_KERNEL_IPIPE_WRAPPERS_H */
+> diff --git a/kernel/cobalt/include/linux/xenomai/wrappers.h b/kernel/cobalt/include/linux/xenomai/wrappers.h
+> index 847d68088..3e825e366 100644
+> --- a/kernel/cobalt/include/linux/xenomai/wrappers.h
+> +++ b/kernel/cobalt/include/linux/xenomai/wrappers.h
+> @@ -21,12 +21,13 @@
 >  
->  static inline void pipeline_post_sirq(int sirq)
->  {
->  	/* Trigger the synthetic IRQ */
-> -	TODO();
-> +	irq_post_inband(sirq);
->  }
+>  #include <linux/version.h>
 >  
-> -#endif /* !_COBALT_KERNEL_IPIPE_SIRQ_H */
-> +#endif /* !_COBALT_KERNEL_DOVETAIL_SIRQ_H */
-> 
+> +#if LINUX_VERSION_CODE < KERNEL_VERSION(4, 20, 0)
 
-Does this series merely target review / discussion?
+#include <linux/signal.h>
+
+Builds failed over 4.4. Fixed up in next.
 
 Jan
+
+> +typedef siginfo_t kernel_siginfo_t;
+> +#endif
+> +
+>  #if LINUX_VERSION_CODE < KERNEL_VERSION(4,11,0)
+>  #include <linux/sched.h>
+>  #include <linux/sched/rt.h>
+> -
+> -#define cobalt_set_task_state(tsk, state_value)	\
+> -	set_task_state(tsk, state_value)
+>  #else
+>  #include <linux/sched.h>
+>  #include <linux/sched/signal.h>
+> @@ -35,22 +36,8 @@
+>  #include <linux/sched/debug.h>
+>  #include <linux/sched/task_stack.h>
+>  #include <uapi/linux/sched/types.h>
+> -/*
+> - * The co-kernel can still do this sanely for a thread which is
+> - * currently active on the head stage.
+> - */
+> -#define cobalt_set_task_state(tsk, state_value)	\
+> -		smp_store_mb((tsk)->state, (state_value))
+>  #endif
+>  
+> -#include <linux/ipipe.h>
+> -
+> -#ifndef ipipe_root_nr_syscalls
+> -#define ipipe_root_nr_syscalls(ti)	NR_syscalls
+> -#endif
+> -
+> -#if LINUX_VERSION_CODE < KERNEL_VERSION(4, 20, 0)
+> -typedef siginfo_t kernel_siginfo_t;
+> -#endif
+> +#include <pipeline/wrappers.h>
+>  
+>  #endif /* !_COBALT_LINUX_WRAPPERS_H */
+> diff --git a/kernel/cobalt/posix/process.c b/kernel/cobalt/posix/process.c
+> index accd989ca..fcae7df06 100644
+> --- a/kernel/cobalt/posix/process.c
+> +++ b/kernel/cobalt/posix/process.c
+> @@ -640,7 +640,7 @@ int cobalt_map_user(struct xnthread *thread, __u32 __user *u_winoff)
+>  	 * it.
+>  	 */
+>  	xnthread_run_handler(thread, map_thread);
+> -	pipeline_enable_kevents(current);
+> +	pipeline_enable_kevents();
+>  
+>  	attr.mode = 0;
+>  	attr.entry = NULL;
+> 
+
 
 -- 
 Siemens AG, T RDA IOT
