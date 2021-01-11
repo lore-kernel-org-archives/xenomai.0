@@ -1,16 +1,10 @@
-Subject: Re: [CXP] some questions about "Common Xenomai Platform"
-References: <ce09c464-b17f-a977-2638-c0fb1f3bcdf4@yeah.net>
- <874kjxrkeb.fsf@xenomai.org>
- <2461fe05.185d.176dd8ca994.Coremail.hailongliiu@yeah.net>
- <CALLqZ8RPFrAFO=NCqGmyvWSWKTje3siXAOcLWp9y1uu2QBRupw@mail.gmail.com>
- <18a08b14-003e-aaab-f59f-d83a1913d5e7@yeah.net> <87o8hylbmz.fsf@xenomai.org>
-From: Hailong <hailongliiu@yeah.net>
-Message-ID: <2d463c32-2ac0-616b-c98c-6d6d07ce05ae@yeah.net>
-Date: Sun, 10 Jan 2021 09:52:06 +0800
-MIME-Version: 1.0
-In-Reply-To: <87o8hylbmz.fsf@xenomai.org>
-Content-Type: text/plain; charset=gbk; format=flowed
-Content-Transfer-Encoding: 7bit
+From: hongzha1 <hongzhan.chen@intel.com>
+Subject: [PATCH 04/10] dovetail/sched: implement pipeline_init_shadow_tcb and
+ pipeline_init_root_tcb
+Date: Mon, 11 Jan 2021 01:43:12 -0500
+Message-Id: <20210111064318.6154-4-hongzhan.chen@intel.com>
+In-Reply-To: <20210111064318.6154-1-hongzhan.chen@intel.com>
+References: <20210111064318.6154-1-hongzhan.chen@intel.com>
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -19,64 +13,36 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Philippe Gerum <rpm@xenomai.org>
-Cc: Greg Gallagher <greg@embeddedgreg.com>, "Xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Xenomai@xenomai.org
 
-> 
-> Hailongliu <hailongliiu@yeah.net> writes:
-> 
->> On 1/7/21 11:59 PM, Greg Gallagher wrote:
->>>
->>>
->>> On Thu, Jan 7, 2021 at 10:53 AM hailong via Xenomai <xenomai@xenomai.org <mailto:xenomai@xenomai.org>> wrote:
->>>
->>>      At 2021-01-04 01:38:04, "Philippe Gerum" <rpm@xenomai.org <mailto:rpm@xenomai.org>> wrote:
->>>      >
->>>      >Hailongliu via Xenomai <xenomai@xenomai.org <mailto:xenomai@xenomai.org>> writes:
->>>      >
->>>      >> Hi,
->>>      >>
->>>      >> I learned the "Common Xenomai Platform" program from this mail-list and wiki
->>>      >> of project Xenomai. This is a very attractive plan, as it will port Xenomai for
->>>      >> recent LTS kernel(v5.10).
->>>      >>
->>>      >> I noticed that  March 31, 2021 is the deadline for "CXP", dose that mean we
->>>      >> can expect the new features at Xenomai-3.3 ?
->>>      >
->>>      >Yes, that is the plan. Xenomai 3.3 is going to be the first release
->>>      >fully implementing the CXP. Xenomai 4 which is going to use a different
->>>      >real-time core will be developed in parallel to Xenomai 3.3, aiming at
->>>      >CXP-compliance too. It should be clear that March 31, 2021 is the date
->>>      >for completing the CXP specification, not that of any release
->>>      >implementing it, which can only happen later by definition.
->>>      >
->>>
->>>      Will the CXP or Xenomai 4 compatible with RT-patch over time?
->>>      In addition,   I learned that the legacy RTOS emulators (such as VxWorks)
->>>      will be excluded from Xenomai 3.x , neither Xenomai 4?
->>>
->>> That is correct, we don't have the resources to continue to support the RTOS emulators.  I believe it was left open that if someone
->>> wants to take this on as a maintainer they could be included.
->>>
->>
->> Thank you for your kind reply.
->>
->> Our work team members now are hesitating about which kernel version to choose
->> as our development baseline for Xenomai between linux-5.10 and linux-5.4,
->> because we find that there is a evl branch based on linux-5.4 but not for
->> linux-5.10 currently.
-> 
-> Yes there is, see evlproject.org. evl/master is based on v5.10 mainline.
-> 
->>
->> And we also want to know the compatibility between the Xenomai4 and rt-patch.
->>
-> 
-> Compatible.
-> 
+Signed-off-by: hongzha1 <hongzhan.chen@intel.com>
+---
+ kernel/cobalt/dovetail/sched.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-I see, thank you for your kind reply.
-
-Thanks.
+diff --git a/kernel/cobalt/dovetail/sched.c b/kernel/cobalt/dovetail/sched.c
+index 71f763d39..82e29136c 100644
+--- a/kernel/cobalt/dovetail/sched.c
++++ b/kernel/cobalt/dovetail/sched.c
+@@ -36,7 +36,7 @@ void pipeline_init_shadow_tcb(struct xnthread *thread)
+ 	/*
+ 	 * Initialize the alternate scheduling control block.
+ 	 */
+-	TODO();
++	dovetail_init_altsched(&xnthread_archtcb(thread)->altsched);
+ 
+ 	trace_cobalt_shadow_map(thread);
+ }
+@@ -46,7 +46,7 @@ void pipeline_init_root_tcb(struct xnthread *thread)
+ 	/*
+ 	 * Initialize the alternate scheduling control block.
+ 	 */
+-	TODO();
++	dovetail_init_altsched(&xnthread_archtcb(thread)->altsched);
+ }
+ 
+ int pipeline_leave_inband(void)
+-- 
+2.17.1
 
 
