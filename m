@@ -1,8 +1,7 @@
 From: hongzha1 <hongzhan.chen@intel.com>
-Subject: [PATCH 07/10] dovetail/tick: implement proxy tick device installing
- and uninstalling
-Date: Mon, 11 Jan 2021 01:43:15 -0500
-Message-Id: <20210111064318.6154-7-hongzhan.chen@intel.com>
+Subject: [PATCH 10/10] dovetail/kevents: dovetail: implement handle_ptrace_cont
+Date: Mon, 11 Jan 2021 01:43:18 -0500
+Message-Id: <20210111064318.6154-10-hongzhan.chen@intel.com>
 In-Reply-To: <20210111064318.6154-1-hongzhan.chen@intel.com>
 References: <20210111064318.6154-1-hongzhan.chen@intel.com>
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
@@ -17,124 +16,112 @@ To: Xenomai@xenomai.org
 
 Signed-off-by: hongzha1 <hongzhan.chen@intel.com>
 ---
- kernel/cobalt/dovetail/tick.c | 85 ++++++++++++++++++++++++++++++++++-
- 1 file changed, 83 insertions(+), 2 deletions(-)
+ kernel/cobalt/dovetail/kevents.c | 78 ++++++++++++++++++++++++++++++--
+ 1 file changed, 75 insertions(+), 3 deletions(-)
 
-diff --git a/kernel/cobalt/dovetail/tick.c b/kernel/cobalt/dovetail/tick.c
-index 02cd86690..6a196496c 100644
---- a/kernel/cobalt/dovetail/tick.c
-+++ b/kernel/cobalt/dovetail/tick.c
-@@ -6,11 +6,92 @@
-  */
+diff --git a/kernel/cobalt/dovetail/kevents.c b/kernel/cobalt/dovetail/kevents.c
+index b5dc50ea7..13c31297c 100644
+--- a/kernel/cobalt/dovetail/kevents.c
++++ b/kernel/cobalt/dovetail/kevents.c
+@@ -473,7 +473,7 @@ int handle_ptrace_resume(struct task_struct *tracee)
+ 	return KEVENT_PROPAGATE;
+ }
  
- #include <linux/tick.h>
-+#include <linux/clockchips.h>
- #include <cobalt/kernel/intr.h>
- #include <pipeline/tick.h>
-+#include <cobalt/kernel/sched.h>
-+#include <cobalt/kernel/timer.h>
- 
- extern struct xnintr nktimer;
- 
-+static DEFINE_PER_CPU(struct clock_proxy_device *, proxy_device);
-+
-+static int proxy_set_next_ktime(ktime_t expires,
-+				struct clock_event_device *proxy_dev)
-+{
-+	struct xnsched *sched;
-+	ktime_t delta;
-+	unsigned long flags;
-+	int ret;
-+
-+	/*
-+	 * When Negative delta have been observed, we set delta zero.
-+	 * Or else exntimer_start() will return -ETIMEDOUT and do not
-+	 * trigger shot
-+	 */
-+	delta = ktime_sub(expires, ktime_get_mono_fast_ns());
-+	if (delta < 0)
-+		delta = 0;
-+
-+	flags = hard_local_irq_save(); /* Prevent CPU migration. */
-+	sched = xnsched_current();
-+	ret = xntimer_start(&sched->htimer, delta, XN_INFINITE, XN_RELATIVE);
-+	hard_local_irq_restore(flags);
-+
-+	return ret ? -ETIME : 0;
-+}
-+
-+
-+void xn_core_tick(struct clock_event_device *dummy) /* hard irqs off */
-+{
-+	xnintr_core_clock_handler();
-+}
-+
-+static int proxy_set_oneshot_stopped(struct clock_event_device *proxy_dev)
-+{
-+	struct clock_event_device *real_dev;
-+	struct clock_proxy_device *dev;
-+	struct xnsched *sched;
+-static void handle_ptrace_cont(void)
++static void handle_ptrace_cont(struct task_struct *next_task)
+ {
+ 	/*
+ 	 * This is the place where the ptrace-related work which used
+@@ -482,7 +482,79 @@ static void handle_ptrace_cont(void)
+ 	 * stopped state, which is what look for in
+ 	 * handle_schedule_event().
+ 	 */
+-	TODO();
++	struct task_struct *prev_task;
++	struct xnthread *next;
++	sigset_t pending;
 +	spl_t s;
 +
-+	dev = container_of(proxy_dev, struct clock_proxy_device, proxy_device);
++	cobalt_signal_yield();
++
++	prev_task = current;
++	next = xnthread_from_task(next_task);
++	if (next == NULL)
++		goto out;
++
++	xnlock_get_irqsave(&nklock, s);
 +
 +	/*
-+	 * In-band wants to disable the clock hardware on entering a
-+	 * tickless state, so we have to stop our in-band tick
-+	 * emulation. Propagate the request for shutting down the
-+	 * hardware to the real device only if we have no outstanding
-+	 * OOB timers. CAUTION: the in-band timer is counted when
-+	 * assessing the RQ_IDLE condition, so we need to stop it
-+	 * prior to testing the latter.
++	 * Track tasks leaving the ptraced state.  Check both SIGSTOP
++	 * (NPTL) and SIGINT (LinuxThreads) to detect ptrace
++	 * continuation.
 +	 */
-+	xnlock_get_irqsave(&nklock, s);
-+	sched = xnsched_current();
-+	xntimer_stop(&sched->htimer);
-+	//sched->lflags |= XNTSTOP;
++	if (xnthread_test_state(next, XNSSTEP)) {
++		if (signal_pending(next_task)) {
++			/*
++			 * Do not grab the sighand lock here: it's
++			 * useless, and we already own the runqueue
++			 * lock, so this would expose us to deadlock
++			 * situations on SMP.
++			 */
++			sigorsets(&pending,
++				  &next_task->pending.signal,
++				  &next_task->signal->shared_pending.signal);
++			if (sigismember(&pending, SIGSTOP) ||
++			    sigismember(&pending, SIGINT))
++				goto no_ptrace;
++		}
 +
-+	if (sched->lflags & XNIDLE) {
-+		real_dev = dev->real_device;
-+		real_dev->set_state_oneshot_stopped(real_dev);
++		/*
++		 * Do not unregister before the thread migrated.
++		 * unregister_debugged_thread will then be called by our
++		 * resume_oob_task.
++		 */
++		if (!xnthread_test_info(next, XNCONTHI))
++			unregister_debugged_thread(next);
++
++		xnthread_set_localinfo(next, XNHICCUP);
 +	}
 +
++no_ptrace:
 +	xnlock_put_irqrestore(&nklock, s);
 +
-+	return 0;
-+}
-+
-+static void setup_proxy(struct clock_proxy_device *dev)
-+{
-+	struct clock_event_device *proxy_dev = &dev->proxy_device;
-+
-+	dev->handle_oob_event = xn_core_tick;
-+	proxy_dev->features |= CLOCK_EVT_FEAT_KTIME;
-+	proxy_dev->set_next_ktime = proxy_set_next_ktime;
-+	if (proxy_dev->set_state_oneshot_stopped)
-+		proxy_dev->set_state_oneshot_stopped = proxy_set_oneshot_stopped;
-+	__this_cpu_write(proxy_device, dev);
-+}
-+
- int pipeline_install_tick_proxy(void)
- {
- 	int ret;
-@@ -20,7 +101,7 @@ int pipeline_install_tick_proxy(void)
- 		return ret;
++	/*
++	 * Do basic sanity checks on the incoming thread state.
++	 * NOTE: we allow ptraced threads to run shortly in order to
++	 * properly recover from a stopped state.
++	 */
++	if (!XENO_WARN(COBALT, !xnthread_test_state(next, XNRELAX),
++		       "hardened thread %s[%d] running in Linux domain?! "
++		       "(status=0x%x, sig=%d, prev=%s[%d])",
++		       next->name, task_pid_nr(next_task),
++		       xnthread_get_state(next),
++		       signal_pending(next_task),
++		       prev_task->comm, task_pid_nr(prev_task)))
++		XENO_WARN(COBALT,
++			  !(next_task->ptrace & PT_PTRACED) &&
++			   !xnthread_test_state(next, XNDORMANT)
++			  && xnthread_test_state(next, XNPEND),
++			  "blocked thread %s[%d] rescheduled?! "
++			  "(status=0x%x, sig=%d, prev=%s[%d])",
++			  next->name, task_pid_nr(next_task),
++			  xnthread_get_state(next),
++			  signal_pending(next_task), prev_task->comm,
++			  task_pid_nr(prev_task));
++out:
++	return KEVENT_PROPAGATE;
+ }
  
- 	/* Install the proxy tick device */
--	TODO();	ret = 0;
-+	ret = tick_install_proxy(setup_proxy, &xnsched_realtime_cpus);
- 	if (ret)
- 		goto fail_proxy;
- 
-@@ -35,7 +116,7 @@ fail_proxy:
- void pipeline_uninstall_tick_proxy(void)
- {
- 	/* Uninstall the proxy tick device. */
--	TODO();
-+	tick_uninstall_proxy(&xnsched_realtime_cpus);
- 
- 	pipeline_free_timer_ipi();
- 
+ void handle_inband_event(enum inband_event_type event, void *data)
+@@ -505,7 +577,7 @@ void handle_inband_event(enum inband_event_type event, void *data)
+ 		handle_ptrace_resume(data);
+ 		break;
+ 	case INBAND_TASK_PTCONT:
+-		handle_ptrace_cont();
++		handle_ptrace_cont(data);
+ 		break;
+ 	case INBAND_TASK_PTSTOP:
+ 		break;
 -- 
 2.17.1
 
