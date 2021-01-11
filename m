@@ -1,11 +1,10 @@
-References: <20210111064318.6154-1-hongzhan.chen@intel.com>
- <ce919978-d926-0965-8956-37602292e12c@siemens.com>
+References: <20210109160233.921972-1-rpm@xenomai.org>
+ <6632491e-7834-1a6e-f488-9b9077111adf@siemens.com>
 From: Philippe Gerum <rpm@xenomai.org>
-Subject: Re: [PATCH 01/10] dovetail/sirq: implement sirq request and free
- and post
-In-reply-to: <ce919978-d926-0965-8956-37602292e12c@siemens.com>
-Date: Mon, 11 Jan 2021 14:05:23 +0100
-Message-ID: <87lfczk4j0.fsf@xenomai.org>
+Subject: Re: [PATCH Dovetail 0/4] Get rid of the APC interface
+In-reply-to: <6632491e-7834-1a6e-f488-9b9077111adf@siemens.com>
+Date: Mon, 11 Jan 2021 14:07:33 +0100
+Message-ID: <87im83k4fe.fsf@xenomai.org>
 MIME-Version: 1.0
 Content-Type: text/plain
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
@@ -17,79 +16,54 @@ List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: Jan Kiszka <jan.kiszka@siemens.com>
-Cc: hongzha1 <hongzhan.chen@intel.com>, xenomai@xenomai.org
+Cc: xenomai@xenomai.org
 
 
-Jan Kiszka via Xenomai <xenomai@xenomai.org> writes:
+Jan Kiszka <jan.kiszka@siemens.com> writes:
 
-> On 11.01.21 07:43, hongzha1 via Xenomai wrote:
->> inband sirq request through synthetic_irq_domain and free and post
->> srq.
+> On 09.01.21 17:02, Philippe Gerum wrote:
+>> From: Philippe Gerum <rpm@xenomai.org>
 >> 
->> Signed-off-by: hongzha1 <hongzhan.chen@intel.com>
->> ---
->>  .../cobalt/kernel/dovetail/pipeline/sirq.h    | 28 +++++++++++++++----
->>  1 file changed, 23 insertions(+), 5 deletions(-)
+>> This patch starts a series aiming at dropping the (functionally
+>> redundant) APC interface entirely.
 >> 
->> diff --git a/include/cobalt/kernel/dovetail/pipeline/sirq.h b/include/cobalt/kernel/dovetail/pipeline/sirq.h
->> index be9dc587f..1da9d13b2 100644
->> --- a/include/cobalt/kernel/dovetail/pipeline/sirq.h
->> +++ b/include/cobalt/kernel/dovetail/pipeline/sirq.h
->> @@ -23,9 +23,24 @@ int pipeline_create_inband_sirq(irqreturn_t (*handler)(int irq, void *dev_id))
->>  	 * Allocate an IRQ from the synthetic interrupt domain then
->>  	 * trap it to @handler, to be fired from the in-band stage.
->>  	 */
->> -	TODO();
->> +	int sirq, ret;
->>  
->> -	return 0;
->> +	sirq = irq_create_direct_mapping(synthetic_irq_domain);
->> +	if (sirq == 0)
->> +		return -EAGAIN;
->> +
->> +	ret = __request_percpu_irq(sirq,
->> +			handler,
->> +			IRQF_NO_THREAD,
->> +			"Inband sirq",
->> +			&cobalt_machine_cpudata);
->> +
->> +	if (ret) {
->> +		irq_dispose_mapping(sirq);
->> +		return ret;
->> +	}
->> +
->> +	return sirq;
->>  }
->>  
->>  static inline
->> @@ -35,13 +50,16 @@ void pipeline_delete_inband_sirq(int sirq)
->>  	 * Free the synthetic IRQ then deallocate it to its
->>  	 * originating domain.
->>  	 */
->> -	TODO();
->> +	free_percpu_irq(sirq,
->> +		&cobalt_machine_cpudata);
->> +
->> +	irq_dispose_mapping(sirq);
->>  }
->>  
->>  static inline void pipeline_post_sirq(int sirq)
->>  {
->>  	/* Trigger the synthetic IRQ */
->> -	TODO();
->> +	irq_post_inband(sirq);
->>  }
->>  
->> -#endif /* !_COBALT_KERNEL_IPIPE_SIRQ_H */
->> +#endif /* !_COBALT_KERNEL_DOVETAIL_SIRQ_H */
+>> APCs are a relic from the Dark Ages, with no upside compared to open
+>> coded requests triggering virtual/synthetic IRQs to be handled by the
+>> root domain. As a matter of fact, an APC does run as a client handler
+>> of a synthetic IRQ under the hood. In other words, the APC
+>> encapsulation adds nothing but useless overhead.
+>> 
+>> Philippe Gerum (4):
+>>   cobalt/pipe: drop dependency on APCs
+>>   cobalt/registry: drop dependency on APCs
+>>   cobalt/select: drop dependency on APCs
+>>   cobalt/apc: drop obsolete APC mechanism
+>> 
+>>  include/cobalt/kernel/apc.h                   |  32 ---
+>>  .../cobalt/kernel/ipipe/pipeline/machine.h    |   2 -
+>>  include/cobalt/kernel/rtdm/driver.h           |   1 -
+>>  kernel/cobalt/ipipe/Makefile                  |   2 +-
+>>  kernel/cobalt/ipipe/apc.c                     | 202 ------------------
+>>  kernel/cobalt/ipipe/init.c                    |  19 --
+>>  kernel/cobalt/pipe.c                          |  26 ++-
+>>  kernel/cobalt/procfs.c                        |  42 ----
+>>  kernel/cobalt/registry.c                      |  30 +--
+>>  kernel/cobalt/rtdm/core.c                     |   1 -
+>>  kernel/cobalt/select.c                        |  23 +-
+>>  11 files changed, 49 insertions(+), 331 deletions(-)
+>>  delete mode 100644 include/cobalt/kernel/apc.h
+>>  delete mode 100644 kernel/cobalt/ipipe/apc.c
 >> 
 >
-> Does this series merely target review / discussion?
+> Would it make sense to introduce the pipeline abstraction of those
+> services first? Then you won't touch the core code twice, once again for
+> removing all the ipipe references.
 >
 
-It is always open for discussion particularly if something needs to be
-clarified wrt the way Dovetail works. If not, then this should be
-considered as a merge merge request.
+I'd rather do it the way it is: first we prove that there is no
+regression in open coding APCs based on virtual IRQs, then we do a 1:1
+mapping from the I-pipe virtual IRQs to Dovetail's synthetic IRQs which
+have the very same semantics.
 
 -- 
 Philippe.
