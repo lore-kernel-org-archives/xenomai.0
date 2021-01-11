@@ -1,10 +1,11 @@
 References: <20210111064318.6154-1-hongzhan.chen@intel.com>
+ <20210111064318.6154-2-hongzhan.chen@intel.com>
 From: Philippe Gerum <rpm@xenomai.org>
-Subject: Re: [PATCH 01/10] dovetail/sirq: implement sirq request and free
- and post
-In-reply-to: <20210111064318.6154-1-hongzhan.chen@intel.com>
-Date: Mon, 11 Jan 2021 18:23:32 +0100
-Message-ID: <87a6tfjskr.fsf@xenomai.org>
+Subject: Re: [PATCH 02/10] dovetail/clock: implement
+ pipeline_read_cycle_counter
+In-reply-to: <20210111064318.6154-2-hongzhan.chen@intel.com>
+Date: Mon, 11 Jan 2021 18:26:27 +0100
+Message-ID: <877dojjsfw.fsf@xenomai.org>
 MIME-Version: 1.0
 Content-Type: text/plain
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
@@ -21,72 +22,32 @@ Cc: xenomai@xenomai.org
 
 hongzha1 via Xenomai <xenomai@xenomai.org> writes:
 
-> inband sirq request through synthetic_irq_domain and free and post
-> srq.
->
 > Signed-off-by: hongzha1 <hongzhan.chen@intel.com>
 > ---
->  .../cobalt/kernel/dovetail/pipeline/sirq.h    | 28 +++++++++++++++----
->  1 file changed, 23 insertions(+), 5 deletions(-)
+>  include/cobalt/kernel/dovetail/pipeline/clock.h | 4 +---
+>  1 file changed, 1 insertion(+), 3 deletions(-)
 >
-> diff --git a/include/cobalt/kernel/dovetail/pipeline/sirq.h b/include/cobalt/kernel/dovetail/pipeline/sirq.h
-> index be9dc587f..1da9d13b2 100644
-> --- a/include/cobalt/kernel/dovetail/pipeline/sirq.h
-> +++ b/include/cobalt/kernel/dovetail/pipeline/sirq.h
-> @@ -23,9 +23,24 @@ int pipeline_create_inband_sirq(irqreturn_t (*handler)(int irq, void *dev_id))
->  	 * Allocate an IRQ from the synthetic interrupt domain then
->  	 * trap it to @handler, to be fired from the in-band stage.
->  	 */
-> -	TODO();
-> +	int sirq, ret;
->  
-> -	return 0;
-> +	sirq = irq_create_direct_mapping(synthetic_irq_domain);
-> +	if (sirq == 0)
-> +		return -EAGAIN;
-> +
-> +	ret = __request_percpu_irq(sirq,
-> +			handler,
-> +			IRQF_NO_THREAD,
-> +			"Inband sirq",
-> +			&cobalt_machine_cpudata);
-> +
-> +	if (ret) {
-> +		irq_dispose_mapping(sirq);
-> +		return ret;
-> +	}
-> +
-> +	return sirq;
->  }
->  
->  static inline
-> @@ -35,13 +50,16 @@ void pipeline_delete_inband_sirq(int sirq)
->  	 * Free the synthetic IRQ then deallocate it to its
->  	 * originating domain.
->  	 */
-> -	TODO();
-> +	free_percpu_irq(sirq,
-> +		&cobalt_machine_cpudata);
-> +
-
-Nitpicking: lines should be joined. I'll fix this while merging.
-
-> +	irq_dispose_mapping(sirq);
->  }
->  
->  static inline void pipeline_post_sirq(int sirq)
+> diff --git a/include/cobalt/kernel/dovetail/pipeline/clock.h b/include/cobalt/kernel/dovetail/pipeline/clock.h
+> index 19e3d8986..5176b1506 100644
+> --- a/include/cobalt/kernel/dovetail/pipeline/clock.h
+> +++ b/include/cobalt/kernel/dovetail/pipeline/clock.h
+> @@ -13,9 +13,7 @@ struct timespec64;
+>  static inline u64 pipeline_read_cycle_counter(void)
 >  {
->  	/* Trigger the synthetic IRQ */
+>  	/* Read the raw cycle counter of the core clock. */
 > -	TODO();
-> +	irq_post_inband(sirq);
+> -
+> -	return 0;
+> +	return  ktime_get_raw_fast_ns();
 >  }
 >  
-> -#endif /* !_COBALT_KERNEL_IPIPE_SIRQ_H */
-> +#endif /* !_COBALT_KERNEL_DOVETAIL_SIRQ_H */
+>  static inline void pipeline_set_timer_shot(unsigned long cycles)
 
-Looks good, I'm picking up this patch.
+Ack, picking up this patch. Thanks.
 
-Thanks,
+NOTE: this can only work because Dovetail requires us to align on the
+in-band kernel's idea of time, i.e. nanosecs. In that case, one Cobalt
+"TSC" tick equals one nanosecond.
 
 -- 
 Philippe.
