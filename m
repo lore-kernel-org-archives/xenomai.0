@@ -1,14 +1,11 @@
-Subject: Re: [PATCH Dovetail 13/13] cobalt/syscall: pipeline: abstract syscall
- entry points
-References: <20210102093353.3195090-1-rpm@xenomai.org>
- <20210102093353.3195090-14-rpm@xenomai.org>
- <bacb5da0-9bca-c9c7-70b4-3490626426a4@siemens.com>
- <87im86l6l7.fsf@xenomai.org>
+Subject: Re: [PATCH 01/10] dovetail/sirq: implement sirq request and free and
+ post
+References: <20210111064318.6154-1-hongzhan.chen@intel.com>
 From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <973f1ccb-1050-2c69-c03a-7e22f10eda6f@siemens.com>
-Date: Mon, 11 Jan 2021 13:11:00 +0100
+Message-ID: <ce919978-d926-0965-8956-37602292e12c@siemens.com>
+Date: Mon, 11 Jan 2021 13:17:00 +0100
 MIME-Version: 1.0
-In-Reply-To: <87im86l6l7.fsf@xenomai.org>
+In-Reply-To: <20210111064318.6154-1-hongzhan.chen@intel.com>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -20,70 +17,71 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Philippe Gerum <rpm@xenomai.org>
-Cc: xenomai@xenomai.org
+To: hongzha1 <hongzhan.chen@intel.com>, Xenomai@xenomai.org
 
-On 09.01.21 11:58, Philippe Gerum wrote:
+On 11.01.21 07:43, hongzha1 via Xenomai wrote:
+> inband sirq request through synthetic_irq_domain and free and post
+> srq.
 > 
-> Jan Kiszka <jan.kiszka@siemens.com> writes:
+> Signed-off-by: hongzha1 <hongzhan.chen@intel.com>
+> ---
+>  .../cobalt/kernel/dovetail/pipeline/sirq.h    | 28 +++++++++++++++----
+>  1 file changed, 23 insertions(+), 5 deletions(-)
 > 
->> On 02.01.21 10:33, Philippe Gerum wrote:
->>> From: Philippe Gerum <rpm@xenomai.org>
->>>
->>> The I-pipe and Dovetail differ only marginally with respect to syscall
->>> handling. Abstract only the few details we need to cope with both
->>> interfaces.
->>>
->>> No functional change is introduced.
->>>
->>> Signed-off-by: Philippe Gerum <rpm@xenomai.org>
->>> ---
->>>  .../cobalt/kernel/ipipe/pipeline/kevents.h    |  3 ++
->>>  .../cobalt/kernel/ipipe/pipeline/pipeline.h   |  2 ++
->>>  include/cobalt/kernel/sched.h                 |  2 --
->>>  kernel/cobalt/ipipe/Makefile                  |  2 +-
->>>  kernel/cobalt/ipipe/syscall.c                 | 29 +++++++++++++++++++
->>>  kernel/cobalt/posix/process.h                 |  3 --
->>>  kernel/cobalt/posix/syscall.c                 | 28 ++++--------------
->>>  kernel/cobalt/posix/syscall.h                 |  7 +++++
->>>  8 files changed, 47 insertions(+), 29 deletions(-)
->>>  create mode 100644 kernel/cobalt/ipipe/syscall.c
->>>
->>> diff --git a/include/cobalt/kernel/ipipe/pipeline/kevents.h b/include/cobalt/kernel/ipipe/pipeline/kevents.h
->>> index 30425a96b..2f186a57e 100644
->>> --- a/include/cobalt/kernel/ipipe/pipeline/kevents.h
->>> +++ b/include/cobalt/kernel/ipipe/pipeline/kevents.h
->>> @@ -7,6 +7,9 @@
->>>  #ifndef _COBALT_KERNEL_IPIPE_KEVENTS_H
->>>  #define _COBALT_KERNEL_IPIPE_KEVENTS_H
->>>  
->>> +#define KEVENT_PROPAGATE   0
->>> +#define KEVENT_STOP        1
->>> +
->>>  struct cobalt_process;
->>>  struct cobalt_thread;
->>>  
->>> diff --git a/include/cobalt/kernel/ipipe/pipeline/pipeline.h b/include/cobalt/kernel/ipipe/pipeline/pipeline.h
->>> index 0ffc9b00b..fb0465fb2 100644
->>> --- a/include/cobalt/kernel/ipipe/pipeline/pipeline.h
->>> +++ b/include/cobalt/kernel/ipipe/pipeline/pipeline.h
->>> @@ -11,6 +11,8 @@
->>>  
->>>  #include <pipeline/machine.h>
->>>  
->>> +#define xnsched_realtime_domain  cobalt_pipeline.domain
->>> +
->>
->> Why not use the chance and call also this xnsched_primary_domain?
-> 
-> Agreed on the reasoning. However I'll push that change on top top of my
-> current patch queue, without affecting this intermediate patch only for
-> a cosmetic change, not to cause useless merge conflicts - I have several
-> other series of changes pending for kernel/cobalt/ipipe/{init, intr}.c
-> typically.
+> diff --git a/include/cobalt/kernel/dovetail/pipeline/sirq.h b/include/cobalt/kernel/dovetail/pipeline/sirq.h
+> index be9dc587f..1da9d13b2 100644
+> --- a/include/cobalt/kernel/dovetail/pipeline/sirq.h
+> +++ b/include/cobalt/kernel/dovetail/pipeline/sirq.h
+> @@ -23,9 +23,24 @@ int pipeline_create_inband_sirq(irqreturn_t (*handler)(int irq, void *dev_id))
+>  	 * Allocate an IRQ from the synthetic interrupt domain then
+>  	 * trap it to @handler, to be fired from the in-band stage.
+>  	 */
+> -	TODO();
+> +	int sirq, ret;
+>  
+> -	return 0;
+> +	sirq = irq_create_direct_mapping(synthetic_irq_domain);
+> +	if (sirq == 0)
+> +		return -EAGAIN;
+> +
+> +	ret = __request_percpu_irq(sirq,
+> +			handler,
+> +			IRQF_NO_THREAD,
+> +			"Inband sirq",
+> +			&cobalt_machine_cpudata);
+> +
+> +	if (ret) {
+> +		irq_dispose_mapping(sirq);
+> +		return ret;
+> +	}
+> +
+> +	return sirq;
+>  }
+>  
+>  static inline
+> @@ -35,13 +50,16 @@ void pipeline_delete_inband_sirq(int sirq)
+>  	 * Free the synthetic IRQ then deallocate it to its
+>  	 * originating domain.
+>  	 */
+> -	TODO();
+> +	free_percpu_irq(sirq,
+> +		&cobalt_machine_cpudata);
+> +
+> +	irq_dispose_mapping(sirq);
+>  }
+>  
+>  static inline void pipeline_post_sirq(int sirq)
+>  {
+>  	/* Trigger the synthetic IRQ */
+> -	TODO();
+> +	irq_post_inband(sirq);
+>  }
+>  
+> -#endif /* !_COBALT_KERNEL_IPIPE_SIRQ_H */
+> +#endif /* !_COBALT_KERNEL_DOVETAIL_SIRQ_H */
 > 
 
-OK. All now applied (with v2 of patch 7).
+Does this series merely target review / discussion?
 
 Jan
 
