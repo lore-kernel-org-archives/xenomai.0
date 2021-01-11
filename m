@@ -1,10 +1,11 @@
 References: <20210111064318.6154-1-hongzhan.chen@intel.com>
- <20210111064318.6154-3-hongzhan.chen@intel.com>
+ <20210111064318.6154-4-hongzhan.chen@intel.com>
 From: Philippe Gerum <rpm@xenomai.org>
-Subject: Re: [PATCH 03/10] dovetail/clock: implement pipeline_get_host_time
-In-reply-to: <20210111064318.6154-3-hongzhan.chen@intel.com>
-Date: Mon, 11 Jan 2021 18:26:57 +0100
-Message-ID: <874kjnjsf2.fsf@xenomai.org>
+Subject: Re: [PATCH 04/10] dovetail/sched: implement
+ pipeline_init_shadow_tcb and pipeline_init_root_tcb
+In-reply-to: <20210111064318.6154-4-hongzhan.chen@intel.com>
+Date: Mon, 11 Jan 2021 18:30:17 +0100
+Message-ID: <871rerjs9i.fsf@xenomai.org>
 MIME-Version: 1.0
 Content-Type: text/plain
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
@@ -23,32 +24,35 @@ hongzha1 via Xenomai <xenomai@xenomai.org> writes:
 
 > Signed-off-by: hongzha1 <hongzhan.chen@intel.com>
 > ---
->  include/cobalt/kernel/dovetail/pipeline/clock.h | 3 ++-
->  1 file changed, 2 insertions(+), 1 deletion(-)
+>  kernel/cobalt/dovetail/sched.c | 4 ++--
+>  1 file changed, 2 insertions(+), 2 deletions(-)
 >
-> diff --git a/include/cobalt/kernel/dovetail/pipeline/clock.h b/include/cobalt/kernel/dovetail/pipeline/clock.h
-> index 5176b1506..28d89b44b 100644
-> --- a/include/cobalt/kernel/dovetail/pipeline/clock.h
-> +++ b/include/cobalt/kernel/dovetail/pipeline/clock.h
-> @@ -7,6 +7,7 @@
->  
->  #include <cobalt/uapi/kernel/types.h>
->  #include <cobalt/kernel/assert.h>
-> +#include <linux/ktime.h>
->  
->  struct timespec64;
->  
-> @@ -50,7 +51,7 @@ static inline const char *pipeline_clock_name(void)
->  static inline int pipeline_get_host_time(struct timespec64 *tp)
->  {
->  	/* Convert ktime_get_real_fast_ns() to timespec. */
+> diff --git a/kernel/cobalt/dovetail/sched.c b/kernel/cobalt/dovetail/sched.c
+> index 71f763d39..82e29136c 100644
+> --- a/kernel/cobalt/dovetail/sched.c
+> +++ b/kernel/cobalt/dovetail/sched.c
+> @@ -36,7 +36,7 @@ void pipeline_init_shadow_tcb(struct xnthread *thread)
+>  	/*
+>  	 * Initialize the alternate scheduling control block.
+>  	 */
 > -	TODO();
-> +	*tp = ktime_to_timespec64(ktime_get_real_fast_ns());
+> +	dovetail_init_altsched(&xnthread_archtcb(thread)->altsched);
 >  
->  	return 0;
+>  	trace_cobalt_shadow_map(thread);
 >  }
+> @@ -46,7 +46,7 @@ void pipeline_init_root_tcb(struct xnthread *thread)
+>  	/*
+>  	 * Initialize the alternate scheduling control block.
+>  	 */
+> -	TODO();
+> +	dovetail_init_altsched(&xnthread_archtcb(thread)->altsched);
+>  }
+>  
+>  int pipeline_leave_inband(void)
 
-Yummie. Ack, picking up this patch. Thanks.
+Looks good, picking up this one too.
+
+Thanks.
 
 -- 
 Philippe.
