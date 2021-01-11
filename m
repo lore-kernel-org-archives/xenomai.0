@@ -1,10 +1,10 @@
-Subject: Re: [PATCH Dovetail 0/4] Get rid of the APC interface
-References: <20210109160233.921972-1-rpm@xenomai.org>
+Subject: Re: [PATCH v2] cobalt/clock: pipeline: make HOSTRT depend on IPIPE
+References: <20210109104833.706898-1-rpm@xenomai.org>
 From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <6632491e-7834-1a6e-f488-9b9077111adf@siemens.com>
-Date: Mon, 11 Jan 2021 13:10:00 +0100
+Message-ID: <3177c963-514a-7001-5c49-26b55c04f96d@siemens.com>
+Date: Mon, 11 Jan 2021 13:10:30 +0100
 MIME-Version: 1.0
-In-Reply-To: <20210109160233.921972-1-rpm@xenomai.org>
+In-Reply-To: <20210109104833.706898-1-rpm@xenomai.org>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -18,43 +18,148 @@ List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: Philippe Gerum <rpm@xenomai.org>, xenomai@xenomai.org
 
-On 09.01.21 17:02, Philippe Gerum wrote:
+On 09.01.21 11:48, Philippe Gerum wrote:
 > From: Philippe Gerum <rpm@xenomai.org>
 > 
-> This patch starts a series aiming at dropping the (functionally
-> redundant) APC interface entirely.
+> This interface is pointless with Dovetail whose applications directly
+> refer to the wallclock time exported through the common vDSO.
 > 
-> APCs are a relic from the Dark Ages, with no upside compared to open
-> coded requests triggering virtual/synthetic IRQs to be handled by the
-> root domain. As a matter of fact, an APC does run as a client handler
-> of a synthetic IRQ under the hood. In other words, the APC
-> encapsulation adds nothing but useless overhead.
+> No functional change is introduced.
 > 
-> Philippe Gerum (4):
->   cobalt/pipe: drop dependency on APCs
->   cobalt/registry: drop dependency on APCs
->   cobalt/select: drop dependency on APCs
->   cobalt/apc: drop obsolete APC mechanism
+> Signed-off-by: Philippe Gerum <rpm@xenomai.org>
+> ---
+>  include/cobalt/kernel/vdso.h  | 18 +++++++++++-------
+>  kernel/cobalt/Kconfig         |  4 ----
+>  kernel/cobalt/ipipe/kevents.c | 14 ++++++++------
+>  kernel/cobalt/posix/clock.c   |  4 ++--
+>  4 files changed, 21 insertions(+), 19 deletions(-)
 > 
->  include/cobalt/kernel/apc.h                   |  32 ---
->  .../cobalt/kernel/ipipe/pipeline/machine.h    |   2 -
->  include/cobalt/kernel/rtdm/driver.h           |   1 -
->  kernel/cobalt/ipipe/Makefile                  |   2 +-
->  kernel/cobalt/ipipe/apc.c                     | 202 ------------------
->  kernel/cobalt/ipipe/init.c                    |  19 --
->  kernel/cobalt/pipe.c                          |  26 ++-
->  kernel/cobalt/procfs.c                        |  42 ----
->  kernel/cobalt/registry.c                      |  30 +--
->  kernel/cobalt/rtdm/core.c                     |   1 -
->  kernel/cobalt/select.c                        |  23 +-
->  11 files changed, 49 insertions(+), 331 deletions(-)
->  delete mode 100644 include/cobalt/kernel/apc.h
->  delete mode 100644 kernel/cobalt/ipipe/apc.c
+> diff --git a/include/cobalt/kernel/vdso.h b/include/cobalt/kernel/vdso.h
+> index f7140adc7..7da88a730 100644
+> --- a/include/cobalt/kernel/vdso.h
+> +++ b/include/cobalt/kernel/vdso.h
+> @@ -25,21 +25,25 @@
+>  #include <asm/processor.h>
+>  #include <cobalt/uapi/kernel/vdso.h>
+>  
+> +extern struct xnvdso *nkvdso;
+> +
+>  /*
+>   * Define the available feature set here. We have a single feature
+> - * defined for now.
+> + * defined for now, only in the I-pipe case.
+>   */
+> -#ifdef CONFIG_XENO_OPT_HOSTRT
+> -#define XNVDSO_FEATURES XNVDSO_FEAT_HOST_REALTIME
+> -#else
+> -#define XNVDSO_FEATURES 0
+> -#endif /* CONFIG_XENO_OPT_HOSTRT */
+> +#ifdef CONFIG_IPIPE_HAVE_HOSTRT
+>  
+> -extern struct xnvdso *nkvdso;
+> +#define XNVDSO_FEATURES XNVDSO_FEAT_HOST_REALTIME
+>  
+>  static inline struct xnvdso_hostrt_data *get_hostrt_data(void)
+>  {
+>  	return &nkvdso->hostrt_data;
+>  }
+>  
+> +#else
+> +
+> +#define XNVDSO_FEATURES 0
+> +
+> +#endif
+> +
+>  #endif /* _COBALT_KERNEL_VDSO_H */
+> diff --git a/kernel/cobalt/Kconfig b/kernel/cobalt/Kconfig
+> index 0d96913bd..ead4740c1 100644
+> --- a/kernel/cobalt/Kconfig
+> +++ b/kernel/cobalt/Kconfig
+> @@ -210,10 +210,6 @@ config XENO_OPT_TIMER_RBTREE
+>  
+>  endchoice
+>  
+> -config XENO_OPT_HOSTRT
+> -       depends on IPIPE_HAVE_HOSTRT
+> -       def_bool y
+> -
+>  config XENO_OPT_PIPE
+>  	bool
+>  
+> diff --git a/kernel/cobalt/ipipe/kevents.c b/kernel/cobalt/ipipe/kevents.c
+> index 620975dfd..e1e1e3a95 100644
+> --- a/kernel/cobalt/ipipe/kevents.c
+> +++ b/kernel/cobalt/ipipe/kevents.c
+> @@ -378,7 +378,7 @@ void ipipe_migration_hook(struct task_struct *p) /* hw IRQs off */
+>  	xnsched_run();
+>  }
+>  
+> -#ifdef CONFIG_XENO_OPT_HOSTRT
+> +#ifdef CONFIG_IPIPE_HAVE_HOSTRT
+>  
+>  static IPIPE_DEFINE_SPINLOCK(__hostrtlock);
+>  
+> @@ -418,7 +418,7 @@ static inline void init_hostrt(void)
+>  	nkvdso->hostrt_data.live = 0;
+>  }
+>  
+> -#else /* !CONFIG_XENO_OPT_HOSTRT */
+> +#else /* !CONFIG_IPIPE_HAVE_HOSTRT */
+>  
+>  struct ipipe_hostrt_data;
+>  
+> @@ -429,7 +429,7 @@ static inline int handle_hostrt_event(struct ipipe_hostrt_data *hostrt)
+>  
+>  static inline void init_hostrt(void) { }
+>  
+> -#endif /* !CONFIG_XENO_OPT_HOSTRT */
+> +#endif /* !CONFIG_IPIPE_HAVE_HOSTRT */
+>  
+>  static void __handle_taskexit_event(struct task_struct *p)
+>  {
+> @@ -757,12 +757,14 @@ int ipipe_kevent_hook(int kevent, void *data)
+>  	case IPIPE_KEVT_CLEANUP:
+>  		ret = handle_cleanup_event(data);
+>  		break;
+> -	case IPIPE_KEVT_HOSTRT:
+> -		ret = handle_hostrt_event(data);
+> -		break;
+>  	case IPIPE_KEVT_SETAFFINITY:
+>  		ret = handle_setaffinity_event(data);
+>  		break;
+> +#ifdef CONFIG_IPIPE_HAVE_HOSTRT
+> +	case IPIPE_KEVT_HOSTRT:
+> +		ret = handle_hostrt_event(data);
+> +		break;
+> +#endif
+>  #ifdef IPIPE_KEVT_CLOCKFREQ
+>  	case IPIPE_KEVT_CLOCKFREQ:
+>  		ret = handle_clockfreq_event(data);
+> diff --git a/kernel/cobalt/posix/clock.c b/kernel/cobalt/posix/clock.c
+> index 561358e74..40271f3ed 100644
+> --- a/kernel/cobalt/posix/clock.c
+> +++ b/kernel/cobalt/posix/clock.c
+> @@ -31,7 +31,7 @@ DECLARE_BITMAP(cobalt_clock_extids, COBALT_MAX_EXTCLOCKS);
+>  
+>  static int do_clock_host_realtime(struct timespec *tp)
+>  {
+> -#ifdef CONFIG_XENO_OPT_HOSTRT
+> +#ifdef CONFIG_IPIPE_HAVE_HOSTRT
+>  	struct xnvdso_hostrt_data *hostrt_data;
+>  	u64 now, base, mask, cycle_delta;
+>  	__u32 mult, shift;
+> @@ -78,7 +78,7 @@ static int do_clock_host_realtime(struct timespec *tp)
+>  	tp->tv_nsec = rem;
+>  
+>  	return 0;
+> -#else /* CONFIG_XENO_OPT_HOSTRT */
+> +#else
+>  	return -EINVAL;
+>  #endif
+>  }
 > 
 
-Would it make sense to introduce the pipeline abstraction of those
-services first? Then you won't touch the core code twice, once again for
-removing all the ipipe references.
+Thanks, applied.
 
 Jan
 
