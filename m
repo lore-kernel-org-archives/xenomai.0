@@ -1,11 +1,14 @@
-From: Philippe  Gerum <rpm@xenomai.org>
-Subject: [PATCH 08/13] cobalt/arm64: ipipe: remove obsolete calibration handler
-Date: Sun, 31 Jan 2021 15:45:35 +0100
-Message-Id: <20210131144540.243363-8-rpm@xenomai.org>
-In-Reply-To: <20210131144540.243363-1-rpm@xenomai.org>
-References: <20210131144540.243363-1-rpm@xenomai.org>
+References: <20210111064318.6154-1-hongzhan.chen@intel.com>
+ <20210111064318.6154-6-hongzhan.chen@intel.com>
+ <87im82m7o2.fsf@xenomai.org>
+From: Philippe Gerum <rpm@xenomai.org>
+Subject: Re: [PATCH 06/10] dovetail/pipeline: implement oob irq request and
+ free and post for both TIMER_OOB_IPI and RESCHEDULE_OOB_IPI
+In-reply-to: <87im82m7o2.fsf@xenomai.org>
+Date: Tue, 12 Jan 2021 17:47:42 +0100
+Message-ID: <877doim79t.fsf@xenomai.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -14,101 +17,141 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
+To: Philippe Gerum <rpm@xenomai.org>
+Cc: hongzha1 <hongzhan.chen@intel.com>, xenomai@xenomai.org
 
-From: Philippe Gerum <rpm@xenomai.org>
 
-Signed-off-by: Philippe Gerum <rpm@xenomai.org>
----
- kernel/cobalt/arch/arm64/ipipe/machine.c | 58 ------------------------
- 1 file changed, 58 deletions(-)
+Also, the short log should be more concise. The changes are all about
+out-of-band IRQ management and handling, details about which IRQs this
+applies to can appear in the main part of the commit log.
 
-diff --git a/kernel/cobalt/arch/arm64/ipipe/machine.c b/kernel/cobalt/arch/arm64/ipipe/machine.c
-index cb2867492..a215e4caa 100644
---- a/kernel/cobalt/arch/arm64/ipipe/machine.c
-+++ b/kernel/cobalt/arch/arm64/ipipe/machine.c
-@@ -19,13 +19,8 @@
-  */
- 
- #include <linux/mm.h>
--#include <linux/ipipe_tickdev.h>
--#include <cobalt/kernel/arith.h>
--#include <asm/cacheflush.h>
- #include <asm/xenomai/machine.h>
- 
--#define CALIBRATION_LOOPS 10
--
- static void mach_arm_prefault(struct vm_area_struct *vma)
- {
- 	unsigned long addr;
-@@ -43,58 +38,6 @@ static void mach_arm_prefault(struct vm_area_struct *vma)
- 	}
- }
- 
--static unsigned long mach_arm_calibrate(void)
--{
--	unsigned long delay = (cobalt_pipeline.timer_freq + HZ / 2) / HZ;
--	unsigned long long start, end, sum = 0, sum_sq = 0;
--	unsigned long result, flags, tsc_lat;
--	long long diff;
--	int i, j;
--
--	flags = ipipe_critical_enter(NULL);
--
--	/*
--	 * Hw interrupts off, other CPUs quiesced, no migration
--	 * possible. We can now fiddle with the timer chip (per-cpu
--	 * local or global, ipipe_timer_set() will handle this
--	 * transparently).
--	 */
--	ipipe_read_tsc(start);
--	barrier();
--	ipipe_read_tsc(end);
--	tsc_lat = end - start;
--	barrier();
--
--	for (i = 0; i < CALIBRATION_LOOPS; i++) {
--		for (j = 0; j < CALIBRATION_LOOPS; j++) {
--			ipipe_read_tsc(start);
--			barrier();
--			ipipe_timer_set(delay);
--			barrier();
--			ipipe_read_tsc(end);
--			diff = end - start - tsc_lat;
--			if (diff > 0) {
--				sum += diff;
--				sum_sq += diff * diff;
--			}
--		}
--	}
--
--	ipipe_critical_exit(flags);
--
--	/* Use average + standard deviation as timer programming latency. */
--	do_div(sum, CALIBRATION_LOOPS * CALIBRATION_LOOPS);
--	do_div(sum_sq, CALIBRATION_LOOPS * CALIBRATION_LOOPS);
--	result = sum + int_sqrt(sum_sq - sum * sum) + 1;
--	/*
--	 * Reset the max trace, since it contains the calibration time
--	 * now.
--	 */
--	ipipe_trace_max_reset();
--
--	return result;
--}
--
- static const char *const fault_labels[] = {
- 	[IPIPE_TRAP_ACCESS] = "Data or instruction access",
- 	[IPIPE_TRAP_SECTION] = "Section fault",
-@@ -115,7 +58,6 @@ struct cobalt_machine cobalt_machine = {
- 	.init = NULL,
- 	.late_init = NULL,
- 	.cleanup = NULL,
--	.calibrate = mach_arm_calibrate,
- 	.prefault = mach_arm_prefault,
- 	.fault_labels = fault_labels,
- };
+There are too many changes for me to fix up that patch on the fly while
+merging eventually. You may want to resubmit it.
+
+Thanks,
+
+Philippe Gerum via Xenomai <xenomai@xenomai.org> writes:
+
+> hongzha1 via Xenomai <xenomai@xenomai.org> writes:
+>
+>> Signed-off-by: hongzha1 <hongzhan.chen@intel.com>
+>> ---
+>>  .../kernel/dovetail/pipeline/pipeline.h       | 44 ++++++++++++++-----
+>>  1 file changed, 34 insertions(+), 10 deletions(-)
+>>
+>> diff --git a/include/cobalt/kernel/dovetail/pipeline/pipeline.h b/include/cobalt/kernel/dovetail/pipeline/pipeline.h
+>> index 23c4a2c18..a345e1399 100644
+>> --- a/include/cobalt/kernel/dovetail/pipeline/pipeline.h
+>> +++ b/include/cobalt/kernel/dovetail/pipeline/pipeline.h
+>> @@ -8,9 +8,12 @@
+>>  #include <linux/irq_pipeline.h>
+>>  #include <cobalt/kernel/assert.h>
+>>  #include <asm/xenomai/features.h>
+>> +#include <pipeline/machine.h>
+>>  
+>>  typedef unsigned long spl_t;
+>>  
+>> +extern void xnintr_core_clock_handler(void);
+>> +
+>
+> No need for mentioning the storage class in the declaration. We know
+> this is extern by default, otherwise we would have mentioned
+> "static". Will fix while merging.
+>
+>>  /*
+>>   * We only keep the LSB when testing in SMP mode in order to strip off
+>>   * the recursion marker (0x2) the nklock may store there.
+>> @@ -30,18 +33,29 @@ typedef unsigned long spl_t;
+>>  
+>>  #ifdef CONFIG_SMP
+>>  
+>> +static irqreturn_t reschedule_interrupt_handler(int irq, void *dev_id)
+>> +{
+>> +
+>> +	/* Will reschedule from irq_exit_pipeline. */
+>> +
+>> +	return IRQ_HANDLED;
+>> +}
+>> +
+>> +
+>>  static inline int pipeline_request_resched_ipi(void (*handler)(void))
+>>  {
+>>  	/* Trap the out-of-band rescheduling interrupt. */
+>> -	TODO();
+>> -
+>> -	return 0;
+>> +	return __request_percpu_irq(RESCHEDULE_OOB_IPI,
+>> +			reschedule_interrupt_handler,
+>> +			IRQF_OOB,
+>> +			"Xenomai reschedule",
+>> +			&cobalt_machine_cpudata);
+>>  }
+>>  
+>>  static inline void pipeline_free_resched_ipi(void)
+>>  {
+>>  	/* Release the out-of-band rescheduling interrupt. */
+>> -	TODO();
+>> +	free_percpu_irq(RESCHEDULE_OOB_IPI, &cobalt_machine_cpudata);
+>>  }
+>>  
+>>  static inline void pipeline_send_resched_ipi(const struct cpumask *dest)
+>> @@ -50,21 +64,31 @@ static inline void pipeline_send_resched_ipi(const struct cpumask *dest)
+>>  	 * Trigger the out-of-band rescheduling interrupt on remote
+>>  	 * CPU(s).
+>>  	 */
+>> -	TODO();
+>> +	irq_pipeline_send_remote(RESCHEDULE_OOB_IPI, dest);
+>
+> This call was recently renamed irq_send_oob_ipi() in an effort to
+> clarify the interface. I'll fix this up while merging.
+>
+>>  }
+>>  
+>> +static irqreturn_t timer_ipi_interrupt_handler(int irq, void *dev_id)
+>> +{
+>> +	xnintr_core_clock_handler();
+>> +
+>> +	return IRQ_HANDLED;
+>> +}
+>> +
+>> +
+>>  static inline int pipeline_request_timer_ipi(void (*handler)(void))
+>>  {
+>>  	/* Trap the out-of-band timer interrupt. */
+>> -	TODO();
+>> -
+>> -	return 0;
+>> +	return __request_percpu_irq(TIMER_OOB_IPI,
+>> +			timer_ipi_interrupt_handler,
+>> +			IRQF_OOB, "Xenomai timer IPI",
+>> +			&cobalt_machine_cpudata);
+>>  }
+>>  
+>>  static inline void pipeline_free_timer_ipi(void)
+>>  {
+>>  	/* Release the out-of-band timer interrupt. */
+>> -	TODO();
+>> +	free_percpu_irq(TIMER_OOB_IPI,
+>> +		&cobalt_machine_cpudata);
+>
+> Single line. Will fix.
+>
+>>  }
+>>  
+>>  static inline void pipeline_send_timer_ipi(const struct cpumask *dest)
+>> @@ -72,7 +96,7 @@ static inline void pipeline_send_timer_ipi(const struct cpumask *dest)
+>>  	/*
+>>  	 * Trigger the out-of-band timer interrupt on remote CPU(s).
+>>  	 */
+>> -	TODO();
+>> +	irq_pipeline_send_remote(TIMER_OOB_IPI, dest);
+>>  }
+>
+> Ditto.
+>
+> Ack.
+
+
 -- 
-2.26.2
-
+Philippe.
 
