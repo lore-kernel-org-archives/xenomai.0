@@ -1,16 +1,11 @@
 MIME-Version: 1.0
-References: <CAMJ=MEfkw3N1O1t3Nic10sdYO6hrUU7OOR5=a0wi61w1V-23vA@mail.gmail.com>
- <8149f85c-4d2e-8411-ee9a-86669c5a1532@siemens.com>
- <CAMJ=MEeCbvzH8QjbZxAQd9H3fcCdNcYphqAXdHsBiUiXyXtUyw@mail.gmail.com>
- <878sah7hyu.fsf@xenomai.org>
- <CAMJ=MEc-Vs-pGXgzjxpM9m6BYMFvAHctm=bafHtmtXwsSf97Pg@mail.gmail.com>
- <871rg54mkh.fsf@xenomai.org>
- <CAMJ=MEdgoosLDBA+veLs48tSDJs_sx5ZaRbt+sLWPmq95bcEsw@mail.gmail.com>
-In-Reply-To: <CAMJ=MEdgoosLDBA+veLs48tSDJs_sx5ZaRbt+sLWPmq95bcEsw@mail.gmail.com>
-From: Ronny Meeus <ronny.meeus@gmail.com>
-Date: Sat, 23 Jan 2021 08:40:41 +0100
-Message-ID: <CAMJ=MEdDpgNxtw4NjEmfYP7Hqcxa0W4q29UO=eWuds0tKxcXuw@mail.gmail.com>
-Subject: Re: race in timerobj
+References: <CADx0-8BgdfneaX4U5EKxDzJ=5vdcQ347iL3W144Fo9gXLibfnA@mail.gmail.com>
+ <CALLqZ8T9aCD3-bBs0SW6W3jU7Fz+30-L=NdV7XjBtTFb1OZZ8Q@mail.gmail.com>
+In-Reply-To: <CALLqZ8T9aCD3-bBs0SW6W3jU7Fz+30-L=NdV7XjBtTFb1OZZ8Q@mail.gmail.com>
+From: Mohamed Irfanulla Mohamed Abdulla <m.mohamedirfanulla@gmail.com>
+Date: Tue, 12 Jan 2021 17:02:00 +0100
+Message-ID: <CADx0-8BgLRhipr-Reg+tN-fhzTMES+NxFT-wDvzDT_XopEAEEQ@mail.gmail.com>
+Subject: Re: Xenomai on Jetson TX2
 Content-Type: text/plain; charset="UTF-8"
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
@@ -20,279 +15,49 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Philippe Gerum <rpm@xenomai.org>
-Cc: Jan Kiszka <jan.kiszka@siemens.com>, xenomai@xenomai.org
+To: Greg Gallagher <greg@embeddedgreg.com>
+Cc: "Xenomai@xenomai.org" <xenomai@xenomai.org>
 
-Op vr 22 jan. 2021 om 08:57 schreef Ronny Meeus <ronny.meeus@gmail.com>:
+Hello Greg,
 
-> Op vr 4 dec. 2020 om 16:29 schreef Philippe Gerum <rpm@xenomai.org>:
-> >
-> >
-> > Ronny Meeus <ronny.meeus@gmail.com> writes:
-> >
-> > > Op di 1 dec. 2020 om 14:51 schreef Philippe Gerum <rpm@xenomai.org>:
-> > >>
-> > >>
-> > >> Ronny Meeus via Xenomai <xenomai@xenomai.org> writes:
-> > >>
-> > >> > Op di 1 dec. 2020 om 12:06 schreef Jan Kiszka <
-> jan.kiszka@siemens.com>:
-> > >> >>
-> > >> >> On 01.12.20 11:26, Ronny Meeus via Xenomai wrote:
-> > >> >> > Hello Xenomai community,
-> > >> >> >
-> > >> >> > it looks like we have a race condition in the timer object
-> handling.
-> > >> >> > The scope of the below mentioned issue is the alarm interface of
-> the
-> > >> >> > alchemy skin:
-> > >> >> > int rt_alarm_start(RT_ALARM *alarm, RTIME value, RTIME interval)
-> > >> >> >
-> > >> >> > The documentation mentions that this start can be called also on
-> an
-> > >> >> > already running timer:
-> > >> >> > "This service overrides any previous setup of the expiry date and
-> > >> >> > reload interval for the given alarm."
-> > >> >> >
-> > >> >> > In the timer server code (see file lib/copperplate/timerobj.c):
-> > >> >> > static void *timerobj_server (void *arg))
-> > >> >> > I see the timer being re-inserted in the timeout list in case of
-> a
-> > >> >> > periodic timer.
-> > >> >> >
-> > >> >> > write_lock_nocancel(&svlock);
-> > >> >> > ...
-> > >> >> > if (interval.tv_sec > 0 || interval.tv_nsec > 0) {
-> > >> >> >   timespec_add(&tmobj->itspec.it_value, &value, &interval);
-> > >> >> >   timerobj_enqueue(tmobj);
-> > >> >> > }
-> > >> >> > write_unlock(&svlock);
-> > >> >> > tmobj->handler(tmobj);
-> > >> >> > write_lock_nocancel(&svlock);
-> > >> >> > }
-> > >> >> >
-> > >> >> > This re-insert is done with the svlock taken but the timer
-> specific
-> > >> >> > lock is not taken.
-> > >> >> >
-> > >> >> > In the start on the other hand I see:
-> > >> >> >
-> > >> >> > int timerobj_start(struct timerobj *tmobj,
-> > >> >> >   void (*handler)(struct timerobj *tmobj),
-> > >> >> >   struct itimerspec *it) /* lock held, dropped */
-> > >> >> > {
-> > >> >> > tmobj->handler = handler;
-> > >> >> > tmobj->itspec = *it;
-> > >> >> > ...
-> > >> >> > write_lock_nocancel(&svlock);
-> > >> >> >
-> > >> >> > So the itspec is updated with only the timerobj lock taken.
-> > >> >> > If the timeout value is changed via the timerobj_start while the
-> timer is
-> > >> >> > under processing by the timer server, we can enter an endless
-> loop (at
-> > >> >> > least that is what we see sporadically)
-> > >> >> >
-> > >> >> > Does this make sense?
-> > >> >>
-> > >> >> Yes, at least to me. Patch welcome.
-> > >> >
-> > >> > Jan,
-> > >> >
-> > >> > this is the patch we are currently testing with (note that the line
-> numbers
-> > >> > might not match since we are not at the latest revision).
-> > >> >
-> > >> > diff --git a/lib/copperplate/timerobj.c b/lib/copperplate/timerobj.c
-> > >> > --- a/lib/copperplate/timerobj.c
-> > >> > +++ b/lib/copperplate/timerobj.c
-> > >> > @@ -165,7 +165,8 @@ static void *timerobj_server(void *arg)
-> > >> >                                 timerobj_enqueue(tmobj);
-> > >> >                         }
-> > >> >                         write_unlock(&svlock);
-> > >> > -                       tmobj->handler(tmobj);
-> > >> > +                       if (tmobj->handler)
-> > >> > +                               tmobj->handler(tmobj);
-> > >> >                         write_lock_nocancel(&svlock);
-> > >> >                 }
-> > >> >
-> > >> > @@ -232,10 +233,14 @@ int timerobj_start(struct timerobj *tmob
-> > >> >                    void (*handler)(struct timerobj *tmobj),
-> > >> >                    struct itimerspec *it) /* lock held, dropped */
-> > >> >  {
-> > >> > +       write_lock_nocancel(&svlock);
-> > >> > +
-> > >> > +       if (pvholder_linked(&tmobj->next))
-> > >> > +               pvlist_remove_init(&tmobj->next);
-> > >> > +
-> > >> >         tmobj->handler = handler;
-> > >> >         tmobj->itspec = *it;
-> > >> >
-> > >> > -       write_lock_nocancel(&svlock);
-> > >> >         timerobj_enqueue(tmobj);
-> > >> >         write_unlock(&svlock);
-> > >> >         timerobj_unlock(tmobj);
-> > >> >
-> > >> >
-> > >> >>
-> > >> >> Note, though, that updating the handler will remain inherently
-> racy.
-> > >> >>
-> > >>
-> > >> Good catch. Also, we would need a consistent view of the
-> > >> (value,interval,handler) triplet for any time wrt concurrent
-> start/stop
-> > >> updates, all accessed under server lock. We would not want a new value
-> > >> being copied to be used with an old interval and/or handler for
-> > >> instance.
-> > >>
-> > >> There is also a locking imbalance to be fixed on error in
-> > >> timerobj_start().
-> > >>
-> > >> e.g. (proudly untested).
-> > >>
-> > >> diff --git a/lib/copperplate/timerobj.c b/lib/copperplate/timerobj.c
-> > >> index cbfcda566..08cc0d3b9 100644
-> > >> --- a/lib/copperplate/timerobj.c
-> > >> +++ b/lib/copperplate/timerobj.c
-> > >> @@ -98,6 +98,7 @@ static int server_prologue(void *arg)
-> > >>
-> > >>  static void *timerobj_server(void *arg)
-> > >>  {
-> > >> +       void (*handler)(struct timerobj *tmobj);
-> > >>         struct timespec now, value, interval;
-> > >>         struct timerobj *tmobj, *tmp;
-> > >>         sigset_t set;
-> > >> @@ -120,17 +121,18 @@ static void *timerobj_server(void *arg)
-> > >>
-> > >>                 pvlist_for_each_entry_safe(tmobj, tmp, &svtimers,
-> next) {
-> > >>                         value = tmobj->itspec.it_value;
-> > >> +                       interval = tmobj->itspec.it_interval;
-> > >> +                       handler = tmobj->handler;
-> > >>                         if (timespec_after(&value, &now))
-> > >>                                 break;
-> > >>                         pvlist_remove_init(&tmobj->next);
-> > >> -                       interval = tmobj->itspec.it_interval;
-> > >>                         if (interval.tv_sec > 0 || interval.tv_nsec >
-> 0) {
-> > >>                                 timespec_add(&tmobj->itspec.it_value,
-> > >>                                              &value, &interval);
-> > >>                                 timerobj_enqueue(tmobj);
-> > >>                         }
-> > >>                         write_unlock(&svlock);
-> > >> -                       tmobj->handler(tmobj);
-> > >> +                       handler(tmobj);
-> > >>                         write_lock_nocancel(&svlock);
-> > >>                 }
-> > >>
-> > >> @@ -218,8 +220,7 @@ int timerobj_start(struct timerobj *tmobj,
-> > >>                    void (*handler)(struct timerobj *tmobj),
-> > >>                    struct itimerspec *it) /* lock held, dropped */
-> > >>  {
-> > >> -       tmobj->handler = handler;
-> > >> -       tmobj->itspec = *it;
-> > >> +       int ret = 0;
-> > >>
-> > >>         /*
-> > >>          * We hold the queue lock long enough to prevent the timer
-> > >> @@ -232,14 +233,23 @@ int timerobj_start(struct timerobj *tmobj,
-> > >>          */
-> > >>         write_lock_nocancel(&svlock);
-> > >>
-> > >> -       if (__RT(timer_settime(tmobj->timer, TIMER_ABSTIME, it,
-> NULL)))
-> > >> -               return __bt(-errno);
-> > >> +       if (pvholder_linked(&tmobj->next))
-> > >> +               pvlist_remove_init(&tmobj->next);
-> > >> +
-> > >> +       tmobj->handler = handler;
-> > >> +       tmobj->itspec = *it;
-> > >> +
-> > >> +       if (__RT(timer_settime(tmobj->timer, TIMER_ABSTIME, it,
-> NULL))) {
-> > >> +               ret = __bt(-errno);
-> > >> +               goto fail;
-> > >> +       }
-> > >>
-> > >>         timerobj_enqueue(tmobj);
-> > >> +fail:
-> > >>         write_unlock(&svlock);
-> > >>         timerobj_unlock(tmobj);
-> > >>
-> > >> -       return 0;
-> > >> +       return ret;
-> > >>  }
-> > >>
-> > >>  int timerobj_stop(struct timerobj *tmobj) /* lock held, dropped */
-> > >> @@ -251,10 +261,9 @@ int timerobj_stop(struct timerobj *tmobj) /*
-> lock held, dropped */
-> > >>         if (pvholder_linked(&tmobj->next))
-> > >>                 pvlist_remove_init(&tmobj->next);
-> > >>
-> > >> -       write_unlock(&svlock);
-> > >> -
-> > >>         __RT(timer_settime(tmobj->timer, 0, &itimer_stop, NULL));
-> > >>         tmobj->handler = NULL;
-> > >> +       write_unlock(&svlock);
-> > >>         timerobj_unlock(tmobj);
-> > >>
-> > >>         return 0;
-> > >> --
-> > >
-> > > Philippe,
-> > >
-> > > we tested with the patch you proposed and the problem seem to be
-> resolved.
-> > > I think this is a good improvement.
-> > >
-> > > Best regards,
-> > > Ronny
-> > >
-> > >> Philippe.
-> >
-> > Ok, thanks for testing. Now pushing a patch referring to your original
-> > post with the preliminary fix.
->
->
-> Hello
->
-> In the same context we have hit another issue.
-> It looks like there is a problem when a timer is deleted/stopped from
-> within
-> the handler callback, the mechanism to traverse the list does not behave
-> correctly anymore.
->
-> pvlist_for_each_entry_safe(tmobj, tmp, &svtimers, next) {
->   value = tmobj->itspec.it_value;
->
-> In the above code, "tmp" is used to reference the next entry to be
-> processed
-> in the next iteration of the loop. When in the callback, this next timer is
-> changed or deleted, the reference is not valid anymore.
->
-> I do not see immedialy a generic a solution for the pvlist.
-> For the timer-server specifically, we could always start from the first
-> element
-> since we will remove from the head and possibly reinsert again in the list.
->
+Thanks for your reply. Thank you for the information about Ipipe release.
+As initial work real-time is concerned for CPU, but GPU is in the roadmap.
 
-To work around the issue in the timer server we have adapter the code like
-below.
-Instead of the pvlist_for_each_entry_safe we use:
+Thanks and Regards,
+Irfan
 
-while (1) {
-    if (pvlist_empty(&svtimers) != 0) {
-        break;
-    }
-    tmobj = pvlist_first_entry(&svtimers, typeof(*tmobj), next);
+On Tue, Jan 12, 2021 at 4:40 PM Greg Gallagher <greg@embeddedgreg.com>
+wrote:
 
-This seems to solve our issue since there is no next pointer anymore
-which can become invalid.
-
-
-> Please comment.
+> HI,
 >
-> Best regards,
-> Ronny
+> On Tue, Jan 12, 2021 at 10:32 AM Mohamed Irfanulla Mohamed Abdulla via
+> Xenomai <xenomai@xenomai.org> wrote:
+>
+>> Hi,
+>>
+>> I would like to know if anyone has successfully installed Xenomai on
+>> Nvidia
+>> Jetson TX2. Thanks for your suggestions and confirmation if it is possible
+>> to install Xenomai on Jetson TX2?
+>>
+>
+> At the moment no.  There's two ways someone could do it, one would be to
+> port the ipipe to L4T or use the mainline kernel and port the ipipe to
+> support nvidia chips.  If the goal is to use the GPU with Xenomai, you'll
+> have to also make the GPU drivers run in the Xenomai domain which may be a
+> large task.  Ipipe on Linux 5.4 for ARM64 is almost ready for release, I'm
+> just working through a couple more issues, which would be a starting point
+> if you want to port the ipipe.
+>
+> Out of curiosity, is the GPU something that you'd like to use in the real
+> time domain?
+>
+>
+>
+>> Thanks and regards
+>> Irfan
+>>
+>
+> -Greg
 >
