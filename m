@@ -1,9 +1,16 @@
-From: hongzha1 <hongzhan.chen@intel.com>
-Subject: [PATCH 5/8] dovetail/kevents: dovetail: implement handle_ptrace_cont
-Date: Thu, 14 Jan 2021 20:16:35 -0500
-Message-Id: <20210115011639.15390-5-hongzhan.chen@intel.com>
-In-Reply-To: <20210115011639.15390-1-hongzhan.chen@intel.com>
-References: <20210115011639.15390-1-hongzhan.chen@intel.com>
+From: "Chen, Hongzhan" <hongzhan.chen@intel.com>
+Subject: RE: [PATCH 09/10] dovetail/clock: implement pipeline_timer_name to
+ get name of real device
+Date: Tue, 12 Jan 2021 01:35:50 +0000
+Message-ID: <MWHPR11MB1710D0CE4E5F4994BE9A8EB3F2AA0@MWHPR11MB1710.namprd11.prod.outlook.com>
+References: <20210111064318.6154-1-hongzhan.chen@intel.com>
+ <20210111064318.6154-9-hongzhan.chen@intel.com>
+ <5FFCF963.7000407@tj.kylinos.cn>+E6AB9DC21AB1EDCC
+In-Reply-To: <5FFCF963.7000407@tj.kylinos.cn>+E6AB9DC21AB1EDCC
+Content-Language: en-US
+MIME-Version: 1.0
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -12,112 +19,56 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
+To: chensong <chensong@tj.kylinos.cn>, "Xenomai@xenomai.org" <Xenomai@xenomai.org>
 
-Signed-off-by: hongzha1 <hongzhan.chen@intel.com>
-
-diff --git a/kernel/cobalt/dovetail/kevents.c b/kernel/cobalt/dovetail/kevents.c
-index b5dc50ea7..378017bea 100644
---- a/kernel/cobalt/dovetail/kevents.c
-+++ b/kernel/cobalt/dovetail/kevents.c
-@@ -473,7 +473,7 @@ int handle_ptrace_resume(struct task_struct *tracee)
- 	return KEVENT_PROPAGATE;
- }
- 
--static void handle_ptrace_cont(void)
-+static void handle_ptrace_cont(struct task_struct *next_task)
- {
- 	/*
- 	 * This is the place where the ptrace-related work which used
-@@ -482,7 +482,77 @@ static void handle_ptrace_cont(void)
- 	 * stopped state, which is what look for in
- 	 * handle_schedule_event().
- 	 */
--	TODO();
-+	struct task_struct *prev_task;
-+	struct xnthread *next;
-+	sigset_t pending;
-+	spl_t s;
-+
-+	cobalt_signal_yield();
-+
-+	prev_task = current;
-+	next = xnthread_from_task(next_task);
-+	if (next == NULL)
-+		return;
-+
-+	xnlock_get_irqsave(&nklock, s);
-+
-+	/*
-+	 * Track tasks leaving the ptraced state.  Check both SIGSTOP
-+	 * (NPTL) and SIGINT (LinuxThreads) to detect ptrace
-+	 * continuation.
-+	 */
-+	if (xnthread_test_state(next, XNSSTEP)) {
-+		if (signal_pending(next_task)) {
-+			/*
-+			 * Do not grab the sighand lock here: it's
-+			 * useless, and we already own the runqueue
-+			 * lock, so this would expose us to deadlock
-+			 * situations on SMP.
-+			 */
-+			sigorsets(&pending,
-+				  &next_task->pending.signal,
-+				  &next_task->signal->shared_pending.signal);
-+			if (sigismember(&pending, SIGSTOP) ||
-+			    sigismember(&pending, SIGINT))
-+				goto no_ptrace;
-+		}
-+
-+		/*
-+		 * Do not unregister before the thread migrated.
-+		 * unregister_debugged_thread will then be called by our
-+		 * resume_oob_task.
-+		 */
-+		if (!xnthread_test_info(next, XNCONTHI))
-+			unregister_debugged_thread(next);
-+
-+		xnthread_set_localinfo(next, XNHICCUP);
-+	}
-+
-+no_ptrace:
-+	xnlock_put_irqrestore(&nklock, s);
-+
-+	/*
-+	 * Do basic sanity checks on the incoming thread state.
-+	 * NOTE: we allow ptraced threads to run shortly in order to
-+	 * properly recover from a stopped state.
-+	 */
-+	if (!XENO_WARN(COBALT, !xnthread_test_state(next, XNRELAX),
-+		       "hardened thread %s[%d] running in Linux domain?! "
-+		       "(status=0x%x, sig=%d, prev=%s[%d])",
-+		       next->name, task_pid_nr(next_task),
-+		       xnthread_get_state(next),
-+		       signal_pending(next_task),
-+		       prev_task->comm, task_pid_nr(prev_task)))
-+		XENO_WARN(COBALT,
-+			  !(next_task->ptrace & PT_PTRACED) &&
-+			   !xnthread_test_state(next, XNDORMANT)
-+			  && xnthread_test_state(next, XNPEND),
-+			  "blocked thread %s[%d] rescheduled?! "
-+			  "(status=0x%x, sig=%d, prev=%s[%d])",
-+			  next->name, task_pid_nr(next_task),
-+			  xnthread_get_state(next),
-+			  signal_pending(next_task), prev_task->comm,
-+			  task_pid_nr(prev_task));
- }
- 
- void handle_inband_event(enum inband_event_type event, void *data)
-@@ -505,7 +575,7 @@ void handle_inband_event(enum inband_event_type event, void *data)
- 		handle_ptrace_resume(data);
- 		break;
- 	case INBAND_TASK_PTCONT:
--		handle_ptrace_cont();
-+		handle_ptrace_cont(data);
- 		break;
- 	case INBAND_TASK_PTSTOP:
- 		break;
--- 
-2.17.1
-
-
+Pg0KPg0KPi0tLS0tT3JpZ2luYWwgTWVzc2FnZS0tLS0tDQo+RnJvbTogY2hlbnNvbmcgPGNoZW5z
+b25nQHRqLmt5bGlub3MuY24+DQo+U2VudDogVHVlc2RheSwgSmFudWFyeSAxMiwgMjAyMSA5OjIx
+IEFNDQo+VG86IENoZW4sIEhvbmd6aGFuIDxob25nemhhbi5jaGVuQGludGVsLmNvbT47IFhlbm9t
+YWlAeGVub21haS5vcmcNCj5TdWJqZWN0OiBSZTogW1BBVENIIDA5LzEwXSBkb3ZldGFpbC9jbG9j
+azogaW1wbGVtZW50IHBpcGVsaW5lX3RpbWVyX25hbWUgdG8gZ2V0IG5hbWUgb2YgcmVhbCBkZXZp
+Y2UNCj4NCj4NCj4NCj5PbiAyMDIxPzAxPzExPyAxNDo0MywgaG9uZ3poYTEgdmlhIFhlbm9tYWkg
+d3JvdGU6DQo+PiBTaWduZWQtb2ZmLWJ5OiBob25nemhhMSA8aG9uZ3poYW4uY2hlbkBpbnRlbC5j
+b20+DQo+PiAtLS0NCj4+ICAgaW5jbHVkZS9jb2JhbHQva2VybmVsL2RvdmV0YWlsL3BpcGVsaW5l
+L2Nsb2NrLmggfCA1ICsrLS0tDQo+PiAgIGtlcm5lbC9jb2JhbHQvZG92ZXRhaWwvdGljay5jICAg
+ICAgICAgICAgICAgICAgIHwgOCArKysrKysrKw0KPj4gICAyIGZpbGVzIGNoYW5nZWQsIDEwIGlu
+c2VydGlvbnMoKyksIDMgZGVsZXRpb25zKC0pDQo+Pg0KPj4gZGlmZiAtLWdpdCBhL2luY2x1ZGUv
+Y29iYWx0L2tlcm5lbC9kb3ZldGFpbC9waXBlbGluZS9jbG9jay5oIGIvaW5jbHVkZS9jb2JhbHQv
+a2VybmVsL2RvdmV0YWlsL3BpcGVsaW5lL2Nsb2NrLmgNCj4+IGluZGV4IGNlOWE1Yzg2Ny4uNzcx
+MTA0YWI0IDEwMDY0NA0KPj4gLS0tIGEvaW5jbHVkZS9jb2JhbHQva2VybmVsL2RvdmV0YWlsL3Bp
+cGVsaW5lL2Nsb2NrLmgNCj4+ICsrKyBiL2luY2x1ZGUvY29iYWx0L2tlcm5lbC9kb3ZldGFpbC9w
+aXBlbGluZS9jbG9jay5oDQo+PiBAQCAtMTIsNiArMTIsNyBAQA0KPj4gICBzdHJ1Y3QgdGltZXNw
+ZWM2NDsNCj4+DQo+PiAgIGV4dGVybiBpbmxpbmUgdm9pZCB4bnByb3h5X3RpbWVyX3NldCh1bnNp
+Z25lZCBsb25nIGRlbHRhKTsNCj4+ICtpbmxpbmUgY29uc3QgY2hhciAqeG5fZ2V0X3RpbWVyX25h
+bWUodm9pZCk7DQo+Pg0KPj4gICBzdGF0aWMgaW5saW5lIHU2NCBwaXBlbGluZV9yZWFkX2N5Y2xl
+X2NvdW50ZXIodm9pZCkNCj4+ICAgew0KPj4gQEAgLTM3LDkgKzM4LDcgQEAgc3RhdGljIGlubGlu
+ZSBjb25zdCBjaGFyICpwaXBlbGluZV90aW1lcl9uYW1lKHZvaWQpDQo+PiAgICAgICAgICAgKiBS
+ZXR1cm4gdGhlIG5hbWUgb2YgdGhlIGN1cnJlbnQgY2xvY2sgZXZlbnQgY2hpcCwgd2hpY2ggaXMN
+Cj4+ICAgICAgICAgICAqIHRoZSByZWFsIGRldmljZSBjb250cm9sbGVkIGJ5IHRoZSBwcm94eSB0
+aWNrIGRldmljZS4NCj4+ICAgICAgICAgICAqLw0KPj4gLSAgICAgICAgVE9ETygpOw0KPj4gLQ0K
+Pj4gLSAgICAgICAgcmV0dXJuICI/IjsNCj4+ICsgICAgICAgcmV0dXJuIHhuX2dldF90aW1lcl9u
+YW1lKCk7DQo+PiAgIH0NCj4+DQo+DQo+UEFUQ0ggMDIvMTAsIFBBVENIIDA4LzEwIGFuZCB0aGlz
+IG9uZSwgYWxsIG9mIHRoZW0gaGF2ZSB0aGUgY2hhbmdlcyBmb3INCj5waXBlbGluZV9yZWFkX2N5
+Y2xlX2NvdW50ZXIgaW4NCj5pbmNsdWRlL2NvYmFsdC9rZXJuZWwvZG92ZXRhaWwvcGlwZWxpbmUv
+Y2xvY2suaCwgYW5kIHRoZXkgbG9vaw0KPmRpZmZlcmVudCwgaG93IHNvPyBvciB0aGV5IGFyZSBp
+bmNyZW1lbnRhbCBpbXBsZW1lbnRhdGlvbixidXQgUEFUQ0gNCj4wMi8xMCByZXR1cm5zIGt0aW1l
+X2dldF9yYXdfZmFzdF9ucygpIGFuZCBQQVRDSCAwOS8xMCByZXR1cm5zDQo+eG5fZ2V0X3RpbWVy
+X25hbWUoKTsuDQo+DQoNClBhdGNoIDAyLzEwIHJlYWxseSBtb2RpZnkgcGlwZWxpbmVfcmVhZF9j
+eWNsZV9jb3VudGUgYnV0IDA4LzEwIGFjdHVhbGx5IG1vZGlmeQ0KcGlwZWxpbmVfc2V0X3RpbWVy
+X3Nob3QgYW5kIHRoaXMgb25lIG1vZGlmeSBwaXBlbGluZV90aW1lcl9uYW1lLiBUaGUgcGF0Y2gg
+Zm9ybWF0DQpjcmVhdGVkIGJ5IGdpdCBzZW5kLWVtYWlsIGlzIHJlYWxseSBub3QgZnJpZW5kbHkg
+dG8gcmVhZCwgSSBhbHNvDQptYWRlIHN1Y2ggbWlzdGFrZSBiZWZvcmUuDQoNClJlZ2FyZHMNCg0K
+SG9uZ3poYW4gQ2hlbg0KPj4gICBzdGF0aWMgaW5saW5lIGNvbnN0IGNoYXIgKnBpcGVsaW5lX2Ns
+b2NrX25hbWUodm9pZCkNCj4+IGRpZmYgLS1naXQgYS9rZXJuZWwvY29iYWx0L2RvdmV0YWlsL3Rp
+Y2suYyBiL2tlcm5lbC9jb2JhbHQvZG92ZXRhaWwvdGljay5jDQo+PiBpbmRleCA1ODY2MmU5NGUu
+LmU0MGVjMDZjYiAxMDA2NDQNCj4+IC0tLSBhL2tlcm5lbC9jb2JhbHQvZG92ZXRhaWwvdGljay5j
+DQo+PiArKysgYi9rZXJuZWwvY29iYWx0L2RvdmV0YWlsL3RpY2suYw0KPj4gQEAgLTE2LDYgKzE2
+LDE0IEBAIGV4dGVybiBzdHJ1Y3QgeG5pbnRyIG5rdGltZXI7DQo+Pg0KPj4gICBzdGF0aWMgREVG
+SU5FX1BFUl9DUFUoc3RydWN0IGNsb2NrX3Byb3h5X2RldmljZSAqLCBwcm94eV9kZXZpY2UpOw0K
+Pj4NCj4+ICtpbmxpbmUgY29uc3QgY2hhciAqeG5fZ2V0X3RpbWVyX25hbWUodm9pZCkNCj4+ICt7
+DQo+PiArICAgICAgIHN0cnVjdCBjbG9ja19wcm94eV9kZXZpY2UgKmRldiA9IF9fdGhpc19jcHVf
+cmVhZChwcm94eV9kZXZpY2UpOw0KPj4gKyAgICAgICBzdHJ1Y3QgY2xvY2tfZXZlbnRfZGV2aWNl
+ICpyZWFsX2RldiA9IGRldi0+cmVhbF9kZXZpY2U7DQo+PiArDQo+PiArICAgICAgIHJldHVybiBy
+ZWFsX2Rldi0+bmFtZTsNCj4+ICt9DQo+PiArDQo+PiAgIGlubGluZSB2b2lkIHhucHJveHlfdGlt
+ZXJfc2V0KHVuc2lnbmVkIGxvbmcgZGVsdGEpDQo+PiAgIHsNCj4+ICAgICAgICAgIHN0cnVjdCBj
+bG9ja19wcm94eV9kZXZpY2UgKmRldiA9IF9fdGhpc19jcHVfcmVhZChwcm94eV9kZXZpY2UpOw0K
+Pj4NCg==
