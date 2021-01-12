@@ -1,13 +1,13 @@
+References: <20210111064318.6154-1-hongzhan.chen@intel.com>
+ <20210111064318.6154-6-hongzhan.chen@intel.com>
+From: Philippe Gerum <rpm@xenomai.org>
+Subject: Re: [PATCH 06/10] dovetail/pipeline: implement oob irq request and
+ free and post for both TIMER_OOB_IPI and RESCHEDULE_OOB_IPI
+In-reply-to: <20210111064318.6154-6-hongzhan.chen@intel.com>
+Date: Tue, 12 Jan 2021 17:39:09 +0100
+Message-ID: <87im82m7o2.fsf@xenomai.org>
 MIME-Version: 1.0
-References: <20210127054348.2128285-1-greg@embeddedgreg.com>
- <e577f54b-43c8-0291-ef3a-e48b77d2ebdf@siemens.com>
- <4a14a81e-207e-76a4-cfa4-c2b94b0fb3d1@siemens.com>
-In-Reply-To: <4a14a81e-207e-76a4-cfa4-c2b94b0fb3d1@siemens.com>
-From: Greg Gallagher <greg@embeddedgreg.com>
-Date: Wed, 27 Jan 2021 09:26:07 -0500
-Message-ID: <CALLqZ8SshX0=ZJgdUjj9a2XBVsFfz6C5MXz-ysig8Tah3AD0+Q@mail.gmail.com>
-Subject: Re: [PATCH 1/2] kernel: cobalt: Fix up elf_hwcap
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,54 +16,129 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jan Kiszka <jan.kiszka@siemens.com>
-Cc: "Xenomai@xenomai.org" <xenomai@xenomai.org>
+To: hongzha1 <hongzhan.chen@intel.com>
+Cc: xenomai@xenomai.org
 
-On Wed, Jan 27, 2021 at 1:15 AM Jan Kiszka <jan.kiszka@siemens.com> wrote:
 
-> On 27.01.21 07:13, Jan Kiszka via Xenomai wrote:
-> > On 27.01.21 06:43, Greg Gallagher via Xenomai wrote:
-> >> Update elf_hwcap to ELF_HWCAP, this will work for newer 5.4 kernels
-> >>
-> >
-> > I assume you mean "also work" - or does it break on certain older
-> > kernels? Just asking before consulting our CI. ;)
-> >
->
-> ...and the same pattern exists on ARM.
->
-> Jan
->
-> >> Signen-off-by: Greg Gallagher <greg@embeddedgreg.com>
-> >> ---
-> >>  kernel/cobalt/arch/arm64/include/asm/xenomai/fptest.h | 2 +-
-> >>  1 file changed, 1 insertion(+), 1 deletion(-)
-> >>
-> >> diff --git a/kernel/cobalt/arch/arm64/include/asm/xenomai/fptest.h
-> b/kernel/cobalt/arch/arm64/include/asm/xenomai/fptest.h
-> >> index b7e3f52f2..291c9e5f0 100644
-> >> --- a/kernel/cobalt/arch/arm64/include/asm/xenomai/fptest.h
-> >> +++ b/kernel/cobalt/arch/arm64/include/asm/xenomai/fptest.h
-> >> @@ -23,7 +23,7 @@
-> >>  #include <asm/xenomai/uapi/fptest.h>
-> >>  #include <asm/hwcap.h>
-> >>
-> >> -#define have_fp (elf_hwcap & HWCAP_FP)
-> >> +#define have_fp (ELF_HWCAP & HWCAP_FP)
-> >>
-> >>  static inline int fp_kernel_supported(void)
-> >>  {
-> >>
-> >
-> > Jan
-> >
->
-> --
-> Siemens AG, T RDA IOT
-> Corporate Competence Center Embedded Linux
->
+hongzha1 via Xenomai <xenomai@xenomai.org> writes:
 
-No problem, ACK.  I'll put a more meaningful commit message as well.  I
-thought I changed that before I sent the patch.
+> Signed-off-by: hongzha1 <hongzhan.chen@intel.com>
+> ---
+>  .../kernel/dovetail/pipeline/pipeline.h       | 44 ++++++++++++++-----
+>  1 file changed, 34 insertions(+), 10 deletions(-)
+>
+> diff --git a/include/cobalt/kernel/dovetail/pipeline/pipeline.h b/include/cobalt/kernel/dovetail/pipeline/pipeline.h
+> index 23c4a2c18..a345e1399 100644
+> --- a/include/cobalt/kernel/dovetail/pipeline/pipeline.h
+> +++ b/include/cobalt/kernel/dovetail/pipeline/pipeline.h
+> @@ -8,9 +8,12 @@
+>  #include <linux/irq_pipeline.h>
+>  #include <cobalt/kernel/assert.h>
+>  #include <asm/xenomai/features.h>
+> +#include <pipeline/machine.h>
+>  
+>  typedef unsigned long spl_t;
+>  
+> +extern void xnintr_core_clock_handler(void);
+> +
 
--Greg
+No need for mentioning the storage class in the declaration. We know
+this is extern by default, otherwise we would have mentioned
+"static". Will fix while merging.
+
+>  /*
+>   * We only keep the LSB when testing in SMP mode in order to strip off
+>   * the recursion marker (0x2) the nklock may store there.
+> @@ -30,18 +33,29 @@ typedef unsigned long spl_t;
+>  
+>  #ifdef CONFIG_SMP
+>  
+> +static irqreturn_t reschedule_interrupt_handler(int irq, void *dev_id)
+> +{
+> +
+> +	/* Will reschedule from irq_exit_pipeline. */
+> +
+> +	return IRQ_HANDLED;
+> +}
+> +
+> +
+>  static inline int pipeline_request_resched_ipi(void (*handler)(void))
+>  {
+>  	/* Trap the out-of-band rescheduling interrupt. */
+> -	TODO();
+> -
+> -	return 0;
+> +	return __request_percpu_irq(RESCHEDULE_OOB_IPI,
+> +			reschedule_interrupt_handler,
+> +			IRQF_OOB,
+> +			"Xenomai reschedule",
+> +			&cobalt_machine_cpudata);
+>  }
+>  
+>  static inline void pipeline_free_resched_ipi(void)
+>  {
+>  	/* Release the out-of-band rescheduling interrupt. */
+> -	TODO();
+> +	free_percpu_irq(RESCHEDULE_OOB_IPI, &cobalt_machine_cpudata);
+>  }
+>  
+>  static inline void pipeline_send_resched_ipi(const struct cpumask *dest)
+> @@ -50,21 +64,31 @@ static inline void pipeline_send_resched_ipi(const struct cpumask *dest)
+>  	 * Trigger the out-of-band rescheduling interrupt on remote
+>  	 * CPU(s).
+>  	 */
+> -	TODO();
+> +	irq_pipeline_send_remote(RESCHEDULE_OOB_IPI, dest);
+
+This call was recently renamed irq_send_oob_ipi() in an effort to
+clarify the interface. I'll fix this up while merging.
+
+>  }
+>  
+> +static irqreturn_t timer_ipi_interrupt_handler(int irq, void *dev_id)
+> +{
+> +	xnintr_core_clock_handler();
+> +
+> +	return IRQ_HANDLED;
+> +}
+> +
+> +
+>  static inline int pipeline_request_timer_ipi(void (*handler)(void))
+>  {
+>  	/* Trap the out-of-band timer interrupt. */
+> -	TODO();
+> -
+> -	return 0;
+> +	return __request_percpu_irq(TIMER_OOB_IPI,
+> +			timer_ipi_interrupt_handler,
+> +			IRQF_OOB, "Xenomai timer IPI",
+> +			&cobalt_machine_cpudata);
+>  }
+>  
+>  static inline void pipeline_free_timer_ipi(void)
+>  {
+>  	/* Release the out-of-band timer interrupt. */
+> -	TODO();
+> +	free_percpu_irq(TIMER_OOB_IPI,
+> +		&cobalt_machine_cpudata);
+
+Single line. Will fix.
+
+>  }
+>  
+>  static inline void pipeline_send_timer_ipi(const struct cpumask *dest)
+> @@ -72,7 +96,7 @@ static inline void pipeline_send_timer_ipi(const struct cpumask *dest)
+>  	/*
+>  	 * Trigger the out-of-band timer interrupt on remote CPU(s).
+>  	 */
+> -	TODO();
+> +	irq_pipeline_send_remote(TIMER_OOB_IPI, dest);
+>  }
+
+Ditto.
+
+Ack.
+
+-- 
+Philippe.
+
