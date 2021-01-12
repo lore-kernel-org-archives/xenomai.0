@@ -1,9 +1,11 @@
-From: Philippe  Gerum <rpm@xenomai.org>
-Subject: [PATCH 1/4] cobalt/kernel: pipeline: add abstract synthetic IRQ API
-Date: Sun, 17 Jan 2021 16:25:00 +0100
-Message-Id: <20210117152503.478765-1-rpm@xenomai.org>
+References: <CO1PR11MB5187C5150955BDD5EC647DD0EEAA0@CO1PR11MB5187.namprd11.prod.outlook.com>
+From: Philippe Gerum <rpm@xenomai.org>
+Subject: Re: remainder: Xenomai community call on tomorrow (Jan 13th)
+In-reply-to: <CO1PR11MB5187C5150955BDD5EC647DD0EEAA0@CO1PR11MB5187.namprd11.prod.outlook.com>
+Date: Tue, 12 Jan 2021 15:17:24 +0100
+Message-ID: <87turmme8b.fsf@xenomai.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -12,90 +14,30 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
+To: "Meng, Fino via Xenomai" <xenomai@xenomai.org>
 
-From: Philippe Gerum <rpm@xenomai.org>
 
-Add wrappers to create "synthetic IRQs" the I-pipe way (used to be
-called "virtual IRQs" there). Those interrupt channels can only be
-triggered by software, with per-CPU semantics. We use them to schedule
-handlers to be run on the in-band execution stage, meaning "secondary
-mode" in the Cobalt jargon.
+Hi,
 
-We don't provide for executing handlers on the out-of-band stage,
-because Cobalt does not need this.
+Meng, Fino via Xenomai <xenomai@xenomai.org> writes:
 
-Signed-off-by: Philippe Gerum <rpm@xenomai.org>
----
- include/cobalt/kernel/ipipe/pipeline/sirq.h | 58 +++++++++++++++++++++
- 1 file changed, 58 insertions(+)
- create mode 100644 include/cobalt/kernel/ipipe/pipeline/sirq.h
+> Hi all,
+>
+> As planned, tomorrow will have the second time of Xenomai community call, 
+> Topics may include but not limited to upstream/downstream project plan, status update, and technical discussion, etc.
+> It's an open online meeting that anyone can join and ask questions, 
+>
+> Time:  
+> Jan 13th (Wednesday)
+> 15:00 for Beijing
+> 8:00 for France, Germany, Italy
+> 23:00 (Jan 12th ) for Santa Clara
+>
 
-diff --git a/include/cobalt/kernel/ipipe/pipeline/sirq.h b/include/cobalt/kernel/ipipe/pipeline/sirq.h
-new file mode 100644
-index 000000000..7c39244f9
---- /dev/null
-+++ b/include/cobalt/kernel/ipipe/pipeline/sirq.h
-@@ -0,0 +1,58 @@
-+/*
-+ * SPDX-License-Identifier: GPL-2.0
-+ *
-+ * Copyright (C) 2020 Philippe Gerum  <rpm@xenomai.org>
-+ */
-+
-+#ifndef _COBALT_KERNEL_IPIPE_SIRQ_H
-+#define _COBALT_KERNEL_IPIPE_SIRQ_H
-+
-+#include <linux/ipipe.h>
-+#include <pipeline/machine.h>
-+
-+/*
-+ * Wrappers to create "synthetic IRQs" the I-pipe way (used to be
-+ * called "virtual IRQs" there). Those interrupt channels can only be
-+ * triggered by software; they have per-CPU semantics. We use them to
-+ * schedule handlers to be run on the in-band execution stage, meaning
-+ * "secondary mode" in the Cobalt jargon.
-+ */
-+
-+static inline
-+int pipeline_create_inband_sirq(irqreturn_t (*handler)(int irq, void *dev_id))
-+{
-+	int sirq = ipipe_alloc_virq(), ret;
-+
-+	if (sirq == 0)
-+		return -EAGAIN;
-+
-+	/*
-+	 * ipipe_irq_handler_t is close enough to the signature of a
-+	 * regular IRQ handler: use the latter in the generic code
-+	 * shared with Dovetail.  The extraneous return code will be
-+	 * ignored by the I-pipe core.
-+	 */
-+	ret = ipipe_request_irq(ipipe_root_domain, sirq,
-+				(ipipe_irq_handler_t)handler,
-+				NULL, NULL);
-+	if (ret) {
-+		ipipe_free_virq(sirq);
-+		return ret;
-+	}
-+
-+	return sirq;
-+}
-+
-+static inline
-+void pipeline_delete_inband_sirq(int sirq)
-+{
-+	ipipe_free_irq(ipipe_root_domain, sirq);
-+	ipipe_free_virq(sirq);
-+}
-+
-+static inline void pipeline_post_sirq(int sirq)
-+{
-+	ipipe_post_irq_root(sirq);
-+}
-+
-+#endif /* !_COBALT_KERNEL_IPIPE_SIRQ_H */
+FYI, I will have to leave the call at 8:45 CET.
+
+Thanks,
+
 -- 
-2.26.2
-
+Philippe.
 
