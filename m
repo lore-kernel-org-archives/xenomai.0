@@ -1,8 +1,12 @@
 MIME-Version: 1.0
-From: Sam Daniel <daniel.jacob.samuel@gmail.com>
-Date: Mon, 25 Jan 2021 12:20:02 -0800
-Message-ID: <CAPMj8MtS-vAssX+P8rywMUoFfs-DeCh_2f4sZts5Jk2Dk_rOEw@mail.gmail.com>
-Subject: Look up all IDDP/XDDP labels in the registry from userspace
+References: <CADx0-8BgdfneaX4U5EKxDzJ=5vdcQ347iL3W144Fo9gXLibfnA@mail.gmail.com>
+ <CALLqZ8T9aCD3-bBs0SW6W3jU7Fz+30-L=NdV7XjBtTFb1OZZ8Q@mail.gmail.com>
+ <CADx0-8BgLRhipr-Reg+tN-fhzTMES+NxFT-wDvzDT_XopEAEEQ@mail.gmail.com>
+In-Reply-To: <CADx0-8BgLRhipr-Reg+tN-fhzTMES+NxFT-wDvzDT_XopEAEEQ@mail.gmail.com>
+From: Greg Gallagher <greg@embeddedgreg.com>
+Date: Tue, 12 Jan 2021 11:20:24 -0500
+Message-ID: <CALLqZ8TR7zGUBjQPJVL8WtekM21d6Vzj-bcuEnLw2QnWtvhAxg@mail.gmail.com>
+Subject: Re: Xenomai on Jetson TX2
 Content-Type: text/plain; charset="UTF-8"
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
@@ -12,16 +16,59 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
+To: Mohamed Irfanulla Mohamed Abdulla <m.mohamedirfanulla@gmail.com>
+Cc: "Xenomai@xenomai.org" <xenomai@xenomai.org>
 
-Is it possible to look up from userspace code all of the IDDP/XDDP labels
-that exist in the registry without leaving the primary domain?
+On Tue, Jan 12, 2021 at 11:02 AM Mohamed Irfanulla Mohamed Abdulla <
+m.mohamedirfanulla@gmail.com> wrote:
 
-I have tried a few different ways of reading the contents of
-/proc/xenomai/registry/rtipc/iddp. The inotify API causes mode switches (it
-relies on select or poll), not to mention that inotify does not work well
-with virtual filesystems. And using the C++ filesystem library to read the
-contents of the directory also causes mode switches (filesystem
-interactions).
+> Hello Greg,
+>
+> Thanks for your reply. Thank you for the information about Ipipe release.
+> As initial work real-time is concerned for CPU, but GPU is in the roadmap.
+>
+> Thanks and Regards,
+> Irfan
+>
+> On Tue, Jan 12, 2021 at 4:40 PM Greg Gallagher <greg@embeddedgreg.com>
+> wrote:
+>
+>> HI,
+>>
+>> On Tue, Jan 12, 2021 at 10:32 AM Mohamed Irfanulla Mohamed Abdulla via
+>> Xenomai <xenomai@xenomai.org> wrote:
+>>
+>>> Hi,
+>>>
+>>> I would like to know if anyone has successfully installed Xenomai on
+>>> Nvidia
+>>> Jetson TX2. Thanks for your suggestions and confirmation if it is
+>>> possible
+>>> to install Xenomai on Jetson TX2?
+>>>
+>>
+>> At the moment no.  There's two ways someone could do it, one would be to
+>> port the ipipe to L4T or use the mainline kernel and port the ipipe to
+>> support nvidia chips.  If the goal is to use the GPU with Xenomai, you'll
+>> have to also make the GPU drivers run in the Xenomai domain which may be a
+>> large task.  Ipipe on Linux 5.4 for ARM64 is almost ready for release, I'm
+>> just working through a couple more issues, which would be a starting point
+>> if you want to port the ipipe.
+>>
+>> Out of curiosity, is the GPU something that you'd like to use in the real
+>> time domain?
+>>
+>>
+>>
+>>> Thanks and regards
+>>> Irfan
+>>>
+>>
+>> -Greg
+>>
+>
+Are you planning to use mainline or l4T? L4T would be harder to maintain as
+it adds another kernel to patch.  I'll ping the list once the 5.4 releases
+are ready.
 
-Is there a real-time API function that I can use to query these labels?
+-Greg
