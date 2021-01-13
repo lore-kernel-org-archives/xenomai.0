@@ -1,8 +1,10 @@
+Subject: Re: mmap64 causes secondary mode switch
+References: <CAPMj8MvB2JmUPcLO8EX5o7RfLxUFb9d-NWGyz5XpCTxuD6QTug@mail.gmail.com>
 From: Jan Kiszka <jan.kiszka@siemens.com>
-Subject: [PATCH] ci: Rename some variables
-Message-ID: <c5600b02-c8fd-374d-8892-96500dc0c7d3@siemens.com>
-Date: Fri, 5 Feb 2021 19:24:25 +0100
+Message-ID: <4f66d077-3c8f-d40a-d74c-ca5334eb2751@siemens.com>
+Date: Wed, 13 Jan 2021 09:03:36 +0100
 MIME-Version: 1.0
+In-Reply-To: <CAPMj8MvB2JmUPcLO8EX5o7RfLxUFb9d-NWGyz5XpCTxuD6QTug@mail.gmail.com>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -14,164 +16,47 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Xenomai <xenomai@xenomai.org>
+To: Sam Daniel <daniel.jacob.samuel@gmail.com>, xenomai@xenomai.org
 
-From: Jan Kiszka <jan.kiszka@siemens.com>
+On 13.01.21 08:52, Sam Daniel via Xenomai wrote:
+> Should a call to mmap64 cause a switch to secondary mode?
+> 
+> I am using Cobalt v3.1 on an aarch64 platform. I am cross-compiling Xenomai
+> via buildroot. Then I am cross-compiling a C++ application with CMake
+> against the Xenomai sysroot and wrapping it with the POSIX skin. I set up
+> debugging as recommended in the Finding Spurious Relaxes page. When run in
+> gdb, I get the following stack trace:
+> 
+> #0  0x0000007fbf26978c in mmap64 () from /lib/libc.so.6
+> #1  0x0000007fbf213094 in ?? () from /lib/libc.so.6
+> #2  0x0000007fbf213998 in ?? () from /lib/libc.so.6
+> #3  0x0000007fbf216504 in ?? () from /lib/libc.so.6
+> #4  0x0000007fbf2173e8 in malloc () from /lib/libc.so.6
+> #5  0x0000007fbf47f834 in operator new(unsigned long) () from
+> /lib/libstdc++.so.6
+> #6  0x0000000000408744 in zcm::ZCM::publish<fcm_dm::fcm_dm_telemetry_t>
+> (this=0x46c0f0, channel=..., msg=0x7fbe7f34a8)
+>     at /data/sam/mocha-death/tonkatime/src/zcm/zcm-cpp-impl.hpp:171
+> #7  0x000000000040819c in FcmDm::task (this=0x46aee0) at
+> /data/sam/mocha-death/tonkatime/apps/zcm_demo/fcm_dm.cpp:57
+> #8  0x0000000000415c28 in PeriodicTask::task_caller (_task=0x46aee0) at
+> /data/sam/mocha-death/tonkatime/src/common/periodic_task.cpp:27
+> #9  0x0000007fbf5c8e68 in ?? () from /usr/xenomai/lib/libcobalt.so.2
+> #10 0x0000007fbf57b6cc in start_thread () from /lib/libpthread.so.0
+> #11 0x0000007fbf26cf7c in ?? () from /lib/libc.so.6
+> 
+> This seems like the mode switch happens on the mmap64 call. From everything
+> I can tell, mmap64 should be a wrapped and supported system call, thus not
+> causing mode switches.
 
-In preparation of adding dovetail as pipeline flavor.
+Nope, this assumption is not correct: mmap64 leads to changes to the
+paging of the calling process, and that is not covered (and cannot be
+covered) by the Xenomai core. You will have to do any mappings upfront
+to entering your time-critical loop.
 
-Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
----
- .gitlab-ci.yml | 60 +++++++++++++++++++++++++-------------------------
- 1 file changed, 30 insertions(+), 30 deletions(-)
+Jan
 
-diff --git a/.gitlab-ci.yml b/.gitlab-ci.yml
-index c6387f6d49..83a8247c72 100644
---- a/.gitlab-ci.yml
-+++ b/.gitlab-ci.yml
-@@ -1,7 +1,7 @@
- #
- # Xenomai Real-Time System
- #
--# Copyright (c) Siemens AG, 2020
-+# Copyright (c) Siemens AG, 2020-2021
- #
- # Authors:
- #  Quirin Gylstorff <quirin.gylstorff@siemens.com>
-@@ -35,9 +35,9 @@ variables:
-     - update-alternatives --install /usr/bin/aarch64-linux-gnu-gcc aarch64-linux-gnu-gcc /usr/bin/aarch64-linux-gnu-gcc-8 800
-     - update-alternatives --install /usr/bin/arm-linux-gnueabihf-gcc arm-linux-gnueabihf-gcc /usr/bin/arm-linux-gnueabihf-gcc-8 800
-     - update-alternatives --install /usr/bin/powerpc-linux-gnu-gcc powerpc-linux-gnu-gcc /usr/bin/powerpc-linux-gnu-gcc-8 800
--    - REV=$(git ls-remote --tags --head --refs ${IPIPE_KERNEL} | sed -e "s|.*[[:space:]]refs/.*/||" | grep "${IPIPE_REV}" | sort -r -n -t - -k 5 -k 6 | head -1)
--    - test -n "${REV}" || REV="${IPIPE_REV}"
--    - git clone --depth 1 --branch ${REV} ${IPIPE_KERNEL} ${KDIR}
-+    - REV=$(git ls-remote --tags --head --refs ${PIPELINE_KERNEL} | sed -e "s|.*[[:space:]]refs/.*/||" | grep "${PIPELINE_REV}" | sort -r -n -t - -k 5 -k 6 | head -1)
-+    - test -n "${REV}" || REV="${PIPELINE_REV}"
-+    - git clone --depth 1 --branch ${REV} ${PIPELINE_KERNEL} ${KDIR}
-     - case "${ARCH}" in
-       "arm64")
-       export CROSS_COMPILE=aarch64-linux-gnu-
-@@ -169,94 +169,94 @@ arm-5.4-release:
-   extends: .build
-   variables:
-     ARCH: arm
--    IPIPE_REV: ipipe-core-5.4..*-arm-.*
--    IPIPE_KERNEL: ${IPIPE_MIRROR_URL}/ipipe-arm.git
-+    PIPELINE_REV: ipipe-core-5.4..*-arm-.*
-+    PIPELINE_KERNEL: ${IPIPE_MIRROR_URL}/ipipe-arm.git
-     KERNEL_DEFCONFIG: multi_v7_defconfig
- 
- arm-4.19-release:
-   extends: .build
-   variables:
-     ARCH: arm
--    IPIPE_REV: ipipe-core-4.19..*-arm-.*
--    IPIPE_KERNEL: ${IPIPE_MIRROR_URL}/ipipe-arm.git
-+    PIPELINE_REV: ipipe-core-4.19..*-arm-.*
-+    PIPELINE_KERNEL: ${IPIPE_MIRROR_URL}/ipipe-arm.git
-     KERNEL_DEFCONFIG: multi_v7_defconfig
- 
- arm-4.4-cip-head:
-   extends: .build
-   variables:
-     ARCH: arm
--    IPIPE_REV: ipipe-4.4.y-cip
--    IPIPE_KERNEL: ${IPIPE_MIRROR_URL}/ipipe.git
-+    PIPELINE_REV: ipipe-4.4.y-cip
-+    PIPELINE_KERNEL: ${IPIPE_MIRROR_URL}/ipipe.git
-     KERNEL_DEFCONFIG: multi_v7_defconfig
- 
- arm64-5.4-release:
-   extends: .build
-   variables:
-     ARCH: arm64
--    IPIPE_REV: ipipe-core-5.4..*-arm64-.*
--    IPIPE_KERNEL: ${IPIPE_MIRROR_URL}/ipipe-arm64.git
-+    PIPELINE_REV: ipipe-core-5.4..*-arm64-.*
-+    PIPELINE_KERNEL: ${IPIPE_MIRROR_URL}/ipipe-arm64.git
-     KERNEL_DEFCONFIG: defconfig
- 
- arm64-4.19-release:
-   extends: .build
-   variables:
-     ARCH: arm64
--    IPIPE_REV: ipipe-core-4.19..*-arm64-.*
--    IPIPE_KERNEL: ${IPIPE_MIRROR_URL}/ipipe-arm64.git
-+    PIPELINE_REV: ipipe-core-4.19..*-arm64-.*
-+    PIPELINE_KERNEL: ${IPIPE_MIRROR_URL}/ipipe-arm64.git
-     KERNEL_DEFCONFIG: defconfig
- 
- x86-5.4-head:
-   extends: .build
-   variables:
-     ARCH: x86
--    IPIPE_REV: ipipe-x86-5.4.y
--    IPIPE_KERNEL: ${IPIPE_MIRROR_URL}/ipipe-x86.git
-+    PIPELINE_REV: ipipe-x86-5.4.y
-+    PIPELINE_KERNEL: ${IPIPE_MIRROR_URL}/ipipe-x86.git
-     KERNEL_DEFCONFIG: x86_64_defconfig
- 
- x86-4.19-cip-head:
-   extends: .build
-   variables:
-     ARCH: x86
--    IPIPE_REV: ipipe-x86-4.19.y-cip
--    IPIPE_KERNEL: ${IPIPE_MIRROR_URL}/ipipe-x86.git
-+    PIPELINE_REV: ipipe-x86-4.19.y-cip
-+    PIPELINE_KERNEL: ${IPIPE_MIRROR_URL}/ipipe-x86.git
-     KERNEL_DEFCONFIG: x86_64_defconfig
- 
- x86-4.19-cip-release:
-   extends: .build
-   variables:
-     ARCH: x86
--    IPIPE_REV: ipipe-core-4.19..*cip.*-x86-.*
--    IPIPE_KERNEL: ${IPIPE_MIRROR_URL}/ipipe-x86.git
-+    PIPELINE_REV: ipipe-core-4.19..*cip.*-x86-.*
-+    PIPELINE_KERNEL: ${IPIPE_MIRROR_URL}/ipipe-x86.git
-     KERNEL_DEFCONFIG: x86_64_defconfig
- 
- x86-4.14-release:
-   extends: .build
-   variables:
-     ARCH: x86
--    IPIPE_REV: ipipe-core-4.14..*-x86-.*
--    IPIPE_KERNEL: ${IPIPE_MIRROR_URL}/ipipe-x86.git
-+    PIPELINE_REV: ipipe-core-4.14..*-x86-.*
-+    PIPELINE_KERNEL: ${IPIPE_MIRROR_URL}/ipipe-x86.git
-     KERNEL_DEFCONFIG: x86_64_defconfig
- 
- x86-4.4-cip-head:
-   extends: .build
-   variables:
-     ARCH: x86
--    IPIPE_REV: ipipe-4.4.y-cip
--    IPIPE_KERNEL: ${IPIPE_MIRROR_URL}/ipipe.git
-+    PIPELINE_REV: ipipe-4.4.y-cip
-+    PIPELINE_KERNEL: ${IPIPE_MIRROR_URL}/ipipe.git
-     KERNEL_DEFCONFIG: x86_64_defconfig
- 
- x86-4.4-cip-release:
-   extends: .build
-   variables:
--     ARCH: x86
--     IPIPE_REV: ipipe-core-4.4..*-cip.*-x86-.*
--     IPIPE_KERNEL: ${IPIPE_MIRROR_URL}/ipipe.git
--     KERNEL_DEFCONFIG: x86_64_defconfig
-+    ARCH: x86
-+    PIPELINE_REV: ipipe-core-4.4..*-cip.*-x86-.*
-+    PIPELINE_KERNEL: ${IPIPE_MIRROR_URL}/ipipe.git
-+    KERNEL_DEFCONFIG: x86_64_defconfig
- 
- powerpc-4.19-release:
-   extends: .build
-   variables:
-     ARCH: powerpc
--    IPIPE_REV: ipipe-core-4.19..*-ppc32-.*
--    IPIPE_KERNEL: ${IPIPE_MIRROR_URL}/ipipe-ppc32.git
-+    PIPELINE_REV: ipipe-core-4.19..*-ppc32-.*
-+    PIPELINE_KERNEL: ${IPIPE_MIRROR_URL}/ipipe-ppc32.git
-     KERNEL_DEFCONFIG: mpc5200_defconfig
 -- 
-2.26.2
+Siemens AG, T RDA IOT
+Corporate Competence Center Embedded Linux
 
