@@ -1,14 +1,11 @@
-Subject: Re: [PATCH v2 2/2] kernel: cobalt: Fix up elf_hwcap
-References: <20210203070159.3610435-1-greg@embeddedgreg.com>
- <20210203070159.3610435-2-greg@embeddedgreg.com>
-From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <5947a2e0-fab4-d098-cca5-3d3305fec6f3@siemens.com>
-Date: Wed, 3 Feb 2021 10:52:41 +0100
-MIME-Version: 1.0
-In-Reply-To: <20210203070159.3610435-2-greg@embeddedgreg.com>
-Content-Type: text/plain; charset=utf-8
+From: "Meng, Fino" <fino.meng@intel.com>
+Subject: just start: remainder: Xenomai community call on tomorrow (Jan 13th)
+Date: Wed, 13 Jan 2021 07:04:08 +0000
+Message-ID: <CO1PR11MB5187EB584120D7F7F1EABC02EEA90@CO1PR11MB5187.namprd11.prod.outlook.com>
 Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+MIME-Version: 1.0
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,51 +14,32 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Greg Gallagher <greg@embeddedgreg.com>, xenomai@xenomai.org
+To: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On 03.02.21 08:01, Greg Gallagher via Xenomai wrote:
-> Update to use ELF_HWCAP instead of elf_hwcap directly.
-> 
-> Signen-off-by: Greg Gallagher <greg@embeddedgreg.com>
-> ---
->  kernel/cobalt/arch/arm/include/asm/xenomai/fptest.h   | 2 +-
->  kernel/cobalt/arch/arm64/include/asm/xenomai/fptest.h | 2 +-
->  2 files changed, 2 insertions(+), 2 deletions(-)
-> 
-> diff --git a/kernel/cobalt/arch/arm/include/asm/xenomai/fptest.h b/kernel/cobalt/arch/arm/include/asm/xenomai/fptest.h
-> index a76f1e6bb..b8c627bed 100644
-> --- a/kernel/cobalt/arch/arm/include/asm/xenomai/fptest.h
-> +++ b/kernel/cobalt/arch/arm/include/asm/xenomai/fptest.h
-> @@ -23,7 +23,7 @@
->  #include <asm/hwcap.h>
->  
->  #ifdef CONFIG_VFP
-> -#define have_vfp (elf_hwcap & HWCAP_VFP)
-> +#define have_vfp (ELF_HWCAP & HWCAP_VFP)
->  #else /* !CONFIG_VFP */
->  #define have_vfp 0
->  #endif /* !CONFIG_VFP */
-> diff --git a/kernel/cobalt/arch/arm64/include/asm/xenomai/fptest.h b/kernel/cobalt/arch/arm64/include/asm/xenomai/fptest.h
-> index b7e3f52f2..291c9e5f0 100644
-> --- a/kernel/cobalt/arch/arm64/include/asm/xenomai/fptest.h
-> +++ b/kernel/cobalt/arch/arm64/include/asm/xenomai/fptest.h
-> @@ -23,7 +23,7 @@
->  #include <asm/xenomai/uapi/fptest.h>
->  #include <asm/hwcap.h>
->  
-> -#define have_fp (elf_hwcap & HWCAP_FP)
-> +#define have_fp (ELF_HWCAP & HWCAP_FP)
->  
->  static inline int fp_kernel_supported(void)
->  {
-> 
-
-Rebased and applied (and "signed-off" typo fixed).
-
-Thanks,
-Jan
-
--- 
-Siemens AG, T RDA IOT
-Corporate Competence Center Embedded Linux
+VGhlIG1lZXRpbmcganVzdCBzdGFydGVkLCB3ZWxjb21lIHRvIGpvaW4uIA0KDQpCUiAvIEZpbm8g
+KOWtn+elpeWkqykNCkludGVsIOKAkyBJT1RHIERldmVsb3BlciBFbmFibGluZw0KDQo+LS0tLS1P
+cmlnaW5hbCBNZXNzYWdlLS0tLS0NCj5Gcm9tOiBYZW5vbWFpIDx4ZW5vbWFpLWJvdW5jZXNAeGVu
+b21haS5vcmc+IE9uIEJlaGFsZiBPZiBNZW5nLCBGaW5vIHZpYSBYZW5vbWFpDQo+U2VudDogVHVl
+c2RheSwgSmFudWFyeSAxMiwgMjAyMSA5OjUyIFBNDQo+VG86IHhlbm9tYWlAeGVub21haS5vcmcN
+Cj5TdWJqZWN0OiByZW1haW5kZXI6IFhlbm9tYWkgY29tbXVuaXR5IGNhbGwgb24gdG9tb3Jyb3cg
+KEphbiAxM3RoKQ0KPg0KPkhpIGFsbCwNCj4NCj5BcyBwbGFubmVkLCB0b21vcnJvdyB3aWxsIGhh
+dmUgdGhlIHNlY29uZCB0aW1lIG9mIFhlbm9tYWkgY29tbXVuaXR5IGNhbGwsDQo+VG9waWNzIG1h
+eSBpbmNsdWRlIGJ1dCBub3QgbGltaXRlZCB0byB1cHN0cmVhbS9kb3duc3RyZWFtIHByb2plY3Qg
+cGxhbiwgc3RhdHVzIHVwZGF0ZSwgYW5kIHRlY2huaWNhbCBkaXNjdXNzaW9uLCBldGMuDQo+SXQn
+cyBhbiBvcGVuIG9ubGluZSBtZWV0aW5nIHRoYXQgYW55b25lIGNhbiBqb2luIGFuZCBhc2sgcXVl
+c3Rpb25zLA0KPg0KPlRpbWU6DQo+SmFuIDEzdGggKFdlZG5lc2RheSkNCj4xNTowMCBmb3IgQmVp
+amluZw0KPjg6MDAgZm9yIEZyYW5jZSwgR2VybWFueSwgSXRhbHkNCj4yMzowMCAoSmFuIDEydGgg
+KSBmb3IgU2FudGEgQ2xhcmENCj4NCj5QbHMgZG93bmxvYWQgV2ViZXggbWVldGluZyBzb2Z0d2Fy
+ZSBvciB1c2UgdGhlIHdlYnBhZ2UgdmVyc2lvbjoNCj4NCj5NZWV0aW5nIG51bWJlciAoYWNjZXNz
+IGNvZGUpOiAxMzAgMDk5IDc0MTYNCj5NZWV0aW5nIHBhc3N3b3JkOiBKUXBFYzdVWUAzOA0KPg0K
+Pg0KPlRhcCB0byBqb2luIGZyb20gYSBtb2JpbGUgZGV2aWNlIChhdHRlbmRlZXMgb25seSkNCj4r
+MS0yMTAtNzk1LTExMTAsLDEzMDA5OTc0MTYjIyBVUyBUb2xsDQo+KzEtODY2LTY2Mi05OTg3LCwx
+MzAwOTk3NDE2IyMgVVMgVG9sbCBGcmVlDQo+DQo+Sm9pbiBieSBwaG9uZQ0KPisxLTIxMC03OTUt
+MTExMCBVUyBUb2xsDQo+KzEtODY2LTY2Mi05OTg3IFVTIFRvbGwgRnJlZQ0KPkdsb2JhbCBjYWxs
+LWluIG51bWJlcnMgIHwgIFRvbGwtZnJlZSBjYWxsaW5nIHJlc3RyaWN0aW9ucw0KPg0KPkpvaW4g
+ZnJvbSBhIHZpZGVvIHN5c3RlbSBvciBhcHBsaWNhdGlvbg0KPkRpYWwgMTMwMDk5NzQxNkBpbnRl
+bC53ZWJleC5jb20NCj5Zb3UgY2FuIGFsc28gZGlhbCAxNzMuMjQzLjIuNjggYW5kIGVudGVyIHlv
+dXIgbWVldGluZyBudW1iZXIuDQo+DQo+TmVlZCBoZWxwPyBHbyB0byBodHRwOi8vaGVscC53ZWJl
+eC5jb20NCj4NCj4NCj5CUiAvIEZpbm8gKOWtn+elpeWkqykNCj5JbnRlbCDigJMgSU9URyBEZXZl
+bG9wZXIgRW5hYmxpbmcNCg0K
 
