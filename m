@@ -1,13 +1,12 @@
-Subject: Re: Xenomai scheduler
-References: <CAFZ-hKhx9FFTP1wdb2OK9oRtML8Aot2kNrkfzw74JPOfam_OKg@mail.gmail.com>
-From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <43ef01e1-37b0-f65c-785c-e240017f4974@siemens.com>
-Date: Mon, 1 Feb 2021 09:11:31 +0100
-MIME-Version: 1.0
-In-Reply-To: <CAFZ-hKhx9FFTP1wdb2OK9oRtML8Aot2kNrkfzw74JPOfam_OKg@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8
+From: "Chen, Hongzhan" <hongzhan.chen@intel.com>
+Subject: [PATCH V2 06/10] dovetail/pipeline: implement out-of-band irq
+ management and handling
+Date: Wed, 13 Jan 2021 04:39:45 +0000
+Message-ID: <MWHPR11MB17102B9776C89373EC8384A9F2A90@MWHPR11MB1710.namprd11.prod.outlook.com>
 Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+MIME-Version: 1.0
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,23 +15,110 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Leandro Bucci <guestleandro11@gmail.com>, xenomai@xenomai.org
+To: Philippe Gerum <rpm@xenomai.org>, "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On 01.02.21 08:47, Leandro Bucci via Xenomai wrote:
-> hi, I wanted to know how the Xenomai scheduler works. If I assign three
-> tasks to processor CPU 0 and four tasks to processor CPU 1, is it possible
-> that the tasks will run simultaneously (one on CPU 0 and one on CPU 1)?
-> 
+implement oob irq request and free and post for both
+TIMER_OOB_IPI and RESCHEDULE_OOB_IPI
 
-Yes.
+Signed-off-by: hongzha1 <hongzhan.chen@intel.com>
 
-Xenomai does no load balancing, i.e. it does not touch the affinity you
-assign - or the one Linux picked during startup if you do not assign
-anything.
-
-Jan
-
--- 
-Siemens AG, T RDA IOT
-Corporate Competence Center Embedded Linux
+diff --git a/include/cobalt/kernel/dovetail/pipeline/pipeline.h b/include/c=
+obalt/kernel/dovetail/pipeline/pipeline.h
+index 23c4a2c18..13fbd7942 100644
+--- a/include/cobalt/kernel/dovetail/pipeline/pipeline.h
++++ b/include/cobalt/kernel/dovetail/pipeline/pipeline.h
+@@ -8,9 +8,12 @@
+ #include <linux/irq_pipeline.h>
+ #include <cobalt/kernel/assert.h>
+ #include <asm/xenomai/features.h>
++#include <pipeline/machine.h>
+=20
+ typedef unsigned long spl_t;
+=20
++void xnintr_core_clock_handler(void);
++
+ /*
+  * We only keep the LSB when testing in SMP mode in order to strip off
+  * the recursion marker (0x2) the nklock may store there.
+@@ -30,18 +33,28 @@ typedef unsigned long spl_t;
+=20
+ #ifdef CONFIG_SMP
+=20
++static irqreturn_t reschedule_interrupt_handler(int irq, void *dev_id)
++{
++
++	/* Will reschedule from irq_exit_pipeline. */
++
++	return IRQ_HANDLED;
++}
++
+ static inline int pipeline_request_resched_ipi(void (*handler)(void))
+ {
+ 	/* Trap the out-of-band rescheduling interrupt. */
+-	TODO();
+-
+-	return 0;
++	return __request_percpu_irq(RESCHEDULE_OOB_IPI,
++			reschedule_interrupt_handler,
++			IRQF_OOB,
++			"Xenomai reschedule",
++			&cobalt_machine_cpudata);
+ }
+=20
+ static inline void pipeline_free_resched_ipi(void)
+ {
+ 	/* Release the out-of-band rescheduling interrupt. */
+-	TODO();
++	free_percpu_irq(RESCHEDULE_OOB_IPI, &cobalt_machine_cpudata);
+ }
+=20
+ static inline void pipeline_send_resched_ipi(const struct cpumask *dest)
+@@ -50,21 +63,29 @@ static inline void pipeline_send_resched_ipi(const stru=
+ct cpumask *dest)
+ 	 * Trigger the out-of-band rescheduling interrupt on remote
+ 	 * CPU(s).
+ 	 */
+-	TODO();
++	irq_send_oob_ipi(RESCHEDULE_OOB_IPI, dest);
++}
++
++static irqreturn_t timer_ipi_interrupt_handler(int irq, void *dev_id)
++{
++	xnintr_core_clock_handler();
++
++	return IRQ_HANDLED;
+ }
+=20
+ static inline int pipeline_request_timer_ipi(void (*handler)(void))
+ {
+ 	/* Trap the out-of-band timer interrupt. */
+-	TODO();
+-
+-	return 0;
++	return __request_percpu_irq(TIMER_OOB_IPI,
++			timer_ipi_interrupt_handler,
++			IRQF_OOB, "Xenomai timer IPI",
++			&cobalt_machine_cpudata);
+ }
+=20
+ static inline void pipeline_free_timer_ipi(void)
+ {
+ 	/* Release the out-of-band timer interrupt. */
+-	TODO();
++	free_percpu_irq(TIMER_OOB_IPI, &cobalt_machine_cpudata);
+ }
+=20
+ static inline void pipeline_send_timer_ipi(const struct cpumask *dest)
+@@ -72,7 +93,7 @@ static inline void pipeline_send_timer_ipi(const struct c=
+pumask *dest)
+ 	/*
+ 	 * Trigger the out-of-band timer interrupt on remote CPU(s).
+ 	 */
+-	TODO();
++	irq_send_oob_ipi(TIMER_OOB_IPI, dest);
+ }
+=20
+ #endif
+--=20
+2.17.1
 
