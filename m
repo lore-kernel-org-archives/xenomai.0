@@ -1,16 +1,9 @@
-From: "Chen, Hongzhan" <hongzhan.chen@intel.com>
-Subject: RE: [PATCH 09/10] dovetail/clock: implement pipeline_timer_name to
- get name of real device
-Date: Tue, 12 Jan 2021 01:35:50 +0000
-Message-ID: <MWHPR11MB1710D0CE4E5F4994BE9A8EB3F2AA0@MWHPR11MB1710.namprd11.prod.outlook.com>
-References: <20210111064318.6154-1-hongzhan.chen@intel.com>
- <20210111064318.6154-9-hongzhan.chen@intel.com>
- <5FFCF963.7000407@tj.kylinos.cn>+E6AB9DC21AB1EDCC
-In-Reply-To: <5FFCF963.7000407@tj.kylinos.cn>+E6AB9DC21AB1EDCC
-Content-Language: en-US
-MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+From: hongzha1 <hongzhan.chen@intel.com>
+Subject: [PATCH 6/8] cobalt/timer: pipeline: abstract signal test of XNTSTOP
+Date: Thu, 14 Jan 2021 20:16:37 -0500
+Message-Id: <20210115011639.15390-7-hongzhan.chen@intel.com>
+In-Reply-To: <20210115011639.15390-1-hongzhan.chen@intel.com>
+References: <20210115011639.15390-1-hongzhan.chen@intel.com>
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -19,56 +12,88 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: chensong <chensong@tj.kylinos.cn>, "Xenomai@xenomai.org" <Xenomai@xenomai.org>
+To: xenomai@xenomai.org
 
-Pg0KPg0KPi0tLS0tT3JpZ2luYWwgTWVzc2FnZS0tLS0tDQo+RnJvbTogY2hlbnNvbmcgPGNoZW5z
-b25nQHRqLmt5bGlub3MuY24+DQo+U2VudDogVHVlc2RheSwgSmFudWFyeSAxMiwgMjAyMSA5OjIx
-IEFNDQo+VG86IENoZW4sIEhvbmd6aGFuIDxob25nemhhbi5jaGVuQGludGVsLmNvbT47IFhlbm9t
-YWlAeGVub21haS5vcmcNCj5TdWJqZWN0OiBSZTogW1BBVENIIDA5LzEwXSBkb3ZldGFpbC9jbG9j
-azogaW1wbGVtZW50IHBpcGVsaW5lX3RpbWVyX25hbWUgdG8gZ2V0IG5hbWUgb2YgcmVhbCBkZXZp
-Y2UNCj4NCj4NCj4NCj5PbiAyMDIxPzAxPzExPyAxNDo0MywgaG9uZ3poYTEgdmlhIFhlbm9tYWkg
-d3JvdGU6DQo+PiBTaWduZWQtb2ZmLWJ5OiBob25nemhhMSA8aG9uZ3poYW4uY2hlbkBpbnRlbC5j
-b20+DQo+PiAtLS0NCj4+ICAgaW5jbHVkZS9jb2JhbHQva2VybmVsL2RvdmV0YWlsL3BpcGVsaW5l
-L2Nsb2NrLmggfCA1ICsrLS0tDQo+PiAgIGtlcm5lbC9jb2JhbHQvZG92ZXRhaWwvdGljay5jICAg
-ICAgICAgICAgICAgICAgIHwgOCArKysrKysrKw0KPj4gICAyIGZpbGVzIGNoYW5nZWQsIDEwIGlu
-c2VydGlvbnMoKyksIDMgZGVsZXRpb25zKC0pDQo+Pg0KPj4gZGlmZiAtLWdpdCBhL2luY2x1ZGUv
-Y29iYWx0L2tlcm5lbC9kb3ZldGFpbC9waXBlbGluZS9jbG9jay5oIGIvaW5jbHVkZS9jb2JhbHQv
-a2VybmVsL2RvdmV0YWlsL3BpcGVsaW5lL2Nsb2NrLmgNCj4+IGluZGV4IGNlOWE1Yzg2Ny4uNzcx
-MTA0YWI0IDEwMDY0NA0KPj4gLS0tIGEvaW5jbHVkZS9jb2JhbHQva2VybmVsL2RvdmV0YWlsL3Bp
-cGVsaW5lL2Nsb2NrLmgNCj4+ICsrKyBiL2luY2x1ZGUvY29iYWx0L2tlcm5lbC9kb3ZldGFpbC9w
-aXBlbGluZS9jbG9jay5oDQo+PiBAQCAtMTIsNiArMTIsNyBAQA0KPj4gICBzdHJ1Y3QgdGltZXNw
-ZWM2NDsNCj4+DQo+PiAgIGV4dGVybiBpbmxpbmUgdm9pZCB4bnByb3h5X3RpbWVyX3NldCh1bnNp
-Z25lZCBsb25nIGRlbHRhKTsNCj4+ICtpbmxpbmUgY29uc3QgY2hhciAqeG5fZ2V0X3RpbWVyX25h
-bWUodm9pZCk7DQo+Pg0KPj4gICBzdGF0aWMgaW5saW5lIHU2NCBwaXBlbGluZV9yZWFkX2N5Y2xl
-X2NvdW50ZXIodm9pZCkNCj4+ICAgew0KPj4gQEAgLTM3LDkgKzM4LDcgQEAgc3RhdGljIGlubGlu
-ZSBjb25zdCBjaGFyICpwaXBlbGluZV90aW1lcl9uYW1lKHZvaWQpDQo+PiAgICAgICAgICAgKiBS
-ZXR1cm4gdGhlIG5hbWUgb2YgdGhlIGN1cnJlbnQgY2xvY2sgZXZlbnQgY2hpcCwgd2hpY2ggaXMN
-Cj4+ICAgICAgICAgICAqIHRoZSByZWFsIGRldmljZSBjb250cm9sbGVkIGJ5IHRoZSBwcm94eSB0
-aWNrIGRldmljZS4NCj4+ICAgICAgICAgICAqLw0KPj4gLSAgICAgICAgVE9ETygpOw0KPj4gLQ0K
-Pj4gLSAgICAgICAgcmV0dXJuICI/IjsNCj4+ICsgICAgICAgcmV0dXJuIHhuX2dldF90aW1lcl9u
-YW1lKCk7DQo+PiAgIH0NCj4+DQo+DQo+UEFUQ0ggMDIvMTAsIFBBVENIIDA4LzEwIGFuZCB0aGlz
-IG9uZSwgYWxsIG9mIHRoZW0gaGF2ZSB0aGUgY2hhbmdlcyBmb3INCj5waXBlbGluZV9yZWFkX2N5
-Y2xlX2NvdW50ZXIgaW4NCj5pbmNsdWRlL2NvYmFsdC9rZXJuZWwvZG92ZXRhaWwvcGlwZWxpbmUv
-Y2xvY2suaCwgYW5kIHRoZXkgbG9vaw0KPmRpZmZlcmVudCwgaG93IHNvPyBvciB0aGV5IGFyZSBp
-bmNyZW1lbnRhbCBpbXBsZW1lbnRhdGlvbixidXQgUEFUQ0gNCj4wMi8xMCByZXR1cm5zIGt0aW1l
-X2dldF9yYXdfZmFzdF9ucygpIGFuZCBQQVRDSCAwOS8xMCByZXR1cm5zDQo+eG5fZ2V0X3RpbWVy
-X25hbWUoKTsuDQo+DQoNClBhdGNoIDAyLzEwIHJlYWxseSBtb2RpZnkgcGlwZWxpbmVfcmVhZF9j
-eWNsZV9jb3VudGUgYnV0IDA4LzEwIGFjdHVhbGx5IG1vZGlmeQ0KcGlwZWxpbmVfc2V0X3RpbWVy
-X3Nob3QgYW5kIHRoaXMgb25lIG1vZGlmeSBwaXBlbGluZV90aW1lcl9uYW1lLiBUaGUgcGF0Y2gg
-Zm9ybWF0DQpjcmVhdGVkIGJ5IGdpdCBzZW5kLWVtYWlsIGlzIHJlYWxseSBub3QgZnJpZW5kbHkg
-dG8gcmVhZCwgSSBhbHNvDQptYWRlIHN1Y2ggbWlzdGFrZSBiZWZvcmUuDQoNClJlZ2FyZHMNCg0K
-SG9uZ3poYW4gQ2hlbg0KPj4gICBzdGF0aWMgaW5saW5lIGNvbnN0IGNoYXIgKnBpcGVsaW5lX2Ns
-b2NrX25hbWUodm9pZCkNCj4+IGRpZmYgLS1naXQgYS9rZXJuZWwvY29iYWx0L2RvdmV0YWlsL3Rp
-Y2suYyBiL2tlcm5lbC9jb2JhbHQvZG92ZXRhaWwvdGljay5jDQo+PiBpbmRleCA1ODY2MmU5NGUu
-LmU0MGVjMDZjYiAxMDA2NDQNCj4+IC0tLSBhL2tlcm5lbC9jb2JhbHQvZG92ZXRhaWwvdGljay5j
-DQo+PiArKysgYi9rZXJuZWwvY29iYWx0L2RvdmV0YWlsL3RpY2suYw0KPj4gQEAgLTE2LDYgKzE2
-LDE0IEBAIGV4dGVybiBzdHJ1Y3QgeG5pbnRyIG5rdGltZXI7DQo+Pg0KPj4gICBzdGF0aWMgREVG
-SU5FX1BFUl9DUFUoc3RydWN0IGNsb2NrX3Byb3h5X2RldmljZSAqLCBwcm94eV9kZXZpY2UpOw0K
-Pj4NCj4+ICtpbmxpbmUgY29uc3QgY2hhciAqeG5fZ2V0X3RpbWVyX25hbWUodm9pZCkNCj4+ICt7
-DQo+PiArICAgICAgIHN0cnVjdCBjbG9ja19wcm94eV9kZXZpY2UgKmRldiA9IF9fdGhpc19jcHVf
-cmVhZChwcm94eV9kZXZpY2UpOw0KPj4gKyAgICAgICBzdHJ1Y3QgY2xvY2tfZXZlbnRfZGV2aWNl
-ICpyZWFsX2RldiA9IGRldi0+cmVhbF9kZXZpY2U7DQo+PiArDQo+PiArICAgICAgIHJldHVybiBy
-ZWFsX2Rldi0+bmFtZTsNCj4+ICt9DQo+PiArDQo+PiAgIGlubGluZSB2b2lkIHhucHJveHlfdGlt
-ZXJfc2V0KHVuc2lnbmVkIGxvbmcgZGVsdGEpDQo+PiAgIHsNCj4+ICAgICAgICAgIHN0cnVjdCBj
-bG9ja19wcm94eV9kZXZpY2UgKmRldiA9IF9fdGhpc19jcHVfcmVhZChwcm94eV9kZXZpY2UpOw0K
-Pj4NCg==
+The I-pipe kind of internally "emulates" a shutdown+restart sequence
+automatically upon resuming a timer after the ONESHOT_STOPPED state, so
+we actually do not need XNTSTOP in this case. We should
+specifically abstract the single test of XNTSTOP when arming a
+timer, so that the Dovetail version does the right thing.
+We can leave XNTSTOP in the set/clear mask bits operations in either
+the I-pipe and Dovetail cases, this has zero overhead since other bits
+are being set/cleared in these operations anyway.
+
+Signed-off-by: hongzha1 <hongzhan.chen@intel.com>
+
+diff --git a/include/cobalt/kernel/ipipe/pipeline/tick.h b/include/cobalt/kernel/ipipe/pipeline/tick.h
+index 409581a3c..41347f7b1 100644
+--- a/include/cobalt/kernel/ipipe/pipeline/tick.h
++++ b/include/cobalt/kernel/ipipe/pipeline/tick.h
+@@ -9,4 +9,10 @@ int pipeline_install_tick_proxy(void);
+ 
+ void pipeline_uninstall_tick_proxy(void);
+ 
++struct xnsched;
++static inline bool pipeline_must_force_program_tick(struct xnsched *sched)
++{
++	return false;
++}
++
+ #endif /* !_COBALT_KERNEL_IPIPE_TICK_H */
+diff --git a/include/cobalt/kernel/sched.h b/include/cobalt/kernel/sched.h
+index c13f46ff7..aa24d5442 100644
+--- a/include/cobalt/kernel/sched.h
++++ b/include/cobalt/kernel/sched.h
+@@ -48,6 +48,11 @@
+ #define XNINIRQ		0x00004000	/* In IRQ handling context */
+ #define XNHDEFER	0x00002000	/* Host tick deferred */
+ 
++/*
++ * Hardware timer is stopped.
++ */
++#define XNTSTOP		0x00000800
++
+ struct xnsched_rt {
+ 	xnsched_queue_t runnable;	/*!< Runnable thread queue. */
+ };
+diff --git a/kernel/cobalt/clock.c b/kernel/cobalt/clock.c
+index bf24e1693..2115b15ef 100644
+--- a/kernel/cobalt/clock.c
++++ b/kernel/cobalt/clock.c
+@@ -147,7 +147,7 @@ void xnclock_core_local_shot(struct xnsched *sched)
+ 	 * or a timer with an earlier timeout date is scheduled,
+ 	 * whichever comes first.
+ 	 */
+-	sched->lflags &= ~(XNHDEFER|XNIDLE);
++	sched->lflags &= ~(XNHDEFER|XNIDLE|XNTSTOP);
+ 	timer = container_of(h, struct xntimer, aplink);
+ 	if (unlikely(timer == &sched->htimer)) {
+ 		if (xnsched_resched_p(sched) ||
+diff --git a/kernel/cobalt/timer.c b/kernel/cobalt/timer.c
+index f9aa457ce..f667a3878 100644
+--- a/kernel/cobalt/timer.c
++++ b/kernel/cobalt/timer.c
+@@ -18,6 +18,7 @@
+  * 02111-1307, USA.
+  */
+ #include <linux/sched.h>
++#include <pipeline/tick.h>
+ #include <cobalt/kernel/sched.h>
+ #include <cobalt/kernel/thread.h>
+ #include <cobalt/kernel/timer.h>
+@@ -63,8 +64,10 @@ int xntimer_heading_p(struct xntimer *timer)
+ 
+ void xntimer_enqueue_and_program(struct xntimer *timer, xntimerq_t *q)
+ {
++	struct xnsched *sched = xntimer_sched(timer);
++
+ 	xntimer_enqueue(timer, q);
+-	if (xntimer_heading_p(timer)) {
++	if (pipeline_must_force_program_tick(sched) || xntimer_heading_p(timer)) {
+ 		struct xnsched *sched = xntimer_sched(timer);
+ 		struct xnclock *clock = xntimer_clock(timer);
+ 		if (sched != xnsched_current())
+-- 
+2.17.1
+
+
