@@ -1,7 +1,7 @@
 From: hongzha1 <hongzhan.chen@intel.com>
 Subject: [PATCH 6/8] cobalt/timer: pipeline: abstract signal test of XNTSTOP
-Date: Thu, 14 Jan 2021 20:16:37 -0500
-Message-Id: <20210115011639.15390-7-hongzhan.chen@intel.com>
+Date: Thu, 14 Jan 2021 20:16:36 -0500
+Message-Id: <20210115011639.15390-6-hongzhan.chen@intel.com>
 In-Reply-To: <20210115011639.15390-1-hongzhan.chen@intel.com>
 References: <20210115011639.15390-1-hongzhan.chen@intel.com>
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
