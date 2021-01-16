@@ -1,11 +1,11 @@
 References: <20210115011639.15390-1-hongzhan.chen@intel.com>
- <20210115011639.15390-5-hongzhan.chen@intel.com>
+ <20210115011639.15390-6-hongzhan.chen@intel.com>
 From: Philippe Gerum <rpm@xenomai.org>
-Subject: Re: [PATCH 5/8] dovetail/kevents: dovetail: implement
- handle_ptrace_cont
-In-reply-to: <20210115011639.15390-5-hongzhan.chen@intel.com>
-Date: Sat, 16 Jan 2021 13:31:16 +0100
-Message-ID: <87sg71rrl7.fsf@xenomai.org>
+Subject: Re: [PATCH 6/8] cobalt/timer: pipeline: abstract signal test of
+ XNTSTOP
+In-reply-to: <20210115011639.15390-6-hongzhan.chen@intel.com>
+Date: Sat, 16 Jan 2021 16:11:51 +0100
+Message-ID: <87eeiksyq0.fsf@xenomai.org>
 MIME-Version: 1.0
 Content-Type: text/plain
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
@@ -22,31 +22,30 @@ Cc: xenomai@xenomai.org
 
 hongzha1 via Xenomai <xenomai@xenomai.org> writes:
 
-> Signed-off-by: hongzha1 <hongzhan.chen@intel.com>
+> The I-pipe kind of internally "emulates" a shutdown+restart sequence
+> automatically upon resuming a timer after the ONESHOT_STOPPED state, so
+> we actually do not need XNTSTOP in this case. We should
+> specifically abstract the single test of XNTSTOP when arming a
+> timer, so that the Dovetail version does the right thing.
+> We can leave XNTSTOP in the set/clear mask bits operations in either
+> the I-pipe and Dovetail cases, this has zero overhead since other bits
+> are being set/cleared in these operations anyway.
 >
-> diff --git a/kernel/cobalt/dovetail/kevents.c b/kernel/cobalt/dovetail/kevents.c
-> index b5dc50ea7..378017bea 100644
-> --- a/kernel/cobalt/dovetail/kevents.c
-> +++ b/kernel/cobalt/dovetail/kevents.c
-> @@ -473,7 +473,7 @@ int handle_ptrace_resume(struct task_struct *tracee)
->  	return KEVENT_PROPAGATE;
->  }
->  
-> -static void handle_ptrace_cont(void)
-> +static void handle_ptrace_cont(struct task_struct *next_task)
->  {
 
-Dovetail does not pass any argument to the client core along with
-INBAND_TASK_PTCONT, because "current" may always be assumed. So
-handle_ptrace_cont() receives no argument, and next_task is actually
-"current" in this case.
+This change log is confusing: citing one of my past remarks it seems, it
+explains how we should be abstracting XNTSTOP, but the patch actually
+introduces it. Therefore we should explain _why_ we are introducing
+XNTSTOP in the first place, then maybe retain the last paragraph only to
+justify some details of the implementation.
 
-The reason was that the I-pipe gave us no way to observe ptraced tasks
-waking up from a stopped state, so we resorted to observing context
-switches, figuring out when/if the incoming task was about to resume
-from a ptrace-induced stopped state. Since Dovetail can send us such
-event directly from the context of the resuming task, next_task ==
-current in this context.
+The patch actually adds a way to force the timer management code to
+reprogram the hardware on option, to make the real device controlled by
+the proxy tick again as it leaves the ONESHOT_STOPPED mode. We should go
+on saying that the I-pipe does not require any further action in this
+case, leading to a nop (for this patch). Patch 7/10 would then implement
+the Dovetail side, which does require the next tick to be force
+programmed in the hardware as a result of leaving the ONESHOT_STOPPED
+mode.
 
 -- 
 Philippe.
