@@ -1,10 +1,11 @@
 References: <20210115011639.15390-1-hongzhan.chen@intel.com>
+ <20210115011639.15390-2-hongzhan.chen@intel.com>
 From: Philippe Gerum <rpm@xenomai.org>
-Subject: Re: [PATCH V2 1/8] dovetail/pipeline: implement out-of-band irq
- management and handling
-In-reply-to: <20210115011639.15390-1-hongzhan.chen@intel.com>
-Date: Sat, 16 Jan 2021 12:38:22 +0100
-Message-ID: <877dodt8lt.fsf@xenomai.org>
+Subject: Re: [PATCH 2/8] dovetail/tick: implement proxy tick device
+ installing and uninstalling
+In-reply-to: <20210115011639.15390-2-hongzhan.chen@intel.com>
+Date: Sat, 16 Jan 2021 12:42:01 +0100
+Message-ID: <8735z1t8fq.fsf@xenomai.org>
 MIME-Version: 1.0
 Content-Type: text/plain
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
@@ -21,113 +22,127 @@ Cc: xenomai@xenomai.org
 
 hongzha1 via Xenomai <xenomai@xenomai.org> writes:
 
-> implement oob irq request and free and post for both
-> TIMER_OOB_IPI and RESCHEDULE_OOB_IPI
->
 > Signed-off-by: hongzha1 <hongzhan.chen@intel.com>
 >
-> diff --git a/include/cobalt/kernel/dovetail/pipeline/pipeline.h b/include/cobalt/kernel/dovetail/pipeline/pipeline.h
-> index 23c4a2c18..13fbd7942 100644
-> --- a/include/cobalt/kernel/dovetail/pipeline/pipeline.h
-> +++ b/include/cobalt/kernel/dovetail/pipeline/pipeline.h
-> @@ -8,9 +8,12 @@
->  #include <linux/irq_pipeline.h>
->  #include <cobalt/kernel/assert.h>
->  #include <asm/xenomai/features.h>
-> +#include <pipeline/machine.h>
+> diff --git a/kernel/cobalt/dovetail/tick.c b/kernel/cobalt/dovetail/tick.c
+> index 02cd86690..6a196496c 100644
+> --- a/kernel/cobalt/dovetail/tick.c
+> +++ b/kernel/cobalt/dovetail/tick.c
+> @@ -6,11 +6,92 @@
+>   */
 >  
->  typedef unsigned long spl_t;
+>  #include <linux/tick.h>
+> +#include <linux/clockchips.h>
+>  #include <cobalt/kernel/intr.h>
+>  #include <pipeline/tick.h>
+> +#include <cobalt/kernel/sched.h>
+> +#include <cobalt/kernel/timer.h>
 >  
-> +void xnintr_core_clock_handler(void);
+>  extern struct xnintr nktimer;
+>  
+> +static DEFINE_PER_CPU(struct clock_proxy_device *, proxy_device);
 > +
->  /*
->   * We only keep the LSB when testing in SMP mode in order to strip off
->   * the recursion marker (0x2) the nklock may store there.
-> @@ -30,18 +33,28 @@ typedef unsigned long spl_t;
->  
->  #ifdef CONFIG_SMP
->  
-> +static irqreturn_t reschedule_interrupt_handler(int irq, void *dev_id)
+> +static int proxy_set_next_ktime(ktime_t expires,
+> +				struct clock_event_device *proxy_dev)
 > +{
+> +	struct xnsched *sched;
+> +	ktime_t delta;
+> +	unsigned long flags;
+> +	int ret;
 > +
-> +	/* Will reschedule from irq_exit_pipeline. */
+> +	/*
+> +	 * When Negative delta have been observed, we set delta zero.
+> +	 * Or else exntimer_start() will return -ETIMEDOUT and do not
+> +	 * trigger shot
+> +	 */
+> +	delta = ktime_sub(expires, ktime_get_mono_fast_ns());
+> +	if (delta < 0)
+> +		delta = 0;
 > +
-> +	return IRQ_HANDLED;
+> +	flags = hard_local_irq_save(); /* Prevent CPU migration. */
+> +	sched = xnsched_current();
+> +	ret = xntimer_start(&sched->htimer, delta, XN_INFINITE, XN_RELATIVE);
+> +	hard_local_irq_restore(flags);
+> +
+> +	return ret ? -ETIME : 0;
 > +}
 > +
->  static inline int pipeline_request_resched_ipi(void (*handler)(void))
->  {
->  	/* Trap the out-of-band rescheduling interrupt. */
-> -	TODO();
-> -
-> -	return 0;
-> +	return __request_percpu_irq(RESCHEDULE_OOB_IPI,
-> +			reschedule_interrupt_handler,
-> +			IRQF_OOB,
-> +			"Xenomai reschedule",
-> +			&cobalt_machine_cpudata);
->  }
->  
->  static inline void pipeline_free_resched_ipi(void)
->  {
->  	/* Release the out-of-band rescheduling interrupt. */
-> -	TODO();
-> +	free_percpu_irq(RESCHEDULE_OOB_IPI, &cobalt_machine_cpudata);
->  }
->  
->  static inline void pipeline_send_resched_ipi(const struct cpumask *dest)
-> @@ -50,21 +63,29 @@ static inline void pipeline_send_resched_ipi(const struct cpumask *dest)
->  	 * Trigger the out-of-band rescheduling interrupt on remote
->  	 * CPU(s).
->  	 */
-> -	TODO();
-> +	irq_send_oob_ipi(RESCHEDULE_OOB_IPI, dest);
-> +}
 > +
-> +static irqreturn_t timer_ipi_interrupt_handler(int irq, void *dev_id)
+> +void xn_core_tick(struct clock_event_device *dummy) /* hard irqs off */
 > +{
 > +	xnintr_core_clock_handler();
+> +}
 > +
-> +	return IRQ_HANDLED;
->  }
->  
->  static inline int pipeline_request_timer_ipi(void (*handler)(void))
+> +static int proxy_set_oneshot_stopped(struct clock_event_device *proxy_dev)
+> +{
+> +	struct clock_event_device *real_dev;
+> +	struct clock_proxy_device *dev;
+> +	struct xnsched *sched;
+> +	spl_t s;
+> +
+> +	dev = container_of(proxy_dev, struct clock_proxy_device, proxy_device);
+> +
+> +	/*
+> +	 * In-band wants to disable the clock hardware on entering a
+> +	 * tickless state, so we have to stop our in-band tick
+> +	 * emulation. Propagate the request for shutting down the
+> +	 * hardware to the real device only if we have no outstanding
+> +	 * OOB timers. CAUTION: the in-band timer is counted when
+> +	 * assessing the RQ_IDLE condition, so we need to stop it
+> +	 * prior to testing the latter.
+> +	 */
+> +	xnlock_get_irqsave(&nklock, s);
+> +	sched = xnsched_current();
+> +	xntimer_stop(&sched->htimer);
+> +	//sched->lflags |= XNTSTOP;
+> +
+> +	if (sched->lflags & XNIDLE) {
+> +		real_dev = dev->real_device;
+> +		real_dev->set_state_oneshot_stopped(real_dev);
+> +	}
+> +
+> +	xnlock_put_irqrestore(&nklock, s);
+> +
+> +	return 0;
+> +}
+> +
+> +static void setup_proxy(struct clock_proxy_device *dev)
+> +{
+> +	struct clock_event_device *proxy_dev = &dev->proxy_device;
+> +
+> +	dev->handle_oob_event = xn_core_tick;
+> +	proxy_dev->features |= CLOCK_EVT_FEAT_KTIME;
+> +	proxy_dev->set_next_ktime = proxy_set_next_ktime;
+> +	if (proxy_dev->set_state_oneshot_stopped)
+> +		proxy_dev->set_state_oneshot_stopped = proxy_set_oneshot_stopped;
+> +	__this_cpu_write(proxy_device, dev);
+> +}
+> +
+>  int pipeline_install_tick_proxy(void)
 >  {
->  	/* Trap the out-of-band timer interrupt. */
-> -	TODO();
-> -
-> -	return 0;
-> +	return __request_percpu_irq(TIMER_OOB_IPI,
-> +			timer_ipi_interrupt_handler,
-> +			IRQF_OOB, "Xenomai timer IPI",
-> +			&cobalt_machine_cpudata);
->  }
+>  	int ret;
+> @@ -20,7 +101,7 @@ int pipeline_install_tick_proxy(void)
+>  		return ret;
 >  
->  static inline void pipeline_free_timer_ipi(void)
+>  	/* Install the proxy tick device */
+> -	TODO();	ret = 0;
+> +	ret = tick_install_proxy(setup_proxy, &xnsched_realtime_cpus);
+>  	if (ret)
+>  		goto fail_proxy;
+>  
+> @@ -35,7 +116,7 @@ fail_proxy:
+>  void pipeline_uninstall_tick_proxy(void)
 >  {
->  	/* Release the out-of-band timer interrupt. */
+>  	/* Uninstall the proxy tick device. */
 > -	TODO();
-> +	free_percpu_irq(TIMER_OOB_IPI, &cobalt_machine_cpudata);
->  }
+> +	tick_uninstall_proxy(&xnsched_realtime_cpus);
 >  
->  static inline void pipeline_send_timer_ipi(const struct cpumask *dest)
-> @@ -72,7 +93,7 @@ static inline void pipeline_send_timer_ipi(const struct cpumask *dest)
->  	/*
->  	 * Trigger the out-of-band timer interrupt on remote CPU(s).
->  	 */
-> -	TODO();
-> +	irq_send_oob_ipi(TIMER_OOB_IPI, dest);
->  }
->  
->  #endif
+>  	pipeline_free_timer_ipi();
 
-Merged, fixing up the short log on the fly, in order to align on the
-matching I-pipe patch as follows:
 
-"dovetail/irq: dovetail: implement out-of-band irq management and
-handling"
+Merged, fixing up the short log for consistency with other patches, as:
 
-Thanks,
+cobalt/tick: dovetail: install/uninstall proxy tick device
 
 -- 
 Philippe.
